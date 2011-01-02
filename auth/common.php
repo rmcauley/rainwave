@@ -1,0 +1,263 @@
+<?php
+
+$pagestart = microtime(true);
+
+require_once('/var/www/substream.rainwave.cc/forums/config.php' );
+define('IN_PHPBB',true);
+$phpbb_root_path = "/var/www/substream.rainwave.cc/forums/";
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
+include($phpbb_root_path . 'common.' . $phpEx);
+
+define("RW", 1);
+define("OCR", 2);
+define("VW", 3);
+
+$sid = RW;
+if ($_COOKIE['r3sid'] == "1") $sid = RW;
+else if ($_COOKIE['r3sid'] == "2") $sid = OCR;
+else if ($_COOKIE['r3sid'] == "3") $sid = VW;
+// This gives precedence to URL if using a subdomained station
+if ($_SERVER['HTTP_HOST'] == "rw.rainwave.cc") $sid = RW;
+else if ($_SERVER['HTTP_HOST'] == "ocr.rainwave.cc") $sid = OCR;
+else if ($_SERVER['HTTP_HOST'] == "vwave.rainwave.cc") $sid = VW;
+// An override, mostly for administration uses
+if ($_GET['site'] == "rw") $sid = RW;
+else if ($_GET['site'] == "oc") $sid = OCR;
+else if ($_GET['site'] == "vw") $sid = VW;
+// And a final override for when $_GET cannot be used or modified!
+if (defined(SITEOVERRIDE)) $sid = SITEOVERRIDE;
+
+$output = array();
+$lastoutput = array();
+
+define("RW_SID", $sid);
+define("RW_DBPREFIX", "rw_");
+
+define("TBL_ADS", RW_DBPREFIX . "ads");
+define("TBL_ALBUMS", RW_DBPREFIX . "albums");
+define("TBL_ARTISTS", RW_DBPREFIX . "artists");
+define("TBL_SONGS", RW_DBPREFIX . "songs");
+define("TBL_SONGRATINGS", RW_DBPREFIX . "songratings");
+define("TBL_ALBUMRATINGS", RW_DBPREFIX . "albumratings");
+define("TBL_COMMANDS", RW_DBPREFIX . "commands");
+define("TBL_REQUESTS", RW_DBPREFIX . "requests");
+define("TBL_SONG_ARTIST", RW_DBPREFIX . "song_artist");
+define("TBL_SCHEDULE", RW_DBPREFIX . "schedule");
+define("TBL_AD_SETS", RW_DBPREFIX . "ad_sets");
+define("TBL_AD_SET_CONTENTS", RW_DBPREFIX . "ad_set_contents");
+define("TBL_ELECTIONS", RW_DBPREFIX . "elections");
+define("TBL_OA_CAT", RW_DBPREFIX . "oa_categories");
+define("TBL_SONG_OA_CAT", RW_DBPREFIX . "song_oa_cat");
+define("TBL_PLAYLISTS", RW_DBPREFIX . "playlists");
+define("TBL_PLAYLIST_SONGS", RW_DBPREFIX . "playlist_songs");
+define("TBL_ONESHOT", RW_DBPREFIX . "oneshot");
+define("TBL_REQUEST_QUEUE", RW_DBPREFIX . "request_queue");
+define("TBL_LISTENERS", RW_DBPREFIX . "listeners");
+define("TBL_LISTENERHISTORY", RW_DBPREFIX . "listenerhistory");
+define("TBL_LISTENERSTATS", RW_DBPREFIX . "listenerstats");
+define("TBL_VOTEHISTORY", RW_DBPREFIX . "votehistory");
+define("TBL_ALBUMFAVOURITES", RW_DBPREFIX . "albumfavourites");
+define("TBL_SONGFAVOURITES", RW_DBPREFIX . "songfavourites");
+define("TBL_APIKEYS", RW_DBPREFIX . "apikeys");
+
+define("SCHED_ELEC", 0);
+define("SCHED_ADSET", 1);
+define("SCHED_JINGLE", 2);
+define("SCHED_LIVE", 3);
+define("SCHED_ONESHOT", 4);
+define("SCHED_PLAYLIST", 5);
+define("SCHED_PAUSE", 6);
+define("SCHED_DJ", 7);
+
+define("FIELDS_ALLALBUM", TBL_ALBUMS . ".album_id, " . TBL_ALBUMS . ".sid, album_name, album_lastplayed, album_rating_avg AS album_rating_avg, album_rating_count, album_totalrequests, album_totalvotes, album_lowest_oa, album_timesplayed, album_timeswon, album_timesdefeated");
+define("FIELDS_LIGHTALBUM", TBL_ALBUMS . ".album_id, album_name, album_rating_avg");
+define("FIELDS_ALLSONG", TBL_SONGS . ".song_id, " . TBL_SONGS . ".sid, song_title, song_secondslong, song_available, song_timesdefeated, song_timeswon, song_timesplayed, song_addedon, song_releasetime, song_lastplayed, song_rating_avg AS song_rating_avg, song_rating_count, song_totalvotes, song_totalrequests, song_url, song_urltext");
+define("FIELDS_LIGHTSONG", TBL_SONGS . ".song_id, song_title, song_secondslong, song_rating_avg AS song_rating_avg");
+define("FIELDS_ALLARTIST", TBL_ARTISTS . ".artist_id, artist_name, artist_lastplayed");
+define("FIELDS_ALLAD", TBL_ADS . ".ad_id, ad_title, ad_album, ad_artist, ad_genre, ad_comment, ad_secondslong, ad_url, ad_url_text");
+
+function globalizeUserData() {
+	$GLOBALS['user']->session_begin();
+	$GLOBALS['auth']->acl($GLOBALS['user']->data);
+	$GLOBALS['userdata'] =& $GLOBALS['user']->data;
+	$GLOBALS['user_id'] =& $GLOBALS['userdata']['user_id'];
+	$GLOBALS['username'] =& $GLOBALS['userdata']['username'];
+}
+	
+//-------------------------------------------------------------------------------------------------------
+
+function cleanUp() {
+	if (!$GLOBALS['db']->sql_close()) print "Error closing phpBB DB link.";
+}
+
+function db_single($sql) {
+	$result = $GLOBALS['db']->sql_query($sql);
+	$firstrow = $GLOBALS['db']->sql_fetchrow($result);
+	$toreturn = "";
+	if (is_array($firstrow)) $toreturn = $firstrow[key($firstrow)];
+	$GLOBALS['db']->sql_freeresult($result);
+	return $toreturn;
+}
+
+function db_row($sql) {
+	$result = $GLOBALS['db']->sql_query($sql);
+	$toreturn = $GLOBALS['db']->sql_fetchrow($result);
+	$GLOBALS['db']->sql_freeresult($result);
+	return $toreturn;
+}
+
+function db_table($sql) {
+	$result = $GLOBALS['db']->sql_query($sql);
+	$set = array();
+	while ($row = $GLOBALS['db']->sql_fetchrow($result)) {
+		$set[] = $row;
+	}
+	$GLOBALS['db']->sql_freeresult($result);
+	return $set;
+}
+
+function db_update($sql) {
+	$result = $GLOBALS['db']->sql_query($sql);
+	$toreturn = $GLOBALS['db']->sql_affectedrows();
+	$GLOBALS['db']->sql_freeresult($result);
+	return $toreturn;
+}
+
+function sendGlobalSignal($refresh) {
+	$r = new HttpRequest('http://localhost:6000/sync/1/update', HttpRequest::METH_GET);
+	$r->setOptions(array('timeout' => 1));
+	$r->send();
+}
+
+function sendUserSignal($user_id) {
+	$ch = curl_init('http://localhost:6000/sync/user/' . $user_id);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+	curl_exec($ch);
+	curl_close($ch);
+}
+
+function sendIPSignal($ip_address) {
+	$ch = curl_init('http://localhost:6000/sync/ip/' . $ip_address);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+	curl_exec($ch);
+	curl_close($ch);
+}
+
+function getCurrentElecSchedID() {
+	return db_single("SELECT sched_id FROM " . TBL_SCHEDULE . " WHERE sched_used != 0 AND sched_type = 0 ORDER BY sched_actualtime DESC LIMIT 1");
+}
+
+function addOutput($class, $data, $last = false, $first = false) {
+	if ($last) array_push($GLOBALS['lastoutput'], array("class" => $class, "data" => $data));
+	else if ($first) array_unshift($GLOBALS['output'], array("class" => $class, "data" => $data));
+	else array_push($GLOBALS['output'], array("class" => $class, "data" => $data));
+}
+
+function doOutput($basetime = 0) {
+	$GLOBALS['output'] += $GLOBALS['lastoutput'];
+	
+	$lyre = array(
+		"time" => time(),
+		"exectime" => sprintf("%0.4f", microtime(true) - $GLOBALS['pagestart']),
+		"queries" => $GLOBALS['db']->sql_num_queries()
+		);
+	if ($basetime != 0) $lyre['synctime'] = $basetime;
+	addOutput("querystats", $lyre, false, true);
+
+	print "[";
+	$first = true;
+	foreach($GLOBALS['output'] as $op) {
+		if (!$first) print ",";
+		print "{\"" . $op['class'] . "\":";
+		print arrayToJSON($op['data']);
+		$first = false;
+		print "}";
+	}
+	print "]";
+	$GLOBALS['output'] = array();
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+# Obtained from http://www.bin-co.com/php/scripts/array2json/
+# This is useful because the default json_encode spits numbers out in quotes
+# it also doesn't handle PostgreSQL's "t" and "f" for booleans 
+function arrayToJSON(array $arr) {
+	$parts = array();
+	$is_list = false;
+
+	if (count($arr) > 0) {
+		// Find out if the given array is a numerical array
+		$keys = array_keys($arr);
+		$max_length = count($arr)-1;
+		if (($keys[0] === 0) && ($keys[$max_length] === $max_length)) {//See if the first key is 0 and last key is length - 1
+			$is_list = true;
+			/*for($i=0; $i<count($keys); $i++) { //See if each key correspondes to its position
+				if($i !== $keys[$i]) { //A key fails at position check.
+					$is_list = false; //It is an associative array.
+					break;
+				}
+			}*/
+		}
+			
+		foreach($arr as $key=>$value) {
+			$str = ( !$is_list ? '"' . $key . '":' : '' );
+			if(is_array($value)) {
+				$parts[] = $str . arrayToJSON($value);
+			} else {
+				if (is_numeric($value)){
+					$str .= $value;
+				} elseif(is_bool($value)) {
+					$str .= ( $value ? 'true' : 'false' );
+				} elseif( $value === null ) {
+					$str .= 'null';
+				} elseif ( $value === "t" ) {
+					$str .= 'true';
+				} elseif ( $value === "f" ) {
+					$str .= 'false';
+				} else {
+					$value = str_replace("\\", "\\\\", $value);
+					$value = str_replace("\"", "\\\"", $value);
+					$value = str_replace("/", "\\/", $value);
+					$str .= '"' . $value . '"';
+				}
+				$parts[] = $str;
+			}
+		}
+	}
+	$json = implode(',',$parts);
+
+	if($is_list) return '[' . $json . ']';//Return numerical JSON
+	return '{' . $json . '}';//Return associative JSON
+}
+
+function newAPIKey($rw = false) {
+	$key = md5(uniqid(rand(), true));
+	$key = substr($key, 0, 10);
+	if ($GLOBALS['user_id'] == 1) {
+		$c = db_single("SELECT COUNT(*) FROM " . TBL_APIKEYS . " WHERE user_id = 1 AND api_ip '" . $_SERVER['REMOTE_ADDR'] . "'");
+		if ($c == 0) {
+			// the insert query is the same throughout the code
+			db_update("INSERT INTO " . TBL_APIKEYS . " (user_id, api_ip, api_key, api_isrw) VALUES (" . $GLOBALS['user_id'] . ", '" . $_SERVER['REMOTE_ADDR'] . "', '" . $key . "', " . ($rw ? "TRUE" : "FALSE") . ")");
+		}
+		else {
+			db_update("UPDATE " . TBL_APIKEYS . " SET api_key = '" . $key . "' WHERE user_id = 1 AND api_ip = '" . $_SERVER['REMOTE_ADDR'] . "'");
+		}
+	}
+	else if ($rw) {
+		$c = db_single("SELECT COUNT(*) FROM " . TBL_APIKEYS . " WHERE user_id = " . $GLOBALS['user_id'] . " AND api_isrw = TRUE");
+		if ($c == 0) {
+			// again same insert query
+			db_update("INSERT INTO " . TBL_APIKEYS . " (user_id, api_ip, api_key, api_isrw) VALUES (" . $GLOBALS['user_id'] . ", '" . $_SERVER['REMOTE_ADDR'] . "', '" . $key . "', " . ($rw ? "TRUE" : "FALSE") . ")");
+		}
+		else {
+			db_update("UPDATE " . TBL_APIKEYS . " SET api_key = '" . $key . "' WHERE user_id = " . $GLOBALS['user_id'] . " AND api_isrw = TRUE");
+		}
+	}
+	else {
+		// same query again
+		db_update("INSERT INTO " . TBL_APIKEYS . " (user_id, api_ip, api_key, api_isrw) VALUES (" . $GLOBALS['user_id'] . ", '" . $_SERVER['REMOTE_ADDR'] . "', '" . $key . "', " . ($rw ? "TRUE" : "FALSE") . ")");
+	}
+	
+	return $key;
+}
