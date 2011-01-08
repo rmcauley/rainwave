@@ -25,6 +25,16 @@ function RatingUpdateControl() {
 		if (result.code == 1) help.continueTutorialIfRunning("ratecurrentsong");
 	};
 	
+	that.songFavUpdate = function(result) {
+		result['category'] = "song";
+		that.favUpdate(result);
+	};
+	
+	that.albumFavUpdate = function(result) {
+		result['category'] = "album";
+		that.favUpdate(result);
+	};
+
 	that.favUpdate = function(result) {
 		log.log("RatingControl", 0, "Favourite: Result code " + result.code + " / " + result.text);
 		if (result.debug) log.log("RatingControl", 0, "PHP Debug: " + result.debug);
@@ -71,7 +81,8 @@ function RatingUpdateControl() {
 	
 	//user.addCallback(that, that.loginUpdate, "tunedin");
 	ajax.addCallback(that, that.ratingUpdate, "rate_result");
-	ajax.addCallback(that, that.favUpdate, "fav_result");
+	ajax.addCallback(that, that.songFavUpdate, "song_fav_result");
+	ajax.addCallback(that, that.albumFavUpdate, "album_fav_result");
 	ajax.addCallback(that, that.historyUpdate, "sched_history");
 
 	return that;

@@ -44,7 +44,7 @@ panels.PlaylistPanel = {
 			hotkey.addCallback(that, that.keyHandle, 0);
 			
 			initpiggyback['playlist'] = "true";
-			if (ajax.sync_on) {
+			if (ajax.sync_time > 0) {
 				ajax.async_get("all_albums");
 			}
 			

@@ -235,9 +235,8 @@ function newAPIKey($rw = false) {
 	$key = md5(uniqid(rand(), true));
 	$key = substr($key, 0, 10);
 	if ($GLOBALS['user_id'] == 1) {
-		$c = db_single("SELECT COUNT(*) FROM " . TBL_APIKEYS . " WHERE user_id = 1 AND api_ip '" . $_SERVER['REMOTE_ADDR'] . "'");
+		$c = db_single("SELECT COUNT(*) FROM " . TBL_APIKEYS . " WHERE user_id = 1 AND api_ip = '" . $_SERVER['REMOTE_ADDR'] . "'");
 		if ($c == 0) {
-			// the insert query is the same throughout the code
 			db_update("INSERT INTO " . TBL_APIKEYS . " (user_id, api_ip, api_key, api_isrw) VALUES (" . $GLOBALS['user_id'] . ", '" . $_SERVER['REMOTE_ADDR'] . "', '" . $key . "', " . ($rw ? "TRUE" : "FALSE") . ")");
 		}
 		else {
@@ -245,18 +244,18 @@ function newAPIKey($rw = false) {
 		}
 	}
 	else if ($rw) {
-		$c = db_single("SELECT COUNT(*) FROM " . TBL_APIKEYS . " WHERE user_id = " . $GLOBALS['user_id'] . " AND api_isrw = TRUE");
-		if ($c == 0) {
-			// again same insert query
-			db_update("INSERT INTO " . TBL_APIKEYS . " (user_id, api_ip, api_key, api_isrw) VALUES (" . $GLOBALS['user_id'] . ", '" . $_SERVER['REMOTE_ADDR'] . "', '" . $key . "', " . ($rw ? "TRUE" : "FALSE") . ")");
+		$c = db_single("SELECT api_key FROM " . TBL_APIKEYS . " WHERE user_id = " . $GLOBALS['user_id'] . " AND api_isrw = TRUE");
+		if ($c) {
+			return $c;
+			//db_update("UPDATE " . TBL_APIKEYS . " SET api_key = '" . $key . "' WHERE user_id = " . $GLOBALS['user_id'] . " AND api_isrw = TRUE");
 		}
 		else {
-			db_update("UPDATE " . TBL_APIKEYS . " SET api_key = '" . $key . "' WHERE user_id = " . $GLOBALS['user_id'] . " AND api_isrw = TRUE");
+			db_update("INSERT INTO " . TBL_APIKEYS . " (user_id, api_ip, api_key, api_isrw, api_expiry) VALUES (" . $GLOBALS['user_id'] . ", '" . $_SERVER['REMOTE_ADDR'] . "', '" . $key . "', " . ($rw ? "TRUE" : "FALSE") . ", 0)");
 		}
 	}
 	else {
 		// same query again
-		db_update("INSERT INTO " . TBL_APIKEYS . " (user_id, api_ip, api_key, api_isrw) VALUES (" . $GLOBALS['user_id'] . ", '" . $_SERVER['REMOTE_ADDR'] . "', '" . $key . "', " . ($rw ? "TRUE" : "FALSE") . ")");
+		db_update("INSERT INTO " . TBL_APIKEYS . " (user_id, api_ip, api_key, api_isrw, api_expiry) VALUES (" . $GLOBALS['user_id'] . ", '" . $_SERVER['REMOTE_ADDR'] . "', '" . $key . "', " . ($rw ? "TRUE" : "FALSE") . ", 0)");
 	}
 	
 	return $key;

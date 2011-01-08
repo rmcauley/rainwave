@@ -134,14 +134,14 @@ panels.SchedulePanel = {
 			
 			initpiggyback['live'] = "true";
 			ajax.addCallback(that, that.listUpdate, "live_shows");
-			if (ajax.sync_on) {
-				ajax.async_get("get_live_shows", {});
+			if (ajax.sync_time > 0) {
+				ajax.async_get("live_shows", {});
 			}
 			ajax.addCallback(that, that.liveTimerResync, "sched_current");
-			ajax.addCallback(that, that.liveStartResult, "live_start_result");
-			ajax.addCallback(that, that.liveEndResult, "live_end_result");
-			ajax.addCallback(that, that.liveDeleteResult, "live_delete_result");
-			ajax.addCallback(that, that.liveNewResult, "live_new_result");
+			ajax.addCallback(that, that.liveStartResult, "event_start_result");
+			ajax.addCallback(that, that.liveEndResult, "event_end_result");
+			ajax.addCallback(that, that.liveDeleteResult, "event_delete_result");
+			ajax.addCallback(that, that.liveNewResult, "event_add_result");
 		};
 		
 		that.submitNewShow = function() {
@@ -154,15 +154,15 @@ panels.SchedulePanel = {
 				var dt = new Date(form_time.value);
 				fdt = Math.floor(dt.getTime() / 1000);
 			}
-			ajax.async_get("live_new", "epochtime=" + fdt + "&name=" + form_name.value + "&notes=" + form_notes.value + "&user_id=" + form_user_id.value + "&type=" + typ + "&length=" + form_length.value);
+			ajax.async_get("event_new", { "time": fdt, "name": form_name.value, "notes": form_notes.value, "user_id": form_user_id.value, "type": typ, "length": form_length.value });
 		};
 		
 		that.startPause = function() {
-			ajax.async_get("live_new", "epochtime=0&name=Pause&notes=&user_id=" + user.p.user_id + "&type=" + SCHED_PAUSE + "&length=0");
+			ajax.async_get("event_new", { "time": 0, "name=": "Pause", "notes": "", "user_id": user.p.user_id, "type": SCHED_PAUSE, "length": 0 });
 		};
 		
 		that.endPause = function() {
-			ajax.async_get("livedelete", "sched_id=0");
+			ajax.async_get("event_delete", { "sched_id": 0 });
 		};
 		
 		that.liveNewResult = function(json) {
@@ -212,17 +212,17 @@ panels.SchedulePanel = {
 				if (user.p.radio_live_admin >= 2) {
 					del = createEl("button", { "textContent": _l("delete") });
 					del.sched_id = "" + json[i].sched_id;
-					del.addEventListener("click", function() { ajax.async_get("live_delete", "sched_id=" + del.sched_id); }, true);
+					del.addEventListener("click", function() { ajax.async_get("event_delete", { "sched_id": del.sched_id }); }, true);
 					td.appendChild(del);
 				}
 				if ((json[i].user_id == user.p.user_id) && (json[i].sched_type == SCHED_LIVE)) {
 					start = createEl("button", { "textContent": _l("start") });
 					start.sched_id = "" + json[i].sched_id;
-					start.addEventListener("click", function() { ajax.async_get("live_start", "sched_id=" + start.sched_id); }, true);
+					start.addEventListener("click", function() { ajax.async_get("event_start", { "sched_id": start.sched_id }); }, true);
 					td.appendChild(start);
 					end = createEl("button", { "textContent": _l("end") });
 					end.sched_id = "" + json[i].sched_id;
-					end.addEventListener("click", function() { ajax.async_get("live_end", "sched_id=" + end.sched_id); }, true);
+					end.addEventListener("click", function() { ajax.async_get("event_end", { "sched_id": end.sched_id }); }, true);
 					td.appendChild(end);
 				}
 				row.appendChild(td);

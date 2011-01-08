@@ -26,6 +26,8 @@ copyFile("root/beta-index.php", "index.php", $dest);
 print "Copying files.php.\n";
 copyFile("files.php", "files.php", $dest);
 
-bumpBuildNumber();
+if (isset($_SERVER['argv'][1])) {
+	bumpBuildNumber();
+}
 
 ?>

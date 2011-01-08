@@ -21,15 +21,15 @@ function ErrorControl() {
 		ajax.addCallback(that, that.requestnewresult, "request_result");
 		ajax.addCallback(that, that.voteresult, "vote_result");
 		ajax.addCallback(that, that.rateresult, "rate_result");
-		ajax.addCallback(that, that.requestorderresult, "reorder_requests_result");
-		ajax.addCallback(that, that.genericError, "live_new_result");
-		ajax.addCallback(that, that.genericError, "live_delete_result");
-		ajax.addCallback(that, that.genericError, "live_start_result");
-		ajax.addCallback(that, that.genericError, "live_end_result");
-		ajax.addCallback(that, that.genericError, "oneshot_new_result");
+		ajax.addCallback(that, that.requestorderresult, "requests_reorder_result");
+		ajax.addCallback(that, that.genericError, "event_add_result");
+		ajax.addCallback(that, that.genericError, "event_delete_result");
+		ajax.addCallback(that, that.genericError, "event_start_result");
+		ajax.addCallback(that, that.genericError, "event_end_result");
+		ajax.addCallback(that, that.genericError, "oneshot_add_result");
 		ajax.addCallback(that, that.genericError, "oneshot_delete_result");
-		ajax.addCallback(that, that.genericError, "forcecandidate_new_result");
-		ajax.addCallback(that, that.genericError, "forcecandidate_delete_result");
+		ajax.addCallback(that, that.genericError, "force_candidate_new_result");
+		ajax.addCallback(that, that.genericError, "force_candidate_delete_result");
 		ajax.addCallback(that, that.loginresult, "login_result")
 		ajax.addCallback(that, that.newsCallback, "news");
 	};

@@ -6,12 +6,12 @@ var Song = {
 	
 	linkifyAsOneshot: function(song_id, el) {
 		linkify(el, true);
-		el.addEventListener('click', function() { ajax.async_get("oneshot_new", { "song_id": song_id }); }, true);
+		el.addEventListener('click', function() { ajax.async_get("oneshot_add", { "song_id": song_id }); }, true);
 	},
 	
 	linkifyAsForceCandidate: function(song_id, el) {
 		linkify(el, true);
-		el.addEventListener('click', function() { ajax.async_get("forcecandidate", { "song_id": song_id }); }, true);
+		el.addEventListener('click', function() { ajax.async_get("force_candidate_add", { "song_id": song_id }); }, true);
 	}
 };
 

@@ -258,7 +258,7 @@ function R3Graph() {
 		}
 		
 		graph.plotValue = function(xvalue, yvalue) {
-			x = (((xvalue - graph.minx) / (graph.maxx - graph.minx)) * graph.gwidth);
+			var x = (((xvalue - graph.minx) / (graph.maxx - graph.minx)) * graph.gwidth);
 			graph.data.raw[xvalue] = yvalue;
 			graph.data.bars[xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 0.5, graph.xendy, graph.barwidth - 0.5, 0, { "stroke": "#666666", "stroke-width": "1", "fill": "#FFFFFF" });
 			graph.data.fx[xvalue] = fx.make(fx.RatingHistogramBar, [ graph.data.bars[xvalue], graph.gheight + graph.data.pady, 250 ]);

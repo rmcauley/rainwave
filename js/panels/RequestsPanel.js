@@ -31,8 +31,8 @@ panels.RequestsPanel = {
 			ajax.addCallback(that, that.updateTitle, "requests_user");
 			
 			initpiggyback['requests'] = "true";
-			if (ajax.sync_time) {
-				ajax.async_get("get_requests", {});
+			if (ajax.sync_time > 0) {
+				ajax.async_get("requests_get", {});
 			}
 			
 			help.addStep("managingrequests", { "h": "managingrequests", "p": "managingrequests_p", "skipf": function() { edi.openPanelLink("RequestsPanel", false); } });
@@ -357,7 +357,7 @@ var RequestList = function(sortable) {
 			if (i > 0) params += ",";
 			params += reqs[i].p.requestq_id;
 		}
-		ajax.async_get("request_order", { "order": params });
+		ajax.async_get("requests_reorder", { "order": params });
 	};
 	
 	that.sortRequestArray = function(a, b) {
@@ -395,11 +395,11 @@ var Request = {
 		//theme.Extend.Request(that);
 		//that.draw();
 		
-		that.songrating_svg = svg.make({ "width": theme.Rating_width, "height": svg.em * 1.4 });
+		/*that.songrating_svg = svg.make({ "width": theme.Rating_width, "height": svg.em * 1.4 });
 		that.songrating_svg.setAttribute("class", "request_songrating");
 		that.songrating = Rating({ category: "song", id: json.song_id, userrating: json.song_rating_user, x: 0, y: 1, siterating: json.song_rating_avg, favourite: json.song_favourite, register: true });
 		that.songrating_svg.appendChild(that.songrating.el);
-		that.el.appendChild(that.songrating_svg);
+		that.el.appendChild(that.songrating_svg);*/
 		
 		that.song_title = document.createElement("div");
 		that.song_title.setAttribute("class", "request_song_title");
@@ -418,11 +418,11 @@ var Request = {
 		
 		that.el.appendChild(that.song_title);
 		
-		that.albumrating_svg = svg.make({ "width": theme.Rating_width, "height": svg.em * 1.4 });
+		/*that.albumrating_svg = svg.make({ "width": theme.Rating_width, "height": svg.em * 1.4 });
 		that.albumrating_svg.setAttribute("class", "request_albumrating");
 		that.albumrating = Rating({ category: "album", id: json.album_id, userrating: json.album_rating_user, x: 0, y: 1, siterating: json.album_rating_avg, favourite: json.album_favourite, register: true });
 		that.albumrating_svg.appendChild(that.albumrating.el);
-		that.el.appendChild(that.albumrating_svg);
+		that.el.appendChild(that.albumrating_svg);*/
 		
 		that.album_name = document.createElement("div");
 		that.album_name.setAttribute("class", "request_album_name");

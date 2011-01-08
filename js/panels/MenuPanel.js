@@ -106,7 +106,7 @@ panels.MenuPanel = {
 		
 		that.doLogin = function(user, password, autologin) {
 			if (loginenabled) {
-				ajax.async_get("login", { "username": user, "password": password, "autologin": autologin });
+				//ajax.async_get("login", { "username": user, "password": password, "autologin": autologin });
 			}
 		};
 		
