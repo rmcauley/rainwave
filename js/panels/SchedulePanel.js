@@ -137,6 +137,8 @@ panels.SchedulePanel = {
 			if (ajax.sync_time > 0) {
 				ajax.async_get("live_shows", {});
 			}
+			ajax.sync_extra['live'] = "true";
+			
 			ajax.addCallback(that, that.liveTimerResync, "sched_current");
 			ajax.addCallback(that, that.liveStartResult, "event_start_result");
 			ajax.addCallback(that, that.liveEndResult, "event_end_result");
@@ -154,11 +156,11 @@ panels.SchedulePanel = {
 				var dt = new Date(form_time.value);
 				fdt = Math.floor(dt.getTime() / 1000);
 			}
-			ajax.async_get("event_new", { "time": fdt, "name": form_name.value, "notes": form_notes.value, "user_id": form_user_id.value, "type": typ, "length": form_length.value });
+			ajax.async_get("event_add", { "time": fdt, "name": form_name.value, "notes": form_notes.value, "user_id": form_user_id.value, "type": typ, "length": form_length.value });
 		};
 		
 		that.startPause = function() {
-			ajax.async_get("event_new", { "time": 0, "name=": "Pause", "notes": "", "user_id": user.p.user_id, "type": SCHED_PAUSE, "length": 0 });
+			ajax.async_get("event_add", { "time": 0, "name": "Pause", "notes": "", "user_id": user.p.user_id, "type": SCHED_PAUSE, "length": 0 });
 		};
 		
 		that.endPause = function() {

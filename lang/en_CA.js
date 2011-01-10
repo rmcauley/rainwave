@@ -215,7 +215,7 @@ var lang = new function() {
 	/* Schedule Panel */
 	
 	this.newliveshow = "New Live Show";
-	this.newliveexplanation = "Time can be 0 for now (CAREFUL), an epoch UTC time, or YYYY/MM/DD HH:MM:SS [zone]. (UTC, EST, EDT, etc)";
+	this.newliveexplanation = "Time can be 0 (now) or an epoch time in UTC.";
 	this.time = "Time";
 	this.name = "Name";
 	this.notes = "Notes";

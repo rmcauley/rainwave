@@ -177,14 +177,16 @@ var RequestList = function(sortable) {
 	that.el = document.createElement("div");
 	that.el.setAttribute("class", "requestlist");
 	var maxy = 0;
-	var mouseorigy = 0;
-	var lastmousey = 0;
-	var dragorigy = 0;
-	var dragidx = 0;
 	var dragging = false;
-	var dragdestidx = -1;
+	var draggingid = -1;
+	var dragthreshup = 0;
+	var dragthreshdown = 0;
+	var dragel = false;
+	var dragidx = 0;
+	var dragmouseoffset = 0;
 	var reqs = [];
 	var goingup = false;
+	var elposition = 0;
 
 	that.update = function(json) {
 		that.stopDrag();
@@ -256,88 +258,82 @@ var RequestList = function(sortable) {
 		}
 	};
 	
-	that.positionReqs = function() {
+	that.positionReqs = function(nopurge) {
 		var runy = 0;
-		var runz = reqs.length;
+		var runz = 0;
 		for (var i = 0; i < reqs.length; i++) {
-			if (!reqs[i].purge) {
+			reqs[i].p.requestq_order = i;
+			if (reqs[i].purge) {
+				// nothing
+			}
+			else if (reqs[i].p.requestq_id == draggingid) {
+				runy += reqs[i].el.offsetHeight + 3;
+				runz += 1;
+			}
+			else {
 				reqs[i].el.style.zIndex = runz;
 				reqs[i].fx_posY.start(runy);
+				reqs[i].desty = runy;
 				runy += reqs[i].el.offsetHeight + 3;
-				runz -= 1;
+				runz += 1;
 			}
 		}
 		that.el.style.height = runy + "px";
-		setTimeout(that.purgeRequests, 250);
+		if (!nopurge) setTimeout(that.purgeRequests, 250);
 	};
 	
-	that.startDrag = function(e, id) {
-		mouseorigy = getMousePosY(e);
+	that.startDrag = function(e) {
+		// find out what drag index we're using
+		dragidx = -1;
 		for (var i = 0; i < reqs.length; i++) {
-			if (reqs[i].p.requestq_id == e.currentTarget.requestq_id) { dragidx = i; break; } 
+			if (reqs[i].p.requestq_id == e.currentTarget.requestq_id) {
+				dragidx = i;
+				draggingid = reqs[i].p.requestq_id;
+				dragel = reqs[i].el;
+				break;
+			}
 		}
+		if (dragidx == -1) return;
 		reqs[dragidx].fx_opacity.start(0.6);
-		dragorigy = reqs[dragidx].fx_posY.now;
 		reqs[dragidx].el.style.zIndex = reqs.length + 1;
+		elposition = help.getElPosition(that.el)["y"];
+		dragmouseoffset = getMousePosY(e) - elposition - reqs[dragidx].fx_posY.now;
+		that.figureDragValues();
 		document.getElementById("body").addEventListener("mousemove", that.runDrag, true);
 		document.getElementById("body").addEventListener("mouseup", that.stopDrag, true);
 		dragging = true;
 	};
 	
+	that.figureDragValues = function() {
+		dragthreshup = -10;
+		if (dragidx > 0) {
+			dragthreshup = reqs[dragidx - 1].desty + Math.round(reqs[dragidx - 1].el.offsetHeight / 2);
+		}
+		dragthreshdown = that.el.offsetHeight + 100;
+		if (dragidx < reqs.length - 1) {
+			dragthreshdown = reqs[dragidx + 1].desty + Math.round(reqs[dragidx + 1].el.offsetHeight / 3);
+		}
+	};
+	
 	that.runDrag = function(e) {
-		var moved = 0;
-		var desty = 0;
-		goingup = false;
-		var mousey;
-		if (e) {
-			mousey = getMousePosY(e);
-			moved = mousey - mouseorigy;
-			desty = dragorigy + moved;
-			if (desty > maxy) return;
-			if (desty < 0) return;
-			if (mousey < lastmousey) goingup = true;
-			lastmousey = mousey;
-			reqs[dragidx].fx_posY.set(desty);
+		var mousey = getMousePosY(e) - elposition - dragmouseoffset;
+		if (mousey > maxy) mousey = maxy;
+		if (mousey < 0) mousey = 0;
+		reqs[dragidx].fx_posY.set(mousey);
+		if (mousey < dragthreshup) {
+			var r = reqs.splice(dragidx - 1, 2);
+			reqs.splice(dragidx - 1, 0, r[1], r[0]);
+			dragidx--;
+			that.positionReqs(true);
+			that.figureDragValues();
 		}
-		var runy = 0;
-		// it might seem inefficient to trigger the posY fx every time, but if the fx.now == fx.end the fx won't run
-		// so the overhead is 2 function calls per sortable.  not terrible, considering there's an upper limit of 12 sortables here.
-		var newdragdestidx = -1;
-		var detecty;
-		if (desty < (reqs[0].el.offsetHeight / 2)) newdragdestidx = 0;
-		else {
-			for (var i = 0; i < reqs.length; i++) {
-				if (i == dragidx) continue;
-				if (goingup) {
-					detecty = (reqs[i].fx_posY.now + (reqs[i].el.offsetHeight / 2));
-					if (desty < detecty) {
-						newdragdestidx = i;
-						break;
-					}
-				}
-				else {
-					detecty = (reqs[i].fx_posY.now - (reqs[i].el.offsetHeight / 2))
-					if (desty < detecty) {
-						newdragdestidx = i;
-						break;
-					}
-				}
-			}
+		else if ((mousey + reqs[dragidx].el.offsetHeight) > dragthreshdown) {
+			var r = reqs.splice(dragidx, 2);
+			reqs.splice(dragidx, 0, r[1], r[0]);
+			dragidx++;
+			that.positionReqs(true);
+			that.figureDragValues();
 		}
-		if (newdragdestidx == -1) newdragdestidx = reqs.length;
-		if (newdragdestidx == dragdestidx) return;
-		dragdestidx = newdragdestidx;
-		var passed = false;
-		for (var i = 0; i < reqs.length; i++) {
-			if (i == dragidx) continue;
-			if (!passed && (i >= dragdestidx)) {
-				passed = true;
-				runy += reqs[dragidx].el.offsetHeight + 3;	
-			}
-			reqs[i].fx_posY.start(runy);
-			runy += reqs[i].el.offsetHeight + 3;
-		}
-		
 	};
 	
 	that.stopDrag = function(e) {
@@ -345,14 +341,12 @@ var RequestList = function(sortable) {
 		document.getElementById("body").removeEventListener("mousemove", that.runDrag, true);
 		document.getElementById("body").removeEventListener("mouseup", that.stopDrag, true);
 		dragging = false;
-		if (!goingup) dragdestidx--;
-		if ((dragdestidx == dragidx) || (dragdestidx < 0)) {
-			reqs[dragidx].fx_opacity.start(1);
-			that.positionReqs();
-			return;
-		}
-		reqs.splice(dragdestidx, 0, reqs.splice(dragidx, 1)[0]);
+		dragel = false;
+		draggingid = -1;
+		dragidx = -1;
 		var params = "";
+		reqs.sort(that.sortRequestArray);
+		that.positionReqs();
 		for (var i = 0; i < reqs.length; i++) {
 			if (i > 0) params += ",";
 			params += reqs[i].p.requestq_id;

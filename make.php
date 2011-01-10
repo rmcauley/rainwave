@@ -8,7 +8,7 @@ $dest = "/home/rmcauley/test/";
 $bnum = getBuildNumber();
 $lyredir = "../lyre/";
 
-print "RAINWAVE 3 LIVE REVISION " . $bnum . " DEPLOYING\n";
+print "RAINWAVE 3 LIVE REVISION " . $bnum . "\n";
 
 array_unshift($jsorder, $lyredir . "javascript/lyre-ajax.js");
 

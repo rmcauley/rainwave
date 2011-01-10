@@ -4,11 +4,15 @@
 require("buildfunc.php");
 require("files.php");
 
+if (isset($_SERVER['argv'][1])) {
+	bumpBuildNumber();
+}
+
 $dest = "/home/rmcauley/r3/beta/";
 $bnum = getBuildNumber();
 $lyredir = "/home/rmcauley/lyre/";
 
-print "RAINWAVE 3 BETA REVISION " . $bnum . " DEPLOYING\n";
+print "RAINWAVE 3 BETA REVISION " . $bnum . "\n";
 
 removeOldBuild($dest);
 writeParsedFile("root/preload.php", $dest . "preload.php", $bnum);
@@ -25,9 +29,5 @@ print "Copying index.php.\n";
 copyFile("root/beta-index.php", "index.php", $dest);
 print "Copying files.php.\n";
 copyFile("files.php", "files.php", $dest);
-
-if (isset($_SERVER['argv'][1])) {
-	bumpBuildNumber();
-}
 
 ?>
