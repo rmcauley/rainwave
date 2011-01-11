@@ -123,6 +123,9 @@ function R3Effects() {
 			newfx.stop();
 			newfx.to = stopat;
 			newfx.from = newfx.now;
+			if (typeof(newfx.onStart) == "function") {
+				newfx.onStart();
+			}
 			if (!that.enabled || (newfx.now == newfx.to)) {
 				newfx.started = 0;
 				newfx.step();
@@ -176,6 +179,36 @@ function R3Effects() {
 		};
 		
 		return cssnfx;
+	};
+	
+	that.OpacityRemoval = function(element, owner, duration) {
+		var orfx = {};
+		orfx.duration = duration;
+		element.style.opacity = "0";
+		
+		orfx.onStart = function() {
+			if (orfx.now == 0) owner.appendChild(element);
+		};
+		
+		orfx.update = function() {
+			element.style.opacity = orfx.now;
+		};
+		
+		orfx.onComplete = function() {
+			if (orfx.now == 0) owner.removeChild(element);
+		};
+
+		return orfx;		
+	};
+	
+	that.menuMouseTimeout = function(header, dropdown, mouseover, mouseout) {
+		var timeout = 0;
+		header.addEventListener("mouseover", function() { clearTimeout(timeout); mouseover(); }, true);
+		header.addEventListener("mouseout", function() { clearTimeout(timeout); timeout = setTimeout(mouseout, 250); }, true);
+		if (dropdown) {
+			dropdown.addEventListener("mouseover", function() { clearTimeout(timeout); mouseover(); }, true);
+			dropdown.addEventListener("mouseout", function() { clearTimeout(timeout); timeout = setTimeout(mouseout, 250); }, true);
+		}
 	};
 	
 	that.p_fps = function(fps) {

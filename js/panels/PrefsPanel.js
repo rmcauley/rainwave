@@ -55,6 +55,7 @@ panels.PrefsPanel = {
 				}
 				that.dropdownMatch(select, prefdata.value);
 				prefs.addPrefCallback(section, prefdata.name, function(v) { that.dropdownMatch(select, v); });
+				select.addEventListener("change", that.prefDropdownChange, true);
 				td.appendChild(select);
 			}
 			tr.appendChild(td);
@@ -88,6 +89,12 @@ panels.PrefsPanel = {
 			if (!e.target) return;
 			var data = e.target.getAttribute("name").split("_", 3);
 			prefs.changePref(data[1], data[2], e.target.checked);
+		};
+		
+		that.prefDropdownChange = function(e) {
+			if (!e.target) return;
+			var data = e.target.getAttribute("name").split("_", 3);
+			prefs.changePref(data[1], data[2], e.target[e.target.selectedIndex].value);
 		};
 		
 		that.newSectionCallback = function(section) {

@@ -1686,148 +1686,25 @@ function EdiTheme() {
 			coglinks.appendChild(createEl("a", { "href": "http://www.ingamechat.net", "textContent": "In-Game Chat" } ));
 			//coglinks.appendChild(createEl("a", { "href": "http://www.johnnygigawatt.com", "textContent": "Johnny Gigawatt" } ));
 			coglinks.appendChild(createEl("a", { "href": "http://www.theweeklyrelease.com", "textContent": "The Weekly Release" } ));
-			menup.td_cog.appendChild(coglinks);
 			var cogbanner = createEl("img", { "class": "COG_banner", "src": "images/cog_network_h.png" });
 			menup.td_cog.appendChild(cogbanner);
 			row.appendChild(menup.td_cog);
 			var fx_cogslide = fx.make(fx.CSSNumeric, [ coglinks, 250, "top", "px" ]);
-			fx_cogslide.set(-1000);
-			menup.td_cog.addEventListener("mouseover", function() { fx_cogslide.start(menup.table.offsetHeight - 1); }, true);
-			menup.td_cog.addEventListener("mouseout", function() { fx_cogslide.start(-coglinks.offsetHeight); }, true);
-			
+			fx_cogslide.set(0);
+			var fx_cogslideo = fx.make(fx.OpacityRemoval, [ coglinks, menup.el, 250 ]);
+			fx.menuMouseTimeout(
+				cogbanner,
+				coglinks,
+				function() { coglinks.style.left = help.getElPosition(menup.td_cog).x + "px"; fx_cogslide.start(menup.table.offsetHeight - 1); fx_cogslideo.start(1); },
+				function() { fx_cogslide.start(0); fx_cogslideo.start(0); }
+			);
 			menup.table.appendChild(row);			
 			menup.el.appendChild(menup.table);
-			
-			fx_cogslide.set(-coglinks.offsetHeight);
 			
 			var pos = help.getElPosition(menup.td_user);
 			menup.loginbox.style.marginLeft = pos.x + "px";
 			
 			return;
-			
-			/*			
-			menup.el.appendChild(svg.makeEl("path", { d: "M0," + (77 - svg.em) + " V" + menup.height + " H" + theme.Timeline_leftsidesize + " V77 Z", fill: theme.indicnormal } ));
-			var usertext = svg.makeEl("text", { x: 2, y: menup.height + (svg.em * 0.8) + 1, fill: theme.textcolor, transform: "rotate(-90, 0, " + menup.height + ")", style: "font-size: 0.8em" } );
-			usertext.textContent = _l("user");
-			menup.el.appendChild(usertext);
-			
-			menup.userinfogroup = svg.makeEl("g", { transform: "translate(" + (theme.Timeline_leftsidesize + 8) + ", 77)" } );	
-			
-			menup.logintext = svg.makeEl("text", { fill: theme.textcolor, x: 37, y: (menup.height - 72) - svg.em } );
-			var loginaction = svg.makeEl("tspan", { "textContent": _l("login") });
-			svg.linkifyText(loginaction);
-			loginaction.addEventListener('click', menup.showLoginBox, true);
-			menup.logintext.appendChild(loginaction);
-			help.changeStepPointEl("login", [ menup.logintext ] );
-			var loginslash = svg.makeEl("tspan", { "textContent": " / " });
-			menup.logintext.appendChild(loginslash);
-			var loginreg = svg.makeEl("tspan", { "textContent": _l("register") });
-			svg.linkifyText(loginreg, "/forums/ucp.php?mode=register", true);
-			menup.logintext.appendChild(loginreg);
-			menup.userinfogroup.appendChild(menup.logintext);
-			
-			menup.username = svg.makeEl("text", { fill: theme.textcolor, x: 37, y: (menup.height - 72) - svg.em } );
-			menup.username.textContent = user.p.username;
-			//menup.userinfogroup.appendChild(menup.username);
-			
-			menup.avatar = svg.makeImage("/forums/download/file.php?avatar=" + user.p.user_avatar, 0, 0, 32, 32);
-			menup.userinfogroup.appendChild(menup.avatar);
-
-			menup.tunedin = svg.makeEl("text", { fill: theme.textcolor, x: 37, y: svg.em * 0.8, style: "font-size: 0.8em" } );
-			menup.tunedin.textContent = _l("tunedoutm3u");
-			menup.userinfogroup.appendChild(menup.tunedin);
-			
-			menup.tuneincatch = svg.makeRect(37, 0, measureText(menup.tunedin.textContent), svg.em, { fill: "black", opacity: 0 } );
-			menup.tuneincatch.style.cursor = "pointer";
-			menup.tuneincatch.addEventListener("click", menup.tuneInClick, true);
-			menup.tuneincatch.addEventListener("mouseover", menup.tuneInOver, true);
-			menup.tuneincatch.addEventListener("mouseout", menup.tuneInOut, true);
-			menup.userinfogroup.appendChild(menup.tuneincatch);
-			
-			menup.compatplayersg = svg.makeEl("g", { "transform": "translate(37, " + ((menup.height - 72) - (svg.em * 2)) + ")" });
-			menup.compatplayersg.appendChild(svg.makeRect(-3, -3, 200, svg.em + 7, { "fill": "#333333", "stroke": "#CCCCCC", "stroke-width": 1 }));
-			menup.compatplayerst = svg.makeEl("text", { "fill": theme.textcolor, "x": 0, "y": svg.em, "textContent": _l("compatplayers") });
-			menup.compatplayersg.appendChild(menup.compatplayerst);
-			var startimgx = measureText(_l("compatplayers"));
-			var vlc = svg.makeImage("images/vlc.png", startimgx + 10, -2, 16, 16);
-			var winamp = svg.makeImage("images/winamp.png", startimgx + 30, -2, 16, 16);
-			var fb2k = svg.makeImage("images/fb2k.png", startimgx + 50, -2, 16, 16);
-			svg.linkify(vlc, "http://www.videolan.org");
-			svg.linkify(winamp, "http://www.winamp.com");
-			svg.linkify(fb2k, "http://www.foobar2000.com");
-			menup.compatplayersg.appendChild(vlc);
-			menup.compatplayersg.appendChild(winamp);
-			menup.compatplayersg.appendChild(fb2k);
-			menup.tuneincatch.addEventListener("mouseover", menup.showCompatPlayers, true);
-			menup.tuneincatch.addEventListener("mouseout", menup.hideCompatPlayers, false);
-			menup.compatplayersg.addEventListener("mouseover", menup.showCompatPlayers, false);
-			menup.compatplayersg.addEventListener("mouseout", menup.hideCompatPlayers, false);
-
-			menup.el.appendChild(menup.userinfogroup);
-			
-			menup.selectong = svg.makeEl("g");
-			menup.selectong.appendChild(svg.makeEl("path", { d: "M" + theme.Timeline_leftsidesize + ",0 H" + (275 + svg.em + 5) + " V68 H" + theme.Timeline_leftsidesize + " Z", fill: "url(#menupanel_logohighlight)", stroke: theme.indicnormal, shape_rendering: "crispEdges", stroke_width: "2" } ));
-			menup.el.appendChild(menup.selectong);
-			menup.FxSelectOn = fx.make(fx.SVGAttrib, [ menup.selectong, 250, "opacity", "" ]);
-			menup.FxSelectOn.set(0);
-			
-			menup.logog = svg.makeEl("g", { mask: "url(#menupanel_logomask)", clip_path: "url(#menupanel_logoclip)", transform: "translate(" + (theme.Timeline_leftsidesize + 4) + "," + svg.em + ")" } );
-			menup.logog.appendChild(svg.makeRect(0, 0, 275, 60, { fill: "url(#menupanel_Rainwavegrad)" } ));
-			menup.logoswipe = svg.makeRect(0, 0, 150, 60, { fill: "url(#menupanel_logoswipe)" } );
-			menup.logog.appendChild(menup.logoswipe);
-			menup.el.appendChild(menup.logog);
-			menup.FxLogoSwipe = fx.make(fx.SVGAttrib, [ menup.logoswipe, 1500, "x", "" ], { unstoppable: true });
-			menup.FxLogoSwipe.set(275);
-			
-			menup.el.appendChild(svg.makeEl("path", { fill: theme.indicnormal, d: "M" + theme.Timeline_leftsidesize + "," + svg.em + " H280 L" + (275 + svg.em + 5) + ",0 H0 V" + (svg.em * 4 - theme.Timeline_leftsidesize) + " L" + theme.Timeline_leftsidesize + "," + (svg.em * 4) + " Z" } ));
-			
-			menup.selectstation = svg.makeEl("text", { x: theme.Timeline_leftsidesize - 2, y: svg.em * 0.8, style: "font-size: 0.8em", fill: theme.textcolor } );
-			menup.selectstation.textContent = _l("selectstation");
-			menup.el.appendChild(menup.selectstation);
-			
-			var mouseover = svg.makeRect(0, 0, 275 + svg.em, 68, { fill: "black", opacity: 0 } );
-			menup.el.appendChild(mouseover);
-			mouseover.addEventListener("mouseover", menup.stationSelectOver, true);
-			mouseover.addEventListener("mouseout", menup.stationSelectOut, true);
-			mouseover.style.cursor = "pointer";
-			
-			menup.el.appendChild(svg.makeEl("path", { fill: theme.indicnormal, d: "M310,0 H" + menup.width + " V" + svg.em + " H" + (310 - svg.em) + " Z" } ));
-			var playertext = svg.makeEl("text", { fill: theme.textcolor, x: menup.width - 2, y: svg.em * 0.8, style: "font-size: 0.8em", text_anchor: "end" } );
-			playertext.textContent = _l("player");
-			menup.el.appendChild(playertext);
-			
-			menup.player = svg.makeRect(300, svg.em + 5, (menup.width - 301), 50, { fill: "#555555", stroke_width: "1", stroke: "#AAAAAA", shape_rendering: "crispEdges" } );
-			menup.el.appendChild(menup.player);
-			
-			//menup.help = svg.makeRect(menup.width - 16, 77, 14, 14, { fill: theme.primarybkg, stroke_width: "1", stroke: theme.textcolor, shape_rendering: "crispEdges" } );
-			//menup.el.appendChild(menup.help);
-			//menup.helpicon = svg.makeEl("text", { fill: theme.textcolor, x: menup.width - 11, y: 77 + svg.em + 2 } );
-			//menup.helpicon.textContent = "?";
-			//menup.el.appendChild(menup.helpicon);
-			menup.helptext = svg.makeEl("text", { fill: theme.textcolor, x: menup.width, y: 77 + svg.em + 2, text_anchor: "end" } );
-			menup.helptext.textContent = _l("help");
-			menup.el.appendChild(menup.helptext);
-			var catchx = menup.width - 19 - measureText(menup.helptext.textContent);
-			menup.helpcatch = svg.makeRect(catchx, 77, menup.width - catchx, 14, { fill: "black", opacity: "0" } );
-			menup.helpcatch.style.cursor = "pointer";
-			menup.el.appendChild(menup.helpcatch);
-			menup.helpcatch.addEventListener("mouseover", menup.helpOver, true);
-			menup.helpcatch.addEventListener("mouseout", menup.helpOut, true);
-			menup.helpcatch.addEventListener("click", menup.helpClick, true);
-			
-			menup.forumstext = svg.makeEl("text", { fill: theme.textcolor, x: menup.width, y: 94 + svg.em + 2, text_anchor: "end" } );
-			menup.forumstext.textContent = _l("forums");
-			menup.el.appendChild(menup.forumstext);
-			var catchx = menup.width - 15 - measureText(menup.forumstext.textContent);
-			menup.forums = svg.makeImage("images/wikilink_12px.png", catchx, 95, 12, 12);
-			menup.el.appendChild(menup.forums);
-			var forumcatch = svg.makeRect(catchx, 94, menup.width - catchx, 14, { fill: "black", opacity: "0" } );
-			forumcatch.addEventListener("mouseover", menup.forumOver, true);
-			forumcatch.addEventListener("mouseout", menup.forumOut, true);
-			forumcatch.style.cursor = "pointer";
-			menup.el.appendChild(forumcatch);
-			
-			help.changeStepPointEl("tunein", [ menup.tunedin, menup.player ]);*/
 		};
 		
 		var showinglogin = false;

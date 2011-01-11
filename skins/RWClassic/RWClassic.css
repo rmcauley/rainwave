@@ -115,7 +115,7 @@ img {
 .EdiPanel {
 	margin: 0px;
 	padding: 0px;
-	z-index: -2;
+	z-index: 1;
 }
 
 #LogPanel_facilitylisttd ul {
@@ -625,7 +625,6 @@ table.menu_table td.menu_td_cog {
 	border-right: none;
 	background: #000000;
 	width: 122px;
-	z-index: -1;
 	margin-left: -25px;
 	padding-right: 2px;
 }
@@ -636,5 +635,5 @@ table.menu_table td.menu_td_cog {
 
 .COG_banner {
 	position: relative;
-	z-index: 2;
+	z-index: 1;
 }
