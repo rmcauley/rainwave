@@ -16,6 +16,8 @@ panels.TimelinePanel = {
 		that.nextevents = [];
 		that.currentevents = [];
 		that.lastevents = [];
+		
+		var hidingx = 0;
 
 		theme.Extend.TimelinePanel(that);
 		
@@ -211,13 +213,54 @@ panels.TimelinePanel = {
 			return ybudget;
 		}*/
 	
-		that.positionEvents = function(json, disableanim) {
+		that.positionEvents = function(json) {
+			var i;
+			if (!that.showelec && !that.showhistory && !that.showallnext) {
+				that.positionOneEvent();
+				hidingx = true;
+			}
+			else {
+				if (hidingx) {
+					for (i = 0; i < that.allevents.length; i++) {
+						that.allevents[i].moveXTo(0);
+					}
+				}
+				hidingx = false;
+				that.positionEventsLinear();
+			}
+		};
+		
+		that.positionOneEvent = function() {
+			// if we're animating off a change of mode switch
+			if (hidingx === false) {
+				// move events to the top
+				that.currentevents[0].moveTo(0);
+				that.nextevents[0].moveTo(0);
+				// move all next events off screen
+				for (i = 1; i < that.nextevents.length; i++) {
+					that.nextevents[i].moveTo(that.height);
+				}
+				// move all last events off screen
+				for (i = 0; i < that.lastevents.length; i++) {
+					that.lastevents[i].moveTo(-that.lastevents[i].height);
+				}
+			}
+			else {
+				that.currentevents[0].setY(0);
+				that.nextevents[0].setY(0);
+				that.nextevents[0].hideX();
+			}
+			that.currentevents[0].moveXTo(that.container.offsetWidth);
+			that.nextevents[0].moveXTo(0);
+		};
+		
+		that.positionEventsLinear = function() {
 			/*1. 1st election
-			2. 1st history
-			3. Now playing
-			4. 2nd election
-			5. More history */
-			log.log("TimeP", 0, "----- Moving Items");
+			  2. 1st history
+			  3. Now playing
+			  4. 2nd election
+			  5. More history */
+
 			var i, moveto;
 			for (i = 0; i < that.allevents.length; i++) {
 				that.allevents[i].timep_showing = false;
@@ -285,7 +328,7 @@ panels.TimelinePanel = {
 			var runy = 0;
 			
 			// hooray copy paste copy paste copy paste... I am terrible sometimes :(
-			for (i = that.lastevents.length - 1; i >= 0 ; i--) {
+			for (i = that.lastevents.length - 1; i >= 0; i--) {
 				if (that.lastevents[i].timep_showing) {
 					that.lastevents[i].changeZ(runz);
 					that.lastevents[i].moveTo(runy);
@@ -327,113 +370,6 @@ panels.TimelinePanel = {
 				that.nextevents[i].clockChange(runningsched);
 				runningsched += that.nextevents[i].getScheduledLength();
 			}
-			
-			/*for (i = 0; i < that.allevents.length; i++) {
-				if (!that.allevents[i].timep_showing) {
-					that.allevents[i].moveTo(-that.allevents[i].height);
-				}
-			}*/
-			
-			// old code for "npcompatible" mode
-			/*if (that.showhistory) {
-				ybudget = container.offsetHeight - 2;
-				if (that.showelec) {
-					for (i = 0; i < that.currentevents.length; i++) { ybudget -= that.currentevents[i].height - theme.TimelineSong_height - theme.Timeline_headerheight + 5; }
-				}
-				ybudget -= that.getMinNextEventsHeight();
-				i = that.lastevents.length - 1;
-				var showhistnum = 0;
-				var runyr = 0;
-				while ((i >= 0) && (ybudget > (that.lastevents[i].height + 5))) {
-					showhistnum++;
-					runyr += (that.lastevents[i].height + 5);
-					ybudget -= (that.lastevents[i].height + 5);
-					ybudgetused += (that.lastevents[i].height + 5);
-					i--;
-				}
-				/*while (i >= 0) {
-					that.lastevents[i].moveTo(container.offsetHeight);
-					that.logPosition(that.lastevents[i], container.offsetHeight);
-					i--;
-				}*/
-				/*runy = container.offsetHeight - runyr - 2;
-				runz -= showhistnum;
-				for (i = 0; i < showhistnum; i++) {
-					runz++;
-					that.lastevents[i].changeZ(runz);
-					that.lastevents[i].moveTo(runy);
-					that.logPosition(that.lastevents[i], "(history) " + runy);
-					runy += (that.lastevents[i].height + 5);
-				}
-				for (i = showhistnum; i < that.lastevents.length; i++) {
-					that.lastevents[i].moveTo(container.offsetHeight);
-					that.logPosition(that.lastevents[i], "(history no room) " + container.offsetHeight);
-				}
-				runz -= showhistnum;
-			}
-			else {
-				for (i = 0; i < that.lastevents.length; i++) {
-					that.lastevents[i].moveTo(-that.lastevents[i].height);
-					that.logPosition(that.lastevents[i], "(no history) " + (-that.lastevents[i].height));
-				}
-			}
-
-			ybudget = (container.offsetHeight + theme.TimelineSong_height + theme.Timeline_headerheight) - ybudgetused;
-			ybudget -= that.getMinNextEventsHeight();
-			if ((ybudget > (that.currentevents[0].height + 5)) && that.showelec) {
-				runy = -theme.TimelineSong_height - theme.Timeline_headerheight;
-				i = 0;
-				while ((i < that.currentevents.length) && (ybudget > that.currentevents[i].height)) {
-					runz--;
-					that.currentevents[i].changeZ(runz);
-					that.currentevents[i].moveTo(runy);
-					that.logPosition(that.currentevents[i], runy);
-					runy += (that.currentevents[i].height + 5);
-					ybudget -= (that.currentevents[i].height + 5);
-					ybudgetused += (that.currentevents[i].height + 5 - theme.TimelineSong_height - theme.Timeline_headerheight)
-					i++;
-				}
-				while (i < that.currentevents.length) {
-					that.currentevents[i].moveTo(-that.currentevents[i].height);
-					that.logPosition(that.currentevents[i], -that.currentevents[i].height);
-					i++;
-				}
-			}
-			else {
-				for (i = 0; i < that.currentevents.length; i++) {
-					that.currentevents[i].moveTo(-that.currentevents[i].height);
-					that.logPosition(that.currentevents[i], -that.currentevents[i].height);
-				}
-				runy = 0;
-			}
-			
-			if (runy < 0) runy = 0;
-			ybudget = container.offsetHeight - ybudgetused;
-			i = 0;
-			crossedelec = false;
-			while ((i < that.nextevents.length) && (ybudget > that.nextevents[i].height)) {
-				if ((i == 0) || that.showallnext || !crossedelec) {
-					if (!crossedelec && that.nextevents[i].updateVotingHelp) that.nextevents[i].updateVotingHelp();
-					if (that.nextevents[i].p.sched_type == SCHED_ELEC) crossedelec = true;
-					runz--;
-					that.nextevents[i].changeZ(runz);
-					that.nextevents[i].moveTo(runy);
-					that.logPosition(that.nextevents[i], runy);
-					runy += (that.nextevents[i].height + 5);
-					ybudget -= (that.nextevents[i].height + 5);
-					ybudgetused += (that.nextevents[i].height + 5)
-				}
-				else {
-					that.nextevents[i].moveTo(container.offsetHeight);
-					that.logPosition(that.nextevents[i], container.offsetHeight);
-				}
-				i++;
-			}
-			while (i < that.nextevents.length) {
-				that.nextevents[i].moveTo(container.offsetHeight);
-				that.logPosition(that.nextevents[i], container.offsetHeight);
-				i++;
-			}*/
 		};
 		
 		that.p_showelec = function(showelec) {
@@ -443,9 +379,6 @@ panels.TimelinePanel = {
 		
 		that.p_showhistory = function(showhistory) {
 			that.showhistory = showhistory;
-			//if (that.fittonow) {
-			//	prefs.changePref("timeline", "fittonow", false);
-			//}
 			if (that.allevents.length > 0) that.positionEvents();
 		};
 		
@@ -454,16 +387,10 @@ panels.TimelinePanel = {
 			if (that.allevents.length > 0) that.positionEvents();
 		};
 		
-		/*that.p_fittonow = function(fittonow) {
-			that.fittonow = fittonow;
-			if (that.allevents.length > 0) that.positionEvents();
-		};*/
-		
 		prefs.addPref("timeline", { name: "showelec", defaultvalue: false, callback: that.p_showelec, type: "checkbox" });
 		prefs.addPref("timeline", { name: "showhistory", defaultvalue: false, callback: that.p_showhistory, type: "checkbox" });
 		prefs.addPref("timeline", { name: "showallnext", defaultvalue: false, callback: that.p_showallnext, type: "checkbox" });
 		prefs.addPref("timeline", { "name": "highlightrequests", "defaultvalue": true, "type": "checkbox" });
-		//prefs.addPref("timeline", { name: "fittonow", defaultvalue: true, callback: that.p_fittonow, type: "checkbox" });
 		
 		return that;
 	}

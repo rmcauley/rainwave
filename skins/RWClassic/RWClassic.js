@@ -88,7 +88,7 @@ function EdiTheme() {
 	that.Rating_shortwidth = Math.floor(that.Rating_gridsizex + that.Rating_gridsizey + 3 + 8 + 5);
 	that.Rating_width = Math.floor((svg.em * 2.2) + that.Rating_shortwidth);
 	
-	var logoheight = 44;
+	var logoheight = 40;
 	var logowidth = 200;
 	
 	that.Extend = {};
@@ -412,14 +412,15 @@ function EdiTheme() {
 		te.headline.textContent = text;
 		te.el.appendChild(te.headline);
 		
-		te.clock = svg.makeEl("text", { text_anchor: "end", fill: theme.textcolor, x: te.width - 2, y: svg.em * 0.8 + 2, style: "font-size: 0.8em" } );
+		te.clock = svg.makeEl("text", { "text-anchor": "end", fill: theme.textcolor, x: te.width - 2, y: svg.em * 0.8 + 2, style: "font-size: 0.8em" } );
 		te.el.appendChild(te.clock);
 	}
 	
 	that.drawTimelineEventBackground = function(te, noclip) {
 		te.bkg = svg.makeRect(theme.Timeline_leftsidesize + 1, 0, te.width - theme.Timeline_leftsidesize - 1, te.height);
 		te.bkg.setAttribute("transform", "translate(0, " + (svg.em * 0.8 + 4) + ")");
-		te.bkg.setAttribute("fill", "url(#TimelineSong_titlebkg)");
+		//te.bkg.setAttribute("fill", "url(#TimelineSong_titlebkg)");
+		te.bkg.setAttribute("fill", that.primarybkg);
 		if (!noclip) te.bkg.setAttribute("clip-path", "url(#songnumx_clip)");
 		else te.bkg.setAttribute("clip-path", "url(#songnumx_basicclip)");
 		te.el.appendChild(te.bkg);
@@ -435,6 +436,8 @@ function EdiTheme() {
 			
 			te.topfx = fx.make(fx.CSSNumeric, [ te.el, 700, "top", "px" ]);
 			te.topfx.set(te.container.offsetHeight);
+			te.leftfx = fx.make(fx.CSSNumeric, [ te.el, 700, "left", "px" ]);
+			te.leftfx.set(0);
 		};
 		
 		te.detectHeaderColor = function() {
@@ -467,6 +470,22 @@ function EdiTheme() {
 
 		te.moveTo = function(y) {
 			te.topfx.start(y);
+		};
+		
+		te.moveXTo = function(x) {
+			te.leftfx.start(x);
+		};
+		
+		te.hideX = function() {
+			te.leftfx.set(-parseInt(te.el.getAttribute("width")))
+		};
+		
+		te.setY = function(y) {
+			te.topfx.set(y);
+		};
+		
+		te.setX = function(x) {
+			te.leftfx.set(x);
 		};
 		
 		te.changeZ = function(z) {
@@ -504,6 +523,8 @@ function EdiTheme() {
 
 			tas.topfx = fx.make(fx.CSSNumeric, [ tas.el, 700, "top", "px" ]);
 			tas.topfx.set(tas.container.offsetHeight);
+			tas.leftfx = fx.make(fx.CSSNumeric, [ tas.el, 700, "left", "px" ]);
+			tas.leftfx.set(0);
 		};
 
 		tas.changeHeadline = function(newtext) {
@@ -522,6 +543,22 @@ function EdiTheme() {
 
 		tas.moveTo = function(y) {
 			tas.topfx.start(y);
+		};
+		
+		tas.moveXTo = function(x) {
+			tas.leftfx.start(x);
+		};
+		
+		tas.hideX = function() {
+			tas.leftfx.set(-parseInt(te.el.getAttribute("width")))
+		};
+		
+		tas.setY = function(y) {
+			tas.topfx.set(y);
+		};
+		
+		tas.setX = function(x) {
+			tas.leftfx.set(x);
 		};
 		
 		tas.changeZ = function(z) {
@@ -582,6 +619,22 @@ function EdiTheme() {
 			tls.topfx.start(y);
 		};
 		
+		tls.moveXTo = function(x) {
+			tls.leftfx.start(x);
+		};
+		
+		tls.hideX = function() {
+			tls.leftfx.set(-parseInt(tls.el.getAttribute("width")))
+		};
+		
+		tls.setY = function(y) {
+			tls.topfx.set(y);
+		};
+		
+		tls.setX = function(x) {
+			tls.leftfx.set(x);
+		};
+		
 		tls.changeZ = function(z) {
 			tls.el.style.zIndex = z;
 		};
@@ -624,6 +677,22 @@ function EdiTheme() {
 
 		tpl.moveTo = function(y) {
 			tpl.topfx.start(y);
+		};
+		
+		tpl.moveXTo = function(x) {
+			tpl.leftfx.start(x);
+		};
+		
+		tpl.hideX = function() {
+			tpl.leftfx.set(-parseInt(tpl.el.getAttribute("width")))
+		};
+		
+		tpl.setY = function(y) {
+			tpl.topfx.set(y);
+		};
+		
+		tpl.setX = function(x) {
+			tpl.leftfx.set(x);
 		};
 		
 		tpl.changeZ = function(z) {
@@ -679,6 +748,22 @@ function EdiTheme() {
 
 		tos.moveTo = function(y) {
 			tos.topfx.start(y);
+		};
+		
+		tos.moveXTo = function(x) {
+			tos.leftfx.start(x);
+		};
+		
+		tos.hideX = function() {
+			tos.leftfx.set(-parseInt(tos.el.getAttribute("width")))
+		};
+		
+		tos.setY = function(y) {
+			tos.topfx.set(y);
+		};
+		
+		tos.setX = function(x) {
+			tos.leftfx.set(x);
 		};
 		
 		tos.changeZ = function(z) {
@@ -790,7 +875,7 @@ function EdiTheme() {
 			ts.songel.textContent = fitText(ts.p.song_title, (room - (svg.em * 5.4)));
 			ts.el.appendChild(ts.songel);
 
-			ts.songtime = svg.makeEl("text", { text_anchor: "end", x: (room - 7), y: baseline, fill: theme.darktext } );
+			ts.songtime = svg.makeEl("text", { "text-anchor": "end", x: (room - 7), y: baseline, fill: theme.darktext } );
 			ts.songtime.textContent = formatTime(ts.p.song_secondslong);
 			ts.el.appendChild(ts.songtime);
 			
@@ -1297,23 +1382,26 @@ function EdiTheme() {
 			npe.songdg.appendChild(npe.linkel);
 		}
 		
+		var toptextleft = anglestart - leftartmargin;
+		var toptexttop = svg.em - 2 - 6;
 		if (song.elec_isrequest && ((song.elec_isrequest == 1) || (song.elec_isrequest == -1))) {
 			var requestor = song.song_requestor;
 			var reqtxt = "";
 			if (song.elec_isrequest == 1) reqtxt = _l("requestedby");
 			else if (song.elec_isrequest < 0) reqtxt = _l("conflictedwith");
 			reqtxt = reqtxt + " " + song.song_requestor;
-			var reqby = svg.makeEl("text", { x: anglestart, text_anchor: "end", y: svg.em - 2, fill: theme.textcolor, style: "font-size: smaller;" } );
+			console.log({ "nowp": nowp.width, "anglestart": anglestart });
+			var reqby = svg.makeEl("text", { x: toptextleft, "text-anchor": "end", y: toptexttop, fill: theme.textcolor, style: "font-size: smaller;" } );
 			reqby.textContent = reqtxt;
 			npe.songdg.appendChild(reqby);
 		}
 		else if ((npe.p.username) && (npe.p.sched_type != SCHED_LIVE)) {
-			var reqby = svg.makeEl("text", { x: anglestart, text_anchor: "end", y: svg.em - 2, fill: theme.textcolor, style: "font-size: smaller;" } );
+			var reqby = svg.makeEl("text", { x: toptextleft, "text-anchor": "end", y: toptexttop, fill: theme.textcolor, style: "font-size: smaller;" } );
 			reqby.textContent = _l("from") + " " + npe.p.username;
 			npe.songdg.appendChild(reqby);
 		}
 		else if (npe.p.sched_dj) {
-			var reqby = svg.makeEl("text", { x: anglestart, text_anchor: "end", y: svg.em - 2, fill: theme.textcolor, style: "font-size: smaller;" } );
+			var reqby = svg.makeEl("text", { x: toptextleft, "text-anchor": "end", y: toptexttop, fill: theme.textcolor, style: "font-size: smaller;" } );
 			reqby.textContent = _l("currentdj") + " " + npe.p.sched_dj;
 			npe.songdg.appendChild(reqby);
 		}
@@ -1321,7 +1409,7 @@ function EdiTheme() {
 		var numvotes = song.elec_votes ? song.elec_votes : 0;
 		if (numvotes > 0) {
 			var votex = (nowp.width - 120 - theme.Rating_width - 13);
-			npe.votes = svg.makeEl("text", { x: votex, y: linky + svg.em, text_anchor: "end", fill: theme.textcolor } );
+			npe.votes = svg.makeEl("text", { x: votex, y: linky + svg.em, "text-anchor": "end", fill: theme.textcolor } );
 			npe.votes.textContent = numvotes;
 			npe.songdg.appendChild(npe.votes);
 			//var votelegendx = urlused ?  votex + (svg.em / 2) : indent1;
@@ -1499,12 +1587,22 @@ function EdiTheme() {
 		defs.appendChild(logohighlight);
 		
 		var logomask = svg.makeEl("mask", { id: "menupanel_rwmask" });
-		var logoimage = svg.makeImage("images/rainwave-logo-mask.png", 0, 0, logowidth, logoheight);
+		var logoimage = svg.makeImage("images/stationselect-1.png", 0, 0, logowidth, logoheight);
 		logomask.appendChild(logoimage);
 		defs.appendChild(logomask);
 		
+		// logomask = svg.makeEl("mask", { id: "menupanel_ocmask" });
+		// logoimage = svg.makeImage("images/stationselect-2.png", 0, 0, logowidth, logoheight);
+		// logomask.appendChild(logoimage);
+		// defs.appendChild(logomask);
+		
+		// logomask = svg.makeEl("mask", { id: "menupanel_vwmask" });
+		// logoimage = svg.makeImage("images/stationselect-3.png", 0, 0, logowidth, logoheight);
+		// logomask.appendChild(logoimage);
+		// defs.appendChild(logomask);
+		
 		var logoclip = svg.makeEl("clipPath", { id: "menupanel_logoclip" });
-		logoclip.appendChild(svg.makeEl("path", { d: "M0,0 V60 H275 V0 Z" } ));
+		logoclip.appendChild(svg.makeEl("path", { d: "M0,0 V50 H250 V0 Z" } ));
 		defs.appendChild(logoclip);
 		
 		var logoswipegrad = svg.makeGradient("linear", "menupanel_logoswipe", "0%", "0%", "100%", "0%", "pad");
@@ -1518,6 +1616,20 @@ function EdiTheme() {
 		rwlogograd.appendChild(svg.makeStop("0%", "#f36f3d", "1"));
 		rwlogograd.appendChild(svg.makeStop("100%", "#faca19", "1"));
 		defs.appendChild(rwlogograd);
+	};
+
+	that.createLogoSwipe = function(attachel, maskname, bkgname) {
+		var logo = svg.make({ "width": logowidth, "height": logoheight });
+		var logog = svg.makeEl("g", { "mask": "url(#" + maskname + ")", "clip_path": "url(#menupanel_logoclip)" } );
+		logog.appendChild(svg.makeRect(0, 0, logowidth, logoheight, { fill: "url(#" + bkgname + ")" } ));
+		var logoswipe = svg.makeRect(0, 0, Math.round(logowidth * .75), logoheight, { fill: "url(#menupanel_logoswipe)" } );
+		logog.appendChild(logoswipe);
+		logo.appendChild(logog);
+		var fx_logoswipe = fx.make(fx.SVGAttrib, [ logoswipe, 1500, "x", "" ], { "unstoppable": true });
+		fx_logoswipe.set(logowidth);
+		attachel.addEventListener("mouseover", function() { fx_logoswipe.start(-Math.round(logowidth * .75), logowidth); }, true);
+		attachel.style.cursor = "pointer";
+		attachel.appendChild(logo);
 	};
 
 	that.Extend.MenuPanel = function(menup) {	
@@ -1563,36 +1675,20 @@ function EdiTheme() {
 			menup.loginbox.style.marginTop = (menup.el.offsetHeight + 3) + "px";
 			menup.loginbox.style.zIndex = "100";
 			
-			menup.table = createEl("table", { "class": "menu_table", "cellpadding": 0, "cellspacing": 0, "style": "height: " + menup.height + "px" });
+			menup.table = createEl("table", { "class": "menu_table", "cellspacing": 0 });
 			var row = createEl("tr");
 			menup.td_station = createEl("td", { "class": "menu_td_station" });
 			
-			menup.td_station.appendChild(createEl("img", { "src": "images/rainwave-menu-logo.png" }));
+			var stationlogo = createEl("img", { "src": "images/rainwave-menu-logo.png" });
+			menup.td_station.appendChild(stationlogo);
 			
 			menup.ul_select = createEl("ul", { "class": "menu_select" } );
 			var li = createEl("li");
-			var logo = svg.make({ "width": logowidth, "height": logoheight });
-			var logog = svg.makeEl("g", { "mask": "url(#menupanel_rwmask)", "clip_path": "url(#menupanel_logoclip)" } );
-			logog.appendChild(svg.makeRect(0, 0, logowidth, logoheight, { fill: "url(#menupanel_Rainwavegrad)" } ));
-			var logoswipe = svg.makeRect(0, 0, Math.round(logowidth * .75), logoheight, { fill: "url(#menupanel_logoswipe)" } );
-			logog.appendChild(logoswipe);
-			logo.appendChild(logog);
-			var fx_logoswipe = fx.make(fx.SVGAttrib, [ logoswipe, 1500, "x", "" ], { "unstoppable": true });
-			fx_logoswipe.set(logowidth);
-			li.addEventListener("mouseover", function() { fx_logoswipe.start(-Math.round(logowidth * .75), logowidth); }, true);
+			that.createLogoSwipe(li, "menupanel_rwmask", "menupanel_Rainwavegrad");
 			li.addEventListener("click", function() { menup.changeStation(1); }, true);
-			li.style.cursor = "pointer";
-			li.appendChild(logo);
-			li.appendChild(createEl("span", { "textContent": _l("station_rainwave") }));
 			menup.ul_select.appendChild(li);
-			menup.td_station.appendChild(menup.ul_select);
-			
-			var fx_selectpulldown = fx.make(fx.CSSNumeric, [ menup.ul_select, 250, "top", "px" ]);
-			fx_selectpulldown.set(-1000);
-			menup.td_station.addEventListener("mouseover", function() { fx_selectpulldown.start(menup.table.offsetHeight - 1); }, true);
-			menup.td_station.addEventListener("mouseout", function() { fx_selectpulldown.start(-menup.ul_select.offsetHeight); }, true);
-			
 			row.appendChild(menup.td_station);
+			fx.makeMenuDropdown(menup.el, stationlogo, menup.ul_select);
 			
 			menup.td_play = createEl("td", { "class": "menu_td_play" });
 			
@@ -1608,7 +1704,7 @@ function EdiTheme() {
 			
 			menup.td_download = createEl("td", { "class": "menu_td_download" });
 			
-			var vlc = createEl("img", { "src": "images/vlc.png", "class": "menu_vlc" });
+			var vlc = createEl("img", { "src": "images/vlc.png", "class": "link" });
 			var fx_vlc = fx.make(fx.CSSNumeric, [ vlc, 250, "opacity", "" ]);
 			fx_vlc.set(0.85);
 			vlc.addEventListener("click", menup.tuneInClick, true);
@@ -1616,7 +1712,7 @@ function EdiTheme() {
 			vlc.addEventListener("mouseout", function() { fx_vlc.start(0.85) }, true);
 			menup.td_download.appendChild(vlc);
 			
-			var winamp = createEl("img", { "src": "images/winamp.png" });
+			var winamp = createEl("img", { "src": "images/winamp.png", "class": "link" });
 			var fx_winamp = fx.make(fx.CSSNumeric, [ winamp, 250, "opacity", "" ]);
 			fx_winamp.set(.85);
 			winamp.addEventListener("mouseover", function() { fx_winamp.start(1) }, true);
@@ -1624,7 +1720,7 @@ function EdiTheme() {
 			winamp.addEventListener("click", menup.tuneInClick, true);
 			menup.td_download.appendChild(winamp);
 			
-			var fb2k = createEl("img", { "src": "images/fb2k.png" });
+			var fb2k = createEl("img", { "src": "images/fb2k.png", "class": "link" });
 			var fx_fb2k = fx.make(fx.CSSNumeric, [ fb2k, 250, "opacity", "" ]);
 			fx_fb2k.set(0.85);
 			fb2k.addEventListener("mouseover", function() { fx_fb2k.start(1) }, true);
@@ -1689,17 +1785,10 @@ function EdiTheme() {
 			var cogbanner = createEl("img", { "class": "COG_banner", "src": "images/cog_network_h.png" });
 			menup.td_cog.appendChild(cogbanner);
 			row.appendChild(menup.td_cog);
-			var fx_cogslide = fx.make(fx.CSSNumeric, [ coglinks, 250, "top", "px" ]);
-			fx_cogslide.set(0);
-			var fx_cogslideo = fx.make(fx.OpacityRemoval, [ coglinks, menup.el, 250 ]);
-			fx.menuMouseTimeout(
-				cogbanner,
-				coglinks,
-				function() { coglinks.style.left = help.getElPosition(menup.td_cog).x + "px"; fx_cogslide.start(menup.table.offsetHeight - 1); fx_cogslideo.start(1); },
-				function() { fx_cogslide.start(0); fx_cogslideo.start(0); }
-			);
-			menup.table.appendChild(row);			
+			fx.makeMenuDropdown(menup.el, cogbanner, coglinks);
+			menup.table.appendChild(row);
 			menup.el.appendChild(menup.table);
+			coglinks.style.left = help.getElPosition(menup.td_cog).x + "px";
 			
 			var pos = help.getElPosition(menup.td_user);
 			menup.loginbox.style.marginLeft = pos.x + "px";

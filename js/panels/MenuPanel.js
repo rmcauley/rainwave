@@ -1,6 +1,6 @@
 panels.MenuPanel = {
 	ytype: "fixed",
-	height: 20,
+	height: 21,
 	minheight: 3,
 	xtype: "fit",
 	width: 0,

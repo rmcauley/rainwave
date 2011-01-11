@@ -19,8 +19,7 @@ header('Content-type: audio/x-mpegurl');
 header("Cache-Control: no-cache, must-revalidate");
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 
-require("../api/lyre-common.php");
-require("../api/lyre-web.php");
+require("auth/common.php");
 
 $playlistfile = "";
 

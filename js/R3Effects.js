@@ -201,12 +201,24 @@ function R3Effects() {
 		return orfx;		
 	};
 	
-	that.menuMouseTimeout = function(header, dropdown, mouseover, mouseout) {
+	that.makeMenuDropdown = function(menu, header, dropdown) {
 		var timeout = 0;
-		header.addEventListener("mouseover", function() { clearTimeout(timeout); mouseover(); }, true);
+		var fx_pulldown = fx.make(fx.CSSNumeric, [ dropdown, 250, "top", "px" ]);
+		fx_pulldown.set(0);
+		var fx_opacity = fx.make(fx.OpacityRemoval, [ dropdown, menu, 250 ]);
+		var mouseover = function() {
+			clearTimeout(timeout);
+			fx_pulldown.start(menu.offsetHeight - 1);
+			fx_opacity.start(1);
+		};
+		var mouseout = function() {
+			fx_pulldown.start(0);
+			fx_opacity.start(0);
+		};
+		header.addEventListener("mouseover", mouseover, true);
 		header.addEventListener("mouseout", function() { clearTimeout(timeout); timeout = setTimeout(mouseout, 250); }, true);
 		if (dropdown) {
-			dropdown.addEventListener("mouseover", function() { clearTimeout(timeout); mouseover(); }, true);
+			dropdown.addEventListener("mouseover", mouseover, true);
 			dropdown.addEventListener("mouseout", function() { clearTimeout(timeout); timeout = setTimeout(mouseout, 250); }, true);
 		}
 	};
