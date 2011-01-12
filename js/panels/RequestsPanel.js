@@ -379,7 +379,7 @@ var Request = {
 	
 	linkifyDelete: function(requestq_id, el) {
 		el.style.cursor = "pointer";
-		el.addEventListener('click', function(e) { ajax.async_get("request_delete", { "requestq_id": requestq_id }); }, true);
+		el.addEventListener('click', function(e) { hotkey.stopBubbling(e); ajax.async_get("request_delete", { "requestq_id": requestq_id }); }, true);
 	},
 	
 	make: function(json) {
@@ -408,6 +408,7 @@ var Request = {
 		that.song_title_text.setAttribute("class", "request_song_title_text");
 		that.song_title_text.textContent = json.song_title;
 		Song.linkify(json.song_id, that.song_title_text);
+		that.song_title_text.addEventListener("click", hotkey.stopBubbling, true);
 		that.song_title.appendChild(that.song_title_text);
 		
 		that.el.appendChild(that.song_title);
@@ -424,6 +425,7 @@ var Request = {
 		that.album_name_text.textContent = json.album_name;
 		that.album_name.appendChild(that.album_name_text);
 		Album.linkify(json.album_id, that.album_name_text);
+		that.album_name.addEventListener("click", hotkey.stopBubbling, true);
 		that.el.appendChild(that.album_name);
 		
 		that.update = function(json) {
@@ -455,8 +457,7 @@ var Request = {
 		};
 		
 		that.destruct = function() {
-			that.songrating.destruct();
-			that.albumrating.destruct();
+			// pass
 		};
 		
 		that.update(json);

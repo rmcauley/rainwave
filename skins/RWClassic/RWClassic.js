@@ -599,6 +599,8 @@ function EdiTheme() {
 
 			tls.topfx = fx.make(fx.CSSNumeric, [ tls.el, 700, "top", "px" ]);
 			tls.topfx.set(tls.container.offsetHeight);
+			tls.leftfx = fx.make(fx.CSSNumeric, [ tls.el, 700, "left", "px" ]);
+			tls.leftfx.set(0);
 		};
 
 		tls.changeHeadline = function(newtext) {
@@ -657,8 +659,10 @@ function EdiTheme() {
 			tpl.bkgfx.set(te.height);
 			tpl.bkgfx.onComplete = te.fixElHeight;
 			
-			tpl.topfx = fx.make(fx.CSSNumeric, [ te.el, 700, "top", "px" ]);
+			tpl.topfx = fx.make(fx.CSSNumeric, [ tpl.el, 700, "top", "px" ]);
 			tpl.topfx.set(te.container.offsetHeight);
+			tpl.leftfx = fx.make(fx.CSSNumeric, [ tpl.el, 700, "left", "px" ]);
+			tpl.leftfx.set(0);
 		};
 		
 		tpl.changeHeadline = function(newtext) {
@@ -730,6 +734,8 @@ function EdiTheme() {
 
 			tos.topfx = fx.make(fx.CSSNumeric, [ tos.el, 700, "top", "px" ]);
 			tos.topfx.set(tos.container.offsetHeight);
+			tos.leftfx = fx.make(fx.CSSNumeric, [ tos.el, 700, "left", "px" ]);
+			tos.leftfx.set(0);
 		};
 
 		tos.changeHeadline = function(newtext) {
@@ -1704,29 +1710,35 @@ function EdiTheme() {
 			
 			menup.td_download = createEl("td", { "class": "menu_td_download" });
 			
+			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;" });
 			var vlc = createEl("img", { "src": "images/vlc.png", "class": "link" });
 			var fx_vlc = fx.make(fx.CSSNumeric, [ vlc, 250, "opacity", "" ]);
 			fx_vlc.set(0.85);
 			vlc.addEventListener("click", menup.tuneInClick, true);
 			vlc.addEventListener("mouseover", function() { fx_vlc.start(1) }, true);
 			vlc.addEventListener("mouseout", function() { fx_vlc.start(0.85) }, true);
-			menup.td_download.appendChild(vlc);
+			vlca.appendChild(vlc);
+			menup.td_download.appendChild(vlca);
 			
+			var winampa = createEl("a", { "href": "tunein.php", "onclick": "return false;" });
 			var winamp = createEl("img", { "src": "images/winamp.png", "class": "link" });
 			var fx_winamp = fx.make(fx.CSSNumeric, [ winamp, 250, "opacity", "" ]);
 			fx_winamp.set(.85);
 			winamp.addEventListener("mouseover", function() { fx_winamp.start(1) }, true);
 			winamp.addEventListener("mouseout", function() { fx_winamp.start(0.85) }, true);
 			winamp.addEventListener("click", menup.tuneInClick, true);
-			menup.td_download.appendChild(winamp);
+			winampa.appendChild(winamp);
+			menup.td_download.appendChild(winampa);
 			
+			var fb2ka = createEl("a", { "href": "tunein.php", "onclick": "return false;" });
 			var fb2k = createEl("img", { "src": "images/fb2k.png", "class": "link" });
 			var fx_fb2k = fx.make(fx.CSSNumeric, [ fb2k, 250, "opacity", "" ]);
 			fx_fb2k.set(0.85);
 			fb2k.addEventListener("mouseover", function() { fx_fb2k.start(1) }, true);
 			fb2k.addEventListener("mouseout", function() { fx_fb2k.start(0.85) }, true);
 			fb2k.addEventListener("click", menup.tuneInClick, true);
-			menup.td_download.appendChild(fb2k);
+			fb2ka.appendChild(fb2k);
+			menup.td_download.appendChild(fb2ka);
 			
 			row.appendChild(menup.td_download);
 			
