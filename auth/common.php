@@ -83,6 +83,8 @@ function globalizeUserData() {
 	$GLOBALS['user_id'] =& $GLOBALS['userdata']['user_id'];
 	$GLOBALS['username'] =& $GLOBALS['userdata']['username'];
 }
+
+globalizeUserData();
 	
 //-------------------------------------------------------------------------------------------------------
 

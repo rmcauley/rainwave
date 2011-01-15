@@ -1,41 +1,10 @@
-/*	Rainwave Classic Theme for Edi 1.0
-
-	This is the Rainwave 2 design upgraded for R3.  It is almost 100% SVG, and as such is VERY hard to
-	understand through the code at first blush.  While it is the most "complete" theme you can look at,
-	it's probably also the hardest one.  If you're looking to build your own theme, it may not be a wise
-	idea to start with this one.
-	
-	Due to the way that CSS is loaded onto the page from the theme, it is HIGHLY recommend you change the
-	<body> tag's style as part of your theme's init to change your font and font size, then call svg.measureEm()
-	to make sure your measurements are accurate.
-	
-             ***** IMPORTANT README ABOUT SCOPING *****
-			 
-	Scoping is handled in the theme in very tricky ways!
-	
-	Here's how it works:
-	that.[function]
-		Gets executed within EdiTheme's scope with full access to EdiTheme's closures.
-	that.Extend.[object]
-		Gets executed within the objects' scope.  "this" will be the object.  No access to closured variables.
-	that.[object].[function]
-		Gets executed within the objects' scope.  "this" is not explicit.  Has access to EdiTheme's closures.
-		
-	There are a *lot* of variables defined by Edi that functions have access to.  Docs on them don't exist, so
-	you'll just have to debug.  Sorry. :)  About all I can tell you is that you do have access to a "tv" (theme variable)
-	array you can manipulate to your hearts content in the theme.
-*/
-
-/*****************************************************************************
-  RW CLASSIC THEME
-*****************************************************************************/
-
 function EdiTheme() {
 	document.getElementById("body").style.fontFamily = "Tahoma, Sans-Serif";
 	document.getElementById("body").style.fontSize = "0.8em";
 	svg.measureEm();
 
 	var that = {};
+	var skindir = "skins_r" + BUILDNUM + "/RWClassic";
 
 	that.textcolor = "#FFFFFF";
 	that.TimelineSong_height = (svg.em + 9) * 3;		// font size + padding * 3 rows
@@ -55,20 +24,12 @@ function EdiTheme() {
 	
 	that.TimelineSong_rowheight = that.TimelineSong_height / 3;
 	that.TimelineSong_leftclipext = 1;			// how many rows the timeline song left clip uses
-	
-	that.Rating_gridcolor = "#708a90";
-	that.Rating_gridsizex = svg.em * 5;			// TODO: that should be * 6 but so many measurements are based off that now... :/
-	that.Rating_gridsizey = svg.em * 1.2;
-	that.Rating_unitsize = that.Rating_gridsizex / 5;
-	that.Rating_strikey = Math.round(that.Rating_gridsizey * 0.65);
-	that.Rating_striketopy = that.Rating_strikey / 2;
-	that.Rating_strikeboty = (that.Rating_gridsizey - that.Rating_strikey) * 0.7;
 
 	// The following are variables used internally by the theme
 	that.linkcolor = "#6cf6ff";
 	that.darktext = "#CCCCCC";
 	that.vdarktext = "#777777";
-	that.primarybkg = "#142027";
+	that.primarybkg = "#233844";
 	that.brightbkg = "#3f4b52";	
 	that.songborderdark = "#355669";
 	that.songborderbright = "#7d94a1";
@@ -85,19 +46,18 @@ function EdiTheme() {
 
 	// Edi required variable that depends on previously-defined variables
 	// text ratings + grid size + fav margin + fav + padding
-	that.Rating_shortwidth = Math.floor(that.Rating_gridsizex + that.Rating_gridsizey + 3 + 8 + 5);
+	that.Rating_shortwidth = 75;
 	that.Rating_width = Math.floor((svg.em * 2.2) + that.Rating_shortwidth);
 	
 	var logoheight = 40;
 	var logowidth = 200;
+	var votebkg_width = 680;
 	
 	that.Extend = {};
 	
 	/* ALL DEFINITIONS */
 	that.allDefs = function(svgel, defs) {
 		that.borderDefs(svgel, defs);
-		that.ratingDefs(svgel, defs);
-		that.timelineSongDefs(svgel, defs);
 		that.menuDefs(svgel, defs);
 	};
 
@@ -163,28 +123,6 @@ function EdiTheme() {
 		else bkg.setAttribute("fill", "url(#bleft)");
 		border.el.appendChild(bkg);
 	};
-
-	/*that.borderCorner = function(border) {
-		if (border.top) {
-			var line = svg.makeLine("50%", "0%", "50%", "50%", { shape_rendering: "crispEdges", stroke: songborderdark, stroke_width: 1 } );
-			border.el.appendChild(line);
-		}
-		
-		if (border.right) {
-			var line = svg.makeLine("50%", "50%", "100%", "50%", { shape_rendering: "crispEdges", stroke: songborderdark, stroke_width: 1 } );
-			border.el.appendChild(line);
-		}
-		
-		if (border.bottom) {
-			var line = svg.makeLine("50%", "50%", "50%", "100%", { shape_rendering: "crispEdges", stroke: songborderdark, stroke_width: 1 } );
-			border.el.appendChild(line);
-		}
-		
-		if (border.left) {
-			var line = svg.makeLine("0%", "50%", "50%", "50%", { shape_rendering: "crispEdges", stroke: songborderdark, stroke_width: 1 } );
-			border.el.appendChild(line);
-		}
-	};*/
 	
 	/*****************************************************************************
 	  RATING EFFECTS
@@ -194,10 +132,14 @@ function EdiTheme() {
 		var urfx = {};
 		urfx.duration = duration;
 		urfx.update = function() {
-			object.userel.setAttribute("d", "M0,0 H" + (that.Rating_unitsize * urfx.now) + " L" + (that.Rating_strikey + (that.Rating_unitsize * urfx.now)) + "," + that.Rating_strikey + " H" + that.Rating_strikey + " Z");
+			var px = Math.round(urfx.now * 10);
+			if (px <= 16) object.user_on.style.width = px + "px";
+			else object.user_on.style.width = "16px";
+			if (px >= 8) object.user_bar.style.backgroundPosition = (px - 50) + "px 0px";
+			else object.user_bar.style.backgroundPosition = "-50px 0px";
 			var text = (Math.round(urfx.now * 10) / 10).toFixed(1);
 			if (text == "0.0") text = "";
-			object.usertext.textContent = text;
+			object.user_text.textContent = text;
 		};
 			
 		return urfx;
@@ -207,11 +149,15 @@ function EdiTheme() {
 		var srfx = {};
 		srfx.duration = duration;
 		srfx.update = function() {
-			object.siteel.setAttribute("d", "M" + that.Rating_strikey + "," + that.Rating_strikey +" H" + (that.Rating_strikey + (that.Rating_unitsize * srfx.now)) + " L" + (that.Rating_gridsizey + (that.Rating_unitsize * srfx.now) + 1) + "," + (that.Rating_gridsizey + 1) + " H" + that.Rating_gridsizey + " Z");
-			//var text = Math.round(srfx.now * 10) / 10;
-			//if (srfx.now == 0) text = "";
-			//else if ((srfx.now % 1) == 0) text += ".0";
-			//object.sitetext.textContent = text;
+			var px = Math.round(srfx.now * 10);
+			if (px <= 8) {
+				object.site_on.style.opacity = "0"
+				object.site_bar.style.backgroundPosition = "-50px 0px";
+			}
+			else {
+				object.site_on.style.opacity = "1"
+				object.site_bar.style.backgroundPosition = (px - 50) + "px 0px";
+			}
 		};
 			
 		return srfx;
@@ -221,160 +167,71 @@ function EdiTheme() {
 	  RATING
 	*****************************************************************************/
 
-	// RatingDefs is used in other classes' themeInit() to provide <defs> tags relevant to the Ratings class.
-	// 	You'll see the pattern of adding a Defs functon to the Theme class a lot.
-	// The reason it's a part of the theme is because "theme" is a global variable.  I do not need to instantiate
-	// 	the Rating class in order to get the <defs>. (and each Rating class does not have to carry the function def)
-	that.ratingDefs = function(svgel, defs) {
-		var usergradient = svg.makeGradient("linear", "Rating_usergradient", "0%", "0%", "0%", "100%", "pad");
-		usergradient.appendChild(svg.makeStop("15%", "#b9e0ff", "1"));
-		usergradient.appendChild(svg.makeStop("50%", "#8bccff", "1"));
-		usergradient.appendChild(svg.makeStop("85%", "#8bccff", "1"));
-		usergradient.appendChild(svg.makeStop("100%", "#76add8", "1"));
-		defs.appendChild(usergradient);
-		
-		var sitegradient = svg.makeGradient("linear", "Rating_sitegradient", "0%", "0%", "0%", "100%", "pad");
-		sitegradient.appendChild(svg.makeStop("0%", "#5fff55", "1"));
-		sitegradient.appendChild(svg.makeStop("75%", "#95c7ee", "1"));
-		defs.appendChild(sitegradient);
-
-		var favgradient = svg.makeGradient("linear", "Rating_favgradient", "0%", "0%", "0%", "100%", "pad");
-		favgradient.appendChild(svg.makeStop("25%", "#ffff66", "1"));
-		favgradient.appendChild(svg.makeStop("60%", "#ffc900", "1"));
-		favgradient.appendChild(svg.makeStop("100%", "#ffa200", "1"));
-		defs.appendChild(favgradient);
-	};
-
 	that.Extend.Rating = function(ro) {
-		//ro.sitetext = false;
-		ro.usertext = false;
-		ro.userel = false;
-		ro.siteel = false;
-		
-		var ratingok = false;
-		var fxRating = false;
-		var gridg = false;
-		var grid = false;
-		var fxUserAnim = false;
-		var fxSiteAnim = false;
-		var fav = false;
-		var fxFav = false;
+		var fx_user;
+		var fx_site;
+		var fx_fav;
 		
 		// This function required by Edi
 		ro.draw = function(x, y, scale) {
-			var rwidth = (ro.notext) ? that.Rating_shortwidth : that.Rating_width;
-			ro.el = svg.makeEl("g");
-			var transform = "";
-			if ((x > 0) || (y > 0)) transform = "translate(" + x + ", " + y + ") ";
-			if (scale) transform += "scale(" + scale + ")";
-			if (transform > "") ro.el.setAttribute("transform", transform);
-
-			//ro.sitetext = svg.makeEl("text", { x: (svg.em * 2.2), y: (svg.em + 2), fill: that.darktext } );
-			//if (!ro.notext) ro.el.appendChild(ro.sitetext);
-				
-			//ratingok = svg.makeEl("path", { transform: "translate(" + ((svg.em * 4.2) + that.Rating_gridsizex + 3) + ", 0)", stroke: "none", fill: that.indicnormal } );
-			//ratingok.setAttribute("d", "M0,0 H8 L" + (that.Rating_gridsizey + 9) + "," + (that.Rating_gridsizey + 1) + " H" + that.Rating_gridsizey + " Z");
-			ratingok = svg.makeRect(-2, 0, svg.em * 2.15, svg.em + 5, { stroke: "none", fill: that.indicnormal });
-			ro.fxRatingOK = fx.make(fx.SVGAttrib, [ ratingok, 250, "opacity", "" ]);
-			ro.fxRatingOK.set(0);
-			if (!ro.notext) ro.el.appendChild(ratingok);
-				
-			// ro.ro.usertext required by Edi
-			ro.usertext = svg.makeEl("text", { x: 0, y: (svg.em + 2), fill: that.textcolor } );
-			if (!ro.notext) ro.el.appendChild(ro.usertext);
-
-			var gridx = (ro.notext) ? 0 : svg.em * 2.2;
-			gridg = svg.makeEl("g", { transform: "translate(" + gridx + ", 0)" } );
-
-			grid = svg.makeEl("path", { stroke_width: 1, stroke: that.Rating_gridcolor, shape_rendering: "crispEdges", fill: "none" } );
-			grid.setAttribute("d", "M0,0 H" + that.Rating_gridsizex + " L" + (that.Rating_gridsizex + that.Rating_gridsizey) + "," + that.Rating_gridsizey + " H" + that.Rating_gridsizey + " Z");
-			gridg.appendChild(grid);
-			ro.grid = grid;
+			ro.el = createEl("div", { "class": "rating" });
+			ro.user_text = createEl("span", { "class": "rating_text" }, ro.el);
+			ro.fav = createEl("img", { "src": skindir + "/images/rating_fav.png", "class": "rating_fav" }, ro.el);
+			ro.user_on = createEl("div", { "class": "rating_user_on" }, ro.el);
+			ro.user = createEl("div", { "class": "rating_user" }, ro.el);
+			ro.user_bar = createEl("div", { "class": "rating_user_bar" }, ro.user);
+			ro.site_on = createEl("img", { "src": skindir + "/images/rating_site_on.png", "class": "rating_site_on" }, ro.el);
+			ro.site = createEl("div", { "class": "rating_site" }, ro.el);
+			ro.site_bar = createEl("div", { "class": "rating_site_bar" }, ro.site);
+			ro.grid = createEl("img", { "src": skindir + "/images/rating_grid.png", "class": "rating_grid" }, ro.el);
 			
-			// ro.userel is required by Edi
-			ro.userel = svg.makeEl("path", { stroke_width: 0, fill: "url(#Rating_usergradient)" } );
-			fxUserAnim = fx.make(fx.UserRating, [ ro, 250 ]);
-			gridg.appendChild(ro.userel);
-			
-			// ro.siteel is required by Edi
-			ro.siteel = svg.makeEl("path", { stroke_width: 0, fill: "url(#Rating_sitegradient)" } );
-			fxSiteAnim = fx.make(fx.SiteRating, [ ro, 250 ]);
-			gridg.appendChild(ro.siteel);
-			
-			gridg.appendChild(svg.makeLine(that.Rating_strikey, that.Rating_strikey, (that.Rating_gridsizex + that.Rating_strikey), that.Rating_strikey, { "stroke-width": "1", "stroke": that.Rating_gridcolor, "shape-rendering": "crispEdges" }));
-			for (var i = 1; i <= 4; i++) {
-				var unitx = i * that.Rating_unitsize + that.Rating_strikey;
-				gridg.appendChild(svg.makeLine((unitx - that.Rating_striketopy), that.Rating_striketopy, (unitx + that.Rating_strikeboty), (that.Rating_strikey + that.Rating_strikeboty), { "stroke-width": "1", "stroke": that.Rating_gridcolor }));
-			}
-			
-			ro.el.appendChild(gridg);
-			
-			// ro.mousecatch required by Edi
-			ro.mousecatch = svg.makeRect(gridx, 0, (that.Rating_gridsizex + that.Rating_gridsizey), that.Rating_gridsizey, { stroke: "none", fill: "black", opacity: 0 } );
-			ro.el.appendChild(ro.mousecatch);
-			
-			var favb = svg.makeEl("path", { transform: "translate(" + (gridx + that.Rating_gridsizex + 3) + ", 0)", stroke_width: 1, stroke: that.Rating_gridcolor, shape_rendering: "crispEdges", fill: "none" } );
-			favb.setAttribute("d", "M0,0 H8 L" + (that.Rating_gridsizey + 8) + "," + (that.Rating_gridsizey) + " H" + that.Rating_gridsizey + " Z");
-			ro.el.appendChild(favb);
-			ro.favbutton = favb;
-			
-			ro.favcatch = svg.makeEl("path", { transform: "translate(" + (gridx + that.Rating_gridsizex + 3) + ", 0)", stroke: "none", fill: "url(#Rating_favgradient)" } );
-			ro.favcatch.setAttribute("d", "M0,0 H8 L" + (that.Rating_gridsizey + 9) + "," + (that.Rating_gridsizey + 1) + " H" + that.Rating_gridsizey + " Z");
-			fxFav = fx.make(fx.SVGAttrib, [ ro.favcatch, 250, "opacity", "" ])
-			fxFav.set(0);
-			ro.el.appendChild(ro.favcatch);
+			fx_user = fx.make(fx.UserRating, [ ro, 250 ]);
+			fx_site = fx.make(fx.SiteRating, [ ro, 250 ]);
+			fx_fav = fx.make(fx.CSSNumeric, [ ro.fav, 250, "opacity", "" ]);	
 		};
 
 		// Required by Edi
 		ro.setUser = function(userrating) {
-			fxUserAnim.set(userrating);
+			fx_user.set(userrating);
 		};
 
 		// Required by Edi
 		ro.resetUser = function() {
-			fxUserAnim.start(ro.userrating);
+			fx_user.start(ro.userrating);
 		};
 
 		// ro function required by Edi.  It may be called in animation functions.
 		ro.setSite = function(siterating) {
-			fxSiteAnim.set(siterating);
+			fx_site.set(siterating);
 		};
 
 		// ro function required by Edi.  Return the rating here.
 		// Edi will filter for the 0.5 stepping, and the API won't allow anything but 0.5 steps, so don't try and be cute. :)
 		ro.userCoord = function(evt) {
-			var m = evt.target.getScreenCTM();
-			var p = evt.target.viewportElement.createSVGPoint();
-			p.x = evt.clientX;
-			p.y = evt.clientY;
-			p = p.matrixTransform(m.inverse());
-			return (((p.x - svg.em * 2.4)) / (that.Rating_gridsizex / 5));
+			// TODO
 		};
 
 		// ro function required by Edi.  State: 2 = mouseover, 1 = favourite, 0 = not favourite
 		ro.favChange = function(state) {
-			if (state == 2) fxFav.start(0.70)
-			else if (state) fxFav.start(1);
-			else fxFav.start(0);
+			if (state == 2) fx_fav.start(0.70)
+			else if (state) fx_fav.start(1);
+			else fx_fav.start(0);
 		};
 
 		ro.showConfirmClick = function() {
-			ratingok.setAttribute("fill", that.indicnormal);
-			ro.fxRatingOK.start(1);
+			// TODO
 		};
 
 		ro.showConfirmOK = function() {
-			ratingok.setAttribute("fill", "#2253e0");
-			ro.fxRatingOK.start(1);
+			// TODO
 		};
 
 		ro.showConfirmBad = function() {
-			ratingok.setAttribute("fill", "#b22424");
-			ro.fxRatingOK.start(1);
+			// TODO
 		};
 
 		ro.resetConfirm = function() {
-			ro.fxRatingOK.start(0);
+			// TODO
 		};
 		
 		return ro;
@@ -385,13 +242,9 @@ function EdiTheme() {
 	*****************************************************************************/
 	
 	that.Extend.TimelinePanel = function(tl) {
-		tl.clipdefs = svg.make({ style: "position: absolute" });
-
 		tl.draw = function() {
-			that.TimelineSongClipPath(tl.clipdefs, tl);
-			tl.container.appendChild(tl.clipdefs);
-		};
-		
+			// nothing
+		};		
 		return tl;
 	};
 
@@ -399,75 +252,26 @@ function EdiTheme() {
 	 TIMELINE ELECTION
 	*****************************************************************************/
 	
-	that.drawTimelineEventHeader = function(te, text, colour, gradient, fill) {
-		var gradbase = svg.makeRect(0, 0, theme.Timeline_leftsidesize, svg.em * 0.8 + 4, { fill: colour } );
-		te.el.appendChild(gradbase);
-
-		te.headlinegrad = svg.makeRect(0, 0, theme.Timeline_leftsidesize, svg.em * 0.8 + 4, { fill: gradient } );
-		te.el.appendChild(te.headlinegrad);
-		te.headlinebkg = svg.makeRect(theme.Timeline_leftsidesize, 0, (te.width - theme.Timeline_leftsidesize - 1), svg.em * 0.8 + 4, { fill: fill } );
-		te.el.appendChild(te.headlinebkg);
-
-		te.headline = svg.makeEl("text", { fill: theme.textcolor, x: theme.Timeline_leftsidesize - 4, y: svg.em * 0.8 + 2, style: "font-size: 0.8em" } );
-		te.headline.textContent = text;
-		te.el.appendChild(te.headline);
-		
-		te.clock = svg.makeEl("text", { "text-anchor": "end", fill: theme.textcolor, x: te.width - 2, y: svg.em * 0.8 + 2, style: "font-size: 0.8em" } );
-		te.el.appendChild(te.clock);
+	that.drawTimelineTable = function(evt, text, indic) {
+		evt.el = createEl("table", { "class": "timeline_table", "cellspacing": 0 });
+		evt.el.style.width = evt.container.offsetWidth + "px";
+		var tr = createEl("tr", {}, evt.el);
+		evt.header_td = createEl("td", { "class": "timeline_header_" + indic, "colspan": 2 }, tr);
+		evt.header_clock = createEl("div", { "class": "timeline_clock" }, evt.header_td);
+		evt.clock = evt.header_clock;
+		evt.header_text = createEl("span", { "class": "timeline_header_text", "textContent": text }, evt.header_td);
 	}
 	
-	that.drawTimelineEventBackground = function(te, noclip) {
-		te.bkg = svg.makeRect(theme.Timeline_leftsidesize + 1, 0, te.width - theme.Timeline_leftsidesize - 1, te.height);
-		te.bkg.setAttribute("transform", "translate(0, " + (svg.em * 0.8 + 4) + ")");
-		//te.bkg.setAttribute("fill", "url(#TimelineSong_titlebkg)");
-		te.bkg.setAttribute("fill", that.primarybkg);
-		if (!noclip) te.bkg.setAttribute("clip-path", "url(#songnumx_clip)");
-		else te.bkg.setAttribute("clip-path", "url(#songnumx_basicclip)");
-		te.el.appendChild(te.bkg);
-	};
-	
-	that.Extend.TimelineElection = function(te) {
-		te.draw = function() {
-			that.drawTimelineEventHeader(te, _l("election"), theme.primarybkg, "url(#TimelineSong_indnormal)", theme.indicnormal);
-			that.drawTimelineEventBackground(te);
-			te.bkgfx = fx.make(fx.SVGAttrib, [ te.bkg, 500, "height", "" ]);
-			te.bkgfx.set(te.height);
-			te.bkgfx.onComplete = te.fixElHeight;
-			
-			te.topfx = fx.make(fx.CSSNumeric, [ te.el, 700, "top", "px" ]);
-			te.topfx.set(te.container.offsetHeight);
-			te.leftfx = fx.make(fx.CSSNumeric, [ te.el, 700, "left", "px" ]);
-			te.leftfx.set(0);
+	that.Extend.TimelineSkeleton = function(te) {
+		te.changeHeadline = function(newtext) {
+			te.header_text.textContent = newtext;
 		};
 		
-		te.detectHeaderColor = function() {
-			var reqstatus = 0;
-			for (var i = 0; i < te.songs.length; i++) {
-				if (te.songs[i].p.elec_isrequest == 1) {
-					reqstatus = 1;
-					break;
-				}
-			}
-			var gradurl = reqstatus == 1 ? "url(#TimelineSong_indrequest)" : "url(#TimelineSong_indnormal)";
-			var bkgfill = reqstatus == 1 ? theme.indicrequest : theme.indicnormal;
-			te.headlinegrad.setAttribute("fill", gradurl);
-			te.headlinebkg.setAttribute("fill", bkgfill);
-		};
-
-		te.changeHeadline = function(newtext) {
-			te.headline.textContent = newtext;
-		};
-
 		te.drawAsCurrent = function() {
-			te.headline.textContent = _l("electionresults");
 			te.clock.textContent = "";
 			te.clockdisplay = false;
 		};
-
-		te.drawShowWinner = function() {
-			te.headline.textContent = _l("previouslyplayed");
-		};
-
+		
 		te.moveTo = function(y) {
 			te.topfx.start(y);
 		};
@@ -477,7 +281,7 @@ function EdiTheme() {
 		};
 		
 		te.hideX = function() {
-			te.leftfx.set(-parseInt(te.el.getAttribute("width")))
+			te.leftfx.set(-te.el.offsetWidth)
 		};
 		
 		te.setY = function(y) {
@@ -493,300 +297,123 @@ function EdiTheme() {
 		};
 		
 		te.clockUndraw = function() {
-			te.el.removeChild(te.clock);
-		};
-
-		te.drawHeightChanged = function() {
-			te.bkgfx.start(te.height - 12);
+			te.header_td.removeChild(te.header_clock);
 		};
 		
-		te.fixElHeight = function() {
-			te.el.setAttribute("height", te.height);
-		}
+		te.recalculateHeight = function() {
+			te.height = te.el.offsetHeight;
+		};
+		
+		te.defineFx = function() {
+			te.topfx = fx.make(fx.CSSNumeric, [ te.el, 700, "top", "px" ]);
+			te.topfx.set(te.container.offsetHeight);
+			te.leftfx = fx.make(fx.CSSNumeric, [ te.el, 700, "left", "px" ]);
+			te.leftfx.set(0);
+		};
+		
+		te.sortSongOrder = function() {};
+	}
+	
+	that.Extend.TimelineElection = function(te) {
+		te.draw = function() {
+			var reqstatus = 0;
+			for (var i = 0; i < te.songs.length; i++) {
+				if (te.songs[i].p.elec_isrequest == 1) {
+					reqstatus = 1;
+					break;
+				}
+			}
+			var indic = reqstatus == 1 ? "request" : "normal";
+			that.drawTimelineTable(te, _l("election"), indic);
+			te.defineFx();
+		};
+		
+		te.drawShowWinner = function() {
+			for (var i = 1; i < te.songs.length; i++) {
+				te.songs[i].tr1_fx.start(0);
+				te.songs[i].tr2_fx.start(0);
+				te.songs[i].tr3_fx.start(0);
+			}
+			te.songs[0].tr3_fx.onComplete2 = function() { te.songs[0].indicator.setAttribute("rowspan", 2); }
+			te.songs[0].tr3_fx.start(0);
+		};
+		
+		te.sortSongOrder = function() {
+			for (var i = 0; i < te.songs.length; i++) {
+				te.el.appendChild(te.songs[i].tr1);
+				te.el.appendChild(te.songs[i].tr2);
+				te.el.appendChild(te.songs[i].tr3);
+			}
+		};
+		
+		te.recalculateHeight = function() {
+			if (te.showingwinner) {
+				te.height = te.header_td.offsetHeight + te.songs[0].song_title.offsetHeight + te.songs[0].album_name.offsetHeight + 5;
+			}
+			else {
+				te.height = te.el.offsetHeight;
+			}
+		};
 	};
 	
 	that.Extend.TimelineAdSet = function(tas) {
 		tas.draw = function() {
-			var indicator = svg.makeEl("path", { d: "M0,0 H" + theme.Timeline_leftsidesize + " V" + (theme.TimelineSong_rowheight - 1) + " L0," + (theme.TimelineSong_rowheight - theme.Timeline_leftsidesize - 1) + " Z", fill: "url(#TimelineSong_indnormal)" } );
-			indicator.setAttribute("transform", "translate(0, " + (svg.em + 3) + ")");
-			tas.el.appendChild(indicator);
-			
-			that.drawTimelineEventHeader(tas, _l("adset"), theme.primarybkg, "url(#TimelineSong_indnormal)", theme.indicnormal);
-			that.drawTimelineEventBackground(tas, true);
-			
-			var txt;
+			that.drawTimelineTable(tas, _l("adset"), "normal");
+
+			var tr, td, crap;
 			for (var i = 0; i < tas.p.ad_data.length; i++) {
-				txt = svg.makeEl("text", { "x": theme.Timeline_leftsidesize + 4, "y": 12 + (theme.TimelineSong_rowheight * (i + 1)) - 4, "textContent": tas.p.ad_data[i].ad_title, "fill": that.textcolor });
-				svg.linkifyText(txt, tas.p.ad_data[i].ad_url);
-				tas.el.appendChild(txt);
+				tr = createEl("tr", {}, tas.el);
+				if (i == 0) {
+					crap = createEl("td", { "class": "timeline_indicator_normal", "rowspan": tas.p.ad_data.length }, tr);
+					createEl("img", { "src": "images/blank.png", "style": "width: 10px; height: 20px;" }, crap);
+				}
+				td = createEl("td", { "class": "timeline_td" }, tr);
+				if (tas.p.ad_data[i].ad_url) {
+					createEl("a", { "href": tas.p.ad_data[i].ad_url, "textContent": tas.p.ad_data[i].ad_title }, td);
+				}
+				else {
+					createEl("span", { "textContent": tas.p.ad_data[i].ad_title }, td);
+				}
 			}
-
-			tas.topfx = fx.make(fx.CSSNumeric, [ tas.el, 700, "top", "px" ]);
-			tas.topfx.set(tas.container.offsetHeight);
-			tas.leftfx = fx.make(fx.CSSNumeric, [ tas.el, 700, "left", "px" ]);
-			tas.leftfx.set(0);
+			tas.defineFx();
 		};
-
-		tas.changeHeadline = function(newtext) {
-			tas.headline.textContent = newtext;
-		};
-
-		tas.drawAsCurrent = function() {
-			tas.headline.textContent = _l("nowplaying");
-			tas.clock.textContent = "";
-			tas.clockdisplay = false;
-		};
-
-		tas.drawShowWinner = function() {
-			tas.headline.textContent = _l("previouslyplayed");
-		};
-
-		tas.moveTo = function(y) {
-			tas.topfx.start(y);
-		};
-		
-		tas.moveXTo = function(x) {
-			tas.leftfx.start(x);
-		};
-		
-		tas.hideX = function() {
-			tas.leftfx.set(-parseInt(te.el.getAttribute("width")))
-		};
-		
-		tas.setY = function(y) {
-			tas.topfx.set(y);
-		};
-		
-		tas.setX = function(x) {
-			tas.leftfx.set(x);
-		};
-		
-		tas.changeZ = function(z) {
-			tas.el.style.zIndex = z;
-		};
-		
-		tas.clockUndraw = function() {
-			tas.el.removeChild(tas.clock);
-		};
-
-		tas.drawHeightChanged = function() {
-			tas.el.setAttribute("height", tas.height);
-		};	
 	};
 	
 	that.Extend.TimelineLiveShow = function(tls) {
 		tls.draw = function() {
-			tls.height = svg.em + that.TimelineSong_height;
-			
-			var indicator = svg.makeEl("path", { d: "M0,0 H" + theme.Timeline_leftsidesize + " V" + (theme.TimelineSong_rowheight - 1) + " L0," + (theme.TimelineSong_rowheight - theme.Timeline_leftsidesize - 1) + " Z", fill: "url(#TimelineSong_indnormal)" } );
-			indicator.setAttribute("transform", "translate(0, " + (svg.em + 3) + ")");
-			tls.el.appendChild(indicator);
-			
-			that.drawTimelineEventHeader(tls, _l("liveshow"), theme.primarybkg, "url(#TimelineSong_indnormal)", that.indicnormal);
-			that.drawTimelineEventBackground(tls, true);
-			
-			var baseline = svg.em * 2.6;
-			var room = tls.parent.width - theme.Timeline_leftsidesize - theme.Rating_width;
-			
-			tls.titleel = svg.makeEl("text", { x: (theme.Timeline_leftsidesize + 5), y: baseline, fill: theme.textcolor, textContent: fitText(tls.p.sched_name, (room - (svg.em * 5.4))) } );
-			tls.el.appendChild(tls.titleel);
-			
-			tls.noteel = svg.makeEl("text", { x: (theme.Timeline_leftsidesize + 16), y: (theme.TimelineSong_rowheight + baseline), fill: theme.darktext, textContent: fitText(tls.p.sched_notes, room - 16 - svg.em) } );
-			tls.el.appendChild(tls.noteel);
-			
-			tls.userel = svg.makeEl("text", { x: (theme.Timeline_leftsidesize + 16), y: ((theme.TimelineSong_rowheight * 2) + baseline), fill: theme.darktext, textContent: tls.p.username }); 
-			tls.el.appendChild(tls.userel);
-
-			tls.topfx = fx.make(fx.CSSNumeric, [ tls.el, 700, "top", "px" ]);
-			tls.topfx.set(tls.container.offsetHeight);
-			tls.leftfx = fx.make(fx.CSSNumeric, [ tls.el, 700, "left", "px" ]);
-			tls.leftfx.set(0);
+			that.drawTimelineTable(te, _l("liveshow"), "normal");
+			var tr = createEl("tr", {}, tls.el);
+			createEl("td", { "class": "timeline_indicator_normal", "rowspan": 3 }, tr);
+			createEl("td", { "class": "timeline_td", "textContent": tls.p.sched_name }, tr);
+			tr = createEl("tr", {}, tls.el);
+			createEl("td", { "class": "timeline_td", "textContent": tls.p.sched_notes }, tr);
+			tr = createEl("tr", {}, tls.el);
+			createEl("td", { "class": "timeline_td", "textContent": tls.p.username }, tr);
+			tls.defineFx();
 		};
-
-		tls.changeHeadline = function(newtext) {
-			tls.headline.textContent = newtext;
-		};
-
-		tls.drawAsCurrent = function() {
-			tls.headline.textContent = _l("nowplaying");
-			tls.clock.textContent = "";
-			tls.clockdisplay = false;
-		};
-
-		tls.drawShowWinner = function() {
-			tls.headline.textContent = _l("previouslyplayed");
-		};
-
-		tls.moveTo = function(y) {
-			tls.topfx.start(y);
-		};
-		
-		tls.moveXTo = function(x) {
-			tls.leftfx.start(x);
-		};
-		
-		tls.hideX = function() {
-			tls.leftfx.set(-parseInt(tls.el.getAttribute("width")))
-		};
-		
-		tls.setY = function(y) {
-			tls.topfx.set(y);
-		};
-		
-		tls.setX = function(x) {
-			tls.leftfx.set(x);
-		};
-		
-		tls.changeZ = function(z) {
-			tls.el.style.zIndex = z;
-		};
-		
-		tls.clockUndraw = function() {
-			tls.el.removeChild(tls.clock);
-		};
-
-		tls.drawHeightChanged = function() {
-			tls.el.setAttribute("height", tls.height);
-		}
-	
 	};
 	
 	that.Extend.TimelinePlaylist = function(tpl) {
 		tpl.draw = function() {
-			that.drawTimelineEventHeader(tpl, _l("playlist") + tpl.p.playlist_name, theme.primarybkg, "url(#TimelineSong_indnormal)", theme.indicnormal);
-			that.drawTimelineEventBackground(tpl);
-			tpl.bkgfx = fx.make(fx.SVGAttrib, [ te.bkg, 500, "height", "" ]);
-			tpl.bkgfx.set(te.height);
-			tpl.bkgfx.onComplete = te.fixElHeight;
-			
-			tpl.topfx = fx.make(fx.CSSNumeric, [ tpl.el, 700, "top", "px" ]);
-			tpl.topfx.set(te.container.offsetHeight);
-			tpl.leftfx = fx.make(fx.CSSNumeric, [ tpl.el, 700, "left", "px" ]);
-			tpl.leftfx.set(0);
+			that.drawTimelineTable(te, _l("playlist"), "normal");
+			tpl.defineFx();
 		};
-		
-		tpl.changeHeadline = function(newtext) {
-			tpl.headline.textContent = newtext;
-		};
-
-		tpl.drawAsCurrent = function() {
-			tpl.headline.textContent = _l("nowplaying");
-			tpl.clock.textContent = "";
-			tpl.clockdisplay = false;
-		};
-
-		tpl.drawShowWinner = function() {
-			tpl.headline.textContent = _l("previouslyplayed");
-		};
-
-		tpl.moveTo = function(y) {
-			tpl.topfx.start(y);
-		};
-		
-		tpl.moveXTo = function(x) {
-			tpl.leftfx.start(x);
-		};
-		
-		tpl.hideX = function() {
-			tpl.leftfx.set(-parseInt(tpl.el.getAttribute("width")))
-		};
-		
-		tpl.setY = function(y) {
-			tpl.topfx.set(y);
-		};
-		
-		tpl.setX = function(x) {
-			tpl.leftfx.set(x);
-		};
-		
-		tpl.changeZ = function(z) {
-			tpl.el.style.zIndex = z;
-		};
-		
-		tpl.clockUndraw = function() {
-			tpl.el.removeChild(tpl.clock);
-		};
-
-		tpl.drawHeightChanged = function() {
-			tpl.bkgfx.start(tpl.height - 12);
-		};
-		
-		tpl.fixElHeight = function() {
-			tpl.el.setAttribute("height", tpl.height);
-		}
 	};
 	
 	that.Extend.TimelineOneShot = function(tos) {
 		tos.draw = function() {
 			var hltitle = _l("onetimeplay");
 			if (tos.p.user_id) hltitle += " from " + tos.p.username;
-			that.drawTimelineEventHeader(tos, hltitle, theme.primarybkg, "url(#TimelineSong_indnormal)", theme.indicnormal);
-			that.drawTimelineEventBackground(tos);
-			tos.bkgfx = fx.make(fx.SVGAttrib, [ tos.bkg, 500, "height", "" ]);
-			tos.bkgfx.set(tos.height);
-			tos.bkgfx.onComplete = tos.fixElHeight;
+			that.drawTimelineTable(te, hltitle, "normal");
 			
 			if (tos.p.user_id == user.p.user_id) {
-				tos.headline.textContent = _l("deleteonetime");
-				tos.headline.style.cursor = "pointer";
-				tos.headline.addEventListener("click", tos.deleteOneShot, true);
+				tos.header_text.textContent = _l("deleteonetime");
+				tos.header_text.style.cursor = "pointer";
+				tos.header_text.addEventListener("click", tos.deleteOneShot, true);
 			}
 
-			tos.topfx = fx.make(fx.CSSNumeric, [ tos.el, 700, "top", "px" ]);
-			tos.topfx.set(tos.container.offsetHeight);
-			tos.leftfx = fx.make(fx.CSSNumeric, [ tos.el, 700, "left", "px" ]);
-			tos.leftfx.set(0);
+			tos.defineFx();
 		};
-
-		tos.changeHeadline = function(newtext) {
-			tos.headline.textContent = newtext;
-		};
-
-		tos.drawAsCurrent = function() {
-			tos.headline.textContent = _l("nowplaying");
-			tos.clock.textContent = "";
-			tos.clockdisplay = false;
-		};
-
-		tos.drawShowWinner = function() {
-			tos.headline.textContent = _l("previouslyplayed");
-		};
-
-		tos.moveTo = function(y) {
-			tos.topfx.start(y);
-		};
-		
-		tos.moveXTo = function(x) {
-			tos.leftfx.start(x);
-		};
-		
-		tos.hideX = function() {
-			tos.leftfx.set(-parseInt(tos.el.getAttribute("width")))
-		};
-		
-		tos.setY = function(y) {
-			tos.topfx.set(y);
-		};
-		
-		tos.setX = function(x) {
-			tos.leftfx.set(x);
-		};
-		
-		tos.changeZ = function(z) {
-			tos.el.style.zIndex = z;
-		};
-		
-		tos.clockUndraw = function() {
-			tos.el.removeChild(tos.clock);
-		};
-
-		tos.drawHeightChanged = function() {
-			tos.bkgfx.start(tos.height - 12);
-		};
-		
-		tos.fixElHeight = function() {
-			tos.el.setAttribute("height", tos.height);
-		}
 	};
 
 	/*****************************************************************************
@@ -794,145 +421,57 @@ function EdiTheme() {
 	*****************************************************************************/
 	
 	that.Extend.TimelineSong = function(ts) {
+		var fx_votebkg_x;
+		var fx_votebkg_y;
+		var votelock_timer;
+		var votelock_started;
+		var fx_swipe;
+		
 		ts.draw = function() {
-			var baseline = svg.em + 5;		// text baseline vertical pixel
-			var room = ts.parent.width - theme.Timeline_leftsidesize - theme.Rating_width;
-
-			ts.indicatorclip = svg.makeEl("g", { clip_path: "url(#songnumx_xclip)" } );
-			ts.indicatorg = svg.makeEl("g");
-			ts.indicatefx = fx.make(fx.SVGTranslateY, [ ts.indicatorg, 250, 0 ]);
-			ts.indicatefx.set(theme.TimelineSong_rowheight);
-			ts.isreq = ts.p['elec_isrequest'];
-			var indicbkg = "#TimelineSong_indnormal";
-			var indicbright = theme.indicnormalbright;
-			var pcolour = "#2c9eff";
-			if (ts.isreq == 1) {
-			//if (ts.songnum == 0) {
-				indicbkg = "#TimelineSong_indrequest";
-				indicbright = theme.indicrequestbright;
-				pcolour = "#2cff40";
-			}
-			else if (ts.isreq == -2) {
-			//else if (ts.songnum == 1) {
-				indicbkg = "#TimelineSong_inddconflict";
-				indicbright = theme.indicconflictbright;
-				pcolour = "#fcfa66";
-			}
-			else if (ts.isreq == -1) {
-			//else if (ts.songnum == 2) {
-				indicbkg = "#TimelineSong_inddconflict";
-				indicbright = theme.indicconflictbright;
-				pcolour = "#ff7d4f";
-			}
-			var indicbkgr = "url(" + indicbkg + "r)";
-			var indicbkgp = "url(" + indicbkg + "_progress)";
-			indicbkg = "url(" + indicbkg + ")";
-
-			var indicbkgrect = svg.makeEl("path", { d: "M0,0 H" + theme.Timeline_leftsidesize + " V" + (theme.TimelineSong_rowheight * 2) + " L0," + ((theme.TimelineSong_rowheight * 2) - theme.Timeline_leftsidesize) + " Z", fill: theme.primarybkg } );
-			ts.indicatorg.appendChild(indicbkgrect);
-			var indicator = svg.makeEl("path", { d: "M0,0 H" + theme.Timeline_leftsidesize + " V" + (theme.TimelineSong_rowheight * 2) + " L0," + ((theme.TimelineSong_rowheight * 2) - theme.Timeline_leftsidesize) + " Z", fill: indicbkg } );
-			ts.indicatorg.appendChild(indicator);
-			ts.indicatorg.appendChild(svg.makeRect(theme.Timeline_leftsidesize, theme.TimelineSong_rowheight, (ts.parent.width - theme.Timeline_leftsidesize), theme.TimelineSong_rowheight, { fill: indicbkgr } ));
-			if (ts.isreq == 1) {
-				var reqtext = svg.makeEl("text", { fill: theme.textcolor, x: theme.Timeline_leftsidesize + 16, y: theme.TimelineSong_rowheight + baseline } );
-				reqtext.textContent = fitText(_l("requestedby") + " " + ts.p.song_requestor + ".", room - 16 - svg.em);
-				ts.indicatorg.appendChild(reqtext);
-			}
-			else if (ts.isreq == -3) {
-				var reqtext = svg.makeEl("text", { fill: theme.textcolor, x: theme.Timeline_leftsidesize + 16, y: theme.TimelineSong_rowheight + baseline } );
-				reqtext.textContent = fitText(_l("conflictswith") + " " + ts.p.song_requestor + ".", room - 16 - svg.em);
-				ts.indicatorg.appendChild(reqtext);
-			}
-			ts.indicatorclip.appendChild(ts.indicatorg);
+			var indic = "normal";
+			if (ts.isreq == 1) indic = "request";
+			else if (ts.isreq < 0) indic = "conflict";
 			
-			ts.votehoverg = svg.makeEl("g");
-			var voterect = svg.makeRect(theme.Timeline_leftsidesize + 1, 1, (ts.parent.width - theme.Timeline_leftsidesize - 1), (theme.TimelineSong_rowheight - 1), { fill: indicbkgr } );
-			ts.votehoverg.appendChild(voterect);
+			ts.tr1 = createEl("tr", {});
+			ts.tr1_fx = fx.make(fx.OpacityRemoval, [ ts.tr1, ts.parent.el, 500 ]);
+			ts.tr1_fx.set(1);
+			ts.indicator = createEl("td", { "class": "timeline_indicator_" + indic, "rowspan": 3 }, ts.tr1);
+			var argh = createEl("img", { "src": "images/blank.png", "class": "timeline_indicator_argh" }, ts.indicator);
+			ts.song_td = createEl("td", { "class": "timeline_td timeline_vote_" + indic }, ts.tr1);
+			ts.vote_hover_el = createEl("div", { "class": "timeline_vote_hover" }, ts.song_td);
+			ts.swipe = createEl("div", { "class": "timeline_vote_swipe" }, ts.song_td);
+			ts.song_rating_bkg = createEl("div", { "class": "timeline_song_rating_bkg" }, ts.song_td);
+			ts.song_rating_c = createEl("div", { "class": "timeline_song_rating_c" }, ts.song_td);
+			ts.song_rating = Rating({ category: "song", "id": ts.p.song_id, "userrating": ts.p.song_rating_user, "siterating": ts.p.song_rating_avg, "favourite": ts.p.song_favourite, "register": true });
+			ts.song_rating_c.appendChild(ts.song_rating.el);
+			ts.song_time = createEl("div", { "class": "timeline_song_time", "textContent": formatTime(ts.p.song_secondslong) }, ts.song_td);
+			ts.song_title = createEl("span", { "class": "song_title", "textContent": ts.p.song_title }, ts.song_td);
 			
-			/*ts.particletimer = false;
-			ts.particles = new Array();
-			for (var i = 0; i < theme.TimelineSong_rowheight; i++) {
-				var x = Math.floor(Math.random() * (ts.parent.width - theme.Timeline_leftsidesize + 1));
-				ts.particles[i] = svg.makeLine(x, theme.TimelineSong_rowheight + i, x, theme.TimelineSong_rowheight, { stroke: pcolour, stroke_width: 1, shape_rendering: "crispEdges" } );
-				ts.votehoverg.appendChild(ts.particles[i]);
-			}*/
+			ts.tr2 = createEl("tr", {});
+			ts.tr2_fx = fx.make(fx.OpacityRemoval, [ ts.tr2, ts.parent.el, 500 ]);
+			ts.tr2_fx.set(1);
+			ts.album_td = createEl("td", { "class": "timeline_td timeline_album_td" }, ts.tr2);
+			ts.album_rating_bkg = createEl("div", { "class": "timeline_song_rating_bkg" }, ts.album_td);
+			ts.album_rating_c = createEl("div", { "class": "timeline_song_rating_c" }, ts.album_td);
+			ts.album_rating = Rating({ category: "album", "id": ts.p.album_id, "userrating": ts.p.album_rating_user, "siterating": ts.p.salbum_rating_avg, "favourite": ts.p.album_favourite, "register": true });
+			ts.album_rating_c.appendChild(ts.album_rating.el);
+			ts.album_name = createEl("span", { "class": "timeline_album_title", "textContent": ts.p.album_name }, ts.album_td);
 			
-			ts.FxVoteHoverOpacity = fx.make(fx.SVGAttrib, [ ts.votehoverg, 250, "opacity", "" ]);
-			ts.FxVoteHoverOpacity.set(0);
+			ts.tr3 = createEl("tr", {});
+			ts.tr3_fx = fx.make(fx.OpacityRemoval, [ ts.tr3, ts.parent.el, 500 ]);
+			ts.tr3_fx.set(1);
+			ts.artist_td = createEl("td", { "class": "timeline_td timeline_artist_td" }, ts.tr3);
+			Artist.allArtistToHTML(ts.p.artists, ts.artist_td);
 			
-			ts.el.appendChild(ts.votehoverg);
-			
-			ts.voteprogress = svg.makeEl("path", { fill: indicbkgp, clip_path: "url(#songnumx_songclip)" });
-			ts.el.appendChild(ts.voteprogress);
-			ts.FxVoteProgress = fx.make(fx.TimelineSong_voteProgress, [ ts.voteprogress, 250 ] );
-			
-			ts.voteconfirmg = svg.makeEl("g", { clip_path: "url(#songnumx_songclip)" } );
-			ts.voteconfirm = svg.makeRect(theme.Timeline_leftsidesize, 0, ts.parent.width, theme.TimelineSong_rowheight, { fill: indicbright } );
-			ts.voteconfirmg.appendChild(ts.voteconfirm);
-			ts.el.appendChild(ts.voteconfirmg);
-			ts.FxVoteConfirmOpacity = fx.make(fx.SVGAttrib, [ ts.voteconfirm, 600, "opacity", "" ]);
-			ts.FxVoteConfirmOpacity.set(1);
-			ts.FxVoteConfirm = fx.make(fx.SVGAttrib, [ ts.voteconfirm, 200, "y", "" ]);
-			ts.FxVoteConfirm.onComplete = ts.registerVoteDraw2;
-			ts.FxVoteConfirm.set(theme.TimelineSong_rowheight);
-			
-			// ts.song is defined (and filled with song data) by Edi.  ts.songel is not required, but I use it. :)
-			ts.songel = svg.makeEl("text", { x: (theme.Timeline_leftsidesize + 5), y: baseline, fill: theme.textcolor, "width": ts.parent.width } );
-			ts.songel.textContent = fitText(ts.p.song_title, (room - (svg.em * 5.4)));
-			ts.el.appendChild(ts.songel);
-
-			ts.songtime = svg.makeEl("text", { "text-anchor": "end", x: (room - 7), y: baseline, fill: theme.darktext } );
-			ts.songtime.textContent = formatTime(ts.p.song_secondslong);
-			ts.el.appendChild(ts.songtime);
-			
-			ts.timeborders = new Array();
-			for (var i = 0; i < 2; i++) {
-				ts.timeborders[i] = svg.makeEl("path", { opacity: 0.3, fill: "#000000" } );
-				ts.timeborders[i].setAttribute("d", "M" + Math.floor(ts.parent.width - theme.Rating_width - theme.TimelineSong_rowheight) + "," + Math.floor((theme.TimelineSong_rowheight * i) + 1) + " H" + (ts.parent.width - 1) + " V" + Math.floor(theme.TimelineSong_rowheight * (i + 1)) + " H" + (ts.parent.width - theme.Rating_width) + " Z");
-				ts.el.appendChild(ts.timeborders[i]);
-			}
-
-			// ts.songrating required by Edi
-			ts.songrating = Rating({ category: "song", id: ts.p.song_id, userrating: ts.p.song_rating_user, siterating: ts.p.song_rating_avg, x: (ts.parent.width - theme.Rating_width), y: 3, favourite: ts.p.song_favourite, register: true });
-			ts.el.appendChild(ts.songrating.el);
-			
-			ts.albumg = svg.makeEl("g");
-			// ts.album is defined by Edi, you must define ts.albumel here for the album to be clickable (for info)
-			ts.albumel = svg.makeEl("text", { x: (theme.Timeline_leftsidesize + 16), y: (theme.TimelineSong_rowheight + baseline), fill: theme.darktext } );
-			ts.albumel.textContent = fitText(ts.p.album_name, room - 16 - svg.em);
-			ts.el.appendChild(ts.albumel);
-			
-			// ts.albumrating required by Edi
-			ts.albumrating = Rating({ category: "album", id: ts.p.album_id, userrating: ts.p.album_rating_user, siterating: ts.p.album_rating_avg, x: (ts.parent.width - theme.Rating_width), y: (theme.TimelineSong_rowheight + 3), favourite: ts.p.album_favourite, register: true });
-			ts.el.appendChild(ts.albumrating.el);
-			
-			// indicatorclip HAS TO GO HERE since it needs to go over the album on hover
-			ts.el.appendChild(ts.indicatorclip);
-			ts.indicatefx.set(-theme.TimelineSong_rowheight);
-			
-			// note how we're using tspans for each artist's element, ts allows properly display of the text in 1 line while
-			// retaining the ability to have each artist have its own link
-			var artisttext = svg.makeEl("text", { x: (theme.Timeline_leftsidesize + 16), y: ((theme.TimelineSong_rowheight * 2) + baseline), fill: theme.darktext } );
-			// ts.p.artists is defined and filled by Edi, as is artistsToTSpans (also handles artist clickability!)
-			artistsToTSpans(artisttext, ts.p.artists);
-			ts.artistel = artisttext;
-			fitTSpans(ts.artistel, (ts.parent.width - theme.Timeline_leftsidesize - 17), false);
-			ts.el.appendChild(ts.artistel);
-			
-			ts.voteswipeg = svg.makeEl("g", { clip_path: "url(#songnumx_songclip)" } );
-			ts.voteswipe = svg.makeRect(theme.Timeline_leftsidesize, 1, ts.parent.width, theme.TimelineSong_rowheight - 1, { fill: "url(#TimelineSong_voteswipe)" } );
-			ts.voteswipeg.appendChild(ts.voteswipe);
-			ts.el.appendChild(ts.voteswipeg);
-			ts.FxVoteSwipe = fx.make(fx.SVGAttrib, [ ts.voteswipe, 400, "y", "" ]);
-			ts.FxVoteSwipe.set(-theme.TimelineSong_rowheight);
-			
-			// ts.votehoverel required for interactivity.
-			ts.votehoverel = svg.makeRect(theme.Timeline_leftsidesize, 0, room - svg.em, theme.TimelineSong_rowheight, { fill: "#FFFFFF", opacity: 0 } );
-			ts.el.appendChild(ts.votehoverel);
-			
-			ts.artistfade = fx.make(fx.SVGAttrib, [ ts.artistel, 250, "opacity", "" ]);
-			ts.artistfade.onComplete = ts.removeArtist;
-			ts.artistfade.set(1);
+			// TODO: requested by drop-down
+		
+			fx_votebkg_x = fx.make(fx.BackgroundPosX, [ ts.song_td, 300 ]);
+			fx_votebkg_x.set(-votebkg_width);
+			fx_votebkg_y = fx.make(fx.BackgroundPosY, [ ts.song_td, 300 ]);
+			fx_votebkg_y.set(0);
+			fx_swipe = fx.make(fx.BackgroundPosY, [ ts.swipe, 500 ]);
+			fx_swipe.onComplete = ts.endSwipe();
+			fx_swipe.set(ts.song_td.offsetHeight);
 			
 			if (prefs.p.timeline.highlightrequests.value && (ts.p.elec_isrequest != 0)) {
 				ts.voteHoverOn();
@@ -940,62 +479,70 @@ function EdiTheme() {
 		};
 
 		ts.destruct = function() {
-			ts.songrating.destruct();
-			ts.albumrating.destruct();
+			ts.song_rating.destruct();
+			ts.album_rating.destruct();
 		};
 
 		ts.showVotes = function() {
 			if (ts.p.elec_votes > 0) {
-				ts.songtime.textContent = ts.p.elec_votes;
+				ts.song_time.textContent = ts.p.elec_votes;
 			}
 			else {
-				ts.songtime.textContent = "";
+				ts.song_time.textContent = "";
 			}
 		};
 
-		ts.showSongLengths = function() {
-			ts.songtime.textContent = formatNumberToMSS(ts.p.song_secondslong);
-		};
-
-		ts.showSongAlbum = function() {
-			ts.height = theme.TimelineSong_rowheight * 2;
-			ts.artistfade.start(0);
-		};
-
-		ts.removeArtist = function() {
-			try { ts.el.removeChild(ts.artistel); } catch(err) {}
-			ts.height = theme.TimelineSong_rowheight * 2;
+		ts.showSongLength = function() {
+			ts.song_time.textContent = formatNumberToMSS(ts.p.song_secondslong);
 		};
 
 		ts.voteHoverOn = function(evt) {
-			/*for (var i = 0; i < ts.particles.length; i++) { ts.particleCalculate(i); }
-			if (ts.particletimer != false) clearInterval(ts.particletimer);
-			ts.particletimer = setInterval(ts.particleAnimate, 40);*/
-			ts.FxVoteHoverOpacity.start(1);
-			if (ts.isreq != 0) ts.indicatefx.start(0);
+			if (!votelock_timer) {
+				fx_votebkg_x.stop();
+				fx_votebkg_x.duration = 300;
+				fx_votebkg_x.start(-votebkg_width + ts.song_td.offsetWidth + 11);
+			}
 		};
 
 		ts.voteHoverOff = function(evt) {
-			ts.FxVoteHoverOpacity.start(0);
-			ts.indicatefx.start(-theme.TimelineSong_rowheight);
-			//clearInterval(ts.particletimer);
-			//ts.particletimer = false;
+			if (!votelock_timer) {
+				fx_votebkg_x.stop();
+				fx_votebkg_x.duration = 300;
+				fx_votebkg_x.start(-votebkg_width);
+			}
 		};
 
 		ts.startVoting = function() {
-			ts.FxVoteSwipe.start(theme.TimelineSong_rowheight, -theme.TimelineSong_rowheight);
-			ts.startedvoting = clock.hiResTime();
-			ts.voteprogresstimer = setInterval(ts.voteProgress, 20);
+			fx_votebkg_x.stop();
+			fx_votebkg_x.set(-votebkg_width + ts.song_td.offsetWidth + 11);
+			fx_votebkg_y.duration = 300;
+			fx_votebkg_y.onComplete = ts.startVoting2;
+			ts.swipe.style.width = ts.song_td.offsetWidth + "px";
+			ts.swipe.style.height = ts.song_td.offsetHeight + "px";
+			fx_votebkg_y.start(-25);
+			fx_swipe.start(ts.song_td.offsetHeight, -21);
 		};
-
+		
+		ts.endSwipe = function() {
+			ts.swipe.style.width = "0px";
+		};
+		
+		ts.startVoting2 = function() {
+			fx_votebkg_y.onComplete = false;
+			fx_votebkg_y.set(-32);
+			fx_votebkg_x.set(-votebkg_width);
+			votelock_started = clock.hiResTime();
+			votelock_timer = setInterval(ts.voteProgress, 20);
+		};
+		
 		ts.voteProgress = function() {
 			var clocktime = clock.hiResTime();
-			if ((ts.startedvoting + 5000) >= clocktime) {
-				var headtime = (Math.floor(((ts.startedvoting + 5000) - clocktime) / 100) / 10);
+			if ((votelock_started + 5000) >= clocktime) {
+				var headtime = Math.floor(((votelock_started + 5000) - clocktime) / 100) / 10;
 				if ((headtime % 1) == 0) headtime += ".0";
 				ts.parent.changeHeadline(_l("votelockingin") + " " + headtime + "...");
-				var x = ((clocktime - ts.startedvoting) / 5000) * (ts.parent.width - theme.Timeline_leftsidesize - theme.Rating_width - 8);
-				ts.FxVoteProgress.set(x);
+				var x = Math.floor(((clocktime - votelock_started) / 5000) * (ts.song_td.offsetWidth + 11) - votebkg_width);
+				fx_votebkg_x.set(x);
 			}
 			else {
 				ts.parent.changeHeadline("Submitting vote...");
@@ -1004,581 +551,180 @@ function EdiTheme() {
 			}
 		};
 
-		ts.voteProgressStop = function() {
-			clearInterval(ts.voteprogresstimer);
-			ts.FxVoteProgress.start(-theme.TimelineSong_rowheight);
+		ts.voteProgressStop = function(noclear) {
+			clearInterval(votelock_timer);
+			if (!noclear) {
+				fx_votebkg_x.onComplete = ts.voteProgressStop2;
+				fx_votebkg_x.start(-votebkg_width);
+			}
+		};
+		
+		ts.voteProgressStop2 = function() {
+			fx_votebkg_x.onComplete = false;
+			fx_votebkg_y.set(0);
+			votelock_timer = false;
 		};
 
 		ts.voteProgressComplete = function() {
-			clearInterval(ts.voteprogresstimer);
-			ts.FxVoteProgress.set(ts.parent.width - theme.Timeline_leftsidesize - theme.Rating_width - 8);
+			ts.voteProgressStop(true);
+			fx_votebkg_x.set(-votebkg_width + ts.song_td.offsetWidth + 11);
 		};
 
 		ts.registerVoteDraw = function() {
 			ts.parent.changeHeadline(_l("voted"));
-			ts.FxVoteConfirm.start(0);
-		};
-
-		ts.registerVoteDraw2 = function() {
-			//ts.FxVoteConfirmOpacity.onComplete = ts.registerVoteDraw3;
-			ts.FxVoteConfirmOpacity.start(0.25);
-			ts.FxVoteProgress.set(-theme.TimelineSong_rowheight);
-		};
-		
-		/*ts.registerVoteDraw3 = function() {
-			ts.FxVoteConfirmOpacity.onComplete = false;
-		};*/
-
-		ts.particleCalculate = function(i) {
-			if (ts.particles[i].getAttribute("y2") <= 0) {
-				ts.particles[i].setAttribute("y1", theme.TimelineSong_rowheight);
-				var x = Math.floor(Math.random() * (ts.parent.width - theme.Timeline_leftsidesize - theme.Rating_width)) + theme.Timeline_leftsidesize;
-				ts.particles[i].setAttribute("x1", x)
-				ts.particles[i].setAttribute("x2", x)
-			}
-			var y1 = parseInt(ts.particles[i].getAttribute("y1"));
-			if (y1 > theme.TimelineSong_rowheight) ts.particles[i].setAttribute("opacity", "0");
-			else if (y1 < (theme.TimelineSong_rowheight)) {
-				ts.particles[i].setAttribute("opacity", (y1 / theme.TimelineSong_rowheight));
-			}
-			else {
-				ts.particles[i].setAttribute("opacity", "1");
-			}
-			ts.particles[i].setAttribute("y1", y1 - 2);
-			var y2 = y1 + (theme.TimelineSong_rowheight / 3);
-			if (y2 > theme.TimelineSong_rowheight) y2 = theme.TimelineSong_rowheight;
-			ts.particles[i].setAttribute("y2", y2);
-		};
-
-		ts.particleAnimate = function() {
-			for (var i = 0; i < ts.particles.length; i++) {
-				ts.particleCalculate(i);
-			}
-			//if (ts.particletimer == true) setTimeout(ts.particleAnimate, 100);
+			fx_votebkg_y.duration = 1000;
+			fx_votebkg_y.start(-70);
+			votelock_timer = false;
 		};
 		
 		return ts;
 	};
-
-	that.timelineSongDefs = function(svgel, defs) {
-		var titlebkg = svg.makeGradient("linear", "TimelineSong_titlebkg", "0%", "0%", "0%", "100%", "pad");
-		titlebkg.appendChild(svg.makeStop("0%", that.brightbkg, "1"));
-		titlebkg.appendChild(svg.makeStop("33%", that.primarybkg, "1"));
-		defs.appendChild(titlebkg);
-
-		var inddconflict = svg.makeGradient("linear", "TimelineSong_inddconflict", "100%", "0%", "0%", "0%", "pad");
-		inddconflict.appendChild(svg.makeStop("0%", that.indicconflict, "1"));
-		inddconflict.appendChild(svg.makeStop("100%", that.indicconflict, "0.3"));
-		defs.appendChild(inddconflict);
-		
-		var inddconflictr = svg.makeGradient("linear", "TimelineSong_inddconflictr", "0%", "0%", "100%", "0%", "pad");
-		inddconflictr.appendChild(svg.makeStop("70%", that.indicconflict, "1"));
-		inddconflictr.appendChild(svg.makeStop("100%", that.indicconflict, "0.3"));
-		defs.appendChild(inddconflictr);
-		
-		var inddconflictv = svg.makeGradient("linear", "TimelineSong_inddconflictv", "0%", "100%", "0%", "0%", "pad");
-		inddconflictv.appendChild(svg.makeStop("0%", that.indicconflict, "1"));
-		inddconflictv.appendChild(svg.makeStop("100%", that.indicconflict, "0.3"));
-		defs.appendChild(inddconflictv);
-		
-		var inddconflictp = svg.makeGradient("linear", "TimelineSong_inddconflict_progress", "0%", "0%", "0%", "100%", "pad");
-		inddconflictp.appendChild(svg.makeStop("0%", that.indicconflict, "0"));
-		inddconflictp.appendChild(svg.makeStop("50%", that.indicconflict, "0"));
-		inddconflictp.appendChild(svg.makeStop("90%", that.indicconflict, "1"));
-		inddconflictp.appendChild(svg.makeStop("100%", that.indicconflictbright, "1"));
-		defs.appendChild(inddconflictp);
-		
-		/*var indqconflict = svg.makeGradient("linear", "TimelineSong_indqconflict", "100%", "0%", "0%", "0%", "pad");
-		indqconflict.appendChild(svg.makeStop("0%", that.indicwarn, "1"));
-		indqconflict.appendChild(svg.makeStop("100%", that.indicwarn, "0.3"));
-		defs.appendChild(indqconflict);
-		
-		var indqconflictr = svg.makeGradient("linear", "TimelineSong_indqconflictr", "0%", "0%", "100%", "0%", "pad");
-		indqconflictr.appendChild(svg.makeStop("70%", that.indicwarn, "1"));
-		indqconflictr.appendChild(svg.makeStop("100%", that.indicwarn, "0.3"));
-		defs.appendChild(indqconflictr);
-		
-		var indqconflictv = svg.makeGradient("linear", "TimelineSong_indqconflictv", "0%", "100%", "0%", "0%", "pad");
-		indqconflictv.appendChild(svg.makeStop("0%", that.indicwarn, "1"));
-		indqconflictv.appendChild(svg.makeStop("100%", that.indicwarn, "0.3"));
-		defs.appendChild(indqconflictv);*/
-		
-		var indrequest = svg.makeGradient("linear", "TimelineSong_indrequest", "100%", "0%", "0%", "0%", "pad");
-		indrequest.appendChild(svg.makeStop("0%", that.indicrequest, "1"));
-		indrequest.appendChild(svg.makeStop("100%", that.indicrequest, "0.3"));
-		defs.appendChild(indrequest);
-		
-		var indrequestr = svg.makeGradient("linear", "TimelineSong_indrequestr", "0%", "0%", "100%", "0%", "pad");
-		indrequestr.appendChild(svg.makeStop("70%", that.indicrequest, "1"));
-		indrequestr.appendChild(svg.makeStop("100%", that.indicrequest, "0.3"));
-		defs.appendChild(indrequestr);
-		
-		var indrequestv = svg.makeGradient("linear", "TimelineSong_indrequestv", "0%", "100%", "0%", "0%", "pad");
-		indrequestv.appendChild(svg.makeStop("0%", that.indicrequest, "1"));
-		indrequestv.appendChild(svg.makeStop("100%", that.indicrequest, "0.3"));
-		defs.appendChild(indrequestv);
-		
-		var indrequestp = svg.makeGradient("linear", "TimelineSong_indrequest_progress", "0%", "0%", "0%", "100%", "pad");
-		indrequestp.appendChild(svg.makeStop("0%", that.indicrequest, "0"));
-		indrequestp.appendChild(svg.makeStop("50%", that.indicrequest, "0"));
-		indrequestp.appendChild(svg.makeStop("90%", that.indicrequest, "1"));
-		indrequestp.appendChild(svg.makeStop("100%", that.indicrequestbright, "1"));
-		defs.appendChild(indrequestp);
-		
-		var indnormal = svg.makeGradient("linear", "TimelineSong_indnormal", "100%", "0%", "0%", "0%", "pad");
-		indnormal.appendChild(svg.makeStop("0%", that.indicnormal, "1"));
-		indnormal.appendChild(svg.makeStop("100%", that.indicnormal, "0.3"));
-		defs.appendChild(indnormal);
-		
-		var indnormalr = svg.makeGradient("linear", "TimelineSong_indnormalr", "0%", "0%", "100%", "0%", "pad");
-		indnormalr.appendChild(svg.makeStop("70%", that.indicnormal, "1"));
-		indnormalr.appendChild(svg.makeStop("100%", that.indicnormal, "0.3"));
-		defs.appendChild(indnormalr);
-		
-		var indnormalv = svg.makeGradient("linear", "TimelineSong_indnormalv", "0%", "100%", "0%", "0%", "pad");
-		indnormalv.appendChild(svg.makeStop("0%", that.indicnormal, "1"));
-		indnormalv.appendChild(svg.makeStop("100%", that.indicnormal, "0.3"));
-		defs.appendChild(indnormalv);
-		
-		var voteprogress = svg.makeGradient("linear", "TimelineSong_indnormal_progress", "0%", "0%", "0%", "100%", "pad");
-		voteprogress.appendChild(svg.makeStop("0%", that.indicnormal, "0"));
-		voteprogress.appendChild(svg.makeStop("50%", that.indicnormal, "0"));
-		voteprogress.appendChild(svg.makeStop("90%", that.indicnormal, "1"));
-		voteprogress.appendChild(svg.makeStop("100%", that.indicnormalbright, "1"));
-		defs.appendChild(voteprogress);
-		
-		var voteswipe = svg.makeGradient("linear", "TimelineSong_voteswipe", "0%", "0%", "0%", "100%", "pad");
-		voteswipe.appendChild(svg.makeStop("0%", "white", "0"));
-		voteswipe.appendChild(svg.makeStop("33%", "white", "1"));
-		voteswipe.appendChild(svg.makeStop("66%", "white", "1"));
-		voteswipe.appendChild(svg.makeStop("100%", "white", "0"));
-		defs.appendChild(voteswipe);
-	};
-
-	that.TimelineSongClipPath = function(svgel, obj) {
-		// should equal 183!
-		var border = svg.makeEl("clipPath");
-		border.setAttribute("id", "songnumx_clip");
-		var bpath = svg.makeEl("path");
-		var path = "";
-		for (var j = 0; j < 3; j++) {
-			var basey = j * that.TimelineSong_height;
-			// first step: create the upper left box
-			path += "M1," + (basey + 1) + " V" + Math.floor(basey + (that.TimelineSong_leftclipext * that.TimelineSong_rowheight) - that.Timeline_leftsidesize) + " L" + that.Timeline_leftsidesize + "," + Math.floor(basey + (that.TimelineSong_leftclipext * that.TimelineSong_rowheight)) + " V" + (basey + 1) + " Z";
-			for (var i = 0; i < 2; i++) {
-				// the song/album clip - ALSO USED BELOW
-				path += " M" + Math.floor(that.Timeline_leftsidesize + 1) + "," + Math.floor(basey + (that.TimelineSong_rowheight * i) + 1) + " H" + Math.floor(obj.width - that.Rating_width - that.TimelineSong_rowheight + 1) + " L" + Math.floor(obj.width - that.Rating_width) + "," + Math.floor(basey + (that.TimelineSong_rowheight * (i + 1))) + " H" + Math.floor(that.Timeline_leftsidesize + 1) + " Z";
-				// the rating clip
-				path += " M" + Math.floor(obj.width - that.Rating_width - that.TimelineSong_rowheight + 2) + "," + Math.floor(basey + (that.TimelineSong_rowheight * i) + 1) + " H" + (obj.width - 1) + " V" + Math.floor(basey + (that.TimelineSong_rowheight * (i + 1))) + " H" + Math.floor(obj.width - that.Rating_width + 1) + " Z";
-			}
-			// artist clip
-			path += " M" + Math.floor(that.Timeline_leftsidesize + 1) + "," + Math.floor(basey + (that.TimelineSong_rowheight * 2) + 1) + " H" + Math.floor(obj.width - 1) + " V" + Math.floor(basey + (that.TimelineSong_rowheight * 3)) + " H" + Math.floor(that.Timeline_leftsidesize + 1) + " Z";			
-		}
-		bpath.setAttribute("d", path);
-		bpath.setAttribute("shape-rendering", "crispEdges");
-		border.appendChild(bpath);
-		svgel.appendChild(border);
-		
-		var border2 = svg.makeEl("clipPath", { id: "songnumx_xclip" } );
-		var bpath2 = svg.makeEl("path", { shape_rendering: "crispEdges", d: "M0,1 H" + that.Timeline_leftsidesize + " V" + (that.TimelineSong_rowheight + 1) + " H" + obj.width + " V" + (that.TimelineSong_rowheight * 2) + " H0 Z" } );
-		border2.appendChild(bpath2);
-		svgel.appendChild(border2);	
-		
-		var border3 = svg.makeEl("clipPath", { id: "songnumx_songclip" } );
-		var bpath3 = svg.makeEl("path", { shape_rendering: "crispEdges", d: "M" + Math.floor(that.Timeline_leftsidesize + 1) + "," + 1 + " H" + Math.floor(obj.width - that.Rating_width - that.TimelineSong_rowheight + 1) + " L" + Math.floor(obj.width - that.Rating_width) + "," + (that.TimelineSong_rowheight) + " H" + Math.floor(that.Timeline_leftsidesize + 1) + " Z" } );
-		border3.appendChild(bpath3);
-		svgel.appendChild(border3);
-		
-		var border4 = svg.makeEl("clipPath", { "id": "songnumx_basicclip" });
-		/*var bpath4;
-		for (var j = 0; j < 5; j++) {
-			bpath4 = svg.makeEl("path", { shape_rendering: "crispEdges", d: "M" + Math.floor(that.Timeline_leftsidesize + 1) + "," + (1 + (that.TimelineSong_rowheight * j)) + " H" + (obj.width - 1) + " V" + (that.TimelineSong_rowheight * (j + 1)) + " H" + Math.floor(that.Timeline_leftsidesize + 1) + " Z " } );	
-			border4.appendChild(bpath4);
-		}*/
-		var bpath4 = "";
-		for (var j = 0; j < 5; j++) {
-			bpath4 += " M" + Math.floor(that.Timeline_leftsidesize + 1) + "," + (1 + (that.TimelineSong_rowheight * j)) + " H" + (obj.width - 1) + " V" + (that.TimelineSong_rowheight * (j + 1)) + " H" + Math.floor(that.Timeline_leftsidesize + 1) + " Z ";	
-		}
-		border4.appendChild(svg.makeEl("path", { shape_rendering: "crispEdges", d: bpath4 }));
-		svgel.appendChild(border4);
-	},
-	
-	fx.extend("TimelineSong_voteProgress", function(object, duration) {
-		var tsvp = {};
-		tsvp.duration = duration;
-		
-		tsvp.update = function() {
-			object.setAttribute("d", "M" + (theme.Timeline_leftsidesize + 1) + ",0 H" + tsvp.now + " L" + (tsvp.now + theme.TimelineSong_rowheight) + "," + (theme.TimelineSong_rowheight) + " H" + (theme.Timeline_leftsidesize + 1) + " Z");
-		};
-		
-		return tsvp;
-	});
 	
 	/*****************************************************************************\
 		NOW PLAYING PANEL
 	*****************************************************************************/
 
+	that.NPDrawSong = function(json, event, panel) {
+		var table = createEl("table", { "class": "nowplaying_table", "cellspacing": 0 });
+		
+		var tr = createEl("tr", {}, table);
+		if (!json || (json.song_data && json.song_data[0].album_art)) {
+			table.album_art = createEl("td", { "class": "nowplaying_album_art", "rowspan": 4 }, tr);
+			if (json && json.song_data && json.song_data[0].album_art) {
+				table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": json.song_data[0].album_art }, table.album_art);
+			}
+		}
+		table.song_title = createEl("td", { "class": "nowplaying_song_title" }, tr);
+		table.song_rating = createEl("td", { "class": "nowplaying_song_rating" }, tr);
+		
+		tr = createEl("tr", {}, table);
+		table.album_name = createEl("td", { "class": "nowplaying_album_name" }, tr);
+		table.album_rating = createEl("td", { "class": "nowplaying_album_rating" }, tr);
+		
+		tr = createEl("tr", {}, table);
+		table.artist_name = createEl("td", { "class": "nowplaying_arist_name", "colspan": 2 }, tr);
+		
+		tr = createEl("tr", {}, table);
+		table.url = createEl("td", { "class": "nowplaying_url" }, tr);
+		table.votes = createEl("td", { "class": "nowplaying_votes" }, tr);
+		
+		if (json) {
+			// songs
+			if (json.song_title) table.song_title.textContent = json.song_title;
+			if (json.album_name) table.album_name.textContent = json.album_name;
+			if (typeof(json.song_rating_user) != "undefined") {
+				event.song_rating = Rating({ "category": "song", "id": json.song_id, "userrating": json.song_rating_user, "albumrating": json.song_rating_avg, "favourite": json.song_favourite, "register": true });
+				table.song_rating.appendChild(event.song_rating.el);
+			}
+			if (typeof(json.album_rating_user) != "undefined") {
+				event.album_rating = Rating({ "category": "album", "id": json.album_id, "userrating": json.album_rating_user, "siterating": json.album_rating_avg, "favourite": json.album_favourite, "register": true });
+				table.album_rating.appendChild(event.album_rating.el);
+			}
+			if (json.artists) Artist.allArtistToHTML(json.artists, table.artist_name);
+			if (json.song_url && (json.song_url.length > 0)) createEl("a", { "href": json.song_url, "textContent": json.song_url_text }, table.url);
+			if (json.elec_votes) {
+				if (json.elec_votes > 1) table.votes.textContent = json.elec_votes + " " + _l("votes");
+				else table.votes.textContent = json.elec_votes + " " + _l("vote");
+			}
+			if (json.elec_isrequest && ((json.elec_isrequest == 1) || (json.elec_isrequest == -1))) {
+				var requestor = json.song_requestor;
+				var reqtxt = "";
+				if (json.elec_isrequest == 1) reqtxt = _l("requestedby");
+				else if (json.elec_isrequest < 0) reqtxt = _l("conflictedwith");
+				panel.changeReqBy(reqtxt + " " + json.song_requestor);
+			}
+			else if (event.p.username && (event.p.sched_type != SCHED_LIVE)) {
+				panel.changeReqBy(_l("from") + " " + json.username);
+			}
+			else if (event.p.sched_dj) {
+				panel.changeReqBy(_l("currentdj") + " " + event.p.sched_dj);
+			}
+			
+			// ads
+			if (json.ad_title) table.song_title.textContent = json.ad_title;
+			if (json.ad_album) table.album_name.textContent = json.album_name;
+			if (json.ad_artist) table.artist_name = json.ad_artist;
+			if (json.ad_url && (json.ad_url.length > 0)) createEl("a", { "href": json.ad_url, "textContent": json.ad_url_text }, table.url);
+
+			// generic
+			if (json.sched_name) table.song_title.textContent = json.sched_name;
+			if (json.sched_notes) table.song_title.textContent = json.sched_notes;
+			if (json.username) table.header_right.textContent = json.username;
+		}
+		
+		return table;
+	};
+
 	that.Extend.NowPanel = function(nowp) {
 		nowp.draw = function() {
-			nowp.svg.setAttribute("style", "position: absolute");
-			
-			nowp.defs = svg.makeEl("defs");
-			
-			var bkgmaskgrad = svg.makeGradient("linear", "NowPanel_bkgmaskgrad", "0%", "0%", "100%", "0%", "pad");
-			bkgmaskgrad.appendChild(svg.makeStop("0%", "#FFFFFF", "1"));
-			bkgmaskgrad.appendChild(svg.makeStop("95%", "#FFFFFF", "1"));
-			bkgmaskgrad.appendChild(svg.makeStop("100%", "#000000", "1"));
-			nowp.defs.appendChild(bkgmaskgrad);
-			
-			var bkgmask = svg.makeEl("mask", { id: "NowPanel_bkgmask" });
-			bkgmask.appendChild(svg.makeRect(0, 0, nowp.width, nowp.height, { "fill": "url(#NowPanel_bkgmaskgrad)" }));
-			nowp.defs.appendChild(bkgmask);
-			
-			nowp.el.appendChild(nowp.defs);
-			
-			var clip1 = svg.makeEl("clipPath", { id: "NowPanel_hdrclip" } );
-			var anglestart = nowp.width - 125;
-			var dropdown = svg.em * 4;
-			clip1.appendChild(svg.makeEl("path", { d: "M" + theme.Timeline_leftsidesize + "," + svg.em + " H" + anglestart + " L" + (anglestart + svg.em) + ",0 H0 V" + (dropdown - theme.Timeline_leftsidesize) + " L" + theme.Timeline_leftsidesize + "," + dropdown + " Z" } ));
-			nowp.el.appendChild(clip1);
-			
-			var clip2 = svg.makeEl("clipPath", { id: "NowPanel_bkgclip" } );
-			clip2.appendChild(svg.makeEl("path", { d: "M" + (theme.Timeline_leftsidesize + 1) + "," + (svg.em + 1) + " H" + (anglestart + 1) + " L" + (anglestart + svg.em + 1) + ",0 H" + nowp.width + " V" + nowp.height + " H" + (theme.Timeline_leftsidesize + 1) + " Z" } ));
-			nowp.el.appendChild(clip2);
-			
-			var bkggrad = svg.makeGradient("linear", "NowPanel_bkggrad", "0%", "0%", "0%", "100%", "pad");
-			bkggrad.appendChild(svg.makeStop("0%", theme.brightbkg, "1"));
-			bkggrad.appendChild(svg.makeStop("50%", theme.primarybkg, "1"));
-			//bkggrad.appendChild(svg.makeStop("100%", theme.primarybkg, "0.7"));
-			nowp.defs.appendChild(bkggrad);
-			
-			nowp.header = svg.makeEl("g", { clip_path: "url(#NowPanel_hdrclip)" } );
-			nowp.bkg = svg.makeEl("g", { clip_path: "url(#NowPanel_bkgclip)" });
-			if (nowp.width == (svg.em * 60)) nowp.bkg.setAttribute("mask", "url(#NowPanel_bkgmask)");
-			
-			var bkgrect = svg.makeRect(0, 0, "100%", "100%", { fill: "url(#NowPanel_bkggrad)" } );
-			nowp.bkg.appendChild(bkgrect);
-			
-			nowp.hdrsolid = svg.makeRect(0, 0, nowp.width, dropdown, { fill: theme.primarybkg } );
-			nowp.header.appendChild(nowp.hdrsolid);
-			
-			nowp.indicbkg = svg.makeRect(0, 0, theme.Timeline_leftsidesize, dropdown, { fill: "url(#TimelineSong_indnormal)" } );
-			nowp.header.appendChild(nowp.indicbkg);
-			
-			//var indicbkg2 = svg.makeRect(0, 0, nowp.width, theme.Timeline_leftsidesize, { fill: "url(#TimelineSong_indnormalv)" });
-			nowp.indicbkg2 = svg.makeRect(theme.Timeline_leftsidesize, 0, anglestart + svg.em, theme.Timeline_leftsidesize, { fill: theme.indicnormal });
-			nowp.header.appendChild(nowp.indicbkg2);
-			
-			var np = svg.makeEl("text", { x: theme.Timeline_leftsidesize, y: svg.em * 0.8, style: "font-size: 0.8em", fill: theme.textcolor } );
-			np.textContent = _l("nowplaying");
-			nowp.header.appendChild(np);
-			
-			nowp.el.appendChild(nowp.header);
-			nowp.el.appendChild(nowp.bkg);
+			nowp.indicator_v = createEl("div", { "class": "nowplaying_indicator_v", "textContent": " " }, nowp.container);
+			nowp.indicator_h = createEl("div", { "class": "nowplaying_indicator_h", "textContent": " " }, nowp.container);
+			nowp.header_text = createEl("div", { "class": "nowplaying_header_text" }, nowp.container);
+			nowp.header_reqby = createEl("div", { "class": "nowplaying_header_reqby", "textContent": " " }, nowp.container);
+			nowp.el = createEl("div", { "class": "nowplaying_wrapper" }, nowp.container);
 		};
 		
-		nowp.changeHeader = function(json) {
-			if (json.sched_type == SCHED_ELEC) {
-				if (json.song_data[0].elec_isrequest == 1) {
-					
-					nowp.indicbkg.setAttribute("fill", "url(#TimelineSong_indrequest)");
-					nowp.indicbkg2.setAttribute("fill", theme.indicrequest);
-				}
-				else if (json.song_data[0].elec_isrequest == -1) {
-					nowp.indicbkg.setAttribute("fill", "url(#TimelineSong_inddconflict)");
-					nowp.indicbkg2.setAttribute("fill", theme.indicconflict);
-				}
-				else {
-					nowp.indicbkg.setAttribute("fill", "url(#TimelineSong_indnormal)");
-					nowp.indicbkg2.setAttribute("fill", theme.indicnormal);
-				}
-			}
-			else {
-				nowp.indicbkg.setAttribute("fill", "url(#TimelineSong_indnormal)");
-				nowp.indicbkg2.setAttribute("fill", theme.indicnormal);
-			}
+		nowp.changeHeader = function(text) {
+			nowp.header_text.textContent = text;
+		};
+		
+		nowp.changeReqBy = function(text) {
+			nowp.header_reqby.textContent = text
 		};
 	};
 	
-	that.NPDrawSong = function(song, npe, nowp) {
-		var anglestart = nowp.width - 125;
-		var leftartmargin = 15;
-		npe.songdg = svg.makeEl("g");
-		if (song.album_id) {
-			npe.albumart = svg.makeImage("albumart/" + song.album_id + "-120.jpg", that.Timeline_leftsidesize + 5, 15, 120, 120);
-			npe.albumart.setAttribute("preserveAspectRatio", "xMidYMin meet");
-			npe.el.appendChild(npe.albumart);
-			leftartmargin = 145;
-		}
-		npe.songdg.setAttribute("transform", "translate(" + leftartmargin + ", 6)");
-		
-		var rowpadding = Math.floor(svg.em * 2.2);
-		var leftpadding = 0;
-		var indent1 = leftpadding + 16;
-		var indent2 = indent1 + 10;
-		var roomfortext = nowp.width - leftartmargin - theme.Rating_width;
-		var ratingx = nowp.width - leftartmargin - theme.Rating_width;
-		if (nowp.width == (svg.em * 60)) {
-			roomfortext -= 25;
-			ratingx -= 25;
+	that.Extend.NPSkeleton = function(npe) {
+		npe.defineFx = function() {
+			npe.fx_marginleft = fx.make(fx.CSSNumeric, [ npe.el, 700, "marginLeft", "px" ]);
+			npe.fx_marginleft.set(-50);
+			npe.fx_opacity = fx.make(fx.OpacityRemoval, [ npe.el, npe.parent.el, 700 ] );
 		}
 		
-		var songy = svg.em;
-		var songstyle = "font-size: 1.1em; font-weight: bold;";
-		if (song.ad_title) song.song_title = song.ad_title;
-		if (song.song_title) {
-			// nowp.song is defined (and filled with song data) by Edi.  nowp.songel is not required, but it's recommended you use it. :)
-			npe.songel = svg.makeEl("text", { x: leftpadding, y: songy + (svg.em * 1.1), fill: theme.textcolor, style: songstyle } );
-			npe.songel.textContent = fitText(song.song_title, roomfortext - leftpadding, songstyle);
-			if (song.song_id) Song.linkify(song.song_id, npe.songel);
-			npe.songdg.appendChild(npe.songel);
-		}
-		
-		if (typeof(song.song_rating_user) != "undefined") {
-			// nowp.songrating required by Edi
-			npe.songrating = Rating({ category: "song", id: song.song_id, userrating: song.song_rating_user, albumrating: song.song_rating_avg, x: ratingx, y: songy - 2, favourite: song.song_favourite, register: true });
-			npe.songdg.appendChild(npe.songrating.el);
-		}
-
-		var albumy = Math.floor(songy + rowpadding);
-		var albumstyle = "font-size: 1.1em";
-		if (song.ad_album) song.album_name = song.ad_album;
-		if (song.album_name) {
-			npe.albumel = svg.makeEl("text", { x: indent1, y: albumy + (svg.em * 1.1), fill: theme.textcolor, style: albumstyle } );
-			npe.albumel.textContent = fitText(song.album_name, roomfortext - indent1, albumstyle);
-			Album.linkify(song.album_id, npe.albumel);
-			npe.songdg.appendChild(npe.albumel);
-		}
-		
-		// nowp.albumrating required by Edi
-		if (typeof(song.album_rating_user) != "undefined") {
-			npe.albumrating = Rating({ category: "album", id: song.album_id, userrating: song.album_rating_user, siterating: song.album_rating_avg, x: ratingx, y: albumy - 2, favourite: song.album_favourite, register: true });
-			npe.songdg.appendChild(npe.albumrating.el);
-		}
-		
-		// note how we're using tspans for each artist's element, this allows properly display of the text in 1 line while
-		// retaining the ability to have each artist have its own link
-		var artisty = albumy + rowpadding;
-		if (song.artists) {
-			var artisttext = svg.makeEl("text", { x: indent1, y: artisty + svg.em, fill: theme.textcolor } );
-			// nowp.artists is defined and filled by Edi, as is artistsToTSpans (also handles artist clickability!)
-			artistsToTSpans(artisttext, song.artists);
-			npe.artistel = artisttext;
-			fitTSpans(npe.artistel, (nowp.width - 120) - indent1, false);
-			npe.songdg.appendChild(npe.artistel);
-		}
-		else if (song.ad_artist) {
-			npe.artistel = svg.makeEl("text", { x: indent1, y: artisty + (svg.em * 1.1), fill: theme.textcolor } );
-			npe.artistel.textContent = fitText(song.ad_artist, roomfortext - indent1);
-		}
-		
-		var linky = artisty + rowpadding;
-		var urlused = false;
-		if (song.ad_url && song.ad_url_text) {
-			song.song_url = song.ad_url;
-			song.song_url_text = song.ad_url_text;
-		}
-		if (song.song_url && (song.song_url.length > 0)) {
-			urlused = true;
-			npe.linkel = svg.makeEl("text", { x: indent1, y: linky + svg.em, fill: theme.textcolor } );
-			npe.linkel.style.cursor = "pointer";
-			npe.linkel.addEventListener('click', function(e) {
-					var popupWin = window.open(song.song_url, song.song_url_text);
-				}, true);
-			npe.songdg.appendChild(npe.linkel);
-		}
-		
-		var toptextleft = anglestart - leftartmargin;
-		var toptexttop = svg.em - 2 - 6;
-		if (song.elec_isrequest && ((song.elec_isrequest == 1) || (song.elec_isrequest == -1))) {
-			var requestor = song.song_requestor;
-			var reqtxt = "";
-			if (song.elec_isrequest == 1) reqtxt = _l("requestedby");
-			else if (song.elec_isrequest < 0) reqtxt = _l("conflictedwith");
-			reqtxt = reqtxt + " " + song.song_requestor;
-			console.log({ "nowp": nowp.width, "anglestart": anglestart });
-			var reqby = svg.makeEl("text", { x: toptextleft, "text-anchor": "end", y: toptexttop, fill: theme.textcolor, style: "font-size: smaller;" } );
-			reqby.textContent = reqtxt;
-			npe.songdg.appendChild(reqby);
-		}
-		else if ((npe.p.username) && (npe.p.sched_type != SCHED_LIVE)) {
-			var reqby = svg.makeEl("text", { x: toptextleft, "text-anchor": "end", y: toptexttop, fill: theme.textcolor, style: "font-size: smaller;" } );
-			reqby.textContent = _l("from") + " " + npe.p.username;
-			npe.songdg.appendChild(reqby);
-		}
-		else if (npe.p.sched_dj) {
-			var reqby = svg.makeEl("text", { x: toptextleft, "text-anchor": "end", y: toptexttop, fill: theme.textcolor, style: "font-size: smaller;" } );
-			reqby.textContent = _l("currentdj") + " " + npe.p.sched_dj;
-			npe.songdg.appendChild(reqby);
-		}
-
-		var numvotes = song.elec_votes ? song.elec_votes : 0;
-		if (numvotes > 0) {
-			var votex = (nowp.width - 120 - theme.Rating_width - 13);
-			npe.votes = svg.makeEl("text", { x: votex, y: linky + svg.em, "text-anchor": "end", fill: theme.textcolor } );
-			npe.votes.textContent = numvotes;
-			npe.songdg.appendChild(npe.votes);
-			//var votelegendx = urlused ?  votex + (svg.em / 2) : indent1;
-			var votelegendx = votex + (svg.em / 2);
-			var votelegend = svg.makeEl("text", { x: votelegendx, y: linky + svg.em, fill: theme.textcolor } );
-			if (numvotes == 1) votelegend.textContent = _l("vote");
-			else votelegend.textContent = _l("votes");
-			//if (!urlused) votelegend.textContent += ":";
-			npe.songdg.appendChild(votelegend);
-		}
-		
-		npe.el.appendChild(npe.songdg);
-	};
-	
-	that.Extend.NPElection = function(npe, nowp) {
-		npe.draw = function() {
-			that.NPDrawSong(npe.p.song_data[0], npe, nowp);
-			
-			npe.fxY = fx.make(fx.SVGTranslateY, [ npe.el, 400, 0 ] );
-			npe.fxY.set(50);
-			npe.fxOpacity = fx.make(fx.SVGAttrib, [ npe.el, 400, "opacity", "" ] );
-			npe.fxOpacity.set(0);
-		};
-
 		npe.destruct = function() {
-			npe.songrating.destruct();
-			npe.albumrating.destruct();
+			if (npe.song_rating) {
+				npe.song_rating.destruct();
+				npe.album_rating.destruct();
+			}
 		};
 		
 		npe.animateIn = function() {
-			npe.fxY.start(0);
-			npe.fxOpacity.start(1);
+			npe.fx_marginleft.start(0);
+			npe.fx_opacity.start(1);
 		};
 		
 		npe.animateOut = function() {
-			npe.fxY.start(50);
-			npe.fxOpacity.start(0);
+			npe.fx_marginleft.start(50);
+			npe.fx_opacity.start(0);
 		};
 	};
 	
-	that.Extend.NPJingle = function(npj, nowp) {
-		npj.draw = function() {
-			var anglestart = nowp.width - 125;
-			
-			var rowpadding = Math.floor(svg.em * 2.2);
-			var leftpadding = theme.Timeline_leftsidesize + 9;
-			var indent1 = leftpadding + 16;
-			var indent2 = indent1 + 10;
-			var roomfortext = nowp.width - 120 - theme.Rating_width;
-			var ratingx = nowp.width - 117 - theme.Rating_width;
-			
-			var songy = theme.Timeline_leftsidesize + svg.em - 3;
-			var songstyle = "font-size: 1.1em; font-weight: bold;";
-			// nowp.song is defined (and filled with song data) by Edi.  nowp.songel is not required, but it's recommended you use it. :)
-			npj.songel = svg.makeEl("text", { x: leftpadding, y: songy + (svg.em * 1.1), fill: theme.textcolor, style: songstyle } );
-			npj.songel.textContent = fitText(_l("jingle"), roomfortext - leftpadding, songstyle);
-			npj.el.appendChild(npj.songel);
-			
-			npj.fxY = fx.make(fx.SVGTranslateY, [ npj.el, 400, 0 ] );
-			npj.fxY.set(50);
-			npj.fxOpacity = fx.make(fx.SVGAttrib, [ npj.el, 400, "opacity", "" ] );
-			npj.fxOpacity.set(0);
-		};
-
-		npj.destruct = function() {};
-		
-		npj.animateIn = function() {
-			npj.fxY.start(0);
-			npj.fxOpacity.start(1);
-		};
-		
-		npj.animateOut = function() {
-			npj.fxY.start(50);
-			npj.fxOpacity.start(0);
-		};
-	};
-	
-	that.Extend.NPLiveShow = function(npl, nowp) {
-		npl.draw = function() {
-			var anglestart = nowp.width - 125;
-			
-			var rowpadding = Math.floor(svg.em * 2.2);
-			var leftpadding = theme.Timeline_leftsidesize + 9;
-			var indent1 = leftpadding + 16;
-			var indent2 = indent1 + 10;
-			var roomfortext = nowp.width - 120 - theme.Rating_width;
-			var ratingx = nowp.width - 117 - theme.Rating_width;
-			
-			var songy = theme.Timeline_leftsidesize + svg.em - 3;
-			var songstyle = "font-size: 1.1em; font-weight: bold;";
-			// nowp.song is defined (and filled with song data) by Edi.  nowp.songel is not required, but it's recommended you use it. :)
-			npl.songel = svg.makeEl("text", { x: leftpadding, y: songy + (svg.em * 1.1), fill: theme.textcolor, style: songstyle } );
-			npl.songel.textContent = fitText(npl.p.sched_name, roomfortext - leftpadding, songstyle);
-			npl.el.appendChild(npl.songel);
-			
-			npl.fxY = fx.make(fx.SVGTranslateY, [ npl.el, 400, 0 ] );
-			npl.fxY.set(50);
-			npl.fxOpacity = fx.make(fx.SVGAttrib, [ npl.el, 400, "opacity", "" ] );
-			npl.fxOpacity.set(0);
-		};
-
-		npl.destruct = function() {};
-		
-		npl.animateIn = function() {
-			npl.fxY.start(0);
-			npl.fxOpacity.start(1);
-		};
-		
-		npl.animateOut = function() {
-			npl.fxY.start(50);
-			npl.fxOpacity.start(0);
-		};
-	};
-	
-	that.Extend.NPPlaylist = function(npe, nowp) {
+	that.Extend.NPElection = function(npe) {
 		npe.draw = function() {
-			that.NPDrawSong(npe.p.song_data[npe.p.playlist_position], npe, nowp);
-			
-			npe.fxY = fx.make(fx.SVGTranslateY, [ npe.el, 400, 0 ] );
-			npe.fxY.set(50);
-			npe.fxOpacity = fx.make(fx.SVGAttrib, [ npe.el, 400, "opacity", "" ] );
-			npe.fxOpacity.set(0);
-		};
-
-		npe.destruct = function() {
-			npe.songrating.destruct();
-			npe.albumrating.destruct();
-		};
-		
-		npe.animateIn = function() {
-			npe.fxY.start(0);
-			npe.fxOpacity.start(1);
-		};
-		
-		npe.animateOut = function() {
-			npe.fxY.start(50);
-			npe.fxOpacity.start(0);
+			npe.el = that.NPDrawSong(npe.p.song_data[0], npe, npe.parent);
+			npe.defineFx();			
 		};
 	};
 	
 	that.Extend.NPOneShot = that.Extend.NPElection;
 	
-	that.Extend.NPAdSet = function(npe, nowp) {
+	that.Extend.NPLiveShow = function(npl) {
+		npl.draw = function() {
+			npl.el = that.NPDrawSong(npl.p, npl, npl.parent);
+			npl.defineFx();
+		};
+	};
+	
+	that.Extend.NPPlaylist = function(npe) {
 		npe.draw = function() {
-			that.NPDrawSong(npe.p.ad_data[npe.p.adset_position], npe, nowp);
-			
-			npe.fxY = fx.make(fx.SVGTranslateY, [ npe.el, 400, 0 ] );
-			npe.fxY.set(50);
-			npe.fxOpacity = fx.make(fx.SVGAttrib, [ npe.el, 400, "opacity", "" ] );
-			npe.fxOpacity.set(0);
+			npe.el = that.NPDrawSong(npe.p.song_data[npe.p.playlist_position], npe, npe.parent);
+			npe.defineFx();			
 		};
-
-		npe.destruct = function() {
-		};
-		
-		npe.animateIn = function() {
-			npe.fxY.start(0);
-			npe.fxOpacity.start(1);
-		};
-		
-		npe.animateOut = function() {
-			npe.fxY.start(50);
-			npe.fxOpacity.start(0);
+	};
+	
+	that.Extend.NPAdSet = function(npe) {
+		npe.draw = function() {
+			npe.el = that.NPDrawSong(npe.p.ad_data[npe.p.adset_position], npe, npe.parent);
+			npe.defineFx();
 		};
 	};
 
@@ -1800,7 +946,6 @@ function EdiTheme() {
 			fx.makeMenuDropdown(menup.el, cogbanner, coglinks);
 			menup.table.appendChild(row);
 			menup.el.appendChild(menup.table);
-			coglinks.style.left = help.getElPosition(menup.td_cog).x + "px";
 			
 			var pos = help.getElPosition(menup.td_user);
 			menup.loginbox.style.marginLeft = pos.x + "px";
@@ -1883,100 +1028,6 @@ function EdiTheme() {
 			else if (username && !menup.username.parentNode) pnode.appendChild(menup.username);
 		};
 		
-		/*menup.showCompatPlayers = function() {
-			if (compatplayerstimer) clearTimeout(compatplayerstimer);
-			menup.userinfogroup.appendChild(menup.compatplayersg);
-		};
-		
-		menup.hideCompatPlayers = function() {
-			if (compatplayerstimer) clearTimeout(compatplayerstimer);
-			compatplayerstimer = setTimeout(menup.hideCompatPlayers2, 1000);
-		};
-		
-		menup.hideCompatPlayers2 = function() {
-			menup.userinfogroup.removeChild(menup.compatplayersg);
-		};*/
-		
-		/*menup.showUsername = function(username) {
-			menup.username.textContent = username;
-			var pnode;
-			if (menup.logintext.parentNode) pnode = menup.logintext.parentNode;
-			else if (menup.username.parentNode) pnode = menup.username.parentNode;
-			if (username && menup.logintext.parentNode) pnode.removeChild(menup.logintext);
-			else if (!username && !menup.logintext.parentNode) pnode.appendChild(menup.logintext);
-			if (!username && menup.username.parentNode) pnode.removeChild(menup.username);
-			else if (username && !menup.username.parentNode) pnode.appendChild(menup.username);
-		};*/
-
-		/*menup.helpOver = function(e) {
-			//menup.help.setAttribute("fill", theme.brightbkg);
-			//menup.help.setAttribute("stroke", theme.linkcolor);
-			menup.helptext.setAttribute("fill", theme.linkcolor);
-			//menup.helpicon.setAttribute("fill", theme.linkcolor);
-		};
-
-		menup.helpOut = function(e) {
-			//menup.help.setAttribute("fill", theme.primarybkg);
-			//menup.help.setAttribute("stroke", theme.textcolor);
-			menup.helptext.setAttribute("fill", theme.textcolor);
-			//menup.helpicon.setAttribute("fill", theme.textcolor);
-		};
-
-		menup.forumOver = function(e) {
-			menup.forumstext.setAttribute("fill", theme.linkcolor);
-		};
-
-		menup.forumOut = function(e) {
-			menup.forumstext.setAttribute("fill", theme.textcolor);
-		};
-
-		menup.optionOver = function(e) {
-			menup.options.setAttribute("fill", theme.brightbkg);
-			menup.options.setAttribute("stroke", theme.linkcolor);
-			menup.optionstext.setAttribute("fill", theme.linkcolor);
-			menup.optionicon1.setAttribute("stroke", theme.linkcolor);
-			menup.optionicon2.setAttribute("fill", theme.linkcolor);
-			menup.optionicon3.setAttribute("stroke", theme.linkcolor);
-			menup.optionicon4.setAttribute("fill", theme.linkcolor);
-		};
-
-		menup.optionOut = function(e) {
-			menup.options.setAttribute("fill", theme.primarybkg);
-			menup.options.setAttribute("stroke", theme.textcolor);
-			menup.optionstext.setAttribute("fill", theme.textcolor);
-			menup.optionicon1.setAttribute("stroke", theme.textcolor);
-			menup.optionicon2.setAttribute("fill", theme.textcolor);
-			menup.optionicon3.setAttribute("stroke", theme.textcolor);
-			menup.optionicon4.setAttribute("fill", theme.textcolor);
-		};
-
-		menup.tuneInOver = function(e) {
-			menup.tunedin.setAttribute("fill", theme.linkcolor);
-		};
-
-		menup.tuneInOut = function(e) {
-			menup.tunedin.setAttribute("fill", theme.textcolor);
-		};
-
-		menup.updateTuneInCatch = function(tunedin) {
-			menup.tuneincatch.setAttribute("width", measureText(menup.tunedin.textContent));
-		};
-
-		menup.stationSelectOver = function(e) {
-			menup.FxSelectOn.start(1);
-			menup.FxLogoSwipe.start(-150, 275);
-		};
-
-		menup.stationSelectOut = function(e) {
-			menup.FxSelectOn.start(0);
-		};*/
-
-		/*menup.changeAvatar = function(avatar) {
-			menup.userinfogroup.removeChild(menup.avatar);
-			menup.avatar = svg.makeImage(avatar, 0, 0, 32, 32);
-			menup.userinfogroup.appendChild(menup.avatar);
-		};*/
-		
 		return menup;
 	};
 		
@@ -2013,32 +1064,13 @@ function EdiTheme() {
 		tabs.width = width;
 		tabs.svgmenu = svg.make( { width: tabs.width, height: that.MPI_MenuHeight + 2 } );
 		tabs.hr = svg.makeRect(0, that.MPI_MenuHeight, tabs.width, 2, { fill: that.indicnormal } );
-		//tabs.hr = svg.makeRect(tabs.width, that.MPI_MenuHeight, 0, 2, { fill: that.indicnormal } );
-		//tabs.fx_hrx = fx.make(fx.SVGAttrib, [ tabs.hr, 250, "x", "" ]);
-		//tabs.fx_hrx.set(tabs.width);
-		//tabs.fx_hrwidth = fx.make(fx.SVGAttrib, [ tabs.hr, 250, "width", "" ]);
 		tabs.svgmenu.appendChild(tabs.hr);
 		tabs.container.appendChild(tabs.svgmenu);
 		tabs.panels = {};
 
 		tabs.addItem = function(panelname, title) {
-			/*var newx = 0;
-			var mcount = 0;
-			var firstel = false;
-			for (var m in tabs.panels) {
-				if (typeof(tabs.panels[m].textwidth) != "undefined") {
-					firstel = tabs.panels[m].group;
-					newx += tabs.panels[m].textwidth + (that.MPI_MenuHeight);
-					mcount++;
-				}
-			}*/
 			var rightpad = 8;
 			var textpad = 5;
-			/*if (newx > 0) {
-				newx -= 13;
-				rightpad = 22;
-				textpad = 22;
-			}*/
 			
 			tabs.panels[panelname] = {};
 			tabs.panels[panelname].group = svg.makeEl("g", { shape_rendering: "crispEdges", opacity: 0.7 } );
@@ -2058,55 +1090,16 @@ function EdiTheme() {
 			tabs.panels[panelname].focused = false;
 			tabs.panels[panelname].enabled = false;
 			tabs.svgmenu.appendChild(tabs.panels[panelname].group);
-			//else tabs.svgmenu.insertBefore(tabs.panels[panelname].group, firstel);
 			tabs.positionTabs(false);
 		};
 		
 		tabs.positionTabs = function(animate) {
-			//var disabled = [];
-			//var enabled = [];
 			var i;
 			var runx = 0;
 			for (i in tabs.panels) {
 				tabs.panels[i].fx_groupx.start(runx);
 				runx += tabs.panels[i].textwidth + 8 + that.MPI_MenuHeight;
-				//if (tabs.panels[i].enabled) enabled.push(i);
-				//else disabled.push(i);
 			}
-			/*var runx = 0;
-			for (i = 0; i < enabled.length; i++) {
-				if (animate) tabs.panels[enabled[i]].fx_groupx.start(runx);
-				else tabs.panels[enabled[i]].fx_groupx.set(runx);
-				runx += tabs.panels[enabled[i]].textwidth + 8 + that.MPI_MenuHeight;
-			}*/
-			/*runx = tabs.width;
-			for (i = disabled.length - 1; i >= 0; i--) {
-				runx -= tabs.panels[disabled[i]].textwidth + 8 + that.MPI_MenuHeight;
-				if (animate) tabs.panels[disabled[i]].fx_groupx.start(runx);
-				else tabs.panels[disabled[i]].fx_groupx.set(runx);
-			}*/
-			/*if (enabled.length == 0) {
-				if (animate) {
-					tabs.fx_hrx.start(runx);
-					tabs.fx_hrwidth.start(tabs.width - runx);
-				}
-				else {
-					tabs.fx_hrx.set(runx);
-					tabs.fx_hrwidth.set(tabs.width - runx);
-				}
-				tabs.hr.setAttribute("opacity", 0.5);
-			}
-			else {
-				if (animate) {
-					tabs.fx_hrx.start(0)
-					tabs.fx_hrwidth.start(tabs.width);
-				}
-				else {
-					tabs.fx_hrx.set(0)
-					tabs.fx_hrwidth.set(tabs.width);
-				}
-				tabs.hr.setAttribute("opacity", 1.0);
-			}*/
 		};
 		
 		tabs.enableTab = function(panelname, animate) {
@@ -2536,26 +1529,6 @@ function EdiTheme() {
 	that.RatingHistogramMask = function(graph, mask) {
 		mask.appendChild(svg.makeRect(0, 0, graph.width, graph.height, { fill: "url(#Rating_usergradient)" }));
 	};	
-	
-	// /*****************************************************************************
-	// MISC THEME-SPECIFIC FUNCTIONS
-	// All functions here are not required by Edi.
-	// *****************************************************************************/
-	
-	// RWClassic.prototype.HFadeRightDefs = function(defel, fadestart, fadefull, size) {
-		// if (typeof(fadestart) == "undefined") fadestart = 0;
-		// if (typeof(fadefull) == "undefined") fadefull = 100;
-		// var bordergrad = svg.makeGradient("linear", "fadeHRGrad" + fadestart + "_" + fadefull, "100%", "0%", "0%", "0%", "pad");
-		// bordergrad.appendChild(svg.makeStop(fadestart + "%", "#FFFFFF", "1"));
-		// bordergrad.appendChild(svg.makeStop(fadefull + "%", "#000000", "0"));
-		// defel.appendChild(bordergrad);
-		
-		// var mask = svg.makeEl("mask");
-		// mask.setAttribute("id", "fadeHROut" + fadestart + "_" + fadefull);
-		// var rect = svg.makeRect(0, 0, size, "100%", { fill: "url(#fadeHRGrad" + fadestart + "_" + fadefull + ")" });
-		// mask.appendChild(rect);
-		// defel.appendChild(mask);
-	// }
 	
 	return that;
 };

@@ -2,7 +2,7 @@ panels.TimelinePanel = {
 	ytype: "fit",
 	rowspannable: true,
 	height: svg.em * 8,
-	minheight: svg.em * 16,
+	minheight: svg.em * 40,
 	xtype: "fit",
 	width: svg.em * 32,
 	minwidth: svg.em * 20,
@@ -23,9 +23,7 @@ panels.TimelinePanel = {
 		
 		that.init = function() {
 			container.style.overflow = "hidden";
-		
-			that.width = container.offsetWidth;
-			that.height = container.offsetHeight;
+
 			that.currentendtime = 0;
 			that.draw();
 			
@@ -68,16 +66,6 @@ panels.TimelinePanel = {
 				}
 				if (!foundidx) albums[i].purge = true;
 			}
-			/*var foundidx;
-			for (i = 0; i < albums.length; i++) {
-				foundidx = -1;
-				for (j = 0; j < that.allevents.length; j++) {
-					if (that.allevents[j].p.sched_id == albums[i].p.sched_id) foundidx = j;
-				}
-				if (foundidx != -1) {
-					that.allevents[foundidx].purge = true;
-				}
-			}*/
 		}
 		
 		that.updateEventData = function(json) {
@@ -121,6 +109,7 @@ panels.TimelinePanel = {
 				}
 				that.lastevents[i].showSongLengths();
 				that.lastevents[i].showWinner();
+				that.lastevents[i].changeHeadline(_l("previouslyplayed"));
 			}
 		};
 		
@@ -139,6 +128,8 @@ panels.TimelinePanel = {
 					that.currentevents[i].disableRating();
 				}
 				that.currentevents[i].showVotes();
+				that.currentevents[i].sortSongOrder();
+				that.currentevents[i].changeHeadline(_l("nowplaying"));
 			}
 		};
 		
@@ -195,23 +186,6 @@ panels.TimelinePanel = {
 				log.log("TimeP", 0, "Moving something to " + pos);
 			}
 		};
-		
-	/*	that.getMinNextEventsHeight = function() {
-			var ybudget = 0;
-			if (that.showallnext) {
-				for (i = 0; i < that.nextevents.length; i++) { ybudget += that.nextevents[i].height; }
-			}
-			else {
-				i = 0;
-				crossedelec = false;
-				while ((i < that.nextevents.length) && !crossedelec) {
-					if (that.nextevents[i].p.sched_type == SCHED_ELEC) crossedelec = true;
-					ybudget += (that.nextevents[i].height + 5);
-					i++;
-				}
-			}	
-			return ybudget;
-		}*/
 	
 		that.positionEvents = function(json) {
 			var i;
@@ -238,11 +212,11 @@ panels.TimelinePanel = {
 				that.nextevents[0].moveTo(0);
 				// move all next events off screen
 				for (i = 1; i < that.nextevents.length; i++) {
-					that.nextevents[i].moveTo(that.height);
+					that.nextevents[i].moveTo(that.el.offsetHeight);
 				}
 				// move all last events off screen
 				for (i = 0; i < that.lastevents.length; i++) {
-					that.lastevents[i].moveTo(-that.lastevents[i].height);
+					that.lastevents[i].moveTo(-that.lastevents[i].el.offsetHeight);
 				}
 			}
 			else {
@@ -298,9 +272,6 @@ panels.TimelinePanel = {
 			if (that.showelec && that.currentevents[0] && ((that.currentevents[0].height + ybudgetused + ymargin) <= ybudget)) {
 				ybudgetused += that.currentevents[0].height + ymargin;
 				that.currentevents[0].timep_showing = true;
-				//if (that.fittonow && (that.currentevents[0].height < (theme.TimelineSong_height * 3))) {
-				//	ybudgetused += ((theme.TimelineSong_height * 3) - that.currentevents[0].height);
-				//}
 			}
 			
 			// the value for i is not reset here, we want to continue from where we left off the last time we calculated the loop
@@ -345,9 +316,6 @@ panels.TimelinePanel = {
 				that.currentevents[0].moveTo(runy);
 				runy += that.currentevents[0].height + ymargin;
 				runz++;
-				//if (that.fittonow && (that.currentevents[0].height < (theme.TimelineSong_height * 3))) {
-				//	ybudgetused += ((theme.TimelineSong_height * 3) - that.currentevents[0].height);
-				//}
 			}
 			if (that.currentevents[0] && !that.currentevents[0].timep_showing) {
 				that.currentevents[0].moveTo(-that.currentevents[0].height);
@@ -400,7 +368,6 @@ function TimelineElection(json, container, parent) {
 	var that = {};
 
 	that.width = parent.width;
-	that.height = 12 + (theme.TimelineSong_height * json.song_data.length) + 1;
 	that.purge = false;
 	that.el = false;
 	that.p = json;
@@ -413,24 +380,25 @@ function TimelineElection(json, container, parent) {
 	that.clockid = false;
 	that.container = container;
 	that.parent = parent;
+	that.height = 0;
 
+	theme.Extend.TimelineSkeleton(that);
 	theme.Extend.TimelineElection(that);
 
 	that.init = function() {
-		that.el = svg.make({ width: that.width, height: that.height });
 		that.draw();
+		that.container.appendChild(that.el);
 
 		for (var sn = 0; sn < json.song_data.length; sn++) {
 			that.songs[sn] = TimelineSong(json.song_data[sn], that, 0, svg.em + (sn * theme.TimelineSong_height), sn);
-			that.el.appendChild(that.songs[sn].el);
 		}
-		that.detectHeaderColor();
 		
 		that.clockdisplay = true;
 		that.clockid = -1;
 		if (that.p.sched_used == 0) {
 			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -5);
 		}
+		that.recalculateHeight();
 	};
 	
 	that.update = function(newjson) {
@@ -449,7 +417,6 @@ function TimelineElection(json, container, parent) {
 			that.songs.sort(that.sortSongs);
 		}
 		that.p = newjson;
-		//that.clockChange(newjson.sched_starttime);
 	};
 	
 	that.enableRating = function() {
@@ -472,28 +439,8 @@ function TimelineElection(json, container, parent) {
 	
 	that.showWinner = function() {
 		if (that.showingwinner) return;
-		that.songs[0].showSongAlbum();
-		for (var i = 1; i < that.songs.length; i++) { 
-			that.songs[i].height = 0;
-			that.el.removeChild(that.songs[i].el);
-		}
-		that.recalculateHeight();
-		that.drawShowWinner();
 		that.showingwinner = true;
-	};
-	
-	that.recalculateHeight = function() {
-		that.height = 12;
-		if (that.showingwinner) {
-			that.height += that.songs[0].height;
-		}
-		else {
-			for (var i = 0; i < that.songs.length; i++) {
-				that.songs[i].el.setAttribute("transform", "translate(0, " + that.height + ")");
-				that.height += that.songs[i].height;
-			}
-		}
-		that.drawHeightChanged();
+		that.drawShowWinner();
 	};
 	
 	that.sortSongs = function(a, b) {
@@ -511,7 +458,7 @@ function TimelineElection(json, container, parent) {
 	
 	that.showSongLengths = function() {
 		for (var i = 0; i < that.songs.length; i++) {
-			that.songs[i].showSongLengths();
+			that.songs[i].showSongLength();
 		}
 	};
 	
@@ -589,35 +536,32 @@ function TimelineSong(json, parent, x, y, songnum) {
 	that.p = json;
 	that.elec_votes = 0;
 	that.songnum = songnum;
-	that.height = theme.TimelineSong_height;
 	that.votehighlighted = false;
 	that.voteinprogress = false;
-	that.el = svg.makeEl("g");
-	that.el.setAttribute("transform", "translate(" + x + ", " + y + ")");
 	that.parent = parent;
 
 	theme.Extend.TimelineSong(that);
 	that.draw();
-	Album.linkify(json.album_id, that.albumel);
+	Album.linkify(json.album_id, that.album_name);
 	
 	that.updateJSON = function(json) {
 		that.p = json;
-		that.songrating.setSite(that.p.song_rating_avg);
-		that.albumrating.setSite(that.p.album_rating_avg);
+		that.song_rating.setSite(that.p.song_rating_avg);
+		that.album_rating.setSite(that.p.album_rating_avg);
 	};
 	
 	that.enableVoting = function() {
-		that.votehoverel.addEventListener('mouseover', that.voteHoverOn, true);
-		that.votehoverel.addEventListener('mouseout', that.voteHoverOff, true);
-		that.votehoverel.addEventListener('click', that.voteAction, true);
-		that.votehoverel.style.cursor = "pointer";
+		that.vote_hover_el.addEventListener('mouseover', that.voteHoverOn, true);
+		that.vote_hover_el.addEventListener('mouseout', that.voteHoverOff, true);
+		that.vote_hover_el.addEventListener('click', that.voteAction, true);
+		that.vote_hover_el.style.cursor = "pointer";
 	};
 	
 	that.disableVoting = function() {
-		that.votehoverel.removeEventListener('mouseover', that.voteHoverOn, true);
-		that.votehoverel.removeEventListener('mouseout', that.voteHoverOff, true);
-		that.votehoverel.removeEventListener('click', that.voteAction, true);
-		that.votehoverel.style.cursor = "default";
+		that.vote_hover_el.removeEventListener('mouseover', that.voteHoverOn, true);
+		that.vote_hover_el.removeEventListener('mouseout', that.voteHoverOff, true);
+		that.vote_hover_el.removeEventListener('click', that.voteAction, true);
+		that.vote_hover_el.style.cursor = "default";
 		that.voteHoverOff();
 	};
 	
@@ -655,13 +599,13 @@ function TimelineSong(json, parent, x, y, songnum) {
 	};
 	
 	that.enableRating = function() {
-		that.songrating.enable();
-		that.albumrating.enable();
+		that.song_rating.enable();
+		that.album_rating.enable();
 	};
 	
 	that.disableRating = function() {
-		that.songrating.disable();
-		that.albumrating.disable();
+		that.song_rating.disable();
+		that.album_rating.disable();
 	};
 	
 	that.getScheduledLength = function()  {
@@ -671,11 +615,9 @@ function TimelineSong(json, parent, x, y, songnum) {
 	return that;
 };
 
-function TimelineAdSet(json, container, parent) {
+function TimelineSkeleton(json, container, parent) {
 	var that = {};
 
-	that.width = parent.width;
-	that.height = svg.em + 2 + (json.ad_data.length * theme.TimelineSong_rowheight);
 	that.purge = false;
 	that.el = false;
 	that.p = json;
@@ -683,19 +625,19 @@ function TimelineAdSet(json, container, parent) {
 	that.clockid = false;
 	that.container = container;
 	that.parent = parent;
-
-	theme.Extend.TimelineAdSet(that);
+	that.height = 0;
+	
+	theme.Extend.TimelineSkeleton(that);
 
 	that.init = function() {
-		that.el = svg.make({ width: that.width, height: that.height });
 		that.draw();
-		that.el.setAttribute("height", that.height);
-
+		that.container.appendChild(that.el);
 		that.clockdisplay = true;
 		that.clockid = -1;
 		if (that.p.sched_used == 0) {
 			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -5);
 		}
+		that.recalculateHeight();
 	};
 	
 	that.update = function(newjson) {
@@ -722,9 +664,25 @@ function TimelineAdSet(json, container, parent) {
 		if ((that.clockdisplay) && (time >= 0)) that.clock.textContent = formatNumberToMSS(time);
 	};
 	
-	that.recalculateHeight = function() {
-		that.el.setAttribute("height", that.height);
-	};
+	that.getScheduleLength = function() { return 0; }	
+	that.remove = function() {};
+	that.showWinner = function() {};
+	that.showVotes = function() {};
+	that.showSongLengths = function() {};
+	that.enableVoting = function() {};
+	that.disableVoting = function(override) {};
+	that.cancelVoting = function() {};	
+	that.updateVotingHelp = function() {};
+	that.enableRating = function() {};	
+	that.disableRating = function() {};
+	that.registerVote = function() {};
+
+	return that;
+};
+
+function TimelineAdSet(json, container, parent) {
+	var that = TimelineSkeleton(json, container, parent);
+	theme.Extend.TimelineAdSet(that);
 	
 	that.getScheduledLength = function() {
 		var avg = 0;
@@ -734,117 +692,28 @@ function TimelineAdSet(json, container, parent) {
 		return Math.round(avg / that.p.ad_data.length);
 	};
 	
-	that.remove = function() {};
-	that.showWinner = function() {};
-	that.showVotes = function() {};
-	that.showSongLengths = function() {};
-	that.enableVoting = function() {};
-	that.disableVoting = function(override) {};
-	that.cancelVoting = function() {};	
-	that.updateVotingHelp = function() {};
-	that.enableRating = function() {};	
-	that.disableRating = function() {};
-	that.registerVote = function() {};
-
 	return that;
-};
+}
 
 function TimelineLiveShow(json, container, parent) {
-	var that = {};
-
-	that.width = parent.width;
-	that.purge = false;
-	that.el = false;
-	that.p = json;
-	that.clockdisplay = false;
-	that.clockid = false;
-	that.container = container;
-	that.parent = parent;
-
+	var that = TimelineLiveShow(json, container, parent);
 	theme.Extend.TimelineLiveShow(that);
-
-	that.init = function() {
-		that.el = svg.make({ width: that.width, height: 0 });
-		that.draw();
-		that.el.setAttribute("height", that.height);
-
-		that.clockdisplay = true;
-		that.clockid = -1;
-		if (that.p.sched_used == 0) {
-			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -5);
-		}
-	};
-	
-	that.update = function(newjson) {
-		that.p = newjson;
-	};
-	
-	that.purgeElements = function() {
-		if (that.clockid >= 0) clock.eraseClock(that.clockid);
-	};
-
-	that.clockRemove = function() {
-		if (that.clockdisplay) {
-			that.clockdisplay = false;
-			that.clockUndraw();
-		}
-	};
-	
-	that.clockChange = function(newend) {
-		clock.updateClockEnd(that.clockid, newend);
-	};
-
-	that.clockUpdate = function(time) {
-		that.timeleft = time;
-		if ((that.clockdisplay) && (time >= 0)) that.clock.textContent = formatNumberToMSS(time);
-	};
-	
-	that.recalculateHeight = function() {
-		that.el.setAttribute("height", that.height);
-	};
 	
 	that.getScheduledLength = function() {
 		return that.p.sched_length;
-	};
+	}
 	
-	that.remove = function() {};
-	that.showWinner = function() {};
-	that.showVotes = function() {};
-	that.showSongLengths = function() {};
-	that.enableVoting = function() {};
-	that.disableVoting = function(override) {};
-	that.cancelVoting = function() {};	
-	that.updateVotingHelp = function() {};
-	that.enableRating = function() {};	
-	that.disableRating = function() {};
-	that.registerVote = function() {};
-
 	return that;
 };
 
 function TimelinePlaylist(json, container, parent) {
-	var that = {};
-
-	that.width = parent.width;
-	that.height = 12 + (theme.TimelineSong_height * json.song_data.length) + 1;
-	if (json.playlist_length > json.song_data.length) that.height += svg.em * 1.4;
-	that.purge = false;
-	that.el = false;
-	that.p = json;
+	var that = TimelineSkeleton(json, container, parent);
 	that.songs = new Array();
-	that.showingwinner = false;
-	that.timeleft = 0;
-	that.votingdisabled = true;
-	that.clockdisplay = false;
-	that.clockid = false;
-	that.container = container;
-	that.parent = parent;
-
 	theme.Extend.TimelinePlaylist(that);
 
 	that.init = function() {
-		that.el = svg.make({ width: that.width, height: that.height });
 		that.draw();
+		that.container.appendChild(that.el);
 
 		for (var sn = 0; sn < json.song_data.length; sn++) {
 			that.songs[sn] = TimelineSong(json.song_data[sn], that, 0, svg.em + (sn * theme.TimelineSong_height), sn);
@@ -856,80 +725,14 @@ function TimelinePlaylist(json, container, parent) {
 		if (that.p.sched_used == 0) {
 			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -5);
 		}
+		that.recalculateHeight();
 	};
-	
-	that.update = function(newjson) {
-		that.p = newjson;
-	};
-	
-	that.enableRating = function() {};
-	
-	that.disableRating = function() {};
 	
 	that.remove = function() {
 		for (var i = 0; i < that.songs.length; i++) {
 			that.songs[i].destruct();
 		}
 	};
-	
-	that.purgeElements = function() {
-		if (that.clockid >= 0) clock.eraseClock(that.clockid);
-	};
-	
-	that.showWinner = function() {
-		if (that.showingwinner) return;
-		for (var i = 0; i < that.songs.length; i++) { 
-			that.songs[i].height = 0;
-			that.el.removeChild(that.songs[i].el);
-		}
-		that.recalculateHeight();
-		that.drawShowWinner();
-		that.showingwinner = true;
-	};
-	
-	that.recalculateHeight = function() {
-		that.height = 12;
-		if (that.showingwinner) {
-			// nothing!
-		}
-		else {
-			for (var i = 0; i < that.songs.length; i++) {
-				that.songs[i].el.setAttribute("transform", "translate(0, " + that.height + ")");
-				that.height += that.songs[i].height;
-			}
-		}
-		that.drawHeightChanged();
-	};
-	
-	that.showVotes = function() {};
-	
-	that.showSongLengths = function() {};
-	
-	that.enableVoting = function() {};
-	
-	that.disableVoting = function(override) {};
-
-	that.cancelVoting = function() {};
-	
-	that.registerVote = function(elec_entry_id) {};
-	
-	that.clockRemove = function() {
-		if (that.clockdisplay) {
-			that.clockdisplay = false;
-			that.clockUndraw();
-		}
-	};
-
-	that.clockChange = function(newend) {
-		clock.updateClockEnd(that.clockid, newend);
-	};
-
-	that.clockUpdate = function(time) {
-		that.timeleft = time;
-		if ((that.clockdisplay) && (time >= 0)) that.clock.textContent = formatNumberToMSS(time);
-	};
-	
-	that.updateVotingHelp = function() {};
 	
 	that.getScheduledLength = function() {
 		var avg = 0;
@@ -943,41 +746,22 @@ function TimelinePlaylist(json, container, parent) {
 };
 
 function TimelineOneShot(json, container, parent) {
-	var that = {};
-
-	that.width = parent.width;
-	that.height = 12 + theme.TimelineSong_height + 1;
-	that.purge = false;
-	that.el = false;
-	that.p = json;
-	that.song = false;
-	that.timeleft = 0;
-	that.clockdisplay = false;
-	that.clockid = false;
-	that.container = container;
-	that.parent = parent;
-	that.showingwinner = false;
-
+	var that = TimelineSkeleton();
 	theme.Extend.TimelineOneShot(that);
 
 	that.init = function() {
-		that.el = svg.make({ width: that.width, height: that.height });
 		that.draw();
-
+		that.container.appendChild(that.el);
 		that.song = TimelineSong(json.song_data[0], that, 0, svg.em + 2, 0);
-		that.el.appendChild(that.song.el);
 		
 		that.clockdisplay = true;
 		that.clockid = -1;
 		if (that.p.sched_used == 0) {
 			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -5);
 		}
+		that.recalculateHeight();
 	};
-	
-	that.update = function(newjson) {
-		that.p = newjson;
-	};
-	
+		
 	that.enableRating = function() {
 		that.song.enableRating();
 	};
@@ -989,54 +773,6 @@ function TimelineOneShot(json, container, parent) {
 	that.remove = function() {
 		that.song.destruct();
 	};
-	
-	that.purgeElements = function() {
-		if (that.clockid >= 0) clock.eraseClock(that.clockid);
-	};
-	
-	that.showWinner = function() {
-		if (that.showingwinner) return;
-		that.song.showSongAlbum();
-		that.recalculateHeight();
-		that.drawShowWinner();
-		that.showingwinner = true;
-	};
-	
-	that.recalculateHeight = function() {
-		that.height = 12;
-		that.height += that.song.height;
-		that.drawHeightChanged();
-	};
-	
-	that.showVotes = function() {};
-	
-	that.showSongLengths = function() {};
-	
-	that.enableVoting = function() {};
-	
-	that.disableVoting = function(override) {};
-
-	that.cancelVoting = function() {};
-	
-	that.registerVote = function(elec_entry_id) {};
-	
-	that.clockRemove = function() {
-		if (that.clockdisplay) {
-			that.clockdisplay = false;
-			that.clockUndraw();
-		}
-	};
-
-	that.clockChange = function(newend) {
-		clock.updateClockEnd(that.clockid, newend);
-	};
-
-	that.clockUpdate = function(time) {
-		that.timeleft = time;
-		if ((that.clockdisplay) && (time >= 0)) that.clock.textContent = formatNumberToMSS(time);
-	};
-	
-	that.updateVotingHelp = function() {};
 	
 	that.deleteOneShot = function() {
 		if (that.p.user_id == user.p.user_id) {

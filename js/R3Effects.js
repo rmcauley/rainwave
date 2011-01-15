@@ -95,13 +95,15 @@ function R3Effects() {
 				newfx.now = newfx.to;
 				newfx.update(newfx.now);
 				newfx.stop();
-				if (typeof(newfx.onComplete) == "function") {
-					newfx.onComplete();
-				}
 			}
 		};
 		
-		newfx.stop = function() { stopEffect(newfx.id); };
+		newfx.stop = function() {
+			stopEffect(newfx.id);
+			if (typeof(newfx.onComplete) == "function") {
+				newfx.onComplete();
+			}
+		};
 		
 		newfx.set = function(nn) {
 			if (isEffectRunning(newfx.id)) {
@@ -110,17 +112,20 @@ function R3Effects() {
 			}
 			else {
 				newfx.now = nn;
+				if (typeof(newfx.onSet) == "function") newfx.onSet(nn);
 				newfx.update(nn);
 			}
 		};
 		
 		newfx.start = function(stopat) {
-			if (isEffectRunning(newfx.id) && options.unstoppable) return;
+			if (isEffectRunning(newfx.id)) {
+				if (options.unstoppable) return;
+				newfx.stop();
+			}
 			if (arguments.length == 2) {
 				newfx.now = arguments[0];
 				stopat = arguments[1];
 			}
-			newfx.stop();
 			newfx.to = stopat;
 			newfx.from = newfx.now;
 			if (typeof(newfx.onStart) == "function") {
@@ -185,9 +190,24 @@ function R3Effects() {
 		var orfx = {};
 		orfx.duration = duration;
 		element.style.opacity = "0";
+		var added = false;
+		
+		orfx.onSet = function() {
+			if ((orfx.now > 0) && !added) {
+				owner.appendChild(element);
+				added = true;
+			}
+			else if ((orfx.now == 0) && added) {
+				owner.removeChild(element);
+				added = false;
+			}
+		};
 		
 		orfx.onStart = function() {
-			if (orfx.now == 0) owner.appendChild(element);
+			if ((orfx.now == 0) && !added) {
+				owner.appendChild(element);
+				added = true;
+			}
 		};
 		
 		orfx.update = function() {
@@ -195,10 +215,52 @@ function R3Effects() {
 		};
 		
 		orfx.onComplete = function() {
-			if (orfx.now == 0) owner.removeChild(element);
+			if ((orfx.now == 0) && added) {
+				owner.removeChild(element);
+				added = false;
+			}
+			if (typeof(orfx.onComplete2) == "function") orfx.onComplete2();
 		};
 
 		return orfx;		
+	};
+	
+	that.BackgroundPosX = function(element, duration) {
+		var bx = {};
+		bx.duration = duration;
+		var y = 0;
+		
+		bx.onStart = function() {
+			y = parseInt(element.style.backgroundPosition.split(" ")[1]);
+			if (isNaN(y)) y = 0;
+		};
+		
+		bx.onSet = bx.onStart;
+		
+		bx.update = function() {
+			element.style.backgroundPosition = bx.now + "px " + y + "px";
+		};
+		
+		return bx;
+	};
+	
+	that.BackgroundPosY = function(element, duration) {
+		var by = {};
+		by.duration = duration;
+		var x = 0;
+		
+		by.onStart = function() {
+			x = parseInt(element.style.backgroundPosition.split(" ")[0]);
+			if (isNaN(x)) x = 0;
+		};
+		
+		by.onSet = by.onStart;
+		
+		by.update = function() {
+			element.style.backgroundPosition = x + "px " + by.now + "px";
+		};
+		
+		return by;
 	};
 	
 	that.makeMenuDropdown = function(menu, header, dropdown) {
@@ -208,6 +270,7 @@ function R3Effects() {
 		var fx_opacity = fx.make(fx.OpacityRemoval, [ dropdown, menu, 250 ]);
 		var mouseover = function() {
 			clearTimeout(timeout);
+			dropdown.style.left = help.getElPosition(header).x + "px";
 			fx_pulldown.start(menu.offsetHeight - 1);
 			fx_opacity.start(1);
 		};

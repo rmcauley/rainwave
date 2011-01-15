@@ -638,3 +638,229 @@ table.menu_table td.menu_td_cog {
 	position: relative;
 	z-index: 1;
 }
+
+.rating {
+	width: 74px;
+	height: 13px;
+	background: url('images/rating_border.png');
+	margin-left: 2em; 
+	margin-top: 1px;
+	position: relative;
+	z-index: 1;
+}
+
+.rating_text {
+	position: absolute;
+	margin-left: -1.5em;
+	margin-top: -1px; 
+}
+
+.rating_fav {
+	position: absolute;
+	opacity: 0;
+}
+
+.rating_user_on {
+	position: absolute;
+	height: 8px;
+	width: 0px;
+	background: url('images/rating_user_on.png') no-repeat scroll;
+}
+
+.rating_user {
+	position: absolute;
+	height: 8px;
+	width: 74px;
+	padding-left: 8px;
+}
+
+.rating_user_bar {
+	height: 8px;
+	width: 66px; 
+	background: url('images/rating_user_bar.png') no-repeat scroll;
+}
+
+.rating_site_on {
+	position: absolute;
+}
+
+.rating_site {
+	position: absolute;
+	height: 13px;
+	width: 74px;
+	padding-left: 13px;
+	padding-top: 9px;
+}
+
+.rating_site_bar {
+	height: 4px;
+	width: 50px;
+	background: url('images/rating_site_bar.png') no-repeat scroll;
+}
+
+.rating_grid {
+	position: absolute;
+	z-index: 2;
+}
+
+/* TIMELINE PANEL */
+
+.timeline_table {
+	position: absolute;
+}
+
+.timeline_table td {
+	border-top: solid 1px #000000;
+	border-left: solid 1px #000000;
+}
+
+.timeline_header_normal {
+	background: #244093 url('images/timeline_indicator_normal.png') no-repeat scroll 0px 0px;
+	font-size: 0.8em;
+}
+
+.timeline_clock {
+	float: right;
+	padding-right: 2px;
+}
+
+.timeline_header_text {
+	padding-left: 6px;
+}
+
+img.timeline_indicator_argh {
+	width: 10px;
+	border: 0px;
+}
+
+.timeline_indicator_normal {
+	background: url('images/timeline_indicator_normal.png') no-repeat scroll 0px -21px;
+	width: 10px;
+}
+
+.timeline_td {
+	background-color: #142027;
+	width: 100%;
+	padding: 1px 3px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.timeline_album_td {
+	color: #CCCCCC;
+	padding-left: 0px;
+}
+
+.timeline_artist_td {
+	color: #CCCCCC;
+	padding-left: 1.5em;
+}
+
+td.timeline_album_td span.link2 {
+	padding-left: 1.5em;
+	color: inherit;
+}
+
+td.timeline_artist_td span.link2 {
+	color: inherit;
+}
+
+.timeline_song_time {
+	float: right;
+	color: #CCCCCC;
+	z-index: 1;
+}
+
+.song_title {
+	position: relative;
+	z-index: 1;
+}
+
+.timeline_song_rating_c {
+	float: right;
+	padding-left: 10px;
+	z-index: 3;
+}
+
+.timeline_song_rating_bkg {
+	background: url('images/timeline_ratingbkg.png') no-repeat 100% 0px;
+	position: absolute;
+	width: 100%;
+	height: 20px;
+	z-index: 0;
+	margin-top: -1px;
+}
+
+.timeline_album_title {
+	position: relative;
+	z-index: 1;
+}
+
+.timeline_vote_hover {
+	position: absolute;
+	width: 70%;
+	height: 20px;
+	z-index: 2;
+}
+
+.timeline_vote_normal {
+	background-image: url('images/timeline_votehover_normal.png');
+	background-repeat: no-repeat;
+	background-position: -700px 0px;
+}
+
+.timeline_vote_swipe {
+	position: absolute;
+	z-index: 2;
+	width: 0px;
+	background: transparent url('images/timeline_voteswipe.png') repeat-x scroll 0px 0px;
+	margin-left: -3px;
+	margin-top: -1px;	
+}
+
+.Panel_Now_Playing {
+	padding-left: 11px;
+}
+
+div.nowplaying_indicator_v {
+	position: absolute;
+	margin-left: -11px;
+	background: transparent url('images/timeline_indicator_normal.png') no-repeat;
+	z-index: 1;
+	width: 10px;
+	height: 100%;
+}
+
+div.nowplaying_indicator_h {
+	position: absolute;
+	width: 70%;
+	background: transparent url('images/nowplaying_indicator_normal.png') no-repeat bottom right;
+	z-index: 1;
+	height: 1em;
+	margin-left: -1px;
+}
+
+div.nowplaying_header_text, div.nowplaying_header_reqby {
+	position: absolute;
+	z-index: 2;
+	font-size: 0.8em;
+}
+
+div.nowplaying_reqby {
+	width: 70%;
+	text-align: right;
+}
+
+div.nowplaying_wrapper {
+	background: url('images/nowplaying_bkg.png') top right;
+	width: 100%;
+	height: 100%;
+}
+
+table.nowplaying_table {
+	position: absolute;
+	z-index: 1;
+	width: 100%;
+	padding: 1.2em 5px 0px 8px;
+}

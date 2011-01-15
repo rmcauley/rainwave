@@ -53,7 +53,7 @@ panels.SlackPanel = {
 		
 		// Edi will call the init() object after populating the container and the edi object.
 		that.init = function() {
-			container.style.background = "#000077";
+			//container.style.background = "#000000";
 		};
 		
 		return that;

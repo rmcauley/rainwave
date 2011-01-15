@@ -23,18 +23,14 @@ panels.NowPanel = {
 
 		theme.Extend.NowPanel(that);
 		that.evt = [ false, false ];
-		that.svg;
-		that.el;
 		that.container = container;
 	
 		that.init = function() {
 			that.width = container.offsetWidth;
 			that.height = container.offsetHeight;
-			that.svg = svg.make( { width: that.width, height: that.height } );
-			container.appendChild(that.svg);
-			that.el = that.svg;
-			ajax.addCallback(that, that.ajaxHandle, "sched_current");
 			that.draw();
+			that.changeHeader(_l("nowplaying"));
+			ajax.addCallback(that, that.ajaxHandle, "sched_current");
 			user.addCallback(that, that.ratableChange, "current_activity_allowed");
 		};
 		
@@ -45,17 +41,13 @@ panels.NowPanel = {
 			else if ((json.sched_type == SCHED_ADSET) && (that.evt[1].p.sched_type == SCHED_ADSET) && (json.adset_position != that.evt[1].p.adset_position)) trip = true;
 			if (trip) {
 				if (json.sched_type == SCHED_ELEC) that.evt[2] = NPElection(that, json);
-				//else if (json.sched_type == SCHED_JINGLE) that.evt[2] = NPJingle(that, json);
 				else if (json.sched_type == SCHED_LIVE) that.evt[2] = NPLiveShow(that, json);
 				else if (json.sched_type == SCHED_ONESHOT) that.evt[2] = NPOneShot(that, json);
 				else if (json.sched_type == SCHED_ADSET) that.evt[2] = NPAdSet(that, json);
 				else if (json.sched_type == SCHED_PLAYLIST) that.evt[2] = NPPlaylist(that, json);
 				if (user.p.current_activity_allowed == 1) that.evt[2].enableRating();
 				if (that.evt[1]) that.evt[1].uninit();
-				if (that.evt[0]) that.el.removeChild(that.evt[0].el);
-				that.el.appendChild(that.evt[2].el);
 				that.evt[2].init();
-				that.changeHeader(json);
 				that.evt.shift();
 			}
 		};
@@ -75,19 +67,24 @@ panels.NowPanel = {
 	}
 };
 
-var NPElection = function(npp, json) {
+var NPSkeleton = function(npp) {
 	var that = {};
-	that.el = svg.makeEl("g");
-	that.p = json;
-	
-	theme.Extend.NPElection(that, npp);
-	that.draw();
-	
-	help.changeStepPointEl("ratecurrentsong", [ that.songrating.grid ]);
-	help.changeTopicPointEl("ratecurrentsong", [ that.songrating.grid ]);
-	help.changeStepPointEl("setfavourite", [ that.songrating.favbutton ]);
+	that.parent = npp;
+	theme.Extend.NPSkeleton(that, npp);
 	
 	that.init = function() {
+		if (that.song_rating) {
+			//help.changeStepPointEl("ratecurrentsong", [ that.song_rating.grid ]);
+			//help.changeTopicPointEl("ratecurrentsong", [ that.song_rating.grid ]);
+			//help.changeStepPointEl("setfavourite", [ that.song_rating.favbutton ]);
+			//help.changeTopicPointEl("setfavourite", false);
+		}
+		else {
+			help.changeStepPointEl("ratecurrentsong", false);
+			help.changeTopicPointEl("ratecurrentsong", false);
+			help.changeStepPointEl("setfavourite", false);
+			help.changeTopicPointEl("setfavourite", false);
+		}
 		that.animateIn();
 	};
 	
@@ -97,170 +94,66 @@ var NPElection = function(npp, json) {
 	};
 	
 	that.enableRating = function() {
-		that.songrating.enable();
-		that.albumrating.enable();
+		if (that.song_rating) {
+			that.song_rating.enable();
+			that.album_rating.enable();
+		}
 	};
 	
 	that.disableRating = function() {
-		that.songrating.disable();
-		that.albumrating.disable();
+		if (that.song_rating) {
+			that.song_rating.disable();
+			that.album_rating.disable();
+		}
 	};
 	
+	return that;
+};
+
+var NPElection = function(npp, json) {
+	var that = NPSkeleton(npp);
+	that.p = json;
+	theme.Extend.NPElection(that);
+	that.draw();	
 	return that;
 };
 
 var NPJingle = function(npp, json) {
-	var that = {};
+	var that = NPSkeleton(npp);
 	that.p = json;
-	that.el = svg.makeEl("g");
-	
-	theme.Extend.NPJingle(that, npp);
+	theme.Extend.NPJingle(that);
 	that.draw();
-	
-	help.changeStepPointEl("ratecurrentsong", false);
-	help.changeTopicPointEl("ratecurrentsong", false);
-	help.changeStepPointEl("setfavourite", false);
-	help.changeTopicPointEl("setfavourite", false);
-	
-	that.init = function() {
-		that.animateIn();
-	};
-	
-	that.uninit = function() {
-		that.destruct();
-		that.animateOut();
-	};
-	
-	
-	that.enableRating = function() {};
-	that.disableRating = function() {};
-	
 	return that;
 };
 
 var NPLiveShow = function(npp, json) {
-	var that = {};
+	var that = NPSkeleton(npp);
 	that.p = json;
-	that.el = svg.makeEl("g");
-	
-	theme.Extend.NPLiveShow(that, npp);
+	theme.Extend.NPLiveShow(that);
 	that.draw();
-	
-	help.changeStepPointEl("ratecurrentsong", false);
-	help.changeTopicPointEl("ratecurrentsong", false);
-	help.changeStepPointEl("setfavourite", false);
-	help.changeTopicPointEl("setfavourite", false);	
-	
-	that.init = function() {
-		that.destruct();
-		that.animateIn();
-	};
-	
-	that.uninit = function() {
-		that.animateOut();
-	};
-	
-	that.enableRating = function() {};
-	that.disableRating = function() {};
-	
 	return that;
 };
 
 var NPOneShot = function(npp, json) {
-	var that = {};
-	that.el = svg.makeEl("g");
+	var that = NPSkeleton(npp);
 	that.p = json;
-	
-	theme.Extend.NPOneShot(that, npp);
+	theme.Extend.NPOneShot(that);
 	that.draw();
-	
-	help.changeStepPointEl("ratecurrentsong", [ that.songrating.grid ]);
-	help.changeTopicPointEl("ratecurrentsong", [ that.songrating.grid ]);
-	help.changeStepPointEl("setfavourite", [ that.songrating.favbutton ]);
-	help.changeTopicPointEl("setfavourite", [ that.songrating.favbutton ]);
-	
-	that.init = function() {
-		that.animateIn();
-	};
-	
-	that.uninit = function() {
-		that.destruct();
-		that.animateOut();
-	};
-	
-	that.enableRating = function() {
-		that.songrating.enable();
-		that.albumrating.enable();
-	};
-	
-	that.disableRating = function() {
-		that.songrating.disable();
-		that.albumrating.disable();
-	};
-	
 	return that;
 };
 
 var NPPlaylist = function(npp, json) {
-	var that = {};
-	that.el = svg.makeEl("g");
+	var that = NPSkeleton(npp);
 	that.p = json;
-	
-	theme.Extend.NPPlaylist(that, npp);
+	theme.Extend.NPPlaylist(that);
 	that.draw();
-	
-	help.changeStepPointEl("ratecurrentsong", [ that.songrating.grid ]);
-	help.changeTopicPointEl("ratecurrentsong", [ that.songrating.grid ]);
-	help.changeStepPointEl("setfavourite", [ that.songrating.favbutton ]);
-	help.changeTopicPointEl("setfavourite", [ that.songrating.favbutton ]);
-	
-	that.init = function() {
-		that.animateIn();
-	};
-	
-	that.uninit = function() {
-		that.destruct();
-		that.animateOut();
-	};
-	
-	that.enableRating = function() {
-		that.songrating.enable();
-		that.albumrating.enable();
-	};
-	
-	that.disableRating = function() {
-		that.songrating.disable();
-		that.albumrating.disable();
-	};
-	
 	return that;
 };
 
 var NPAdSet = function(npp, json) {
-	var that = {};
-	that.el = svg.makeEl("g");
-	that.p = json;
-	
-	help.changeStepPointEl("ratecurrentsong", false);
-	help.changeTopicPointEl("ratecurrentsong", false);
-	help.changeStepPointEl("setfavourite", false);
-	help.changeTopicPointEl("setfavourite", false);
-	
-	theme.Extend.NPAdSet(that, npp);
+	var that = NPSkeleton(npp);
+	that.p = json;	
+	theme.Extend.NPAdSet(that);
 	that.draw();
-	
-	that.init = function() {
-		that.animateIn();
-	};
-	
-	that.uninit = function() {
-		that.destruct();
-		that.animateOut();
-	};
-	
-	that.enableRating = function() {};
-	
-	that.disableRating = function() {};
-	
 	return that;
 };

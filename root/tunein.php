@@ -1,20 +1,5 @@
 <?php
 
-if (isset($_GET['plugin']) && ($_GET['plugin'] != "false")) {
-	$plugin = "A plugin was detected that";
-	if (($_GET['plugin'] != "undefined") && (preg_match("/^[\d\w\s-_.]+$/", $_GET['plugin']))) {
-		$plugin = $_GET['plugin'];
-	}
-	print "<html><head><title>Rainwave Tune In Plugin Detection</title></head>";
-	print "<body style='background: black; color: white; text-align: center'>";
-	print "<p>" . $plugin . " inteferes with downloading the Rainwave playlist.</p>";
-	print "<p><a style='color: #6cf6ff' href='tunein.php'>Please right-click this link and \"Save As\"</a>, then open in your media player.</p>";
-	print "<p>Your media player must play Ogg Vorbis.  We recommend Winamp, VLC, or fstream for Mac.</p>";
-	print "<p>Enjoy Rainwave!  Any questions, click 'Help' or 'Chat'.</p>";
-	print "</body></html>";
-	exit(0);
-}
-
 header('Content-type: audio/x-mpegurl');
 header("Cache-Control: no-cache, must-revalidate");
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
