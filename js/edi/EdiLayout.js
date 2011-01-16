@@ -12,21 +12,6 @@ function EdiLayout(layout, name, parent) {
 	var that = {};
 	
 	that.openpanels = new Array();
-	
-	var EdiBorder = function(el) {
-		var that = {};
-		that.el = el;
-		that.vfirst = false;
-		that.vlast = false;
-		that.hfirst = false;
-		that.hlast = false;
-		that.top = false;
-		that.right = false;
-		that.bottom = false;
-		that.left = false;
-		//that.irregular = false;
-		return that;
-	};
 
 	that.sizeLayout = function() {
 		var maxcols = 0;
@@ -183,48 +168,25 @@ function EdiLayout(layout, name, parent) {
 				var dispheight = (typeof(layout[i][j].initSizeY) == "function") ? layout[i][j].initSizeY(cellheight, rowh[i]) : cellheight;
 				if ((dispwidth != cellwidth) || (dispheight != cellheight)) cirregular = true;
 
-				var vborder = svg.make();
-				vborder.setAttribute("style", "position: absolute; top: " + runningy + "px; left: " + (runningx + dispwidth) + "px; width: " + parent.themeobj.borderwidth + "px; height: " + dispheight + "px;");
-				vborders[i][j] = new EdiBorder(vborder);
+				vborders[i][j] = {};
+				vborders[i][j].el = createEl("div", { "class": "edi_border_vertical" });
+				vborders[i][j].el.setAttribute("style", "position: absolute; top: " + runningy + "px; left: " + (runningx + dispwidth) + "px; width: " + parent.themeobj.borderwidth + "px; height: " + dispheight + "px;");
 				vborders[i][j].vfirst = (i == 0) ? true : false;
 				vborders[i][j].vlast = ((i + (layout[i][j].rowspan - 1)) >= (rowflags.length - 1)) ? true : false;
-				//vborders[i][j].irregular = ((typeof(cborders[i - 1]) != "undefined") && (typeof(cborders[i - 1][j]) == "object")) ? cborders[i - 1][j].irregular : true;
 				if (usevborder) {
 					parent.themeobj.borderVertical(vborders[i][j]);
 					element.appendChild(vborders[i][j].el);
 				}
 				
-				var hborder = svg.make();
-				hborder.setAttribute("style", "position: absolute; top: " + (runningy + dispheight) + "px; left: " + runningx + "px; width: " + dispwidth + "px; height: " + parent.themeobj.borderheight + "px;");
-				hborders[i][j] = new EdiBorder(hborder);
+				hborders[i][j] = {}
+				hborders[i][j].el = createEl("div", { "class": "edi_border_horizontal" });
+				hborders[i][j].el.setAttribute("style", "position: absolute; top: " + (runningy + dispheight) + "px; left: " + runningx + "px; width: " + dispwidth + "px; height: " + parent.themeobj.borderheight + "px;");
 				hborders[i][j].hfirst = (j == 0) ? true : false;
 				hborders[i][j].hlast = (j >= (layout[i].length - 1)) ? true : false;
-				// IF TURNING CORNER BORDERS BACK ON: hborders are not insulated against irregularities
 				if (usehborder) {
 					parent.themeobj.borderHorizontal(hborders[i][j]);
 					element.appendChild(hborders[i][j].el);
-					
-					//if (hborders[i][j].hlast && (typeof(cborders[i][j - 1]) == "object")) {
-					//	cborders[i][j - 1].right = true;
-					//}
 				}
-				
-				/*if (usevborder && usehborder) {
-					var cborder = svg.make();
-					cborder.setAttribute("style", "position: absolute; top: " + (runningy + dispheight) + "px; left: " + (runningx + dispwidth) + "px; width: " + parent.themeobj.borderheight + "px; height: " + parent.themeobj.borderwidth + "px;");
-					cborders[i][j] = new EdiBorder(cborder);
-					cborders[i][j].top = true;
-					cborders[i][j].left = true;
-					cborders[i][j].irregular = cirregular;
-					//if (parent.layoutname == "default") {
-					//	cborders[i][j].top = (vborders[i][j].vlast != true) ? true : false;
-					//	cborders[i][j].right = (j == (colflags.length - 2)) ? true : false;
-					//	cborders[i][j].bottom = (i == (rowflags.length - 2)) ? true : false;
-					//}
-					//parent.themeobj.borderDefs(cborders[i][j].el);
-					cborders[i][j].el.setAttribute("id", "cborder" + i + "_" + j);
-					element.appendChild(cborders[i][j].el);
-				}*/
 				
 				var panelel = document.createElement("div");
 				panelel.row = i;

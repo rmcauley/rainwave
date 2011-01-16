@@ -55,8 +55,6 @@ function EdiTheme() {
 	that.Extend = {};
 
 	that.allDefs = function(svgel, defs) {
-		that.borderDefs(svgel, defs);
-		that.menuDefs(svgel, defs);
 		that.graphDefs(svgel, defs);
 	};
 
@@ -66,61 +64,12 @@ function EdiTheme() {
 	  These border functions are passed <svg> elements.
 	*****************************************************************************/
 
-	that.borderDefs = function(svgel, defs) {
-		var gright = svg.makeGradient("linear", "bleft", "100%", "0%", "0%", "0%", "pad");
-		gright.appendChild(svg.makeStop("30%", that.ediborderdark, 0));
-		gright.appendChild(svg.makeStop("50%", that.ediborderbright, 1));
-		gright.appendChild(svg.makeStop("97%", that.ediborderbright, 1));
-		gright.appendChild(svg.makeStop("100%", that.ediborderdark, 0));
-
-		var gleft = svg.makeGradient("linear", "bright", "0%", "0%", "100%", "0%", "pad");
-		gleft.appendChild(svg.makeStop("30%", that.ediborderdark, 0));
-		gleft.appendChild(svg.makeStop("50%", that.ediborderbright, 1));
-		gleft.appendChild(svg.makeStop("97%", that.ediborderbright, 1));
-		gleft.appendChild(svg.makeStop("100%", that.ediborderdark, 0));
-
-		var gtop = svg.makeGradient("linear", "btop", "0%", "100%", "0%", "0%", "pad");
-		gtop.appendChild(svg.makeStop("30%", that.ediborderdark, 0));
-		gtop.appendChild(svg.makeStop("50%", that.ediborderbright, 1));
-		gtop.appendChild(svg.makeStop("97%", that.ediborderbright, 1));
-		gtop.appendChild(svg.makeStop("100%", that.ediborderdark, 0));
-
-		var gbottom = svg.makeGradient("linear", "bbottom", "0%", "0%", "0%", "100%", "pad");
-		gbottom.appendChild(svg.makeStop("30%", that.ediborderdark, 0));
-		gbottom.appendChild(svg.makeStop("50%", that.ediborderbright, 1));
-		gbottom.appendChild(svg.makeStop("97%", that.ediborderbright, 1));
-		gbottom.appendChild(svg.makeStop("100%", that.ediborderdark, 0));
-		
-		/*var virregular = svg.makeGradient("linear", "bvirregular", "0%", "0%", "0%", "100%", "pad");
-		virregular.appendChild(svg.makeStop("0%", that.ediborderdark, 0));
-		virregular.appendChild(svg.makeStop("5%", that.ediborderbright, 1));
-		virregular.appendChild(svg.makeStop("30%", that.ediborderbright, 1));
-		virregular.appendChild(svg.makeStop("40%", that.ediborderbright, 0));*/
-
-		defs.appendChild(gright);
-		defs.appendChild(gleft);
-		defs.appendChild(gtop);
-		defs.appendChild(gbottom);
-		//defs.appendChild(virregular);
-	};
-
 	that.borderVertical = function(border) {
-		var bkg = svg.makeRect("50%", 0, 1, "100%");
-		if (border.irregular && !border.vfirst) {
-			bkg.setAttribute("fill", "url(#bvirregular)");
-		}
-		else {
-			if (!border.vlast) bkg.setAttribute("fill", "url(#bbottom)");
-			else bkg.setAttribute("fill", "url(#btop)");
-		}
-		border.el.appendChild(bkg);
+		border.el.appendChild(createEl("img", { "src": skindir + "/images/edi_border_vertical.png", "style": "width: 1px; height: 60%; padding-left: 6px;" }));
 	};
 
 	that.borderHorizontal = function(border) {
-		var bkg = svg.makeRect(0, "50%", "100%", 1);
-		if (!border.hlast) bkg.setAttribute("fill", "url(#bright)");
-		else bkg.setAttribute("fill", "url(#bleft)");
-		border.el.appendChild(bkg);
+		border.el.appendChild(createEl("img", { "src": skindir + "/images/edi_border_horizontal.png", "style": "width: 60%; height: 1px; vertical-align: top; margin-top: 6px;" }));
 	};
 	
 	/*****************************************************************************
@@ -457,7 +406,7 @@ function EdiTheme() {
 			ts.album_rating_c.appendChild(ts.album_rating.el);
 			ts.album_rating_bkg = createEl("div", { "class": "timeline_song_rating_bkg" }, ts.album_td);
 			if (ts.p.elec_isrequest == 1) {
-				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor timeline_song_requestor_request", "textContent": _l("requestedby") + " " ts.p.song_requestor });
+				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor timeline_song_requestor_request", "textContent": _l("requestedby") + " " + ts.p.song_requestor });
 			}
 			else if (ts.p.elec_isrequest < 0) {
 				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor timeline_song_requestor_conflict", "textContent": _l("conflictswith") + " " + ts.p.song_requestor });
@@ -791,131 +740,59 @@ function EdiTheme() {
 	/*****************************************************************************
 	   Menu Panel Styling
 	*****************************************************************************/
-	
-	that.menuDefs = function(svgel, defs) {
-		var logohighlight = svg.makeGradient("linear", "menupanel_logohighlight", "0%", "0%", "0%", "100%", "pad");
-		logohighlight.appendChild(svg.makeStop("0%", theme.indicnormal, 0));
-		logohighlight.appendChild(svg.makeStop("100%", theme.indicnormal, 1));
-		defs.appendChild(logohighlight);
-		
-		var logomask = svg.makeEl("mask", { id: "menupanel_rwmask" });
-		var logoimage = svg.makeImage("images/stationselect-1.png", 0, 0, logowidth, logoheight);
-		logomask.appendChild(logoimage);
-		defs.appendChild(logomask);
-		
-		// logomask = svg.makeEl("mask", { id: "menupanel_ocmask" });
-		// logoimage = svg.makeImage("images/stationselect-2.png", 0, 0, logowidth, logoheight);
-		// logomask.appendChild(logoimage);
-		// defs.appendChild(logomask);
-		
-		// logomask = svg.makeEl("mask", { id: "menupanel_vwmask" });
-		// logoimage = svg.makeImage("images/stationselect-3.png", 0, 0, logowidth, logoheight);
-		// logomask.appendChild(logoimage);
-		// defs.appendChild(logomask);
-		
-		var logoclip = svg.makeEl("clipPath", { id: "menupanel_logoclip" });
-		logoclip.appendChild(svg.makeEl("path", { d: "M0,0 V50 H250 V0 Z" } ));
-		defs.appendChild(logoclip);
-		
-		var logoswipegrad = svg.makeGradient("linear", "menupanel_logoswipe", "0%", "0%", "100%", "0%", "pad");
-		logoswipegrad.appendChild(svg.makeStop("0%", "white", "0"));
-		logoswipegrad.appendChild(svg.makeStop("70%", "white", "1"));
-		logoswipegrad.appendChild(svg.makeStop("95%", "white", "1"));
-		logoswipegrad.appendChild(svg.makeStop("100%", "white", "0"));
-		defs.appendChild(logoswipegrad);
-		
-		var rwlogograd = svg.makeGradient("linear", "menupanel_Rainwavegrad", "0%", "0%", "0%", "100%", "pad");
-		rwlogograd.appendChild(svg.makeStop("0%", "#f36f3d", "1"));
-		rwlogograd.appendChild(svg.makeStop("100%", "#faca19", "1"));
-		defs.appendChild(rwlogograd);
-	};
 
-	that.createLogoSwipe = function(attachel, maskname, bkgname) {
-		var logo = svg.make({ "width": logowidth, "height": logoheight });
-		var logog = svg.makeEl("g", { "mask": "url(#" + maskname + ")", "clip_path": "url(#menupanel_logoclip)" } );
-		logog.appendChild(svg.makeRect(0, 0, logowidth, logoheight, { fill: "url(#" + bkgname + ")" } ));
-		var logoswipe = svg.makeRect(0, 0, Math.round(logowidth * .75), logoheight, { fill: "url(#menupanel_logoswipe)" } );
-		logog.appendChild(logoswipe);
-		logo.appendChild(logog);
-		var fx_logoswipe = fx.make(fx.SVGAttrib, [ logoswipe, 1500, "x", "" ], { "unstoppable": true });
-		fx_logoswipe.set(logowidth);
-		attachel.addEventListener("mouseover", function() { fx_logoswipe.start(-Math.round(logowidth * .75), logowidth); }, true);
-		attachel.style.cursor = "pointer";
-		attachel.appendChild(logo);
-	};
 
 	that.Extend.MenuPanel = function(menup) {	
 		menup.draw = function() {
+			// Login Box
 			menup.loginbox = createEl("table", { "class": "loginbox", "cellborder": 0, "cellpadding": 0 });
-			var row = createEl("tr");
+			var row = createEl("tr", {}, menup.loginbox);
 			row.appendChild(createEl("td", { "textContent": _l("username"), "style": "padding-right: 1em;" }));
-			var td = createEl("td");
-			menup.login_username = createEl("input", { "type": "text" });
+			var td = createEl("td", {}, row);
+			menup.login_username = createEl("input", { "type": "text" }, td);
 			menup.login_username.addEventListener('keypress', menup.loginBoxKeypress, true);
-			td.appendChild(menup.login_username);
-			var closelogin = createEl("span", { "textContent": "X" });
+			var closelogin = createEl("span", { "textContent": "X", "style": "margin-left: 1em; cursor: pointer;" }, td);
 			closelogin.addEventListener("click", menup.hideLoginBox, true);
-			closelogin.style.marginLeft = "1em";
-			closelogin.style.cursor = "pointer";
-			td.appendChild(closelogin);
-			row.appendChild(td);
-			menup.loginbox.appendChild(row);
-			row = createEl("tr");
+
+			row = createEl("tr", {}, menup.loginbox);
 			row.appendChild(createEl("td", { "textContent": _l("password") }));
-			td = createEl("td");
-			menup.login_password = createEl("input", { "type": "password" });
+			td = createEl("td", {}, row);
+			menup.login_password = createEl("input", { "type": "password" }, td);
 			menup.login_password.addEventListener('keypress', menup.loginBoxKeypress, true);
-			td.appendChild(menup.login_password);
-			row.appendChild(td);
-			menup.loginbox.appendChild(row);
-			row = createEl("tr");
+
+			row = createEl("tr", {}, menup.loginbox);
 			row.appendChild(createEl("td", { "textContent": _l("autologin") }));
-			td = createEl("td");
-			menup.login_auto = createEl("input", { "type": "checkbox", "checked": "yes" });
-			td.appendChild(menup.login_auto);
-			row.appendChild(td);
-			menup.loginbox.appendChild(row);
-			row = createEl("tr");
+			td = createEl("td", {}, row);
+			menup.login_auto = createEl("input", { "type": "checkbox", "checked": "yes" }, td);
+
+			row = createEl("tr", {}, menup.loginbox);
 			row.appendChild(createEl("td", { "textContent": "" }));
-			td = createEl("td");
-			menup.login_button = createEl("button", { "textContent": _l("login") });
+			td = createEl("td", {}, row);
+			menup.login_button = createEl("button", { "textContent": _l("login") }, td);
 			menup.login_button.addEventListener('click', menup.loginSubmit, true);
-			td.appendChild(menup.login_button);
-			row.appendChild(td);
-			menup.loginbox.appendChild(row);
+
 			menup.loginbox.style.position = "absolute";
 			menup.loginbox.style.marginTop = (menup.el.offsetHeight + 3) + "px";
 			menup.loginbox.style.zIndex = "100";
 			
 			menup.table = createEl("table", { "class": "menu_table", "cellspacing": 0 });
-			var row = createEl("tr");
-			menup.td_station = createEl("td", { "class": "menu_td_station" });
-			
-			var stationlogo = createEl("img", { "src": "images/rainwave-menu-logo.png" });
-			menup.td_station.appendChild(stationlogo);
-			
-			menup.ul_select = createEl("ul", { "class": "menu_select" } );
-			var li = createEl("li");
-			that.createLogoSwipe(li, "menupanel_rwmask", "menupanel_Rainwavegrad");
+			var row = createEl("tr", {}, menup.table);
+			menup.td_station = createEl("td", { "class": "menu_td_station" }, row);
+			var stationlogo = createEl("img", { "src": "images/rainwave-menu-logo.png" }, menup.td_station);
+			menup.ul_select = createEl("ul", { "class": "menu_select", "style": "margin-left: -3px;" });
+			var li = createEl("li", { "style": "cursor: pointer" }, menup.ul_select);
 			li.addEventListener("click", function() { menup.changeStation(1); }, true);
-			menup.ul_select.appendChild(li);
-			row.appendChild(menup.td_station);
+			menup.station_rw = createEl("img", { "src": "images/stationselect-1.png" }, li);
 			fx.makeMenuDropdown(menup.el, stationlogo, menup.ul_select);
 			
-			menup.td_play = createEl("td", { "class": "menu_td_play" });
-			
-			menup.player = createEl("span", { "class": "menu_player" });
+			menup.td_play = createEl("td", { "class": "menu_td_play" }, row);		
+			menup.player = createEl("span", { "class": "menu_player", "style": "cursor: pointer" }, menup.td_play);
 			menup.player.addEventListener("click", menup.playerClick, true);
-			menup.player.style.cursor = "pointer";
 			menup.fx_player = fx.make(fx.CSSNumeric, [ menup.player, 250, "opacity", 0 ]);
 			menup.fx_player.set(1);
 			menup.player.innerHTML = _l("play");
-			menup.td_play.appendChild(menup.player);
 			
-			row.appendChild(menup.td_play);
-			
-			menup.td_download = createEl("td", { "class": "menu_td_download" });
-			
+			menup.td_download = createEl("td", { "class": "menu_td_download" }, row);
 			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;" });
 			var vlc = createEl("img", { "src": "images/vlc.png", "class": "link" });
 			var fx_vlc = fx.make(fx.CSSNumeric, [ vlc, 250, "opacity", "" ]);
@@ -945,8 +822,6 @@ function EdiTheme() {
 			fb2k.addEventListener("click", menup.tuneInClick, true);
 			fb2ka.appendChild(fb2k);
 			menup.td_download.appendChild(fb2ka);
-			
-			row.appendChild(menup.td_download);
 			
 			help.changeStepPointEl("tunein", [ menup.player, menup.td_download ]);
 			help.changeTopicPointEl("tunein", [ menup.player, menup.td_download ]);
