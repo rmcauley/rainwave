@@ -16,6 +16,7 @@ function R3Effects() {
 	var started = false;
 	var fpscounter = 0;
 	var deferred = []
+	var mozAnim = window.mozRequestAnimationFrame ? true : false;
 	
 	that.extend = function(name, func) {
 		that[name] = func;
@@ -30,8 +31,10 @@ function R3Effects() {
 		else return false;
 	}
 	
-	var globalStep = function() {
-		var time = new Date().getTime();
+	var globalStep = function(event) {
+		var time;
+		if (event && event.timeStamp) time = event.timeStamp;
+		else time = new Date().getTime();
 		var c = 0;
 		var i;
 		for (i in runningfx) {
@@ -42,18 +45,30 @@ function R3Effects() {
 		deferred = [];
 		fpscounter++;
 		if (c == 0) {
-			clearInterval(timer);
+			if (mozAnim) window.removeEventListener("MozBeforePaint", globalStep, false);
+			else clearInterval(timer);
 			timer = false;
 			log.log("Fx", 0, "Avg FPS: " + Math.round(fpscounter / ((time - started) / 1000)));
+		}
+		else if (mozAnim) {
+			window.mozRequestAnimationFrame();
 		}
 	}
 	
 	var startEffect = function(id, func) {
 		runningfx[id] = func;
 		if (!timer) {
-			started = new Date().getTime();
 			fpscounter = 0;
-			timer = setInterval(globalStep, 1000 / Math.ceil(that.fps));
+			if (mozAnim) {
+				started = window.mozAnimationStartTime;
+				window.addEventListener("MozBeforePaint", globalStep, false);
+				window.mozRequestAnimationFrame();
+				timer = true;
+			}
+			else {
+				started = new Date().getTime();	
+				timer = setInterval(globalStep, Math.ceil(1000 / that.fps));
+			}
 		}
 	}
 	
@@ -120,6 +135,7 @@ function R3Effects() {
 		newfx.start = function(stopat) {
 			if (isEffectRunning(newfx.id)) {
 				if (options.unstoppable) return;
+				if (newfx.to == stopat) return;
 				newfx.stop();
 			}
 			if (arguments.length == 2) {
@@ -136,7 +152,8 @@ function R3Effects() {
 				newfx.step();
 			}
 			else {
-				newfx.started = new Date().getTime();
+				if (mozAnim) newfx.started = window.mozAnimationStartTime;
+				else newfx.started = new Date().getTime();
 				startEffect(newfx.id, newfx.step);
 			}
 		};

@@ -1,10 +1,10 @@
 panels.SchedulePanel = {
 	ytype: "fit",
-	height: svg.em * 24,
-	minheight: svg.em * 16,
+	height: svg.em * 30,
+	minheight: svg.em * 20,
 	xtype: "fit",
-	width: svg.em * 24,
-	minwidth: svg.em * 16,
+	width: svg.em * 30,
+	minwidth: svg.em * 20,
 	title: "Schedule",
 	intitle: "SchedulePanel",
 	

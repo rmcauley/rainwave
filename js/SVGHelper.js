@@ -1,4 +1,6 @@
 function SVGHelper(workel) {
+	if (!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1")) return;
+
 	var ns = "http://www.w3.org/2000/svg";
 	var xlinkns = "http://www.w3.org/1999/xlink";
 	var xmlns = "http://www.w3.org/2000/xmlns/";
@@ -41,15 +43,7 @@ function SVGHelper(workel) {
 	
 	that.makeEl = function(type, attribs) {
 		var newel = document.createElementNS(ns, type);
-		if (attribs) {
-			// inlined for sssspppppeeeeeeeeeeed
-			//that.setAttribs(newel, attribs);
-			for (var i in attribs) {
-				if (webkit && (i == "shape_rendering")) continue;
-				else if (i == "textContent") newel.textContent = attribs[i];
-				else newel.setAttribute(i.replace(/_/g, "-"), attribs[i]);
-			}
-		}
+		if (attribs) that.setAttribs(newel, attribs);
 		return newel;
 	};
 	
@@ -107,11 +101,6 @@ function SVGHelper(workel) {
 	that.linkify = function(el, href, samewindow, textcolor) {
 		linkcount++;
 		el.style.cursor = "pointer";
-		if (el.nodeName == "text") {
-			//el.addEventListener("mouseover", function() { el.setAttribute("fill", textcolor); }, true);
-			//if (textcolor) el.addEventListener("mouseout", function() { el.setAttribute("fill", textcolor); }, true);
-			//else el.addEventListener("mouseout", function() { el.setAttribute("fill", theme.textcolor); }, true);
-		}
 		if (href) {
 			if (samewindow) el.addEventListener("click", function() { location.href = href }, true);
 			else el.addEventListener("click", function() { window.open(href, "rw_link_" + linkcount, ''); }, true);

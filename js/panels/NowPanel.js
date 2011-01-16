@@ -3,14 +3,14 @@ panels.NowPanel = {
 	height: 140,
 	minheight: 140,
 	xtype: "max",
-	width: svg.em * 32,
-	minwidth: svg.em * 32,
+	width: svg.em * 55,
+	minwidth: svg.em * 30,
 	title: "Now Playing",
 	intitle: "NowPanel",
 	
 	initSizeX: function(x, colw) {
-		if (colw > (svg.em * 60)) {
-			return (svg.em * 60);
+		if (colw > (svg.em * 55)) {
+			return (svg.em * 55);
 		}
 		else if (x > (colw + 117)) {
 			return (colw + 117)

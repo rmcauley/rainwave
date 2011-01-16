@@ -1,11 +1,11 @@
 panels.TimelinePanel = {
 	ytype: "fit",
 	rowspannable: true,
-	height: svg.em * 8,
+	height: svg.em * 10,
 	minheight: svg.em * 40,
 	xtype: "fit",
-	width: svg.em * 32,
-	minwidth: svg.em * 20,
+	width: svg.em * 40,
+	minwidth: svg.em * 25,
 	title: "Timeline",
 	intitle: "TimelinePanel",
 	
@@ -212,7 +212,7 @@ panels.TimelinePanel = {
 				that.nextevents[0].moveTo(0);
 				// move all next events off screen
 				for (i = 1; i < that.nextevents.length; i++) {
-					that.nextevents[i].moveTo(that.el.offsetHeight);
+					that.nextevents[i].moveTo(that.container.offsetHeight);
 				}
 				// move all last events off screen
 				for (i = 0; i < that.lastevents.length; i++) {
@@ -238,7 +238,6 @@ panels.TimelinePanel = {
 			var i, moveto;
 			for (i = 0; i < that.allevents.length; i++) {
 				that.allevents[i].timep_showing = false;
-				that.allevents[i].recalculateHeight();
 				if (that.allevents[i].purge) {
 					that.allevents[i].moveTo(-that.allevents[i].height);
 					that.allevents[i].remove();
@@ -329,7 +328,7 @@ panels.TimelinePanel = {
 					runz++;
 				}
 				else {
-					that.nextevents[i].moveTo(that.height);
+					that.nextevents[i].moveTo(that.container.offsetHeight);
 				}
 			}
 			// Properly calculate the time until each event
@@ -441,6 +440,7 @@ function TimelineElection(json, container, parent) {
 		if (that.showingwinner) return;
 		that.showingwinner = true;
 		that.drawShowWinner();
+		that.recalculateHeight();
 	};
 	
 	that.sortSongs = function(a, b) {

@@ -1,8 +1,7 @@
-function EdiTheme() {
-	document.getElementById("body").style.fontFamily = "Tahoma, Sans-Serif";
-	document.getElementById("body").style.fontSize = "0.8em";
-	svg.measureEm();
+document.getElementById("body").style.fontFamily = "Tahoma, Sans-Serif";
+document.getElementById("body").style.fontSize = "0.8em";
 
+function EdiTheme() {
 	var that = {};
 	var skindir = "skins_r" + BUILDNUM + "/RWClassic";
 
@@ -54,11 +53,11 @@ function EdiTheme() {
 	var votebkg_width = 680;
 	
 	that.Extend = {};
-	
-	/* ALL DEFINITIONS */
+
 	that.allDefs = function(svgel, defs) {
 		that.borderDefs(svgel, defs);
 		that.menuDefs(svgel, defs);
+		that.graphDefs(svgel, defs);
 	};
 
 	/*****************************************************************************
@@ -256,7 +255,8 @@ function EdiTheme() {
 		evt.el = createEl("table", { "class": "timeline_table", "cellspacing": 0 });
 		evt.el.style.width = evt.container.offsetWidth + "px";
 		var tr = createEl("tr", {}, evt.el);
-		evt.header_td = createEl("td", { "class": "timeline_header_" + indic, "colspan": 2 }, tr);
+		evt.header_indicator = createEl("td", { "class": "timeline_header_indicator timeline_header_indicator_" + indic }, tr);
+		evt.header_td = createEl("td", { "class": "timeline_header timeline_header_" + indic }, tr);
 		evt.header_clock = createEl("div", { "class": "timeline_clock" }, evt.header_td);
 		evt.clock = evt.header_clock;
 		evt.header_text = createEl("span", { "class": "timeline_header_text", "textContent": text }, evt.header_td);
@@ -360,12 +360,12 @@ function EdiTheme() {
 		tas.draw = function() {
 			that.drawTimelineTable(tas, _l("adset"), "normal");
 
-			var tr, td, crap;
+			var tr, td, header;
 			for (var i = 0; i < tas.p.ad_data.length; i++) {
 				tr = createEl("tr", {}, tas.el);
 				if (i == 0) {
-					crap = createEl("td", { "class": "timeline_indicator_normal", "rowspan": tas.p.ad_data.length }, tr);
-					createEl("img", { "src": "images/blank.png", "style": "width: 10px; height: 20px;" }, crap);
+					header = createEl("td", { "class": "timeline_indicator_normal", "rowspan": tas.p.ad_data.length }, tr);
+					createEl("img", { "src": "images/blank.png", "style": "width: 10px; height: 20px;" }, header);
 				}
 				td = createEl("td", { "class": "timeline_td" }, tr);
 				if (tas.p.ad_data[i].ad_url) {
@@ -433,11 +433,12 @@ function EdiTheme() {
 			else if (ts.isreq < 0) indic = "conflict";
 			
 			ts.tr1 = createEl("tr", {});
-			ts.tr1_fx = fx.make(fx.OpacityRemoval, [ ts.tr1, ts.parent.el, 500 ]);
+			ts.tr1_fx = fx.make(fx.OpacityRemoval, [ ts.tr1, ts.parent.el, 250 ]);
 			ts.tr1_fx.set(1);
-			ts.indicator = createEl("td", { "class": "timeline_indicator_" + indic, "rowspan": 3 }, ts.tr1);
+			ts.indicator = createEl("td", { "class": "timeline_indicator timeline_indicator_" + indic, "rowspan": 3 }, ts.tr1);
+			// for indicator_fx check the "if (ts.song_requestor)" block below
 			var argh = createEl("img", { "src": "images/blank.png", "class": "timeline_indicator_argh" }, ts.indicator);
-			ts.song_td = createEl("td", { "class": "timeline_td timeline_vote_" + indic }, ts.tr1);
+			ts.song_td = createEl("td", { "class": "timeline_td timeline_song_td timeline_song_td_" + indic }, ts.tr1);
 			ts.vote_hover_el = createEl("div", { "class": "timeline_vote_hover" }, ts.song_td);
 			ts.swipe = createEl("div", { "class": "timeline_vote_swipe" }, ts.song_td);
 			ts.song_rating_bkg = createEl("div", { "class": "timeline_song_rating_bkg" }, ts.song_td);
@@ -445,25 +446,39 @@ function EdiTheme() {
 			ts.song_rating = Rating({ category: "song", "id": ts.p.song_id, "userrating": ts.p.song_rating_user, "siterating": ts.p.song_rating_avg, "favourite": ts.p.song_favourite, "register": true });
 			ts.song_rating_c.appendChild(ts.song_rating.el);
 			ts.song_time = createEl("div", { "class": "timeline_song_time", "textContent": formatTime(ts.p.song_secondslong) }, ts.song_td);
-			ts.song_title = createEl("span", { "class": "song_title", "textContent": ts.p.song_title }, ts.song_td);
+			ts.song_title = createEl("div", { "class": "song_title", "textContent": ts.p.song_title }, ts.song_td);
 			
 			ts.tr2 = createEl("tr", {});
-			ts.tr2_fx = fx.make(fx.OpacityRemoval, [ ts.tr2, ts.parent.el, 500 ]);
+			ts.tr2_fx = fx.make(fx.OpacityRemoval, [ ts.tr2, ts.parent.el, 250 ]);
 			ts.tr2_fx.set(1);
 			ts.album_td = createEl("td", { "class": "timeline_td timeline_album_td" }, ts.tr2);
-			ts.album_rating_bkg = createEl("div", { "class": "timeline_song_rating_bkg" }, ts.album_td);
 			ts.album_rating_c = createEl("div", { "class": "timeline_song_rating_c" }, ts.album_td);
 			ts.album_rating = Rating({ category: "album", "id": ts.p.album_id, "userrating": ts.p.album_rating_user, "siterating": ts.p.salbum_rating_avg, "favourite": ts.p.album_favourite, "register": true });
 			ts.album_rating_c.appendChild(ts.album_rating.el);
-			ts.album_name = createEl("span", { "class": "timeline_album_title", "textContent": ts.p.album_name }, ts.album_td);
+			ts.album_rating_bkg = createEl("div", { "class": "timeline_song_rating_bkg" }, ts.album_td);
+			if (ts.p.elec_isrequest == 1) {
+				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor timeline_song_requestor_request", "textContent": _l("requestedby") + " " ts.p.song_requestor });
+			}
+			else if (ts.p.elec_isrequest < 0) {
+				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor timeline_song_requestor_conflict", "textContent": _l("conflictswith") + " " + ts.p.song_requestor });
+			}
+			if (ts.song_requestor) {
+				ts.song_requestor_wrap = createEl("div", { "class": "timeline_song_requestor_wrap" }, ts.album_td);
+				ts.song_requestor_wrap.appendChild(ts.song_requestor);
+				ts.song_requestor.style.height = (ts.album_td.offsetHeight + 1) + "px";
+				ts.song_requestor_wrap.style.height = (ts.album_td.offsetHeight + 1) + "px";
+				ts.song_requestor_fx = fx.make(fx.CSSNumeric, [ ts.song_requestor, 250, "marginTop", "px" ]);
+				ts.song_requestor_fx.height = ts.song_requestor.offsetHeight;
+				ts.song_requestor_fx.set(-ts.song_requestor_fx.height);
+				ts.indicator_fx = fx.make(fx.BackgroundPosY, [ ts.indicator, 250 ]);
+			}
+			ts.album_name = createEl("div", { "class": "timeline_album_title", "textContent": ts.p.album_name }, ts.album_td);
 			
 			ts.tr3 = createEl("tr", {});
 			ts.tr3_fx = fx.make(fx.OpacityRemoval, [ ts.tr3, ts.parent.el, 500 ]);
 			ts.tr3_fx.set(1);
 			ts.artist_td = createEl("td", { "class": "timeline_td timeline_artist_td" }, ts.tr3);
 			Artist.allArtistToHTML(ts.p.artists, ts.artist_td);
-			
-			// TODO: requested by drop-down
 		
 			fx_votebkg_x = fx.make(fx.BackgroundPosX, [ ts.song_td, 300 ]);
 			fx_votebkg_x.set(-votebkg_width);
@@ -501,6 +516,10 @@ function EdiTheme() {
 				fx_votebkg_x.stop();
 				fx_votebkg_x.duration = 300;
 				fx_votebkg_x.start(-votebkg_width + ts.song_td.offsetWidth + 11);
+				if (ts.song_requestor) {
+					ts.song_requestor_fx.start(0);
+					ts.indicator_fx.start(-22 + ts.album_td.offsetHeight);
+				}
 			}
 		};
 
@@ -509,6 +528,10 @@ function EdiTheme() {
 				fx_votebkg_x.stop();
 				fx_votebkg_x.duration = 300;
 				fx_votebkg_x.start(-votebkg_width);
+				if (ts.song_requestor) {
+					ts.song_requestor_fx.start(-ts.song_requestor_fx.height - 1);
+					ts.indicator_fx.start(-22);
+				}
 			}
 		};
 
@@ -588,11 +611,12 @@ function EdiTheme() {
 		var table = createEl("table", { "class": "nowplaying_table", "cellspacing": 0 });
 		
 		var tr = createEl("tr", {}, table);
-		if (!json || (json.song_data && json.song_data[0].album_art)) {
-			table.album_art = createEl("td", { "class": "nowplaying_album_art", "rowspan": 4 }, tr);
-			if (json && json.song_data && json.song_data[0].album_art) {
-				table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": json.song_data[0].album_art }, table.album_art);
-			}
+		table.album_art = createEl("td", { "class": "nowplaying_album_art", "rowspan": 4 }, tr);
+		if (json && json.album_art) {
+			table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": json.album_art }, table.album_art);
+		}
+		else {
+			table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": "images/blank.png" }, table.album_art);
 		}
 		table.song_title = createEl("td", { "class": "nowplaying_song_title" }, tr);
 		table.song_rating = createEl("td", { "class": "nowplaying_song_rating" }, tr);
@@ -602,12 +626,13 @@ function EdiTheme() {
 		table.album_rating = createEl("td", { "class": "nowplaying_album_rating" }, tr);
 		
 		tr = createEl("tr", {}, table);
-		table.artist_name = createEl("td", { "class": "nowplaying_arist_name", "colspan": 2 }, tr);
+		table.artist_name = createEl("td", { "class": "nowplaying_artist_name", "colspan": 2 }, tr);
 		
 		tr = createEl("tr", {}, table);
 		table.url = createEl("td", { "class": "nowplaying_url" }, tr);
 		table.votes = createEl("td", { "class": "nowplaying_votes" }, tr);
 		
+		var urlneedsfill = false;
 		if (json) {
 			// songs
 			if (json.song_title) table.song_title.textContent = json.song_title;
@@ -621,10 +646,14 @@ function EdiTheme() {
 				table.album_rating.appendChild(event.album_rating.el);
 			}
 			if (json.artists) Artist.allArtistToHTML(json.artists, table.artist_name);
-			if (json.song_url && (json.song_url.length > 0)) createEl("a", { "href": json.song_url, "textContent": json.song_url_text }, table.url);
+			if (json.song_url && (json.song_url.length > 0)) {
+				createEl("a", { "href": json.song_url, "textContent": json.song_url_text }, table.url);
+				urlneedsfill = false;
+			}
 			if (json.elec_votes) {
 				if (json.elec_votes > 1) table.votes.textContent = json.elec_votes + " " + _l("votes");
 				else table.votes.textContent = json.elec_votes + " " + _l("vote");
+				urlneedsfill = false;
 			}
 			if (json.elec_isrequest && ((json.elec_isrequest == 1) || (json.elec_isrequest == -1))) {
 				var requestor = json.song_requestor;
@@ -652,13 +681,29 @@ function EdiTheme() {
 			if (json.username) table.header_right.textContent = json.username;
 		}
 		
+		if (!urlneedsfill) {
+			createEl("img", { "src": "images/blank.png", "style": "width: 1px; height: 1px;" }, table.url);
+		}
+		
+		if (table.song_title.textContent > "") {
+			table.song_title.setAttribute("class", table.song_title.className + " nowplaying_fadeborder");
+			table.song_rating.setAttribute("class", table.song_rating.className + " nowplaying_fadeborder_r");
+		}
+		if (table.album_name.textContent > "") {
+			table.album_name.setAttribute("class", table.album_name.className + " nowplaying_fadeborder");
+			table.album_rating.setAttribute("class", table.album_rating.className + " nowplaying_fadeborder_r");
+		}
+		if (table.artist_name.textContent > "") {
+			table.artist_name.setAttribute("class", table.artist_name.className + " nowplaying_fadeborder");
+		}
+		
 		return table;
 	};
 
 	that.Extend.NowPanel = function(nowp) {
 		nowp.draw = function() {
-			nowp.indicator_v = createEl("div", { "class": "nowplaying_indicator_v", "textContent": " " }, nowp.container);
-			nowp.indicator_h = createEl("div", { "class": "nowplaying_indicator_h", "textContent": " " }, nowp.container);
+			nowp.indicator_v = createEl("div", { "class": "nowplaying_indicator_v nowplaying_indicator_v_normal", "textContent": " " }, nowp.container);
+			nowp.indicator_h = createEl("div", { "class": "nowplaying_indicator_h nowplaying_indicator_h_normal", "textContent": " " }, nowp.container);
 			nowp.header_text = createEl("div", { "class": "nowplaying_header_text" }, nowp.container);
 			nowp.header_reqby = createEl("div", { "class": "nowplaying_header_reqby", "textContent": " " }, nowp.container);
 			nowp.el = createEl("div", { "class": "nowplaying_wrapper" }, nowp.container);
@@ -670,6 +715,21 @@ function EdiTheme() {
 		
 		nowp.changeReqBy = function(text) {
 			nowp.header_reqby.textContent = text
+		};
+		
+		nowp.changeIsRequest = function(elec_isrequest) {
+			if (elec_isrequest == 1) {
+				nowp.indicator_v.setAttribute("class", "nowplaying_indicator_v nowplaying_indicator_v_request");
+				nowp.indicator_h.setAttribute("class", "nowplaying_indicator_h nowplaying_indicator_h_request");
+			}
+			else if (elec_isrequest < 0) {
+				nowp.indicator_v.setAttribute("class", "nowplaying_indicator_v nowplaying_indicator_v_conflict");
+				nowp.indicator_h.setAttribute("class", "nowplaying_indicator_h nowplaying_indicator_h_conflict");
+			}
+			else {
+				nowp.indicator_v.setAttribute("class", "nowplaying_indicator_v nowplaying_indicator_v_normal");
+				nowp.indicator_h.setAttribute("class", "nowplaying_indicator_h nowplaying_indicator_h_normal");
+			}
 		};
 	};
 	
@@ -895,7 +955,7 @@ function EdiTheme() {
 			row.appendChild(menup.td_news);
 			
 			menup.td_user = createEl("td", { "class": "menu_td_user" });
-			menup.avatar = createEl("img", { "class": "menu_avatar", "src": "images/blank_avatar.png" });
+			menup.avatar = createEl("img", { "class": "menu_avatar", "src": "images/blank.png" });
 			menup.td_user.appendChild(menup.avatar);
 			menup.username = createEl("span", { "class": "menu_username" });
 			menup.loginreg = createEl("span", { "class": "menu_loginreg" });
@@ -1525,6 +1585,15 @@ function EdiTheme() {
 	// /*****************************************************************************
 	// GRAPH MASKING FUNCTIONS
 	// *****************************************************************************/
+	
+	that.graphDefs = function(svgel, defs) {
+		var usergradient = svg.makeGradient("linear", "Rating_usergradient", "0%", "0%", "0%", "100%", "pad");
+		usergradient.appendChild(svg.makeStop("15%", "#b9e0ff", "1"));
+		usergradient.appendChild(svg.makeStop("50%", "#8bccff", "1"));
+		usergradient.appendChild(svg.makeStop("85%", "#8bccff", "1"));
+		usergradient.appendChild(svg.makeStop("100%", "#76add8", "1"));
+		defs.appendChild(usergradient);
+	};
 	
 	that.RatingHistogramMask = function(graph, mask) {
 		mask.appendChild(svg.makeRect(0, 0, graph.width, graph.height, { fill: "url(#Rating_usergradient)" }));

@@ -7,7 +7,7 @@ function UserControl() {
 		user_id: 1,
 		username: "Anonymous",
 		user_new_privmsg: 0,
-		user_avatar: "images/avatar_blank.png",
+		user_avatar: "images/blank.png",
 		radio_lastnews: -1,
 		radio_statrestricted: 0,
 		radio_perks: 0,

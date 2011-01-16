@@ -93,38 +93,7 @@ function Edi(container) {
 		}
 		return false;
 	};
-	
-	that.loadStage1 = function() {
-		that.loadExternalFile("skins_r" + BUILDNUM + "/" + themename + "/" + themename + ".css", "css", false);
-		that.loadExternalFile("skins_r" + BUILDNUM + "/" + themename + "/" + themename + ".js", "js", that.loadStage2);
-	};
-	
-	that.loadStage2 = function() {
-		if (typeof(EdiTheme) != "function") {
-			themename = "RWClassic";
-			loadStage1();
-			return;
-		}
-		that.themeobj = EdiTheme();
-		
-		that.loadLayouts();
-		layouts['default'] = EdiLayout([ [ panels.MenuPanel ], [ panels.TimelinePanel, panels.NowPanel ], [ false, panels.MainMPI ] ], "Default Layout", that);
 
-		var svgdefs = svg.make( { style: "position: absolute;", "width": 0, "height": 0 } );
-		var defs = svg.makeEl("defs");
-		if (theme) theme = that.themeobj;
-		that.themeobj.allDefs(svgdefs, defs);
-		svgdefs.appendChild(defs);
-		container.appendChild(svgdefs);
-		
-		layouts[layoutname].sizeLayout();
-		layouts[layoutname].drawGrid(container);
-		if (that.initcallback != false) {
-			that.initcallback();
-			that.initcallback = false;
-		}
-	};
-	
 	that.init = function() {
 		prefs.addPref("edi", { name: "language", defaultvalue: "en_CA", type: "dropdown", options: [ { value: "en_CA", option: "English (Canada)" } ], refresh: true });
 		prefs.addPref("edi", { hidden: true, name: "theme", defaultvalue: "RWClassic", type: "dropdown", options: [ { value: "RWClassic", option: "Rainwave 3" } ], refresh: true });
@@ -135,7 +104,24 @@ function Edi(container) {
 		var newlang = prefs.p.edi.language.value;
 		if (newlang) language = newlang;
 		
-		that.loadExternalFile("lang_r" + BUILDNUM + "/" + language + ".js", "js", that.loadStage1);
+		that.themeobj = EdiTheme();
+		theme = that.themeobj;
+		
+		that.loadLayouts();
+		layouts['default'] = EdiLayout([ [ panels.MenuPanel ], [ panels.TimelinePanel, panels.NowPanel ], [ false, panels.MainMPI ] ], "Default Layout", that);
+
+		var svgdefs = svg.make( { style: "position: absolute;", "width": 0, "height": 0 } );
+		var defs = svg.makeEl("defs");
+		that.themeobj.allDefs(svgdefs, defs);
+		svgdefs.appendChild(defs);
+		container.appendChild(svgdefs);
+		
+		layouts[layoutname].sizeLayout();
+		layouts[layoutname].drawGrid(container);
+		if (that.initcallback != false) {
+			that.initcallback();
+			that.initcallback = false;
+		}
 	}
 	
 	setInterval(that.urlChangeDetect, 200);

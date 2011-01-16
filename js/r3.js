@@ -95,6 +95,8 @@ function drawAboutScreen(div) {
 }
 
 function init() {
+	var errorcontrol = ErrorControl();
+
 	body = document.getElementById("body");
 	body.appendChild(fittextdiv);
 	ajax = LyreAJAX();
@@ -146,5 +148,4 @@ function init() {
 	prefs.addPref("help", { name: "visited", defaultvalue: false, hidden: true });
 }
 
-
-window.addEventListener('load', init, false);
+window.addEventListener('load', init, true);
