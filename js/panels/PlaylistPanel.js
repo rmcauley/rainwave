@@ -230,7 +230,6 @@ panels.PlaylistPanel = {
 			log.log("PlayP", 0, "# Divs: " + opendivs.length);
 			var div = document.createElement("div");
 			div.setAttribute("class", "pl_opendiv");
-			div.style.width = "100%";
 			that.appendOpenDiv(div);
 			opendivs.push({ "div": div, "type": type, "id": id });
 			return opendivs.length - 1;

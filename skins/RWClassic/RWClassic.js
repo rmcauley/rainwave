@@ -132,6 +132,7 @@ function EdiTheme() {
 			ro.site = createEl("div", { "class": "rating_site" }, ro.el);
 			ro.site_bar = createEl("div", { "class": "rating_site_bar" }, ro.site);
 			ro.grid = createEl("img", { "src": skindir + "/images/rating_grid.png", "class": "rating_grid" }, ro.el);
+			ro.mousecatch = ro.grid;
 			
 			fx_user = fx.make(fx.UserRating, [ ro, 250 ]);
 			fx_site = fx.make(fx.SiteRating, [ ro, 250 ]);
@@ -154,14 +155,38 @@ function EdiTheme() {
 		};
 
 		// ro function required by Edi.  Return the rating here.
-		// Edi will filter for the 0.5 stepping, and the API won't allow anything but 0.5 steps, so don't try and be cute. :)
+		// Edi will round for the 0.5 stepping and clamp < 1.0 or > 5.0, no need to do that here.
 		ro.userCoord = function(evt) {
-			// TODO
+			var x = 0;
+			var y = 0;
+			if (evt.offsetX) {
+				x = evt.offsetX;
+				y = evt.offsetY;
+			}
+			else if (evt.layerX) {
+				x = evt.layerX;
+				y = evt.layerY;
+			}
+			// This normalizes the slant to the same place regardless of Y
+			x = x - y;
+			
+			if ((x > 53) && (x < 61)) {
+				ro.favMouseOver();
+			}
+			else if (ro.favhover) {
+				ro.favMouseOut();
+			}
+			
+			if (x > 53) return 0;			
+			return (x / 10);
 		};
 
 		// ro function required by Edi.  State: 2 = mouseover, 1 = favourite, 0 = not favourite
 		ro.favChange = function(state) {
-			if (state == 2) fx_fav.start(0.70)
+			if (state == 2) {
+				fx_fav.start(0.70)
+				ro.favhover = true;
+			}
 			else if (state) fx_fav.start(1);
 			else fx_fav.start(0);
 		};

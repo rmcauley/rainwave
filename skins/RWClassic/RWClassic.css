@@ -345,8 +345,8 @@ div.pl_ad_albumhdr {
 }
 
 div.pl_odholder {
-	width: 100%;
-	overflow: scroll;
+	height: 100%;
+	overflow: auto;
 }
 
 table.pl_songlist {

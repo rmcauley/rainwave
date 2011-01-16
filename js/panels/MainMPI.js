@@ -33,6 +33,10 @@ panels.MainMPI = {
 			for (var i in savedpanels) {
 				that.addPanel(i);
 			}
+			// we needs tabs to have contents to measure the tab height, which is why we delay drawing and sizing divs until this point
+			that.tabheight = that.tabs.el.offsetHeight;
+			that.postDraw();
+			
 			var startfocused = false;
 			for (var i in startpanels) {
 				if (savedpanels[i]) {
@@ -49,10 +53,6 @@ panels.MainMPI = {
 				that.addPanel("LogPanel");
 				if (startpanels.LogPanel) that.initPanel("LogPanel", false);
 			}
-			that.tabheight = that.tabs.el.offsetHeight;
-			// we needs tabs to have contents to measure the tab heightz, which is why we delay drawing and sizing divs until this point
-			that.postDraw();
-			for (i in that.panels) that.divSize(that.panels[i].container);
 			if (startpanels[lastpanel]) that.focusPanel(lastpanel);
 		};
 		
@@ -97,6 +97,7 @@ panels.MainMPI = {
 			that.panels[panel.intitle].container.style.top = "-5000px";
 			container.appendChild(mpi_container);
 			that.panels[panel.intitle].init();
+			that.divSize(that.panels[panel.intitle].container);
 			//if (that.panels[panel.intitle].onLoad) that.panels[i].onLoad();
 			that.panels[panel.intitle].title = panels[panel.intitle].title;
 			that.tabs.enableTab(panel.intitle, animate);
