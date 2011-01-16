@@ -54,10 +54,6 @@ function EdiTheme() {
 	
 	that.Extend = {};
 
-	that.allDefs = function(svgel, defs) {
-		that.graphDefs(svgel, defs);
-	};
-
 	/*****************************************************************************
 	  EDI BORDERS
 	  
@@ -1179,15 +1175,13 @@ function EdiTheme() {
 			div.albumnametd.setAttribute("class", "pl_ad_albumnametd");
 			div.albumnametd.setAttribute("colspan", 2);
 			
+			div.albumrating = Rating({ category: "album", id: json.album_id, userrating: json.album_rating_user, siterating: json.album_rating_avg, favourite: json.album_favourite, scale: 1.2, register: true });
+			div.albumnametd.appendChild(div.albumrating.el);
+			
 			div.albumname = document.createElement("div");
 			div.albumname.setAttribute("class", "pl_ad_albumname");
 			div.albumname.textContent = json.album_name;
 			div.albumnametd.appendChild(div.albumname);
-			
-			div.albumratingsvg = svg.make({ "class": "pl_ad_albumrating", "width": that.Rating_width * 1.5, "height": svg.em * 2 });
-			div.albumrating = Rating({ category: "album", id: json.album_id, userrating: json.album_rating_user, siterating: json.album_rating_avg, favourite: json.album_favourite, scale: 1.2, register: true });
-			div.albumratingsvg.appendChild(div.albumrating.el);
-			div.albumnametd.appendChild(div.albumratingsvg);
 			
 			tr.appendChild(div.albumnametd);
 			div.hdrtable.appendChild(tr);
@@ -1196,7 +1190,7 @@ function EdiTheme() {
 			div.albumdetailtd = document.createElement("td");
 			div.albumdetailtd.setAttribute("class", "pl_ad_albumdetailtd");
 			
-			if (json.album_rating_count >= 2) {
+			if ((json.album_rating_count >= 2) && svg) {
 				var gr = graph.makeSVG(graph.RatingHistogram, that.RatingHistogramMask, 200, 120 - (svg.em * 3), { maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnonumbers: true, minx: 0.5, miny: true, padx: 10, raw: json.album_rating_histogram });
 				//var gr = graph.makeSVG(graph.RatingHistogram, that.RatingHistogramMask, 200, 120 - (svg.em * 3), { maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnonumbers: true, minx: 0.5, miny: true, padx: 10, raw: { "1.0": 53, "1.5": 84, "2.0": 150, "2.5": 200, "3.0": 250, "3.5": 300, "4.0": 350, "4.5": 400, "5.0": 521 }});
 				gr.svg.setAttribute("class", "pl_ad_ratinghisto");
@@ -1242,22 +1236,13 @@ function EdiTheme() {
 				stats.appendChild(tmp);
 			}
 			div.albumdetailtd.appendChild(stats);
-			
 			tr.appendChild(div.albumdetailtd);
 			
-			div.albumarttd = document.createElement("td");
-			div.albumarttd.setAttribute("class", "pl_ad_albumarttd");
-			div.albumarttd.style.width = "135px";
-			div.albumartsvg = svg.make({ width: 120, height: 120 });
-			div.albumartsvg.setAttribute("class", "pl_ad_albumart");
-			div.albumartsvg.appendChild(svg.makeRect(0, 0, 120, 120, { "fill": "#000000", "stroke-width": 1, "stroke": "#000000" }));
-			div.albumart = svg.makeImage("albumart/" + json.album_id + "-120.jpg", 0, 0, 120, 120, { "stroke": "#333333", "stroke-width": 2, "preserveAspectRatio": "xMidYMid meet" });
-			//div.albumart.setAttribute("preserveAspectRatio", "xMidYMid meet");
-			//div.albumart.setAttribute("src", "albumart/" + json.album_id + "-240.jpg");
-			div.albumartsvg.appendChild(div.albumart)
-			div.albumarttd.appendChild(div.albumartsvg);
+			if (json.album_art) {
+				div.albumarttd = createEl("td", { "class": "pl_ad_albumart_td" }, tr);
+				createEl("img", { "src": json.album_art, "class": "pl_ad_albumart" }, div.albumarttd);
+			}
 			
-			tr.appendChild(div.albumarttd);
 			div.hdrtable.appendChild(tr);
 			div.appendChild(div.hdrtable);
 			

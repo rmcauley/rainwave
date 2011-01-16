@@ -297,7 +297,7 @@ var Help = function() {
 		var x = 0;
 		var y = 0;
 		if (!el) return { "x": x, "y": y };
-		if (svg.isElSVG(el)) {
+		if (svg.capable && svg.isElSVG(el)) {
 			var m = el.getScreenCTM();
 			x = Math.round(m.e);
 			y = Math.round(m.f);

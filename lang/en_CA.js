@@ -120,23 +120,23 @@ var lang = new function() {
 	
 	/* Playlist Sentences */
 	
-	this.pl_oncooldown = "<span class='pl_oncooldown'>... is on cooldown for <b>";
+	this.pl_oncooldown = "<span class='pl_oncooldown'>On cooldown for <b>";
 	this.pl_oncooldown2 = "</b>.</span>";
-	this.pl_ranks = "... ranks <b>";
+	this.pl_ranks = "Ranks <b>";
 	this.pl_ranks2 = "</b> in globals ratings.";
-	this.pl_favourited = "... is favourited by <b>";
+	this.pl_favourited = "Favourited by <b>";
 	this.pl_favourited2 = "</b>";
 	this.pl_favourited3 = ".";
-	this.pl_wins = "... wins <b>";
-	this.pl_wins2 = "%</b> of elections it's in, ranking <b>";
+	this.pl_wins = "Has won <b>";
+	this.pl_wins2 = "%</b> of the elections it's in, ranking <b>";
 	this.pl_wins3 = "</b>.";
-	this.pl_requested = "... has been requested <b>";
+	this.pl_requested = "Has been requested <b>";
 	this.pl_requested2 = "</b> times, ranking <b>";
 	this.pl_requested3 = "</b>.";
-	this.pl_genre = "... belongs to the ";
-	this.pl_genre2 = " cooldown group.";
-	this.pl_genres = "... has songs belonging to the ";
-	this.pl_genres2 = " cooldown groups.";
+	this.pl_genre = "Cooldown group: ";
+	this.pl_genre2 = ".";
+	this.pl_genres = "Cooldown groups: ";
+	this.pl_genres2 = ".";
 	
 	/* Preferences */
 	

@@ -1,6 +1,24 @@
 function SVGHelper(workel) {
-	if (!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1")) return;
-
+	var that = {};
+	that.em = 0;
+	that.capable = false;
+	
+	that.measureEm = function() {
+		var emm = document.createElement('span');
+		emm.setAttribute("style", "position: absolute; left: -400px");
+		emm.textContent = "M";
+		workel.appendChild(emm);
+		that.em = emm.offsetWidth;
+		workel.removeChild(emm);
+	};
+	
+	that.measureEm();
+	
+	if (!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1")) {
+		return that;
+	}
+	that.capable = true;
+	
 	var ns = "http://www.w3.org/2000/svg";
 	var xlinkns = "http://www.w3.org/1999/xlink";
 	var xmlns = "http://www.w3.org/2000/xmlns/";
@@ -11,18 +29,6 @@ function SVGHelper(workel) {
 	else if (RegExp(" Safari/").test(navigator.userAgent)) webkit = true;
 	
 	var linkcount = 0;
-	
-	var that = {};
-	that.em = 0;
-	
-	that.measureEm = function() {
-		var emm = document.createElement('span');
-		emm.setAttribute("style", "position: absolute; left: -400px");
-		emm.textContent = "M";
-		workel.appendChild(emm);
-		that.em = emm.offsetWidth;
-		workel.removeChild(emm);
-	};
 	
 	that.setAttribs = function(el, attribs) {
 		if ((typeof(attribs) == "object") || (typeof(attribs) == "array")) {
@@ -113,8 +119,6 @@ function SVGHelper(workel) {
 		if (el.namespaceURI.indexOf("svg") > 0) return true
 		return false;
 	};
-	
-	that.measureEm();
 	
 	return that;
 }

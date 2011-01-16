@@ -303,7 +303,7 @@ svg.pl_ad_albumrating {
 	margin-right: 100px;
 }
 
-td.pl_ad_albumarttd, td.pl_ad_albumdetailtd {
+td.pl_ad_albumart_td, td.pl_ad_albumdetailtd {
 	background: #142027 url('images/pl_ad_hdr_bkg.png') repeat-x;
 	border-top: 2px solid black;
 }
@@ -312,15 +312,18 @@ td.pl_ad_albumdetailtd {
 	border-left: 2px solid black;
 }
 
-td.pl_ad_albumarttd {
+td.pl_ad_albumart_td {
 	text-align: center;
-	width: 180px;
+	width: 130px;
+	padding-right: 5px;
 }
 
-.pl_ad_albumart {
+img.pl_ad_albumart {
 	border: 2px solid black;
 	margin-left: .5em;
 	margin-top: -2em;
+	max-height: 120px;
+	max-width: 120px;
 }
 
 svg.pl_ad_ratinghisto {
@@ -332,12 +335,16 @@ div.pl_ad_albumname {
 	font-size: 1.4em;
 	font-weight: bold;
 	padding:  0.1em 0px .2em .2em;
-	float: left;
 }
 
 td.pl_ad_albumnametd {
 	background: #142027 url('images/pl_ad_albumname_bkg.png') top right;
-	text-align: right;
+}
+
+td.pl_ad_albumnametd .rating {
+	float: right;
+	margin-right: 150px;
+	margin-top: 6px;
 }
 
 div.pl_ad_albumhdr {
@@ -407,8 +414,12 @@ td.pl_songlist_oneshot {
 	width: 2em;
 }
 
-span.oncooldown {
-	color: #7ecfff;
+td.pl_albumart_td {
+	width: 135px;
+}
+
+td.pl_ad_albumdetailtd {
+	padding-left: 5px;
 }
 
 div.request {

@@ -109,12 +109,6 @@ function Edi(container) {
 		
 		that.loadLayouts();
 		layouts['default'] = EdiLayout([ [ panels.MenuPanel ], [ panels.TimelinePanel, panels.NowPanel ], [ false, panels.MainMPI ] ], "Default Layout", that);
-
-		var svgdefs = svg.make( { style: "position: absolute;", "width": 0, "height": 0 } );
-		var defs = svg.makeEl("defs");
-		that.themeobj.allDefs(svgdefs, defs);
-		svgdefs.appendChild(defs);
-		container.appendChild(svgdefs);
 		
 		layouts[layoutname].sizeLayout();
 		layouts[layoutname].drawGrid(container);

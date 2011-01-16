@@ -1,6 +1,15 @@
 function R3Graph() {
+	if (!svg.capable) return false;
 	var that = {};
 	var gid = 0;
+	
+	that.init = function() {
+		var svgdefs = svg.make( { style: "position: absolute;", "width": 0, "height": 0 } );
+		var defs = svg.makeEl("defs");
+		theme.graphDefs(svgdefs, defs);
+		svgdefs.appendChild(defs);
+		document.getElementById("body").appendChild(svgdefs);
+	};
 	
 	that.extend = function(name, func) {
 		that[name] = func;

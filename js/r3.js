@@ -144,6 +144,7 @@ function init() {
 	
 	edi.initcallback = startSync;
 	edi.init();
+	if (graph) graph.init(); // must be done after the theme object is available
 	
 	prefs.addPref("help", { name: "visited", defaultvalue: false, hidden: true });
 }

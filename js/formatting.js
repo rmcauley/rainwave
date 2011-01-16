@@ -23,15 +23,15 @@ function formatHumanTime(seconds, fulltime, disableseconds) {
 }
 
 function linkify(el, link2) {
-	if (svg.isElSVG(el)) {
+/*	if (svg.isElSVG(el)) {
 		if (link2) svg.linkify(el);
 		else el.style.cursor = "pointer";
 	}
-	else {
+	else {*/
 		//el.style.cursor = "pointer";
 		if (link2) el.setAttribute("class", el.getAttribute("class") + " link2");
 		else el.setAttribute("class", el.getAttribute("class") + " link");
-	}
+	//}
 }
 
 function formatTime(seconds) {
