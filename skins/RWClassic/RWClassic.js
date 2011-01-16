@@ -971,100 +971,48 @@ function EdiTheme() {
 	*****************************************************************************/
 
 	that.Extend.MainMPI = function(mpi) {
-		mpi.draw = function() {
+		mpi.postDraw = function() {
 			mpi.bkg = document.createElement("div");
-			mpi.divPositionAndSize(mpi.bkg);
+			mpi.divSize(mpi.bkg);
+			mpi.divPosition(mpi.bkg);
 			mpi.bkg.style.zIndex = "1";
-			mpi.bkg.style.top = mpi.panelsroom + "px";
+			mpi.bkg.style.top = mpi.tabheight + "px";
 			mpi.container.appendChild(mpi.bkg);
 		};
 		
 		return mpi;
 	};
-	
-	fx.extend("TabSize", function(object, duration) {
-		var tsfx = {};
-		tsfx.duration = duration;
-		tsfx.update = function() {
-			object.setAttribute("d", "M" + (tsfx.now + 8) + ",0 H0 V" + that.MPI_MenuHeight + " H" + (tsfx.now + that.MPI_MenuHeight + 8) + " Z");
-		};
-			
-		return tsfx;
-	});
-	
 
 	that.TabBar = function(container, width) {
 		var tabs = {};
 		tabs.container = container;
 		tabs.width = width;
-		tabs.svgmenu = svg.make( { width: tabs.width, height: that.MPI_MenuHeight + 2 } );
-		tabs.hr = svg.makeRect(0, that.MPI_MenuHeight, tabs.width, 2, { fill: that.indicnormal } );
-		tabs.svgmenu.appendChild(tabs.hr);
-		tabs.container.appendChild(tabs.svgmenu);
+		tabs.el = createEl("ul", { "class": "tabs" }, container);
 		tabs.panels = {};
-
+		
 		tabs.addItem = function(panelname, title) {
-			var rightpad = 8;
-			var textpad = 5;
-			
 			tabs.panels[panelname] = {};
-			tabs.panels[panelname].group = svg.makeEl("g", { shape_rendering: "crispEdges", opacity: 0.7 } );
-			tabs.panels[panelname].fx_groupx = fx.make(fx.SVGTranslateX, [ tabs.panels[panelname].group, 350, 0 ] );
-			tabs.panels[panelname].textwidth = measureText(title);
-			tabs.panels[panelname].outline = svg.makeEl("path", { stroke_width : 1, stroke: that.indicnormal, fill: "black" } );
-			tabs.panels[panelname].fx_resize = fx.make(fx.TabSize, [ tabs.panels[panelname].outline, 250 ]);
-			tabs.panels[panelname].fx_resize.set(tabs.panels[panelname].textwidth);
-			tabs.panels[panelname].group.appendChild(tabs.panels[panelname].outline);
-			tabs.panels[panelname].el = svg.makeEl("text", { x: textpad, y: svg.em + 4, fill: that.textcolor } );
-			tabs.panels[panelname].el.textContent = title;
-			tabs.panels[panelname].group.appendChild(tabs.panels[panelname].el);
-			tabs.panels[panelname].group.panelname = panelname;
-			tabs.panels[panelname].group.style.cursor = "pointer";
-			tabs.panels[panelname].group.addEventListener("mouseover", tabs.mouseOverTab, true);
-			tabs.panels[panelname].group.addEventListener("mouseout", tabs.mouseOutTab, true);
 			tabs.panels[panelname].focused = false;
 			tabs.panels[panelname].enabled = false;
-			tabs.svgmenu.appendChild(tabs.panels[panelname].group);
-			tabs.positionTabs(false);
-		};
-		
-		tabs.positionTabs = function(animate) {
-			var i;
-			var runx = 0;
-			for (i in tabs.panels) {
-				tabs.panels[i].fx_groupx.start(runx);
-				runx += tabs.panels[i].textwidth + 8 + that.MPI_MenuHeight;
-			}
+			tabs.panels[panelname].el = createEl("li", { "textContent": title }, tabs.el);
 		};
 		
 		tabs.enableTab = function(panelname, animate) {
 			tabs.panels[panelname].enabled = true;
-			tabs.panels[panelname].group.setAttribute("opacity", 1.0);
-			tabs.positionTabs(animate);
+			tabs.panels[panelname].el.style.opacity = 1;
 		};
 
 		tabs.focusTab = function(panelname) {
 			if (tabs.panels[panelname].focused == true) {
-				tabs.panels[panelname].outline.setAttribute("fill", that.indicnormal);
+				tabs.panels[panelname].el.setAttribute("class", "tab_focused");
 			}
 			else {
-				tabs.panels[panelname].outline.setAttribute("fill", "black");
+				tabs.panels[panelname].el.setAttribute("class", "");
 			}
 		};
 
-		tabs.mouseOverTab = function(evt) {
-			tabs.panels[evt.currentTarget.panelname].outline.setAttribute("fill", that.indicnormalbright)
-		};
-
-		tabs.mouseOutTab = function(evt) {
-			tabs.focusTab(evt.currentTarget.panelname);
-		};
-		
 		tabs.changeTitle = function(panelname, newtitle) {
-			tabs.panels[panelname].textwidth = measureText(newtitle);
-			tabs.panels[panelname].fx_resize.start(tabs.panels[panelname].textwidth);
 			tabs.panels[panelname].el.textContent = newtitle;
-			tabs.positionTabs(true);
 		};
 		
 		return tabs;
@@ -1088,53 +1036,12 @@ function EdiTheme() {
 		
 		pp.draw = function() {
 			var leftwidth = svg.em * 30;
-		
-			el = document.createElement("table");
-			pp.width = pp.container.offsetWidth;
-			el.setAttribute("class", "pl_table");
-			el.style.tableLayout = "fixed";
-			el.style.height = pp.container.offsetHeight + "px";
-			el.style.width = "100%";
-			
-			tr = document.createElement("tr");
-
-			inlinesearchc = document.createElement("div");
-			inlinesearchc.setAttribute("class", "pl_searchc");
-			var tempspan = document.createElement("span");
-			tempspan.textContent = "Search: ";
-			inlinesearchc.appendChild(tempspan);
-			inlinesearch = document.createElement("span");
-			inlinesearch.textContent = "";
-			inlinesearch.setAttribute("class", "pl_search");
-			inlinesearchc.appendChild(inlinesearch);
-			pp.container.appendChild(inlinesearchc);
-
-			listtd = document.createElement("td");
-			listtd.setAttribute("id", "pl_albumlist_td");
-			listtd.setAttribute("class", "pl_listtd");
-			listtd.style.width = leftwidth + "px";
-			
-			albumlistc = document.createElement("div");
-			albumlistc.style.overflow = "scroll";
-			albumlistc.style.height = pp.container.offsetHeight + "px";
-			albumlist = document.createElement("table");
-			albumlist.setAttribute("class", "pl_albumlist");
-			albumlistc.appendChild(albumlist);
-			listtd.appendChild(albumlistc);
-			tr.appendChild(listtd);
-			
-			maintd = document.createElement("td");
-			maintd.setAttribute("class", "pl_maintd");
-			odholder = document.createElement("div");
-			odholder.setAttribute("class", "pl_odholder");
-			odholder.style.height = pp.container.offsetHeight + "px";
-			maintd.appendChild(odholder);
-			tr.appendChild(maintd);
-			
-			el.appendChild(tr);
-			
-			
-			pp.container.appendChild(el);
+			inlinesearchc = createEl("div", { "class": "pl_searchc" }, pp.container);
+			createEl("span", { "textContent": _l("searching:") }, inlinesearchc);
+			inlinesearch = createEl("span", { "class": "pl_search" }, inlinesearchc);
+			albumlistc = createEl("div", { "class": "pl_albumlistc" }, pp.container);
+			albumlist = createEl("table", { "class": "pl_albumlist" }, albumlistc);			
+			odholder = createEl("div", { "class": "pl_odholder" }, pp.container);
 		};
 		
 		pp.drawAlbumlistEntry = function(album) {
@@ -1165,8 +1072,7 @@ function EdiTheme() {
 		};
 		
 		pp.startSearchDraw = function() {
-			albumlistc.style.height = (pp.container.offsetHeight - (svg.em * 2)) + "px";
-			albumlistc.style.marginTop = (svg.em * 2) + "px";
+			albumlistc.style.paddingTop = (svg.em * 2) + "px";
 			inlinesearch.textContent = "";
 			inlinesearchc.style.display = "block";
 		};
@@ -1235,8 +1141,7 @@ function EdiTheme() {
 		
 		pp.clearInlineSearchDraw = function() {
 			inlinesearchc.style.display = "none";
-			albumlistc.style.height = pp.container.offsetHeight + "px";
-			albumlistc.style.marginTop = "0px";
+			albumlistc.style.paddingTop = "0px";
 		};
 	
 		pp.drawAlbum = function(div, json) {

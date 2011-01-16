@@ -28,7 +28,7 @@ body {
 h2 {
 	font-size: 1.2em;
 	font-weight: bold;
-	border-bottom: solid 1px #666666;
+	border-bottom: 1px solid #666666;
 	max-width: 80%;
 	padding: .2em;
 }
@@ -101,7 +101,7 @@ td div.textoverflow {
 
 .err_div {
 	background: #DD0000;
-	border: solid 1px #FF0000;
+	border: 1px solid #FF0000;
 	
 	background: -moz-linear-gradient(100% 100% 90deg, #660000, #DD0000);
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DD0000), to(#660000));
@@ -109,7 +109,7 @@ td div.textoverflow {
 
 .err_div_ok {
 	background: #1ca8e2;
-	border: solid 1px #43c8ff;
+	border: 1px solid #43c8ff;
 	
 	background: -moz-linear-gradient(100% 100% 90deg, #1694c8, #1ca8e2);
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#1ca8e2), to(#1694c8));
@@ -117,6 +117,35 @@ td div.textoverflow {
 
 .err_button {
 	cursor: pointer;
+}
+
+ul.tabs {
+	border-bottom: 2px solid #244093;
+	margin: 0;
+	padding: 0px;
+}
+
+ul.tabs li {
+	border: 1px solid #244093;
+	border-bottom: none;
+	display: inline;
+	padding: 0px 5px 0px 5px;	
+	cursor: pointer;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	user-select: none;
+}
+
+ul.tabs li.tab_focused {
+	background: #1f2b32;
+}
+
+ul.tabs li:hover {
+	background: #3c6dff;
+}
+
+ul.tabs li+li {
+	margin-left: 5px;
 }
 
 .EdiPanel {
@@ -136,15 +165,15 @@ td div.textoverflow {
 	padding-right: 20px;
 	cursor: pointer;
 	background: transparent;
-	border-right: solid 2px #244093;
+	border-right: 2px solid #244093;
 }
 
 #LogPanel_facilitylisttd ul li.LogPanel_active {
-	background-color: #244093; /* var(indicnormal); */
+	background-color: #244093;
 }
 
 #LogPanel_facilitylisttd ul li:hover {
-	background-color: #3c6dff; /* var(indicnormalbright); */
+	background-color: #3c6dff;
 }
 
 .Panel_LogPanel {
@@ -156,7 +185,7 @@ td div.textoverflow {
 }
 
 fieldset {
-	border-top: solid 1px #777777;
+	border-top: 1px solid #777777;
 	border-left: none;
 	border-right: none;
 	border-bottom: none;
@@ -182,28 +211,26 @@ td.pref_label {
 	width: 16.5em;
 }
 
-table.pl_table {
-	border-spacing: 0px;
-}
-
-td.pl_listtd {
-	border-right: solid 3px #244093;
-}
-
-td.pl_listtd div {
-	margin-top: 1px;
+div.pl_albumlistc {
+	width: 23em;
+	height: 100%;
+	border-right: 2px solid #244093;
+	float: left;
+	padding: 0px;
+	overflow: auto;
 }
 
 table.pl_albumlist {
 	margin: 0px;
 	padding: 0px;
-	border-spacing: 2px;
+	border-spacing: 0px;
 	table-layout: fixed;
 	width: 100%;
 }
 
 table.pl_albumlist td {
 	padding: 0px 0px 0px .2em;
+	border-top: 1px solid black;
 	border-bottom: 2px solid black;
 	background-color: transparent;
 	cursor: pointer;
@@ -226,7 +253,7 @@ table.pl_albumlist tr:hover td.pl_al_name{
 	margin-left: 0px;
 }
 
-tr.pl_highlight td.pl_al_name  {
+tr.pl_highlight td.pl_al_name {
 	background-color: #333333 !important;
 }
 
@@ -243,6 +270,8 @@ td.pl_al_name {
 td.pl_fav_true, td.pl_fav_false {
 	width: 5px !important;
 	cursor: pointer;
+	border-left: 3px solid black;
+	border-right: 2px solid black;
 }
 
 tr.pl_cooldown td.pl_al_rating, tr.pl_cooldown td.pl_fav_false {
@@ -276,11 +305,11 @@ svg.pl_ad_albumrating {
 
 td.pl_ad_albumarttd, td.pl_ad_albumdetailtd {
 	background: #142027 url('images/pl_ad_hdr_bkg.png') repeat-x;
-	border-top: solid 2px black;
+	border-top: 2px solid black;
 }
 
 td.pl_ad_albumdetailtd {
-	border-left: solid 2px black;
+	border-left: 2px solid black;
 }
 
 td.pl_ad_albumarttd {
@@ -289,7 +318,7 @@ td.pl_ad_albumarttd {
 }
 
 .pl_ad_albumart {
-	border: solid 2px #000000;
+	border: 2px solid black;
 	margin-left: .5em;
 	margin-top: -2em;
 }
@@ -312,7 +341,7 @@ td.pl_ad_albumnametd {
 }
 
 div.pl_ad_albumhdr {
-	border-bottom: solid 2px #000000;
+	border-bottom: 2px solid #000000;
 }
 
 div.pl_odholder {
@@ -330,7 +359,7 @@ table.pl_songlist {
 table.pl_songlist td {
 	padding-left: 2px;
 	padding-top: 1px;
-	border-bottom: solid 1px #3F667C;
+	border-bottom: 1px solid #3F667C;
 }
 
 tr.pl_songlist_tr_unavailable td {
@@ -339,7 +368,7 @@ tr.pl_songlist_tr_unavailable td {
 
 table.pl_songlist tr:hover td {
 	background: #3D484F;
-	border-bottom: solid 1px #7D94A1;
+	border-bottom: 1px solid #7D94A1;
 }
 
 td.pl_songlist_cooldown {
@@ -384,7 +413,7 @@ span.oncooldown {
 
 div.request {
 	margin: .2em;
-	border: solid 1px #333333;
+	border: 1px solid #333333;
 	width: 100%;
 	max-width: 35em;
 	padding: .2em;
@@ -436,14 +465,14 @@ div.request_cooldown {
 	float: right;
 	margin: 1em;
 	padding: .5em 1em;
-	border: solid 1px white;
+	border: 1px solid white;
 	-moz-border-radius: .5em;
 	border-radius: .5em;
 }
 
 .help_container {
 	background: rgb(0, 0, 0);
-	border: solid 1px #7f38ad;
+	border: 1px solid #7f38ad;
 	-moz-border-radius: .5em;
 	border-radius: .5em;
 	padding: 0.8em 0.5em 0.8em 0.8em;
@@ -470,7 +499,7 @@ div.request_cooldown {
 .help_header {
 	background: #6d2c96;
 	font-weight: bold;
-	border-bottom: solid 2px #ad4cea;
+	border-bottom: 2px solid #ad4cea;
 	padding: 0.1em 0.3em;
 }
 
@@ -501,11 +530,11 @@ table.about {
 
 table.about td {
 	padding-bottom: .1em;
-	border-bottom: solid 1px #8c55c5;
+	border-bottom: 1px solid #8c55c5;
 }
 
 .loginbox {
-	border: solid 1px #4575A7;
+	border: 1px solid #4575A7;
 	background: #152657;
 	padding: .3em;
 }
@@ -531,7 +560,7 @@ table.menu_table img {
 
 table.menu_table td {
 	padding: 2px 3px 2px 3px;
-	border-bottom: solid 1px #4575A7;
+	border-bottom: 1px solid #4575A7;
 	background: #000000;
 }
 
@@ -541,7 +570,7 @@ td.menu_td_station {
 
 ul.menu_select {
 	position: absolute;
-	border: solid 1px #4575A7;
+	border: 1px solid #4575A7;
 	border-left: none;
 	background: #000000;
 	z-index: -1;
@@ -579,7 +608,7 @@ td.menu_td_play img{
 }
 
 td.menu_td_download {
-	border-left: solid 1px #4575A7;
+	border-left: 1px solid #4575A7;
 	width: 60px;
 	text-align: center;
 }
@@ -602,21 +631,21 @@ table.menu_table td.menu_td_news {
 
 table.menu_table td.menu_td_help {
 	width: 6em;
-	border-left: solid 1px #ad4cea;
-	border-bottom: solid 1px #ad4cea;
+	border-left: 1px solid #ad4cea;
+	border-bottom: 1px solid #ad4cea;
 	background-color: #4f206d;
 	text-align: center;
 }
 
 td.menu_td_chat {
 	width: 6em;
-	border-left: solid 1px #4575A7;
+	border-left: 1px solid #4575A7;
 	text-align: center;
 }
 
 td.menu_td_forums {
 	width: 6em;
-	border-left: solid 1px #4575A7;
+	border-left: 1px solid #4575A7;
 	text-align: center;
 }
 
@@ -624,14 +653,14 @@ table.menu_table td.menu_td_cog {
 	width: 95px;
 	text-align: right;
 	background: #000000;
-	border-left: solid 1px #FFA200;
-	border-bottom: solid 1px #FFA200;
+	border-left: 1px solid #FFA200;
+	border-bottom: 1px solid #FFA200;
 }
 
 .COG_links {
 	text-align: right;
 	position: absolute;
-	border: solid 1px #FFA200;
+	border: 1px solid #FFA200;
 	border-right: none;
 	background: #000000;
 	width: 122px;
@@ -726,8 +755,8 @@ table.timeline_table {
 }
 
 table.timeline_table td {
-	border-bottom: solid 1px #000000;
-	border-left: solid 1px #000000;
+	border-bottom: 1px solid #000000;
+	border-left: 1px solid #000000;
 }
 
 td.timeline_header_indicator {

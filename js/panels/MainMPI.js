@@ -20,7 +20,6 @@ panels.MainMPI = {
 		that.panels = {};
 		that.focused = false;
 		that.bkg = false;
-		that.panelsroom = theme.MPI_MenuHeight + theme.MPI_MenuYPad;
 		that.tabs = false;
 		that.container = container;
 		var ucallbackid = false;
@@ -29,7 +28,6 @@ panels.MainMPI = {
 
 		that.init = function() {
 			that.panels = {};
-			that.draw();
 			that.tabs = theme.TabBar(container, container.offsetWidth);
 			
 			for (var i in savedpanels) {
@@ -51,18 +49,26 @@ panels.MainMPI = {
 				that.addPanel("LogPanel");
 				if (startpanels.LogPanel) that.initPanel("LogPanel", false);
 			}
+			that.tabheight = that.tabs.el.offsetHeight;
+			// we needs tabs to have contents to measure the tab heightz, which is why we delay drawing and sizing divs until this point
+			that.postDraw();
+			for (i in that.panels) that.divSize(that.panels[i].container);
 			if (startpanels[lastpanel]) that.focusPanel(lastpanel);
 		};
 		
-		that.divPositionAndSize = function(el) {
-			el.setAttribute("style", "z-index: 2; position: absolute; width: " + container.offsetWidth + "px; top: " + that.panelsroom + "px; height: " + (container.offsetHeight - that.panelsroom) + "px;");
+		that.divSize = function(el) {
+			el.style.width = container.offsetWidth + "px";
+			el.style.height = (container.offsetHeight - that.tabheight) + "px";
+		};
+		
+		that.divPosition = function(el) {
+			el.style.top = that.tabheight + "px";
 		};
 		
 		that.addPanel = function(panelname) {
 			if (!panels[panelname]) return;
 			var panel = panels[panelname];
 			if (typeof(that.tabs.panels[panel.intitle]) != "undefined") {
-				//that.focusPanel(panel.intitle);
 				return;
 			}
 			//try {
@@ -83,12 +89,11 @@ panels.MainMPI = {
 			if (that.panels[panel.intitle]) return;
 			that.panels[panel.intitle] = {};
 			log.log("MPI", 0, "Initializing " + panel.intitle);
-			var mpi_container = document.createElement("div");
+			var mpi_container = createEl("div", { "style": "z-index: 2; position: absolute;" });
 			var panelcl = panel.intitle;
 			panelcl = panelcl.replace(" ", "_");
 			mpi_container.className = "EdiPanel Panel_" + panelcl;
 			that.panels[panel.intitle] = panel.constructor(that, mpi_container);
-			that.divPositionAndSize(mpi_container);
 			that.panels[panel.intitle].container.style.top = "-5000px";
 			container.appendChild(mpi_container);
 			that.panels[panel.intitle].init();
@@ -117,7 +122,7 @@ panels.MainMPI = {
 				that.tabs.focusTab(that.focused);
 			}
 			that.focused = panelname;
-			that.panels[that.focused].container.style.top = that.panelsroom + "px";
+			that.panels[that.focused].container.style.top = that.tabheight + "px";
 			that.tabs.panels[that.focused].focused = true;
 			that.tabs.focusTab(that.focused);
 		};
