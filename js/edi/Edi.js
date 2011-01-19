@@ -112,10 +112,6 @@ function Edi(container) {
 		
 		layouts[layoutname].sizeLayout();
 		layouts[layoutname].drawGrid(container);
-		if (that.initcallback != false) {
-			that.initcallback();
-			that.initcallback = false;
-		}
 	}
 	
 	setInterval(that.urlChangeDetect, 200);

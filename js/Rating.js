@@ -26,18 +26,19 @@ function RatingUpdateControl() {
 	};
 	
 	that.songFavUpdate = function(result) {
-		result['category'] = "song";
+		result['fav_type'] = "song";
+		result['id'] = result['song_id'];
 		that.favUpdate(result);
 	};
 	
 	that.albumFavUpdate = function(result) {
-		result['category'] = "album";
+		result['fav_type'] = "album";
+		result['id'] = result['album_id'];
 		that.favUpdate(result);
 	};
 
 	that.favUpdate = function(result) {
 		log.log("RatingControl", 0, "Favourite: Result code " + result.code + " / " + result.text);
-		if (result.debug) log.log("RatingControl", 0, "PHP Debug: " + result.debug);
 		if (result.id) {
 			for (var i in callbacks) {
 				if ((callbacks[i].category == result.fav_type) && (callbacks[i].id == result.id)) {
@@ -81,8 +82,8 @@ function RatingUpdateControl() {
 	
 	//user.addCallback(that, that.loginUpdate, "tunedin");
 	ajax.addCallback(that, that.ratingUpdate, "rate_result");
-	ajax.addCallback(that, that.songFavUpdate, "song_fav_result");
-	ajax.addCallback(that, that.albumFavUpdate, "album_fav_result");
+	ajax.addCallback(that, that.songFavUpdate, "fav_song_result");
+	ajax.addCallback(that, that.albumFavUpdate, "fav_album_result");
 	ajax.addCallback(that, that.historyUpdate, "sched_history");
 
 	return that;
@@ -128,7 +129,7 @@ function Rating(p) {
 	};
 	
 	that.enable = function() {
-		that.ratable = true;
+		if (that.category == "song") that.ratable = true;
 	};
 	
 	that.disable = function() {
@@ -213,11 +214,13 @@ function Rating(p) {
 	
 	that.favMouseOver = function(evt) {
 		if (user.p.user_id <= 1) return;
+		that.favhover = true;
 		that.favChange(2);
 	};
 	
 	that.favMouseOut = function(evt) {
 		if (user.p.user_id <= 1) return;
+		that.favhover = false;
 		that.favChange(that.favourite);
 	};
 	
@@ -229,7 +232,10 @@ function Rating(p) {
 		if (user.p.user_id <= 1) return;
 		var setfav = that.favourite ? "false" : "true";
 		var category_id = that.category + "_id";
-		ajax.async_get("fav_" + that.category, { "fav": setfav, category_id: that.id });
+		var submithash = {};
+		submithash['fav'] = setfav;
+		submithash[that.category + "_id"] = that.id;
+		ajax.async_get("fav_" + that.category, submithash);
 	};
 	
 	that.draw();

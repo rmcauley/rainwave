@@ -61,11 +61,11 @@ function EdiTheme() {
 	*****************************************************************************/
 
 	that.borderVertical = function(border) {
-		border.el.appendChild(createEl("img", { "src": skindir + "/images/edi_border_vertical.png", "style": "width: 1px; height: 60%; padding-left: 6px;" }));
+		//border.el.appendChild(createEl("img", { "src": skindir + "/images/edi_border_vertical.png", "style": "width: 1px; height: 60%; padding-left: 6px;" }));
 	};
 
 	that.borderHorizontal = function(border) {
-		border.el.appendChild(createEl("img", { "src": skindir + "/images/edi_border_horizontal.png", "style": "width: 60%; height: 1px; vertical-align: top; margin-top: 6px;" }));
+		//border.el.appendChild(createEl("img", { "src": skindir + "/images/edi_border_horizontal.png", "style": "width: 60%; height: 1px; vertical-align: top; margin-top: 6px;" }));
 	};
 	
 	/*****************************************************************************
@@ -181,7 +181,6 @@ function EdiTheme() {
 		ro.favChange = function(state) {
 			if (state == 2) {
 				fx_fav.start(0.70)
-				ro.favhover = true;
 			}
 			else if (state) fx_fav.start(1);
 			else fx_fav.start(0);
@@ -224,15 +223,32 @@ function EdiTheme() {
 	that.drawTimelineTable = function(evt, text, indic) {
 		evt.el = createEl("table", { "class": "timeline_table", "cellspacing": 0 });
 		evt.el.style.width = evt.container.offsetWidth + "px";
-		var tr = createEl("tr", {}, evt.el);
-		evt.header_indicator = createEl("td", { "class": "timeline_header_indicator timeline_header_indicator_" + indic }, tr);
-		evt.header_td = createEl("td", { "class": "timeline_header timeline_header_" + indic }, tr);
+		evt.header_tr = createEl("tr", {}, evt.el);
+		evt.header_indicator = createEl("td", { "class": "timeline_header_indicator timeline_header_indicator_" + indic }, evt.header_tr);
+		evt.header_td = createEl("td", { "class": "timeline_header timeline_header_" + indic }, evt.header_tr);
 		evt.header_clock = createEl("div", { "class": "timeline_clock" }, evt.header_td);
 		evt.clock = evt.header_clock;
 		evt.header_text = createEl("span", { "class": "timeline_header_text", "textContent": text }, evt.header_td);
+		evt.showingheader = true;
 	}
 	
 	that.Extend.TimelineSkeleton = function(te) {
+		te.showHeader = function() {
+			if (!te.showingheader) {
+				te.showingheader = true;
+				te.el.insertBefore(te.header_tr, te.el.firstChild);
+				//te.recalculateHeight();
+			}
+		};
+		
+		te.hideHeader = function() {
+			if (te.showingheader) {
+				te.showingheader = false;
+				te.el.removeChild(te.header_tr);
+				//te.recalculateHeight();
+			}
+		};
+	
 		te.changeHeadline = function(newtext) {
 			te.header_text.textContent = newtext;
 		};
@@ -282,13 +298,15 @@ function EdiTheme() {
 		};
 		
 		te.sortSongOrder = function() {};
+		
+		te.emphasizeWinner = function() {};
 	}
 	
 	that.Extend.TimelineElection = function(te) {
 		te.draw = function() {
 			var reqstatus = 0;
-			for (var i = 0; i < te.songs.length; i++) {
-				if (te.songs[i].p.elec_isrequest == 1) {
+			for (var i = 0; i < te.p.song_data.length; i++) {
+				if (te.p.song_data[i].elec_isrequest == 1) {
 					reqstatus = 1;
 					break;
 				}
@@ -296,6 +314,14 @@ function EdiTheme() {
 			var indic = reqstatus == 1 ? "request" : "normal";
 			that.drawTimelineTable(te, _l("election"), indic);
 			te.defineFx();
+		};
+		
+		te.emphasizeWinner = function() {
+			for (var i = 1; i < te.songs.length; i++) {
+				te.songs[i].tr1_fx.start(0.8);
+				te.songs[i].tr2_fx.start(0.8);
+				te.songs[i].tr3_fx.start(0.8);
+			}
 		};
 		
 		te.drawShowWinner = function() {
@@ -373,8 +399,8 @@ function EdiTheme() {
 	that.Extend.TimelineOneShot = function(tos) {
 		tos.draw = function() {
 			var hltitle = _l("onetimeplay");
-			if (tos.p.user_id) hltitle += " from " + tos.p.username;
-			that.drawTimelineTable(te, hltitle, "normal");
+			if (tos.p.username) hltitle += " from " + tos.p.username;
+			that.drawTimelineTable(tos, hltitle, "normal");
 			
 			if (tos.p.user_id == user.p.user_id) {
 				tos.header_text.textContent = _l("deleteonetime");
@@ -399,8 +425,8 @@ function EdiTheme() {
 		
 		ts.draw = function() {
 			var indic = "normal";
-			if (ts.isreq == 1) indic = "request";
-			else if (ts.isreq < 0) indic = "conflict";
+			if (ts.p.elec_isrequest == 1) indic = "request";
+			else if (ts.p.elec_isrequest < 0) indic = "conflict";
 			
 			ts.tr1 = createEl("tr", {});
 			ts.tr1_fx = fx.make(fx.OpacityRemoval, [ ts.tr1, ts.parent.el, 250 ]);
@@ -486,18 +512,24 @@ function EdiTheme() {
 				fx_votebkg_x.stop();
 				fx_votebkg_x.duration = 300;
 				fx_votebkg_x.start(-votebkg_width + ts.song_td.offsetWidth + 11);
-				if (ts.song_requestor) {
-					ts.song_requestor_fx.start(0);
-					ts.indicator_fx.start(-22 + ts.album_td.offsetHeight);
-				}
+				ts.requesterShow();
+			}
+		};
+		
+		ts.requesterShow = function() {
+			if (ts.song_requestor) {
+				ts.song_requestor_fx.start(0);
+				ts.indicator_fx.start(-22 + ts.album_td.offsetHeight);
 			}
 		};
 
 		ts.voteHoverOff = function(evt) {
 			if (!votelock_timer) {
-				fx_votebkg_x.stop();
-				fx_votebkg_x.duration = 300;
-				fx_votebkg_x.start(-votebkg_width);
+				if (!ts.voteinprogress) {
+					fx_votebkg_x.stop();
+					fx_votebkg_x.duration = 300;
+					fx_votebkg_x.start(-votebkg_width);
+				}
 				if (ts.song_requestor) {
 					ts.song_requestor_fx.start(-ts.song_requestor_fx.height - 1);
 					ts.indicator_fx.start(-22);
@@ -539,7 +571,7 @@ function EdiTheme() {
 			}
 			else {
 				ts.parent.changeHeadline("Submitting vote...");
-				ts.voteProgressComplete();
+				ts.voteProgressStop(true);
 				ts.voteSubmit();
 			}
 		};
@@ -565,6 +597,7 @@ function EdiTheme() {
 
 		ts.registerVoteDraw = function() {
 			ts.parent.changeHeadline(_l("voted"));
+			fx_votebkg_x.set(-votebkg_width + ts.song_td.offsetWidth + 11);
 			fx_votebkg_y.duration = 1000;
 			fx_votebkg_y.start(-70);
 			votelock_timer = false;
@@ -625,7 +658,7 @@ function EdiTheme() {
 				else table.votes.textContent = json.elec_votes + " " + _l("vote");
 				urlneedsfill = false;
 			}
-			if (json.elec_isrequest && ((json.elec_isrequest == 1) || (json.elec_isrequest == -1))) {
+			if (json.elec_isrequest && ((json.elec_isrequest == 1) || (json.elec_isrequest <= -1))) {
 				var requestor = json.song_requestor;
 				var reqtxt = "";
 				if (json.elec_isrequest == 1) reqtxt = _l("requestedby");
@@ -633,7 +666,7 @@ function EdiTheme() {
 				panel.changeReqBy(reqtxt + " " + json.song_requestor);
 			}
 			else if (event.p.username && (event.p.sched_type != SCHED_LIVE)) {
-				panel.changeReqBy(_l("from") + " " + json.username);
+				panel.changeReqBy(_l("from") + " " + event.p.username);
 			}
 			else if (event.p.sched_dj) {
 				panel.changeReqBy(_l("currentdj") + " " + event.p.sched_dj);
@@ -704,6 +737,9 @@ function EdiTheme() {
 	};
 	
 	that.Extend.NPSkeleton = function(npe) {
+		npe.parent.changeReqBy("");
+		npe.parent.changeIsRequest(0);
+		
 		npe.defineFx = function() {
 			npe.fx_marginleft = fx.make(fx.CSSNumeric, [ npe.el, 700, "marginLeft", "px" ]);
 			npe.fx_marginleft.set(-50);
@@ -731,7 +767,8 @@ function EdiTheme() {
 	that.Extend.NPElection = function(npe) {
 		npe.draw = function() {
 			npe.el = that.NPDrawSong(npe.p.song_data[0], npe, npe.parent);
-			npe.defineFx();			
+			npe.defineFx();	
+			npe.parent.changeIsRequest(npe.p.song_data[0].elec_isrequest);
 		};
 	};
 	
@@ -799,12 +836,27 @@ function EdiTheme() {
 			menup.table = createEl("table", { "class": "menu_table", "cellspacing": 0 });
 			var row = createEl("tr", {}, menup.table);
 			menup.td_station = createEl("td", { "class": "menu_td_station" }, row);
-			var stationlogo = createEl("img", { "src": "images/rainwave-menu-logo.png" }, menup.td_station);
+			var morestations = createEl("div", { "class": "menu_select_more" }, menup.td_station);
+			morestations.innerHTML = _l("menu_morestations");
+			var stationlogo = createEl("img", { "src": "images/menu_logo_" + PRELOADED_SID + ".png" }, menup.td_station);
 			menup.ul_select = createEl("ul", { "class": "menu_select", "style": "margin-left: -3px;" });
-			var li = createEl("li", { "style": "cursor: pointer" }, menup.ul_select);
-			li.addEventListener("click", function() { menup.changeStation(1); }, true);
-			menup.station_rw = createEl("img", { "src": "images/stationselect-1.png" }, li);
-			fx.makeMenuDropdown(menup.el, stationlogo, menup.ul_select);
+			menup.li_stations = Array();
+			if (PRELOADED_SID != 1) {
+				var li = createEl("li", { "style": "cursor: pointer" }, menup.ul_select);
+				li.addEventListener("click", function() { menup.changeStation(1); }, true);
+				menup.station_rw = createEl("img", { "src": "images/stationselect_1.png" }, li);
+			}
+			if (PRELOADED_SID != 2) {
+				var li = createEl("li", { "style": "cursor: pointer" }, menup.ul_select);
+				li.addEventListener("click", function() { menup.changeStation(2); }, true);
+				menup.station_rw = createEl("img", { "src": "images/stationselect_2.png" }, li);
+			}
+			if (PRELOADED_SID != 3) {
+				var li = createEl("li", { "style": "cursor: pointer" }, menup.ul_select);
+				li.addEventListener("click", function() { menup.changeStation(3); }, true);
+				menup.station_rw = createEl("img", { "src": "images/stationselect_3.png" }, li);
+			}
+			fx.makeMenuDropdown(menup.el, menup.td_station, menup.ul_select);
 			
 			menup.td_play = createEl("td", { "class": "menu_td_play" }, row);		
 			menup.player = createEl("span", { "class": "menu_player", "style": "cursor: pointer" }, menup.td_play);
@@ -1190,7 +1242,7 @@ function EdiTheme() {
 			div.albumdetailtd = document.createElement("td");
 			div.albumdetailtd.setAttribute("class", "pl_ad_albumdetailtd");
 			
-			if ((json.album_rating_count >= 2) && svg) {
+			if ((json.album_rating_count >= 2) && svg.capable) {
 				var gr = graph.makeSVG(graph.RatingHistogram, that.RatingHistogramMask, 200, 120 - (svg.em * 3), { maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnonumbers: true, minx: 0.5, miny: true, padx: 10, raw: json.album_rating_histogram });
 				//var gr = graph.makeSVG(graph.RatingHistogram, that.RatingHistogramMask, 200, 120 - (svg.em * 3), { maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnonumbers: true, minx: 0.5, miny: true, padx: 10, raw: { "1.0": 53, "1.5": 84, "2.0": 150, "2.5": 200, "3.0": 250, "3.5": 300, "4.0": 350, "4.5": 400, "5.0": 521 }});
 				gr.svg.setAttribute("class", "pl_ad_ratinghisto");
@@ -1296,10 +1348,8 @@ function EdiTheme() {
 				ns.td_rating = document.createElement("td");
 				ns.td_rating.setAttribute("class", "pl_songlist_rating");
 				ns.td_rating.style.width = (that.Rating_width + 5) + "px";
-				ns.svg_rating = svg.make({ "width": that.Rating_width, "height": svg.em * 1.4 });
 				ns.rating = Rating({ category: "song", id: song_data[i].song_id, userrating: song_data[i].song_rating_user, x: 0, y: 1, siterating: song_data[i].song_rating_avg, favourite: song_data[i].song_favourite, register: true });
-				ns.svg_rating.appendChild(ns.rating.el);
-				ns.td_rating.appendChild(ns.svg_rating);
+				ns.td_rating.appendChild(ns.rating.el);
 				ns.tr.appendChild(ns.td_rating);
 				
 				ns.td_length = document.createElement("td");

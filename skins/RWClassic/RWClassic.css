@@ -562,10 +562,10 @@ table.menu_table {
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	user-select: none;
+	table-layout: fixed;
 }
 
 table.menu_table img {
-	height: 16px;
 	vertical-align: top;
 }
 
@@ -576,7 +576,17 @@ table.menu_table td {
 }
 
 td.menu_td_station {
-	width: 170px;
+	width: 200px;
+}
+
+div.menu_select_more {
+	border-right: 1px solid #888888;
+	color: #888888;
+	margin-top: 1px;
+	padding-right: 3px;
+	position: absolute;
+	text-align: right;
+	width: 200px;
 }
 
 ul.menu_select {
@@ -600,7 +610,7 @@ ul.menu_select li svg {
 }
 
 td.menu_td_play {
-	width: 224px;
+	width: 194px;
 	text-align: right;
 }
 
@@ -624,10 +634,18 @@ td.menu_td_download {
 	text-align: center;
 }
 
+td.menu_td_download img {
+	height: 16px;
+}
+
 td.menu_td_user {
 	width: 15.5em;
 	padding-right: 5px;
 	text-align: right;
+}
+
+td.menu_td_user img {
+	height: 16px;
 }
 
 img.menu_avatar {
@@ -666,6 +684,10 @@ table.menu_table td.menu_td_cog {
 	background: #000000;
 	border-left: 1px solid #FFA200;
 	border-bottom: 1px solid #FFA200;
+}
+
+table.menu_table td.menu_td_cog img {
+	height: 16px;
 }
 
 .COG_links {
@@ -1011,8 +1033,8 @@ div.nowplaying_header_text, div.nowplaying_header_reqby {
 	font-size: 0.8em;
 }
 
-div.nowplaying_reqby {
-	width: 70%;
+div.nowplaying_header_reqby {
+	width: 67%;
 	text-align: right;
 }
 
@@ -1050,6 +1072,9 @@ td.nowplaying_song_title {
 	height: 1.5em;
 	vertical-align: bottom;
 	padding-bottom: 3px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 td.nowplaying_album_name, td.nowplaying_artist_name {

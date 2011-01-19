@@ -297,6 +297,7 @@ function R3Effects() {
 		};
 		header.addEventListener("mouseover", mouseover, true);
 		header.addEventListener("mouseout", function() { clearTimeout(timeout); timeout = setTimeout(mouseout, 250); }, true);
+		header.style.cursor = "default";
 		if (dropdown) {
 			dropdown.addEventListener("mouseover", mouseover, true);
 			dropdown.addEventListener("mouseout", function() { clearTimeout(timeout); timeout = setTimeout(mouseout, 250); }, true);

@@ -99,6 +99,8 @@ panels.TimelinePanel = {
 				that.lastevents = that.updateEventData(json);
 			}
 			for (var i = 0; i < that.lastevents.length; i++) {
+				if (i == (that.lastevents.length - 1)) that.lastevents[i].showHeader();
+				else that.lastevents[i].hideHeader();
 				that.lastevents[i].disableVoting();
 				that.lastevents[i].clockRemove();
 				if (user.p.current_activity_allowed && that.lastevents[i].p.user_wastunedin) {
@@ -109,7 +111,10 @@ panels.TimelinePanel = {
 				}
 				that.lastevents[i].showSongLengths();
 				that.lastevents[i].showWinner();
+				that.lastevents[i].recalculateHeight();
 				that.lastevents[i].changeHeadline(_l("previouslyplayed"));
+				// this will squish the previously played results together into a neat block
+				if (i != 0) that.lastevents[i].height -= 4;
 			}
 		};
 		
@@ -239,10 +244,11 @@ panels.TimelinePanel = {
 			for (i = 0; i < that.allevents.length; i++) {
 				that.allevents[i].timep_showing = false;
 				if (that.allevents[i].purge) {
-					that.allevents[i].moveTo(-that.allevents[i].height);
+					that.allevents[i].moveTo(-that.allevents[i].height - 5);
 					that.allevents[i].remove();
 					that.logPosition(that.allevents[i], " (purge) " + moveto);
 				}
+				else log.log("TimeP", 0, "Event " + i + " height: " + that.allevents[i].height);
 			}
 			var ybudget = container.offsetHeight;
 			var ybudgetused = 0;
@@ -313,6 +319,7 @@ panels.TimelinePanel = {
 			if (that.currentevents[0] && that.currentevents[0].timep_showing) {
 				that.currentevents[0].changeZ(runz);
 				that.currentevents[0].moveTo(runy);
+				that.currentevents[0].emphasizeWinner();
 				runy += that.currentevents[0].height + ymargin;
 				runz++;
 			}
@@ -440,7 +447,6 @@ function TimelineElection(json, container, parent) {
 		if (that.showingwinner) return;
 		that.showingwinner = true;
 		that.drawShowWinner();
-		that.recalculateHeight();
 	};
 	
 	that.sortSongs = function(a, b) {
@@ -588,12 +594,10 @@ function TimelineSong(json, parent, x, y, songnum) {
 
 	that.voteSubmit = function() {
 		parent.disableVoting();
-		that.voteinprogress = false;
 		ajax.async_get("vote", { "elec_entry_id": that.p.elec_entry_id });
 	};
 	
 	that.registerVote = function() {
-		that.voteinprogress = false;
 		that.votehighlighted = true;
 		that.registerVoteDraw();
 	};
@@ -696,7 +700,7 @@ function TimelineAdSet(json, container, parent) {
 }
 
 function TimelineLiveShow(json, container, parent) {
-	var that = TimelineLiveShow(json, container, parent);
+	var that = TimelineSkeleton(json, container, parent);
 	theme.Extend.TimelineLiveShow(that);
 	
 	that.getScheduledLength = function() {
@@ -746,7 +750,8 @@ function TimelinePlaylist(json, container, parent) {
 };
 
 function TimelineOneShot(json, container, parent) {
-	var that = TimelineSkeleton();
+	var that = TimelineSkeleton(json, container, parent);
+	that.p = json;
 	theme.Extend.TimelineOneShot(that);
 
 	that.init = function() {

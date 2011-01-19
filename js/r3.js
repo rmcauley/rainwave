@@ -28,19 +28,6 @@ var help = Help();
 var body = false;
 var fittextdiv = false;
 
-function startSync() {
-	errorcontrol.initTheme();
-	if (!prefs.p.help || !prefs.p.help.visited.value) {
-		edi.openPanelLink("HelpPanel", "");
-	}
-	ajax.sync_start(initpiggyback);
-	
-	if (!prefs.p.help.visited.value) {
-		help.startTutorial("welcome");
-		prefs.changePref("help", "visited", true);
-	}
-}
-
 // stolen from quirksmode.org
 function getMousePosX(e) {
 	var posx = 0;
@@ -142,9 +129,19 @@ function init() {
 
 	help.addTopic("tunein", { "h": "tunein", "p": "tunein_p", "mody": 35, "modx": -350 });
 	
-	edi.initcallback = startSync;
 	edi.init();
 	if (graph) graph.init(); // must be done after the theme object is available
+	
+	errorcontrol.initTheme();
+	if (!prefs.p.help || !prefs.p.help.visited.value) {
+		edi.openPanelLink("HelpPanel", "");
+	}
+	ajax.sync_start(initpiggyback);
+	
+	if (!prefs.p.help.visited.value) {
+		help.startTutorial("welcome");
+		prefs.changePref("help", "visited", true);
+	}
 	
 	prefs.addPref("help", { name: "visited", defaultvalue: false, hidden: true });
 }

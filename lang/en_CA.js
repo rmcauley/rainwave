@@ -45,22 +45,23 @@ var lang = new function() {
 	this.log_2000 = "Server-side error while submitting vote.";
 	this.log_2001 = "You must be tuned in to vote.";
 	this.log_2002 = "Invalid candidate ID.";
-	this.log_2003 = "You've already voted in that election.";
+	this.log_2003 = "Invalid election entry ID."
 	this.log_2004 = "You must wait to vote when switching between stations.";
 	this.log_2005 = "Candidate entry does not exist.";
-	this.log_2006 = "You cannot vote on that election this early.";
-	this.log_2007 = "Wrong station.  Please switch to the correct station.";
+	this.log_2006 = "Election has already been decided.";
+	this.log_2007 = "You cannot vote on that election yet.";
+	this.log_2008 = "You must vote on the station you're tuned in to."
 	
 	// Request New Codes
 	this.log_3000 = "Server-side error while submitting request.  Please try again.";
 	this.log_3001 = "You must be logged in to request.";
 	this.log_3002 = "You must be tuned in to request.";
-	this.log_3003 = "Client-side error while submitting request.  Please refresh your page and try again.";
-	this.log_3004 = "You have reached the maximum number of requests.";
-	this.log_3005 = "You've already requested that song.";
-	this.log_3006 = "You've already requested a song from that album.";
-	this.log_3007 = "That song is on cooldown.";
-	this.log_3500 = "Request submitted successfully.";
+	this.log_3003 = "Invalid Song ID submitted.";
+	this.log_3004 = "Non-existent song requested.";
+	this.log_3005 = "You must request a song from the current station.";
+	this.log_3006 = "Request limit reached.";
+	this.log_3007 = "Song already requested.";
+	this.log_3008 = "Album already requested.";
 	
 	// Request Delete Results
 	this.log_4000 = "Server-side error while deleting request.  Please try again.";
@@ -81,8 +82,9 @@ var lang = new function() {
 	this.log_6003 = "Client-side error while submitting change.  Please refresh your page and try again, or try a different song.";
 	this.log_6004 = "That request does not belong to you.";
 	this.log_6005 = "You have requested a song that does not exist.";
-	this.log_6006 = "You have already requested that song.";
-	this.log_6007 = "You have already requested a song from that album.";
+	this.log_6006 = "You must request a song from the station you're tuned in to."
+	this.log_6007 = "You have already requested that song.";
+	this.log_6008 = "You have already requested a song from that album.";
 	
 	// Rating Results
 	this.log_7000 = "Server-side error while submitting rating.  Please try again.";
@@ -90,7 +92,7 @@ var lang = new function() {
 	this.log_7002 = "You must be tuned in to rate.";
 	this.log_7003 = "Client-side error while submitting rating.  Please refresh your page and try again.";
 	this.log_7004 = this.log_7003;
-	this.log_7005 = this.log_7005;
+	this.log_7005 = this.log_7003;
 	this.log_7006 = "You must have been recently tuned in to that song to rate it.";
 	this.log_7007 = "You must wait to rate when switching between stations.";
 	
@@ -98,13 +100,15 @@ var lang = new function() {
 	this.log_8000 = "Server-side error while re-ordering.  Please try again.";
 	this.log_8001 = "Client-side error while forming re-order request.  Please try again.";
 	this.log_8002 = "One of your requests does not exist anymore.  Please try again.";
+	this.log_8002 = "One of your ratings has been fulfilled.  Please try again.";
+	this.log_8003 = "One of those ratings does not belong to you.";
 	
 	// Login Results
 	this.log_9000 = "Invalid username or password.";
 	this.log_9001 = "Too many login attempts. Please go to the forums.";
 	this.log_9002 = "Login error.  Please use the forums.";
 	
-	// 10000 is tune in hijacking
+	// 10000 is tune in hijacking errors
 	
 	/* Number suffixes */
 	this.suffix_0 = "";
@@ -127,10 +131,10 @@ var lang = new function() {
 	this.pl_favourited = "Favourited by <b>";
 	this.pl_favourited2 = "</b>";
 	this.pl_favourited3 = ".";
-	this.pl_wins = "Has won <b>";
+	this.pl_wins = "Won <b>";
 	this.pl_wins2 = "%</b> of the elections it's in, ranking <b>";
 	this.pl_wins3 = "</b>.";
-	this.pl_requested = "Has been requested <b>";
+	this.pl_requested = "Requested <b>";
 	this.pl_requested2 = "</b> times, ranking <b>";
 	this.pl_requested3 = "</b>.";
 	this.pl_genre = "Cooldown group: ";
@@ -245,6 +249,7 @@ var lang = new function() {
 	this.requestsubmittedfor = "Request submitted for";
 	this.requestok = "Requested";
 	this.expiring = "Expiring!";
+	this.fewminutes = "A Few Minutes";
 	this.soon = "Soon";
 	this.shortwait = "Short Wait";
 	this.wait = "Waiting";
@@ -304,4 +309,6 @@ var lang = new function() {
 	this.station_rainwave = "Original video game soundtracks.";
 	this.station_ocremix = "100% OverClocked Remix.";
 	this.station_mixwave = "Independant game cover bands and remixes.";
+	
+	this.menu_morestations = "More &#9660;"
 };

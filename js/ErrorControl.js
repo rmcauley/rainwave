@@ -79,9 +79,12 @@ function ErrorControl() {
 			}
 			
 			if (!permanent) {
+				var x = mouse.x;
 				var y = (mouse.y - (svg.em * 2.5));
 				if (y < (svg.em * 2)) y = svg.em * 2;
-				errors[code].el.style.left = mouse.x + "px";
+				if (x > (window.innerWidth - errors[code].el.offsetWidth)) x = window.innerWidth - errors[code].el.offsetWidth - 15;
+				if (y > (window.innerHeight - errors[code].el.offsetHeight)) y = window.innerHeight - errors[code].el.offsetHeight - 15;
+				errors[code].el.style.left = x + "px";
 				errors[code].el.style.top = y + "px";
 			}
 		}
@@ -95,29 +98,7 @@ function ErrorControl() {
 			ry += errors[code].el.offsetHeight + (svg.em / 2);
 		}
 	};
-	
-/*	that.stopTracking = function() {
-		if (tracking) {
-			that.clearError(tracking);
-			tracking = false;
-			//document.getElementById("body").removeEventListener('mousemove', that.mouseTrack, false);
-		}
-		if (tracktimer) clearTimeout(tracktimer);
-		tracktimer = false;
-	};*/
-	
-	//that.startTracking = function(code, overridetime) {
-		//if (tracking) that.stopTracking();
-		//tracking = code;
-		
-		//document.getElementById("body").addEventListener('mousemove', that.mouseTrack, false);
-	//};
-	
-	/*that.mouseTrack = function(e) {
-		errors[tracking].el.style.left = (getMousePosX(e) - svg.em) + "px";
-		errors[tracking].el.style.top = (getMousePosY(e) - (svg.em * 2.5)) + "px";
-	};*/
-	
+
 	that.positionErrors = function() {
 		var runy = 0;
 		for (var i in errors) {
