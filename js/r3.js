@@ -138,7 +138,7 @@ function init() {
 	}
 	ajax.sync_start(initpiggyback);
 	
-	if (!prefs.p.help.visited.value) {
+	if (!prefs || !prefs.p || !prefs.p.help || !prefs.p.help.visited || !prefs.p.help.visited.value) {
 		help.startTutorial("welcome");
 		prefs.changePref("help", "visited", true);
 	}

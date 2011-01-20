@@ -99,8 +99,8 @@ panels.TimelinePanel = {
 				that.lastevents = that.updateEventData(json);
 			}
 			for (var i = 0; i < that.lastevents.length; i++) {
-				if (i == (that.lastevents.length - 1)) that.lastevents[i].showHeader();
-				else that.lastevents[i].hideHeader();
+				//if (i == (that.lastevents.length - 1)) that.lastevents[i].showHeader();
+				that.lastevents[i].hideHeader();
 				that.lastevents[i].disableVoting();
 				that.lastevents[i].clockRemove();
 				if (user.p.current_activity_allowed && that.lastevents[i].p.user_wastunedin) {
@@ -155,9 +155,22 @@ panels.TimelinePanel = {
 		};
 		
 		that.voteResultHandle = function(json) {
+			if (json.code == 3) {
+				for (var i = 0; i < that.allevents.length; i++) {
+					that.allevents[i].registerFailedVote(json.elec_entry_id);
+				}
+				if (json.elec_voted_id) {
+					json.code = 1;
+					json.elec_entry_id = json.elec_voted_id;
+				}
+				else {
+					that.allevents[i].enableVoting();
+				}
+			}
 			if (json.code == 1) {
 				for (var i = 0; i < that.allevents.length; i++) {
 					that.allevents[i].registerVote(json.elec_entry_id);
+					that.allevents[i].disableVoting();
 				}
 			}
 		};
@@ -304,12 +317,15 @@ panels.TimelinePanel = {
 			var runy = 0;
 			
 			// hooray copy paste copy paste copy paste... I am terrible sometimes :(
+			var runopacity = .70;
 			for (i = that.lastevents.length - 1; i >= 0; i--) {
 				if (that.lastevents[i].timep_showing) {
 					that.lastevents[i].changeZ(runz);
 					that.lastevents[i].moveTo(runy);
+					that.lastevents[i].changeOpacity(runopacity);
 					runy += that.lastevents[i].height + ymargin;
 					runz++;
+					runopacity += .10;
 				}
 				else {
 					that.lastevents[i].moveTo(-that.lastevents[i].height);
@@ -476,8 +492,9 @@ function TimelineElection(json, container, parent) {
 	};
 	
 	that.disableVoting = function(override) {
-		//if (that.votingdisabled && !override) return;
+		if (that.votingdisabled && !override) return;
 		that.votingdisabled = true;
+		that.cancelVoting();
 		for (var i = 0; i < that.songs.length; i++) {
 			that.songs[i].disableVoting();
 		}
@@ -489,11 +506,18 @@ function TimelineElection(json, container, parent) {
 		}
 	};
 	
+	that.registerFailedVote = function(elec_entry_id) {
+		for (var i = 0; i < that.songs.length; i++) {
+			if (that.songs[i].p.elec_entry_id == elec_entry_id) {
+				that.songs[i].registerFailedVote();
+			}
+		}
+	};
+	
 	that.registerVote = function(elec_entry_id) {
 		for (var i = 0; i < that.songs.length; i++) {
 			if (that.songs[i].p.elec_entry_id == elec_entry_id) {
 				that.songs[i].registerVote();
-				that.disableVoting(true);
 				that.voted = true;
 				help.continueTutorialIfRunning("clickonsongtovote");
 				break;
@@ -542,8 +566,9 @@ function TimelineSong(json, parent, x, y, songnum) {
 	that.p = json;
 	that.elec_votes = 0;
 	that.songnum = songnum;
-	that.votehighlighted = false;
 	that.voteinprogress = false;
+	that.votesubmitted = false;
+	that.votehighlighted = false;
 	that.parent = parent;
 
 	theme.Extend.TimelineSong(that);
@@ -568,38 +593,58 @@ function TimelineSong(json, parent, x, y, songnum) {
 		that.vote_hover_el.removeEventListener('mouseout', that.voteHoverOff, true);
 		that.vote_hover_el.removeEventListener('click', that.voteAction, true);
 		that.vote_hover_el.style.cursor = "default";
-		that.voteHoverOff();
+		if (!that.votehighlighted) that.voteHoverOff();
 	};
 	
 	that.voteAction = function() {
 		if (that.voteinprogress) {
-			that.voteProgressComplete();
 			that.voteSubmit();
 			return;
 		}
-		parent.cancelVoting();
+		that.parent.cancelVoting();
 		if (parent.timeleft >= 15) {
 			that.voteinprogress = true;
 			that.startVoting();
 		}
-		else that.voteSubmit();
+		else {
+			that.voteinprogress = true;
+			that.voteSubmit();
+		}
 	};
 	
 	that.voteCancel = function() {
 		if (that.voteinprogress) {
 			that.voteinprogress = false;
 			that.voteProgressStop();
+			that.voteProgressReset();
 		}
 	};
 
 	that.voteSubmit = function() {
-		parent.disableVoting();
+		if (that.votesubmitted) return;
+		that.votesubmitted = true;
+		that.voteProgressStop();
+		that.voteProgressComplete();
+		that.parent.disableVoting();
+		that.parent.changeHeadline(_l("submittingvote"));
 		ajax.async_get("vote", { "elec_entry_id": that.p.elec_entry_id });
 	};
 	
+	that.registerFailedVote = function() {
+		that.voteinprogress = false;
+		that.votesubmitted = false;
+		that.votehighlighted = false;
+		that.voteHoverReset();
+		that.voteHoverOff();
+	};
+	
 	that.registerVote = function() {
+		that.voteinprogress = true;
+		that.votesubmitted = true;
 		that.votehighlighted = true;
+		that.voteProgressComplete();
 		that.registerVoteDraw();
+		that.parent.changeHeadline(_l("voted"));
 	};
 	
 	that.enableRating = function() {

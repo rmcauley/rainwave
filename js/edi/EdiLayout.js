@@ -168,7 +168,7 @@ function EdiLayout(layout, name, parent) {
 				var dispheight = (typeof(layout[i][j].initSizeY) == "function") ? layout[i][j].initSizeY(cellheight, rowh[i]) : cellheight;
 				if ((dispwidth != cellwidth) || (dispheight != cellheight)) cirregular = true;
 
-				vborders[i][j] = {};
+				/*vborders[i][j] = {};
 				vborders[i][j].el = createEl("div", { "class": "edi_border_vertical" });
 				vborders[i][j].el.setAttribute("style", "position: absolute; top: " + runningy + "px; left: " + (runningx + dispwidth) + "px; width: " + parent.themeobj.borderwidth + "px; height: " + dispheight + "px;");
 				vborders[i][j].vfirst = (i == 0) ? true : false;
@@ -186,7 +186,7 @@ function EdiLayout(layout, name, parent) {
 				if (usehborder) {
 					parent.themeobj.borderHorizontal(hborders[i][j]);
 					element.appendChild(hborders[i][j].el);
-				}
+				}*/
 				
 				var panelel = document.createElement("div");
 				panelel.row = i;

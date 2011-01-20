@@ -6,8 +6,6 @@ function EdiTheme() {
 	var skindir = "skins_r" + BUILDNUM + "/RWClassic";
 
 	that.textcolor = "#FFFFFF";
-	that.TimelineSong_height = (svg.em + 9) * 3;		// font size + padding * 3 rows
-	that.Timeline_headerheight = svg.em * 0.8 + 4;
 	that.borderheight = 12;
 	that.borderwidth = 12;
 	that.name = _l("s_RainwaveClassic");
@@ -15,8 +13,6 @@ function EdiTheme() {
 	that.MPI_MenuYPad = 2;
 	that.PLS_AlbumHeight = svg.em * 1.5;
 	that.helplinecolor = "#c287ff";
-	
-	//panels.NowPanel.height = (that.TimelineSong_height * 3) + 12;
 	
 	// The following variables are internal to that theme, related to a specific "class"
 	that.Timeline_leftsidesize = 10;
@@ -295,11 +291,17 @@ function EdiTheme() {
 			te.topfx.set(te.container.offsetHeight);
 			te.leftfx = fx.make(fx.CSSNumeric, [ te.el, 700, "left", "px" ]);
 			te.leftfx.set(0);
+			te.opacityfx = fx.make(fx.CSSNumeric, [ te.el, 700, "opacity", "" ]);
+			te.opacityfx.set(1);
 		};
 		
 		te.sortSongOrder = function() {};
 		
 		te.emphasizeWinner = function() {};
+		
+		te.changeOpacity = function(to) {
+			te.opacityfx.start(to);
+		};
 	}
 	
 	that.Extend.TimelineElection = function(te) {
@@ -508,39 +510,39 @@ function EdiTheme() {
 		};
 
 		ts.voteHoverOn = function(evt) {
-			if (!votelock_timer) {
+			if (!ts.voteinprogress) {
 				fx_votebkg_x.stop();
 				fx_votebkg_x.duration = 300;
 				fx_votebkg_x.start(-votebkg_width + ts.song_td.offsetWidth + 11);
-				ts.requesterShow();
 			}
-		};
-		
-		ts.requesterShow = function() {
 			if (ts.song_requestor) {
 				ts.song_requestor_fx.start(0);
 				ts.indicator_fx.start(-22 + ts.album_td.offsetHeight);
+				ts.album_name.style.zIndex = 1;
 			}
 		};
 
 		ts.voteHoverOff = function(evt) {
-			if (!votelock_timer) {
-				if (!ts.voteinprogress) {
-					fx_votebkg_x.stop();
-					fx_votebkg_x.duration = 300;
-					fx_votebkg_x.start(-votebkg_width);
-				}
-				if (ts.song_requestor) {
-					ts.song_requestor_fx.start(-ts.song_requestor_fx.height - 1);
-					ts.indicator_fx.start(-22);
-				}
+			if (!ts.voteinprogress) {
+				fx_votebkg_x.stop();
+				fx_votebkg_x.duration = 300;
+				fx_votebkg_x.start(-votebkg_width);
 			}
+			if (ts.song_requestor) {
+				ts.song_requestor_fx.start(-ts.song_requestor_fx.height - 1);
+				ts.indicator_fx.start(-22);
+				ts.album_name.style.zIndex = 10;
+			}
+		};
+		
+		ts.voteHoverReset = function() {
+			fx_votebkg_y.set(0);
 		};
 
 		ts.startVoting = function() {
 			fx_votebkg_x.stop();
 			fx_votebkg_x.set(-votebkg_width + ts.song_td.offsetWidth + 11);
-			fx_votebkg_y.duration = 300;
+			fx_votebkg_y.duration = 200;
 			fx_votebkg_y.onComplete = ts.startVoting2;
 			ts.swipe.style.width = ts.song_td.offsetWidth + "px";
 			ts.swipe.style.height = ts.song_td.offsetHeight + "px";
@@ -553,11 +555,13 @@ function EdiTheme() {
 		};
 		
 		ts.startVoting2 = function() {
-			fx_votebkg_y.onComplete = false;
-			fx_votebkg_y.set(-32);
-			fx_votebkg_x.set(-votebkg_width);
-			votelock_started = clock.hiResTime();
-			votelock_timer = setInterval(ts.voteProgress, 20);
+			if (!ts.votesubmitted) {
+				fx_votebkg_y.onComplete = false;
+				fx_votebkg_y.set(-32);
+				fx_votebkg_x.set(-votebkg_width);
+				votelock_started = clock.hiResTime();
+				votelock_timer = setInterval(ts.voteProgress, 20);
+			}
 		};
 		
 		ts.voteProgress = function() {
@@ -570,34 +574,38 @@ function EdiTheme() {
 				fx_votebkg_x.set(x);
 			}
 			else {
-				ts.parent.changeHeadline("Submitting vote...");
-				ts.voteProgressStop(true);
+				ts.voteProgressStop();
+				ts.voteProgressComplete();
 				ts.voteSubmit();
 			}
 		};
 
-		ts.voteProgressStop = function(noclear) {
+		ts.voteProgressStop = function() {
 			clearInterval(votelock_timer);
-			if (!noclear) {
-				fx_votebkg_x.onComplete = ts.voteProgressStop2;
-				fx_votebkg_x.start(-votebkg_width);
-			}
 		};
 		
-		ts.voteProgressStop2 = function() {
+		ts.voteProgressReset = function() {
+			fx_votebkg_x.onComplete = ts.voteProgressReset2;
+			fx_votebkg_x.start(-votebkg_width);
+		};
+		
+		ts.voteProgressReset2 = function() {
 			fx_votebkg_x.onComplete = false;
+			fx_votebkg_x.set(-votebkg_width);
 			fx_votebkg_y.set(0);
-			votelock_timer = false;
 		};
 
 		ts.voteProgressComplete = function() {
-			ts.voteProgressStop(true);
+			fx_votebkg_x.stop();
 			fx_votebkg_x.set(-votebkg_width + ts.song_td.offsetWidth + 11);
 		};
 
 		ts.registerVoteDraw = function() {
-			ts.parent.changeHeadline(_l("voted"));
+			fx_votebkg_x.stop();
+			fx_votebkg_x.onComplete = false;
 			fx_votebkg_x.set(-votebkg_width + ts.song_td.offsetWidth + 11);
+			fx_votebkg_y.stop();
+			fx_votebkg_y.onComplete = false;
 			fx_votebkg_y.duration = 1000;
 			fx_votebkg_y.start(-70);
 			votelock_timer = false;
