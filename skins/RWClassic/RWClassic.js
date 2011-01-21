@@ -288,7 +288,7 @@ function EdiTheme() {
 		
 		te.defineFx = function() {
 			te.topfx = fx.make(fx.CSSNumeric, [ te.el, 700, "top", "px" ]);
-			te.topfx.set(te.container.offsetHeight);
+			te.topfx.set(-200);
 			te.leftfx = fx.make(fx.CSSNumeric, [ te.el, 700, "left", "px" ]);
 			te.leftfx.set(0);
 			te.opacityfx = fx.make(fx.CSSNumeric, [ te.el, 700, "opacity", "" ]);
@@ -431,7 +431,7 @@ function EdiTheme() {
 			else if (ts.p.elec_isrequest < 0) indic = "conflict";
 			
 			ts.tr1 = createEl("tr", {});
-			ts.tr1_fx = fx.make(fx.OpacityRemoval, [ ts.tr1, ts.parent.el, 250 ]);
+			ts.tr1_fx = fx.make(fx.OpacityRemoval, [ ts.tr1, ts.parent.el, 500 ]);
 			ts.tr1_fx.set(1);
 			ts.indicator = createEl("td", { "class": "timeline_indicator timeline_indicator_" + indic, "rowspan": 3 }, ts.tr1);
 			// for indicator_fx check the "if (ts.song_requestor)" block below
@@ -447,7 +447,7 @@ function EdiTheme() {
 			ts.song_title = createEl("div", { "class": "song_title", "textContent": ts.p.song_title }, ts.song_td);
 			
 			ts.tr2 = createEl("tr", {});
-			ts.tr2_fx = fx.make(fx.OpacityRemoval, [ ts.tr2, ts.parent.el, 250 ]);
+			ts.tr2_fx = fx.make(fx.OpacityRemoval, [ ts.tr2, ts.parent.el, 500 ]);
 			ts.tr2_fx.set(1);
 			ts.album_td = createEl("td", { "class": "timeline_td timeline_album_td" }, ts.tr2);
 			ts.album_rating_c = createEl("div", { "class": "timeline_song_rating_c" }, ts.album_td);
@@ -469,6 +469,9 @@ function EdiTheme() {
 				ts.song_requestor_fx.height = ts.song_requestor.offsetHeight;
 				ts.song_requestor_fx.set(-ts.song_requestor_fx.height);
 				ts.indicator_fx = fx.make(fx.BackgroundPosY, [ ts.indicator, 250 ]);
+				ts.song_requestor_fx.onComplete = function() {
+					if (ts.song_requestor_fx.now < -5) ts.album_name.style.zIndex = 10;
+				}
 			}
 			ts.album_name = createEl("div", { "class": "timeline_album_title", "textContent": ts.p.album_name }, ts.album_td);
 			
@@ -531,7 +534,6 @@ function EdiTheme() {
 			if (ts.song_requestor) {
 				ts.song_requestor_fx.start(-ts.song_requestor_fx.height - 1);
 				ts.indicator_fx.start(-22);
-				ts.album_name.style.zIndex = 10;
 			}
 		};
 		
@@ -606,7 +608,7 @@ function EdiTheme() {
 			fx_votebkg_x.set(-votebkg_width + ts.song_td.offsetWidth + 11);
 			fx_votebkg_y.stop();
 			fx_votebkg_y.onComplete = false;
-			fx_votebkg_y.duration = 1000;
+			fx_votebkg_y.duration = 700;
 			fx_votebkg_y.start(-70);
 			votelock_timer = false;
 		};
@@ -647,7 +649,10 @@ function EdiTheme() {
 		if (json) {
 			// songs
 			if (json.song_title) table.song_title.textContent = json.song_title;
-			if (json.album_name) table.album_name.textContent = json.album_name;
+			if (json.album_name) {
+				table.album_name.textContent = json.album_name;
+				Album.linkify(json.album_id, table.album_name);
+			}
 			if (typeof(json.song_rating_user) != "undefined") {
 				event.song_rating = Rating({ "category": "song", "id": json.song_id, "userrating": json.song_rating_user, "albumrating": json.song_rating_avg, "favourite": json.song_favourite, "register": true });
 				table.song_rating.appendChild(event.song_rating.el);

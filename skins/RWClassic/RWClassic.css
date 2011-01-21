@@ -945,7 +945,7 @@ div.timeline_song_requestor_request {
 }
 
 div.timeline_song_requestor_conflict {
-	background: url('images/timeline_song_requestor_c.png') repeat-y;
+	background: url('images/timeline_song_requestor_conflict.png') repeat-y;
 }
 
 div.timeline_vote_hover {

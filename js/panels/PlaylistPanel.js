@@ -132,7 +132,7 @@ panels.PlaylistPanel = {
 				albumsort.push(reinsert[i]);
 				that.appendChild(albums[reinsert[i]]);
 			}
-			help.changeStepPointEl("openanalbum", [ albums[albumsort[0]].td_name ]);
+			if (albumsort.length > 0) help.changeStepPointEl("openanalbum", [ albums[albumsort[0]].td_name ]);
 			reinsert = new Array();
 		};
 		

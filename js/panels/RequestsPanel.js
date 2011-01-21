@@ -68,7 +68,7 @@ panels.RequestsPanel = {
 				else {
 					var str = "";
 					if (total == 0) str = "";
-					else if (user.p.radio_request_expiresat) str = " (" + _l("expiring") + ")";
+					else if (user.p.radio_request_expiresat && (num == 0)) str = " (" + _l("expiring") + ")";
 					else if ((num == 0) & (total > 0)) str = " (" + _l("reqoncooldown") + ")";
 					else if ((num == 0) && user.p.radio_request_position) str = " (" + _l("reqempty") + ")";
 					else if (user.p.radio_request_position == 0) str = " (" + _l("fewminutes") + ")";

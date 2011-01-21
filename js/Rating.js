@@ -197,7 +197,10 @@ function Rating(p) {
 	
 	that.updateSiteRating = function(site) {
 		that.siterating = site;
-		if (ratingcontrol.hideuntilrated && !that.userrating) return;
+		if (ratingcontrol.hideuntilrated && !that.userrating) {
+			that.setSite(0);
+			return;
+		}
 		that.setSite(site);
 	};
 	

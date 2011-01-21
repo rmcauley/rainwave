@@ -16,6 +16,7 @@ panels.TimelinePanel = {
 		that.nextevents = [];
 		that.currentevents = [];
 		that.lastevents = [];
+		that.new_ux_sched_id = 0;
 		
 		var hidingx = 0;
 
@@ -99,8 +100,8 @@ panels.TimelinePanel = {
 				that.lastevents = that.updateEventData(json);
 			}
 			for (var i = 0; i < that.lastevents.length; i++) {
-				//if (i == (that.lastevents.length - 1)) that.lastevents[i].showHeader();
-				that.lastevents[i].hideHeader();
+				if (i == 0) that.lastevents[i].showHeader();
+				else that.lastevents[i].hideHeader();
 				that.lastevents[i].disableVoting();
 				that.lastevents[i].clockRemove();
 				if (user.p.current_activity_allowed && that.lastevents[i].p.user_wastunedin) {
@@ -114,7 +115,7 @@ panels.TimelinePanel = {
 				that.lastevents[i].recalculateHeight();
 				that.lastevents[i].changeHeadline(_l("previouslyplayed"));
 				// this will squish the previously played results together into a neat block
-				if (i != 0) that.lastevents[i].height -= 4;
+				that.lastevents[i].height -= 4;
 			}
 		};
 		
@@ -132,6 +133,7 @@ panels.TimelinePanel = {
 				else {
 					that.currentevents[i].disableRating();
 				}
+				that.currentevents[i].disableVoting();
 				that.currentevents[i].showVotes();
 				that.currentevents[i].sortSongOrder();
 				that.currentevents[i].changeHeadline(_l("nowplaying"));
@@ -195,15 +197,6 @@ panels.TimelinePanel = {
 			}
 			return newobj;
 		};
-		
-		that.logPosition = function(event, pos) {
-			if (event.p.song_data && event.p.song_data[0]) {
-				log.log("TimeP", 0, "Moving: " + pos + " // " + event.p.song_data[0].song_title);
-			}
-			else {
-				log.log("TimeP", 0, "Moving something to " + pos);
-			}
-		};
 	
 		that.positionEvents = function(json) {
 			var i;
@@ -230,18 +223,21 @@ panels.TimelinePanel = {
 				that.nextevents[0].moveTo(0);
 				// move all next events off screen
 				for (i = 1; i < that.nextevents.length; i++) {
-					that.nextevents[i].moveTo(that.container.offsetHeight);
+					that.nextevents[i].moveTo(-that.nextevents[i].el.offsetHeight - 5);
 				}
 				// move all last events off screen
 				for (i = 0; i < that.lastevents.length; i++) {
-					that.lastevents[i].moveTo(-that.lastevents[i].el.offsetHeight);
+					that.lastevents[i].moveTo(that.container.offsetHeight);
 				}
 			}
 			else {
 				that.currentevents[0].setY(0);
 				that.nextevents[0].setY(0);
-				that.nextevents[0].hideX();
+				if (that.new_ux_sched_id != that.currentevents[0].p.sched_id) {
+					that.nextevents[0].hideX();
+				}
 			}
+			that.new_ux_sched_id == that.currentevents[0].p.sched_id;
 			that.currentevents[0].moveXTo(that.container.offsetWidth);
 			that.nextevents[0].moveXTo(0);
 		};
@@ -257,16 +253,17 @@ panels.TimelinePanel = {
 			for (i = 0; i < that.allevents.length; i++) {
 				that.allevents[i].timep_showing = false;
 				if (that.allevents[i].purge) {
-					that.allevents[i].moveTo(-that.allevents[i].height - 5);
+					that.allevents[i].moveTo(that.container.offsetHeight);
 					that.allevents[i].remove();
-					that.logPosition(that.allevents[i], " (purge) " + moveto);
 				}
-				else log.log("TimeP", 0, "Event " + i + " height: " + that.allevents[i].height);
+				//else log.log("TimeP", 0, "Event " + i + " height: " + that.allevents[i].height);
 			}
 			var ybudget = container.offsetHeight;
 			var ybudgetused = 0;
 			var crossedelec  = false;
 			var ymargin = 5;
+			
+			// Until I comment otherwise, the following section of code solves which events should be showing
 			
 			// in the following blocks of code, i keeps track of next event index and j for history
 			i = 0;
@@ -316,19 +313,17 @@ panels.TimelinePanel = {
 			var runz = 0;
 			var runy = 0;
 			
-			// hooray copy paste copy paste copy paste... I am terrible sometimes :(
-			var runopacity = .70;
-			for (i = that.lastevents.length - 1; i >= 0; i--) {
-				if (that.lastevents[i].timep_showing) {
-					that.lastevents[i].changeZ(runz);
-					that.lastevents[i].moveTo(runy);
-					that.lastevents[i].changeOpacity(runopacity);
-					runy += that.lastevents[i].height + ymargin;
+			// The next block positions events, with a lot of horribly copy-pasted code
+			
+			for (i = that.nextevents.length - 1; i >= 0; i--) {
+				if (that.nextevents[i].timep_showing) {
+					that.nextevents[i].changeZ(runz);
+					that.nextevents[i].moveTo(runy);
+					runy += that.nextevents[i].height + ymargin;
 					runz++;
-					runopacity += .10;
 				}
 				else {
-					that.lastevents[i].moveTo(-that.lastevents[i].height);
+					that.nextevents[i].moveTo(-that.nextevents[i].height - 5);
 				}
 			}
 			
@@ -340,20 +335,24 @@ panels.TimelinePanel = {
 				runz++;
 			}
 			if (that.currentevents[0] && !that.currentevents[0].timep_showing) {
-				that.currentevents[0].moveTo(-that.currentevents[0].height);
+				that.currentevents[0].moveTo(-that.currentevents[0].height - 5);
 			}
-			
-			for (i = 0; i < that.nextevents.length; i++) {
-				if (that.nextevents[i].timep_showing) {
-					that.nextevents[i].changeZ(runz);
-					that.nextevents[i].moveTo(runy);
-					runy += that.nextevents[i].height + ymargin;
+
+			var runopacity = .75;
+			for (i = 0; i < that.lastevents.length; i++) {
+				if (that.lastevents[i].timep_showing) {
+					that.lastevents[i].changeZ(runz);
+					that.lastevents[i].moveTo(runy);
+					that.lastevents[i].changeOpacity(runopacity);
+					runy += that.lastevents[i].height + ymargin;
 					runz++;
+					runopacity -= .07;
 				}
 				else {
-					that.nextevents[i].moveTo(that.container.offsetHeight);
+					that.lastevents[i].moveTo(that.container.offsetHeight + 5);
 				}
 			}
+			
 			// Properly calculate the time until each event
 			var runningsched = that.currentendtime;
 			for (i = 0; i < that.nextevents.length; i++) {

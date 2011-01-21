@@ -296,6 +296,7 @@ var lang = new function() {
 	this.chat = "Chat";
 	this.playing = "&#9633; Stop Playback";
 	this.loading = "Loading";
+	this.searching = "Searching";
 	
 	/* Words */
 	
