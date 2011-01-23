@@ -13,6 +13,7 @@ function EdiTheme() {
 	that.MPI_MenuYPad = 2;
 	that.PLS_AlbumHeight = svg.em * 1.5;
 	that.helplinecolor = "#c287ff";
+	that.helptextcolor = "#d6afff";
 	
 	// The following variables are internal to that theme, related to a specific "class"
 	that.Timeline_leftsidesize = 10;
@@ -411,6 +412,11 @@ function EdiTheme() {
 			}
 
 			tos.defineFx();
+		};
+		
+		te.drawShowWinner = function() {
+			te.songs[0].tr3_fx.onComplete2 = function() { te.songs[0].indicator.setAttribute("rowspan", 2); }
+			te.songs[0].tr3_fx.start(0);
 		};
 	};
 
@@ -1123,7 +1129,7 @@ function EdiTheme() {
 		pp.draw = function() {
 			var leftwidth = svg.em * 30;
 			inlinesearchc = createEl("div", { "class": "pl_searchc" }, pp.container);
-			createEl("span", { "textContent": _l("searching:") }, inlinesearchc);
+			createEl("span", { "textContent": _l("searching") }, inlinesearchc);
 			inlinesearch = createEl("span", { "class": "pl_search" }, inlinesearchc);
 			albumlistc = createEl("div", { "class": "pl_albumlistc" }, pp.container);
 			albumlist = createEl("table", { "class": "pl_albumlist" }, albumlistc);			

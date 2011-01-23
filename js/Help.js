@@ -10,10 +10,10 @@ var Help = function() {
 	var ctutshowing = false;
 	var ctut = false;
 	var arrows = [];
-	var arrowdests = false;
+	var highlighted = [];
 	var showingstepname = false;		// named differently because ctutstep is actually 1 /ahead/ of what's showing.
 	
-	/*	Steps and topics have the following propertieS:
+	/*	Steps and topics have the following properties:
 		h: header language key (can be HTML)
 		p: paragraph language key (optional) (can be HTML)
 		pf: paragraph draw function (optional)
@@ -351,34 +351,21 @@ var Help = function() {
 	that.drawArrows2 = function(container) {
 		//if (alltopicsshown == 2) return;
 		if (!container.pointel) return;
+		that.highlightElements(container);
+		if (!svg.capable) return;
 		
 		var arr, ppos, cpos;
 		for (var i = 0; i < container.pointel.length; i++) {
 			arr = {};
 			arr.c = container;
-			arr.pointend = container.pointel[i];
 			ppos = that.getElPosition(container.pointel[i]);	
 			cpos = { "x": parseInt(container.finalx), "y": parseInt(container.finaly) };
 			if (svg.isElSVG(container.pointel[i])) {
-				arr.stroke = container.pointel[i].getAttribute("stroke");
-				arr.strokewidth = container.pointel[i].getAttribute("stroke-width");
-				container.pointel[i].setAttribute("stroke", theme.helplinecolor);
-				if (container.pointel[i].nodeName == "text") container.pointel[i].setAttribute("stroke-width", 1);
-				else container.pointel[i].setAttribute("stroke-width", 2);
-				
 				if (container.pointel[i].nodeName == "text") ppos.y += (svg.em * 0.5);
 				else if (container.pointel[i].getAttribute("height")) ppos.y += Math.round(parseInt(container.pointel[i].getAttribute("height")) / 2);
 				
 				if (ppos.x > cpos.x) cpos.x = cpos.x - 2;
 				else cpos.x = cpos.x - 2;
-			}
-			else if (typeof(container.pointel[i].getStyle) == "function") {
-				arr.border = container.pointel[i].getStyle("border");
-				container.pointel[i].style.border = "solid 2px " + theme.helplinecolor;
-			}
-			else {
-				arr.border = false;
-				container.pointel[i].style.border = "solid 2px " + theme.helplinecolor;
 			}
 			if (ppos.x < cpos.x) {
 				if (container.pointel[i].nodeName == "text") ppos.x += that.getElWidth(container.pointel[i], true);
@@ -417,21 +404,68 @@ var Help = function() {
 	};
 	
 	that.removeArrows = function() {
+		that.unhighlightElements();
 		if (!arrows) return;
 		for (var i = 0; i < arrows.length; i++) {
 			document.getElementById("body").removeChild(arrows[i].arrowsvg);
-			if (svg.isElSVG(arrows[i].pointend)) {
-				if (arrows[i].stroke) arrows[i].pointend.setAttribute("stroke", arrows[i].stroke);
-				else arrows[i].pointend.removeAttribute("stroke");
-				if (arrows[i].strokewidth) arrows[i].pointend.setAttribute("stroke-width", arrows[i].strokewidth);
-				else arrows[i].pointend.removeAttribute("strokewidth");
-			}
-			else {
-				if (arrows[i].border) arrows[i].pointend.style.border = arrows[i].border;
-				else arrows[i].pointend.style.removeProperty("border");
-			}			
 		}
 		arrows = [];
+	};
+	
+	that.highlightElements = function(container) {
+		for (var i = 0; i < container.pointel.length; i++) {
+			var obj = {};
+			obj.el = container.pointel[i];
+			if (svg.isElSVG(obj.el)) {
+				obj.stroke = obj.el.getAttribute("stroke");
+				obj.strokewidth = obj.el.getAttribute("stroke-width");
+				obj.el.setAttribute("stroke", theme.helplinecolor);
+				if (obj.el.nodeName == "text") obj.el.setAttribute("stroke-width", 1);
+				else obj.el.setAttribute("stroke-width", 2);
+			}
+			else {
+				if ((obj.el.children.length == 0) && (obj.el.textContent > "")) {
+					obj.color = that.getStyle(obj.el, "color");
+					obj.fontweight = that.getStyle(obj.el, "font-weight");
+					obj.el.style.color = theme.helptextcolor;
+					obj.el.style.fontWeight = "bold";
+				}
+				else {
+					obj.border = that.getStyle(obj.el, "border");
+					obj.el.style.border = "solid 2px " + theme.helplinecolor;
+				}
+			}
+			highlighted.push(obj);
+		}
+	};
+	
+	that.unhighlightElements = function() {
+		for (var i = 0; i < highlighted.length; i++) {
+			if (svg.isElSVG(highlighted[i].el)) {
+				if (highlighted[i].stroke) highlighted[i].el.setAttribute("stroke", highlighted[i].stroke);
+				else highlighted[i].el.removeAttribute("stroke");
+				if (highlighted[i].strokewidth) highlighted[i].el.setAttribute("stroke-width", highlighted[i].strokewidth);
+				else highlighted[i].el.removeAttribute("strokewidth");
+			}
+			else {
+				if (highlighted[i].border) highlighted[i].el.style.border = highlighted[i].border;
+				else highlighted[i].el.style.border = "";
+				if (highlighted[i].color) highlighted[i].el.style.color = highlighted[i].color;
+				else highlighted[i].el.style.color = "auto";
+				if (highlighted[i].fontweight) highlighted[i].el.style.fontWeight = highlighted[i].fontweight;
+				else highlighted[i].el.style.fontWeight = "normal";
+			}
+		}
+		highlighted = [];
+	};
+	
+	/* courtesy http://www.quirksmode.org/dom/getstyles.html */
+	that.getStyle = function(el, styleProp) {
+		if (el.currentStyle)
+			var y = el.currentStyle[styleProp];
+		else if (window.getComputedStyle)
+			var y = document.defaultView.getComputedStyle(el,null).getPropertyValue(styleProp);
+		return y;
 	};
 	
 	return that;

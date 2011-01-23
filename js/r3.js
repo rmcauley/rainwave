@@ -121,11 +121,11 @@ function init() {
 	/*help.addTutorial("setfavourite", [ "register",  ] );
 	help.addTopic("setfavourite", { "h": "setfavourite", "p": "setfavourite_t", "height": svg.em * 4, "modx": svg.em * 2, "mody": -svg.em, "tutorial": "setfavourite" });*/
 
-	help.addStep("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_p", "mody": svg.em, "modx": svg.em * 3, "height": svg.em * 15 });
+	help.addStep("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_p", "height": svg.em * 15 });
 	help.addStep("tunein", { "h": "tunein", "p": "tunein_p", "mody": 35, "skipf": function() { return user.p.radio_tunedin ? true : false; } } );
 	help.addStep("login", { "h": "login", "p": "login_p", "skipf": function() { return user.p.user_id > 1 ? true : false } });
 	help.addTutorial("ratecurrentsong", [ "register", "tunein", "ratecurrentsong", "setfavourite" ]);
-	help.addTopic("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_t", "mody": svg.em * 6, "tutorial": "ratecurrentsong", "skipf": function() { return user.p.radio_tunedin ? true : false; } });
+	help.addTopic("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_t", "tutorial": "ratecurrentsong", "skipf": function() { return user.p.radio_tunedin ? true : false; } });
 
 	help.addTopic("tunein", { "h": "tunein", "p": "tunein_p", "mody": 35, "modx": -350 });
 	

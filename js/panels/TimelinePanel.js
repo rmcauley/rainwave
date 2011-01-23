@@ -133,6 +133,7 @@ panels.TimelinePanel = {
 				else {
 					that.currentevents[i].disableRating();
 				}
+				that.currentevents[i].clockRemove();
 				that.currentevents[i].disableVoting();
 				that.currentevents[i].showVotes();
 				that.currentevents[i].sortSongOrder();
@@ -384,26 +385,82 @@ panels.TimelinePanel = {
 		return that;
 	}
 };
-	
-function TimelineElection(json, container, parent) {
+
+function TimelineSkeleton(json, container, parent) {
 	var that = {};
 
-	that.width = parent.width;
 	that.purge = false;
 	that.el = false;
 	that.p = json;
-	that.songs = new Array();
-	that.showingwinner = false;
-	that.timeleft = 0;
-	that.votingdisabled = true;
-	that.voted = false;
 	that.clockdisplay = false;
 	that.clockid = false;
 	that.container = container;
 	that.parent = parent;
 	that.height = 0;
-
+	that.timeleft = 0;
+	
 	theme.Extend.TimelineSkeleton(that);
+
+	that.init = function() {
+		that.draw();
+		that.container.appendChild(that.el);
+		that.clockdisplay = true;
+		that.clockid = -1;
+		if (that.p.sched_used == 0) {
+			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -5);
+		}
+		that.recalculateHeight();
+	};
+	
+	that.update = function(newjson) {
+		that.p = newjson;
+	};
+	
+	that.purgeElements = function() {
+		if (that.clockid >= 0) clock.eraseClock(that.clockid);
+	};
+
+	that.clockRemove = function() {
+		if (that.clockdisplay) {
+			that.clockdisplay = false;
+			that.clockUndraw();
+		}
+	};
+	
+	that.clockChange = function(newend) {
+		clock.updateClockEnd(that.clockid, newend);
+	};
+
+	that.clockUpdate = function(time) {
+		that.timeleft = time;
+		if ((that.clockdisplay) && (time >= 0)) that.clock.textContent = formatNumberToMSS(time);
+	};
+	
+	that.getScheduleLength = function() { return 0; }	
+	that.remove = function() {};
+	that.showWinner = function() {};
+	that.showVotes = function() {};
+	that.showSongLengths = function() {};
+	that.enableVoting = function() {};
+	that.disableVoting = function(override) {};
+	that.cancelVoting = function() {};	
+	that.updateVotingHelp = function() {};
+	that.enableRating = function() {};	
+	that.disableRating = function() {};
+	that.registerVote = function() {};
+
+	return that;
+};
+	
+function TimelineElection(json, container, parent) {
+	var that = TimelineSkeleton(json, container, parent);
+	
+	that.songs = new Array();
+	that.showingwinner = false;
+	that.votingdisabled = true;
+	that.voted = false;
+	
+	theme.Extend.TimelineSkeleton(json, container, parent);
 	theme.Extend.TimelineElection(that);
 
 	that.init = function() {
@@ -524,26 +581,10 @@ function TimelineElection(json, container, parent) {
 		}
 	};
 	
-	that.clockRemove = function() {
-		if (that.clockdisplay) {
-			that.clockdisplay = false;
-			that.clockUndraw();
-		}
-	};
-
-	that.clockChange = function(newend) {
-		clock.updateClockEnd(that.clockid, newend);
-	};
-
-	that.clockUpdate = function(time) {
-		that.timeleft = time;
-		if ((that.clockdisplay) && (time >= 0)) fx.renderF(function() { that.clock.textContent = formatNumberToMSS(time); });
-	};
-	
 	that.updateVotingHelp = function() {
 		var spe = [];
 		for (var i = 0; i < that.songs.length; i++) {
-			spe.push(that.songs[i].songel);
+			spe.push(that.songs[i].song_title);
 		}
 		help.changeStepPointEl("clickonsongtovote", spe);
 		help.changeTopicPointEl("voting", spe);
@@ -556,174 +597,6 @@ function TimelineElection(json, container, parent) {
 		}
 		return Math.round(avg / that.songs.length);
 	};
-
-	return that;
-};
-
-function TimelineSong(json, parent, x, y, songnum) {
-	var that = {};
-	that.p = json;
-	that.elec_votes = 0;
-	that.songnum = songnum;
-	that.voteinprogress = false;
-	that.votesubmitted = false;
-	that.votehighlighted = false;
-	that.parent = parent;
-
-	theme.Extend.TimelineSong(that);
-	that.draw();
-	Album.linkify(json.album_id, that.album_name);
-	
-	that.updateJSON = function(json) {
-		that.p = json;
-		that.song_rating.setSite(that.p.song_rating_avg);
-		that.album_rating.setSite(that.p.album_rating_avg);
-	};
-	
-	that.enableVoting = function() {
-		that.vote_hover_el.addEventListener('mouseover', that.voteHoverOn, true);
-		that.vote_hover_el.addEventListener('mouseout', that.voteHoverOff, true);
-		that.vote_hover_el.addEventListener('click', that.voteAction, true);
-		that.vote_hover_el.style.cursor = "pointer";
-	};
-	
-	that.disableVoting = function() {
-		that.vote_hover_el.removeEventListener('mouseover', that.voteHoverOn, true);
-		that.vote_hover_el.removeEventListener('mouseout', that.voteHoverOff, true);
-		that.vote_hover_el.removeEventListener('click', that.voteAction, true);
-		that.vote_hover_el.style.cursor = "default";
-		if (!that.votehighlighted) that.voteHoverOff();
-	};
-	
-	that.voteAction = function() {
-		if (that.voteinprogress) {
-			that.voteSubmit();
-			return;
-		}
-		that.parent.cancelVoting();
-		if (parent.timeleft >= 15) {
-			that.voteinprogress = true;
-			that.startVoting();
-		}
-		else {
-			that.voteinprogress = true;
-			that.voteSubmit();
-		}
-	};
-	
-	that.voteCancel = function() {
-		if (that.voteinprogress) {
-			that.voteinprogress = false;
-			that.voteProgressStop();
-			that.voteProgressReset();
-		}
-	};
-
-	that.voteSubmit = function() {
-		if (that.votesubmitted) return;
-		that.votesubmitted = true;
-		that.voteProgressStop();
-		that.voteProgressComplete();
-		that.parent.disableVoting();
-		that.parent.changeHeadline(_l("submittingvote"));
-		ajax.async_get("vote", { "elec_entry_id": that.p.elec_entry_id });
-	};
-	
-	that.registerFailedVote = function() {
-		that.voteinprogress = false;
-		that.votesubmitted = false;
-		that.votehighlighted = false;
-		that.voteHoverReset();
-		that.voteHoverOff();
-	};
-	
-	that.registerVote = function() {
-		that.voteinprogress = true;
-		that.votesubmitted = true;
-		that.votehighlighted = true;
-		that.voteProgressComplete();
-		that.registerVoteDraw();
-		that.parent.changeHeadline(_l("voted"));
-	};
-	
-	that.enableRating = function() {
-		that.song_rating.enable();
-		that.album_rating.enable();
-	};
-	
-	that.disableRating = function() {
-		that.song_rating.disable();
-		that.album_rating.disable();
-	};
-	
-	that.getScheduledLength = function()  {
-		return that.p.song_secondslong;
-	};
-
-	return that;
-};
-
-function TimelineSkeleton(json, container, parent) {
-	var that = {};
-
-	that.purge = false;
-	that.el = false;
-	that.p = json;
-	that.clockdisplay = false;
-	that.clockid = false;
-	that.container = container;
-	that.parent = parent;
-	that.height = 0;
-	
-	theme.Extend.TimelineSkeleton(that);
-
-	that.init = function() {
-		that.draw();
-		that.container.appendChild(that.el);
-		that.clockdisplay = true;
-		that.clockid = -1;
-		if (that.p.sched_used == 0) {
-			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -5);
-		}
-		that.recalculateHeight();
-	};
-	
-	that.update = function(newjson) {
-		that.p = newjson;
-	};
-	
-	that.purgeElements = function() {
-		if (that.clockid >= 0) clock.eraseClock(that.clockid);
-	};
-
-	that.clockRemove = function() {
-		if (that.clockdisplay) {
-			that.clockdisplay = false;
-			that.clockUndraw();
-		}
-	};
-	
-	that.clockChange = function(newend) {
-		clock.updateClockEnd(that.clockid, newend);
-	};
-
-	that.clockUpdate = function(time) {
-		that.timeleft = time;
-		if ((that.clockdisplay) && (time >= 0)) that.clock.textContent = formatNumberToMSS(time);
-	};
-	
-	that.getScheduleLength = function() { return 0; }	
-	that.remove = function() {};
-	that.showWinner = function() {};
-	that.showVotes = function() {};
-	that.showSongLengths = function() {};
-	that.enableVoting = function() {};
-	that.disableVoting = function(override) {};
-	that.cancelVoting = function() {};	
-	that.updateVotingHelp = function() {};
-	that.enableRating = function() {};	
-	that.disableRating = function() {};
-	that.registerVote = function() {};
 
 	return that;
 };
@@ -831,6 +704,109 @@ function TimelineOneShot(json, container, parent) {
 	
 	that.getScheduledLength = function() {
 		return that.p.song_data[0].song_secondslong;
+	};
+
+	return that;
+};
+
+function TimelineSong(json, parent, x, y, songnum) {
+	var that = {};
+	that.p = json;
+	that.elec_votes = 0;
+	that.songnum = songnum;
+	that.voteinprogress = false;
+	that.votesubmitted = false;
+	that.votehighlighted = false;
+	that.parent = parent;
+
+	theme.Extend.TimelineSong(that);
+	that.draw();
+	Album.linkify(json.album_id, that.album_name);
+	
+	that.updateJSON = function(json) {
+		that.p = json;
+		that.song_rating.setSite(that.p.song_rating_avg);
+		that.album_rating.setSite(that.p.album_rating_avg);
+	};
+	
+	that.enableVoting = function() {
+		that.vote_hover_el.addEventListener('mouseover', that.voteHoverOn, true);
+		that.vote_hover_el.addEventListener('mouseout', that.voteHoverOff, true);
+		that.vote_hover_el.addEventListener('click', that.voteAction, true);
+		that.vote_hover_el.style.cursor = "pointer";
+	};
+	
+	that.disableVoting = function() {
+		that.vote_hover_el.removeEventListener('mouseover', that.voteHoverOn, true);
+		that.vote_hover_el.removeEventListener('mouseout', that.voteHoverOff, true);
+		that.vote_hover_el.removeEventListener('click', that.voteAction, true);
+		that.vote_hover_el.style.cursor = "default";
+		if (!that.votehighlighted) that.voteHoverOff();
+	};
+	
+	that.voteAction = function() {
+		if (that.voteinprogress) {
+			that.voteSubmit();
+			return;
+		}
+		that.parent.cancelVoting();
+		if (parent.timeleft >= 15) {
+			that.voteinprogress = true;
+			that.startVoting();
+		}
+		else {
+			that.voteinprogress = true;
+			that.voteSubmit();
+		}
+	};
+	
+	that.voteCancel = function() {
+		if (that.voteinprogress) {
+			that.voteinprogress = false;
+			that.voteProgressStop();
+			that.voteProgressReset();
+		}
+	};
+
+	that.voteSubmit = function() {
+		if (that.votesubmitted) return;
+		that.votesubmitted = true;
+		that.voteProgressStop();
+		that.voteProgressComplete();
+		that.parent.disableVoting();
+		that.parent.changeHeadline(_l("submittingvote"));
+		ajax.async_get("vote", { "elec_entry_id": that.p.elec_entry_id });
+	};
+	
+	that.registerFailedVote = function() {
+		that.voteinprogress = false;
+		that.votesubmitted = false;
+		that.votehighlighted = false;
+		that.voteHoverReset();
+		that.voteHoverOff();
+	};
+	
+	that.registerVote = function() {
+		that.voteinprogress = true;
+		that.votesubmitted = true;
+		that.votehighlighted = true;
+		that.voteProgressComplete();
+		that.registerVoteDraw();
+		that.parent.changeHeadline(_l("voted"));
+	};
+	
+	that.enableRating = function() {
+		that.song_rating.enable();
+		that.album_rating.enable();
+	};
+	
+	that.disableRating = function() {
+		that.song_rating.disable();
+		that.album_rating.disable();
+	};
+	
+	that.getScheduledLength = function()  {
+		return that.p.song_secondslong;
 	};
 
 	return that;

@@ -74,10 +74,10 @@ var NPSkeleton = function(npp) {
 	
 	that.init = function() {
 		if (that.song_rating) {
-			//help.changeStepPointEl("ratecurrentsong", [ that.song_rating.grid ]);
-			//help.changeTopicPointEl("ratecurrentsong", [ that.song_rating.grid ]);
-			//help.changeStepPointEl("setfavourite", [ that.song_rating.favbutton ]);
-			//help.changeTopicPointEl("setfavourite", false);
+			help.changeStepPointEl("ratecurrentsong", [ that.song_rating.mousecatch ]);
+			help.changeTopicPointEl("ratecurrentsong", [ that.song_rating.mousecatch ]);
+			help.changeStepPointEl("setfavourite", [ that.song_rating.mousecatch ]);
+			help.changeTopicPointEl("setfavourite", false);
 		}
 		else {
 			help.changeStepPointEl("ratecurrentsong", false);

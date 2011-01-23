@@ -12,11 +12,18 @@ function SVGHelper(workel) {
 		workel.removeChild(emm);
 	};
 	
+	that.isElSVG = function(el) {
+		if (!that.capable) return false;
+		if (el.namespaceURI.indexOf("svg") > 0) return true;
+		return false;
+	};
+
 	that.measureEm();
 	
 	if (!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1")) {
 		return that;
 	}
+
 	that.capable = true;
 	
 	var ns = "http://www.w3.org/2000/svg";
@@ -114,11 +121,6 @@ function SVGHelper(workel) {
 	};
 	
 	that.linkifyText = that.linkify;
-	
-	that.isElSVG = function(el) {
-		if (el.namespaceURI.indexOf("svg") > 0) return true
-		return false;
-	};
-	
+
 	return that;
 }
