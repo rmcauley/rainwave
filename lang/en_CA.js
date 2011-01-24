@@ -3,16 +3,12 @@
 var lang = new function() {
 	// Panel Names
 	this.p_COGBanner = "COG Banner";
-	this.p_LogoPanel = "Logo/Status";
 	this.p_LogPanel = "Debug Log";
 	this.p_MainMPI = "Main Panel";
 	this.p_NowPanel = "Now Playing";
 	this.p_RequestsPanel = "Requests";
 	this.p_SlackPanel = "Slack Test";
 	this.p_TimelinePanel = "Timeline";
-	
-	// Skin Names
-	this.s_RainwaveClassic = "Rainwave Classic";
 
 	// Raw Log Code
 	this.log_0 = "Debug";
@@ -20,8 +16,6 @@ var lang = new function() {
 	// Edi Codes
 	this.log_1 = "Station ID not provided to API.";
 	this.log_2 = "This station is currently offline.<br />Check <a href=\"http://twitter.com/Rainwavecc\">twitter.com/Rainwavecc</a> or the chat room for the latest updates.";
-	// this.log_3 is an M3U hijack
-	this.m3uhijack = " is trying to hijack the M3U download.  Please right click and 'Save As.'";
 	
 	// HTTP Codes
 	this.log_200 = "HTTP OK";
@@ -69,12 +63,6 @@ var lang = new function() {
 	this.log_4002 = "Client-side error while submitting change.  Please refresh your page and try again.";
 	this.log_4003 = "That request does not belong to you.";
 	
-	/*// Request Swap Results
-	this.log_5000 = "Server-side error while re-ordering requests.  Please try again.";
-	this.log_5001 = "You must be logged in to re-order requests.";
-	this.log_5002 = "Client-side error while submitting re-order.  Please refresh your page and try again.";
-	this.log_5003 = "One of the requests being re-ordered does not belong to you.";*/
-	
 	// Request Change Results
 	this.log_6000 = "Server-side error while changing request.  Please try again.";
 	this.log_6001 = "You must be logged in to use requests.";
@@ -108,8 +96,6 @@ var lang = new function() {
 	this.log_9001 = "Too many login attempts. Please go to the forums.";
 	this.log_9002 = "Login error.  Please use the forums.";
 	
-	// 10000 is tune in hijacking errors
-	
 	/* Number suffixes */
 	this.suffix_0 = "";
 	this.suffix_1 = "st";
@@ -127,7 +113,7 @@ var lang = new function() {
 	this.pl_oncooldown = "<span class='pl_oncooldown'>On cooldown for <b>";
 	this.pl_oncooldown2 = "</b>.</span>";
 	this.pl_ranks = "Ranks <b>";
-	this.pl_ranks2 = "</b> in globals ratings.";
+	this.pl_ranks2 = "</b> in global ratings.";
 	this.pl_favourited = "Favourited by <b>";
 	this.pl_favourited2 = "</b>";
 	this.pl_favourited3 = ".";
@@ -149,7 +135,6 @@ var lang = new function() {
 	this.pref_timeline_linear = "Linear Timeline";
 	this.pref_timeline_showhistory = "Show History";
 	this.pref_timeline_showelec = "Show Election Results";
-	this.pref_playlist_disablesearch = "Disable Search";
 	this.pref_timeline_showallnext = "Show All Upcoming Events";
 	this.pref_rating_hidesite = "Hide Site Ratings Until I've Rated";
 	this.pref_edi = "General";
@@ -157,14 +142,12 @@ var lang = new function() {
 	this.pref_edi_language = "Language";
 	this.pref_edi_theme = "Skin";
 	this.pref_fx = "Effects";
-	this.pref_fx_fps = "Animation Framerate";
+	this.pref_fx_fps = "Animation Frame Rate";
 	this.pref_fx_enabled = "Animation Enabled";
-	this.pref_logo_flash = "Flash Player";
 	this.pref_mpi_showlog = "Show Log Panel";
 	this.pref_requests = "Requests";
 	this.pref_requests_technicalhint = "Technical Tab Title";
 	this.pref_timeline_highlightrequests = "Highlight Requests";
-	this.pref_timeline_fittonow = "Align To Now Playing";
 	
 	/* About */
 	
@@ -185,8 +168,6 @@ var lang = new function() {
 	this.helpstart = "Start &#9654; ";
 	this.helpnext = "Next &#9654; ";
 	this.helplast = "Close &#9654; ";
-	this.welcomefinish = "That's the Basics!";
-	this.welcomefinish_p = "Enjoy Rainwave!<br /><br />Click Help for more, or drop by the chat.";
 	this.about = "About / Donations / API";
 	this.about_p = "Staff, technology used, and donation information.";
 	this.voting = "Voting";
@@ -198,7 +179,7 @@ var lang = new function() {
 	this.login = "Login or Register";
 	this.login_p = "Please login.";
 	this.ratecurrentsong = "Rating";
-	this.ratecurrentsong_p = "Slide your mouse over the graph, and click to rate the song.<br /><br />You can rate here, or in Previously Playing.<br /><br />Album ratings are averaged from your song ratings.";
+	this.ratecurrentsong_p = "Slide your mouse over the graph, and click to rate the song.<br /><br />Album ratings are averaged from your song ratings.";
 	this.ratecurrentsong_t = "Rating affects how often songs and albums are played.<br /><br />Learn how to rate.";
 	this.ratecurrentsong_tp = "Rating";
 	this.setfavourite = "Favourites";
@@ -224,7 +205,6 @@ var lang = new function() {
 	this.name = "Name";
 	this.notes = "Notes";
 	this.user_id = "User ID";
-	this.showlist = "Live Show List";
 	this.addshow = "Add Show";
 	this.start = "Start";
 	this.end = "End";
@@ -243,10 +223,10 @@ var lang = new function() {
 	this.endnow = "End Show";
 	this.wrapup = "Wrap Up";
 	this.dormant = "Dormant";
-	this.OVERTIME = "Overtime";
+	this.OVERTIME = "OVERTIME";
+	this.noschedule = "No events planned for this week.";
 	
 	// Requests
-	this.requestsubmittedfor = "Request submitted for";
 	this.requestok = "Requested";
 	this.expiring = "Expiring!";
 	this.fewminutes = "A Few Minutes";
@@ -273,14 +253,9 @@ var lang = new function() {
 	this.selectstation = "Select Station";
 	this.tunedin = "Tuned In";
 	this.tunedout = "Tuned Out";
-	this.tunedoutm3u = "Tuned Out - Download M3U";
 	this.play = "&#9654; Play In Browser";
-	this.user = "User";
-	this.player = "Player";
 	this.help = "Help";
-	this.options = "Options";
 	this.forums = "Forums";
-	this.jingle = "Jingle";
 	this.liveshow = "Live Show";
 	this.adset = "Advertisement";
 	this.onetimeplay = "One-Time Play";
@@ -296,7 +271,9 @@ var lang = new function() {
 	this.chat = "Chat";
 	this.playing = "&#9633; Stop Playback";
 	this.loading = "Loading";
-	this.searching = "Searching";
+	this.searching = "Searching: ";
+	this.m3uhijack = " is trying to hijack the M3U download.  Please right click and 'Save As.'";
+	this.menu_morestations = "More &#9660;"
 	
 	/* Words */
 	
@@ -306,11 +283,5 @@ var lang = new function() {
 	this['with'] = "with";
 	this.or = "or";
 	this.from = "from";
-	
-	/* Station descriptions */
-	this.station_rainwave = "Original video game soundtracks.";
-	this.station_ocremix = "100% OverClocked Remix.";
-	this.station_mixwave = "Independant game cover bands and remixes.";
-	
-	this.menu_morestations = "More &#9660;"
+
 };

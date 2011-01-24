@@ -282,7 +282,7 @@ panels.PlaylistPanel = {
 			else if (/\w/.test(chr)) dosearch = true;
 			else if (code == 32) {
 				dosearch = true;
-				evt.preventDefault();
+				bubble = false;
 			}
 			
 			if (dosearch && !inlinetimer) {
@@ -301,7 +301,6 @@ panels.PlaylistPanel = {
 				// backspace
 				if (code == 8) {
 					bubble = false;
-					evt.preventDefault();
 					if (searchstring.length == 1) {
 						that.clearInlineSearch();
 					}
@@ -315,7 +314,6 @@ panels.PlaylistPanel = {
 			// down arrow
 			if ((code == 40) && (albumsort[keynavpos + 1])) {
 				bubble = false;
-				evt.preventDefault();
 				//log.log("PlayP", 0, "[keyHandle] Scrolling down to " + albums[albumsort[keynavpos + 1]].album_name);
 				if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
 				keynavpos++;
@@ -327,7 +325,6 @@ panels.PlaylistPanel = {
 			// up arrow
 			if ((code == 38) && (albumsort.length > 0) && (keynavpos > 0)) {
 				bubble = false;
-				evt.preventDefault();
 				//log.log("PlayP", 0, "[keyHandle] Scrolling up to " + albums[albumsort[keynavpos - 1]].album_name);
 				if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
 				keynavpos--;
@@ -340,7 +337,6 @@ panels.PlaylistPanel = {
 			if ((code == 13) && (keynavpos >= 0)) {
 				that.setRowClass(albums[albumsort[keynavpos]], false);
 				bubble = false;
-				evt.preventDefault();
 				var linkobj = { "type": "album", "id": albumsort[keynavpos] };
 				that.clearInlineSearch();
 				that.openLink(linkobj);
@@ -358,7 +354,6 @@ panels.PlaylistPanel = {
 			
 			if (inlinetimer && (code == 27)) {
 				that.clearInlineSearch();
-				evt.preventDefault();
 				bubble = false;
 			}
 			else if ((keynavpos >= 0) && (code == 27)) {

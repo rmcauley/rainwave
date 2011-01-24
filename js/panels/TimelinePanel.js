@@ -126,7 +126,6 @@ panels.TimelinePanel = {
 				that.currentendtime = json.sched_endtime;
 			}
 			for (var i = 0; i < that.currentevents.length; i++) {
-				that.currentevents[i].disableVoting();
 				if (user.p.current_activity_allowed) {
 					that.currentevents[i].enableRating();
 				}
@@ -442,7 +441,7 @@ function TimelineSkeleton(json, container, parent) {
 	that.showVotes = function() {};
 	that.showSongLengths = function() {};
 	that.enableVoting = function() {};
-	that.disableVoting = function(override) {};
+	that.disableVoting = function() {};
 	that.cancelVoting = function() {};	
 	that.updateVotingHelp = function() {};
 	that.enableRating = function() {};	
@@ -542,13 +541,14 @@ function TimelineElection(json, container, parent) {
 	
 	that.enableVoting = function() {
 		if (!that.votingdisabled && !that.voted) return;
+		that.votingdisabled = false;
 		for (var i = 0; i < that.songs.length; i++) {
 			that.songs[i].enableVoting();
 		}
 	};
 	
 	that.disableVoting = function(override) {
-		if (that.votingdisabled && !override) return;
+		if (that.votingdisabled) return;
 		that.votingdisabled = true;
 		that.cancelVoting();
 		for (var i = 0; i < that.songs.length; i++) {

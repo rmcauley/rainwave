@@ -199,17 +199,32 @@ panels.SchedulePanel = {
 		
 		that.listUpdate = function(json) {
 			listfs.removeChild(list);
-			list = document.createElement("table");
+			if (json.length == 0) {
+				list = createEl("div", { "textContent": _l("noschedule") });
+				listfs.appendChild(list);
+				return;
+			}
+			list = createEl("table", { "class": "schedule_table" });
 			var row;
 			var date;
 			var del;
 			var start;
 			var end;
 			var td;
+			var minutes, minutese;
 			for (var i = 0; i < json.length; i++) {
 				row = document.createElement("tr");
 				date = new Date(json[i].sched_starttime * 1000);
-				row.appendChild(createEl("td", { "textContent": date.toString() + ": " + json[i].sched_name + " -- " + json[i].username + " // " + json[i].sched_notes } ));
+				enddate = new Date((json[i].sched_starttime + json[i].sched_length) * 1000);
+				row.appendChild(createEl("td", { "textContent": date.toLocaleDateString() }));
+				minutes = date.getMinutes();
+				if (minutes < 10) minutes = "0" + minutes;
+				minutese = enddate.getMinutes();
+				if (minutese < 10) minutese = "0" + minutese;
+				row.appendChild(createEl("td", { "textContent": date.getHours() + ":" + minutes + " - " + enddate.getHours() + ":" + minutese }));
+				row.appendChild(createEl("td", { "textContent": json[i].sched_name }));
+				row.appendChild(createEl("td", { "textContent": json[i].sched_notes }));
+				row.appendChild(createEl("td", { "textContent": json[i].username }));
 				td = document.createElement("td");
 				if (user.p.radio_live_admin >= 2) {
 					del = createEl("button", { "textContent": _l("delete") });

@@ -25,42 +25,13 @@ function HotkeyControl() {
 		}
 	};
 	
-	that.keyPressHandle = function(evt) {
-		/* handy keycodes:
-				space: 32
-				enter: 13
-				tab: 9
-				escape: 27
-				backspace: 8
-				a-z,A-Z: 65 to 90, 90 to 122
-				numbers: 48-57 */
-		for (var i = 0; i < callbacks.length; i++) {
-			if (!callbacks[i].method.call(callbacks[i].object, evt)) {
-				evt.cancelBubble = true;
-				evt.returnValue = false;
-				evt.stopPropagation();
-				return false;
-			}
-		}
-		// stop this from canceling our AJAX requests
-		if (evt.keyCode) {
-			var code = (evt.keyCode != 0) ? evt.keyCode : evt.charCode;
-			if (code == 27) {
-				evt.preventDefault();
-			}
-		}			
-		return true;
-	};
-	
 	// From: http://www.tedspence.com/index.php?entry=entry070503-103948
 	that.stopDefaultAction = function(e) {
-		//e.cancelBubble = true;
+		//if (e.stopPropagation) e.stopPropagation();
+		if (e.preventDefault) e.preventDefault();
 		//e.returnValue = false;
-			
-		//if (e.stopPropagation) {
-			//e.stopPropagation();
-			e.preventDefault();
-		//}
+		//e.cancelBubble = true;
+		//return false;
 	};
 	
 	that.preventHotkeys = function(el) {
@@ -73,7 +44,46 @@ function HotkeyControl() {
 		e.stopPropagation();
 	};
 	
-	window.addEventListener('keypress', that.keyPressHandle, false);
+	that.keyPress = function(evt) {
+		/* handy keycodes:
+				space: 32
+				enter: 13
+				tab: 9
+				escape: 27
+				backspace: 8
+				a-z,A-Z: 65 to 90, 90 to 122
+				numbers: 48-57 */
+		for (var i = 0; i < callbacks.length; i++) {
+			if (!callbacks[i].method.call(callbacks[i].object, evt)) {
+				that.stopDefaultAction(evt);
+				return false;
+			}
+		}
+		return true;
+	};
+	
+	that.keyPressHandler = function(evt) {
+		var code = (evt.keyCode != 0) ? evt.keyCode : evt.charCode;
+		if (code && (code != 8)) {
+			return that.keyPress(evt);
+		}
+	};
+	
+	that.keyDownHandler = function(evt) {
+		var code = (evt.keyCode != 0) ? evt.keyCode : evt.charCode;
+		if (code && (code == 8)) {
+			return that.keyPress(evt);
+		}
+		// stop this from canceling our AJAX requests
+		if (code && (code == 27)) {
+			that.keyPress(evt);
+			that.stopDefaultAction(evt);
+			return false;
+		}
+	};
+	
+	window.addEventListener('keydown', that.keyDownHandler, false);
+	window.addEventListener('keypress', that.keyPressHandler, false);
 	
 	return that;
 }

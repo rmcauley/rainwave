@@ -111,15 +111,11 @@ function init() {
 	help.addTutorial("about", [ "about" ]);
 	help.addTopic("about", { "h": "about", "p": "about_p", "tutorial": "about" });
 
-	help.addStep("welcometorw", { "h": "welcometorw", "p": "welcometorw" } );
-	help.addStep("welcomefinish", { "h": "welcomefinish", "p": "welcomefinish_p" } );
-	help.addTutorial("welcome", [ "tunein", "clickonsongtovote", "welcomefinish" ] );
+	help.addTutorial("welcome", [ "tunein", "clickonsongtovote" ] );
 
 	help.addTopic("playlistsearch", { "h": "playlistsearch", "p": "playlistsearch_p" });
 
 	help.addStep("setfavourite", { "h": "setfavourite", "p": "setfavourite_p" });
-	/*help.addTutorial("setfavourite", [ "register",  ] );
-	help.addTopic("setfavourite", { "h": "setfavourite", "p": "setfavourite_t", "height": svg.em * 4, "modx": svg.em * 2, "mody": -svg.em, "tutorial": "setfavourite" });*/
 
 	help.addStep("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_p", "height": svg.em * 15 });
 	help.addStep("tunein", { "h": "tunein", "p": "tunein_p", "mody": 35, "skipf": function() { return user.p.radio_tunedin ? true : false; } } );

@@ -89,7 +89,7 @@ panels.LogPanel = {
 				fs[facility].removeChild(fs[facility].lastElementChild);
 				fslength[facility]--;
 			}
-			var li = document.createElement("div");
+			var li = createEl("div");
 			if (facility == "All") li.innerHTML = "<b>" + originalfacility + "</b>: " + message;
 			else li.textContent = message;
 			fs[facility].insertBefore(li, fs[facility].firstElementChild);

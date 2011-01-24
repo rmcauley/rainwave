@@ -1111,3 +1111,14 @@ td.nowplaying_song_rating, td.nowplaying_album_rating, td.nowplaying_votes {
 	width: 120px;
 	padding-right: 3px;
 }
+
+table.schedule_table td {
+	padding: .2em .5em;
+	border-bottom: 1px solid #888888;
+	border-right: 1px solid #444444;
+}
+
+table.schedule_table button {
+	padding: 0px;
+	font-size: 0.8em;
+}
