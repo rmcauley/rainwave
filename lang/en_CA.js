@@ -16,6 +16,9 @@ var lang = new function() {
 	// Edi Codes
 	this.log_1 = "Station ID not provided to API.";
 	this.log_2 = "This station is currently offline.<br />Check <a href=\"http://twitter.com/Rainwavecc\">twitter.com/Rainwavecc</a> or the chat room for the latest updates.";
+	this.log_3 = "You used ";
+	this.log_3_2 = " in the last few minutes; you must wait to use ";
+	this.log_3_3 = ".";
 	
 	// HTTP Codes
 	this.log_200 = "HTTP OK";
@@ -95,6 +98,8 @@ var lang = new function() {
 	this.log_9000 = "Invalid username or password.";
 	this.log_9001 = "Too many login attempts. Please go to the forums.";
 	this.log_9002 = "Login error.  Please use the forums.";
+	
+	// 10000 is used by error control for news
 	
 	/* Number suffixes */
 	this.suffix_0 = "";
@@ -228,14 +233,15 @@ var lang = new function() {
 	
 	// Requests
 	this.requestok = "Requested";
-	this.expiring = "Expiring!";
-	this.fewminutes = "A Few Minutes";
-	this.soon = "Soon";
-	this.shortwait = "Short Wait";
-	this.wait = "Waiting";
-	this.longwait = "Long Wait";
-	this.reqoncooldown = "On Cooldown";
-	this.reqempty = "Empty";
+	this.expiring = " (expiring!)";
+	this.fewminutes = " (a few minutes)";
+	this.soon = " (soon)";
+	this.shortwait = " (short wait)";
+	this.wait = " (waiting)";
+	this.longwait = " (long wait)";
+	this.reqoncooldown = " (on cooldown)";
+	this.reqempty = " (empty)";
+	this.wrongstation = " (wrong station)";
 	
 	/* Others */
 	this.nowplaying = "Now Playing";

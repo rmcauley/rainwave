@@ -85,7 +85,7 @@ panels.LogPanel = {
 		};
 		
 		that.logCallback = function(facility, originalfacility, code, message) {
-			while (fslength[facility] >= 100) {
+			while (fs[facility].children.length >= 100)
 				fs[facility].removeChild(fs[facility].lastElementChild);
 				fslength[facility]--;
 			}

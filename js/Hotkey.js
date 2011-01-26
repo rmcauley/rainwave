@@ -64,7 +64,7 @@ function HotkeyControl() {
 	
 	that.keyPressHandler = function(evt) {
 		var code = (evt.keyCode != 0) ? evt.keyCode : evt.charCode;
-		if (code && (code != 8)) {
+		if (code && (code != 8) && (code != 27)) {
 			return that.keyPress(evt);
 		}
 	};

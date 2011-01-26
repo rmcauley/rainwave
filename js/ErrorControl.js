@@ -180,6 +180,6 @@ function ErrorControl() {
 			}
 		}
 	};
-	
+
 	return that;
 };

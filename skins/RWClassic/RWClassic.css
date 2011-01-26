@@ -1049,7 +1049,7 @@ table.nowplaying_table {
 	z-index: 1;
 	width: 100%;
 	height: 100%;
-	padding: 1.2em 0px 0px 3px;
+	padding: 1.2em 10px 0px 3px;
 	table-layout: fixed;
 }
 
@@ -1077,9 +1077,7 @@ td.nowplaying_song_title {
 	text-overflow: ellipsis;
 }
 
-td.nowplaying_album_name, td.nowplaying_artist_name {
-	height: 1.5em;
-	vertical-align: bottom;
+td.nowplaying_album_name, td.nowplaying_artist_name, td.nowplaying_url {
 	padding-bottom: 3px;
 	padding-top: .6em;
 	overflow: hidden;
@@ -1087,6 +1085,11 @@ td.nowplaying_album_name, td.nowplaying_artist_name {
 	text-overflow: ellipsis;
 	padding-left: 1.5em;
 	font-size: 1.1em;
+}
+
+td.nowplaying_album_name, td.nowplaying_artist_name {
+	height: 1.5em;
+	vertical-align: bottom;
 }
 
 td.nowplaying_song_title, td.nowplaying_album_name, td.nowplaying_artist_name {
@@ -1108,7 +1111,7 @@ td.nowplaying_song_rating, td.nowplaying_album_rating {
 }
 
 td.nowplaying_song_rating, td.nowplaying_album_rating, td.nowplaying_votes {
-	width: 120px;
+	width: 110px;
 	padding-right: 3px;
 }
 

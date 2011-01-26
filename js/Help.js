@@ -10,6 +10,7 @@ var Help = function() {
 	var ctutshowing = false;
 	var ctut = false;
 	var arrows = [];
+	var arrowtimer = false;
 	var highlighted = [];
 	var showingstepname = false;		// named differently because ctutstep is actually 1 /ahead/ of what's showing.
 	
@@ -345,10 +346,11 @@ var Help = function() {
 	};
 	
 	that.drawArrows = function(container) {
-		setTimeout(function() { that.drawArrows2(container); }, 750);
+		arrowtimer = setTimeout(function() { that.drawArrows2(container); }, 750);
 	};
 	
 	that.drawArrows2 = function(container) {
+		if (arrowtimer) arrowtimer = false;
 		//if (alltopicsshown == 2) return;
 		if (!container.pointel) return;
 		that.highlightElements(container);
@@ -404,6 +406,10 @@ var Help = function() {
 	};
 	
 	that.removeArrows = function() {
+		if (arrowtimer) {
+			clearTimeout(arrowtimer);
+			arrowtimer = false;
+		}
 		that.unhighlightElements();
 		if (!arrows) return;
 		for (var i = 0; i < arrows.length; i++) {

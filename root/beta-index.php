@@ -19,7 +19,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 <head>
 	<title>Rainwave 3</title>
 	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-	<script src="preload.php" type="text/javascript"></script>
+	<script src="preload.php?site=<?php print $_GET['site'] ?>" type="text/javascript"></script>
 	<script src="lyre-ajax.js" type="text/javascript"></script>
 	<?php
 		$bnum = <%BUILDNUM%>;

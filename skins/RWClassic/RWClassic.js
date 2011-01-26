@@ -668,8 +668,8 @@ function EdiTheme() {
 				table.album_rating.appendChild(event.album_rating.el);
 			}
 			if (json.artists) Artist.allArtistToHTML(json.artists, table.artist_name);
-			if (json.song_url && (json.song_url.length > 0)) {
-				createEl("a", { "href": json.song_url, "textContent": json.song_url_text }, table.url);
+			if (json.song_url && (json.song_url.length > 0) && json.song_urltext && (json.song_urltext.length > 0)) {
+				createEl("a", { "href": json.song_url, "textContent": json.song_urltext }, table.url);
 				urlneedsfill = false;
 			}
 			if (json.elec_votes) {
@@ -1053,6 +1053,15 @@ function EdiTheme() {
 			else if (!username && !menup.loginreg.parentNode) pnode.appendChild(menup.loginreg);
 			if (!username && menup.username.parentNode) pnode.removeChild(menup.username);
 			else if (username && !menup.username.parentNode) pnode.appendChild(menup.username);
+		};
+		
+		menup.statRestrict = function(restricted) {
+			if (restricted) {
+				menup.td_news.textContent = _l("log_3") + STATIONS[user.p.radio_active_sid] + _l("log_3_2") + STATIONS[user.p.sid] + _l("log_3_3");
+			}
+			else {
+				menup.td_news.textContent = "";
+			}
 		};
 		
 		return menup;
@@ -1439,6 +1448,8 @@ function EdiTheme() {
 			obj.fx_opacity.onComplete = function() { ec.deleteError(obj); };
 			obj.fx_opacity.start(0);
 		};
+		
+		return ec;
 	};
 	
 	// /*****************************************************************************

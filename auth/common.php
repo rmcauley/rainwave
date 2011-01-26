@@ -11,6 +11,7 @@ include($phpbb_root_path . 'common.' . $phpEx);
 define("RW", 1);
 define("OCR", 2);
 define("VW", 3);
+define("MW", 3);
 
 $sid = RW;
 if ($_COOKIE['r3sid'] == "1") $sid = RW;
@@ -23,7 +24,7 @@ else if ($_SERVER['HTTP_HOST'] == "vwave.rainwave.cc") $sid = VW;
 // An override, mostly for administration uses
 if ($_GET['site'] == "rw") $sid = RW;
 else if ($_GET['site'] == "oc") $sid = OCR;
-else if ($_GET['site'] == "vw") $sid = VW;
+else if ($_GET['site'] == "mw") $sid = VW;
 // And a final override for when $_GET cannot be used or modified!
 if (defined(SITEOVERRIDE)) $sid = SITEOVERRIDE;
 

@@ -7,6 +7,8 @@ var SCHED_PLAYLIST = 5;
 var SCHED_PAUSE = 6;
 var SCHED_DJ = 7;
 
+var STATIONS = [ false, "Rainwave", "OCR Radio", "Mixwave" ];
+
 var errorcontrol = ErrorControl();
 var ajax = false;
 var edi = false;
@@ -82,8 +84,6 @@ function drawAboutScreen(div) {
 }
 
 function init() {
-	var errorcontrol = ErrorControl();
-
 	body = document.getElementById("body");
 	body.appendChild(fittextdiv);
 	ajax = LyreAJAX();

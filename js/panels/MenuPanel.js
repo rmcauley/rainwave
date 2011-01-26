@@ -37,6 +37,7 @@ panels.MenuPanel = {
 			user.addCallback(that, that.usernameCallback, "username");
 			user.addCallback(that, that.tunedinCallback, "radio_tunedin");
 			user.addCallback(that, that.userAvatarCallback, "user_avatar");
+			user.addCallback(that, that.statRestrict, "radio_statrestricted");
 			//ajax.addCallback(that, that.loginResult, "loginresult");
 		};
 		
@@ -133,7 +134,7 @@ panels.MenuPanel = {
 			if (sid == 2) window.location.href = "http://ocremix.rainwave.cc";
 			if (sid == 3) window.location.href = "http://mixwave.rainwave.cc";
 		};
-		
+	
 		return that;
 	}
 };
