@@ -15,10 +15,10 @@ function formatHumanTime(seconds, fulltime, disableseconds) {
 	var humantime = "";
 	var stophere = false;
 	if (seconds >= 604800) { humantime += Math.floor(seconds / 604800) + "w "; seconds = seconds % 604800; stophere = true; }
-	if ((!stophere || fulltime) && (seconds >= 86400)) { humantime += Math.floor(seconds / 86400) + "d "; seconds = seconds % 86400; stophere = true; }
-	if ((!stophere || fulltime) && (seconds >= 3600)) { humantime += Math.floor(seconds / 3600) + "h "; seconds = seconds %   3600; stophere = true; }
-	if ((!stophere || fulltime) && (seconds >= 60)) { humantime += Math.floor(seconds / 60) + "m "; seconds = seconds % 60;   stophere = true; }
-	if ((!stophere || fulltime) && (!disableseconds && (seconds < 60))) { humantime += seconds + "s "; }
+	if ((!stophere || fulltime) && (seconds >= 86400)) { humantime += Math.floor(seconds / 86400) + lang["timeformat_d"]; seconds = seconds % 86400; stophere = true; }
+	if ((!stophere || fulltime) && (seconds >= 3600)) { humantime += Math.floor(seconds / 3600) + lang["timeformat_h"]; seconds = seconds %   3600; stophere = true; }
+	if ((!stophere || fulltime) && (seconds >= 60)) { humantime += Math.floor(seconds / 60) + lang["timeformat_m"]; seconds = seconds % 60;   stophere = true; }
+	if ((!stophere || fulltime) && (!disableseconds && (seconds < 60))) { humantime += seconds + lang["timeformat_s"]; }
 	return humantime.substr(0, humantime.length - 1);
 }
 

@@ -137,6 +137,7 @@ panels.TimelinePanel = {
 				that.currentevents[i].showVotes();
 				that.currentevents[i].sortSongOrder();
 				that.currentevents[i].changeHeadline(_l("nowplaying"));
+				that.currentevents[i].updateIndicator();
 			}
 		};
 		
@@ -171,8 +172,9 @@ panels.TimelinePanel = {
 			}
 			if (json.code == 1) {
 				for (var i = 0; i < that.allevents.length; i++) {
-					that.allevents[i].registerVote(json.elec_entry_id);
-					that.allevents[i].disableVoting();
+					if (that.allevents[i].registerVote(json.elec_entry_id)) {
+						that.allevents[i].disableVoting();
+					}
 				}
 			}
 		};
@@ -435,6 +437,17 @@ function TimelineSkeleton(json, container, parent) {
 		if ((that.clockdisplay) && (time >= 0)) that.clock.textContent = formatNumberToMSS(time);
 	};
 	
+	that.updateIndicator = function() {
+		if (that.p.song_data && (typeof(that.p.song_data[0].elec_isrequest) != "undefined")) {
+			if (that.p.song_data[0].elec_isrequest == 0) that.changeIndicator("normal");
+			else if (that.p.song_data[0].elec_isrequest == 1) that.changeIndicator("request");
+			else if (that.p.song_data[0].elec_isrequest < 0) that.changeIndicator("conflict");
+		}
+		else {
+			that.changeIndicator("normal");
+		}
+	};
+	
 	that.getScheduleLength = function() { return 0; }	
 	that.remove = function() {};
 	that.showWinner = function() {};
@@ -579,6 +592,7 @@ function TimelineElection(json, container, parent) {
 				break;
 			}
 		}
+		return that.voted;
 	};
 	
 	that.updateVotingHelp = function() {
@@ -761,7 +775,7 @@ function TimelineSong(json, parent, x, y, songnum) {
 	};
 	
 	that.voteCancel = function() {
-		if (that.voteinprogress) {
+		if (that.voteinprogress && !that.votesubmitted) {
 			that.voteinprogress = false;
 			that.voteProgressStop();
 			that.voteProgressReset();
@@ -805,7 +819,7 @@ function TimelineSong(json, parent, x, y, songnum) {
 		that.album_rating.disable();
 	};
 	
-	that.getScheduledLength = function()  {
+	that.getScheduledLength = function() {
 		return that.p.song_secondslong;
 	};
 

@@ -8,7 +8,7 @@ function EdiTheme() {
 	that.textcolor = "#FFFFFF";
 	that.borderheight = 12;
 	that.borderwidth = 12;
-	that.name = _l("s_RainwaveClassic");
+	that.name = "Rainwave Classic";
 	that.MPI_MenuHeight = svg.em * 2;
 	that.MPI_MenuYPad = 2;
 	that.PLS_AlbumHeight = svg.em * 1.5;
@@ -245,6 +245,11 @@ function EdiTheme() {
 				//te.recalculateHeight();
 			}
 		};
+		
+		te.changeIndicator = function(indic) {
+			te.header_indicator.setAttribute("class", "timeline_header_indicator timeline_header_indicator_" + indic);
+			te.header_td.setAttribute("class", "timeline_header timeline_header_" + indic);
+		};
 	
 		te.changeHeadline = function(newtext) {
 			te.header_text.textContent = newtext;
@@ -380,7 +385,7 @@ function EdiTheme() {
 	
 	that.Extend.TimelineLiveShow = function(tls) {
 		tls.draw = function() {
-			that.drawTimelineTable(te, _l("liveshow"), "normal");
+			that.drawTimelineTable(tls, _l("liveshow"), "normal");
 			var tr = createEl("tr", {}, tls.el);
 			createEl("td", { "class": "timeline_indicator_normal", "rowspan": 3 }, tr);
 			createEl("td", { "class": "timeline_td", "textContent": tls.p.sched_name }, tr);
@@ -461,10 +466,10 @@ function EdiTheme() {
 			ts.album_rating_c.appendChild(ts.album_rating.el);
 			ts.album_rating_bkg = createEl("div", { "class": "timeline_song_rating_bkg" }, ts.album_td);
 			if (ts.p.elec_isrequest == 1) {
-				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor timeline_song_requestor_request", "textContent": _l("requestedby") + " " + ts.p.song_requestor });
+				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor timeline_song_requestor_request", "textContent": _l("requestedby", { "requester": ts.p.song_requestor }) });
 			}
 			else if (ts.p.elec_isrequest < 0) {
-				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor timeline_song_requestor_conflict", "textContent": _l("conflictswith") + " " + ts.p.song_requestor });
+				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor timeline_song_requestor_conflict", "textContent": _l("conflictswith", { "requester": ts.p.song_requestor }) });
 			}
 			if (ts.song_requestor) {
 				ts.song_requestor_wrap = createEl("div", { "class": "timeline_song_requestor_wrap" }, ts.album_td);
@@ -496,7 +501,7 @@ function EdiTheme() {
 			fx_swipe.set(ts.song_td.offsetHeight);
 			
 			if (prefs.p.timeline.highlightrequests.value && (ts.p.elec_isrequest != 0)) {
-				ts.voteHoverOn();
+				ts.showRequester();
 			}
 		};
 
@@ -520,10 +525,15 @@ function EdiTheme() {
 
 		ts.voteHoverOn = function(evt) {
 			if (!ts.voteinprogress) {
+				fx_votebkg_y.set(0);
 				fx_votebkg_x.stop();
 				fx_votebkg_x.duration = 300;
 				fx_votebkg_x.start(-votebkg_width + ts.song_td.offsetWidth + 11);
 			}
+			ts.showRequester();
+		};
+		
+		ts.showRequester = function() {
 			if (ts.song_requestor) {
 				ts.song_requestor_fx.start(0);
 				ts.indicator_fx.start(-22 + ts.album_td.offsetHeight);
@@ -577,13 +587,11 @@ function EdiTheme() {
 			if ((votelock_started + 5000) >= clocktime) {
 				var headtime = Math.floor(((votelock_started + 5000) - clocktime) / 100) / 10;
 				if ((headtime % 1) == 0) headtime += ".0";
-				ts.parent.changeHeadline(_l("votelockingin") + " " + headtime + "...");
+				ts.parent.changeHeadline(_l("votelockingin", { "time": headtime }));
 				var x = Math.floor(((clocktime - votelock_started) / 5000) * (ts.song_td.offsetWidth + 11) - votebkg_width);
 				fx_votebkg_x.set(x);
 			}
 			else {
-				ts.voteProgressStop();
-				ts.voteProgressComplete();
 				ts.voteSubmit();
 			}
 		};
@@ -593,28 +601,19 @@ function EdiTheme() {
 		};
 		
 		ts.voteProgressReset = function() {
-			fx_votebkg_x.onComplete = ts.voteProgressReset2;
 			fx_votebkg_x.start(-votebkg_width);
-		};
-		
-		ts.voteProgressReset2 = function() {
-			fx_votebkg_x.onComplete = false;
-			fx_votebkg_x.set(-votebkg_width);
-			fx_votebkg_y.set(0);
 		};
 
 		ts.voteProgressComplete = function() {
 			fx_votebkg_x.stop();
 			fx_votebkg_x.set(-votebkg_width + ts.song_td.offsetWidth + 11);
+			fx_votebkg_y.stop();
+			fx_votebkg_y.set(-32);
 		};
 
 		ts.registerVoteDraw = function() {
-			fx_votebkg_x.stop();
-			fx_votebkg_x.onComplete = false;
-			fx_votebkg_x.set(-votebkg_width + ts.song_td.offsetWidth + 11);
-			fx_votebkg_y.stop();
-			fx_votebkg_y.onComplete = false;
-			fx_votebkg_y.duration = 700;
+			ts.voteProgressComplete();
+			fx_votebkg_y.duration = 500;
 			fx_votebkg_y.start(-70);
 			votelock_timer = false;
 		};
@@ -673,22 +672,21 @@ function EdiTheme() {
 				urlneedsfill = false;
 			}
 			if (json.elec_votes) {
-				if (json.elec_votes > 1) table.votes.textContent = json.elec_votes + " " + _l("votes");
-				else table.votes.textContent = json.elec_votes + " " + _l("vote");
+				table.votes.textContent = _l("votes", { "votes": json.elec_votes });
 				urlneedsfill = false;
 			}
 			if (json.elec_isrequest && ((json.elec_isrequest == 1) || (json.elec_isrequest <= -1))) {
 				var requestor = json.song_requestor;
 				var reqtxt = "";
-				if (json.elec_isrequest == 1) reqtxt = _l("requestedby");
-				else if (json.elec_isrequest < 0) reqtxt = _l("conflictedwith");
-				panel.changeReqBy(reqtxt + " " + json.song_requestor);
+				if (json.elec_isrequest == 1) reqtxt = _l("requestedby", { "requester": json.song_requestor });
+				else if (json.elec_isrequest < 0) reqtxt = _l("conflictedwith", { "requester": json.song_requestor });
+				panel.changeReqBy(reqtxt);
 			}
 			else if (event.p.username && (event.p.sched_type != SCHED_LIVE)) {
-				panel.changeReqBy(_l("from") + " " + event.p.username);
+				panel.changeReqBy(_l("from", { "username": event.p.username }));
 			}
 			else if (event.p.sched_dj) {
-				panel.changeReqBy(_l("currentdj") + " " + event.p.sched_dj);
+				panel.changeReqBy(_l("currentdj", { "username": event.p.sched_dj }));
 			}
 			
 			// ads
@@ -1057,7 +1055,7 @@ function EdiTheme() {
 		
 		menup.statRestrict = function(restricted) {
 			if (restricted) {
-				menup.td_news.textContent = _l("log_3") + STATIONS[user.p.radio_active_sid] + _l("log_3_2") + STATIONS[user.p.sid] + _l("log_3_3");
+				menup.td_news.textContent = _l("log_3", { "lockedto": STATIONS[user.p.radio_active_sid], "currentlyon": STATIONS[user.p.sid] });
 			}
 			else {
 				menup.td_news.textContent = "";
@@ -1279,24 +1277,24 @@ function EdiTheme() {
 			
 			var stats = document.createElement("div");
 			var tmp = document.createElement("div");
-			if (json.album_lowest_oa > clock.now) tmp.innerHTML = _l("pl_oncooldown")  + formatHumanTime(json.album_lowest_oa - clock.now, true, true) + _l("pl_oncooldown2");
+			if (json.album_lowest_oa > clock.now) tmp.innerHTML = _l("pl_oncooldown", { "time": formatHumanTime(json.album_lowest_oa - clock.now, true, true) });
 			stats.appendChild(tmp);
 			tmp = document.createElement("div");
-			tmp.innerHTML = _l("pl_ranks") + _lSuffixNumber(json.album_rating_rank) + _l("pl_ranks2");
+			tmp.innerHTML = _l("pl_ranks", { "rank": json.album_rating_rank });
 			stats.appendChild(tmp);
 			if (json.album_fav_count > 0) {
 				tmp = document.createElement("div");
-				tmp.innerHTML = _l("pl_favourited") + json.album_fav_count + " " + _l("pl_favourited2") + _lPlural(json.album_fav_count, "person")  + _l("pl_favourited3");
+				tmp.innerHTML = _l("pl_favourited", { "count": json.album_fav_count });
 				stats.appendChild(tmp);
 			}
 			if ((json.album_timeswon > 0) && (json.album_timesdefeated > 0)) {
 				tmp = document.createElement("div");
-				tmp.innerHTML = _l("pl_wins") + ((json.album_timeswon / (json.album_timeswon + json.album_timesdefeated)) * 100).toFixed(1) + _l("pl_wins2") + _lSuffixNumber(json.album_winloss_rank) + _l("pl_wins3");
+				tmp.innerHTML = _l("pl_wins", { "percent": ((json.album_timeswon / (json.album_timeswon + json.album_timesdefeated)) * 100).toFixed(1), "rank": json.album_winloss_rank });
 				stats.appendChild(tmp);
 			}
 			if (json.album_totalrequests > 0) {
 				tmp = document.createElement("div");
-				tmp.innerHTML = _l("pl_requested") + json.album_totalrequests + _l("pl_requested2") + _lSuffixNumber(json.album_request_rank) + _l("pl_requested3");
+				tmp.innerHTML = _l("pl_requested", { "count": json.album_totalrequests, "rank": json.album_request_rank });
 				stats.appendChild(tmp);
 			}
 			if (json.album_genres.length == 1) {
@@ -1309,7 +1307,7 @@ function EdiTheme() {
 				tmp.innerHTML = _l("pl_genres");
 				for (var g = 0; g < json.album_genres.length; g++) {
 					if (g > 0) tmp.innerHTML += ", ";
-					if (g == (json.album_genres.length - 1)) tmp.innerHTML += _l("and") + " ";
+					//if (g == (json.album_genres.length - 1)) tmp.innerHTML += _l("and") + " ";
 					tmp.innerHTML += json.album_genres[g].genre_name;
 				}
 				tmp.innerHTML += _l("pl_genres2");

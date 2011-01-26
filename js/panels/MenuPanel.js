@@ -74,7 +74,7 @@ panels.MenuPanel = {
 		that.tuneInClick = function() {
 			var plugin = that.detectM3UHijack();
 			if (plugin) {
-				errorcontrol.doError(3, false, false, plugin + _l("m3uhijack"));
+				errorcontrol.doError(3, false, false, _l("m3uhijack", { "plugin": plugin }));
 			}
 			else {
 				window.location.href = "tunein.php";

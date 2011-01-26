@@ -1,4 +1,10 @@
 /* Rainwave 3 en_CA Language File */
+// |variables| are replaced by Rainwave's localization library
+// |S:variable| means to suffix a number-variable using the suffixes you define here. i.e. 4th, 5th, 6th, etc.  Works only on 1-10 number scales, made for English.
+// |P:variable,word| pluralizes a word (found in this file) based on variable.  Again made for English, it only uses the plural word for anything != 0 and > 1.
+
+// Due to various levels of assinineness, please remember to save this file as UTF-8, and also remember you are not guaranteed to use HTML codes.
+// I have selectively used HTML codes in only certain places - you are not guaranteed to land upon a translation line that will make use of them.
 
 var lang = new function() {
 	// Panel Names
@@ -9,6 +15,12 @@ var lang = new function() {
 	this.p_RequestsPanel = "Requests";
 	this.p_SlackPanel = "Slack Test";
 	this.p_TimelinePanel = "Timeline";
+	
+	// This will produce dates like 5d 23h 10m 46s.  Change to your liking.
+	this.timeformat_d = "d ";
+	this.timeformat_h = "h ";
+	this.timeformat_m = "m ";
+	this.timeformat_s = "s ";
 
 	// Raw Log Code
 	this.log_0 = "Debug";
@@ -16,9 +28,7 @@ var lang = new function() {
 	// Edi Codes
 	this.log_1 = "Station ID not provided to API.";
 	this.log_2 = "This station is currently offline.<br />Check <a href=\"http://twitter.com/Rainwavecc\">twitter.com/Rainwavecc</a> or the chat room for the latest updates.";
-	this.log_3 = "You used ";
-	this.log_3_2 = " in the last few minutes; you must wait to use ";
-	this.log_3_3 = ".";
+	this.log_3 = "You used |lockedto| in the last few minutes; you must wait to use |currentlyon|.";
 	
 	// HTTP Codes
 	this.log_200 = "HTTP OK";
@@ -102,7 +112,7 @@ var lang = new function() {
 	// 10000 is used by error control for news
 	
 	/* Number suffixes */
-	this.suffix_0 = "";
+	this.suffix_0 = "th";
 	this.suffix_1 = "st";
 	this.suffix_2 = "nd";
 	this.suffix_3 = "rd";
@@ -115,20 +125,12 @@ var lang = new function() {
 	
 	/* Playlist Sentences */
 	
-	this.pl_oncooldown = "<span class='pl_oncooldown'>On cooldown for <b>";
-	this.pl_oncooldown2 = "</b>.</span>";
-	this.pl_ranks = "Ranks <b>";
-	this.pl_ranks2 = "</b> in global ratings.";
-	this.pl_favourited = "Favourited by <b>";
-	this.pl_favourited2 = "</b>";
-	this.pl_favourited3 = ".";
-	this.pl_wins = "Won <b>";
-	this.pl_wins2 = "%</b> of the elections it's in, ranking <b>";
-	this.pl_wins3 = "</b>.";
-	this.pl_requested = "Requested <b>";
-	this.pl_requested2 = "</b> times, ranking <b>";
-	this.pl_requested3 = "</b>.";
-	this.pl_genre = "Cooldown group: ";
+	this.pl_oncooldown = "<span class='pl_oncooldown'>On cooldown for |time|.<b>";
+	this.pl_ranks = "Ranks <b>|S:rank|</b>.";
+	this.pl_favourited = "Favourited by <b>|count|</b> |P:count,person|.";
+	this.pl_wins = "Won <b>|percent|%</b> of the elections it's in, ranking <b>|S:rank|</b>.";
+	this.pl_requested = "Requested <b>|count|</b> times, ranking <b>|S:rank|</b>.";
+	this.pl_genre = "Cooldown group: ";		// Due to the code structure I cannot combine these.
 	this.pl_genre2 = ".";
 	this.pl_genres = "Cooldown groups: ";
 	this.pl_genres2 = ".";
@@ -233,27 +235,28 @@ var lang = new function() {
 	
 	// Requests
 	this.requestok = "Requested";
-	this.expiring = " (expiring!)";
-	this.fewminutes = " (a few minutes)";
-	this.soon = " (soon)";
-	this.shortwait = " (short wait)";
-	this.wait = " (waiting)";
-	this.longwait = " (long wait)";
+	this.reqexpiring = " (expiring!)";
+	this.reqfewminutes = " (a few minutes)";
+	this.reqsoon = " (soon)";
+	this.reqshortwait = " (short wait)";
+	this.reqwait = " (waiting)";
+	this.reqlongwait = " (long wait)";
 	this.reqoncooldown = " (on cooldown)";
 	this.reqempty = " (empty)";
-	this.wrongstation = " (wrong station)";
+	this.reqwrongstation = " (wrong station)";
+	this.reqtechtitlefull = " (|S:position| with |requestcount|)";
+	this.reqtechtitlesimple = " (|requestcount|)";
 	
 	/* Others */
 	this.nowplaying = "Now Playing";
-	this.requestedby = "Requested by";
-	this.oncooldown = "On cooldown for";
-	this.conflictedwith = "Conflicted with request by";
-	this.conflictswith = "Conflicts with request by";
+	this.requestedby = "Requested by |requester|.";
+	this.oncooldownfor = "On cooldown for |cooldown|.";
+	this.conflictedwith = "Conflicted with request by |requester|.";
+	this.conflictswith = "Conflicts with request by |requester|.";
 	this.election = "Election";
 	this.previouslyplayed = "Previously Played";
-	this.vote = "Vote";
-	this.votes = "Votes";
-	this.votelockingin = "Vote locking in";
+	this.votes = "|votes| |P:votes,Vote|";
+	this.votelockingin = "Vote locking in |time|...";
 	this.submittingvote = "Submitting vote...";
 	this.voted = "Voted";
 	this.selectstation = "Select Station";
@@ -266,7 +269,7 @@ var lang = new function() {
 	this.adset = "Advertisement";
 	this.onetimeplay = "One-Time Play";
 	this.deleteonetime = "Delete One-Time Play";
-	this.currentdj = "dj";
+	this.currentdj = "dj |username|";
 	this.login = "Login";
 	this.register = "Register";
 	this.username = "Username";
@@ -278,16 +281,15 @@ var lang = new function() {
 	this.playing = "&#9633; Stop Playback";
 	this.loading = "Loading";
 	this.searching = "Searching: ";
-	this.m3uhijack = " is trying to hijack the M3U download.  Please right click and 'Save As.'";
+	this.m3uhijack = "|plugin| is trying to hijack the M3U download.  Please right click and 'Save As.'";
 	this.menu_morestations = "More &#9660;"
+	this.from = "from |username|";
 	
-	/* Words */
-	
-	this.and = "and";
+	/* Words for pluralization */
+
 	this.person = "person";
 	this.person_p = "people";
-	this['with'] = "with";
-	this.or = "or";
-	this.from = "from";
+	this.Vote = "Vote";
+	this.Vote_p = "Votes";
 
 };

@@ -216,6 +216,7 @@ panels.SchedulePanel = {
 				row = document.createElement("tr");
 				date = new Date(json[i].sched_starttime * 1000);
 				enddate = new Date((json[i].sched_starttime + json[i].sched_length) * 1000);
+				row.appendChild(createEl("td", { "textContent": STATIONS[json[i].sid] }));
 				row.appendChild(createEl("td", { "textContent": date.toLocaleDateString() }));
 				minutes = date.getMinutes();
 				if (minutes < 10) minutes = "0" + minutes;

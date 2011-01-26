@@ -17,7 +17,7 @@ function TitleUpdate() {
 		clock.updateClockEnd(clockid, json.sched_endtime);
 		
 		if (json.sched_type == SCHED_ELEC) titlestring = json.song_data[0].album_name + ": " + json.song_data[0].song_title;
-		else if (json.sched_type == SCHED_JINGLE) titlestring = _l("jingle");
+		//else if (json.sched_type == SCHED_JINGLE) titlestring = _l("jingle");
 		else if (json.sched_type == SCHED_LIVE) titlestring = json.sched_name;
 		else if (json.sched_type == SCHED_ADSET) titlestring = json.ad_data[json.adset_position].ad_title;
 		else if (json.sched_type == SCHED_ONESHOT) titlestring = json.song_data[0].album_name + ": " + json.song_data[0].song_title;

@@ -62,21 +62,21 @@ panels.RequestsPanel = {
 					var numstring = "";
 					numstring += num;
 					if (total != num) numstring += "/" + total;
-					if (pos > 0) str = " (" + _lSuffixNumber(pos) + " " + _l("with") + " " + numstring + ")";
-					else if ((num > 0) || (total > 0)) str = " (" + numstring + ")";
+					if (pos > 0) str = _l("reqtechtitlefull", { "position": pos, "requestcount": numstring });
+					else if ((num > 0) || (total > 0)) str = _l("reqtechtitlesimple", { "requestcount": numstring });
 				}
 				else {
 					var str = "";
 					if (total == 0) str = "";
-					else if (json[0].sid != user.p.sid) str = _l("reqwrongstation");
+					else if (list.p && list.p[0] && (list.p[0].sid != user.p.sid)) str = _l("reqwrongstation");
 					else if (user.p.radio_request_expiresat && (num == 0)) str = _l("reqexpiring");
 					else if ((num == 0) & (total > 0)) str = _l("reqoncooldown");
 					else if ((num == 0) && user.p.radio_request_position) str = _l("reqempty");
-					else if (user.p.radio_request_position == 0) str = _l("fewminutes");
-					else if (user.p.radio_request_position > 10) str = _l("longwait");
-					else if (user.p.radio_request_position > 6) str = _l("wait");
-					else if (user.p.radio_request_position > 3) str = _l("shortwait");
-					else str = " (" + _l("soon") + ")";
+					else if (user.p.radio_request_position == 0) str = _l("reqfewminutes");
+					else if (user.p.radio_request_position > 10) str = _l("reqlongwait");
+					else if (user.p.radio_request_position > 6) str = _l("reqwait");
+					else if (user.p.radio_request_position > 3) str = _l("reqshortwait");
+					else str = " (" + _l("reqsoon") + ")";
 				}
 				edi.changeTitle(panels.RequestsPanel.intitle, panels.RequestsPanel.title + str);
 			}
@@ -191,6 +191,7 @@ var RequestList = function(sortable) {
 
 	that.update = function(json) {
 		that.stopDrag();
+		that.p = json;
 		var i = 0;
 		var j = 0;
 		var found = false;
@@ -445,11 +446,11 @@ var Request = {
 			if ((json.song_available == false) && (!that.cooldown)) {
 				that.cooldown = document.createElement("div");
 				that.cooldown.setAttribute("class", "request_cooldown");
-				that.cooldown.textContent = _l("oncooldown") + " " + formatHumanTime(json.song_releasetime - clock.now, true, true) + ".";
+				that.cooldown.textContent = _l("oncooldownfor", { "cooldown": formatHumanTime(json.song_releasetime - clock.now, true, true) });
 				that.el.appendChild(that.cooldown);
 			}
 			else if (json.song_available == false) {
-				that.cooldown.textContent = _l("oncooldown") + " " + formatHumanTime(json.song_releasetime - clock.now, true, true) + ".";
+				that.cooldown.textContent = _l("oncooldownfor", { "cooldown": formatHumanTime(json.song_releasetime - clock.now, true, true) });
 			}
 			else if (that.cooldown) {
 				that.el.removeChild(that.cooldown);
