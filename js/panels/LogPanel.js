@@ -5,7 +5,7 @@ panels.LogPanel = {
 	xtype: "fit",
 	width: svg.em * 32,
 	minwidth: svg.em * 16,
-	title: "Log",
+	title: _l("p_LogPanel"),
 	intitle: "LogPanel",
 	
 	constructor: function(edi, container) {

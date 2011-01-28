@@ -5,7 +5,7 @@ panels.NowPanel = {
 	xtype: "max",
 	width: svg.em * 55,
 	minwidth: svg.em * 30,
-	title: "Now Playing",
+	title: _l("p_NowPanel"),
 	intitle: "NowPanel",
 	
 	initSizeX: function(x, colw) {

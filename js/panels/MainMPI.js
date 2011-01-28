@@ -5,7 +5,7 @@ panels.MainMPI = {
 	width: 0,
 	minwidth: 0,
 	xtype: "max",
-	title: "Tabbed Panel",
+	title: _l("p_MainMPI"),
 	mpi: true,
 	mpikey: "main",
 	intitle: "MainMPI",

@@ -5,7 +5,7 @@ panels.MenuPanel = {
 	xtype: "fit",
 	width: 0,
 	minwidth: 0,
-	title: "Menu",
+	title: _l("MenuPanel"),
 	intitle: "MenuPanel",
 	noborder: true,
 	

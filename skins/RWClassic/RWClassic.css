@@ -122,14 +122,13 @@ td div.textoverflow {
 ul.tabs {
 	border-bottom: 2px solid #244093;
 	margin: 0;
-	padding: 0px;
+	padding: 0px 0px 4px 0px;
 }
 
 ul.tabs li {
-	border: 1px solid #244093;
 	border-bottom: none;
 	display: inline;
-	padding: 0px 5px 0px 5px;	
+	padding: 0px 7px 1px 7px;	
 	cursor: pointer;
 	-moz-user-select: none;
 	-khtml-user-select: none;
@@ -137,11 +136,11 @@ ul.tabs li {
 }
 
 ul.tabs li.tab_focused {
-	background: #1f2b32;
+	border-bottom: 3px solid #244093;
 }
 
 ul.tabs li:hover {
-	background: #3c6dff;
+	border-bottom: 3px solid #3c6dff;
 }
 
 ul.tabs li+li {
@@ -550,7 +549,7 @@ table.about td {
 	padding: .3em;
 }
 
-.Panel_Menu {
+.Panel_MenuPanel {
 	z-index: 2;
 }
 
@@ -642,10 +641,15 @@ td.menu_td_user {
 	width: 15.5em;
 	padding-right: 5px;
 	text-align: right;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 td.menu_td_user img {
 	height: 16px;
+	z-index: 2;
+	position: relative;
 }
 
 img.menu_avatar {
@@ -656,6 +660,9 @@ img.menu_avatar {
 table.menu_table td.menu_td_news {
 	border-left: 1px solid #4575A7;
 	padding-left: .5em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 table.menu_table td.menu_td_help {
@@ -983,7 +990,7 @@ div.timeline_vote_swipe {
 	margin-top: -1px;	
 }
 
-.Panel_Now_Playing {
+.Panel_NowPanel {
 	padding-left: 11px;
 }
 
@@ -1077,7 +1084,7 @@ td.nowplaying_song_title {
 	text-overflow: ellipsis;
 }
 
-td.nowplaying_album_name, td.nowplaying_artist_name, td.nowplaying_url {
+td.nowplaying_album_name, td.nowplaying_artist_name, td.nowplaying_url, td.timeline_live_notes, td.timeline_live_user {
 	padding-bottom: 3px;
 	padding-top: .6em;
 	overflow: hidden;

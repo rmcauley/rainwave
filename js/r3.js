@@ -8,6 +8,7 @@ var SCHED_PAUSE = 6;
 var SCHED_DJ = 7;
 
 var STATIONS = [ false, "Rainwave", "OCR Radio", "Mixwave" ];
+var SHORTSTATIONS = [ false, "RW", "OC", "MW" ];
 
 var errorcontrol = ErrorControl();
 var ajax = false;
@@ -75,12 +76,12 @@ function drawAboutScreen(div) {
 	html += "<tr><td style='padding-top: 1em;'>" + _l("poweredby") + ":</td><td style='padding-top: 1em;'>" + _l("customsoftware") + ", <a href='http://icecast.org' target='_blank' onclick='return false;'>Icecast<img src='images/new_window_icon.png' alt='(*)' /></a>, <a href='http://savonet.sourceforge.net' target='_blank' onclick='return false;'>Liquidsoap<img src='images/new_window_icon.png' alt='(*)' /></a></td></tr>";
 	tbl.innerHTML = html;
 	div.appendChild(tbl);
-	var a1 = createEl("a", { "href": "donations.php", "textContent": _l("donationinformation"), "class": "help_paragraph", "style": "margin-top: 1em; display: block", "target": "_blank", "onclick": "return false;" });
+	var a1 = createEl("a", { "href": "/donations.php", "textContent": _l("donationinformation"), "class": "help_paragraph", "style": "margin-top: 1em; display: block", "target": "_blank", "onclick": "return false;" });
 	a1.appendChild(createEl("img", { "src": "images/new_window_icon.png", "alt": "->" }));
 	div.appendChild(a1);
-	var a2 = createEl("a", { "href": "/api", "textContent": _l("apiinformation"), "class": "help_paragraph", "style": "margin-top: 1em; display: block", "target": "_blank", "onclick": "return false;" });
-	a2.appendChild(createEl("img", { "src": "images/new_window_icon.png", "alt": "->" }));
-	div.appendChild(a2);
+	//var a2 = createEl("a", { "href": "/api", "textContent": _l("apiinformation"), "class": "help_paragraph", "style": "margin-top: 1em; display: block", "target": "_blank", "onclick": "return false;" });
+	//a2.appendChild(createEl("img", { "src": "images/new_window_icon.png", "alt": "->" }));
+	//div.appendChild(a2);
 }
 
 function init() {
@@ -126,7 +127,7 @@ function init() {
 	help.addTopic("tunein", { "h": "tunein", "p": "tunein_p", "mody": 35, "modx": -350 });
 	
 	edi.init();
-	if (graph) graph.init(); // must be done after the theme object is available
+	if (graph) graph.init();
 	
 	errorcontrol.initTheme();
 	if (!prefs.p.help || !prefs.p.help.visited.value) {

@@ -5,7 +5,7 @@ panels.SchedulePanel = {
 	xtype: "fit",
 	width: svg.em * 30,
 	minwidth: svg.em * 20,
-	title: "Schedule",
+	title: _l("p_SchedulePanel"),
 	intitle: "SchedulePanel",
 	
 	constructor: function(edi, container) {

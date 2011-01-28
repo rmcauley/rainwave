@@ -2,7 +2,6 @@ function Edi(container) {
 	var layouts = new Array();
 	var layoutname = "default";
 	var themename = "RWClassic";
-	var language = "en_CA";
 	panels['false'] = false;
 	
 	var that = {};
@@ -95,7 +94,7 @@ function Edi(container) {
 	};
 
 	that.init = function() {
-		prefs.addPref("edi", { name: "language", defaultvalue: "en_CA", type: "dropdown", options: [ { value: "en_CA", option: "English (Canada)" } ], refresh: true });
+		prefs.addPref("edi", { name: "language", defaultvalue: "en_CA", type: "dropdown", options: [ { value: "en_CA", option: "English (Canada)" }, { "value": "nl_NL", "option": "Nederlands" } ], refresh: true });
 		prefs.addPref("edi", { hidden: true, name: "theme", defaultvalue: "RWClassic", type: "dropdown", options: [ { value: "RWClassic", option: "Rainwave 3" } ], refresh: true });
 		
 		var newthemename = prefs.p.edi.theme.value;

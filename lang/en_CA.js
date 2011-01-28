@@ -8,12 +8,14 @@
 
 var lang = new function() {
 	// Panel Names
-	this.p_COGBanner = "COG Banner";
-	this.p_LogPanel = "Debug Log";
-	this.p_MainMPI = "Main Panel";
+	this.p_LogPanel = "Log";
+	this.p_MainMPI = "Tabs";
+	this.p_MenuPanel = "Menu";
+	this.p_PlaylistPanel = "Playlist";
+	this.p_PrefsPanel = "Preferences";
+	this.p_SchedulePanel = "Schedule";
 	this.p_NowPanel = "Now Playing";
 	this.p_RequestsPanel = "Requests";
-	this.p_SlackPanel = "Slack Test";
 	this.p_TimelinePanel = "Timeline";
 	
 	// This will produce dates like 5d 23h 10m 46s.  Change to your liking.
@@ -100,9 +102,8 @@ var lang = new function() {
 	// Request Re-order Results
 	this.log_8000 = "Server-side error while re-ordering.  Please try again.";
 	this.log_8001 = "Client-side error while forming re-order request.  Please try again.";
-	this.log_8002 = "One of your requests does not exist anymore.  Please try again.";
-	this.log_8002 = "One of your ratings has been fulfilled.  Please try again.";
-	this.log_8003 = "One of those ratings does not belong to you.";
+	this.log_8002 = "You have no requests to re-order.";
+	this.log_8003 = "One of your requests has been fulfilled.  Please try again.";
 	
 	// Login Results
 	this.log_9000 = "Invalid username or password.";
@@ -175,7 +176,7 @@ var lang = new function() {
 	this.helpstart = "Start &#9654; ";
 	this.helpnext = "Next &#9654; ";
 	this.helplast = "Close &#9654; ";
-	this.about = "About / Donations / API";
+	this.about = "About / Donations";
 	this.about_p = "Staff, technology used, and donation information.";
 	this.voting = "Voting";
 	this.voting_p = "Each song played is part of an election.  The song with the most votes gets played next.<br /><br />Learn how to vote.";
@@ -244,7 +245,7 @@ var lang = new function() {
 	this.reqoncooldown = " (on cooldown)";
 	this.reqempty = " (empty)";
 	this.reqwrongstation = " (wrong station)";
-	this.reqtechtitlefull = " (|S:position| with |requestcount|)";
+	this.reqtechtitlefull = " (|station| |S:position| with |requestcount|)";
 	this.reqtechtitlesimple = " (|requestcount|)";
 	
 	/* Others */
@@ -256,7 +257,7 @@ var lang = new function() {
 	this.election = "Election";
 	this.previouslyplayed = "Previously Played";
 	this.votes = "|votes| |P:votes,Vote|";
-	this.votelockingin = "Vote locking in |time|...";
+	this.votelockingin = "Vote locking in |timeleft|...";
 	this.submittingvote = "Submitting vote...";
 	this.voted = "Voted";
 	this.selectstation = "Select Station";

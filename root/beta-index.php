@@ -28,7 +28,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		if (isset($_COOKIE['r3prefs'])) {
 			$cookie = json_decode($_COOKIE['r3prefs'], true);
 			if (isset($cookie['edi']['theme']['value'])) $skin = $cookie['edi']['theme']['value'];
-			if (isset($cookie['edi']['lang']['value'])) $lang = $cookie['edi']['lang']['value'];
+			if (isset($cookie['edi']['language']['value'])) $lang = $cookie['edi']['language']['value'];
 		}
 		print "<link rel=\"stylesheet\" href='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".css' type='text/css' />\n";
 		print "\t<script src='lang_r" . $bnum . "/" . $lang . ".js' type='text/javascript'></script>\n";

@@ -5,7 +5,7 @@ panels.PrefsPanel = {
 	xtype: "slack",
 	width: svg.em * 20,
 	minwidth: svg.em * 8,
-	title: "Preferences",
+	title: _l("p_PrefsPanel"),
 	intitle: "PrefsPanel",
 	
 	constructor: function(edi, container) {

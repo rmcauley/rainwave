@@ -5,7 +5,7 @@ panels.RequestsPanel = {
 	xtype: "fit",
 	width: svg.em * 20,
 	minwidth: svg.em * 8,
-	title: "Requests",
+	title: _l("p_RequestsPanel"),
 	intitle: "RequestsPanel",
 	
 	constructor: function(edi, container) {
@@ -62,7 +62,9 @@ panels.RequestsPanel = {
 					var numstring = "";
 					numstring += num;
 					if (total != num) numstring += "/" + total;
-					if (pos > 0) str = _l("reqtechtitlefull", { "position": pos, "requestcount": numstring });
+					var stationstring = "";
+					if (list.p && list.p[0] && (list.p[0].sid != user.p.sid)) stationstring = SHORTSTATIONS[list.p[0].sid];
+					if (pos > 0) str = _l("reqtechtitlefull", { "position": pos, "requestcount": numstring, "station": stationstring });
 					else if ((num > 0) || (total > 0)) str = _l("reqtechtitlesimple", { "requestcount": numstring });
 				}
 				else {
@@ -76,7 +78,7 @@ panels.RequestsPanel = {
 					else if (user.p.radio_request_position > 10) str = _l("reqlongwait");
 					else if (user.p.radio_request_position > 6) str = _l("reqwait");
 					else if (user.p.radio_request_position > 3) str = _l("reqshortwait");
-					else str = " (" + _l("reqsoon") + ")";
+					else str = _l("reqsoon");
 				}
 				edi.changeTitle(panels.RequestsPanel.intitle, panels.RequestsPanel.title + str);
 			}

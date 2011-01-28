@@ -388,11 +388,11 @@ function EdiTheme() {
 			that.drawTimelineTable(tls, _l("liveshow"), "normal");
 			var tr = createEl("tr", {}, tls.el);
 			createEl("td", { "class": "timeline_indicator_normal", "rowspan": 3 }, tr);
-			createEl("td", { "class": "timeline_td", "textContent": tls.p.sched_name }, tr);
+			createEl("td", { "class": "timeline_td timeline_live_title", "textContent": tls.p.sched_name }, tr);
 			tr = createEl("tr", {}, tls.el);
-			createEl("td", { "class": "timeline_td", "textContent": tls.p.sched_notes }, tr);
+			createEl("td", { "class": "timeline_td timeline_live_notes", "textContent": tls.p.sched_notes }, tr);
 			tr = createEl("tr", {}, tls.el);
-			createEl("td", { "class": "timeline_td", "textContent": tls.p.username }, tr);
+			createEl("td", { "class": "timeline_td timeline_live_user", "textContent": tls.p.username }, tr);
 			tls.defineFx();
 		};
 	};
@@ -587,7 +587,7 @@ function EdiTheme() {
 			if ((votelock_started + 5000) >= clocktime) {
 				var headtime = Math.floor(((votelock_started + 5000) - clocktime) / 100) / 10;
 				if ((headtime % 1) == 0) headtime += ".0";
-				ts.parent.changeHeadline(_l("votelockingin", { "time": headtime }));
+				ts.parent.changeHeadline(_l("votelockingin", { "timeleft": headtime }));
 				var x = Math.floor(((clocktime - votelock_started) / 5000) * (ts.song_td.offsetWidth + 11) - votebkg_width);
 				fx_votebkg_x.set(x);
 			}
@@ -1215,8 +1215,8 @@ function EdiTheme() {
 			album.td_rating.textContent = album.album_rating_user.toFixed(1);
 		};
 		
-		pp.favResultDraw = function(album, result) {
-			album.td_fav.setAttribute("class", "pl_fav_" + result.favourite);
+		pp.favResultDraw = function(album, favourite) {
+			album.td_fav.setAttribute("class", "pl_fav_" + favourite);
 		};
 		
 		pp.updateKeyNavOffset = function(album) {

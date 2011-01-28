@@ -6,7 +6,7 @@ panels.TimelinePanel = {
 	xtype: "fit",
 	width: svg.em * 40,
 	minwidth: svg.em * 25,
-	title: "Timeline",
+	title: _l("p_TimelinePanel"),
 	intitle: "TimelinePanel",
 	
 	constructor: function(edi, container) {
@@ -553,7 +553,7 @@ function TimelineElection(json, container, parent) {
 	};
 	
 	that.enableVoting = function() {
-		if (!that.votingdisabled && !that.voted) return;
+		if (!that.votingdisabled || that.voted) return;
 		that.votingdisabled = false;
 		for (var i = 0; i < that.songs.length; i++) {
 			that.songs[i].enableVoting();

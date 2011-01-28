@@ -5,7 +5,7 @@ panels.PlaylistPanel = {
 	xtype: "max",
 	width: 300,
 	minwidth: 300,
-	title: "Playlist",
+	title: _l("p_PlaylistPanel"),
 	intitle: "PlaylistPanel",
 	
 	constructor: function(edi, container) {
@@ -40,7 +40,7 @@ panels.PlaylistPanel = {
 			ajax.addCallback(that, that.playlistUpdate, "playlist_album_diff");
 			ajax.addCallback(that, that.drawAlbumCallback, "playlist_album");
 			ajax.addCallback(that, that.ratingResult, "rate_result");
-			ajax.addCallback(that, that.favResult, "fav_result");
+			ajax.addCallback(that, that.favResult, "fav_album_result");
 			hotkey.addCallback(that, that.keyHandle, 0);
 			
 			initpiggyback['playlist'] = "true";
@@ -153,10 +153,8 @@ panels.PlaylistPanel = {
 		};
 		
 		that.favResult = function(result) {
-			if ((result.fav_type == "album") && result.id && albums[result.id]) {
-				that.favResultDraw(albums[result.id], result);
-				albums[result.id].album_favourite = result.favourite;
-			}
+			that.favResultDraw(albums[result.album_id], result.favourite);
+			albums[result.id].album_favourite = result.favourite;
 		};
 		
 		that.favSwitch = function(evt) {
