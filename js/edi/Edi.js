@@ -10,7 +10,6 @@ function Edi(container) {
 	
 	that.initcallback = false;	
 	that.themeobj = false;
-	that.log = EdiLogger();
 	
 	that.urlChangeDetect = function() {
 		if (oldurl != location.href) {
@@ -50,7 +49,6 @@ function Edi(container) {
 				layouts[l][row] = new Array();
 				for (var p in c[l][row]) {
 					if (panels[c[l][row][p]]) {
-						that.log.log("Edi", 0, "Saved Layout '" + l + "' Row " + row + " Added Panel: " + p);
 						layouts[i][row].push(panels[c][l][row][p]);
 					}
 				}

@@ -133,14 +133,17 @@ ul.tabs li {
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	user-select: none;
+	opacity: 0.8;
 }
 
 ul.tabs li.tab_focused {
 	border-bottom: 3px solid #244093;
+	opacity: 1.0;
 }
 
 ul.tabs li:hover {
 	border-bottom: 3px solid #3c6dff;
+	opacity: 1.0;
 }
 
 ul.tabs li+li {
@@ -348,6 +351,10 @@ td.pl_ad_albumnametd .rating {
 
 div.pl_ad_albumhdr {
 	border-bottom: 2px solid #000000;
+}
+
+span.pl_ad_oncooldown {
+	color: #8bedff;
 }
 
 div.pl_odholder {

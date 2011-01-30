@@ -17,7 +17,6 @@ var clock = false;
 var titleupdate = false;
 var user = false;
 var ratingcontrol = false;
-var log = false;
 var theme = true;   // this global var only gets the actual theme obj from edi if it's assigned true (NOT a truthy value, *true*), so that Prefs can overwrite it
 var fx = false;
 var panels = new Array();
@@ -71,7 +70,7 @@ function drawAboutScreen(div) {
 	html += "<tr><td>" + _l("ocrmanagers") + ":</td><td>William</td></tr>";
 	html += "<tr><td>" + _l("mixwavemanagers") + ":</td><td>SOcean255</td></tr>";
 	html += "<tr><td>" + _l("jfinalfunkjob") + ":</td><td>jfinalfunk</td></tr>";
-	html += "<tr><td>" + _l("relayadmins") + ":</td><td>Lyfe, Tanaric, Dracoirs, Rilgon</td></tr>";
+	html += "<tr><td>" + _l("relayadmins") + ":</td><td>Lyfe, Tanaric, Dracoirs</td></tr>";
 	html += "<tr><td style='padding-top: 1em;'>" + _l("specialthanks") + ":</td><td style='padding-top: 1em;'>strwrsxprt, heschi, Brayniac, Salty, efiloN, Steppo</td></tr>";
 	html += "<tr><td style='padding-top: 1em;'>" + _l("poweredby") + ":</td><td style='padding-top: 1em;'>" + _l("customsoftware") + ", <a href='http://icecast.org' target='_blank' onclick='return false;'>Icecast<img src='images/new_window_icon.png' alt='(*)' /></a>, <a href='http://savonet.sourceforge.net' target='_blank' onclick='return false;'>Liquidsoap<img src='images/new_window_icon.png' alt='(*)' /></a></td></tr>";
 	tbl.innerHTML = html;
@@ -100,8 +99,6 @@ function init() {
 	graph = R3Graph();
 	edi = Edi(document.getElementById("body"));
 	edi.panels = panels;
-	log = edi.log;
-	ajax.logobj = edi.log;
 	
 	clock = ClockControl();
 	titleupdate = TitleUpdate();
@@ -122,9 +119,9 @@ function init() {
 	help.addStep("tunein", { "h": "tunein", "p": "tunein_p", "mody": 35, "skipf": function() { return user.p.radio_tunedin ? true : false; } } );
 	help.addStep("login", { "h": "login", "p": "login_p", "skipf": function() { return user.p.user_id > 1 ? true : false } });
 	help.addTutorial("ratecurrentsong", [ "register", "tunein", "ratecurrentsong", "setfavourite" ]);
-	help.addTopic("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_t", "tutorial": "ratecurrentsong", "skipf": function() { return user.p.radio_tunedin ? true : false; } });
+	help.addTopic("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_t", "tutorial": "ratecurrentsong", "mody": svg.em * 3, "modx": svg.em * 2, "skipf": function() { return user.p.radio_tunedin ? true : false; } });
 
-	help.addTopic("tunein", { "h": "tunein", "p": "tunein_p", "mody": 35, "modx": -350 });
+	//help.addTopic("tunein", { "h": "tunein", "p": "tunein_p", "mody": 35, "modx": -350 });
 	
 	edi.init();
 	if (graph) graph.init();

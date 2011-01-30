@@ -8,8 +8,6 @@
 
 var lang = new function() {
 	// Panel Names
-		// Panel Names
-	this.p_LogPanel = "Log";
 	this.p_MainMPI = "Tabs";
 	this.p_MenuPanel = "Menu";
 	this.p_PlaylistPanel = "Speellijst";
@@ -103,9 +101,8 @@ var lang = new function() {
 	// Request Re-order Results
 	this.log_8000 = "Server fout met het ordeneren. Probeer het opnieuw.";
 	this.log_8001 = "Client fout met het versturen van uw ordenering. Probeer het opnieuw.";
-	this.log_8002 = "Één van uw verzoeken bestaat niet meer. Probeer het opnieuw.";
-	this.log_8002 = "Één van uw verzoeken is voldaan. Probeer het opnieuw.";
-	this.log_8003 = "Dit is niet uw verzoek.";
+	this.log_8002 = "U heeft geen verzoeken om te ordeneren.";
+	this.log_8003 = "Één van uw verzoeken is voldaan. Probeer het opnieuw.";
 	
 	// Login Results
 	this.log_9000 = "Ongeldig gebruikersnaam of wachtwoord.";
@@ -128,7 +125,7 @@ var lang = new function() {
 	
 	/* Playlist Sentences */
 	
-	this.pl_oncooldown = "<span class='pl_oncooldown'>In cooldown fase voor |time|.<b>";
+	this.pl_oncooldown = "<span class='pl_ad_oncooldown'>In cooldown fase voor <b>|time|</b>.</span>";
 	this.pl_ranks = "Rank <b>|S:rank|</b>.";
 	this.pl_favourited = "Gefavoriseerd door <b>|count|</b> |P:count,person|.";
 	this.pl_wins = "Won met <b>|percent|%</b> van de stemmen, met rank <b>|S:rank|</b>.";
@@ -178,7 +175,7 @@ var lang = new function() {
 	this.helpstart = "Start &#9654; ";
 	this.helpnext = "Volgende &#9654; ";
 	this.helplast = "Sluit &#9654; ";
-	this.about = "Over / Donaties / API";
+	this.about = "Over / Donaties";
 	this.about_p = "Personeel, gebruikte technieken, en donatie informatie.";
 	this.voting = "Stemmen";
 	this.voting_p = "Elk gespeeld nummer is een deel van een electie. Het nummer met de meeste stemmen gaat door.<br /><br />Leer hoe u moet stemmen.";
@@ -189,7 +186,7 @@ var lang = new function() {
 	this.login = "Login of Register";
 	this.login_p = "Log alstublieft in.";
 	this.ratecurrentsong = "Beoordelen";
-	this.ratecurrentsong_p = "Ga met uw muisje over de grafiek en click om het nummer te beoordelen.<br /><br />Album beoordeling wordt bepaald door de gemiddelde beoordelingen van uw nummers.";
+	this.ratecurrentsong_p = "Ga met uw muisje over de grafiek en klik om het nummer te beoordelen.<br /><br />Album beoordeling wordt bepaald door de gemiddelde beoordelingen van uw nummers.";
 	this.ratecurrentsong_t = "Gebaseerd op de beoordelingen wordt bepaald hoe vaak een nummer en album worden afgespeeld.<br /><br />Leer hoe u moet beoordelen.";
 	this.ratecurrentsong_tp = "Beoordelen";
 	this.setfavourite = "Favorieten";
@@ -201,7 +198,7 @@ var lang = new function() {
 	this.openanalbum = "Open een Album";
 	this.openanalbum_p = "Klik een album in de speellijst paneel.<br /><br />Albums onderin van de speellijst zijn in cooldown fase, en kunnen dus niet worden verzocht.";
 	this.clicktorequest = "Maak een Verzoek";
-	this.clicktorequest_p = "Click op de R knop om een nummer te verzoeken.<br /><br />Nummers ondering de lijst zijn in cooldown fase, en kunnen dus niet worden verzocht.";
+	this.clicktorequest_p = "Klik op de R knop om een nummer te verzoeken.<br /><br />Nummers ondering de lijst zijn in cooldown fase, en kunnen dus niet worden verzocht.";
 	this.managingrequests = "Sleep Verzoeken";
 	this.managingrequests_p = "Sleep een verzoek om deze te ordeneren, of klik op de X om deze te verwijderen.";
 	this.timetorequest = "Verzoek Status";
@@ -248,19 +245,19 @@ var lang = new function() {
 	this.reqoncooldown = " (in cooldown fase)";
 	this.reqempty = " (leeg)";
 	this.reqwrongstation = " (verkeerde zender)";
-	this.reqtechtitlefull = " (|S:position| met |requestcount|)";
-	this.reqtechtitlesimple = " (|requestcount|)";
+	this.reqtechtitlefull = " (|station||S:position| met |requestcount|)";
+	this.reqtechtitlesimple = " (|station||requestcount|)";
 	
 	/* Others */
 	this.nowplaying = "Huidige Nummer";
-	this.requestedby = "Verzocht door";
+	this.requestedby = "Verzocht door |requester|";
 	this.oncooldownfor = "In cooldown fase voor |cooldown|.";
-	this.conflictedwith = "Geconflicteerd met een verzoek van |requester|.";
+	this.conflictedwith = "Geconflicteerd met een verzoek van |requester|";
 	this.conflictswith = "Conflicteerd met een verzoek van |requester|.";
 	this.election = "Electie";
 	this.previouslyplayed = "Vorige Nummers";
 	this.votes = "|votes| |P:votes,Vote|";
-	this.votelockingin = "Stem wordt besloten in |time|...";
+	this.votelockingin = "Stem wordt besloten in |timeleft|...";
 	this.submittingvote = "Stem wordt verstuurd...";
 	this.voted = "Gestemd";
 	this.selectstation = "Selecteer Zender";

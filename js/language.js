@@ -13,7 +13,7 @@ function _l(line, object) {
 			keyend = lang[line].indexOf("|", keystart + 1);
 			key = lang[line].substr(keystart + 1, (keyend - keystart - 1));
 			if (key.substr(0, 2) == "S:") {
-				if (object[key.substr(2)]) {
+				if (typeof(object[key.substr(2)]) != "undefined") {
 					str += _lSuffixNumber(object[key.substr(2)])
 				}
 				else {
@@ -23,14 +23,14 @@ function _l(line, object) {
 			else if (key.substr(0, 2) == "P:") {
 				key2 = key.substr(2, key.indexOf(",") - 2);
 				word = key.substr(key.indexOf(",") + 1);
-				if (object[key2]) {
+				if (typeof(object[key2]) != "undefined") {
 					str += _lPlural(object[key2], word);
 				}
 				else {
 					str += "|*" + key2 + "*|";
 				}
 			}
-			else if (object[key]) {
+			else if (typeof(object[key]) != "undefined") {
 				str += object[key];
 			}
 			else {
@@ -53,6 +53,6 @@ function _lSuffixNumber(number) {
 
 function _lPlural(number, word) {
 	if ((number > 1) && (number != 0)) word += "_p";
-	if (lang[word]) return lang[word];
+	if (typeof(lang[word]) != "undefined") return lang[word];
 	else return "[*" + word + "*]";
 }

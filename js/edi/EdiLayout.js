@@ -7,7 +7,6 @@ function EdiLayout(layout, name, parent) {
 	var rowflags = new Array();	
 	var vborders = new Array();
 	var hborders = new Array();
-	var log = parent.log;
 	
 	var that = {};
 	
@@ -25,7 +24,6 @@ function EdiLayout(layout, name, parent) {
 			colw[j] = 0;
 			mincolw[j] = 0;
 		}
-		log.log("Edi", 0, "maxcols = " + maxcols);
 		
 		// Step 1: Find out the normal width/height for each column and row and the minimum width/height
 		for (var i = 0; i < layout.length; i++) {
@@ -43,26 +41,16 @@ function EdiLayout(layout, name, parent) {
 		// Step 2: Get how large our current layout is
 		var ediwidth = 0;
 		var ediheight = 0;
-		log.log("Edi", 0, "Heights: ", false);
 		for (var i = 0; i < layout.length; i++) {
 			ediheight += rowh[i];
-			log.log("Edi", 0, rowh[i] + " ", false);
 		}
-		log.flush("Edi");
-		log.log("Edi", 0, "Widths: ", false);
 		for (var j = 0; j < maxcols; j++) {
 			ediwidth += colw[j];
-			log.log("Edi", 0, colw[j] + " ", false);
 		}
-		log.flush("Edi");
-		
-		log.log("Edi", 0, "Size: " + ediwidth + " " + ediheight);
-		log.log("Edi", 0, "Screen: " + window.innerWidth + " " + window.innerHeight);
+
 		// Step 3: Shrink or expand panels to fit screen
 		var xbudget = window.innerWidth - ediwidth;
 		var ybudget = window.innerHeight - ediheight;
-
-		log.log("Edi", 0, "Budgets: " + xbudget + " " + ybudget);
 		
 		// Find out which columns and rows are slackable or maxable
 		for (var i = 0; i < layout.length; i++) rowflags[i] = "slack";
@@ -96,9 +84,7 @@ function EdiLayout(layout, name, parent) {
 			}
 		}
 		
-		log.log("Edi", 0, "** COLUMN SIZING **");
 		colw = that.getGridSize(colw, mincolw, colflags, xbudget, parent.themeobj.borderwidth);
-		log.log("Edi", 0, "** ROW SIZING **");
 		rowh = that.getGridSize(rowh, minrowh, rowflags, ybudget, parent.themeobj.borderheight);
 
 		for (var i = 0; i < layout.length; i++) {
@@ -225,24 +211,19 @@ function EdiLayout(layout, name, parent) {
 		// Find out how many max/slack cells we have
 		var nummax = 0;
 		var numslack = 0;
-		log.log("Edi", 0, "Cell flags: ", false);
 		for (var j = 0; j < flags.length; j++) {
-			log.log("Edi", 0, flags[j] + " ", false);
 			if (flags[j] == "max") nummax++;
 			else if (flags[j] == "slack") numslack++;
 		}
-		log.flush("Edi");
 
 		// If we've got width to spare, let's maximize any cells
 		if ((budget > 0) && (nummax > 0)) {
 			var addwidth = Math.floor(budget / nummax);
 			var spare = budget - addwidth;		// catch rounding errors!
-			log.log("Edi", 0, "Maximizing " + nummax + " cells.");
 			for (var j = 0; j < flags.length; j++) {
 				if (flags[j] == "max") {
 					sizes[j] += addwidth + spare;
 					budget -= addwidth - spare;
-					log.log("Edi", 0, "Cell " + j + ", added " + (addwidth + spare) + ".");
 					spare = 0;
 				}
 			}
@@ -251,17 +232,13 @@ function EdiLayout(layout, name, parent) {
 		if ((budget != 0) && (numslack > 0)) {
 			var addwidth = Math.floor(budget / numslack);
 			var spare = budget - addwidth;
-			log.log("Edi", 0, "Shrinking/expanding slack space.  Addwidth: " + addwidth + " / spare: " + spare);
 			for (var j = 0; j < flags.length; j++) {
 				if (flags[j] == "slack") {
-					log.log("Edi", 0, "Slack cell " + j + ".  minsize: " + minsizes[j] + " / size: " + sizes[j] + " / budget: " + budget + " / addwidth: " + addwidth + " / spare: " + spare);
 					if ((sizes[j] + addwidth + spare) < minsizes[j]) {
-						log.log("Edi", 0, "Slack not enough on " + j + ".  Shrinking to min. " + (sizes[j] - minsizes[j]));
 						budget -= (sizes[j] - minsizes[j]);
 						sizes[j] = minsizes[j];
 					}
 					else {
-						log.log("Edi", 0, "Slack used.");
 						sizes[j] += (addwidth + spare);
 						budget -= (addwidth + spare);
 						spare = 0;
@@ -269,13 +246,11 @@ function EdiLayout(layout, name, parent) {
 				}
 			}
 		}
-		log.log("Edi", 0, "Budget after max and slack: " + budget);
 		// Shrink all columns.
 		if (budget < 0) {
 			// Add up the minimum attainable width
 			var minwidthtotal = 0;
 			for (var j = 0; j < minsizes.length; j++) minwidthtotal += minsizes[j];
-			log.log("Edi", 0, "Need to shrink cells.  Minimum width total: " + minwidthtotal);
 			// If minimum width is <= available width, we can shrink some of our columns without doing any sacrifices.
 			if (minwidthtotal <= window.innerWidth) {
 				var shrinkable = 1;
@@ -289,7 +264,6 @@ function EdiLayout(layout, name, parent) {
 							lastshrink = minsizes[j];
 						}
 					}
-					log.log("Edi", 0, "Shrink loop: budget: " + budget + " / largestmin: " + largestmin + " / lastshrink: " + lastshrink);
 					var gain = 0;
 					for (var j = 0; j < sizes.length; j++) {
 						if ((sizes[j] > minsizes[j]) && (minsizes[j] <= largestmin)) {
@@ -298,17 +272,14 @@ function EdiLayout(layout, name, parent) {
 						}
 					}
 					if (gain > Math.abs(budget)) gain = Math.abs(budget);
-					log.log("Edi", 0, "Shrink loop: shrinkable: " + shrinkable + " / gain: " + gain);
 					if (shrinkable > 0) {
 						var shrinkeach = Math.floor(gain / shrinkable);
 						var spare = gain - (shrinkeach * shrinkable);
-						log.log("Edi", 0, "Shrink loop: shrinkeach = " + shrinkeach + " / spare: " + spare);
 						for (var j = 0; j < sizes.length; j++) {
 							if ((sizes[j] > minsizes[j]) && (minsizes[j] <= largestmin)) {
 								sizes[j] -= shrinkeach - spare;
 								spare = 0;
 								budget += shrinkeach + spare;
-								log.log("Edi", 0, "Shrinking cell " + j + " to " + sizes[j] + " / budget: " + budget);
 							}
 						}
 					}
@@ -323,7 +294,6 @@ function EdiLayout(layout, name, parent) {
 				}
 				var subwidth = Math.floor(Math.abs(budget) / shrinkable);
 				var spare = Math.abs(budget) - (subwidth * shrinkable);
-				log.log("Edi", 0, "Final shrink subwidth and spare: " + subwidth + "  " + spare);
 				for (var j = 0; j < sizes.length; j++) {
 					if (flags[j] != "fixed") {
 						sizes[j] -= subwidth - spare;
@@ -334,7 +304,6 @@ function EdiLayout(layout, name, parent) {
 			}
 		}
 		
-		log.log("Edi", 0, "Final budget: " + budget);
 		return sizes;
 	};
 	

@@ -48,7 +48,7 @@ function R3Effects() {
 			if (mozAnim) window.removeEventListener("MozBeforePaint", globalStep, false);
 			else clearInterval(timer);
 			timer = false;
-			log.log("Fx", 0, "Avg FPS: " + Math.round(fpscounter / ((time - started) / 1000)));
+			//log.log("Fx", 0, "Avg FPS: " + Math.round(fpscounter / ((time - started) / 1000)));
 		}
 		else if (mozAnim) {
 			window.mozRequestAnimationFrame();

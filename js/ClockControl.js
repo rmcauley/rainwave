@@ -25,7 +25,6 @@ var ClockControl = function() {
 	that.clockSync = function(newtime) {
 		var count = 0;
 		for (var i in clocks) count++;
-		log.log("Clock", 0, "Clock count: " + count);
 		timediff = newtime - that.time();
 		that.now = that.time() + timediff;
 		ready = true;
@@ -40,7 +39,6 @@ var ClockControl = function() {
 				clocks[cb].func.call(clocks[cb].obj, clocktime);
 			//}
 			// catch(err) {
-				// log.log("Clock", 0, "Clock " + cb + " experienced a Javascript failure.");
 				// delete(clocks[cb]);
 			// }
 		}

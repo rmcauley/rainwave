@@ -1,4 +1,4 @@
-/* Rainwave 3 en_CA Language File */
+﻿/* Rainwave 3 en_CA Language File */
 // |variables| are replaced by Rainwave's localization library
 // |S:variable| means to suffix a number-variable using the suffixes you define here. i.e. 4th, 5th, 6th, etc.  Works only on 1-10 number scales, made for English.
 // |P:variable,word| pluralizes a word (found in this file) based on variable.  Again made for English, it only uses the plural word for anything != 0 and > 1.
@@ -8,7 +8,6 @@
 
 var lang = new function() {
 	// Panel Names
-	this.p_LogPanel = "Log";
 	this.p_MainMPI = "Tabs";
 	this.p_MenuPanel = "Menu";
 	this.p_PlaylistPanel = "Playlist";
@@ -126,7 +125,7 @@ var lang = new function() {
 	
 	/* Playlist Sentences */
 	
-	this.pl_oncooldown = "<span class='pl_oncooldown'>On cooldown for |time|.<b>";
+	this.pl_oncooldown = "<span class='pl_ad_oncooldown'>On cooldown for <b>|time|</b>.</span>";
 	this.pl_ranks = "Ranks <b>|S:rank|</b>.";
 	this.pl_favourited = "Favourited by <b>|count|</b> |P:count,person|.";
 	this.pl_wins = "Won <b>|percent|%</b> of the elections it's in, ranking <b>|S:rank|</b>.";
@@ -245,14 +244,14 @@ var lang = new function() {
 	this.reqoncooldown = " (on cooldown)";
 	this.reqempty = " (empty)";
 	this.reqwrongstation = " (wrong station)";
-	this.reqtechtitlefull = " (|station| |S:position| with |requestcount|)";
-	this.reqtechtitlesimple = " (|requestcount|)";
+	this.reqtechtitlefull = " (|station||S:position| with |requestcount|)";
+	this.reqtechtitlesimple = " (|station||requestcount|)";
 	
 	/* Others */
 	this.nowplaying = "Now Playing";
-	this.requestedby = "Requested by |requester|.";
+	this.requestedby = "Requested by |requester|";
 	this.oncooldownfor = "On cooldown for |cooldown|.";
-	this.conflictedwith = "Conflicted with request by |requester|.";
+	this.conflictedwith = "Conflicted with request by |requester|";
 	this.conflictswith = "Conflicts with request by |requester|.";
 	this.election = "Election";
 	this.previouslyplayed = "Previously Played";

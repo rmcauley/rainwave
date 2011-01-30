@@ -10,9 +10,10 @@ function RatingUpdateControl() {
 	};
 	
 	that.ratingUpdate = function(result) {
-		log.log("RatingControl", 0, "Rating: Result code " + result.code + " / " + result.text);
 		if (result.song_id) {
+			var callbackcount = 0;
 			for (var i in callbacks) {
+				callbackcount++;
 				if ((callbacks[i].category == "song") && (callbacks[i].id == result.song_id)) {
 					if (result.code == 1) callbacks[i].ratingConfirm.call(callbacks[i], result.song_rating);
 					else callbacks[i].ratingBad.call(callbacks[i], result.song_rating);
@@ -21,6 +22,7 @@ function RatingUpdateControl() {
 					callbacks[i].ratingConfirm.call(callbacks[i], result.album_rating);
 				}
 			}
+			//log.log callbackcount
 		}
 		if (result.code == 1) help.continueTutorialIfRunning("ratecurrentsong");
 	};
@@ -38,7 +40,6 @@ function RatingUpdateControl() {
 	};
 
 	that.favUpdate = function(result) {
-		log.log("RatingControl", 0, "Favourite: Result code " + result.code + " / " + result.text);
 		if (result.id) {
 			for (var i in callbacks) {
 				if ((callbacks[i].category == result.fav_type) && (callbacks[i].id == result.id)) {

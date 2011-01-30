@@ -1098,7 +1098,6 @@ function EdiTheme() {
 		
 		tabs.enableTab = function(panelname, animate) {
 			tabs.panels[panelname].enabled = true;
-			tabs.panels[panelname].el.style.opacity = 1;
 		};
 
 		tabs.focusTab = function(panelname) {
@@ -1189,15 +1188,15 @@ function EdiTheme() {
 		}
 		
 		pp.insertBefore = function(album1, album2) {
-			albumlist.insertBefore(album1.tr, album2.tr);
+			if (album2.tr.parentNode) albumlist.insertBefore(album1.tr, album2.tr);
 		};
 		
 		pp.appendChild = function(album) {
-			albumlist.appendChild(album.tr);
+			if (!album.tr.parentNode) albumlist.appendChild(album.tr);
 		};
 		
 		pp.removeChild = function(album) {
-			albumlist.removeChild(album.tr);
+			if (album.tr.parentNode) albumlist.removeChild(album.tr);
 		};
 		
 		pp.appendOpenDiv = function(div) {

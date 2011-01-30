@@ -12,10 +12,8 @@ panels.MainMPI = {
 	
 	constructor: function(edi, container) {
 		var that = {};
-		var showlog = false;
 		var savedpanels = {};	// saved panels that should be open in the MPI
-		var startpanels = {};	// panels that should be opened on initialization
-		var lastpanel = "blarghlarg";
+		var lastpanel = false;
 		that.mpi = true;
 		that.panels = {};
 		that.focused = false;
@@ -23,6 +21,12 @@ panels.MainMPI = {
 		that.tabs = false;
 		that.container = container;
 		var ucallbackid = false;
+		
+		var pos = 0;
+		var num = 0;
+		var total = 0;
+		var technicalhint = false;
+		var no1requestsid = 0;
 
 		theme.Extend.MainMPI(that);
 
@@ -33,27 +37,18 @@ panels.MainMPI = {
 			for (var i in savedpanels) {
 				that.addPanel(i);
 			}
+			
 			// we needs tabs to have contents to measure the tab height, which is why we delay drawing and sizing divs until this point
 			that.tabheight = that.tabs.el.offsetHeight;
 			that.postDraw();
+
+			if (lastpanel && panels[lastpanel]) {
+				that.focusPanel(lastpanel);
+			}
 			
-			var startfocused = false;
-			for (var i in startpanels) {
-				if (savedpanels[i]) {
-					that.initPanel(i, false);
-					if (!startfocused) {
-						that.focusPanel(i, true);
-						startfocused = true;
-					}
-				}
-			}
-			// odd place for a pref, maybe, but the log panel should load after everything else
-			prefs.addPref("mpi", { name: "showlog", callback: that.p_showlog, defaultvalue: false, type: "checkbox", dsection: "edi" });
-			if (showlog) {
-				that.addPanel("LogPanel");
-				if (startpanels.LogPanel) that.initPanel("LogPanel", false);
-			}
-			if (startpanels[lastpanel]) that.focusPanel(lastpanel);
+			user.addCallback(that, that.updateRequestPos, "radio_requestposition");
+			ajax.addCallback(that, that.updateRequestNum, "requests_user");
+			ajax.addCallback(that, that.updateRequestTitle, "requests_user");
 		};
 		
 		that.divSize = function(el) {
@@ -79,7 +74,6 @@ panels.MainMPI = {
 				//if (panel.intitle == "PlaylistPanel") help["playlist"] = that.tabs.panels[panel.intitle].el;
 			/*}
 			catch(err) {
-				log.log("MPI", 0, "Failed to initialize " + panelname);
 				return;
 			}*/
 		};
@@ -88,7 +82,6 @@ panels.MainMPI = {
 			var panel = panels[panelname];
 			if (that.panels[panel.intitle]) return;
 			that.panels[panel.intitle] = {};
-			log.log("MPI", 0, "Initializing " + panel.intitle);
 			var mpi_container = createEl("div", { "style": "z-index: 2; position: absolute;" });
 			var panelcl = panel.intitle;
 			panelcl = panelcl.replace(" ", "_");
@@ -107,16 +100,10 @@ panels.MainMPI = {
 			if (evt.target.panelname) that.focusPanel(evt.target.panelname);
 		};
 		
-		that.focusPanel = function(panelname, nosave) {
+		that.focusPanel = function(panelname) {
 			if (that.focused == panelname) return;
 			if (!that.panels[panelname]) that.initPanel(panelname, true);
-			if (!startpanels[panelname]) {
-				startpanels[panelname] = true;
-				prefs.changePref("mpi", "startpanels", startpanels);
-			}
-			if (!nosave) {
-				prefs.changePref("mpi", "lastpanel", panelname);
-			}
+			prefs.changePref("mpi", "lastpanel", panelname);
 			if (that.focused) {
 				that.panels[that.focused].container.style.top = "-5000px";
 				that.tabs.panels[that.focused].focused = false;
@@ -141,29 +128,65 @@ panels.MainMPI = {
 			return false;
 		};
 		
-		that.p_showlog = function(nshowlog) {
-			showlog = nshowlog;
-			if (nshowlog && that.tabs.panels && !that.tabs.panels[panels.LogPanel.intitle]) {
-				that.addPanel(panels.LogPanel.intitle);
+		that.updateRequestTitle = function() {
+			if (!that.tabs || !that.tabs.panels[panels.RequestsPanel.intitle]) return;
+			var str = "";
+			if (technicalhint) {
+				var numstring = "";
+				numstring += num;
+				if (total != num) numstring += "/" + total;
+				var stationstring = "";
+				if (no1requestsid != user.p.sid) stationstring = SHORTSTATIONS[no1requestsid] + " ";
+				if (pos > 0) str = _l("reqtechtitlefull", { "position": pos, "requestcount": numstring, "station": stationstring });
+				else if ((num > 0) || (total > 0)) str = _l("reqtechtitlesimple", { "requestcount": numstring, "station": stationstring });
 			}
+			else {
+				var str = "";
+				if (total == 0) str = "";
+				else if (no1requestsid != user.p.sid) str = _l("reqwrongstation");
+				else if (user.p.radio_request_expiresat && (num == 0)) str = _l("reqexpiring");
+				else if ((num == 0) & (total > 0)) str = _l("reqoncooldown");
+				else if ((num == 0) && user.p.radio_request_position) str = _l("reqempty");
+				else if (user.p.radio_request_position == 0) str = _l("reqfewminutes");
+				else if (user.p.radio_request_position > 10) str = _l("reqlongwait");
+				else if (user.p.radio_request_position > 6) str = _l("reqwait");
+				else if (user.p.radio_request_position > 3) str = _l("reqshortwait");
+				else str = _l("reqsoon");
+			}
+			that.changeTitle(panels.RequestsPanel.intitle, panels.RequestsPanel.title + str);
 		};
+		
+		that.updateReqestPos = function(newpos) {
+			pos = newpos;
+		};
+		
+		that.updateRequestNum = function(json) {
+			num = 0;
+			total = 0;
+			for (var i = 0; i < json.length; i++) {
+				if (json[i].song_available) num++;
+				total++;
+			};
+			if (json.length > 0) no1requestsid = json[0].sid;
+		};
+		
+		that.p_technicalhint = function(techhint) {
+			technicalhint = techhint;
+			that.updateRequestTitle();
+		}
 		
 		that.p_savedpanels = function(nsavedpanels) {
 			savedpanels = nsavedpanels;
 		};
-		
-		that.p_startpanels = function(nstartpanels) {
-			startpanels = nstartpanels;
-		};
-		
+
 		that.p_lastpanel = function(nlastpanel) {
 			lastpanel = nlastpanel;
 		}
 
 		savedpanels =  { "PlaylistPanel": true, "RequestsPanel": true, "PrefsPanel": true, "SchedulePanel": true };
 		//prefs.addPref("mpi", { name: "savedpanels", callback: that.p_savedpanels, defaultvalue: { "PlaylistPanel": true, "RequestsPanel": true, "PrefsPanel": true, "SchedulePanel": true, "HelpPanel": true }, hidden: true });
-		prefs.addPref("mpi", { name: "startpanels", callback: that.p_startpanels, defaultvalue: {}, hidden: true });
 		prefs.addPref("mpi", { name: "lastpanel", callback: that.p_lastpanel, defaultvalue: {}, hidden: true });
+		prefs.addPref("requests", { name: "technicalhint", defaultvalue: false, type: "checkbox", callback: that.p_technicalhint });
 
 		return that;
 	}

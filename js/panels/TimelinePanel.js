@@ -47,7 +47,6 @@ panels.TimelinePanel = {
 			var i = 0;
 			while (i < that.allevents.length) {
 				if (that.allevents[i].purge == true) {
-					log.log("TimeP", 0, "Purging: " + that.allevents[i].p.sched_id);
 					that.allevents[i].purgeElements();
 					container.removeChild(that.allevents[i].el);
 					that.allevents.splice(i, 1);
@@ -146,6 +145,7 @@ panels.TimelinePanel = {
 				that.setPurgeFlags(that.nextevents);
 				that.nextevents = that.updateEventData(json);
 			}
+			var crossedelec = false;
 			for (var i = 0; i < that.nextevents.length; i++) {
 				that.nextevents[i].disableRating();
 				if (user.p.current_activity_allowed && ((i == 0) || user.p.radio_perks)) {
@@ -153,6 +153,10 @@ panels.TimelinePanel = {
 				}
 				else {
 					that.nextevents[i].disableVoting();
+				}
+				if (!crossedelec && that.nextevents[i].p.sched_type == SCHED_ELEC) {
+					crossedelec = true;
+					if (that.nextevents[i].updateVotingHelp) that.nextevents[i].updateVotingHelp();
 				}
 			}
 		};
@@ -258,7 +262,6 @@ panels.TimelinePanel = {
 					that.allevents[i].moveTo(that.container.offsetHeight);
 					that.allevents[i].remove();
 				}
-				//else log.log("TimeP", 0, "Event " + i + " height: " + that.allevents[i].height);
 			}
 			var ybudget = container.offsetHeight;
 			var ybudgetused = 0;
@@ -274,7 +277,6 @@ panels.TimelinePanel = {
 				ybudgetused += that.nextevents[i].height + ymargin;
 				if (that.nextevents[i].p.sched_type == SCHED_ELEC) {
 					crossedelec = true;
-					if (that.nextevents[i].updateVotingHelp) that.nextevents[i].updateVotingHelp();
 				}
 				i++;
 			}

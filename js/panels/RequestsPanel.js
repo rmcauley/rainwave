@@ -12,23 +12,16 @@ panels.RequestsPanel = {
 		var that = {};
 		var list = RequestList(true);
 		var line = AllRequestList();
-		var pos = 0;
-		var num = 0;
-		var total = 0;
-		var technicalhint = false;
 		
 		that.container = container;
 		
 		that.init = function() {
-			container.style.overflow = "scroll";
+			container.style.overflow = "auto";
 			container.appendChild(line.el);
 			container.appendChild(list.el);
 			
 			ajax.addCallback(that, list.update, "requests_user");
 			ajax.addCallback(that, line.update, "requests_all");
-			user.addCallback(that, that.updatePos, "radio_requestposition");
-			ajax.addCallback(that, that.updateNum, "requests_user");
-			ajax.addCallback(that, that.updateTitle, "requests_user");
 			
 			initpiggyback['requests'] = "true";
 			if (ajax.sync_time > 0) {
@@ -41,56 +34,7 @@ panels.RequestsPanel = {
 			}
 			help.addToTutorial("request", [ "managingrequests", "timetorequest" ]);
 		};
-		
-		that.updatePos = function(newpos) {
-			pos = newpos;
-		};
-		
-		that.updateNum = function(json) {
-			num = 0;
-			total = 0;
-			for (var i = 0; i < json.length; i++) {
-				if (json[i].song_available) num++;
-				total++;
-			};
-		};
-		
-		that.updateTitle = function(json) {
-			if (edi.changeTitle) {
-				var str = "";
-				if (technicalhint) {
-					var numstring = "";
-					numstring += num;
-					if (total != num) numstring += "/" + total;
-					var stationstring = "";
-					if (list.p && list.p[0] && (list.p[0].sid != user.p.sid)) stationstring = SHORTSTATIONS[list.p[0].sid];
-					if (pos > 0) str = _l("reqtechtitlefull", { "position": pos, "requestcount": numstring, "station": stationstring });
-					else if ((num > 0) || (total > 0)) str = _l("reqtechtitlesimple", { "requestcount": numstring });
-				}
-				else {
-					var str = "";
-					if (total == 0) str = "";
-					else if (list.p && list.p[0] && (list.p[0].sid != user.p.sid)) str = _l("reqwrongstation");
-					else if (user.p.radio_request_expiresat && (num == 0)) str = _l("reqexpiring");
-					else if ((num == 0) & (total > 0)) str = _l("reqoncooldown");
-					else if ((num == 0) && user.p.radio_request_position) str = _l("reqempty");
-					else if (user.p.radio_request_position == 0) str = _l("reqfewminutes");
-					else if (user.p.radio_request_position > 10) str = _l("reqlongwait");
-					else if (user.p.radio_request_position > 6) str = _l("reqwait");
-					else if (user.p.radio_request_position > 3) str = _l("reqshortwait");
-					else str = _l("reqsoon");
-				}
-				edi.changeTitle(panels.RequestsPanel.intitle, panels.RequestsPanel.title + str);
-			}
-		};
-		
-		that.p_technicalhint = function(techhint) {
-			technicalhint = techhint;
-			that.updateTitle({});
-		}
-		
-		prefs.addPref("requests", { name: "technicalhint", defaultvalue: false, type: "checkbox", callback: that.p_technicalhint });
-		
+
 		return that;
 	}
 }
@@ -188,8 +132,8 @@ var RequestList = function(sortable) {
 	var dragidx = 0;
 	var dragmouseoffset = 0;
 	var reqs = [];
-	var goingup = false;
 	var elposition = 0;
+	var origdragidx = 0;
 
 	that.update = function(json) {
 		that.stopDrag();
@@ -298,6 +242,7 @@ var RequestList = function(sortable) {
 			}
 		}
 		if (dragidx == -1) return;
+		origdragidx = dragidx;
 		reqs[dragidx].fx_opacity.start(0.6);
 		reqs[dragidx].el.style.zIndex = reqs.length + 1;
 		elposition = help.getElPosition(that.el)["y"];
@@ -347,6 +292,10 @@ var RequestList = function(sortable) {
 		dragging = false;
 		dragel = false;
 		draggingid = -1;
+		if (origdragidx == dragidx) {
+			dragidx = -1;
+			return;
+		}
 		dragidx = -1;
 		var params = "";
 		reqs.sort(that.sortRequestArray);

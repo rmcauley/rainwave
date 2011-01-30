@@ -190,15 +190,12 @@ panels.PlaylistPanel = {
 		}
 		
 		that.checkOpenDivs = function(type, id) {
-			log.log("PlayP", 0, "Checking for open div: " + type + " :: " + id);
 			var found = false;
 			for (var i = 0; i < opendivs.length; i++) {
 				if ((opendivs[i].type == type) && (opendivs[i].id == id)) {
 					if (i == opendivs.length - 1) {
-						log.log("PlayP", 0, "Already front and centre!");
 						return true;
 					}
-					log.log("PlayP", 0, "Already opened, bringing to front.");
 					found = true;
 					opendivs[i].div.style.display = "block";
 					if (typeof(opendivs[i].div.updateHelp) == "function") opendivs[i].div.updateHelp();
@@ -208,7 +205,6 @@ panels.PlaylistPanel = {
 				}
 			}
 			if (!found) return false;
-			log.log("PlayP", 0, "Hiding all others.");
 			for (i = 0; i < opendivs.length - 1; i++) {
 				opendivs[i].div.style.display = "none";
 			}
@@ -216,7 +212,6 @@ panels.PlaylistPanel = {
 		};
 		
 		that.createOpenDiv = function(type, id) {
-			log.log("PlayP", 0, "Creating div with " + type + " :: " + id);
 			while (opendivs.length > 9) {
 				that.destruct(opendivs[0]);
 				that.removeOpenDiv(opendivs[0].div);
@@ -225,7 +220,6 @@ panels.PlaylistPanel = {
 			for (i = 0; i < opendivs.length; i++) {
 				opendivs[i].div.style.display = "none";
 			}
-			log.log("PlayP", 0, "# Divs: " + opendivs.length);
 			var div = document.createElement("div");
 			div.setAttribute("class", "pl_opendiv");
 			that.appendOpenDiv(div);
@@ -237,7 +231,6 @@ panels.PlaylistPanel = {
 			if (json.album_id != idloading) return false;
 			idloading = false;
 			var i = that.createOpenDiv("album", json.album_id);
-			log.log("PlayP", 0, "Rendering album.");
 			json.song_data.sort(that.sortSongList);
 			that.drawAlbum(opendivs[i].div, json);
 			if (typeof(opendivs[i].div.updateHelp) == "function") opendivs[i].div.updateHelp();
@@ -312,7 +305,6 @@ panels.PlaylistPanel = {
 			// down arrow
 			if ((code == 40) && (albumsort[keynavpos + 1])) {
 				bubble = false;
-				//log.log("PlayP", 0, "[keyHandle] Scrolling down to " + albums[albumsort[keynavpos + 1]].album_name);
 				if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
 				keynavpos++;
 				that.scrollToAlbum(albums[albumsort[keynavpos]]);
@@ -323,7 +315,6 @@ panels.PlaylistPanel = {
 			// up arrow
 			if ((code == 38) && (albumsort.length > 0) && (keynavpos > 0)) {
 				bubble = false;
-				//log.log("PlayP", 0, "[keyHandle] Scrolling up to " + albums[albumsort[keynavpos - 1]].album_name);
 				if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
 				keynavpos--;
 				that.scrollToAlbum(albums[albumsort[keynavpos]]);
@@ -345,7 +336,6 @@ panels.PlaylistPanel = {
 				inlinetimer = setTimeout(that.clearInlineSearch, 20000);
 			}
 			if (resetkeytimer) {
-				//log.log("PlayP", 0, "[keyHandle] Resetting key timer.");
 				if (keynavtimer) clearTimeout(keynavtimer);
 				keynavtimer = setTimeout(that.clearKeyNav, 5000);
 			}
@@ -367,8 +357,6 @@ panels.PlaylistPanel = {
 			var i;
 			var j;
 			text = text.toLowerCase();
-			
-			log.log("PlayP", 0, "Search :: # Albums Displayed before \"" + text + "\": " + albumsort.length);
 			
 			// remove all albums that no longer match the search
 			for (i = 0; i < albumsort.length; i++) {
@@ -392,8 +380,6 @@ panels.PlaylistPanel = {
 					if (!insearch) reinsert.push(i);
 				}
 			}
-			
-			log.log("PlayP", 0, "Search :: # Albums Displayed after \"" + text + "\": " + albumsort.length);
 					
 			reinsert.sort(that.sortAlbumArray);
 			that.updateAlbumList();
@@ -403,9 +389,7 @@ panels.PlaylistPanel = {
 			if (keynavtimer) clearTimeout(keynavtimer);
 			keynavtimer = false;
 			if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
-			//log.log("PlayP", 0, "[clearKeyNav] Reset key nav highlight and timer.");
 			if (reset === true) {
-				//log.log("PlayP", 0, "[clearKeyNav] Reset key nav position and scroll offset.");
 				keynavpos = -1;
 				that.setKeyNavOffset(false);
 			}
@@ -426,7 +410,6 @@ panels.PlaylistPanel = {
 				reinsert = reinsert.concat(searchremoved);
 				searchremoved = [];
 				reinsert.sort(that.sortAlbumArray);
-				log.log("PlayP", 0, "Clear :: # Reinserting " + reinsert.length);
 				that.updateAlbumList();
 			}
 			
