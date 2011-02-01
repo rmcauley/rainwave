@@ -393,7 +393,12 @@ var Request = {
 				that.el.removeChild(that.expires_on);
 				delete(that.expires_on);
 			}*/
-			that.el.setAttribute("class", "request request_" + json.song_available);
+			if (json.sid != user.p.sid) {
+				that.el.setAttribute("class", "request request_" + json.song_available + " request_station_" + json.sid);
+			}
+			else {
+				that.el.setAttribute("class", "request request_" + json.song_available);
+			}
 			if ((json.song_available == false) && (!that.cooldown)) {
 				that.cooldown = document.createElement("div");
 				that.cooldown.setAttribute("class", "request_cooldown");

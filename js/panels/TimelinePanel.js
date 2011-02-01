@@ -622,11 +622,11 @@ function TimelineAdSet(json, container, parent) {
 	theme.Extend.TimelineAdSet(that);
 	
 	that.getScheduledLength = function() {
-		var avg = 0;
-		for (var i = 0; i < that.p.ad_data.length; i++) {
-			avg += that.p.ad_data[i].ad_secondslong;
+		var total = 0;
+		for (var i = that.p.adset_position; i < that.p.ad_data.length; i++) {
+			total += that.p.ad_data[i].ad_secondslong;
 		}
-		return Math.round(avg / that.p.ad_data.length);
+		return total;
 	};
 	
 	return that;
@@ -672,11 +672,11 @@ function TimelinePlaylist(json, container, parent) {
 	};
 	
 	that.getScheduledLength = function() {
-		var avg = 0;
+		var total = 0;
 		for (var i = 0; i < that.p.song_data.length; i++) {
-			avg += that.p.song_data[i].song_secondslong;
+			total += that.p.song_data[i].song_secondslong;
 		}
-		return Math.round(avg / that.p.song_data.length);
+		return total;
 	};
 
 	return that;

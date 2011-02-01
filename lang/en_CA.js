@@ -1,4 +1,4 @@
-﻿/* Rainwave 3 en_CA Language File */
+/* Rainwave 3 en_CA Language File */
 // |variables| are replaced by Rainwave's localization library
 // |S:variable| means to suffix a number-variable using the suffixes you define here. i.e. 4th, 5th, 6th, etc.  Works only on 1-10 number scales, made for English.
 // |P:variable,word| pluralizes a word (found in this file) based on variable.  Again made for English, it only uses the plural word for anything != 0 and > 1.
@@ -29,7 +29,7 @@ var lang = new function() {
 	// Edi Codes
 	this.log_1 = "Station ID not provided to API.";
 	this.log_2 = "This station is currently offline.<br />Check <a href=\"http://twitter.com/Rainwavecc\">twitter.com/Rainwavecc</a> or the chat room for the latest updates.";
-	this.log_3 = "You used |lockedto| in the last few minutes; you must wait to use |currentlyon|.";
+	this.log_3 = "Please wait to use |currentlyon|.";
 	
 	// HTTP Codes
 	this.log_200 = "HTTP OK";

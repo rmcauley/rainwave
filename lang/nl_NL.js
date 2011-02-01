@@ -27,7 +27,7 @@ var lang = new function() {
 	this.log_0 = "Debug";
 	
 	// Edi Codes
-	this.log_1 = "Zender ID not provided to API.";
+	this.log_1 = "Zender ID niet verstuurd naar API.";
 	this.log_2 = "Deze zender is op dit moment offline.<br />Kijk op <a href=\"http://twitter.com/Rainwavecc\">twitter.com/Rainwavecc</a> of de chatroom voor de laatste updates.";
 	this.log_3 = "U gebruikte |lockedto| in de afgelopen minuten; u moet wachten voordat u |currentlyon| kunt gebruiken.";
 	
@@ -137,7 +137,7 @@ var lang = new function() {
 	
 	/* Preferences */
 	
-	this.pref_refreshrequired = "(herlaad vereist)";
+	this.pref_refreshrequired = "(herladen vereist)";
 	this.pref_timeline = "Tijdlijn";
 	this.pref_timeline_linear = "Lineaire Tijdlijn";
 	this.pref_timeline_showhistory = "Toon Geschiedenis";
@@ -245,14 +245,14 @@ var lang = new function() {
 	this.reqoncooldown = " (in cooldown fase)";
 	this.reqempty = " (leeg)";
 	this.reqwrongstation = " (verkeerde zender)";
-	this.reqtechtitlefull = " (|station||S:position| met |requestcount|)";
-	this.reqtechtitlesimple = " (|station||requestcount|)";
+	this.reqtechtitlefull = " (|station| |S:position| met |requestcount|)";
+	this.reqtechtitlesimple = " (|requestcount|)";
 	
 	/* Others */
 	this.nowplaying = "Huidige Nummer";
-	this.requestedby = "Verzocht door |requester|";
+	this.requestedby = "Verzocht door |requester|.";
 	this.oncooldownfor = "In cooldown fase voor |cooldown|.";
-	this.conflictedwith = "Geconflicteerd met een verzoek van |requester|";
+	this.conflictedwith = "Geconflicteerd met een verzoek van |requester|.";
 	this.conflictswith = "Conflicteerd met een verzoek van |requester|.";
 	this.election = "Electie";
 	this.previouslyplayed = "Vorige Nummers";

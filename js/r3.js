@@ -90,8 +90,7 @@ function init() {
 	ajax.setStationID(PRELOADED_SID);
 	ajax.setUserID(PRELOADED_USER_ID);
 	ajax.setKey(PRELOADED_APIKEY);
-	
-	errorcontrol.setupCallbacks();
+
 	ajax.errorCallback = errorcontrol.doError;
 
 	hotkey = HotkeyControl();
@@ -104,6 +103,7 @@ function init() {
 	titleupdate = TitleUpdate();
 	user = UserControl();
 	ratingcontrol = RatingUpdateControl();
+	errorcontrol.setupCallbacks();
 	
 	help.addStep("about", { "h": "about", "pf": drawAboutScreen, "width": svg.em * 55, "height": svg.em * 30 });
 	help.addTutorial("about", [ "about" ]);

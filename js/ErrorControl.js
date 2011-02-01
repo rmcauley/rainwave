@@ -31,7 +31,9 @@ function ErrorControl() {
 		ajax.addCallback(that, that.genericError, "force_candidate_new_result");
 		ajax.addCallback(that, that.genericError, "force_candidate_delete_result");
 		ajax.addCallback(that, that.loginresult, "login_result")
-		ajax.addCallback(that, that.newsCallback, "news");
+		ajax.addCallback(that, that.genericError, "admin_playlist_refresh_result");
+		//ajax.addCallback(that, that.newsCallback, "news");
+		//user.addCallback(that, that.statRestrict, "radio_statrestricted");
 	};
 	
 	that.genericError = function(json) {
@@ -178,6 +180,12 @@ function ErrorControl() {
 			for (var i = 0; i < json.length; i++) {
 				that.doError(10000 + i, 1, false, json[i].topic_title);
 			}
+		}
+	};
+	
+	that.statRestrict = function(restricted) {
+		if (restricted) {
+			that.doError(3, true, _l("log_3", { "lockedto": STATIONS[user.p.radio_active_sid], "currentlyon": STATIONS[user.p.sid] }));
 		}
 	};
 

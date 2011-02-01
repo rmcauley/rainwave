@@ -419,9 +419,9 @@ function EdiTheme() {
 			tos.defineFx();
 		};
 		
-		te.drawShowWinner = function() {
-			te.songs[0].tr3_fx.onComplete2 = function() { te.songs[0].indicator.setAttribute("rowspan", 2); }
-			te.songs[0].tr3_fx.start(0);
+		tos.drawShowWinner = function() {
+			tos.songs[0].tr3_fx.onComplete2 = function() { tos.songs[0].indicator.setAttribute("rowspan", 2); }
+			tos.songs[0].tr3_fx.start(0);
 		};
 	};
 
@@ -1055,7 +1055,7 @@ function EdiTheme() {
 		
 		menup.statRestrict = function(restricted) {
 			if (restricted) {
-				menup.td_news.textContent = _l("log_3", { "lockedto": STATIONS[user.p.radio_active_sid], "currentlyon": STATIONS[user.p.sid] });
+				menup.td_news.textContent = _l("log_3", { "lockedto": SHORTSTATIONS[user.p.radio_active_sid], "currentlyon": SHORTSTATIONS[user.p.sid] });
 			}
 			else {
 				menup.td_news.textContent = "";

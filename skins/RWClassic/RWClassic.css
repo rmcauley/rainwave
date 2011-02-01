@@ -439,14 +439,28 @@ div.request {
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	user-select: none;
+	background-position: bottom right;
+	background-repeat: no-repeat;
 }
 
 div.request_true {
-	background: #111111;
+	background-color: #111111;
 }
 
 div.request_false {
-	background: #110000;
+	background-color: #110000;
+}
+
+div.request_station_1 {
+	background-image: url("../../images/menu_logo_1.png");
+}
+
+div.request_station_2 {
+	background-image: url("../../images/menu_logo_2.png");
+}
+
+div.request_station_3 {
+	background-image: url("../../images/menu_logo_3.png");
 }
 
 svg.request_songrating {
@@ -642,6 +656,7 @@ td.menu_td_download {
 
 td.menu_td_download img {
 	height: 16px;
+	width: auto;
 }
 
 td.menu_td_user {
@@ -655,6 +670,7 @@ td.menu_td_user {
 
 td.menu_td_user img {
 	height: 16px;
+	width: auto;
 	z-index: 2;
 	position: relative;
 }
@@ -670,6 +686,8 @@ table.menu_table td.menu_td_news {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	color: #ff0000;
+	font-weight: bold;
 }
 
 table.menu_table td.menu_td_help {
@@ -702,6 +720,7 @@ table.menu_table td.menu_td_cog {
 
 table.menu_table td.menu_td_cog img {
 	height: 16px;
+	width: auto;
 }
 
 .COG_links {

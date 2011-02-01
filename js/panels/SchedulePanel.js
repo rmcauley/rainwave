@@ -129,6 +129,14 @@ panels.SchedulePanel = {
 			row.appendChild(td);
 			tbl.appendChild(row);
 			
+			row = createEl("tr", {}, tbl);
+			td = createEl("td", {}, row);
+			var refresh_playlist = createEl("button", { "textContent": "Refresh Playlist" }, td);
+			refresh_playlist.addEventListener('click', function() {
+				ajax.async_get("admin_playlist_refresh");
+			}, true);
+			row.appendChild(createEl("td", { "textContent": ""}));
+			
 			newfs.appendChild(tbl);
 			container.appendChild(newfs);
 			
