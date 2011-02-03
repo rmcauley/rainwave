@@ -79,13 +79,14 @@ function R3Graph() {
 			
 			graph.maxx = graph.data.maxx ? graph.data.maxx : keys[keys.length - 1];
 			graph.maxy = graph.data.maxy ? graph.data.maxy : true;
-			graph.minx = graph.data.minx ? graph.data.minx : 0;
-			graph.miny = graph.data.miny ? graph.data.miny : 0;
+			graph.minx = typeof(graph.data.minx) != "undefined" ? graph.data.minx : 0;
+			graph.miny = typeof(graph.data.miny) != "undefined" ? graph.data.miny : 0;
 			if (graph.maxy === true) {
 				graph.maxy = 0;
 				for (i in graph.data.raw) {
 					if (graph.data.raw[i] > graph.maxy) graph.maxy = graph.data.raw[i];
 				}
+				graph.maxy = Math.ceil(graph.maxy / 10) * 10;
 			}
 			if (graph.minx === true) graph.data.minx = keys[0];
 			if (graph.miny === true) {
@@ -163,7 +164,8 @@ function R3Graph() {
 			if (((graph.minx !== 0) || (graph.miny !== 0)) && !graph.data.ynonumbers) {
 				var zerotexty = graph.data.xnonumbers ? runningy : runningy + (svg.em * 0.3);
 				steptext = svg.makeEl("text", { x: graph.ystartx - 2, y: zerotexty, fill: theme.vdarktext, text_anchor: "end", style: "font-size: 0.7em" });
-				if (graph.maxy > (graph.data.raw[keys[0]] + 10)) steptext.textContent = graph.data.raw[keys[0]];
+				if (typeof(graph.data.miny) != "undefined") steptext.textContent = graph.miny;
+				//else if (graph.maxy > (graph.data.raw[keys[0]] + 10)) steptext.textContent = graph.data.raw[keys[0]];
 				else steptext.textContent = graph.data.yprecision ? graph.miny.toFixed(graph.data.yprecision) : Math.floor(graph.miny);				
 				graph.scalable.appendChild(steptext);
 			}

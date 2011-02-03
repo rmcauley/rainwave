@@ -457,7 +457,7 @@ var Help = function() {
 				if (highlighted[i].border) highlighted[i].el.style.border = highlighted[i].border;
 				else highlighted[i].el.style.border = "";
 				if (highlighted[i].color) highlighted[i].el.style.color = highlighted[i].color;
-				else highlighted[i].el.style.color = "auto";
+				else highlighted[i].el.style.color = "inherit";
 				if (highlighted[i].fontweight) highlighted[i].el.style.fontWeight = highlighted[i].fontweight;
 				else highlighted[i].el.style.fontWeight = "normal";
 			}

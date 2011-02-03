@@ -1267,9 +1267,8 @@ function EdiTheme() {
 			div.albumdetailtd = document.createElement("td");
 			div.albumdetailtd.setAttribute("class", "pl_ad_albumdetailtd");
 			
-			if ((json.album_rating_count >= 2) && svg.capable) {
-				var gr = graph.makeSVG(graph.RatingHistogram, that.RatingHistogramMask, 200, 120 - (svg.em * 3), { maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnonumbers: true, minx: 0.5, miny: true, padx: 10, raw: json.album_rating_histogram });
-				//var gr = graph.makeSVG(graph.RatingHistogram, that.RatingHistogramMask, 200, 120 - (svg.em * 3), { maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnonumbers: true, minx: 0.5, miny: true, padx: 10, raw: { "1.0": 53, "1.5": 84, "2.0": 150, "2.5": 200, "3.0": 250, "3.5": 300, "4.0": 350, "4.5": 400, "5.0": 521 }});
+			if ((json.album_rating_count >= 10) && svg.capable) {
+				var gr = graph.makeSVG(graph.RatingHistogram, that.RatingHistogramMask, 200, 120 - (svg.em * 3), { maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnonumbers: true, minx: 0.5, miny: 0, padx: 10, raw: json.album_rating_histogram });
 				gr.svg.setAttribute("class", "pl_ad_ratinghisto");
 				div.albumdetailtd.appendChild(gr.svg);
 			}
@@ -1315,9 +1314,12 @@ function EdiTheme() {
 			div.albumdetailtd.appendChild(stats);
 			tr.appendChild(div.albumdetailtd);
 			
+			div.albumarttd = createEl("td", { "class": "pl_ad_albumart_td" }, tr);
 			if (json.album_art) {
-				div.albumarttd = createEl("td", { "class": "pl_ad_albumart_td" }, tr);
 				createEl("img", { "src": json.album_art, "class": "pl_ad_albumart" }, div.albumarttd);
+			}
+			else {
+				div.albumarttd.innerHTML = " ";
 			}
 			
 			div.hdrtable.appendChild(tr);
