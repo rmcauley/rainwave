@@ -2,9 +2,9 @@
 
 $pagestart = microtime(true);
 
-require_once('/var/www/substream.rainwave.cc/forums/config.php' );
+require_once('/var/www/rainwave.cc/forums/config.php' );
 define('IN_PHPBB',true);
-$phpbb_root_path = "/var/www/substream.rainwave.cc/forums/";
+$phpbb_root_path = "/var/www/rainwave.cc/forums/";
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 

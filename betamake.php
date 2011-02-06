@@ -8,9 +8,9 @@ if (isset($_SERVER['argv'][1])) {
 	bumpBuildNumber();
 }
 
-$dest = "/home/rmcauley/r3/beta/";
+$dest = "/var/www/rainwave.cc/beta/";
 $bnum = getBuildNumber();
-$lyredir = "/home/rmcauley/lyre/";
+$lyredir = "/home/rmcauley/r3/lyre/";
 
 print "RAINWAVE 3 BETA REVISION " . $bnum . "\n";
 

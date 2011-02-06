@@ -94,6 +94,7 @@ function Edi(container) {
 	that.init = function() {
 		prefs.addPref("edi", { name: "language", defaultvalue: "en_CA", type: "dropdown", options: [
 				{ "value": "en_CA", "option": "English (Canada)" },
+				{ "value": "fr_CA", "option": "French (Canada)" },
 				{ "value": "nl_NL", "option": "Nederlands" },
 				{ "value": "fi_FI", "option": "Suomi" }
 			], refresh: true });

@@ -462,7 +462,7 @@ function EdiTheme() {
 			ts.tr2_fx.set(1);
 			ts.album_td = createEl("td", { "class": "timeline_td timeline_album_td" }, ts.tr2);
 			ts.album_rating_c = createEl("div", { "class": "timeline_song_rating_c" }, ts.album_td);
-			ts.album_rating = Rating({ category: "album", "id": ts.p.album_id, "userrating": ts.p.album_rating_user, "siterating": ts.p.salbum_rating_avg, "favourite": ts.p.album_favourite, "register": true });
+			ts.album_rating = Rating({ category: "album", "id": ts.p.album_id, "userrating": ts.p.album_rating_user, "siterating": ts.p.album_rating_avg, "favourite": ts.p.album_favourite, "register": true });
 			ts.album_rating_c.appendChild(ts.album_rating.el);
 			ts.album_rating_bkg = createEl("div", { "class": "timeline_song_rating_bkg" }, ts.album_td);
 			if (ts.p.elec_isrequest == 1) {
