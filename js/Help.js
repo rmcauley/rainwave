@@ -9,8 +9,6 @@ var Help = function() {
 	var ctutstep = 0;
 	var ctutshowing = false;
 	var ctut = false;
-	var arrows = [];
-	var arrowtimer = false;
 	var highlighted = [];
 	var showingstepname = false;		// named differently because ctutstep is actually 1 /ahead/ of what's showing.
 	
@@ -52,8 +50,8 @@ var Help = function() {
 			steps[name].pointel = pointel;
 			if (showingstepname == name) {
 				ctutshowing.pointel = pointel;
-				that.removeArrows();
-				that.drawArrows(ctutshowing);
+				that.removeHighlights();
+				that.drawHighlights(ctutshowing);
 			}
 		}
 	};
@@ -61,7 +59,7 @@ var Help = function() {
 	that.changeTopicPointEl = function(name, pointel) {
 		if (topics[name]) {
 			topics[name].pointel = pointel;
-			if (alltopicsshown == 2) that.removeArrows();
+			if (alltopicsshown == 2) that.removeHighlights();
 		}
 	};
 	
@@ -99,7 +97,7 @@ var Help = function() {
 	
 	that.hideAllTopics = function(exception) {
 		that.endTutorial();
-		that.removeArrows();
+		that.removeHighlights();
 		alltopicsshown = 1;
 		for (var i in showing) {
 			if (exception && alltopics[i] && (alltopics[i] == exception)) continue;
@@ -125,7 +123,7 @@ var Help = function() {
 				return;
 			}
 			if (steps[tuts[tut][ctutstep]]) {
-				that.removeArrows();
+				that.removeHighlights();
 				ctut = tut;
 				var nx = false;
 				if (steps[tuts[tut][ctutstep]].skipf) nx = steps[tuts[tut][ctutstep]].skipf();
@@ -155,7 +153,7 @@ var Help = function() {
 		ctutstep = 0;
 		ctutshowing = false;
 		ctut = false;
-		that.removeArrows();
+		that.removeHighlights();
 	};
 	
 	that.clickXButton = function() {
@@ -216,13 +214,14 @@ var Help = function() {
 	
 	that.changeHelpDiv = function(data, container, laststep) {
 		if (container.h) container.div.removeChild(container.h);
-		container.h = createEl("div", { "class": "help_header", "textContent": _l(data.h) });
+		container.h = createEl("div", { "class": "help_header" });
+		_l(data.h, {}, container.h);
 		container.div.appendChild(container.h);
 
 		if (container.p) container.div.removeChild(container.p);
 		if (data.p) {
 			container.p = createEl("div", { "class": "help_paragraph" });
-			container.p.innerHTML = _l(data.p);
+			_l(data.p, {}, container.p);
 			container.div.appendChild(container.p);
 		}
 		else if (data.pf) {
@@ -231,13 +230,13 @@ var Help = function() {
 		
 		if (container.next) {
 			if (alltopicsshown == 2) {
-				container.next.innerHTML = "<span>" + _l("helpstart") + "</span>";
+				_l("helpstart", {}, container.next);
 			}
 			else if (laststep) {
-				container.next.innerHTML = "<span>" + _l("helplast") + "</span>";
+				_l("helplast", {}, container.next);
 			}
 			else {
-				container.next.innerHTML = "<span>" + _l("helpnext") + "</span>";
+				_l("helpnext", {}, container.next);
 			}
 		}
 		
@@ -291,7 +290,7 @@ var Help = function() {
 		
 		if (data.pointel) container.pointel = data.pointel;
 		else container.pointel = false;
-		that.drawArrows(container);
+		that.drawHighlights(container);
 	};
 	
 	that.getElPosition = function(el) {
@@ -345,80 +344,7 @@ var Help = function() {
 		else return el.offsetHeight;
 	};
 	
-	that.drawArrows = function(container) {
-		arrowtimer = setTimeout(function() { that.drawArrows2(container); }, 750);
-	};
-	
-	that.drawArrows2 = function(container) {
-		if (arrowtimer) arrowtimer = false;
-		//if (alltopicsshown == 2) return;
-		if (!container.pointel) return;
-		that.highlightElements(container);
-		if (!svg.capable) return;
-		
-		var arr, ppos, cpos;
-		for (var i = 0; i < container.pointel.length; i++) {
-			arr = {};
-			arr.c = container;
-			ppos = that.getElPosition(container.pointel[i]);	
-			cpos = { "x": parseInt(container.finalx), "y": parseInt(container.finaly) };
-			if (svg.isElSVG(container.pointel[i])) {
-				if (container.pointel[i].nodeName == "text") ppos.y += (svg.em * 0.5);
-				else if (container.pointel[i].getAttribute("height")) ppos.y += Math.round(parseInt(container.pointel[i].getAttribute("height")) / 2);
-				
-				if (ppos.x > cpos.x) cpos.x = cpos.x - 2;
-				else cpos.x = cpos.x - 2;
-			}
-			if (ppos.x < cpos.x) {
-				if (container.pointel[i].nodeName == "text") ppos.x += that.getElWidth(container.pointel[i], true);
-				else ppos.x += that.getElWidth(container.pointel[i]);
-				cpos.x = cpos.x + 8;
-			}
-			else {
-				cpos.x = cpos.x + container.finalwidth;
-				cpos.x = cpos.x - 5;
-			}
-			if (ppos.y < cpos.y) {
-				ppos.y += that.getElHeight(container.pointel[i]);
-			}
-			cpos.y = cpos.y + (svg.em * 1.8);
-			var w = Math.abs(cpos.x - ppos.x);
-			var h = Math.abs(cpos.y - ppos.y);
-			var aw = 3;
-			arr.arrowsvg = svg.make({ "width": w, "height": h });
-			arr.arrowsvg.style.position = "absolute";
-			arr.arrowsvg.style.zIndex = "1000000";
-			// if dest is to the left of source and above --OR-- dest is to the right and below source, draw a \ arrow line
-			if (((cpos.x < ppos.x) && (cpos.y < ppos.y)) || ((cpos.x > ppos.x) && (cpos.y > ppos.y))) {
-				arr.arrowsvg.appendChild(svg.makeEl("path", { "fill": theme.helplinecolor, "stroke": "#000000", "stroke-width": "1", "d": "M0,0 H" + aw + " L" + w + "," + (h - aw) + " V" + h + " H" + (w - aw) + " L0," + aw + " Z" }));
-			}
-			// otherwise draw a / arrow line
-			else {
-				arr.arrowsvg.appendChild(svg.makeEl("path", { "fill": theme.helplinecolor, "stroke": "#000000", "stroke-width": "1","d": "M" + aw + "," + h + " H0 V" + (h - aw) + " L" + (w - aw) + ",0 H" + w + " V" + aw + " Z"}));
-			}
-			if (cpos.x < ppos.x) arr.arrowsvg.style.left = cpos.x + "px";
-			else arr.arrowsvg.style.left = ppos.x + "px";
-			if (cpos.y < ppos.y) arr.arrowsvg.style.top = cpos.y + "px";
-			else arr.arrowsvg.style.top = ppos.y + "px";
-			document.getElementById("body").appendChild(arr.arrowsvg);
-			arrows.push(arr);
-		}
-	};
-	
-	that.removeArrows = function() {
-		if (arrowtimer) {
-			clearTimeout(arrowtimer);
-			arrowtimer = false;
-		}
-		that.unhighlightElements();
-		if (!arrows) return;
-		for (var i = 0; i < arrows.length; i++) {
-			document.getElementById("body").removeChild(arrows[i].arrowsvg);
-		}
-		arrows = [];
-	};
-	
-	that.highlightElements = function(container) {
+	that.drawHighlights = function(container) {
 		for (var i = 0; i < container.pointel.length; i++) {
 			var obj = {};
 			obj.el = container.pointel[i];
@@ -445,7 +371,7 @@ var Help = function() {
 		}
 	};
 	
-	that.unhighlightElements = function() {
+	that.removeHighlights = function() {
 		for (var i = 0; i < highlighted.length; i++) {
 			if (svg.isElSVG(highlighted[i].el)) {
 				if (highlighted[i].stroke) highlighted[i].el.setAttribute("stroke", highlighted[i].stroke);

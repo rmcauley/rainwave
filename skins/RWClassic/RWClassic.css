@@ -17,7 +17,7 @@
 
 body {
 	background: #000000;
-	color: #FFFFFF;		/* textcolor */
+	color: #FFFFFF;
 	margin: 0px;
 	padding: 0px;
 	font-family: Tahoma, Sans-Serif;
@@ -154,36 +154,6 @@ ul.tabs li+li {
 	margin: 0px;
 	padding: 0px;
 	z-index: 1;
-}
-
-#LogPanel_facilitylisttd ul {
-	list-style-type: none;
-	padding: 0px;
-	margin: 0px;
-}
-
-#LogPanel_facilitylisttd ul li {
-	padding: 3px 20px 3px 3px;
-	padding-right: 20px;
-	cursor: pointer;
-	background: transparent;
-	border-right: 2px solid #244093;
-}
-
-#LogPanel_facilitylisttd ul li.LogPanel_active {
-	background-color: #244093;
-}
-
-#LogPanel_facilitylisttd ul li:hover {
-	background-color: #3c6dff;
-}
-
-.Panel_LogPanel {
-	overflow: scroll;
-}
-
-#LogPanel_contenttd {
-	padding: 3px;
 }
 
 fieldset {
@@ -353,11 +323,19 @@ div.pl_ad_albumhdr {
 	border-bottom: 2px solid #000000;
 }
 
-span.pl_ad_oncooldown {
+span.lang_pl_oncooldown {
 	color: #8bedff;
 }
 
+span.lang_pl_ranks_rank, span.lang_pl_wins_rank, span.lang_pl_requested_rank, span.lang_pl_wins_percent, span.lang_pl_requested_count {
+	font-weight: bold;
+}
+
 div.pl_odholder {
+	height: 100%;
+}
+
+div.pl_opendiv {
 	height: 100%;
 	overflow: auto;
 }

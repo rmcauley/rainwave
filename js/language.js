@@ -1,46 +1,88 @@
-function _l(line, object) {
+// Pass just "line" to receive a straight string back from the language file
+// Pass "line" and "object" to receive a translated string with variables filled in
+// Pass an element and the el will be filled with <span>s of each chunk of string
+//    Variables will be given class "lang_[line]_[variablename]" when filling in variables
+function _l(line, object, el, keep) {
+	if (!object) {
+		if (lang[line]) {
+			if (el) {
+				if (!keep) while (el.hasChildNodes()) el.removeChild(el.firstChild);
+				createEl("span", { "textContent": lang[line] }, el);
+			}
+			return lang[line];
+		}
+		else return "|*" + line + "*|";
+	}
 	if ((typeof(lang[line]) != "undefined")) {
 		if (!object) object = {};
-		var str = "";
-		var keystart = lang[line].indexOf("|");
-		var keyend = -1;
-		var lastkey = false;
+		if (el && !keep) {
+			while (el.hasChildNodes()) el.removeChild(el.firstChild);
+		}
+		var keystart = 0;
+		var keyend = lang[line].indexOf("|");
 		var key = false;
 		var key2 = false;
 		var word = false;
-		while (keystart != -1) {
-			str += lang[line].substr(keyend + 1, (keystart - keyend - 1));
-			keyend = lang[line].indexOf("|", keystart + 1);
-			key = lang[line].substr(keystart + 1, (keyend - keystart - 1));
-			if (key.substr(0, 2) == "S:") {
+		var span;
+		var str;
+		var wholestr = "";
+		var classname;
+		while (keyend != -1) {
+			str = false;
+			classname = "lang_" + line;
+			key = lang[line].substr(keystart, (keyend - keystart));
+			if (key == "br" && el) {
+				createEl("br", false, el);
+				createEl("br", false, el);
+			}
+			else if (key.substr(0, 2) == "S:") {
 				if (typeof(object[key.substr(2)]) != "undefined") {
-					str += _lSuffixNumber(object[key.substr(2)])
+					classname += " lang_" + line + "_" + key.substr(2);
+					str = _lSuffixNumber(object[key.substr(2)])
 				}
 				else {
-					str += "|*" + key.substr(2) + "*|";
+					str = "|*" + key.substr(2) + "*|";
 				}
 			}
 			else if (key.substr(0, 2) == "P:") {
 				key2 = key.substr(2, key.indexOf(",") - 2);
 				word = key.substr(key.indexOf(",") + 1);
 				if (typeof(object[key2]) != "undefined") {
-					str += _lPlural(object[key2], word);
+					classname += " lang_" + line + "_" + word;
+					str = _lPlural(object[key2], word);
 				}
 				else {
-					str += "|*" + key2 + "*|";
+					str = "|*" + key2 + "*|";
 				}
 			}
 			else if (typeof(object[key]) != "undefined") {
-				str += object[key];
+				classname += " lang_" + line + "_" + key;
+				str = object[key];
 			}
 			else {
-				str += "|*" + key + "*|";
+				str = key;
 			}
-			keystart = lang[line].indexOf("|", keyend + 1);
+			if (str) {
+				if (el) createEl("span", { "textContent": str, "class": classname }, el);
+				wholestr += str;
+			}
+			keystart = keyend + 1;
+			keyend = lang[line].indexOf("|", keystart);
 		}
-		if (keyend == 0) str = lang[line];
-		else str += lang[line].substr(keyend + 1);
-		return str;
+		if (keystart == 0) {
+			classname = "lang_" + line;
+			if (el) createEl("span", { "textContent": lang[line], "class": classname }, el);
+			wholestr = lang[line];
+		}
+		else {
+			classname = "lang_" + line;
+			str = lang[line].substr(keystart);
+			if (str > "") {
+				if (el) createEl("span", { "textContent": str, "class": classname }, el);
+				wholestr += str;
+			}
+		}
+		return wholestr;
 	}
 	else return "[*" + line + "*]";
 }

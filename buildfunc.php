@@ -51,16 +51,36 @@ function copyStatic($dest, $bnum) {
 
 function buildLanguages($dest, $bnum) {
 	print "Building languages.\n";
+	require("lang/en_CA.php");
 	$dest2 = $dest . "lang_r" . $bnum;
 	mkdir($dest2) or die("Can't make destination language directory.");
+	writeLang($dest2 . "/en_CA.js", $lang);
 	$dir = opendir("lang");
 	while (false !== ($file = readdir($dir))) {
-        if (preg_match("/.js$/", $file)) {
-			$d = fopen($dest2 . "/" . $file, 'w') or die("Can't open javascript destination.");
-			fwrite($d, JSMin::minify(file_get_contents("lang/" . $file)));
-			fclose($d);
+        if (preg_match("/.php$/", $file) && ($file != "en_CA.php")) {
+			require("lang/" . $file);
+			$fl = array_merge($lang, $lang2);
+			writeLang($dest2 . "/" . substr($file, 0, (strlen($file) - 4)) . ".js", $fl);
+			foreach ($lang as $key => $value) {
+				if (!isset($lang2[$key])) {
+					print "\t$file missing $key.\n";
+				}
+			}
 		}
     }	
+}
+
+function writeLang($destfile, $fl) {
+	$d = fopen($destfile, 'w') or die("Can't open javascript destination.");
+	fwrite($d, "var lang = {");
+	$commad = false;
+	foreach ($fl as $key => $value) {
+		if ($commad == false) $commad = true;
+		else fwrite($d, ",");
+		fwrite($d, "\"" . $key . "\":\"" . addslashes($value) . "\"");
+	}
+	fwrite($d, "}");
+	fclose($d);
 }
 
 function buildSkins($dest, $bnum) {

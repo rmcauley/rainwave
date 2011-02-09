@@ -50,15 +50,12 @@ elsif ($ARGV[0] =~ /^\d+$/) {
 	$updatehappen = 1;
 }
 else {
-	$dbh->disconnect();
 	print "Usage:\n";
 	print "getocr.pl update - Updates using 'ocr.max' file as start point\n";
 	print "getocr.pl [OCR ID] - Fetches OCR ID remix\n";
 	print "getocr.pl [start OCR ID] [end OCR ID] - Fetches range of OCRs\n";
 	exit(0);
 }
-
-$dbh->disconnect();
 
 for (my $i = ($ormgasmax + 1); $i <= $ocrmax; $i++) {
 	my ($title, $game, $filename);
@@ -150,4 +147,15 @@ if ($updatehappen == 1) {
 		print LAST $ocrmax . "\n";
 		close(LAST);
 	}
+	
+	use DBI;
+	my $dsn = 'DBI:Pg:dbname=rainwave';
+	my $db_user_name = 'orpheus';
+	my $db_password = 'iD7mie7U';
+	my $dbh = DBI->connect($dsn, $db_user_name, $db_password);
+	my $sth;
+	$sth = $dbh->prepare("INSERT INTO rw_commands (sid, command_name) VALUES (2, 'regenplaylist')");
+	$sth->execute();
+	$sth->finish();
+	$dbh->disconnect();
 }

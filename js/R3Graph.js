@@ -137,14 +137,14 @@ function R3Graph() {
 			
 			// Render angled line separating Y and X minimum values
 			var runningx = graph.ystartx;
-			if (((graph.minx !== 0) || (graph.miny !== 0)) && !graph.data.xnonumbers && !graph.data.ynonumbers) {
+			if (((graph.minx !== 0) || (graph.miny !== 0)) && (!graph.data.xnonumbers && !graph.data.ynonumbers) && (!graph.data.xnomin && !graph.data.ynomin)) {
 				graph.scalable.appendChild(svg.makeLine(graph.ystartx, graph.xendy, 3, height - 3, { stroke_width: 1, stroke: theme.vdarktext }));
 			}
 			// Render minimum X value
-			if (((graph.minx !== 0) || (graph.miny !== 0)) && !graph.data.xnonumbers) {
+			if (((graph.minx !== 0) || (graph.miny !== 0)) && !graph.data.xnonumbers && !graph.data.xnomin) {
 				steptext = svg.makeEl("text", { x: graph.ystartx + 2, y: graph.xendy + svg.em + 2, fill: theme.vdarktext, text_anchor: "middle", style: "font-size: 0.7em" });
-				if (graph.maxx >= (keys[0] + 10)) steptext.textContent = keys[0];
-				else steptext.textContent = (graph.data.xprecision) ? graph.minx.toFixed(graph.data.xprecision) : Math.floor(graph.minx);
+				//if (graph.maxx >= (keys[0] + 10)) steptext.textContent = keys[0];
+				steptext.textContent = (graph.data.xprecision) ? graph.minx.toFixed(graph.data.xprecision) : Math.floor(graph.minx);
 				graph.scalable.appendChild(steptext);
 			}
 			// Render grid lines and legend numbers along the X axis
@@ -161,7 +161,7 @@ function R3Graph() {
 			
 			// Render Y minimum text
 			var runningy = graph.xendy;
-			if (((graph.minx !== 0) || (graph.miny !== 0)) && !graph.data.ynonumbers) {
+			if (((graph.minx !== 0) || (graph.miny !== 0)) && !graph.data.ynonumbers && !graph.data.ynomin) {
 				var zerotexty = graph.data.xnonumbers ? runningy : runningy + (svg.em * 0.3);
 				steptext = svg.makeEl("text", { x: graph.ystartx - 2, y: zerotexty, fill: theme.vdarktext, text_anchor: "end", style: "font-size: 0.7em" });
 				if (typeof(graph.data.miny) != "undefined") steptext.textContent = graph.miny;

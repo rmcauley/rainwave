@@ -1,0 +1,290 @@
+<?php
+// Rainwave 3 fi_FI v2 Language File by quarterlife
+
+$lang2 = array(
+	// Panel Names
+	"p_MainMPI" => "Välilehdet",
+	"p_MenuPanel" => "Valikko",
+	"p_PlaylistPanel" => "Soittolista",
+	"p_PrefsPanel" => "Asetukset",
+	"p_SchedulePanel" => "Aikataulu",
+	"p_NowPanel" => "Nyt soi",
+	"p_RequestsPanel" => "Toiveet",
+	"p_TimelinePanel" => "Aikajana",
+	
+	// This will produce dates like 5d 23h 10m 46s.  Change to your liking.
+	"timeformat_d" => "d ",
+	"timeformat_h" => "h ",
+	"timeformat_m" => "m ",
+	"timeformat_s" => "s ",
+
+	// Raw Log Code
+	"log_0" => "Debug",
+	
+	// Edi Codes
+	"log_1" => "Asematunnusta ei välitetty ohjelmointirajapinnalle.",
+	"log_2" => "Tällä asemalla ei juuri nyt ole lähetystä.",
+	"log_3" => "You used |lockedto| in the last few minutes, you must wait to use |currentlyon|.",
+	
+	// HTTP Codes
+	"log_200" => "HTTP OK",
+	"log_300" => "HTTP Uudelleenohjattu",
+	"log_301" => "HTTP Siirretty",
+	"log_307" => "HTTP Uudelleenohjattu",
+	"log_400" => "HTTP Virheellinen pyyntö",
+	"log_401" => "HTTP Pääsy kielletty",
+	"log_403" => "Tunnistusvirhe - ole hyvä ja päivitä sivu.",
+	"log_404" => "HTTP Ei löytynyt",
+	"log_408" => "HTTP Aikaraja ylittyi",
+	"log_500" => "Teknisiä vaikeuksia - ole hyvä ja yritä uudelleen tai ilmoita virheestä.",
+	"log_502" => "Teknisiä vaikeuksia - ole hyvä ja odota.",
+	"log_503" => "Rainwave on suuren kuormituksen alla, ole hyvä ja yritä uudelleen.",
+	
+	// Lyre-AJAX Codes
+	"log_1000" => "Hups!  Löysit virheen!",
+	"log_1001" => "Virheellinen JSON-vastaus palvelimelta.",
+	
+	// Election Codes
+	"log_2000" => "Palvelinvirhe ääntä lähettäessä.",
+	"log_2001" => "Sinun täytyy kuunnella asemaa äänestääksesi.",
+	"log_2002" => "Virheellinen ehdokastunnus.",
+	"log_2003" => "Olet jo äänestänyt tässä äänestyksessä.",
+	"log_2004" => "Sinun täytyy odottaa, ennen kuin voit äänestää asemanvaihdon yhteydessä.",
+	"log_2005" => "Ehdokasta ei ole olemassa.",
+	"log_2006" => "Äänestyksen tulos on jo ratkennut.",
+	"log_2007" => "Et voi äänestää kyseisessä äänestyksessä vielä.",
+	"log_2008" => "Sinun täytyy äänestää sillä asemalla jota kuuntelet.",
+	
+	// Request New Codes
+	"log_3000" => "Palvelinvirhe toivetta lähettäessä.  Ole hyvä ja yritä uudelleen.",
+	"log_3001" => "Sinun täytyy olla sisäänkirjautuneena toivoaksesi kappaletta.",
+	"log_3002" => "Sinun täytyy kuunnella asemaa toivoaksesi kappaletta.",
+	"log_3003" => "Lähetetty kappaletunnus oli virheellinen.",
+	"log_3004" => "Toivottua kappaletta ei ole olemassa.",
+	"log_3005" => "Sinun täytyy toivoa kappaletta nykyiseltä asemalta.",
+	"log_3006" => "Toiveraja saavutettu.",
+	"log_3007" => "Kappaletta on jo toivottu.",
+	"log_3008" => "Albumia on jo toivottu.",
+	
+	// Request Delete Results
+	"log_4000" => "Palvelinvirhe toivetta poistaessa.  Ole hyvä ja yritä uudelleen.",
+	"log_4001" => "Sinun täytyy olla sisäänkirjauneena vaihtaaksesi toivetta.",
+	"log_4002" => "Asiakasvirhe muutosta lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
+	"log_4003" => "Kyseinen toive ei ole sinun.",
+	
+	// Request Change Results
+	"log_6000" => "Palvelinvirhe toivetta muuttaessa.  Ole hyvä ja yritä uudelleen.",
+	"log_6001" => "Sinun täytyy olla sisäänkirjautuneena toivoaksesi kappaletta.",
+	"log_6002" => "Asiakasvirhe muutosta lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
+	"log_6003" => "Asiakasvirhe muutosta lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen tai kokeile toista kappaletta.",
+	"log_6004" => "Kyseinen toive ei ole sinun.",
+	"log_6005" => "Toivottua kappaletta ei ole olemassa.",
+	"log_6006" => "Sinun täytyy toivoa kappaletta siltä asemalta, jota kuuntelet.",
+	"log_6007" => "Olet jo toivonut kyseistä kappaletta.",
+	"log_6008" => "Olet jo toivonut kappaletta kyseiseltä albumilta.",
+	
+	// Rating Results
+	"log_7000" => "Palvelinvirhe arvostelua lähettäessä.  Ole hyvä ja yritä uudelleen.",
+	"log_7001" => "Sinun täytyy olla sisäänkirjautuneena arvostellaksesi kappaleita.",
+	"log_7002" => "Sinun täytyy kuunnella asemaa arvostellaksesi kappaleita.",
+	"log_7003" => "Asiakasvirhe arvostelua lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
+	"log_7004" => "Asiakasvirhe arvostelua lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
+	"log_7005" => "Asiakasvirhe arvostelua lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
+	"log_7006" => "You must have been recently tuned in to that song to rate it.",
+	"log_7007" => "Sinun täytyy odottaa arvostellaksesi asemavaihdon yhteydessä.",
+	
+	// Request Re-order Results
+	"log_8000" => "Palvelinvirhe uudelleenjärjestäessä toiveita.  Ole hyvä ja yritä uudelleen.",
+	"log_8001" => "Asiakasvirhe muodostaessa uudelleenjärjestyspyyntöä.  Ole hyvä ja yritä uudelleen.",
+	"log_8002" => "Sinulla ei ole toiveita mitä järjestää uudelleen.",
+	"log_8003" => "Jokin toiveesi on täytetty.  Ole hyvä ja yritä uudelleen.",
+	
+	// Login Results
+	"log_9000" => "Virheellinen käyttäjänimi tai salasana.",
+	"log_9001" => "Liian monta sisäänkirjautumisyritystä. Ole hyvä ja mene keskustelufoorumille.",
+	"log_9002" => "Sisäänkirjautumisvirhe.  Ole hyvä, ja käytä keskutelufoorumia.",
+	
+	// 10000 is used by error control for news
+	
+	/* Number suffixes */
+	"suffix_0" => "th",
+	"suffix_1" => "st",
+	"suffix_2" => "nd",
+	"suffix_3" => "rd",
+	"suffix_4" => "th",
+	"suffix_5" => "th",
+	"suffix_6" => "th",
+	"suffix_7" => "th",
+	"suffix_8" => "th",
+	"suffix_9" => "th",
+	
+	/* Playlist Sentences */
+	
+	"pl_oncooldown" => "Jäähyllä |time| ajan.",
+	"pl_ranks" => "Sijalla |rank|.",
+	"pl_favourited" => "|count| |P:count,person| on asettanut tämän suosikikseen.",
+	"pl_wins" => "Voittanut |percent|% äänestyksistä.",
+	"pl_requested" => "Toivottu |count| kertaa, sijalla |rank|.",
+	"pl_genre" => "Jäähyryhmä: ",
+	"pl_genre2" => ".",
+	"pl_genres" => "Jäähyryhmät: ",
+	"pl_genres2" => ".",
+	
+	/* Preferences */
+	
+	"pref_refreshrequired" => "(sivun päivitys vaaditaan)",
+	"pref_timeline" => "Aikajana",
+	"pref_timeline_linear" => "Lineaarinen aikajana",
+	"pref_timeline_showhistory" => "Näytä historia",
+	"pref_timeline_showelec" => "Näytä äänestyksen tulokset",
+	"pref_timeline_showallnext" => "Näytä kaikki tulevat tapahtumat",
+	"pref_rating_hidesite" => "Piilota sivuston arvostelut kunnes olen itse arvostellut",
+	"pref_edi" => "Yleiset",
+	"pref_edi_wipeall" => "Pyyhi asetukset",
+	"pref_edi_language" => "Kieli",
+	"pref_edi_theme" => "Ulkoasu",
+	"pref_fx" => "Tehosteet",
+	"pref_fx_fps" => "Animaatioiden kehysnopeus (fps)",
+	"pref_fx_enabled" => "Animointi päällä",
+	"pref_mpi_showlog" => "Näytä lokipaneeli",
+	"pref_requests" => "Toiveet",
+	"pref_requests_technicalhint" => "Technical Tab Title",
+	"pref_timeline_highlightrequests" => "Korosta toiveet",
+	
+	/* About */
+	
+	"creator" => "Tekijä",
+	"rainwavemanagers" => "Rainwaven henkilökunta",
+	"ocrmanagers" => "OCR Radion henkilökunta",
+	"mixwavemanagers" => "Mixwaven henkilökunta",
+	"jfinalfunkjob" => "Matematiikan ihmelapsi",
+	"relayadmins" => "Välityspalvelinten lahjoittajat",
+	"specialthanks" => "Kiitokset",
+	"poweredby" => "Powered By",
+	"customsoftware" => "Custom 'Orpheus' software",
+	"donationinformation" => "Lista lahjoituksista ja lahjoitustietoa.",
+	"apiinformation" => "Ohjelmointirajapinnan dokumentaatio.",
+	
+	/* Help */
+	
+	"helpstart" => "Aloita ▶ ",
+	"helpnext" => "Seuraava ▶ ",
+	"helplast" => "Sulje ▶ ",
+	"about" => "Yleistä / Lahjoitukset",
+	"about_p" => "Henkilökunta, käytetty tekniikka ja lahjoitustietoa.",
+	"voting" => "Äänestykset",
+	"voting_p" => "Jokainen soitettu kappale on osa äänestystä. Se kappale, jolla on eniten ääniä soitetaan seuraavaksi.|br|Opi äänestämään.",
+	"clickonsongtovote" => "Napsauta kappaletta äänestääksesi",
+	"clickonsongtovote_p" => "Kuunnellessasi asemaa, napsauta kappaletta.|br|Eniten ääniä saanut kappale soitetaan seuraavaksi.",
+	"tunein" => "Kuuntele",
+	"tunein_p" => "Käytä selaimen sisäistä Flash-soitinta kuunnellaksesi asemaa.|br|Voit myös imuroida M3U-soittolistatiedoston napsauttamalla musiikkisoittimesi kuvaketta.",
+	"login" => "Kirjaudu sisään tai rekisteröidy",
+	"login_p" => "Ole hyvä ja kirjaudu sisään.",
+	"ratecurrentsong" => "Arvostelut",
+	"ratecurrentsong_p" => "Liu'uta hiirtäsi asteikon päällä ja napsauta arvostellaksesi kappaleen.|br|Albumiarvostelut lasketaan kappalearvioidesi keskiarvosta.",
+	"ratecurrentsong_t" => "Arvosteleminen vaikuttaa kappaleiden ja albumien soittotiheyteen.|br|Opi arvostelemaan.",
+	"ratecurrentsong_tp" => "Arvostelu",
+	"setfavourite" => "Suosikit",
+	"setfavourite_p" => "Napsauta laatikkoa arviointiasteikon päässä asettaaksesi tai poistaaksesi suosikkisi.",
+	"playlistsearch" => "Soittolistalta hakeminen",
+	"playlistsearch_p" => "Kun soittolista on avoinna, voit aloittaa soittolistahaun alkamalla kirjoittamaan.|br|Käytä hiirtäsi tai ylös-/alas-näppäintä ohjataksesi.",
+	"request" => "Toiveet",
+	"request_p" => "Toivominen saattaa haluamasi kappaleet äänestykseen.|br|Opi toivomaan kappaleita.",
+	"openanalbum" => "Avaa jokin albumi",
+	"openanalbum_p" => "Napsauta albumia soittolistapaneelissa.|br|Soittolistan pohjalla olevat albumit ovat jäähyllä, joten niitä ei voi toivoa.",
+	"clicktorequest" => "Toivo kappaletta",
+	"clicktorequest_p" => "Napsauta R-nappia tehdäksesi toiveen.|br|Albumin pohjalla olevat kappaleet ovat jäähyllä, joten niitä ei voi toivoa.",
+	"managingrequests" => "Toiveiden raahaus ja pudotus",
+	"managingrequests_p" => "Raahaa ja pudota muuttaaksesi toiveidesi järjestystä, tai napsauta X:ää poistaaksesi yhden niistä.",
+	"timetorequest" => "Kappaletoiveen tila",
+	"timetorequest_p" => "Toiveesi tila näytetään tässä.|br|Jos se näyttää \"Umpeutumassa\" tai \"Jäähyllä\", sinun kannattaa vaihtaa ensimmäistä toivettasi.",
+	
+	/* Schedule Panel */
+	
+	"newliveshow" => "Uusi suora lähetys",
+	"newliveexplanation" => "Aika voi olla 0 (nyt) tai epoch-aika UTC-aikavyöhykkeen mukaan.",
+	"time" => "Aika",
+	"name" => "Nimi",
+	"notes" => "Muistiinpanot",
+	"user_id" => "Käyttäjätunnus",
+	"addshow" => "Lisää lähetys",
+	"start" => "Aloita",
+	"end" => "Lopeta",
+	"delete" => "Poista",
+	"lengthinseconds" => "Pituus sekunneissa",
+	"djblock" => "DJ Block?",
+	"djadmin" => "DJ Admin",
+	"pausestation" => "Tauota asema",
+	"endpause" => "Lopeta tauko",
+	"getready" => "Valmistaudu",
+	"standby" => "Valmiustila",
+	"mixingok" => "Miksaus päällä",
+	"connect" => "Yhdistä",
+	"HOLD" => "ODOTA",
+	"onair" => "Suora",
+	"endnow" => "Lopeta lähetys",
+	"wrapup" => "Päätä lähetys",
+	"dormant" => "Toimeton",
+	"OVERTIME" => "YLIAIKA",
+	"noschedule" => "Tälle viikolle ei ole suunniteltu tapahtumia.",
+	
+	// Requests
+	"requestok" => "Toivottu",
+	"reqexpiring" => " (umpeutumassa!)",
+	"reqfewminutes" => " (muutama minuutti)",
+	"reqsoon" => " (pian)",
+	"reqshortwait" => " (lyhyt odotus)",
+	"reqwait" => " (odotus)",
+	"reqlongwait" => " (pitkä odotus)",
+	"reqoncooldown" => " (jäähyllä)",
+	"reqempty" => " (tyhjä)",
+	"reqwrongstation" => " (väärä asema)",
+	"reqtechtitlefull" => " (|station||S:position| with |requestcount|)",
+	"reqtechtitlesimple" => " (|requestcount|)",
+	
+	/* Others */
+	"nowplaying" => "Nyt soi",
+	"requestedby" => "Toivoja: |requester|.",
+	"oncooldownfor" => "Jäähyllä |cooldown| ajan.",
+	"conflictedwith" => "Oli ristiriidassa toiveen kanssa, jonka teki |requester|.",
+	"conflictswith" => "Ristiriidassa toiveen kanssa, jonka teki |requester|.",
+	"election" => "Äänestys",
+	"previouslyplayed" => "Aiemmin soinut",
+	"votes" => "|votes| |P:votes,Vote|",
+	"votelockingin" => "Äänen lukitukseen |timeleft|...",
+	"submittingvote" => "Lähetetään ääntä...",
+	"voted" => "Äänestetty",
+	"selectstation" => "Valitse asema",
+	"tunedin" => "Tuned In",
+	"tunedout" => "Tuned Out",
+	"play" => "▶ Soita selaimessa",
+	"help" => "Apua",
+	"forums" => "Foorumi",
+	"liveshow" => "Suora lähetys",
+	"adset" => "Mainos",
+	"onetimeplay" => "One-Time Play",
+	"deleteonetime" => "Delete One-Time Play",
+	"currentdj" => "dj |username|",
+	"login" => "Kirjaudu sisään",
+	"register" => "Rekisteröidy",
+	"username" => "Käyttäjänimi",
+	"password" => "Salasana",
+	"autologin" => "Automaattinen sisäänkirjautuminen",
+	"compatplayers" => "Tuetut soittimet:",
+	"electionresults" => "Äänestyksen tulokset",
+	"chat" => "Chat",
+	"playing" => "◼ Pysäytä soitto",
+	"loading" => "Ladataan",
+	"searching" => "Etsitään: ",
+	"m3uhijack" => "|plugin| yrittää kaapata M3U-soittolistan latauksen.  Ole hyvä ja napsauta oikealla hiiren painikkeella ja valitse 'Tallenna nimellä.'",
+	"menu_morestations" => "Lisää ▼",
+	"from" => "käyttäjältä |username|",
+	
+	/* Words for pluralization */
+
+	"person" => "henkilö",
+	"person_p" => "henkilöä",
+	"Vote" => "ääni",
+	"Vote_p" => "ääntä",
+);
+?>

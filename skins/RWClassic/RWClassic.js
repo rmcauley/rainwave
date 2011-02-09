@@ -659,7 +659,7 @@ function EdiTheme() {
 				Album.linkify(json.album_id, table.album_name);
 			}
 			if (typeof(json.song_rating_user) != "undefined") {
-				event.song_rating = Rating({ "category": "song", "id": json.song_id, "userrating": json.song_rating_user, "albumrating": json.song_rating_avg, "favourite": json.song_favourite, "register": true });
+				event.song_rating = Rating({ "category": "song", "id": json.song_id, "userrating": json.song_rating_user, "siterating": json.song_rating_avg, "favourite": json.song_favourite, "register": true });
 				table.song_rating.appendChild(event.song_rating.el);
 			}
 			if (typeof(json.album_rating_user) != "undefined") {
@@ -854,7 +854,7 @@ function EdiTheme() {
 			var row = createEl("tr", {}, menup.table);
 			menup.td_station = createEl("td", { "class": "menu_td_station" }, row);
 			var morestations = createEl("div", { "class": "menu_select_more" }, menup.td_station);
-			morestations.innerHTML = _l("menu_morestations");
+			_l("menu_morestations", {}, morestations);
 			var stationlogo = createEl("img", { "src": "images/menu_logo_" + PRELOADED_SID + ".png" }, menup.td_station);
 			menup.ul_select = createEl("ul", { "class": "menu_select", "style": "margin-left: -3px;" });
 			menup.li_stations = Array();
@@ -880,7 +880,7 @@ function EdiTheme() {
 			menup.player.addEventListener("click", menup.playerClick, true);
 			menup.fx_player = fx.make(fx.CSSNumeric, [ menup.player, 250, "opacity", 0 ]);
 			menup.fx_player.set(1);
-			menup.player.innerHTML = _l("play");
+			_l("play", {}, menup.player);
 			
 			menup.td_download = createEl("td", { "class": "menu_td_download" }, row);
 			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;" });
@@ -938,13 +938,15 @@ function EdiTheme() {
 			menup.td_chat = createEl("td", { "class": "menu_td_chat" });
 			var chatlink = createEl("a", { "class": "link" } );
 			chatlink.addEventListener("click", menup.openChat, true);
-			chatlink.innerHTML = _l("chat") + "<img src='images/new_window_icon.png' alt='' style='height: 12px;' />";
+			_l("chat", {}, chatlink);
+			createEl("img", { "src": "images/new_window_icon.png", "style": "height: 12px;" }, chatlink);
 			menup.td_chat.appendChild(chatlink);
 			row.appendChild(menup.td_chat);
 			
 			menup.td_forums = createEl("td", { "class": "menu_td_forums" });
 			var forumlink = createEl("a", { "target": "_blank", "href": "/forums" });
-			forumlink.innerHTML = _l("forums") + "<img src='images/wikilink_12px.png' alt='' style='height: 12px;' />";
+			_l("forums", {}, forumlink);
+			createEl("img", { "src": "images/wikilink_12px.png", "style": "height: 12px;" }, forumlink);
 			menup.td_forums.appendChild(forumlink);
 			row.appendChild(menup.td_forums);
 			
@@ -1022,23 +1024,23 @@ function EdiTheme() {
 				menup.player.style.backgroundColor = "#225f8a";
 				menup.player.style.cursor = "pointer";
 				menup.fx_player.start(1);
-				if (tunedin == 1) menup.player.innerHTML = _l("playing");
-				else menup.player.innerHTML = _l("waitingforstatus");
+				if (tunedin == 1) _l("playing", false, menup.player);
+				else _l("waitingforstatus", false, menup.player);
 			}
 			else if (Oggpixel && (tunedin == -1)) {
-				menup.player.innerHTML = _l("loading");
+				_l("loading", false, menup.player);
 			}
 			else if (tunedin == 1) {
 				menup.player.style.backgroundColor = "transparent";
 				menup.player.style.cursor = "none";
 				menup.fx_player.start(.65);
-				menup.player.innerHTML = _l("tunedin");
+				_l("tunedin", false, menup.player);
 			}
 			else {
 				menup.player.style.backgroundColor = "#225f8a";
 				menup.player.style.cursor = "pointer";
 				menup.fx_player.start(1);
-				menup.player.innerHTML = _l("play");
+				_l("play", false, menup.player);
 			}
 		};
 		
@@ -1268,47 +1270,48 @@ function EdiTheme() {
 			div.albumdetailtd.setAttribute("class", "pl_ad_albumdetailtd");
 			
 			if ((json.album_rating_count >= 10) && svg.capable) {
-				var gr = graph.makeSVG(graph.RatingHistogram, that.RatingHistogramMask, 200, 120 - (svg.em * 3), { maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnonumbers: true, minx: 0.5, miny: 0, padx: 10, raw: json.album_rating_histogram });
+				var gr = graph.makeSVG(graph.RatingHistogram, that.RatingHistogramMask, 200, 120 - (svg.em * 3), { maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10, raw: json.album_rating_histogram });
 				gr.svg.setAttribute("class", "pl_ad_ratinghisto");
 				div.albumdetailtd.appendChild(gr.svg);
 			}
 			
 			var stats = document.createElement("div");
 			var tmp = document.createElement("div");
-			if (json.album_lowest_oa > clock.now) tmp.innerHTML = _l("pl_oncooldown", { "time": formatHumanTime(json.album_lowest_oa - clock.now, true, true) });
+			if (json.album_lowest_oa > clock.now) _l("pl_oncooldown", { "time": formatHumanTime(json.album_lowest_oa - clock.now, true, true) }, tmp);
 			stats.appendChild(tmp);
 			tmp = document.createElement("div");
-			tmp.innerHTML = _l("pl_ranks", { "rank": json.album_rating_rank });
+			_l("pl_ranks", { "rank": json.album_rating_rank }, tmp);
 			stats.appendChild(tmp);
 			if (json.album_fav_count > 0) {
 				tmp = document.createElement("div");
-				tmp.innerHTML = _l("pl_favourited", { "count": json.album_fav_count });
+				_l("pl_favourited", { "count": json.album_fav_count }, tmp);
 				stats.appendChild(tmp);
 			}
 			if ((json.album_timeswon > 0) && (json.album_timesdefeated > 0)) {
 				tmp = document.createElement("div");
-				tmp.innerHTML = _l("pl_wins", { "percent": ((json.album_timeswon / (json.album_timeswon + json.album_timesdefeated)) * 100).toFixed(1), "rank": json.album_winloss_rank });
+				_l("pl_wins", { "percent": ((json.album_timeswon / (json.album_timeswon + json.album_timesdefeated)) * 100).toFixed(1) }, tmp);
 				stats.appendChild(tmp);
 			}
 			if (json.album_totalrequests > 0) {
 				tmp = document.createElement("div");
-				tmp.innerHTML = _l("pl_requested", { "count": json.album_totalrequests, "rank": json.album_request_rank });
+				_l("pl_requested", { "count": json.album_totalrequests, "rank": json.album_request_rank }, tmp);
 				stats.appendChild(tmp);
 			}
 			if (json.album_genres.length == 1) {
 				tmp = document.createElement("div");
-				tmp.innerHTML = _l("pl_genre") + json.album_genres[0].genre_name + _l("pl_genre2");
+				_l("pl_genre", false, tmp, true);
+				createEl("span", { "textContent": json.album_genres[0].genre_name + _l("pl_genre2") }, tmp);
 				stats.appendChild(tmp);
 			}
 			else if (json.album_genres.length > 1) {
 				tmp = document.createElement("div");
-				tmp.innerHTML = _l("pl_genres");
+				_l("pl_genres", {}, tmp);
+				var span = createEl("span", {}, tmp);
 				for (var g = 0; g < json.album_genres.length; g++) {
-					if (g > 0) tmp.innerHTML += ", ";
-					//if (g == (json.album_genres.length - 1)) tmp.innerHTML += _l("and") + " ";
-					tmp.innerHTML += json.album_genres[g].genre_name;
+					if (g > 0) span.textContent += ", ";
+					span.textContent += json.album_genres[g].genre_name;
 				}
-				tmp.innerHTML += _l("pl_genres2");
+				_l("pl_genres2", false, tmp);
 				stats.appendChild(tmp);
 			}
 			div.albumdetailtd.appendChild(stats);
@@ -1319,7 +1322,7 @@ function EdiTheme() {
 				createEl("img", { "src": json.album_art, "class": "pl_ad_albumart" }, div.albumarttd);
 			}
 			else {
-				div.albumarttd.innerHTML = " ";
+				div.albumarttd.texContent = " ";
 			}
 			
 			div.hdrtable.appendChild(tr);
@@ -1431,8 +1434,8 @@ function EdiTheme() {
 			
 			obj.text = document.createElement("span");
 			
-			if (!overridetext) obj.text.innerHTML = _l("log_" + code);
-			else obj.text.innerHTML = overridetext;
+			if (!overridetext) _l("log_" + code, false, obj.text);
+			else obj.text.textContent = overridetext;
 			obj.el.appendChild(obj.text);
 			
 			obj.fx_opacity = fx.make(fx.CSSNumeric, [ obj.el, 250, "opacity", "" ]);

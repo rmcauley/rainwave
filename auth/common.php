@@ -20,11 +20,13 @@ else if ($_COOKIE['r3sid'] == "3") $sid = VW;
 // This gives precedence to URL if using a subdomained station
 if ($_SERVER['HTTP_HOST'] == "rw.rainwave.cc") $sid = RW;
 else if ($_SERVER['HTTP_HOST'] == "ocr.rainwave.cc") $sid = OCR;
+else if ($_SERVER['HTTP_HOST'] == "mix.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "vwave.rainwave.cc") $sid = VW;
 // An override, mostly for administration uses
 if ($_GET['site'] == "rw") $sid = RW;
 else if ($_GET['site'] == "oc") $sid = OCR;
 else if ($_GET['site'] == "mw") $sid = VW;
+else if ($_GET['site'] == "vw") $sid = VW;
 // And a final override for when $_GET cannot be used or modified!
 if (defined(SITEOVERRIDE)) $sid = SITEOVERRIDE;
 

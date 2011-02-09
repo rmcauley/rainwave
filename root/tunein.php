@@ -32,29 +32,30 @@ if ($user_id > 1) {
 
 print "#EXTM3U\n";
 if ($sid == RW) {
-	/*print "#EXT3INF:0,Rainwave Relay 1 - Donated by Lyfe - Connecticut, USA\n";
-	print "http://stream.gameowls.com:8000/rainwave.ogg" . $userstring . "\n";
-	print "#EXT3INF:0,Rainwave Relay 2 - Core Server - Toronto, ON, Canada\n";
-	print "http://stream.rainwave.cc:8000/stream.ogg" . $userstring . "\n";*/
-	print "#EXT3INF:0,Rainwave 3 Beta\n";
-	print "http://substream.rainwave.cc:8000/rainwave.ogg" . $userstring . "\n";
+	print "#EXT3INF:0,Rainwave Random Relay\n";
+	print "http://rwstream.rainwave.cc:8000/rainwave.ogg" . $userstring . "\n";
+	print "#EXT3INF:0,Rainwave Relay 1 - Donated by Tanaric - California, USA\n";
+	print "http://radio.petosky.net:8000/rainwave.ogg" . $userstring . "\n";
+	print "#EXT3INF:0,Rainwave Relay 2 - Donated by Lyfe - Connecticut, USA\n";
+	print "http://stream1.gameowls.com:8000/rainwave.ogg" . $userstring . "\n";
+	print "#EXT3INF:0,Rainwave Relay 3 - Donated by Lyfe - Connecticut, USA\n";
+	print "http://stream2.gameowls.com:8000/rainwave.ogg" . $userstring . "\n";
+	print "#EXT3INF:0,Rainwave Overflow - Donated by Tanaric - California, USA\n";
+	print "http://octosphere.com:8000/rainwave.ogg" . $userstring . "\n";
 }
 else if ($sid == OCR) {
-	/*print "#EXTINF:0,OCR Radio Relay 1 - Donated by Dracoirs - Phoenix, AZ, USA\n";
+	print "#EXTINF:0,OCR Radio Random Relay\n";
+	print "http://ocrstream.rainwave.cc:8000/ocremix.ogg" . $userstring . "\n";
+	print "#EXTINF:0,OCR Radio Relay 1 - Donated by Dracoirs - Arizona, USA\n";
 	print "http://ormgas.dracoirs.com:8000/ormgas.ogg" . $userstring . "\n";
 	print "#EXTINF:0,OCR Radio Relay 2 - Donated by Lyfe - Connecticut, USA\n";
-	print "http://stream.gameowls.com:8000/ocremix.ogg" . $userstring . "\n";
-	print "#EXTINF:0,OCR Radio Relay 3 - Donated by Ravon - Stockholm, Sweden\n";
-	print "http://ormgas.com:8000/ormgas.ogg" . $userstring . "\n";*/
-	print "#EXT3INF:0,Rainwave 3 Beta\n";
-	print "http://substream.rainwave.cc:8000/ocremix.ogg" . $userstring . "\n";
+	print "http://stream1.gameowls.com:8000/ocremix.ogg" . $userstring . "\n";
+	print "#EXTINF:0,OCR Radio Relay 3 - Donated by Lyfe - Connecticut, USA\n";
+	print "http://stream2.gameowls.com:8000/ocremix.ogg" . $userstring . "\n";
 }
-else if ($sid == VW) {
-	/*print "#EXTINF:0,V-wave Relay 1 - Rainwave Core Server - Toronto, Canada\n";
-	print "http://rainwave.cc:8000/vwave.ogg" . $userstring . "\n";*/
-	print "#EXT3INF:0,Rainwave 3 Beta\n";
-	print "http://substream.rainwave.cc:8000/mixwave.ogg" . $userstring . "\n";
-
+else if ($sid == MW) {
+	print "#EXTINF:0,Mixwave Relay 1 - Rainwave Core Server - Toronto, Canada\n";
+	print "http://rainwave.cc:8000/mixwave.ogg" . $userstring . "\n";
 }
 
 cleanUp(false);

@@ -10,7 +10,7 @@ if (isset($_SERVER['argv'][1])) {
 
 $dest = "/var/www/rainwave.cc/beta/";
 $bnum = getBuildNumber();
-$lyredir = "/home/rmcauley/r3/lyre/";
+$lyredir = "/home/rmcauley/lyre/";
 
 print "RAINWAVE 3 BETA REVISION " . $bnum . "\n";
 
@@ -18,8 +18,8 @@ removeOldBuild($dest);
 writeParsedFile("root/preload.php", $dest . "preload.php", $bnum);
 copyStatic($dest, $bnum);
 
-print "Copying languages and skins.\n";
-copyDirectory("lang", "lang_r" . $bnum, $dest);
+buildLanguages($dest, $bnum);
+print "Copying skins.\n";
 copyDirectory("skins", "skins_r" . $bnum, $dest);
 print "Copying lyre-ajax.js.\n";
 copyFile($lyredir . "javascript/lyre-ajax.js", "lyre-ajax.js", $dest);

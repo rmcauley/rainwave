@@ -13,6 +13,7 @@ panels.PrefsPanel = {
 		var that = {};
 		var displaying = {};
 		that.container = container;
+		container.style.overflow = "auto";
 		
 		that.init = function() {
 			var i, k;
