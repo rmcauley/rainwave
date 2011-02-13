@@ -1,6 +1,7 @@
 <?php
 
 $jsorder = array(
+	"js/swfobject.js",
 	"js/SVGHelper.js",
 	"js/Preferences.js",
 	"js/ErrorControl.js",

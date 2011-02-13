@@ -88,6 +88,12 @@ td div.textoverflow {
 	text-overflow: ellipsis;
 }
 
+#oggpixel {
+	position: absolute;
+	left: -50px;
+	top: -50px;
+}
+
 .err_div, .err_div_ok {
 	position: absolute;
 	top: 0px;

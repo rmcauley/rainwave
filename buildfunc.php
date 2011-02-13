@@ -45,6 +45,7 @@ function writeParsedFile($source, $dest, $bnum) {
 function copyStatic($dest, $bnum) {
 	print "Copying static files.\n";
 	copyFile("root/tunein.php", "tunein.php", $dest);
+	copyFile("root/donations.php", "donations.php", $dest);
 	copyDirectory("auth", "auth", $dest);
 	copyDirectory("images", "images", $dest);
 }
@@ -58,6 +59,7 @@ function buildLanguages($dest, $bnum) {
 	$dir = opendir("lang");
 	while (false !== ($file = readdir($dir))) {
         if (preg_match("/.php$/", $file) && ($file != "en_CA.php")) {
+			$lang2 = array();
 			require("lang/" . $file);
 			$fl = array_merge($lang, $lang2);
 			writeLang($dest2 . "/" . substr($file, 0, (strlen($file) - 4)) . ".js", $fl);
@@ -84,7 +86,7 @@ function writeLang($destfile, $fl) {
 }
 
 function buildSkins($dest, $bnum) {
-	print "Building skins.\n";
+	print "Building production skins.\n";
 	$dir = opendir("skins") or die ("Can't read skins.");
 	$dest2 = $dest . "skins_r" . $bnum;
 	mkdir($dest2) or die ("Can't make destination skins directory.");
@@ -121,6 +123,7 @@ function buildSkins($dest, $bnum) {
 }
 
 function copyFile($source, $dest, $destdir) {
+	print "Copying file " . $source . "\n";
 	if (!copy($source, $destdir . $dest)) {
 		print "*** Could not copy file " . $source . " to " . $dest . ": exiting.\n";
 		exit(0);
@@ -128,6 +131,7 @@ function copyFile($source, $dest, $destdir) {
 }
 
 function copyDirectory($source, $dest, $destdir) {
+	print "Copying directory " . $source . "\n";
 	$phpisdumb = array();
 	unset($phpisdumb);
 	$return = 1;
@@ -142,8 +146,8 @@ function copyDirectory($source, $dest, $destdir) {
 }
 
 function minifyJavascript($dest, $bnum) {
+	print "Minifying and joining JS.\n";
 	$d = fopen($dest . "rainwave3_r" . $bnum . ".js", 'w') or die("Can't open javascript destination.");
-	print "Minifying all JS.\n";
 	for ($i = 0; $i < count($GLOBALS['jsorder']); $i++) {
 		fwrite($d, JSMin::minify(file_get_contents($GLOBALS['jsorder'][$i])));
 	}

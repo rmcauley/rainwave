@@ -14,6 +14,7 @@ panels.MenuPanel = {
 		that.container = container;
 		that.el;
 		var loginenabled = true;
+		var loginattempts = 0;
 
 		theme.Extend.MenuPanel(that);
 	
@@ -38,7 +39,7 @@ panels.MenuPanel = {
 			user.addCallback(that, that.tunedinCallback, "radio_tunedin");
 			user.addCallback(that, that.userAvatarCallback, "user_avatar");
 			user.addCallback(that, that.statRestrict, "radio_statrestricted");
-			//ajax.addCallback(that, that.loginResult, "loginresult");
+			ajax.addCallback(that, that.loginResult, "login_result");
 		};
 		
 		that.usernameCallback = function(username) {
@@ -65,8 +66,11 @@ panels.MenuPanel = {
 				Oggpixel.stop();
 			}
 			else if (!user.p.radio_tunedin) {
-				if (user.p.user_id > 1)	Oggpixel.play("http://substream.rainwave.cc:8000/rainwave.ogg?" + user.p.user_id + ":" + user.p.radio_listenkey);
-				else Oggpixel.play("http://substream.rainwave.cc:8000/rainwave.ogg");	
+				var usrstr = user.p.user_id > 1 ? "?" + user.p.user_id + ":" + user.p.radio_listenkey : "";
+				if (user.p.sid == 1) Oggpixel.play("http://rwstream.rainwave.cc:8000/rainwave.ogg" + usrstr);
+				if (user.p.sid == 2) Oggpixel.play("http://ocstream.rainwave.cc:8000/ocremix.ogg" + usrstr);
+				if (user.p.sid == 3) Oggpixel.play("http://mwstream.rainwave.cc:8000/mixwave.ogg" + usrstr);
+				
 			}
 		};
 
@@ -106,18 +110,20 @@ panels.MenuPanel = {
 		};
 		
 		that.doLogin = function(user, password, autologin) {
+			if (loginattempts >= 3) loginenabled = false;
 			if (loginenabled) {
-				//ajax.async_get("login", { "username": user, "password": password, "autologin": autologin });
+				loginattempts++;
+				ajax.async_get("login", { "username": user, "password": password, "autologin": autologin });
 			}
 		};
 		
 		that.loginResult = function(json) {
 			if (json.code && (json.code < 0)) {
-				loginenabled = 0;
+				if (loginattempts > 0) loginenabled = false;
 				that.drawLoginDisabled();
 			}
 			else if (json.code && (json.code == 1)) {
-				that.hideLoginBox();
+				window.location.reload(true);
 			}
 		};
 		
@@ -131,8 +137,8 @@ panels.MenuPanel = {
 		
 		that.changeStation = function(sid) {
 			if (sid == 1) window.location.href = "http://rw.rainwave.cc";
-			if (sid == 2) window.location.href = "http://ocremix.rainwave.cc";
-			if (sid == 3) window.location.href = "http://mixwave.rainwave.cc";
+			if (sid == 2) window.location.href = "http://ocr.rainwave.cc";
+			if (sid == 3) window.location.href = "http://mix.rainwave.cc";
 		};
 	
 		return that;

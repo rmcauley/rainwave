@@ -281,6 +281,8 @@ $lang2 = array(
 	"m3uhijack" => "|plugin| essaie de détourner le téléchargement du M3U. S.v.p., faire souris-droite et 'Sauvegarder en tant que.'",
 	"menu_morestations" => "Plus ▼",
 	"from" => "de |username|",
+	"translators" => "Traducteurs",
+	"waitingforstatus" => "En Attente du Status",
 
 	/* Words for pluralization */
 

@@ -1,5 +1,3 @@
-// Coded by Cory Petosky: https://github.com/Tanaric/Oggpixel/tree/master
-
 /**
  * Oggpixel -- a JS library wrapping a SWF that streams OGG.
  *
@@ -32,7 +30,7 @@ var Oggpixel = function () {
 			id = 'oggpixel';
 		}
 		self.player = document.getElementById(id);
-		alert("Attached!");
+
 		if (self.onReady) {
 			self.onReady();
 		}
@@ -47,7 +45,14 @@ var Oggpixel = function () {
 	 *     url: the url to play.
 	 */
 	self.play = function (url) {
-		self.player.play(url);
+		self.player.playStream(url);
+	};
+
+	/**
+	 * Stop the currently playing stream.
+	 */
+	self.stop = function () {
+		self.player.stopStream();
 	};
 
 	/**
@@ -75,36 +80,25 @@ var Oggpixel = function () {
 	self._onStart = function () {
 		self.playing = true;
 		if (self.onStart) {
-			self.onStart(user.p.radio_tunedin);	//modified by LR
+			self.onStart(user.p.radio_tunedin); // LR mod
 		}
 	};
 
 	self._onStop = function () {
 		self.playing = false;
 		if (self.onStop) {
-			self.onStop(user.p.radio_tunedin);	//modified by LR
+			self.onStop(user.p.radio_tunedin); // LR mod
 		}
 	};
 	
-	/**
-	 * Further code by LiquidRain which obviously means it will be undocumented. I R GOOD
-	 */
-	 
-	self.stop = function() {
-		return self.player.stop();
-	}
-	
-	self.inject = function() {
-		if (!document.getElementById("oggpixel")) {
-			var obj = createEl("object", { "id": "oggpixel", "type": "application/x-shockwave-flash", "data": "js/oggpixel/oggpixel.swf", "width": 1, "height": 1 });
-			obj.appendChild(createEl("param", { "name": "allowScriptAccess", "value": "always" }));
-			obj.style.position = "absolute";
-			obj.style.top = "-5px";
-			document.getElementById("body").appendChild(obj);
-			return true
-		}
-		return false;
-	}
+	// LR mod
+	self.inject = function () {
+		//document.getElementById("body").appendChild(createEl("div", { "id": "oggpixel" }));
+		var flashvars = {};
+		var params = {allowScriptAccess: "always"};
+		var attributes = {};
+		swfobject.embedSWF("images/oggpixel.swf", "oggpixel", "1", "1", "10.0.0", "images/expressInstall.swf", flashvars, params, attributes);
+	};
 
 	return self;
 }();

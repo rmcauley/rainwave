@@ -10,7 +10,7 @@ $playlistfile = "";
 
 if ($sid == RW) $playlistfile = "rainwave.m3u";
 else if ($sid == OCR) $playlistfile = "ocr_radio.m3u";
-else if ($sid == VW) $playlistfile = "vwave.m3u";
+else if ($sid == VW) $playlistfile = "mixwave.m3u";
 
 if (preg_match("/MSIE 5.5/", $_SERVER['HTTP_USER_AGENT'])) {
        header("Content-Disposition: filename=\"" . $playlistfile . "\"");
@@ -47,7 +47,7 @@ else if ($sid == OCR) {
 	print "#EXTINF:0,OCR Radio Random Relay\n";
 	print "http://ocrstream.rainwave.cc:8000/ocremix.ogg" . $userstring . "\n";
 	print "#EXTINF:0,OCR Radio Relay 1 - Donated by Dracoirs - Arizona, USA\n";
-	print "http://ormgas.dracoirs.com:8000/ormgas.ogg" . $userstring . "\n";
+	print "http://ormgas.dracoirs.com:8000/ocremix.ogg" . $userstring . "\n";
 	print "#EXTINF:0,OCR Radio Relay 2 - Donated by Lyfe - Connecticut, USA\n";
 	print "http://stream1.gameowls.com:8000/ocremix.ogg" . $userstring . "\n";
 	print "#EXTINF:0,OCR Radio Relay 3 - Donated by Lyfe - Connecticut, USA\n";
@@ -55,7 +55,7 @@ else if ($sid == OCR) {
 }
 else if ($sid == MW) {
 	print "#EXTINF:0,Mixwave Relay 1 - Rainwave Core Server - Toronto, Canada\n";
-	print "http://rainwave.cc:8000/mixwave.ogg" . $userstring . "\n";
+	print "http://mwstream.rainwave.cc:8000/mixwave.ogg" . $userstring . "\n";
 }
 
 cleanUp(false);

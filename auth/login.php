@@ -19,7 +19,6 @@ $el = array();
 if ($result['status'] == LOGIN_SUCCESS) {
 	$el['code'] = 1;
 	$el['text'] = "Login successful.";
-	globalizeUserData();
 }
 else if (($result['error_msg'] == "LOGIN_ERROR_PASSWORD") || ($result['error_msg'] == "LOGIN_ERROR_USERNAME")) {
 	$el['code'] = 0;

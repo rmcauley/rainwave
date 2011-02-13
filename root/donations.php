@@ -72,6 +72,7 @@
 <ul><li>You can affix a personal note to go on this page. Just put it in your payment description.</li>
 <li>You can specify that you want your name to be made public, if you wish. (keep in mind you'll be listed as a donor on the forums with a yellow name, just that the amount you donated cannot be publically tied to you)</li>
 <li><b><span style='color: #FF4444'>Please note your username in the payment description</span></b> as well so that you may receive donor status.</li>
+<li>You can donate in Canadian to save both of us money!  Just use the same email address you see on the Paypal page, and send in CAD!</li>
 </ul>
 <p>Rainwave will keep running even if the donation money runs out.  This is a "tip jar."  Donate what you want!</p>
 <p>Donating is done through Robert "LiquidRain" McAuley's PayPal account.  Click on the PayPal icon below to donate.</p>
@@ -111,11 +112,8 @@ foreach ($donations as $donation) {
 	if ($donation['donation_private_name']) print "<span class='grey'>private</span>";
 	else print $donation['username'];
 	print "</td><td class='alignright' style='padding-right: 2em;'>";
-	#if ($donation['donation_private_amt']) print "";
 	print sprintf("%0.2f", $donation['donation_amount']);
 	print "</td><td>" . $donation['donation_desc'] . "</td>";
-	#if ($donation['donation_for_rw'] == 1) print "Y";
-	#else print "&nbsp;";
 	print "</tr>";
 }
 

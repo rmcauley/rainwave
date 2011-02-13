@@ -1,26 +1,40 @@
 <?php
-
 header("content-type: application/xhtml+xml");
 
-require("auth/common.php");
+define("RW", 1);
+define("OCR", 2);
+define("VW", 3);
+define("MW", 3);
 
-if (!in_array($userdata['group_id'], array(5, 4, 8, 12, 15, 14))) {
-	print "<body>You are not allowed to see this page.</body>";
-	exit(0);
-}
+$sid = RW;
+if ($_COOKIE['r3sid'] == "1") $sid = RW;
+else if ($_COOKIE['r3sid'] == "2") $sid = OCR;
+else if ($_COOKIE['r3sid'] == "3") $sid = VW;
+// This gives precedence to URL if using a subdomained station
+if ($_SERVER['HTTP_HOST'] == "rw.rainwave.cc") $sid = RW;
+else if ($_SERVER['HTTP_HOST'] == "ocr.rainwave.cc") $sid = OCR;
+else if ($_SERVER['HTTP_HOST'] == "ocremix.rainwave.cc") $sid = OCR;
+else if ($_SERVER['HTTP_HOST'] == "mix.rainwave.cc") $sid = VW;
+else if ($_SERVER['HTTP_HOST'] == "mixwave.rainwave.cc") $sid = VW;
+else if ($_SERVER['HTTP_HOST'] == "vwave.rainwave.cc") $sid = VW;
+// An override, mostly for administration uses
+if ($_GET['site'] == "rw") $sid = RW;
+else if ($_GET['site'] == "oc") $sid = OCR;
+else if ($_GET['site'] == "mw") $sid = VW;
+else if ($_GET['site'] == "vw") $sid = VW;
 
-require("files.php");
+if ($sid == 1) $site = "Rainwave";
+if ($sid == 2) $site = "OCR Radio";
+if ($sid == 3) $site = "Mixwave";
 
 print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <head>
-	<title>Rainwave Beta</title>
+	<title><?php print $site; ?></title>
 	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
 	<script src="preload.php?site=<?php print $_GET['site'] ?>" type="text/javascript"></script>
-	<script src="lyre-ajax.js" type="text/javascript"></script>
 	<?php
 		$bnum = <%BUILDNUM%>;
 		$skin = "RWClassic";
@@ -36,12 +50,6 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 </head>
 <body id="body">
 <div id="oggpixel"></div>
-<?php
-	print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript'></script>\n";
-	for ($i = 0; $i < count($jsorder); $i++) {
-		print "<script src='" . $jsorder[$i] . "' type='text/javascript'></script>\n";
-	}
-?>
 <div id="IMAGE_PRELOAD" style="position: absolute; top: -5000px; left: -5000px; width: 1px; height: 1px;">
 	<?php
 		$dir = opendir("images") or die ("Can't read images directory.");
@@ -61,5 +69,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		print "\n";
 	?>
 </div>
+<?php print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript'></script>\n"; ?>
+<script src='rainwave3_r<%BUILDNUM%>.js' type='text/javascript'></script>
 </body>
 </html>

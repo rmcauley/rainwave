@@ -326,9 +326,9 @@ function EdiTheme() {
 		
 		te.emphasizeWinner = function() {
 			for (var i = 1; i < te.songs.length; i++) {
-				te.songs[i].tr1_fx.start(0.8);
-				te.songs[i].tr2_fx.start(0.8);
-				te.songs[i].tr3_fx.start(0.8);
+				te.songs[i].tr1_fx.set(0.8);
+				te.songs[i].tr2_fx.set(0.8);
+				te.songs[i].tr3_fx.set(0.8);
 			}
 		};
 		
@@ -407,7 +407,7 @@ function EdiTheme() {
 	that.Extend.TimelineOneShot = function(tos) {
 		tos.draw = function() {
 			var hltitle = _l("onetimeplay");
-			if (tos.p.username) hltitle += " from " + tos.p.username;
+			if (tos.p.username) hltitle += _l("from", { "username": tos.p.username } );
 			that.drawTimelineTable(tos, hltitle, "normal");
 			
 			if (tos.p.user_id == user.p.user_id) {
@@ -847,7 +847,6 @@ function EdiTheme() {
 			menup.login_button.addEventListener('click', menup.loginSubmit, true);
 
 			menup.loginbox.style.position = "absolute";
-			menup.loginbox.style.marginTop = (menup.el.offsetHeight + 3) + "px";
 			menup.loginbox.style.zIndex = "100";
 			
 			menup.table = createEl("table", { "class": "menu_table", "cellspacing": 0 });

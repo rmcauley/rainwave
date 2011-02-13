@@ -17,17 +17,11 @@ print "RAINWAVE 3 BETA REVISION " . $bnum . "\n";
 removeOldBuild($dest);
 writeParsedFile("root/preload.php", $dest . "preload.php", $bnum);
 copyStatic($dest, $bnum);
-
 buildLanguages($dest, $bnum);
-print "Copying skins.\n";
 copyDirectory("skins", "skins_r" . $bnum, $dest);
-print "Copying lyre-ajax.js.\n";
 copyFile($lyredir . "javascript/lyre-ajax.js", "lyre-ajax.js", $dest);
-print "Copying javascript.\n";
 copyDirectory("js", "js", $dest);
-print "Copying index.php.\n";
 writeParsedFile("root/beta-index.php", $dest . "index.php", $bnum);
-print "Copying files.php.\n";
 copyFile("files.php", "files.php", $dest);
 
 ?>

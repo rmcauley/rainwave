@@ -175,14 +175,14 @@ $lang2 = array(
 	"voting" => "Stemmen",
 	"voting_p" => "Elk gespeeld nummer is een deel van een electie. Het nummer met de meeste stemmen gaat door.|br|Leer hoe u moet stemmen.",
 	"clickonsongtovote" => "Klik op een nummer om te stemmen",
-	"clickonsongtovote_p" => "Wanneer u meeluistert, klik op een nummer.|br|>Het nummer met de meeste stemmen wordt als volgende gespeeld.",
+	"clickonsongtovote_p" => "Wanneer u meeluistert, klik op een nummer.|br|Het nummer met de meeste stemmen wordt als volgende gespeeld.",
 	"tunein" => "Luister mee",
 	"tunein_p" => "Gebruik de ingebouwde Flash player om mee te luisteren.|br|U kunt ook een M3U downloading door op één van de icoontjes te klikken.",
-	"login" => "Login of Register",
+	"login" => "Login of Registreer",
 	"login_p" => "Log alstublieft in.",
 	"ratecurrentsong" => "Beoordelen",
-	"ratecurrentsong_p" => "Ga met uw muisje over de grafiek en klik om het nummer te beoordelen.|br|Album beoordeling wordt bepaald door de gemiddelde beoordelingen van uw nummers.",
-	"ratecurrentsong_t" => "Gebaseerd op de beoordelingen wordt bepaald hoe vaak een nummer en album worden afgespeeld.|br|Leer hoe u moet beoordelen.",
+	"ratecurrentsong_p" => "Ga met uw pijltje over de grafiek en klik om het nummer te beoordelen.|br|Album beoordeling wordt bepaald door de gemiddelde beoordelingen van uw nummers.",
+	"ratecurrentsong_t" => "Gebaseerd op de beoordelingen wordt bepaald hoe vaak een nummer en album worden afgespeeld.|br|Leer nummers te beoordelen.",
 	"ratecurrentsong_tp" => "Beoordelen",
 	"setfavourite" => "Favorieten",
 	"setfavourite_p" => "Klik op de knop aan het einde van de beoordeling reep om een nummer bij uw favorieten toe te voegen of verwijden.",
@@ -280,13 +280,15 @@ $lang2 = array(
 	"m3uhijack" => "|plugin| probeert de M3U bestand over te nemen. Klik alstublieft met uw rechter muisknop en kies 'Opslaan Als.''",
 	"menu_morestations" => "Meer ▼",
 	"from" => "van |username|",
+	"translators" => "Vertalers",
+	"waitingforstatus" => "Wachten op Status",
 	
 	/* Words for pluralization */
 
 	"person" => "persoon",
 	"person_p" => "gebruikers",
 	"Vote" => "Stem",
-	"Vote_p" => "Stemmen",
+	"Vote_p" => "Stemmen"
 
 );
 ?>

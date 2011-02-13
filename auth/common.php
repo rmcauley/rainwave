@@ -20,7 +20,9 @@ else if ($_COOKIE['r3sid'] == "3") $sid = VW;
 // This gives precedence to URL if using a subdomained station
 if ($_SERVER['HTTP_HOST'] == "rw.rainwave.cc") $sid = RW;
 else if ($_SERVER['HTTP_HOST'] == "ocr.rainwave.cc") $sid = OCR;
+else if ($_SERVER['HTTP_HOST'] == "ocremix.rainwave.cc") $sid = OCR;
 else if ($_SERVER['HTTP_HOST'] == "mix.rainwave.cc") $sid = VW;
+else if ($_SERVER['HTTP_HOST'] == "mixwave.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "vwave.rainwave.cc") $sid = VW;
 // An override, mostly for administration uses
 if ($_GET['site'] == "rw") $sid = RW;
@@ -79,15 +81,11 @@ define("FIELDS_LIGHTSONG", TBL_SONGS . ".song_id, song_title, song_secondslong, 
 define("FIELDS_ALLARTIST", TBL_ARTISTS . ".artist_id, artist_name, artist_lastplayed");
 define("FIELDS_ALLAD", TBL_ADS . ".ad_id, ad_title, ad_album, ad_artist, ad_genre, ad_comment, ad_secondslong, ad_url, ad_url_text");
 
-function globalizeUserData() {
-	$GLOBALS['user']->session_begin();
-	$GLOBALS['auth']->acl($GLOBALS['user']->data);
-	$GLOBALS['userdata'] =& $GLOBALS['user']->data;
-	$GLOBALS['user_id'] =& $GLOBALS['userdata']['user_id'];
-	$GLOBALS['username'] =& $GLOBALS['userdata']['username'];
-}
-
-globalizeUserData();
+$user->session_begin();
+$auth->acl($GLOBALS['user']->data);
+$userdata =& $GLOBALS['user']->data;
+$user_id =& $GLOBALS['userdata']['user_id'];
+$username =& $GLOBALS['userdata']['username'];
 	
 //-------------------------------------------------------------------------------------------------------
 

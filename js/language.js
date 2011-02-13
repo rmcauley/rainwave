@@ -3,7 +3,7 @@
 // Pass an element and the el will be filled with <span>s of each chunk of string
 //    Variables will be given class "lang_[line]_[variablename]" when filling in variables
 function _l(line, object, el, keep) {
-	if (!object) {
+	if (!object && !el) {
 		if (lang[line]) {
 			if (el) {
 				if (!keep) while (el.hasChildNodes()) el.removeChild(el.firstChild);

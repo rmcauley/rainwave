@@ -291,6 +291,7 @@ $lang = array(
 	"m3uhijack" => "|plugin| is trying to hijack the M3U download.  Please right click and 'Save As.'",
 	"menu_morestations" => "More ▼",
 	"from" => "from |username|",
+	"waitingforstatus" => "Waiting for Status",
 	
 	/* Words for pluralization */
 

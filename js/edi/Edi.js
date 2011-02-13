@@ -96,7 +96,8 @@ function Edi(container) {
 				{ "value": "en_CA", "option": "English (Canada)" },
 				{ "value": "fr_CA", "option": "French (Canada)" },
 				{ "value": "nl_NL", "option": "Nederlands" },
-				{ "value": "fi_FI", "option": "Suomi" }
+				{ "value": "fi_FI", "option": "Suomi" },
+				{ "value": "se_SE", "option": "Svenska" }
 			], refresh: true });
 		prefs.addPref("edi", { hidden: true, name: "theme", defaultvalue: "RWClassic", type: "dropdown", options: [ { value: "RWClassic", option: "Rainwave 3" } ], refresh: true });
 		
