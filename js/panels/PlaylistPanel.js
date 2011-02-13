@@ -270,7 +270,7 @@ panels.PlaylistPanel = {
 			
 			var dosearch = false;
 			if (/\d/.test(chr) && inlinetimer) dosearch = true;
-			else if (/\w/.test(chr)) dosearch = true;
+			else if (/[\w\-.&]+/.test(chr)) dosearch = true;
 			else if (code == 32) {
 				dosearch = true;
 				bubble = false;

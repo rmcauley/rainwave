@@ -1306,11 +1306,18 @@ function EdiTheme() {
 				tmp = document.createElement("div");
 				_l("pl_genres", {}, tmp);
 				var span = createEl("span", {}, tmp);
-				for (var g = 0; g < json.album_genres.length; g++) {
+				var maxgenres = json.album_genres.length;
+				var maxhit = false;
+				if (json.album_genres.length > 3) {
+					maxgenres = 3;
+					maxhit = true;
+				}
+				for (var g = 0; g < maxgenres; g++) {
 					if (g > 0) span.textContent += ", ";
 					span.textContent += json.album_genres[g].genre_name;
 				}
-				_l("pl_genres2", false, tmp);
+				if (!maxhit) _l("pl_genres2_normal", false, tmp, true);
+				else _l("pl_genres2_more", false, tmp, true);
 				stats.appendChild(tmp);
 			}
 			div.albumdetailtd.appendChild(stats);

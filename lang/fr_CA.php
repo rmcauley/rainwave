@@ -130,7 +130,8 @@ $lang2 = array(
 	"pl_genre" => "Groupe de recharge: ",
 	"pl_genre2" => ".",
 	"pl_genres" => "Groupe de recharge: ",
-	"pl_genres2" => ".",
+	"pl_genres2_normal" => ".",
+	"pl_genres2_more" => "...",
 
 	/* Preferences */
 

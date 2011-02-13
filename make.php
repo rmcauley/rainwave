@@ -4,11 +4,16 @@
 require("buildfunc.php");
 require("files.php");
 
-$dest = "/var/www/rainwave.cc/test/";
 $bnum = getBuildNumber();
 $lyredir = "../lyre/";
 
-print "RAINWAVE 3 LIVE REVISION " . $bnum . "\n";
+if (!isset($dest)) {
+	$dest = "/var/www/rainwave.cc/";
+	print "RAINWAVE 3 LIVE REVISION " . $bnum . "\n";
+}
+else {
+	print "RAINWAVE 3 TEST REVISION " . $bnum . "\n";
+}
 
 // Add lyre-ajax to the large lump JS file
 array_unshift($jsorder, $lyredir . "javascript/lyre-ajax.js");

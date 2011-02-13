@@ -128,7 +128,8 @@ $lang2 = array(
 	"pl_genre" => "Cooldown groep: ",
 	"pl_genre2" => ".",
 	"pl_genres" => "Cooldown groepen: ",
-	"pl_genres2" => ".",
+	"pl_genres2_normal" => ".",
+	"pl_genres2_more" => "...",
 	
 	/* Preferences */
 	
