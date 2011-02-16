@@ -19,8 +19,6 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 <head>
 	<title>Rainwave Beta</title>
 	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-	<script src="preload.php?site=<?php print $_GET['site'] ?>" type="text/javascript"></script>
-	<script src="lyre-ajax.js" type="text/javascript"></script>
 	<?php
 		$bnum = <%BUILDNUM%>;
 		$skin = "RWClassic";
@@ -33,6 +31,8 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		print "<link rel=\"stylesheet\" href='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".css' type='text/css' />\n";
 		print "\t<script src='lang_r" . $bnum . "/" . $lang . ".js' type='text/javascript'></script>\n";
 	?>
+	<script src="preload.php?site=<?php print $_GET['site'] ?>" type="text/javascript"></script>
+	<script src="lyre-ajax.js" type="text/javascript"></script>
 </head>
 <body id="body">
 <div id="oggpixel"></div>

@@ -34,7 +34,6 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 <head>
 	<title><?php print $site; ?></title>
 	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-	<script src="preload.php?site=<?php print $_GET['site'] ?>" type="text/javascript"></script>
 	<?php
 		$bnum = <%BUILDNUM%>;
 		$skin = "RWClassic";
@@ -47,6 +46,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		print "<link rel=\"stylesheet\" href='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".css' type='text/css' />\n";
 		print "\t<script src='lang_r" . $bnum . "/" . $lang . ".js' type='text/javascript'></script>\n";
 	?>
+	<script src="preload.php?site=<?php print $_GET['site'] ?>" type="text/javascript"></script>
 </head>
 <body id="body">
 <div id="oggpixel"></div>
@@ -71,5 +71,14 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 </div>
 <?php print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript'></script>\n"; ?>
 <script src='rainwave3_r<%BUILDNUM%>.js' type='text/javascript'></script>
+<script type="text/javascript">
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/ script%3E"));
+</script>
+<script type="text/javascript">
+		var pageTracker = _gat._getTracker("UA-3567354-1");
+		pageTracker._initData();
+		pageTracker._trackPageview();
+</script>
 </body>
 </html>

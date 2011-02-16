@@ -63,6 +63,7 @@ function HotkeyControl() {
 	};
 	
 	that.keyPressHandler = function(evt) {
+		if (evt.ctrlKey || evt.altKey || evt.metaKey) return true;
 		var code = (evt.keyCode != 0) ? evt.keyCode : evt.charCode;
 		if (code && (code != 8) && (code != 27)) {
 			return that.keyPress(evt);
@@ -70,6 +71,7 @@ function HotkeyControl() {
 	};
 	
 	that.keyDownHandler = function(evt) {
+		if (evt.ctrlKey || evt.altKey || evt.metaKey) return true;
 		var code = (evt.keyCode != 0) ? evt.keyCode : evt.charCode;
 		if (code && (code == 8)) {
 			return that.keyPress(evt);

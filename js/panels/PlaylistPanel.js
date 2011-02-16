@@ -15,6 +15,7 @@ panels.PlaylistPanel = {
 		var inlinetimer = false;
 		var keynavpos = -1;
 		var searchremoved = [];
+		var updated = [];
 		var opendivs = [];
 		var idloading = false;
 		var currentview = "album";
@@ -57,10 +58,10 @@ panels.PlaylistPanel = {
 		that.playlistUpdate = function(json) {
 			var oa;
 			var i = 0;
-			while (i < albumsort.length) {
+			/*while (i < albumsort.length) {
 				if (!albums[albumsort[i]].album_available) {
 					that.setAlbumRating(albumsort[i]);
-					if ((albums[albumsort[i]].album_lowest_oa - clock.now) <= 0) {
+					if (albums[albumsort[i]].album_lowest_oa < clock.now) {
 						albums[albumsort[i]].album_available = true;
 						that.setRowClass(albums[albumsort[i]]);
 						that.reinsertAlbum(albumsort[i]);
@@ -68,12 +69,11 @@ panels.PlaylistPanel = {
 					else i++;
 				}
 				else i++;
-			}
+			}*/
 			for (var i in json) {
 				if (json[i].album_id) that.albumUpdate(json[i]);
 			}
-			if (!keynavtimer) {
-				reinsert.sort(that.sortAlbumArray);
+			if (!inlinetimer) {
 				that.updateAlbumList();
 			}
 		};
@@ -85,13 +85,13 @@ panels.PlaylistPanel = {
 			if (typeof(albums[album_id]) == "undefined") {
 				albums[album_id] = json;
 				that.drawAlbumlistEntry(albums[album_id]);
-				that.reinsertAlbum(album_id);
+				updated.push(album_id);
 				toreturn = true;
 			}
-			else if ((albums[album_id].album_lowest_oa != json.album_lowest_oa) || (albums[album_id].album_available != json.album_available)) {
+			else if (albums[album_id].album_lowest_oa != json.album_lowest_oa) {
 				albums[album_id].album_lowest_oa = json.album_lowest_oa;
 				albums[album_id].album_available = json.album_available;
-				that.reinsertAlbum(album_id);
+				updated.push(album_id);
 				toreturn = true;
 			}
 			that.setRowClass(albums[album_id]);
@@ -113,7 +113,7 @@ panels.PlaylistPanel = {
 		that.reinsertAlbum = function(album_id) {
 			var io = albumsort.indexOf(album_id);
 			if (io >= 0) {
-				albumsort.splice(io, 1);
+				albumsort.splice(io, 1)[0];
 			}
 			if (reinsert.indexOf(album_id) == -1) {
 				reinsert.push(album_id);
@@ -121,14 +121,20 @@ panels.PlaylistPanel = {
 		}
 
 		that.updateAlbumList = function() {
-			for (var i = 0; i < albumsort.length; i++) {
+			var i = 0;
+			if (updated.length > 0) {
+				for (i = 0; i < updated.length; i++) that.reinsertAlbum(updated[i]);
+				updated = [];
+			}
+			reinsert.sort(that.sortAlbumArray);
+			for (i = 0; i < albumsort.length; i++) {
 				if (reinsert.length == 0) break;
 				if (that.sortAlbumArray(reinsert[0], albumsort[i]) == -1) {
 					that.insertBefore(albums[reinsert[0]], albums[albumsort[i]]);
 					albumsort.splice(i, 0, reinsert.shift());
 				}
 			}
-			for (var i = 0; i < reinsert.length; i++) {
+			for (i = 0; i < reinsert.length; i++) {
 				albumsort.push(reinsert[i]);
 				that.appendChild(albums[reinsert[i]]);
 			}
@@ -255,8 +261,6 @@ panels.PlaylistPanel = {
 		};
 		
 		that.keyHandle = function(evt) {
-			// never get in the way of bigger, better shortcuts!
-			if (evt.ctrlKey || evt.altKey) return true;
 			// only go if we have focus or we're not inside the MPI
 			if (edi.mpi) {
 				if (edi.focused != "PlaylistPanel") return true;
@@ -362,7 +366,7 @@ panels.PlaylistPanel = {
 			for (i = 0; i < albumsort.length; i++) {
 				if (albums[albumsort[i]].album_name.toLowerCase().indexOf(text) == -1) {
 					that.removeChild(albums[albumsort[i]]);
-					searchremoved.push(albumsort.splice(i, 1));
+					searchremoved.push(albumsort.splice(i, 1)[0]);
 					i--;
 				}
 			}
@@ -375,13 +379,12 @@ panels.PlaylistPanel = {
 						if (i == albumsort[j]) insearch = true;
 					}
 					for (j = 0; j < searchremoved.length; j++) {
-						if (i == searchremoved[j]) searchremoved.splice(j, 1);
+						if (i == searchremoved[j]) searchremoved.splice(j, 1)[0];
 					}
 					if (!insearch) reinsert.push(i);
 				}
 			}
 					
-			reinsert.sort(that.sortAlbumArray);
 			that.updateAlbumList();
 		};
 		
@@ -409,7 +412,6 @@ panels.PlaylistPanel = {
 			if (searchremoved.length > 0) {
 				reinsert = reinsert.concat(searchremoved);
 				searchremoved = [];
-				reinsert.sort(that.sortAlbumArray);
 				that.updateAlbumList();
 			}
 			
