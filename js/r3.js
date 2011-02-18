@@ -64,7 +64,7 @@ window.addEventListener('mousedown', mouseUpdate, true);
 
 function drawAboutScreen(div) {
 	var tbl = createEl("table", { "class": "about help_paragraph" });
-	var html = "<tr><td>Rainwave Version:</td><td>r" + BUILDNUM + "</td></tr>";
+	var html = "<tr><td>" + _l("rainwave3version") + ":</td><td>" + _l("revision") + " " + BUILDNUM + "</td></tr>";
 	html += "<tr><td>" + _l("creator") + ":</td><td>LiquidRain</td></tr>";
 	html += "<tr><td>" + _l("rainwavemanagers") + ":</td><td>Ten19, Vyzov, Metal-Ridley, LiquidRain</td></tr>";
 	html += "<tr><td>" + _l("ocrmanagers") + ":</td><td>William</td></tr>";

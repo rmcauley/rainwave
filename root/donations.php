@@ -1,4 +1,4 @@
-<?php require ("auth\common.php") ?>
+<?php require ("auth/common.php") ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/2000/REC-xhtml1-20000126/DTD/xhtml1-transitional.dtd">
 <html>
 
@@ -90,16 +90,16 @@
 <tr class='titlerow'><td class='pagetitle' colspan='2'>Statistics</td></tr>
 <?php
 
-$sitebal = db_value("SELECT SUM(donation_amount) FROM rw_donations");
-$rwtotal = db_value("SELECT SUM(donation_amount) FROM rw_donations WHERE donation_amount > 0 AND user_id != 2");
-$count = db_value("SELECT COUNT(*) FROM rw_donations WHERE donation_amount > 0 AND user_id != 2");
+$sitebal = db_single("SELECT SUM(donation_amount) FROM rw_donations");
+$rwtotal = db_single("SELECT SUM(donation_amount) FROM rw_donations WHERE donation_amount > 0 AND user_id != 2");
+$count = db_single("SELECT COUNT(*) FROM rw_donations WHERE donation_amount > 0 AND user_id != 2");
 
 print "<tr><td><b>Rainwave Site Balance</b></td><td class='alignright'><b>" . sprintf("%0.2f", $sitebal) . "</b></td></tr>";
 print "<tr><td>Donated to Rainwave</td><td class='alignright'>" . sprintf("%0.2f", $rwtotal) . "</td></tr>";
 print "<tr><td>Total Number of Donations</td><td class='alignright'>" .  $count . "</td></tr>";
 ?>
 </table>
-
+<br />
 <table class='playlist'>
 <tr class='titlerow'><td class='pagetitle' colspan='4'>Last 50 Donations</td></tr>
 <tr class='headerrow'><td>Username</td><td class='alignright' style='width: 10em; padding-right: 2em;'>Amount</td><td>Notes</td></tr>
@@ -109,7 +109,7 @@ $donations = array();
 $donations = db_table("SELECT rw_donations.*, username FROM rw_donations JOIN phpbb_users USING (user_id) ORDER BY donation_id DESC LIMIT 50");
 foreach ($donations as $donation) {
 	print "<tr><td>";
-	if ($donation['donation_private_name']) print "<span class='grey'>private</span>";
+	if ($donation['donation_private_name'] == "t") print "<span style='color: #AAAAAA'>private</span>";
 	else print $donation['username'];
 	print "</td><td class='alignright' style='padding-right: 2em;'>";
 	print sprintf("%0.2f", $donation['donation_amount']);

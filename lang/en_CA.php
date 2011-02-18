@@ -190,7 +190,7 @@ $lang = array(
 	"clickonsongtovote" => "Click a Song to Vote",
 	"clickonsongtovote_p" => "After tuning in, click on a song.|br|The song with the most votes gets played next.",
 	"tunein" => "Tune In",
-	"tunein_p" => "Download an M3U by clicking your player's icon.|br|VLC, Winamp, Foobar2000, and fstream (Mac) recommended.|br|iTunes and Windows Media Player will not work.",
+	"tunein_p" => "Download the M3U and use your media player to listen.|br|VLC, Winamp, Foobar2000, and fstream (Mac) recommended.",
 	"login" => "Login or Register",
 	"login_p" => "Please login.",
 	"ratecurrentsong" => "Rating",
@@ -211,6 +211,8 @@ $lang = array(
 	"managingrequests_p" => "Drag and drop to re-order your requests, or click X to delete one of them.",
 	"timetorequest" => "Request Status",
 	"timetorequest_p" => "Your request status is indicated here.|br|If it indicates \"Expiring\" or \"Cooldown\", you should change your #1 request.",
+	"rainwave3version" => "Rainwave 3 Version",
+	"revision" => "Rev",
 	
 	/* Schedule Panel */
 	
