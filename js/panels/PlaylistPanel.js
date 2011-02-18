@@ -273,8 +273,40 @@ panels.PlaylistPanel = {
 			var chr = String.fromCharCode(code);
 			
 			var dosearch = false;
-			if (/\d/.test(chr) && inlinetimer) dosearch = true;
-			else if (/[\w\-.&]+/.test(chr)) dosearch = true;
+			// down arrow
+			if ((code == 40) && (albumsort[keynavpos + 1])) {
+				bubble = false;
+				if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
+				keynavpos++;
+				that.scrollToAlbum(albums[albumsort[keynavpos]]);
+				that.setRowClass(albums[albumsort[keynavpos]], true);
+				if (inlinetimer) resettimer = true;
+				resetkeytimer = true;
+			}
+			// up arrow
+			else if ((code == 38) && (albumsort.length > 0) && (keynavpos > 0)) {
+				bubble = false;
+				if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
+				keynavpos--;
+				that.scrollToAlbum(albums[albumsort[keynavpos]]);
+				that.setRowClass(albums[albumsort[keynavpos]], true);
+				if (inlinetimer) resettimer = true;
+				resetkeytimer = true;
+			}
+			// escape
+			else if ((code == 13) && (keynavpos >= 0)) {
+				that.setRowClass(albums[albumsort[keynavpos]], false);
+				bubble = false;
+				var linkobj = { "type": "album", "id": albumsort[keynavpos] };
+				that.clearInlineSearch();
+				that.openLink(linkobj);
+			}
+			else if (/\d/.test(chr) && inlinetimer) {
+				dosearch = true;
+			}
+			else if (/[\w\-.&]+/.test(chr)) {
+				dosearch = true;
+			}
 			else if (code == 32) {
 				dosearch = true;
 				bubble = false;
@@ -302,37 +334,9 @@ panels.PlaylistPanel = {
 					else {
 						resettimer = true;
 						searchstring = searchstring.substring(0, searchstring.length - 1);
-						that.performSearch(searchstring);
+						that.performSearchBackspace(searchstring);
 					}
 				}
-			}
-			// down arrow
-			if ((code == 40) && (albumsort[keynavpos + 1])) {
-				bubble = false;
-				if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
-				keynavpos++;
-				that.scrollToAlbum(albums[albumsort[keynavpos]]);
-				that.setRowClass(albums[albumsort[keynavpos]], true);
-				if (inlinetimer) resettimer = true;
-				resetkeytimer = true;
-			}
-			// up arrow
-			if ((code == 38) && (albumsort.length > 0) && (keynavpos > 0)) {
-				bubble = false;
-				if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
-				keynavpos--;
-				that.scrollToAlbum(albums[albumsort[keynavpos]]);
-				that.setRowClass(albums[albumsort[keynavpos]], true);
-				if (inlinetimer) resettimer = true;
-				resetkeytimer = true;
-			}
-			// escape
-			if ((code == 13) && (keynavpos >= 0)) {
-				that.setRowClass(albums[albumsort[keynavpos]], false);
-				bubble = false;
-				var linkobj = { "type": "album", "id": albumsort[keynavpos] };
-				that.clearInlineSearch();
-				that.openLink(linkobj);
 			}
 			
 			if (resettimer) {
@@ -364,28 +368,23 @@ panels.PlaylistPanel = {
 			
 			// remove all albums that no longer match the search
 			for (i = 0; i < albumsort.length; i++) {
-				if (albums[albumsort[i]].album_name.toLowerCase().indexOf(text) == -1) {
-					that.removeChild(albums[albumsort[i]]);
-					searchremoved.push(albumsort.splice(i, 1)[0]);
-					i--;
+				if (!albums[albumsort[i]].hidden && albums[albumsort[i]].album_name.toLowerCase().indexOf(text) != 0) {
+					albums[albumsort[i]].hidden = true;
+					that.hideChild(albums[albumsort[i]]);
+					searchremoved.push(albumsort[i]);
 				}
 			}
-			
-			// get all new albums going into the search
-			for (i in albums) {
-				if (albums[i].album_name.toLowerCase().indexOf(text) != -1) {
-					insearch = false;
-					for (j = 0; j < albumsort.length; j++) {
-						if (i == albumsort[j]) insearch = true;
-					}
-					for (j = 0; j < searchremoved.length; j++) {
-						if (i == searchremoved[j]) searchremoved.splice(j, 1)[0];
-					}
-					if (!insearch) reinsert.push(i);
+		};
+		
+		that.performSearchBackspace = function(text) {
+			that.drawSearchString(searchstring);
+			text = text.toLowerCase();
+			for (var i in searchremoved) {
+				if (albums[searchremoved[i]].album_name.toLowerCase().indexOf(text) == 0) {
+					that.unhideChild(albums[searchremoved[i]]);
+					albums[searchremoved[i]].hidden = false;
 				}
 			}
-					
-			that.updateAlbumList();
 		};
 		
 		that.clearKeyNav = function(reset) {
@@ -410,7 +409,10 @@ panels.PlaylistPanel = {
 			else that.clearKeyNav();
 			
 			if (searchremoved.length > 0) {
-				reinsert = reinsert.concat(searchremoved);
+				for (var i = 0; i < searchremoved.length; i++) {
+					that.unhideChild(albums[searchremoved[i]]);
+					albums[searchremoved[i]].hidden = false;
+				}
 				searchremoved = [];
 				that.updateAlbumList();
 			}

@@ -132,7 +132,7 @@ $lang = array(
 	/* Playlist Sentences */
 	
 	"pl_oncooldown" => "On cooldown for |time|.",
-	"pl_ranks" => "Ranks |S:rank|.",
+	"pl_ranks" => "Rated at |rating|, ranking |S:rank|.",
 	"pl_favourited" => "Favourited by |count| |P:count,person|.",
 	"pl_wins" => "Wins |percent|% of the elections it's in.",
 	"pl_requested" => "Requested |count| times, ranking |S:rank|.",
@@ -190,7 +190,7 @@ $lang = array(
 	"clickonsongtovote" => "Click a Song to Vote",
 	"clickonsongtovote_p" => "After tuning in, click on a song.|br|The song with the most votes gets played next.",
 	"tunein" => "Tune In",
-	"tunein_p" => "Use the in-browser Flash player to tune in.|br|You can also download an M3U by clicking your player's icon.",
+	"tunein_p" => "Download an M3U by clicking your player's icon.|br|VLC, Winamp, Foobar2000, and fstream (Mac) recommended.|br|iTunes and Windows Media Player will not work.",
 	"login" => "Login or Register",
 	"login_p" => "Please login.",
 	"ratecurrentsong" => "Rating",
@@ -271,6 +271,8 @@ $lang = array(
 	"tunedin" => "Tuned In",
 	"tunedout" => "Tuned Out",
 	"play" => "▶ Play In Browser",
+	"downloadm3u" => "▶ Download M3U",
+	"players" => "Supported players are VLC, Winamp, Foobar2000, and fstream (Mac/iPhone).|br|Windows Media Player and iTunes will not work.",
 	"help" => "Help",
 	"forums" => "Forums",
 	"liveshow" => "Live Show",

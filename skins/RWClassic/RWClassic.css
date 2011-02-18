@@ -333,7 +333,7 @@ span.lang_pl_oncooldown {
 	color: #8bedff;
 }
 
-span.lang_pl_ranks_rank, span.lang_pl_wins_rank, span.lang_pl_requested_rank, span.lang_pl_wins_percent, span.lang_pl_requested_count {
+span.lang_pl_ranks_rating, span.lang_pl_ranks_rank, span.lang_pl_wins_rank, span.lang_pl_requested_rank, span.lang_pl_wins_percent, span.lang_pl_requested_count {
 	font-weight: bold;
 }
 

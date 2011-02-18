@@ -52,7 +52,7 @@ panels.MenuPanel = {
 			if (tunedin) help.continueTutorialIfRunning("tunein");
 		};
 		
-		that.playerClick = function() {
+		/*that.playerClick = function() {
 			if (Oggpixel.player) that.playerClick2();
 			else {
 				that.drawTuneInChange(-1);	
@@ -72,7 +72,7 @@ panels.MenuPanel = {
 				if (user.p.sid == 3) Oggpixel.play("http://mwstream.rainwave.cc:8000/mixwave.ogg" + usrstr);
 				
 			}
-		};
+		};*/
 
 		// this is for m3u links
 		that.tuneInClick = function() {

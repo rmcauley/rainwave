@@ -875,11 +875,17 @@ function EdiTheme() {
 			fx.makeMenuDropdown(menup.el, menup.td_station, menup.ul_select);
 			
 			menup.td_play = createEl("td", { "class": "menu_td_play" }, row);		
-			menup.player = createEl("span", { "class": "menu_player", "style": "cursor: pointer" }, menup.td_play);
-			menup.player.addEventListener("click", menup.playerClick, true);
+			//menup.player = createEl("span", { "class": "menu_player", "style": "cursor: pointer" }, menup.td_play);
+			//menup.player.addEventListener("click", menup.playerClick, true);
+			menup.player = createEl("a", { "class": "menu_player", "href": "tunein.php", "onclick": "return false;" }, menup.td_play);
+			menup.player.addEventListener("click", menup.tuneInClick, true);
 			menup.fx_player = fx.make(fx.CSSNumeric, [ menup.player, 250, "opacity", 0 ]);
 			menup.fx_player.set(1);
-			_l("play", {}, menup.player);
+			_l("downloadm3u", false, menup.player);
+			
+			menup.supportedplayers = createEl("div", { "class": "err_div_ok", "style": "z-index: -1;" });
+			_l("players", false, menup.supportedplayers);
+			fx.makeMenuDropdown(menup.el, menup.player, menup.supportedplayers);
 			
 			menup.td_download = createEl("td", { "class": "menu_td_download" }, row);
 			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;" });
@@ -1039,7 +1045,8 @@ function EdiTheme() {
 				menup.player.style.backgroundColor = "#225f8a";
 				menup.player.style.cursor = "pointer";
 				menup.fx_player.start(1);
-				_l("play", false, menup.player);
+				//_l("play", false, menup.player);
+				_l("downloadm3u", false, menup.player);
 			}
 		};
 		
@@ -1200,6 +1207,14 @@ function EdiTheme() {
 			if (album.tr.parentNode) albumlist.removeChild(album.tr);
 		};
 		
+		pp.hideChild = function(album) {
+			album.tr.style.display = "none";
+		};
+		
+		pp.unhideChild = function(album) {
+			album.tr.style.display = "";
+		};
+		
 		pp.appendOpenDiv = function(div) {
 			odholder.appendChild(div);
 		};
@@ -1279,7 +1294,7 @@ function EdiTheme() {
 			if (json.album_lowest_oa > clock.now) _l("pl_oncooldown", { "time": formatHumanTime(json.album_lowest_oa - clock.now, true, true) }, tmp);
 			stats.appendChild(tmp);
 			tmp = document.createElement("div");
-			_l("pl_ranks", { "rank": json.album_rating_rank }, tmp);
+			_l("pl_ranks", { "rating": json.album_rating_avg.toFixed(1), "rank": json.album_rating_rank }, tmp);
 			stats.appendChild(tmp);
 			if (json.album_fav_count > 0) {
 				tmp = document.createElement("div");
