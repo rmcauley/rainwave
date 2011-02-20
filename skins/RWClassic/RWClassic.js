@@ -340,6 +340,7 @@ function EdiTheme() {
 			}
 			te.songs[0].tr3_fx.onComplete2 = function() { te.songs[0].indicator.setAttribute("rowspan", 2); }
 			te.songs[0].tr3_fx.start(0);
+			te.songs[0].hideRequestor();
 		};
 		
 		te.sortSongOrder = function() {
@@ -480,6 +481,7 @@ function EdiTheme() {
 				ts.song_requestor_fx.height = ts.song_requestor.offsetHeight;
 				ts.song_requestor_fx.set(-ts.song_requestor_fx.height);
 				ts.indicator_fx = fx.make(fx.BackgroundPosY, [ ts.indicator, 250 ]);
+				ts.indicator_fx.set(-22);
 				ts.song_requestor_fx.onComplete = function() {
 					if (ts.song_requestor_fx.now < -5) ts.album_name.style.zIndex = 10;
 				}
@@ -501,7 +503,7 @@ function EdiTheme() {
 			fx_swipe.set(ts.song_td.offsetHeight);
 			
 			if (prefs.p.timeline.highlightrequests.value && (ts.p.elec_isrequest != 0)) {
-				ts.showRequester();
+				ts.showRequestor();
 			}
 		};
 
@@ -530,14 +532,20 @@ function EdiTheme() {
 				fx_votebkg_x.duration = 300;
 				fx_votebkg_x.start(-votebkg_width + ts.song_td.offsetWidth + 11);
 			}
-			ts.showRequester();
 		};
 		
-		ts.showRequester = function() {
+		ts.showRequestor = function() {
 			if (ts.song_requestor) {
 				ts.song_requestor_fx.start(0);
 				ts.indicator_fx.start(-22 + ts.album_td.offsetHeight);
 				ts.album_name.style.zIndex = 1;
+			}
+		};
+		
+		ts.hideRequestor = function() {
+			if (ts.song_requestor) {
+				ts.song_requestor_fx.start(-ts.song_requestor_fx.height - 1);
+				ts.indicator_fx.start(-22);
 			}
 		};
 
@@ -546,10 +554,6 @@ function EdiTheme() {
 				fx_votebkg_x.stop();
 				fx_votebkg_x.duration = 300;
 				fx_votebkg_x.start(-votebkg_width);
-			}
-			if (ts.song_requestor) {
-				ts.song_requestor_fx.start(-ts.song_requestor_fx.height - 1);
-				ts.indicator_fx.start(-22);
 			}
 		};
 		
@@ -1012,8 +1016,7 @@ function EdiTheme() {
 		
 		menup.loginBoxKeypress = function(evt) {
 			var code = (evt.keyCode != 0) ? evt.keyCode : evt.charCode;
-			if (code == 13) { menup.loginSubmit(); }				
-			hotkey.stopBubbling(evt);
+			if (code == 13) menup.loginSubmit();
 		};
 		
 		menup.loginSubmit = function() {

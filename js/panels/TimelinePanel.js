@@ -738,6 +738,10 @@ function TimelineSong(json, parent, x, y, songnum) {
 	theme.Extend.TimelineSong(that);
 	that.draw();
 	Album.linkify(json.album_id, that.album_name);
+	if (that.vote_hover_el) {
+		that.vote_hover_el.addEventListener('mouseover', that.showRequestor, true);
+		that.vote_hover_el.addEventListener('mouseout', that.hideRequestor, true);
+	}
 	
 	that.updateJSON = function(json) {
 		that.p = json;

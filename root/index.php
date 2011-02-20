@@ -7,9 +7,11 @@ define("VW", 3);
 define("MW", 3);
 
 $sid = RW;
-if ($_COOKIE['r3sid'] == "1") $sid = RW;
-else if ($_COOKIE['r3sid'] == "2") $sid = OCR;
-else if ($_COOKIE['r3sid'] == "3") $sid = VW;
+if (isset($_COOKIE['r3sid'])) {
+	if ($_COOKIE['r3sid'] == "1") $sid = RW;
+	else if ($_COOKIE['r3sid'] == "2") $sid = OCR;
+	else if ($_COOKIE['r3sid'] == "3") $sid = VW;
+}
 // This gives precedence to URL if using a subdomained station
 if ($_SERVER['HTTP_HOST'] == "rw.rainwave.cc") $sid = RW;
 else if ($_SERVER['HTTP_HOST'] == "ocr.rainwave.cc") $sid = OCR;
@@ -18,10 +20,12 @@ else if ($_SERVER['HTTP_HOST'] == "mix.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "mixwave.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "vwave.rainwave.cc") $sid = VW;
 // An override, mostly for administration uses
-if ($_GET['site'] == "rw") $sid = RW;
-else if ($_GET['site'] == "oc") $sid = OCR;
-else if ($_GET['site'] == "mw") $sid = VW;
-else if ($_GET['site'] == "vw") $sid = VW;
+if (isset($_GET['site'])) {
+	if ($_GET['site'] == "rw") $sid = RW;
+	else if ($_GET['site'] == "oc") $sid = OCR;
+	else if ($_GET['site'] == "mw") $sid = VW;
+	else if ($_GET['site'] == "vw") $sid = VW;
+}
 
 if ($sid == 1) $site = "Rainwave";
 if ($sid == 2) $site = "OCR Radio";
@@ -71,10 +75,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 </div>
 <?php print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript'></script>\n"; ?>
 <script src='rainwave3_r<%BUILDNUM%>.js' type='text/javascript'></script>
-<script type="text/javascript">
-		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/ script%3E"));
-</script>
+<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script> 
 <script type="text/javascript">
 		var pageTracker = _gat._getTracker("UA-3567354-1");
 		pageTracker._initData();

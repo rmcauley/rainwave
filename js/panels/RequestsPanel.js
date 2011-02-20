@@ -98,13 +98,11 @@ var AllRequestList = function() {
 		if ((expiry > 0) && (!li.expires_on)) {
 			li.expires_on = document.createElement("span");
 			li.expires_on.setAttribute("class", "request_expires_on");
-			if (expiry > clock.now) li.expires_on.textContent = " (expires in " + formatHumanTime(expiry - clock.now, true, true) + ")";
-			else li.expires_on.textContent = " (expires next request fulfillment)";
 			li.el.appendChild(li.expires_on);
 		}
-		else if ((expiry > 0) && (li.expires_on)) {
-			if (expiry > clock.now) li.expires_on.textContent = " (expires in " + formatHumanTime(expiry - clock.now, true, true) + ")";
-			else li.expires_on.textContent = " (expires next request fulfillment)";
+		if ((expiry > 0) && (li.expires_on)) {
+			if (expiry > clock.now) li.expires_on.textContent = _l("reqexpiresin", { "expiretime": formatHumanTime(expiry - clock.now, true, true) });
+			else li.expires_on.textContent = _l("reqexpiresnext");
 		}
 		else if (li.expires_on) {
 			li.el.removeChild(li.expires_on);

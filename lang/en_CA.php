@@ -128,6 +128,9 @@ $lang = array(
 	"suffix_7" => "th",
 	"suffix_8" => "th",
 	"suffix_9" => "th",
+	"suffix_11" => "th",
+	"suffix_12" => "th",
+	"suffix_13" => "th",
 	
 	/* Playlist Sentences */
 	
@@ -256,6 +259,8 @@ $lang = array(
 	"reqwrongstation" => " (wrong station)",
 	"reqtechtitlefull" => " (|station||S:position| with |requestcount|)",
 	"reqtechtitlesimple" => " (|station||requestcount|)",
+	"reqexpiresin" => " (place in line expires in |expiretime|)",
+	"reqexpiresnext" => " (place in list expires next request)",
 	
 	/* Others */
 	"nowplaying" => "Now Playing",

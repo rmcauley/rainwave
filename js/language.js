@@ -89,6 +89,7 @@ function _l(line, object, el, keep) {
 
 function _lSuffixNumber(number) {
 	var key = "suffix_" + (number % 10);
+	if ((number >= 11) && (number <= 13)) key = "suffix_" + number;
 	if (typeof(lang[key]) != "undefined") return number + lang[key];
 	else return number + "[*" + key + "*]";
 }

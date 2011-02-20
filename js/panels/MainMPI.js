@@ -46,9 +46,9 @@ panels.MainMPI = {
 				that.focusPanel(lastpanel);
 			}
 			
-			user.addCallback(that, that.updateRequestPos, "radio_requestposition");
+			user.addCallback(that, that.updateRequestPos, "radio_request_position");
 			ajax.addCallback(that, that.updateRequestNum, "requests_user");
-			ajax.addCallback(that, that.updateRequestTitle, "requests_user");
+			ajax.addCallback(that, that.updateRequestTitle, "sched_sync");
 		};
 		
 		that.divSize = function(el) {
@@ -156,7 +156,7 @@ panels.MainMPI = {
 			that.changeTitle(panels.RequestsPanel.intitle, panels.RequestsPanel.title + str);
 		};
 		
-		that.updateReqestPos = function(newpos) {
+		that.updateRequestPos = function(newpos) {
 			pos = newpos;
 		};
 		
@@ -168,6 +168,7 @@ panels.MainMPI = {
 				total++;
 			};
 			if (json.length > 0) no1requestsid = json[0].sid;
+			else no1requestsid = user.p.sid;
 		};
 		
 		that.p_technicalhint = function(techhint) {

@@ -25,7 +25,7 @@ if ($user_id > 1) {
         if (($userdata['radio_listenkey'] == "") || ($_GET['genkey'] == '1')) {
                 $listenkey = md5(uniqid(rand(), true));
                 $listenkey = substr($listenkey, 0, 10);
-                bb_updateDB("UPDATE phpbb_users SET radio_listenkey = '$listenkey' WHERE user_id = $user_id");
+                db_update("UPDATE phpbb_users SET radio_listenkey = '$listenkey' WHERE user_id = $user_id");
         }
         $userstring = "?" . $user_id . ":" . $listenkey . "";
 }

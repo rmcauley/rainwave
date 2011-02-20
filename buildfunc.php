@@ -57,6 +57,7 @@ function buildLanguages($dest, $bnum) {
 	mkdir($dest2) or die("Can't make destination language directory.");
 	writeLang($dest2 . "/en_CA.js", $lang);
 	$dir = opendir("lang");
+	$errs = fopen("/home/rmcauley/public_html/lang_errors.txt", "w");
 	while (false !== ($file = readdir($dir))) {
         if (preg_match("/.php$/", $file) && ($file != "en_CA.php")) {
 			$lang2 = array();
@@ -65,11 +66,13 @@ function buildLanguages($dest, $bnum) {
 			writeLang($dest2 . "/" . substr($file, 0, (strlen($file) - 4)) . ".js", $fl);
 			foreach ($lang as $key => $value) {
 				if (!isset($lang2[$key])) {
-					print "\t$file missing $key.\n";
+					fwrite($errs, "$file missing $key => \"" . $lang[$key] . "\"\n");
 				}
 			}
+			fwrite($errs, "\n");
 		}
-    }	
+    }
+	fclose($errs);
 }
 
 function writeLang($destfile, $fl) {

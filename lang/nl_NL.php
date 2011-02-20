@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /* Rainwave 3 nl_NL Language File by Metal-Geo */
 
 $lang2 = array(
@@ -128,8 +128,7 @@ $lang2 = array(
 	"pl_genre" => "Cooldown groep: ",
 	"pl_genre2" => ".",
 	"pl_genres" => "Cooldown groepen: ",
-	"pl_genres2_normal" => ".",
-	"pl_genres2_more" => "...",
+	"pl_genres2" => ".",
 	
 	/* Preferences */
 	
@@ -165,6 +164,7 @@ $lang2 = array(
 	"customsoftware" => "Custom 'Orpheus' software",
 	"donationinformation" => "Donatie lijst en informatie.",
 	"apiinformation" => "API documentatie.",
+	"rainwave3version" => "Rainwave 3 Versie",
 	
 	/* Help */
 	
@@ -178,7 +178,7 @@ $lang2 = array(
 	"clickonsongtovote" => "Klik op een nummer om te stemmen",
 	"clickonsongtovote_p" => "Wanneer u meeluistert, klik op een nummer.|br|Het nummer met de meeste stemmen wordt als volgende gespeeld.",
 	"tunein" => "Luister mee",
-	//"tunein_p" => "Gebruik de ingebouwde Flash player om mee te luisteren.|br|U kunt ook een M3U downloading door op één van de icoontjes te klikken.",
+	"tunein_p" => "Download de M3U en gebruik uw media speler om te luisteren.|br|VLC, Winamp, Foobar2000 of FStream (Mac) aanbevolen.",
 	"login" => "Login of Registreer",
 	"login_p" => "Log alstublieft in.",
 	"ratecurrentsong" => "Beoordelen",
@@ -273,6 +273,7 @@ $lang2 = array(
 	"password" => "Wachtwoord",
 	"autologin" => "Auto-Login",
 	"compatplayers" => "Ondersteunde Spelers:",
+	"players" => "Ondersteunde spelers zijn VLC, Winamp, Foobar2000 en FStream (Mac/iPhone).|br|Windows Media Player en iTunes worden helaas niet ondersteund.",
 	"electionresults" => "Electie Resultaten",
 	"chat" => "Chat",
 	"playing" => "◼ Stop Afspeling",
@@ -281,15 +282,14 @@ $lang2 = array(
 	"m3uhijack" => "|plugin| probeert de M3U bestand over te nemen. Klik alstublieft met uw rechter muisknop en kies 'Opslaan Als.''",
 	"menu_morestations" => "Meer ▼",
 	"from" => "van |username|",
-	"translators" => "Vertalers",
-	"waitingforstatus" => "Wachten op Status",
 	
 	/* Words for pluralization */
 
 	"person" => "persoon",
 	"person_p" => "gebruikers",
 	"Vote" => "Stem",
-	"Vote_p" => "Stemmen"
+	"Vote_p" => "Stemmen",
+	"translators" => "Vertalers",
 
 );
 ?>
