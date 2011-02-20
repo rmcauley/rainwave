@@ -410,7 +410,7 @@ function TimelineSkeleton(json, container, parent) {
 		that.clockdisplay = true;
 		that.clockid = -1;
 		if (that.p.sched_used == 0) {
-			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -5);
+			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -2);
 		}
 		that.recalculateHeight();
 	};
@@ -488,7 +488,7 @@ function TimelineElection(json, container, parent) {
 		that.clockdisplay = true;
 		that.clockid = -1;
 		if (that.p.sched_used == 0) {
-			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -5);
+			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -2);
 		}
 		that.recalculateHeight();
 	};
@@ -660,7 +660,7 @@ function TimelinePlaylist(json, container, parent) {
 		that.clockdisplay = true;
 		that.clockid = -1;
 		if (that.p.sched_used == 0) {
-			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -5);
+			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -2);
 		}
 		that.recalculateHeight();
 	};
@@ -695,7 +695,7 @@ function TimelineOneShot(json, container, parent) {
 		that.clockdisplay = true;
 		that.clockid = -1;
 		if (that.p.sched_used == 0) {
-			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -5);
+			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -2);
 		}
 		that.recalculateHeight();
 	};

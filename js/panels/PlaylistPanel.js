@@ -274,22 +274,38 @@ panels.PlaylistPanel = {
 			
 			var dosearch = false;
 			// down arrow
-			if ((code == 40) && (albumsort[keynavpos + 1])) {
-				bubble = false;
-				if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
+			if (code == 40) {
+				var lastkeypos = keynavpos;
 				keynavpos++;
-				that.scrollToAlbum(albums[albumsort[keynavpos]]);
-				that.setRowClass(albums[albumsort[keynavpos]], true);
+				while (albums[albumsort[keynavpos]] && albums[albumsort[keynavpos]].hidden) keynavpos++;
+				if (!albums[albumsort[keynavpos]]) keynavpos--;
+				if (lastkeypos != keynavpos) {
+					bubble = false;
+					if (lastkeypos >= 0) that.setRowClass(albums[albumsort[lastkeypos]], false);
+					that.scrollToAlbum(albums[albumsort[keynavpos]]);
+					that.setRowClass(albums[albumsort[keynavpos]], true);
+				}
+				else {
+					keynavpos = lastkeypos;
+				}
 				if (inlinetimer) resettimer = true;
 				resetkeytimer = true;
 			}
 			// up arrow
 			else if ((code == 38) && (albumsort.length > 0) && (keynavpos > 0)) {
-				bubble = false;
-				if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
+				var lastkeypos = keynavpos;
 				keynavpos--;
-				that.scrollToAlbum(albums[albumsort[keynavpos]]);
-				that.setRowClass(albums[albumsort[keynavpos]], true);
+				while (albums[albumsort[keynavpos]] && albums[albumsort[keynavpos]].hidden) keynavpos--;
+				if (!albums[albumsort[keynavpos]]) keynavpos++;
+				if (lastkeypos != keynavpos) {
+					bubble = false;
+					if (lastkeypos >= 0) that.setRowClass(albums[albumsort[lastkeypos]], false);
+					that.scrollToAlbum(albums[albumsort[keynavpos]]);
+					that.setRowClass(albums[albumsort[keynavpos]], true);
+				}
+				else {
+					keynavpos = lastkeypos;
+				}
 				if (inlinetimer) resettimer = true;
 				resetkeytimer = true;
 			}
@@ -368,7 +384,7 @@ panels.PlaylistPanel = {
 			
 			// remove all albums that no longer match the search
 			for (i = 0; i < albumsort.length; i++) {
-				if (!albums[albumsort[i]].hidden && albums[albumsort[i]].album_name.toLowerCase().indexOf(text) != 0) {
+				if (!albums[albumsort[i]].hidden && albums[albumsort[i]].album_name.toLowerCase().indexOf(text) == -1) {
 					albums[albumsort[i]].hidden = true;
 					that.hideChild(albums[albumsort[i]]);
 					searchremoved.push(albumsort[i]);
@@ -380,7 +396,7 @@ panels.PlaylistPanel = {
 			that.drawSearchString(searchstring);
 			text = text.toLowerCase();
 			for (var i in searchremoved) {
-				if (albums[searchremoved[i]].album_name.toLowerCase().indexOf(text) == 0) {
+				if (albums[searchremoved[i]].album_name.toLowerCase().indexOf(text) > -1) {
 					that.unhideChild(albums[searchremoved[i]]);
 					albums[searchremoved[i]].hidden = false;
 				}
