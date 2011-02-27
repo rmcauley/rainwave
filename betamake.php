@@ -9,6 +9,9 @@ if (isset($_SERVER['argv'][1])) {
 }
 
 $dest = "/var/www/rainwave.cc/beta/";
+if (gethostname() == "substream") {
+	$dest = "/home/rmcauley/r3/beta/";
+}
 $bnum = getBuildNumber();
 $lyredir = "/home/rmcauley/lyre/";
 

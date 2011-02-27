@@ -76,7 +76,7 @@ function drawAboutScreen(div) {
 	html += "<tr><td style='padding-top: 1em;'>" + _l("poweredby") + ":</td><td style='padding-top: 1em;'>" + _l("customsoftware") + ", <a href='http://icecast.org' target='_blank' onclick='return false;'>Icecast<img src='images/new_window_icon.png' alt='(*)' /></a>, <a href='http://savonet.sourceforge.net' target='_blank' onclick='return false;'>Liquidsoap<img src='images/new_window_icon.png' alt='(*)' /></a></td></tr>";
 	tbl.innerHTML = html;
 	div.appendChild(tbl);
-	var a1 = createEl("a", { "href": "/donations.php", "textContent": _l("donationinformation"), "class": "help_paragraph", "style": "margin-top: 1em; display: block", "target": "_blank", "onclick": "return false;" });
+	var a1 = createEl("a", { "href": "/donations.php", "textContent": _l("donationinformation"), "class": "help_paragraph", "style": "margin-top: 1em; display: block", "target": "_blank" });
 	a1.appendChild(createEl("img", { "src": "images/new_window_icon.png", "alt": "->" }));
 	div.appendChild(a1);
 	//var a2 = createEl("a", { "href": "/api", "textContent": _l("apiinformation"), "class": "help_paragraph", "style": "margin-top: 1em; display: block", "target": "_blank", "onclick": "return false;" });

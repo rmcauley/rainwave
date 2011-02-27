@@ -1,5 +1,5 @@
 <?php
-// Rainwave 3 fi_FI v2 Language File by quarterlife
+// Rainwave 3 fi_FI v3 Language File by quarterlife
 
 $lang2 = array(
 	// Panel Names
@@ -22,9 +22,9 @@ $lang2 = array(
 	"log_0" => "Debug",
 	
 	// Edi Codes
-	"log_1" => "Asematunnusta ei välitetty ohjelmointirajapinnalle.",
-	"log_2" => "Tällä asemalla ei juuri nyt ole lähetystä.",
-	"log_3" => "You used |lockedto| in the last few minutes, you must wait to use |currentlyon|.",
+	"log_1" => "Asematunnusta ei välitetty API:lle.",
+	"log_2" => "Tällä asemalla ei juuri nyt ole lähetystä teknisten vaikeuksien vuoksi.",
+	"log_3" => "Ole hyvä ja odota käyttääksesi |currentlyon|.",
 	
 	// HTTP Codes
 	"log_200" => "HTTP OK",
@@ -90,7 +90,7 @@ $lang2 = array(
 	"log_7003" => "Asiakasvirhe arvostelua lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
 	"log_7004" => "Asiakasvirhe arvostelua lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
 	"log_7005" => "Asiakasvirhe arvostelua lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
-	"log_7006" => "You must have been recently tuned in to that song to rate it.",
+	"log_7006" => "Sinun täytyy olla kuunnellut kyseistä kappaletta arvostellaksesi sen.",
 	"log_7007" => "Sinun täytyy odottaa arvostellaksesi asemavaihdon yhteydessä.",
 	
 	// Request Re-order Results
@@ -101,8 +101,8 @@ $lang2 = array(
 	
 	// Login Results
 	"log_9000" => "Virheellinen käyttäjänimi tai salasana.",
-	"log_9001" => "Liian monta sisäänkirjautumisyritystä. Ole hyvä ja mene keskustelufoorumille.",
-	"log_9002" => "Sisäänkirjautumisvirhe.  Ole hyvä, ja käytä keskutelufoorumia.",
+	"log_9001" => "Liian monta sisäänkirjautumisyritystä. Ole hyvä ja mene keskustelufoorumeille.",
+	"log_9002" => "Sisäänkirjautumisvirhe.  Ole hyvä, ja käytä keskutelufoorumeita.",
 	
 	// 10000 is used by error control for news
 	
@@ -117,19 +117,22 @@ $lang2 = array(
 	"suffix_7" => "th",
 	"suffix_8" => "th",
 	"suffix_9" => "th",
+	"suffix_11" => "th",
+	"suffix_12" => "th",
+	"suffix_13" => "th",
 	
 	/* Playlist Sentences */
 	
 	"pl_oncooldown" => "Jäähyllä |time| ajan.",
-	"pl_ranks" => "Sijalla |rank|.",
+	"pl_ranks" => "Arvosteltu |rating|, sijalla |rank|.",
 	"pl_favourited" => "|count| |P:count,person| on asettanut tämän suosikikseen.",
-	"pl_wins" => "Voittanut |percent|% äänestyksistä.",
+	"pl_wins" => "Voittaa |percent|% äänestyksistä, joissa mukana.",
 	"pl_requested" => "Toivottu |count| kertaa, sijalla |rank|.",
 	"pl_genre" => "Jäähyryhmä: ",
 	"pl_genre2" => ".",
 	"pl_genres" => "Jäähyryhmät: ",
 	"pl_genres2_normal" => ".",
-	"pl_genres2_more" => "...",
+	"pl_genres2_more" => " & muita.",
 	
 	/* Preferences */
 	
@@ -145,32 +148,33 @@ $lang2 = array(
 	"pref_edi_language" => "Kieli",
 	"pref_edi_theme" => "Ulkoasu",
 	"pref_fx" => "Tehosteet",
-	"pref_fx_fps" => "Animaatioiden kehysnopeus (fps)",
+	"pref_fx_fps" => "Animaatioiden kehysnopeus",
 	"pref_fx_enabled" => "Animointi päällä",
 	"pref_mpi_showlog" => "Näytä lokipaneeli",
 	"pref_requests" => "Toiveet",
-	"pref_requests_technicalhint" => "Technical Tab Title",
+	"pref_requests_technicalhint" => "Tekninen välilehden otsikko",
 	"pref_timeline_highlightrequests" => "Korosta toiveet",
 	
 	/* About */
 	
-	"creator" => "Tekijä",
+	"creator" => "Luoja",
 	"rainwavemanagers" => "Rainwaven henkilökunta",
 	"ocrmanagers" => "OCR Radion henkilökunta",
 	"mixwavemanagers" => "Mixwaven henkilökunta",
 	"jfinalfunkjob" => "Matematiikan ihmelapsi",
 	"relayadmins" => "Välityspalvelinten lahjoittajat",
 	"specialthanks" => "Kiitokset",
-	"poweredby" => "Powered By",
-	"customsoftware" => "Custom 'Orpheus' software",
+	"poweredby" => "Käytetty tekniikka",
+	"customsoftware" => "Omatekoinen 'Orpheus' ohjelma",
 	"donationinformation" => "Lista lahjoituksista ja lahjoitustietoa.",
 	"apiinformation" => "Ohjelmointirajapinnan dokumentaatio.",
+	"translators" => "Kääntäjät",
 	
 	/* Help */
 	
-	"helpstart" => "Aloita ▶ ",
-	"helpnext" => "Seuraava ▶ ",
-	"helplast" => "Sulje ▶ ",
+	"helpstart" => "Aloita ? ",
+	"helpnext" => "Seuraava ? ",
+	"helplast" => "Sulje ? ",
 	"about" => "Yleistä / Lahjoitukset",
 	"about_p" => "Henkilökunta, käytetty tekniikka ja lahjoitustietoa.",
 	"voting" => "Äänestykset",
@@ -178,7 +182,7 @@ $lang2 = array(
 	"clickonsongtovote" => "Napsauta kappaletta äänestääksesi",
 	"clickonsongtovote_p" => "Kuunnellessasi asemaa, napsauta kappaletta.|br|Eniten ääniä saanut kappale soitetaan seuraavaksi.",
 	"tunein" => "Kuuntele",
-	//"tunein_p" => "Käytä selaimen sisäistä Flash-soitinta kuunnellaksesi asemaa.|br|Voit myös imuroida M3U-soittolistatiedoston napsauttamalla musiikkisoittimesi kuvaketta.",
+	"tunein_p" => "Imuroi M3U-soittolista ja käytä mediasoitintasi kuuntelemiseen.|br|VLC, Winamp, Foobar2000 ja fstream (Mac) ovat suositeltuja.",
 	"login" => "Kirjaudu sisään tai rekisteröidy",
 	"login_p" => "Ole hyvä ja kirjaudu sisään.",
 	"ratecurrentsong" => "Arvostelut",
@@ -198,7 +202,9 @@ $lang2 = array(
 	"managingrequests" => "Toiveiden raahaus ja pudotus",
 	"managingrequests_p" => "Raahaa ja pudota muuttaaksesi toiveidesi järjestystä, tai napsauta X:ää poistaaksesi yhden niistä.",
 	"timetorequest" => "Kappaletoiveen tila",
-	"timetorequest_p" => "Toiveesi tila näytetään tässä.|br|Jos se näyttää \"Umpeutumassa\" tai \"Jäähyllä\", sinun kannattaa vaihtaa ensimmäistä toivettasi.",
+	"timetorequest_p" => "Toiveesi tila näytetään tässä.|br|Jos se näyttää \"umpeutumassa!\" tai \"jäähyllä\", sinun kannattaa vaihtaa ensimmäistä toivettasi.",
+	"rainwave3version" => "Rainwave 3 -versio",
+	"revision" => "Rev",
 	
 	/* Schedule Panel */
 	
@@ -240,12 +246,14 @@ $lang2 = array(
 	"reqoncooldown" => " (jäähyllä)",
 	"reqempty" => " (tyhjä)",
 	"reqwrongstation" => " (väärä asema)",
-	"reqtechtitlefull" => " (|station||S:position| with |requestcount|)",
-	"reqtechtitlesimple" => " (|requestcount|)",
+	"reqtechtitlefull" => " (|station|sijalla |position|, |requestcount| toivetta)",
+	"reqtechtitlesimple" => " (|station||requestcount|)",
+	"reqexpiresin" => " (paikka jonossa umpeutuu ajassa |expiretime|)",
+	"reqexpiresnext" => " (paikka jonossa umpeutuu seuraavan toiveen jälkeen)",
 	
 	/* Others */
 	"nowplaying" => "Nyt soi",
-	"requestedby" => "Toivoja: |requester|.",
+	"requestedby" => "|requester| toivoi tätä",
 	"oncooldownfor" => "Jäähyllä |cooldown| ajan.",
 	"conflictedwith" => "Oli ristiriidassa toiveen kanssa, jonka teki |requester|.",
 	"conflictswith" => "Ristiriidassa toiveen kanssa, jonka teki |requester|.",
@@ -256,15 +264,17 @@ $lang2 = array(
 	"submittingvote" => "Lähetetään ääntä...",
 	"voted" => "Äänestetty",
 	"selectstation" => "Valitse asema",
-	"tunedin" => "Tuned In",
-	"tunedout" => "Tuned Out",
-	"play" => "▶ Soita selaimessa",
+	"tunedin" => "Kuuntelet asemaa",
+	"tunedout" => "Et kuuntele asemaa",
+	"play" => "? Soita selaimessa",
+	"downloadm3u" => "? Lataa M3U",
+	"players" => "Tuetut soittimet ovat VLC, Winamp, Foobar2000 ja fstream (Mac/iPhone).|br|Windows Media Player ja iTunes eivät toimi.",
 	"help" => "Apua",
-	"forums" => "Foorumi",
+	"forums" => "Foorumit",
 	"liveshow" => "Suora lähetys",
 	"adset" => "Mainos",
-	"onetimeplay" => "One-Time Play",
-	"deleteonetime" => "Delete One-Time Play",
+	"onetimeplay" => "Yhden kerran soitto",
+	"deleteonetime" => "Poista Yhden kerran soitto",
 	"currentdj" => "dj |username|",
 	"login" => "Kirjaudu sisään",
 	"register" => "Rekisteröidy",
@@ -274,12 +284,13 @@ $lang2 = array(
 	"compatplayers" => "Tuetut soittimet:",
 	"electionresults" => "Äänestyksen tulokset",
 	"chat" => "Chat",
-	"playing" => "◼ Pysäytä soitto",
+	"playing" => "? Pysäytä soitto",
 	"loading" => "Ladataan",
 	"searching" => "Etsitään: ",
 	"m3uhijack" => "|plugin| yrittää kaapata M3U-soittolistan latauksen.  Ole hyvä ja napsauta oikealla hiiren painikkeella ja valitse 'Tallenna nimellä.'",
-	"menu_morestations" => "Lisää ▼",
+	"menu_morestations" => "Lisää ?",
 	"from" => "käyttäjältä |username|",
+	"waitingforstatus" => "Odottaa tietoja",
 	
 	/* Words for pluralization */
 

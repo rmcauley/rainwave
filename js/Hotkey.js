@@ -3,7 +3,6 @@ function HotkeyControl() {
 	var maxid = 0;
 	
 	var that = {};
-	var nonext = false;
 
 	that.addCallback = function(object, method, priority) {
 		var newcb = { "object": object, "method": method, "id": maxid };
@@ -39,10 +38,6 @@ function HotkeyControl() {
 		el.addEventListener('keypress', that.stopBubbling, true);
 	}
 	
-	that.stopNextHotKey = function() {
-		nonext = true;
-	};
-	
 	that.stopBubbling = function(e) {
 		e.cancelBubble = true;
 		e.returnValue = false;
@@ -52,9 +47,9 @@ function HotkeyControl() {
 	that.keyPress = function(evt) {
 		// one more from Quirksmode
 		var targ;
-		if (!e) var e = window.event;
-		if (e.target) targ = e.target;
-		else if (e.srcElement) targ = e.srcElement;
+		if (!evt) evt = window.event;
+		if (evt.target) targ = evt.target;
+		else if (evt.srcElement) targ = evt.srcElement;
 		if (targ.nodeType == 3) // defeat Safari bug
 		targ = targ.parentNode;
 		if (targ.tagName == "input") return true;

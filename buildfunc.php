@@ -53,15 +53,17 @@ function copyStatic($dest, $bnum) {
 function buildLanguages($dest, $bnum) {
 	print "Building languages.\n";
 	require("lang/en_CA.php");
+	copyFile("lang/en_CA.php", "en_CA.php.txt", "/home/rmcauley/public_html/lang/");
 	$dest2 = $dest . "lang_r" . $bnum;
 	mkdir($dest2) or die("Can't make destination language directory.");
 	writeLang($dest2 . "/en_CA.js", $lang);
 	$dir = opendir("lang");
-	$errs = fopen("/home/rmcauley/public_html/lang_errors.txt", "w");
+	$errs = fopen("/home/rmcauley/public_html/lang/1_STATUS.txt", "w");
 	while (false !== ($file = readdir($dir))) {
         if (preg_match("/.php$/", $file) && ($file != "en_CA.php")) {
 			$lang2 = array();
 			require("lang/" . $file);
+			copyFile("lang/" . $file, $file . ".txt", "/home/rmcauley/public_html/lang/");
 			$fl = array_merge($lang, $lang2);
 			writeLang($dest2 . "/" . substr($file, 0, (strlen($file) - 4)) . ".js", $fl);
 			foreach ($lang as $key => $value) {

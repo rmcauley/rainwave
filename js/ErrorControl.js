@@ -43,8 +43,17 @@ function ErrorControl() {
 	}
 	
 	that.lyreError = function(json) {
-		if (json.code && (json.code == 2)) that.doError(json.code, true);
-		else if (json.code) that.doError(json.code);
+		if (json.code) {
+			var perm = false;
+			var text = false;
+			if (json.code == 2) perm = true;
+			else if (json.code == 403) {
+				if (user.p.user_id == 1) text = _l("log_403_anon");
+				else text = _l("log_403_reg");
+				perm = true;
+			}
+			that.doError(json.code, perm, false, text);
+		}
 	};
 	
 	that.doError = function(code, permanent, overrideclass, overridetext, overridetime) {

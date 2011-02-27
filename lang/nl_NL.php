@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /* Rainwave 3 nl_NL Language File by Metal-Geo */
 
 $lang2 = array(
@@ -117,6 +117,9 @@ $lang2 = array(
 	"suffix_7" => "de",
 	"suffix_8" => "de",
 	"suffix_9" => "de",
+	"suffix_11" => "de",
+	"suffix_12" => "de",
+	"suffix_13" => "de",
 	
 	/* Playlist Sentences */
 	
@@ -290,6 +293,14 @@ $lang2 = array(
 	"Vote" => "Stem",
 	"Vote_p" => "Stemmen",
 	"translators" => "Vertalers",
+	
+	"pl_genres2_normal" => ".",
+	"pl_genres2_more" => " & anderen.",
+	"revision" => "Versie",
+	"reqexpiresin" => " (plaats in rij verloopt na |expiretime|)",
+	"reqexpiresnext" => " (plaats in rij verloopt na volgend verzoek)",
+	"downloadm3u" => "▶ Download M3U",
+	"waitingforstatus" => "Wachten op status",
 
 );
 ?>
