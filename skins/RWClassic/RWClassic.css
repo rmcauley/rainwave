@@ -412,11 +412,38 @@ td.pl_ad_albumdetailtd {
 	padding-left: 5px;
 }
 
+div.requestspanel_constrict {
+	max-width: 60em;
+}
+
+div.requestlist_header, div.allrequests_header {
+	font-weight: bold;
+	text-decoration: underline;
+	margin-bottom: .5em;
+	margin-top: .5em;
+}
+
+div.allrequests {
+	float: left;
+	overflow: auto;
+}
+
+ol.allrequests_list {
+	margin-top: 0em;
+}
+
+div.requestlist {
+	float: left;
+	margin-right: 3em;
+	width: 27em;
+	margin-bottom: 2em;
+}
+
 div.request {
 	margin: .2em;
 	border: 1px solid #333333;
 	width: 100%;
-	max-width: 35em;
+	max-width: 27em;
 	padding: .2em;
 	position: absolute;
 	cursor: n-resize;

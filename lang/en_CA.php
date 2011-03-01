@@ -217,6 +217,9 @@ $lang = array(
 	"timetorequest_p" => "Your request status is indicated here.|br|If it indicates \"Expiring\" or \"Cooldown\", you should change your #1 request.",
 	"rainwave3version" => "Rainwave 3 Version",
 	"revision" => "Rev",
+	"crashed" => "Rainwave has crashed.",
+	"submiterror" => "Please copy and paste the contents below and post them on the forums to help in debugging:",
+	"pleaserefresh" => "Refresh the page to use Rainwave again.",
 	
 	/* Schedule Panel */
 	
@@ -262,6 +265,10 @@ $lang = array(
 	"reqtechtitlesimple" => " (|station||requestcount|)",
 	"reqexpiresin" => " (place in line expires in |expiretime|)",
 	"reqexpiresnext" => " (place in list expires next request)",
+	"reqnorequests" => "No Requests Submitted",
+	"reqmyrequests" => "My Requests",
+	"reqrequestline" => "Request Line",
+	"reqrequestlinelong" => "First |showing| of |linesize| In Line",
 	
 	/* Others */
 	"nowplaying" => "Now Playing",

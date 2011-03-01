@@ -130,7 +130,10 @@ panels.MenuPanel = {
 		that.openChat = function() {
 			var chaturl = "http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&server=irc.synirc.net&channel=%23rainwave&noServerNotices=true&noServerMotd=true&autoConnect=true";
 			if (user.p.user_id > 1) {
-				chaturl += "&nick=" + user.p.username;
+				var re = new RegExp("[^0-9A-Za-z]", "g");
+				var un = user.p.username;
+				un = un.replace(re, "");
+				chaturl += "&nick=" + un;
 			}
 			var popupWin = window.open(chaturl, 'rainwave_mibbit_window', 'width=750, height=550')
 		};

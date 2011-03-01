@@ -88,10 +88,13 @@ function init() {
 	body = document.getElementById("body");
 	body.appendChild(fittextdiv);
 	ajax = LyreAJAX();
+	if (document.location.href.indexOf("beta") == -1) {
+		ajax.catcherrors = true;
+		ajax.jsErrorCallback = errorcontrol.jsError;
+	}
 	ajax.setStationID(PRELOADED_SID);
 	ajax.setUserID(PRELOADED_USER_ID);
 	ajax.setKey(PRELOADED_APIKEY);
-
 	ajax.errorCallback = errorcontrol.doError;
 
 	hotkey = HotkeyControl();
@@ -131,12 +134,13 @@ function init() {
 	}
 	ajax.sync_start(initpiggyback);
 	
+	prefs.addPref("help", { name: "visited", defaultvalue: false, hidden: true });
+	
 	if (!prefs || !prefs.p || !prefs.p.help || !prefs.p.help.visited || !prefs.p.help.visited.value) {
 		help.startTutorial("welcome");
 		prefs.changePref("help", "visited", true);
+		prefs.savePrefs();
 	}
-	
-	prefs.addPref("help", { name: "visited", defaultvalue: false, hidden: true });
 }
 
 window.addEventListener('load', init, true);

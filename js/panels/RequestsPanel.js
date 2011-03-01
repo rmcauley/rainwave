@@ -14,11 +14,13 @@ panels.RequestsPanel = {
 		var line = AllRequestList();
 		
 		that.container = container;
+		that.el = createEl("div", { "class": "requestspanel_constrict" }, container);
 		
 		that.init = function() {
 			container.style.overflow = "auto";
-			container.appendChild(line.el);
-			container.appendChild(list.el);
+			
+			that.el.appendChild(list.el);
+			that.el.appendChild(line.div);
 			
 			ajax.addCallback(that, list.update, "requests_user");
 			ajax.addCallback(that, line.update, "requests_all");
@@ -41,39 +43,28 @@ panels.RequestsPanel = {
 
 var AllRequestList = function() {
 	var that = {};
-	that.el = document.createElement("ol");
-	that.el.setAttribute("class", "allrequestlist");
-	var line = [];
+	that.div = createEl("div", { "class": "allrequests" });
+	that.header = createEl("div", { "class": "allrequests_header" }, that.div);
+	that.el = createEl("ol", { "class": "allrequests_list" }, that.div);
 	
 	that.update = function(json) {
 		var i = 0;
-		var j = 0;
-		var found = false;
-		var newreq = false;
+		var newli;
+		while (that.el.hasChildNodes()) that.el.removeChild(that.el.firstChild);
 		for (i = 0; i < json.length; i++) {
-			found = false;
-			for (j = 0; j < line.length; j++) {
-				if (json[i].request_id == line[j].p.request_id) {
-					that.updateLi(line[j], json[i]);
-					found = true;
-				}
-			}
-			if (!found) {
-				var newli = that.makeLi(json[i]);
-				that.el.appendChild(newli.el);
-				line.push(newli);
-			}
+			newli = that.makeLi(json[i]);
+			that.el.appendChild(newli.el);
 		}
 		
-		for (j = 0; j < line.length; j++) {
-			found = false;
-			for (i = 0; i < json.length; i++) {
-				if (json[i].request_id == line[j].p.request_id) found = true;
-			}
-			if (!found) {
-				that.removeLi(line[j]);
-				line.splice(j, 1);
-			}
+		if (user.p.radio_request_position > 10) {
+			createEl("li", { "value": user.p.radio_request_position, "textContent": user.p.username }, that.el);
+		}
+		
+		if ((json.length > 0) && json[0].request_linelength && (json[0].request_linelength > 10)) {
+			_l("reqrequestlinelong", { "showing": 10, "linesize": json[0].request_linelength }, that.header);
+		}
+		else {
+			_l("reqrequestline", false, that.header);
 		}
 	};
 	
@@ -101,7 +92,7 @@ var AllRequestList = function() {
 			li.el.appendChild(li.expires_on);
 		}
 		if ((expiry > 0) && (li.expires_on)) {
-			if (expiry > clock.now) li.expires_on.textContent = _l("reqexpiresin", { "expiretime": formatHumanTime(expiry - clock.now, true, true) });
+			if ((expiry - clock.now) > 60) li.expires_on.textContent = _l("reqexpiresin", { "expiretime": formatHumanTime(expiry - clock.now, true, true) });
 			else li.expires_on.textContent = _l("reqexpiresnext");
 		}
 		else if (li.expires_on) {
@@ -110,17 +101,13 @@ var AllRequestList = function() {
 		}
 	};
 	
-	that.removeLi = function(li) {
-		that.el.removeChild(li.el);
-	};
-	
 	return that;
 };
 
 var RequestList = function(sortable) {
 	var that = {};
-	that.el = document.createElement("div");
-	that.el.setAttribute("class", "requestlist");
+	that.el = createEl("div", { "class": "requestlist" });
+	that.header = createEl("div", { "class": "requestlist_header" }, that.el);
 	var maxy = 0;
 	var dragging = false;
 	var draggingid = -1;
@@ -134,8 +121,16 @@ var RequestList = function(sortable) {
 	var origdragidx = 0;
 
 	that.update = function(json) {
-		that.stopDrag();
+		that.stopDrag(false, true);
 		that.p = json;
+		
+		if (json.length == 0) {
+			_l("reqnorequests", false, that.header);
+		}
+		else {
+			_l("reqmyrequests", false, that.header);
+		}
+		
 		var i = 0;
 		var j = 0;
 		var found = false;
@@ -158,7 +153,7 @@ var RequestList = function(sortable) {
 				newreq.fx_opacity.set(0);
 				if (sortable) {
 					newreq.el.requestq_id = json[i].requestq_id;
-					newreq.el.addEventListener('mousedown', that.startDrag, true);
+					newreq.el.addEventListener('mousedown', that.startDrag, false);
 				}
 				reqs.push(newreq);
 				that.el.appendChild(newreq.el);
@@ -224,6 +219,7 @@ var RequestList = function(sortable) {
 				runz += 1;
 			}
 		}
+		runy += that.header.offsetHeight;
 		that.el.style.height = runy + "px";
 		if (!nopurge) setTimeout(that.purgeRequests, 250);
 	};
@@ -283,21 +279,20 @@ var RequestList = function(sortable) {
 		}
 	};
 	
-	that.stopDrag = function(e) {
+	that.stopDrag = function(e, hardstop) {
 		if (!dragging) return;
 		document.getElementById("body").removeEventListener("mousemove", that.runDrag, true);
 		document.getElementById("body").removeEventListener("mouseup", that.stopDrag, true);
 		dragging = false;
 		dragel = false;
 		draggingid = -1;
-		if (origdragidx == dragidx) {
-			dragidx = -1;
-			return;
-		}
 		dragidx = -1;
 		var params = "";
+		if (hardstop) return;
 		reqs.sort(that.sortRequestArray);
 		that.positionReqs();
+		if (origdragidx == dragidx) return;
+		
 		for (var i = 0; i < reqs.length; i++) {
 			if (i > 0) params += ",";
 			params += reqs[i].p.requestq_id;
@@ -359,7 +354,7 @@ var Request = {
 		that.song_title_text.setAttribute("class", "request_song_title_text");
 		that.song_title_text.textContent = json.song_title;
 		Song.linkify(json.song_id, that.song_title_text);
-		that.song_title_text.addEventListener("click", hotkey.stopBubbling, true);
+		//that.song_title_text.addEventListener("mousedown", hotkey.stopBubbling, true);
 		that.song_title.appendChild(that.song_title_text);
 		
 		that.el.appendChild(that.song_title);
@@ -376,7 +371,7 @@ var Request = {
 		that.album_name_text.textContent = json.album_name;
 		that.album_name.appendChild(that.album_name_text);
 		Album.linkify(json.album_id, that.album_name_text);
-		that.album_name.addEventListener("click", hotkey.stopBubbling, true);
+		that.album_name.addEventListener("mousedown", hotkey.stopBubbling, true);
 		that.el.appendChild(that.album_name);
 		
 		that.update = function(json) {

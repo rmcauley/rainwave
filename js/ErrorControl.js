@@ -32,15 +32,13 @@ function ErrorControl() {
 		ajax.addCallback(that, that.genericError, "force_candidate_delete_result");
 		ajax.addCallback(that, that.loginresult, "login_result")
 		ajax.addCallback(that, that.genericError, "admin_playlist_refresh_result");
-		//ajax.addCallback(that, that.newsCallback, "news");
-		//user.addCallback(that, that.statRestrict, "radio_statrestricted");
 	};
 	
 	that.genericError = function(json) {
 		if ((typeof(json.code) != "undefined") && json.text) {
 			that.doError(json.code, false, false, json.text, 2000);
 		}
-	}
+	};
 	
 	that.lyreError = function(json) {
 		if (json.code) {
@@ -81,7 +79,6 @@ function ErrorControl() {
 			else {
 				var fortime = overridetime ? overridetime: 5000;
 				timers[code] = setTimeout(function() { that.clearError(code); }, fortime);
-				//that.startTracking(code, overridetime);
 			}
 			
 			if (!permanent || (permanent !== true)) {
@@ -184,18 +181,15 @@ function ErrorControl() {
 		}
 	};
 	
-	that.newsCallback = function(json) {
-		if (json.length) {
-			for (var i = 0; i < json.length; i++) {
-				that.doError(10000 + i, 1, false, json[i].topic_title);
-			}
+	that.jsError = function(err) {
+		var el = createEl("div", { "class": "err_div", "style": "z-index: 100000; top: 0px; left: 0px;" }, document.getElementById("body"));
+		createEl("div", { "textContent": _l("crashed"), "style": "padding-bottom: 1em;" }, el);
+		if (err.message && err.name && err.stack) {
+			createEl("div", { "textContent": _l("submiterror"), "style": "padding-bottom: 1em;" }, el);
+			createEl("textarea", { "textContent": err.message + "\n" + err.name + "\n\n" + err.stack, "style": "width: 40em; height: 15em; margin-bottom: 1em;" }, el);
 		}
-	};
-	
-	that.statRestrict = function(restricted) {
-		if (restricted) {
-			that.doError(3, true, _l("log_3", { "lockedto": STATIONS[user.p.radio_active_sid], "currentlyon": STATIONS[user.p.sid] }));
-		}
+		createEl("div", { "textContent": _l("pleaserefresh") }, el);
+		ajax.sync_stop = true;
 	};
 
 	return that;

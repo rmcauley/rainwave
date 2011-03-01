@@ -48,7 +48,7 @@ var Help = function() {
 	that.changeStepPointEl = function(name, pointel) {
 		if (steps[name]) {
 			steps[name].pointel = pointel;
-			if (showingstepname == name) {
+			if (showingstepname === name) {
 				ctutshowing.pointel = pointel;
 				that.removeHighlights();
 				that.drawHighlights(ctutshowing);
@@ -149,6 +149,7 @@ var Help = function() {
 	
 	that.endTutorial = function() {
 		if (!ctutshowing) return;
+		showingstepname = false;
 		ctutshowing.fxOpacity.start(0);
 		ctutstep = 0;
 		ctutshowing = false;
@@ -345,6 +346,7 @@ var Help = function() {
 	};
 	
 	that.drawHighlights = function(container) {
+		if (!container || !container.pointel) return;
 		for (var i = 0; i < container.pointel.length; i++) {
 			var obj = {};
 			obj.el = container.pointel[i];

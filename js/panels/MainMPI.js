@@ -48,7 +48,7 @@ panels.MainMPI = {
 			
 			user.addCallback(that, that.updateRequestPos, "radio_request_position");
 			ajax.addCallback(that, that.updateRequestNum, "requests_user");
-			ajax.addCallback(that, that.updateRequestTitle, "sched_sync");
+			ajax.addCallback(that, that.updateRequestTitle, "requests_user");
 		};
 		
 		that.divSize = function(el) {
@@ -142,7 +142,8 @@ panels.MainMPI = {
 			}
 			else {
 				var str = "";
-				if (total == 0) str = "";
+				if (user.p.radio_request_expiresat) str = _l("reqexpiring");
+				else if (total == 0) str = "";
 				else if (no1requestsid != user.p.sid) str = _l("reqwrongstation");
 				else if (user.p.radio_request_expiresat && (num == 0)) str = _l("reqexpiring");
 				else if ((num == 0) & (total > 0)) str = _l("reqoncooldown");

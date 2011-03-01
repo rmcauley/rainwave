@@ -178,12 +178,18 @@ function EdiLayout(layout, name, parent) {
 				panelel.row = i;
 				panelel.column = j;
 				panelel.setAttribute("style", "position: absolute; top: " + runningy + "px; left:" + runningx + "px; width: " + dispwidth + "px; height: " + dispheight + "px;");
-				that.openpanels[layout[i][j].intitle] = layout[i][j].constructor(parent, panelel);
-				var panelcl = layout[i][j].intitle;
-				panelcl = panelcl.replace(" ", "_");
-				panelel.setAttribute("class", "EdiPanel Panel_" + panelcl);
-				element.appendChild(panelel);
-				that.openpanels[layout[i][j].intitle].init();
+				try {
+					that.openpanels[layout[i][j].intitle] = layout[i][j].constructor(parent, panelel);
+					var panelcl = layout[i][j].intitle;
+					panelcl = panelcl.replace(" ", "_");
+					panelel.setAttribute("class", "EdiPanel Panel_" + panelcl);
+					element.appendChild(panelel);
+					that.openpanels[layout[i][j].intitle].init();
+				}
+				catch (err) {
+					errorcontrol.jsError(err);
+					return;
+				}
 				
 				runningx += cellwidth + borderwidth;
 			}

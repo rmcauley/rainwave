@@ -721,6 +721,12 @@ function TimelineOneShot(json, container, parent) {
 	that.getScheduledLength = function() {
 		return that.p.song_data[0].song_secondslong;
 	};
+	
+	that.showWinner = function() {
+		if (that.showingwinner) return;
+		that.showingwinner = true;
+		that.drawShowWinner();
+	};
 
 	return that;
 };

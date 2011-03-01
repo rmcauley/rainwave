@@ -1,5 +1,11 @@
 <?php
 
+if ((strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 8") !== false) || (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 7") !== false) || (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 6") !== false)) {
+	header("content-type: text/plain");
+	print "Your browser is unsupported.  Please upgrade to IE9, or switch to Firefox or Chrome.";
+	exit(0);
+}
+
 header("content-type: application/xhtml+xml");
 
 require("auth/common.php");
