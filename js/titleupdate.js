@@ -1,4 +1,4 @@
-function TitleUpdate() {
+var titleupdate = function() {
 	var on = false;
 	var clockid = 0;
 	var sv_ready = false;
@@ -25,7 +25,7 @@ function TitleUpdate() {
 	};
 	
 	clockid = clock.addClock(that, that.updateTitle, clock.time(), -5);
-	ajax.addCallback(that, that.ajaxHandle, "sched_current");
+	lyre.addCallback(that.ajaxHandle, "sched_current");
 	
 	return that;
-}
+}();

@@ -6,7 +6,7 @@
  *     onStart: called after a stream begins playing
  *     onStop: called after a stream ends playing
  */
-var Oggpixel = function () {
+var oggpixel = function () {
 	var self = {};
 
 	/**

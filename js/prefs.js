@@ -1,9 +1,4 @@
-/* prefdata must have the following attributes:
-	name
-	type
-*/
-
-function Preferences() {
+var prefs = function() {
 	var newsectioncb = [];
 	var newprefcb = [];
 	var that = {};
@@ -138,4 +133,4 @@ function Preferences() {
 	
 	that.loadPrefs();	
 	return that;
-};
+}();

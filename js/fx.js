@@ -6,7 +6,7 @@ fxOne.set(1);
 fxOne.start(0);
 */
 
-function R3Effects() {
+var fx = function() {
 	var that = {};
 	that.fps = 30;
 	that.enabled = true;
@@ -316,4 +316,4 @@ function R3Effects() {
 	prefs.addPref("fx", { name: "enabled", callback: that.p_enabled, defaultvalue: true, type: "checkbox" });
 	
 	return that;
-}
+}();

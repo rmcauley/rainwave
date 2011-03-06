@@ -1,8 +1,14 @@
 <?php
-i
-f ((strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 8") !== false) || (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 7") !== false) || (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 6") !== false)) {
+
+if ((strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 8") !== false) || (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 7") !== false) || (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 6") !== false)) {
 	header("content-type: text/plain");
-	print "Your browser is unsupported.  Please upgrade to IE9, or switch to Firefox or Chrome.";
+	print "Your browser is unsupported.  Please upgrade to IE9, or switch to Firefox or Chrome.\n";
+	print "Your browser is: " . $_SERVER['HTTP_USER_AGENT'] . "\n\n";
+	print "You can download M3U files by going to:\n";
+	print "http://rw.rainwave.cc/tunein.php for Rainwave\n";
+	print "http://ocr.rainwave.cc/tunein.php for OCR Radio\n";
+	print "http://mix.rainwave.cc/tunein.php for Mixwave\n\n";
+	print "Our forums are accessible to all browsers at http://rainwave.cc/forums";
 	exit(0);
 }
 

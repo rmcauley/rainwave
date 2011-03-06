@@ -1,24 +1,12 @@
-function SVGHelper(workel) {
+var svg = function() {
 	var that = {};
-	that.em = 0;
 	that.capable = false;
-	
-	that.measureEm = function() {
-		var emm = document.createElement('span');
-		emm.setAttribute("style", "position: absolute; left: -400px");
-		emm.textContent = "M";
-		workel.appendChild(emm);
-		that.em = emm.offsetWidth;
-		workel.removeChild(emm);
-	};
 	
 	that.isElSVG = function(el) {
 		if (!that.capable) return false;
 		if (el.namespaceURI.indexOf("svg") > 0) return true;
 		return false;
 	};
-
-	that.measureEm();
 	
 	if (!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1")) {
 		return that;
@@ -123,4 +111,4 @@ function SVGHelper(workel) {
 	that.linkifyText = that.linkify;
 
 	return that;
-}
+}();

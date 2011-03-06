@@ -5,12 +5,10 @@ panels.MainMPI = {
 	width: 0,
 	minwidth: 0,
 	xtype: "max",
-	title: _l("p_MainMPI"),
 	mpi: true,
-	mpikey: "main",
-	intitle: "MainMPI",
+	title: _l("p_MainMPI"),
 	
-	constructor: function(edi, container) {
+	constructor: function(container) {
 		var that = {};
 		var savedpanels = {};	// saved panels that should be open in the MPI
 		var lastpanel = false;
@@ -46,9 +44,9 @@ panels.MainMPI = {
 				that.focusPanel(lastpanel);
 			}
 			
-			user.addCallback(that, that.updateRequestPos, "radio_request_position");
-			ajax.addCallback(that, that.updateRequestNum, "requests_user");
-			ajax.addCallback(that, that.updateRequestTitle, "requests_user");
+			user.addCallback(that.updateRequestPos, "radio_request_position");
+			lyre.addCallback(that.updateRequestNum, "requests_user");
+			lyre.addCallback(that.updateRequestTitle, "requests_user");
 		};
 		
 		that.divSize = function(el) {
@@ -63,37 +61,36 @@ panels.MainMPI = {
 		that.addPanel = function(panelname) {
 			if (!panels[panelname]) return;
 			var panel = panels[panelname];
-			if (typeof(that.tabs.panels[panel.intitle]) != "undefined") {
+			if (typeof(that.tabs.panels[panelname]) != "undefined") {
 				return;
 			}
-			//try {
-				that.tabs.addItem(panel.intitle, panel.title);
-				that.tabs.panels[panel.intitle].focused = false;
-				that.tabs.panels[panel.intitle].el.panelname = panel.intitle;
-				that.tabs.panels[panel.intitle].el.addEventListener('click', that.focusPanelEvent, true);
-				//if (panel.intitle == "PlaylistPanel") help["playlist"] = that.tabs.panels[panel.intitle].el;
-			/*}
+			try {
+				that.tabs.addItem(panelname, panel.title);
+				that.tabs.panels[panelname].focused = false;
+				that.tabs.panels[panelname].el.panelname = panelname;
+				that.tabs.panels[panelname].el.addEventListener('click', that.focusPanelEvent, true);
+			}
 			catch(err) {
+				errorcontrol.jsError(err);
 				return;
-			}*/
+			}
 		};
 		
 		that.initPanel = function(panelname, animate) {
 			var panel = panels[panelname];
-			if (that.panels[panel.intitle]) return;
-			that.panels[panel.intitle] = {};
+			if (that.panels[panelname]) return;
+			that.panels[panelname] = {};
 			var mpi_container = createEl("div", { "style": "z-index: 2; position: absolute;" });
-			var panelcl = panel.intitle;
+			var panelcl = panelname;
 			panelcl = panelcl.replace(" ", "_");
 			mpi_container.className = "EdiPanel Panel_" + panelcl;
-			that.panels[panel.intitle] = panel.constructor(that, mpi_container);
-			that.panels[panel.intitle].container.style.top = "-5000px";
+			that.panels[panelname] = panel.constructor(mpi_container);
+			that.panels[panelname].container.style.top = "-5000px";
 			container.appendChild(mpi_container);
-			that.panels[panel.intitle].init();
-			that.divSize(that.panels[panel.intitle].container);
-			//if (that.panels[panel.intitle].onLoad) that.panels[i].onLoad();
-			that.panels[panel.intitle].title = panels[panel.intitle].title;
-			that.tabs.enableTab(panel.intitle, animate);
+			that.panels[panelname].init();
+			that.divSize(that.panels[panelname].container);
+			that.panels[panelname].title = panels[panelname].title;
+			that.tabs.enableTab(panelname, animate);
 		};
 		
 		that.focusPanelEvent = function(evt) {
@@ -129,7 +126,7 @@ panels.MainMPI = {
 		};
 		
 		that.updateRequestTitle = function() {
-			if (!that.tabs || !that.tabs.panels[panels.RequestsPanel.intitle]) return;
+			if (!that.tabs || !that.tabs.panels["RequestsPanel"]) return;
 			var str = "";
 			if (technicalhint) {
 				var numstring = "";
@@ -154,7 +151,7 @@ panels.MainMPI = {
 				else if (user.p.radio_request_position > 3) str = _l("reqshortwait");
 				else str = _l("reqsoon");
 			}
-			that.changeTitle(panels.RequestsPanel.intitle, panels.RequestsPanel.title + str);
+			that.changeTitle("RequestsPanel", panels.RequestsPanel.title + str);
 		};
 		
 		that.updateRequestPos = function(newpos) {

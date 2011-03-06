@@ -26,6 +26,7 @@ buildSkins($dest, $bnum);
 buildLanguages($dest, $bnum);
 minifyJavascript($dest, $bnum);
 writeParsedFile("root/index.php", $dest . "index.php", $bnum);
+chmod($dest . "auth/common.php", "755");
 
 //makeAPIDirectory($lyredir, $dest, false);
 

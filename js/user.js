@@ -1,4 +1,4 @@
-function UserControl() {
+var user = function() {
 	var callbacks = [];
 	var maxid = 0;
 	
@@ -41,14 +41,14 @@ function UserControl() {
 	that.doCallback = function(key, value) {
 		if (typeof(callbacks[key]) != "undefined") {
 			for (var cb in callbacks[key]) {
-				callbacks[key][cb].func.call(callbacks[key][cb].obj, value);
+				callbacks[key][cb](value);
 			}
 		}
 	};
 
-	that.addCallback = function(object, method, datum) {
+	that.addCallback = function(method, datum) {
 		if (typeof(callbacks[datum]) == "undefined") callbacks[datum] = [];
-		callbacks[datum][maxid] = { obj: object, func: method };
+		callbacks[datum][maxid] = method;
 		maxid++;
 		return maxid - 1;
 	};
@@ -57,10 +57,9 @@ function UserControl() {
 		delete(that.callbacks[datum][id]);
 	};
 	
-	that.addCallback(ajax, ajax.setUserID, "user_id");	
-	that.addCallback(ajax, ajax.setKey, "api_key");
-	// that.addCallback(ajax, ajax.setStationID, "sid");
-	ajax.addCallback(that, that.ajaxHandle, "user");
+	that.addCallback(lyre.setUserID, "user_id");	
+	that.addCallback(lyre.setKey, "api_key");
+	lyre.addCallback(that.ajaxHandle, "user");
 	
 	return that;
-}
+}();

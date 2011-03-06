@@ -1,20 +1,3 @@
-/*@variables {
-	textcolor: #FFFFFF;
-	darktext: #CCCCCC;
-	vdarktext: #777777;
-	primarybkg: #142027;
-	brightbkg: #3f4b52;
-	songborderdark: #355669;
-	songborderbright: #7d94a1;
-	ediborderdark: #000000;
-	ediborderbright: #7d94a1;
-	indicnormal: #244093;
-	indicnormalbright: #3c6dff;
-	indicwarn: #84880c;
-	indicconflict: #84880c;
-	indicrequest: #248293;
-}*/
-
 body {
 	background: #000000;
 	color: #FFFFFF;
@@ -160,6 +143,30 @@ ul.tabs li+li {
 	margin: 0px;
 	padding: 0px;
 	z-index: 1;
+}
+
+.edi_border_vertical {
+	width: 6px;
+	margin-left: 3px;
+	cursor: w-resize;
+	cursor: ew-resize;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	user-select: none;
+}
+
+.edi_border_horizontal {
+	height: 6px;
+	margin-top: 3px;
+	cursor: n-resize;
+	cursor: ns-resize;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	user-select: none;
+}
+
+.edi_border_vertical:hover, .edi_border_horizontal:hover {
+	background: #555555;
 }
 
 fieldset {
@@ -825,6 +832,7 @@ span.rating_text {
 
 table.timeline_table {
 	position: absolute;
+	width: 100%;
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	user-select: none;
@@ -1029,6 +1037,7 @@ div.timeline_vote_swipe {
 
 .Panel_NowPanel {
 	padding-left: 11px;
+	max-width: 550px;
 }
 
 div.nowplaying_indicator_v {

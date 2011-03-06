@@ -1,15 +1,13 @@
-function R3Graph() {
+var graph = function() {
 	if (!svg.capable) return false;
 	var that = {};
 	var gid = 0;
 	
-	that.init = function() {
-		var svgdefs = svg.make( { style: "position: absolute;", "width": 0, "height": 0 } );
-		var defs = svg.makeEl("defs");
-		theme.graphDefs(svgdefs, defs);
-		svgdefs.appendChild(defs);
-		document.getElementById("body").appendChild(svgdefs);
-	};
+	var svgdefs = svg.make( { style: "position: absolute;", "width": 0, "height": 0 } );
+	var defs = svg.makeEl("defs");
+	theme.graphDefs(svgdefs, defs);
+	svgdefs.appendChild(defs);
+	document.getElementById("body").appendChild(svgdefs);
 	
 	that.extend = function(name, func) {
 		that[name] = func;
@@ -53,19 +51,19 @@ function R3Graph() {
 
 		graph.label = function() {
 			if (graph.data.xlabel) {
-				var xlabelx = ((graph.width - (svg.em * 2)) / 2) - (measureText(graph.data.xlabel) / 2) + (svg.em * 2);
-				var xlabel = svg.makeEl("text", { x: xlabelx, y: graph.height - (svg.em * .3), fill: theme.textcolor });
+				var xlabelx = ((graph.width - (UISCALE * 2)) / 2) - (measureText(graph.data.xlabel) / 2) + (UISCALE * 2);
+				var xlabel = svg.makeEl("text", { x: xlabelx, y: graph.height - (UISCALE * .3), fill: theme.textcolor });
 				xlabel.textContent = graph.data.xlabel;
 				graph.g.appendChild(xlabel);
-				graph.xendy -= svg.em;
+				graph.xendy -= UISCALE;
 			}
 			
 			if (graph.data.ylabel) {
-				var ylabely = graph.height - svg.em - measureText(graph.data.ylabel);
-				var ylabel = svg.makeEl("text", { x: 0, y: ylabely + svg.em, fill: theme.textcolor, transform: "rotate(-90, 0, " + ylabely + ")" });
+				var ylabely = graph.height - UISCALE - measureText(graph.data.ylabel);
+				var ylabel = svg.makeEl("text", { x: 0, y: ylabely + UISCALE, fill: theme.textcolor, transform: "rotate(-90, 0, " + ylabely + ")" });
 				ylabel.textContent = graph.data.ylabel;
 				graph.g.appendChild(ylabel);
-				graph.ystartx += svg.em + (svg.em * .3);
+				graph.ystartx += UISCALE + (UISCALE * .3);
 			}
 		};
 		
@@ -97,11 +95,11 @@ function R3Graph() {
 			}
 			if (!graph.data.padx) {
 				if (graph.data.xnonumbers) graph.data.padx = 0;
-				else graph.data.padx = svg.em;
+				else graph.data.padx = UISCALE;
 			}
 			if (!graph.data.pady) {
 				if (graph.data.ynonumbers) graph.data.pady = 0;
-				else graph.data.pady = svg.em;
+				else graph.data.pady = UISCALE;
 			}
 			// by this point, we have the "real" miny/maxy numbers as defined by options or the graph data
 			// it has not been changed in any way
@@ -109,7 +107,7 @@ function R3Graph() {
 			// This next block determines the starting X pixel of the Y legend and the ending (bottom) Y pixel of the X legends
 			if (!graph.data.ynonumbers) graph.ystartx += Math.floor(measureText(graph.data.yprecision ? graph.maxy.toFixed(graph.data.yprecision) : Math.round(graph.maxy)));
 			else graph.ystartx = 1;
-			if (!graph.data.xnonumbers) graph.xendy -= Math.floor(svg.em * 1.5);
+			if (!graph.data.xnonumbers) graph.xendy -= Math.floor(UISCALE * 1.5);
 			else graph.xendy--;
 			
 			// Number of background grid and legend markings
@@ -142,7 +140,7 @@ function R3Graph() {
 			}
 			// Render minimum X value
 			if (((graph.minx !== 0) || (graph.miny !== 0)) && !graph.data.xnonumbers && !graph.data.xnomin) {
-				steptext = svg.makeEl("text", { x: graph.ystartx + 2, y: graph.xendy + svg.em + 2, fill: theme.vdarktext, text_anchor: "middle", style: "font-size: 0.7em" });
+				steptext = svg.makeEl("text", { x: graph.ystartx + 2, y: graph.xendy + UISCALE + 2, fill: theme.vdarktext, text_anchor: "middle", style: "font-size: 0.7em" });
 				//if (graph.maxx >= (keys[0] + 10)) steptext.textContent = keys[0];
 				steptext.textContent = (graph.data.xprecision) ? graph.minx.toFixed(graph.data.xprecision) : Math.floor(graph.minx);
 				graph.scalable.appendChild(steptext);
@@ -151,7 +149,7 @@ function R3Graph() {
 			for (i = stepdeltax + graph.minx; i <= graph.maxx; i += stepdeltax) {
 				runningx += graph.gwidth / numstepsx;
 				if (!graph.data.xnonumbers && (!graph.data.xnumbermod || (i % graph.data.xnumbermod == 0))) {
-					steptext = svg.makeEl("text", { x: runningx, y: graph.xendy + svg.em * 1.2, fill: theme.textcolor, text_anchor: "middle" });
+					steptext = svg.makeEl("text", { x: runningx, y: graph.xendy + UISCALE * 1.2, fill: theme.textcolor, text_anchor: "middle" });
 					steptext.textContent = (graph.data.xprecision) ? i.toFixed(graph.data.xprecision) : Math.floor(i);
 					graph.scalable.appendChild(steptext);
 				}
@@ -162,7 +160,7 @@ function R3Graph() {
 			// Render Y minimum text
 			var runningy = graph.xendy;
 			if (((graph.minx !== 0) || (graph.miny !== 0)) && !graph.data.ynonumbers && !graph.data.ynomin) {
-				var zerotexty = graph.data.xnonumbers ? runningy : runningy + (svg.em * 0.3);
+				var zerotexty = graph.data.xnonumbers ? runningy : runningy + (UISCALE * 0.3);
 				steptext = svg.makeEl("text", { x: graph.ystartx - 2, y: zerotexty, fill: theme.vdarktext, text_anchor: "end", style: "font-size: 0.7em" });
 				if (typeof(graph.data.miny) != "undefined") steptext.textContent = graph.miny;
 				//else if (graph.maxy > (graph.data.raw[keys[0]] + 10)) steptext.textContent = graph.data.raw[keys[0]];
@@ -173,7 +171,7 @@ function R3Graph() {
 			for (i = stepdeltay + graph.miny; i <= graph.maxy; i += stepdeltay) {
 				runningy -= graph.gheight / numstepsy;
 				if (!graph.data.ynonumbers && (!graph.data.ynumbermod || (i % graph.data.ynumbermod == 0))) {
-					steptext = svg.makeEl("text", { x: graph.ystartx, y: runningy + (svg.em * 0.5), fill: theme.textcolor, text_anchor: "end" });
+					steptext = svg.makeEl("text", { x: graph.ystartx, y: runningy + (UISCALE * 0.5), fill: theme.textcolor, text_anchor: "end" });
 					if ((i == graph.maxy) || (graph.maxy < 50)) steptext.textContent = (graph.data.yprecision) ? i.toFixed(graph.data.yprecision) : Math.floor(i);
 					else steptext.textContent = (graph.data.yprecision) ? i.toFixed(graph.data.yprecision) : Math.floor(i / 10) * 10;
 					graph.scalable.appendChild(steptext);
@@ -281,4 +279,4 @@ function R3Graph() {
 	};
 
 	return that;
-}
+}();

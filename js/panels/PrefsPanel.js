@@ -1,14 +1,13 @@
 panels.PrefsPanel = {
 	ytype: "slack",
-	height: svg.em * 2,
-	minheight: svg.em * 2,
+	height: UISCALE * 2,
+	minheight: UISCALE * 2,
 	xtype: "slack",
-	width: svg.em * 20,
-	minwidth: svg.em * 8,
+	width: UISCALE * 20,
+	minwidth: UISCALE * 8,
 	title: _l("p_PrefsPanel"),
-	intitle: "PrefsPanel",
 	
-	constructor: function(edi, container) {
+	constructor: function(container) {
 		var stables = {};
 		var that = {};
 		var displaying = {};

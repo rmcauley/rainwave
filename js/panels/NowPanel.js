@@ -2,23 +2,22 @@ panels.NowPanel = {
 	ytype: "fit",
 	height: 140,
 	minheight: 140,
-	xtype: "max",
-	width: svg.em * 55,
-	minwidth: svg.em * 30,
+	xtype: "fit",
+	width: UISCALE * 55,
+	minwidth: UISCALE * 45,
 	title: _l("p_NowPanel"),
-	intitle: "NowPanel",
 	
-	initSizeX: function(x, colw) {
-		if (colw > (svg.em * 55)) {
-			return (svg.em * 55);
+	/*initSizeX: function(x, colw) {
+		if (colw > (UISCALE * 55)) {
+			return (UISCALE * 55);
 		}
 		else if (x > (colw + 117)) {
 			return (colw + 117)
 		}
 		return x;
-	},
+	},*/
 	
-	constructor: function(edi, container) {
+	constructor: function(container) {
 		var that = {};
 
 		theme.Extend.NowPanel(that);
@@ -30,8 +29,8 @@ panels.NowPanel = {
 			that.height = container.offsetHeight;
 			that.draw();
 			that.changeHeader(_l("nowplaying"));
-			ajax.addCallback(that, that.ajaxHandle, "sched_current");
-			user.addCallback(that, that.ratableChange, "current_activity_allowed");
+			lyre.addCallback(that.ajaxHandle, "sched_current");
+			user.addCallback(that.ratableChange, "current_activity_allowed");
 		};
 		
 		that.ajaxHandle = function(json) {

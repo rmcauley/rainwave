@@ -1,5 +1,5 @@
 <?php
-// Rainwave 3 fi_FI v3 Language File by quarterlife
+// Rainwave 3 fi_FI v4 Language File by quarterlife
 
 $lang2 = array(
 	// Panel Names
@@ -33,7 +33,8 @@ $lang2 = array(
 	"log_307" => "HTTP Uudelleenohjattu",
 	"log_400" => "HTTP Virheellinen pyyntö",
 	"log_401" => "HTTP Pääsy kielletty",
-	"log_403" => "Tunnistusvirhe - ole hyvä ja päivitä sivu.",
+	"log_403_anon" => "Joku muu käyttää Rainwavea samasta IP-osoitteesta kuin sinä.  Ole hyvä ja rekisteröidy ratkaistaksesi tämän ongelman.",
+	"log_403_reg" => "API tunnistusvirhe - ole hyvä ja päivitä sivu.",
 	"log_404" => "HTTP Ei löytynyt",
 	"log_408" => "HTTP Aikaraja ylittyi",
 	"log_500" => "Teknisiä vaikeuksia - ole hyvä ja yritä uudelleen tai ilmoita virheestä.",
@@ -172,9 +173,9 @@ $lang2 = array(
 	
 	/* Help */
 	
-	"helpstart" => "Aloita ? ",
-	"helpnext" => "Seuraava ? ",
-	"helplast" => "Sulje ? ",
+	"helpstart" => "Aloita ▶ ",
+	"helpnext" => "Seuraava ▶ ",
+	"helplast" => "Sulje ▶ ",
 	"about" => "Yleistä / Lahjoitukset",
 	"about_p" => "Henkilökunta, käytetty tekniikka ja lahjoitustietoa.",
 	"voting" => "Äänestykset",
@@ -205,6 +206,9 @@ $lang2 = array(
 	"timetorequest_p" => "Toiveesi tila näytetään tässä.|br|Jos se näyttää \"umpeutumassa!\" tai \"jäähyllä\", sinun kannattaa vaihtaa ensimmäistä toivettasi.",
 	"rainwave3version" => "Rainwave 3 -versio",
 	"revision" => "Rev",
+	"crashed" => "Rainwave kaatui.",
+	"submiterror" => "Ole hyvä ja kopioi alla oleva teksti ja liitä se viestiin foorumeilla auttaaksesi virheen korjaamisessa:",
+	"pleaserefresh" => "Päivitä sivu jatkaaksesi Rainwaven käyttöä.",
 	
 	/* Schedule Panel */
 	
@@ -246,10 +250,14 @@ $lang2 = array(
 	"reqoncooldown" => " (jäähyllä)",
 	"reqempty" => " (tyhjä)",
 	"reqwrongstation" => " (väärä asema)",
-	"reqtechtitlefull" => " (|station|sijalla |position|, |requestcount| toivetta)",
+	"reqtechtitlefull" => " (|station|sijalla |position|, toiveita |requestcount|)",
 	"reqtechtitlesimple" => " (|station||requestcount|)",
 	"reqexpiresin" => " (paikka jonossa umpeutuu ajassa |expiretime|)",
 	"reqexpiresnext" => " (paikka jonossa umpeutuu seuraavan toiveen jälkeen)",
+	"reqnorequests" => "Et ole toivonut mitään",
+	"reqmyrequests" => "Minun toiveeni",
+	"reqrequestline" => "Jono",
+	"reqrequestlinelong" => "Jonon |showing| ensimmäistä, |linesize| jonossa.",
 	
 	/* Others */
 	"nowplaying" => "Nyt soi",
@@ -266,8 +274,8 @@ $lang2 = array(
 	"selectstation" => "Valitse asema",
 	"tunedin" => "Kuuntelet asemaa",
 	"tunedout" => "Et kuuntele asemaa",
-	"play" => "? Soita selaimessa",
-	"downloadm3u" => "? Lataa M3U",
+	"play" => "▶ Soita selaimessa",
+	"downloadm3u" => "▶ Lataa M3U",
 	"players" => "Tuetut soittimet ovat VLC, Winamp, Foobar2000 ja fstream (Mac/iPhone).|br|Windows Media Player ja iTunes eivät toimi.",
 	"help" => "Apua",
 	"forums" => "Foorumit",
@@ -284,11 +292,11 @@ $lang2 = array(
 	"compatplayers" => "Tuetut soittimet:",
 	"electionresults" => "Äänestyksen tulokset",
 	"chat" => "Chat",
-	"playing" => "? Pysäytä soitto",
+	"playing" => "◼ Pysäytä soitto",
 	"loading" => "Ladataan",
 	"searching" => "Etsitään: ",
 	"m3uhijack" => "|plugin| yrittää kaapata M3U-soittolistan latauksen.  Ole hyvä ja napsauta oikealla hiiren painikkeella ja valitse 'Tallenna nimellä.'",
-	"menu_morestations" => "Lisää ?",
+	"menu_morestations" => "Lisää ▼",
 	"from" => "käyttäjältä |username|",
 	"waitingforstatus" => "Odottaa tietoja",
 	

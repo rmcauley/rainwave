@@ -1,31 +1,30 @@
-// Making Panels 101: Define a unique object name.
+// Making Panels 101: Define a unique panel name for the panels object.
 panels.SlackPanel = {
 	// The (y|x)type variables define how the panel is fitted into the Edi grid.  Here they are listed in priority:
-	// 	fixed - the panel cannot be shrunken or expanded on the row/column
-	//	max   - the panel will expand to consume as much space as possible on the row/column
-	//	fit   - the panel will be fitted to its appropriate size
-	//	slack - the panel will use whatever space is leftover on the row/column (while obeying its minimum size)
+	//   fixed - the panel cannot be shrunken or expanded on the row/column
+	//	 max   - take up the maximum amount of space
+	//	 fit   - the panel will be fitted to its appropriate size
+	//	 slack - the panel will use whatever space is leftover on the row/column
+	// e.g. if there are 3 panels in a row and their ytypes are slack, fixed, and max, the row is maxed.
+	//      if the types are slack, max, fit, the row is maxed.
+	//      if the types are slack, fit, slack, the row is fit.
 	// Slack space is divided evenly amongst all slack panels if there is any.
-	// Be careful that if you put a slack and max panel type on the same column/row, the slack column will be at its minimum size.
-	// When there is no max or slack panel on a row, all panels get the extra space evenly
 	// If all panels are at their minimum size, all panels will be shrunk equally to fit on the screen
-	// Only max type columns will do *row* spanning.  slack and fit panels will not span rows.
 	ytype: "slack",
-	// Desired minimum height of the panel.  This is ignored for "slack" type panels.
+	// Desired height of the panel.  This is ignored for "slack" type panels.
 	height: 100,
 	// Minimum height the panel requires
 	minheight: 50,
 	xtype: "slack",
 	width: 100,
 	minwidth: 50,
-	// Title to report to Edi for tab names and layout editor.
-	title: "Slack Space",
-	intitle: "SlackPanel",
 	
-	// This is the constructor function that will be called when Edi wants a new instance.
-	// edi is the Edi instance that spawned the panel, and container is the containing <div>
-	// that edi has constructed for the panel.
-	constructor: function(edi, container) {
+	// Since you're not likely to have translation strings available to you, best put the title here.
+	title: "Slack",
+	
+	// This is the constructor function that will be called when Edi wants a new instance of the panel.
+	// Container is the HTML <td> that Edi passes to you to work with.
+	constructor: function(container) {
 	
 		var that = {};
 	
@@ -46,14 +45,13 @@ panels.SlackPanel = {
 		constructor.  Look at some other R3 panels as examples.
 		*/
 		
-		// This variable will be given the "owning" Edi panel
-		that.edi = edi;
-		// And this is the containing div you'll want to keep on hand.
+		// It's almost a certainty that the Theme object will need access to the container, so it's a wise idea to make it public.
 		that.container = container;
 		
-		// Edi will call the init() object after populating the container and the edi object.
+		// Edi will call the init() method after construction is complete.  Other panels may not be rendered at this time. 
+		// Your panel is expected to function on its own.
 		that.init = function() {
-			//container.style.background = "#000000";
+			// do your stuff here!
 		};
 		
 		return that;

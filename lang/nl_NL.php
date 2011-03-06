@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /* Rainwave 3 nl_NL Language File by Metal-Geo */
 
 $lang2 = array(
@@ -35,6 +35,8 @@ $lang2 = array(
 	"log_401" => "HTTP Onbevoegd",
 	"log_403" => "Machtiging error - herlaad de pagina alstublieft.",
 	"log_404" => "HTTP Niet gevonden",
+	"log_403_anon" => "Een andere gebruik luistert met dezelfde IP als de uwe naar Rainwave. Registreer een account om dit probleem op te lossen.",
+	"log_403_reg" => "API machtiging fout - Herlaad de pagina alstublieft.",
 	"log_408" => "HTTP Time Out",
 	"log_500" => "Technische problemen - probeer het later opnieuw of meld deze fout.",
 	"log_502" => "Technische problemen - een moment geduld alstublieft.",
@@ -107,26 +109,26 @@ $lang2 = array(
 	// 10000 is used by error control for news
 	
 	/* Number suffixes */
-	"suffix_0" => "ste",
-	"suffix_1" => "ste",
-	"suffix_2" => "de",
-	"suffix_3" => "de",
-	"suffix_4" => "de",
-	"suffix_5" => "de",
-	"suffix_6" => "de",
-	"suffix_7" => "de",
-	"suffix_8" => "de",
-	"suffix_9" => "de",
-	"suffix_11" => "de",
-	"suffix_12" => "de",
-	"suffix_13" => "de",
+	"suffix_0" => "e",
+	"suffix_1" => "e",
+	"suffix_2" => "e",
+	"suffix_3" => "e",
+	"suffix_4" => "e",
+	"suffix_5" => "e",
+	"suffix_6" => "e",
+	"suffix_7" => "e",
+	"suffix_8" => "e",
+	"suffix_9" => "e",
+	"suffix_11" => "e",
+	"suffix_12" => "e",
+	"suffix_13" => "e",
 	
 	/* Playlist Sentences */
 	
 	"pl_oncooldown" => "In cooldown fase voor |time|.",
 	"pl_ranks" => "Rank |S:rank|.",
 	"pl_favourited" => "Gefavoriseerd door |count| |P:count,person|.",
-	"pl_wins" => "Won met |percent|% van de stemmen, met rank |S:rank|.",
+	"pl_wins" => "Won met |percent|% van alle electies.",
 	"pl_requested" => "Verzocht |count| times, met rank |S:rank|.",
 	"pl_genre" => "Cooldown groep: ",
 	"pl_genre2" => ".",
@@ -246,6 +248,10 @@ $lang2 = array(
 	"reqwrongstation" => " (verkeerde zender)",
 	"reqtechtitlefull" => " (|station| |S:position| met |requestcount|)",
 	"reqtechtitlesimple" => " (|requestcount|)",
+	"reqnorequests" => "Geen nummers verzocht.",
+	"reqmyrequests "=> "Mijn verzoeken",
+	"reqrequestline" => "Verzoek wachtrij",
+	"reqrequestlinelong" => "Eerste |showing| van de |linesize| in wachtrij",
 	
 	/* Others */
 	"nowplaying" => "Huidige Nummer",
@@ -301,6 +307,9 @@ $lang2 = array(
 	"reqexpiresnext" => " (plaats in rij verloopt na volgend verzoek)",
 	"downloadm3u" => "▶ Download M3U",
 	"waitingforstatus" => "Wachten op status",
+	"crashed" => "Rainwave is gecrasht.",
+	"submiterror" => "Kopieer en plak de tekst hieronder op de forum om te helpen met het oplossen van de fout:",
+	"pleaserefresh" => "Herlaad de pagina om weer gebruik te maken van Rainwave.",
 
 );
 ?>

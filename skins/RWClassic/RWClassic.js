@@ -1,72 +1,27 @@
-document.getElementById("body").style.fontFamily = "Tahoma, Sans-Serif";
-document.getElementById("body").style.fontSize = "0.8em";
-
-function EdiTheme() {
+function _THEME() {
 	var that = {};
 	var skindir = "skins_r" + BUILDNUM + "/RWClassic";
 
-	that.textcolor = "#FFFFFF";
+	// These are variables that Edi depends upon
 	that.borderheight = 12;
 	that.borderwidth = 12;
-	that.name = "Rainwave Classic";
-	that.MPI_MenuHeight = svg.em * 2;
-	that.MPI_MenuYPad = 2;
-	that.PLS_AlbumHeight = svg.em * 1.5;
+	that.textcolor = "#FFFFFF";
 	that.helplinecolor = "#c287ff";
 	that.helptextcolor = "#d6afff";
-	
-	// The following variables are internal to that theme, related to a specific "class"
-	that.Timeline_leftsidesize = 10;
-	
-	that.TimelineSong_rowheight = that.TimelineSong_height / 3;
-	that.TimelineSong_leftclipext = 1;			// how many rows the timeline song left clip uses
 
-	// The following are variables used internally by the theme
-	that.linkcolor = "#6cf6ff";
-	that.darktext = "#CCCCCC";
-	that.vdarktext = "#777777";
-	that.primarybkg = "#233844";
-	that.brightbkg = "#3f4b52";	
-	that.songborderdark = "#355669";
-	that.songborderbright = "#7d94a1";
-	that.ediborderdark = "#000000";
-	that.ediborderbright = that.songborderdark;
-	that.indicnormal = "#244093";
-	that.indicnormalbright = "#3c6dff";
-	that.indicwarn = "#84880c"; // 666717
-	that.indicwarnbright = "#C2C810";
-	that.indicconflict = that.indicwarn;
-	that.indicconflictbright = that.indicwarnbright;
-	that.indicrequest = "#247293";
-	that.indicrequestbright = "#3585c3";
-
-	// Edi required variable that depends on previously-defined variables
-	// text ratings + grid size + fav margin + fav + padding
-	that.Rating_shortwidth = 75;
-	that.Rating_width = Math.floor((svg.em * 2.2) + that.Rating_shortwidth);
-	
-	var logoheight = 40;
-	var logowidth = 200;
+	// Internal variables
 	var votebkg_width = 680;
 	
 	that.Extend = {};
-
-	/*****************************************************************************
-	  EDI BORDERS
-	  
-	  These border functions are passed <svg> elements.
-	*****************************************************************************/
-
-	that.borderVertical = function(border) {
-		//border.el.appendChild(createEl("img", { "src": skindir + "/images/edi_border_vertical.png", "style": "width: 1px; height: 60%; padding-left: 6px;" }));
-	};
-
-	that.borderHorizontal = function(border) {
-		//border.el.appendChild(createEl("img", { "src": skindir + "/images/edi_border_horizontal.png", "style": "width: 60%; height: 1px; vertical-align: top; margin-top: 6px;" }));
-	};
 	
 	/*****************************************************************************
-	  RATING EFFECTS
+	  EDI FUNCTIONS
+	*****************************************************************************/
+	
+	// nothing here yet...
+	
+	/*****************************************************************************
+	  RATING EFFECTS (not required by Edi)
 	*****************************************************************************/
 	
 	fx.extend("UserRating", function(object, duration) {
@@ -219,7 +174,6 @@ function EdiTheme() {
 	
 	that.drawTimelineTable = function(evt, text, indic) {
 		evt.el = createEl("table", { "class": "timeline_table", "cellspacing": 0 });
-		evt.el.style.width = evt.container.offsetWidth + "px";
 		evt.header_tr = createEl("tr", {}, evt.el);
 		evt.header_indicator = createEl("td", { "class": "timeline_header_indicator timeline_header_indicator_" + indic }, evt.header_tr);
 		evt.header_td = createEl("td", { "class": "timeline_header timeline_header_" + indic }, evt.header_tr);
@@ -234,7 +188,6 @@ function EdiTheme() {
 			if (!te.showingheader) {
 				te.showingheader = true;
 				te.el.insertBefore(te.header_tr, te.el.firstChild);
-				//te.recalculateHeight();
 			}
 		};
 		
@@ -242,7 +195,6 @@ function EdiTheme() {
 			if (te.showingheader) {
 				te.showingheader = false;
 				te.el.removeChild(te.header_tr);
-				//te.recalculateHeight();
 			}
 		};
 		
@@ -820,7 +772,6 @@ function EdiTheme() {
 	   Menu Panel Styling
 	*****************************************************************************/
 
-
 	that.Extend.MenuPanel = function(menup) {	
 		menup.draw = function() {
 			// Login Box
@@ -1028,7 +979,7 @@ function EdiTheme() {
 		};
 		
 		menup.drawTuneInChange = function(tunedin) {
-			if (Oggpixel && Oggpixel.playing) {
+			/*if (Oggpixel && Oggpixel.playing) {
 				menup.player.style.backgroundColor = "#225f8a";
 				menup.player.style.cursor = "pointer";
 				menup.fx_player.start(1);
@@ -1037,8 +988,8 @@ function EdiTheme() {
 			}
 			else if (Oggpixel && (tunedin == -1)) {
 				_l("loading", false, menup.player);
-			}
-			else if (tunedin == 1) {
+			}*/
+			if (tunedin == 1) {
 				menup.player.style.backgroundColor = "transparent";
 				menup.player.style.cursor = "none";
 				menup.fx_player.start(.65);

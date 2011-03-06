@@ -1,14 +1,13 @@
 panels.RequestsPanel = {
 	ytype: "slack",
-	height: svg.em * 2,
-	minheight: svg.em * 2,
-	xtype: "fit",
-	width: svg.em * 20,
-	minwidth: svg.em * 8,
+	height: UISCALE * 2,
+	minheight: UISCALE * 2,
+	xtype: "slack",
+	width: UISCALE * 20,
+	minwidth: UISCALE * 8,
 	title: _l("p_RequestsPanel"),
-	intitle: "RequestsPanel",
 	
-	constructor: function(edi, container) {
+	constructor: function(container) {
 		var that = {};
 		var list = RequestList(true);
 		var line = AllRequestList();
@@ -22,12 +21,12 @@ panels.RequestsPanel = {
 			that.el.appendChild(list.el);
 			that.el.appendChild(line.div);
 			
-			ajax.addCallback(that, list.update, "requests_user");
-			ajax.addCallback(that, line.update, "requests_all");
+			lyre.addCallback(list.update, "requests_user");
+			lyre.addCallback(line.update, "requests_all");
 			
 			initpiggyback['requests'] = "true";
-			if (ajax.sync_time > 0) {
-				ajax.async_get("requests_get", {});
+			if (lyre.sync_time > 0) {
+				lyre.async_get("requests_get", {});
 			}
 			
 			help.addStep("managingrequests", { "h": "managingrequests", "p": "managingrequests_p", "skipf": function() { edi.openPanelLink("RequestsPanel", false); } });
@@ -297,7 +296,7 @@ var RequestList = function(sortable) {
 			if (i > 0) params += ",";
 			params += reqs[i].p.requestq_id;
 		}
-		ajax.async_get("requests_reorder", { "order": params });
+		lyre.async_get("requests_reorder", { "order": params });
 	};
 	
 	that.sortRequestArray = function(a, b) {
@@ -320,12 +319,12 @@ var RequestList = function(sortable) {
 var Request = {
 	linkify: function(song_id, el) {
 		el.style.cursor = "pointer";
-		el.addEventListener('click', function() { if (user.p.radio_tunedin) ajax.async_get("request", { "song_id": song_id }); else errorcontrol.doError(3002); }, true);
+		el.addEventListener('click', function() { if (user.p.radio_tunedin) lyre.async_get("request", { "song_id": song_id }); else errorcontrol.doError(3002); }, true);
 	},
 	
 	linkifyDelete: function(requestq_id, el) {
 		el.style.cursor = "pointer";
-		el.addEventListener('click', function(e) { hotkey.stopBubbling(e); ajax.async_get("request_delete", { "requestq_id": requestq_id }); }, true);
+		el.addEventListener('click', function(e) { hotkey.stopBubbling(e); lyre.async_get("request_delete", { "requestq_id": requestq_id }); }, true);
 	},
 	
 	make: function(json) {
@@ -335,7 +334,7 @@ var Request = {
 		//theme.Extend.Request(that);
 		//that.draw();
 		
-		/*that.songrating_svg = svg.make({ "width": theme.Rating_width, "height": svg.em * 1.4 });
+		/*that.songrating_svg = svg.make({ "width": theme.Rating_width, "height": UISCALE * 1.4 });
 		that.songrating_svg.setAttribute("class", "request_songrating");
 		that.songrating = Rating({ category: "song", id: json.song_id, userrating: json.song_rating_user, x: 0, y: 1, siterating: json.song_rating_avg, favourite: json.song_favourite, register: true });
 		that.songrating_svg.appendChild(that.songrating.el);
@@ -359,7 +358,7 @@ var Request = {
 		
 		that.el.appendChild(that.song_title);
 		
-		/*that.albumrating_svg = svg.make({ "width": theme.Rating_width, "height": svg.em * 1.4 });
+		/*that.albumrating_svg = svg.make({ "width": theme.Rating_width, "height": UISCALE * 1.4 });
 		that.albumrating_svg.setAttribute("class", "request_albumrating");
 		that.albumrating = Rating({ category: "album", id: json.album_id, userrating: json.album_rating_user, x: 0, y: 1, siterating: json.album_rating_avg, favourite: json.album_favourite, register: true });
 		that.albumrating_svg.appendChild(that.albumrating.el);

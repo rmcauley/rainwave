@@ -1,4 +1,4 @@
-function ErrorControl() {
+var errorcontrol = function() {
 	var that = {};
 	var errors = {};
 	var showx = 0;
@@ -6,9 +6,7 @@ function ErrorControl() {
 	var timers = {};
 	var showing = {};
 	
-	that.initTheme = function() {
-		theme.Extend.ErrorControl(that);
-	};
+	theme.Extend.ErrorControl(that);
 	
 	that.changeShowXY = function(x, y) {
 		showx = x;
@@ -16,22 +14,22 @@ function ErrorControl() {
 	};
 	
 	that.setupCallbacks = function() {
-		ajax.addCallback(that, that.lyreError, "error");
-		ajax.addCallback(that, that.clearError2, "user");
-		ajax.addCallback(that, that.requestnewresult, "request_result");
-		ajax.addCallback(that, that.voteresult, "vote_result");
-		ajax.addCallback(that, that.rateresult, "rate_result");
-		ajax.addCallback(that, that.requestorderresult, "requests_reorder_result");
-		ajax.addCallback(that, that.genericError, "event_add_result");
-		ajax.addCallback(that, that.genericError, "event_delete_result");
-		ajax.addCallback(that, that.genericError, "event_start_result");
-		ajax.addCallback(that, that.genericError, "event_end_result");
-		ajax.addCallback(that, that.genericError, "oneshot_add_result");
-		ajax.addCallback(that, that.genericError, "oneshot_delete_result");
-		ajax.addCallback(that, that.genericError, "force_candidate_new_result");
-		ajax.addCallback(that, that.genericError, "force_candidate_delete_result");
-		ajax.addCallback(that, that.loginresult, "login_result")
-		ajax.addCallback(that, that.genericError, "admin_playlist_refresh_result");
+		lyre.addCallback(that.lyreError, "error");
+		lyre.addCallback(that.clearError2, "user");
+		lyre.addCallback(that.requestnewresult, "request_result");
+		lyre.addCallback(that.voteresult, "vote_result");
+		lyre.addCallback(that.rateresult, "rate_result");
+		lyre.addCallback(that.requestorderresult, "requests_reorder_result");
+		lyre.addCallback(that.genericError, "event_add_result");
+		lyre.addCallback(that.genericError, "event_delete_result");
+		lyre.addCallback(that.genericError, "event_start_result");
+		lyre.addCallback(that.genericError, "event_end_result");
+		lyre.addCallback(that.genericError, "oneshot_add_result");
+		lyre.addCallback(that.genericError, "oneshot_delete_result");
+		lyre.addCallback(that.genericError, "force_candidate_new_result");
+		lyre.addCallback(that.genericError, "force_candidate_delete_result");
+		lyre.addCallback(that.loginresult, "login_result")
+		lyre.addCallback(that.genericError, "admin_playlist_refresh_result");
 	};
 	
 	that.genericError = function(json) {
@@ -88,8 +86,8 @@ function ErrorControl() {
 			
 			if (!permanent) {
 				var x = mouse.x;
-				var y = (mouse.y - (svg.em * 2.5));
-				if (y < (svg.em * 2)) y = svg.em * 2;
+				var y = (mouse.y - (UISCALE * 2.5));
+				if (y < (UISCALE * 2)) y = UISCALE * 2;
 				if (x > (window.innerWidth - errors[code].el.offsetWidth)) x = window.innerWidth - errors[code].el.offsetWidth - 15;
 				if (y > (window.innerHeight - errors[code].el.offsetHeight)) y = window.innerHeight - errors[code].el.offsetHeight - 15;
 				errors[code].el.style.left = x + "px";
@@ -103,7 +101,7 @@ function ErrorControl() {
 		for (var code in showing) {
 			errors[code].el.style.left = showx + "px";
 			errors[code].el.style.top = ry + "px";
-			ry += errors[code].el.offsetHeight + (svg.em / 2);
+			ry += errors[code].el.offsetHeight + (UISCALE / 2);
 		}
 	};
 
@@ -189,8 +187,8 @@ function ErrorControl() {
 			createEl("textarea", { "textContent": err.message + "\n" + err.name + "\n\n" + err.stack, "style": "width: 40em; height: 15em; margin-bottom: 1em;" }, el);
 		}
 		createEl("div", { "textContent": _l("pleaserefresh") }, el);
-		ajax.sync_stop = true;
+		lyre.sync_stop = true;
 	};
 
 	return that;
-};
+}();

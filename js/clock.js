@@ -1,4 +1,4 @@
-var ClockControl = function() {
+var clock = function() {
 	var clocks = {};
 	var interval = 0;
 	var timediff = 0;
@@ -34,13 +34,14 @@ var ClockControl = function() {
 		if (ready == false) return;
 		that.now = that.time() + timediff;
 		for (var cb in clocks) {
-			//try {
+			try {
 				var clocktime = clocks[cb].end - that.now + clocks[cb].offset;
 				clocks[cb].func.call(clocks[cb].obj, clocktime);
-			//}
-			// catch(err) {
-				// delete(clocks[cb]);
-			// }
+			}
+			catch(err) {
+				clearInterval(interval);
+				errorcontrol.jsError(err);
+			}
 		}
 	};
 	
@@ -68,10 +69,10 @@ var ClockControl = function() {
 	};
 	
 	that.now = that.time() + timediff;
-	ajax.clockSync = that.clockSync;
+	lyre.clockSync = that.clockSync;
 	if (interval == 0) {
 		interval = setInterval(that.loop, 1000);
 	}
 
 	return that;
-}
+}();

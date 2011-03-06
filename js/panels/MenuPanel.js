@@ -2,14 +2,13 @@ panels.MenuPanel = {
 	ytype: "fixed",
 	height: 21,
 	minheight: 3,
-	xtype: "fit",
+	xtype: "slack",
 	width: 0,
 	minwidth: 0,
-	title: _l("MenuPanel"),
-	intitle: "MenuPanel",
 	noborder: true,
+	title: _l("p_MenuPanel"),
 	
-	constructor: function(edi, container) {
+	constructor: function(container) {
 		var that = {};
 		that.container = container;
 		that.el;
@@ -26,20 +25,20 @@ panels.MenuPanel = {
 			that.draw();
 			
 			that.tunedinCallback(user.p.radio_tunedin);
-			if (Oggpixel) {
+			/*if (typeof(Oggpixel) != "undefined") {
 				Oggpixel.onStart = that.tunedinCallback;
 				Oggpixel.onStop = that.tunedinCallback;
 				Oggpixel.onReady = that.oggReadyCallback;
-			}
+			}*/
 		
 			var pos = help.getElPosition(that.td_news);
 			errorcontrol.changeShowXY(pos.x, pos.y + container.offsetHeight);
 			
-			user.addCallback(that, that.usernameCallback, "username");
-			user.addCallback(that, that.tunedinCallback, "radio_tunedin");
-			user.addCallback(that, that.userAvatarCallback, "user_avatar");
-			user.addCallback(that, that.statRestrict, "radio_statrestricted");
-			ajax.addCallback(that, that.loginResult, "login_result");
+			user.addCallback(that.usernameCallback, "username");
+			user.addCallback(that.tunedinCallback, "radio_tunedin");
+			user.addCallback(that.userAvatarCallback, "user_avatar");
+			user.addCallback(that.statRestrict, "radio_statrestricted");
+			lyre.addCallback(that.loginResult, "login_result");
 		};
 		
 		that.usernameCallback = function(username) {
@@ -113,7 +112,7 @@ panels.MenuPanel = {
 			if (loginattempts >= 3) loginenabled = false;
 			if (loginenabled) {
 				loginattempts++;
-				ajax.async_get("login", { "username": user, "password": password, "autologin": autologin });
+				lyre.async_get("login", { "username": user, "password": password, "autologin": autologin });
 			}
 		};
 		

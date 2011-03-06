@@ -1,9 +1,9 @@
 <?php
 
-require("/var/www/rainwave.cc/beta/auth/common.php");
+require("/var/www/rainwave.cc/auth/common.php");
 
 $iceservers = array(
-		array(name => "Tanaric", site => "rw", "sid" => 1, url => "http://admin:oTdrdrCZNfy3@173.255.122.200:8000/admin/listclients?mount=/rainwave.ogg"),
+		#array(name => "Tanaric", site => "rw", "sid" => 1, url => "http://admin:oTdrdrCZNfy3@173.255.122.200:8000/admin/listclients?mount=/rainwave.ogg"),
 		array(name => "Lyfe", site => "rw", "sid" => 1, url => "http://ice-admin:horseshavehooves@69.94.104.182:8000/admin/listclients?mount=/rainwave.ogg"),
         array(name => "Lyfe2", site => "rw", "sid" => 1, url => "http://ice-admin:horseshavehooves@69.94.108.98:8000/admin/listclients?mount=/rainwave.ogg"),
 		array(name => "TanaricBackup", site => "rw", "sid" => 1, url => "http://admin:oTdrdrCZNfy3@173.164.249.97:8000/admin/listclients?mount=/rainwave.ogg"),

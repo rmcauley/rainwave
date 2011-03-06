@@ -1,14 +1,13 @@
 panels.SchedulePanel = {
-	ytype: "fit",
-	height: svg.em * 30,
-	minheight: svg.em * 20,
-	xtype: "fit",
-	width: svg.em * 30,
-	minwidth: svg.em * 20,
+	ytype: "slack",
+	height: UISCALE * 30,
+	minheight: UISCALE * 20,
+	xtype: "slack",
+	width: UISCALE * 30,
+	minwidth: UISCALE * 20,
 	title: _l("p_SchedulePanel"),
-	intitle: "SchedulePanel",
 	
-	constructor: function(edi, container) {
+	constructor: function(container) {
 		var that = {};
 		that.container = container;
 		var form_time;
@@ -54,7 +53,7 @@ panels.SchedulePanel = {
 			container.appendChild(djfs);
 			
 			that.djAdminChange(user.p.radio_live_admin);
-			user.addCallback(that, that.djAdminChange, "radio_live_admin");
+			user.addCallback(that.djAdminChange, "radio_live_admin");
 			
 			container.appendChild(schedule);
 			container.appendChild(listfs);
@@ -133,7 +132,7 @@ panels.SchedulePanel = {
 			td = createEl("td", {}, row);
 			var refresh_playlist = createEl("button", { "textContent": "Refresh Playlist" }, td);
 			refresh_playlist.addEventListener('click', function() {
-				ajax.async_get("admin_playlist_refresh");
+				lyre.async_get("admin_playlist_refresh");
 			}, true);
 			row.appendChild(createEl("td", { "textContent": ""}));
 			
@@ -141,17 +140,17 @@ panels.SchedulePanel = {
 			container.appendChild(newfs);
 			
 			initpiggyback['live'] = "true";
-			ajax.addCallback(that, that.listUpdate, "live_shows");
-			if (ajax.sync_time > 0) {
-				ajax.async_get("live_shows", {});
+			lyre.addCallback(that.listUpdate, "live_shows");
+			if (lyre.sync_time > 0) {
+				lyre.async_get("live_shows", {});
 			}
-			ajax.sync_extra['live'] = "true";
+			lyre.sync_extra['live'] = "true";
 			
-			ajax.addCallback(that, that.liveTimerResync, "sched_current");
-			ajax.addCallback(that, that.liveStartResult, "event_start_result");
-			ajax.addCallback(that, that.liveEndResult, "event_end_result");
-			ajax.addCallback(that, that.liveDeleteResult, "event_delete_result");
-			ajax.addCallback(that, that.liveNewResult, "event_add_result");
+			lyre.addCallback(that.liveTimerResync, "sched_current");
+			lyre.addCallback(that.liveStartResult, "event_start_result");
+			lyre.addCallback(that.liveEndResult, "event_end_result");
+			lyre.addCallback(that.liveDeleteResult, "event_delete_result");
+			lyre.addCallback(that.liveNewResult, "event_add_result");
 		};
 		
 		that.submitNewShow = function() {
@@ -164,15 +163,15 @@ panels.SchedulePanel = {
 				var dt = new Date(form_time.value);
 				fdt = Math.floor(dt.getTime() / 1000);
 			}
-			ajax.async_get("event_add", { "time": fdt, "name": form_name.value, "notes": form_notes.value, "user_id": form_user_id.value, "type": typ, "length": form_length.value });
+			lyre.async_get("event_add", { "time": fdt, "name": form_name.value, "notes": form_notes.value, "user_id": form_user_id.value, "type": typ, "length": form_length.value });
 		};
 		
 		that.startPause = function() {
-			ajax.async_get("event_add", { "time": 0, "name": "Pause", "notes": "", "user_id": user.p.user_id, "type": SCHED_PAUSE, "length": 0 });
+			lyre.async_get("event_add", { "time": 0, "name": "Pause", "notes": "", "user_id": user.p.user_id, "type": SCHED_PAUSE, "length": 0 });
 		};
 		
 		that.endPause = function() {
-			ajax.async_get("event_delete", { "sched_id": 0 });
+			lyre.async_get("event_delete", { "sched_id": 0 });
 		};
 		
 		that.liveNewResult = function(json) {
@@ -238,17 +237,17 @@ panels.SchedulePanel = {
 				if (user.p.radio_live_admin >= 2) {
 					del = createEl("button", { "textContent": _l("delete") });
 					del.sched_id = "" + json[i].sched_id;
-					del.addEventListener("click", function() { ajax.async_get("event_delete", { "sched_id": del.sched_id }); }, true);
+					del.addEventListener("click", function() { lyre.async_get("event_delete", { "sched_id": del.sched_id }); }, true);
 					td.appendChild(del);
 				}
 				if ((json[i].user_id == user.p.user_id) && (json[i].sched_type == SCHED_LIVE)) {
 					start = createEl("button", { "textContent": _l("start") });
 					start.sched_id = "" + json[i].sched_id;
-					start.addEventListener("click", function() { ajax.async_get("event_start", { "sched_id": start.sched_id }); }, true);
+					start.addEventListener("click", function() { lyre.async_get("event_start", { "sched_id": start.sched_id }); }, true);
 					td.appendChild(start);
 					end = createEl("button", { "textContent": _l("end") });
 					end.sched_id = "" + json[i].sched_id;
-					end.addEventListener("click", function() { ajax.async_get("event_end", { "sched_id": end.sched_id }); }, true);
+					end.addEventListener("click", function() { lyre.async_get("event_end", { "sched_id": end.sched_id }); }, true);
 					td.appendChild(end);
 				}
 				row.appendChild(td);

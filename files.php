@@ -1,25 +1,35 @@
 <?php
 
 $jsorder = array(
-	"js/swfobject.js",
-	"js/SVGHelper.js",
-	"js/Preferences.js",
-	"js/ErrorControl.js",
-	"js/Help.js",
-	"js/r3.js",	
-	"js/Hotkey.js",
-	"js/R3Effects.js",
-	"js/R3Graph.js",
-	"js/formatting.js",
-	"js/playlistobjects.js",
-	"js/ClockControl.js",
-	"js/UserControl.js",
-	"js/Rating.js",
-	"js/TitleUpdate.js",
+	// OggPixel
+	// "js/swfobject.js",
+	// "js/oggpixel.js",
+	
+	// Priority Order
+	"js/prefs.js",		// Must come first for cookie load prepping other JS files
+	"js/svg.js",		// Required by fx, graph, and help
+	"js/fx.js",			// Required by themes
+	"js/formatting.js",	// contains $ and createEl, so likely required by theme
+	"js/main.js",		// Triggers theme, so required by anything below that uses the theme
+	
+	// Any order
+	"js/clock.js",
+	"js/edi.js",
+	"js/errorcontrol.js",
+	"js/graph.js",
+	"js/help.js",
+	"js/hotkey.js",
 	"js/language.js",
-	"js/Oggpixel.js",
-	"js/edi/EdiLayout.js",
-	"js/edi/Edi.js",
+	"js/mouse.js",
+	"js/playlistobjects.js",
+	"js/prefs.js",
+	"js/rating.js",
+	"js/ratingcontrol.js",
+	"js/swfobject.js",
+	"js/titleupdate.js",
+	"js/user.js",
+	
+	// Panels
 	"js/panels/MenuPanel.js",
 	"js/panels/MainMPI.js",
 	"js/panels/NowPanel.js",

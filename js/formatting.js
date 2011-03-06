@@ -1,3 +1,5 @@
+var $ = document.getElementById;
+
 function createEl(type, attribs, appendto) {
 	var el = document.createElement(type);
 	if ((typeof(attribs) == "object") || (typeof(attribs) == "array")) {
@@ -42,7 +44,7 @@ function formatTime(seconds) {
 }
 
 // we'll want these for the fitText functions
-fittextdiv = document.createElement("div");
+var fittextdiv = document.createElement("div");
 fittextdiv.setAttribute("id", "fittextdiv");
 
 // returns true if changed, false if not.  textel is a reference and will be changed if necessary.
@@ -72,7 +74,7 @@ function fitTSpans(textel, maxwidth, chop, style) {
 }
 
 function fitText(text, maxwidth, style) {
-	if (maxwidth < (svg.em * 2)) return "...";
+	if (maxwidth < (UISCALE * 2)) return "...";
 	if (style) fittextdiv.setAttribute("style", style);
 	fittextdiv.textContent = text;
 	// prime the ellipsis if necessary

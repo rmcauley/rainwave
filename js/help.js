@@ -1,4 +1,4 @@
-var Help = function() {
+var help = function() {
 	var that = {};
 	var alltopics = [];
 	var topics = {};
@@ -84,11 +84,11 @@ var Help = function() {
 				showing[i] = that.makeHelpDiv(topics[alltopics[i]]);
 			}
 		}
-		var x = window.innerWidth - svg.em;
-		var y = window.innerHeight - (svg.em * 16);
+		var x = window.innerWidth - UISCALE;
+		var y = window.innerHeight - (UISCALE * 16);
 		for (i = 0; i < alltopics.length; i++) {
 			if (!topics[alltopics[i]].pointel) {
-				x -= (showing[i].offsetWidth + (svg.em * 2));
+				x -= (showing[i].offsetWidth + (UISCALE * 2));
 				showing[i].fxY.set(y);
 				showing[i].fxX.start(x);
 			}
@@ -241,16 +241,16 @@ var Help = function() {
 			}
 		}
 		
-		var width = data.width ? data.width : svg.em * 28;
-		var height = data.height ? data.height : svg.em * 12;
+		var width = data.width ? data.width : UISCALE * 28;
+		var height = data.height ? data.height : UISCALE * 12;
 		container.fxWidth.start(width);
 		container.fxHeight.start(height);
 
 		var finalx, finaly;
 		if (data.pointel && data.pointel[0]) {
 			var pel = that.getElPosition(data.pointel[0]);
-			if (pel.x < (window.innerWidth / 2)) finalx = pel.x + that.getElWidth(data.pointel[0]) + (svg.em * 3);
-			else finalx = pel.x - (width + (svg.em * 3));
+			if (pel.x < (window.innerWidth / 2)) finalx = pel.x + that.getElWidth(data.pointel[0]) + (UISCALE * 3);
+			else finalx = pel.x - (width + (UISCALE * 3));
 			finaly = pel.y;
 		}
 		else {
@@ -306,7 +306,7 @@ var Help = function() {
 				x += parseInt(el.getAttribute("x"));
 				y += parseInt(el.getAttribute("y"));
 			}
-			if (el.nodeName == "text") y -= svg.em;
+			if (el.nodeName == "text") y -= UISCALE;
 			else if (el.nodeName == "path") y += 12; // cheap hack for ratings
 		}
 		else {
@@ -339,7 +339,7 @@ var Help = function() {
 		if (svg.isElSVG(el)) {
 			//if (el.nodeName == "path") return 12;
 			if (el.getAttribute("height") && !overridetext) return parseInt(el.getAttribute("height"));
-			if (el.nodeName == "text") return svg.em * 1.2;
+			if (el.nodeName == "text") return UISCALE * 1.2;
 			return 0;
 		}
 		else return el.offsetHeight;
@@ -403,4 +403,42 @@ var Help = function() {
 	};
 	
 	return that;
-};
+}();
+
+function drawAboutScreen(div) {
+	var tbl = createEl("table", { "class": "about help_paragraph" });
+	var html = "<tr><td>" + _l("rainwave3version") + ":</td><td>" + _l("revision") + " " + BUILDNUM + "</td></tr>";
+	html += "<tr><td>" + _l("creator") + ":</td><td>LiquidRain</td></tr>";
+	html += "<tr><td>" + _l("rainwavemanagers") + ":</td><td>Ten19, Metal-Ridley</td></tr>";
+	html += "<tr><td>" + _l("ocrmanagers") + ":</td><td>William</td></tr>";
+	html += "<tr><td>" + _l("mixwavemanagers") + ":</td><td>SOcean255</td></tr>";
+	html += "<tr><td>" + _l("jfinalfunkjob") + ":</td><td>jfinalfunk</td></tr>";
+	html += "<tr><td>" + _l("relayadmins") + ":</td><td>Lyfe, Tanaric, Dracoirs</td></tr>";
+	html += "<tr><td>" + _l("translators") + ":</td><td>Metal-Geo (NL), Metal-Ridley (FR), quarterlife (FI), Steppo (SE)</td></tr>";
+	html += "<tr><td style='padding-top: 1em;'>" + _l("specialthanks") + ":</td><td style='padding-top: 1em;'>strwrsxprt, heschi, Brayniac, Salty, efiloN, Vyzov</td></tr>";
+	html += "<tr><td style='padding-top: 1em;'>" + _l("poweredby") + ":</td><td style='padding-top: 1em;'>" + _l("customsoftware") + ", <a href='http://icecast.org' target='_blank' onclick='return false;'>Icecast<img src='images/new_window_icon.png' alt='(*)' /></a>, <a href='http://savonet.sourceforge.net' target='_blank' onclick='return false;'>Liquidsoap<img src='images/new_window_icon.png' alt='(*)' /></a></td></tr>";
+	tbl.innerHTML = html;
+	div.appendChild(tbl);
+	var a1 = createEl("a", { "href": "/donations.php", "textContent": _l("donationinformation"), "class": "help_paragraph", "style": "margin-top: 1em; display: block", "target": "_blank" });
+	a1.appendChild(createEl("img", { "src": "images/new_window_icon.png", "alt": "->" }));
+	div.appendChild(a1);
+	//var a2 = createEl("a", { "href": "/api", "textContent": _l("apiinformation"), "class": "help_paragraph", "style": "margin-top: 1em; display: block", "target": "_blank", "onclick": "return false;" });
+	//a2.appendChild(createEl("img", { "src": "images/new_window_icon.png", "alt": "->" }));
+	//div.appendChild(a2);
+}
+
+help.addStep("about", { "h": "about", "pf": drawAboutScreen, "width": UISCALE * 55, "height": UISCALE * 30 });
+help.addTutorial("about", [ "about" ]);
+help.addTopic("about", { "h": "about", "p": "about_p", "tutorial": "about" });
+
+help.addTutorial("welcome", [ "tunein", "clickonsongtovote" ] );
+
+help.addTopic("playlistsearch", { "h": "playlistsearch", "p": "playlistsearch_p" });
+
+help.addStep("setfavourite", { "h": "setfavourite", "p": "setfavourite_p" });
+
+help.addStep("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_p", "height": UISCALE * 15 });
+help.addStep("tunein", { "h": "tunein", "p": "tunein_p", "mody": 35, "skipf": function() { return user.p.radio_tunedin ? true : false; } } );
+help.addStep("login", { "h": "login", "p": "login_p", "skipf": function() { return user.p.user_id > 1 ? true : false } });
+help.addTutorial("ratecurrentsong", [ "register", "tunein", "ratecurrentsong", "setfavourite" ]);
+help.addTopic("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_t", "tutorial": "ratecurrentsong", "mody": UISCALE * 3, "modx": UISCALE * 2, "skipf": function() { return user.p.radio_tunedin ? true : false; } });

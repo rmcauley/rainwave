@@ -1,15 +1,13 @@
 panels.TimelinePanel = {
 	ytype: "fit",
-	rowspannable: true,
-	height: svg.em * 10,
-	minheight: svg.em * 40,
+	height: UISCALE * 40,
+	minheight: UISCALE * 40,
 	xtype: "fit",
-	width: svg.em * 40,
-	minwidth: svg.em * 25,
+	width: UISCALE * 40,
+	minwidth: UISCALE * 35,
 	title: _l("p_TimelinePanel"),
-	intitle: "TimelinePanel",
 	
-	constructor: function(edi, container) {
+	constructor: function(container) {
 		var that = {};
 		that.container = container;
 		that.allevents = [];
@@ -28,14 +26,14 @@ panels.TimelinePanel = {
 			that.currentendtime = 0;
 			that.draw();
 			
-			ajax.addCallback(that, that.purgeEvents, "sched_presync");
-			ajax.addCallback(that, that.currentHandle, "sched_current");
-			ajax.addCallback(that, that.nextHandle, "sched_next");
-			ajax.addCallback(that, that.historyHandle, "sched_history");
-			ajax.addCallback(that, that.positionEvents, "sched_sync");
-			ajax.addCallback(that, that.voteResultHandle, "vote_result");
+			lyre.addCallback(that.purgeEvents, "sched_presync");
+			lyre.addCallback(that.currentHandle, "sched_current");
+			lyre.addCallback(that.nextHandle, "sched_next");
+			lyre.addCallback(that.historyHandle, "sched_history");
+			lyre.addCallback(that.positionEvents, "sched_sync");
+			lyre.addCallback(that.voteResultHandle, "vote_result");
 			
-			user.addCallback(that, that.activityAllowedChange, "current_activity_allowed");
+			user.addCallback(that.activityAllowedChange, "current_activity_allowed");
 			
 			help.addStep("clickonsongtovote", { "h": "clickonsongtovote", "p": "clickonsongtovote_p" });
 			help.addStep("donevoting", { "h": "donevoting", "p": "donevoting_p" });
@@ -482,7 +480,7 @@ function TimelineElection(json, container, parent) {
 		that.container.appendChild(that.el);
 
 		for (var sn = 0; sn < json.song_data.length; sn++) {
-			that.songs[sn] = TimelineSong(json.song_data[sn], that, 0, svg.em + (sn * theme.TimelineSong_height), sn);
+			that.songs[sn] = TimelineSong(json.song_data[sn], that, 0, UISCALE + (sn * theme.TimelineSong_height), sn);
 		}
 		
 		that.clockdisplay = true;
@@ -653,7 +651,7 @@ function TimelinePlaylist(json, container, parent) {
 		that.container.appendChild(that.el);
 
 		for (var sn = 0; sn < json.song_data.length; sn++) {
-			that.songs[sn] = TimelineSong(json.song_data[sn], that, 0, svg.em + (sn * theme.TimelineSong_height), sn);
+			that.songs[sn] = TimelineSong(json.song_data[sn], that, 0, UISCALE + (sn * theme.TimelineSong_height), sn);
 			that.el.appendChild(that.songs[sn].el);
 		}
 		
@@ -690,7 +688,7 @@ function TimelineOneShot(json, container, parent) {
 	that.init = function() {
 		that.draw();
 		that.container.appendChild(that.el);
-		that.song = TimelineSong(json.song_data[0], that, 0, svg.em + 2, 0);
+		that.song = TimelineSong(json.song_data[0], that, 0, UISCALE + 2, 0);
 		
 		that.clockdisplay = true;
 		that.clockid = -1;
@@ -714,7 +712,7 @@ function TimelineOneShot(json, container, parent) {
 	
 	that.deleteOneShot = function() {
 		if (that.p.user_id == user.p.user_id) {
-			ajax.async_get("oneshot_delete", { "sched_id": that.p.sched_id });
+			lyre.async_get("oneshot_delete", { "sched_id": that.p.sched_id });
 		}
 	};
 	
@@ -801,7 +799,7 @@ function TimelineSong(json, parent, x, y, songnum) {
 		that.voteProgressComplete();
 		that.parent.disableVoting();
 		that.parent.changeHeadline(_l("submittingvote"));
-		ajax.async_get("vote", { "elec_entry_id": that.p.elec_entry_id });
+		lyre.async_get("vote", { "elec_entry_id": that.p.elec_entry_id });
 	};
 	
 	that.registerFailedVote = function() {

@@ -1,11 +1,11 @@
-function HotkeyControl() {
+var hotkey = function() {
 	var callbacks = [];
 	var maxid = 0;
 	
 	var that = {};
 
-	that.addCallback = function(object, method, priority) {
-		var newcb = { "object": object, "method": method, "id": maxid };
+	that.addCallback = function(method, priority) {
+		var newcb = { "method": method, "id": maxid };
 		maxid++;
 		if (callbacks.length < priority) {
 			callbacks.splice(priority, 0, newcb);
@@ -62,7 +62,7 @@ function HotkeyControl() {
 				a-z,A-Z: 65 to 90, 90 to 122
 				numbers: 48-57 */
 		for (var i = 0; i < callbacks.length; i++) {
-			if (!callbacks[i].method.call(callbacks[i].object, evt)) {
+			if (!callbacks[i].method(evt)) {
 				that.stopDefaultAction(evt);
 				return false;
 			}
@@ -96,4 +96,4 @@ function HotkeyControl() {
 	window.addEventListener('keypress', that.keyPressHandler, false);
 	
 	return that;
-}
+}();

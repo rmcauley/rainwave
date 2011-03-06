@@ -1,14 +1,13 @@
 panels.PlaylistPanel = {
-	ytype: "max",
+	ytype: "fit",
 	height: 300,
 	minheight: 300,
-	xtype: "max",
+	xtype: "fit",
 	width: 300,
 	minwidth: 300,
 	title: _l("p_PlaylistPanel"),
-	intitle: "PlaylistPanel",
 	
-	constructor: function(edi, container) {
+	constructor: function(container) {
 		var albums;
 		var albumsort;
 		var reinsert = [];
@@ -37,16 +36,16 @@ panels.PlaylistPanel = {
 			albumsort = [];
 			reinsert = [];
 			
-			ajax.addCallback(that, that.playlistUpdate, "playlist_all_albums");
-			ajax.addCallback(that, that.playlistUpdate, "playlist_album_diff");
-			ajax.addCallback(that, that.drawAlbumCallback, "playlist_album");
-			ajax.addCallback(that, that.ratingResult, "rate_result");
-			ajax.addCallback(that, that.favResult, "fav_album_result");
-			hotkey.addCallback(that, that.keyHandle, 0);
+			lyre.addCallback(that.playlistUpdate, "playlist_all_albums");
+			lyre.addCallback(that.playlistUpdate, "playlist_album_diff");
+			lyre.addCallback(that.drawAlbumCallback, "playlist_album");
+			lyre.addCallback(that.ratingResult, "rate_result");
+			lyre.addCallback(that.favResult, "fav_album_result");
+			hotkey.addCallback(that.keyHandle, 0);
 			
 			initpiggyback['playlist'] = "true";
-			if (ajax.sync_time > 0) {
-				ajax.async_get("all_albums");
+			if (lyre.sync_time > 0) {
+				lyre.async_get("all_albums");
 			}
 			
 			help.addStep("openanalbum", { "h": "openanalbum", "p": "openanalbum_p", "skipf": that.isAlbumOpen });
@@ -166,7 +165,7 @@ panels.PlaylistPanel = {
 		that.favSwitch = function(evt) {
 			if (evt.target.album_id) {
 				var setfav = albums[evt.target.album_id].album_favourite ? false : true;
-				ajax.async_get("fav_album", { "fav": setfav, "album_id": evt.target.album_id });
+				lyre.async_get("fav_album", { "fav": setfav, "album_id": evt.target.album_id });
 			}
 		};
 		
@@ -247,7 +246,7 @@ panels.PlaylistPanel = {
 		that.openAlbum = function(album_id) {
 			if (that.checkOpenDivs("album", album_id)) return;
 			idloading = album_id;
-			ajax.async_get("album", { "album_id": album_id });
+			lyre.async_get("album", { "album_id": album_id });
 		};
 		
 		that.sortSongList = function(a, b) {
