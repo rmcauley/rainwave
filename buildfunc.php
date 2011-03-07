@@ -66,12 +66,17 @@ function buildLanguages($dest, $bnum) {
 			copyFile("lang/" . $file, $file . ".txt", "/home/rmcauley/public_html/lang/");
 			$fl = array_merge($lang, $lang2);
 			writeLang($dest2 . "/" . substr($file, 0, (strlen($file) - 4)) . ".js", $fl);
+			$missingany = false;
 			foreach ($lang as $key => $value) {
 				if (!isset($lang2[$key])) {
-					fwrite($errs, "$file missing $key => \"" . $lang[$key] . "\"\n");
+					if (!$missingany) {
+						fwrite($errs, "*** $file Missing ***\n");
+						$missingany = true;
+					}
+					fwrite($errs, "\t\"$key\" => \"" . $lang[$key] . "\",\n");
 				}
 			}
-			fwrite($errs, "\n");
+			if ($missingany) fwrite($errs, "\n");
 		}
     }
 	fclose($errs);

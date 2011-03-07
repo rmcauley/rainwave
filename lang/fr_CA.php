@@ -35,6 +35,8 @@ $lang2 = array(
 	"log_400" => "HTTP Mauvaise Demande Spéciale",
 	"log_401" => "HTTP Non-autorisé",
 	"log_403" => "Erreur d'autorisation - s.v.p., actualisez la page.",
+	"log_403_anon" => "Quelqu'un d'autre sur votre adresse IP utilise Rainwave. Veuillez vous connecter pour régler le problème.",
+	"log_403_reg" => "Erreur d'autorisation de l'API. Veuillez rafraîchir la page.",
 	"log_404" => "HTTP Non Trouvé",
 	"log_408" => "HTTP Time Out",
 	"log_500" => "Difficultés Techniques - s.v.p., réessayez ou reportez le bug.",
@@ -119,6 +121,9 @@ $lang2 = array(
 	"suffix_7" => "e",
 	"suffix_8" => "e",
 	"suffix_9" => "e",
+	"suffix_11" => "ème",
+	"suffix_12" => "ème",
+	"suffix_13" => "ème",
 
 	/* Playlist Sentences */
 
@@ -291,5 +296,20 @@ $lang2 = array(
 	"person_p" => "personnes",
 	"Vote" => "Vote",
 	"Vote_p" => "Votes",
+	
+	"tunein_p" => "Téléchargez le fichier M3U et utilisez votre lecteur multimédia pour l'écouter.|br|VLC, Winamp Foobar2000 et fstream (Mac) sont recommendés.",
+	"rainwave3version" => "Rainwave Version 3",
+	"revision" => "Rev",
+	"crashed" => "Rainwave a cessé abruptement de fonctionner.",
+	"submiterror" => "S.V.P. veuillez copier/coller le contenu ci-dessous sur les forums pour aider le débuggage:",
+	"pleaserefresh" => "Rafraîchissez la page pour recommencer à utiliser Rainwave",
+	"reqexpiresin" => "(la place dans la file expire dans |expiretime|)",
+	"reqexpiresnext" => "(la place dans la file expire à la prochaine dem,ande spéciale.)",
+	"reqnorequests" => "Aucune demande spéciale n'a été soumise",
+	"reqmyrequests" => "Vos demandes spéciales",
+	"reqrequestline" => "File d'attente des demandes spéciales",
+	"reqrequestlinelong" => "Premiers |showing| des |linesize| dans la file d'attente",
+	"downloadm3u" => "▶ Télécharger le fichier M3U",
+	"players" => "Les lecteurs supportés sont VLC, Winamp, Foobar2000 et fstream (Mac/iPhone).|br|Windows Media Player et iTunes ne fonctionnent pas."
 );
 ?>

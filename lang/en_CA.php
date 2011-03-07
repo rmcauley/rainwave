@@ -272,6 +272,8 @@ $lang = array(
 	
 	/* Others */
 	"nowplaying" => "Now Playing",
+	"remixdetails" => "Remix Details",
+	"songhomepage" => "Song Homepage",
 	"requestedby" => "Requested by |requester|",
 	"oncooldownfor" => "On cooldown for |cooldown|.",
 	"conflictedwith" => "Conflicted with request by |requester|",

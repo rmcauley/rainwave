@@ -3,6 +3,10 @@ var edi = function() {
 	var layouts = [];
 	var clayout = false;
 	var oldurl = location.href;
+	if (location.href.indexOf("#") >= 0) {
+		location.href = location.href.substring(0, location.href.indexOf("#"));
+		oldurl = location.href;
+	}
 	var urlhistory = [];
 	that.openpanels = {};
 	
@@ -24,13 +28,13 @@ var edi = function() {
 			else oldurl = location.href + "#" + (urlhistory.length - 1);
 			location.href = oldurl;
 		}
-		if (typeof(openpanels[panel]) != "undefined") {
-			openpanels[panel].openLink(link);
+		if (typeof(that.openpanels[panel]) != "undefined") {
+			that.openpanels[panel].openLink(link);
 			return;
 		}
-		for (i in openpanels) {
-			if (openpanels[i].mpi) {
-				if (openpanels[i].openPanelLink(panel, link)) 
+		for (i in that.openpanels) {
+			if (that.openpanels[i].mpi) {
+				if (that.openpanels[i].openPanelLink(panel, link)) 
 					return;
 			}
 		}
@@ -266,6 +270,7 @@ var edi = function() {
 				panelcl = panelcl.replace(" ", "_");
 				panelel.setAttribute("class", "EdiPanel Panel_" + panelcl);
 				element.appendChild(panelel);
+				that.openpanels[layout[i][j].EDINAME].parent = that;
 				that.openpanels[layout[i][j].EDINAME].init();
 				
 				that.openpanels[layout[i][j].EDINAME]._row = i;
@@ -407,12 +412,69 @@ var edi = function() {
 	var resize_last_height = -1;
 	
 	that.startRowResize = function(evt, row) {
+		if (resize_row !== false) return;
+		resize_my = getMousePosY(evt);
+		resize_row = row;
+		resize_last_height = rowh[row];
+		document.addEventListener("mousemove", that.rollingRowResize, false);
+		document.addEventListener("mouseup", that.stopRowResize, false);
 	};
 	
 	that.rollingRowResize = function(evt) {
+		var my = getMousePosY(evt);
+		var height = rowh[resize_row] + (my - resize_my);
+		if (height < minrowh[resize_row]) height = minrowh[resize_row];
+		if (resize_last_height == height) return;
+		var height2 = rowh[resize_row + 1] - (height - rowh[resize_row]);
+		if (height2 < minrowh[resize_row + 1]) {
+			if ((height + (minrowh[resize_row + 1] - height2)) < minrowh[resize_row]) return;
+			height += height2 - minrowh[resize_row + 1];
+			height2 = minrowh[resize_row + 1];
+		}
+		var rowdiff = height - rowh[resize_row];
+		var rowdiff2 = height2 - rowh[resize_row + 1];
+		var y2, j;
+		for (var i = 0; i < layout[resize_row].length; i++) {
+			if ((typeof(layout[resize_row][i]) == "object") && (typeof(hborders[resize_row][i]) == "object")) {
+				hborders[resize_row][i].el.style.top = height + "px";
+				that.openpanels[layout[resize_row][i].EDINAME]._div.style.height = height + "px";
+			}
+		}
+		for (i = 0; i < layout[resize_row + 1].length; i++) {
+			if (typeof(layout[resize_row + 1][i]) == "object") {
+				y2 = that.openpanels[layout[resize_row + 1][i].EDINAME]._runningy - rowdiff2;
+				that.openpanels[layout[resize_row + 1][i].EDINAME]._div.style.top = y2 + "px";
+				for (j = 2; j <= layout[resize_row + 1][i].rowspan; j++) {
+					height2 += rowh[resize_row + j] + theme.borderheight;
+				}
+				that.openpanels[layout[resize_row + 1][i].EDINAME]._div.style.height = height2 + "px";
+			}
+		}
+		resize_last_height = height;
 	};
 	
 	that.stopRowResize = function(evt) {
+		var rowdiff = resize_last_height - rowh[resize_row];
+		rowh[resize_row] = resize_last_height;
+		rowh[resize_row + 1] = rowh[resize_row + 1] - rowdiff;
+		for (var i = 0; i < layout[resize_row].length; i++) {
+			if (typeof(layout[resize_row][i]) == "object") {
+				if (that.openpanels[layout[resize_row][i].EDINAME].afterWidthResize) {
+					that.openpanels[layout[resize_row][i].EDINAME].afterHeightResize(rowh[resize_row]);
+				}
+			}
+		}
+		for (i = 0; i < layout[resize_row + 1].length; i++) {
+			if (typeof(layout[resize_row + 1][i]) == "object") {
+				if (that.openpanels[layout[resize_row + 1][i].EDINAME].afterHeightResize) {
+					that.openpanels[layout[resize_row + 1][i].EDINAME].afterHeightResize(rowh[resize_row + 1]);
+				}
+				that.openpanels[layout[resize_row + 1][i].EDINAME]._runningy += rowdiff;
+			}
+		}
+		document.removeEventListener("mousemove", that.rollingRowResize, false);
+		document.removeEventListener("mouseup", that.stopRowResize, false);
+		resize_row = false;
 	};
 	
 	that.startColumnResize = function(evt, col) {
@@ -438,38 +500,40 @@ var edi = function() {
 		}
 		var coldiff = width - colw[resize_col];
 		var coldiff2 = width2 - colw[resize_col + 1];
-		var x2;
+		var x2, h;
 		for (var i = 0; i < layout.length; i++) {
-			if (typeof(layout[i][resize_col]) != "undefined") {
-				if (that.resizeColumnOK(i, resize_col)) {
-					vborders[i][resize_col].el.style.left = width + "px";
-					that.openpanels[layout[i][resize_col].EDINAME]._div.style.width = width + "px";
-				}
+			// checking for vborder doubles as a check for colspan
+			if ((typeof(layout[i][resize_col]) == "object") && (typeof(vborders[i][resize_col]) == "object")) {
+				vborders[i][resize_col].el.style.left = width + "px";
+				that.openpanels[layout[i][resize_col].EDINAME]._div.style.width = width + "px";
 			}
-			if (typeof(layout[i][resize_col + 1]) != "undefined") {
-				if (that.resizeColumnOK(i, resize_col + 1)) {
-					x2 = that.openpanels[layout[i][resize_col + 1].EDINAME]._runningx - coldiff2;
-					that.openpanels[layout[i][resize_col + 1].EDINAME]._div.style.left = x2 + "px";
-					that.openpanels[layout[i][resize_col + 1].EDINAME]._div.style.width = width2 + "px";
+			if (typeof(layout[i][resize_col + 1]) == "object") {
+				x2 = that.openpanels[layout[i][resize_col + 1].EDINAME]._runningx - coldiff2;
+				that.openpanels[layout[i][resize_col + 1].EDINAME]._div.style.left = x2 + "px";
+				for (j = 2; j <= layout[i][resize_col + 1].rowspan; j++) {
+					width2 += colw[resize_col + j] + theme.borderwidth;
 				}
+				that.openpanels[layout[i][resize_col + 1].EDINAME]._div.style.width = width2 + "px";
 			}
 		}
 		resize_last_width = width;
 	};
-	
-	that.resizeColumnOK = function(row, col) {
-		if (layout[row][col].colspan != 1) return false;
-		return true;
-	}
-	
-	
+
 	that.stopColumnResize = function(evt) {
 		var coldiff = resize_last_width - colw[resize_col];
 		colw[resize_col] = resize_last_width;
 		colw[resize_col + 1] = colw[resize_col + 1] - coldiff;
 		for (var i = 0; i < layout.length; i++) {
-			if (typeof(layout[i][resize_col + 1]) != "undefined") {
+			if (typeof(layout[i][resize_col]) == "object") {
+				if (that.openpanels[layout[i][resize_col].EDINAME].afterWidthResize) {
+					that.openpanels[layout[i][resize_col].EDINAME].afterWidthResize(colw[resize_col]);
+				}
+			}
+			if (typeof(layout[i][resize_col + 1]) == "object") {
 				that.openpanels[layout[i][resize_col + 1].EDINAME]._runningx += coldiff;
+				if (that.openpanels[layout[i][resize_col + 1].EDINAME].afterWidthResize) {
+					that.openpanels[layout[i][resize_col + 1].EDINAME].afterWidthResize(colw[resize_col + 1]);
+				}
 			}
 		}
 		document.removeEventListener("mousemove", that.rollingColumnResize, false);

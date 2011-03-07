@@ -73,7 +73,9 @@ function Rating(p) {
 					lockeduntil = now + 5;
 				}
 				lasttime = now;
-				newrating = that.scrubRating(that.userCoord(evt));
+				var newrating = that.userCoord(evt)
+				if (newrating == 0) return;
+				newrating = that.scrubRating(newrating);
 				that.oldrating = that.userrating;
 				that.userrating = newrating;
 				that.setUser(newrating);

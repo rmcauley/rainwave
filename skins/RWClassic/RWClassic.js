@@ -590,7 +590,8 @@ function _THEME() {
 			table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": json.album_art }, table.album_art);
 		}
 		else {
-			table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": "images/blank.png" }, table.album_art);
+			if (user.p.sid == 2) table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": "images/noart_2.jpg" }, table.album_art);			
+			else table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": "images/noart_1.jpg" }, table.album_art);
 		}
 		table.song_title = createEl("td", { "class": "nowplaying_song_title" }, tr);
 		table.song_rating = createEl("td", { "class": "nowplaying_song_rating" }, tr);
@@ -623,8 +624,13 @@ function _THEME() {
 				table.album_rating.appendChild(event.album_rating.el);
 			}
 			if (json.artists) Artist.allArtistToHTML(json.artists, table.artist_name);
-			if (json.song_url && (json.song_url.length > 0) && json.song_urltext && (json.song_urltext.length > 0)) {
-				createEl("a", { "href": json.song_url, "textContent": json.song_urltext }, table.url);
+			if (json.song_url && (json.song_url.length > 0)) {
+				var urltext = _l("songhomepage");
+				if (json.song_urltext && (json.song_urltext.length > 0)) urltext = json.song_urltext;
+				else if (user.p.sid == 2) urltext = _l("remixdetails");
+				var songlink = createEl("a", { "href": json.song_url, "target": "_blank" }, table.url);
+				createEl("span", { "textContent": urltext }, songlink);
+				createEl("img", { "src": "images/new_window_icon.png" }, songlink);
 				urlneedsfill = false;
 			}
 			if (json.elec_votes) {
@@ -1297,7 +1303,8 @@ function _THEME() {
 				createEl("img", { "src": json.album_art, "class": "pl_ad_albumart" }, div.albumarttd);
 			}
 			else {
-				div.albumarttd.texContent = " ";
+				if (user.p.sid == 2) createEl("img", { "src": "images/noart_2.jpg", "class": "pl_ad_albumart" }, div.albumarttd);
+				else createEl("img", { "src": "images/noart_1.jpg", "class": "pl_ad_albumart" }, div.albumarttd);
 			}
 			
 			div.hdrtable.appendChild(tr);

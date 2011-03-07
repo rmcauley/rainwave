@@ -253,7 +253,7 @@ td.pl_al_name {
 }
 
 td.pl_fav_true, td.pl_fav_false {
-	width: 5px !important;
+	width: 10px;
 	cursor: pointer;
 	border-left: 3px solid black;
 	border-right: 2px solid black;

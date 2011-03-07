@@ -87,6 +87,7 @@ panels.MainMPI = {
 			that.panels[panelname] = panel.constructor(mpi_container);
 			that.panels[panelname].container.style.top = "-5000px";
 			container.appendChild(mpi_container);
+			that.panels[panelname].parent = that;
 			that.panels[panelname].init();
 			that.divSize(that.panels[panelname].container);
 			that.panels[panelname].title = panels[panelname].title;

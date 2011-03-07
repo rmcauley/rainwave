@@ -1,13 +1,5 @@
 <?php
 
-$pagestart = microtime(true);
-
-require_once('/var/www/rainwave.cc/forums/config.php' );
-define('IN_PHPBB',true);
-$phpbb_root_path = "/var/www/rainwave.cc/forums/";
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
-
 define("RW", 1);
 define("OCR", 2);
 define("VW", 3);
@@ -32,6 +24,16 @@ else if ($_GET['site'] == "vw") $sid = VW;
 // And a final override for when $_GET cannot be used or modified!
 if (defined(SITEOVERRIDE)) $sid = SITEOVERRIDE;
 
+setcookie("r3sid", $sid, time()+60*60*24*30, "/", ".rainwave.cc");
+
+$pagestart = microtime(true);
+
+require_once('/var/www/rainwave.cc/forums/config.php');
+
+define('IN_PHPBB',true);
+$phpbb_root_path = "/var/www/rainwave.cc/forums/";
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
+include($phpbb_root_path . 'common.' . $phpEx);
 $output = array();
 $lastoutput = array();
 
