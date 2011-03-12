@@ -88,10 +88,13 @@ function _l(line, object, el, keep) {
 }
 
 function _lSuffixNumber(number) {
-	var key = "suffix_" + (number % 10);
-	if ((number >= 11) && (number <= 13)) key = "suffix_" + number;
-	if (typeof(lang[key]) != "undefined") return number + lang[key];
-	else return number + "[*" + key + "*]";
+	if (("suffix_" + number) in lang) return number + lang["suffix_" + number];
+	var key;
+	for (var i = 100; i >= 10; i = i / 10) {
+		key = "suffix_" + (number % i);
+		if (key in lang) return number + lang[key];
+	}
+	return number;
 }
 
 function _lPlural(number, word) {

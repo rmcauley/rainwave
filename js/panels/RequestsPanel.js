@@ -404,6 +404,13 @@ var Request = {
 				that.el.removeChild(that.cooldown);
 				delete(that.cooldown);
 			}
+			if (json.song_blocked && !that.blocked) {
+				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("reqruleblocked") }, that.el);
+			}
+			else if (that.blocked) {
+				that.el.removeChild(that.blocked);
+				delete(that.blocked);
+			}
 		};
 		
 		that.destruct = function() {

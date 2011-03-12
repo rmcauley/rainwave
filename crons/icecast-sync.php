@@ -20,7 +20,7 @@ foreach ($iceservers as $iceserver) {
 	if ($xmlurl = fopen($iceserver['url'], "r")) {
 		$clients = array();
 		$clistids = array();
-		$clistids = db_table("SELECT list_icecast_id FROM rw_listeners WHERE list_relay = '" . $iceserver['name'] . "' AND list_purge = FALSE ORDER BY list_icecast_id", $clistids);
+		$clistids = db_table("SELECT list_icecast_id FROM rw_listeners WHERE sid = " . $iceserver['sid'] . " AND list_relay = '" . $iceserver['name'] . "' AND list_purge = FALSE ORDER BY list_icecast_id", $clistids);
 		foreach ($clistids as $row) {
 			//print "\tDB Client: " . $row['clist_icecast_id'] . "\n";
 			array_push($clients, $row['list_icecast_id']); 
@@ -37,15 +37,15 @@ foreach ($iceservers as $iceserver) {
 		foreach ($clients as $dbid) {
 			if (count(preg_grep("/^" . $dbid . "$/", $ids)) == 0) {
 				print "\tClient ID $dbid does not exist on " . $iceserver['name'] . " Icecast server.\n";
-				db_update("UPDATE rw_listeners SET list_purge = TRUE WHERE list_relay = '" . $iceserver['name'] . "' AND list_icecast_id = " . $dbid);
+				#db_update("UPDATE rw_listeners SET list_purge = TRUE WHERE list_relay = '" . $iceserver['name'] . "' AND list_icecast_id = " . $dbid);
 			}
 		}
 
-		foreach ($ids as $id) {
-			if (count(preg_grep("/^" . $id . "$/", $clients)) == 0) {
-				print "\tClient ID $id from " . $iceserver['name'] . " does not exist in local database.\n";
-			}
-		}
+		#foreach ($ids as $id) {
+			#if (count(preg_grep("/^" . $id . "$/", $clients)) == 0) {
+				#print "\tClient ID $id from " . $iceserver['name'] . " does not exist in local database.\n";
+			#}
+		#}
 	}
 	else {
 		print "Sync failed on " . $iceserver['name'] . ".\n";

@@ -110,3 +110,24 @@ function formatNumberToMSS(seconds) {
 	if (newseconds < 10) newseconds = "0" + newseconds;
 	return (minutes + ":" + newseconds);
 }
+
+var _ACCENTS = {
+	"a": new RegExp("[àáâãäå]", 'g'),
+	"ae": new RegExp("æ", 'g'),
+	"c": new RegExp("ç", 'g'),
+	"e": new RegExp("[èéêë]", 'g'),
+	"i": new RegExp("[ìíîï]", 'g'),
+	"n": new RegExp("ñ", 'g'),
+	"o": new RegExp("[òóôõö]", 'g'),
+	"oe": new RegExp("œ", 'g'),
+	"u": new RegExp("[ùúûü]", 'g'),
+	"y": new RegExp("[ýÿ]", 'g')
+}
+
+function removeAccentsAndLC(s){
+	var r = s.toLowerCase();
+	for (var i in _ACCENTS) {
+		r = r.replace(_ACCENTS[i], i);
+	}
+	return r;
+};

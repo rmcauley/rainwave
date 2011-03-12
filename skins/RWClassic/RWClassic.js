@@ -1097,11 +1097,11 @@ function _THEME() {
 		var el;
 		var inlinesearchc;
 		var inlinesearch;
-		var keynavscrolloffset = svg.em * 5;
+		var keynavscrolloffset = UISCALE * 5;
 		var odholder;
 		
 		pp.draw = function() {
-			var leftwidth = svg.em * 30;
+			var leftwidth = UISCALE * 30;
 			inlinesearchc = createEl("div", { "class": "pl_searchc" }, pp.container);
 			createEl("span", { "textContent": _l("searching") }, inlinesearchc);
 			inlinesearch = createEl("span", { "class": "pl_search" }, inlinesearchc);
@@ -1118,7 +1118,8 @@ function _THEME() {
 			var ratingx = album.album_rating_user * 10;
 			album.td_name = document.createElement("td");
 			album.td_name.setAttribute("class", "pl_al_name");
-			album.td_name.style.backgroundPosition = "100% " + (-200 + ratingx) + "px";
+			if (ratingx > 0) album.td_name.style.backgroundPosition = "100% " + (-193 + ratingx) + "px";
+			else album.td_name.style.backgroundPosition = "100% -200px";
 			album.td_name.textContent = album.album_name;
 			album.tr.appendChild(album.td_name);
 			album.td_name.addEventListener("click", function() { pp.updateKeyNavOffset(album); }, true);
@@ -1138,7 +1139,7 @@ function _THEME() {
 		};
 		
 		pp.startSearchDraw = function() {
-			albumlistc.style.paddingTop = (svg.em * 2) + "px";
+			albumlistc.style.paddingTop = (UISCALE * 2) + "px";
 			inlinesearch.textContent = "";
 			inlinesearchc.style.display = "block";
 		};
@@ -1186,7 +1187,7 @@ function _THEME() {
 		pp.ratingResultDraw = function(album, result) {
 			album.album_rating_user = result.album_rating;
 			var ratingx = album.album_rating_user * 10;
-			album.td_name.style.backgroundPosition = "100% " + (-200 + ratingx) + "px";
+			album.td_name.style.backgroundPosition = "100% " + (-193 + ratingx) + "px";
 			album.td_rating.textContent = album.album_rating_user.toFixed(1);
 		};
 		
@@ -1199,11 +1200,11 @@ function _THEME() {
 		};
 		
 		pp.setKeyNavOffset = function(offset) {
-			if (offset && (offset > svg.em * 5)) {
+			if (offset && (offset > UISCALE * 5)) {
 				keynavscrolloffset = offset;
 			}
 			else {
-				keynavscrolloffset = svg.em * 5;
+				keynavscrolloffset = UISCALE * 5;
 			}
 		}
 		
@@ -1244,7 +1245,7 @@ function _THEME() {
 			div.albumdetailtd.setAttribute("class", "pl_ad_albumdetailtd");
 			
 			if ((json.album_rating_count >= 10) && svg.capable) {
-				var gr = graph.makeSVG(graph.RatingHistogram, that.RatingHistogramMask, 200, 120 - (svg.em * 3), { maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10, raw: json.album_rating_histogram });
+				var gr = graph.makeSVG(graph.RatingHistogram, that.RatingHistogramMask, 200, 120 - (UISCALE * 3), { maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10, raw: json.album_rating_histogram });
 				gr.svg.setAttribute("class", "pl_ad_ratinghisto");
 				div.albumdetailtd.appendChild(gr.svg);
 			}
@@ -1317,7 +1318,9 @@ function _THEME() {
 			that.drawAlbumTable(div.songlist, div.songarray, json.song_data);
 			
 			div.updateHelp = function() {
-				help.changeStepPointEl("clicktorequest", [ div.songarray[0].td_r ]);
+				if (div.songarray.length > 0) {
+					help.changeStepPointEl("clicktorequest", [ div.songarray[0].td_r ]);
+				}
 			};
 			
 			div.appendChild(div.songlist);

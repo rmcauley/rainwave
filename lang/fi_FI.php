@@ -1,5 +1,5 @@
-<?php
-// Rainwave 3 fi_FI v4 Language File by quarterlife
+﻿<?php
+// Rainwave 3 fi_FI v5 Language File by quarterlife
 
 $lang2 = array(
 	// Panel Names
@@ -127,7 +127,7 @@ $lang2 = array(
 	"pl_oncooldown" => "Jäähyllä |time| ajan.",
 	"pl_ranks" => "Arvosteltu |rating|, sijalla |rank|.",
 	"pl_favourited" => "|count| |P:count,person| on asettanut tämän suosikikseen.",
-	"pl_wins" => "Voittaa |percent|% äänestyksistä, joissa mukana.",
+	"pl_wins" => "Voittaa |percent|% äänestyksistä, joissa on mukana.",
 	"pl_requested" => "Toivottu |count| kertaa, sijalla |rank|.",
 	"pl_genre" => "Jäähyryhmä: ",
 	"pl_genre2" => ".",
@@ -261,7 +261,9 @@ $lang2 = array(
 	
 	/* Others */
 	"nowplaying" => "Nyt soi",
-	"requestedby" => "|requester| toivoi tätä",
+	"remixdetails" => "Tiedot Remixistä",
+	"songhomepage" => "Kappaleen kotisivu",
+	"requestedby" => "Tätä kappaletta toivoi |requester|",
 	"oncooldownfor" => "Jäähyllä |cooldown| ajan.",
 	"conflictedwith" => "Oli ristiriidassa toiveen kanssa, jonka teki |requester|.",
 	"conflictswith" => "Ristiriidassa toiveen kanssa, jonka teki |requester|.",

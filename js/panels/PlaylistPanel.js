@@ -55,8 +55,6 @@ panels.PlaylistPanel = {
 		};
 		
 		that.playlistUpdate = function(json) {
-			var oa;
-			var i = 0;
 			/*while (i < albumsort.length) {
 				if (!albums[albumsort[i]].album_available) {
 					that.setAlbumRating(albumsort[i]);
@@ -72,6 +70,15 @@ panels.PlaylistPanel = {
 			for (var i in json) {
 				if (json[i].album_id) that.albumUpdate(json[i]);
 			}
+			for (i in albums) {
+				if (!albums[i].album_available) {
+					if ((albums[i].album_lowest_oa - clock.now) <= 0) {
+						that.setAlbumRating(i);
+						that.setRowClass(albums[i]);
+						that.reinsertAlbum(i);
+					}
+				}
+			}
 			if (!inlinetimer) {
 				that.updateAlbumList();
 			}
@@ -83,6 +90,7 @@ panels.PlaylistPanel = {
 			json.album_available = (json.album_lowest_oa < clock.now) ? true : false;
 			if (typeof(albums[album_id]) == "undefined") {
 				albums[album_id] = json;
+				albums[album_id].album_searchname = removeAccentsAndLC(albums[album_id].album_name);
 				that.drawAlbumlistEntry(albums[album_id]);
 				updated.push(album_id);
 				toreturn = true;
@@ -271,9 +279,15 @@ panels.PlaylistPanel = {
 			var code = (evt.keyCode != 0) ? evt.keyCode : evt.charCode;
 			var chr = String.fromCharCode(code);
 			
+			// TODO: Why am I combining keyCode and charCode, this is clearly proving dangerous!
 			var dosearch = false;
+			// f keys
+			if (evt.keyCode && (evt.keyCode >= 112) && (evt.keyCode <= 123)) {
+				// short circuit
+				return bubble;
+			}
 			// down arrow
-			if (code == 40) {
+			else if (code == 40) {
 				var lastkeypos = keynavpos;
 				keynavpos++;
 				while (albums[albumsort[keynavpos]] && albums[albumsort[keynavpos]].hidden) keynavpos++;
@@ -291,22 +305,24 @@ panels.PlaylistPanel = {
 				resetkeytimer = true;
 			}
 			// up arrow
-			else if ((code == 38) && (albumsort.length > 0) && (keynavpos > 0)) {
-				var lastkeypos = keynavpos;
-				keynavpos--;
-				while (albums[albumsort[keynavpos]] && albums[albumsort[keynavpos]].hidden) keynavpos--;
-				if (!albums[albumsort[keynavpos]]) keynavpos++;
-				if (lastkeypos != keynavpos) {
-					bubble = false;
-					if (lastkeypos >= 0) that.setRowClass(albums[albumsort[lastkeypos]], false);
-					that.scrollToAlbum(albums[albumsort[keynavpos]]);
-					that.setRowClass(albums[albumsort[keynavpos]], true);
+			else if (code == 38) {
+				if ((albumsort.length > 0) && (keynavpos > 0)) {
+					var lastkeypos = keynavpos;
+					keynavpos--;
+					while (albums[albumsort[keynavpos]] && albums[albumsort[keynavpos]].hidden) keynavpos--;
+					if (!albums[albumsort[keynavpos]]) keynavpos++;
+					if (lastkeypos != keynavpos) {
+						bubble = false;
+						if (lastkeypos >= 0) that.setRowClass(albums[albumsort[lastkeypos]], false);
+						that.scrollToAlbum(albums[albumsort[keynavpos]]);
+						that.setRowClass(albums[albumsort[keynavpos]], true);
+					}
+					else {
+						keynavpos = lastkeypos;
+					}
+					if (inlinetimer) resettimer = true;
+					resetkeytimer = true;
 				}
-				else {
-					keynavpos = lastkeypos;
-				}
-				if (inlinetimer) resettimer = true;
-				resetkeytimer = true;
 			}
 			// escape
 			else if ((code == 13) && (keynavpos >= 0)) {
@@ -383,7 +399,7 @@ panels.PlaylistPanel = {
 			
 			// remove all albums that no longer match the search
 			for (i = 0; i < albumsort.length; i++) {
-				if (!albums[albumsort[i]].hidden && albums[albumsort[i]].album_name.toLowerCase().indexOf(text) == -1) {
+				if (!albums[albumsort[i]].hidden && albums[albumsort[i]].album_searchname.indexOf(text) == -1) {
 					albums[albumsort[i]].hidden = true;
 					that.hideChild(albums[albumsort[i]]);
 					searchremoved.push(albumsort[i]);
@@ -395,7 +411,7 @@ panels.PlaylistPanel = {
 			that.drawSearchString(searchstring);
 			text = text.toLowerCase();
 			for (var i in searchremoved) {
-				if (albums[searchremoved[i]].album_name.toLowerCase().indexOf(text) > -1) {
+				if (albums[searchremoved[i]].album_searchname.indexOf(text) > -1) {
 					that.unhideChild(albums[searchremoved[i]]);
 					albums[searchremoved[i]].hidden = false;
 				}
