@@ -50,7 +50,6 @@ panels.MainMPI = {
 		};
 		
 		that.divSize = function(el) {
-			el.style.width = container.offsetWidth + "px";
 			el.style.height = (container.offsetHeight - that.tabheight) + "px";
 		};
 		
@@ -86,6 +85,7 @@ panels.MainMPI = {
 			mpi_container.className = "EdiPanel Panel_" + panelcl;
 			that.panels[panelname] = panel.constructor(mpi_container);
 			that.panels[panelname].container.style.top = "-5000px";
+			that.panels[panelname].container.style.width = "100%";
 			container.appendChild(mpi_container);
 			that.panels[panelname].parent = that;
 			that.panels[panelname].init();

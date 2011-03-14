@@ -1,6 +1,6 @@
 var edi = function() {
 	var that = {};
-	var layouts = [];
+	var layouts = {};
 	var clayout = false;
 	var oldurl = location.href;
 	if (location.href.indexOf("#") >= 0) {
@@ -9,6 +9,14 @@ var edi = function() {
 	}
 	var urlhistory = [];
 	that.openpanels = {};
+	
+	that.getDefaultLayout = function() {
+		return [
+			[ { "panel": "MenuPanel", "rowspan": 1, "colspan": 2 } ],
+			[ { "panel": "TimelinePanel", "rowspan": 2, "colspan": 1 }, { "panel": "NowPanel", "rowspan": 1, "colspan": 1 } ],
+			[ false, { "panel": "MainMPI", "rowspan": 1, "colspan": 1 } ]
+		];
+	};
 	
 	that.urlChangeDetect = function() {
 		if (oldurl != location.href) {
@@ -40,24 +48,28 @@ var edi = function() {
 		}
 	};
 	
-	// NEEDS TO BE RE-CODED for new layouts format
-	/*	that.loadLayouts = function() {
-		var c = prefs.loadCookie("edilayouts");
-		for (var l in c) {
-			if (c[l].length > 0) layouts[l] = new Array();
-			for (var row = 0; row < c[l].length; row++) {
-				layouts[l][row] = [];
-				for (var p in c[l][row]) {
-					if (panels[c[l][row][p]]) {
-						layouts[i][row].push(panels[c][l][row][p]);
+	// TODO: Scrub on load
+	that.loadLayouts = function() {
+		var cookie = prefs.loadCookie("edilayouts");
+		var layout;
+		var row;
+		var column;
+		for (layout in cookie) {
+			if (cookie[layout].length > 0) layouts[layout] = [];
+			for (row = 0; row < cookie[layout].length; row++) {
+				layouts[layout][row] = [];
+				for (column = 0; column < cookie[layout][row].length; column++) {
+					if ((column in cookie[layout][row]) && cookie[layout][row][column] && ("panel" in cookie[layout][row][column]) && (cookie[layout][row][column].panel in panels)) {
+						layouts[layout][row][column] = cookie[layout][row][column];
 					}
 				}
 			}
 		}
 	};
-	
+
+	// TODO: Scrub on save
 	that.saveLayouts = function() {
-		var c = new Array();
+		/*var c = {};
 		for (var l in layouts) {
 			if (layouts[l].length > 0) c[l] = new Array();
 			for (var row = 0; row < layouts[l].length; row++) {
@@ -66,18 +78,26 @@ var edi = function() {
 					c[l][row].push(p);
 				}
 			}
-		}
-		prefs.saveCookie("edilayouts", c);
-	};*/
+		}*/
+		prefs.saveCookie("edilayouts", layouts);
+	};
 
 	that.init = function(container) {
-		//that.loadLayouts();
-		layouts['default'] = [
-			[ { "panel": "MenuPanel", "rowspan": 1, "colspan": 2 } ],
-			[ { "panel": "TimelinePanel", "rowspan": 2, "colspan": 1 }, { "panel": "NowPanel", "rowspan": 1, "colspan": 1 } ],
-			[ false, { "panel": "MainMPI", "rowspan": 1, "colspan": 1 } ]
-		];
-		clayout = layouts['default'];
+		that.loadLayouts();
+		var wantlayout = prefs.getPref("edi", "clayout");
+		if ((wantlayout != "_default") && (wantlayout in layouts)) {
+			clayout = layouts[wantlayout];
+		}
+		else {
+			wantlayout = "default";
+			layouts['default'] = that.getDefaultLayout();
+			clayout = layouts['default'];
+		}
+		prefs.changePref("edi", "clayout", wantlayout);
+		
+		// TODO: When adding a callback for the changing the layout, DEFINE THE CALLBACK HERE.
+		// Putting it above this mark would cause an unnecessary reflow when starting up the page without cookies.
+		
 		for (var i in panels) {
 			panels[i].EDINAME = i;
 		}
@@ -88,22 +108,30 @@ var edi = function() {
 		setInterval(that.urlChangeDetect, 200);
 	};
 	
+	that.resetLayout = function(value) {
+		if (value) {
+			layouts['default'] = that.getDefaultLayout();
+			that.saveLayouts();
+			prefs.changePref("edi", "clayout", "_default", true);
+		}
+	};
+	
+	prefs.addPref("edi", { "hidden": true, "name": "clayout", "defaultvalue": "_default" });
+	//prefs.addPref("edi", { "name": "resetlayout", "type": "button", "defaultvalue": false, "callback": that.resetLayout, "refresh": true, "sessiononly": true });
+	
 	//*************************************************************************
 	// Sizing/drawing layouts
 	
 	var colw = [];
-	var colx = [];
 	var rowh = [];
-	var rowy = [];
 	var mincolw = [];
 	var minrowh = [];
 	var colflags = [];
 	var rowflags = [];
-	var table = [];
 	var layout = [];
 	var vborders = [];
 	var hborders = [];
-	var cborders = [];
+	//var cborders = [];
 
 	that.sizeLayout = function() {
 		var maxcols = 0;
@@ -129,6 +157,8 @@ var edi = function() {
 				layout[i][j] = panels[clayout[i][j].panel];
 				layout[i][j].rowspan = clayout[i][j].rowspan;
 				layout[i][j].colspan = clayout[i][j].colspan;
+				if ("width" in clayout[i][j]) layout[i][j].width = clayout[i][j].width;
+				if ("height" in clayout[i][j]) layout[i][j].height = clayout[i][j].height;
 				layout[i][j].row = i;
 				layout[i][j].column = j;
 				if (layout[i][j].rowspan == 1) {
@@ -190,113 +220,6 @@ var edi = function() {
 		
 		colw = that.getGridSize(colw, mincolw, colflags, xbudget, theme.borderwidth);
 		rowh = that.getGridSize(rowh, minrowh, rowflags, ybudget, theme.borderheight);
-	};
-	
-	that.drawGrid = function(element) {
-		for (var i = 0; i < layout.length; i++) {
-			vborders[i] = new Array();
-			hborders[i] = new Array();
-			//cborders[i] = new Array();
-		}
-		var runningy = 0;
-		for (var i = 0; i < layout.length; i++) {
-			var runningx = 0;
-			var borderheight = theme.borderheight;
-			for (var j = 0; j < layout[i].length; j++) {
-				if (!layout[i][j]) {
-					var cellwidth = (layout[i - 1][j].colspan - 1) * theme.borderwidth;
-					for (var k = j; k <= (j + layout[i - 1][j].colspan - 1); k++) {
-						cellwidth += colw[k];
-					}
-					runningx += cellwidth + theme.borderwidth;
-					continue;
-				}
-				
-				var usevborder = false;
-				var usehborder = false;
-				var borderwidth = theme.borderwidth;
-				var cirregular = (layout[i][j].colspan > 1) || (layout[i][j].colspan > 1) ? true : false;
-				if ((j + layout[i][j].colspan) < colflags.length) usevborder = true;
-				if ((i + layout[i][j].rowspan) < layout.length) usehborder = true;
-				if (panels[layout[i][j].EDINAME].noborder) {
-					//usevborder = false;
-					usehborder = false;
-					//borderwidth = Math.floor(borderwidth / 2);
-					borderheight = Math.floor(borderheight / 2);
-					rowh[rowh.length - 1] += borderheight;
-				}
-				
-				var cellwidth = (layout[i][j].colspan - 1) * theme.borderwidth;
-				for (var k = j; k <= (j + layout[i][j].colspan - 1); k++) cellwidth += colw[k];
-				var cellheight = (layout[i][j].rowspan - 1) * theme.borderheight;
-				for (var k = i; k <= (i + layout[i][j].rowspan - 1); k++) cellheight += rowh[k];
-				
-				var dispwidth = (typeof(layout[i][j].initSizeX) == "function") ? layout[i][j].initSizeX(cellwidth, colw[j]) : cellwidth;
-				var dispheight = (typeof(layout[i][j].initSizeY) == "function") ? layout[i][j].initSizeY(cellheight, rowh[i]) : cellheight;
-				if ((dispwidth != cellwidth) || (dispheight != cellheight)) cirregular = true;
-
-				if (usevborder) {
-					vborders[i][j] = {};
-					vborders[i][j].el = createEl("div", { "class": "edi_border_vertical" });
-					vborders[i][j].el.setAttribute("style", "position: absolute; top: " + runningy + "px; left: " + (runningx + dispwidth) + "px; height: " + cellheight + "px;");
-					vborders[i][j].vfirst = (i == 0) ? true : false;
-					vborders[i][j].vlast = ((i + (layout[i][j].rowspan - 1)) >= (rowflags.length - 1)) ? true : false;
-					var crap = function() {
-						var h = j - 1;
-						vborders[i][j].el.addEventListener('mousedown', function(e) { that.startColumnResize(e, h + 1); }, true);
-					}();
-					if (theme.borderVertical) theme.borderVertical(vborders[i][j]);
-					element.appendChild(vborders[i][j].el);
-				}
-				
-				if (usehborder) {
-					hborders[i][j] = {}
-					hborders[i][j].el = createEl("div", { "class": "edi_border_horizontal" });
-					hborders[i][j].el.setAttribute("style", "position: absolute; top: " + (runningy + cellheight) + "px; left: " + runningx + "px; width: " + cellwidth + "px;");
-					hborders[i][j].hfirst = (j == 0) ? true : false;
-					hborders[i][j].hlast = (j >= (layout[i].length - 1)) ? true : false;
-					var crap = function() {
-						var h = i - 1;
-						hborders[i][j].el.addEventListener('mousedown', function(e) { that.startRowResize(e, h + 1); }, true);
-					}();
-					if (theme.borderHorizontal) theme.borderHorizontal(hborders[i][j]);
-					element.appendChild(hborders[i][j].el);
-				}
-				
-				var panelel = document.createElement("div");
-				panelel.setAttribute("style", "position: absolute; top: " + runningy + "px; left:" + runningx + "px; width: " + dispwidth + "px; height: " + dispheight + "px;");
-				that.openpanels[layout[i][j].EDINAME] = layout[i][j].constructor(panelel);
-				var panelcl = layout[i][j].EDINAME;
-				panelcl = panelcl.replace(" ", "_");
-				panelel.setAttribute("class", "EdiPanel Panel_" + panelcl);
-				element.appendChild(panelel);
-				that.openpanels[layout[i][j].EDINAME].parent = that;
-				that.openpanels[layout[i][j].EDINAME].init();
-				
-				that.openpanels[layout[i][j].EDINAME]._row = i;
-				that.openpanels[layout[i][j].EDINAME]._column = j;
-				that.openpanels[layout[i][j].EDINAME]._runningx = runningx;
-				that.openpanels[layout[i][j].EDINAME]._runningy = runningy;
-				that.openpanels[layout[i][j].EDINAME]._div = panelel;
-				
-				runningx += cellwidth + borderwidth;
-			}
-		runningy += rowh[i] + borderheight;
-		}
-		
-		for (i = 0; i < layout.length; i++) {
-			for (j = 0; j < layout[i].length; j++) {
-				if (typeof(layout[i][j]) != "object") continue;
-				if (that.openpanels[layout[i][j].EDINAME].onLoad) that.openpanels[layout[i][j].EDINAME].onLoad();
-			}
-		}
-		
-		/*for (var i = 0; i < (layout.length - 1); i++) {
-			for (var j = 0; j < (layout[i].length - 1); j++) {
-				if (typeof(cborders[i][j]) != "object") continue;
-				theme.borderCorner(cborders[i][j]);
-			}
-		}*/
 	};
 	
 	that.getGridSize = function(sizes, minsizes, flags, budget, bordersize) {
@@ -401,6 +324,115 @@ var edi = function() {
 		return sizes;
 	};
 	
+	that.drawGrid = function(element) {
+		for (var i = 0; i < layout.length; i++) {
+			vborders[i] = new Array();
+			hborders[i] = new Array();
+			//cborders[i] = new Array();
+		}
+		var runningy = 0;
+		for (var i = 0; i < layout.length; i++) {
+			var runningx = 0;
+			var borderheight = theme.borderheight;
+			for (var j = 0; j < layout[i].length; j++) {
+				if (!layout[i][j]) {
+					var cellwidth = (layout[i - 1][j].colspan - 1) * theme.borderwidth;
+					for (var k = j; k <= (j + layout[i - 1][j].colspan - 1); k++) {
+						cellwidth += colw[k];
+					}
+					runningx += cellwidth + theme.borderwidth;
+					continue;
+				}
+				
+				var usevborder = false;
+				var usehborder = false;
+				var borderwidth = theme.borderwidth;
+				var cirregular = (layout[i][j].colspan > 1) || (layout[i][j].colspan > 1) ? true : false;
+				if ((j + layout[i][j].colspan) < colflags.length) usevborder = true;
+				if ((i + layout[i][j].rowspan) < layout.length) usehborder = true;
+				if (panels[layout[i][j].EDINAME].noborder) {
+					//usevborder = false;
+					usehborder = false;
+					//borderwidth = Math.floor(borderwidth / 2);
+					borderheight = Math.floor(borderheight / 2);
+					rowh[rowh.length - 1] += borderheight;
+				}
+				
+				var cellwidth = (layout[i][j].colspan - 1) * theme.borderwidth;
+				for (var k = j; k <= (j + layout[i][j].colspan - 1); k++) cellwidth += colw[k];
+				var cellheight = (layout[i][j].rowspan - 1) * theme.borderheight;
+				for (var k = i; k <= (i + layout[i][j].rowspan - 1); k++) cellheight += rowh[k];
+				
+				var dispwidth = (typeof(layout[i][j].initSizeX) == "function") ? layout[i][j].initSizeX(cellwidth, colw[j]) : cellwidth;
+				var dispheight = (typeof(layout[i][j].initSizeY) == "function") ? layout[i][j].initSizeY(cellheight, rowh[i]) : cellheight;
+				if ((dispwidth != cellwidth) || (dispheight != cellheight)) cirregular = true;
+
+				usevborder = false;
+				if (usevborder) {
+					vborders[i][j] = {};
+					vborders[i][j].el = createEl("div", { "class": "edi_border_vertical" });
+					vborders[i][j].el.setAttribute("style", "position: absolute; top: " + runningy + "px; left: " + (runningx + dispwidth) + "px; height: " + cellheight + "px;");
+					vborders[i][j].vfirst = (i == 0) ? true : false;
+					vborders[i][j].vlast = ((i + (layout[i][j].rowspan - 1)) >= (rowflags.length - 1)) ? true : false;
+					var crap = function() {
+						var h = j - 1;
+						vborders[i][j].el.addEventListener('mousedown', function(e) { that.startColumnResize(e, h + 1); }, true);
+					}();
+					if (theme.borderVertical) theme.borderVertical(vborders[i][j]);
+					element.appendChild(vborders[i][j].el);
+				}
+				
+				usehborder = false;
+				if (usehborder) {
+					hborders[i][j] = {}
+					hborders[i][j].el = createEl("div", { "class": "edi_border_horizontal" });
+					hborders[i][j].el.setAttribute("style", "position: absolute; top: " + (runningy + cellheight) + "px; left: " + runningx + "px; width: " + cellwidth + "px;");
+					hborders[i][j].hfirst = (j == 0) ? true : false;
+					hborders[i][j].hlast = (j >= (layout[i].length - 1)) ? true : false;
+					var crap = function() {
+						var h = i - 1;
+						hborders[i][j].el.addEventListener('mousedown', function(e) { that.startRowResize(e, h + 1); }, true);
+					}();
+					if (theme.borderHorizontal) theme.borderHorizontal(hborders[i][j]);
+					element.appendChild(hborders[i][j].el);
+				}
+				
+				var panelel = document.createElement("div");
+				panelel.setAttribute("style", "position: absolute; top: " + runningy + "px; left:" + runningx + "px; width: " + dispwidth + "px; height: " + dispheight + "px;");
+				that.openpanels[layout[i][j].EDINAME] = layout[i][j].constructor(panelel);
+				var panelcl = layout[i][j].EDINAME;
+				panelcl = panelcl.replace(" ", "_");
+				panelel.setAttribute("class", "EdiPanel Panel_" + panelcl);
+				element.appendChild(panelel);
+				that.openpanels[layout[i][j].EDINAME].parent = that;
+				that.openpanels[layout[i][j].EDINAME].init();
+				
+				that.openpanels[layout[i][j].EDINAME]._row = i;
+				that.openpanels[layout[i][j].EDINAME]._column = j;
+				that.openpanels[layout[i][j].EDINAME]._runningx = runningx;
+				that.openpanels[layout[i][j].EDINAME]._runningy = runningy;
+				that.openpanels[layout[i][j].EDINAME]._div = panelel;
+				
+				runningx += cellwidth + borderwidth;
+			}
+		runningy += rowh[i] + borderheight;
+		}
+		
+		for (i = 0; i < layout.length; i++) {
+			for (j = 0; j < layout[i].length; j++) {
+				if (typeof(layout[i][j]) != "object") continue;
+				if (that.openpanels[layout[i][j].EDINAME].onLoad) that.openpanels[layout[i][j].EDINAME].onLoad();
+			}
+		}
+		
+		/*for (var i = 0; i < (layout.length - 1); i++) {
+			for (var j = 0; j < (layout[i].length - 1); j++) {
+				if (typeof(cborders[i][j]) != "object") continue;
+				theme.borderCorner(cborders[i][j]);
+			}
+		}*/
+	};
+	
 	//*************************************
 	//  Resizing
 	
@@ -436,7 +468,7 @@ var edi = function() {
 		var y2, j;
 		for (var i = 0; i < layout[resize_row].length; i++) {
 			if ((typeof(layout[resize_row][i]) == "object") && (typeof(hborders[resize_row][i]) == "object")) {
-				hborders[resize_row][i].el.style.top = height + "px";
+				hborders[resize_row][i].el.style.top = (that.openpanels[layout[resize_row][i].EDINAME]._runningy + height) + "px";
 				that.openpanels[layout[resize_row][i].EDINAME]._div.style.height = height + "px";
 			}
 		}
@@ -457,7 +489,11 @@ var edi = function() {
 		var rowdiff = resize_last_height - rowh[resize_row];
 		rowh[resize_row] = resize_last_height;
 		rowh[resize_row + 1] = rowh[resize_row + 1] - rowdiff;
+		var layoutname = prefs.getPref("edi", "clayout");
 		for (var i = 0; i < layout[resize_row].length; i++) {
+			if (typeof(layouts[layoutname][resize_row][i]) == "object") {
+				layouts[layoutname][resize_row][i].height = rowh[resize_row];
+			}
 			if (typeof(layout[resize_row][i]) == "object") {
 				if (that.openpanels[layout[resize_row][i].EDINAME].afterWidthResize) {
 					that.openpanels[layout[resize_row][i].EDINAME].afterHeightResize(rowh[resize_row]);
@@ -465,6 +501,9 @@ var edi = function() {
 			}
 		}
 		for (i = 0; i < layout[resize_row + 1].length; i++) {
+			if (typeof(layouts[layoutname][resize_row + 1][i]) == "object") {
+				layouts[layoutname][resize_row + 1][i].height = rowh[resize_row + 1];
+			}
 			if (typeof(layout[resize_row + 1][i]) == "object") {
 				if (that.openpanels[layout[resize_row + 1][i].EDINAME].afterHeightResize) {
 					that.openpanels[layout[resize_row + 1][i].EDINAME].afterHeightResize(rowh[resize_row + 1]);
@@ -475,6 +514,7 @@ var edi = function() {
 		document.removeEventListener("mousemove", that.rollingRowResize, false);
 		document.removeEventListener("mouseup", that.stopRowResize, false);
 		resize_row = false;
+		that.saveLayouts();
 	};
 	
 	that.startColumnResize = function(evt, col) {
@@ -504,7 +544,7 @@ var edi = function() {
 		for (var i = 0; i < layout.length; i++) {
 			// checking for vborder doubles as a check for colspan
 			if ((typeof(layout[i][resize_col]) == "object") && (typeof(vborders[i][resize_col]) == "object")) {
-				vborders[i][resize_col].el.style.left = width + "px";
+				vborders[i][resize_col].el.style.left = (that.openpanels[layout[i][resize_col].EDINAME]._runningx + width) + "px";
 				that.openpanels[layout[i][resize_col].EDINAME]._div.style.width = width + "px";
 			}
 			if (typeof(layout[i][resize_col + 1]) == "object") {
@@ -523,7 +563,14 @@ var edi = function() {
 		var coldiff = resize_last_width - colw[resize_col];
 		colw[resize_col] = resize_last_width;
 		colw[resize_col + 1] = colw[resize_col + 1] - coldiff;
+		var layoutname = prefs.getPref("edi", "clayout");
 		for (var i = 0; i < layout.length; i++) {
+			if (typeof(layouts[layoutname][i][resize_col]) == "object") {
+				layouts[layoutname][i][resize_col].width = colw[resize_col];
+			}
+			if (typeof(layouts[layoutname][i][resize_col + 1]) == "object") {
+				layouts[layoutname][i][resize_col + 1].width = colw[resize_col + 1];
+			}
 			if (typeof(layout[i][resize_col]) == "object") {
 				if (that.openpanels[layout[i][resize_col].EDINAME].afterWidthResize) {
 					that.openpanels[layout[i][resize_col].EDINAME].afterWidthResize(colw[resize_col]);
@@ -539,6 +586,7 @@ var edi = function() {
 		document.removeEventListener("mousemove", that.rollingColumnResize, false);
 		document.removeEventListener("mouseup", that.stopColumnResize, false);
 		resize_col = false;
+		that.saveLayouts();
 	};
 		
 	return that;

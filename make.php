@@ -22,7 +22,7 @@ removeOldBuild($dest);
 crushPNG();
 writeParsedFile("root/preload.php", $dest . "preload.php", $bnum);
 copyStatic($dest, $bnum);
-buildSkins($dest, $bnum);
+buildProdSkins($dest, $bnum);
 buildLanguages($dest, $bnum);
 minifyJavascript($dest, $bnum);
 writeParsedFile("root/index.php", $dest . "index.php", $bnum);

@@ -58,8 +58,12 @@ panels.PrefsPanel = {
 				select.addEventListener("change", that.prefDropdownChange, true);
 				td.appendChild(select);
 			}
+			else if (prefdata.type == "button") {
+				var button = createEl("button", { "textContent": _l("pref_" + section + "_" + prefdata.name + "_button") }, td);
+				button.addEventListener("click", function() { prefs.changePref(section, prefdata.name, true); }, true);
+			}
 			tr.appendChild(td);
-			td = document.createElement("td");
+			/*td = document.createElement("td");
 			td.setAttribute("class", "pref_third");
 			if (prefdata.refresh) {
 				td.textContent = _l("pref_refreshrequired");
@@ -67,7 +71,7 @@ panels.PrefsPanel = {
 			else {
 				td.textContent = " ";
 			}
-			tr.appendChild(td);
+			tr.appendChild(td);*/
 			if (prefdata.dsection) {
 				if (!stables[prefdata.dsection]) that.newSectionCallback(prefdata.dsection);
 				stables[prefdata.dsection].appendChild(tr);
@@ -99,19 +103,14 @@ panels.PrefsPanel = {
 		
 		that.newSectionCallback = function(section) {
 			if (stables[section]) return;
-			var fs = document.createElement("fieldset");
-			var l = document.createElement("legend");
-			l.textContent = _l("pref_" + section);
-			fs.appendChild(l);
-			var tbl = document.createElement("table");
-			tbl.setAttribute("class", "pref_table");
-			fs.appendChild(tbl);
+			var tbl = createEl("table", { "class": "pref_table" }, container);
+			var row = createEl("tr", false, tbl);
+			createEl("th", { "textContent": _l("pref_" + section), "colspan": 2 }, row);
 			stables[section] = tbl;
-			container.appendChild(fs);
 		};
 		
 		prefs.addNewPrefCallback(that, that.newPrefCallback);
-		prefs.addPref("edi", { name: "wipeall", defaultvalue: false, type: "checkbox", refresh: true });
+		prefs.addPref("edi", { name: "wipeall", defaultvalue: false, type: "button", refresh: true });
 		
 		return that;
 	}

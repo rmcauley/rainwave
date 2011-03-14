@@ -21,7 +21,7 @@ removeOldBuild($dest);
 writeParsedFile("root/preload.php", $dest . "preload.php", $bnum);
 copyStatic($dest, $bnum);
 buildLanguages($dest, $bnum);
-copyDirectory("skins", "skins_r" . $bnum, $dest);
+buildBetaSkins($dest, $bnum);
 copyFile($lyredir . "javascript/lyre-ajax.js", "lyre-ajax.js", $dest);
 copyDirectory("js", "js", $dest);
 writeParsedFile("root/beta-index.php", $dest . "index.php", $bnum);

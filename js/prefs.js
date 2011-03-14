@@ -54,21 +54,33 @@ var prefs = function() {
 		for (var section in that.p) {
 			p[section] = {};
 			for (var name in that.p[section]) {
-				p[section][name] = { "value": that.p[section][name].value };
+				if (!that.p[section][name].sessiononly) {
+					p[section][name] = { "value": that.p[section][name].value };
+				}
 			}
 		}
 		that.saveCookie("r3prefs", p);
 	};
 	
-	that.changePref = function(section, name, value) {
+	that.getPref = function(section, name) {
+		if (!that.p) return;
+		if (!that.p[section]) return;
+		if (!that.p[section][name]) return;
+		return that.p[section][name].value;
+	}
+	
+	that.changePref = function(section, name, value, nocallbacks) {
 		if (!that.p[section]) return false;
 		if (!that.p[section][name]) return false;
 		if (typeof(that.p[section][name].verify) == "function") {
 			if (!that.p[section][name].verify(value)) return false;
 		}
 		that.p[section][name].value = value;
-		that.doCallback(that.p[section][name]);
+		if (!nocallbacks) that.doCallback(that.p[section][name]);
 		that.savePrefs();
+		if (that.p[section][name].refresh || that.p[section][name].reload) {
+			window.location.reload();
+		}
 		return true;
 	};
 	

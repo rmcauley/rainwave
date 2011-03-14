@@ -482,7 +482,9 @@ function _THEME() {
 				fx_votebkg_y.set(0);
 				fx_votebkg_x.stop();
 				fx_votebkg_x.duration = 300;
-				fx_votebkg_x.start(-votebkg_width + ts.song_td.offsetWidth + 11);
+				var vhx = -votebkg_width + ts.song_td.offsetWidth + 11;
+				if (vhx > 0) vhx = 0;
+				fx_votebkg_x.start(vhx);
 			}
 		};
 		

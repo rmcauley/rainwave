@@ -169,31 +169,34 @@ ul.tabs li+li {
 	background: #555555;
 }
 
-fieldset {
-	border-top: 1px solid #777777;
-	border-left: none;
-	border-right: none;
-	border-bottom: none;
-}
-
-fieldset {
-	margin-top: .5em;
-}
-
 table.pref_table {
-	width: 100%;
+	border: 1px solid #233844;
+	border-bottom: none;
+	margin-top: 1em;
+	background: -moz-linear-gradient(100% 100% 90deg, rgba(20, 32, 39, 0), #142027);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#142027), to(rgba(20,32,39,0)));
+	min-width: 32em;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+table.pref_table + table.pref_table {
+	margin-top: 2em;
+}
+
+table.pref_table th {
+	text-align: left;
+	text-decoration: underline;
+	padding: .5em;
 }
 
 table.pref_table td {
 	padding: .1em;
 }
 
-table.pref_table tr:hover td {
-	background: #555555;
-}
-
-td.pref_label {
-	width: 16.5em;
+table.pref_table td.pref_label {
+	padding-left: 1.5em;
+	width: 18.5em;
 }
 
 div.pl_albumlistc {
@@ -1166,6 +1169,10 @@ td.nowplaying_song_rating, td.nowplaying_album_rating {
 td.nowplaying_song_rating, td.nowplaying_album_rating, td.nowplaying_votes {
 	width: 110px;
 	padding-right: 3px;
+}
+
+td.nowplaying_votes {
+	padding-top: .7em;
 }
 
 table.schedule_table td {

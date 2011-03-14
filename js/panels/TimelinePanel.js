@@ -202,7 +202,7 @@ panels.TimelinePanel = {
 			return newobj;
 		};
 	
-		that.positionEvents = function(json) {
+		that.positionEvents = function() {
 			var i;
 			if (!that.showelec && !that.showhistory && !that.showallnext) {
 				that.positionOneEvent();
@@ -218,6 +218,8 @@ panels.TimelinePanel = {
 				that.positionEventsLinear();
 			}
 		};
+		
+		that.afterHeightResize = that.positionEvents;
 		
 		that.positionOneEvent = function() {
 			// if we're animating off a change of mode switch
@@ -243,6 +245,7 @@ panels.TimelinePanel = {
 			}
 			that.new_ux_sched_id == that.currentevents[0].p.sched_id;
 			that.currentevents[0].moveXTo(that.container.offsetWidth);
+			that.currentevents[0].changeOpacity(0);
 			that.nextevents[0].moveXTo(0);
 		};
 		
@@ -332,6 +335,7 @@ panels.TimelinePanel = {
 			if (that.currentevents[0] && that.currentevents[0].timep_showing) {
 				that.currentevents[0].changeZ(runz);
 				that.currentevents[0].moveTo(runy);
+				that.currentevents[0].changeOpacity(1);
 				that.currentevents[0].emphasizeWinner();
 				runy += that.currentevents[0].height + ymargin;
 				runz++;

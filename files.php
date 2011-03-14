@@ -14,15 +14,14 @@ $jsorder = array(
 	
 	// Any order
 	"js/clock.js",
-	"js/edi.js",
 	"js/errorcontrol.js",
+	"js/edi.js",
 	"js/graph.js",
 	"js/help.js",
 	"js/hotkey.js",
 	"js/language.js",
 	"js/mouse.js",
 	"js/playlistobjects.js",
-	"js/prefs.js",
 	"js/rating.js",
 	"js/ratingcontrol.js",
 	"js/swfobject.js",

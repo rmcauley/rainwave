@@ -61,38 +61,43 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 			if (isset($cookie['edi']['language']['value'])) $lang = $cookie['edi']['language']['value'];
 		}
 		print "<link rel=\"stylesheet\" href='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".css' type='text/css' />\n";
-		print "\t<script src='lang_r" . $bnum . "/" . $lang . ".js' type='text/javascript'></script>\n";
 	?>
 	<script src="preload.php?site=<?php print $_GET['site'] ?>" type="text/javascript"></script>
 </head>
 <body id="body">
-<div id="oggpixel"></div>
-<div id="IMAGE_PRELOAD" style="position: absolute; top: -5000px; left: -5000px; width: 1px; height: 1px;">
-	<?php
-		$dir = opendir("images") or die ("Can't read images directory.");
-		while (false !== ($img = readdir($dir))) {
-			if (($img != ".") && ($img != "..") && (!strpos($img, ".swf"))) {
-				print "<img src='images/" . $img . "' alt=''/>";
-			}
+<?php
+	/*
+	print "<div id='oggpixel'></div>\n";
+	print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript'></script>\n";
+	$dir = opendir("images") or die ("Can't read images directory.");
+	while (false !== ($img = readdir($dir))) {
+		if (($img != ".") && ($img != "..") && (!strpos($img, ".swf"))) {
+			print "<img src='images/" . $img . "' alt=''/>";
 		}
-		closedir($dir);
-		$dir = opendir("skins_r" . $bnum . "/" . $skin . "/images") or die ("Can't read skins directory.");
-		while (false !== ($img = readdir($dir))) {
-			if (($img != ".") && ($img != "..")) {
-				print "<img src='skins_r" . $bnum . "/" . $skin . "/images/" . $img . "' alt=''/>";
-			}
+	}
+	closedir($dir);
+	$dir = opendir("skins_r" . $bnum . "/" . $skin . "/images") or die ("Can't read skins directory.");
+	while (false !== ($img = readdir($dir))) {
+		if (($img != ".") && ($img != "..")) {
+			print "<img src='skins_r" . $bnum . "/" . $skin . "/images/" . $img . "' alt=''/>";
 		}
-		closedir($dir);
-		print "\n";
-	?>
-</div>
-<?php print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript'></script>\n"; ?>
-<script src='rainwave3_r<%BUILDNUM%>.js' type='text/javascript'></script>
-<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script> 
+	}
+	closedir($dir);
+	print "\n</div>\n";*/
+	
+	print "\t<script src='lang_r" . $bnum . "/" . $lang . ".js' type='text/javascript' async='true'></script>\n";
+	print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript' async='true'></script>\n";
+?>
+<script src='rainwave3_r<%BUILDNUM%>.js' type='text/javascript' async="true"></script>
+<script type="text/javascript" src="http://www.google-analytics.com/ga.js" async="true"></script> 
 <script type="text/javascript">
-		var pageTracker = _gat._getTracker("UA-3567354-1");
+	var pagetracker;
+	function startGoogle() {
+		pageTracker = _gat._getTracker("UA-3567354-1");
 		pageTracker._initData();
 		pageTracker._trackPageview();
+	}
+	document.getElementById("body").addEventListener('onload', startGoogle, true);
 </script>
 </body>
 </html>

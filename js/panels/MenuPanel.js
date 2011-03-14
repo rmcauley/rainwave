@@ -122,7 +122,7 @@ panels.MenuPanel = {
 				that.drawLoginDisabled();
 			}
 			else if (json.code && (json.code == 1)) {
-				window.location.reload(true);
+				window.location.reload();
 			}
 		};
 		

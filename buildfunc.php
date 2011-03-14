@@ -95,7 +95,7 @@ function writeLang($destfile, $fl) {
 	fclose($d);
 }
 
-function buildSkins($dest, $bnum) {
+function buildProdSkins($dest, $bnum) {
 	print "Building production skins.\n";
 	$dir = opendir("skins") or die ("Can't read skins.");
 	$dest2 = $dest . "skins_r" . $bnum;
@@ -117,22 +117,94 @@ function buildSkins($dest, $bnum) {
 					fclose($d);
 				}
 				else if (preg_match("/.css$/", $file)) {
-					$d = fopen($dest2 . "/" . $skin . "/" . $file, 'w') or die("Can't open destination file.");
-					fwrite($d, CssMin::minify(file_get_contents("skins/" . $skin . "/" . $file)));
-					fclose($d);
+					buildCSSFile("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file, "skins/" . $skin);
 				}
 				else if (is_dir("skins/" . $skin . "/" . $file)) {
 					copyDirectory("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file, "");
 				}
-				else {
+				/*else {
 					copyFile("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file, "");
-				}
+				}*/
 			}
 		}
     }
 }
 
-function copyFile($source, $dest, $destdir) {
+function buildBetaSkins($dest, $bnum) {
+	print "Building beta skins.\n";
+	$dir = opendir("skins") or die ("Can't read skins.");
+	$dest2 = $dest . "skins_r" . $bnum;
+	mkdir($dest2) or die ("Can't make destination skins directory.");
+	while (false !== ($skin = readdir($dir))) {
+		if (($skin == ".") || ($skin == "..")) {
+			# pass
+		}
+        else if (is_dir("skins/" . $skin)) {
+			$skindir = opendir("skins/" . $skin) or die("Can't open " . $skin . " skin directory.");
+			mkdir($dest2 . "/" . $skin) or die("Can't create " . $skin . " skin directory.");
+			while (false !== ($file = readdir($skindir))) {
+				if (($file == ".") || ($file == "..")) {
+					# pass
+				}
+				else if (preg_match("/.js$/", $file)) {
+					copyFile("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file);
+				}
+				else if (preg_match("/.css$/", $file)) {
+					buildCSSFile("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file, "skins/" . $skin, true);
+				}
+				else if (is_dir("skins/" . $skin . "/" . $file)) {
+					copyDirectory("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file, "");
+				}
+				/*else {
+					copyFile("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file, "");
+				}*/
+			}
+		}
+    }
+}
+
+function buildCSSFile($sourcefile, $destfile, $skindir, $uncompressed = false) {
+	print "Building CSS file $sourcefile.\n";
+	$css = fopen($sourcefile, "r") or die("Can't open CSS file $sourcefile.");
+	$d = false;
+	if ($uncompressed) {
+		$d = fopen($destfile, 'w') or die("Can't open destination file $destfile.");
+	}
+	else {
+		$d = fopen("/tmp/rwcss", 'w') or die("Can't open destination file $destfile.");
+	}
+	while (($buffer = fgets($css, 4096)) !== false) {
+		$wrote = false;
+		$matches = array();
+		if (preg_match("/^(.*) url\(['\"]?([\w.-_]+).(png|jpg|gif|jpeg)['\"]?\)(.*)$/", $buffer, $matches)) {
+			$filename = $skindir . "/" . $matches[2] . "." . $matches[3];
+			if (filesize($filename) <= 2048) {
+				$image = fopen($filename, "rb") or die("Could not open image $filename.");
+				$contents = fread($image, filesize($filename));
+				fclose($image);
+				fwrite($d, $matches[1] . " url(data:image/" . $matches[3] . ";base64," . base64_encode($contents) . ")" . $matches[4]);
+				$wrote = true;
+			}
+		}
+		if (!$wrote) {
+			fwrite($d, $buffer);
+		}
+	}
+	if (!feof($css)) {
+		die("Error: unexpected fgets() fail on $sourcefile");
+	}
+	fclose($css);
+	fclose($d);
+	
+	if (!$uncompressed) {
+		$d = fopen($destfile, 'w') or die("Can't open destination file $destfile.");
+		fwrite($d, CssMin::minify(file_get_contents("/tmp/rwcss")));
+		fclose($d);
+		unlink("/tmp/rwcss");
+	}
+}
+
+function copyFile($source, $dest, $destdir = "") {
 	print "Copying file " . $source . "\n";
 	if (!copy($source, $destdir . $dest)) {
 		print "*** Could not copy file " . $source . " to " . $dest . ": exiting.\n";

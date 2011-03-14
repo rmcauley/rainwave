@@ -41,31 +41,28 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	<script src="lyre-ajax.js" type="text/javascript"></script>
 </head>
 <body id="body">
-<div id="oggpixel"></div>
 <?php
+	//print "<div id='oggpixel'></div>\n";
 	print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript'></script>\n";
 	for ($i = 0; $i < count($jsorder); $i++) {
 		print "<script src='" . $jsorder[$i] . "' type='text/javascript'></script>\n";
 	}
+	/*print "<div id='IMAGE_PRELOAD' style='position: absolute; top: -5000px; left: -5000px; width: 1px; height: 1px;'>\n";
+	$dir = opendir("images") or die ("Can't read images directory.");
+	while (false !== ($img = readdir($dir))) {
+		if (($img != ".") && ($img != "..") && (!strpos($img, ".swf"))) {
+			print "<img src='images/" . $img . "' alt=''/>";
+		}
+	}
+	closedir($dir);
+	$dir = opendir("skins_r" . $bnum . "/" . $skin . "/images") or die ("Can't read skins directory.");
+	while (false !== ($img = readdir($dir))) {
+		if (($img != ".") && ($img != "..")) {
+			print "<img src='skins_r" . $bnum . "/" . $skin . "/images/" . $img . "' alt=''/>";
+		}
+	}
+	closedir($dir);
+	print "\n</div>\n";*/
 ?>
-<div id="IMAGE_PRELOAD" style="position: absolute; top: -5000px; left: -5000px; width: 1px; height: 1px;">
-	<?php
-		$dir = opendir("images") or die ("Can't read images directory.");
-		while (false !== ($img = readdir($dir))) {
-			if (($img != ".") && ($img != "..") && (!strpos($img, ".swf"))) {
-				print "<img src='images/" . $img . "' alt=''/>";
-			}
-		}
-		closedir($dir);
-		$dir = opendir("skins_r" . $bnum . "/" . $skin . "/images") or die ("Can't read skins directory.");
-		while (false !== ($img = readdir($dir))) {
-			if (($img != ".") && ($img != "..")) {
-				print "<img src='skins_r" . $bnum . "/" . $skin . "/images/" . $img . "' alt=''/>";
-			}
-		}
-		closedir($dir);
-		print "\n";
-	?>
-</div>
 </body>
 </html>
