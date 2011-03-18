@@ -14,35 +14,7 @@ if ((strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 8") !== false) || (strpos($_SERVE
 
 header("content-type: application/xhtml+xml");
 
-define("RW", 1);
-define("OCR", 2);
-define("VW", 3);
-define("MW", 3);
-
-$sid = RW;
-if (isset($_COOKIE['r3sid'])) {
-	if ($_COOKIE['r3sid'] == "1") $sid = RW;
-	else if ($_COOKIE['r3sid'] == "2") $sid = OCR;
-	else if ($_COOKIE['r3sid'] == "3") $sid = VW;
-}
-// This gives precedence to URL if using a subdomained station
-if ($_SERVER['HTTP_HOST'] == "rw.rainwave.cc") $sid = RW;
-else if ($_SERVER['HTTP_HOST'] == "ocr.rainwave.cc") $sid = OCR;
-else if ($_SERVER['HTTP_HOST'] == "ocremix.rainwave.cc") $sid = OCR;
-else if ($_SERVER['HTTP_HOST'] == "mix.rainwave.cc") $sid = VW;
-else if ($_SERVER['HTTP_HOST'] == "mixwave.rainwave.cc") $sid = VW;
-else if ($_SERVER['HTTP_HOST'] == "vwave.rainwave.cc") $sid = VW;
-// An override, mostly for administration uses
-if (isset($_GET['site'])) {
-	if ($_GET['site'] == "rw") $sid = RW;
-	else if ($_GET['site'] == "oc") $sid = OCR;
-	else if ($_GET['site'] == "mw") $sid = VW;
-	else if ($_GET['site'] == "vw") $sid = VW;
-}
-
-if ($sid == 1) $site = "Rainwave";
-if ($sid == 2) $site = "OCR Radio";
-if ($sid == 3) $site = "Mixwave";
+require("auth/common.php");
 
 print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 ?>
@@ -62,42 +34,27 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		}
 		print "<link rel=\"stylesheet\" href='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".css' type='text/css' />\n";
 	?>
-	<script src="preload.php?site=<?php print $_GET['site'] ?>" type="text/javascript"></script>
 </head>
 <body id="body">
+<script type="text/javascript">
 <?php
-	/*
+	print "\tvar PRELOADED_APIKEY = '" . newAPIKey(true) . "';\n";
+	print "\tvar PRELOADED_USER_ID = " . $user_id . ";\n";
+	print "\tvar PRELOADED_SID = " . $sid . ";\n";
+	print "\tvar BUILDNUM = <%BUILDNUM%>;\n";
+?>
+</script>
+<?php
 	print "<div id='oggpixel'></div>\n";
-	print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript'></script>\n";
-	$dir = opendir("images") or die ("Can't read images directory.");
-	while (false !== ($img = readdir($dir))) {
-		if (($img != ".") && ($img != "..") && (!strpos($img, ".swf"))) {
-			print "<img src='images/" . $img . "' alt=''/>";
-		}
-	}
-	closedir($dir);
-	$dir = opendir("skins_r" . $bnum . "/" . $skin . "/images") or die ("Can't read skins directory.");
-	while (false !== ($img = readdir($dir))) {
-		if (($img != ".") && ($img != "..")) {
-			print "<img src='skins_r" . $bnum . "/" . $skin . "/images/" . $img . "' alt=''/>";
-		}
-	}
-	closedir($dir);
-	print "\n</div>\n";*/
-	
-	print "\t<script src='lang_r" . $bnum . "/" . $lang . ".js' type='text/javascript' async='true'></script>\n";
+	print "<script src='lang_r" . $bnum . "/" . $lang . ".js' type='text/javascript' async='true'></script>\n";
 	print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript' async='true'></script>\n";
 ?>
 <script src='rainwave3_r<%BUILDNUM%>.js' type='text/javascript' async="true"></script>
-<script type="text/javascript" src="http://www.google-analytics.com/ga.js" async="true"></script> 
+<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script> 
 <script type="text/javascript">
-	var pagetracker;
-	function startGoogle() {
-		pageTracker = _gat._getTracker("UA-3567354-1");
-		pageTracker._initData();
-		pageTracker._trackPageview();
-	}
-	document.getElementById("body").addEventListener('onload', startGoogle, true);
+	pageTracker = _gat._getTracker("UA-3567354-1");
+	pageTracker._initData();
+	pageTracker._trackPageview();
 </script>
 </body>
 </html>

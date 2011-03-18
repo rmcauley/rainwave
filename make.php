@@ -20,7 +20,6 @@ array_unshift($jsorder, $lyredir . "javascript/lyre-ajax.js");
 
 removeOldBuild($dest);
 crushPNG();
-writeParsedFile("root/preload.php", $dest . "preload.php", $bnum);
 copyStatic($dest, $bnum);
 buildProdSkins($dest, $bnum);
 buildLanguages($dest, $bnum);
@@ -29,5 +28,8 @@ writeParsedFile("root/index.php", $dest . "index.php", $bnum);
 chmod($dest . "auth/common.php", "755");
 
 //makeAPIDirectory($lyredir, $dest, false);
+
+exec("chmod u+r $dest/auth -R");
+exec("chown www-data $dest/auth -R");
 
 ?>

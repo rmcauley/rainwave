@@ -312,7 +312,7 @@ var fx = function() {
 		that.enabled = enabled;
 	};
 	
-	prefs.addPref("fx", { name: "fps", callback: that.p_fps, defaultvalue: 30, type: "dropdown", options: [ { "value": "15", "option": "15fps" }, { value: "30", option: "30fps" }, { value: "45", option: "45fps" }, { value: "60", option: "60fps" } ] } );
+	prefs.addPref("fx", { name: "fps", hidden: mozAnim, callback: that.p_fps, defaultvalue: 30, type: "dropdown", options: [ { "value": "15", "option": "15fps" }, { value: "30", option: "30fps" }, { value: "45", option: "45fps" }, { value: "60", option: "60fps" } ] } );
 	prefs.addPref("fx", { name: "enabled", callback: that.p_enabled, defaultvalue: true, type: "checkbox" });
 	
 	return that;

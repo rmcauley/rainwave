@@ -185,7 +185,7 @@ $lang = array(
 	"pref_fx_enabled" => "Animation Enabled",
 	"pref_requests" => "Requests",
 	"pref_requests_technicalhint" => "Technical Tab Title",
-	"pref_timeline_highlightrequests" => "Highlight Requests",
+	"pref_timeline_highlightrequests" => "Show Requesters By Default",
 	
 	// About screen
 	
@@ -300,7 +300,7 @@ $lang = array(
 	"reqmyrequests" => "My Requests",
 	"reqrequestline" => "Request Line",
 	"reqrequestlinelong" => "First |showing| of |linesize| In Line",
-	"reqruleblocked" => "Temporarily stalled due to election rules.",
+	"reqruleblocked" => "Stalled; group or album is in an election.",
 	
 	// Now Playing and Timeline panels
 

@@ -21,7 +21,7 @@ function init() {
 	prefs.addPref("edi", { name: "language", defaultvalue: "en_CA", type: "dropdown", options: [
 			{ "value": "de_DE", "option": "Deutsch" },
 			{ "value": "en_CA", "option": "English (Canada)" },
-			{ "value": "fr_CA", "option": "Français (Canada)" },
+			{ "value": "fr_CA", "option": "FranÃ§ais (Canada)" },
 			{ "value": "nl_NL", "option": "Nederlands" },
 			{ "value": "fi_FI", "option": "Suomi" },
 			{ "value": "se_SE", "option": "Svenska" }

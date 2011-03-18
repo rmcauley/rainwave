@@ -198,6 +198,7 @@ var RequestList = function(sortable) {
 		}
 	};
 	
+	var reqmargin = 7;
 	that.positionReqs = function(nopurge) {
 		var runy = 0;
 		var runz = 0;
@@ -207,19 +208,20 @@ var RequestList = function(sortable) {
 				// nothing
 			}
 			else if (reqs[i].p.requestq_id == draggingid) {
-				runy += reqs[i].el.offsetHeight + 3;
+				runy += reqs[i].el.offsetHeight + reqmargin;
 				runz += 1;
 			}
 			else {
 				reqs[i].el.style.zIndex = runz;
 				reqs[i].fx_posY.start(runy);
 				reqs[i].desty = runy;
-				runy += reqs[i].el.offsetHeight + 3;
+				runy += reqs[i].el.offsetHeight;
+				if (i == 0) runy += reqmargin * 2;
+				else runy += reqmargin;
 				runz += 1;
 			}
 		}
-		runy += that.header.offsetHeight;
-		that.el.style.height = runy + "px";
+		that.el.style.height = (runy + that.header.offsetHeight) + "px";
 		if (!nopurge) setTimeout(that.purgeRequests, 250);
 	};
 	
@@ -344,7 +346,8 @@ var Request = {
 		that.song_title.setAttribute("class", "request_song_title");
 		
 		that.xbutton = document.createElement("span");
-		that.xbutton.textContent = "X";
+		// another instance of "courier new not having the right character"
+		that.xbutton.textContent = "⊗";
 		that.xbutton.setAttribute("class", "request_xbutton");
 		Request.linkifyDelete(json.requestq_id, that.xbutton);
 		that.song_title.appendChild(that.xbutton);
@@ -407,7 +410,7 @@ var Request = {
 			if (json.song_blocked && !that.blocked) {
 				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("reqruleblocked") }, that.el);
 			}
-			else if (that.blocked) {
+			else if (!json.song_blocked && that.blocked) {
 				that.el.removeChild(that.blocked);
 				delete(that.blocked);
 			}

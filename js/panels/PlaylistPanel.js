@@ -276,18 +276,14 @@ panels.PlaylistPanel = {
 			var resettimer = false;
 			var resetkeytimer = false;
 			var bubble = true;
-			var code = (evt.keyCode != 0) ? evt.keyCode : evt.charCode;
-			var chr = String.fromCharCode(code);
-			
-			// TODO: Why am I combining keyCode and charCode, this is clearly proving dangerous!
-			var dosearch = false;
-			// f keys
-			if (evt.keyCode && (evt.keyCode >= 112) && (evt.keyCode <= 123)) {
-				// short circuit
-				return bubble;
+			var chr = '';
+			if (evt.charCode > 0) {
+				chr = String.fromCharCode(evt.charCode);
 			}
+			
+			var dosearch = false;
 			// down arrow
-			else if (code == 40) {
+			if (evt.keyCode == 40) {
 				var lastkeypos = keynavpos;
 				keynavpos++;
 				while (albums[albumsort[keynavpos]] && albums[albumsort[keynavpos]].hidden) keynavpos++;
@@ -305,7 +301,7 @@ panels.PlaylistPanel = {
 				resetkeytimer = true;
 			}
 			// up arrow
-			else if (code == 38) {
+			else if (evt.keyCode == 38) {
 				if ((albumsort.length > 0) && (keynavpos > 0)) {
 					var lastkeypos = keynavpos;
 					keynavpos--;
@@ -325,7 +321,7 @@ panels.PlaylistPanel = {
 				}
 			}
 			// escape
-			else if ((code == 13) && (keynavpos >= 0)) {
+			else if ((evt.keyCode == 13) && (keynavpos >= 0)) {
 				that.setRowClass(albums[albumsort[keynavpos]], false);
 				bubble = false;
 				var linkobj = { "type": "album", "id": albumsort[keynavpos] };
@@ -338,7 +334,8 @@ panels.PlaylistPanel = {
 			else if (/[\w\-.&]+/.test(chr)) {
 				dosearch = true;
 			}
-			else if (code == 32) {
+			// spacebar
+			else if (evt.keyCode == 32) {
 				dosearch = true;
 				bubble = false;
 			}
@@ -357,7 +354,7 @@ panels.PlaylistPanel = {
 
 			if (inlinetimer) {
 				// backspace
-				if (code == 8) {
+				if (evt.keyCode == 8) {
 					bubble = false;
 					if (searchstring.length == 1) {
 						that.clearInlineSearch();
@@ -379,11 +376,11 @@ panels.PlaylistPanel = {
 				keynavtimer = setTimeout(that.clearKeyNav, 5000);
 			}
 			
-			if (inlinetimer && (code == 27)) {
+			if (inlinetimer && (evt.keyCode == 27)) {
 				that.clearInlineSearch();
 				bubble = false;
 			}
-			else if ((keynavpos >= 0) && (code == 27)) {
+			else if ((keynavpos >= 0) && (evt.keyCode == 27)) {
 				that.setRowClass(albums[albumsort[keynavpos]], false);
 				that.clearKeyNav();
 			}

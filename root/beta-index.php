@@ -37,11 +37,17 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		print "<link rel=\"stylesheet\" href='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".css' type='text/css' />\n";
 		print "\t<script src='lang_r" . $bnum . "/" . $lang . ".js' type='text/javascript'></script>\n";
 	?>
-	<script src="preload.php?site=<?php print $_GET['site'] ?>" type="text/javascript"></script>
 	<script src="lyre-ajax.js" type="text/javascript"></script>
 </head>
 <body id="body">
 <?php
+	print "<script type=\"text/javascript\">\n";
+	print "\tvar PRELOADED_APIKEY = '" . newAPIKey(true) . "';\n";
+	print "\tvar PRELOADED_USER_ID = " . $user_id . ";\n";
+	print "\tvar PRELOADED_SID = " . $sid . ";\n";
+	print "\tvar BUILDNUM = <%BUILDNUM%>;\n";
+	print "</script>\n";
+	
 	//print "<div id='oggpixel'></div>\n";
 	print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript'></script>\n";
 	for ($i = 0; $i < count($jsorder); $i++) {

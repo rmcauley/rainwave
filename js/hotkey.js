@@ -71,25 +71,31 @@ var hotkey = function() {
 	};
 	
 	that.keyPressHandler = function(evt) {
-		if (evt.ctrlKey || evt.altKey || evt.metaKey) return true;
-		var code = (evt.keyCode != 0) ? evt.keyCode : evt.charCode;
-		if (code && (code != 8) && (code != 27)) {
+		if (that.ignoreKey(evt)) return true;
+		if ((evt.keyCode != 8) && (evt.keyCode != 27)) {
 			return that.keyPress(evt);
 		}
 	};
 	
 	that.keyDownHandler = function(evt) {
-		if (evt.ctrlKey || evt.altKey || evt.metaKey) return true;
-		var code = (evt.keyCode != 0) ? evt.keyCode : evt.charCode;
-		if (code && (code == 8)) {
+		if (that.ignoreKey(evt)) return true;
+		// Short-circuit backspace on Chrome
+		if (evt.keyCode == 8) {
 			return that.keyPress(evt);
 		}
 		// stop this from canceling our AJAX requests
-		if (code && (code == 27)) {
+		if (evt.keyCode == 27) {
 			that.keyPress(evt);
 			that.stopDefaultAction(evt);
 			return false;
 		}
+	};
+	
+	that.ignoreKey = function(evt) {
+		if (evt.ctrlKey || evt.altKey || evt.metaKey) return true;
+		// f keys
+		if ((evt.charCode == 0) && (evt.keyCode >= 112) && (evt.keyCode <= 123)) return true;
+		return false;
 	};
 	
 	window.addEventListener('keydown', that.keyDownHandler, false);

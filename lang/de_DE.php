@@ -1,5 +1,5 @@
 <?php
-// Rainwave 3 de_DE v3 Language File by DarkLink
+// Rainwave 3 de_DE Language File by DarkLink
 
 
 $lang2 = array(
@@ -8,7 +8,7 @@ $lang2 = array(
 	"p_MenuPanel" => "Menü",
 	"p_PlaylistPanel" => "Wiedergabeliste",
 	"p_PrefsPanel" => "Einstellungen",
-	"p_SchedulePanel" => "Schedule",
+	"p_SchedulePanel" => "Terminplan",
 	"p_NowPanel" => "Jetzt läuft",
 	"p_RequestsPanel" => "Wünsche",
 	"p_TimelinePanel" => "Zeitlinie",
@@ -18,9 +18,6 @@ $lang2 = array(
 	"timeformat_h" => "h ",
 	"timeformat_m" => "m ",
 	"timeformat_s" => "s ",
-
-	// Raw Log Code
-	"log_0" => "Debug",
 	
 	// Edi Codes
 	"log_1" => "Keine Sender ID von der API erhalten.",
@@ -108,35 +105,22 @@ $lang2 = array(
 	
 	// 10000 is used by error control for news
 	
-	/* Number suffixes */
-	"suffix_0" => ".er",
-	"suffix_1" => ".er",
-	"suffix_2" => ".er",
-	"suffix_3" => ".er",
-	"suffix_4" => ".er",
-	"suffix_5" => ".er",
-	"suffix_6" => ".er",
-	"suffix_7" => ".er",
-	"suffix_8" => ".er",
-	"suffix_9" => ".er",
-	"suffix_11" => ".er",
-	"suffix_12" => ".er",
-	"suffix_13" => ".er",
+	// Number suffixes aren't necessary for german
 	
-	/* Playlist Sentences */
+	// Playlist Sentences, these all show up in the album detail pages.
 	
 	"pl_oncooldown" => "Am abkühlen für |time|.",
 	"pl_ranks" => "Bewertet mit |rating|, auf Rang |S:rank|.",
 	"pl_favourited" => "Favorisiert von |count| |P:count,person|.",
 	"pl_wins" => "Gwinnt |percent|% der Abstimmungen.",
-	"pl_requested" => "Wurde |count| mal gewünscht, ist auf dem |S:rank| Platz.",
+	"pl_requested" => "Wurde |count| mal gewünscht, ist damit auf Platz |S:rank|.",
 	"pl_genre" => "Abkühlgruppe: ",
 	"pl_genre2" => ".",
 	"pl_genres" => "Abkühlgruppen: ",
 	"pl_genres2_normal" => ".",
 	"pl_genres2_more" => " & weitere.",
 	
-	/* Preferences */
+	// Preference names
 	
 	"pref_refreshrequired" => "(Seite muss neu geladen werden)",
 	"pref_timeline" => "Zeitlinie",
@@ -147,17 +131,19 @@ $lang2 = array(
 	"pref_rating_hidesite" => "Verstecke Wertungen bis ich gewertet habe",
 	"pref_edi" => "Allgemein",
 	"pref_edi_wipeall" => "Einstellungen löschen",
+	"pref_edi_wipeall_button" => "Löschen",
 	"pref_edi_language" => "Sprache",
 	"pref_edi_theme" => "Skin",
+	"pref_edi_resetlayout" => "Layout Zurücksetzen",
+	"pref_edi_resetlayout_button" => "Zurücksetzen",
 	"pref_fx" => "Effekte",
 	"pref_fx_fps" => "Animationsgeschwindigkeit",
 	"pref_fx_enabled" => "Animationen aktivieren",
-	"pref_mpi_showlog" => "Zeige das Log Panel",
 	"pref_requests" => "Wünsche",
 	"pref_requests_technicalhint" => "Zeige technischen Tab Titel",
 	"pref_timeline_highlightrequests" => "Hebe Wünsche hervor",
 	
-	/* About */
+	// About screen
 	
 	"creator" => "Ersteller",
 	"rainwavemanagers" => "Rainwave Mitarbeiter",
@@ -167,12 +153,14 @@ $lang2 = array(
 	"relayadmins" => "Relay Donors",
 	"specialthanks" => "Danke geht an",
 	"poweredby" => "Unterstützt von",
-	"customsoftware" => "Angepasste 'Orpheus' Software",
+	"customsoftware" => "Custom 'Orpheus' software",
 	"donationinformation" => "Spendenkonto und Informationen.",
 	"apiinformation" => "API Dokumentation.",
 	"translators" => "Übersetzer",
+	"rainwave3version" => "Rainwave 3 Version",
+	"revision" => "Rev",
 	
-	/* Help */
+	// Help
 	
 	"helpstart" => "Start ▶ ",
 	"helpnext" => "weiter ▶ ",
@@ -205,13 +193,14 @@ $lang2 = array(
 	"managingrequests_p" => "Ordne deine Wünsche per Drag & Drop an, oder klicke auf X um sie von deiner Wunschliste zu entfernen.",
 	"timetorequest" => "Wunschstatus",
 	"timetorequest_p" => "Deinen Wunschstatus kannst du hier verfolgen.|br|Steht hier \"Ablaufend\" oder \"am abkühlen\", solltest du einen Anderen Song auf den ersten Platz deiner Wunschliste schieben.",
-	"rainwave3version" => "Rainwave 3 Version",
-	"revision" => "Rev",
+	
+	// What happens when RW crashes
+	
 	"crashed" => "Rainwave ist abgestürzt.",
 	"submiterror" => "Bitte kopiere den unten stehenden Text und stelle ihn im Forum ein, um beim beheben des Fehlers zu helfen:",
 	"pleaserefresh" => "Bitte lade die Seite neu um Rainwave wieder benutzen zu können.",
 	
-	/* Schedule Panel */
+	// Schedule Panel Administration Functions
 	
 	"newliveshow" => "Neue Live Show",
 	"newliveexplanation" => "Zeit kann 0 (jetzt) sein oder eine Zeitangabe in UTC",
@@ -238,9 +227,13 @@ $lang2 = array(
 	"wrapup" => "Nachbereitung",
 	"dormant" => "Untätig",
 	"OVERTIME" => "ÜBER DER ZEIT",
+	
+	// Schedule Panel user text.
+
 	"noschedule" => "Diese Woche stehen keine Events an.",
 	
 	// Requests
+	
 	"requestok" => "Gewünscht",
 	"reqexpiring" => " (Ablaufend!)",
 	"reqfewminutes" => " (in wenigen Minuten)",
@@ -253,16 +246,19 @@ $lang2 = array(
 	"reqwrongstation" => " (falscher Sender)",
 	"reqtechtitlefull" => " (|station||S:position| mit |requestcount|)",
 	"reqtechtitlesimple" => " (|station||requestcount|)",
-	"reqexpiresin" => " (Dein Platz läuft ab in |expiretime|)",
-	"reqexpiresnext" => " (Dein Platz läuft nach dem nächsten Wunsch ab)",
+	"reqexpiresin" => " (Der Platz läuft ab in |expiretime|)",
+	"reqexpiresnext" => " (Der Platz läuft nach dem nächsten Wunsch ab)",
 	"reqnorequests" => "Keine Wünsche übermittelt",
 	"reqmyrequests" => "Meine Wünsche",
 	"reqrequestline" => "Warteschlange",
 	"reqrequestlinelong" => "Zeige die ersten |showing| von |linesize| Benutzern in der Warteschlange",
+	"reqruleblocked" => "Zur Zeit wegen Abstimmungsregeln gesperrt.",
 
-	
-	/* Others */
+	// Now Playing and Timeline panels
+
 	"nowplaying" => "Gerade läuft",
+	"remixdetails" => "Remix Details",
+	"songhomepage" => "Song Homepage",
 	"requestedby" => "Gewünscht von |requester|",
 	"oncooldownfor" => "Am abkühlen für |cooldown|.",
 	"conflictedwith" => "Überschneidung mit dem Wunsch von |requester|",
@@ -273,6 +269,16 @@ $lang2 = array(
 	"votelockingin" => "Stimme wird eingeloggt in |timeleft|...",
 	"submittingvote" => "Übertrage Stimme...",
 	"voted" => "Abgestimmt",
+	"liveshow" => "Live Show",
+	"adset" => "Werbung",
+	"onetimeplay" => "Einmalwiedergabe",
+	"deleteonetime" => "Lösche Einmalwiedergabe",
+	"currentdj" => "dj |username|",
+	"electionresults" => "Abstimmungsergebnisse",
+	"from" => "von |username|",
+	
+	// Menu Bar
+	
 	"selectstation" => "Wähle einen Sender",
 	"tunedin" => "Tuned In",
 	"tunedout" => "Tuned Out",
@@ -281,25 +287,18 @@ $lang2 = array(
 	"players" => "Unterstützte Media-Player sind VLC, Winamp, Foobar2000, und fstream (Mac/iPhone).|br|Windows Media Player und iTunes werden nicht funktionieren.",
 	"help" => "Hilfe",
 	"forums" => "Forum",
-	"liveshow" => "Live Show",
-	"adset" => "Werbung",
-	"onetimeplay" => "Einmalwiedergabe",
-	"deleteonetime" => "Lösche Einmalwiedergabe",
-	"currentdj" => "dj |username|",
 	"login" => "Einloggen",
 	"register" => "Registrieren",
 	"username" => "Benutername",
 	"password" => "Passwort",
 	"autologin" => "Automatisch-einloggen",
 	"compatplayers" => "Unterstützte Media-Player:",
-	"electionresults" => "Abstimmungsergebnisse",
 	"chat" => "Chat",
 	"playing" => "◼ Wiedergabe stoppen",
 	"loading" => "Lade",
 	"searching" => "Suche: ",
 	"m3uhijack" => "|plugin| versucht den M3U download zu übernehmen.  Bitte klicke mit der rechten Maustaste und wähle 'Speichern unter'",
 	"menu_morestations" => "Mehr ▼",
-	"from" => "von |username|",
 	"waitingforstatus" => "Warte auf Status",
 	
 	/* Words for pluralization */

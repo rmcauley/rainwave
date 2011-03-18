@@ -450,11 +450,8 @@ div.requestlist {
 }
 
 div.request {
-	margin: .2em;
-	border: 1px solid #333333;
 	width: 100%;
 	max-width: 27em;
-	padding: .2em;
 	position: absolute;
 	cursor: n-resize;
 	-moz-user-select: none;
@@ -462,6 +459,15 @@ div.request {
 	user-select: none;
 	background-position: bottom right;
 	background-repeat: no-repeat;
+	padding: .3em;
+	
+	border: 1px solid #233844;
+	border-bottom: none;
+	margin-top: 1em;
+	background-image: -moz-linear-gradient(100% 100% 90deg, rgba(20, 32, 39, 0), #142027);
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#142027), to(rgba(20,32,39,0)));
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }
 
 div.request_true {
@@ -469,7 +475,7 @@ div.request_true {
 }
 
 div.request_false {
-	background-color: #110000;
+	background-color: #000044;
 }
 
 div.request_station_1 {
@@ -499,7 +505,8 @@ span.request_xbutton {
 	float: left;
 	display: block;
 	margin-left: 0.2em;
-	width: 1.5em;
+	margin-right: .6em;
+	color: #888;
 }
 
 div.request_album_name {

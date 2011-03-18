@@ -18,7 +18,6 @@ $lyredir = "/home/rmcauley/lyre/";
 print "RAINWAVE 3 BETA REVISION " . $bnum . "\n";
 
 removeOldBuild($dest);
-writeParsedFile("root/preload.php", $dest . "preload.php", $bnum);
 copyStatic($dest, $bnum);
 buildLanguages($dest, $bnum);
 buildBetaSkins($dest, $bnum);
