@@ -300,7 +300,8 @@ $lang = array(
 	"reqmyrequests" => "My Requests",
 	"reqrequestline" => "Request Line",
 	"reqrequestlinelong" => "First |showing| of |linesize| In Line",
-	"reqruleblocked" => "Stalled; group or album is in an election.",
+	"reqalbumblocked" => "Stalled; album is in an election.",
+	"reqgroupblocked" => "Stalled; cooldown group is in an election.",
 	
 	// Now Playing and Timeline panels
 

@@ -105,15 +105,28 @@ $lang2 = array(
 	
 	// 10000 is used by error control for news
 	
-	// Number suffixes aren't necessary for german
+	// Suffixes may not be displayed in german
+	"suffix_0" => "",
+	"suffix_1" => "",
+	"suffix_2" => "",
+	"suffix_3" => "",
+	"suffix_4" => "",
+	"suffix_5" => "",
+	"suffix_6" => "",
+	"suffix_7" => "",
+	"suffix_8" => "",
+	"suffix_9" => "",
+	"suffix_11" => "",
+	"suffix_12" => "",
+	"suffix_13" => "",
 	
 	// Playlist Sentences, these all show up in the album detail pages.
 	
 	"pl_oncooldown" => "Am abkühlen für |time|.",
-	"pl_ranks" => "Bewertet mit |rating|, auf Rang |S:rank|.",
+	"pl_ranks" => "Bewertet mit |rating|, auf Rang |rank|.",
 	"pl_favourited" => "Favorisiert von |count| |P:count,person|.",
-	"pl_wins" => "Gwinnt |percent|% der Abstimmungen.",
-	"pl_requested" => "Wurde |count| mal gewünscht, ist damit auf Platz |S:rank|.",
+	"pl_wins" => "Gewinnt |percent|% der Abstimmungen.",
+	"pl_requested" => "Wurde |count| mal gewünscht, ist damit auf Platz |rank|.",
 	"pl_genre" => "Abkühlgruppe: ",
 	"pl_genre2" => ".",
 	"pl_genres" => "Abkühlgruppen: ",
@@ -175,7 +188,7 @@ $lang2 = array(
 	"tunein_p" => "Lade die M3U-Datei herunter und öffne sie mit einem Media-Player um den Sender zu hören.|br|VLC, Winamp, Foobar2000, oder fstream (Mac) werden empfohlen.",
 	"login" => "Einloggen oder Registrieren",
 	"login_p" => "Bitte logge dich ein.",
-	"ratecurrentsong" => "Abstimmung",
+	"ratecurrentsong" => "Bewerten",
 	"ratecurrentsong_p" => "Fahre mit der Maus über die Skala, klicke um den Song zu bewerten.|br|Die Albumwertung ist der Durchschnitt der Songwertungen.",
 	"ratecurrentsong_t" => "Die Bewertung entscheidet, wie oft Songs und Alben gespielt werden.|br|Erfahre, wie man bewertet.",
 	"ratecurrentsong_tp" => "Bewertung",
@@ -244,7 +257,7 @@ $lang2 = array(
 	"reqoncooldown" => " (am abkühlen)",
 	"reqempty" => " (leer)",
 	"reqwrongstation" => " (falscher Sender)",
-	"reqtechtitlefull" => " (|station||S:position| mit |requestcount|)",
+	"reqtechtitlefull" => " (|station||position|. mit |requestcount|)",
 	"reqtechtitlesimple" => " (|station||requestcount|)",
 	"reqexpiresin" => " (Der Platz läuft ab in |expiretime|)",
 	"reqexpiresnext" => " (Der Platz läuft nach dem nächsten Wunsch ab)",

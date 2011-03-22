@@ -407,10 +407,19 @@ var Request = {
 				that.el.removeChild(that.cooldown);
 				delete(that.cooldown);
 			}
-			if (json.song_blocked && !that.blocked) {
-				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("reqruleblocked") }, that.el);
+			if (json.album_electionblock && !that.blocked) {
+				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("reqalbumblocked") }, that.el);
 			}
-			else if (!json.song_blocked && that.blocked) {
+			else if (json.album_electionblock && that.blocked) {
+				that.blocked.textContent = _l("reqalbumblocked");
+			}
+			else if (json.group_electionblock && !that.blocked) {
+				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("reqgroupblocked") }, that.el);
+			}
+			else if (json.group_electionblock && that.blocked) {
+				that.blocked.textContent = _l("reqgroupblocked");
+			}
+			else if (that.blocked) {
 				that.el.removeChild(that.blocked);
 				delete(that.blocked);
 			}

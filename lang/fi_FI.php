@@ -1,5 +1,5 @@
 ﻿<?php
-// Rainwave 3 fi_FI v5 Language File by quarterlife
+// Rainwave 3 fi_FI r6 Language File by quarterlife
 
 $lang2 = array(
 	// Panel Names
@@ -146,8 +146,11 @@ $lang2 = array(
 	"pref_rating_hidesite" => "Piilota sivuston arvostelut kunnes olen itse arvostellut",
 	"pref_edi" => "Yleiset",
 	"pref_edi_wipeall" => "Pyyhi asetukset",
+	"pref_edi_wipeall_button" => "Pyyhi",
 	"pref_edi_language" => "Kieli",
-	"pref_edi_theme" => "Ulkoasu",
+	"pref_edi_theme" => "Teema",
+	"pref_edi_resetlayout" => "Nollaa ulkoasu",
+	"pref_edi_resetlayout_button" => "Nollaa",
 	"pref_fx" => "Tehosteet",
 	"pref_fx_fps" => "Animaatioiden kehysnopeus",
 	"pref_fx_enabled" => "Animointi päällä",
@@ -258,6 +261,7 @@ $lang2 = array(
 	"reqmyrequests" => "Minun toiveeni",
 	"reqrequestline" => "Jono",
 	"reqrequestlinelong" => "Jonon |showing| ensimmäistä, |linesize| jonossa.",
+	"reqruleblocked" => "Pysähtynyt; ryhmä tai albumi on äänestyksessä.",
 	
 	/* Others */
 	"nowplaying" => "Nyt soi",
