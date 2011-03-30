@@ -43,7 +43,7 @@ var ratingcontrol = function() {
 		if (result.id) {
 			for (var i in callbacks) {
 				if ((callbacks[i].category == result.fav_type) && (callbacks[i].id == result.id)) {
-					callbacks[i].favConfirm.call(callbacks[i], result.favourite);
+					callbacks[i].favConfirm.call(callbacks[i], result.fav);
 				}
 			}
 		}

@@ -3,7 +3,7 @@
 require("/var/www/rainwave.cc/auth/common.php");
 
 $iceservers = array(
-		#array(name => "Tanaric", site => "rw", "sid" => 1, url => "http://admin:oTdrdrCZNfy3@173.255.122.200:8000/admin/listclients?mount=/rainwave.ogg"),
+		array(name => "Tanaric", site => "rw", "sid" => 1, url => "http://admin:uwy#xm1z8j2tgp8u@69.163.166.98:8000/admin/listclients?mount=/rainwave.ogg"),
 		array(name => "Lyfe", site => "rw", "sid" => 1, url => "http://ice-admin:horseshavehooves@69.94.104.182:8000/admin/listclients?mount=/rainwave.ogg"),
         array(name => "Lyfe2", site => "rw", "sid" => 1, url => "http://ice-admin:horseshavehooves@69.94.108.98:8000/admin/listclients?mount=/rainwave.ogg"),
 		array(name => "TanaricBackup", site => "rw", "sid" => 1, url => "http://admin:oTdrdrCZNfy3@173.164.249.97:8000/admin/listclients?mount=/rainwave.ogg"),
@@ -11,8 +11,10 @@ $iceservers = array(
         array(name => "Dracoirs", site => "oc", "sid" => 2, url => "http://admin:ic3rc%40st@69.16.138.218:8000/admin/listclients?mount=/ocremix.ogg"),
 		array(name => "Lyfe", site => "oc", "sid" => 2, url => "http://ice-admin:horseshavehooves@69.94.104.182:8000/admin/listclients?mount=/ocremix.ogg"),
 		array(name => "Lyfe2", site => "oc", "sid" => 2, url => "http://ice-admin:horseshavehooves@69.94.108.98:8000/admin/listclients?mount=/ocremix.ogg"),
+		array(name => "Tanaric", site => "oc", "sid" => 2, url => "http://admin:uwy#xm1z8j2tgp8u@69.163.166.98:8000/admin/listclients?mount=/ocremix.ogg"),
 		
-        array(name => "Rainwave", site => "vw", "sid" => 3, url => "http://liquidrain:bunnies@127.0.0.1:8000/admin/listclients?mount=/mixwave.ogg")
+        array(name => "Rainwave", site => "vw", "sid" => 3, url => "http://liquidrain:bunnies@127.0.0.1:8000/admin/listclients?mount=/mixwave.ogg"),
+		array(name => "Tanaric", site => "vw", "sid" => 3, url => "http://admin:uwy#xm1z8j2tgp8u@69.163.166.98:8000/admin/listclients?mount=/mixwave.ogg"),
 	);
 
 foreach ($iceservers as $iceserver) {

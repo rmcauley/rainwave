@@ -166,8 +166,8 @@ panels.PlaylistPanel = {
 		};
 		
 		that.favResult = function(result) {
-			that.favResultDraw(albums[result.album_id], result.favourite);
-			albums[result.id].album_favourite = result.favourite;
+			that.favResultDraw(albums[result.album_id], result.fav);
+			albums[result.id].album_favourite = result.fav;
 		};
 		
 		that.favSwitch = function(evt) {
@@ -277,7 +277,10 @@ panels.PlaylistPanel = {
 			var resetkeytimer = false;
 			var bubble = true;
 			var chr = '';
-			if (evt.charCode > 0) {
+			if (!('charCode' in evt)) {
+				chr = String.fromCharCode(evt.keyCode);
+			}
+			else if (evt.charCode > 0) {
 				chr = String.fromCharCode(evt.charCode);
 			}
 			

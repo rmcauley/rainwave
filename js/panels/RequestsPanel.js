@@ -216,8 +216,9 @@ var RequestList = function(sortable) {
 				reqs[i].fx_posY.start(runy);
 				reqs[i].desty = runy;
 				runy += reqs[i].el.offsetHeight;
-				if (i == 0) runy += reqmargin * 2;
-				else runy += reqmargin;
+				//if (i == 0) runy += reqmargin * 2;
+				//else
+				runy += reqmargin;
 				runz += 1;
 			}
 		}
@@ -347,7 +348,7 @@ var Request = {
 		
 		that.xbutton = document.createElement("span");
 		// another instance of "courier new not having the right character"
-		that.xbutton.textContent = "⊗";
+		that.xbutton.textContent = "⨯";
 		that.xbutton.setAttribute("class", "request_xbutton");
 		Request.linkifyDelete(json.requestq_id, that.xbutton);
 		that.song_title.appendChild(that.xbutton);

@@ -117,7 +117,7 @@ var edi = function() {
 	};
 	
 	prefs.addPref("edi", { "hidden": true, "name": "clayout", "defaultvalue": "_default" });
-	//prefs.addPref("edi", { "name": "resetlayout", "type": "button", "defaultvalue": false, "callback": that.resetLayout, "refresh": true, "sessiononly": true });
+	prefs.addPref("edi", { "name": "resetlayout", "type": "button", "defaultvalue": false, "callback": that.resetLayout, "refresh": true, "sessiononly": true });
 	
 	//*************************************************************************
 	// Sizing/drawing layouts
@@ -126,6 +126,8 @@ var edi = function() {
 	var rowh = [];
 	var mincolw = [];
 	var minrowh = [];
+	var maxcolw = [];
+	var maxrowh = [];
 	var colflags = [];
 	var rowflags = [];
 	var layout = [];
@@ -138,12 +140,14 @@ var edi = function() {
 		for (var i = 0; i < clayout.length; i++) {
 			rowh[i] = 0;
 			minrowh[i] = 0;
+			maxrowh[i] = 10000;
 			if (clayout[i].length > maxcols) maxcols = clayout[i].length;
 		}
 
 		for (var j = 0; j < maxcols; j++) {
 			colw[j] = 0;
 			mincolw[j] = 0;
+			maxcolw[j] = 10000;
 		}
 		
 		// Step 1: Find out the normal width/height for each column and row and the minimum width/height
@@ -164,10 +168,12 @@ var edi = function() {
 				if (layout[i][j].rowspan == 1) {
 					if (rowh[i] < layout[i][j].height) rowh[i] = layout[i][j].height;
 					if (minrowh[i] < layout[i][j].minheight) minrowh[i] = layout[i][j].minheight;
+					if (layout[i][j].maxheight && (maxrowh[i] > layout[i][j].maxheight)) maxrowh[i] = layout[i][j].maxheight;
 				}
 				if (layout[i][j].colspan == 1) {
 					if (colw[j] < layout[i][j].width) colw[j] = layout[i][j].width;
 					if (mincolw[j] < layout[i][j].minwidth) mincolw[j] = layout[i][j].minwidth;
+					if (layout[i][j].maxwidth && (maxcolw[j] > layout[i][j].maxwidth)) maxcolw[j] = layout[i][j].maxwidth;
 				}
 			}
 		}
@@ -367,7 +373,6 @@ var edi = function() {
 				var dispheight = (typeof(layout[i][j].initSizeY) == "function") ? layout[i][j].initSizeY(cellheight, rowh[i]) : cellheight;
 				if ((dispwidth != cellwidth) || (dispheight != cellheight)) cirregular = true;
 
-				usevborder = false;
 				if (usevborder) {
 					vborders[i][j] = {};
 					vborders[i][j].el = createEl("div", { "class": "edi_border_vertical" });
@@ -381,8 +386,7 @@ var edi = function() {
 					if (theme.borderVertical) theme.borderVertical(vborders[i][j]);
 					element.appendChild(vborders[i][j].el);
 				}
-				
-				usehborder = false;
+
 				if (usehborder) {
 					hborders[i][j] = {}
 					hborders[i][j].el = createEl("div", { "class": "edi_border_horizontal" });
@@ -454,6 +458,7 @@ var edi = function() {
 	
 	that.rollingRowResize = function(evt) {
 		var my = getMousePosY(evt);
+		// TODO: max height
 		var height = rowh[resize_row] + (my - resize_my);
 		if (height < minrowh[resize_row]) height = minrowh[resize_row];
 		if (resize_last_height == height) return;
@@ -530,6 +535,9 @@ var edi = function() {
 		var mx = getMousePosX(evt);
 		var width = colw[resize_col] + (mx - resize_mx);
 		if (width < mincolw[resize_col]) width = mincolw[resize_col];
+		else if (width > maxcolw[resize_col]) {
+			width = maxcolw[resize_col];
+		}
 		if (resize_last_width == width) return;
 		var width2 = colw[resize_col + 1] - (width - colw[resize_col]);
 		if (width2 < mincolw[resize_col + 1]) {
@@ -537,6 +545,11 @@ var edi = function() {
 			if ((width + (mincolw[resize_col + 1] - width2)) < mincolw[resize_col]) return;
 			width += width2 - mincolw[resize_col + 1];
 			width2 = mincolw[resize_col + 1];
+		}
+		else if (width2 > maxcolw[resize_col + 1]) {
+			if ((width + (width2 - maxcolw[resize_col + 1])) > maxcolw[resize_col]) return;
+			width -= maxcolw[resize_col + 1] - width2;
+			width2 = maxcolw[resize_col + 1];
 		}
 		var coldiff = width - colw[resize_col];
 		var coldiff2 = width2 - colw[resize_col + 1];

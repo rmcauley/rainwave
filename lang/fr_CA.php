@@ -310,6 +310,13 @@ $lang2 = array(
 	"reqrequestline" => "File d'attente des demandes spéciales",
 	"reqrequestlinelong" => "Premiers |showing| des |linesize| dans la file d'attente",
 	"downloadm3u" => "▶ Télécharger le fichier M3U",
-	"players" => "Les lecteurs supportés sont VLC, Winamp, Foobar2000 et fstream (Mac/iPhone).|br|Windows Media Player et iTunes ne fonctionnent pas."
+	"players" => "Les lecteurs supportés sont VLC, Winamp, Foobar2000 et fstream (Mac/iPhone).|br|Windows Media Player et iTunes ne fonctionnent pas.",
+	
+	"pref_edi_wipeall_button" => "Supprimer",
+	"pref_edi_resetlayout" => "Réinitialiser la mise en page",
+	"pref_edi_resetlayout_button" => "Réinitialiser",
+	"reqruleblocked" => "Temporairement bloquée du aux règlements d'élection.",
+	"remixdetails" => "Détails du Remix",
+	"songhomepage" => "Page de la chanson"
 );
 ?>

@@ -290,9 +290,11 @@ function _THEME() {
 				te.songs[i].tr2_fx.start(0);
 				te.songs[i].tr3_fx.start(0);
 			}
-			te.songs[0].tr3_fx.onComplete2 = function() { te.songs[0].indicator.setAttribute("rowspan", 2); }
-			te.songs[0].tr3_fx.start(0);
-			te.songs[0].hideRequestor();
+			if (te.songs.length > 0) {
+				te.songs[0].tr3_fx.onComplete2 = function() { te.songs[0].indicator.setAttribute("rowspan", 2); }
+				te.songs[0].tr3_fx.start(0);
+				te.songs[0].hideRequestor();
+			}
 		};
 		
 		te.sortSongOrder = function() {
@@ -373,8 +375,8 @@ function _THEME() {
 		};
 		
 		tos.drawShowWinner = function() {
-			tos.songs[0].tr3_fx.onComplete2 = function() { tos.songs[0].indicator.setAttribute("rowspan", 2); }
-			tos.songs[0].tr3_fx.start(0);
+			tos.song.tr3_fx.onComplete2 = function() { tos.songs[0].indicator.setAttribute("rowspan", 2); }
+			tos.song.tr3_fx.start(0);
 		};
 	};
 
@@ -999,13 +1001,15 @@ function _THEME() {
 			}*/
 			if (tunedin == 1) {
 				menup.player.style.backgroundColor = "transparent";
-				menup.player.style.cursor = "none";
+				menup.player.style.cursor = "inherit";
+				menup.player.style.textDecoration = "none !important";
 				menup.fx_player.start(.65);
 				_l("tunedin", false, menup.player);
 			}
 			else {
 				menup.player.style.backgroundColor = "#225f8a";
 				menup.player.style.cursor = "pointer";
+				menup.player.style.textDecoration = "inherit";
 				menup.fx_player.start(1);
 				//_l("play", false, menup.player);
 				_l("downloadm3u", false, menup.player);

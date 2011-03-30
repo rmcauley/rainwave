@@ -3,6 +3,8 @@ var hotkey = function() {
 	var maxid = 0;
 	
 	var that = {};
+	var backspace_trap = false;
+	var backspace_timer = false;
 
 	that.addCallback = function(method, priority) {
 		var newcb = { "method": method, "id": maxid };
@@ -75,15 +77,21 @@ var hotkey = function() {
 		if ((evt.keyCode != 8) && (evt.keyCode != 27)) {
 			return that.keyPress(evt);
 		}
+		if (backspace_trap) {
+			that.stopDefaultAction(evt);
+			//that.stopBubbling(evt);
+			return false;
+		}
 	};
 	
 	that.keyDownHandler = function(evt) {
 		if (that.ignoreKey(evt)) return true;
 		// Short-circuit backspace on Chrome
 		if (evt.keyCode == 8) {
-			return that.keyPress(evt);
+			backspace_trap = !that.keyPress(evt) || backspace_trap;
+			return !backspace_trap;
 		}
-		// stop this from canceling our AJAX requests
+		// stop this from cancelling our AJAX requests
 		if (evt.keyCode == 27) {
 			that.keyPress(evt);
 			that.stopDefaultAction(evt);
@@ -91,8 +99,17 @@ var hotkey = function() {
 		}
 	};
 	
+	that.keyUpHandler = function(evt) {
+		if (backspace_trap && (evt.keyCode == 8)) {
+			if (backspace_timer) clearTimeout(backspace_timer);
+			setTimeout(function() { backspace_trap = false; backspace_timer = false; }, 500);
+		}
+	};
+	
 	that.ignoreKey = function(evt) {
 		if (evt.ctrlKey || evt.altKey || evt.metaKey) return true;
+		// we can't trap anything beyond here for opera without losing important keys
+		if (!('charCode' in evt)) return false;
 		// f keys
 		if ((evt.charCode == 0) && (evt.keyCode >= 112) && (evt.keyCode <= 123)) return true;
 		return false;
@@ -100,6 +117,7 @@ var hotkey = function() {
 	
 	window.addEventListener('keydown', that.keyDownHandler, false);
 	window.addEventListener('keypress', that.keyPressHandler, false);
+	window.addEventListener('keyup', that.keyUpHandler, false);
 	
 	return that;
 }();

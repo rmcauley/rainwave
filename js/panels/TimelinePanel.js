@@ -5,6 +5,7 @@ panels.TimelinePanel = {
 	xtype: "fit",
 	width: UISCALE * 40,
 	minwidth: UISCALE * 35,
+	maxwidth: 600,
 	title: _l("p_TimelinePanel"),
 	
 	constructor: function(container) {

@@ -71,6 +71,10 @@ td div.textoverflow {
 	text-overflow: ellipsis;
 }
 
+fieldset {
+	border: none;
+}
+
 #oggpixel {
 	position: absolute;
 	left: -50px;
@@ -453,7 +457,7 @@ div.request {
 	width: 100%;
 	max-width: 27em;
 	position: absolute;
-	cursor: n-resize;
+	cursor: ns-resize;
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	user-select: none;
@@ -506,6 +510,7 @@ span.request_xbutton {
 	display: block;
 	margin-left: 0.2em;
 	margin-right: .6em;
+	margin-top: -2px;
 	color: #888;
 }
 

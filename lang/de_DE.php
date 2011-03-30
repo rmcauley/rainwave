@@ -265,7 +265,8 @@ $lang2 = array(
 	"reqmyrequests" => "Meine Wünsche",
 	"reqrequestline" => "Warteschlange",
 	"reqrequestlinelong" => "Zeige die ersten |showing| von |linesize| Benutzern in der Warteschlange",
-	"reqruleblocked" => "Zur Zeit wegen Abstimmungsregeln gesperrt.",
+	"reqalbumblocked" => "Blockiert; Album ist in einer Abstimmung.",
+	"reqgroupblocked" => "Blockiert; Abkühlgruppe ist in einer Abstimmung.",
 
 	// Now Playing and Timeline panels
 
