@@ -144,7 +144,6 @@ panels.SchedulePanel = {
 			if (lyre.sync_time > 0) {
 				lyre.async_get("live_shows", {});
 			}
-			lyre.sync_extra['live'] = "true";
 			
 			lyre.addCallback(that.liveTimerResync, "sched_current");
 			lyre.addCallback(that.liveStartResult, "event_start_result");

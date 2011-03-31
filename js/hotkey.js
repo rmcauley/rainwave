@@ -102,7 +102,7 @@ var hotkey = function() {
 	that.keyUpHandler = function(evt) {
 		if (backspace_trap && (evt.keyCode == 8)) {
 			if (backspace_timer) clearTimeout(backspace_timer);
-			setTimeout(function() { backspace_trap = false; backspace_timer = false; }, 500);
+			setTimeout(function() { backspace_trap = false; backspace_timer = false; }, 1000);
 		}
 	};
 	

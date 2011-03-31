@@ -566,7 +566,7 @@ function _THEME() {
 
 		ts.voteProgressComplete = function() {
 			fx_votebkg_x.stop();
-			fx_votebkg_x.set(-votebkg_width + ts.song_td.offsetWidth + 11);
+			fx_votebkg_x.set(0);
 			fx_votebkg_y.stop();
 			fx_votebkg_y.set(-32);
 		};
@@ -904,6 +904,11 @@ function _THEME() {
 			menup.loginreg.appendChild(reg);
 			menup.td_user.appendChild(menup.loginreg);
 			row.appendChild(menup.td_user);
+			
+			menup.user_cp = createEl("div", { "class": "menu_user_cp" });
+			var usercp_logout = createEl("a", { "class": "displayblock", "textContent": _l("logout"), "href": "http://rainwave.cc/forums/ucp.php?mode=logout" }, menup.user_cp);
+			var usercp_keys = createEl("a", { "class": "displayblock", "textContent": _l("managekeys"), "href": "http://rainwave.cc/auth/" }, menup.user_cp);
+			fx.makeMenuDropdown(menup.el, menup.td_user, menup.user_cp, { "checkbefore": function() { if (user.p.user_id == 1) return false; } } );
 			
 			menup.td_chat = createEl("td", { "class": "menu_td_chat" });
 			var chatlink = createEl("a", { "class": "link" } );

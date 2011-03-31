@@ -459,6 +459,7 @@ var edi = function() {
 	that.rollingRowResize = function(evt) {
 		var my = getMousePosY(evt);
 		// TODO: max height
+		// TODO: vborders
 		var height = rowh[resize_row] + (my - resize_my);
 		if (height < minrowh[resize_row]) height = minrowh[resize_row];
 		if (resize_last_height == height) return;
@@ -567,6 +568,10 @@ var edi = function() {
 					width2 += colw[resize_col + j] + theme.borderwidth;
 				}
 				that.openpanels[layout[i][resize_col + 1].EDINAME]._div.style.width = width2 + "px";
+				if ((typeof(layout[i][resize_col + 1]) == "object") && (typeof(hborders[i][resize_col + 1]) == "object")) {
+					hborders[i][resize_col + 1].el.style.left = x2 + "px";
+					hborders[i][resize_col + 1].el.style.width = width2 + "px";
+				}
 			}
 		}
 		resize_last_width = width;

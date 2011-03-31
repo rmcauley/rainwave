@@ -48,6 +48,10 @@ a:hover, .link:hover {
 	text-align: right;
 }
 
+.displayblock {
+	display: block;
+}
+
 td {
 	vertical-align: top;
 	padding: 0px;
@@ -1196,4 +1200,16 @@ table.schedule_table td {
 table.schedule_table button {
 	padding: 0px;
 	font-size: 0.8em;
+}
+
+div.menu_user_cp {
+	width: 15.5em;
+	position: absolute;
+	padding: .3em;	
+	border: 1px solid #233844;
+	background-image: -moz-linear-gradient(100% 100% 90deg, #000000, #142027);
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#142027), to(#000000));
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	text-align: right;
 }

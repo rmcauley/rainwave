@@ -280,13 +280,16 @@ var fx = function() {
 		return by;
 	};
 	
-	that.makeMenuDropdown = function(menu, header, dropdown) {
+	that.makeMenuDropdown = function(menu, header, dropdown, options) {
 		var timeout = 0;
 		var fx_pulldown = fx.make(fx.CSSNumeric, [ dropdown, 250, "top", "px" ]);
 		fx_pulldown.set(0);
 		var fx_opacity = fx.make(fx.OpacityRemoval, [ dropdown, menu, 250 ]);
 		var mouseover = function() {
 			clearTimeout(timeout);
+			if (options && options.checkbefore) {
+				if (!options.checkbefore) return;
+			}
 			dropdown.style.left = help.getElPosition(header).x + "px";
 			fx_pulldown.start(menu.offsetHeight - 1);
 			fx_opacity.start(1);

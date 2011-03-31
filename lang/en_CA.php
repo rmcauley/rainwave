@@ -221,7 +221,6 @@ $lang = array(
 	"clickonsongtovote_p" => "After tuning in, click on a song.|br|The song with the most votes gets played next.",
 	"tunein" => "Tune In",
 	"tunein_p" => "Download the M3U and use your media player to listen.|br|VLC, Winamp, Foobar2000, and fstream (Mac) recommended.",
-	"login" => "Login or Register",
 	"login_p" => "Please login.",
 	"ratecurrentsong" => "Rating",
 	"ratecurrentsong_p" => "Slide your mouse over the graph, and click to rate the song.|br|Album ratings are averaged from your song ratings.",
@@ -337,6 +336,7 @@ $lang = array(
 	"help" => "Help",
 	"forums" => "Forums",
 	"login" => "Login",
+	"logout" => "Logout",	
 	"register" => "Register",
 	"username" => "Username",
 	"password" => "Password",
@@ -349,6 +349,7 @@ $lang = array(
 	"m3uhijack" => "|plugin| is trying to hijack the M3U download.  Please right click and 'Save As.'",
 	"menu_morestations" => "More ▼",
 	"waitingforstatus" => "Waiting for Status",
+	"managekeys" => "Manage API Keys",
 	
 	/* Words for pluralization */
 
