@@ -27,7 +27,7 @@ minifyJavascript($dest, $bnum);
 writeParsedFile("root/index.php", $dest . "index.php", $bnum);
 chmod($dest . "auth/common.php", "755");
 
-//makeAPIDirectory($lyredir, $dest, false);
+makeAPIDirectory($lyredir, $dest, false);
 
 exec("chmod u+r $dest/auth -R");
 exec("chown www-data $dest/auth -R");

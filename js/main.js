@@ -12,6 +12,9 @@ var SHORTSTATIONS = [ false, "RW", "OC", "MW" ];
 var UISCALE = 10;
 var BODY = document.getElementById("body");
 
+var SIDEBAR = false;
+if (location.href.indexOf("sidebar=true") > 0) SIDEBAR = true;
+
 var panels = { "false": false };
 var mouse = { "x": 0, "y": 0 };
 var initpiggyback = {};
@@ -21,6 +24,7 @@ function init() {
 	prefs.addPref("edi", { name: "language", defaultvalue: "en_CA", type: "dropdown", options: [
 			{ "value": "de_DE", "option": "Deutsch" },
 			{ "value": "en_CA", "option": "English (Canada)" },
+			{ "value": "es_CL", "option": "Español (LA)" },
 			{ "value": "fr_CA", "option": "Français (Canada)" },
 			{ "value": "nl_NL", "option": "Nederlands" },
 			{ "value": "fi_FI", "option": "Suomi" },
@@ -44,7 +48,7 @@ function init() {
 	
 	prefs.addPref("help", { "name": "visited", "defaultvalue": false, "hidden": true });
 	
-	if (!prefs.getPref("help", "visited")) {
+	if (!prefs.getPref("help", "visited") && !sidebar) {
 		help.startTutorial("welcome");
 		prefs.changePref("help", "visited", true);
 		prefs.savePrefs();

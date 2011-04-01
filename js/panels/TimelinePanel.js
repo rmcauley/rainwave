@@ -369,11 +369,13 @@ panels.TimelinePanel = {
 		};
 		
 		that.p_showelec = function(showelec) {
+			if (SIDEBAR) showelec = true;
 			that.showelec = showelec;
 			if (that.allevents.length > 0) that.positionEvents();
 		};
 		
 		that.p_showhistory = function(showhistory) {
+			if (SIDEBAR) showhistory = true;
 			that.showhistory = showhistory;
 			if (that.allevents.length > 0) that.positionEvents();
 		};

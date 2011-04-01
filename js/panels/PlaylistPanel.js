@@ -36,8 +36,8 @@ panels.PlaylistPanel = {
 			albumsort = [];
 			reinsert = [];
 			
-			lyre.addCallback(that.playlistUpdate, "playlist_all_albums");
-			lyre.addCallback(that.playlistUpdate, "playlist_album_diff");
+			lyre.addCallback(that.playlistAllAlbums, "playlist_all_albums");
+			lyre.addCallback(that.playlistAlbumDiff, "playlist_album_diff");
 			lyre.addCallback(that.drawAlbumCallback, "playlist_album");
 			lyre.addCallback(that.ratingResult, "rate_result");
 			lyre.addCallback(that.favResult, "fav_album_result");
@@ -54,33 +54,35 @@ panels.PlaylistPanel = {
 			help.addTopic("request", { "h": "request", "p": "request_p", "tutorial": "request" });
 		};
 		
-		that.playlistUpdate = function(json) {
-			/*while (i < albumsort.length) {
-				if (!albums[albumsort[i]].album_available) {
-					that.setAlbumRating(albumsort[i]);
-					if (albums[albumsort[i]].album_lowest_oa < clock.now) {
-						albums[albumsort[i]].album_available = true;
-						that.setRowClass(albums[albumsort[i]]);
-						that.reinsertAlbum(albumsort[i]);
-					}
-					else i++;
-				}
-				else i++;
-			}*/
-			for (var i in json) {
-				if (json[i].album_id) that.albumUpdate(json[i]);
-			}
+		that.playlistAllAlbums = function(json) {
+			that.loadFromJSON(json);
+			if (!inlinetimer) that.updateAlbumList();
+		};
+		
+		that.playlistAlbumDiff = function(json) {
+			that.loadFromJSON(json);
+			
 			for (i in albums) {
 				if (!albums[i].album_available) {
+					// reinserts the album if it becomes available again
 					if ((albums[i].album_lowest_oa - clock.now) <= 0) {
+						albums[i].album_available = true;
 						that.setAlbumRating(i);
 						that.setRowClass(albums[i]);
 						that.reinsertAlbum(i);
 					}
+					else {
+						that.setAlbumRating(i);
+					}
 				}
 			}
-			if (!inlinetimer) {
-				that.updateAlbumList();
+			
+			if (!inlinetimer) that.updateAlbumList();
+		};
+		
+		that.loadFromJSON = function(json) {
+			for (var i in json) {
+				if (json[i].album_id) that.albumUpdate(json[i]);
 			}
 		};
 		

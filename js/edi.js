@@ -85,7 +85,12 @@ var edi = function() {
 	that.init = function(container) {
 		that.loadLayouts();
 		var wantlayout = prefs.getPref("edi", "clayout");
-		if ((wantlayout != "_default") && (wantlayout in layouts)) {
+		if (SIDEBAR) {
+			clayout = [ [ { "panel": "TimelinePanel", "rowspan": 1, "colspan": 1 } ] ];
+			panels.TimelinePanel.height = window.innerHeight;
+			
+		}
+		else if ((wantlayout != "_default") && (wantlayout in layouts)) {
 			clayout = layouts[wantlayout];
 		}
 		else {
