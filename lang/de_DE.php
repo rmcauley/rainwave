@@ -186,7 +186,7 @@ $lang2 = array(
 	"clickonsongtovote_p" => "Nachdem du den Sender eingestellt hast, klicke auf einen Song.|br|Der Song mit den meisten Stimmen wird als nächstes gespielt.",
 	"tunein" => "Reinhören",
 	"tunein_p" => "Lade die M3U-Datei herunter und öffne sie mit einem Media-Player um den Sender zu hören.|br|VLC, Winamp, Foobar2000, oder fstream (Mac) werden empfohlen.",
-	"login" => "Einloggen oder Registrieren",
+	"login" => "Anmelden oder Registrieren",
 	"login_p" => "Bitte logge dich ein.",
 	"ratecurrentsong" => "Bewerten",
 	"ratecurrentsong_p" => "Fahre mit der Maus über die Skala, klicke um den Song zu bewerten.|br|Die Albumwertung ist der Durchschnitt der Songwertungen.",
@@ -301,11 +301,12 @@ $lang2 = array(
 	"players" => "Unterstützte Media-Player sind VLC, Winamp, Foobar2000, und fstream (Mac/iPhone).|br|Windows Media Player und iTunes werden nicht funktionieren.",
 	"help" => "Hilfe",
 	"forums" => "Forum",
-	"login" => "Einloggen",
+	"login" => "Anmelden",
+	"logout" => "Abmelden",	
 	"register" => "Registrieren",
 	"username" => "Benutername",
 	"password" => "Passwort",
-	"autologin" => "Automatisch-einloggen",
+	"autologin" => "Automatisch anmelden",
 	"compatplayers" => "Unterstützte Media-Player:",
 	"chat" => "Chat",
 	"playing" => "◼ Wiedergabe stoppen",
@@ -314,6 +315,7 @@ $lang2 = array(
 	"m3uhijack" => "|plugin| versucht den M3U download zu übernehmen.  Bitte klicke mit der rechten Maustaste und wähle 'Speichern unter'",
 	"menu_morestations" => "Mehr ▼",
 	"waitingforstatus" => "Warte auf Status",
+	"managekeys" => "API Keys Verwalten",
 	
 	/* Words for pluralization */
 

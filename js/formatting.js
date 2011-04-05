@@ -1,5 +1,3 @@
-var $ = document.getElementById;
-
 function createEl(type, attribs, appendto) {
 	var el = document.createElement(type);
 	if ((typeof(attribs) == "object") || (typeof(attribs) == "array")) {

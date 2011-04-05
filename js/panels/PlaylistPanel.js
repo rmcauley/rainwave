@@ -458,5 +458,5 @@ panels.PlaylistPanel = {
 		};
 		
 		return that;
-	}
+	};
 };
