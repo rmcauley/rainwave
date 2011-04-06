@@ -35,7 +35,7 @@ var graph = function() {
 		graph.g = svg.makeEl("g");
 		if (x || y) graph.g.setAttribute("transform", "translate(" + x + ", " + y + ")");
 		graph.scalable = svg.makeEl("g");
-		if (gmaskfunc) {
+		/*if (gmaskfunc) {
 			graph.defs = svg.makeEl("defs");
 			graph.plot = svg.makeEl("mask");
 			graph.plot.setAttribute("id", "R3Graph" + gid + "_mask");
@@ -44,9 +44,9 @@ var graph = function() {
 			graph.masked = svg.makeEl("g");
 			graph.masked.setAttribute("mask", "url(#R3Graph" + gid + "_mask)");
 		}
-		else {
+		else {*/
 			graph.plot = svg.makeEl("g");
-		}
+		//}
 		graph.bgrid = svg.makeEl("g");
 
 		graph.label = function() {
@@ -187,10 +187,18 @@ var graph = function() {
 			graph.scalable.appendChild(borderx);
 		};
 		
+		graph.getXPixel = function(xvalue) {
+			return Math.round(((xvalue - graph.minx) / (graph.maxx - graph.minx)) * graph.gwidth);
+		};
+		
+		graph.getYPixel = function(yvalue) {
+			return Math.round(((1 - ((yvalue - graph.miny) / (graph.maxy - graph.miny))) * graph.gheight) + graph.data.pady);
+		};
+		
 		graph.label();
 		graph.scale();
 		graph.g.appendChild(graph.bgrid);
-		if (gmaskfunc) {
+		if (gmaskfunc && graph.masked) {
 			gmaskfunc(graph, graph.masked);
 			graph.g.appendChild(graph.masked);
 			graph.masked.setAttribute("transform", "translate(" + graph.ystartx + ",0)");
@@ -216,10 +224,7 @@ var graph = function() {
 			object.setAttribute("y", now);
 			object.setAttribute("height", gheight - now);
 		};
-		
-		/*rhbfx.transition = function(time, started, duration) {
-			return -(Math.cos(Math.PI * ((time - newfx.started) / newfx.duration)) - 1) / 2;
-		}*/
+
 		return rhbfx;
 	});
 	
@@ -262,17 +267,160 @@ var graph = function() {
 			}
 		};
 		
-		graph.getYPixel = function(yvalue) {
-			return ((1 - ((yvalue - graph.miny) / (graph.maxy - graph.miny))) * graph.gheight) + graph.data.pady;
-		}
-		
 		graph.plotValue = function(xvalue, yvalue) {
-			var x = (((xvalue - graph.minx) / (graph.maxx - graph.minx)) * graph.gwidth);
+			var x = graph.getXPixel(xvalue);
 			graph.data.raw[xvalue] = yvalue;
-			graph.data.bars[xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 0.5, graph.xendy, graph.barwidth - 0.5, 0, { "stroke": "#666666", "stroke-width": "1", "fill": "#FFFFFF" });
+			if (graph.data.stroke && graph.data.fill) {
+				graph.data.bars[xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 0.5, graph.xendy, graph.barwidth - 0.5, 0, { "stroke": graph.data.stroke(x, graph.gheight + graph.data.pady), "stroke-width": "1", "fill": graph.data.fill(x, graph.gheight + graph.data.pady) });
+			}
+			else {
+				graph.data.bars[xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 0.5, graph.xendy, graph.barwidth - 0.5, 0, { "stroke": "#666666", "stroke-width": "1", "fill": "#FFFFFF" });
+			}
 			graph.data.fx[xvalue] = fx.make(fx.RatingHistogramBar, [ graph.data.bars[xvalue], graph.gheight + graph.data.pady, 250 ]);
 			graph.data.fx[xvalue].set(graph.gheight + graph.data.pady);
 			graph.plot.appendChild(graph.data.bars[xvalue]);
+		};
+		
+		graph.update(graph.data.raw, true);
+	};
+	
+	fx.extend("LineGraphPoint", function(line, point1, point2, gheight, duration) {
+		var lfx = {};
+		lfx.duration = duration;
+		
+		var p1_from_x, p1_from_y;
+		lfx.setP1From = function(x, y, x1, y2) {
+			p1_from_x = x;
+			p1_from_y = y;
+		};
+		
+		var p2_from_x, p2_from_y;
+		lfx.setP2From = function(x, y, x1, y2) {
+			p2_from_x = x;
+			p2_from_y = y;
+		};
+		
+		var p1_to_x, p1_to_y;
+		lfx.setP1To = function(x, y, x1, y2) {
+			p1_to_x = x;
+			p1_to_y = y;
+		};
+		
+		var p2_to_x, p2_to_y;
+		lfx.setP2To = function(x, y, x1, y2) {
+			p2_to_x = x;
+			p2_to_y = y;
+		};
+		
+		lfx.update = function(now) {
+			var x1 = p1_from_x - p1_to_x;
+			if (x1 != 0) x1 = Math.round(x1 * now) + p1_from_x;
+			else x1 = p1_to_x;
+			
+			var y1 = p1_from_y - p1_to_y;
+			if (y1 > 0) y1 = Math.round(y1 * now) + p1_from_y;
+			else y1 = p1_from_y;
+			
+			var x2 = p2_from_x - p2_to_x;
+			if (x2 > 0) x2 = Math.round(x2 * now) + p2_from_x;
+			else x2 = p2_to_x;
+			
+			var y2 = p2_from_y - p2_to_y;
+			if (y2 > 0) y2 = Math.round(y2 * now) + p2_from_y;
+			else y2 = p2_from_y;
+			
+			line.setAttribute("x1", x1);
+			line.setAttribute("y1", y1);
+			line.setAttribute("x2", x2);
+			line.setAttribute("y2", y2);
+			
+			point1.setAttribute("x", x1 - 3);
+			point1.setAttribute("y", y1 - 3);
+			
+			point2.setAttribute("x", x2 - 3);
+			point2.setAttribute("y", y2 - 3);
+			
+			// object.setAttribute("y", now);
+			// object.setAttribute("height", gheight - now);
+		};
+
+		return rhbfx;
+	});
+	
+	that.Line = function(graph) {
+		graph.data.fx = {};
+		graph.data.lines = {};
+		graph.data.points1 = {};
+		graph.data.points2 = {};
+		
+		graph.update = function(newdata, init) {
+			var i, j, k, found;
+			for (i in graph.data.raw) {
+				found = false;
+				for (j in newdata) {
+					if (i == j) found = true;
+				}
+				if (!found) {
+					graph.data.raw[i] = 0;
+					graph.plot.removeChild(graph.data.lines[i]);
+					graph.plot.removeChild(graph.data.points1[i]);
+					delete(graph.data.lines[i]);
+					delete(graph.data.points[i]);
+					delete(graph.data.fx[i]);
+				}
+			}
+			
+			var keys = [];
+			for (i in newdata) {
+				keys.push(i);
+			}
+			keys.sort();
+			
+			var lastx = graph.minx;
+			var lasty = newdata[keys[0]];
+			for (k = 0; k < keys.length; k++) {
+				i = keys[k];
+				found = false;
+				for (j in graph.data.raw) {
+					if (i == j) found = true;
+				}
+				if ((!found) || (init)) {
+					graph.plotValue(i, newdata[i], lastx, lasty);
+				}
+				lastx = i;
+				lasty = newdata[i];
+			}
+			
+			if (fx.enabled) setTimeout(graph.animateAll, 100);
+			else graph.animateAll();
+		};
+		
+		graph.animateAll = function() {
+			/*for (i in graph.data.raw) {
+				graph.data.fxx[i].start(graph.getXPixel(i));
+				graph.data.fxy[i].start(graph.getYPixel(graph.data.raw[i]));
+			}*/
+		};
+
+		graph.plotValue = function(xvalue, yvalue, lastx, lasty) {
+			var x1 = graph.getXPixel(lastx);
+			var y1 = graph.getYPixel(lasty);
+			var x2 = graph.getXPixel(xvalue);
+			var y2 = graph.getYPixel(yvalue);
+			graph.data.raw[xvalue] = yvalue;
+			var fill = "#FFF";
+			var stroke = "#BBB";
+			if (graph.data.fill && graph.data.stroke) {
+				//stroke = graph.data.stroke(xvalue / graph.maxx, yvalue / graph.maxy);
+				fill = graph.data.fill(xvalue / graph.maxx, yvalue / graph.maxy);
+			}
+			graph.data.lines[xvalue] = svg.makeLine(x1, y1, x2, y2, { "stroke": stroke, "stroke-width": 2 });
+			graph.data.points1[xvalue] = svg.makeRect(x1 - 3, y1 - 3, 6, 6, { "fill": fill });
+			graph.data.points2[xvalue] = svg.makeRect(x2 - 3, y2 - 3, 6, 6, { "fill": fill });
+
+			graph.plot.appendChild(graph.data.lines[xvalue]);
+			graph.plot.appendChild(graph.data.points1[xvalue]);
+			graph.plot.appendChild(graph.data.points2[xvalue]);
 		};
 		
 		graph.update(graph.data.raw, true);
