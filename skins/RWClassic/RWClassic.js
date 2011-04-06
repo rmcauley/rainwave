@@ -2,10 +2,11 @@ function _THEME() {
 	var that = {};
 	var skindir = "skins_r" + BUILDNUM + "/RWClassic";
 
-	// These are variables that Edi depends upon
+	// These are variables that Edi or the graphing engine depends upon
 	that.borderheight = 12;
 	that.borderwidth = 12;
 	that.textcolor = "#FFFFFF";
+	that.vdarktext = "#777777";
 	that.helplinecolor = "#c287ff";
 	that.helptextcolor = "#d6afff";
 
@@ -1050,12 +1051,12 @@ function _THEME() {
 
 	that.Extend.MainMPI = function(mpi) {
 		mpi.postDraw = function() {
-			mpi.bkg = document.createElement("div");
-			mpi.divSize(mpi.bkg);
-			mpi.divPosition(mpi.bkg);
-			mpi.bkg.style.zIndex = "1";
-			mpi.bkg.style.top = mpi.tabheight + "px";
-			mpi.container.appendChild(mpi.bkg);
+			//mpi.bkg = document.createElement("div");
+			//mpi.divSize(mpi.bkg);
+			//mpi.divPosition(mpi.bkg);
+			//mpi.bkg.style.zIndex = "1";
+			//mpi.bkg.style.top = mpi.tabheight + "px";
+			//mpi.container.appendChild(mpi.bkg);
 		};
 		
 		return mpi;
@@ -1117,9 +1118,12 @@ function _THEME() {
 			createEl("span", { "textContent": _l("searching") }, inlinesearchc);
 			inlinesearch = createEl("span", { "class": "pl_search" }, inlinesearchc);
 			albumlistc = createEl("div", { "class": "pl_albumlistc" }, pp.container);
-			albumlist = createEl("table", { "class": "pl_albumlist" }, albumlistc);			
+			//albumlistgrab = createEl("div"
+			albumlist = createEl("table", { "class": "pl_albumlist" }, albumlistc);
 			odholder = createEl("div", { "class": "pl_odholder" }, pp.container);
 		};
+		
+		prefs.addPref("playlist", { "name": "listsize", "defaultvalue": 300, "hidden": true });
 		
 		pp.drawAlbumlistEntry = function(album) {
 			album.tr = document.createElement("tr");
@@ -1256,7 +1260,8 @@ function _THEME() {
 			div.albumdetailtd.setAttribute("class", "pl_ad_albumdetailtd");
 			
 			if ((json.album_rating_count >= 10) && svg.capable) {
-				var gr = graph.makeSVG(graph.RatingHistogram, that.RatingHistogramMask, 200, 120 - (UISCALE * 3), { maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10, raw: json.album_rating_histogram });
+				//var gr = graph.makeSVG(graph.RatingHistogram, false, 200, 120 - (UISCALE * 3), { stroke: that.RatingHistoStroke, fill: that.RatingHistoFill, maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10, raw: json.album_rating_histogram });
+				var gr = graph.makeSVG(graph.Line, false, 200, 120 - (UISCALE * 3), { stroke: that.RatingHistoStroke, fill: that.RatingHistoFill, maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10, raw: json.album_rating_histogram });
 				gr.svg.setAttribute("class", "pl_ad_ratinghisto");
 				div.albumdetailtd.appendChild(gr.svg);
 			}
@@ -1461,11 +1466,16 @@ function _THEME() {
 		usergradient.appendChild(svg.makeStop("85%", "#8bccff", "1"));
 		usergradient.appendChild(svg.makeStop("100%", "#76add8", "1"));
 		defs.appendChild(usergradient);
+		//mask.appendChild(svg.makeRect(0, 0, graph.width, graph.height, { fill: "url(#Rating_usergradient)" }));*/
 	};
 	
-	that.RatingHistogramMask = function(graph, mask) {
-		mask.appendChild(svg.makeRect(0, 0, graph.width, graph.height, { fill: "url(#Rating_usergradient)" }));
-	};	
+	that.RatingHistoStroke = function(x, y) {
+		return "#000000";
+	};
+	
+	that.RatingHistoFill = function(x, y) {
+		return "url(#Rating_usergradient)";
+	};
 	
 	return that;
 };
