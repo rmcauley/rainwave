@@ -48,7 +48,7 @@ function init() {
 	
 	prefs.addPref("help", { "name": "visited", "defaultvalue": false, "hidden": true });
 	
-	if (!prefs.getPref("help", "visited") && !sidebar) {
+	if (!prefs.getPref("help", "visited") && !SIDEBAR) {
 		help.startTutorial("welcome");
 		prefs.changePref("help", "visited", true);
 		prefs.savePrefs();
