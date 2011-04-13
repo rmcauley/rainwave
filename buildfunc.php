@@ -36,6 +36,7 @@ function writeParsedFile($source, $dest, $bnum) {
 	$s = fopen($source, "r") or die("Can't open " . $source);
 	while (($buffer = fgets($s, 4096)) !== false) {
 		$buffer = str_replace("<%BUILDNUM%>", $bnum, $buffer);
+		$buffer = str_replace("<%LANGFUNC%>", file_get_contents("langfunc.php"), $buffer);
 		fwrite($d, $buffer);
     }
 	fclose($s);
@@ -68,7 +69,7 @@ function buildLanguages($dest, $bnum) {
 			writeLang($dest2 . "/" . substr($file, 0, (strlen($file) - 4)) . ".js", $fl);
 			$missingany = false;
 			foreach ($lang as $key => $value) {
-				if (!isset($lang2[$key])) {
+				if (!isset($lang2[$key]) && (strpos($key, "suffix") != 0) && (strpos($key, "log") != 0)) {
 					if (!$missingany) {
 						fwrite($errs, "*** $file Missing ***\n");
 						$missingany = true;

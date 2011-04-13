@@ -317,6 +317,11 @@ $lang2 = array(
 	"pref_edi_resetlayout_button" => "Réinitialiser",
 	"reqruleblocked" => "Temporairement bloquée du aux règlements d'élection.",
 	"remixdetails" => "Détails du Remix",
-	"songhomepage" => "Page de la chanson"
+	"songhomepage" => "Page de la chanson",
+	
+	"reqalbumblocked" => "Bloqué; l'album est en élection.",
+	"reqgroupblocked" => "Bloqué; le groupe de recharge est en élection.",
+	"logout" => "Déconnexion",
+	"managekeys" => "Gérer les clés API"
 );
 ?>

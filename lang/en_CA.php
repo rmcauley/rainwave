@@ -155,7 +155,7 @@ $lang = array(
 	"pl_ranks" => "Rated at |rating|, ranking |S:rank|.",
 	"pl_favourited" => "Favourited by |count| |P:count,person|.",
 	"pl_wins" => "Wins |percent|% of the elections it's in.",
-	"pl_requested" => "Requested |count| times, ranking |S:rank|.",
+	"pl_requested" => "Requested |count| |p:count,time_p|, ranking |S:rank|.",
 	"pl_genre" => "Cooldown group: ",
 	"pl_genre2" => ".",
 	"pl_genres" => "Cooldown groups: ",
@@ -172,7 +172,7 @@ $lang = array(
 	"pref_timeline_showhistory" => "Show History",
 	"pref_timeline_showelec" => "Show Election Results",
 	"pref_timeline_showallnext" => "Show All Upcoming Events",
-	"pref_rating_hidesite" => "Hide Site Ratings Until I've Rated",
+	"pref_rating_hidesite" => "Hide Global Ratings Until I've Rated",
 	"pref_edi" => "General",
 	"pref_edi_wipeall" => "Erase Preferences",
 	"pref_edi_wipeall_button" => "Erase",
@@ -299,8 +299,8 @@ $lang = array(
 	"reqmyrequests" => "My Requests",
 	"reqrequestline" => "Request Line",
 	"reqrequestlinelong" => "First |showing| of |linesize| In Line",
-	"reqalbumblocked" => "Stalled; album is in an election.",
-	"reqgroupblocked" => "Stalled; cooldown group is in an election.",
+	"reqalbumblocked" => "Blocked; album is in an election.",
+	"reqgroupblocked" => "Blocked; cooldown group is in an election.",
 	
 	// Now Playing and Timeline panels
 
@@ -357,5 +357,7 @@ $lang = array(
 	"person_p" => "people",
 	"Vote" => "Vote",
 	"Vote_p" => "Votes",
+	"time_p" => "time",
+	"time_p_p" => "times"
 );
 ?>

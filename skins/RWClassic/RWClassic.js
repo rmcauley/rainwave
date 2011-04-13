@@ -1260,8 +1260,7 @@ function _THEME() {
 			div.albumdetailtd.setAttribute("class", "pl_ad_albumdetailtd");
 			
 			if ((json.album_rating_count >= 10) && svg.capable) {
-				//var gr = graph.makeSVG(graph.RatingHistogram, false, 200, 120 - (UISCALE * 3), { stroke: that.RatingHistoStroke, fill: that.RatingHistoFill, maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10, raw: json.album_rating_histogram });
-				var gr = graph.makeSVG(graph.Line, false, 200, 120 - (UISCALE * 3), { stroke: that.RatingHistoStroke, fill: that.RatingHistoFill, maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10, raw: json.album_rating_histogram });
+				var gr = graph.makeSVG(graph.RatingHistogram, 200, 120 - (UISCALE * 3), { stroke: that.RatingHistoStroke, fill: that.RatingHistoFill, maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10, raw: [ json.album_rating_histogram ]});
 				gr.svg.setAttribute("class", "pl_ad_ratinghisto");
 				div.albumdetailtd.appendChild(gr.svg);
 			}
@@ -1475,6 +1474,18 @@ function _THEME() {
 	
 	that.RatingHistoFill = function(x, y) {
 		return "url(#Rating_usergradient)";
+	};
+	
+	that.LineGraphColor = function(num, x, y) {
+		var key = Math.round(84 * x) + 128 + 44;
+		var sub = 80;
+		var comp = key - 50;
+		if (num == 0) {	
+			return "rgb(" + sub + ", " + comp + ", " + key + ")";
+		}
+		if (num == 1) {
+			return "rgb(" + sub + ", " + key + ", " + comp + ")";
+		}
 	};
 	
 	return that;

@@ -79,7 +79,7 @@ panels.MainMPI = {
 			var panel = panels[panelname];
 			if (that.panels[panelname]) return;
 			that.panels[panelname] = {};
-			var mpi_container = createEl("div", { "style": "z-index: 2;" });
+			var mpi_container = createEl("div", { "style": "z-index: 2; position: absolute;" });
 			var panelcl = panelname;
 			panelcl = panelcl.replace(" ", "_");
 			mpi_container.className = "EdiPanel Panel_" + panelcl;

@@ -13,15 +13,15 @@ var graph = function() {
 		that[name] = func;
 	};
 	
-	that.makeSVG = function(gfunc, gmaskfunc, width, height, data) {
+	that.makeSVG = function(gfunc, width, height, data) {
 		var s = svg.make({ width: width, height: height });
-		var newgr = that.make(gfunc, gmaskfunc, 0, 0, width, height, data);
+		var newgr = that.make(gfunc, 0, 0, width, height, data);
 		newgr.svg = s;
 		newgr.svg.appendChild(newgr.g);
 		return newgr;
 	};
 	
-	that.make = function(gfunc, gmaskfunc, x, y, width, height, data) {
+	that.make = function(gfunc, x, y, width, height, data) {
 		var graph = {};
 		if (!data.xnumbermod) data.xnumbermod = false;
 		if (!data.ynumbermod) data.ynumbermod = false;
@@ -35,18 +35,6 @@ var graph = function() {
 		graph.g = svg.makeEl("g");
 		if (x || y) graph.g.setAttribute("transform", "translate(" + x + ", " + y + ")");
 		graph.scalable = svg.makeEl("g");
-		/*if (gmaskfunc) {
-			graph.defs = svg.makeEl("defs");
-			graph.plot = svg.makeEl("mask");
-			graph.plot.setAttribute("id", "R3Graph" + gid + "_mask");
-			graph.defs.appendChild(graph.plot);
-			graph.g.appendChild(graph.defs);
-			graph.masked = svg.makeEl("g");
-			graph.masked.setAttribute("mask", "url(#R3Graph" + gid + "_mask)");
-		}
-		else {*/
-			graph.plot = svg.makeEl("g");
-		//}
 		graph.bgrid = svg.makeEl("g");
 
 		graph.label = function() {
@@ -69,9 +57,13 @@ var graph = function() {
 		
 		graph.scale = function() {			
 			var keys = [];
-			var i;
+			var i, j;
+			var p_miny = 1000000000;		// potential min y
 			for (i in graph.data.raw) {
-				keys.push(i);
+				for (j in graph.data.raw[i]) {
+					keys.push(j);
+					if (graph.data.raw[i][j] < p_miny) p_miny = graph.data.raw[i][j];
+				}
 			}
 			keys.sort();
 			
@@ -82,13 +74,15 @@ var graph = function() {
 			if (graph.maxy === true) {
 				graph.maxy = 0;
 				for (i in graph.data.raw) {
-					if (graph.data.raw[i] > graph.maxy) graph.maxy = graph.data.raw[i];
+					for (j in graph.data.raw[i]) {
+						if (graph.data.raw[i][j] > graph.maxy) graph.maxy = graph.data.raw[i][j];
+					}
 				}
 				graph.maxy = Math.ceil(graph.maxy / 10) * 10;
 			}
 			if (graph.minx === true) graph.data.minx = keys[0];
 			if (graph.miny === true) {
-				graph.miny = graph.data.raw[keys[0]];
+				graph.miny = p_miny;
 				graph.miny = Math.floor(graph.miny - ((graph.maxy - graph.miny) * 0.1));
 				if (graph.miny < 0) graph.miny = 0;
 				if (graph.miny == graph.maxy) graph.miny = 0;
@@ -195,21 +189,66 @@ var graph = function() {
 			return Math.round(((1 - ((yvalue - graph.miny) / (graph.maxy - graph.miny))) * graph.gheight) + graph.data.pady);
 		};
 		
+		graph.update = function(newdata, init) {
+			var g, i, j, k, found;
+			for (var g = 0; g < newdata.length; g++) {
+				if (typeof(graph.data.raw[g]) == "undefined") {
+					graph.data.raw[g] = [];
+				}
+				if (typeof(graph.plots[g]) == "undefined") {
+					graph.plots[g] = svg.makeEl("g");
+					graph.plots[g].setAttribute("transform", "translate(" + graph.ystartx + ",0)");
+					graph.g.appendChild(graph.plots[g]);
+				}
+				
+				for (i in graph.data.raw[g]) {
+					found = false;
+					for (j in newdata[g]) {
+						if (i == j) found = true;
+					}
+					if (!found) graph.removePoint(g, i);
+				}
+			
+				var keys = [];
+				for (i in newdata[g]) {
+					keys.push(i);
+				}
+				keys.sort();
+				
+				var lastx = false;
+				var lasty = false;
+				for (k = 0; k < keys.length; k++) {
+					i = keys[k];
+					found = false;
+					for (j in graph.data.raw[g]) {
+						if (i == j) found = true;
+					}
+					if ((!found) || (init)) {
+						graph.plotValue(g, i, newdata[g][i], lastx, lasty);
+					}
+					lastx = i;
+					lasty = newdata[g][i];
+				}
+			}
+			if (graph.data.raw.length > newdata.length) {
+				graph.removeLastPlots(g, graph.data.raw.length - newdata.length);
+				for (i = newdata.length; i < graph.data.raw.length; i++) {
+					graph.g.removeChild(graph.plots[g]);
+				}
+			}
+			
+			graph.data.raw = newdata;
+			if (fx.enabled) setTimeout(graph.animateAll, 100);
+			else graph.animateAll();
+		};
+		
 		graph.label();
 		graph.scale();
 		graph.g.appendChild(graph.bgrid);
-		if (gmaskfunc && graph.masked) {
-			gmaskfunc(graph, graph.masked);
-			graph.g.appendChild(graph.masked);
-			graph.masked.setAttribute("transform", "translate(" + graph.ystartx + ",0)");
-		}
-		else {
-			graph.g.appendChild(graph.plot);
-			graph.plot.setAttribute("transform", "translate(" + graph.ystartx + ",0)");
-		}
 		graph.g.appendChild(graph.scalable);
 		
 		gfunc(graph);
+		graph.update(graph.data.raw, true);
 		
 		return graph;
 	};
@@ -229,201 +268,188 @@ var graph = function() {
 	});
 	
 	that.RatingHistogram = function(graph) {
-		graph.data.fx = {};
-		graph.data.bars = {};
-		graph.update = function(newdata, init) {
-			var i, j, found;
-			for (i in graph.data.raw) {
-				found = false;
-				for (j in newdata) {
-					if (i == j) found = true;
-				}
-				if (!found) {
-					graph.data.raw[i] = 0;
-					graph.plot.removeChild(graph.data.bars[i]);
-					delete(graph.data.bars[i]);
-					delete(graph.data.fx[i]);
-				}
-			}
-			
-			var newkeys = [];
-			for (i in newdata) {
-				found = false;
-				for (j in graph.data.raw) {
-					if (i == j) found = true;
-				}
-				if ((!found) || (init)) {
-					graph.plotValue(i, newdata[i]);
-				}
-			}
-			
-			if (fx.enabled) setTimeout(graph.animateAll, 100);
-			else graph.animateAll();
+		graph.data.fx = [];
+		graph.data.bars = [];
+		for (var i = 0; i < graph.data.raw.length; i++) {
+			graph.data.fx[i] = {};
+			graph.data.bars[i] = {};
+		}
+		
+		graph.removePoint = function(g, i) {
+			graph.plots[g].removeChild(graph.data.bars[g][i]);
+			delete(graph.data.bars[g][i]);
+			delete(graph.data.fx[g][i]);
+		};
+		
+		graph.removePlot = function(g, numplots) {
+			graph.data.fx.splice(g, numplots);
+			graph.data.bars.splice(g, numplots);
 		};
 		
 		graph.animateAll = function() {
-			for (i in graph.data.raw) {
-				graph.data.fx[i].start(graph.getYPixel(graph.data.raw[i]));
+			var g, i;
+			for (g in graph.data.raw) {
+				for (i in graph.data.raw[i]) {
+					graph.data.fx[g][i].start(graph.getYPixel(graph.data.raw[g][i]));
+				}
 			}
 		};
 		
-		graph.plotValue = function(xvalue, yvalue) {
+		graph.plotValue = function(g, xvalue, yvalue) {
 			var x = graph.getXPixel(xvalue);
-			graph.data.raw[xvalue] = yvalue;
+			graph.data.raw[g][xvalue] = yvalue;
 			if (graph.data.stroke && graph.data.fill) {
-				graph.data.bars[xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 0.5, graph.xendy, graph.barwidth - 0.5, 0, { "stroke": graph.data.stroke(x, graph.gheight + graph.data.pady), "stroke-width": "1", "fill": graph.data.fill(x, graph.gheight + graph.data.pady) });
+				graph.data.bars[g][xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 0.5, graph.xendy, graph.barwidth - 0.5, 0, { "stroke": graph.data.stroke(x, graph.gheight + graph.data.pady), "stroke-width": "1", "fill": graph.data.fill(x, graph.gheight + graph.data.pady) });
 			}
 			else {
-				graph.data.bars[xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 0.5, graph.xendy, graph.barwidth - 0.5, 0, { "stroke": "#666666", "stroke-width": "1", "fill": "#FFFFFF" });
+				graph.data.bars[g][xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 0.5, graph.xendy, graph.barwidth - 0.5, 0, { "stroke": "#666666", "stroke-width": "1", "fill": "#FFFFFF" });
 			}
-			graph.data.fx[xvalue] = fx.make(fx.RatingHistogramBar, [ graph.data.bars[xvalue], graph.gheight + graph.data.pady, 250 ]);
-			graph.data.fx[xvalue].set(graph.gheight + graph.data.pady);
-			graph.plot.appendChild(graph.data.bars[xvalue]);
+			graph.data.fx[g][xvalue] = fx.make(fx.RatingHistogramBar, [ graph.data.bars[g][xvalue], graph.gheight + graph.data.pady, 250 ]);
+			graph.data.fx[g][xvalue].set(graph.gheight + graph.data.pady);
+			graph.plot.appendChild(graph.data.bars[g][xvalue]);
 		};
-		
-		graph.update(graph.data.raw, true);
 	};
-	
-	fx.extend("LineGraphPoint", function(line, point1, point2, gheight, duration) {
+
+	fx.extend("LineGraphLine", function(line, duration) {
 		var lfx = {};
 		lfx.duration = duration;
 		
 		var p1_from_x, p1_from_y;
-		lfx.setP1From = function(x, y, x1, y2) {
+		var p2_from_x, p2_from_y;
+		lfx.setFrom = function(x, y, x2, y2) {
 			p1_from_x = x;
 			p1_from_y = y;
-		};
-		
-		var p2_from_x, p2_from_y;
-		lfx.setP2From = function(x, y, x1, y2) {
-			p2_from_x = x;
-			p2_from_y = y;
+			p2_from_x = x2;
+			p2_from_y = y2;
 		};
 		
 		var p1_to_x, p1_to_y;
-		lfx.setP1To = function(x, y, x1, y2) {
+		var p2_to_x, p2_to_y;
+		lfx.setTo = function(x, y, x2, y2) {
 			p1_to_x = x;
 			p1_to_y = y;
+			p2_to_x = x2;
+			p2_to_y = y2;
 		};
-		
-		var p2_to_x, p2_to_y;
-		lfx.setP2To = function(x, y, x1, y2) {
-			p2_to_x = x;
-			p2_to_y = y;
+
+		lfx.onComplete = function(now) {
+			lfx.setFrom(p1_to_x, p1_to_y, p2_to_x, p2_to_y);
 		};
 		
 		lfx.update = function(now) {
 			var x1 = p1_from_x - p1_to_x;
-			if (x1 != 0) x1 = Math.round(x1 * now) + p1_from_x;
+			if (x1 != 0) x1 = p1_from_x - Math.round(x1 * now);
 			else x1 = p1_to_x;
 			
 			var y1 = p1_from_y - p1_to_y;
-			if (y1 > 0) y1 = Math.round(y1 * now) + p1_from_y;
+			if (y1 > 0) y1 = p1_from_y - Math.round(y1 * now);
 			else y1 = p1_from_y;
 			
 			var x2 = p2_from_x - p2_to_x;
-			if (x2 > 0) x2 = Math.round(x2 * now) + p2_from_x;
+			if (x2 > 0) x2 = p2_from_x - Math.round(x2 * now);
 			else x2 = p2_to_x;
 			
 			var y2 = p2_from_y - p2_to_y;
-			if (y2 > 0) y2 = Math.round(y2 * now) + p2_from_y;
+			if (y2 > 0) y2 = p2_from_y - Math.round(y2 * now);
 			else y2 = p2_from_y;
 			
 			line.setAttribute("x1", x1);
 			line.setAttribute("y1", y1);
 			line.setAttribute("x2", x2);
 			line.setAttribute("y2", y2);
-			
-			point1.setAttribute("x", x1 - 3);
-			point1.setAttribute("y", y1 - 3);
-			
-			point2.setAttribute("x", x2 - 3);
-			point2.setAttribute("y", y2 - 3);
-			
-			// object.setAttribute("y", now);
-			// object.setAttribute("height", gheight - now);
 		};
 
-		return rhbfx;
+		return lfx;
 	});
 	
 	that.Line = function(graph) {
-		graph.data.fx = {};
-		graph.data.lines = {};
-		graph.data.points1 = {};
-		graph.data.points2 = {};
+		graph.data.fx_l = [];
+		graph.data.fx_py = [];
+		graph.data.fx_px = [];
+		graph.data.lines = [];
+		graph.data.points = [];
+		for (var i = 0; i < graph.data.raw.length; i++) {
+			graph.data.fx_l[i] = {};
+			graph.data.fx_py[i] = {};
+			graph.data.fx_px[i] = {};
+			graph.data.lines[i] = {};
+			graph.data.points[i] = {};
+		}
+		graph.plots = [];
 		
-		graph.update = function(newdata, init) {
-			var i, j, k, found;
-			for (i in graph.data.raw) {
-				found = false;
-				for (j in newdata) {
-					if (i == j) found = true;
-				}
-				if (!found) {
-					graph.data.raw[i] = 0;
-					graph.plot.removeChild(graph.data.lines[i]);
-					graph.plot.removeChild(graph.data.points1[i]);
-					delete(graph.data.lines[i]);
-					delete(graph.data.points[i]);
-					delete(graph.data.fx[i]);
-				}
-			}
-			
-			var keys = [];
-			for (i in newdata) {
-				keys.push(i);
-			}
-			keys.sort();
-			
-			var lastx = graph.minx;
-			var lasty = newdata[keys[0]];
-			for (k = 0; k < keys.length; k++) {
-				i = keys[k];
-				found = false;
-				for (j in graph.data.raw) {
-					if (i == j) found = true;
-				}
-				if ((!found) || (init)) {
-					graph.plotValue(i, newdata[i], lastx, lasty);
-				}
-				lastx = i;
-				lasty = newdata[i];
-			}
-			
-			if (fx.enabled) setTimeout(graph.animateAll, 100);
-			else graph.animateAll();
+		graph.removePoint = function(g, i) {
+			graph.plots[g].removeChild(graph.data.lines[g][i]);
+			graph.plots[g].removeChild(graph.data.points[g][i]);
+			delete(graph.data.raw[g][i]);
+			delete(graph.data.lines[g][i]);
+			delete(graph.data.points[g][i]);
+			delete(graph.data.fx_l[g][i]);
+			delete(graph.data.fx_py[g][i]);
+			delete(graph.data.fx_px[g][i]);
+		};
+		
+		graph.removeLastPlots = function(g, numplots) {
+			graph.data.lines.splice(g, numplots);
+			graph.data.points.splice(g, numplots);
+			graph.data.fx_l.splice(g, numplots);
+			graph.data.fx_py.splice(g, numplots);
+			graph.data.fx_px.splice(g, numplots);
 		};
 		
 		graph.animateAll = function() {
-			/*for (i in graph.data.raw) {
-				graph.data.fxx[i].start(graph.getXPixel(i));
-				graph.data.fxy[i].start(graph.getYPixel(graph.data.raw[i]));
-			}*/
+			var lastx = false;
+			var lasty = false;
+			var g, i, j, x, y;
+			for (g in graph.data.raw) {
+				var keys = [];
+				for (i in graph.data.raw[g]) {
+					keys.push(i);
+				}
+				keys.sort();
+				for (j = 0; j < keys.length; j++) {
+					i = keys[j];
+					x = graph.getXPixel(i);
+					y = graph.getYPixel(graph.data.raw[g][i]);
+					if (lastx && lasty && graph.data.fx_l[g][i]) {
+						graph.data.fx_l[g][i].setTo(lastx, lasty, x, y);
+						graph.data.fx_l[g][i].set(0);
+						graph.data.fx_l[g][i].start(1);
+					}
+					graph.data.fx_px[g][i].start(x - 3);
+					graph.data.fx_py[g][i].start(y - 3);
+					lastx = x;
+					lasty = y;
+				}
+			}
 		};
 
-		graph.plotValue = function(xvalue, yvalue, lastx, lasty) {
-			var x1 = graph.getXPixel(lastx);
-			var y1 = graph.getYPixel(lasty);
+		graph.plotValue = function(g, xvalue, yvalue, lastx, lasty) {
 			var x2 = graph.getXPixel(xvalue);
 			var y2 = graph.getYPixel(yvalue);
-			graph.data.raw[xvalue] = yvalue;
 			var fill = "#FFF";
-			var stroke = "#BBB";
-			if (graph.data.fill && graph.data.stroke) {
-				//stroke = graph.data.stroke(xvalue / graph.maxx, yvalue / graph.maxy);
-				fill = graph.data.fill(xvalue / graph.maxx, yvalue / graph.maxy);
+			if (graph.data.fill) {
+				fill = graph.data.fill(g, xvalue / graph.maxx, yvalue / graph.maxy);
 			}
-			graph.data.lines[xvalue] = svg.makeLine(x1, y1, x2, y2, { "stroke": stroke, "stroke-width": 2 });
-			graph.data.points1[xvalue] = svg.makeRect(x1 - 3, y1 - 3, 6, 6, { "fill": fill });
-			graph.data.points2[xvalue] = svg.makeRect(x2 - 3, y2 - 3, 6, 6, { "fill": fill });
-
-			graph.plot.appendChild(graph.data.lines[xvalue]);
-			graph.plot.appendChild(graph.data.points1[xvalue]);
-			graph.plot.appendChild(graph.data.points2[xvalue]);
+			graph.data.points[g][xvalue] = svg.makeRect(x2 - 3, graph.gheight + graph.data.pady - 3, 6, 6, { "fill": fill });
+			graph.data.fx_px[g][xvalue] = fx.make(fx.SVGAttrib, [ graph.data.points[g][xvalue], 250, "x", "" ]);
+			graph.data.fx_px[g][xvalue].set(x2 - 3);
+			graph.data.fx_py[g][xvalue] = fx.make(fx.SVGAttrib, [ graph.data.points[g][xvalue], 250, "y", "" ]);
+			graph.data.fx_py[g][xvalue].set(graph.gheight + graph.data.pady - 6);
+			
+			if (lastx && lasty) {
+				var x1 = graph.getXPixel(lastx);
+				var stroke = "#BBB";
+				if (graph.data.stroke) {
+					stroke = graph.data.stroke(g, xvalue / graph.maxx, yvalue / graph.maxy);
+				}
+				graph.data.lines[g][xvalue] = svg.makeLine(x1, graph.gheight + graph.data.pady, x2, graph.gheight + graph.data.pady, { "stroke": stroke, "stroke-width": 2 });
+				graph.plots[g].appendChild(graph.data.lines[g][xvalue]);
+				graph.data.fx_l[g][xvalue] = fx.make(fx.LineGraphLine, [ graph.data.lines[g][xvalue], 250 ]);
+				graph.data.fx_l[g][xvalue].setFrom(x1, graph.gheight + graph.data.pady, x2, graph.gheight + graph.data.pady);
+			}
+			
+			graph.plots[g].appendChild(graph.data.points[g][xvalue]);
 		};
-		
-		graph.update(graph.data.raw, true);
 	};
 
 	return that;

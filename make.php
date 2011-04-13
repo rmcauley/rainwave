@@ -31,5 +31,6 @@ makeAPIDirectory($lyredir, $dest, false);
 
 exec("chmod u+r $dest/auth -R");
 exec("chown www-data $dest/auth -R");
+exec("chmod o+r $dest/auth/common.php");
 
 ?>

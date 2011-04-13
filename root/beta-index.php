@@ -25,10 +25,12 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 <head>
 	<title>Rainwave Beta</title>
 	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+	<%LANGFUNC%>
 	<?php
 		$bnum = <%BUILDNUM%>;
 		$skin = "RWClassic";
-		$lang = "en_CA";
+		$lang = getDefaultLanguage();
+		print "\n<!-- " . $lang . " -->\n";
 		if (isset($_COOKIE['r3prefs'])) {
 			$cookie = json_decode($_COOKIE['r3prefs'], true);
 			if (isset($cookie['edi']['theme']['value'])) $skin = $cookie['edi']['theme']['value'];
