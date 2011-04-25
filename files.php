@@ -27,6 +27,8 @@ $jsorder = array(
 	"js/swfobject.js",
 	"js/titleupdate.js",
 	"js/user.js",
+	"js/splitwindow.js",
+	"js/searchtable.js",
 	
 	// Panels
 	"js/panels/MenuPanel.js",

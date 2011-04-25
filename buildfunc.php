@@ -34,9 +34,11 @@ function writeParsedFile($source, $dest, $bnum) {
 	print "Building " . $dest . ".\n";
 	$d = fopen($dest, 'w') or die("Can't open " . $dest);
 	$s = fopen($source, "r") or die("Can't open " . $source);
+	$desc = var_export($GLOBALS['rwdesc'], true);
 	while (($buffer = fgets($s, 4096)) !== false) {
 		$buffer = str_replace("<%BUILDNUM%>", $bnum, $buffer);
 		$buffer = str_replace("<%LANGFUNC%>", file_get_contents("langfunc.php"), $buffer);
+		$buffer = str_replace("<%RWDESC%>", "\$rwdesc = " . $desc . ";", $buffer);
 		fwrite($d, $buffer);
     }
 	fclose($s);
@@ -51,25 +53,29 @@ function copyStatic($dest, $bnum) {
 	copyDirectory("images", "images", $dest);
 }
 
+$rwdesc = array();
 function buildLanguages($dest, $bnum) {
 	print "Building languages.\n";
 	require("lang/en_CA.php");
 	copyFile("lang/en_CA.php", "en_CA.php.txt", "/home/rmcauley/public_html/lang/");
 	$dest2 = $dest . "lang_r" . $bnum;
 	mkdir($dest2) or die("Can't make destination language directory.");
-	writeLang($dest2 . "/en_CA.js", $lang);
 	$dir = opendir("lang");
 	$errs = fopen("/home/rmcauley/public_html/lang/1_STATUS.txt", "w");
 	while (false !== ($file = readdir($dir))) {
         if (preg_match("/.php$/", $file) && ($file != "en_CA.php")) {
 			$lang2 = array();
+			$filenoext = substr($file, 0, (strlen($file) - 4));
 			require("lang/" . $file);
+			if (isset($lang2['_SITEDESCRIPTIONS'])) {
+				$GLOBALS['rwdesc'][$filenoext] = $lang2['_SITEDESCRIPTIONS'];
+			}
 			copyFile("lang/" . $file, $file . ".txt", "/home/rmcauley/public_html/lang/");
 			$fl = array_merge($lang, $lang2);
-			writeLang($dest2 . "/" . substr($file, 0, (strlen($file) - 4)) . ".js", $fl);
+			writeLang($dest2 . "/" . $filenoext . ".js", $fl);
 			$missingany = false;
 			foreach ($lang as $key => $value) {
-				if (!isset($lang2[$key]) && (strpos($key, "suffix") != 0) && (strpos($key, "log") != 0)) {
+				if (!isset($lang2[$key])) {
 					if (!$missingany) {
 						fwrite($errs, "*** $file Missing ***\n");
 						$missingany = true;
@@ -81,6 +87,9 @@ function buildLanguages($dest, $bnum) {
 		}
     }
 	fclose($errs);
+	require("lang/en_CA.php.local");
+	$GLOBALS['rwdesc']['en_CA'] = $lang['_SITEDESCRIPTIONS'];
+	writeLang($dest2 . "/en_CA.js", $lang);
 }
 
 function writeLang($destfile, $fl) {
@@ -88,6 +97,7 @@ function writeLang($destfile, $fl) {
 	fwrite($d, "var lang = {");
 	$commad = false;
 	foreach ($fl as $key => $value) {
+		if ($key == "_SITEDESCRIPTIONS") continue;
 		if ($commad == false) $commad = true;
 		else fwrite($d, ",");
 		fwrite($d, "\"" . $key . "\":\"" . addslashes($value) . "\"");

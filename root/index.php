@@ -3,7 +3,7 @@
 if ((strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 8") !== false) || (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 7") !== false) || (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 6") !== false)) {
 	header("content-type: text/plain");
 	print "Your browser is unsupported.  Please upgrade to IE9, or switch to Firefox or Chrome.\n";
-	print "Your browser is: " . $_SERVER['HTTP_USER_AGENT'] . "\n\n";
+	print "Your browser is telling us that it is: " . $_SERVER['HTTP_USER_AGENT'] . "\n\n";
 	print "You can download M3U files by going to:\n";
 	print "http://rw.rainwave.cc/tunein.php for Rainwave\n";
 	print "http://ocr.rainwave.cc/tunein.php for OCR Radio\n";
@@ -15,6 +15,8 @@ if ((strpos($_SERVER['HTTP_USER_AGENT'], "MSIE 8") !== false) || (strpos($_SERVE
 header("content-type: application/xhtml+xml");
 
 require("auth/common.php");
+
+<%RWDESC%>
 
 print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 ?>
@@ -37,6 +39,12 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	?>
 </head>
 <body id="body">
+<div style="display: none;">
+	<?php 
+		if (isset($rwdesc[$lang])) print "\t" . $rwdesc[$lang][$sid] . "\n";
+		else print "\t" . $rwdesc['en_CA'][$sid] . "\n";
+	?>
+</div>
 <script type="text/javascript">
 <?php
 	print "\tvar PRELOADED_APIKEY = '" . newAPIKey(true) . "';\n";

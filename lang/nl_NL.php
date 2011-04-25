@@ -1,7 +1,13 @@
-﻿<?php
+<?php
 /* Rainwave 3 nl_NL Language File by Metal-Geo */
 
 $lang2 = array(
+	"_SITEDESCRIPTIONS" => array(
+		1 => "Luister Video Game Muziek Radio. Stem op het nummer dat je wilt horen!",
+		2 => "OverClocked Remix Radip. Stem op jouw favoriete remixen!",
+		3 => "Video game cover bands en remixen. Stem op jouw favoriete artiesten!"
+	),
+
 	// Panel Names
 	"p_MainMPI" => "Tabs",
 	"p_MenuPanel" => "Menu",
@@ -310,6 +316,17 @@ $lang2 = array(
 	"crashed" => "Rainwave is gecrasht.",
 	"submiterror" => "Kopieer en plak de tekst hieronder op de forum om te helpen met het oplossen van de fout:",
 	"pleaserefresh" => "Herlaad de pagina om weer gebruik te maken van Rainwave.",
+
+	"pref_edi_wipeall_button" => "Wissen",
+	"pref_edi_resetlayout" => "Reset opmaak",
+	"pref_edi_resetlayout_button" => "Reset",
+	"reqmyrequests" => "Mijn Verzoeken",
+	"reqalbumblocked" => "Geblokkeerd; album is in een electie.",
+	"reqgroupblocked" => "Geblokkeerd; cooldown groep is in een electie.",
+	"remixdetails" => "Remix Details",
+	"songhomepage" => "Nummer Hoofdpagina",
+	"logout" => "Log uit",
+	"managekeys" => "Onderhoud API Sleutels",
 
 );
 ?>

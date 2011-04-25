@@ -1,6 +1,15 @@
 <?php
 /* Rainwave 3 pt_BR Language File by ocrfan */
 $lang2 = array(
+	"_SITEDESCRIPTIONS" => array(
+		// Rainwave's description as it appears to search engines.
+		1 => "Rádio Online de Músicas de Video Game.  Vote na música que quiser ouvir!",
+		// OCR Radio's description as it appears to search engines.
+		2 => "Rádio OverClocked Remix.  Vote nos seus remixes favoritos!",
+		// Mixwave's.
+		3 => "Bandas cover e remixes de Video Game.  Vote nos seus artistas favoritos!"
+	),
+
 	// Panel Names, these show up in the tab titles
 	"p_MainMPI" => "Abas",
 	"p_MenuPanel" => "Menu",

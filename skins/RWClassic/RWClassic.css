@@ -1213,3 +1213,47 @@ div.menu_user_cp {
 	border-radius: 5px;
 	text-align: right;
 }
+
+/* Split Window */
+
+table.splitwindow_table {
+	border-spacing: 0;
+}
+
+td.splitwindow_tabs_td {
+	height: 2.2em;
+}
+
+div.splitwindow_leftcontainer {
+	overflow: auto;
+}
+
+div.splitwindow_right {
+	height: 10px;
+}
+
+ul.splitwindow_tabs {
+	margin: 5px 0 0 0;
+	padding: 0 0 3px;
+	border-bottom: 1px solid #244093;
+}
+
+li.splitwindow_tab  {
+	display: inline;
+	border-bottom: none;
+	padding: 0px 7px 1px 7px;
+	opacity: 0.8;
+	margin-bottom: 2px;
+	cursor: pointer;
+}
+
+li.splitwindow_tab_active {
+	border-bottom: 2px solid #244093;
+	opacity: 1;
+}
+
+td.splitwindow_resize {
+	width: 3px;
+	background: #244093;
+	cursor: ew-resize;
+}

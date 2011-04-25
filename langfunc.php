@@ -1,4 +1,5 @@
 <?php
+
 // many thanks to http://techpatterns.com/downloads/php_language_detection.php
 function getDefaultLanguage() {
 	$lang = array(

@@ -463,16 +463,23 @@ var edi = function() {
 	
 	that.rollingRowResize = function(evt) {
 		var my = getMousePosY(evt);
-		// TODO: max height
 		// TODO: vborders
 		var height = rowh[resize_row] + (my - resize_my);
 		if (height < minrowh[resize_row]) height = minrowh[resize_row];
+		else if (height > maxrowh[resize_row]) {
+			height = maxrowh[resize_row];
+		}
 		if (resize_last_height == height) return;
 		var height2 = rowh[resize_row + 1] - (height - rowh[resize_row]);
 		if (height2 < minrowh[resize_row + 1]) {
 			if ((height + (minrowh[resize_row + 1] - height2)) < minrowh[resize_row]) return;
 			height += height2 - minrowh[resize_row + 1];
 			height2 = minrowh[resize_row + 1];
+		}
+		else if (height2 > maxrowh[resize_row + 1]) {
+			if ((height + (height2 - maxrowh[resize_row + 1])) > maxrowh[resize_row]) return;
+			height -= maxrowh[resize_col + 1] - height2;
+			height2 = maxrowh[resize_row + 1];
 		}
 		var rowdiff = height - rowh[resize_row];
 		var rowdiff2 = height2 - rowh[resize_row + 1];
@@ -506,8 +513,8 @@ var edi = function() {
 				layouts[layoutname][resize_row][i].height = rowh[resize_row];
 			}
 			if (typeof(layout[resize_row][i]) == "object") {
-				if (that.openpanels[layout[resize_row][i].EDINAME].afterWidthResize) {
-					that.openpanels[layout[resize_row][i].EDINAME].afterHeightResize(rowh[resize_row]);
+				if (that.openpanels[layout[resize_row][i].EDINAME].onHeightResize) {
+					that.openpanels[layout[resize_row][i].EDINAME].onHeightResize(rowh[resize_row]);
 				}
 			}
 		}
@@ -516,8 +523,8 @@ var edi = function() {
 				layouts[layoutname][resize_row + 1][i].height = rowh[resize_row + 1];
 			}
 			if (typeof(layout[resize_row + 1][i]) == "object") {
-				if (that.openpanels[layout[resize_row + 1][i].EDINAME].afterHeightResize) {
-					that.openpanels[layout[resize_row + 1][i].EDINAME].afterHeightResize(rowh[resize_row + 1]);
+				if (that.openpanels[layout[resize_row + 1][i].EDINAME].onHeightResize) {
+					that.openpanels[layout[resize_row + 1][i].EDINAME].onHeightResize(rowh[resize_row + 1]);
 				}
 				that.openpanels[layout[resize_row + 1][i].EDINAME]._runningy += rowdiff;
 			}
@@ -563,10 +570,16 @@ var edi = function() {
 		for (var i = 0; i < layout.length; i++) {
 			// checking for vborder doubles as a check for colspan
 			if ((typeof(layout[i][resize_col]) == "object") && (typeof(vborders[i][resize_col]) == "object")) {
+				if (typeof(layout[i][resize_col].onWidthResize) == "function") {
+					layout[i][resize_col].onWidthResize(width);
+				}
 				vborders[i][resize_col].el.style.left = (that.openpanels[layout[i][resize_col].EDINAME]._runningx + width) + "px";
 				that.openpanels[layout[i][resize_col].EDINAME]._div.style.width = width + "px";
 			}
 			if (typeof(layout[i][resize_col + 1]) == "object") {
+				if (typeof(layout[i][resize_col + 1].onWidthResize) == "function") {
+					layout[i][resize_col + 1].onWidthResize(width)
+				}
 				x2 = that.openpanels[layout[i][resize_col + 1].EDINAME]._runningx - coldiff2;
 				that.openpanels[layout[i][resize_col + 1].EDINAME]._div.style.left = x2 + "px";
 				for (j = 2; j <= layout[i][resize_col + 1].rowspan; j++) {

@@ -12,6 +12,7 @@ function _THEME() {
 
 	// Internal variables
 	var votebkg_width = 680;
+	that.Rating_width = 130;
 	
 	that.Extend = {};
 	
@@ -1100,140 +1101,7 @@ function _THEME() {
 		Playlist Styling
 	*****************************************************************************/
 	
-	that.Extend.PlaylistPanel = function(pp) {
-		var tr;
-		var listtd;
-		var maintd;
-		var albumlist;
-		var albumlistc;
-		var el;
-		var inlinesearchc;
-		var inlinesearch;
-		var keynavscrolloffset = UISCALE * 5;
-		var odholder;
-		
-		pp.draw = function() {
-			var leftwidth = UISCALE * 30;
-			inlinesearchc = createEl("div", { "class": "pl_searchc" }, pp.container);
-			createEl("span", { "textContent": _l("searching") }, inlinesearchc);
-			inlinesearch = createEl("span", { "class": "pl_search" }, inlinesearchc);
-			albumlistc = createEl("div", { "class": "pl_albumlistc" }, pp.container);
-			//albumlistgrab = createEl("div"
-			albumlist = createEl("table", { "class": "pl_albumlist" }, albumlistc);
-			odholder = createEl("div", { "class": "pl_odholder" }, pp.container);
-		};
-		
-		prefs.addPref("playlist", { "name": "listsize", "defaultvalue": 300, "hidden": true });
-		
-		pp.drawAlbumlistEntry = function(album) {
-			album.tr = document.createElement("tr");
-			album.tr.album_id = album.album_id;
-
-			album.album_rating_user = album.album_rating_user;
-			var ratingx = album.album_rating_user * 10;
-			album.td_name = document.createElement("td");
-			album.td_name.setAttribute("class", "pl_al_name");
-			if (ratingx > 0) album.td_name.style.backgroundPosition = "100% " + (-193 + ratingx) + "px";
-			else album.td_name.style.backgroundPosition = "100% -200px";
-			album.td_name.textContent = album.album_name;
-			album.tr.appendChild(album.td_name);
-			album.td_name.addEventListener("click", function() { pp.updateKeyNavOffset(album); }, true);
-			Album.linkify(album.album_id, album.td_name);
-			
-			album.td_rating = document.createElement("td");
-			album.td_rating.setAttribute("class", "pl_al_rating");
-			album.tr.appendChild(album.td_rating);
-			
-			album.td_fav = document.createElement("td");
-			// make sure to attach the album_id to the element that acts as the catch for a fav switch
-			album.td_fav.album_id = album.album_id;
-			album.td_fav.addEventListener('click', pp.favSwitch, true);
-			album.td_fav.setAttribute("class", "pl_fav_" + album.album_favourite);
-			
-			album.tr.appendChild(album.td_fav);
-		};
-		
-		pp.startSearchDraw = function() {
-			albumlistc.style.paddingTop = (UISCALE * 2) + "px";
-			inlinesearch.textContent = "";
-			inlinesearchc.style.display = "block";
-		};
-		
-		pp.drawSearchString = function(string) {
-			inlinesearch.textContent = string;
-			albumlistc.scrollTop = 0;
-		};
-		
-		pp.setRowClass = function(album, highlight, open) {
-			var cl = album.album_available ? "pl_available" : "pl_cooldown";
-			if (highlight) cl += " pl_highlight";
-			if (open || ((album.album_id == pp.currentidopen) && !open)) cl += " pl_albumopen";
-			album.tr.setAttribute("class", cl);
-		}
-		
-		pp.insertBefore = function(album1, album2) {
-			if (album2.tr.parentNode) albumlist.insertBefore(album1.tr, album2.tr);
-		};
-		
-		pp.appendChild = function(album) {
-			if (!album.tr.parentNode) albumlist.appendChild(album.tr);
-		};
-		
-		pp.removeChild = function(album) {
-			if (album.tr.parentNode) albumlist.removeChild(album.tr);
-		};
-		
-		pp.hideChild = function(album) {
-			album.tr.style.display = "none";
-		};
-		
-		pp.unhideChild = function(album) {
-			album.tr.style.display = "";
-		};
-		
-		pp.appendOpenDiv = function(div) {
-			odholder.appendChild(div);
-		};
-		
-		pp.removeOpenDiv = function(div) {
-			odholder.removeChild(div);
-		};
-		
-		pp.ratingResultDraw = function(album, result) {
-			album.album_rating_user = result.album_rating;
-			var ratingx = album.album_rating_user * 10;
-			album.td_name.style.backgroundPosition = "100% " + (-193 + ratingx) + "px";
-			album.td_rating.textContent = album.album_rating_user.toFixed(1);
-		};
-		
-		pp.favResultDraw = function(album, favourite) {
-			album.td_fav.setAttribute("class", "pl_fav_" + favourite);
-		};
-		
-		pp.updateKeyNavOffset = function(album) {
-			pp.setKeyNavOffset(album.tr.offsetTop - albumlistc.scrollTop);
-		};
-		
-		pp.setKeyNavOffset = function(offset) {
-			if (offset && (offset > UISCALE * 5)) {
-				keynavscrolloffset = offset;
-			}
-			else {
-				keynavscrolloffset = UISCALE * 5;
-			}
-		}
-		
-		pp.scrollToAlbum = function(album) {
-			if (album) {
-				albumlistc.scrollTop = album.tr.offsetTop - keynavscrolloffset;
-			}
-		};
-		
-		pp.clearInlineSearchDraw = function() {
-			inlinesearchc.style.display = "none";
-			albumlistc.style.paddingTop = "0px";
-		};
-	
+	that.Extend.PlaylistPanel = function(pp) {	
 		pp.drawAlbum = function(div, json) {
 			div.hdrtable = document.createElement("table");
 			div.hdrtable.style.width = "100%";
@@ -1341,10 +1209,10 @@ function _THEME() {
 			div.appendChild(div.songlist);
 		};
 		
-		pp.destruct = function(div) {
-			div.div.albumrating.destruct();
-			for (var i = 0; i < div.div.songarray.length; i++) {
-				div.div.songarray[i].rating.destruct();
+		pp.destructAlbum = function(wdow) {
+			wdow.div.albumrating.destruct();
+			for (var i = 0; i < wdow.div.songarray.length; i++) {
+				wdow.div.songarray[i].rating.destruct();
 			}
 		};
 	};

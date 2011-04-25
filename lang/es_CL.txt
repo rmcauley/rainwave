@@ -2,6 +2,15 @@
 /* Rainwave 3 es_CL Language File by BreadMaker aka CTM */
 
 $lang2 = array(
+  "_SITEDESCRIPTIONS" => array(
+		// Rainwave's description as it appears to search engines.
+		1 => "Radio por Internet de Música de Videojuegos. ¡Vota por la canción que quieres escuchar!",
+		// OCR Radio's description as it appears to search engines.
+		2 => "La Radio de OverClocked Remix. ¡Vota por tus remixes favoritos!",
+		// Mixwave's.
+		3 => "Covers y Remixes de Música de Videojuegos. ¡Vota por tus artistas favoritos!"
+	),
+	
 	// Panel Names, these show up in the tab titles
 	"p_MainMPI" => "Pestañas",
 	"p_MenuPanel" => "Menú",

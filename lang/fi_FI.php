@@ -1,8 +1,17 @@
 ﻿<?php
-// Rainwave 3 fi_FI r6 Language File by quarterlife
+// Rainwave 3 fi_FI r7 (21 apr 2011) for (R3 r41) Language File by quarterlife
 
 $lang2 = array(
-	// Panel Names
+	"_SITEDESCRIPTIONS" => array(
+		// Rainwave's description as it appears to search engines.
+		1 => "Videopelimusiikkia soittava internet-radio.  Äänestä haluamaasi kappaletta!",
+		// OCR Radio's description as it appears to search engines.
+		2 => "OverClocked Remix radio.  Äänestä haluamaasi remixiä!",
+		// Mixwave's.
+		3 => "Videopelimusiikkia soittavia coverbändejä ja remixejä.  Äänestä suosikkiesittäjääsi!"
+	),
+
+	// Panel Names, these show up in the tab titles
 	"p_MainMPI" => "Välilehdet",
 	"p_MenuPanel" => "Valikko",
 	"p_PlaylistPanel" => "Soittolista",
@@ -12,21 +21,18 @@ $lang2 = array(
 	"p_RequestsPanel" => "Toiveet",
 	"p_TimelinePanel" => "Aikajana",
 	
-	// This will produce dates like 5d 23h 10m 46s.  Change to your liking.
+	// These are used for cooldown times, e.g. 5d 23h 10m 46s.  Change to your liking.
 	"timeformat_d" => "d ",
 	"timeformat_h" => "h ",
 	"timeformat_m" => "m ",
 	"timeformat_s" => "s ",
 
-	// Raw Log Code
-	"log_0" => "Debug",
-	
-	// Edi Codes
+	// Edi error codes
 	"log_1" => "Asematunnusta ei välitetty API:lle.",
 	"log_2" => "Tällä asemalla ei juuri nyt ole lähetystä teknisten vaikeuksien vuoksi.",
-	"log_3" => "Ole hyvä ja odota käyttääksesi |currentlyon|.",
+	"log_3" => "Ole hyvä ja odota käyttääksesi |currentlyon|.",	
 	
-	// HTTP Codes
+	// HTTP error codes
 	"log_200" => "HTTP OK",
 	"log_300" => "HTTP Uudelleenohjattu",
 	"log_301" => "HTTP Siirretty",
@@ -41,11 +47,11 @@ $lang2 = array(
 	"log_502" => "Teknisiä vaikeuksia - ole hyvä ja odota.",
 	"log_503" => "Rainwave on suuren kuormituksen alla, ole hyvä ja yritä uudelleen.",
 	
-	// Lyre-AJAX Codes
+	// Lyre-AJAX Codes, these should NEVER show up...
 	"log_1000" => "Hups!  Löysit virheen!",
 	"log_1001" => "Virheellinen JSON-vastaus palvelimelta.",
 	
-	// Election Codes
+	// Election Errors
 	"log_2000" => "Palvelinvirhe ääntä lähettäessä.",
 	"log_2001" => "Sinun täytyy kuunnella asemaa äänestääksesi.",
 	"log_2002" => "Virheellinen ehdokastunnus.",
@@ -56,7 +62,7 @@ $lang2 = array(
 	"log_2007" => "Et voi äänestää kyseisessä äänestyksessä vielä.",
 	"log_2008" => "Sinun täytyy äänestää sillä asemalla jota kuuntelet.",
 	
-	// Request New Codes
+	// Making-a-Request Errors
 	"log_3000" => "Palvelinvirhe toivetta lähettäessä.  Ole hyvä ja yritä uudelleen.",
 	"log_3001" => "Sinun täytyy olla sisäänkirjautuneena toivoaksesi kappaletta.",
 	"log_3002" => "Sinun täytyy kuunnella asemaa toivoaksesi kappaletta.",
@@ -67,13 +73,13 @@ $lang2 = array(
 	"log_3007" => "Kappaletta on jo toivottu.",
 	"log_3008" => "Albumia on jo toivottu.",
 	
-	// Request Delete Results
+	// Request Deletion Errors
 	"log_4000" => "Palvelinvirhe toivetta poistaessa.  Ole hyvä ja yritä uudelleen.",
 	"log_4001" => "Sinun täytyy olla sisäänkirjauneena vaihtaaksesi toivetta.",
 	"log_4002" => "Asiakasvirhe muutosta lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
 	"log_4003" => "Kyseinen toive ei ole sinun.",
 	
-	// Request Change Results
+	// Request Change Errors (swapping 1 request for another)
 	"log_6000" => "Palvelinvirhe toivetta muuttaessa.  Ole hyvä ja yritä uudelleen.",
 	"log_6001" => "Sinun täytyy olla sisäänkirjautuneena toivoaksesi kappaletta.",
 	"log_6002" => "Asiakasvirhe muutosta lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
@@ -84,7 +90,7 @@ $lang2 = array(
 	"log_6007" => "Olet jo toivonut kyseistä kappaletta.",
 	"log_6008" => "Olet jo toivonut kappaletta kyseiseltä albumilta.",
 	
-	// Rating Results
+	// Rating Errors
 	"log_7000" => "Palvelinvirhe arvostelua lähettäessä.  Ole hyvä ja yritä uudelleen.",
 	"log_7001" => "Sinun täytyy olla sisäänkirjautuneena arvostellaksesi kappaleita.",
 	"log_7002" => "Sinun täytyy kuunnella asemaa arvostellaksesi kappaleita.",
@@ -94,7 +100,7 @@ $lang2 = array(
 	"log_7006" => "Sinun täytyy olla kuunnellut kyseistä kappaletta arvostellaksesi sen.",
 	"log_7007" => "Sinun täytyy odottaa arvostellaksesi asemavaihdon yhteydessä.",
 	
-	// Request Re-order Results
+	// Request Re-order Errors
 	"log_8000" => "Palvelinvirhe uudelleenjärjestäessä toiveita.  Ole hyvä ja yritä uudelleen.",
 	"log_8001" => "Asiakasvirhe muodostaessa uudelleenjärjestyspyyntöä.  Ole hyvä ja yritä uudelleen.",
 	"log_8002" => "Sinulla ei ole toiveita mitä järjestää uudelleen.",
@@ -105,24 +111,25 @@ $lang2 = array(
 	"log_9001" => "Liian monta sisäänkirjautumisyritystä. Ole hyvä ja mene keskustelufoorumeille.",
 	"log_9002" => "Sisäänkirjautumisvirhe.  Ole hyvä, ja käytä keskutelufoorumeita.",
 	
-	// 10000 is used by error control for news
-	
-	/* Number suffixes */
-	"suffix_0" => "th",
-	"suffix_1" => "st",
-	"suffix_2" => "nd",
-	"suffix_3" => "rd",
-	"suffix_4" => "th",
-	"suffix_5" => "th",
-	"suffix_6" => "th",
-	"suffix_7" => "th",
-	"suffix_8" => "th",
-	"suffix_9" => "th",
-	"suffix_11" => "th",
-	"suffix_12" => "th",
-	"suffix_13" => "th",
-	
-	/* Playlist Sentences */
+	/* Suffixes 101:
+		Rainwave's language library uses the following, in order:
+			1. The whole number's suffix
+			2. Number modulus 100's suffix
+			3. Number modulus 10's suffix
+			4. No suffix
+		Given the number 1113, Rainwave will look for the following:
+			1. "suffix_1113"
+			2. "suffix_113"
+			3. "suffix_13"
+			4. "suffix_3"
+		Whichever suffix exists first gets used.  If no suffix existed, Rainwave would just use "3."
+		You cannot replace the number here, nor does Rainwave have support for multiple suffixes for languages which
+			use different counters for different types of objects.
+	*/
+	// English example:
+	// "suffix_2" => "nd"     // results in "2nd" when suffixes are used
+
+	// Playlist Sentences, these all show up in the album detail pages.
 	
 	"pl_oncooldown" => "Jäähyllä |time| ajan.",
 	"pl_ranks" => "Arvosteltu |rating|, sijalla |rank|.",
@@ -132,10 +139,12 @@ $lang2 = array(
 	"pl_genre" => "Jäähyryhmä: ",
 	"pl_genre2" => ".",
 	"pl_genres" => "Jäähyryhmät: ",
+	// If there's more than 3 cooldown groups across all songs in an album, Rainwave truncates the list and uses " & others."
+	// So you'll see "Cooldown groups: foo, bar, baz, & others." if there's more than 3.  But if only 3 exist: "Cooldown groups: foo, bar, baz."
 	"pl_genres2_normal" => ".",
 	"pl_genres2_more" => " & muita.",
 	
-	/* Preferences */
+	// Preference names
 	
 	"pref_refreshrequired" => "(sivun päivitys vaaditaan)",
 	"pref_timeline" => "Aikajana",
@@ -154,12 +163,11 @@ $lang2 = array(
 	"pref_fx" => "Tehosteet",
 	"pref_fx_fps" => "Animaatioiden kehysnopeus",
 	"pref_fx_enabled" => "Animointi päällä",
-	"pref_mpi_showlog" => "Näytä lokipaneeli",
 	"pref_requests" => "Toiveet",
 	"pref_requests_technicalhint" => "Tekninen välilehden otsikko",
-	"pref_timeline_highlightrequests" => "Korosta toiveet",
+	"pref_timeline_highlightrequests" => "Näytä kappaleiden toivojat oletuksena",
 	
-	/* About */
+	// About screen
 	
 	"creator" => "Luoja",
 	"rainwavemanagers" => "Rainwaven henkilökunta",
@@ -173,26 +181,30 @@ $lang2 = array(
 	"donationinformation" => "Lista lahjoituksista ja lahjoitustietoa.",
 	"apiinformation" => "Ohjelmointirajapinnan dokumentaatio.",
 	"translators" => "Kääntäjät",
+	"rainwave3version" => "Rainwave 3 -versio",
+	"revision" => "Rev",
 	
-	/* Help */
+	// Help
+	// Careful, a lot of those funny blocks are there because Courier New doesn't have the UTF-8 arrow icons.
+	// "blank" is a header
+	// "blank_p" is an explanatory paragraph, part of a tutorial
+	// "blank_t" is the short explanation of what tutorial follows when you click on the help box
 	
 	"helpstart" => "Aloita ▶ ",
 	"helpnext" => "Seuraava ▶ ",
 	"helplast" => "Sulje ▶ ",
 	"about" => "Yleistä / Lahjoitukset",
 	"about_p" => "Henkilökunta, käytetty tekniikka ja lahjoitustietoa.",
-	"voting" => "Äänestykset",
+	"voting" => "Äänestäminen",
 	"voting_p" => "Jokainen soitettu kappale on osa äänestystä. Se kappale, jolla on eniten ääniä soitetaan seuraavaksi.|br|Opi äänestämään.",
 	"clickonsongtovote" => "Napsauta kappaletta äänestääksesi",
 	"clickonsongtovote_p" => "Kuunnellessasi asemaa, napsauta kappaletta.|br|Eniten ääniä saanut kappale soitetaan seuraavaksi.",
 	"tunein" => "Kuuntele",
 	"tunein_p" => "Imuroi M3U-soittolista ja käytä mediasoitintasi kuuntelemiseen.|br|VLC, Winamp, Foobar2000 ja fstream (Mac) ovat suositeltuja.",
-	"login" => "Kirjaudu sisään tai rekisteröidy",
 	"login_p" => "Ole hyvä ja kirjaudu sisään.",
-	"ratecurrentsong" => "Arvostelut",
+	"ratecurrentsong" => "Arvosteleminen",
 	"ratecurrentsong_p" => "Liu'uta hiirtäsi asteikon päällä ja napsauta arvostellaksesi kappaleen.|br|Albumiarvostelut lasketaan kappalearvioidesi keskiarvosta.",
 	"ratecurrentsong_t" => "Arvosteleminen vaikuttaa kappaleiden ja albumien soittotiheyteen.|br|Opi arvostelemaan.",
-	"ratecurrentsong_tp" => "Arvostelu",
 	"setfavourite" => "Suosikit",
 	"setfavourite_p" => "Napsauta laatikkoa arviointiasteikon päässä asettaaksesi tai poistaaksesi suosikkisi.",
 	"playlistsearch" => "Soittolistalta hakeminen",
@@ -207,13 +219,15 @@ $lang2 = array(
 	"managingrequests_p" => "Raahaa ja pudota muuttaaksesi toiveidesi järjestystä, tai napsauta X:ää poistaaksesi yhden niistä.",
 	"timetorequest" => "Kappaletoiveen tila",
 	"timetorequest_p" => "Toiveesi tila näytetään tässä.|br|Jos se näyttää \"umpeutumassa!\" tai \"jäähyllä\", sinun kannattaa vaihtaa ensimmäistä toivettasi.",
-	"rainwave3version" => "Rainwave 3 -versio",
-	"revision" => "Rev",
+
+	// What happens when RW crashes
+	
 	"crashed" => "Rainwave kaatui.",
 	"submiterror" => "Ole hyvä ja kopioi alla oleva teksti ja liitä se viestiin foorumeilla auttaaksesi virheen korjaamisessa:",
 	"pleaserefresh" => "Päivitä sivu jatkaaksesi Rainwaven käyttöä.",
 	
-	/* Schedule Panel */
+	// Schedule Panel Administration Functions, does not need to be translated.
+	// AND YOU SAY THAT NOW????? -quarterlife
 	
 	"newliveshow" => "Uusi suora lähetys",
 	"newliveexplanation" => "Aika voi olla 0 (nyt) tai epoch-aika UTC-aikavyöhykkeen mukaan.",
@@ -240,9 +254,13 @@ $lang2 = array(
 	"wrapup" => "Päätä lähetys",
 	"dormant" => "Toimeton",
 	"OVERTIME" => "YLIAIKA",
+	
+	// Schedule Panel user text.
+	
 	"noschedule" => "Tälle viikolle ei ole suunniteltu tapahtumia.",
 	
 	// Requests
+	
 	"requestok" => "Toivottu",
 	"reqexpiring" => " (umpeutumassa!)",
 	"reqfewminutes" => " (muutama minuutti)",
@@ -261,13 +279,15 @@ $lang2 = array(
 	"reqmyrequests" => "Minun toiveeni",
 	"reqrequestline" => "Jono",
 	"reqrequestlinelong" => "Jonon |showing| ensimmäistä, |linesize| jonossa.",
-	"reqruleblocked" => "Pysähtynyt; ryhmä tai albumi on äänestyksessä.",
+	"reqalbumblocked" => "Estetty; albumi on äänestyksessä.",
+	"reqgroupblocked" => "Estetty; jäähyryhmä on äänestyksessä.",
 	
-	/* Others */
+	// Now Playing and Timeline panels
+	
 	"nowplaying" => "Nyt soi",
 	"remixdetails" => "Tiedot Remixistä",
 	"songhomepage" => "Kappaleen kotisivu",
-	"requestedby" => "Tätä kappaletta toivoi |requester|",
+	"requestedby" => "Kappaletta toivoi |requester|",
 	"oncooldownfor" => "Jäähyllä |cooldown| ajan.",
 	"conflictedwith" => "Oli ristiriidassa toiveen kanssa, jonka teki |requester|.",
 	"conflictswith" => "Ristiriidassa toiveen kanssa, jonka teki |requester|.",
@@ -277,6 +297,16 @@ $lang2 = array(
 	"votelockingin" => "Äänen lukitukseen |timeleft|...",
 	"submittingvote" => "Lähetetään ääntä...",
 	"voted" => "Äänestetty",
+	"liveshow" => "Suora lähetys",
+	"adset" => "Mainos",
+	"onetimeplay" => "Kertasoitto",
+	"deleteonetime" => "Poista kertasoitto",
+	"currentdj" => "dj |username|",
+	"electionresults" => "Äänestyksen tulokset",
+	"from" => "käyttäjältä |username|",
+	
+	// Menu Bar
+	
 	"selectstation" => "Valitse asema",
 	"tunedin" => "Kuuntelet asemaa",
 	"tunedout" => "Et kuuntele asemaa",
@@ -285,32 +315,27 @@ $lang2 = array(
 	"players" => "Tuetut soittimet ovat VLC, Winamp, Foobar2000 ja fstream (Mac/iPhone).|br|Windows Media Player ja iTunes eivät toimi.",
 	"help" => "Apua",
 	"forums" => "Foorumit",
-	"liveshow" => "Suora lähetys",
-	"adset" => "Mainos",
-	"onetimeplay" => "Yhden kerran soitto",
-	"deleteonetime" => "Poista Yhden kerran soitto",
-	"currentdj" => "dj |username|",
 	"login" => "Kirjaudu sisään",
+	"logout" => "Kirjaudu ulos",	
 	"register" => "Rekisteröidy",
 	"username" => "Käyttäjänimi",
 	"password" => "Salasana",
 	"autologin" => "Automaattinen sisäänkirjautuminen",
 	"compatplayers" => "Tuetut soittimet:",
-	"electionresults" => "Äänestyksen tulokset",
 	"chat" => "Chat",
 	"playing" => "◼ Pysäytä soitto",
 	"loading" => "Ladataan",
 	"searching" => "Etsitään: ",
 	"m3uhijack" => "|plugin| yrittää kaapata M3U-soittolistan latauksen.  Ole hyvä ja napsauta oikealla hiiren painikkeella ja valitse 'Tallenna nimellä.'",
 	"menu_morestations" => "Lisää ▼",
-	"from" => "käyttäjältä |username|",
 	"waitingforstatus" => "Odottaa tietoja",
+	"managekeys" => "Manage API Keys",
 	
 	/* Words for pluralization */
 
 	"person" => "henkilö",
 	"person_p" => "henkilöä",
 	"Vote" => "ääni",
-	"Vote_p" => "ääntä",
+	"Vote_p" => "ääntä"
 );
 ?>

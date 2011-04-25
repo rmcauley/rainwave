@@ -49,6 +49,18 @@ panels.MainMPI = {
 			lyre.addCallback(that.updateRequestTitle, "requests_user");
 		};
 		
+		that.onHeightResize = function(height) {
+			for (var i in that.panels) {
+				if (typeof(that.panels[i].onHeightResize) == "function") that.panels[i].onHeightResize(height);
+			}
+		};
+		
+		that.onWidthResize = function(width) {
+			for (var i in that.panels) {
+				if (typeof(that.panels[i].onWidthResize) == "function") that.panels[i].onWidthResize(height);
+			}
+		};
+		
 		that.divSize = function(el) {
 			el.style.height = (container.offsetHeight - that.tabheight) + "px";
 		};
@@ -88,8 +100,8 @@ panels.MainMPI = {
 			that.panels[panelname].container.style.width = "100%";
 			container.appendChild(mpi_container);
 			that.panels[panelname].parent = that;
-			that.panels[panelname].init();
 			that.divSize(that.panels[panelname].container);
+			that.panels[panelname].init();
 			that.panels[panelname].title = panels[panelname].title;
 			that.tabs.enableTab(panelname, animate);
 		};

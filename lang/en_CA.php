@@ -20,6 +20,15 @@
  */
 
 $lang = array(
+	"_SITEDESCRIPTIONS" => array(
+		// Rainwave's description as it appears to search engines.
+		1 => "Streaming Video Game Music Radio.  Vote for the song you want to hear!",
+		// OCR Radio's description as it appears to search engines.
+		2 => "OverClocked Remix Radio.  Vote for your favourite remixes!",
+		// Mixwave's.
+		3 => "Video game cover bands and remixes.  Vote for your favourite artists!"
+	),
+	
 	// Panel Names, these show up in the tab titles
 	"p_MainMPI" => "Tabs",
 	"p_MenuPanel" => "Menu",
@@ -135,19 +144,12 @@ $lang = array(
 		You cannot replace the number here, nor does Rainwave have support for multiple suffixes for languages which
 			use different counters for different types of objects.
 	*/
-	"suffix_0" => "th",
-	"suffix_1" => "st",
-	"suffix_2" => "nd",
-	"suffix_3" => "rd",
-	"suffix_4" => "th",
-	"suffix_5" => "th",
-	"suffix_6" => "th",
-	"suffix_7" => "th",
-	"suffix_8" => "th",
-	"suffix_9" => "th",
-	"suffix_11" => "th",
-	"suffix_12" => "th",
-	"suffix_13" => "th",
+	// English example:
+	// "suffix_2" => "nd"     // results in "2nd" when suffixes are used
+	
+	// Playlist Tabs
+	"pltab_albums" => "Albums",
+	"pltab_artists" => "Artists",
 	
 	// Playlist Sentences, these all show up in the album detail pages.
 	
@@ -155,7 +157,7 @@ $lang = array(
 	"pl_ranks" => "Rated at |rating|, ranking |S:rank|.",
 	"pl_favourited" => "Favourited by |count| |P:count,person|.",
 	"pl_wins" => "Wins |percent|% of the elections it's in.",
-	"pl_requested" => "Requested |count| |p:count,time_p|, ranking |S:rank|.",
+	"pl_requested" => "Requested |count| |P:count,time_count|, ranking |S:rank|.",
 	"pl_genre" => "Cooldown group: ",
 	"pl_genre2" => ".",
 	"pl_genres" => "Cooldown groups: ",
@@ -225,7 +227,6 @@ $lang = array(
 	"ratecurrentsong" => "Rating",
 	"ratecurrentsong_p" => "Slide your mouse over the graph, and click to rate the song.|br|Album ratings are averaged from your song ratings.",
 	"ratecurrentsong_t" => "Rating affects how often songs and albums are played.|br|Learn how to rate.",
-	"ratecurrentsong_tp" => "Rating",
 	"setfavourite" => "Favourites",
 	"setfavourite_p" => "Click the box at the end of the ratings bar to set, or unset, your favourites.",
 	"playlistsearch" => "Playlist Search",
@@ -349,15 +350,6 @@ $lang = array(
 	"m3uhijack" => "|plugin| is trying to hijack the M3U download.  Please right click and 'Save As.'",
 	"menu_morestations" => "More ▼",
 	"waitingforstatus" => "Waiting for Status",
-	"managekeys" => "Manage API Keys",
-	
-	/* Words for pluralization */
-
-	"person" => "person",
-	"person_p" => "people",
-	"Vote" => "Vote",
-	"Vote_p" => "Votes",
-	"time_p" => "time",
-	"time_p_p" => "times"
+	"managekeys" => "Manage API Keys"
 );
 ?>

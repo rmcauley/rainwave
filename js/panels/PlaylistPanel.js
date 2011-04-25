@@ -8,255 +8,70 @@ panels.PlaylistPanel = {
 	title: _l("p_PlaylistPanel"),
 	
 	constructor: function(container) {
-		var albums;
-		var albumsort;
-		var reinsert = [];
-		var inlinetimer = false;
-		var keynavpos = -1;
-		var searchremoved = [];
-		var updated = [];
-		var opendivs = [];
-		var idloading = false;
-		var currentview = "album";
-		var keynavtimer = false;
-		var searchstring = "";
-		
+		var albums = {};
 		var that  = {};
-		that.width = container.offsetWidth;
+		var view;
+		var albumlistc;
+		var albumlist;
+		var artistlistc;
+		var artistlist;
+		var idloading;
 		that.container = container;
-		that.currentidopen = false;
+		that.open_album = 0;
 		
 		theme.Extend.PlaylistPanel(that);
 
 		that.init = function() {
-			that.draw();
-			that.clearInlineSearch();
+			view = SplitWindow("playlist", container);
+			albumlistc = view.addTab("albums", _l("pltab_albums"));
+			artistlistc = view.addTab("artists", _l("pltab_artists"));
+			//that.clearInlineSearch();
 			
 			albums = [];
 			albumsort = [];
 			reinsert = [];
 			
-			lyre.addCallback(that.playlistAllAlbums, "playlist_all_albums");
-			lyre.addCallback(that.playlistAlbumDiff, "playlist_album_diff");
+			albumlist = AlbumSearchTable(that, albumlistc, view);
 			lyre.addCallback(that.drawAlbumCallback, "playlist_album");
-			lyre.addCallback(that.ratingResult, "rate_result");
-			lyre.addCallback(that.favResult, "fav_album_result");
-			hotkey.addCallback(that.keyHandle, 0);
 			
 			initpiggyback['playlist'] = "true";
 			if (lyre.sync_time > 0) {
 				lyre.async_get("all_albums");
 			}
 			
-			help.addStep("openanalbum", { "h": "openanalbum", "p": "openanalbum_p", "skipf": that.isAlbumOpen });
+			that.onHeightResize(container.offsetHeight);
+			
+			/*help.addStep("openanalbum", { "h": "openanalbum", "p": "openanalbum_p", "skipf": that.isAlbumOpen });
 			help.addStep("clicktorequest", { "h": "clicktorequest", "p": "clicktorequest_p" });
 			help.addTutorial("request", [ "login", "tunein", "openanalbum", "clicktorequest" ]);
-			help.addTopic("request", { "h": "request", "p": "request_p", "tutorial": "request" });
+			help.addTopic("request", { "h": "request", "p": "request_p", "tutorial": "request" });*/
 		};
 		
-		that.playlistAllAlbums = function(json) {
-			that.loadFromJSON(json);
-			if (!inlinetimer) that.updateAlbumList();
-		};
-		
-		that.playlistAlbumDiff = function(json) {
-			that.loadFromJSON(json);
-			
-			for (i in albums) {
-				if (!albums[i].album_available) {
-					// reinserts the album if it becomes available again
-					if ((albums[i].album_lowest_oa - clock.now) <= 0) {
-						albums[i].album_available = true;
-						that.setAlbumRating(i);
-						that.setRowClass(albums[i]);
-						that.reinsertAlbum(i);
-					}
-					else {
-						that.setAlbumRating(i);
-					}
-				}
-			}
-			
-			if (!inlinetimer) that.updateAlbumList();
-		};
-		
-		that.loadFromJSON = function(json) {
-			for (var i in json) {
-				if (json[i].album_id) that.albumUpdate(json[i]);
-			}
-		};
-		
-		that.albumUpdate = function(json) {
-			var album_id = json.album_id;
-			var toreturn = false;
-			json.album_available = (json.album_lowest_oa < clock.now) ? true : false;
-			if (typeof(albums[album_id]) == "undefined") {
-				albums[album_id] = json;
-				albums[album_id].album_searchname = removeAccentsAndLC(albums[album_id].album_name);
-				that.drawAlbumlistEntry(albums[album_id]);
-				updated.push(album_id);
-				toreturn = true;
-			}
-			else if (albums[album_id].album_lowest_oa != json.album_lowest_oa) {
-				albums[album_id].album_lowest_oa = json.album_lowest_oa;
-				albums[album_id].album_available = json.album_available;
-				updated.push(album_id);
-				toreturn = true;
-			}
-			that.setRowClass(albums[album_id]);
-			that.setAlbumRating(album_id);
-			
-			return toreturn;
-		};
-		
-		that.setAlbumRating = function(album_id) {
-			if ((albums[album_id].album_lowest_oa - clock.now) > 0) {
-				albums[album_id].td_rating.textContent = formatHumanTime(albums[album_id].album_lowest_oa - clock.now);
-			}
-			else {
-				if (albums[album_id].album_rating_user > 0) albums[album_id].td_rating.textContent = albums[album_id].album_rating_user.toFixed(1);
-				else albums[album_id].td_rating.textContent = "";
-			}
-		};
-		
-		that.reinsertAlbum = function(album_id) {
-			var io = albumsort.indexOf(album_id);
-			if (io >= 0) {
-				albumsort.splice(io, 1)[0];
-			}
-			if (reinsert.indexOf(album_id) == -1) {
-				reinsert.push(album_id);
-			}
-		}
-
-		that.updateAlbumList = function() {
-			var i = 0;
-			if (updated.length > 0) {
-				for (i = 0; i < updated.length; i++) that.reinsertAlbum(updated[i]);
-				updated = [];
-			}
-			reinsert.sort(that.sortAlbumArray);
-			for (i = 0; i < albumsort.length; i++) {
-				if (reinsert.length == 0) break;
-				if (that.sortAlbumArray(reinsert[0], albumsort[i]) == -1) {
-					that.insertBefore(albums[reinsert[0]], albums[albumsort[i]]);
-					albumsort.splice(i, 0, reinsert.shift());
-				}
-			}
-			for (i = 0; i < reinsert.length; i++) {
-				albumsort.push(reinsert[i]);
-				that.appendChild(albums[reinsert[i]]);
-			}
-			if (albumsort.length > 0) help.changeStepPointEl("openanalbum", [ albums[albumsort[0]].td_name ]);
-			reinsert = new Array();
-		};
-		
-		that.sortAlbumArray = function(a, b) {
-			if (albums[a].album_available != albums[b].album_available) {
-				if (albums[a].album_available == true) return -1;
-				else return 1;
-			}
-			else if (albums[a].album_name.toLowerCase() < albums[b].album_name.toLowerCase()) return -1;
-			else if (albums[a].album_name.toLowerCase() > albums[b].album_name.toLowerCase()) return 1;
-			else return 0;
-		};
-		
-		that.ratingResult = function(result) {
-			if (result.album_id && albums[result.album_id]) {
-				that.ratingResultDraw(albums[result.album_id], result);
-			}
-		};
-		
-		that.favResult = function(result) {
-			that.favResultDraw(albums[result.album_id], result.fav);
-			albums[result.id].album_favourite = result.fav;
-		};
-		
-		that.favSwitch = function(evt) {
-			if (evt.target.album_id) {
-				var setfav = albums[evt.target.album_id].album_favourite ? false : true;
-				lyre.async_get("fav_album", { "fav": setfav, "album_id": evt.target.album_id });
-			}
+		that.onHeightResize = function(height) {
+			view.setHeight(height);
 		};
 		
 		that.openLink = function(link) {
 			if (link.type == "album") {
 				that.openAlbum(link.id);
-				if (currentview == "album") {
-					that.clearKeyNav();
-					for (var i = 0; i < albumsort.length; i++) {
-						if (albumsort[i] == link.id) keynavpos = i;
-					}
-					that.scrollToAlbum(albums[link.id]);
-					if (inlinetimer) that.clearInlineSearch();
-					var prevcid = that.currentidopen;
-					that.currentidopen = link.id;
-					if (prevcid) that.setRowClass(albums[prevcid]);
-					that.setRowClass(albums[link.id]);
-					that.updateKeyNavOffset(albums[link.id]);
-				}
 			}
 		};
 		
 		that.isAlbumOpen = function() {
 			edi.openPanelLink("PlaylistPanel", "");
-			if (opendivs.length > 0) return true;
-			return false;
-		}
-		
-		that.checkOpenDivs = function(type, id) {
-			var found = false;
-			for (var i = 0; i < opendivs.length; i++) {
-				if ((opendivs[i].type == type) && (opendivs[i].id == id)) {
-					if (i == opendivs.length - 1) {
-						return true;
-					}
-					found = true;
-					opendivs[i].div.style.display = "block";
-					if (typeof(opendivs[i].div.updateHelp) == "function") opendivs[i].div.updateHelp();
-					help.continueTutorialIfRunning("openanalbum");
-					opendivs.push(opendivs.splice(i, 1)[0]);
-					break;
-				}
-			}
-			if (!found) return false;
-			for (i = 0; i < opendivs.length - 1; i++) {
-				opendivs[i].div.style.display = "none";
-			}
-			return true;
-		};
-		
-		that.createOpenDiv = function(type, id) {
-			while (opendivs.length > 9) {
-				that.destruct(opendivs[0]);
-				that.removeOpenDiv(opendivs[0].div);
-				opendivs.shift();
-			}
-			for (i = 0; i < opendivs.length; i++) {
-				opendivs[i].div.style.display = "none";
-			}
-			var div = document.createElement("div");
-			div.setAttribute("class", "pl_opendiv");
-			that.appendOpenDiv(div);
-			opendivs.push({ "div": div, "type": type, "id": id });
-			return opendivs.length - 1;
+			return view.isAnyDivOpen();
 		};
 		
 		that.drawAlbumCallback = function(json) {
 			if (json.album_id != idloading) return false;
 			idloading = false;
-			var i = that.createOpenDiv("album", json.album_id);
+			var wdow = view.createOpenDiv("album", json.album_id);
+			wdow.destruct = that.destructAlbum;
 			json.song_data.sort(that.sortSongList);
-			that.drawAlbum(opendivs[i].div, json);
-			if (typeof(opendivs[i].div.updateHelp) == "function") opendivs[i].div.updateHelp();
+			that.drawAlbum(wdow.div, json);
+			if (typeof(wdow.updateHelp) == "function") wdow.updateHelp();
 			help.continueTutorialIfRunning("openanalbum");
 			return true;
-		};
-
-		that.openAlbum = function(album_id) {
-			if (that.checkOpenDivs("album", album_id)) return;
-			idloading = album_id;
-			lyre.async_get("album", { "album_id": album_id });
 		};
 		
 		that.sortSongList = function(a, b) {
@@ -268,195 +83,169 @@ panels.PlaylistPanel = {
 			else if (a.song_title.toLowerCase() > b.song_title.toLowerCase()) return 1;
 			else return 0;
 		};
-		
-		that.keyHandle = function(evt) {
-			// only go if we have focus or we're not inside the MPI
-			if (edi.mpi) {
-				if (edi.focused != "PlaylistPanel") return true;
-			}
-		
-			var resettimer = false;
-			var resetkeytimer = false;
-			var bubble = true;
-			var chr = '';
-			if (!('charCode' in evt)) {
-				chr = String.fromCharCode(evt.keyCode);
-			}
-			else if (evt.charCode > 0) {
-				chr = String.fromCharCode(evt.charCode);
-			}
-			
-			var dosearch = false;
-			// down arrow
-			if (evt.keyCode == 40) {
-				var lastkeypos = keynavpos;
-				keynavpos++;
-				while (albums[albumsort[keynavpos]] && albums[albumsort[keynavpos]].hidden) keynavpos++;
-				if (!albums[albumsort[keynavpos]]) keynavpos--;
-				if (lastkeypos != keynavpos) {
-					bubble = false;
-					if (lastkeypos >= 0) that.setRowClass(albums[albumsort[lastkeypos]], false);
-					that.scrollToAlbum(albums[albumsort[keynavpos]]);
-					that.setRowClass(albums[albumsort[keynavpos]], true);
-				}
-				else {
-					keynavpos = lastkeypos;
-				}
-				if (inlinetimer) resettimer = true;
-				resetkeytimer = true;
-			}
-			// up arrow
-			else if (evt.keyCode == 38) {
-				if ((albumsort.length > 0) && (keynavpos > 0)) {
-					var lastkeypos = keynavpos;
-					keynavpos--;
-					while (albums[albumsort[keynavpos]] && albums[albumsort[keynavpos]].hidden) keynavpos--;
-					if (!albums[albumsort[keynavpos]]) keynavpos++;
-					if (lastkeypos != keynavpos) {
-						bubble = false;
-						if (lastkeypos >= 0) that.setRowClass(albums[albumsort[lastkeypos]], false);
-						that.scrollToAlbum(albums[albumsort[keynavpos]]);
-						that.setRowClass(albums[albumsort[keynavpos]], true);
-					}
-					else {
-						keynavpos = lastkeypos;
-					}
-					if (inlinetimer) resettimer = true;
-					resetkeytimer = true;
-				}
-			}
-			// escape
-			else if ((evt.keyCode == 13) && (keynavpos >= 0)) {
-				that.setRowClass(albums[albumsort[keynavpos]], false);
-				bubble = false;
-				var linkobj = { "type": "album", "id": albumsort[keynavpos] };
-				that.clearInlineSearch();
-				that.openLink(linkobj);
-			}
-			else if (/\d/.test(chr) && inlinetimer) {
-				dosearch = true;
-			}
-			else if (/[\w\-.&]+/.test(chr)) {
-				dosearch = true;
-			}
-			// spacebar
-			else if (evt.keyCode == 32) {
-				dosearch = true;
-				bubble = false;
-			}
-			
-			if (dosearch && !inlinetimer) {
-				if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
-				that.startSearchDraw();
-				that.clearKeyNav(true);
-			}
-			if (dosearch) {
-				bubble = false;
-				resettimer = true;
-				searchstring += chr;
-				that.performSearch(searchstring);
-			}
 
-			if (inlinetimer) {
-				// backspace
-				if (evt.keyCode == 8) {
-					bubble = false;
-					if (searchstring.length == 1) {
-						that.clearInlineSearch();
-					}
-					else {
-						resettimer = true;
-						searchstring = searchstring.substring(0, searchstring.length - 1);
-						that.performSearchBackspace(searchstring);
-					}
-				}
-			}
-			
-			if (resettimer) {
-				if (inlinetimer) clearTimeout(inlinetimer);
-				inlinetimer = setTimeout(that.clearInlineSearch, 20000);
-			}
-			if (resetkeytimer) {
-				if (keynavtimer) clearTimeout(keynavtimer);
-				keynavtimer = setTimeout(that.clearKeyNav, 5000);
-			}
-			
-			if (inlinetimer && (evt.keyCode == 27)) {
-				that.clearInlineSearch();
-				bubble = false;
-			}
-			else if ((keynavpos >= 0) && (evt.keyCode == 27)) {
-				that.setRowClass(albums[albumsort[keynavpos]], false);
-				that.clearKeyNav();
-			}
-			
-			return bubble;
-		};
-		
-		that.performSearch = function(text) {
-			that.drawSearchString(searchstring);
-			var i;
-			var j;
-			text = text.toLowerCase();
-			
-			// remove all albums that no longer match the search
-			for (i = 0; i < albumsort.length; i++) {
-				if (!albums[albumsort[i]].hidden && albums[albumsort[i]].album_searchname.indexOf(text) == -1) {
-					albums[albumsort[i]].hidden = true;
-					that.hideChild(albums[albumsort[i]]);
-					searchremoved.push(albumsort[i]);
-				}
-			}
-		};
-		
-		that.performSearchBackspace = function(text) {
-			that.drawSearchString(searchstring);
-			text = text.toLowerCase();
-			for (var i in searchremoved) {
-				if (albums[searchremoved[i]].album_searchname.indexOf(text) > -1) {
-					that.unhideChild(albums[searchremoved[i]]);
-					albums[searchremoved[i]].hidden = false;
-				}
-			}
-		};
-		
-		that.clearKeyNav = function(reset) {
-			if (keynavtimer) clearTimeout(keynavtimer);
-			keynavtimer = false;
-			if (keynavpos >= 0) that.setRowClass(albums[albumsort[keynavpos]], false);
-			if (reset === true) {
-				keynavpos = -1;
-				that.setKeyNavOffset(false);
-			}
-		};
-		
-		that.clearInlineSearch = function() {
-			that.clearInlineSearchDraw();
-			if (inlinetimer) clearTimeout(inlinetimer);
-			inlinetimer = false;
-			searchstring = "";
-			
-			var ckeynavid = -1;
-			if (keynavpos >= 0) ckeynavid = albumsort[keynavpos];
-			if (inlinetimer) that.clearKeyNav(true);
-			else that.clearKeyNav();
-			
-			if (searchremoved.length > 0) {
-				for (var i = 0; i < searchremoved.length; i++) {
-					that.unhideChild(albums[searchremoved[i]]);
-					albums[searchremoved[i]].hidden = false;
-				}
-				searchremoved = [];
-				that.updateAlbumList();
-			}
-			
-			if (ckeynavid >= 0) {
-				for (var i = 0; i < albumsort.length; i++) {
-					if (albumsort[i] == ckeynavid) keynavpos = i;
-				}
-			}
+		that.openAlbum = function(album_id) {
+			if (view.checkOpenDivs("album", album_id)) return;
+			idloading = album_id;
+			lyre.async_get("album", { "album_id": album_id });
 		};
 		
 		return that;
 	}
+};
+
+var AlbumSearchTable = function(parent, container, view) {
+	var that = SearchTable(container, "album_id", "album_name", "pl_albumlist");
+	
+	that.drawUpdate = function(album) {
+		that.drawRating();
+	};
+	
+	that.afterUpdate = function(json, albums, sorted) {
+		for (i in albums) {
+			if (!albums[i].album_available) {
+				// reinserts the album if it becomes available again
+				if ((albums[i].album_lowest_oa - clock.now) <= 0) albums[i].album_available = true;
+				that.addToUpdated(albums[i].album_id);
+			}
+		}
+		
+		var reopen;
+		for (i in json) {
+			reopen = view.reOpenDiv("album", json[i].album_id);
+			if (reopen) {
+				parent.openLink({ "type": "album", "id": json[i].album_id });
+			}
+		}
+		
+		if (albums.length > 0) help.changeStepPointEl("openanalbum", [ albums[sorted[0]].td_name ]);
+	};
+	
+	that.sortList = function(a, b) {
+		if (that.data[a].album_available != that.data[b].album_available) {
+			if (that.data[a].album_available == true) return -1;
+			else return 1;
+		}
+		else if (that.data[a]._searchname < that.data[b]._searchname) return -1;
+		else if (that.data[a]._searchname > that.data[b]._searchname) return 1;
+		else return 0;
+	};
+
+	that.ratingResult = function(result) {
+		if (result.album_id && that.data[result.album_id]) {
+			that.data[result.album_id].album_rating_user = result.album_rating;
+			that.drawRating(that.data[result.album_id]);
+		}
+	};
+	
+	that.favResult = function(result) {
+		that.data[result.album_id].td_fav.setAttribute("class", "pl_fav_" + result.fav);
+		that.data[result.album_id].album_favourite = result.fav;
+	};
+	
+	that.favSwitch = function(evt) {
+		if (evt.target.album_id) {
+			var setfav = albums[evt.target.album_id].album_favourite ? false : true;
+			lyre.async_get("fav_album", { "fav": setfav, "album_id": evt.target.album_id });
+		}
+	};
+	
+	that.searchAction = function(id) {
+		var linkobj = { "type": "album", "id": id };
+		parent.openLink(linkobj);
+	};
+
+	that.drawEntry = function(album) {
+		if (!album.album_name) {
+			alert(album.album_id)
+		}
+		album.tr._search_id = album.album_id;
+
+		album.album_rating_user = album.album_rating_user;
+		var ratingx = album.album_rating_user * 10;
+		album.td_name = document.createElement("td");
+		album.td_name.setAttribute("class", "pl_al_name");
+		if (ratingx > 0) album.td_name.style.backgroundPosition = "100% " + (-193 + ratingx) + "px";
+		else album.td_name.style.backgroundPosition = "100% -200px";
+		album.td_name.textContent = album.album_name;
+		album.tr.appendChild(album.td_name);
+		Album.linkify(album.album_id, album.td_name);
+		
+		album.td_rating = document.createElement("td");
+		album.td_rating.setAttribute("class", "pl_al_rating");
+		album.tr.appendChild(album.td_rating);
+		
+		album.td_fav = document.createElement("td");
+		// make sure to attach the album_id to the element that acts as the catch for a fav switch
+		album.td_fav.album_id = album.album_id;
+		album.td_fav.addEventListener('click', that.favSwitch, true);
+		album.td_fav.setAttribute("class", "pl_fav_" + album.album_favourite);
+		
+		album.tr.appendChild(album.td_fav);
+		that.drawNavChange(album, false);
+		that.drawRating(album);
+	};
+	
+	that.drawRating = function(album) {
+		if ((album.album_lowest_oa - clock.now) > 0) {
+			album.td_rating.textContent = formatHumanTime(album.album_lowest_oa - clock.now);
+		}
+		else {
+			if (album.album_rating_user > 0) album.td_rating.textContent = album.album_rating_user.toFixed(1);
+			else album.td_rating.textContent = "";
+		}
+		
+		var ratingx = album.album_rating_user * 10;
+		if (album.album_rating_user == 0) ratingx = -200;
+		album.td_name.style.backgroundPosition = "100% " + (-193 + ratingx) + "px";
+		album.td_rating.textContent = album.album_rating_user.toFixed(1);
+	};
+	
+	that.drawNavChange = function(album, highlight) {
+		var cl = album.album_available ? "pl_available" : "pl_cooldown";
+		if (highlight) cl += " pl_highlight";
+		if (album.album_id == parent.open_album) cl += " pl_albumopen";
+		album.tr.setAttribute("class", cl);
+	};
+	
+	that.drawUpdate = function(album) {
+		that.drawNavChange(album, false);
+	};
+
+	that.startSearchDraw = function() {
+		// albumlistc.style.paddingTop = (UISCALE * 2) + "px";
+		// inlinesearch.textContent = "";
+		// inlinesearchc.style.display = "block";
+	};
+	
+	that.clearSearchDraw = function() {
+		// inlinesearchc.style.display = "none";
+		// albumlistc.style.paddingTop = "0px";
+	};
+
+	that.drawSearchString = function(string) {
+		// inlinesearch.textContent = string;
+		// albumlistc.scrollTop = 0;
+	};
+	
+	that.scrollToID = function(album_id) {
+		that.scrollTo(that.data[album_id]);
+	};
+
+	that.scrollTo = function(album) {
+		if (album) {
+			albumlistc.scrollTop = album.tr.offsetTop - 50;
+		}
+	};
+	
+	that.searchEnabled = function() {
+		if (parent.parent.mpi && (parent.parent.mpi.focused = "PlaylistPanel")) return true;
+		else if (parent.parent.mpi) return false;
+		return true;
+	};
+
+	lyre.addCallback(that.ratingResult, "rate_result");
+	lyre.addCallback(that.favResult, "fav_album_result");
+	lyre.addCallback(that.update, "playlist_all_albums");
+	lyre.addCallback(that.update, "playlist_album_diff");
 };

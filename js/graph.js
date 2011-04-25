@@ -36,6 +36,7 @@ var graph = function() {
 		if (x || y) graph.g.setAttribute("transform", "translate(" + x + ", " + y + ")");
 		graph.scalable = svg.makeEl("g");
 		graph.bgrid = svg.makeEl("g");
+		graph.plots = [];
 
 		graph.label = function() {
 			if (graph.data.xlabel) {
@@ -117,13 +118,9 @@ var graph = function() {
 			var numstepsy = (graph.maxy - graph.miny) / stepdeltay;
 			// Now we begin shrinking the actual area for graph data to create some padding.
 			graph.gwidth = (graph.width - graph.ystartx) - graph.data.padx;
-			//graph.gwidth -= Math.floor((graph.gwidth / numstepsx) / 2);
-			//graph.gwidth -= graph.gwidth % Math.floor(graph.gwidth / numstepsx);
 			graph.gheight = (graph.height - (graph.height - graph.xendy)) - graph.data.pady;
-			//graph.gheight -= Math.floor((graph.gheight / numstepsy) / 2);
-			//graph.gheight -= graph.gheight % Math.floor(graph.gheight / numstepsy);
+			// Variable for bar graphs.
 			graph.barwidth = graph.gwidth / numstepsx;
-			graph.barheight = graph.gheight / numstepsy;
 			var steptext;
 			var stepline;
 			
@@ -182,11 +179,11 @@ var graph = function() {
 		};
 		
 		graph.getXPixel = function(xvalue) {
-			return Math.round(((xvalue - graph.minx) / (graph.maxx - graph.minx)) * graph.gwidth);
+			return (((xvalue - graph.minx) / (graph.maxx - graph.minx)) * graph.gwidth);
 		};
 		
 		graph.getYPixel = function(yvalue) {
-			return Math.round(((1 - ((yvalue - graph.miny) / (graph.maxy - graph.miny))) * graph.gheight) + graph.data.pady);
+			return (((1 - ((yvalue - graph.miny) / (graph.maxy - graph.miny))) * graph.gheight) + graph.data.pady);
 		};
 		
 		graph.update = function(newdata, init) {
@@ -253,15 +250,14 @@ var graph = function() {
 		return graph;
 	};
 	
-	that.HLineGraph = function() {};
-	
 	fx.extend("RatingHistogramBar", function(object, gheight, duration) {
 		var rhbfx = {};
 		rhbfx.duration = duration;
 		
 		rhbfx.update = function(now) {
 			object.setAttribute("y", now);
-			object.setAttribute("height", gheight - now);
+			if ((gheight - now - 1) > 0) object.setAttribute("height", gheight - now - 1);
+			else object.setAttribute("height", 0);
 		};
 
 		return rhbfx;
@@ -289,7 +285,7 @@ var graph = function() {
 		graph.animateAll = function() {
 			var g, i;
 			for (g in graph.data.raw) {
-				for (i in graph.data.raw[i]) {
+				for (i in graph.data.raw[g]) {
 					graph.data.fx[g][i].start(graph.getYPixel(graph.data.raw[g][i]));
 				}
 			}
@@ -298,15 +294,15 @@ var graph = function() {
 		graph.plotValue = function(g, xvalue, yvalue) {
 			var x = graph.getXPixel(xvalue);
 			graph.data.raw[g][xvalue] = yvalue;
-			if (graph.data.stroke && graph.data.fill) {
-				graph.data.bars[g][xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 0.5, graph.xendy, graph.barwidth - 0.5, 0, { "stroke": graph.data.stroke(x, graph.gheight + graph.data.pady), "stroke-width": "1", "fill": graph.data.fill(x, graph.gheight + graph.data.pady) });
+			if (graph.data.fill) {
+				graph.data.bars[g][xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 1, graph.xendy, graph.barwidth - 0.5, 0, { "fill": graph.data.fill(xvalue, graph.gheight + graph.data.pady) });
 			}
 			else {
-				graph.data.bars[g][xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 0.5, graph.xendy, graph.barwidth - 0.5, 0, { "stroke": "#666666", "stroke-width": "1", "fill": "#FFFFFF" });
+				graph.data.bars[g][xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 1, graph.xendy, graph.barwidth - 0.5, 0, { "fill": "#FFFFFF" });
 			}
 			graph.data.fx[g][xvalue] = fx.make(fx.RatingHistogramBar, [ graph.data.bars[g][xvalue], graph.gheight + graph.data.pady, 250 ]);
 			graph.data.fx[g][xvalue].set(graph.gheight + graph.data.pady);
-			graph.plot.appendChild(graph.data.bars[g][xvalue]);
+			graph.plots[g].appendChild(graph.data.bars[g][xvalue]);
 		};
 	};
 
@@ -375,7 +371,6 @@ var graph = function() {
 			graph.data.lines[i] = {};
 			graph.data.points[i] = {};
 		}
-		graph.plots = [];
 		
 		graph.removePoint = function(g, i) {
 			graph.plots[g].removeChild(graph.data.lines[g][i]);

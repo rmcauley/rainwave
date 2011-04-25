@@ -1,0 +1,26 @@
+<?php
+$lang2 = array(
+	"suffix_0" => "th",
+	"suffix_1" => "st",
+	"suffix_2" => "nd",
+	"suffix_3" => "rd",
+	"suffix_4" => "th",
+	"suffix_5" => "th",
+	"suffix_6" => "th",
+	"suffix_7" => "th",
+	"suffix_8" => "th",
+	"suffix_9" => "th",
+	"suffix_11" => "th",
+	"suffix_12" => "th",
+	"suffix_13" => "th",
+	
+	"person" => "person",
+	"person_p" => "people",
+	"Vote" => "Vote",
+	"Vote_p" => "Votes",
+	"time_count" => "time",
+	"time_count_p" => "times"
+);
+$lang = array_merge($lang, $lang2);
+	
+?>

@@ -303,12 +303,12 @@ var RequestList = function(sortable) {
 	};
 	
 	that.sortRequestArray = function(a, b) {
-		if (a.p.song_available && !b.p.song_available) return -1;
-		else if (!a.p.song_available && b.p.song_available) return 1;
-		if (!a.p.song_available && !b.p.song_available) {
-			if (a.p.song_releasetime < b.p.song_releasetime) return -1;
-			else if (a.p.song_releasetime > b.p.song_releasetime) return 1;
-		}
+		// if (a.p.song_available && !b.p.song_available) return -1;
+		// else if (!a.p.song_available && b.p.song_available) return 1;
+		// if (!a.p.song_available && !b.p.song_available) {
+			// if (a.p.song_releasetime < b.p.song_releasetime) return -1;
+			// else if (a.p.song_releasetime > b.p.song_releasetime) return 1;
+		// }
 		if (a.p.requestq_order < b.p.requestq_order) return -1;
 		else if (a.p.requestq_order > b.p.requestq_order) return 1;
 		if (a.p.requestq_id < b.p.requestq_id) return -1;

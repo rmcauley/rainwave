@@ -17,6 +17,8 @@ if (!in_array($userdata['group_id'], array(5, 4, 8, 12, 15, 14))) {
 
 require("files.php");
 
+<%RWDESC%>
+
 print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
 ?>
@@ -30,7 +32,6 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		$bnum = <%BUILDNUM%>;
 		$skin = "RWClassic";
 		$lang = getDefaultLanguage();
-		print "\n<!-- " . $lang . " -->\n";
 		if (isset($_COOKIE['r3prefs'])) {
 			$cookie = json_decode($_COOKIE['r3prefs'], true);
 			if (isset($cookie['edi']['theme']['value'])) $skin = $cookie['edi']['theme']['value'];
@@ -42,7 +43,14 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	<script src="lyre-ajax.js" type="text/javascript"></script>
 </head>
 <body id="body">
+<div style="display: none;">
+	<?php 
+		if (isset($rwdesc[$lang])) print "\t" . $rwdesc[$lang][$sid] . "\n";
+		else print "\t" . $rwdesc['en_CA'][$sid] . "\n";
+	?>
+</div>
 <?php
+
 	print "<script type=\"text/javascript\">\n";
 	print "\tvar PRELOADED_APIKEY = '" . newAPIKey(true) . "';\n";
 	print "\tvar PRELOADED_USER_ID = " . $user_id . ";\n";
@@ -55,22 +63,6 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	for ($i = 0; $i < count($jsorder); $i++) {
 		print "<script src='" . $jsorder[$i] . "' type='text/javascript'></script>\n";
 	}
-	/*print "<div id='IMAGE_PRELOAD' style='position: absolute; top: -5000px; left: -5000px; width: 1px; height: 1px;'>\n";
-	$dir = opendir("images") or die ("Can't read images directory.");
-	while (false !== ($img = readdir($dir))) {
-		if (($img != ".") && ($img != "..") && (!strpos($img, ".swf"))) {
-			print "<img src='images/" . $img . "' alt=''/>";
-		}
-	}
-	closedir($dir);
-	$dir = opendir("skins_r" . $bnum . "/" . $skin . "/images") or die ("Can't read skins directory.");
-	while (false !== ($img = readdir($dir))) {
-		if (($img != ".") && ($img != "..")) {
-			print "<img src='skins_r" . $bnum . "/" . $skin . "/images/" . $img . "' alt=''/>";
-		}
-	}
-	closedir($dir);
-	print "\n</div>\n";*/
 ?>
 </body>
 </html>
