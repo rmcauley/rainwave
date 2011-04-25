@@ -1257,3 +1257,29 @@ td.splitwindow_resize {
 	background: #244093;
 	cursor: ew-resize;
 }
+
+/* SEARCH */
+
+div.inlinesearch_container {
+	padding: 0;
+	position: absolute;
+	overflow: hidden;
+}
+
+span.inlinesearch_text {
+	padding: 2px;
+	background: #143073;
+	width: 100%;
+}
+
+div.inlinesearch_help {
+	font-size: smaller;
+	color: #888888;
+	float: right;
+	background: #143073;
+}
+
+div.inlinesearch_hdr {
+	padding: 3px;
+	background: #244093;
+}

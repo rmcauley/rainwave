@@ -69,6 +69,7 @@ panels.PlaylistPanel = {
 			wdow.destruct = that.destructAlbum;
 			json.song_data.sort(that.sortSongList);
 			that.drawAlbum(wdow.div, json);
+			albumlist.navToID(json.album_id);
 			if (typeof(wdow.updateHelp) == "function") wdow.updateHelp();
 			help.continueTutorialIfRunning("openanalbum");
 			return true;
@@ -210,22 +211,6 @@ var AlbumSearchTable = function(parent, container, view) {
 	
 	that.drawUpdate = function(album) {
 		that.drawNavChange(album, false);
-	};
-
-	that.startSearchDraw = function() {
-		// albumlistc.style.paddingTop = (UISCALE * 2) + "px";
-		// inlinesearch.textContent = "";
-		// inlinesearchc.style.display = "block";
-	};
-	
-	that.clearSearchDraw = function() {
-		// inlinesearchc.style.display = "none";
-		// albumlistc.style.paddingTop = "0px";
-	};
-
-	that.drawSearchString = function(string) {
-		// inlinesearch.textContent = string;
-		// albumlistc.scrollTop = 0;
 	};
 	
 	that.scrollToID = function(album_id) {

@@ -280,6 +280,11 @@ $lang = array(
 
 	"noschedule" => "No events planned for this week.",
 	
+	// Searching Related
+	
+	"escapetoclear" => "[esc] to clear",
+	"searchheader" => "Search: ",
+	
 	// Requests
 	
 	"requestok" => "Requested",

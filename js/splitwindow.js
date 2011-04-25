@@ -31,7 +31,7 @@ function SplitWindow(name, container, table_class) {
 		var mx = getMousePosX(e);
 		var width = resize_last_width + (mx - resize_mx);
 		if (width > (maxwidth - 300)) width = maxwidth - 300;
-		if (width < 150) width = 150;
+		if (width < 200) width = 200;
 		left.style.width = width + "px";
 		tabs_td.style.width = width + "px";
 		resize_final_width = width;

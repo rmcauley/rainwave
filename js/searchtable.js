@@ -11,8 +11,15 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	var inlinetimer = false;
 	var searchstring = "";
 	var currentnav = false;
-	
+
+	var textcontainer = createEl("div", { "class": "inlinesearch_container" }, container);
+	var texthelp = createEl("div", { "class": "inlinesearch_help", "textContent": _l("escapetoclear") }, textcontainer);
+	var texthdr = createEl("div", { "class": "inlinesearch_hdr", "textContent": _l("searchheader") }, textcontainer);
+	var textfield = createEl("span", { "class": "inlinesearch_text" }, texthdr);
 	var table = createEl("table", { "class": table_class }, container);
+	var fx_test_top = fx.make(fx.CSSNumeric, [ textcontainer, 250, "marginTop", "px" ]);
+	var fx_test_height = fx.make(fx.CSSNumeric, [ textcontainer, 250, "height", "px" ]);
+	fx_test_height.set(0);
 	
 	var that = {};
 	that.data = data;
@@ -23,9 +30,6 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	//	that.drawUpdate(entry_data);
 	//	that.drawNavChange(entry_data, is_current_nav);
 	//	that.searchAction(id);
-	//	that.startSearchDraw();
-	//	that.drawSearchString();
-	//	that.clearSearchDraw();
 	//	that.scrollTo();
 	
 	// OPTIONAL EXTERNAL DEFINITIONS:
@@ -153,6 +157,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 		else if (evt.keyCode == 32) {		// spacebar
 			dosearch = true;
 			bubble = false;
+			chr = " ";
 		}
 		
 		if (dosearch && !inlinetimer) {
@@ -243,7 +248,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	};
 	
 	that.performSearch = function(text) {
-		that.drawSearchString(searchstring);
+		textfield.textContent = text;
 		var i;
 		var j;
 		text = text.toLowerCase();
@@ -257,7 +262,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	};
 	
 	that.performSearchBackspace = function(text) {
-		that.drawSearchString(searchstring);
+		textfield.textContent = text;
 		text = text.toLowerCase();
 		var unremove = [];
 		for (var i in removed) {
@@ -273,17 +278,33 @@ function SearchTable(container, id_key, sort_key, table_class) {
 		that.clearSearchDraw();
 		if (inlinetimer) clearTimeout(inlinetimer);
 		inlinetimer = false;
-		searchstring = "";
+		searchstring = " ";
 		
 		that.navClear();
 		
 		if (removed.length > 0) {
-			for (var i = 0; i < searchremoved.length; i++) {
-				data[sorted[i]].tr.style.display = "table-row";
+			for (var i = 0; i < removed.length; i++) {
+				data[removed[i]].tr.style.display = "table-row";
 			}
-			searchremoved = [];
+			removed = [];
 			that.updateList();
 		}
+	};
+	
+	// DRAWING ********
+	
+	that.startSearchDraw = function() {
+		textcontainer.style.width = container.offsetWidth + "px";
+		var h = texthdr.offsetHeight;
+		fx_test_top.start(-h);
+		fx_test_height.start(h);
+		textfield.textContent = "hello";
+	};
+	
+	that.clearSearchDraw = function() {
+		fx_test_top.start(0);
+		fx_test_height.start(0);
+		textfield.textContent = "hello";
 	};
 	
 	hotkey.addCallback(that.keyHandle, 0);
