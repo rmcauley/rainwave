@@ -152,8 +152,7 @@ var AlbumSearchTable = function(parent, container, view) {
 	};
 	
 	that.searchAction = function(id) {
-		var linkobj = { "type": "album", "id": id };
-		parent.openLink(linkobj);
+		Album.open(id);
 	};
 
 	that.drawEntry = function(album) {
@@ -170,6 +169,7 @@ var AlbumSearchTable = function(parent, container, view) {
 		else album.td_name.style.backgroundPosition = "100% -200px";
 		album.td_name.textContent = album.album_name;
 		album.tr.appendChild(album.td_name);
+		album.tr.addEventListener('click', that.updateScrollOffsetByEvt, true);
 		Album.linkify(album.album_id, album.td_name);
 		
 		album.td_rating = document.createElement("td");
@@ -213,16 +213,6 @@ var AlbumSearchTable = function(parent, container, view) {
 		that.drawNavChange(album, false);
 	};
 	
-	that.scrollToID = function(album_id) {
-		that.scrollTo(that.data[album_id]);
-	};
-
-	that.scrollTo = function(album) {
-		if (album) {
-			albumlistc.scrollTop = album.tr.offsetTop - 50;
-		}
-	};
-	
 	that.searchEnabled = function() {
 		if (parent.parent.mpi && (parent.parent.mpi.focused = "PlaylistPanel")) return true;
 		else if (parent.parent.mpi) return false;
@@ -233,4 +223,6 @@ var AlbumSearchTable = function(parent, container, view) {
 	lyre.addCallback(that.favResult, "fav_album_result");
 	lyre.addCallback(that.update, "playlist_all_albums");
 	lyre.addCallback(that.update, "playlist_album_diff");
+	
+	return that;
 };

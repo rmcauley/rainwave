@@ -11,6 +11,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	var inlinetimer = false;
 	var searchstring = "";
 	var currentnav = false;
+	var scrolloffset = 0;
 
 	var textcontainer = createEl("div", { "class": "inlinesearch_container" }, container);
 	var texthelp = createEl("div", { "class": "inlinesearch_help", "textContent": _l("escapetoclear") }, textcontainer);
@@ -67,7 +68,6 @@ function SearchTable(container, id_key, sort_key, table_class) {
 					toreturn = true;
 				}
 			}
-			that.drawUpdate(data[id]);
 		}
 		
 		if (toreturn) {
@@ -94,7 +94,10 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	that.updateList = function() {
 		var i = 0;
 		if (updated.length > 0) {
-			for (i = 0; i < updated.length; i++) that.reinsertEntry(updated[i]);
+			for (i = 0; i < updated.length; i++) {
+				that.drawUpdate(data[updated[i]]);
+				that.reinsertEntry(updated[i]);
+			}
 			updated = [];
 		}
 		reinsert.sort(that.sortList);
@@ -154,10 +157,9 @@ function SearchTable(container, id_key, sort_key, table_class) {
 		else if (/[\d\w\-.&]+/.test(chr)) {
 			dosearch = true;
 		}
-		else if (evt.keyCode == 32) {		// spacebar
+		else if (chr == " ") {		// spacebar
 			dosearch = true;
 			bubble = false;
-			chr = " ";
 		}
 		
 		if (dosearch && !inlinetimer) {
@@ -199,6 +201,41 @@ function SearchTable(container, id_key, sort_key, table_class) {
 		
 		return bubble;
 	};
+	
+	// SCROLL **************************
+	
+	that.updateScrollOffsetByEvt = function(evt) {
+		that.setScrollOffset(evt.target.offsetTop - container.scrollTop);
+	};
+	
+	that.updateScrollOffsetByID = function(id) {
+		that.updateScrollOffset(data[id]);
+	};
+	
+	that.updateScrollOffset = function(entry) {
+		that.setScrollOffset(entry.tr.offsetTop - container.scrollTop);
+	};
+
+	that.setScrollOffset = function(offset) {
+		if (offset && (offset > UISCALE * 5)) {
+			scrolloffset = offset;
+		}
+		else {
+			scrolloffset = UISCALE * 5;
+		}
+	};
+	
+	that.scrollToID = function(entry_id) {
+		that.scrollTo(data[entry_id]);
+	};
+	
+	that.scrollTo = function(entry) {
+		if (entry) {
+			container.scrollTop = entry.tr.offsetTop - scrolloffset;
+		}
+	};
+	
+	// NAV *****************************
 	
 	that.navGet = function() {
 		if (!keynavtimer) return 0;
@@ -294,6 +331,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	// DRAWING ********
 	
 	that.startSearchDraw = function() {
+		that.setScrollOffset();
 		textcontainer.style.width = container.offsetWidth + "px";
 		var h = texthdr.offsetHeight;
 		fx_test_top.start(-h);

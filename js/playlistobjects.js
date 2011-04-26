@@ -19,6 +19,10 @@ var Album = {
 	linkify: function(album_id, el) {
 		linkify(el, true);
 		el.addEventListener('click', function() { edi.openPanelLink("PlaylistPanel", { type: "album", id: album_id, history: true }) }, true);
+	},
+	
+	open: function(album_id) {
+		edi.openPanelLink("PlaylistPanel", { type: "album", id: album_id, history: true });
 	}
 };
 

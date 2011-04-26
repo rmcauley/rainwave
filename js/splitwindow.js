@@ -41,6 +41,7 @@ function SplitWindow(name, container, table_class) {
 		document.removeEventListener('mousemove', that.runningResize, true);
 		document.removeEventListener('mouseup', that.stopColumnResize, true);
 		prefs.changePref("sizes", "left_" + name, resize_final_width);
+		resize_last_width = resize_final_width;
 	};
 	
 	bar.addEventListener('mousedown', that.startResize, true);
@@ -103,9 +104,9 @@ function SplitWindow(name, container, table_class) {
 	that.createOpenDiv = function(type, id) {
 		while (opendivs.length > 9) {
 			if (typeof(opendivs[0].destruct) == "function") {
-				opendivs[0].destruct();
+				opendivs[0].destruct(opendivs[0]);
 			}
-			that.removeOpenDiv(opendivs[0]);
+			right.removeChild(opendivs[0].div);
 			opendivs.shift();
 		}
 		for (i = 0; i < opendivs.length; i++) {
@@ -126,11 +127,11 @@ function SplitWindow(name, container, table_class) {
 		}
 		for (var i = 0; i < opendivs.length; i++) {
 			if ((opendivs[i].type == type) && (opendivs[i].id == id)) {
-				if (typeof(opendivs[0].destruct) == "function") {
-					opendivs[0].destruct();
+				if (typeof(opendivs[i].destruct) == "function") {
+					opendivs[i].destruct(opendivs[i]);
 				}
-				right.removeChild(div);
-				opendivs.splice(opendivs.length - 1, 1);
+				right.removeChild(opendivs[i].div);
+				opendivs.splice(i, 1);
 			}
 		}
 	};
