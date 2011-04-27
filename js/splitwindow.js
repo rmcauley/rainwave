@@ -11,12 +11,13 @@ function SplitWindow(name, container, table_class) {
 	that.currentidopen = false;
 	
 	// RESIZE MANAGEMENT
-	prefs.addPref("sizes", { "name": "left_" + name, "defaultvalue": 200, "hidden": true });	
-	left.style.width = prefs.getPref("sizes", "left_" + name) + "px";
-	tabs_td.style.width = prefs.getPref("sizes", "left_" + name) + "px";
+	prefs.addPref("splitwindow", { "name": "sizeleft_" + name, "defaultvalue": 200, "hidden": true });	
+	prefs.addPref("splitwindow", { "name": "lasttab_" + name, "defaultvalue": false, "hidden": true });
+	left.style.width = prefs.getPref("splitwindow", "sizeleft_" + name) + "px";
+	tabs_td.style.width = prefs.getPref("splitwindow", "sizeleft_" + name) + "px";
 	
 	var resize_mx;
-	var resize_last_width = prefs.getPref("sizes", "left_" + name);
+	var resize_last_width = prefs.getPref("splitwindow", "sizeleft_" + name);
 	var resize_final_width = resize_last_width;
 	var maxwidth = container.offsetWidth;
 	
@@ -40,38 +41,59 @@ function SplitWindow(name, container, table_class) {
 	that.stopResize = function(e) {
 		document.removeEventListener('mousemove', that.runningResize, true);
 		document.removeEventListener('mouseup', that.stopColumnResize, true);
-		prefs.changePref("sizes", "left_" + name, resize_final_width);
+		prefs.changePref("splitwindow", "sizeleft_" + name, resize_final_width);
 		resize_last_width = resize_final_width;
 	};
 	
 	bar.addEventListener('mousedown', that.startResize, true);
 	
 	// TAB MANAGEMENT
-	
-	var currenttab = false;
+
+	var firsttab = false;
+	var currenttab;
 	var tabs = {};
 	var tabdivs = {};
 	var tabul = createEl("ul", { "class": "splitwindow_tabs" }, tabs_td);
+	var tabinitfunc = {};
 	
-	that.addTab = function(key, title) {
+	that.getCurrentTab = function() {
+		return currenttab;
+	};
+	
+	that.addTab = function(key, title, initfunc) {
 		tabs[key] = createEl("li", { "class": "splitwindow_tab", "textContent": title }, tabul);
 		tabs[key]._tabkey = key;
-		tabs[key].addEventListener("click", that.switchToTab, true);
+		tabs[key].addEventListener("click", that.switchToTabByEvt, true);
 		tabdivs[key] = createEl("div", { "class": "splitwindow_leftcontainer" });
-		if (!currenttab) {
-			currenttab = key;
-			left.appendChild(tabdivs[key]);
-			tabs[key].className = "splitwindow_tab splitwindow_tab_active";
-		}
+		tabinitfunc[key] = initfunc;
+		if (!firsttab) firsttab = key;
 		return tabdivs[key];
 	};
 	
-	that.switchToTab = function(e) {
-		left.removeChild(tabdivs[currenttab]);
-		tabs[currenttab].className = "splitwindow_tab";
-		currenttab = e.currentTarget._tabkey;
+	that.initTabs = function() {
+		var defaulttab = prefs.getPref("splitwindow", "lasttab_" + name);
+		if (!defaulttab) defaulttab = firsttab;
+		that.switchToTab(defaulttab);
+	};
+	
+	that.switchToTabByEvt = function(evt) {
+		that.switchToTab(evt.currentTarget._tabkey);
+	};
+	
+	that.switchToTab = function(newtab) {
+		if (newtab == currenttab) return;
+		if (tabinitfunc[newtab]) {
+			tabinitfunc[newtab]();
+			tabinitfunc[newtab] = false;
+		}
+		if (currenttab) {
+			left.removeChild(tabdivs[currenttab]);
+			tabs[currenttab].className = "splitwindow_tab";
+		}
+		currenttab = newtab;
 		left.appendChild(tabdivs[currenttab]);
 		tabs[currenttab].className = "splitwindow_tab splitwindow_tab_active";
+		prefs.changePref("splitwindow", "lasttab_" + name, currenttab);
 	};
 	
 	that.getTab = function(key) {
@@ -96,13 +118,15 @@ function SplitWindow(name, container, table_class) {
 
 	var opendivs = [];
 	
-	that.isAnyDivOpen = function() {
-		if (opendivs.length > 0) return true;
+	that.isAnyDivOpen = function(type) {
+		for (var i in opendivs) {
+			if (opendivs[i].type == type) return true;
+		}
 		return false;
 	};
 	
 	that.createOpenDiv = function(type, id) {
-		while (opendivs.length > 9) {
+		while (opendivs.length > 25) {
 			if (typeof(opendivs[0].destruct) == "function") {
 				opendivs[0].destruct(opendivs[0]);
 			}
@@ -118,7 +142,7 @@ function SplitWindow(name, container, table_class) {
 		opendivs.push({ "div": div, "type": type, "id": id });
 		return opendivs[opendivs.length - 1];
 	};
-	
+
 	that.reOpenDiv = function(type, id) {
 		if (opendivs.length == 0) return;
 		var reopen = false;
@@ -134,6 +158,7 @@ function SplitWindow(name, container, table_class) {
 				opendivs.splice(i, 1);
 			}
 		}
+		return reopen;
 	};
 	
 	that.checkOpenDivs = function(type, id) {

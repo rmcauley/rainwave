@@ -1105,6 +1105,7 @@ function _THEME() {
 		pp.drawAlbum = function(div, json) {
 			div.hdrtable = document.createElement("table");
 			div.hdrtable.style.width = "100%";
+			div.hdrtable.style.marginBottom = "0.5em";
 			div.hdrtable.setAttribute("cellspacing", "0");
 			
 			var tr = document.createElement("tr");
@@ -1215,6 +1216,51 @@ function _THEME() {
 				wdow.div.songarray[i].rating.destruct();
 			}
 		};
+		
+		pp.drawArtist = function(div, json) {
+			div.hdrtable = createEl("table", { "style": "width: 100%;", "cellspacing": 0 }, div);
+			var tr = createEl("tr", false, div.hdrtable);
+			div.artistnametd = createEl("td", { "class": "pl_ad_albumnametd" }, tr);
+			div.artistname = createEl("div", { "class": "pl_ad_albumname", "textContent": json.artist_name }, div.artistnametd);
+			
+			var album_id = -1;
+			var album_name;
+			var album_sid;
+			var album = [];
+			div.drawnalbums = [];
+			var tbl;
+			var tr;
+			var hdr;
+			for (var i = 0; i < json.songs.length; i++) {
+				if (json.songs[i].album_id != album_id) {
+					if (album.length > 0) {
+						hdr = createEl("div", { "class": "pl_songlist_hdr" }, div);
+						createEl("img", { "src": "images/menu_logo_" + album_sid + ".png", "style": "float: right;" }, hdr);
+						createEl("span", { "textContent": album_name }, hdr);
+						tbl = createEl("table", { "class": "pl_songlist" }, div);
+						div.drawnalbums.push([]);
+						that.drawAlbumTable(tbl, div.drawnalbums[div.drawnalbums.length - 1], album);
+					}
+					album_id = json.songs[i].album_id;
+					album_name = json.songs[i].album_name;
+					album_sid = json.songs[i].sid;
+					album = [];
+				}
+				album.push(json.songs[i]);
+			}
+			if (album.length > 0) {
+				hdr = createEl("div", { "class": "pl_songlist_hdr" }, div);
+				createEl("img", { "src": "images/menu_logo_" + album_sid + ".png", "style": "float: right;" }, hdr);
+				createEl("span", { "textContent": album_name }, hdr);
+				tbl = createEl("table", { "class": "pl_songlist" }, div);
+				div.drawnalbums.push([]);
+				that.drawAlbumTable(tbl, div.drawnalbums[div.drawnalbums.length - 1], album);
+			}
+		};
+		
+		pp.destructArtist = function(wdow) {
+			// nothing to do since there are no ratings
+		};
 	};
 	
 	// Pass a table already created, an empty array, and JSON song_data in
@@ -1238,17 +1284,21 @@ function _THEME() {
 				ns.td_n.textContent = song_data[i].song_title;
 				ns.tr.appendChild(ns.td_n);
 				
-				ns.td_a = document.createElement("td");
-				ns.td_a.setAttribute("class", "pl_songlist_artists");
-				Artist.allArtistToHTML(song_data[i].artists, ns.td_a);
-				ns.tr.appendChild(ns.td_a);
+				if ("artists" in song_data[i]) {
+					ns.td_a = document.createElement("td");
+					ns.td_a.setAttribute("class", "pl_songlist_artists");
+					Artist.allArtistToHTML(song_data[i].artists, ns.td_a);
+					ns.tr.appendChild(ns.td_a);
+				}
 				
-				ns.td_rating = document.createElement("td");
-				ns.td_rating.setAttribute("class", "pl_songlist_rating");
-				ns.td_rating.style.width = (that.Rating_width + 5) + "px";
-				ns.rating = Rating({ category: "song", id: song_data[i].song_id, userrating: song_data[i].song_rating_user, x: 0, y: 1, siterating: song_data[i].song_rating_avg, favourite: song_data[i].song_favourite, register: true });
-				ns.td_rating.appendChild(ns.rating.el);
-				ns.tr.appendChild(ns.td_rating);
+				if ("song_rating_user" in song_data[i]) {
+					ns.td_rating = document.createElement("td");
+					ns.td_rating.setAttribute("class", "pl_songlist_rating");
+					ns.td_rating.style.width = (that.Rating_width + 5) + "px";
+					ns.rating = Rating({ category: "song", id: song_data[i].song_id, userrating: song_data[i].song_rating_user, x: 0, y: 1, siterating: song_data[i].song_rating_avg, favourite: song_data[i].song_favourite, register: true });
+					ns.td_rating.appendChild(ns.rating.el);
+					ns.tr.appendChild(ns.td_rating);
+				}
 				
 				ns.td_length = document.createElement("td");
 				ns.td_length.setAttribute("class", "pl_songlist_length");

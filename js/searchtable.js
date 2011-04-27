@@ -11,7 +11,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	var inlinetimer = false;
 	var searchstring = "";
 	var currentnav = false;
-	var scrolloffset = 0;
+	var scrolloffset = UISCALE * 5;
 
 	var textcontainer = createEl("div", { "class": "inlinesearch_container" }, container);
 	var texthelp = createEl("div", { "class": "inlinesearch_help", "textContent": _l("escapetoclear") }, textcontainer);
@@ -31,7 +31,6 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	//	that.drawUpdate(entry_data);
 	//	that.drawNavChange(entry_data, is_current_nav);
 	//	that.searchAction(id);
-	//	that.scrollTo();
 	
 	// OPTIONAL EXTERNAL DEFINITIONS:
 	//	that.afterUpdate(json, data);
@@ -56,8 +55,9 @@ function SearchTable(container, id_key, sort_key, table_class) {
 		var id = json[id_key];
 		if (typeof(data[id]) == "undefined") {
 			data[id] = json;
-			data[id]._searchname = removeAccentsAndLC(data[id].album_name);
+			data[id]._searchname = removeAccentsAndLC(data[id][sort_key]);
 			data[id].tr = createEl("tr");
+			data[id].tr._search_id = id;
 			that.drawEntry(data[id]);
 			toreturn = true;
 		}
@@ -152,19 +152,16 @@ function SearchTable(container, id_key, sort_key, table_class) {
 		else if ((evt.keyCode == 13) && keynavtimer && currentnav) {		// enter
 			bubble = false;
 			that.clearInlineSearch();
-			that.searchAction(currentnav[id_key]);
+			that.searchAction(currentnav._search_id);
 		}
-		else if (/[\d\w\-.&]+/.test(chr)) {
+		else if (/[\d\w\-.&':+~,]+/.test(chr)) {
 			dosearch = true;
 		}
 		else if (chr == " ") {		// spacebar
 			dosearch = true;
 			bubble = false;
 		}
-		
-		if (dosearch && !inlinetimer) {
-			that.startSearchDraw();
-		}
+
 		if (dosearch) {
 			bubble = false;
 			resettimer = true;
@@ -202,6 +199,53 @@ function SearchTable(container, id_key, sort_key, table_class) {
 		return bubble;
 	};
 	
+	that.performSearch = function(text) {
+		textfield.textContent = text;
+		var i;
+		var j;
+		text = text.toLowerCase();
+		
+		for (i = 0; i < sorted.length; i++) {
+			if (data[sorted[i]]._searchname.indexOf(text) == -1) {
+				data[sorted[i]].tr.style.display = "none";
+				removed.push(sorted[i]);
+			}
+		}
+		
+		if (!inlinetimer) that.startSearchDraw();
+	};
+	
+	that.performSearchBackspace = function(text) {
+		textfield.textContent = text;
+		text = text.toLowerCase();
+		var unremove = [];
+		for (var i in removed) {
+			if (data[removed[i]]._searchname.indexOf(text) > -1) {
+				data[removed[i]].tr.style.display = "table-row";
+				unremove.push(i);
+			}
+		}
+		for (i in unremove) removed.splice(unremove[i], 1);
+	};
+	
+	that.clearInlineSearch = function() {
+		if (inlinetimer) clearTimeout(inlinetimer);
+		inlinetimer = false;
+		searchstring = "";
+		
+		that.navClear();
+		
+		if (removed.length > 0) {
+			for (var i = 0; i < removed.length; i++) {
+				data[removed[i]].tr.style.display = "table-row";
+			}
+			removed = [];
+			that.updateList();
+		}
+		
+		that.clearSearchDraw();
+	};
+	
 	// SCROLL **************************
 	
 	that.updateScrollOffsetByEvt = function(evt) {
@@ -229,6 +273,10 @@ function SearchTable(container, id_key, sort_key, table_class) {
 		that.scrollTo(data[entry_id]);
 	};
 	
+	that.scrollToCurrent = function() {
+		that.scrollTo(data[currentnav._search_id]);
+	};
+	
 	that.scrollTo = function(entry) {
 		if (entry) {
 			container.scrollTop = entry.tr.offsetTop - scrolloffset;
@@ -239,17 +287,22 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	
 	that.navGet = function() {
 		if (!keynavtimer) return 0;
-		if (currentnav) return currentnav[id_key];
+		if (currentnav) return currentnav._search_id;
 		return 0;
 	};
 	
 	that.preNavCheck = function() {
-		if (currentnav && !currentnav.tr.parentNode) {
-			that.drawNavChange(currentnav, false);
+		if (currentnav && (currentnav.style.display == "none")) {
+			that.drawNavChange(data[currentnav._search_id], false);
+			currentnav = false;
 		}
 		if (!currentnav) {
-			currentnav = data[sorted[0]];
-			that.drawNavChange(currentnav, true);
+			currentnav = table.firstChild;
+			while (currentnav.style.display == "none") {
+				if ((currentnav == table.lastChild) && (currentnav.style.display == "none")) return false;
+				currentnav = currentnav.nextSibling;
+			}
+			that.drawNavChange(data[currentnav._search_id], true);
 			return false;
 		}
 		return true;
@@ -258,74 +311,41 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	that.navClear = function() {
 		if (keynavtimer) clearTimeout(keynavtimer);
 		keynavtimer = false;
-		if (currentnav) that.drawNavChange(currentnav, false);
+		if (currentnav) that.drawNavChange(data[currentnav._search_id], false);
 	};
 	
 	that.navToID = function(id) {
-		that.navTo(data[id]);
+		that.navTo(data[id].tr);
 	};
 	
 	that.navTo = function(newnav) {
-		if (currentnav) that.drawNavChange(currentnav, false);
+		if (currentnav) that.drawNavChange(data[currentnav._search_id], false);
 		currentnav = newnav;
-		that.drawNavChange(currentnav, true);
-		that.scrollTo(currentnav);
+		that.drawNavChange(data[currentnav._search_id], true);
+		that.scrollTo(data[currentnav._search_id]);
 	};
 	
 	that.navDown = function() {
-		if (!that.preNavCheck()) return;
-		if (!currentnav.tr.nextSibling) return;
-		that.navTo(currentnav.tr.nextSibling);
+		if (!that.preNavCheck()) return false;
+		if (!currentnav.nextSibling) return false;
+		var next = currentnav.nextSibling;
+		while (next.style.display == "none") {
+			if (next == table.lastChild) return false;
+			next = next.nextSibling;
+		}
+		that.navTo(next);
+		return true;
 	};
 	
 	that.navUp = function() {
 		if (!that.preNavCheck()) return;
-		if (!currentnav.tr.previousSibling) return;
-		that.navTo(currentnav.tr.previousSibling)
-	};
-	
-	that.performSearch = function(text) {
-		textfield.textContent = text;
-		var i;
-		var j;
-		text = text.toLowerCase();
-		
-		for (i = 0; i < sorted.length; i++) {
-			if (data[sorted[i]]._searchname.indexOf(text) == -1) {
-				data[sorted[i]].tr.style.display = "none";
-				removed.push(sorted[i]);
-			}
+		if (!currentnav.previousSibling) return;
+		var prev = currentnav.previousSibling;
+		while (prev.style.display == "none") {
+			if (prev == table.firstChild) return false;
+			prev = prev.previousSibling;
 		}
-	};
-	
-	that.performSearchBackspace = function(text) {
-		textfield.textContent = text;
-		text = text.toLowerCase();
-		var unremove = [];
-		for (var i in removed) {
-			if (data[removed[i]]._searchname.indexOf(text) > -1) {
-				data[sorted[i]].tr.style.display = "table-row";
-				unremove.push(i);
-			}
-		}
-		for (i in unremove) removed.splice(unremove[i], 1);
-	};
-	
-	that.clearInlineSearch = function() {
-		that.clearSearchDraw();
-		if (inlinetimer) clearTimeout(inlinetimer);
-		inlinetimer = false;
-		searchstring = " ";
-		
-		that.navClear();
-		
-		if (removed.length > 0) {
-			for (var i = 0; i < removed.length; i++) {
-				data[removed[i]].tr.style.display = "table-row";
-			}
-			removed = [];
-			that.updateList();
-		}
+		that.navTo(prev);
 	};
 	
 	// DRAWING ********
@@ -336,13 +356,13 @@ function SearchTable(container, id_key, sort_key, table_class) {
 		var h = texthdr.offsetHeight;
 		fx_test_top.start(-h);
 		fx_test_height.start(h);
-		textfield.textContent = "hello";
+		textfield.textContent = "";
 	};
 	
 	that.clearSearchDraw = function() {
 		fx_test_top.start(0);
 		fx_test_height.start(0);
-		textfield.textContent = "hello";
+		textfield.textContent = "";
 	};
 	
 	hotkey.addCallback(that.keyHandle, 0);

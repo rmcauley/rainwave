@@ -20,6 +20,13 @@ $lang2 = array(
 	"p_NowPanel" => "Ahora Reproduciendo",
 	"p_RequestsPanel" => "Peticiones",
 	"p_TimelinePanel" => "Cronograma", // T.N.: I think it's the best word to describe this item
+	"pltab_albums" => "Álbumes",
+	"pltab_artists" => "Artistas",
+	
+	// Search related strings
+	
+	"escapetoclear" => "[Esc] para limpiar",
+	"searchheader" => "Búsqueda: ",
 	
 	// These are used for cooldown times, e.g. 5d 23h 10m 46s. Change to your liking.
 	"timeformat_d" => "d ",
@@ -147,7 +154,7 @@ $lang2 = array(
 	"pl_ranks" => "Valoración: |rating|, lugar |S:rank| del ránking.",
 	"pl_favourited" => "Favorito por |count| |P:count,person|.",
 	"pl_wins" => "Ha ganado |percent|% de las votaciones.",
-	"pl_requested" => "Pedida |count| veces, lugar |S:rank| del ránking.",
+	"pl_requested" => "Pedido |count| veces, lugar |S:rank| del ránking.",
 	"pl_genre" => "Grupo de enfriamiento: ",
 	"pl_genre2" => ".",
 	"pl_genres" => "Grupos de enfriamiento: ",
@@ -290,7 +297,7 @@ $lang2 = array(
 	"reqexpiresin" => " (posición en cola expira en |expiretime|)",
 	"reqexpiresnext" => " (posición en cola expira en próxima petición)",
 	"reqnorequests" => "No se han hecho peticiones",
-	"reqmyrequests" => "Tus Peticiones",
+	"reqmyrequests" => "Sus Peticiones",
 	"reqrequestline" => "Cola de Peticiones",
 	"reqrequestlinelong" => "Mostrando |showing| de |linesize| en cola.",
 	"reqruleblocked" => "Detenido; álbum o grupo está en votación.",

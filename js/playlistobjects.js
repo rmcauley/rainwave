@@ -49,8 +49,12 @@ var Artist = {
 	},
 	
 	linkify: function(artist_id, el) {
-		//el.style.cursor = "pointer";
-		//el.addEventListener('click', function() { edi.openPanelLink("PlaylistPanel", { type: "artist", id: artist_id, history: true }); }, true);
+		linkify(el, true);
+		el.addEventListener('click', function() { edi.openPanelLink("PlaylistPanel", { type: "artist", id: artist_id, history: true }); }, true);
+	},
+	
+	open: function(artist_id) {
+		edi.openPanelLink("PlaylistPanel", { type: "artist", id: artist_id, history: true });
 	}
 };
 

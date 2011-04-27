@@ -234,10 +234,12 @@ table.pl_albumlist td {
 
 table.pl_albumlist tr.pl_available td.pl_al_name {
 	background: url('images/albumlist_userrating.png') no-repeat;
+	background-position: -200px;
 }
 
 table.pl_albumlist tr.pl_cooldown td.pl_al_name {
 	background: url('images/albumlist_userrating_oa.png') no-repeat;
+	background-position: -200px;
 }
 
 table.pl_albumlist tr:hover td, tr.pl_highlight td {
@@ -361,12 +363,10 @@ div.pl_odholder {
 
 div.pl_opendiv {
 	height: 100%;
-	overflow: auto;
 }
 
 table.pl_songlist {
 	width: 100%;
-	margin-top: .5em;
 	padding: .2em;
 	table-layout: fixed;
 }
@@ -375,6 +375,12 @@ table.pl_songlist td {
 	padding-left: 2px;
 	padding-top: 1px;
 	border-bottom: 1px solid #3F667C;
+}
+
+div.pl_songlist_hdr {
+	font-weight: bold;
+	border-bottom: 1px solid #777;
+	margin: 1em 0.5em 0 .5em;
 }
 
 tr.pl_songlist_tr_unavailable td {
@@ -412,7 +418,7 @@ td.pl_songlist_artists {
 }
 
 td.pl_songlist_title {
-	width: 35%;
+	min-width: 35%;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -1228,8 +1234,9 @@ div.splitwindow_leftcontainer {
 	overflow: auto;
 }
 
-div.splitwindow_right {
+td.splitwindow_right {
 	height: 10px;
+	overflow: auto;
 }
 
 ul.splitwindow_tabs {
@@ -1262,7 +1269,7 @@ td.splitwindow_resize {
 
 div.inlinesearch_container {
 	padding: 0;
-	position: absolute;
+	position: fixed;
 	overflow: hidden;
 }
 

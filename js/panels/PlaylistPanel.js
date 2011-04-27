@@ -15,36 +15,49 @@ panels.PlaylistPanel = {
 		var albumlist;
 		var artistlistc;
 		var artistlist;
-		var idloading;
 		that.container = container;
 		that.open_album = 0;
 		
 		theme.Extend.PlaylistPanel(that);
-
-		that.init = function() {
-			view = SplitWindow("playlist", container);
-			albumlistc = view.addTab("albums", _l("pltab_albums"));
-			artistlistc = view.addTab("artists", _l("pltab_artists"));
-			//that.clearInlineSearch();
-			
-			albums = [];
-			albumsort = [];
-			reinsert = [];
-			
-			albumlist = AlbumSearchTable(that, albumlistc, view);
-			lyre.addCallback(that.drawAlbumCallback, "playlist_album");
-			
+		
+		that.initAlbumView = function() {
 			initpiggyback['playlist'] = "true";
+			lyre.sync_extra['playlist_album_diff'] = "true";
 			if (lyre.sync_time > 0) {
 				lyre.async_get("all_albums");
 			}
+		};
+		
+		that.initArtistView = function() {
+			initpiggyback['artist_list'] = "true";
+			if (lyre.sync_time > 0) {
+				lyre.async_get("artist_list");
+			}
+		};
+		
+		// this gets redefined in that.init
+		that.getCurrentTab = function() { return false; };
+
+		that.init = function() {
+			view = SplitWindow("playlist", container);
+			albumlistc = view.addTab("albums", _l("pltab_albums"), that.initAlbumView);
+			artistlistc = view.addTab("artists", _l("pltab_artists"), that.initArtistView);
+			view.initTabs();
+			
+			that.getCurrentTab = view.getCurrentTab;
+			
+			albumlist = AlbumSearchTable(that, albumlistc, view);
+			artistlist = ArtistSearchTable(that, artistlistc, view);
+			
+			lyre.addCallback(that.drawAlbumCallback, "playlist_album");
+			lyre.addCallback(that.drawArtistCallback, "artist_detail");
 			
 			that.onHeightResize(container.offsetHeight);
 			
-			/*help.addStep("openanalbum", { "h": "openanalbum", "p": "openanalbum_p", "skipf": that.isAlbumOpen });
+			help.addStep("openanalbum", { "h": "openanalbum", "p": "openanalbum_p", "skipf": function() { view.isAnyDivOpen("album"); } });
 			help.addStep("clicktorequest", { "h": "clicktorequest", "p": "clicktorequest_p" });
 			help.addTutorial("request", [ "login", "tunein", "openanalbum", "clicktorequest" ]);
-			help.addTopic("request", { "h": "request", "p": "request_p", "tutorial": "request" });*/
+			help.addTopic("request", { "h": "request", "p": "request_p", "tutorial": "request" });
 		};
 		
 		that.onHeightResize = function(height) {
@@ -55,6 +68,9 @@ panels.PlaylistPanel = {
 			if (link.type == "album") {
 				that.openAlbum(link.id);
 			}
+			if (link.type == "artist") {
+				that.openArtist(link.id);
+			}
 		};
 		
 		that.isAlbumOpen = function() {
@@ -63,8 +79,6 @@ panels.PlaylistPanel = {
 		};
 		
 		that.drawAlbumCallback = function(json) {
-			if (json.album_id != idloading) return false;
-			idloading = false;
 			var wdow = view.createOpenDiv("album", json.album_id);
 			wdow.destruct = that.destructAlbum;
 			json.song_data.sort(that.sortSongList);
@@ -72,6 +86,15 @@ panels.PlaylistPanel = {
 			albumlist.navToID(json.album_id);
 			if (typeof(wdow.updateHelp) == "function") wdow.updateHelp();
 			help.continueTutorialIfRunning("openanalbum");
+			return true;
+		};
+		
+		that.drawArtistCallback = function(json) {
+			var wdow = view.createOpenDiv("artist", json.album_id);
+			wdow.destruct = that.destructArtist;
+			that.drawArtist(wdow.div, json);
+			artistlist.navToID(json.artist_id);
+			if (typeof(wdow.updateHelp) == "function") wdow.updateHelp();
 			return true;
 		};
 		
@@ -86,9 +109,15 @@ panels.PlaylistPanel = {
 		};
 
 		that.openAlbum = function(album_id) {
+			view.switchToTab("albums");
 			if (view.checkOpenDivs("album", album_id)) return;
-			idloading = album_id;
 			lyre.async_get("album", { "album_id": album_id });
+		};
+		
+		that.openArtist = function(artist_id) {
+			view.switchToTab("artists");
+			if (view.checkOpenDivs("artist", artist_id)) return;
+			lyre.async_get("artist_detail", { "artist_id": artist_id });
 		};
 		
 		return that;
@@ -97,10 +126,6 @@ panels.PlaylistPanel = {
 
 var AlbumSearchTable = function(parent, container, view) {
 	var that = SearchTable(container, "album_id", "album_name", "pl_albumlist");
-	
-	that.drawUpdate = function(album) {
-		that.drawRating();
-	};
 	
 	that.afterUpdate = function(json, albums, sorted) {
 		for (i in albums) {
@@ -183,23 +208,24 @@ var AlbumSearchTable = function(parent, container, view) {
 		album.td_fav.setAttribute("class", "pl_fav_" + album.album_favourite);
 		
 		album.tr.appendChild(album.td_fav);
-		that.drawNavChange(album, false);
-		that.drawRating(album);
+		//that.drawNavChange(album, false);
+		//that.drawRating(album);
 	};
 	
 	that.drawRating = function(album) {
 		if ((album.album_lowest_oa - clock.now) > 0) {
 			album.td_rating.textContent = formatHumanTime(album.album_lowest_oa - clock.now);
 		}
-		else {
+		else if ("album_rating_user" in album) {
 			if (album.album_rating_user > 0) album.td_rating.textContent = album.album_rating_user.toFixed(1);
 			else album.td_rating.textContent = "";
 		}
 		
-		var ratingx = album.album_rating_user * 10;
-		if (album.album_rating_user == 0) ratingx = -200;
-		album.td_name.style.backgroundPosition = "100% " + (-193 + ratingx) + "px";
-		album.td_rating.textContent = album.album_rating_user.toFixed(1);
+		if ("album_rating_user" in album) {
+			var ratingx = album.album_rating_user * 10;
+			if (album.album_rating_user == 0) ratingx = -200;
+			album.td_name.style.backgroundPosition = "100% " + (-193 + ratingx) + "px";
+		}
 	};
 	
 	that.drawNavChange = function(album, highlight) {
@@ -210,19 +236,53 @@ var AlbumSearchTable = function(parent, container, view) {
 	};
 	
 	that.drawUpdate = function(album) {
+		that.drawRating(album);
 		that.drawNavChange(album, false);
 	};
 	
 	that.searchEnabled = function() {
-		if (parent.parent.mpi && (parent.parent.mpi.focused = "PlaylistPanel")) return true;
-		else if (parent.parent.mpi) return false;
-		return true;
+		if ((parent.getCurrentTab() == 'albums') && parent.parent.mpi && (parent.parent.mpi.focused = "PlaylistPanel")) return true;
+		return false;
 	};
 
 	lyre.addCallback(that.ratingResult, "rate_result");
 	lyre.addCallback(that.favResult, "fav_album_result");
 	lyre.addCallback(that.update, "playlist_all_albums");
 	lyre.addCallback(that.update, "playlist_album_diff");
+	
+	return that;
+};
+
+var ArtistSearchTable = function(parent, container, view) {
+	var that = SearchTable(container, "artist_id", "artist_name", "pl_albumlist");
+	
+	that.searchAction = function(id) {
+		Artist.open(id);
+	};
+
+	that.drawEntry = function(artist) {
+		var artist_td = createEl("td", { "textContent": artist.artist_name, "class": "pl_al_name" }, artist.tr);
+		artist_td.addEventListener('click', that.updateScrollOffsetByEvt, true);
+		Artist.linkify(artist.artist_id, artist_td);
+	};
+	
+	that.drawNavChange = function(artist, highlight) {
+		var cl = "pl_available";
+		if (highlight) cl += " pl_highlight";
+		//if (artist.artist_id == parent.open_artist) cl += " pl_albumopen";
+		artist.tr.setAttribute("class", cl);
+	};
+	
+	that.drawUpdate = function(album) {
+		return;
+	};
+	
+	that.searchEnabled = function() {
+		if ((parent.getCurrentTab() == 'artists') && parent.parent.mpi && (parent.parent.mpi.focused = "PlaylistPanel")) return true;
+		return false;
+	};
+
+	lyre.addCallback(that.update, "artist_list");
 	
 	return that;
 };
