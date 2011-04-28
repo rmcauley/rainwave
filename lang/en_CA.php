@@ -147,9 +147,10 @@ $lang = array(
 	// English example:
 	// "suffix_2" => "nd"     // results in "2nd" when suffixes are used
 	
-	// Playlist Tabs
+	// Playlist Related
 	"pltab_albums" => "Albums",
 	"pltab_artists" => "Artists",
+	"overclockedremixes" => "OverClocked Remixes",
 	
 	// Playlist Sentences, these all show up in the album detail pages.
 	

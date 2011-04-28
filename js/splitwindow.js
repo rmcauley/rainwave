@@ -20,6 +20,7 @@ function SplitWindow(name, container, table_class) {
 	var resize_last_width = prefs.getPref("splitwindow", "sizeleft_" + name);
 	var resize_final_width = resize_last_width;
 	var maxwidth = container.offsetWidth;
+	var height = container.offsetHeight;
 	
 	that.startResize = function(e) {
 		resize_mx = getMousePosX(e);
@@ -83,7 +84,7 @@ function SplitWindow(name, container, table_class) {
 	that.switchToTab = function(newtab) {
 		if (newtab == currenttab) return;
 		if (tabinitfunc[newtab]) {
-			tabinitfunc[newtab]();
+			tabinitfunc[newtab](that);
 			tabinitfunc[newtab] = false;
 		}
 		if (currenttab) {
@@ -106,11 +107,15 @@ function SplitWindow(name, container, table_class) {
 	
 	// OTHER
 	
-	that.setHeight = function(height) {
+	that.setHeight = function(newheight) {
+		height = newheight;
 		table.style.height = height + "px";
 		var divh = table.offsetHeight - tabs_td.offsetHeight;
 		for (var i in tabdivs) {
 			tabdivs[i].style.height = divh + "px";
+		}
+		if (opendivs.length > 0) {
+			opendivs[opendivs.length - 1].div.style.height = height + "px";
 		}
 	};
 	
@@ -136,9 +141,7 @@ function SplitWindow(name, container, table_class) {
 		for (i = 0; i < opendivs.length; i++) {
 			opendivs[i].div.style.display = "none";
 		}
-		var div = document.createElement("div");
-		div.setAttribute("class", "pl_opendiv");
-		right.appendChild(div);
+		var div = createEl("div", { "class": "pl_opendiv", "style": "height: " + height + "px;" }, right);
 		opendivs.push({ "div": div, "type": type, "id": id });
 		return opendivs[opendivs.length - 1];
 	};
@@ -170,6 +173,7 @@ function SplitWindow(name, container, table_class) {
 				}
 				found = true;
 				opendivs[i].div.style.display = "block";
+				opendivs[i].div.style.height = height + "px";
 				if (typeof(opendivs[i].updateHelp) == "function") opendivs[i].updateHelp();
 				if (typeof(opendivs[i].continueTutorial) == "function") opendivs[i].continueTutorial();
 				opendivs.push(opendivs.splice(i, 1)[0]);

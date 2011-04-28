@@ -116,7 +116,7 @@ var _ACCENTS = {
 	"e": new RegExp("[èéêë]", 'g'),
 	"i": new RegExp("[ìíîï]", 'g'),
 	"n": new RegExp("ñ", 'g'),
-	"o": new RegExp("[òóôõö]", 'g'),
+	"o": new RegExp("[òóôõöø]", 'g'),
 	"oe": new RegExp("œ", 'g'),
 	"u": new RegExp("[ùúûü]", 'g'),
 	"y": new RegExp("[ýÿ]", 'g')

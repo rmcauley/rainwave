@@ -1217,6 +1217,7 @@ function _THEME() {
 			}
 		};
 		
+		// TODO: these functions should really be changed to use wdow instead of div... :/
 		pp.drawArtist = function(div, json) {
 			div.hdrtable = createEl("table", { "style": "width: 100%;", "cellspacing": 0 }, div);
 			var tr = createEl("tr", false, div.hdrtable);
@@ -1228,18 +1229,14 @@ function _THEME() {
 			var album_sid;
 			var album = [];
 			div.drawnalbums = [];
-			var tbl;
-			var tr;
-			var hdr;
+			var tbldiv;
+			var deferred = [];
 			for (var i = 0; i < json.songs.length; i++) {
-				if (json.songs[i].album_id != album_id) {
+				if ((json.songs[i].album_id != album_id) && ((json.songs[i].sid != 2) || (album_sid != json.songs[i].sid))) {
 					if (album.length > 0) {
-						hdr = createEl("div", { "class": "pl_songlist_hdr" }, div);
-						createEl("img", { "src": "images/menu_logo_" + album_sid + ".png", "style": "float: right;" }, hdr);
-						createEl("span", { "textContent": album_name }, hdr);
-						tbl = createEl("table", { "class": "pl_songlist" }, div);
-						div.drawnalbums.push([]);
-						that.drawAlbumTable(tbl, div.drawnalbums[div.drawnalbums.length - 1], album);
+						tbldiv = pp.drawArtistTable(div, album, album_id, album_name, album_sid);
+						if (album_sid == user.p.sid) div.appendChild(tbldiv);
+						else deferred.push(tbldiv);
 					}
 					album_id = json.songs[i].album_id;
 					album_name = json.songs[i].album_name;
@@ -1248,14 +1245,28 @@ function _THEME() {
 				}
 				album.push(json.songs[i]);
 			}
-			if (album.length > 0) {
-				hdr = createEl("div", { "class": "pl_songlist_hdr" }, div);
-				createEl("img", { "src": "images/menu_logo_" + album_sid + ".png", "style": "float: right;" }, hdr);
-				createEl("span", { "textContent": album_name }, hdr);
-				tbl = createEl("table", { "class": "pl_songlist" }, div);
-				div.drawnalbums.push([]);
-				that.drawAlbumTable(tbl, div.drawnalbums[div.drawnalbums.length - 1], album);
+			for (var i = 0; i < deferred.length; i++) {
+				div.appendChild(deferred[i]);
 			}
+			if (album.length > 0) {
+				div.appendChild(pp.drawArtistTable(div, album, album_id, album_name, album_sid));
+			}
+		};
+		
+		pp.drawArtistTable = function(div, album, album_id, album_name, album_sid) {
+			var encloseddiv = createEl("div");
+			if (album_sid == 2) {
+				album_name = _l("overclockedremixes");
+				album_id = -1;
+			}
+			var hdr = createEl("div", { "class": "pl_songlist_hdr" }, encloseddiv);
+			createEl("img", { "src": "images/menu_logo_" + album_sid + ".png", "style": "float: right;" }, hdr);
+			var album_hdr = createEl("span", { "textContent": album_name }, hdr);
+			if (album_id != -1) Album.linkify(album_id, album_hdr);
+			var tbl = createEl("table", { "class": "pl_songlist" }, encloseddiv);
+			div.drawnalbums.push([]);
+			that.drawAlbumTable(tbl, div.drawnalbums[div.drawnalbums.length - 1], album);
+			return encloseddiv;
 		};
 		
 		pp.destructArtist = function(wdow) {
@@ -1273,11 +1284,21 @@ function _THEME() {
 				trclass = song_data[i].song_available ? "pl_songlist_tr_available" : "pl_songlist_tr_unavailable";
 				ns.tr.setAttribute("class", trclass);
 				
-				ns.td_r = document.createElement("td");
-				ns.td_r.setAttribute("class", "pl_songlist_r");
-				ns.td_r.textContent = "R";
-				Request.linkify(song_data[i].song_id, ns.td_r);
-				ns.tr.appendChild(ns.td_r);
+				if (("sid" in song_data[i]) && (song_data[i].sid != user.p.sid)) {
+					ns.td_r = createEl("td", { "class": "pl_songlist_r" }, ns.tr);
+				}
+				else {
+					ns.td_r = document.createElement("td");
+					ns.td_r.setAttribute("class", "pl_songlist_r");
+					ns.td_r.textContent = "R";
+					Request.linkify(song_data[i].song_id, ns.td_r);
+					ns.tr.appendChild(ns.td_r);
+				}
+				
+				if ("album_name" in song_data[i]) {
+					ns.td_album_name = createEl("td", { "class": "pl_songlist_album_name", "textContent": song_data[i].album_name }, ns.tr);
+					Album.linkify(song_data[i].album_id, ns.td_album_name);
+				}
 				
 				ns.td_n = document.createElement("td");
 				ns.td_n.setAttribute("class", "pl_songlist_title");

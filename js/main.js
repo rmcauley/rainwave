@@ -33,10 +33,10 @@ function init() {
 		], refresh: true });
 	prefs.addPref("edi", { hidden: true, name: "theme", defaultvalue: "RWClassic", type: "dropdown", options: [ { value: "RWClassic", option: "Rainwave 3" } ], refresh: true });
 	
-	if (document.location.href.indexOf("beta") == -1) {
+	//if (document.location.href.indexOf("beta") == -1) {
 		lyre.catcherrors = true;
 		lyre.jsErrorCallback = errorcontrol.jsError;
-	}
+	//}
 	lyre.setStationID(PRELOADED_SID);
 	lyre.setUserID(PRELOADED_USER_ID);
 	lyre.setKey(PRELOADED_APIKEY);

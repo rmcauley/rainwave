@@ -362,7 +362,7 @@ div.pl_odholder {
 }
 
 div.pl_opendiv {
-	height: 100%;
+	overflow: auto;
 }
 
 table.pl_songlist {
@@ -399,6 +399,13 @@ td.pl_songlist_cooldown {
 
 td.pl_songlist_r {
 	width: 1.5em;
+}
+
+td.pl_songlist_album_name {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: 16em;
 }
 
 td.pl_songlist_rating {

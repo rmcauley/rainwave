@@ -20,10 +20,8 @@ $lang2 = array(
 	"p_NowPanel" => "Ahora Reproduciendo",
 	"p_RequestsPanel" => "Peticiones",
 	"p_TimelinePanel" => "Cronograma", // T.N.: I think it's the best word to describe this item
-	"pltab_albums" => "Álbumes",
-	"pltab_artists" => "Artistas",
 	
-	// Search related strings
+	// Search related
 	
 	"escapetoclear" => "[Esc] para limpiar",
 	"searchheader" => "Búsqueda: ",
@@ -147,6 +145,12 @@ $lang2 = array(
 	"suffix_11" => "º",
 	"suffix_12" => "º",
 	"suffix_13" => "º",
+	
+	// Playlist Related
+
+  "pltab_albums" => "Álbumes",
+	"pltab_artists" => "Artistas",
+	"overclockedremixes" => "ReMixes OverClockeados", // T.N.: In spanish that sounds... awful! Looking for best translations.
 	
 	// Playlist Sentences, these all show up in the album detail pages.
 	

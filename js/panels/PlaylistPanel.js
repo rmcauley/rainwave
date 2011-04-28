@@ -20,7 +20,7 @@ panels.PlaylistPanel = {
 		
 		theme.Extend.PlaylistPanel(that);
 		
-		that.initAlbumView = function() {
+		that.initAlbumView = function(self) {
 			initpiggyback['playlist'] = "true";
 			lyre.sync_extra['playlist_album_diff'] = "true";
 			if (lyre.sync_time > 0) {
@@ -28,7 +28,7 @@ panels.PlaylistPanel = {
 			}
 		};
 		
-		that.initArtistView = function() {
+		that.initArtistView = function(self) {
 			initpiggyback['artist_list'] = "true";
 			if (lyre.sync_time > 0) {
 				lyre.async_get("artist_list");
@@ -126,8 +126,16 @@ panels.PlaylistPanel = {
 
 var AlbumSearchTable = function(parent, container, view) {
 	var that = SearchTable(container, "album_id", "album_name", "pl_albumlist");
+	var initialized = false;
 	
 	that.afterUpdate = function(json, albums, sorted) {
+		if (!initialized) {
+			lyre.addCallback(that.ratingResult, "rate_result");
+			lyre.addCallback(that.favResult, "fav_album_result");
+			lyre.addCallback(that.update, "playlist_album_diff");
+			initialized = true;
+		}
+	
 		for (i in albums) {
 			if (!albums[i].album_available) {
 				// reinserts the album if it becomes available again
@@ -244,11 +252,8 @@ var AlbumSearchTable = function(parent, container, view) {
 		if ((parent.getCurrentTab() == 'albums') && parent.parent.mpi && (parent.parent.mpi.focused = "PlaylistPanel")) return true;
 		return false;
 	};
-
-	lyre.addCallback(that.ratingResult, "rate_result");
-	lyre.addCallback(that.favResult, "fav_album_result");
+	
 	lyre.addCallback(that.update, "playlist_all_albums");
-	lyre.addCallback(that.update, "playlist_album_diff");
 	
 	return that;
 };
@@ -281,7 +286,7 @@ var ArtistSearchTable = function(parent, container, view) {
 		if ((parent.getCurrentTab() == 'artists') && parent.parent.mpi && (parent.parent.mpi.focused = "PlaylistPanel")) return true;
 		return false;
 	};
-
+	
 	lyre.addCallback(that.update, "artist_list");
 	
 	return that;

@@ -200,7 +200,6 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	};
 	
 	that.performSearch = function(text) {
-		textfield.textContent = text;
 		var i;
 		var j;
 		text = text.toLowerCase();
@@ -213,6 +212,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 		}
 		
 		if (!inlinetimer) that.startSearchDraw();
+		textfield.textContent = text;
 	};
 	
 	that.performSearchBackspace = function(text) {
@@ -253,7 +253,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	};
 	
 	that.updateScrollOffsetByID = function(id) {
-		that.updateScrollOffset(data[id]);
+		if (id in data) that.updateScrollOffset(data[id]);
 	};
 	
 	that.updateScrollOffset = function(entry) {
@@ -270,11 +270,11 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	};
 	
 	that.scrollToID = function(entry_id) {
-		that.scrollTo(data[entry_id]);
+		if (entry_id in data) that.scrollTo(data[entry_id]);
 	};
 	
 	that.scrollToCurrent = function() {
-		that.scrollTo(data[currentnav._search_id]);
+		if (currentnav) that.scrollTo(data[currentnav._search_id]);
 	};
 	
 	that.scrollTo = function(entry) {
@@ -315,7 +315,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	};
 	
 	that.navToID = function(id) {
-		that.navTo(data[id].tr);
+		if (id in data) that.navTo(data[id].tr);
 	};
 	
 	that.navTo = function(newnav) {
