@@ -1110,6 +1110,7 @@ function _THEME() {
 			wdow.albumrating = Rating({ category: "album", id: json.album_id, userrating: json.album_rating_user, siterating: json.album_rating_avg, favourite: json.album_favourite, scale: 1.2, register: true });
 			wdow.albumnametd.appendChild(wdow.albumrating.el);
 			wdow.albumname = createEl("div", { "class": "pl_ad_albumname", "textContent": json.album_name }, wdow.albumnametd);
+			if (json.sid != user.p.sid) createEl("img", { "src": "images/menu_logo_" + json.sid + ".png", "class": "pl_ad_albumname_station" }, wdow.albumname);
 
 			tr = createEl("tr", false, wdow.hdrtable);
 			wdow.albumdetailtd = createEl("td", { "class": "pl_ad_albumdetailtd" }, tr);

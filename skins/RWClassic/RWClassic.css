@@ -335,6 +335,11 @@ div.pl_ad_albumname {
 	padding:  0.1em 0px .2em .2em;
 }
 
+img.pl_ad_albumname_station {
+	float: right;
+	margin-top: 3px;
+}
+
 td.pl_ad_albumnametd {
 	background: #142027 url('images/pl_ad_albumname_bkg.png') top right;
 }
