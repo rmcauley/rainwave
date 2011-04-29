@@ -316,6 +316,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	
 	that.navToID = function(id) {
 		if (id in data) that.navTo(data[id].tr);
+		else that.navClear();
 	};
 	
 	that.navTo = function(newnav) {
