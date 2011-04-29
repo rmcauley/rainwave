@@ -151,6 +151,7 @@ $lang = array(
 	"pltab_albums" => "Albums",
 	"pltab_artists" => "Artists",
 	"overclockedremixes" => "OverClocked Remixes",
+	"mixwavesongs" => "Mixwave Songs",
 	
 	// Playlist Sentences, these all show up in the album detail pages.
 	

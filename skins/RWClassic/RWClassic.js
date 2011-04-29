@@ -1102,36 +1102,22 @@ function _THEME() {
 	*****************************************************************************/
 	
 	that.Extend.PlaylistPanel = function(pp) {	
-		pp.drawAlbum = function(div, json) {
-			div.hdrtable = document.createElement("table");
-			div.hdrtable.style.width = "100%";
-			div.hdrtable.style.marginBottom = "0.5em";
-			div.hdrtable.setAttribute("cellspacing", "0");
-			
-			var tr = document.createElement("tr");
-			div.albumnametd = document.createElement("td");
-			div.albumnametd.setAttribute("class", "pl_ad_albumnametd");
-			div.albumnametd.setAttribute("colspan", 2);
-			
-			div.albumrating = Rating({ category: "album", id: json.album_id, userrating: json.album_rating_user, siterating: json.album_rating_avg, favourite: json.album_favourite, scale: 1.2, register: true });
-			div.albumnametd.appendChild(div.albumrating.el);
-			
-			div.albumname = document.createElement("div");
-			div.albumname.setAttribute("class", "pl_ad_albumname");
-			div.albumname.textContent = json.album_name;
-			div.albumnametd.appendChild(div.albumname);
-			
-			tr.appendChild(div.albumnametd);
-			div.hdrtable.appendChild(tr);
-			tr = document.createElement("tr");
-			
-			div.albumdetailtd = document.createElement("td");
-			div.albumdetailtd.setAttribute("class", "pl_ad_albumdetailtd");
+		pp.drawAlbum = function(wdow, json) {
+			wdow.hdrtable = createEl("table", { "style": "width: 100%; margin-bottom: 0.5em;", "cellspacing": 0 }, wdow.div);
+		
+			var tr = createEl("tr", false, wdow.hdrtable);
+			wdow.albumnametd = createEl("td", { "class": "pl_ad_albumnametd", "colspan": 2 }, tr);
+			wdow.albumrating = Rating({ category: "album", id: json.album_id, userrating: json.album_rating_user, siterating: json.album_rating_avg, favourite: json.album_favourite, scale: 1.2, register: true });
+			wdow.albumnametd.appendChild(wdow.albumrating.el);
+			wdow.albumname = createEl("div", { "class": "pl_ad_albumname", "textContent": json.album_name }, wdow.albumnametd);
+
+			tr = createEl("tr", false, wdow.hdrtable);
+			wdow.albumdetailtd = createEl("td", { "class": "pl_ad_albumdetailtd" }, tr);
 			
 			if ((json.album_rating_count >= 10) && svg.capable) {
 				var gr = graph.makeSVG(graph.RatingHistogram, 200, 120 - (UISCALE * 3), { stroke: that.RatingHistoStroke, fill: that.RatingHistoFill, maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10, raw: [ json.album_rating_histogram ]});
 				gr.svg.setAttribute("class", "pl_ad_ratinghisto");
-				div.albumdetailtd.appendChild(gr.svg);
+				wdow.albumdetailtd.appendChild(gr.svg);
 			}
 			
 			var stats = document.createElement("div");
@@ -1180,63 +1166,54 @@ function _THEME() {
 				else _l("pl_genres2_more", false, tmp, true);
 				stats.appendChild(tmp);
 			}
-			div.albumdetailtd.appendChild(stats);
-			tr.appendChild(div.albumdetailtd);
+			wdow.albumdetailtd.appendChild(stats);
 			
-			div.albumarttd = createEl("td", { "class": "pl_ad_albumart_td" }, tr);
+			wdow.albumarttd = createEl("td", { "class": "pl_ad_albumart_td" }, tr);
 			if (json.album_art) {
-				createEl("img", { "src": json.album_art, "class": "pl_ad_albumart" }, div.albumarttd);
+				createEl("img", { "src": json.album_art, "class": "pl_ad_albumart" }, wdow.albumarttd);
 			}
 			else {
-				if (user.p.sid == 2) createEl("img", { "src": "images/noart_2.jpg", "class": "pl_ad_albumart" }, div.albumarttd);
-				else createEl("img", { "src": "images/noart_1.jpg", "class": "pl_ad_albumart" }, div.albumarttd);
+				if (user.p.sid == 2) createEl("img", { "src": "images/noart_2.jpg", "class": "pl_ad_albumart" }, wdow.albumarttd);
+				else createEl("img", { "src": "images/noart_1.jpg", "class": "pl_ad_albumart" }, wdow.albumarttd);
 			}
 			
-			div.hdrtable.appendChild(tr);
-			div.appendChild(div.hdrtable);
+			wdow.songlist = createEl("table", { "class": "pl_songlist", "style": "clear: both;" }, wdow.div);
+			wdow.songarray = [];
+			that.drawAlbumTable(wdow.songlist, wdow.songarray, json.song_data);
 			
-			div.songlist = document.createElement("table");
-			div.songlist.setAttribute("class", "pl_songlist");
-			div.songlist.style.clear = "both";
-			div.songarray = [];
-			that.drawAlbumTable(div.songlist, div.songarray, json.song_data);
-			
-			div.updateHelp = function() {
-				if (div.songarray.length > 0) {
-					help.changeStepPointEl("clicktorequest", [ div.songarray[0].td_r ]);
+			wdow.updateHelp = function() {
+				if (wdow.songarray.length > 0) {
+					help.changeStepPointEl("clicktorequest", [ wdow.songarray[0].td_r ]);
 				}
 			};
-			
-			div.appendChild(div.songlist);
 		};
 		
 		pp.destructAlbum = function(wdow) {
-			wdow.div.albumrating.destruct();
-			for (var i = 0; i < wdow.div.songarray.length; i++) {
-				wdow.div.songarray[i].rating.destruct();
+			wdow.albumrating.destruct();
+			for (var i = 0; i < wdow.songarray.length; i++) {
+				wdow.songarray[i].rating.destruct();
 			}
 		};
-		
-		// TODO: these functions should really be changed to use wdow instead of div... :/
-		pp.drawArtist = function(div, json) {
-			div.hdrtable = createEl("table", { "style": "width: 100%;", "cellspacing": 0 }, div);
-			var tr = createEl("tr", false, div.hdrtable);
-			div.artistnametd = createEl("td", { "class": "pl_ad_albumnametd" }, tr);
-			div.artistname = createEl("div", { "class": "pl_ad_albumname", "textContent": json.artist_name }, div.artistnametd);
+
+		pp.drawArtist = function(wdow, json) {
+			wdow.hdrtable = createEl("table", { "style": "width: 100%;", "cellspacing": 0 }, wdow.div);
+			var tr = createEl("tr", false, wdow.hdrtable);
+			wdow.artistnametd = createEl("td", { "class": "pl_ad_albumnametd" }, tr);
+			wdow.artistname = createEl("div", { "class": "pl_ad_albumname", "textContent": json.artist_name }, wdow.artistnametd);
 			
 			var album_id = -1;
 			var album_name;
-			var album_sid;
+			var album_sid = 0;
 			var album = [];
-			div.drawnalbums = [];
-			var tbldiv;
-			var deferred = [];
-			for (var i = 0; i < json.songs.length; i++) {
-				if ((json.songs[i].album_id != album_id) && ((json.songs[i].sid != 2) || (album_sid != json.songs[i].sid))) {
+			var drawntables = [];
+			var i, j;
+			for (i = 0; i < STATIONS.length; i++) {
+				drawntables[i] = [];
+			}
+			for (i = 0; i < json.songs.length; i++) {
+				if ((json.songs[i].album_id != album_id) && (((album_sid != 2) && (album_sid != 3)) || (album_sid != json.songs[i].sid))) {
 					if (album.length > 0) {
-						tbldiv = pp.drawArtistTable(div, album, album_id, album_name, album_sid);
-						if (album_sid == user.p.sid) div.appendChild(tbldiv);
-						else deferred.push(tbldiv);
+						drawntables[album_sid].push(pp.drawArtistTable(wdow, album, album_id, album_name, album_sid));
 					}
 					album_id = json.songs[i].album_id;
 					album_name = json.songs[i].album_name;
@@ -1245,18 +1222,31 @@ function _THEME() {
 				}
 				album.push(json.songs[i]);
 			}
-			for (var i = 0; i < deferred.length; i++) {
-				div.appendChild(deferred[i]);
-			}
 			if (album.length > 0) {
-				div.appendChild(pp.drawArtistTable(div, album, album_id, album_name, album_sid));
+				drawntables[album_sid].push(pp.drawArtistTable(wdow, album, album_id, album_name, album_sid));
+			}
+			
+			for (j = 0; j < drawntables[user.p.sid].length; j++) {
+				wdow.div.appendChild(drawntables[user.p.sid][j]);
+			}
+			
+			for (i = 0; i < drawntables.length; i++) {
+				if (i != user.p.sid) {
+					for (j = 0; j < drawntables[i].length; j++) {
+						wdow.div.appendChild(drawntables[i][j]);
+					}
+				}
 			}
 		};
 		
-		pp.drawArtistTable = function(div, album, album_id, album_name, album_sid) {
+		pp.drawArtistTable = function(wdow, album, album_id, album_name, album_sid) {
 			var encloseddiv = createEl("div");
 			if (album_sid == 2) {
 				album_name = _l("overclockedremixes");
+				album_id = -1;
+			}
+			else if (album_sid == 3) {
+				album_name = _l("mixwavesongs");
 				album_id = -1;
 			}
 			var hdr = createEl("div", { "class": "pl_songlist_hdr" }, encloseddiv);
@@ -1264,8 +1254,8 @@ function _THEME() {
 			var album_hdr = createEl("span", { "textContent": album_name }, hdr);
 			if (album_id != -1) Album.linkify(album_id, album_hdr);
 			var tbl = createEl("table", { "class": "pl_songlist" }, encloseddiv);
-			div.drawnalbums.push([]);
-			that.drawAlbumTable(tbl, div.drawnalbums[div.drawnalbums.length - 1], album);
+			var useless = [];
+			that.drawAlbumTable(tbl, useless, album);
 			return encloseddiv;
 		};
 		
