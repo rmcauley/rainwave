@@ -38,7 +38,8 @@ $jsorder = array(
 	"js/panels/TimelinePanel.js",
 	"js/panels/PlaylistPanel.js",
 	"js/panels/PrefsPanel.js",
-	"js/panels/SchedulePanel.js"
+	"js/panels/SchedulePanel.js",
+	"js/panels/ListenersPanel.js"
 );
 
 ?>

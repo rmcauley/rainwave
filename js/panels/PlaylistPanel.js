@@ -125,7 +125,9 @@ panels.PlaylistPanel = {
 };
 
 var AlbumSearchTable = function(parent, container, view) {
-	var that = SearchTable(container, "album_id", "album_name", "pl_albumlist");
+	var that = SearchTable(container, "album_id", "pl_albumlist");
+	that.changeSearchKey("album_name");
+	
 	var initialized = false;
 	
 	that.afterUpdate = function(json, albums, sorted) {
@@ -259,7 +261,9 @@ var AlbumSearchTable = function(parent, container, view) {
 };
 
 var ArtistSearchTable = function(parent, container, view) {
-	var that = SearchTable(container, "artist_id", "artist_name", "pl_albumlist");
+	var that = SearchTable(container, "artist_id", "pl_albumlist");
+	that.changeSortKey("artist_name");
+	that.changeSearchKey("artist_name");
 	
 	that.searchAction = function(id) {
 		Artist.open(id);

@@ -407,14 +407,14 @@ var help = function() {
 
 function drawAboutScreen(div) {
 	var tbl = createEl("table", { "class": "about help_paragraph" });
-	var html = "<tr><td>" + _l("rainwave3version") + ":</td><td>" + _l("revision") + " " + BUILDNUM + "</td></tr>";
+	var html = "<tr><td style='width: 10em;'>" + _l("rainwave3version") + ":</td><td>" + _l("revision") + " " + BUILDNUM + "</td></tr>";
 	html += "<tr><td>" + _l("creator") + ":</td><td>LiquidRain</td></tr>";
 	html += "<tr><td>" + _l("rainwavemanagers") + ":</td><td>Ten19, Metal-Ridley</td></tr>";
 	html += "<tr><td>" + _l("ocrmanagers") + ":</td><td>William</td></tr>";
 	html += "<tr><td>" + _l("mixwavemanagers") + ":</td><td>SOcean255</td></tr>";
 	html += "<tr><td>" + _l("jfinalfunkjob") + ":</td><td>jfinalfunk</td></tr>";
 	html += "<tr><td>" + _l("relayadmins") + ":</td><td>Lyfe, Tanaric, Dracoirs</td></tr>";
-	html += "<tr><td>" + _l("translators") + ":</td><td>Metal-Geo (NL), Metal-Ridley (FR), quarterlife (FI), Steppo (SE), DarkLink (DE), BreadMaker (ES).</td></tr>";
+	html += "<tr><td>" + _l("translators") + ":</td><td>Metal-Geo (NL), Metal-Ridley (FR), quarterlife (FI), Steppo (SE), DarkLink (DE), BreadMaker (ES), ocrfan (PT).</td></tr>";
 	html += "<tr><td style='padding-top: 1em;'>" + _l("specialthanks") + ":</td><td style='padding-top: 1em;'>strwrsxprt, heschi, Brayniac, Salty, efiloN, Vyzov</td></tr>";
 	html += "<tr><td style='padding-top: 1em;'>" + _l("poweredby") + ":</td><td style='padding-top: 1em;'>" + _l("customsoftware") + ", <a href='http://icecast.org' target='_blank' onclick='return false;'>Icecast<img src='images/new_window_icon.png' alt='(*)' /></a>, <a href='http://savonet.sourceforge.net' target='_blank' onclick='return false;'>Liquidsoap<img src='images/new_window_icon.png' alt='(*)' /></a></td></tr>";
 	tbl.innerHTML = html;
@@ -427,7 +427,7 @@ function drawAboutScreen(div) {
 	//div.appendChild(a2);
 }
 
-help.addStep("about", { "h": "about", "pf": drawAboutScreen, "width": UISCALE * 55, "height": UISCALE * 30 });
+help.addStep("about", { "h": "about", "pf": drawAboutScreen, "width": UISCALE * 55, "height": UISCALE * 35 });
 help.addTutorial("about", [ "about" ]);
 help.addTopic("about", { "h": "about", "p": "about_p", "tutorial": "about" });
 

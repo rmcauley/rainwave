@@ -38,6 +38,7 @@ $lang = array(
 	"p_NowPanel" => "Now Playing",
 	"p_RequestsPanel" => "Requests",
 	"p_TimelinePanel" => "Timeline",
+	"p_ListenersPanel" => "Listeners",
 	
 	// These are used for cooldown times, e.g. 5d 23h 10m 46s.  Change to your liking.
 	"timeformat_d" => "d ",
@@ -168,6 +169,12 @@ $lang = array(
 	"pl_genres2_normal" => ".",
 	"pl_genres2_more" => " & others.",
 	
+	// Listeners Panel
+	
+	"ltab_listeners" => "Listeners", 			// Listeners tab name
+	"guestlisteners" => "|guests| guests.",		// appears at the bottom of the current listeners list
+	"totallisteners" => "|total| listeners.",	// appears underneath guestlisteners.
+	
 	// Preference names
 	
 	"pref_refreshrequired" => "(refresh required)",
@@ -205,7 +212,7 @@ $lang = array(
 	"donationinformation" => "Donation ledger and information.",
 	"apiinformation" => "API documentation.",
 	"translators" => "Translators",
-	"rainwave3version" => "Rainwave 3 Version",
+	"rainwave3version" => "R3 Version",
 	"revision" => "Rev",
 	
 	// Help

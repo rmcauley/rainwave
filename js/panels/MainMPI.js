@@ -195,7 +195,7 @@ panels.MainMPI = {
 			lastpanel = nlastpanel;
 		}
 
-		savedpanels =  { "PlaylistPanel": true, "RequestsPanel": true, "PrefsPanel": true, "SchedulePanel": true };
+		savedpanels =  { "PlaylistPanel": true, "RequestsPanel": true, "ListenersPanel": true, "PrefsPanel": true, "SchedulePanel": true };
 		//prefs.addPref("mpi", { name: "savedpanels", callback: that.p_savedpanels, defaultvalue: { "PlaylistPanel": true, "RequestsPanel": true, "PrefsPanel": true, "SchedulePanel": true, "HelpPanel": true }, hidden: true });
 		prefs.addPref("mpi", { name: "lastpanel", callback: that.p_lastpanel, defaultvalue: {}, hidden: true });
 		prefs.addPref("requests", { name: "technicalhint", defaultvalue: false, type: "checkbox", callback: that.p_technicalhint });

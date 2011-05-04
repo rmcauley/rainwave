@@ -272,6 +272,13 @@ td.pl_fav_true, td.pl_fav_false {
 	border-right: 2px solid black;
 }
 
+table.pl_albumlist td.pl_al_number {
+	text-align: right;
+	padding-right: .2em;
+	background-color: #1C3370;
+	width: 3em;
+}
+
 tr.pl_cooldown td.pl_al_rating, tr.pl_cooldown td.pl_fav_false {
 	background-color: #242E34 !important;
 }
@@ -571,7 +578,7 @@ div.request_cooldown {
 	background-color: #4f206d;
 	height: 8em;
 	margin-right: .5em;
-	overflow: hidden;
+	overflow: auto;
 	padding-bottom: 1em;
 }
 
@@ -607,7 +614,7 @@ div.request_cooldown {
 }
 
 .help_next span {
-	padding-right: 2.2em;
+	padding-right: 3em;
 }
 
 table.about {

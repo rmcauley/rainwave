@@ -1,5 +1,7 @@
-function SearchTable(container, id_key, sort_key, table_class) {
-	if (!sort_key) sort_key = id_key;
+function SearchTable(container, id_key, table_class) {
+	var sort_key = id_key;
+	var search_key = id_key;
+	var reverse_sort = false;
 	if (!table_class) table_class = "";
 	var data = {};
 	var sorted = [];
@@ -24,6 +26,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	
 	var that = {};
 	that.data = data;
+	that.syncdeletes = false;
 	that.searchEnabled = function() { return false; };
 	
 	// REQUIRED EXTERNAL DEFINITIONS FOR USING THIS OBJECT FACTORY:
@@ -36,10 +39,30 @@ function SearchTable(container, id_key, sort_key, table_class) {
 	//	that.afterUpdate(json, data);
 	//	that.searchEnabled();
 	
+	// OPTIONS *******************************************************
+	
+	that.changeSortKey = function(new_sort_key) {
+		sort_key = new_sort_key;
+	};
+	
+	that.changeSearchKey = function(new_search_key) {
+		search_key = new_search_key;
+	};
+	
+	that.changeReverseSort = function(reverse) {
+		reverse_sort = reverse;
+	};
+	
 	// LIST MANAGEMENT ***********************************************
 
 	that.update = function(json) {
-		for (var i in json) {
+		var i;
+		if (that.syncdeletes) {
+			for (i in data) {
+				data[i]._delete = true;
+			}
+		}
+		for (i in json) {
 			that.updateItem(json[i]);
 		}
 		if (that.afterUpdate) that.afterUpdate(json, data, sorted);
@@ -55,7 +78,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 		var id = json[id_key];
 		if (typeof(data[id]) == "undefined") {
 			data[id] = json;
-			data[id]._searchname = removeAccentsAndLC(data[id][sort_key]);
+			data[id]._searchname = removeAccentsAndLC(data[id][search_key]);
 			data[id].tr = createEl("tr");
 			data[id].tr._search_id = id;
 			that.drawEntry(data[id]);
@@ -69,6 +92,8 @@ function SearchTable(container, id_key, sort_key, table_class) {
 				}
 			}
 		}
+		
+		if (that.syncdeletes) data[id]._delete = false;
 		
 		if (toreturn) {
 			updated.push(id);
@@ -101,6 +126,7 @@ function SearchTable(container, id_key, sort_key, table_class) {
 			updated = [];
 		}
 		reinsert.sort(that.sortList);
+		if (reverse_sort) reinsert.reverse();
 		for (i = 0; i < sorted.length; i++) {
 			if (reinsert.length == 0) break;
 			if (that.sortList(reinsert[0], sorted[i]) == -1) {
@@ -111,6 +137,14 @@ function SearchTable(container, id_key, sort_key, table_class) {
 		for (i = 0; i < reinsert.length; i++) {
 			sorted.push(reinsert[i]);
 			table.appendChild(data[reinsert[i]].tr);
+		}
+		if (that.syncdeletes) {
+			for (i in data) {
+				if (data[i]._delete) {
+					table.removeChild(data[i].tr);
+					delete(data[i]);
+				}
+			}
 		}
 		reinsert = [];
 	};
