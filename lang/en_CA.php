@@ -172,8 +172,8 @@ $lang = array(
 	// Listeners Panel
 	
 	"ltab_listeners" => "Listeners", 			// Listeners tab name
-	"guestlisteners" => "|guests| guests.",		// appears at the bottom of the current listeners list
-	"totallisteners" => "|total| listeners.",	// appears underneath guestlisteners.
+	"guestlisteners" => "|guests| Guests",		// appears at the bottom of the current listeners list
+	"totallisteners" => "|total| Listeners Now",	// appears underneath guestlisteners.
 	
 	// Preference names
 	

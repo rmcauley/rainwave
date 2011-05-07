@@ -33,11 +33,12 @@ panels.ListenersPanel = {
 			view.initTabs();
 			that.getCurrentTab = view.getCurrentTab;
 			
-			clist = ListenersSearchTable(that, clistc, view);
 			guest_counter = createEl("div", { "class": "clist_guest_count" }, clistc);
 			total_counter = createEl("div", { "class": "clist_total_count" }, clistc);
+			clist = ListenersSearchTable(that, clistc, view);
 			
 			lyre.addCallback(that.clistUpdate, "listeners_current");
+			lyre.addCallback(that.drawListener, "listener_detail");
 			
 			that.onHeightResize(container.offsetHeight);
 		};
@@ -58,18 +59,18 @@ panels.ListenersPanel = {
 			_l("totallisteners", { "total": (json.guests + json.users.length) }, total_counter);
 		};
 		
-		// that.drawListenerCallback = function(json) {
-			// var wdow = view.createOpenDiv("artist", json.album_id);
-			// wdow.destruct = that.destructArtist;
-			// that.drawArtist(wdow, json);
-			// artistlist.navToID(json.artist_id);
-			// if (typeof(wdow.updateHelp) == "function") wdow.updateHelp();
-			// return true;
-		// };
+		that.drawListenerCallback = function(json) {
+			var wdow = view.createOpenDiv("listener", json.album_id);
+			//wdow.destruct = that.destructArtist;
+			that.drawListener(wdow, json);
+			clist.navToID(json.user_id);
+			if (typeof(wdow.updateHelp) == "function") wdow.updateHelp();
+			return true;
+		};
 		
 		that.openListener = function(user_id) {
-			// if (view.checkOpenDivs("listener", user_id)) return;
-			// lyre.async_get("listener_detail", { "user_id": user_id });
+			if (view.checkOpenDivs("listener", user_id)) return;
+			lyre.async_get("listener_detail", { "listener_uid": user_id });
 		};
 		
 		return that;
@@ -85,14 +86,14 @@ var ListenersSearchTable = function(parent, container, view) {
 	that.syncdeletes = true;
 	
 	that.searchAction = function(id) {
-		// nothing yet
+		Username.open(id);
 	};
 
 	that.drawEntry = function(clist) {
 		clist.name_td = createEl("td", { "textContent": clist.username, "class": "pl_al_name" }, clist.tr);
 		clist.name_td.addEventListener('click', that.updateScrollOffsetByEvt, true);
 		clist.votes_td = createEl("td", { "textContent": clist.user_2wkvotes, "class": "pl_al_number" }, clist.tr);
-		//Artist.linkify(artist.artist_id, artist_td);
+		Username.linkify(clist.user_id, clist.name_td);
 	};
 	
 	that.drawNavChange = function(artist, highlight) {

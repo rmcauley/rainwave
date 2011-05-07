@@ -20,6 +20,7 @@ $lang2 = array(
 	"p_NowPanel" => "Ahora Reproduciendo",
 	"p_RequestsPanel" => "Peticiones",
 	"p_TimelinePanel" => "Cronograma", // T.N.: I think it's the best word to describe this item
+	"p_ListenersPanel" => "Escuchas",
 	
 	// Search related
 	
@@ -148,9 +149,10 @@ $lang2 = array(
 	
 	// Playlist Related
 
-  "pltab_albums" => "Álbumes",
+	"pltab_albums" => "Álbumes",
 	"pltab_artists" => "Artistas",
 	"overclockedremixes" => "ReMixes OverClockeados", // T.N.: In spanish that sounds... awful! Looking for best translations.
+	"mixwavesongs" => "Canciones de Mixwave",
 	
 	// Playlist Sentences, these all show up in the album detail pages.
 	
@@ -166,6 +168,12 @@ $lang2 = array(
 	// So you'll see "Cooldown groups: foo, bar, baz, & others." if there's more than 3. But if only 3 exist: "Cooldown groups: foo, bar, baz."
 	"pl_genres2_normal" => ".",
 	"pl_genres2_more" => ", entre otros.",
+
+	// Listeners Panel
+	
+	"ltab_listeners" => "Escuchas", 		// Listeners tab name
+	"guestlisteners" => "|guests| Invitados",	// appears at the bottom of the current listeners list
+	"totallisteners" => "|total| Escuchas Ahora",	// appears underneath guestlisteners.
 	
 	// Preference names
 	

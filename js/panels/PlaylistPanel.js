@@ -181,7 +181,7 @@ var AlbumSearchTable = function(parent, container, view) {
 	
 	that.favSwitch = function(evt) {
 		if (evt.target.album_id) {
-			var setfav = albums[evt.target.album_id].album_favourite ? false : true;
+			var setfav = that.data[evt.target.album_id].album_favourite ? false : true;
 			lyre.async_get("fav_album", { "fav": setfav, "album_id": evt.target.album_id });
 		}
 	};

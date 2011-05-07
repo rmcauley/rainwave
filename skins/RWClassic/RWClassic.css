@@ -1309,3 +1309,22 @@ div.inlinesearch_hdr {
 	padding: 3px;
 	background: #244093;
 }
+
+div.clist_guest_count {
+	float: right;
+	padding-right: 0.2em;
+}
+
+span.lang_guestlisteners_guests {
+	font-weight: bold;
+}
+
+div.clist_total_count {
+	padding-left: .2em;
+	border-bottom: 1px solid #666;
+	margin-bottom: .2em;
+}
+
+span.lang_totallisteners_total {
+	font-weight: bold;
+}

@@ -126,7 +126,6 @@ function SearchTable(container, id_key, table_class) {
 			updated = [];
 		}
 		reinsert.sort(that.sortList);
-		if (reverse_sort) reinsert.reverse();
 		for (i = 0; i < sorted.length; i++) {
 			if (reinsert.length == 0) break;
 			if (that.sortList(reinsert[0], sorted[i]) == -1) {
@@ -138,21 +137,23 @@ function SearchTable(container, id_key, table_class) {
 			sorted.push(reinsert[i]);
 			table.appendChild(data[reinsert[i]].tr);
 		}
-		if (that.syncdeletes) {
-			for (i in data) {
-				if (data[i]._delete) {
-					table.removeChild(data[i].tr);
-					delete(data[i]);
-				}
+		for (i = sorted.length - 1; i >= 0; i--) {
+			if (data[sorted[i]]._delete) {
+				table.removeChild(data[sorted[i]].tr);
+				delete(data[sorted[i]]);
+				sorted.splice(i, 1);
 			}
 		}
 		reinsert = [];
 	};
 	
 	that.sortList = function(a, b) {
-		if (data[a][sort_key] < data[b][sort_key]) return -1;
-		else if (data[a][sort_key] > data[b][sort_key]) return 1;
-		else return 0;
+		var toret = 0;
+		if (data[a][sort_key] < data[b][sort_key]) toret = -1;
+		else if (data[a][sort_key] > data[b][sort_key]) toret = 1;
+		if (!reverse_sort || (toret == 0)) return toret;
+		else if (toret == -1) return 1;
+		else return -1;
 	};
 	
 	// SEARCHING **************************** 

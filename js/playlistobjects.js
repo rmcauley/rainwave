@@ -26,12 +26,6 @@ var Album = {
 	}
 };
 
-var Username = {
-	linkify: function(user_id, el) {
-		// TODO: this
-	}
-};
-
 var Artist = {
 	allArtistToHTML: function(artistarray, el) {	
 		var a, span;
@@ -57,6 +51,17 @@ var Artist = {
 		edi.openPanelLink("PlaylistPanel", { type: "artist", id: artist_id, history: true });
 	}
 };
+
+var Username = {
+	linkify: function(user_id, el) {
+		linkify(el, true);
+		el.addEventListener('click', function() { edi.openPanelLink("ListenersPanel", { "type": "listener", "id": user_id, "history": true }); }, true);
+	},
+	
+	open: function(user_id) {
+		edi.openPanelLink("ListenersPanel", { "type": "listener", "id": user_id, "history": true });
+	}
+}
 
 // WARNING: function modifies artists array
 function artistsToTSpans(el, artists) {
