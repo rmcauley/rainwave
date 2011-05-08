@@ -1344,7 +1344,36 @@ function _THEME() {
 				table.appendChild(ns.tr);
 				songarray.push(ns);
 			}
-	};	
+	};
+	
+	// /*****************************************************************************
+	// LISTENERS PANELS
+	// *****************************************************************************/
+	
+	that.Extend.ListenersPanel = function(lp) {	
+		lp.drawListener = function(wdow, json) {
+			var header = createEl("div", { "class": "pl_ad_albumname" }, wdow.div);
+			createEl("div", { "textContent": json.username }, header);
+			var table = createEl("table", { "class": "listener_detail" }, wdow.div);
+			var tr = createEl("tr", false, table);
+			createEl("td", { "textContent": _l("voteslast2weeks") }, tr);
+			createEl("td", { "textContent": json.user_2wkvotes }, tr);
+
+			if (json.user_2wk_voting.length > 2) {
+				var vcdata = {};
+				for (var i = 0; i < json.user_2wk_voting.length; i++) {
+					if (json.user_2wk_voting[i].user_vote_count) {
+						vcdata[json.user_2wk_voting[i].vhist_day] = json.user_2wk_voting[i].user_vote_count;
+					}
+				}
+				var gr = graph.makeSVG(graph.Line, 400, 300, { stroke: that.LineGraphColor, fill: that.LineGraphColor, xnonumbers: true, raw: [ vcdata ]});
+				//, fill: that.RatingHistoFill, maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10,
+				//gr.svg.setAttribute("class", "pl_ad_ratinghisto");
+				wdow.div.appendChild(gr.svg);
+			}
+		};
+	};
+	
 	
 	// /*****************************************************************************
 	// Error Skinning
@@ -1383,14 +1412,7 @@ function _THEME() {
 		
 		return ec;
 	};
-	
-	// /*****************************************************************************
-	// LISTENERS PANELS
-	// *****************************************************************************/
-	
-	that.Extend.ListenersPanel = function(lp) {	
-	};
-	
+
 	// /*****************************************************************************
 	// GRAPH MASKING FUNCTIONS
 	// *****************************************************************************/
@@ -1402,7 +1424,6 @@ function _THEME() {
 		usergradient.appendChild(svg.makeStop("85%", "#8bccff", "1"));
 		usergradient.appendChild(svg.makeStop("100%", "#76add8", "1"));
 		defs.appendChild(usergradient);
-		//mask.appendChild(svg.makeRect(0, 0, graph.width, graph.height, { fill: "url(#Rating_usergradient)" }));*/
 	};
 	
 	that.RatingHistoStroke = function(x, y) {
@@ -1414,7 +1435,7 @@ function _THEME() {
 	};
 	
 	that.LineGraphColor = function(num, x, y) {
-		var key = Math.round(84 * x) + 128 + 44;
+		var key = Math.round(120 * (1 - y)) + 128 + 44;
 		var sub = 80;
 		var comp = key - 50;
 		if (num == 0) {	

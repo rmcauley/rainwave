@@ -70,8 +70,8 @@ var graph = function() {
 			
 			graph.maxx = graph.data.maxx ? graph.data.maxx : keys[keys.length - 1];
 			graph.maxy = graph.data.maxy ? graph.data.maxy : true;
-			graph.minx = typeof(graph.data.minx) != "undefined" ? graph.data.minx : 0;
-			graph.miny = typeof(graph.data.miny) != "undefined" ? graph.data.miny : 0;
+			graph.minx = typeof(graph.data.minx) != "undefined" ? graph.data.minx : true;
+			graph.miny = typeof(graph.data.miny) != "undefined" ? graph.data.miny : true;
 			if (graph.maxy === true) {
 				graph.maxy = 0;
 				for (i in graph.data.raw) {
@@ -81,7 +81,7 @@ var graph = function() {
 				}
 				graph.maxy = Math.ceil(graph.maxy / 10) * 10;
 			}
-			if (graph.minx === true) graph.data.minx = keys[0];
+			if (graph.minx === true) graph.minx = keys[0] - ((keys[keys.length - 1] - keys[0]) * 0.05);
 			if (graph.miny === true) {
 				graph.miny = p_miny;
 				graph.miny = Math.floor(graph.miny - ((graph.maxy - graph.miny) * 0.1));
@@ -111,7 +111,7 @@ var graph = function() {
 			// If more steps than numbers, make the number of steps whole numbers
 			if (stepsy > graph.maxy) stepsy = graph.maxy;
 			// Determine the number of x/y values to step for each grid/legend.  THIS IS NOT IN PIXELS.
-			var stepdeltax = graph.data.stepdeltax ? graph.data.stepdeltax : (graph.maxx - graph.minx) / stepx;
+			var stepdeltax = graph.data.stepdeltax ? graph.data.stepdeltax : (graph.maxx - graph.minx) / stepsx;
 			var stepdeltay = graph.data.stepdeltay ? graph.data.stepdeltay : (graph.maxy - graph.miny) / stepsy;
 			// Number of steps that need to be done.
 			var numstepsx = (graph.maxx - graph.minx) / stepdeltax;
@@ -423,7 +423,7 @@ var graph = function() {
 			var y2 = graph.getYPixel(yvalue);
 			var fill = "#FFF";
 			if (graph.data.fill) {
-				fill = graph.data.fill(g, xvalue / graph.maxx, yvalue / graph.maxy);
+				fill = graph.data.fill(g, x2 / graph.gwidth, y2 / graph.gheight);
 			}
 			graph.data.points[g][xvalue] = svg.makeRect(x2 - 3, graph.gheight + graph.data.pady - 3, 6, 6, { "fill": fill });
 			graph.data.fx_px[g][xvalue] = fx.make(fx.SVGAttrib, [ graph.data.points[g][xvalue], 250, "x", "" ]);
@@ -435,7 +435,7 @@ var graph = function() {
 				var x1 = graph.getXPixel(lastx);
 				var stroke = "#BBB";
 				if (graph.data.stroke) {
-					stroke = graph.data.stroke(g, xvalue / graph.maxx, yvalue / graph.maxy);
+					stroke = graph.data.stroke(g, x2 / graph.gwidth, y2 / graph.gheight);
 				}
 				graph.data.lines[g][xvalue] = svg.makeLine(x1, graph.gheight + graph.data.pady, x2, graph.gheight + graph.data.pady, { "stroke": stroke, "stroke-width": 2 });
 				graph.plots[g].appendChild(graph.data.lines[g][xvalue]);

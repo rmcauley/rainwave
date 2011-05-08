@@ -38,7 +38,7 @@ panels.ListenersPanel = {
 			clist = ListenersSearchTable(that, clistc, view);
 			
 			lyre.addCallback(that.clistUpdate, "listeners_current");
-			lyre.addCallback(that.drawListener, "listener_detail");
+			lyre.addCallback(that.drawListenerCallback, "listener_detail");
 			
 			that.onHeightResize(container.offsetHeight);
 		};
@@ -61,7 +61,7 @@ panels.ListenersPanel = {
 		
 		that.drawListenerCallback = function(json) {
 			var wdow = view.createOpenDiv("listener", json.album_id);
-			//wdow.destruct = that.destructArtist;
+			//wdow.destruct = that.destructListener;
 			that.drawListener(wdow, json);
 			clist.navToID(json.user_id);
 			if (typeof(wdow.updateHelp) == "function") wdow.updateHelp();
