@@ -407,12 +407,18 @@ var edi = function() {
 				}
 				
 				var panelel = document.createElement("div");
-				panelel.setAttribute("style", "position: absolute; top: " + runningy + "px; left:" + runningx + "px; width: " + dispwidth + "px; height: " + dispheight + "px;");
+				panelel.setAttribute("style", "position: absolute; width: " + dispwidth + "px; height: " + dispheight + "px;");
 				that.openpanels[layout[i][j].EDINAME] = layout[i][j].constructor(panelel);
 				var panelcl = layout[i][j].EDINAME;
 				panelcl = panelcl.replace(" ", "_");
 				panelel.setAttribute("class", "EdiPanel Panel_" + panelcl);
 				element.appendChild(panelel);
+				that.openpanels[layout[i][j].EDINAME]._fx_x = fx.make(fx.CSSTranslateX, panelel, 250);
+				that.openpanels[layout[i][j].EDINAME]._fx_x.set(runningx);
+				that.openpanels[layout[i][j].EDINAME]._fx_y = fx.make(fx.CSSTranslateY, panelel, 250);
+				that.openpanels[layout[i][j].EDINAME]._fx_y.set(runningy);
+				that.openpanels[layout[i][j].EDINAME].height = dispheight;
+				that.openpanels[layout[i][j].EDINAME].width = dispwidth;
 				that.openpanels[layout[i][j].EDINAME].parent = that;
 				that.openpanels[layout[i][j].EDINAME].init();
 				
@@ -493,7 +499,7 @@ var edi = function() {
 		for (i = 0; i < layout[resize_row + 1].length; i++) {
 			if (typeof(layout[resize_row + 1][i]) == "object") {
 				y2 = that.openpanels[layout[resize_row + 1][i].EDINAME]._runningy - rowdiff2;
-				that.openpanels[layout[resize_row + 1][i].EDINAME]._div.style.top = y2 + "px";
+				that.openpanels[layout[resize_row + 1][i].EDINAME]._fx_y.set(y2);
 				for (j = 2; j <= layout[resize_row + 1][i].rowspan; j++) {
 					height2 += rowh[resize_row + j] + theme.borderheight;
 				}
@@ -574,6 +580,7 @@ var edi = function() {
 					layout[i][resize_col].onWidthResize(width);
 				}
 				vborders[i][resize_col].el.style.left = (that.openpanels[layout[i][resize_col].EDINAME]._runningx + width) + "px";
+				that.openpanels[layout[i][resize_col].EDINAME].width = width;
 				that.openpanels[layout[i][resize_col].EDINAME]._div.style.width = width + "px";
 			}
 			if (typeof(layout[i][resize_col + 1]) == "object") {
@@ -581,10 +588,11 @@ var edi = function() {
 					layout[i][resize_col + 1].onWidthResize(width)
 				}
 				x2 = that.openpanels[layout[i][resize_col + 1].EDINAME]._runningx - coldiff2;
-				that.openpanels[layout[i][resize_col + 1].EDINAME]._div.style.left = x2 + "px";
+				that.openpanels[layout[i][resize_col + 1].EDINAME]._fx_x.set(x2);
 				for (j = 2; j <= layout[i][resize_col + 1].rowspan; j++) {
 					width2 += colw[resize_col + j] + theme.borderwidth;
 				}
+				that.openpanels[layout[i][resize_col + 1].EDINAME].width = width2;
 				that.openpanels[layout[i][resize_col + 1].EDINAME]._div.style.width = width2 + "px";
 				if ((typeof(layout[i][resize_col + 1]) == "object") && (typeof(hborders[i][resize_col + 1]) == "object")) {
 					hborders[i][resize_col + 1].el.style.left = x2 + "px";

@@ -250,10 +250,9 @@ var graph = function() {
 		return graph;
 	};
 	
-	fx.extend("RatingHistogramBar", function(object, gheight, duration) {
+	fx.extend("RatingHistogramBar", function(object, gheight) {
 		var rhbfx = {};
-		rhbfx.duration = duration;
-		
+
 		rhbfx.update = function(now) {
 			object.setAttribute("y", now);
 			if ((gheight - now - 1) > 0) object.setAttribute("height", gheight - now - 1);
@@ -300,15 +299,14 @@ var graph = function() {
 			else {
 				graph.data.bars[g][xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 1, graph.xendy, graph.barwidth - 0.5, 0, { "fill": "#FFFFFF" });
 			}
-			graph.data.fx[g][xvalue] = fx.make(fx.RatingHistogramBar, [ graph.data.bars[g][xvalue], graph.gheight + graph.data.pady, 250 ]);
+			graph.data.fx[g][xvalue] = fx.make(fx.RatingHistogramBar, graph.data.bars[g][xvalue], 250, graph.gheight + graph.data.pady);
 			graph.data.fx[g][xvalue].set(graph.gheight + graph.data.pady);
 			graph.plots[g].appendChild(graph.data.bars[g][xvalue]);
 		};
 	};
 
-	fx.extend("LineGraphLine", function(line, duration) {
+	fx.extend("LineGraphLine", function(line) {
 		var lfx = {};
-		lfx.duration = duration;
 		
 		var p1_from_x, p1_from_y;
 		var p2_from_x, p2_from_y;
@@ -426,9 +424,9 @@ var graph = function() {
 				fill = graph.data.fill(g, x2 / graph.gwidth, y2 / graph.gheight);
 			}
 			graph.data.points[g][xvalue] = svg.makeRect(x2 - 3, graph.gheight + graph.data.pady - 3, 6, 6, { "fill": fill });
-			graph.data.fx_px[g][xvalue] = fx.make(fx.SVGAttrib, [ graph.data.points[g][xvalue], 250, "x", "" ]);
+			graph.data.fx_px[g][xvalue] = fx.make(fx.SVGAttrib, graph.data.points[g][xvalue], 250, "x");
 			graph.data.fx_px[g][xvalue].set(x2 - 3);
-			graph.data.fx_py[g][xvalue] = fx.make(fx.SVGAttrib, [ graph.data.points[g][xvalue], 250, "y", "" ]);
+			graph.data.fx_py[g][xvalue] = fx.make(fx.SVGAttrib, graph.data.points[g][xvalue], 250, "y");
 			graph.data.fx_py[g][xvalue].set(graph.gheight + graph.data.pady - 6);
 			
 			if (lastx && lasty) {
@@ -439,7 +437,7 @@ var graph = function() {
 				}
 				graph.data.lines[g][xvalue] = svg.makeLine(x1, graph.gheight + graph.data.pady, x2, graph.gheight + graph.data.pady, { "stroke": stroke, "stroke-width": 2 });
 				graph.plots[g].appendChild(graph.data.lines[g][xvalue]);
-				graph.data.fx_l[g][xvalue] = fx.make(fx.LineGraphLine, [ graph.data.lines[g][xvalue], 250 ]);
+				graph.data.fx_l[g][xvalue] = fx.make(fx.LineGraphLine, graph.data.lines[g][xvalue], 250);
 				graph.data.fx_l[g][xvalue].setFrom(x1, graph.gheight + graph.data.pady, x2, graph.gheight + graph.data.pady);
 			}
 			

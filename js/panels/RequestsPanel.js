@@ -146,9 +146,9 @@ var RequestList = function(sortable) {
 			if (!found) {
 				newreq = Request.make(json[i]);
 				newreq.purge = false;
-				newreq.fx_posY = fx.make(fx.CSSNumeric, [ newreq.el, 250, "marginTop", "px" ]);
+				newreq.fx_posY = fx.make(fx.CSSNumeric, newreq.el, 250, "marginTop", "px");
 				newreq.fx_posY.set(0);
-				newreq.fx_opacity = fx.make(fx.CSSNumeric, [ newreq.el, 250, "opacity", "" ]);
+				newreq.fx_opacity = fx.make(fx.CSSNumeric, newreq.el, 250, "opacity");
 				newreq.fx_opacity.set(0);
 				if (sortable) {
 					newreq.el.requestq_id = json[i].requestq_id;

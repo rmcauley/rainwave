@@ -176,13 +176,13 @@ var help = function() {
 		container.div = createEl("div", { "class": "help" });
 		container.appendChild(container.div);
 
-		container.fxX = fx.make(fx.CSSNumeric, [ container, 500, "left", "px" ]);
+		container.fxX = fx.make(fx.CSSTranslateX, container, 500);
 		container.fxX.set(-1000);
-		container.fxY = fx.make(fx.CSSNumeric, [ container, 500, "top", "px" ]);
+		container.fxY = fx.make(fx.CSSTranslateY, container, 500);
 		container.fxY.set(-1000);
-		container.fxWidth = fx.make(fx.CSSNumeric, [ container, 500, "width", "px" ]);
-		container.fxHeight = fx.make(fx.CSSNumeric, [ container.div, 500, "height", "px" ]);
-		container.fxOpacity = fx.make(fx.CSSNumeric, [ container, 500, "opacity", "" ]);
+		container.fxWidth = fx.make(fx.CSSNumeric, container, 500, "width", "px");
+		container.fxHeight = fx.make(fx.CSSNumeric, container.div, 500, "height", "px");
+		container.fxOpacity = fx.make(fx.CSSNumeric, container, 500, "opacity", "");
 		container.fxOpacity.set(1);
 		container.fxOpacity.onComplete = function() { document.getElementById("body").removeChild(container); };
 		

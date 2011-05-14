@@ -20,8 +20,8 @@ function SearchTable(container, id_key, table_class) {
 	var texthdr = createEl("div", { "class": "inlinesearch_hdr", "textContent": _l("searchheader") }, textcontainer);
 	var textfield = createEl("span", { "class": "inlinesearch_text" }, texthdr);
 	var table = createEl("table", { "class": table_class }, container);
-	var fx_test_top = fx.make(fx.CSSNumeric, [ textcontainer, 250, "marginTop", "px" ]);
-	var fx_test_height = fx.make(fx.CSSNumeric, [ textcontainer, 250, "height", "px" ]);
+	var fx_test_top = fx.make(fx.CSSNumeric, textcontainer, 250, "marginTop", "px");
+	var fx_test_height = fx.make(fx.CSSNumeric, textcontainer, 250, "height", "px");
 	fx_test_height.set(0);
 	
 	var that = {};

@@ -26,16 +26,15 @@ function _THEME() {
 	  RATING EFFECTS (not required by Edi)
 	*****************************************************************************/
 	
-	fx.extend("UserRating", function(object, duration) {
+	fx.extend("UserRating", function(object) {
 		var urfx = {};
-		urfx.duration = duration;
-		urfx.update = function() {
-			var px = Math.round(urfx.now * 10);
+		urfx.update = function(now) {
+			var px = Math.round(now * 10);
 			if (px <= 16) object.user_on.style.width = px + "px";
 			else object.user_on.style.width = "16px";
 			if (px >= 8) object.user_bar.style.backgroundPosition = (px - 50) + "px 0px";
 			else object.user_bar.style.backgroundPosition = "-50px 0px";
-			var text = (Math.round(urfx.now * 10) / 10).toFixed(1);
+			var text = (Math.round(now * 10) / 10).toFixed(1);
 			if (text == "0.0") text = "";
 			object.user_text.textContent = text;
 		};
@@ -43,11 +42,10 @@ function _THEME() {
 		return urfx;
 	});
 	
-	fx.extend("SiteRating", function(object, duration) {
+	fx.extend("SiteRating", function(object) {
 		var srfx = {};
-		srfx.duration = duration;
-		srfx.update = function() {
-			var px = Math.round(srfx.now * 10);
+		srfx.update = function(now) {
+			var px = Math.round(now * 10);
 			if (px <= 8) {
 				object.site_on.style.opacity = "0"
 				object.site_bar.style.backgroundPosition = "-50px 0px";
@@ -84,9 +82,9 @@ function _THEME() {
 			ro.grid = createEl("img", { "src": skindir + "/images/rating_grid.png", "class": "rating_grid" }, ro.el);
 			ro.mousecatch = ro.grid;
 			
-			fx_user = fx.make(fx.UserRating, [ ro, 250 ]);
-			fx_site = fx.make(fx.SiteRating, [ ro, 250 ]);
-			fx_fav = fx.make(fx.CSSNumeric, [ ro.fav, 250, "opacity", "" ]);	
+			fx_user = fx.make(fx.UserRating, ro, 250);
+			fx_site = fx.make(fx.SiteRating, ro, 250);
+			fx_fav = fx.make(fx.CSSNumeric, ro.fav, 250, "opacity", "");
 		};
 
 		// Required by Edi
@@ -223,7 +221,7 @@ function _THEME() {
 		};
 		
 		te.hideX = function() {
-			te.leftfx.set(-te.el.offsetWidth)
+			te.leftfx.set(-te.parent.width);
 		};
 		
 		te.setY = function(y) {
@@ -247,11 +245,11 @@ function _THEME() {
 		};
 		
 		te.defineFx = function() {
-			te.topfx = fx.make(fx.CSSNumeric, [ te.el, 700, "top", "px" ]);
+			te.topfx = fx.make(fx.CSSTranslateY, te.el, 700);
 			te.topfx.set(-200);
-			te.leftfx = fx.make(fx.CSSNumeric, [ te.el, 700, "left", "px" ]);
+			te.leftfx = fx.make(fx.CSSTranslateX, te.el, 700);
 			te.leftfx.set(0);
-			te.opacityfx = fx.make(fx.CSSNumeric, [ te.el, 700, "opacity", "" ]);
+			te.opacityfx = fx.make(fx.CSSNumeric, te.el, 700, "opacity", "");
 			te.opacityfx.set(1);
 		};
 		
@@ -260,7 +258,7 @@ function _THEME() {
 		te.emphasizeWinner = function() {};
 		
 		te.changeOpacity = function(to) {
-			te.opacityfx.start(to);
+			te.opacityfx.set(to);
 		};
 	}
 	
@@ -399,7 +397,7 @@ function _THEME() {
 			else if (ts.p.elec_isrequest < 0) indic = "conflict";
 			
 			ts.tr1 = createEl("tr", {});
-			ts.tr1_fx = fx.make(fx.OpacityRemoval, [ ts.tr1, ts.parent.el, 500 ]);
+			ts.tr1_fx = fx.make(fx.OpacityRemoval, ts.tr1, 500, ts.parent.el);
 			ts.tr1_fx.set(1);
 			ts.indicator = createEl("td", { "class": "timeline_indicator timeline_indicator_" + indic, "rowspan": 3 }, ts.tr1);
 			// for indicator_fx check the "if (ts.song_requestor)" block below
@@ -415,7 +413,7 @@ function _THEME() {
 			ts.song_title = createEl("div", { "class": "song_title", "textContent": ts.p.song_title }, ts.song_td);
 			
 			ts.tr2 = createEl("tr", {});
-			ts.tr2_fx = fx.make(fx.OpacityRemoval, [ ts.tr2, ts.parent.el, 500 ]);
+			ts.tr2_fx = fx.make(fx.OpacityRemoval, ts.tr2, 500, ts.parent.el);
 			ts.tr2_fx.set(1);
 			ts.album_td = createEl("td", { "class": "timeline_td timeline_album_td" }, ts.tr2);
 			ts.album_rating_c = createEl("div", { "class": "timeline_song_rating_c" }, ts.album_td);
@@ -433,28 +431,28 @@ function _THEME() {
 				ts.song_requestor_wrap.appendChild(ts.song_requestor);
 				ts.song_requestor.style.height = (ts.album_td.offsetHeight + 1) + "px";
 				ts.song_requestor_wrap.style.height = (ts.album_td.offsetHeight + 1) + "px";
-				ts.song_requestor_fx = fx.make(fx.CSSNumeric, [ ts.song_requestor, 250, "marginTop", "px" ]);
+				ts.song_requestor_fx = fx.make(fx.CSSNumeric, ts.song_requestor, 250, "marginTop", "px");
 				ts.song_requestor_fx.height = ts.song_requestor.offsetHeight;
 				ts.song_requestor_fx.set(-ts.song_requestor_fx.height);
-				ts.indicator_fx = fx.make(fx.BackgroundPosY, [ ts.indicator, 250 ]);
+				ts.indicator_fx = fx.make(fx.BackgroundPosY, ts.indicator, 250);
 				ts.indicator_fx.set(-22);
-				ts.song_requestor_fx.onComplete = function() {
-					if (ts.song_requestor_fx.now < -5) ts.album_name.style.zIndex = 10;
+				ts.song_requestor_fx.onComplete = function(now) {
+					if (now < -5) ts.album_name.style.zIndex = 10;
 				}
 			}
 			ts.album_name = createEl("div", { "class": "timeline_album_title", "textContent": ts.p.album_name }, ts.album_td);
 			
 			ts.tr3 = createEl("tr", {});
-			ts.tr3_fx = fx.make(fx.OpacityRemoval, [ ts.tr3, ts.parent.el, 500 ]);
+			ts.tr3_fx = fx.make(fx.OpacityRemoval, ts.tr3, 500, ts.parent.el);
 			ts.tr3_fx.set(1);
 			ts.artist_td = createEl("td", { "class": "timeline_td timeline_artist_td" }, ts.tr3);
 			Artist.allArtistToHTML(ts.p.artists, ts.artist_td);
 		
-			fx_votebkg_x = fx.make(fx.BackgroundPosX, [ ts.song_td, 300 ]);
+			fx_votebkg_x = fx.make(fx.BackgroundPosX, ts.song_td, 300);
 			fx_votebkg_x.set(-votebkg_width);
-			fx_votebkg_y = fx.make(fx.BackgroundPosY, [ ts.song_td, 300 ]);
+			fx_votebkg_y = fx.make(fx.BackgroundPosY, ts.song_td, 300);
 			fx_votebkg_y.set(0);
-			fx_swipe = fx.make(fx.BackgroundPosY, [ ts.swipe, 500 ]);
+			fx_swipe = fx.make(fx.BackgroundPosY, ts.swipe, 500);
 			fx_swipe.onComplete = ts.endSwipe();
 			fx_swipe.set(ts.song_td.offsetHeight);
 			
@@ -726,9 +724,9 @@ function _THEME() {
 		npe.parent.changeIsRequest(0);
 		
 		npe.defineFx = function() {
-			npe.fx_marginleft = fx.make(fx.CSSNumeric, [ npe.el, 700, "marginLeft", "px" ]);
+			npe.fx_marginleft = fx.make(fx.CSSTranslateX, npe.el, 700);
 			npe.fx_marginleft.set(-50);
-			npe.fx_opacity = fx.make(fx.OpacityRemoval, [ npe.el, npe.parent.el, 700 ] );
+			npe.fx_opacity = fx.make(fx.OpacityRemoval, npe.el, 700, npe.parent.el);
 		}
 		
 		npe.destruct = function() {
@@ -846,7 +844,7 @@ function _THEME() {
 			//menup.player.addEventListener("click", menup.playerClick, true);
 			menup.player = createEl("a", { "class": "menu_player", "href": "tunein.php", "onclick": "return false;" }, menup.td_play);
 			menup.player.addEventListener("click", menup.tuneInClick, true);
-			menup.fx_player = fx.make(fx.CSSNumeric, [ menup.player, 250, "opacity", 0 ]);
+			menup.fx_player = fx.make(fx.CSSNumeric, menup.player, 250, "opacity");
 			menup.fx_player.set(1);
 			_l("downloadm3u", false, menup.player);
 			
@@ -857,7 +855,7 @@ function _THEME() {
 			menup.td_download = createEl("td", { "class": "menu_td_download" }, row);
 			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;" });
 			var vlc = createEl("img", { "src": "images/vlc.png", "class": "link" });
-			var fx_vlc = fx.make(fx.CSSNumeric, [ vlc, 250, "opacity", "" ]);
+			var fx_vlc = fx.make(fx.CSSNumeric, vlc, 250, "opacity");
 			fx_vlc.set(0.85);
 			vlc.addEventListener("click", menup.tuneInClick, true);
 			vlc.addEventListener("mouseover", function() { fx_vlc.start(1) }, true);
@@ -867,7 +865,7 @@ function _THEME() {
 			
 			var winampa = createEl("a", { "href": "tunein.php", "onclick": "return false;" });
 			var winamp = createEl("img", { "src": "images/winamp.png", "class": "link" });
-			var fx_winamp = fx.make(fx.CSSNumeric, [ winamp, 250, "opacity", "" ]);
+			var fx_winamp = fx.make(fx.CSSNumeric, winamp, 250, "opacity");
 			fx_winamp.set(.85);
 			winamp.addEventListener("mouseover", function() { fx_winamp.start(1) }, true);
 			winamp.addEventListener("mouseout", function() { fx_winamp.start(0.85) }, true);
@@ -877,7 +875,7 @@ function _THEME() {
 			
 			var fb2ka = createEl("a", { "href": "tunein.php", "onclick": "return false;" });
 			var fb2k = createEl("img", { "src": "images/fb2k.png", "class": "link" });
-			var fx_fb2k = fx.make(fx.CSSNumeric, [ fb2k, 250, "opacity", "" ]);
+			var fx_fb2k = fx.make(fx.CSSNumeric, fb2k, 250, "opacity");
 			fx_fb2k.set(0.85);
 			fb2k.addEventListener("mouseover", function() { fx_fb2k.start(1) }, true);
 			fb2k.addEventListener("mouseout", function() { fx_fb2k.start(0.85) }, true);
@@ -1352,13 +1350,26 @@ function _THEME() {
 	
 	that.Extend.ListenersPanel = function(lp) {	
 		lp.drawListener = function(wdow, json) {
-			var header = createEl("div", { "class": "pl_ad_albumname" }, wdow.div);
+			var header = createEl("div", { "class": "pl_ad_albumname" });
 			createEl("div", { "textContent": json.username }, header);
-			var table = createEl("table", { "class": "listener_detail" }, wdow.div);
+			createEl("img", { "src": json.user_avatar, "class": "pl_ad_avatar" }, header);
+			wdow.div.appendChild(header);
+			
+			// Single statistics
+			var table = createEl("table", { "class": "listener_detail" });
+			
 			var tr = createEl("tr", false, table);
 			createEl("td", { "textContent": _l("voteslast2weeks") }, tr);
 			createEl("td", { "textContent": json.user_2wkvotes }, tr);
+			
+			wdow.div.appendChild(table);
+			
+			// Station breakdown
+			var table = createEl("table", { "class": "listener_detail" });
+			
+			var tr = createEl("tr", false, table);
 
+			// Vote rank vs. time
 			if (json.user_2wk_voting.length > 2) {
 				var vcdata = {};
 				for (var i = 0; i < json.user_2wk_voting.length; i++) {
@@ -1397,7 +1408,7 @@ function _THEME() {
 			else obj.text.textContent = overridetext;
 			obj.el.appendChild(obj.text);
 			
-			obj.fx_opacity = fx.make(fx.CSSNumeric, [ obj.el, 250, "opacity", "" ]);
+			obj.fx_opacity = fx.make(fx.CSSNumeric, obj.el, 250, "opacity");
 			obj.fx_opacity.set(0);
 			
 			document.getElementById("body").appendChild(obj.el);

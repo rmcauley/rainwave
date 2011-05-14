@@ -64,18 +64,18 @@ var Username = {
 }
 
 // WARNING: function modifies artists array
-function artistsToTSpans(el, artists) {
-	el.setAttribute("xml:space", "preserve");
-	for (var i = 0; i < artists.length; i++) {
-		var tspan = svg.makeEl("tspan");
-		tspan.textContent = artists[i].artist_name;
-		//Artist.linkify(artists[i].artist_id, tspan);
-		el.appendChild(tspan);
-		artists[i].el = tspan;
-		if (i != (artists.length - 1)) {
-			var comma = svg.makeEl("tspan");
-			comma.textContent = ", ";
-			el.appendChild(comma);
-		}
-	}
-}
+// function artistsToTSpans(el, artists) {
+	// el.setAttribute("xml:space", "preserve");
+	// for (var i = 0; i < artists.length; i++) {
+		// var tspan = svg.makeEl("tspan");
+		// tspan.textContent = artists[i].artist_name;
+		// //Artist.linkify(artists[i].artist_id, tspan);
+		// el.appendChild(tspan);
+		// artists[i].el = tspan;
+		// if (i != (artists.length - 1)) {
+			// var comma = svg.makeEl("tspan");
+			// comma.textContent = ", ";
+			// el.appendChild(comma);
+		// }
+	// }
+// }

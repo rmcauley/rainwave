@@ -10,7 +10,7 @@ var titleupdate = function() {
 	that.updateTitle = function(time) {
 		timeleft = time;
 		if (!sv_ready) return;
-		if (time >= 0) fx.renderF(function() { document.title = "[" + formatNumberToMSS(time) + "] " + titlestring; });
+		if (time >= 0) document.title = "[" + formatNumberToMSS(time) + "] " + titlestring;
 	};
 
 	that.ajaxHandle = function(json) {
@@ -24,7 +24,7 @@ var titleupdate = function() {
 		sv_ready = true;
 	};
 	
-	clockid = clock.addClock(that, that.updateTitle, clock.time(), -8);
+	clockid = clock.addClock(that, that.updateTitle, clock.time(), -2);
 	lyre.addCallback(that.ajaxHandle, "sched_current");
 	
 	return that;

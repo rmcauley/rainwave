@@ -24,7 +24,6 @@ $jsorder = array(
 	"js/playlistobjects.js",
 	"js/rating.js",
 	"js/ratingcontrol.js",
-	"js/swfobject.js",
 	"js/titleupdate.js",
 	"js/user.js",
 	"js/splitwindow.js",

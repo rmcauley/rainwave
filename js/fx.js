@@ -1,238 +1,181 @@
 /* Sample usage:
 
-fx = R3Effects();
-fxOne = fx.make(fx.SVGAttrib, [ svgnode, 250, "opacity" ]);
+fxOne = fx.make(fx.SVGAttrib, svgnode, 250, "opacity");		// 4th argument onward gets passed to effect constructor
 fxOne.set(1);
 fxOne.start(0);
 */
 
 var fx = function() {
 	var that = {};
-	that.fps = 30;
 	that.enabled = true;
-	var idmax = 0;
-	var runningfx = {};
 	var timer = false;
 	var started = false;
-	var fpscounter = 0;
-	var deferred = []
-	var mozAnim = window.mozRequestAnimationFrame ? true : false;
+
+	var requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+	var browsersupport = true;
+	if (!requestFrame) {
+		browsersupport = false;
+		requestFrame = function(callback) {
+			window.setTimeout(callback, 1000 / 30);
+		};
+	}
 	
 	that.extend = function(name, func) {
 		that[name] = func;
 	}
-	
-	var stopEffect = function(id) {
-		if (runningfx[id]) delete(runningfx[id]);
-	}
-	
-	var isEffectRunning = function(id) {
-		if (runningfx[id]) return true;
-		else return false;
-	}
-	
-	var globalStep = function(event) {
-		var time;
-		if (event && event.timeStamp) time = event.timeStamp;
-		else time = new Date().getTime();
-		var c = 0;
-		var i;
-		for (i in runningfx) {
-			runningfx[i](time);
-			c++;
-		}
-		for (i in deferred) deferred[i]();
-		deferred = [];
-		fpscounter++;
-		if (c == 0) {
-			if (mozAnim) window.removeEventListener("MozBeforePaint", globalStep, false);
-			else clearInterval(timer);
-			timer = false;
-			//log.log("Fx", 0, "Avg FPS: " + Math.round(fpscounter / ((time - started) / 1000)));
-		}
-		else if (mozAnim) {
-			window.mozRequestAnimationFrame();
-		}
-	}
-	
-	var startEffect = function(id, func) {
-		runningfx[id] = func;
-		if (!timer) {
-			fpscounter = 0;
-			if (mozAnim) {
-				started = window.mozAnimationStartTime;
-				window.addEventListener("MozBeforePaint", globalStep, false);
-				window.mozRequestAnimationFrame();
-				timer = true;
-			}
-			else {
-				started = new Date().getTime();	
-				timer = setInterval(globalStep, Math.ceil(1000 / that.fps));
-			}
-		}
-	}
-	
-	that.renderF = function(func) {
-		if (timer) deferred.push(func);
-		else func();
-	}
-	
-	that.renderTC = function(el, tc) {
-		that.renderF(function() { el.textContent = tc });
-	}
-	
-	that.renderA = function(el, attrib, value) {
-		that.renderF(function() { el.setAttribute(attrib, value); });
-	};
 
-	that.make = function(func, args, options) {
-		var newfx = func.apply(this, args);
+	that.make = function(func, el, duration) {
+		var newfx;
+		if (arguments.length > 3) {
+			var args = [ el ];
+			for (var i = 3; i < arguments.length; i++) args.push(arguments[i])
+			newfx = func.apply(this, args);
+		}
+		else {
+			newfx = func(el);
+		}
 		
-		newfx.id = idmax;
-		idmax++;
+		var from = 0;
+		var to = 0;
+		var now = 0;
+		var delta = 0;
+		var started = 0;
 		
-		newfx.from = 0;
-		newfx.to = 0;
-		newfx.now = 0;
-		if (!newfx.duration) newfx.duration = 250;
-		if (!options) options = {};
+		newfx.duration = duration;
+		newfx.unstoppable = false;
+		if (!("onStart" in newfx)) newfx.onStart = false;
+		if (!("onComplete" in newfx)) newfx.onComplete = false;
+		if (!("onSet" in newfx)) newfx.onSet = false;
 		
-		newfx.step = function(time) {
-			if ((time < (newfx.started + newfx.duration)) && (newfx.now != newfx.to)) {
-				var delta = 0;
-				if (typeof(newfx.transition) == "function") delta = newfx.transition(newfx.time, newfx.started, newfx.duration);
-				// algorithm ripped from MooTools
-				else delta = -(Math.cos(Math.PI * ((time - newfx.started) / newfx.duration)) - 1) / 2;
-				newfx.now = (newfx.to - newfx.from) * delta + newfx.from;
-				newfx.update(newfx.now);
+		var step = function(time) {
+			if (!time) time = new Date().getTime(); // Irish has this as *.002 for some reason... not sure why...
+			
+			if ((time < (started + duration)) && (now != to)) {
+				// Stolen from Robert Penner's Programming Macromedia Flash MX p.210:
+				// now = -delta * (time /= duration) * (time - 2) + from;
+				// can't get the damned thing to work, though, so we're sticking with what works which was stolen from MooTools:
+				// (who probably stole it from Penner but hey, that's the way it goes :) )
+				var delta2 = -(Math.cos(Math.PI * ((time - started) / duration)) - 1) / 2;
+				now = (to - from) * delta2 + from;
+
+				newfx.update(now);
+				requestFrame(step);
 			}
 			else {
-				newfx.now = newfx.to;
-				newfx.update(newfx.now);
 				newfx.stop();
 			}
 		};
 		
 		newfx.stop = function() {
-			stopEffect(newfx.id);
-			if (typeof(newfx.onComplete) == "function") {
-				newfx.onComplete();
-			}
+			now = to;
+			newfx.update(now);
+			if (newfx.onComplete) newfx.onComplete(now);
 		};
 		
 		newfx.set = function(nn) {
-			if (isEffectRunning(newfx.id)) {
-				newfx.now = nn;
-				newfx.to = nn;
-			}
-			else {
-				newfx.now = nn;
-				if (typeof(newfx.onSet) == "function") newfx.onSet(nn);
-				newfx.update(nn);
-			}
+			now = nn;
+			to = nn;
+			if (newfx.onSet) newfx.onSet(now);
+			newfx.update(nn);
 		};
 		
 		newfx.start = function(stopat) {
-			if (isEffectRunning(newfx.id)) {
-				if (options.unstoppable) return;
-				if (newfx.to == stopat) return;
+			var time = new Date().getTime();
+			if (time < (started + duration)) {
+				if (newfx.unstoppable) return;
+				if (to == stopat) return;
 				newfx.stop();
 			}
 			if (arguments.length == 2) {
-				newfx.now = arguments[0];
+				now = arguments[0];
 				stopat = arguments[1];
 			}
-			newfx.to = stopat;
-			newfx.from = newfx.now;
-			if (typeof(newfx.onStart) == "function") {
-				newfx.onStart();
-			}
-			if (!that.enabled || (newfx.now == newfx.to)) {
-				newfx.started = 0;
-				newfx.step();
-			}
-			else {
-				if (mozAnim) newfx.started = window.mozAnimationStartTime;
-				else newfx.started = new Date().getTime();
-				startEffect(newfx.id, newfx.step);
-			}
+			started = time;
+			to = stopat;
+			from = now;
+			delta = to - from;
+			if (newfx.onStart) newfx.onStart(now);
+			if (!that.enabled) now = to;
+			step();
 		};
 		
 		return newfx;
 	};
+	
+	// ************************************************************** ANIMATION FUNCTIONS
 
-	that.SVGAttrib = function(element, duration, attribute, unit) {
+	that.SVGAttrib = function(element, attribute, unit) {
 		if (!unit) unit = "";
 	
 		var svgafx = {};
-		svgafx.duration = duration;
-		svgafx.update =function() {
+		svgafx.update = function() {
 			element.setAttribute(attribute, svgafx.now + unit);
 		};
 		
 		return svgafx;
 	};
 
-	that.SVGTranslateY = function(element, duration, x) {
+	that.SVGTranslateY = function(element, x) {
 		var svgyfx = {};
-		svgyfx.duration = duration;
-		svgyfx.update = function() {
-			element.setAttribute("transform", "translate(" + x + ", " + Math.floor(svgyfx.now) + ")");
+		
+		svgyfx.update = function(now) {
+			element.setAttribute("transform", "translate(" + x + ", " + Math.floor(now) + ")");
 		};
 		
 		return svgyfx;
 	};
 	
-	that.SVGTranslateX = function(element, duration, y) {
+	that.SVGTranslateX = function(element, y) {
 		var svgxfx = {};
-		svgxfx.duration = duration;
-		svgxfx.update = function() {
-			element.setAttribute("transform", "translate(" + Math.floor(svgxfx.now) + ", " + y + ")");
+	
+		svgxfx.update = function(now) {
+			element.setAttribute("transform", "translate(" + Math.floor(now) + ", " + y + ")");
 		};
 		
 		return svgxfx;
 	};
 	
-	that.CSSNumeric = function(element, duration, attribute, unit) {
+	that.CSSNumeric = function(element, attribute, unit) {
 		var cssnfx = {};
-		cssnfx.duration = duration;
-		cssnfx.update = function() {
-			element.style[attribute] = cssnfx.now + unit;
+		if (!unit) unit = "";
+		
+		cssnfx.update = function(now) {
+			element.style[attribute] = now + unit;
 		};
 		
 		return cssnfx;
 	};
 	
-	that.OpacityRemoval = function(element, owner, duration) {
+	that.OpacityRemoval = function(element, owner) {
 		var orfx = {};
-		orfx.duration = duration;
+		
 		element.style.opacity = "0";
 		var added = false;
 		
-		orfx.onSet = function() {
-			if ((orfx.now > 0) && !added) {
+		orfx.onSet = function(now) {
+			if ((now > 0) && !added) {
 				owner.appendChild(element);
 				added = true;
 			}
-			else if ((orfx.now == 0) && added) {
+			else if ((now == 0) && added) {
 				owner.removeChild(element);
 				added = false;
 			}
 		};
 		
-		orfx.onStart = function() {
-			if ((orfx.now == 0) && !added) {
+		orfx.onStart = function(now) {
+			if ((now == 0) && !added) {
 				owner.appendChild(element);
 				added = true;
 			}
 		};
 		
-		orfx.update = function() {
-			element.style.opacity = orfx.now;
+		orfx.update = function(now) {
+			element.style.opacity = now;
 		};
 		
-		orfx.onComplete = function() {
-			if ((orfx.now == 0) && added) {
+		orfx.onComplete = function(now) {
+			if ((now == 0) && added) {
 				owner.removeChild(element);
 				added = false;
 			}
@@ -242,49 +185,110 @@ var fx = function() {
 		return orfx;		
 	};
 	
-	that.BackgroundPosX = function(element, duration) {
+	that.BackgroundPosX = function(element) {
 		var bx = {};
-		bx.duration = duration;
-		var y = 0;
-		
-		bx.onStart = function() {
-			y = parseInt(element.style.backgroundPosition.split(" ")[1]);
-			if (isNaN(y)) y = 0;
-		};
-		
-		bx.onSet = bx.onStart;
-		
-		bx.update = function() {
-			element.style.backgroundPosition = bx.now + "px " + y + "px";
+		if (!element._fx_bkgy) element._fx_bkgy = 0;
+
+		bx.update = function(now) {
+			element.style.backgroundPosition = now + "px " + element._fx_bkgy + "px";
+			element._fx_bkgx = now;
 		};
 		
 		return bx;
 	};
 	
-	that.BackgroundPosY = function(element, duration) {
+	that.BackgroundPosY = function(element) {
 		var by = {};
-		by.duration = duration;
-		var x = 0;
-		
-		by.onStart = function() {
-			x = parseInt(element.style.backgroundPosition.split(" ")[0]);
-			if (isNaN(x)) x = 0;
-		};
-		
-		by.onSet = by.onStart;
-		
-		by.update = function() {
-			element.style.backgroundPosition = x + "px " + by.now + "px";
+		if (!element._fx_bkgx) element._fx_bkgx = 0;
+
+		by.update = function(now) {
+			element.style.backgroundPosition = element._fx_bkgx + "px " + now + "px";
+			element._fx_bkgy = now;
 		};
 		
 		return by;
 	};
 	
+	var CSSTransform = function(el) {
+		if (!el._fx_csstrans) {
+			el._fx_csstrans = { "scale": 1, "translatex": 0, "translatey": 0 };
+		}
+		
+		var transkey = false;
+		var threed = false;
+		if ("MozTransform" in el.style) {
+			transkey = 'MozTransform';
+		}
+		else if ("webkitTransform" in el.style) {
+			transkey = 'webkitTransform';
+			threed = true;
+		}
+		else return false;
+		
+		var csstfx = {};
+		
+		csstfx.doTransform = function() {
+			var t = "";
+			t += "scale(" + el._fx_csstrans.scale + ") ";
+			//t += "rotate(" + el._fx_csstrans.rotate + "deg) ";
+			t += "translate(" + el._fx_csstrans.translatex + "px, " + el._fx_csstrans.translatey + "px)";
+			//t += "skew(" + el._fx_csstrans.skewx + "deg " + el._fx_csstrans.skewy + "deg) ";
+			if (threed) t += "translate3d(0,0,0) ";
+			el.style[transkey] = t;
+		};
+		
+		return csstfx;
+	}
+	
+	that.CSSScale = function(el) {
+		var scalefx = CSSTransform(el);
+		
+		if (!scalefx) {
+			return { "update": function() { return false; } };
+		}
+		
+		scalefx.update = function(now) {
+			el._fx_csstrans.scale = now;
+			scalefx.doTransform();
+		};
+		return scalefx;
+	};
+	
+	that.CSSTranslateX = function(el) {
+		var txfx = CSSTransform(el);
+		
+		if (!txfx) {
+			return that.CSSNumeric(el, "left", "px");
+		}
+		
+		txfx.update = function(now) {
+			el._fx_csstrans.translatex = Math.round(now);
+			txfx.doTransform();
+		};
+		return txfx;
+	};
+	
+	that.CSSTranslateY = function(el) {
+		var tyfx = CSSTransform(el);
+		
+		if (!tyfx) {
+			return that.CSSNumeric(el, "top", "px");
+		}
+		
+		tyfx.update = function(now) {
+			el._fx_csstrans.translatey = Math.round(now);
+			tyfx.doTransform();
+		};
+		return tyfx;
+	};
+	
+	// ************************************************************** MISC FUNCTIONS
+	
 	that.makeMenuDropdown = function(menu, header, dropdown, options) {
 		var timeout = 0;
-		var fx_pulldown = fx.make(fx.CSSNumeric, [ dropdown, 250, "top", "px" ]);
+		var fx_pulldown = that.make(that.CSSTranslateY, dropdown, 250);
 		fx_pulldown.set(0);
-		var fx_opacity = fx.make(fx.OpacityRemoval, [ dropdown, menu, 250 ]);
+		var fx_opacity = that.make(that.OpacityRemoval, dropdown, 250, menu);
 		var mouseover = function() {
 			clearTimeout(timeout);
 			if (options && options.checkbefore) {
@@ -307,6 +311,8 @@ var fx = function() {
 		}
 	};
 	
+	// ************************************************************** PREFS
+	
 	that.p_fps = function(fps) {
 		that.fps = parseInt(fps);
 	};
@@ -315,8 +321,10 @@ var fx = function() {
 		that.enabled = enabled;
 	};
 	
-	prefs.addPref("fx", { name: "fps", hidden: mozAnim, callback: that.p_fps, defaultvalue: 30, type: "dropdown", options: [ { "value": "15", "option": "15fps" }, { value: "30", option: "30fps" }, { value: "45", option: "45fps" }, { value: "60", option: "60fps" } ] } );
+	prefs.addPref("fx", { name: "fps", hidden: browsersupport, callback: that.p_fps, defaultvalue: 30, type: "dropdown", options: [ { "value": "15", "option": "15fps" }, { value: "30", option: "30fps" }, { value: "45", option: "45fps" }, { value: "60", option: "60fps" } ] } );
 	prefs.addPref("fx", { name: "enabled", callback: that.p_enabled, defaultvalue: true, type: "checkbox" });
+	
+	// **************************************************************
 	
 	return that;
 }();

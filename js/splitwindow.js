@@ -1,11 +1,12 @@
 function SplitWindow(name, container, table_class) {
-	var table = createEl("table", { "style": "width: 100%; table-layout: fixed; height: " + container.offsetHeight + "px;", "class": "splitwindow_table" }, container);
+	var table = createEl("table", { "style": "width: 100%; table-layout: fixed; height: " + container.offsetHeight + "px;", "class": "splitwindow_table" });
 	var row = createEl("tr", false, table);
 	var tabs_td = createEl("td", { "class": "splitwindow_tabs_td" }, row);
 	var bar = createEl("td", { "class": "splitwindow_resize", "rowspan": 2 }, row);
 	var right = createEl("td", { "class": "splitwindow_right", "rowspan": 2 }, row);
 	var row2 = createEl("tr", false, table);
 	var left = createEl("td", { "class": "splitwindow_left" }, row2);
+	container.appendChild(table);
 	
 	var that = {};
 	that.currentidopen = false;
@@ -110,7 +111,7 @@ function SplitWindow(name, container, table_class) {
 	that.setHeight = function(newheight) {
 		height = newheight;
 		table.style.height = height + "px";
-		var divh = table.offsetHeight - tabs_td.offsetHeight;
+		var divh = height - tabs_td.offsetHeight;
 		for (var i in tabdivs) {
 			tabdivs[i].style.height = divh + "px";
 		}
@@ -141,7 +142,8 @@ function SplitWindow(name, container, table_class) {
 		for (i = 0; i < opendivs.length; i++) {
 			opendivs[i].div.style.display = "none";
 		}
-		var div = createEl("div", { "class": "pl_opendiv", "style": "height: " + height + "px;" }, right);
+		var div = createEl("div", { "class": "pl_opendiv", "style": "height: " + height + "px;" });
+		right.appendChild(div);
 		opendivs.push({ "div": div, "type": type, "id": id });
 		return opendivs[opendivs.length - 1];
 	};

@@ -180,13 +180,14 @@ var errorcontrol = function() {
 	};
 	
 	that.jsError = function(err, json) {
-		var el = createEl("div", { "class": "err_div", "style": "z-index: 100000; top: 0px; left: 0px;" }, document.getElementById("body"));
-		createEl("div", { "textContent": _l("crashed"), "style": "padding-bottom: 1em;" }, el);
+		var el = createEl("div", { "class": "err_div", "style": "z-index: 100000; top: 0px; left: 0px;" });
+		el.appendChild(createEl("div", { "textContent": _l("crashed"), "style": "padding-bottom: 1em;" }));
 		if (err.message && err.name && err.stack) {
-			createEl("div", { "textContent": _l("submiterror"), "style": "padding-bottom: 1em;" }, el);
-			createEl("textarea", { "textContent": err.message + "\n" + err.name + "\n\n" + err.stack + "\n\nServer response:\n" + JSON.stringify(json) + "\n", "style": "width: 40em; height: 15em; margin-bottom: 1em;" }, el);
+			el.appendChild(createEl("div", { "textContent": _l("submiterror"), "style": "padding-bottom: 1em;" }));
+			el.appendChild(createEl("textarea", { "textContent": err.message + "\n" + err.name + "\n\n" + err.stack + "\n\nServer response:\n" + JSON.stringify(json) + "\n", "style": "width: 40em; height: 15em; margin-bottom: 1em;" }));
 		}
-		createEl("div", { "textContent": _l("pleaserefresh") }, el);
+		el.appendChild(createEl("div", { "textContent": _l("pleaserefresh") }));
+		BODY.appendChild(el);
 		lyre.sync_stop = true;
 	};
 

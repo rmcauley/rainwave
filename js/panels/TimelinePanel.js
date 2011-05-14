@@ -261,7 +261,7 @@ panels.TimelinePanel = {
 			for (i = 0; i < that.allevents.length; i++) {
 				that.allevents[i].timep_showing = false;
 				if (that.allevents[i].purge) {
-					that.allevents[i].moveTo(that.container.offsetHeight);
+					that.allevents[i]._move_to_y = that.height;
 					that.allevents[i].remove();
 				}
 			}
@@ -293,6 +293,8 @@ panels.TimelinePanel = {
 			if (that.showelec && that.currentevents[0] && ((that.currentevents[0].height + ybudgetused + ymargin) <= ybudget)) {
 				ybudgetused += that.currentevents[0].height + ymargin;
 				that.currentevents[0].timep_showing = true;
+				that.currentevents[0].emphasizeWinner();
+				that.currentevents[0].changeOpacity(1);
 			}
 			
 			// the value for i is not reset here, we want to continue from where we left off the last time we calculated the loop
@@ -319,52 +321,54 @@ panels.TimelinePanel = {
 			var runz = 0;
 			var runy = 0;
 			
+			// Properly calculate the time until each event
+			var runningsched = that.currentendtime;
+			for (i = 0; i < that.nextevents.length; i++) {
+				that.nextevents[i].clockChange(runningsched);
+				runningsched += that.nextevents[i].getScheduledLength();
+			}
+			
 			// The next block positions events, with a lot of horribly copy-pasted code
 			
 			for (i = that.nextevents.length - 1; i >= 0; i--) {
 				if (that.nextevents[i].timep_showing) {
 					that.nextevents[i].changeZ(runz);
-					that.nextevents[i].moveTo(runy);
+					that.nextevents[i]._move_to_y = runy;
 					runy += that.nextevents[i].height + ymargin;
 					runz++;
 				}
 				else {
-					that.nextevents[i].moveTo(-that.nextevents[i].height - 5);
+					that.nextevents[i]._move_to_y = -that.nextevents[i].height - 5;
 				}
 			}
 			
 			if (that.currentevents[0] && that.currentevents[0].timep_showing) {
 				that.currentevents[0].changeZ(runz);
-				that.currentevents[0].moveTo(runy);
-				that.currentevents[0].changeOpacity(1);
-				that.currentevents[0].emphasizeWinner();
+				that.currentevents[0]._move_to_y = runy;
 				runy += that.currentevents[0].height + ymargin;
 				runz++;
 			}
 			if (that.currentevents[0] && !that.currentevents[0].timep_showing) {
-				that.currentevents[0].moveTo(-that.currentevents[0].height - 5);
+				that.currentevents[0]._move_to_y = -that.currentevents[0].height - 5;
 			}
 
 			var runopacity = .75;
 			for (i = 0; i < that.lastevents.length; i++) {
 				if (that.lastevents[i].timep_showing) {
 					that.lastevents[i].changeZ(runz);
-					that.lastevents[i].moveTo(runy);
+					that.lastevents[i]._move_to_y = runy;
 					that.lastevents[i].changeOpacity(runopacity);
 					runy += that.lastevents[i].height + ymargin;
 					runz++;
 					runopacity -= .07;
 				}
 				else {
-					that.lastevents[i].moveTo(that.container.offsetHeight + 5);
+					that.lastevents[i]._move_to_y = that.height + 5;
 				}
 			}
 			
-			// Properly calculate the time until each event
-			var runningsched = that.currentendtime;
-			for (i = 0; i < that.nextevents.length; i++) {
-				that.nextevents[i].clockChange(runningsched);
-				runningsched += that.nextevents[i].getScheduledLength();
+			for (i = 0; i < that.allevents.length; i++) {
+				that.allevents[i].moveTo(that.allevents[i]._move_to_y);
 			}
 		};
 		
@@ -410,7 +414,7 @@ function TimelineSkeleton(json, container, parent) {
 	theme.Extend.TimelineSkeleton(that);
 
 	that.init = function() {
-		that.draw();
+		//that.draw();
 		that.container.appendChild(that.el);
 		that.clockdisplay = true;
 		that.clockid = -1;

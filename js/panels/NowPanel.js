@@ -6,17 +6,7 @@ panels.NowPanel = {
 	width: UISCALE * 55,
 	minwidth: UISCALE * 45,
 	title: _l("p_NowPanel"),
-	
-	/*initSizeX: function(x, colw) {
-		if (colw > (UISCALE * 55)) {
-			return (UISCALE * 55);
-		}
-		else if (x > (colw + 117)) {
-			return (colw + 117)
-		}
-		return x;
-	},*/
-	
+
 	constructor: function(container) {
 		var that = {};
 

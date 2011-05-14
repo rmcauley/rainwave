@@ -41,54 +41,7 @@ function formatTime(seconds) {
 	return minutes + ":" + secs;
 }
 
-// we'll want these for the fitText functions
-var fittextdiv = document.createElement("div");
-fittextdiv.setAttribute("id", "fittextdiv");
-
-// returns true if changed, false if not.  textel is a reference and will be changed if necessary.
-// expects <text> filled with <tspans> and no internal text at all (only tspans!)
-function fitTSpans(textel, maxwidth, chop, style) {
-	if (typeof(style) == "undefined") style = "";
-	var toreturn = false;
-	var tspans = textel.getElementsByTagName("tspan");
-	var maxi = 0;
-	fittextdiv.textContent = "";
-	for (var i = 0; i < tspans.length; i++) {
-		var prevwidth = fittextdiv.offsetWidth;
-		fittextdiv.textContent += tspans[i].textContent;
-		maxi = i;
-		if (fittextdiv.offsetWidth > maxwidth) {
-			toreturn = true;
-			if ((i > 0) && chop) break;
-			tspans[i].textContent = fitText(tspans[i].textContent, (maxwidth - prevwidth), style);
-			break;
-		}
-	}
-	for (var i = (tspans.length - 1); i > maxi; i--) {
-		toreturn = true;
-		textel.removeChild(tspans[i]);
-	}
-	return toreturn;
-}
-
-function fitText(text, maxwidth, style) {
-	if (maxwidth < (UISCALE * 2)) return "...";
-	if (style) fittextdiv.setAttribute("style", style);
-	fittextdiv.textContent = text;
-	// prime the ellipsis if necessary
-	if (fittextdiv.offsetWidth > maxwidth) {
-		fittextdiv.textContent += "...";
-		var lastwidth = fittextdiv.offsetWidth;
-		while (fittextdiv.offsetWidth > maxwidth) {
-			// we do length - 4 so we can always keep the ellpisis intact at the end, and included in the measurements
-			fittextdiv.textContent = fittextdiv.textContent.substring(0, (fittextdiv.textContent.length - 4)) + "...";
-			if (fittextdiv.offsetWidth == lastwidth) break;
-			lastwidth = fittextdiv.offsetWidth;
-		}
-	}
-	return fittextdiv.textContent;
-}
-
+// TODO: Remove usage of this function
 function measureText(text, style) {
 	if (typeof(style) == "undefined") style = "";
 	var textdiv = document.createElement("div");
