@@ -32,7 +32,7 @@ panels.MenuPanel = {
 			}*/
 		
 			var pos = help.getElPosition(that.td_news);
-			errorcontrol.changeShowXY(pos.x, pos.y + container.offsetHeight);
+			errorcontrol.changeShowXY(pos.x, pos.y + that.height);
 			
 			user.addCallback(that.usernameCallback, "username");
 			user.addCallback(that.tunedinCallback, "radio_tunedin");

@@ -139,9 +139,21 @@ var fx = function() {
 		var cssnfx = {};
 		if (!unit) unit = "";
 		
-		cssnfx.update = function(now) {
-			element.style[attribute] = now + unit;
-		};
+		if (attribute == "opacity") {		
+			cssnfx.update = function(now) {
+				element.style[attribute] = now.toFixed(2) + unit;
+			};
+		}
+		else if (unit == "px") {
+			cssnfx.update = function(now) {
+				element.style[attribute] = Math.round(now) + unit;
+			};
+		}
+		else {
+			cssnfx.update = function(now) {
+				element.style[attribute] = now + unit;
+			};
+		}
 		
 		return cssnfx;
 	};
@@ -171,7 +183,7 @@ var fx = function() {
 		};
 		
 		orfx.update = function(now) {
-			element.style.opacity = now;
+			element.style.opacity = now.toFixed(2);
 		};
 		
 		orfx.onComplete = function(now) {
@@ -216,12 +228,15 @@ var fx = function() {
 		
 		var transkey = false;
 		var threed = false;
-		if ("MozTransform" in el.style) {
+		/*if ("MozTransform" in el.style) {
 			transkey = 'MozTransform';
-		}
-		else if ("webkitTransform" in el.style) {
+		}*/
+		if ("webkitTransform" in el.style) {
 			transkey = 'webkitTransform';
 			threed = true;
+		}
+		if ("OTransform" in el.style) {
+			transkey = "OTransform";
 		}
 		else return false;
 		
@@ -284,22 +299,26 @@ var fx = function() {
 	
 	// ************************************************************** MISC FUNCTIONS
 	
+	// this menuheight thing only works so long as 1 menu is on the page...
+	var menuheight = false;
 	that.makeMenuDropdown = function(menu, header, dropdown, options) {
+		if (!menuheight) menuheight = menu.offsetHeight;
 		var timeout = 0;
 		var fx_pulldown = that.make(that.CSSTranslateY, dropdown, 250);
-		fx_pulldown.set(0);
+		fx_pulldown.set(-menuheight - 1);
 		var fx_opacity = that.make(that.OpacityRemoval, dropdown, 250, menu);
-		var mouseover = function() {
+		var mouseover = function(e) {
+			if (e && ("pageX" in e) && ("pageY" in e) && (e.pageX == 0) && (e.pageY == 0)) return; 		// webkit bugfix that triggers menu hover on page load
 			clearTimeout(timeout);
 			if (options && options.checkbefore) {
 				if (!options.checkbefore) return;
 			}
 			dropdown.style.left = help.getElPosition(header).x + "px";
-			fx_pulldown.start(menu.offsetHeight - 1);
+			fx_pulldown.start(0);
 			fx_opacity.start(1);
 		};
 		var mouseout = function() {
-			fx_pulldown.start(0);
+			fx_pulldown.start(-menuheight - 1);
 			fx_opacity.start(0);
 		};
 		header.addEventListener("mouseover", mouseover, true);

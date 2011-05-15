@@ -245,7 +245,7 @@ function _THEME() {
 		};
 		
 		te.defineFx = function() {
-			te.topfx = fx.make(fx.CSSTranslateY, te.el, 700);
+			te.topfx = fx.make(fx.CSSNumeric, te.el, 700, "top", "px");
 			te.topfx.set(-200);
 			te.leftfx = fx.make(fx.CSSTranslateX, te.el, 700);
 			te.leftfx.set(0);
@@ -261,6 +261,10 @@ function _THEME() {
 			te.opacityfx.set(to);
 		};
 	}
+	
+	var timeline_elec_fullheight = false;
+	var timeline_elec_winnerheight = false;
+	var timeline_elec_slimheight = false;
 	
 	that.Extend.TimelineElection = function(te) {
 		te.draw = function() {
@@ -306,11 +310,23 @@ function _THEME() {
 		};
 		
 		te.recalculateHeight = function() {
-			if (te.showingwinner) {
-				te.height = te.header_td.offsetHeight + te.songs[0].song_title.offsetHeight + te.songs[0].album_name.offsetHeight + 5;
+			if (te.showingwinner && te.showingheader) {
+				if (!timeline_elec_winnerheight) {
+					timeline_elec_winnerheight = te.header_td.offsetHeight + te.songs[0].song_title.offsetHeight + te.songs[0].album_name.offsetHeight + 5;
+				}
+				te.height = timeline_elec_winnerheight;
+			}
+			else if (te.showingwinner) {
+				if (!timeline_elec_slimheight) {
+					timeline_elec_slimheight = te.songs[0].song_title.offsetHeight + te.songs[0].album_name.offsetHeight + 5;
+				}
+				te.height = timeline_elec_slimheight;
 			}
 			else {
-				te.height = te.el.offsetHeight;
+				if (!timeline_elec_fullheight) {
+					timeline_elec_fullheight = te.el.offsetHeight;
+				}
+				te.height = timeline_elec_fullheight;
 			}
 		};
 	};
@@ -384,6 +400,8 @@ function _THEME() {
 	TIMELINE SONG
 	*****************************************************************************/
 	
+	var timeline_elec_tdheight = false;
+	
 	that.Extend.TimelineSong = function(ts) {
 		var fx_votebkg_x;
 		var fx_votebkg_y;
@@ -398,7 +416,6 @@ function _THEME() {
 			
 			ts.tr1 = createEl("tr", {});
 			ts.tr1_fx = fx.make(fx.OpacityRemoval, ts.tr1, 500, ts.parent.el);
-			ts.tr1_fx.set(1);
 			ts.indicator = createEl("td", { "class": "timeline_indicator timeline_indicator_" + indic, "rowspan": 3 }, ts.tr1);
 			// for indicator_fx check the "if (ts.song_requestor)" block below
 			var argh = createEl("img", { "src": "images/blank.png", "class": "timeline_indicator_argh" }, ts.indicator);
@@ -414,26 +431,31 @@ function _THEME() {
 			
 			ts.tr2 = createEl("tr", {});
 			ts.tr2_fx = fx.make(fx.OpacityRemoval, ts.tr2, 500, ts.parent.el);
-			ts.tr2_fx.set(1);
-			ts.album_td = createEl("td", { "class": "timeline_td timeline_album_td" }, ts.tr2);
+			var albumclasses = "timeline_td timeline_album_td";
+			if (ts.p.elec_isrequest == 1) {
+				albumclasses += " timeline_album_td_request";
+			}
+			else {
+				albumclasses += " timeline_album_td_conflict";
+			}
+			ts.album_td = createEl("td", { "class": albumclasses }, ts.tr2);
 			ts.album_rating_c = createEl("div", { "class": "timeline_song_rating_c" }, ts.album_td);
 			ts.album_rating = Rating({ category: "album", "id": ts.p.album_id, "userrating": ts.p.album_rating_user, "siterating": ts.p.album_rating_avg, "favourite": ts.p.album_favourite, "register": true });
 			ts.album_rating_c.appendChild(ts.album_rating.el);
 			ts.album_rating_bkg = createEl("div", { "class": "timeline_song_rating_bkg" }, ts.album_td);
 			if (ts.p.elec_isrequest == 1) {
-				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor timeline_song_requestor_request", "textContent": _l("requestedby", { "requester": ts.p.song_requestor }) });
+				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor", "textContent": _l("requestedby", { "requester": ts.p.song_requestor }) });
 			}
 			else if (ts.p.elec_isrequest < 0) {
-				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor timeline_song_requestor_conflict", "textContent": _l("conflictswith", { "requester": ts.p.song_requestor }) });
+				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor", "textContent": _l("conflictswith", { "requester": ts.p.song_requestor }) });
 			}
 			if (ts.song_requestor) {
 				ts.song_requestor_wrap = createEl("div", { "class": "timeline_song_requestor_wrap" }, ts.album_td);
 				ts.song_requestor_wrap.appendChild(ts.song_requestor);
-				ts.song_requestor.style.height = (ts.album_td.offsetHeight + 1) + "px";
-				ts.song_requestor_wrap.style.height = (ts.album_td.offsetHeight + 1) + "px";
 				ts.song_requestor_fx = fx.make(fx.CSSNumeric, ts.song_requestor, 250, "marginTop", "px");
-				ts.song_requestor_fx.height = ts.song_requestor.offsetHeight;
 				ts.song_requestor_fx.set(-ts.song_requestor_fx.height);
+				ts.song_requestor_bkg_fx = fx.make(fx.BackgroundPosY, ts.album_td, 250);
+				ts.song_requestor_bkg_fx.set(-90);
 				ts.indicator_fx = fx.make(fx.BackgroundPosY, ts.indicator, 250);
 				ts.indicator_fx.set(-22);
 				ts.song_requestor_fx.onComplete = function(now) {
@@ -441,10 +463,13 @@ function _THEME() {
 				}
 			}
 			ts.album_name = createEl("div", { "class": "timeline_album_title", "textContent": ts.p.album_name }, ts.album_td);
+			if (ts.song_requestor) {
+				ts.album_name_fx = fx.make(fx.CSSNumeric, ts.album_name, 250, "opacity");
+				ts.album_name_fx.set(1);
+			}
 			
 			ts.tr3 = createEl("tr", {});
 			ts.tr3_fx = fx.make(fx.OpacityRemoval, ts.tr3, 500, ts.parent.el);
-			ts.tr3_fx.set(1);
 			ts.artist_td = createEl("td", { "class": "timeline_td timeline_artist_td" }, ts.tr3);
 			Artist.allArtistToHTML(ts.p.artists, ts.artist_td);
 		
@@ -454,11 +479,25 @@ function _THEME() {
 			fx_votebkg_y.set(0);
 			fx_swipe = fx.make(fx.BackgroundPosY, ts.swipe, 500);
 			fx_swipe.onComplete = ts.endSwipe();
-			fx_swipe.set(ts.song_td.offsetHeight);
 			
 			if (prefs.p.timeline.highlightrequests.value && (ts.p.elec_isrequest != 0)) {
 				ts.showRequestor();
 			}
+			
+			ts.tr1_fx.set(1);
+			ts.tr2_fx.set(1);
+			ts.tr3_fx.set(1);
+			
+			if (!timeline_elec_tdheight) {
+				timeline_elec_tdheight = ts.album_td.offsetHeight;
+			}
+			
+			if (ts.song_requestor) {
+				ts.song_requestor.style.height = timeline_elec_tdheight + "px";
+				ts.song_requestor_wrap.style.height = timeline_elec_tdheight + "px";
+				ts.song_requestor_fx.height = timeline_elec_tdheight;
+			}
+			fx_swipe.set(timeline_elec_tdheight);
 		};
 
 		ts.destruct = function() {
@@ -484,7 +523,7 @@ function _THEME() {
 				fx_votebkg_y.set(0);
 				fx_votebkg_x.stop();
 				fx_votebkg_x.duration = 300;
-				var vhx = -votebkg_width + ts.song_td.offsetWidth + 11;
+				var vhx = -votebkg_width + ts.parent.parent.width + 11;
 				if (vhx > 0) vhx = 0;
 				fx_votebkg_x.start(vhx);
 			}
@@ -493,15 +532,19 @@ function _THEME() {
 		ts.showRequestor = function() {
 			if (ts.song_requestor) {
 				ts.song_requestor_fx.start(0);
-				ts.indicator_fx.start(-22 + ts.album_td.offsetHeight);
-				ts.album_name.style.zIndex = 1;
+				ts.indicator_fx.start(-22 + timeline_elec_tdheight);
+				ts.album_name_fx.start(0);
+				ts.song_requestor_bkg_fx.start(-90 + timeline_elec_tdheight);
+				//ts.album_name.style.zIndex = 1;
 			}
 		};
 		
 		ts.hideRequestor = function() {
 			if (ts.song_requestor) {
-				ts.song_requestor_fx.start(-ts.song_requestor_fx.height - 1);
+				ts.song_requestor_fx.start(-timeline_elec_tdheight);
 				ts.indicator_fx.start(-22);
+				ts.album_name_fx.start(1);
+				ts.song_requestor_bkg_fx.start(-90);
 			}
 		};
 
@@ -519,13 +562,13 @@ function _THEME() {
 
 		ts.startVoting = function() {
 			fx_votebkg_x.stop();
-			fx_votebkg_x.set(-votebkg_width + ts.song_td.offsetWidth + 11);
+			fx_votebkg_x.set(-votebkg_width + ts.parent.parent.width + 11);
 			fx_votebkg_y.duration = 200;
 			fx_votebkg_y.onComplete = ts.startVoting2;
-			ts.swipe.style.width = ts.song_td.offsetWidth + "px";
-			ts.swipe.style.height = ts.song_td.offsetHeight + "px";
+			ts.swipe.style.width = ts.parent.parent.width + "px";
+			ts.swipe.style.height = timeline_elec_tdheight + "px";
 			fx_votebkg_y.start(-25);
-			fx_swipe.start(ts.song_td.offsetHeight, -21);
+			fx_swipe.start(timeline_elec_tdheight, -21);
 		};
 		
 		ts.endSwipe = function() {
@@ -548,7 +591,7 @@ function _THEME() {
 				var headtime = Math.floor(((votelock_started + 5000) - clocktime) / 100) / 10;
 				if ((headtime % 1) == 0) headtime += ".0";
 				ts.parent.changeHeadline(_l("votelockingin", { "timeleft": headtime }));
-				var x = Math.floor(((clocktime - votelock_started) / 5000) * (ts.song_td.offsetWidth + 11) - votebkg_width);
+				var x = Math.floor(((clocktime - votelock_started) / 5000) * (ts.parent.parent.width + 11) - votebkg_width);
 				fx_votebkg_x.set(x);
 			}
 			else {
@@ -848,7 +891,7 @@ function _THEME() {
 			menup.fx_player.set(1);
 			_l("downloadm3u", false, menup.player);
 			
-			menup.supportedplayers = createEl("div", { "class": "err_div_ok", "style": "z-index: -1;" });
+			menup.supportedplayers = createEl("div", { "class": "err_div_ok", "style": "z-index: -1; top: auto;" });
 			_l("players", false, menup.supportedplayers);
 			fx.makeMenuDropdown(menup.el, menup.player, menup.supportedplayers);
 			
@@ -1061,10 +1104,9 @@ function _THEME() {
 		return mpi;
 	};
 
-	that.TabBar = function(container, width) {
+	that.TabBar = function(container) {
 		var tabs = {};
 		tabs.container = container;
-		tabs.width = width;
 		tabs.el = createEl("ul", { "class": "tabs" }, container);
 		tabs.panels = {};
 		
@@ -1287,6 +1329,21 @@ function _THEME() {
 				if ("album_name" in song_data[i]) {
 					ns.td_album_name = createEl("td", { "class": "pl_songlist_album_name", "textContent": song_data[i].album_name }, ns.tr);
 					Album.linkify(song_data[i].album_id, ns.td_album_name);
+				}
+				
+				if (("song_url" in song_data[i]) && (song_data[i].song_url.length > 0)) {
+					ns.td_u = document.createElement("td");
+					ns.td_u.setAttribute("class", "pl_songlist_u");
+					ns.td_u_a = document.createElement("a");
+					ns.td_u_a.setAttribute("href", song_data[i].song_url);
+					ns.td_u_a.setAttribute("target", "_blank");
+					ns.td_u_a_i = document.createElement("img");
+					ns.td_u_a_i.setAttribute("src", "images/new_window_icon.png")
+					ns.td_u_a.appendChild(ns.td_u_a_i);
+					ns.td_u.appendChild(ns.td_u_a);
+					ns.tr.appendChild(ns.td_u);
+				} else {
+					ns.td_u = createEl("td", { "class": "pl_songlist_u" }, ns.tr);
 				}
 				
 				ns.td_n = document.createElement("td");

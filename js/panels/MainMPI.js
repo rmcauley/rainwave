@@ -19,6 +19,7 @@ panels.MainMPI = {
 		that.tabs = false;
 		that.container = container;
 		var ucallbackid = false;
+		var containerheight = 0;
 		
 		var pos = 0;
 		var num = 0;
@@ -29,8 +30,9 @@ panels.MainMPI = {
 		theme.Extend.MainMPI(that);
 
 		that.init = function() {
+			containerheight = container.offsetHeight;
 			that.panels = {};
-			that.tabs = theme.TabBar(container, container.offsetWidth);
+			that.tabs = theme.TabBar(container);
 			
 			for (var i in savedpanels) {
 				that.addPanel(i);
@@ -50,6 +52,7 @@ panels.MainMPI = {
 		};
 		
 		that.onHeightResize = function(height) {
+			containerheight = height;
 			for (var i in that.panels) {
 				if (typeof(that.panels[i].onHeightResize) == "function") that.panels[i].onHeightResize(height);
 			}
@@ -62,7 +65,7 @@ panels.MainMPI = {
 		};
 		
 		that.divSize = function(el) {
-			el.style.height = (container.offsetHeight - that.tabheight) + "px";
+			el.style.height = (containerheight - that.tabheight) + "px";
 		};
 		
 		that.divPosition = function(el) {

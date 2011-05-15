@@ -413,6 +413,10 @@ td.pl_songlist_r {
 	width: 1.5em;
 }
 
+td.pl_songlist_u {
+	width: 1.5em;
+}
+
 td.pl_songlist_album_name {
 	overflow: hidden;
 	white-space: nowrap;
@@ -966,6 +970,18 @@ td.timeline_album_td {
 	padding-left: 0px;
 }
 
+td.timeline_album_td_request {
+	background-image: url('images/timeline_votehover_request.png');
+	background-repeat: no-repeat;
+	background-position: 0px -90px;
+}
+
+td.timeline_album_td_conflict {
+	background-image: url('images/timeline_votehover_request.png');
+	background-repeat: no-repeat;
+	background-position: 0px -90px;
+}
+
 td.timeline_artist_td {
 	color: #CCCCCC;
 	padding-left: 1.5em;
@@ -1036,13 +1052,13 @@ div.timeline_song_requestor {
 	padding-left: 0.7em;
 }
 
-div.timeline_song_requestor_request {
+/*div.timeline_song_requestor_request {
 	background: url('images/timeline_song_requestor_request.png') repeat-y;
 }
 
 div.timeline_song_requestor_conflict {
 	background: url('images/timeline_song_requestor_conflict.png') repeat-y;
-}
+}*/
 
 div.timeline_vote_hover {
 	position: absolute;

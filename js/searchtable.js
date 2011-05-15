@@ -14,12 +14,15 @@ function SearchTable(container, id_key, table_class) {
 	var searchstring = "";
 	var currentnav = false;
 	var scrolloffset = UISCALE * 5;
+	var tableappended = false;
 
-	var textcontainer = createEl("div", { "class": "inlinesearch_container" }, container);
+	var textcontainer = createEl("div", { "class": "inlinesearch_container" });
 	var texthelp = createEl("div", { "class": "inlinesearch_help", "textContent": _l("escapetoclear") }, textcontainer);
 	var texthdr = createEl("div", { "class": "inlinesearch_hdr", "textContent": _l("searchheader") }, textcontainer);
 	var textfield = createEl("span", { "class": "inlinesearch_text" }, texthdr);
-	var table = createEl("table", { "class": table_class }, container);
+	container.appendChild(textcontainer);
+	var texthdrheight = texthdr.offsetHeight;
+	var table = createEl("table", { "class": table_class });
 	var fx_test_top = fx.make(fx.CSSNumeric, textcontainer, 250, "marginTop", "px");
 	var fx_test_height = fx.make(fx.CSSNumeric, textcontainer, 250, "height", "px");
 	fx_test_height.set(0);
@@ -145,6 +148,11 @@ function SearchTable(container, id_key, table_class) {
 			}
 		}
 		reinsert = [];
+		
+		if (!tableappended) {
+			container.appendChild(table);
+			tableappended = true;
+		}
 	};
 	
 	that.sortList = function(a, b) {
@@ -389,7 +397,7 @@ function SearchTable(container, id_key, table_class) {
 	that.startSearchDraw = function() {
 		that.setScrollOffset();
 		textcontainer.style.width = container.offsetWidth + "px";
-		var h = texthdr.offsetHeight;
+		var h = texthdrheight;
 		fx_test_top.start(-h);
 		fx_test_height.start(h);
 		textfield.textContent = "";

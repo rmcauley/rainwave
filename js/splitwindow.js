@@ -22,10 +22,10 @@ function SplitWindow(name, container, table_class) {
 	var resize_final_width = resize_last_width;
 	var maxwidth = container.offsetWidth;
 	var height = container.offsetHeight;
+	var tabs_td_height = false;
 	
 	that.startResize = function(e) {
 		resize_mx = getMousePosX(e);
-		maxwidth = container.offsetWidth;
 		document.addEventListener("mousemove", that.runningResize, true);
 		document.addEventListener("mouseup", that.stopResize, true);
 	};
@@ -69,6 +69,7 @@ function SplitWindow(name, container, table_class) {
 		tabdivs[key] = createEl("div", { "class": "splitwindow_leftcontainer" });
 		tabinitfunc[key] = initfunc;
 		if (!firsttab) firsttab = key;
+		tabs_td_height = tabs_td.offsetHeight;
 		return tabdivs[key];
 	};
 	
@@ -111,13 +112,17 @@ function SplitWindow(name, container, table_class) {
 	that.setHeight = function(newheight) {
 		height = newheight;
 		table.style.height = height + "px";
-		var divh = height - tabs_td.offsetHeight;
+		var divh = height - tabs_td_height;
 		for (var i in tabdivs) {
 			tabdivs[i].style.height = divh + "px";
 		}
 		if (opendivs.length > 0) {
 			opendivs[opendivs.length - 1].div.style.height = height + "px";
 		}
+	};
+	
+	that.setWidth = function(newwidth) {
+		maxwidth = newwidth;
 	};
 	
 	// DIV MANAGEMENT

@@ -23,6 +23,9 @@ panels.TimelinePanel = {
 		
 		that.init = function() {
 			container.style.overflow = "hidden";
+			
+			that.height = container.offsetHeight;
+			that.width = container.offsetWidth;
 
 			that.currentendtime = 0;
 			that.draw();
@@ -40,6 +43,14 @@ panels.TimelinePanel = {
 			help.addStep("donevoting", { "h": "donevoting", "p": "donevoting_p" });
 			help.addTutorial("voting", [ "tunein", "clickonsongtovote" ]);
 			help.addTopic("voting", { "h": "voting", "p": "voting_p", "tutorial": "voting" });
+		};
+		
+		that.onHeightResize = function(height) {
+			that.height = height;
+		};
+		
+		that.onWidthResize = function(width) {
+			that.width = width;
 		};
 		
 		that.purgeEvents = function(json) {
@@ -230,11 +241,11 @@ panels.TimelinePanel = {
 				that.nextevents[0].moveTo(0);
 				// move all next events off screen
 				for (i = 1; i < that.nextevents.length; i++) {
-					that.nextevents[i].moveTo(-that.nextevents[i].el.offsetHeight - 5);
+					that.nextevents[i].moveTo(-that.nextevents[i].height - 5);
 				}
 				// move all last events off screen
 				for (i = 0; i < that.lastevents.length; i++) {
-					that.lastevents[i].moveTo(that.container.offsetHeight);
+					that.lastevents[i].moveTo(that.height);
 				}
 			}
 			else {
@@ -265,7 +276,7 @@ panels.TimelinePanel = {
 					that.allevents[i].remove();
 				}
 			}
-			var ybudget = container.offsetHeight;
+			var ybudget = that.height;
 			var ybudgetused = 0;
 			var crossedelec  = false;
 			var ymargin = 5;
@@ -414,7 +425,7 @@ function TimelineSkeleton(json, container, parent) {
 	theme.Extend.TimelineSkeleton(that);
 
 	that.init = function() {
-		//that.draw();
+		that.draw();
 		that.container.appendChild(that.el);
 		that.clockdisplay = true;
 		that.clockid = -1;

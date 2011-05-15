@@ -107,6 +107,8 @@ var RequestList = function(sortable) {
 	var that = {};
 	that.el = createEl("div", { "class": "requestlist" });
 	that.header = createEl("div", { "class": "requestlist_header" }, that.el);
+	var elheight = 0;
+	var headerheight = that.header.offsetHeight;
 	var maxy = 0;
 	var dragging = false;
 	var draggingid = -1;
@@ -146,7 +148,7 @@ var RequestList = function(sortable) {
 			if (!found) {
 				newreq = Request.make(json[i]);
 				newreq.purge = false;
-				newreq.fx_posY = fx.make(fx.CSSNumeric, newreq.el, 250, "marginTop", "px");
+				newreq.fx_posY = fx.make(fx.CSSTranslateY, newreq.el, 250);
 				newreq.fx_posY.set(0);
 				newreq.fx_opacity = fx.make(fx.CSSNumeric, newreq.el, 250, "opacity");
 				newreq.fx_opacity.set(0);
@@ -174,12 +176,14 @@ var RequestList = function(sortable) {
 				reqs[j].fx_opacity.start(0);
 			}
 			else if (j < (reqs.length - 1)) {
-				maxy += reqs[j].el.offsetHeight + 3;
+				maxy += reqs[j].height + 3;
 			}
 		}
 		
 		reqs.sort(that.sortRequestArray);
 		that.positionReqs();
+		
+		elheight = that.el.offsetHeight;
 		
 		if (sortable && (reqs.length > 0)) {
 			help.changeStepPointEl("managingrequests", [ reqs[reqs.length - 1].el ]);
@@ -208,21 +212,21 @@ var RequestList = function(sortable) {
 				// nothing
 			}
 			else if (reqs[i].p.requestq_id == draggingid) {
-				runy += reqs[i].el.offsetHeight + reqmargin;
+				runy += reqs[i].height + reqmargin;
 				runz += 1;
 			}
 			else {
 				reqs[i].el.style.zIndex = runz;
 				reqs[i].fx_posY.start(runy);
 				reqs[i].desty = runy;
-				runy += reqs[i].el.offsetHeight;
+				runy += reqs[i].height;
 				//if (i == 0) runy += reqmargin * 2;
 				//else
 				runy += reqmargin;
 				runz += 1;
 			}
 		}
-		that.el.style.height = (runy + that.header.offsetHeight) + "px";
+		that.el.style.height = (runy + headerheight) + "px";
 		if (!nopurge) setTimeout(that.purgeRequests, 250);
 	};
 	
@@ -252,11 +256,11 @@ var RequestList = function(sortable) {
 	that.figureDragValues = function() {
 		dragthreshup = -10;
 		if (dragidx > 0) {
-			dragthreshup = reqs[dragidx - 1].desty + Math.round(reqs[dragidx - 1].el.offsetHeight / 2);
+			dragthreshup = reqs[dragidx - 1].desty + Math.round(reqs[dragidx - 1].height / 2);
 		}
-		dragthreshdown = that.el.offsetHeight + 100;
+		dragthreshdown = elheight + 100;
 		if (dragidx < reqs.length - 1) {
-			dragthreshdown = reqs[dragidx + 1].desty + Math.round(reqs[dragidx + 1].el.offsetHeight / 3);
+			dragthreshdown = reqs[dragidx + 1].desty + Math.round(reqs[dragidx + 1].height / 3);
 		}
 	};
 	
@@ -272,7 +276,7 @@ var RequestList = function(sortable) {
 			that.positionReqs(true);
 			that.figureDragValues();
 		}
-		else if ((mousey + reqs[dragidx].el.offsetHeight) > dragthreshdown) {
+		else if ((mousey + reqs[dragidx].height) > dragthreshdown) {
 			var r = reqs.splice(dragidx, 2);
 			reqs.splice(dragidx, 0, r[1], r[0]);
 			dragidx++;
@@ -424,6 +428,8 @@ var Request = {
 				that.el.removeChild(that.blocked);
 				delete(that.blocked);
 			}
+			
+			that.height = that.el.offsetHeight;
 		};
 		
 		that.destruct = function() {
