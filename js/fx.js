@@ -59,6 +59,7 @@ var fx = function() {
 				now = (to - from) * delta2 + from;
 
 				newfx.update(now);
+				newfx.now = now;
 				requestFrame(step);
 			}
 			else {
@@ -70,6 +71,7 @@ var fx = function() {
 			now = to;
 			newfx.update(now);
 			if (newfx.onComplete) newfx.onComplete(now);
+			newfx.now = now;
 		};
 		
 		newfx.set = function(nn) {
@@ -77,6 +79,7 @@ var fx = function() {
 			to = nn;
 			if (newfx.onSet) newfx.onSet(now);
 			newfx.update(nn);
+			newfx.now = now;
 		};
 		
 		newfx.start = function(stopat) {
@@ -108,8 +111,8 @@ var fx = function() {
 		if (!unit) unit = "";
 	
 		var svgafx = {};
-		svgafx.update = function() {
-			element.setAttribute(attribute, svgafx.now + unit);
+		svgafx.update = function(now) {
+			element.setAttribute(attribute, now + unit);
 		};
 		
 		return svgafx;

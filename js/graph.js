@@ -88,6 +88,15 @@ var graph = function() {
 				if (graph.miny < 0) graph.miny = 0;
 				if (graph.miny == graph.maxy) graph.miny = 0;
 			}
+			if (graph.data.minrangey) {
+				if (graph.maxy - graph.miny < graph.data.minrangey) {
+					graph.miny = graph.maxy - graph.data.minrangey;
+					if (graph.miny < 0) {
+						graph.maxy += Math.abs(graph.miny);
+						graph.miny = 0;
+					}
+				}
+			}
 			if (!graph.data.padx) {
 				if (graph.data.xnonumbers) graph.data.padx = 0;
 				else graph.data.padx = UISCALE;
@@ -153,13 +162,20 @@ var graph = function() {
 			if (((graph.minx !== 0) || (graph.miny !== 0)) && !graph.data.ynonumbers && !graph.data.ynomin) {
 				var zerotexty = graph.data.xnonumbers ? runningy : runningy + (UISCALE * 0.3);
 				steptext = svg.makeEl("text", { x: graph.ystartx - 2, y: zerotexty, fill: theme.vdarktext, text_anchor: "end", style: "font-size: 0.7em" });
-				if (typeof(graph.data.miny) != "undefined") steptext.textContent = graph.miny;
-				//else if (graph.maxy > (graph.data.raw[keys[0]] + 10)) steptext.textContent = graph.data.raw[keys[0]];
-				else steptext.textContent = graph.data.yprecision ? graph.miny.toFixed(graph.data.yprecision) : Math.floor(graph.miny);				
+				if (graph.data.upsidedown) {
+					if (typeof(graph.data.maxy) != "undefined") steptext.textContent = graph.maxy;
+					else steptext.textContent = graph.data.yprecision ? graph.maxy.toFixed(graph.data.yprecision) : Math.floor(graph.maxy);
+				}
+				else {
+					if (typeof(graph.data.miny) != "undefined") steptext.textContent = graph.miny;
+					//else if (graph.maxy > (graph.data.raw[keys[0]] + 10)) steptext.textContent = graph.data.raw[keys[0]];
+					else steptext.textContent = graph.data.yprecision ? graph.miny.toFixed(graph.data.yprecision) : Math.floor(graph.miny);
+				}
 				graph.scalable.appendChild(steptext);
 			}
 			// Render Y grid lines
-			for (i = stepdeltay + graph.miny; i <= graph.maxy; i += stepdeltay) {
+			i = graph.data.upsidedown ? graph.maxy - stepdeltay : stepdeltay + graph.miny;
+			while (true) {
 				runningy -= graph.gheight / numstepsy;
 				if (!graph.data.ynonumbers && (!graph.data.ynumbermod || (i % graph.data.ynumbermod == 0))) {
 					steptext = svg.makeEl("text", { x: graph.ystartx, y: runningy + (UISCALE * 0.5), fill: theme.textcolor, text_anchor: "end" });
@@ -169,6 +185,14 @@ var graph = function() {
 				}
 				stepline = svg.makeLine(graph.ystartx, runningy, graph.width, runningy, { stroke: theme.vdarktext, stroke_width: 1 });
 				graph.bgrid.appendChild(stepline);
+				if (graph.data.upsidedown) {
+					if (i <= graph.miny) break;
+					i -= stepdeltay;
+				}
+				else {
+					if (i >= graph.maxy) break;
+					i += stepdeltay;
+				}
 			}
 			
 			// Render border lines last
@@ -182,10 +206,17 @@ var graph = function() {
 			return (((xvalue - graph.minx) / (graph.maxx - graph.minx)) * graph.gwidth);
 		};
 		
-		graph.getYPixel = function(yvalue) {
-			return (((1 - ((yvalue - graph.miny) / (graph.maxy - graph.miny))) * graph.gheight) + graph.data.pady);
-		};
-		
+		if (graph.data.upsidedown) {
+			graph.getYPixel = function(yvalue) {
+				return (((((yvalue - graph.miny) / (graph.maxy - graph.miny))) * graph.gheight) + graph.data.pady);
+			};
+		}
+		else {
+			graph.getYPixel = function(yvalue) {
+				return (((1 - ((yvalue - graph.miny) / (graph.maxy - graph.miny))) * graph.gheight) + graph.data.pady);
+			};
+		}
+
 		graph.update = function(newdata, init) {
 			var g, i, j, k, found;
 			for (var g = 0; g < newdata.length; g++) {

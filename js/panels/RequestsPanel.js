@@ -107,8 +107,8 @@ var RequestList = function(sortable) {
 	var that = {};
 	that.el = createEl("div", { "class": "requestlist" });
 	that.header = createEl("div", { "class": "requestlist_header" }, that.el);
+	var headerheight = UISCALE * 2;
 	var elheight = 0;
-	var headerheight = that.header.offsetHeight;
 	var maxy = 0;
 	var dragging = false;
 	var draggingid = -1;
@@ -156,8 +156,9 @@ var RequestList = function(sortable) {
 					newreq.el.requestq_id = json[i].requestq_id;
 					newreq.el.addEventListener('mousedown', that.startDrag, false);
 				}
-				reqs.push(newreq);
 				that.el.appendChild(newreq.el);
+				newreq.height = newreq.el.offsetHeight;
+				reqs.push(newreq);
 				newreq.fx_opacity.start(1);
 			}
 		}
@@ -204,7 +205,7 @@ var RequestList = function(sortable) {
 	
 	var reqmargin = 7;
 	that.positionReqs = function(nopurge) {
-		var runy = 0;
+		var runy = headerheight;
 		var runz = 0;
 		for (var i = 0; i < reqs.length; i++) {
 			reqs[i].p.requestq_order = i;
@@ -220,13 +221,11 @@ var RequestList = function(sortable) {
 				reqs[i].fx_posY.start(runy);
 				reqs[i].desty = runy;
 				runy += reqs[i].height;
-				//if (i == 0) runy += reqmargin * 2;
-				//else
 				runy += reqmargin;
 				runz += 1;
 			}
 		}
-		that.el.style.height = (runy + headerheight) + "px";
+		that.el.style.height = runy + "px";
 		if (!nopurge) setTimeout(that.purgeRequests, 250);
 	};
 	
@@ -429,7 +428,7 @@ var Request = {
 				delete(that.blocked);
 			}
 			
-			that.height = that.el.offsetHeight;
+			if (that.height) that.height = that.el.offsetHeight;
 		};
 		
 		that.destruct = function() {

@@ -174,6 +174,7 @@ $lang = array(
 	"ltab_listeners" => "Listeners", 			// Listeners tab name
 	"guestlisteners" => "|guests| Guests",		// appears at the bottom of the current listeners list
 	"totallisteners" => "|total| Listeners Now",	// appears underneath guestlisteners.
+	"voteslast2weeks" => "Votes in the last 2 weeks: ",
 	
 	// Preference names
 	

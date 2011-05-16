@@ -780,7 +780,7 @@ function _THEME() {
 		};
 		
 		npe.animateIn = function() {
-			npe.fx_marginleft.start(0);
+			npe.fx_marginleft.start(5);
 			npe.fx_opacity.start(1);
 		};
 		
@@ -1429,15 +1429,22 @@ function _THEME() {
 			// Vote rank vs. time
 			if (json.user_2wk_voting.length > 2) {
 				var vcdata = {};
+				vcdata2 = {};
+				var maxrank = 0;
 				for (var i = 0; i < json.user_2wk_voting.length; i++) {
 					if (json.user_2wk_voting[i].user_vote_count) {
 						vcdata[json.user_2wk_voting[i].vhist_day] = json.user_2wk_voting[i].user_vote_count;
+						vcdata2[json.user_2wk_voting[i].vhist_day] = json.user_2wk_voting[i].user_vote_rank;
+						if (json.user_2wk_voting[i].user_vote_rank > maxrank) {
+							maxrank = json.user_2wk_voting[i].user_vote_rank;
+						}
 					}
 				}
-				var gr = graph.makeSVG(graph.Line, 400, 300, { stroke: that.LineGraphColor, fill: that.LineGraphColor, xnonumbers: true, raw: [ vcdata ]});
-				//, fill: that.RatingHistoFill, maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10,
-				//gr.svg.setAttribute("class", "pl_ad_ratinghisto");
+				var gr = graph.makeSVG(graph.Line, 400, 300, { stroke: that.LineGraphColor, fill: that.LineGraphColor, xnonumbers: true, minrangey: 200, raw: [ vcdata ]});	
 				wdow.div.appendChild(gr.svg);
+				var gr2maxy = Math.ceil(maxrank / 50) * 50;
+				var gr2 = graph.makeSVG(graph.Line, 400, 300, { stroke: that.LineGraphColor, fill: that.LineGraphColor, upsidedown: true, miny: 1, maxy: gr2maxy, xnonumbers: true, raw: [ vcdata2 ]});	
+				wdow.div.appendChild(gr2.svg);
 			}
 		};
 	};
