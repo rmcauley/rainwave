@@ -175,6 +175,12 @@ $lang = array(
 	"guestlisteners" => "|guests| Guests",		// appears at the bottom of the current listeners list
 	"totallisteners" => "|total| Listeners Now",	// appears underneath guestlisteners.
 	"voteslast2weeks" => "Votes in the last 2 weeks: ",
+	"lsnrdt_allstations" => "All Stations",
+	"lsnrdt_averagerating" => "Avg. Rating",
+	"lsnrdt_ratingprogress" => "Rating Completion",
+	"lsnrdt_percentofratings" => "Rating Share",
+	"lsnrdt_percentofrequests" => "Request Share",
+	"lsnrdt_percentofvotes" => "Vote Share",
 	
 	// Preference names
 	

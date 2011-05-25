@@ -305,23 +305,23 @@ var fx = function() {
 	// this menuheight thing only works so long as 1 menu is on the page...
 	var menuheight = false;
 	that.makeMenuDropdown = function(menu, header, dropdown, options) {
-		if (!menuheight) menuheight = menu.offsetHeight;
 		var timeout = 0;
 		var fx_pulldown = that.make(that.CSSTranslateY, dropdown, 250);
 		fx_pulldown.set(-menuheight - 1);
 		var fx_opacity = that.make(that.OpacityRemoval, dropdown, 250, menu);
 		var mouseover = function(e) {
+			if (!menuheight) menuheight = menu.offsetHeight - 1;
 			if (e && ("pageX" in e) && ("pageY" in e) && (e.pageX == 0) && (e.pageY == 0)) return; 		// webkit bugfix that triggers menu hover on page load
 			clearTimeout(timeout);
 			if (options && options.checkbefore) {
 				if (!options.checkbefore) return;
 			}
 			dropdown.style.left = help.getElPosition(header).x + "px";
-			fx_pulldown.start(0);
+			fx_pulldown.start(menuheight);
 			fx_opacity.start(1);
 		};
 		var mouseout = function() {
-			fx_pulldown.start(-menuheight - 1);
+			fx_pulldown.start(0);
 			fx_opacity.start(0);
 		};
 		header.addEventListener("mouseover", mouseover, true);

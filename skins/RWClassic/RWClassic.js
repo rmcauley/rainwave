@@ -1405,6 +1405,29 @@ function _THEME() {
 	// LISTENERS PANELS
 	// *****************************************************************************/
 	
+	that.ListenerBarCSS = function(percent) {
+		var firststop = (percent > 15) ? percent - 15 : 0;
+	
+		var style = "background-image: -webkit-gradient(";
+		style += 		"linear, left top, right top,";
+		style +=		"color-stop(" + (firststop / 100) + ", rgb(0, 35, 163)),";
+		style +=		"color-stop(" + (percent / 100) + ", rgb(45, 109, 227))";
+		if (percent < 99) {
+			style += ", color-stop(" + ((percent + 1) / 100) + ", rgba(0, 0, 0, 0))";
+		}
+		style += ");";
+		
+		style += "background-image: -moz-linear-gradient(right center,"
+		style +=	"rgb(0, 35, 163) " + firststop + "%,";
+		style += 	"rgb(45, 109, 227) " + percent + "%";
+		if (percent < 99) {
+			style += ", rgba(0, 0, 0, 0) " + (percent + 1) + "%";
+		}
+		style += ");";
+		
+		return style;
+	}
+	
 	that.Extend.ListenersPanel = function(lp) {	
 		lp.drawListener = function(wdow, json) {
 			var header = createEl("div", { "class": "pl_ad_albumname" });
@@ -1420,13 +1443,8 @@ function _THEME() {
 			createEl("td", { "textContent": json.user_2wkvotes }, tr);
 			
 			wdow.div.appendChild(table);
-			
-			// Station breakdown
-			var table = createEl("table", { "class": "listener_detail" });
-			
-			var tr = createEl("tr", false, table);
 
-			// Vote rank vs. time
+			// Vote graphs
 			if (json.user_2wk_voting.length > 2) {
 				var vcdata = {};
 				vcdata2 = {};
@@ -1446,6 +1464,63 @@ function _THEME() {
 				var gr2 = graph.makeSVG(graph.Line, 400, 300, { stroke: that.LineGraphColor, fill: that.LineGraphColor, upsidedown: true, miny: 1, maxy: gr2maxy, xnonumbers: true, raw: [ vcdata2 ]});	
 				wdow.div.appendChild(gr2.svg);
 			}
+			
+			// Station breakdown
+			var stationstats = createEl("table", { "class": "listener_detail" });
+			
+			var tr = createEl("tr", false, stationstats);
+			createEl("td", false, tr);
+			createEl("td", { "class": "lsnrdt_spacer" }, tr);
+			createEl("td", { "textContent": _l("lsnrdt_averagerating") }, tr);
+			createEl("td", { "class": "lsnrdt_spacer" }, tr);
+			createEl("td", { "textContent": _l("lsnrdt_ratingprogress") }, tr);
+			createEl("td", { "class": "lsnrdt_spacer" }, tr);
+			createEl("td", { "textContent": _l("lsnrdt_percentofratings") }, tr);
+			createEl("td", { "class": "lsnrdt_spacer" }, tr);
+			createEl("td", { "textContent": _l("lsnrdt_percentofrequests") }, tr);
+			createEl("td", { "class": "lsnrdt_spacer" }, tr);
+			createEl("td", { "textContent": _l("lsnrdt_percentofvotes") }, tr);
+			
+			tr = createEl("tr", false, stationstats);
+			createEl("td", { "textContent": _l("lsnrdt_allstations") }, tr);
+			createEl("td", { "class": "lsnrdt_spacer" }, tr);
+			createEl("td", { "textContent": json.user_station_specific[0].rating_average }, tr);
+			createEl("td", { "class": "lsnrdt_spacer" }, tr);
+			createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[0].rating_progress), "textContent": json.user_station_specific[0].rating_progress + "%" }, tr);
+			createEl("td", { "class": "lsnrdt_spacer" }, tr);
+			createEl("td", false, tr);
+			createEl("td", { "class": "lsnrdt_spacer" }, tr);
+			createEl("td", false, tr);
+			createEl("td", { "class": "lsnrdt_spacer" }, tr);
+			createEl("td", false, tr);
+			
+			tr = createEl("tr", false, stationstats);
+			createEl("td", { "class": "lsnrdt_spacer" }, tr);
+			
+			var stations = [];
+			for (var i in json.user_station_specific) {
+				if (i != 0) stations.push(i);
+			}
+			stations.sort();
+			
+			for (var h = 0; h < stations.length; h++) {
+				i = stations[h];
+				tr = createEl("tr", false, stationstats);
+				createEl("td", { "textContent": STATIONS[i] }, tr);
+				createEl("td", { "class": "lsnrdt_spacer" }, tr);
+				createEl("td", { "textContent": json.user_station_specific[i].rating_average }, tr);
+				createEl("td", { "class": "lsnrdt_spacer" }, tr);
+				createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[i].rating_progress), "textContent": json.user_station_specific[i].rating_progress + "%" }, tr);
+				createEl("td", { "class": "lsnrdt_spacer" }, tr);
+				createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[i].rating_percentage), "textContent": json.user_station_specific[i].rating_percentage + "%" }, tr);
+				createEl("td", { "class": "lsnrdt_spacer" }, tr);
+				createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[i].request_percentage), "textContent": json.user_station_specific[i].request_percentage + "%" }, tr);
+				createEl("td", { "class": "lsnrdt_spacer" }, tr);
+				createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[i].vote_percentage), "textContent": json.user_station_specific[i].vote_percentage + "%" }, tr);
+			}
+			
+			wdow.div.appendChild(stationstats);
+			
 		};
 	};
 	

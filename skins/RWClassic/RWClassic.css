@@ -1344,3 +1344,19 @@ div.clist_total_count {
 span.lang_totallisteners_total {
 	font-weight: bold;
 }
+
+td.lsnrdt_spacer {
+	width: 1em;
+}
+
+table.listener_detail td {
+	padding: .5em;
+	text-align: centre;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+
+td.lsnrdt_bar {
+	border-right: solid 1px #AAA;
+	border-left: solid 1px #AAA;
+}
