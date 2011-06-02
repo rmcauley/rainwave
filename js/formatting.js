@@ -55,6 +55,12 @@ function measureText(text, style) {
 	return textwidth;
 }
 
+// VERY rough, based on: http://www.gubatron.com/blog/2010/01/16/javascript-get-how-many-digits-are-there-in-a-decimal-number/
+// It is, however, far less painful than using measureText as above.
+function measureNumber(number) {
+	 return (UISCALE * 0.7) * (1 + Math.floor(Math.log(number)/Math.log(10)));
+}
+
 function formatNumberToMSS(seconds) {
 	var minutes = Math.floor(seconds / 60);
 	var newseconds = seconds - (minutes * 60);

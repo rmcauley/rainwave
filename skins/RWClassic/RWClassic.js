@@ -1156,7 +1156,24 @@ function _THEME() {
 			wdow.albumdetailtd = createEl("td", { "class": "pl_ad_albumdetailtd" }, tr);
 			
 			if ((json.album_rating_count >= 10) && svg.capable) {
-				var gr = graph.makeSVG(graph.RatingHistogram, 200, 120 - (UISCALE * 3), { stroke: that.RatingHistoStroke, fill: that.RatingHistoFill, maxx: 5, stepdeltax: 0.5, stepsy: 3, xprecision: 1, xnumbermod: 1, xnomin: true, ynomin: true, minx: 0.5, miny: 0, padx: 10, raw: [ json.album_rating_histogram ]});
+				var gr = graph.makeSVG(200, 120 - (UISCALE * 3), [
+					{	"options": {
+							"stroke": that.BarGraphStroke,
+							"fill": that.BarGraphFill,
+							"xaxis_max": 5,
+							"xaxis_perstep": 0.5, 
+							"yaxis_steps": 3,
+							"xaxis_precision": 1, 
+							"xaxis_modulus": 1, 
+							"xaxis_nomin": true, 
+							"yaxis_nomin": true, 
+							"xaxis_min": 0.5, 
+							"yaxis_min": 0, 
+							"xaxis_padpx": 10
+						},
+						"data": json.album_rating_histogram,
+						"graphfunc": graph.Bar
+					} ] );
 				gr.svg.setAttribute("class", "pl_ad_ratinghisto");
 				wdow.albumdetailtd.appendChild(gr.svg);
 			}
@@ -1417,7 +1434,7 @@ function _THEME() {
 		}
 		style += ");";
 		
-		style += "background-image: -moz-linear-gradient(right center,"
+		style += "background-image: -moz-linear-gradient(left center,"
 		style +=	"rgb(0, 35, 163) " + firststop + "%,";
 		style += 	"rgb(45, 109, 227) " + percent + "%";
 		if (percent < 99) {
@@ -1430,19 +1447,33 @@ function _THEME() {
 	
 	that.Extend.ListenersPanel = function(lp) {	
 		lp.drawListener = function(wdow, json) {
-			var header = createEl("div", { "class": "pl_ad_albumname" });
-			createEl("div", { "textContent": json.username }, header);
-			createEl("img", { "src": json.user_avatar, "class": "pl_ad_avatar" }, header);
-			wdow.div.appendChild(header);
+			wdow.hdrtable = createEl("table", { "style": "width: 100%; margin-bottom: 0.5em;", "cellspacing": 0 }, wdow.div);
+		
+			var tr = createEl("tr", false, wdow.hdrtable);
+			wdow.listenernametd = createEl("td", { "class": "pl_ad_albumnametd", "colspan": 2 }, tr);
+			wdow.listenername = createEl("div", { "class": "pl_ad_albumname", "textContent": json.username }, wdow.listenernametd);
+
+			tr = createEl("tr", false, wdow.hdrtable);
+			wdow.detailtd = createEl("td", { "class": "pl_ad_albumdetailtd" }, tr);
 			
 			// Single statistics
-			var table = createEl("table", { "class": "listener_detail" });
+			var dtable = createEl("table", { "class": "listener_detail" });
 			
-			var tr = createEl("tr", false, table);
-			createEl("td", { "textContent": _l("voteslast2weeks") }, tr);
-			createEl("td", { "textContent": json.user_2wkvotes }, tr);
+			var dtr = createEl("tr", false, dtable);
+			createEl("td", { "textContent": _l("voteslast2weeks") }, dtr);
+			createEl("td", { "textContent": json.radio_2wkvotes }, dtr);
+			wdow.detailtd.appendChild(dtable);
+
+			// Avatar
+			wdow.avatartd = createEl("td", { "class": "pl_ad_albumart_td" }, tr);
+			if (json.user_avatar && (json.user_avatar != "images/blank.png")) {
+				createEl("img", { "src": json.user_avatar, "class": "pl_ad_albumart" }, wdow.avatartd);
+			}
+			else {
+				createEl("img", { "src": "images/noart_1.jpg", "class": "pl_ad_albumart" }, wdow.avatartd);
+			}
 			
-			wdow.div.appendChild(table);
+			wdow.div.appendChild(wdow.hdrtable);
 
 			// Vote graphs
 			if (json.user_2wk_voting.length > 2) {
@@ -1458,11 +1489,36 @@ function _THEME() {
 						}
 					}
 				}
-				var gr = graph.makeSVG(graph.Line, 400, 300, { stroke: that.LineGraphColor, fill: that.LineGraphColor, xnonumbers: true, minrangey: 200, raw: [ vcdata ]});	
-				wdow.div.appendChild(gr.svg);
+				var maxtime = clock.now;
+				var mintime = clock.now - 2629743;
 				var gr2maxy = Math.ceil(maxrank / 50) * 50;
-				var gr2 = graph.makeSVG(graph.Line, 400, 300, { stroke: that.LineGraphColor, fill: that.LineGraphColor, upsidedown: true, miny: 1, maxy: gr2maxy, xnonumbers: true, raw: [ vcdata2 ]});	
-				wdow.div.appendChild(gr2.svg);
+				var gr = graph.makeSVG(400, 300, [
+					{	"options": {
+							"stroke": that.BarGraphStroke, 
+							"fill": that.BarGraphFill, 
+							"xaxis_nonumbers": true, 
+							"minrangey": 100, 
+							"xaxis_max": maxtime, 
+							"xaxis_perstep": 86400, 
+							"xgrid_perstep": (86400 * 7), 
+							"xaxis_min": mintime
+						},
+						"data": vcdata,
+						"graphfunc": graph.Bar
+					},
+					{	"options": { 
+							"stroke": that.LineGraphColor, 
+							"fill": that.LineGraphColor, 
+							"yaxis_reverse": true, 
+							"yaxis_min": 1, 
+							"yaxis_max": gr2maxy, 
+							"xaxis_max": maxtime, 
+							"xaxis_min": mintime
+						},
+						"data": vcdata2,
+						"graphfunc": graph.Line
+					} ] );
+				wdow.div.appendChild(gr.svg);
 			}
 			
 			// Station breakdown
@@ -1576,23 +1632,23 @@ function _THEME() {
 		defs.appendChild(usergradient);
 	};
 	
-	that.RatingHistoStroke = function(x, y) {
+	that.BarGraphStroke = function(graphindex, x, y) {
 		return "#000000";
 	};
 	
-	that.RatingHistoFill = function(x, y) {
+	that.BarGraphFill = function(graphindex, x, y) {
 		return "url(#Rating_usergradient)";
 	};
 	
-	that.LineGraphColor = function(num, x, y) {
+	that.LineGraphColor = function(graphindex, x, y) {
 		var key = Math.round(120 * (1 - y)) + 128 + 44;
 		var sub = 80;
 		var comp = key - 50;
-		if (num == 0) {	
-			return "rgb(" + sub + ", " + comp + ", " + key + ")";
-		}
-		if (num == 1) {
+		if (graphindex == 1) {
 			return "rgb(" + sub + ", " + key + ", " + comp + ")";
+		}
+		else {
+			return "rgb(" + sub + ", " + comp + ", " + key + ")";
 		}
 	};
 	

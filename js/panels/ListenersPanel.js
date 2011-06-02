@@ -80,7 +80,7 @@ panels.ListenersPanel = {
 var ListenersSearchTable = function(parent, container, view) {
 	var that = SearchTable(container, "user_id", "pl_albumlist");
 	that.changeSearchKey("username");
-	that.changeSortKey("user_2wkvotes");
+	that.changeSortKey("radio_2wkvotes");
 	that.changeReverseSort(true);
 	
 	that.syncdeletes = true;
@@ -92,7 +92,7 @@ var ListenersSearchTable = function(parent, container, view) {
 	that.drawEntry = function(clist) {
 		clist.name_td = createEl("td", { "textContent": clist.username, "class": "pl_al_name" }, clist.tr);
 		clist.name_td.addEventListener('click', that.updateScrollOffsetByEvt, true);
-		clist.votes_td = createEl("td", { "textContent": clist.user_2wkvotes, "class": "pl_al_number" }, clist.tr);
+		clist.votes_td = createEl("td", { "textContent": clist.radio_2wkvotes, "class": "pl_al_number" }, clist.tr);
 		Username.linkify(clist.user_id, clist.name_td);
 	};
 	
@@ -104,7 +104,7 @@ var ListenersSearchTable = function(parent, container, view) {
 	};
 	
 	that.drawUpdate = function(clist) {
-		clist.votes_td.textContent = clist.user_2wkvotes;
+		clist.votes_td.textContent = clist.radio_2wkvotes;
 	};
 	
 	that.searchEnabled = function() {

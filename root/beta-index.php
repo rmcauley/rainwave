@@ -52,6 +52,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 <?php
 
 	print "<script type=\"text/javascript\">\n";
+	print "\tvar PRELOADED_LANG = '" . $lang . "';\n";
 	print "\tvar PRELOADED_APIKEY = '" . newAPIKey(true) . "';\n";
 	print "\tvar PRELOADED_USER_ID = " . $user_id . ";\n";
 	print "\tvar PRELOADED_SID = " . $sid . ";\n";

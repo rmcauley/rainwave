@@ -21,7 +21,7 @@ var initpiggyback = {};
 var theme = _THEME();
 
 function init() {
-	prefs.addPref("edi", { name: "language", defaultvalue: "en_CA", type: "dropdown", options: [
+	prefs.addPref("edi", { name: "language", defaultvalue: PRELOADED_LANG, type: "dropdown", options: [
 			{ "value": "de_DE", "option": "Deutsch" },
 			{ "value": "en_CA", "option": "English (Canada)" },
 			{ "value": "es_CL", "option": "Español (Chile)" },
@@ -33,10 +33,8 @@ function init() {
 		], refresh: true });
 	prefs.addPref("edi", { hidden: true, name: "theme", defaultvalue: "RWClassic", type: "dropdown", options: [ { value: "RWClassic", option: "Rainwave 3" } ], refresh: true });
 	
-	//if (document.location.href.indexOf("beta") == -1) {
-		lyre.catcherrors = true;
-		lyre.jsErrorCallback = errorcontrol.jsError;
-	//}
+	//lyre.catcherrors = true;
+	//lyre.jsErrorCallback = errorcontrol.jsError;
 	lyre.setStationID(PRELOADED_SID);
 	lyre.setUserID(PRELOADED_USER_ID);
 	lyre.setKey(PRELOADED_APIKEY);

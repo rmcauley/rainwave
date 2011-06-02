@@ -1,7 +1,6 @@
 var graph = function() {
 	if (!svg.capable) return false;
 	var that = {};
-	var gid = 0;
 	
 	var svgdefs = svg.make( { style: "position: absolute;", "width": 0, "height": 0 } );
 	var defs = svg.makeEl("defs");
@@ -9,332 +8,347 @@ var graph = function() {
 	svgdefs.appendChild(defs);
 	document.getElementById("body").appendChild(svgdefs);
 	
-	that.extend = function(name, func) {
-		that[name] = func;
-	};
+	// graphs should be an array of objects that consist of:
+	//		data
+	//		options
+	//		graphfunc
 	
-	that.makeSVG = function(gfunc, width, height, data) {
-		var s = svg.make({ width: width, height: height });
-		var newgr = that.make(gfunc, 0, 0, width, height, data);
-		newgr.svg = s;
+	that.makeSVG = function(width, height, graphs) {
+		var newgr = that.make(0, 0, width, height, graphs);
+		newgr.svg = svg.make({ width: width, height: height });
 		newgr.svg.appendChild(newgr.g);
 		return newgr;
 	};
 	
-	that.make = function(gfunc, x, y, width, height, data) {
-		var graph = {};
-		if (!data.xnumbermod) data.xnumbermod = false;
-		if (!data.ynumbermod) data.ynumbermod = false;
-		graph.gid = parseInt(gid);
-		gid++;
-		graph.width = width;
-		graph.height = height;
-		graph.data = data;
-		graph.ystartx = 0;
-		graph.xendy = height;
-		graph.g = svg.makeEl("g");
-		if (x || y) graph.g.setAttribute("transform", "translate(" + x + ", " + y + ")");
-		graph.scalable = svg.makeEl("g");
-		graph.bgrid = svg.makeEl("g");
-		graph.plots = [];
+	that.make = function(x, y, width, height, graphs) {
+		var newgr = {};
+		newgr.graphs = graphs;
 
-		graph.label = function() {
-			if (graph.data.xlabel) {
-				var xlabelx = ((graph.width - (UISCALE * 2)) / 2) - (measureText(graph.data.xlabel) / 2) + (UISCALE * 2);
-				var xlabel = svg.makeEl("text", { x: xlabelx, y: graph.height - (UISCALE * .3), fill: theme.textcolor });
-				xlabel.textContent = graph.data.xlabel;
-				graph.g.appendChild(xlabel);
-				graph.xendy -= UISCALE;
+		newgr.g = svg.makeEl("g");
+		if (x || y) newgr.g.setAttribute("transform", "translate(" + x + ", " + y + ")");
+		
+		var i;
+		
+		// Variables for scaling the graph, that apply once across the entire graph.
+		// Scaling is done only according to the first data set.
+		
+		newgr.xaxis_width = 0;
+		newgr.xaxis_padpx = 0;
+		newgr.xaxis_height = 0;
+		newgr.xaxis_steps = graphs[0].options.xaxis_steps ? graphs[0].options.xaxis_steps : 10;
+		newgr.xgrid_perstep = graphs[0].options.xgrid_perstep ? graphs[0].options.xgrid_perstep : false; 
+		
+		newgr.yaxis_height = 0;
+		newgr.yaxis_padpx = 0;
+		newgr.yaxis_width = 0;
+		newgr.yaxis_steps = graphs[0].options.yaxis_steps ? graphs[0].options.yaxis_steps : 5;
+		newgr.ygrid_perstep = graphs[0].options.ygrid_perstep ? graphs[0].options.ygrid_perstep : false;
+		
+		// Set-up scaling and variables for each graph
+		
+		for (i = 0; i < newgr.graphs.length; i++) {
+			newgr.graphs[i].graphindex = parseInt("" + i);		// the horror
+			that.graphSkeleton(newgr, newgr.graphs[i]);
+			newgr.graphs[i].graphfunc(newgr, newgr.graphs[i]);
+		}
+		// we only need to scale the first graph to do work, graph.update() will handle scaling for the other graphs
+		newgr.graphs[0].scale();
+
+		// The following code is only calculated once based on options, so does not need to be part of per-update scaling
+		
+		if (!graphs[0].options.xaxis_padpx) {
+			if (graphs[0].xaxis_nonumbers) newgr.xaxis_padpx = 0;
+			else newgr.xaxis_padpx = UISCALE;
+		}
+		if (!graphs[0].options.yaxis_padpx) {
+			if (graphs[0].options.yaxis_ynonumbers) newgr.yaxis_padpx = 0;
+			else newgr.yaxis_padpx = UISCALE;
+		}
+		
+		if (!graphs[0].options.xaxis_nonumbers) newgr.xaxis_height = Math.floor(UISCALE * 1.5);
+		else newgr.xaxis_height = 1;
+		
+		if (!graphs[0].yaxis_nonumbers) newgr.yaxis_width = measureNumber(Math.floor(newgr.graphs[0].yaxis_max));
+		else newgr.yaxis_width = 1;
+		
+		newgr.xaxis_width = (width - newgr.yaxis_width) - newgr.xaxis_padpx;
+		newgr.yaxis_height = (height - newgr.xaxis_height) - newgr.yaxis_padpx;
+		
+		// Following code only gets drawn once on graph init (borders, etc)
+		// CAREFUL, there is definitely some sloppy variable overwriting going on here, particularly with "x" and y"
+		
+		var drawonce = svg.makeEl("g");
+		
+		if (!graphs[0].options.xgrid_modulus) graphs[0].options.xgrid_modulus = false;
+		if (!graphs[0].options.xaxis_steps) graphs[0].options.xaxis_steps = (newgr.graphs[0].xaxis_max - newgr.graphs[0].xaxis_min) / newgr.graphs[0].xaxis_steps;
+		if (!graphs[0].options.ygrid_modulus) graphs[0].options.ygrid_modulus = false;
+		if (!graphs[0].options.yaxis_steps) graphs[0].options.yaxis_steps = (newgr.graphs[0].yaxis_max - newgr.graphs[0].yaxis_min) / newgr.graphs[0].yaxis_steps;
+		
+		// Render X grid lines
+		var stepline;
+		if (!graphs[0].options.xgrid_disable) {
+			for (i = newgr.graphs[0].xgrid_perstep + newgr.graphs[0].xaxis_min; i <= newgr.graphs[0].xaxis_max; i += newgr.graphs[0].xgrid_perstep) {
+				x = newgr.graphs[0].getXPixel(i);		// TODO: this is going to screwup somehow, somewhere... don't know how yet, though
+				stepline = svg.makeLine(x, newgr.yaxis_height, x, 0, { "stroke": theme.vdarktext, "stroke_width": 1 });
+				drawonce.appendChild(stepline);
+			}
+		}
+		
+		// Render Y grid lines
+		if (!graphs[0].options.ygrid_disable) {
+			for (i = newgr.graphs[0].ygrid_perstep + newgr.graphs[0].yaxis_min; i <= newgr.graphs[0].yaxis_max; i += newgr.graphs[0].ygrid_perstep) {
+				y = newgr.graphs[0].getYPixel(i);
+				stepline = svg.makeLine(newgr.yaxis_width, y, width, y, { stroke: theme.vdarktext, stroke_width: 1 });
+				drawonce.appendChild(stepline);
+			}
+		}
+		
+		// Render border lines last
+		var bordery = svg.makeLine(newgr.yaxis_width, 0, newgr.yaxis_width, newgr.yaxis_height, { shape_rendering: "crispEdges", stroke: theme.textcolor, stroke_width: 1 } );
+		var borderx = svg.makeLine(newgr.yaxis_width, newgr.yaxis_height, width, newgr.yaxis_height, { shape_rendering: "crispEdges", stroke: theme.textcolor, stroke_width: 1 } );
+		drawonce.appendChild(bordery);
+		drawonce.appendChild(borderx);
+		
+		// if (subgraph.data.xlabel) {
+			// var xlabelx = ((subgraph.width - (UISCALE * 2)) / 2) - (measureText(subgraph.data.xlabel) / 2) + (UISCALE * 2);
+			// var xlabel = svg.makeEl("text", { x: xlabelx, y: subgraph.height - (UISCALE * .3), fill: theme.textcolor });
+			// xlabel.textContent = subgraph.data.xlabel;
+			// subgraph.g.appendChild(xlabel);
+			// subgraph.xendy -= UISCALE;
+		// }
+		
+		// if (subgraph.data.ylabel) {
+			// var ylabely = subgraph.height - UISCALE - measureText(subgraph.data.ylabel);
+			// var ylabel = svg.makeEl("text", { x: 0, y: ylabely + UISCALE, fill: theme.textcolor, transform: "rotate(-90, 0, " + ylabely + ")" });
+			// ylabel.textContent = subgraph.data.ylabel;
+			// subgraph.g.appendChild(ylabel);
+			// subgraph.ystartx += UISCALE + (UISCALE * .3);
+		// }
+		
+		newgr.g.appendChild(drawonce);
+		
+		// TODO: Make this fade in/out and the graph re-scalable
+		newgr.g.appendChild(newgr.graphs[0].getScaledGroup());
+		
+		for (i = 0; i < newgr.graphs.length; i++) {
+			newgr.graphs[i].update(newgr.graphs[i].data, true);
+			newgr.g.appendChild(newgr.graphs[i].plot);
+		}
+		
+		return newgr;
+	};
+	
+	//**************************************************************************************************
+		
+	that.graphSkeleton = function(parent, graph) {
+		graph.xaxis_perstep = 0;
+		graph.yaxis_perstep = 0;
+		graph.plot = svg.makeEl("g");
+		graph.xaxis_max = false;
+		graph.xaxis_min = false;
+		graph.yaxis_max = false;
+		graph.yaxis_min = false;
+		
+		graph.plot = svg.makeEl("g");
+		graph.plot.setAttribute("transform", "translate(" + parent.yaxis_width + ",0)");
+	
+		graph.scale = function() {
+			var i, j;
+			
+			graph.xaxis_points = [];
+			var p_miny = 1000000000;		// potential min y
+			var p_maxy = 0;					// potential max y
+			for (i in graph.data) {
+				graph.xaxis_points.push(i);
+				if (graph.data[i] < p_miny) p_miny = graph.data[i];
+				if (graph.data[i] > p_maxy) p_maxy = graph.data[i];
+			}
+			graph.xaxis_points.sort();
+
+			if (graph.options.xaxis_max) graph.xaxis_max = graph.options.xaxis_max;
+			else graph.xaxis_max = Math.ceil(graph.xaxis_points[graph.xaxis_points.length - 1] / 10.0) * 10;
+			if (graph.options.xaxis_min) graph.xaxis_min = graph.options.xaxis_min;
+			else graph.xaxis_min = graph.xaxis_points[0] - ((graph.xaxis_points[graph.xaxis_points.length - 1] - graph.xaxis_points[0]) * 0.05);
+			if (graph.options.yaxis_min) graph.yaxis_min = graph.options.yaxis_min;
+			else graph.yaxis_max = p_maxy;
+			if (graph.options.yaxis_max) graph.yaxis_max = graph.options.yaxis_max;
+			else graph.yaxis_min = Math.floor(p_miny - ((p_maxy - p_miny) * 0.1));
+
+			if (graph.options.yaxis_minrange && ((graph.yaxis_max - graph.yaxis_min) < graph.options.yaxis_minrange)) {
+				graph.yaxis_min = graph.yaxis_max - graph.options.yaxis_minrange;
+				if (graph.yaxis_min < 0) graph.yaxis_min += Math.abs(graph.yaxis_min);
 			}
 			
-			if (graph.data.ylabel) {
-				var ylabely = graph.height - UISCALE - measureText(graph.data.ylabel);
-				var ylabel = svg.makeEl("text", { x: 0, y: ylabely + UISCALE, fill: theme.textcolor, transform: "rotate(-90, 0, " + ylabely + ")" });
-				ylabel.textContent = graph.data.ylabel;
-				graph.g.appendChild(ylabel);
-				graph.ystartx += UISCALE + (UISCALE * .3);
-			}
+			if (graph.xaxis_min < 0) graph.xaxis_min = 0;
+			if (graph.yaxis_min < 0) graph.yaxis_min = 0;
+			
+			graph.xaxis_perstep = (graph.xaxis_max - graph.xaxis_min) / parent.xaxis_steps;
+			graph.yaxis_perstep = (graph.yaxis_max - graph.yaxis_min) / parent.yaxis_steps;
 		};
 		
-		graph.scale = function() {			
-			var keys = [];
-			var i, j;
-			var p_miny = 1000000000;		// potential min y
-			for (i in graph.data.raw) {
-				for (j in graph.data.raw[i]) {
-					keys.push(j);
-					if (graph.data.raw[i][j] < p_miny) p_miny = graph.data.raw[i][j];
-				}
-			}
-			keys.sort();
+		graph.getScaledGroup = function() {
+			var scaleg = svg.makeEl("g");
 			
-			graph.maxx = graph.data.maxx ? graph.data.maxx : keys[keys.length - 1];
-			graph.maxy = graph.data.maxy ? graph.data.maxy : true;
-			graph.minx = typeof(graph.data.minx) != "undefined" ? graph.data.minx : true;
-			graph.miny = typeof(graph.data.miny) != "undefined" ? graph.data.miny : true;
-			if (graph.maxy === true) {
-				graph.maxy = 0;
-				for (i in graph.data.raw) {
-					for (j in graph.data.raw[i]) {
-						if (graph.data.raw[i][j] > graph.maxy) graph.maxy = graph.data.raw[i][j];
-					}
-				}
-				graph.maxy = Math.ceil(graph.maxy / 10) * 10;
-			}
-			if (graph.minx === true) graph.minx = keys[0] - ((keys[keys.length - 1] - keys[0]) * 0.05);
-			if (graph.miny === true) {
-				graph.miny = p_miny;
-				graph.miny = Math.floor(graph.miny - ((graph.maxy - graph.miny) * 0.1));
-				if (graph.miny < 0) graph.miny = 0;
-				if (graph.miny == graph.maxy) graph.miny = 0;
-			}
-			if (graph.data.minrangey) {
-				if (graph.maxy - graph.miny < graph.data.minrangey) {
-					graph.miny = graph.maxy - graph.data.minrangey;
-					if (graph.miny < 0) {
-						graph.maxy += Math.abs(graph.miny);
-						graph.miny = 0;
-					}
-				}
-			}
-			if (!graph.data.padx) {
-				if (graph.data.xnonumbers) graph.data.padx = 0;
-				else graph.data.padx = UISCALE;
-			}
-			if (!graph.data.pady) {
-				if (graph.data.ynonumbers) graph.data.pady = 0;
-				else graph.data.pady = UISCALE;
-			}
-			// by this point, we have the "real" miny/maxy numbers as defined by options or the graph data
-			// it has not been changed in any way
-			
-			// This next block determines the starting X pixel of the Y legend and the ending (bottom) Y pixel of the X legends
-			if (!graph.data.ynonumbers) graph.ystartx += Math.floor(measureText(graph.data.yprecision ? graph.maxy.toFixed(graph.data.yprecision) : Math.round(graph.maxy)));
-			else graph.ystartx = 1;
-			if (!graph.data.xnonumbers) graph.xendy -= Math.floor(UISCALE * 1.5);
-			else graph.xendy--;
-			
-			// Number of background grid and legend markings
-			var stepsx = graph.data.stepsx ? graph.data.stepsx : 10;
-			var stepsy = graph.data.stepsy ? graph.data.stepsy : 5;
-			// If more steps than numbers, make the number of steps whole numbers
-			if (stepsy > graph.maxy) stepsy = graph.maxy;
-			// Determine the number of x/y values to step for each grid/legend.  THIS IS NOT IN PIXELS.
-			var stepdeltax = graph.data.stepdeltax ? graph.data.stepdeltax : (graph.maxx - graph.minx) / stepsx;
-			var stepdeltay = graph.data.stepdeltay ? graph.data.stepdeltay : (graph.maxy - graph.miny) / stepsy;
-			// Number of steps that need to be done.
-			var numstepsx = (graph.maxx - graph.minx) / stepdeltax;
-			var numstepsy = (graph.maxy - graph.miny) / stepdeltay;
-			// Now we begin shrinking the actual area for graph data to create some padding.
-			graph.gwidth = (graph.width - graph.ystartx) - graph.data.padx;
-			graph.gheight = (graph.height - (graph.height - graph.xendy)) - graph.data.pady;
-			// Variable for bar graphs.
-			graph.barwidth = graph.gwidth / numstepsx;
 			var steptext;
-			var stepline;
-			
-			// Render angled line separating Y and X minimum values
-			var runningx = graph.ystartx;
-			if (((graph.minx !== 0) || (graph.miny !== 0)) && (!graph.data.xnonumbers && !graph.data.ynonumbers) && (!graph.data.xnomin && !graph.data.ynomin)) {
-				graph.scalable.appendChild(svg.makeLine(graph.ystartx, graph.xendy, 3, height - 3, { stroke_width: 1, stroke: theme.vdarktext }));
-			}
+			var usedxmin = false;
 			// Render minimum X value
-			if (((graph.minx !== 0) || (graph.miny !== 0)) && !graph.data.xnonumbers && !graph.data.xnomin) {
-				steptext = svg.makeEl("text", { x: graph.ystartx + 2, y: graph.xendy + UISCALE + 2, fill: theme.vdarktext, text_anchor: "middle", style: "font-size: 0.7em" });
-				//if (graph.maxx >= (keys[0] + 10)) steptext.textContent = keys[0];
-				steptext.textContent = (graph.data.xprecision) ? graph.minx.toFixed(graph.data.xprecision) : Math.floor(graph.minx);
-				graph.scalable.appendChild(steptext);
+			if (((graph.xaxis_min !== 0) || (graph.yaxis_min !== 0)) && !graph.options.xaxis_nonumbers && !graph.options.xaxis_nomin) {
+				usedxmin = true;
+				steptext = svg.makeEl("text", { x: parent.yaxis_width + 2, y: parent.yaxis_height + UISCALE + 2, fill: theme.vdarktext, text_anchor: "middle", style: "font-size: 0.7em" });
+				steptext.textContent = (graph.options.axis_precision) ? graph.xaxis_min.toFixed(graph.options.xaxis_precision) : Math.floor(graph.xaxis_min);
+				scaleg.appendChild(steptext);
 			}
-			// Render grid lines and legend numbers along the X axis
-			for (i = stepdeltax + graph.minx; i <= graph.maxx; i += stepdeltax) {
-				runningx += graph.gwidth / numstepsx;
-				if (!graph.data.xnonumbers && (!graph.data.xnumbermod || (i % graph.data.xnumbermod == 0))) {
-					steptext = svg.makeEl("text", { x: runningx, y: graph.xendy + UISCALE * 1.2, fill: theme.textcolor, text_anchor: "middle" });
-					steptext.textContent = (graph.data.xprecision) ? i.toFixed(graph.data.xprecision) : Math.floor(i);
-					graph.scalable.appendChild(steptext);
+			
+			// Render X numbers
+			if (!graph.options.xaxis_nonumbers) {
+				for (i = graph.xgrid_perstep + graph.xaxis_min; i <= graph.xaxis_max; i += graph.xgrid_perstep) {
+					x = graph.getXPixel(i);		// TODO: this will likely screw up just like getDrawOnceGroup
+					if (!graph.options.xgrid_modulus || (i % graph.options.xgrid_modulus == 0)) {
+						steptext = svg.makeEl("text", { "x": x, "y": parent.yaxis_height + UISCALE * 1.2, "fill": theme.textcolor, "text_anchor": "middle" });
+						steptext.textContent = (graph.options.xaxis_precision) ? i.toFixed(graph.options.xaxis_precision) : Math.floor(i);
+						scaleg.appendChild(steptext);
+					}
 				}
-				stepline = svg.makeLine(runningx, graph.xendy, runningx, 0, { stroke: theme.vdarktext, stroke_width: 1 });
-				graph.bgrid.appendChild(stepline);
 			}
 			
 			// Render Y minimum text
-			var runningy = graph.xendy;
-			if (((graph.minx !== 0) || (graph.miny !== 0)) && !graph.data.ynonumbers && !graph.data.ynomin) {
-				var zerotexty = graph.data.xnonumbers ? runningy : runningy + (UISCALE * 0.3);
-				steptext = svg.makeEl("text", { x: graph.ystartx - 2, y: zerotexty, fill: theme.vdarktext, text_anchor: "end", style: "font-size: 0.7em" });
-				if (graph.data.upsidedown) {
-					if (typeof(graph.data.maxy) != "undefined") steptext.textContent = graph.maxy;
-					else steptext.textContent = graph.data.yprecision ? graph.maxy.toFixed(graph.data.yprecision) : Math.floor(graph.maxy);
+			if (((graph.xaxis_min !== 0) || (graph.yaxis_min !== 0)) && !graph.options.yaxis_nonumbers && !graph.options.yaxis_nomin) {
+				var zerotexty = parent.yaxis_height;
+				if (!usedxmin) zerotexty -= (UISCALE * 0.7);
+				steptext = svg.makeEl("text", { "x": parent.yaxis_width - 2, "y": zerotexty, "fill": theme.vdarktext, "text_anchor": "end", "style": "font-size: 0.7em" });
+				if (graph.options.yaxis_reverse) {
+					steptext.textContent = graph.options.yaxis_precision ? graph.yaxis_max.toFixed(graph.options.yaxis_precision) : Math.floor(graph.yaxis_max);
 				}
 				else {
-					if (typeof(graph.data.miny) != "undefined") steptext.textContent = graph.miny;
-					//else if (graph.maxy > (graph.data.raw[keys[0]] + 10)) steptext.textContent = graph.data.raw[keys[0]];
-					else steptext.textContent = graph.data.yprecision ? graph.miny.toFixed(graph.data.yprecision) : Math.floor(graph.miny);
+					steptext.textContent = graph.options.yaxis_precision ? graph.yaxis_min.toFixed(graph.options.yaxis_precision) : Math.floor(graph.yaxis_min);
 				}
-				graph.scalable.appendChild(steptext);
+				scaleg.appendChild(steptext);
 			}
-			// Render Y grid lines
-			i = graph.data.upsidedown ? graph.maxy - stepdeltay : stepdeltay + graph.miny;
-			while (true) {
-				runningy -= graph.gheight / numstepsy;
-				if (!graph.data.ynonumbers && (!graph.data.ynumbermod || (i % graph.data.ynumbermod == 0))) {
-					steptext = svg.makeEl("text", { x: graph.ystartx, y: runningy + (UISCALE * 0.5), fill: theme.textcolor, text_anchor: "end" });
-					if ((i == graph.maxy) || (graph.maxy < 50)) steptext.textContent = (graph.data.yprecision) ? i.toFixed(graph.data.yprecision) : Math.floor(i);
-					else steptext.textContent = (graph.data.yprecision) ? i.toFixed(graph.data.yprecision) : Math.floor(i / 10) * 10;
-					graph.scalable.appendChild(steptext);
-				}
-				stepline = svg.makeLine(graph.ystartx, runningy, graph.width, runningy, { stroke: theme.vdarktext, stroke_width: 1 });
-				graph.bgrid.appendChild(stepline);
-				if (graph.data.upsidedown) {
-					if (i <= graph.miny) break;
-					i -= stepdeltay;
-				}
-				else {
-					if (i >= graph.maxy) break;
-					i += stepdeltay;
+
+			if (!graph.options.yaxis_nonumbers) {
+				var ydisp;
+				// This loop is a little trickier because of the possibility of reversing
+				i = graph.options.yaxis_reverse ? graph.yaxis_max - graph.yaxis_perstep : graph.yaxis_perstep + graph.yaxis_min;
+				var y = parent.yaxis_height;
+				while (true) {
+					y -= parent.yaxis_height / parent.yaxis_steps;
+					if (!graph.options.ygrid_modulus || (i % graph.options.ygrid_modulus == 0)) {
+						steptext = svg.makeEl("text", { "x": parent.yaxis_width, "y": y + (UISCALE * 0.5), "fill": theme.textcolor, "text_anchor": "end" });
+						ydisp = i;
+						if ((i == graph.yaxis_max) || (graph.yaxis_max < 50)) ydisp = (i / 10) * 10;
+						steptext.textContent = graph.options.yaxis_precision ? ydisp.toFixed(graph.options.yprecision) : Math.floor(ydisp);
+						scaleg.appendChild(steptext);
+					}
+					if (graph.options.yaxis_reverse) {
+						if (i <= graph.yaxis_min) break;
+						i -= graph.yaxis_perstep;
+					}
+					else {
+						if (i >= graph.yaxis_max) break;
+						i += graph.yaxis_perstep;
+					}
 				}
 			}
 			
-			// Render border lines last
-			var bordery = svg.makeLine(graph.ystartx, 0, graph.ystartx, graph.xendy, { shape_rendering: "crispEdges", stroke: theme.textcolor, stroke_width: 1 } );
-			var borderx = svg.makeLine(graph.ystartx, graph.xendy, graph.width, graph.xendy, { shape_rendering: "crispEdges", stroke: theme.textcolor, stroke_width: 1 } );
-			graph.scalable.appendChild(bordery);
-			graph.scalable.appendChild(borderx);
+			return scaleg;
 		};
 		
 		graph.getXPixel = function(xvalue) {
-			return (((xvalue - graph.minx) / (graph.maxx - graph.minx)) * graph.gwidth);
+			return (((xvalue - graph.xaxis_min) / (graph.xaxis_max - graph.xaxis_min)) * parent.xaxis_width);
 		};
 		
-		if (graph.data.upsidedown) {
+		if (graph.options.yaxis_reverse) {
 			graph.getYPixel = function(yvalue) {
-				return (((((yvalue - graph.miny) / (graph.maxy - graph.miny))) * graph.gheight) + graph.data.pady);
+				return (((((yvalue - graph.yaxis_min) / (graph.yaxis_max - graph.yaxis_min))) * parent.yaxis_height) + parent.yaxis_padpx);
 			};
 		}
 		else {
 			graph.getYPixel = function(yvalue) {
-				return (((1 - ((yvalue - graph.miny) / (graph.maxy - graph.miny))) * graph.gheight) + graph.data.pady);
+				return (((1 - ((yvalue - graph.yaxis_min) / (graph.yaxis_max - graph.yaxis_min))) * parent.yaxis_height) + parent.yaxis_padpx);
 			};
 		}
 
 		graph.update = function(newdata, init) {
-			var g, i, j, k, found;
-			for (var g = 0; g < newdata.length; g++) {
-				if (typeof(graph.data.raw[g]) == "undefined") {
-					graph.data.raw[g] = [];
-				}
-				if (typeof(graph.plots[g]) == "undefined") {
-					graph.plots[g] = svg.makeEl("g");
-					graph.plots[g].setAttribute("transform", "translate(" + graph.ystartx + ",0)");
-					graph.g.appendChild(graph.plots[g]);
-				}
-				
-				for (i in graph.data.raw[g]) {
-					found = false;
-					for (j in newdata[g]) {
-						if (i == j) found = true;
-					}
-					if (!found) graph.removePoint(g, i);
-				}
+			var oldpoints = [];
+			if (!init) oldpoints = graph.xaxis_points;
 			
-				var keys = [];
-				for (i in newdata[g]) {
-					keys.push(i);
-				}
-				keys.sort();
-				
-				var lastx = false;
-				var lasty = false;
-				for (k = 0; k < keys.length; k++) {
-					i = keys[k];
-					found = false;
-					for (j in graph.data.raw[g]) {
-						if (i == j) found = true;
-					}
-					if ((!found) || (init)) {
-						graph.plotValue(g, i, newdata[g][i], lastx, lasty);
-					}
-					lastx = i;
-					lasty = newdata[g][i];
+			graph.data = newdata;
+			graph.scale();
+
+			if (!init) {
+				for (var x in oldpoints) {
+					if (!(x in graph.xaxis_points)) graph.removePoint(x);
 				}
 			}
-			if (graph.data.raw.length > newdata.length) {
-				graph.removeLastPlots(g, graph.data.raw.length - newdata.length);
-				for (i = newdata.length; i < graph.data.raw.length; i++) {
-					graph.g.removeChild(graph.plots[g]);
+
+			var lastx = false;
+			var lasty = false;
+			for (x = 0; x < graph.xaxis_points.length; x++) {
+				if (!(x in oldpoints) || (init)) {
+					graph.addPoint(graph.xaxis_points[x], newdata[graph.xaxis_points[x]], lastx, lasty);
 				}
+				lastx = graph.xaxis_points[x];
+				lasty = newdata[graph.xaxis_points[x]];
 			}
-			
-			graph.data.raw = newdata;
-			if (fx.enabled) setTimeout(graph.animateAll, 100);
-			else graph.animateAll();
+
+			if (fx.enabled) setTimeout(graph.animate, 100);
+			else graph.animate();
 		};
-		
-		graph.label();
-		graph.scale();
-		graph.g.appendChild(graph.bgrid);
-		graph.g.appendChild(graph.scalable);
-		
-		gfunc(graph);
-		graph.update(graph.data.raw, true);
 		
 		return graph;
 	};
 	
-	fx.extend("RatingHistogramBar", function(object, gheight) {
+	//**************************************************************************************************
+
+	fx.extend("BarGraphBar", function(object, yaxis_height) {
 		var rhbfx = {};
 
 		rhbfx.update = function(now) {
 			object.setAttribute("y", now);
-			if ((gheight - now - 1) > 0) object.setAttribute("height", gheight - now - 1);
+			if ((yaxis_height - now - 1) > 0) object.setAttribute("height", yaxis_height - now - 1);
 			else object.setAttribute("height", 0);
 		};
 
 		return rhbfx;
 	});
 	
-	that.RatingHistogram = function(graph) {
-		graph.data.fx = [];
-		graph.data.bars = [];
-		for (var i = 0; i < graph.data.raw.length; i++) {
-			graph.data.fx[i] = {};
-			graph.data.bars[i] = {};
+	that.Bar = function(parent, graph) {
+		var gfx = [];
+		var bars = [];
+		
+		for (var i = 0; i < graph.data.length; i++) {
+			gfx[i] = {};
+			bars[i] = {};
 		}
 		
-		graph.removePoint = function(g, i) {
-			graph.plots[g].removeChild(graph.data.bars[g][i]);
-			delete(graph.data.bars[g][i]);
-			delete(graph.data.fx[g][i]);
+		graph.removePoint = function(x) {
+			graph.plot.removeChild(bars[x]);
+			delete(bars[x]);
+			delete(gfx[x]);
 		};
 		
-		graph.removePlot = function(g, numplots) {
-			graph.data.fx.splice(g, numplots);
-			graph.data.bars.splice(g, numplots);
-		};
-		
-		graph.animateAll = function() {
-			var g, i;
-			for (g in graph.data.raw) {
-				for (i in graph.data.raw[g]) {
-					graph.data.fx[g][i].start(graph.getYPixel(graph.data.raw[g][i]));
-				}
+		graph.animate = function() {
+			for (var x in graph.data) {
+				gfx[x].start(graph.getYPixel(graph.data[x]));
 			}
 		};
 		
-		graph.plotValue = function(g, xvalue, yvalue) {
-			var x = graph.getXPixel(xvalue);
-			graph.data.raw[g][xvalue] = yvalue;
-			if (graph.data.fill) {
-				graph.data.bars[g][xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 1, graph.xendy, graph.barwidth - 0.5, 0, { "fill": graph.data.fill(xvalue, graph.gheight + graph.data.pady) });
+		graph.addPoint = function(x, y) {
+			var x_px = graph.getXPixel(x);
+			var y_px = graph.getYPixel(y);
+			var barwidth = parent.xaxis_width / parent.xaxis_steps;
+			bars[x] = svg.makeRect(x_px - (barwidth / 2) - 1, parent.yaxis_height, barwidth - 0.5, 0);
+			if (graph.options.fill) {
+				bars[x].setAttribute("fill", graph.options.fill(graph.graphindex, x_px / parent.xaxis_width, y_px / parent.yaxis_width));
 			}
-			else {
-				graph.data.bars[g][xvalue] = svg.makeRect(x - (graph.barwidth / 2) - 1, graph.xendy, graph.barwidth - 0.5, 0, { "fill": "#FFFFFF" });
-			}
-			graph.data.fx[g][xvalue] = fx.make(fx.RatingHistogramBar, graph.data.bars[g][xvalue], 250, graph.gheight + graph.data.pady);
-			graph.data.fx[g][xvalue].set(graph.gheight + graph.data.pady);
-			graph.plots[g].appendChild(graph.data.bars[g][xvalue]);
+			
+			gfx[x] = fx.make(fx.BarGraphBar, bars[x], 250, parent.yaxis_height + parent.yaxis_padpx);
+			gfx[x].set(parent.yaxis_height + parent.yaxis_padpx);
+			graph.plot.appendChild(bars[x]);
 		};
 	};
+	
+	//**************************************************************************************************
 
 	fx.extend("LineGraphLine", function(line) {
 		var lfx = {};
@@ -387,92 +401,73 @@ var graph = function() {
 		return lfx;
 	});
 	
-	that.Line = function(graph) {
-		graph.data.fx_l = [];
-		graph.data.fx_py = [];
-		graph.data.fx_px = [];
-		graph.data.lines = [];
-		graph.data.points = [];
-		for (var i = 0; i < graph.data.raw.length; i++) {
-			graph.data.fx_l[i] = {};
-			graph.data.fx_py[i] = {};
-			graph.data.fx_px[i] = {};
-			graph.data.lines[i] = {};
-			graph.data.points[i] = {};
-		}
+	that.Line = function(parent, graph) {
+		var fx_l = [];
+		var fx_py = [];
+		var fx_px = [];
+		var lines = [];
+		var points = [];
 		
-		graph.removePoint = function(g, i) {
-			graph.plots[g].removeChild(graph.data.lines[g][i]);
-			graph.plots[g].removeChild(graph.data.points[g][i]);
-			delete(graph.data.raw[g][i]);
-			delete(graph.data.lines[g][i]);
-			delete(graph.data.points[g][i]);
-			delete(graph.data.fx_l[g][i]);
-			delete(graph.data.fx_py[g][i]);
-			delete(graph.data.fx_px[g][i]);
+		graph.removePoint = function(x) {
+			graph.plot.removeChild(lines[x]);
+			graph.plot.removeChild(points[x]);
+			delete(lines[x]);
+			delete(points[x]);
+			delete(fx_l[x]);
+			delete(fx_py[x]);
+			delete(fx_px[x]);
 		};
 		
-		graph.removeLastPlots = function(g, numplots) {
-			graph.data.lines.splice(g, numplots);
-			graph.data.points.splice(g, numplots);
-			graph.data.fx_l.splice(g, numplots);
-			graph.data.fx_py.splice(g, numplots);
-			graph.data.fx_px.splice(g, numplots);
-		};
-		
-		graph.animateAll = function() {
-			var lastx = false;
-			var lasty = false;
-			var g, i, j, x, y;
-			for (g in graph.data.raw) {
-				var keys = [];
-				for (i in graph.data.raw[g]) {
-					keys.push(i);
+		graph.animate = function() {
+			var lastx_px = false;
+			var lasty_px = false;
+			var i, x, y, x_px, y_px;
+			for (i = 0; i < graph.xaxis_points.length; i++) {
+				x = graph.xaxis_points[i];
+				y = graph.data[x];
+				x_px = graph.getXPixel(x);
+				y_px = graph.getYPixel(y);
+				
+				if (lastx_px && lasty_px && fx_l[x]) {
+					fx_l[x].setTo(lastx_px, lasty_px, x_px, y_px);
+					fx_l[x].set(0);
+					fx_l[x].start(1);
 				}
-				keys.sort();
-				for (j = 0; j < keys.length; j++) {
-					i = keys[j];
-					x = graph.getXPixel(i);
-					y = graph.getYPixel(graph.data.raw[g][i]);
-					if (lastx && lasty && graph.data.fx_l[g][i]) {
-						graph.data.fx_l[g][i].setTo(lastx, lasty, x, y);
-						graph.data.fx_l[g][i].set(0);
-						graph.data.fx_l[g][i].start(1);
-					}
-					graph.data.fx_px[g][i].start(x - 3);
-					graph.data.fx_py[g][i].start(y - 3);
-					lastx = x;
-					lasty = y;
-				}
+				fx_px[x].start(x_px - 3);
+				fx_py[x].start(y_px - 3);
+				lastx_px = x_px;
+				lasty_px = y_px;
 			}
 		};
 
-		graph.plotValue = function(g, xvalue, yvalue, lastx, lasty) {
-			var x2 = graph.getXPixel(xvalue);
-			var y2 = graph.getYPixel(yvalue);
+		graph.addPoint = function(x, y, lastx, lasty) {
+			var x_px = graph.getXPixel(x);
+			var y_px = graph.getYPixel(y);
+			
 			var fill = "#FFF";
-			if (graph.data.fill) {
-				fill = graph.data.fill(g, x2 / graph.gwidth, y2 / graph.gheight);
+			if (graph.options.fill) {
+				fill = graph.options.fill(graph.graphindex, x_px / parent.xaxis_width, y_px / parent.yaxis_height);
 			}
-			graph.data.points[g][xvalue] = svg.makeRect(x2 - 3, graph.gheight + graph.data.pady - 3, 6, 6, { "fill": fill });
-			graph.data.fx_px[g][xvalue] = fx.make(fx.SVGAttrib, graph.data.points[g][xvalue], 250, "x");
-			graph.data.fx_px[g][xvalue].set(x2 - 3);
-			graph.data.fx_py[g][xvalue] = fx.make(fx.SVGAttrib, graph.data.points[g][xvalue], 250, "y");
-			graph.data.fx_py[g][xvalue].set(graph.gheight + graph.data.pady - 6);
+			
+			points[x] = svg.makeRect(x_px - 3, parent.yaxis_height + parent.yaxis_padpx - 3, 6, 6, { "fill": fill });
+			fx_px[x] = fx.make(fx.SVGAttrib, points[x], 250, "x");
+			fx_px[x].set(x_px - 3);
+			fx_py[x] = fx.make(fx.SVGAttrib, points[x], 250, "y");
+			fx_py[x].set(parent.yaxis_height + parent.yaxis_padpx - 6);
 			
 			if (lastx && lasty) {
-				var x1 = graph.getXPixel(lastx);
+				var lx_px = graph.getXPixel(lastx);
 				var stroke = "#BBB";
-				if (graph.data.stroke) {
-					stroke = graph.data.stroke(g, x2 / graph.gwidth, y2 / graph.gheight);
+				if (graph.options.stroke) {
+					stroke = graph.options.stroke(graph.graphindex, x_px / parent.xaxis_width, y_px / parent.yaxis_height);
 				}
-				graph.data.lines[g][xvalue] = svg.makeLine(x1, graph.gheight + graph.data.pady, x2, graph.gheight + graph.data.pady, { "stroke": stroke, "stroke-width": 2 });
-				graph.plots[g].appendChild(graph.data.lines[g][xvalue]);
-				graph.data.fx_l[g][xvalue] = fx.make(fx.LineGraphLine, graph.data.lines[g][xvalue], 250);
-				graph.data.fx_l[g][xvalue].setFrom(x1, graph.gheight + graph.data.pady, x2, graph.gheight + graph.data.pady);
+				lines[x] = svg.makeLine(lx_px, parent.yaxis_height + parent.yaxis_padpx, x_px, parent.yaxis_height + parent.yaxis_padpx, { "stroke": stroke, "stroke-width": 2 });
+				graph.plot.appendChild(lines[x]);
+				fx_l[x] = fx.make(fx.LineGraphLine, lines[x], 250);
+				fx_l[x].setFrom(lx_px, parent.yaxis_height + parent.yaxis_padpx, lx_px, parent.yaxis_height + parent.yaxis_padpx);
 			}
 			
-			graph.plots[g].appendChild(graph.data.points[g][xvalue]);
+			graph.plot.appendChild(points[x]);
 		};
 	};
 

@@ -19,6 +19,7 @@ $lang2 = array(
 	"p_NowPanel" => "Em Reprodução",
 	"p_RequestsPanel" => "Requisições",
 	"p_TimelinePanel" => "Linha de Tempo",
+	"p_ListenersPanel" => "Ouvintes",
 	
 	// These are used for cooldown times, e.g. 5d 23h 10m 46s.  Change to your liking.
 	"timeformat_d" => "d ",
@@ -109,21 +110,12 @@ $lang2 = array(
 	"log_9000" => "Nome de usuário ou senha inválida.",
 	"log_9001" => "Muitas tentativas de entrar. Por favor vá para os fórums.",
 	"log_9002" => "Erro ao entrar.  Por favor vá para os fórums.",
-	
-	// Suffixes
-	"suffix_0" => "",
-	"suffix_1" => "",
-	"suffix_2" => "",
-	"suffix_3" => "",
-	"suffix_4" => "",
-	"suffix_5" => "",
-	"suffix_6" => "",
-	"suffix_7" => "",
-	"suffix_8" => "",
-	"suffix_9" => "",
-	"suffix_11" => "",
-	"suffix_12" => "",
-	"suffix_13" => "",
+
+	// Playlist Related
+	"pltab_albums" => "Álbuns",
+	"pltab_artists" => "Artistas",
+	"overclockedremixes" => "Remixes OverClocked",
+	"mixwavesongs" => "Músicas Mixwave",
 	
 	// Playlist Sentences, these all show up in the album detail pages.
 	
@@ -138,6 +130,19 @@ $lang2 = array(
 	"pl_genres2_normal" => ".",
 	"pl_genres2_more" => " & outros.",
 	
+	// Listeners Panel
+	
+	"ltab_listeners" => "Ouvintes", 			// Listeners tab name
+	"guestlisteners" => "|guests| Visitantes",		// appears at the bottom of the current listeners list
+	"totallisteners" => "|total| Ouvintes Agora",	// appears underneath guestlisteners.
+	"voteslast2weeks" => "Votos nas últimas 2 semanas: ",
+	"lsnrdt_allstations" => "Todas as Estações",
+	"lsnrdt_averagerating" => "Avaliação Média",
+	"lsnrdt_ratingprogress" => "Completude da Avaliação",
+	"lsnrdt_percentofratings" => "Parcela de Avaliação",
+	"lsnrdt_percentofrequests" => "Parcela de Requisição",
+	"lsnrdt_percentofvotes" => "Parcela de Voto",
+
 	// Preference names
 	
 	"pref_refreshrequired" => "(necessita atualização de página)",
@@ -158,7 +163,7 @@ $lang2 = array(
 	"pref_fx_fps" => "Taxa de Quadros de Animações",
 	"pref_fx_enabled" => "Animação Ativada",
 	"pref_requests" => "Requisições",
-	"pref_requests_technicalhint" => "Título de Aba Técnico",
+	"pref_requests_technicalhint" => "Título Técnico de Aba",
 	"pref_timeline_highlightrequests" => "Mostrar Requisitantes Por Padrão",
 	
 	// About screen
@@ -253,6 +258,11 @@ $lang2 = array(
 
 	"noschedule" => "Nenhum evento planejado para esta semana.",
 	
+	// Searching Related
+	
+	"escapetoclear" => "[esc] para limpar",
+	"searchheader" => "Buscar: ",
+
 	// Requests
 	
 	"requestok" => "Requisitado",
@@ -273,8 +283,8 @@ $lang2 = array(
 	"reqmyrequests" => "Minhas Requisições",
 	"reqrequestline" => "Fila de Requisições",
 	"reqrequestlinelong" => "Primeiros |showing| de |linesize| na fila",
-	"reqalbumblocked" => "Contido; álbum está em uma eleição.",
-	"reqgroupblocked" => "Contido; grupo de resfriamento está em uma eleição.",
+	"reqalbumblocked" => "Bloqueado; álbum está em uma eleição.",
+	"reqgroupblocked" => "Bloqueado; grupo de resfriamento está em uma eleição.",
 	
 	// Now Playing and Timeline panels
 

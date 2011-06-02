@@ -323,6 +323,11 @@ td.pl_ad_albumart_td {
 	padding-right: 5px;
 }
 
+img.pl_ad_avatar {
+	float: right;
+	border: 2px solid black;
+}
+
 img.pl_ad_albumart {
 	border: 2px solid black;
 	margin-left: .5em;
@@ -347,7 +352,7 @@ img.pl_ad_albumname_station {
 	margin-top: 3px;
 }
 
-td.pl_ad_albumnametd {
+.pl_ad_albumnametd {
 	background: #142027 url('images/pl_ad_albumname_bkg.png') top right;
 }
 

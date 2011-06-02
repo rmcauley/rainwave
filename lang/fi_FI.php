@@ -1,5 +1,5 @@
 ﻿<?php
-// Rainwave 3 fi_FI r7 (21 apr 2011) for (R3 r41) Language File by quarterlife
+// Rainwave 3 fi_FI r8 (31 may 2011) for (R3 r42) Language File by quarterlife
 
 $lang2 = array(
 	"_SITEDESCRIPTIONS" => array(
@@ -20,6 +20,7 @@ $lang2 = array(
 	"p_NowPanel" => "Nyt soi",
 	"p_RequestsPanel" => "Toiveet",
 	"p_TimelinePanel" => "Aikajana",
+	"p_ListenersPanel" => "Kuuntelijat",
 	
 	// These are used for cooldown times, e.g. 5d 23h 10m 46s.  Change to your liking.
 	"timeformat_d" => "d ",
@@ -28,8 +29,8 @@ $lang2 = array(
 	"timeformat_s" => "s ",
 
 	// Edi error codes
-	"log_1" => "Asematunnusta ei välitetty API:lle.",
-	"log_2" => "Tällä asemalla ei juuri nyt ole lähetystä teknisten vaikeuksien vuoksi.",
+	"log_1" => "Kanavatunnusta ei välitetty API:lle.",
+	"log_2" => "Tällä kanavalla ei juuri nyt ole lähetystä teknisten vaikeuksien vuoksi.",
 	"log_3" => "Ole hyvä ja odota käyttääksesi |currentlyon|.",	
 	
 	// HTTP error codes
@@ -53,22 +54,22 @@ $lang2 = array(
 	
 	// Election Errors
 	"log_2000" => "Palvelinvirhe ääntä lähettäessä.",
-	"log_2001" => "Sinun täytyy kuunnella asemaa äänestääksesi.",
+	"log_2001" => "Sinun täytyy kuunnella kanavaa äänestääksesi.",
 	"log_2002" => "Virheellinen ehdokastunnus.",
 	"log_2003" => "Olet jo äänestänyt tässä äänestyksessä.",
-	"log_2004" => "Sinun täytyy odottaa, ennen kuin voit äänestää asemanvaihdon yhteydessä.",
+	"log_2004" => "Sinun täytyy odottaa, ennen kuin voit äänestää kanavanvaihdon yhteydessä.",
 	"log_2005" => "Ehdokasta ei ole olemassa.",
 	"log_2006" => "Äänestyksen tulos on jo ratkennut.",
 	"log_2007" => "Et voi äänestää kyseisessä äänestyksessä vielä.",
-	"log_2008" => "Sinun täytyy äänestää sillä asemalla jota kuuntelet.",
+	"log_2008" => "Sinun täytyy äänestää sillä kanavalla jota kuuntelet.",
 	
 	// Making-a-Request Errors
 	"log_3000" => "Palvelinvirhe toivetta lähettäessä.  Ole hyvä ja yritä uudelleen.",
 	"log_3001" => "Sinun täytyy olla sisäänkirjautuneena toivoaksesi kappaletta.",
-	"log_3002" => "Sinun täytyy kuunnella asemaa toivoaksesi kappaletta.",
+	"log_3002" => "Sinun täytyy kuunnella kanavaa toivoaksesi kappaletta.",
 	"log_3003" => "Lähetetty kappaletunnus oli virheellinen.",
 	"log_3004" => "Toivottua kappaletta ei ole olemassa.",
-	"log_3005" => "Sinun täytyy toivoa kappaletta nykyiseltä asemalta.",
+	"log_3005" => "Sinun täytyy toivoa kappaletta nykyiseltä kanavalta.",
 	"log_3006" => "Toiveraja saavutettu.",
 	"log_3007" => "Kappaletta on jo toivottu.",
 	"log_3008" => "Albumia on jo toivottu.",
@@ -86,19 +87,19 @@ $lang2 = array(
 	"log_6003" => "Asiakasvirhe muutosta lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen tai kokeile toista kappaletta.",
 	"log_6004" => "Kyseinen toive ei ole sinun.",
 	"log_6005" => "Toivottua kappaletta ei ole olemassa.",
-	"log_6006" => "Sinun täytyy toivoa kappaletta siltä asemalta, jota kuuntelet.",
+	"log_6006" => "Sinun täytyy toivoa kappaletta siltä kanavalta, jota kuuntelet.",
 	"log_6007" => "Olet jo toivonut kyseistä kappaletta.",
 	"log_6008" => "Olet jo toivonut kappaletta kyseiseltä albumilta.",
 	
 	// Rating Errors
 	"log_7000" => "Palvelinvirhe arvostelua lähettäessä.  Ole hyvä ja yritä uudelleen.",
 	"log_7001" => "Sinun täytyy olla sisäänkirjautuneena arvostellaksesi kappaleita.",
-	"log_7002" => "Sinun täytyy kuunnella asemaa arvostellaksesi kappaleita.",
+	"log_7002" => "Sinun täytyy kuunnella kanavaa arvostellaksesi kappaleita.",
 	"log_7003" => "Asiakasvirhe arvostelua lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
 	"log_7004" => "Asiakasvirhe arvostelua lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
 	"log_7005" => "Asiakasvirhe arvostelua lähettäessä.  Ole hyvä ja päivitä sivu ja yritä sitten uudelleen.",
 	"log_7006" => "Sinun täytyy olla kuunnellut kyseistä kappaletta arvostellaksesi sen.",
-	"log_7007" => "Sinun täytyy odottaa arvostellaksesi asemavaihdon yhteydessä.",
+	"log_7007" => "Sinun täytyy odottaa arvostellaksesi kanavanvaihdon yhteydessä.",
 	
 	// Request Re-order Errors
 	"log_8000" => "Palvelinvirhe uudelleenjärjestäessä toiveita.  Ole hyvä ja yritä uudelleen.",
@@ -129,6 +130,12 @@ $lang2 = array(
 	// English example:
 	// "suffix_2" => "nd"     // results in "2nd" when suffixes are used
 
+	// Playlist Related
+	"pltab_albums" => "Albumit",
+	"pltab_artists" => "Esittäjät",
+	"overclockedremixes" => "OverClocked Remixit",
+	"mixwavesongs" => "Mixwave-kappaleet",
+	
 	// Playlist Sentences, these all show up in the album detail pages.
 	
 	"pl_oncooldown" => "Jäähyllä |time| ajan.",
@@ -143,6 +150,19 @@ $lang2 = array(
 	// So you'll see "Cooldown groups: foo, bar, baz, & others." if there's more than 3.  But if only 3 exist: "Cooldown groups: foo, bar, baz."
 	"pl_genres2_normal" => ".",
 	"pl_genres2_more" => " & muita.",
+	
+	// Listeners Panel
+	
+	"ltab_listeners" => "Kuuntelijat", 			// Listeners tab name
+	"guestlisteners" => "|guests| Vierasta",		// appears at the bottom of the current listeners list
+	"totallisteners" => "|total| Kuuntelijaa juuri nyt",	// appears underneath guestlisteners.
+	"voteslast2weeks" => "Ääniä viimeisen kahden viikon aikana: ",
+	"lsnrdt_allstations" => "Kaikki kanavat",
+	"lsnrdt_averagerating" => "Arvostelujen keskiarvo",
+	"lsnrdt_ratingprogress" => "Kappaleita arvosteltu",
+	"lsnrdt_percentofratings" => "Arvosteluosuus",
+	"lsnrdt_percentofrequests" => "Toiveosuus",
+	"lsnrdt_percentofvotes" => "Äänestysosuus",
 	
 	// Preference names
 	
@@ -198,7 +218,7 @@ $lang2 = array(
 	"voting" => "Äänestäminen",
 	"voting_p" => "Jokainen soitettu kappale on osa äänestystä. Se kappale, jolla on eniten ääniä soitetaan seuraavaksi.|br|Opi äänestämään.",
 	"clickonsongtovote" => "Napsauta kappaletta äänestääksesi",
-	"clickonsongtovote_p" => "Kuunnellessasi asemaa, napsauta kappaletta.|br|Eniten ääniä saanut kappale soitetaan seuraavaksi.",
+	"clickonsongtovote_p" => "Kuunnellessasi kanavaa, napsauta kappaletta.|br|Eniten ääniä saanut kappale soitetaan seuraavaksi.",
 	"tunein" => "Kuuntele",
 	"tunein_p" => "Imuroi M3U-soittolista ja käytä mediasoitintasi kuuntelemiseen.|br|VLC, Winamp, Foobar2000 ja fstream (Mac) ovat suositeltuja.",
 	"login_p" => "Ole hyvä ja kirjaudu sisään.",
@@ -227,8 +247,7 @@ $lang2 = array(
 	"pleaserefresh" => "Päivitä sivu jatkaaksesi Rainwaven käyttöä.",
 	
 	// Schedule Panel Administration Functions, does not need to be translated.
-	// AND YOU SAY THAT NOW????? -quarterlife
-	
+	// AND YOU SAY THAT NOW????? -quarterlife	
 	"newliveshow" => "Uusi suora lähetys",
 	"newliveexplanation" => "Aika voi olla 0 (nyt) tai epoch-aika UTC-aikavyöhykkeen mukaan.",
 	"time" => "Aika",
@@ -242,7 +261,7 @@ $lang2 = array(
 	"lengthinseconds" => "Pituus sekunneissa",
 	"djblock" => "DJ Block?",
 	"djadmin" => "DJ Admin",
-	"pausestation" => "Tauota asema",
+	"pausestation" => "Tauota kanava",
 	"endpause" => "Lopeta tauko",
 	"getready" => "Valmistaudu",
 	"standby" => "Valmiustila",
@@ -259,6 +278,11 @@ $lang2 = array(
 	
 	"noschedule" => "Tälle viikolle ei ole suunniteltu tapahtumia.",
 	
+	// Searching Related
+	
+	"escapetoclear" => "[esc] tyhjentää",
+	"searchheader" => "Haku: ",
+	
 	// Requests
 	
 	"requestok" => "Toivottu",
@@ -270,7 +294,7 @@ $lang2 = array(
 	"reqlongwait" => " (pitkä odotus)",
 	"reqoncooldown" => " (jäähyllä)",
 	"reqempty" => " (tyhjä)",
-	"reqwrongstation" => " (väärä asema)",
+	"reqwrongstation" => " (väärä kanava)",
 	"reqtechtitlefull" => " (|station|sijalla |position|, toiveita |requestcount|)",
 	"reqtechtitlesimple" => " (|station||requestcount|)",
 	"reqexpiresin" => " (paikka jonossa umpeutuu ajassa |expiretime|)",
@@ -307,9 +331,9 @@ $lang2 = array(
 	
 	// Menu Bar
 	
-	"selectstation" => "Valitse asema",
-	"tunedin" => "Kuuntelet asemaa",
-	"tunedout" => "Et kuuntele asemaa",
+	"selectstation" => "Valitse kanava",
+	"tunedin" => "Kuuntelet kanavaa",
+	"tunedout" => "Et kuuntele kanava",
 	"play" => "▶ Soita selaimessa",
 	"downloadm3u" => "▶ Lataa M3U",
 	"players" => "Tuetut soittimet ovat VLC, Winamp, Foobar2000 ja fstream (Mac/iPhone).|br|Windows Media Player ja iTunes eivät toimi.",

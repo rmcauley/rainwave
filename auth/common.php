@@ -17,10 +17,12 @@ else if ($_SERVER['HTTP_HOST'] == "mix.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "mixwave.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "vwave.rainwave.cc") $sid = VW;
 // An override, mostly for administration uses
-if ($_GET['site'] == "rw") $sid = RW;
-else if ($_GET['site'] == "oc") $sid = OCR;
-else if ($_GET['site'] == "mw") $sid = VW;
-else if ($_GET['site'] == "vw") $sid = VW;
+if (isset($_GET['site'])) {
+	if ($_GET['site'] == "rw") $sid = RW;
+	else if ($_GET['site'] == "oc") $sid = OCR;
+	else if ($_GET['site'] == "mw") $sid = VW;
+	else if ($_GET['site'] == "vw") $sid = VW;
+}
 // And a final override for when $_GET cannot be used or modified!
 if (defined(SITEOVERRIDE)) $sid = SITEOVERRIDE;
 
