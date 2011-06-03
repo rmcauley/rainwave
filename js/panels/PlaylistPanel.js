@@ -251,7 +251,7 @@ var AlbumSearchTable = function(parent, container, view) {
 	};
 	
 	that.searchEnabled = function() {
-		if ((parent.getCurrentTab() == 'albums') && parent.parent.mpi && (parent.parent.mpi.focused = "PlaylistPanel")) return true;
+		if ((parent.getCurrentTab() == 'albums') && parent.parent.mpi && (parent.parent.focused == "PlaylistPanel")) return true;
 		return false;
 	};
 	
@@ -287,7 +287,7 @@ var ArtistSearchTable = function(parent, container, view) {
 	};
 	
 	that.searchEnabled = function() {
-		if ((parent.getCurrentTab() == 'artists') && parent.parent.mpi && (parent.parent.mpi.focused = "PlaylistPanel")) return true;
+		if ((parent.getCurrentTab() == 'artists') && parent.parent.mpi && (parent.parent.focused == "PlaylistPanel")) return true;
 		return false;
 	};
 	

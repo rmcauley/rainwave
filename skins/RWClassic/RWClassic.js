@@ -453,11 +453,11 @@ function _THEME() {
 				ts.song_requestor_wrap = createEl("div", { "class": "timeline_song_requestor_wrap" }, ts.album_td);
 				ts.song_requestor_wrap.appendChild(ts.song_requestor);
 				ts.song_requestor_fx = fx.make(fx.CSSNumeric, ts.song_requestor, 250, "marginTop", "px");
-				ts.song_requestor_fx.set(-ts.song_requestor_fx.height);
+				ts.song_requestor_fx.set(-22);
 				ts.song_requestor_bkg_fx = fx.make(fx.BackgroundPosY, ts.album_td, 250);
 				ts.song_requestor_bkg_fx.set(-90);
 				ts.indicator_fx = fx.make(fx.BackgroundPosY, ts.indicator, 250);
-				ts.indicator_fx.set(-22);
+				ts.indicator_fx.set(-21);
 				ts.song_requestor_fx.onComplete = function(now) {
 					if (now < -5) ts.album_name.style.zIndex = 10;
 				}
@@ -483,6 +483,7 @@ function _THEME() {
 			if (prefs.p.timeline.highlightrequests.value && (ts.p.elec_isrequest != 0)) {
 				ts.showRequestor();
 			}
+			
 			
 			ts.tr1_fx.set(1);
 			ts.tr2_fx.set(1);
@@ -532,7 +533,7 @@ function _THEME() {
 		ts.showRequestor = function() {
 			if (ts.song_requestor) {
 				ts.song_requestor_fx.start(0);
-				ts.indicator_fx.start(-22 + timeline_elec_tdheight);
+				ts.indicator_fx.start(-21 + timeline_elec_tdheight);
 				ts.album_name_fx.start(0);
 				ts.song_requestor_bkg_fx.start(-90 + timeline_elec_tdheight);
 				//ts.album_name.style.zIndex = 1;
@@ -542,7 +543,7 @@ function _THEME() {
 		ts.hideRequestor = function() {
 			if (ts.song_requestor) {
 				ts.song_requestor_fx.start(-timeline_elec_tdheight);
-				ts.indicator_fx.start(-22);
+				ts.indicator_fx.start(-21);
 				ts.album_name_fx.start(1);
 				ts.song_requestor_bkg_fx.start(-90);
 			}
@@ -1490,7 +1491,7 @@ function _THEME() {
 					}
 				}
 				var maxtime = clock.now;
-				var mintime = clock.now - 2629743;
+				var mintime = clock.now - 2592000;	// this number is 38 * 86400, the same number that's in Lyre
 				var gr2maxy = Math.ceil(maxrank / 50) * 50;
 				var gr = graph.makeSVG(400, 300, [
 					{	"options": {
@@ -1499,8 +1500,8 @@ function _THEME() {
 							"xaxis_nonumbers": true, 
 							"minrangey": 100, 
 							"xaxis_max": maxtime, 
-							"xaxis_perstep": 86400, 
-							"xgrid_perstep": (86400 * 7), 
+							"xaxis_steps": 30,
+							"xgrid_disable": true, 
 							"xaxis_min": mintime
 						},
 						"data": vcdata,
@@ -1645,7 +1646,7 @@ function _THEME() {
 		var sub = 80;
 		var comp = key - 50;
 		if (graphindex == 1) {
-			return "rgb(" + sub + ", " + key + ", " + comp + ")";
+			return "rgb(" + comp + ", " + key + ", " + sub + ")";
 		}
 		else {
 			return "rgb(" + sub + ", " + comp + ", " + key + ")";

@@ -71,13 +71,13 @@ var graph = function() {
 		if (!graphs[0].yaxis_nonumbers) newgr.yaxis_width = measureNumber(Math.floor(newgr.graphs[0].yaxis_max));
 		else newgr.yaxis_width = 1;
 		
-		newgr.xaxis_width = (width - newgr.yaxis_width) - newgr.xaxis_padpx;
-		newgr.yaxis_height = (height - newgr.xaxis_height) - newgr.yaxis_padpx;
+		newgr.xaxis_width = width - newgr.yaxis_width - newgr.xaxis_padpx;
+		newgr.yaxis_height = height - newgr.xaxis_height - newgr.yaxis_padpx;
 		
 		// Following code only gets drawn once on graph init (borders, etc)
 		// CAREFUL, there is definitely some sloppy variable overwriting going on here, particularly with "x" and y"
-		
-		var drawonce = svg.makeEl("g");
+
+		var grid = svg.makeEl("g");
 		
 		if (!graphs[0].options.xgrid_modulus) graphs[0].options.xgrid_modulus = false;
 		if (!graphs[0].options.xaxis_steps) graphs[0].options.xaxis_steps = (newgr.graphs[0].xaxis_max - newgr.graphs[0].xaxis_min) / newgr.graphs[0].xaxis_steps;
@@ -87,27 +87,27 @@ var graph = function() {
 		// Render X grid lines
 		var stepline;
 		if (!graphs[0].options.xgrid_disable) {
-			for (i = newgr.graphs[0].xgrid_perstep + newgr.graphs[0].xaxis_min; i <= newgr.graphs[0].xaxis_max; i += newgr.graphs[0].xgrid_perstep) {
+			for (i = newgr.xgrid_perstep + newgr.graphs[0].xaxis_min; i <= newgr.graphs[0].xaxis_max; i += newgr.xgrid_perstep) {
 				x = newgr.graphs[0].getXPixel(i);		// TODO: this is going to screwup somehow, somewhere... don't know how yet, though
 				stepline = svg.makeLine(x, newgr.yaxis_height, x, 0, { "stroke": theme.vdarktext, "stroke_width": 1 });
-				drawonce.appendChild(stepline);
+				grid.appendChild(stepline);
 			}
 		}
 		
 		// Render Y grid lines
 		if (!graphs[0].options.ygrid_disable) {
-			for (i = newgr.graphs[0].ygrid_perstep + newgr.graphs[0].yaxis_min; i <= newgr.graphs[0].yaxis_max; i += newgr.graphs[0].ygrid_perstep) {
+			for (i = newgr.ygrid_perstep + newgr.graphs[0].yaxis_min; i <= newgr.graphs[0].yaxis_max; i += newgr.ygrid_perstep) {
 				y = newgr.graphs[0].getYPixel(i);
 				stepline = svg.makeLine(newgr.yaxis_width, y, width, y, { stroke: theme.vdarktext, stroke_width: 1 });
-				drawonce.appendChild(stepline);
+				grid.appendChild(stepline);
 			}
 		}
 		
-		// Render border lines last
-		var bordery = svg.makeLine(newgr.yaxis_width, 0, newgr.yaxis_width, newgr.yaxis_height, { shape_rendering: "crispEdges", stroke: theme.textcolor, stroke_width: 1 } );
-		var borderx = svg.makeLine(newgr.yaxis_width, newgr.yaxis_height, width, newgr.yaxis_height, { shape_rendering: "crispEdges", stroke: theme.textcolor, stroke_width: 1 } );
-		drawonce.appendChild(bordery);
-		drawonce.appendChild(borderx);
+		var border = svg.makeEl("g");
+		var bordery = svg.makeLine(newgr.yaxis_width, 0, newgr.yaxis_width, newgr.yaxis_height + newgr.yaxis_padpx, { shape_rendering: "crispEdges", stroke: theme.textcolor, stroke_width: 1 } );
+		var borderx = svg.makeLine(newgr.yaxis_width, newgr.yaxis_height + newgr.yaxis_padpx, width, newgr.yaxis_height + newgr.yaxis_padpx, { shape_rendering: "crispEdges", stroke: theme.textcolor, stroke_width: 1 } );
+		border.appendChild(bordery);
+		border.appendChild(borderx);
 		
 		// if (subgraph.data.xlabel) {
 			// var xlabelx = ((subgraph.width - (UISCALE * 2)) / 2) - (measureText(subgraph.data.xlabel) / 2) + (UISCALE * 2);
@@ -125,7 +125,7 @@ var graph = function() {
 			// subgraph.ystartx += UISCALE + (UISCALE * .3);
 		// }
 		
-		newgr.g.appendChild(drawonce);
+		newgr.g.appendChild(grid);
 		
 		// TODO: Make this fade in/out and the graph re-scalable
 		newgr.g.appendChild(newgr.graphs[0].getScaledGroup());
@@ -134,6 +134,8 @@ var graph = function() {
 			newgr.graphs[i].update(newgr.graphs[i].data, true);
 			newgr.g.appendChild(newgr.graphs[i].plot);
 		}
+		
+		newgr.g.appendChild(border);
 		
 		return newgr;
 	};
@@ -150,9 +152,15 @@ var graph = function() {
 		graph.yaxis_min = false;
 		
 		graph.plot = svg.makeEl("g");
-		graph.plot.setAttribute("transform", "translate(" + parent.yaxis_width + ",0)");
+		
+		var translateset = false;
 	
 		graph.scale = function() {
+			if (!translateset && parent.yaxis_width) {
+				graph.plot.setAttribute("transform", "translate(" + parent.yaxis_width + ",0)");
+				translateset = true;
+			}
+			
 			var i, j;
 			
 			graph.xaxis_points = [];
@@ -183,11 +191,13 @@ var graph = function() {
 			if (graph.yaxis_min < 0) graph.yaxis_min = 0;
 			
 			graph.xaxis_perstep = (graph.xaxis_max - graph.xaxis_min) / parent.xaxis_steps;
+			if (!graph.options.xgrid_perstep) parent.xgrid_perstep = graph.xaxis_perstep;
 			graph.yaxis_perstep = (graph.yaxis_max - graph.yaxis_min) / parent.yaxis_steps;
+			if (!graph.options.ygrid_perstep) parent.ygrid_perstep = graph.yaxis_perstep;
 		};
 		
 		graph.getScaledGroup = function() {
-			var scaleg = svg.makeEl("g");
+			var scaleg = svg.makeEl("g", { "transform": "translate(0, " + parent.yaxis_padpx + ")"} );
 			
 			var steptext;
 			var usedxmin = false;
@@ -201,7 +211,7 @@ var graph = function() {
 			
 			// Render X numbers
 			if (!graph.options.xaxis_nonumbers) {
-				for (i = graph.xgrid_perstep + graph.xaxis_min; i <= graph.xaxis_max; i += graph.xgrid_perstep) {
+				for (i = parent.xgrid_perstep + graph.xaxis_min; i <= graph.xaxis_max; i += parent.xgrid_perstep) {
 					x = graph.getXPixel(i);		// TODO: this will likely screw up just like getDrawOnceGroup
 					if (!graph.options.xgrid_modulus || (i % graph.options.xgrid_modulus == 0)) {
 						steptext = svg.makeEl("text", { "x": x, "y": parent.yaxis_height + UISCALE * 1.2, "fill": theme.textcolor, "text_anchor": "middle" });

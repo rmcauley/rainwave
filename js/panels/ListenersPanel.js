@@ -60,7 +60,7 @@ panels.ListenersPanel = {
 		};
 		
 		that.drawListenerCallback = function(json) {
-			var wdow = view.createOpenDiv("listener", json.album_id);
+			var wdow = view.createOpenDiv("listener", json.user_id);
 			//wdow.destruct = that.destructListener;
 			that.drawListener(wdow, json);
 			clist.navToID(json.user_id);
@@ -108,7 +108,7 @@ var ListenersSearchTable = function(parent, container, view) {
 	};
 	
 	that.searchEnabled = function() {
-		if ((parent.getCurrentTab() == 'clist') && parent.parent.mpi && (parent.parent.mpi.focused = "ListenersPanel")) return true;
+		if ((parent.getCurrentTab() == 'clist') && parent.parent.mpi && (parent.parent.focused == "ListenersPanel")) return true;
 		return false;
 	};
 	

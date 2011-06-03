@@ -21,7 +21,7 @@ function SearchTable(container, id_key, table_class) {
 	var texthdr = createEl("div", { "class": "inlinesearch_hdr", "textContent": _l("searchheader") }, textcontainer);
 	var textfield = createEl("span", { "class": "inlinesearch_text" }, texthdr);
 	container.appendChild(textcontainer);
-	var texthdrheight = texthdr.offsetHeight;
+	var texthdrheight = UISCALE * 2;
 	var table = createEl("table", { "class": table_class });
 	var fx_test_top = fx.make(fx.CSSNumeric, textcontainer, 250, "marginTop", "px");
 	var fx_test_height = fx.make(fx.CSSNumeric, textcontainer, 250, "height", "px");
