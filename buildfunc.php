@@ -118,6 +118,7 @@ function buildProdSkins($dest, $bnum) {
         else if (is_dir("skins/" . $skin)) {
 			$skindir = opendir("skins/" . $skin) or die("Can't open " . $skin . " skin directory.");
 			mkdir($dest2 . "/" . $skin) or die("Can't create " . $skin . " skin directory.");
+			require("skins/" . $skin . "/colors.php");
 			while (false !== ($file = readdir($skindir))) {
 				if (($file == ".") || ($file == "..")) {
 					# pass
@@ -128,7 +129,7 @@ function buildProdSkins($dest, $bnum) {
 					fclose($d);
 				}
 				else if (preg_match("/.css$/", $file)) {
-					buildCSSFile("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file, "skins/" . $skin);
+					appendCSSFile("skins/" . $skin . "/" . $file, "skins/" . $skin);
 				}
 				else if (is_dir("skins/" . $skin . "/" . $file)) {
 					copyDirectory("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file, "");
@@ -137,6 +138,8 @@ function buildProdSkins($dest, $bnum) {
 					copyFile("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file, "");
 				}*/
 			}
+			compressTempCSS($dest2 . "/" . $skin . "/" . $skin . ".css");
+			unlink("/tmp/rwcss");
 		}
     }
 }
@@ -153,6 +156,7 @@ function buildBetaSkins($dest, $bnum) {
         else if (is_dir("skins/" . $skin)) {
 			$skindir = opendir("skins/" . $skin) or die("Can't open " . $skin . " skin directory.");
 			mkdir($dest2 . "/" . $skin) or die("Can't create " . $skin . " skin directory.");
+			require("skins/" . $skin . "/colors.php");
 			while (false !== ($file = readdir($skindir))) {
 				if (($file == ".") || ($file == "..")) {
 					# pass
@@ -161,7 +165,7 @@ function buildBetaSkins($dest, $bnum) {
 					copyFile("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file);
 				}
 				else if (preg_match("/.css$/", $file)) {
-					buildCSSFile("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file, "skins/" . $skin, true);
+					appendCSSFile("skins/" . $skin . "/" . $file, "skins/" . $skin);
 				}
 				else if (is_dir("skins/" . $skin . "/" . $file)) {
 					copyDirectory("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file, "");
@@ -170,23 +174,29 @@ function buildBetaSkins($dest, $bnum) {
 					copyFile("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file, "");
 				}*/
 			}
+			copyFile("/tmp/rwcss", $dest2 . "/" . $skin . "/" . $skin . ".css");
+			unlink("/tmp/rwcss");
 		}
     }
 }
 
-function buildCSSFile($sourcefile, $destfile, $skindir, $uncompressed = false) {
+function compressTempCSS($destfile) {
+	$d = fopen($destfile, 'w') or die("Can't open destination file $destfile.");
+	fwrite($d, CssMin::minify(file_get_contents("/tmp/rwcss")));
+	fclose($d);
+}
+
+function appendCSSFile($sourcefile, $skindir) {
 	print "Building CSS file $sourcefile.\n";
 	$css = fopen($sourcefile, "r") or die("Can't open CSS file $sourcefile.");
 	$d = false;
-	if ($uncompressed) {
-		$d = fopen($destfile, 'w') or die("Can't open destination file $destfile.");
-	}
-	else {
-		$d = fopen("/tmp/rwcss", 'w') or die("Can't open destination file $destfile.");
-	}
+	$d = fopen("/tmp/rwcss", 'w') or die("Can't open destination file /tmp/rwcss");
 	while (($buffer = fgets($css, 4096)) !== false) {
 		$wrote = false;
 		$matches = array();
+		if (preg_match("/\[% ([A-Za-z0-9]+) %\]/", $buffer, $matches)) {
+			$buffer = preg_replace("/\[% ([A-Za-z0-9]+) %\]/", $GLOBALS['skincolors'][$matches[1]], $buffer);
+		}
 		if (preg_match("/^(.*) url\(['\"]?([\w.-_]+).(png|jpg|gif|jpeg)['\"]?\)(.*)$/", $buffer, $matches)) {
 			$filename = $skindir . "/" . $matches[2] . "." . $matches[3];
 			if (filesize($filename) <= 2048) {
@@ -206,13 +216,6 @@ function buildCSSFile($sourcefile, $destfile, $skindir, $uncompressed = false) {
 	}
 	fclose($css);
 	fclose($d);
-	
-	if (!$uncompressed) {
-		$d = fopen($destfile, 'w') or die("Can't open destination file $destfile.");
-		fwrite($d, CssMin::minify(file_get_contents("/tmp/rwcss")));
-		fclose($d);
-		unlink("/tmp/rwcss");
-	}
 }
 
 function copyFile($source, $dest, $destdir = "") {
