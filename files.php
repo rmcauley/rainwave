@@ -1,10 +1,6 @@
 <?php
 
 $jsorder = array(
-	// OggPixel
-	// "js/swfobject.js",
-	// "js/oggpixel.js",
-	
 	// Priority Order
 	"js/prefs.js",		// Must come first for cookie load prepping other JS files
 	"js/svg.js",		// Required by fx, graph, and help

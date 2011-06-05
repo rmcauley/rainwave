@@ -521,15 +521,15 @@ div.request_false {
 }
 
 div.request_station_1 {
-	background-image: url("../../images/menu_logo_1.png");
+	background-image: url("images/menu_logo_1.png");
 }
 
 div.request_station_2 {
-	background-image: url("../../images/menu_logo_2.png");
+	background-image: url("images/menu_logo_2.png");
 }
 
 div.request_station_3 {
-	background-image: url("../../images/menu_logo_3.png");
+	background-image: url("images/menu_logo_3.png");
 }
 
 svg.request_songrating {
@@ -662,7 +662,7 @@ table.menu_table img {
 
 table.menu_table td {
 	padding: 2px 3px 2px 3px;
-	border-bottom: 1px solid [% brightbkg %];
+	border-bottom: 1px solid [% border %];
 	background: [% background %];
 }
 

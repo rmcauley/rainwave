@@ -1,6 +1,6 @@
 function _THEME() {
 	var that = {};
-	var skindir = "skins_r" + BUILDNUM + "/RWClassic";
+	var skindir = "skins_r" + BUILDNUM + "/Rainwave";
 
 	// These are variables that Edi or the graphing engine depends upon
 	that.borderheight = 12;
@@ -638,8 +638,8 @@ function _THEME() {
 			table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": json.album_art }, table.album_art);
 		}
 		else {
-			if (user.p.sid == 2) table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": "images/noart_2.jpg" }, table.album_art);			
-			else table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": "images/noart_1.jpg" }, table.album_art);
+			if (user.p.sid == 2) table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": skindir + "/images/noart_2.jpg" }, table.album_art);			
+			else table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": skindir + "/images/noart_1.jpg" }, table.album_art);
 		}
 		table.song_title = createEl("td", { "class": "nowplaying_song_title" }, tr);
 		table.song_rating = createEl("td", { "class": "nowplaying_song_rating" }, tr);
@@ -863,23 +863,23 @@ function _THEME() {
 			menup.td_station = createEl("td", { "class": "menu_td_station" }, row);
 			var morestations = createEl("div", { "class": "menu_select_more" }, menup.td_station);
 			_l("menu_morestations", {}, morestations);
-			var stationlogo = createEl("img", { "src": "images/menu_logo_" + PRELOADED_SID + ".png" }, menup.td_station);
+			var stationlogo = createEl("img", { "src": skindir + "/images/menu_logo_" + PRELOADED_SID + ".png" }, menup.td_station);
 			menup.ul_select = createEl("ul", { "class": "menu_select", "style": "margin-left: -3px;" });
 			menup.li_stations = Array();
 			if (PRELOADED_SID != 1) {
 				var li = createEl("li", { "style": "cursor: pointer" }, menup.ul_select);
 				li.addEventListener("click", function() { menup.changeStation(1); }, true);
-				menup.station_rw = createEl("img", { "src": "images/stationselect_1.png" }, li);
+				menup.station_rw = createEl("img", { "src": skindir + "/images/stationselect_1.png" }, li);
 			}
 			if (PRELOADED_SID != 2) {
 				var li = createEl("li", { "style": "cursor: pointer" }, menup.ul_select);
 				li.addEventListener("click", function() { menup.changeStation(2); }, true);
-				menup.station_rw = createEl("img", { "src": "images/stationselect_2.png" }, li);
+				menup.station_rw = createEl("img", { "src": skindir + "/images/stationselect_2.png" }, li);
 			}
 			if (PRELOADED_SID != 3) {
 				var li = createEl("li", { "style": "cursor: pointer" }, menup.ul_select);
 				li.addEventListener("click", function() { menup.changeStation(3); }, true);
-				menup.station_rw = createEl("img", { "src": "images/stationselect_3.png" }, li);
+				menup.station_rw = createEl("img", { "src": skindir + "/images/stationselect_3.png" }, li);
 			}
 			fx.makeMenuDropdown(menup.el, menup.td_station, menup.ul_select);
 			
@@ -1151,7 +1151,7 @@ function _THEME() {
 			wdow.albumrating = Rating({ category: "album", id: json.album_id, userrating: json.album_rating_user, siterating: json.album_rating_avg, favourite: json.album_favourite, scale: 1.2, register: true });
 			wdow.albumnametd.appendChild(wdow.albumrating.el);
 			wdow.albumname = createEl("div", { "class": "pl_ad_albumname", "textContent": json.album_name }, wdow.albumnametd);
-			if (json.sid != user.p.sid) createEl("img", { "src": "images/menu_logo_" + json.sid + ".png", "class": "pl_ad_albumname_station" }, wdow.albumname);
+			if (json.sid != user.p.sid) createEl("img", { "src": skindir + "/images/menu_logo_" + json.sid + ".png", "class": "pl_ad_albumname_station" }, wdow.albumname);
 
 			tr = createEl("tr", false, wdow.hdrtable);
 			wdow.albumdetailtd = createEl("td", { "class": "pl_ad_albumdetailtd" }, tr);
@@ -1232,8 +1232,8 @@ function _THEME() {
 				createEl("img", { "src": json.album_art, "class": "pl_ad_albumart" }, wdow.albumarttd);
 			}
 			else {
-				if (user.p.sid == 2) createEl("img", { "src": "images/noart_2.jpg", "class": "pl_ad_albumart" }, wdow.albumarttd);
-				else createEl("img", { "src": "images/noart_1.jpg", "class": "pl_ad_albumart" }, wdow.albumarttd);
+				if (user.p.sid == 2) createEl("img", { "src": skindir + "/images/noart_2.jpg", "class": "pl_ad_albumart" }, wdow.albumarttd);
+				else createEl("img", { "src": skindir + "/images/noart_1.jpg", "class": "pl_ad_albumart" }, wdow.albumarttd);
 			}
 			
 			wdow.songlist = createEl("table", { "class": "pl_songlist", "style": "clear: both;" }, wdow.div);
@@ -1309,7 +1309,7 @@ function _THEME() {
 				album_id = -1;
 			}
 			var hdr = createEl("div", { "class": "pl_songlist_hdr" }, encloseddiv);
-			createEl("img", { "src": "images/menu_logo_" + album_sid + ".png", "style": "float: right;" }, hdr);
+			createEl("img", { "src": skindir + "/images/menu_logo_" + album_sid + ".png", "style": "float: right;" }, hdr);
 			var album_hdr = createEl("span", { "textContent": album_name }, hdr);
 			if (album_id != -1) Album.linkify(album_id, album_hdr);
 			var tbl = createEl("table", { "class": "pl_songlist" }, encloseddiv);
@@ -1471,7 +1471,7 @@ function _THEME() {
 				createEl("img", { "src": json.user_avatar, "class": "pl_ad_albumart" }, wdow.avatartd);
 			}
 			else {
-				createEl("img", { "src": "images/noart_1.jpg", "class": "pl_ad_albumart" }, wdow.avatartd);
+				createEl("img", { "src": skindir + "/images/noart_1.jpg", "class": "pl_ad_albumart" }, wdow.avatartd);
 			}
 			
 			wdow.div.appendChild(wdow.hdrtable);

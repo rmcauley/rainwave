@@ -18,6 +18,7 @@ if (!in_array($userdata['group_id'], array(5, 4, 8, 12, 15, 14))) {
 require("files.php");
 
 <%RWDESC%>
+<%VALIDSKINS%>
 
 print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
@@ -30,11 +31,11 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	<%LANGFUNC%>
 	<?php
 		$bnum = <%BUILDNUM%>;
-		$skin = "RWClassic";
+		$skin = "Rainwave";
 		$lang = getDefaultLanguage();
 		if (isset($_COOKIE['r3prefs'])) {
 			$cookie = json_decode($_COOKIE['r3prefs'], true);
-			if (isset($cookie['edi']['theme']['value'])) $skin = $cookie['edi']['theme']['value'];
+			if (isset($cookie['edi']['theme']['value']) && in_array($cookie['edi']['theme']['value'], $validskins)) $skin = $cookie['edi']['theme']['value'];
 			if (isset($cookie['edi']['language']['value'])) $lang = $cookie['edi']['language']['value'];
 		}
 		print "<link rel=\"stylesheet\" href='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".css' type='text/css' />\n";

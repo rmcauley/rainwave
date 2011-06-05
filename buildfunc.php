@@ -4,6 +4,7 @@ require("jsmin.php");
 require("cssmin.php");
 
 $skincolors = array();
+$validskins = array();
 
 function getBuildNumber($suffix = "") {
 	$bnum = file_get_contents("buildnum" . $suffix);
@@ -36,11 +37,13 @@ function writeParsedFile($source, $dest, $bnum) {
 	print "Building " . $dest . ".\n";
 	$d = fopen($dest, 'w') or die("Can't open " . $dest);
 	$s = fopen($source, "r") or die("Can't open " . $source);
-	$desc = var_export($GLOBALS['rwdesc'], true);
+	$desc = "\$rwdesc = " . var_export($GLOBALS['rwdesc'], true) . ";";
+	$skins = "\$validskins = " . var_export($GLOBALS['validskins'], true) . ";";
 	while (($buffer = fgets($s, 4096)) !== false) {
 		$buffer = str_replace("<%BUILDNUM%>", $bnum, $buffer);
 		$buffer = str_replace("<%LANGFUNC%>", file_get_contents("langfunc.php"), $buffer);
-		$buffer = str_replace("<%RWDESC%>", "\$rwdesc = " . $desc . ";", $buffer);
+		$buffer = str_replace("<%RWDESC%>", $desc, $buffer);
+		$buffer = str_replace("<%VALIDSKINS%>", $skins, $buffer);
 		fwrite($d, $buffer);
     }
 	fclose($s);
@@ -118,6 +121,7 @@ function buildProdSkins($dest, $bnum) {
 			# pass
 		}
         else if (is_dir("skins/" . $skin)) {
+			array_push($GLOBALS['validskins'], $skin);
 			$skindir = opendir("skins/" . $skin) or die("Can't open " . $skin . " skin directory.");
 			mkdir($dest2 . "/" . $skin) or die("Can't create " . $skin . " skin directory.");
 			require("skins/" . $skin . "/colors.php");
@@ -156,6 +160,7 @@ function buildBetaSkins($dest, $bnum) {
 			# pass
 		}
         else if (is_dir("skins/" . $skin)) {
+			array_push($GLOBALS['validskins'], $skin);
 			$skindir = opendir("skins/" . $skin) or die("Can't open " . $skin . " skin directory.");
 			mkdir($dest2 . "/" . $skin) or die("Can't create " . $skin . " skin directory.");
 			require("skins/" . $skin . "/colors.php");
@@ -196,8 +201,8 @@ function appendCSSFile($sourcefile, $skindir) {
 	while (($buffer = fgets($css, 4096)) !== false) {
 		$wrote = false;
 		$matches = array();
-		while (preg_match("/\[% ([A-Za-z0-9_\-]+) %\]/", $buffer, $matches)) {
-			$buffer = preg_replace("/\[% ([A-Za-z0-9_\-]+) %\]/", $GLOBALS['skincolors'][$matches[1]], $buffer);
+		while (preg_match("/\[% ([A-Za-z0-9_]+) %\]/", $buffer, $matches)) {
+			$buffer = preg_replace("/\[% [A-Za-z0-9_]+ %\]/", $GLOBALS['skincolors'][$matches[1]], $buffer, 1);
 		}
 		if (preg_match("/^(.*) url\(['\"]?([\w.-_]+).(png|jpg|gif|jpeg)['\"]?\)(.*)$/", $buffer, $matches)) {
 			$filename = $skindir . "/" . $matches[2] . "." . $matches[3];

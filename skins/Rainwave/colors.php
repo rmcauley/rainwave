@@ -29,6 +29,7 @@ $GLOBALS['skincolors'] = array_merge($GLOBALS['skincolors'], array(
 	"tooltip_bright" => "#1694c8",
 	"tooltip_border" => "#43c8ff",
 	
+	"request" => "#142027", 	// primarybkg
 	"request_border" => "#233844",
 	"request_dark" => "rgba(20, 32, 39, 0)",
 	"request_ok" => "#111111",	// this colour is mixed on top of the gradient
@@ -44,6 +45,7 @@ $GLOBALS['skincolors'] = array_merge($GLOBALS['skincolors'], array(
 	
 	"cooldown" => "#8bedff",		// the ice blue colour given to cooldown messages
 	
+	"songlist_hover" => "#7d94a1",	// border
 	"songlist_line" => "#3F667C",
 	"songlist_cooldown" => "#111133",
 	
@@ -63,10 +65,5 @@ $GLOBALS['skincolors'] = array_merge($GLOBALS['skincolors'], array(
 	
 	"search" => "#143073"
 ));
-
-// re-using colours, feel free to shift these into the main array above if you're using unique values
-$GLOBALS['skincolors']['request'] = $GLOBALS['skincolors']['primarybkg'];
-$GLOBALS['skincolors']['songlist_hover'] = $GLOBALS['skincolors']['border']
-
 
 ?>
