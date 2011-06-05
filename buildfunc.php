@@ -3,6 +3,8 @@
 require("jsmin.php");
 require("cssmin.php");
 
+$skincolors = array();
+
 function getBuildNumber($suffix = "") {
 	$bnum = file_get_contents("buildnum" . $suffix);
 	str_replace("\n", "", $bnum);
@@ -194,8 +196,8 @@ function appendCSSFile($sourcefile, $skindir) {
 	while (($buffer = fgets($css, 4096)) !== false) {
 		$wrote = false;
 		$matches = array();
-		if (preg_match("/\[% ([A-Za-z0-9]+) %\]/", $buffer, $matches)) {
-			$buffer = preg_replace("/\[% ([A-Za-z0-9]+) %\]/", $GLOBALS['skincolors'][$matches[1]], $buffer);
+		while (preg_match("/\[% ([A-Za-z0-9_\-]+) %\]/", $buffer, $matches)) {
+			$buffer = preg_replace("/\[% ([A-Za-z0-9_\-]+) %\]/", $GLOBALS['skincolors'][$matches[1]], $buffer);
 		}
 		if (preg_match("/^(.*) url\(['\"]?([\w.-_]+).(png|jpg|gif|jpeg)['\"]?\)(.*)$/", $buffer, $matches)) {
 			$filename = $skindir . "/" . $matches[2] . "." . $matches[3];
