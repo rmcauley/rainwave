@@ -12,7 +12,7 @@ if (gethostname() == "substream") {
 }
 $bnum = getBuildNumber();
 
-print "RAINWAVE 3 BETA REVISION " . $bnum . "\n";
+print "RAINWAVE 3 THIRD PARTY DEV REVISION " . $bnum . "\n";
 
 removeOldBuild($dest);
 copyStatic($dest, $bnum);
