@@ -39,7 +39,7 @@ function init() {
 	lyre.setStationID(PRELOADED_SID);
 	lyre.setUserID(PRELOADED_USER_ID);
 	lyre.setKey(PRELOADED_APIKEY);
-	if (PRELOADED_URLPREFIX) lyre.setURLPrefix(PRELOADED_URLPREFIX);
+	if (PRELOADED_LYREURL) lyre.setURLPrefix(PRELOADED_LYREURL);
 	lyre.errorCallback = errorcontrol.doError;
 
 	errorcontrol.setupCallbacks();

@@ -43,6 +43,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	print "\tvar PRELOADED_LANG = '" . $lang . "';\n";
 	print "\tvar PRELOADED_APIKEY = '<%DEVAPIKEY%>';\n";
 	print "\tvar PRELOADED_USER_ID = <%DEVUSERID%>;\n";
+	print "\tvar PRELOADED_LYREURL = <%DEVLYREURL%>;\n";
 	print "\tvar PRELOADED_SID = <%DEVSID%>;\n";
 	print "\tvar BUILDNUM = <%BUILDNUM%>;\n";
 	print "</script>\n";
