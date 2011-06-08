@@ -1,0 +1,66 @@
+This project is the GUI portion of the Rainwave online radio system, as seen
+at http://rainwave.cc.
+
+== Deploying Rainwave ==
+
+There are four deployment scripts for Rainwave:
+	- make.php creates a production Rainwave copy, for the Rainwave server
+	- testmake.php creates a production Rainwave copy, for the Rainwave
+		server, but in a different directory.
+	- betamake.php creates a beta copy of Rainwave, for the Rainwave server
+	- devmake.php creates a beta copy of Rainwave for anyone else
+	
+Production versions compile and minimize Javascript.  Beta versions do not.
+Production versions compile and minimize CSS.  Beta versions do not.
+Both production and beta versions do, however, have CSS interpreters
+that will build skins and automatically base64-encode and images <2KiB
+into the CSS file when building.
+
+99.9% chance is, you will only be using devmake.php.
+
+=== Setting Up A Dev Copy ===
+
+You will require an HTTP server with PHP setup.  This README assumes
+you are capable of setting that up on your own.
+
+You must be a registered Rainwave user.  Then go to
+http://rainwave.cc/auth/ and create yourself an API key.  Keep the
+page open, you'll need those values.
+
+Create a file called devconf.php in the root directory.  Do not add this
+file to git.  Here's the variables and their purposes for you:
+
+<?php
+	$devkey = "[APIKEY]";
+	$devuid = "[DEVUID]";
+	$devsid = 1;	// 2 = OCR, 3 = Mixwave, 4 = Bitwave
+	$devdest = "~/rwbuild/";		// destination, note the trailing slash
+	$devlyre = "http://localhost";
+	//$devlyrejs = "/path/to/lyre-ajax.js";
+?>
+
+You will need $devlyre because of same-origin security issues on browsers.
+You will not be able to use http://rainwave.cc.  You'll want to configure
+a local Apache or nginx server to do a little proxying for you.
+Here's a quick config you can stash in your Apache config to do that:
+
+RewriteEngine On
+ProxyRequests Off
+<Proxy>
+    Order deny,allow
+    Allow from all
+</Proxy>
+ProxyPass /rwapi/ http://rainwave.cc/
+ProxyPassReverse /rwapi/ http://rainwave.cc/
+
+The example $devlyre variable would then be http://myserver/rwapi.  No
+trailing slash.
+
+$devlyrejs is optional, simply remove it or set to false.  If specified,
+devmake.php will use a local copy of lyre-ajax.js to include in the build.
+If unspecified or false, devmake.php will use a fresh copy of lyre-ajax.js
+downloaded from http://rainwave.cc/api/.  It will cache it in /tmp/ and if
+older than 24h will download a new one.
+
+If you wish to have language debug info (missing strings, etc) you may put
+$langstatus = true in your devconf.php.

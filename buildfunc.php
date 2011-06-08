@@ -22,6 +22,12 @@ function bumpBuildNumber($suffix = "") {
 function removeOldBuild($dest) {
 	print "Cleaning old build.\n";
 	$dir = opendir($dest);
+	if (!$dir) {
+		print "No previous Rainwave build to clean, the above error message is OK to ignore.\n";
+		print "Making Rainwave build dir.\n";
+		mkdir($dest, 0755, true) or die("Could not create build destination: " . $dest . "\n");
+		return;
+	}
 	while (false !== ($file = readdir($dir))) {
         if (is_dir($dest . $file) && preg_match("/^(lang|skins)_r\d*$/", $file)) {
 			exec("rm -rf \"" . $dest . $file . "\"");
@@ -44,6 +50,9 @@ function writeParsedFile($source, $dest, $bnum) {
 		$buffer = str_replace("<%LANGFUNC%>", file_get_contents("langfunc.php"), $buffer);
 		$buffer = str_replace("<%RWDESC%>", $desc, $buffer);
 		$buffer = str_replace("<%VALIDSKINS%>", $skins, $buffer);
+		$buffer = str_replace("<%DEVAPIKEY%>", $GLOBALS['devkey'], $buffer);
+		$buffer = str_replace("<%DEVUSERID%>", $GLOBALS['devuid'], $buffer);
+		$buffer = str_replace("<%DEVSID%>", $GLOBALS['devsid'], $buffer);
 		fwrite($d, $buffer);
     }
 	fclose($s);
@@ -62,11 +71,14 @@ $rwdesc = array();
 function buildLanguages($dest, $bnum) {
 	print "Building languages.\n";
 	require("lang/en_CA.php");
-	copyFile("lang/en_CA.php", "en_CA.php.txt", "/home/rmcauley/public_html/lang/");
+	$errs = false;
+	if (isset($GLOBALS['langstatus']) && ($GLOBALS['langstatus'] == true)) {
+		copyFile("lang/en_CA.php", "en_CA.php.txt", $dest . "langstatus/");
+		$errs = fopen($dest . "langstatus/1_STATUS.txt", "w");
+	}
 	$dest2 = $dest . "lang_r" . $bnum;
 	mkdir($dest2) or die("Can't make destination language directory.");
 	$dir = opendir("lang");
-	$errs = fopen("/home/rmcauley/public_html/lang/1_STATUS.txt", "w");
 	while (false !== ($file = readdir($dir))) {
         if (preg_match("/.php$/", $file) && ($file != "en_CA.php")) {
 			$lang2 = array();
@@ -75,23 +87,26 @@ function buildLanguages($dest, $bnum) {
 			if (isset($lang2['_SITEDESCRIPTIONS'])) {
 				$GLOBALS['rwdesc'][$filenoext] = $lang2['_SITEDESCRIPTIONS'];
 			}
-			copyFile("lang/" . $file, $file . ".txt", "/home/rmcauley/public_html/lang/");
+			if (isset($GLOBALS['langstatus'])) copyFile("lang/" . $file, $file . ".txt", $dest . "langstatus/");
 			$fl = array_merge($lang, $lang2);
 			writeLang($dest2 . "/" . $filenoext . ".js", $fl);
-			$missingany = false;
-			foreach ($lang as $key => $value) {
-				if (!isset($lang2[$key])) {
-					if (!$missingany) {
-						fwrite($errs, "*** $file Missing ***\n");
-						$missingany = true;
+			
+			if ($errs != false) {
+				$missingany = false;
+				foreach ($lang as $key => $value) {
+					if (!isset($lang2[$key])) {
+						if (!$missingany) {
+							fwrite($errs, "*** $file Missing ***\n");
+							$missingany = true;
+						}
+						fwrite($errs, "\t\"$key\" => \"" . $lang[$key] . "\",\n");
 					}
-					fwrite($errs, "\t\"$key\" => \"" . $lang[$key] . "\",\n");
 				}
+				if ($missingany) fwrite($errs, "\n");
 			}
-			if ($missingany) fwrite($errs, "\n");
 		}
     }
-	fclose($errs);
+	if ($errs != false) fclose($errs);
 	require("lang/en_CA.php.local");
 	$GLOBALS['rwdesc']['en_CA'] = $lang['_SITEDESCRIPTIONS'];
 	writeLang($dest2 . "/en_CA.js", $lang);

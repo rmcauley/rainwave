@@ -14,6 +14,7 @@ if (gethostname() == "substream") {
 }
 $bnum = getBuildNumber();
 $lyredir = "/home/rmcauley/lyre/";
+$langstatus = true;
 
 print "RAINWAVE 3 BETA REVISION " . $bnum . "\n";
 
