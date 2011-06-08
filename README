@@ -34,7 +34,7 @@ file to git.  Here's the variables and their purposes for you:
 	$devkey = "[APIKEY]";
 	$devuid = "[DEVUID]";
 	$devsid = 1;	// 2 = OCR, 3 = Mixwave, 4 = Bitwave
-	$devdest = "~/rwbuild/";		// destination, note the trailing slash
+	$devdest = "/tmp/rw";	// destination, note the trailing slash
 	$devlyre = "http://localhost";
 	//$devlyrejs = "/path/to/lyre-ajax.js";
 ?>
