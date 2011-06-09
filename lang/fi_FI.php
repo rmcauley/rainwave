@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Rainwave 3 fi_FI r8 (31 may 2011) for (R3 r42) Language File by quarterlife
 
 $lang2 = array(

@@ -322,6 +322,24 @@ $lang2 = array(
 	"reqalbumblocked" => "Bloqué; l'album est en élection.",
 	"reqgroupblocked" => "Bloqué; le groupe de recharge est en élection.",
 	"logout" => "Déconnexion",
-	"managekeys" => "Gérer les clés API"
+	"managekeys" => "Gérer les clés API",
+	
+	"p_ListenersPanel" => "Membres à l'écoute",
+	"pltab_albums" => "Albums",
+	"pltab_artists" => "Artistes",
+	"overclockedremixes" => "Chaine OverClocked Remix",
+	"mixwavesongs" => "Chaine Mixwave",
+	"ltab_listeners" => "Listeners",
+	"guestlisteners" => "|guests| Invités",
+	"totallisteners" => "|total| à l'écoute maintenant",
+	"voteslast2weeks" => "Votes dans les deux dernières semaines: ",
+	"lsnrdt_allstations" => "Toutes les chaines",
+	"lsnrdt_averagerating" => "Note Moyenne",
+	"lsnrdt_ratingprogress" => "% de Chansons notées",
+	"lsnrdt_percentofratings" => "Part des chansons notées",
+	"lsnrdt_percentofrequests" => "Part des requêtes",
+	"lsnrdt_percentofvotes" => "Part des votes",
+	"escapetoclear" => "[esc] pour vider",
+	"searchheader" => "Rechercher: "
 );
 ?>

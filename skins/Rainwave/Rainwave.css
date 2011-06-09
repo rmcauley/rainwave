@@ -128,7 +128,7 @@ ul.tabs li {
 	padding: 0px 7px 1px 7px;	
 	cursor: pointer;
 	-moz-user-select: none;
-	-khtml-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 	opacity: 0.8;
 }
@@ -159,7 +159,7 @@ ul.tabs li+li {
 	cursor: w-resize;
 	cursor: ew-resize;
 	-moz-user-select: none;
-	-khtml-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 }
 
@@ -169,7 +169,7 @@ ul.tabs li+li {
 	cursor: n-resize;
 	cursor: ns-resize;
 	-moz-user-select: none;
-	-khtml-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 }
 
@@ -497,7 +497,7 @@ div.request {
 	position: absolute;
 	cursor: ns-resize;
 	-moz-user-select: none;
-	-khtml-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 	background-position: bottom right;
 	background-repeat: no-repeat;
@@ -651,7 +651,7 @@ table.menu_table {
 	position: relative;
 	z-index: 1;
 	-moz-user-select: none;
-	-khtml-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 	table-layout: fixed;
 }
@@ -823,7 +823,7 @@ table.menu_table td.menu_td_cog img {
 	margin-top: 1px;
 	position: relative;
 	-moz-user-select: none;
-	-khtml-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 }
 
@@ -887,7 +887,7 @@ table.timeline_table {
 	position: absolute;
 	width: 100%;
 	-moz-user-select: none;
-	-khtml-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 	table-layout: fixed;
 }

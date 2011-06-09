@@ -5,6 +5,10 @@ require("cssmin.php");
 
 $skincolors = array();
 $validskins = array();
+$devkey = "";
+$devuid = "";
+$devsid = "";
+$devlyre = "";
 
 function getBuildNumber($suffix = "") {
 	$bnum = file_get_contents("buildnum" . $suffix);
@@ -185,7 +189,9 @@ function buildBetaSkins($dest, $bnum) {
 					# pass
 				}
 				else if (preg_match("/.js$/", $file)) {
-					copyFile("skins/" . $skin . "/" . $file, $dest2 . "/" . $skin . "/" . $file);
+					$d = fopen($dest2 . "/" . $skin . "/" . $skin . ".js", "a");
+					fwrite($d, file_get_contents("skins/" . $skin . "/" . $file));
+					fclose($d);
 				}
 				else if (preg_match("/.css$/", $file)) {
 					appendCSSFile("skins/" . $skin . "/" . $file, "skins/" . $skin);
@@ -213,7 +219,7 @@ function appendCSSFile($sourcefile, $skindir) {
 	print "Building CSS file $sourcefile.\n";
 	$css = fopen($sourcefile, "r") or die("Can't open CSS file $sourcefile.");
 	$d = false;
-	$d = fopen("/tmp/rwcss", 'w') or die("Can't open destination file /tmp/rwcss");
+	$d = fopen("/tmp/rwcss", 'a') or die("Can't open destination file /tmp/rwcss");
 	while (($buffer = fgets($css, 4096)) !== false) {
 		$wrote = false;
 		$matches = array();

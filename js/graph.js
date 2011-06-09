@@ -60,9 +60,15 @@ var graph = function() {
 			if (graphs[0].xaxis_nonumbers) newgr.xaxis_padpx = 0;
 			else newgr.xaxis_padpx = UISCALE;
 		}
+		else {
+			newgr.xaxis_padpx = graphs[0].options.xaxis_padpx;
+		}
 		if (!graphs[0].options.yaxis_padpx) {
 			if (graphs[0].options.yaxis_ynonumbers) newgr.yaxis_padpx = 0;
 			else newgr.yaxis_padpx = UISCALE;
+		}
+		else {
+			newgr.yaxis_padpx = graphs[0].options.yaxis_padpx;
 		}
 		
 		if (!graphs[0].options.xaxis_nonumbers) newgr.xaxis_height = Math.floor(UISCALE * 1.5);
@@ -75,7 +81,6 @@ var graph = function() {
 		newgr.yaxis_height = height - newgr.xaxis_height - newgr.yaxis_padpx;
 		
 		// Following code only gets drawn once on graph init (borders, etc)
-		// CAREFUL, there is definitely some sloppy variable overwriting going on here, particularly with "x" and y"
 
 		var grid = svg.makeEl("g");
 		
@@ -87,16 +92,18 @@ var graph = function() {
 		// Render X grid lines
 		var stepline;
 		if (!graphs[0].options.xgrid_disable) {
-			for (i = newgr.xgrid_perstep + newgr.graphs[0].xaxis_min; i <= newgr.graphs[0].xaxis_max; i += newgr.xgrid_perstep) {
-				x = newgr.graphs[0].getXPixel(i);		// TODO: this is going to screwup somehow, somewhere... don't know how yet, though
-				stepline = svg.makeLine(x, newgr.yaxis_height, x, 0, { "stroke": theme.vdarktext, "stroke_width": 1 });
+			var xgrid_start = graphs[0].options.xgrid_start ? graphs[0].options.xgrid_start : newgr.xgrid_perstep + newgr.graphs[0].xaxis_min;
+			for (i = xgrid_start; i <= newgr.graphs[0].xaxis_max; i += newgr.xgrid_perstep) {
+				x = newgr.graphs[0].getXPixel(i) + newgr.yaxis_width;
+				stepline = svg.makeLine(x, newgr.yaxis_height + newgr.yaxis_padpx, x, 0, { "stroke": theme.vdarktext, "stroke_width": 1 });
 				grid.appendChild(stepline);
 			}
 		}
 		
 		// Render Y grid lines
 		if (!graphs[0].options.ygrid_disable) {
-			for (i = newgr.ygrid_perstep + newgr.graphs[0].yaxis_min; i <= newgr.graphs[0].yaxis_max; i += newgr.ygrid_perstep) {
+			var ygrid_start = graphs[0].options.ygrid_start ? graphs[0].options.ygrid_start : newgr.ygrid_perstep + newgr.graphs[0].yaxis_min;
+			for (i = ygrid_start; i <= newgr.graphs[0].yaxis_max; i += newgr.ygrid_perstep) {
 				y = newgr.graphs[0].getYPixel(i);
 				stepline = svg.makeLine(newgr.yaxis_width, y, width, y, { stroke: theme.vdarktext, stroke_width: 1 });
 				grid.appendChild(stepline);
@@ -212,7 +219,7 @@ var graph = function() {
 			// Render X numbers
 			if (!graph.options.xaxis_nonumbers) {
 				for (i = parent.xgrid_perstep + graph.xaxis_min; i <= graph.xaxis_max; i += parent.xgrid_perstep) {
-					x = graph.getXPixel(i);		// TODO: this will likely screw up just like getDrawOnceGroup
+					x = graph.getXPixel(i) + parent.yaxis_width;
 					if (!graph.options.xgrid_modulus || (i % graph.options.xgrid_modulus == 0)) {
 						steptext = svg.makeEl("text", { "x": x, "y": parent.yaxis_height + UISCALE * 1.2, "fill": theme.textcolor, "text_anchor": "middle" });
 						steptext.textContent = (graph.options.xaxis_precision) ? i.toFixed(graph.options.xaxis_precision) : Math.floor(i);
@@ -346,7 +353,7 @@ var graph = function() {
 		graph.addPoint = function(x, y) {
 			var x_px = graph.getXPixel(x);
 			var y_px = graph.getYPixel(y);
-			var barwidth = parent.xaxis_width / parent.xaxis_steps;
+			var barwidth = (parent.xaxis_width / parent.xaxis_steps) - 2;
 			bars[x] = svg.makeRect(x_px - (barwidth / 2) - 1, parent.yaxis_height, barwidth - 0.5, 0);
 			if (graph.options.fill) {
 				bars[x].setAttribute("fill", graph.options.fill(graph.graphindex, x_px / parent.xaxis_width, y_px / parent.yaxis_width));

@@ -781,7 +781,7 @@ function _THEME() {
 		};
 		
 		npe.animateIn = function() {
-			npe.fx_marginleft.start(5);
+			npe.fx_marginleft.start(10);
 			npe.fx_opacity.start(1);
 		};
 		
@@ -1161,16 +1161,17 @@ function _THEME() {
 					{	"options": {
 							"stroke": that.BarGraphStroke,
 							"fill": that.BarGraphFill,
+							"xaxis_min": 0.5,
 							"xaxis_max": 5,
-							"xaxis_perstep": 0.5, 
+							"xaxis_steps": 9,
 							"yaxis_steps": 3,
 							"xaxis_precision": 1, 
-							"xaxis_modulus": 1, 
+							"xgrid_modulus": 1, 
 							"xaxis_nomin": true, 
-							"yaxis_nomin": true, 
-							"xaxis_min": 0.5, 
-							"yaxis_min": 0, 
-							"xaxis_padpx": 10
+							"yaxis_nomin": true,
+							"yaxis_min": 0,
+							"xgrid_disable": true,
+							"xaxis_padpx": 13
 						},
 						"data": json.album_rating_histogram,
 						"graphfunc": graph.Bar
@@ -1491,8 +1492,11 @@ function _THEME() {
 					}
 				}
 				var maxtime = clock.now;
-				var mintime = clock.now - 2592000;	// this number is 38 * 86400, the same number that's in Lyre
+				var mintime = clock.now - 2592000 - 86400;	// this number is 30 * 86400, the same number that's in Lyre
 				var gr2maxy = Math.ceil(maxrank / 50) * 50;
+				var xgrid_start = new Date(mintime).getDay() - 1;
+				if (xgrid_start < 0) xgrid_start = 86400;
+				else xgrid_start = ((5 - xgrid_start) * 86400) + mintime;
 				var gr = graph.makeSVG(400, 300, [
 					{	"options": {
 							"stroke": that.BarGraphStroke, 
@@ -1501,8 +1505,9 @@ function _THEME() {
 							"minrangey": 100, 
 							"xaxis_max": maxtime, 
 							"xaxis_steps": 30,
-							"xgrid_disable": true, 
-							"xaxis_min": mintime
+							"xaxis_min": mintime,
+							"xgrid_start": xgrid_start,
+							"xgrid_perstep": 604800
 						},
 						"data": vcdata,
 						"graphfunc": graph.Bar

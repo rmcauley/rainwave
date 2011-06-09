@@ -174,6 +174,13 @@ $lang2 = array(
 	"ltab_listeners" => "Escuchas", 		// Listeners tab name
 	"guestlisteners" => "|guests| Invitados",	// appears at the bottom of the current listeners list
 	"totallisteners" => "|total| Escuchas Ahora",	// appears underneath guestlisteners.
+	"voteslast2weeks" => "Votos en las últimas 2 semanas: ",
+	"lsnrdt_allstations" => "Todas Estaciones",
+	"lsnrdt_averagerating" => "Valoración Media",
+	"lsnrdt_ratingprogress" => "Progreso de Valoración",
+	"lsnrdt_percentofratings" => "Porcentaje de Valoraciones",
+	"lsnrdt_percentofrequests" => "Porcentaje de Peticiones",
+	"lsnrdt_percentofvotes" => "Porcentaje de Votos",
 	
 	// Preference names
 	
