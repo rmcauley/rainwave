@@ -346,6 +346,7 @@ $lang = array(
 	"currentdj" => "dj |username|",
 	"electionresults" => "Election Results",
 	"from" => "from |username|",
+	"votefaileleclocked" => "Vote Failed, Election Locked",
 	
 	// Menu Bar
 	

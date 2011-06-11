@@ -950,7 +950,7 @@ function _THEME() {
 			row.appendChild(menup.td_user);
 			
 			menup.user_cp = createEl("div", { "class": "menu_user_cp" });
-			var usercp_logout = createEl("a", { "class": "displayblock", "textContent": _l("logout"), "href": "http://rainwave.cc/forums/ucp.php?mode=logout" }, menup.user_cp);
+			//var usercp_logout = createEl("a", { "class": "displayblock", "textContent": _l("logout"), "href": "http://rainwave.cc/forums/ucp.php?mode=logout" }, menup.user_cp);
 			var usercp_keys = createEl("a", { "class": "displayblock", "textContent": _l("managekeys"), "href": "http://rainwave.cc/auth/" }, menup.user_cp);
 			fx.makeMenuDropdown(menup.el, menup.td_user, menup.user_cp, { "checkbefore": function() { if (user.p.user_id == 1) return false; } } );
 			

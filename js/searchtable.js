@@ -167,6 +167,7 @@ function SearchTable(container, id_key, table_class) {
 	// SEARCHING **************************** 
 	
 	that.keyHandle = function(evt) {
+		if (sorted.length < 10) return;	// fixes searching before the page loads
 		// only go if we have focus or we're not inside the MPI
 		if (!that.searchEnabled()) return true;
 

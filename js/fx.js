@@ -8,21 +8,19 @@ fxOne.start(0);
 var fx = function() {
 	var that = {};
 	that.enabled = true;
-	var timer = false;
-	var started = false;
 
 	var requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
 	var browsersupport = true;
 	if (!requestFrame) {
 		browsersupport = false;
 		requestFrame = function(callback) {
-			window.setTimeout(callback, 1000 / 30);
+			window.setTimeout(callback, 40);
 		};
 	}
 	
 	that.extend = function(name, func) {
 		that[name] = func;
-	}
+	};
 
 	that.make = function(func, el, duration) {
 		var newfx;
@@ -47,15 +45,14 @@ var fx = function() {
 		if (!("onComplete" in newfx)) newfx.onComplete = false;
 		if (!("onSet" in newfx)) newfx.onSet = false;
 		
-		var step = function(time) {
-			if (!time) time = new Date().getTime(); // Irish has this as *.002 for some reason... not sure why...
+		var step = function(steptime) {
+			if (!browsersupport || !steptime) steptime = new Date().getTime();
 			
-			if ((time < (started + duration)) && (now != to)) {
+			if ((steptime < (started + duration)) && (now != to)) {
 				// Stolen from Robert Penner's Programming Macromedia Flash MX p.210:
-				// now = -delta * (time /= duration) * (time - 2) + from;
+				// now = -delta * (steptime /= duration) * (steptime - 2) + from;
 				// can't get the damned thing to work, though, so we're sticking with what works which was stolen from MooTools:
-				// (who probably stole it from Penner but hey, that's the way it goes :) )
-				var delta2 = -(Math.cos(Math.PI * ((time - started) / duration)) - 1) / 2;
+				var delta2 = -(Math.cos(Math.PI * ((steptime - started) / duration)) - 1) / 2;
 				now = (to - from) * delta2 + from;
 
 				newfx.update(now);
@@ -63,13 +60,13 @@ var fx = function() {
 				requestFrame(step);
 			}
 			else {
+				now = to;
+				newfx.update(now);
 				newfx.stop();
 			}
 		};
 		
 		newfx.stop = function() {
-			now = to;
-			newfx.update(now);
 			if (newfx.onComplete) newfx.onComplete(now);
 			newfx.now = now;
 		};
@@ -83,17 +80,17 @@ var fx = function() {
 		};
 		
 		newfx.start = function(stopat) {
-			var time = new Date().getTime();
-			if (time < (started + duration)) {
-				if (newfx.unstoppable) return;
-				if (to == stopat) return;
-				newfx.stop();
-			}
+			var temptime = new Date().getTime();
 			if (arguments.length == 2) {
 				now = arguments[0];
 				stopat = arguments[1];
 			}
-			started = time;
+			if (temptime < (started + duration)) {
+				if (newfx.unstoppable) return;
+				if (to == stopat) return;
+				newfx.stop();
+			}
+			started = temptime;
 			to = stopat;
 			from = now;
 			delta = to - from;
@@ -335,15 +332,10 @@ var fx = function() {
 	
 	// ************************************************************** PREFS
 	
-	that.p_fps = function(fps) {
-		that.fps = parseInt(fps);
-	};
-	
 	that.p_enabled = function(enabled) {
 		that.enabled = enabled;
 	};
-	
-	prefs.addPref("fx", { name: "fps", hidden: browsersupport, callback: that.p_fps, defaultvalue: 30, type: "dropdown", options: [ { "value": "15", "option": "15fps" }, { value: "30", option: "30fps" }, { value: "45", option: "45fps" }, { value: "60", option: "60fps" } ] } );
+
 	prefs.addPref("fx", { name: "enabled", callback: that.p_enabled, defaultvalue: true, type: "checkbox" });
 	
 	// **************************************************************

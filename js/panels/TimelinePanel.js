@@ -172,19 +172,13 @@ panels.TimelinePanel = {
 		};
 		
 		that.voteResultHandle = function(json) {
-			if (json.code == 3) {
+			if ((json.code <= 0) && ("elec_entry_id" in json)) {
 				for (var i = 0; i < that.allevents.length; i++) {
 					that.allevents[i].registerFailedVote(json.elec_entry_id);
 				}
-				if (json.elec_voted_id) {
-					json.code = 1;
-					json.elec_entry_id = json.elec_voted_id;
-				}
-				else {
-					that.allevents[i].enableVoting();
-				}
+				
 			}
-			if (json.code == 1) {
+			else if (json.code == 1) {
 				for (var i = 0; i < that.allevents.length; i++) {
 					if (that.allevents[i].registerVote(json.elec_entry_id)) {
 						that.allevents[i].disableVoting();
@@ -601,6 +595,7 @@ function TimelineElection(json, container, parent) {
 		for (var i = 0; i < that.songs.length; i++) {
 			if (that.songs[i].p.elec_entry_id == elec_entry_id) {
 				that.songs[i].registerFailedVote();
+				that.changeHeadline(_l("votefaileleclocked"));
 			}
 		}
 	};

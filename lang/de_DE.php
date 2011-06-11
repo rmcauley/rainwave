@@ -1,8 +1,16 @@
 <?php
 // Rainwave 3 de_DE Language File by DarkLink
 
-
 $lang2 = array(
+"_SITEDESCRIPTIONS" => array(
+		// Rainwave's description as it appears to search engines.
+		1 => "Streaming Video Game Music Radio.  Stimme für den Song ab den du hören willst!",
+		// OCR Radio's description as it appears to search engines.
+		2 => "OverClocked Remix Radio.  Stimme für deine lieblings remixes ab!",
+		// Mixwave's.
+		3 => "Video game cover bands and remixes.  Stimme für deine lieblings Interpreten ab!"
+	),
+	
 	// Panel Names
 	"p_MainMPI" => "Tabs",
 	"p_MenuPanel" => "Menü",
@@ -12,6 +20,7 @@ $lang2 = array(
 	"p_NowPanel" => "Jetzt läuft",
 	"p_RequestsPanel" => "Wünsche",
 	"p_TimelinePanel" => "Zeitlinie",
+	"p_ListenersPanel" => "Zuhörer",
 	
 	// This will produce dates like 5d 23h 10m 46s.  Change to your liking.
 	"timeformat_d" => "d ",
@@ -119,6 +128,12 @@ $lang2 = array(
 	"suffix_11" => "",
 	"suffix_12" => "",
 	"suffix_13" => "",
+
+	// Playlist Related
+	"pltab_albums" => "Alben",
+	"pltab_artists" => "Interpreten",
+	"overclockedremixes" => "OverClocked Remixes",
+	"mixwavesongs" => "Mixwave Songs",
 	
 	// Playlist Sentences, these all show up in the album detail pages.
 	
@@ -132,6 +147,19 @@ $lang2 = array(
 	"pl_genres" => "Abkühlgruppen: ",
 	"pl_genres2_normal" => ".",
 	"pl_genres2_more" => " & weitere.",
+	
+// Listeners Panel
+	
+	"ltab_listeners" => "Zuhörer", 			// Listeners tab name
+	"guestlisteners" => "|guests| Gäste",		// appears at the bottom of the current listeners list
+	"totallisteners" => "Aktuell |total| Zuhörer",	// appears underneath guestlisteners.
+	"voteslast2weeks" => "Stimmvergaben in den letzten 2 Wochen: ",
+	"lsnrdt_allstations" => "Alle Sender",
+	"lsnrdt_averagerating" => "⌀ Songwertung",
+	"lsnrdt_ratingprogress" => "Songs bewertet",
+	"lsnrdt_percentofratings" => "Bewertungsverteilung",
+	"lsnrdt_percentofrequests" => "Wunschverteilung",
+	"lsnrdt_percentofvotes" => "Stimmverteilung",
 	
 	// Preference names
 	
@@ -244,6 +272,10 @@ $lang2 = array(
 	// Schedule Panel user text.
 
 	"noschedule" => "Diese Woche stehen keine Events an.",
+	// Searching Related
+	
+	"escapetoclear" => "[esc] zum löschen",
+	"searchheader" => "Suchen: ",
 	
 	// Requests
 	

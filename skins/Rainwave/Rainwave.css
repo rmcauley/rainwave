@@ -272,6 +272,10 @@ td.pl_fav_true, td.pl_fav_false {
 	border-right: 2px solid [% background %];
 }
 
+table.pl_albumlist td.pl_fav_true {
+	background-color: [% playlist_fav %];
+}
+
 table.pl_albumlist td.pl_al_number {
 	text-align: right;
 	padding-right: .2em;
@@ -287,13 +291,10 @@ table.pl_albumlist tr.pl_available td.pl_al_rating, table.pl_albumlist tr.pl_ava
 	background-color: [% playlist_rating %];
 }
 
-td.pl_al_rating {
+table.pl_albumlist td.pl_al_rating {
 	width: 1.8em;
 	text-align: right;
-}
-
-table.pl_albumlist tr.pl_available td.pl_fav_true {
-	background-color: [% playlist_fav %];
+	padding-right: 3px;
 }
 
 div.pl_searchc {
@@ -1021,7 +1022,7 @@ div.song_title {
 
 div.timeline_song_rating_c {
 	float: right;
-	padding-left: 10px;
+	padding-left: 23px;
 	z-index: 7;
 	position: relative;
 }

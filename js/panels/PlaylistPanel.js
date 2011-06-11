@@ -110,13 +110,19 @@ panels.PlaylistPanel = {
 
 		that.openAlbum = function(album_id) {
 			view.switchToTab("albums");
-			if (view.checkOpenDivs("album", album_id)) return;
+			if (view.checkOpenDivs("album", album_id)) {
+				albumlist.navToID(album_id);
+				return;
+			}
 			lyre.async_get("album", { "album_id": album_id });
 		};
 		
 		that.openArtist = function(artist_id) {
 			view.switchToTab("artists");
-			if (view.checkOpenDivs("artist", artist_id)) return;
+			if (view.checkOpenDivs("artist", artist_id)) {
+				artistlist.navToID(artist_id);
+				return;
+			}
 			lyre.async_get("artist_detail", { "artist_id": artist_id });
 		};
 		
@@ -270,15 +276,17 @@ var ArtistSearchTable = function(parent, container, view) {
 	};
 
 	that.drawEntry = function(artist) {
+		artist.tr.setAttribute("class", "pl_available");
 		var artist_td = createEl("td", { "textContent": artist.artist_name, "class": "pl_al_name" }, artist.tr);
 		artist_td.addEventListener('click', that.updateScrollOffsetByEvt, true);
 		Artist.linkify(artist.artist_id, artist_td);
+	
+		createEl("td", { "textContent": artist.artist_numsongs, "class": "pl_al_rating" }, artist.tr);		
 	};
 	
 	that.drawNavChange = function(artist, highlight) {
 		var cl = "pl_available";
 		if (highlight) cl += " pl_highlight";
-		//if (artist.artist_id == parent.open_artist) cl += " pl_albumopen";
 		artist.tr.setAttribute("class", cl);
 	};
 	

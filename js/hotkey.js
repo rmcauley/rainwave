@@ -86,13 +86,14 @@ var hotkey = function() {
 	
 	that.keyDownHandler = function(evt) {
 		if (that.ignoreKey(evt)) return true;
-		// Short-circuit backspace on Chrome
+		// Short-circuit backspace on Webkit
 		if (evt.keyCode == 8) {
 			backspace_trap = !that.keyPress(evt) || backspace_trap;
 			return !backspace_trap;
 		}
-		// stop this from cancelling our AJAX requests
-		if (evt.keyCode == 27) {
+		// Code 27 is escape, and this stops esc from cancelling our AJAX requests
+		// Codes 38 and 40 are arrow keys, since Webkit browsers don't fire keyPress events on them
+		if ((evt.keyCode == 27) || (evt.keyCode == 38) || (evt.keyCode == 40)) {
 			that.keyPress(evt);
 			that.stopDefaultAction(evt);
 			return false;

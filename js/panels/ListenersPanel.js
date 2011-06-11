@@ -69,7 +69,10 @@ panels.ListenersPanel = {
 		};
 		
 		that.openListener = function(user_id) {
-			if (view.checkOpenDivs("listener", user_id)) return;
+			if (view.checkOpenDivs("listener", user_id)) {
+				clist.navToID(user_id);
+				return;
+			}
 			lyre.async_get("listener_detail", { "listener_uid": user_id });
 		};
 		
