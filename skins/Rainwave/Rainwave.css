@@ -1329,7 +1329,7 @@ div.clist_guest_count {
 	padding-right: 0.2em;
 }
 
-span.lang_guestlisteners_guests {
+span.lang_registeredlisteners_users, span.lang_otherlisteners_total {
 	font-weight: bold;
 }
 
@@ -1337,10 +1337,6 @@ div.clist_total_count {
 	padding-left: .2em;
 	border-bottom: 1px solid [% vdarktext %];
 	margin-bottom: .2em;
-}
-
-span.lang_totallisteners_total {
-	font-weight: bold;
 }
 
 td.lsnrdt_spacer {

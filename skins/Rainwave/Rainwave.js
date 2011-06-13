@@ -1464,6 +1464,15 @@ function _THEME() {
 			var dtr = createEl("tr", false, dtable);
 			createEl("td", { "textContent": _l("voteslast2weeks") }, dtr);
 			createEl("td", { "textContent": json.radio_2wkvotes }, dtr);
+			
+			dtr = createEl("tr", false, dtable);
+			createEl("td", { "textContent": _l("voterecord") }, dtr);
+			createEl("td", { "textContent": _l("votewinloss", { "wins": json.radio_winningvotes, "losses": json.radio_losingvotes, "ratio": Math.round(json.radio_winningvotes / (json.radio_winningvotes + json.radio_losingvotes) * 100) } ) }, dtr);
+			
+			dtr = createEl("tr", false, dtable);
+			createEl("td", { "textContent": _l("requestrecord") }, dtr);
+			createEl("td", { "textContent": _l("requestwinloss", { "wins": json.radio_winningrequests, "losses": json.radio_losingrequests, "ratio": Math.round(json.radio_winningrequests / (json.radio_winningrequests + json.radio_losingrequests) * 100) }) }, dtr);
+			
 			wdow.detailtd.appendChild(dtable);
 
 			// Avatar

@@ -55,8 +55,8 @@ panels.ListenersPanel = {
 		
 		that.clistUpdate = function(json) {
 			clist.update(json.users);
-			_l("guestlisteners", { "guests": json.guests }, guest_counter);
-			_l("totallisteners", { "total": (json.guests + json.users.length) }, total_counter);
+			_l("otherlisteners", { "guests": json.guests, "total": (json.guests + json.users.length) }, guest_counter);
+			_l("registeredlisteners", { "users": json.users.length }, total_counter);
 		};
 		
 		that.drawListenerCallback = function(json) {

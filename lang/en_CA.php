@@ -172,9 +172,14 @@ $lang = array(
 	// Listeners Panel
 	
 	"ltab_listeners" => "Listeners", 			// Listeners tab name
-	"guestlisteners" => "|guests| Guests",		// appears at the bottom of the current listeners list
-	"totallisteners" => "|total| Listeners Now",	// appears underneath guestlisteners.
+	"otherlisteners" => "(|guests| guests, |total| total)",		// appears at the bottom of the current listeners list
+	"registeredlisteners" => "|users| Users",	// appears underneath guestlisteners.
 	"voteslast2weeks" => "Votes in the last 2 weeks: ",
+	"voterecord" => "Vote Record: ",
+	"requestrecord" => "Request Record: ",
+	"votewinloss" => "|wins| |P:wins,win|, |losses| |P:losses,loss| -- wins |ratio|%",
+	"requestwinloss" => "|wins| played, |losses| rejected -- played |ratio|%",
+	
 	"lsnrdt_allstations" => "All Stations",
 	"lsnrdt_averagerating" => "Avg. Rating",
 	"lsnrdt_ratingprogress" => "Rating Completion",

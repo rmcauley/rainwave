@@ -19,7 +19,11 @@ $lang2 = array(
 	"Vote" => "Vote",
 	"Vote_p" => "Votes",
 	"time_count" => "time",
-	"time_count_p" => "times"
+	"time_count_p" => "times",
+	"win" => "win",
+	"win_p" => "wins",
+	"loss" => "loss",
+	"loss_p" => "losses"
 );
 $lang = array_merge($lang, $lang2);
 	
