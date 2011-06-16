@@ -100,6 +100,7 @@ var ListenersSearchTable = function(parent, container, view) {
 	};
 	
 	that.drawNavChange = function(artist, highlight) {
+		if (!artist) return;
 		var cl = "pl_available";
 		if (highlight) cl += " pl_highlight";
 		//if (artist.artist_id == parent.open_artist) cl += " pl_albumopen";

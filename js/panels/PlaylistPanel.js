@@ -181,8 +181,10 @@ var AlbumSearchTable = function(parent, container, view) {
 	};
 	
 	that.favResult = function(result) {
-		that.data[result.album_id].td_fav.setAttribute("class", "pl_fav_" + result.fav);
-		that.data[result.album_id].album_favourite = result.fav;
+		if (result.album_id in that.data) {
+			that.data[result.album_id].td_fav.setAttribute("class", "pl_fav_" + result.fav);
+			that.data[result.album_id].album_favourite = result.fav;
+		}
 	};
 	
 	that.favSwitch = function(evt) {

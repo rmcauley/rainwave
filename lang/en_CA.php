@@ -179,6 +179,7 @@ $lang = array(
 	"requestrecord" => "Request Record: ",
 	"votewinloss" => "|wins| |P:wins,win|, |losses| |P:losses,loss| -- wins |ratio|%",
 	"requestwinloss" => "|wins| played, |losses| rejected -- played |ratio|%",
+	"lsnr_rankgraph_header" => "Votes and Rank For The Last Month",
 	
 	"lsnrdt_allstations" => "All Stations",
 	"lsnrdt_averagerating" => "Avg. Rating",

@@ -1485,9 +1485,12 @@ function _THEME() {
 			}
 			
 			wdow.div.appendChild(wdow.hdrtable);
+			
+			var centrediv = createEl("div", { "class": "ldetail_container" });
 
 			// Vote graphs
 			if (json.user_2wk_voting.length > 2) {
+				createEl("div", { "class": "graph_header", "textContent": _l("lsnr_rankgraph_header") }, centrediv);
 				var vcdata = {};
 				vcdata2 = {};
 				var maxrank = 0;
@@ -1533,7 +1536,8 @@ function _THEME() {
 						"data": vcdata2,
 						"graphfunc": graph.Line
 					} ] );
-				wdow.div.appendChild(gr.svg);
+				centrediv.appendChild(gr.svg);
+				centrediv.appendChild(createEl("hr"));
 			}
 			
 			// Station breakdown
@@ -1590,7 +1594,8 @@ function _THEME() {
 				createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[i].vote_percentage), "textContent": json.user_station_specific[i].vote_percentage + "%" }, tr);
 			}
 			
-			wdow.div.appendChild(stationstats);
+			centrediv.appendChild(stationstats);
+			wdow.div.appendChild(centrediv);
 			
 		};
 	};

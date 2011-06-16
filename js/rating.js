@@ -107,7 +107,6 @@ function Rating(p) {
 	};
 	
 	that.updateSiteRating = function(site) {
-		if (that.siterating == site) return;
 		that.siterating = site;
 		if (ratingcontrol.hideuntilrated && !that.userrating) {
 			that.setSite(0);

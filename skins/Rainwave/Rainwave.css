@@ -1324,6 +1324,8 @@ div.inlinesearch_hdr {
 	background: [% indicnormal %];
 }
 
+/* LISTENER PANEL */
+
 div.clist_guest_count {
 	float: right;
 	padding-right: 0.2em;
@@ -1353,4 +1355,12 @@ table.listener_detail td {
 td.lsnrdt_bar {
 	border-right: solid 1px [% vdarktext %];
 	border-left: solid 1px [% vdarktext %];
+}
+
+div.ldetail_container {
+	text-align: center;
+}
+
+div.graph_header {
+	font-weight: bold;
 }
