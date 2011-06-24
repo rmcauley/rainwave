@@ -22,16 +22,10 @@ function formatHumanTime(seconds, fulltime, disableseconds) {
 	return humantime.substr(0, humantime.length - 1);
 }
 
-function linkify(el, link2) {
-/*	if (svg.isElSVG(el)) {
-		if (link2) svg.linkify(el);
-		else el.style.cursor = "pointer";
-	}
-	else {*/
-		//el.style.cursor = "pointer";
-		if (link2) el.setAttribute("class", el.getAttribute("class") + " link2");
-		else el.setAttribute("class", el.getAttribute("class") + " link");
-	//}
+function linkify(el, external, new_window) {
+	if (new_window) el.setAttribute("class", el.getAttribute("class") + " new_window");
+	else if (external) el.setAttribute("class", el.getAttribute("class") + " external_link");
+	else el.setAttribute("class", el.getAttribute("class") + " link");
 }
 
 function formatTime(seconds) {

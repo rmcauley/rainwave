@@ -378,6 +378,7 @@ $lang = array(
 	"m3uhijack" => "|plugin| is trying to hijack the M3U download.  Please right click and 'Save As.'",
 	"menu_morestations" => "More ▼",
 	"waitingforstatus" => "Waiting for Status",
-	"managekeys" => "Manage API Keys"
+	"managekeys" => "Manage API Keys",
+	"listenerprofile" => "Listener Profile"
 );
 ?>

@@ -5,19 +5,19 @@ var Song = {
 	},
 	
 	linkifyAsOneshot: function(song_id, el) {
-		linkify(el, true);
+		linkify(el);
 		el.addEventListener('click', function() { lyre.async_get("oneshot_add", { "song_id": song_id }); }, true);
 	},
 	
 	linkifyAsForceCandidate: function(song_id, el) {
-		linkify(el, true);
+		linkify(el);
 		el.addEventListener('click', function() { lyre.async_get("force_candidate_add", { "song_id": song_id }); }, true);
 	}
 };
 
 var Album = {
 	linkify: function(album_id, el) {
-		linkify(el, true);
+		linkify(el);
 		el.addEventListener('click', function() { edi.openPanelLink("PlaylistPanel", { type: "album", id: album_id, history: true }) }, true);
 	},
 	
@@ -43,7 +43,7 @@ var Artist = {
 	},
 	
 	linkify: function(artist_id, el) {
-		linkify(el, true);
+		linkify(el);
 		el.addEventListener('click', function() { edi.openPanelLink("PlaylistPanel", { type: "artist", id: artist_id, history: true }); }, true);
 	},
 	
@@ -54,7 +54,7 @@ var Artist = {
 
 var Username = {
 	linkify: function(user_id, el) {
-		linkify(el, true);
+		linkify(el);
 		el.addEventListener('click', function() { edi.openPanelLink("ListenersPanel", { "type": "listener", "id": user_id, "history": true }); }, true);
 	},
 	

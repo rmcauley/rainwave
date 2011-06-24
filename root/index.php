@@ -48,7 +48,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 </div>
 <script type="text/javascript">
 <?php
-	print "\tVAR PRELOADED_LANG = '" . $lang . "';\n";
+	print "\tvar PRELOADED_LANG = '" . $lang . "';\n";
 	print "\tvar PRELOADED_APIKEY = '" . newAPIKey(true) . "';\n";
 	print "\tvar PRELOADED_USER_ID = " . $user_id . ";\n";
 	print "\tvar PRELOADED_SID = " . $sid . ";\n";
@@ -58,9 +58,9 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 <?php
 	print "<div id='oggpixel'></div>\n";
 	print "<script src='lang_r" . $bnum . "/" . $lang . ".js' type='text/javascript' async='true'></script>\n";
-	print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript' async='true'></script>\n";
+	print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript'></script>\n";
 ?>
-<script src='rainwave3_r<%BUILDNUM%>.js' type='text/javascript' async="true"></script>
+<script src='rainwave3_r<%BUILDNUM%>.js' type='text/javascript'></script>
 <script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script> 
 <script type="text/javascript">
 	pageTracker = _gat._getTracker("UA-3567354-1");

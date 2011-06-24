@@ -228,7 +228,7 @@ function appendCSSFile($sourcefile, $skindir) {
 		}
 		if (preg_match("/^(.*) url\(['\"]?([\w.-_]+).(png|jpg|gif|jpeg)['\"]?\)(.*)$/", $buffer, $matches)) {
 			$filename = $skindir . "/" . $matches[2] . "." . $matches[3];
-			if (filesize($filename) <= 2048) {
+			if (filesize($filename) <= 5128) {
 				$image = fopen($filename, "rb") or die("Could not open image $filename.");
 				$contents = fread($image, filesize($filename));
 				fclose($image);

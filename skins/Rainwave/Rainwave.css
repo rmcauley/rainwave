@@ -20,17 +20,25 @@ p {
 	padding: .2em;
 }
 
-a, a:visited, .link, .link2 {
+a, a:visited, .link, .external_link {
 	color: [% text %];
 	text-decoration: none;
 	cursor: pointer;
+}
+
+.external_link:after {
+	content: url("images/wikilink_12px.png");
+}
+
+.new_window:after {
+	content: url("images/new_window_icon.png");
 }
 
 a img {
 	border: none;
 }
 
-a:hover, .link:hover {
+a:hover, .link:hover, .external_link:hover, .new_window:hover {
 	text-decoration: underline;
 	color: [% text %];
 }
@@ -654,7 +662,6 @@ table.menu_table {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	user-select: none;
-	table-layout: fixed;
 }
 
 table.menu_table img {
@@ -664,11 +671,25 @@ table.menu_table img {
 table.menu_table td {
 	padding: 2px 3px 2px 3px;
 	border-bottom: 1px solid [% border %];
-	background: [% background %];
+	background-color: [% background %];
 }
 
 td.menu_td_station {
 	width: 200px;
+	background-repeat: no-repeat;
+	background-position: 2px 2px;
+}
+
+td.menu_td_station_1 {
+	background-image: url("images/menu_logo_1.png");
+}
+
+td.menu_td_station_2 {
+	background-image: url("images/menu_logo_2.png");
+}
+
+td.menu_td_station_3 {
+	background-image: url("images/menu_logo_3.png");
 }
 
 div.menu_select_more {
@@ -694,7 +715,22 @@ ul.menu_select {
 }
 
 ul.menu_select li {
-	padding: 8px;
+	width: 220px;
+	height: 50px;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
+ul.menu_select li.menu_select_station_1 {
+	background-image: url("images/stationselect_1.png");
+}
+
+ul.menu_select li.menu_select_station_2 {
+	background-image: url("images/stationselect_2.png");
+}
+
+ul.menu_select li.menu_select_station_3 {
+	background-image: url("images/stationselect_3.png");
 }
 
 ul.menu_select li svg {
@@ -704,6 +740,28 @@ ul.menu_select li svg {
 td.menu_td_play {
 	width: 194px;
 	text-align: right;
+}
+
+a.tunein_vlc, a.tunein_winamp, a.tunein_fb2k {
+	width: 20px;
+	height: 16px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	position: absolute;
+}
+
+a.tunein_vlc {
+	background-image: url("images/vlc.png");
+}
+
+a.tunein_winamp {
+	background-image: url("images/winamp.png");
+	margin-left: 21px;
+}
+
+a.tunein_fb2k {
+	background-image: url("images/fb2k.png");
+	margin-left: 40px;
 }
 
 .menu_player {
@@ -801,10 +859,14 @@ table.menu_table td.menu_td_cog img {
 	border: 1px solid [% cog %];
 	border-right: none;
 	background: [% background %];
-	width: 122px;
-	margin-left: -25px;
+	width: 150px;
+	margin-left: -35px;
 	padding-right: 2px;
 	z-index: -1;
+}
+
+.COG_links hr {
+	color: [% cog %]
 }
 
 .COG_links a {
@@ -814,6 +876,9 @@ table.menu_table td.menu_td_cog img {
 .COG_banner {
 	position: relative;
 	z-index: 1;
+	height: 19px;
+	width: 115px;
+	background: url("images/cog_network_h.png") no-repeat;
 }
 
 .rating {
@@ -996,11 +1061,11 @@ td.timeline_artist_td {
 	text-overflow: ellipsis;
 }
 
-td.timeline_album_td .link2 {
+td.timeline_album_td .external_link {
 	color: inherit;
 }
 
-td.timeline_artist_td .link2 {
+td.timeline_artist_td .external_link {
 	color: inherit;
 }
 

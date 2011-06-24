@@ -153,13 +153,20 @@ $lang2 = array(
 	"ltab_listeners" => "Zuhörer", 			// Listeners tab name
 	"guestlisteners" => "|guests| Gäste",		// appears at the bottom of the current listeners list
 	"totallisteners" => "Aktuell |total| Zuhörer",	// appears underneath guestlisteners.
-	"voteslast2weeks" => "Stimmvergaben in den letzten 2 Wochen: ",
+	"voteslast2weeks" => "Stimmvergaben in den letzten 2 Wochen: ",	
+	"otherlisteners" => "(|guests| Gäste, |total| Gesamt)",		// appears at the bottom of the current listeners list
+	"registeredlisteners" => "|users| Benutzer",	// appears underneath guestlisteners.
+	"voterecord" => "Stimmvergabe Status: ",
+	"requestrecord" => "Wunsch Status: ",
+	"votewinloss" => "|wins| |P:wins,win|, |losses| |P:losses,loss| -- gewinnt |ratio|%",
+	"requestwinloss" => "|wins| gespielt, |losses| abgelehnt -- gespielt |ratio|%",
+	"lsnr_rankgraph_header" => "Votes and Rank For The Last Month",
 	"lsnrdt_allstations" => "Alle Sender",
 	"lsnrdt_averagerating" => "⌀ Songwertung",
 	"lsnrdt_ratingprogress" => "Songs bewertet",
 	"lsnrdt_percentofratings" => "Bewertungsverteilung",
 	"lsnrdt_percentofrequests" => "Wunschverteilung",
-	"lsnrdt_percentofvotes" => "Stimmverteilung",
+	"lsnrdt_percentofvotes" => "Stimmverteilung",		
 	
 	// Preference names
 	
@@ -322,6 +329,7 @@ $lang2 = array(
 	"currentdj" => "dj |username|",
 	"electionresults" => "Abstimmungsergebnisse",
 	"from" => "von |username|",
+	"votefaileleclocked" => "Stimmabgabe fehlgeschlagen, Abstimmung gesperrt",
 	
 	// Menu Bar
 	

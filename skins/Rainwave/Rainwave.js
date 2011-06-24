@@ -344,7 +344,7 @@ function _THEME() {
 				}
 				td = createEl("td", { "class": "timeline_td" }, tr);
 				if (tas.p.ad_data[i].ad_url) {
-					createEl("a", { "href": tas.p.ad_data[i].ad_url, "textContent": tas.p.ad_data[i].ad_title }, td);
+					createEl("a", { "href": tas.p.ad_data[i].ad_url, "textContent": tas.p.ad_data[i].ad_title, "class": "link" }, td);
 				}
 				else {
 					createEl("span", { "textContent": tas.p.ad_data[i].ad_title }, td);
@@ -391,7 +391,7 @@ function _THEME() {
 		};
 		
 		tos.drawShowWinner = function() {
-			tos.song.tr3_fx.onComplete2 = function() { tos.songs[0].indicator.setAttribute("rowspan", 2); }
+			tos.song.tr3_fx.onComplete2 = function() { tos.song.indicator.setAttribute("rowspan", 2); }
 			tos.song.tr3_fx.start(0);
 		};
 	};
@@ -676,9 +676,8 @@ function _THEME() {
 				var urltext = _l("songhomepage");
 				if (json.song_urltext && (json.song_urltext.length > 0)) urltext = json.song_urltext;
 				else if (user.p.sid == 2) urltext = _l("remixdetails");
-				var songlink = createEl("a", { "href": json.song_url, "target": "_blank" }, table.url);
+				var songlink = createEl("a", { "href": json.song_url, "target": "_blank", "class": "link" }, table.url);
 				createEl("span", { "textContent": urltext }, songlink);
-				createEl("img", { "src": "images/new_window_icon.png" }, songlink);
 				urlneedsfill = false;
 			}
 			if (json.elec_votes) {
@@ -703,7 +702,7 @@ function _THEME() {
 			if (json.ad_title) table.song_title.textContent = json.ad_title;
 			if (json.ad_album) table.album_name.textContent = json.album_name;
 			if (json.ad_artist) table.artist_name = json.ad_artist;
-			if (json.ad_url && (json.ad_url.length > 0)) createEl("a", { "href": json.ad_url, "textContent": json.ad_url_text }, table.url);
+			if (json.ad_url && (json.ad_url.length > 0)) createEl("a", { "href": json.ad_url, "textContent": json.ad_url_text, "class": "link" }, table.url);
 
 			// generic
 			if (json.sched_name) table.song_title.textContent = json.sched_name;
@@ -860,26 +859,23 @@ function _THEME() {
 			
 			menup.table = createEl("table", { "class": "menu_table", "cellspacing": 0 });
 			var row = createEl("tr", {}, menup.table);
-			menup.td_station = createEl("td", { "class": "menu_td_station" }, row);
+			menup.td_station = createEl("td", { "class": "menu_td_station menu_td_station_" + PRELOADED_SID }, row);
 			var morestations = createEl("div", { "class": "menu_select_more" }, menup.td_station);
 			_l("menu_morestations", {}, morestations);
-			var stationlogo = createEl("img", { "src": skindir + "/images/menu_logo_" + PRELOADED_SID + ".png" }, menup.td_station);
+			//var stationlogo = createEl("img", { "src": skindir + "/images/menu_logo_" + PRELOADED_SID + ".png" }, menup.td_station);
 			menup.ul_select = createEl("ul", { "class": "menu_select", "style": "margin-left: -3px;" });
 			menup.li_stations = Array();
 			if (PRELOADED_SID != 1) {
-				var li = createEl("li", { "style": "cursor: pointer" }, menup.ul_select);
+				var li = createEl("li", { "style": "cursor: pointer", "class": "menu_select_station_1" }, menup.ul_select);
 				li.addEventListener("click", function() { menup.changeStation(1); }, true);
-				menup.station_rw = createEl("img", { "src": skindir + "/images/stationselect_1.png" }, li);
 			}
 			if (PRELOADED_SID != 2) {
-				var li = createEl("li", { "style": "cursor: pointer" }, menup.ul_select);
+				var li = createEl("li", { "style": "cursor: pointer", "class": "menu_select_station_2" }, menup.ul_select);
 				li.addEventListener("click", function() { menup.changeStation(2); }, true);
-				menup.station_rw = createEl("img", { "src": skindir + "/images/stationselect_2.png" }, li);
 			}
 			if (PRELOADED_SID != 3) {
-				var li = createEl("li", { "style": "cursor: pointer" }, menup.ul_select);
+				var li = createEl("li", { "style": "cursor: pointer", "class": "menu_select_station_3" }, menup.ul_select);
 				li.addEventListener("click", function() { menup.changeStation(3); }, true);
-				menup.station_rw = createEl("img", { "src": skindir + "/images/stationselect_3.png" }, li);
 			}
 			fx.makeMenuDropdown(menup.el, menup.td_station, menup.ul_select);
 			
@@ -897,34 +893,28 @@ function _THEME() {
 			fx.makeMenuDropdown(menup.el, menup.player, menup.supportedplayers);
 			
 			menup.td_download = createEl("td", { "class": "menu_td_download" }, row);
-			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;" });
-			var vlc = createEl("img", { "src": "images/vlc.png", "class": "link" });
-			var fx_vlc = fx.make(fx.CSSNumeric, vlc, 250, "opacity");
+			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_vlc" });
+			var fx_vlc = fx.make(fx.CSSNumeric, vlca, 250, "opacity");
 			fx_vlc.set(0.85);
-			vlc.addEventListener("click", menup.tuneInClick, true);
-			vlc.addEventListener("mouseover", function() { fx_vlc.start(1) }, true);
-			vlc.addEventListener("mouseout", function() { fx_vlc.start(0.85) }, true);
-			vlca.appendChild(vlc);
+			vlca.addEventListener("click", menup.tuneInClick, true);
+			vlca.addEventListener("mouseover", function() { fx_vlc.start(1) }, true);
+			vlca.addEventListener("mouseout", function() { fx_vlc.start(0.85) }, true);
 			menup.td_download.appendChild(vlca);
 			
-			var winampa = createEl("a", { "href": "tunein.php", "onclick": "return false;" });
-			var winamp = createEl("img", { "src": "images/winamp.png", "class": "link" });
-			var fx_winamp = fx.make(fx.CSSNumeric, winamp, 250, "opacity");
+			var winampa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_winamp" });
+			var fx_winamp = fx.make(fx.CSSNumeric, winampa, 250, "opacity");
 			fx_winamp.set(.85);
-			winamp.addEventListener("mouseover", function() { fx_winamp.start(1) }, true);
-			winamp.addEventListener("mouseout", function() { fx_winamp.start(0.85) }, true);
-			winamp.addEventListener("click", menup.tuneInClick, true);
-			winampa.appendChild(winamp);
+			winampa.addEventListener("mouseover", function() { fx_winamp.start(1) }, true);
+			winampa.addEventListener("mouseout", function() { fx_winamp.start(0.85) }, true);
+			winampa.addEventListener("click", menup.tuneInClick, true);
 			menup.td_download.appendChild(winampa);
 			
-			var fb2ka = createEl("a", { "href": "tunein.php", "onclick": "return false;" });
-			var fb2k = createEl("img", { "src": "images/fb2k.png", "class": "link" });
-			var fx_fb2k = fx.make(fx.CSSNumeric, fb2k, 250, "opacity");
+			var fb2ka = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_fb2k" });
+			var fx_fb2k = fx.make(fx.CSSNumeric, fb2ka, 250, "opacity");
 			fx_fb2k.set(0.85);
-			fb2k.addEventListener("mouseover", function() { fx_fb2k.start(1) }, true);
-			fb2k.addEventListener("mouseout", function() { fx_fb2k.start(0.85) }, true);
-			fb2k.addEventListener("click", menup.tuneInClick, true);
-			fb2ka.appendChild(fb2k);
+			fb2ka.addEventListener("mouseover", function() { fx_fb2k.start(1) }, true);
+			fb2ka.addEventListener("mouseout", function() { fx_fb2k.start(0.85) }, true);
+			fb2ka.addEventListener("click", menup.tuneInClick, true);
 			menup.td_download.appendChild(fb2ka);
 			
 			help.changeStepPointEl("tunein", [ menup.player, menup.td_download ]);
@@ -943,29 +933,33 @@ function _THEME() {
 			linkify(login);
 			menup.loginreg.appendChild(login);
 			menup.loginreg.appendChild(createEl("span", { "textContent": " / " }));
-			var reg = createEl("a", { "class": "menu_register", "href": "http://rainwave.cc/forums/ucp.php?mode=register", "textContent": _l("register") });
+			var reg = createEl("a", { "class": "menu_register", "href": "http://rainwave.cc/forums/ucp.php?mode=register", "textContent": _l("register"), "class": "link" });
 			linkify(reg);
 			menup.loginreg.appendChild(reg);
 			menup.td_user.appendChild(menup.loginreg);
 			row.appendChild(menup.td_user);
 			
-			menup.user_cp = createEl("div", { "class": "menu_user_cp" });
-			//var usercp_logout = createEl("a", { "class": "displayblock", "textContent": _l("logout"), "href": "http://rainwave.cc/forums/ucp.php?mode=logout" }, menup.user_cp);
-			var usercp_keys = createEl("a", { "class": "displayblock", "textContent": _l("managekeys"), "href": "http://rainwave.cc/auth/" }, menup.user_cp);
-			fx.makeMenuDropdown(menup.el, menup.td_user, menup.user_cp, { "checkbefore": function() { if (user.p.user_id == 1) return false; } } );
+			if (user.p.user_id > 1) {
+				menup.user_cp = createEl("div", { "class": "menu_user_cp" });
+				//var usercp_logout = createEl("a", { "class": "displayblock", "textContent": _l("logout"), "href": "http://rainwave.cc/forums/ucp.php?mode=logout" }, menup.user_cp);
+				var usercp_keys = createEl("a", { "class": "displayblock", "textContent": _l("managekeys"), "href": "http://rainwave.cc/auth/", "class": "link" }, menup.user_cp);
+				var usercp_profile = createEl("span", { "class": "displayblock", "textContent": _l("listenerprofile") }, menup.user_cp);
+				Username.linkify(user.p.user_id, usercp_profile);
+				fx.makeMenuDropdown(menup.el, menup.td_user, menup.user_cp, { "checkbefore": function() { if (user.p.user_id == 1) return false; } } );
+			}
 			
 			menup.td_chat = createEl("td", { "class": "menu_td_chat" });
-			var chatlink = createEl("a", { "class": "link" } );
+			var chatlink = createEl("a");
+			linkify(chatlink, false, true);
 			chatlink.addEventListener("click", menup.openChat, true);
 			_l("chat", {}, chatlink);
-			createEl("img", { "src": "images/new_window_icon.png", "style": "height: 12px;" }, chatlink);
 			menup.td_chat.appendChild(chatlink);
 			row.appendChild(menup.td_chat);
 			
 			menup.td_forums = createEl("td", { "class": "menu_td_forums" });
 			var forumlink = createEl("a", { "target": "_blank", "href": "/forums" });
+			linkify(forumlink, true);
 			_l("forums", {}, forumlink);
-			createEl("img", { "src": "images/wikilink_12px.png", "style": "height: 12px;" }, forumlink);
 			menup.td_forums.appendChild(forumlink);
 			row.appendChild(menup.td_forums);
 			
@@ -981,12 +975,15 @@ function _THEME() {
 			coglinks.setAttribute("class", "COG_links");
 			coglinks.appendChild(createEl("a", { "href": "http://www.colonyofgamers.com", "textContent": "Colony of Gamers" } ));
 			coglinks.appendChild(createEl("a", { "href": "http://www.co-optimus.com", "textContent": "Co-Optimus" } ));
-			coglinks.appendChild(createEl("a", { "href": "http://www.dipswitchcomics.com", "textContent": "Dipswitch Comics" } ));
+			coglinks.appendChild(createEl("a", { "href": "http://www.theweeklyrelease.com", "textContent": "The Weekly Release" } ));
+			coglinks.appendChild(createEl("a", { "href": "http://popculturezoo.com/", "textContent": "Pop Culture Zoo" } ));
+			coglinks.appendChild(createEl("hr"));
 			coglinks.appendChild(createEl("a", { "href": "http://www.immortalmachines.com", "textContent": "Immortal Machines" } ));
 			coglinks.appendChild(createEl("a", { "href": "http://www.ingamechat.net", "textContent": "In-Game Chat" } ));
-			//coglinks.appendChild(createEl("a", { "href": "http://www.johnnygigawatt.com", "textContent": "Johnny Gigawatt" } ));
-			coglinks.appendChild(createEl("a", { "href": "http://www.theweeklyrelease.com", "textContent": "The Weekly Release" } ));
-			var cogbanner = createEl("img", { "class": "COG_banner", "src": "images/cog_network_h.png" });
+			coglinks.appendChild(createEl("a", { "href": "http://gameradio.us/", "textContent": "FUDcast" } ));
+			coglinks.appendChild(createEl("a", { "href": "http://www.thecomicsarchive.com/", "textContent": "Comics Archive" } ));
+			
+			var cogbanner = createEl("div", { "class": "COG_banner" });
 			menup.td_cog.appendChild(cogbanner);
 			row.appendChild(menup.td_cog);
 			fx.makeMenuDropdown(menup.el, cogbanner, coglinks);
@@ -1353,15 +1350,10 @@ function _THEME() {
 				if (("song_url" in song_data[i]) && (song_data[i].song_url.length > 0)) {
 					ns.td_u = document.createElement("td");
 					ns.td_u.setAttribute("class", "pl_songlist_u");
-					ns.td_u_a = document.createElement("a");
-					ns.td_u_a.setAttribute("href", song_data[i].song_url);
-					ns.td_u_a.setAttribute("target", "_blank");
-					ns.td_u_a_i = document.createElement("img");
-					ns.td_u_a_i.setAttribute("src", "images/new_window_icon.png")
-					ns.td_u_a.appendChild(ns.td_u_a_i);
-					ns.td_u.appendChild(ns.td_u_a);
+					ns.td_u_a = createEl("a", { "class": "link", "href": song_data[i].song_url, "target": "_blank", "textContent": " " }, ns.td_u_a);
 					ns.tr.appendChild(ns.td_u);
-				} else {
+				}
+				else {
 					ns.td_u = createEl("td", { "class": "pl_songlist_u" }, ns.tr);
 				}
 				
@@ -1504,7 +1496,7 @@ function _THEME() {
 					}
 				}
 				var maxtime = clock.now;
-				var mintime = clock.now - 2592000 - 86400;	// this number is 30 * 86400, the same number that's in Lyre
+				var mintime = clock.now - 2592000 - 86400 - (86400 / 2);	// this number is 30 * 86400, the same number that's in Lyre
 				var gr2maxy = Math.ceil(maxrank / 50) * 50;
 				var xgrid_start = new Date(mintime).getDay() - 1;
 				if (xgrid_start < 0) xgrid_start = 86400;
