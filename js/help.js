@@ -416,11 +416,10 @@ function drawAboutScreen(div) {
 	html += "<tr><td>" + _l("relayadmins") + ":</td><td>Lyfe, Tanaric, Dracoirs</td></tr>";
 	html += "<tr><td>" + _l("translators") + ":</td><td>Metal-Geo (NL), Metal-Ridley (FR), quarterlife (FI), Steppo (SE), DarkLink (DE), BreadMaker (ES), ocrfan (PT).</td></tr>";
 	html += "<tr><td style='padding-top: 1em;'>" + _l("specialthanks") + ":</td><td style='padding-top: 1em;'>strwrsxprt, heschi, Brayniac, Salty, efiloN, Vyzov</td></tr>";
-	html += "<tr><td style='padding-top: 1em;'>" + _l("poweredby") + ":</td><td style='padding-top: 1em;'>" + _l("customsoftware") + ", <a href='http://icecast.org' target='_blank' onclick='return false;'>Icecast<img src='images/new_window_icon.png' alt='(*)' /></a>, <a href='http://savonet.sourceforge.net' target='_blank' onclick='return false;'>Liquidsoap<img src='images/new_window_icon.png' alt='(*)' /></a></td></tr>";
+	html += "<tr><td style='padding-top: 1em;'>" + _l("poweredby") + ":</td><td style='padding-top: 1em;'>" + _l("customsoftware") + ", <a href='http://icecast.org' class='new_window' target='_blank' onclick='return false;'>Icecast</a>, <a href='http://savonet.sourceforge.net' target='_blank' class='new_window' onclick='return false;'>Liquidsoap</a></td></tr>";
 	tbl.innerHTML = html;
 	div.appendChild(tbl);
-	var a1 = createEl("a", { "href": "/donations.php", "textContent": _l("donationinformation"), "class": "help_paragraph", "style": "margin-top: 1em; display: block", "target": "_blank" });
-	a1.appendChild(createEl("img", { "src": "images/new_window_icon.png", "alt": "->" }));
+	var a1 = createEl("a", { "href": "/donations.php", "textContent": _l("donationinformation"), "class": "help_paragraph new_window", "style": "margin-top: 1em; display: block", "target": "_blank" });
 	div.appendChild(a1);
 	//var a2 = createEl("a", { "href": "/api", "textContent": _l("apiinformation"), "class": "help_paragraph", "style": "margin-top: 1em; display: block", "target": "_blank", "onclick": "return false;" });
 	//a2.appendChild(createEl("img", { "src": "images/new_window_icon.png", "alt": "->" }));
