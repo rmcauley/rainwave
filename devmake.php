@@ -47,5 +47,6 @@ fclose($lyreout);
 
 writeParsedFile("root/dev-index.php", $dest . "index.php", $bnum);
 copyFile("files.php", "files.php", $dest);
+copyDirectory("ffmp3", "ffmp3", $dest);
 
 ?>

@@ -17,12 +17,6 @@ function _THEME() {
 	that.Extend = {};
 	
 	/*****************************************************************************
-	  EDI FUNCTIONS
-	*****************************************************************************/
-	
-	// nothing here yet...
-	
-	/*****************************************************************************
 	  RATING EFFECTS (not required by Edi)
 	*****************************************************************************/
 	
@@ -879,18 +873,22 @@ function _THEME() {
 			}
 			fx.makeMenuDropdown(menup.el, menup.td_station, menup.ul_select);
 			
+			// menup.td_play_dropdown = createEl("div", { "class": "menu_user_cp" });
+			// createEl("
+			
 			menup.td_play = createEl("td", { "class": "menu_td_play" }, row);		
-			//menup.player = createEl("span", { "class": "menu_player", "style": "cursor: pointer" }, menup.td_play);
-			//menup.player.addEventListener("click", menup.playerClick, true);
-			menup.player = createEl("a", { "class": "menu_player", "href": "tunein.php", "onclick": "return false;" }, menup.td_play);
-			menup.player.addEventListener("click", menup.tuneInClick, true);
+			menup.player = createEl("span", { "class": "menu_player link" }, menup.td_play);
+			menup.player.addEventListener("click", menup.playerClick, true);
+			// menup.player = createEl("a", { "class": "menu_player", "href": "tunein.php", "onclick": "return false;" }, menup.td_play);
+			// menup.player.addEventListener("click", menup.tuneInClick, true);
 			menup.fx_player = fx.make(fx.CSSNumeric, menup.player, 250, "opacity");
 			menup.fx_player.set(1);
 			_l("downloadm3u", false, menup.player);
 			
 			menup.supportedplayers = createEl("div", { "class": "err_div_ok", "style": "z-index: -1; top: auto;" });
-			_l("players", false, menup.supportedplayers);
+			//_l("players", false, menup.supportedplayers);
 			fx.makeMenuDropdown(menup.el, menup.player, menup.supportedplayers);
+			menup.flashcontainer = menup.supportedplayers;
 			
 			menup.td_download = createEl("td", { "class": "menu_td_download" }, row);
 			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_vlc" });
@@ -1035,16 +1033,6 @@ function _THEME() {
 		};
 		
 		menup.drawTuneInChange = function(tunedin) {
-			/*if (Oggpixel && Oggpixel.playing) {
-				menup.player.style.backgroundColor = "#225f8a";
-				menup.player.style.cursor = "pointer";
-				menup.fx_player.start(1);
-				if (tunedin == 1) _l("playing", false, menup.player);
-				else _l("waitingforstatus", false, menup.player);
-			}
-			else if (Oggpixel && (tunedin == -1)) {
-				_l("loading", false, menup.player);
-			}*/
 			if (tunedin == 1) {
 				menup.player.style.backgroundColor = "transparent";
 				menup.player.style.cursor = "inherit";

@@ -30,20 +30,28 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	<?php
 		$bnum = <%BUILDNUM%>;
 		$skin = "Rainwave";
+		#print "<!--\n";
 		$lang = getDefaultLanguage();
 		if (isset($_COOKIE['r3prefs'])) {
 			$cookie = json_decode($_COOKIE['r3prefs'], true);
-			if (isset($cookie['edi']['theme']['value']) && in_array($cookie['edi']['theme']['value'], $validskins)) $skin = $cookie['edi']['theme']['value'];
-			if (isset($cookie['edi']['language']['value'])) $lang = $cookie['edi']['language']['value'];
+			if (isset($cookie['edi']['language']['value'])) {
+				$lang = $cookie['edi']['language']['value'];
+				#print "preference language loaded instead: " . $lang . "\n";
+			}
+			if (isset($cookie['edi']['theme']['value']) && in_array($cookie['edi']['theme']['value'], $validskins)) { 
+				$skin = $cookie['edi']['theme']['value'];
+				#print "preference theme loaded: " . $skin . "\n";
+			}
 		}
+		#print "\n-->\n";
 		print "<link rel=\"stylesheet\" href='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".css' type='text/css' />\n";
 	?>
 </head>
 <body id="body">
 <div style="display: none;">
 	<?php 
-		if (isset($rwdesc[$lang])) print "\t" . $rwdesc[$lang][$sid] . "\n";
-		else print "\t" . $rwdesc['en_CA'][$sid] . "\n";
+		if (isset($rwdesc[$lang])) print $rwdesc[$lang][$sid] . "\n";
+		else print $rwdesc['en_CA'][$sid] . "\n";
 	?>
 </div>
 <script type="text/javascript">

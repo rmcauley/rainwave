@@ -2,7 +2,7 @@
 /* Rainwave 3 es_CL Language File by BreadMaker aka CTM */
 
 $lang2 = array(
-  "_SITEDESCRIPTIONS" => array(
+	"_SITEDESCRIPTIONS" => array(
 		// Rainwave's description as it appears to search engines.
 		1 => "Radio por Internet de Música de Videojuegos. ¡Vota por la canción que quieres escuchar!",
 		// OCR Radio's description as it appears to search engines.
@@ -171,13 +171,21 @@ $lang2 = array(
 
 	// Listeners Panel
 	
-	"ltab_listeners" => "Escuchas", 		// Listeners tab name
-	"guestlisteners" => "|guests| Invitados",	// appears at the bottom of the current listeners list
-	"totallisteners" => "|total| Escuchas Ahora",	// appears underneath guestlisteners.
+	"ltab_listeners" => "Escuchas",					// Listeners tab name
+	"otherlisteners" => "(|guests| invitados, |total| en total)",	// appears at the bottom of the current listeners list
+	"registeredlisteners" => "|users| Usuarios",			// appears underneath guestlisteners.
+	"guestlisteners" => "|guests| Invitados",			// appears at the bottom of the current listeners list
+	"totallisteners" => "|total| Escuchas Ahora",			// appears underneath guestlisteners.
 	"voteslast2weeks" => "Votos en las últimas 2 semanas: ",
-	"lsnrdt_allstations" => "Todas Estaciones",
-	"lsnrdt_averagerating" => "Valoración Media",
-	"lsnrdt_ratingprogress" => "Progreso de Valoración",
+	"voterecord" => "Historial de Votos: ",
+	"requestrecord" => "Historial de Peticiones: ",
+	"votewinloss" => "|wins| |P:ganados,ganado|, |losses| |P:perdidos,perdido| -- |ratio|% de votaciones ganadas",
+	"requestwinloss" => "|wins| reproducidas, |losses| rechazadas -- |ratio|% de peticiones reproducidas",
+	"lsnr_rankgraph_header" => "Votos y Valoraciones Del Último Mes",
+
+	"lsnrdt_allstations" => "Total",
+	"lsnrdt_averagerating" => "Promedio de Valoraciones",
+	"lsnrdt_ratingprogress" => "Valoraciones Completadas",
 	"lsnrdt_percentofratings" => "Porcentaje de Valoraciones",
 	"lsnrdt_percentofrequests" => "Porcentaje de Peticiones",
 	"lsnrdt_percentofvotes" => "Porcentaje de Votos",
@@ -319,9 +327,9 @@ $lang2 = array(
 	"reqmyrequests" => "Sus Peticiones",
 	"reqrequestline" => "Cola de Peticiones",
 	"reqrequestlinelong" => "Mostrando |showing| de |linesize| en cola.",
-	"reqruleblocked" => "Detenido; álbum o grupo está en votación.",
-	"reqalbumblocked" => "Detenido; álbum está en votación.",
-	"reqgroupblocked" => "Detenido; grupo de enfriamiento está en votación.",
+	"reqruleblocked" => "Bloqueado; álbum o grupo está en votación.",
+	"reqalbumblocked" => "Bloqueado; álbum está en votación.",
+	"reqgroupblocked" => "Bloqueado; grupo de enfriamiento está en votación.",
 	
 	// Now Playing and Timeline panels
 
@@ -345,6 +353,7 @@ $lang2 = array(
 	"currentdj" => "DJ |username|",  // T.N.: It's the same word for spanish.
 	"electionresults" => "Resultado de la votación",
 	"from" => "de |username|",
+	"votefaileleclocked" => "Voto Fallido, Votación Cerrada",
 	
 	// Menu Bar
 	

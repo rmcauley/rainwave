@@ -7,7 +7,7 @@ var SCHED_PLAYLIST = 5;
 var SCHED_PAUSE = 6;
 var SCHED_DJ = 7;
 
-var STATIONS = [ false, "Rainwave", "OCR Radio", "Mixwave" ];
+var STATIONS = [ false, "Rainwave", "OCR Radio", "Mixwave", "Bitwave" ];
 var SHORTSTATIONS = [ false, "RW", "OC", "MW" ];
 var UISCALE = 10;
 var BODY = document.getElementById("body");

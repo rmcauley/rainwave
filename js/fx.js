@@ -166,18 +166,26 @@ var fx = function() {
 		
 		orfx.onSet = function(now) {
 			if ((now > 0) && !added) {
-				owner.appendChild(element);
+				orfx.addToEl();
 				added = true;
 			}
 			else if ((now == 0) && added) {
-				owner.removeChild(element);
+				orfx.removeFromEl();
 				added = false;
 			}
 		};
 		
+		orfx.removeFromEl = function() {
+			owner.removeChild(element);
+		};
+		
+		orfx.addToEl = function() {
+			owner.appendChild(element);
+		};
+		
 		orfx.onStart = function(now) {
 			if ((now == 0) && !added) {
-				owner.appendChild(element);
+				orfx.addToEl();
 				added = true;
 			}
 		};
@@ -188,13 +196,27 @@ var fx = function() {
 		
 		orfx.onComplete = function(now) {
 			if ((now == 0) && added) {
-				owner.removeChild(element);
+				orfx.removeFromEl();
 				added = false;
 			}
 			if (typeof(orfx.onComplete2) == "function") orfx.onComplete2();
 		};
 
 		return orfx;		
+	};
+	
+	that.OpacityHide = function(element, owner) {
+		var orfx = that.OpacityRemoval(element, owner);
+		
+		orfx.removeFromEl = function() {
+			element.style.display = "none";
+		};
+		
+		orfx.addToEl = function() {
+			element.style.display = "block";
+		};
+		
+		return orfx;
 	};
 	
 	that.BackgroundPosX = function(element) {
@@ -304,8 +326,17 @@ var fx = function() {
 	that.makeMenuDropdown = function(menu, header, dropdown, options) {
 		var timeout = 0;
 		var fx_pulldown = that.make(that.CSSTranslateY, dropdown, 250);
-		fx_pulldown.set(-menuheight - 1);
-		var fx_opacity = that.make(that.OpacityRemoval, dropdown, 250, menu);
+		fx_pulldown.onComplete = function(now) {
+			if (now == 0) {
+				fx_pulldown.update(-1000);
+			}
+		};
+		fx_pulldown.set(0);
+		
+		var fx_opacity = that.make(that.CSSNumeric, dropdown, 250, "opacity");
+		fx_opacity.set(0);
+		menu.appendChild(dropdown);
+		
 		var mouseover = function(e) {
 			if (!menuheight) menuheight = menu.offsetHeight - 1;
 			if (e && ("pageX" in e) && ("pageY" in e) && (e.pageX == 0) && (e.pageY == 0)) return; 		// webkit bugfix that triggers menu hover on page load

@@ -11,7 +11,7 @@ header("content-type: application/xhtml+xml");
 require("auth/common.php");
 
 if (!in_array($userdata['group_id'], array(5, 4, 8, 12, 15, 14))) {
-	print "<body>You are not allowed to see this page.</body>";
+	print "<body>Sorry, only donors and administrators may use the Rainwave beta. (which is often broken anyway)</body>";
 	exit(0);
 }
 
@@ -19,9 +19,7 @@ require("files.php");
 
 <%RWDESC%>
 <%VALIDSKINS%>
-
 print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -32,12 +30,20 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	<?php
 		$bnum = <%BUILDNUM%>;
 		$skin = "Rainwave";
+		#print "<!--\n";
 		$lang = getDefaultLanguage();
 		if (isset($_COOKIE['r3prefs'])) {
 			$cookie = json_decode($_COOKIE['r3prefs'], true);
-			if (isset($cookie['edi']['theme']['value']) && in_array($cookie['edi']['theme']['value'], $validskins)) $skin = $cookie['edi']['theme']['value'];
-			if (isset($cookie['edi']['language']['value'])) $lang = $cookie['edi']['language']['value'];
+			if (isset($cookie['edi']['language']['value'])) {
+				$lang = $cookie['edi']['language']['value'];
+				#print "preference language loaded instead: " . $lang . "\n";
+			}
+			if (isset($cookie['edi']['theme']['value']) && in_array($cookie['edi']['theme']['value'], $validskins)) { 
+				$skin = $cookie['edi']['theme']['value'];
+				#print "preference theme loaded: " . $skin . "\n";
+			}
 		}
+		#print "\n-->\n";
 		print "<link rel=\"stylesheet\" href='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".css' type='text/css' />\n";
 		print "\t<script src='lang_r" . $bnum . "/" . $lang . ".js' type='text/javascript'></script>\n";
 	?>

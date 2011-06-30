@@ -42,6 +42,10 @@ function getDefaultLanguage() {
 		// 'div' => 'Divehi',
 		'nl-be' => 'nl_NL', //'Dutch (Belgium)',
 		'nl' => 'nl_NL', //'Dutch (Netherlands)',
+		'en' => 'en_CA',
+		'en-us' => 'en_CA',
+		'en-ca' => 'en_CA',
+		'en-gb' => 'en_CA',
 		// 'et' => 'Estonian',
 		// 'fo' => 'Faeroese',
 		// 'fa' => 'Farsi',
@@ -146,10 +150,13 @@ function getDefaultLanguage() {
 		// example: ' fr-ch;q=0.3, da, en-us;q=0.8, en;q=0.5, fr;q=0.3';
 		$languages = strtolower($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
 		$languages = str_replace(' ', '', $languages);
+		#print "browser languages: " . $languages . "\n";
 		$languages = explode(",", $languages);
 		for ($i = 0; $i < count($languages); $i++ ) {
 			$bits = explode(";", $languages[$i]);
+			#print "checking for supported language: " . $languages[$i] . "\n";
 			if (isset($lang[$bits[0]])) {
+				#print "supported language found: " . $lang[$bits[0]] . "\n";
 				return $lang[$bits[0]];
 			}
 		}

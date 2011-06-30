@@ -29,6 +29,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 if ($user_id == 1) {
 	print "<p>Anonymous users cannot manage keys.</p>";
 	print "</body></html>";
+	exit(0);
 }
 
 if ($_GET['new'] == "true") {

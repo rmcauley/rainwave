@@ -26,6 +26,7 @@ buildLanguages($dest, $bnum);
 minifyJavascript($dest, $bnum);
 writeParsedFile("root/index.php", $dest . "index.php", $bnum);
 chmod($dest . "auth/common.php", "755");
+copyDirectory("ffmp3", "ffmp3", $dest);
 
 makeAPIDirectory($lyredir, $dest, false);
 

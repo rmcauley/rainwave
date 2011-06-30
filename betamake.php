@@ -26,5 +26,6 @@ copyFile($lyredir . "javascript/lyre-ajax.js", "lyre-ajax.js", $dest);
 copyDirectory("js", "js", $dest);
 writeParsedFile("root/beta-index.php", $dest . "index.php", $bnum);
 copyFile("files.php", "files.php", $dest);
+copyDirectory("ffmp3", "ffmp3", $dest);
 
 ?>

@@ -14,6 +14,7 @@ panels.MenuPanel = {
 		that.el;
 		var loginenabled = true;
 		var loginattempts = 0;
+		var playeradded = false;
 
 		theme.Extend.MenuPanel(that);
 	
@@ -51,27 +52,43 @@ panels.MenuPanel = {
 			if (tunedin) help.continueTutorialIfRunning("tunein");
 		};
 		
-		/*that.playerClick = function() {
-			if (Oggpixel.player) that.playerClick2();
-			else {
-				that.drawTuneInChange(-1);	
-				Oggpixel.onReady = that.playerClick2;
-				Oggpixel.inject();
-			}
+		that.addPlayer = function(el) {
+			if (playeradded) return;
+			
+			var url;
+			var usrstr = user.p.user_id > 1 ? "?" + user.p.user_id + ":" + user.p.radio_listenkey : "";
+			if (user.p.sid == 1) url = "http://rwstream.rainwave.cc:8000/rainwave.ogg" + usrstr;
+			else if (user.p.sid == 2) url = "http://ocstream.rainwave.cc:8000/ocremix.ogg" + usrstr;
+			else if (user.p.sid == 3) url = "http://mwstream.rainwave.cc:8000/mixwave.ogg" + usrstr;
+			else if (user.p.sid == 4) url = "http://bitstream.rainwave.cc:8000/bitwave.ogg" + usrstr;
+			
+			// var flashvars = {};
+			// var params = {allowScriptAccess: "always"};
+			// var attributes = {};
+			// swfobject.embedSWF("oggpixel.swf", "oggpixel", "1", "1", "10.0.0", "expressInstall.swf", flashvars, params, attributes);
+
+			var flashvars = "url=" + url + "&lang=en&codec=ogg&volume=100&autoplay=true&traking=false&tracking=false&jsevents=false&skin=ffmp3/ffmp3-repvku-115.xml&title=" + STATIONS[user.p.sid];
+			var flash = createEl("object", { "width": 115, "height": 25 });
+			createEl("param", { "name": "movie", "value": "ffmp3/ffmp3-config.swf" }, flash);
+			createEl("param", { "name": "flashvars", "value": flashvars }, flash);
+			createEl("param", { "name": "wmode", "value": "transparent" }, flash);
+			createEl("param", { "name": "allowscriptaccess", "value": "always" }, flash);
+			createEl("param", { "name": "scale", "value": "noscale" }, flash);
+			createEl("embed", {	
+				"src": "ffmp3/ffmp3-config.swf",
+				"flashvars": flashvars,
+				"width": 115,
+				"height": 25,
+				"wmode": "transparent",
+				"allowscriptaccess": "always",
+				"type": "application/x-shockwave-flash"
+			}, flash);
+			el.appendChild(flash);
 		};
 		
-		that.playerClick2 = function() {
-			if (Oggpixel.playing) {
-				Oggpixel.stop();
-			}
-			else if (!user.p.radio_tunedin) {
-				var usrstr = user.p.user_id > 1 ? "?" + user.p.user_id + ":" + user.p.radio_listenkey : "";
-				if (user.p.sid == 1) Oggpixel.play("http://rwstream.rainwave.cc:8000/rainwave.ogg" + usrstr);
-				if (user.p.sid == 2) Oggpixel.play("http://ocstream.rainwave.cc:8000/ocremix.ogg" + usrstr);
-				if (user.p.sid == 3) Oggpixel.play("http://mwstream.rainwave.cc:8000/mixwave.ogg" + usrstr);
-				
-			}
-		};*/
+		that.playerClick = function() {
+			if (!playeradded) that.addPlayer(that.flashcontainer);
+		};
 
 		// this is for m3u links
 		that.tuneInClick = function() {

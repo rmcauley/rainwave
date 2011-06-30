@@ -24,7 +24,7 @@ if (isset($_GET['site'])) {
 	else if ($_GET['site'] == "vw") $sid = VW;
 }
 // And a final override for when $_GET cannot be used or modified!
-if (defined(SITEOVERRIDE)) $sid = SITEOVERRIDE;
+if (defined('SITEOVERRIDE')) $sid = SITEOVERRIDE;
 
 setcookie("r3sid", $sid, time()+60*60*24*30, "/", ".rainwave.cc");
 
