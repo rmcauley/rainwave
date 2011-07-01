@@ -133,9 +133,14 @@ $lang2 = array(
 	// Listeners Panel
 	
 	"ltab_listeners" => "Ouvintes", 			// Listeners tab name
-	"guestlisteners" => "|guests| Visitantes",		// appears at the bottom of the current listeners list
-	"totallisteners" => "|total| Ouvintes Agora",	// appears underneath guestlisteners.
+	"otherlisteners" => "(|guests| visitantes, |total| total)",
+	"registeredlisteners" => "|users| Usuários",
 	"voteslast2weeks" => "Votos nas últimas 2 semanas: ",
+	"voterecord" => "Histórico de Votos: ",
+	"requestrecord" => "Histórico de Requisições: ",
+	"votewinloss" => "|wins| |P:wins,vitoria|, |losses| |P:losses,derrota| -- wins |ratio|%",
+	"requestwinloss" => "|wins| |P:wins,reproduzida|, |losses| |P:losses,rejeitada| -- reproduziu |ratio|%",
+	"lsnr_rankgraph_header" => "Votos e avaliações no último mês",
 	"lsnrdt_allstations" => "Todas as Estações",
 	"lsnrdt_averagerating" => "Avaliação Média",
 	"lsnrdt_ratingprogress" => "Completude da Avaliação",
@@ -308,6 +313,7 @@ $lang2 = array(
 	"currentdj" => "dj |username|",
 	"electionresults" => "Resultado da Eleição",
 	"from" => "de |username|",
+	"votefaileleclocked" => "Voto falhou, eleição encerrada",
 	
 	// Menu Bar
 	
@@ -334,6 +340,7 @@ $lang2 = array(
 	"menu_morestations" => "Mais ▼",
 	"waitingforstatus" => "Aguardado por Estado",
 	"managekeys" => "Gerenciar Chaves de API",
+	"listenerprofile" => "Perfil do ouvinte",
 	
 	/* Words for pluralization */
 
@@ -343,5 +350,13 @@ $lang2 = array(
 	"Vote_p" => "Votos",
 	"times" => "vez",
 	"times_p" => "vezes",
+	"vitoria" => "vitória",
+	"vitoria_p" => "vitórias",
+	"derrota" => "derrota",
+	"derrota_p" => "derrotas",
+	"reproduzida" => "reproduzida",
+	"reproduzida_p" => "reproduzidas",
+	"rejeitada" => "rejeitada",
+	"rejeitada_p" => "rejeitadas",
 );
 ?>

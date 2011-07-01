@@ -74,7 +74,7 @@ var hotkey = function() {
 	
 	that.keyPressHandler = function(evt) {
 		if (that.ignoreKey(evt)) return true;
-		if ((evt.keyCode != 8) && (evt.keyCode != 27)) {
+		if ((evt.keyCode != 8) && (evt.keyCode != 27) && (evt.keyCode != 38) && (evt.keyCode != 40)) {
 			return that.keyPress(evt);
 		}
 		if (backspace_trap) {

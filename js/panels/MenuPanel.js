@@ -26,11 +26,6 @@ panels.MenuPanel = {
 			that.draw();
 			
 			that.tunedinCallback(user.p.radio_tunedin);
-			/*if (typeof(Oggpixel) != "undefined") {
-				Oggpixel.onStart = that.tunedinCallback;
-				Oggpixel.onStop = that.tunedinCallback;
-				Oggpixel.onReady = that.oggReadyCallback;
-			}*/
 		
 			var pos = help.getElPosition(that.td_news);
 			errorcontrol.changeShowXY(pos.x, pos.y + that.height);
@@ -67,8 +62,9 @@ panels.MenuPanel = {
 			// var attributes = {};
 			// swfobject.embedSWF("oggpixel.swf", "oggpixel", "1", "1", "10.0.0", "expressInstall.swf", flashvars, params, attributes);
 
-			var flashvars = "url=" + url + "&lang=en&codec=ogg&volume=100&autoplay=true&traking=false&tracking=false&jsevents=false&skin=ffmp3/ffmp3-repvku-115.xml&title=" + STATIONS[user.p.sid];
-			var flash = createEl("object", { "width": 115, "height": 25 });
+			var flashvars = "url=" + url + "&lang=en&codec=ogg&volume=100&autoplay=true&traking=false&tracking=false&jsevents=false&skin=ffmp3/ffmp3-scradio.xml&title=" + STATIONS[user.p.sid];
+			//var flash = createEl("object", { "width": 115, "height": 25 });		// the other skin
+			var flash = createEl("object", { "width": 160, "height": 76 });
 			createEl("param", { "name": "movie", "value": "ffmp3/ffmp3-config.swf" }, flash);
 			createEl("param", { "name": "flashvars", "value": flashvars }, flash);
 			createEl("param", { "name": "wmode", "value": "transparent" }, flash);
@@ -84,6 +80,7 @@ panels.MenuPanel = {
 				"type": "application/x-shockwave-flash"
 			}, flash);
 			el.appendChild(flash);
+			playeradded = true;
 		};
 		
 		that.playerClick = function() {

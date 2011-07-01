@@ -680,61 +680,54 @@ td.menu_td_station {
 	background-position: 2px 2px;
 }
 
-td.menu_td_station_1 {
+td.menu_td_station_1, div.menu_select_station_1 {
 	background-image: url("images/menu_logo_1.png");
 }
 
-td.menu_td_station_2 {
+td.menu_td_station_2, div.menu_select_station_2 {
 	background-image: url("images/menu_logo_2.png");
 }
 
-td.menu_td_station_3 {
+td.menu_td_station_3, div.menu_select_station_3 {
 	background-image: url("images/menu_logo_3.png");
 }
 
 div.menu_select_more {
-	border-right: 1px solid [% vdarktext %];
 	color: [% vdarktext %];
 	margin-top: 1px;
 	padding-right: 3px;
 	position: absolute;
 	text-align: right;
-	width: 200px;
+	width: 187px;
+	/* background: transparent url("images/menu_station_arrow.png") no-repeat top right; */
 }
 
-ul.menu_select {
+div.menu_select {
 	position: absolute;
-	border: 1px solid [% border %];
-	border-left: none;
-	background: [% background %];
-	z-index: -1;
-	left: 0px;
-	list-style: none;
+	background: transparent url("images/menu_station_bkg.png") no-repeat top right;
+	z-index: 2;
+	left: 188px;
 	margin: 0px;
-	padding: 0px;
+	padding: 0px 0px 0px 12px;
+	top: -3px;
+	height: 23px;
+	overflow: hidden;
 }
 
-ul.menu_select li {
-	width: 220px;
-	height: 50px;
-	background-position: center center;
+div.menu_select_station {
+	background: transparent url("images/menu_station_bigarrow.png") no-repeat;
+	position: absolute;
+	height: 23px;
+	width: 200px;
+	padding-left: 20px;
+}
+
+div.menu_select_station_x {
 	background-repeat: no-repeat;
-}
-
-ul.menu_select li.menu_select_station_1 {
-	background-image: url("images/stationselect_1.png");
-}
-
-ul.menu_select li.menu_select_station_2 {
-	background-image: url("images/stationselect_2.png");
-}
-
-ul.menu_select li.menu_select_station_3 {
-	background-image: url("images/stationselect_3.png");
-}
-
-ul.menu_select li svg {
-	display: block;
+	background-position: center left;
+	height: 23px;
+	width: 130px;
+	cursor: pointer;
 }
 
 td.menu_td_play {
@@ -1048,7 +1041,7 @@ td.timeline_album_td_request {
 }
 
 td.timeline_album_td_conflict {
-	background-image: url('images/timeline_votehover_request.png');
+	background-image: url('images/timeline_votehover_conflict.png');
 	background-repeat: no-repeat;
 	background-position: 0px -90px;
 }
