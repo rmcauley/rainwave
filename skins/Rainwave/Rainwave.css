@@ -39,8 +39,21 @@ a img {
 }
 
 a:hover, .link:hover, .external_link:hover, .new_window:hover {
-	text-decoration: underline;
+	/* text-decoration: underline; */
 	color: [% text %];
+}
+
+hr {
+	width: 90%;
+	border: solid 1px [% border %];
+}
+
+button, .fakebutton {
+	background: [% brightbkg %];
+	color: [% text %];
+	border: solid 1px [% borderdark %];
+	border-radius: 3px;
+	cursor: pointer;
 }
 
 #fittextdiv {
@@ -664,6 +677,17 @@ table.menu_table {
 	user-select: none;
 }
 
+div.menu_dropdown {
+	min-width: 15.5em;
+	position: absolute;
+	padding: .5em;	
+	border: 1px solid [% borderdark %];
+	background-image: -moz-linear-gradient(100% 100% 90deg, [% background %], [% primarybkg %]);
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from([% primarybkg %]), to([% background %]));
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
 table.menu_table img {
 	vertical-align: top;
 }
@@ -675,7 +699,7 @@ table.menu_table td {
 }
 
 td.menu_td_station {
-	width: 200px;
+	width: 150px;
 	background-repeat: no-repeat;
 	background-position: 2px 2px;
 }
@@ -695,23 +719,21 @@ td.menu_td_station_3, div.menu_select_station_3 {
 div.menu_select_more {
 	color: [% vdarktext %];
 	margin-top: 1px;
-	padding-right: 3px;
 	position: absolute;
 	text-align: right;
-	width: 187px;
-	/* background: transparent url("images/menu_station_arrow.png") no-repeat top right; */
+	width: 200px;
 }
 
 div.menu_select {
 	position: absolute;
 	background: transparent url("images/menu_station_bkg.png") no-repeat top right;
 	z-index: 2;
-	left: 188px;
+	left: 130px;
 	margin: 0px;
 	padding: 0px 0px 0px 12px;
-	top: -3px;
 	height: 23px;
 	overflow: hidden;
+	top: 0px;
 }
 
 div.menu_select_station {
@@ -731,55 +753,55 @@ div.menu_select_station_x {
 }
 
 td.menu_td_play {
-	width: 194px;
-	text-align: right;
+	width: 130px;
+}
+
+.menu_player {
+	padding: 0px 3px 0px 3px;
+	position: relative;
+	top: 1px;
+}
+
+.menu_player_tunedin {
+	background-color: #000000;
+}
+
+.menu_player_tunedout {
+	background-color: [% player %];
+}
+
+.menu_player_tunedout:hover {
+	background-color: [% player_hover %];
+}
+
+.flash_container {
+	width: 160px;
+	height: 76px;
+}
+
+.flash_placeholder {
+	display: block;
 }
 
 a.tunein_vlc, a.tunein_winamp, a.tunein_fb2k {
-	width: 20px;
-	height: 16px;
+	padding-left: 20px;
+	margin-left: 7px;
 	background-repeat: no-repeat;
-	background-position: center center;
-	position: absolute;
+	background-position: center left;
+	display: block;
 }
 
 a.tunein_vlc {
 	background-image: url("images/vlc.png");
+	margin-top: 3px;
 }
 
 a.tunein_winamp {
 	background-image: url("images/winamp.png");
-	margin-left: 21px;
 }
 
 a.tunein_fb2k {
 	background-image: url("images/fb2k.png");
-	margin-left: 40px;
-}
-
-.menu_player {
-	background-color: [% player %];
-	padding-left: .5em;
-	padding-right: .5em;
-}
-
-.menu_player:hover {
-	background-color: [% player_hover %];
-}
-
-td.menu_td_play img{
-	cursor: pointer;
-}
-
-td.menu_td_download {
-	border-left: 1px solid [% border %];
-	width: 60px;
-	text-align: center;
-}
-
-td.menu_td_download img {
-	height: 16px;
-	width: auto;
 }
 
 td.menu_td_user {
@@ -803,14 +825,26 @@ img.menu_avatar {
 	float: right;
 }
 
+div.menu_user_cp {
+	text-align: right;
+}
+
 table.menu_table td.menu_td_news {
-	border-left: 1px solid [% border %];
 	padding-left: .5em;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	color: #ff0000;
-	font-weight: bold;
+}
+
+table.menu_table td.menu_td_news_active {
+	border-left: 1px solid [% border %];
+}
+
+div.news_ticker {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 100%;
 }
 
 table.menu_table td.menu_td_help {
@@ -1297,18 +1331,6 @@ table.schedule_table td {
 table.schedule_table button {
 	padding: 0px;
 	font-size: 0.8em;
-}
-
-div.menu_user_cp {
-	width: 15.5em;
-	position: absolute;
-	padding: .3em;	
-	border: 1px solid [% borderdark %];
-	background-image: -moz-linear-gradient(100% 100% 90deg, [% background %], [% primarybkg %]);
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from([% primarybkg %]), to([% background %]));
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	text-align: right;
 }
 
 /* Split Window */

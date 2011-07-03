@@ -57,6 +57,8 @@ panels.MenuPanel = {
 			else if (user.p.sid == 3) url = "http://mwstream.rainwave.cc:8000/mixwave.ogg" + usrstr;
 			else if (user.p.sid == 4) url = "http://bitstream.rainwave.cc:8000/bitwave.ogg" + usrstr;
 			
+			that.playerInitThemeHook();
+			
 			// var flashvars = {};
 			// var params = {allowScriptAccess: "always"};
 			// var attributes = {};
@@ -73,8 +75,8 @@ panels.MenuPanel = {
 			createEl("embed", {	
 				"src": "ffmp3/ffmp3-config.swf",
 				"flashvars": flashvars,
-				"width": 115,
-				"height": 25,
+				"width": 160,
+				"height": 76,
 				"wmode": "transparent",
 				"allowscriptaccess": "always",
 				"type": "application/x-shockwave-flash"
@@ -84,7 +86,7 @@ panels.MenuPanel = {
 		};
 		
 		that.playerClick = function() {
-			if (!playeradded) that.addPlayer(that.flashcontainer);
+			if (!playeradded) that.addPlayer(that.flash_container);
 		};
 
 		// this is for m3u links

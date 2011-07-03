@@ -342,7 +342,7 @@ var fx = function() {
 			if (e && ("pageX" in e) && ("pageY" in e) && (e.pageX == 0) && (e.pageY == 0)) return; 		// webkit bugfix that triggers menu hover on page load
 			clearTimeout(timeout);
 			if (options && options.checkbefore) {
-				if (!options.checkbefore) return;
+				if (!options.checkbefore()) return;
 			}
 			dropdown.style.left = help.getElPosition(header).x + "px";
 			fx_pulldown.start(menuheight);
