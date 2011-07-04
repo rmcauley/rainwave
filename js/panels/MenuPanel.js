@@ -64,9 +64,9 @@ panels.MenuPanel = {
 			// var attributes = {};
 			// swfobject.embedSWF("oggpixel.swf", "oggpixel", "1", "1", "10.0.0", "expressInstall.swf", flashvars, params, attributes);
 
-			var flashvars = "url=" + url + "&lang=en&codec=ogg&volume=100&autoplay=true&traking=false&tracking=false&jsevents=false&skin=ffmp3/ffmp3-scradio.xml&title=" + STATIONS[user.p.sid];
+			var flashvars = "url=" + url + "&lang=en&codec=ogg&volume=100&autoplay=true&traking=false&tracking=false&jsevents=false&skin=ffmp3/ffmp3-rainwave.xml&title=" + STATIONS[user.p.sid];
 			//var flash = createEl("object", { "width": 115, "height": 25 });		// the other skin
-			var flash = createEl("object", { "width": 160, "height": 76 });
+			var flash = createEl("object", { "width": 79, "height": 18 });
 			createEl("param", { "name": "movie", "value": "ffmp3/ffmp3-config.swf" }, flash);
 			createEl("param", { "name": "flashvars", "value": flashvars }, flash);
 			createEl("param", { "name": "wmode", "value": "transparent" }, flash);
@@ -75,8 +75,8 @@ panels.MenuPanel = {
 			createEl("embed", {	
 				"src": "ffmp3/ffmp3-config.swf",
 				"flashvars": flashvars,
-				"width": 160,
-				"height": 76,
+				"width": 79,
+				"height": 18,
 				"wmode": "transparent",
 				"allowscriptaccess": "always",
 				"type": "application/x-shockwave-flash"
@@ -98,6 +98,7 @@ panels.MenuPanel = {
 			else {
 				window.location.href = "tunein.php";
 			}
+			that.tuneInClickThemeHook();
 		};
 		
 		that.userAvatarCallback = function(avatar) {

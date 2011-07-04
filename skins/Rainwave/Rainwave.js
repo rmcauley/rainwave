@@ -820,6 +820,10 @@ function _THEME() {
 	*****************************************************************************/
 
 	that.Extend.MenuPanel = function(menup) {
+		var usingflash = true;
+		var flashloaded = false;
+		var removedflash = false;
+		
 		menup.draw = function() {
 			// Login Box
 			menup.loginbox = createEl("table", { "class": "loginbox", "cellborder": 0, "cellpadding": 0 });
@@ -863,25 +867,17 @@ function _THEME() {
 				selectdiv.addEventListener("click", function() { menup.changeStation(1); }, true);
 				runningx += 130;
 			}
-			else {
-				logowidth = 120;
-			}
 			if (PRELOADED_SID != 2) {
 				selectdiv = createEl("div", { "class": "menu_select_station_2 menu_select_station_x" }, createEl("div", { "class": "menu_select_station", "style": "margin-left: " + runningx + "px;" }, menup.station_select));
 				selectdiv.addEventListener("click", function() { menup.changeStation(2); }, true);
 				runningx += 130;
-			}
-			else {
-				// nada
 			}
 			if (PRELOADED_SID != 3) {
 				selectdiv = createEl("div", { "class": "menu_select_station_3 menu_select_station_x" }, createEl("div", { "class": "menu_select_station", "style": "margin-left: " + runningx + "px;" }, menup.station_select));
 				selectdiv.addEventListener("click", function() { menup.changeStation(3); }, true);
 				runningx += 130;
 			}
-			else {
-				// hi?
-			}
+
 			menup.station_select_width = fx.make(fx.CSSNumeric, menup.station_select, 250, "width", "px");
 			menup.td_station.addEventListener("mouseover", function(e) {
 					if ((getMousePosX(e) == 0) && (getMousePosY(e) == 0)) return;
@@ -890,7 +886,7 @@ function _THEME() {
 			menup.td_station.addEventListener("mouseout", function() { menup.station_select_width.start(12); }, true);
 			menup.station_select_width.set(12);
 			
-			prefs.addPref("rainwavetheme", { "name": "showmorestations", "defaultvalue": true, "type": "hidden" });
+			prefs.addPref("rainwavetheme", { "name": "showmorestations", "defaultvalue": true, "hidden": true });
 			if (prefs.getPref("rainwavetheme", "showmorestations")) {
 				var morestations = createEl("div", { "class": "menu_select_more" });
 				_l("menu_morestations_v2", {}, morestations);
@@ -912,26 +908,34 @@ function _THEME() {
 				// menup.td_station_width.set(150);
 			// }
 			
-			menup.td_play = createEl("td", { "class": "menu_td_play menu_td_play_tunedout" }, row);		
-			menup.player = createEl("span", { "class": "menu_player fakebutton" }, menup.td_play);
-			menup.player.addEventListener("click", menup.playerClick, true);
+			menup.td_play = createEl("td", { "class": "menu_td_play menu_td_play_tunedout" }, row);
+			
+			menup.m3u_download = createEl("div", { "class": "menu_download" }, menup.td_play);
+			createEl("span", { "textContent": _l("downloadm3u_v3") }, menup.m3u_download);
+			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_vlc" }, menup.m3u_download);
+			createEl("img", { "width": 17, "height": 20, "src": "images/blank.png" }, vlca);
+			vlca.addEventListener("click", menup.tuneInClick, true);
+			var winampa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_winamp" }, menup.m3u_download);
+			createEl("img", { "width": 16, "height": 20, "src": "images/blank.png" }, winampa);
+			winampa.addEventListener("click", menup.tuneInClick, true);
+			var fb2ka = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_fb2k" }, menup.m3u_download);
+			createEl("img", { "width": 17, "height": 20, "src": "images/blank.png" }, fb2ka);
+			fb2ka.addEventListener("click", menup.tuneInClick, true);
+			var m3u_download_width = fx.make(fx.CSSNumeric, menup.m3u_download, 250, "width", "px");
+			m3u_download_width.set(0);
+			menup.td_play.addEventListener("mouseover", function() { m3u_download_width.start(110); }, true);
+			menup.td_play.addEventListener("mouseout", function() { m3u_download_width.start(0); }, true);
+			
+			menup.player = createEl("div", { "class": "menu_player menu_player_flash" }, menup.td_play);
+			menup.flash_container = menup.player;
+			menup.flash_warning = createEl("div", { "class": "menu_flash_warning" }, menup.player);
+			var flash_warning_opacity = fx.make(fx.CSSNumeric, menup.flash_warning, 150, "opacity");
+			menup.flash_warning.addEventListener("click", menup.playerClick, true);
+			menup.flash_warning.addEventListener("mouseover", function() { flash_warning_opacity.start(1); }, true);
+			menup.flash_warning.addEventListener("mouseout", function() { flash_warning_opacity.start(0); }, true);
+			flash_warning_opacity.set(0);
 			menup.fx_player = fx.make(fx.CSSNumeric, menup.player, 250, "opacity");
 			menup.fx_player.set(1);
-			_l("play_v2", false, menup.player);
-			
-			menup.td_play_dropdown = createEl("div", { "class": "menu_dropdown" });
-			menup.flash_container = createEl("div", { "class": "menu_flash_container" }, menup.td_play_dropdown);
-			menup.flash_placeholder = createEl("button", { "class": "menu_flash_placeholder", "textContent": _l("play") }, menup.flash_container);
-			menup.flash_placeholder.addEventListener("click", menup.playerClick, true);
-			createEl("hr", false, menup.td_play_dropdown);
-			createEl("div", { "textContent": _l("downloadm3u_v2") }, menup.td_play_dropdown);
-			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_vlc", "textContent": "VLC" }, menup.td_play_dropdown);
-			vlca.addEventListener("click", menup.tuneInClick, true);
-			var winampa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_winamp", "textContent": "Winamp" }, menup.td_play_dropdown);
-			winampa.addEventListener("click", menup.tuneInClick, true);
-			var fb2ka = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_fb2k", "textContent": "Foobar2000" }, menup.td_play_dropdown);
-			fb2ka.addEventListener("click", menup.tuneInClick, true);
-			fx.makeMenuDropdown(menup.el, menup.td_play, menup.td_play_dropdown);
 			
 			help.changeStepPointEl("tunein", [ menup.player, menup.td_download ]);
 			help.changeTopicPointEl("tunein", [ menup.player, menup.td_download ]);
@@ -1049,6 +1053,15 @@ function _THEME() {
 		};
 		
 		menup.drawTuneInChange = function(tunedin) {
+			if (usingflash) return;
+			if (flashloaded) return;
+			
+			if (!removedflash) {
+				menup.player.removeChild(menup.flash_warning);
+				menup.player.className = "menu_player";
+				removedflash = true;
+			}
+			
 			if (tunedin) {
 				menup.player.className = "menu_player menu_player_tunedin";
 				menup.fx_player.start(.5);
@@ -1057,7 +1070,7 @@ function _THEME() {
 			else {
 				menup.player.className = "menu_player fakebutton menu_player_tunedout";
 				menup.fx_player.start(1);
-				_l("play_v2", false, menup.player);
+				_l("tunedout", false, menup.player);
 			}
 		};
 		
@@ -1082,8 +1095,13 @@ function _THEME() {
 		};
 		
 		menup.playerInitThemeHook = function() {
-			menup.player.style.cursor = "default";
-			menup.flash_container.removeChild(menup.flash_placeholder);
+			flashloaded = true;
+			menup.flash_container.removeChild(menup.flash_warning);
+		};
+		
+		menup.tuneInClickThemeHook = function() {
+			if (flashloaded) return;
+			usingflash = false;
 		};
 		
 		return menup;

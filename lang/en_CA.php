@@ -353,15 +353,13 @@ $lang = array(
 	"electionresults" => "Election Results",
 	"from" => "from |username|",
 	"votefaileleclocked" => "Vote Failed, Election Locked",
+	"searching" => "Searching: ",
 	
 	// Menu Bar
 	
 	"selectstation" => "Select Station",
 	"tunedin" => "Tuned In",
 	"tunedout" => "Tuned Out",
-	"play" => "▶ Play In Browser",
-	"downloadm3u" => "▶ Download M3U",
-	"players" => "Supported players are VLC, Winamp, Foobar2000, and fstream (Mac/iPhone).|br|Windows Media Player and iTunes will not work.",
 	"help" => "Help",
 	"forums" => "Forums",
 	"login" => "Login",
@@ -370,14 +368,10 @@ $lang = array(
 	"username" => "Username",
 	"password" => "Password",
 	"autologin" => "Auto-Login",
-	"compatplayers" => "Supported Players:",
 	"chat" => "Chat",
-	"searching" => "Searching: ",
 	"m3uhijack" => "|plugin| is trying to hijack the M3U download.  Please right click and 'Save As.'",
-	"play_v2" => "Tune In",
-	"downloadm3u_v2" => "Download an M3U for your player:",
+	"downloadm3u_v3" => "or use:",
 	"menu_morestations_v2" => "All Stations »",
-	"waitingforstatus" => "Waiting for Status",
 	"managekeys" => "Manage API Keys",
 	"listenerprofile" => "Listener Profile"
 );

@@ -18,7 +18,7 @@ $GLOBALS['skincolors'] = array_merge($GLOBALS['skincolors'], array(
 	"indicwarnbright" => "#C2C810",
 	"indicconflict" => "#84880c",
 	"indicconflictbright" => "#C2C810",
-	"indicrequest" => "#247293",
+	"indicrequest" => "#248293",
 	"indicrequestbright" => "#3585c3",
 	
 	"error_dark" => "#660000",

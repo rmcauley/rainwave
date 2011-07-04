@@ -1,8 +1,0 @@
-<ffmp3-skin folder="ffmp3/ffmp3-repvku-115">
-  <bg image="bg.png" x="0" y="0" ></bg>
-  <play image="Play.png" x="22" y="2" clickimage="Playclick.png" />
-  <stop image="Stop.png" x="42" y="2" clickimage="Stopclick.png" />
-  <text x="145" y="8" width="120" height="20" color="#FFFFFF" font="Verdana" size="10" />
-  <volume x="67" y="7" width="39" height="11" colOr1="#999999" color2="#ffffff" barwidth="2" barStep="3" mode="bars" />
-  <status imagePlay="statusplay.png" imageStop="statusstop.png" x="65" y="3" />
-</ffmp3-skin>
