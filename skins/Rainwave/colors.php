@@ -6,6 +6,7 @@ $GLOBALS['skincolors'] = array_merge($GLOBALS['skincolors'], array(
 	"vdarktext" => "#777777",
 	"vvdarktext" => "#444444",
 	"link" => "#6cf6ff",
+	"donorcolor" => "#FFFF00",
 	
 	"primarybkg" => "#142027",
 	"brightbkg" => "#3f4b52",

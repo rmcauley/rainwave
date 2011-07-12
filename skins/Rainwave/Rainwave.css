@@ -769,25 +769,19 @@ div.menu_flash_warning {
 	width: 100%;
 	height: 18px;
 	background: url("../../ffmp3/ffmp3-rainwave/flash.png") no-repeat;
+	cursor: pointer;
 }
 
 div.menu_download {
-	background: [% background %];
 	overflow: hidden;
-	text-overflow: ellipsis;
 	white-space: nowrap;
 	position: absolute;
 	margin-left: 84px;
 }
 
 .menu_player_tunedin {
-	background-color: [% background %];
+	color: [% darktext %];
 	text-align: center;
-}
-
-.menu_player_tunedout {
-	text-align: center;
-	background-color: [% player %];
 }
 
 .flash_container {
@@ -826,6 +820,14 @@ td.menu_td_user {
 	white-space: nowrap;
 }
 
+.menu_username_perks {
+	color: [% donorcolor %];
+}
+
+.menu_username_perks:hover {
+	color: [% donorcolor %];
+}
+
 td.menu_td_user img {
 	height: 16px;
 	width: auto;
@@ -847,6 +849,7 @@ table.menu_table td.menu_td_news {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	border-left: 1px solid [% border %];
 }
 
 table.menu_table td.menu_td_news_active {

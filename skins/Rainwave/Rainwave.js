@@ -447,7 +447,6 @@ function _THEME() {
 				ts.song_requestor_wrap = createEl("div", { "class": "timeline_song_requestor_wrap" }, ts.album_td);
 				ts.song_requestor_wrap.appendChild(ts.song_requestor);
 				ts.song_requestor_fx = fx.make(fx.CSSNumeric, ts.song_requestor, 250, "marginTop", "px");
-				ts.song_requestor_fx.set(-22);
 				ts.song_requestor_bkg_fx = fx.make(fx.BackgroundPosY, ts.album_td, 250);
 				ts.song_requestor_bkg_fx.set(-90);
 				ts.indicator_fx = fx.make(fx.BackgroundPosY, ts.indicator, 250);
@@ -474,11 +473,6 @@ function _THEME() {
 			fx_swipe = fx.make(fx.BackgroundPosY, ts.swipe, 500);
 			fx_swipe.onComplete = ts.endSwipe();
 			
-			if (prefs.p.timeline.highlightrequests.value && (ts.p.elec_isrequest > ELECSONGTYPES.normal)) {
-				ts.showRequestor();
-			}
-			
-			
 			ts.tr1_fx.set(1);
 			ts.tr2_fx.set(1);
 			ts.tr3_fx.set(1);
@@ -491,7 +485,12 @@ function _THEME() {
 				ts.song_requestor.style.height = timeline_elec_tdheight + "px";
 				ts.song_requestor_wrap.style.height = timeline_elec_tdheight + "px";
 				ts.song_requestor_fx.height = timeline_elec_tdheight;
+				ts.song_requestor_fx.set(-timeline_elec_tdheight);
+				if (prefs.p.timeline.highlightrequests.value) {
+					ts.showRequestor();
+				}
 			}
+			
 			fx_swipe.set(timeline_elec_tdheight);
 		};
 
@@ -908,6 +907,8 @@ function _THEME() {
 			// }
 			
 			menup.td_play = createEl("td", { "class": "menu_td_play menu_td_play_tunedout" }, row);
+			menup.fx_play_width = fx.make(fx.CSSNumeric, menup.td_play, 250, "width", "px");
+			menup.fx_play_width.set(84);
 			
 			menup.m3u_download = createEl("div", { "class": "menu_download" }, menup.td_play);
 			menup.or_use = createEl("span", { "textContent": _l("oruse") }, menup.m3u_download);
@@ -922,8 +923,15 @@ function _THEME() {
 			fb2ka.addEventListener("click", menup.tuneInClick, true);
 			var m3u_download_width = fx.make(fx.CSSNumeric, menup.m3u_download, 250, "width", "px");
 			m3u_download_width.set(0);
-			menup.td_play.addEventListener("mouseover", function() { m3u_download_width.start(110); }, true);
-			menup.td_play.addEventListener("mouseout", function() { m3u_download_width.start(0); }, true);
+			
+			menup.td_play.addEventListener("mouseover", function() {
+					m3u_download_width.start(110);
+					menup.fx_play_width.start(190);
+				}, true);
+			menup.td_play.addEventListener("mouseout", function() {
+					m3u_download_width.start(0);
+					menup.fx_play_width.start(84);
+				}, true);
 			
 			menup.player = createEl("div", { "class": "menu_player menu_player_flash", "id": "flash_player" }, menup.td_play);
 			menup.flash_container = menup.player;
@@ -933,8 +941,6 @@ function _THEME() {
 			menup.flash_warning.addEventListener("mouseover", function() { flash_warning_opacity.start(1); }, true);
 			menup.flash_warning.addEventListener("mouseout", function() { flash_warning_opacity.start(0); }, true);
 			flash_warning_opacity.set(0);
-			menup.fx_player = fx.make(fx.CSSNumeric, menup.player, 250, "opacity");
-			menup.fx_player.set(1);
 			
 			help.changeStepPointEl("tunein", [ menup.player, menup.td_download ]);
 			help.changeTopicPointEl("tunein", [ menup.player, menup.td_download ]);
@@ -961,9 +967,9 @@ function _THEME() {
 			menup.user_cp = createEl("div", { "class": "menu_user_cp menu_dropdown" });
 			//var usercp_logout = createEl("a", { "class": "displayblock", "textContent": _l("logout"), "href": "http://rainwave.cc/forums/ucp.php?mode=logout" }, menup.user_cp);
 			var usercp_keys = createEl("a", { "class": "displayblock", "textContent": _l("managekeys"), "href": "http://rainwave.cc/auth/", "class": "link" }, menup.user_cp);
-			var usercp_profile = createEl("span", { "class": "displayblock", "textContent": _l("listenerprofile") }, menup.user_cp);
-			Username.linkify(user.p.user_id, usercp_profile);
-			fx.makeMenuDropdown(menup.el, menup.td_user, menup.user_cp, { "checkbefore": function() { if (user.p.user_id == 1) return false; } } );
+			//var usercp_profile = createEl("span", { "class": "displayblock", "textContent": _l("listenerprofile") }, menup.user_cp);
+			Username.linkify(user.p.user_id, menup.username);
+			fx.makeMenuDropdown(menup.el, menup.td_user, menup.user_cp, { "checkbefore": function() { if (user.p.user_id == 1) return false; else return true; } } );
 			
 			menup.td_chat = createEl("td", { "class": "menu_td_chat" });
 			var chatlink = createEl("a");
@@ -1064,19 +1070,26 @@ function _THEME() {
 			
 			if (tunedin) {
 				menup.player.className = "menu_player menu_player_tunedin";
-				menup.fx_player.start(.5);
 				menup.player.textContent = _l("tunedin");
 			}
 			else {
 				menup.tuneInClickThemeHook();
 				// menup.player.className = "menu_player fakebutton menu_player_tunedout";
-				// menup.fx_player.start(1);
 				// _l("tunedout", false, menup.player);
 			}
 		};
 		
 		menup.showUsername = function(username) {
 			menup.username.textContent = username;
+			if (user.p.radio_perks > 0) {
+				menup.username.className = "menu_username menu_username_perks link";
+			}
+			else if (user.p.user_id > 1) {
+				menup.username.className = "menu_username link";
+			}
+			else {
+				menup.username.className = "menu_username";
+			}
 			var pnode;
 			if (menup.loginreg.parentNode) pnode = menup.loginreg.parentNode;
 			else if (menup.username.parentNode) pnode = menup.username.parentNode;
@@ -1106,7 +1119,6 @@ function _THEME() {
 			menup.player.appendChild(menup.flash_warning);
 			menup.player.className = "menu_player menu_player_flash";
 			menup.or_use.textContent = _l("oruse");
-			menup.fx_player.start(1);
 			flashloaded = false;
 			menup.playeradded = false;
 		};

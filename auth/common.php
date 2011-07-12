@@ -6,9 +6,11 @@ define("VW", 3);
 define("MW", 3);
 
 $sid = RW;
-if ($_COOKIE['r3sid'] == "1") $sid = RW;
-else if ($_COOKIE['r3sid'] == "2") $sid = OCR;
-else if ($_COOKIE['r3sid'] == "3") $sid = VW;
+if (isset($_COOKIE['r3sid'])) {
+	if ($_COOKIE['r3sid'] == "1") $sid = RW;
+	else if ($_COOKIE['r3sid'] == "2") $sid = OCR;
+	else if ($_COOKIE['r3sid'] == "3") $sid = VW;
+}
 // This gives precedence to URL if using a subdomained station
 if ($_SERVER['HTTP_HOST'] == "rw.rainwave.cc") $sid = RW;
 else if ($_SERVER['HTTP_HOST'] == "ocr.rainwave.cc") $sid = OCR;
