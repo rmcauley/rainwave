@@ -455,9 +455,9 @@ function TimelineSkeleton(json, container, parent) {
 	
 	that.updateIndicator = function() {
 		if (that.p.song_data && (typeof(that.p.song_data[0].elec_isrequest) != "undefined")) {
-			if (that.p.song_data[0].elec_isrequest == 0) that.changeIndicator("normal");
-			else if (that.p.song_data[0].elec_isrequest == 1) that.changeIndicator("request");
-			else if (that.p.song_data[0].elec_isrequest < 0) that.changeIndicator("conflict");
+			if (that.p.song_data[0].elec_isrequest > ELECSONGTYPES.normal) that.changeIndicator("request");
+			else if (that.p.song_data[0].elec_isrequest < ELECSONGTYPES.normal) that.changeIndicator("conflict");
+			else that.changeIndicator("normal");
 		}
 		else {
 			that.changeIndicator("normal");

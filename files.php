@@ -34,7 +34,10 @@ $jsorder = array(
 	"js/panels/PlaylistPanel.js",
 	"js/panels/PrefsPanel.js",
 	"js/panels/SchedulePanel.js",
-	"js/panels/ListenersPanel.js"
+	"js/panels/ListenersPanel.js",
+	
+	// Flash
+	"ffmp3/swfobject.js"
 );
 
 ?>

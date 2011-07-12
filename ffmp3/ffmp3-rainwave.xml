@@ -1,0 +1,13 @@
+<ffmp3-skin folder="ffmp3/ffmp3-rainwave">
+  <bg image="bkg.png" x="0" y="0" ></bg>
+  <play image="play.png" x="5" y="3" clickimage="playclick.png" />
+  <stop image="stop.png" x="21" y="3" clickimage="stop.png" />
+  <volume x="36" y="3m" width="40" height="13" 
+      color1="#FFFFFF" color2="#555555"
+      barwidth="2"
+      barStep="3"
+      holderImage="holder.png"
+	  mode="bars"  You-can-try-with-mode="bars"
+  />
+  <status imagePlay="statusplay.png" imageStop="statusstop.png" x="36" y="3" />
+</ffmp3-skin>

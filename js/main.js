@@ -9,6 +9,8 @@ var SCHED_DJ = 7;
 
 var STATIONS = [ false, "Rainwave", "OCR Radio", "Mixwave", "Bitwave" ];
 var SHORTSTATIONS = [ false, "RW", "OC", "MW" ];
+//var ELECSONGTYPES = { "conflict": 0, "warn": 1, "normal": 2, "queue": 3, "request": 4 };
+var ELECSONGTYPES = { "conflict": -2, "warn": -1, "normal": 0, "queue": 1, "request": 1 };
 var UISCALE = 10;
 var BODY = document.getElementById("body");
 

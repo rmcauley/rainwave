@@ -753,7 +753,7 @@ div.menu_select_station_x {
 }
 
 td.menu_td_play {
-	width: 130px;
+	width: 90px;
 }
 
 div.menu_player {
@@ -782,14 +782,12 @@ div.menu_download {
 
 .menu_player_tunedin {
 	background-color: [% background %];
+	text-align: center;
 }
 
 .menu_player_tunedout {
+	text-align: center;
 	background-color: [% player %];
-}
-
-.menu_player_tunedout:hover {
-	background-color: [% player_hover %];
 }
 
 .flash_container {

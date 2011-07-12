@@ -264,7 +264,7 @@ function _THEME() {
 		te.draw = function() {
 			var reqstatus = 0;
 			for (var i = 0; i < te.p.song_data.length; i++) {
-				if (te.p.song_data[i].elec_isrequest == 1) {
+				if (te.p.song_data[i].elec_isrequest > ELECSONGTYPES.normal) {
 					reqstatus = 1;
 					break;
 				}
@@ -405,8 +405,8 @@ function _THEME() {
 		
 		ts.draw = function() {
 			var indic = "normal";
-			if (ts.p.elec_isrequest == 1) indic = "request";
-			else if (ts.p.elec_isrequest < 0) indic = "conflict";
+			if (ts.p.elec_isrequest > ELECSONGTYPES.normal) indic = "request";
+			else if (ts.p.elec_isrequest < ELECSONGTYPES.normal) indic = "conflict";
 			
 			ts.tr1 = createEl("tr", {});
 			ts.tr1_fx = fx.make(fx.OpacityRemoval, ts.tr1, 500, ts.parent.el);
@@ -426,7 +426,7 @@ function _THEME() {
 			ts.tr2 = createEl("tr", {});
 			ts.tr2_fx = fx.make(fx.OpacityRemoval, ts.tr2, 500, ts.parent.el);
 			var albumclasses = "timeline_td timeline_album_td";
-			if (ts.p.elec_isrequest == 1) {
+			if (ts.p.elec_isrequest > ELECSONGTYPES.normal) {
 				albumclasses += " timeline_album_td_request";
 			}
 			else {
@@ -437,10 +437,10 @@ function _THEME() {
 			ts.album_rating = Rating({ category: "album", "id": ts.p.album_id, "userrating": ts.p.album_rating_user, "siterating": ts.p.album_rating_avg, "favourite": ts.p.album_favourite, "register": true });
 			ts.album_rating_c.appendChild(ts.album_rating.el);
 			ts.album_rating_bkg = createEl("div", { "class": "timeline_song_rating_bkg" }, ts.album_td);
-			if (ts.p.elec_isrequest == 1) {
+			if (ts.p.elec_isrequest > ELECSONGTYPES.normal) {
 				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor", "textContent": _l("requestedby", { "requester": ts.p.song_requestor }) });
 			}
-			else if (ts.p.elec_isrequest < 0) {
+			else if (ts.p.elec_isrequest < ELECSONGTYPES.normal) {
 				ts.song_requestor = createEl("div", { "class": "timeline_song_requestor", "textContent": _l("conflictswith", { "requester": ts.p.song_requestor }) });
 			}
 			if (ts.song_requestor) {
@@ -474,7 +474,7 @@ function _THEME() {
 			fx_swipe = fx.make(fx.BackgroundPosY, ts.swipe, 500);
 			fx_swipe.onComplete = ts.endSwipe();
 			
-			if (prefs.p.timeline.highlightrequests.value && (ts.p.elec_isrequest != 0)) {
+			if (prefs.p.timeline.highlightrequests.value && (ts.p.elec_isrequest > ELECSONGTYPES.normal)) {
 				ts.showRequestor();
 			}
 			
@@ -678,11 +678,11 @@ function _THEME() {
 				table.votes.textContent = _l("votes", { "votes": json.elec_votes });
 				urlneedsfill = false;
 			}
-			if (json.elec_isrequest && ((json.elec_isrequest == 1) || (json.elec_isrequest <= -1))) {
+			if (json.elec_isrequest && ((json.elec_isrequest > ELECSONGTYPES.normal) || (json.elec_isrequest < ELECSONGTYPES.normal))) {
 				var requestor = json.song_requestor;
 				var reqtxt = "";
-				if (json.elec_isrequest == 1) reqtxt = _l("requestedby", { "requester": json.song_requestor });
-				else if (json.elec_isrequest < 0) reqtxt = _l("conflictedwith", { "requester": json.song_requestor });
+				if (json.elec_isrequest > ELECSONGTYPES.normal) reqtxt = _l("requestedby", { "requester": json.song_requestor });
+				else if (json.elec_isrequest < ELECSONGTYPES.normal) reqtxt = _l("conflictedwith", { "requester": json.song_requestor });
 				panel.changeReqBy(reqtxt);
 			}
 			else if (event.p.username && (event.p.sched_type != SCHED_LIVE)) {
@@ -741,11 +741,11 @@ function _THEME() {
 		};
 		
 		nowp.changeIsRequest = function(elec_isrequest) {
-			if (elec_isrequest == 1) {
+			if (elec_isrequest > ELECSONGTYPES.normal) {
 				nowp.indicator_v.setAttribute("class", "nowplaying_indicator_v nowplaying_indicator_v_request");
 				nowp.indicator_h.setAttribute("class", "nowplaying_indicator_h nowplaying_indicator_h_request");
 			}
-			else if (elec_isrequest < 0) {
+			else if (elec_isrequest < ELECSONGTYPES.normal) {
 				nowp.indicator_v.setAttribute("class", "nowplaying_indicator_v nowplaying_indicator_v_conflict");
 				nowp.indicator_h.setAttribute("class", "nowplaying_indicator_h nowplaying_indicator_h_conflict");
 			}
@@ -758,7 +758,7 @@ function _THEME() {
 	
 	that.Extend.NPSkeleton = function(npe) {
 		npe.parent.changeReqBy("");
-		npe.parent.changeIsRequest(0);
+		npe.parent.changeIsRequest(ELECSONGTYPES.normal);
 		
 		npe.defineFx = function() {
 			npe.fx_marginleft = fx.make(fx.CSSTranslateX, npe.el, 700);
@@ -820,7 +820,6 @@ function _THEME() {
 	*****************************************************************************/
 
 	that.Extend.MenuPanel = function(menup) {
-		var usingflash = true;
 		var flashloaded = false;
 		var removedflash = false;
 		
@@ -911,7 +910,7 @@ function _THEME() {
 			menup.td_play = createEl("td", { "class": "menu_td_play menu_td_play_tunedout" }, row);
 			
 			menup.m3u_download = createEl("div", { "class": "menu_download" }, menup.td_play);
-			createEl("span", { "textContent": _l("downloadm3u_v3") }, menup.m3u_download);
+			menup.or_use = createEl("span", { "textContent": _l("oruse") }, menup.m3u_download);
 			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_vlc" }, menup.m3u_download);
 			createEl("img", { "width": 17, "height": 20, "src": "images/blank.png" }, vlca);
 			vlca.addEventListener("click", menup.tuneInClick, true);
@@ -926,7 +925,7 @@ function _THEME() {
 			menup.td_play.addEventListener("mouseover", function() { m3u_download_width.start(110); }, true);
 			menup.td_play.addEventListener("mouseout", function() { m3u_download_width.start(0); }, true);
 			
-			menup.player = createEl("div", { "class": "menu_player menu_player_flash" }, menup.td_play);
+			menup.player = createEl("div", { "class": "menu_player menu_player_flash", "id": "flash_player" }, menup.td_play);
 			menup.flash_container = menup.player;
 			menup.flash_warning = createEl("div", { "class": "menu_flash_warning" }, menup.player);
 			var flash_warning_opacity = fx.make(fx.CSSNumeric, menup.flash_warning, 150, "opacity");
@@ -1053,24 +1052,26 @@ function _THEME() {
 		};
 		
 		menup.drawTuneInChange = function(tunedin) {
-			if (usingflash) return;
+			if (menup.playeradded) return;
 			if (flashloaded) return;
 			
 			if (!removedflash) {
 				menup.player.removeChild(menup.flash_warning);
 				menup.player.className = "menu_player";
 				removedflash = true;
+				menup.or_use.textContent = _l("use");
 			}
 			
 			if (tunedin) {
 				menup.player.className = "menu_player menu_player_tunedin";
 				menup.fx_player.start(.5);
-				_l("tunedin", false, menup.player);
+				menup.player.textContent = _l("tunedin");
 			}
 			else {
-				menup.player.className = "menu_player fakebutton menu_player_tunedout";
-				menup.fx_player.start(1);
-				_l("tunedout", false, menup.player);
+				menup.tuneInClickThemeHook();
+				// menup.player.className = "menu_player fakebutton menu_player_tunedout";
+				// menup.fx_player.start(1);
+				// _l("tunedout", false, menup.player);
 			}
 		};
 		
@@ -1100,8 +1101,14 @@ function _THEME() {
 		};
 		
 		menup.tuneInClickThemeHook = function() {
-			if (flashloaded) return;
-			usingflash = false;
+			if (flashloaded) menup.flash_container.removeChild(document.getElementById("embedded_swf"));
+			menup.player.textContent = "";
+			menup.player.appendChild(menup.flash_warning);
+			menup.player.className = "menu_player menu_player_flash";
+			menup.or_use.textContent = _l("oruse");
+			menup.fx_player.start(1);
+			flashloaded = false;
+			menup.playeradded = false;
 		};
 		
 		return menup;

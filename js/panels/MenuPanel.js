@@ -11,10 +11,10 @@ panels.MenuPanel = {
 	constructor: function(container) {
 		var that = {};
 		that.container = container;
+		that.playeradded = false;
 		that.el;
 		var loginenabled = true;
 		var loginattempts = 0;
-		var playeradded = false;
 
 		theme.Extend.MenuPanel(that);
 	
@@ -25,7 +25,7 @@ panels.MenuPanel = {
 
 			that.draw();
 			
-			that.tunedinCallback(user.p.radio_tunedin);
+			//that.tunedinCallback(user.p.radio_tunedin);
 		
 			var pos = help.getElPosition(that.td_news);
 			errorcontrol.changeShowXY(pos.x, pos.y + that.height);
@@ -48,7 +48,7 @@ panels.MenuPanel = {
 		};
 		
 		that.addPlayer = function(el) {
-			if (playeradded) return;
+			if (that.playeradded) return;
 			
 			var url;
 			var usrstr = user.p.user_id > 1 ? "?" + user.p.user_id + ":" + user.p.radio_listenkey : "";
@@ -59,34 +59,55 @@ panels.MenuPanel = {
 			
 			that.playerInitThemeHook();
 			
-			// var flashvars = {};
-			// var params = {allowScriptAccess: "always"};
-			// var attributes = {};
-			// swfobject.embedSWF("oggpixel.swf", "oggpixel", "1", "1", "10.0.0", "expressInstall.swf", flashvars, params, attributes);
-
-			var flashvars = "url=" + url + "&lang=en&codec=ogg&volume=100&autoplay=true&traking=false&tracking=false&jsevents=false&skin=ffmp3/ffmp3-rainwave.xml&title=" + STATIONS[user.p.sid];
-			//var flash = createEl("object", { "width": 115, "height": 25 });		// the other skin
-			var flash = createEl("object", { "width": 79, "height": 18 });
-			createEl("param", { "name": "movie", "value": "ffmp3/ffmp3-config.swf" }, flash);
-			createEl("param", { "name": "flashvars", "value": flashvars }, flash);
-			createEl("param", { "name": "wmode", "value": "transparent" }, flash);
-			createEl("param", { "name": "allowscriptaccess", "value": "always" }, flash);
-			createEl("param", { "name": "scale", "value": "noscale" }, flash);
-			createEl("embed", {	
-				"src": "ffmp3/ffmp3-config.swf",
-				"flashvars": flashvars,
+			var flashvars = {
+				"url": url,
+				"lang": "en",
+				"codec": "ogg",
+				"volume": "100",
+				"autoplay": "true",
+				"traking": "false",
+				"tracking": "false",
+				"jsevents": "false",
+				"skin": "ffmp3/ffmp3-rainwave.xml",
+				"title": STATIONS[user.p.sid]
+			};
+			var params = {
+				"allowScriptAccess": "always",
+				"scale": "noscale",
+				"wmode": "transparent"
+			};
+			var attributes = {
 				"width": 79,
 				"height": 18,
-				"wmode": "transparent",
-				"allowscriptaccess": "always",
-				"type": "application/x-shockwave-flash"
-			}, flash);
-			el.appendChild(flash);
-			playeradded = true;
+				"id": "embedded_swf"
+			};
+			that.embedded_swf_container = createEl("div", { "id": "embedded_swf_container" }, that.flash_container);
+			swfobject.embedSWF("ffmp3/ffmp3-config.swf", that.embedded_swf_container.getAttribute("id"), "79", "18", "10.0.0", "ffmp3/expressInstall.swf", flashvars, params, attributes);
+
+			// var flashvars = "url=" + url + "&lang=en&codec=ogg&volume=100&autoplay=true&traking=false&tracking=false&jsevents=false&skin=ffmp3/ffmp3-rainwave.xml&title=" + STATIONS[user.p.sid];
+			// //var flash = createEl("object", { "width": 115, "height": 25 });		// the other skin
+			// var flash = createEl("object", { "width": 79, "height": 18 });
+			// createEl("param", { "name": "movie", "value": "ffmp3/ffmp3-config.swf" }, flash);
+			// createEl("param", { "name": "flashvars", "value": flashvars }, flash);
+			// createEl("param", { "name": "wmode", "value": "transparent" }, flash);
+			// createEl("param", { "name": "allowscriptaccess", "value": "always" }, flash);
+			// createEl("param", { "name": "scale", "value": "noscale" }, flash);
+			// createEl("embed", {	
+				// "src": "ffmp3/ffmp3-config.swf",
+				// "flashvars": flashvars,
+				// "width": 79,
+				// "height": 18,
+				// "wmode": "transparent",
+				// "allowscriptaccess": "always",
+				// "type": "application/x-shockwave-flash"
+			// }, flash);
+			// el.appendChild(flash);
+			
+			that.playeradded = true;
 		};
 		
 		that.playerClick = function() {
-			if (!playeradded) that.addPlayer(that.flash_container);
+			if (!that.playeradded) that.addPlayer(that.flash_container);
 		};
 
 		// this is for m3u links
