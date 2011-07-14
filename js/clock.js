@@ -23,8 +23,6 @@ var clock = function() {
 	};
 	
 	that.clockSync = function(newtime) {
-		var count = 0;
-		for (var i in clocks) count++;
 		timediff = newtime - that.time();
 		that.now = that.time() + timediff;
 		ready = true;
@@ -33,15 +31,25 @@ var clock = function() {
 	that.loop = function() {
 		if (ready == false) return;
 		that.now = that.time() + timediff;
-		for (var cb in clocks) {
+		var cb;
+		for (cb in clocks) {
 			try {
-				var clocktime = clocks[cb].end - that.now + clocks[cb].offset;
-				clocks[cb].func.call(clocks[cb].obj, clocktime);
+				clocks[cb].func(clocks[cb].end - that.now + clocks[cb].offset);
 			}
 			catch(err) {
 				clearInterval(interval);
 				errorcontrol.jsError(err);
 			}
+		}
+		if ((that.now % 60) == 0) {
+			var c = 0;
+			for (var cb in clocks) {
+				if (clocks[cb].el && !document.getElementById("clock_" + cb)) {
+					delete(clocks[cb]);
+				}
+				else c++;
+			}
+			//console.log("Clock count: " + c + "/" + cb);
 		}
 	};
 	
@@ -49,23 +57,19 @@ var clock = function() {
 		if (clocks[idx]) clocks[idx].end = newend;
 	};
 
-	that.addClock = function(object, method, end, offset) {
-		if (typeof(offset) == "undefined") offset = 0;
-		var newclock = {
-			func: method,
-			obj: object,
-			end: end,
-			finished: false,
-			offset: offset
-		};
-		var cid = maxid;
+	that.addClock = function(el, method, end, offset) {
 		maxid++;
-		clocks[cid] = newclock;
-		return cid;
-	};
-	
-	that.eraseClock = function(idx) {
-		if (clocks[idx]) delete(clocks[idx]);
+		if (typeof(offset) == "undefined") offset = 0;
+		if (el) el.setAttribute("id", "clock_" + maxid);
+		var newclock = {
+			"el": el,
+			"func": method,
+			"end": end,
+			"finished": false,
+			"offset": offset
+		};
+		clocks[maxid] = newclock;
+		return maxid;
 	};
 	
 	that.now = that.time() + timediff;

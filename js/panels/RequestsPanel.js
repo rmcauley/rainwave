@@ -172,7 +172,6 @@ var RequestList = function(sortable) {
 				if (json[i].requestq_id == reqs[j].p.requestq_id) found = true;
 			}
 			if (!found) {
-				reqs[j].destruct();
 				reqs[j].purge = true;
 				reqs[j].fx_opacity.start(0);
 			}
@@ -429,10 +428,6 @@ var Request = {
 			}
 			
 			if (that.height) that.height = that.el.offsetHeight;
-		};
-		
-		that.destruct = function() {
-			// pass
 		};
 		
 		that.update(json);

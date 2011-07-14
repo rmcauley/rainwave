@@ -1,5 +1,5 @@
 var ratingcontrol = function() {
-	var callbacks = [];
+	var callbacks = {};
 	var maxid = 0;
 	
 	var that = {};
@@ -11,20 +11,34 @@ var ratingcontrol = function() {
 	
 	that.ratingUpdate = function(result) {
 		if (result.song_id) {
-			var callbackcount = 0;
 			for (var i in callbacks) {
-				callbackcount++;
 				if ((callbacks[i].category == "song") && (callbacks[i].id == result.song_id)) {
-					if (result.code == 1) callbacks[i].ratingConfirm.call(callbacks[i], result.song_rating);
-					else callbacks[i].ratingBad.call(callbacks[i], result.song_rating);
+					if (result.code == 1) callbacks[i].ratingConfirm(result.song_rating);
+					else callbacks[i].ratingBad(result.song_rating);
 				}
 				if ((result.code == 1) && (result.album_id) && (callbacks[i].category == "album") && (callbacks[i].id == result.album_id)) {
-					callbacks[i].ratingConfirm.call(callbacks[i], result.album_rating);
+					callbacks[i].ratingConfirm(result.album_rating);
 				}
 			}
-			//log.log callbackcount
 		}
 		if (result.code == 1) help.continueTutorialIfRunning("ratecurrentsong");
+	};
+	
+	that.cleanCallbacks = function() {
+		// var idstart = new Date().getTime();
+		var cb = 0;
+		for (var i in callbacks) {
+			if (!document.getElementById(callbacks[i].el.id)) {
+				delete(callbacks[i]);
+			}
+			else {
+				cb++;
+			}
+		}
+		// var idend = new Date().getTime();
+		
+		//console.log("Ratings being tracked: " + cb + "/" + maxid);
+		// console.log("ById speed: " + (idend - idstart));
 	};
 	
 	that.songFavUpdate = function(result) {
@@ -65,14 +79,9 @@ var ratingcontrol = function() {
 	};
 	
 	that.addCallback = function(ratingobj) {
-		var cid = maxid;
 		maxid++;
-		callbacks[cid] = ratingobj;
-		return cid;
-	};
-	
-	that.eraseCallback = function(control_id) {
-		delete(callbacks[control_id]);
+		ratingobj.el.setAttribute("id", "rating_" + maxid);
+		callbacks[maxid] = ratingobj;
 	};
 	
 	that.p_hideuntilrated = function(hideuntilrated) {
@@ -85,6 +94,7 @@ var ratingcontrol = function() {
 	lyre.addCallback(that.songFavUpdate, "fav_song_result");
 	lyre.addCallback(that.albumFavUpdate, "fav_album_result");
 	lyre.addCallback(that.historyUpdate, "sched_history");
+	lyre.addCallback(that.cleanCallbacks, "sched_sync");
 
 	return that;
 }();

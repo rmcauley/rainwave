@@ -122,7 +122,7 @@ fieldset {
 	border: 1px solid [% error_border %];
 	
 	background: -moz-linear-gradient(100% 100% 90deg, [% error_dark %], [% error_bright %]);
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, [% error_bright %], to([% error_dark %]));
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from([% error_bright %]), to([% error_dark %]));
 }
 
 .err_div_ok {
@@ -423,12 +423,12 @@ div.pl_songlist_hdr {
 }
 
 tr.pl_songlist_tr_unavailable td {
-	background: [% songlist_cooldown %];
+	background-color: [% songlist_cooldown %];
 }
 
 table.pl_songlist tr:hover td {
-	background: #3D484F;
-	border-bottom: 1px solid [% songlist_hover %];
+	background-color: [% songlist_hover %];
+	border-bottom: 1px solid [% songlist_hover_border %];
 }
 
 td.pl_songlist_cooldown {
@@ -440,8 +440,17 @@ td.pl_songlist_r {
 	width: 1.5em;
 }
 
-td.pl_songlist_u {
+td.pl_songlist_url {
 	width: 1.5em;
+}
+
+td.pl_songlist_url a {
+	display: block;
+	width: 1em;
+	height: 1.2em;
+	background-image: url("images/wikilink_12px.png");
+	background-repeat: no-repeat;
+	background-position: bottom left;
 }
 
 td.pl_songlist_album_name {

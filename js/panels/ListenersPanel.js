@@ -61,7 +61,6 @@ panels.ListenersPanel = {
 		
 		that.drawListenerCallback = function(json) {
 			var wdow = view.createOpenDiv("listener", json.user_id);
-			//wdow.destruct = that.destructListener;
 			that.drawListener(wdow, json);
 			clist.navToID(json.user_id);
 			if (typeof(wdow.updateHelp) == "function") wdow.updateHelp();

@@ -80,7 +80,6 @@ panels.PlaylistPanel = {
 		
 		that.drawAlbumCallback = function(json) {
 			var wdow = view.createOpenDiv("album", json.album_id);
-			wdow.destruct = that.destructAlbum;
 			json.song_data.sort(that.sortSongList);
 			that.drawAlbum(wdow, json);
 			albumlist.navToID(json.album_id);
@@ -91,7 +90,6 @@ panels.PlaylistPanel = {
 		
 		that.drawArtistCallback = function(json) {
 			var wdow = view.createOpenDiv("artist", json.album_id);
-			wdow.destruct = that.destructArtist;
 			that.drawArtist(wdow, json);
 			artistlist.navToID(json.artist_id);
 			if (typeof(wdow.updateHelp) == "function") wdow.updateHelp();

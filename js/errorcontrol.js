@@ -131,7 +131,7 @@ var errorcontrol = function() {
 	};
 	
 	that.deleteError = function(error) {
-		document.getElementById("body").removeChild(error.el);
+		BODY.removeChild(error.el);
 	};
 	
 	that.clearError2 = function(garbage) {

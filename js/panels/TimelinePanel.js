@@ -424,7 +424,7 @@ function TimelineSkeleton(json, container, parent) {
 		that.clockdisplay = true;
 		that.clockid = -1;
 		if (that.p.sched_used == 0) {
-			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -2);
+			that.clockid = clock.addClock(that.el, that.clockUpdate, that.p.sched_starttime, -2);
 		}
 		that.recalculateHeight();
 	};
@@ -434,7 +434,7 @@ function TimelineSkeleton(json, container, parent) {
 	};
 	
 	that.purgeElements = function() {
-		if (that.clockid >= 0) clock.eraseClock(that.clockid);
+		//if (that.clockid >= 0) clock.eraseClock(that.clockid);
 	};
 
 	that.clockRemove = function() {
@@ -502,7 +502,7 @@ function TimelineElection(json, container, parent) {
 		that.clockdisplay = true;
 		that.clockid = -1;
 		if (that.p.sched_used == 0) {
-			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -2);
+			that.clockid = clock.addClock(that.el, that.clockUpdate, that.p.sched_starttime, -2);
 		}
 		that.recalculateHeight();
 	};
@@ -531,16 +531,6 @@ function TimelineElection(json, container, parent) {
 	
 	that.disableRating = function() {
 		that.songs[0].disableRating();
-	};
-	
-	that.remove = function() {
-		for (var i = 0; i < that.songs.length; i++) {
-			that.songs[i].destruct();
-		}
-	};
-	
-	that.purgeElements = function() {
-		if (that.clockid >= 0) clock.eraseClock(that.clockid);
 	};
 	
 	that.showWinner = function() {
@@ -675,15 +665,13 @@ function TimelinePlaylist(json, container, parent) {
 		that.clockdisplay = true;
 		that.clockid = -1;
 		if (that.p.sched_used == 0) {
-			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -2);
+			that.clockid = clock.addClock(that.el, that.clockUpdate, that.p.sched_starttime, -2);
 		}
 		that.recalculateHeight();
 	};
 	
 	that.remove = function() {
-		for (var i = 0; i < that.songs.length; i++) {
-			that.songs[i].destruct();
-		}
+		// nothing to do
 	};
 	
 	that.getScheduledLength = function() {
@@ -710,7 +698,7 @@ function TimelineOneShot(json, container, parent) {
 		that.clockdisplay = true;
 		that.clockid = -1;
 		if (that.p.sched_used == 0) {
-			that.clockid = clock.addClock(that, that.clockUpdate, that.p.sched_starttime, -2);
+			that.clockid = clock.addClock(that.el, that.clockUpdate, that.p.sched_starttime, -2);
 		}
 		that.recalculateHeight();
 	};
@@ -724,7 +712,7 @@ function TimelineOneShot(json, container, parent) {
 	};
 	
 	that.remove = function() {
-		that.song.destruct();
+		// nothing to do
 	};
 	
 	that.deleteOneShot = function() {
@@ -766,8 +754,8 @@ function TimelineSong(json, parent, x, y, songnum) {
 	
 	that.updateJSON = function(json) {
 		that.p = json;
-		that.song_rating.setSite(that.p.song_rating_avg);
-		that.album_rating.setSite(that.p.album_rating_avg);
+		that.song_rating.updateSiteRating(that.p.song_rating_avg);
+		that.album_rating.updateSiteRating(that.p.album_rating_avg);
 	};
 	
 	that.enableVoting = function() {

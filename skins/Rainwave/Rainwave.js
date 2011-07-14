@@ -494,11 +494,6 @@ function _THEME() {
 			fx_swipe.set(timeline_elec_tdheight);
 		};
 
-		ts.destruct = function() {
-			ts.song_rating.destruct();
-			ts.album_rating.destruct();
-		};
-
 		ts.showVotes = function() {
 			if (ts.p.elec_votes > 0) {
 				ts.song_time.textContent = ts.p.elec_votes;
@@ -764,13 +759,6 @@ function _THEME() {
 			npe.fx_marginleft.set(-50);
 			npe.fx_opacity = fx.make(fx.OpacityRemoval, npe.el, 700, npe.parent.el);
 		}
-		
-		npe.destruct = function() {
-			if (npe.song_rating) {
-				npe.song_rating.destruct();
-				npe.album_rating.destruct();
-			}
-		};
 		
 		npe.animateIn = function() {
 			npe.fx_marginleft.start(10);
@@ -1285,13 +1273,6 @@ function _THEME() {
 				}
 			};
 		};
-		
-		pp.destructAlbum = function(wdow) {
-			wdow.albumrating.destruct();
-			for (var i = 0; i < wdow.songarray.length; i++) {
-				wdow.songarray[i].rating.destruct();
-			}
-		};
 
 		pp.drawArtist = function(wdow, json) {
 			wdow.hdrtable = createEl("table", { "style": "width: 100%;", "cellspacing": 0 }, wdow.div);
@@ -1356,10 +1337,6 @@ function _THEME() {
 			that.drawAlbumTable(tbl, useless, album);
 			return encloseddiv;
 		};
-		
-		pp.destructArtist = function(wdow) {
-			// nothing to do since there are no ratings
-		};
 	};
 	
 	// Pass a table already created, an empty array, and JSON song_data in
@@ -1390,8 +1367,8 @@ function _THEME() {
 				
 				if (("song_url" in song_data[i]) && (song_data[i].song_url.length > 0)) {
 					ns.td_u = document.createElement("td");
-					ns.td_u.setAttribute("class", "pl_songlist_u");
-					ns.td_u_a = createEl("a", { "class": "link", "href": song_data[i].song_url, "target": "_blank", "textContent": " " }, ns.td_u_a);
+					ns.td_u.setAttribute("class", "pl_songlist_url");
+					ns.td_u_a = createEl("a", { "class": "link", "href": song_data[i].song_url, "target": "_blank", "textContent": " " }, ns.td_u);
 					ns.tr.appendChild(ns.td_u);
 				}
 				else {
@@ -1659,7 +1636,7 @@ function _THEME() {
 			obj.fx_opacity = fx.make(fx.CSSNumeric, obj.el, 250, "opacity");
 			obj.fx_opacity.set(0);
 			
-			document.getElementById("body").appendChild(obj.el);
+			BODY.appendChild(obj.el);
 			obj.fx_opacity.start(1);
 		};
 		

@@ -24,7 +24,7 @@ var titleupdate = function() {
 		sv_ready = true;
 	};
 	
-	clockid = clock.addClock(that, that.updateTitle, clock.time(), -2);
+	clockid = clock.addClock(false, that.updateTitle, clock.now, -2);
 	lyre.addCallback(that.ajaxHandle, "sched_current");
 	
 	return that;

@@ -46,7 +46,8 @@ $GLOBALS['skincolors'] = array_merge($GLOBALS['skincolors'], array(
 	
 	"cooldown" => "#8bedff",		// the ice blue colour given to cooldown messages
 	
-	"songlist_hover" => "#7d94a1",	// border
+	"songlist_hover" => "#3D484F",
+	"songlist_hover_border" => "#7d94a1",
 	"songlist_line" => "#3F667C",
 	"songlist_cooldown" => "#111133",
 	

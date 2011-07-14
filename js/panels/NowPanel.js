@@ -78,7 +78,6 @@ var NPSkeleton = function(npp) {
 	};
 	
 	that.uninit = function() {
-		that.destruct();
 		that.animateOut();
 	};
 	

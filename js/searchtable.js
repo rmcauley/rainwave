@@ -226,8 +226,9 @@ function SearchTable(container, id_key, table_class) {
 		}
 		
 		if (resettimer) {
-			if (inlinetimer) clearTimeout(inlinetimer);
-			inlinetimer = setTimeout(that.clearInlineSearch, 20000);
+			// if (inlinetimer) clearTimeout(inlinetimer);
+			// inlinetimer = setTimeout(that.clearInlineSearch, 60000);
+			inlinetimer = true;
 		}
 		if (resetkeytimer) {
 			if (keynavtimer) clearTimeout(keynavtimer);
@@ -273,7 +274,7 @@ function SearchTable(container, id_key, table_class) {
 	};
 	
 	that.clearInlineSearch = function() {
-		if (inlinetimer) clearTimeout(inlinetimer);
+		//if (inlinetimer) clearTimeout(inlinetimer);
 		inlinetimer = false;
 		searchstring = "";
 		

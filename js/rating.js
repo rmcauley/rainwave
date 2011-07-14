@@ -18,8 +18,6 @@ function Rating(p) {
 	if (p.fake) that.fake = p.fake;
 	else that.fake = false;
 	
-	if (that.register) that.control_id = ratingcontrol.addCallback(that)
-	else that.control_id = false;
 	that.oldrating = that.userrating;
 
 	var lasttime = 0;
@@ -32,10 +30,6 @@ function Rating(p) {
 	var sitetext = "";
 
 	theme.Extend.Rating(that);
-	
-	that.destruct = function() {
-		if (that.control_id >= 0) ratingcontrol.eraseCallback(that.control_id);
-	};
 	
 	that.enable = function() {
 		if (that.category == "song") that.ratable = true;
@@ -66,7 +60,7 @@ function Rating(p) {
 			that.favClick();
 		}
 		else if (that.ratable) {
-			var now = clock.time();
+			var now = clock.now;
 			var newrating = 0;
 			if (now > lockeduntil) {
 				if ((lasttime + 5) >= now) {
@@ -170,6 +164,8 @@ function Rating(p) {
 		// that.favcatch.addEventListener("click", that.favClick, true);
 	// }	
 	if (that.ratable) that.enable();
+	
+	if (that.register) ratingcontrol.addCallback(that)
 
 	return that;
 };

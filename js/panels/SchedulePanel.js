@@ -271,11 +271,14 @@ panels.SchedulePanel = {
 		that.showLiveTimer = function(show) {
 			if (show) {
 				livetimer.style.display = "block";
-				if (!livetimerclock) livetimerclock = clock.addClock(that, that.liveTimerUpdate, livetimernext, -8);
+				if (!livetimerclock) {
+					clock.addClock(livetimer, that.liveTimerUpdate, livetimernext, -8);
+					livetimerclock = true;
+				}
 			}
 			else {
-				livetimer.style.display = "false";
-				if (livetimerclock) clock.eraseClock(livetimerclock);
+				livetimer.style.display = "hidden";
+				//if (livetimerclock) clock.eraseClock(livetimerclock);
 				livetimerclock = false;
 			}
 		};
