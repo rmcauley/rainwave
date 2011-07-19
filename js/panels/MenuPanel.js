@@ -24,8 +24,6 @@ panels.MenuPanel = {
 			that.el = container;
 
 			that.draw();
-			
-			//that.tunedinCallback(user.p.radio_tunedin);
 		
 			var pos = help.getElPosition(that.td_news);
 			errorcontrol.changeShowXY(pos.x, pos.y + that.height);
@@ -33,7 +31,6 @@ panels.MenuPanel = {
 			user.addCallback(that.usernameCallback, "username");
 			user.addCallback(that.tunedinCallback, "radio_tunedin");
 			user.addCallback(that.userAvatarCallback, "user_avatar");
-			user.addCallback(that.statRestrict, "radio_statrestricted");
 			lyre.addCallback(that.loginResult, "login_result");
 		};
 		
@@ -53,7 +50,7 @@ panels.MenuPanel = {
 			var url;
 			var usrstr = user.p.user_id > 1 ? "?" + user.p.user_id + ":" + user.p.radio_listenkey : "";
 			if (user.p.sid == 1) url = "http://rwstream.rainwave.cc:8000/rainwave.ogg" + usrstr;
-			else if (user.p.sid == 2) url = "http://ocstream.rainwave.cc:8000/ocremix.ogg" + usrstr;
+			else if (user.p.sid == 2) url = "http://ocrstream.rainwave.cc:8000/ocremix.ogg" + usrstr;
 			else if (user.p.sid == 3) url = "http://mwstream.rainwave.cc:8000/mixwave.ogg" + usrstr;
 			else if (user.p.sid == 4) url = "http://bitstream.rainwave.cc:8000/bitwave.ogg" + usrstr;
 			
@@ -83,25 +80,6 @@ panels.MenuPanel = {
 			};
 			that.embedded_swf_container = createEl("div", { "id": "embedded_swf_container" }, that.flash_container);
 			swfobject.embedSWF("ffmp3/ffmp3-config.swf", that.embedded_swf_container.getAttribute("id"), "79", "18", "10.0.0", "ffmp3/expressInstall.swf", flashvars, params, attributes);
-
-			// var flashvars = "url=" + url + "&lang=en&codec=ogg&volume=100&autoplay=true&traking=false&tracking=false&jsevents=false&skin=ffmp3/ffmp3-rainwave.xml&title=" + STATIONS[user.p.sid];
-			// //var flash = createEl("object", { "width": 115, "height": 25 });		// the other skin
-			// var flash = createEl("object", { "width": 79, "height": 18 });
-			// createEl("param", { "name": "movie", "value": "ffmp3/ffmp3-config.swf" }, flash);
-			// createEl("param", { "name": "flashvars", "value": flashvars }, flash);
-			// createEl("param", { "name": "wmode", "value": "transparent" }, flash);
-			// createEl("param", { "name": "allowscriptaccess", "value": "always" }, flash);
-			// createEl("param", { "name": "scale", "value": "noscale" }, flash);
-			// createEl("embed", {	
-				// "src": "ffmp3/ffmp3-config.swf",
-				// "flashvars": flashvars,
-				// "width": 79,
-				// "height": 18,
-				// "wmode": "transparent",
-				// "allowscriptaccess": "always",
-				// "type": "application/x-shockwave-flash"
-			// }, flash);
-			// el.appendChild(flash);
 			
 			that.playeradded = true;
 		};

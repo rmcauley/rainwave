@@ -855,21 +855,24 @@ div.menu_user_cp {
 
 table.menu_table td.menu_td_news {
 	padding-left: .5em;
+	border-left: 1px solid [% border %];
+}
+
+table.menu_table .menu_ticker_overflow {
+	position: relative;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	border-left: 1px solid [% border %];
+	height: 100%;
+	width: 100%;
 }
 
-table.menu_table td.menu_td_news_active {
-	border-left: 1px solid [% border %];
-}
-
-div.news_ticker {
-	overflow: hidden;
+table.menu_table .menu_ticker {
+	position: absolute;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	width: 100%;
+	height: 100%;
 }
 
 table.menu_table td.menu_td_help {
@@ -1468,4 +1471,14 @@ div.ldetail_container {
 
 div.graph_header {
 	font-weight: bold;
+}
+
+.ticker_item {
+	position: absolute;
+}
+
+.ticker_x {
+	margin-right: .5em;
+	cursor: pointer;
+	color: [% vdarktext %];
 }

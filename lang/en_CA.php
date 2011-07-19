@@ -49,7 +49,7 @@ $lang = array(
 	// Edi error codes
 	"log_1" => "Station ID not provided to API.",
 	"log_2" => "This station is currently offline due to technical difficulties.",
-	"log_3" => "Please wait to use |currentlyon|.",
+	"log_3" => "You cannot use 2 stations at once, please wait to use |currentlyon|.",
 	
 	// HTTP error codes
 	"log_200" => "HTTP OK",

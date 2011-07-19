@@ -933,8 +933,10 @@ function _THEME() {
 			help.changeStepPointEl("tunein", [ menup.player, menup.td_download ]);
 			help.changeTopicPointEl("tunein", [ menup.player, menup.td_download ]);
 			
-			menup.td_news = createEl("td", { "class": "menu_td_news" });
-			row.appendChild(menup.td_news);
+			menup.td_news = createEl("td", { "class": "menu_td_news" }, row);
+			menup.ticker_overflow = createEl("div", { "class": "menu_ticker_overflow" }, menup.td_news);
+			menup.ticker = createEl("div", { "class": "menu_ticker" }, menup.ticker_overflow);
+			ticker.el = menup.ticker;
 			
 			menup.td_user = createEl("td", { "class": "menu_td_user" });
 			menup.avatar = createEl("img", { "class": "menu_avatar", "src": "images/blank.png" });
@@ -1085,15 +1087,6 @@ function _THEME() {
 			else if (!username && !menup.loginreg.parentNode) pnode.appendChild(menup.loginreg);
 			if (!username && menup.username.parentNode) pnode.removeChild(menup.username);
 			else if (username && !menup.username.parentNode) pnode.appendChild(menup.username);
-		};
-		
-		menup.statRestrict = function(restricted) {
-			if (restricted) {
-				menup.td_news.textContent = _l("log_3", { "lockedto": SHORTSTATIONS[user.p.radio_active_sid], "currentlyon": SHORTSTATIONS[user.p.sid] });
-			}
-			else {
-				menup.td_news.textContent = "";
-			}
 		};
 		
 		menup.playerInitThemeHook = function() {
@@ -1647,6 +1640,46 @@ function _THEME() {
 		};
 		
 		return ec;
+	};
+	
+	// /*****************************************************************************
+	// Error Skinning
+	// *****************************************************************************/
+	
+	that.Extend.Ticker = function(ticker) {
+		var currentitem = false;
+
+		ticker.showItem = function(item) {
+			item.el = createEl("div", { "class": "ticker_item" }, ticker.el);
+			item.xbutton = createEl("span", { "class": "ticker_x", "textContent": "[X]" }, item.el);
+			item.xbutton.addEventListener("click", function() { ticker.nextItem(); });
+			if (item.url) {
+				item.textel = createEl("a", { "href": item.url, "class": "ticker_text", "textContent": item.text }, item.el);
+				linkify(item.textel, true, true);
+			}
+			else {
+				item.textel = createEl("span", { "class": "ticker_text", "textContent": item.text }, item.el);
+			}
+			item.effect = fx.make(fx.CSSNumeric, item.el, 400, "marginTop", "px");
+			item.opacity = fx.make(fx.CSSNumeric, item.el, 400, "opacity");
+			item.effect.start(20, 0);
+			item.opacity.start(0, 1);
+			currentitem = item;
+		};
+		
+		ticker.hideItem = function() {
+			if (!currentitem) return;
+			if (currentitem.x_api_action) {
+				lyre.async_get(currentitem.x_api_action, currentitem.x_api_params);
+			}
+			currentitem.effect.start(0, -20);
+			currentitem.opacity.start(1, 0);
+			currentitem.effect.onComplete = function() {
+				while (ticker.el.firstChild != ticker.el.lastChild) {
+					ticker.el.removeChild(ticker.el.firstChild);
+				}
+			};
+		};
 	};
 
 	// /*****************************************************************************

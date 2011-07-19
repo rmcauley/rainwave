@@ -88,10 +88,11 @@ define("FIELDS_ALLARTIST", TBL_ARTISTS . ".artist_id, artist_name, artist_lastpl
 define("FIELDS_ALLAD", TBL_ADS . ".ad_id, ad_title, ad_album, ad_artist, ad_genre, ad_comment, ad_secondslong, ad_url, ad_url_text");
 
 $user->session_begin();
-$auth->acl($GLOBALS['user']->data);
-$userdata =& $GLOBALS['user']->data;
-$user_id =& $GLOBALS['userdata']['user_id'];
-$username =& $GLOBALS['userdata']['username'];
+$auth->acl($user->data);
+$userdata =& $user->data;
+$user_id =& $userdata['user_id'];
+$username =& $userdata['username'];
+$user_listen_key = getListenKey();
 	
 //-------------------------------------------------------------------------------------------------------
 
@@ -238,6 +239,20 @@ function arrayToJSON(array $arr) {
 
 	if($is_list) return '[' . $json . ']';//Return numerical JSON
 	return '{' . $json . '}';//Return associative JSON
+}
+
+function getListenKey() {
+	if ($GLOBALS['user_id'] > 1) {
+		$listenkey = $GLOBALS['userdata']['radio_listenkey'];
+		if (($listenkey == "") || ($_GET['genkey'] == '1')) {
+				$listenkey = md5(uniqid(rand(), true));
+				$listenkey = substr($listenkey, 0, 10);
+				db_update("UPDATE phpbb_users SET radio_listenkey = '" . $listenkey . "' WHERE user_id = " . $GLOBALS['user_id']);
+				$GLOBALS['userdata']['radio_listenkey'] = $listenkey;
+		}
+		return "?" . $GLOBALS['user_id'] . ":" . $listenkey;
+	}
+	return "";
 }
 
 function newAPIKey($rw = false) {

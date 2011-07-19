@@ -19,16 +19,7 @@ else {
        header("Content-Disposition: inline; filename=\"" . $playlistfile . "\"");
 }
 
-$userstring = "";
-if ($user_id > 1) {
-        $listenkey = $userdata['radio_listenkey'];
-        if (($userdata['radio_listenkey'] == "") || ($_GET['genkey'] == '1')) {
-                $listenkey = md5(uniqid(rand(), true));
-                $listenkey = substr($listenkey, 0, 10);
-                db_update("UPDATE phpbb_users SET radio_listenkey = '$listenkey' WHERE user_id = $user_id");
-        }
-        $userstring = "?" . $user_id . ":" . $listenkey . "";
-}
+$userstring = $user_listen_key;
 
 print "#EXTM3U\n";
 if ($sid == RW) {

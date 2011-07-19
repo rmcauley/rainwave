@@ -24,6 +24,7 @@ $jsorder = array(
 	"js/user.js",
 	"js/splitwindow.js",
 	"js/searchtable.js",
+	"js/ticker.js",
 	
 	// Panels
 	"js/panels/MenuPanel.js",

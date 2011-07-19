@@ -2,7 +2,7 @@ var errorcontrol = function() {
 	var that = {};
 	var errors = {};
 	var showx = 0;
-	var showy = 0;
+	var showy = 24;
 	var timers = {};
 	var showing = {};
 	
