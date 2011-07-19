@@ -348,28 +348,30 @@ var help = function() {
 	that.drawHighlights = function(container) {
 		if (!container || !container.pointel) return;
 		for (var i = 0; i < container.pointel.length; i++) {
-			var obj = {};
-			obj.el = container.pointel[i];
-			if (svg.isElSVG(obj.el)) {
-				obj.stroke = obj.el.getAttribute("stroke");
-				obj.strokewidth = obj.el.getAttribute("stroke-width");
-				obj.el.setAttribute("stroke", theme.helplinecolor);
-				if (obj.el.nodeName == "text") obj.el.setAttribute("stroke-width", 1);
-				else obj.el.setAttribute("stroke-width", 2);
-			}
-			else {
-				if ((obj.el.children.length == 0) && (obj.el.textContent > "")) {
-					obj.color = that.getStyle(obj.el, "color");
-					obj.fontweight = that.getStyle(obj.el, "font-weight");
-					obj.el.style.color = theme.helptextcolor;
-					obj.el.style.fontWeight = "bold";
+			if (container.pointel[i]) {
+				var obj = {};
+				obj.el = container.pointel[i];
+				if (svg.isElSVG(obj.el)) {
+					obj.stroke = obj.el.getAttribute("stroke");
+					obj.strokewidth = obj.el.getAttribute("stroke-width");
+					obj.el.setAttribute("stroke", theme.helplinecolor);
+					if (obj.el.nodeName == "text") obj.el.setAttribute("stroke-width", 1);
+					else obj.el.setAttribute("stroke-width", 2);
 				}
 				else {
-					obj.border = that.getStyle(obj.el, "border");
-					obj.el.style.border = "solid 2px " + theme.helplinecolor;
+					if ((obj.el.children.length == 0) && (obj.el.textContent > "")) {
+						obj.color = that.getStyle(obj.el, "color");
+						obj.fontweight = that.getStyle(obj.el, "font-weight");
+						obj.el.style.color = theme.helptextcolor;
+						obj.el.style.fontWeight = "bold";
+					}
+					else {
+						obj.border = that.getStyle(obj.el, "border");
+						obj.el.style.border = "solid 2px " + theme.helplinecolor;
+					}
 				}
+				highlighted.push(obj);
 			}
-			highlighted.push(obj);
 		}
 	};
 	
