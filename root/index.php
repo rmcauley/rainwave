@@ -65,7 +65,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 </script>
 <?php
 	print "<div id='oggpixel'></div>\n";
-	print "<script src='lang_r" . $bnum . "/" . $lang . ".js' type='text/javascript' async='true'></script>\n";
+	print "<script src='lang_r" . $bnum . "/" . $lang . ".js' type='text/javascript'></script>\n";
 	print "<script src='skins_r" . $bnum . "/" . $skin . "/" . $skin . ".js' type='text/javascript'></script>\n";
 ?>
 <script src='rainwave3_r<%BUILDNUM%>.js' type='text/javascript'></script>

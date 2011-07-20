@@ -31,6 +31,7 @@ var ticker = function() {
 	};
 	
 	that.removeItem = function(code) {
+		if (items.length == 0) return;
 		if (items[0].code === code) {
 			that.nextItem();
 			return;

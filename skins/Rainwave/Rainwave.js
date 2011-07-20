@@ -1652,7 +1652,7 @@ function _THEME() {
 		ticker.showItem = function(item) {
 			item.el = createEl("div", { "class": "ticker_item" }, ticker.el);
 			item.xbutton = createEl("span", { "class": "ticker_x", "textContent": "[X]" }, item.el);
-			item.xbutton.addEventListener("click", function() { ticker.nextItem(); });
+			item.xbutton.addEventListener("click", function() { ticker.nextItem(); }, true);
 			if (item.url) {
 				item.textel = createEl("a", { "href": item.url, "class": "ticker_text", "textContent": item.text }, item.el);
 				linkify(item.textel, true, true);
