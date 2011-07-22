@@ -605,9 +605,7 @@ div.request_cooldown {
 
 .help_container {
 	background: rgb(0, 0, 0);
-	border: 1px solid [% help %];
-	-moz-border-radius: .5em;
-	border-radius: .5em;
+	border: 1px solid [% help_border %];
 	padding: 0.8em 0.5em 0.8em 0.8em;
 	position: absolute;
 	z-index: 10000;
@@ -655,6 +653,38 @@ div.request_cooldown {
 
 .help_next span {
 	padding-right: 3em;
+}
+
+.help_arrow_up {
+	position: absolute;
+	width: 27px;
+	height: 14px;
+	margin-top: -14px;
+	background-image: url("images/help_arrow_up.png");
+}
+
+.help_arrow_down {
+	position: absolute;
+	width: 27px;
+	height: 14px;
+	margin-top: 14px;
+	background-image: url("images/help_arrow_down.png");
+}
+
+.help_arrow_left {
+	position: absolute;
+	width: 14px;
+	height: 27px;
+	margin-left: -14px;
+	background-image: url("images/help_arrow_left.png");
+}
+
+.help_arrow_right {
+	position: absolute;
+	width: 14px;
+	height: 27px;
+	margin-left: 14px;
+	background-image: url("images/help_arrow_right.png");
 }
 
 table.about {

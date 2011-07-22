@@ -39,7 +39,7 @@ panels.TimelinePanel = {
 			
 			user.addCallback(that.activityAllowedChange, "current_activity_allowed");
 			
-			help.addStep("clickonsongtovote", { "h": "clickonsongtovote", "p": "clickonsongtovote_p" });
+			help.addStep("clickonsongtovote", { "h": "clickonsongtovote", "p": "clickonsongtovote_p", "modx": (UISCALE * 2) });
 			help.addStep("donevoting", { "h": "donevoting", "p": "donevoting_p" });
 			help.addTutorial("voting", [ "tunein", "clickonsongtovote" ]);
 			help.addTopic("voting", { "h": "voting", "p": "voting_p", "tutorial": "voting" });

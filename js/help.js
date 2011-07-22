@@ -50,8 +50,8 @@ var help = function() {
 			steps[name].pointel = pointel;
 			if (showingstepname === name) {
 				ctutshowing.pointel = pointel;
-				that.removeHighlights();
-				that.drawHighlights(ctutshowing);
+				//that.removeHighlights();
+				//that.drawHighlights(ctutshowing);
 			}
 		}
 	};
@@ -59,7 +59,7 @@ var help = function() {
 	that.changeTopicPointEl = function(name, pointel) {
 		if (topics[name]) {
 			topics[name].pointel = pointel;
-			if (alltopicsshown == 2) that.removeHighlights();
+			//if (alltopicsshown == 2) that.removeHighlights();
 		}
 	};
 	
@@ -97,7 +97,7 @@ var help = function() {
 	
 	that.hideAllTopics = function(exception) {
 		that.endTutorial();
-		that.removeHighlights();
+		//that.removeHighlights();
 		alltopicsshown = 1;
 		for (var i in showing) {
 			if (exception && alltopics[i] && (alltopics[i] == exception)) continue;
@@ -123,7 +123,7 @@ var help = function() {
 				return;
 			}
 			if (steps[tuts[tut][ctutstep]]) {
-				that.removeHighlights();
+				//that.removeHighlights();
 				ctut = tut;
 				var nx = false;
 				if (steps[tuts[tut][ctutstep]].skipf) nx = steps[tuts[tut][ctutstep]].skipf();
@@ -154,7 +154,7 @@ var help = function() {
 		ctutstep = 0;
 		ctutshowing = false;
 		ctut = false;
-		that.removeHighlights();
+		//that.removeHighlights();
 	};
 	
 	that.clickXButton = function() {
@@ -245,20 +245,47 @@ var help = function() {
 		var height = data.height ? data.height : UISCALE * 12;
 		container.fxWidth.start(width);
 		container.fxHeight.start(height);
+		
+		if (container.arrow) {
+			container.removeChild(container.arrow);
+			container.arrow = false;
+		}
 
-		var finalx, finaly;
+		var finalx, finaly, pel, arrow, arrowx, arrowy;
+		finalx = 0;
+		finaly = 0;
+		if (data.modx) finalx = data.modx;
+		if (data.mody) finaly = data.mody;
 		if (data.pointel && data.pointel[0]) {
-			var pel = that.getElPosition(data.pointel[0]);
-			if (pel.x < (window.innerWidth / 2)) finalx = pel.x + that.getElWidth(data.pointel[0]) + (UISCALE * 3);
-			else finalx = pel.x - (width + (UISCALE * 3));
-			finaly = pel.y;
+			pel = that.getElPosition(data.pointel[0]);
+			if (pel.y < 30) {
+				finalx += pel.x - UISCALE;
+				finaly += pel.y;
+				arrow = "up";
+				arrowy = 0;
+				arrowx = pel.x - finalx + UISCALE;
+			}
+			else if (pel.x < (window.innerWidth * 0.75)) {
+				finalx += pel.x + that.getElWidth(data.pointel[0]);
+				finaly += pel.y - UISCALE;
+				arrow = "left";
+				arrowx = 0;
+				arrowy = pel.y - finaly - (UISCALE / 2);
+			}
+			else {
+				finalx += pel.x - width;
+				finaly += pel.y - UISCALE;
+				arrow = "right";
+				arrowx = width;
+				arrowy = pel.y - finaly - (UISCALE / 2);
+			}
+			container.arrow = createEl("div", { "class": "help_arrow_" + arrow, "style": "left: " + arrowx + "px; top: " + arrowy + "px;" });
+			container.insertBefore(container.arrow, container.firstChild);
 		}
 		else {
-			finalx = Math.round((window.innerWidth / 2) - (height / 2));
-			finaly = Math.round((window.innerHeight / 2) - (width / 2));
+			finalx += Math.round((window.innerWidth / 2) - (height / 2));
+			finaly += Math.round((window.innerHeight / 2) - (width / 2));
 		}
-		if (data.modx) finalx += data.modx;
-		if (data.mody) finaly += data.mody;
 		if (finalx < 5) finalx = 5;
 		if (finaly < 5) finaly = 5;
 		
@@ -269,7 +296,7 @@ var help = function() {
 				sety = window.innerHeight;
 			}
 			else {
-				var pel = that.getElPosition(data.pointel[0]);
+				if (!pel) pel = that.getElPosition(data.pointel[0]);
 				if (pel.x < (window.innerWidth / 2)) setx = -width;
 				else setx = window.innerWidth;
 				if (pel.y < (window.innerHeight / 2)) sety = -height;
@@ -291,7 +318,7 @@ var help = function() {
 		
 		if (data.pointel) container.pointel = data.pointel;
 		else container.pointel = false;
-		that.drawHighlights(container);
+		//that.drawHighlights(container);
 	};
 	
 	that.getElPosition = function(el) {
@@ -345,7 +372,7 @@ var help = function() {
 		else return el.offsetHeight;
 	};
 	
-	that.drawHighlights = function(container) {
+/*	that.drawHighlights = function(container) {
 		if (!container || !container.pointel) return;
 		for (var i = 0; i < container.pointel.length; i++) {
 			if (container.pointel[i]) {
@@ -393,7 +420,7 @@ var help = function() {
 			}
 		}
 		highlighted = [];
-	};
+	};*/
 	
 	/* courtesy http://www.quirksmode.org/dom/getstyles.html */
 	that.getStyle = function(el, styleProp) {
@@ -436,10 +463,10 @@ help.addTutorial("welcome", [ "tunein", "clickonsongtovote" ] );
 
 help.addTopic("playlistsearch", { "h": "playlistsearch", "p": "playlistsearch_p" });
 
-help.addStep("setfavourite", { "h": "setfavourite", "p": "setfavourite_p" });
+help.addStep("setfavourite", { "h": "setfavourite", "p": "setfavourite_p", "modx": 8, "mody": -5 });
+help.addStep("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_p", "height": UISCALE * 15, "modx": -4, "mody": -5 });
 
-help.addStep("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_p", "height": UISCALE * 15 });
 help.addStep("tunein", { "h": "tunein", "p": "tunein_p", "mody": 35, "skipf": function() { return user.p.radio_tunedin ? true : false; } } );
 help.addStep("login", { "h": "login", "p": "login_p", "skipf": function() { return user.p.user_id > 1 ? true : false } });
 help.addTutorial("ratecurrentsong", [ "register", "tunein", "ratecurrentsong", "setfavourite" ]);
-help.addTopic("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_t", "tutorial": "ratecurrentsong", "mody": UISCALE * 3, "modx": UISCALE * 2, "skipf": function() { return user.p.radio_tunedin ? true : false; } });
+help.addTopic("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_t", "tutorial": "ratecurrentsong", "modx": 6, "mody": -5, "skipf": function() { return user.p.radio_tunedin ? true : false; } });
