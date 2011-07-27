@@ -254,6 +254,20 @@ function _THEME() {
 		te.changeOpacity = function(to) {
 			te.opacityfx.set(to);
 		};
+		
+		te.drawShowWinner = function() {
+			if (!te.songs) return;
+			for (var i = 1; i < te.songs.length; i++) {
+				te.songs[i].tr1_fx.start(0);
+				te.songs[i].tr2_fx.start(0);
+				te.songs[i].tr3_fx.start(0);
+			}
+			if (te.songs.length > 0) {
+				te.songs[0].tr3_fx.onComplete2 = function() { te.songs[0].indicator.setAttribute("rowspan", 2); }
+				te.songs[0].tr3_fx.start(0);
+				te.songs[0].hideRequestor();
+			}
+		};
 	}
 	
 	var timeline_elec_fullheight = false;
@@ -279,19 +293,6 @@ function _THEME() {
 				te.songs[i].tr1_fx.set(0.8);
 				te.songs[i].tr2_fx.set(0.8);
 				te.songs[i].tr3_fx.set(0.8);
-			}
-		};
-		
-		te.drawShowWinner = function() {
-			for (var i = 1; i < te.songs.length; i++) {
-				te.songs[i].tr1_fx.start(0);
-				te.songs[i].tr2_fx.start(0);
-				te.songs[i].tr3_fx.start(0);
-			}
-			if (te.songs.length > 0) {
-				te.songs[0].tr3_fx.onComplete2 = function() { te.songs[0].indicator.setAttribute("rowspan", 2); }
-				te.songs[0].tr3_fx.start(0);
-				te.songs[0].hideRequestor();
 			}
 		};
 		
@@ -380,14 +381,14 @@ function _THEME() {
 				tos.header_text.style.cursor = "pointer";
 				tos.header_text.addEventListener("click", tos.deleteOneShot, true);
 			}
-
+			
 			tos.defineFx();
 		};
 		
-		tos.drawShowWinner = function() {
-			tos.song.tr3_fx.onComplete2 = function() { tos.song.indicator.setAttribute("rowspan", 2); }
-			tos.song.tr3_fx.start(0);
-		};
+		// tos.drawShowWinner = function() {
+			// tos.song.tr3_fx.onComplete2 = function() { tos.song.indicator.setAttribute("rowspan", 2); }
+			// tos.song.tr3_fx.start(0);
+		// };
 	};
 
 	/*****************************************************************************
@@ -646,10 +647,12 @@ function _THEME() {
 		var urlneedsfill = false;
 		if (json) {
 			// songs
-			if (json.song_title) table.song_title.textContent = json.song_title;
+			if (json.song_title) {
+				table.song_title_text = createEl("div", { "textContent": json.song_title }, table.song_title);
+			}
 			if (json.album_name) {
-				table.album_name.textContent = json.album_name;
-				Album.linkify(json.album_id, table.album_name);
+				table.album_name_text = createEl("div", { "textContent": json.album_name }, table.album_name);
+				Album.linkify(json.album_id, table.album_name_text);
 			}
 			if (typeof(json.song_rating_user) != "undefined") {
 				event.song_rating = Rating({ "category": "song", "id": json.song_id, "userrating": json.song_rating_user, "siterating": json.song_rating_avg, "favourite": json.song_favourite, "register": true });
@@ -851,7 +854,7 @@ function _THEME() {
 			if (PRELOADED_SID != 1) {
 				selectdiv = createEl("div", { "class": "menu_select_station_1 menu_select_station_x" }, createEl("div", { "class": "menu_select_station", "style": "margin-left: " + runningx + "px;" }, menup.station_select));
 				selectdiv.addEventListener("click", function() { menup.changeStation(1); }, true);
-				runningx += 130;
+				runningx += 140;
 			}
 			if (PRELOADED_SID != 2) {
 				selectdiv = createEl("div", { "class": "menu_select_station_2 menu_select_station_x" }, createEl("div", { "class": "menu_select_station", "style": "margin-left: " + runningx + "px;" }, menup.station_select));
@@ -1354,8 +1357,9 @@ function _THEME() {
 				}
 				
 				if ("album_name" in song_data[i]) {
-					ns.td_album_name = createEl("td", { "class": "pl_songlist_album_name", "textContent": song_data[i].album_name }, ns.tr);
-					Album.linkify(song_data[i].album_id, ns.td_album_name);
+					ns.td_album_name = createEl("td", { "class": "pl_songlist_album_name" }, ns.tr);
+					ns.td_album_name_text = createEl("div", { "textContent": song_data[i].album_name }, ns.td_album_name);
+					Album.linkify(song_data[i].album_id, ns.td_album_name_text);
 				}
 				
 				if (("song_url" in song_data[i]) && (song_data[i].song_url.length > 0)) {
@@ -1365,13 +1369,11 @@ function _THEME() {
 					ns.tr.appendChild(ns.td_u);
 				}
 				else {
-					ns.td_u = createEl("td", { "class": "pl_songlist_u" }, ns.tr);
+					ns.td_u = createEl("td", { "class": "pl_songlist_url" }, ns.tr);
 				}
 				
-				ns.td_n = document.createElement("td");
-				ns.td_n.setAttribute("class", "pl_songlist_title");
-				ns.td_n.textContent = song_data[i].song_title;
-				ns.tr.appendChild(ns.td_n);
+				ns.td_n = createEl("td", { "class": "pl_songlist_title" }, ns.tr);
+				ns.td_n_text = createEl("div", { "textContent": song_data[i].song_title }, ns.td_n);
 				
 				if ("artists" in song_data[i]) {
 					ns.td_a = document.createElement("td");

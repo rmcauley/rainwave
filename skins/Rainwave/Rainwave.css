@@ -89,13 +89,6 @@ img {
 	padding: 0px;
 }
 
-td div.textoverflow {
-	width: 100%;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-
 fieldset {
 	border: none;
 }
@@ -460,6 +453,10 @@ td.pl_songlist_album_name {
 	width: 16em;
 }
 
+td.pl_songlist_album_name:hover {
+	white-space: normal;
+}
+
 td.pl_songlist_rating {
 	padding-right: 0px;
 	padding-left: 4px !important;
@@ -476,11 +473,19 @@ td.pl_songlist_artists {
 	text-overflow: ellipsis;
 }
 
+td.pl_songlist_artists:hover {
+	white-space: normal;
+}
+
 td.pl_songlist_title {
 	min-width: 35%;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+}
+
+td.pl_songlist_title:hover {
+	white-space: normal;
 }
 
 td.pl_songlist_oneshot {
@@ -1485,7 +1490,7 @@ td.lsnrdt_spacer {
 
 table.listener_detail td {
 	padding: .5em;
-	text-align: centre;
+	text-align: center;
 	vertical-align: middle;
 	white-space: nowrap;
 }

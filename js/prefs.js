@@ -3,17 +3,28 @@ var prefs = function() {
 	var newprefcb = [];
 	var that = {};
 	that.p = {};
+
+	// a small set of characters need to be escaped, not all, and not all of these are caught by escape() and escape() bloats the JSON object to 2x the size
+	// a better idea is to use encodeURIComponent, but again, we get 2x the cookie size as a result.
+	// unfortunately, for Opera users, we have to use encodeURIComponent because Opera silently fails to save the cookie due to apparently some illegal chars.
+	var heavyencode = false;
+	if (navigator.userAgent.toLowerCase().indexOf("opera") > 0) heavyencode = true;
 	
 	that.saveCookie = function(name, object) {
 		var today = new Date();
 		var expiry = new Date(today.getTime() + 28 * 24 * 60 * 60 * 1000 * 13);
 		var sfied = JSON.stringify(object);
-		// a small set of characters need to be escaped, not all, and not all of these are caught by escape()
-		sfied = sfied.replace("%", "%25");
-		sfied = sfied.replace("+", "%2B");
-		sfied = sfied.replace("=", "%3D");
-		sfied = sfied.replace(";", "%3B");
-		var thecookie = name + "=" + sfied
+		if (heavyencode) {
+			sfied = encodeURIComponent(sfied);
+		}
+		else {
+			sfied = sfied.replace("%", "%25");
+			sfied = sfied.replace("+", "%2B");
+			sfied = sfied.replace("=", "%3D");
+			sfied = sfied.replace(";", "%3B");
+			sfied = sfied.replace(",", "%2C");
+		}
+		var thecookie = name + "=" + sfied;
 		document.cookie = thecookie + ";path=/;domain=rainwave.cc;expires=" + expiry.toGMTString();
 	};
 
@@ -35,11 +46,24 @@ var prefs = function() {
 		var mmm_cookie = dc.substring(begin, end);
 		if (!mmm_cookie) return null;
 		mmm_cookie = mmm_cookie.substring(mmm_cookie.indexOf("=") + 1);
-		mmm_cookie.replace("%3B", ";");
-		mmm_cookie.replace("%3D", "=");
-		mmm_cookie.replace("%2B", "+");
-		mmm_cookie.replace("%25", "%");
-		return JSON.parse(mmm_cookie);
+		if (heavyencode) {
+			mmm_cookie = decodeURIComponent(mmm_cookie);
+		}
+		else {
+			mmm_cookie = mmm_cookie.replace("%3B", ";");
+			mmm_cookie = mmm_cookie.replace("%3D", "=");
+			mmm_cookie = mmm_cookie.replace("%2B", "+");
+			mmm_cookie = mmm_cookie.replace("%25", "%");
+			mmm_cookie = mmm_cookie.replace("%2C", ",");
+		}
+		var cookieobj = null;
+		try {
+			cookieobj = JSON.parse(mmm_cookie);
+		}
+		catch (err) {
+			// silently fail...
+		}
+		return cookieobj;
 	};
 	
 	that.loadPrefs = function() {

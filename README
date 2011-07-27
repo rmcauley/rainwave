@@ -13,7 +13,7 @@ There are four deployment scripts for Rainwave:
 Production versions compile and minimize Javascript.  Beta versions do not.
 Production versions compile and minimize CSS.  Beta versions do not.
 Both production and beta versions do, however, have CSS interpreters
-that will build skins and automatically base64-encode and images <2KiB
+that will build skins and automatically base64-encode any small images
 into the CSS file when building.
 
 99.9% chance is, you will only be using devmake.php.
@@ -34,7 +34,7 @@ file to git.  Here's the variables and their purposes for you:
 	$devkey = "[APIKEY]";
 	$devuid = "[DEVUID]";
 	$devsid = 1;	// 2 = OCR, 3 = Mixwave, 4 = Bitwave
-	$devdest = "/tmp/rw";	// destination, note the trailing slash
+	$devdest = "/tmp/rw";	// destination, note lack of trailing slash
 	$devlyre = "http://localhost";
 	//$devlyrejs = "/path/to/lyre-ajax.js";
 ?>

@@ -131,6 +131,7 @@ panels.PlaylistPanel = {
 var AlbumSearchTable = function(parent, container, view) {
 	var that = SearchTable(container, "album_id", "pl_albumlist");
 	that.changeSearchKey("album_name");
+	that.changeSortKey("_searchname");
 	
 	var initialized = false;
 	
@@ -268,8 +269,8 @@ var AlbumSearchTable = function(parent, container, view) {
 
 var ArtistSearchTable = function(parent, container, view) {
 	var that = SearchTable(container, "artist_id", "pl_albumlist");
-	that.changeSortKey("artist_name");
 	that.changeSearchKey("artist_name");
+	that.changeSortKey("_searchname");
 	
 	that.searchAction = function(id) {
 		Artist.open(id);

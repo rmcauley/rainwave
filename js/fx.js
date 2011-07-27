@@ -38,6 +38,7 @@ var fx = function() {
 		var now = 0;
 		var delta = 0;
 		var started = 0;
+		var originalduration = parseInt(duration + "");
 		
 		newfx.duration = duration;
 		newfx.unstoppable = false;
@@ -49,11 +50,15 @@ var fx = function() {
 			if (!browsersupport || !steptime) steptime = new Date().getTime();
 			
 			if ((steptime < (started + duration)) && (now != to)) {
-				// Stolen from Robert Penner's Programming Macromedia Flash MX p.210:
-				// now = -delta * (steptime /= duration) * (steptime - 2) + from;
-				// can't get the damned thing to work, though, so we're sticking with what works which was stolen from MooTools:
-				var delta2 = -(Math.cos(Math.PI * ((steptime - started) / duration)) - 1) / 2;
-				now = (to - from) * delta2 + from;
+				// This is all Robert Penner's work, as you might imagine...
+				// First formula: sinOut
+				//var delta2 = -(Math.cos(Math.PI * ((steptime - started) / duration)) - 1) / 2;
+				//now = (to - from) * delta2 + from;
+				// Second formula: quintOut
+				//now = (to - from) * ((steptime = (steptime - started) / duration - 1) * steptime * steptime * steptime * steptime + 1) + from;
+				// Third formula: quadOut
+				var timeoverduration = (steptime - started) / duration;
+				now = -(to - from) * timeoverduration * (timeoverduration - 2) + from;
 
 				newfx.update(now);
 				newfx.now = now;
@@ -367,7 +372,7 @@ var fx = function() {
 		that.enabled = enabled;
 	};
 
-	prefs.addPref("fx", { name: "enabled", callback: that.p_enabled, defaultvalue: true, type: "checkbox" });
+	prefs.addPref("fx", { "name": "enabled", "callback": that.p_enabled, "defaultvalue": true, "type": "checkbox" });
 	
 	// **************************************************************
 	

@@ -694,6 +694,7 @@ function TimelineOneShot(json, container, parent) {
 		that.draw();
 		that.container.appendChild(that.el);
 		that.song = TimelineSong(json.song_data[0], that, 0, UISCALE + 2, 0);
+		that.songs = [ that.song ];		
 		
 		that.clockdisplay = true;
 		that.clockid = -1;
