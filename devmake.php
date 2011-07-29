@@ -11,6 +11,7 @@ if (gethostname() == "substream") {
 	$dest = "/home/rmcauley/r3/beta/";
 }
 $bnum = getBuildNumber();
+$cookiedomain = 'rainwave.cc';
 
 print "RAINWAVE 3 THIRD PARTY DEV REVISION " . $bnum . "\n";
 

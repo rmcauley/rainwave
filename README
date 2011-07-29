@@ -37,6 +37,7 @@ file to git.  Here's the variables and their purposes for you:
 	$devdest = "/tmp/rw/";	// destination, note trailing slash
 	$devlyre = "http://localhost/rwapi";
 	//$devlyrejs = "/path/to/lyre-ajax.js";
+	$cookiedomain = 'localhost';
 ?>
 
 You will need $devlyre because of same-origin security issues on browsers.

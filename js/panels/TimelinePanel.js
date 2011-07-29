@@ -7,6 +7,7 @@ panels.TimelinePanel = {
 	minwidth: UISCALE * 35,
 	maxwidth: 600,
 	title: _l("p_TimelinePanel"),
+	cname: "timeline",
 	
 	constructor: function(container) {
 		var that = {};

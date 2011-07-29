@@ -7,6 +7,7 @@ panels.MainMPI = {
 	xtype: "max",
 	mpi: true,
 	title: _l("p_MainMPI"),
+	cname: "mpi",
 	
 	constructor: function(container) {
 		var that = {};
@@ -132,10 +133,14 @@ panels.MainMPI = {
 			that.tabs.changeTitle(panelname, newtitle);
 		};
 		
-		that.openPanelLink = function(panel, link) {
+		that.openPanelLink = function() {
+			// the validity of the panel name is checked for us by Edi, but we still need to make sure it exists within the MPI
+			var panel = panelcname[arguments[0]];
 			if (that.panels[panel] || savedpanels[panel]) {
 				that.focusPanel(panel);
-				if (that.panels[panel].openLink) that.panels[panel].openLink(link);
+				// slice the panel argument out before passing it in
+				var passargs = Array.prototype.slice.call(arguments).slice(1);
+				if (that.panels[panel].openLink) that.panels[panel].openLink.apply(this, passargs);
 				return true;
 			}
 			return false;

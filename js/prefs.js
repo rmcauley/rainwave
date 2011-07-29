@@ -25,7 +25,7 @@ var prefs = function() {
 			sfied = sfied.replace(",", "%2C");
 		}
 		var thecookie = name + "=" + sfied;
-		document.cookie = thecookie + ";path=/;domain=rainwave.cc;expires=" + expiry.toGMTString();
+		document.cookie = thecookie + ";path=/;domain=" + COOKIEDOMAIN + ";expires=" + expiry.toGMTString();
 	};
 
 	that.loadCookie = function(name) {

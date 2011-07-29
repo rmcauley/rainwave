@@ -6,6 +6,7 @@ panels.SchedulePanel = {
 	width: UISCALE * 30,
 	minwidth: UISCALE * 20,
 	title: _l("p_SchedulePanel"),
+	cname: "schedule",
 	
 	constructor: function(container) {
 		var that = {};

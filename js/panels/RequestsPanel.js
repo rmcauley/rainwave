@@ -6,6 +6,7 @@ panels.RequestsPanel = {
 	width: UISCALE * 20,
 	minwidth: UISCALE * 8,
 	title: _l("p_RequestsPanel"),
+	cname: "requests",
 	
 	constructor: function(container) {
 		var that = {};
@@ -29,7 +30,7 @@ panels.RequestsPanel = {
 				lyre.async_get("requests_get", {});
 			}
 			
-			help.addStep("managingrequests", { "h": "managingrequests", "p": "managingrequests_p", "skipf": function() { edi.openPanelLink("RequestsPanel", false); } });
+			help.addStep("managingrequests", { "h": "managingrequests", "p": "managingrequests_p", "skipf": function() { edi.openPanelLink(false, "requests"); } });
 			if (edi.mpi) {
 				help.addStep("timetorequest", { "h": "timetorequest", "p": "timetorequest_p", "pointel": [ edi.tabs.panels["RequestsPanel"].el ] });
 			}
@@ -175,7 +176,7 @@ var RequestList = function(sortable) {
 				reqs[j].purge = true;
 				reqs[j].fx_opacity.start(0);
 			}
-			else if (j < (reqs.length - 1)) {
+			else { //if (j < (reqs.length - 1)) {
 				maxy += reqs[j].height + 3;
 			}
 		}

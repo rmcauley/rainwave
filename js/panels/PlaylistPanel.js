@@ -6,6 +6,7 @@ panels.PlaylistPanel = {
 	width: 300,
 	minwidth: 300,
 	title: _l("p_PlaylistPanel"),
+	cname: "playlist",
 	
 	constructor: function(container) {
 		var albums = {};
@@ -64,17 +65,17 @@ panels.PlaylistPanel = {
 			view.setHeight(height);
 		};
 		
-		that.openLink = function(link) {
-			if (link.type == "album") {
-				that.openAlbum(link.id);
+		that.openLink = function(type, id) {
+			if (type == "album") {
+				that.openAlbum(id);
 			}
-			if (link.type == "artist") {
-				that.openArtist(link.id);
+			if (type == "artist") {
+				that.openArtist(id);
 			}
 		};
 		
 		that.isAlbumOpen = function() {
-			edi.openPanelLink("PlaylistPanel", "");
+			edi.openPanelLink(false, "playlist");
 			return view.isAnyDivOpen();
 		};
 		
@@ -155,7 +156,7 @@ var AlbumSearchTable = function(parent, container, view) {
 		for (i in json) {
 			reopen = view.reOpenDiv("album", json[i].album_id);
 			if (reopen) {
-				parent.openLink({ "type": "album", "id": json[i].album_id });
+				parent.openLink("album", json[i].album_id);
 			}
 		}
 		

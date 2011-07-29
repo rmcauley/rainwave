@@ -7,7 +7,6 @@ var edi = function() {
 		location.href = location.href.substring(0, location.href.indexOf("#"));
 		oldurl = location.href;
 	}
-	var urlhistory = [];
 	that.openpanels = {};
 	
 	that.getDefaultLayout = function() {
@@ -20,30 +19,40 @@ var edi = function() {
 	
 	that.urlChangeDetect = function() {
 		if (oldurl != location.href) {
-			var i = parseInt(location.href.substring(location.href.indexOf("#") + 1));
-			if (urlhistory[i]) {
-				that.openPanelLink(urlhistory[i].panel, urlhistory[i].link);
-			}
+			var urlstring = location.href.substring(location.href.indexOf("#!/") + 3);
+			var args = urlstring.split("/");
+			args.unshift(true);
+			that.openPanelLink.apply(this, args);
 			oldurl = location.href;
 		}
 	};
 	
-	that.openPanelLink = function(panel, link) {
-		if (link.history) {
-			delete(link.history);
-			urlhistory.push({ "panel": panel, "link": link });
-			if (location.href.indexOf("#") >= 0) oldurl = location.href.substring(0, location.href.indexOf("#")) + "#" + (urlhistory.length - 1);
-			else oldurl = location.href + "#" + (urlhistory.length - 1);
+	that.openPanelLink = function(changeurl) {
+		// if the panel we're trying to call doesn't exist, leave
+		if (typeof(panelcname[arguments[1]]) == "undefined") return;
+		var panel = panelcname[arguments[1]];
+		// convert our arguments to an array and then chop changeurl out of the array
+		var args = Array.prototype.slice.call(arguments).slice(1);
+		if (changeurl) {
+			var urlstring = args.join("/");
+			if (location.href.indexOf("#!/") >= 0) {
+				oldurl = location.href.substring(0, location.href.indexOf("#!/") + 3) + urlstring;
+			}
+			else {
+				oldurl = location.href + "#!/" + urlstring
+			}
 			location.href = oldurl;
 		}
 		if (typeof(that.openpanels[panel]) != "undefined") {
-			that.openpanels[panel].openLink(link);
+			// make sure to slice the args again to leave out the panel name
+			that.openpanels[panel].openLink.apply(this, args.slice(1));
 			return;
 		}
 		for (i in that.openpanels) {
 			if (that.openpanels[i].mpi) {
-				if (that.openpanels[i].openPanelLink(panel, link)) 
+				if (that.openpanels[i].openPanelLink.apply(this, args)) {
 					return;
+				}
 			}
 		}
 	};

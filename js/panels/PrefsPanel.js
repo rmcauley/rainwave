@@ -6,6 +6,7 @@ panels.PrefsPanel = {
 	width: UISCALE * 20,
 	minwidth: UISCALE * 8,
 	title: _l("p_PrefsPanel"),
+	cname: "prefs",
 	
 	constructor: function(container) {
 		var stables = {};

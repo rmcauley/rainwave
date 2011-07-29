@@ -6,6 +6,7 @@ panels.NowPanel = {
 	width: UISCALE * 55,
 	minwidth: UISCALE * 45,
 	title: _l("p_NowPanel"),
+	cname: "now",
 
 	constructor: function(container) {
 		var that = {};

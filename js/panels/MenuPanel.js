@@ -7,6 +7,7 @@ panels.MenuPanel = {
 	minwidth: 0,
 	noborder: true,
 	title: _l("p_MenuPanel"),
+	cname: "menu",
 	
 	constructor: function(container) {
 		var that = {};

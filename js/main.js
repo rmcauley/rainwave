@@ -20,6 +20,7 @@ var panels = { "false": false };
 var mouse = { "x": 0, "y": 0 };
 var initpiggyback = {};
 var theme = _THEME();
+var panelcname = {};
 
 function init() {
 	prefs.addPref("edi", { name: "language", defaultvalue: PRELOADED_LANG, type: "dropdown", options: [
@@ -49,6 +50,10 @@ function init() {
 	lyre.sync_start(initpiggyback);
 	
 	prefs.addPref("help", { "name": "visited", "defaultvalue": false, "hidden": true });
+	
+	for (var i in panels) {
+		panelcname[panels[i].cname] = i;
+	}
 	
 	if (!prefs.getPref("help", "visited") && !SIDEBAR) {
 		help.startTutorial("welcome");

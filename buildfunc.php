@@ -58,6 +58,7 @@ function writeParsedFile($source, $dest, $bnum) {
 		$buffer = str_replace("<%DEVUSERID%>", $GLOBALS['devuid'], $buffer);
 		$buffer = str_replace("<%DEVSID%>", $GLOBALS['devsid'], $buffer);
 		$buffer = str_replace("<%DEVLYREURL%>", $GLOBALS['devlyre'], $buffer);
+		$buffer = str_replace("<%COOKIEDOMAIN%>", $GLOBALS['cookiedomain'], $buffer);
 		fwrite($d, $buffer);
     }
 	fclose($s);

@@ -18,6 +18,8 @@ panels.SlackPanel = {
 	xtype: "slack",
 	width: 100,
 	minwidth: 50,
+	// What the name of the panel appears in the URL bar if the panel is deep-linked
+	cname: "slack",
 	
 	// Since you're not likely to have translation strings available to you, best put the title here.
 	title: "Slack",

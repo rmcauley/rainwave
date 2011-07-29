@@ -46,6 +46,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	print "\tvar PRELOADED_LYREURL = '<%DEVLYREURL%>';\n";
 	print "\tvar PRELOADED_SID = <%DEVSID%>;\n";
 	print "\tvar BUILDNUM = <%BUILDNUM%>;\n";
+	print "\tvar COOKIEDOMAIN = <%COOKIEDOMAIN%>;\n";
 	print "</script>\n";
 	
 	//print "<div id='oggpixel'></div>\n";

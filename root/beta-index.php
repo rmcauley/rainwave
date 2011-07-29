@@ -65,6 +65,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	print "\tvar PRELOADED_SID = " . $sid . ";\n";
 	print "\tvar PRELOADED_LYREURL = '';\n";
 	print "\tvar BUILDNUM = <%BUILDNUM%>;\n";
+	print "\tvar COOKIEDOMAIN = 'rainwave.cc';\n";
 	print "</script>\n";
 	
 	//print "<div id='oggpixel'></div>\n";

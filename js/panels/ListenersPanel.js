@@ -6,6 +6,7 @@ panels.ListenersPanel = {
 	width: 300,
 	minwidth: 300,
 	title: _l("p_ListenersPanel"),
+	cname: "listeners",
 	
 	constructor: function(container) {
 		var clistc;
@@ -47,9 +48,9 @@ panels.ListenersPanel = {
 			view.setHeight(height);
 		};
 		
-		that.openLink = function(link) {
-			if (link.type == "listener") {
-				that.openListener(link.id);
+		that.openLink = function(type, id) {
+			if (type == "user") {
+				that.openListener(id);
 			}
 		};
 		

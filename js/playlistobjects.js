@@ -1,7 +1,7 @@
 var Song = {
 	linkify: function(song_id, el) {
 		//el.style.cursor = "pointer";
-		//el.addEventListener('click', function() { edi.openPanelLink("PlaylistPanel", { type: "song", id: song_id, history: true }); }, true);
+		//el.addEventListener('click', function() { edi.openPanelLink(true, "playlist", "song", song_id); }, true);
 	},
 	
 	linkifyAsOneshot: function(song_id, el) {
@@ -18,11 +18,11 @@ var Song = {
 var Album = {
 	linkify: function(album_id, el) {
 		linkify(el);
-		el.addEventListener('click', function() { edi.openPanelLink("PlaylistPanel", { type: "album", id: album_id, history: true }) }, true);
+		el.addEventListener('click', function() { edi.openPanelLink(true, "playlist", "album", album_id); }, true);
 	},
 	
 	open: function(album_id) {
-		edi.openPanelLink("PlaylistPanel", { type: "album", id: album_id, history: true });
+		edi.openPanelLink(true, "playlist", "album_id", album_id);
 	}
 };
 
@@ -44,38 +44,21 @@ var Artist = {
 	
 	linkify: function(artist_id, el) {
 		linkify(el);
-		el.addEventListener('click', function() { edi.openPanelLink("PlaylistPanel", { type: "artist", id: artist_id, history: true }); }, true);
+		el.addEventListener('click', function() { edi.openPanelLink(true, "playlist", "artist", artist_id); }, true);
 	},
 	
 	open: function(artist_id) {
-		edi.openPanelLink("PlaylistPanel", { type: "artist", id: artist_id, history: true });
+		edi.openPanelLink(true, "playlist", "artist", artist_id);
 	}
 };
 
 var Username = {
 	linkify: function(user_id, el) {
 		linkify(el);
-		el.addEventListener('click', function() { edi.openPanelLink("ListenersPanel", { "type": "listener", "id": user_id, "history": true }); }, true);
+		el.addEventListener('click', function() { edi.openPanelLink(true, "listener", "id", user_id); }, true);
 	},
 	
 	open: function(user_id) {
-		edi.openPanelLink("ListenersPanel", { "type": "listener", "id": user_id, "history": true });
+		edi.openPanelLink(true, "listener", "id", user_id);
 	}
 }
-
-// WARNING: function modifies artists array
-// function artistsToTSpans(el, artists) {
-	// el.setAttribute("xml:space", "preserve");
-	// for (var i = 0; i < artists.length; i++) {
-		// var tspan = svg.makeEl("tspan");
-		// tspan.textContent = artists[i].artist_name;
-		// //Artist.linkify(artists[i].artist_id, tspan);
-		// el.appendChild(tspan);
-		// artists[i].el = tspan;
-		// if (i != (artists.length - 1)) {
-			// var comma = svg.makeEl("tspan");
-			// comma.textContent = ", ";
-			// el.appendChild(comma);
-		// }
-	// }
-// }

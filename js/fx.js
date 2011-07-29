@@ -23,6 +23,7 @@ var fx = function() {
 	};
 
 	that.make = function(func, el, duration) {
+		duration = duration * 0.8;		// because I like effects to be fast
 		var newfx;
 		if (arguments.length > 3) {
 			var args = [ el ];
@@ -38,7 +39,6 @@ var fx = function() {
 		var now = 0;
 		var delta = 0;
 		var started = 0;
-		var originalduration = parseInt(duration + "");
 		
 		newfx.duration = duration;
 		newfx.unstoppable = false;
