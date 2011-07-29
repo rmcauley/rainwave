@@ -127,6 +127,7 @@ panels.MainMPI = {
 			that.panels[that.focused].container.style.top = that.tabheight + "px";
 			that.tabs.panels[that.focused].focused = true;
 			that.tabs.focusTab(that.focused);
+			edi.changeDeepLinkPanel(panels[that.focused].cname);
 		};
 		
 		that.changeTitle = function(panelname, newtitle) {

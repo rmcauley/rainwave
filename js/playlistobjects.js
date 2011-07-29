@@ -22,7 +22,7 @@ var Album = {
 	},
 	
 	open: function(album_id) {
-		edi.openPanelLink(true, "playlist", "album_id", album_id);
+		edi.openPanelLink(true, "playlist", "album", album_id);
 	}
 };
 
@@ -55,10 +55,10 @@ var Artist = {
 var Username = {
 	linkify: function(user_id, el) {
 		linkify(el);
-		el.addEventListener('click', function() { edi.openPanelLink(true, "listener", "id", user_id); }, true);
+		el.addEventListener('click', function() { edi.openPanelLink(true, "listeners", "id", user_id); }, true);
 	},
 	
 	open: function(user_id) {
-		edi.openPanelLink(true, "listener", "id", user_id);
+		edi.openPanelLink(true, "listeners", "id", user_id);
 	}
 }

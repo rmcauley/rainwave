@@ -8,7 +8,8 @@ var SCHED_PAUSE = 6;
 var SCHED_DJ = 7;
 
 var STATIONS = [ false, "Rainwave", "OCR Radio", "Mixwave", "Bitwave" ];
-var SHORTSTATIONS = [ false, "RW", "OC", "MW" ];
+var SHORTSTATIONS = [ false, "RW", "OC", "MW", "Bit" ];
+var CANONSTATIONS = [ false, "rw", "oc", "mw", "bit" ];
 var ELECSONGTYPES = { "conflict": 0, "warn": 1, "normal": 2, "queue": 3, "request": 4 };
 var UISCALE = 10;
 var BODY = document.getElementById("body");
@@ -21,6 +22,7 @@ var mouse = { "x": 0, "y": 0 };
 var initpiggyback = {};
 var theme = _THEME();
 var panelcname = {};
+var deeplinkcallbackid = false;
 
 function init() {
 	prefs.addPref("edi", { name: "language", defaultvalue: PRELOADED_LANG, type: "dropdown", options: [
@@ -35,6 +37,16 @@ function init() {
 		], refresh: true });
 	prefs.addPref("edi", { hidden: true, name: "theme", defaultvalue: "RWClassic", type: "dropdown", options: [ { value: "RWClassic", option: "Rainwave 3" } ], refresh: true });
 	
+	var deeplinkurl = decodeURI(location.href);
+	if (deeplinkurl.indexOf("#!/") >= 0) {
+		var pageargs = deeplinkurl.substring(deeplinkurl.indexOf("#!/") + 3).split("/");
+		var new_sid = CANONSTATIONS.indexOf(pageargs[0]);
+		pageargs = pageargs.slice(1);
+		if (new_sid) {
+			PRELOADED_SID = new_sid;
+			deeplinkcallbackid = lyre.addCallback(function() { deepLink(pageargs); }, "sched_sync");
+		}
+	}
 	
 	lyre.catcherrors = true;
 	lyre.jsErrorCallback = errorcontrol.jsError;
@@ -60,6 +72,13 @@ function init() {
 		prefs.changePref("help", "visited", true);
 		prefs.savePrefs();
 	}
+}
+
+function deepLink(pageargs) {
+	// this tells edi to change the URL
+	pageargs.unshift(true);
+	edi.openPanelLink.apply(this, pageargs);
+	lyre.removeCallback("sched_sync", deeplinkcallbackid);
 }
 
 window.addEventListener('load', init, true);

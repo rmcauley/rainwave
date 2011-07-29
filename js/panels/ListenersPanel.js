@@ -49,7 +49,7 @@ panels.ListenersPanel = {
 		};
 		
 		that.openLink = function(type, id) {
-			if (type == "user") {
+			if (type == "id") {
 				that.openListener(id);
 			}
 		};

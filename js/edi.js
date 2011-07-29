@@ -3,11 +3,13 @@ var edi = function() {
 	var layouts = {};
 	var clayout = false;
 	var oldurl = location.href;
-	if (location.href.indexOf("#") >= 0) {
-		location.href = location.href.substring(0, location.href.indexOf("#"));
-		oldurl = location.href;
-	}
+	// this was a crash fix for an older version of chrome but had to be removed to support deep-linking
+	// if (location.href.indexOf("#") >= 0) {
+		// location.href = location.href.substring(0, location.href.indexOf("#"));
+		// oldurl = location.href;
+	// }
 	that.openpanels = {};
+	var panellinks = {};
 	
 	that.getDefaultLayout = function() {
 		return [
@@ -19,11 +21,14 @@ var edi = function() {
 	
 	that.urlChangeDetect = function() {
 		if (oldurl != location.href) {
-			var urlstring = location.href.substring(location.href.indexOf("#!/") + 3);
-			var args = urlstring.split("/");
-			args.unshift(true);
-			that.openPanelLink.apply(this, args);
-			oldurl = location.href;
+			var deeplinkurl = decodeURI(location.href);
+			if (deeplinkurl.indexOf("#!/") >= 0) {
+				var args = deeplinkurl.substring(deeplinkurl.indexOf("#!/") + 3).split("/");
+				// replace the canonical station name with a "true" arg, which will tell openPanelLink to change location.href
+				args[0] = true;
+				that.openPanelLink.apply(this, args);
+				oldurl = location.href;
+			}
 		}
 	};
 	
@@ -35,13 +40,8 @@ var edi = function() {
 		var args = Array.prototype.slice.call(arguments).slice(1);
 		if (changeurl) {
 			var urlstring = args.join("/");
-			if (location.href.indexOf("#!/") >= 0) {
-				oldurl = location.href.substring(0, location.href.indexOf("#!/") + 3) + urlstring;
-			}
-			else {
-				oldurl = location.href + "#!/" + urlstring
-			}
-			location.href = oldurl;
+			that.changeDeepLink(urlstring);
+			panellinks[args[0]] = urlstring;
 		}
 		if (typeof(that.openpanels[panel]) != "undefined") {
 			// make sure to slice the args again to leave out the panel name
@@ -55,6 +55,27 @@ var edi = function() {
 				}
 			}
 		}
+	};
+	
+	that.changeDeepLinkPanel = function(panel) {		
+		var urlstring = panel;
+		if (panel in panellinks) {
+			urlstring = panellinks[panel];
+		}
+		that.changeDeepLink(urlstring);
+	};
+	
+	that.changeDeepLink = function(urlstring) {
+		// this stops changing the deep link before the page has even opened
+		if (!user.p.sid) return;
+		var deeplinkurl = decodeURI(location.href);
+		if (deeplinkurl.indexOf("#") >= 0) {
+			oldurl = deeplinkurl.substring(0, deeplinkurl.indexOf("#")) + "#!/" + CANONSTATIONS[user.p.sid] + "/" + urlstring;
+		}
+		else {
+			oldurl = deeplinkurl + "#!/" + CANONSTATIONS[user.p.sid] + "/" + urlstring;
+		}
+		location.href = oldurl;
 	};
 	
 	// TODO: Scrub on load

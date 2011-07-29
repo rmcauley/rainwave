@@ -77,6 +77,7 @@ td {
 	vertical-align: top;
 	padding: 0px;
 	margin: 0px;
+	text-align: left;
 }
 
 svg {
@@ -1482,6 +1483,10 @@ div.clist_total_count {
 	padding-left: .2em;
 	border-bottom: 1px solid [% vdarktext %];
 	margin-bottom: .2em;
+}
+
+table.listener_header_detail td {
+	padding: .2em .5em .2em .5em;
 }
 
 td.lsnrdt_spacer {

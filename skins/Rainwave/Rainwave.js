@@ -1464,7 +1464,7 @@ function _THEME() {
 			wdow.detailtd = createEl("td", { "class": "pl_ad_albumdetailtd" }, tr);
 			
 			// Single statistics
-			var dtable = createEl("table", { "class": "listener_detail" });
+			var dtable = createEl("table", { "class": "listener_header_detail" });
 			
 			var dtr = createEl("tr", false, dtable);
 			createEl("td", { "textContent": _l("voteslast2weeks") }, dtr);
