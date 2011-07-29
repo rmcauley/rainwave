@@ -32,10 +32,10 @@ file to git.  Here's the variables and their purposes for you:
 
 <?php
 	$devkey = "[APIKEY]";
-	$devuid = "[DEVUID]";
-	$devsid = 1;	// 2 = OCR, 3 = Mixwave, 4 = Bitwave
-	$devdest = "/tmp/rw";	// destination, note lack of trailing slash
-	$devlyre = "http://localhost";
+	$devuid = "[DEVUID]"; // your user ID from http://rainwave.cc/auth/
+	$devsid = 1;	// 1 = RW, 2 = OCR, 3 = Mixwave, 4 = Bitwave
+	$devdest = "/tmp/rw/";	// destination, note trailing slash
+	$devlyre = "http://localhost/rwapi";
 	//$devlyrejs = "/path/to/lyre-ajax.js";
 ?>
 
