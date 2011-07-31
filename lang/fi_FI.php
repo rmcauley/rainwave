@@ -355,7 +355,7 @@ $lang2 = array(
 	"use" => "käytä:",
 	"menu_morestations_v2" => "Kaikki kanavat »",
 	"managekeys" => "Hallinnoi API-avaimia",
-	"listenerprofile" => "Kuuntelijaprofiili"
+	"listenerprofile" => "Kuuntelijaprofiili",
 	
 	/* Words for pluralization */
 
