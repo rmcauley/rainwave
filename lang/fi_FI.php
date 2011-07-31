@@ -1,5 +1,5 @@
 <?php
-// Rainwave 3 fi_FI r8 (31 may 2011) for (R3 r42) Language File by quarterlife
+// Rainwave 3 fi_FI r9 (31 jul 2011) for (R3 r47) Language File by quarterlife
 
 $lang2 = array(
 	"_SITEDESCRIPTIONS" => array(
@@ -154,9 +154,15 @@ $lang2 = array(
 	// Listeners Panel
 	
 	"ltab_listeners" => "Kuuntelijat", 			// Listeners tab name
-	"guestlisteners" => "|guests| Vierasta",		// appears at the bottom of the current listeners list
-	"totallisteners" => "|total| Kuuntelijaa juuri nyt",	// appears underneath guestlisteners.
+	"otherlisteners" => "(|guests| vierasta, |total| yhteensä)",		// appears at the bottom of the current listeners list
+	"registeredlisteners" => "|users| käyttäjää",	// appears underneath guestlisteners.
 	"voteslast2weeks" => "Ääniä viimeisen kahden viikon aikana: ",
+	"voterecord" => "Äänestyshistoria: ",
+	"requestrecord" => "Arvosteluhistoria: ",
+	"votewinloss" => "|wins| |P:wins,win|, |losses| |P:losses,loss| -- voittoja |ratio|%",
+	"requestwinloss" => "|wins| soitettu, |losses| hylätty -- soittettu |ratio|%",
+	"lsnr_rankgraph_header" => "Äänestykset ja sijat viimeisen kuukauden ajalta",
+	
 	"lsnrdt_allstations" => "Kaikki kanavat",
 	"lsnrdt_averagerating" => "Arvostelujen keskiarvo",
 	"lsnrdt_ratingprogress" => "Kappaleita arvosteltu",
@@ -328,15 +334,13 @@ $lang2 = array(
 	"currentdj" => "dj |username|",
 	"electionresults" => "Äänestyksen tulokset",
 	"from" => "käyttäjältä |username|",
+	"votefaileleclocked" => "Äänestäminen epäonnistui, äänestys lukittu",
 	
 	// Menu Bar
 	
 	"selectstation" => "Valitse kanava",
 	"tunedin" => "Kuuntelet kanavaa",
 	"tunedout" => "Et kuuntele kanava",
-	"play" => "▶ Soita selaimessa",
-	"downloadm3u" => "▶ Lataa M3U",
-	"players" => "Tuetut soittimet ovat VLC, Winamp, Foobar2000 ja fstream (Mac/iPhone).|br|Windows Media Player ja iTunes eivät toimi.",
 	"help" => "Apua",
 	"forums" => "Foorumit",
 	"login" => "Kirjaudu sisään",
@@ -345,21 +349,23 @@ $lang2 = array(
 	"username" => "Käyttäjänimi",
 	"password" => "Salasana",
 	"autologin" => "Automaattinen sisäänkirjautuminen",
-	"compatplayers" => "Tuetut soittimet:",
 	"chat" => "Chat",
-	"playing" => "◼ Pysäytä soitto",
-	"loading" => "Ladataan",
-	"searching" => "Etsitään: ",
 	"m3uhijack" => "|plugin| yrittää kaapata M3U-soittolistan latauksen.  Ole hyvä ja napsauta oikealla hiiren painikkeella ja valitse 'Tallenna nimellä.'",
-	"menu_morestations" => "Lisää ▼",
-	"waitingforstatus" => "Odottaa tietoja",
-	"managekeys" => "Manage API Keys",
+	"oruse" => "tai käytä:",
+	"use" => "käytä:",
+	"menu_morestations_v2" => "Kaikki kanavat »",
+	"managekeys" => "Hallinnoi API-avaimia",
+	"listenerprofile" => "Kuuntelijaprofiili"
 	
 	/* Words for pluralization */
 
 	"person" => "henkilö",
 	"person_p" => "henkilöä",
 	"Vote" => "ääni",
-	"Vote_p" => "ääntä"
+	"Vote_p" => "ääntä",
+	"win" => "voitto",
+	"win_p" => "voittoa",
+	"loss" => "häviö",
+	"loss_p" => "häviötä"
 );
 ?>

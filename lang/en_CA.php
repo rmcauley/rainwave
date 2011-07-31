@@ -353,7 +353,6 @@ $lang = array(
 	"electionresults" => "Election Results",
 	"from" => "from |username|",
 	"votefaileleclocked" => "Vote Failed, Election Locked",
-	"searching" => "Searching: ",
 	
 	// Menu Bar
 	
