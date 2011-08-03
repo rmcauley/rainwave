@@ -1472,11 +1472,13 @@ function _THEME() {
 			
 			dtr = createEl("tr", false, dtable);
 			createEl("td", { "textContent": _l("voterecord") }, dtr);
-			createEl("td", { "textContent": _l("votewinloss", { "wins": json.radio_winningvotes, "losses": json.radio_losingvotes, "ratio": Math.round(json.radio_winningvotes / (json.radio_winningvotes + json.radio_losingvotes) * 100) } ) }, dtr);
+			var voteratio = (json.radio_losingvotes + json.radio_winningvotes > 0) ? Math.round(json.radio_winningvotes / (json.radio_winningvotes + json.radio_losingvotes) * 100) : 0;
+			createEl("td", { "textContent": _l("votewinloss", { "wins": json.radio_winningvotes, "losses": json.radio_losingvotes, "ratio": voteratio } ) }, dtr);
 			
 			dtr = createEl("tr", false, dtable);
 			createEl("td", { "textContent": _l("requestrecord") }, dtr);
-			createEl("td", { "textContent": _l("requestwinloss", { "wins": json.radio_winningrequests, "losses": json.radio_losingrequests, "ratio": Math.round(json.radio_winningrequests / (json.radio_winningrequests + json.radio_losingrequests) * 100) }) }, dtr);
+			var requestratio = (json.radio_winningrequests + json.radio_losingrequets > 0) ? Math.round(json.radio_winningrequests / (json.radio_winningrequests + json.radio_losingrequests) * 100) : 0;
+			createEl("td", { "textContent": _l("requestwinloss", { "wins": json.radio_winningrequests, "losses": json.radio_losingrequests, "ratio": requestratio }) }, dtr);
 			
 			wdow.detailtd.appendChild(dtable);
 

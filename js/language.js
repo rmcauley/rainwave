@@ -28,7 +28,7 @@ function _l(line, object, el, keep) {
 		var wholestr = "";
 		var classname;
 		while (keyend != -1) {
-			str = false;
+			str = undefined;
 			classname = "lang_" + line;
 			key = lang[line].substr(keystart, (keyend - keystart));
 			if (key == "br" && el) {
@@ -62,7 +62,7 @@ function _l(line, object, el, keep) {
 			else {
 				str = key;
 			}
-			if (str) {
+			if (typeof(str) != "undefined") {
 				if (el) createEl("span", { "textContent": str, "class": classname }, el);
 				wholestr += str;
 			}
