@@ -7,9 +7,9 @@ var SCHED_PLAYLIST = 5;
 var SCHED_PAUSE = 6;
 var SCHED_DJ = 7;
 
-var STATIONS = [ false, "Rainwave", "OCR Radio", "Mixwave", "Bitwave" ];
-var SHORTSTATIONS = [ false, "RW", "OC", "MW", "Bit" ];
-var CANONSTATIONS = [ false, "rw", "oc", "mw", "bit" ];
+var STATIONS = [ false, "Rainwave", "OCR Radio", "Mixwave" ];
+var SHORTSTATIONS = [ false, "RW", "OC", "MW", "Bit", "Omni" ];
+var CANONSTATIONS = [ false, "rw", "oc", "mw", "bit", "omni" ];
 var ELECSONGTYPES = { "conflict": 0, "warn": 1, "normal": 2, "queue": 3, "request": 4 };
 var UISCALE = 10;
 var BODY = document.getElementById("body");
@@ -35,7 +35,7 @@ function init() {
 			{ "value": "fi_FI", "option": "Suomi" },
 			{ "value": "se_SE", "option": "Svenska" }
 		], refresh: true });
-	prefs.addPref("edi", { hidden: true, name: "theme", defaultvalue: "RWClassic", type: "dropdown", options: [ { value: "RWClassic", option: "Rainwave 3" } ], refresh: true });
+	prefs.addPref("edi", { hidden: true, name: "theme", defaultvalue: "RWClassic", type: "dropdown", options: [ { value: "Rainwave", option: "Rainwave 3" } ], refresh: true });
 	
 	var deeplinkurl = decodeURI(location.href);
 	if (deeplinkurl.indexOf("#!/") >= 0) {

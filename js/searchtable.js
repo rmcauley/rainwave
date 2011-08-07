@@ -115,12 +115,20 @@ function SearchTable(container, id_key, table_class) {
 		}
 	};
 	
+	that.reinsertAll = function() {
+		sorted.sort(that.sortList);
+		for (var i = 0; i < sorted.length; i++) {
+			table.appendChild(data[sorted[i]].tr);
+		}
+	};
+	
 	that.addToUpdated = function(id) {
 		if (updated.indexOf(id) == -1) updated.push(id);
 	};
 	
 	that.updateList = function() {
 		var i = 0;
+		// first we walk through and sort the list to be re-inserted
 		if (updated.length > 0) {
 			for (i = 0; i < updated.length; i++) {
 				that.drawUpdate(data[updated[i]]);
@@ -129,6 +137,10 @@ function SearchTable(container, id_key, table_class) {
 			updated = [];
 		}
 		reinsert.sort(that.sortList);
+		// this could be made to be a little bit faster (the reverse walk below seems extraneous)
+		// but this is both really stable and works very well, so I'm quite hesitant to
+		// first we walk ONCE through the sorted list, re-inserting entries as necessary
+		// into the sorted pile where necessary.  this ensures we're o(n)
 		for (i = 0; i < sorted.length; i++) {
 			if (reinsert.length == 0) break;
 			if (that.sortList(reinsert[0], sorted[i]) == -1) {
@@ -136,10 +148,12 @@ function SearchTable(container, id_key, table_class) {
 				sorted.splice(i, 0, reinsert.shift());
 			}
 		}
+		// finish adding any leftovers at the bottom of the pile
 		for (i = 0; i < reinsert.length; i++) {
 			sorted.push(reinsert[i]);
 			table.appendChild(data[reinsert[i]].tr);
 		}
+		// walk backwards through the list for deleted elements
 		for (i = sorted.length - 1; i >= 0; i--) {
 			if (data[sorted[i]]._delete) {
 				table.removeChild(data[sorted[i]].tr);

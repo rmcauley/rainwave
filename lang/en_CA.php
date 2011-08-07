@@ -210,6 +210,14 @@ $lang = array(
 	"pref_requests" => "Requests",
 	"pref_requests_technicalhint" => "Technical Tab Title",
 	"pref_timeline_highlightrequests" => "Show Requesters By Default",
+	"pref_playlist" => "Playlist",
+	"pref_playlist_sortfavfirst" => "Favourite Albums First",
+	"pref_playlist_sortreadyfirst" => "Available Albums First",
+	"pref_playlist_sortalbums" => "Album Sort Method",
+	"pref_playlist_v_albumname" => "Album Name",
+	"pref_playlist_v_globalrating" => "Global Rating",
+	"pref_playlist_v_cooldown" => "Cooldown",
+	"pref_playlist_v_rating" => "Rating",
 	
 	// About screen
 	

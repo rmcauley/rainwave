@@ -1,3 +1,12 @@
+prefs.addPref("playlist", { "name": "sortfavfirst", "defaultvalue": false, "type": "checkbox" });
+prefs.addPref("playlist", { "name": "sortreadyfirst", "defaultvalue": true, "type": "checkbox" });
+prefs.addPref("playlist", { "name": "sortalbums", "defaultvalue": "album_name", "type": "dropdown", "options":
+	[ 	{ "value": "_searchname", "option": _l("pref_playlist_v_albumname") },
+		{ "value": "album_rating_user", "option": _l("pref_playlist_v_rating") },
+		{ "value": "album_lowest_oa", "option": _l("pref_playlist_v_cooldown") },
+		{ "value": "album_rating_avg", "option": _l("pref_playlist_v_globalrating") }
+	] } );
+
 panels.PlaylistPanel = {
 	ytype: "fit",
 	height: 300,
@@ -48,6 +57,9 @@ panels.PlaylistPanel = {
 			that.getCurrentTab = view.getCurrentTab;
 			
 			albumlist = AlbumSearchTable(that, albumlistc, view);
+			prefs.addPrefCallback("playlist", "sortfavfirst", albumlist.reinsertAll, albumlist);
+			prefs.addPrefCallback("playlist", "sortreadyfirst", albumlist.reinsertAll, albumlist);
+			prefs.addPrefCallback("playlist", "sortalbums", albumlist.reinsertAll, albumlist);
 			artistlist = ArtistSearchTable(that, artistlistc, view);
 			
 			lyre.addCallback(that.drawAlbumCallback, "playlist_album");
@@ -164,13 +176,28 @@ var AlbumSearchTable = function(parent, container, view) {
 	};
 	
 	that.sortList = function(a, b) {
-		if (that.data[a].album_available != that.data[b].album_available) {
+		if (prefs.p.playlist.sortfavfirst.value && (that.data[a].album_favourite != that.data[b].album_favourite)) {
+			if (that.data[a].album_favourite) return -1;
+			else return 1;
+		}
+		
+		if ((prefs.p.playlist.sortreadyfirst.value || (prefs.p.playlist.sortalbums.value == "album_lowest_oa")) && (that.data[a].album_available != that.data[b].album_available)) {
 			if (that.data[a].album_available == true) return -1;
 			else return 1;
 		}
-		else if (that.data[a]._searchname < that.data[b]._searchname) return -1;
-		else if (that.data[a]._searchname > that.data[b]._searchname) return 1;
-		else return 0;
+		
+		if ((prefs.p.playlist.sortalbums.value == "album_rating_user") || (prefs.p.playlist.sortalbums.value == "album_rating_avg")) {
+			if (that.data[a][prefs.p.playlist.sortalbums.value] < that.data[b][prefs.p.playlist.sortalbums.value]) return 1;
+			if (that.data[a][prefs.p.playlist.sortalbums.value] > that.data[b][prefs.p.playlist.sortalbums.value]) return -1;
+		}
+		else if ((prefs.p.playlist.sortalbums.value == "album_lowest_oa") && (that.data[a].album_available == false) && (that.data[b].album_available == false)) {
+			if (that.data[a][prefs.p.playlist.sortalbums.value] < that.data[b][prefs.p.playlist.sortalbums.value]) return -1;
+			if (that.data[a][prefs.p.playlist.sortalbums.value] > that.data[b][prefs.p.playlist.sortalbums.value]) return 1;
+		}
+		
+		if (that.data[a]._searchname < that.data[b]._searchname) return -1;
+		if (that.data[a]._searchname > that.data[b]._searchname) return 1;
+		return 0;
 	};
 
 	that.ratingResult = function(result) {

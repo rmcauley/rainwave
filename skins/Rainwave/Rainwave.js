@@ -177,6 +177,10 @@ function _THEME() {
 		evt.showingheader = true;
 	}
 	
+	var timeline_elec_fullheight = false;
+	var timeline_elec_winnerheight = false;
+	var timeline_elec_slimheight = false;
+	
 	that.Extend.TimelineSkeleton = function(te) {
 		te.showHeader = function() {
 			if (!te.showingheader) {
@@ -235,7 +239,30 @@ function _THEME() {
 		};
 		
 		te.recalculateHeight = function() {
-			te.height = te.el.offsetHeight;
+			if (!te.songs) {
+				te.height = te.el.offsetHeight;
+			}
+			else if (te.showingwinner && te.showingheader) {
+				if (!timeline_elec_winnerheight) {
+					timeline_elec_winnerheight = te.header_td.offsetHeight + te.songs[0].song_title.offsetHeight + te.songs[0].album_name.offsetHeight + 5;
+				}
+				te.height = timeline_elec_winnerheight;
+			}
+			else if (te.showingwinner) {
+				if (!timeline_elec_slimheight) {
+					timeline_elec_slimheight = te.songs[0].song_title.offsetHeight + te.songs[0].album_name.offsetHeight + 5;
+				}
+				te.height = timeline_elec_slimheight;
+			}
+			else if (te.sched_type == 0) {
+				if (!timeline_elec_fullheight) {
+					timeline_elec_fullheight = te.el.offsetHeight;
+				}
+				te.height = timeline_elec_fullheight;
+			}
+			else {
+				te.height = te.el.offsetHeight;
+			}
 		};
 		
 		te.defineFx = function() {
@@ -270,10 +297,6 @@ function _THEME() {
 		};
 	}
 	
-	var timeline_elec_fullheight = false;
-	var timeline_elec_winnerheight = false;
-	var timeline_elec_slimheight = false;
-	
 	that.Extend.TimelineElection = function(te) {
 		te.draw = function() {
 			var reqstatus = 0;
@@ -301,27 +324,6 @@ function _THEME() {
 				te.el.appendChild(te.songs[i].tr1);
 				te.el.appendChild(te.songs[i].tr2);
 				te.el.appendChild(te.songs[i].tr3);
-			}
-		};
-		
-		te.recalculateHeight = function() {
-			if (te.showingwinner && te.showingheader) {
-				if (!timeline_elec_winnerheight) {
-					timeline_elec_winnerheight = te.header_td.offsetHeight + te.songs[0].song_title.offsetHeight + te.songs[0].album_name.offsetHeight + 5;
-				}
-				te.height = timeline_elec_winnerheight;
-			}
-			else if (te.showingwinner) {
-				if (!timeline_elec_slimheight) {
-					timeline_elec_slimheight = te.songs[0].song_title.offsetHeight + te.songs[0].album_name.offsetHeight + 5;
-				}
-				te.height = timeline_elec_slimheight;
-			}
-			else {
-				if (!timeline_elec_fullheight) {
-					timeline_elec_fullheight = te.el.offsetHeight;
-				}
-				te.height = timeline_elec_fullheight;
 			}
 		};
 	};
@@ -384,11 +386,6 @@ function _THEME() {
 			
 			tos.defineFx();
 		};
-		
-		// tos.drawShowWinner = function() {
-			// tos.song.tr3_fx.onComplete2 = function() { tos.song.indicator.setAttribute("rowspan", 2); }
-			// tos.song.tr3_fx.start(0);
-		// };
 	};
 
 	/*****************************************************************************
@@ -512,7 +509,7 @@ function _THEME() {
 			if (!ts.voteinprogress) {
 				fx_votebkg_y.set(0);
 				fx_votebkg_x.stop();
-				fx_votebkg_x.duration = 300;
+				fx_votebkg_x.duration = 450;
 				var vhx = -votebkg_width + ts.parent.parent.width + 11;
 				if (vhx > 0) vhx = 0;
 				fx_votebkg_x.start(vhx);
@@ -541,7 +538,7 @@ function _THEME() {
 		ts.voteHoverOff = function(evt) {
 			if (!ts.voteinprogress) {
 				fx_votebkg_x.stop();
-				fx_votebkg_x.duration = 300;
+				fx_votebkg_x.duration = 450;
 				fx_votebkg_x.start(-votebkg_width);
 			}
 		};
@@ -553,7 +550,7 @@ function _THEME() {
 		ts.startVoting = function() {
 			fx_votebkg_x.stop();
 			fx_votebkg_x.set(-votebkg_width + ts.parent.parent.width + 11);
-			fx_votebkg_y.duration = 200;
+			fx_votebkg_y.duration = 300;
 			fx_votebkg_y.onComplete = ts.startVoting2;
 			ts.swipe.style.width = ts.parent.parent.width + "px";
 			ts.swipe.style.height = timeline_elec_tdheight + "px";
@@ -606,7 +603,7 @@ function _THEME() {
 
 		ts.registerVoteDraw = function() {
 			ts.voteProgressComplete();
-			fx_votebkg_y.duration = 500;
+			fx_votebkg_y.duration = 800;
 			fx_votebkg_y.start(-70);
 			votelock_timer = false;
 		};
@@ -1282,7 +1279,7 @@ function _THEME() {
 			var album = [];
 			var drawntables = [];
 			var i, j;
-			for (i = 0; i < STATIONS.length; i++) {
+			for (i = 0; i < STATIONS.length + 2; i++) {
 				drawntables[i] = [];
 			}
 			for (i = 0; i < json.songs.length; i++) {
@@ -1477,7 +1474,7 @@ function _THEME() {
 			
 			dtr = createEl("tr", false, dtable);
 			createEl("td", { "textContent": _l("requestrecord") }, dtr);
-			var requestratio = (json.radio_winningrequests + json.radio_losingrequets > 0) ? Math.round(json.radio_winningrequests / (json.radio_winningrequests + json.radio_losingrequests) * 100) : 0;
+			var requestratio = (json.radio_winningrequests + json.radio_losingrequests > 0) ? Math.round(json.radio_winningrequests / (json.radio_winningrequests + json.radio_losingrequests) * 100) : 0;
 			createEl("td", { "textContent": _l("requestwinloss", { "wins": json.radio_winningrequests, "losses": json.radio_losingrequests, "ratio": requestratio }) }, dtr);
 			
 			wdow.detailtd.appendChild(dtable);

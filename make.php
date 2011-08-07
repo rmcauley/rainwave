@@ -6,6 +6,7 @@ require("files.php");
 
 $bnum = getBuildNumber();
 $lyredir = "../lyre/";
+$cookiedomain = "rainwave.cc";
 
 if (!isset($dest)) {
 	$dest = "/var/www/rainwave.cc/";

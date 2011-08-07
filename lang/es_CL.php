@@ -182,7 +182,6 @@ $lang2 = array(
 	"votewinloss" => "|wins| |P:ganados,ganado|, |losses| |P:perdidos,perdido| -- |ratio|% de votaciones ganadas",
 	"requestwinloss" => "|wins| reproducidas, |losses| rechazadas -- |ratio|% de peticiones reproducidas",
 	"lsnr_rankgraph_header" => "Votos y Valoraciones Del Último Mes",
-
 	"lsnrdt_allstations" => "Total",
 	"lsnrdt_averagerating" => "Promedio de Valoraciones",
 	"lsnrdt_ratingprogress" => "Valoraciones Completadas",
@@ -198,7 +197,7 @@ $lang2 = array(
 	"pref_timeline_showhistory" => "Mostrar Historial",
 	"pref_timeline_showelec" => "Mostrar Resultados Votación",
 	"pref_timeline_showallnext" => "Mostrar Próximos Eventos",
-	"pref_rating_hidesite" => "Esconder valoraciones hasta que yo lo haya hecho",
+	"pref_rating_hidesite" => "Ocultar Valoraciones Globales hasta que se haya valorado",
 	"pref_edi" => "General", // T.N.: It's the same word for spanish.
 	"pref_edi_wipeall" => "Borrar Preferencias",
 	"pref_edi_wipeall_button" => "Borrar",
@@ -212,6 +211,14 @@ $lang2 = array(
 	"pref_requests" => "Peticiones",
 	"pref_requests_technicalhint" => "Mostrar más detalles en la pestaña",
 	"pref_timeline_highlightrequests" => "Mostrar quien solicita por defecto",
+  "pref_playlist" => "Lista de canciones",
+	"pref_playlist_sortfavfirst" => "Mostrar Álbumes Favoritos Primero",
+	"pref_playlist_sortreadyfirst" => "Mostrar Álbumes Disponibles Primero",
+	"pref_playlist_sortalbums" => "Ordenar Álbumes por",
+	"pref_playlist_v_albumname" => "Nombre de Álbum",
+	"pref_playlist_v_globalrating" => "Valoración Global",
+	"pref_playlist_v_cooldown" => "Tiempo de Enfríamiento",
+	"pref_playlist_v_rating" => "Valoración Personal",
 	
 	// About screen
 	
@@ -221,7 +228,7 @@ $lang2 = array(
 	"mixwavemanagers" => "Equipo de Mixwave",
 	"jfinalfunkjob" => "Loco de las Mates",
 	"relayadmins" => "Donantes de Repetidoras",
-	"specialthanks" => "Gracias A",
+	"specialthanks" => "Agradecimientos a",
 	"poweredby" => "Potenciado por",
 	"customsoftware" => "Programa 'Orpheus' modificado",
 	"donationinformation" => "Libro de Contabilidad de Donaciones e información relacionada.",
@@ -376,10 +383,14 @@ $lang2 = array(
 	"loading" => "Cargando",
 	"searching" => "Buscando: ",
 	"m3uhijack" => "|plugin| está tratando de reproducir el M3U. Mejor haz click derecho y luego 'Guardar como'.",
+  "oruse" => "o use:", // T.N.: It's the same word for spanish. Pronounced oo-seh.
+	"use" => "use:", // T.N.: It's the same word for spanish. Pronounced oo-seh.
+	"menu_morestations_v2" => "Todas las Estaciones »",
 	"menu_morestations" => "Más ▼",
 	"waitingforstatus" => "Esperando por Estatus",
 	"logout" => "Cerrar sesión",
 	"managekeys" => "Administrar Claves de API",
+  "listenerprofile" => "Perfil de Escucha",
 	
 	/* Words for pluralization */
 
