@@ -226,9 +226,6 @@ var AlbumSearchTable = function(parent, container, view) {
 	};
 
 	that.drawEntry = function(album) {
-		if (!album.album_name) {
-			alert(album.album_id)
-		}
 		album.tr._search_id = album.album_id;
 
 		album.album_rating_user = album.album_rating_user;

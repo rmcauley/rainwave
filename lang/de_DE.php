@@ -8,7 +8,7 @@ $lang2 = array(
 		// OCR Radio's description as it appears to search engines.
 		2 => "OverClocked Remix Radio.  Stimme für deine lieblings remixes ab!",
 		// Mixwave's.
-		3 => "Video game cover bands and remixes.  Stimme für deine lieblings Interpreten ab!"
+		3 => "Video game cover bands and remixes.  Stimme für deine lieblings Interpreten ab!",
 		4 => "Streaming original game chiptunes.  Stimme für den Song ab den du hören willst!",
 		5 => "Streaming game music and remixes.  Stimme für den Song ab den du hören willst!"
 	),
@@ -359,7 +359,7 @@ $lang2 = array(
 	"use" => "Benutze:",
 	"menu_morestations_v2" => "Alle Sender »",
 	"managekeys" => "API Keys Verwalten",
-	"listenerprofile" => "Zuhörer Profil"
+	"listenerprofile" => "Zuhörer Profil",
 	
 	/* Words for pluralization */
 

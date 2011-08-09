@@ -7,7 +7,7 @@ define("MW", 3);
 define("BIT", 4);
 define("OMNI", 5);
 
-$sid = RW;
+$sid = OMNI;
 if (isset($_COOKIE['r3sid'])) {
 	if ($_COOKIE['r3sid'] == "1") $sid = RW;
 	else if ($_COOKIE['r3sid'] == "2") $sid = OCR;

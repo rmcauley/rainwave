@@ -906,13 +906,13 @@ function _THEME() {
 			
 			menup.m3u_download = createEl("div", { "class": "menu_download" }, menup.td_play);
 			menup.or_use = createEl("span", { "textContent": _l("oruse") }, menup.m3u_download);
-			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_vlc" }, menup.m3u_download);
+			var vlca = createEl("a", { "href": "tunein.php?ogg=true", "onclick": "return false;", "class": "tunein_vlc" }, menup.m3u_download);
 			createEl("img", { "width": 17, "height": 20, "src": "images/blank.png" }, vlca);
 			vlca.addEventListener("click", menup.tuneInClick, true);
-			var winampa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_winamp" }, menup.m3u_download);
+			var winampa = createEl("a", { "href": "tunein.php?ogg=true", "onclick": "return false;", "class": "tunein_winamp" }, menup.m3u_download);
 			createEl("img", { "width": 16, "height": 20, "src": "images/blank.png" }, winampa);
 			winampa.addEventListener("click", menup.tuneInClick, true);
-			var fb2ka = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_fb2k" }, menup.m3u_download);
+			var fb2ka = createEl("a", { "href": "tunein.php?ogg=true", "onclick": "return false;", "class": "tunein_fb2k" }, menup.m3u_download);
 			createEl("img", { "width": 17, "height": 20, "src": "images/blank.png" }, fb2ka);
 			fb2ka.addEventListener("click", menup.tuneInClick, true);
 			var m3u_download_width = fx.make(fx.CSSNumeric, menup.m3u_download, 250, "width", "px");
