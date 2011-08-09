@@ -7,7 +7,7 @@ var SCHED_PLAYLIST = 5;
 var SCHED_PAUSE = 6;
 var SCHED_DJ = 7;
 
-var STATIONS = [ false, "Rainwave", "OCR Radio", "Mixwave" ];
+var STATIONS = [ false, "Rainwave", "OCR Radio", "Mixwave", "Bitwave", "Omniwave" ];
 var SHORTSTATIONS = [ false, "RW", "OC", "MW", "Bit", "Omni" ];
 var CANONSTATIONS = [ false, "rw", "oc", "mw", "bit", "omni" ];
 var ELECSONGTYPES = { "conflict": 0, "warn": 1, "normal": 2, "queue": 3, "request": 4 };

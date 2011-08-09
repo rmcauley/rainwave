@@ -4,26 +4,39 @@ define("RW", 1);
 define("OCR", 2);
 define("VW", 3);
 define("MW", 3);
+define("BIT", 4);
+define("OMNI", 5);
 
 $sid = RW;
 if (isset($_COOKIE['r3sid'])) {
 	if ($_COOKIE['r3sid'] == "1") $sid = RW;
 	else if ($_COOKIE['r3sid'] == "2") $sid = OCR;
 	else if ($_COOKIE['r3sid'] == "3") $sid = VW;
+	else if ($_COOKIE['r3sid'] == "4") $sid = BIT;
+	else if ($_COOKIE['r3sid'] == "5") $sid = OMNI;
 }
 // This gives precedence to URL if using a subdomained station
 if ($_SERVER['HTTP_HOST'] == "rw.rainwave.cc") $sid = RW;
+else if ($_SERVER['HTTP_HOST'] == "game.rainwave.cc") $sid = RW;
 else if ($_SERVER['HTTP_HOST'] == "ocr.rainwave.cc") $sid = OCR;
 else if ($_SERVER['HTTP_HOST'] == "ocremix.rainwave.cc") $sid = OCR;
+else if ($_SERVER['HTTP_HOST'] == "remix.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "mix.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "mixwave.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "vwave.rainwave.cc") $sid = VW;
+else if ($_SERVER['HTTP_HOST'] == "chip.rainwave.cc") $sid = BIT;
+else if ($_SERVER['HTTP_HOST'] == "bit.rainwave.cc") $sid = BIT;
+else if ($_SERVER['HTTP_HOST'] == "bitwave.rainwave.cc") $sid = BIT;
+else if ($_SERVER['HTTP_HOST'] == "omni.rainwave.cc") $sid = OMNI;
+else if ($_SERVER['HTTP_HOST'] == "all.rainwave.cc") $sid = OMNI;
 // An override, mostly for administration uses
 if (isset($_GET['site'])) {
 	if ($_GET['site'] == "rw") $sid = RW;
 	else if ($_GET['site'] == "oc") $sid = OCR;
 	else if ($_GET['site'] == "mw") $sid = VW;
 	else if ($_GET['site'] == "vw") $sid = VW;
+	else if ($_GET['site'] == "bit") $sid = BIT;
+	else if ($_GET['site'] == "omni") $sid = OMNI;
 }
 // And a final override for when $_GET cannot be used or modified!
 if (defined('SITEOVERRIDE')) $sid = SITEOVERRIDE;

@@ -843,9 +843,15 @@ function _THEME() {
 			
 			menup.table = createEl("table", { "class": "menu_table", "cellspacing": 0 });
 			var row = createEl("tr", {}, menup.table);
-			menup.td_station = createEl("td", { "class": "menu_td_station menu_td_station_" + PRELOADED_SID }, row);
-			menup.station_select = createEl("div", { "class": "menu_select" }, menup.td_station);
-			var selectdiv;
+			menup.td_station = createEl("td", { "class": "menu_td_station menu_td_station_1" }, row);
+			menup.station_select = createEl("ul", { "class": "menu_select" }, menup.td_station);
+			createEl("li", { "class": "menu_select_station menu_select_station_selected", "textContent": _l("menu_station_" + PRELOADED_SID) }, menup.station_select);
+			for (var i = 1; i < STATIONS.length; i++) {
+				if (i != PRELOADED_SID) {
+					createEl("li", { "class": "menu_select_station", "textContent": _l("menu_station_" + i) }, menup.station_select);
+				}
+			}
+			/*var selectdiv;
 			var runningx = 0;
 			var logowidth = 120;
 			if (PRELOADED_SID != 1) {
@@ -862,17 +868,17 @@ function _THEME() {
 				selectdiv = createEl("div", { "class": "menu_select_station_3 menu_select_station_x" }, createEl("div", { "class": "menu_select_station", "style": "margin-left: " + runningx + "px;" }, menup.station_select));
 				selectdiv.addEventListener("click", function() { menup.changeStation(3); }, true);
 				runningx += 130;
-			}
+			}*/
 
-			menup.station_select_width = fx.make(fx.CSSNumeric, menup.station_select, 250, "width", "px");
+			/*menup.station_select_width = fx.make(fx.CSSNumeric, menup.station_select, 250, "width", "px");
 			menup.td_station.addEventListener("mouseover", function(e) {
 					if ((getMousePosX(e) == 0) && (getMousePosY(e) == 0)) return;
 					menup.station_select_width.start(300);
 				}, true);
 			menup.td_station.addEventListener("mouseout", function() { menup.station_select_width.start(12); }, true);
-			menup.station_select_width.set(12);
+			menup.station_select_width.set(12);*/
 			
-			prefs.addPref("rainwavetheme", { "name": "showmorestations", "defaultvalue": true, "hidden": true });
+			/*prefs.addPref("rainwavetheme", { "name": "showmorestations", "defaultvalue": true, "hidden": true });
 			if (prefs.getPref("rainwavetheme", "showmorestations")) {
 				var morestations = createEl("div", { "class": "menu_select_more" });
 				_l("menu_morestations_v2", {}, morestations);
@@ -889,7 +895,7 @@ function _THEME() {
 						menup.td_station_width.start(150);
 						prefs.changePref("rainwavetheme", "showmorestations", false);
 					}, true);
-			}
+			}*/
 			// else {			// should be defined in CSS
 				// menup.td_station_width.set(150);
 			// }

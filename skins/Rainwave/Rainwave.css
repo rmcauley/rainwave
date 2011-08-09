@@ -744,7 +744,7 @@ table.menu_table td {
 }
 
 td.menu_td_station {
-	width: 150px;
+	width: 500px;
 	background-repeat: no-repeat;
 	background-position: 2px 2px;
 }
@@ -769,7 +769,7 @@ div.menu_select_more {
 	width: 200px;
 }
 
-div.menu_select {
+/*div.menu_select {
 	position: absolute;
 	background: transparent url("images/menu_station_bkg.png") no-repeat top right;
 	z-index: 2;
@@ -795,10 +795,26 @@ div.menu_select_station_x {
 	height: 23px;
 	width: 130px;
 	cursor: pointer;
+}*/
+
+ul.menu_select {
+	margin: 0 0 0 120px;
+	padding: 0px;
+}
+
+ul.menu_select li {
+	display: inline;
+	padding: 0px;
+	margin: 0px;
+}
+
+ul.menu_select li + li {
+	padding-left: 1em;
 }
 
 td.menu_td_play {
 	width: 90px;
+	border-left: 1px solid [% border %];
 }
 
 div.menu_player {

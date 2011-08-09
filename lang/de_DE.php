@@ -2,13 +2,15 @@
 // Rainwave 3 de_DE Language File by DarkLink
 
 $lang2 = array(
-"_SITEDESCRIPTIONS" => array(
+	"_SITEDESCRIPTIONS" => array(
 		// Rainwave's description as it appears to search engines.
 		1 => "Streaming Video Game Music Radio.  Stimme für den Song ab den du hören willst!",
 		// OCR Radio's description as it appears to search engines.
 		2 => "OverClocked Remix Radio.  Stimme für deine lieblings remixes ab!",
 		// Mixwave's.
 		3 => "Video game cover bands and remixes.  Stimme für deine lieblings Interpreten ab!"
+		4 => "Streaming original game chiptunes.  Stimme für den Song ab den du hören willst!",
+		5 => "Streaming game music and remixes.  Stimme für den Song ab den du hören willst!"
 	),
 	
 	// Panel Names
@@ -151,16 +153,16 @@ $lang2 = array(
 // Listeners Panel
 	
 	"ltab_listeners" => "Zuhörer", 			// Listeners tab name
-	"guestlisteners" => "|guests| Gäste",		// appears at the bottom of the current listeners list
-	"totallisteners" => "Aktuell |total| Zuhörer",	// appears underneath guestlisteners.
-	"voteslast2weeks" => "Stimmvergaben in den letzten 2 Wochen: ",	
 	"otherlisteners" => "(|guests| Gäste, |total| Gesamt)",		// appears at the bottom of the current listeners list
 	"registeredlisteners" => "|users| Benutzer",	// appears underneath guestlisteners.
+	"voteslast2weeks" => "Stimmvergaben in den letzten 2 Wochen: ",	
 	"voterecord" => "Stimmvergabe Status: ",
 	"requestrecord" => "Wunsch Status: ",
-	"votewinloss" => "|wins| |P:wins,win|, |losses| |P:losses,loss| -- gewinnt |ratio|%",
+	"votewinloss" => "|wins| |P:wins,siege|, |losses| |P:losses,niederlagen| -- gewinnt |ratio|%",
 	"requestwinloss" => "|wins| gespielt, |losses| abgelehnt -- gespielt |ratio|%",
 	"lsnr_rankgraph_header" => "Votes and Rank For The Last Month",
+	
+	
 	"lsnrdt_allstations" => "Alle Sender",
 	"lsnrdt_averagerating" => "⌀ Songwertung",
 	"lsnrdt_ratingprogress" => "Songs bewertet",
@@ -190,6 +192,14 @@ $lang2 = array(
 	"pref_requests" => "Wünsche",
 	"pref_requests_technicalhint" => "Zeige technischen Tab Titel",
 	"pref_timeline_highlightrequests" => "Hebe Wünsche hervor",
+	"pref_playlist" => "Wiedergabeliste",
+	"pref_playlist_sortfavfirst" => "Favorisierte Alben zuerst",
+	"pref_playlist_sortreadyfirst" => "Verfügbare Alben zuerst",
+	"pref_playlist_sortalbums" => "Wiedergabeliste sortieren nach",
+	"pref_playlist_v_albumname" => "Album Name",
+	"pref_playlist_v_globalrating" => "Global Bewertung",
+	"pref_playlist_v_cooldown" => "Abkühlzeit",
+	"pref_playlist_v_rating" => "Eigene Bewertung",
 	
 	// About screen
 	
@@ -220,13 +230,11 @@ $lang2 = array(
 	"clickonsongtovote" => "Klicke auf einen Song um für ihn zu stimmen.",
 	"clickonsongtovote_p" => "Nachdem du den Sender eingestellt hast, klicke auf einen Song.|br|Der Song mit den meisten Stimmen wird als nächstes gespielt.",
 	"tunein" => "Reinhören",
-	"tunein_p" => "Lade die M3U-Datei herunter und öffne sie mit einem Media-Player um den Sender zu hören.|br|VLC, Winamp, Foobar2000, oder fstream (Mac) werden empfohlen.",
-	"login" => "Anmelden oder Registrieren",
+	"tunein_p" => "Klicke auf den Button um den Flash Player zu laden und reinzuhören.",
 	"login_p" => "Bitte logge dich ein.",
 	"ratecurrentsong" => "Bewerten",
 	"ratecurrentsong_p" => "Fahre mit der Maus über die Skala, klicke um den Song zu bewerten.|br|Die Albumwertung ist der Durchschnitt der Songwertungen.",
 	"ratecurrentsong_t" => "Die Bewertung entscheidet, wie oft Songs und Alben gespielt werden.|br|Erfahre, wie man bewertet.",
-	"ratecurrentsong_tp" => "Bewertung",
 	"setfavourite" => "Favoriten",
 	"setfavourite_p" => "Klicke auf die Box neben der Skala um den Song oder das Album deinen Favoriten hinzuzufügen, oder zu entfernen.",
 	"playlistsearch" => "Wiedergabeliste durchsuchen",
@@ -279,6 +287,7 @@ $lang2 = array(
 	// Schedule Panel user text.
 
 	"noschedule" => "Diese Woche stehen keine Events an.",
+	
 	// Searching Related
 	
 	"escapetoclear" => "[esc] zum löschen",
@@ -336,9 +345,6 @@ $lang2 = array(
 	"selectstation" => "Wähle einen Sender",
 	"tunedin" => "Tuned In",
 	"tunedout" => "Tuned Out",
-	"play" => "▶ Im Browser abspielen",
-	"downloadm3u" => "▶ M3U Herunterladen",
-	"players" => "Unterstützte Media-Player sind VLC, Winamp, Foobar2000, und fstream (Mac/iPhone).|br|Windows Media Player und iTunes werden nicht funktionieren.",
 	"help" => "Hilfe",
 	"forums" => "Forum",
 	"login" => "Anmelden",
@@ -347,15 +353,13 @@ $lang2 = array(
 	"username" => "Benutername",
 	"password" => "Passwort",
 	"autologin" => "Automatisch anmelden",
-	"compatplayers" => "Unterstützte Media-Player:",
 	"chat" => "Chat",
-	"playing" => "◼ Wiedergabe stoppen",
-	"loading" => "Lade",
-	"searching" => "Suche: ",
 	"m3uhijack" => "|plugin| versucht den M3U download zu übernehmen.  Bitte klicke mit der rechten Maustaste und wähle 'Speichern unter'",
-	"menu_morestations" => "Mehr ▼",
-	"waitingforstatus" => "Warte auf Status",
+	"oruse" => "oder Benutze:",
+	"use" => "Benutze:",
+	"menu_morestations_v2" => "Alle Sender »",
 	"managekeys" => "API Keys Verwalten",
+	"listenerprofile" => "Zuhörer Profil"
 	
 	/* Words for pluralization */
 
@@ -363,5 +367,9 @@ $lang2 = array(
 	"person_p" => "Personen",
 	"Vote" => "Stimme",
 	"Vote_p" => "Stimmen",
+	"siege" => "Sieg",
+	"siege_p" => "Siege",
+	"niederlagen" => "Niederlage",
+	"niederlagen_p" => "Niederlagen",
 );
 ?>

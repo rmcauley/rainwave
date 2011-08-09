@@ -26,8 +26,16 @@ $lang = array(
 		// OCR Radio's description as it appears to search engines.
 		2 => "OverClocked Remix Radio.  Vote for your favourite remixes!",
 		// Mixwave's.
-		3 => "Video game cover bands and remixes.  Vote for your favourite artists!"
+		3 => "Video game cover bands and remixes.  Vote for your favourite artists!",
+		4 => "Streaming original game chiptunes.  Vote for the songs you want to hear!",
+		5 => "Streaming game music and remixes.  Vote for the songs you want to hear!"
 	),
+	
+	"menu_station_1" => "Soundtracks",
+	"menu_station_2" => "OC ReMix",
+	"menu_station_3" => "Covers",
+	"menu_station_4" => "Chiptunes",
+	"menu_station_5" => "All",
 	
 	// Panel Names, these show up in the tab titles
 	"p_MainMPI" => "Tabs",
