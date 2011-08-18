@@ -10,7 +10,7 @@ header("content-type: application/xhtml+xml");
 
 require("auth/common.php");
 
-if (!in_array($userdata['group_id'], array(5, 4, 8, 12, 15, 14))) {
+if (!in_array($userdata['group_id'], array(5, 4, 8, 12, 15, 14, 17))) {
 	print "<body>Sorry, only donors and administrators may use the Rainwave beta. (which is often broken anyway)</body>";
 	exit(0);
 }

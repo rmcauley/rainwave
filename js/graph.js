@@ -191,11 +191,18 @@ var graph = function() {
 
 			if (graph.options.yaxis_minrange && ((graph.yaxis_max - graph.yaxis_min) < graph.options.yaxis_minrange)) {
 				graph.yaxis_min = graph.yaxis_max - graph.options.yaxis_minrange;
-				if (graph.yaxis_min < 0) graph.yaxis_min += Math.abs(graph.yaxis_min);
+				if (graph.yaxis_min < 0) {
+					graph.yaxis_min = 0;
+					graph.yaxis_max = graph.options.yaxis_minrange;
+					//graph.yaxis_min += Math.abs(graph.yaxis_min);
+				}
 			}
 			
 			if (graph.xaxis_min < 0) graph.xaxis_min = 0;
 			if (graph.yaxis_min < 0) graph.yaxis_min = 0;
+
+			if (graph.xgrid_perstep == 0) graph.xgrid_perstep = 1;
+			if (graph.ygrid_perstep == 0) graph.ygrid_perstep = 1;
 			
 			graph.xaxis_perstep = (graph.xaxis_max - graph.xaxis_min) / parent.xaxis_steps;
 			if (!graph.options.xgrid_perstep) parent.xgrid_perstep = graph.xaxis_perstep;

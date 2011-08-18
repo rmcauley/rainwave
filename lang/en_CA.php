@@ -31,12 +31,6 @@ $lang = array(
 		5 => "Streaming game music and remixes.  Vote for the songs you want to hear!"
 	),
 	
-	"menu_station_1" => "Soundtracks",
-	"menu_station_2" => "OC ReMix",
-	"menu_station_3" => "Covers",
-	"menu_station_4" => "Chiptunes",
-	"menu_station_5" => "All",
-	
 	// Panel Names, these show up in the tab titles
 	"p_MainMPI" => "Tabs",
 	"p_MenuPanel" => "Menu",

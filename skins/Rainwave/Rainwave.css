@@ -411,9 +411,11 @@ table.pl_songlist td {
 }
 
 div.pl_songlist_hdr {
+	min-height: 16px;
 	font-weight: bold;
 	border-bottom: 1px solid [% vdarktext %];
 	margin: 1em 0.5em 0 .5em;
+	background-repeat: no-repeat;
 }
 
 tr.pl_songlist_tr_unavailable td {
@@ -557,16 +559,24 @@ div.request_false {
 	background-color: [% request_bad %];
 }
 
-div.request_station_1 {
+div.request_station_1, .station_1 {
 	background-image: url("images/menu_logo_1.png");
 }
 
-div.request_station_2 {
+div.request_station_2, .station_2 {
 	background-image: url("images/menu_logo_2.png");
 }
 
-div.request_station_3 {
+div.request_station_3, .station_3 {
 	background-image: url("images/menu_logo_3.png");
+}
+
+div.request_station_4, .station_4 {
+	background-image: url("images/menu_logo_4.png");
+}
+
+div.request_station_5, .station_5 {
+	background-image: url("images/menu_logo_5.png");
 }
 
 svg.request_songrating {
@@ -743,73 +753,66 @@ table.menu_table td {
 	background-color: [% background %];
 }
 
-td.menu_td_station {
-	width: 500px;
-	background-repeat: no-repeat;
+td.menu_td_rainwave {
+	width: 105px;
 	background-position: 2px 2px;
-}
-
-td.menu_td_station_1, div.menu_select_station_1 {
-	background-image: url("images/menu_logo_1.png");
-}
-
-td.menu_td_station_2, div.menu_select_station_2 {
-	background-image: url("images/menu_logo_2.png");
-}
-
-td.menu_td_station_3, div.menu_select_station_3 {
-	background-image: url("images/menu_logo_3.png");
-}
-
-div.menu_select_more {
-	color: [% vdarktext %];
-	margin-top: 1px;
-	position: absolute;
-	text-align: right;
-	width: 200px;
-}
-
-/*div.menu_select {
-	position: absolute;
-	background: transparent url("images/menu_station_bkg.png") no-repeat top right;
-	z-index: 2;
-	left: 130px;
-	margin: 0px;
-	padding: 0px 0px 0px 12px;
-	height: 23px;
-	overflow: hidden;
-	top: 0px;
-}
-
-div.menu_select_station {
-	background: transparent url("images/menu_station_bigarrow.png") no-repeat;
-	position: absolute;
-	height: 23px;
-	width: 200px;
-	padding-left: 20px;
-}
-
-div.menu_select_station_x {
 	background-repeat: no-repeat;
-	background-position: center left;
-	height: 23px;
-	width: 130px;
+}
+
+td.menu_td_station {
+	background-position: 3px 7px;
+	background-repeat: no-repeat;
 	cursor: pointer;
-}*/
-
-ul.menu_select {
-	margin: 0 0 0 120px;
-	padding: 0px;
 }
 
-ul.menu_select li {
-	display: inline;
-	padding: 0px;
-	margin: 0px;
+td.menu_td_station_1 {
+	background-image: url("images/station_select_1.png");
+	width: 53px;
 }
 
-ul.menu_select li + li {
-	padding-left: 1em;
+td.menu_td_station_1_on, td.menu_td_station_1:hover {
+	background-image: url("images/station_select_1_on.png");
+	width: 53px;
+}
+
+td.menu_td_station_2 {
+	background-image: url("images/station_select_2.png");
+	width: 80px;
+}
+
+td.menu_td_station_2_on, td.menu_td_station_2:hover {
+	background-image: url("images/station_select_2_on.png");
+	width: 80px;
+}
+
+td.menu_td_station_3 {
+	background-image: url("images/station_select_3.png");
+	width: 75px;
+}
+
+td.menu_td_station_3_on, td.menu_td_station_3:hover {
+	background-image: url("images/station_select_3_on.png");
+	width: 75px;
+}
+
+td.menu_td_station_4 {
+	background-image: url("images/station_select_4.png");
+	width: 90px;
+}
+
+td.menu_td_station_4_on, td.menu_td_station_4:hover {
+	background-image: url("images/station_select_4_on.png");
+	width: 90px;
+}
+
+td.menu_td_station_5 {
+	background-image: url("images/station_select_5.png");
+	width: 40px;
+}
+
+td.menu_td_station_5_on, td.menu_td_station_5:hover {
+	background-image: url("images/station_select_5_on.png");
+	width: 40px;
 }
 
 td.menu_td_play {
@@ -854,14 +857,23 @@ div.menu_download {
 	display: block;
 }
 
-a.tunein_vlc, a.tunein_winamp, a.tunein_fb2k {
+a.tunein_vlc, a.tunein_winamp, a.tunein_fb2k , a.tunein_itunes, a.tunein_wmp {
 	background-repeat: no-repeat;
 	background-position: center left;
 }
 
+a.tunein_itunes {
+	background-image: url("images/itunes.png");
+}
+
+a.tunein_wmp {
+	background-image: url("images/wmp.png");
+	margin-left: 5px;
+}
+
 a.tunein_vlc {
 	background-image: url("images/vlc.png");
-	margin-left: 4px;
+	margin-left: 5px;
 }
 
 a.tunein_winamp {

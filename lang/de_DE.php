@@ -160,7 +160,7 @@ $lang2 = array(
 	"requestrecord" => "Wunsch Status: ",
 	"votewinloss" => "|wins| |P:wins,siege|, |losses| |P:losses,niederlagen| -- gewinnt |ratio|%",
 	"requestwinloss" => "|wins| gespielt, |losses| abgelehnt -- gespielt |ratio|%",
-	"lsnr_rankgraph_header" => "Votes and Rank For The Last Month",
+	"lsnr_rankgraph_header" => "Bewertungen und Rang des letzten Monats",
 	
 	
 	"lsnrdt_allstations" => "Alle Sender",

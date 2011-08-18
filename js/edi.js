@@ -408,7 +408,7 @@ var edi = function() {
 				var dispheight = (typeof(layout[i][j].initSizeY) == "function") ? layout[i][j].initSizeY(cellheight, rowh[i]) : cellheight;
 				if ((dispwidth != cellwidth) || (dispheight != cellheight)) cirregular = true;
 
-				if (usevborder) {
+				/*if (usevborder) {
 					vborders[i][j] = {};
 					vborders[i][j].el = createEl("div", { "class": "edi_border_vertical" });
 					vborders[i][j].el.setAttribute("style", "position: absolute; top: " + runningy + "px; left: " + (runningx + dispwidth) + "px; height: " + cellheight + "px;");
@@ -434,7 +434,7 @@ var edi = function() {
 					}();
 					if (theme.borderHorizontal) theme.borderHorizontal(hborders[i][j]);
 					element.appendChild(hborders[i][j].el);
-				}
+				}*/
 				
 				var panelel = document.createElement("div");
 				panelel.setAttribute("style", "position: absolute; width: " + dispwidth + "px; height: " + dispheight + "px;");

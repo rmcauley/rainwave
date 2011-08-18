@@ -409,10 +409,15 @@ function SearchTable(container, id_key, table_class) {
 	};
 	
 	// DRAWING ********
-	
+
 	that.startSearchDraw = function() {
 		that.setScrollOffset();
-		textcontainer.style.width = container.offsetWidth + "px";
+		if (container.parentNode.className == "splitwindow_left") {
+			textcontainer.style.width = container.parentNode.style.width;
+		}
+		else {
+			textcontainer.style.width = container.style.left;
+		}
 		var h = texthdrheight;
 		fx_test_top.start(-h);
 		fx_test_height.start(h);

@@ -4,13 +4,21 @@
 $lang2 = array(
 	"_SITEDESCRIPTIONS" => array(
 		// Rainwave's description as it appears to search engines.
-		1 => "Radio por Internet de Música de Videojuegos. ¡Vota por la canción que quieres escuchar!",
+		1 => "Radio por Internet de Música de Videojuegos.	¡Vota por las canciones que quieres escuchar!",
 		// OCR Radio's description as it appears to search engines.
-		2 => "La Radio de OverClocked Remix. ¡Vota por tus remixes favoritos!",
+		2 => "La Radio de OverClocked Remix.	¡Vota por tus remixes favoritos!",
 		// Mixwave's.
-		3 => "Covers y Remixes de Música de Videojuegos. ¡Vota por tus artistas favoritos!"
+		3 => "Covers y Remixes de Música de Videojuegos.	¡Vota por tus artistas favoritos!",
+		4 => "Transmitiendo chiptunes originales de videojuegos.	¡Vota por las canciones que quieres escuchar!", // T.N.: "Chiptune" does not have an official translation.
+		5 => "Transmitiendo música original y remixes de videojuegos.	¡Vota por las canciones que quieres escuchar!"
 	),
-	
+
+	"menu_station_1" => "Música Original de Videojuegos",
+	"menu_station_2" => "Radio Oficial de OCReMix",
+	"menu_station_3" => "Remezclas al por mayor",
+	"menu_station_4" => "Chiptunes Originales de Videojuegos",
+	"menu_station_5" => "Todo",
+
 	// Panel Names, these show up in the tab titles
 	"p_MainMPI" => "Pestañas",
 	"p_MenuPanel" => "Menú",
@@ -21,12 +29,12 @@ $lang2 = array(
 	"p_RequestsPanel" => "Peticiones",
 	"p_TimelinePanel" => "Cronograma", // T.N.: I think it's the best word to describe this item
 	"p_ListenersPanel" => "Escuchas",
-	
+
 	// Search related
-	
+
 	"escapetoclear" => "[Esc] para limpiar",
 	"searchheader" => "Búsqueda: ",
-	
+
 	// These are used for cooldown times, e.g. 5d 23h 10m 46s. Change to your liking.
 	"timeformat_d" => "d ",
 	"timeformat_h" => "h ",
@@ -37,7 +45,7 @@ $lang2 = array(
 	"log_1" => "La API no ha recibido la identificación de la estación.",
 	"log_2" => "Ésta estación se encuentra fuera de línea debido a dificultades técnicas.",
 	"log_3" => "Espere para poder usar |currentlyon|.",
-	
+
 	// HTTP error codes
 	"log_200" => "HTTP OK",
 	"log_300" => "HTTP Redireccionado",
@@ -52,11 +60,11 @@ $lang2 = array(
 	"log_500" => "Dificultades técnicas - Inténtelo nuevamente, si el problema continúa, reporte el bug.",
 	"log_502" => "Dificultades técnicas - Espere...",
 	"log_503" => "Rainwave expermienta una sobrecarga, intente nuevamente.",
-	
+
 	// Lyre-AJAX Codes, these should NEVER show up...
 	"log_1000" => "Ups... ¡Encontraste un bug!",
 	"log_1001" => "Respuesta de JSON mal construida desde el servidor.",
-	
+
 	// Election Errors
 	"log_2000" => "Error del lado del servidor mientras se enviaba el voto.",
 	"log_2001" => "Debe estar sintonizado para poder votar.",
@@ -67,7 +75,7 @@ $lang2 = array(
 	"log_2006" => "La votación ha finalizado.",
 	"log_2007" => "No puede votar en ésta elección todavía.",
 	"log_2008" => "Debe votar en la estación en la cual está sintonizado.",
-	
+
 	// Making-a-Request Errors
 	"log_3000" => "Error del lado del servidor mientras se enviaba el voto. Intente nuevamente.",
 	"log_3001" => "Debe acceder para hacer una petición.",
@@ -78,13 +86,13 @@ $lang2 = array(
 	"log_3006" => "Límite de peticiones alcanzado.",
 	"log_3007" => "Canción ya pedida.",
 	"log_3008" => "Álbum ya pedido.",
-	
+
 	// Request Deletion Errors
 	"log_4000" => "Error del lado del servidor mientras se eliminaba la petición. Intente nuevamente.",
 	"log_4001" => "Debe acceder para cambiar sus peticiones.",
 	"log_4002" => "Error del lado del cliente mientras se enviaba el cambio. Recargue la página e intente nuevamente.",
 	"log_4003" => "Esa petición no le pertenece.",
-	
+
 	// Request Change Errors (swapping 1 request for another)
 	"log_6000" => "Error del lado del servidor mientras se cambiaba la petición. Intente nuevamente.",
 	"log_6001" => "Debe acceder para usar las peticiones.",
@@ -95,7 +103,7 @@ $lang2 = array(
 	"log_6006" => "Debe pedir una canción de la estación a la cual esté sintonizado.",
 	"log_6007" => "Ya ha pedido ésa canción.",
 	"log_6008" => "Ya ha pedido una canción de ése álbum.",
-	
+
 	// Rating Errors
 	"log_7000" => "Error del lado del servidor mientras se enviaba la valoración. Intente nuevamente.",
 	"log_7001" => "Debe acceder para poder valorar.",
@@ -105,18 +113,18 @@ $lang2 = array(
 	"log_7005" => "Error del lado del cliente mientras se enviaba la valoración. Recargue la página e intente nuevamente.",
 	"log_7006" => "Debe haberse sintonizado mientras sonaba la canción para poder valorarla.",
 	"log_7007" => "Debe esperar para valorar cuando se cambie de estación.",
-	
+
 	// Request Re-order Errors
 	"log_8000" => "Error del lado del servidor mientras se reordenaba. Intente nuevamente.",
 	"log_8001" => "Error del lado del cliente mientra se creaba la solicitud para reordenar. Intente nuevamente.",
 	"log_8002" => "No tiene peticiones para reordenar.",
 	"log_8003" => "Una de sus peticiones se ha cumplido. Intente nuevamente.",
-	
+
 	// Login Errors
 	"log_9000" => "Usuario y/o contraseña inválidos.",
 	"log_9001" => "Demasiados intentos de inicio de sesión. Por favor, ve a los foros.",
 	"log_9002" => "Error al iniciar sesión. Por favor, pregunta en los foros",
-	
+
 	/* Suffixes 101:
 		Rainwave's language library uses the following, in order:
 			1. The whole number's suffix
@@ -146,16 +154,16 @@ $lang2 = array(
 	"suffix_11" => "º",
 	"suffix_12" => "º",
 	"suffix_13" => "º",
-	
+
 	// Playlist Related
 
 	"pltab_albums" => "Álbumes",
 	"pltab_artists" => "Artistas",
 	"overclockedremixes" => "ReMixes OverClockeados", // T.N.: In spanish that sounds... awful! Looking for best translations.
 	"mixwavesongs" => "Canciones de Mixwave",
-	
+
 	// Playlist Sentences, these all show up in the album detail pages.
-	
+
 	"pl_oncooldown" => "En enfriamiento por |time|.",
 	"pl_ranks" => "Valoración: |rating|, lugar |S:rank| del ránking.",
 	"pl_favourited" => "Favorito por |count| |P:count,person|.",
@@ -170,12 +178,12 @@ $lang2 = array(
 	"pl_genres2_more" => ", entre otros.",
 
 	// Listeners Panel
-	
-	"ltab_listeners" => "Escuchas",					// Listeners tab name
-	"otherlisteners" => "(|guests| invitados, |total| en total)",	// appears at the bottom of the current listeners list
-	"registeredlisteners" => "|users| Usuarios",			// appears underneath guestlisteners.
-	"guestlisteners" => "|guests| Invitados",			// appears at the bottom of the current listeners list
-	"totallisteners" => "|total| Escuchas Ahora",			// appears underneath guestlisteners.
+
+	"ltab_listeners" => "Escuchas", // Listeners tab name
+	"otherlisteners" => "(|guests| invitados, |total| en total)", // appears at the bottom of the current listeners list
+	"registeredlisteners" => "|users| Usuarios", // appears underneath guestlisteners.
+	"guestlisteners" => "|guests| Invitados", // appears at the bottom of the current listeners list
+	"totallisteners" => "|total| Escuchas Ahora", // appears underneath guestlisteners.
 	"voteslast2weeks" => "Votos en las últimas 2 semanas: ",
 	"voterecord" => "Historial de Votos: ",
 	"requestrecord" => "Historial de Peticiones: ",
@@ -188,9 +196,9 @@ $lang2 = array(
 	"lsnrdt_percentofratings" => "Porcentaje de Valoraciones",
 	"lsnrdt_percentofrequests" => "Porcentaje de Peticiones",
 	"lsnrdt_percentofvotes" => "Porcentaje de Votos",
-	
+
 	// Preference names
-	
+
 	"pref_refreshrequired" => "(se requiere recargar)",
 	"pref_timeline" => "Cronograma",
 	"pref_timeline_linear" => "Cronograma Lineal",
@@ -211,7 +219,7 @@ $lang2 = array(
 	"pref_requests" => "Peticiones",
 	"pref_requests_technicalhint" => "Mostrar más detalles en la pestaña",
 	"pref_timeline_highlightrequests" => "Mostrar quien solicita por defecto",
-  "pref_playlist" => "Lista de canciones",
+	"pref_playlist" => "Lista de canciones",
 	"pref_playlist_sortfavfirst" => "Mostrar Álbumes Favoritos Primero",
 	"pref_playlist_sortreadyfirst" => "Mostrar Álbumes Disponibles Primero",
 	"pref_playlist_sortalbums" => "Ordenar Álbumes por",
@@ -219,9 +227,9 @@ $lang2 = array(
 	"pref_playlist_v_globalrating" => "Valoración Global",
 	"pref_playlist_v_cooldown" => "Tiempo de Enfríamiento",
 	"pref_playlist_v_rating" => "Valoración Personal",
-	
+
 	// About screen
-	
+
 	"creator" => "Creador",
 	"rainwavemanagers" => "Equipo de Rainwave",
 	"ocrmanagers" => "Equipo de OCR Radio",
@@ -236,13 +244,13 @@ $lang2 = array(
 	"translators" => "Traductores",
 	"rainwave3version" => "Rainwave Versión 3",
 	"revision" => "Rev", // T.N.: It's the same word for spanish.
-	
+
 	// Help
 	// Careful, a lot of those funny blocks are there because Courier New doesn't have the UTF-8 arrow icons.
 	// "blank" is a header
 	// "blank_p" is an explanatory paragraph, part of a tutorial
 	// "blank_t" is the short explanation of what tutorial follows when you click on the help box
-	
+
 	"helpstart" => "Iniciar ▶ ",
 	"helpnext" => "Siguiente ▶ ",
 	"helplast" => "Cerrar ▶ ",
@@ -274,16 +282,16 @@ $lang2 = array(
 	"managingrequests_p" => "Arrastre para re-ordenar los peticiones, o haga click en la X para eliminar una petición.",
 	"timetorequest" => "Estado de la Petición",
 	"timetorequest_p" => "El estado de su petición se muestra aquí.|br|Si dice \"Expirando\" o \"Enfriando\", debería cambiar la petición que se encuentre en primer lugar.",
-	
+
 	// What happens when RW crashes
-	
+
 	"crashed" => "Rainwave se ha estrellado y caido estrepitosamente.",
 	"submiterror" => "Por favor, copie y pegue lo que aparece abajo y publíquelo en los foros para ayudar en la depuración:",
 	"pleaserefresh" => "Actualice la página para usar nuevamente Rainwave.",
-	
+
 	// Schedule Panel Administration Functions, does not need to be translated.
 	// T.N.: So... why is it here, anyway? lol
-	
+
 	"newliveshow" => "New Live Show",
 	"newliveexplanation" => "Time can be 0 (now) or an epoch time in UTC.",
 	"time" => "Time",
@@ -309,13 +317,13 @@ $lang2 = array(
 	"wrapup" => "Wrap Up",
 	"dormant" => "Dormant",
 	"OVERTIME" => "OVERTIME",
-	
+
 	// Schedule Panel user text.
 
 	"noschedule" => "No hay eventos planificados para ésta semana.",
-	
+
 	// Requests
-	
+
 	"requestok" => "Pedido",
 	"reqexpiring" => " (¡expirando!)",
 	"reqfewminutes" => " (en pocos minutos)",
@@ -337,7 +345,7 @@ $lang2 = array(
 	"reqruleblocked" => "Bloqueado; álbum o grupo está en votación.",
 	"reqalbumblocked" => "Bloqueado; álbum está en votación.",
 	"reqgroupblocked" => "Bloqueado; grupo de enfriamiento está en votación.",
-	
+
 	// Now Playing and Timeline panels
 
 	"nowplaying" => "Ahora reproduciendo",
@@ -357,13 +365,13 @@ $lang2 = array(
 	"adset" => "Publicidad",
 	"onetimeplay" => "Reproducción De-Una-Vez",
 	"deleteonetime" => "Borrar Reproducción De-Una-Vez",
-	"currentdj" => "DJ |username|",  // T.N.: It's the same word for spanish.
+	"currentdj" => "DJ |username|", // T.N.: It's the same word for spanish.
 	"electionresults" => "Resultado de la votación",
 	"from" => "de |username|",
 	"votefaileleclocked" => "Voto Fallido, Votación Cerrada",
-	
+
 	// Menu Bar
-	
+
 	"selectstation" => "Seleccione una Estación",
 	"tunedin" => "Sintonizado",
 	"tunedout" => "Desconectado",
@@ -383,15 +391,15 @@ $lang2 = array(
 	"loading" => "Cargando",
 	"searching" => "Buscando: ",
 	"m3uhijack" => "|plugin| está tratando de reproducir el M3U. Mejor haz click derecho y luego 'Guardar como'.",
-  "oruse" => "o use:", // T.N.: It's the same word for spanish. Pronounced oo-seh.
-	"use" => "use:", // T.N.: It's the same word for spanish. Pronounced oo-seh.
+	"oruse" => "o use:", // T.N.: It's the same word for spanish. Pronounced oo-se.
+	"use" => "use:",
 	"menu_morestations_v2" => "Todas las Estaciones »",
 	"menu_morestations" => "Más ▼",
 	"waitingforstatus" => "Esperando por Estatus",
 	"logout" => "Cerrar sesión",
 	"managekeys" => "Administrar Claves de API",
-  "listenerprofile" => "Perfil de Escucha",
-	
+	"listenerprofile" => "Perfil de Escucha",
+
 	/* Words for pluralization */
 
 	"person" => "persona",

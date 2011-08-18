@@ -97,7 +97,7 @@ function Rating(p) {
 		that.userrating = that.oldrating;
 		that.resetUser();
 		that.showConfirmBad();
-		that.setTimeout(that.resetConfirm, 750);
+		setTimeout(that.resetConfirm, 750);
 	};
 	
 	that.updateSiteRating = function(site) {

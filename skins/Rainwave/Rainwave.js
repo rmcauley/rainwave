@@ -843,62 +843,19 @@ function _THEME() {
 			
 			menup.table = createEl("table", { "class": "menu_table", "cellspacing": 0 });
 			var row = createEl("tr", {}, menup.table);
-			menup.td_station = createEl("td", { "class": "menu_td_station menu_td_station_1" }, row);
-			menup.station_select = createEl("ul", { "class": "menu_select" }, menup.td_station);
-			createEl("li", { "class": "menu_select_station menu_select_station_selected", "textContent": _l("menu_station_" + PRELOADED_SID) }, menup.station_select);
-			for (var i = 1; i < STATIONS.length; i++) {
-				if (i != PRELOADED_SID) {
-					createEl("li", { "class": "menu_select_station", "textContent": _l("menu_station_" + i) }, menup.station_select);
-				}
+			menup.td_station = createEl("td", { "class": "menu_td_rainwave station_1" }, row);
+			var menuorder = [ 5, 1, 4, 3, 2 ];
+			var classname, station;
+			for (var i = 0; i < menuorder.length; i++) {
+				classname = "menu_td_station menu_td_station_" + menuorder[i];
+				if (menuorder[i] == PRELOADED_SID) classname += "_on";
+				station = createEl("td", { "class": classname }, row);
+				if (menuorder[i] == 1)	station.addEventListener("click", function() { menup.changeStation(1); }, true);
+				else if (menuorder[i] == 2) station.addEventListener("click", function() { menup.changeStation(2); }, true);
+				else if (menuorder[i] == 3) station.addEventListener("click", function() { menup.changeStation(3); }, true);
+				else if (menuorder[i] == 4) station.addEventListener("click", function() { menup.changeStation(4); }, true);
+				else if (menuorder[i] == 5) station.addEventListener("click", function() { menup.changeStation(5); }, true);
 			}
-			/*var selectdiv;
-			var runningx = 0;
-			var logowidth = 120;
-			if (PRELOADED_SID != 1) {
-				selectdiv = createEl("div", { "class": "menu_select_station_1 menu_select_station_x" }, createEl("div", { "class": "menu_select_station", "style": "margin-left: " + runningx + "px;" }, menup.station_select));
-				selectdiv.addEventListener("click", function() { menup.changeStation(1); }, true);
-				runningx += 140;
-			}
-			if (PRELOADED_SID != 2) {
-				selectdiv = createEl("div", { "class": "menu_select_station_2 menu_select_station_x" }, createEl("div", { "class": "menu_select_station", "style": "margin-left: " + runningx + "px;" }, menup.station_select));
-				selectdiv.addEventListener("click", function() { menup.changeStation(2); }, true);
-				runningx += 130;
-			}
-			if (PRELOADED_SID != 3) {
-				selectdiv = createEl("div", { "class": "menu_select_station_3 menu_select_station_x" }, createEl("div", { "class": "menu_select_station", "style": "margin-left: " + runningx + "px;" }, menup.station_select));
-				selectdiv.addEventListener("click", function() { menup.changeStation(3); }, true);
-				runningx += 130;
-			}*/
-
-			/*menup.station_select_width = fx.make(fx.CSSNumeric, menup.station_select, 250, "width", "px");
-			menup.td_station.addEventListener("mouseover", function(e) {
-					if ((getMousePosX(e) == 0) && (getMousePosY(e) == 0)) return;
-					menup.station_select_width.start(300);
-				}, true);
-			menup.td_station.addEventListener("mouseout", function() { menup.station_select_width.start(12); }, true);
-			menup.station_select_width.set(12);*/
-			
-			/*prefs.addPref("rainwavetheme", { "name": "showmorestations", "defaultvalue": true, "hidden": true });
-			if (prefs.getPref("rainwavetheme", "showmorestations")) {
-				var morestations = createEl("div", { "class": "menu_select_more" });
-				_l("menu_morestations_v2", {}, morestations);
-				var morestations_fx = fx.make(fx.OpacityRemoval, morestations, 250, menup.td_station);
-				morestations_fx.set(1);
-				var stationselect_fx = fx.make(fx.CSSNumeric, menup.station_select, 250, "left", "px");
-				stationselect_fx.set(210);
-				menup.td_station_width = fx.make(fx.CSSNumeric, menup.td_station, 250, "width", "px");
-				menup.td_station_width.set(230);
-				menup.td_station.addEventListener("mouseover", function(e) {
-						if ((getMousePosX(e) == 0) && (getMousePosY(e) == 0)) return;
-						morestations_fx.start(0);
-						stationselect_fx.start(logowidth);
-						menup.td_station_width.start(150);
-						prefs.changePref("rainwavetheme", "showmorestations", false);
-					}, true);
-			}*/
-			// else {			// should be defined in CSS
-				// menup.td_station_width.set(150);
-			// }
 			
 			menup.td_play = createEl("td", { "class": "menu_td_play menu_td_play_tunedout" }, row);
 			menup.fx_play_width = fx.make(fx.CSSNumeric, menup.td_play, 250, "width", "px");
@@ -906,21 +863,27 @@ function _THEME() {
 			
 			menup.m3u_download = createEl("div", { "class": "menu_download" }, menup.td_play);
 			menup.or_use = createEl("span", { "textContent": _l("oruse") }, menup.m3u_download);
+			var wmpa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_wmp" }, menup.m3u_download);
+			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, wmpa);
+			wmpa.addEventListener("click", menup.tuneInClickMP3, true);
+			var itunesa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_itunes" }, menup.m3u_download);
+			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, itunesa);
+			itunesa.addEventListener("click", menup.tuneInClickMP3, true);
 			var vlca = createEl("a", { "href": "tunein.php?ogg=true", "onclick": "return false;", "class": "tunein_vlc" }, menup.m3u_download);
-			createEl("img", { "width": 17, "height": 20, "src": "images/blank.png" }, vlca);
-			vlca.addEventListener("click", menup.tuneInClick, true);
+			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, vlca);
+			vlca.addEventListener("click", menup.tuneInClickOgg, true);
 			var winampa = createEl("a", { "href": "tunein.php?ogg=true", "onclick": "return false;", "class": "tunein_winamp" }, menup.m3u_download);
-			createEl("img", { "width": 16, "height": 20, "src": "images/blank.png" }, winampa);
-			winampa.addEventListener("click", menup.tuneInClick, true);
+			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, winampa);
+			winampa.addEventListener("click", menup.tuneInClickOgg, true);
 			var fb2ka = createEl("a", { "href": "tunein.php?ogg=true", "onclick": "return false;", "class": "tunein_fb2k" }, menup.m3u_download);
-			createEl("img", { "width": 17, "height": 20, "src": "images/blank.png" }, fb2ka);
-			fb2ka.addEventListener("click", menup.tuneInClick, true);
+			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, fb2ka);
+			fb2ka.addEventListener("click", menup.tuneInClickOgg, true);
 			var m3u_download_width = fx.make(fx.CSSNumeric, menup.m3u_download, 250, "width", "px");
 			m3u_download_width.set(0);
 			
 			menup.td_play.addEventListener("mouseover", function() {
-					m3u_download_width.start(110);
-					menup.fx_play_width.start(190);
+					m3u_download_width.start(135);
+					menup.fx_play_width.start(220);
 				}, true);
 			menup.td_play.addEventListener("mouseout", function() {
 					m3u_download_width.start(0);
@@ -1196,7 +1159,8 @@ function _THEME() {
 							"yaxis_nomin": true,
 							"yaxis_min": 0,
 							"xgrid_disable": true,
-							"xaxis_padpx": 13
+							"xaxis_padpx": 13,
+							"yaxis_minrange": 5
 						},
 						"data": json.album_rating_histogram,
 						"graphfunc": graph.Bar
@@ -1262,9 +1226,27 @@ function _THEME() {
 				else createEl("img", { "src": skindir + "/images/noart_1.jpg", "class": "pl_ad_albumart" }, wdow.albumarttd);
 			}
 			
-			wdow.songlist = createEl("table", { "class": "pl_songlist", "style": "clear: both;" }, wdow.div);
 			wdow.songarray = [];
-			that.drawAlbumTable(wdow.songlist, wdow.songarray, json.song_data);
+			if (user.p.sid == 5) {	
+				var hdr;
+				var render = {};
+				for (var i = 0; i < STATIONS.length; i++) {
+					render[i] = [];
+				}
+				for (i = 0; i < json.song_data.length; i++) {
+					render[json.song_data[i].song_rating_sid].push(json.song_data[i]);
+				}
+				for (i = 0; i < STATIONS.length; i++) {
+					if (render[i].length > 0) {
+						createEl("div", { "class": "pl_songlist_hdr station_" + i, "style": "clear: both;" }, wdow.div);
+						that.drawAlbumTable(createEl("table", { "class": "pl_songlist" }, wdow.div), wdow.songarray, render[i]);
+					}
+				}
+			}
+			else {
+				wdow.songlist = createEl("table", { "class": "pl_songlist", "style": "clear: both;" }, wdow.div);
+				that.drawAlbumTable(wdow.songlist, wdow.songarray, json.song_data);
+			}
 			
 			wdow.updateHelp = function() {
 				if (wdow.songarray.length > 0) {
@@ -1524,7 +1506,7 @@ function _THEME() {
 							"stroke": that.BarGraphStroke, 
 							"fill": that.BarGraphFill, 
 							"xaxis_nonumbers": true, 
-							"minrangey": 100, 
+							"yaxis_minrange": 100, 
 							"xaxis_max": maxtime, 
 							"xaxis_steps": 30,
 							"xaxis_min": mintime,

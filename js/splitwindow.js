@@ -12,7 +12,7 @@ function SplitWindow(name, container, table_class) {
 	that.currentidopen = false;
 	
 	// RESIZE MANAGEMENT
-	prefs.addPref("splitwindow", { "name": "sizeleft_" + name, "defaultvalue": 200, "hidden": true });	
+	prefs.addPref("splitwindow", { "name": "sizeleft_" + name, "defaultvalue": 260, "hidden": true });	
 	prefs.addPref("splitwindow", { "name": "lasttab_" + name, "defaultvalue": false, "hidden": true });
 	left.style.width = prefs.getPref("splitwindow", "sizeleft_" + name) + "px";
 	tabs_td.style.width = prefs.getPref("splitwindow", "sizeleft_" + name) + "px";

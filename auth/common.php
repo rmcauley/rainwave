@@ -21,12 +21,13 @@ else if ($_SERVER['HTTP_HOST'] == "game.rainwave.cc") $sid = RW;
 else if ($_SERVER['HTTP_HOST'] == "ocr.rainwave.cc") $sid = OCR;
 else if ($_SERVER['HTTP_HOST'] == "ocremix.rainwave.cc") $sid = OCR;
 else if ($_SERVER['HTTP_HOST'] == "remix.rainwave.cc") $sid = VW;
+else if ($_SERVER['HTTP_HOST'] == "covers.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "mix.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "mixwave.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "vwave.rainwave.cc") $sid = VW;
 else if ($_SERVER['HTTP_HOST'] == "chip.rainwave.cc") $sid = BIT;
+else if ($_SERVER['HTTP_HOST'] == "chiptune.rainwave.cc") $sid = BIT;
 else if ($_SERVER['HTTP_HOST'] == "bit.rainwave.cc") $sid = BIT;
-else if ($_SERVER['HTTP_HOST'] == "bitwave.rainwave.cc") $sid = BIT;
 else if ($_SERVER['HTTP_HOST'] == "omni.rainwave.cc") $sid = OMNI;
 else if ($_SERVER['HTTP_HOST'] == "all.rainwave.cc") $sid = OMNI;
 // An override, mostly for administration uses
