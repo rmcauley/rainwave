@@ -843,7 +843,7 @@ function _THEME() {
 			
 			menup.table = createEl("table", { "class": "menu_table", "cellspacing": 0 });
 			var row = createEl("tr", {}, menup.table);
-			menup.td_station = createEl("td", { "class": "menu_td_rainwave station_1" }, row);
+			menup.td_station = createEl("td", { "class": "menu_td_rainwave station_" + PRELOADED_SID }, row);
 			var menuorder = [ 5, 1, 4, 3, 2 ];
 			var classname, station;
 			for (var i = 0; i < menuorder.length; i++) {
@@ -1575,11 +1575,20 @@ function _THEME() {
 				tr = createEl("tr", false, stationstats);
 				createEl("td", { "textContent": STATIONS[i] }, tr);
 				createEl("td", { "class": "lsnrdt_spacer" }, tr);
-				createEl("td", { "textContent": json.user_station_specific[i].rating_average }, tr);
-				createEl("td", { "class": "lsnrdt_spacer" }, tr);
-				createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[i].rating_progress), "textContent": json.user_station_specific[i].rating_progress + "%" }, tr);
-				createEl("td", { "class": "lsnrdt_spacer" }, tr);
-				createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[i].rating_percentage), "textContent": json.user_station_specific[i].rating_percentage + "%" }, tr);
+				if (i != 5) {
+					createEl("td", { "textContent": json.user_station_specific[i].rating_average }, tr);
+					createEl("td", { "class": "lsnrdt_spacer" }, tr);
+					createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[i].rating_progress), "textContent": json.user_station_specific[i].rating_progress + "%" }, tr);
+					createEl("td", { "class": "lsnrdt_spacer" }, tr);
+					createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[i].rating_percentage), "textContent": json.user_station_specific[i].rating_percentage + "%" }, tr);
+				}
+				else {
+					createEl("td", { "textContent": _l("notapplicable"), "class": "lsnrdt_notapplicable" }, tr);
+					createEl("td", { "class": "lsnrdt_spacer" }, tr);
+					createEl("td", { "class": "lsnrdt_bar lsnrdt_notapplicable", "textContent": _l("notapplicable") }, tr);
+					createEl("td", { "class": "lsnrdt_spacer" }, tr);
+					createEl("td", { "class": "lsnrdt_bar lsnrdt_notapplicable", "textContent": _l("notapplicable") }, tr);
+				}
 				createEl("td", { "class": "lsnrdt_spacer" }, tr);
 				createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[i].request_percentage), "textContent": json.user_station_specific[i].request_percentage + "%" }, tr);
 				createEl("td", { "class": "lsnrdt_spacer" }, tr);

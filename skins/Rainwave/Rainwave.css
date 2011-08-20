@@ -755,7 +755,7 @@ table.menu_table td {
 
 td.menu_td_rainwave {
 	width: 105px;
-	background-position: 2px 2px;
+	background-position: 2px 3px;
 	background-repeat: no-repeat;
 }
 
@@ -1519,6 +1519,10 @@ table.listener_header_detail td {
 
 td.lsnrdt_spacer {
 	width: 1em;
+}
+
+.lsnrdt_notapplicable {
+	color: [% vdarktext %]
 }
 
 table.listener_detail td {

@@ -11,6 +11,10 @@ function SplitWindow(name, container, table_class) {
 	var that = {};
 	that.currentidopen = false;
 	
+	that.getSearchHelpEl = function() {
+		return bar;
+	};
+	
 	// RESIZE MANAGEMENT
 	prefs.addPref("splitwindow", { "name": "sizeleft_" + name, "defaultvalue": 260, "hidden": true });	
 	prefs.addPref("splitwindow", { "name": "lasttab_" + name, "defaultvalue": false, "hidden": true });

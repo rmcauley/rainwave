@@ -182,6 +182,7 @@ $lang = array(
 	"votewinloss" => "|wins| |P:wins,win|, |losses| |P:losses,loss| -- wins |ratio|%",
 	"requestwinloss" => "|wins| played, |losses| rejected -- played |ratio|%",
 	"lsnr_rankgraph_header" => "Votes and Rank For The Last Month",
+	"notapplicable" => "n/a",
 	
 	"lsnrdt_allstations" => "All Stations",
 	"lsnrdt_averagerating" => "Avg. Rating",
@@ -261,8 +262,8 @@ $lang = array(
 	"ratecurrentsong_t" => "Rating affects how often songs and albums are played.|br|Learn how to rate.",
 	"setfavourite" => "Favourites",
 	"setfavourite_p" => "Click the box at the end of the ratings bar to set, or unset, your favourites.",
-	"playlistsearch" => "Playlist Search",
-	"playlistsearch_p" => "With the playlist open, simply start typing to run a playlist search.|br|Use your mouse or up/down keys to navigate.",
+	"playlistsearch_v2" => "Type to Search",
+	"playlistsearch_v2_p" => "Start typing away to search the open list.|br|Press escape to clear.",
 	"request" => "Requests",
 	"request_p" => "Requesting gets the songs you want into an election.|br|Learn how to request.",
 	"openanalbum" => "Open an Album",
@@ -273,6 +274,8 @@ $lang = array(
 	"managingrequests_p" => "Drag and drop to re-order your requests, or click X to delete one of them.",
 	"timetorequest" => "Request Status",
 	"timetorequest_p" => "Your request status is indicated here.|br|If it indicates \"Expiring\" or \"Cooldown\", you should change your #1 request.",
+	"openplaylist" => "Open the Playlist",
+	"openplaylist_p" => "",
 	
 	// What happens when RW crashes
 	

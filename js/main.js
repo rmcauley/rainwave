@@ -68,9 +68,9 @@ function init() {
 	}
 	
 	if (!prefs.getPref("help", "visited") && !SIDEBAR) {
-		help.startTutorial("welcome");
 		prefs.changePref("help", "visited", true);
 		prefs.savePrefs();
+		help.startTutorial("welcome");
 	}
 }
 

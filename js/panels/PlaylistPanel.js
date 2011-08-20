@@ -6,6 +6,7 @@ prefs.addPref("playlist", { "name": "sortalbums", "defaultvalue": "album_name", 
 		{ "value": "album_lowest_oa", "option": _l("pref_playlist_v_cooldown") },
 		{ "value": "album_rating_avg", "option": _l("pref_playlist_v_globalrating") }
 	] } );
+prefs.addPref("playlist", { "name": "opened", "defaultvalue": false, "hidden": true });
 
 panels.PlaylistPanel = {
 	ytype: "fit",
@@ -68,9 +69,9 @@ panels.PlaylistPanel = {
 			that.onHeightResize(container.offsetHeight);
 			
 			help.addStep("openanalbum", { "h": "openanalbum", "p": "openanalbum_p", "skipf": function() { view.isAnyDivOpen("album"); } });
-			help.addStep("clicktorequest", { "h": "clicktorequest", "p": "clicktorequest_p" });
-			help.addTutorial("request", [ "login", "tunein", "openanalbum", "clicktorequest" ]);
-			help.addTopic("request", { "h": "request", "p": "request_p", "tutorial": "request" });
+
+			help.addStep("playlistsearch_v2", { "h": "playlistsearch_v2", "p": "playlistsearch_v2_p", "mody": 5, "modx": 5 });
+			help.addTutorial("playlistsearch_v2", [ "playlistsearch_v2" ]);
 		};
 		
 		that.onHeightResize = function(height) {
@@ -173,6 +174,13 @@ var AlbumSearchTable = function(parent, container, view) {
 		}
 		
 		if (albums.length > 0) help.changeStepPointEl("openanalbum", [ albums[sorted[0]].td_name ]);
+		
+		if (!prefs.getPref("playlist", "opened") && (help.getCurrentTutorial() != "request") && (help.getCurrentTutorial() != "playlistsearch_v2")) {
+			help.changeStepPointEl("playlistsearch_v2", [ view.getSearchHelpEl() ]);
+			prefs.changePref("playlist", "opened", true);
+			prefs.savePrefs();
+			help.startTutorial("playlistsearch_v2");
+		}
 	};
 	
 	that.sortList = function(a, b) {

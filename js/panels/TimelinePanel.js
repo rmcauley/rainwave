@@ -477,6 +477,7 @@ function TimelineSkeleton(json, container, parent) {
 	that.enableRating = function() {};	
 	that.disableRating = function() {};
 	that.registerVote = function() {};
+	that.registerFailedVote = function() {};
 
 	return that;
 };

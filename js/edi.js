@@ -34,7 +34,7 @@ var edi = function() {
 	
 	that.openPanelLink = function(changeurl) {
 		// if the panel we're trying to call doesn't exist, leave
-		if (typeof(panelcname[arguments[1]]) == "undefined") return;
+		if (typeof(panelcname[arguments[1]]) == "undefined") return false;
 		var panel = panelcname[arguments[1]];
 		// convert our arguments to an array and then chop changeurl out of the array
 		var args = Array.prototype.slice.call(arguments).slice(1);
@@ -46,15 +46,16 @@ var edi = function() {
 		if (typeof(that.openpanels[panel]) != "undefined") {
 			// make sure to slice the args again to leave out the panel name
 			that.openpanels[panel].openLink.apply(this, args.slice(1));
-			return;
+			return true;
 		}
 		for (i in that.openpanels) {
 			if (that.openpanels[i].mpi) {
 				if (that.openpanels[i].openPanelLink.apply(this, args)) {
-					return;
+					return true;
 				}
 			}
 		}
+		return false;
 	};
 	
 	that.changeDeepLinkPanel = function(panel) {		

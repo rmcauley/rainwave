@@ -50,8 +50,6 @@ var help = function() {
 			steps[name].pointel = pointel;
 			if (showingstepname === name) {
 				ctutshowing.pointel = pointel;
-				//that.removeHighlights();
-				//that.drawHighlights(ctutshowing);
 			}
 		}
 	};
@@ -59,7 +57,6 @@ var help = function() {
 	that.changeTopicPointEl = function(name, pointel) {
 		if (topics[name]) {
 			topics[name].pointel = pointel;
-			//if (alltopicsshown == 2) that.removeHighlights();
 		}
 	};
 	
@@ -97,7 +94,6 @@ var help = function() {
 	
 	that.hideAllTopics = function(exception) {
 		that.endTutorial();
-		//that.removeHighlights();
 		alltopicsshown = 1;
 		for (var i in showing) {
 			if (exception && alltopics[i] && (alltopics[i] == exception)) continue;
@@ -112,6 +108,10 @@ var help = function() {
 		ctutshowing = that.makeHelpDiv(steps[tuts[tutname][0]], tutname);
 		ctutstep = 1;
 		ctut = tutname;
+	};
+	
+	that.getCurrentTutorial = function() {
+		return ctut;
 	};
 	
 	that.continueTutorial = function(tut, div) {
@@ -154,7 +154,6 @@ var help = function() {
 		ctutstep = 0;
 		ctutshowing = false;
 		ctut = false;
-		//that.removeHighlights();
 	};
 	
 	that.clickXButton = function() {
@@ -186,16 +185,9 @@ var help = function() {
 		container.fxOpacity.set(1);
 		container.fxOpacity.onComplete = function() { document.getElementById("body").removeChild(container); };
 		
-		if (data.tutorial) {
-			container.div.addEventListener("click", function() { that.continueTutorial(data.tutorial, container); }, true);
-			container.div.style.cursor = "pointer";	
-			
-			container.next = createEl("div", { "class": "help_next" });
-			container.next.addEventListener("click", function() { that.continueTutorial(data.tutorial, container); }, true);
-			container.next.style.cursor = "pointer";
-			container.appendChild(container.next);
-		}
-		else if (tutorial) {
+		var laststep = false;
+		if (data.tutorial) tutorial = data.tutorial;
+		if (tutorial) {
 			container.div.addEventListener("click", function() { that.continueTutorial(tutorial, container); }, true);
 			container.div.style.cursor = "pointer";	
 			
@@ -203,12 +195,14 @@ var help = function() {
 			container.next.addEventListener("click", function() { that.continueTutorial(tutorial, container); }, true);
 			container.next.style.cursor = "pointer";
 			container.appendChild(container.next);
+			
+			if (tuts[tutorial].length == 1) laststep = true;
 		}
 		
 		document.getElementById("body").appendChild(container);
 		container.fxWidth.set(container.offsetWidth);
 		container.fxHeight.set(container.div.offsetHeight);
-		that.changeHelpDiv(data, container);
+		that.changeHelpDiv(data, container, laststep);
 		
 		return container;
 	};
@@ -254,8 +248,6 @@ var help = function() {
 		var finalx, finaly, pel, arrow, arrowx, arrowy;
 		finalx = 0;
 		finaly = 0;
-		if (data.modx) finalx = data.modx;
-		if (data.mody) finaly = data.mody;
 		if (data.pointel && data.pointel[0]) {
 			pel = that.getElPosition(data.pointel[0]);
 			if (pel.y < 30) {
@@ -288,6 +280,8 @@ var help = function() {
 		}
 		if (finalx < 5) finalx = 5;
 		if (finaly < 5) finaly = 5;
+		if (data.modx) finalx += data.modx;
+		if (data.mody) finaly += data.mody;
 		
 		if (alltopicsshown == 2) {
 			var setx, sety;
@@ -318,7 +312,6 @@ var help = function() {
 		
 		if (data.pointel) container.pointel = data.pointel;
 		else container.pointel = false;
-		//that.drawHighlights(container);
 	};
 	
 	that.getElPosition = function(el) {
@@ -372,56 +365,6 @@ var help = function() {
 		else return el.offsetHeight;
 	};
 	
-/*	that.drawHighlights = function(container) {
-		if (!container || !container.pointel) return;
-		for (var i = 0; i < container.pointel.length; i++) {
-			if (container.pointel[i]) {
-				var obj = {};
-				obj.el = container.pointel[i];
-				if (svg.isElSVG(obj.el)) {
-					obj.stroke = obj.el.getAttribute("stroke");
-					obj.strokewidth = obj.el.getAttribute("stroke-width");
-					obj.el.setAttribute("stroke", theme.helplinecolor);
-					if (obj.el.nodeName == "text") obj.el.setAttribute("stroke-width", 1);
-					else obj.el.setAttribute("stroke-width", 2);
-				}
-				else {
-					if ((obj.el.children.length == 0) && (obj.el.textContent > "")) {
-						obj.color = that.getStyle(obj.el, "color");
-						obj.fontweight = that.getStyle(obj.el, "font-weight");
-						obj.el.style.color = theme.helptextcolor;
-						obj.el.style.fontWeight = "bold";
-					}
-					else {
-						obj.border = that.getStyle(obj.el, "border");
-						obj.el.style.border = "solid 2px " + theme.helplinecolor;
-					}
-				}
-				highlighted.push(obj);
-			}
-		}
-	};
-	
-	that.removeHighlights = function() {
-		for (var i = 0; i < highlighted.length; i++) {
-			if (svg.isElSVG(highlighted[i].el)) {
-				if (highlighted[i].stroke) highlighted[i].el.setAttribute("stroke", highlighted[i].stroke);
-				else highlighted[i].el.removeAttribute("stroke");
-				if (highlighted[i].strokewidth) highlighted[i].el.setAttribute("stroke-width", highlighted[i].strokewidth);
-				else highlighted[i].el.removeAttribute("strokewidth");
-			}
-			else {
-				if (highlighted[i].border) highlighted[i].el.style.border = highlighted[i].border;
-				else highlighted[i].el.style.border = "";
-				if (highlighted[i].color) highlighted[i].el.style.color = highlighted[i].color;
-				else highlighted[i].el.style.color = "inherit";
-				if (highlighted[i].fontweight) highlighted[i].el.style.fontWeight = highlighted[i].fontweight;
-				else highlighted[i].el.style.fontWeight = "normal";
-			}
-		}
-		highlighted = [];
-	};*/
-	
 	/* courtesy http://www.quirksmode.org/dom/getstyles.html */
 	that.getStyle = function(el, styleProp) {
 		if (el.currentStyle)
@@ -461,8 +404,6 @@ help.addTopic("about", { "h": "about", "p": "about_p", "tutorial": "about" });
 
 help.addTutorial("welcome", [ "tunein", "clickonsongtovote" ] );
 
-help.addTopic("playlistsearch", { "h": "playlistsearch", "p": "playlistsearch_p" });
-
 help.addStep("setfavourite", { "h": "setfavourite", "p": "setfavourite_p", "modx": 8, "mody": -5 });
 help.addStep("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_p", "height": UISCALE * 15, "modx": -4, "mody": -5 });
 
@@ -470,3 +411,9 @@ help.addStep("tunein", { "h": "tunein", "p": "tunein_p", "mody": 35, "skipf": fu
 help.addStep("login", { "h": "login", "p": "login_p", "skipf": function() { return user.p.user_id > 1 ? true : false } });
 help.addTutorial("ratecurrentsong", [ "register", "tunein", "ratecurrentsong", "setfavourite" ]);
 help.addTopic("ratecurrentsong", { "h": "ratecurrentsong", "p": "ratecurrentsong_t", "tutorial": "ratecurrentsong", "modx": 6, "mody": -5, "skipf": function() { return user.p.radio_tunedin ? true : false; } });
+
+// the openanalbum step and playlistsearch_v2 step are defined in the playlist.  the openplaylist step takes care of, well, opening the playlist
+help.addStep("clicktorequest", { "h": "clicktorequest", "p": "clicktorequest_p" });
+help.addStep("openplaylist", { "h": "openplaylist", "p": "openplaylist_p", "skipf": function() { if (edi.openPanelLink(true, "playlist")) return true; } });
+help.addTutorial("request", [ "login", "tunein", "openplaylist", "playlistsearch_v2", "openanalbum", "clicktorequest" ]);
+help.addTopic("request", { "h": "request", "p": "request_p", "tutorial": "request" });
