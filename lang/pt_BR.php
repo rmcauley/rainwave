@@ -141,6 +141,8 @@ $lang2 = array(
 	"votewinloss" => "|wins| |P:wins,vitoria|, |losses| |P:losses,derrota| -- wins |ratio|%",
 	"requestwinloss" => "|wins| |P:wins,reproduzida|, |losses| |P:losses,rejeitada| -- reproduziu |ratio|%",
 	"lsnr_rankgraph_header" => "Votos e avaliações no último mês",
+	"notapplicable" => "n/a",
+
 	"lsnrdt_allstations" => "Todas as Estações",
 	"lsnrdt_averagerating" => "Avaliação Média",
 	"lsnrdt_ratingprogress" => "Completude da Avaliação",
@@ -170,7 +172,15 @@ $lang2 = array(
 	"pref_requests" => "Requisições",
 	"pref_requests_technicalhint" => "Título Técnico de Aba",
 	"pref_timeline_highlightrequests" => "Mostrar Requisitantes Por Padrão",
-	
+	"pref_playlist" => "Lista de Reprodução",
+	"pref_playlist_sortfavfirst" => "Álbuns Favoritos Primeiro",
+	"pref_playlist_sortreadyfirst" => "Álbuns Disponíveis Primeiro",
+	"pref_playlist_sortalbums" => "Método de Ordenamento de Álbuns",
+	"pref_playlist_v_albumname" => "Nome do Álbum",
+	"pref_playlist_v_globalrating" => "Avaliação Global",
+	"pref_playlist_v_cooldown" => "Resfriamento",
+	"pref_playlist_v_rating" => "Minha Avaliação",	
+
 	// About screen
 	
 	"creator" => "Criador",
@@ -212,8 +222,8 @@ $lang2 = array(
 	"ratecurrentsong_tp" => "Avaliação",
 	"setfavourite" => "Favoritos",
 	"setfavourite_p" => "Clique na caixa no fim da barra de avaliações para marcar, ou desmarcar, seus favoritos.",
-	"playlistsearch" => "Pesquisar na Lista de Reprodução",
-	"playlistsearch_p" => "Com a Lista de Reprodução aberta, apenas começe a digitar para executar uma busca na lista.|br|Use seu mouse or teclas acima/abaixo para navegar.",
+	"playlistsearch_v2" => "Digite para Pesquisar",
+	"playlistsearch_v2_p" => "Começe a digitar para pesquisar na lista aberta.|br|Pressione Esc para limpar.",
 	"request" => "Requisições",
 	"request_p" => "Requisições colocam as músicas que você quer em uma eleição.|br|Aprenda a requisitar.",
 	"openanalbum" => "Abra um álbum",
@@ -224,6 +234,8 @@ $lang2 = array(
 	"managingrequests_p" => "Arraste e solte para reordenar suas requisições, ou clique X para remover uma delas.",
 	"timetorequest" => "Estado da Requisição",
 	"timetorequest_p" => "O estado de sua requisição é indicado aqui.|br|Se indicar \"Expirando\" or \"Resfriando\", você deve alterar sua 1ª requisição.",
+	"openplaylist" => "Abrir a Lista de Reprodução",
+	"openplaylist_p" => "",
 	
 	// What happens when RW crashes
 	
@@ -339,6 +351,9 @@ $lang2 = array(
 	"m3uhijack" => "|plugin| está tentando se apoderar do arquivo M3U baixado.  Por favor, use clique direito e 'Salvar Como'.",
 	"menu_morestations" => "Mais ▼",
 	"waitingforstatus" => "Aguardado por Estado",
+	"oruse" => "ou use:",
+	"use" => "use:",
+	"menu_morestations_v2" => "Todas as Estações »",
 	"managekeys" => "Gerenciar Chaves de API",
 	"listenerprofile" => "Perfil do ouvinte",
 	

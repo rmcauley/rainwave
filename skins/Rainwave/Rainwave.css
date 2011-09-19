@@ -1346,6 +1346,8 @@ table.nowplaying_table {
 	height: 100%;
 	padding: 1.2em 10px 0px 3px;
 	table-layout: fixed;
+	background-position: bottom right;
+	background-repeat: no-repeat;
 }
 
 td.nowplaying_album_art {

@@ -644,6 +644,9 @@ function _THEME() {
 		var urlneedsfill = false;
 		if (json) {
 			// songs
+			if (json.song_rating_sid && (json.song_rating_sid != user.p.sid)) {
+				table.className = "nowplaying_table station_" + json.song_rating_sid;
+			}
 			if (json.song_title) {
 				table.song_title_text = createEl("div", { "textContent": json.song_title }, table.song_title);
 			}
