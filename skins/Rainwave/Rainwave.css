@@ -363,6 +363,13 @@ div.pl_ad_albumname {
 	padding:  0.1em 0px .2em .2em;
 }
 
+.pl_ad_albumname_detail {
+	float: right;
+	margin-right: 150px;
+	margin-top: 6px;
+	cursor: pointer;
+}
+
 img.pl_ad_albumname_station {
 	float: right;
 	margin-top: 3px;

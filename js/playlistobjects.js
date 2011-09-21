@@ -60,5 +60,9 @@ var Username = {
 	
 	open: function(user_id) {
 		edi.openPanelLink(true, "listeners", "id", user_id);
+	},
+	
+	openFresh: function(user_id) {
+		edi.openPanelLink(true, "listeners", "id_refresh", user_id);
 	}
 }

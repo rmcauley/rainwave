@@ -183,6 +183,7 @@ $lang = array(
 	"requestwinloss" => "|wins| played, |losses| rejected -- played |ratio|%",
 	"lsnr_rankgraph_header" => "Votes and Rank For The Last Month",
 	"notapplicable" => "n/a",
+	"refresh" => "Refresh",
 	
 	"lsnrdt_allstations" => "All Stations",
 	"lsnrdt_averagerating" => "Avg. Rating",

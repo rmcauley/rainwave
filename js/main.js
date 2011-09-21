@@ -25,6 +25,28 @@ var panelcname = {};
 var deeplinkcallbackid = false;
 
 function init() {
+	var browserfailed = false;
+	if (/MSIE (6|7|8)/i.test(navigator.userAgent)) browserfailed = true;
+	else if (!JSON) browserfailed = true;
+	else if (!XMLHttpRequest) browserfailed = true;
+	
+	if (browserfailed) {
+		createEl("p", false, BODY).innerHTML = "Sorry, your browser is too old to use Rainwave.  Please upgrade to <a href='http://getfirefox.com' class='external_link' style='color: #AAFFFF;'>Firefox</a> or <a href='http://google.com/chrome' class='external_link' style='color: #AAFFFF;'>Chrome</a>.";
+		createEl("p", false, BODY).innerHTML = "If you don't, or can't, you can still tune in to Rainwave using a media player with the following links:";
+		var ul = createEl("ul", false, BODY);
+		var li = createEl("li", false, ul);
+		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "All Station Mix", "href": "http://rainwave.cc/tunein.php?site=omni" }, li);
+		li = createEl("li", false, ul);
+		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "Game Only", "href": "http://rainwave.cc/tunein.php?site=rw" }, li);
+		li = createEl("li", false, ul);
+		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "Chiptune Only", "href": "http://rainwave.cc/tunein.php?site=bit" }, li);
+		li = createEl("li", false, ul);
+		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "Covers Only", "href": "http://rainwave.cc/tunein.php?site=mw" }, li);		
+		li = createEl("li", false, ul);
+		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "OverClocked ReMix", "href": "http://rainwave.cc/tunein.php?site=oc" }, li);
+		return false;
+	}
+
 	prefs.addPref("edi", { name: "language", defaultvalue: PRELOADED_LANG, type: "dropdown", options: [
 			{ "value": "de_DE", "option": "Deutsch" },
 			{ "value": "en_CA", "option": "English (Canada)" },

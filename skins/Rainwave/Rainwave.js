@@ -865,7 +865,7 @@ function _THEME() {
 			menup.fx_play_width.set(84);
 			
 			menup.m3u_download = createEl("div", { "class": "menu_download" }, menup.td_play);
-			menup.or_use = createEl("span", { "textContent": _l("oruse") }, menup.m3u_download);
+			//menup.or_use = createEl("span", { "textContent": _l("oruse") }, menup.m3u_download);
 			var wmpa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_wmp" }, menup.m3u_download);
 			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, wmpa);
 			wmpa.addEventListener("click", menup.tuneInClickMP3, true);
@@ -1027,7 +1027,7 @@ function _THEME() {
 				menup.player.removeChild(menup.flash_warning);
 				menup.player.className = "menu_player";
 				removedflash = true;
-				menup.or_use.textContent = _l("use");
+				//menup.or_use.textContent = _l("use");
 			}
 			
 			if (tunedin) {
@@ -1071,7 +1071,7 @@ function _THEME() {
 			menup.player.textContent = "";
 			menup.player.appendChild(menup.flash_warning);
 			menup.player.className = "menu_player menu_player_flash";
-			menup.or_use.textContent = _l("oruse");
+			//menup.or_use.textContent = _l("oruse");
 			flashloaded = false;
 			menup.playeradded = false;
 		};
@@ -1446,6 +1446,8 @@ function _THEME() {
 		
 			var tr = createEl("tr", false, wdow.hdrtable);
 			wdow.listenernametd = createEl("td", { "class": "pl_ad_albumnametd", "colspan": 2 }, tr);
+			wdow.refresh = createEl("div", { "class": "pl_ad_albumname_detail", "textContent": _l("refresh") }, wdow.listenernametd);
+			wdow.refresh.addEventListener("click", function() { Username.openFresh(json.user_id); }, true);
 			wdow.listenername = createEl("div", { "class": "pl_ad_albumname", "textContent": json.username }, wdow.listenernametd);
 
 			tr = createEl("tr", false, wdow.hdrtable);
@@ -1554,7 +1556,7 @@ function _THEME() {
 			tr = createEl("tr", false, stationstats);
 			createEl("td", { "textContent": _l("lsnrdt_allstations") }, tr);
 			createEl("td", { "class": "lsnrdt_spacer" }, tr);
-			createEl("td", { "textContent": json.user_station_specific[0].rating_average }, tr);
+			createEl("td", { "textContent": json.user_station_specific[0].rating_average.toFixed(2) }, tr);
 			createEl("td", { "class": "lsnrdt_spacer" }, tr);
 			createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[0].rating_progress), "textContent": json.user_station_specific[0].rating_progress + "%" }, tr);
 			createEl("td", { "class": "lsnrdt_spacer" }, tr);
@@ -1579,7 +1581,7 @@ function _THEME() {
 				createEl("td", { "textContent": STATIONS[i] }, tr);
 				createEl("td", { "class": "lsnrdt_spacer" }, tr);
 				if (i != 5) {
-					createEl("td", { "textContent": json.user_station_specific[i].rating_average }, tr);
+					createEl("td", { "textContent": json.user_station_specific[i].rating_average.toFixed(2) }, tr);
 					createEl("td", { "class": "lsnrdt_spacer" }, tr);
 					createEl("td", { "class": "lsnrdt_bar", "style": that.ListenerBarCSS(json.user_station_specific[i].rating_progress), "textContent": json.user_station_specific[i].rating_progress + "%" }, tr);
 					createEl("td", { "class": "lsnrdt_spacer" }, tr);

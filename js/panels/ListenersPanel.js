@@ -52,6 +52,9 @@ panels.ListenersPanel = {
 			if (type == "id") {
 				that.openListener(id);
 			}
+			if (type == "id_refresh") { 
+				that.openListener(id, true);
+			}
 		};
 		
 		that.clistUpdate = function(json) {
@@ -68,8 +71,8 @@ panels.ListenersPanel = {
 			return true;
 		};
 		
-		that.openListener = function(user_id) {
-			if (view.checkOpenDivs("listener", user_id)) {
+		that.openListener = function(user_id, force) {
+			if (!force && (view.checkOpenDivs("listener", user_id))) {
 				clist.navToID(user_id);
 				return;
 			}
