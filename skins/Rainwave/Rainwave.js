@@ -1401,11 +1401,17 @@ function _THEME() {
 					Song.linkifyAsOneshot(song_data[i].song_id, ns.td_oneshot);
 					ns.tr.appendChild(ns.td_oneshot);
 					
-					/*ns.td_fc = document.createElement("td");
+					ns.td_fc = document.createElement("td");
 					ns.td_fc.setAttribute("class", "pl_songlist_forcecandidate");
-					ns.td_fc.textContent = "Cand";
+					ns.td_fc.textContent = "ElecUp";
 					Song.linkifyAsForceCandidate(song_data[i].song_id, ns.td_fc);
-					ns.tr.appendChild(ns.td_fc);*/
+					ns.tr.appendChild(ns.td_fc);
+					
+					ns.td_multiplier = document.createElement("td");
+					ns.td_multiplier.setAttribute("class", "pl_songlist_multiplier");
+					ns.multiplier_field = createEl("input", { "type": "text", "value": song_data[i].song_oa_multiplier }, ns.td_multiplier);
+					Song.addChangeMultiplierListener(song_data[i].song_id, ns.multiplier_field);
+					ns.tr.appendChild(ns.td_multiplier);
 				}
 				
 				table.appendChild(ns.tr);

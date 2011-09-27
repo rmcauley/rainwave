@@ -12,6 +12,10 @@ var Song = {
 	linkifyAsForceCandidate: function(song_id, el) {
 		linkify(el);
 		el.addEventListener('click', function() { lyre.async_get("force_candidate_add", { "song_id": song_id }); }, true);
+	},
+	
+	addChangeMultiplierListener: function(song_id, el) {
+		el.addEventListener('change', function() { lyre.async_get("admin_change_song_multiplier", { "song_id": song_id, "multiplier": el.value }); }, true);
 	}
 };
 

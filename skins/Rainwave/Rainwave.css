@@ -499,7 +499,26 @@ td.pl_songlist_title:hover {
 }
 
 td.pl_songlist_oneshot {
-	width: 2em;
+	width: 3em;
+	text-align: center;
+}
+
+td.pl_songlist_forcecandidate {
+	width: 4em;
+	text-align: center;
+}
+
+td.pl_songlist_multiplier {
+	width: 4em;
+	text-align: center;
+}
+td.pl_songlist_multiplier input {
+	width: 3em;
+	border: none;
+	padding: 0;
+	margin: 0;
+	background: #336;
+	color: #FFF;
 }
 
 td.pl_albumart_td {

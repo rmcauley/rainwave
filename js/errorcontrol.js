@@ -30,6 +30,7 @@ var errorcontrol = function() {
 		lyre.addCallback(that.genericError, "force_candidate_delete_result");
 		lyre.addCallback(that.loginresult, "login_result")
 		lyre.addCallback(that.genericError, "admin_playlist_refresh_result");
+		lyre.addCallback(that.genericError, "admin_change_song_multiplier_result");
 	};
 	
 	that.genericError = function(json) {
