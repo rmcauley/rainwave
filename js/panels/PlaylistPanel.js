@@ -240,6 +240,7 @@ var AlbumSearchTable = function(parent, container, view) {
 		var ratingx = album.album_rating_user * 10;
 		album.td_name = document.createElement("td");
 		album.td_name.setAttribute("class", "pl_al_name");
+		album.td_name.setAttribute("title", album.album_name);
 		if (ratingx > 0) album.td_name.style.backgroundPosition = "100% " + (-193 + ratingx) + "px";
 		else album.td_name.style.backgroundPosition = "100% -200px";
 		album.td_name.textContent = album.album_name;
