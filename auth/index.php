@@ -11,8 +11,20 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 <head>
 	<title>Rainwave API Key Management</title>
 	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-	<link rel="stylesheet" href="http://rainwave.cc/~rain/lyre/api.css" type="text/css" />
 	<style type="text/css">
+	body {
+		background: black;
+		color: white;
+	}
+	
+	a, a:visited, a:hover {
+		color: aqua;
+	}
+	
+	h2 {
+		border-bottom: 1px solid #fff;
+	}
+	
 	th {
 		text-align: left;
 		border-bottom: 1px solid #AAA;
@@ -21,6 +33,7 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	td {
 		border-bottom: 1px solid #666;
 		padding: .1em .3em;
+		vertical-align: top;
 	}
 	</style>
 </head>
@@ -53,11 +66,22 @@ if (isset($_GET['delete'])) {
 }
 ?>
 <h2>Rainwave API Key Management</h2>
-<p>Rainwave API Keys are a piece of text that you give to another app or website that authorizes them to use your Rainwave account for radio purposes.  Authorized apps or sites will never have access to modify your forums account (e.g. password or email), or other API keys, but they will have access to vote, rate, or request for you.</p>
-<p>Here you can see which keys you have available and delete ones you don't use anymore, or delete ones you suspect may be abusing your account.  It is recommended you use 1 key per external application in the event that an application or site does abuse your account.</p>
-<p>You must also give the app or website your user ID.</p>
+<p>Rainwave API keys are a piece of text.  You must give keys to other Rainwave applications you want to use before they are able to talk to Rainwave.</p>
+<ol>
+	<li>Create a key using the link below.</li>
+	<li>On a smartphone, click the QR code and then scan it.</li>
+	<li>If not, write down your user ID (shown below in green) in the app, then write down your key into the app.</li>
+</ol>
+<p>Some notes:</p>
+<ul>
+	<li>API keys are generated randomly.</li>
+	<li>Your account details cannot be seen or changed. (email, password, etc).  We value your privacy.</li>
+	<li>It is recommended you use 1 API key per application.</li>
+</ul>
 
-<p>Your (<?php print $username; ?>'s) User ID: <b style='font-size: 1.5em; font-style: italic;'><?php print $user_id; ?></b></p>
+<p><b><?php print $username; ?>'s User ID: <b style='font-size: 1.5em; color: #0F0;'><?php print $user_id; ?></b></b></p>
+
+<h2><?php print $username; ?>'s Keys</h2>
 
 <table>
 <tr><th>Key</th><th>Delete</th><th>QR</th></tr>
@@ -69,7 +93,7 @@ while ($row = $db->sql_fetchrow($result)) {
 	$mini_qr_url = sprintf(MINI_QR_SERVICE, urlencode("rw://{$user_id}:{$row['api_key']}@rainwave.cc"));
 	$qr_url = sprintf(QR_SERVICE, urlencode("rw://{$user_id}:{$row['api_key']}@rainwave.cc"));
 	print "<tr><td>" . $row['api_key'] . "</td><td><a href='?delete=" . $row['api_id'] . "'>Delete</a></td><td><a href='"
-		. $qr_url . "'><img src='" . $mini_qr_url . "' /></a></td></tr>\n";
+		. htmlspecialchars($qr_url) . "'><img src='" . htmlspecialchars($mini_qr_url) . "' /></a></td></tr>\n";
 }
 $GLOBALS['db']->sql_freeresult($result);
 
