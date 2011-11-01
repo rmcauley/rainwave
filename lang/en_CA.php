@@ -208,6 +208,7 @@ $lang = array(
 	"pref_edi_theme" => "Theme",
 	"pref_edi_resetlayout" => "Reset Layout",
 	"pref_edi_resetlayout_button" => "Reset",
+	"pref_edi_autoplay" => "Auto-Play",
 	"pref_fx" => "Effects",
 	"pref_fx_fps" => "Animation Frame Rate",
 	"pref_fx_enabled" => "Animation Enabled",

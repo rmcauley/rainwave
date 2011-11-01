@@ -7,9 +7,9 @@ var SCHED_PLAYLIST = 5;
 var SCHED_PAUSE = 6;
 var SCHED_DJ = 7;
 
-var STATIONS = [ false, "Rainwave", "OCR Radio", "Mixwave", "Bitwave", "Omniwave" ];
-var SHORTSTATIONS = [ false, "RW", "OC", "MW", "Bit", "Omni" ];
-var CANONSTATIONS = [ false, "rw", "oc", "mw", "bit", "omni" ];
+var STATIONS = [ false, "Game", "OverClocked ReMix", "Covers", "Chiptunes", "All" ];
+var SHORTSTATIONS = [ false, "Game", "OCR", "Covers", "Chip", "All" ];
+var CANONSTATIONS = [ false, "game", "ocr", "cover", "chip", "all" ];
 var ELECSONGTYPES = { "conflict": 0, "warn": 1, "normal": 2, "queue": 3, "request": 4 };
 var UISCALE = 10;
 var BODY = document.getElementById("body");
@@ -58,6 +58,7 @@ function init() {
 			{ "value": "se_SE", "option": "Svenska" }
 		], refresh: true });
 	prefs.addPref("edi", { hidden: true, name: "theme", defaultvalue: "RWClassic", type: "dropdown", options: [ { value: "Rainwave", option: "Rainwave 3" } ], refresh: true });
+	prefs.addPref("help", { "name": "visited", "defaultvalue": false, "hidden": true });
 	
 	var deeplinkurl = decodeURI(location.href);
 	if (deeplinkurl.indexOf("#!/") >= 0) {
@@ -83,8 +84,6 @@ function init() {
 
 	lyre.sync_start(initpiggyback);
 	
-	prefs.addPref("help", { "name": "visited", "defaultvalue": false, "hidden": true });
-	
 	for (var i in panels) {
 		panelcname[panels[i].cname] = i;
 	}
@@ -93,6 +92,11 @@ function init() {
 		prefs.changePref("help", "visited", true);
 		prefs.savePrefs();
 		help.startTutorial("welcome");
+	}
+	
+	prefs.addPref("edi", { "name": "autoplay", "defaultvalue": false, "type": "checkbox" });
+	if (prefs.getPref("edi", "autoplay")) {
+		edi.openpanels["MenuPanel"].playerClick();
 	}
 }
 

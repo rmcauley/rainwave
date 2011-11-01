@@ -645,7 +645,7 @@ function _THEME() {
 		if (json) {
 			// songs
 			if (json.song_rating_sid && (json.song_rating_sid != user.p.sid)) {
-				table.className = "nowplaying_table station_" + json.song_rating_sid;
+				table.className = "nowplaying_table nowplaying_station_" + json.song_rating_sid;
 			}
 			if (json.song_title) {
 				table.song_title_text = createEl("div", { "textContent": json.song_title }, table.song_title);
@@ -846,7 +846,7 @@ function _THEME() {
 			
 			menup.table = createEl("table", { "class": "menu_table", "cellspacing": 0 });
 			var row = createEl("tr", {}, menup.table);
-			menup.td_station = createEl("td", { "class": "menu_td_rainwave station_" + PRELOADED_SID }, row);
+			menup.td_station = createEl("td", { "class": "menu_td_rainwave" }, row);
 			var menuorder = [ 5, 1, 4, 3, 2 ];
 			var classname, station;
 			for (var i = 0; i < menuorder.length; i++) {
@@ -1312,8 +1312,8 @@ function _THEME() {
 				album_name = _l("mixwavesongs");
 				album_id = -1;
 			}
-			var hdr = createEl("div", { "class": "pl_songlist_hdr" }, encloseddiv);
-			createEl("img", { "src": skindir + "/images/menu_logo_" + album_sid + ".png", "style": "float: right;" }, hdr);
+			var hdr = createEl("div", { "class": "pl_songlist_hdr", "textcontent": STATIONS[album_sid] }, encloseddiv);
+			//createEl("img", { "src": skindir + "/images/menu_logo_" + album_sid + ".png", "style": "float: right;" }, hdr);
 			var album_hdr = createEl("span", { "textContent": album_name }, hdr);
 			if (album_id != -1) Album.linkify(album_id, album_hdr);
 			var tbl = createEl("table", { "class": "pl_songlist" }, encloseddiv);
@@ -1406,7 +1406,9 @@ function _THEME() {
 					ns.td_fc.textContent = "ElecUp";
 					Song.linkifyAsForceCandidate(song_data[i].song_id, ns.td_fc);
 					ns.tr.appendChild(ns.td_fc);
-					
+				}
+
+				if (song_data[i].song_id && (user.p.radio_admin > 0)) {
 					ns.td_multiplier = document.createElement("td");
 					ns.td_multiplier.setAttribute("class", "pl_songlist_multiplier");
 					ns.multiplier_field = createEl("input", { "type": "text", "value": song_data[i].song_oa_multiplier }, ns.td_multiplier);

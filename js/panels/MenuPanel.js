@@ -50,11 +50,11 @@ panels.MenuPanel = {
 			
 			var url;
 			var usrstr = user.p.user_id > 1 ? "?" + user.p.user_id + ":" + user.p.radio_listenkey : "";
-			if (user.p.sid == 1) url = "http://rwstream.rainwave.cc:8000/rainwave.mp3" + usrstr;
+			if (user.p.sid == 1) url = "http://gamestream.rainwave.cc:8000/rainwave.mp3" + usrstr;
 			else if (user.p.sid == 2) url = "http://ocrstream.rainwave.cc:8000/ocremix.mp3" + usrstr;
-			else if (user.p.sid == 3) url = "http://mwstream.rainwave.cc:8000/mixwave.mp3" + usrstr;
-			else if (user.p.sid == 4) url = "http://bitstream.rainwave.cc:8000/bitwave.mp3" + usrstr;
-			else if (user.p.sid == 5) url = "http://omnistream.rainwave.cc:8000/omniwave.mp3" + usrstr;
+			else if (user.p.sid == 3) url = "http://coverstream.rainwave.cc:8000/mixwave.mp3" + usrstr;
+			else if (user.p.sid == 4) url = "http://chipstream.rainwave.cc:8000/bitwave.mp3" + usrstr;
+			else if (user.p.sid == 5) url = "http://allstream.rainwave.cc:8000/omniwave.mp3" + usrstr;
 			
 			that.playerInitThemeHook();
 			
@@ -163,11 +163,11 @@ panels.MenuPanel = {
 		};
 		
 		that.changeStation = function(sid) {
-			if (sid == 1) window.location.href = "http://rw.rainwave.cc";
+			if (sid == 1) window.location.href = "http://game.rainwave.cc";
 			if (sid == 2) window.location.href = "http://ocr.rainwave.cc";
-			if (sid == 3) window.location.href = "http://mix.rainwave.cc";
-			if (sid == 4) window.location.href = "http://bit.rainwave.cc";
-			if (sid == 5) window.location.href = "http://omni.rainwave.cc";
+			if (sid == 3) window.location.href = "http://cover.rainwave.cc";
+			if (sid == 4) window.location.href = "http://chiptune.rainwave.cc";
+			if (sid == 5) window.location.href = "http://all.rainwave.cc";
 		};
 	
 		return that;

@@ -585,26 +585,6 @@ div.request_false {
 	background-color: [% request_bad %];
 }
 
-div.request_station_1, .station_1 {
-	background-image: url("images/menu_logo_1.png");
-}
-
-div.request_station_2, .station_2 {
-	background-image: url("images/menu_logo_2.png");
-}
-
-div.request_station_3, .station_3 {
-	background-image: url("images/menu_logo_3.png");
-}
-
-div.request_station_4, .station_4 {
-	background-image: url("images/menu_logo_4.png");
-}
-
-div.request_station_5, .station_5 {
-	background-image: url("images/menu_logo_5.png");
-}
-
 svg.request_songrating {
 	margin-top: .2em;
 	float: right;
@@ -783,6 +763,7 @@ td.menu_td_rainwave {
 	width: 105px;
 	background-position: 2px 3px;
 	background-repeat: no-repeat;
+	background-image: url("images/menu_logo_1.png");
 }
 
 td.menu_td_station {
@@ -791,54 +772,64 @@ td.menu_td_station {
 	cursor: pointer;
 }
 
-td.menu_td_station_1 {
+td.menu_td_station_1, td.menu_td_station_1_on {
+	width: 53px;
+}
+
+td.menu_td_station_1, td.menu_td_station_1_on, .nowplaying_station_1 {
 	background-image: url("images/station_select_1.png");
-	width: 53px;
 }
 
-td.menu_td_station_1_on, td.menu_td_station_1:hover {
+td.menu_td_station_1_on, td.menu_td_station_1:hover, div.request_station_1, .station_1 {
 	background-image: url("images/station_select_1_on.png");
-	width: 53px;
 }
 
-td.menu_td_station_2 {
+td.menu_td_station_2, td.menu_td_station_2_on {
+	width: 80px;
+}
+
+td.menu_td_station_2, td.menu_td_station_2_on, .nowplaying_station_2 {
 	background-image: url("images/station_select_2.png");
-	width: 80px;
 }
 
-td.menu_td_station_2_on, td.menu_td_station_2:hover {
+td.menu_td_station_2_on, td.menu_td_station_2:hover, div.request_station_2, .station_2 {
 	background-image: url("images/station_select_2_on.png");
-	width: 80px;
 }
 
-td.menu_td_station_3 {
+td.menu_td_station_3, td.menu_td_station_3_on {
+	width: 75px;
+}
+
+td.menu_td_station_3, td.menu_td_station_3_on, .nowplaying_station_3 {
 	background-image: url("images/station_select_3.png");
-	width: 75px;
 }
 
-td.menu_td_station_3_on, td.menu_td_station_3:hover {
+td.menu_td_station_3_on, td.menu_td_station_3:hover, div.request_station_3, .station_3 {
 	background-image: url("images/station_select_3_on.png");
-	width: 75px;
 }
 
-td.menu_td_station_4 {
+td.menu_td_station_4, td.menu_td_station_4_on {
+	width: 90px;
+}
+
+td.menu_td_station_4, td.menu_td_station_4_on, .nowplaying_station_4 {
 	background-image: url("images/station_select_4.png");
-	width: 90px;
 }
 
-td.menu_td_station_4_on, td.menu_td_station_4:hover {
+td.menu_td_station_4_on, td.menu_td_station_4:hover, div.request_station_4, .station_4 {
 	background-image: url("images/station_select_4_on.png");
-	width: 90px;
 }
 
-td.menu_td_station_5 {
+td.menu_td_station_5, td.menu_td_station_5_on {
+	width: 40px;
+}
+
+td.menu_td_station_5, td.menu_td_station_5_on, .nowplaying_station_5 {
 	background-image: url("images/station_select_5.png");
-	width: 40px;
 }
 
-td.menu_td_station_5_on, td.menu_td_station_5:hover {
+td.menu_td_station_5_on, td.menu_td_station_5:hover, div.request_station_5, .station_5 {
 	background-image: url("images/station_select_5_on.png");
-	width: 40px;
 }
 
 td.menu_td_play {
@@ -1372,7 +1363,7 @@ table.nowplaying_table {
 	height: 100%;
 	padding: 1.2em 10px 0px 3px;
 	table-layout: fixed;
-	background-position: bottom right;
+	background-position: 97% bottom;
 	background-repeat: no-repeat;
 }
 
