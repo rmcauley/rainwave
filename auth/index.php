@@ -60,13 +60,16 @@ if (isset($_GET['delete'])) {
 <p>Your (<?php print $username; ?>'s) User ID: <b style='font-size: 1.5em; font-style: italic;'><?php print $user_id; ?></b></p>
 
 <table>
-<tr><th>Key</th><th>Delete</th></tr>
+<tr><th>Key</th><th>Delete</th><th>QR</th></tr>
 
 <?php
 
 $result = $db->sql_query("SELECT api_id, api_key FROM rw_apikeys WHERE user_id = " . $user_id . " AND api_isrw = FALSE ORDER BY api_id");
 while ($row = $db->sql_fetchrow($result)) {
-	print "<tr><td>" . $row['api_key'] . "</td><td><a href='?delete=" . $row['api_id'] . "'>Delete</a></td></tr>";
+	$mini_qr_url = sprintf(MINI_QR_SERVICE, urlencode("rw://{$user_id}:{$row['api_key']}@rainwave.cc"));
+	$qr_url = sprintf(QR_SERVICE, urlencode("rw://{$user_id}:{$row['api_key']}@rainwave.cc"));
+	print "<tr><td>" . $row['api_key'] . "</td><td><a href='?delete=" . $row['api_id'] . "'>Delete</a></td><td><a href='"
+		. $qr_url . "'><img src='" . $mini_qr_url . "' /></a></td></tr>\n";
 }
 $GLOBALS['db']->sql_freeresult($result);
 
