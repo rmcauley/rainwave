@@ -101,6 +101,9 @@ define("FIELDS_LIGHTSONG", TBL_SONGS . ".song_id, song_title, song_secondslong, 
 define("FIELDS_ALLARTIST", TBL_ARTISTS . ".artist_id, artist_name, artist_lastplayed");
 define("FIELDS_ALLAD", TBL_ADS . ".ad_id, ad_title, ad_album, ad_artist, ad_genre, ad_comment, ad_secondslong, ad_url, ad_url_text");
 
+define("QR_SERVICE", "http://chart.apis.google.com/chart?cht=qr&chs=350x350&chl=%s");
+define("MINI_QR_SERVICE", "http://chart.apis.google.com/chart?cht=qr&chs=50x50&chl=%s");
+
 $user->session_begin();
 $auth->acl($user->data);
 $userdata =& $user->data;
