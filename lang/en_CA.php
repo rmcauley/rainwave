@@ -227,10 +227,7 @@ $lang = array(
 	// About screen
 	
 	"creator" => "Creator",
-	"rainwavemanagers" => "Rainwave Staff",
-	"ocrmanagers" => "OCR Radio Staff",
-	"mixwavemanagers" => "Mixwave Staff",
-	"jfinalfunkjob" => "Math Madman",
+	"staff" => "Staff",
 	"relayadmins" => "Relay Donors",
 	"specialthanks" => "Thanks To",
 	"poweredby" => "Powered By",

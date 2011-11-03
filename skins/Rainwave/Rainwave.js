@@ -1309,8 +1309,7 @@ function _THEME() {
 				album_id = -1;
 			}
 			else if (album_sid == 3) {
-				album_name = _l("mixwavesongs");
-				album_id = -1;
+				album_name = STATIONS[3];
 			}
 			var hdr = createEl("div", { "class": "pl_songlist_hdr", "textcontent": STATIONS[album_sid] }, encloseddiv);
 			//createEl("img", { "src": skindir + "/images/menu_logo_" + album_sid + ".png", "style": "float: right;" }, hdr);

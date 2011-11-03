@@ -381,13 +381,10 @@ function drawAboutScreen(div) {
 	var tbl = createEl("table", { "class": "about help_paragraph" });
 	var html = "<tr><td style='width: 10em;'>" + _l("rainwave3version") + ":</td><td>" + _l("revision") + " " + BUILDNUM + "</td></tr>";
 	html += "<tr><td>" + _l("creator") + ":</td><td>LiquidRain</td></tr>";
-	html += "<tr><td>" + _l("rainwavemanagers") + ":</td><td>Ten19, Metal-Ridley</td></tr>";
-	html += "<tr><td>" + _l("ocrmanagers") + ":</td><td>William</td></tr>";
-	html += "<tr><td>" + _l("mixwavemanagers") + ":</td><td>SOcean255</td></tr>";
-	html += "<tr><td>" + _l("jfinalfunkjob") + ":</td><td>jfinalfunk</td></tr>";
+	html += "<tr><td>" + _l("staff") + ":</td><td>Ten19 and Metal-Ridley (game)<br />SOcean255 (covers)<br />Schneau and Natural-Chemical (chiptunes)<br />William and jfinalfunk (special projects)</td></tr>";
 	html += "<tr><td>" + _l("relayadmins") + ":</td><td>Lyfe, Tanaric, Dracoirs</td></tr>";
 	html += "<tr><td>" + _l("translators") + ":</td><td>Metal-Geo (NL), Metal-Ridley (FR), quarterlife (FI), Steppo (SE), DarkLink (DE), BreadMaker (ES), ocrfan (PT).</td></tr>";
-	html += "<tr><td style='padding-top: 1em;'>" + _l("specialthanks") + ":</td><td style='padding-top: 1em;'>strwrsxprt, heschi, Brayniac, Salty, efiloN, Vyzov</td></tr>";
+	html += "<tr><td style='padding-top: 1em;'>" + _l("specialthanks") + ":</td><td style='padding-top: 1em;'>strwrsxprt, heschi, Brayniac, Salty, efiloN, Steppo, Vyzov.</td></tr>";
 	html += "<tr><td style='padding-top: 1em;'>" + _l("poweredby") + ":</td><td style='padding-top: 1em;'>" + _l("customsoftware") + ", <a href='http://icecast.org' class='new_window' target='_blank' onclick='return false;'>Icecast</a>, <a href='http://savonet.sourceforge.net' target='_blank' class='new_window' onclick='return false;'>Liquidsoap</a></td></tr>";
 	tbl.innerHTML = html;
 	div.appendChild(tbl);
