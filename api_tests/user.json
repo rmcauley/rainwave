@@ -1,0 +1,24 @@
+{
+    "user": {
+        "list_active": true,
+        "list_id": 0,
+        "list_voted_entry_id": 0,
+        "radio_active_sid": null,
+        "radio_active_until": 0,
+        "radio_admin": 1,
+        "radio_dj": 0,
+        "radio_lastnews": 0,
+        "radio_listenkey": "TESTKEY",
+        "radio_perks": true,
+        "radio_request_expiresat": 0,
+        "radio_request_position": 0,
+        "radio_statrestricted": true,
+        "radio_tunedin": false,
+        "sid": 1,
+        "user_avatar": "images/blank.png",
+        "user_id": 2,
+        "user_new_privmsg": 0,
+        "username": "Test"
+    }
+}
+
