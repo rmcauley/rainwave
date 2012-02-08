@@ -11,23 +11,14 @@ connection = None
 
 # NOTE TO ALL:
 #
-# SQLite is **not meant for production purposes**
-# It is only meant for quick testing.
-# All SQL queries are run through a meatgrinder ahead of
-# passing queries to SQLite.  Most surrounding table creation
-# are mangled badly, but a few other things (such as time functions)
-# are replaced when you go to use them.
-#
-# DO NOT USE SQLITE IN PRODUCTION AND DO EXPECT WEIRD THINGS
-# IF YOU START GETTING FUNKY WITH POSTGRES.
-#
-# The postgres cursor is a legit psycopg cursor with some nice functions on.
-# Tried to keep that as fast as possible.
+# SQLite is UNUSABLE for production.  It is ONLY meant for testing
+# and offers zero data consistency - important values (sequences, etc)
+# are reset between startups.
 
 class PostgresCursor(psycopg2.extras.RealDictCursor):
 	def fetch_var(self, query, params = None):
 		self.execute(query, params)
-		if self.cur.rowcount == 0:
+		if self.rowcount == 0:
 			return None
 		r = self.fetchone()
 		# I realize this is not the most efficient way, but one of the primary
@@ -40,15 +31,27 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 	
 	def fetch_row(self, query, params = None):
 		self.execute(query, params)
-		if self.cur.rowcount == 0:
+		if self.rowcount == 0:
 			return None
 		return self.fetchone()
 		
 	def fetch_all(self, query, params = None):
 		self.execute(query, params)
-		if self.cur.rowcount == 0:
+		if self.rowcount == 0:
 			return None
 		return self.fetchall()
+		
+	def fetch_list(self, query, params = None):
+		self.execute(query, params)
+		if self.rowcount == 0:
+			return []
+		arr = []
+		row = self.fetchone()
+		col = row.keys()[0]
+		arr.append(row[col])
+		for row in self.fetchmany()
+			arr.append(row[col])
+		return arr
 		
 	def update(self, query, params = None):
 		self.execute(query, params)
@@ -64,6 +67,8 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		self.execute("CREATE INDEX %s_%s_idx ON %s (%s)", (table, column, table, column))
 		
 class SQLiteCursor:
+	serial = 0
+
 	def __init__(self, filename):
 		self.con = sqlite3.connect(filename, 5, sqlite3.PARSE_DECLTYPES)
 		self.con.isolation_level = None
@@ -90,6 +95,9 @@ class SQLiteCursor:
 			query = query.replace("SERIAL", "INTEGER")
 		if query.find("ADD CONSTRAINT") >= 0:
 			return None
+		if query.find("nextval(") >= 0:
+			serial = serial + 1
+			return "SELECT %s" % serial
 		query = query.replace("%s", "?")
 		query = query.replace("TRUE", "1")
 		query = query.replace("FALSE", "0")
@@ -113,6 +121,13 @@ class SQLiteCursor:
 		if self.cur.rowcount == 0:
 			return []
 		return self.cur.fetchall()
+		
+	def fetch_list(self, query, params = None):
+		self.execute(query, params)
+		arr = []
+		for row in self.cur.fetchall():
+			arr.append(row[0])
+		return arr
 		
 	def update(self, query, params = None):
 		self.execute(query, params)
@@ -201,10 +216,66 @@ def create_tables():
 		_create_test_tables()
 
 	c.update(" \
+		CREATE TABLE r4_songs ( \
+			song_id					SERIAL		PRIMARY KEY, \
+			song_verified			BOOLEAN		DEFAULT TRUE, \
+			song_filename			TEXT		, \
+			song_title				TEXT		, \
+			song_link				TEXT		, \
+			song_link_text			TEXT		, \
+			song_length				SMALLINT	, \
+			song_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
+			song_rating				REAL		DEFAULT 0, \
+			song_rating_count		INTEGER		DEFAULT 0, \
+			song_cool_multiply		REAL		DEFAULT 1, \
+			song_cool_override		INTEGER		, \
+			song_origin_sid			SMALLINT	NOT NULL, \
+		)")
+	c.create_idx("r4_songs", "song_verified")
+	
+	c.update(" \
+		CREATE TABLE r4_song_sid ( \
+			song_id					INTEGER		NOT NULL, \
+			sid						SMALLINT	NOT NULL, \
+			song_cool				BOOLEAN		DEFAULT FALSE, \
+			song_cool_end			INTEGER		, \
+			song_elec_appearances	INTEGER		DEFAULT 0, \
+			song_elec_last			INTEGER		DEFAULT 0, \
+			song_elec_blocked		BOOLEAN 	DEFAULT FALSE, \
+			song_elec_blocked_num	SMALLINT	DEFAULT 0, \
+			song_elec_blocked_by	VARCHAR(10)	, \
+			song_vote_share			REAL		, \
+			song_vote_total			INTEGER		, \
+			song_request_total		INTEGER		DEFAULT 0, \
+			song_played_last		INTEGER		\, \
+			song_exists				BOOLEAN		DEFAULT TRUE\
+		)")
+	c.create_idx("r4_song_sid", "sid")
+	c.create_idx("r4_song_sid", "song_id")
+	c.create_idx("r4_song_sid", "song_cool")
+	c.create_idx("r4_song_sid", "song_elec_blocked")
+	c.create_idx("r4_song_sid", "song_exists")
+	c.create_delete_fk("r4_song_sid", "r4_songs", "song_id")
+	
+	c.update(" \
+		CREATE TABLE r4_song_ratings ( \
+			song_id					INTEGER		NOT NULL, \
+			user_id					INTEGER		NOT NULL, \
+			song_rating				REAL		, \
+			song_rated_at			INTEGER		, \
+			song_rated_at_rank		INTEGER		, \
+			song_rated_at_count		INTEGER		\
+		)")
+	c.create_idx("r4_song_ratings", "song_id")
+	c.create_idx("r4_song_ratings", "user_id")
+	c.create_delete_fk("r4_song_ratings", "r4_songs", "song_id")
+	c.create_delete_fk("r4_song_ratings", "phpbb_users", "user_id")
+	
+	c.update(" \
 		CREATE TABLE r4_albums ( \
 			album_id				SERIAL		PRIMARY KEY, \
 			album_title				TEXT		, \
-			album_rating_avg		REAL		DEFAULT 0, \
+			album_rating			REAL		DEFAULT 0, \
 			album_rating_count		INTEGER		DEFAULT 0, \
 			album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 		)")
@@ -243,61 +314,58 @@ def create_tables():
 	c.create_delete_fk("r4_album_ratings", "phpbb_users", "user_id")
 	
 	c.update(" \
-		CREATE TABLE r4_songs ( \
-			song_id					SERIAL		PRIMARY KEY, \
-			album_id				INTEGER		, \
-			song_verified			BOOLEAN		DEFAULT TRUE, \
-			song_filename			TEXT		, \
-			song_title				TEXT		, \
-			song_link				TEXT		, \
-			song_link_text			TEXT		, \
-			song_secondslong		SMALLINT	, \
-			song_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-			song_rating_avg			REAL		DEFAULT 0, \
-			song_rating_count		INTEGER		DEFAULT 0, \
-			song_cool_multiply		REAL		DEFAULT 1, \
-			song_cool_override		INTEGER		, \
-			song_origin_sid			SMALLINT	NOT NULL, \
+		CREATE TABLE r4_song_album ( \
+			album_id				INTEGER		NOT NULL, \
+			song_id					INTEGER		NOT NULL, \
+			album_is_tag			BOOLEAN		DEFAULT TRUE \
 		)")
-	c.create_idx("r4_songs", "album_id")
-	c.create_idx("r4_songs", "song_verified")
-	c.create_null_fk("r4_songs", "r4_albums", "album_id")
+	c.create_idx("r4_song_album", "album_id")
+	c.create_idx("r4_song_album", "song_id")
+	c.create_delete_fk("r4_song_album", "r4_albums", "album_id")
+	c.create_delete_fk("r4_song_album", "r4_songs", "song_id")
 	
 	c.update(" \
-		CREATE TABLE r4_song_sid ( \
+		CREATE TABLE r4_artists		( \
+			artist_id				SERIAL		NOT NULL, \
+			artist_name				TEXT		\
+		)")
+	
+	c.update(" \
+		CREATE TABLE r4_song_artist	( \
 			song_id					INTEGER		NOT NULL, \
+			artist_id				INTEGER		NOT NULL, \
+			artist_is_tag			BOOLEAN		DEFAULT TRUE \
+		)")
+	c.create_idx("r4_song_artist", "song_id")
+	c.create_idx("r4_song_artist", "artist_id")
+	c.create_delete_fk("r4_song_artist", "r4_songs", "song_id")
+	c.create_delete_fk("r4_song_artist", "r4_artists", "artist_id")
+	
+	c.update(" \
+		CREATE TABLE r4_song_groups ( \
+			group_id				SERIAL		PRIMARY KEY, \
+			group_name				TEXT		\
+		)")
+	
+	c.update(" \
+		CREATE TABLE r4_song_group_sid ( \
+			group_id				INTEGER		NOT NULL, \
 			sid						SMALLINT	NOT NULL, \
-			song_cool				BOOLEAN		DEFAULT FALSE, \
-			song_cool_end			INTEGER		, \
-			song_elec_appearances	INTEGER		DEFAULT 0, \
-			song_elec_last			INTEGER		DEFAULT 0, \
-			song_elec_blocked		BOOLEAN 	DEFAULT FALSE, \
-			song_elec_blocked_num	SMALLINT	DEFAULT 0, \
-			song_elec_blocked_by	VARCHAR(10)	, \
-			song_vote_share			REAL		, \
-			song_vote_total			INTEGER		, \
-			song_request_total		INTEGER		DEFAULT 0, \
-			song_played_last		INTEGER		\
+			group_cool_time			INTEGER		DEFAULT 1200 \
 		)")
-	c.create_idx("r4_song_sid", "sid")
-	c.create_idx("r4_song_sid", "song_id")
-	c.create_idx("r4_song_sid", "song_cool")
-	c.create_idx("r4_song_sid", "song_elec_blocked")
-	c.create_delete_fk("r4_song_sid", "r4_songs", "song_id")
+	c.create_idx("r4_song_group_sid", "group_id")
+	c.create_delete_fk("r4_song_group_sid", "r4_song_groups", "group_id")
 	
 	c.update(" \
-		CREATE TABLE r4_song_ratings ( \
+		CREATE TABLE r4_song_group ( \
 			song_id					INTEGER		NOT NULL, \
-			user_id					INTEGER		NOT NULL, \
-			song_rating				REAL		, \
-			song_rated_at			INTEGER		, \
-			song_rated_at_rank		INTEGER		, \
-			song_rated_at_count		INTEGER		\
+			group_id				INTEGER		NOT NULL, \
+			group_is_tag			BOOLEAN		DEFAULT TRUE \
 		)")
-	c.create_idx("r4_song_ratings", "song_id")
-	c.create_idx("r4_song_ratings", "user_id")
-	c.create_delete_fk("r4_song_ratings", "r4_songs", "song_id")
-	c.create_delete_fk("r4_song_ratings", "phpbb_users", "user_id")
+	c.create_idx("r4_songs_in_groups", "song_id")
+	c.create_idx("r4_songs_in_groups", "group_id")
+	c.create_delete_fk("r4_songs_in_groups", "r4_songs", "song_id")
+	c.create_delete_fk("r4_songs_in_groups", "r4_song_groups", "group_id")
 	
 	c.update(" \
 		CREATE TABLE r4_schedule ( \
@@ -477,32 +545,6 @@ def create_tables():
 	c.create_idx("r4_song_favs", "user_id")
 	c.create_delete_fk("r4_song_favs", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_favs", "phpbb_users", "user_id")
-	
-	c.update(" \
-		CREATE TABLE r4_song_groups ( \
-			group_id				SERIAL		PRIMARY KEY, \
-			group_name				TEXT		\
-		)")
-	
-	c.update(" \
-		CREATE TABLE r4_song_group_sid ( \
-			group_id				INTEGER		NOT NULL, \
-			sid						SMALLINT	NOT NULL, \
-			group_cool_time			INTEGER		DEFAULT 1200, \
-			group_id3_created		BOOLEAN		DEFAULT FALSE \
-		)")
-	c.create_idx("r4_song_group_sid", "group_id")
-	c.create_delete_fk("r4_song_group_sid", "r4_song_groups", "group_id")
-	
-	c.update(" \
-		CREATE TABLE r4_songs_in_groups ( \
-			song_id					INTEGER		NOT NULL, \
-			group_id				INTEGER		NOT NULL \
-		)")
-	c.create_idx("r4_songs_in_groups", "song_id")
-	c.create_idx("r4_songs_in_groups", "group_id")
-	c.create_delete_fk("r4_songs_in_groups", "r4_songs", "song_id")
-	c.create_delete_fk("r4_songs_in_groups", "r4_song_groups", "group_id")
 	
 	c.update(" \
 		CREATE TABLE r4_api_keys ( \
