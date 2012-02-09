@@ -282,7 +282,7 @@ def create_tables():
 	
 	c.update(" \
 		CREATE TABLE r4_album_sid ( \
-			album_verified			BOOLEAN		, \
+			album_exists			BOOLEAN		DEFAULT TRUE, \
 			album_id				INTEGER		NOT NULL, \
 			sid						SMALLINT	NOT NULL, \
 			album_played_last		INTEGER		DEFAULT 0, \
@@ -294,8 +294,8 @@ def create_tables():
 			album_updated			INTEGER		DEFAULT 0, \
 			album_elec_last			INTEGER		DEFAULT 0, \
 			album_elec_appearances	INTEGER		DEFAULT 0, \
-			album_vote_share		REAL		, \
-			album_vote_total		INTEGER		\
+			album_vote_share		REAL		DEFAULT 0, \
+			album_vote_total		INTEGER		DEFAULT 0\
 		)")
 	c.create_idx("r4_album_sid", "album_verified")
 	c.create_idx("r4_album_sid", "sid")
@@ -342,20 +342,12 @@ def create_tables():
 	c.create_delete_fk("r4_song_artist", "r4_artists", "artist_id")
 	
 	c.update(" \
-		CREATE TABLE r4_song_groups ( \
+		CREATE TABLE r4_groups ( \
 			group_id				SERIAL		PRIMARY KEY, \
-			group_name				TEXT		\
+			group_name				TEXT		, \
+			group_elec_block		SMALLINT	DEFAULT 5 \
 		)")
-	
-	c.update(" \
-		CREATE TABLE r4_song_group_sid ( \
-			group_id				INTEGER		NOT NULL, \
-			sid						SMALLINT	NOT NULL, \
-			group_cool_time			INTEGER		DEFAULT 1200 \
-		)")
-	c.create_idx("r4_song_group_sid", "group_id")
-	c.create_delete_fk("r4_song_group_sid", "r4_song_groups", "group_id")
-	
+
 	c.update(" \
 		CREATE TABLE r4_song_group ( \
 			song_id					INTEGER		NOT NULL, \
