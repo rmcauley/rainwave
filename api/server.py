@@ -43,6 +43,12 @@ class TestShutdownRequest(api.web.RequestHandler):
 	auth_required = False
 	def get(self, _unused):
 		tornado.ioloop.IOLoop.instance().stop()
+		
+class APITestFailed(Exception):
+	def __init__(self, value):
+		self.value = value
+	def __str__(self):
+		return repr(self.value)
 
 class APIServer(object):
 	def __init__(self):
@@ -93,23 +99,13 @@ class APIServer(object):
 		# Fake a decorator call on the handle_url decorator 
 		handle_obj = handle_url("shutdown")
 		handle_obj.__call__(TestShutdownRequest)
-		
-		config.test_mode = True
-		
-		config.override("db_type", "sqlite")
-		config.override("db_name", "/tmp/rwapi_test.sqlite")
-		if os.path.exists("/tmp/rwapi_test.sqlite"):
-			os.remove("/tmp/rwapi_test.sqlite")
-		db.open()
-		db.create_tables()
-		db.close()
 
 		tornado.process.fork_processes(2, 0)
 		
 		task_id = tornado.process.task_id()
 		if task_id == 0:
 			self._listen(task_id)
-			print
+			time.sleep(2)
 			return True
 		elif task_id == 1:
 			time.sleep(1)
@@ -121,8 +117,10 @@ class APIServer(object):
 	def _run_tests(self):
 		passed = True
 		headers = ({"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain text/html text/javascript application/json application/javascript" })
+		params = {}
 		for request_pair in testable_requests:
 			request = request_pair['class']
+			sys.stdout.write(".")
 			try:
 				#print "*** ", request.url
 				# Setup and get the data from the HTTP server
@@ -144,7 +142,7 @@ class APIServer(object):
 					web_data = json.load(response)
 					del(web_data['api_info'])
 					
-					ref_file = open("api_tests/%s.json" % request.url)
+					ref_file = open("../api_tests/%s.json" % request.url)
 					ref_data = json.load(ref_file)
 					ref_file.close()
 					
@@ -154,6 +152,8 @@ class APIServer(object):
 						print json.dumps(web_data, indent=4, sort_keys=True)
 						print
 				else:
+					print
+					print "*** ERROR:", request.url, ": Response status", response.status
 					passed = False
 			except:
 				print
@@ -161,12 +161,13 @@ class APIServer(object):
 				print "*** ERROR:", request.url, ": ", sys.exc_info()[0]
 				passed = False
 				print
-				
+
 		conn = httplib.HTTPConnection('localhost', config.get("base_port"))
 		conn.request("GET", "/api/1/shutdown", params, headers)
 		conn.getresponse()
 		time.sleep(1)
 		
-		print "%s requests tested." % len(testable_requests)
+		print "----------------------------------------------------------------------"
+		print "Ran %s tests." % len(testable_requests)
 
 		return passed

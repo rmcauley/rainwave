@@ -57,10 +57,10 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		self.execute(query, params)
 		return self.rowcount
 		
-	def create_delete_pk(self, linking_table, foreign_table, key):
+	def create_delete_fk(self, linking_table, foreign_table, key):
 		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE CASCADE", (linking_table, linking_table, key, key, foreign_table, key))
 		
-	def create_null_pk(self, linking_table, foreign_table, key):
+	def create_null_fk(self, linking_table, foreign_table, key):
 		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE SET NULL", (linking_table, linking_table, key, key, foreign_table, key))
 		
 	def create_idx(self, table, column):
@@ -151,10 +151,10 @@ class SQLiteCursor(object):
 	def fetchall(self):
 		return self.cur.fetchall()
 		
-	def create_delete_pk(self, linking_table, foreign_table, key):
+	def create_delete_fk(self, linking_table, foreign_table, key):
 		pass
 		
-	def create_null_pk(self, linking_table, foreign_table, key):
+	def create_null_fk(self, linking_table, foreign_table, key):
 		pass
 		
 	def create_idx(self, table, column):
@@ -229,7 +229,7 @@ def create_tables():
 			song_rating_count		INTEGER		DEFAULT 0, \
 			song_cool_multiply		REAL		DEFAULT 1, \
 			song_cool_override		INTEGER		, \
-			song_origin_sid			SMALLINT	NOT NULL, \
+			song_origin_sid			SMALLINT	NOT NULL \
 		)")
 	c.create_idx("r4_songs", "song_verified")
 	
@@ -247,8 +247,8 @@ def create_tables():
 			song_vote_share			REAL		, \
 			song_vote_total			INTEGER		, \
 			song_request_total		INTEGER		DEFAULT 0, \
-			song_played_last		INTEGER		\, \
-			song_exists				BOOLEAN		DEFAULT TRUE\
+			song_played_last		INTEGER		, \
+			song_exists				BOOLEAN		DEFAULT TRUE \
 		)")
 	c.create_idx("r4_song_sid", "sid")
 	c.create_idx("r4_song_sid", "song_id")
@@ -277,7 +277,7 @@ def create_tables():
 			album_title				TEXT		, \
 			album_rating			REAL		DEFAULT 0, \
 			album_rating_count		INTEGER		DEFAULT 0, \
-			album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
+			album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
 		)")
 	
 	c.update(" \
@@ -456,15 +456,15 @@ def create_tables():
 			donation_amount			REAL		, \
 			donation_message		TEXT		, \
 			donation_private		BOOLEAN		DEFAULT TRUE \
-		")
+		)")
 	
 	c.update(" \
 		CREATE TABLE r4_request_lists ( \
 			reqlist_id				SERIAL		PRIMARY KEY, \
 			reqlist_order			SMALLINT	, \
 			user_id					INTEGER		NOT NULL, \
-			song_id					INTEGER		NOT NULL, \
-		")
+			song_id					INTEGER		NOT NULL \
+		)")
 	c.create_idx("r4_request_lists", "user_id")
 	c.create_idx("r4_request_lists", "song_id")
 	c.create_delete_fk("r4_request_lists", "phpbb_users", "user_id")
@@ -477,7 +477,7 @@ def create_tables():
 			requestq_wait_start		INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 			requestq_expiry_tune_in	INTEGER		, \
 			requestq_expiry_block	SMALLINT	\
-		")
+		)")
 	c.create_idx("r4_request_queue", "user_id")
 	c.create_idx("r4_request_queue", "sid")
 	c.create_idx("r4_request_queue", "requestq_wait_start")
@@ -552,21 +552,21 @@ def create_tables():
 	c.create_delete_fk("r4_api_keys", "phpbb_users", "user_id")
 	
 	c.update(" \
-		CREATE TABLE r4_one_up_lists ( \
-			1uplist_id				SERIAL		PRIMARY KEY, \
+		CREATE TABLE r4_oneup_lists ( \
+			oneuplist_id			SERIAL		PRIMARY KEY, \
 			sched_id				INTEGER		\
 		)")
-	c.create_idx("r4_1up_lists", "sched_id")
-	c.create_delete_fk("r4_one_up_lists", "r4_schedule", "sched_id")
+	c.create_idx("r4_oneup_lists", "sched_id")
+	c.create_delete_fk("r4_oneup_lists", "r4_schedule", "sched_id")
 	
 	c.update(" \
-		CREATE TABLE r4_1up_list_content ( \
-			1uplist_id				INTEGER		NOT NULL, \
+		CREATE TABLE r4_oneup_list_content ( \
+			oneuplist_id			INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL, \
-			1up_position			SMALLINT	\
+			oneup_position			SMALLINT	\
 		)")
-	c.create_idx("r4_1up_list_content", "song_id")
-	c.create_delete_fk("r4_1up_list_content", "r4_1up_lists", "1uplist_id")
+	c.create_idx("r4_oneup_list_content", "song_id")
+	c.create_delete_fk("r4_oneup_list_content", "r4_oneup_lists", "oneuplist_id")
 	
 	if config.test_mode:
 		_fill_test_tables()
@@ -596,4 +596,4 @@ def _fill_test_tables():
 	
 	# User ID 2: site admin
 	c.update("INSERT INTO phpbb_users (user_id, username, group_id) VALUES (2, 'Test', 5)")
-	c.update("INSERT INTO rw_apikeys (user_id, api_key, api_isrw) VALUES (2, 'TESTKEY', TRUE)")
+	c.update("INSERT INTO r4_api_keys (user_id, api_key, api_is_rainwave) VALUES (2, 'TESTKEY', TRUE)")
