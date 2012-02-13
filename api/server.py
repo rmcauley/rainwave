@@ -44,7 +44,7 @@ class TestShutdownRequest(api.web.RequestHandler):
 	def get(self, _unused):
 		tornado.ioloop.IOLoop.instance().stop()
 
-class APIServer:
+class APIServer(object):
 	def __init__(self):
 		pid = os.getpid()
 		pidfile = open(config.get("pid_file", True), 'w')

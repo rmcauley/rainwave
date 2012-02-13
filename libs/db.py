@@ -49,7 +49,7 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		row = self.fetchone()
 		col = row.keys()[0]
 		arr.append(row[col])
-		for row in self.fetchmany()
+		for row in self.fetchmany():
 			arr.append(row[col])
 		return arr
 		
@@ -66,7 +66,7 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 	def create_idx(self, table, column):
 		self.execute("CREATE INDEX %s_%s_idx ON %s (%s)", (table, column, table, column))
 		
-class SQLiteCursor:
+class SQLiteCursor(object):
 	serial = 0
 
 	def __init__(self, filename):

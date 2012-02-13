@@ -8,7 +8,7 @@ from libs import db
 
 _AVATAR_PATH = "/forums/download/file.php?avatar=%s"
 
-class User:
+class User(object):
 	def __init__(self, user_id):
 		self.user_id = user_id
 		self.authorized = False

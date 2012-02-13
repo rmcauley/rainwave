@@ -3,7 +3,7 @@ import pylibmc
 #TODO: Instantiate module-wide memcache connection
 cache = None
 
-class RainwaveCache:
+class RainwaveCache(object):
 	def __init__(self):
 		#TODO: Lots of stuff in here I'm sure
 		self.memcache = pylibmc.Client(["127.0.0.1"], binary = True)

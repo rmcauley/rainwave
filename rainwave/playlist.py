@@ -54,7 +54,7 @@ class SongHasNoSIDsException(Exception):
 class SongNonExistent(Exception):
 	pass
 	
-class Song(Object):
+class Song(object):
 	@classmethod
 	def load_from_id(klass, id, sid = False):
 		d = None
@@ -242,7 +242,7 @@ class MetadataNotNamedError(MetadataInsertionError):
 class MetadataNotFoundError(MetadataInsertionError):
 	pass
 
-class AssociatedMetadata(Object):
+class AssociatedMetadata(object):
 	select_by_name_query = None 		# one %s argument: name
 	select_by_id_query = None			# one %s argument: id
 	select_by_song_id_query = None		# one %s argument: song_id
