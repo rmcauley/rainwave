@@ -106,14 +106,17 @@ class SQLiteCursor(object):
 		
 	def fetch_var(self, query, params = None):
 		self.execute(query, params)
-		if self.cur.rowcount == 0:
+		# if self.cur.rowcount <= 0:
+			# return None
+		row = self.cur.fetchone()
+		if not row:
 			return None
-		return self.cur.fetchone()[0]		
+		return row[row.keys()[0]]
 		
 	def fetch_row(self, query, params = None):
 		self.execute(query, params)
-		if self.cur.rowcount == 0:
-			return None
+		# if self.cur.rowcount <= 0:
+			# return None
 		return self.cur.fetchone()
 	
 	def fetch_all(self, query, params = None):
@@ -126,7 +129,7 @@ class SQLiteCursor(object):
 		self.execute(query, params)
 		arr = []
 		for row in self.cur.fetchall():
-			arr.append(row[0])
+			arr.append(row.keys()[0])
 		return arr
 		
 	def update(self, query, params = None):
@@ -431,6 +434,7 @@ def create_tables():
 			listener_sid_lock		BOOLEAN		DEFAULT FALSE, \
 			listener_sid_lock_end	INTEGER		, \
 			listener_purge			BOOLEAN		DEFAULT FALSE, \
+			listener_voted_entry	INTEGER		, \
 			user_id					INTEGER		DEFAULT 1 \
 		)")
 	c.create_idx("r4_listeners", "sid")
@@ -459,11 +463,12 @@ def create_tables():
 		)")
 	
 	c.update(" \
-		CREATE TABLE r4_request_lists ( \
-			reqlist_id				SERIAL		PRIMARY KEY, \
-			reqlist_order			SMALLINT	, \
+		CREATE TABLE r4_request_store ( \
+			reqstor_id				SERIAL		PRIMARY KEY, \
+			reqstor_order			SMALLINT	, \
 			user_id					INTEGER		NOT NULL, \
-			song_id					INTEGER		NOT NULL \
+			song_id					INTEGER		NOT NULL, \
+			sid						SMALLINT	NOT NULL \
 		)")
 	c.create_idx("r4_request_lists", "user_id")
 	c.create_idx("r4_request_lists", "song_id")
@@ -471,12 +476,12 @@ def create_tables():
 	c.create_delete_fk("r4_request_lists", "r4_songs", "song_id")
 	
 	c.update(" \
-		CREATE TABLE r4_request_queue ( \
+		CREATE TABLE r4_request_line ( \
 			user_id					INTEGER		NOT NULL, \
 			sid						SMALLINT	NOT NULL, \
-			requestq_wait_start		INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-			requestq_expiry_tune_in	INTEGER		, \
-			requestq_expiry_block	SMALLINT	\
+			line_wait_start			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
+			line_expiry_tune_in		INTEGER		, \
+			line_expiry_election	INTEGER		\
 		)")
 	c.create_idx("r4_request_queue", "user_id")
 	c.create_idx("r4_request_queue", "sid")
@@ -593,7 +598,9 @@ def _create_test_tables():
 def _fill_test_tables():
 	# Anonymous user
 	c.update("INSERT INTO phpbb_users (user_id, username) VALUES (1, 'Anonymous')")
+	c.update("INSERT INTO r4_api_keys (user_id, api_key, api_is_rainwave, api_ip) VALUES (1, 'TESTKEY', TRUE, '127.0.0.1')")
 	
 	# User ID 2: site admin
 	c.update("INSERT INTO phpbb_users (user_id, username, group_id) VALUES (2, 'Test', 5)")
 	c.update("INSERT INTO r4_api_keys (user_id, api_key, api_is_rainwave) VALUES (2, 'TESTKEY', TRUE)")
+	

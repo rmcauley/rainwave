@@ -48,10 +48,12 @@ libs.db.create_tables()
 # I found Nose impossible to configure programmatically so I'm resorting
 # to faking argv to pass in.  Terrible.  Absolutely terrible.
 if nose.run(addplugins=[ExtensionPlugin()], argv=sys.argv.extend(['-w', 'tests', '-s'])) == 0:
-	sys.stderr.write("Unit testing failed.")
+	sys.stderr.write("Unit testing failed.\n")
 	sys.exit(1)
 	
 libs.db.close()
+
+sys.exit(0)
 
 print
 print "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"

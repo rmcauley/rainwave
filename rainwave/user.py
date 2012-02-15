@@ -18,6 +18,7 @@ class User(object):
 		self.api_key = False
 		self.official_ui = False
 		
+		self.id = user_id
 		self.data = {}
 		self.data['radio_admin'] = 0
 		self.data['radio_dj'] = 0
@@ -33,9 +34,10 @@ class User(object):
 		self.data['user_id'] = 1
 		self.data['username'] = "Anonymous"
 		self.data['sid'] = 0
-		self.data['list_active'] = True
-		self.data['list_voted_entry_id'] = 0
-		self.data['list_id'] = 0
+		self.data['listener_sid_lock'] = False
+		self.data['listener_sid_lock_end'] = 0
+		self.data['listener_voted_entry'] = 0
+		self.data['listener_id'] = 0
 
 	def authorize(self, sid, ip_address, api_key):
 		self.request_sid = sid
@@ -53,11 +55,11 @@ class User(object):
 			self.load()
 
 	def _auth_registered_user(self, ip_address, api_key):
-		r = db.c.fetch_row("SELECT api_key, api_isrw FROM rw_apikeys WHERE user_id = %s AND api_key = %s", (self.user_id, api_key))
+		r = db.c.fetch_row("SELECT api_key, api_is_rainwave FROM r4_api_keys WHERE user_id = %s AND api_key = %s", (self.user_id, api_key))
 		if not r:
 			log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.user_id, api_key))
 			return
-		if r['api_isrw']:
+		if r['api_is_rainwave']:
 			self._official_ui = True
 
 		# Set as authorized and begin populating information
@@ -91,13 +93,12 @@ class User(object):
 			self.radio_admin = self.request_sid
 
 	def _auth_anon_user(self, ip_address, api_key):
-		db.c.execute("SELECT api_key FROM rw_apikeys WHERE api_ip = %s AND user_id = 1", (ip_address,))
-		if db.c.rowcount == 0:
-			globals.debug(self, "user", "Anonymous user key %s not found." % (api_key))
+		auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (ip_address,))
+		if not auth_against:
+			log.debug(self, "user", "Anonymous user key %s not found." % api_key)
 			return
-		r = db.c.fetchone()
-		if r['api_key'] != api_key:
-			globals.debug(self, "user", "Anonymous user key %s does not match DB key %s." % (api_key, r['api_key']))
+		if auth_against != api_key:
+			log.debug(self, "user", "Anonymous user key %s does not match DB key %s." % (api_key, auth_against))
 			return
 		self.authorized = True
 
@@ -112,7 +113,7 @@ class User(object):
 		cache.set_user_var(self, "tunedin", sched_id, True)
 
 	def _refresh_registered(self):
-		db.c.execute("SELECT list_id, sid, list_active, list_voted_entry_id FROM rw_listeners WHERE user_id = %s AND list_purge = FALSE", (self.user_id,))
+		db.c.execute("SELECT listener_id, sid, listener_sid_lock, listener_sid_lock_end, listener_voted_entry FROM r4_listeners WHERE user_id = %s AND listener_purge = FALSE", (self.user_id,))
 		if db.c.rowcount > 0:
 			toupdate = db.c.fetchone()
 			self.data.update(toupdate)
@@ -130,28 +131,16 @@ class User(object):
 		
 		#TODO: Check for and grant special permission for being the signed-in DJ
 		
-		r = db.c.fetch_row("SELECT request_id, request_expires_at, sid FROM rw_requests "
-					"WHERE sid = %s AND user_id = %s AND request_fulfilled_at = 0 "
-					"ORDER BY request_id LIMIT 1",
-					(self.request_sid, self.user_id))
-		if r:
-			self.data['radio_request_expiresat'] = r['request_expires_at']
-			self.data['radio_request_position'] = db.c.fetchvar("SELECT COUNT(*) FROM rw_requests "
-						"WHERE sid = %s AND request_id < %s AND request_fulfilled_at = 0",
-						(r['sid'], r['request_id']))
-			self.data['radio_request_position'] += 1
-						
-		#TODO: Restore this functionality.
-		#if self.data['radio_active_until'] <= cache.current_event(self.request_sid)['sched_actualtime'] + 10:
-		#	self.data['radio_statrestricted'] = False
-		#elif (self.data['radio_active_sid'] == self.request_sid):
-		#	self.data['radio_statrestricted'] = False
+		if self.has_requests():
+			self.put_in_request_line()
+		self.data['radio_request_position'] = self.get_request_line_position(self.data['sid'])
+		self.data['radio_request_expires_at'] = self.get_request_expiry()
 			
 	def _refresh_anon(self):
-		db.c.execute("SELECT sid, list_id, list_active, list_voted_entry_id FROM rw_listeners "
-					"WHERE user_id = 1 AND sid = %s AND list_purge = FALSE AND list_ip_address = %s",
+		refreshed = db.c.fetch_row("SELECT sid, listener_id, listener_sid_lock, listener_sid_lock_end, listener_voted_entry FROM r4_listeners "
+					"WHERE user_id = 1 AND sid = %s AND listener_purge = FALSE AND listener_ip = %s",
 					(self.request_sid, self.ip_address))
-		if db.c.rowcount:
+		if refreshed:
 			self.__dict__.update(db.c.fetchone())
 			if self.data['sid'] == self.request_sid:
 				self.data['radio_tunedin'] = True
@@ -163,8 +152,6 @@ class User(object):
 
 		if self.data['sid'] == 0:
 			self.data['sid'] = self.request_sid
-			
-		self.data['radio_statrestricted'] = False
 		
 	def get_private_jsonable(self):
 		public = {}
@@ -188,5 +175,54 @@ class User(object):
 		
 	def is_anonymous(self):
 		return self.user_id > 1
+		
+	def has_requests(self, sid = False):
+		if self.user_id <= 1:
+			return False
+		elif sid:
+			return db.c.fetch_var("SELECT COUNT(*) FROM r4_request_store WHERE user_id = %s AND sid = %s", (sid, self.user_id))
+		else:
+			return db.c.fetch_var("SELECT COUNT(*) FROM r4_request_store WHERE user_id = %s", (self.user_id,))
+			
+	def put_in_request_line(self, sid):
+		if self.user_id <= 1:
+			return False
+		else:
+			already_lined = db.c.fetch_row("SELECT * FROM r4_request_line WHERE user_id = %s", (self.user_id,))
+			if already_lined and already_lined['sid'] == sid:
+				return True
+			elif already_lined:
+				self.remove_from_request_line()
+			return db.c.update("INSERT INTO r4_request_line (user_id, sid) VALUES (%s, %s)", (self.user_id, sid))
+			
+	def remove_from_request_line(self):
+		return db.c.update("DELETE FROM r4_request_line WHERE user_id = %s", (self.user_id,))
+			
+	def get_request_line_position(self, sid):
+		if self.user_id <= 1:
+			return False
+		# TODO: Make the line positions cached for each station centrally
+		# Pull this data straight from the cache
+						
+	def get_request_expiry(self):
+		if self.user_id <= 1:
+			return None
+		if self.data['radio_tunedin']:
+			return None
+		position = db.c.fetch_row("SELECT * FROM r4_request_line WHERE user_id = %s", (self.user_id,))
+		if not position:
+			return None
+		else:
+			if not position['line_expiry_tune_in'] and not position['line_expiry_election']:
+				return None
+			if position['line_expiry_tune_in'] and not position['line_expiry_election']:
+				return position['line_expiry_tune_in']
+			elif position['line_expiry_election'] and not position['line_expiry_tune_in']:
+				return position['line_expiry_election']
+			elif position['line_expiry_election'] > position['line_expiry_tune_in']:
+				return position['line_expiry_election']
+			else:
+				return position['line_expiry_tune_in']
+
 		
 	#TODO: you left off looking at getSongRating in the original lyre code
