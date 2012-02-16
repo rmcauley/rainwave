@@ -1,19 +1,19 @@
 {
     "user": {
-        "list_active": true,
-        "list_id": 0,
-        "list_voted_entry_id": 0,
-        "radio_active_sid": null,
-        "radio_active_until": 0,
+        "listener_id": 0,
+        "listener_lock": false,
+        "listener_lock_counter": 0,
+        "listener_lock_sid": null,
+        "listener_voted_entry": 0,
         "radio_admin": 1,
         "radio_dj": 0,
+        "radio_last_news": 0,
         "radio_lastnews": 0,
-        "radio_listenkey": "TESTKEY",
+        "radio_listen_key": "TESTKEY",
         "radio_perks": true,
-        "radio_request_expiresat": 0,
-        "radio_request_position": 0,
-        "radio_statrestricted": true,
-        "radio_tunedin": false,
+        "radio_request_expires_at": null,
+        "radio_request_position": null,
+        "radio_tuned_in": false,
         "sid": 1,
         "user_avatar": "images/blank.png",
         "user_id": 2,
@@ -21,4 +21,3 @@
         "username": "Test"
     }
 }
-

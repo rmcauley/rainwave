@@ -42,7 +42,7 @@ def test_post(klass):
 class TestShutdownRequest(api.web.RequestHandler):
 	auth_required = False
 	def get(self, _unused):
-		tornado.ioloop.IOLoop.instance().stop()
+		tornado.ioloop.IOLoop.instance().add_timeout(time.time() + 1, tornado.ioloop.IOLoop.instance().stop)
 		
 class APITestFailed(Exception):
 	def __init__(self, value):
@@ -108,14 +108,16 @@ class APIServer(object):
 		task_id = tornado.process.task_id()
 		if task_id == 0:
 			self._listen(task_id)
-			time.sleep(2)
+			# time.sleep(2)
 			return True
 		elif task_id == 1:
 			time.sleep(1)
 			return self._run_tests()
 		elif task_id == None:
-			print "API response testing passed."
+			print
+			print "OK."
 			return True
+		return False
 			
 	def _run_tests(self):
 		passed = True
@@ -170,6 +172,7 @@ class APIServer(object):
 		conn.getresponse()
 		time.sleep(1)
 		
+		print
 		print "----------------------------------------------------------------------"
 		print "Ran %s tests." % len(testable_requests)
 

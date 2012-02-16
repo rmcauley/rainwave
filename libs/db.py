@@ -431,8 +431,9 @@ def create_tables():
 			listener_relay			TEXT		, \
 			listener_agent			TEXT		, \
 			listener_icecast_id		INTEGER		NOT NULL, \
-			listener_sid_lock		BOOLEAN		DEFAULT FALSE, \
-			listener_sid_lock_end	INTEGER		, \
+			listener_lock			BOOLEAN		DEFAULT FALSE, \
+			listener_lock_sid		SMALLINT	, \
+			listener_lock_counter	SMALLINT	DEFAULT 0, \
 			listener_purge			BOOLEAN		DEFAULT FALSE, \
 			listener_voted_entry	INTEGER		, \
 			user_id					INTEGER		DEFAULT 1 \
@@ -580,14 +581,12 @@ def _create_test_tables():
 	c.update(" \
 		CREATE TABLE phpbb_users( \
 			user_id					SERIAL		DEFAULT (EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) + 86400), \
-			radio_active_until		INT			DEFAULT 0, \
-			radio_active_sid		INT, \
 			radio_winningvotes		INT			DEFAULT 0, \
 			radio_losingvotes		INT			DEFAULT 0, \
 			radio_winningrequests	INT			DEFAULT 0, \
 			radio_losingrequests	INT			DEFAULT 0, \
 			radio_lastnews			INT			DEFAULT 0, \
-			radio_listenkey			TEXT		DEFAULT 'TESTKEY', \
+			radio_listen_key		TEXT		DEFAULT 'TESTKEY', \
 			group_id				INT			DEFAULT 1, \
 			username				TEXT 		DEFAULT 'Test', \
 			user_new_privmsg		INT			DEFAULT 0, \

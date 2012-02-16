@@ -53,15 +53,15 @@ if nose.run(addplugins=[ExtensionPlugin()], argv=sys.argv.extend(['-w', 'tests',
 	
 libs.db.close()
 
-sys.exit(0)
-
-print
-print "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 print
 
 server = api.server.APIServer()
 try:
-	sys.exit(server.test())
+	passed = server.test()
+	if passed:
+		sys.exit(0)
+	else:
+		sys.exit(1)
 except RuntimeError as (err):
 	print
 	if repr(err).index("Too many child restarts"):
