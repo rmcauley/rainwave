@@ -147,7 +147,7 @@ class APIServer(object):
 					web_data = json.load(response)
 					del(web_data['api_info'])
 					
-					ref_file = open("../api_tests/%s.json" % request.url)
+					ref_file = open("api_tests/%s.json" % request.url)
 					ref_data = json.load(ref_file)
 					ref_file.close()
 					

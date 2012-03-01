@@ -145,17 +145,17 @@ class Song(object):
 			self.title = f["TIT2"][0]
 		if "TPE1" in keys:
 			self.artist_tag = f["TPE1"][0]
-		if "TRCK" in keys:
-			self.track = f["TRCK"][0]
 		if "TALB" in keys:
 			self.album_tag = f["TALB"][0]
 		if "TCON" in keys:
 			self.genre_tag = f["TCON"][0]
 		if "COMM" in keys:
 			self.link_text = f["COMM"][0]
-		if "TDRC" in keys:
-			self.year = f["TDRC"][0]
-		if "WXXX" in keys:
+		elif "COMM::'XXX'" in keys:
+			self.link_text = f["COMM::'XXX'"][0]
+		if "WXXX:URL" in keys:
+			self.link = f["WXXX:URL"]
+		elif "WXXX" in keys:
 			self.link = f["WXXX"][0]
 		self.length = int(f.info.length)
 		
@@ -174,11 +174,11 @@ class Song(object):
 		Save song to the database.  Does NOT associate metadata.
 		"""
 		update = False
-		if self.id
+		if self.id:
 			update = True
-		else
+		else:
 			potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs JOIN r4_albums USING (album_id) WHERE song_title = %s AND album_title = %s" % (self.title, self.album_tag))
-			if potential_id
+			if potential_id:
 				self.id = potential_id
 				update = True
 				
@@ -198,7 +198,7 @@ class Song(object):
 					song_verified = true \
 				WHERE song_id = %s", 
 				(self.filename, self.title, self.link, self.link_text, self.secondslong, True))
-		else
+		else:
 			self.id = db.c.fetch_var("SELECT nextval('r4_songs_song_id_seq'::regclass)")
 			db.c.update("INSERT INTO r4_songs \
 				(song_id, song_filename, song_title, song_link, song_link_text, song_secondslong, song_origin_sid) \
@@ -279,7 +279,7 @@ class AssociatedMetadata(object):
 	@classmethod
 	def load_list_from_song_id(klass, song_id):
 		instances = []
-		for row in db.c.query(klass.select_by_song_id_query, (song_id,))
+		for row in db.c.query(klass.select_by_song_id_query, (song_id,)):
 			instance = klass()
 			instance._assign_from_dict(row)
 			instances.append(instance)
@@ -297,9 +297,9 @@ class AssociatedMetadata(object):
 		self.name = d["name"]
 		if d.has_key("is_tag"):
 			self.is_tag = d["is_tag"]
-		if d.has_key("elec_block")
+		if d.has_key("elec_block"):
 			self.elec_block = d["elec_block"]
-		if d.has_key("cool_time")
+		if d.has_key("cool_time"):
 			self.cool_time = d["cool_time"]
 		
 	def save(self):
@@ -341,7 +341,7 @@ class AssociatedMetadata(object):
 		if not db.c.update(disassociate_song_id_query, (song_id, self.id)):
 			raise MetadataUpdateError("Cannot disassociate song ID %s with %s ID %s" % (song_id, self.__class__.__name__, self.id))
 		
-class Album(AssociatedMetaData):
+class Album(AssociatedMetadata):
 	select_by_name_query = "SELECT r4_albums.* FROM r4_albums WHERE album_name = %s"
 	select_by_id_query = "SELECT r4_albums.* FROM r4_albums WHERE album_id = %s"
 	select_by_song_id_query = "SELECT r4_albums.*, r4_song_album.album_is_tag FROM r4_song_album JOIN r4_albmus USING (album_id) WHERE song_id = %s"
@@ -377,7 +377,7 @@ class Album(AssociatedMetaData):
 			if not current_sids.index(sid):
 				if old_sids.index(sid):
 					db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (self.id, sid))
-				else
+				else:
 					db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (self.id, sid))
 					
 class Artist(AssociatedMetadata):
