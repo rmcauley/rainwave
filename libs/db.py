@@ -67,14 +67,13 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		self.execute("CREATE INDEX %s_%s_idx ON %s (%s)", (table, column, table, column))
 		
 class SQLiteCursor(object):
-	serial = 0
-
 	def __init__(self, filename):
 		self.con = sqlite3.connect(filename, 5, sqlite3.PARSE_DECLTYPES)
 		self.con.isolation_level = None
 		self.con.row_factory = self._dict_factory
 		self.cur = self.con.cursor()
 		self.rowcount = 0
+		self._serial_count = 0
 		
 	def close(self):
 		self.cur.close()
@@ -96,8 +95,8 @@ class SQLiteCursor(object):
 		if query.find("ADD CONSTRAINT") >= 0:
 			return None
 		if query.find("nextval(") >= 0:
-			serial = serial + 1
-			return "SELECT %s" % serial
+			self._serial_count = self._serial_count + 1
+			return "SELECT %s" % self._serial_count
 		query = query.replace("%s", "?")
 		query = query.replace("TRUE", "1")
 		query = query.replace("FALSE", "0")
@@ -120,7 +119,7 @@ class SQLiteCursor(object):
 		return self.cur.fetchone()
 	
 	def fetch_all(self, query, params = None):
-		self.fetch_array()
+		self.fetchall()
 		if self.cur.rowcount == 0:
 			return []
 		return self.cur.fetchall()
@@ -129,7 +128,7 @@ class SQLiteCursor(object):
 		self.execute(query, params)
 		arr = []
 		for row in self.cur.fetchall():
-			arr.append(row.keys()[0])
+			arr.append(row[row.keys()[0]])
 		return arr
 		
 	def update(self, query, params = None):

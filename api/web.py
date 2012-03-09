@@ -121,16 +121,16 @@ class RequestHandler(tornado.web.RequestHandler):
 				self.sid = self.user.request_sid
 		
 		if self.user and request_ok:
-			if self.__class__.login_required and not user.is_anonymous():
+			if self.login_required and not user.is_anonymous():
 				self.append("error", api.returns.ErrorReturn(-1001, "Login required for %s." % url))
 				request_ok = False
-			if self.__class__.tunein_required and not user.is_tunedin():
+			if self.tunein_required and not user.is_tunedin():
 				self.append("error", api.returns.ErrorReturn(-1001, "You must be tuned in to use %s." % url))
 				request_ok = False
-			if self.__class__.admin_required and not user.is_admin():
+			if self.admin_required and not user.is_admin():
 				self.append("error", api.returns.ErrorReturn(-1001, "You must be an admin to use %s." % url))
 				request_ok = False
-			if self.__class__.dj_required and not user.is_dj():
+			if self.dj_required and not user.is_dj():
 				self.append("error", api.returns.ErrorReturn(-1001, "You must be DJing to use %s." % url))
 				request_ok = False
 		
