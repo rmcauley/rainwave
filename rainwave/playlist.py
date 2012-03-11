@@ -111,8 +111,7 @@ class Song(object):
 
 		matched_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
 		if matched_id:
-			raise Exception
-			s = klass.load_from_id(id)
+			s = klass.load_from_id(matched_id)
 			for metadata in s.albums + s.artists + s.groups:
 				if metadata.is_from_tag():
 					metadata.disassociate_song_id(matched_id)
@@ -215,9 +214,9 @@ class Song(object):
 					song_link = %s, \
 					song_link_text = %s, \
 					song_length = %s, \
-					song_verified = true \
+					song_verified = TRUE \
 				WHERE song_id = %s", 
-				(self.filename, self.title, self.link, self.link_text, self.length, True))
+				(self.filename, self.title, self.link, self.link_text, self.length, self.id))
 			self.verified = True
 		else:
 			self.id = db.c.fetch_var("SELECT nextval('r4_songs_song_id_seq'::regclass)")
@@ -378,7 +377,11 @@ class Album(AssociatedMetadata):
 		return db.c.update("UPDATE r4_albums SET album_title = %s, album_rating = %s WHERE album_id = %s", (self.name, self.rating, self.id))
 		
 	def _assign_from_dict(self, d):
-		pass
+		self.id = d['album_id']
+		self.title = d['album_title']
+		self.rating = d['album_rating']
+		self.rating_count = d['album_rating_count']
+		self.added_on = d['album_added_on']
 	
 	def associate_song_id(self, song_id):
 		self._reconcile_sids()

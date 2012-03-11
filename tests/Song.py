@@ -32,9 +32,5 @@ class SongReadTest(unittest.TestCase):
 		self.assertEqual(song_loaded.sid, 1)
 		
 		
-	# def test_update(self):
-	
-	# def test_load_from_id(self):
-	
-	# def test_save(self):
-	
+	def test_update(self):
+		song_updated = playlist.Song.load_from_file("tests/test1.mp3", [1])
