@@ -193,10 +193,10 @@ class Song(object):
 			# To check for moved/duplicate songs we try to find if it exists in the db
 			# by matching on song title and either the first album if we have it, or its entire album tag.
 			if self.albums:
-				check_album = self.albums[0].title
+				check_album = self.albums[0].name
 			else:
 				check_album = self.album_tag
-			potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) WHERE song_title = %s AND album_title = %s", (self.title, check_album))
+			potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) WHERE song_title = %s AND album_name = %s", (self.title, check_album))
 			if potential_id:
 				self.id = potential_id
 				update = True
@@ -214,12 +214,13 @@ class Song(object):
 					song_link = %s, \
 					song_link_text = %s, \
 					song_length = %s, \
+					song_scanned = TRUE, \
 					song_verified = TRUE \
 				WHERE song_id = %s", 
 				(self.filename, self.title, self.link, self.link_text, self.length, self.id))
 			self.verified = True
 		else:
-			self.id = db.c.fetch_var("SELECT nextval('r4_songs_song_id_seq'::regclass)")
+			self.id = db.c.get_next_id("r4_songs", "song_id")
 			db.c.update("INSERT INTO r4_songs \
 				(song_id, song_filename, song_title, song_link, song_link_text, song_length, song_origin_sid) \
 				VALUES \
@@ -294,7 +295,8 @@ class AssociatedMetadata(object):
 	def load_list_from_tag(klass, tag):
 		instances = []
 		for fragment in tag.split(","):
-			instances.append(klass.load_from_name(fragment.strip()))
+			if len(fragment) > 0:
+				instances.append(klass.load_from_name(fragment.strip()))
 		return instances
 		
 	@classmethod
@@ -363,33 +365,33 @@ class AssociatedMetadata(object):
 			raise MetadataUpdateError("Cannot disassociate song ID %s with %s ID %s" % (song_id, self.__class__.__name__, self.id))
 		
 class Album(AssociatedMetadata):
-	select_by_name_query = "SELECT r4_albums.* FROM r4_albums WHERE album_title = %s"
+	select_by_name_query = "SELECT r4_albums.* FROM r4_albums WHERE album_name = %s"
 	select_by_id_query = "SELECT r4_albums.* FROM r4_albums WHERE album_id = %s"
 	select_by_song_id_query = "SELECT r4_albums.*, r4_song_album.album_is_tag FROM r4_song_album JOIN r4_albums USING (album_id) WHERE song_id = %s"
 	disassociate_song_id_query = "DELETE FROM r4_song_album WHERE song_id = %s AND album_id = %s"
 	associate_song_id_query = "INSERT INTO r4_song_album (song_id, album_id, album_is_tag) VALUES (%s, %s, %s)"
 
 	def _insert_into_db(self):
-		self.id = db.c.fetch_var("SELECT nextval('r4_albums_album_id_seq'::regclass)")
-		return db.c.update("INSERT INTO r4_albums (album_id, album_title) VALUES (%s, %s)", (self.id, self.name))
+		self.id = db.c.get_next_id("r4_albums", "album_id")
+		return db.c.update("INSERT INTO r4_albums (album_id, album_name) VALUES (%s, %s)", (self.id, self.name))
 	
 	def _update_db(self):
-		return db.c.update("UPDATE r4_albums SET album_title = %s, album_rating = %s WHERE album_id = %s", (self.name, self.rating, self.id))
+		return db.c.update("UPDATE r4_albums SET album_name = %s, album_rating = %s WHERE album_id = %s", (self.name, self.rating, self.id))
 		
 	def _assign_from_dict(self, d):
 		self.id = d['album_id']
-		self.title = d['album_title']
+		self.name = d['album_name']
 		self.rating = d['album_rating']
 		self.rating_count = d['album_rating_count']
 		self.added_on = d['album_added_on']
 	
 	def associate_song_id(self, song_id):
-		self._reconcile_sids()
 		super(Album, self).associate_song_id(song_id)
+		self._reconcile_sids()
 		
 	def disassociate_song_id(self, song_id):
-		self._reconcile_sids()
 		super(Album, self).disassociate_song_id(song_id)
+		self._reconcile_sids()
 		
 	def _reconcile_sids(self):
 		sids = db.c.fetch_list("SELECT r4_song_sid.sid AS 'sid' FROM r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) WHERE album_id = %s GROUP BY sid", (self.id,))
@@ -413,7 +415,7 @@ class Artist(AssociatedMetadata):
 	associate_song_id_query = "INSERT INTO r4_song_artist (song_id, artist_id, artist_is_tag) VALUES (%s, %s, %s)"
 	
 	def _insert_into_db(self):
-		self.id = db.c.fetch_var("SELECT nextval('r4_artists_artist_id_seq'::regclass)")
+		self.id = db.c.get_next_id("r4_artists", "artist_id")
 		return db.c.update("INSERT INTO r4_artists (artist_id, artist_name) VALUES (%s, %s)", (self.id, self.name))
 	
 	def _update_db(self):
@@ -427,7 +429,7 @@ class SongGroup(AssociatedMetadata):
 	associate_song_id_query = "INSERT INTO r4_song_group (song_id, group_id, group_is_tag) VALUES (%s, %s, %s)"
 	
 	def _insert_into_db(self):
-		self.id = db.c.fetch_var("SELECT nextval('r4_groups_group_id_seq'::regclass)")
+		self.id = db.c.get_next_id("r4_groups", "group_id")
 		return db.c.update("INSERT INTO r4_groups (group_id, group_name) VALUES (%s, %s)", (self.id, self.name))
 	
 	def _update_db(self):

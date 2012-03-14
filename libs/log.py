@@ -60,3 +60,6 @@ def critical(key, message, user = None):
 	if not log:
 		return
 	log.critical(_massage_line(key, message, user))
+	
+def exception(key, message, e):
+	log.critical(_massage_line(key, message, None), exc_info = e)

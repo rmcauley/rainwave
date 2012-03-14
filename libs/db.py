@@ -57,6 +57,9 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		self.execute(query, params)
 		return self.rowcount
 		
+	def get_next_id(self, sequence, table):
+		return self.fetch_var("SELECT nextval('" + sequence + "_" + column + "_seq'::regclass)")
+		
 	def create_delete_fk(self, linking_table, foreign_table, key):
 		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE CASCADE", (linking_table, linking_table, key, key, foreign_table, key))
 		
@@ -73,7 +76,6 @@ class SQLiteCursor(object):
 		self.con.row_factory = self._dict_factory
 		self.cur = self.con.cursor()
 		self.rowcount = 0
-		self._serial_count = 0
 		
 	def close(self):
 		self.cur.close()
@@ -91,12 +93,9 @@ class SQLiteCursor(object):
 	# Speaking of performance, everything gets mangled through this method anyway.
 	def _convert_pg_query(self, query):
 		if query.find("CREATE TABLE") >= 0:
-			query = query.replace("SERIAL", "INTEGER")
+			query = re.sub("SERIAL\w+PRIMARY KEY", "INTEGER PRIMARY KEY", query)
 		if query.find("ADD CONSTRAINT") >= 0:
 			return None
-		if query.find("nextval(") >= 0:
-			self._serial_count = self._serial_count + 1
-			return "SELECT %s" % self._serial_count
 		query = query.replace("%s", "?")
 		query = query.replace("TRUE", "1")
 		query = query.replace("FALSE", "0")
@@ -146,6 +145,12 @@ class SQLiteCursor(object):
 		else:
 			self.cur.execute(query)
 		self.rowcount = self.cur.rowcount
+		
+	def get_next_id(self, table, column):
+		val = self.fetch_var("SELECT MAX(" + column + ") + 1 FROM " + table)
+		if not val:
+			return 1
+		return val
 			
 	def fetchone(self):
 		return self.cur.fetchone()
@@ -221,6 +226,7 @@ def create_tables():
 		CREATE TABLE r4_songs ( \
 			song_id					SERIAL		PRIMARY KEY, \
 			song_verified			BOOLEAN		DEFAULT TRUE, \
+			song_scanned			BOOLEAN		DEFAULT TRUE, \
 			song_filename			TEXT		, \
 			song_title				TEXT		, \
 			song_link				TEXT		, \
@@ -276,7 +282,7 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_albums ( \
 			album_id				SERIAL		PRIMARY KEY, \
-			album_title				TEXT		, \
+			album_name				TEXT		, \
 			album_rating			REAL		DEFAULT 0, \
 			album_rating_count		INTEGER		DEFAULT 0, \
 			album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \

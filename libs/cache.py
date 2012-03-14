@@ -1,19 +1,24 @@
 import pylibmc
+from libs import config
 
-#TODO: Instantiate module-wide memcache connection
-cache = None
+_memcache = None
 
-class RainwaveCache(object):
-	def __init__(self):
-		#TODO: Lots of stuff in here I'm sure
-		self.memcache = pylibmc.Client(["127.0.0.1"], binary = True)
-		self.memcache.behaviors = { "tcp_nodelay": True }
-		pass
+def open():
+	global _memcache
+	_memcache = pylibmc.Client(config.get("memcache_servers", True), binary = True)
+	_memcache.behaviors = { "tcp_nodelay": True, "ketama": config.get("memcache_ketama") }
 
-	def set_user_var(user, *args):
-		value = args.pop()
-		key = "u%s_" % user.user_id
-		key2 = '_'.join("_")
-		self.memcache.set(key + key2, value)
-		
-	#TODO def @propery current_event
+def set_user_var(user, *args):
+	value = args.pop()
+	key = "u%s_" % user.id
+	key2 = args.join("_")
+	_memcache.set(key + key2, value)
+	
+def get_user_var(user, *args):
+	_memcache.get("u%s_%s" % (user.id, args.join("_")))
+	
+def set(key, value):
+	_memcache.set(key, value)
+
+def get(key):
+	_memcache.get(key)

@@ -3,7 +3,7 @@ import time
 import re
 
 from libs import log
-from libs.cache import cache
+from libs import cache
 from libs import db
 
 _AVATAR_PATH = "/forums/download/file.php?avatar=%s"

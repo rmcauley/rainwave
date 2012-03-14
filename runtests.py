@@ -49,6 +49,7 @@ libs.config.override("db_type", "sqlite")
 libs.config.override("db_name", sqlite_file)
 libs.db.open()
 libs.db.create_tables()
+libs.cache.open()
 
 # I found Nose impossible to configure programmatically so I'm resorting
 # to faking argv to pass in.  Terrible.  Absolutely terrible.

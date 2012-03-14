@@ -14,12 +14,15 @@ test_mode = False
 
 def load(file):
 	global _opts
+	global test_mode
 	
 	config_file = open(file)
 	_opts = json.load(config_file)
 	config_file.close()
 	
 	constants.set_station_ids(get("song_dirs", True), get("station_id_friendly", True))
+	if get("test_mode") == True:
+		test_mode = True
 	
 def require(key):
 	if not key in _opts:
