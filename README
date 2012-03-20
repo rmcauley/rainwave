@@ -1,1 +1,10 @@
 This is the back-end and API project for Rainwave 4.
+
+Required Python modules:
+	- pyinotify
+	- tornado
+	- sqlite3
+	- psycopg2
+	- pylibmc
+	- mutagen
+	- nose

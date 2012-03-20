@@ -112,9 +112,9 @@ class Song(object):
 		matched_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
 		if matched_id:
 			s = klass.load_from_id(matched_id)
-			for metadata in s.albums + s.artists + s.groups:
-				if metadata.is_from_tag():
-					metadata.disassociate_song_id(matched_id)
+			s.disassociate_metadata()
+		elif len(sids) == 0:
+			raise SongHasNoSIDsException
 		else:
 			s = klass()
 		
@@ -235,14 +235,24 @@ class Song(object):
 		for sid in self.sids:
 			if current_sids.count(sid) == 0:
 				db.c.update("INSERT INTO r4_song_sid (song_id, sid) VALUES (%s, %s)", (self.id, sid))
+				
+	def disable(self):
+		db.c.update("UPDATE r4_songs SET song_verified = FALSE WHERE song_id = %s", (self.id,))
+		db.c.update("UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s", (self.id,))
+		self.disassociate_metadata()
 		
-	def start_cooldown():
+	def disassociate_metadata(self):
+		for metadata in self.albums + self.artists + self.groups:
+			if metadata.is_from_tag():
+				metadata.disassociate_song_id(self.id)
+		
+	def start_cooldown(self):
 		"""
 		Calculates cooldown based on jfinalfunk's crazy algorithms.
 		Cooldown may be overriden by song_cool_* rules found in database.
 		"""
 	
-	def update_rating():
+	def update_rating(self):
 		"""
 		Calculate an updated rating from the database.
 		"""
@@ -394,7 +404,7 @@ class Album(AssociatedMetadata):
 		self._reconcile_sids()
 		
 	def _reconcile_sids(self):
-		sids = db.c.fetch_list("SELECT r4_song_sid.sid AS 'sid' FROM r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) WHERE album_id = %s GROUP BY sid", (self.id,))
+		sids = db.c.fetch_list("SELECT r4_song_sid.sid AS 'sid' FROM r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) WHERE album_id = %s AND r4_song_sid.song_exists = TRUE GROUP BY sid", (self.id,))
 		current_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (self.id,))
 		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (self.id,))
 		for sid in current_sids:
