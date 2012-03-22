@@ -118,7 +118,7 @@ class SQLiteCursor(object):
 		return self.cur.fetchone()
 	
 	def fetch_all(self, query, params = None):
-		self.fetchall()
+		self.execute(query, params)
 		if self.cur.rowcount == 0:
 			return []
 		return self.cur.fetchall()

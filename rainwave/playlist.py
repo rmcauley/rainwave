@@ -112,7 +112,9 @@ class Song(object):
 		matched_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
 		if matched_id:
 			s = klass.load_from_id(matched_id)
-			s.disassociate_metadata()
+			for metadata in s.albums + s.artists + s.groups:
+				if metadata.is_from_tag():
+					metadata.disassociate_song_id(s.id)
 		elif len(sids) == 0:
 			raise SongHasNoSIDsException
 		else:
@@ -230,21 +232,20 @@ class Song(object):
 
 		current_sids = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (self.id,))
 		for sid in current_sids:
-			if not self.sids.index(sid):
+			if not self.sids.count(sid):
 				db.c.update("UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s AND sid = %s", (self.id, sid))
 		for sid in self.sids:
-			if current_sids.count(sid) == 0:
+			if current_sids.count(sid):
+				db.c.update("UPDATE r4_song_sid SET song_exists = TRUE WHERE song_id = %s AND sid = %s", (self.id, sid))
+			else:
 				db.c.update("INSERT INTO r4_song_sid (song_id, sid) VALUES (%s, %s)", (self.id, sid))
+			
 				
 	def disable(self):
 		db.c.update("UPDATE r4_songs SET song_verified = FALSE WHERE song_id = %s", (self.id,))
 		db.c.update("UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s", (self.id,))
-		self.disassociate_metadata()
-		
-	def disassociate_metadata(self):
-		for metadata in self.albums + self.artists + self.groups:
-			if metadata.is_from_tag():
-				metadata.disassociate_song_id(self.id)
+		for metadata in self.albums:
+			metadata.reconcile_sids()
 		
 	def start_cooldown(self):
 		"""
@@ -256,6 +257,56 @@ class Song(object):
 		"""
 		Calculate an updated rating from the database.
 		"""
+		
+	def add_artist(self, name):
+		return self._add_metadata(self.artists, name, Artist)
+		
+	def add_album(self, name):
+		return self._add_metadata(self.albums, name, Album)
+
+	def add_group(self, name):
+		return self._add_metadata(self.groups, name, SongGroup)
+	
+	def _add_metadata(self, lst, name, klass):
+		for metadata in lst:
+			if metadata.name == name:
+				return True
+		new_md = klass.load_from_name(name)
+		new_md.associate_song_id(self.id)
+		lst.append(new_md)
+		return True
+		
+	def remove_artist_id(self, id):
+		return self._remove_metadata_id(self.artists, id)
+		
+	def remove_album_id(self, id):
+		return self._remove_metadata_id(self.albums, id)
+		
+	def remove_group_id(self, id):
+		return self._remove_metadata_id(self.groups, id)
+		
+	def _remove_metadata_id(self, lst, id):
+		for metadata in lst:
+			if metadata.id == id and not metadata.is_from_tag():
+				metadata.disassociate_song_id(self.id)
+				return True
+		return False
+		
+	def remove_artist(self, name):
+		return self._remove_metadata(self.artists, name)
+		
+	def remove_album(self, name):
+		return self._remove_metadata(self.albums, name)
+		
+	def remove_group(self, name):
+		return self._remove_metadata(self.groups, name)
+		
+	def _remove_metadata(self, lst, name):
+		for metadata in lst:
+			if metadata.name == name and not metadata.is_from_tag():
+				metadata.disassociate_song_id(self.id)
+				return True
+		return False
 		
 # ################################################################### ASSOCIATED DATA TEMPLATE
 
@@ -306,7 +357,9 @@ class AssociatedMetadata(object):
 		instances = []
 		for fragment in tag.split(","):
 			if len(fragment) > 0:
-				instances.append(klass.load_from_name(fragment.strip()))
+				instance = klass.load_from_name(fragment.strip())
+				instance.is_tag = True
+				instances.append(instance)
 		return instances
 		
 	@classmethod
@@ -345,7 +398,7 @@ class AssociatedMetadata(object):
 		else:
 			raise MetadataNotNamedError("Tried to save a %s without a name" % self.__class__.__name__)
 			
-	def is_from_tag(self, song_id):
+	def is_from_tag(self):
 		return self.is_tag
 			
 	def _insert_into_db():
@@ -367,8 +420,11 @@ class AssociatedMetadata(object):
 			self._start_cooldown_db(self.cool_time)
 
 	def associate_song_id(self, song_id, is_tag = True):
-		if not db.c.update(self.associate_song_id_query, (song_id, self.id, is_tag)):
-			raise MetadataUpdateError("Cannot associate song ID %s with %s ID %s" % (song_id, self.__class__.__name__, self.id))
+		if db.c.fetch_var(self.has_song_id_query, (song_id, self.id)) > 0:
+			pass
+		else:
+			if not db.c.update(self.associate_song_id_query, (song_id, self.id, is_tag)):
+				raise MetadataUpdateError("Cannot associate song ID %s with %s ID %s" % (song_id, self.__class__.__name__, self.id))
 		
 	def disassociate_song_id(self, song_id, is_tag = True):
 		if not db.c.update(self.disassociate_song_id_query, (song_id, self.id)):
@@ -380,6 +436,7 @@ class Album(AssociatedMetadata):
 	select_by_song_id_query = "SELECT r4_albums.*, r4_song_album.album_is_tag FROM r4_song_album JOIN r4_albums USING (album_id) WHERE song_id = %s"
 	disassociate_song_id_query = "DELETE FROM r4_song_album WHERE song_id = %s AND album_id = %s"
 	associate_song_id_query = "INSERT INTO r4_song_album (song_id, album_id, album_is_tag) VALUES (%s, %s, %s)"
+	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_album WHERE song_id = %s AND album_id = %s"
 
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_albums", "album_id")
@@ -394,28 +451,31 @@ class Album(AssociatedMetadata):
 		self.rating = d['album_rating']
 		self.rating_count = d['album_rating_count']
 		self.added_on = d['album_added_on']
+		if d.has_key('album_is_tag'):
+			self.is_tag = d['album_is_tag']
 	
 	def associate_song_id(self, song_id):
 		super(Album, self).associate_song_id(song_id)
-		self._reconcile_sids()
+		self.reconcile_sids()
 		
 	def disassociate_song_id(self, song_id):
 		super(Album, self).disassociate_song_id(song_id)
-		self._reconcile_sids()
+		self.reconcile_sids()
 		
-	def _reconcile_sids(self):
-		sids = db.c.fetch_list("SELECT r4_song_sid.sid AS 'sid' FROM r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) WHERE album_id = %s AND r4_song_sid.song_exists = TRUE GROUP BY sid", (self.id,))
+	def reconcile_sids(self):
+		sids = db.c.fetch_list("SELECT r4_song_sid.sid AS 'sid' FROM r4_song_sid JOIN r4_song_album USING (song_id) WHERE album_id = %s AND r4_song_sid.song_exists = TRUE GROUP BY sid", (self.id,))
 		current_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (self.id,))
 		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (self.id,))
 		for sid in current_sids:
-			if not sids.index(sid):
+			if not sids.count(sid):
 				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE WHERE album_id = %s AND sid = %s", (self.id, sid))
 		for sid in sids:
-			if not current_sids.index(sid):
-				if old_sids.index(sid):
-					db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (self.id, sid))
-				else:
-					db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (self.id, sid))
+			if current_sids.count(sid):
+				pass
+			elif old_sids.count(sid):
+				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (self.id, sid))
+			else:
+				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (self.id, sid))
 					
 class Artist(AssociatedMetadata):
 	select_by_name_query = "SELECT artist_id AS id, artist_name AS name FROM r4_artists WHERE artist_name = %s"
@@ -423,6 +483,7 @@ class Artist(AssociatedMetadata):
 	select_by_song_id_query = "SELECT r4_artists.artist_id AS id, r4_artists.artist_name AS name, r4_song_artist.artist_is_tag AS is_tag FROM r4_song_artist JOIN r4_artists USING (artist_id) WHERE song_id = %s"
 	disassociate_song_id_query = "DELETE FROM r4_song_artist WHERE song_id = %s AND artist_id = %s"
 	associate_song_id_query = "INSERT INTO r4_song_artist (song_id, artist_id, artist_is_tag) VALUES (%s, %s, %s)"
+	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_artist WHERE song_id = %s AND artist_id = %s"
 	
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_artists", "artist_id")
@@ -437,6 +498,7 @@ class SongGroup(AssociatedMetadata):
 	select_by_song_id_query = "SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, group_elec_block AS elec_block FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s"
 	disassociate_song_id_query = "DELETE FROM r4_song_group WHERE song_id = %s AND group_id = %s"
 	associate_song_id_query = "INSERT INTO r4_song_group (song_id, group_id, group_is_tag) VALUES (%s, %s, %s)"
+	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_group WHERE song_id = %s AND group_id = %s"
 	
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_groups", "group_id")

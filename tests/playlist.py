@@ -2,7 +2,22 @@ import unittest
 from rainwave import playlist
 from libs import db
 
-class SongReadTest(unittest.TestCase):
+class SongTest(unittest.TestCase):
+	def _check_associations(self, song, sid):
+		self.assertEqual(True, db.c.fetch_var("SELECT song_verified FROM r4_songs WHERE song_id = %s", (song.id,)))
+		self.assertEqual(True, db.c.fetch_var("SELECT song_exists FROM r4_song_sid WHERE song_id = %s", (song.id,)))
+		
+		self.assertEqual(1, db.c.fetch_var("SELECT song_exists FROM r4_song_sid WHERE song_id = %s AND sid = %s", (song.id, sid)))
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_album WHERE song_id = %s", (song.id,)))
+		
+		self.assertEqual(1, db.c.fetch_var("SELECT song_verified FROM r4_songs WHERE song_id = %s", (song.id,)))
+		self.assertEqual(1, db.c.fetch_var("SELECT song_exists FROM r4_song_sid WHERE song_id = %s", (song.id,)))
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_artist WHERE song_id = %s", (song.id,)))
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_group WHERE song_id = %s", (song.id,)))
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_album WHERE song_id = %s", (song.id,)))
+
+		self.assertEqual(1, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s", (song.albums[0].id,)))
+		
 	def test_read(self):
 		song = playlist.Song()
 		song.load_tag_from_file("tests/test1.mp3")
@@ -15,7 +30,8 @@ class SongReadTest(unittest.TestCase):
 
 	def test_save_and_load(self):
 		song_saved = playlist.Song.load_from_file("tests/test1.mp3", [1])
-		
+		self._check_associations(song_saved, 1)
+
 		# Test no-sid song loading
 		song_loaded = playlist.Song.load_from_id(db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_filename = 'tests/test1.mp3'"))
 		self.assertEqual(song_saved.filename, song_loaded.filename)
@@ -26,14 +42,41 @@ class SongReadTest(unittest.TestCase):
 		self.assertEqual(song_saved.length, song_loaded.length)
 		self.assertEqual(song_saved.verified, song_loaded.verified)
 		self.assertEqual(song_saved.sids[0], song_loaded.sids[0])
+		self._check_associations(song_loaded, 1)
 		
 		# Tests with sid loaded
 		song_loaded = playlist.Song.load_from_id(db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_filename = 'tests/test1.mp3'"), 1)
 		self.assertEqual(song_loaded.sid, 1)
-		
+		self._check_associations(song_loaded, 1)
 		
 	def test_update(self):
 		song_updated = playlist.Song.load_from_file("tests/test1.mp3", [1])
+		self._check_associations(song_updated, 1)
+	
+	def test_disable(self):
+		s = playlist.Song.load_from_file("tests/test1.mp3", [1])
+		s.disable()
+		self.assertEqual(0, db.c.fetch_var("SELECT song_verified FROM r4_songs WHERE song_id = %s", (s.id,)))
+		self.assertEqual(0, db.c.fetch_var("SELECT song_exists FROM r4_song_sid WHERE song_id = %s", (s.id,)))
+		self.assertEqual(0, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s", (s.albums[0].id,)))
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_artist WHERE song_id = %s", (s.id,)))
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_group WHERE song_id = %s", (s.id,)))
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_album WHERE song_id = %s", (s.id,)))
+		
+		s = playlist.Song.load_from_file("tests/test1.mp3", [1])
+		self._check_associations(s, 1)
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_artist WHERE song_id = %s", (s.id,)))
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_group WHERE song_id = %s", (s.id,)))
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_album WHERE song_id = %s", (s.id,)))
+		
+	def test_nontag_metadata(self):
+		s = playlist.Song.load_from_file("tests/test1.mp3", [1])
+		s.add_group("Non-Tag Group")
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_groups WHERE group_name = 'Non-Tag Group'"))
+		self.assertEqual(2, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_group WHERE song_id = %s", (s.id,)))
+		s.remove_group("Non-Tag Group")
+		
+		# TODO: Test album non-tag types loading/unloading
 		
 class ArtistTest(unittest.TestCase):
 	def test_load(self):

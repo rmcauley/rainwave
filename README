@@ -8,3 +8,8 @@ Required Python modules:
 	- pylibmc
 	- mutagen
 	- nose
+
+Recommended .git/hooks/pre-commit:
+	#!/bin/bash
+	python runtests.py --api
+	exit $?
