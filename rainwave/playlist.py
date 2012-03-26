@@ -55,6 +55,9 @@ class SongHasNoSIDsException(Exception):
 class SongNonExistent(Exception):
 	pass
 	
+class SongMetadataUnremovable(Exception):
+	pass
+	
 class Song(object):
 	@classmethod
 	def load_from_id(klass, id, sid = False):
@@ -109,12 +112,27 @@ class Song(object):
 		All metadata is saved to the database and updated where necessary.
 		"""
 
+		kept_albums = []
+		kept_artists = []
+		kept_groups = []
 		matched_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
 		if matched_id:
 			s = klass.load_from_id(matched_id)
-			for metadata in s.albums + s.artists + s.groups:
-				if metadata.is_from_tag():
+			for metadata in s.albums:
+				if metadata.is_tag:
 					metadata.disassociate_song_id(s.id)
+				else:
+					kept_albums.append(metadata)
+			for metadata in s.artists:
+				if metadata.is_tag:
+					metadata.disassociate_song_id(s.id)
+				else:
+					kept_artists.append(metadata)
+			for metadata in s.groups:
+				if metadata.is_tag:
+					metadata.disassociate_song_id(s.id)
+				else:
+					kept_groups.append(metadata)
 		elif len(sids) == 0:
 			raise SongHasNoSIDsException
 		else:
@@ -123,9 +141,9 @@ class Song(object):
 		s.load_tag_from_file(filename)
 		s.save(sids)
 		
-		s.artists = Artist.load_list_from_tag(s.artist_tag)
-		s.albums = Album.load_list_from_tag(s.album_tag)
-		s.groups = SongGroup.load_list_from_tag(s.genre_tag)
+		s.artists = Artist.load_list_from_tag(s.artist_tag) + kept_artists
+		s.albums = Album.load_list_from_tag(s.album_tag) + kept_albums
+		s.groups = SongGroup.load_list_from_tag(s.genre_tag) + kept_groups
 		
 		for metadata in s.artists + s.albums + s.groups:
 			metadata.associate_song_id(s.id)
@@ -287,10 +305,10 @@ class Song(object):
 		
 	def _remove_metadata_id(self, lst, id):
 		for metadata in lst:
-			if metadata.id == id and not metadata.is_from_tag():
+			if metadata.id == id and not metadata.is_tag:
 				metadata.disassociate_song_id(self.id)
 				return True
-		return False
+		raise SongMetadataUnremovable("Found no tag by ID %s that wasn't assigned by ID3." % id)
 		
 	def remove_artist(self, name):
 		return self._remove_metadata(self.artists, name)
@@ -303,10 +321,10 @@ class Song(object):
 		
 	def _remove_metadata(self, lst, name):
 		for metadata in lst:
-			if metadata.name == name and not metadata.is_from_tag():
+			if metadata.name == name and not metadata.is_tag:
 				metadata.disassociate_song_id(self.id)
 				return True
-		return False
+		raise SongMetadataUnremovable("Found no tag by name %s that wasn't assigned by ID3." % name)
 		
 # ################################################################### ASSOCIATED DATA TEMPLATE
 
@@ -397,10 +415,7 @@ class AssociatedMetadata(object):
 				raise MetadataUpdateError("%s with ID %s could not be updated." % (self.__class__.__name__, self.id))
 		else:
 			raise MetadataNotNamedError("Tried to save a %s without a name" % self.__class__.__name__)
-			
-	def is_from_tag(self):
-		return self.is_tag
-			
+
 	def _insert_into_db():
 		return False
 	
@@ -419,7 +434,11 @@ class AssociatedMetadata(object):
 		elif self.cool_time:
 			self._start_cooldown_db(self.cool_time)
 
-	def associate_song_id(self, song_id, is_tag = True):
+	def associate_song_id(self, song_id, is_tag = None):
+		if is_tag == None:
+			is_tag = self.is_tag
+		else:
+			self.is_tag = is_tag
 		if db.c.fetch_var(self.has_song_id_query, (song_id, self.id)) > 0:
 			pass
 		else:
@@ -433,7 +452,7 @@ class AssociatedMetadata(object):
 class Album(AssociatedMetadata):
 	select_by_name_query = "SELECT r4_albums.* FROM r4_albums WHERE album_name = %s"
 	select_by_id_query = "SELECT r4_albums.* FROM r4_albums WHERE album_id = %s"
-	select_by_song_id_query = "SELECT r4_albums.*, r4_song_album.album_is_tag FROM r4_song_album JOIN r4_albums USING (album_id) WHERE song_id = %s"
+	select_by_song_id_query = "SELECT r4_albums.*, r4_song_album.album_is_tag FROM r4_song_album JOIN r4_albums USING (album_id) WHERE song_id = %s ORDER BY r4_albums.album_name"
 	disassociate_song_id_query = "DELETE FROM r4_song_album WHERE song_id = %s AND album_id = %s"
 	associate_song_id_query = "INSERT INTO r4_song_album (song_id, album_id, album_is_tag) VALUES (%s, %s, %s)"
 	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_album WHERE song_id = %s AND album_id = %s"
