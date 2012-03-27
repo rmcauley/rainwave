@@ -71,33 +71,33 @@ class Song(object):
 		
 		s = klass()
 		s.id = id
-		s.sids = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (id,))
 		s.filename = d['song_filename']
 		s.verified = d['song_verified']
-		s.title = d['song_title']
-		s.link = d['song_link']
-		s.link_text = d['song_link_text']
-		s.length = d['song_length']
-		s.added_on = d['song_added_on']
-		s.rating = d['song_rating']
-		s.rating_count = d['song_rating_count']
-		s.cool_multiply = d['song_cool_multiply']
-		s.origin_sid = d['song_origin_sid']
-		s.sid = None
+		s.data['sids'] = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (id,))
+		s.data['title'] = d['song_title']
+		s.data['link'] = d['song_link']
+		s.data['link_text'] = d['song_link_text']
+		s.data['length'] = d['song_length']
+		s.data['added_on'] = d['song_added_on']
+		s.data['rating'] = d['song_rating']
+		s.data['rating_count'] = d['song_rating_count']
+		s.data['cool_multiply'] = d['song_cool_multiply']
+		s.data['origin_sid'] = d['song_origin_sid']
+		s.data['sid'] = None
 		
 		if sid:
 			s.sid = sid
-			s.cool = d['song_cool']
-			s.cool_end = d['song_cool_end']
-			s.elec_appearances = d['song_elec_appearances']
-			s.elec_last = d['song_elec_last']
-			s.elec_blocked = d['song_elec_blocked']
-			s.elec_blocked_num = d['song_elec_blocked_num']
-			s.elec_blocked_by = d['song_elec_blocked_by']
-			s.vote_share = d['song_vote_share']
-			s.vote_total = d['song_vote_total']
-			s.request_total = d['song_request_total']
-			s.played_last = d['song_played_last']
+			s.data['cool'] = d['song_cool']
+			s.data['cool_end'] = d['song_cool_end']
+			s.data['elec_appearances'] = d['song_elec_appearances']
+			s.data['elec_last'] = d['song_elec_last']
+			s.data['elec_blocked'] = d['song_elec_blocked']
+			s.data['elec_blocked_num'] = d['song_elec_blocked_num']
+			s.data['elec_blocked_by'] = d['song_elec_blocked_by']
+			s.data['vote_share'] = d['song_vote_share']
+			s.data['vote_total'] = d['song_vote_total']
+			s.data['request_total'] = d['song_request_total']
+			s.data['played_last'] = d['song_played_last']
 
 		s.artists = Artist.load_list_from_song_id(id)
 		s.groups = SongGroup.load_list_from_song_id(id)
@@ -155,14 +155,11 @@ class Song(object):
 		A blank Song object.  Please use one of the load functions to get a filled instance.
 		"""
 		self.id = None
-		self.title = ""
-		self.artist_tag = ""
-		self.album_tag = ""
-		self.genre_tag = ""
-		self.link_text = ""
-		self.link = ""
 		self.albums = None
+		self.artists = None
+		self.groups = None
 		self.verified = False
+		self.data = {}
 		
 	def load_tag_from_file(self, filename):
 		"""
@@ -173,7 +170,7 @@ class Song(object):
 		self.filename = filename
 		keys = f.keys()
 		if "TIT2" in keys:
-			self.title = f["TIT2"][0]
+			self.data['title'] = f["TIT2"][0]
 		if "TPE1" in keys:
 			self.artist_tag = f["TPE1"][0]
 		if "TALB" in keys:
@@ -181,14 +178,14 @@ class Song(object):
 		if "TCON" in keys:
 			self.genre_tag = f["TCON"][0]
 		if "COMM" in keys:
-			self.link_text = f["COMM"][0]
+			self.data['link_text'] = f["COMM"][0]
 		elif "COMM::'XXX'" in keys:
-			self.link_text = f["COMM::'XXX'"][0]
+			self.data['link_text'] = f["COMM::'XXX'"][0]
 		if "WXXX:URL" in keys:
-			self.link = f["WXXX:URL"].url
+			self.data['link'] = f["WXXX:URL"].url
 		elif "WXXX" in keys:
-			self.link = f["WXXX"][0]
-		self.length = int(f.info.length)
+			self.data['link'] = f["WXXX"][0]
+		self.data['length'] = int(f.info.length)
 		
 	def is_valid(self):
 		"""
@@ -196,8 +193,10 @@ class Song(object):
 		"""
 		
 		if os.path.exists(self.filename):
+			self.verified = True
 			return True
 		else:
+			self.verified = False
 			return False
 		
 	def save(self, sids_override = False):
@@ -213,19 +212,19 @@ class Song(object):
 			# To check for moved/duplicate songs we try to find if it exists in the db
 			# by matching on song title and either the first album if we have it, or its entire album tag.
 			if self.albums:
-				check_album = self.albums[0].name
+				check_album = self.albums[0].data['name']
 			else:
 				check_album = self.album_tag
-			potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) WHERE song_title = %s AND album_name = %s", (self.title, check_album))
+			potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) WHERE song_title = %s AND album_name = %s", (self.data['title'], check_album))
 			if potential_id:
 				self.id = potential_id
 				update = True
 				
 		if sids_override:
-			self.sids = sids_override
+			self.data['sids'] = sids_override
 		elif len(self.sids) == 0:
 			raise SongHasNoSIDsException
-		self.origin_sid = self.sids[0]
+		self.data['origin_sid'] = self.data['sids'][0]
 		
 		if update:
 			db.c.update("UPDATE r4_songs \
@@ -237,7 +236,7 @@ class Song(object):
 					song_scanned = TRUE, \
 					song_verified = TRUE \
 				WHERE song_id = %s", 
-				(self.filename, self.title, self.link, self.link_text, self.length, self.id))
+				(self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], self.id))
 			self.verified = True
 		else:
 			self.id = db.c.get_next_id("r4_songs", "song_id")
@@ -245,14 +244,14 @@ class Song(object):
 				(song_id, song_filename, song_title, song_link, song_link_text, song_length, song_origin_sid) \
 				VALUES \
 				(%s,      %s           , %s        , %s       , %s            , %s              , %s)",
-				(self.id, self.filename, self.title, self.link, self.link_text, self.length, self.origin_sid))
+				(self.id, self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid']))
 			self.verified = True
 
 		current_sids = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (self.id,))
 		for sid in current_sids:
-			if not self.sids.count(sid):
+			if not self.data['sids'].count(sid):
 				db.c.update("UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s AND sid = %s", (self.id, sid))
-		for sid in self.sids:
+		for sid in self.data['sids']:
 			if current_sids.count(sid):
 				db.c.update("UPDATE r4_song_sid SET song_exists = TRUE WHERE song_id = %s AND sid = %s", (self.id, sid))
 			else:
@@ -287,7 +286,7 @@ class Song(object):
 	
 	def _add_metadata(self, lst, name, klass):
 		for metadata in lst:
-			if metadata.name == name:
+			if metadata.data['name'] == name:
 				return True
 		new_md = klass.load_from_name(name)
 		new_md.associate_song_id(self.id)
@@ -321,10 +320,29 @@ class Song(object):
 		
 	def _remove_metadata(self, lst, name):
 		for metadata in lst:
-			if metadata.name == name and not metadata.is_tag:
+			if metadata.data['name'] == name and not metadata.is_tag:
 				metadata.disassociate_song_id(self.id)
 				return True
 		raise SongMetadataUnremovable("Found no tag by name %s that wasn't assigned by ID3." % name)
+		
+	def to_dict(self):
+		self.data['id'] = self.id
+		album_list = []
+		artist_list = []
+		group_list = []
+		if self.albums:
+			for metadata in self.albums:
+				albums_list.append(metadata.to_dict())
+			self.data['albums'] = album_list
+		if self.artists:
+			for metadata in self.artists:
+				artist_list.append(metadata.to_dict())
+			self.data['artists'] = artist_list
+		if self.groups:
+			for metadata in self.groups:
+				group_list.append(metadata.to_dict())
+			self.data['groups'] = group_list
+		return self.data
 		
 # ################################################################### ASSOCIATED DATA TEMPLATE
 
@@ -357,7 +375,7 @@ class AssociatedMetadata(object):
 		if data:
 			instance._assign_from_dict(data)
 		else:
-			instance.name = name
+			instance.data['name'] = name
 			instance.save()
 		return instance
 		
@@ -391,14 +409,16 @@ class AssociatedMetadata(object):
 		
 	def __init__(self):
 		self.id = None
-		self.name = None
 		self.is_tag = False
 		self.elec_block = False
 		self.cool_time = False
+		
+		self.data = {}
+		self.data['name'] = None
 
 	def _assign_from_dict(self, d):
 		self.id = d["id"]
-		self.name = d["name"]
+		self.data['name'] = d["name"]
 		if d.has_key("is_tag"):
 			self.is_tag = d["is_tag"]
 		if d.has_key("elec_block"):
@@ -407,9 +427,9 @@ class AssociatedMetadata(object):
 			self.cool_time = d["cool_time"]
 		
 	def save(self):
-		if not self.id and self.name:
+		if not self.id and self.data['name']:
 			if not self._insert_into_db():
-				raise MetadataInsertionError("%s with name \"%s\" could not be inserted into the database." % (self.__class__.__name__, self.name))
+				raise MetadataInsertionError("%s with name \"%s\" could not be inserted into the database." % (self.__class__.__name__, self.data['name']))
 		elif self.id:
 			if not self._update_db():
 				raise MetadataUpdateError("%s with ID %s could not be updated." % (self.__class__.__name__, self.id))
@@ -448,6 +468,10 @@ class AssociatedMetadata(object):
 	def disassociate_song_id(self, song_id, is_tag = True):
 		if not db.c.update(self.disassociate_song_id_query, (song_id, self.id)):
 			raise MetadataUpdateError("Cannot disassociate song ID %s with %s ID %s" % (song_id, self.__class__.__name__, self.id))
+			
+	def to_dict(self):
+		self.data['id'] = self.id
+		return self.data
 		
 class Album(AssociatedMetadata):
 	select_by_name_query = "SELECT r4_albums.* FROM r4_albums WHERE album_name = %s"
@@ -459,17 +483,17 @@ class Album(AssociatedMetadata):
 
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_albums", "album_id")
-		return db.c.update("INSERT INTO r4_albums (album_id, album_name) VALUES (%s, %s)", (self.id, self.name))
+		return db.c.update("INSERT INTO r4_albums (album_id, album_name) VALUES (%s, %s)", (self.id, self.data['name']))
 	
 	def _update_db(self):
-		return db.c.update("UPDATE r4_albums SET album_name = %s, album_rating = %s WHERE album_id = %s", (self.name, self.rating, self.id))
+		return db.c.update("UPDATE r4_albums SET album_name = %s, album_rating = %s WHERE album_id = %s", (self.data['name'], self.data['rating'], self.id))
 		
 	def _assign_from_dict(self, d):
 		self.id = d['album_id']
-		self.name = d['album_name']
-		self.rating = d['album_rating']
-		self.rating_count = d['album_rating_count']
-		self.added_on = d['album_added_on']
+		self.data['name'] = d['album_name']
+		self.data['rating'] = d['album_rating']
+		self.data['rating_count'] = d['album_rating_count']
+		self.data['added_on'] = d['album_added_on']
 		if d.has_key('album_is_tag'):
 			self.is_tag = d['album_is_tag']
 	
@@ -506,7 +530,7 @@ class Artist(AssociatedMetadata):
 	
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_artists", "artist_id")
-		return db.c.update("INSERT INTO r4_artists (artist_id, artist_name) VALUES (%s, %s)", (self.id, self.name))
+		return db.c.update("INSERT INTO r4_artists (artist_id, artist_name) VALUES (%s, %s)", (self.id, self.data['name']))
 	
 	def _update_db(self):
 		return db.c.update("UPDATE r4_artists SET artist_name = %s WHERE artist_id = %s", (self.name, self.id))
@@ -521,7 +545,7 @@ class SongGroup(AssociatedMetadata):
 	
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_groups", "group_id")
-		return db.c.update("INSERT INTO r4_groups (group_id, group_name) VALUES (%s, %s)", (self.id, self.name))
+		return db.c.update("INSERT INTO r4_groups (group_id, group_name) VALUES (%s, %s)", (self.id, self.data['name']))
 	
 	def _update_db(self):
 		return db.c.update("UPDATE r4_groups SET group_name = %s WHERE group_id = %s", (self.name, self.id))

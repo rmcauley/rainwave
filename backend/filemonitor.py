@@ -63,9 +63,9 @@ def _is_mp3(filename):
 	return False
 	
 def _scan_file(filename, sids):
-	print "Scanning %s" % filename
 	try:
 		if _is_mp3(filename):
+			print "Scanning %s" % filename
 			playlist.Song.load_from_file(filename, sids)
 	except Exception as xception:
 		_add_scan_error(filename, xception)
