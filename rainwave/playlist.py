@@ -98,10 +98,13 @@ class Song(object):
 			s.data['vote_total'] = d['song_vote_total']
 			s.data['request_total'] = d['song_request_total']
 			s.data['played_last'] = d['song_played_last']
+			s.albums = Album.load_list_from_song_id_sid(id, sid)
+		else:
+			s.albums = Album.load_list_from_song_id(id)
 
 		s.artists = Artist.load_list_from_song_id(id)
 		s.groups = SongGroup.load_list_from_song_id(id)
-		s.albums = Album.load_list_from_song_id(id)
+		
 		
 		return s
 			
@@ -141,12 +144,19 @@ class Song(object):
 		s.load_tag_from_file(filename)
 		s.save(sids)
 		
-		s.artists = Artist.load_list_from_tag(s.artist_tag) + kept_artists
-		s.albums = Album.load_list_from_tag(s.album_tag) + kept_albums
-		s.groups = SongGroup.load_list_from_tag(s.genre_tag) + kept_groups
+		new_artists = Artist.load_list_from_tag(s.artist_tag)
+		new_albums = Album.load_list_from_tag(s.album_tag)
+		new_groups = SongGroup.load_list_from_tag(s.genre_tag)
 		
-		for metadata in s.artists + s.albums + s.groups:
+		for metadata in new_artists + new_groups:
 			metadata.associate_song_id(s.id)
+			
+		s.artists = new_artists + kept_artists
+		s.albums = new_albums + kept_albums
+		s.groups = new_groups + kept_groups
+		
+		for metadata in s.albums:
+			metadata.associate_song_id(s.id, sids)
 		
 		return s
 
@@ -208,14 +218,8 @@ class Song(object):
 			update = True
 		else:
 			potential_id = None
-			check_album = None
 			# To check for moved/duplicate songs we try to find if it exists in the db
-			# by matching on song title and either the first album if we have it, or its entire album tag.
-			if self.albums:
-				check_album = self.albums[0].data['name']
-			else:
-				check_album = self.album_tag
-			potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) WHERE song_title = %s AND album_name = %s", (self.data['title'], check_album))
+			potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s", (self.data['title'], self.data['length']))
 			if potential_id:
 				self.id = potential_id
 				update = True
@@ -278,8 +282,18 @@ class Song(object):
 	def add_artist(self, name):
 		return self._add_metadata(self.artists, name, Artist)
 		
-	def add_album(self, name):
-		return self._add_metadata(self.albums, name, Album)
+	def add_album(self, name, sids = None):
+		if not sids and not 'sids' in self.data:
+			raise TypeError("add_album() requires a station ID list if song was not loaded/saved into database")
+		elif not sids:
+			sids = self.data['sids']
+		for metadata in self.albums:
+			if metadata.data['name'] == name:
+				return True
+		new_md = Album.load_from_name(name)
+		new_md.associate_song_id(self.id, sids)
+		self.albums.append(new_md)
+		return True
 
 	def add_group(self, name):
 		return self._add_metadata(self.groups, name, SongGroup)
@@ -478,8 +492,16 @@ class Album(AssociatedMetadata):
 	select_by_id_query = "SELECT r4_albums.* FROM r4_albums WHERE album_id = %s"
 	select_by_song_id_query = "SELECT r4_albums.*, r4_song_album.album_is_tag FROM r4_song_album JOIN r4_albums USING (album_id) WHERE song_id = %s ORDER BY r4_albums.album_name"
 	disassociate_song_id_query = "DELETE FROM r4_song_album WHERE song_id = %s AND album_id = %s"
-	associate_song_id_query = "INSERT INTO r4_song_album (song_id, album_id, album_is_tag) VALUES (%s, %s, %s)"
 	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_album WHERE song_id = %s AND album_id = %s"
+	
+	@classmethod
+	def load_list_from_song_id_sid(klass, song_id, sid):
+		instances = []
+		for row in db.c.fetch_all("SELECT r4_albums.*, r4_song_album.album_is_tag FROM r4_song_album JOIN r4_albums USING (album_id) WHERE song_id = %s  AND r4_song_album.sid = %s ORDER BY r4_albums.album_name", (song_id, sid)):
+			instance = klass()
+			instance._assign_from_dict(row)
+			instances.append(instance)
+		return instances
 
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_albums", "album_id")
@@ -497,8 +519,17 @@ class Album(AssociatedMetadata):
 		if d.has_key('album_is_tag'):
 			self.is_tag = d['album_is_tag']
 	
-	def associate_song_id(self, song_id):
-		super(Album, self).associate_song_id(song_id)
+	def associate_song_id(self, song_id, sids, is_tag = None):
+		if is_tag == None:
+			is_tag = self.is_tag
+		else:
+			self.is_tag = is_tag
+		if db.c.fetch_var(self.has_song_id_query, (song_id, self.id)) > 0:
+			pass
+		else:
+			associate_song_id_query = "INSERT INTO r4_song_album (song_id, album_id, album_is_tag, sid) VALUES (%s, %s, %s, %s)"
+			for sid in sids:
+				db.c.update(associate_song_id_query, (song_id, self.id, is_tag, sid))
 		self.reconcile_sids()
 		
 	def disassociate_song_id(self, song_id):
@@ -506,13 +537,13 @@ class Album(AssociatedMetadata):
 		self.reconcile_sids()
 		
 	def reconcile_sids(self):
-		sids = db.c.fetch_list("SELECT r4_song_sid.sid AS 'sid' FROM r4_song_sid JOIN r4_song_album USING (song_id) WHERE album_id = %s AND r4_song_sid.song_exists = TRUE GROUP BY sid", (self.id,))
+		new_sids = db.c.fetch_list("SELECT r4_song_album.sid FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid.song_exists = TRUE GROUP BY r4_song_album.sid", (self.id,))
 		current_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (self.id,))
 		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (self.id,))
 		for sid in current_sids:
-			if not sids.count(sid):
+			if not new_sids.count(sid):
 				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE WHERE album_id = %s AND sid = %s", (self.id, sid))
-		for sid in sids:
+		for sid in new_sids:
 			if current_sids.count(sid):
 				pass
 			elif old_sids.count(sid):

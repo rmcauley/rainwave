@@ -325,7 +325,8 @@ def create_tables():
 		CREATE TABLE r4_song_album ( \
 			album_id				INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL, \
-			album_is_tag			BOOLEAN		DEFAULT TRUE \
+			album_is_tag			BOOLEAN		DEFAULT TRUE, \
+			sid						SMALLINT	NOT NULL \
 		)")
 	c.create_idx("r4_song_album", "album_id")
 	c.create_idx("r4_song_album", "song_id")

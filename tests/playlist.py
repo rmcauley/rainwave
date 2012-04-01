@@ -8,13 +8,12 @@ class SongTest(unittest.TestCase):
 		self.assertEqual(True, db.c.fetch_var("SELECT song_exists FROM r4_song_sid WHERE song_id = %s", (song.id,)))
 		
 		self.assertEqual(1, db.c.fetch_var("SELECT song_exists FROM r4_song_sid WHERE song_id = %s AND sid = %s", (song.id, sid)))
-		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_album WHERE song_id = %s", (song.id,)))
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_album WHERE song_id = %s AND album_id = %s", (song.id, song.albums[0].id)))
 		
 		self.assertEqual(1, db.c.fetch_var("SELECT song_verified FROM r4_songs WHERE song_id = %s", (song.id,)))
 		self.assertEqual(1, db.c.fetch_var("SELECT song_exists FROM r4_song_sid WHERE song_id = %s", (song.id,)))
 		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_artist WHERE song_id = %s", (song.id,)))
 		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_group WHERE song_id = %s", (song.id,)))
-		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_album WHERE song_id = %s", (song.id,)))
 
 		self.assertEqual(1, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s", (song.albums[0].id,)))
 		
