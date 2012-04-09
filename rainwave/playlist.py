@@ -1,16 +1,26 @@
-from mutagen.mp3 import MP3
 import os
+import time
+import random
+
+from mutagen.mp3 import MP3
+
 from libs import db
 
-def get_shortest_song():
+class NoAvailableSongsException(Exception):
+	pass
+
+def get_shortest_song(sid):
 	"""
 	This function gets the shortest available song to us from the database.
 	"""
+	# Should we take into account song_elec_blocked here?
+	return db.c.fetch_var("SELECT MIN(song_length) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE song_exists = TRUE AND r4_song_sid.sid = %s AND song_cool = FALSE")
 	
-def get_average_song_length():
+def get_average_song_length(sid = None):
 	"""
 	Calculates the average song length of available songs in the database.
 	"""
+	return db.c.fetch_var("SELECT AVG(song_length) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE song_exists = TRUE AND r4_song_sid.sid = %s AND song_cool = FALSE")
 	
 def prepare_cooldown_algorithm():
 	"""
@@ -19,35 +29,74 @@ def prepare_cooldown_algorithm():
 	refer to jfinalfunk.
 	"""
 	
-def get_random_song():
-	"""
-	Fetch a random song, abiding by all election block, request block, and
-	availability rules.  Falls back to get_random_ignore_requests on failure.
-	"""
-	
-def get_random_song_timed(target_seconds):
+def get_random_song_timed(sid, target_seconds, target_delta = 30):
 	"""
 	Fetch a random song abiding by all election block, request block, and
 	availability rules, but giving priority to the target song length 
 	provided.  Falls back to get_random_ignore_requests on failure.
 	"""
+	sql_query = "FROM r4_songs JOIN r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) \
+		WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0 AND song_length >= %s AND song_length <= %s"
+	num_available = db.c.fetch_var("SELECT COUNT(r4_song_sid.song_id) " + sql_query, (sid, sid, (target_seconds - target_delta), (target_seconds + target_delta)))
+	if num_available == 0:
+		return get_random_song(sid)
+	else:
+		offset = random.randint(1, num_available) - 1
+		song_id = db.c.fetch_var("SELECT r4_song_sid.song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, sid, (target_seconds - target_delta), (target_seconds + target_delta), offset))
+		return Song.load_from_id(song_id, sid)
 	
-def get_random_song_ignore_requests():
+def get_random_song(sid):
+	"""
+	Fetch a random song, abiding by all election block, request block, and
+	availability rules.  Falls back to get_random_ignore_requests on failure.
+	"""
+	sql_query = "FROM r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) \
+		WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0"
+	num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid, sid))
+	offset = 0
+	if num_available == 0:
+		return get_random_song_ignore_requests(sid)
+	else:
+		offset = random.randint(1, num_available) - 1
+		song_id = db.c.fetch_var("SELECT song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, sid, offset))
+		return Song.load_from_id(song_id, sid)
+	
+def get_random_song_ignore_requests(sid):
 	"""
 	Fetch a random song abiding by election block and availability rules,
 	but ignoring request blocking rules.
 	"""
+	sql_query = "FROM r4_song_sid WHERE r4_song_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE"
+	num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
+	offset = 0
+	if num_available == 0:
+		return get_random_song_ignore_all(sid)
+	else:
+		offset = random.randint(1, num_available) - 1
+		song_id = db.c.fetch_var("SELECT song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, offset))
+		return Song.load_from_id(song_id, sid)
 	
-def get_random_song_ignore_all():
+	
+def get_random_song_ignore_all(sid):
 	"""
 	Fetches the most stale song (longest time since it's been played) in the db,
 	ignoring all availability and election block rules.
 	"""
+	sql_query = "FROM r4_song_sid WHERE r4_song_sid.sid = %s"
+	num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
+	offset = 0
+	if num_available == 0:
+		return get_random_song_ignore_all(sid)
+	else:
+		offset = random.randint(1, num_available) - 1
+		song_id = db.c.fetch_var("SELECT song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, offset))
+		return Song.load_from_id(song_id, sid)
 	
-def warm_cooled_songs():
+def warm_cooled_songs(sid):
 	"""
 	Makes songs whose cooldowns have expired available again.
 	"""
+	db.c.update("UPDATE r4_song_sid SET song_cool = FALSE WHERE sid = %s AND song_cool_end < %s AND song_cool = TRUE", (sid, time.time()))
 	
 class SongHasNoSIDsException(Exception):
 	pass
@@ -273,6 +322,10 @@ class Song(object):
 		Calculates cooldown based on jfinalfunk's crazy algorithms.
 		Cooldown may be overriden by song_cool_* rules found in database.
 		"""
+		for metadata in self.groups:
+			metadata.start_cooldown()
+		for metadata in self.albums:
+			metadata.start_cooldown()
 	
 	def update_rating(self):
 		"""

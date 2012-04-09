@@ -76,6 +76,7 @@ class SQLiteCursor(object):
 		self.con.row_factory = self._dict_factory
 		self.cur = self.con.cursor()
 		self.rowcount = 0
+		self.print_next = False
 		
 	def close(self):
 		self.cur.close()
@@ -91,12 +92,13 @@ class SQLiteCursor(object):
 		return d
 	
 	# Speaking of performance, everything gets mangled through this method anyway.
-	def _convert_pg_query(self, query):
+	def _convert_pg_query(self, query, for_print = False):
 		if query.find("CREATE TABLE") >= 0:
 			query = re.sub("SERIAL\w+PRIMARY KEY", "INTEGER PRIMARY KEY", query)
 		if query.find("ADD CONSTRAINT") >= 0:
 			return None
-		query = query.replace("%s", "?")
+		if not for_print:
+			query = query.replace("%s", "?")
 		query = query.replace("TRUE", "1")
 		query = query.replace("FALSE", "0")
 		query = query.replace("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP)", "(DATETIME('%s','now'))")
@@ -135,6 +137,12 @@ class SQLiteCursor(object):
 		return self.cur.rowcount
 		
 	def execute(self, query, params = None):
+		if self.print_next:
+			self.print_next = False
+			if params:
+				print self._convert_pg_query(query, True) % params
+			else:
+				print self._convert_pg_query(query, True)
 		query = self._convert_pg_query(query)
 		# If the query can't be done or properly to SQLite,
 		# silently drop it.  This is mostly for table creation, things like foreign keys.

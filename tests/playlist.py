@@ -2,6 +2,14 @@ import unittest
 from rainwave import playlist
 from libs import db
 
+class SongSelectTest(unittest.TestCase):
+	def test_random_select(self):
+		playlist.Song.load_from_file("tests/test1.mp3", [1])
+		self.assertNotEqual(None, playlist.get_random_song_timed(1, 1))
+		self.assertNotEqual(None, playlist.get_random_song(1))
+		self.assertNotEqual(None, playlist.get_random_song_ignore_requests(1))
+		self.assertNotEqual(None, playlist.get_random_song_ignore_all(1))
+
 class SongTest(unittest.TestCase):
 	def _check_associations(self, song, sid):
 		self.assertEqual(True, db.c.fetch_var("SELECT song_verified FROM r4_songs WHERE song_id = %s", (song.id,)))
