@@ -1,14 +1,16 @@
 <?php
-// Rainwave 3 fi_FI r9 (31 jul 2011) for (R3 r47) Language File by quarterlife
+// Rainwave 3 fi_FI r11 (3 nov 2011) for (R3 r50) Language File by quarterlife
 
 $lang2 = array(
 	"_SITEDESCRIPTIONS" => array(
 		// Rainwave's description as it appears to search engines.
 		1 => "Videopelimusiikkia soittava internet-radio.  Äänestä haluamaasi kappaletta!",
 		// OCR Radio's description as it appears to search engines.
-		2 => "OverClocked Remix radio.  Äänestä haluamaasi remixiä!",
+		2 => "OverClocked Remix internet-radio.  Äänestä haluamaasi remixiä!",
 		// Mixwave's.
-		3 => "Videopelimusiikkia soittavia coverbändejä ja remixejä.  Äänestä suosikkiesittäjääsi!"
+		3 => "Videopelimusiikkia soittavia coverbändejä ja pelimusiikkiremixejä.  Äänestä suosikkiesittäjääsi!",
+		4 => "Videopelien chiptune-tyylistä musiikkia soittava internet-radio.  Äänestä haluamiasi kappaleita!",
+		5 => "Videopelimusiikkia ja niiden remixejä soittava internet-radio.  Äänestä haluamiasi kappaleita!"
 	),
 
 	// Panel Names, these show up in the tab titles
@@ -162,6 +164,8 @@ $lang2 = array(
 	"votewinloss" => "|wins| |P:wins,win|, |losses| |P:losses,loss| -- voittoja |ratio|%",
 	"requestwinloss" => "|wins| soitettu, |losses| hylätty -- soittettu |ratio|%",
 	"lsnr_rankgraph_header" => "Äänestykset ja sijat viimeisen kuukauden ajalta",
+	"notapplicable" => "ei dataa",
+	"refresh" => "Päivitä",
 	
 	"lsnrdt_allstations" => "Kaikki kanavat",
 	"lsnrdt_averagerating" => "Arvostelujen keskiarvo",
@@ -178,7 +182,7 @@ $lang2 = array(
 	"pref_timeline_showhistory" => "Näytä historia",
 	"pref_timeline_showelec" => "Näytä äänestyksen tulokset",
 	"pref_timeline_showallnext" => "Näytä kaikki tulevat tapahtumat",
-	"pref_rating_hidesite" => "Piilota sivuston arvostelut kunnes olen itse arvostellut",
+	"pref_rating_hidesite" => "Piilota muiden arvostelut kunnes olen itse arvostellut",
 	"pref_edi" => "Yleiset",
 	"pref_edi_wipeall" => "Pyyhi asetukset",
 	"pref_edi_wipeall_button" => "Pyyhi",
@@ -186,20 +190,26 @@ $lang2 = array(
 	"pref_edi_theme" => "Teema",
 	"pref_edi_resetlayout" => "Nollaa ulkoasu",
 	"pref_edi_resetlayout_button" => "Nollaa",
+	"pref_edi_autoplay" => "Automaattinen toisto",
 	"pref_fx" => "Tehosteet",
 	"pref_fx_fps" => "Animaatioiden kehysnopeus",
 	"pref_fx_enabled" => "Animointi päällä",
 	"pref_requests" => "Toiveet",
 	"pref_requests_technicalhint" => "Tekninen välilehden otsikko",
 	"pref_timeline_highlightrequests" => "Näytä kappaleiden toivojat oletuksena",
+	"pref_playlist" => "Soittolista",
+	"pref_playlist_sortfavfirst" => "Suosikkialbumit ensin",
+	"pref_playlist_sortreadyfirst" => "Saatavilla olevat albumit ensin",
+	"pref_playlist_sortalbums" => "Albumien järjestelytapa",
+	"pref_playlist_v_albumname" => "Albumin nimi",
+	"pref_playlist_v_globalrating" => "Muiden arvostelut",
+	"pref_playlist_v_cooldown" => "Jäähy",
+	"pref_playlist_v_rating" => "Arvostelu",
 	
 	// About screen
 	
 	"creator" => "Luoja",
-	"rainwavemanagers" => "Rainwaven henkilökunta",
-	"ocrmanagers" => "OCR Radion henkilökunta",
-	"mixwavemanagers" => "Mixwaven henkilökunta",
-	"jfinalfunkjob" => "Matematiikan ihmelapsi",
+	"staff" => "Henkilökunta",
 	"relayadmins" => "Välityspalvelinten lahjoittajat",
 	"specialthanks" => "Kiitokset",
 	"poweredby" => "Käytetty tekniikka",
@@ -233,8 +243,8 @@ $lang2 = array(
 	"ratecurrentsong_t" => "Arvosteleminen vaikuttaa kappaleiden ja albumien soittotiheyteen.|br|Opi arvostelemaan.",
 	"setfavourite" => "Suosikit",
 	"setfavourite_p" => "Napsauta laatikkoa arviointiasteikon päässä asettaaksesi tai poistaaksesi suosikkisi.",
-	"playlistsearch" => "Soittolistalta hakeminen",
-	"playlistsearch_p" => "Kun soittolista on avoinna, voit aloittaa soittolistahaun alkamalla kirjoittamaan.|br|Käytä hiirtäsi tai ylös-/alas-näppäintä ohjataksesi.",
+	"playlistsearch_v2" => "Kirjoita hakeaksesi",
+	"playlistsearch_v2_p" => "Aloita soittolistahaku kirjoittamalla.|br|Paina Esciä tyhjentääksesi.",
 	"request" => "Toiveet",
 	"request_p" => "Toivominen saattaa haluamasi kappaleet äänestykseen.|br|Opi toivomaan kappaleita.",
 	"openanalbum" => "Avaa jokin albumi",
@@ -245,7 +255,9 @@ $lang2 = array(
 	"managingrequests_p" => "Raahaa ja pudota muuttaaksesi toiveidesi järjestystä, tai napsauta X:ää poistaaksesi yhden niistä.",
 	"timetorequest" => "Kappaletoiveen tila",
 	"timetorequest_p" => "Toiveesi tila näytetään tässä.|br|Jos se näyttää \"umpeutumassa!\" tai \"jäähyllä\", sinun kannattaa vaihtaa ensimmäistä toivettasi.",
-
+	"openplaylist" => "Avaa soittolista",
+	"openplaylist_p" => "",
+	
 	// What happens when RW crashes
 	
 	"crashed" => "Rainwave kaatui.",

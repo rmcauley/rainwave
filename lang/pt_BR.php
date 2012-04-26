@@ -3,11 +3,13 @@
 $lang2 = array(
 	"_SITEDESCRIPTIONS" => array(
 		// Rainwave's description as it appears to search engines.
-		1 => "Rádio Online de Músicas de Video Game.  Vote na música que quiser ouvir!",
+		1 => "Rádio Online de Músicas de Video Game.  Vote nas músicas que quiser ouvir!",
 		// OCR Radio's description as it appears to search engines.
 		2 => "Rádio OverClocked Remix.  Vote nos seus remixes favoritos!",
 		// Mixwave's.
-		3 => "Bandas cover e remixes de Video Game.  Vote nos seus artistas favoritos!"
+		3 => "Bandas cover e remixes de Video Game.  Vote nos seus artistas favoritos!",
+		4 => "Chiptunes Originais de Videgame.  Vote nas músicas que quiser ouvir!",
+		5 => "Músicas e Remixes de Videogame.  Vote nas músicas que quiser ouvir!"
 	),
 
 	// Panel Names, these show up in the tab titles
@@ -109,7 +111,7 @@ $lang2 = array(
 	// Login Errors
 	"log_9000" => "Nome de usuário ou senha inválida.",
 	"log_9001" => "Muitas tentativas de entrar. Por favor vá para os fórums.",
-	"log_9002" => "Erro ao entrar.  Por favor vá para os fórums.",
+	"log_9002" => "Erro ao entrar.  Por favor use os fórums.",
 
 	// Playlist Related
 	"pltab_albums" => "Álbuns",
@@ -142,6 +144,7 @@ $lang2 = array(
 	"requestwinloss" => "|wins| |P:wins,reproduzida|, |losses| |P:losses,rejeitada| -- reproduziu |ratio|%",
 	"lsnr_rankgraph_header" => "Votos e avaliações no último mês",
 	"notapplicable" => "n/a",
+	"refresh" => "Atualizar",
 
 	"lsnrdt_allstations" => "Todas as Estações",
 	"lsnrdt_averagerating" => "Avaliação Média",
@@ -166,6 +169,7 @@ $lang2 = array(
 	"pref_edi_theme" => "Tema",
 	"pref_edi_resetlayout" => "Restaurar Apresentação",
 	"pref_edi_resetlayout_button" => "Restaurar",
+	"pref_edi_autoplay" => "Auto-Executar",
 	"pref_fx" => "Efeitos",
 	"pref_fx_fps" => "Taxa de Quadros de Animações",
 	"pref_fx_enabled" => "Animação Ativada",
@@ -184,10 +188,7 @@ $lang2 = array(
 	// About screen
 	
 	"creator" => "Criador",
-	"rainwavemanagers" => "Equipe Rainwave",
-	"ocrmanagers" => "Equipe OCR Radio",
-	"mixwavemanagers" => "Equipe Mixwave",
-	"jfinalfunkjob" => "Math Madman",
+	"staff" => "Equipe",
 	"relayadmins" => "Doadores de Retransmissão",
 	"specialthanks" => "Agradecimento a",
 	"poweredby" => "Powered By",
@@ -195,7 +196,7 @@ $lang2 = array(
 	"donationinformation" => "Registro e informações de doação.",
 	"apiinformation" => "Documentação da API.",
 	"translators" => "Tradutores",
-	"rainwave3version" => "Rainwave 3 Versão",
+	"rainwave3version" => "R3 Versão",
 	"revision" => "Rev",
 	
 	// Help
