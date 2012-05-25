@@ -36,8 +36,10 @@ function Rating(p) {
 	};
 	
 	that.disable = function() {
-		that.ratable = false;
-		that.resetUser();
+		if (!user.p.radio_rate_anything) {
+			that.ratable = false;
+			that.resetUser();
+		}
 	};
 	
 	that.onMouseMove = function(evt) {
@@ -164,6 +166,7 @@ function Rating(p) {
 		// that.favcatch.addEventListener("click", that.favClick, true);
 	// }	
 	if (that.ratable) that.enable();
+	else if (user.p.radio_rate_anything) that.enable();
 	
 	if (that.register) ratingcontrol.addCallback(that)
 

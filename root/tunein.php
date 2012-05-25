@@ -8,11 +8,11 @@ require("auth/common.php");
 
 $playlistfile = "";
 
-if ($sid == RW) $playlistfile = "rainwave.m3u";
+if ($sid == RW) $playlistfile = "rw_game.m3u";
 else if ($sid == OCR) $playlistfile = "ocr_radio.m3u";
-else if ($sid == VW) $playlistfile = "mixwave.m3u";
-else if ($sid == BIT) $playlistfile = "bitwave.m3u";
-else if ($sid == OMNI) $playlistfile = "omniwave.m3u";
+else if ($sid == VW) $playlistfile = "rw_covers.m3u";
+else if ($sid == BIT) $playlistfile = "rw_chiptune.m3u";
+else if ($sid == OMNI) $playlistfile = "rw_all.m3u";
 
 if (preg_match("/MSIE 5.5/", $_SERVER['HTTP_USER_AGENT'])) {
        header("Content-Disposition: filename=\"" . $playlistfile . "\"");
@@ -22,9 +22,6 @@ else {
 }
 
 $streamtype = "mp3";
-if (isset($_GET['ogg'])) {
-	$streamtype = "ogg";
-}
 
 $userstring = $user_listen_key;
 

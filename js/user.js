@@ -23,7 +23,8 @@ var user = function() {
 		list_id: 0,
 		list_voted_entry_id: false,
 		radio_active_sid: 0,
-		radio_active_until: 0
+		radio_active_until: 0,
+		radio_rate_anything: false
 	};
 	
 	that.ajaxHandle = function(json) {
