@@ -375,7 +375,7 @@ function _THEME() {
 	that.Extend.TimelineOneShot = function(tos) {
 		tos.draw = function() {
 			var hltitle = _l("onetimeplay");
-			if (tos.p.username) hltitle += _l("from", { "username": tos.p.username } );
+			if (tos.p.username) hltitle += " " + _l("from", { "username": tos.p.username } );
 			that.drawTimelineTable(tos, hltitle, "normal");
 			
 			if (tos.p.user_id == user.p.user_id) {
