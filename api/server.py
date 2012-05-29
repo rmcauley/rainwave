@@ -53,16 +53,16 @@ class APITestFailed(Exception):
 class APIServer(object):
 	def __init__(self):
 		pid = os.getpid()
-		pid_file = open(config.get("pid_file", True), 'w')
+		pid_file = open(config.get("pid_file"), 'w')
 		pid_file.write(str(pid))
 		pid_file.close()
 	
 	def _listen(self, task_id):
 		# task_ids start at zero, so we gobble up ports starting at the base port and work up
-		port_no = int(config.get("base_port", True)) + task_id
+		port_no = int(config.get("base_port")) + task_id
 		
 		# Log according to configured directory and port # we're operating on
-		log_file = "%s/api%s.log" % (config.get("log_dir", True), port_no)
+		log_file = "%s/api%s.log" % (config.get("log_dir"), port_no)
 		if config.test_mode and os.path.exists(log_file):
 			os.remove(log_file)
 		log.init(log_file, config.get("log_level"))

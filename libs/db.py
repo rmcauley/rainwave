@@ -5,6 +5,7 @@ import re
 
 from libs import config
 from libs import log
+from libs import constants
 
 c = None
 connection = None
@@ -57,8 +58,8 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		self.execute(query, params)
 		return self.rowcount
 		
-	def get_next_id(self, sequence, table):
-		return self.fetch_var("SELECT nextval('" + sequence + "_" + column + "_seq'::regclass)")
+	def get_next_id(self, table, column):
+		return self.fetch_var("SELECT nextval('" + table + "_" + column + "_seq'::regclass)")
 		
 	def create_delete_fk(self, linking_table, foreign_table, key):
 		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE CASCADE", (linking_table, linking_table, key, key, foreign_table, key))
@@ -182,8 +183,8 @@ def open():
 	if c:
 		close()
 	
-	type = config.get("db_type", True)
-	name = config.get("db_name", True)
+	type = config.get("db_type")
+	name = config.get("db_name")
 	host = config.get("db_host")
 	port = config.get("db_port")
 	user = config.get("db_user")
@@ -245,7 +246,8 @@ def create_tables():
 			song_rating_count		INTEGER		DEFAULT 0, \
 			song_cool_multiply		REAL		DEFAULT 1, \
 			song_cool_override		INTEGER		, \
-			song_origin_sid			SMALLINT	NOT NULL \
+			song_origin_sid			SMALLINT	NOT NULL, \
+			song_artist_tag			TEXT		\
 		)")
 	c.create_idx("r4_songs", "song_verified")
 	
@@ -264,13 +266,15 @@ def create_tables():
 			song_vote_total			INTEGER		, \
 			song_request_total		INTEGER		DEFAULT 0, \
 			song_played_last		INTEGER		, \
-			song_exists				BOOLEAN		DEFAULT TRUE \
+			song_exists				BOOLEAN		DEFAULT TRUE, \
+			song_request_only		BOOLEAN		DEFAULT FALSE \
 		)")
 	c.create_idx("r4_song_sid", "sid")
 	c.create_idx("r4_song_sid", "song_id")
 	c.create_idx("r4_song_sid", "song_cool")
 	c.create_idx("r4_song_sid", "song_elec_blocked")
 	c.create_idx("r4_song_sid", "song_exists")
+	c.create_idx("r4_song_sid", "song_request_only")
 	c.create_delete_fk("r4_song_sid", "r4_songs", "song_id")
 	
 	c.update(" \
@@ -380,7 +384,7 @@ def create_tables():
 		CREATE TABLE r4_schedule ( \
 			sched_id				SERIAL		PRIMARY KEY, \
 			sched_start				INTEGER		, \
-			sched_time_started		INTEGER		, \
+			sched_start_actual		INTEGER		, \
 			sched_end				INTEGER		, \
 			sched_type				VARCHAR(10)	, \
 			sched_name				TEXT		, \
@@ -410,9 +414,10 @@ def create_tables():
 			entry_id				SERIAL		PRIMARY KEY, \
 			song_id					INTEGER		NOT NULL, \
 			elec_id					INTEGER		NOT NULL, \
+			entry_type				SMALLINT	DEFAULT %s, \
 			entry_position			SMALLINT	, \
-			entry_votes				SMALLINT	\
-		)")
+			entry_votes				SMALLINT	DEFAULT 0 \
+		)" % constants.ElecSongTypes.normal)
 	c.create_idx("r4_election_entries", "song_id")
 	c.create_idx("r4_election_entries", "elec_id")
 	c.create_delete_fk("r4_election_entries", "r4_songs", "song_id")
@@ -421,8 +426,8 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_election_queue ( \
 			elecq_id				SERIAL		PRIMARY KEY, \
-			elecq_insert_time		INTEGER		, \
-			song_id					INTEGER		\
+			song_id					INTEGER		, \
+			sid						SMALLINT	NOT NULL \
 		)")
 	c.create_idx("r4_election_queue", "song_id")
 	c.create_delete_fk("r4_election_queue", "r4_songs", "song_id")
@@ -496,7 +501,8 @@ def create_tables():
 			sid						SMALLINT	NOT NULL, \
 			line_wait_start			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 			line_expiry_tune_in		INTEGER		, \
-			line_expiry_election	INTEGER		\
+			line_expiry_election	INTEGER		, \
+			line_top_song_id		INTEGER		\
 		)")
 	c.create_idx("r4_request_queue", "user_id")
 	c.create_idx("r4_request_queue", "sid")
@@ -522,7 +528,7 @@ def create_tables():
 		CREATE TABLE r4_vote_history ( \
 			vote_id					SERIAL		PRIMARY KEY, \
 			vote_time				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-			sched_id				INTEGER		, \
+			elec_id					INTEGER		, \
 			user_id					INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL, \
 			vote_at_rank			INTEGER		, \
@@ -534,7 +540,7 @@ def create_tables():
 	c.create_idx("r4_vote_history", "song_id")
 	c.create_idx("r4_vote_history", "entry_id")
 	c.create_null_fk("r4_vote_history", "r4_election_entries", "entry_id")
-	c.create_null_fk("r4_vote_history", "r4_schedule", "sched_id")
+	c.create_null_fk("r4_vote_history", "r4_elections", "elec_id")
 	c.create_null_fk("r4_vote_history", "r4_songs", "song_id")
 	c.create_delete_fk("r4_vote_history", "phpbb_users", "user_id")
 	

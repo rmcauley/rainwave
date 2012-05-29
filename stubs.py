@@ -1,58 +1,22 @@
-# songgroup.set_election_blocks
-# songgroup.is_from_tag
-# songgroup.disassociate_song
-
-# artist.set_election_blocks
-
-# schedule.load
-# schedule.get_current_mp3
-# schedule.advance
-# schedule.get_upcoming
-# schedule.create_elections
-# schedule.trim
-
-# event.create
-# event.get_mp3
-# event.is_in_progress
-# event.finish
-
-# election.create_timed
-# election.create_normal
-
-# election.fill
-# election.add_song
-# election.get_mp3
-# election.elect_winner
-# election.length
-# election.finish
-
-# jingle.create
-# jingle.get_mp3
-# jingle.length
-# jingle.finish
-
-# liveshow.create
-# liveshow.is_in_progress
-# liveshow.length
-# liveshow.finish
-
-# oneup.create
-# oneup.get_mp3
-# oneup.length
-# oneup.finish
-
-# ??.request_needed
-# ??.get_request
-# ??.upd
-
-# rwtime.time
-# rwtime.add_fake_time
-# rwtime.set_fake_time
-
-# oneup_series.create
-# oneup_series.delete
-
-# backend.get_filename
-# backend.send_refresh_to_api
-# backend.start?
-# backend.stop?
+# - Read the latest filename from the backend to stdout (can't just be pulled from cache)
+# - Backend-to-API caching and communication
+# - Refactoring old API
+# - Manage the listeners table (purge old listeners) [Orpheus.cpp:177]
+# - Update song statistics after playback [PlaylistControl.cpp:741 for ideas]
+# - Update ratings after playback [PlaylistControl.cpp:544]
+# - Cooldown implementation
+# - Station state code
+	# - Request gaps
+	# - Request sequences
+# - Album art
+# - Check for deactivating/deleting empty groups
+# - Accepting forceoption commands
+# - Accepting forceplay commands
+# - Request intake
+# - Getting is_request state on a song
+# - Figuring out if we need requests [ElectionControl.cpp:469]
+# - Manage request line [ElectionControl.cpp:632]
+# - Update song won statistics? (Schneau had an idea or two here...)
+# - Ability to 'pause' radio
+# - Listener counts
+# - Album cover art

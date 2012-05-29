@@ -36,7 +36,7 @@ def get_random_song_timed(sid, target_seconds, target_delta = 30):
 	provided.  Falls back to get_random_ignore_requests on failure.
 	"""
 	sql_query = "FROM r4_songs JOIN r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) \
-		WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0 AND song_length >= %s AND song_length <= %s"
+		WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0 AND song_request_only = FALSE AND song_length >= %s AND song_length <= %s"
 	num_available = db.c.fetch_var("SELECT COUNT(r4_song_sid.song_id) " + sql_query, (sid, sid, (target_seconds - target_delta), (target_seconds + target_delta)))
 	if num_available == 0:
 		return get_random_song(sid)
@@ -45,13 +45,19 @@ def get_random_song_timed(sid, target_seconds, target_delta = 30):
 		song_id = db.c.fetch_var("SELECT r4_song_sid.song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, sid, (target_seconds - target_delta), (target_seconds + target_delta), offset))
 		return Song.load_from_id(song_id, sid)
 	
-def get_random_song(sid):
+def get_random_song(sid, target_seconds = None, target_delta = None):
 	"""
 	Fetch a random song, abiding by all election block, request block, and
 	availability rules.  Falls back to get_random_ignore_requests on failure.
 	"""
+	if target_seconds:
+		if target_delta:
+			get_random_song_timed(sid, target_seconds, target_delta)
+		else:
+			get_random_song_timed(sid, target_seconds)
+
 	sql_query = "FROM r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) \
-		WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0"
+		WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_request_only = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0"
 	num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid, sid))
 	offset = 0
 	if num_available == 0:
@@ -66,7 +72,7 @@ def get_random_song_ignore_requests(sid):
 	Fetch a random song abiding by election block and availability rules,
 	but ignoring request blocking rules.
 	"""
-	sql_query = "FROM r4_song_sid WHERE r4_song_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE"
+	sql_query = "FROM r4_song_sid WHERE r4_song_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE AND song_request_only = FALSE"
 	num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
 	offset = 0
 	if num_available == 0:
@@ -268,7 +274,10 @@ class Song(object):
 		else:
 			potential_id = None
 			# To check for moved/duplicate songs we try to find if it exists in the db
-			potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s", (self.data['title'], self.data['length']))
+			if self.artist_tag:
+				potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s AND song_artist_tag = %s", (self.data['title'], self.data['length'], self.artist_tag))
+			else:
+				potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s", (self.data['title'], self.data['length']))
 			if potential_id:
 				self.id = potential_id
 				update = True
@@ -326,6 +335,9 @@ class Song(object):
 			metadata.start_cooldown()
 		for metadata in self.albums:
 			metadata.start_cooldown()
+			
+	def start_block(self, sid, blocked_by, block_length):
+		db.c.update("UPDATE r4_song_sid SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s WHERE song_id = %s AND sid = %s AND song_elec_blocked_num < %s", (blocked_by, block_length, self.id, sid, block_length))
 	
 	def update_rating(self):
 		"""
