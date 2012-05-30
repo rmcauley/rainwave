@@ -386,13 +386,15 @@ def create_tables():
 			sched_start				INTEGER		, \
 			sched_start_actual		INTEGER		, \
 			sched_end				INTEGER		, \
+			sched_end_actual		INTEGER		, \
 			sched_type				VARCHAR(10)	, \
 			sched_name				TEXT		, \
 			sid						SMALLINT	NOT NULL, \
 			sched_public			BOOLEAN		DEFAULT TRUE, \
 			sched_timed				BOOLEAN		DEFAULT TRUE, \
 			sched_url				TEXT		, \
-			sched_in_progress		BOOLEAN		DEFAULT FALSE \
+			sched_in_progress		BOOLEAN		DEFAULT FALSE, \
+			sched_used				BOOLEAN		DEFAULT FALSE \
 		)")
 	c.create_idx("r4_schedule", "sched_in_progress")
 	c.create_idx("r4_schedule", "sched_public")
@@ -402,7 +404,8 @@ def create_tables():
 		CREATE TABLE r4_elections ( \
 			elec_id					SERIAL		PRIMARY KEY, \
 			elec_used				BOOLEAN		DEFAULT FALSE, \
-			elec_played_at			INTEGER		, \
+			elec_in_progress		BOOLEAN		DEFAULT FALSE, \
+			elec_start_actual		INTEGER		, \
 			elec_type				VARCHAR(10)	, \
 			sid						SMALLINT	NOT NULL \
 		)")
@@ -514,6 +517,7 @@ def create_tables():
 			request_id				SERIAL		PRIMARY KEY, \
 			user_id					INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL, \
+			request_fulfilled_at	INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 			request_wait_time		INTEGER		, \
 			request_queue_size		INTEGER		, \
 			request_at_rank			INTEGER		, \

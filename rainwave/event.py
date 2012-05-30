@@ -1,5 +1,6 @@
 import random
 import math
+import time
 
 from libs import db
 from libs import config
@@ -21,6 +22,12 @@ class InvalidScheduleID(Exception):
 	
 class InvalidScheduleType(Exception):
 	pass
+	
+class EventAlreadyUsed(Exception):
+	pass
+	
+class InvalidElectionID(Exception):
+	pass
 
 def load_by_id(sched_id):
 	event_type = db.c.fetch_var("SELECT sched_type FROM r4_schedule WHERE sched_id = %s", (sched_id,))
@@ -30,7 +37,7 @@ def load_by_id(sched_id):
 	
 def load_by_id_and_type(sched_id, sched_type):
 	if sched_type == EventTypes.election:
-		return Election.load_event_by_id(sched_id)
+		return Election.load_by_id(sched_id)
 	raise InvalidScheduleType
 	
 class OneUpSeries(Object):
@@ -43,8 +50,6 @@ class OneUpSeries(Object):
 class Event(Object):
 	def __init__(self):
 		self.id = None
-		
-	def update(self):
 	
 	def _update_from_dict(self, dict):
 		self.start = dict['sched_start']
@@ -61,26 +66,48 @@ class Event(Object):
 	def get_filename(self):
 		pass
 	
-	def is_in_progress(self):
-		pass
-	
 	def finish(self):
-		pass
+		self.used = True
+		self.in_progress = False
+		db.c.update("UPDATE r4_schedule SET sched_used = TRUE, sched_in_progress = FALSE, sched_end_actual = %s WHERE sched_id = %s", (time.time(), self.id))
 		
 	def length(self):
-		pass
+		if self.start_actual:
+			return self.start_actual - self.end
+		return self.start - self.end
 		
 	def start(self):
-		pass
+		if self.in_progress and not self.used:
+			return
+		elif self.used:
+			raise EventAlreadyUsed
+		self.in_progress = True
+		db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (time.time(), self.id))
 		
-	def is_in_progress(self):
-		pass
-
-# AKA the normal election
+# Normal election
 class Election(Event):
 	@classmethod
-	def load_by_id(cls):
-		pass
+	def load_by_id(cls, id):
+		elec = cls()
+		row = db.c.fetch_row("SELECT * FROM r4_elections WHERE elec_id = %s", (id,))
+		if not row:
+			raise InvalidElectionID
+		elec.id = id
+		elec.type = row['elec_type']
+		elec.used = row['elec_used']
+		elec.start_actual = row['elec_start_actual']
+		elec.in_progress = row['elec_in_progress']
+		elec.sid = row['sid']
+		for song_row in db.c.fetch_all("SELECT * FROM r4_election_entries WHERE elec_id = %s", (id,)):
+			song = playlist.Song.load_from_id(song_row['song_id'], elec.sid)
+			song.data['entry_id'] = song_row['entry_id']
+			song.data['entry_type'] = song_row['entry_type']
+			song.data['entry_position'] = song_row['entry_position']
+			if song.data['entry_type'] != constants.ElecSongTypes.normal:
+				song.data['elec_request_user_id'] = 0
+				song.data['elec_request_username'] = None
+			elec.songs.append(song)
+		return elec
 		
 	@classmethod
 	def load_by_type(cls, sid, type):
@@ -96,7 +123,8 @@ class Election(Event):
 		elec.id = elec_id
 		elec.type = type
 		elec.used = False
-		elec.played_at = None
+		elec.start_actual = None
+		elec.in_progress = False
 		elec.sid = sid
 		elec.songs = []
 		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid) VALUES (%s, %s, %s, %s)", (elec.elec_id, False, elec.elec_type, elec.sid))
@@ -134,12 +162,15 @@ class Election(Event):
 			song.data['request_username'] = requesting_user
 		
 	def add_song(self, song):
-		db.c.update("INSERT INTO r4_election_entries (song_id, elec_id, entry_position, entry_type) VALUES (%s, %s, %s)", (song.id, self.id, length(self.songs), song.data['entry_type']))
+		entry_id = db.c.get_next_id("r4_election_entries", "entry_id")
+		song.data['entry_id'] = entry_id
+		song.data['entry_position'] = length(self.songs)
+		db.c.update("INSERT INTO r4_election_entries (entry_id, song_id, elec_id, entry_position, entry_type) VALUES (%s, %s, %s)", (entry_id, song.id, self.id, length(self.songs), song.data['entry_type']))
 		song.start_block(self.sid, constants.ElecBlockTypes.in_elec, config.get_station(sid, "elec_block_length"))
 		self.songs.append(song)
-	
-	def get_filename(self):
-		if not self.used:
+		
+	def start(self):
+		if not self.used and not self.in_progress:
 			results = db.c.fetch_all("SELECT song_id, elec_votes FROM r4_election_entries WHERE elec_id = %s", (self.id,))
 			for song in self.songs:
 				for song_result in results:
@@ -153,6 +184,10 @@ class Election(Event):
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
 			self.songs = sorted(self.songs, key=lambda song: song.data['elec_votes'])
 			self.songs.reverse()
+			self.in_progress = True
+			db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s WHERE elec_id = %s", (time.time(), self.id))
+	
+	def get_filename(self):
 		return self.songs[0]
 		
 	def _add_from_queue(self):
@@ -193,13 +228,29 @@ class Election(Event):
 			return False
 		
 	def get_request(self):
-		pass
+		request = db.c.fetch_row("SELECT username, r4_request_line.user_id, song_id "
+			"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN phpbb_users USING (user_id) JOIN r4_request_store USING (user_id) JOIN r4_song_sid USING (song_id) "
+			"WHERE r4_listeners.sid = %s AND r4_listeners.purge = FALSE AND r4_request_line.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE "
+			"ORDER BY line_wait_start LIMIT 1",
+			(self.sid,))
+		song = playlist.Song.load_from_id(request['song_id'], self.sid)
+		song.data['elec_request_user_id'] = request['user_id']
+		song.data['elec_request_username'] = request['username']
+		return song		
 		
 	def length(self):
-		pass
+		if self.used:
+			return self.songs[0].data['length']
+		else:
+			totalsec = 0
+			for song in self.songs:
+				totalsec += song.data['length']
+			return math.floor(totalsec / length(self.songs))
 		
 	def finish(self):
-		pass
+		self.in_progress = False
+		self.used = True
+		db.c.update("UPDATE r4_elections SET elec_used = TRUE, elec_in_progress = FALSE WHERE elec_id = %s", (self.id,))
 		
 class OneUp(Event):
 	@classmethod

@@ -160,7 +160,6 @@ class Song(object):
 		s.artists = Artist.load_list_from_song_id(id)
 		s.groups = SongGroup.load_list_from_song_id(id)
 		
-		
 		return s
 			
 	@classmethod
