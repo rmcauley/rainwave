@@ -598,6 +598,16 @@ def create_tables():
 	c.create_idx("r4_oneup_list_content", "song_id")
 	c.create_delete_fk("r4_oneup_list_content", "r4_oneup_lists", "oneuplist_id")
 	
+	c.update(" \
+		CREATE TABLE r4_song_history ( \
+			songhist_id				SERIAL		PRIMARY KEY, \
+			sid						SMALLINT	NOT NULL, \
+			song_id					INTEGER		NOT NULL \
+		)")
+	c.create_idx("r4_song_history", "sid")
+	c.create_idx("r4_song_history", "song_id")
+	c.create_delete_fk("r4_song_history", "r4_songs", "song_id")
+	
 	if config.test_mode:
 		_fill_test_tables()
 	

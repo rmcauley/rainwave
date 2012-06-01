@@ -73,7 +73,7 @@ STATIONS = {
 
 STATION_CONFIG_TEMPLATE = """
     <relay>
-        <server>67.213.72.218</server>
+        <server>rainwave.cc</server>
         <port>8000</port>
         <mount>/%(station_source_relay)s</mount>
         <local-mount>/%(station_mount)s</local-mount>
@@ -88,8 +88,8 @@ STATION_CONFIG_TEMPLATE = """
         <public>1</public>
         <!-- <max-listeners>(client_limit)s</max-listeners> -->
         <authentication type="url">
-            <option name="listener_add" value="http://67.213.72.218/sync/%(station_num)s/listener_add"/>
-            <option name="listener_remove" value="http://67.213.72.218/sync/%(station_num)s/listener_remove"/>
+            <option name="listener_add" value="http://rainwave.cc/sync/%(station_num)s/listener_add"/>
+            <option name="listener_remove" value="http://rainwave.cc/sync/%(station_num)s/listener_remove"/>
             <option name="username" value="user"/>
             <option name="password" value="pass"/>
             <option name="auth_header" value="icecast-auth-user: 1"/>

@@ -23,6 +23,9 @@ class InvalidScheduleID(Exception):
 class InvalidScheduleType(Exception):
 	pass
 	
+class ElectionDoesNotExist(Exception):
+	pass
+	
 class EventAlreadyUsed(Exception):
 	pass
 	
@@ -64,6 +67,9 @@ class Event(Object):
 		self.in_progress = dict['sched_in_progress']
 	
 	def get_filename(self):
+		pass
+		
+	def get_song(self):
 		pass
 	
 	def finish(self):
@@ -111,13 +117,22 @@ class Election(Event):
 		
 	@classmethod
 	def load_by_type(cls, sid, type):
-		sched_id = db.c.fetch_var("SELECT * FROM r4_elections JOIN r4_schedule USING (sched_id) WHERE elec_type = %s AND elec_used = FALSE AND sid = %s ORDER BY elec_id DESC", (type, sid))
-		if not sched_id:
-			raise InvalidScheduleID("No election of type %s exists" % sched_id)
+		elec_id = db.c.fetch_var("SELECT * FROM r4_elections WHERE elec_type = %s AND elec_used = FALSE AND sid = %s ORDER BY elec_id", (type, sid))
+		if not elec_id:
+			raise ElectionDoesNotExist("No election of type %s exists" % sched_id)
 		return cls.load_by_id(type)
+		
+	@classmethod
+	def load_unused(cls, sid):
+		ids = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE elec_used = FALSE AND sid = %s ORDER BY elec_id", (sid,))
+		elecs = []
+		for id in elec_ids:
+			elecs.append(cls.load_by_id(id))
+		return elecs
 	
 	@classmethod
 	def create(cls, sid, type = ElectionTypes.normal):
+		# TODO: Timed election algorithms should go here
 		elec_id = db.c.get_next_id("r4_elections", "elec_id")
 		elec = cls()
 		elec.id = elec_id
@@ -188,6 +203,9 @@ class Election(Event):
 			db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s WHERE elec_id = %s", (time.time(), self.id))
 	
 	def get_filename(self):
+		return self.songs[0].filename
+		
+	def get_song(self):
 		return self.songs[0]
 		
 	def _add_from_queue(self):
