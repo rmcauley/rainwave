@@ -942,7 +942,7 @@ function _THEME() {
 			row.appendChild(menup.td_chat);
 			
 			menup.td_forums = createEl("td", { "class": "menu_td_forums" });
-			var forumlink = createEl("a", { "target": "_blank", "href": "/forums" });
+			var forumlink = createEl("a", { "target": "_blank", "href": "http://rainwave.cc/forums" });
 			linkify(forumlink, true);
 			_l("forums", {}, forumlink);
 			menup.td_forums.appendChild(forumlink);
