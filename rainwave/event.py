@@ -53,6 +53,8 @@ class OneUpSeries(Object):
 class Event(Object):
 	def __init__(self):
 		self.id = None
+		self.is_election = False
+		self.start = None
 	
 	def _update_from_dict(self, dict):
 		self.start = dict['sched_start']
@@ -99,8 +101,10 @@ class Election(Event):
 		if not row:
 			raise InvalidElectionID
 		elec.id = id
+		elec.is_election = True
 		elec.type = row['elec_type']
 		elec.used = row['elec_used']
+		elec.start = None
 		elec.start_actual = row['elec_start_actual']
 		elec.in_progress = row['elec_in_progress']
 		elec.sid = row['sid']
@@ -131,16 +135,17 @@ class Election(Event):
 		return elecs
 	
 	@classmethod
-	def create(cls, sid, type = ElectionTypes.normal):
-		# TODO: Timed election algorithms should go here
+	def create(cls, sid, timing = None, type = ElectionTypes.normal):
 		elec_id = db.c.get_next_id("r4_elections", "elec_id")
 		elec = cls()
+		elec.is_election = True
 		elec.id = elec_id
 		elec.type = type
 		elec.used = False
 		elec.start_actual = None
 		elec.in_progress = False
 		elec.sid = sid
+		elec.start = None
 		elec.songs = []
 		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid) VALUES (%s, %s, %s, %s)", (elec.elec_id, False, elec.elec_type, elec.sid))
 		return elec

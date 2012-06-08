@@ -234,40 +234,40 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_songs ( \
 			song_id					SERIAL		PRIMARY KEY, \
-			song_verified			BOOLEAN		DEFAULT TRUE, \
-			song_scanned			BOOLEAN		DEFAULT TRUE, \
-			song_filename			TEXT		, \
+			song_verified				BOOLEAN		DEFAULT TRUE, \
+			song_scanned				BOOLEAN		DEFAULT TRUE, \
+			song_filename				TEXT		, \
 			song_title				TEXT		, \
 			song_link				TEXT		, \
-			song_link_text			TEXT		, \
+			song_link_text				TEXT		, \
 			song_length				SMALLINT	, \
-			song_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
+			song_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 			song_rating				REAL		DEFAULT 0, \
-			song_rating_count		INTEGER		DEFAULT 0, \
-			song_cool_multiply		REAL		DEFAULT 1, \
-			song_cool_override		INTEGER		, \
-			song_origin_sid			SMALLINT	NOT NULL, \
-			song_artist_tag			TEXT		\
+			song_rating_count			INTEGER		DEFAULT 0, \
+			song_cool_multiply			REAL		DEFAULT 1, \
+			song_cool_override			INTEGER		, \
+			song_origin_sid				SMALLINT	NOT NULL, \
+			song_artist_tag				TEXT		\
 		)")
 	c.create_idx("r4_songs", "song_verified")
 	
 	c.update(" \
 		CREATE TABLE r4_song_sid ( \
 			song_id					INTEGER		NOT NULL, \
-			sid						SMALLINT	NOT NULL, \
+			sid					SMALLINT	NOT NULL, \
 			song_cool				BOOLEAN		DEFAULT FALSE, \
-			song_cool_end			INTEGER		, \
-			song_elec_appearances	INTEGER		DEFAULT 0, \
-			song_elec_last			INTEGER		DEFAULT 0, \
-			song_elec_blocked		BOOLEAN 	DEFAULT FALSE, \
-			song_elec_blocked_num	SMALLINT	DEFAULT 0, \
-			song_elec_blocked_by	VARCHAR(10)	, \
-			song_vote_share			REAL		, \
-			song_vote_total			INTEGER		, \
-			song_request_total		INTEGER		DEFAULT 0, \
-			song_played_last		INTEGER		, \
+			song_cool_end				INTEGER		, \
+			song_elec_appearances			INTEGER		DEFAULT 0, \
+			song_elec_last				INTEGER		DEFAULT 0, \
+			song_elec_blocked			BOOLEAN 	DEFAULT FALSE, \
+			song_elec_blocked_num			SMALLINT	DEFAULT 0, \
+			song_elec_blocked_by			VARCHAR(10)	, \
+			song_vote_share				REAL		, \
+			song_vote_total				INTEGER		, \
+			song_request_total			INTEGER		DEFAULT 0, \
+			song_played_last			INTEGER		, \
 			song_exists				BOOLEAN		DEFAULT TRUE, \
-			song_request_only		BOOLEAN		DEFAULT FALSE \
+			song_request_only			BOOLEAN		DEFAULT FALSE \
 		)")
 	c.create_idx("r4_song_sid", "sid")
 	c.create_idx("r4_song_sid", "song_id")
@@ -282,9 +282,9 @@ def create_tables():
 			song_id					INTEGER		NOT NULL, \
 			user_id					INTEGER		NOT NULL, \
 			song_rating				REAL		, \
-			song_rated_at			INTEGER		, \
-			song_rated_at_rank		INTEGER		, \
-			song_rated_at_count		INTEGER		\
+			song_rated_at				INTEGER		, \
+			song_rated_at_rank			INTEGER		, \
+			song_rated_at_count			INTEGER		\
 		)")
 	c.create_idx("r4_song_ratings", "song_id")
 	c.create_idx("r4_song_ratings", "user_id")
@@ -295,27 +295,27 @@ def create_tables():
 		CREATE TABLE r4_albums ( \
 			album_id				SERIAL		PRIMARY KEY, \
 			album_name				TEXT		, \
-			album_rating			REAL		DEFAULT 0, \
-			album_rating_count		INTEGER		DEFAULT 0, \
-			album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
+			album_rating				REAL		DEFAULT 0, \
+			album_rating_count			INTEGER		DEFAULT 0, \
+			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
 		)")
 	
 	c.update(" \
 		CREATE TABLE r4_album_sid ( \
-			album_exists			BOOLEAN		DEFAULT TRUE, \
+			album_exists				BOOLEAN		DEFAULT TRUE, \
 			album_id				INTEGER		NOT NULL, \
-			sid						SMALLINT	NOT NULL, \
-			album_played_last		INTEGER		DEFAULT 0, \
-			album_played_times		INTEGER		DEFAULT 0, \
-			album_request_count		INTEGER		DEFAULT 0, \
-			album_cool_lowest		INTEGER		DEFAULT 0, \
-			album_cool_multiply		REAL		DEFAULT 1, \
-			album_cool_override		INTEGER		, \
-			album_updated			INTEGER		DEFAULT 0, \
-			album_elec_last			INTEGER		DEFAULT 0, \
-			album_elec_appearances	INTEGER		DEFAULT 0, \
-			album_vote_share		REAL		DEFAULT 0, \
-			album_vote_total		INTEGER		DEFAULT 0\
+			sid					SMALLINT	NOT NULL, \
+			album_played_last			INTEGER		DEFAULT 0, \
+			album_played_times			INTEGER		DEFAULT 0, \
+			album_request_count			INTEGER		DEFAULT 0, \
+			album_cool_lowest			INTEGER		DEFAULT 0, \
+			album_cool_multiply			REAL		DEFAULT 1, \
+			album_cool_override			INTEGER		, \
+			album_updated				INTEGER		DEFAULT 0, \
+			album_elec_last				INTEGER		DEFAULT 0, \
+			album_elec_appearances			INTEGER		DEFAULT 0, \
+			album_vote_share			REAL		DEFAULT 0, \
+			album_vote_total			INTEGER		DEFAULT 0\
 		)")
 	c.create_idx("r4_album_sid", "album_verified")
 	c.create_idx("r4_album_sid", "sid")
@@ -326,7 +326,7 @@ def create_tables():
 		CREATE TABLE r4_album_ratings ( \
 			album_id				INTEGER		NOT NULL, \
 			user_id					INTEGER		NOT NULL, \
-			album_rating			REAL		\
+			album_rating				REAL		\
 		)")
 	c.create_idx("r4_album_ratings", "album_id")
 	c.create_idx("r4_album_ratings", "user_id")
@@ -337,8 +337,8 @@ def create_tables():
 		CREATE TABLE r4_song_album ( \
 			album_id				INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL, \
-			album_is_tag			BOOLEAN		DEFAULT TRUE, \
-			sid						SMALLINT	NOT NULL \
+			album_is_tag				BOOLEAN		DEFAULT TRUE, \
+			sid					SMALLINT	NOT NULL \
 		)")
 	c.create_idx("r4_song_album", "album_id")
 	c.create_idx("r4_song_album", "song_id")
@@ -355,7 +355,7 @@ def create_tables():
 		CREATE TABLE r4_song_artist	( \
 			song_id					INTEGER		NOT NULL, \
 			artist_id				INTEGER		NOT NULL, \
-			artist_is_tag			BOOLEAN		DEFAULT TRUE \
+			artist_is_tag				BOOLEAN		DEFAULT TRUE \
 		)")
 	c.create_idx("r4_song_artist", "song_id")
 	c.create_idx("r4_song_artist", "artist_id")
@@ -366,14 +366,14 @@ def create_tables():
 		CREATE TABLE r4_groups ( \
 			group_id				SERIAL		PRIMARY KEY, \
 			group_name				TEXT		, \
-			group_elec_block		SMALLINT	DEFAULT 5 \
+			group_elec_block			SMALLINT	DEFAULT 5 \
 		)")
 
 	c.update(" \
 		CREATE TABLE r4_song_group ( \
 			song_id					INTEGER		NOT NULL, \
 			group_id				INTEGER		NOT NULL, \
-			group_is_tag			BOOLEAN		DEFAULT TRUE \
+			group_is_tag				BOOLEAN		DEFAULT TRUE \
 		)")
 	c.create_idx("r4_songs_in_groups", "song_id")
 	c.create_idx("r4_songs_in_groups", "group_id")
@@ -384,16 +384,16 @@ def create_tables():
 		CREATE TABLE r4_schedule ( \
 			sched_id				SERIAL		PRIMARY KEY, \
 			sched_start				INTEGER		, \
-			sched_start_actual		INTEGER		, \
+			sched_start_actual			INTEGER		, \
 			sched_end				INTEGER		, \
-			sched_end_actual		INTEGER		, \
+			sched_end_actual			INTEGER		, \
 			sched_type				VARCHAR(10)	, \
 			sched_name				TEXT		, \
-			sid						SMALLINT	NOT NULL, \
-			sched_public			BOOLEAN		DEFAULT TRUE, \
+			sid					SMALLINT	NOT NULL, \
+			sched_public				BOOLEAN		DEFAULT TRUE, \
 			sched_timed				BOOLEAN		DEFAULT TRUE, \
 			sched_url				TEXT		, \
-			sched_in_progress		BOOLEAN		DEFAULT FALSE, \
+			sched_in_progress			BOOLEAN		DEFAULT FALSE, \
 			sched_used				BOOLEAN		DEFAULT FALSE \
 		)")
 	c.create_idx("r4_schedule", "sched_in_progress")
@@ -404,10 +404,11 @@ def create_tables():
 		CREATE TABLE r4_elections ( \
 			elec_id					SERIAL		PRIMARY KEY, \
 			elec_used				BOOLEAN		DEFAULT FALSE, \
-			elec_in_progress		BOOLEAN		DEFAULT FALSE, \
-			elec_start_actual		INTEGER		, \
+			elec_in_progress			BOOLEAN		DEFAULT FALSE, \
+			elec_start_actual			INTEGER		, \
 			elec_type				VARCHAR(10)	, \
-			sid						SMALLINT	NOT NULL \
+			elec_priority				BOOLEAN		DEFAULT FALSE, \
+			sid					SMALLINT	NOT NULL \
 		)")
 	c.create_idx("r4_elections", "elec_used")
 	c.create_idx("r4_elections", "sid")
@@ -418,7 +419,7 @@ def create_tables():
 			song_id					INTEGER		NOT NULL, \
 			elec_id					INTEGER		NOT NULL, \
 			entry_type				SMALLINT	DEFAULT %s, \
-			entry_position			SMALLINT	, \
+			entry_position				SMALLINT	, \
 			entry_votes				SMALLINT	DEFAULT 0 \
 		)" % constants.ElecSongTypes.normal)
 	c.create_idx("r4_election_entries", "song_id")
@@ -430,7 +431,7 @@ def create_tables():
 		CREATE TABLE r4_election_queue ( \
 			elecq_id				SERIAL		PRIMARY KEY, \
 			song_id					INTEGER		, \
-			sid						SMALLINT	NOT NULL \
+			sid					SMALLINT	NOT NULL \
 		)")
 	c.create_idx("r4_election_queue", "song_id")
 	c.create_delete_fk("r4_election_queue", "r4_songs", "song_id")
@@ -448,16 +449,16 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_listeners ( \
 			listener_id				SERIAL		PRIMARY KEY, \
-			sid						SMALLINT	NOT NULL, \
+			sid					SMALLINT	NOT NULL, \
 			listener_ip				TEXT		, \
-			listener_relay			TEXT		, \
-			listener_agent			TEXT		, \
-			listener_icecast_id		INTEGER		NOT NULL, \
-			listener_lock			BOOLEAN		DEFAULT FALSE, \
-			listener_lock_sid		SMALLINT	, \
-			listener_lock_counter	SMALLINT	DEFAULT 0, \
-			listener_purge			BOOLEAN		DEFAULT FALSE, \
-			listener_voted_entry	INTEGER		, \
+			listener_relay				TEXT		, \
+			listener_agent				TEXT		, \
+			listener_icecast_id			INTEGER		NOT NULL, \
+			listener_lock				BOOLEAN		DEFAULT FALSE, \
+			listener_lock_sid			SMALLINT	, \
+			listener_lock_counter			SMALLINT	DEFAULT 0, \
+			listener_purge				BOOLEAN		DEFAULT FALSE, \
+			listener_voted_entry			INTEGER		, \
 			user_id					INTEGER		DEFAULT 1 \
 		)")
 	c.create_idx("r4_listeners", "sid")
@@ -467,11 +468,11 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_listener_counts ( \
 			lc_time					INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-			sid						SMALLINT	NOT NULL, \
+			sid					SMALLINT	NOT NULL, \
 			lc_guests				SMALLINT	, \
 			lc_users				SMALLINT	, \
-			lc_users_active			SMALLINT	, \
-			lc_guests_active		SMALLINT	\
+			lc_users_active				SMALLINT	, \
+			lc_guests_active			SMALLINT	\
 		)")
 	c.create_idx("r4_listener_counts", "lc_time")
 	c.create_idx("r4_listener_counts", "sid")
@@ -480,18 +481,18 @@ def create_tables():
 		CREATE TABLE r4_donations ( \
 			donation_id				SERIAL		PRIMARY KEY, \
 			user_id					INTEGER		, \
-			donation_amount			REAL		, \
-			donation_message		TEXT		, \
-			donation_private		BOOLEAN		DEFAULT TRUE \
+			donation_amount				REAL		, \
+			donation_message			TEXT		, \
+			donation_private			BOOLEAN		DEFAULT TRUE \
 		)")
 	
 	c.update(" \
 		CREATE TABLE r4_request_store ( \
 			reqstor_id				SERIAL		PRIMARY KEY, \
-			reqstor_order			SMALLINT	, \
+			reqstor_order				SMALLINT	, \
 			user_id					INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL, \
-			sid						SMALLINT	NOT NULL \
+			sid					SMALLINT	NOT NULL \
 		)")
 	c.create_idx("r4_request_lists", "user_id")
 	c.create_idx("r4_request_lists", "song_id")
@@ -501,11 +502,11 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_request_line ( \
 			user_id					INTEGER		NOT NULL, \
-			sid						SMALLINT	NOT NULL, \
-			line_wait_start			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-			line_expiry_tune_in		INTEGER		, \
-			line_expiry_election	INTEGER		, \
-			line_top_song_id		INTEGER		\
+			sid					SMALLINT	NOT NULL, \
+			line_wait_start				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
+			line_expiry_tune_in			INTEGER		, \
+			line_expiry_election			INTEGER		, \
+			line_top_song_id			INTEGER		\
 		)")
 	c.create_idx("r4_request_queue", "user_id")
 	c.create_idx("r4_request_queue", "sid")
@@ -517,11 +518,11 @@ def create_tables():
 			request_id				SERIAL		PRIMARY KEY, \
 			user_id					INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL, \
-			request_fulfilled_at	INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-			request_wait_time		INTEGER		, \
-			request_queue_size		INTEGER		, \
-			request_at_rank			INTEGER		, \
-			request_at_count		INTEGER		\
+			request_fulfilled_at			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
+			request_wait_time			INTEGER		, \
+			request_queue_size			INTEGER		, \
+			request_at_rank				INTEGER		, \
+			request_at_count			INTEGER		\
 		)")
 	c.create_idx("r4_request_history", "user_id")
 	c.create_idx("r4_request_history", "song_id")
@@ -535,8 +536,8 @@ def create_tables():
 			elec_id					INTEGER		, \
 			user_id					INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL, \
-			vote_at_rank			INTEGER		, \
-			vote_at_count			INTEGER		, \
+			vote_at_rank				INTEGER		, \
+			vote_at_count				INTEGER		, \
 			entry_id				INTEGER		\
 		)")
 	c.create_idx("r4_vote_history", "sched_id")
@@ -574,7 +575,7 @@ def create_tables():
 			user_id					INTEGER		NOT NULL, \
 			api_ip					TEXT		, \
 			api_key					VARCHAR(10) , \
-			api_is_rainwave			BOOLEAN		DEFAULT FALSE, \
+			api_is_rainwave				BOOLEAN		DEFAULT FALSE, \
 			api_expiry				INTEGER		\
 		)")
 	c.create_idx("r4_api_keys", "user_id")
@@ -583,7 +584,7 @@ def create_tables():
 	
 	c.update(" \
 		CREATE TABLE r4_oneup_lists ( \
-			oneuplist_id			SERIAL		PRIMARY KEY, \
+			oneuplist_id				SERIAL		PRIMARY KEY, \
 			sched_id				INTEGER		\
 		)")
 	c.create_idx("r4_oneup_lists", "sched_id")
@@ -591,9 +592,9 @@ def create_tables():
 	
 	c.update(" \
 		CREATE TABLE r4_oneup_list_content ( \
-			oneuplist_id			INTEGER		NOT NULL, \
+			oneuplist_id				INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL, \
-			oneup_position			SMALLINT	\
+			oneup_position				SMALLINT	\
 		)")
 	c.create_idx("r4_oneup_list_content", "song_id")
 	c.create_delete_fk("r4_oneup_list_content", "r4_oneup_lists", "oneuplist_id")
@@ -601,7 +602,7 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_song_history ( \
 			songhist_id				SERIAL		PRIMARY KEY, \
-			sid						SMALLINT	NOT NULL, \
+			sid					SMALLINT	NOT NULL, \
 			song_id					INTEGER		NOT NULL \
 		)")
 	c.create_idx("r4_song_history", "sid")
@@ -615,17 +616,17 @@ def _create_test_tables():
 	c.update(" \
 		CREATE TABLE phpbb_users( \
 			user_id					SERIAL		DEFAULT (EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) + 86400), \
-			radio_winningvotes		INT			DEFAULT 0, \
-			radio_losingvotes		INT			DEFAULT 0, \
-			radio_winningrequests	INT			DEFAULT 0, \
-			radio_losingrequests	INT			DEFAULT 0, \
-			radio_lastnews			INT			DEFAULT 0, \
-			radio_listen_key		TEXT		DEFAULT 'TESTKEY', \
-			group_id				INT			DEFAULT 1, \
+			radio_winningvotes			INT		DEFAULT 0, \
+			radio_losingvotes			INT		DEFAULT 0, \
+			radio_winningrequests			INT		DEFAULT 0, \
+			radio_losingrequests			INT		DEFAULT 0, \
+			radio_lastnews				INT		DEFAULT 0, \
+			radio_listen_key			TEXT		DEFAULT 'TESTKEY', \
+			group_id				INT		DEFAULT 1, \
 			username				TEXT 		DEFAULT 'Test', \
-			user_new_privmsg		INT			DEFAULT 0, \
+			user_new_privmsg			INT		DEFAULT 0, \
 			user_avatar				TEXT		DEFAULT '', \
-			user_avatar_type		INT			DEFAULT 0 \
+			user_avatar_type			INT		DEFAULT 0 \
 		)")
 
 def _fill_test_tables():
