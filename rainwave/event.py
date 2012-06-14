@@ -11,10 +11,10 @@ from rainwave import playlist
 _request_interval = {}
 _request_sequence = {}
 
-class ElectionTypes(Object):
+class ElectionTypes(object):
 	normal = "normal"
 	
-class EventTypes(Object):
+class EventTypes(object):
 	election = "election"
 	
 class InvalidScheduleID(Exception):
@@ -43,14 +43,14 @@ def load_by_id_and_type(sched_id, sched_type):
 		return Election.load_by_id(sched_id)
 	raise InvalidScheduleType
 	
-class OneUpSeries(Object):
+class OneUpSeries(object):
 	def __init__(self):
 		pass
 		
 	def add_song(self, song):
 		pass
 
-class Event(Object):
+class Event(object):
 	def __init__(self):
 		self.id = None
 		self.is_election = False
@@ -84,13 +84,16 @@ class Event(Object):
 			return self.start_actual - self.end
 		return self.start - self.end
 		
-	def start(self):
+	def start_event(self):
 		if self.in_progress and not self.used:
 			return
 		elif self.used:
 			raise EventAlreadyUsed
 		self.in_progress = True
 		db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (time.time(), self.id))
+
+def add_to_election_queue(sid, song):
+	db.c.update("INSERT INTO r4_election_queue (sid, song_id) VALUES (%s, %s)", (sid, song.id))
 		
 # Normal election
 class Election(Event):
@@ -108,6 +111,7 @@ class Election(Event):
 		elec.start_actual = row['elec_start_actual']
 		elec.in_progress = row['elec_in_progress']
 		elec.sid = row['sid']
+		elec.songs = []
 		for song_row in db.c.fetch_all("SELECT * FROM r4_election_entries WHERE elec_id = %s", (id,)):
 			song = playlist.Song.load_from_id(song_row['song_id'], elec.sid)
 			song.data['entry_id'] = song_row['entry_id']
@@ -121,10 +125,10 @@ class Election(Event):
 		
 	@classmethod
 	def load_by_type(cls, sid, type):
-		elec_id = db.c.fetch_var("SELECT * FROM r4_elections WHERE elec_type = %s AND elec_used = FALSE AND sid = %s ORDER BY elec_id", (type, sid))
+		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_used = FALSE AND sid = %s ORDER BY elec_id", (type, sid))
 		if not elec_id:
 			raise ElectionDoesNotExist("No election of type %s exists" % sched_id)
-		return cls.load_by_id(type)
+		return cls.load_by_id(elec_id)
 		
 	@classmethod
 	def load_unused(cls, sid):
@@ -135,7 +139,7 @@ class Election(Event):
 		return elecs
 	
 	@classmethod
-	def create(cls, sid, timing = None, type = ElectionTypes.normal):
+	def create(cls, sid, type = ElectionTypes.normal):
 		elec_id = db.c.get_next_id("r4_elections", "elec_id")
 		elec = cls()
 		elec.is_election = True
@@ -147,15 +151,16 @@ class Election(Event):
 		elec.sid = sid
 		elec.start = None
 		elec.songs = []
-		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid) VALUES (%s, %s, %s, %s)", (elec.elec_id, False, elec.elec_type, elec.sid))
+		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid) VALUES (%s, %s, %s, %s)", (elec_id, False, elec.type, elec.sid))
 		return elec
 	
 	def fill(self, target_song_length = None):
 		self._add_from_queue()
+		# ONLY RUN _ADD_REQUESTS ONCE PER FILL
 		self._add_requests()
-		for i in range(length(self.songs), config.get_station(self.sid, "songs_in_election")):
+		for i in range(len(self.songs), config.get_station(self.sid, "songs_in_election")):
 			song = playlist.get_random_song(self.sid, target_song_length)
-			song.data['elec_votes'] = 0
+			song.data['entry_votes'] = 0
 			song.data['entry_type'] = constants.ElecSongTypes.normal
 			song.data['elec_request_user_id'] = 0
 			song.data['elec_request_username'] = None
@@ -163,46 +168,57 @@ class Election(Event):
 			self.add_song(song)
 			
 	def _check_song_for_conflict(self, song):
-		for album in song.albums:
-			conflicting_user = db.c.fetch_var("SELECT username "
-				"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN r4_song_album ON (line_top_song_id = r4_song_album.song_id) JOIN phpbb_users ON (r4_listeners.user_id = phpbb_users.user_id) "
-				"WHERE r4_listeners.sid = %s AND r4_request_line.sid = %s AND r4_song_album.sid = %s AND r4_song_album.album_id = %s "
-				"ORDER BY line_wait_start LIMIT 1",
-				(self.sid, self.sid, self.sid, album.id))
-			if conflicting_user:
-				song.data['entry_type'] = constants.ElecSongTypes.conflict
-				song.data['request_username'] = conflicting_user
+		if song.albums and len(song.albums) > 0:
+			for album in song.albums:
+				conflicting_user = db.c.fetch_var("SELECT username "
+					"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN r4_song_album ON (line_top_song_id = r4_song_album.song_id) JOIN phpbb_users ON (r4_listeners.user_id = phpbb_users.user_id) "
+					"WHERE r4_listeners.sid = %s AND r4_request_line.sid = %s AND r4_song_album.sid = %s AND r4_song_album.album_id = %s "
+					"ORDER BY line_wait_start LIMIT 1",
+					(self.sid, self.sid, self.sid, album.id))
+				print "Con: ", conflicting_user
+				if conflicting_user:
+					song.data['entry_type'] = constants.ElecSongTypes.conflict
+					song.data['request_username'] = conflicting_user
+					return True
 		requesting_user = db.c.fetch_var("SELECT username "
-			"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN phpbb_users USING (user_id) "
+			"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN r4_request_store USING (user_id) JOIN phpbb_users USING (user_id) "
 			"WHERE r4_listeners.sid = %s AND r4_request_line.sid = %s AND song_id = %s "
 			"ORDER BY line_wait_start LIMIT 1",
 			(self.sid, self.sid, song.id))
-		if num_requests > 0:
+		print "Req: ", requesting_user
+		if requesting_user:
 			song.data['entry_type'] = constants.ElecSongTypes.request
 			song.data['request_username'] = requesting_user
+			return True
+		return False
 		
 	def add_song(self, song):
+		if not song:
+			return False
 		entry_id = db.c.get_next_id("r4_election_entries", "entry_id")
 		song.data['entry_id'] = entry_id
-		song.data['entry_position'] = length(self.songs)
-		db.c.update("INSERT INTO r4_election_entries (entry_id, song_id, elec_id, entry_position, entry_type) VALUES (%s, %s, %s)", (entry_id, song.id, self.id, length(self.songs), song.data['entry_type']))
-		song.start_block(self.sid, constants.ElecBlockTypes.in_elec, config.get_station(sid, "elec_block_length"))
+		song.data['entry_position'] = len(self.songs)
+		if not 'entry_type' in song.data:
+			song.data['entry_type'] = constants.ElecSongTypes.normal
+		db.c.update("INSERT INTO r4_election_entries (entry_id, song_id, elec_id, entry_position, entry_type) VALUES (%s, %s, %s, %s, %s)", (entry_id, song.id, self.id, len(self.songs), song.data['entry_type']))
+		song.start_block(self.sid, constants.ElecBlockTypes.in_elec, config.get_station(self.sid, "elec_block_length"))
 		self.songs.append(song)
+		return True
 		
-	def start(self):
+	def start_event(self):
 		if not self.used and not self.in_progress:
-			results = db.c.fetch_all("SELECT song_id, elec_votes FROM r4_election_entries WHERE elec_id = %s", (self.id,))
+			results = db.c.fetch_all("SELECT song_id, entry_votes FROM r4_election_entries WHERE elec_id = %s", (self.id,))
 			for song in self.songs:
 				for song_result in results:
 					if song_result['song_id'] == song.id:
-						song.data['elec_votes'] == song_result['elec_votes']
+						song.data['entry_votes'] == song_result['entry_votes']
 					# Auto-votes for somebody's request
-					if song.data['elec_is_request'] == constants.ElecSongTypes.request:
+					if song.data['entry_type'] == constants.ElecSongTypes.request:
 						if db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (song.data['elec_request_user_id'], self.id)) == 0:
-							song.data['elec_votes'] += 1
+							song.data['entry_votes'] += 1
 			random.shuffle(self.songs)
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
-			self.songs = sorted(self.songs, key=lambda song: song.data['elec_votes'])
+			self.songs = sorted(self.songs, key=lambda song: song.data['entry_votes'])
 			self.songs.reverse()
 			self.in_progress = True
 			db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s WHERE elec_id = %s", (time.time(), self.id))
@@ -220,9 +236,8 @@ class Election(Event):
 			self.add_song(song)
 			
 	def _add_requests(self):
-		global _request_interval
-		global _request_sequence
-		if self.is_request_needed() and length(self.songs) < config.get_station(self.sid, "songs_in_election"):
+		# ONLY RUN IS_REQUEST_NEEDED ONCE
+		if self.is_request_needed() and len(self.songs) < config.get_station(self.sid, "songs_in_election"):
 			self.add_song(self.get_request())
 		
 	def is_request_needed(self):
@@ -253,12 +268,15 @@ class Election(Event):
 	def get_request(self):
 		request = db.c.fetch_row("SELECT username, r4_request_line.user_id, song_id "
 			"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN phpbb_users USING (user_id) JOIN r4_request_store USING (user_id) JOIN r4_song_sid USING (song_id) "
-			"WHERE r4_listeners.sid = %s AND r4_listeners.purge = FALSE AND r4_request_line.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE "
+			"WHERE r4_listeners.sid = %s AND listener_purge = FALSE AND r4_request_line.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE "
 			"ORDER BY line_wait_start LIMIT 1",
-			(self.sid,))
+			(self.sid, self.sid))
+		if not request:
+			return None
 		song = playlist.Song.load_from_id(request['song_id'], self.sid)
 		song.data['elec_request_user_id'] = request['user_id']
 		song.data['elec_request_username'] = request['username']
+		song.data['entry_type'] = constants.ElecSongTypes.request
 		return song		
 		
 	def length(self):
@@ -268,7 +286,7 @@ class Election(Event):
 			totalsec = 0
 			for song in self.songs:
 				totalsec += song.data['length']
-			return math.floor(totalsec / length(self.songs))
+			return math.floor(totalsec / len(self.songs))
 		
 	def finish(self):
 		self.in_progress = False

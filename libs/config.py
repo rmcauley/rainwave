@@ -20,6 +20,11 @@ def load(file):
 	_opts = json.load(config_file)
 	config_file.close()
 	
+	stations = _opts.pop('stations')
+	_opts['stations'] = {}
+	for key in stations.keys():
+		_opts['stations'][int(key)] = stations[key]
+	
 	require('stations')
 	constants.set_station_ids(get("song_dirs"), get("station_id_friendly"))
 	if get("test_mode") == True:
@@ -39,6 +44,6 @@ def override(key, value):
 def get_station(sid, key):
 	if not sid in _opts['stations']:
 		raise StandardError("Station SID %s has no configuration." % sid)
-	if not key in _options['stations']:
+	if not key in _opts['stations'][sid]:
 		raise StandardError("Station SID %s has no configuration key %s." % (sid, key))
 	return _opts['stations'][sid][key]

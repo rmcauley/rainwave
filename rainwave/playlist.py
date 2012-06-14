@@ -104,6 +104,12 @@ def warm_cooled_songs(sid):
 	"""
 	db.c.update("UPDATE r4_song_sid SET song_cool = FALSE WHERE sid = %s AND song_cool_end < %s AND song_cool = TRUE", (sid, time.time()))
 	
+def remove_all_locks(sid):
+	"""
+	Removes all cooldown & election locks on songs.
+	"""
+	db.c.update("UPDATE r4_song_sid SET song_elec_blocked = FALSE, song_elec_blocked_num = 0, song_cool = FALSE, song_cool_end = 0 WHERE sid = %s", (sid,))
+	
 class SongHasNoSIDsException(Exception):
 	pass
 
@@ -223,7 +229,12 @@ class Song(object):
 		self.artists = None
 		self.groups = None
 		self.verified = False
+		self.artist_tag = None
+		self.album_tag = None
+		self.genre_tag = None
 		self.data = {}
+		self.data['link'] = None
+		self.data['link_text'] = None
 		
 	def load_tag_from_file(self, filename):
 		"""
@@ -468,6 +479,8 @@ class AssociatedMetadata(object):
 		
 	@classmethod
 	def load_list_from_tag(klass, tag):
+		if not tag:
+			return []
 		instances = []
 		for fragment in tag.split(","):
 			if len(fragment) > 0:

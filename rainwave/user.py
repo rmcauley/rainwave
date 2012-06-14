@@ -38,28 +38,29 @@ class User(object):
 		self.data['listener_voted_entry'] = 0
 		self.data['listener_id'] = 0
 
-	def authorize(self, sid, ip_address, api_key):
+	def authorize(self, sid, ip_address, api_key, bypass = False):
 		self.request_sid = sid
 		self.ip_address = ip_address
 		self.api_key = api_key
 				
-		if not re.match('^[\w\d]+$', api_key):
+		if not bypass and not re.match('^[\w\d]+$', api_key):
 			return
 		
 		if self.id > 1:
-			self._auth_registered_user(ip_address, api_key)
+			self._auth_registered_user(ip_address, api_key, bypass)
 		else:
-			self._auth_anon_user(ip_address, api_key)
+			self._auth_anon_user(ip_address, api_key, bypass)
 		if self.authorized:
 			self.refresh()
 
-	def _auth_registered_user(self, ip_address, api_key):
-		r = db.c.fetch_row("SELECT api_key, api_is_rainwave FROM r4_api_keys WHERE user_id = %s AND api_key = %s", (self.id, api_key))
-		if not r:
-			log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
-			return
-		if r['api_is_rainwave']:
-			self._official_ui = True
+	def _auth_registered_user(self, ip_address, api_key, bypass = False):
+		if not bypass:
+			r = db.c.fetch_row("SELECT api_key, api_is_rainwave FROM r4_api_keys WHERE user_id = %s AND api_key = %s", (self.id, api_key))
+			if not r:
+				log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
+				return
+			if r['api_is_rainwave']:
+				self._official_ui = True
 
 		# Set as authorized and begin populating information
 		# Pay attention to the "AS _variable" names in the SQL fields, they won't get exported to private JSONable dict
@@ -91,14 +92,15 @@ class User(object):
 		elif self.data['_group_id'] in [12, 15, 14, 17]:
 			self.data['radio_admin'] = self.request_sid
 
-	def _auth_anon_user(self, ip_address, api_key):
-		auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (ip_address,))
-		if not auth_against:
-			log.debug(self, "user", "Anonymous user key %s not found." % api_key)
-			return
-		if auth_against != api_key:
-			log.debug(self, "user", "Anonymous user key %s does not match DB key %s." % (api_key, auth_against))
-			return
+	def _auth_anon_user(self, ip_address, api_key, bypass = False):
+		if not bypass:
+			auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (ip_address,))
+			if not auth_against:
+				log.debug(self, "user", "Anonymous user key %s not found." % api_key)
+				return
+			if auth_against != api_key:
+				log.debug(self, "user", "Anonymous user key %s does not match DB key %s." % (api_key, auth_against))
+				return
 		self.authorized = True
 
 	def refresh(self):

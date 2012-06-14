@@ -95,7 +95,7 @@ class SQLiteCursor(object):
 	# Speaking of performance, everything gets mangled through this method anyway.
 	def _convert_pg_query(self, query, for_print = False):
 		if query.find("CREATE TABLE") >= 0:
-			query = re.sub("SERIAL\w+PRIMARY KEY", "INTEGER PRIMARY KEY", query)
+			query = query.replace("SERIAL", "INTEGER")
 		if query.find("ADD CONSTRAINT") >= 0:
 			return None
 		if not for_print:
