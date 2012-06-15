@@ -42,15 +42,30 @@ def load_by_id_and_type(sched_id, sched_type):
 	if sched_type == EventTypes.election:
 		return Election.load_by_id(sched_id)
 	raise InvalidScheduleType
-	
-class OneUpSeries(object):
-	def __init__(self):
-		pass
-		
-	def add_song(self, song):
-		pass
 
 class Event(object):
+	@classmethod
+	def create(cls, sid, start, end, type = None, name = None, public = True, timed = False, url = None):
+		evt = cls()
+		evt.id = db.c.get_next_id("r4_schedule", "sched_id")
+		evt.start = start
+		evt.start_actual = None
+		evt.end = end
+		if type:
+			evt.type = type
+		else:
+			evt.type = evt.__class__.__name__
+		evt.name = name
+		evt.sid = sid
+		evt.public = public
+		evt.timed = timed
+		evt.url = url
+		evt.in_progress = False
+		db.c.update("INSERT INTO r4_schedule "
+					"(sched_id, sched_start, sched_end, sched_type, sched_name, sid, sched_public, sched_timed, sched_url, sched_in_progress) VALUES "
+					"(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
+					(evt.id, evt.start, evt.end, evt.type, evt.name, evt.sid, evt.public, evt.timed, evt.url, evt.in_progress))
+
 	def __init__(self):
 		self.id = None
 		self.is_election = False
@@ -296,14 +311,32 @@ class Election(Event):
 class OneUp(Event):
 	@classmethod
 	def load_event_by_id(cls, id):
-		pass
-
-class Jingle(Event):
+		row = db.c.fetch_row("SELECT * FROM r4_schedule JOIN r4_one_ups USING (sched_id) WHERE r4_schedule.sched_id = %s", (id,))
+		one_up = cls()
+		one_up._update_from_dict(row)
+		one_up.songs = [ playlist.Song.load_from_id(id, one_up.sid) ]
+		
 	@classmethod
-	def load_event_by_id(cls, id):
+	def create(cls, sid, start, song_id):
+		song = playlist.Song.load_from_id(id, sid)
+		one_up = super(Event, cls).create(sid=sid, start=start, end=start+song.length, public=False)
+		one_up.songs = [ song ]
+
+	def get_filename(self):
+		return self.songs[0].filename
+		
+	def get_song(self):
+		return self.songs[0]
+		
+	def length(self):
+		return self.songs[0].length
+
+# How this works is TBD.
+class OneUpSeries(object):
+	def __init__(self):
 		pass
 		
-class LiveShow(Event):
-	@classmethod
-	def load_event_by_id(cls, id):
+	def add_song(self, song):
 		pass
+
+# Other events (Jingle, LiveShow) will be developed later.

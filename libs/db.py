@@ -387,7 +387,7 @@ def create_tables():
 			sched_start_actual			INTEGER		, \
 			sched_end				INTEGER		, \
 			sched_end_actual			INTEGER		, \
-			sched_type				VARCHAR(10)	, \
+			sched_type				TEXT	, \
 			sched_name				TEXT		, \
 			sid					SMALLINT	NOT NULL, \
 			sched_public				BOOLEAN		DEFAULT TRUE, \
@@ -437,7 +437,7 @@ def create_tables():
 	c.create_delete_fk("r4_election_queue", "r4_songs", "song_id")
 	
 	c.update(" \
-		CREATE TABLE r4_1ups ( \
+		CREATE TABLE r4_one_ups ( \
 			sched_id				INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL \
 		)")

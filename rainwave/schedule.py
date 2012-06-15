@@ -83,7 +83,7 @@ def advance_station(sid):
 	db.c.update("INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)", (sid, last_song.id))
 	
 	current[sid] = next.pop(0)
-	current[sid].start()
+	current[sid].start_event()
 	
 	_create_elections(sid)
 	_trim(sid)
@@ -112,7 +112,7 @@ def _create_elections(sid):
 	for elec_id in unused_elec_id:
 		unused_elecs.append(event.Election.load_by_id(elec_id))
 	
-	# Step 3a: Sort the next list
+	# Step 3a: Sort the next list (that excludes any added elections)
 	next[sid] = sorted(next[sid], key=lambda event: event.start_time)
 	# Step 3b: Insert elections where there's time and adjust predicted start times as necessary, if num_elections < 2 then create them where necessary
 	i = 1
