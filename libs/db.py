@@ -67,8 +67,10 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 	def create_null_fk(self, linking_table, foreign_table, key):
 		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE SET NULL", (linking_table, linking_table, key, key, foreign_table, key))
 		
-	def create_idx(self, table, column):
-		self.execute("CREATE INDEX %s_%s_idx ON %s (%s)", (table, column, table, column))
+	def create_idx(self, table, *args):
+		name = "%s_%s_idx" % (table, '_'.join(map(str, args)))
+		columns = ','.join(map(str, args))
+		self.execute("CREATE INDEX %s ON %s (%s)", (name, table, columns))
 		
 class SQLiteCursor(object):
 	def __init__(self, filename):
@@ -173,7 +175,7 @@ class SQLiteCursor(object):
 	def create_null_fk(self, linking_table, foreign_table, key):
 		pass
 		
-	def create_idx(self, table, column):
+	def create_idx(self, table, *args):
 		pass
 		
 def open():
@@ -281,13 +283,14 @@ def create_tables():
 		CREATE TABLE r4_song_ratings ( \
 			song_id					INTEGER		NOT NULL, \
 			user_id					INTEGER		NOT NULL, \
-			song_rating				REAL		, \
+			song_user_rating			REAL		, \
 			song_rated_at				INTEGER		, \
 			song_rated_at_rank			INTEGER		, \
-			song_rated_at_count			INTEGER		\
+			song_rated_at_count			INTEGER		, \
+			song_fave				BOOLEAN		DEFAULT FALSE \
 		)")
+	c.create_idx("r4_song_ratings", "user_id", "song_id")
 	c.create_idx("r4_song_ratings", "song_id")
-	c.create_idx("r4_song_ratings", "user_id")
 	c.create_delete_fk("r4_song_ratings", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_ratings", "phpbb_users", "user_id")
 	
@@ -326,10 +329,11 @@ def create_tables():
 		CREATE TABLE r4_album_ratings ( \
 			album_id				INTEGER		NOT NULL, \
 			user_id					INTEGER		NOT NULL, \
-			album_rating				REAL		\
+			album_user_rating			REAL		, \
+			album_fave				BOOLEAN		DEFAULT FALSE \
 		)")
+	c.create_idx("r4_album_ratings", "user_id", "album_id")
 	c.create_idx("r4_album_ratings", "album_id")
-	c.create_idx("r4_album_ratings", "user_id")
 	c.create_delete_fk("r4_album_ratings", "r4_albums", "album_id")
 	c.create_delete_fk("r4_album_ratings", "phpbb_users", "user_id")
 	
@@ -406,7 +410,7 @@ def create_tables():
 			elec_used				BOOLEAN		DEFAULT FALSE, \
 			elec_in_progress			BOOLEAN		DEFAULT FALSE, \
 			elec_start_actual			INTEGER		, \
-			elec_type				VARCHAR(10)	, \
+			elec_type				TEXT		, \
 			elec_priority				BOOLEAN		DEFAULT FALSE, \
 			sid					SMALLINT	NOT NULL \
 		)")
@@ -548,26 +552,6 @@ def create_tables():
 	c.create_null_fk("r4_vote_history", "r4_elections", "elec_id")
 	c.create_null_fk("r4_vote_history", "r4_songs", "song_id")
 	c.create_delete_fk("r4_vote_history", "phpbb_users", "user_id")
-	
-	c.update(" \
-		CREATE TABLE r4_album_faves ( \
-			album_id				INTEGER		NOT NULL, \
-			user_id					INTEGER		NOT NULL \
-		)")
-	c.create_idx("r4_album_favs", "album_id")
-	c.create_idx("r4_album_favs", "user_id")
-	c.create_delete_fk("r4_album_favs", "r4_albums", "album_id")
-	c.create_delete_fk("r4_album_favs", "phpbb_users", "user_id")
-	
-	c.update(" \
-		CREATE TABLE r4_song_faves ( \
-			song_id					INTEGER		NOT NULL, \
-			user_id					INTEGER		NOT NULL \
-		)")
-	c.create_idx("r4_song_favs", "song_id")
-	c.create_idx("r4_song_favs", "user_id")
-	c.create_delete_fk("r4_song_favs", "r4_songs", "song_id")
-	c.create_delete_fk("r4_song_favs", "phpbb_users", "user_id")
 	
 	c.update(" \
 		CREATE TABLE r4_api_keys ( \

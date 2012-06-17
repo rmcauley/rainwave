@@ -37,8 +37,8 @@ class ElectionTest(unittest.TestCase):
 		u = user.User(2)
 		u.authorize(1, None, None, True)
 		self.assertEqual(1, u.put_in_request_line(1))
-		print self.song5.albums
-		print self.song1.albums
+		# print self.song5.albums
+		# print self.song1.albums
 		# TODO: Use proper request class here instead of DB call
 		db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (2, %s, 1)", (self.song5.id,))
 		self.assertEqual(True, e._check_song_for_conflict(self.song1))

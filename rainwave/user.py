@@ -137,7 +137,7 @@ class User(object):
 			
 	def set_event_tuned_in(self, sched_id):
 		#TODO: Ensure that the user is set and saved to be tuned in for the current schedule ID as part of the station refresh
-		cache.set_user_var(self, "tunedin", sched_id, True)
+		cache.set_user(self, "tunedin_%s" % sched_id, True)
 
 	def get_private_jsonable(self):
 		"""

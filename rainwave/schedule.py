@@ -17,7 +17,7 @@ class ScheduleIsEmpty(Exception):
 
 def load():
 	for sid in constants.station_ids:
-		current[sid] = cache.get_station_var(sid, "sched_current")
+		current[sid] = cache.get_station(sid, "sched_current")
 		# If our cache is empty, pull from the DB
 		if not current[sid]:
 			try:
@@ -27,7 +27,7 @@ def load():
 		if not current[sid]:
 			raise ScheduleIsEmpty("Could not load or create any election for a current event.")
 			
-		next[sid] = cache.get_station_var(sid, "sched_next")
+		next[sid] = cache.get_station(sid, "sched_next")
 		if not next[sid]:
 			future_time = time.time() + current[sid].get_length()
 			next_elecs = event.Election.load_unused(sid)
@@ -44,7 +44,7 @@ def load():
 					future_time += next_event.get_length()
 					next.append(next_event)
 		
-		history[sid] = cache.get_station_var(sid, "sched_history")
+		history[sid] = cache.get_station(sid, "sched_history")
 		if not history[sid]:
 			history[sid] = []
 			song_ids = db.c.fetch_list("SELECT song_id FROM r4_song_history WHERE sid = %s ORDER BY songhist_id DESC")
@@ -197,7 +197,10 @@ def _trim(sid):
 	
 def _update_memcache(sid):
 	# Stuffs the events into memcache
-	cache.set_station_var(sid, "sched_current", current[sid])
-	cache.set_station_var(sid, "sched_next", next[sid])
-	cache.set_station_var(sid, "sched_history", history[sid])
-	
+	cache.set_station(sid, "sched_current_%s" % sid, current[sid])
+	cache.set_station(sid, "sched_next_%s" % sid, next[sid])
+	cache.set_station(sid, "sched_history_%s" % sid, history[sid])
+	cache.prime_rating_cache_for_events([ sched_current[sid] ] + sched_next[sid] + sched_history[sid])	
+	# TODO: Update current listeners
+	# TODO: Update news
+	# TODO: Update album diff

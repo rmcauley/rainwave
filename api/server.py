@@ -28,7 +28,7 @@ class handle_url(object):
 	
 	def __call__(self, klass):
 		klass.url = self.url
-		request_classes.append((r"/api/([0-9]+)/" + self.url, klass))
+		request_classes.append((r"/api/" + self.url, klass))
 		return klass
 		
 def test_get(klass):

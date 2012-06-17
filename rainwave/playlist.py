@@ -110,6 +110,25 @@ def remove_all_locks(sid):
 	"""
 	db.c.update("UPDATE r4_song_sid SET song_elec_blocked = FALSE, song_elec_blocked_num = 0, song_cool = FALSE, song_cool_end = 0 WHERE sid = %s", (sid,))
 	
+def get_all_albums(sid, user):
+	return db.c.fetch_all(
+		"SELECT album_id, album_name, album_rating, album_cool_lowest, album_fave, album_user_rating "
+		"FROM r4_albums "
+		"JOIN r4_album_sid USING (album_id) "
+		"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
+		"WHERE r4_album_sid.sid = %s "
+		"ORDER BY album_name",
+		(user.id, user.id, sid))
+		
+def get_all_artists(sid):
+	return db.fetch_all(
+		"SELECT artist_name, artist_id "
+		"FROM r4_artists JOIN r4_song_artist USING (artist_id) JOIN r4_song_sid using (song_id) "
+		"WHERE r4_song_sid.sid = %s AND song_exists = TRUE "
+		"GROUP BY artist_id, artist_name "
+		"ORDER BY artist_name",
+		(user.sid,))
+	
 class SongHasNoSIDsException(Exception):
 	pass
 
@@ -432,6 +451,13 @@ class Song(object):
 				group_list.append(metadata.to_dict())
 			self.data['groups'] = group_list
 		return self.data
+		
+	def get_all_ratings(self):
+		table = db.c.fetch_all("SELECT song_rating, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
+		all_ratings = {}
+		for row in all_ratings:
+			all_ratings[row['user_id']] = { 'song_rating': row['song_rating'], 'song_fave': row['song_fave'] }
+		return all_ratings
 		
 # ################################################################### ASSOCIATED DATA TEMPLATE
 

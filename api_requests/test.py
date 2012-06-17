@@ -9,7 +9,7 @@ class HelloWorld(RequestHandler):
 	auth_required = False
 	description = "A simple hello world to test your communication."
 	
-	def get(self, _not_used):
+	def get(self):
 		self.append("hello_world", { "hello": "world" })
 		
 @test_post
@@ -17,5 +17,5 @@ class HelloWorld(RequestHandler):
 class User(RequestHandler):
 	description = "A test request that displays the user's information."
 	
-	def post(self, _not_used):
+	def post(self):
 		self.append("user", self.user.get_private_jsonable())

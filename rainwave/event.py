@@ -7,6 +7,7 @@ from libs import config
 from libs import constants
 from libs import cache
 from rainwave import playlist
+from rainwave import request
 
 _request_interval = {}
 _request_sequence = {}
@@ -142,7 +143,7 @@ class Election(Event):
 	def load_by_type(cls, sid, type):
 		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_used = FALSE AND sid = %s ORDER BY elec_id", (type, sid))
 		if not elec_id:
-			raise ElectionDoesNotExist("No election of type %s exists" % sched_id)
+			raise ElectionDoesNotExist("No election of type %s exists" % type)
 		return cls.load_by_id(elec_id)
 		
 	@classmethod
@@ -154,12 +155,12 @@ class Election(Event):
 		return elecs
 	
 	@classmethod
-	def create(cls, sid, type = ElectionTypes.normal):
+	def create(cls, sid):
 		elec_id = db.c.get_next_id("r4_elections", "elec_id")
-		elec = cls()
+		elec = cls(sid)
 		elec.is_election = True
 		elec.id = elec_id
-		elec.type = type
+		elec.type = cls.__name__
 		elec.used = False
 		elec.start_actual = None
 		elec.in_progress = False
@@ -168,12 +169,19 @@ class Election(Event):
 		elec.songs = []
 		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid) VALUES (%s, %s, %s, %s)", (elec_id, False, elec.type, elec.sid))
 		return elec
+		
+	def __init__(self, sid = None):
+		self._num_requests = 1
+		if sid:
+			self._num_songs = config.get_station(sid, "songs_in_election")
+		else:
+			self._num_songs = 3
 	
 	def fill(self, target_song_length = None):
 		self._add_from_queue()
 		# ONLY RUN _ADD_REQUESTS ONCE PER FILL
 		self._add_requests()
-		for i in range(len(self.songs), config.get_station(self.sid, "songs_in_election")):
+		for i in range(len(self.songs), self._num_songs):
 			song = playlist.get_random_song(self.sid, target_song_length)
 			song.data['entry_votes'] = 0
 			song.data['entry_type'] = constants.ElecSongTypes.normal
@@ -245,50 +253,53 @@ class Election(Event):
 		return self.songs[0]
 		
 	def _add_from_queue(self):
-		for row in db.c.fetch_all("SELECT elecq_id, song_id FROM r4_election_queue WHERE sid = %s ORDER BY elecq_id LIMIT %s" % (self.sid, config.get_station(self.sid, "songs_in_election"))):
+		for row in db.c.fetch_all("SELECT elecq_id, song_id FROM r4_election_queue WHERE sid = %s ORDER BY elecq_id LIMIT %s" % (self.sid, self._num_songs)):
 			db.c.update("DELETE FROM r4_election_queue WHERE elecq_id = %s" % (row['elecq_id'],))
 			song = playlist.Song.load_from_id(row['song_id'], self.sid)
 			self.add_song(song)
 			
 	def _add_requests(self):
 		# ONLY RUN IS_REQUEST_NEEDED ONCE
-		if self.is_request_needed() and len(self.songs) < config.get_station(self.sid, "songs_in_election"):
-			self.add_song(self.get_request())
+		if self.is_request_needed() and len(self.songs) < self._num_songs:
+			for i in range(1, self._num_requests):
+				self.add_song(self.get_request())
+			if len(self.songs) > 0:
+				request.update_all_list()
 		
 	def is_request_needed(self):
 		global _request_interval
 		global _request_sequence
 		if not self.sid in _request_interval:
-			_request_interval[self.sid] = cache.get_station_var(self.sid, "request_interval")
+			_request_interval[self.sid] = cache.get_station(self.sid, "request_interval")
 			if not _request_interval[self.sid]:
 				_request_interval[self.sid] = 0
 		if not self.sid in _request_sequence:
-			_request_sequence[self.sid] = cache.get_station_var(self.sid, "request_sequence")
+			_request_sequence[self.sid] = cache.get_station(self.sid, "request_sequence")
 			if not _request_sequence[self.sid]:
 				_request_sequence[self.sid] = 0
 				
 		# If we're ready for a request sequence, start one
+		return_value = None
 		if _request_interval[self.sid] <= 0 and _request_sequence[self.sid] <= 0:
 			line_length = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_line WHERE sid = %s", (self.sid,))
 			_request_sequence[self.sid] = 1 + math.floor(line_length / config.get_station(self.sid, "request_interval_scale"))
 			_request_interval[self.sid] = config.get_station(self.sid, "request_interval_gap")
-			return True
+			return_value = True
 		# If we are in a request sequence, do one
 		elif _request_sequence[self.sid] > 0:
-			return True
+			return_value = True
 		else:
 			_request_interval[self.sid] -= 1
-			return False
+			return_value = False
+
+		cache.set_station(self.sid, "request_interval", _request_interval[self.sid])
+		cache.set_station(self.sid, "request_sequence", _request_sequence[self.sid])
+		return return_value
 		
 	def get_request(self):
-		request = db.c.fetch_row("SELECT username, r4_request_line.user_id, song_id "
-			"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN phpbb_users USING (user_id) JOIN r4_request_store USING (user_id) JOIN r4_song_sid USING (song_id) "
-			"WHERE r4_listeners.sid = %s AND listener_purge = FALSE AND r4_request_line.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE "
-			"ORDER BY line_wait_start LIMIT 1",
-			(self.sid, self.sid))
-		if not request:
+		song = request.get_next(self.sid)
+		if not song:
 			return None
-		song = playlist.Song.load_from_id(request['song_id'], self.sid)
 		song.data['elec_request_user_id'] = request['user_id']
 		song.data['elec_request_username'] = request['username']
 		song.data['entry_type'] = constants.ElecSongTypes.request
@@ -307,6 +318,14 @@ class Election(Event):
 		self.in_progress = False
 		self.used = True
 		db.c.update("UPDATE r4_elections SET elec_used = TRUE, elec_in_progress = FALSE WHERE elec_id = %s", (self.id,))
+		
+class PVPElection(Election):
+	def __init__(self):
+		self._num_requests = 2
+		self._num_songs = 2
+	
+	def is_request_needed(self):
+		return True
 		
 class OneUp(Event):
 	@classmethod

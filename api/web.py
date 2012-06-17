@@ -16,7 +16,7 @@ import re
 # from api.server import handle_url
 # @handle_url(...)
 
-# Pass a string there for the URL to handle at /api/#/[url] and the server will do the rest of the work.
+# Pass a string there for the URL to handle at /api/[url] and the server will do the rest of the work.
 
 class RequestHandler(tornado.web.RequestHandler):
 	# The following variables can be overridden by you.
@@ -37,6 +37,8 @@ class RequestHandler(tornado.web.RequestHandler):
 	admin_required = False
 	# Validate user is currently DJing.
 	dj_required = False
+	# Do we need a valid SID as part of the submitted form?
+	sid_required = True
 	# Description string for documentation.
 	description = "Undocumented."
 
@@ -73,25 +75,25 @@ class RequestHandler(tornado.web.RequestHandler):
 					request_ok = False
 				else:
 					self.args[field] = parsed
-					
-		m = re.search('^/api/(\d+)/', self.request.uri)
-		if not m:
-			self.append("error", api.returns.ErrorReturn(404, "Invalid URL."))
-			request_ok = False
-		self.sid = int(m.group(1))
-		# We can allow 0 for now in case this is a request trying to figure out what station the user is on
-		if self.sid != 0 and not self.sid in constants.station_ids:
-			self.append("error", api.returns.ErrorReturn(-1000, "Invalid station ID in URL."))
-			request_ok = False
 		
 		self.user = None
 		if request_ok:
 			if self.auth_required and not self.rainwave_auth():
 				self.finish()
+		
+		if self.sid_required and not "id" in self.request.arguments:
+			self.append("error", api.returns.ErrorReturn(-1000, "Missing station ID argument."))
+			request_ok = False
+		elif "id" in self.request.arguments:
+			self.sid = int(self.request.arguments("sid"))
+		elif self.user:
+			self.sid = self.user.sid
+		else:
+			self.append("error", api.returns.ErrorReturn(-1000, "Missing station ID argument."))
 
 		# Now we strictly enforce valid station IDs.
-		if not self.sid in constants.station_ids:
-			self.append("error", api.returns.ErrorReturn(-1000, "Invalid station ID in URL."))
+		if not self.sid in constants.station_ids or self.sid == 0:
+			self.append("error", api.returns.ErrorReturn(-1000, "Invalid station ID."))
 			request_ok = False
 				
 		if not request_ok:
