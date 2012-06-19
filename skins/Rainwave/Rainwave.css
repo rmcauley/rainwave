@@ -975,47 +975,6 @@ td.menu_td_forums {
 	text-align: center;
 }
 
-table.menu_table td.menu_td_cog {
-	width: 95px;
-	text-align: right;
-	background: [% background %];
-	border-left: 1px solid [% cog %];
-	border-bottom: 1px solid [% cog %];
-}
-
-table.menu_table td.menu_td_cog img {
-	height: 16px;
-	width: auto;
-}
-
-.COG_links {
-	text-align: right;
-	position: absolute;
-	border: 1px solid [% cog %];
-	border-right: none;
-	background: [% background %];
-	width: 150px;
-	margin-left: -35px;
-	padding-right: 2px;
-	z-index: -1;
-}
-
-.COG_links hr {
-	color: [% cog %]
-}
-
-.COG_links a {
-	display: block;
-}
-
-.COG_banner {
-	position: relative;
-	z-index: 1;
-	height: 19px;
-	width: 115px;
-	background: url("images/cog_network_h.png") no-repeat;
-}
-
 .rating {
 	width: 74px;
 	height: 13px;

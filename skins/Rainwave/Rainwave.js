@@ -954,24 +954,7 @@ function _THEME() {
 			hbutton.addEventListener('click', help.showAllTopics, true);
 			menup.td_help.appendChild(hbutton);
 			row.appendChild(menup.td_help);
-			
-			menup.td_cog = createEl("td", { "class": "menu_td_cog" });
-			var coglinks = document.createElement("div");
-			coglinks.setAttribute("class", "COG_links");
-			coglinks.appendChild(createEl("a", { "href": "http://www.colonyofgamers.com", "textContent": "Colony of Gamers" } ));
-			coglinks.appendChild(createEl("a", { "href": "http://www.co-optimus.com", "textContent": "Co-Optimus" } ));
-			coglinks.appendChild(createEl("a", { "href": "http://www.theweeklyrelease.com", "textContent": "The Weekly Release" } ));
-			coglinks.appendChild(createEl("a", { "href": "http://popculturezoo.com/", "textContent": "Pop Culture Zoo" } ));
-			coglinks.appendChild(createEl("hr"));
-			coglinks.appendChild(createEl("a", { "href": "http://www.immortalmachines.com", "textContent": "Immortal Machines" } ));
-			coglinks.appendChild(createEl("a", { "href": "http://www.ingamechat.net", "textContent": "In-Game Chat" } ));
-			coglinks.appendChild(createEl("a", { "href": "http://gameradio.us/", "textContent": "FUDcast" } ));
-			coglinks.appendChild(createEl("a", { "href": "http://www.thecomicsarchive.com/", "textContent": "Comics Archive" } ));
-			
-			var cogbanner = createEl("div", { "class": "COG_banner" });
-			menup.td_cog.appendChild(cogbanner);
-			row.appendChild(menup.td_cog);
-			fx.makeMenuDropdown(menup.el, cogbanner, coglinks);
+
 			menup.table.appendChild(row);
 			menup.el.appendChild(menup.table);
 			
