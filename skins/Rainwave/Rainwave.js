@@ -814,36 +814,6 @@ function _THEME() {
 		var removedflash = false;
 		
 		menup.draw = function() {
-			// Login Box
-			menup.loginbox = createEl("table", { "class": "loginbox", "cellborder": 0, "cellpadding": 0 });
-			var row = createEl("tr", {}, menup.loginbox);
-			row.appendChild(createEl("td", { "textContent": _l("username"), "style": "padding-right: 1em;" }));
-			var td = createEl("td", {}, row);
-			menup.login_username = createEl("input", { "type": "text" }, td);
-			menup.login_username.addEventListener('keypress', menup.loginBoxKeypress, true);
-			var closelogin = createEl("span", { "textContent": "X", "style": "margin-left: 1em; cursor: pointer;" }, td);
-			closelogin.addEventListener("click", menup.hideLoginBox, true);
-
-			row = createEl("tr", {}, menup.loginbox);
-			row.appendChild(createEl("td", { "textContent": _l("password") }));
-			td = createEl("td", {}, row);
-			menup.login_password = createEl("input", { "type": "password" }, td);
-			menup.login_password.addEventListener('keypress', menup.loginBoxKeypress, true);
-
-			row = createEl("tr", {}, menup.loginbox);
-			row.appendChild(createEl("td", { "textContent": _l("autologin") }));
-			td = createEl("td", {}, row);
-			menup.login_auto = createEl("input", { "type": "checkbox", "checked": "yes" }, td);
-
-			row = createEl("tr", {}, menup.loginbox);
-			row.appendChild(createEl("td", { "textContent": "" }));
-			td = createEl("td", {}, row);
-			menup.login_button = createEl("button", { "textContent": _l("login") }, td);
-			menup.login_button.addEventListener('click', menup.loginSubmit, true);
-
-			menup.loginbox.style.position = "absolute";
-			menup.loginbox.style.zIndex = "100";
-			
 			menup.table = createEl("table", { "class": "menu_table", "cellspacing": 0 });
 			var row = createEl("tr", {}, menup.table);
 			menup.td_station = createEl("td", { "class": "menu_td_rainwave" }, row);
@@ -915,9 +885,7 @@ function _THEME() {
 			menup.td_user.appendChild(menup.avatar);
 			menup.username = createEl("span", { "class": "menu_username" });
 			menup.loginreg = createEl("span", { "class": "menu_loginreg" });
-			var login = createEl("span", { "class": "menu_login", "textContent": _l("login") });
-			login.addEventListener("click", menup.showLoginBox, true);
-			linkify(login);
+			var login = createEl("a", { "href": "http://rainwave.cc/forums/ucp.php?mode=login&redirect=/", "class": "menu_login", "textContent": _l("login") });
 			menup.loginreg.appendChild(login);
 			menup.loginreg.appendChild(createEl("span", { "textContent": " / " }));
 			var reg = createEl("a", { "class": "menu_register", "href": "http://rainwave.cc/forums/ucp.php?mode=register", "textContent": _l("register"), "class": "link" });
@@ -958,45 +926,9 @@ function _THEME() {
 			menup.table.appendChild(row);
 			menup.el.appendChild(menup.table);
 			
-			var pos = help.getElPosition(menup.td_user);
-			menup.loginbox.style.marginLeft = pos.x + "px";
-			
 			return;
 		};
-		
-		var showinglogin = false;
-		menup.showLoginBox = function() {
-			if (showinglogin) {
-				menup.hideLoginBox();
-			}
-			else {
-				menup.container.appendChild(menup.loginbox);
-				menup.login_username.focus();
-				showinglogin = true;
-			}
-		};
-		
-		menup.hideLoginBox = function() {
-			if (showinglogin) {
-				menup.container.removeChild(menup.loginbox);
-				showinglogin = false;
-			}
-		};
-		
-		menup.drawLoginDisabled = function() {
-			menup.login_username.style.background = "#AA0000";
-			menup.login_password.style.background = "#AA0000";
-			menup.login_button.textContent = _l("disabled");
-		};
-		
-		menup.loginBoxKeypress = function(evt) {
-			var code = (evt.keyCode != 0) ? evt.keyCode : evt.charCode;
-			if (code == 13) menup.loginSubmit();
-		};
-		
-		menup.loginSubmit = function() {
-			menup.doLogin(menup.login_username.value, menup.login_password.value, menup.login_auto.checked);
-		};
+	
 		
 		menup.changeAvatar = function(avatar) {
 			menup.avatar.setAttribute("src", avatar);

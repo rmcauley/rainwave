@@ -14,8 +14,6 @@ panels.MenuPanel = {
 		that.container = container;
 		that.playeradded = false;
 		that.el;
-		var loginenabled = true;
-		var loginattempts = 0;
 
 		theme.Extend.MenuPanel(that);
 	
@@ -32,7 +30,6 @@ panels.MenuPanel = {
 			user.addCallback(that.usernameCallback, "username");
 			user.addCallback(that.tunedinCallback, "radio_tunedin");
 			user.addCallback(that.userAvatarCallback, "user_avatar");
-			lyre.addCallback(that.loginResult, "login_result");
 		};
 		
 		that.usernameCallback = function(username) {
@@ -131,24 +128,6 @@ panels.MenuPanel = {
 				}
 			}
 			return false;
-		};
-		
-		that.doLogin = function(user, password, autologin) {
-			if (loginattempts >= 3) loginenabled = false;
-			if (loginenabled) {
-				loginattempts++;
-				lyre.async_get("login", { "username": user, "password": password, "autologin": autologin });
-			}
-		};
-		
-		that.loginResult = function(json) {
-			if (json.code && (json.code < 0)) {
-				if (loginattempts > 0) loginenabled = false;
-				that.drawLoginDisabled();
-			}
-			else if (json.code && (json.code == 1)) {
-				window.location.reload();
-			}
 		};
 		
 		that.openChat = function() {

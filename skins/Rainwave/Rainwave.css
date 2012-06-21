@@ -718,12 +718,6 @@ table.about td {
 	border-bottom: 1px solid [% help_about_line %];
 }
 
-.loginbox {
-	border: 1px solid [% login_border %];
-	background: [% login %];
-	padding: .3em;
-}
-
 .Panel_MenuPanel {
 	z-index: 2;
 }

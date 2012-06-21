@@ -28,7 +28,6 @@ var errorcontrol = function() {
 		lyre.addCallback(that.genericError, "oneshot_delete_result");
 		lyre.addCallback(that.genericError, "force_candidate_new_result");
 		lyre.addCallback(that.genericError, "force_candidate_delete_result");
-		lyre.addCallback(that.loginresult, "login_result")
 		lyre.addCallback(that.genericError, "admin_playlist_refresh_result");
 		lyre.addCallback(that.genericError, "admin_change_song_multiplier_result");
 	};
@@ -163,20 +162,6 @@ var errorcontrol = function() {
 	that.requestorderresult = function(json) {
 		if ((typeof(json.code) != "undefined") && (json.code <= 0)) {
 			that.doError(8000 + Math.abs(json.code));
-		}
-	};
-	
-	that.loginresult = function(json) {
-		if ((typeof(json.code) != "undefined") && (json.code == -2)) {
-			that.doError(9002, false, false, json.text);
-		}
-		else if ((typeof(json.code) != "undefined") && (json.code <= 0)) {
-			that.doError(9000 + Math.abs(json.code));
-		}
-		else if (json.code && (json.code == 1)) {
-			that.clearError(9000);
-			that.clearError(9001);
-			that.clearError(9002);
 		}
 	};
 	
