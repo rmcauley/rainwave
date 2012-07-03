@@ -13,3 +13,8 @@ Recommended .git/hooks/pre-commit:
 	#!/bin/bash
 	python runtests.py --api
 	exit $?
+
+To get started on helping with this project:
+	- Clone it
+	- python runtests.py
+	- Fix failing scenarios
