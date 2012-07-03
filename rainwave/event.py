@@ -198,7 +198,6 @@ class Election(Event):
 					"WHERE r4_listeners.sid = %s AND r4_request_line.sid = %s AND r4_song_album.sid = %s AND r4_song_album.album_id = %s "
 					"ORDER BY line_wait_start LIMIT 1",
 					(self.sid, self.sid, self.sid, album.id))
-				print "Con: ", conflicting_user
 				if conflicting_user:
 					song.data['entry_type'] = constants.ElecSongTypes.conflict
 					song.data['request_username'] = conflicting_user
@@ -208,7 +207,6 @@ class Election(Event):
 			"WHERE r4_listeners.sid = %s AND r4_request_line.sid = %s AND song_id = %s "
 			"ORDER BY line_wait_start LIMIT 1",
 			(self.sid, self.sid, song.id))
-		print "Req: ", requesting_user
 		if requesting_user:
 			song.data['entry_type'] = constants.ElecSongTypes.request
 			song.data['request_username'] = requesting_user

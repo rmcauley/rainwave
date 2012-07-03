@@ -61,10 +61,14 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 	def get_next_id(self, table, column):
 		return self.fetch_var("SELECT nextval('" + table + "_" + column + "_seq'::regclass)")
 		
-	def create_delete_fk(self, linking_table, foreign_table, key):
+	def create_delete_fk(self, linking_table, foreign_table, key, create_idx = True):
+		if create_idx:
+			self.create_idx(linking_table, key)
 		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE CASCADE", (linking_table, linking_table, key, key, foreign_table, key))
 		
-	def create_null_fk(self, linking_table, foreign_table, key):
+	def create_null_fk(self, linking_table, foreign_table, key, create_idx = True):
+		if create_idx:
+			self.create_idx(linking_table, key)
 		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE SET NULL", (linking_table, linking_table, key, key, foreign_table, key))
 		
 	def create_idx(self, table, *args):
@@ -169,10 +173,10 @@ class SQLiteCursor(object):
 	def fetchall(self):
 		return self.cur.fetchall()
 		
-	def create_delete_fk(self, linking_table, foreign_table, key):
+	def create_delete_fk(self, linking_table, foreign_table, key, create_idx = True):
 		pass
 		
-	def create_null_fk(self, linking_table, foreign_table, key):
+	def create_null_fk(self, linking_table, foreign_table, key, create_idx = True):
 		pass
 		
 	def create_idx(self, table, *args):
@@ -263,7 +267,7 @@ def create_tables():
 			song_elec_last				INTEGER		DEFAULT 0, \
 			song_elec_blocked			BOOLEAN 	DEFAULT FALSE, \
 			song_elec_blocked_num			SMALLINT	DEFAULT 0, \
-			song_elec_blocked_by			VARCHAR(10)	, \
+			song_elec_blocked_by			TEXT		, \
 			song_vote_share				REAL		, \
 			song_vote_total				INTEGER		, \
 			song_request_total			INTEGER		DEFAULT 0, \
@@ -271,8 +275,8 @@ def create_tables():
 			song_exists				BOOLEAN		DEFAULT TRUE, \
 			song_request_only			BOOLEAN		DEFAULT FALSE \
 		)")
+	# c.create_idx("r4_song_sid", "song_id")	# handled by create_delete_fk
 	c.create_idx("r4_song_sid", "sid")
-	c.create_idx("r4_song_sid", "song_id")
 	c.create_idx("r4_song_sid", "song_cool")
 	c.create_idx("r4_song_sid", "song_elec_blocked")
 	c.create_idx("r4_song_sid", "song_exists")
@@ -289,8 +293,8 @@ def create_tables():
 			song_rated_at_count			INTEGER		, \
 			song_fave				BOOLEAN		DEFAULT FALSE \
 		)")
-	c.create_idx("r4_song_ratings", "user_id", "song_id")
-	c.create_idx("r4_song_ratings", "song_id")
+	# c.create_idx("r4_song_ratings", "user_id", "song_id")		# handled by create_delete_fk
+	# c.create_idx("r4_song_ratings", "song_id")
 	c.create_delete_fk("r4_song_ratings", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_ratings", "phpbb_users", "user_id")
 	
@@ -322,7 +326,7 @@ def create_tables():
 		)")
 	c.create_idx("r4_album_sid", "album_verified")
 	c.create_idx("r4_album_sid", "sid")
-	c.create_idx("r4_album_sid", "album_id")
+	# c.create_idx("r4_album_sid", "album_id")		# handled by create_delete_fk
 	c.create_delete_fk("r4_album_sid", "r4_albums", "album_id")
 	
 	c.update(" \
@@ -334,8 +338,8 @@ def create_tables():
 		)")
 	c.create_idx("r4_album_ratings", "user_id", "album_id")
 	c.create_idx("r4_album_ratings", "album_id")
-	c.create_delete_fk("r4_album_ratings", "r4_albums", "album_id")
-	c.create_delete_fk("r4_album_ratings", "phpbb_users", "user_id")
+	c.create_delete_fk("r4_album_ratings", "r4_albums", "album_id", create_idx=False)
+	c.create_delete_fk("r4_album_ratings", "phpbb_users", "user_id", create_idx=False)
 	
 	c.update(" \
 		CREATE TABLE r4_song_album ( \
@@ -344,8 +348,8 @@ def create_tables():
 			album_is_tag				BOOLEAN		DEFAULT TRUE, \
 			sid					SMALLINT	NOT NULL \
 		)")
-	c.create_idx("r4_song_album", "album_id")
-	c.create_idx("r4_song_album", "song_id")
+	# c.create_idx("r4_song_album", "album_id")		# handled by create_delete_fk
+	# c.create_idx("r4_song_album", "song_id")
 	c.create_delete_fk("r4_song_album", "r4_albums", "album_id")
 	c.create_delete_fk("r4_song_album", "r4_songs", "song_id")
 	
@@ -361,8 +365,8 @@ def create_tables():
 			artist_id				INTEGER		NOT NULL, \
 			artist_is_tag				BOOLEAN		DEFAULT TRUE \
 		)")
-	c.create_idx("r4_song_artist", "song_id")
-	c.create_idx("r4_song_artist", "artist_id")
+	# c.create_idx("r4_song_artist", "song_id")		# handled by create_delete_fk
+	# c.create_idx("r4_song_artist", "artist_id")
 	c.create_delete_fk("r4_song_artist", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_artist", "r4_artists", "artist_id")
 	
@@ -379,8 +383,8 @@ def create_tables():
 			group_id				INTEGER		NOT NULL, \
 			group_is_tag				BOOLEAN		DEFAULT TRUE \
 		)")
-	c.create_idx("r4_songs_in_groups", "song_id")
-	c.create_idx("r4_songs_in_groups", "group_id")
+	# c.create_idx("r4_songs_in_groups", "song_id")		# handled by create_delete_fk
+	# c.create_idx("r4_songs_in_groups", "group_id")
 	c.create_delete_fk("r4_songs_in_groups", "r4_songs", "song_id")
 	c.create_delete_fk("r4_songs_in_groups", "r4_song_groups", "group_id")
 	
@@ -426,8 +430,8 @@ def create_tables():
 			entry_position				SMALLINT	, \
 			entry_votes				SMALLINT	DEFAULT 0 \
 		)" % constants.ElecSongTypes.normal)
-	c.create_idx("r4_election_entries", "song_id")
-	c.create_idx("r4_election_entries", "elec_id")
+	# c.create_idx("r4_election_entries", "song_id")	# handled by create_delete_fk
+	# c.create_idx("r4_election_entries", "elec_id")
 	c.create_delete_fk("r4_election_entries", "r4_songs", "song_id")
 	c.create_delete_fk("r4_election_entries", "r4_elections", "elec_id")
 	
@@ -437,7 +441,7 @@ def create_tables():
 			song_id					INTEGER		, \
 			sid					SMALLINT	NOT NULL \
 		)")
-	c.create_idx("r4_election_queue", "song_id")
+	# c.create_idx("r4_election_queue", "song_id")		# handled by create_delete_fk
 	c.create_delete_fk("r4_election_queue", "r4_songs", "song_id")
 	
 	c.update(" \
@@ -445,8 +449,8 @@ def create_tables():
 			sched_id				INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL \
 		)")
-	c.create_idx("r4_1ups", "sched_id")
-	c.create_idx("r4_1ups", "song_id")
+	# c.create_idx("r4_1ups", "sched_id")		# handled by create_delete_fk
+	# c.create_idx("r4_1ups", "song_id")
 	c.create_delete_fk("r4_1ups", "r4_schedule", "sched_id")
 	c.create_delete_fk("r4_1ups", "r4_songs", "song_id")
 	
@@ -466,7 +470,7 @@ def create_tables():
 			user_id					INTEGER		DEFAULT 1 \
 		)")
 	c.create_idx("r4_listeners", "sid")
-	c.create_idx("r4_listeners", "user_id")
+	# c.create_idx("r4_listeners", "user_id")		# handled by create_delete_fk
 	c.create_delete_fk("r4_listeners", "phpbb_users", "user_id")
 	
 	c.update(" \
@@ -498,8 +502,8 @@ def create_tables():
 			song_id					INTEGER		NOT NULL, \
 			sid					SMALLINT	NOT NULL \
 		)")
-	c.create_idx("r4_request_lists", "user_id")
-	c.create_idx("r4_request_lists", "song_id")
+	# c.create_idx("r4_request_lists", "user_id")		# handled by create_delete_fk
+	# c.create_idx("r4_request_lists", "song_id")
 	c.create_delete_fk("r4_request_lists", "phpbb_users", "user_id")
 	c.create_delete_fk("r4_request_lists", "r4_songs", "song_id")
 	
@@ -512,7 +516,7 @@ def create_tables():
 			line_expiry_election			INTEGER		, \
 			line_top_song_id			INTEGER		\
 		)")
-	c.create_idx("r4_request_queue", "user_id")
+	# c.create_idx("r4_request_queue", "user_id")		# handled by create_delete_fk
 	c.create_idx("r4_request_queue", "sid")
 	c.create_idx("r4_request_queue", "requestq_wait_start")
 	c.create_delete_fk("r4_request_queue", "phpbb_users", "user_id")
@@ -528,8 +532,8 @@ def create_tables():
 			request_at_rank				INTEGER		, \
 			request_at_count			INTEGER		\
 		)")
-	c.create_idx("r4_request_history", "user_id")
-	c.create_idx("r4_request_history", "song_id")
+	# c.create_idx("r4_request_history", "user_id")		# handled by create_delete_fk
+	# c.create_idx("r4_request_history", "song_id")
 	c.create_null_fk("r4_request_history", "r4_songs", "song_id")
 	c.create_delete_fk("r4_request_history", "phpbb_users", "user_id")
 	
@@ -544,10 +548,9 @@ def create_tables():
 			vote_at_count				INTEGER		, \
 			entry_id				INTEGER		\
 		)")
-	c.create_idx("r4_vote_history", "sched_id")
-	c.create_idx("r4_vote_history", "user_id")
-	c.create_idx("r4_vote_history", "song_id")
-	c.create_idx("r4_vote_history", "entry_id")
+	# c.create_idx("r4_vote_history", "user_id")		# handled by create_delete_fk
+	# c.create_idx("r4_vote_history", "song_id")
+	# c.create_idx("r4_vote_history", "entry_id")
 	c.create_null_fk("r4_vote_history", "r4_election_entries", "entry_id")
 	c.create_null_fk("r4_vote_history", "r4_elections", "elec_id")
 	c.create_null_fk("r4_vote_history", "r4_songs", "song_id")
@@ -562,7 +565,7 @@ def create_tables():
 			api_is_rainwave				BOOLEAN		DEFAULT FALSE, \
 			api_expiry				INTEGER		\
 		)")
-	c.create_idx("r4_api_keys", "user_id")
+	# c.create_idx("r4_api_keys", "user_id")		# handled by create_delete_fk
 	c.create_idx("r4_api_keys", "api_ip")
 	c.create_delete_fk("r4_api_keys", "phpbb_users", "user_id")
 	
@@ -571,7 +574,7 @@ def create_tables():
 			oneuplist_id				SERIAL		PRIMARY KEY, \
 			sched_id				INTEGER		\
 		)")
-	c.create_idx("r4_oneup_lists", "sched_id")
+	# c.create_idx("r4_oneup_lists", "sched_id")		# handled by create_delete_fk
 	c.create_delete_fk("r4_oneup_lists", "r4_schedule", "sched_id")
 	
 	c.update(" \
@@ -580,7 +583,7 @@ def create_tables():
 			song_id					INTEGER		NOT NULL, \
 			oneup_position				SMALLINT	\
 		)")
-	c.create_idx("r4_oneup_list_content", "song_id")
+	c.create_delete_fk("r4_oneup_list_content", "r4_songs", "song_id")
 	c.create_delete_fk("r4_oneup_list_content", "r4_oneup_lists", "oneuplist_id")
 	
 	c.update(" \
@@ -590,7 +593,6 @@ def create_tables():
 			song_id					INTEGER		NOT NULL \
 		)")
 	c.create_idx("r4_song_history", "sid")
-	c.create_idx("r4_song_history", "song_id")
 	c.create_delete_fk("r4_song_history", "r4_songs", "song_id")
 	
 	if config.test_mode:

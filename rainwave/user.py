@@ -65,9 +65,12 @@ class User(object):
 		# Set as authorized and begin populating information
 		# Pay attention to the "AS _variable" names in the SQL fields, they won't get exported to private JSONable dict
 		self.authorized = True
-		user_data = db.c.fetch_row("SELECT user_id, username, user_new_privmsg, user_avatar, user_avatar_type AS _user_avatar_type, radio_lastnews, radio_listen_key, group_id AS _group_id "
+		user_data = cache.get_user(self, "db_data")
+		if not user_data:
+			user_data = db.c.fetch_row("SELECT user_id, username, user_new_privmsg, user_avatar, user_avatar_type AS _user_avatar_type, radio_lastnews, radio_listen_key, group_id AS _group_id "
 					"FROM phpbb_users WHERE user_id = %s",
 					(self.id,))
+			cache.set_user(self, "db_data", user_data)
 		self.data.update(user_data)
 			
 		if self.data['_user_avatar_type'] == 1:
@@ -103,11 +106,15 @@ class User(object):
 				return
 		self.authorized = True
 
-	def refresh(self):
-		listener = db.c.fetch_row("SELECT "
-			"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
-			"FROM r4_listeners "
-			"WHERE user_id = %s AND listener_purge = FALSE", (self.id,))
+	def refresh(self, use_local_cache = False):
+		listener = None
+		if use_local_cache and self.id in cache.local['listeners_internal']:
+			listener = cache.local['listeners_internal'][self.id]
+		elif not use_local_cache:
+			listener = db.c.fetch_row("SELECT "
+				"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
+				"FROM r4_listeners "
+				"WHERE user_id = %s AND listener_purge = FALSE", (self.id,))
 		if listener:
 			self.data.update(listener)
 			if self.data['sid'] == self.request_sid:
@@ -200,6 +207,7 @@ class User(object):
 		# Pull this data straight from the cache
 						
 	def get_request_expiry(self):
+		# TODO: Use only cache for this
 		if self.id <= 1:
 			return None
 		if self.data['radio_tuned_in']:

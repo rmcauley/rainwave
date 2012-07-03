@@ -12,18 +12,30 @@ sessions = {}
 
 @handle_url("sync_update_all")
 class SyncUpdateAll(tornado.web.RequestHandler):
+	sid_required = True
+
 	def prepare(self):
+		self._rw_update_clients = True
 		if not self.request.remote_ip == "127.0.0.1":
+			self._rw_update_clients = False
 			self.set_status(403)
 			self.finish()
 			
 	def get(self):
+		if self._rw_update_clients:
+			self.write("Processing.")
+	
+	def on_finish(self):
+		if not self._rw_update_clients:
+			return
+			
 		# These caches don't change between elections, and are safe to use at all times
-		cache.refresh_local_station(self.sid, "album_diff")
+		cache.refresh_local_station(self.sid, "album_diff_json")
 		cache.refresh_local_station(self.sid, "sched_next")
 		cache.refresh_local_station(self.sid, "sched_history")
 		cache.refresh_local_station(self.sid, "sched_current")
-		cache.refresh_local_station(self.sid, "listeners_current")
+		cache.refresh_local_station(self.sid, "listeners_current_json")
+		cache.refresh_local_station(self.sid, "listeners_internal")
 		cache.refresh_local("calendar")
 		cache.refresh_local("news")
 		
@@ -31,28 +43,63 @@ class SyncUpdateAll(tornado.web.RequestHandler):
 		cache.refresh_local_station(self.sid, "song_ratings")
 		cache.refresh_local_station(self.sid, "request_all")
 		
-		for session in sessions:
+		for session in sessions[self.sid]:
 			session.update(True)
+		sessions[self.sid] = []
 		
 @handle_url("sync_update_user")
 class SyncUpdateUser(tornado.web.RequestHandler):
+	sid_required = False
+
 	def prepare(self):
+		self._rw_update_clients = True
 		if not self.request.remote_ip == "127.0.0.1":
+			self._rw_update_clients = False
 			self.set_status(403)
 			self.finish()
 			
 	def get(self):
-		pass
+		if self._rw_update_clients:
+			self.write("Processing.")
+			
+	def on_finish(self):
+		if not self._rw_update_clients:
+			return
+
+		user_id = long(self.request.arguments['user_id'])
+		for sid in sessions:
+			for session in sessions[sid]:
+				if session.user.id == user_id:
+					session.update_user()
+					sessions[sid].remove(session)
+					return
 			
 @handle_url("sync_update_ip")
 class SyncUpdateIP(tornado.web.RequestHandler):
+	sid_required = False
+
 	def prepare(self):
+		self._rw_update_clients = True
 		if not self.request.remote_ip == "127.0.0.1":
+			self._rw_update_clients = False
 			self.set_status(403)
 			self.finish()
 			
 	def get(self):
-		pass
+		if self._rw_update_clients:
+			self.write("Processing.")
+			
+	def on_finish(self):
+		if not self._rw_update_clients:
+			return
+		
+		ip_address = long(self.request.arguments['ip_address'])
+		for sid in sessions:
+			for session in sessions[sid]:
+				if session.request.remote_ip == ip_address:
+					session.update_user()
+					sessions[sid].remove(session)
+					return
 
 @handle_url("sync")
 class Sync(RequestHandler):
@@ -74,7 +121,7 @@ class Sync(RequestHandler):
 		# first has a good impact on the perceived animation smoothness since table redrawing
 		# doesn't have to take place during the first few frames.
 		
-		self.user.refresh()
+		self.user.refresh(use_local_cache)
 		self.append("user", self.user.get_public_dict())
 		
 		if 'playlist' in self.request.arguments:
