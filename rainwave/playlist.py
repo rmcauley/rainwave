@@ -28,6 +28,7 @@ def prepare_cooldown_algorithm():
 	Should pull all variables fresh from the DB, for algorithm
 	refer to jfinalfunk.
 	"""
+	# TODO: Cooldown needs to be implemented
 	
 def get_random_song_timed(sid, target_seconds, target_delta = 30):
 	"""
@@ -585,6 +586,7 @@ class AssociatedMetadata(object):
 	def disassociate_song_id(self, song_id, is_tag = True):
 		if not db.c.update(self.disassociate_song_id_query, (song_id, self.id)):
 			raise MetadataUpdateError("Cannot disassociate song ID %s with %s ID %s" % (song_id, self.__class__.__name__, self.id))
+		# TODO: Delete empty groups
 			
 	def to_dict(self):
 		self.data['id'] = self.id

@@ -8,6 +8,8 @@ from libs import constants
 from libs import config
 from libs import cache
 
+# TODO: This enture module needs to have its unit tests written
+
 # Events for each station
 current = {}
 next = {}
@@ -77,7 +79,13 @@ def get_current_file(sid):
 	return current[sid].get_filename()
 
 def advance_station(sid):
+	# TODO: Make sure finish handles cooldowns and rating & statistic updates
+	# Old places to look: [PlaylistControl.cpp:741] and [PlaylistControl.cpp:544]
 	current[sid].finish()
+	
+	# TODO: Make sure we can "pause" the station here to handle DJ interruptions
+	# Requires controlling the streamer itself to some degree and will take more
+	# work on the API than the back-end.
 	
 	last_song = current[sid].get_song()
 	history.insert(0, last_song)
@@ -90,6 +98,8 @@ def post_process(sid):
 	_create_elections(sid)
 	_trim(sid)
 	_update_memcache(sid)
+	
+	# TODO: Listener count statistics should go here
 	
 	if not config.test_mode:
 		sync_to_front.sync_frontend_all(sid)

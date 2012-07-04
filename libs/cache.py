@@ -55,6 +55,10 @@ def refresh_local_station(sid, key):
 def push_local_to_memcache(key):
 	set(key, local[key])
 
+def push_local_station(sid, key):
+	key = "sid%s_%s" % (sid, key)
+	set(key, local[key])
+
 def prime_rating_cache_for_events(events):
 	key = 'song_ratings_%s' % event[0].sid
 	local[key] = {}

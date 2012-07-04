@@ -9,6 +9,41 @@ from libs import cache
 from rainwave import playlist
 from rainwave import request
 
+"""
+These are the test scenarios I thought of that should be written that apply to this module:
+
+Election.load_by_id ** tested by load_by_type / load_unused
+Election.load_by_type
+Election.load_unused
+Election.create
+	- Timing
+	- No timing
+Election.fill
+Election._check_song_for_conflict
+	- Album conflict
+	- Direct conflict
+Election.add_song
+Election.start
+	- Start
+	- After in progress already
+	- After used
+Election.get_filename
+Election.get_song
+Election._add_from_queue
+Election.add_requests
+Election.is_request_needed
+	- Nobody in line, no requests done yet
+	- Request due, nobody in line
+	- Request due, 1 person
+	- Request due, config.get_station(self.sid, "request_interval_scale")
+	- Request due, config.get_station etc * 2
+Election.get_request
+Election.length
+	- Before use
+	- After use
+Election.finish
+"""
+
 _request_interval = {}
 _request_sequence = {}
 	

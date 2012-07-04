@@ -63,6 +63,7 @@ def _is_mp3(filename):
 	return False
 	
 def _scan_file(filename, sids):
+	# TODO: Album art
 	try:
 		if _is_mp3(filename):
 			print "Scanning %s" % filename
