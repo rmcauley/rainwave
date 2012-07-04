@@ -54,8 +54,8 @@ class ElectionTest(unittest.TestCase):
 		win_song = e.songs[1]
 		db.c.update("UPDATE r4_election_entries SET entry_votes = 5 WHERE song_id = %s", (win_song.id,))
 		e.start_event()
-		self.assertEqual(req_song.id, e.songs[0])
-		self.assertEqual(win_song.id, e.songs[1])
+		self.assertEqual(req_song.id, e.songs[0].id)
+		self.assertEqual(win_song.id, e.songs[1].id)
 		self.assertEqual(win_song.id, e.get_song().id)
 		e.finish()
 		
