@@ -75,7 +75,7 @@ class APIServer(object):
 		http_server.listen(port_no)
 		for request in request_classes:
 			log.debug("start", "   Handler: %s" % str(request))
-		# TODO: Prime caches
+		# TODO: Fake a sync call to prime the caches?
 		log.info("start", "Server bootstrapped and ready to go.")
 		self.ioloop = tornado.ioloop.IOLoop.instance()
 		self.ioloop.start()

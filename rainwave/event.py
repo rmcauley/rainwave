@@ -11,12 +11,6 @@ from rainwave import request
 
 _request_interval = {}
 _request_sequence = {}
-
-class ElectionTypes(object):
-	normal = "normal"
-	
-class EventTypes(object):
-	election = "election"
 	
 class InvalidScheduleID(Exception):
 	pass

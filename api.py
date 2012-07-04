@@ -4,8 +4,6 @@ import argparse
 import sys
 
 import api.server
-
-# The following is the list of modules containing API requests:
 from api_requests import *
 
 if __name__ == "__main__":

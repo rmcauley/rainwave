@@ -1,5 +1,6 @@
 import time
 
+from backend import sync_to_front
 from rainwave import event
 from rainwave import playlist
 from libs import db
@@ -84,10 +85,14 @@ def advance_station(sid):
 	
 	current[sid] = next.pop(0)
 	current[sid].start_event()
-	
+
+def post_process(sid):
 	_create_elections(sid)
 	_trim(sid)
 	_update_memcache(sid)
+	
+	if not config.test_mode:
+		sync_to_front.sync_frontend_all(sid)
 	
 def _create_elections(sid):
 	# Step 1: See if any new events are in the schedule that apply to this station, that haven't been used, and aren't in our next list
