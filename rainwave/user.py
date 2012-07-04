@@ -99,10 +99,10 @@ class User(object):
 		if not bypass:
 			auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (ip_address,))
 			if not auth_against:
-				log.debug(self, "user", "Anonymous user key %s not found." % api_key)
+				log.debug("user", "Anonymous user key %s not found." % api_key)
 				return
 			if auth_against != api_key:
-				log.debug(self, "user", "Anonymous user key %s does not match DB key %s." % (api_key, auth_against))
+				log.debug("user", "Anonymous user key %s does not match DB key %s." % (api_key, auth_against))
 				return
 		self.authorized = True
 

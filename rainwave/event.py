@@ -154,7 +154,7 @@ class Election(Event):
 		elec = cls(sid)
 		elec.is_election = True
 		elec.id = elec_id
-		elec.type = cls.__name__
+		elec.type = cls.__name__.lower()
 		elec.used = False
 		elec.start_actual = None
 		elec.in_progress = False
@@ -216,7 +216,7 @@ class Election(Event):
 		if not 'entry_type' in song.data:
 			song.data['entry_type'] = constants.ElecSongTypes.normal
 		db.c.update("INSERT INTO r4_election_entries (entry_id, song_id, elec_id, entry_position, entry_type) VALUES (%s, %s, %s, %s, %s)", (entry_id, song.id, self.id, len(self.songs), song.data['entry_type']))
-		song.start_block(self.sid, constants.ElecBlockTypes.in_elec, config.get_station(self.sid, "elec_block_length"))
+		song.start_block(self.sid, "in_election", config.get_station(self.sid, "elec_block_length"))
 		self.songs.append(song)
 		return True
 		

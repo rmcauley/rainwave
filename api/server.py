@@ -53,13 +53,13 @@ class APITestFailed(Exception):
 class APIServer(object):
 	def __init__(self):
 		pid = os.getpid()
-		pid_file = open(config.get("pid_file"), 'w')
+		pid_file = open(config.get("api_pid_file"), 'w')
 		pid_file.write(str(pid))
 		pid_file.close()
 	
 	def _listen(self, task_id):
 		# task_ids start at zero, so we gobble up ports starting at the base port and work up
-		port_no = int(config.get("base_port")) + task_id
+		port_no = int(config.get("api_base_port")) + task_id
 		
 		# Log according to configured directory and port # we're operating on
 		log_file = "%s/api%s.log" % (config.get("log_dir"), port_no)
@@ -92,7 +92,7 @@ class APIServer(object):
 		# We can have a config directive for numprocesses but it's entirely optional - a return of
 		# None from the config option getter (if the config didn't exist) will cause Tornado
 		# to spawn as many processes as there are cores on the server CPU(s).
-		tornado.process.fork_processes(config.get("num_processes"))
+		tornado.process.fork_processes(config.get("api_num_processes"))
 		
 		task_id = tornado.process.task_id()
 		if task_id != None:
@@ -139,7 +139,7 @@ class APIServer(object):
 						# need an anon user/key added to params here
 						pass
 				params = urllib.urlencode(params)
-				conn = httplib.HTTPConnection('localhost', config.get("base_port"))
+				conn = httplib.HTTPConnection('localhost', config.get("api_base_port"))
 				
 				conn.request(request_pair['method'], "/api/1/%s" % request.url, params, headers)
 				response = conn.getresponse()
@@ -167,7 +167,7 @@ class APIServer(object):
 				passed = False
 				print
 
-		conn = httplib.HTTPConnection('localhost', config.get("base_port"))
+		conn = httplib.HTTPConnection('localhost', config.get("api_base_port"))
 		conn.request("GET", "/api/1/shutdown", params, headers)
 		conn.getresponse()
 		time.sleep(1)

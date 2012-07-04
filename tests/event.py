@@ -20,7 +20,7 @@ class ElectionTest(unittest.TestCase):
 		e.fill()
 		e2 = Election.load_by_id(e.id)
 		self.assertEqual(e.id, e2.id)
-		e2 = Election.load_by_type(1, event.ElectionTypes.normal)
+		e2 = Election.load_by_type(1, "election")
 		self.assertEqual(e.id, e2.id)
 		e2 = Election.load_unused(1)
 		self.assertEqual(e.id, e2.id)
