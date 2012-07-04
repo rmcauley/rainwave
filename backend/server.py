@@ -32,7 +32,7 @@ def start():
 		])
 	
 	server = tornado.httpserver.HTTPServer(app)
-	server.listen(int(config.get("backend_port")))
+	server.listen(int(config.get("backend_port")), address='127.0.0.1')
 	
 	schedule.load()
 	# TODO: Load caches?  Is it necessary on the backend?
