@@ -79,6 +79,7 @@ def get_current_file(sid):
 	return current[sid].get_filename()
 
 def advance_station(sid):
+	playlist.prepare_cooldown_algorithm(sid)
 	playlist.clear_updated_albums()
 
 	# TODO: Make sure finish handles cooldowns and rating & statistic updates
@@ -105,7 +106,6 @@ def post_process(sid):
 		
 	# TODO: Listener count statistics should go here
 	_trim(sid)
-	playlist.prepare_cooldown_algorithm(sid)
 	
 def _create_elections(sid):
 	# Step 1: See if any new events are in the schedule that apply to this station, that haven't been used, and aren't in our next list

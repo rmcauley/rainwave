@@ -38,13 +38,21 @@ def prepare_cooldown_algorithm(sid):
 		return
 	
 	# Variable names from here on down are from jf's proposal at: http://rainwave.cc/forums/viewtopic.php?f=13&t=1267
-	sum_aasl = db.c.fetch_var("SELECT SUM(aasl) FROM (SELECT AVG(song_length) AS aasl FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.verified = TRUE) AS jfiscrazy", (sid,))
-	base_album_cool = config.get_station(sid, "cooldown_percentage") * sumAASL
+	sum_aasl = db.c.fetch_var("SELECT SUM(aasl) FROM (SELECT AVG(song_length) AS aasl FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.verified = TRUE GROUP BY r4_album_sid.album_id) AS jfiscrazy", (sid,))
 	avg_album_rating = db.c.fetch_var("SELECT AVG(album_rating) FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.sid = %s AND r4_album_exists = TRUE", (sid,)) 
+	mutliplier_adjustment = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT album_cool_multiply * AVG(song_length) AS tempvar FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
+	base_album_cool = config.get_station(sid, "cooldown_percentage") * sum_aasl / multiplier_adjustment
+	base_rating = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT album_rating  * AVG(song_length) AS tempvar FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
+	min_album_cool = config.get("cooldown_highest_rating_multiplier") * base_album_cool
+	max_album_cool = min_album_cool + ((5 - 2.5) * ((base_album_cool - min_album_cool) / (5 - base_rating)))
 	
 	cooldown_config[sid]['sum_aasl'] = sum_aasl
-	cooldown_config[sid]['base_album_cool'] = base_album_cool
 	cooldown_config[sid]['avg_album_rating'] = avg_album_rating
+	cooldown_config[sid]['multiplier_adjustment'] = multiplier_adjustment
+	cooldown_config[sid]['base_album_cool'] = base_album_cool
+	cooldown_config[sid]['base_rating'] = base_rating
+	cooldown_config[sid]['min_album_cool'] = min_album_cool
+	cooldown_config[sid]['max_album_cool'] = max_album_cool
 	cooldown_config[sid]['time'] = time.time()
 	
 def get_random_song_timed(sid, target_seconds, target_delta = 30):
@@ -698,8 +706,25 @@ class Album(AssociatedMetadata):
 				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (self.id, sid))
 				
 	def start_cooldown(self, sid, cool_time = False):
-		# TODO: Album cooldown
+		# TODO: Size and age adjustments + manual overrides & multipliers
+		global cooldown_config
+		if cool_time:
+			self._start_cooldown_db(sid, cool_time)
+		else:
+			auto_cool = cooldown_config[sid]['min_album_cool'] + ((self.data['rating'] - 2.5) * (cooldown_config[sid]['max_album_cool'] - cooldown_config[sid]['min_album_cool']))
+			
+	cooldown_config[sid]['sum_aasl'] = sum_aasl
+	cooldown_config[sid]['avg_album_rating'] = avg_album_rating
+	cooldown_config[sid]['multiplier_adjustment'] = multiplier_adjustment
+	cooldown_config[sid]['base_album_cool'] = base_album_cool
+	cooldown_config[sid]['base_rating'] = base_rating
+	cooldown_config[sid]['min_album_cool'] = min_album_cool
+	cooldown_config[sid]['max_album_cool'] = max_album_cool
+	cooldown_config[sid]['time'] = time.time()
 		pass
+		
+	def _start_cooldown_db(self, sid, cool_time):
+		cool_end = cool_time + time.time()
 					
 class Artist(AssociatedMetadata):
 	select_by_name_query = "SELECT artist_id AS id, artist_name AS name FROM r4_artists WHERE artist_name = %s"
