@@ -185,7 +185,7 @@ class Election(Event):
 	def load_unused(cls, sid):
 		ids = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE elec_used = FALSE AND sid = %s ORDER BY elec_id", (sid,))
 		elecs = []
-		for id in elec_ids:
+		for id in ids:
 			elecs.append(cls.load_by_id(id))
 		return elecs
 	
