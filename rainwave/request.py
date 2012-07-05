@@ -12,4 +12,4 @@ def get_next(sid):
 		(sid, sid))
 	if not request:
 		return None
-	return playlist.Song.load_from_id(request['song_id'], self.sid)
+	return playlist.Song.load_from_id(request['song_id'], sid)
