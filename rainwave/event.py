@@ -185,7 +185,7 @@ class Election(Event):
 	def load_unused(cls, sid):
 		ids = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE elec_used = FALSE AND sid = %s ORDER BY elec_id", (sid,))
 		elecs = []
-		for id in elec_ids:
+		for id in ids:
 			elecs.append(cls.load_by_id(id))
 		return elecs
 	
@@ -333,8 +333,9 @@ class Election(Event):
 		song = request.get_next(self.sid)
 		if not song:
 			return None
-		song.data['elec_request_user_id'] = request['user_id']
-		song.data['elec_request_username'] = request['username']
+		# TODO: Where does the request's user information come from?
+		#song.data['elec_request_user_id'] = request['user_id']
+		#song.data['elec_request_username'] = request['username']
 		song.data['entry_type'] = ElecSongTypes.request
 		return song		
 		
