@@ -1,6 +1,6 @@
 import json
 import tornado.web
-from libs import constants
+from libs import config
 
 help_classes = {}
 
@@ -46,8 +46,8 @@ class IndexRequest(tornado.web.RequestHandler):
 		self.write("</ul>")
 		self.write("<h2>Station IDs</h2>")
 		self.write("<ul>")
-		for id in constants.station_ids:
-			self.write("<li>%s: %s</li>" % (id, constants.station_id_friendly[id]))
+		for id in config.station_ids:
+			self.write("<li>%s: %s</li>" % (id, config.station_id_friendly[id]))
 		self.write("</ul>")
 		write_help_footer(self)
 		

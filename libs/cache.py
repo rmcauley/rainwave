@@ -66,3 +66,17 @@ def prime_rating_cache_for_events(events):
 		for song in event.songs:
 			local[key][song.id] = song.get_all_ratings()
 	push_local_to_memcache(key)
+	
+def update_local_cache_for_sid(sid):
+	# These caches don't change between elections, and are safe to use at all times
+	cache.refresh_local_station(self.sid, "album_diff")
+	cache.refresh_local_station(self.sid, "sched_next")
+	cache.refresh_local_station(self.sid, "sched_history")
+	cache.refresh_local_station(self.sid, "sched_current")
+	cache.refresh_local_station(self.sid, "listeners_current")
+	cache.refresh_local_station(self.sid, "listeners_internal")
+	cache.refresh_local_station(self.sid, "request_all")
+	cache.refresh_local("calendar")
+	
+	# The caches below should only be used on new-song refreshes
+	cache.refresh_local_station(self.sid, "song_ratings")

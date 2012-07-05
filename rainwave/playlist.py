@@ -567,6 +567,7 @@ class AssociatedMetadata(object):
 			self._start_election_block_db(self.elec_block)
 		
 	def start_cooldown(self, cool_time = False):
+		# TODO: The actual cooldown times. :/
 		if cool_time:
 			self._start_cooldown_db(cool_time)
 		elif self.cool_time:
@@ -592,6 +593,7 @@ class AssociatedMetadata(object):
 		self.data['id'] = self.id
 		return self.data
 		
+# TODO: Figure out how to populate these arrays correctly (trickier than you may think)
 updated_albums = {}
 
 def clear_updated_albums(sid):
@@ -599,6 +601,12 @@ def clear_updated_albums(sid):
 		
 def get_updated_albums(sid):
 	return updated_albums[sid]
+
+def get_updated_albums_dict(sid):
+	album_diff = []
+	for album in updated_albums:
+		album_diff.append(album.to_dict())
+	return album_diff
 		
 class Album(AssociatedMetadata):
 	select_by_name_query = "SELECT r4_albums.* FROM r4_albums WHERE album_name = %s"
@@ -621,16 +629,12 @@ class Album(AssociatedMetadata):
 	
 		self.id = db.c.get_next_id("r4_albums", "album_id")
 		success = db.c.update("INSERT INTO r4_albums (album_id, album_name) VALUES (%s, %s)", (self.id, self.data['name']))
-		if success:
-			updated_albums[sid].append(self)
 		return success
 	
 	def _update_db(self):
 		global updated_albums
 		
 		success = db.c.update("UPDATE r4_albums SET album_name = %s, album_rating = %s WHERE album_id = %s", (self.data['name'], self.data['rating'], self.id))
-		if success:
-			updated_albums[sid].append(self)
 		return success
 		
 	def _assign_from_dict(self, d):

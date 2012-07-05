@@ -1,6 +1,5 @@
 import unittest
 from libs import db
-from libs import constants
 from rainwave import playlist
 from rainwave import event
 from rainwave.event import Election
@@ -42,15 +41,15 @@ class ElectionTest(unittest.TestCase):
 		# TODO: Use proper request class here instead of DB call
 		db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (2, %s, 1)", (self.song5.id,))
 		self.assertEqual(True, e._check_song_for_conflict(self.song1))
-		self.assertEqual(constants.ElecSongTypes.conflict, self.song1)
+		self.assertEqual(event.ElecSongTypes.conflict, self.song1)
 		self.assertEqual(True, e._check_song_for_conflict(self.song5))
-		self.assertEqual(constants.ElecSongTypes.request, self.song1)
+		self.assertEqual(event.ElecSongTypes.request, self.song1)
 		
 	def test_start_finish(self):
 		e = Election.create(1)
 		e.fill()
 		req_song = e.songs[0]
-		db.c.update("UPDATE r4_election_entries SET entry_type = %s, entry_votes = 3 WHERE song_id = %s", (constants.ElecSongTypes.request, req_song.id))
+		db.c.update("UPDATE r4_election_entries SET entry_type = %s, entry_votes = 3 WHERE song_id = %s", (event.ElecSongTypes.request, req_song.id))
 		win_song = e.songs[1]
 		db.c.update("UPDATE r4_election_entries SET entry_votes = 5 WHERE song_id = %s", (win_song.id,))
 		e.start_event()

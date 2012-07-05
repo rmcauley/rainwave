@@ -1,5 +1,4 @@
 import json
-from libs import constants
 
 # TODO: Enable reflection/inspection here to find out where config lines are called from
 # for easy documentation purposes
@@ -11,6 +10,9 @@ _opts = {}
 # under test purposes (e.g. bypass song verification) will look here to see if we're
 # running in a test environment.
 test_mode = False
+
+station_ids = set()
+station_id_friendly = {}
 
 def load(file):
 	global _opts
@@ -26,7 +28,7 @@ def load(file):
 		_opts['stations'][int(key)] = stations[key]
 	
 	require('stations')
-	constants.set_station_ids(get("song_dirs"), get("station_id_friendly"))
+	set_station_ids(get("song_dirs"), get("station_id_friendly"))
 	if get("test_mode") == True:
 		test_mode = True
 	
@@ -47,3 +49,17 @@ def get_station(sid, key):
 	if not key in _opts['stations'][sid]:
 		raise StandardError("Station SID %s has no configuration key %s." % (sid, key))
 	return _opts['stations'][sid][key]
+
+def set_station_ids(dirs, friendly):
+	global station_ids
+	global station_id_friendly
+	
+	sid_array = []
+	for dir, sids in dirs.iteritems():
+		for sid in sids:
+			if sid_array.count(sid) == 0:
+				sid_array.append(sid)
+	station_ids = set(sid_array)
+	
+	for id, friendly in friendly.iteritems():
+		station_id_friendly[int(id)] = friendly

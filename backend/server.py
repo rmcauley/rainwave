@@ -8,12 +8,11 @@ from rainwave import schedule
 from libs import log
 from libs import config
 from libs import db
-from libs import constants
 
 class AdvanceScheduleRequest(tornado.web.RequestHandler):
 	def get(self, sid):
 		self.sid = None
-		if int(sid) in constants.station_ids:
+		if int(sid) in config.station_ids:
 			self.sid = int(sid)
 			schedule.advance_station(sid)
 			self.write(schedule.get_current_file())

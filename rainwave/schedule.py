@@ -1,12 +1,10 @@
 import time
-import tornado.escape
 
 from backend import sync_to_front
 from rainwave import event
 from rainwave import playlist
 from rainwave import listeners
 from libs import db
-from libs import constants
 from libs import config
 from libs import cache
 
@@ -21,7 +19,7 @@ class ScheduleIsEmpty(Exception):
 	pass
 
 def load():
-	for sid in constants.station_ids:
+	for sid in config.station_ids:
 		current[sid] = cache.get_station(sid, "sched_current")
 		# If our cache is empty, pull from the DB
 		if not current[sid]:
@@ -215,14 +213,9 @@ def _trim(sid):
 	db.c.update("DELETE FROM r4_song_history WHERE songhist_id <= %s", (max_history_id - config.get("trim_history_length")))
 	
 def _update_memcache(sid):
-	# Stuffs the events into memcache
 	cache.set_station(sid, "sched_current", current[sid])
 	cache.set_station(sid, "sched_next", next[sid])
 	cache.set_station(sid, "sched_history", history[sid])
 	cache.prime_rating_cache_for_events([ sched_current[sid] ] + sched_next[sid] + sched_history[sid])	
-	cache.set_station(sid, "current_listeners_json", tornado.escape.json_encode(listeners.get_listeners_dict()))
-	
-	album_diff = []
-	for album in playlist.get_updated_albums(sid):
-		album_diff.append(album.to_dict())
-	cache.set_station(sid, "album_diff_json", tornado.escape.json_encode(album_diff))
+	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict())
+	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid))

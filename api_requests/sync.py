@@ -28,19 +28,7 @@ class SyncUpdateAll(tornado.web.RequestHandler):
 	def on_finish(self):
 		if not self._rw_update_clients:
 			return
-			
-		# These caches don't change between elections, and are safe to use at all times
-		cache.refresh_local_station(self.sid, "album_diff_json")
-		cache.refresh_local_station(self.sid, "sched_next")
-		cache.refresh_local_station(self.sid, "sched_history")
-		cache.refresh_local_station(self.sid, "sched_current")
-		cache.refresh_local_station(self.sid, "listeners_current_json")
-		cache.refresh_local_station(self.sid, "listeners_internal")
-		cache.refresh_local("calendar")
-		
-		# The caches below should only be used on new-song refreshes
-		cache.refresh_local_station(self.sid, "song_ratings")
-		cache.refresh_local_station(self.sid, "request_all")
+		cache.update_local_cache_for_sid(self.sid)
 		
 		for session in sessions[self.sid]:
 			session.update(True)
@@ -124,24 +112,23 @@ class Sync(RequestHandler):
 		self.append("user", self.user.get_public_dict())
 		
 		if 'playlist' in self.request.arguments:
-			self.append(constants.JSONName.all_albums, playlist.fetch_all_albums(self.user))
+			self.append("all_albums", playlist.fetch_all_albums(self.user))
 		elif 'artist_list' in self.request.arguments:
-			self.append(constants.JSONName.artist_list, playlist.fetch_all_artists(self.sid))
+			self.append("artist_list", playlist.fetch_all_artists(self.sid))
 		elif 'init' not in self.request.arguments:
-			self.append(constants.JSONName.album_diff, cache.get_local_station(self.sid, 'album_diff'))
+			self.append("album_diff", cache.get_local_station(self.sid, 'album_diff'))
 		
 		if use_local_cache:
-			self.append(globals.JSONName.requests_all, cache.get_local_station(self.sid, "request_all"))
+			self.append("requests_all", cache.get_local_station(self.sid, "request_all"))
 		else:
-			self.append(globals.JSONName.requests_all, cache.get_station(self.sid, "request_all"))
-		self.append(globals.JSONName.requests_user, self.user.get_requests())
-		self.append(globals.JSONName.calendar, cache.local["calendar"])
-		if 'listeners_current' in self.request.arguments:
-			self.append("listeners_current", cache.get_local_station(self.sid, "listeners_current"))
+			self.append("requests_all", cache.get_station(self.sid, "request_all"))
+		self.append("requests_user", self.user.get_requests())
+		self.append("calendar", cache.local["calendar"])
+		self.append("listeners_current", cache.get_local_station(self.sid, "listeners_current"))
 		
-		self.append(globals.JSONName.current, self.user.make_event_jsonable(cache.get_local_station(self.sid, "sched_current"), use_local_cache))
-		self.append(globals.JSONName.next, self.user.make_events_jsonable(cache.get_local_station(self.sid, "sched_next"), use_local_cache))
-		self.append(globals.JSONName.history, self.user.make_event_jsonable(cache.get_local_station(self.sid, "sched_history"), use_local_cache))
+		self.append("sched_current", self.user.make_event_jsonable(cache.get_local_station(self.sid, "sched_current"), use_local_cache))
+		self.append("sched_next", self.user.make_events_jsonable(cache.get_local_station(self.sid, "sched_next"), use_local_cache))
+		self.append("sched_history", self.user.make_event_jsonable(cache.get_local_station(self.sid, "sched_history"), use_local_cache))
 		self.finish()
 	
 	def update_user(self):

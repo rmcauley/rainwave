@@ -4,7 +4,6 @@ import time
 
 from libs import db
 from libs import config
-from libs import constants
 from libs import cache
 from rainwave import playlist
 from rainwave import request
@@ -139,6 +138,13 @@ class Event(object):
 
 def add_to_election_queue(sid, song):
 	db.c.update("INSERT INTO r4_election_queue (sid, song_id) VALUES (%s, %s)", (sid, song.id))
+	
+class ElecSongTypes(object):
+	conflict = 0
+	warn = 1
+	normal = 2
+	queue = 3
+	request = 4
 		
 # Normal election
 class Election(Event):
@@ -162,7 +168,7 @@ class Election(Event):
 			song.data['entry_id'] = song_row['entry_id']
 			song.data['entry_type'] = song_row['entry_type']
 			song.data['entry_position'] = song_row['entry_position']
-			if song.data['entry_type'] != constants.ElecSongTypes.normal:
+			if song.data['entry_type'] != ElecSongTypes.normal:
 				song.data['elec_request_user_id'] = 0
 				song.data['elec_request_username'] = None
 			elec.songs.append(song)
@@ -213,7 +219,7 @@ class Election(Event):
 		for i in range(len(self.songs), self._num_songs):
 			song = playlist.get_random_song(self.sid, target_song_length)
 			song.data['entry_votes'] = 0
-			song.data['entry_type'] = constants.ElecSongTypes.normal
+			song.data['entry_type'] = ElecSongTypes.normal
 			song.data['elec_request_user_id'] = 0
 			song.data['elec_request_username'] = None
 			self._check_song_for_conflict(song)
@@ -228,7 +234,7 @@ class Election(Event):
 					"ORDER BY line_wait_start LIMIT 1",
 					(self.sid, self.sid, self.sid, album.id))
 				if conflicting_user:
-					song.data['entry_type'] = constants.ElecSongTypes.conflict
+					song.data['entry_type'] = ElecSongTypes.conflict
 					song.data['request_username'] = conflicting_user
 					return True
 		requesting_user = db.c.fetch_var("SELECT username "
@@ -237,7 +243,7 @@ class Election(Event):
 			"ORDER BY line_wait_start LIMIT 1",
 			(self.sid, self.sid, song.id))
 		if requesting_user:
-			song.data['entry_type'] = constants.ElecSongTypes.request
+			song.data['entry_type'] = ElecSongTypes.request
 			song.data['request_username'] = requesting_user
 			return True
 		return False
@@ -249,7 +255,7 @@ class Election(Event):
 		song.data['entry_id'] = entry_id
 		song.data['entry_position'] = len(self.songs)
 		if not 'entry_type' in song.data:
-			song.data['entry_type'] = constants.ElecSongTypes.normal
+			song.data['entry_type'] = ElecSongTypes.normal
 		db.c.update("INSERT INTO r4_election_entries (entry_id, song_id, elec_id, entry_position, entry_type) VALUES (%s, %s, %s, %s, %s)", (entry_id, song.id, self.id, len(self.songs), song.data['entry_type']))
 		song.start_block(self.sid, "in_election", config.get_station(self.sid, "elec_block_length"))
 		self.songs.append(song)
@@ -263,7 +269,7 @@ class Election(Event):
 					if song_result['song_id'] == song.id:
 						song.data['entry_votes'] == song_result['entry_votes']
 					# Auto-votes for somebody's request
-					if song.data['entry_type'] == constants.ElecSongTypes.request:
+					if song.data['entry_type'] == ElecSongTypes.request:
 						if db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (song.data['elec_request_user_id'], self.id)) == 0:
 							song.data['entry_votes'] += 1
 			random.shuffle(self.songs)
@@ -329,7 +335,7 @@ class Election(Event):
 			return None
 		song.data['elec_request_user_id'] = request['user_id']
 		song.data['elec_request_username'] = request['username']
-		song.data['entry_type'] = constants.ElecSongTypes.request
+		song.data['entry_type'] = ElecSongTypes.request
 		return song		
 		
 	def length(self):

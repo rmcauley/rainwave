@@ -1,6 +1,6 @@
 from rainwave.user import User
 from api import fieldtypes
-from libs import constants
+from libs import config
 import api.returns
 
 import tornado.web
@@ -92,7 +92,7 @@ class RequestHandler(tornado.web.RequestHandler):
 			self.append("error", api.returns.ErrorReturn(-1000, "Missing station ID argument."))
 
 		# Now we strictly enforce valid station IDs.
-		if not self.sid in constants.station_ids or self.sid == 0:
+		if not self.sid in config.station_ids or self.sid == 0:
 			self.append("error", api.returns.ErrorReturn(-1000, "Invalid station ID."))
 			request_ok = False
 				

@@ -5,7 +5,6 @@ import re
 
 from libs import config
 from libs import log
-from libs import constants
 
 c = None
 connection = None
@@ -78,8 +77,8 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		
 class SQLiteCursor(object):
 	def __init__(self, filename):
-		self.con = sqlite3.connect(filename, 5, sqlite3.PARSE_DECLTYPES)
-		self.con.isolation_level = None
+		self.con = sqlite3.connect(filename, 0, sqlite3.PARSE_DECLTYPES)
+		# self.con.isolation_level = None
 		self.con.row_factory = self._dict_factory
 		self.cur = self.con.cursor()
 		self.rowcount = 0
@@ -426,10 +425,10 @@ def create_tables():
 			entry_id				SERIAL		PRIMARY KEY, \
 			song_id					INTEGER		NOT NULL, \
 			elec_id					INTEGER		NOT NULL, \
-			entry_type				SMALLINT	DEFAULT %s, \
+			entry_type				SMALLINT	DEFAULT 2, \
 			entry_position				SMALLINT	, \
 			entry_votes				SMALLINT	DEFAULT 0 \
-		)" % constants.ElecSongTypes.normal)
+		)")
 	# c.create_idx("r4_election_entries", "song_id")	# handled by create_delete_fk
 	# c.create_idx("r4_election_entries", "elec_id")
 	c.create_delete_fk("r4_election_entries", "r4_songs", "song_id")
