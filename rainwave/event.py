@@ -333,8 +333,6 @@ class Election(Event):
 		song = request.get_next(self.sid)
 		if not song:
 			return None
-		song.data['elec_request_user_id'] = request['user_id']
-		song.data['elec_request_username'] = request['username']
 		song.data['entry_type'] = ElecSongTypes.request
 		return song		
 		

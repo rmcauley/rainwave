@@ -98,13 +98,14 @@ def advance_station(sid):
 
 def post_process(sid):
 	_create_elections(sid)
-	_trim(sid)
 	_update_memcache(sid)
-	
-	# TODO: Listener count statistics should go here
 	
 	if not config.test_mode:
 		sync_to_front.sync_frontend_all(sid)
+		
+	# TODO: Listener count statistics should go here
+	_trim(sid)
+	playlist.prepare_cooldown_algorithm(sid)
 	
 def _create_elections(sid):
 	# Step 1: See if any new events are in the schedule that apply to this station, that haven't been used, and aren't in our next list

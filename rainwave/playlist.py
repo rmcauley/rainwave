@@ -6,6 +6,8 @@ from mutagen.mp3 import MP3
 
 from libs import db
 
+cooldown_config = { }
+
 class NoAvailableSongsException(Exception):
 	pass
 
@@ -22,13 +24,28 @@ def get_average_song_length(sid = None):
 	"""
 	return db.c.fetch_var("SELECT AVG(song_length) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE song_exists = TRUE AND r4_song_sid.sid = %s AND song_cool = FALSE")
 	
-def prepare_cooldown_algorithm():
+def prepare_cooldown_algorithm(sid):
 	"""
 	Prepares pre-calculated variables that relate to calculating cooldown.
 	Should pull all variables fresh from the DB, for algorithm
 	refer to jfinalfunk.
 	"""
-	# TODO: Cooldown needs to be implemented
+	global cooldown_config
+	
+	if not cooldown_config[sid]:
+		cooldown_config[sid] = { "time": 0 }
+	if cooldown_config[sid]['time'] > (time.time() - 3600):
+		return
+	
+	# Variable names from here on down are from jf's proposal at: http://rainwave.cc/forums/viewtopic.php?f=13&t=1267
+	sum_aasl = db.c.fetch_var("SELECT SUM(aasl) FROM (SELECT AVG(song_length) AS aasl FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.verified = TRUE) AS jfiscrazy", (sid,))
+	base_album_cool = config.get_station(sid, "cooldown_percentage") * sumAASL
+	avg_album_rating = db.c.fetch_var("SELECT AVG(album_rating) FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.sid = %s AND r4_album_exists = TRUE", (sid,)) 
+	
+	cooldown_config[sid]['sum_aasl'] = sum_aasl
+	cooldown_config[sid]['base_album_cool'] = base_album_cool
+	cooldown_config[sid]['avg_album_rating'] = avg_album_rating
+	cooldown_config[sid]['time'] = time.time()
 	
 def get_random_song_timed(sid, target_seconds, target_delta = 30):
 	"""
@@ -356,15 +373,18 @@ class Song(object):
 		for metadata in self.albums:
 			metadata.reconcile_sids()
 		
-	def start_cooldown(self):
+	def start_cooldown(self, sid):
 		"""
 		Calculates cooldown based on jfinalfunk's crazy algorithms.
 		Cooldown may be overriden by song_cool_* rules found in database.
 		"""
+		# TODO: This cooldown method
+		
 		for metadata in self.groups:
-			metadata.start_cooldown()
+			metadata.start_cooldown(sid)
+		# Albums always have to go last since they store cached cooldown values
 		for metadata in self.albums:
-			metadata.start_cooldown()
+			metadata.start_cooldown(sid)
 			
 	def start_block(self, sid, blocked_by, block_length):
 		db.c.update("UPDATE r4_song_sid SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s WHERE song_id = %s AND sid = %s AND song_elec_blocked_num < %s", (blocked_by, block_length, self.id, sid, block_length))
@@ -566,12 +586,11 @@ class AssociatedMetadata(object):
 		elif self.elec_block:
 			self._start_election_block_db(self.elec_block)
 		
-	def start_cooldown(self, cool_time = False):
-		# TODO: The actual cooldown times. :/
+	def start_cooldown(self, sid, cool_time = False):
 		if cool_time:
-			self._start_cooldown_db(cool_time)
+			self._start_cooldown_db(sid, cool_time)
 		elif self.cool_time:
-			self._start_cooldown_db(self.cool_time)
+			self._start_cooldown_db(sid, self.cool_time)
 
 	def associate_song_id(self, song_id, is_tag = None):
 		if is_tag == None:
@@ -677,6 +696,10 @@ class Album(AssociatedMetadata):
 				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (self.id, sid))
 			else:
 				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (self.id, sid))
+				
+	def start_cooldown(self, sid, cool_time = False):
+		# TODO: Album cooldown
+		pass
 					
 class Artist(AssociatedMetadata):
 	select_by_name_query = "SELECT artist_id AS id, artist_name AS name FROM r4_artists WHERE artist_name = %s"
@@ -692,6 +715,10 @@ class Artist(AssociatedMetadata):
 	
 	def _update_db(self):
 		return db.c.update("UPDATE r4_artists SET artist_name = %s WHERE artist_id = %s", (self.name, self.id))
+		
+	def _start_cooldown_db(self, sid, cool_time):
+		# Artists don't have cooldowns on Rainwave.
+		pass
 	
 class SongGroup(AssociatedMetadata):
 	select_by_name_query = "SELECT group_id AS id, group_name AS name FROM r4_groups WHERE group_name = %s"
@@ -707,3 +734,13 @@ class SongGroup(AssociatedMetadata):
 	
 	def _update_db(self):
 		return db.c.update("UPDATE r4_groups SET group_name = %s WHERE group_id = %s", (self.name, self.id))
+		
+	def _start_cooldown_db(self, sid, cool_time):
+		cool_end = cool_time + time.time()
+		song_ids = db.c.fetch_array(
+			"SELECT song_id "
+			"FROM r4_song_group JOIN r4_song_sid USING (song_id) "
+			"WHERE r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.cool_end < %s",
+			(self.id, sid, time.time() - cool_time()))
+		for song_id in song_ids:
+			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE AND song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_end, song_id, sid))

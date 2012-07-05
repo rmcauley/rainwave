@@ -314,7 +314,7 @@ def create_tables():
 			album_played_last			INTEGER		DEFAULT 0, \
 			album_played_times			INTEGER		DEFAULT 0, \
 			album_request_count			INTEGER		DEFAULT 0, \
-			album_cool_lowest			INTEGER		DEFAULT 0, \
+			album_cool				INTEGER		DEFAULT 0, \
 			album_cool_multiply			REAL		DEFAULT 1, \
 			album_cool_override			INTEGER		, \
 			album_updated				INTEGER		DEFAULT 0, \

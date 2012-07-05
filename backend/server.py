@@ -34,6 +34,5 @@ def start():
 	server.listen(int(config.get("backend_port")), address='127.0.0.1')
 	
 	schedule.load()
-	# TODO: Load caches?  Is it necessary on the backend?
 	
 	tornado.ioloop.IOLoop.instance().start()
