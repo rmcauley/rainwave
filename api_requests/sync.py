@@ -37,7 +37,6 @@ class SyncUpdateAll(tornado.web.RequestHandler):
 		cache.refresh_local_station(self.sid, "listeners_current_json")
 		cache.refresh_local_station(self.sid, "listeners_internal")
 		cache.refresh_local("calendar")
-		cache.refresh_local("news")
 		
 		# The caches below should only be used on new-song refreshes
 		cache.refresh_local_station(self.sid, "song_ratings")
@@ -143,7 +142,6 @@ class Sync(RequestHandler):
 		self.append(globals.JSONName.current, self.user.make_event_jsonable(cache.get_local_station(self.sid, "sched_current"), use_local_cache))
 		self.append(globals.JSONName.next, self.user.make_events_jsonable(cache.get_local_station(self.sid, "sched_next"), use_local_cache))
 		self.append(globals.JSONName.history, self.user.make_event_jsonable(cache.get_local_station(self.sid, "sched_history"), use_local_cache))
-		self.append("news", self.user.make_news_jsonable())		
 		self.finish()
 	
 	def update_user(self):

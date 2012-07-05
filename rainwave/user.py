@@ -27,7 +27,6 @@ class User(object):
 		self.data['radio_request_expires_at'] = 0
 		self.data['user_avatar'] = "images/blank.png"
 		self.data['user_new_privmsg'] = 0
-		self.data['radio_last_news'] = 0
 		self.data['radio_listen_key'] = ''
 		self.data['user_id'] = 1
 		self.data['username'] = "Anonymous"
@@ -67,7 +66,7 @@ class User(object):
 		self.authorized = True
 		user_data = cache.get_user(self, "db_data")
 		if not user_data:
-			user_data = db.c.fetch_row("SELECT user_id, username, user_new_privmsg, user_avatar, user_avatar_type AS _user_avatar_type, radio_lastnews, radio_listen_key, group_id AS _group_id "
+			user_data = db.c.fetch_row("SELECT user_id, username, user_new_privmsg, user_avatar, user_avatar_type AS _user_avatar_type, radio_listen_key, group_id AS _group_id "
 					"FROM phpbb_users WHERE user_id = %s",
 					(self.id,))
 			cache.set_user(self, "db_data", user_data)

@@ -592,6 +592,14 @@ class AssociatedMetadata(object):
 		self.data['id'] = self.id
 		return self.data
 		
+updated_albums = {}
+
+def clear_updated_albums(sid):
+	updated_albums[sid] = []
+		
+def get_updated_albums(sid):
+	return updated_albums[sid]
+		
 class Album(AssociatedMetadata):
 	select_by_name_query = "SELECT r4_albums.* FROM r4_albums WHERE album_name = %s"
 	select_by_id_query = "SELECT r4_albums.* FROM r4_albums WHERE album_id = %s"
@@ -609,11 +617,21 @@ class Album(AssociatedMetadata):
 		return instances
 
 	def _insert_into_db(self):
+		global updated_albums
+	
 		self.id = db.c.get_next_id("r4_albums", "album_id")
-		return db.c.update("INSERT INTO r4_albums (album_id, album_name) VALUES (%s, %s)", (self.id, self.data['name']))
+		success = db.c.update("INSERT INTO r4_albums (album_id, album_name) VALUES (%s, %s)", (self.id, self.data['name']))
+		if success:
+			updated_albums[sid].append(self)
+		return success
 	
 	def _update_db(self):
-		return db.c.update("UPDATE r4_albums SET album_name = %s, album_rating = %s WHERE album_id = %s", (self.data['name'], self.data['rating'], self.id))
+		global updated_albums
+		
+		success = db.c.update("UPDATE r4_albums SET album_name = %s, album_rating = %s WHERE album_id = %s", (self.data['name'], self.data['rating'], self.id))
+		if success:
+			updated_albums[sid].append(self)
+		return success
 		
 	def _assign_from_dict(self, d):
 		self.id = d['album_id']

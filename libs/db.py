@@ -606,7 +606,6 @@ def _create_test_tables():
 			radio_losingvotes			INT		DEFAULT 0, \
 			radio_winningrequests			INT		DEFAULT 0, \
 			radio_losingrequests			INT		DEFAULT 0, \
-			radio_lastnews				INT		DEFAULT 0, \
 			radio_listen_key			TEXT		DEFAULT 'TESTKEY', \
 			group_id				INT		DEFAULT 1, \
 			username				TEXT 		DEFAULT 'Test', \

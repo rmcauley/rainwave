@@ -7,8 +7,6 @@
         "listener_voted_entry": 0,
         "radio_admin": 1,
         "radio_dj": 0,
-        "radio_last_news": 0,
-        "radio_lastnews": 0,
         "radio_listen_key": "TESTKEY",
         "radio_perks": true,
         "radio_request_expires_at": null,
