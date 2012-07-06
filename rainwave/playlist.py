@@ -645,7 +645,7 @@ class Album(AssociatedMetadata):
 	@classmethod
 	def load_list_from_song_id_sid(klass, song_id, sid):
 		instances = []
-		for row in db.c.fetch_all("SELECT r4_albums.*, r4_song_album.album_is_tag, r4_album_sid.album_cool_multiply, r4_album_sid.album_cool_override FROM r4_song_album JOIN r4_albums USING (album_id) WHERE song_id = %s  AND r4_song_album.sid = %s ORDER BY r4_albums.album_name", (song_id, sid)):
+		for row in db.c.fetch_all("SELECT r4_albums.*, r4_song_album.album_is_tag, r4_album_sid.album_cool_multiply, r4_album_sid.album_cool_override FROM r4_song_album JOIN r4_albums USING (album_id) JOIN r4_album_sid USING (album_id) WHERE song_id = %s  AND r4_song_album.sid = %s ORDER BY r4_albums.album_name", (song_id, sid)):
 			instance = klass()
 			instance._assign_from_dict(row)
 			instances.append(instance)
