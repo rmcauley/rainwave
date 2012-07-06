@@ -645,7 +645,7 @@ class Album(AssociatedMetadata):
 	@classmethod
 	def load_list_from_song_id_sid(klass, song_id, sid):
 		instances = []
-		for row in db.c.fetch_all("SELECT r4_albums.*, r4_song_album.album_is_tag FROM r4_song_album JOIN r4_albums USING (album_id) WHERE song_id = %s  AND r4_song_album.sid = %s ORDER BY r4_albums.album_name", (song_id, sid)):
+		for row in db.c.fetch_all("SELECT r4_albums.*, r4_song_album.album_is_tag, r4_album_sid.album_cool_multiply, r4_album_sid.album_cool_override FROM r4_song_album JOIN r4_albums USING (album_id) WHERE song_id = %s  AND r4_song_album.sid = %s ORDER BY r4_albums.album_name", (song_id, sid)):
 			instance = klass()
 			instance._assign_from_dict(row)
 			instances.append(instance)
@@ -672,6 +672,14 @@ class Album(AssociatedMetadata):
 		self.data['added_on'] = d['album_added_on']
 		if d.has_key('album_is_tag'):
 			self.is_tag = d['album_is_tag']
+		if d.has_key('album_cool_multiply'):
+			self.album_cool_multiply = d['album_cool_multiply']
+		else:
+			self.album_cool_multiply = 1
+		if d.has_key('album_cool_override'):
+			self.album_cool_override = d['album_cool_override']
+		else:
+			self.album_cool_multiply = None
 	
 	def associate_song_id(self, song_id, sids, is_tag = None):
 		if is_tag == None:
@@ -706,22 +714,32 @@ class Album(AssociatedMetadata):
 				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (self.id, sid))
 				
 	def start_cooldown(self, sid, cool_time = False):
-		# TODO: Size and age adjustments + manual overrides & multipliers
 		global cooldown_config
+
 		if cool_time:
-			self._start_cooldown_db(sid, cool_time)
+			pass
+		elif self.album_cool_override:
+			self._start_cooldown_db(sid, self.album_cool_override)
 		else:
 			auto_cool = cooldown_config[sid]['min_album_cool'] + ((self.data['rating'] - 2.5) * (cooldown_config[sid]['max_album_cool'] - cooldown_config[sid]['min_album_cool']))
-			
-	cooldown_config[sid]['sum_aasl'] = sum_aasl
-	cooldown_config[sid]['avg_album_rating'] = avg_album_rating
-	cooldown_config[sid]['multiplier_adjustment'] = multiplier_adjustment
-	cooldown_config[sid]['base_album_cool'] = base_album_cool
-	cooldown_config[sid]['base_rating'] = base_rating
-	cooldown_config[sid]['min_album_cool'] = min_album_cool
-	cooldown_config[sid]['max_album_cool'] = max_album_cool
-	cooldown_config[sid]['time'] = time.time()
-		pass
+			album_num_songs = db.c.fetch_var("SELECT COUNT(r4_album_song.song_id) FROM r4_album_song JOIN r4_song_sid USING (song_id) WHERE r4_album_song.album_id = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.sid = %s", (self.id, sid))
+			cool_size_multiplier = config.get_station("cooldown_size_min_multiplier") + (config.get_station("cooldown_size_max_multiplier") - config.get_station("cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station("cooldown_size_slope") * (album_num_songs - config.get_station("cooldown_size_slope_start")))) / 2);
+			age_weeks = (time.time() - self.data['added_on']) / 604800.0
+			cool_age_multiplier = 1.0
+			if age_weeks < config.get_station("cooldown_album_age_threshold"):
+				s2_end = config.get_station("cooldown_album_age_threshold")
+				s2_start = config.get_station("cooldown_album_age_stage2_start")
+				s2_min_multiplier = config.get_station("cooldown_album_age_stage2_min_multiplier")
+				s1_min_multiplier = config.get_station("cooldown_album_age_stage1_min_multiplier")
+				# Age Cooldown Stage 1
+				if age_weeks <= s2_start:
+					cool_age_multiplier = (age_weeks / s2_start) * (s2_min_multiplier - s1_min_multiplier) + s1_min_multiplier;
+				# Age Cooldown Stage 2
+				else:
+					cool_age_multiplier = s2_min_multiplier + ((1.0 - s2_min_multiplier) * ((0.32436 - (s2_end / 288.0) + (math.pow(s2_end, 2.0) / 38170.0)) * math.log(2.0 * age_weeks + 1.0)))
+			cool_time = auto_cool * cool_size_multiplier * cool_age_multiplier * self.album_cool_multiply
+		return self._start_cooldown_db(sid, cool_time)
+		
 		
 	def _start_cooldown_db(self, sid, cool_time):
 		cool_end = cool_time + time.time()
