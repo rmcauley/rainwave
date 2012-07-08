@@ -15,6 +15,8 @@ connection = None
 # and offers zero data consistency - important values (sequences, etc)
 # are reset between startups.
 
+# TODO: Solve the "SQLITE_CANNOT_DO_JOINS_ON_UPDATES" problem
+
 class PostgresCursor(psycopg2.extras.RealDictCursor):
 	def fetch_var(self, query, params = None):
 		self.execute(query, params)
@@ -261,7 +263,7 @@ def create_tables():
 			song_id					INTEGER		NOT NULL, \
 			sid					SMALLINT	NOT NULL, \
 			song_cool				BOOLEAN		DEFAULT FALSE, \
-			song_cool_end				INTEGER		, \
+			song_cool_end				INTEGER		DEFAULT 0, \
 			song_elec_appearances			INTEGER		DEFAULT 0, \
 			song_elec_last				INTEGER		DEFAULT 0, \
 			song_elec_blocked			BOOLEAN 	DEFAULT FALSE, \
@@ -317,6 +319,7 @@ def create_tables():
 			album_cool				INTEGER		DEFAULT 0, \
 			album_cool_multiply			REAL		DEFAULT 1, \
 			album_cool_override			INTEGER		, \
+			album_cool_lowest			INTEGER		DEFAULT 0, \
 			album_updated				INTEGER		DEFAULT 0, \
 			album_elec_last				INTEGER		DEFAULT 0, \
 			album_elec_appearances			INTEGER		DEFAULT 0, \

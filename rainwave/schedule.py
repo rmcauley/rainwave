@@ -80,7 +80,7 @@ def get_current_file(sid):
 
 def advance_station(sid):
 	playlist.prepare_cooldown_algorithm(sid)
-	playlist.clear_updated_albums()
+	playlist.clear_updated_albums(sid)
 
 	# TODO: Make sure finish handles cooldowns and rating & statistic updates
 	# Old places to look: [PlaylistControl.cpp:741] and [PlaylistControl.cpp:544]

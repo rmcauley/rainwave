@@ -18,3 +18,9 @@ To get started on helping with this project:
 	- Clone it
 	- python runtests.py
 	- Fix failing scenarios
+
+You may notice throughout the program that many UPDATE statements are
+broken out into loops, rather than letting the database handle it
+with an array.  There's a reason for this, and until there's a better
+way of handling these scenarios, they are greppable by searching for
+SQLITE_CANNOT_DO_JOINS_ON_UPDATES.

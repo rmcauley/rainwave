@@ -11,6 +11,7 @@ import libs.config
 import libs.db
 import api.server
 import libs.log
+import rainwave.playlist
 
 from api_requests import *
 
@@ -52,6 +53,10 @@ libs.db.open()
 libs.db.create_tables()
 libs.cache.open()
 libs.log.init("%s/rw_backend.log" % libs.config.get("log_dir"), libs.config.get("log_level"))
+
+# Prevents KeyError from occurring in playlist
+for sid in range(1, 10):
+	rainwave.playlist.clear_updated_albums(sid)
 
 # I found Nose impossible to configure programmatically so I'm resorting
 # to faking argv to pass in.  Terrible.  Absolutely terrible.
