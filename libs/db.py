@@ -9,6 +9,8 @@ from libs import log
 c = None
 connection = None
 
+# TODO: Deal with PostgreSQL deadlocks once and for all
+
 # NOTE TO ALL:
 #
 # SQLite is UNUSABLE for production.  It is ONLY meant for testing
@@ -211,6 +213,7 @@ def open():
 			connstr += "password=%s " % password
 		connection = psycopg2.connect(connstr)
 		connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+		connection.autocommit = True
 		c = self.con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 	elif type == "sqlite":
 		log.debug("dbopen", "Opening SQLite DB %s" % name)

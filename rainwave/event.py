@@ -97,8 +97,8 @@ class Event(object):
 
 	def __init__(self):
 		self.id = None
-		self.is_election = False
 		self.start = None
+		self.produces_elections = False
 	
 	def _update_from_dict(self, dict):
 		self.start = dict['sched_start']
@@ -135,6 +135,18 @@ class Event(object):
 			raise EventAlreadyUsed
 		self.in_progress = True
 		db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (time.time(), self.id))
+		
+class ElectionScheduler(Event):
+	def __init__(self):
+		super(Event, self).__init__()
+		self.produces_elections = True
+	
+	def create_election(self, sid):
+		return PVPElection.create(sid)
+		
+class PVPElectionScheduler(ElectionScheduler):
+	def create_election(self, sid):
+		return PVPElection.create(sid)
 
 def add_to_election_queue(sid, song):
 	db.c.update("INSERT INTO r4_election_queue (sid, song_id) VALUES (%s, %s)", (sid, song.id))

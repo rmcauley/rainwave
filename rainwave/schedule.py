@@ -195,16 +195,23 @@ def _create_elections(sid):
 	
 	# Step 5: If we're at less than 2 elections available, create them and append them
 	# No timing is required here, since we're simply outright appending to the end
+	# (any elections appearing before a scheduled item would be handled by the block above)
 	for i in range(num_elections, config.get("num_planned_elections")):
-		next_elec = _create_election(sid)
+		next_elec = _create_election(sid, running_time)
 		next_elec.start = running_time
 		running_time += next_elec.length()
 		next[sid].append(next_elec)
 	
 def _create_election(sid, start_time = None, target_length = None)
-	# TODO: Check for scheduled events to figure out different election block types
-	# TODO: Time elections here
-	return playlist.Election.create()
+	# Check to see if there are any events during this time
+	elec_scheduler = get_event_at_time(start_time)
+	# If there are, and it makes elections (e.g. PVP Hours), get it from there
+	if elec_scheduler and elec_scheduler.produces_elections:
+		elec_scheduler.create_election(sid)
+	else:
+		elec = Event.Election.create(sid)
+	elec.fill(target_length)
+	return elec
 
 def _trim(sid):
 	# Deletes any events in the schedule and elections tables that are old, according to the config
