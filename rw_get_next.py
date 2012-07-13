@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 # TODO: This needs to be tested
+# TODO: If the connection fails/times out, set a memcache variable to signal the station as offline
 
 import httplib
 import urllib

@@ -55,6 +55,27 @@ def prepare_cooldown_algorithm(sid):
 	cooldown_config[sid]['max_album_cool'] = max_album_cool
 	cooldown_config[sid]['time'] = time.time()
 	
+	average_song_length = db.c.fetch_var("SELECT AVG(song_length) FROM r4_song_sid WHERE song_exists = TRUE AND sid = %s", (sid,))
+	number_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE song_exists = TRUE AND sid = %s", (sid,))
+	cooldown_config[sid]['max_song_cool'] = average_song_length * (number_songs * config.get("cooldown_song_max_multiplier"))
+	cooldown_config[sid]['min_song_cool'] = cooldown_config[sid]['song_max_cool'] * config.get("cooldown_song_min_multiplier")
+	
+def get_age_cooldown_multiplier(added_on):
+	age_weeks = (time.time() - added_on) / 604800.0
+	cool_age_multiplier = 1.0
+	if age_weeks < config.get_station("cooldown_age_threshold"):
+		s2_end = config.get_station("cooldown_age_threshold")
+		s2_start = config.get_station("cooldown_age_stage2_start")
+		s2_min_multiplier = config.get_station("cooldown_age_stage2_min_multiplier")
+		s1_min_multiplier = config.get_station("cooldown_age_stage1_min_multiplier")
+		# Age Cooldown Stage 1
+		if age_weeks <= s2_start:
+			cool_age_multiplier = (age_weeks / s2_start) * (s2_min_multiplier - s1_min_multiplier) + s1_min_multiplier;
+		# Age Cooldown Stage 2
+		else:
+			cool_age_multiplier = s2_min_multiplier + ((1.0 - s2_min_multiplier) * ((0.32436 - (s2_end / 288.0) + (math.pow(s2_end, 2.0) / 38170.0)) * math.log(2.0 * age_weeks + 1.0)))
+	return cool_age_multiplier
+	
 def get_random_song_timed(sid, target_seconds, target_delta = 30):
 	"""
 	Fetch a random song abiding by all election block, request block, and
@@ -188,6 +209,7 @@ class Song(object):
 		s.data['rating'] = d['song_rating']
 		s.data['rating_count'] = d['song_rating_count']
 		s.data['cool_multiply'] = d['song_cool_multiply']
+		s.data['cool_override'] = d['song_cool_override']
 		s.data['origin_sid'] = d['song_origin_sid']
 		s.data['sid'] = None
 		
@@ -381,18 +403,43 @@ class Song(object):
 		for metadata in self.albums:
 			metadata.reconcile_sids()
 		
-	def start_cooldown(self, sid):
-		"""
-		Calculates cooldown based on jfinalfunk's crazy algorithms.
-		Cooldown may be overriden by song_cool_* rules found in database.
-		"""
-		# TODO: This cooldown method
+	def _assign_from_dict(self, d):
+		self.data['added_on'] = d['song_added_on']
+		self.data['rating'] = d['song_rating']
+		self.data['rating_count'] = d['song_rating_count']
+		self.data['cool_multiply'] = d['song_cool_multiply']
+		self.data['cool_override'] = d['song_cool_override']
 		
 		for metadata in self.groups:
 			metadata.start_cooldown(sid)
 		# Albums always have to go last since they store cached cooldown values
 		for metadata in self.albums:
 			metadata.start_cooldown(sid)
+	
+	def start_cooldown(self, sid):
+		"""
+		Calculates cooldown based on jfinalfunk's crazy algorithms.
+		Cooldown may be overriden by song_cool_* rules found in database.
+		"""
+		
+		cool_time = cooldown_config[sid]['max_song_cool']
+		if self.data['cool_override']:
+			cool_time = self.data['cool_override']
+		else:
+			cool_rating = self.data['rating']
+			if not self.data['rating'] or self.data['rating'] == 0:
+				cool_rating = 4
+			# 3.5 is the rating range (2.5 to 5.0) and 2.5 is the "minimum" rating, effectively.
+			auto_cool = ((3.5 - (cool_rating - 2.5)) / 3.5) * cooldown_config[sid]['max_song_cool'] + cooldown_config[sid]['min_song_cool']
+			cool_time = auto_cool * get_age_cooldown_multiplier(self.data['added_on']) * self.data['cool_multiply']
+			
+		cool_time = cool_time + time.time()
+		db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_time, self.id, sid))
+		self.data['cool'] = True
+		self.data['cool_end'] = cool_time
+		
+		for album in self.albums:
+			album.start_cooldown(sid)
 			
 	def start_block(self, sid, blocked_by, block_length):
 		db.c.update("UPDATE r4_song_sid SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s WHERE song_id = %s AND sid = %s AND song_elec_blocked_num < %s", (blocked_by, block_length, self.id, sid, block_length))
@@ -749,22 +796,8 @@ class Album(AssociatedMetadata):
 			auto_cool = cooldown_config[sid]['min_album_cool'] + ((self.data['rating'] - 2.5) * (cooldown_config[sid]['max_album_cool'] - cooldown_config[sid]['min_album_cool']))
 			album_num_songs = db.c.fetch_var("SELECT COUNT(r4_album_song.song_id) FROM r4_album_song JOIN r4_song_sid USING (song_id) WHERE r4_album_song.album_id = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.sid = %s", (self.id, sid))
 			cool_size_multiplier = config.get_station("cooldown_size_min_multiplier") + (config.get_station("cooldown_size_max_multiplier") - config.get_station("cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station("cooldown_size_slope") * (album_num_songs - config.get_station("cooldown_size_slope_start")))) / 2);
-			age_weeks = (time.time() - self.data['added_on']) / 604800.0
-			cool_age_multiplier = 1.0
-			if age_weeks < config.get_station("cooldown_album_age_threshold"):
-				s2_end = config.get_station("cooldown_album_age_threshold")
-				s2_start = config.get_station("cooldown_album_age_stage2_start")
-				s2_min_multiplier = config.get_station("cooldown_album_age_stage2_min_multiplier")
-				s1_min_multiplier = config.get_station("cooldown_album_age_stage1_min_multiplier")
-				# Age Cooldown Stage 1
-				if age_weeks <= s2_start:
-					cool_age_multiplier = (age_weeks / s2_start) * (s2_min_multiplier - s1_min_multiplier) + s1_min_multiplier;
-				# Age Cooldown Stage 2
-				else:
-					cool_age_multiplier = s2_min_multiplier + ((1.0 - s2_min_multiplier) * ((0.32436 - (s2_end / 288.0) + (math.pow(s2_end, 2.0) / 38170.0)) * math.log(2.0 * age_weeks + 1.0)))
-			cool_time = auto_cool * cool_size_multiplier * cool_age_multiplier * self.cool_multiply
-		for sid in self.sids:
-			updated_album_ids[sid][self.id] = True
+			cool_time = auto_cool * cool_size_multiplier * get_cool_age_multiplier(self.data['added_on']) * self.cool_multiply
+		updated_album_ids[sid][self.id] = True
 		return self._start_cooldown_db(sid, cool_time)
 		
 		
