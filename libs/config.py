@@ -1,8 +1,5 @@
 import json
 
-# TODO: Enable reflection/inspection here to find out where config lines are called from
-# for easy documentation purposes
-
 # Options hash - please don't access this externally in case the storage method changes
 _opts = {}
 

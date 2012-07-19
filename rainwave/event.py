@@ -90,6 +90,7 @@ class Event(object):
 		evt.timed = timed
 		evt.url = url
 		evt.in_progress = False
+		evt.dj_user_id = None
 		db.c.update("INSERT INTO r4_schedule "
 					"(sched_id, sched_start, sched_end, sched_type, sched_name, sid, sched_public, sched_timed, sched_url, sched_in_progress) VALUES "
 					"(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
@@ -99,6 +100,7 @@ class Event(object):
 		self.id = None
 		self.start = None
 		self.produces_elections = False
+		self.dj_user_id = None
 	
 	def _update_from_dict(self, dict):
 		self.start = dict['sched_start']
@@ -111,6 +113,7 @@ class Event(object):
 		self.timed = dict['sched_timed']
 		self.url = dict['sched_url']
 		self.in_progress = dict['sched_in_progress']
+		self.dj_user_id = dict['sched_dj_user_id']
 	
 	def get_filename(self):
 		pass
@@ -135,6 +138,9 @@ class Event(object):
 			raise EventAlreadyUsed
 		self.in_progress = True
 		db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (time.time(), self.id))
+		
+	def get_dj_user_id(self):
+		return self.dj_user_id
 		
 class ElectionScheduler(Event):
 	def __init__(self):

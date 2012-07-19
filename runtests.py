@@ -9,9 +9,11 @@ from nose.plugins.base import Plugin
 
 import libs.config
 import libs.db
+import libs.cache
 import api.server
 import libs.log
 import rainwave.playlist
+import rainwave.event
 
 from api_requests import *
 
@@ -53,6 +55,8 @@ libs.db.open()
 libs.db.create_tables()
 libs.cache.open()
 libs.log.init("%s/rw_backend.log" % libs.config.get("log_dir"), libs.config.get("log_level"))
+
+libs.cache.local["sid1_sched_current"] = rainwave.event.Event()
 
 # Prevents KeyError from occurring in playlist
 for sid in range(1, 10):

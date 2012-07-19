@@ -4,6 +4,7 @@ from backend import sync_to_front
 from rainwave import event
 from rainwave import playlist
 from rainwave import listeners
+from rainwave import request
 from libs import db
 from libs import config
 from libs import cache
@@ -227,3 +228,6 @@ def _update_memcache(sid):
 	cache.prime_rating_cache_for_events([ sched_current[sid] ] + sched_next[sid] + sched_history[sid])	
 	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict())
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid))
+	# request.get_line_list must be called second since it relies on cache from get_expire_times
+	cache.set_station(sid, "request_expire_times_dict", request.get_expire_times_dict(sid))
+	cache.set_station(sid, "request_line", request.get_line_list(sid))

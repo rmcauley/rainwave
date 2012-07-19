@@ -19,8 +19,8 @@ class User(object):
 		self.official_ui = False
 		
 		self.data = {}
-		self.data['radio_admin'] = 0
-		self.data['radio_dj'] = 0
+		self.data['radio_admin'] = False
+		self.data['radio_dj'] = False
 		self.data['radio_tuned_in'] = False
 		self.data['radio_perks'] = False
 		self.data['radio_request_position'] = 0
@@ -84,15 +84,12 @@ class User(object):
 		if self.data['_group_id'] in [5, 4, 8, 12, 15, 14, 17]:
 			self.data['radio_perks'] = True
 		
-		# Universal radio admin (Liquid)
-		if self.data['_group_id'] == 5:
-			self.data['radio_admin'] = self.request_sid
+		# Admin and station manager groups
+		if self.data['_group_id'] in [5, 12, 15, 14, 17]:
+			self.data['radio_admin'] = True
 		# jfinalfunk is a special case since he floats around outside the main admin groups
 		elif self.id == 9575:
-			self.data['radio_admin'] = self.request_sid
-		# Individual station manager groups
-		elif self.data['_group_id'] in [12, 15, 14, 17]:
-			self.data['radio_admin'] = self.request_sid
+			self.data['radio_admin'] = True
 
 	def _auth_anon_user(self, ip_address, api_key, bypass = False):
 		if not bypass:
@@ -133,7 +130,8 @@ class User(object):
 			self.data['radio_tuned_in'] = False
 	
 		if (self.id > 1):
-			#TODO: Check for and grant special permission for being the signed-in DJ
+			if cache.get_local_station(self.request_sid, "sched_current").get_dj_user_id() == self.id:
+				self.data['radio_dj'] = True
 			
 			self.data['radio_request_position'] = self.get_request_line_position(self.data['sid'])
 			self.data['radio_request_expires_at'] = self.get_request_expiry()

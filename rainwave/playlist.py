@@ -448,7 +448,17 @@ class Song(object):
 		"""
 		Calculate an updated rating from the database.
 		"""
-		# TODO: Rating re-calculation
+		dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_user_rating < 3 GROUP BY song_id", (self.id,))
+		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_user_rating >= 3 AND song_user_rating < 3.5 GROUP BY song_id", (self.id,));
+		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_user_rating >= 3.5 AND song_user_rating < 4 GROUP BY song_id", (self.id,));
+		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_user_rating >= 4 GROUP BY song_id", (self.id,));
+		rating_count = dislikes + neutrals + neutralplus + likes
+		if rating_count > config.get("rating_threshold_for_calc"):
+			self.rating = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
+			db.c.update("UPDATE r4_songs SET song_rating = %s AND song_rating_count = %s WHERE song_id = %s", (self.rating, rating_count, self.id))
+		
+		for album in self.albums:
+			album.update_rating()
 		
 	def add_artist(self, name):
 		return self._add_metadata(self.artists, name, Artist)
@@ -812,6 +822,16 @@ class Album(AssociatedMetadata):
 		self.data['cool_lowest'] = db.c.fetch_var("SELECT MIN(song_cool_end) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid = %s", (self.id, sid))
 		db.c.update("UPDATE r4_album_sid SET album_cool_lowest = %s WHERE album_id = %s AND sid = %s", (self.data['cool_lowest'], self.id, sid))
 		return self.data['cool_lowest']
+		
+	def update_rating(self):
+		dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_user_rating < 3 GROUP BY album_id", (self.id,))
+		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_user_rating >= 3 AND album_user_rating < 3.5 GROUP BY album_id", (self.id,));
+		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_user_rating >= 3.5 AND album_user_rating < 4 GROUP BY album_id", (self.id,));
+		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating >= 4 GROUP BY song_id", (self.id,));
+		rating_count = dislikes + neutrals + neutralplus + likes
+		if rating_count > config.get("rating_threshold_for_calc"):
+			self.rating = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
+			db.c.update("UPDATE r4_albums SET album_rating = %s AND album_rating_count = %s WHERE album_id = %s", (self.rating, rating_count, self.id))
 					
 class Artist(AssociatedMetadata):
 	select_by_name_query = "SELECT artist_id AS id, artist_name AS name FROM r4_artists WHERE artist_name = %s"
