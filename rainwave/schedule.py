@@ -87,7 +87,7 @@ def advance_station(sid):
 	# Old places to look: [PlaylistControl.cpp:741] and [PlaylistControl.cpp:544]
 	current[sid].finish()
 	
-	# TODO: Make sure we can "pause" the station here to handle DJ interruptions
+	# TODO LATER: Make sure we can "pause" the station here to handle DJ interruptions
 	# Requires controlling the streamer itself to some degree and will take more
 	# work on the API than the back-end.
 	
@@ -109,6 +109,10 @@ def post_process(sid):
 	_trim(sid)
 	
 def _create_elections(sid):
+	# Step, er, 0: Update the request cache first, so elections have the most recent data to work with
+	# (the entire requests module depends on its caches)
+	request.update_caches(sid)
+
 	# Step 1: See if any new events are in the schedule that apply to this station, that haven't been used, and aren't in our next list
 	max_sched_id = 0
 	max_elec_id = 0
@@ -228,6 +232,3 @@ def _update_memcache(sid):
 	cache.prime_rating_cache_for_events([ sched_current[sid] ] + sched_next[sid] + sched_history[sid])	
 	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict())
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid))
-	# request.get_line_list must be called second since it relies on cache from get_expire_times
-	cache.set_station(sid, "request_expire_times_dict", request.get_expire_times_dict(sid))
-	cache.set_station(sid, "request_line", request.get_line_list(sid))

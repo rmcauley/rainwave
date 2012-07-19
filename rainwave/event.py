@@ -126,6 +126,13 @@ class Event(object):
 		self.in_progress = False
 		db.c.update("UPDATE r4_schedule SET sched_used = TRUE, sched_in_progress = FALSE, sched_end_actual = %s WHERE sched_id = %s", (time.time(), self.id))
 		
+		song = self.get_song()
+		if song:
+			song.update_last_played(self.sid)
+		
+	def get_song(self):
+		return None	
+		
 	def length(self):
 		if self.start_actual:
 			return self.start_actual - self.end
@@ -367,6 +374,9 @@ class Election(Event):
 		self.in_progress = False
 		self.used = True
 		db.c.update("UPDATE r4_elections SET elec_used = TRUE, elec_in_progress = FALSE WHERE elec_id = %s", (self.id,))
+		
+		self.songs[0].add_to_vote_count(self.songs[0].data['entry_votes'], self.sid)
+		self.songs[0].update_last_played(self.sid)
 		
 class PVPElection(Election):
 	def __init__(self):

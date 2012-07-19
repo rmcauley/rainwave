@@ -139,9 +139,12 @@ class User(object):
 			if self.data['radio_tuned_in'] and not self.is_in_request_line() and self.has_requests():
 				self.put_in_request_line(self.data['sid'])
 			
-	def set_event_tuned_in(self, sched_id):
-		#TODO: Ensure that the user is set and saved to be tuned in for the current schedule ID as part of the station refresh
-		cache.set_user(self, "tunedin_%s" % sched_id, True)
+	def set_song_ratable(self, song_id):
+		# TODO LATER: Ensure that the user is set and saved to be tuned in for the current schedule ID as part of the station refresh
+		cache.set_user(self, "song_id_%s_ratable" % song_id, True)
+		
+	def get_song_ratable(self, song_id):
+		return cache.get_user(self, "song_id_%s_ratable" % song_id)
 
 	def get_private_jsonable(self):
 		"""
@@ -196,33 +199,21 @@ class User(object):
 		
 	def is_in_request_line(self):
 		return (db.c.fetch_var("SELECT COUNT(*) FROM r4_request_line WHERE user_id = %s", (self.id,)) > 0)
+		
+	def get_top_request_song_id(self, sid):
+		return db.c.fetch_var("SELECT song_id FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND r4_request_store.sid = %s AND song_exists = TRUE AND song_cool = FALSE AND song_elec_blocked = FALSE ORDER BY reqstor_order, reqstor_id", (self.id, sid))
+	
+	def get_top_request_sid(self):
+		return db.c.fetch_var("SELECT r4_request_store FROM r4_request_store WHERE user_id = %s ORDER BY reqstor_order, reqstor_id", (self.id,))
 			
 	def get_request_line_position(self, sid):
 		if self.id <= 1:
 			return False
-		# TODO: Make the line positions cached for each station centrally
-		# Pull this data straight from the cache
+		if self.id in cache.get_local_station(sid, "request_user_positions"):
+			return cache.get_local_station(sid, "request_user_positions")[self.id]
 						
 	def get_request_expiry(self):
-		# TODO: Use only cache for this
 		if self.id <= 1:
 			return None
-		if self.data['radio_tuned_in']:
-			return None
-		position = db.c.fetch_row("SELECT * FROM r4_request_line WHERE user_id = %s", (self.id,))
-		if not position:
-			return None
-		else:
-			if not position['line_expiry_tune_in'] and not position['line_expiry_election']:
-				return None
-			if position['line_expiry_tune_in'] and not position['line_expiry_election']:
-				return position['line_expiry_tune_in']
-			elif position['line_expiry_election'] and not position['line_expiry_tune_in']:
-				return position['line_expiry_election']
-			elif position['line_expiry_election'] > position['line_expiry_tune_in']:
-				return position['line_expiry_election']
-			else:
-				return position['line_expiry_tune_in']
-
-		
-	#TODO: you left off looking at getSongRating in the original lyre code
+		if self.id in cache.local['request_expire_times']:
+			return cache.local['request_expire_times'][self.id]

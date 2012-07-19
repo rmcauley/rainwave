@@ -14,6 +14,7 @@ import api.server
 import libs.log
 import rainwave.playlist
 import rainwave.event
+import rainwave.request
 
 from api_requests import *
 
@@ -56,6 +57,8 @@ libs.db.create_tables()
 libs.cache.open()
 libs.log.init("%s/rw_backend.log" % libs.config.get("log_dir"), libs.config.get("log_level"))
 
+rainwave.request.update_caches(1)
+libs.cache.update_local_cache_for_sid(1)
 libs.cache.local["sid1_sched_current"] = rainwave.event.Event()
 
 # Prevents KeyError from occurring in playlist

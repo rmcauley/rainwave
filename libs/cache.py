@@ -50,7 +50,7 @@ def refresh_local(key):
 	local[key] = get(key)
 	
 def refresh_local_station(sid, key):
-	local[key] = get_station(sid, key)
+	local["sid%s_%s" % (sid, key)] = get_station(sid, key)
 	
 def push_local_to_memcache(key):
 	set(key, local[key])
@@ -68,15 +68,16 @@ def prime_rating_cache_for_events(events):
 	push_local_to_memcache(key)
 	
 def update_local_cache_for_sid(sid):
-	cache.refresh_local_station(self.sid, "album_diff")
-	cache.refresh_local_station(self.sid, "sched_next")
-	cache.refresh_local_station(self.sid, "sched_history")
-	cache.refresh_local_station(self.sid, "sched_current")
-	cache.refresh_local_station(self.sid, "listeners_current")
-	cache.refresh_local_station(self.sid, "listeners_internal")
-	cache.refresh_local_station(self.sid, "request_line")
-	cache.refrehs_local_station(self.sid, "request_expire_times_dict")
-	cache.refresh_local("calendar")
+	refresh_local_station(sid, "album_diff")
+	refresh_local_station(sid, "sched_next")
+	refresh_local_station(sid, "sched_history")
+	refresh_local_station(sid, "sched_current")
+	refresh_local_station(sid, "listeners_current")
+	refresh_local_station(sid, "listeners_internal")
+	refresh_local_station(sid, "request_line")
+	refresh_local_station(sid, "request_user_positions")
+	refresh_local("request_expire_times")
+	refresh_local("calendar")
 	
 	# The caches below should only be used on new-song refreshes
-	cache.refresh_local_station(self.sid, "song_ratings")
+	refresh_local_station(sid, "song_ratings")

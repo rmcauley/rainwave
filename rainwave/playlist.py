@@ -546,6 +546,14 @@ class Song(object):
 			all_ratings[row['user_id']] = { 'song_rating': row['song_rating'], 'song_fave': row['song_fave'] }
 		return all_ratings
 		
+	def update_last_played(self, sid):
+		for album in self.albums:
+			album.update_last_played(sid)
+		return db.c.update("UPDATE r4_song_sid SET song_played_last = %s WHERE song_id = %s AND sid = %s", (time.time(), self.id, sid))
+		
+	def add_to_vote_count(self, votes, sid):
+		return db.c.update("UPDATE r4_song_sid SET song_vote_total = song_vote_total + %s WHERE song_id = %s AND sid = %s", (votes, self.id, sid))
+		
 # ################################################################### ASSOCIATED DATA TEMPLATE
 
 class MetadataInsertionError(Exception):
@@ -832,6 +840,13 @@ class Album(AssociatedMetadata):
 		if rating_count > config.get("rating_threshold_for_calc"):
 			self.rating = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
 			db.c.update("UPDATE r4_albums SET album_rating = %s AND album_rating_count = %s WHERE album_id = %s", (self.rating, rating_count, self.id))
+			
+	def update_last_played(self, sid):
+		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (time.time(), self.id, sid))
+		
+	def update_vote_total(self, sid):
+		vote_total = db.c.fetch_var("SELECT SUM(song_vote_total) FROM r4_song_sid JOIN r4_song_album USING (song_id) WHERE album_id = %s AND song_exists = TRUE", (self.id,))
+		return db.c.update("UPDATE r4_album_sid SET album_vote_total = %s WHERE album_id = %s AND sid = %s", (vote_total, self.id, sid))
 					
 class Artist(AssociatedMetadata):
 	select_by_name_query = "SELECT artist_id AS id, artist_name AS name FROM r4_artists WHERE artist_name = %s"
