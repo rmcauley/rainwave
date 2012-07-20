@@ -1,9 +1,11 @@
 import unittest
 from libs import db
+from libs import cache
 from rainwave import playlist
 from rainwave import event
 from rainwave.event import Election
 from rainwave import user
+from rainwave import request
 
 class ElectionTest(unittest.TestCase):
 	def setUp(self):
@@ -43,14 +45,16 @@ class ElectionTest(unittest.TestCase):
 		u = user.User(2)
 		u.authorize(1, None, None, True)
 		self.assertEqual(1, u.put_in_request_line(1))
-		# TODO: Use proper request class here instead of DB call
+		# TODO: Use proper request/user methods here instead of DB call
+		db.c.update("UPDATE r4_request_line SET line_top_song_id = %s WHERE user_id = %s", (self.song1.id, u.id))
 		db.c.update("INSERT INTO r4_listeners (sid, user_id, listener_icecast_id) VALUES (1, %s, 1)", (u.id,))
 		db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, 1)", (u.id, self.song1.id))
+		request.update_cache(1)
+		cache.update_local_cache_for_sid(1)
 		self.assertEqual(True, e._check_song_for_conflict(self.song1))
 		self.assertEqual(False, e._check_song_for_conflict(self.song5))
-		# TODO: Fix these asserts
-		#self.assertEqual(event.ElecSongTypes.conflict, self.song5.data['entry_type'])
-		#self.assertEqual(event.ElecSongTypes.request, self.song1.data['entry_type'])
+		self.assertEqual(event.ElecSongTypes.conflict, self.song5.data['entry_type'])
+		self.assertEqual(event.ElecSongTypes.request, self.song1.data['entry_type'])
 		
 	def test_start_finish(self):
 		e = Election.create(1)

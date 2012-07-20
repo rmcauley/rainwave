@@ -4,7 +4,7 @@ from libs import cache
 from rainwave import playlist
 from rainwave.user import User
 
-def update_caches(sid):
+def update_cache(sid):
 	update_expire_times()
 	update_line(sid)
 	

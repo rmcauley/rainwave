@@ -251,6 +251,15 @@ class Election(Event):
 			self.add_song(song)
 			
 	def _check_song_for_conflict(self, song):
+		requesting_user = db.c.fetch_var("SELECT username "
+			"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN r4_request_store USING (user_id) JOIN phpbb_users USING (user_id) "
+			"WHERE r4_listeners.sid = %s AND r4_request_line.sid = %s AND song_id = %s "
+			"ORDER BY line_wait_start LIMIT 1",
+			(self.sid, self.sid, song.id))
+		if requesting_user:
+			song.data['entry_type'] = ElecSongTypes.request
+			song.data['request_username'] = requesting_user
+			return True
 		if song.albums and len(song.albums) > 0:
 			for album in song.albums:
 				conflicting_user = db.c.fetch_var("SELECT username "
@@ -262,15 +271,6 @@ class Election(Event):
 					song.data['entry_type'] = ElecSongTypes.conflict
 					song.data['request_username'] = conflicting_user
 					return True
-		requesting_user = db.c.fetch_var("SELECT username "
-			"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN r4_request_store USING (user_id) JOIN phpbb_users USING (user_id) "
-			"WHERE r4_listeners.sid = %s AND r4_request_line.sid = %s AND song_id = %s "
-			"ORDER BY line_wait_start LIMIT 1",
-			(self.sid, self.sid, song.id))
-		if requesting_user:
-			song.data['entry_type'] = ElecSongTypes.request
-			song.data['request_username'] = requesting_user
-			return True
 		return False
 		
 	def add_song(self, song):

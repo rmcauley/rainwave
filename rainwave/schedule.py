@@ -111,7 +111,7 @@ def post_process(sid):
 def _create_elections(sid):
 	# Step, er, 0: Update the request cache first, so elections have the most recent data to work with
 	# (the entire requests module depends on its caches)
-	request.update_caches(sid)
+	request.update_cache\(sid)
 
 	# Step 1: See if any new events are in the schedule that apply to this station, that haven't been used, and aren't in our next list
 	max_sched_id = 0
