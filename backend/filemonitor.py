@@ -4,6 +4,7 @@ import magic
 import sys
 import pyinotify
 import asyncore
+from PIL import Image
 
 from libs import config
 from libs import log
@@ -61,15 +62,39 @@ def _is_mp3(filename):
 	if filetype and filetype.count("MPEG") and filetype.count("layer III"):
 		return True
 	return False
+
+def _is_image(filename):
+	filetype = _ms.file(filename)
+	if filetype and (filetype.count("PNG") or filetype.count("GIF") or filetype.count("JPEG"))
+		return True
+	return False
 	
 def _scan_file(filename, sids):
-	# TODO: Album art
 	try:
 		if _is_mp3(filename):
-			print "Scanning %s" % filename
+			# print "Scanning %s" % filename
 			playlist.Song.load_from_file(filename, sids)
+		if _is_image(filename):
+			process_album_art(filename)
 	except Exception as xception:
 		_add_scan_error(filename, xception)
+		
+def process_album_art(filename):
+	# TODO: Only update and process thumbnails based on mtime
+	im_original = Image.open(filename)
+	im_120 = im_original.copy().thumbnail((120, 120), Image.ANTIALIAS)
+	im_240 = im_original.copy().thumbnail((240, 240), Image.ANTIALIAS)
+	im_320 = None
+	if im_original.size[0] > 420 or im_original.size[1] > 420:
+		im_320 = im_original.copy().thumbnail((320, 320), Image.ANTIALIAS)
+	else:
+		im_320 = im_original
+	directory = filename[0:filename.rfind("/")]
+	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_album USING (song_id) WHERE song_filename LIKE '%s%'", (directory,))
+	for album_id in album_ids:
+		im_120.save("%s/%s_120.jpg" % (config.get("album_art_directory"), album_id))
+		im_240.save("%s/%s_240.jpg" % (config.get("album_art_directory"), album_id))
+		im_320.save("%s/%s.jpg" % (config.get("album_art_directory"), album_id))
 			
 def _disable_file(filename):
 	try:
