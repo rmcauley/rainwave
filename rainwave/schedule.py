@@ -82,14 +82,12 @@ def get_current_file(sid):
 def advance_station(sid):
 	playlist.prepare_cooldown_algorithm(sid)
 	playlist.clear_updated_albums(sid)
-
-	# TODO: Make sure finish handles cooldowns and rating & statistic updates
-	# Old places to look: [PlaylistControl.cpp:741] and [PlaylistControl.cpp:544]
-	current[sid].finish()
 	
 	# TODO LATER: Make sure we can "pause" the station here to handle DJ interruptions
 	# Requires controlling the streamer itself to some degree and will take more
 	# work on the API than the back-end.
+
+	current[sid].finish()
 	
 	last_song = current[sid].get_song()
 	history.insert(0, last_song)
@@ -105,13 +103,20 @@ def post_process(sid):
 	if not config.test_mode:
 		sync_to_front.sync_frontend_all(sid)
 		
-	# TODO: Listener count statistics should go here
+	_add_listener_count_record(sid)
 	_trim(sid)
+	
+def _add_listener_count_record(sid):
+	lc_guests = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1", (sid,))
+	lc_users = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1", (sid,))
+	lc_guests_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1 AND listener_voted_entry IS NOT NULL", (sid,))
+	lc_users_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1 AND listener_voted_entry IS NOT NULL", (sid,))
+	return db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests, lc_users, lc_guests_active, lc_users_active) VALUES (%s, %s, %s, %s, %s)", (sid, lc_guests, lc_users, lc_guests_active, lc_users_active))
 	
 def _create_elections(sid):
 	# Step, er, 0: Update the request cache first, so elections have the most recent data to work with
 	# (the entire requests module depends on its caches)
-	request.update_cache\(sid)
+	request.update_cache(sid)
 
 	# Step 1: See if any new events are in the schedule that apply to this station, that haven't been used, and aren't in our next list
 	max_sched_id = 0

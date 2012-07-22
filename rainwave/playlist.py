@@ -1,10 +1,12 @@
 import os
 import time
 import random
+import math
 
 from mutagen.mp3 import MP3
 
 from libs import db
+from libs import config
 
 cooldown_config = { }
 
@@ -32,19 +34,34 @@ def prepare_cooldown_algorithm(sid):
 	"""
 	global cooldown_config
 	
-	if not cooldown_config[sid]:
+	if not sid in cooldown_config:
 		cooldown_config[sid] = { "time": 0 }
 	if cooldown_config[sid]['time'] > (time.time() - 3600):
 		return
 	
 	# Variable names from here on down are from jf's proposal at: http://rainwave.cc/forums/viewtopic.php?f=13&t=1267
-	sum_aasl = db.c.fetch_var("SELECT SUM(aasl) FROM (SELECT AVG(song_length) AS aasl FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.verified = TRUE GROUP BY r4_album_sid.album_id) AS jfiscrazy", (sid,))
-	avg_album_rating = db.c.fetch_var("SELECT AVG(album_rating) FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.sid = %s AND r4_album_exists = TRUE", (sid,)) 
-	mutliplier_adjustment = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT album_cool_multiply * AVG(song_length) AS tempvar FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
-	base_album_cool = config.get_station(sid, "cooldown_percentage") * sum_aasl / multiplier_adjustment
-	base_rating = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT album_rating  * AVG(song_length) AS tempvar FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
-	min_album_cool = config.get("cooldown_highest_rating_multiplier") * base_album_cool
+	sum_aasl = db.c.fetch_var("SELECT SUM(aasl) FROM (SELECT AVG(song_length) AS aasl FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS jfiscrazy", (sid,))
+	if not sum_aasl:
+		sum_aasl = 100
+	# print "sumAASL: %s" % sum_aasl
+	avg_album_rating = db.c.fetch_var("SELECT AVG(album_rating) FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.sid = %s AND r4_album_sid.album_exists = TRUE", (sid,)) 
+	if not avg_album_rating:
+		avg_album_rating = 3.5
+	# print "avg_album_rating: %s" % avg_album_rating
+	multiplier_adjustment = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT album_cool_multiply * AVG(song_length) AS tempvar FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
+	if not multiplier_adjustment:
+		multiplier_adjustment = 1
+	# print "multi: %s" % multiplier_adjustment
+	base_album_cool = float(config.get_station(sid, "cooldown_percentage")) * sum_aasl / multiplier_adjustment
+	# print "base_album_cool: %s" % base_album_cool
+	base_rating = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT album_rating * AVG(song_length) AS tempvar FROM r4_albums JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
+	if not base_rating:
+		base_rating = 4
+	# print "base rating: %s" % base_rating
+	min_album_cool = config.get_station(sid, "cooldown_highest_rating_multiplier") * base_album_cool
+	# print "min_album_cool: %s" % min_album_cool
 	max_album_cool = min_album_cool + ((5 - 2.5) * ((base_album_cool - min_album_cool) / (5 - base_rating)))
+	# print "max_album_cool: %s" % max_album_cool
 	
 	cooldown_config[sid]['sum_aasl'] = sum_aasl
 	cooldown_config[sid]['avg_album_rating'] = avg_album_rating
@@ -55,19 +72,25 @@ def prepare_cooldown_algorithm(sid):
 	cooldown_config[sid]['max_album_cool'] = max_album_cool
 	cooldown_config[sid]['time'] = time.time()
 	
-	average_song_length = db.c.fetch_var("SELECT AVG(song_length) FROM r4_song_sid WHERE song_exists = TRUE AND sid = %s", (sid,))
+	average_song_length = db.c.fetch_var("SELECT AVG(song_length) FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE song_exists = TRUE AND sid = %s", (sid,))
+	# print "average_song_length: %s" % average_song_length
+	if not average_song_length:
+		average_song_length = 160
 	number_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE song_exists = TRUE AND sid = %s", (sid,))
-	cooldown_config[sid]['max_song_cool'] = average_song_length * (number_songs * config.get("cooldown_song_max_multiplier"))
-	cooldown_config[sid]['min_song_cool'] = cooldown_config[sid]['song_max_cool'] * config.get("cooldown_song_min_multiplier")
+	if not number_songs:
+		number_songs = 1
+	# print "number_songs: %s" % number_songs
+	cooldown_config[sid]['max_song_cool'] = average_song_length * (number_songs * config.get_station(sid, "cooldown_song_max_multiplier"))
+	cooldown_config[sid]['min_song_cool'] = cooldown_config[sid]['max_song_cool'] * config.get_station(sid, "cooldown_song_min_multiplier")
 	
 def get_age_cooldown_multiplier(added_on):
 	age_weeks = (time.time() - added_on) / 604800.0
 	cool_age_multiplier = 1.0
-	if age_weeks < config.get_station("cooldown_age_threshold"):
-		s2_end = config.get_station("cooldown_age_threshold")
-		s2_start = config.get_station("cooldown_age_stage2_start")
-		s2_min_multiplier = config.get_station("cooldown_age_stage2_min_multiplier")
-		s1_min_multiplier = config.get_station("cooldown_age_stage1_min_multiplier")
+	if age_weeks < config.get("cooldown_age_threshold"):
+		s2_end = config.get("cooldown_age_threshold")
+		s2_start = config.get("cooldown_age_stage2_start")
+		s2_min_multiplier = config.get("cooldown_age_stage2_min_multiplier")
+		s1_min_multiplier = config.get("cooldown_age_stage1_min_multiplier")
 		# Age Cooldown Stage 1
 		if age_weeks <= s2_start:
 			cool_age_multiplier = (age_weeks / s2_start) * (s2_min_multiplier - s1_min_multiplier) + s1_min_multiplier;
@@ -247,6 +270,7 @@ class Song(object):
 		kept_groups = []
 		matched_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
 		if matched_id:
+			# TODO: Skip reload/metadata update if file has same mtime as last scan
 			s = klass.load_from_id(matched_id)
 			for metadata in s.albums:
 				if metadata.is_tag:
@@ -385,6 +409,7 @@ class Song(object):
 				(%s,      %s           , %s        , %s       , %s            , %s              , %s)",
 				(self.id, self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid']))
 			self.verified = True
+			self.data['added_on'] = int(time.time())
 
 		current_sids = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (self.id,))
 		for sid in current_sids:
@@ -812,9 +837,9 @@ class Album(AssociatedMetadata):
 			self._start_cooldown_db(sid, self.cool_override)
 		else:
 			auto_cool = cooldown_config[sid]['min_album_cool'] + ((self.data['rating'] - 2.5) * (cooldown_config[sid]['max_album_cool'] - cooldown_config[sid]['min_album_cool']))
-			album_num_songs = db.c.fetch_var("SELECT COUNT(r4_album_song.song_id) FROM r4_album_song JOIN r4_song_sid USING (song_id) WHERE r4_album_song.album_id = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.sid = %s", (self.id, sid))
-			cool_size_multiplier = config.get_station("cooldown_size_min_multiplier") + (config.get_station("cooldown_size_max_multiplier") - config.get_station("cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station("cooldown_size_slope") * (album_num_songs - config.get_station("cooldown_size_slope_start")))) / 2);
-			cool_time = auto_cool * cool_size_multiplier * get_cool_age_multiplier(self.data['added_on']) * self.cool_multiply
+			album_num_songs = db.c.fetch_var("SELECT COUNT(r4_song_album.song_id) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.sid = %s", (self.id, sid))
+			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_num_songs - config.get_station(sid, "cooldown_size_slope_start")))) / 2);
+			cool_time = auto_cool * cool_size_multiplier * get_age_cooldown_multiplier(self.data['added_on']) * self.cool_multiply
 		updated_album_ids[sid][self.id] = True
 		return self._start_cooldown_db(sid, cool_time)
 		
@@ -822,9 +847,9 @@ class Album(AssociatedMetadata):
 	def _start_cooldown_db(self, sid, cool_time):
 		cool_end = cool_time + time.time()
 		# SQLITE_CANNOT_DO_JOINS_ON_UPDATES
-		songs = db.c.fetch_array("SELECT song_id FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND r4_song_sid.sid = %s", (self.id, sid))
+		songs = db.c.fetch_list("SELECT song_id FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND r4_song_sid.sid = %s", (self.id, sid))
 		for song_id in songs:
-			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE AND song_cool_end = %s WHERE song_id = %s AND song_cool_end < %s", (song_id, cool_end))
+			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE AND song_cool_end = %s WHERE song_id = %s AND song_cool_end < %s", (song_id, cool_end, cool_end))
 			
 	def solve_cool_lowest(self, sid):
 		self.data['cool_lowest'] = db.c.fetch_var("SELECT MIN(song_cool_end) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid = %s", (self.id, sid))
@@ -885,7 +910,7 @@ class SongGroup(AssociatedMetadata):
 	def _start_cooldown_db(self, sid, cool_time):
 		cool_end = cool_time + time.time()
 		# SQLITE_CANNOT_DO_JOINS_ON_UPDATES
-		song_ids = db.c.fetch_array(
+		song_ids = db.c.fetch_list(
 			"SELECT song_id "
 			"FROM r4_song_group JOIN r4_song_sid USING (song_id) "
 			"WHERE r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.cool_end < %s",

@@ -92,7 +92,6 @@ class ElectionTest(unittest.TestCase):
 		self.assertEqual(self.song1.id, e.songs[0].id)
 	
 	def test_is_request_needed(self):
-		# TODO: This
 		pass
 		# e = Election(1)
 		# e.is_request_needed()

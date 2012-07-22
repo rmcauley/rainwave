@@ -59,6 +59,7 @@ libs.log.init("%s/rw_backend.log" % libs.config.get("log_dir"), libs.config.get(
 
 libs.cache.set_station(1, "sched_current", rainwave.event.Event())
 rainwave.request.update_cache(1)
+rainwave.playlist.prepare_cooldown_algorithm(1)
 libs.cache.update_local_cache_for_sid(1)
 
 # Prevents KeyError from occurring in playlist

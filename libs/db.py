@@ -111,7 +111,7 @@ class SQLiteCursor(object):
 			query = query.replace("%s", "?")
 		query = query.replace("TRUE", "1")
 		query = query.replace("FALSE", "0")
-		query = query.replace("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP)", "(DATETIME('%s','now'))")
+		query = query.replace("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP)", "(strftime('%s','now'))")
 		return query
 		
 	def fetch_var(self, query, params = None):
