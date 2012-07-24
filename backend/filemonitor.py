@@ -54,7 +54,7 @@ def _scan_directories():
 			for filename in files:
 				cache.set("backend_scan_counted", file_counter)
 				fqfn = root + "/" + filename
-				_scan_file(fqfn, sids)
+				_scan_file(fqfn, sids, True)
 	_save_scan_errors()
 	
 def _is_mp3(filename):
@@ -69,18 +69,22 @@ def _is_image(filename):
 		return True
 	return False
 	
-def _scan_file(filename, sids):
+def _scan_file(filename, sids, mp3_only = False):
 	try:
 		if _is_mp3(filename):
 			# print "Scanning %s" % filename
-			playlist.Song.load_from_file(filename, sids)
-		if _is_image(filename):
+			# Only scan the file if we don't have a previous mtime for it, or the mtime is different
+			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s", (filename,))
+			if not old_mtime or old_mtime != os.stat(filename)[8]:
+				playlist.Song.load_from_file(filename, sids)
+		if not mp3_only and _is_image(filename):
 			process_album_art(filename)
 	except Exception as xception:
 		_add_scan_error(filename, xception)
 		
 def process_album_art(filename):
-	# TODO: Only update and process thumbnails based on mtime
+	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_album USING (song_id) WHERE song_filename LIKE '%s%'", (directory,))
+	if not album_ids or len(album_id
 	im_original = Image.open(filename)
 	im_120 = im_original.copy().thumbnail((120, 120), Image.ANTIALIAS)
 	im_240 = im_original.copy().thumbnail((240, 240), Image.ANTIALIAS)

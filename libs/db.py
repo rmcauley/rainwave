@@ -257,7 +257,8 @@ def create_tables():
 			song_cool_multiply			REAL		DEFAULT 1, \
 			song_cool_override			INTEGER		, \
 			song_origin_sid				SMALLINT	NOT NULL, \
-			song_artist_tag				TEXT		\
+			song_artist_tag				TEXT		, \
+			song_file_mtime				INTEGER		\
 		)")
 	c.create_idx("r4_songs", "song_verified")
 	

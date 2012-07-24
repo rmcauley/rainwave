@@ -268,10 +268,9 @@ class Song(object):
 		kept_albums = []
 		kept_artists = []
 		kept_groups = []
-		matched_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
-		if matched_id:
-			# TODO: Skip reload/metadata update if file has same mtime as last scan
-			s = klass.load_from_id(matched_id)
+		matched_entry = db.c.fetch_row("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
+		if matched_entry:
+			s = klass.load_from_id(matched_entry['song_id'])
 			for metadata in s.albums:
 				if metadata.is_tag:
 					metadata.disassociate_song_id(s.id)
@@ -397,17 +396,18 @@ class Song(object):
 					song_link_text = %s, \
 					song_length = %s, \
 					song_scanned = TRUE, \
-					song_verified = TRUE \
+					song_verified = TRUE, \
+					song_file_mtime = %s \
 				WHERE song_id = %s", 
-				(self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], self.id))
+				(self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], os.stat(self.filename)[8], self.id))
 			self.verified = True
 		else:
 			self.id = db.c.get_next_id("r4_songs", "song_id")
 			db.c.update("INSERT INTO r4_songs \
-				(song_id, song_filename, song_title, song_link, song_link_text, song_length, song_origin_sid) \
+				(song_id, song_filename, song_title, song_link, song_link_text, song_length, song_origin_sid, song_file_mtime) \
 				VALUES \
-				(%s,      %s           , %s        , %s       , %s            , %s              , %s)",
-				(self.id, self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid']))
+				(%s,      %s           , %s        , %s       , %s            , %s         , %s             , %s )",
+				(self.id, self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid'], os.stat(self.filename)[8]))
 			self.verified = True
 			self.data['added_on'] = int(time.time())
 
