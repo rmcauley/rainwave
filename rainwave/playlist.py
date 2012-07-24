@@ -602,6 +602,8 @@ class AssociatedMetadata(object):
 	select_by_song_id_query = None		# one %s argument: song_id
 	disassociate_song_id_query = None	# two %s argument: song_id, id
 	associate_song_id_query = None		# three %s argument: song_id, id, is_tag
+	check_self_size_query = None			# one argument: id
+	delete_self_query = None		# one argument: id
 
 	@classmethod
 	def load_from_name(klass, name):
@@ -705,7 +707,8 @@ class AssociatedMetadata(object):
 	def disassociate_song_id(self, song_id, is_tag = True):
 		if not db.c.update(self.disassociate_song_id_query, (song_id, self.id)):
 			raise MetadataUpdateError("Cannot disassociate song ID %s with %s ID %s" % (song_id, self.__class__.__name__, self.id))
-		# TODO: Delete empty groups
+		if db.c.fetch_var(self.check_self_size_query, (self.id,)) == 0:
+			db.c.update(self.delete_self_query, (self.id,))
 			
 	def to_dict(self):
 		self.data['id'] = self.id
@@ -734,6 +737,10 @@ class Album(AssociatedMetadata):
 	select_by_song_id_query = "SELECT r4_albums.*, r4_song_album.album_is_tag FROM r4_song_album JOIN r4_albums USING (album_id) WHERE song_id = %s ORDER BY r4_albums.album_name"
 	disassociate_song_id_query = "DELETE FROM r4_song_album WHERE song_id = %s AND album_id = %s"
 	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_album WHERE song_id = %s AND album_id = %s"
+	# This is a hack, but,umm..... yeah.  It'll do. :P  reconcile_sids handles these duties.
+	check_self_size_query = "SELECT 1, %s"
+	# delete_self_query will never run, but just in case
+	delete_self_query = "SELECT 1, %s"
 	
 	@classmethod
 	def load_list_from_song_id_sid(klass, song_id, sid):
@@ -880,6 +887,8 @@ class Artist(AssociatedMetadata):
 	disassociate_song_id_query = "DELETE FROM r4_song_artist WHERE song_id = %s AND artist_id = %s"
 	associate_song_id_query = "INSERT INTO r4_song_artist (song_id, artist_id, artist_is_tag) VALUES (%s, %s, %s)"
 	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_artist WHERE song_id = %s AND artist_id = %s"
+	check_self_size_query = "SELECT COUNT(song_id) FROM r4_song_artist JOIN r4_songs USING (song_id) WHERE artist_id = %s AND song_verified = TRUE"
+	delete_self_query = "DELETE FROM r4_artists WHERE artist_id = %s"
 	
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_artists", "artist_id")
@@ -899,6 +908,8 @@ class SongGroup(AssociatedMetadata):
 	disassociate_song_id_query = "DELETE FROM r4_song_group WHERE song_id = %s AND group_id = %s"
 	associate_song_id_query = "INSERT INTO r4_song_group (song_id, group_id, group_is_tag) VALUES (%s, %s, %s)"
 	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_group WHERE song_id = %s AND group_id = %s"
+	check_self_size_query = "SELECT COUNT(song_id) FROM r4_song_group JOIN r4_songs USING (song_id) WHERE group_id = %s AND song_verified = TRUE"
+	delete_self_query = "DELETE FROM r4_groups WHERE group_id = %s"
 	
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_groups", "group_id")
