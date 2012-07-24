@@ -8,6 +8,9 @@ from libs import db
 
 _AVATAR_PATH = "/forums/download/file.php?avatar=%s"
 
+def trim_listeners(sid):
+	db.c.update("DELETE FROM r4_listeners WHERE sid = %s AND listener_purge = TRUE", (sid,))
+
 class User(object):
 	def __init__(self, user_id):
 		self.id = user_id

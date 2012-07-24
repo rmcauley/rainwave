@@ -5,6 +5,7 @@ from rainwave import event
 from rainwave import playlist
 from rainwave import listeners
 from rainwave import request
+from rainwave import user
 from libs import db
 from libs import config
 from libs import cache
@@ -104,7 +105,9 @@ def post_process(sid):
 		sync_to_front.sync_frontend_all(sid)
 		
 	_add_listener_count_record(sid)
+	cache.update_user_rating_acl(sid, current[sid].get_song().id)
 	_trim(sid)
+	user.trim_listeners(sid)
 	
 def _add_listener_count_record(sid):
 	lc_guests = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1", (sid,))

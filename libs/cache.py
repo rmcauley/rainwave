@@ -36,6 +36,9 @@ def set_station(sid, key, value):
 	
 def get_local_station(sid, key):
 	return local["sid%s_%s" % (sid, key)]
+
+def local_exists(sid, key):
+	return "sid%s_%s" % (sid, key) in local
 	
 def get_station(sid, key):
 	return _memcache.get("sid%s_%s" % (sid, key))
@@ -76,8 +79,31 @@ def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "listeners_internal")
 	refresh_local_station(sid, "request_line")
 	refresh_local_station(sid, "request_user_positions")
+	refresh_local_station(sid, "user_rating_acl")
+	refresh_local_station(sid, "user_rating_acl_song_index")
 	refresh_local("request_expire_times")
 	refresh_local("calendar")
 	
 	# The caches below should only be used on new-song refreshes
 	refresh_local_station(sid, "song_ratings")
+	
+def update_user_rating_acl(sid, song_id):
+	users = {}
+	if local_exists(sid, "user_rating_acl"):
+		users = get_local_station(sid, "user_rating_acl")
+	songs = []
+	if local_exists(sid, "user_rating_acl_song_index"):
+		songs = get_local_station(sid, "user_rating_acl_song_index")
+
+	while len(songs) > 2:
+		del users[songs.pop(0)]
+	songs.append(song_id)
+	users[song_id] = {}
+	
+	for user_id in db.c.fetch_list("SELECT user_id FROM r4_listeners WHERE sid = %s AND user_id > 1", (sid,)):
+		users[user_id] = True
+		
+	set_station_local(sid, "user_rating_acl", users)
+	push_local_station(sid, "user_rating_acl")
+	set_station_local(sid, "user_rating_acl_song_index", songs)
+	push_local_station(sid, "user_rating_acl_song_index")
