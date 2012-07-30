@@ -1,6 +1,6 @@
 <?php
 
-header("content-type: application/xhtml+xml");
+header("content-type: text/html");
 
 require("auth/common.php");
 
@@ -11,21 +11,32 @@ if (!in_array($userdata['group_id'], array(5, 4, 8, 12, 15, 14, 17))) {
 
 require("files.php");
 
+// TODO: Lang should use dashes, not underscores. :/
+
+$lang = getDefaultLanguage();
+
 <%RWDESC%>
 <%VALIDSKINS%>
-print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+//print "<?xml version=\"1.0\" encoding=\"UTF-8\" ? >";
+//<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+//<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<!DOCTYPE html>
+<html lang="<?php print $lang ?>">
 <head>
 	<title>Rainwave Beta</title>
-	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+	<meta charset="UTF-8" />
+	<?php 
+		print "<meta name=\"description\" content=\"";
+		if (isset($rwdesc[$lang])) print $rwdesc[$lang][$sid];
+		else print $rwdesc['en_CA'][$sid];
+		print "\" />";
+	?>
 	<%LANGFUNC%>
 	<?php
 		$bnum = <%BUILDNUM%>;
 		$skin = "Rainwave";
 		#print "<!--\n";
-		$lang = getDefaultLanguage();
 		if (isset($_COOKIE['r3prefs'])) {
 			$cookie = json_decode($_COOKIE['r3prefs'], true);
 			if (isset($cookie['edi']['language']['value'])) {
@@ -44,12 +55,6 @@ print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	<script src="lyre-ajax.js" type="text/javascript"></script>
 </head>
 <body id="body">
-<div style="display: none;">
-	<?php 
-		if (isset($rwdesc[$lang])) print "\t" . $rwdesc[$lang][$sid] . "\n";
-		else print "\t" . $rwdesc['en_CA'][$sid] . "\n";
-	?>
-</div>
 <?php
 
 	print "<script type=\"text/javascript\">\n";

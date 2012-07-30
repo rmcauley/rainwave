@@ -9,37 +9,40 @@ var fx = function() {
 	var that = {};
 	that.enabled = true;
 	
-	that.css3 = false;
-	that.transformation = false;
-	that.transformation_3d = false;
+	that.css_transition = false;
+	that.transform = false;
+	that.transform_3d = false;
+	that.css_animation = false;
 	that.animation_string = 'animation';
 	that.transform_string = 'transform';
-	that.keyframe_prefix = '';
+	that.transition_string = 'transition';
 	var dom_prefixes = 'Webkit Moz O ms Khtml'.split(' ');
 	that.dom_prefix  = '';
 	var temp_el = document.createElement("div");
-	if (temp_el.style.animationName) { that.css3 = true; }    
-	if (temp_el.style.transform) { that.transformation = true; }    
+	if (temp_el.style.animationName) { that.css_animation = true; }
+	if (temp_el.style.transform) { that.transform = true; } 
+	if (temp_el.style.transition) { that.css_transition = true; }    
 
 	for (var i = 0; i < dom_prefixes.length; i++) {
-		if (!that.css3 && (temp_el.style[dom_prefixes[i] + 'AnimationName' ] !== undefined)) {
+		if (!that.css_transition && (temp_el.style[dom_prefixes[i] + "Transition"] !== undefined)) {
+			that.dom_prefix = dom_prefixes[i];
+			that.transition_string = that.dom_prefix + 'Transition';
+			that.css_transition = true;
+		}
+		if (!that.css_animation && (temp_el.style[dom_prefixes[i] + 'AnimationName' ] !== undefined)) {
 			that.dom_prefix = dom_prefixes[i];
 			that.animation_string = that.dom_prefix + 'Animation';
-			that.keyframe_prefix = '-' + that.dom_prefix.toLowerCase() + '-';
-			that.css3 = true;
+			that.css_animation = true;
 		}
-		if (!that.transformation && (temp_el.style[dom_prefixes[i] + 'Transform'] !== undefined)) {
+		if (!that.transform && (temp_el.style[dom_prefixes[i] + 'Transform'] !== undefined)) {
 			that.dom_prefix = dom_prefixes[i];
 			that.transform_string = that.dom_prefix + 'Transform';
-			that.transformation = true;
+			that.transform = true;
 			if (that.dom_prefix == "Webkit") {
-				that.transformation_3d = true;
+				that.transform_3d = true;
 			}
 		}
 	}
-	
-	// because it's broken for now
-	that.css3 = false;
 
 	var requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
 	if (!requestFrame) {
@@ -86,9 +89,27 @@ var fx = function() {
 		if (!("onStart" in newfx)) newfx.onStart = false;
 		if (!("onComplete" in newfx)) newfx.onComplete = false;
 		if (!("onSet" in newfx)) newfx.onSet = false;
+
+		if (that.css_transition && newfx.transition_name) {
+			if (!("_transition_string" in el)) {
+				el._transition_string = "";
+			}
+			else {
+				el._transition_string += ", ";
+			}
+			el._transition_string += newfx.transition_name + " " + duration + "ms ease-out";
+			el.style[that.transition_string] = el._transition_string;
+		}
 		
-		if (that.css3 && newfx.animation_name) {
-			el.style[that.animation_string] = newfx.animation_name + " " + (duration / 1000) + "s ease-out 1";
+		if (that.css_animation && newfx.animation_name) {
+			if (!("_animation_string" in el)) {
+				el._animation_string = "";
+			}
+			else {
+				el._animation_string += ", ";
+			}
+			el._animation_string += newfx.animation_name + " " + duration + "ms ease-out";
+			el.style[that.animation_string] = el._animation_string;
 		}
 		
 		// these are the same for all types of transforms
@@ -123,9 +144,10 @@ var fx = function() {
 			delta = to - from;
 			if (newfx.onStart) newfx.onStart(now);
 			
-			if (that.css3 && newfx.animation_name) {
+			if (that.css_transition && newfx.transition_name) {
 				newfx.set(to);
 				newfx.stop_timer = setTimeout(newfx.stop, duration);
+				console.log("Using CSS3 for " + newfx.transition_name);
 			}
 			else {
 				if (!that.enabled) now = to;
@@ -197,7 +219,7 @@ var fx = function() {
 	that.CSSNumeric = function(element, attribute, unit) {
 		var cssnfx = {};
 		if (!unit) unit = "";
-		cssnfx.animation_name = attribute;
+		cssnfx.transition_name = attribute;
 		
 		if (attribute == "opacity") {		
 			cssnfx.update = function(now) {
@@ -220,7 +242,7 @@ var fx = function() {
 	
 	that.OpacityRemoval = function(element, owner) {
 		var orfx = {};
-		orfx.animation_name = "opacity";
+		orfx.transition_name = "opacity";
 		
 		element.style.opacity = "0";
 		var added = false;
@@ -305,7 +327,7 @@ var fx = function() {
 	};
 	
 	var CSSTransform = function(el) {
-		if (!that.transformation) return false;
+		if (!that.transform) return false;
 		
 		if (!el._fx_csstrans) {
 			el._fx_csstrans = { "scale": 1, "translatex": 0, "translatey": 0 };
@@ -319,7 +341,7 @@ var fx = function() {
 			//t += "rotate(" + el._fx_csstrans.rotate + "deg) ";
 			t += "translate(" + el._fx_csstrans.translatex + "px, " + el._fx_csstrans.translatey + "px)";
 			//t += "skew(" + el._fx_csstrans.skewx + "deg " + el._fx_csstrans.skewy + "deg) ";
-			if (that.transformation_3d) t += "translate3d(0,0,0) ";
+			if (that.transform_3d) t += "translate3d(0,0,0) ";
 			el.style[that.transform_string] = t;
 		};
 		
@@ -342,7 +364,7 @@ var fx = function() {
 	
 	that.CSSTranslateX = function(el) {
 		var txfx = false;
-		if (!that.css3) {
+		if (!that.css_transition) {
 			var txfx = CSSTransform(el);
 		}
 		
@@ -359,7 +381,7 @@ var fx = function() {
 	
 	that.CSSTranslateY = function(el) {
 		var tyfx = false;
-		if (!that.css3) {
+		if (!that.css_transition) {
 			tyfx = CSSTransform(el);
 		}
 		
@@ -380,7 +402,7 @@ var fx = function() {
 		that.enabled = enabled;
 	};
 	
-	if (!that.css3) {
+	if (!that.css_transition) {
 		prefs.addPref("fx", { "name": "enabled", "callback": that.p_enabled, "defaultvalue": true, "type": "checkbox" });
 	}
 	
