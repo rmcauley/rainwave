@@ -1,6 +1,6 @@
 panels.MenuPanel = {
 	ytype: "fixed",
-	height: 21,
+	height: 60,
 	minheight: 3,
 	xtype: "slack",
 	width: 0,
@@ -73,7 +73,7 @@ panels.MenuPanel = {
 			};
 			var attributes = {
 				"width": 79,
-				"height": 18,
+				"height": 32,
 				"id": "embedded_swf"
 			};
 			that.embedded_swf_container = createEl("div", { "id": "embedded_swf_container" }, that.flash_container);

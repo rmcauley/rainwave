@@ -8,11 +8,41 @@ fxOne.start(0);
 var fx = function() {
 	var that = {};
 	that.enabled = true;
+	
+	that.css3 = false;
+	that.transformation = false;
+	that.transformation_3d = false;
+	that.animation_string = 'animation';
+	that.transform_string = 'transform';
+	that.keyframe_prefix = '';
+	var dom_prefixes = 'Webkit Moz O ms Khtml'.split(' ');
+	that.dom_prefix  = '';
+	var temp_el = document.createElement("div");
+	if (temp_el.style.animationName) { that.css3 = true; }    
+	if (temp_el.style.transform) { that.transformation = true; }    
+
+	for (var i = 0; i < dom_prefixes.length; i++) {
+		if (!that.css3 && (temp_el.style[dom_prefixes[i] + 'AnimationName' ] !== undefined)) {
+			that.dom_prefix = dom_prefixes[i];
+			that.animation_string = that.dom_prefix + 'Animation';
+			that.keyframe_prefix = '-' + that.dom_prefix.toLowerCase() + '-';
+			that.css3 = true;
+		}
+		if (!that.transformation && (temp_el.style[dom_prefixes[i] + 'Transform'] !== undefined)) {
+			that.dom_prefix = dom_prefixes[i];
+			that.transform_string = that.dom_prefix + 'Transform';
+			that.transformation = true;
+			if (that.dom_prefix == "Webkit") {
+				that.transformation_3d = true;
+			}
+		}
+	}
+	
+	// because it's broken for now
+	that.css3 = false;
 
 	var requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
-	var browsersupport = true;
 	if (!requestFrame) {
-		browsersupport = false;
 		requestFrame = function(callback) {
 			window.setTimeout(callback, 40);
 		};
@@ -21,19 +51,29 @@ var fx = function() {
 	that.extend = function(name, func) {
 		that[name] = func;
 	};
+	
+	that.addCSSKeyframe = function(keyframe) {
+		if (document.styleSheets && document.styleSheets.length) {
+			document.styleSheets[0].insertRule(keyframe, 0);
+		} else {
+			var s = document.createElement('style');
+			s.innerHTML = keyframe;
+			document.getElementsByTagName('head')[0].appendChild(s);
+		}
+	};
 
 	that.make = function(func, el, duration) {
-		duration = duration * 0.8;		// because I like effects to be fast
+		duration = Math.round(duration * 0.8);		// because I like effects to be fast
 		var newfx;
 		if (arguments.length > 3) {
 			var args = [ el ];
-			for (var i = 3; i < arguments.length; i++) args.push(arguments[i])
+			for (var i = 3; i < arguments.length; i++) { args.push(arguments[i]); }
 			newfx = func.apply(this, args);
 		}
 		else {
 			newfx = func(el);
 		}
-		
+
 		var from = 0;
 		var to = 0;
 		var now = 0;
@@ -42,36 +82,18 @@ var fx = function() {
 		
 		newfx.duration = duration;
 		newfx.unstoppable = false;
+		newfx.stop_timer = false;
 		if (!("onStart" in newfx)) newfx.onStart = false;
 		if (!("onComplete" in newfx)) newfx.onComplete = false;
 		if (!("onSet" in newfx)) newfx.onSet = false;
 		
-		var step = function(steptime) {
-			if (!browsersupport || !steptime) steptime = new Date().getTime();
-			
-			if ((steptime < (started + duration)) && (now != to)) {
-				// This is all Robert Penner's work, as you might imagine...
-				// First formula: sinOut
-				//var delta2 = -(Math.cos(Math.PI * ((steptime - started) / duration)) - 1) / 2;
-				//now = (to - from) * delta2 + from;
-				// Second formula: quintOut
-				//now = (to - from) * ((steptime = (steptime - started) / duration - 1) * steptime * steptime * steptime * steptime + 1) + from;
-				// Third formula: quadOut
-				var timeoverduration = (steptime - started) / duration;
-				now = -(to - from) * timeoverduration * (timeoverduration - 2) + from;
-
-				newfx.update(now);
-				newfx.now = now;
-				requestFrame(step);
-			}
-			else {
-				now = to;
-				newfx.update(now);
-				newfx.stop();
-			}
-		};
+		if (that.css3 && newfx.animation_name) {
+			el.style[that.animation_string] = newfx.animation_name + " " + (duration / 1000) + "s ease-out 1";
+		}
 		
+		// these are the same for all types of transforms
 		newfx.stop = function() {
+			if (newfx.stop_timer) clearTimeout(newfx.stop_timer);
 			if (newfx.onComplete) newfx.onComplete(now);
 			newfx.now = now;
 		};
@@ -100,10 +122,42 @@ var fx = function() {
 			from = now;
 			delta = to - from;
 			if (newfx.onStart) newfx.onStart(now);
-			if (!that.enabled) now = to;
-			step();
+			
+			if (that.css3 && newfx.animation_name) {
+				newfx.set(to);
+				newfx.stop_timer = setTimeout(newfx.stop, duration);
+			}
+			else {
+				if (!that.enabled) now = to;
+				step();
+			}
 		};
 		
+		var step = function(steptime) {
+			if (!steptime) steptime = new Date().getTime();
+			
+			if ((steptime < (started + duration)) && (now != to)) {
+				// This is all Robert Penner's work, as you might imagine...
+				// First formula: sinOut
+				//var delta2 = -(Math.cos(Math.PI * ((steptime - started) / duration)) - 1) / 2;
+				//now = (to - from) * delta2 + from;
+				// Second formula: quintOut
+				//now = (to - from) * ((steptime = (steptime - started) / duration - 1) * steptime * steptime * steptime * steptime + 1) + from;
+				// Third formula: quadOut
+				var timeoverduration = (steptime - started) / duration;
+				now = -(to - from) * timeoverduration * (timeoverduration - 2) + from;
+
+				newfx.update(now);
+				newfx.now = now;
+				requestFrame(step);
+			}
+			else {
+				now = to;
+				newfx.update(now);
+				newfx.stop();
+			}
+		};
+
 		return newfx;
 	};
 	
@@ -143,6 +197,7 @@ var fx = function() {
 	that.CSSNumeric = function(element, attribute, unit) {
 		var cssnfx = {};
 		if (!unit) unit = "";
+		cssnfx.animation_name = attribute;
 		
 		if (attribute == "opacity") {		
 			cssnfx.update = function(now) {
@@ -165,6 +220,7 @@ var fx = function() {
 	
 	that.OpacityRemoval = function(element, owner) {
 		var orfx = {};
+		orfx.animation_name = "opacity";
 		
 		element.style.opacity = "0";
 		var added = false;
@@ -249,23 +305,11 @@ var fx = function() {
 	};
 	
 	var CSSTransform = function(el) {
+		if (!that.transformation) return false;
+		
 		if (!el._fx_csstrans) {
 			el._fx_csstrans = { "scale": 1, "translatex": 0, "translatey": 0 };
 		}
-		
-		var transkey = false;
-		var threed = false;
-		/*if ("MozTransform" in el.style) {
-			transkey = 'MozTransform';
-		}*/
-		if ("webkitTransform" in el.style) {
-			transkey = 'webkitTransform';
-			threed = true;
-		}
-		if ("OTransform" in el.style) {
-			transkey = "OTransform";
-		}
-		else return false;
 		
 		var csstfx = {};
 		
@@ -275,8 +319,8 @@ var fx = function() {
 			//t += "rotate(" + el._fx_csstrans.rotate + "deg) ";
 			t += "translate(" + el._fx_csstrans.translatex + "px, " + el._fx_csstrans.translatey + "px)";
 			//t += "skew(" + el._fx_csstrans.skewx + "deg " + el._fx_csstrans.skewy + "deg) ";
-			if (threed) t += "translate3d(0,0,0) ";
-			el.style[transkey] = t;
+			if (that.transformation_3d) t += "translate3d(0,0,0) ";
+			el.style[that.transform_string] = t;
 		};
 		
 		return csstfx;
@@ -297,7 +341,10 @@ var fx = function() {
 	};
 	
 	that.CSSTranslateX = function(el) {
-		var txfx = CSSTransform(el);
+		var txfx = false;
+		if (!that.css3) {
+			var txfx = CSSTransform(el);
+		}
 		
 		if (!txfx) {
 			return that.CSSNumeric(el, "left", "px");
@@ -311,7 +358,10 @@ var fx = function() {
 	};
 	
 	that.CSSTranslateY = function(el) {
-		var tyfx = CSSTransform(el);
+		var tyfx = false;
+		if (!that.css3) {
+			tyfx = CSSTransform(el);
+		}
 		
 		if (!tyfx) {
 			return that.CSSNumeric(el, "top", "px");
@@ -324,55 +374,15 @@ var fx = function() {
 		return tyfx;
 	};
 	
-	// ************************************************************** MISC FUNCTIONS
-	
-	// this menuheight thing only works so long as 1 menu is on the page...
-	var menuheight = false;
-	that.makeMenuDropdown = function(menu, header, dropdown, options) {
-		var timeout = 0;
-		var fx_pulldown = that.make(that.CSSTranslateY, dropdown, 250);
-		fx_pulldown.onComplete = function(now) {
-			if (now == 0) {
-				fx_pulldown.update(-1000);
-			}
-		};
-		fx_pulldown.set(0);
-		
-		var fx_opacity = that.make(that.CSSNumeric, dropdown, 250, "opacity");
-		fx_opacity.set(0);
-		menu.appendChild(dropdown);
-		
-		var mouseover = function(e) {
-			if (!menuheight) menuheight = menu.offsetHeight - 1;
-			if (e && ("pageX" in e) && ("pageY" in e) && (e.pageX == 0) && (e.pageY == 0)) return; 		// webkit bugfix that triggers menu hover on page load
-			clearTimeout(timeout);
-			if (options && options.checkbefore) {
-				if (!options.checkbefore()) return;
-			}
-			dropdown.style.left = help.getElPosition(header).x + "px";
-			fx_pulldown.start(menuheight);
-			fx_opacity.start(1);
-		};
-		var mouseout = function() {
-			fx_pulldown.start(0);
-			fx_opacity.start(0);
-		};
-		header.addEventListener("mouseover", mouseover, true);
-		header.addEventListener("mouseout", function() { clearTimeout(timeout); timeout = setTimeout(mouseout, 250); }, true);
-		header.style.cursor = "default";
-		if (dropdown) {
-			dropdown.addEventListener("mouseover", mouseover, true);
-			dropdown.addEventListener("mouseout", function() { clearTimeout(timeout); timeout = setTimeout(mouseout, 250); }, true);
-		}
-	};
-	
 	// ************************************************************** PREFS
 	
 	that.p_enabled = function(enabled) {
 		that.enabled = enabled;
 	};
-
-	prefs.addPref("fx", { "name": "enabled", "callback": that.p_enabled, "defaultvalue": true, "type": "checkbox" });
+	
+	if (!that.css3) {
+		prefs.addPref("fx", { "name": "enabled", "callback": that.p_enabled, "defaultvalue": true, "type": "checkbox" });
+	}
 	
 	// **************************************************************
 	

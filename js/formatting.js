@@ -26,6 +26,7 @@ function linkify(el, external, new_window) {
 	if (new_window) el.setAttribute("class", el.getAttribute("class") + " new_window");
 	else if (external) el.setAttribute("class", el.getAttribute("class") + " external_link");
 	else el.setAttribute("class", el.getAttribute("class") + " link");
+	return el;
 }
 
 function formatTime(seconds) {

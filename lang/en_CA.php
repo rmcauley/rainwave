@@ -375,6 +375,7 @@ $lang = array(
 	"forums" => "Forums",
 	"login" => "Login",
 	"logout" => "Logout",	
+	"profile" => "Profile",
 	"register" => "Register",
 	"username" => "Username",
 	"password" => "Password",
