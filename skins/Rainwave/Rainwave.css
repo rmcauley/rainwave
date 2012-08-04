@@ -750,8 +750,19 @@ table.header_table {
 	border-spacing: 0;
 }
 
-tr.header_primary_row td, td.menu_download_td {
+table.header_table td {
+	vertical-align: middle;
+}
+
+tr.header_primary_row td {
 	background: #015796;
+	background-image: -moz-linear-gradient(bottom, rgb(8,104,172) 22%, rgb(0,20,121) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(8,104,172) 22%, rgb(0,20,121) 100%);
+	background-image: linear-gradient(bottom, rgb(8,104,172) 22%, rgb(0,20,121) 100%);
+}
+
+td.menu_download_td {
+	background: #0868ac;
 }
 
 td.site_header {
@@ -769,7 +780,7 @@ span.menu_username {
 	display: block;
 	font-weight: bold;
 	margin-bottom: 3px;
-	margin-right: 45px;
+	margin-right: 47px;
 }
 
 span.menu_username_perks {
@@ -778,14 +789,15 @@ span.menu_username_perks {
 
 img.header_avatar {
 	float: right;
-	max-height: 42px;
-	max-width: 42px;
+	max-height: 33px;
+	max-width: 33px;
+	margin-right: 5px;
 }
 
 ul.menu_userlinks {
 	text-align: right;
 	margin: 0px;
-	margin-right: 45px;
+	margin-right: 47px;
 }
 
 ul.menu_userlinks li {
@@ -803,7 +815,7 @@ ul.menu_userlinks li+li {
 
 td.station_list_td {
 	background: [% primarybkg %];
-	border: solid 2px #000000;
+	border-right: solid 2px #000000;
 }
 
 ul.station_list {
@@ -815,8 +827,9 @@ ul.station_list {
 ul.station_list li {
 	float: left;
 	background-repeat: no-repeat;
-	background-align: center middle;
+	background-position: left center;
 	white-space: pre;
+	margin-right: 5px;
 }
 
 .menu_station_1, .menu_station_1_on {
@@ -883,21 +896,25 @@ ul.sub_menu {
 	margin: 0;
 	float: right;
 	list-style: none;
+	padding: 0;
+	margin-right: 5px;
 }
 
 ul.sub_menu li {
 	float: right;
+	padding-left: 1em;
+	padding-right: 1em;
 }
 
-div.menu_ogg {
-	float: right;
+ul.sub_menu li+li {
+	border-right: solid 1px #CCC;
 }
 
-div.menu_mp3 {
-	float: left;
+ul.sub_menu li.menu_help+li {
+	border-color: [% help_border %];
 }
 
-td.menu_player_td, td.menu_download_td {
+td.menu_player_td {
 	width: 200px;
 }
 
@@ -929,6 +946,23 @@ div.menu_flash_warning {
 
 .flash_placeholder {
 	display: block;
+}
+
+td.menu_download_td {
+	text-align: center;
+	width: 200px;
+	vertical-align: top;
+}
+
+div.menu_mp3 {
+	display: inline;
+	padding-right: .6em;
+}
+
+div.menu_ogg {
+	display: inline;
+	border-left: solid 1px #CCC;
+	padding-left: .6em;
 }
 
 a.tunein_vlc, a.tunein_winamp, a.tunein_fb2k , a.tunein_itunes, a.tunein_wmp {

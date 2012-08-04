@@ -947,8 +947,9 @@ function _THEME() {
 			}
 			else {
 				menup.profile_link = createEl("a", { "textContent": _l("profile") }, createEl("li", false, menup.userlinks));
-				Username.linkify(user.p.user_id, menup.username);
-				//var usercp_logout = createEl("a", { "class": "displayblock", "textContent": _l("logout"), "href": "http://rainwave.cc/forums/ucp.php?mode=logout" }, menup.user_cp);
+				//Username.linkify(user.p.user_id, menup.username);
+				Username.linkify(user.p.user_id, menup.profile_link);
+				//linkify(createEl("a", { "textContent": _l("logout"), "href": "http://rainwave.cc/forums/ucp.php?mode=logout" }, createEl("li", false, menup.userlinks)));
 				linkify(createEl("a", { "textContent": _l("managekeys"), "href": "http://rainwave.cc/auth/" }, createEl("li", false, menup.userlinks)));
 			}
 
