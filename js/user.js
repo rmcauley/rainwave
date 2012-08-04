@@ -5,7 +5,7 @@ var user = function() {
 	var that = {};
 	that.p = {
 		user_id: PRELOADED_USER_ID,
-		username: "Anonymous",
+		username: "",
 		user_new_privmsg: 0,
 		user_avatar: "images/blank.png",
 		radio_lastnews: -1,

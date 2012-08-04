@@ -147,7 +147,6 @@ var fx = function() {
 			if (that.css_transition && newfx.transition_name) {
 				newfx.set(to);
 				newfx.stop_timer = setTimeout(newfx.stop, duration);
-				console.log("Using CSS3 for " + newfx.transition_name);
 			}
 			else {
 				if (!that.enabled) now = to;

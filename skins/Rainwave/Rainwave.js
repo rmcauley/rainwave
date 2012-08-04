@@ -814,18 +814,18 @@ function _THEME() {
 		var removedflash = false;
 		
 		menup.draw = function() {
-			menup.header = createEl("div", { "class": "site_header" });
+			menup.header_table = createEl("table", { "class": "header_table" }, menup.container);
 			
-			menup.td_user = createEl("div", { "class": "header_user" });
-			menup.avatar = createEl("img", { "class": "header_avatar", "src": "images/anonymous.png" });
-			menup.td_user.appendChild(menup.avatar);
-			menup.username = createEl("span", { "class": "menu_username" }, menup.td_user);
-			menup.userlinks = createEl("span", { "class": "menu_userlinks" }, menup.td_user);
-			menup.userlinks.appendChild(linkify(createEl("a", { "href": "http://rainwave.cc/forums/ucp.php?mode=login&redirect=/", "class": "menu_login", "textContent": _l("login") })));
-			menup.userlinks.appendChild(linkify(createEl("a", { "href": "http://rainwave.cc/forums/ucp.php?mode=register", "textContent": _l("register") })));
-			menup.header.appendChild(menup.td_user);
-
-			menup.player = createEl("div", { "class": "menu_player menu_player_flash", "id": "flash_player" });
+			var row = createEl("tr", { "class": "header_primary_row" }, menup.header_table);
+			menup.header_td = createEl("td", { "class": "site_header" }, row);
+			menup.header = createEl("img", { "src": skindir + "/images/logo.png" }, menup.header_td);
+			
+			menup.td_user = createEl("div", { "class": "header_user" }, menup.header_td);
+			menup.avatar = createEl("img", { "class": "header_avatar" }, menup.td_user);
+			// see menup.showUsername for the rest of the user-related stuff
+			
+			menup.player_td = createEl("td", { "class": "menu_player_td" }, row);
+			menup.player = createEl("div", { "class": "menu_player menu_player_flash", "id": "flash_player" }, menup.player_td);
 			menup.flash_container = menup.player;
 			menup.flash_warning = createEl("div", { "class": "menu_flash_warning" }, menup.player);
 			var flash_warning_opacity = fx.make(fx.CSSNumeric, menup.flash_warning, 150, "opacity");
@@ -833,45 +833,50 @@ function _THEME() {
 			menup.flash_warning.addEventListener("mouseover", function() { flash_warning_opacity.start(1); }, true);
 			menup.flash_warning.addEventListener("mouseout", function() { flash_warning_opacity.start(0); }, true);
 			flash_warning_opacity.set(0);
-			menup.header.appendChild(menup.player);
-			
-			menup.header_image = createEl("div", { "class": "header_image" }, menup.header);
 			
 			help.changeStepPointEl("tunein", [ menup.player ]);
 			help.changeTopicPointEl("tunein", [ menup.player ]);
 			
-			menup.menu = createEl("div", { "class": "menu" });
-			menup.sub_menu = createEl("ul", { "class": "sub_menu" });
+			row = createEl("tr", false, menup.header_table);
+		
+			var station_td = createEl("td", { "class": "station_list_td" }, row);		
+			menup.sub_menu = createEl("ul", { "class": "sub_menu" }, station_td);
 			
-			menup.td_chat = createEl("li", { "class": "menu_chat" });
+			menup.td_help = createEl("li", { "class": "menu_help" }, menup.sub_menu);
+			var hbutton = createEl("span", { "textContent": _l("help") });
+			linkify(hbutton);
+			hbutton.addEventListener('click', help.showAllTopics, true);
+			menup.td_help.appendChild(hbutton);
+			
+			menup.td_forums = createEl("li", { "class": "menu_forums" }, menup.sub_menu);
+			var forumlink = linkify(createEl("a", { "target": "_blank", "href": "http://rainwave.cc/forums" }), true);
+			_l("forums", {}, forumlink);
+			menup.td_forums.appendChild(forumlink);
+			
+			menup.td_chat = createEl("li", { "class": "menu_chat" }, menup.sub_menu);
 			var chatlink = linkify(createEl("a", { "textContent": _l("chat") }), false, true);
 			chatlink.addEventListener("click", menup.openChat, true);
 			// _l needs to be called with element due to wikipedia-style external link images
 			_l("chat", {}, chatlink);
 			menup.td_chat.appendChild(chatlink);
-			menup.sub_menu.appendChild(menup.td_chat);
+		
+			menup.station_list = createEl("ul", { "class": "station_list" }, station_td);
+			var menuorder = [ 5, 1, 4, 3, 2 ];
+			var classname, station;
+			for (var i = 0; i < menuorder.length; i++) {
+				classname = "menu_station menu_station_" + menuorder[i];
+				if (menuorder[i] == PRELOADED_SID) classname += "_on";
+				station = createEl("li", { "class": classname, "textContent": " " }, menup.station_list);
+				if (menuorder[i] == 1)	station.addEventListener("click", function() { menup.changeStation(1); }, true);
+				else if (menuorder[i] == 2) station.addEventListener("click", function() { menup.changeStation(2); }, true);
+				else if (menuorder[i] == 3) station.addEventListener("click", function() { menup.changeStation(3); }, true);
+				else if (menuorder[i] == 4) station.addEventListener("click", function() { menup.changeStation(4); }, true);
+				else if (menuorder[i] == 5) station.addEventListener("click", function() { menup.changeStation(5); }, true);
+			}
 			
-			menup.td_forums = createEl("li", { "class": "menu_forums" });
-			var forumlink = linkify(createEl("a", { "target": "_blank", "href": "http://rainwave.cc/forums" }), true);
-			_l("forums", {}, forumlink);
-			menup.td_forums.appendChild(forumlink);
-			menup.sub_menu.appendChild(menup.td_forums);
-			
-			menup.td_help = createEl("li", { "class": "menu_help" });
-			var hbutton = createEl("span", { "textContent": _l("help") });
-			linkify(hbutton);
-			hbutton.addEventListener('click', help.showAllTopics, true);
-			menup.td_help.appendChild(hbutton);
-			menup.sub_menu.appendChild(menup.td_help);
-
-			// TODO: Fix the ticker once and for all
-			menup.td_news = createEl("td", { "class": "menu_td_news" });
-			menup.ticker_overflow = createEl("div", { "class": "menu_ticker_overflow" }, menup.td_news);
-			menup.ticker = createEl("div", { "class": "menu_ticker" }, menup.ticker_overflow);
-			ticker.el = menup.ticker;
-			
-			menup.mp3_download = createEl("li");
-			menup.mp3_download.appendChild(createEl("span", { "textContent": _l("MP3: ") }));
+			menup.download_td = createEl("td", { "class": "menu_download_td" }, row);
+			menup.mp3_download = createEl("div", { "class": "menu_mp3" }, menup.download_td);
+			menup.mp3_download.appendChild(createEl("span", { "textContent": "MP3: " }));
 			var wmpa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_wmp" }, menup.mp3_download);
 			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, wmpa);
 			wmpa.addEventListener("click", menup.tuneInClickMP3, true);
@@ -882,41 +887,31 @@ function _THEME() {
 			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, vlca);
 			vlca.addEventListener("click", menup.tuneInClickOgg, true);
 			
-			menup.ogg_download = createEl("li");
-			menup.mp3_download.appendChild(createEl("span", { "textContent": _l("Ogg: ") }));
-			var winampa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_winamp" }, menup.ogg_download);
+			menup.ogg_download = createEl("div", { "class": "menu_ogg" }, menup.download_td);
+			menup.ogg_download.appendChild(createEl("span", { "textContent": "Ogg: " }));
+			var winampa = createEl("a", { "href": "tunein.php?ogg=true", "onclick": "return false;", "class": "tunein_winamp" }, menup.ogg_download);
 			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, winampa);
 			winampa.addEventListener("click", menup.tuneInClickOgg, true);
-			var fb2ka = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_fb2k" }, menup.ogg_download);
+			var fb2ka = createEl("a", { "href": "tunein.php?ogg=true", "onclick": "return false;", "class": "tunein_fb2k" }, menup.ogg_download);
 			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, fb2ka);
 			fb2ka.addEventListener("click", menup.tuneInClickOgg, true);
-			
-			menup.station_menu = createEl("ul");
-			var menuorder = [ 5, 1, 4, 3, 2 ];
-			var classname, station;
-			for (var i = 0; i < menuorder.length; i++) {
-				classname = "menu_station menu_station_" + menuorder[i];
-				if (menuorder[i] == PRELOADED_SID) classname += "_on";
-				station = createEl("li", { "class": classname }, menup.station_menu);
-				if (menuorder[i] == 1)	station.addEventListener("click", function() { menup.changeStation(1); }, true);
-				else if (menuorder[i] == 2) station.addEventListener("click", function() { menup.changeStation(2); }, true);
-				else if (menuorder[i] == 3) station.addEventListener("click", function() { menup.changeStation(3); }, true);
-				else if (menuorder[i] == 4) station.addEventListener("click", function() { menup.changeStation(4); }, true);
-				else if (menuorder[i] == 5) station.addEventListener("click", function() { menup.changeStation(5); }, true);
-			}
-			
-			menup.menu.appendChild(menup.sub_menu);
-			menup.menu.appendChild(menup.station_menu);
-			
-			menup.container.appendChild(menup.header);
-			menup.container.appendChild(menup.menu);
+
+			// TODO: Fix the ticker once and for all
+			menup.td_news = createEl("td", { "class": "menu_td_news" });
+			menup.ticker_overflow = createEl("div", { "class": "menu_ticker_overflow" }, menup.td_news);
+			menup.ticker = createEl("div", { "class": "menu_ticker" }, menup.ticker_overflow);
+			ticker.el = menup.ticker;
 			
 			return;
 		};
-	
 		
 		menup.changeAvatar = function(avatar) {
-			menup.avatar.setAttribute("src", avatar);
+			if (user.p.user_id > 1) {
+				menup.avatar.setAttribute("src", avatar);
+			}
+			else {
+				menup.avatar.setAttribute("src", "images/anonymous.png");
+			}
 		};
 		
 		menup.drawTuneInChange = function(tunedin) {
@@ -942,14 +937,21 @@ function _THEME() {
 		};
 		
 		menup.showUsername = function(username) {
-			menup.td_user.removeChild(menup.userlinks);
-			menup.userlinks = createEl("div", { "class": "menu_userlinks" }, menup.td_user);
-			menup.profile_link = createEl("a", { "textContent": _l("profile") }, menup.userlinks);
-			Username.linkify(user.p.user_id, menup.username);
-			//var usercp_logout = createEl("a", { "class": "displayblock", "textContent": _l("logout"), "href": "http://rainwave.cc/forums/ucp.php?mode=logout" }, menup.user_cp);
-			menup.userlinks.appendChild(linkify(createEl("a", { "class": "displayblock", "textContent": _l("managekeys"), "href": "http://rainwave.cc/auth/", "class": "link" })));
 			
-			menup.username.textContent = username;
+			menup.username = createEl("span", { "class": "menu_username", "textContent": username }, menup.td_user);
+			menup.userlinks = createEl("ul", { "class": "menu_userlinks" }, menup.td_user);
+			
+			if (user.p.user_id <= 1) {
+				linkify(createEl("a", { "href": "http://rainwave.cc/forums/ucp.php?mode=login&redirect=/", "class": "menu_login", "textContent": _l("login") }, createEl("li", false, menup.userlinks)));
+				linkify(createEl("a", { "href": "http://rainwave.cc/forums/ucp.php?mode=register", "textContent": _l("register") }, createEl("li", false, menup.userlinks)));
+			}
+			else {
+				menup.profile_link = createEl("a", { "textContent": _l("profile") }, createEl("li", false, menup.userlinks));
+				Username.linkify(user.p.user_id, menup.username);
+				//var usercp_logout = createEl("a", { "class": "displayblock", "textContent": _l("logout"), "href": "http://rainwave.cc/forums/ucp.php?mode=logout" }, menup.user_cp);
+				linkify(createEl("a", { "textContent": _l("managekeys"), "href": "http://rainwave.cc/auth/" }, createEl("li", false, menup.userlinks)));
+			}
+
 			if (user.p.radio_perks > 0) {
 				menup.username.className = "menu_username menu_username_perks";
 			}

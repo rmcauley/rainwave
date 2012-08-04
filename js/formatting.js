@@ -25,7 +25,8 @@ function formatHumanTime(seconds, fulltime, disableseconds) {
 function linkify(el, external, new_window) {
 	if (new_window) el.setAttribute("class", el.getAttribute("class") + " new_window");
 	else if (external) el.setAttribute("class", el.getAttribute("class") + " external_link");
-	else el.setAttribute("class", el.getAttribute("class") + " link");
+	else if (el.getAttribute("class")) el.setAttribute("class", el.getAttribute("class") + " link");
+	else el.setAttribute("class", "link");
 	return el;
 }
 
