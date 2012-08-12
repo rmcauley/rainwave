@@ -9,11 +9,6 @@ from rainwave import playlist
 from rainwave import request
 
 """
-These are the test scenarios I thought of that should be written that apply to this module:
-
-Election.load_by_id ** tested by load_by_type / load_unused
-Election.load_by_type
-Election.load_unused
 Election.create
 	- Timing
 	- No timing
@@ -188,6 +183,7 @@ class Election(Event):
 		elec.in_progress = row['elec_in_progress']
 		elec.sid = row['sid']
 		elec.songs = []
+		elec.priority = row['elec_priority']
 		for song_row in db.c.fetch_all("SELECT * FROM r4_election_entries WHERE elec_id = %s", (id,)):
 			song = playlist.Song.load_from_id(song_row['song_id'], elec.sid)
 			song.data['entry_id'] = song_row['entry_id']
@@ -227,6 +223,7 @@ class Election(Event):
 		elec.sid = sid
 		elec.start = None
 		elec.songs = []
+		elec.priority = False
 		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid) VALUES (%s, %s, %s, %s)", (elec_id, False, elec.type, elec.sid))
 		return elec
 		
@@ -378,6 +375,14 @@ class Election(Event):
 		self.songs[0].add_to_vote_count(self.songs[0].data['entry_votes'], self.sid)
 		self.songs[0].update_last_played(self.sid)
 		self.songs[0].start_cooldown(self.sid)
+	
+	def set_priority(self, priority):
+		# Do not update the actual local priority variable, that may be needed
+		# for sorting purposes
+		if priority:
+			db.c.update("UPDATE r4_elections SET elec_priority = TRUE WHERE elec_id = %s", (self.id,))
+		else:
+			db.c.update("UPDATE r4_elections SET elec_priority = FALSE WHERE elec_id = %s", (self.id,))
 		
 class PVPElection(Election):
 	def __init__(self):

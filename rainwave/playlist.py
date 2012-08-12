@@ -309,12 +309,28 @@ class Song(object):
 			metadata.associate_song_id(s.id, sids)
 		
 		return s
+		
+	@classmethod
+	def create_fake(klass, sid):
+		if not config.test_mode:
+			raise "Tried to create a fake song when not in test mode."
+			
+		s = klass()
+		s.filename = "fake.mp3"
+		s.data['title'] = "Test Song %s" % db.c.get_next_id("r4_songs", "song_id")
+		s.artist_tag = "Test Artist %s" % db.c.get_next_id("r4_artists", "artist_id")
+		s.album_tag = "Test Album %s" % db.c.get_next_id("r4_albums", "album_id")
+		s.fake = True
+		s.data['length'] = 60
+		s.save([ sid ])
+		return s
 
 	def __init__(self):
 		"""
 		A blank Song object.  Please use one of the load functions to get a filled instance.
 		"""
 		self.id = None
+		self.filename = None
 		self.albums = None
 		self.artists = None
 		self.groups = None
@@ -325,6 +341,7 @@ class Song(object):
 		self.data = {}
 		self.data['link'] = None
 		self.data['link_text'] = None
+		self.fake = False
 		
 	def load_tag_from_file(self, filename):
 		"""
@@ -356,7 +373,10 @@ class Song(object):
 		"""
 		Lets callee know if this MP3 is valid or not.
 		"""
-		
+		if config.test_mode and self.fake:
+			self.verified = True
+			return True
+
 		if os.path.exists(self.filename):
 			self.verified = True
 			return True
@@ -388,6 +408,10 @@ class Song(object):
 			raise SongHasNoSIDsException
 		self.data['origin_sid'] = self.data['sids'][0]
 		
+		file_mtime = 0
+		if not self.fake:
+			file_mtime = os.stat(self.filename)[8]
+		
 		if update:
 			db.c.update("UPDATE r4_songs \
 				SET	song_filename = %s, \
@@ -399,7 +423,7 @@ class Song(object):
 					song_verified = TRUE, \
 					song_file_mtime = %s \
 				WHERE song_id = %s", 
-				(self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], os.stat(self.filename)[8], self.id))
+				(self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], file_mtime, self.id))
 			self.verified = True
 		else:
 			self.id = db.c.get_next_id("r4_songs", "song_id")
@@ -407,7 +431,7 @@ class Song(object):
 				(song_id, song_filename, song_title, song_link, song_link_text, song_length, song_origin_sid, song_file_mtime) \
 				VALUES \
 				(%s,      %s           , %s        , %s       , %s            , %s         , %s             , %s )",
-				(self.id, self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid'], os.stat(self.filename)[8]))
+				(self.id, self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime))
 			self.verified = True
 			self.data['added_on'] = int(time.time())
 

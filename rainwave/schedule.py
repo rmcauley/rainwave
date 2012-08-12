@@ -10,8 +10,6 @@ from libs import db
 from libs import config
 from libs import cache
 
-# TODO: This enture module needs to have its unit tests written
-
 # Events for each station
 current = {}
 next = {}
@@ -27,7 +25,7 @@ def load():
 		if not current[sid]:
 			try:
 				current[sid] = get_event_in_progress(sid)
-			except ElectionDoesNotExist:
+			except event.ElectionDoesNotExist:
 				current[sid] = event.Election(sid)
 		if not current[sid]:
 			raise ScheduleIsEmpty("Could not load or create any election for a current event.")
@@ -64,16 +62,16 @@ def get_event_in_progress(sid):
 		return get_event_at_time(sid, time.time())
 		
 def get_event_at_time(sid, epoch_time):
-	at_time = db.c.fetch_row("SELECT sched_id, sched_type FROM r4_schedule WHERE sid = %s AND sched_start <= %s AND sched_end > %s ORDER BY (%s - sched_start) LIMIT 1", (sid, epoch_time, epoch_time))
+	at_time = db.c.fetch_row("SELECT sched_id, sched_type FROM r4_schedule WHERE sid = %s AND sched_start <= %s AND sched_end > %s ORDER BY (%s - sched_start) LIMIT 1", (sid, epoch_time - 5, epoch_time, epoch_time))
 	if at_time:
 		return event.load_by_id_and_type(at_time['sched_id'], at_time['sched_type'])
 	elif epoch_time >= time.time():
 		return None
 	else:
 		# We add 5 seconds here in order to make up for any crossfading and buffering times that can screw up the radio timing
-		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE r4_elections.sid = %s AND elec_played_at <= %s ORDER BY elec_played_at DESC LIMIT 1", (sid, epoch_time - 5))
+		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE r4_elections.sid = %s AND elec_start_actual <= %s ORDER BY elec_start_actual DESC LIMIT 1", (sid, epoch_time - 5))
 		if elec_id:
-			return event.Election.load_by_id(load_by_id_and_type(at_time['sched_id'], at_time['sched_type'])
+			return event.Election.load_by_id(load_by_id_and_type(at_time['sched_id'], at_time['sched_type']))
 		else:
 			return None
 
@@ -94,6 +92,8 @@ def advance_station(sid):
 	history.insert(0, last_song)
 	db.c.update("INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)", (sid, last_song.id))
 	
+	integrate_new_events(sid)
+	sort_next(sid)
 	current[sid] = next.pop(0)
 	current[sid].start_event()
 
@@ -116,12 +116,7 @@ def _add_listener_count_record(sid):
 	lc_users_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1 AND listener_voted_entry IS NOT NULL", (sid,))
 	return db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests, lc_users, lc_guests_active, lc_users_active) VALUES (%s, %s, %s, %s, %s)", (sid, lc_guests, lc_users, lc_guests_active, lc_users_active))
 	
-def _create_elections(sid):
-	# Step, er, 0: Update the request cache first, so elections have the most recent data to work with
-	# (the entire requests module depends on its caches)
-	request.update_cache(sid)
-
-	# Step 1: See if any new events are in the schedule that apply to this station, that haven't been used, and aren't in our next list
+def integrate_new_events(sid):
 	max_sched_id = 0
 	max_elec_id = 0
 	num_elections = 0
@@ -135,16 +130,39 @@ def _create_elections(sid):
 	unused_sched_id = db.c.fetch_list("SELECT sched_id FROM r4_schedule WHERE sid = %s AND sched_id > %s AND sched_used = FALSE AND sched_start <= %s ORDER BY sched_start", (sid, max_sched_id, time.time() + 86400))
 	for sched_id in unused_sched_id:
 		next[sid].append(event.load_by_id(sched_id))
+		
+	# Step 4: Insert "priority elections" ahead of anything else
+	priority_elec_ids = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND elec_id > %s AND elec_priority = TRUE ORDER BY elec_id DESC", (sid, max_elec_id))
+	for elec_id in priority_elec_ids:
+		event = playlist.Election.load_by_id(elec_id)
+		# The client, through the API, sets start times, so we don't have to worry about where in the array it goes.  The sorter will take care of it.
+		next[sid].append(event)
+		if event.id > max_elec_id:
+			max_elec_id = event.id
+		num_elections += 1
+		event.set_priority(False)
+		
+	return (max_sched_id, max_elec_id, num_elections)
+
+def sort_next(sid):
+	next[sid] = sorted(next[sid], key=lambda event: event.start_time)
+	
+def _create_elections(sid):
+	# Step, er, 0: Update the request cache first, so elections have the most recent data to work with
+	# (the entire requests module depends on its caches)
+	request.update_cache(sid)
+
+	max_sched_id, max_elec_id, num_elections = integrate_new_events(sid)
 	
 	# Step 2: Load up any elections that have been added while we've been idle (i.e. by admins) and append them to the list
-	unused_elec_id = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND max_elec_id > %s AND elec_priority = FALSE ORDER BY elec_id", (sid, max_elec_id))
+	unused_elec_id = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND elec_id > %s AND elec_priority = FALSE ORDER BY elec_id", (sid, max_elec_id))
 	unused_elecs = []
 	num_elections += length(unused_elec_id)
 	for elec_id in unused_elec_id:
 		unused_elecs.append(event.Election.load_by_id(elec_id))
 	
 	# Step 3a: Sort the next list (that excludes any added elections)
-	next[sid] = sorted(next[sid], key=lambda event: event.start_time)
+	sort_next(sid)
 	# Step 3b: Insert elections where there's time and adjust predicted start times as necessary, if num_elections < 2 then create them where necessary
 	i = 1
 	running_time = current[sid].start_actual + current[sid].length()
@@ -198,13 +216,7 @@ def _create_elections(sid):
 		else:
 			next[sid][i].start = running_time
 			running_time += next[sid][i].length()
-		i += 1		
-	
-	# Step 4: Insert "priority elections" ahead of anything else
-	# Since they'll be inserted at index 0 of the array at all times, order by elec_id DESC so the first elec is the last inserted at index 0
-	priority_elec_ids = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND max_elec_id > %s AND elec_priority = TRUE ORDER BY elec_id DESC", (sid, max_elec_id))
-	for elec_id in priority_elec_ids:
-		next[sid].insert(0, playlist.Election.load_by_id(elec_id))
+		i += 1
 	
 	# Step 5: If we're at less than 2 elections available, create them and append them
 	# No timing is required here, since we're simply outright appending to the end
@@ -215,7 +227,7 @@ def _create_elections(sid):
 		running_time += next_elec.length()
 		next[sid].append(next_elec)
 	
-def _create_election(sid, start_time = None, target_length = None)
+def _create_election(sid, start_time = None, target_length = None):
 	# Check to see if there are any events during this time
 	elec_scheduler = get_event_at_time(start_time)
 	# If there are, and it makes elections (e.g. PVP Hours), get it from there

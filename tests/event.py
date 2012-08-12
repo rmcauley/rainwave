@@ -16,7 +16,7 @@ class ElectionTest(unittest.TestCase):
 		self.song1.disable()
 		self.song5.disable()
 		
-	def test_fill(self):
+	def test_fill_and_load(self):
 		e = Election.create(1)
 		e.fill()
 		e2 = Election.load_by_id(e.id)
