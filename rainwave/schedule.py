@@ -62,7 +62,7 @@ def get_event_in_progress(sid):
 		return get_event_at_time(sid, time.time())
 		
 def get_event_at_time(sid, epoch_time):
-	at_time = db.c.fetch_row("SELECT sched_id, sched_type FROM r4_schedule WHERE sid = %s AND sched_start <= %s AND sched_end > %s ORDER BY (%s - sched_start) LIMIT 1", (sid, epoch_time - 5, epoch_time, epoch_time))
+	at_time = db.c.fetch_row("SELECT sched_id, sched_type FROM r4_schedule WHERE sid = %s AND sched_start <= %s AND sched_end > %s ORDER BY (%s - sched_start) LIMIT 1", (sid, epoch_time + 5, epoch_time, epoch_time))
 	if at_time:
 		return event.load_by_id_and_type(at_time['sched_id'], at_time['sched_type'])
 	elif epoch_time >= time.time():
