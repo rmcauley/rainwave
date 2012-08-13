@@ -837,7 +837,7 @@ function _THEME() {
 			help.changeStepPointEl("tunein", [ menup.player ]);
 			help.changeTopicPointEl("tunein", [ menup.player ]);
 			
-			row = createEl("tr", false, menup.header_table);
+			row = createEl("tr", { "class": "header_secondary_row" }, menup.header_table);
 		
 			var station_td = createEl("td", { "class": "station_list_td" }, row);		
 			menup.sub_menu = createEl("ul", { "class": "sub_menu" }, station_td);

@@ -759,15 +759,12 @@ tr.header_primary_row td {
 	background-image: -moz-linear-gradient(bottom, rgb(8,104,172) 22%, rgb(0,20,121) 100%);
 	background-image: -webkit-linear-gradient(bottom, rgb(8,104,172) 22%, rgb(0,20,121) 100%);
 	background-image: linear-gradient(bottom, rgb(8,104,172) 22%, rgb(0,20,121) 100%);
-}
-
-td.menu_download_td {
-	background: #0868ac;
+	border-bottom: solid 2px #000000;
 }
 
 td.site_header {
-	border-bottom: solid 2px #000000;
-	border-right: solid 2px #000000;
+	border-right: solid 5px #000000;
+	padding-left: 5px;
 }
 
 .header_user {
@@ -813,9 +810,13 @@ ul.menu_userlinks li+li {
 	border-right: solid 1px #CCC;
 }
 
-td.station_list_td {
+tr.header_secondary_row {
 	background: [% primarybkg %];
-	border-right: solid 2px #000000;
+}
+
+td.station_list_td {
+	border-right: solid 5px #000000;
+	padding-left: 5px;
 }
 
 ul.station_list {
@@ -948,7 +949,7 @@ div.menu_flash_warning {
 	display: block;
 }
 
-td.menu_download_td {
+table.header_table td.menu_download_td {
 	text-align: center;
 	width: 200px;
 	vertical-align: top;

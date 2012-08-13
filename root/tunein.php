@@ -22,6 +22,9 @@ else {
 }
 
 $streamtype = "mp3";
+if (isset($_GET['ogg'])) {
+	$streamtype = "ogg";
+}
 
 $userstring = $user_listen_key;
 
