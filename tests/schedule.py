@@ -39,6 +39,7 @@ class ScheduleTest(unittest.TestCase):
 		
 		# Second test:
 		# Cycle through the elections and make sure the event gets played properly
+		schedule.advance_station(1)
 				
 		# Third test: 
 		# Reset the schedule, fill with elections, then create an event that is supposed to happen

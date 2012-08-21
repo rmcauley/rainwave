@@ -289,7 +289,7 @@ class Election(Event):
 			for song in self.songs:
 				for song_result in results:
 					if song_result['song_id'] == song.id:
-						song.data['entry_votes'] == song_result['entry_votes']
+						song.data['entry_votes'] = song_result['entry_votes']
 					# Auto-votes for somebody's request
 					if song.data['entry_type'] == ElecSongTypes.request:
 						if db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (song.data['elec_request_user_id'], self.id)) == 0:

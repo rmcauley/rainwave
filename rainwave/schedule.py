@@ -86,12 +86,13 @@ def advance_station(sid):
 	current[sid].finish()
 	
 	last_song = current[sid].get_song()
-	history.insert(0, last_song)
-	db.c.update("INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)", (sid, last_song.id))
+	if last_song:
+		history[sid].insert(0, last_song)
+		db.c.update("INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)", (sid, last_song.id))
 	
 	integrate_new_events(sid)
 	sort_next(sid)
-	current[sid] = next.pop(0)
+	current[sid] = next[sid].pop(0)
 	current[sid].start_event()
 
 def post_process(sid):
@@ -142,7 +143,7 @@ def integrate_new_events(sid):
 	return (max_sched_id, max_elec_id, num_elections)
 
 def sort_next(sid):
-	next[sid] = sorted(next[sid], key=lambda event: event.start_time)
+	next[sid] = sorted(next[sid], key=lambda event: event.start)
 	
 def _create_elections(sid):
 	# Step, er, 0: Update the request cache first, so elections have the most recent data to work with
