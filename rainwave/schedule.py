@@ -23,34 +23,31 @@ def load():
 		current[sid] = cache.get_station(sid, "sched_current")
 		# If our cache is empty, pull from the DB
 		if not current[sid]:
-			try:
-				current[sid] = get_event_in_progress(sid)
-			except event.ElectionDoesNotExist:
-				current[sid] = event.Election(sid)
+			current[sid] = get_event_in_progress(sid)
 		if not current[sid]:
-			raise ScheduleIsEmpty("Could not load or create any election for a current event.")
+			current[sid] = _create_election(sid)
 			
 		next[sid] = cache.get_station(sid, "sched_next")
 		if not next[sid]:
-			future_time = time.time() + current[sid].get_length()
+			future_time = time.time() + current[sid].length()
 			next_elecs = event.Election.load_unused(sid)
 			next_event = True
 			next[sid] = []
-			while len(next) < 2 and next_event:
+			while len(next[sid]) < 2 and next_event:
 				next_event = get_event_at_time(sid, future_time)
 				if not next_event:
-					if length(next_elecs) > 0:
+					if len(next_elecs) > 0:
 						next_event = next_elecs.pop(0)
 					else:
-						next_event = event.Election.create(sid)
+						next_event = _create_election(sid, future_time)
 				if next_event:
-					future_time += next_event.get_length()
-					next.append(next_event)
+					future_time += next_event.length()
+					next[sid].append(next_event)
 		
 		history[sid] = cache.get_station(sid, "sched_history")
 		if not history[sid]:
 			history[sid] = []
-			song_ids = db.c.fetch_list("SELECT song_id FROM r4_song_history WHERE sid = %s ORDER BY songhist_id DESC")
+			song_ids = db.c.fetch_list("SELECT song_id FROM r4_song_history WHERE sid = %s ORDER BY songhist_id DESC", (sid,))
 			for id in song_ids:
 				history[sid].append(playlist.Song.load_by_id(id, sid))
 		
@@ -157,7 +154,7 @@ def _create_elections(sid):
 	# Step 2: Load up any elections that have been added while we've been idle (i.e. by admins) and append them to the list
 	unused_elec_id = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND elec_id > %s AND elec_priority = FALSE ORDER BY elec_id", (sid, max_elec_id))
 	unused_elecs = []
-	num_elections += length(unused_elec_id)
+	num_elections += len(unused_elec_id)
 	for elec_id in unused_elec_id:
 		unused_elecs.append(event.Election.load_by_id(elec_id))
 	
@@ -167,18 +164,18 @@ def _create_elections(sid):
 	i = 1
 	running_time = current[sid].start_actual + current[sid].length()
 	next[0].start = running_time
-	while i < length(next[sid]):
+	while i < len(next[sid]):
 		next_start = next[i].start
 		gap = next_start - running_time
 		next_elec_i = None
 		next_elec_length = playlist.avg_song_length
 		j = i
-		while j < length(next[sid]):
+		while j < len(next[sid]):
 			if next[j].is_election:
 				next_elec = j
 				next_elec_length = next[j].length()
 				break
-		if not next_elec_i and length(unused_elecs) > 0:
+		if not next_elec_i and len(unused_elecs) > 0:
 			next_elec_length = unused_elecs[0].length()
 
 		# TODO: This algorithm DEFINITELY needs code/concept review
@@ -196,7 +193,7 @@ def _create_elections(sid):
 		elif not next_elec_i and gap <= (next_elec_length * 1.4):
 			next_elec = None
 			# If we have an existing unused election, we can use that (as next_elec_length is already based on the first unused elec, this can happen)
-			if length(unused_elecs) > 0:
+			if len(unused_elecs) > 0:
 				next_elec = unused_elecs.pop(0)
 			# If not, create a new election timed to the gap (next_elec_length will be the average song length*1.4, so this will happen frequently)
 			else:
@@ -229,12 +226,14 @@ def _create_elections(sid):
 	
 def _create_election(sid, start_time = None, target_length = None):
 	# Check to see if there are any events during this time
-	elec_scheduler = get_event_at_time(start_time)
+	elec_scheduler = None
+	if start_time:
+		elec_scheduler = get_event_at_time(sid, start_time)
 	# If there are, and it makes elections (e.g. PVP Hours), get it from there
 	if elec_scheduler and elec_scheduler.produces_elections:
 		elec_scheduler.create_election(sid)
 	else:
-		elec = Event.Election.create(sid)
+		elec = event.Election.create(sid)
 	elec.fill(target_length)
 	return elec
 
