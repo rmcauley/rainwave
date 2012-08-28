@@ -4,24 +4,38 @@ import os
 import shutil
 from subprocess import call
 
-from libs import config
+# from libs import config
 
-if getuid() != 0:
-	raise "Installer must be run as root."
+if os.getuid() != 0:
+	raise Exception("Installer must be run as root.")
 
 installdir = "/opt/rainwave"
 user = "rainwave"
 group = "rainwave"
 
-if not os.path.exists("/etc/rainwave.conf")
+if not os.path.exists("/etc/rainwave.conf"):
+	raise Exception("Configuration not found at /etc/rainwave.conf.  Please create a config.")
 
-if not os.path.exists(installdir):
-	os.makedirs(installdir)
-elif not os.path.isdir(installdir):
-	raise "Installation directory (%s) appears to be a filename.  Please check." % installdir
+# call([ "/etc/init.d/rainwave stop" ])
+if os.path.exists(installdir):
+	shutil.rmtree(installdir)
+os.makedirs(installdir)
+if not os.path.isdir(installdir):
+	raise Exception("Installation directory (%s) appears to be a filename.  Please check." % installdir)
 
-shutil.copytree(".", installdir, ignore=shutil.ignore_patterns("*.pyc", "etc", ".git", "api_tests", "tests"))
+shutil.copytree("api", installdir + "/api", ignore=shutil.ignore_patterns("*.pyc"))
+shutil.copytree("api_requests", installdir + "/api_requests", ignore=shutil.ignore_patterns("*.pyc"))
+shutil.copytree("backend", installdir + "/backend", ignore=shutil.ignore_patterns("*.pyc"))
+shutil.copytree("libs", installdir + "/libs", ignore=shutil.ignore_patterns("*.pyc"))
+shutil.copytree("rainwave", installdir + "/rainwave", ignore=shutil.ignore_patterns("*.pyc"))
+
+shutil.copy("icecast_sync.py", "/opt/rainwave/icecast_sync.py")
+shutil.copy("rw_api.py", "/opt/rainwave/rw_api.py")
+shutil.copy("rw_backend.py", "/opt/rainwave/rw_backend.py")
+shutil.copy("rw_scanner.py", "/opt/rainwave/rw_scanner.py")
+# TODO: What to do with tagset.py and icecast_sync.py?
+
 shutil.copy("initscript", "/etc/init.d/rainwave")
 shutil.copy("rw_get_next.py", "/usr/local/bin/rw_get_next.py")
-# TODO: What to do with tagset.py and icecast_sync.py/
-call([ "/etc/init.d/rainwave stop", "/etc/init.d/rainwave start" ])
+
+# call([ "/etc/init.d/rainwave start" ])
