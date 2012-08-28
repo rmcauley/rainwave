@@ -27,7 +27,8 @@ def start():
 	if not _scan_errors:
 		_scan_errors = []
 	_directories = config.get("song_dirs", True)
-	full_update()
+	
+	# full_update()
 	monitor()
 	
 def full_update():

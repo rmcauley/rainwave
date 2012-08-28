@@ -13,4 +13,8 @@ if __name__ == "__main__":
 	libs.log.init("%s/rw_scanner.log" % libs.config.get("log_dir"), libs.config.get("log_level"))
 	libs.db.open()
 	libs.cache.open()
+	
+	if libs.config.get("scanner_user") and libs.config.get("scanner_group"):
+		libs.chuser.change_user(lisb.config.get("scanner_user"), libs.config.get("scanner_group"))
+	
 	backend.filemonitor.start()

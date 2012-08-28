@@ -1,0 +1,39 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          rw_scanner rw_backend rw_api
+# Required-Start:    $remote_fs $network postgresql memcache
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Starts the icecast audio streaming server daemon
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+D_SCANNER=/opt/rainwave/rw_scanner.py
+D_API=/opt/rainwave/rw_api.py
+D_BACKEND=/opt/rainwave/rw_backend.py
+
+set -e
+
+case "$1" in
+  start)
+	echo -n "Starting Rainwave: "
+	start-stop-daemon --start --background --exec $D_SCANNER
+	start-stop-daemon --start --background --exec $D_API
+	start-stop-daemon --start --background --exec $D_BACKEND
+	echo "OK"
+	;;
+  stop)
+	echo -n "Stopping Rainwave: "
+	start-stop-daemon --stop --oknodo --quiet --pidfile /opt/run/rw_scanner.pid
+	start-stop-daemon --stop --oknodo --quiet --pidfile /opt/run/rw_api.pid
+	start-stop-daemon --stop --oknodo --quiet --pidfile /opt/run/rw_backend.pid
+	echo "OK"
+	;;
+  *)
+	echo "Usage: $0 {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

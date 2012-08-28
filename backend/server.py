@@ -8,6 +8,7 @@ from rainwave import schedule
 from libs import log
 from libs import config
 from libs import db
+from libs import chuser
 
 class AdvanceScheduleRequest(tornado.web.RequestHandler):
 	def get(self, sid):
@@ -32,6 +33,9 @@ def start():
 	
 	server = tornado.httpserver.HTTPServer(app)
 	server.listen(int(config.get("backend_port")), address='127.0.0.1')
+	
+	if config.get("backend_user") and config.get("backend_group"):
+		chuser.change_user(config.get("backend_user"), config.get("backend_group"))
 	
 	schedule.load()
 	
