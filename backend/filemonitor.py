@@ -4,6 +4,7 @@ import magic
 import sys
 import pyinotify
 import asyncore
+import psutil
 from PIL import Image
 
 from libs import config
@@ -27,6 +28,10 @@ def start(full_scan):
 	if not _scan_errors:
 		_scan_errors = []
 	_directories = config.get("song_dirs", True)
+	
+	p = psutil.Process(os.getpid())
+	p.set_nice(10)
+	p.set_ionice(psutil.IOPRIO_CLASS_IDLE)
 	
 	if full_scan:
 		full_update()
@@ -57,6 +62,7 @@ def _scan_directories():
 			for filename in files:
 				cache.set("backend_scan_counted", file_counter)
 				fqfn = root + "/" + filename
+				print fqfn
 				_scan_file(fqfn, sids, True)
 	_save_scan_errors()
 	
@@ -68,7 +74,7 @@ def _is_mp3(filename):
 
 def _is_image(filename):
 	filetype = _ms.file(filename)
-	if filetype and (filetype.count("PNG") or filetype.count("GIF") or filetype.count("JPEG"))
+	if filetype and (filetype.count("PNG") or filetype.count("GIF") or filetype.count("JPEG")):
 		return True
 	return False
 	
@@ -87,7 +93,8 @@ def _scan_file(filename, sids, mp3_only = False):
 		
 def process_album_art(filename):
 	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_album USING (song_id) WHERE song_filename LIKE '%s%'", (directory,))
-	if not album_ids or len(album_id
+	if not album_ids or len(album_id) == 0:
+		return
 	im_original = Image.open(filename)
 	im_120 = im_original.copy().thumbnail((120, 120), Image.ANTIALIAS)
 	im_240 = im_original.copy().thumbnail((240, 240), Image.ANTIALIAS)
