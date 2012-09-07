@@ -62,7 +62,7 @@ class APIServer(object):
 		port_no = int(config.get("api_base_port")) + task_id
 		
 		# Log according to configured directory and port # we're operating on
-		log_file = "%s/api%s.log" % (config.get("log_dir"), port_no)
+		log_file = "%s/api%s.log" % (config.get("api_log_dir"), port_no)
 		if config.test_mode and os.path.exists(log_file):
 			os.remove(log_file)
 		log.init(log_file, config.get("log_level"))

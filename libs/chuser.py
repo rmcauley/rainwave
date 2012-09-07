@@ -3,6 +3,9 @@ from pwd import getpwnam
 from grp import getgrpnam
 
 def change_user(user, group):
+	if os.getuid() != 0:
+		raise Exception("Installer must be run as root.")
+
 	user_id = getpwnam(user).pw_uid
 	group_id = grp.getgrnam(group).gr_gid
 	os.setuid(user_id)
