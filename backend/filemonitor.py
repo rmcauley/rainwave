@@ -92,7 +92,8 @@ def _scan_file(filename, sids, mp3_only = False):
 		_add_scan_error(filename, xception)
 		
 def process_album_art(filename):
-	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_album USING (song_id) WHERE song_filename LIKE '%s%'", (directory,))
+	directory = filename[0:filename.rfind("/")]
+	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_album USING (song_id) WHERE song_filename LIKE %s%", (directory,))
 	if not album_ids or len(album_id) == 0:
 		return
 	im_original = Image.open(filename)
@@ -103,8 +104,6 @@ def process_album_art(filename):
 		im_320 = im_original.copy().thumbnail((320, 320), Image.ANTIALIAS)
 	else:
 		im_320 = im_original
-	directory = filename[0:filename.rfind("/")]
-	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_album USING (song_id) WHERE song_filename LIKE '%s%'", (directory,))
 	for album_id in album_ids:
 		im_120.save("%s/%s_120.jpg" % (config.get("album_art_directory"), album_id))
 		im_240.save("%s/%s_240.jpg" % (config.get("album_art_directory"), album_id))
