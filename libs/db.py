@@ -67,17 +67,17 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 	def create_delete_fk(self, linking_table, foreign_table, key, create_idx = True):
 		if create_idx:
 			self.create_idx(linking_table, key)
-		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE CASCADE", (linking_table, linking_table, key, key, foreign_table, key))
+		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE CASCADE" % (linking_table, linking_table, key, key, foreign_table, key))
 		
 	def create_null_fk(self, linking_table, foreign_table, key, create_idx = True):
 		if create_idx:
 			self.create_idx(linking_table, key)
-		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE SET NULL", (linking_table, linking_table, key, key, foreign_table, key))
+		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE SET NULL" % (linking_table, linking_table, key, key, foreign_table, key))
 		
 	def create_idx(self, table, *args):
 		name = "%s_%s_idx" % (table, '_'.join(map(str, args)))
 		columns = ','.join(map(str, args))
-		self.execute("CREATE INDEX %s ON %s (%s)", (name, table, columns))
+		self.execute("CREATE INDEX %s ON %s (%s)" % (name, table, columns))
 		
 class SQLiteCursor(object):
 	def __init__(self, filename):
@@ -202,7 +202,7 @@ def open():
 	if type == "postgres":
 		psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 		psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
-		connstr = "sslmode=disable dbname=%s" % name
+		connstr = "sslmode=disable dbname=%s " % name
 		if host:
 			connstr += "host=%s " % host
 		if port:
@@ -214,7 +214,7 @@ def open():
 		connection = psycopg2.connect(connstr)
 		connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 		connection.autocommit = True
-		c = self.con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+		c = connection.cursor(cursor_factory=PostgresCursor)
 	elif type == "sqlite":
 		log.debug("dbopen", "Opening SQLite DB %s" % name)
 		c = SQLiteCursor(name)
@@ -330,7 +330,7 @@ def create_tables():
 			album_vote_share			REAL		DEFAULT 0, \
 			album_vote_total			INTEGER		DEFAULT 0\
 		)")
-	c.create_idx("r4_album_sid", "album_verified")
+	c.create_idx("r4_album_sid", "album_exists")
 	c.create_idx("r4_album_sid", "sid")
 	# c.create_idx("r4_album_sid", "album_id")		# handled by create_delete_fk
 	c.create_delete_fk("r4_album_sid", "r4_albums", "album_id")
@@ -361,7 +361,7 @@ def create_tables():
 	
 	c.update(" \
 		CREATE TABLE r4_artists		( \
-			artist_id				SERIAL		NOT NULL, \
+			artist_id				SERIAL		NOT NULL PRIMARY KEY, \
 			artist_name				TEXT		\
 		)")
 	
@@ -389,10 +389,10 @@ def create_tables():
 			group_id				INTEGER		NOT NULL, \
 			group_is_tag				BOOLEAN		DEFAULT TRUE \
 		)")
-	# c.create_idx("r4_songs_in_groups", "song_id")		# handled by create_delete_fk
-	# c.create_idx("r4_songs_in_groups", "group_id")
-	c.create_delete_fk("r4_songs_in_groups", "r4_songs", "song_id")
-	c.create_delete_fk("r4_songs_in_groups", "r4_song_groups", "group_id")
+	# c.create_idx("r4_song_group", "song_id")		# handled by create_delete_fk
+	# c.create_idx("r4_song_group", "group_id")
+	c.create_delete_fk("r4_song_group", "r4_songs", "song_id")
+	c.create_delete_fk("r4_song_group", "r4_groups", "group_id")
 	
 	c.update(" \
 		CREATE TABLE r4_schedule ( \
@@ -413,7 +413,7 @@ def create_tables():
 		)")
 	c.create_idx("r4_schedule", "sched_in_progress")
 	c.create_idx("r4_schedule", "sched_public")
-	c.create_idx("r4_schedule", "sched_started")
+	c.create_idx("r4_schedule", "sched_start_actual")
 	
 	c.update(" \
 		CREATE TABLE r4_elections ( \
@@ -456,10 +456,10 @@ def create_tables():
 			sched_id				INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL \
 		)")
-	# c.create_idx("r4_1ups", "sched_id")		# handled by create_delete_fk
-	# c.create_idx("r4_1ups", "song_id")
-	c.create_delete_fk("r4_1ups", "r4_schedule", "sched_id")
-	c.create_delete_fk("r4_1ups", "r4_songs", "song_id")
+	# c.create_idx("r4_one_ups", "sched_id")		# handled by create_delete_fk
+	# c.create_idx("r4_one_ups", "song_id")
+	c.create_delete_fk("r4_one_ups", "r4_schedule", "sched_id")
+	c.create_delete_fk("r4_one_ups", "r4_songs", "song_id")
 	
 	c.update(" \
 		CREATE TABLE r4_listeners ( \
@@ -509,10 +509,10 @@ def create_tables():
 			song_id					INTEGER		NOT NULL, \
 			sid					SMALLINT	NOT NULL \
 		)")
-	# c.create_idx("r4_request_lists", "user_id")		# handled by create_delete_fk
-	# c.create_idx("r4_request_lists", "song_id")
-	c.create_delete_fk("r4_request_lists", "phpbb_users", "user_id")
-	c.create_delete_fk("r4_request_lists", "r4_songs", "song_id")
+	# c.create_idx("r4_request_store", "user_id")		# handled by create_delete_fk
+	# c.create_idx("r4_request_store", "song_id")
+	c.create_delete_fk("r4_request_store", "phpbb_users", "user_id")
+	c.create_delete_fk("r4_request_store", "r4_songs", "song_id")
 	
 	c.update(" \
 		CREATE TABLE r4_request_line ( \
@@ -523,10 +523,10 @@ def create_tables():
 			line_expiry_election			INTEGER		, \
 			line_top_song_id			INTEGER		\
 		)")
-	# c.create_idx("r4_request_queue", "user_id")		# handled by create_delete_fk
-	c.create_idx("r4_request_queue", "sid")
-	c.create_idx("r4_request_queue", "requestq_wait_start")
-	c.create_delete_fk("r4_request_queue", "phpbb_users", "user_id")
+	# c.create_idx("r4_request_line", "user_id")		# handled by create_delete_fk
+	c.create_idx("r4_request_line", "sid")
+	c.create_idx("r4_request_line", "line_wait_start")
+	c.create_delete_fk("r4_request_line", "phpbb_users", "user_id")
 
 	c.update(" \
 		CREATE TABLE r4_request_history ( \
@@ -596,7 +596,8 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_song_history ( \
 			songhist_id				SERIAL		PRIMARY KEY, \
-			sid					SMALLINT	NOT NULL, \
+			songhist_time			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
+			sid						SMALLINT	NOT NULL, \
 			song_id					INTEGER		NOT NULL \
 		)")
 	c.create_idx("r4_song_history", "sid")
@@ -608,7 +609,7 @@ def create_tables():
 def _create_test_tables():
 	c.update(" \
 		CREATE TABLE phpbb_users( \
-			user_id					SERIAL		DEFAULT (EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) + 86400), \
+			user_id					SERIAL		PRIMARY KEY, \
 			radio_winningvotes			INT		DEFAULT 0, \
 			radio_losingvotes			INT		DEFAULT 0, \
 			radio_winningrequests			INT		DEFAULT 0, \
