@@ -57,6 +57,7 @@ class User(object):
 
 	def _auth_registered_user(self, ip_address, api_key, bypass = False):
 		if not bypass:
+			# TODO: Check to see if a cached value of this exists, if so, use it; if not, cache it
 			r = db.c.fetch_row("SELECT api_key, api_is_rainwave FROM r4_api_keys WHERE user_id = %s AND api_key = %s", (self.id, api_key))
 			if not r:
 				log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
@@ -96,6 +97,7 @@ class User(object):
 
 	def _auth_anon_user(self, ip_address, api_key, bypass = False):
 		if not bypass:
+			# TODO: Check to see if a cached value of this exists, if so, use it; if not, cache it
 			auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (ip_address,))
 			if not auth_against:
 				log.debug("user", "Anonymous user key %s not found." % api_key)

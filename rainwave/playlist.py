@@ -2,6 +2,7 @@ import os
 import time
 import random
 import math
+import subprocess
 
 from mutagen.mp3 import MP3
 
@@ -367,8 +368,12 @@ class Song(object):
 			self.data['link'] = f["WXXX:URL"].url
 		elif "WXXX" in keys:
 			self.data['link'] = f["WXXX"][0]
+		if not "TXXX:REPLAYGAIN_TRACK_GAIN" in keys:
+			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
+			process = subprocess.Popen([ "mp3gain", "-q", "-k", "-o", "-p", "Deadline.mp3" ], shell=False)
+			process.wait()
 		self.data['length'] = int(f.info.length)
-		
+
 	def is_valid(self):
 		"""
 		Lets callee know if this MP3 is valid or not.

@@ -19,7 +19,7 @@ _ms = magic.open(magic.MAGIC_NONE)
 _ms.load()
 _wm = pyinotify.WatchManager()
 
-def start():
+def start(full_scan):
 	global _directories
 	global _scan_errors
 	
@@ -28,8 +28,10 @@ def start():
 		_scan_errors = []
 	_directories = config.get("song_dirs", True)
 	
-	# full_update()
-	monitor()
+	if full_scan:
+		full_update()
+	else:
+		monitor()
 	
 def full_update():
 	cache.set("backend_scan", "full scan")

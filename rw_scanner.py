@@ -8,6 +8,7 @@ import libs
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Rainwave song scanning daemon.")
 	parser.add_argument("--config", default="etc/rainwave_test.conf")
+	parser.add_argument("--full", action="store_true")
 	args = parser.parse_args()
 	libs.config.load(args.config)
 	libs.log.init("%s/rw_scanner.log" % libs.config.get("log_dir"), libs.config.get("log_level"))
@@ -17,4 +18,4 @@ if __name__ == "__main__":
 	if libs.config.get("scanner_user") and libs.config.get("scanner_group"):
 		libs.chuser.change_user(lisb.config.get("scanner_user"), libs.config.get("scanner_group"))
 	
-	backend.filemonitor.start()
+	backend.filemonitor.start(args.full)
