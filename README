@@ -4,13 +4,14 @@ Required Python modules:
 	- pyinotify (filesystem monitoring)
 	- tornado (webserver)
 	- sqlite3 (database)
-	- psycopg2 (database)
+	- psycopg 2.x (database)
 	- pylibmc (memcache)
-	- mutagen (ID3 tag reading)
+	- mutagen (ID3 tag reader)
 	- nose (test library)
-	- PIL (Python Image Library, on Debian: python-imaging, used for album art)
-	- psutil (used for nice and ionice)
-	- magic (used for filetype identification)
+	- PIL (album art) [Debian: python-imaging, Gentoo: dev-python/imaging]
+	- psutil (nice and ionice)
+	- magic (filetype identification)
+	- mp3gain (streaming)
 
 Recommended .git/hooks/pre-commit:
 	#!/bin/bash
