@@ -109,9 +109,10 @@ class User(object):
 
 	def refresh(self, use_local_cache = False):
 		listener = None
-		if use_local_cache and self.id in cache.local['listeners_internal']:
+		# TODO: The caching here needs work, improve it. <3
+		if use_local_cache and cache.local_exists(self.data['sid'], "listeners_internal") and self.id in cache.local['listeners_internal']:
 			listener = cache.local['listeners_internal'][self.id]
-		elif not use_local_cache:
+		else:
 			listener = db.c.fetch_row("SELECT "
 				"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
 				"FROM r4_listeners "
@@ -207,10 +208,10 @@ class User(object):
 		
 	def get_top_request_song_id(self, sid):
 		return db.c.fetch_var("SELECT song_id FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND r4_request_store.sid = %s AND song_exists = TRUE AND song_cool = FALSE AND song_elec_blocked = FALSE ORDER BY reqstor_order, reqstor_id", (self.id, sid))
-	
+		
 	def get_top_request_sid(self):
-		return db.c.fetch_var("SELECT r4_request_store FROM r4_request_store WHERE user_id = %s ORDER BY reqstor_order, reqstor_id", (self.id,))
-			
+		return db.c.fetch_var("SELECT reqstor_id FROM r4_request_store WHERE user_id = %s ORDER BY reqstor_order, reqstor_id LIMIT 1", (self.id,))
+		
 	def get_request_line_position(self, sid):
 		if self.id <= 1:
 			return False

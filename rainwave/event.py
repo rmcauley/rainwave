@@ -250,9 +250,9 @@ class Election(Event):
 	def _check_song_for_conflict(self, song):
 		requesting_user = db.c.fetch_var("SELECT username "
 			"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN r4_request_store USING (user_id) JOIN phpbb_users USING (user_id) "
-			"WHERE r4_listeners.sid = %s AND r4_request_line.sid = %s AND song_id = %s "
+			"WHERE r4_listeners.sid = %s AND r4_request_line.sid = r4_listeners.sid AND song_id = %s "
 			"ORDER BY line_wait_start LIMIT 1",
-			(self.sid, self.sid, song.id))
+			(self.sid, song.id))
 		if requesting_user:
 			song.data['entry_type'] = ElecSongTypes.request
 			song.data['request_username'] = requesting_user

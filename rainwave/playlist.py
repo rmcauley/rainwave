@@ -370,7 +370,7 @@ class Song(object):
 			self.data['link'] = f["WXXX"][0]
 		if not "TXXX:REPLAYGAIN_TRACK_GAIN" in keys:
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
-			process = subprocess.Popen([ "mp3gain", "-q", "-k", "-o", "-p", "Deadline.mp3" ], shell=False)
+			process = subprocess.Popen([ "mp3gain", "-q", "-k", "-o", "-p", "tests/test1.mp3" ], shell=False)
 			process.wait()
 		self.data['length'] = int(f.info.length)
 
