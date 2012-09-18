@@ -9,6 +9,7 @@ from libs import log
 from libs import config
 from libs import db
 from libs import chuser
+from libs import cache
 
 class AdvanceScheduleRequest(tornado.web.RequestHandler):
 	def get(self, sid):
@@ -23,9 +24,9 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			schedule.post_process(self.sid)
 
 def start():
-	log.init(log_file, config.get("log_level"))
-	log.debug("start", "Server booting, port %s." % port_no)
+	log.debug("start", "Server booting, port %s." % int(config.get("backend_port")))
 	db.open()
+	cache.open()
 	
 	app = tornado.web.Application([
 		(r"/advance/([0-9]+)", AdvanceScheduleRequest)

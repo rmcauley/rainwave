@@ -35,14 +35,14 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 	
 	def fetch_row(self, query, params = None):
 		self.execute(query, params)
-		if self.rowcount == 0:
-			return None
+		#if self.rowcount == 0:
+		#	return None
 		return self.fetchone()
 		
 	def fetch_all(self, query, params = None):
 		self.execute(query, params)
 		if self.rowcount == 0:
-			return None
+			return []
 		return self.fetchall()
 		
 	def fetch_list(self, query, params = None):

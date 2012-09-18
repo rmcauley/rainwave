@@ -27,7 +27,7 @@ def start(full_scan):
 	_scan_errors = cache.get("backend_scan_errors")
 	if not _scan_errors:
 		_scan_errors = []
-	_directories = config.get("song_dirs", True)
+	_directories = config.get("song_dirs")
 	
 	p = psutil.Process(os.getpid())
 	p.set_nice(10)

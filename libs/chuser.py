@@ -1,12 +1,14 @@
 import os
 from pwd import getpwnam
-from grp import getgrpnam
+from grp import getgrnam
 
 def change_user(user, group):
 	if os.getuid() != 0:
-		raise Exception("Installer must be run as root.")
+		raise Exception("Must run as root.")
 
 	user_id = getpwnam(user).pw_uid
-	group_id = grp.getgrnam(group).gr_gid
+	group_id = getgrnam(group).gr_gid
 	os.setuid(user_id)
-	os.setgid(group_id)
+	# TODO: This causes problems for some reason - maybe it needs to be forked?
+	# I get "Operation not permitted"
+	# os.setgid(group_id)

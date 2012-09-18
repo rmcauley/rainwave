@@ -758,6 +758,7 @@ def get_updated_albums_dict(sid):
 		album = Album.load_from_id_sid(album_id, sid).to_dict()
 		album.solve_cool_lowest(sid)
 		album_diff.append(album)
+	# TODO: Return newly added albums here (query new albums since last time this function was run)
 	return album_diff
 		
 class Album(AssociatedMetadata):

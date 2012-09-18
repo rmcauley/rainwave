@@ -16,7 +16,7 @@ if __name__ == "__main__":
 	libs.config.load(args.config)
 	
 	pid = os.getpid()
-	pidfile = open(config.get("pid_backend"), 'w')
+	pidfile = open(libs.config.get("backend_pid_file"), 'w')
 	pidfile.write(str(pid))
 	pidfile.close()
 	
