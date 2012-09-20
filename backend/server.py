@@ -5,6 +5,7 @@ import tornado.process
 import tornado.options
 
 from rainwave import schedule
+from rainwave import playlist
 from libs import log
 from libs import config
 from libs import db
@@ -39,5 +40,8 @@ def start():
 		chuser.change_user(config.get("backend_user"), config.get("backend_group"))
 	
 	schedule.load()
+	
+	for sid in config.station_ids:
+		playlist.prepare_cooldown_algorithm(sid)
 	
 	tornado.ioloop.IOLoop.instance().start()

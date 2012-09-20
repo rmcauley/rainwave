@@ -49,13 +49,13 @@ def prepare_cooldown_algorithm(sid):
 	if not avg_album_rating:
 		avg_album_rating = 3.5
 	# print "avg_album_rating: %s" % avg_album_rating
-	multiplier_adjustment = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT album_cool_multiply * AVG(song_length) AS tempvar FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
+	multiplier_adjustment = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_cool_multiply) * AVG(song_length) AS tempvar FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
 	if not multiplier_adjustment:
 		multiplier_adjustment = 1
 	# print "multi: %s" % multiplier_adjustment
-	base_album_cool = float(config.get_station(sid, "cooldown_percentage")) * sum_aasl / multiplier_adjustment
+	base_album_cool = float(config.get_station(sid, "cooldown_percentage")) * float(sum_aasl) / float(multiplier_adjustment)
 	# print "base_album_cool: %s" % base_album_cool
-	base_rating = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT album_rating * AVG(song_length) AS tempvar FROM r4_albums JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
+	base_rating = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_rating) * AVG(song_length) AS tempvar FROM r4_albums JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
 	if not base_rating:
 		base_rating = 4
 	# print "base rating: %s" % base_rating

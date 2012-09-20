@@ -10,6 +10,8 @@ from libs import db
 from libs import config
 from libs import cache
 
+# import pdb
+
 # Events for each station
 current = {}
 next = {}
@@ -29,6 +31,7 @@ def load():
 			
 		next[sid] = cache.get_station(sid, "sched_next")
 		if not next[sid]:
+			# pdb.set_trace()
 			future_time = time.time() + current[sid].length()
 			next_elecs = event.Election.load_unused(sid)
 			next_event = True
