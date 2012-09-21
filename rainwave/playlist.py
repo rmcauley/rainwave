@@ -55,7 +55,7 @@ def prepare_cooldown_algorithm(sid):
 	# print "multi: %s" % multiplier_adjustment
 	base_album_cool = float(config.get_station(sid, "cooldown_percentage")) * float(sum_aasl) / float(multiplier_adjustment)
 	# print "base_album_cool: %s" % base_album_cool
-	base_rating = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_rating) * AVG(song_length) AS tempvar FROM r4_albums JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
+	base_rating = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_rating) * AVG(song_length) AS tempvar FROM r4_albums JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) JOIN r4_song_album ON (r4_albums.album_id = r4_song_album.album_id) JOIN r4_songs USING (song_id) WHERE r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
 	if not base_rating:
 		base_rating = 4
 	# print "base rating: %s" % base_rating
@@ -81,7 +81,7 @@ def prepare_cooldown_algorithm(sid):
 	if not number_songs:
 		number_songs = 1
 	# print "number_songs: %s" % number_songs
-	cooldown_config[sid]['max_song_cool'] = average_song_length * (number_songs * config.get_station(sid, "cooldown_song_max_multiplier"))
+	cooldown_config[sid]['max_song_cool'] = float(average_song_length) * (number_songs * config.get_station(sid, "cooldown_song_max_multiplier"))
 	cooldown_config[sid]['min_song_cool'] = cooldown_config[sid]['max_song_cool'] * config.get_station(sid, "cooldown_song_min_multiplier")
 	
 def get_age_cooldown_multiplier(added_on):

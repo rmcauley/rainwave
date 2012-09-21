@@ -138,8 +138,9 @@ class Event(object):
 			return
 		elif self.used:
 			raise EventAlreadyUsed
+		self.start_actual = time.time()
 		self.in_progress = True
-		db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (time.time(), self.id))
+		db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (self.start_actual, self.id))
 		
 	def get_dj_user_id(self):
 		return self.dj_user_id

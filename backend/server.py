@@ -28,6 +28,7 @@ def start():
 	log.debug("start", "Server booting, port %s." % int(config.get("backend_port")))
 	db.open()
 	cache.open()
+	playlist.remove_all_locks(1)		# DEBUG ONLY
 	
 	app = tornado.web.Application([
 		(r"/advance/([0-9]+)", AdvanceScheduleRequest)
