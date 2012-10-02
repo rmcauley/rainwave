@@ -55,7 +55,7 @@ else if ($sid == MW) {
 	print "#EXTINF:0,Rainwave Covers Random Relay\n";
 	print "http://coverstream.rainwave.cc:8000/covers." . $streamtype . $userstring . "\n";
 	print "#EXTINF:0,Rainwave Covers Relay 1 - Donated by Tanaric - USA - Firewall Friendly\n";
-	print "http://textville.net/chiptune." . $streamtype . $userstring . "\n";
+	print "http://textville.net/covers." . $streamtype . $userstring . "\n";
 	print "#EXTINF:0;Rainwave Covers Relay 2 - Donated by Lyfe - Connecticut, USA\n";
 	print "http://stream3.gameowls.com:8000/covers." . $streamtype . $userstring . "\n";
 	print "#EXTINF:0,Rainwave Covers Relay 3 - Donated by Lyfe - Connecticut, USA\n";
