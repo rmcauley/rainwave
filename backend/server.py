@@ -17,8 +17,8 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		self.sid = None
 		if int(sid) in config.station_ids:
 			self.sid = int(sid)
-			schedule.advance_station(sid)
-			self.write(schedule.get_current_file())
+			schedule.advance_station(self.sid)
+			self.write(schedule.get_current_file(self.sid))
 	
 	def on_finish(self):
 		if self.sid:
