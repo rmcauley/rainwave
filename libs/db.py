@@ -619,7 +619,8 @@ def _create_test_tables():
 			username				TEXT 		DEFAULT 'Test', \
 			user_new_privmsg			INT		DEFAULT 0, \
 			user_avatar				TEXT		DEFAULT '', \
-			user_avatar_type			INT		DEFAULT 0 \
+			user_avatar_type			INT		DEFAULT 0, \
+			radio_inactive \
 		)")
 
 def _fill_test_tables():

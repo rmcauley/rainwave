@@ -594,7 +594,7 @@ class Song(object):
 		return self.data
 		
 	def get_all_ratings(self):
-		table = db.c.fetch_all("SELECT song_rating, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
+		table = db.c.fetch_all("SELECT song_user_rating, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
 		all_ratings = {}
 		for row in all_ratings:
 			all_ratings[row['user_id']] = { 'song_rating': row['song_rating'], 'song_fave': row['song_fave'] }
@@ -754,10 +754,10 @@ def clear_updated_albums(sid):
 def get_updated_albums_dict(sid):
 	global updated_album_ids
 	album_diff = []
-	for album_id in updated_album_ids:
-		album = Album.load_from_id_sid(album_id, sid).to_dict()
+	for album_id in updated_album_ids[sid]:
+		album = Album.load_from_id_sid(album_id, sid)
 		album.solve_cool_lowest(sid)
-		album_diff.append(album)
+		album_diff.append(album.to_dict())
 	# TODO: Return newly added albums here (query new albums since last time this function was run)
 	return album_diff
 		
@@ -785,6 +785,8 @@ class Album(AssociatedMetadata):
 	@classmethod
 	def load_from_id_sid(cls, album_id, sid):
 		row = db.c.fetch_row("SELECT r4_albums.*, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.album_id = %s AND r4_album_sid.sid = %s", (album_id, sid))
+		if not row:
+			return None
 		instance = cls()
 		instance._assign_from_dict(row)
 		instance.sids = [ sid ]
@@ -889,7 +891,7 @@ class Album(AssociatedMetadata):
 			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE AND song_cool_end = %s WHERE song_id = %s AND song_cool_end < %s", (song_id, cool_end, cool_end))
 			
 	def solve_cool_lowest(self, sid):
-		self.data['cool_lowest'] = db.c.fetch_var("SELECT MIN(song_cool_end) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid = %s", (self.id, sid))
+		self.data['cool_lowest'] = db.c.fetch_var("SELECT MIN(song_cool_end) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid.sid = %s", (self.id, sid))
 		db.c.update("UPDATE r4_album_sid SET album_cool_lowest = %s WHERE album_id = %s AND sid = %s", (self.data['cool_lowest'], self.id, sid))
 		return self.data['cool_lowest']
 		

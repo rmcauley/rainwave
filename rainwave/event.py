@@ -190,6 +190,7 @@ class Election(Event):
 			song.data['entry_id'] = song_row['entry_id']
 			song.data['entry_type'] = song_row['entry_type']
 			song.data['entry_position'] = song_row['entry_position']
+			song.data['entry_votes'] = song_row['entry_votes']
 			if song.data['entry_type'] != ElecSongTypes.normal:
 				song.data['elec_request_user_id'] = 0
 				song.data['elec_request_username'] = None
@@ -299,8 +300,9 @@ class Election(Event):
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_votes'])
 			self.songs.reverse()
+			self.start_actual = time.time()
 			self.in_progress = True
-			db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s WHERE elec_id = %s", (time.time(), self.id))
+			db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s WHERE elec_id = %s", (self.start_actual, self.id))
 	
 	def get_filename(self):
 		return self.songs[0].filename

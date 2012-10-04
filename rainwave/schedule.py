@@ -1,4 +1,5 @@
 import time
+import pprint
 
 from backend import sync_to_front
 from rainwave import event
@@ -52,7 +53,7 @@ def load():
 			history[sid] = []
 			song_ids = db.c.fetch_list("SELECT song_id FROM r4_song_history WHERE sid = %s ORDER BY songhist_id DESC", (sid,))
 			for id in song_ids:
-				history[sid].append(playlist.Song.load_by_id(id, sid))
+				history[sid].append(playlist.Song.load_from_id(id, sid))
 		
 def get_event_in_progress(sid):
 	in_progress = db.c.fetch_row("SELECT sched_id, sched_type FROM r4_schedule WHERE sid = %s AND sched_in_progress = TRUE ORDER BY sched_start DESC LIMIT 1", (sid,))
@@ -71,7 +72,7 @@ def get_event_at_time(sid, epoch_time):
 		# We add 5 seconds here in order to make up for any crossfading and buffering times that can screw up the radio timing
 		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE r4_elections.sid = %s AND elec_start_actual <= %s ORDER BY elec_start_actual DESC LIMIT 1", (sid, epoch_time - 5))
 		if elec_id:
-			return event.Election.load_by_id(load_by_id_and_type(at_time['sched_id'], at_time['sched_type']))
+			return event.Election.load_by_id(elec_id)
 		else:
 			return None
 
@@ -167,17 +168,18 @@ def _create_elections(sid):
 	# Step 3b: Insert elections where there's time and adjust predicted start times as necessary, if num_elections < 2 then create them where necessary
 	i = 1
 	running_time = current[sid].start_actual + current[sid].length()
-	next[0].start = running_time
+	if len(next) > 0:
+		next[sid][0].start = running_time
 	while i < len(next[sid]):
-		next_start = next[i].start
+		next_start = next[sid][i].start
 		gap = next_start - running_time
 		next_elec_i = None
 		next_elec_length = playlist.avg_song_length
 		j = i
 		while j < len(next[sid]):
-			if next[j].is_election:
+			if next[sid][j].is_election:
 				next_elec = j
-				next_elec_length = next[j].length()
+				next_elec_length = next[sid][j].length()
 				break
 		if not next_elec_i and len(unused_elecs) > 0:
 			next_elec_length = unused_elecs[0].length()
@@ -243,15 +245,16 @@ def _create_election(sid, start_time = None, target_length = None):
 
 def _trim(sid):
 	# Deletes any events in the schedule and elections tables that are old, according to the config
-	db.c.update("DELETE FROM r4_schedule WHERE sched_start_actual <= %s", (time.time() - config.get("trim_event_age")))
-	db.c.update("DELETE FROM r4_elections WHERE elec_start_actual <= %s", (time.time() - config.get("trim_election_age")))
+	current_time = round(time.time())
+	db.c.update("DELETE FROM r4_schedule WHERE sched_start_actual <= %s", (current_time - config.get("trim_event_age"),))
+	db.c.update("DELETE FROM r4_elections WHERE elec_start_actual <= %s", (current_time - config.get("trim_election_age"),))
 	max_history_id = db.c.fetch_var("SELECT MAX(songhist_id) FROM r4_song_history")
-	db.c.update("DELETE FROM r4_song_history WHERE songhist_id <= %s", (max_history_id - config.get("trim_history_length")))
+	db.c.update("DELETE FROM r4_song_history WHERE songhist_id <= %s", (max_history_id - config.get("trim_history_length"),))
 	
 def _update_memcache(sid):
 	cache.set_station(sid, "sched_current", current[sid])
 	cache.set_station(sid, "sched_next", next[sid])
 	cache.set_station(sid, "sched_history", history[sid])
-	cache.prime_rating_cache_for_events([ sched_current[sid] ] + sched_next[sid] + sched_history[sid])	
-	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict())
+	cache.prime_rating_cache_for_events([ current[sid] ] + next[sid], history[sid])	
+	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict(sid))
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid))

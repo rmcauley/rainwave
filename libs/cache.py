@@ -1,5 +1,6 @@
 import pylibmc
 from libs import config
+from libs import db
 
 _memcache = None
 local = {}
@@ -36,6 +37,9 @@ def set_station(sid, key, value):
 	
 def get_local_station(sid, key):
 	return local["sid%s_%s" % (sid, key)]
+	
+def set_local_station(sid, key, value):
+	local["sid%s_%s" % (sid, key)] = value
 
 def local_exists(sid, key):
 	return "sid%s_%s" % (sid, key) in local
@@ -62,12 +66,14 @@ def push_local_station(sid, key):
 	key = "sid%s_%s" % (sid, key)
 	set(key, local[key])
 
-def prime_rating_cache_for_events(events):
-	key = 'song_ratings_%s' % event[0].sid
+def prime_rating_cache_for_events(events, songs = []):
+	key = 'song_ratings_%s' % events[0].sid
 	local[key] = {}
-	for event in events:
-		for song in event.songs:
+	for e in events:
+		for song in e.songs:
 			local[key][song.id] = song.get_all_ratings()
+	for song in songs:
+		local[key][song.id] = song.get_all_ratings()
 	push_local_to_memcache(key)
 	
 def update_local_cache_for_sid(sid):
@@ -88,12 +94,12 @@ def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "song_ratings")
 	
 def update_user_rating_acl(sid, song_id):
-	users = {}
-	if local_exists(sid, "user_rating_acl"):
-		users = get_local_station(sid, "user_rating_acl")
-	songs = []
-	if local_exists(sid, "user_rating_acl_song_index"):
-		songs = get_local_station(sid, "user_rating_acl_song_index")
+	users = get_local_station(sid, "user_rating_acl")
+	if not users:
+		users = {}
+	songs = get_local_station(sid, "user_rating_acl_song_index")
+	if not songs:
+		songs = []
 
 	while len(songs) > 2:
 		del users[songs.pop(0)]
@@ -103,7 +109,7 @@ def update_user_rating_acl(sid, song_id):
 	for user_id in db.c.fetch_list("SELECT user_id FROM r4_listeners WHERE sid = %s AND user_id > 1", (sid,)):
 		users[user_id] = True
 		
-	set_station_local(sid, "user_rating_acl", users)
+	set_local_station(sid, "user_rating_acl", users)
 	push_local_station(sid, "user_rating_acl")
-	set_station_local(sid, "user_rating_acl_song_index", songs)
+	set_local_station(sid, "user_rating_acl_song_index", songs)
 	push_local_station(sid, "user_rating_acl_song_index")
