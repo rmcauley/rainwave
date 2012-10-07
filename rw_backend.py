@@ -15,11 +15,6 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 	libs.config.load(args.config)
 	
-	pid = os.getpid()
-	pidfile = open(libs.config.get("backend_pid_file"), 'w')
-	pidfile.write(str(pid))
-	pidfile.close()
-	
 	libs.log.init("%s/rw_backend.log" % libs.config.get("log_dir"), libs.config.get("log_level"))
 	
 	sys.exit(backend.server.start())

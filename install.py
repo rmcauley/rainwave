@@ -2,7 +2,7 @@
 
 import os
 import shutil
-from subprocess import call
+import subprocess
 
 # from libs import config
 
@@ -16,7 +16,8 @@ group = "rainwave"
 if not os.path.exists("/etc/rainwave.conf"):
 	raise Exception("Configuration not found at /etc/rainwave.conf.  Please create a config.")
 
-# call([ "/etc/init.d/rainwave stop" ])
+if os.path.exists("/etc/init.d/rainwave"):
+	subprocess.check_call([ "/etc/init.d/rainwave", "stop" ])
 if os.path.exists(installdir):
 	shutil.rmtree(installdir)
 os.makedirs(installdir)
@@ -38,4 +39,4 @@ shutil.copy("rw_scanner.py", "/opt/rainwave/rw_scanner.py")
 shutil.copy("initscript", "/etc/init.d/rainwave")
 shutil.copy("rw_get_next.py", "/usr/local/bin/rw_get_next.py")
 
-# call([ "/etc/init.d/rainwave start" ])
+subprocess.check_call([ "/etc/init.d/rainwave", "start" ])

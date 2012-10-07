@@ -1,3 +1,4 @@
+import os
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
@@ -39,6 +40,11 @@ def start():
 	
 	if config.get("backend_user") and config.get("backend_group"):
 		chuser.change_user(config.get("backend_user"), config.get("backend_group"))
+		
+	pid = os.getpid()
+	pidfile = open(config.get("backend_pid_file"), 'w')
+	pidfile.write(str(pid))
+	pidfile.close()
 	
 	schedule.load()
 	
