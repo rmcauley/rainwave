@@ -8,7 +8,7 @@ def get_listeners_dict(sid):
 	clist = db.c.fetch_all(
 		"SELECT r4_listeners.user_id, username, COUNT(vote_time) AS radio_2wkvotes "
 		"FROM r4_listeners JOIN phpbb_users USING (user_id) "
-		"LEFT JOIN r4_vote_history ON (phpbb_users.user_id == r4_vote_history.user_id AND vote_time < %s) "
+		"LEFT JOIN r4_vote_history ON (phpbb_users.user_id = r4_vote_history.user_id AND vote_time < %s) "
 		"WHERE r4_listeners.sid = %s AND r4_listeners.user_id > 1 "
 		"GROUP BY r4_listeners.user_id, username "
 		"ORDER BY radio_2wkvotes DESC, username",

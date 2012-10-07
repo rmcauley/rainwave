@@ -93,13 +93,28 @@ def update_local_cache_for_sid(sid):
 	# The caches below should only be used on new-song refreshes
 	refresh_local_station(sid, "song_ratings")
 	
+def reset_station_caches():
+	for sid in config.station_ids:
+		set_station(sid, "album_diff", None)
+		set_station(sid, "sched_next", None)
+		set_station(sid, "sched_history", None)
+		set_station(sid, "sched_current", None)
+		set_station(sid, "listeners_current", None)
+		set_station(sid, "listeners_internal", None)
+		set_station(sid, "request_line", None)
+		set_station(sid, "request_user_positions", None)
+		set_station(sid, "user_rating_acl", None)
+		set_station(sid, "user_rating_acl_song_index", None)
+		set("request_expire_times", None)
+		set("calendar", None)
+	
 def update_user_rating_acl(sid, song_id):
-	users = get_local_station(sid, "user_rating_acl")
-	if not users:
-		users = {}
-	songs = get_local_station(sid, "user_rating_acl_song_index")
-	if not songs:
-		songs = []
+	users = {}
+	if ("sid%s_user_rating_acl" % sid) in local:
+		users = local["sid%s_user_rating_acl" % sid]
+	songs = []
+	if ("sid%s_user_rating_song_index" % sid) in local:
+		songs = local["sid%s_user_rating_song_index" % sid]
 
 	while len(songs) > 2:
 		del users[songs.pop(0)]
