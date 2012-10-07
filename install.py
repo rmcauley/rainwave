@@ -34,7 +34,8 @@ shutil.copy("icecast_sync.py", "/opt/rainwave/icecast_sync.py")
 shutil.copy("rw_api.py", "/opt/rainwave/rw_api.py")
 shutil.copy("rw_backend.py", "/opt/rainwave/rw_backend.py")
 shutil.copy("rw_scanner.py", "/opt/rainwave/rw_scanner.py")
-# TODO: What to do with tagset.py and icecast_sync.py?
+shutil.copy("rw_clear_cache.py", "/opt/rainwave/rw_clear_cache.py")
+# TODO: What to do with tagset.py?
 
 shutil.copy("initscript", "/etc/init.d/rainwave")
 shutil.copy("rw_get_next.py", "/usr/local/bin/rw_get_next.py")

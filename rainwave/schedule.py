@@ -10,6 +10,7 @@ from rainwave import user
 from libs import db
 from libs import config
 from libs import cache
+from libs import log
 
 # import pdb
 
@@ -155,20 +156,22 @@ def _create_elections(sid):
 	request.update_cache(sid)
 
 	max_sched_id, max_elec_id, num_elections = integrate_new_events(sid)
+	log.debug("create_elec", "Max sched ID: %s // Max elec ID: %s // Num elections already existing: %s // Size of next: %s" % (max_sched_id, max_elec_id, num_elections, len(next[sid])))
 	
 	# Step 2: Load up any elections that have been added while we've been idle (i.e. by admins) and append them to the list
 	unused_elec_id = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND elec_id > %s AND elec_priority = FALSE ORDER BY elec_id", (sid, max_elec_id))
 	unused_elecs = []
-	num_elections += len(unused_elec_id)
 	for elec_id in unused_elec_id:
+		log.debug("create_elec", "Appending an unused election.")
 		unused_elecs.append(event.Election.load_by_id(elec_id))
+		num_elections += 1
 	
 	# Step 3a: Sort the next list (that excludes any added elections)
 	sort_next(sid)
 	# Step 3b: Insert elections where there's time and adjust predicted start times as necessary, if num_elections < 2 then create them where necessary
 	i = 1
 	running_time = current[sid].start_actual + current[sid].length()
-	if len(next) > 0:
+	if len(next[sid]) > 0:
 		next[sid][0].start = running_time
 	while i < len(next[sid]):
 		next_start = next[sid][i].start
@@ -224,6 +227,7 @@ def _create_elections(sid):
 	# Step 5: If we're at less than 2 elections available, create them and append them
 	# No timing is required here, since we're simply outright appending to the end
 	# (any elections appearing before a scheduled item would be handled by the block above)
+	log.debug("create_elec", "Filling in rest of elections.  Current num elections: %s // Next size: %s" % (num_elections, len(next[sid])))
 	for i in range(num_elections, config.get("num_planned_elections")):
 		next_elec = _create_election(sid, running_time)
 		next_elec.start = running_time
@@ -231,6 +235,7 @@ def _create_elections(sid):
 		next[sid].append(next_elec)
 	
 def _create_election(sid, start_time = None, target_length = None):
+	log.debug("create_elec", "Creating election.")
 	# Check to see if there are any events during this time
 	elec_scheduler = None
 	if start_time:
