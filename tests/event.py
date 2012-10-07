@@ -19,10 +19,13 @@ class ElectionTest(unittest.TestCase):
 		
 	def test_fill_and_load(self):
 		e = Election.create(1)
+		self.assertEqual(e.use_crossfade, True)
 		e.fill()
 		e2 = Election.load_by_id(e.id)
+		self.assertEqual(e2.use_crossfade, True)
 		self.assertEqual(e.id, e2.id)
 		e2 = Election.load_by_type(1, e.type)
+		self.assertEqual(e2.use_crossfade, True)
 		self.assertEqual(e.type, e2.type)
 		unused_elecs = Election.load_unused(1)
 		fail = True

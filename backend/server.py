@@ -19,7 +19,33 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		if int(sid) in config.station_ids:
 			self.sid = int(sid)
 			schedule.advance_station(self.sid)
-			self.write(schedule.get_current_file(self.sid))
+			if not config.get("liquidsoap_annotations"):
+				self.write(schedule.get_current_file(self.sid))
+			else:
+				self.write(self._get_annotated(schedule.get_current_event(self.sid)))
+				
+	def _get_annotated(self, e):
+		string = "annotate:crossfade=\""
+		if e.use_crossfade:
+			string += "1"
+		else:
+			string += "0"
+		string += "\","
+		
+		string += "use_suffix=\""
+		if e.use_tag_suffix:
+			string += "1"
+		else:
+			string += "0"
+		string += "\""
+		
+		string += ",suffix=\"%s\"" % config.get_station(self.sid, "stream_suffix")
+		
+		if e.name:
+			string += ",title=\"%s\"" % event.name
+		
+		string += ":" + e.get_filename()
+		return string
 	
 	def on_finish(self):
 		if self.sid:

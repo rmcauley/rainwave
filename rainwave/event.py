@@ -5,6 +5,7 @@ import time
 from libs import db
 from libs import config
 from libs import cache
+from libs import log
 from rainwave import playlist
 from rainwave import request
 
@@ -69,7 +70,7 @@ def load_by_id_and_type(sched_id, sched_type):
 
 class Event(object):
 	@classmethod
-	def create(cls, sid, start, end, type = None, name = None, public = True, timed = False, url = None):
+	def create(cls, sid, start, end, type = None, name = None, public = True, timed = False, url = None, use_crossfade = True, use_tag_suffix = True):
 		evt = cls()
 		evt.id = db.c.get_next_id("r4_schedule", "sched_id")
 		evt.start = start
@@ -86,6 +87,8 @@ class Event(object):
 		evt.url = url
 		evt.in_progress = False
 		evt.dj_user_id = None
+		evt.use_crossfade = use_crossfade
+		evt.use_tag_suffix = use_tag_suffix
 		db.c.update("INSERT INTO r4_schedule "
 					"(sched_id, sched_start, sched_end, sched_type, sched_name, sid, sched_public, sched_timed, sched_url, sched_in_progress) VALUES "
 					"(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
@@ -96,6 +99,9 @@ class Event(object):
 		self.start = None
 		self.produces_elections = False
 		self.dj_user_id = None
+		self.use_crossfade = True
+		self.use_tag_suffix = True
+		self.name = None
 	
 	def _update_from_dict(self, dict):
 		self.start = dict['sched_start']
@@ -230,6 +236,7 @@ class Election(Event):
 		return elec
 		
 	def __init__(self, sid = None):
+		super(Election, self).__init__()
 		self._num_requests = 1
 		if sid:
 			self._num_songs = config.get_station(sid, "songs_in_election")

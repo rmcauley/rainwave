@@ -79,6 +79,9 @@ def get_event_at_time(sid, epoch_time):
 
 def get_current_file(sid):
 	return current[sid].get_filename()
+	
+def get_current_event(sid):
+	return current[sid]
 
 def advance_station(sid):
 	playlist.prepare_cooldown_algorithm(sid)
@@ -97,6 +100,8 @@ def advance_station(sid):
 	
 	integrate_new_events(sid)
 	sort_next(sid)
+	if len(next[sid]) == 0:
+		_create_elections(sid)
 	current[sid] = next[sid].pop(0)
 	current[sid].start_event()
 
@@ -164,7 +169,6 @@ def _create_elections(sid):
 	for elec_id in unused_elec_id:
 		log.debug("create_elec", "Appending an unused election.")
 		unused_elecs.append(event.Election.load_by_id(elec_id))
-		num_elections += 1
 	
 	# Step 3a: Sort the next list (that excludes any added elections)
 	sort_next(sid)
@@ -223,16 +227,23 @@ def _create_elections(sid):
 			next[sid][i].start = running_time
 			running_time += next[sid][i].length()
 		i += 1
+		
+	log.debug("create_elec", "Filling in rest of elections.  Unused elecs: %s // Current num elections: %s // Next size: %s" % (len(unused_elecs), num_elections, len(next[sid])))
 	
-	# Step 5: If we're at less than 2 elections available, create them and append them
+	needed_elecs = config.get("num_planned_elections") - num_elections
+	# Step 5: If we're at less than 2 elections available, create them (or use unused ones) and append them
 	# No timing is required here, since we're simply outright appending to the end
 	# (any elections appearing before a scheduled item would be handled by the block above)
-	log.debug("create_elec", "Filling in rest of elections.  Current num elections: %s // Next size: %s" % (num_elections, len(next[sid])))
-	for i in range(num_elections, config.get("num_planned_elections")):
-		next_elec = _create_election(sid, running_time)
+	while needed_elecs > 0:
+		next_elec = None
+		if len(unused_elecs) > 0:
+			next_elec = unused_elecs.pop(0)
+		else:
+			next_elec = _create_election(sid, running_time)
 		next_elec.start = running_time
 		running_time += next_elec.length()
 		next[sid].append(next_elec)
+		needed_elecs -= 1
 	
 def _create_election(sid, start_time = None, target_length = None):
 	log.debug("create_elec", "Creating election.")
