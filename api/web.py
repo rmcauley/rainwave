@@ -92,7 +92,7 @@ class RequestHandler(tornado.web.RequestHandler):
 			self.append("error", api.returns.ErrorReturn(-1000, "Missing station ID argument."))
 
 		# Now we strictly enforce valid station IDs.
-		if not self.sid in config.station_ids or self.sid == 0:
+		if not self.sid or not self.sid in config.station_ids or self.sid == 0:
 			self.append("error", api.returns.ErrorReturn(-1000, "Invalid station ID."))
 			request_ok = False
 				

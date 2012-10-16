@@ -11,11 +11,15 @@ class IndexRequest(tornado.web.RequestHandler):
 	def get(self):
 		write_help_header(self, "Rainwave API Documentation")
 		self.write("<h2>Requests</h2>")
-		self.write("<table class='help_legend'><tr><th>Auth</th><th>Lstn</th><th>Lgn</th><th>DJ</th><th>Admn</th><th>Method</th><th>URL</th></tr>")
+		self.write("<table class='help_legend'><tr><th>Station ID Required</th><th>Auth Required</th><th>Tune In Required</th><th>Login Required</th><th>DJ Required</th><th>Admin Required</th><th>Method</th><th>URL</th></tr>")
 		for k, v in help_classes.iteritems():
 			self.write("<tr>")
-			if not v["class"].auth_required:
-				self.write("<td class='noauth_required requirement'>N</td>")
+			if v["class"].sid_required:
+				self.write("<td class='sid_required requirement'>Y</td>")
+			else:
+				self.write("<td class='requirement'>&nbsp;</td>")
+			if v["class"].auth_required:
+				self.write("<td class='noauth_required requirement'>Y</td>")
 			else:
 				self.write("<td class='requirement'>&nbsp;</td>")
 			if v["class"].tunein_required:
@@ -35,10 +39,10 @@ class IndexRequest(tornado.web.RequestHandler):
 			else:
 				self.write("<td class='requirement'>&nbsp;</td>")
 			self.write("<td class='requirement'>%s</td>" % v["method"])
-			self.write("<td><a href='%s'>%s</a></td>" % (k, k))
+			self.write("<td><a href='/api/help/%s'>%s</a></td>" % (k, k))
 		self.write("</table>")
 		self.write("<h2>Making a Request</h2>")
-		self.write("<ul><li>The Rainwave API handles all requests in the following format <b>http://rainwave.cc/api/[station ID]/[request]</b>.</li>")
+		self.write("<ul><li>The Rainwave API handles all requests in the following format <b>http://rainwave.cc/api/[request]</b>.</li>")
 		self.write("<li>All data returned is JSON.</li>")
 		self.write("<li>All data submitted is through standard GET or POST form submission.</li>")
 		self.write("<li>Authentication keys and user IDs need to be obtained by the users at http://rainwave.cc/auth/</li>")

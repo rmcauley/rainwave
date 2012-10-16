@@ -7,6 +7,7 @@ from api.server import handle_url
 @handle_url("hello_world")
 class HelloWorld(RequestHandler):
 	auth_required = False
+	sid_required = False
 	description = "A simple hello world to test your communication."
 	
 	def get(self):
@@ -15,6 +16,7 @@ class HelloWorld(RequestHandler):
 @test_post
 @handle_url("user")
 class User(RequestHandler):
+	sid_required = False
 	description = "A test request that displays the user's information."
 	
 	def post(self):

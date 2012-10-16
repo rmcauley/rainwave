@@ -18,8 +18,10 @@ from libs import log
 from libs import config
 from libs import dict_compare
 from libs import db
+from libs import chuser
+from libs import cache
 
-request_classes = [(r"/api/", api.help.IndexRequest), (r"/api/help/", api.help.IndexRequest), (r"/api/help/(.+)", api.help.HelpRequest)]
+request_classes = [(r"/api/?", api.help.IndexRequest), (r"/api/help/?", api.help.IndexRequest), (r"/api/help/(.+)", api.help.HelpRequest)]
 testable_requests = []
 
 class handle_url(object):
@@ -68,6 +70,7 @@ class APIServer(object):
 		log.init(log_file, config.get("log_level"))
 		log.debug("start", "Server booting, port %s." % port_no)
 		db.open()
+		cache.open()
 		
 		# Fire ze missiles!
 		app = tornado.web.Application(request_classes)
