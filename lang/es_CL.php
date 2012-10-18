@@ -3,11 +3,8 @@
 
 $lang2 = array(
 	"_SITEDESCRIPTIONS" => array(
-		// Rainwave's description as it appears to search engines.
 		1 => "Radio por Internet de Música de Videojuegos.	¡Vota por las canciones que quieres escuchar!",
-		// OCR Radio's description as it appears to search engines.
 		2 => "La Radio de OverClocked Remix.	¡Vota por tus remixes favoritos!",
-		// Mixwave's.
 		3 => "Covers y Remixes de Música de Videojuegos.	¡Vota por tus artistas favoritos!",
 		4 => "Transmitiendo chiptunes originales de videojuegos.	¡Vota por las canciones que quieres escuchar!", // T.N.: "Chiptune" does not have an official translation.
 		5 => "Transmitiendo música original y remixes de videojuegos.	¡Vota por las canciones que quieres escuchar!"
@@ -30,11 +27,6 @@ $lang2 = array(
 	"p_TimelinePanel" => "Cronograma", // T.N.: I think it's the best word to describe this item
 	"p_ListenersPanel" => "Escuchas",
 
-	// Search related
-
-	"escapetoclear" => "[Esc] para limpiar",
-	"searchheader" => "Búsqueda: ",
-
 	// These are used for cooldown times, e.g. 5d 23h 10m 46s. Change to your liking.
 	"timeformat_d" => "d ",
 	"timeformat_h" => "h ",
@@ -44,14 +36,14 @@ $lang2 = array(
 	// Edi error codes
 	"log_1" => "La API no ha recibido la identificación de la estación.",
 	"log_2" => "Ésta estación se encuentra fuera de línea debido a dificultades técnicas.",
-	"log_3" => "Espere para poder usar |currentlyon|.",
+	"log_3" => "No puede usar dos estaciones a la vez, espere para poder usar |currentlyon|.",
 
 	// HTTP error codes
 	"log_200" => "HTTP OK",
 	"log_300" => "HTTP Redireccionado",
 	"log_301" => "HTTP Movido",
 	"log_307" => "HTTP Redireccionado",
-	"log_400" => "HTTP Solicitud mal recibida",
+	"log_400" => "HTTP Solicitud incorrecta",
 	"log_401" => "HTTP No Autorizado",
 	"log_403_anon" => "Otro equipo con la misma dirección IP está usando Rainwave. Regístrese para solucionar éste problema",
 	"log_403_reg" => "Error de autorización de API - Recargue la página.",
@@ -93,7 +85,7 @@ $lang2 = array(
 	"log_4002" => "Error del lado del cliente mientras se enviaba el cambio. Recargue la página e intente nuevamente.",
 	"log_4003" => "Esa petición no te pertenece.",
 
-	// Request Change Errors (swapping 1 request for another)
+	// Request Change Errors
 	"log_6000" => "Error del lado del servidor mientras se cambiaba la petición. Intente nuevamente.",
 	"log_6001" => "Debes acceder para usar las peticiones.",
 	"log_6002" => "Error del lado del cliente mientras se enviaba el cambio. Recargue la página e intente nuevamente.",
@@ -160,11 +152,11 @@ $lang2 = array(
 	"pl_genres2_more" => ", entre otros.",
 
 	// Listeners Panel
-	"ltab_listeners" => "Escuchas", // Listeners tab name
-	"otherlisteners" => "(|guests| invitados, |total| en total)", // appears at the bottom of the current listeners list
-	"registeredlisteners" => "|users| Usuarios", // appears underneath guestlisteners.
-	"guestlisteners" => "|guests| Invitados", // appears at the bottom of the current listeners list
-	"totallisteners" => "|total| Escuchas Ahora", // appears underneath guestlisteners.
+	"ltab_listeners" => "Escuchas",
+	"otherlisteners" => "(|guests| invitados, |total| en total)",
+	"registeredlisteners" => "|users| Usuarios",
+	"guestlisteners" => "|guests| Invitados",
+	"totallisteners" => "|total| Escuchas Ahora",
 	"voteslast2weeks" => "Votos de las últimas 2 semanas:",
 	"voterecord" => "Historial de Votos:",
 	"requestrecord" => "Historial de Peticiones:",
@@ -195,6 +187,7 @@ $lang2 = array(
 	"pref_edi_theme" => "Piel",
 	"pref_edi_resetlayout" => "Restablecer Diseño",
 	"pref_edi_resetlayout_button" => "Restablecer",
+	"pref_edi_autoplay" => "Reproducción Automática",
 	"pref_fx" => "Efectos",
 	"pref_fx_fps" => "Tasa de cuadros de las animaciones",
 	"pref_fx_enabled" => "Activar animaciones",
@@ -212,6 +205,7 @@ $lang2 = array(
 
 	// About screen
 	"creator" => "Creador",
+	"staff" => "Staff",
 	"rainwavemanagers" => "Equipo de Rainwave",
 	"ocrmanagers" => "Equipo de OCR Radio",
 	"mixwavemanagers" => "Equipo de Mixwave",
@@ -227,11 +221,6 @@ $lang2 = array(
 	"revision" => "Rev", // T.N.: It's the same word for spanish.
 
 	// Help
-	// Careful, a lot of those funny blocks are there because Courier New doesn't have the UTF-8 arrow icons.
-	// "blank" is a header
-	// "blank_p" is an explanatory paragraph, part of a tutorial
-	// "blank_t" is the short explanation of what tutorial follows when you click on the help box
-
 	"helpstart" => "Iniciar ▶ ",
 	"helpnext" => "Siguiente ▶ ",
 	"helplast" => "Cerrar ▶ ",
@@ -274,7 +263,6 @@ $lang2 = array(
 	"pleaserefresh" => "Actualice la página para usar nuevamente Rainwave.",
 
 	// Schedule Panel Administration Functions, does not need to be translated.
-	// T.N.: So... why is it here, anyway? lol
 	"newliveshow" => "New Live Show",
 	"newliveexplanation" => "Time can be 0 (now) or an epoch time in UTC.",
 	"time" => "Time",
@@ -303,6 +291,10 @@ $lang2 = array(
 
 	// Schedule Panel user text.
 	"noschedule" => "No hay eventos planificados para ésta semana.",
+
+	// Searching Related
+	"escapetoclear" => "[Esc] para limpiar",
+	"searchheader" => "Búsqueda: ",
 
 	// Requests
 	"requestok" => "Pedido",
@@ -360,6 +352,8 @@ $lang2 = array(
 	"help" => "Ayuda",
 	"forums" => "Foros",
 	"login" => "Acceder",
+	"logout" => "Cerrar sesión",
+	"profile" => "Perfil",
 	"register" => "Registro",
 	"username" => "Usuario",
 	"password" => "Contraseña",
@@ -375,11 +369,10 @@ $lang2 = array(
 	"menu_morestations_v2" => "Todas las Estaciones »",
 	"menu_morestations" => "Más ▼",
 	"waitingforstatus" => "Esperando por Estatus",
-	"logout" => "Cerrar sesión",
 	"managekeys" => "Administrar Claves de API",
 	"listenerprofile" => "Perfil de Escucha",
 
-	/* Words for pluralization */
+	// Words for pluralization
 	"person" => "persona",
 	"person_p" => "personas",
 	"Vote" => "Voto",
