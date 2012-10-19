@@ -73,7 +73,7 @@ class APIServer(object):
 		cache.open()
 		
 		# Fire ze missiles!
-		app = tornado.web.Application(request_classes)
+		app = tornado.web.Application(request_classes, debug=config.get("debug_mode"))
 		http_server = tornado.httpserver.HTTPServer(app, xheaders = True)
 		http_server.listen(port_no)
 		

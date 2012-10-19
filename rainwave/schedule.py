@@ -97,6 +97,9 @@ def advance_station(sid):
 	if last_song:
 		history[sid].insert(0, last_song)
 		db.c.update("INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)", (sid, last_song.id))
+		
+	while len(history[sid]) > 3:
+		history[sid].pop()
 	
 	integrate_new_events(sid)
 	sort_next(sid)

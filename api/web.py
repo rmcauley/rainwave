@@ -1,6 +1,7 @@
 from rainwave.user import User
 from api import fieldtypes
 from libs import config
+from libs import log
 import api.returns
 
 import tornado.web
@@ -41,10 +42,18 @@ class RequestHandler(tornado.web.RequestHandler):
 	sid_required = True
 	# Description string for documentation.
 	description = "Undocumented."
+	# Only for the backend to be called
+	local_only = False
 
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):
 		self._startclock = time.clock()
+		self.request_ok = False
+		
+		if self.local_only and not self.request.remote_ip == "127.0.0.1":
+			self.failed = True
+			self.set_status(403)
+			self.finish()
 
 		if self.return_name == False:
 			self.return_name = self.__class__.url + "_result"
@@ -80,12 +89,12 @@ class RequestHandler(tornado.web.RequestHandler):
 		if request_ok:
 			if self.auth_required and not self.rainwave_auth():
 				self.finish()
-		
-		if self.sid_required and not "id" in self.request.arguments:
+
+		if self.sid_required and not "sid" in self.request.arguments:
 			self.append("error", api.returns.ErrorReturn(-1000, "Missing station ID argument."))
 			request_ok = False
-		elif "id" in self.request.arguments:
-			self.sid = int(self.request.arguments("sid"))
+		elif "sid" in self.request.arguments:
+			self.sid = int(self.get_argument("sid"))
 		elif self.user:
 			self.sid = self.user.sid
 		else:
@@ -96,6 +105,7 @@ class RequestHandler(tornado.web.RequestHandler):
 			self.append("error", api.returns.ErrorReturn(-1000, "Invalid station ID."))
 			request_ok = False
 				
+		self.request_ok = request_ok
 		if not request_ok:
 			self.finish()
 	
@@ -162,3 +172,11 @@ class RequestHandler(tornado.web.RequestHandler):
 			self.append("api_info", { "exectime": exectime, "time": round(time.time()) })
 			self.write(tornado.escape.json_encode(self._output))
 		super(RequestHandler, self).finish(chunk)
+	
+	# TODO: Custom error handler
+	#def send_error(self, status_code=500, **kwargs):
+	#	pass
+		
+	# TODO: Custom error handler 
+	#def write_error(self, status_code, **kwargs):
+	#	pass

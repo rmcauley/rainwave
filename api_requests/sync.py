@@ -6,28 +6,23 @@ from api.server import test_post
 from api.server import handle_url
 
 from libs import cache
+from libs import log
 from rainwave import playlist
 
 sessions = {}
 
 @handle_url("sync_update_all")
-class SyncUpdateAll(tornado.web.RequestHandler):
-	sid_required = True
-
-	def prepare(self):
-		self._rw_update_clients = True
-		if not self.request.remote_ip == "127.0.0.1":
-			self._rw_update_clients = False
-			self.set_status(403)
-			self.finish()
+class SyncUpdateAll(RequestHandler):
+	local_only = True
 			
-	def get(self):
+	def post(self):
 		if self._rw_update_clients:
 			self.write("Processing.")
 	
 	def on_finish(self):
-		if not self._rw_update_clients:
+		if not self.request_ok:
 			return
+		log.debug("sync_update_all", "Updating all sessions for sid %s" % self.sid)
 		cache.update_local_cache_for_sid(self.sid)
 		
 		for session in sessions[self.sid]:
@@ -35,7 +30,7 @@ class SyncUpdateAll(tornado.web.RequestHandler):
 		sessions[self.sid] = []
 		
 @handle_url("sync_update_user")
-class SyncUpdateUser(tornado.web.RequestHandler):
+class SyncUpdateUser(RequestHandler):
 	sid_required = False
 
 	def prepare(self):
@@ -45,7 +40,7 @@ class SyncUpdateUser(tornado.web.RequestHandler):
 			self.set_status(403)
 			self.finish()
 			
-	def get(self):
+	def post(self):
 		if self._rw_update_clients:
 			self.write("Processing.")
 			
@@ -62,7 +57,7 @@ class SyncUpdateUser(tornado.web.RequestHandler):
 					return
 			
 @handle_url("sync_update_ip")
-class SyncUpdateIP(tornado.web.RequestHandler):
+class SyncUpdateIP(RequestHandler):
 	sid_required = False
 
 	def prepare(self):
@@ -72,7 +67,7 @@ class SyncUpdateIP(tornado.web.RequestHandler):
 			self.set_status(403)
 			self.finish()
 			
-	def get(self):
+	def post(self):
 		if self._rw_update_clients:
 			self.write("Processing.")
 			
