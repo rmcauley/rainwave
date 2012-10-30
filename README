@@ -23,6 +23,9 @@ To get started on helping with this project:
 	- python runtests.py
 	- Fix failing scenarios
 
+To see the TODO list, just grep the code:
+	grep -r TODO
+
 You may notice throughout the program that many UPDATE statements are
 broken out into loops, rather than letting the database handle it in a JOIN.
 There's a reason for this, and until there's a better
