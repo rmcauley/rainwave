@@ -86,6 +86,7 @@ class SyncUpdateIP(RequestHandler):
 @handle_url("sync")
 class Sync(RequestHandler):
 	auth_required = True
+	fields = { "playlist" => (fieldtypes.boolean, False), "artist_list" => (fieldtypes.boolean, False), "init" => (fieldtypes.boolean, False) }
 	
 	@tornado.web.asynchronous
 	def post(self):

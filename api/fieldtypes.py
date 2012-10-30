@@ -35,3 +35,11 @@ def rating(str):
 	if not (r * 10) % 5 == 0:
 		return None
 	return r
+
+boolean_error = "must be 'true' or 'false'."
+def boolean(str):
+	if str == "true":
+		return True
+	elif str == "false":
+		return False
+	return None

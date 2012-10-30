@@ -21,7 +21,7 @@ import re
 
 class RequestHandler(tornado.web.RequestHandler):
 	# The following variables can be overridden by you.
-	# Fields is a hash with { "form_name" => fieldtypes.[something] } format, so that automatic form validation can be done for you.
+	# Fields is a hash with { "form_name" => (fieldtypes.[something], True|False } format, so that automatic form validation can be done for you.  True/False values are for required/optional.
 	fields = {}
 	# This URL variable is setup by the server decorator - DON'T TOUCH IT.
 	url = False
@@ -73,10 +73,13 @@ class RequestHandler(tornado.web.RequestHandler):
 		request_ok = True
 	
 		self.args = {}
-		for field, type in self.__class__.fields.iteritems():
-			if not field in self.request.arguments:
+		for field, field_attribs in self.__class__.fields.iteritems():
+			type, required = field_attribs
+			if required and field not in self.request.arguments:
 				self.append("error", api.returns.ErrorReturn(-1000, "Missing %s argument." % field))
 				request_ok = False
+			elif not required and field not in self.request.arguments:
+				pass
 			else:
 				parsed = getattr(fieldtypes, type)(self.get_argument(field))
 				if parsed == None:	
@@ -88,7 +91,7 @@ class RequestHandler(tornado.web.RequestHandler):
 		self.user = None
 		if request_ok:
 			if self.auth_required and not self.rainwave_auth():
-				self.finish()
+				request_ok = False
 
 		if self.sid_required and not "sid" in self.request.arguments:
 			self.append("error", api.returns.ErrorReturn(-1000, "Missing station ID argument."))
@@ -99,6 +102,7 @@ class RequestHandler(tornado.web.RequestHandler):
 			self.sid = self.user.sid
 		else:
 			self.append("error", api.returns.ErrorReturn(-1000, "Missing station ID argument."))
+			request_ok = False
 
 		# Now we strictly enforce valid station IDs.
 		if not self.sid or not self.sid in config.station_ids or self.sid == 0:
@@ -163,7 +167,7 @@ class RequestHandler(tornado.web.RequestHandler):
 
 	# Sends off the data to the user.
 	def finish(self, chunk=None):
-		self.set_header("Content-Type", "application/javascript")
+		self.set_header("Content-Type", "application/json")
 		if hasattr(self, "_output"):
 			if hasattr(self, "_startclock"):
 				exectime = time.clock() - self._startclock
