@@ -1,5 +1,6 @@
 import tornado.web
 
+from api import fieldtypes
 from api.web import RequestHandler
 from api.server import test_get
 from api.server import test_post
@@ -86,7 +87,7 @@ class SyncUpdateIP(RequestHandler):
 @handle_url("sync")
 class Sync(RequestHandler):
 	auth_required = True
-	fields = { "playlist" => (fieldtypes.boolean, False), "artist_list" => (fieldtypes.boolean, False), "init" => (fieldtypes.boolean, False) }
+	fields = { "playlist": (fieldtypes.boolean, False), "artist_list": (fieldtypes.boolean, False), "init": (fieldtypes.boolean, False) }
 	
 	@tornado.web.asynchronous
 	def post(self):
