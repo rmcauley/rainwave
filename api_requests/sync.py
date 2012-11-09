@@ -4,6 +4,7 @@ from api.web import RequestHandler
 from api.server import test_get
 from api.server import test_post
 from api.server import handle_url
+from api import fieldtypes
 
 from libs import cache
 from libs import log
@@ -86,7 +87,7 @@ class SyncUpdateIP(RequestHandler):
 @handle_url("sync")
 class Sync(RequestHandler):
 	auth_required = True
-	fields = { "playlist" => (fieldtypes.boolean, False), "artist_list" => (fieldtypes.boolean, False), "init" => (fieldtypes.boolean, False) }
+	fields = { "playlist": (fieldtypes.boolean, False), "artist_list": (fieldtypes.boolean, False), "init": (fieldtypes.boolean, False) }
 	
 	@tornado.web.asynchronous
 	def post(self):
@@ -98,13 +99,13 @@ class Sync(RequestHandler):
 				sessions[sid] = []
 			sessions[self.user.sid].append(self)
 		
-	def update(self, use_local_cache = False):
+	def update(self):
 		# Front-load all non-animated content ahead of the schedule content
 		# Since the schedule content is the most animated on R3, setting this content to load
 		# first has a good impact on the perceived animation smoothness since table redrawing
 		# doesn't have to take place during the first few frames.
 		
-		self.user.refresh(use_local_cache)
+		self.user.refresh()
 		self.append("user", self.user.get_public_dict())
 		
 		if 'playlist' in self.request.arguments:
@@ -112,19 +113,16 @@ class Sync(RequestHandler):
 		elif 'artist_list' in self.request.arguments:
 			self.append("artist_list", playlist.fetch_all_artists(self.sid))
 		elif 'init' not in self.request.arguments:
-			self.append("album_diff", cache.get_local_station(self.sid, 'album_diff'))
+			self.append("album_diff", cache.get_station(self.sid, 'album_diff'))
 		
-		if use_local_cache:
-			self.append("requests_all", cache.get_local_station(self.sid, "request_all"))
-		else:
-			self.append("requests_all", cache.get_station(self.sid, "request_all"))
+		self.append("requests_all", cache.get_station(self.sid, "request_all"))
 		self.append("requests_user", self.user.get_requests())
-		self.append("calendar", cache.local["calendar"])
-		self.append("listeners_current", cache.get_local_station(self.sid, "listeners_current"))
+		self.append("calendar", cache.get("calendar"))
+		self.append("listeners_current", cache.get_station(self.sid, "listeners_current"))
 		
-		self.append("sched_current", self.user.make_event_jsonable(cache.get_local_station(self.sid, "sched_current"), use_local_cache))
-		self.append("sched_next", self.user.make_events_jsonable(cache.get_local_station(self.sid, "sched_next"), use_local_cache))
-		self.append("sched_history", self.user.make_event_jsonable(cache.get_local_station(self.sid, "sched_history"), use_local_cache))
+		self.append("sched_current", self.user.make_event_jsonable(cache.get_station(self.sid, "sched_current")))
+		self.append("sched_next", self.user.make_events_jsonable(cache.get_local_station(self.sid, "sched_next")))
+		self.append("sched_history", self.user.make_event_jsonable(cache.get_local_station(self.sid, "sched_history")))
 		self.finish()
 	
 	def update_user(self):

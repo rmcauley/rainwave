@@ -271,9 +271,9 @@ def _trim(sid):
 	db.c.update("DELETE FROM r4_song_history WHERE songhist_id <= %s", (max_history_id - config.get("trim_history_length"),))
 	
 def _update_memcache(sid):
-	cache.set_station(sid, "sched_current", current[sid])
-	cache.set_station(sid, "sched_next", next[sid])
-	cache.set_station(sid, "sched_history", history[sid])
-	cache.prime_rating_cache_for_events([ current[sid] ] + next[sid], history[sid])	
-	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict(sid))
-	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid))
+	cache.set_station(sid, "sched_current", current[sid], True)
+	cache.set_station(sid, "sched_next", next[sid], True)
+	cache.set_station(sid, "sched_history", history[sid], True)
+	cache.prime_rating_cache_for_events([ current[sid] ] + next[sid], history[sid])
+	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict(sid), True)
+	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)

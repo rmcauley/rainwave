@@ -25,56 +25,50 @@ def open():
 		_memcache.behaviors = { "tcp_nodelay": True, "ketama": config.get("memcache_ketama") }
 	else:
 		_memcache = TestModeCache()
-
-def set_user(user, key, value):
-	_memcache.set("u%s_%s" % (user.id, key), value)
 	
-def get_user(user, key):
-	return _memcache.get("u%s_%s" % (user.id, key))
-	
-def set_station(sid, key, value):
-	_memcache.set("sid%s_%s" % (sid, key), value)
-	
-def get_local_station(sid, key):
-	return local["sid%s_%s" % (sid, key)]
-	
-def set_local_station(sid, key, value):
-	local["sid%s_%s" % (sid, key)] = value
-
-def local_exists(sid, key):
-	return "sid%s_%s" % (sid, key) in local
-	
-def get_station(sid, key):
-	return _memcache.get("sid%s_%s" % (sid, key))
-	
-def set(key, value):
+def set(key, value, save_local = False):
+	if save_local or key in local:
+		local[key] = value
 	_memcache.set(key, value)
-
+	
 def get(key):
+	if key in local:
+		return local[key]
 	return _memcache.get(key)
 
-def refresh_local(key):
-	local[key] = get(key)
+def set_user(user, key, value):
+	if user.__class__.__name__ == 'int':
+		set("u%s_%s" % (user, key), value)
+	else:
+		set("u%s_%s" % (user.id, key), value)
 	
-def refresh_local_station(sid, key):
-	local["sid%s_%s" % (sid, key)] = get_station(sid, key)
+def get_user(user, key):
+	if user.__class__.__name__ == 'int':
+		return get("u%s_%s" % (user, key))
+	else:
+		return get("u%s_%s" % (user.id, key))
 	
-def push_local_to_memcache(key):
-	set(key, local[key])
-
-def push_local_station(sid, key):
-	key = "sid%s_%s" % (sid, key)
-	set(key, local[key])
+def set_station(sid, key, value, save_local = False):
+	set("sid%s_%s" % (sid, key), value, save_local)
+	
+def get_station(sid, key):
+	return get("sid%s_%s" % (sid, key))
 
 def prime_rating_cache_for_events(events, songs = []):
-	key = 'song_ratings_%s' % events[0].sid
-	local[key] = {}
+	ratings = {}
 	for e in events:
 		for song in e.songs:
-			local[key][song.id] = song.get_all_ratings()
+			ratings[song.id] = song.get_all_ratings()
 	for song in songs:
-		local[key][song.id] = song.get_all_ratings()
-	push_local_to_memcache(key)
+		ratings[song.id] = song.get_all_ratings()
+	set('song_ratings_%s' % events[0].sid, ratings)
+	
+def refresh_local(key):
+	local[key] = _memcache.get(key)
+	
+def refresh_local_station(sid, key):
+	# we can't use the normal get functions here since they'll ping what's already in local
+	local["sid%s_%s" % (sid, key)] = _memcache.get("sid%s_%s" % (sid, key))
 	
 def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "album_diff")
@@ -95,26 +89,26 @@ def update_local_cache_for_sid(sid):
 	
 def reset_station_caches():
 	for sid in config.station_ids:
-		set_station(sid, "album_diff", None)
-		set_station(sid, "sched_next", None)
-		set_station(sid, "sched_history", None)
-		set_station(sid, "sched_current", None)
-		set_station(sid, "listeners_current", None)
-		set_station(sid, "listeners_internal", None)
-		set_station(sid, "request_line", None)
-		set_station(sid, "request_user_positions", None)
-		set_station(sid, "user_rating_acl", None)
-		set_station(sid, "user_rating_acl_song_index", None)
-		set("request_expire_times", None)
-		set("calendar", None)
+		set_station(sid, "album_diff", None, True)
+		set_station(sid, "sched_next", None, True)
+		set_station(sid, "sched_history", None, True)
+		set_station(sid, "sched_current", None, True)
+		set_station(sid, "listeners_current", None, True)
+		set_station(sid, "listeners_internal", None, True)
+		set_station(sid, "request_line", None, True)
+		set_station(sid, "request_user_positions", None, True)
+		set_station(sid, "user_rating_acl", None, True)
+		set_station(sid, "user_rating_acl_song_index", None, True)
+		set("request_expire_times", None, True)
+		set("calendar", None, True)
 	
 def update_user_rating_acl(sid, song_id):
-	users = {}
-	if ("sid%s_user_rating_acl" % sid) in local:
-		users = local["sid%s_user_rating_acl" % sid]
-	songs = []
-	if ("sid%s_user_rating_song_index" % sid) in local:
-		songs = local["sid%s_user_rating_song_index" % sid]
+	users = get_station(sid, "user_rating_acl")
+	if not users:
+		users = {}
+	songs = get_station(sid, "user_rating_acl_song_index")
+	if not songs:
+		songs = []
 
 	while len(songs) > 2:
 		del users[songs.pop(0)]
@@ -122,9 +116,7 @@ def update_user_rating_acl(sid, song_id):
 	users[song_id] = {}
 	
 	for user_id in db.c.fetch_list("SELECT user_id FROM r4_listeners WHERE sid = %s AND user_id > 1", (sid,)):
-		users[user_id] = True
+		users[song_id][user_id] = True
 		
-	set_local_station(sid, "user_rating_acl", users)
-	push_local_station(sid, "user_rating_acl")
-	set_local_station(sid, "user_rating_acl_song_index", songs)
-	push_local_station(sid, "user_rating_acl_song_index")
+	set_station(sid, "user_rating_acl", users, True)
+	set_station(sid, "user_rating_acl_song_index", songs, True)

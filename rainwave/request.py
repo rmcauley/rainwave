@@ -26,7 +26,7 @@ def update_line(sid):
 			u.remove_from_request_line()
 		else:
 			# refresh the user to get their data, using local cache only - speed things up here
-			u.refresh(True)
+			u.refresh()
 			# If they're not tuned in and haven't been marked as expiring yet, mark them, add to line, move on
 			if not u.data['radio_tuned_in'] and not u.data['radio_tuned_in']:
 				row['line_expiry_tune_in'] = t + 600
@@ -57,8 +57,8 @@ def update_line(sid):
 			user_positions[u.id] = position
 			position = position + 1
 	
-	cache.set_station(sid, "request_line", new_line)
-	cache.set_station(sid, "request_user_positions", user_positions)
+	cache.set_station(sid, "request_line", new_line, True)
+	cache.set_station(sid, "request_user_positions", user_positions, True)
 
 def update_expire_times():
 	expiries = db.c.fetch_all("SELECT * FROM r4_request_line")
@@ -75,7 +75,7 @@ def update_expire_times():
 			expiry_times[row['user_id']] = row['line_expiry_election']
 		else:
 			expiry_times[row['user_id']] = row['line_expiry_tune_in']
-	cache.set("request_expire_times", expiry_times)
+	cache.set("request_expire_times", expiry_times, True)
 
 def get_next(sid):
 	# TODO: Code review
@@ -95,7 +95,7 @@ def get_next(sid):
 			u.remove_from_request_line()
 			if u.has_requests():
 				u.put_in_request_line(u.get_top_request_sid())
-			cache.set_station(sid, "request_line", line)
+			cache.set_station(sid, "request_line", line, True)
 			break
 
 	return song

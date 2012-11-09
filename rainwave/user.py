@@ -57,12 +57,18 @@ class User(object):
 
 	def _auth_registered_user(self, ip_address, api_key, bypass = False):
 		if not bypass:
-			# TODO: Check to see if a cached value of this exists, if so, use it; if not, cache it
-			r = db.c.fetch_row("SELECT api_key, api_is_rainwave FROM r4_api_keys WHERE user_id = %s AND api_key = %s", (self.id, api_key))
-			if not r:
-				log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
+			# TODO: Users can have multiple keys, should we cache them all?
+			key = cache.get_user(self, "api_key")
+			if not key:
+				key = db.c.fetch_row("SELECT api_key, api_is_rainwave FROM r4_api_keys WHERE user_id = %s AND api_key = %s", (self.id, api_key))
+				if not key:
+					log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
+					return
+				cache.set_user(self, "api_key", key)
+			if key['api_key'] != api_key:
+				log.debug("auth", "Invalid user ID %s and/or API key %s from cache." % (self.id, api_key))
 				return
-			if r['api_is_rainwave']:
+			if key['api_is_rainwave']:
 				self._official_ui = True
 
 		# Set as authorized and begin populating information
@@ -97,21 +103,22 @@ class User(object):
 
 	def _auth_anon_user(self, ip_address, api_key, bypass = False):
 		if not bypass:
-			# TODO: Check to see if a cached value of this exists, if so, use it; if not, cache it
-			auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (ip_address,))
+			auth_against = cache.get("ip_%s_api_key" % ip_address)
 			if not auth_against:
-				log.debug("user", "Anonymous user key %s not found." % api_key)
-				return
+				auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (ip_address,))
+				if not auth_against:
+					log.debug("user", "Anonymous user key %s not found." % api_key)
+					return
+				cache.set("ip_%s_api_key" % ip_address, auth_against)
 			if auth_against != api_key:
 				log.debug("user", "Anonymous user key %s does not match DB key %s." % (api_key, auth_against))
 				return
 		self.authorized = True
 
-	def refresh(self, use_local_cache = False):
+	def refresh(self):
 		listener = None
-		# TODO: The caching here needs work, improve it. <3
-		if use_local_cache and cache.local_exists(self.data['sid'], "listeners_internal") and self.id in cache.local['listeners_internal']:
-			listener = cache.local['listeners_internal'][self.id]
+		if self.id in cache.get("listeners_internal"):
+			listener = cache.get("listeners_internal")[self.id]
 		else:
 			listener = db.c.fetch_row("SELECT "
 				"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
@@ -136,7 +143,7 @@ class User(object):
 			self.data['radio_tuned_in'] = False
 	
 		if (self.id > 1):
-			if cache.get_local_station(self.request_sid, "sched_current").get_dj_user_id() == self.id:
+			if cache.get_station(self.request_sid, "sched_current").get_dj_user_id() == self.id:
 				self.data['radio_dj'] = True
 			
 			self.data['radio_request_position'] = self.get_request_line_position(self.data['sid'])
@@ -215,11 +222,11 @@ class User(object):
 	def get_request_line_position(self, sid):
 		if self.id <= 1:
 			return False
-		if self.id in cache.get_local_station(sid, "request_user_positions"):
-			return cache.get_local_station(sid, "request_user_positions")[self.id]
+		if self.id in cache.get_station(sid, "request_user_positions"):
+			return cache.get_station(sid, "request_user_positions")[self.id]
 						
 	def get_request_expiry(self):
 		if self.id <= 1:
 			return None
-		if self.id in cache.local['request_expire_times']:
-			return cache.local['request_expire_times'][self.id]
+		if self.id in cache.get("request_expire_times"):
+			return cache.get("request_expire_times")[self.id]

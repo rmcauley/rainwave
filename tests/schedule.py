@@ -13,9 +13,9 @@ def reset_schedule(sid):
 	schedule.current = {}
 	schedule.next = {}
 	schedule.history = {}
-	cache.set_station(sid, "sched_current", False)
-	cache.set_station(sid, "sched_next", False)
-	cache.set_station(sid, "sched_history", False)
+	cache.set_station(sid, "sched_current", None, True)
+	cache.set_station(sid, "sched_next", None, True)
+	cache.set_station(sid, "sched_history", None, True)
 	playlist.remove_all_locks(1)
 
 class ScheduleTest(unittest.TestCase):
