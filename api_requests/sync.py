@@ -1,5 +1,6 @@
 import tornado.web
 
+from api import fieldtypes
 from api.web import RequestHandler
 from api.server import test_get
 from api.server import test_post
