@@ -597,7 +597,7 @@ class Song(object):
 		table = db.c.fetch_all("SELECT song_user_rating, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
 		all_ratings = {}
 		for row in all_ratings:
-			all_ratings[row['user_id']] = { 'song_rating': row['song_rating'], 'song_fave': row['song_fave'] }
+			all_ratings[row['user_id']] = { 'song_rating': row['song_user_rating'], 'song_fave': row['song_fave'] }
 		return all_ratings
 		
 	def update_last_played(self, sid):
@@ -911,6 +911,13 @@ class Album(AssociatedMetadata):
 	def update_vote_total(self, sid):
 		vote_total = db.c.fetch_var("SELECT SUM(song_vote_total) FROM r4_song_sid JOIN r4_song_album USING (song_id) WHERE album_id = %s AND song_exists = TRUE", (self.id,))
 		return db.c.update("UPDATE r4_album_sid SET album_vote_total = %s WHERE album_id = %s AND sid = %s", (vote_total, self.id, sid))
+		
+	def get_all_ratings(self):
+		table = db.c.fetch_all("SELECT album_user_rating, album_fave, user_id FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s", (self.id,))
+		all_ratings = {}
+		for row in all_ratings:
+			all_ratings[row['user_id']] = { 'album_rating': row['album_user_rating'], 'album_fave': row['album_fave'] }
+		return all_ratings
 					
 class Artist(AssociatedMetadata):
 	select_by_name_query = "SELECT artist_id AS id, artist_name AS name FROM r4_artists WHERE artist_name = %s"

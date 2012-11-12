@@ -56,12 +56,16 @@ def get_station(sid, key):
 
 def prime_rating_cache_for_events(events, songs = []):
 	ratings = {}
+	album_ratings = {}
 	for e in events:
 		for song in e.songs:
 			ratings[song.id] = song.get_all_ratings()
+			for album in song.albums:
+				album_ratings[album.id] = album.get_all_ratings()
 	for song in songs:
 		ratings[song.id] = song.get_all_ratings()
-	set('song_ratings_%s' % events[0].sid, ratings)
+	set_station(events[0].sid, 'song_ratings', ratings)
+	set_station(events[0].sid, 'album_ratings', album_ratings)
 	
 def refresh_local(key):
 	local[key] = _memcache.get(key)
@@ -81,6 +85,8 @@ def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "request_user_positions")
 	refresh_local_station(sid, "user_rating_acl")
 	refresh_local_station(sid, "user_rating_acl_song_index")
+	refresh_local_station(sid, "song_ratings")
+	refresh_local_station(sid, "album_ratings")
 	refresh_local("request_expire_times")
 	refresh_local("calendar")
 	

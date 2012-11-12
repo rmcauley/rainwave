@@ -151,6 +151,22 @@ class Event(object):
 	def get_dj_user_id(self):
 		return self.dj_user_id
 		
+	def to_dict(self, user = None):
+		obj = {
+			"start": self.start,
+			"start_actual": self.start_actual, 
+			"end": self.end,
+			"type": self.type,
+			"name": self.name,
+			"sid": self.sid,
+			"url": self.url,
+			"dj_user_id": self.dj_user_id
+		}
+		if user and user.data['radio_admin'] > 0:
+			obj['public'] = self.public
+			obj['timed'] = self.timed
+		return obj;
+		
 class ElectionScheduler(Event):
 	def __init__(self):
 		super(Event, self).__init__()
@@ -393,6 +409,13 @@ class Election(Event):
 			db.c.update("UPDATE r4_elections SET elec_priority = TRUE WHERE elec_id = %s", (self.id,))
 		else:
 			db.c.update("UPDATE r4_elections SET elec_priority = FALSE WHERE elec_id = %s", (self.id,))
+			
+	def to_dict(self, user = None):
+		obj = super(Event, self).to_dict(user)
+		obj['songs'] = []
+		for song in self.songs:
+			obj['songs'].append(song.to_dict(user))
+		return obj
 		
 class PVPElection(Election):
 	def __init__(self):
@@ -424,6 +447,11 @@ class OneUp(Event):
 		
 	def length(self):
 		return self.songs[0].length
+	
+	def to_dict(self, user = None):
+		obj = super(Event, self).to_dict(user)
+		obj['songs'] = [ self.songs[0].to_dict(user) ]
+		return obj
 
 # How this works is TBD.
 class OneUpSeries(object):

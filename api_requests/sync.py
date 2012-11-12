@@ -121,9 +121,10 @@ class Sync(RequestHandler):
 		self.append("calendar", cache.get("calendar"))
 		self.append("listeners_current", cache.get_station(self.sid, "listeners_current"))
 		
-		self.append("sched_current", self.user.make_event_jsonable(cache.get_station(self.sid, "sched_current")))
-		self.append("sched_next", self.user.make_events_jsonable(cache.get_local_station(self.sid, "sched_next")))
-		self.append("sched_history", self.user.make_event_jsonable(cache.get_local_station(self.sid, "sched_history")))
+		# TODO: Some mixing of pre-dictionaried items here might help speed
+		self.append("sched_current", cache.get_station(self.sid, "sched_current").to_dict(self.user))
+		self.append("sched_next", cache.get_station(self.sid, "sched_next").to_dict(self.user))
+		self.append("sched_history", cache.get_station(self.sid, "sched_history").to_dict(self.user))
 		self.finish()
 	
 	def update_user(self):

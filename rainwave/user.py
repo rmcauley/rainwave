@@ -151,15 +151,8 @@ class User(object):
 		
 			if self.data['radio_tuned_in'] and not self.is_in_request_line() and self.has_requests():
 				self.put_in_request_line(self.data['sid'])
-			
-	def set_song_ratable(self, song_id):
-		# TODO LATER: Ensure that the user is set and saved to be tuned in for the current schedule ID as part of the station refresh
-		cache.set_user(self, "song_id_%s_ratable" % song_id, True)
-		
-	def get_song_ratable(self, song_id):
-		return cache.get_user(self, "song_id_%s_ratable" % song_id)
 
-	def get_private_jsonable(self):
+	def get_private_dict(self):
 		"""
 		Returns a JSONable dict containing data that the user will want to see or make use of.
 		NOT for other users to see.
@@ -170,7 +163,7 @@ class User(object):
 				public[k] = v
 		return public
 		
-	def get_public_jsonable(self):
+	def get_public_dict(self):
 		"""
 		Returns a JSONable dict containing data that other users are allowed to see.
 		"""
