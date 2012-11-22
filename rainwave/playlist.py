@@ -181,7 +181,7 @@ def remove_all_locks(sid):
 	"""
 	db.c.update("UPDATE r4_song_sid SET song_elec_blocked = FALSE, song_elec_blocked_num = 0, song_cool = FALSE, song_cool_end = 0 WHERE sid = %s", (sid,))
 	
-def get_all_albums(sid, user):
+def get_all_albums_list(sid, user):
 	return db.c.fetch_all(
 		"SELECT album_id, album_name, album_rating, album_cool_lowest, album_fave, album_user_rating "
 		"FROM r4_albums "
@@ -191,7 +191,7 @@ def get_all_albums(sid, user):
 		"ORDER BY album_name",
 		(user.id, user.id, sid))
 		
-def get_all_artists(sid):
+def get_all_artists_list(sid):
 	return db.fetch_all(
 		"SELECT artist_name, artist_id "
 		"FROM r4_artists JOIN r4_song_artist USING (artist_id) JOIN r4_song_sid using (song_id) "
@@ -463,12 +463,6 @@ class Song(object):
 		self.data['rating_count'] = d['song_rating_count']
 		self.data['cool_multiply'] = d['song_cool_multiply']
 		self.data['cool_override'] = d['song_cool_override']
-		
-		for metadata in self.groups:
-			metadata.start_cooldown(sid)
-		# Albums always have to go last since they store cached cooldown values
-		for metadata in self.albums:
-			metadata.start_cooldown(sid)
 	
 	def start_cooldown(self, sid):
 		"""
@@ -491,11 +485,21 @@ class Song(object):
 		db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_time, self.id, sid))
 		self.data['cool'] = True
 		self.data['cool_end'] = cool_time
-		
-		for album in self.albums:
-			album.start_cooldown(sid)
+
+		for metadata in self.groups:
+			metadata.start_cooldown(sid)
+		# Albums always have to go last since album records in the DB store cached cooldown values
+		for metadata in self.albums:
+			metadata.start_cooldown(sid)
 			
-	def start_block(self, sid, blocked_by, block_length):
+	def start_election_block(self, sid, num_elections):
+		for metadata in self.groups:
+			metadata.start_election_block(sid, num_elections)
+		# Albums always have to go last since album records in the DB store cached cooldown values
+		for metadata in self.albums:
+			metadata.start_election_block(sid, num_elections)
+			
+	def set_election_block(self, sid, blocked_by, block_length):
 		db.c.update("UPDATE r4_song_sid SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s WHERE song_id = %s AND sid = %s AND song_elec_blocked_num < %s", (blocked_by, block_length, self.id, sid, block_length))
 	
 	def update_rating(self):
@@ -710,11 +714,11 @@ class AssociatedMetadata(object):
 	def _update_db():
 		return False
 		
-	def start_election_block(self, num_elections = False):
+	def start_election_block(self, sid, num_elections = False):
 		if num_elections:
-			self._start_election_block_db(num_elections)
+			self._start_election_block_db(sid, num_elections)
 		elif self.elec_block:
-			self._start_election_block_db(self.elec_block)
+			self._start_election_block_db(sid, self.elec_block)
 		
 	def start_cooldown(self, sid, cool_time = False):
 		if cool_time:
@@ -882,7 +886,6 @@ class Album(AssociatedMetadata):
 		updated_album_ids[sid][self.id] = True
 		return self._start_cooldown_db(sid, cool_time)
 		
-		
 	def _start_cooldown_db(self, sid, cool_time):
 		cool_end = cool_time + time.time()
 		# SQLITE_CANNOT_DO_JOINS_ON_UPDATES
@@ -915,9 +918,16 @@ class Album(AssociatedMetadata):
 	def get_all_ratings(self):
 		table = db.c.fetch_all("SELECT album_user_rating, album_fave, user_id FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s", (self.id,))
 		all_ratings = {}
-		for row in all_ratings:
+		for row in table:
 			all_ratings[row['user_id']] = { 'album_rating': row['album_user_rating'], 'album_fave': row['album_fave'] }
 		return all_ratings
+		
+	def _start_election_block_db(self, sid, num_elections):
+		table = db.c.fetch_all("SELECT song_id FROM r4_song_album WHERE album_id = %s AND sid = %s", (self.id, num_elections))
+		for row in table:
+			song = Song()
+			song.id = row['song_id']
+			song.set_election_block(sid, 'album', num_elections)
 					
 class Artist(AssociatedMetadata):
 	select_by_name_query = "SELECT artist_id AS id, artist_name AS name FROM r4_artists WHERE artist_name = %s"
@@ -939,11 +949,15 @@ class Artist(AssociatedMetadata):
 	def _start_cooldown_db(self, sid, cool_time):
 		# Artists don't have cooldowns on Rainwave.
 		pass
+		
+	def _start_election_block_db(self, sid, num_elections):
+		# Artists don't block elections either (OR DO THEY)
+		pass
 	
 class SongGroup(AssociatedMetadata):
 	select_by_name_query = "SELECT group_id AS id, group_name AS name FROM r4_groups WHERE group_name = %s"
 	select_by_id_query = "SELECT group_id AS id, group_name AS name FROM r4_groups WHERE group_id = %s"
-	select_by_song_id_query = "SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, group_elec_block AS elec_block FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s"
+	select_by_song_id_query = "SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s"
 	disassociate_song_id_query = "DELETE FROM r4_song_group WHERE song_id = %s AND group_id = %s"
 	associate_song_id_query = "INSERT INTO r4_song_group (song_id, group_id, group_is_tag) VALUES (%s, %s, %s)"
 	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_group WHERE song_id = %s AND group_id = %s"
@@ -963,7 +977,14 @@ class SongGroup(AssociatedMetadata):
 		song_ids = db.c.fetch_list(
 			"SELECT song_id "
 			"FROM r4_song_group JOIN r4_song_sid USING (song_id) "
-			"WHERE r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.cool_end < %s",
-			(self.id, sid, time.time() - cool_time()))
+			"WHERE r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end < %s",
+			(self.id, sid, time.time() - cool_time))
 		for song_id in song_ids:
 			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE AND song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_end, song_id, sid))
+			
+	def _start_election_block_db(self, sid, num_elections):
+		table = db.c.fetch_all("SELECT r4_song_group.song_id FROM r4_song_group JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) WHERE group_id = %s", (self.id, num_elections))
+		for row in table:
+			song = Song()
+			song.id = row['song_id']
+			song.set_election_block(sid, 'album', num_elections)

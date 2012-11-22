@@ -6,6 +6,7 @@ from api.server import test_get
 from api.server import test_post
 from api.server import handle_url
 from api import fieldtypes
+import api_requests.info
 
 from libs import cache
 from libs import log
@@ -101,33 +102,10 @@ class Sync(RequestHandler):
 			sessions[self.user.sid].append(self)
 		
 	def update(self):
-		# Front-load all non-animated content ahead of the schedule content
-		# Since the schedule content is the most animated on R3, setting this content to load
-		# first has a good impact on the perceived animation smoothness since table redrawing
-		# doesn't have to take place during the first few frames.
-		
-		self.user.refresh()
-		self.append("user", self.user.get_public_dict())
-		
-		if 'playlist' in self.request.arguments:
-			self.append("all_albums", playlist.fetch_all_albums(self.user))
-		elif 'artist_list' in self.request.arguments:
-			self.append("artist_list", playlist.fetch_all_artists(self.sid))
-		elif 'init' not in self.request.arguments:
-			self.append("album_diff", cache.get_station(self.sid, 'album_diff'))
-		
-		self.append("requests_all", cache.get_station(self.sid, "request_all"))
-		self.append("requests_user", self.user.get_requests())
-		self.append("calendar", cache.get("calendar"))
-		self.append("listeners_current", cache.get_station(self.sid, "listeners_current"))
-		
-		# TODO: Some mixing of pre-dictionaried items here might help speed
-		self.append("sched_current", cache.get_station(self.sid, "sched_current").to_dict(self.user))
-		self.append("sched_next", cache.get_station(self.sid, "sched_next").to_dict(self.user))
-		self.append("sched_history", cache.get_station(self.sid, "sched_history").to_dict(self.user))
+		api_requests.info.attach_info_to_request(self)
 		self.finish()
 	
 	def update_user(self):
 		self.user.refresh()
-		self.append("user", self.user.get_public_dict())
+		self.append("user", self.user.to_public_dict())
 		self.finish()

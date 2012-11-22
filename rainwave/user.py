@@ -142,7 +142,7 @@ class User(object):
 			self.data['sid'] = self.request_sid
 			self.data['radio_tuned_in'] = False
 	
-		if (self.id > 1):
+		if (self.id > 1) and cache.get_station(self.request_sid, "sched_current"):
 			if cache.get_station(self.request_sid, "sched_current").get_dj_user_id() == self.id:
 				self.data['radio_dj'] = True
 			
@@ -152,7 +152,7 @@ class User(object):
 			if self.data['radio_tuned_in'] and not self.is_in_request_line() and self.has_requests():
 				self.put_in_request_line(self.data['sid'])
 
-	def get_private_dict(self):
+	def to_private_dict(self):
 		"""
 		Returns a JSONable dict containing data that the user will want to see or make use of.
 		NOT for other users to see.
@@ -163,7 +163,7 @@ class User(object):
 				public[k] = v
 		return public
 		
-	def get_public_dict(self):
+	def to_public_dict(self):
 		"""
 		Returns a JSONable dict containing data that other users are allowed to see.
 		"""

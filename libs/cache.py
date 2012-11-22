@@ -117,7 +117,9 @@ def update_user_rating_acl(sid, song_id):
 		songs = []
 
 	while len(songs) > 2:
-		del users[songs.pop(0)]
+		to_remove = songs.pop(0)
+		if to_remove in users:
+			del users[to_remove]
 	songs.append(song_id)
 	users[song_id] = {}
 	
