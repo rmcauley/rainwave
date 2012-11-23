@@ -87,27 +87,20 @@ class RequestHandler(tornado.web.RequestHandler):
 					request_ok = False
 				else:
 					self.args[field] = parsed
-		
-		self.user = None
+
+		self.sid = None
+		if "sid" in self.request.arguments:
+			self.sid = int(self.get_argument("sid"))
+		elif self.sid_required:
+			self.append("error", api.returns.ErrorReturn(-1000, "Missing station ID argument."))
+			request_ok = False
+		if request_ok and self.sid and not self.sid in config.station_ids:
+			self.append("error", api.returns.ErrorReturn(-1000, "Invalid station ID."))
+			request_ok = False
+				
 		if request_ok:
 			if self.auth_required and not self.rainwave_auth():
 				request_ok = False
-
-		if self.sid_required and not "sid" in self.request.arguments:
-			self.append("error", api.returns.ErrorReturn(-1000, "Missing station ID argument."))
-			request_ok = False
-		elif "sid" in self.request.arguments:
-			self.sid = int(self.get_argument("sid"))
-		elif self.user:
-			self.sid = self.user.sid
-		else:
-			self.append("error", api.returns.ErrorReturn(-1000, "Missing station ID argument."))
-			request_ok = False
-
-		# Now we strictly enforce valid station IDs.
-		if not self.sid or not self.sid in config.station_ids or self.sid == 0:
-			self.append("error", api.returns.ErrorReturn(-1000, "Invalid station ID."))
-			request_ok = False
 				
 		self.request_ok = request_ok
 		if not request_ok:

@@ -44,7 +44,7 @@ def test_post(klass):
 class TestShutdownRequest(api.web.RequestHandler):
 	auth_required = False
 	def get(self, _unused):
-		tornado.ioloop.IOLoop.instance().add_timeout(time.time() + 1, tornado.ioloop.IOLoop.instance().stop)
+		tornado.ioloop.IOLoop.instance().add_timeout(time.time() + 2, tornado.ioloop.IOLoop.instance().stop)
 		
 class APITestFailed(Exception):
 	def __init__(self, value):
@@ -64,7 +64,7 @@ class APIServer(object):
 		port_no = int(config.get("api_base_port")) + task_id
 		
 		# Log according to configured directory and port # we're operating on
-		log_file = "%s/api%s.log" % (config.get("api_log_dir"), port_no)
+		log_file = "%s/rw_api_%s.log" % (config.get("api_log_dir"), port_no)
 		if config.test_mode and os.path.exists(log_file):
 			os.remove(log_file)
 		log.init(log_file, config.get("log_level"))
@@ -73,7 +73,7 @@ class APIServer(object):
 		cache.open()
 		
 		# Fire ze missiles!
-		app = tornado.web.Application(request_classes, debug=config.get("debug_mode"))
+		app = tornado.web.Application(request_classes, debug=config.get("test_mode"))
 		http_server = tornado.httpserver.HTTPServer(app, xheaders = True)
 		http_server.listen(port_no)
 		
@@ -139,17 +139,19 @@ class APIServer(object):
 				# Setup and get the data from the HTTP server
 				params = {}
 				if request.auth_required:
-					params = { "user_id": 2, "key": "TESTKEY" }
+					params['user_id'] = 2
+					params['key'] = "TESTKEY"
 					if request.login_required or request.admin_required or request.dj_required:
 						# admin login, user ID 2 currently is though.
 						pass
 					else:
 						# need an anon user/key added to params here
 						pass
+				params['sid'] = 1
 				params = urllib.urlencode(params)
 				conn = httplib.HTTPConnection('localhost', config.get("api_base_port"))
 				
-				conn.request(request_pair['method'], "/api/1/%s" % request.url, params, headers)
+				conn.request(request_pair['method'], "/api/%s" % request.url, params, headers)
 				response = conn.getresponse()
 				if response.status == 200:
 					web_data = json.load(response)
@@ -176,9 +178,9 @@ class APIServer(object):
 				print
 
 		conn = httplib.HTTPConnection('localhost', config.get("api_base_port"))
-		conn.request("GET", "/api/1/shutdown", params, headers)
+		conn.request("GET", "/api/shutdown", params, headers)
 		conn.getresponse()
-		time.sleep(1)
+		time.sleep(3)
 		
 		print
 		print "----------------------------------------------------------------------"

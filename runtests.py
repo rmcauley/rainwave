@@ -46,7 +46,7 @@ class ExtensionPlugin(Plugin):
 # Setup our run environment for the test.
 username = os.environ['USER']
 libs.config.test_mode = True
-sqlite_file = "%s/rwapi_test.%s.sqlite" % (tempfile.gettempdir(), username)
+sqlite_file = "%s/rw_test.%s.sqlite" % (tempfile.gettempdir(), username)
 if os.path.exists(sqlite_file):
 	os.remove(sqlite_file)
 		
@@ -72,7 +72,7 @@ for sid in range(1, 10):
 # to faking argv to pass in.  Terrible.  Absolutely terrible.
 if nose.run(addplugins=[ExtensionPlugin()], argv=['-w', 'tests', '-s']) == 0:
 	sys.stderr.write("Unit testing failed.\n")
-	sys.exit(1)
+#	sys.exit(1)
 	
 libs.db.close()
 
