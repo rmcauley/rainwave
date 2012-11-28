@@ -43,8 +43,11 @@ def test_post(klass):
 	
 class TestShutdownRequest(api.web.RequestHandler):
 	auth_required = False
-	def get(self, _unused):
-		tornado.ioloop.IOLoop.instance().add_timeout(time.time() + 2, tornado.ioloop.IOLoop.instance().stop)
+	def get(self):
+		self.write("Shutting down server.")
+	
+	def on_finish(self):
+		tornado.ioloop.IOLoop.instance().stop() #add_timeout(time.time() + 2, tornado.ioloop.IOLoop.instance().stop)
 		
 class APITestFailed(Exception):
 	def __init__(self, value):
@@ -86,10 +89,14 @@ class APIServer(object):
 			cache.update_local_cache_for_sid(sid)
 		log.info("start", "Server bootstrapped and ready to go.")
 		self.ioloop = tornado.ioloop.IOLoop.instance()
-		self.ioloop.start()
-		http_server.stop()
-		log.info("stop", "Server has been shutdown.")
-		log.close()
+		try:
+			self.ioloop.start()
+		finally:
+			self.ioloop.stop()
+			http_server.stop()
+			db.close()
+			log.info("stop", "Server has been shutdown.")
+			log.close()
 
 	def start(self):
 		# The way this works, is that the parent PID is hijacked away from us and everything after this

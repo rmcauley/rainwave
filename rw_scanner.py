@@ -26,4 +26,9 @@ if __name__ == "__main__":
 	if libs.config.get("scanner_user") and libs.config.get("scanner_group"):
 		libs.chuser.change_user(libs.config.get("scanner_user"), libs.config.get("scanner_group"))
 	
-	backend.filemonitor.start(args.full)
+	try:
+		backend.filemonitor.start(args.full)
+	finally:
+		libs.cache.close()
+		libs.db.close()
+		libs.log.close(0

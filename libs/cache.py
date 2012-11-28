@@ -25,6 +25,7 @@ def open():
 		_memcache.behaviors = { "tcp_nodelay": True, "ketama": config.get("memcache_ketama") }
 	else:
 		_memcache = TestModeCache()
+		reset_station_caches()
 	
 def set(key, value, save_local = False):
 	if save_local or key in local:
@@ -80,13 +81,13 @@ def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "sched_history")
 	refresh_local_station(sid, "sched_current")
 	refresh_local_station(sid, "listeners_current")
-	refresh_local_station(sid, "listeners_internal")
 	refresh_local_station(sid, "request_line")
 	refresh_local_station(sid, "request_user_positions")
 	refresh_local_station(sid, "user_rating_acl")
 	refresh_local_station(sid, "user_rating_acl_song_index")
 	refresh_local_station(sid, "song_ratings")
 	refresh_local_station(sid, "album_ratings")
+	refresh_local("listeners_internal")
 	refresh_local("request_expire_times")
 	refresh_local("calendar")
 	
@@ -94,19 +95,19 @@ def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "song_ratings")
 	
 def reset_station_caches():
+	set("listeners_internal", {}, True)
+	set("request_expire_times", None, True)
+	set("calendar", None, True)
 	for sid in config.station_ids:
 		set_station(sid, "album_diff", None, True)
 		set_station(sid, "sched_next", None, True)
 		set_station(sid, "sched_history", None, True)
 		set_station(sid, "sched_current", None, True)
 		set_station(sid, "listeners_current", None, True)
-		set_station(sid, "listeners_internal", None, True)
 		set_station(sid, "request_line", None, True)
 		set_station(sid, "request_user_positions", None, True)
 		set_station(sid, "user_rating_acl", None, True)
 		set_station(sid, "user_rating_acl_song_index", None, True)
-		set("request_expire_times", None, True)
-		set("calendar", None, True)
 	
 def update_user_rating_acl(sid, song_id):
 	users = get_station(sid, "user_rating_acl")

@@ -77,4 +77,8 @@ def start():
 	for sid in config.station_ids:
 		playlist.prepare_cooldown_algorithm(sid)
 	
-	tornado.ioloop.IOLoop.instance().start()
+	try:
+		tornado.ioloop.IOLoop.instance().start()
+	finally:
+		cache.close()
+		db.close()

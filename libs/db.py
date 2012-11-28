@@ -82,7 +82,6 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 class SQLiteCursor(object):
 	def __init__(self, filename):
 		self.con = sqlite3.connect(filename, 0, sqlite3.PARSE_DECLTYPES)
-		# self.con.isolation_level = None
 		self.con.row_factory = self._dict_factory
 		self.cur = self.con.cursor()
 		self.rowcount = 0
@@ -90,6 +89,7 @@ class SQLiteCursor(object):
 		
 	def close(self):
 		self.cur.close()
+		self.con.commit()
 		self.con.close()
 		
 	# This isn't the most efficient.  See Pg's cursor class for explanation
