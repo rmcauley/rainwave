@@ -160,6 +160,7 @@ class APIServer(object):
 				
 				conn.request(request_pair['method'], "/api/%s" % request.url, params, headers)
 				response = conn.getresponse()
+				response_pass = True
 				if response.status == 200:
 					web_data = json.load(response)
 					del(web_data['api_info'])
@@ -169,14 +170,16 @@ class APIServer(object):
 					ref_file.close()
 					
 					if not dict_compare.print_differences(ref_data, web_data):
-						passed = False
+						response_pass = False
 						print "JSON from server:"
 						print json.dumps(web_data, indent=4, sort_keys=True)
 						print
 				else:
+					response_pass = False
+				if not response_pass:
+					passed = False
 					print
 					print "*** ERROR:", request.url, ": Response status", response.status
-					passed = False
 			except:
 				print
 				traceback.print_exc(file=sys.stdout)

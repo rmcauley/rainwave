@@ -20,4 +20,4 @@ class User(RequestHandler):
 	description = "A test request that displays the user's information."
 	
 	def post(self):
-		self.append("user", self.user.get_private_jsonable())
+		self.append("user", self.user.to_private_dict())
