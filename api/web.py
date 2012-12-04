@@ -49,6 +49,7 @@ class RequestHandler(tornado.web.RequestHandler):
 	def prepare(self):
 		self._startclock = time.clock()
 		self.request_ok = False
+		self.user = None
 		
 		if self.local_only and not self.request.remote_ip == "127.0.0.1":
 			self.failed = True
@@ -99,7 +100,8 @@ class RequestHandler(tornado.web.RequestHandler):
 			request_ok = False
 				
 		if request_ok:
-			if self.auth_required and not self.rainwave_auth():
+			authorized = self.rainwave_auth()
+			if self.auth_required and not authorized:
 				request_ok = False
 				
 		self.request_ok = request_ok

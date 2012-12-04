@@ -20,6 +20,8 @@ from api_requests import *
 
 parser = argparse.ArgumentParser(description="Rainwave unit and API testing.")
 parser.add_argument("--api", action="store_true")
+parser.add_argument("--apionly", action="store_true")
+parser.add_argument("--config", default="etc/rainwave_test.conf")
 args = parser.parse_args()
 
 # Taken from http://stackoverflow.com/questions/3670515/how-to-make-py-test-or-nose-to-look-for-tests-inside-all-python-files
@@ -49,34 +51,36 @@ libs.config.test_mode = True
 sqlite_file = "%s/rw_test.%s.sqlite" % (tempfile.gettempdir(), username)
 if os.path.exists(sqlite_file):
 	os.remove(sqlite_file)
-		
-libs.config.load("etc/rainwave_test.conf")
-libs.config.override("db_type", "sqlite")
-libs.config.override("db_name", sqlite_file)
-libs.db.open()
-libs.db.create_tables()
-libs.cache.open()
-libs.log.init("%s/rw_backend.%s.log" % (libs.config.get("log_dir"), username), libs.config.get("log_level"))
-
-libs.cache.set_station(1, "sched_current", rainwave.event.Event())
-rainwave.request.update_cache(1)
-rainwave.playlist.prepare_cooldown_algorithm(1)
-libs.cache.update_local_cache_for_sid(1)
-libs.cache.set("listeners_internal", {})
-
-# Prevents KeyError from occurring in playlist
-for sid in range(1, 10):
-	rainwave.playlist.clear_updated_albums(sid)
-
-# I found Nose impossible to configure programmatically so I'm resorting
-# to faking argv to pass in.  Terrible.  Absolutely terrible.
-if nose.run(addplugins=[ExtensionPlugin()], argv=['-w', 'tests', '-s']) == 0:
-	sys.stderr.write("Unit testing failed.\n")
-#	sys.exit(1)
 	
-libs.db.close()
+libs.config.load(args.config)
+		
+if not args.apionly:
+	if libs.config.get("db_type") == "sqlite":
+		libs.config.override("db_name", sqlite_file)
+	libs.db.open()
+	libs.db.create_tables()
+	libs.cache.open()
+	libs.log.init("%s/rw_backend.%s.log" % (libs.config.get("log_dir"), username), libs.config.get("log_level"))
 
-if args.api:
+	libs.cache.set_station(1, "sched_current", rainwave.event.Event())
+	rainwave.request.update_cache(1)
+	rainwave.playlist.prepare_cooldown_algorithm(1)
+	libs.cache.update_local_cache_for_sid(1)
+	libs.cache.set("listeners_internal", {})
+
+	# Prevents KeyError from occurring in playlist
+	for sid in range(1, 10):
+		rainwave.playlist.clear_updated_albums(sid)
+
+	# I found Nose impossible to configure programmatically so I'm resorting
+	# to faking argv to pass in.  Terrible.  Absolutely terrible.
+	if nose.run(addplugins=[ExtensionPlugin()], argv=['-w', 'tests', '-s']) == 0:
+		sys.stderr.write("Unit testing failed.\n")
+	#	sys.exit(1)
+		
+	libs.db.close()
+
+if args.api or args.apionly:
 	print
 
 	server = api.server.APIServer()

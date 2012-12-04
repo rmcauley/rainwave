@@ -41,7 +41,7 @@ def attach_info_to_request(request):
 		request.append("sched_next", cache.get_station(request.sid, "sched_next"))
 		request.append("sched_history", cache.get_station(request.sid, "sched_history"))
 	
-@test_get
+@test_post
 @handle_url("info")
 class InfoRequest(RequestHandler):
 	auth_required = False
@@ -49,4 +49,7 @@ class InfoRequest(RequestHandler):
 	fields = { "playlist": (fieldtypes.boolean, False), "artist_list": (fieldtypes.boolean, False) }
 	
 	def get(self):
+		attach_info_to_request(self)
+
+	def post(self):
 		attach_info_to_request(self)

@@ -29,7 +29,6 @@ shutil.copytree("api_requests", installdir + "/api_requests", ignore=shutil.igno
 shutil.copytree("backend", installdir + "/backend", ignore=shutil.ignore_patterns("*.pyc"))
 shutil.copytree("libs", installdir + "/libs", ignore=shutil.ignore_patterns("*.pyc"))
 shutil.copytree("rainwave", installdir + "/rainwave", ignore=shutil.ignore_patterns("*.pyc"))
-shutil.copytree("api_requests", installdir + "/rainwave", ignore=shutil.ignore_patterns("*.pyc"))
 
 shutil.copy("icecast_sync.py", "/opt/rainwave/icecast_sync.py")
 shutil.copy("rw_api.py", "/opt/rainwave/rw_api.py")

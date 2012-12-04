@@ -29,6 +29,5 @@ if __name__ == "__main__":
 	try:
 		backend.filemonitor.start(args.full)
 	finally:
-		libs.cache.close()
 		libs.db.close()
-		libs.log.close(0
+		libs.log.close()

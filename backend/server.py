@@ -64,7 +64,7 @@ def start():
 	server = tornado.httpserver.HTTPServer(app)
 	server.listen(int(config.get("backend_port")), address='127.0.0.1')
 	
-	if config.get("backend_user") and config.get("backend_group"):
+	if config.get("backend_user") or config.get("backend_group"):
 		chuser.change_user(config.get("backend_user"), config.get("backend_group"))
 		
 	pid = os.getpid()
@@ -80,5 +80,4 @@ def start():
 	try:
 		tornado.ioloop.IOLoop.instance().start()
 	finally:
-		cache.close()
 		db.close()
