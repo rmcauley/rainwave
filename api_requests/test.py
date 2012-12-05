@@ -3,7 +3,7 @@ from api.server import test_get
 from api.server import test_post
 from api.server import handle_url
 
-@test_get
+#@test_get
 @handle_url("hello_world")
 class HelloWorld(RequestHandler):
 	auth_required = False
@@ -13,7 +13,7 @@ class HelloWorld(RequestHandler):
 	def get(self):
 		self.append("hello_world", { "hello": "world" })
 		
-@test_post
+#@test_post
 @handle_url("user")
 class User(RequestHandler):
 	sid_required = False

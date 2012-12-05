@@ -110,19 +110,20 @@ class RequestHandler(tornado.web.RequestHandler):
 	
 	def rainwave_auth(self):
 		request_ok = True
+		user_id_present = "user_id" in self.request.arguments
 		
-		if not "user_id" in self.request.arguments:
+		if self.auth_required and not user_id_present:
 			self.append("error", api.returns.ErrorReturn(-1000, "Missing user_id argument."))
 			request_ok = False
-		elif not fieldtypes.numeric(self.get_argument("user_id")):
+		if user_id_present and not fieldtypes.numeric(self.get_argument("user_id")):
 			self.append("error", api.returns.ErrorReturn(-1000, "Invalid user ID %s."))
 			request_ok = False
-		if not "key" in self.request.arguments:
+		if (self.auth_required or user_id_present) and not "key" in self.request.arguments:
 			self.append("error", api.returns.ErrorReturn(-1000, "Missing 'key' argument."))
 			request_ok = False
 		
 		self.user = None
-		if request_ok:
+		if request_ok and user_id_present:
 			self.user = User(long(self.get_argument("user_id")))
 			self.user.authorize(self.sid, self.request.remote_ip, self.get_argument("key"))
 			if not self.user.authorized:
@@ -130,6 +131,10 @@ class RequestHandler(tornado.web.RequestHandler):
 				request_ok = False
 			else:
 				self.sid = self.user.request_sid
+		
+		if self.auth_required and not self.user:
+			self.append("error", api.returns.ErrorReturn(403, "Authorization required."))
+			request_ok = False
 		
 		if self.user and request_ok:
 			if self.login_required and not user.is_anonymous():
