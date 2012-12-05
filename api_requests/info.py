@@ -33,13 +33,13 @@ def attach_info_to_request(request):
 	if request.user:
 		request.append("requests_user", request.user.get_requests())
 		# TODO: Some mixing of pre-dictionaried items here might help speed
-		self.append("sched_current", cache.get_station(self.sid, "sched_current").to_dict(self.user))
-		self.append("sched_next", cache.get_station(self.sid, "sched_next").to_dict(self.user))
-		self.append("sched_history", cache.get_station(self.sid, "sched_history").to_dict(self.user))
+		request.append("sched_current", cache.get_station(request.sid, "sched_current").to_dict(self.user))
+		request.append("sched_next", cache.get_station(request.sid, "sched_next").to_dict(self.user))
+		request.append("sched_history", cache.get_station(request.sid, "sched_history").to_dict(self.user))
 	else:
-		request.append("sched_current", cache.get_station(request.sid, "sched_current"))
-		request.append("sched_next", cache.get_station(request.sid, "sched_next"))
-		request.append("sched_history", cache.get_station(request.sid, "sched_history"))
+		request.append("sched_current", cache.get_station(request.sid, "sched_current_dict"))
+		request.append("sched_next", cache.get_station(request.sid, "sched_next_dict"))
+		request.append("sched_history", cache.get_station(request.sid, "sched_history_dict"))
 	
 @test_post
 @handle_url("info")

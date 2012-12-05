@@ -47,7 +47,6 @@ class ExtensionPlugin(Plugin):
 		
 # Setup our run environment for the test.
 username = os.environ['USER']
-libs.config.test_mode = True
 sqlite_file = "%s/rw_test.%s.sqlite" % (tempfile.gettempdir(), username)
 if os.path.exists(sqlite_file):
 	os.remove(sqlite_file)

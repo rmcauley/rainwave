@@ -578,22 +578,22 @@ class Song(object):
 				return True
 		raise SongMetadataUnremovable("Found no tag by name %s that wasn't assigned by ID3." % name)
 		
-	def to_dict(self):
+	def to_dict(self, user = None):
 		self.data['id'] = self.id
 		album_list = []
 		artist_list = []
 		group_list = []
 		if self.albums:
 			for metadata in self.albums:
-				albums_list.append(metadata.to_dict())
+				album_list.append(metadata.to_dict(user))
 			self.data['albums'] = album_list
 		if self.artists:
 			for metadata in self.artists:
-				artist_list.append(metadata.to_dict())
+				artist_list.append(metadata.to_dict(user))
 			self.data['artists'] = artist_list
 		if self.groups:
 			for metadata in self.groups:
-				group_list.append(metadata.to_dict())
+				group_list.append(metadata.to_dict(user))
 			self.data['groups'] = group_list
 		return self.data
 		
@@ -743,8 +743,7 @@ class AssociatedMetadata(object):
 		if db.c.fetch_var(self.check_self_size_query, (self.id,)) == 0:
 			db.c.update(self.delete_self_query, (self.id,))
 			
-	def to_dict(self):
-		self.data['id'] = self.id
+	def to_dict(self, user = None):
 		return self.data
 		
 # ################################################################### ALBUMS

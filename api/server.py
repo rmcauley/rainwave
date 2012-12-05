@@ -75,6 +75,9 @@ class APIServer(object):
 		db.open()
 		cache.open()
 		
+		for sid in config.station_ids:
+			cache.update_local_cache_for_sid(sid)
+		
 		# Fire ze missiles!
 		app = tornado.web.Application(request_classes, debug=config.get("debug_mode"))
 		http_server = tornado.httpserver.HTTPServer(app, xheaders = True)
@@ -85,8 +88,6 @@ class APIServer(object):
 		
 		for request in request_classes:
 			log.debug("start", "   Handler: %s" % str(request))
-		for sid in config.station_ids:
-			cache.update_local_cache_for_sid(sid)
 		log.info("start", "Server bootstrapped and ready to go.")
 		self.ioloop = tornado.ioloop.IOLoop.instance()
 		try:

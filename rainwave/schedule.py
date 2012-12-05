@@ -274,6 +274,16 @@ def _update_memcache(sid):
 	cache.set_station(sid, "sched_current", current[sid], True)
 	cache.set_station(sid, "sched_next", next[sid], True)
 	cache.set_station(sid, "sched_history", history[sid], True)
+	cache.set_station(sid, "sched_current_dict", current[sid].to_dict(), True)
+	next_dict_list = []
+	for event in next[sid]:
+		next_dict_list.append(event.to_dict())
+	cache.set_station(sid, "sched_next_dict", next_dict_list, True)
+	history_dict_list = []
+	for event in history[sid]:
+		history_dict_list.append(event.to_dict())
+	cache.set_station(sid, "sched_history_dict", history_dict_list, True)
 	cache.prime_rating_cache_for_events([ current[sid] ] + next[sid], history[sid])
-	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict(sid), True)
+	cache.set_station(sid, "listeners_current", listeners.get_listeners_dict(sid), True)
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)
+	request.update_line(sid)

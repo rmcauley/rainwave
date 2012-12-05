@@ -20,6 +20,8 @@ class TestModeCache(object):
 
 def open():
 	global _memcache
+	if _memcache:
+		return
 	if not config.test_mode or config.get("test_use_memcache"):
 		_memcache = pylibmc.Client(config.get("memcache_servers"), binary = True)
 		_memcache.behaviors = { "tcp_nodelay": True, "ketama": config.get("memcache_ketama") }
@@ -80,6 +82,9 @@ def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "sched_next")
 	refresh_local_station(sid, "sched_history")
 	refresh_local_station(sid, "sched_current")
+	refresh_local_station(sid, "sched_next_dict")
+	refresh_local_station(sid, "sched_history_dict")
+	refresh_local_station(sid, "sched_current_dict")
 	refresh_local_station(sid, "listeners_current")
 	refresh_local_station(sid, "request_line")
 	refresh_local_station(sid, "request_user_positions")
@@ -97,7 +102,7 @@ def update_local_cache_for_sid(sid):
 def reset_station_caches():
 	set("listeners_internal", {}, True)
 	set("request_expire_times", None, True)
-	set("calendar", None, True)
+	set("calendar", [], True)
 	for sid in config.station_ids:
 		set_station(sid, "album_diff", None, True)
 		set_station(sid, "sched_next", None, True)

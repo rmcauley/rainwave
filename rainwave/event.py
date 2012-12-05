@@ -102,6 +102,8 @@ class Event(object):
 		self.use_crossfade = True
 		self.use_tag_suffix = True
 		self.name = None
+		self.end = None
+		self.url = None
 	
 	def _update_from_dict(self, dict):
 		self.start = dict['sched_start']
@@ -169,7 +171,7 @@ class Event(object):
 		
 class ElectionScheduler(Event):
 	def __init__(self):
-		super(Event, self).__init__()
+		super(ElectionScheduler, self).__init__()
 		self.produces_elections = True
 	
 	def create_election(self, sid):
@@ -411,7 +413,7 @@ class Election(Event):
 			db.c.update("UPDATE r4_elections SET elec_priority = FALSE WHERE elec_id = %s", (self.id,))
 			
 	def to_dict(self, user = None):
-		obj = super(Event, self).to_dict(user)
+		obj = super(Election, self).to_dict(user)
 		obj['songs'] = []
 		for song in self.songs:
 			obj['songs'].append(song.to_dict(user))
@@ -449,7 +451,7 @@ class OneUp(Event):
 		return self.songs[0].length
 	
 	def to_dict(self, user = None):
-		obj = super(Event, self).to_dict(user)
+		obj = super(OneUp, self).to_dict(user)
 		obj['songs'] = [ self.songs[0].to_dict(user) ]
 		return obj
 
