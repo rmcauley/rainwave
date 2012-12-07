@@ -10,6 +10,7 @@ def sync_frontend_all(sid):
 		params = urllib.urlencode({ "sid": sid })
 		for i in range(0, config.get("api_num_processes")):
 			urllib2.urlopen(urllib2.Request("http://localhost:%s/api/sync_update_all" % (config.get("api_base_port") + i,), params))
+			log.debug("sync_front", "Sent update_all to API port %s" % (config.get("api_base_port") + i,))
 	except urllib2.URLError, e:
 		log.warn("sync_front", "Could not connect to an API port: %s" % repr(e.reason))
 	except socket.error:

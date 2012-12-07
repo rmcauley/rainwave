@@ -20,7 +20,7 @@ case "$1" in
   start)
 	echo -n "Starting Rainwave: "
 	# start-stop-daemon --start --background --exec $D_SCANNER -- $D_OPTS
-	# start-stop-daemon --start --background --exec $D_API -- $D_OPTS
+	start-stop-daemon --start --background --exec $D_API -- $D_OPTS
 	start-stop-daemon --start --background --exec $D_BACKEND -- $D_OPTS
 	echo "OK"
 	;;

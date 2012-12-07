@@ -34,7 +34,7 @@ def load():
 		next[sid] = cache.get_station(sid, "sched_next")
 		if not next[sid]:
 			# pdb.set_trace()
-			future_time = time.time() + current[sid].length()
+			future_time = int(time.time()) + current[sid].length()
 			next_elecs = event.Election.load_unused(sid)
 			next_event = True
 			next[sid] = []
@@ -100,6 +100,8 @@ def advance_station(sid):
 		
 	while len(history[sid]) > 3:
 		history[sid].pop()
+		
+	# TODO: IMPORTANT: Block currently playing song/album from being selected so there's no "hole"
 	
 	integrate_new_events(sid)
 	sort_next(sid)
@@ -184,7 +186,7 @@ def _create_elections(sid):
 		next_start = next[sid][i].start
 		gap = next_start - running_time
 		next_elec_i = None
-		next_elec_length = playlist.avg_song_length
+		next_elec_length = playlist.get_average_song_length(sid)
 		j = i
 		while j < len(next[sid]):
 			if next[sid][j].is_election:

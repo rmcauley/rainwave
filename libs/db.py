@@ -53,7 +53,7 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		row = self.fetchone()
 		col = row.keys()[0]
 		arr.append(row[col])
-		for row in self.fetchmany():
+		for row in self.fetchall():
 			arr.append(row[col])
 		return arr
 		

@@ -8,6 +8,7 @@ from mutagen.mp3 import MP3
 
 from libs import db
 from libs import config
+from libs import log
 
 cooldown_config = { }
 
@@ -19,13 +20,13 @@ def get_shortest_song(sid):
 	This function gets the shortest available song to us from the database.
 	"""
 	# Should we take into account song_elec_blocked here?
-	return db.c.fetch_var("SELECT MIN(song_length) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE song_exists = TRUE AND r4_song_sid.sid = %s AND song_cool = FALSE")
+	return db.c.fetch_var("SELECT MIN(song_length) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE song_exists = TRUE AND r4_song_sid.sid = %s AND song_cool = FALSE", (sid,))
 	
 def get_average_song_length(sid = None):
 	"""
 	Calculates the average song length of available songs in the database.
 	"""
-	return db.c.fetch_var("SELECT AVG(song_length) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE song_exists = TRUE AND r4_song_sid.sid = %s AND song_cool = FALSE")
+	return db.c.fetch_var("SELECT AVG(song_length) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE song_exists = TRUE AND r4_song_sid.sid = %s AND song_cool = FALSE", (sid,))
 	
 def prepare_cooldown_algorithm(sid):
 	"""
@@ -211,7 +212,7 @@ class SongMetadataUnremovable(Exception):
 	
 class Song(object):
 	@classmethod
-	def load_from_id(klass, id, sid = False):
+	def load_from_id(klass, id, sid = None):
 		d = None
 		if not sid:
 			d = db.c.fetch_row("SELECT * FROM r4_songs WHERE song_id = %s", (id,))
@@ -235,7 +236,7 @@ class Song(object):
 		s.data['cool_multiply'] = d['song_cool_multiply']
 		s.data['cool_override'] = d['song_cool_override']
 		s.data['origin_sid'] = d['song_origin_sid']
-		s.data['sid'] = None
+		s.data['sid'] = sid
 		
 		if sid:
 			s.sid = sid
@@ -481,26 +482,35 @@ class Song(object):
 			auto_cool = ((3.5 - (cool_rating - 2.5)) / 3.5) * cooldown_config[sid]['max_song_cool'] + cooldown_config[sid]['min_song_cool']
 			cool_time = auto_cool * get_age_cooldown_multiplier(self.data['added_on']) * self.data['cool_multiply']
 			
-		cool_time = cool_time + time.time()
+		cool_time = int(cool_time + time.time())
 		db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_time, self.id, sid))
 		self.data['cool'] = True
 		self.data['cool_end'] = cool_time
 
 		for metadata in self.groups:
+			log.debug("song_cooldown", "Starting group cooldown on group %s" % metadata.id)
 			metadata.start_cooldown(sid)
 		# Albums always have to go last since album records in the DB store cached cooldown values
 		for metadata in self.albums:
+			log.debug("song_cooldown", "Starting album cooldown on group %s" % metadata.id)
 			metadata.start_cooldown(sid)
 			
 	def start_election_block(self, sid, num_elections):
 		for metadata in self.groups:
 			metadata.start_election_block(sid, num_elections)
-		# Albums always have to go last since album records in the DB store cached cooldown values
 		for metadata in self.albums:
 			metadata.start_election_block(sid, num_elections)
+		# The above won't actually modify the data in THIS class, so to present things nicely for the API
+		# we'll need to modify this here manually. (no need to touch the DB)
+		self.data['elec_blocked_num'] = num_elections
+		self.data['elec_blocked_by'] = "in_election"
+		self.data['elec_blocked'] = True
 			
 	def set_election_block(self, sid, blocked_by, block_length):
 		db.c.update("UPDATE r4_song_sid SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s WHERE song_id = %s AND sid = %s AND song_elec_blocked_num < %s", (blocked_by, block_length, self.id, sid, block_length))
+		self.data['elec_blocked_num'] = block_length
+		self.data['elec_blocked_by'] = blocked_by
+		self.data['elec_blocked'] = True
 	
 	def update_rating(self):
 		"""
@@ -513,7 +523,7 @@ class Song(object):
 		rating_count = dislikes + neutrals + neutralplus + likes
 		if rating_count > config.get("rating_threshold_for_calc"):
 			self.rating = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
-			db.c.update("UPDATE r4_songs SET song_rating = %s AND song_rating_count = %s WHERE song_id = %s", (self.rating, rating_count, self.id))
+			db.c.update("UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s", (self.rating, rating_count, self.id))
 		
 		for album in self.albums:
 			album.update_rating()
@@ -744,6 +754,7 @@ class AssociatedMetadata(object):
 			db.c.update(self.delete_self_query, (self.id,))
 			
 	def to_dict(self, user = None):
+		self.data['id'] = self.id
 		return self.data
 		
 # ################################################################### ALBUMS
@@ -778,7 +789,7 @@ class Album(AssociatedMetadata):
 	@classmethod
 	def load_list_from_song_id_sid(klass, song_id, sid):
 		instances = []
-		for row in db.c.fetch_all("SELECT r4_albums.*, r4_song_album.album_is_tag, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_song_album JOIN r4_albums USING (album_id) JOIN r4_album_sid USING (album_id) WHERE song_id = %s  AND r4_song_album.sid = %s ORDER BY r4_albums.album_name", (song_id, sid)):
+		for row in db.c.fetch_all("SELECT r4_albums.*, r4_song_album.album_is_tag, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_song_album JOIN r4_albums USING (album_id) JOIN r4_album_sid USING (album_id) WHERE song_id = %s  AND r4_song_album.sid = %s AND r4_album_sid.sid = %s ORDER BY r4_albums.album_name", (song_id, sid, sid)):
 			instance = klass()
 			instance._assign_from_dict(row)
 			instance.sids = [ sid ]
@@ -886,14 +897,14 @@ class Album(AssociatedMetadata):
 		return self._start_cooldown_db(sid, cool_time)
 		
 	def _start_cooldown_db(self, sid, cool_time):
-		cool_end = cool_time + time.time()
+		cool_end = int(cool_time + time.time())
 		# SQLITE_CANNOT_DO_JOINS_ON_UPDATES
-		songs = db.c.fetch_list("SELECT song_id FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND r4_song_sid.sid = %s", (self.id, sid))
+		songs = db.c.fetch_list("SELECT song_id FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND r4_song_sid.sid = %s AND r4_song_album.sid = %s AND song_exists = TRUE", (self.id, sid, sid))
 		for song_id in songs:
-			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE AND song_cool_end = %s WHERE song_id = %s AND song_cool_end < %s", (song_id, cool_end, cool_end))
+			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND song_cool_end < %s AND sid = %s", (cool_end, song_id, cool_end, sid))
 			
 	def solve_cool_lowest(self, sid):
-		self.data['cool_lowest'] = db.c.fetch_var("SELECT MIN(song_cool_end) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid.sid = %s", (self.id, sid))
+		self.data['cool_lowest'] = db.c.fetch_var("SELECT MIN(song_cool_end) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE", (self.id, sid))
 		db.c.update("UPDATE r4_album_sid SET album_cool_lowest = %s WHERE album_id = %s AND sid = %s", (self.data['cool_lowest'], self.id, sid))
 		return self.data['cool_lowest']
 		
@@ -905,7 +916,7 @@ class Album(AssociatedMetadata):
 		rating_count = dislikes + neutrals + neutralplus + likes
 		if rating_count > config.get("rating_threshold_for_calc"):
 			self.rating = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
-			db.c.update("UPDATE r4_albums SET album_rating = %s AND album_rating_count = %s WHERE album_id = %s", (self.rating, rating_count, self.id))
+			db.c.update("UPDATE r4_albums SET album_rating = %s, album_rating_count = %s WHERE album_id = %s", (self.rating, rating_count, self.id))
 			
 	def update_last_played(self, sid):
 		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (time.time(), self.id, sid))
@@ -979,7 +990,7 @@ class SongGroup(AssociatedMetadata):
 			"WHERE r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end < %s",
 			(self.id, sid, time.time() - cool_time))
 		for song_id in song_ids:
-			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE AND song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_end, song_id, sid))
+			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_end, song_id, sid))
 			
 	def _start_election_block_db(self, sid, num_elections):
 		table = db.c.fetch_all("SELECT r4_song_group.song_id FROM r4_song_group JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) WHERE group_id = %s", (self.id, num_elections))
