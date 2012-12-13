@@ -419,6 +419,22 @@ class Election(Event):
 			obj['songs'].append(song.to_dict(user))
 		return obj
 		
+	def has_entry_id(self, entry_id):
+		for song in self.songs:
+			if song.data['entry_id'] == entry_id:
+				return True
+		return False
+		
+	def get_entry(self, entry_id):
+		for song in self.songs:
+			if song.data['entry_id'] == entry_id:
+				return song
+		return None
+		
+	def add_vote_to_entry(self, entry_id, addition = 1):
+		# I hope you've verified this entry belongs to this event, cause I don't do that here.. :)
+		return db.c.update("UPDATE r4_election_entries SET entry_votes = entry_votes + %s WHERE entry_id = %s", (addition, entry_id))
+		
 class PVPElection(Election):
 	def __init__(self):
 		self._num_requests = 2

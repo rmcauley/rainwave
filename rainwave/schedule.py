@@ -112,7 +112,6 @@ def advance_station(sid):
 
 def post_process(sid):
 	_create_elections(sid)
-	_update_memcache(sid)
 	
 	if not config.test_mode:
 		sync_to_front.sync_frontend_all(sid)
@@ -121,6 +120,9 @@ def post_process(sid):
 	cache.update_user_rating_acl(sid, current[sid].get_song().id)
 	_trim(sid)
 	user.trim_listeners(sid)
+	user.unlock_listeners(sid)
+	
+	_update_memcache(sid)
 	
 def _add_listener_count_record(sid):
 	lc_guests = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1", (sid,))

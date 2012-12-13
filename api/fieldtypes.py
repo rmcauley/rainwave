@@ -13,6 +13,15 @@ def integer(str):
 		return None
 	return int(str)
 	
+positive_integer_error = "must be a positive number."
+def positive_integer(str):
+	if not re.match('^\d+$', str):
+		return None
+	nmbr = int(str)
+	if nmbr <= 0:
+		return None
+	return nmbr
+	
 float_num_error = "must be a number."
 def float_num(str):
 	if not re.match('^\d+(.\d+)?$', str):

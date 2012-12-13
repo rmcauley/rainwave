@@ -44,6 +44,8 @@ class RequestHandler(tornado.web.RequestHandler):
 	description = "Undocumented."
 	# Only for the backend to be called
 	local_only = False
+	# Should the user be free to vote and rate?
+	unlocked_listener_only = False
 
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):
@@ -103,6 +105,10 @@ class RequestHandler(tornado.web.RequestHandler):
 			authorized = self.rainwave_auth()
 			if self.auth_required and not authorized:
 				request_ok = False
+				
+		if self.unlocked_listener_only and self.user and self.user.data['listener_lock']:
+			request_ok = False
+			self.append("error", api.returns.ErrorReturn(-1000, "Listener locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_count'])))
 				
 		self.request_ok = request_ok
 		if not request_ok:

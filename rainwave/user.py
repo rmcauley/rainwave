@@ -10,6 +10,10 @@ _AVATAR_PATH = "/forums/download/file.php?avatar=%s"
 
 def trim_listeners(sid):
 	db.c.update("DELETE FROM r4_listeners WHERE sid = %s AND listener_purge = TRUE", (sid,))
+	
+def unlock_listeners(sid):
+	db.c.update("UPDATE r4_listeners SET listener_lock_counter = listener_lock_counter - 1 WHERE listener_lock = TRUE AND listener_lock_sid = %s", (sid,))
+	db.c.update("UPDATE r4_listeners SET listener_lock = FALSE WHERE listener_lock_counter <= 0")
 
 class User(object):
 	def __init__(self, user_id):
@@ -116,14 +120,16 @@ class User(object):
 		self.authorized = True
 
 	def refresh(self):
-		listener = None
-		if self.id in cache.get("listeners_internal"):
-			listener = cache.get("listeners_internal")[self.id]
-		else:
-			listener = db.c.fetch_row("SELECT "
-				"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
-				"FROM r4_listeners "
-				"WHERE user_id = %s AND listener_purge = FALSE", (self.id,))
+		#listener = None
+		# if self.id in cache.get("listeners_internal"):
+		# listener = cache.get("listeners_internal")[self.id]
+		# else:
+		# TODO: listeners_internal needs kind of a per-row updating, it may not be worth caching or it may be difficult to cache
+		# considering it needs consistency
+		listener = db.c.fetch_row("SELECT "
+			"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
+			"FROM r4_listeners "
+			"WHERE user_id = %s AND listener_purge = FALSE", (self.id,))
 		if listener:
 			self.data.update(listener)
 			if self.data['sid'] == self.request_sid:
@@ -223,3 +229,13 @@ class User(object):
 			return None
 		if self.id in cache.get("request_expire_times"):
 			return cache.get("request_expire_times")[self.id]
+
+	def lock_to_sid(self, sid, lock_count):
+		self.data['listener_lock'] = True
+		self.data['listener_lock_sid'] = sid
+		self.data['listener_lock_counter'] = lock_count
+		return db.c.update("UPDATE r4_listeners SET listener_lock = TRUE, listener_lock_sid = %s, listener_lock_counter = %s WHERE listener_id = %s", (sid, lock_count, self.data['listener_id']))
+		
+	def update(self, hash):
+		self.data.update(hash)
+		# TODO: Update listener's cache record
