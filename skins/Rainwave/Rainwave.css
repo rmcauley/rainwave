@@ -756,9 +756,9 @@ table.header_table td {
 
 tr.header_primary_row td {
 	background: #015796;
-	background-image: -moz-linear-gradient(bottom, rgb(8,104,172) 22%, rgb(0,20,121) 100%);
-	background-image: -webkit-linear-gradient(bottom, rgb(8,104,172) 22%, rgb(0,20,121) 100%);
-	background-image: linear-gradient(bottom, rgb(8,104,172) 22%, rgb(0,20,121) 100%);
+	background-image: -moz-linear-gradient(bottom, #1B68AF 22%, #00445D 100%);
+	background-image: -webkit-linear-gradient(bottom, #1B68AF 22%, #00445D 100%);
+	background-image: linear-gradient(bottom, #1B68AF 22%, #00445D 100%);
 	border-bottom: solid 2px #000000;
 }
 
@@ -920,17 +920,19 @@ td.menu_player_td {
 }
 
 div.menu_player {
-	width: 150px;
+	width: 100%;
 	height: 32px;
 }
 
 div.menu_player_flash {
-	background: url("../../ffmp3/ffmp3-rainwave/bkg.png") no-repeat;
+	background: url("../../ffmp3/ffmp3-rainwave/not_on.png") no-repeat;
+	padding-left: 8px;
+	background-position: 8px 0px;
 }
 
 div.menu_flash_warning {
 	width: 100%;
-	height: 18px;
+	height: 32px;
 	background: url("../../ffmp3/ffmp3-rainwave/flash.png") no-repeat;
 	cursor: pointer;
 }

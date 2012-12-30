@@ -34,14 +34,14 @@ var fx = function() {
 			that.animation_string = that.dom_prefix + 'Animation';
 			that.css_animation = true;
 		}
-		if (!that.transform && (temp_el.style[dom_prefixes[i] + 'Transform'] !== undefined)) {
-			that.dom_prefix = dom_prefixes[i];
-			that.transform_string = that.dom_prefix + 'Transform';
-			that.transform = true;
-			if (that.dom_prefix == "Webkit") {
-				that.transform_3d = true;
-			}
-		}
+		// if (!that.transform && (temp_el.style[dom_prefixes[i] + 'Transform'] !== undefined)) {
+			// that.dom_prefix = dom_prefixes[i];
+			// that.transform_string = that.dom_prefix + 'Transform';
+			// that.transform = true;
+			// if (that.dom_prefix == "Webkit") {
+				// that.transform_3d = true;
+			// }
+		// }
 	}
 
 	var requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;

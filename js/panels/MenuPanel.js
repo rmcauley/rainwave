@@ -33,7 +33,7 @@ panels.MenuPanel = {
 		};
 		
 		that.usernameCallback = function(username) {
-			if (user.p.user_id == 1) that.showAnonUser();
+			if (user.p.user_id == 1) that.showUsername("Anonymous");
 			else that.showUsername(username);
 		};
 		
@@ -72,12 +72,13 @@ panels.MenuPanel = {
 				"wmode": "transparent"
 			};
 			var attributes = {
-				"width": 79,
+				"width": 190,
 				"height": 32,
 				"id": "embedded_swf"
 			};
 			that.embedded_swf_container = createEl("div", { "id": "embedded_swf_container" }, that.flash_container);
-			swfobject.embedSWF("ffmp3/ffmp3-config.swf", that.embedded_swf_container.getAttribute("id"), "79", "18", "10.0.0", "ffmp3/expressInstall.swf", flashvars, params, attributes);
+			swfobject.embedSWF("ffmp3/muses-config.swf", that.embedded_swf_container.getAttribute("id"), "190", "32", "10.0.0", "ffmp3/expressInstall.swf", flashvars, params, attributes);
+			that.player.style.background = "none"
 			
 			that.playeradded = true;
 		};
