@@ -21,7 +21,7 @@ from libs import db
 from libs import chuser
 from libs import cache
 
-request_classes = [(r"/api/?", api.help.IndexRequest), (r"/api/help/?", api.help.IndexRequest), (r"/api/help/(.+)", api.help.HelpRequest)]
+request_classes = [ (r"/api4?/?", api.help.IndexRequest), (r"/api4?/help/?", api.help.IndexRequest), (r"/api4?/help/(.+)", api.help.HelpRequest) ]
 testable_requests = []
 
 class handle_url(object):
@@ -30,7 +30,7 @@ class handle_url(object):
 	
 	def __call__(self, klass):
 		klass.url = self.url
-		request_classes.append((r"/api/" + self.url, klass))
+		request_classes.append((r"/api4?/" + self.url, klass))
 		return klass
 		
 def test_get(klass):
@@ -79,7 +79,7 @@ class APIServer(object):
 			cache.update_local_cache_for_sid(sid)
 		
 		# Fire ze missiles!
-		app = tornado.web.Application(request_classes, debug=config.get("debug_mode"))
+		app = tornado.web.Application(request_classes, debug=config.get("debug_mode"), template_path=os.path.join(os.path.dirname(__file__), "../templates"))
 		http_server = tornado.httpserver.HTTPServer(app, xheaders = True)
 		http_server.listen(port_no)
 		

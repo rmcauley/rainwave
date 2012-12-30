@@ -1,6 +1,8 @@
 import copy
 import time
 import re
+import random
+import string
 
 from libs import log
 from libs import cache
@@ -34,7 +36,7 @@ class User(object):
 		self.data['radio_request_expires_at'] = 0
 		self.data['user_avatar'] = "images/blank.png"
 		self.data['user_new_privmsg'] = 0
-		self.data['radio_listen_key'] = ''
+		self.data['radio_listen_key'] = None
 		self.data['user_id'] = 1
 		self.data['username'] = "Anonymous"
 		self.data['sid'] = 0
@@ -104,6 +106,9 @@ class User(object):
 		# jfinalfunk is a special case since he floats around outside the main admin groups
 		elif self.id == 9575:
 			self.data['radio_admin'] = True
+			
+		if not self.data['radio_listen_key']:
+			self.generate_listen_key()
 
 	def _auth_anon_user(self, ip_address, api_key, bypass = False):
 		if not bypass:
@@ -239,3 +244,29 @@ class User(object):
 	def update(self, hash):
 		self.data.update(hash)
 		# TODO: Update listener's cache record
+
+	def generate_listen_key(self):
+		listen_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
+		db.c.update("UPDATE phpbb_users SET radio_listenkey = %s WHERE user_id = %s", (listen_key, self.id))
+		self.update({ "radio_listen_key": listen_key })
+
+	def ensure_api_key(self, ip_address = None):
+		if self.id == 1 and ip_address:
+			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (ip_address,))
+			if not existing:
+				api_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(15))
+				db.c.update("INSERT INTO r4_api_keys (user_id, api_ip, api_key, api_is_rainwave, api_expiry) VALUES (1 %s, %s, TRUE, %s)", (ip_address, api_key, time.time() + 86400))
+				# TODO: Delete expired anonymous API keys
+			self.update({ "api_key": api_key })
+		elif self.id > 1:
+			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = %s", (self.id,))
+			if not api_key:
+				api_key = self.generate_api_key(True)
+			self.update({ "api_key": api_key })
+
+	def generate_api_key(self, is_rainwave = False):
+		if self.id == 1:
+			return False
+		api_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(15))
+		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_is_rainwave) VALUES (%s, %s, %s)", (self.id, api_key, is_rainwave))
+		return api_key
