@@ -30,16 +30,22 @@ def attach_info_to_request(request):
 	request.append("calendar", cache.get("calendar"))
 	request.append("listeners_current", cache.get_station(request.sid, "listeners_current"))
 	
+	sched_next = []
+	sched_history = []
 	if request.user:
 		request.append("requests_user", request.user.get_requests())
 		# TODO: Some mixing of pre-dictionaried items here might help speed
-		request.append("sched_current", cache.get_station(request.sid, "sched_current").to_dict(self.user))
-		request.append("sched_next", cache.get_station(request.sid, "sched_next").to_dict(self.user))
-		request.append("sched_history", cache.get_station(request.sid, "sched_history").to_dict(self.user))
+		request.append("sched_current", cache.get_station(request.sid, "sched_current").to_dict(request.user))
+		for evt in cache.get_station(request.sid, "sched_next"):
+			sched_next.append(evt.to_dict(request.user))
+		for evt in cache.get_station(request.sid, "sched_history"):
+			sched_history.append(evt.to_dict(request.user))
 	else:
 		request.append("sched_current", cache.get_station(request.sid, "sched_current_dict"))
-		request.append("sched_next", cache.get_station(request.sid, "sched_next_dict"))
-		request.append("sched_history", cache.get_station(request.sid, "sched_history_dict"))
+		sched_next = cache.get_station(request.sid, "sched_next_dict")
+		sched_history = cache.get_station(request.sid, "sched_history_dict")
+	request.append("sched_next", sched_next)
+	request.append("sched_history", sched_history)
 	
 @test_post
 @handle_url("info")

@@ -28,6 +28,9 @@ def load(file):
 	set_station_ids(get("song_dirs"), get("station_id_friendly"))
 	if get("test_mode") == True:
 		test_mode = True
+		
+def has(key):
+	return key in _opts
 	
 def require(key):
 	if not key in _opts:

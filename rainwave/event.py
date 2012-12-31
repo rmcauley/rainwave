@@ -209,6 +209,8 @@ class Election(Event):
 		elec.sid = row['sid']
 		elec.songs = []
 		elec.priority = row['elec_priority']
+		elec.public = True
+		elec.timed = False
 		for song_row in db.c.fetch_all("SELECT * FROM r4_election_entries WHERE elec_id = %s", (id,)):
 			song = playlist.Song.load_from_id(song_row['song_id'], elec.sid)
 			song.data['entry_id'] = song_row['entry_id']
@@ -250,6 +252,8 @@ class Election(Event):
 		elec.start = None
 		elec.songs = []
 		elec.priority = False
+		elec.public = True
+		elec.timed = True
 		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid) VALUES (%s, %s, %s, %s)", (elec_id, False, elec.type, elec.sid))
 		return elec
 		

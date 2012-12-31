@@ -80,9 +80,10 @@ class User(object):
 		# Set as authorized and begin populating information
 		# Pay attention to the "AS _variable" names in the SQL fields, they won't get exported to private JSONable dict
 		self.authorized = True
-		user_data = cache.get_user(self, "db_data")
+		user_data = None
+		# user_data = cache.get_user(self, "db_data")
 		if not user_data:
-			user_data = db.c.fetch_row("SELECT user_id, username, user_new_privmsg, user_avatar, user_avatar_type AS _user_avatar_type, radio_listen_key, group_id AS _group_id "
+			user_data = db.c_old.fetch_row("SELECT user_id, username, user_new_privmsg, user_avatar, user_avatar_type AS _user_avatar_type, radio_listenkey AS radio_listen_key, group_id AS _group_id "
 					"FROM phpbb_users WHERE user_id = %s",
 					(self.id,))
 			cache.set_user(self, "db_data", user_data)
@@ -234,6 +235,10 @@ class User(object):
 			return None
 		if self.id in cache.get("request_expire_times"):
 			return cache.get("request_expire_times")[self.id]
+			
+	def get_requests(self):
+		# TODO: This
+		return []
 
 	def lock_to_sid(self, sid, lock_count):
 		self.data['listener_lock'] = True
@@ -247,26 +252,23 @@ class User(object):
 
 	def generate_listen_key(self):
 		listen_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
-		db.c.update("UPDATE phpbb_users SET radio_listenkey = %s WHERE user_id = %s", (listen_key, self.id))
+		db.c_old.update("UPDATE phpbb_users SET radio_listenkey = %s WHERE user_id = %s", (listen_key, self.id))
 		self.update({ "radio_listen_key": listen_key })
 
 	def ensure_api_key(self, ip_address = None):
 		if self.id == 1 and ip_address:
 			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (ip_address,))
-			if not existing:
-				api_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(15))
-				db.c.update("INSERT INTO r4_api_keys (user_id, api_ip, api_key, api_is_rainwave, api_expiry) VALUES (1 %s, %s, TRUE, %s)", (ip_address, api_key, time.time() + 86400))
-				# TODO: Delete expired anonymous API keys
-			self.update({ "api_key": api_key })
+			if not api_key:
+				api_key = self.generate_api_key(True, ip_address, time.time() + 86400)
 		elif self.id > 1:
 			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = %s", (self.id,))
 			if not api_key:
 				api_key = self.generate_api_key(True)
-			self.update({ "api_key": api_key })
+		# DO NOT USE self.update, we don't want this value in memcache or it'll get sucked into future request (which could expose it to other clients)
+		self.data['api_key'] = api_key
 
-	def generate_api_key(self, is_rainwave = False):
-		if self.id == 1:
-			return False
-		api_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(15))
-		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_is_rainwave) VALUES (%s, %s, %s)", (self.id, api_key, is_rainwave))
+	def generate_api_key(self, is_rainwave = False, ip_address = None, expiry = 0):
+		# TODO: Delete expired anonymous API keys
+		api_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
+		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_is_rainwave, api_expiry, api_ip) VALUES (%s, %s, %s, %s, %s)", (self.id, api_key, is_rainwave, expiry, ip_address))
 		return api_key

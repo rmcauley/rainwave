@@ -8,6 +8,7 @@ from libs import log
 
 c = None
 connection = None
+c_old = None
 
 # TODO: Deal with PostgreSQL deadlocks once and for all
 
@@ -188,8 +189,9 @@ class SQLiteCursor(object):
 def open():
 	global connection
 	global c
+	global c_old
 	
-	if c:
+	if c or c_old:
 		close()
 	
 	type = config.get("db_type")
@@ -202,19 +204,28 @@ def open():
 	if type == "postgres":
 		psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 		psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
-		connstr = "sslmode=disable dbname=%s " % name
+		base_connstr = "sslmode=disable "
 		if host:
-			connstr += "host=%s " % host
+			base_connstr += "host=%s " % host
 		if port:
-			connstr += "port=%s " % port
+			base_connstr += "port=%s " % port
 		if user:
-			connstr += "user=%s " % user
+			base_connstr += "user=%s " % user
 		if password:
-			connstr += "password=%s " % password
-		connection = psycopg2.connect(connstr)
+			base_connstr += "password=%s " % password
+		connection = psycopg2.connect(base_connstr + ("dbname=%s" % name))
 		connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 		connection.autocommit = True
 		c = connection.cursor(cursor_factory=PostgresCursor)
+		
+		if config.has("db_USE_LIVE_R3") and config.get("db_USE_LIVE_R3"):
+			c_old = None
+			connection = psycopg2.connect(base_connstr + "dbname=rainwave")
+			connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+			connection.autocommit = True
+			c_old = connection.cursor(cursor_factory=PostgresCursor)
+		else:
+			c_old = c
 	elif type == "sqlite":
 		log.debug("dbopen", "Opening SQLite DB %s" % name)
 		c = SQLiteCursor(name)
@@ -227,13 +238,17 @@ def open():
 def close():
 	global connection
 	global c
+	global c_old
 	
 	if connection:
 		connection.close()
-	c.close()
-	
-	connection = False
-	c = False
+		connection = None
+	if c:
+		c.close()
+		c = None
+	if c_old:
+		c_old.close()
+		c_old = None
 	
 	return True
 	
