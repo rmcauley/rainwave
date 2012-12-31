@@ -108,3 +108,4 @@ older than 24h will download a new one.
 
 If you wish to have language debug info (missing strings, etc) you may put
 $langstatus = true in your devconf.php.
+=======
