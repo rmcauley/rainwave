@@ -1,3 +1,5 @@
+$img_dir: "../../images";
+
 $background: #000000;
 $text: #FFFFFF;
 $darktext: #CCCCCC;
@@ -94,11 +96,11 @@ a, a:visited, .link, .external_link {
 }
 
 .external_link:after {
-	content: url("images/wikilink_12px.png");
+	content: url("#{$img_dir}/wikilink_12px.png");
 }
 
 .new_window:after {
-	content: url("images/new_window_icon.png");
+	content: url("#{$img_dir}/new_window_icon.png");
 }
 
 a img {
@@ -315,12 +317,12 @@ table.pl_albumlist td {
 }
 
 table.pl_albumlist tr.pl_available td.pl_al_name {
-	background: url('images/albumlist_userrating.png') no-repeat;
+	background: url('#{$img_dir}/albumlist_userrating.png') no-repeat;
 	background-position: -200px;
 }
 
 table.pl_albumlist tr.pl_cooldown td.pl_al_name {
-	background: url('images/albumlist_userrating_oa.png') no-repeat;
+	background: url('#{$img_dir}/albumlist_userrating_oa.png') no-repeat;
 	background-position: -200px;
 }
 
@@ -392,7 +394,7 @@ svg.pl_ad_albumrating {
 }
 
 td.pl_ad_albumart_td, td.pl_ad_albumdetailtd {
-	background: $primarybkg url('images/pl_ad_hdr_bkg.png') repeat-x;
+	background: $primarybkg url('#{$img_dir}/pl_ad_hdr_bkg.png') repeat-x;
 	border-top: 2px solid $background;
 }
 
@@ -443,7 +445,7 @@ img.pl_ad_albumname_station {
 }
 
 .pl_ad_albumnametd {
-	background: $primarybkg url('images/pl_ad_albumname_bkg.png') top right;
+	background: $primarybkg url('#{$img_dir}/pl_ad_albumname_bkg.png') top right;
 }
 
 td.pl_ad_albumnametd .rating {
@@ -518,7 +520,7 @@ td.pl_songlist_url a {
 	display: block;
 	width: 1em;
 	height: 1.2em;
-	background-image: url("images/wikilink_12px.png");
+	background-image: url("#{$img_dir}/wikilink_12px.png");
 	background-repeat: no-repeat;
 	background-position: bottom left;
 }
@@ -749,7 +751,7 @@ div.request_cooldown {
 	width: 27px;
 	height: 14px;
 	margin-top: -14px;
-	background-image: url("images/help_arrow_up.png");
+	background-image: url("#{$img_dir}/help_arrow_up.png");
 }
 
 .help_arrow_down {
@@ -757,7 +759,7 @@ div.request_cooldown {
 	width: 27px;
 	height: 14px;
 	margin-top: 14px;
-	background-image: url("images/help_arrow_down.png");
+	background-image: url("#{$img_dir}/help_arrow_down.png");
 }
 
 .help_arrow_left {
@@ -765,7 +767,7 @@ div.request_cooldown {
 	width: 14px;
 	height: 27px;
 	margin-left: -14px;
-	background-image: url("images/help_arrow_left.png");
+	background-image: url("#{$img_dir}/help_arrow_left.png");
 }
 
 .help_arrow_right {
@@ -773,7 +775,7 @@ div.request_cooldown {
 	width: 14px;
 	height: 27px;
 	margin-left: 14px;
-	background-image: url("images/help_arrow_right.png");
+	background-image: url("#{$img_dir}/help_arrow_right.png");
 }
 
 table.about {
@@ -905,11 +907,11 @@ ul.station_list li {
 }
 
 .menu_station_1, .menu_station_1_on, .nowplaying_station_1 {
-	background-image: url("images/station_select_1.png");
+	background-image: url("#{$img_dir}/station_select_1.png");
 }
 
 .menu_station_1_on, .menu_station_1:hover, div.request_station_1, .station_1 {
-	background-image: url("images/station_select_1_on.png");
+	background-image: url("#{$img_dir}/station_select_1_on.png");
 }
 
 .menu_station_2, .menu_station_2_on {
@@ -917,11 +919,11 @@ ul.station_list li {
 }
 
 .menu_station_2, .menu_station_2_on, .nowplaying_station_2 {
-	background-image: url("images/station_select_2.png");
+	background-image: url("#{$img_dir}/station_select_2.png");
 }
 
 .menu_station_2_on, .menu_station_2:hover, div.request_station_2, .station_2 {
-	background-image: url("images/station_select_2_on.png");
+	background-image: url("#{$img_dir}/station_select_2_on.png");
 }
 
 .menu_station_3, .menu_station_3_on {
@@ -929,11 +931,11 @@ ul.station_list li {
 }
 
 .menu_station_3, .menu_station_3_on, .nowplaying_station_3 {
-	background-image: url("images/station_select_3.png");
+	background-image: url("#{$img_dir}/station_select_3.png");
 }
 
 .menu_station_3_on, .menu_station_3:hover, div.request_station_3, .station_3 {
-	background-image: url("images/station_select_3_on.png");
+	background-image: url("#{$img_dir}/station_select_3_on.png");
 }
 
 .menu_station_4, .menu_station_4_on {
@@ -941,11 +943,11 @@ ul.station_list li {
 }
 
 .menu_station_4, .menu_station_4_on, .nowplaying_station_4 {
-	background-image: url("images/station_select_4.png");
+	background-image: url("#{$img_dir}/station_select_4.png");
 }
 
 .menu_station_4_on, .menu_station_4:hover, div.request_station_4, .station_4 {
-	background-image: url("images/station_select_4_on.png");
+	background-image: url("#{$img_dir}/station_select_4_on.png");
 }
 
 .menu_station_5, .menu_station_5_on {
@@ -953,11 +955,11 @@ ul.station_list li {
 }
 
 .menu_station_5, .menu_station_5_on, .nowplaying_station_5 {
-	background-image: url("images/station_select_5.png");
+	background-image: url("#{$img_dir}/station_select_5.png");
 }
 
 .menu_station_5_on, .menu_station_5:hover, div.request_station_5, .station_5 {
-	background-image: url("images/station_select_5_on.png");
+	background-image: url("#{$img_dir}/station_select_5_on.png");
 }
 
 ul.sub_menu {
@@ -1041,24 +1043,24 @@ a.tunein_vlc, a.tunein_winamp, a.tunein_fb2k , a.tunein_itunes, a.tunein_wmp {
 }
 
 a.tunein_itunes {
-	background-image: url("images/itunes.png");
+	background-image: url("#{$img_dir}/itunes.png");
 }
 
 a.tunein_wmp {
-	background-image: url("images/wmp.png");
+	background-image: url("#{$img_dir}/wmp.png");
 	margin-left: 5px;
 }
 
 a.tunein_vlc {
-	background-image: url("images/vlc.png");
+	background-image: url("#{$img_dir}/vlc.png");
 }
 
 a.tunein_winamp {
-	background-image: url("images/winamp.png");
+	background-image: url("#{$img_dir}/winamp.png");
 }
 
 a.tunein_fb2k {
-	background-image: url("images/fb2k.png");
+	background-image: url("#{$img_dir}/fb2k.png");
 }
 
 .menu_help {
@@ -1069,7 +1071,7 @@ a.tunein_fb2k {
 .rating {
 	width: 74px;
 	height: 13px;
-	background: url('images/rating_border.png');
+	background: url('#{$img_dir}/rating_border.png');
 	margin-left: 2em; 
 	margin-top: 1px;
 	position: relative;
@@ -1094,7 +1096,7 @@ span.rating_text {
 	position: absolute;
 	height: 8px;
 	width: 0px;
-	background: url('images/rating_user_on.png') no-repeat scroll;
+	background: url('#{$img_dir}/rating_user_on.png') no-repeat scroll;
 }
 
 .rating_user {
@@ -1107,7 +1109,7 @@ span.rating_text {
 .rating_user_bar {
 	height: 8px;
 	width: 66px; 
-	background: url('images/rating_user_bar.png') no-repeat scroll;
+	background: url('#{$img_dir}/rating_user_bar.png') no-repeat scroll;
 }
 
 .rating_site_on {
@@ -1125,7 +1127,7 @@ span.rating_text {
 .rating_site_bar {
 	height: 4px;
 	width: 50px;
-	background: url('images/rating_site_bar.png') no-repeat scroll;
+	background: url('#{$img_dir}/rating_site_bar.png') no-repeat scroll;
 }
 
 .rating_grid {
@@ -1154,15 +1156,15 @@ td.timeline_header_indicator {
 }
 
 td.timeline_header_indicator_normal {
-	background: url('images/timeline_indicator_normal.png') no-repeat scroll 0px 0px;
+	background: url('#{$img_dir}/timeline_indicator_normal.png') no-repeat scroll 0px 0px;
 }
 
 td.timeline_header_indicator_request {
-	background: url('images/timeline_indicator_request.png') no-repeat scroll 0px 0px;
+	background: url('#{$img_dir}/timeline_indicator_request.png') no-repeat scroll 0px 0px;
 }
 
 td.timeline_header_indicator_conflict {
-	background: url('images/timeline_indicator_conflict.png') no-repeat scroll 0px 0px;
+	background: url('#{$img_dir}/timeline_indicator_conflict.png') no-repeat scroll 0px 0px;
 }
 
 table.timeline_table td.timeline_header {
@@ -1198,17 +1200,17 @@ img.timeline_indicator_argh {
 }
 
 td.timeline_indicator_normal {
-	background: url('images/timeline_indicator_normal.png') no-repeat scroll 0px -22px;
+	background: url('#{$img_dir}/timeline_indicator_normal.png') no-repeat scroll 0px -22px;
 	width: 10px;
 }
 
 td.timeline_indicator_request {
-	background: url('images/timeline_indicator_request.png') no-repeat scroll 0px -22px;
+	background: url('#{$img_dir}/timeline_indicator_request.png') no-repeat scroll 0px -22px;
 	width: 10px;
 }
 
 td.timeline_indicator_conflict {
-	background: url('images/timeline_indicator_conflict.png') no-repeat scroll 0px -22px;
+	background: url('#{$img_dir}/timeline_indicator_conflict.png') no-repeat scroll 0px -22px;
 	width: 10px;
 }
 
@@ -1227,13 +1229,13 @@ td.timeline_album_td {
 }
 
 td.timeline_album_td_request {
-	background-image: url('images/timeline_votehover_request.png');
+	background-image: url('#{$img_dir}/timeline_votehover_request.png');
 	background-repeat: no-repeat;
 	background-position: 0px -90px;
 }
 
 td.timeline_album_td_conflict {
-	background-image: url('images/timeline_votehover_conflict.png');
+	background-image: url('#{$img_dir}/timeline_votehover_conflict.png');
 	background-repeat: no-repeat;
 	background-position: 0px -90px;
 }
@@ -1278,7 +1280,7 @@ div.timeline_song_rating_c {
 }
 
 div.timeline_song_rating_bkg {
-	background: url('images/timeline_ratingbkg.png') no-repeat 100% 0px;
+	background: url('#{$img_dir}/timeline_ratingbkg.png') no-repeat 100% 0px;
 	position: absolute;
 	width: 100%;
 	height: 20px;
@@ -1323,22 +1325,22 @@ td.timeline_song_td {
 }
 
 td.timeline_song_td_normal {
-	background-image: url('images/timeline_votehover_normal.png');
+	background-image: url('#{$img_dir}/timeline_votehover_normal.png');
 }
 
 td.timeline_song_td_request {
-	background-image: url('images/timeline_votehover_request.png');
+	background-image: url('#{$img_dir}/timeline_votehover_request.png');
 }
 
 td.timeline_song_td_conflict {
-	background-image: url('images/timeline_votehover_conflict.png');
+	background-image: url('#{$img_dir}/timeline_votehover_conflict.png');
 }
 
 div.timeline_vote_swipe {
 	position: absolute;
 	z-index: 4;
 	width: 0px;
-	background: transparent url('images/timeline_voteswipe.png') repeat-x scroll 0px 0px;
+	background: transparent url('#{$img_dir}/timeline_voteswipe.png') repeat-x scroll 0px 0px;
 	margin-left: -3px;
 	margin-top: -1px;	
 }
@@ -1357,15 +1359,15 @@ div.nowplaying_indicator_v {
 }
 
 div.nowplaying_indicator_v_normal {
-	background: transparent url('images/timeline_indicator_normal.png') no-repeat;
+	background: transparent url('#{$img_dir}/timeline_indicator_normal.png') no-repeat;
 }
 
 div.nowplaying_indicator_v_request {
-	background: transparent url('images/timeline_indicator_request.png') no-repeat;
+	background: transparent url('#{$img_dir}/timeline_indicator_request.png') no-repeat;
 }
 
 div.nowplaying_indicator_v_conflict {
-	background: transparent url('images/timeline_indicator_conflict.png') no-repeat;
+	background: transparent url('#{$img_dir}/timeline_indicator_conflict.png') no-repeat;
 }
 
 div.nowplaying_indicator_h {
@@ -1377,15 +1379,15 @@ div.nowplaying_indicator_h {
 }
 
 div.nowplaying_indicator_h_normal {
-	background: transparent url('images/nowplaying_indicator_normal.png') no-repeat bottom right;
+	background: transparent url('#{$img_dir}/nowplaying_indicator_normal.png') no-repeat bottom right;
 }
 
 div.nowplaying_indicator_h_request {
-	background: transparent url('images/nowplaying_indicator_request.png') no-repeat bottom right;
+	background: transparent url('#{$img_dir}/nowplaying_indicator_request.png') no-repeat bottom right;
 }
 
 div.nowplaying_indicator_h_conflict {
-	background: transparent url('images/nowplaying_indicator_conflict.png') no-repeat bottom right;
+	background: transparent url('#{$img_dir}/nowplaying_indicator_conflict.png') no-repeat bottom right;
 }
 
 div.nowplaying_header_text, div.nowplaying_header_reqby {
@@ -1400,7 +1402,7 @@ div.nowplaying_header_reqby {
 }
 
 div.nowplaying_wrapper {
-	background: $primarybkg url('images/nowplaying_bkg.png') repeat-x;
+	background: $primarybkg url('#{$img_dir}/nowplaying_bkg.png') repeat-x;
 	width: 100%;
 	height: 100%;
 }
@@ -1461,11 +1463,11 @@ td.nowplaying_song_title, td.nowplaying_album_name, td.nowplaying_artist_name {
 }
 
 td.nowplaying_fadeborder {
-	background: url('images/nowplaying_fadeborder.png') no-repeat bottom left;
+	background: url('#{$img_dir}/nowplaying_fadeborder.png') no-repeat bottom left;
 }
 
 td.nowplaying_fadeborder_r {
-	background: url('images/nowplaying_fadeborder.png') no-repeat bottom right;
+	background: url('#{$img_dir}/nowplaying_fadeborder.png') no-repeat bottom right;
 }
 
 td.nowplaying_song_rating, td.nowplaying_album_rating {

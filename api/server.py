@@ -21,7 +21,12 @@ from libs import db
 from libs import chuser
 from libs import cache
 
-request_classes = [ (r"/api4?/?", api.help.IndexRequest), (r"/api4?/help/?", api.help.IndexRequest), (r"/api4?/help/(.+)", api.help.HelpRequest) ]
+request_classes = [ 
+	(r"/api4?/?", api.help.IndexRequest),
+	(r"/api4?/help/?", api.help.IndexRequest),
+	(r"/api4?/help/(.+)", api.help.HelpRequest),
+	(r"/api4/static/(.*)", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "../static/") })
+]
 testable_requests = []
 
 class handle_url(object):

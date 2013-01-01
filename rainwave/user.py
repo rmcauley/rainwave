@@ -45,6 +45,7 @@ class User(object):
 		self.data['listener_lock_counter'] = 0
 		self.data['listener_voted_entry'] = 0
 		self.data['listener_id'] = 0
+		self.data['_group_id'] = None
 
 	def authorize(self, sid, ip_address, api_key, bypass = False):
 		self.request_sid = sid
