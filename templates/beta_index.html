@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale }}">
+<head>
+	<title>Rainwave 4 Beta</title>
+	<meta charset="UTF-8" />
+	<meta name="description" content="{{ request.site_description }}" />
+	<link  href="static/baked/{{ revision_number }}/style.css" type="text/css" rel="stylesheet" />
+	<script src="static/baked/{{ revision_number }}/lang/{{ request.locale }}" type="application/javascript" />
+	{% for file in jsfiles %}
+		<script src="static/js/{{ file }}" type="application/javascript" />
+	{% end %}
+</head>
+<body id="body" />
+</html>

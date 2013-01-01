@@ -32,6 +32,7 @@ def sync_frontend_ip(ip_address):
 		log.warn("sync_front", "Timeout connecting to an API port.")
 
 def sync_frontend_user_id(user_id):
+	# TODO: Syncing a front-end user should ALSO search for an IP just in case the user hasn't redownloaded their M3U
 	try:
 		headers = ({"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain text/html text/javascript application/json application/javascript" })
 		params = urllib.urlencode({ "sid": sid })

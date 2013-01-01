@@ -9,7 +9,7 @@ This is the back-end and API project for Rainwave 4.
 
 Required Python modules:
 	- pyinotify (filesystem monitoring)
-	- tornado (webserver)
+	- tornado (webserver, minimum version 2.3)
 	- sqlite3 (database)
 	- psycopg 2.x (database)
 	- pylibmc (memcache)
@@ -19,6 +19,8 @@ Required Python modules:
 	- psutil (nice and ionice)
 	- magic (filetype identification)
 	- mp3gain (streaming)
+	- pyScss (CSS/SASS compiling)
+	- jsmin
 
 Recommended .git/hooks/pre-commit:
 	#!/bin/bash

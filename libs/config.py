@@ -1,4 +1,5 @@
 import json
+from libs import buildtools
 
 # Options hash - please don't access this externally in case the storage method changes
 _opts = {}
@@ -28,6 +29,8 @@ def load(file):
 	set_station_ids(get("song_dirs"), get("station_id_friendly"))
 	if get("test_mode") == True:
 		test_mode = True
+		
+	_opts["build_number"] = buildtools.get_build_number()
 		
 def has(key):
 	return key in _opts

@@ -79,7 +79,10 @@ class APIServer(object):
 			cache.update_local_cache_for_sid(sid)
 		
 		# Fire ze missiles!
-		app = tornado.web.Application(request_classes, debug=config.get("debug_mode"), template_path=os.path.join(os.path.dirname(__file__), "../templates"))
+		app = tornado.web.Application(request_classes,
+			debug=config.get("debug_mode"),
+			template_path=os.path.join(os.path.dirname(__file__), "../templates"),
+			static_path=os.path.join(os.path.dirname(__file__), "../static"))
 		http_server = tornado.httpserver.HTTPServer(app, xheaders = True)
 		http_server.listen(port_no)
 		

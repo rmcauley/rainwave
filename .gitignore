@@ -1,4 +1,5 @@
 *.pyc
+static/baked
 
 # Following is from github:
 ###################
