@@ -5,12 +5,12 @@
 	<meta charset="UTF-8" />
 	<meta name="description" content="{{ request.site_description }}" />
 	<script type="text/javascript">
-		var JSON_PAYLOAD = {{ info }};
+		var JSON_PAYLOAD = {{ json_encode(request.json_payload) }};
 	</script>
 	<link  href="static/baked/{{ revision_number }}/style.css" type="text/css" rel="stylesheet" />
 	<script src="static/baked/{{ revision_number }}/lang/{{ request.locale }}" type="application/javascript" />
 	{% for file in jsfiles %}
-		<script src="static/js/{{ file }}" type="application/javascript" />
+		<!-- src="{{ file }}" type="application/javascript" -->
 	{% end %}
 </head>
 <body id="body" />

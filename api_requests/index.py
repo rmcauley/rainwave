@@ -1,7 +1,10 @@
+# coding=utf-8
+
 import tornado.web
 import tornado.escape
 import time
 import hashlib
+import os
 
 from api.server import handle_url
 from api.web import RequestHandler
@@ -22,47 +25,59 @@ translations = {
 		3: "Video game cover bands and remixes.  Vote for your favourite artists!",
 		4: "Streaming original game chiptunes.  Vote for the songs you want to hear!",
 		5: "Streaming game music and remixes.  Vote for the songs you want to hear!"
-	),
+	},
 	"de_DE": {
-		1: "Streaming Video Game Music Radio.  Stimme für den Song ab den du hören willst!",
-		2: "OverClocked Remix Radio.  Stimme für deine lieblings remixes ab!",
-		3: "Video game cover bands and remixes.  Stimme für deine lieblings Interpreten ab!",
-		4: "Streaming original game chiptunes.  Stimme für den Song ab den du hören willst!",
-		5: "Streaming game music and remixes.  Stimme für den Song ab den du hören willst!"
-	),
+		1: u"Streaming Video Game Music Radio.  Stimme fÃ¼r den Song ab den du hÃ¶ren willst!",
+		2: u"OverClocked Remix Radio.  Stimme fÃ¼r deine lieblings remixes ab!",
+		3: u"Video game cover bands and remixes.  Stimme fÃ¼r deine lieblings Interpreten ab!",
+		4: u"Streaming original game chiptunes.  Stimme fÃ¼r den Song ab den du hÃ¶ren willst!",
+		5: u"Streaming game music and remixes.  Stimme fÃ¼r den Song ab den du hÃ¶ren willst!"
+	},
 	"es_CL": {
-		1: "Radio por Internet de Música de Videojuegos.  ¡Vota por las canciones que quieres escuchar!",
-		2: "La Radio de OverClocked Remix.  ¡Vota por tus remixes favoritos!",
-		3: "Covers y Remixes de Música de Videojuegos.  ¡Vota por tus artistas favoritos!",
-		4: "Transmitiendo chiptunes originales de videojuegos.  ¡Vota por las canciones que quieres escuchar!"
-		5: "Transmitiendo música original y remixes de videojuegos.  ¡Vota por las canciones que quieres escuchar!"
-	),
-	"fi_FI":
-		1: "Videopelimusiikkia soittava internet-radio.  Äänestä haluamaasi kappaletta!",
-		2: "OverClocked Remix internet-radio.  Äänestä haluamaasi remixiä!",
-		3: "Videopelimusiikkia soittavia coverbändejä ja pelimusiikkiremixejä.  Äänestä suosikkiesittäjääsi!",
-		4: "Videopelien chiptune-tyylistä musiikkia soittava internet-radio.  Äänestä haluamiasi kappaleita!",
-		5: "Videopelimusiikkia ja niiden remixejä soittava internet-radio.  Äänestä haluamiasi kappaleita!"
-	),
+		1: u"Radio por Internet de MÃºsica de Videojuegos.  Â¡Vota por las canciones que quieres escuchar!",
+		2: u"La Radio de OverClocked Remix.  Â¡Vota por tus remixes favoritos!",
+		3: u"Covers y Remixes de MÃºsica de Videojuegos.  Â¡Vota por tus artistas favoritos!",
+		4: u"Transmitiendo chiptunes originales de videojuegos.  Â¡Vota por las canciones que quieres escuchar!",
+		5: u"Transmitiendo mÃºsica original y remixes de videojuegos.  Â¡Vota por las canciones que quieres escuchar!"
+	},
+	"fi_FI": {
+		1: u"Videopelimusiikkia soittava internet-radio.  Ã„Ã¤nestÃ¤ haluamaasi kappaletta!",
+		2: u"OverClocked Remix internet-radio.  Ã„Ã¤nestÃ¤ haluamaasi remixiÃ¤!",
+		3: u"Videopelimusiikkia soittavia coverbÃ¤ndejÃ¤ ja pelimusiikkiremixejÃ¤.  Ã„Ã¤nestÃ¤ suosikkiesittÃ¤jÃ¤Ã¤si!",
+		4: u"Videopelien chiptune-tyylistÃ¤ musiikkia soittava internet-radio.  Ã„Ã¤nestÃ¤ haluamiasi kappaleita!",
+		5: u"Videopelimusiikkia ja niiden remixejÃ¤ soittava internet-radio.  Ã„Ã¤nestÃ¤ haluamiasi kappaleita!"
+	},
 	"nl_NL": {
 		1: "Luister Video Game Muziek Radio. Stem op het nummer dat je wilt horen!",
 		2: "OverClocked Remix Radip. Stem op jouw favoriete remixen!",
 		3: "Video game cover bands en remixen. Stem op jouw favoriete artiesten!"
-	),
+	},
 	"pt_BR": {
-		1: "Rádio Online de Músicas de Video Game.  Vote nas músicas que quiser ouvir!",
-		2: "Rádio OverClocked Remix.  Vote nos seus remixes favoritos!",
-		3: "Bandas cover e remixes de Video Game.  Vote nos seus artistas favoritos!",
-		4: "Chiptunes Originais de Videgame.  Vote nas músicas que quiser ouvir!",
-		5: "Músicas e Remixes de Videogame.  Vote nas músicas que quiser ouvir!"
-	),
+		1: u"RÃ¡dio Online de MÃºsicas de Video Game.  Vote nas mÃºsicas que quiser ouvir!",
+		2: u"RÃ¡dio OverClocked Remix.  Vote nos seus remixes favoritos!",
+		3: u"Bandas cover e remixes de Video Game.  Vote nos seus artistas favoritos!",
+		4: u"Chiptunes Originais de Videgame.  Vote nas mÃºsicas que quiser ouvir!",
+		5: u"MÃºsicas e Remixes de Videogame.  Vote nas mÃºsicas que quiser ouvir!"
+	},
 	"se_SE": {}
 }
 
 @handle_url("authtest")
 class MainIndex(tornado.web.RequestHandler):
+	def get_user_locale(self):
+		global translations
+		locale = self.get_cookie("r4lang", "en_CA")
+		if locale in translations:
+			if self.sid in translations[locale]:
+				self.site_description = translations[locale][self.sid]
+			else:
+				self.site_description = translations['en_CA'][self.sid]
+			return locale
+		else:
+			return "en_CA"
+
 	def prepare(self):
-		self.info = []
+		self.json_payload = []
 		self.sid = fieldtypes.integer(self.get_cookie("r4sid", "1"))
 		if not self.sid:
 			self.sid = 1
@@ -103,34 +118,27 @@ class MainIndex(tornado.web.RequestHandler):
 		self.user.ensure_api_key(self.request.remote_ip)
 		self.user.data['sid'] = self.sid
 		
-		locale = self.get_cookie("r4lang", "en_CA")
-		if locale in translations:
-			if self.sid in translations[locale]:
-				self.site_description = translations[locale][self.sid]
-			else:
-				self.site_description = translations['en_CA'][self.sid]
-			self.locale = locale
-		else:
-			self.locale = "en_CA"
-		
 	# this is so that get_info can be called, makes us compatible with the custom web handler used elsewhere in RW
 	def append(self, key, value):
-		self.info.append({ key: value })
+		self.json_payload.append({ key: value })
 
 	def get(self):
 		info.attach_info_to_request(self)
 		self.set_header("Content-Type", "text/plain")
-		self.render("index.html", request=self, info=tornado.escape.json_encode(self.info))
+		self.render("index.html", request=self, revision_number=config.get("revision_number"))
 		
 @handle_url("authtest_beta")
 class BetaIndex(MainIndex):
 	def get(self):
-		if self.user.data['group_id'] not in (5, 4, 8, 12, 15, 14, 17):
+		if self.user.data['_group_id'] not in (5, 4, 8, 12, 15, 14, 17):
 			self.send_error(403)
 		else:
 			jsfiles = []
-			jsroot, jssubdirs, jsfiles = os.walk(os.path.join(os.path.dirname(__file__), "../static/js"))
+			for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js")):
+				for file in files:
+					jsfiles.append(os.path.join(root[root.find("static/js"):], file))
+			jsfiles.sort()
 			buildtools.bake_css()
 			
 			info.attach_info_to_request(self)
-			self.render("beta_index.html", request=self, info=tornado.escape.json_encode(self.info), jsfiles=jsfiles)
+			self.render("beta_index.html", request=self, jsfiles=jsfiles, revision_number=config.get("revision_number"))

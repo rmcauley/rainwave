@@ -30,7 +30,7 @@ def load(file):
 	if get("test_mode") == True:
 		test_mode = True
 		
-	_opts["build_number"] = buildtools.get_build_number()
+	_opts["revision_number"] = buildtools.get_build_number()
 		
 def has(key):
 	return key in _opts
