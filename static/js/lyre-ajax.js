@@ -232,12 +232,10 @@ var lyre = function() {
 		}
 	};
 	
-	that.sync_start = function(exparams) {
+	that.sync_start = function(initial_payload) {
 		if (sync_on === true) return false;
-		if (exparams) exparams['refresh'] = "full";
-		else exparams = { "refresh": "full" }
-		sync_get(exparams);
-		return true;
+		performCallbacks(initial_payload);
+		sync_get();
 	};
 	
 	// Using override is VERY DANGEROUS, don't do it unless you absolutely know what you're doing!

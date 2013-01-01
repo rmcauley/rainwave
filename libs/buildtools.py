@@ -56,7 +56,7 @@ def bake_languages():
 			f = codecs.open(os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), file[:-5] + ".js"), "w", encoding="utf-8")
 			f.write(u'\u4500')
 			f.seek(0)
-			f.write("lang = " + (json.dumps(lang, ensure_ascii=False, encoding="utf-8", separators=(',',':'))) + ";")
+			f.write("var LOCALE = \"" + file[:-5] + "\"; var lang = " + (json.dumps(lang, ensure_ascii=False, encoding="utf-8", separators=(',',':'))) + ";")
 			f.close()
 
 bn = None

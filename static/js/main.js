@@ -7,6 +7,8 @@ var SCHED_PLAYLIST = 5;
 var SCHED_PAUSE = 6;
 var SCHED_DJ = 7;
 
+var COOKIEDOMAIN = ".rainwave.cc"
+
 var STATIONS = [ false, "Game", "OverClocked ReMix", "Covers", "Chiptunes", "All" ];
 var SHORTSTATIONS = [ false, "Game", "OCR", "Covers", "Chip", "All" ];
 var CANONSTATIONS = [ false, "game", "ocr", "cover", "chip", "all" ];
@@ -35,29 +37,35 @@ function init() {
 		createEl("p", false, BODY).innerHTML = "If you don't, or can't, you can still tune in to Rainwave using a media player with the following links:";
 		var ul = createEl("ul", false, BODY);
 		var li = createEl("li", false, ul);
-		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "All Station Mix", "href": "http://rainwave.cc/tunein.php?site=omni" }, li);
+		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "All Station Mix", "href": "http://all.rainwave.cc/tunein" }, li);
 		li = createEl("li", false, ul);
-		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "Game Only", "href": "http://rainwave.cc/tunein.php?site=rw" }, li);
+		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "Game Only", "href": "http://game.rainwave.cc/tunein" }, li);
 		li = createEl("li", false, ul);
-		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "Chiptune Only", "href": "http://rainwave.cc/tunein.php?site=bit" }, li);
+		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "Chiptune Only", "href": "http://chiptune.rainwave.cc/tunein" }, li);
 		li = createEl("li", false, ul);
-		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "Covers Only", "href": "http://rainwave.cc/tunein.php?site=mw" }, li);		
+		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "Covers Only", "href": "http://covers.rainwave.cc/tunein" }, li);		
 		li = createEl("li", false, ul);
-		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "OverClocked ReMix", "href": "http://rainwave.cc/tunein.php?site=oc" }, li);
+		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "OverClocked ReMix", "href": "http://ocr.rainwave.cc/tunein.php" }, li);
 		return false;
 	}
+	
+	var save_lang_cookie = function(new_lang) {
+		var today = new Date();
+		var expiry = new Date(today.getTime() + 28 * 24 * 60 * 60 * 1000 * 13);
+		var thecookie = "r4lang=" + new_lang;
+		document.cookie = thecookie + ";path=/;domain=" + COOKIEDOMAIN + ";expires=" + expiry.toGMTString();
+	};
 
-	prefs.addPref("edi", { name: "language", defaultvalue: PRELOADED_LANG, type: "dropdown", options: [
+	prefs.addPref("edi", { name: "language", defaultvalue: LOCALE, type: "dropdown", options: [
 			{ "value": "de_DE", "option": "Deutsch" },
-			{ "value": "en_CA", "option": "English (Canada)" },
+			{ "value": "en_CA", "option": "English" },
 			{ "value": "es_CL", "option": "Español (Chile)" },
 			{ "value": "fr_CA", "option": "Français (Canada)" },
 			{ "value": "nl_NL", "option": "Nederlands" },
 			{ "value": "pt_BR", "option": "Português (Brasil)" },
 			{ "value": "fi_FI", "option": "Suomi" },
 			{ "value": "se_SE", "option": "Svenska" }
-		], refresh: true });
-	prefs.addPref("edi", { hidden: true, name: "theme", defaultvalue: "RWClassic", type: "dropdown", options: [ { value: "Rainwave", option: "Rainwave 3" } ], refresh: true });
+		], refresh: true, callback: save_lang_cookie });
 	prefs.addPref("help", { "name": "visited", "defaultvalue": false, "hidden": true });
 	
 	var deeplinkurl = decodeURI(location.href);
@@ -82,7 +90,10 @@ function init() {
 	errorcontrol.setupCallbacks();
 	edi.init(BODY);
 
-	lyre.sync_start(initpiggyback);
+	lyre.setStationID(INITIAL_PAYLOAD.user.sid);
+	lyre.setUserID(INITIAL_PAYLOAD.user.id);
+	lyre.setKey(INITIAL_PAYLOAD.user.api_key);
+	lyre.sync_start(INITIAL_PAYLOAD);
 	
 	for (var i in panels) {
 		panelcname[panels[i].cname] = i;
