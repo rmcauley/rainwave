@@ -8,9 +8,9 @@
 		var JSON_PAYLOAD = {{ json_encode(request.json_payload) }};
 	</script>
 	<link  href="static/baked/{{ revision_number }}/style.css" type="text/css" rel="stylesheet" />
-	<script src="static/baked/{{ revision_number }}/lang/{{ request.locale }}" type="application/javascript" />
+	<script src="static/baked/{{ revision_number }}/{{ request.locale }}.js" type="application/javascript"></script>
 	{% for file in jsfiles %}
-		<!-- src="{{ file }}" type="application/javascript" -->
+		<script src="{{ file }}" type="application/javascript"></script>
 	{% end %}
 </head>
 <body id="body" />

@@ -1,6 +1,6 @@
 function _THEME() {
 	var that = {};
-	var skindir = "skins_r" + BUILDNUM + "/Rainwave";
+	var skindir = ".";
 
 	// These are variables that Edi or the graphing engine depends upon
 	that.borderheight = 12;

@@ -4,7 +4,7 @@ var lyre = function() {
 	var maxid = -1;
 	var sync = new XMLHttpRequest();
 	var sync_on = false;
-	var sync_init = true;
+	var sync_init = false;
 	var async = new XMLHttpRequest();
 	var sid = 0;
 	var errorcount = 0;
@@ -262,7 +262,7 @@ var lyre = function() {
 
 	var whitelist = [ "user" ]
 	that.addCallback = function(method, lyreelement) {
-		if !(lyreelement in whitelist) return;
+		if (whitelist.indexOf(lyreelement) >= 0) return;
 		maxid++;
 		if (!callbacks[lyreelement]) callbacks[lyreelement] = [];
 		callbacks[lyreelement][maxid] = method;
