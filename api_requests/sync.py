@@ -32,7 +32,7 @@ class SyncUpdateAll(RequestHandler):
 		
 		if self.sid in sessions:
 			for session in sessions[self.sid]:
-				session.update(True)
+				session.update()
 		sessions[self.sid] = []
 		
 @handle_url("sync_update_user")
@@ -82,7 +82,6 @@ class SyncUpdateIP(RequestHandler):
 @handle_url("sync")
 class Sync(RequestHandler):
 	auth_required = True
-	fields = { "playlist": (fieldtypes.boolean, False), "artist_list": (fieldtypes.boolean, False), "init": (fieldtypes.boolean, False) }
 	
 	@tornado.web.asynchronous
 	def post(self):
@@ -90,9 +89,9 @@ class Sync(RequestHandler):
 		if "init" in self.request.arguments:
 			self.update()
 		else:
-			if not self.sid in sessions:
-				sessions[sid] = []
-			sessions[self.user.sid].append(self)
+			if not self.user.request_sid in sessions:
+				sessions[self.user.request_sid] = []
+			sessions[self.user.request_sid].append(self)
 		
 	def update(self):
 		api_requests.info.attach_info_to_request(self)
@@ -100,5 +99,5 @@ class Sync(RequestHandler):
 	
 	def update_user(self):
 		self.user.refresh()
-		self.append("user", self.user.to_public_dict())
+		self.append("user", self.user.to_private_dict())
 		self.finish()

@@ -1,7 +1,7 @@
 var user = function() {
 	var callbacks = [];
 	var maxid = 0;
-	
+
 	var that = {};
 	that.p = {
 		user_id: PRELOADED_USER_ID,
@@ -24,12 +24,46 @@ var user = function() {
 		list_voted_entry_id: false,
 		radio_active_sid: 0,
 		radio_active_until: 0,
-		radio_rate_anything: false
+		radio_rate_anything: false,
+		api_key: false
 	};
 	
 	that.ajaxHandle = function(json) {
-		json.current_activity_allowed = ((json.radio_tunedin == 1) && (json.radio_statrestricted == 0)) ? true : false;
 		var lastinfo = {};
+		
+		// R4TRANSLATE
+		// list_active no longer exists
+		// radio_lastnews no longer exists
+		// api_key is new ONLY AS PART OF THE INITIAL PAYLOAD at the index page of RW, not as part of the normal payload
+		var json2 = {
+			// the same as the R3 API:
+			"username": json['username'],
+			'user_id': json['user_id'],
+			'user_new_privmsg': json['user_new_privmsg'],
+			'user_avatar': json['user_avatar'],
+			'radio_perks': json['radio_perks'],
+			'sid': json['sid'],
+			'radio_request_position': json['radio_request_position'],
+			'radio_rate_anything': json['radio_rate_anything'],
+			// funny translations:
+			// radio_admin in R4 is a boolean value, previous it was the value of the station ID
+			'radio_admin': json['radio_admin'] ? json['sid'] : 0,
+			// radio_live_admin used to be something but honestly I don't think I ever used it, but now it's also a boolean!
+			'radio_live_admin': json['radio_dj'],
+			// direct translations from older variable names:
+			'list_id': json['listener_id'],
+			'list_voted_entry_id': json['listener_voted_entry'],
+			'radio_active_sid': json['radio_locked_sid'],
+			'radio_active_until': json['radio_locked_counter'],
+			'radio_listenkey': json['radio_listen_key'],
+			'radio_request_expiresat': json['radio_request_expires_at'],			
+			'radio_tunedin': json['radio_tuned_in'],
+			'api_key': json['api_key'],
+			'current_activity_allowed': json['listener_lock_in_effect'],
+			'radio_statrestricted': json['listener_lock_in_effect']
+		};			
+		// END TRANSLATE
+		
 		for (var i in json) {
 			lastinfo[i] = that.p[i];
 			that.p[i] = json[i];

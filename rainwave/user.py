@@ -17,6 +17,7 @@ def unlock_listeners(sid):
 	db.c.update("UPDATE r4_listeners SET listener_lock_counter = listener_lock_counter - 1 WHERE listener_lock = TRUE AND listener_lock_sid = %s", (sid,))
 	db.c.update("UPDATE r4_listeners SET listener_lock = FALSE WHERE listener_lock_counter <= 0")
 
+# TODO: radio_rate_anything implementation
 class User(object):
 	def __init__(self, user_id):
 		self.id = user_id
@@ -34,6 +35,7 @@ class User(object):
 		self.data['radio_perks'] = False
 		self.data['radio_request_position'] = 0
 		self.data['radio_request_expires_at'] = 0
+		self.data['radio_rate_anything'] = False
 		self.data['user_avatar'] = "images/blank.png"
 		self.data['user_new_privmsg'] = 0
 		self.data['radio_listen_key'] = None
@@ -41,6 +43,7 @@ class User(object):
 		self.data['username'] = "Anonymous"
 		self.data['sid'] = 0
 		self.data['listener_lock'] = False
+		self.data['listener_lock_in_effect'] = False
 		self.data['listener_lock_sid'] = None
 		self.data['listener_lock_counter'] = 0
 		self.data['listener_voted_entry'] = 0
@@ -164,6 +167,9 @@ class User(object):
 		
 			if self.data['radio_tuned_in'] and not self.is_in_request_line() and self.has_requests():
 				self.put_in_request_line(self.data['sid'])
+		
+		if self.data['listener_lock'] and self.request_sid != self.data['listener_lock_sid']:
+			self.data['listener_lock_in_effect'] = True
 
 	def to_private_dict(self):
 		"""
