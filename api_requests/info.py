@@ -17,7 +17,7 @@ def attach_info_to_request(request):
 	# doesn't have to take place during the first few frames.
 
 	if request.user:
-		request.append("user", request.user.to_public_dict())
+		request.append("user", request.user.to_private_dict())
 		
 	if 'playlist' in request.request.arguments:
 		request.append("all_albums", playlist.get_all_albums_list(request.user))

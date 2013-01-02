@@ -26,6 +26,10 @@ var theme = _THEME();
 var panelcname = {};
 var deeplinkcallbackid = false;
 
+var PRELOADED_SID = INITIAL_PAYLOAD[0].user.sid;
+var PRELOADED_USER_ID = INITIAL_PAYLOAD[0].user.id;
+var PRELOADED_APIKEY = INITIAL_PAYLOAD[0].user.api_key;
+
 function init() {
 	var browserfailed = false;
 	if (/MSIE (6|7|8)/i.test(navigator.userAgent)) browserfailed = true;
@@ -79,7 +83,7 @@ function init() {
 		}
 	}
 	
-	lyre.catcherrors = true;
+	lyre.catcherrors = false;
 	lyre.jsErrorCallback = errorcontrol.jsError;
 	lyre.setStationID(PRELOADED_SID);
 	lyre.setUserID(PRELOADED_USER_ID);
@@ -90,9 +94,9 @@ function init() {
 	errorcontrol.setupCallbacks();
 	edi.init(BODY);
 
-	lyre.setStationID(INITIAL_PAYLOAD.user.sid);
-	lyre.setUserID(INITIAL_PAYLOAD.user.id);
-	lyre.setKey(INITIAL_PAYLOAD.user.api_key);
+	lyre.setStationID(INITIAL_PAYLOAD[0].user.sid);
+	lyre.setUserID(INITIAL_PAYLOAD[0].user.id);
+	lyre.setKey(INITIAL_PAYLOAD[0].user.api_key);
 	lyre.sync_start(INITIAL_PAYLOAD);
 	
 	for (var i in panels) {

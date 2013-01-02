@@ -260,9 +260,9 @@ var lyre = function() {
 		}
 	};
 
-	var whitelist = [ "user" ]
+	var whitelist = [ "user" ];
 	that.addCallback = function(method, lyreelement) {
-		if (whitelist.indexOf(lyreelement) >= 0) return;
+		if (whitelist.indexOf(lyreelement) == -1) return;
 		maxid++;
 		if (!callbacks[lyreelement]) callbacks[lyreelement] = [];
 		callbacks[lyreelement][maxid] = method;

@@ -5,13 +5,17 @@
 	<meta charset="UTF-8" />
 	<meta name="description" content="{{ request.site_description }}" />
 	<script type="text/javascript">
-		var JSON_PAYLOAD = {{ json_encode(request.json_payload) }};
+		var INITIAL_PAYLOAD = {{ json_encode(request.json_payload) }};
 	</script>
 	<link  href="static/baked/{{ revision_number }}/style.css" type="text/css" rel="stylesheet" />
 	<script src="static/baked/{{ revision_number }}/{{ request.locale }}.js" type="application/javascript"></script>
-	{% for file in jsfiles %}
-		<script src="{{ file }}" type="application/javascript"></script>
-	{% end %}
 </head>
-<body id="body" />
+<body id="body">
+<div style="display: none;">
+	{{ request.site_description }}
+</div>
+{% for file in jsfiles %}
+	<script src="{{ file }}" type="application/javascript"></script>
+{% end %}
+</body>
 </html>

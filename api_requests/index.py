@@ -67,11 +67,10 @@ class MainIndex(tornado.web.RequestHandler):
 	def get_user_locale(self):
 		global translations
 		locale = self.get_cookie("r4lang", "en_CA")
+		self.site_description = translations['en_CA'][self.sid]
 		if locale in translations:
 			if self.sid in translations[locale]:
 				self.site_description = translations[locale][self.sid]
-			else:
-				self.site_description = translations['en_CA'][self.sid]
 			return locale
 		else:
 			return "en_CA"

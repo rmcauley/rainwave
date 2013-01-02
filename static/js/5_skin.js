@@ -1,6 +1,6 @@
 function _THEME() {
 	var that = {};
-	var skindir = ".";
+	var skindir = "./static";
 
 	// These are variables that Edi or the graphing engine depends upon
 	that.borderheight = 12;
@@ -337,7 +337,7 @@ function _THEME() {
 				tr = createEl("tr", {}, tas.el);
 				if (i == 0) {
 					header = createEl("td", { "class": "timeline_indicator_normal", "rowspan": tas.p.ad_data.length }, tr);
-					createEl("img", { "src": "images/blank.png", "style": "width: 10px; height: 20px;" }, header);
+					createEl("img", { "src": "static/images/blank.png", "style": "width: 10px; height: 20px;" }, header);
 				}
 				td = createEl("td", { "class": "timeline_td" }, tr);
 				if (tas.p.ad_data[i].ad_url) {
@@ -410,7 +410,7 @@ function _THEME() {
 			ts.tr1_fx = fx.make(fx.OpacityRemoval, ts.tr1, 500, ts.parent.el);
 			ts.indicator = createEl("td", { "class": "timeline_indicator timeline_indicator_" + indic, "rowspan": 3 }, ts.tr1);
 			// for indicator_fx check the "if (ts.song_requestor)" block below
-			var argh = createEl("img", { "src": "images/blank.png", "class": "timeline_indicator_argh" }, ts.indicator);
+			var argh = createEl("img", { "src": "static/images/blank.png", "class": "timeline_indicator_argh" }, ts.indicator);
 			ts.song_td = createEl("td", { "class": "timeline_td timeline_song_td timeline_song_td_" + indic }, ts.tr1);
 			ts.vote_hover_el = createEl("div", { "class": "timeline_vote_hover" }, ts.song_td);
 			ts.swipe = createEl("div", { "class": "timeline_vote_swipe" }, ts.song_td);
@@ -702,7 +702,7 @@ function _THEME() {
 		}
 		
 		if (!urlneedsfill) {
-			createEl("img", { "src": "images/blank.png", "style": "width: 1px; height: 1px;" }, table.url);
+			createEl("img", { "src": "static/images/blank.png", "style": "width: 1px; height: 1px;" }, table.url);
 		}
 		
 		if (table.song_title.textContent > "") {
@@ -878,22 +878,22 @@ function _THEME() {
 			menup.mp3_download = createEl("div", { "class": "menu_mp3" }, menup.download_td);
 			menup.mp3_download.appendChild(createEl("span", { "textContent": "MP3: " }));
 			var wmpa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_wmp" }, menup.mp3_download);
-			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, wmpa);
+			createEl("img", { "width": 16, "height": 16, "src": "static/images/blank.png" }, wmpa);
 			wmpa.addEventListener("click", menup.tuneInClickMP3, true);
 			var itunesa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_itunes" }, menup.mp3_download);
-			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, itunesa);
+			createEl("img", { "width": 16, "height": 16, "src": "static/images/blank.png" }, itunesa);
 			itunesa.addEventListener("click", menup.tuneInClickMP3, true);
 			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_vlc" }, menup.mp3_download);
-			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, vlca);
+			createEl("img", { "width": 16, "height": 16, "src": "static/images/blank.png" }, vlca);
 			vlca.addEventListener("click", menup.tuneInClickOgg, true);
 			
 			menup.ogg_download = createEl("div", { "class": "menu_ogg" }, menup.download_td);
 			menup.ogg_download.appendChild(createEl("span", { "textContent": "Ogg: " }));
 			var winampa = createEl("a", { "href": "tunein.php?ogg=true", "onclick": "return false;", "class": "tunein_winamp" }, menup.ogg_download);
-			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, winampa);
+			createEl("img", { "width": 16, "height": 16, "src": "static/images/blank.png" }, winampa);
 			winampa.addEventListener("click", menup.tuneInClickOgg, true);
 			var fb2ka = createEl("a", { "href": "tunein.php?ogg=true", "onclick": "return false;", "class": "tunein_fb2k" }, menup.ogg_download);
-			createEl("img", { "width": 16, "height": 16, "src": "images/blank.png" }, fb2ka);
+			createEl("img", { "width": 16, "height": 16, "src": "static/images/blank.png" }, fb2ka);
 			fb2ka.addEventListener("click", menup.tuneInClickOgg, true);
 
 			// TODO: Fix the ticker once and for all
@@ -910,7 +910,7 @@ function _THEME() {
 				menup.avatar.setAttribute("src", avatar);
 			}
 			else {
-				menup.avatar.setAttribute("src", "images/anonymous.png");
+				menup.avatar.setAttribute("src", "static/images/anonymous.png");
 			}
 		};
 		
@@ -1384,7 +1384,7 @@ function _THEME() {
 
 			// Avatar
 			wdow.avatartd = createEl("td", { "class": "pl_ad_albumart_td" }, tr);
-			if (json.user_avatar && (json.user_avatar != "images/blank.png")) {
+			if (json.user_avatar && (json.user_avatar != "static/images/blank.png")) {
 				createEl("img", { "src": json.user_avatar, "class": "pl_ad_albumart" }, wdow.avatartd);
 			}
 			else {
