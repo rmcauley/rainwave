@@ -155,6 +155,7 @@ class Event(object):
 		
 	def to_dict(self, user = None):
 		obj = {
+			"id": self.id,
 			"start": self.start,
 			"start_actual": self.start_actual, 
 			"end": self.end,
@@ -418,6 +419,9 @@ class Election(Event):
 			
 	def to_dict(self, user = None):
 		obj = super(Election, self).to_dict(user)
+		obj['used'] = self.used
+		obj['length'] = self.length()
+		obj['end'] = self.start_actual + obj['length']
 		obj['songs'] = []
 		for song in self.songs:
 			obj['songs'].append(song.to_dict(user))

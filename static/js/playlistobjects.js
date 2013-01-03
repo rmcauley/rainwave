@@ -16,6 +16,71 @@ var Song = {
 	
 	addChangeMultiplierListener: function(song_id, el) {
 		el.addEventListener('change', function() { lyre.async_get("admin_change_song_multiplier", { "song_id": song_id, "multiplier": el.value }); }, true);
+	},
+	
+	r4translate: function(json) {
+		// R4TRANSLATE
+		// song_rating_id is obsolete
+		// song_timesplayed is gone
+		// song_timesdefeated is gone
+		// song_timeswon is gone
+		var artists = [];
+		for (var i = 0; i < json.artists.length; i++) {
+			artists.push({ "artist_name": json['name'], "artist_id": json['id'] });
+		}
+		var s = {
+			"artists": 
+			"song_timesdefeated": 0,
+			"song_timesplayed": 0,
+			"song_timeswon": 0,
+			"song_rating_id": json['id'],
+			"song_rating_sid": json['origin_sid'],
+		
+			"song_added_on": json['added_on'],
+			"song_available": json['cool'] ? false : true,
+			"song_favourite": json['fave'],
+			"song_id": json['id'],
+			"song_lastplayed": json['played_last'],
+			"song_rank": 1,				// TODO: this is also missing
+			"song_rating_avg": json['rating'],
+			"song_rating_count": json['rating_count'],
+			"song_rating_user": json['user_rating'],
+			"song_release_time": json['cool_end'],
+			"song_secondslong": json['length'],
+			"song_title": json['title'],
+			"song_totalvotes": json['vote_total'],
+			"song_totalrequests": json['request_total'],
+			"song_url": json['link'],
+			"song_urltext": json['link_text'],
+			
+			"elec_entry_id": json['entry_id'],
+			"elec_position": json['entry_position'],
+			"elec_isrequest": json['entry_type'],
+			"elec_votes": json['entry_votes'],
+			
+			"artists": artists,
+			
+			// untranslated..?
+			"cool_multiply": 1,
+			"cool_override": null,
+			"elec_appearances": 0,
+			"elec_blocked": true,
+			"elec_blocked_by": "in_election",
+			"elec_blocked_num": 2,
+			"elec_last": 0,
+			"elec_request_user_id": 0,
+			"elec_request_username": null,
+  
+                          // "groups": [
+                        // {
+                            // "name": "Ace Combat",
+                            // "id": 35
+                        // }]
+		};
+		s = Album.r4translate(json['albums'][0], s);
+		return s;
+	}
+    }
 	}
 };
 
@@ -27,6 +92,26 @@ var Album = {
 	
 	open: function(album_id) {
 		edi.openPanelLink(true, "playlist", "album", album_id);
+	},
+	
+	r4translate: function(json, base = {}) {
+		base['album_art'] = null;		// AUGH
+		base['album_favourite'] = json['fave'];	// AUGH
+		base['album_id'] = json['id'];
+		base['album_lastplayed'] = json['played_last']; // AUGH
+		base['album_lowest_oa'] = json['cool_lowest'];
+		base['album_name'] = json['name'];
+		base['album_rank'] = json['rank'];		// AUGH
+		base['album_rating_avg'] = json['rating'];
+		base['album_rating_count'] = json['rating_count'];
+		base['album_rating_user'] = json['user_rating'];
+		base['album_totalrequests'] = json['request_total'];	// AUGH
+		base['album_totalvotes'] = json['vote_total'];		// AUGH
+		// obsoleted
+		base['album_timesdefeated'] = 0;
+		base['album_timesplayed'] = 0;
+		base['album_timeswon'] = 0;
+		return base;
 	}
 };
 
@@ -69,4 +154,28 @@ var Username = {
 	openFresh: function(user_id) {
 		edi.openPanelLink(true, "listeners", "id_refresh", user_id);
 	}
-}
+};
+
+var Schedule = {
+	r4translate: function(json, used) {
+		var type = 0;
+		if (json['type'] == "1up") type = 4;
+		return {
+			// these don't exist
+			"sched_paused": false,
+			"sched_notes": null,
+			// used to be 0, 1, or 2, now is a boolean
+			"sched_used": json['used'] ? 2 : 0,
+			// the rest are translations
+			"sched_length": json['length'],
+			"sched_name": json['name'],
+			"sched_actualtime": json['start_actual'],
+			"sched_starttime": json['start'],
+			"sid": json['sid'],
+			"user_id": json['dj_user_id'],
+			"sched_id": json['id'],
+			"sched_endtime": json['end'],
+			"sched_type": type
+		};
+	}
+};

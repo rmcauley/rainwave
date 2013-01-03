@@ -19,6 +19,7 @@ c_old = None
 # are reset between startups.
 
 # TODO: Solve the "SQLITE_CANNOT_DO_JOINS_ON_UPDATES" problem
+# TODO: Make elections and schedules share the same sequence in Pg so that "IDs" are unique in the schedule feeds
 
 class PostgresCursor(psycopg2.extras.RealDictCursor):
 	def fetch_var(self, query, params = None):

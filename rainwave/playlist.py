@@ -12,6 +12,10 @@ from libs import log
 
 cooldown_config = { }
 
+# TODO: Favourites!
+# TODO: Song ranks?
+# TODO: User rating...?
+
 class NoAvailableSongsException(Exception):
 	pass
 
