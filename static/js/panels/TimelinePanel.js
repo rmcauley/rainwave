@@ -31,12 +31,12 @@ panels.TimelinePanel = {
 			that.currentendtime = 0;
 			that.draw();
 			
-			lyre.addCallback(that.purgeEvents, "sched_presync");
-			lyre.addCallback(that.currentHandle, "sched_current");
-			lyre.addCallback(that.nextHandle, "sched_next");
-			lyre.addCallback(that.historyHandle, "sched_history");
-			lyre.addCallback(that.positionEvents, "sched_sync");
-			lyre.addCallback(that.voteResultHandle, "vote_result");
+			// lyre.addCallback(that.purgeEvents, "sched_presync");
+			// lyre.addCallback(that.currentHandle, "sched_current");
+			// lyre.addCallback(that.nextHandle, "sched_next");
+			// lyre.addCallback(that.historyHandle, "sched_history");
+			// lyre.addCallback(that.positionEvents, "sched_sync");
+			// lyre.addCallback(that.voteResultHandle, "vote_result");
 			
 			user.addCallback(that.activityAllowedChange, "current_activity_allowed");
 			

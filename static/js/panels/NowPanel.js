@@ -25,6 +25,8 @@ panels.NowPanel = {
 		};
 		
 		that.ajaxHandle = function(json) {
+			json = Schedule.r4translate(json);
+		
 			var trip = false;
 			if (!that.evt[1] || (json.sched_id != that.evt[1].p.sched_id)) trip = true;
 			else if ((json.sched_type == SCHED_PLAYLIST) && (that.evt[1].p.sched_type == SCHED_PLAYLIST) && (json.playlist_position != that.evt[1].p.playlist_position)) trip = true;

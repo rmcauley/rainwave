@@ -127,7 +127,8 @@ class Event(object):
 	def finish(self):
 		self.used = True
 		self.in_progress = False
-		db.c.update("UPDATE r4_schedule SET sched_used = TRUE, sched_in_progress = FALSE, sched_end_actual = %s WHERE sched_id = %s", (time.time(), self.id))
+		self.end = int(time.time())
+		db.c.update("UPDATE r4_schedule SET sched_used = TRUE, sched_in_progress = FALSE, sched_end_actual = %s WHERE sched_id = %s", (self.end, self.id))
 		
 		song = self.get_song()
 		if song:
@@ -330,7 +331,7 @@ class Election(Event):
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_votes'])
 			self.songs.reverse()
-			self.start_actual = time.time()
+			self.start_actual = int(time.time())
 			self.in_progress = True
 			db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s, elec_used = TRUE WHERE elec_id = %s", (self.start_actual, self.id))
 	

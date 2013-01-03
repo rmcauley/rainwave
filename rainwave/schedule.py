@@ -61,7 +61,7 @@ def get_event_in_progress(sid):
 	if in_progress:
 		return event.load_by_id_and_type(in_progress['sched_id'], in_progress['sched_type'])
 	else:
-		return get_event_at_time(sid, time.time())
+		return get_event_at_time(sid, int(time.time()))
 		
 def get_event_at_time(sid, epoch_time):
 	at_time = db.c.fetch_row("SELECT sched_id, sched_type FROM r4_schedule WHERE sid = %s AND sched_start <= %s AND sched_end > %s ORDER BY (%s - sched_start) LIMIT 1", (sid, epoch_time + 5, epoch_time, epoch_time))
@@ -142,7 +142,7 @@ def integrate_new_events(sid):
 				max_elec_id = event.id
 		elif not event.is_election and event.id > max_sched_id:
 			max_sched_id = event.id
-	unused_sched_id = db.c.fetch_list("SELECT sched_id FROM r4_schedule WHERE sid = %s AND sched_id > %s AND sched_used = FALSE AND sched_start <= %s ORDER BY sched_start", (sid, max_sched_id, time.time() + 86400))
+	unused_sched_id = db.c.fetch_list("SELECT sched_id FROM r4_schedule WHERE sid = %s AND sched_id > %s AND sched_used = FALSE AND sched_start <= %s ORDER BY sched_start", (sid, max_sched_id, int(time.time()) + 86400))
 	for sched_id in unused_sched_id:
 		next[sid].append(event.load_by_id(sched_id))
 		
@@ -277,7 +277,7 @@ def _create_election(sid, start_time = None, target_length = None):
 
 def _trim(sid):
 	# Deletes any events in the schedule and elections tables that are old, according to the config
-	current_time = round(time.time())
+	current_time = int(time.time())
 	db.c.update("DELETE FROM r4_schedule WHERE sched_start_actual <= %s", (current_time - config.get("trim_event_age"),))
 	db.c.update("DELETE FROM r4_elections WHERE elec_start_actual <= %s", (current_time - config.get("trim_election_age"),))
 	max_history_id = db.c.fetch_var("SELECT MAX(songhist_id) FROM r4_song_history")

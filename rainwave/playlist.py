@@ -76,7 +76,7 @@ def prepare_cooldown_algorithm(sid):
 	cooldown_config[sid]['base_rating'] = base_rating
 	cooldown_config[sid]['min_album_cool'] = min_album_cool
 	cooldown_config[sid]['max_album_cool'] = max_album_cool
-	cooldown_config[sid]['time'] = time.time()
+	cooldown_config[sid]['time'] = int(time.time())
 	
 	average_song_length = db.c.fetch_var("SELECT AVG(song_length) FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE song_exists = TRUE AND sid = %s", (sid,))
 	# print "average_song_length: %s" % average_song_length
@@ -90,7 +90,7 @@ def prepare_cooldown_algorithm(sid):
 	cooldown_config[sid]['min_song_cool'] = cooldown_config[sid]['max_song_cool'] * config.get_station(sid, "cooldown_song_min_multiplier")
 	
 def get_age_cooldown_multiplier(added_on):
-	age_weeks = (time.time() - added_on) / 604800.0
+	age_weeks = (int(time.time()) - added_on) / 604800.0
 	cool_age_multiplier = 1.0
 	if age_weeks < config.get("cooldown_age_threshold"):
 		s2_end = config.get("cooldown_age_threshold")
@@ -178,7 +178,7 @@ def warm_cooled_songs(sid):
 	"""
 	Makes songs whose cooldowns have expired available again.
 	"""
-	db.c.update("UPDATE r4_song_sid SET song_cool = FALSE WHERE sid = %s AND song_cool_end < %s AND song_cool = TRUE", (sid, time.time()))
+	db.c.update("UPDATE r4_song_sid SET song_cool = FALSE WHERE sid = %s AND song_cool_end < %s AND song_cool = TRUE", (sid, int(time.time())))
 	
 def remove_all_locks(sid):
 	"""

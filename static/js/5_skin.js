@@ -621,7 +621,7 @@ function _THEME() {
 		var tr = createEl("tr", {}, table);
 		table.album_art = createEl("td", { "class": "nowplaying_album_art", "rowspan": 4 }, tr);
 		if (json && json.album_art) {
-			table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": PRELOADED_LYREURL + json.album_art }, table.album_art);
+			table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": json.album_art }, table.album_art);
 		}
 		else {
 			if (user.p.sid == 2) table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": skindir + "/images/noart_2.jpg" }, table.album_art);			
@@ -1125,7 +1125,7 @@ function _THEME() {
 			
 			wdow.albumarttd = createEl("td", { "class": "pl_ad_albumart_td" }, tr);
 			if (json.album_art) {
-				createEl("img", { "src": PRELOADED_LYREURL + json.album_art, "class": "pl_ad_albumart" }, wdow.albumarttd);
+				createEl("img", { "src": json.album_art, "class": "pl_ad_albumart" }, wdow.albumarttd);
 			}
 			else {
 				if (user.p.sid == 2) createEl("img", { "src": skindir + "/images/noart_2.jpg", "class": "pl_ad_albumart" }, wdow.albumarttd);

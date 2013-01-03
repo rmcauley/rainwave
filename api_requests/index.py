@@ -102,7 +102,7 @@ class MainIndex(tornado.web.RequestHandler):
 			if self.get_cookie("phpbb3_38ie8_sid"):
 				session_id = db.c_old.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_id = %s AND session_user_id = %s", (self.get_cookie("phpbb3_38ie8_sid"), user_id))
 				if session_id:
-					db.c_old.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (time.time(), "rainwave", session_id))
+					db.c_old.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(time.time()), "rainwave", session_id))
 					self.user = User(user_id)
 					self.user.authorize(self.sid, None, None, True)
 
@@ -123,6 +123,7 @@ class MainIndex(tornado.web.RequestHandler):
 
 	def get(self):
 		info.attach_info_to_request(self)
+		self.append("api_info", { "time": int(time.time()) })
 		self.set_header("Content-Type", "text/plain")
 		self.render("index.html", request=self, revision_number=config.get("revision_number"))
 		
@@ -140,4 +141,5 @@ class BetaIndex(MainIndex):
 			buildtools.bake_css()
 			
 			info.attach_info_to_request(self)
+			self.append("api_info", { "time": int(time.time()) })
 			self.render("beta_index.html", request=self, jsfiles=jsfiles, revision_number=config.get("revision_number"))

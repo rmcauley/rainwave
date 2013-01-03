@@ -50,7 +50,7 @@ class ElectionTest(unittest.TestCase):
 		u.authorize(1, None, None, True)
 		self.assertEqual(1, u.put_in_request_line(1))
 		# TODO: Use proper request/user methods here instead of DB call
-		db.c.update("UPDATE r4_request_line SET line_top_song_id = %s, line_expiry_tune_in = %s WHERE user_id = %s", (self.song1.id, time.time()+9999, u.id))
+		db.c.update("UPDATE r4_request_line SET line_top_song_id = %s, line_expiry_tune_in = %s WHERE user_id = %s", (self.song1.id, int(time.time()) + 9999, u.id))
 		db.c.update("INSERT INTO r4_listeners (sid, user_id, listener_icecast_id) VALUES (1, %s, 1)", (u.id,))
 		db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, 1)", (u.id, self.song1.id))
 		request.update_cache(1)

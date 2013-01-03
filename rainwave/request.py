@@ -14,7 +14,7 @@ def update_line(sid):
 	line = db.c.fetch_all("SELECT username, user_id, line_expiry_tune_in, line_expiry_election FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE sid = %s ORDER BY line_wait_start", (sid,))
 	new_line = []
 	user_positions = {}
-	t = time.time()
+	t = int(time.time())
 	position = 1
 	# For each person
 	for row in line:

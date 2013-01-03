@@ -12,5 +12,5 @@ def get_listeners_dict(sid):
 		"WHERE r4_listeners.sid = %s AND r4_listeners.user_id > 1 "
 		"GROUP BY r4_listeners.user_id, username "
 		"ORDER BY radio_2wkvotes DESC, username",
-		((time.time() - 1209600), sid))	# 1209600 is 2 weeks in seconds
+		((int(time.time()) - 1209600), sid))	# 1209600 is 2 weeks in seconds
 	return { "guests": guests, "users": clist }

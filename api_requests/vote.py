@@ -65,7 +65,7 @@ class SubmitVote(RequestHandler):
 				db.c.update("UPDATE phpbb_users SET radio_totalvotes = radio_totalvotes + 1 WHERE user_id = %s", (self.user.id,))
 				self.user.update({ "radio_totalvotes": self.user.data['radio_totalvotes'] + 1 })
 		
-				timewindow = time.time() - 1209600
+				timewindow = int(time.time()) - 1209600
 				db.c.query("SELECT user_id, COUNT(song_id) AS c FROM rw_vote_history WHERE vote_time > %s GROUP BY user_id HAVING COUNT(song_id) > %s", (timewindow, self.user.data['radio_totalvotes']))
 				rank = db.c.rowcount + 1
 				db.c.update(

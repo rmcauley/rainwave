@@ -133,7 +133,6 @@ var lyre = function() {
 				performCallbacks(response);
 			}
 			synctimeout = 5000;
-			sync_init = true;
 		}
 		
 		if (response && response[0] && response[0].error && response[0].error.code) {
@@ -143,7 +142,6 @@ var lyre = function() {
 			}
 			else {
 				synctimeout = 5000;
-				sync_init = true;
 			}
 		}
 		
@@ -260,7 +258,7 @@ var lyre = function() {
 		}
 	};
 
-	var whitelist = [ "user" ];
+	var whitelist = [ "user", "sched_current", "api_info" ];
 	that.addCallback = function(method, lyreelement) {
 		if (whitelist.indexOf(lyreelement) == -1) return;
 		maxid++;
@@ -279,7 +277,7 @@ var lyre = function() {
 		return false;
 	}
 	
-	that.addCallback(lyreClockHandle, "lyre");
+	that.addCallback(lyreClockHandle, "api_info");
 	
 	return that;
 }();

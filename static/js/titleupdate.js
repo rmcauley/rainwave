@@ -14,6 +14,8 @@ var titleupdate = function() {
 	};
 
 	that.ajaxHandle = function(json) {
+		json = Schedule.r4translate(json);
+	
 		clock.updateClockEnd(clockid, json.sched_endtime);
 		
 		if (json.sched_type == SCHED_ELEC) titlestring = json.song_data[0].album_name + ": " + json.song_data[0].song_title;

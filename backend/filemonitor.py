@@ -128,7 +128,7 @@ def _disable_file(filename):
 def _add_scan_error(filename, xception):
 	global _scan_errors
 	
-	_scan_errors.insert(0, { "time": time.time(), "file": filename, "type": xception.__class__.__name__, "error": str(xception) })
+	_scan_errors.insert(0, { "time": int(time.time()), "file": filename, "type": xception.__class__.__name__, "error": str(xception) })
 	log.exception("scan", "Error scanning %s" % filename, xception)
 	if config.test_mode:
 		raise Exception(_scan_errors[0])
