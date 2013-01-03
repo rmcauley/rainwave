@@ -241,16 +241,25 @@ def _create_elections(sid):
 	# Step 5: If we're at less than 2 elections available, create them (or use unused ones) and append them
 	# No timing is required here, since we're simply outright appending to the end
 	# (any elections appearing before a scheduled item would be handled by the block above)
-	while needed_elecs > 0:
+	failures = 0
+	while needed_elecs > 0 and failures <= 2:
 		next_elec = None
 		if len(unused_elecs) > 0:
 			next_elec = unused_elecs.pop(0)
 		else:
 			next_elec = _create_election(sid, running_time)
-		next_elec.start = running_time
-		running_time += next_elec.length()
-		next[sid].append(next_elec)
-		needed_elecs -= 1
+		next_elec_length = next_elec.length()
+		if next_elec_length > 0:
+			next_elec.start = running_time
+			running_time += next_elec.length()
+			next[sid].append(next_elec)
+			needed_elecs -= 1
+		else:
+			log.error("create_elec", "Election ID %s was faulty - zero length.  Deleting.")
+			next_elec.delete()
+			failures += 1
+	if failures => 2:
+		log.error("create_elec", "Total failure when creating elections.")
 	
 def _create_election(sid, start_time = None, target_length = None):
 	log.debug("create_elec", "Creating election.")

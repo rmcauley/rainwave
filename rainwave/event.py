@@ -332,7 +332,7 @@ class Election(Event):
 			self.songs.reverse()
 			self.start_actual = time.time()
 			self.in_progress = True
-			db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s WHERE elec_id = %s", (self.start_actual, self.id))
+			db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s, elec_used = TRUE WHERE elec_id = %s", (self.start_actual, self.id))
 	
 	def get_filename(self):
 		return self.songs[0].filename
@@ -398,12 +398,13 @@ class Election(Event):
 			totalsec = 0
 			for song in self.songs:
 				totalsec += song.data['length']
+			if totalsec == 0:
+				return 0
 			return math.floor(totalsec / len(self.songs))
 		
 	def finish(self):
 		self.in_progress = False
 		self.used = True
-		db.c.update("UPDATE r4_elections SET elec_used = TRUE, elec_in_progress = FALSE WHERE elec_id = %s", (self.id,))
 		
 		self.songs[0].add_to_vote_count(self.songs[0].data['entry_votes'], self.sid)
 		self.songs[0].update_last_played(self.sid)
@@ -442,6 +443,9 @@ class Election(Event):
 	def add_vote_to_entry(self, entry_id, addition = 1):
 		# I hope you've verified this entry belongs to this event, cause I don't do that here.. :)
 		return db.c.update("UPDATE r4_election_entries SET entry_votes = entry_votes + %s WHERE entry_id = %s", (addition, entry_id))
+		
+	def delete(self):
+		return db.c.update("DELETE FROM r4_elections WHERE elec_id = %s", (self.id,))
 		
 class PVPElection(Election):
 	def __init__(self):
