@@ -230,6 +230,7 @@ def open():
 	elif type == "sqlite":
 		log.debug("dbopen", "Opening SQLite DB %s" % name)
 		c = SQLiteCursor(name)
+		c_old = c
 	else:
 		log.critical("dbopen", "Invalid DB type %s!" % type)
 		return False
@@ -241,15 +242,15 @@ def close():
 	global c
 	global c_old
 	
-	if connection:
-		connection.close()
-		connection = None
+	if c_old and (c_old != c):
+		c_old.close()
+		c_old = None
 	if c:
 		c.close()
 		c = None
-	if c_old:
-		c_old.close()
-		c_old = None
+	if connection:
+		connection.close()
+		connection = None
 	
 	return True
 	
@@ -631,7 +632,7 @@ def _create_test_tables():
 			radio_losingvotes			INT		DEFAULT 0, \
 			radio_winningrequests			INT		DEFAULT 0, \
 			radio_losingrequests			INT		DEFAULT 0, \
-			radio_listen_key			TEXT		DEFAULT 'TESTKEY', \
+			radio_listenkey			TEXT		DEFAULT 'TESTKEY', \
 			group_id				INT		DEFAULT 1, \
 			username				TEXT 		DEFAULT 'Test', \
 			user_new_privmsg			INT		DEFAULT 0, \

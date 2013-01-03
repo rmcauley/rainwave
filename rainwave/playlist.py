@@ -241,6 +241,8 @@ class Song(object):
 		s.data['cool_override'] = d['song_cool_override']
 		s.data['origin_sid'] = d['song_origin_sid']
 		s.data['sid'] = sid
+		# TODO: fill in rank somehow/somewhere (but not as part of this, too heavy an SQL statement)
+		s.data['rank'] = None
 		
 		if sid:
 			s.sid = sid
@@ -609,6 +611,13 @@ class Song(object):
 			for metadata in self.groups:
 				group_list.append(metadata.to_dict(user))
 			self.data['groups'] = group_list
+		if user:
+			# TODO: ratings
+			self.data['user_rating'] = None
+			self.data['fave'] = False
+		else:
+			self.data['user_rating'] = None
+			self.data['fave'] = False
 		return self.data
 		
 	def get_all_ratings(self):
@@ -837,18 +846,30 @@ class Album(AssociatedMetadata):
 		self.data['rating'] = d['album_rating']
 		self.data['rating_count'] = d['album_rating_count']
 		self.data['added_on'] = d['album_added_on']
+		self._dict_check_assign(d, "album_added_on")
+		self._dict_check_assign(d, "album_cool_multiply", 1)
+		self._dict_check_assign(d, "album_cool_override")
+		self._dict_check_assign(d, "album_cool_lowest", 0)
+		self._dict_check_assign(d, "album_played_last", 0)
+		self._dict_check_assign(d, "album_vote_total", 0)
+		self._dict_check_assign(d, "album_request_total", 0)
 		if d.has_key('album_is_tag'):
 			self.is_tag = d['album_is_tag']
-		if d.has_key('album_cool_multiply'):
-			self.cool_multiply = d['album_cool_multiply']
+		if os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % self.id)):
+			self.data['album_art'] = config.get("album_art_url_path") + "/" + str(self.id)
 		else:
-			self.cool_multiply = 1
-		if d.has_key('album_cool_override'):
-			self.cool_override = d['album_cool_override']
+			self.data['album_art'] = None
+		# TODO: fill in rank on the album API request
+		self.data['rank'] = None
+			
+	def _dict_check_assign(self, d, key, default = None, new_key = None):
+		if not new_key:
+			# wild guess that we're removing "album_"
+			new_key = key[6:]
+		if d.has_key(key):
+			self.data[new_key] = d[key]
 		else:
-			self.cool_multiply = None
-		if d.has_key('album_cool_lowest'):
-			self.data['cool_lowest'] = d['album_cool_lowest']
+			self.data[new_key] = default
 	
 	def associate_song_id(self, song_id, sids, is_tag = None):
 		if is_tag == None:
@@ -890,13 +911,13 @@ class Album(AssociatedMetadata):
 
 		if cool_time:
 			pass
-		elif self.cool_override:
-			self._start_cooldown_db(sid, self.cool_override)
+		elif self.data['cool_override']:
+			self._start_cooldown_db(sid, self.data['cool_override'])
 		else:
 			auto_cool = cooldown_config[sid]['min_album_cool'] + ((self.data['rating'] - 2.5) * (cooldown_config[sid]['max_album_cool'] - cooldown_config[sid]['min_album_cool']))
 			album_num_songs = db.c.fetch_var("SELECT COUNT(r4_song_album.song_id) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.sid = %s", (self.id, sid))
 			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_num_songs - config.get_station(sid, "cooldown_size_slope_start")))) / 2);
-			cool_time = auto_cool * cool_size_multiplier * get_age_cooldown_multiplier(self.data['added_on']) * self.cool_multiply
+			cool_time = auto_cool * cool_size_multiplier * get_age_cooldown_multiplier(self.data['added_on']) * self.data['cool_multiply']
 		updated_album_ids[sid][self.id] = True
 		return self._start_cooldown_db(sid, cool_time)
 		
@@ -942,6 +963,17 @@ class Album(AssociatedMetadata):
 			song = Song()
 			song.id = row['song_id']
 			song.set_election_block(sid, 'album', num_elections)
+			
+	def to_dict(self, user = None):
+		d = super(Album, self).to_dict(user)
+		if user:
+			# TODO: album ratings
+			self.data['user_rating'] = None
+			self.data['fave'] = False
+		else:
+			d['user_rating'] = None
+			d['fave'] = False
+		return d
 					
 class Artist(AssociatedMetadata):
 	select_by_name_query = "SELECT artist_id AS id, artist_name AS name FROM r4_artists WHERE artist_name = %s"

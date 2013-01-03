@@ -258,7 +258,7 @@ def _create_elections(sid):
 			log.error("create_elec", "Election ID %s was faulty - zero length.  Deleting.")
 			next_elec.delete()
 			failures += 1
-	if failures => 2:
+	if failures >= 2:
 		log.error("create_elec", "Total failure when creating elections.")
 	
 def _create_election(sid, start_time = None, target_length = None):

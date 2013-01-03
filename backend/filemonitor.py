@@ -113,9 +113,9 @@ def process_album_art(filename):
 	else:
 		im_120 = im_original
 	for album_id in album_ids:
-		im_120.save("%s/%s_120.jpg" % (config.get("album_art_directory"), album_id))
-		im_240.save("%s/%s_240.jpg" % (config.get("album_art_directory"), album_id))
-		im_320.save("%s/%s.jpg" % (config.get("album_art_directory"), album_id))
+		im_120.save("%s/%s_120.jpg" % (config.get("album_art_file_path"), album_id))
+		im_240.save("%s/%s_240.jpg" % (config.get("album_art_file_path"), album_id))
+		im_320.save("%s/%s.jpg" % (config.get("album_art_file_path"), album_id))
 			
 def _disable_file(filename):
 	try:

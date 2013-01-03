@@ -422,7 +422,12 @@ class Election(Event):
 		obj = super(Election, self).to_dict(user)
 		obj['used'] = self.used
 		obj['length'] = self.length()
-		obj['end'] = self.start_actual + obj['length']
+		if self.start_actual:
+			obj['end'] = self.start_actual + obj['length']
+		elif self.start:
+			obj['end'] = self.start + obj['length']
+		else:
+			obj['end'] = 0
 		obj['songs'] = []
 		for song in self.songs:
 			obj['songs'].append(song.to_dict(user))
