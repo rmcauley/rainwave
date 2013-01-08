@@ -31,12 +31,12 @@ panels.TimelinePanel = {
 			that.currentendtime = 0;
 			that.draw();
 			
-			// lyre.addCallback(that.purgeEvents, "sched_presync");
-			// lyre.addCallback(that.currentHandle, "sched_current");
-			// lyre.addCallback(that.nextHandle, "sched_next");
-			// lyre.addCallback(that.historyHandle, "sched_history");
-			// lyre.addCallback(that.positionEvents, "sched_sync");
-			// lyre.addCallback(that.voteResultHandle, "vote_result");
+			lyre.addCallback(that.purgeEvents, "sched_presync");
+			lyre.addCallback(that.currentHandle, "sched_current");
+			lyre.addCallback(that.nextHandle, "sched_next");
+			lyre.addCallback(that.historyHandle, "sched_history");
+			lyre.addCallback(that.positionEvents, "sched_sync");
+			lyre.addCallback(that.voteResultHandle, "vote_result");
 			
 			user.addCallback(that.activityAllowedChange, "current_activity_allowed");
 			
@@ -54,7 +54,17 @@ panels.TimelinePanel = {
 			that.width = width;
 		};
 		
+		that.convertJsonArray = function(json) {
+			var na = [];
+			for (var i = 0; i < json.length; i++) {
+				na.push(Schedule.r4translate(json[i]));
+			}
+			return na;
+		};
+		
 		that.purgeEvents = function(json) {
+			json = that.convertJsonArray(json);
+		
 			var i = 0;
 			while (i < that.allevents.length) {
 				if (that.allevents[i].purge == true) {
@@ -80,6 +90,7 @@ panels.TimelinePanel = {
 		}
 		
 		that.updateEventData = function(json) {
+			// JSON is already translated at this point
 			var i, j, foundidx, added;
 			var catarray = [];
 			for (i = 0; i < json.length; i++) {
@@ -105,6 +116,8 @@ panels.TimelinePanel = {
 		};
 		
 		that.historyHandle = function(json) {
+			json = that.convertJsonArray(json);
+			
 			if (json) {
 				that.setPurgeFlags(that.lastevents);
 				that.lastevents = that.updateEventData(json);
@@ -130,6 +143,8 @@ panels.TimelinePanel = {
 		};
 		
 		that.currentHandle = function(json) {
+			json = Schedule.r4translate(json);
+		
 			if (json) {
 				that.setPurgeFlags(that.currentevents);
 				that.currentevents = that.updateEventData([ json ]);
@@ -152,6 +167,8 @@ panels.TimelinePanel = {
 		};
 		
 		that.nextHandle = function(json) {
+			json = that.convertJsonArray(json);
+		
 			if (json) {
 				that.setPurgeFlags(that.nextevents);
 				that.nextevents = that.updateEventData(json);

@@ -18,6 +18,7 @@ from libs import log
 current = {}
 next = {}
 history = {}
+long_history = {}
 
 class ScheduleIsEmpty(Exception):
 	pass
@@ -48,13 +49,18 @@ def load():
 				if next_event:
 					future_time += next_event.length()
 					next[sid].append(next_event)
-		
+					
 		history[sid] = cache.get_station(sid, "sched_history")
 		if not history[sid]:
 			history[sid] = []
+			# TODO: Load schedule/election history here in case of cache failure
+		
+		long_history[sid] = cache.get_station(sid, "long_history")
+		if not long_history[sid]:
+			long_history[sid] = []
 			song_ids = db.c.fetch_list("SELECT song_id FROM r4_song_history WHERE sid = %s ORDER BY songhist_id DESC", (sid,))
 			for id in song_ids:
-				history[sid].append(playlist.Song.load_from_id(id, sid))
+				long_history[sid].append(playlist.Song.load_from_id(id, sid))
 		
 def get_event_in_progress(sid):
 	in_progress = db.c.fetch_row("SELECT sched_id, sched_type FROM r4_schedule WHERE sid = %s AND sched_in_progress = TRUE ORDER BY sched_start DESC LIMIT 1", (sid,))
@@ -95,16 +101,21 @@ def advance_station(sid):
 	
 	last_song = current[sid].get_song()
 	if last_song:
-		history[sid].insert(0, last_song)
+		long_history[sid].insert(0, last_song)
 		db.c.update("INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)", (sid, last_song.id))
 		
-	while len(history[sid]) > 3:
+	while len(long_history[sid]) > 30:
+		long_history[sid].pop()
+
+	history[sid].insert(0, current[sid])
+	while len(history[sid]) > 5:
 		history[sid].pop()
 		
 	# TODO: IMPORTANT: Block currently playing song/album from being selected so there's no "hole"
 	
 	integrate_new_events(sid)
 	sort_next(sid)
+	# If we need some emergency elections here (normal len(next[sid]) < 2 gets dealt with in post_process)
 	if len(next[sid]) == 0:
 		_create_elections(sid)
 	current[sid] = next[sid].pop(0)
@@ -112,9 +123,6 @@ def advance_station(sid):
 
 def post_process(sid):
 	_create_elections(sid)
-	
-	if not config.test_mode:
-		sync_to_front.sync_frontend_all(sid)
 		
 	_add_listener_count_record(sid)
 	cache.update_user_rating_acl(sid, current[sid].get_song().id)
@@ -123,6 +131,10 @@ def post_process(sid):
 	user.unlock_listeners(sid)
 	
 	_update_memcache(sid)
+
+	# must do this AFTER memcache gets updated, for hopefully obvious reasons
+	if not config.test_mode:
+		sync_to_front.sync_frontend_all(sid)
 	
 def _add_listener_count_record(sid):
 	lc_guests = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1", (sid,))
@@ -287,6 +299,7 @@ def _update_memcache(sid):
 	cache.set_station(sid, "sched_current", current[sid], True)
 	cache.set_station(sid, "sched_next", next[sid], True)
 	cache.set_station(sid, "sched_history", history[sid], True)
+	cache.set_station(sid, "long_history", long_history[sid], True)
 	cache.set_station(sid, "sched_current_dict", current[sid].to_dict(), True)
 	next_dict_list = []
 	for event in next[sid]:
@@ -296,7 +309,11 @@ def _update_memcache(sid):
 	for event in history[sid]:
 		history_dict_list.append(event.to_dict())
 	cache.set_station(sid, "sched_history_dict", history_dict_list, True)
-	cache.prime_rating_cache_for_events([ current[sid] ] + next[sid], history[sid])
+	cache.prime_rating_cache_for_events([ current[sid] ] + next[sid] + history[sid])
+	long_history_dict_list = []
+	for song in long_history[sid]:
+		long_history_dict_list.append(song.to_dict())
+	cache.set_station(sid, "long_history_dict", long_history_dict_list, True)
 	cache.set_station(sid, "listeners_current", listeners.get_listeners_dict(sid), True)
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)
 	request.update_line(sid)

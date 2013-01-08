@@ -258,7 +258,7 @@ var lyre = function() {
 		}
 	};
 
-	var whitelist = [ "user", "sched_current", "api_info" ];
+	var whitelist = [ "user", "sched_current", "api_info", "sched_history", "sched_next", "sched_sync" ];
 	that.addCallback = function(method, lyreelement) {
 		if (whitelist.indexOf(lyreelement) == -1) return;
 		maxid++;
