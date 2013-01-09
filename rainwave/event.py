@@ -333,6 +333,10 @@ class Election(Event):
 			self.songs.reverse()
 			self.start_actual = int(time.time())
 			self.in_progress = True
+			self.used = True
+			for i in range(0, len(self.songs)):
+				self.songs[i].data['entry_position'] = i
+				db.c.update("UPDATE r4_election_entries SET entry_position = %s WHERE entry_id = %s", (i, self.songs[i].data['entry_id']))				
 			db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s, elec_used = TRUE WHERE elec_id = %s", (self.start_actual, self.id))
 	
 	def get_filename(self):
@@ -393,7 +397,7 @@ class Election(Event):
 		return song		
 		
 	def length(self):
-		if self.used:
+		if self.used or self.in_progress:
 			return self.songs[0].data['length']
 		else:
 			totalsec = 0
