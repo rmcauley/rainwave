@@ -5,7 +5,7 @@ require("buildfunc.php");
 require("files.php");
 
 $bnum = getBuildNumber();
-$lyredir = "../lyre/";
+$lyredir = "../../lyre/";
 $cookiedomain = "rainwave.cc";
 
 if (!isset($dest)) {
@@ -29,7 +29,7 @@ writeParsedFile("root/index.php", $dest . "index.php", $bnum);
 chmod($dest . "auth/common.php", "755");
 copyDirectory("ffmp3", "ffmp3", $dest);
 
-makeAPIDirectory($lyredir, $dest, false);
+# makeAPIDirectory($lyredir, $dest, false);
 
 exec("chmod u+r $dest/auth -R");
 exec("chown www-data $dest/auth -R");
