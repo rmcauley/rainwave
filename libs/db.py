@@ -255,6 +255,7 @@ def close():
 	return True
 	
 def create_tables():
+	# TODO: There should be a bootstrap option which should do all of the table creation without enabling test_mode, etc.
 	if config.test_mode:
 		_create_test_tables()
 
@@ -638,7 +639,7 @@ def _create_test_tables():
 			user_new_privmsg			INT		DEFAULT 0, \
 			user_avatar				TEXT		DEFAULT '', \
 			user_avatar_type			INT		DEFAULT 0, \
-			radio_inactive \
+			radio_inactive			BOOLEAN		DEFAULT FALSE \
 		)")
 
 def _fill_test_tables():

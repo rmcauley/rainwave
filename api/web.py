@@ -53,7 +53,7 @@ class RequestHandler(tornado.web.RequestHandler):
 		self.request_ok = False
 		self.user = None
 		
-		if self.local_only and not self.request.remote_ip == "127.0.0.1":
+		if self.local_only and not self.request.remote_ip in config.get("trusted_ips"):
 			self.failed = True
 			self.set_status(403)
 			self.finish()
@@ -77,16 +77,16 @@ class RequestHandler(tornado.web.RequestHandler):
 	
 		self.args = {}
 		for field, field_attribs in self.__class__.fields.iteritems():
-			type, required = field_attribs
+			type_cast, required = field_attribs
 			if required and field not in self.request.arguments:
 				self.append("error", api.returns.ErrorReturn(-1000, "Missing %s argument." % field))
 				request_ok = False
 			elif not required and field not in self.request.arguments:
 				pass
 			else:
-				parsed = getattr(fieldtypes, type)(self.get_argument(field))
-				if parsed == None:	
-					self.append("error", api.returns.ErrorReturn(-1000, "Invalid argument %s: %s" % (field, getattr(fieldtypes, "%s_error" % type))))
+				parsed = type_cast(self.get_argument(field))
+				if parsed == None:
+					self.append("error", api.returns.ErrorReturn(-1000, "Invalid argument %s: %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__))))
 					request_ok = False
 				else:
 					self.args[field] = parsed
