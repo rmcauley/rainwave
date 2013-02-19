@@ -1,4 +1,9 @@
 import re
+from libs import config
+
+string_error = "must be a string."
+def string(str):
+	return str
 
 # All _error variables start with no capital letter and end with a period.
 numeric_error = "must be a number."
@@ -51,4 +56,11 @@ def boolean(str):
 		return True
 	elif str == "false":
 		return False
+	return None
+	
+valid_relay_error = "must be a known and valid relay's IP address."
+def valid_relay(str):
+	for name, value in config.get("relays").iteritems():
+		if value['ip_address'] == str:
+			return name
 	return None

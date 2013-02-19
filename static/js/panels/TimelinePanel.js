@@ -794,19 +794,19 @@ function TimelineSong(json, parent, x, y, songnum) {
 	};
 	
 	that.voteAction = function() {
-		if (that.voteinprogress) {
-			that.voteSubmit();
-			return;
-		}
-		that.parent.cancelVoting();
-		if (parent.timeleft >= 15) {
-			that.voteinprogress = true;
-			that.startVoting();
-		}
-		else {
-			that.voteinprogress = true;
-			that.voteSubmit();
-		}
+		// if (that.voteinprogress) {
+		that.voteSubmit();
+		// return;
+		// }
+		// that.parent.cancelVoting();
+		// if (parent.timeleft >= 15) {
+			// that.voteinprogress = true;
+			// that.startVoting();
+		// }
+		// else {
+			// that.voteinprogress = true;
+			// that.voteSubmit();
+		// }
 	};
 	
 	that.voteCancel = function() {
@@ -818,9 +818,9 @@ function TimelineSong(json, parent, x, y, songnum) {
 	};
 
 	that.voteSubmit = function() {
-		if (that.votesubmitted) return;
+		!if (that.votesubmitted) return;
 		that.votesubmitted = true;
-		that.voteProgressStop();
+		!that.voteProgressStop();
 		that.voteProgressComplete();
 		that.parent.disableVoting();
 		that.parent.changeHeadline(_l("submittingvote"));

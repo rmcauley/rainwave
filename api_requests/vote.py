@@ -1,3 +1,5 @@
+import time
+
 from api import fieldtypes
 from api.web import RequestHandler
 from api.server import test_get
@@ -8,6 +10,7 @@ import api.returns
 from libs import cache
 from libs import log
 from rainwave import playlist
+
 
 class SubmitVote(RequestHandler):
 	return_name = "vote_result"
@@ -24,7 +27,7 @@ class SubmitVote(RequestHandler):
 			lock_count += 1
 			if event.is_election and event.has_entry_id(self.arguments["entry_id"]):
 				if self.user.is_anonymous():
-					made_vote = self.vote(entry_id, event, lock_count)
+					made_vote = self.vote((self.arguments["entry_id"]), event, lock_count)
 				break
 			if not self.user.data['radio_perks']:
 				break
