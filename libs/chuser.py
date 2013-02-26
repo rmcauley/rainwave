@@ -1,6 +1,8 @@
 import os
-from pwd import getpwnam
-from grp import getgrnam
+
+if os.name != "nt":
+    from pwd import getpwnam
+    from grp import getgrnam
 
 def change_user(user, group):
 	if (user or group) and os.getuid() != 0:

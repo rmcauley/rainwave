@@ -1,4 +1,6 @@
 import json
+import os
+import getpass
 from libs import buildtools
 
 # Options hash - please don't access this externally in case the storage method changes
@@ -12,9 +14,26 @@ test_mode = False
 station_ids = set()
 station_id_friendly = {}
 
-def load(file):
+def get_config_file(testmode = False):
+	if os.path.isfile("etc/%s.conf" % getpass.getuser()):
+		return ("etc/%s.conf" % getpass.getuser())
+	elif testmode and os.path.isfile("etc/rainwave_test.conf"):
+		return ("etc/rainwave_tes.conf")
+	elif os.path.isfile("etc/rainwave.conf"):
+		return ("etc/rainwave.conf")
+	elif os.path.isfile("/etc/rainwave.conf"):
+		return ("/etc/rainwave.conf")
+	elif testmode:
+		raise RuntimeError, "Could not find a configuration file at etc/rainwave_test.conf."
+	else:
+		raise RuntimeError, "Could not find a configuration file at etc/rainwave.conf or /etc/rainwave.conf"
+
+def load(file = None, testmode = False):
 	global _opts
 	global test_mode
+	
+	if not file:
+		file = get_config_file(testmode)
 	
 	config_file = open(file)
 	_opts = json.load(config_file)

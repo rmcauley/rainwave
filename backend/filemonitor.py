@@ -1,11 +1,15 @@
-import os.path
+import os
 import time
-import magic
+import mimetypes
 import sys
-import pyinotify
 import asyncore
 import psutil
 from PIL import Image
+
+_wm = None
+if os.name != "nt":
+	import pyinotify
+	_wm = pyinotify.WatchManager()
 
 from libs import config
 from libs import log
@@ -16,9 +20,7 @@ from rainwave import playlist
 
 _directories = {}
 _scan_errors = None
-_ms = magic.open(magic.MAGIC_NONE)
-_ms.load()
-_wm = pyinotify.WatchManager()
+mimetypes.init()
 
 def start(full_scan):
 	global _directories
@@ -29,9 +31,10 @@ def start(full_scan):
 		_scan_errors = []
 	_directories = config.get("song_dirs")
 	
-	p = psutil.Process(os.getpid())
-	p.set_nice(10)
-	p.set_ionice(psutil.IOPRIO_CLASS_IDLE)
+	if os.name != "nt":
+		p = psutil.Process(os.getpid())
+		p.set_nice(10)
+		p.set_ionice(psutil.IOPRIO_CLASS_IDLE)
 	
 	if full_scan:
 		full_update()
@@ -62,19 +65,22 @@ def _scan_directories():
 			for filename in files:
 				cache.set("backend_scan_counted", file_counter)
 				fqfn = root + "/" + filename
-				print fqfn
+				try:
+					print fqfn
+				except UnicodeEncodeError:
+					print "<< unicode filename >>"
 				_scan_file(fqfn, sids, True)
 	_save_scan_errors()
 	
 def _is_mp3(filename):
-	filetype = _ms.file(filename)
-	if filetype and filetype.count("MPEG") and filetype.count("layer III"):
+	filetype = mimetypes.guess_type(filename)
+	if filetype and filetype[0] == "audio/x-mpg":
 		return True
 	return False
 
 def _is_image(filename):
-	filetype = _ms.file(filename)
-	if filetype and (filetype.count("PNG") or filetype.count("GIF") or filetype.count("JPEG")):
+	filetype = mimetypes.guess_type(filename)
+	if filetype and filetype[0].count("image") == 1:
 		return True
 	return False
 	
@@ -142,6 +148,21 @@ def _save_scan_errors():
 
 def monitor():
 	global _wm
+	if not _wm:
+		raise "Cannot monitor without pyinotify or on Windows."
+	
+	class EventHandler(pyinotify.ProcessEvent):
+		def __init__(self, sids):
+			self.sids = sids
+	
+		def process_IN_CREATE(self, event):
+			_scan_file(event.pathname, self.sids)
+			
+		def process_IN_MODIFY(self, event):
+			_scan_file(event.pathname, self.sids)
+			
+		def process_IN_DELETE(self, event):
+			_disable_file(event.pathname)
 	
 	cache.set("backend_scan", "monitoring")
 	mask = pyinotify.IN_DELETE | pyinotify.IN_CREATE | pyinotify.IN_MODIFY
@@ -154,15 +175,4 @@ def monitor():
 	asyncore.loop()
 	cache.set("backend_scan", "off")
 	
-class EventHandler(pyinotify.ProcessEvent):
-	def __init__(self, sids):
-		self.sids = sids
 
-	def process_IN_CREATE(self, event):
-		_scan_file(event.pathname, self.sids)
-		
-	def process_IN_MODIFY(self, event):
-		_scan_file(event.pathname, self.sids)
-		
-	def process_IN_DELETE(self, event):
-		_disable_file(event.pathname)

@@ -12,7 +12,7 @@ import rainwave.playlist
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Rainwave song scanning daemon.")
-	parser.add_argument("--config", default="etc/rainwave_test.conf")
+	parser.add_argument("--config", default=None)
 	parser.add_argument("--full", action="store_true")
 	args = parser.parse_args()
 	libs.config.load(args.config)

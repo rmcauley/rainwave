@@ -1,4 +1,10 @@
-import pylibmc
+__using_libmc = False
+try:
+    import pylibmc as libmc
+    __using_libmc = True
+except ImportError:
+    import memcache as libmc
+
 from libs import config
 from libs import db
 
@@ -23,8 +29,11 @@ def open():
 	if _memcache:
 		return
 	if not config.test_mode or config.get("test_use_memcache"):
-		_memcache = pylibmc.Client(config.get("memcache_servers"), binary = True)
-		_memcache.behaviors = { "tcp_nodelay": True, "ketama": config.get("memcache_ketama") }
+		if __using_libmc:
+		    _memcache = libmc.Client(config.get("memcache_servers"), binary = True)
+		    _memcache.behaviors = { "tcp_nodelay": True, "ketama": config.get("memcache_ketama") }
+		else:
+			_memcache = libmc.Client(config.get("memcache_servers"))
 	else:
 		_memcache = TestModeCache()
 		reset_station_caches()

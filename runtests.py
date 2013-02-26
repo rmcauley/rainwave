@@ -21,7 +21,7 @@ from api_requests import *
 parser = argparse.ArgumentParser(description="Rainwave unit and API testing.")
 parser.add_argument("--api", action="store_true")
 parser.add_argument("--apionly", action="store_true")
-parser.add_argument("--config", default="etc/rainwave_test.conf")
+parser.add_argument("--config", default=None)
 args = parser.parse_args()
 
 # Taken from http://stackoverflow.com/questions/3670515/how-to-make-py-test-or-nose-to-look-for-tests-inside-all-python-files
@@ -51,7 +51,8 @@ sqlite_file = "%s/rw_test.%s.sqlite" % (tempfile.gettempdir(), username)
 if os.path.exists(sqlite_file):
 	os.remove(sqlite_file)
 	
-libs.config.load(args.config)
+if config:
+    libs.config.load(args.config, testmode=True)
 		
 if not args.apionly:
 	if libs.config.get("db_type") == "sqlite":

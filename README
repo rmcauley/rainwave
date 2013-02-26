@@ -9,15 +9,17 @@ eliminating all our old PHP in the process.
 - tornado (webserver, minimum version 2.3)
 - sqlite3 (database)
 - psycopg 2.x (database)
-- pylibmc (memcache)
+- pylibmc (preferred, C wrapper) or python-memcached (pure Python)
 - mutagen (ID3 tag reader)
 - nose (test library)
-- PIL (album art) [Debian: python-imaging, Gentoo: dev-python/imaging]
+- PIL (album art) [Debian: python-imaging, Gentoo: dev-python/imaging, pip: pil]
 - psutil (nice and ionice)
-- magic (filetype identification)
-- mp3gain (streaming)
 - pyScss (CSS/SASS compiling)
 - jsmin
+
+You also need to have the following programs on your path:
+
+- mp3gain
 
 Recommended .git/hooks/pre-commit:
 	#!/bin/bash
@@ -32,6 +34,18 @@ broken out into loops, rather than letting the database handle it in a JOIN.
 There's a reason for this, and until there's a better
 way of handling these scenarios, they are greppable by searching for
 SQLITE_CANNOT_DO_JOINS_ON_UPDATES.
+
+===== Installing on Windows =====
+
+* Install 32-bit Python 2.7
+* Install setup tools (http://pypi.python.org/pypi/setuptools#files)
+* Install MinGW with gcc g++ mingw32-make (http://www.mingw.org/wiki/Getting_Started)
+* Create C:\[Python]\Lib\distutils\distutils.cfg with the following 2 lines:
+
+[build]
+compiler=mingw32
+
+* You may come across this a no-cygwin error: http://bugs.python.org/issue12641
 
 ===== OLD README =====
 
