@@ -46,19 +46,22 @@ class ExtensionPlugin(Plugin):
         return True
 		
 # Setup our run environment for the test.
-username = os.environ['USER']
+username = os.environ.get("USERNAME") #os.environ['USER']
 sqlite_file = "%s/rw_test.%s.sqlite" % (tempfile.gettempdir(), username)
 if os.path.exists(sqlite_file):
 	os.remove(sqlite_file)
 	
-if config:
+if args.config:
     libs.config.load(args.config, testmode=True)
+else:
+    libs.config.load("etc/%s.conf" % username, testmode=True)
 		
 if not args.apionly:
 	if libs.config.get("db_type") == "sqlite":
 		libs.config.override("db_name", sqlite_file)
 	libs.db.open()
-	libs.db.create_tables()
+	if libs.config.get("db_type") == "sqlite":
+	    libs.db.create_tables()
 	libs.cache.open()
 	libs.log.init("%s/rw_backend.%s.log" % (libs.config.get("log_dir"), username), libs.config.get("log_level"))
 

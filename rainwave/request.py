@@ -82,7 +82,7 @@ def get_next(sid):
 	line = cache.get_station(sid, "request_line")
 	song = None
 	for pos in range(0, len(line)):
-		if not line['song_id']:
+		if not line[pos] or not line[pos]['song_id']:
 			pass
 		else:
 			entry = line.pop(pos)

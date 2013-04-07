@@ -1,6 +1,7 @@
 import unittest
 from libs import db
 from libs import cache
+from libs import config
 from rainwave import playlist
 from rainwave import event
 from rainwave.event import Election
@@ -23,11 +24,11 @@ class ScheduleTest(unittest.TestCase):
 		# We need a completely blank slate for this
 		db.c.update("DELETE FROM r4_schedule")
 		db.c.update("DELETE FROM r4_elections")
-		db.c.update("DELETE FROM r4_songs")
-		
-		# A hundred fake songs to fill our range out
-		for i in range(0, 100):
-			playlist.Song.create_fake(1)
+		# A hundred fake songs to fill our range out if we're not running in test mode or running in sqlite
+		if config.get("db_type") != "postgres" and not config.test_mode:
+		    db.c.update("DELETE FROM r4_songs")
+		    for i in range(0, 100):
+		    	playlist.Song.create_fake(1)
 		
 		reset_schedule(1)
 		

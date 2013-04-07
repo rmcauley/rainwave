@@ -111,8 +111,8 @@ def get_random_song_timed(sid, target_seconds, target_delta = 30):
 	availability rules, but giving priority to the target song length 
 	provided.  Falls back to get_random_ignore_requests on failure.
 	"""
-	sql_query = "FROM r4_songs JOIN r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) \
-		WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0 AND song_request_only = FALSE AND song_length >= %s AND song_length <= %s"
+	sql_query = ("FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) "
+		"WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0 AND song_request_only = FALSE AND song_length >= %s AND song_length <= %s")
 	num_available = db.c.fetch_var("SELECT COUNT(r4_song_sid.song_id) " + sql_query, (sid, sid, (target_seconds - target_delta), (target_seconds + target_delta)))
 	if num_available == 0:
 		return get_random_song(sid)
@@ -132,8 +132,8 @@ def get_random_song(sid, target_seconds = None, target_delta = None):
 		else:
 			get_random_song_timed(sid, target_seconds)
 
-	sql_query = "FROM r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) \
-		WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_request_only = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0"
+	sql_query = ("FROM r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) "
+		"WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_request_only = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0")
 	num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid, sid))
 	offset = 0
 	if num_available == 0:
@@ -158,7 +158,6 @@ def get_random_song_ignore_requests(sid):
 		song_id = db.c.fetch_var("SELECT song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, offset))
 		return Song.load_from_id(song_id, sid)
 	
-	
 def get_random_song_ignore_all(sid):
 	"""
 	Fetches the most stale song (longest time since it's been played) in the db,
@@ -168,7 +167,7 @@ def get_random_song_ignore_all(sid):
 	num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
 	offset = 0
 	if num_available == 0:
-		return get_random_song_ignore_all(sid)
+		raise Exception("Could not find any songs to play.")
 	else:
 		offset = random.randint(1, num_available) - 1
 		song_id = db.c.fetch_var("SELECT song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, offset))
@@ -321,7 +320,7 @@ class Song(object):
 	@classmethod
 	def create_fake(klass, sid):
 		if not config.test_mode:
-			raise "Tried to create a fake song when not in test mode."
+			raise Exception("Tried to create a fake song when not in test mode.")
 			
 		s = klass()
 		s.filename = "fake.mp3"
@@ -375,7 +374,7 @@ class Song(object):
 			self.data['link'] = f["WXXX:URL"].url
 		elif "WXXX" in keys:
 			self.data['link'] = f["WXXX"][0]
-		if not "TXXX:REPLAYGAIN_TRACK_GAIN" in keys:
+		if not "TXXX:REPLAYGAIN_TRACK_GAIN" in keys and config.get("mp3gain_scan"):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
 			process = subprocess.Popen([ "mp3gain", "-q", "-k", "-o", "-p", self.filename ], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			process.wait()
