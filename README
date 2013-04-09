@@ -3,13 +3,12 @@ This is the git project for the Rainwave website at http://rainwave.cc
 It is currently in a major state of flux as we transition from Rainwave 3 to 4,
 eliminating all our old PHP in the process.
 
-== Required Python Modules
+== Required Modules and Executables
 
-- pyinotify (filesystem monitoring)
+Required on all systems:
 - tornado (webserver, minimum version 2.3)
 - sqlite3 (database)
 - psycopg 2.x (database)
-- pylibmc (preferred, C wrapper) or python-memcached (pure Python)
 - mutagen (ID3 tag reader)
 - nose (test library)
 - PIL (album art) [Debian: python-imaging, Gentoo: dev-python/imaging, pip: pil]
@@ -17,9 +16,17 @@ eliminating all our old PHP in the process.
 - pyScss (CSS/SASS compiling)
 - jsmin
 
-You also need to have the following programs on your path:
+Required on POSIX:
+- pyinotify (filesystem monitoring)
+- pylibmc (preferred, C wrapper) or python-memcached (pure Python)
 
-- mp3gain
+Required on Windows:
+- python-memcached
+
+To let Rainwave automatically mp3gain your collection, you will need to enable it
+in the configs and also have the "mp3gain" executable in your system path.
+
+== Git
 
 Recommended .git/hooks/pre-commit:
 	#!/bin/bash
@@ -28,6 +35,10 @@ Recommended .git/hooks/pre-commit:
 
 To see the TODO list, just grep the code:
 	grep -r TODO
+	
+== Database
+
+Rainwave supports sqlite for testing, and only Postgres in production environments.
 
 You may notice throughout the program that many UPDATE statements are
 broken out into loops, rather than letting the database handle it in a JOIN.
@@ -35,85 +46,18 @@ There's a reason for this, and until there's a better
 way of handling these scenarios, they are greppable by searching for
 SQLITE_CANNOT_DO_JOINS_ON_UPDATES.
 
-===== Installing on Windows =====
+== Running sqlite tests
 
-* Install 32-bit Python 2.7
-* Install setup tools (http://pypi.python.org/pypi/setuptools#files)
-* Install MinGW with gcc g++ mingw32-make (http://www.mingw.org/wiki/Getting_Started)
-* Create C:\[Python]\Lib\distutils\distutils.cfg with the following 2 lines:
+1. Copy rainwave_test.conf to [your username].conf
+2. Modify the config for your OS (assumes Linux by default)
+3. runtests.py
 
-[build]
-compiler=mingw32
+== Initial setup for Postgres testing environment
 
-* You may come across this a no-cygwin error: http://bugs.python.org/issue12641
-
-===== OLD README =====
-
-This project is the GUI portion of the Rainwave online radio system, as seen
-at http://rainwave.cc.
-
-== Deploying Rainwave ==
-
-There are four deployment scripts for Rainwave:
-	- make.php creates a production Rainwave copy, for the Rainwave server
-	- testmake.php creates a production Rainwave copy, for the Rainwave
-		server, but in a different directory.
-	- betamake.php creates a beta copy of Rainwave, for the Rainwave server
-	- devmake.php creates a beta copy of Rainwave for anyone else
-	
-Production versions compile and minimize Javascript.  Beta versions do not.
-Production versions compile and minimize CSS.  Beta versions do not.
-Both production and beta versions do, however, have CSS interpreters
-that will build skins and automatically base64-encode any small images
-into the CSS file when building.
-
-99.9% chance is, you will only be using devmake.php.
-
-=== Setting Up A Dev Copy ===
-
-You will require an HTTP server with PHP setup.  This README assumes
-you are capable of setting that up on your own.
-
-You must be a registered Rainwave user.  Then go to
-http://rainwave.cc/auth/ and create yourself an API key.  Keep the
-page open, you'll need those values.
-
-Create a file called devconf.php in the root directory.  Do not add this
-file to git.  Here's the variables and their purposes for you:
-
-<?php
-	$devkey = "[APIKEY]";
-	$devuid = "[DEVUID]"; // your user ID from http://rainwave.cc/auth/
-	$devsid = 1;	// 1 = RW, 2 = OCR, 3 = Mixwave, 4 = Bitwave
-	$devdest = "/tmp/rw/";	// destination, note trailing slash
-	$devlyre = "http://localhost/rwapi";
-	//$devlyrejs = "/path/to/lyre-ajax.js";
-	$cookiedomain = 'localhost';
-?>
-
-You will need $devlyre because of same-origin security issues on browsers.
-You will not be able to use http://rainwave.cc.  You'll want to configure
-a local Apache or nginx server to do a little proxying for you.
-Here's a quick config you can stash in your Apache config to do that:
-
-RewriteEngine On
-ProxyRequests Off
-<Proxy>
-    Order deny,allow
-    Allow from all
-</Proxy>
-ProxyPass /rwapi/ http://rainwave.cc/
-ProxyPassReverse /rwapi/ http://rainwave.cc/
-
-The example $devlyre variable would then be http://myserver/rwapi.  No
-trailing slash.
-
-$devlyrejs is optional, simply remove it or set to false.  If specified,
-devmake.php will use a local copy of lyre-ajax.js to include in the build.
-If unspecified or false, devmake.php will use a fresh copy of lyre-ajax.js
-downloaded from http://rainwave.cc/api/.  It will cache it in /tmp/ and if
-older than 24h will download a new one.
-
-If you wish to have language debug info (missing strings, etc) you may put
-$langstatus = true in your devconf.php.
-=======
+1. Install Python, Postgres, memcached, and Python modules
+2. Copy rainwave_test.conf to [your username].conf
+3. Modify config to fit your environment and OS
+4. Modify the config to point at your music collection (MP3 only, sorry)
+5. db_init.py --config etc/[username].conf
+6. rw_scanner.py --full --config /etc/[username].conf
+7. runtests.py

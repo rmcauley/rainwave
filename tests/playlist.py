@@ -81,12 +81,15 @@ class SongTest(unittest.TestCase):
 		
 	def test_nontag_metadata(self):
 		s = playlist.Song.load_from_file("tests/test1.mp3", [1])
+		s.remove_nontag_metadata()
 		self.assertEqual(1, db.c.fetch_var("SELECT album_is_tag FROM r4_song_album WHERE album_id = %s AND song_id = %s", (s.albums[0].id, s.id)))
 		
 		s.add_group("Non-Tag Group")
 		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_groups WHERE group_name = 'Non-Tag Group'"))
 		self.assertEqual(2, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_group WHERE song_id = %s", (s.id,)))
 		s.remove_group("Non-Tag Group")
+		self.assertEqual(0, db.c.fetch_var("SELECT COUNT(*) FROM r4_groups WHERE group_name = 'Non-Tag Group'"))
+		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_group WHERE song_id = %s", (s.id,)))
 		
 		s.add_album("Test Album 1")
 		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_album WHERE song_id = %s", (s.id,)))
@@ -108,11 +111,11 @@ class SongTest(unittest.TestCase):
 		self.assertEqual(2, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_album WHERE song_id = %s", (loaded.id,)))
 		self.assertEqual(0, db.c.fetch_var("SELECT album_is_tag FROM r4_song_album WHERE album_id = %s AND song_id = %s", (album_id, s.id)))
 		self.assertEqual(1, db.c.fetch_var("SELECT album_is_tag FROM r4_song_album WHERE album_id = %s AND song_id = %s", (s.albums[0].id, loaded.id)))
-		self.assertEqual(0, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s", (loaded.albums[0].id,)))
-		self.assertEqual(0, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s", (loaded.albums[1].id,)))
+		self.assertEqual(0, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s AND sid = %s", (loaded.albums[0].id, 1)))
+		self.assertEqual(0, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s AND sid = %s", (loaded.albums[1].id, 1)))
 		loaded = playlist.Song.load_from_file("tests/test1.mp3", [1])
-		self.assertEqual(1, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s", (loaded.albums[0].id,)))
-		self.assertEqual(1, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s", (loaded.albums[1].id,)))
+		self.assertEqual(1, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s AND sid = %s", (loaded.albums[0].id, 1)))
+		self.assertEqual(1, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s AND sid = %s", (loaded.albums[1].id, 1)))
 		loaded.remove_album("Non-Tag Album")
 		
 class ArtistTest(unittest.TestCase):

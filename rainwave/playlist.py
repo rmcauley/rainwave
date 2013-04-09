@@ -10,6 +10,8 @@ from libs import db
 from libs import config
 from libs import log
 
+
+
 cooldown_config = { }
 
 # TODO: Favourites!
@@ -585,6 +587,11 @@ class Song(object):
 		
 	def remove_group(self, name):
 		return self._remove_metadata(self.groups, name)
+
+	def remove_nontag_metadata(self):
+		for metadata in (self.albums + self.artists + self.groups):
+			if not metadata.is_tag:
+				metadata.disassociate_song_id(self.id)
 		
 	def _remove_metadata(self, lst, name):
 		for metadata in lst:
@@ -1002,7 +1009,7 @@ class Artist(AssociatedMetadata):
 class SongGroup(AssociatedMetadata):
 	select_by_name_query = "SELECT group_id AS id, group_name AS name FROM r4_groups WHERE group_name = %s"
 	select_by_id_query = "SELECT group_id AS id, group_name AS name FROM r4_groups WHERE group_id = %s"
-	select_by_song_id_query = "SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s"
+	select_by_song_id_query = "SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time, group_is_tag AS is_tag FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s"
 	disassociate_song_id_query = "DELETE FROM r4_song_group WHERE song_id = %s AND group_id = %s"
 	associate_song_id_query = "INSERT INTO r4_song_group (song_id, group_id, group_is_tag) VALUES (%s, %s, %s)"
 	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_group WHERE song_id = %s AND group_id = %s"
