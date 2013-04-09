@@ -90,8 +90,8 @@ def get_next(sid):
 			song.data['elec_request_user_id'] = entry['user_id']
 			song.data['elec_request_username'] = entry['username']
 			
-			db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (u.id, request['song_id']))
 			u = User(entry['user_id'])
+			db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (u.id, entry['song_id']))
 			u.remove_from_request_line()
 			if u.has_requests():
 				u.put_in_request_line(u.get_top_request_sid())
