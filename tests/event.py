@@ -47,7 +47,7 @@ class ElectionTest(unittest.TestCase):
 		self.assertEqual(False, e._check_song_for_conflict(self.song1))
 		
 		u = User(2)
-		u.authorize(1, None, None, True)
+		u.authorize(sid=1, ip_address=None, api_key=None, bypass=True)
 		self.assertEqual(1, u.put_in_request_line(1))
 		# TODO: Use proper request/user methods here instead of DB call
 		db.c.update("UPDATE r4_request_line SET line_top_song_id = %s, line_expiry_tune_in = %s WHERE user_id = %s", (self.song1.id, int(time.time()) + 9999, u.id))
@@ -56,7 +56,7 @@ class ElectionTest(unittest.TestCase):
 		request.update_cache(1)
 		cache.update_local_cache_for_sid(1)
 		self.assertEqual(True, e._check_song_for_conflict(self.song1))
-		self.assertEqual(False, e._check_song_for_conflict(self.song5))
+		self.assertEqual(True, e._check_song_for_conflict(self.song5))
 		self.assertEqual(event.ElecSongTypes.conflict, self.song5.data['entry_type'])
 		self.assertEqual(event.ElecSongTypes.request, self.song1.data['entry_type'])
 		

@@ -23,7 +23,7 @@ class SongTest(unittest.TestCase):
 		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_artist WHERE song_id = %s", (song.id,)))
 		self.assertEqual(1, db.c.fetch_var("SELECT COUNT(*) FROM r4_song_group WHERE song_id = %s", (song.id,)))
 
-		self.assertEqual(1, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s", (song.albums[0].id,)))
+		self.assertEqual(1, db.c.fetch_var("SELECT album_exists FROM r4_album_sid WHERE album_id = %s AND sid = %s", (song.albums[0].id, sid)))
 		
 	def test_read(self):
 		song = playlist.Song()
