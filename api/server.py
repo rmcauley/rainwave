@@ -85,7 +85,7 @@ class APIServer(object):
 		
 		# Fire ze missiles!
 		app = tornado.web.Application(request_classes,
-			debug=config.get("debug_mode"),
+			debug=config.test_mode,
 			template_path=os.path.join(os.path.dirname(__file__), "../templates"),
 			static_path=os.path.join(os.path.dirname(__file__), "../static"),
 			autoescape=None)

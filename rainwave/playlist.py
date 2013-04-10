@@ -10,8 +10,6 @@ from libs import db
 from libs import config
 from libs import log
 
-
-
 cooldown_config = { }
 
 # TODO: Favourites!

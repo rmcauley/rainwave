@@ -51,10 +51,7 @@ sqlite_file = "%s/rw_test.%s.sqlite" % (tempfile.gettempdir(), username)
 if os.path.exists(sqlite_file):
 	os.remove(sqlite_file)
 	
-if args.config:
-    libs.config.load(args.config, testmode=True)
-else:
-    libs.config.load("etc/%s.conf" % username, testmode=True)
+libs.config.load(args.config, testmode=True)
 		
 if not args.apionly:
 	if libs.config.get("db_type") == "sqlite":

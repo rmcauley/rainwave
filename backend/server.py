@@ -59,7 +59,7 @@ def start():
 	
 	app = tornado.web.Application([
 		(r"/advance/([0-9]+)", AdvanceScheduleRequest),
-		], debug=config.get("debug_mode"))
+		], debug=config.test_mode)
 	
 	server = tornado.httpserver.HTTPServer(app)
 	server.listen(int(config.get("backend_port")), address='127.0.0.1')
