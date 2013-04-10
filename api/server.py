@@ -109,19 +109,23 @@ class APIServer(object):
 			log.close()
 
 	def start(self):
-		# The way this works, is that the parent PID is hijacked away from us and everything after this
-		# is a child process.  As of Tornado 2.1, fork() is used, which means we do have a complete
-		# copy of all execution in memory up until this point and we will have complete separation of
-		# processes from here on out.  Tornado handles child cleanup and zombification.
-		#
-		# We can have a config directive for numprocesses but it's entirely optional - a return of
-		# None from the config option getter (if the config didn't exist) will cause Tornado
-		# to spawn as many processes as there are cores on the server CPU(s).
-		tornado.process.fork_processes(config.get("api_num_processes"))
-		
-		task_id = tornado.process.task_id()
-		if task_id != None:
-			self._listen(task_id)
+		# Bypass Tornado's forking processes for Windows machines if num_processes is set to 1
+		if config.get("api_num_processes") == 1:
+			self._listen(0)
+		else:
+			# The way this works, is that the parent PID is hijacked away from us and everything after this
+			# is a child process.  As of Tornado 2.1, fork() is used, which means we do have a complete
+			# copy of all execution in memory up until this point and we will have complete separation of
+			# processes from here on out.  Tornado handles child cleanup and zombification.
+			#
+			# We can have a config directive for numprocesses but it's entirely optional - a return of
+			# None from the config option getter (if the config didn't exist) will cause Tornado
+			# to spawn as many processes as there are cores on the server CPU(s).
+			tornado.process.fork_processes(config.get("api_num_processes"))
+			
+			task_id = tornado.process.task_id()
+			if task_id != None:
+				self._listen(task_id)
 			
 	def test(self):
 		# Fake a decorator call on the handle_url decorator 

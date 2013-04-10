@@ -53,7 +53,8 @@ class RequestHandler(tornado.web.RequestHandler):
 		self.request_ok = False
 		self.user = None
 		
-		if self.local_only and not self.request.remote_ip in config.get("trusted_ips"):
+		if self.local_only and not self.request.remote_ip in config.get("api_trusted_ip_addresses"):
+			log.info("api", "Rejected %s request from %s" % (self.url, self.request.remote_ip))
 			self.failed = True
 			self.set_status(403)
 			self.finish()
