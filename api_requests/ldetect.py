@@ -69,13 +69,13 @@ class IcecastHandler(RequestHandler):
 	
 	def finish(self, chunk = None):
 		if self.failed:
-			self.request.set_header("icecast-auth-user", "1")
+			self.set_header("icecast-auth-user", "1")
 		else:
-			self.request.set_header("icecast-auth-user", "0")
+			self.set_header("icecast-auth-user", "0")
 			
 	def append(self, object):
 		globals.debug("ldetect", object, self.user)
-		self.request.set_header("icecast-auth-message", message)
+		self.set_header("icecast-auth-message", message)
 		self.set_debug_message(repr(object))
 
 @handle_url("listener_add/(\d+)")		
