@@ -113,6 +113,7 @@ class RequestHandler(tornado.web.RequestHandler):
 				
 		self.request_ok = request_ok
 		if not request_ok:
+			self.set_status(400)
 			self.finish()
 	
 	def rainwave_auth(self):

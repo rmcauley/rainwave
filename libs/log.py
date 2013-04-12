@@ -1,5 +1,6 @@
 import logging
 import logging.handlers
+import sys
 
 log = None
 
@@ -9,6 +10,11 @@ def init(logfile, loglevel = "warning"):
 	handler = logging.handlers.RotatingFileHandler(logfile, maxBytes = 20000000, backupCount = 1)
 	handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
 	logging.getLogger().addHandler(handler)
+	
+	if loglevel == "print":
+		print_handler = logging.StreamHandler(sys.stdout)
+		print_handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
+		logging.getLogger().addHandler(print_handler)
 
 	log = logging.getLogger("rainwave")
 	if loglevel == "critical":
@@ -17,11 +23,8 @@ def init(logfile, loglevel = "warning"):
 		log.setLevel(logging.ERROR)
 	elif loglevel == "info":
 		log.setLevel(logging.INFO)
-	elif loglevel == "debug":
+	elif loglevel == "debug" or loglevel == "print":
 		log.setLevel(logging.DEBUG)
-	elif loglevel == "print":
-		log.setLevel(logging.DEBUG)
-		toscreen = True
 	else:
 		log.setLevel(logging.WARNING)
 		
@@ -35,6 +38,7 @@ def _massage_line(key, message, user):
 	elif user:
 		user_info = "a%s" % user.ip_address
 	return " %-15s [%-10s] %s" % (user_info, key, message)
+	return line
 	
 def debug(key, message, user = None):
 	if not log:
