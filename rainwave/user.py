@@ -246,6 +246,13 @@ class User(object):
 	def get_requests(self):
 		# TODO: This
 		return []
+	
+	def set_request_tunein_expiry(self, t = None):
+		if not self.is_in_request_line():
+			return None
+		if not t:
+			t = time.time() + config.get("request_tunein_timeout")
+		return db.c.update("UPDATE r4_listeners SET line_expiry_tunein = %s WHERE user_id = %s", (t, self.id))
 
 	def lock_to_sid(self, sid, lock_count):
 		self.data['listener_lock'] = True
