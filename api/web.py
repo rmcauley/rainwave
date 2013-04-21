@@ -14,8 +14,8 @@ import re
 
 # VERY IMPORTANT: YOU MUST DECORATE YOUR CLASSES.
 
-# from api.server import handle_url
-# @handle_url(...)
+# from api.server import handle_api_url
+# @handle_api_url(...)
 
 # Pass a string there for the URL to handle at /api/[url] and the server will do the rest of the work.
 
@@ -42,10 +42,17 @@ class RequestHandler(tornado.web.RequestHandler):
 	sid_required = True
 	# Description string for documentation.
 	description = "Undocumented."
-	# Only for the backend to be called
+	# Restricts requests to config.get("api_trusted_ip_addresses") (presumably 127.0.0.1)
 	local_only = False
 	# Should the user be free to vote and rate?
 	unlocked_listener_only = False
+	# Do we allow GET HTTP requests to this URL?  (standard is "no")
+	allow_get = False
+	
+	def __init__(self):
+		super(RequestHandler, self).__init__()
+		if config.get("developer_mode") or config.test_mode or self.allow_get:
+			self.get = self.post
 
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):

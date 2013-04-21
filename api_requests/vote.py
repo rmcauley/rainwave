@@ -4,13 +4,12 @@ from api import fieldtypes
 from api.web import RequestHandler
 from api.server import test_get
 from api.server import test_post
-from api.server import handle_url
+from api.server import handle_api_url
 import api.returns
 
 from libs import cache
 from libs import log
 from rainwave import playlist
-
 
 class SubmitVote(RequestHandler):
 	return_name = "vote_result"

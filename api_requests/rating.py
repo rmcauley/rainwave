@@ -2,14 +2,14 @@ from api import fieldtypes
 from api.web import RequestHandler
 from api.server import test_get
 from api.server import test_post
-from api.server import handle_url
+from api.server import handle_api_url
 import api.returns
 
 from libs import cache
 from libs import log
 from rainwave import playlist
 
-@handle_url('rate')
+@handle_api_url('rate')
 class SubmitRating(RequestHandler):
 	return_name = "rate_result"
 	login_required = True
@@ -21,7 +21,7 @@ class SubmitRating(RequestHandler):
 		"rating": (fieldtypes.rating, True)
 	}
 	
-	def get(self):
+	def post(self):
 		if self.rate(self, song_id, rating):
 			self.append(self.return_name, { "code": 0, "text": "Rating submitted." })
 		else:

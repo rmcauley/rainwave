@@ -4,7 +4,7 @@ from api import fieldtypes
 from api.web import RequestHandler
 from api.server import test_get
 from api.server import test_post
-from api.server import handle_url
+from api.server import handle_api_url
 import api.returns
 
 from libs import cache
@@ -88,7 +88,7 @@ class IcecastHandler(RequestHandler):
 		self.set_header("icecast-auth-message", message)
 		self.write(message)
 
-@handle_url("listener_add/(\d+)")		
+@handle_api_url("listener_add/(\d+)")		
 class AddListener(IcecastHandler):
 	fields = {
 		"server": (fieldtypes.string, True),
@@ -100,16 +100,9 @@ class AddListener(IcecastHandler):
 		"ip": (fieldtypes.string, True),
 		"agent": (fieldtypes.string, True)
 	}
-	
-	def get(self, sid):
-		sid = 1
-		self.execute(sid)
 		
 	def post(self, sid):
 		sid = 1
-		self.execute(sid)
-		
-	def execute(self, sid):
 		if self.user_id > 1:
 			self.add_registered(int(sid))
 		else:
@@ -161,19 +154,13 @@ class AddListener(IcecastHandler):
 			self.append("Anonymous user from IP %s record updated." % self.get_argument("ip"))
 			self.failed = False
 			
-@handle_url("listener_remove")
+@handle_api_url("listener_remove")
 class RemoveListener(IcecastHandler):
 	fields = {
 		"client": (fieldtypes.integer, True),
 	}
-	
-	def get(self):
-		self.execute()
-		
+
 	def post(self):
-		self.execute()
-	
-	def execute(self):
 		listener = db.c.fetchrow("SELECT user_id, listener_ip FROM r4_listeners WHERE listener_icecast_id = %s AND list_relay = %s",
 								 (self.get_argument("relay"), self.get_argument("client")))
 		if not listener:

@@ -93,21 +93,21 @@ class MainIndex(tornado.web.RequestHandler):
 			self.sid = 5
 		
 		self.set_cookie("r4sid", str(self.sid), expires_days=365, domain=".rainwave.cc")
-	
+		phpbb_cookie_name = config.get("phpbb_cookie_name")
 		self.user = None
-		if not fieldtypes.integer(self.get_cookie("phpbb3_38ie8_u", "")):
+		if not fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", "")):
 			self.user = User(1)
 		else:
-			user_id = int(self.get_cookie("phpbb3_38ie8_u"))
-			if self.get_cookie("phpbb3_38ie8_sid"):
-				session_id = db.c_old.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_id = %s AND session_user_id = %s", (self.get_cookie("phpbb3_38ie8_sid"), user_id))
+			user_id = int(self.get_cookie(phpbb_cookie_name + "u"))
+			if self.get_cookie(phpbb_cookie_name):
+				session_id = db.c_old.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_id = %s AND session_user_id = %s", (self.get_cookie(phpbb_cookie_name + "sid"), user_id))
 				if session_id:
 					db.c_old.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(time.time()), "rainwave", session_id))
 					self.user = User(user_id)
 					self.user.authorize(self.sid, None, None, True)
 
-			if not self.user and self.get_cookie("phpbb3_38ie8_k"):
-				can_login = db.c_old.fetch_var("SELECT 1 FROM phpbb_sessions_keys WHERE key_id = %s AND user_id = %s", (hashlib.md5(self.get_cookie("phpbb3_38ie8_k")).hexdigest(), user_id))
+			if not self.user and self.get_cookie(phpbb_cookie_name + "k"):
+				can_login = db.c_old.fetch_var("SELECT 1 FROM phpbb_sessions_keys WHERE key_id = %s AND user_id = %s", (hashlib.md5(self.get_cookie(phpbb_cookie_name + "k")).hexdigest(), user_id))
 				if can_login == 1:
 					self.user = User(user_id)
 					self.user.authorize(self.sid, None, None, True)

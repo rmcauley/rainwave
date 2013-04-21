@@ -641,6 +641,14 @@ def _create_test_tables():
 			user_avatar_type			INT		DEFAULT 0, \
 			radio_inactive			BOOLEAN		DEFAULT FALSE \
 		)")
+	
+	c.update("CREATE TABLE phpbb_sessions("
+				"session_user_id		INT,"
+				"session_id				TEXT,"
+				"session_last_visit		INT,"
+				"session_page			TEXT)")
+
+	c.update("CREATE TABLE phpbb_session_keys(key_id TEXT, user_id INT)")
 
 def _fill_test_tables():
 	# Anonymous user

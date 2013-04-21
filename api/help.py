@@ -1,50 +1,55 @@
 import json
 import tornado.web
+import api.web
 from libs import config
 
 help_classes = {}
 
-def add_help_class(method, klass, url):
-	help_classes[url] = { "method": method, "class": klass }
+def add_help_class(klass, url):
+	help_classes[url] = klass
 
 class IndexRequest(tornado.web.RequestHandler):
+	def write_property(self, name, handler, to_print):
+		if getattr(handler, name, False):
+			self.write("<td class='%s requirement'>%s</td>" % (name, to_print))
+		else:
+			self.write("<td class='requirement'>&nbsp;</td>")
+	
+	def write_class_properties(self, url, handler):
+		self.write("<tr>")
+		self.write_property("allow_get", handler, "GET")
+		self.write_property("sid_required", handler, "sid")
+		self.write_property("auth_required", handler, "auth")
+		self.write_property("tunein_required", handler, "tunein")
+		self.write_property("login_required", handler, "login")
+		self.write_property("dj_required", handler, "dj")
+		self.write_property("admin_required", handler, "admin")
+		safe_url = url
+		if safe_url.find("/api4/") == 0:
+			safe_url = "api-" + safe_url[6:]
+		self.write("<td><a href='/api/help/%s'>%s</a></td></tr>" % (url, safe_url))
+	
 	def get(self):
 		write_help_header(self, "Rainwave API Documentation")
+		other_requests = {}
 		self.write("<h2>Requests</h2>")
-		self.write("<table class='help_legend'><tr><th>Station ID Required</th><th>Auth Required</th><th>Tune In Required</th><th>Login Required</th><th>DJ Required</th><th>Admin Required</th><th>Method</th><th>URL</th></tr>")
-		for k, v in help_classes.iteritems():
-			self.write("<tr>")
-			if v["class"].sid_required:
-				self.write("<td class='sid_required requirement'>Y</td>")
+		self.write("<table class='help_legend'>")
+		self.write("<tr><th colspan='8'>JSON API Requests</th></tr>")
+		self.write("<tr><th>Allows GET<th>Station ID Required</th><th>Auth Required</th><th>Tune In Required</th><th>Login Required</th><th>DJs Only</th><th>Admins Only</th><th>URL</th></tr>")
+		for url, handler in sorted(help_classes.items()):
+			if issubclass(handler, api.web.RequestHandler):
+				self.write_class_properties(url, handler)
 			else:
-				self.write("<td class='requirement'>&nbsp;</td>")
-			if v["class"].auth_required:
-				self.write("<td class='noauth_required requirement'>Y</td>")
-			else:
-				self.write("<td class='requirement'>&nbsp;</td>")
-			if v["class"].tunein_required:
-				self.write("<td class='tunein_required requirement'>Y</td>")
-			else:
-				self.write("<td class='requirement'>&nbsp;</td>")
-			if v["class"].login_required:
-				self.write("<td class='login_required requirement'>Y</td>")
-			else:
-				self.write("<td class='requirement'>&nbsp;</td>")
-			if v["class"].dj_required:
-				self.write("<td class='dj_required requirement'>Y</td>")
-			else:
-				self.write("<td class='requirement'>&nbsp;</td>")
-			if v["class"].admin_required:
-				self.write("<td class='admin_required requirement'>Y</td>")
-			else:
-				self.write("<td class='requirement'>&nbsp;</td>")
-			self.write("<td class='requirement'>%s</td>" % v["method"])
-			self.write("<td><a href='/api/help/%s'>%s</a></td>" % (k, k))
+				other_requests[url] = handler
+		self.write("<tr><th colspan='8'>Other Requests</th></tr>")
+		for url, handler in sorted(other_requests.items()):
+			self.write_class_properties(url, handler)
 		self.write("</table>")
-		self.write("<h2>Making a Request</h2>")
-		self.write("<ul><li>The Rainwave API handles all requests in the following format <b>http://rainwave.cc/api/[request]</b>.</li>")
+
+		self.write("<h2>Making an API Request</h2>")
+		self.write("<ul><li>The Rainwave 4 API handles all requests in the following format <b>http://rainwave.cc/api4/[request]</b>.</li>")
 		self.write("<li>All data returned is JSON.</li>")
-		self.write("<li>All data submitted is through standard GET or POST form submission.</li>")
+		self.write("<li>All data submitted is through POST form submission unless otherwise specified by 'Allow GET'.</li>")
 		self.write("<li>Authentication keys and user IDs need to be obtained by the users at http://rainwave.cc/auth/</li>")
 		self.write("<li>Unless otherwise indicated, authentication is required.</li>")
 		self.write("</ul>")
@@ -167,6 +172,10 @@ def write_help_header(request, title):
 
 		dd.return {
 			margin-top: .5em;
+		}
+		
+		tr:hover td {
+			background: #111144;
 		}
 		
 		th {
