@@ -1,4 +1,5 @@
 import socket
+import urllib
 from tornado.httpclient import AsyncHTTPClient
 
 from libs import log

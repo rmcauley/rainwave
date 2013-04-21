@@ -9,6 +9,7 @@ import api.returns
 
 from libs import cache
 from libs import log
+from libs import db
 from rainwave import user
 from backend import sync_to_front
 
@@ -74,11 +75,11 @@ class IcecastHandler(RequestHandler):
 	
 	def finish(self, chunk = None):
 		if self.failed:
+			self.set_status(403)
+			self.set_header("icecast-auth-user", "0")
+		else:
 			self.set_status(200)
 			self.set_header("icecast-auth-user", "1")
-		else:
-			self.set_status(400)
-			self.set_header("icecast-auth-user", "0")
 		log.debug("ldetect", "Finish!")
 		super(RequestHandler, self).finish()
 			
@@ -101,9 +102,11 @@ class AddListener(IcecastHandler):
 	}
 	
 	def get(self, sid):
+		sid = 1
 		self.execute(sid)
 		
 	def post(self, sid):
+		sid = 1
 		self.execute(sid)
 		
 	def execute(self, sid):
@@ -113,9 +116,9 @@ class AddListener(IcecastHandler):
 			self.add_anonymous(int(sid))
 	
 	def add_registered(self, sid):
-		tunedin = db.fetchvar("SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,))
+		tunedin = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,))
 		if tunedin:
-			db.update(
+			db.c.update(
 				"UPDATE r4_listeners "
 				"SET sid = %s, listener_ip = s, listener_purge = FALSE, listener_icecast_id = %s, listener_relay = %s, listener_agent = %s "
 				"WHERE user_id = %s",
@@ -123,7 +126,7 @@ class AddListener(IcecastHandler):
 			self.append("Registered user %s record updated." % self.user_id)
 			self.failed = False
 		else:
-			db.update("INSERT INTO r4_listeners "
+			db.c.update("INSERT INTO r4_listeners "
 				"(sid, user_id, listener_ip, listener_icecast_id, listener_relay, listener_agent) "
 				"VALUES (%s, %s, %s, %s, %s, %s)",
 				(sid, self.user_id, self.listener_ip, self.relay, self.agent, self.get_argument("client")))
@@ -142,7 +145,7 @@ class AddListener(IcecastHandler):
 		# can re-tune-in on the small chance that this occurs.
 		records = db.c.fetch_list("SELECT listener_icecast_id FROM r4_listeners WHERE listener_ip = %s", (self.get_argument("ip"),))
 		if len(records) == 0:
-			db.update("INSERT INTO r4_listeners "
+			db.c.update("INSERT INTO r4_listeners "
 					"(sid, listener_ip, user_id, listener_relay, listener_agent, listener_icecast_id) "
 					"VALUES (%s, %s, %s, %s, %s, %s)",
 				(sid, self.get_argument("ip"), 1, self.relay, self.get_argument("agent"), self.get_argument("client")))
@@ -150,10 +153,12 @@ class AddListener(IcecastHandler):
 			self.append("Anonymous user from IP %s is now tuned in with record." % self.get_argument("ip_address"))
 			self.failed = False
 		else:
-			while len(num_records) > 1:
-				db.c.update("DELETE FROM r4_listeners WHERE listener_icecast_id = %s", (num_records.pop(),))
-			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE WHERE listener_ip = %s")
-			self.append("Anonymous user from IP %s record updated." % self.get_argument("ip_address"))
+			while len(records) > 1:
+				extra_record = records.pop()
+				db.c.update("DELETE FROM r4_listeners WHERE listener_icecast_id = %s", (records.pop(),))
+				log.debug("ldetect", "Deleted extra record for icecast ID %s from IP %s." % (self.get_argument("client"), self.get_argument("ip")))
+			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE WHERE listener_ip = %s", (self.get_argument("client"), self.get_argument("ip")))
+			self.append("Anonymous user from IP %s record updated." % self.get_argument("ip"))
 			self.failed = False
 			
 @handle_url("listener_remove")
@@ -162,10 +167,10 @@ class RemoveListener(IcecastHandler):
 		"client": (fieldtypes.integer, True),
 	}
 	
-	def get(self, sid):
+	def get(self):
 		self.execute()
 		
-	def post(self, sid):
+	def post(self):
 		self.execute()
 	
 	def execute(self):
@@ -174,7 +179,7 @@ class RemoveListener(IcecastHandler):
 		if not listener:
 			return self.append("No user record to delete for client %s on relay %s." % (self.get_argument("relay"), self.get_argument("client")))
 
-		db.update("UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_icecast_id = %s AND listener_relay = %s", (self.get_argument("relay"), self.get_argument("client")))
+		db.c.update("UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_icecast_id = %s AND listener_relay = %s", (self.get_argument("relay"), self.get_argument("client")))
 		self.append("User ID %s relay %s flagged for removal." % (self.get_argument("relay"), self.get_argument("client")))
 		if listener['user_id'] > 1:
 			sync_to_front.sync_frontend_user_id(listener['user_id'])
