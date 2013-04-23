@@ -1,9 +1,17 @@
+import os
 import json
 import tornado.web
 import api.web
 from libs import config
 
 help_classes = {}
+url_properties = ( ("allow_get", "GET", "Allows HTTP GET requests in addition to POST requests."),
+	("auth_required", "auth", "User ID and API Key required as part of form submission."),
+	("sid_required", "sid", "Station ID required as part of form submission."),
+	("tunein_required", "tunein", "User is required to be tuned in to use command."),
+	("login_required", "login", "User must be logged in to a registered account to use command."),
+	("dj_required", "dj", "User must be the active DJ for the station to use command."),
+	("admin_required", "admin", "User must be an administrator to use command."))
 
 def add_help_class(klass, url):
 	help_classes[url] = klass
@@ -17,17 +25,12 @@ class IndexRequest(tornado.web.RequestHandler):
 	
 	def write_class_properties(self, url, handler):
 		self.write("<tr>")
-		self.write_property("allow_get", handler, "GET")
-		self.write_property("sid_required", handler, "sid")
-		self.write_property("auth_required", handler, "auth")
-		self.write_property("tunein_required", handler, "tunein")
-		self.write_property("login_required", handler, "login")
-		self.write_property("dj_required", handler, "dj")
-		self.write_property("admin_required", handler, "admin")
-		safe_url = url
-		if safe_url.find("/api4/") == 0:
-			safe_url = "api-" + safe_url[6:]
-		self.write("<td><a href='/api/help/%s'>%s</a></td></tr>" % (url, safe_url))
+		for prop in url_properties:
+			self.write_property(prop[0], handler, prop[1])
+		display_url = url
+		if display_url.find("/api4/") == 0:
+			display_url = display_url[6:]
+		self.write("<td><a href='/api4/help%s'>%s</a></td></tr>" % (url, display_url))
 	
 	def get(self):
 		write_help_header(self, "Rainwave API Documentation")
@@ -62,31 +65,47 @@ class IndexRequest(tornado.web.RequestHandler):
 		
 class HelpRequest(tornado.web.RequestHandler):
 	def get(self, url):
+		url = "/" + url
 		if not url in help_classes:
 			self.send_error(404)
-		klass = help_classes[url]["class"]
+		klass = help_classes[url]
 		write_help_header(self, "Rainwave API - %s" % url)
 		self.write("<p>%s</p>" % klass.description)
 		self.write("<ul>")
-		if klass.auth_required:
-			self.write("<li>User ID and API key required.</li>")
-		if klass.tunein_required:
-			self.write("<li>User must be tuned in.</li>")
-		if klass.login_required:
-			self.write("<li>User must be registered.</li>")
-		if klass.dj_required:
-			self.write("<li>User must be a DJ.</li>")
-		if klass.admin_required:
-			self.write("<li>User must be an administrator.</li>")
+		for prop in url_properties:
+			if getattr(klass, prop[0], False):
+				self.write("<li>" + prop[2] + "</li>")
 		self.write("</ul>")
 		
-		self.write("<h2>Sample Output</h2>")
-		self.write("<div class='json'>")
-		json_file = open("api_tests/%s.json" % url)
-		json_data = json.load(json_file)
-		self.write(json.dumps(json_data, sort_keys=True, indent=4))
-		json_file.close()
-		self.write("</div>")
+		if getattr(klass, "fields", False):
+			self.write("<h2>Fields</h2>")
+			self.write("<table><tr><th>Field Name</th><th>Type</th><th>Required</th></tr>")
+			if getattr(klass, "sid_required", False):
+				self.write("<tr><td>sid</td><td>integer</td><td>Required</td></tr>")
+			if getattr(klass, "auth_required", False):
+				self.write("<tr><td>user_id</td><td>integer</td><td>Required</td></tr>")
+				self.write("<tr><td>key</td><td>api_key</td><td>Required</td></tr>")
+			else:
+				self.write("<tr><td>user_id</td><td>integer</td><td>Optional</td></tr>")
+				self.write("<tr><td>key</td><td>api_key</td><td>Optional</td></tr>")
+			for field, field_attribs in klass.fields.iteritems():
+				type_cast, required = field_attribs
+				self.write("<tr><td>%s</td><td>%s</td>" % (field, type_cast.__name__))
+				if required:
+					self.write("<td>Required</td>")
+				else:
+					self.write("<td>Not required.</td>")
+				self.write("</tr>")
+			self.write("</table>")
+		
+		if (os.path.exists("api_tests/%s.json" % url)):
+			self.write("<h2>Sample Output</h2>")
+			self.write("<div class='json'>")
+			json_file = open("api_tests/%s.json" % url)
+			json_data = json.load(json_file)
+			self.write(json.dumps(json_data, sort_keys=True, indent=4))
+			json_file.close()
+			self.write("</div>")
 		
 		write_help_footer(self)
 		
