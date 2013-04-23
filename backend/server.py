@@ -52,14 +52,13 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			schedule.post_process(self.sid)
 
 def start():
-	log.debug("start", "Server booting, port %s." % int(config.get("backend_port")))
 	db.open()
 	cache.open()
 	playlist.remove_all_locks(1)		# DEBUG ONLY
 	
 	app = tornado.web.Application([
 		(r"/advance/([0-9]+)", AdvanceScheduleRequest),
-		], debug=config.test_mode)
+		], debug=(config.test_mode or config.get("developer_mode")))
 	
 	server = tornado.httpserver.HTTPServer(app)
 	server.listen(int(config.get("backend_port")), address='127.0.0.1')
@@ -73,6 +72,8 @@ def start():
 	pidfile.close()
 	
 	schedule.load()
+	
+	log.debug("start", "Backend server bootstrapped, port %s, ready to go." % int(config.get("backend_port")))
 	
 	for sid in config.station_ids:
 		playlist.prepare_cooldown_algorithm(sid)

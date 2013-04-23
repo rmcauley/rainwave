@@ -110,7 +110,7 @@ class APIServer(object):
 		
 		for request in request_classes:
 			log.debug("start", "   Handler: %s" % str(request))
-		log.info("start", "Server bootstrapped and ready to go.")
+		log.info("start", "API server bootstrapped and ready to go.")
 		self.ioloop = tornado.ioloop.IOLoop.instance()
 		try:
 			self.ioloop.start()

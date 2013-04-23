@@ -62,7 +62,7 @@ translations = {
 	"se_SE": {}
 }
 
-@handle_url("authtest")
+@handle_url("/(?:index.html)?")
 class MainIndex(tornado.web.RequestHandler):
 	def get_user_locale(self):
 		global translations
@@ -127,10 +127,10 @@ class MainIndex(tornado.web.RequestHandler):
 		self.set_header("Content-Type", "text/plain")
 		self.render("index.html", request=self, revision_number=config.get("revision_number"))
 		
-@handle_url("authtest_beta")
+@handle_url("/beta/?")
 class BetaIndex(MainIndex):
 	def get(self):
-		if self.user.data['_group_id'] not in (5, 4, 8, 12, 15, 14, 17):
+		if not config.get("developer_mode") and self.user.data['_group_id'] not in (5, 4, 8, 12, 15, 14, 17):
 			self.send_error(403)
 		else:
 			jsfiles = []

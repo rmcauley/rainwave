@@ -49,10 +49,15 @@ class RequestHandler(tornado.web.RequestHandler):
 	# Do we allow GET HTTP requests to this URL?  (standard is "no")
 	allow_get = False
 	
-	def __init__(self):
-		super(RequestHandler, self).__init__()
+	def initialize(self, **kwargs):
+		super(RequestHandler, self).initialize(**kwargs)
 		if config.get("developer_mode") or config.test_mode or self.allow_get:
 			self.get = self.post
+			
+	def set_cookie(self, name, value, **kwargs):
+		if isinstance(value, (int, long)):
+			value = repr(value)
+		super(RequestHandler, self).set_cookie(name, value, **kwargs)
 
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):
