@@ -33,13 +33,13 @@ class TestUserRequest(RequestHandler):
 		if user_id < 2:
 			user_id = user_id + 1
 			db.c.update("INSERT INTO phpbb_users (username, user_id) VALUES ('Test" + str(user_id) + ", %s)", (user_id,))
-		self.set_cookie(config.get("phpbb_cookie_name") + "_u", user_id)
+		self.set_cookie(config.get("phpbb_cookie_name") + "u", user_id)
 		session_id = db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s", (user_id,))
 		if not session_id:
 			session_id = hashlib.md5(repr(time.time())).hexdigest()
 			db.c.update("INSERT INTO phpbb_sessions (session_id, session_user_id) VALUES (%s, %s)", (session_id, user_id))
-		self.set_cookie(config.get("phpbb_cookie_name") + "_u", user_id)
-		self.set_cookie(config.get("phpbb_cookie_name") + "_sid", session_id)
+		self.set_cookie(config.get("phpbb_cookie_name") + "u", user_id)
+		self.set_cookie(config.get("phpbb_cookie_name") + "sid", session_id)
 		self.execute(user_id, sid)
 		self.append("test_login_result", "You are now user ID %s session ID %s" % (user_id, session_id))
 		

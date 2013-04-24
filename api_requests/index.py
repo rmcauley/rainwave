@@ -62,6 +62,12 @@ translations = {
 	"se_SE": {}
 }
 
+jsfiles = []
+for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js")):
+	for file in files:
+		jsfiles.append(os.path.join(root[root.find("static/js"):], file))
+jsfiles.sort()
+
 @handle_url("/(?:index.html)?")
 class MainIndex(tornado.web.RequestHandler):
 	def get_user_locale(self):
@@ -99,7 +105,7 @@ class MainIndex(tornado.web.RequestHandler):
 			self.user = User(1)
 		else:
 			user_id = int(self.get_cookie(phpbb_cookie_name + "u"))
-			if self.get_cookie(phpbb_cookie_name):
+			if self.get_cookie(phpbb_cookie_name + "sid"):
 				session_id = db.c_old.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_id = %s AND session_user_id = %s", (self.get_cookie(phpbb_cookie_name + "sid"), user_id))
 				if session_id:
 					db.c_old.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(time.time()), "rainwave", session_id))
@@ -125,7 +131,7 @@ class MainIndex(tornado.web.RequestHandler):
 		info.attach_info_to_request(self)
 		self.append("api_info", { "time": int(time.time()) })
 		self.set_header("Content-Type", "text/plain")
-		self.render("index.html", request=self, revision_number=config.get("revision_number"))
+		self.render("index.html", request=self, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"))
 		
 @handle_url("/beta/?")
 class BetaIndex(MainIndex):
@@ -133,13 +139,6 @@ class BetaIndex(MainIndex):
 		if not config.get("developer_mode") and self.user.data['_group_id'] not in (5, 4, 8, 12, 15, 14, 17):
 			self.send_error(403)
 		else:
-			jsfiles = []
-			for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js")):
-				for file in files:
-					jsfiles.append(os.path.join(root[root.find("static/js"):], file))
-			jsfiles.sort()
-			buildtools.bake_css()
-			
 			info.attach_info_to_request(self)
 			self.append("api_info", { "time": int(time.time()) })
-			self.render("beta_index.html", request=self, jsfiles=jsfiles, revision_number=config.get("revision_number"))
+			self.render("beta_index.html", request=self, jsfiles=jsfiles, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"))
