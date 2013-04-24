@@ -59,17 +59,17 @@ var user = function() {
 			'radio_request_expiresat': json['radio_request_expires_at'],			
 			'radio_tunedin': json['radio_tuned_in'],
 			'api_key': json['api_key'],
-			'current_activity_allowed': json['listener_lock_in_effect'],
+			'current_activity_allowed': json['listener_lock_in_effect'] ? false : true,
 			'radio_statrestricted': json['listener_lock_in_effect']
 		};			
 		// END TRANSLATE
 		
-		for (var i in json) {
+		for (var i in json2) {
 			lastinfo[i] = that.p[i];
-			that.p[i] = json[i];
+			that.p[i] = json2[i];
 		}
-		for (var i in json) {
-			if (json[i] != lastinfo[i]) that.doCallback(i, json[i]);
+		for (var i in json2) {
+			if (json2[i] != lastinfo[i]) that.doCallback(i, json2[i]);
 		}
 	};
 	

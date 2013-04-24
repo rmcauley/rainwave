@@ -90,6 +90,7 @@ panels.TimelinePanel = {
 		}
 		
 		that.updateEventData = function(json) {
+			if (!json) return;
 			// JSON is already translated at this point
 			var i, j, foundidx, added;
 			var catarray = [];
@@ -116,6 +117,7 @@ panels.TimelinePanel = {
 		};
 		
 		that.historyHandle = function(json) {
+			if (!json) return;
 			json = that.convertJsonArray(json);
 			
 			if (json) {
@@ -143,6 +145,7 @@ panels.TimelinePanel = {
 		};
 		
 		that.currentHandle = function(json) {
+			if (!json) return;
 			json = Schedule.r4translate(json);
 		
 			if (json) {
@@ -167,6 +170,7 @@ panels.TimelinePanel = {
 		};
 		
 		that.nextHandle = function(json) {
+			if (!json) return;
 			json = that.convertJsonArray(json);
 		
 			if (json) {

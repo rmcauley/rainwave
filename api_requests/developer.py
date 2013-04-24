@@ -53,8 +53,7 @@ class CreateLoginTunedIn(TestUserRequest):
 
 	def execute(self, user_id, sid):
 		if db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (user_id,)) == 0:
-			db.c.update("INSERT INTO r4_listeners (listener_ip, user_id, sid, listener_icecast_id) VALUES ('127.0.0.1', %s, %s, 1)", (int(sid), user_id))
-	
+			db.c.update("INSERT INTO r4_listeners (listener_ip, user_id, sid, listener_icecast_id) VALUES ('127.0.0.1', %s, %s, 1)", (user_id, sid))
 
 @handle_api_url("test/login_tuned_out/(\d+)")
 class CreateLoginTunedOut(TestUserRequest):
