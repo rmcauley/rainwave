@@ -21,7 +21,7 @@ class SyncUpdateAll(RequestHandler):
 			
 	def post(self):
 		if self.request_ok:
-			self.write("Processing.")
+			self.append("sync_all_result", "Processing.")
 	
 	def on_finish(self):
 		if not self.request_ok:
@@ -42,7 +42,7 @@ class SyncUpdateUser(RequestHandler):
 
 	def post(self):
 		if self.request_ok:
-			self.write("Processing.")
+			self.append("sync_user_result", "Processing.")
 			
 	def on_finish(self):
 		if not self.request_ok:
@@ -64,7 +64,7 @@ class SyncUpdateIP(RequestHandler):
 			
 	def post(self):
 		if self.request_ok:
-			self.write("Processing.")
+			self.append("sync_ip_result", "Processing.")
 			
 	def on_finish(self):
 		if not self.request_ok:
