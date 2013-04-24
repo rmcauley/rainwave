@@ -818,9 +818,9 @@ function TimelineSong(json, parent, x, y, songnum) {
 	};
 
 	that.voteSubmit = function() {
-		!if (that.votesubmitted) return;
+		if (that.votesubmitted) return;
 		that.votesubmitted = true;
-		!that.voteProgressStop();
+		// that.voteProgressStop();
 		that.voteProgressComplete();
 		that.parent.disableVoting();
 		that.parent.changeHeadline(_l("submittingvote"));
