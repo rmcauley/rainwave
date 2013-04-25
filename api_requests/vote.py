@@ -9,8 +9,10 @@ import api.returns
 
 from libs import cache
 from libs import log
+from libs import db
 from rainwave import playlist
 
+@handle_api_url("vote")
 class SubmitVote(RequestHandler):
 	return_name = "vote_result"
 	tunein_required = True
@@ -21,44 +23,40 @@ class SubmitVote(RequestHandler):
 	def post(self):
 		events = cache.get_station(self.sid, "sched_next")
 		lock_count = 0
-		made_vote = False
+		vote_code = 0
+		vote_string = "Could not find entry_id in future events."
+		try_again = False
 		for event in events:
 			lock_count += 1
-			if event.is_election and event.has_entry_id(self.arguments["entry_id"]):
-				if self.user.is_anonymous():
-					made_vote = self.vote((self.arguments["entry_id"]), event, lock_count)
+			if event.is_election and event.has_entry_id(self.get_argument("entry_id")):
+				(vote_code, vote_string, try_again) = self.vote(self.get_argument("entry_id"), event, lock_count)
 				break
 			if not self.user.data['radio_perks']:
 				break
-		if made_vote:
-			self.append(self.return_name, { "code": 0, "text": "Vote submitted." })
+		self.append(self.return_name, { "code": vote_code, "text": vote_string, "entry_id": self.get_argument("entry_id"), "try_again": try_again })
 		
 	def vote(self, entry_id, event, lock_count):
 		if not self.user.lock_to_sid(self.sid, lock_count):
 			log.warn("vote", "Could not lock user: listener ID %s voting for entry ID %s, tried to lock for %s events." % (self.user.data['listener_id'], entry_id, lock_count))
-			self.append(self.return_name, api.returns.ErrorReturn(0, "Internal server error. (logged)", { "entry_id": entry_id, "try_again": True }))
-			return False
+			return (0, "Internal server error. (logged)", True)
 		
 		vote_id = None
 		song = event.get_entry(entry_id)
 		if self.user.data['listener_voted_entry']:
 			if not event.add_vote_to_entry(entry_id, -1):
 				log.warn("vote", "Could not subtract vote from entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
-				self.append(self.return_name, api.returns.ErrorReturn(0, "Internal server error. (logged)", { "entry_id": entry_id, "try_again": True }))
-				return False
+				return (0, "Internal server error. (logged)", True)
 			if not self.user.is_anonymous():
 				vote_id = db.c.fetch_var("SELECT vote_id FROM r4_vote_history WHERE user_id = %s AND song_id = %s ORDER BY vote_id DESC LIMIT 1", (self.user.id, song.id))
 			
 		if not db.c.update("UPDATE r4_listeners SET listener_voted_entry = %s WHERE listener_id = %s", (entry_id, self.user.data['listener_id'])):
 			log.warn("vote", "Could not set voted_entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
-			self.append(self.return_name, api.returns.ErrorReturn(0, "Internal server error. (logged)", { "entry_id": entry_id, "try_again": True }))
-			return False
+			return (0, "Internal server error. (logged)", True)
 		self.user.update({ "listener_voted_entry": entry_id })
 		
 		if not event.add_vote_to_entry(entry_id):
 			log.warn("vote", "Could not add vote to entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
-			self.append(self.return_name, api.returns.ErrorReturn(0, "Internal server error. (logged)", { "entry_id": entry_id, "try_again": True }))
-			return False
+			return (0, "Internal server error. (logged)", True)
 		
 		if not self.user.is_anonymous():
 			if vote_id:
@@ -75,4 +73,4 @@ class SubmitVote(RequestHandler):
 					"VALUES (%s, %s, %s, %s, %s)",
 					(event.id, self.user.id, song.id, rank, self.user.data['radio_totalvotes']))
 		
-		return True
+		return (1, "Vote successful.", False)

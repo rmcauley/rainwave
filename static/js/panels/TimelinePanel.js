@@ -194,15 +194,15 @@ panels.TimelinePanel = {
 		};
 		
 		that.voteResultHandle = function(json) {
-			if ((json.code <= 0) && ("elec_entry_id" in json)) {
+			if ((json.code <= 0) && ("entry_id" in json)) {
 				for (var i = 0; i < that.allevents.length; i++) {
-					that.allevents[i].registerFailedVote(json.elec_entry_id);
+					that.allevents[i].registerFailedVote(json.entry_id);
 				}
 				
 			}
 			else if (json.code == 1) {
 				for (var i = 0; i < that.allevents.length; i++) {
-					if (that.allevents[i].registerVote(json.elec_entry_id)) {
+					if (that.allevents[i].registerVote(json.entry_id)) {
 						that.allevents[i].disableVoting();
 					}
 				}
@@ -828,7 +828,7 @@ function TimelineSong(json, parent, x, y, songnum) {
 		that.voteProgressComplete();
 		that.parent.disableVoting();
 		that.parent.changeHeadline(_l("submittingvote"));
-		lyre.async_get("vote", { "elec_entry_id": that.p.elec_entry_id });
+		lyre.async_get("vote", { "entry_id": that.p.elec_entry_id });
 	};
 	
 	that.registerFailedVote = function() {
@@ -840,7 +840,7 @@ function TimelineSong(json, parent, x, y, songnum) {
 	};
 	
 	that.registerVote = function() {
-		that.voteinprogress = true;
+		// that.voteinprogress = true;
 		that.votesubmitted = true;
 		that.votehighlighted = true;
 		that.voteProgressComplete();
