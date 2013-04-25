@@ -16,7 +16,6 @@ from rainwave import playlist
 class SubmitVote(RequestHandler):
 	return_name = "vote_result"
 	tunein_required = True
-	unlocked_listener_only = True
 	description = "Vote for a candidate in an election."
 	fields = { "entry_id": (fieldtypes.integer, True) }
 	
@@ -36,31 +35,44 @@ class SubmitVote(RequestHandler):
 		self.append(self.return_name, { "code": vote_code, "text": vote_string, "entry_id": self.get_argument("entry_id"), "try_again": try_again })
 		
 	def vote(self, entry_id, event, lock_count):
+		# Subtract a previous vote from the song's total if there was one
+		already_voted = False
+		if self.user.is_anonymous():
+			if self.user.data['listener_voted_entry']:
+				already_voted = True
+				if not event.add_vote_to_entry(entry_id, -1):
+					log.warn("vote", "Could not subtract vote from entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
+					return (0, "Internal server error. (logged)", True)
+		else:
+			already_voted = db.c.fetch_row("SELECT entry_id, vote_id, song_id FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (self.user.id, event.id))
+			log.debug("vote", "Already voted: %s" % repr(already_voted))
+			if already_voted['entry_id'] == entry_id:
+				return (0, "Already voted for entry ID %s" % entry_id)
+			if already_voted:
+				log.debug("vote", "Subtracting vote from %s" % already_voted['entry_id'])
+				if not event.add_vote_to_entry(already_voted['entry_id'], -1):
+					log.warn("vote", "Could not subtract vote from entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
+					return (0, "Internal server error. (logged)", True)
+		
+		# If this is a new vote, we need to check to make sure the listener is not locked.
+		if not already_voted and self.user.data['listener_lock'] and self.user.data['listener_lock_sid'] != self.sid:
+			return (-1000, "User locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_counter']), False)
+		# Issue the listener lock (will extend a lock if necessary)
 		if not self.user.lock_to_sid(self.sid, lock_count):
 			log.warn("vote", "Could not lock user: listener ID %s voting for entry ID %s, tried to lock for %s events." % (self.user.data['listener_id'], entry_id, lock_count))
-			return (0, "Internal server error. (logged)", True)
+			return (0, "Internal server error. (logged)  User is now locked to station ID %s." % self.sid, True)
 		
-		vote_id = None
-		song = event.get_entry(entry_id)
-		if self.user.data['listener_voted_entry']:
-			if not event.add_vote_to_entry(entry_id, -1):
-				log.warn("vote", "Could not subtract vote from entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
+		# Make sure the vote is tracked
+		track_success = False
+		if self.user.is_anonymous():
+			if not db.c.update("UPDATE r4_listeners SET listener_voted_entry = %s WHERE listener_id = %s", (entry_id, self.user.data['listener_id'])):
+				log.warn("vote", "Could not set voted_entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
 				return (0, "Internal server error. (logged)", True)
-			if not self.user.is_anonymous():
-				vote_id = db.c.fetch_var("SELECT vote_id FROM r4_vote_history WHERE user_id = %s AND song_id = %s ORDER BY vote_id DESC LIMIT 1", (self.user.id, song.id))
-			
-		if not db.c.update("UPDATE r4_listeners SET listener_voted_entry = %s WHERE listener_id = %s", (entry_id, self.user.data['listener_id'])):
-			log.warn("vote", "Could not set voted_entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
-			return (0, "Internal server error. (logged)", True)
-		self.user.update({ "listener_voted_entry": entry_id })
-		
-		if not event.add_vote_to_entry(entry_id):
-			log.warn("vote", "Could not add vote to entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
-			return (0, "Internal server error. (logged)", True)
-		
-		if not self.user.is_anonymous():
-			if vote_id:
-				db.c.update("UPDATE r4_vote_history SET song_id = %s WHERE vote_id = %s", (song.id, vote_id))
+			self.user.update({ "listener_voted_entry": entry_id })
+			track_success = True
+		else:
+			if already_voted:
+				db.c.update("UPDATE r4_vote_history SET song_id = %s WHERE vote_id = %s", (song.id, already_voted['vote_id']))
 			else:
 				db.c.update("UPDATE phpbb_users SET radio_totalvotes = radio_totalvotes + 1 WHERE user_id = %s", (self.user.id,))
 				self.user.update({ "radio_totalvotes": self.user.data['radio_totalvotes'] + 1 })
@@ -72,5 +84,11 @@ class SubmitVote(RequestHandler):
 					"INSERT INTO r4_vote_history (elec_id, user_id, song_id, vote_at_rank, vote_at_count) "
 					"VALUES (%s, %s, %s, %s, %s)",
 					(event.id, self.user.id, song.id, rank, self.user.data['radio_totalvotes']))
+			track_success = True
 		
+		# Register vote
+		if not event.add_vote_to_entry(entry_id):
+			log.warn("vote", "Could not add vote to entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
+			return (0, "Internal server error. (logged)", True)
+
 		return (1, "Vote successful.", False)

@@ -124,9 +124,12 @@ class RequestHandler(tornado.web.RequestHandler):
 			if self.auth_required and not authorized:
 				request_ok = False
 				
-		if self.unlocked_listener_only and self.user and self.user.data['listener_lock']:
+		if self.unlocked_listener_only and self.user and self.user.data['listener_lock'] and self.user.data['listener_lock_sid'] != self.sid:
 			request_ok = False
-			self.append("error", api.returns.ErrorReturn(-1000, "Listener locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_counter'])))
+			self.append("error", api.returns.ErrorReturn(-1000, "User locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_counter'])))
+		elif self.unlocked_listener_only and not self.user:
+			request_ok = False
+			self.append("error", api.returns.ErrorReturn(-1000, "User cannot be locked to a station, but no user record found."))
 				
 		self.request_ok = request_ok
 		if not request_ok:
