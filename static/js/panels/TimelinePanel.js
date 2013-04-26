@@ -90,6 +90,7 @@ panels.TimelinePanel = {
 		}
 		
 		that.updateEventData = function(json) {
+			if (!json) return;
 			// JSON is already translated at this point
 			var i, j, foundidx, added;
 			var catarray = [];
@@ -116,6 +117,7 @@ panels.TimelinePanel = {
 		};
 		
 		that.historyHandle = function(json) {
+			if (!json) return;
 			json = that.convertJsonArray(json);
 			
 			if (json) {
@@ -143,6 +145,7 @@ panels.TimelinePanel = {
 		};
 		
 		that.currentHandle = function(json) {
+			if (!json) return;
 			json = Schedule.r4translate(json);
 		
 			if (json) {
@@ -167,6 +170,7 @@ panels.TimelinePanel = {
 		};
 		
 		that.nextHandle = function(json) {
+			if (!json) return;
 			json = that.convertJsonArray(json);
 		
 			if (json) {
@@ -190,15 +194,15 @@ panels.TimelinePanel = {
 		};
 		
 		that.voteResultHandle = function(json) {
-			if ((json.code <= 0) && ("elec_entry_id" in json)) {
+			if ((json.code <= 0) && ("entry_id" in json)) {
 				for (var i = 0; i < that.allevents.length; i++) {
-					that.allevents[i].registerFailedVote(json.elec_entry_id);
+					that.allevents[i].registerFailedVote(json.entry_id);
 				}
 				
 			}
 			else if (json.code == 1) {
 				for (var i = 0; i < that.allevents.length; i++) {
-					if (that.allevents[i].registerVote(json.elec_entry_id)) {
+					if (that.allevents[i].registerVote(json.entry_id)) {
 						that.allevents[i].disableVoting();
 					}
 				}
@@ -818,13 +822,13 @@ function TimelineSong(json, parent, x, y, songnum) {
 	};
 
 	that.voteSubmit = function() {
-		!if (that.votesubmitted) return;
+		if (that.votesubmitted) return;
 		that.votesubmitted = true;
-		!that.voteProgressStop();
+		// that.voteProgressStop();
 		that.voteProgressComplete();
 		that.parent.disableVoting();
 		that.parent.changeHeadline(_l("submittingvote"));
-		lyre.async_get("vote", { "elec_entry_id": that.p.elec_entry_id });
+		lyre.async_get("vote", { "entry_id": that.p.elec_entry_id });
 	};
 	
 	that.registerFailedVote = function() {
@@ -836,7 +840,7 @@ function TimelineSong(json, parent, x, y, songnum) {
 	};
 	
 	that.registerVote = function() {
-		that.voteinprogress = true;
+		// that.voteinprogress = true;
 		that.votesubmitted = true;
 		that.votehighlighted = true;
 		that.voteProgressComplete();

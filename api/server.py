@@ -5,6 +5,7 @@ import urllib
 import json
 import time
 import traceback
+import re
 
 import tornado.httpserver
 import tornado.ioloop
@@ -22,10 +23,11 @@ from libs import chuser
 from libs import cache
 
 request_classes = [ 
-	(r"/api4?/?", api.help.IndexRequest),
-	(r"/api4?/help/?", api.help.IndexRequest),
-	(r"/api4?/help/(.+)", api.help.HelpRequest),
-	(r"/api4/static/(.*)", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "../static/") })
+	(r"/api4/?", api.help.IndexRequest),
+	(r"/api4/help/?", api.help.IndexRequest),
+	(r"/api4/help/(.+)", api.help.HelpRequest),
+	(r"/static/(.*)", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "../static/") }),
+	(r"/favicon.ico", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "../static/favicon.ico") })
 ]
 testable_requests = []
 
@@ -35,16 +37,19 @@ class handle_url(object):
 	
 	def __call__(self, klass):
 		klass.url = self.url
-		request_classes.append((r"/api4?/" + self.url, klass))
+		request_classes.append((self.url, klass))
+		api.help.add_help_class(klass, klass.url)
 		return klass
+
+class handle_api_url(handle_url):
+	def __init__(self, url):
+		super(handle_api_url, self).__init__("/api4/" + url)
 		
 def test_get(klass):
 	testable_requests.append({ "method": "GET", "class": klass })
-	api.help.add_help_class("GET", klass, klass.url)
 	
 def test_post(klass):
 	testable_requests.append({ "method": "POST", "class": klass })
-	api.help.add_help_class("POST", klass, klass.url)
 	
 class TestShutdownRequest(api.web.RequestHandler):
 	auth_required = False
@@ -83,9 +88,18 @@ class APIServer(object):
 		for sid in config.station_ids:
 			cache.update_local_cache_for_sid(sid)
 		
-		# Fire ze missiles!
+		# If we're not in developer, remove development-related URLs
+		if not config.get("developer_mode"):
+			i = 0
+			while (i < len(request_classes)):
+				if request_classes[i][0].find("/test/") != -1:
+					request_classes.pop(i)
+					i = i - 1
+				i = i + 1
+		
+		# Fire ze missiles!	
 		app = tornado.web.Application(request_classes,
-			debug=config.test_mode,
+			debug=(config.test_mode or config.get("developer_mode")),
 			template_path=os.path.join(os.path.dirname(__file__), "../templates"),
 			static_path=os.path.join(os.path.dirname(__file__), "../static"),
 			autoescape=None)
@@ -97,7 +111,7 @@ class APIServer(object):
 		
 		for request in request_classes:
 			log.debug("start", "   Handler: %s" % str(request))
-		log.info("start", "Server bootstrapped and ready to go.")
+		log.info("start", "API server bootstrapped and ready to go.")
 		self.ioloop = tornado.ioloop.IOLoop.instance()
 		try:
 			self.ioloop.start()

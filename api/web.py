@@ -1,21 +1,21 @@
+import tornado.web
+import tornado.escape
+import time
+import re
+
 from rainwave.user import User
 from api import fieldtypes
 from libs import config
 from libs import log
 import api.returns
 
-import tornado.web
-import tornado.escape
-import time
-import re
-
 # This is the Rainwave API main handling request class.  You'll inherit it in order to handle requests.
 # Does a lot of form checking and validation of user/etc.  There's a request class that requires no authentication at the bottom of this module.
 
 # VERY IMPORTANT: YOU MUST DECORATE YOUR CLASSES.
 
-# from api.server import handle_url
-# @handle_url(...)
+# from api.server import handle_api_url
+# @handle_api_url(...)
 
 # Pass a string there for the URL to handle at /api/[url] and the server will do the rest of the work.
 
@@ -42,10 +42,28 @@ class RequestHandler(tornado.web.RequestHandler):
 	sid_required = True
 	# Description string for documentation.
 	description = "Undocumented."
-	# Only for the backend to be called
+	# Restricts requests to config.get("api_trusted_ip_addresses") (presumably 127.0.0.1)
 	local_only = False
 	# Should the user be free to vote and rate?
 	unlocked_listener_only = False
+	# Do we allow GET HTTP requests to this URL?  (standard is "no")
+	allow_get = False
+	
+	def initialize(self, **kwargs):
+		super(RequestHandler, self).initialize(**kwargs)
+		if config.get("developer_mode") or config.test_mode or self.allow_get:
+			self.get = self.post
+		self.cleaned_args = {}
+			
+	def set_cookie(self, name, value, **kwargs):
+		if isinstance(value, (int, long)):
+			value = repr(value)
+		super(RequestHandler, self).set_cookie(name, value, **kwargs)
+		
+	def get_argument(self, name):
+		if name in self.cleaned_args:
+			return self.cleaned_args[name]
+		return super(RequestHandler, self).get_argument(name)
 
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):
@@ -75,8 +93,7 @@ class RequestHandler(tornado.web.RequestHandler):
 			self._output_array = False
 			
 		request_ok = True
-	
-		self.args = {}
+
 		for field, field_attribs in self.__class__.fields.iteritems():
 			type_cast, required = field_attribs
 			if required and field not in self.request.arguments:
@@ -90,7 +107,7 @@ class RequestHandler(tornado.web.RequestHandler):
 					self.append("error", api.returns.ErrorReturn(-1000, "Invalid argument %s: %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__))))
 					request_ok = False
 				else:
-					self.args[field] = parsed
+					self.cleaned_args[field] = parsed
 
 		self.sid = None
 		if "sid" in self.request.arguments:
@@ -109,11 +126,10 @@ class RequestHandler(tornado.web.RequestHandler):
 				
 		if self.unlocked_listener_only and self.user and self.user.data['listener_lock']:
 			request_ok = False
-			self.append("error", api.returns.ErrorReturn(-1000, "Listener locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_count'])))
+			self.append("error", api.returns.ErrorReturn(-1000, "Listener locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_counter'])))
 				
 		self.request_ok = request_ok
 		if not request_ok:
-			self.set_status(400)
 			self.finish()
 	
 	def rainwave_auth(self):
@@ -145,16 +161,16 @@ class RequestHandler(tornado.web.RequestHandler):
 			request_ok = False
 		
 		if self.user and request_ok:
-			if self.login_required and not user.is_anonymous():
+			if self.login_required and not self.user.is_anonymous():
 				self.append("error", api.returns.ErrorReturn(-1001, "Login required for %s." % url))
 				request_ok = False
-			if self.tunein_required and not user.is_tunedin():
+			if self.tunein_required and not self.user.is_tunedin():
 				self.append("error", api.returns.ErrorReturn(-1001, "You must be tuned in to use %s." % url))
 				request_ok = False
-			if self.admin_required and not user.is_admin():
+			if self.admin_required and not self.user.is_admin():
 				self.append("error", api.returns.ErrorReturn(-1001, "You must be an admin to use %s." % url))
 				request_ok = False
-			if self.dj_required and not user.is_dj():
+			if self.dj_required and not self.user.is_dj():
 				self.append("error", api.returns.ErrorReturn(-1001, "You must be DJing to use %s." % url))
 				request_ok = False
 		

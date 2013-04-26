@@ -4,7 +4,7 @@ from api.web import RequestHandler
 from api import fieldtypes
 from api.server import test_get
 from api.server import test_post
-from api.server import handle_url
+from api.server import handle_api_url
 
 from libs import cache
 from libs import log
@@ -48,14 +48,12 @@ def attach_info_to_request(request):
 	request.append("sched_history", sched_history)
 	
 @test_post
-@handle_url("info")
+@handle_api_url("info")
 class InfoRequest(RequestHandler):
 	auth_required = False
 	description = "Returns applicable user and station info."
 	fields = { "playlist": (fieldtypes.boolean, False), "artist_list": (fieldtypes.boolean, False) }
-	
-	def get(self):
-		attach_info_to_request(self)
+	allow_get = True
 
 	def post(self):
 		attach_info_to_request(self)

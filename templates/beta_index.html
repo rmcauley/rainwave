@@ -17,5 +17,8 @@
 {% for file in jsfiles %}
 	<script src="{{ file }}" type="application/javascript"></script>
 {% end %}
+<script type="application/x-javascript">
+	lyre.setURLPrefix("{{ api_url }}/");
+</script>
 </body>
 </html>

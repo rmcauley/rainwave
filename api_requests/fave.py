@@ -2,9 +2,9 @@ import time
 
 from api import fieldtypes
 from api.web import RequestHandler
-from api.server import handle_url
+from api.server import handle_api_url
 
-@handle_url('fave')
+@handle_api_url('fave')
 class SubmitFave(RequestHandler):
 	return_name = "fave_result"
 	login_required = True
@@ -16,7 +16,7 @@ class SubmitFave(RequestHandler):
 		"fave": (fieldtypes.boolean, True)
 	}
 	
-	def get(self):
+	def post(self):
 		if self.fave(self, self.arguments["song_id"], self.arguments["fave"]):
 			self.append(self.return_name, { "code": 0, "text": "Fave submitted." })
 		else:

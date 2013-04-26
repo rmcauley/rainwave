@@ -4,7 +4,7 @@ from api import fieldtypes
 from api.web import RequestHandler
 from api.server import test_get
 from api.server import test_post
-from api.server import handle_url
+from api.server import handle_api_url
 from api import fieldtypes
 import api_requests.info
 
@@ -14,14 +14,14 @@ from rainwave import playlist
 
 sessions = {}
 
-@handle_url("sync_update_all")
+@handle_api_url("sync_update_all")
 class SyncUpdateAll(RequestHandler):
 	local_only = True
 	auth_required = False
 			
 	def post(self):
 		if self.request_ok:
-			self.write("Processing.")
+			self.append("sync_all_result", "Processing.")
 	
 	def on_finish(self):
 		if not self.request_ok:
@@ -35,14 +35,14 @@ class SyncUpdateAll(RequestHandler):
 				session.update()
 		sessions[self.sid] = []
 		
-@handle_url("sync_update_user")
+@handle_api_url("sync_update_user")
 class SyncUpdateUser(RequestHandler):
 	sid_required = False
 	local_only = True
 
 	def post(self):
 		if self.request_ok:
-			self.write("Processing.")
+			self.append("sync_user_result", "Processing.")
 			
 	def on_finish(self):
 		if not self.request_ok:
@@ -57,14 +57,14 @@ class SyncUpdateUser(RequestHandler):
 					sessions[sid].remove(session)
 					return
 			
-@handle_url("sync_update_ip")
+@handle_api_url("sync_update_ip")
 class SyncUpdateIP(RequestHandler):
 	sid_required = False
 	local_only = True
 			
 	def post(self):
 		if self.request_ok:
-			self.write("Processing.")
+			self.append("sync_ip_result", "Processing.")
 			
 	def on_finish(self):
 		if not self.request_ok:
@@ -79,7 +79,7 @@ class SyncUpdateIP(RequestHandler):
 					sessions[sid].remove(session)
 					return
 
-@handle_url("sync")
+@handle_api_url("sync")
 class Sync(RequestHandler):
 	auth_required = True
 	
