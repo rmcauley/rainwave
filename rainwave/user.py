@@ -198,7 +198,7 @@ class User(object):
 		return self.data['radio_dj'] > 0 and self.official_ui
 		
 	def is_anonymous(self):
-		return self.id > 1
+		return self.id <= 1
 		
 	def has_requests(self, sid = False):
 		if self.id <= 1:

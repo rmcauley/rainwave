@@ -42,6 +42,8 @@ class RequestHandler(tornado.web.RequestHandler):
 	sid_required = True
 	# Description string for documentation.
 	description = "Undocumented."
+	# Error codes for documentation.
+	return_codes = None
 	# Restricts requests to config.get("api_trusted_ip_addresses") (presumably 127.0.0.1)
 	local_only = False
 	# Should the user be free to vote and rate?
@@ -97,14 +99,14 @@ class RequestHandler(tornado.web.RequestHandler):
 		for field, field_attribs in self.__class__.fields.iteritems():
 			type_cast, required = field_attribs
 			if required and field not in self.request.arguments:
-				self.append("error", api.returns.ErrorReturn(-1000, "Missing %s argument." % field))
+				self.append("error", api.returns.ErrorReturn(400, "Missing %s argument." % field))
 				request_ok = False
 			elif not required and field not in self.request.arguments:
 				pass
 			else:
 				parsed = type_cast(self.get_argument(field))
 				if parsed == None:
-					self.append("error", api.returns.ErrorReturn(-1000, "Invalid argument %s: %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__))))
+					self.append("error", api.returns.ErrorReturn(400, "Invalid argument %s: %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__))))
 					request_ok = False
 				else:
 					self.cleaned_args[field] = parsed
@@ -113,10 +115,10 @@ class RequestHandler(tornado.web.RequestHandler):
 		if "sid" in self.request.arguments:
 			self.sid = int(self.get_argument("sid"))
 		elif self.sid_required:
-			self.append("error", api.returns.ErrorReturn(-1000, "Missing station ID argument."))
+			self.append("error", api.returns.ErrorReturn(400, "Missing station ID argument."))
 			request_ok = False
 		if request_ok and self.sid and not self.sid in config.station_ids:
-			self.append("error", api.returns.ErrorReturn(-1000, "Invalid station ID."))
+			self.append("error", api.returns.ErrorReturn(400, "Invalid station ID."))
 			request_ok = False
 				
 		if request_ok:
@@ -126,10 +128,10 @@ class RequestHandler(tornado.web.RequestHandler):
 				
 		if self.unlocked_listener_only and self.user and self.user.data['listener_lock'] and self.user.data['listener_lock_sid'] != self.sid:
 			request_ok = False
-			self.append("error", api.returns.ErrorReturn(-1000, "User locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_counter'])))
+			self.append("error", api.returns.ErrorReturn(601, "User locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_counter'])))
 		elif self.unlocked_listener_only and not self.user:
 			request_ok = False
-			self.append("error", api.returns.ErrorReturn(-1000, "User cannot be locked to a station, but no user record found."))
+			self.append("error", api.returns.ErrorReturn(601, "User cannot be locked to a station, but no user record found."))
 				
 		self.request_ok = request_ok
 		if not request_ok:
@@ -140,13 +142,13 @@ class RequestHandler(tornado.web.RequestHandler):
 		user_id_present = "user_id" in self.request.arguments
 		
 		if self.auth_required and not user_id_present:
-			self.append("error", api.returns.ErrorReturn(-1000, "Missing user_id argument."))
+			self.append("error", api.returns.ErrorReturn(400, "Missing user_id argument."))
 			request_ok = False
 		if user_id_present and not fieldtypes.numeric(self.get_argument("user_id")):
-			self.append("error", api.returns.ErrorReturn(-1000, "Invalid user ID %s."))
+			self.append("error", api.returns.ErrorReturn(400, "Invalid user ID %s."))
 			request_ok = False
 		if (self.auth_required or user_id_present) and not "key" in self.request.arguments:
-			self.append("error", api.returns.ErrorReturn(-1000, "Missing 'key' argument."))
+			self.append("error", api.returns.ErrorReturn(400, "Missing 'key' argument."))
 			request_ok = False
 		
 		self.user = None
@@ -154,27 +156,27 @@ class RequestHandler(tornado.web.RequestHandler):
 			self.user = User(long(self.get_argument("user_id")))
 			self.user.authorize(self.sid, self.request.remote_ip, self.get_argument("key"))
 			if not self.user.authorized:
-				self.append("error", api.returns.ErrorReturn(403, "Authorization failed."))
+				self.append("error", api.returns.ErrorReturn(401, "Authorization failed."))
 				request_ok = False
 			else:
 				self.sid = self.user.request_sid
 		
 		if self.auth_required and not self.user:
-			self.append("error", api.returns.ErrorReturn(403, "Authorization required."))
+			self.append("error", api.returns.ErrorReturn(401, "Authorization required."))
 			request_ok = False
 		
 		if self.user and request_ok:
 			if self.login_required and not self.user.is_anonymous():
-				self.append("error", api.returns.ErrorReturn(-1001, "Login required for %s." % url))
+				self.append("error", api.returns.ErrorReturn(401, "Login required for %s." % url))
 				request_ok = False
 			if self.tunein_required and not self.user.is_tunedin():
-				self.append("error", api.returns.ErrorReturn(-1001, "You must be tuned in to use %s." % url))
+				self.append("error", api.returns.ErrorReturn(602, "You must be tuned in to use %s." % url))
 				request_ok = False
 			if self.admin_required and not self.user.is_admin():
-				self.append("error", api.returns.ErrorReturn(-1001, "You must be an admin to use %s." % url))
+				self.append("error", api.returns.ErrorReturn(403, "You must be an admin to use %s." % url))
 				request_ok = False
 			if self.dj_required and not self.user.is_dj():
-				self.append("error", api.returns.ErrorReturn(-1001, "You must be DJing to use %s." % url))
+				self.append("error", api.returns.ErrorReturn(403, "You must be DJing to use %s." % url))
 				request_ok = False
 		
 		return request_ok

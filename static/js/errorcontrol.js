@@ -148,8 +148,8 @@ var errorcontrol = function() {
 	};
 	
 	that.voteresult = function(json) {
-		if ((typeof(json.code) != "undefined") && (json.code <= 0)) {
-			that.doError(2000 + Math.abs(json.code));
+		if ((typeof(json.code) != "undefined") && (json.code != 700)) {
+			that.doError(json.code);
 		}
 	};
 	

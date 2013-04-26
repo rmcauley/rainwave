@@ -5,6 +5,7 @@ from api import fieldtypes
 from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
+import api_requests.vote
 
 from libs import cache
 from libs import log
@@ -46,6 +47,15 @@ def attach_info_to_request(request):
 		sched_history = cache.get_station(request.sid, "sched_history_dict")
 	request.append("sched_next", sched_next)
 	request.append("sched_history", sched_history)
+	if request.user:
+		if request.user.data['listener_voted_entry'] > 0:
+			request.append("vote_result", { "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": request.user.data['listener_voted_entry'], "try_again": False })
+		elif not request.user.is_anonymous() and cache.get_user(request.user, user_vote_cache):
+			for history in cache.get_user(request.user, user_vote_cache):
+				for event in sched_history:
+					if history[0] == event.id:
+						request.append("vote_result", { "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": history[1], "try_again": False })
+			
 	
 @test_post
 @handle_api_url("info")

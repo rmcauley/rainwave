@@ -28,6 +28,11 @@
     "log_500": "Technical difficulties - please try again or report a bug.",
     "log_502": "Technical difficulties - please wait.",
     "log_503": "Rainwave is experiencing a high load, please try again.",
+    
+    "log_700": "Vote submitted successfully.",
+    "log_701": "Page error - please refresh and try again.",
+    "log_702": "Already voted for this song.",
+    
     "log_1000": "Oops!  You found a bug!",
     "log_1001": "Bad JSON response from server.",
     "log_2000": "Server-side error while submitting vote.",

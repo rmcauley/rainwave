@@ -536,7 +536,7 @@ function _THEME() {
 		};
 
 		ts.voteHoverOff = function(evt) {
-			if (!ts.voteinprogress) {
+			if (!ts.voteinprogress && !ts.votehighlighted) {
 				fx_votebkg_x.stop();
 				fx_votebkg_x.duration = 450;
 				fx_votebkg_x.start(-votebkg_width);

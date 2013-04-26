@@ -194,16 +194,16 @@ panels.TimelinePanel = {
 		};
 		
 		that.voteResultHandle = function(json) {
-			if ((json.code <= 0) && ("entry_id" in json)) {
+			if ((json.code != 700) && ("entry_id" in json)) {
 				for (var i = 0; i < that.allevents.length; i++) {
 					that.allevents[i].registerFailedVote(json.entry_id);
 				}
 				
 			}
-			else if (json.code == 1) {
+			else if (json.code == 700) {
 				for (var i = 0; i < that.allevents.length; i++) {
 					if (that.allevents[i].registerVote(json.entry_id)) {
-						that.allevents[i].disableVoting();
+						// that.allevents[i].disableVoting();
 					}
 				}
 			}
@@ -608,7 +608,7 @@ function TimelineElection(json, container, parent) {
 		for (var i = 0; i < that.songs.length; i++) {
 			if (that.songs[i].p.elec_entry_id == elec_entry_id) {
 				that.songs[i].registerFailedVote();
-				that.changeHeadline(_l("votefaileleclocked"));
+				that.changeHeadline(_l("election"));
 			}
 		}
 	};
@@ -620,6 +620,9 @@ function TimelineElection(json, container, parent) {
 				that.voted = true;
 				help.continueTutorialIfRunning("clickonsongtovote");
 				break;
+			}
+			else {
+				that.songs[i].voteCancel()
 			}
 		}
 		return that.voted;
@@ -814,11 +817,14 @@ function TimelineSong(json, parent, x, y, songnum) {
 	};
 	
 	that.voteCancel = function() {
-		if (that.voteinprogress && !that.votesubmitted) {
+		//if (that.voteinprogress && !that.votesubmitted) {
 			that.voteinprogress = false;
-			that.voteProgressStop();
-			that.voteProgressReset();
-		}
+			that.votehighlighted = false;
+			that.votesubmitted = false;
+			// that.voteProgressStop();
+			// that.voteProgressReset();
+			that.voteHoverReset();
+		//}
 	};
 
 	that.voteSubmit = function() {
@@ -826,8 +832,8 @@ function TimelineSong(json, parent, x, y, songnum) {
 		that.votesubmitted = true;
 		// that.voteProgressStop();
 		that.voteProgressComplete();
-		that.parent.disableVoting();
-		that.parent.changeHeadline(_l("submittingvote"));
+		// that.parent.disableVoting();
+		// that.parent.changeHeadline(_l("submittingvote"));
 		lyre.async_get("vote", { "entry_id": that.p.elec_entry_id });
 	};
 	
@@ -836,7 +842,7 @@ function TimelineSong(json, parent, x, y, songnum) {
 		that.votesubmitted = false;
 		that.votehighlighted = false;
 		that.voteHoverReset();
-		that.voteHoverOff();
+		// that.voteHoverOff();
 	};
 	
 	that.registerVote = function() {
