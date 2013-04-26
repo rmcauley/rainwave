@@ -8,7 +8,7 @@ fxOne.start(0);
 var fx = function() {
 	var that = {};
 	that.enabled = true;
-	
+
 	that.css_transition = false;
 	that.transform = false;
 	that.transform_3d = false;
@@ -21,7 +21,7 @@ var fx = function() {
 	var temp_el = document.createElement("div");
 	if (temp_el.style.animationName) { that.css_animation = true; }
 	if (temp_el.style.transform) { that.transform = true; } 
-	if (temp_el.style.transition) { that.css_transition = true; }    
+	if (temp_el.style.transition) { that.css_transition = true; }
 
 	for (var i = 0; i < dom_prefixes.length; i++) {
 		if (!that.css_transition && (temp_el.style[dom_prefixes[i] + "Transition"] !== undefined)) {
@@ -34,17 +34,18 @@ var fx = function() {
 			that.animation_string = that.dom_prefix + 'Animation';
 			that.css_animation = true;
 		}
-		// if (!that.transform && (temp_el.style[dom_prefixes[i] + 'Transform'] !== undefined)) {
-			// that.dom_prefix = dom_prefixes[i];
-			// that.transform_string = that.dom_prefix + 'Transform';
-			// that.transform = true;
-			// if (that.dom_prefix == "Webkit") {
-				// that.transform_3d = true;
-			// }
-		// }
 	}
 
-	var requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+	var requestFrame;
+	var performance;
+	if (window.requestAnimationFrame) {
+		requestFrame = window.requestAnimationFrame;
+		performance = window.performance;
+	}
+	else {
+		requestFrame = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+		var performance = {	"now": function() { return new Date().getTime(); } };
+	}
 	if (!requestFrame) {
 		requestFrame = function(callback) {
 			window.setTimeout(callback, 40);
@@ -128,7 +129,7 @@ var fx = function() {
 		};
 		
 		newfx.start = function(stopat) {
-			var temptime = new Date().getTime();
+			var temptime = performance.now();
 			if (arguments.length == 2) {
 				now = arguments[0];
 				stopat = arguments[1];
@@ -150,7 +151,7 @@ var fx = function() {
 			}
 			else {
 				if (!that.enabled) now = to;
-				step();
+				step(started);
 			}
 		};
 		
