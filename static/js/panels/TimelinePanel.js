@@ -196,15 +196,18 @@ panels.TimelinePanel = {
 		that.voteResultHandle = function(json) {
 			if ((json.code != 700) && ("entry_id" in json)) {
 				for (var i = 0; i < that.allevents.length; i++) {
-					that.allevents[i].registerFailedVote(json.entry_id);
+						if (that.allevents[i].p.sched_id == json.elec_id) {
+								that.allevents[i].registerFailedVote(json.entry_id);	
+						}		
 				}
 				
 			}
 			else if (json.code == 700) {
 				for (var i = 0; i < that.allevents.length; i++) {
-					if (that.allevents[i].registerVote(json.entry_id)) {
+						if (that.allevents[i].p.sched_id == json.elec_id) {
+								that.allevents[i].registerVote(json.entry_id);
 						// that.allevents[i].disableVoting();
-					}
+						}
 				}
 			}
 		};
@@ -619,10 +622,10 @@ function TimelineElection(json, container, parent) {
 				that.songs[i].registerVote();
 				that.voted = true;
 				help.continueTutorialIfRunning("clickonsongtovote");
-				break;
 			}
 			else {
-				that.songs[i].voteCancel()
+				that.songs[i].voteCancel();
+				that.songs[i].voteHoverOff();
 			}
 		}
 		return that.voted;

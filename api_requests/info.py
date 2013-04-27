@@ -48,14 +48,15 @@ def attach_info_to_request(request):
 	request.append("sched_next", sched_next)
 	request.append("sched_history", sched_history)
 	if request.user:
-		if request.user.data['listener_voted_entry'] > 0:
-			request.append("vote_result", { "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": request.user.data['listener_voted_entry'], "try_again": False })
-		elif not request.user.is_anonymous() and cache.get_user(request.user, user_vote_cache):
-			for history in cache.get_user(request.user, user_vote_cache):
-				for event in sched_history:
-					if history[0] == event.id:
-						request.append("vote_result", { "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": history[1], "try_again": False })
-			
+		if not request.user.is_anonymous():
+			user_vote_cache = cache.get_user(request.user, "user_vote_cache")
+			if user_vote_cache:
+				for history in user_vote_cache:
+					for event in sched_history:
+						if history[0] == event.id:
+							request.append("vote_result", { "elec_id": event.id, "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": history[1], "try_again": False })
+		elif request.user.data['listener_voted_entry'] > 0 and request.user.data['listener_lock_sid'] == request.sid:
+			request.append("vote_result", { "elec_id": sched_next[0].id, "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": request.user.data['listener_voted_entry'], "try_again": False })
 	
 @test_post
 @handle_api_url("info")
