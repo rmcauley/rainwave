@@ -87,6 +87,7 @@ class MainIndex(tornado.web.RequestHandler):
 		if not self.sid:
 			self.sid = 1
 		
+		# TODO: Make this section configurable?
 		if self.request.host == "game.rainwave.cc":
 			self.sid = 1
 		elif self.request.host == "ocr.rainwave.cc":
@@ -98,7 +99,7 @@ class MainIndex(tornado.web.RequestHandler):
 		elif self.request.host == "all.rainwave.cc":
 			self.sid = 5
 		
-		self.set_cookie("r4sid", str(self.sid), expires_days=365, domain=".rainwave.cc")
+		self.set_cookie("r4sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 		phpbb_cookie_name = config.get("phpbb_cookie_name")
 		self.user = None
 		if not fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", "")):
@@ -131,7 +132,7 @@ class MainIndex(tornado.web.RequestHandler):
 		info.attach_info_to_request(self)
 		self.append("api_info", { "time": int(time.time()) })
 		self.set_header("Content-Type", "text/plain")
-		self.render("index.html", request=self, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"))
+		self.render("index.html", request=self, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"), cookie_domain=config.get("cookie_domain"))
 		
 @handle_url("/beta/?")
 class BetaIndex(MainIndex):
@@ -141,4 +142,4 @@ class BetaIndex(MainIndex):
 		else:
 			info.attach_info_to_request(self)
 			self.append("api_info", { "time": int(time.time()) })
-			self.render("beta_index.html", request=self, jsfiles=jsfiles, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"))
+			self.render("beta_index.html", request=self, jsfiles=jsfiles, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"), cookie_domain=config.get("cookie_domain"))

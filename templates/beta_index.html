@@ -5,6 +5,7 @@
 	<meta charset="UTF-8" />
 	<meta name="description" content="{{ request.site_description }}" />
 	<script type="text/javascript">
+		var COOKIE_DOMAIN = "{{ cookie_domain }}";
 		var INITIAL_PAYLOAD = {{ json_encode(request.json_payload) }};
 	</script>
 	<link  href="static/baked/{{ revision_number }}/style.css" type="text/css" rel="stylesheet" />

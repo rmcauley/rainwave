@@ -7,8 +7,6 @@ var SCHED_PLAYLIST = 5;
 var SCHED_PAUSE = 6;
 var SCHED_DJ = 7;
 
-var COOKIEDOMAIN = ".rainwave.cc"
-
 var STATIONS = [ false, "Game", "OverClocked ReMix", "Covers", "Chiptunes", "All" ];
 var SHORTSTATIONS = [ false, "Game", "OCR", "Covers", "Chip", "All" ];
 var CANONSTATIONS = [ false, "game", "ocr", "cover", "chip", "all" ];
@@ -57,7 +55,7 @@ function init() {
 		var today = new Date();
 		var expiry = new Date(today.getTime() + 28 * 24 * 60 * 60 * 1000 * 13);
 		var thecookie = "r4lang=" + new_lang;
-		document.cookie = thecookie + ";path=/;domain=" + COOKIEDOMAIN + ";expires=" + expiry.toGMTString();
+		document.cookie = thecookie + ";path=/;domain=" + COOKIE_DOMAIN + ";expires=" + expiry.toGMTString();
 	};
 
 	prefs.addPref("edi", { name: "language", defaultvalue: LOCALE, type: "dropdown", options: [
