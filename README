@@ -36,15 +36,11 @@ Recommended .git/hooks/pre-commit:
 To see the TODO list, just grep the code:
 	grep -r TODO
 	
-== Database
+== SQLite Support for the Test Suite
 
-Rainwave supports sqlite for testing, and only Postgres in production environments.
-
-You may notice throughout the program that many UPDATE statements are
-broken out into loops, rather than letting the database handle it in a JOIN.
-There's a reason for this, and until there's a better
-way of handling these scenarios, they are greppable by searching for
-SQLITE_CANNOT_DO_JOINS_ON_UPDATES.
+Rainwave supports SQLite for testing, and only Postgres in production environments.
+Important data (notably sequences/unique IDs) are not held across program restarts
+with SQLite.
 
 == Running sqlite tests
 

@@ -18,10 +18,10 @@ c_old = None
 # and offers zero data consistency - important values (sequences, etc)
 # are reset between startups.
 
-# TODO: Solve the "SQLITE_CANNOT_DO_JOINS_ON_UPDATES" problem
-# TODO: Make elections and schedules share the same sequence in Pg so that "IDs" are unique in the schedule feeds
-
 class PostgresCursor(psycopg2.extras.RealDictCursor):
+	allows_join_on_update = True
+	is_postgres = True
+	
 	def fetch_var(self, query, params = None):
 		self.execute(query, params)
 		if self.rowcount == 0:
@@ -82,6 +82,9 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		self.execute("CREATE INDEX %s ON %s (%s)" % (name, table, columns))
 		
 class SQLiteCursor(object):
+	allows_join_on_update = False
+	is_postgres = False
+	
 	def __init__(self, filename):
 		self.con = sqlite3.connect(filename, 0, sqlite3.PARSE_DECLTYPES)
 		self.con.row_factory = self._dict_factory
@@ -412,7 +415,7 @@ def create_tables():
 	# c.create_idx("r4_song_group", "group_id")
 	c.create_delete_fk("r4_song_group", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_group", "r4_groups", "group_id")
-	
+
 	c.update(" \
 		CREATE TABLE r4_schedule ( \
 			sched_id				SERIAL		PRIMARY KEY, \
@@ -436,7 +439,7 @@ def create_tables():
 	
 	c.update(" \
 		CREATE TABLE r4_elections ( \
-			elec_id					SERIAL		PRIMARY KEY, \
+			elec_id					INTEGER		PRIMARY KEY, \
 			elec_used				BOOLEAN		DEFAULT FALSE, \
 			elec_in_progress			BOOLEAN		DEFAULT FALSE, \
 			elec_start_actual			INTEGER		, \
@@ -444,6 +447,11 @@ def create_tables():
 			elec_priority				BOOLEAN		DEFAULT FALSE, \
 			sid					SMALLINT	NOT NULL \
 		)")
+	# If we're using Postgres, make the Election ID use the same sequence
+	# as schedule_id for unique numbers so there's one unified "event ID".
+	if c.is_postgres:
+		c.update("ALTER TABLE r4_elections ALTER COLUMN elec_id SET DEFAULT nextval('r4_schedule_sched_id_seq')")
+		c.update("ALTER TABLE r4_elections ALTER COLUMN elec_id SET NOT NULL")
 	c.create_idx("r4_elections", "elec_used")
 	c.create_idx("r4_elections", "sid")
 	

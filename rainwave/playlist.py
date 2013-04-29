@@ -927,10 +927,15 @@ class Album(AssociatedMetadata):
 		
 	def _start_cooldown_db(self, sid, cool_time):
 		cool_end = int(cool_time + time.time())
-		# SQLITE_CANNOT_DO_JOINS_ON_UPDATES
-		songs = db.c.fetch_list("SELECT song_id FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND r4_song_sid.sid = %s AND r4_song_album.sid = %s AND song_exists = TRUE", (self.id, sid, sid))
-		for song_id in songs:
-			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND song_cool_end < %s AND sid = %s", (cool_end, song_id, cool_end, sid))
+		if db.c.allows_join_on_update:
+			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s "
+						"FROM r4_song_album "
+						"WHERE r4_song_sid.song_id = r4_song_album.sid AND album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE",
+						(cool_end, self.id, sid))
+		else:
+			songs = db.c.fetch_list("SELECT song_id FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND r4_song_sid.sid = %s AND r4_song_album.sid = %s AND song_exists = TRUE", (self.id, sid, sid))
+			for song_id in songs:
+				db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND song_cool_end < %s AND sid = %s", (cool_end, song_id, cool_end, sid))
 			
 	def solve_cool_lowest(self, sid):
 		self.data['cool_lowest'] = db.c.fetch_var("SELECT MIN(song_cool_end) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE", (self.id, sid))
@@ -1023,14 +1028,21 @@ class SongGroup(AssociatedMetadata):
 		
 	def _start_cooldown_db(self, sid, cool_time):
 		cool_end = cool_time + time.time()
-		# SQLITE_CANNOT_DO_JOINS_ON_UPDATES
-		song_ids = db.c.fetch_list(
-			"SELECT song_id "
-			"FROM r4_song_group JOIN r4_song_sid USING (song_id) "
-			"WHERE r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end < %s",
-			(self.id, sid, time.time() - cool_time))
-		for song_id in song_ids:
-			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_end, song_id, sid))
+		# Make sure to update both the if and else SQL statements if doing any updates
+		if db.c.allows_join_on_update:
+			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s "
+						"FROM r4_song_group "
+						"WHERE r4_song_sid.song_id = r4_song_group.song_id AND r4_song_group.group_id = %s "
+						"AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end < %s",
+						(cool_end, self.id, sid, time.time() - cool_time))
+		else:
+			song_ids = db.c.fetch_list(
+				"SELECT song_id "
+				"FROM r4_song_group JOIN r4_song_sid USING (song_id) "
+				"WHERE r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end < %s",
+				(self.id, sid, time.time() - cool_time))
+			for song_id in song_ids:
+				db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_end, song_id, sid))
 			
 	def _start_election_block_db(self, sid, num_elections):
 		table = db.c.fetch_all("SELECT r4_song_group.song_id FROM r4_song_group JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) WHERE group_id = %s", (self.id, num_elections))
