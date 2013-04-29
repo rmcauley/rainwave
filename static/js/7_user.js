@@ -93,7 +93,7 @@ var user = function() {
 	};
 	
 	that.addCallback(lyre.setUserID, "user_id");	
-	that.addCallback(lyre.setKey, "api_key");
+	// that.addCallback(lyre.setKey, "api_key");
 	lyre.addCallback(that.ajaxHandle, "user");
 	
 	return that;

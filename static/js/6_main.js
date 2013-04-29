@@ -85,7 +85,7 @@ function init() {
 	lyre.jsErrorCallback = errorcontrol.jsError;
 	lyre.setStationID(PRELOADED_SID);
 	lyre.setUserID(PRELOADED_USER_ID);
-	lyre.setKey(PRELOADED_APIKEY);
+	//lyre.setKey(PRELOADED_APIKEY);
 	if (typeof(PRELOADED_LYREURL) != "undefined") lyre.setURLPrefix(PRELOADED_LYREURL);
 	lyre.errorCallback = errorcontrol.doError;
 
