@@ -80,9 +80,9 @@ class RequestHandler(tornado.web.RequestHandler):
 			self.finish()
 
 		if self.return_name == False:
-			self.return_name = self.__class__.url + "_result"
+			self.return_name = self.url + "_result"
 		else:
-			self.return_name = self.__class__.return_name
+			self.return_name = self.return_name
 			
 		if self.admin_required or self.dj_required:
 			self.login_required = True
@@ -167,16 +167,16 @@ class RequestHandler(tornado.web.RequestHandler):
 		
 		if self.user and request_ok:
 			if self.login_required and not self.user.is_anonymous():
-				self.append("error", api.returns.ErrorReturn(401, "Login required for %s." % url))
+				self.append("error", api.returns.ErrorReturn(401, "Login required for %s." % self.url))
 				request_ok = False
 			if self.tunein_required and not self.user.is_tunedin():
-				self.append("error", api.returns.ErrorReturn(602, "You must be tuned in to use %s." % url))
+				self.append("error", api.returns.ErrorReturn(602, "You must be tuned in to use %s." % self.url))
 				request_ok = False
 			if self.admin_required and not self.user.is_admin():
-				self.append("error", api.returns.ErrorReturn(403, "You must be an admin to use %s." % url))
+				self.append("error", api.returns.ErrorReturn(403, "You must be an admin to use %s." % self.url))
 				request_ok = False
 			if self.dj_required and not self.user.is_dj():
-				self.append("error", api.returns.ErrorReturn(403, "You must be DJing to use %s." % url))
+				self.append("error", api.returns.ErrorReturn(403, "You must be DJing to use %s." % self.url))
 				request_ok = False
 		
 		return request_ok
