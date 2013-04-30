@@ -7,6 +7,7 @@ import string
 from libs import log
 from libs import cache
 from libs import db
+from libs import config
 
 _AVATAR_PATH = "/forums/download/file.php?avatar=%s"
 
@@ -103,6 +104,8 @@ class User(object):
 		# Privileged folk - donors, admins, etc - get perks.
 		# The numbers are the phpBB group IDs.
 		if self.data['_group_id'] in [5, 4, 8, 12, 15, 14, 17]:
+			self.data['radio_perks'] = True
+		elif config.get("developer_mode"):
 			self.data['radio_perks'] = True
 		
 		# Admin and station manager groups

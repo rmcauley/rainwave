@@ -46,6 +46,8 @@ class SubmitVote(RequestHandler):
 		already_voted = False
 		if self.user.is_anonymous():
 			log.debug("vote", "Anon already voted: %s" % (self.user.id, self.user.data['listener_voted_entry']))
+			if self.user.data['listener_voted_entry'] and self.user.data['listener_voted_entry'] == entry_id:
+				return (700, "Already voted for that song.", True)
 			if self.user.data['listener_voted_entry']:
 				already_voted = True
 				if not event.add_vote_to_entry(entry_id, -1):
@@ -55,7 +57,7 @@ class SubmitVote(RequestHandler):
 			already_voted = db.c.fetch_row("SELECT entry_id, vote_id, song_id FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (self.user.id, event.id))
 			log.debug("vote", "Already voted: %s" % repr(already_voted))
 			if already_voted and already_voted['entry_id'] == entry_id:
-				return (702, self.return_codes[702], False)
+				return (700, self.return_codes[700], False)
 			elif already_voted:
 				log.debug("vote", "Subtracting vote from %s" % already_voted['entry_id'])
 				if not event.add_vote_to_entry(already_voted['entry_id'], -1):

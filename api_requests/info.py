@@ -33,28 +33,34 @@ def attach_info_to_request(request):
 	
 	sched_next = []
 	sched_history = []
+	sched_current = {}
 	if request.user:
 		request.append("requests_user", request.user.get_requests())
-		# TODO: Some mixing of pre-dictionaried items here might help speed
-		request.append("sched_current", cache.get_station(request.sid, "sched_current").to_dict(request.user))
+		# TODO: Some mixing of pre-dictionaried items here might help speed...?
+		sched_current = cache.get_station(request.sid, "sched_current").to_dict(request.user)
 		for evt in cache.get_station(request.sid, "sched_next"):
 			sched_next.append(evt.to_dict(request.user))
 		for evt in cache.get_station(request.sid, "sched_history"):
 			sched_history.append(evt.to_dict(request.user))
 	else:
-		request.append("sched_current", cache.get_station(request.sid, "sched_current_dict"))
+		sched_current = cache.get_station(request.sid, "sched_current_dict")
 		sched_next = cache.get_station(request.sid, "sched_next_dict")
 		sched_history = cache.get_station(request.sid, "sched_history_dict")
+	request.append("sched_current", sched_current)
 	request.append("sched_next", sched_next)
 	request.append("sched_history", sched_history)
 	if request.user:
 		if not request.user.is_anonymous():
-			user_vote_cache = cache.get_user(request.user, "user_vote_cache")
+			user_vote_cache = cache.get_user(request.user, "vote_history")
+			temp_current = list()
+			temp_current.append(sched_current)
 			if user_vote_cache:
 				for history in user_vote_cache:
-					for event in sched_history:
-						if history[0] == event.id:
-							request.append("vote_result", { "elec_id": event.id, "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": history[1], "try_again": False })
+					for event in (sched_history + sched_next + temp_current):
+						print history
+						print event['id']
+						if history[0] == event['id']:
+							request.append("vote_result", { "elec_id": event['id'], "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": history[1], "try_again": False })
 		elif request.user.data['listener_voted_entry'] > 0 and request.user.data['listener_lock_sid'] == request.sid:
 			request.append("vote_result", { "elec_id": sched_next[0].id, "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": request.user.data['listener_voted_entry'], "try_again": False })
 	
