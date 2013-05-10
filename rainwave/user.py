@@ -57,10 +57,12 @@ def set_song_rating(song_id, user_id, rating = None, fave = None):
 	db.c.update("UPDATE phpbb_users SET radio_totalratings = %s WHERE user_id = %s", (count, user_id))
 	cache.set_song_rating(song_id, user_id, { "user_rating": rating, "fave": fave })
 	
+	toreturn = []
 	for album_id in db.c.fetch_list("SELECT album_id FROM r4_song_album WHERE song_id = %s", (song_id,)):
 		album_rating = db.c.fetch_var("SELECT ROUND(AVG(song_user_rating), 1) FROM r4_song_album JOIN r4_song_ratings ON (album_id = %s AND r4_song_album.song_id = r4_song_ratings.song_id) "
 									  "WHERE user_id = %s",
 									  (album_id, user_id))
+		toreturn.append({ "id": album_id, "user_rating": album_rating})
 		album_fave = False
 		existing_rating = db.c.fetch_var("SELECT album_user_rating, album_fave FROM r4_album_ratings WHERE album_id = %s AND user_id = %s", (album_id, user_id))
 		if existing_rating:
@@ -71,6 +73,7 @@ def set_song_rating(song_id, user_id, rating = None, fave = None):
 			db.c.update("INSERT INTO r4_album_ratings (album_user_rating, album_fave, user_id, album_id) VALUES (%s, %s, %s, %s)",
 						(album_rating, album_fave, user_id, album_id))
 		cache.set_album_rating(album_id, user_id, { "user_rating": album_rating, "fave": album_fave })
+	return toreturn
 
 # TODO: radio_rate_anything implementation
 class User(object):
