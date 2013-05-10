@@ -9,6 +9,8 @@ from mutagen.mp3 import MP3
 from libs import db
 from libs import config
 from libs import log
+from libs import cache
+from rainwave import user as userlib
 
 cooldown_config = { }
 
@@ -605,7 +607,7 @@ class Song(object):
 		group_list = []
 		if self.albums:
 			for metadata in self.albums:
-				album_list.append(metadata.to_dict(user))
+				album_list.append(metadata.to_dict(user, self.data['sid']))
 			self.data['albums'] = album_list
 		if self.artists:
 			for metadata in self.artists:
@@ -615,20 +617,17 @@ class Song(object):
 			for metadata in self.groups:
 				group_list.append(metadata.to_dict(user))
 			self.data['groups'] = group_list
+		self.data['user_rating'] = None
+		self.data['fave'] = False
 		if user:
-			# TODO: ratings
-			self.data['user_rating'] = None
-			self.data['fave'] = False
-		else:
-			self.data['user_rating'] = None
-			self.data['fave'] = False
+			self.data.update(userlib.get_song_rating(self.id, user.id))
 		return self.data
 		
 	def get_all_ratings(self):
 		table = db.c.fetch_all("SELECT song_user_rating, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
 		all_ratings = {}
 		for row in all_ratings:
-			all_ratings[row['user_id']] = { 'song_rating': row['song_user_rating'], 'song_fave': row['song_fave'] }
+			all_ratings[row['user_id']] = { "user_rating": row['song_user_rating'], "fave": row['song_fave'] }
 		return all_ratings
 		
 	def update_last_played(self, sid):
@@ -963,7 +962,7 @@ class Album(AssociatedMetadata):
 		table = db.c.fetch_all("SELECT album_user_rating, album_fave, user_id FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s", (self.id,))
 		all_ratings = {}
 		for row in table:
-			all_ratings[row['user_id']] = { 'album_rating': row['album_user_rating'], 'album_fave': row['album_fave'] }
+			all_ratings[row['user_id']] = { "user_rating": row['album_user_rating'], "fave": row['album_fave'] }
 		return all_ratings
 		
 	def _start_election_block_db(self, sid, num_elections):
@@ -976,9 +975,7 @@ class Album(AssociatedMetadata):
 	def to_dict(self, user = None):
 		d = super(Album, self).to_dict(user)
 		if user:
-			# TODO: album ratings
-			self.data['user_rating'] = None
-			self.data['fave'] = False
+			self.data.update(userlib.get_album_rating(self.id, user.id))
 		else:
 			d['user_rating'] = None
 			d['fave'] = False
