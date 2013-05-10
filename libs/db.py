@@ -637,6 +637,10 @@ def _create_test_tables():
 	c.update(" \
 		CREATE TABLE phpbb_users( \
 			user_id					SERIAL		PRIMARY KEY, \
+			radio_totalvotes		INTEGER		DEFAULT 0, \
+			radio_totalratings		INTEGER		DEFAULT 0, \
+			radio_totalmindchange	INTEGER		DEFAULT 0, \
+			radio_totalrequests		INTEGER		DEFAULT 0, \
 			radio_winningvotes			INT		DEFAULT 0, \
 			radio_losingvotes			INT		DEFAULT 0, \
 			radio_winningrequests			INT		DEFAULT 0, \

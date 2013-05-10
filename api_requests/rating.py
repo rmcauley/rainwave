@@ -22,14 +22,13 @@ class SubmitRating(RequestHandler):
 	}
 	
 	def post(self):
-		if self.rate(self, song_id, rating):
+		if self.rate(self, self.get_argument("song_id"), self.get_argument("rating")):
 			self.append(self.return_name, { "code": 0, "text": "Rating submitted." })
 		else:
 			self.append(self.return_name, { "code": -1, "text": "Rating failed." })
 	
 	def rate(self, song_id, rating):
-		db.c.update("UPDATE r4_listeners SET listener_voted_entry = %s WHERE listener_id = %s", (entry_id, self.user.data['listener_id']))
-		
+			
 		if not db.c.update("UPDATE r4_listeners SET listener_voted_entry = %s WHERE listener_id = %s", (entry_id, self.user.data['listener_id'])):
 			log.warn("vote", "Could not set voted_entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
 			self.append(self.return_name, api.returns.ErrorReturn(0, "Internal server error. (logged)", { "entry_id": entry_id, "try_again": True }))

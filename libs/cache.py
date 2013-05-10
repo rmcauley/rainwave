@@ -9,6 +9,7 @@ from libs import config
 from libs import db
 
 _memcache = None
+_memcache_ratings = None
 local = {}
 
 class TestModeCache(object):
@@ -30,12 +31,16 @@ def open():
 		return
 	if not config.test_mode or config.get("test_use_memcache"):
 		if __using_libmc:
-		    _memcache = libmc.Client(config.get("memcache_servers"), binary = True)
-		    _memcache.behaviors = { "tcp_nodelay": True, "ketama": config.get("memcache_ketama") }
+			_memcache = libmc.Client(config.get("memcache_servers"), binary = True)
+			_memcache.behaviors = { "tcp_nodelay": True, "ketama": config.get("memcache_ketama") }
+			_memcache_ratings = libmc.Client(config.get("memcache_ratings_servers"), binary = True)
+			_memcache.behaviors = { "tcp_nodelay": True, "ketama": config.get("memcache_ratings_ketama") }
 		else:
 			_memcache = libmc.Client(config.get("memcache_servers"))
+			_memcache_ratings = libmc.Client(config.get("memcache_ratings_servers"))
 	else:
 		_memcache = TestModeCache()
+		_memcache_ratings = TestModeCache()
 		reset_station_caches()
 	
 def set(key, value, save_local = False):
@@ -66,18 +71,31 @@ def set_station(sid, key, value, save_local = False):
 def get_station(sid, key):
 	return get("sid%s_%s" % (sid, key))
 
+def set_song_rating(song_id, user_id, rating):
+	_memcache_rating.set("rating_song_%s_%s" % (song_id, user_id), rating)
+
+def get_song_rating(song_id, user_id):
+	return _memcache_rating.get("rating_song_%s_%s" % (song_id, user_id))
+
+def set_album_rating(album_id, user_id, rating):
+	_memcache_rating.set("rating_album_%s_%s" % (song_id, user_id), rating)
+
+def get_album_rating(album_id, user_id):
+	return _memcache_rating.get("rating_album_%s_%s" % (song_id, user_id))
+
 def prime_rating_cache_for_events(events, songs = []):
-	ratings = {}
-	album_ratings = {}
 	for e in events:
 		for song in e.songs:
-			ratings[song.id] = song.get_all_ratings()
-			for album in song.albums:
-				album_ratings[album.id] = album.get_all_ratings()
+			prime_rating_cache_for_song(song)
 	for song in songs:
-		ratings[song.id] = song.get_all_ratings()
-	set_station(events[0].sid, 'song_ratings', ratings)
-	set_station(events[0].sid, 'album_ratings', album_ratings)
+		prime_rating_cache_for_song(song)
+				
+def prime_rating_cache_for_song(song):
+	for user_id, rating in song.get_all_ratings().iteritems():
+		set_song_rating(song.id, user_id, rating)
+	for album in song.albums:
+		for user_id, rating in album.get_all_ratings().iteritems():
+			set_album_rating(album.id, user_id, rating)
 	
 def refresh_local(key):
 	local[key] = _memcache.get(key)
@@ -99,14 +117,9 @@ def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "request_user_positions")
 	refresh_local_station(sid, "user_rating_acl")
 	refresh_local_station(sid, "user_rating_acl_song_index")
-	refresh_local_station(sid, "song_ratings")
-	refresh_local_station(sid, "album_ratings")
 	refresh_local("listeners_internal")
 	refresh_local("request_expire_times")
 	refresh_local("calendar")
-	
-	# The caches below should only be used on new-song refreshes
-	refresh_local_station(sid, "song_ratings")
 	
 def reset_station_caches():
 	set("listeners_internal", {}, True)

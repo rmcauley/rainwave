@@ -466,6 +466,8 @@ class PVPElection(Election):
 		self._num_songs = 2
 	
 	def is_request_needed(self):
+		global _request_sequence
+		_request_sequence[self.sid] = 0
 		return True
 		
 class OneUp(Event):
