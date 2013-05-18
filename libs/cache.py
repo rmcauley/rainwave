@@ -27,6 +27,8 @@ class TestModeCache(object):
 
 def open():
 	global _memcache
+	global _memcache_ratings
+
 	if _memcache:
 		return
 	if not config.test_mode or config.get("test_use_memcache"):
@@ -38,6 +40,8 @@ def open():
 		else:
 			_memcache = libmc.Client(config.get("memcache_servers"))
 			_memcache_ratings = libmc.Client(config.get("memcache_ratings_servers"))
+		if not _memcache_ratings:
+			_memcache_ratings = _memcache
 	else:
 		_memcache = TestModeCache()
 		_memcache_ratings = TestModeCache()
@@ -72,16 +76,16 @@ def get_station(sid, key):
 	return get("sid%s_%s" % (sid, key))
 
 def set_song_rating(song_id, user_id, rating):
-	_memcache_rating.set("rating_song_%s_%s" % (song_id, user_id), rating)
+	_memcache_ratings.set("rating_song_%s_%s" % (song_id, user_id), rating)
 
 def get_song_rating(song_id, user_id):
-	return _memcache_rating.get("rating_song_%s_%s" % (song_id, user_id))
+	return _memcache_ratings.get("rating_song_%s_%s" % (song_id, user_id))
 
 def set_album_rating(album_id, user_id, rating):
-	_memcache_rating.set("rating_album_%s_%s" % (song_id, user_id), rating)
+	_memcache_ratings.set("rating_album_%s_%s" % (album_id, user_id), rating)
 
 def get_album_rating(album_id, user_id):
-	return _memcache_rating.get("rating_album_%s_%s" % (song_id, user_id))
+	return _memcache_ratings.get("rating_album_%s_%s" % (album_id, user_id))
 
 def prime_rating_cache_for_events(events, songs = []):
 	for e in events:

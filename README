@@ -1,8 +1,5 @@
 This is the git project for the Rainwave website at http://rainwave.cc
 
-It is currently in a major state of flux as we transition from Rainwave 3 to 4,
-eliminating all our old PHP in the process.
-
 == Required Modules and Executables
 
 Required on all systems:
@@ -24,7 +21,7 @@ Required on Windows:
 - python-memcached
 
 To let Rainwave automatically mp3gain your collection, you will need to enable it
-in the configs and also have the "mp3gain" executable in your system path.
+in the configs and also have the "mp3gain" executable in your path.
 
 == Git
 

@@ -209,9 +209,13 @@ var AlbumSearchTable = function(parent, container, view) {
 	};
 
 	that.ratingResult = function(result) {
-		if (result.album_id && that.data[result.album_id]) {
-			that.data[result.album_id].album_rating_user = result.album_rating;
-			that.drawRating(that.data[result.album_id]);
+		if (result.updated_album_ratings) {
+			for (var album_rating in result.updated_album_ratings) {
+				if (that.data[album_rating.id]) {
+					that.data[album_rating.id].album_rating_user = album_rating.user_rating;
+					that.drawRating(that.data[album_rating.id]);
+				}
+			}
 		}
 	};
 	

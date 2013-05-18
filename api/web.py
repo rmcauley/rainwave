@@ -166,7 +166,7 @@ class RequestHandler(tornado.web.RequestHandler):
 			request_ok = False
 		
 		if self.user and request_ok:
-			if self.login_required and not self.user.is_anonymous():
+			if self.login_required and self.user.is_anonymous():
 				self.append("error", api.returns.ErrorReturn(401, "Login required for %s." % self.url))
 				request_ok = False
 			if self.tunein_required and not self.user.is_tunedin():

@@ -24,13 +24,12 @@ class SubmitRating(RequestHandler):
 	}
 	
 	def post(self):
-		self.append(self.return_name,
-			self.rate(self.get_argument("song_id"),
-			self.get_argument("rating")).update({ "song_id": self.get_argument("song_id"), "rating": self.get_argument("rating") })
-		)
+		result = self.rate(self.get_argument("song_id"), self.get_argument("rating"))
+		result.update({ "song_id": self.get_argument("song_id"), "user_rating": self.get_argument("rating") })
+		self.append(self.return_name, result)
 
 	def rate(self, song_id, rating):
-		acl = cache.get_station(sid, "user_rating_acl")
+		acl = cache.get_station(self.sid, "user_rating_acl")
 		if not song_id in acl or not self.user.id in acl[song_id]:
 			return { "code": 0, "text": "Cannot rate that song at this time." }
 		albums = userlib.set_song_rating(song_id, self.user.id, rating)

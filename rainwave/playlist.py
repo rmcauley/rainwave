@@ -607,7 +607,7 @@ class Song(object):
 		group_list = []
 		if self.albums:
 			for metadata in self.albums:
-				album_list.append(metadata.to_dict(user, self.data['sid']))
+				album_list.append(metadata.to_dict(user))
 			self.data['albums'] = album_list
 		if self.artists:
 			for metadata in self.artists:

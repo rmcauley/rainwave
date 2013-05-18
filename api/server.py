@@ -27,6 +27,7 @@ request_classes = [
 	(r"/api4/help/?", api.help.IndexRequest),
 	(r"/api4/help/(.+)", api.help.HelpRequest),
 	(r"/static/(.*)", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "../static/") }),
+	(r"/beta/static/(.*)", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "../static/") }),
 	(r"/favicon.ico", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "../static/favicon.ico") })
 ]
 testable_requests = []
