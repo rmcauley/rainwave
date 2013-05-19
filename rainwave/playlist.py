@@ -507,14 +507,10 @@ class Song(object):
 			metadata.start_election_block(sid, num_elections)
 		for metadata in self.albums:
 			metadata.start_election_block(sid, num_elections)
-		# The above won't actually modify the data in THIS class, so to present things nicely for the API
-		# we'll need to modify this here manually. (no need to touch the DB)
-		self.data['elec_blocked_num'] = num_elections
-		self.data['elec_blocked_by'] = "in_election"
-		self.data['elec_blocked'] = True
+		self.set_election_block(sid, "in_election", num_elections)
 			
 	def set_election_block(self, sid, blocked_by, block_length):
-		db.c.update("UPDATE r4_song_sid SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s WHERE song_id = %s AND sid = %s AND song_elec_blocked_num < %s", (blocked_by, block_length, self.id, sid, block_length))
+		db.c.update("UPDATE r4_song_sid SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s WHERE song_id = %s AND sid = %s AND song_elec_blocked_num <= %s", (blocked_by, block_length, self.id, sid, block_length))
 		self.data['elec_blocked_num'] = block_length
 		self.data['elec_blocked_by'] = blocked_by
 		self.data['elec_blocked'] = True
@@ -966,11 +962,20 @@ class Album(AssociatedMetadata):
 		return all_ratings
 		
 	def _start_election_block_db(self, sid, num_elections):
-		table = db.c.fetch_all("SELECT song_id FROM r4_song_album WHERE album_id = %s AND sid = %s", (self.id, num_elections))
-		for row in table:
-			song = Song()
-			song.id = row['song_id']
-			song.set_election_block(sid, 'album', num_elections)
+		if db.c.allows_join_on_update:
+			# refer to song.set_election_block for base SQL
+			db.c.update("UPDATE r4_song_sid "
+						"SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s "
+						"FROM r4_song_album "
+						"WHERE r4_song_sid.song_id = r4_song_album.song_id AND "
+						"r4_song_album.album_id = %s AND r4_song_sid.sid = %s AND song_elec_blocked_num <= %s",
+						('album', num_elections, self.id, sid, num_elections))
+		else:
+			table = db.c.fetch_all("SELECT song_id FROM r4_song_album WHERE album_id = %s AND sid = %s", (self.id, sid))
+			for row in table:
+				song = Song()
+				song.id = row['song_id']
+				song.set_election_block(sid, 'album', num_elections)
 			
 	def to_dict(self, user = None):
 		d = super(Album, self).to_dict(user)
@@ -1030,7 +1035,7 @@ class SongGroup(AssociatedMetadata):
 			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s "
 						"FROM r4_song_group "
 						"WHERE r4_song_sid.song_id = r4_song_group.song_id AND r4_song_group.group_id = %s "
-						"AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end < %s",
+						"AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end <= %s",
 						(cool_end, self.id, sid, time.time() - cool_time))
 		else:
 			song_ids = db.c.fetch_list(
@@ -1042,8 +1047,17 @@ class SongGroup(AssociatedMetadata):
 				db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_end, song_id, sid))
 			
 	def _start_election_block_db(self, sid, num_elections):
-		table = db.c.fetch_all("SELECT r4_song_group.song_id FROM r4_song_group JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) WHERE group_id = %s", (self.id, num_elections))
-		for row in table:
-			song = Song()
-			song.id = row['song_id']
-			song.set_election_block(sid, 'album', num_elections)
+		if db.c.allows_join_on_update:
+			# refer to song.set_election_block for base SQL
+			db.c.update("UPDATE r4_song_sid "
+						"SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s "
+						"FROM r4_song_group "
+						"WHERE r4_song_sid.song_id = r4_song_group.song_id AND "
+						"r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND song_elec_blocked_num < %s",
+						('group', num_elections, self.id, sid, num_elections))
+		else:
+			table = db.c.fetch_all("SELECT r4_song_group.song_id FROM r4_song_group JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) WHERE group_id = %s", (self.id, sid))
+			for row in table:
+				song = Song()
+				song.id = row['song_id']
+				song.set_election_block(sid, 'group', num_elections)
