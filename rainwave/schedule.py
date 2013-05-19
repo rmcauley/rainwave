@@ -316,4 +316,6 @@ def _update_memcache(sid):
 	cache.set_station(sid, "long_history_dict", long_history_dict_list, True)
 	cache.set_station(sid, "listeners_current", listeners.get_listeners_dict(sid), True)
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)
+	cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
+	cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)
 	request.update_line(sid)

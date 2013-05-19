@@ -187,15 +187,24 @@ def remove_all_locks(sid):
 	"""
 	db.c.update("UPDATE r4_song_sid SET song_elec_blocked = FALSE, song_elec_blocked_num = 0, song_cool = FALSE, song_cool_end = 0 WHERE sid = %s", (sid,))
 	
-def get_all_albums_list(sid, user):
-	return db.c.fetch_all(
-		"SELECT album_id, album_name, album_rating, album_cool_lowest, album_fave, album_user_rating "
-		"FROM r4_albums "
-		"JOIN r4_album_sid USING (album_id) "
-		"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
-		"WHERE r4_album_sid.sid = %s "
-		"ORDER BY album_name",
-		(user.id, user.id, sid))
+def get_all_albums_list(sid, user = None):
+	if not user or user.id == 1:
+		return db.c.fetch_all(
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool_lowest AS cool_lowest, FALSE AS fave, 0 AS user_rating "
+			"FROM r4_albums "
+			"JOIN r4_album_sid USING (album_id) "
+			"WHERE r4_album_sid.sid = %s "
+			"ORDER BY album_name",
+			(sid,))
+	else:
+		return db.c.fetch_all(
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool_lowest AS cool_lowest, album_fave AS fave, album_user_rating AS user_rating "
+			"FROM r4_albums "
+			"JOIN r4_album_sid USING (album_id) "
+			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
+			"WHERE r4_album_sid.sid = %s "
+			"ORDER BY album_name",
+			(user.id, sid))
 		
 def get_all_artists_list(sid):
 	return db.fetch_all(

@@ -6,12 +6,13 @@ from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
 import api_requests.vote
+import api_requests.playlist
 
 from libs import cache
 from libs import log
 from rainwave import playlist
 
-def attach_info_to_request(request):
+def attach_info_to_request(request, playlist = False, artist_list = False):
 	# Front-load all non-animated content ahead of the schedule content
 	# Since the schedule content is the most animated on R3, setting this content to load
 	# first has a good impact on the perceived animation smoothness since table redrawing
@@ -20,13 +21,13 @@ def attach_info_to_request(request):
 	if request.user:
 		request.append("user", request.user.to_private_dict())
 		
-	if 'playlist' in request.request.arguments:
-		request.append("all_albums", playlist.get_all_albums_list(request.user))
-	elif 'artist_list' in request.request.arguments:
-		request.append("artist_list", playlist.get_all_artists_list(request.sid))
-	elif 'init' not in request.request.arguments:
+	if playlist or 'playlist' in request.request.arguments:
+		request.append("all_albums", api_requests.playlist.get_all_albums(request.sid, request.user))
+	else:
 		request.append("album_diff", cache.get_station(request.sid, 'album_diff'))
-	
+	if artist_list or 'artist_list' in request.request.arguments:
+		request.append("all_artists", cache.get_station(request.sid, 'all_artists'))
+
 	request.append("requests_all", cache.get_station(request.sid, "request_all"))
 	request.append("calendar", cache.get("calendar"))
 	request.append("listeners_current", cache.get_station(request.sid, "listeners_current"))
