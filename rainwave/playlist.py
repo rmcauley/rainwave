@@ -808,10 +808,10 @@ class Album(AssociatedMetadata):
 	delete_self_query = "SELECT 1, %s"
 
 	@classmethod
-	def load_list_from_song_id_sid(klass, song_id, sid):
+	def load_list_from_song_id_sid(cls, song_id, sid):
 		instances = []
 		for row in db.c.fetch_all("SELECT r4_albums.*, r4_song_album.album_is_tag, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_song_album JOIN r4_albums USING (album_id) JOIN r4_album_sid USING (album_id) WHERE song_id = %s  AND r4_song_album.sid = %s AND r4_album_sid.sid = %s ORDER BY r4_albums.album_name", (song_id, sid, sid)):
-			instance = klass()
+			instance = cls()
 			instance._assign_from_dict(row)
 			instance.sids = [ sid ]
 			instances.append(instance)
@@ -821,11 +821,32 @@ class Album(AssociatedMetadata):
 	def load_from_id_sid(cls, album_id, sid):
 		row = db.c.fetch_row("SELECT r4_albums.*, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.album_id = %s AND r4_album_sid.sid = %s", (album_id, sid))
 		if not row:
-			return None
+			raise MetadataNotFoundError("%s ID %s could not be found." % (cls.__name__, id))
 		instance = cls()
 		instance._assign_from_dict(row)
 		instance.sids = [ sid ]
 		return instance
+
+	@classmethod
+	def load_from_id_with_songs(cls, album_id, sid, user = None):
+		row = db.c.fetch_row("SELECT * FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.album_id = %s AND r4_album_sid.sid = %s", (album_id, sid))
+		if not row:
+			raise MetadataNotFoundError("%s ID %s could not be found." % (cls.__name__, id))
+		instance = cls()
+		instance._assign_from_dict(row)
+		instance.sids = [ sid ]
+		if not user or user.is_anonymous():
+			instance.data['songs'] = db.c.fetch_all("SELECT r4_song_album.song_id AS id, song_title AS title, song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, song_rating AS rating, 0 AS user_rating, FALSE AS fave, string_agg(artist_id || ':' || artist_name,  ',') AS artist_parseable  "
+													"FROM r4_song_album JOIN r4_song_sid USING (song_id) JOIN r4_songs USING (song_id) JOIN r4_song_artist USING (song_id) JOIN r4_artists USING (artist_id) "
+													"WHERE r4_song_album.album_id = %s "
+													"GROUP BY r4_song_album.song_id, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating",
+													(instance.id,))
+		else:
+			instance.data['songs'] = db.c.fetch_all("SELECT r4_song_album.song_id AS id, song_title AS title, song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiplty, song_cool_override AS cool_override, COALESCE(song_user_rating, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave, string_agg(artist_id || ':' || artist_name,  ',') AS artist_parseable  "
+													"FROM r4_song_album JOIN r4_song_sid USING (song_id) JOIN r4_songs USING (song_id) JOIN r4_song_artist USING (song_id) JOIN r4_artists USING (artist_id) LEFT JOIN r4_song_ratings ON (r4_song_album.song_id = r4_song_ratings.song_id) "
+													"WHERE r4_song_album.album_id = %s "
+													"GROUP BY r4_song_album.song_id, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_user_rating, song_fave, song_cool_override, song_cool_multiply",
+													(instance.id,))
 
 	def __init__(self):
 		super(Album, self).__init__()
@@ -1019,6 +1040,12 @@ class Artist(AssociatedMetadata):
 	def _start_election_block_db(self, sid, num_elections):
 		# Artists don't block elections either (OR DO THEY)
 		pass
+
+	def load_all_songs(self, sid):
+		self.data['songs'] = db.c.fetch_all("SELECT r4_song_artist.song_id AS id, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS requestable, song_user_rating AS user_rating, song_fave AS fave "
+						"FROM r4_song_artist JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id) "
+						 "WHERE r4_song_artist.artist_id = %s",
+						(self.sid, self.id))
 
 class SongGroup(AssociatedMetadata):
 	select_by_name_query = "SELECT group_id AS id, group_name AS name FROM r4_groups WHERE group_name = %s"
