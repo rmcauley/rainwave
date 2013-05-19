@@ -86,7 +86,7 @@ class MainIndex(tornado.web.RequestHandler):
 		self.sid = fieldtypes.integer(self.get_cookie("r4sid", "1"))
 		if not self.sid:
 			self.sid = 1
-		
+
 		# TODO: Make this section configurable?
 		if self.request.host == "game.rainwave.cc":
 			self.sid = 1
@@ -98,7 +98,7 @@ class MainIndex(tornado.web.RequestHandler):
 			self.sid = 4
 		elif self.request.host == "all.rainwave.cc":
 			self.sid = 5
-		
+
 		self.set_cookie("r4sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 		phpbb_cookie_name = config.get("phpbb_cookie_name")
 		self.user = None
@@ -123,7 +123,7 @@ class MainIndex(tornado.web.RequestHandler):
 			self.user = User(1)
 		self.user.ensure_api_key(self.request.remote_ip)
 		self.user.data['sid'] = self.sid
-		
+
 	# this is so that get_info can be called, makes us compatible with the custom web handler used elsewhere in RW
 	def append(self, key, value):
 		self.json_payload.append({ key: value })
@@ -133,13 +133,13 @@ class MainIndex(tornado.web.RequestHandler):
 		self.append("api_info", { "time": int(time.time()) })
 		self.set_header("Content-Type", "text/plain")
 		self.render("index.html", request=self, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"), cookie_domain=config.get("cookie_domain"))
-		
+
 @handle_url("/beta/?")
 class BetaIndex(MainIndex):
 	def get(self):
 		if not config.get("developer_mode") and self.user.data['_group_id'] not in (5, 4, 8, 12, 15, 14, 17):
 			self.send_error(403)
 		else:
-			info.attach_info_to_request(self, playlist=True)
+			info.attach_info_to_request(self, playlist=True, artists=True)
 			self.append("api_info", { "time": int(time.time()) })
 			self.render("beta_index.html", request=self, jsfiles=jsfiles, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"), cookie_domain=config.get("cookie_domain"))

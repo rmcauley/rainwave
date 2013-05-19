@@ -20,18 +20,18 @@ def attach_info_to_request(request, playlist = False, artists = False):
 
 	if request.user:
 		request.append("user", request.user.to_private_dict())
-		
-	if playlist or 'playlist' in request.request.arguments:
+
+	if playlist or 'all_albums' in request.request.arguments:
 		request.append("all_albums", api_requests.playlist.get_all_albums(request.sid, request.user))
 	else:
 		request.append("album_diff", cache.get_station(request.sid, 'album_diff'))
-	if artists or 'artist_list' in request.request.arguments:
+	if artists or 'all_artists' in request.request.arguments:
 		request.append("all_artists", cache.get_station(request.sid, 'all_artists'))
 
 	request.append("requests_all", cache.get_station(request.sid, "request_all"))
 	request.append("calendar", cache.get("calendar"))
 	request.append("listeners_current", cache.get_station(request.sid, "listeners_current"))
-	
+
 	sched_next = []
 	sched_history = []
 	sched_current = {}
@@ -64,7 +64,7 @@ def attach_info_to_request(request, playlist = False, artists = False):
 							request.append("vote_result", { "elec_id": event['id'], "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": history[1], "try_again": False })
 		elif request.user.data['listener_voted_entry'] > 0 and request.user.data['listener_lock_sid'] == request.sid:
 			request.append("vote_result", { "elec_id": sched_next[0].id, "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": request.user.data['listener_voted_entry'], "try_again": False })
-	
+
 @test_post
 @handle_api_url("info")
 class InfoRequest(RequestHandler):
