@@ -349,7 +349,7 @@ td.pl_al_name {
 	text-overflow: ellipsis;
 }
 
-td.pl_fav_true, td.pl_fav_false {
+td.pl_fav_true, td.pl_fav_false, td.pl_fav_null{
 	width: 10px;
 	cursor: pointer;
 	border-left: 3px solid $background;
@@ -367,11 +367,19 @@ table.pl_albumlist td.pl_al_number {
 	width: 3em;
 }
 
-table.pl_albumlist tr.pl_cooldown td.pl_al_rating, table.pl_albumlist tr.pl_cooldown td.pl_fav_false {
+table.pl_albumlist tr.pl_cooldown td.pl_al_rating, table.pl_albumlist tr.pl_cooldown td.pl_fav_false{
 	background-color: $playlist_cooldown_rating;
 }
 
 table.pl_albumlist tr.pl_available td.pl_al_rating, table.pl_albumlist tr.pl_available td.pl_fav_false {
+	background-color: $playlist_rating;
+}
+
+table.pl_albumlist tr.pl_cooldown td.pl_al_rating, table.pl_albumlist tr.pl_cooldown td.pl_fav_null {
+	background-color: $playlist_cooldown_rating;
+}
+
+table.pl_albumlist tr.pl_available td.pl_al_rating, table.pl_albumlist tr.pl_available td.pl_fav_null {
 	background-color: $playlist_rating;
 }
 

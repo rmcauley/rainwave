@@ -129,7 +129,7 @@ class MainIndex(tornado.web.RequestHandler):
 		self.json_payload.append({ key: value })
 
 	def get(self):
-		info.attach_info_to_request(self, playlist=True)
+		info.attach_info_to_request(self, playlist=True, artists=True)
 		self.append("api_info", { "time": int(time.time()) })
 		self.set_header("Content-Type", "text/plain")
 		self.render("index.html", request=self, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"), cookie_domain=config.get("cookie_domain"))

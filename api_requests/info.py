@@ -12,7 +12,7 @@ from libs import cache
 from libs import log
 from rainwave import playlist
 
-def attach_info_to_request(request, playlist = False, artist_list = False):
+def attach_info_to_request(request, playlist = False, artists = False):
 	# Front-load all non-animated content ahead of the schedule content
 	# Since the schedule content is the most animated on R3, setting this content to load
 	# first has a good impact on the perceived animation smoothness since table redrawing
@@ -25,7 +25,7 @@ def attach_info_to_request(request, playlist = False, artist_list = False):
 		request.append("all_albums", api_requests.playlist.get_all_albums(request.sid, request.user))
 	else:
 		request.append("album_diff", cache.get_station(request.sid, 'album_diff'))
-	if artist_list or 'artist_list' in request.request.arguments:
+	if artists or 'artist_list' in request.request.arguments:
 		request.append("all_artists", cache.get_station(request.sid, 'all_artists'))
 
 	request.append("requests_all", cache.get_station(request.sid, "request_all"))
