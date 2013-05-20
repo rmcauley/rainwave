@@ -265,7 +265,7 @@ class Song(object):
 			s.data['elec_blocked_by'] = d['song_elec_blocked_by']
 			s.data['vote_share'] = d['song_vote_share']
 			s.data['vote_total'] = d['song_vote_total']
-			s.data['request_total'] = d['song_request_total']
+			s.data['request_count'] = d['song_request_count']
 			s.data['played_last'] = d['song_played_last']
 			s.albums = Album.load_list_from_song_id_sid(id, sid)
 		else:
@@ -605,6 +605,24 @@ class Song(object):
 				return True
 		raise SongMetadataUnremovable("Found no tag by name %s that wasn't assigned by ID3." % name)
 
+	def load_extra_detail(self):
+		self.data['fave_count'] = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings WHERE song_fave = TRUE AND song_id = %s", (self.id,))
+		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_rating > %s", (self.data['rating'],))
+		self.data['vote_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE sid = %s AND song_vote_total > %s", (self.data['sid'], self.data['vote_total']))
+		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE sid = %s AND song_request_count > %s", (self.data['sid'], self.data['request_count']))
+
+		self.data['rating_histogram'] = {}
+		histo = db.c.fetch_all("SELECT "
+							   "ROUND(((song_user_rating * 10) - (CAST(song_user_rating * 10 AS SMALLINT) %% 5))) / 10 AS user_rating_rnd, "
+							   "COUNT(song_user_rating) AS user_rating_count "
+							   "FROM r4_song_ratings JOIN phpbb_users USING (user_id) "
+							   "WHERE radio_inactive = FALSE AND song_id = %s "
+							   "GROUP BY song_rating_rnd "
+							   "ORDER BY song_rating_rnd",
+							   (self.id,))
+		for point in histo:
+			self.data['rating_histogram'][str(point['user_rating_rnd'])] = point['user_rating_count']
+
 	def to_dict(self, user = None):
 		self.data['id'] = self.id
 		album_list = []
@@ -836,17 +854,18 @@ class Album(AssociatedMetadata):
 		instance._assign_from_dict(row)
 		instance.sids = [ sid ]
 		if not user or user.is_anonymous():
-			instance.data['songs'] = db.c.fetch_all("SELECT r4_song_album.song_id AS id, song_title AS title, song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, song_rating AS rating, 0 AS user_rating, FALSE AS fave, string_agg(artist_id || ':' || artist_name,  ',') AS artist_parseable  "
+			instance.data['songs'] = db.c.fetch_all("SELECT r4_song_album.song_id AS id, song_origin_sid AS origin_sid, song_title AS title, song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, song_rating AS rating, 0 AS user_rating, FALSE AS fave, string_agg(artist_id || ':' || artist_name,  ',') AS artist_parseable  "
 													"FROM r4_song_album JOIN r4_song_sid USING (song_id) JOIN r4_songs USING (song_id) JOIN r4_song_artist USING (song_id) JOIN r4_artists USING (artist_id) "
 													"WHERE r4_song_album.album_id = %s "
-													"GROUP BY r4_song_album.song_id, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating",
+													"GROUP BY r4_song_album.song_id, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating",
 													(instance.id,))
 		else:
-			instance.data['songs'] = db.c.fetch_all("SELECT r4_song_album.song_id AS id, song_title AS title, song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiplty, song_cool_override AS cool_override, COALESCE(song_user_rating, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave, string_agg(artist_id || ':' || artist_name,  ',') AS artist_parseable  "
+			instance.data['songs'] = db.c.fetch_all("SELECT r4_song_album.song_id AS id, song_origin_sid AS origin_sid, song_title AS title, song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiplty, song_cool_override AS cool_override, COALESCE(song_user_rating, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave, string_agg(artist_id || ':' || artist_name,  ',') AS artist_parseable  "
 													"FROM r4_song_album JOIN r4_song_sid USING (song_id) JOIN r4_songs USING (song_id) JOIN r4_song_artist USING (song_id) JOIN r4_artists USING (artist_id) LEFT JOIN r4_song_ratings ON (r4_song_album.song_id = r4_song_ratings.song_id) "
 													"WHERE r4_song_album.album_id = %s "
-													"GROUP BY r4_song_album.song_id, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_user_rating, song_fave, song_cool_override, song_cool_multiply",
+													"GROUP BY r4_song_album.song_id, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_user_rating, song_fave, song_cool_override, song_cool_multiply",
 													(instance.id,))
+		return instance
 
 	def __init__(self):
 		super(Album, self).__init__()
@@ -881,15 +900,13 @@ class Album(AssociatedMetadata):
 		self._dict_check_assign(d, "album_cool_lowest", 0)
 		self._dict_check_assign(d, "album_played_last", 0)
 		self._dict_check_assign(d, "album_vote_total", 0)
-		self._dict_check_assign(d, "album_request_total", 0)
+		self._dict_check_assign(d, "album_request_count", 0)
 		if d.has_key('album_is_tag'):
 			self.is_tag = d['album_is_tag']
 		if os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % self.id)):
-			self.data['album_art'] = config.get("album_art_url_path") + "/" + str(self.id)
+			self.data['art'] = config.get("album_art_url_path") + "/" + str(self.id)
 		else:
-			self.data['album_art'] = None
-		# TODO: fill in rank on the album API request
-		self.data['rank'] = None
+			self.data['art'] = None
 
 	def _dict_check_assign(self, d, key, default = None, new_key = None):
 		if not new_key:
@@ -1007,6 +1024,30 @@ class Album(AssociatedMetadata):
 				song.id = row['song_id']
 				song.set_election_block(sid, 'album', num_elections)
 
+	def load_extra_detail(self, sid):
+		self.data['fave_count'] = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings WHERE album_id = %s AND album_fave = TRUE", (self.id,))
+		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_albums WHERE album_rating > %s", (self.data['rating'],))
+		self.data['vote_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE sid = %s AND album_vote_total > %s", (sid, self.data['vote_total']))
+		self.data['request_rank'] = 1+ db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE sid = %s AND album_request_count > %s", (sid, self.data['request_count']))
+
+		self.data['genres'] = db.c.fetch_all(
+			"SELECT DISTINCT group_id AS id, group_name AS name "
+			"FROM r4_song_album JOIN r4_song_group USING (song_id) JOIN r4_groups USING (group_id) "
+			"WHERE album_id = %s",
+			(self.id,))
+
+		self.data['rating_histogram'] = {}
+		histo = db.c.fetch_all("SELECT "
+							   "ROUND(((album_user_rating * 10) - (CAST(album_user_rating * 10 AS SMALLINT) %% 5))) / 10 AS rating_rnd, "
+							   "COUNT(album_user_rating) AS rating_count "
+							   "FROM r4_album_ratings JOIN phpbb_users USING (user_id) "
+							   "WHERE radio_inactive = FALSE AND album_id = %s "
+							   "GROUP BY rating_rnd "
+							   "ORDER BY rating_rnd",
+							   (self.id,))
+		for point in histo:
+			self.data['rating_histogram'][str(point['rating_rnd'])] = point['rating_count']
+
 	def to_dict(self, user = None):
 		d = super(Album, self).to_dict(user)
 		if user:
@@ -1042,10 +1083,11 @@ class Artist(AssociatedMetadata):
 		pass
 
 	def load_all_songs(self, sid):
-		self.data['songs'] = db.c.fetch_all("SELECT r4_song_artist.song_id AS id, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS requestable, song_user_rating AS user_rating, song_fave AS fave "
+		self.data['songs'] = db.c.fetch_all("SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS requestable, song_user_rating AS user_rating, song_fave AS fave "
 						"FROM r4_song_artist JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id) "
-						 "WHERE r4_song_artist.artist_id = %s",
-						(self.sid, self.id))
+						"WHERE r4_song_artist.artist_id = %s "
+						"ORDER BY album_name, origin_sid",
+						(sid, self.id))
 
 class SongGroup(AssociatedMetadata):
 	select_by_name_query = "SELECT group_id AS id, group_name AS name FROM r4_groups WHERE group_name = %s"
