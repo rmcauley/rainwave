@@ -8,50 +8,50 @@ var lyre = function() {
 	var async = new XMLHttpRequest();
 	var sid = 0;
 	var errorcount = 0;
-	
+
 	var async_ready = true;
 	var async_queue = new Array();
 	var callbacks = new Array();
 	var urlprefix = "http://rainwave.cc/api4/";
-	
+
 	var rw_user_id = 1;
 	var rw_apikey = "";
-	
+
 	var that = {};
 
 	that.catcherrors = false;
 	that.sync_stop = false;
 	that.sync_time = 0;
 	that.sync_extra = {};
-	
+
 	that.setURLPrefix = function(newprefix) {
 		urlprefix = newprefix;
 	};
-	
+
 	that.setStationID = function(newsid) {
 		sid = newsid;
 	};
-	
+
 	that.setUserID = function(user_id) {
 		rw_user_id = user_id;
 	};
-	
+
 	that.setKey = function(key) {
 		rw_apikey = key;
 	};
-	
+
 	that.clockSync = function(time) {
 		return;
 	};
-	
+
 	that.errorCallback = function(json) {
 		return;
 	};
-	
+
 	that.jsErrorCallback = function(caught, json) {
 		return;
 	};
-	
+
 	// stolen from http://stackoverflow.com/questions/1714786/querystring-encoding-of-a-javascript-object
 	that.serialize = function(obj) {
 		var str = [];
@@ -67,11 +67,11 @@ var lyre = function() {
 		var pair;
 		for (var i = 0; i < vars.length; i++) {
 			pair = vars[i].split("=");
-			
+
 			obj[pair[0]] = pair[1];
 		}
 	}*/
-	
+
 	var cloneObject = function() {
 		var nobj = {}
 		for (var i = 0; i < arguments.length; i++) {
@@ -81,14 +81,14 @@ var lyre = function() {
 		}
 		return nobj;
 	}
-	
+
 	var lyreClockHandle = function(response) {
 		if (response['time']) {
 			that.sync_time = response['time'];
 			that.clockSync(that.sync_time);
 		}
 	};
-	
+
 	var sync_get = function(params) {
 		if (!params) params = {}
 		var actionurl = sync_init ? "init" : "sync"
@@ -104,7 +104,7 @@ var lyre = function() {
 		var sfparams = that.serialize(fparams);
 		sync.send(sfparams);
 	};
-	
+
 	var sync_complete = function() {
 		var response;
 		var synctimeout = 1000;
@@ -134,17 +134,17 @@ var lyre = function() {
 			}
 			synctimeout = 5000;
 		}
-		
+
 		if (response && response[0] && response[0].error && response[0].error.code) {
 			if (response[0].error.code == 403) {
 				that.sync_stop = true;
-				
+
 			}
 			else {
 				synctimeout = 5000;
 			}
 		}
-		
+
 		if (sync.readyState == 4) {
 			if (that.sync_stop) {
 				sync_on = false;
@@ -155,7 +155,7 @@ var lyre = function() {
 			}
 		}
 	};
-	
+
 	var async_complete = function() {
 		var response;
 		if ((async.readyState == 4) && (async.status == 200)) {
@@ -167,7 +167,7 @@ var lyre = function() {
 			response = [ { "error": { "code": async.status, "text": "HTTP Error on asynchronous request." } } ];
 			performCallbacks(response);
 		}
-		
+
 		if (async.readyState == 4) {
 			if (!async_queueCheck(true)) async_ready = true;
 		}
@@ -188,7 +188,7 @@ var lyre = function() {
 		}
 		return false;
 	};
-	
+
 	var performCallbacks = function(json) {
 		var cb, i;
 		var sched_synced = false;
@@ -207,7 +207,7 @@ var lyre = function() {
 		}
 		if (sched_synced) performCallback({}, "sched_sync");
 	};
-	
+
 	var performCallback = function(json, segment) {
 		if (callbacks[segment]) {
 			for (var cb = 0; cb < callbacks[segment].length; cb++) {
@@ -229,13 +229,13 @@ var lyre = function() {
 			}
 		}
 	};
-	
+
 	that.sync_start = function(initial_payload) {
 		if (sync_on === true) return false;
 		performCallbacks(initial_payload);
 		sync_get();
 	};
-	
+
 	// Using override is VERY DANGEROUS, don't do it unless you absolutely know what you're doing!
 	// It's used internally when performing queued actions, i.e. when the library knows things are good to go
 	// but is holding off any calls from jumping the queue.
@@ -258,15 +258,13 @@ var lyre = function() {
 		}
 	};
 
-	var whitelist = [ "user", "sched_current", "api_info", "sched_history", "sched_next", "sched_sync", "vote_result", "rate_result", "error" ];
 	that.addCallback = function(method, lyreelement) {
-		if (whitelist.indexOf(lyreelement) == -1) return;
 		maxid++;
 		if (!callbacks[lyreelement]) callbacks[lyreelement] = [];
 		callbacks[lyreelement][maxid] = method;
 		return maxid;
 	};
-	
+
 	that.removeCallback = function(lyreelement, cbid) {
 		if (callbacks[lyreelement]) {
 			if (callbacks[lyreelement][cbid]) {
@@ -276,8 +274,8 @@ var lyre = function() {
 		}
 		return false;
 	}
-	
+
 	that.addCallback(lyreClockHandle, "api_info");
-	
+
 	return that;
 }();

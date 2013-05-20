@@ -75,14 +75,14 @@ function SearchTable(id_key, table_class) {
 		var toreturn;
 		// special hook for albums
 		if (typeof(json.cool_lowest) != "undefined") {
-			json.album_available = (json.cool_lowest < clock.now) ? true : false;
+			json.cool = (json.cool_lowest < clock.now) ? true : false;
 		}
 		var id = json[id_key];
 		if (typeof(data[id]) == "undefined") {
 			data[id] = json;
 			data[id]._searchname = removeAccentsAndLC(data[id][search_key]);
 			data[id].tr = createEl("tr");
-			data[id].tr._search_id = id;
+			data[id].tr._search_id = json[id_key];
 			that.drawEntry(data[id]);
 			toreturn = true;
 		}

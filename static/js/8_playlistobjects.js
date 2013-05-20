@@ -3,21 +3,21 @@ var Song = {
 		//el.style.cursor = "pointer";
 		//el.addEventListener('click', function() { edi.openPanelLink(true, "playlist", "song", song_id); }, true);
 	},
-	
+
 	linkifyAsOneshot: function(song_id, el) {
 		linkify(el);
-		el.addEventListener('click', function() { lyre.async_get("oneshot_add", { "song_id": song_id }); }, true);
+		el.addEventListener('click', function() { lyre.async_get("oneshot_add", { "id": song_id }); }, true);
 	},
-	
+
 	linkifyAsForceCandidate: function(song_id, el) {
 		linkify(el);
-		el.addEventListener('click', function() { lyre.async_get("force_candidate_add", { "song_id": song_id }); }, true);
+		el.addEventListener('click', function() { lyre.async_get("force_candidate_add", { "id": song_id }); }, true);
 	},
-	
+
 	addChangeMultiplierListener: function(song_id, el) {
-		el.addEventListener('change', function() { lyre.async_get("admin_change_song_multiplier", { "song_id": song_id, "multiplier": el.value }); }, true);
+		el.addEventListener('change', function() { lyre.async_get("admin_change_song_multiplier", { "id": song_id, "multiplier": el.value }); }, true);
 	},
-	
+
 	r4translate: function(json) {
 		// R4TRANSLATE
 		// song_rating_id is obsolete
@@ -34,7 +34,7 @@ var Song = {
 			"song_timeswon": 0,
 			"song_rating_id": json['id'],
 			"song_rating_sid": json['origin_sid'],
-		
+
 			"song_added_on": json['added_on'],
 			"song_available": json['cool'] ? false : true,
 			"song_favourite": json['fave'],
@@ -48,19 +48,19 @@ var Song = {
 			"song_secondslong": json['length'],
 			"song_title": json['title'],
 			"song_totalvotes": json['vote_total'],
-			"song_totalrequests": json['request_total'],
+			"song_totalrequests": json['request_count'],
 			"song_url": json['link'],
 			"song_urltext": json['link_text'],
 			"song_oa_multiplier": json['cool_multiply'],
 			"song_requestor": json['elec_request_username'],
-			
+
 			"elec_entry_id": json['entry_id'],
 			"elec_position": json['entry_position'],
 			"elec_isrequest": json['entry_type'],
 			"elec_votes": json['entry_votes'],
-	
+
 			"artists": artists
-			
+
 			// new to r4
 			// "elec_request_user_id": 0,
 			// "elec_last": 0,		// last election appearance
@@ -80,11 +80,11 @@ var Album = {
 		linkify(el);
 		el.addEventListener('click', function() { edi.openPanelLink(true, "playlist", "album", album_id); }, true);
 	},
-	
+
 	open: function(album_id) {
 		edi.openPanelLink(true, "playlist", "album", album_id);
 	},
-	
+
 	r4translate: function(json, base) {
 		if (!base) base = {};
 		if (json['album_art']) {
@@ -116,7 +116,7 @@ var Album = {
 };
 
 var Artist = {
-	allArtistToHTML: function(artistarray, el) {	
+	allArtistToHTML: function(artistarray, el) {
 		var a, span;
 		for (var i = 0; i < artistarray.length; i++) {
 			if (i > 0) {
@@ -130,12 +130,12 @@ var Artist = {
 			el.appendChild(a);
 		}
 	},
-	
+
 	linkify: function(artist_id, el) {
 		linkify(el);
 		el.addEventListener('click', function() { edi.openPanelLink(true, "playlist", "artist", artist_id); }, true);
 	},
-	
+
 	open: function(artist_id) {
 		edi.openPanelLink(true, "playlist", "artist", artist_id);
 	}
@@ -146,11 +146,11 @@ var Username = {
 		linkify(el);
 		el.addEventListener('click', function() { edi.openPanelLink(true, "listeners", "id", user_id); }, true);
 	},
-	
+
 	open: function(user_id) {
 		edi.openPanelLink(true, "listeners", "id", user_id);
 	},
-	
+
 	openFresh: function(user_id) {
 		edi.openPanelLink(true, "listeners", "id_refresh", user_id);
 	}

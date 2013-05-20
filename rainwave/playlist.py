@@ -901,6 +901,8 @@ class Album(AssociatedMetadata):
 		self._dict_check_assign(d, "album_played_last", 0)
 		self._dict_check_assign(d, "album_vote_total", 0)
 		self._dict_check_assign(d, "album_request_count", 0)
+		if d.has_key('sid'):
+			self.data['sid'] = d['sid']
 		if d.has_key('album_is_tag'):
 			self.is_tag = d['album_is_tag']
 		if os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % self.id)):

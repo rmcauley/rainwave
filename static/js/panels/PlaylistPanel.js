@@ -51,8 +51,8 @@ panels.PlaylistPanel = {
 			prefs.addPrefCallback("playlist", "sortreadyfirst", albumlist.reinsertAll, albumlist);
 			prefs.addPrefCallback("playlist", "sortalbums", albumlist.reinsertAll, albumlist);
 
-			lyre.addCallback(that.drawAlbumCallback, "playlist_album");
-			lyre.addCallback(that.drawArtistCallback, "artist_detail");
+			lyre.addCallback(that.drawAlbumCallback, "album");
+			lyre.addCallback(that.drawArtistCallback, "artist");
 
 			that.onHeightResize(container.offsetHeight);
 
@@ -81,30 +81,30 @@ panels.PlaylistPanel = {
 		};
 
 		that.drawAlbumCallback = function(json) {
-			var wdow = view.createOpenDiv("album", json.album_id);
-			json.song_data.sort(that.sortSongList);
+			var wdow = view.createOpenDiv("album", json.id);
+			json.songs.sort(that.sortSongList);
 			that.drawAlbum(wdow, json);
-			albumlist.navToID(json.album_id);
+			albumlist.navToID(json.id);
 			if (typeof(wdow.updateHelp) == "function") wdow.updateHelp();
 			help.continueTutorialIfRunning("openanalbum");
 			return true;
 		};
 
 		that.drawArtistCallback = function(json) {
-			var wdow = view.createOpenDiv("artist", json.album_id);
+			var wdow = view.createOpenDiv("artist", json.id);
 			that.drawArtist(wdow, json);
-			artistlist.navToID(json.artist_id);
+			artistlist.navToID(json.id);
 			if (typeof(wdow.updateHelp) == "function") wdow.updateHelp();
 			return true;
 		};
 
 		that.sortSongList = function(a, b) {
-			if (a.song_available != b.song_available) {
-				if (a.song_available == true) return -1;
+			if (a.cool != b.cool) {
+				if (a.cool == false) return -1;
 				else return 1;
 			}
-			else if (a.song_title.toLowerCase() < b.song_title.toLowerCase()) return -1;
-			else if (a.song_title.toLowerCase() > b.song_title.toLowerCase()) return 1;
+			else if (a.title.toLowerCase() < b.title.toLowerCase()) return -1;
+			else if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
 			else return 0;
 		};
 
@@ -114,7 +114,7 @@ panels.PlaylistPanel = {
 				albumlist.navToID(album_id);
 				return;
 			}
-			lyre.async_get("album", { "album_id": album_id });
+			lyre.async_get("album", { "id": album_id });
 		};
 
 		that.openArtist = function(artist_id) {
@@ -123,7 +123,7 @@ panels.PlaylistPanel = {
 				artistlist.navToID(artist_id);
 				return;
 			}
-			lyre.async_get("artist_detail", { "artist_id": artist_id });
+			lyre.async_get("artist_detail", { "id": artist_id });
 		};
 
 		return that;
@@ -163,7 +163,7 @@ var albumlist = function() {
 		}
 
 		for (i in albums) {
-			if (!albums[i].album_available) {
+			if (albums[i].cool) {
 				// reinserts the album if it becomes available again
 				if ((albums[i].cool_lowest - clock.now) <= 0) albums[i].cool = true;
 				that.addToUpdated(albums[i].id);
@@ -245,7 +245,7 @@ var albumlist = function() {
 	};
 
 	that.drawEntry = function(album) {
-		album.tr._search_id = album.album_id;
+		album.tr._search_id = album.id;
 
 		var ratingx = album.user_rating * 10;
 		album.td_name = document.createElement("td");
