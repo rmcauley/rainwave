@@ -1237,7 +1237,7 @@ function _THEME() {
 				ns.tr.setAttribute("class", trclass);
 
 				requestable = false;
-				if (("sid" in song_data[i]) && (song_data[i].sid == user.p.sid)) requestable = true;
+				if (("origin_sid" in song_data[i]) && (song_data[i].origin_sid == user.p.sid)) requestable = true;
 				if (("requestable" in song_data[i]) && (song_data[i].requestable)) requestable = true;
 
 				if (!requestable) {
@@ -1269,6 +1269,16 @@ function _THEME() {
 
 				ns.td_n = createEl("td", { "class": "pl_songlist_title" }, ns.tr);
 				ns.td_n_text = createEl("div", { "textContent": song_data[i].title }, ns.td_n);
+				
+				if ("artist_parseable" in song_data[i]) {
+					var artists = song_data[i].artist_parseable.split(',');
+					var artist_split;
+					song_data[i].artists = []
+					for (var artist_i = 0; artist_i < artists.length; artist_i++) {
+						artist_split = artists[artist_i].split(":", 2);
+						song_data[i].artists.push({ "id": parseInt(artist_split[0]), "name": artist_split[1] });
+					}
+				}
 
 				if ("artists" in song_data[i]) {
 					ns.td_a = document.createElement("td");

@@ -125,8 +125,14 @@ var Artist = {
 				el.appendChild(span);
 			}
 			a = document.createElement("span");
-			Artist.linkify(artistarray[i].artist_id, a);
-			a.textContent = artistarray[i].artist_name;
+			if (artistarray[i].artist_id) {
+				Artist.linkify(artistarray[i].artist_id, a);
+				a.textContent = artistarray[i].artist_name;
+			}
+			else {
+				Artist.linkify(artistarray[i].id, a);
+				a.textContent = artistarray[i].name;
+			}
 			el.appendChild(a);
 		}
 	},
