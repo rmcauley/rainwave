@@ -625,21 +625,18 @@ class Song(object):
 
 	def to_dict(self, user = None):
 		self.data['id'] = self.id
-		album_list = []
-		artist_list = []
-		group_list = []
+		self.data['artists'] = []
+		self.data['albums'] = []
+		self.data['groups'] = []
 		if self.albums:
 			for metadata in self.albums:
-				album_list.append(metadata.to_dict(user))
-			self.data['albums'] = album_list
+				self.data['albums'].append(metadata.to_dict(user))
 		if self.artists:
 			for metadata in self.artists:
-				artist_list.append(metadata.to_dict(user))
-			self.data['artists'] = artist_list
+				self.data['artists'].append(metadata.to_dict(user))
 		if self.groups:
 			for metadata in self.groups:
-				group_list.append(metadata.to_dict(user))
-			self.data['groups'] = group_list
+				self.data['groups'].append(metadata.to_dict(user))
 		self.data['user_rating'] = None
 		self.data['fave'] = False
 		if user:
