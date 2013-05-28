@@ -110,8 +110,6 @@ def advance_station(sid):
 	history[sid].insert(0, current[sid])
 	while len(history[sid]) > 5:
 		history[sid].pop()
-		
-	# TODO: IMPORTANT: Block currently playing song/album from being selected so there's no "hole"
 	
 	integrate_new_events(sid)
 	sort_next(sid)
@@ -129,6 +127,7 @@ def post_process(sid):
 	_trim(sid)
 	user.trim_listeners(sid)
 	user.unlock_listeners(sid)
+	playlist.warm_cooled_albums(sid)
 	
 	_update_memcache(sid)
 
@@ -316,6 +315,7 @@ def _update_memcache(sid):
 	cache.set_station(sid, "long_history_dict", long_history_dict_list, True)
 	cache.set_station(sid, "listeners_current", listeners.get_listeners_dict(sid), True)
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)
+	playlist.clear_updated_albums(sid)
 	cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
 	cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)
 	request.update_line(sid)

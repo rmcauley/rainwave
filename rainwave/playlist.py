@@ -190,7 +190,7 @@ def remove_all_locks(sid):
 def get_all_albums_list(sid, user = None):
 	if not user or user.id == 1:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool_lowest AS cool_lowest, FALSE AS fave, 0 AS user_rating "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, FALSE AS fave, 0 AS user_rating "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"WHERE r4_album_sid.sid = %s "
@@ -198,7 +198,7 @@ def get_all_albums_list(sid, user = None):
 			(sid,))
 	else:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool_lowest AS cool_lowest, album_fave AS fave, album_user_rating AS user_rating "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_fave AS fave, album_user_rating AS user_rating "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
@@ -810,6 +810,13 @@ def get_updated_albums_dict(sid):
 		album_diff.append(album.to_dict())
 	# TODO: Return newly added albums here (query new albums since last time this function was run)
 	return album_diff
+
+def warm_cooled_albums(sid):
+	global updated_album_ids
+	album_list = db.c.fetch_all("SELECT album_id FROM r4_album_sid WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE", (sid, time.time()))
+	for album_id in album_list:
+		updated_album_ids[sid][album_id] = True
+	db.c.update("UPDATE r4_album_sid SET album_cool = FALSE WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE", (sid, time.time()))
 
 class Album(AssociatedMetadata):
 	select_by_name_query = "SELECT r4_albums.* FROM r4_albums WHERE album_name = %s"
