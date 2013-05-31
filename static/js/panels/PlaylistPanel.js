@@ -165,7 +165,7 @@ var albumlist = function() {
 		for (i in albums) {
 			if (albums[i].cool) {
 				// reinserts the album if it becomes available again
-				if ((albums[i].cool_lowest - clock.now) <= 0) albums[i].cool = true;
+				if ((albums[i].cool_lowest - clock.now) <= 0) albums[i].cool = false;
 				that.addToUpdated(albums[i].id);
 			}
 		}

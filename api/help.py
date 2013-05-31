@@ -38,7 +38,7 @@ class IndexRequest(tornado.web.RequestHandler):
 		self.write("<h2>Requests</h2>")
 		self.write("<table class='help_legend'>")
 		self.write("<tr><th colspan='8'>JSON API Requests</th></tr>")
-		self.write("<tr><th>Allows GET<th>Station ID Required</th><th>Auth Required</th><th>Tune In Required</th><th>Login Required</th><th>DJs Only</th><th>Admins Only</th><th>URL</th></tr>")
+		self.write("<tr><th>Allows GET<th>Auth Required</th><th>Station ID Required</th><th>Tune In Required</th><th>Login Required</th><th>DJs Only</th><th>Admins Only</th><th>URL</th></tr>")
 		for url, handler in sorted(help_classes.items()):
 			if issubclass(handler, api.web.RequestHandler):
 				self.write_class_properties(url, handler)
