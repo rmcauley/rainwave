@@ -73,10 +73,6 @@ function SearchTable(id_key, table_class) {
 
 	that.updateItem = function(json) {
 		var toreturn;
-		// special hook for albums
-		if (typeof(json.cool_lowest) != "undefined") {
-			json.cool = (json.cool_lowest < clock.now) ? true : false;
-		}
 		var id = json[id_key];
 		if (typeof(data[id]) == "undefined") {
 			data[id] = json;

@@ -493,10 +493,10 @@ class Song(object):
 			cool_time = self.data['cool_override']
 		else:
 			cool_rating = self.data['rating']
+			# If no rating exists, give it a middle rating
 			if not self.data['rating'] or self.data['rating'] == 0:
-				cool_rating = 4
-			# 3.5 is the rating range (2.5 to 5.0) and 2.5 is the "minimum" rating, effectively.
-			auto_cool = ((3.5 - (cool_rating - 2.5)) / 3.5) * cooldown_config[sid]['max_song_cool'] + cooldown_config[sid]['min_song_cool']
+				cool_rating = 3
+			auto_cool = cooldown_config[sid]['min_song_cool'] + (((4 - (cool_rating - 1)) / 4.0) * (cooldown_config[sid]['max_song_cool'] - cooldown_config[sid]['min_song_cool']))
 			cool_time = auto_cool * get_age_cooldown_multiplier(self.data['added_on']) * self.data['cool_multiply']
 
 		cool_time = int(cool_time + time.time())
@@ -833,7 +833,7 @@ class Album(AssociatedMetadata):
 	@classmethod
 	def load_list_from_song_id_sid(cls, song_id, sid):
 		instances = []
-		for row in db.c.fetch_all("SELECT r4_albums.*, r4_song_album.album_is_tag, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_song_album JOIN r4_albums USING (album_id) JOIN r4_album_sid USING (album_id) WHERE song_id = %s  AND r4_song_album.sid = %s AND r4_album_sid.sid = %s ORDER BY r4_albums.album_name", (song_id, sid, sid)):
+		for row in db.c.fetch_all("SELECT r4_albums.*, r4_song_album.album_is_tag, album_cool_lowest, album_cool_multiply, album_cool_override, album_cool FROM r4_song_album JOIN r4_albums USING (album_id) JOIN r4_album_sid USING (album_id) WHERE song_id = %s  AND r4_song_album.sid = %s AND r4_album_sid.sid = %s ORDER BY r4_albums.album_name", (song_id, sid, sid)):
 			instance = cls()
 			instance._assign_from_dict(row)
 			instance.sids = [ sid ]
@@ -842,7 +842,7 @@ class Album(AssociatedMetadata):
 
 	@classmethod
 	def load_from_id_sid(cls, album_id, sid):
-		row = db.c.fetch_row("SELECT r4_albums.*, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.album_id = %s AND r4_album_sid.sid = %s", (album_id, sid))
+		row = db.c.fetch_row("SELECT r4_albums.*, album_cool, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.album_id = %s AND r4_album_sid.sid = %s", (album_id, sid))
 		if not row:
 			raise MetadataNotFoundError("%s ID %s could not be found." % (cls.__name__, id))
 		instance = cls()
@@ -906,6 +906,7 @@ class Album(AssociatedMetadata):
 		self._dict_check_assign(d, "album_played_last", 0)
 		self._dict_check_assign(d, "album_vote_total", 0)
 		self._dict_check_assign(d, "album_request_count", 0)
+		self._dict_check_assign(d, "album_cool", False)
 		if d.has_key('sid'):
 			self.data['sid'] = d['sid']
 		if d.has_key('album_is_tag'):
@@ -916,8 +917,7 @@ class Album(AssociatedMetadata):
 			self.data['art'] = None
 
 	def _dict_check_assign(self, d, key, default = None, new_key = None):
-		if not new_key:
-			# wild guess that we're removing "album_"
+		if not new_key and key.find("album_") == 0:
 			new_key = key[6:]
 		if d.has_key(key):
 			self.data[new_key] = d[key]
@@ -965,17 +965,21 @@ class Album(AssociatedMetadata):
 		if cool_time:
 			pass
 		elif self.data['cool_override']:
-			self._start_cooldown_db(sid, self.data['cool_override'])
+			cool_time = self.data['cool_override']
 		else:
-			auto_cool = cooldown_config[sid]['min_album_cool'] + ((self.data['rating'] - 2.5) * (cooldown_config[sid]['max_album_cool'] - cooldown_config[sid]['min_album_cool']))
+			cool_rating = self.data['rating']
+			if not cool_rating or cool_rating == 0:
+				cool_rating = 3
+			auto_cool = cooldown_config[sid]['min_album_cool'] + (((4 - (cool_rating - 1)) / 4.0) * (cooldown_config[sid]['max_album_cool'] - cooldown_config[sid]['min_album_cool']))
 			album_num_songs = db.c.fetch_var("SELECT COUNT(r4_song_album.song_id) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.sid = %s", (self.id, sid))
-			log.debug("cooldown", "min_album_cool: %s .. max_album_cool: %s .. auto_cool: %s .. album_num_songs: %s .. rating: %s" % (cooldown_config[sid]['min_album_cool'], cooldown_config[sid]['max_album_cool'], auto_cool, album_num_songs, self.data['rating']))
+			log.debug("cooldown", "min_album_cool: %s .. max_album_cool: %s .. auto_cool: %s .. album_num_songs: %s .. rating: %s" % (cooldown_config[sid]['min_album_cool'], cooldown_config[sid]['max_album_cool'], auto_cool, album_num_songs, cool_rating))
 			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_num_songs - config.get_station(sid, "cooldown_size_slope_start")))) / 2);
 			cool_age_multiplier = get_age_cooldown_multiplier(self.data['added_on'])
 			cool_time = auto_cool * cool_size_multiplier * cool_age_multiplier * self.data['cool_multiply']
 			log.debug("cooldown", "auto_cool: %s .. cool_size_multiplier: %s .. cool_age_multiplier: %s .. cool_multiply: %s .. cool_time: %s" %
 					  (auto_cool, cool_size_multiplier, cool_age_multiplier, self.data['cool_multiply'], cool_time))
 		updated_album_ids[sid][self.id] = True
+		log.debug("cooldown", "Album ID %s Station ID %s cool_time period: %s" % (self.id, sid, cool_time))
 		return self._start_cooldown_db(sid, cool_time)
 
 	def _start_cooldown_db(self, sid, cool_time):
@@ -983,8 +987,8 @@ class Album(AssociatedMetadata):
 		if db.c.allows_join_on_update:
 			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s "
 						"FROM r4_song_album "
-						"WHERE r4_song_sid.song_id = r4_song_album.sid AND album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE",
-						(cool_end, self.id, sid))
+						"WHERE r4_song_sid.song_id = r4_song_album.song_id AND album_id = %s AND r4_song_sid.sid = %s AND song_cool_end < %s",
+						(cool_end, self.id, sid, cool_end))
 		else:
 			songs = db.c.fetch_list("SELECT song_id FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND r4_song_sid.sid = %s AND r4_song_album.sid = %s AND song_exists = TRUE", (self.id, sid, sid))
 			for song_id in songs:
@@ -992,7 +996,11 @@ class Album(AssociatedMetadata):
 
 	def solve_cool_lowest(self, sid):
 		self.data['cool_lowest'] = db.c.fetch_var("SELECT MIN(song_cool_end) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE", (self.id, sid))
-		db.c.update("UPDATE r4_album_sid SET album_cool_lowest = %s WHERE album_id = %s AND sid = %s", (self.data['cool_lowest'], self.id, sid))
+		if self.data['cool_lowest'] > time.time():
+			self.data['cool'] = True
+		else:
+			self.data['cool'] = False
+		db.c.update("UPDATE r4_album_sid SET album_cool_lowest = %s, album_cool = %s WHERE album_id = %s AND sid = %s", (self.data['cool_lowest'], self.data['cool'], self.id, sid))
 		return self.data['cool_lowest']
 
 	def update_rating(self):

@@ -162,14 +162,6 @@ var albumlist = function() {
 			initialized = true;
 		}
 
-		for (i in albums) {
-			if (albums[i].cool) {
-				// reinserts the album if it becomes available again
-				if ((albums[i].cool_lowest - clock.now) <= 0) albums[i].cool = false;
-				that.addToUpdated(albums[i].id);
-			}
-		}
-
 		if (parent) {
 			var reopen;
 			for (i in json) {
@@ -269,12 +261,11 @@ var albumlist = function() {
 		album.td_fav.setAttribute("class", "pl_fav_" + album.fave);
 
 		album.tr.appendChild(album.td_fav);
-		//that.drawNavChange(album, false);
-		//that.drawRating(album);
+		that.drawUpdate(album);
 	};
 
 	that.drawRating = function(album) {
-		if ((album.cool_lowest - clock.now) > 0) {
+		if (album.cool && ((album.cool_lowest - clock.now) > 0)) {
 			album.td_rating.textContent = formatHumanTime(album.cool_lowest - clock.now);
 		}
 		else if ("album_rating_user" in album) {
@@ -291,6 +282,9 @@ var albumlist = function() {
 
 	that.drawNavChange = function(album, highlight) {
 		var cl = album.cool ? "pl_cooldown" : "pl_available";
+		if (album.cool) {
+			console.log("I'm a dummy");
+		}
 		if (highlight) cl += " pl_highlight";
 		if (parent) { if (album.id == parent.open_album) cl += " pl_albumopen"; }
 		album.tr.setAttribute("class", cl);
