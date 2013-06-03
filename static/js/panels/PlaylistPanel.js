@@ -282,9 +282,6 @@ var albumlist = function() {
 
 	that.drawNavChange = function(album, highlight) {
 		var cl = album.cool ? "pl_cooldown" : "pl_available";
-		if (album.cool) {
-			console.log("I'm a dummy");
-		}
 		if (highlight) cl += " pl_highlight";
 		if (parent) { if (album.id == parent.open_album) cl += " pl_albumopen"; }
 		album.tr.setAttribute("class", cl);
