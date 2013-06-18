@@ -123,7 +123,7 @@ panels.PlaylistPanel = {
 				artistlist.navToID(artist_id);
 				return;
 			}
-			lyre.async_get("artist_detail", { "id": artist_id });
+			lyre.async_get("artist", { "id": artist_id });
 		};
 
 		return that;
@@ -261,7 +261,6 @@ var albumlist = function() {
 		album.td_fav.setAttribute("class", "pl_fav_" + album.fave);
 
 		album.tr.appendChild(album.td_fav);
-		that.drawUpdate(album);
 	};
 
 	that.drawRating = function(album) {

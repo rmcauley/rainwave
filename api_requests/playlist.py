@@ -32,7 +32,7 @@ class ArtistRequestHandler(RequestHandler):
 	def post(self):
 		try:
 			artist = playlist.Artist.load_from_id(self.get_argument("id"))
-			artist.load_all_songs(self.sid)
+			artist.load_all_songs(self.sid, self.user.id)
 			self.append("artist", artist.to_dict(self.user))
 		except playlist.MetadataNotFoundError:
 			self.append("error", { "code": "404", "description": "Artist not found." })

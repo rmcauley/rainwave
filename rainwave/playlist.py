@@ -814,7 +814,7 @@ def get_updated_albums_dict(sid):
 
 def warm_cooled_albums(sid):
 	global updated_album_ids
-	album_list = db.c.fetch_all("SELECT album_id FROM r4_album_sid WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE", (sid, time.time()))
+	album_list = db.c.fetch_list("SELECT album_id FROM r4_album_sid WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE", (sid, time.time()))
 	for album_id in album_list:
 		updated_album_ids[sid][album_id] = True
 	db.c.update("UPDATE r4_album_sid SET album_cool = FALSE WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE", (sid, time.time()))
@@ -1101,12 +1101,24 @@ class Artist(AssociatedMetadata):
 		# Artists don't block elections either (OR DO THEY)
 		pass
 
-	def load_all_songs(self, sid):
-		self.data['songs'] = db.c.fetch_all("SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS requestable, song_user_rating AS user_rating, song_fave AS fave "
-						"FROM r4_song_artist JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id) "
-						"WHERE r4_song_artist.artist_id = %s "
-						"ORDER BY album_name, origin_sid",
-						(sid, self.id))
+	def load_all_songs(self, sid, user_id = None):
+		# I'm not going to provide a list of Song objects here because the overhead of that could easily spiral out of control
+		if not user_id or user_id == 1:
+			self.data['songs'] = db.c.fetch_all("SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS requestable, 0 AS user_rating, FALSE AS fave "
+							"FROM r4_song_artist JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) "
+							"WHERE r4_song_artist.artist_id = %s "
+							"ORDER BY album_name, origin_sid, song_title",
+							(sid, self.id))
+		else:
+			self.data['songs'] = db.c.fetch_all("SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS requestable, COALESCE(song_user_rating, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave "
+							"FROM r4_song_artist JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id) "
+							"WHERE r4_song_artist.artist_id = %s "
+							"ORDER BY album_name, origin_sid, song_title",
+							(sid, self.id))
+		for song in self.data['songs']:
+			song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
+			song.pop('album_name', None)
+			song.pop('album_id', None)
 
 class SongGroup(AssociatedMetadata):
 	select_by_name_query = "SELECT group_id AS id, group_name AS name FROM r4_groups WHERE group_name = %s"
