@@ -238,36 +238,16 @@ class Song(object):
 
 		s = klass()
 		s.id = id
+		s.sid = sid
 		s.filename = d['song_filename']
 		s.verified = d['song_verified']
 		s.data['sids'] = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (id,))
-		s.data['title'] = d['song_title']
-		s.data['link'] = d['song_link']
-		s.data['link_text'] = d['song_link_text']
-		s.data['length'] = d['song_length']
-		s.data['added_on'] = d['song_added_on']
-		s.data['rating'] = d['song_rating']
-		s.data['rating_count'] = d['song_rating_count']
-		s.data['cool_multiply'] = d['song_cool_multiply']
-		s.data['cool_override'] = d['song_cool_override']
-		s.data['origin_sid'] = d['song_origin_sid']
 		s.data['sid'] = sid
 		# TODO: fill in rank somehow/somewhere (but not as part of this, too heavy an SQL statement)
 		s.data['rank'] = None
+		s._assign_from_dict(d)
 
 		if sid:
-			s.sid = sid
-			s.data['cool'] = d['song_cool']
-			s.data['cool_end'] = d['song_cool_end']
-			s.data['elec_appearances'] = d['song_elec_appearances']
-			s.data['elec_last'] = d['song_elec_last']
-			s.data['elec_blocked'] = d['song_elec_blocked']
-			s.data['elec_blocked_num'] = d['song_elec_blocked_num']
-			s.data['elec_blocked_by'] = d['song_elec_blocked_by']
-			s.data['vote_share'] = d['song_vote_share']
-			s.data['vote_total'] = d['song_vote_total']
-			s.data['request_count'] = d['song_request_count']
-			s.data['played_last'] = d['song_played_last']
 			s.albums = Album.load_list_from_song_id_sid(id, sid)
 		else:
 			s.albums = Album.load_list_from_song_id(id)
@@ -476,11 +456,10 @@ class Song(object):
 			metadata.reconcile_sids()
 
 	def _assign_from_dict(self, d):
-		self.data['added_on'] = d['song_added_on']
-		self.data['rating'] = d['song_rating']
-		self.data['rating_count'] = d['song_rating_count']
-		self.data['cool_multiply'] = d['song_cool_multiply']
-		self.data['cool_override'] = d['song_cool_override']
+		for key, val in d.iteritems():
+			if key.find("song_") == 0:
+				key = key[5:]
+			self.data[key] = val
 
 	def start_cooldown(self, sid):
 		"""

@@ -533,8 +533,7 @@ def create_tables():
 			reqstor_id				SERIAL		PRIMARY KEY, \
 			reqstor_order				SMALLINT	, \
 			user_id					INTEGER		NOT NULL, \
-			song_id					INTEGER		NOT NULL, \
-			sid					SMALLINT	NOT NULL \
+			song_id					INTEGER		NOT NULL \
 		)")
 	# c.create_idx("r4_request_store", "user_id")		# handled by create_delete_fk
 	# c.create_idx("r4_request_store", "song_id")

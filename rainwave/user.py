@@ -9,6 +9,8 @@ from libs import cache
 from libs import db
 from libs import config
 
+from api.exceptions import APIException
+
 _AVATAR_PATH = "/forums/download/file.php?avatar=%s"
 
 def trim_listeners(sid):
@@ -274,6 +276,23 @@ class User(object):
 			return db.c.fetch_var("SELECT COUNT(*) FROM r4_request_store WHERE user_id = %s AND sid = %s", (sid, self.id))
 		else:
 			return db.c.fetch_var("SELECT COUNT(*) FROM r4_request_store WHERE user_id = %s", (self.id,))
+		
+	def add_request(self, sid, song_id):
+		song = playlist.Song.load_from_id(song_id, sid)
+		if self.data['radio_perks'] and self.has_requests() >= 12:
+			raise APIException(0, "too_many_requests12", "You are limited to 12 requests.")
+		elif self.has_requests() >= 6:
+			raise APIException(0, "too_many_requests6", "You are limited to 6 requests.")
+		for requested in self.get_requests():
+			if song.id == requested.id:
+				raise APIException(0, "same_request", "You've already requested that song.")
+			for album in song.albums:
+				for requested_album in requested.albums:
+					if album.id == requested_album.id:
+						raise APIException(0, "same_request_album", "You've already requested a song from that album.")
+		db.c.update("INSERT INTO r4_request_store VALUES (user_id, song_id) VALUES (%s, %s)", (self.id, song_id))
+		if self.data['sid'] == sid and self.is_tunedin():
+			self.put_in_request_line(sid)
 			
 	def put_in_request_line(self, sid):
 		if self.id <= 1:
@@ -300,18 +319,32 @@ class User(object):
 		
 	def get_request_line_position(self, sid):
 		if self.id <= 1:
-			return False
+			return None
 		if self.id in cache.get_station(sid, "request_user_positions"):
 			return cache.get_station(sid, "request_user_positions")[self.id]
+		return None
 						
 	def get_request_expiry(self):
 		if self.id <= 1:
 			return None
 		if self.id in cache.get("request_expire_times"):
 			return cache.get("request_expire_times")[self.id]
+		return None
 			
 	def get_requests(self):
-		# TODO: This
+		if self.id <= 1:
+			return []
+		requests = cache.get_user(self, "requests")
+		if not requests:
+			requests = db.c.fetch_all("SELECT r4_request_store.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS valid, song_elec_blocked AS elec_blocked, song_elec_blocked_by AS elec_blocked_by "
+							"FROM r4_request_store JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) "
+							"WHERE user_id = %s "
+							"ORDER BY reqstor_order, reqstor_id",
+							(self.request_sid, self.id))
+			for song in requests:
+				song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
+				song.pop('album_name', None)
+				song.pop('album_id', None)
 		return []
 	
 	def set_request_tunein_expiry(self, t = None):

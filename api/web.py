@@ -4,7 +4,10 @@ import time
 import re
 
 from rainwave.user import User
+from rainwave.playlist import SongNonExistent
+
 from api import fieldtypes
+from api.exceptions import APIException
 from libs import config
 from libs import log
 import api.returns
@@ -205,11 +208,16 @@ class RequestHandler(tornado.web.RequestHandler):
 			self.append("api_info", { "exectime": exectime, "time": round(time.time()) })
 			self.write(tornado.escape.json_encode(self._output))
 		super(RequestHandler, self).finish(chunk)
-	
-	# TODO: Custom error handler
-	#def send_error(self, status_code=500, **kwargs):
-	#	pass
-		
-	# TODO: Custom error handler 
-	#def write_error(self, status_code, **kwargs):
-	#	pass
+
+	def write_error(self, status_code, **kwargs):
+		self._output_array = []
+		if kwargs.has_key("exc_info"):
+			if kwargs['exc_info'].isclass(APIException):
+				self.append("error", kwargs['exc_info'].jsonable())
+			if kwargs['exc_info'].isclass(SongNonExistent):
+				self.append("error", { "code": 0, "key": "song_does_not_exist", "text": "Song does not exist." })
+			else:
+				self.append("error", { "code": 500, "key": "internal_error", "text": repr(kwargs['exc_info']) })
+		else:
+			self.append("error", { "code": status_code, "key": "internal_error", "text": self._reason } )
+		self.finish()
