@@ -64,3 +64,10 @@ def valid_relay(str):
 		if value['ip_address'] == str:
 			return name
 	return None
+
+sid_error = "must be a valid station ID."
+def sid(str):
+	sid = integer(str)
+	if sid in config.station_ids:
+		return sid
+	return None

@@ -41,7 +41,8 @@ class IndexRequest(tornado.web.RequestHandler):
 		self.write("<tr><th>Allows GET<th>Auth Required</th><th>Station ID Required</th><th>Tune In Required</th><th>Login Required</th><th>DJs Only</th><th>Admins Only</th><th>URL</th></tr>")
 		for url, handler in sorted(help_classes.items()):
 			if issubclass(handler, api.web.RequestHandler):
-				self.write_class_properties(url, handler)
+				if not handler.hidden and not handler.local_only:
+					self.write_class_properties(url, handler)
 			else:
 				other_requests[url] = handler
 		self.write("<tr><th colspan='8'>Other Requests</th></tr>")

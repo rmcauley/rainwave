@@ -28,7 +28,7 @@ def attach_info_to_request(request, playlist = False, artists = False):
 	if artists or 'all_artists' in request.request.arguments:
 		request.append("all_artists", cache.get_station(request.sid, 'all_artists'))
 
-	request.append("requests_all", cache.get_station(request.sid, "request_all"))
+	request.append("request_line", cache.get_station(request.sid, "request_line"))
 	request.append("calendar", cache.get("calendar"))
 	request.append("listeners_current", cache.get_station(request.sid, "listeners_current"))
 
@@ -36,7 +36,7 @@ def attach_info_to_request(request, playlist = False, artists = False):
 	sched_history = []
 	sched_current = {}
 	if request.user:
-		request.append("requests_user", request.user.get_requests())
+		request.append("requests", request.user.get_requests())
 		# TODO: Some mixing of pre-dictionaried items here might help speed...?
 		sched_current = cache.get_station(request.sid, "sched_current").to_dict(request.user)
 		for evt in cache.get_station(request.sid, "sched_next"):

@@ -53,6 +53,8 @@ class RequestHandler(tornado.web.RequestHandler):
 	unlocked_listener_only = False
 	# Do we allow GET HTTP requests to this URL?  (standard is "no")
 	allow_get = False
+	# Hidden from public view in the help?
+	hidden = False
 	
 	def initialize(self, **kwargs):
 		super(RequestHandler, self).initialize(**kwargs)
@@ -210,14 +212,15 @@ class RequestHandler(tornado.web.RequestHandler):
 		super(RequestHandler, self).finish(chunk)
 
 	def write_error(self, status_code, **kwargs):
-		self._output_array = []
+		self._output = []
 		if kwargs.has_key("exc_info"):
-			if kwargs['exc_info'].isclass(APIException):
-				self.append("error", kwargs['exc_info'].jsonable())
-			if kwargs['exc_info'].isclass(SongNonExistent):
+			exc = kwargs['exc_info'][1]
+			if exc.__class__ == "APIException":
+				self.append("error", exc.jsonable())
+			if exc.__class__ == "SongNonExistent":
 				self.append("error", { "code": 0, "key": "song_does_not_exist", "text": "Song does not exist." })
 			else:
-				self.append("error", { "code": 500, "key": "internal_error", "text": repr(kwargs['exc_info']) })
+				self.append("error", { "code": 500, "key": "internal_error", "text": repr(exc) })
 		else:
 			self.append("error", { "code": status_code, "key": "internal_error", "text": self._reason } )
 		self.finish()

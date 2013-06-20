@@ -22,13 +22,8 @@ panels.RequestsPanel = {
 			that.el.appendChild(list.el);
 			that.el.appendChild(line.div);
 			
-			lyre.addCallback(list.update, "requests_user");
-			lyre.addCallback(line.update, "requests_all");
-			
-			initpiggyback['requests'] = "true";
-			if (lyre.sync_time > 0) {
-				lyre.async_get("requests_get", {});
-			}
+			lyre.addCallback(list.update, "requests");
+			lyre.addCallback(line.update, "request_line");
 			
 			help.addStep("managingrequests", { "h": "managingrequests", "p": "managingrequests_p", "skipf": function() { edi.openPanelLink(false, "requests"); } });
 			if (edi.mpi) {
@@ -302,7 +297,7 @@ var RequestList = function(sortable) {
 			if (i > 0) params += ",";
 			params += reqs[i].p.requestq_id;
 		}
-		lyre.async_get("requests_reorder", { "order": params });
+		lyre.async_get("order_requests", { "order": params });
 	};
 	
 	that.sortRequestArray = function(a, b) {
@@ -330,7 +325,7 @@ var Request = {
 	
 	linkifyDelete: function(requestq_id, el) {
 		el.style.cursor = "pointer";
-		el.addEventListener('click', function(e) { hotkey.stopBubbling(e); lyre.async_get("request_delete", { "requestq_id": requestq_id }); }, true);
+		el.addEventListener('click', function(e) { hotkey.stopBubbling(e); lyre.async_get("delete_request", { "requestq_id": requestq_id }); }, true);
 	},
 	
 	make: function(json) {

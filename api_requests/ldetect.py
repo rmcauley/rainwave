@@ -19,6 +19,7 @@ from backend import sync_to_front
 class IcecastHandler(RequestHandler):
 	sid_required = False
 	auth_required = False
+	hidden = True
 	
 	def prepare(self):
 		self.failed = True    # Assume failure unless otherwise told

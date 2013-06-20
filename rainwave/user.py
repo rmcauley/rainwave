@@ -294,6 +294,12 @@ class User(object):
 		if self.data['sid'] == sid and self.is_tunedin():
 			self.put_in_request_line(sid)
 			
+	def remove_request(self, song_id):
+		song_requested = db.c.fetch_var("SELECT reqstor_id FROM r4_request_store WHERE user_id = %s AND song_id = %s", (self.id, song_id))
+		if not song_requested:
+			raise APIException(0, "song_not_requested", "Song not requested.")
+		return db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (self.id, song_id))
+			
 	def put_in_request_line(self, sid):
 		if self.id <= 1:
 			return False
@@ -341,11 +347,13 @@ class User(object):
 							"WHERE user_id = %s "
 							"ORDER BY reqstor_order, reqstor_id",
 							(self.request_sid, self.id))
+			if not requests:
+				requests = []
 			for song in requests:
 				song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
 				song.pop('album_name', None)
 				song.pop('album_id', None)
-		return []
+		return requests
 	
 	def set_request_tunein_expiry(self, t = None):
 		if not self.is_in_request_line():
