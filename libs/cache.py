@@ -121,12 +121,10 @@ def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "request_user_positions")
 	refresh_local_station(sid, "user_rating_acl")
 	refresh_local_station(sid, "user_rating_acl_song_index")
-	refresh_local("listeners_internal")
 	refresh_local("request_expire_times")
 	refresh_local("calendar")
 	
 def reset_station_caches():
-	set("listeners_internal", {}, True)
 	set("request_expire_times", None, True)
 	set("calendar", [], True)
 	for sid in config.station_ids:

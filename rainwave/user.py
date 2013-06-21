@@ -135,20 +135,26 @@ class User(object):
 				log.debug("user", "Anonymous user key %s does not match DB key %s." % (api_key, auth_against))
 				return
 		self.authorized = True
+		
+	def get_listener_record(self, use_cache=True):
+		listener = None
+		if self.id > 1 and use_cache:
+			listener = cache.get_user(self.id, "listener_record")
+		else:
+			listener = db.c.fetch_row("SELECT "
+				"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
+				"FROM r4_listeners "
+				"WHERE user_id = %s AND listener_purge = FALSE", (self.id,))
+		self.data.update(listener)
+		if self.id > 1:
+			cache.set_user(self.id, "listener_record", listener)
+		return listener
 
 	def refresh(self):
-		#listener = None
-		# if self.id in cache.get("listeners_internal"):
-		# listener = cache.get("listeners_internal")[self.id]
-		# else:
-		# TODO: listeners_internal needs kind of a per-row updating, it may not be worth caching or it may be difficult to cache
-		# considering it needs consistency
-		listener = db.c.fetch_row("SELECT "
-			"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
-			"FROM r4_listeners "
-			"WHERE user_id = %s AND listener_purge = FALSE", (self.id,))
+		listener = get_listener_record()
+		if not listener:
+			listener = update_listener_cache()
 		if listener:
-			self.data.update(listener)
 			if self.data['sid'] == self.request_sid:
 				self.data['radio_tuned_in'] = True
 			elif self.request_sid == 0:

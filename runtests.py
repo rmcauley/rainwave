@@ -66,7 +66,6 @@ if not args.apionly:
 	rainwave.request.update_cache(1)
 	rainwave.playlist.prepare_cooldown_algorithm(1)
 	libs.cache.update_local_cache_for_sid(1)
-	libs.cache.set("listeners_internal", {})
 
 	# Prevents KeyError from occurring in playlist
 	for sid in range(1, 10):

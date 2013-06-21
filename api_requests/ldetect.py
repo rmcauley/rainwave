@@ -128,6 +128,7 @@ class AddListener(IcecastHandler):
 			self.failed = False
 		if not self.failed:
 			u = user.User(self.user_id)
+			u.get_listener_record(use_cache=False)
 			if u.has_requests() and not u.is_in_request_line():
 				u.put_in_request_line(sid)
 		sync_to_front.sync_frontend_user_id(self.user_id)
@@ -171,6 +172,7 @@ class RemoveListener(IcecastHandler):
 		self.append("User ID %s relay %s flagged for removal." % (self.get_argument("relay"), self.get_argument("client")))
 		if listener['user_id'] > 1:
 			sync_to_front.sync_frontend_user_id(listener['user_id'])
+			cache.set_user(listener['user_id'], "listener_record", None)
 		else:
 			sync_to_front.sync_frontend_ip(listener['listener_ip'])
 		self.failed = False
