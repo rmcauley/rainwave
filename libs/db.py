@@ -258,7 +258,6 @@ def close():
 	return True
 
 def create_tables():
-	# TODO: There should be a bootstrap option which should do all of the table creation without enabling test_mode, etc.
 	if config.test_mode:
 		_create_test_tables()
 

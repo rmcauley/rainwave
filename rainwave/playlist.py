@@ -10,13 +10,9 @@ from libs import db
 from libs import config
 from libs import log
 from libs import cache
-from rainwave import user as userlib
+from rainwave import rating
 
 cooldown_config = { }
-
-# TODO: Favourites!
-# TODO: Song ranks?
-# TODO: User rating...?
 
 class NoAvailableSongsException(Exception):
 	pass
@@ -243,7 +239,6 @@ class Song(object):
 		s.verified = d['song_verified']
 		s.data['sids'] = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (id,))
 		s.data['sid'] = sid
-		# TODO: fill in rank somehow/somewhere (but not as part of this, too heavy an SQL statement)
 		s.data['rank'] = None
 		s._assign_from_dict(d)
 
@@ -620,7 +615,7 @@ class Song(object):
 		self.data['user_rating'] = None
 		self.data['fave'] = False
 		if user:
-			self.data.update(userlib.get_song_rating(self.id, user.id))
+			self.data.update(rating.get_song_rating(self.id, user.id))
 		return self.data
 
 	def get_all_ratings(self):
@@ -783,12 +778,19 @@ def clear_updated_albums(sid):
 
 def get_updated_albums_dict(sid):
 	global updated_album_ids
+	previous_newest_album = cache.get_station(sid, "newest_album")
+	if not previous_newest_album:
+		previous_newest_album = time.time()
+	else:
+		newest_albums = db.c.fetch_list("SELECT album_id FROM r4_albums JOIN r4_album_sid USING (album_id) WHERE sid = %s AND album_added_on > %s", (sid, previous_newest_album))
+		for album_id in newest_albums:
+			updated_album_ids[sid][album_id] = True
+	cache.set_station(sid, "newest_album")
 	album_diff = []
 	for album_id in updated_album_ids[sid]:
 		album = Album.load_from_id_sid(album_id, sid)
 		album.solve_cool_lowest(sid)
 		album_diff.append(album.to_dict())
-	# TODO: Return newly added albums here (query new albums since last time this function was run)
 	return album_diff
 
 def warm_cooled_albums(sid):
@@ -1049,7 +1051,7 @@ class Album(AssociatedMetadata):
 	def to_dict(self, user = None):
 		d = super(Album, self).to_dict(user)
 		if user:
-			self.data.update(userlib.get_album_rating(self.id, user.id))
+			self.data.update(rating.get_album_rating(self.id, user.id))
 		else:
 			d['user_rating'] = None
 			d['fave'] = False

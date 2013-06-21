@@ -86,18 +86,11 @@ class MainIndex(tornado.web.RequestHandler):
 		self.sid = fieldtypes.integer(self.get_cookie("r4sid", "1"))
 		if not self.sid:
 			self.sid = 1
-
-		# TODO: Make this section configurable?
-		if self.request.host == "game.rainwave.cc":
-			self.sid = 1
-		elif self.request.host == "ocr.rainwave.cc":
-			self.sid = 2
-		elif self.request.host == "covers.rainwave.cc" or self.request.host == "cover.rainwave.cc":
-			self.sid = 3
-		elif self.request.host == "chiptune.rainwave.cc":
-			self.sid = 4
-		elif self.request.host == "all.rainwave.cc":
-			self.sid = 5
+		
+		for possible_sid in config.station_ids:
+			if self.request.host == config.get_station(possible_sid, "host"):
+				self.sid = possible_sid
+				break
 
 		self.set_cookie("r4sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 		phpbb_cookie_name = config.get("phpbb_cookie_name")
