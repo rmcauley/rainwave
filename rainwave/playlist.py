@@ -780,12 +780,12 @@ def get_updated_albums_dict(sid):
 	global updated_album_ids
 	previous_newest_album = cache.get_station(sid, "newest_album")
 	if not previous_newest_album:
-		previous_newest_album = time.time()
+		cache.set_station(sid, "newest_album", time.time())
 	else:
 		newest_albums = db.c.fetch_list("SELECT album_id FROM r4_albums JOIN r4_album_sid USING (album_id) WHERE sid = %s AND album_added_on > %s", (sid, previous_newest_album))
 		for album_id in newest_albums:
 			updated_album_ids[sid][album_id] = True
-	cache.set_station(sid, "newest_album")
+		cache.set_station(sid, "newest_album", time.time())
 	album_diff = []
 	for album_id in updated_album_ids[sid]:
 		album = Album.load_from_id_sid(album_id, sid)

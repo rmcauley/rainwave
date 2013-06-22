@@ -1,3 +1,4 @@
+from tornado.web import HTTPError
 from api import fieldtypes
 from api.web import RequestHandler
 from api.server import test_get
@@ -13,7 +14,6 @@ from rainwave import user as userlib
 @handle_api_url('request')
 class SubmitRequest(RequestHandler):
 	sid_required = True
-	return_name = "request_result"
 	login_required = True
 	tunein_required = True
 	unlocked_listener_only = False
@@ -23,12 +23,15 @@ class SubmitRequest(RequestHandler):
 	}
 	
 	def post(self):
-		self.user.add_request(self.sid, self.get_argument("song_id"))
+		if self.user.add_request(self.sid, self.get_argument("song_id")):
+			self.append(self.return_name, { "code": 1, "key": "request_success", "text": "Request submitted successfully." })
+			self.append("requests", self.user.get_requests())
+		else:
+			raise HTTPError(500)
 	
 @handle_api_url('delete_request')
 class DeleteRequest(RequestHandler):
 	sid_required = True
-	return_name = "request_result"
 	login_required = True
 	tunein_required = True
 	unlocked_listener_only = False
@@ -37,12 +40,15 @@ class DeleteRequest(RequestHandler):
 	}
 	
 	def post(self):
-		self.user.remove_request(self.get_argument("song_id"))
+		if self.user.remove_request(self.get_argument("song_id")):
+			self.append(self.return_name, { "code": 1, "key": "request_success", "text": "Request deleted successfully." })
+			self.append("requests", self.user.get_requests())
+		else:
+			raise HTTPError(500)
 
 @handle_api_url("order_requests")
 class OrderRequests(RequestHandler):
 	sid_required = True
-	return_name = "request_result"
 	login_required = True
 	tunein_required = True
 	unlocked_listener_only = False

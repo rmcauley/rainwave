@@ -1,3 +1,4 @@
+// TODO: Finish standardizing API4 error handling, then redo this file
 var errorcontrol = function() {
 	var that = {};
 	var errors = {};
@@ -16,7 +17,7 @@ var errorcontrol = function() {
 	that.setupCallbacks = function() {
 		lyre.addCallback(that.lyreError, "error");
 		lyre.addCallback(that.clearError2, "user");
-		lyre.addCallback(that.requestnewresult, "request_result");
+		lyre.addCallback(that.genericR4Error, "request_result");
 		lyre.addCallback(that.voteresult, "vote_result");
 		lyre.addCallback(that.rateresult, "rate_result");
 		lyre.addCallback(that.requestorderresult, "requests_reorder_result");
@@ -34,6 +35,12 @@ var errorcontrol = function() {
 	
 	that.genericError = function(json) {
 		if ((typeof(json.code) != "undefined") && json.text) {
+			that.doError(json.code, false, false, json.text, 2000);
+		}
+	};
+	
+	that.genericR4Error = function(json) {
+		if ((typeof(json.code) != "undefined") && json.text && json.code != 1) {
 			that.doError(json.code, false, false, json.text, 2000);
 		}
 	};

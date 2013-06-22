@@ -215,9 +215,9 @@ class RequestHandler(tornado.web.RequestHandler):
 		self._output = []
 		if kwargs.has_key("exc_info"):
 			exc = kwargs['exc_info'][1]
-			if exc.__class__ == "APIException":
+			if isinstance(exc, APIException):
 				self.append("error", exc.jsonable())
-			if exc.__class__ == "SongNonExistent":
+			elif exc.__class__.__name__ == "SongNonExistent":
 				self.append("error", { "code": 0, "key": "song_does_not_exist", "text": "Song does not exist." })
 			else:
 				self.append("error", { "code": 500, "key": "internal_error", "text": repr(exc) })

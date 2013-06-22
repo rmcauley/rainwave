@@ -140,20 +140,19 @@ class User(object):
 		listener = None
 		if self.id > 1 and use_cache:
 			listener = cache.get_user(self.id, "listener_record")
-		else:
+		if self.id == 1 or not use_cache or not listener:
 			listener = db.c.fetch_row("SELECT "
 				"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
 				"FROM r4_listeners "
 				"WHERE user_id = %s AND listener_purge = FALSE", (self.id,))
-		self.data.update(listener)
+		if listener:
+			self.data.update(listener)
 		if self.id > 1:
 			cache.set_user(self.id, "listener_record", listener)
 		return listener
 
 	def refresh(self):
-		listener = get_listener_record()
-		if not listener:
-			listener = update_listener_cache()
+		listener = self.get_listener_record()
 		if listener:
 			if self.data['sid'] == self.request_sid:
 				self.data['radio_tuned_in'] = True
@@ -228,15 +227,16 @@ class User(object):
 		elif self.has_requests() >= 6:
 			raise APIException(0, "too_many_requests6", "You are limited to 6 requests.")
 		for requested in self.get_requests():
-			if song.id == requested.id:
+			if song.id == requested['id']:
 				raise APIException(0, "same_request", "You've already requested that song.")
 			for album in song.albums:
-				for requested_album in requested.albums:
-					if album.id == requested_album.id:
-						raise APIException(0, "same_request_album", "You've already requested a song from that album.")
-		db.c.update("INSERT INTO r4_request_store VALUES (user_id, song_id) VALUES (%s, %s)", (self.id, song_id))
+				for requested_album in requested['albums']:
+					if album.id == requested_album['id']:
+						raise APIException(0, "same_request_album", "You've already requested a song from %s." % requested_album['name'])
+		updated_rows = db.c.update("INSERT INTO r4_request_store (user_id, song_id) VALUES (%s, %s)", (self.id, song_id))
 		if self.data['sid'] == sid and self.is_tunedin():
 			self.put_in_request_line(sid)
+		return updated_rows
 			
 	def remove_request(self, song_id):
 		song_requested = db.c.fetch_var("SELECT reqstor_id FROM r4_request_store WHERE user_id = %s AND song_id = %s", (self.id, song_id))

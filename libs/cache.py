@@ -58,13 +58,13 @@ def get(key):
 	return _memcache.get(key)
 
 def set_user(user, key, value):
-	if user.__class__.__name__ == 'int':
+	if user.__class__.__name__ == 'int' or user.__class__.__name__ == 'long':
 		set("u%s_%s" % (user, key), value)
 	else:
 		set("u%s_%s" % (user.id, key), value)
 	
 def get_user(user, key):
-	if user.__class__.__name__ == 'int':
+	if user.__class__.__name__ == 'int' or user.__class__.__name__ == 'long':
 		return get("u%s_%s" % (user, key))
 	else:
 		return get("u%s_%s" % (user.id, key))
