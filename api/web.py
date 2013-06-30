@@ -32,7 +32,7 @@ class RequestHandler(tornado.web.RequestHandler):
 	auth_required = True
 	# return_name is used for documentation, can be an array.
 	# If not inherited, return_key automatically turns into url + "_result".  Useful for simple requests like rate, vote, etc.
-	return_name = False
+	return_name = None
 	# Validate user's tuned in status first.
 	tunein_required = False
 	# Validate user's logged in status first.
@@ -84,8 +84,8 @@ class RequestHandler(tornado.web.RequestHandler):
 			self.set_status(403)
 			self.finish()
 
-		if self.return_name == False:
-			self.return_name = self.url + "_result"
+		if not self.return_name:
+			self.return_name = self.url[self.url.rfind("/")+1:] + "_result"
 		else:
 			self.return_name = self.return_name
 			
@@ -216,7 +216,7 @@ class RequestHandler(tornado.web.RequestHandler):
 		if kwargs.has_key("exc_info"):
 			exc = kwargs['exc_info'][1]
 			if isinstance(exc, APIException):
-				self.append("error", exc.jsonable())
+				self.append(self.return_name, exc.jsonable())
 			elif exc.__class__.__name__ == "SongNonExistent":
 				self.append("error", { "code": 0, "key": "song_does_not_exist", "text": "Song does not exist." })
 			else:

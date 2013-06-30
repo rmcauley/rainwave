@@ -40,6 +40,7 @@ var errorcontrol = function() {
 	};
 	
 	that.genericR4Error = function(json) {
+		// TODO: Use translation keys
 		if ((typeof(json.code) != "undefined") && json.text && json.code != 1) {
 			that.doError(json.code, false, false, json.text, 2000);
 		}
