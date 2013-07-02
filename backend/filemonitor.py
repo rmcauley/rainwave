@@ -1,4 +1,5 @@
 import os
+import os.path
 import time
 import mimetypes
 import sys
@@ -64,7 +65,7 @@ def _scan_directories():
 			file_counter = 0
 			for filename in files:
 				cache.set("backend_scan_counted", file_counter)
-				fqfn = root + "/" + filename
+				fqfn = os.path.normpath(root + "/" + filename)
 				try:
 					print fqfn
 				except UnicodeEncodeError:
@@ -98,30 +99,35 @@ def _scan_file(filename, sids, mp3_only = False):
 		_add_scan_error(filename, xception)
 		
 def process_album_art(filename):
-	directory = filename[0:filename.rfind("/")]
-	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_album USING (song_id) WHERE song_filename LIKE %s% AND r4_song_album.album_is_tag = TRUE", (directory,))
-	if not album_ids or len(album_id) == 0:
-		return
+	# There's an ugly bug here where psycopg isn't correctly escaping the path's \ on Windows
+	# So we need to repr() in order to get the proper number of \ and then chop the leading and trailing single-quotes
+	# Nasty bug.  This workaround needs to be tested on a POSIX system.
+	directory = repr(os.path.dirname(filename))[1:-1]
+	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_album USING (song_id) WHERE song_filename LIKE %s || '%%' AND r4_song_album.album_is_tag = TRUE", (directory,))
+	if not album_ids or len(album_ids) == 0:
+		return False
 	im_original = Image.open(filename)
-	im_320 = None
-	im_240 = None
-	im_120 = None
+	if not im_original:
+		print "Couldn't open art!"
+		_add_scan_error(filename, "Could not open album art.")
+		return False
+	im_320 = im_original
+	im_240 = im_original
+	im_120 = im_original
 	if im_original.size[0] > 420 or im_original.size[1] > 420:
-		im_320 = im_original.copy().thumbnail((320, 320), Image.ANTIALIAS)
-	else:
-		im_320 = im_original
+		im_320 = im_original.copy()
+		im_320.thumbnail((320, 320), Image.ANTIALIAS)
 	if im_original.size[0] > 260 or im_original.size[1] > 260:
-		im_240 = im_original.copy().thumbnail((240, 240), Image.ANTIALIAS)
-	else:
-		im_240 = im_original
+		im_240 = im_original.copy()
+		im_240.thumbnail((240, 240), Image.ANTIALIAS)
 	if im_original.size[0] > 160 or im_original.size[1] > 160:
-		im_120 = im_original.copy().thumbnail((120, 120), Image.ANTIALIAS)
-	else:
-		im_120 = im_original
+		im_120 = im_original.copy()
+		im_120.thumbnail((120, 120), Image.ANTIALIAS)
 	for album_id in album_ids:
 		im_120.save("%s/%s_120.jpg" % (config.get("album_art_file_path"), album_id))
 		im_240.save("%s/%s_240.jpg" % (config.get("album_art_file_path"), album_id))
 		im_320.save("%s/%s.jpg" % (config.get("album_art_file_path"), album_id))
+	return True
 			
 def _disable_file(filename):
 	try:
@@ -149,7 +155,7 @@ def _save_scan_errors():
 def monitor():
 	global _wm
 	if not _wm:
-		raise "Cannot monitor without pyinotify or on Windows."
+		raise "Cannot monitor on Windows, or without pyinotify."
 	
 	class EventHandler(pyinotify.ProcessEvent):
 		def __init__(self, sids):
