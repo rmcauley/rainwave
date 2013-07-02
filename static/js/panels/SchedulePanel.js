@@ -1,4 +1,4 @@
-panels.SchedulePanel = {
+/*panels.SchedulePanel = {
 	ytype: "slack",
 	height: UISCALE * 30,
 	minheight: UISCALE * 20,
@@ -331,3 +331,4 @@ panels.SchedulePanel = {
 		return that;
 	}
 };
+*/

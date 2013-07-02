@@ -11,7 +11,7 @@ panels.RequestsPanel = {
 	constructor: function(container) {
 		var that = {};
 		var list = RequestList(true);
-		var line = AllRequestList();
+		//var line = AllRequestList();
 		
 		that.container = container;
 		that.el = createEl("div", { "class": "requestspanel_constrict" }, container);
@@ -20,10 +20,10 @@ panels.RequestsPanel = {
 			container.style.overflow = "auto";
 			
 			that.el.appendChild(list.el);
-			that.el.appendChild(line.div);
+			//that.el.appendChild(line.div);
 			
 			lyre.addCallback(list.update, "requests");
-			lyre.addCallback(line.update, "request_line");
+			//lyre.addCallback(line.update, "request_line");
 			
 			help.addStep("managingrequests", { "h": "managingrequests", "p": "managingrequests_p", "skipf": function() { edi.openPanelLink(false, "requests"); } });
 			if (edi.mpi) {
@@ -135,7 +135,7 @@ var RequestList = function(sortable) {
 		for (i = 0; i < json.length; i++) {
 			found = false;
 			for (j = 0; j < reqs.length; j++) {
-				if (json[i].requestq_id == reqs[j].p.requestq_id) {
+				if (json[i].song_id == reqs[j].p.song_id) {
 					found = true;
 					reqs[j].update(json[i]);
 					if (reqs[j].fx_opacity.now != 1) reqs[j].fx_opacity.start(1);
@@ -149,7 +149,7 @@ var RequestList = function(sortable) {
 				newreq.fx_opacity = fx.make(fx.CSSNumeric, newreq.el, 250, "opacity");
 				newreq.fx_opacity.set(0);
 				if (sortable) {
-					newreq.el.requestq_id = json[i].requestq_id;
+					newreq.el.song_id = json[i].song_id;
 					newreq.el.addEventListener('mousedown', that.startDrag, false);
 				}
 				that.el.appendChild(newreq.el);
@@ -162,10 +162,10 @@ var RequestList = function(sortable) {
 		maxy = 0;
 		var reqid;
 		for (j = 0; j < reqs.length; j++) {
-			reqid = reqs[j].p.requestq_id;
+			reqid = reqs[j].p.song_id;
 			found = false;
 			for (var i = 0; i < json.length; i++) {
-				if (json[i].requestq_id == reqs[j].p.requestq_id) found = true;
+				if (json[i].song_id == reqs[j].p.song_id) found = true;
 			}
 			if (!found) {
 				reqs[j].purge = true;
@@ -207,7 +207,7 @@ var RequestList = function(sortable) {
 			if (reqs[i].purge) {
 				// nothing
 			}
-			else if (reqs[i].p.requestq_id == draggingid) {
+			else if (reqs[i].p.song_id == draggingid) {
 				runy += reqs[i].height + reqmargin;
 				runz += 1;
 			}
@@ -228,9 +228,9 @@ var RequestList = function(sortable) {
 		// find out what drag index we're using
 		dragidx = -1;
 		for (var i = 0; i < reqs.length; i++) {
-			if (reqs[i].p.requestq_id == e.currentTarget.requestq_id) {
+			if (reqs[i].p.song_id == e.currentTarget.song_id) {
 				dragidx = i;
-				draggingid = reqs[i].p.requestq_id;
+				draggingid = reqs[i].p.song_id;
 				dragel = reqs[i].el;
 				break;
 			}
@@ -295,7 +295,7 @@ var RequestList = function(sortable) {
 		
 		for (var i = 0; i < reqs.length; i++) {
 			if (i > 0) params += ",";
-			params += reqs[i].p.requestq_id;
+			params += reqs[i].p.song_id;
 		}
 		lyre.async_get("order_requests", { "order": params });
 	};
@@ -318,17 +318,35 @@ var RequestList = function(sortable) {
 };
 
 var Request = {
+	r4translate: function(json) {
+		var s = {};
+		s.song_title = json.title;
+		s.song_id = json.id;
+		s.album_id = json.albums[0].id;
+		s.album_name = json.albums[0].name;
+		s.song_available = json.cool;
+		s.sid = json.origin_sid;
+		s.song_releasetime = json.cool_end;
+		s.album_electionblock = json.elec_blocked_by == "album" ? true : false;
+		s.group_electionblock = json.elec_blocked_by == "group" ? true : false;
+		s.requestq_id = json.request_id;
+		s.requestq_order = json.order;
+		return s;
+	},
+	
 	linkify: function(song_id, el) {
 		el.style.cursor = "pointer";
 		el.addEventListener('click', function() { if (user.p.radio_tunedin) lyre.async_get("request", { "song_id": song_id }); else errorcontrol.doError(3002); }, true);
 	},
 	
-	linkifyDelete: function(requestq_id, el) {
+	linkifyDelete: function(song_id, el) {
 		el.style.cursor = "pointer";
-		el.addEventListener('click', function(e) { hotkey.stopBubbling(e); lyre.async_get("delete_request", { "requestq_id": requestq_id }); }, true);
+		el.addEventListener('click', function(e) { hotkey.stopBubbling(e); lyre.async_get("delete_request", { "song_id": song_id }); }, true);
 	},
 	
 	make: function(json) {
+		json = Request.r4translate(json);
+		
 		var that = {};
 		that.el = document.createElement("div");
 		
@@ -348,7 +366,7 @@ var Request = {
 		// another instance of "courier new not having the right character"
 		that.xbutton.textContent = "⨯";
 		that.xbutton.setAttribute("class", "request_xbutton");
-		Request.linkifyDelete(json.requestq_id, that.xbutton);
+		Request.linkifyDelete(json.song_id, that.xbutton);
 		that.song_title.appendChild(that.xbutton);
 		
 		that.song_title_text = document.createElement("span");

@@ -17,7 +17,7 @@ var errorcontrol = function() {
 	that.setupCallbacks = function() {
 		lyre.addCallback(that.lyreError, "error");
 		lyre.addCallback(that.clearError2, "user");
-		lyre.addCallback(that.genericR4Error, "request_result");
+		lyre.addCallback(that.genericR4Result, "request_result");
 		lyre.addCallback(that.voteresult, "vote_result");
 		lyre.addCallback(that.rateresult, "rate_result");
 		lyre.addCallback(that.requestorderresult, "requests_reorder_result");
@@ -39,9 +39,18 @@ var errorcontrol = function() {
 		}
 	};
 	
+	that.genericR4Result = function(json) {
+		// TODO: Use translation keys for error clearing instead of codes
+		if (json.code != 1) {
+			that.genericR4Error(json);
+		}
+		else if (json.code == 1) {
+			that.doError(json.code, false, "err_div_ok", _l(json.key), 1250);
+		}
+	};
+	
 	that.genericR4Error = function(json) {
-		// TODO: Use translation keys
-		if ((typeof(json.code) != "undefined") && json.text && json.code != 1) {
+		if (json.code != 1) {
 			that.doError(json.code, false, false, json.text, 2000);
 		}
 	};
@@ -147,10 +156,7 @@ var errorcontrol = function() {
 	};
 	
 	that.requestnewresult = function(json) {
-		if ((typeof(json.code) != "undefined") && (json.code <= 0)) {
-			that.doError(3000 + Math.abs(json.code));
-		}
-		else if ((typeof(json.code) != "undefined") && (json.code == 1)) {
+		if (json.code == 1) {
 			that.doError(3500, false, "err_div_ok", _l("requestok"), 1250);
 		}
 	};

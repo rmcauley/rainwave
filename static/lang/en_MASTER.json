@@ -33,6 +33,8 @@
     "log_701": "Page error - please refresh and try again.",
     "log_702": "Already voted for this song.",
     
+    "request_success": "Request submitted.",
+    
     "log_1000": "Oops!  You found a bug!",
     "log_1001": "Bad JSON response from server.",
     "log_2000": "Server-side error while submitting vote.",

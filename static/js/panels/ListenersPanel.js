@@ -1,4 +1,4 @@
-panels.ListenersPanel = {
+/*panels.ListenersPanel = {
 	ytype: "fit",
 	height: 300,
 	minheight: 300,
@@ -121,3 +121,4 @@ var ListenersSearchTable = function(parent, container, view) {
 	
 	return that;
 };
+*/
