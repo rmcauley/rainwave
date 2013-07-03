@@ -65,27 +65,27 @@ def _scan_directories():
 			file_counter = 0
 			for filename in files:
 				cache.set("backend_scan_counted", file_counter)
-				fqfn = os.path.normpath(root + "/" + filename)
+				fqfn = os.path.normpath(root + os.sep + filename)
 				try:
 					print fqfn
 				except UnicodeEncodeError:
 					print "<< unicode filename >>"
-				_scan_file(fqfn, sids, True)
+				_scan_file(fqfn, sids)
 	_save_scan_errors()
 	
 def _is_mp3(filename):
 	filetype = mimetypes.guess_type(filename)
-	if filetype and filetype[0] == "audio/x-mpg":
+	if len(filetype) > 0 and filetype[0] and filetype[0] == "audio/x-mpg":
 		return True
 	return False
 
 def _is_image(filename):
 	filetype = mimetypes.guess_type(filename)
-	if filetype and filetype[0].count("image") == 1:
+	if len(filetype) > 0 and filetype[0] and filetype[0].count("image") == 1:
 		return True
 	return False
 	
-def _scan_file(filename, sids, mp3_only = False):
+def _scan_file(filename, sids):
 	try:
 		if _is_mp3(filename):
 			# print "Scanning %s" % filename
@@ -93,7 +93,7 @@ def _scan_file(filename, sids, mp3_only = False):
 			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s", (filename,))
 			if not old_mtime or old_mtime != os.stat(filename)[8]:
 				playlist.Song.load_from_file(filename, sids)
-		if not mp3_only and _is_image(filename):
+		elif _is_image(filename):
 			process_album_art(filename)
 	except Exception as xception:
 		_add_scan_error(filename, xception)
@@ -102,13 +102,12 @@ def process_album_art(filename):
 	# There's an ugly bug here where psycopg isn't correctly escaping the path's \ on Windows
 	# So we need to repr() in order to get the proper number of \ and then chop the leading and trailing single-quotes
 	# Nasty bug.  This workaround needs to be tested on a POSIX system.
-	directory = repr(os.path.dirname(filename))[1:-1]
+	directory = repr(os.path.dirname(filename))[2:-1]
 	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_album USING (song_id) WHERE song_filename LIKE %s || '%%' AND r4_song_album.album_is_tag = TRUE", (directory,))
 	if not album_ids or len(album_ids) == 0:
 		return False
 	im_original = Image.open(filename)
 	if not im_original:
-		print "Couldn't open art!"
 		_add_scan_error(filename, "Could not open album art.")
 		return False
 	im_320 = im_original

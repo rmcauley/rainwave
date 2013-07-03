@@ -1,19 +1,12 @@
 #!/usr/bin/python
 
-import os
-import sys
-import tempfile
 import argparse
+import sys
 
 import libs.config
 import libs.db
-import libs.cache
-import libs.log
-import rainwave.playlist
-import rainwave.event
-import rainwave.request
 
-parser = argparse.ArgumentParser(description="Rainwave unit and API testing.")
+parser = argparse.ArgumentParser(description="Rainwave DB table creator.")
 parser.add_argument("--config", default=None)
 args = parser.parse_args()
 libs.config.load(args.config)
