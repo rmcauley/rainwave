@@ -4,12 +4,15 @@ from libs import cache
 from rainwave import playlist
 from rainwave.user import User
 
+# TODO: This entire module needs a big whoppin' code review
+
 def update_cache(sid):
 	update_expire_times()
 	update_line(sid)
 	
 def update_line(sid):
 	# TODO: This needs code review
+	# TODO: Where's the part of this function that updates the database?
 	# Get everyone in the line
 	line = db.c.fetch_all("SELECT username, user_id, line_expiry_tune_in, line_expiry_election FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE sid = %s ORDER BY line_wait_start", (sid,))
 	new_line = []
@@ -27,12 +30,8 @@ def update_line(sid):
 		else:
 			# refresh the user to get their data, using local cache only - speed things up here
 			u.refresh()
-			# If they're not tuned in and haven't been marked as expiring yet, mark them, add to line, move on
-			if not u.data['radio_tuned_in'] and not u.data['radio_tuned_in']:
-				row['line_expiry_tune_in'] = t + 600
-				add_to_line = True
 			# do nothing if they're not tuned in
-			elif not u.data['radio_tuned_in']:
+			if not u.data['radio_tuned_in']:
 				pass
 			else:
 				# Get their top song ID
@@ -96,6 +95,7 @@ def get_next(sid):
 			if u.has_requests():
 				u.put_in_request_line(u.get_top_request_sid())
 			cache.set_station(sid, "request_line", line, True)
+			# TODO: Add to review history
 			break
 
 	return song

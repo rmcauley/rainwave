@@ -102,6 +102,8 @@ def process_album_art(filename):
 	# There's an ugly bug here where psycopg isn't correctly escaping the path's \ on Windows
 	# So we need to repr() in order to get the proper number of \ and then chop the leading and trailing single-quotes
 	# Nasty bug.  This workaround needs to be tested on a POSIX system.
+	if not config.get("album_art_enabled"):
+		return True
 	directory = repr(os.path.dirname(filename))[2:-1]
 	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_album USING (song_id) WHERE song_filename LIKE %s || '%%' AND r4_song_album.album_is_tag = TRUE", (directory,))
 	if not album_ids or len(album_ids) == 0:

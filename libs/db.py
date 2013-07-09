@@ -278,6 +278,7 @@ def create_tables():
 			song_cool_override			INTEGER		, \
 			song_origin_sid				SMALLINT	NOT NULL, \
 			song_artist_tag				TEXT		, \
+			song_request_count			INT			DEFAULT 0, \
 			song_file_mtime				INTEGER		\
 		)")
 	c.create_idx("r4_songs", "song_verified")
@@ -295,7 +296,6 @@ def create_tables():
 			song_elec_blocked_by			TEXT		, \
 			song_vote_share				REAL		, \
 			song_vote_total				INTEGER		, \
-			song_request_count			INTEGER		DEFAULT 0, \
 			song_played_last			INTEGER		, \
 			song_exists				BOOLEAN		DEFAULT TRUE, \
 			song_request_only			BOOLEAN		DEFAULT FALSE \
@@ -312,7 +312,7 @@ def create_tables():
 		CREATE TABLE r4_song_ratings ( \
 			song_id					INTEGER		NOT NULL, \
 			user_id					INTEGER		NOT NULL, \
-			song_user_rating			REAL		, \
+			song_rating_user			REAL		, \
 			song_rated_at				INTEGER		, \
 			song_rated_at_rank			INTEGER		, \
 			song_rated_at_count			INTEGER		, \
@@ -359,8 +359,9 @@ def create_tables():
 		CREATE TABLE r4_album_ratings ( \
 			album_id				INTEGER		NOT NULL, \
 			user_id					INTEGER		NOT NULL, \
-			album_user_rating			REAL		, \
-			album_fave				BOOLEAN		DEFAULT FALSE \
+			album_rating_user		REAL		, \
+			album_fave				BOOLEAN		DEFAULT FALSE, \
+			album_rating_complete	BOOLEAN		DEFAULT FALSE, \
 		)")
 	c.create_idx("r4_album_ratings", "user_id", "album_id")
 	c.create_idx("r4_album_ratings", "album_id")
@@ -522,9 +523,9 @@ def create_tables():
 		CREATE TABLE r4_donations ( \
 			donation_id				SERIAL		PRIMARY KEY, \
 			user_id					INTEGER		, \
-			donation_amount				REAL		, \
-			donation_message			TEXT		, \
-			donation_private			BOOLEAN		DEFAULT TRUE \
+			donation_amount			REAL		, \
+			donation_message		TEXT		, \
+			donation_private		BOOLEAN		DEFAULT TRUE \
 		)")
 
 	c.update(" \
@@ -560,7 +561,7 @@ def create_tables():
 			song_id					INTEGER		NOT NULL, \
 			request_fulfilled_at			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 			request_wait_time			INTEGER		, \
-			request_queue_size			INTEGER		, \
+			request_line_size			INTEGER		, \
 			request_at_rank				INTEGER		, \
 			request_at_count			INTEGER		\
 		)")

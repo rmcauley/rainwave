@@ -195,7 +195,7 @@ def get_all_albums_list(sid, user = None):
 			(sid,))
 	else:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_fave AS fave, album_user_rating AS user_rating "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_fave AS fave, album_rating_user AS user_rating "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
@@ -503,10 +503,10 @@ class Song(object):
 		"""
 		Calculate an updated rating from the database.
 		"""
-		dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_user_rating < 3 GROUP BY song_id", (self.id,))
-		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_user_rating >= 3 AND song_user_rating < 3.5 GROUP BY song_id", (self.id,));
-		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_user_rating >= 3.5 AND song_user_rating < 4 GROUP BY song_id", (self.id,));
-		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_user_rating >= 4 GROUP BY song_id", (self.id,));
+		dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user < 3 GROUP BY song_id", (self.id,))
+		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3 AND song_rating_user < 3.5 GROUP BY song_id", (self.id,));
+		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3.5 AND song_rating_user < 4 GROUP BY song_id", (self.id,));
+		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 4 GROUP BY song_id", (self.id,));
 		rating_count = dislikes + neutrals + neutralplus + likes
 		if rating_count > config.get("rating_threshold_for_calc"):
 			self.rating = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
@@ -588,8 +588,8 @@ class Song(object):
 
 		self.data['rating_histogram'] = {}
 		histo = db.c.fetch_all("SELECT "
-							   "ROUND(((song_user_rating * 10) - (CAST(song_user_rating * 10 AS SMALLINT) %% 5))) / 10 AS user_rating_rnd, "
-							   "COUNT(song_user_rating) AS user_rating_count "
+							   "ROUND(((song_rating_user * 10) - (CAST(song_rating_user * 10 AS SMALLINT) %% 5))) / 10 AS user_rating_rnd, "
+							   "COUNT(song_rating_user) AS user_rating_count "
 							   "FROM r4_song_ratings JOIN phpbb_users USING (user_id) "
 							   "WHERE radio_inactive = FALSE AND song_id = %s "
 							   "GROUP BY song_rating_rnd "
@@ -619,10 +619,10 @@ class Song(object):
 		return self.data
 
 	def get_all_ratings(self):
-		table = db.c.fetch_all("SELECT song_user_rating, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
+		table = db.c.fetch_all("SELECT song_rating_user, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
 		all_ratings = {}
 		for row in all_ratings:
-			all_ratings[row['user_id']] = { "user_rating": row['song_user_rating'], "fave": row['song_fave'] }
+			all_ratings[row['user_id']] = { "user_rating": row['song_rating_user'], "fave": row['song_fave'] }
 		return all_ratings
 
 	def update_last_played(self, sid):
@@ -846,10 +846,10 @@ class Album(AssociatedMetadata):
 													"GROUP BY r4_song_album.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating",
 													(instance.id,))
 		else:
-			instance.data['songs'] = db.c.fetch_all("SELECT r4_song_album.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiplty, song_cool_override AS cool_override, COALESCE(song_user_rating, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave, string_agg(artist_id || ':' || artist_name,  ',') AS artist_parseable  "
+			instance.data['songs'] = db.c.fetch_all("SELECT r4_song_album.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiplty, song_cool_override AS cool_override, COALESCE(song_rating_user, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave, string_agg(artist_id || ':' || artist_name,  ',') AS artist_parseable  "
 													"FROM r4_song_album JOIN r4_song_sid USING (song_id) JOIN r4_songs USING (song_id) JOIN r4_song_artist USING (song_id) JOIN r4_artists USING (artist_id) LEFT JOIN r4_song_ratings ON (r4_song_album.song_id = r4_song_ratings.song_id) "
 													"WHERE r4_song_album.album_id = %s "
-													"GROUP BY r4_song_album.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_user_rating, song_fave, song_cool_override, song_cool_multiply",
+													"GROUP BY r4_song_album.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply",
 													(instance.id,))
 		return instance
 
@@ -985,9 +985,9 @@ class Album(AssociatedMetadata):
 		return self.data['cool_lowest']
 
 	def update_rating(self):
-		dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_user_rating < 3 GROUP BY album_id", (self.id,))
-		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_user_rating >= 3 AND album_user_rating < 3.5 GROUP BY album_id", (self.id,));
-		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_user_rating >= 3.5 AND album_user_rating < 4 GROUP BY album_id", (self.id,));
+		dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user < 3 GROUP BY album_id", (self.id,))
+		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3 AND album_rating_user < 3.5 GROUP BY album_id", (self.id,));
+		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3.5 AND album_rating_user < 4 GROUP BY album_id", (self.id,));
 		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating >= 4 GROUP BY song_id", (self.id,));
 		rating_count = dislikes + neutrals + neutralplus + likes
 		if rating_count > config.get("rating_threshold_for_calc"):
@@ -1002,10 +1002,10 @@ class Album(AssociatedMetadata):
 		return db.c.update("UPDATE r4_album_sid SET album_vote_total = %s WHERE album_id = %s AND sid = %s", (vote_total, self.id, sid))
 
 	def get_all_ratings(self):
-		table = db.c.fetch_all("SELECT album_user_rating, album_fave, user_id FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s", (self.id,))
+		table = db.c.fetch_all("SELECT album_rating_user, album_fave, user_id FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s", (self.id,))
 		all_ratings = {}
 		for row in table:
-			all_ratings[row['user_id']] = { "user_rating": row['album_user_rating'], "fave": row['album_fave'] }
+			all_ratings[row['user_id']] = { "user_rating": row['album_rating_user'], "fave": row['album_fave'] }
 		return all_ratings
 
 	def _start_election_block_db(self, sid, num_elections):
@@ -1038,8 +1038,8 @@ class Album(AssociatedMetadata):
 
 		self.data['rating_histogram'] = {}
 		histo = db.c.fetch_all("SELECT "
-							   "ROUND(((album_user_rating * 10) - (CAST(album_user_rating * 10 AS SMALLINT) %% 5))) / 10 AS rating_rnd, "
-							   "COUNT(album_user_rating) AS rating_count "
+							   "ROUND(((album_rating_user * 10) - (CAST(album_rating_user * 10 AS SMALLINT) %% 5))) / 10 AS rating_rnd, "
+							   "COUNT(album_rating_user) AS rating_count "
 							   "FROM r4_album_ratings JOIN phpbb_users USING (user_id) "
 							   "WHERE radio_inactive = FALSE AND album_id = %s "
 							   "GROUP BY rating_rnd "
@@ -1091,7 +1091,7 @@ class Artist(AssociatedMetadata):
 							"ORDER BY album_name, origin_sid, song_title",
 							(sid, self.id))
 		else:
-			self.data['songs'] = db.c.fetch_all("SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS requestable, COALESCE(song_user_rating, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave "
+			self.data['songs'] = db.c.fetch_all("SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS requestable, COALESCE(song_rating_user, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave "
 							"FROM r4_song_artist JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id) "
 							"WHERE r4_song_artist.artist_id = %s "
 							"ORDER BY album_name, origin_sid, song_title",
