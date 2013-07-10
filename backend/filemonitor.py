@@ -60,19 +60,25 @@ def _scan_directories():
 	
 	leftovers = []
 	for directory, sids in _directories.iteritems():
-		for root, subdirs, files in os.walk(directory.decode("utf-8"), followlinks = True):
+		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
 			cache.set("backend_scan_size", len(files))
 			file_counter = 0
 			for filename in files:
 				cache.set("backend_scan_counted", file_counter)
-				try:
-					filename = filename.encode("utf-8")
-				except UnicodeDecodeError:
-					os.rename(filename, filename.encode("utf-8", errors="ignore"))
-					filename = filename.encode("utf-8", errors="ignore")
 				fqfn = os.path.normpath(root + os.sep + filename)
-				print fqfn
-				_scan_file(fqfn, sids)
+				scan = True
+				try:
+					fqfn = fqfn.decode("utf-8")
+				except UnicodeDecodeError:
+					try:
+						os.rename(fqfn, fqfn.decode("utf-8", errors="ignore"))
+						fqfn = fqfn.decode("utf-8", errors="ignore")
+					except Exception as xception:
+						scan = False
+						_add_scan_error(fqfn.decode("utf-8", errors="ignore"), xception)
+				if scan:
+					print fqfn.encode("utf-8")
+					_scan_file(fqfn, sids)
 	_save_scan_errors()
 	
 def _is_mp3(filename):
