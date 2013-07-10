@@ -76,6 +76,7 @@ def _scan_directories():
 					except Exception as xception:
 						scan = False
 						_add_scan_error(fqfn.decode("utf-8", errors="ignore"), xception)
+						raise
 				if scan:
 					print fqfn.encode("utf-8")
 					_scan_file(fqfn, sids)
