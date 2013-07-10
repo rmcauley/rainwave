@@ -73,9 +73,14 @@ def _scan_directories():
 					try:
 						os.rename(fqfn, fqfn.decode("utf-8", errors="ignore"))
 						fqfn = fqfn.decode("utf-8", errors="ignore")
-					except Exception as xception:
+					except OSError as e:
 						scan = False
-						_add_scan_error(fqfn.decode("utf-8", errors="ignore"), xception)
+						new_e = Exception("Permissions or file error renaming non-UTF-8 filename.  Please rename or fix permissions.")
+						_add_scan_error(fqfn.decode("utf-8", errors="ignore"), new_e)
+						raise new_e
+					except Exception as e:
+						scan = False
+						_add_scan_error(fqfn.decode("utf-8", errors="ignore"), e)
 						raise
 				if scan:
 					print fqfn.encode("utf-8")
