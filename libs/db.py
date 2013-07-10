@@ -361,7 +361,7 @@ def create_tables():
 			user_id					INTEGER		NOT NULL, \
 			album_rating_user		REAL		, \
 			album_fave				BOOLEAN		DEFAULT FALSE, \
-			album_rating_complete	BOOLEAN		DEFAULT FALSE, \
+			album_rating_complete	BOOLEAN		DEFAULT FALSE \
 		)")
 	c.create_idx("r4_album_ratings", "user_id", "album_id")
 	c.create_idx("r4_album_ratings", "album_id")

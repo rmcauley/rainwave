@@ -60,6 +60,7 @@ def update_line(sid):
 	cache.set_station(sid, "request_user_positions", user_positions, True)
 
 def update_expire_times():
+	# TODO: Are we using songs or time for election expiries?
 	expiries = db.c.fetch_all("SELECT * FROM r4_request_line")
 	expiry_times = {}
 	for row in expiries:

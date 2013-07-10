@@ -59,17 +59,19 @@ def _scan_directories():
 	global _directories
 	
 	leftovers = []
-	for dir, sids in _directories.iteritems():
-		for root, subdirs, files in os.walk(dir, followlinks = True):
+	for directory, sids in _directories.iteritems():
+		for root, subdirs, files in os.walk(directory.decode("utf-8"), followlinks = True):
 			cache.set("backend_scan_size", len(files))
 			file_counter = 0
 			for filename in files:
 				cache.set("backend_scan_counted", file_counter)
-				fqfn = os.path.normpath(root + os.sep + filename)
 				try:
-					print fqfn
-				except UnicodeEncodeError:
-					print "<< unicode filename >>"
+					filename = filename.encode("utf-8")
+				except UnicodeDecodeError:
+					os.rename(filename, filename.encode("utf-8", errors="ignore"))
+					filename = filename.encode("utf-8", errors="ignore")
+				fqfn = os.path.normpath(root + os.sep + filename)
+				print fqfn
 				_scan_file(fqfn, sids)
 	_save_scan_errors()
 	
