@@ -54,6 +54,28 @@ def full_update():
 	
 	cache.set("backend_scan", "off")
 	
+def _fix_codepage_1252(filename, path = None):
+	fqfn = filename
+	if path:
+		fqfn = os.path.normpath(path + os.sep + filename)
+	try:
+		fqfn = fqfn.decode("utf-8")
+	except UnicodeDecodeError:
+		try:
+			os.rename(fqfn, fqfn.decode("utf-8", errors="ignore"))
+			fqfn = fqfn.decode("utf-8", errors="ignore")
+		except OSError as e:
+			new_e = Exception("Permissions or file error renaming non-UTF-8 filename.  Please rename or fix permissions.")
+			_add_scan_error(fqfn.decode("utf-8", errors="ignore"), new_e)
+			raise new_e
+		except Exception as e:
+			_add_scan_error(fqfn.decode("utf-8", errors="ignore"), e)
+			raise
+	except Exception as e:
+		_add_scan_error(fqfn.decode("utf-8", errors="ignore"), e)
+		raise
+	return fqfn
+	
 def _scan_directories():
 	global _scan_errors
 	global _directories
@@ -65,26 +87,9 @@ def _scan_directories():
 			file_counter = 0
 			for filename in files:
 				cache.set("backend_scan_counted", file_counter)
-				fqfn = os.path.normpath(root + os.sep + filename)
-				scan = True
-				try:
-					fqfn = fqfn.decode("utf-8")
-				except UnicodeDecodeError:
-					try:
-						os.rename(fqfn, fqfn.decode("utf-8", errors="ignore"))
-						fqfn = fqfn.decode("utf-8", errors="ignore")
-					except OSError as e:
-						scan = False
-						new_e = Exception("Permissions or file error renaming non-UTF-8 filename.  Please rename or fix permissions.")
-						_add_scan_error(fqfn.decode("utf-8", errors="ignore"), new_e)
-						raise new_e
-					except Exception as e:
-						scan = False
-						_add_scan_error(fqfn.decode("utf-8", errors="ignore"), e)
-						raise
-				if scan:
-					print fqfn.encode("utf-8")
-					_scan_file(fqfn, sids)
+				fqfn = _fix_codepage_1252(filename, root)
+				print fqfn.encode("utf-8")
+				_scan_file(fqfn, sids)
 	_save_scan_errors()
 	
 def _is_mp3(filename):
@@ -175,12 +180,18 @@ def monitor():
 	class EventHandler(pyinotify.ProcessEvent):
 		def __init__(self, sids):
 			self.sids = sids
-	
+			
+		def _rw_process(self, event):
+			try:
+				_scan_file(_fix_codepage_1252(event.pathname, self.sids))
+			except Exception as e:
+				_add_scan_error(filename, e)
+
 		def process_IN_CREATE(self, event):
-			_scan_file(event.pathname, self.sids)
+			self._rw_process(event)
 			
 		def process_IN_MODIFY(self, event):
-			_scan_file(event.pathname, self.sids)
+			self._rw_process(event)
 			
 		def process_IN_DELETE(self, event):
 			_disable_file(event.pathname)
