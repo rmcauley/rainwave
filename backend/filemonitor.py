@@ -86,13 +86,13 @@ def _scan_directories():
 			cache.set("backend_scan_size", len(files))
 			file_counter = 0
 			for filename in files:
-				cache.set("backend_scan_counted", file_counter)
-				_scan_file(_fix_codepage_1252(filename, root), sids)
+				cache.set("backend_scan_counted", file_counter + 1)
+				_scan_file(_fix_codepage_1252(filename, root), sids, True)
 	_save_scan_errors()
 	
 def _is_mp3(filename):
 	filetype = mimetypes.guess_type(filename)
-	if len(filetype) > 0 and filetype[0] and filetype[0] == "audio/x-mpg":
+	if len(filetype) > 0 and filetype[0] and (filetype[0] == "audio/x-mpg" or filetype[0] == "audio/mpeg"):
 		return True
 	return False
 
@@ -102,7 +102,7 @@ def _is_image(filename):
 		return True
 	return False
 	
-def _scan_file(filename, sids):
+def _scan_file(filename, sids, throw_exceptions = False):
 	try:
 		if _is_mp3(filename):
 			# print "Scanning %s" % filename
@@ -114,7 +114,9 @@ def _scan_file(filename, sids):
 			process_album_art(filename)
 	except Exception as xception:
 		_add_scan_error(filename, xception)
-		
+		if throw_exceptions:
+			raise
+
 def process_album_art(filename):
 	# There's an ugly bug here where psycopg isn't correctly escaping the path's \ on Windows
 	# So we need to repr() in order to get the proper number of \ and then chop the leading and trailing single-quotes
@@ -204,5 +206,3 @@ def monitor():
 	print "Monitoring"
 	asyncore.loop()
 	cache.set("backend_scan", "off")
-	
-
