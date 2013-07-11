@@ -3,16 +3,16 @@
 import os
 import sys
 
-import libs.config
-import libs.db
+from libs import config
+from libs import db
 import rainwave.playlist
 
 # Step 1: db_init.py
 # Step 2: rw_scanner.py --full
 # Step 3: this script
 	
-libs.config.load()
-libs.db.open()
+config.load()
+db.open()
 
 class R3Song(rainwave.playlist.Song):
 	def load_r3_data(self):
@@ -43,7 +43,7 @@ for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums"):
 	
 for donation in db.c.fetch_all("SELECT * FROM rw_donations ORDER BY donation_id"):
 	db.c.update("INSERT INTO r4_donations(user_id, donation_amount, donation_message, donation_private) VALUES (%s, %s, %s, %s)",
-				(donation['user_id'], donation['donation_amount'], donation['donation_desc'], donation['donation_private']))
+				(donation['user_id'], donation['donation_amount'], donation['donation_desc'], donation['donation_private_name']))
 
 translated_stats = 0	
 for stat in db.c.fetch_all("SELECT * FROM rw_listenerstats ORDER BY lstats_time"):

@@ -87,9 +87,7 @@ def _scan_directories():
 			file_counter = 0
 			for filename in files:
 				cache.set("backend_scan_counted", file_counter)
-				fqfn = _fix_codepage_1252(filename, root)
-				print fqfn.encode("utf-8")
-				_scan_file(fqfn, sids)
+				_scan_file(_fix_codepage_1252(filename, root), sids)
 	_save_scan_errors()
 	
 def _is_mp3(filename):
