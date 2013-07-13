@@ -92,7 +92,7 @@ class MainIndex(tornado.web.RequestHandler):
 				self.sid = possible_sid
 				break
 
-		self.set_cookie("r4sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
+		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 		phpbb_cookie_name = config.get("phpbb_cookie_name")
 		self.user = None
 		if not fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", "")):
