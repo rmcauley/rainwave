@@ -96,10 +96,6 @@ def get_current_event(sid):
 def advance_station(sid):
 	playlist.prepare_cooldown_algorithm(sid)
 	playlist.clear_updated_albums(sid)
-	
-	# TODO LATER: Make sure we can "pause" the station here to handle DJ interruptions
-	# Requires controlling the streamer itself to some degree and will take more
-	# work on the API than the back-end.
 
 	current[sid].finish()
 	
@@ -175,7 +171,13 @@ def integrate_new_events(sid):
 	return (max_sched_id, max_elec_id, num_elections)
 
 def sort_next(sid):
+	global next
 	next[sid] = sorted(next[sid], key=lambda event: event.start)
+	
+	# Calibrate the start points of each scheduled event
+	next[sid][0].start = current[sid].start + current[sid].length()
+	for i in range(1, len(next[sid])):
+		next[sid][i].start = next[sid][i - 1].start + next[sid][i - 1].length()
 	
 def _create_elections(sid):
 	# Step, er, 0: Update the request cache first, so elections have the most recent data to work with

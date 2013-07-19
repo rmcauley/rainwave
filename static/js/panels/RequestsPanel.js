@@ -119,7 +119,11 @@ var RequestList = function(sortable) {
 
 	that.update = function(json) {
 		that.stopDrag(false, true);
-		that.p = json;
+		that.p = []
+		for (var i = 0; i < json.length; i++) {
+			that.p.push(Request.r4translate(json[i]));	
+		}
+		json = that.p;
 		
 		if (json.length == 0) {
 			_l("reqnorequests", false, that.header);
@@ -345,8 +349,6 @@ var Request = {
 	},
 	
 	make: function(json) {
-		json = Request.r4translate(json);
-		
 		var that = {};
 		that.el = document.createElement("div");
 		
