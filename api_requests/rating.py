@@ -8,7 +8,7 @@ import api.returns
 from libs import cache
 from libs import log
 from rainwave import playlist
-from rainwave import rating
+from rainwave import rating as ratinglib
 
 @handle_api_url('rate')
 class SubmitRating(RequestHandler):
@@ -32,6 +32,6 @@ class SubmitRating(RequestHandler):
 		acl = cache.get_station(self.sid, "user_rating_acl")
 		if not song_id in acl or not self.user.id in acl[song_id]:
 			return { "code": 0, "text": "Cannot rate that song at this time." }
-		albums = rating.set_song_rating(song_id, self.user.id, rating)
+		albums = ratinglib.set_song_rating(song_id, self.user.id, rating)
 		return { "code": 1, "text": "Rating successful.", "updated_album_ratings": albums }
 

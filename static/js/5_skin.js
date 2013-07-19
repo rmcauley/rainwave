@@ -1325,13 +1325,13 @@ function _THEME() {
 					ns.tr.appendChild(ns.td_fc);
 				}
 
-				if (song_data[i].id && (user.p.radio_admin > 0)) {
-					ns.td_multiplier = document.createElement("td");
-					ns.td_multiplier.setAttribute("class", "pl_songlist_multiplier");
-					ns.multiplier_field = createEl("input", { "type": "text", "value": song_data[i].cool_multiply }, ns.td_multiplier);
-					Song.addChangeMultiplierListener(song_data[i].id, ns.multiplier_field);
-					ns.tr.appendChild(ns.td_multiplier);
-				}
+				//if (song_data[i].id && (user.p.radio_admin > 0)) {
+				//	ns.td_multiplier = document.createElement("td");
+				//	ns.td_multiplier.setAttribute("class", "pl_songlist_multiplier");
+				//	ns.multiplier_field = createEl("input", { "type": "text", "value": song_data[i].cool_multiply }, ns.td_multiplier);
+				//	Song.addChangeMultiplierListener(song_data[i].id, ns.multiplier_field);
+				//	ns.tr.appendChild(ns.td_multiplier);
+				//}
 
 				table.appendChild(ns.tr);
 				songarray.push(ns);

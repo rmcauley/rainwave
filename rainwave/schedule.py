@@ -67,9 +67,13 @@ def get_event_in_progress(sid):
 	if in_progress:
 		return event.load_by_id_and_type(in_progress['sched_id'], in_progress['sched_type'])
 	else:
-		return get_event_at_time(sid, int(time.time()))
+		return get_event_at_time(sid, int(time.time()), queued_events=True)
 		
-def get_event_at_time(sid, epoch_time):
+def get_event_at_time(sid, epoch_time, queued_events = False):
+	if queued_events:
+		in_queue = db.c.fetch_row("SELECT sched_id, sched_type FROM r4_schedule WHERE sid = %s AND sched_start = 0 ORDER BY sched_id LIMIT 1", (sid,))
+		if in_queue:
+			return event.load_by_id_and_type(in_queue['sched_id'], in_queue['sched_type'])
 	at_time = db.c.fetch_row("SELECT sched_id, sched_type FROM r4_schedule WHERE sid = %s AND sched_start <= %s AND sched_end > %s ORDER BY (%s - sched_start) LIMIT 1", (sid, epoch_time + 5, epoch_time, epoch_time))
 	if at_time:
 		return event.load_by_id_and_type(at_time['sched_id'], at_time['sched_type'])

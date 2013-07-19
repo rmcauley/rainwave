@@ -58,12 +58,12 @@ def set_song_rating(song_id, user_id, rating = None, fave = None):
 	for album_id in db.c.fetch_list("SELECT album_id FROM r4_song_album WHERE song_id = %s", (song_id,)):
 		user_data = db.c.fetch_row("SELECT ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS user_rating, COUNT(song_rating_user) AS user_rating_count FROM r4_song_album JOIN r4_song_ratings ON (album_id = %s AND r4_song_album.song_id = r4_song_ratings.song_id) "
 							  "WHERE user_id = %s",
-							  (user_id, user_id))
+							  (album_id, user_id))
 		num_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_album WHERE album_id = %s", (album_id,))
 		rating_complete = False
 		if user_data['user_rating_count'] >= num_songs:
 			rating_complete = True
-		album_rating = float(album_data['user_rating'])
+		album_rating = float(user_data['user_rating'])
 		toreturn.append({ "id": album_id, "user_rating": album_rating, "rating_complete": rating_complete })
 		album_fave = False
 		existing_rating = db.c.fetch_row("SELECT album_rating_user, album_fave FROM r4_album_ratings WHERE album_id = %s AND user_id = %s", (album_id, user_id))

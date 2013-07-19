@@ -650,7 +650,7 @@ def _create_test_tables():
 			user_new_privmsg			INT		DEFAULT 0, \
 			user_avatar				TEXT		DEFAULT '', \
 			user_avatar_type			INT		DEFAULT 0, \
-			radio_inactive			BOOLEAN		DEFAULT FALSE, \
+			radio_inactive			BOOLEAN		DEFAULT FALSE \
 		)")
 
 	c.update("CREATE TABLE phpbb_sessions("

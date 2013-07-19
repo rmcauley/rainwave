@@ -82,12 +82,16 @@ def _scan_directories():
 	
 	leftovers = []
 	for directory, sids in _directories.iteritems():
+		total_files = 0
+		file_counter = 0
 		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
-			cache.set("backend_scan_size", len(files))
-			file_counter = 0
+			total_files += len(files)
+		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
 			for filename in files:
-				cache.set("backend_scan_counted", file_counter + 1)
-				_scan_file(_fix_codepage_1252(filename, root), sids, True)
+				_scan_file(_fix_codepage_1252(filename, root), sids)
+				file_counter += 1
+				print '\r%s %s / %s' % (directory, file_counter, total_files),
+				sys.stdout.flush()
 	_save_scan_errors()
 	
 def _is_mp3(filename):
@@ -162,8 +166,9 @@ def _add_scan_error(filename, xception):
 	
 	_scan_errors.insert(0, { "time": int(time.time()), "file": filename, "type": xception.__class__.__name__, "error": str(xception) })
 	log.exception("scan", "Error scanning %s" % filename, xception)
+	
 	if config.test_mode:
-		raise Exception(_scan_errors[0])
+		raise xception
 
 def _save_scan_errors():
 	global _scan_errors
