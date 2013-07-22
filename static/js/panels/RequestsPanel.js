@@ -328,11 +328,15 @@ var Request = {
 		s.song_id = json.id;
 		s.album_id = json.albums[0].id;
 		s.album_name = json.albums[0].name;
-		s.song_available = json.cool;
+		s.song_available = !json.cool;
 		s.sid = json.origin_sid;
 		s.song_releasetime = json.cool_end;
-		s.album_electionblock = json.elec_blocked_by == "album" ? true : false;
-		s.group_electionblock = json.elec_blocked_by == "group" ? true : false;
+		s.album_electionblock = false;
+		s.group_electionblock = false;
+		if (s.elec_blocked) {
+			s.album_electionblock = json.elec_blocked_by == "album" ? true : false;
+			s.group_electionblock = json.elec_blocked_by == "group" ? true : false;	
+		}
 		s.requestq_id = json.request_id;
 		s.requestq_order = json.order;
 		return s;

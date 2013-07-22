@@ -175,7 +175,7 @@ def sort_next(sid):
 	next[sid] = sorted(next[sid], key=lambda event: event.start)
 	
 	# Calibrate the start points of each scheduled event
-	next[sid][0].start = current[sid].start + current[sid].length()
+	next[sid][0].start = current[sid].start_actual + current[sid].length()
 	for i in range(1, len(next[sid])):
 		next[sid][i].start = next[sid][i - 1].start + next[sid][i - 1].length()
 	
