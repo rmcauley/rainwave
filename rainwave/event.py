@@ -357,6 +357,7 @@ class Election(Event):
 	def _add_requests(self):
 		# ONLY RUN IS_REQUEST_NEEDED ONCE
 		if self.is_request_needed() and len(self.songs) < self._num_songs:
+			log.debug("requests", "Ready for requests, filling %s." % self._num_requests)
 			for i in range(1, self._num_requests):
 				self.add_song(self.get_request())
 			if len(self.songs) > 0:
@@ -373,19 +374,25 @@ class Election(Event):
 			_request_sequence[self.sid] = cache.get_station(self.sid, "request_sequence")
 			if not _request_sequence[self.sid]:
 				_request_sequence[self.sid] = 0
+		log.debug("requests", "Interval %s // Sequence %s" % (_request_interval, _request_sequence))
 				
 		# If we're ready for a request sequence, start one
 		return_value = None
 		if _request_interval[self.sid] <= 0 and _request_sequence[self.sid] <= 0:
 			line_length = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_line WHERE sid = %s", (self.sid,))
-			_request_sequence[self.sid] = 1 + math.floor(line_length / config.get_station(self.sid, "request_interval_scale"))
-			_request_interval[self.sid] = config.get_station(self.sid, "request_interval_gap")
+			log.debug("requests", "Ready for sequence, line length %s" % line_length)
+			_request_sequence[self.sid] = 1 + math.floor(line_length / config.get_station(self.sid, "request_sequence_scale"))
+			_request_interval[self.sid] = config.get_station(self.sid, "request_interval")
+			log.debug("requests", "Sequence length: %s" % _request_sequence[self.sid])
 			return_value = True
 		# If we are in a request sequence, do one
 		elif _request_sequence[self.sid] > 0:
+			_request_sequence[self.sid] -= 1
+			log.debug("requests", "Still in sequence.  Remainder: %s" % _request_sequence[self.sid])
 			return_value = True
 		else:
 			_request_interval[self.sid] -= 1
+			log.debug("requests", "Waiting on interval.  Remainder: %s" % _request_interval[self.sid])
 			return_value = False
 
 		cache.set_station(self.sid, "request_interval", _request_interval[self.sid])
