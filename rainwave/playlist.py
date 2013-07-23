@@ -177,6 +177,7 @@ def warm_cooled_songs(sid):
 	Makes songs whose cooldowns have expired available again.
 	"""
 	db.c.update("UPDATE r4_song_sid SET song_cool = FALSE WHERE sid = %s AND song_cool_end < %s AND song_cool = TRUE", (sid, int(time.time())))
+	db.c.update("UPDATE r4_song_sid SET song_request_only = FALSE WHERE sid = %s AND song_request_only_end IS NOT NULL AND song_request_only_end < %s AND osng_request_only = TRUE", (sid, int(time.time())))
 
 def remove_all_locks(sid):
 	"""
@@ -481,6 +482,11 @@ class Song(object):
 		db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_time, self.id, sid))
 		self.data['cool'] = True
 		self.data['cool_end'] = cool_time
+		
+		if self.data['request_only_end'] != None:
+			self.data['request_only_end'] = self.data['cool_end'] + config.get_station(sid, "cooldown_request_only_period")
+			self.data['request_only'] = True
+			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s WHERE song_id = %s AND sid = %s", (self.data['request_only_end'], self.id, sid))
 
 		for metadata in self.groups:
 			log.debug("song_cooldown", "Starting group cooldown on group %s" % metadata.id)
@@ -742,7 +748,7 @@ class AssociatedMetadata(object):
 	def start_election_block(self, sid, num_elections = False):
 		if num_elections:
 			self._start_election_block_db(sid, num_elections)
-		elif self.elec_block:
+		elif self.elec_block and self.elec_block > 0:
 			self._start_election_block_db(sid, self.elec_block)
 
 	def start_cooldown(self, sid, cool_time = False):

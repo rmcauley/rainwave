@@ -288,7 +288,7 @@ class User(object):
 			return []
 		requests = cache.get_user(self, "requests")
 		if not requests:
-			requests = db.c.fetch_all("SELECT r4_request_store.song_id AS id, r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS valid, song_elec_blocked AS elec_blocked, song_elec_blocked_by AS elec_blocked_by "
+			requests = db.c.fetch_all("SELECT r4_request_store.song_id AS id, r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS valid, song_elec_blocked AS elec_blocked, song_elec_blocked_by AS elec_blocked_by, song_elec_blocked_num AS elec_blocked_num "
 							"FROM r4_request_store JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) "
 							"WHERE user_id = %s "
 							"ORDER BY reqstor_order, reqstor_id",

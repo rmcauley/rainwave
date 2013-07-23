@@ -256,7 +256,7 @@ def _create_elections(sid):
 		
 	log.debug("create_elec", "Filling in rest of elections.  Unused elecs: %s // Current num elections: %s // Next size: %s" % (len(unused_elecs), num_elections, len(next[sid])))
 	
-	needed_elecs = config.get("num_planned_elections") - num_elections
+	needed_elecs = config.get_station(sid, "num_planned_elections") - num_elections
 	# Step 5: If we're at less than 2 elections available, create them (or use unused ones) and append them
 	# No timing is required here, since we're simply outright appending to the end
 	# (any elections appearing before a scheduled item would be handled by the block above)

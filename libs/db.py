@@ -298,7 +298,8 @@ def create_tables():
 			song_vote_total				INTEGER		, \
 			song_played_last			INTEGER		, \
 			song_exists				BOOLEAN		DEFAULT TRUE, \
-			song_request_only			BOOLEAN		DEFAULT FALSE \
+			song_request_only			BOOLEAN		DEFAULT FALSE, \
+			song_request_only_end		INTEGER	DEFAULT 0 \
 		)")
 	# c.create_idx("r4_song_sid", "song_id")	# handled by create_delete_fk
 	c.create_idx("r4_song_sid", "sid")
