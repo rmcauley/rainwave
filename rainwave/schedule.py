@@ -120,6 +120,7 @@ def advance_station(sid):
 	current[sid].start_event()
 
 def post_process(sid):
+	request.update_line(sid)
 	_create_elections(sid)
 		
 	_add_listener_count_record(sid)
@@ -324,4 +325,3 @@ def _update_memcache(sid):
 	playlist.clear_updated_albums(sid)
 	cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
 	cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)
-	request.update_line(sid)

@@ -169,7 +169,8 @@ class RemoveListener(IcecastHandler):
 			return self.append("No user record to delete for client %s on relay %s." % (self.get_argument("relay"), self.get_argument("client")))
 
 		db.c.update("UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_icecast_id = %s AND listener_relay = %s", (self.get_argument("relay"), self.get_argument("client")))
-		self.append("User ID %s relay %s flagged for removal." % (self.get_argument("relay"), self.get_argument("client")))
+		db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s", (time.time(), listener['user_id']))
+		self.append("User ID %s relay %s flagged for removal." % (self.get_argument("client"), self.get_argument("relay")))
 		if listener['user_id'] > 1:
 			sync_to_front.sync_frontend_user_id(listener['user_id'])
 			cache.set_user(listener['user_id'], "listener_record", None)

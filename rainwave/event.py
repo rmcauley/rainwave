@@ -358,10 +358,8 @@ class Election(Event):
 		# ONLY RUN IS_REQUEST_NEEDED ONCE
 		if self.is_request_needed() and len(self.songs) < self._num_songs:
 			log.debug("requests", "Ready for requests, filling %s." % self._num_requests)
-			for i in range(1, self._num_requests):
+			for i in range(0, self._num_requests):
 				self.add_song(self.get_request())
-			if len(self.songs) > 0:
-				request.update_all_list()
 		
 	def is_request_needed(self):
 		global _request_interval
@@ -379,6 +377,10 @@ class Election(Event):
 		# If we're ready for a request sequence, start one
 		return_value = None
 		if _request_interval[self.sid] <= 0 and _request_sequence[self.sid] <= 0:
+			# TODO: Make the sequence and interval not start/reset until a request is actually fulfilled
+			# (this code does no checks to make sure a request is actually going in, it's only responsible
+			#  for starting both, not the greatest thing - BE CAREFUL how you fix this as it could cause
+			#  problems for classes inheriting/overwriting where interval and sequence are handled)
 			line_length = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_line WHERE sid = %s", (self.sid,))
 			log.debug("requests", "Ready for sequence, line length %s" % line_length)
 			_request_sequence[self.sid] = 1 + math.floor(line_length / config.get_station(self.sid, "request_sequence_scale"))

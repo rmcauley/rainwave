@@ -250,6 +250,8 @@ class User(object):
 		else:
 			already_lined = db.c.fetch_row("SELECT * FROM r4_request_line WHERE user_id = %s", (self.id,))
 			if already_lined and already_lined['sid'] == sid:
+				if already_lined['line_expiry_tune_in']:
+					db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = NULL WHERE user_id = %s", (time.time(), listener['user_id']))
 				return True
 			elif already_lined:
 				self.remove_from_request_line()
@@ -262,7 +264,7 @@ class User(object):
 		return (db.c.fetch_var("SELECT COUNT(*) FROM r4_request_line WHERE user_id = %s", (self.id,)) > 0)
 		
 	def get_top_request_song_id(self, sid):
-		return db.c.fetch_var("SELECT song_id FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND r4_request_store.sid = %s AND song_exists = TRUE AND song_cool = FALSE AND song_elec_blocked = FALSE ORDER BY reqstor_order, reqstor_id", (self.id, sid))
+		return db.c.fetch_var("SELECT song_id FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_cool = FALSE AND song_elec_blocked = FALSE ORDER BY reqstor_order, reqstor_id", (self.id, sid))
 		
 	def get_top_request_sid(self):
 		return db.c.fetch_var("SELECT reqstor_id FROM r4_request_store WHERE user_id = %s ORDER BY reqstor_order, reqstor_id LIMIT 1", (self.id,))
