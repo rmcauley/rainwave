@@ -75,15 +75,12 @@ def update_expire_times():
 def get_next(sid):
 	line = cache.get_station(sid, "request_line")
 	song = None
-	print "getting req"
 	for pos in range(0, len(line)):
 		if not line[pos] or not line[pos]['song_id']:
-			print "no song ID for user %s" % line[pos]['user_id']
 			pass
 		else:
 			entry = line.pop(pos)
 			song = playlist.Song.load_from_id(entry['song_id'], sid)
-			print "doing request"
 			song.data['elec_request_user_id'] = entry['user_id']
 			song.data['elec_request_username'] = entry['username']
 			

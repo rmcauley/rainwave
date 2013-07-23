@@ -212,6 +212,10 @@ def get_all_artists_list(sid):
 		"ORDER BY artist_name",
 		(sid,))
 
+def reduce_song_blocks(sid):
+	db.c.update("UPDATE r4_song_sid SET song_elec_blocked_num = song_elec_blocked_num - 1 WHERE song_elec_blocked = TRUE AND sid = %s", (sid,))
+	db.c.update("UPDATE r4_song_sid SET song_elec_blocked_num = 0, song_elec_blocked = FALSE WHERE song_elec_blocked_num <= 0 AND song_elec_blocked = TRUE AND sid = %s", (sid,))
+
 class SongHasNoSIDsException(Exception):
 	pass
 
@@ -852,7 +856,7 @@ class Album(AssociatedMetadata):
 													"GROUP BY r4_song_album.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply",
 													(instance.id,))
 		return instance
-
+		
 	def __init__(self):
 		super(Album, self).__init__()
 		self.sids = []

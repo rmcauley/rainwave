@@ -333,7 +333,7 @@ var Request = {
 		s.song_releasetime = json.cool_end;
 		s.album_electionblock = false;
 		s.group_electionblock = false;
-		if (s.elec_blocked) {
+		if (json.elec_blocked) {
 			s.album_electionblock = json.elec_blocked_by == "album" ? true : false;
 			s.group_electionblock = json.elec_blocked_by == "group" ? true : false;	
 		}

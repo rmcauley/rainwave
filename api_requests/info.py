@@ -58,8 +58,6 @@ def attach_info_to_request(request, playlist = False, artists = False):
 			if user_vote_cache:
 				for history in user_vote_cache:
 					for event in (sched_history + sched_next + temp_current):
-						print history
-						print event['id']
 						if history[0] == event['id']:
 							request.append("vote_result", { "elec_id": event['id'], "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": history[1], "try_again": False })
 		elif request.user.data['listener_voted_entry'] > 0 and request.user.data['listener_lock_sid'] == request.sid:

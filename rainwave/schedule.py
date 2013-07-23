@@ -121,6 +121,7 @@ def advance_station(sid):
 
 def post_process(sid):
 	request.update_line(sid)
+	playlist.reduce_song_blocks(sid)
 	_create_elections(sid)
 		
 	_add_listener_count_record(sid)
