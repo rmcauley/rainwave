@@ -71,3 +71,12 @@ def sid(str):
 	if sid in config.station_ids:
 		return sid
 	return None
+
+integer_list_error = "must be a comma-separated list of integers."
+def integer_list(str):
+	if not re.match('^(\d+)(,\d+)*$', str):
+		return None
+	l = []
+	for entry in str.split(","):
+		l.append(int(entry))
+	return l

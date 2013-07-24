@@ -63,3 +63,16 @@ class SongRequestHandler(RequestHandler):
 		except playlist.SongNonExistent:
 			self.append("error", { "code": "404", "description": "Song not found." })
 
+@handle_api_url("all_songs")
+class AllSongsRequestHandler(RequestHandler):
+	return_name = "all_songs"
+	login_required = True
+	sid_required = False
+	allow_get = True
+	
+	def post(self):
+		self.append(self.return_name, db.c.fetch_all(
+			"SELECT song_title AS title, album_name, song_rating AS rating, song_rating_user AS rating_user, song_fave AS fave "
+			"FROM r4_songs JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) "
+			"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
+			"WHERE song_verified = TRUE ORDER BY album_name, song_title", (self.user.id,)))

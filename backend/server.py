@@ -16,6 +16,7 @@ from libs import cache
 class AdvanceScheduleRequest(tornado.web.RequestHandler):
 	def get(self, sid):
 		self.sid = None
+		self.success = False
 		if int(sid) in config.station_ids:
 			self.sid = int(sid)
 			schedule.advance_station(self.sid)
@@ -23,6 +24,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 				self.write(schedule.get_current_file(self.sid))
 			else:
 				self.write(self._get_annotated(schedule.get_current_event(self.sid)))
+		self.success = True
 				
 	def _get_annotated(self, e):
 		string = "annotate:crossfade=\""
@@ -48,7 +50,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		return string
 	
 	def on_finish(self):
-		if self.sid:
+		if self.sid and self.success:
 			schedule.post_process(self.sid)
 
 def start():

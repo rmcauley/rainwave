@@ -337,6 +337,7 @@ var Request = {
 			s.album_electionblock = json.elec_blocked_by == "album" ? true : false;
 			s.group_electionblock = json.elec_blocked_by == "group" ? true : false;	
 		}
+		s.elec_blocked_num = json.elec_blocked_num;
 		s.requestq_id = json.request_id;
 		s.requestq_order = json.order;
 		return s;
@@ -431,13 +432,13 @@ var Request = {
 				delete(that.cooldown);
 			}
 			if (json.album_electionblock && !that.blocked) {
-				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("reqalbumblocked") }, that.el);
+				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("reqalbumblocked") + json.elec_blocked_num }, that.el);
 			}
 			else if (json.album_electionblock && that.blocked) {
-				that.blocked.textContent = _l("reqalbumblocked");
+				that.blocked.textContent = _l("reqalbumblocked") + json.elec_blocked_num;
 			}
 			else if (json.group_electionblock && !that.blocked) {
-				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("reqgroupblocked") }, that.el);
+				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("reqgroupblocked") + json.elec_blocked_num }, that.el);
 			}
 			else if (json.group_electionblock && that.blocked) {
 				that.blocked.textContent = _l("reqgroupblocked");

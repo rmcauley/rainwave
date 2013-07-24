@@ -74,6 +74,8 @@ def update_expire_times():
 
 def get_next(sid):
 	line = cache.get_station(sid, "request_line")
+	if not line:
+		return None
 	song = None
 	for pos in range(0, len(line)):
 		if not line[pos] or not line[pos]['song_id']:

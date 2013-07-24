@@ -112,14 +112,15 @@ def advance_station(sid):
 		history[sid].pop()
 	
 	integrate_new_events(sid)
-	sort_next(sid)
 	# If we need some emergency elections here (normal len(next[sid]) < 2 gets dealt with in post_process)
 	if len(next[sid]) == 0:
 		_create_elections(sid)
+	sort_next(sid)
 	current[sid] = next[sid].pop(0)
 	current[sid].start_event()
 
 def post_process(sid):
+	set_next_start_times(sid)
 	request.update_line(sid)
 	playlist.reduce_song_blocks(sid)
 	_create_elections(sid)
@@ -155,6 +156,7 @@ def integrate_new_events(sid):
 				max_elec_id = event.id
 		elif not event.is_election and event.id > max_sched_id:
 			max_sched_id = event.id
+	# This is the line of code that loads in any upcoming events
 	unused_sched_id = db.c.fetch_list("SELECT sched_id FROM r4_schedule WHERE sid = %s AND sched_id > %s AND sched_used = FALSE AND sched_start <= %s ORDER BY sched_start", (sid, max_sched_id, int(time.time()) + 86400))
 	for sched_id in unused_sched_id:
 		next[sid].append(event.load_by_id(sched_id))
@@ -176,10 +178,19 @@ def sort_next(sid):
 	global next
 	next[sid] = sorted(next[sid], key=lambda event: event.start)
 	
+def set_next_start_times(sid):
+	pass
+	# DISABLED
+	#
+	# Must be written to only overwrite sequential events or events that are very close to eachother
+	# The timeline is somewhat 'sparse' - it does not contain only sequential events.  It may contain
+	# 2 elections and an event that doesn't start for another 45 minutes, whose start time should not
+	# be changed.
+	#
 	# Calibrate the start points of each scheduled event
-	next[sid][0].start = current[sid].start_actual + current[sid].length()
-	for i in range(1, len(next[sid])):
-		next[sid][i].start = next[sid][i - 1].start + next[sid][i - 1].length()
+	# next[sid][0].start = current[sid].start_actual + current[sid].length()
+	# for i in range(1, len(next[sid])):
+	#	next[sid][i].start = next[sid][i - 1].start + next[sid][i - 1].length()
 	
 def _create_elections(sid):
 	# Step, er, 0: Update the request cache first, so elections have the most recent data to work with
@@ -196,9 +207,7 @@ def _create_elections(sid):
 		log.debug("create_elec", "Appending an unused election.")
 		unused_elecs.append(event.Election.load_by_id(elec_id))
 	
-	# Step 3a: Sort the next list (that excludes any added elections)
-	sort_next(sid)
-	# Step 3b: Insert elections where there's time and adjust predicted start times as necessary, if num_elections < 2 then create them where necessary
+	# Step 3: Insert elections where there's time and adjust predicted start times as necessary, if num_elections < 2 then create them where necessary
 	i = 1
 	running_time = current[sid].start_actual + current[sid].length()
 	if len(next[sid]) > 0:

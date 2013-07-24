@@ -532,7 +532,7 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_request_store ( \
 			reqstor_id				SERIAL		PRIMARY KEY, \
-			reqstor_order				SMALLINT	, \
+			reqstor_order			SMALLINT	DEFAULT 32766, \
 			user_id					INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL \
 		)")

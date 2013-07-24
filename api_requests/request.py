@@ -52,8 +52,13 @@ class OrderRequests(RequestHandler):
 	login_required = True
 	tunein_required = True
 	unlocked_listener_only = False
+	fields = {
+		"order": (fieldtypes.integer_list, True)
+	}
 	
 	def post(self):
-		pass
-	
-
+		for song_id in self.get_argument("order"):
+			db.c.update("UPDATE r4_request_store SET reqstor_order WHERE user_id = %s AND song_id = %s", (self.user.id, song_id))
+		self.append(self.return_name, { "code": 1, "key": "request_order_success", "text": "Requests re-ordered successfully." })
+		self.append("requests", self.user.get_requests())
+		
