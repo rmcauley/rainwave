@@ -8,6 +8,7 @@ import api.returns
 
 from libs import cache
 from libs import log
+from libs import db
 from rainwave import playlist
 from rainwave import user as userlib
 
@@ -57,8 +58,10 @@ class OrderRequests(RequestHandler):
 	}
 	
 	def post(self):
+		order = 0
 		for song_id in self.get_argument("order"):
-			db.c.update("UPDATE r4_request_store SET reqstor_order WHERE user_id = %s AND song_id = %s", (self.user.id, song_id))
+			db.c.update("UPDATE r4_request_store SET reqstor_order = %s WHERE user_id = %s AND song_id = %s", (order, self.user.id, song_id))
+			order = order + 1
 		self.append(self.return_name, { "code": 1, "key": "request_order_success", "text": "Requests re-ordered successfully." })
 		self.append("requests", self.user.get_requests())
 		
