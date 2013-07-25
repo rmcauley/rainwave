@@ -25,8 +25,6 @@ panels.RequestsPanel = {
 				latest_json = json;
 		};
 		lyre.addCallback(latest_json_update, "requests");
-		
-		
 
 		//var line = AllRequestList();
 		

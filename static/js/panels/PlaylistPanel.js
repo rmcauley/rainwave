@@ -272,7 +272,7 @@ var albumlist = function() {
 			else album.td_rating.textContent = "";
 		}
 
-		if ("user_rating" in album) {
+		if ("album_user_rating" in album) {
 			var ratingx = album.user_rating * 10;
 			if (album.user_rating == 0) ratingx = -200;
 			album.td_name.style.backgroundPosition = "100% " + (-193 + ratingx) + "px";
