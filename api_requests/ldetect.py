@@ -28,6 +28,8 @@ class IcecastHandler(RequestHandler):
 		self.agent = None
 		self.listen_key = None
 		self.user = None
+		self.listener_ip = None
+		# TODO: Scrub listener_ip
 		
 		self.relay = fieldtypes.valid_relay(self.request.remote_ip)
 		
@@ -123,7 +125,7 @@ class AddListener(IcecastHandler):
 			db.c.update("INSERT INTO r4_listeners "
 				"(sid, user_id, listener_ip, listener_icecast_id, listener_relay, listener_agent) "
 				"VALUES (%s, %s, %s, %s, %s, %s)",
-				(sid, self.user_id, self.listener_ip, self.relay, self.agent, self.get_argument("client")))
+				(sid, self.user_id, self.get_argument("ip"), self.relay, self.agent, self.get_argument("client")))
 			self.append(True, "Registered user %s is now tuned in." % self.user_id)
 			self.failed = False
 		if not self.failed:
