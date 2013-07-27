@@ -4,7 +4,8 @@ prefs.addPref("playlist", { "name": "sortalbums", "defaultvalue": "album_name", 
 	[ 	{ "value": "_searchname", "option": _l("pref_playlist_v_albumname") },
 		{ "value": "user_rating", "option": _l("pref_playlist_v_rating") },
 		{ "value": "cool_lowest", "option": _l("pref_playlist_v_cooldown") },
-		{ "value": "rating", "option": _l("pref_playlist_v_globalrating") }
+		{ "value": "rating", "option": _l("pref_playlist_v_globalrating") },
+		{ "value": "updated", "option": _l("pref_playlist_v_updated") }
 	] } );
 prefs.addPref("playlist", { "name": "opened", "defaultvalue": false, "hidden": true });
 

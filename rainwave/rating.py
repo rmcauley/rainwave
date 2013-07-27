@@ -54,6 +54,17 @@ def set_song_rating(song_id, user_id, rating = None, fave = None):
 	db.c.update("UPDATE phpbb_users SET radio_totalratings = %s WHERE user_id = %s", (count, user_id))
 	cache.set_song_rating(song_id, user_id, { "user_rating": rating, "fave": fave })
 	
+	return update_album_ratings(song_id, user_id)
+
+def clear_song_rating(song_id, user_id):
+	existed = db.c.update("DELETE FROM r4_song_ratings WHERE song_id = %s AND user_id = %s", (song_id, user_id))
+	if existed:
+		return update_album_ratings(song_id, user_id)
+	else:
+		# TODO: Return an exception
+		return []
+	
+def update_album_ratings(song_id, user_id):
 	toreturn = []
 	for album_id in db.c.fetch_list("SELECT album_id FROM r4_song_album WHERE song_id = %s", (song_id,)):
 		user_data = db.c.fetch_row("SELECT ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS user_rating, COUNT(song_rating_user) AS user_rating_count FROM r4_song_album JOIN r4_song_ratings ON (album_id = %s AND r4_song_album.song_id = r4_song_ratings.song_id) "

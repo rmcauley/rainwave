@@ -32,7 +32,7 @@ class SubmitRequest(RequestHandler):
 	
 @handle_api_url('delete_request')
 class DeleteRequest(RequestHandler):
-	sid_required = True
+	sid_required = False
 	login_required = True
 	tunein_required = True
 	unlocked_listener_only = False
@@ -49,7 +49,7 @@ class DeleteRequest(RequestHandler):
 
 @handle_api_url("order_requests")
 class OrderRequests(RequestHandler):
-	sid_required = True
+	sid_required = False
 	login_required = True
 	tunein_required = True
 	unlocked_listener_only = False
@@ -65,3 +65,16 @@ class OrderRequests(RequestHandler):
 		self.append(self.return_name, { "code": 1, "key": "request_order_success", "text": "Requests re-ordered successfully." })
 		self.append("requests", self.user.get_requests())
 		
+@handle_api_url("request_unrated_songs")
+class RequestUnratedSongs(RequestHandler):
+	sid_required = True
+	login_required = True
+	tunein_required = True
+	unlocked_listener_only = False
+	
+	def post(self):
+		if self.user.add_unrated_requests(self.sid):
+			self.append(self.return_name, { "code": 1, "key": "request_success", "text": "Request queue filled with unrated songs." })
+			self.append("requests", self.user.get_requests())
+		else:
+			raise HTTPError(500)

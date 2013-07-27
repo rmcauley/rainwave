@@ -188,7 +188,7 @@ def remove_all_locks(sid):
 def get_all_albums_list(sid, user = None):
 	if not user or user.id == 1:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, FALSE AS fave, 0 AS user_rating "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updeted AS updated, FALSE AS fave, 0 AS user_rating "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"WHERE r4_album_sid.sid = %s "
@@ -196,7 +196,7 @@ def get_all_albums_list(sid, user = None):
 			(sid,))
 	else:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_fave AS fave, album_rating_user AS user_rating "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS user_rating "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
@@ -216,6 +216,23 @@ def get_all_artists_list(sid):
 def reduce_song_blocks(sid):
 	db.c.update("UPDATE r4_song_sid SET song_elec_blocked_num = song_elec_blocked_num - 1 WHERE song_elec_blocked = TRUE AND sid = %s", (sid,))
 	db.c.update("UPDATE r4_song_sid SET song_elec_blocked_num = 0, song_elec_blocked = FALSE WHERE song_elec_blocked_num <= 0 AND song_elec_blocked = TRUE AND sid = %s", (sid,))
+	
+def get_unrated_songs_for_user(user_id):
+	return db.c.fetch_all(
+		"SELECT song_id AS id, song_title AS title, album_name "
+		"FROM r4_songs JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) "
+		"LEFT OUTER JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
+		"WHERE song_verified = TRUE AND r4_song_ratings.song_id IS NULL ORDER BY album_name, song_title", (user_id,))
+
+def get_unrated_songs_for_requesting(user_id, sid, limit):
+	return db.c.fetch_list(
+		"SELECT MIN(song_id), album_id "
+		"FROM r4_song_sid JOIN r4_song_album USING (song_id) "
+		"LEFT OUTER JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
+		"WHERE song_verified = TRUE AND song_available = TRUE AND song_elec_blocked = FALSE "
+		"AND r4_song_ratings.song_id IS NULL "
+		"GROUP BY album_id "
+		"LIMIT %s", (user_id, limit))
 
 class SongHasNoSIDsException(Exception):
 	pass
@@ -752,9 +769,9 @@ class AssociatedMetadata(object):
 			self._start_election_block_db(sid, self.elec_block)
 
 	def start_cooldown(self, sid, cool_time = False):
-		if cool_time:
+		if cool_time and cool_time > 0:
 			self._start_cooldown_db(sid, cool_time)
-		elif self.cool_time:
+		elif self.cool_time and self.cool_time > 0:
 			self._start_cooldown_db(sid, self.cool_time)
 
 	def associate_song_id(self, song_id, is_tag = None):

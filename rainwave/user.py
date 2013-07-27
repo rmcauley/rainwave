@@ -220,12 +220,18 @@ class User(object):
 		else:
 			return db.c.fetch_var("SELECT COUNT(*) FROM r4_request_store WHERE user_id = %s", (self.id,))
 		
+	def _check_too_many_requests(self):
+		num_reqs = self.has_requests()
+		max_reqs = 6
+		if self.data['radio_perks']:
+			max_reqs = 12
+		if num_reqs >= max_reqs:
+			raise APIException(0, "too_many_requests", "You are limited to %s requests." % max_reqs)
+		return num_reqs - max_reqs
+		
 	def add_request(self, sid, song_id):
+		self._check_too_many_requests()
 		song = playlist.Song.load_from_id(song_id, sid)
-		if self.data['radio_perks'] and self.has_requests() >= 12:
-			raise APIException(0, "too_many_requests12", "You are limited to 12 requests.")
-		elif self.has_requests() >= 6:
-			raise APIException(0, "too_many_requests6", "You are limited to 6 requests.")
 		for requested in self.get_requests():
 			if song.id == requested['id']:
 				raise APIException(0, "same_request", "You've already requested that song.")
@@ -237,6 +243,13 @@ class User(object):
 		if self.data['sid'] == sid and self.is_tunedin():
 			self.put_in_request_line(sid)
 		return updated_rows
+	
+	def add_unrated_requests(self, sid):
+		limit = self._check_too_many_requests()
+		added_songs = 0
+		for song_id in playlist.get_unrated_songs_for_requesting(self.id, sid, limit):
+			added_requests += self.add_request(sid, song_id)
+		return added_requests
 			
 	def remove_request(self, song_id):
 		song_requested = db.c.fetch_var("SELECT reqstor_id FROM r4_request_store WHERE user_id = %s AND song_id = %s", (self.id, song_id))
