@@ -33,6 +33,7 @@ class SyncUpdateAll(RequestHandler):
 		if self.sid in sessions:
 			for session in sessions[self.sid]:
 				session.update()
+		log.debug("sync_update_all", "Updated %s sessions." % len(sessions[self.sid]))
 		sessions[self.sid] = []
 		
 @handle_api_url("sync_update_user")
@@ -46,13 +47,14 @@ class SyncUpdateUser(RequestHandler):
 			
 	def on_finish(self):
 		if not self.request_ok:
-			log.debug("sync_update_user", "sync_update_all request was not OK.")
+			log.debug("sync_update_user", "sync_update_user request was not OK.")
 			return
 
 		user_id = long(self.request.arguments['user_id'])
 		for sid in sessions:
 			for session in sessions[sid]:
 				if session.user.id == user_id:
+					log.debug("sync_update_user", "Updating user %s session." % user_id)
 					session.update_user()
 					sessions[sid].remove(session)
 					return
@@ -68,13 +70,14 @@ class SyncUpdateIP(RequestHandler):
 			
 	def on_finish(self):
 		if not self.request_ok:
-			log.debug("sync_update_ip", "sync_update_all request was not OK.")
+			log.debug("sync_update_ip", "sync_update_ip request was not OK.")
 			return
 			
 		ip_address = long(self.request.arguments['ip_address'])
 		for sid in sessions:
 			for session in sessions[sid]:
 				if session.request.remote_ip == ip_address:
+					log.debug("sync_update_ip", "Updating IP %s" % ip_address)
 					session.update_user()
 					sessions[sid].remove(session)
 					return
@@ -85,6 +88,7 @@ class Sync(RequestHandler):
 	
 	@tornado.web.asynchronous
 	def post(self):
+		global sessions
 		self.set_header("Content-Type", "application/json")
 		if "init" in self.request.arguments:
 			self.update()
