@@ -11,6 +11,7 @@ connection = None
 c_old = None
 
 # TODO: Deal with PostgreSQL deadlocks once and for all
+# Trap  psycopg2.extensions.TransactionRollbackError
 
 # NOTE TO ALL:
 #
