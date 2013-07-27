@@ -188,7 +188,7 @@ def remove_all_locks(sid):
 def get_all_albums_list(sid, user = None):
 	if not user or user.id == 1:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updeted AS updated, FALSE AS fave, 0 AS user_rating "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, FALSE AS fave, 0 AS user_rating "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"WHERE r4_album_sid.sid = %s "
