@@ -500,7 +500,7 @@ class Song(object):
 		self.data['cool'] = True
 		self.data['cool_end'] = cool_time
 		
-		if self.data['request_only_end'] != None:
+		if 'request_only_end' in self.data and self.data['request_only_end'] != None:
 			self.data['request_only_end'] = self.data['cool_end'] + config.get_station(sid, "cooldown_request_only_period")
 			self.data['request_only'] = True
 			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s WHERE song_id = %s AND sid = %s", (self.data['request_only_end'], self.id, sid))
