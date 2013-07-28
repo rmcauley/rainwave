@@ -34,7 +34,7 @@ class R3Song(rainwave.playlist.Song):
 			"WHERE rw_songratings.song_rating_id = %s",
 			(self.id, r3_data['song_rating_id']))
 		
-		self.update_rating()
+		self.update_rating(skip_album_update=True)
 		
 		return updated_ratings
 			

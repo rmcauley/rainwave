@@ -531,7 +531,7 @@ class Song(object):
 		self.data['elec_blocked_by'] = blocked_by
 		self.data['elec_blocked'] = True
 
-	def update_rating(self):
+	def update_rating(self, skip_album_update = False):
 		"""
 		Calculate an updated rating from the database.
 		"""
@@ -552,8 +552,9 @@ class Song(object):
 			self.rating = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
 			db.c.update("UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s", (self.rating, rating_count, self.id))
 
-		for album in self.albums:
-			album.update_rating()
+		if not skip_album_update:
+			for album in self.albums:
+				album.update_rating()
 
 	def add_artist(self, name):
 		return self._add_metadata(self.artists, name, Artist)
@@ -1044,9 +1045,17 @@ class Album(AssociatedMetadata):
 
 	def update_rating(self):
 		dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user < 3 GROUP BY album_id", (self.id,))
+		if not dislikes:
+			dislikes = 0
 		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3 AND album_rating_user < 3.5 GROUP BY album_id", (self.id,));
+		if not neutrals:
+			neutrals = 0
 		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3.5 AND album_rating_user < 4 GROUP BY album_id", (self.id,));
+		if not neutralplus:
+			neutralplus = 0
 		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 4 GROUP BY song_id", (self.id,));
+		if not likes:
+			likes = 0
 		rating_count = dislikes + neutrals + neutralplus + likes
 		if rating_count > config.get("rating_threshold_for_calc"):
 			self.rating = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
