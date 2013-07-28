@@ -1,4 +1,7 @@
 var user = function() {
+	
+	prefs.addPref("edi", { "name": "disable_rate_anything", "defaultvalue": false, "type": "checkbox" });
+	
 	var callbacks = [];
 	var maxid = 0;
 
@@ -63,6 +66,10 @@ var user = function() {
 			'radio_statrestricted': json['listener_lock_in_effect']
 		};			
 		// END TRANSLATE
+		
+		if (prefs.getPref("edi", "disable_rate_anything")) {
+			json2['radio_rate_anything'] = false;
+		}
 		
 		for (var i in json2) {
 			lastinfo[i] = that.p[i];

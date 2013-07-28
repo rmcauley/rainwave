@@ -22,7 +22,6 @@ def unlock_listeners(sid):
 	db.c.update("UPDATE r4_listeners SET listener_lock_counter = listener_lock_counter - 1 WHERE listener_lock = TRUE AND listener_lock_sid = %s", (sid,))
 	db.c.update("UPDATE r4_listeners SET listener_lock = FALSE WHERE listener_lock_counter <= 0")
 
-# TODO: radio_rate_anything implementation
 class User(object):
 	def __init__(self, user_id):
 		self.id = user_id
@@ -92,7 +91,7 @@ class User(object):
 		user_data = None
 		# user_data = cache.get_user(self, "db_data")
 		if not user_data:
-			user_data = db.c_old.fetch_row("SELECT user_id, username, user_new_privmsg, user_avatar, user_avatar_type AS _user_avatar_type, radio_listenkey AS radio_listen_key, group_id AS _group_id "
+			user_data = db.c_old.fetch_row("SELECT user_id, username, user_new_privmsg, user_avatar, user_avatar_type AS _user_avatar_type, radio_listenkey AS radio_listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings "
 					"FROM phpbb_users WHERE user_id = %s",
 					(self.id,))
 			cache.set_user(self, "db_data", user_data)
@@ -118,6 +117,9 @@ class User(object):
 		# jfinalfunk is a special case since he floats around outside the main admin groups
 		elif self.id == 9575:
 			self.data['radio_admin'] = True
+			
+		if self.data['_total_ratings'] > config.get("rating_allow_all_threshold"):
+			self.data['radio_rate_anything'] = True
 			
 		if not self.data['radio_listen_key']:
 			self.generate_listen_key()

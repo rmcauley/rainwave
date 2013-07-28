@@ -287,6 +287,7 @@ class Election(Event):
 			"ORDER BY line_wait_start LIMIT 1",
 			(self.sid, song.id))
 		if requesting_user:
+			# TODO: Have this stop a request being added to an election
 			song.data['entry_type'] = ElecSongTypes.request
 			song.data['request_username'] = requesting_user
 			return True
