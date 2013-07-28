@@ -1075,7 +1075,7 @@ class Album(AssociatedMetadata):
 			") "
 			"INSERT INTO r4_album_ratings (album_id, user_id, album_fave, album_rating_complete, album_rating_user) "
 			"SELECT old.album_id AS album_id, old.user_id AS user_id, old.album_fave AS album_fave, "
-				"old.album_rating_complete AS album_rating_complete, AVG(song_rating_user) AS album_rating_user "
+				"old.album_rating_complete AS album_rating_complete, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user "
 			"FROM old "
 				"JOIN r4_song_album USING (album_id) "
 				" LEFT JOIN r4_song_ratings ON (r4_song_ratings.song_id = r4_song_album.song_id AND r4_song_ratings.user_id = old.user_id) "
