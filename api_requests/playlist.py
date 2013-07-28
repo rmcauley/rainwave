@@ -126,13 +126,25 @@ class PlaybackHistory(RequestHandler):
 	
 	def post(self):
 		if self.user.is_anonymous():
-			self.append(self.return_name,
+			self.append(self.return_name, db.c.fetch_all(
 				"SELECT song_id AS id, song_title AS title, album_name "
 				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) "
-				"ORDER BY songhist_id DESC LIMIT 100")
+				"ORDER BY songhist_id DESC LIMIT 100"))
 		else:
-			self.append(self.return_name,
+			self.append(self.return_name, db.c.fetch_all(
 				"SELECT song_id AS id, song_title AS title, album_name, song_rating_user AS rating_user, song_fave AS fave "
 				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) "
 				"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
-				"ORDER BY songhist_id DESC LIMIT 100")
+				"ORDER BY songhist_id DESC LIMIT 100"))
+
+@handle_api_url("station_song_count")
+class StationSongCountRequest(RequestHandler):
+	return_name = "station_song_count"
+	login_required = False
+	sid_required = False
+	allow_get = True
+
+	def post(self):
+		return self.append(self.return_name, db.c.fetch_all(
+			"SELECT song_origin_sid AS sid, COUNT(song_id) AS song_count "
+			"FROM r4_songs WHERE song_verified = TRUE GROUP BY song_origin_sid")
