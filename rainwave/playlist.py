@@ -283,12 +283,13 @@ class Song(object):
 		kept_albums = []
 		kept_artists = []
 		kept_groups = []
+		old_albums = []
 		matched_entry = db.c.fetch_row("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
 		if matched_entry:
 			s = klass.load_from_id(matched_entry['song_id'])
 			for metadata in s.albums:
 				if metadata.is_tag:
-					# TODO: Don't destroy user's rating_completed flag for albums here, somehow
+					old_albums.append(metadata.id)
 					metadata.disassociate_song_id(s.id)
 				else:
 					kept_albums.append(metadata)
@@ -323,6 +324,10 @@ class Song(object):
 
 		for metadata in s.albums:
 			metadata.associate_song_id(s.id, sids)
+			# This will reset the album_rating_completed flag on any albums this song
+			# has just been added to.
+			if not metadata.id in old_albums:
+				metadata.reset_user_completed_flags()
 
 		return s
 
@@ -1068,6 +1073,9 @@ class Album(AssociatedMetadata):
 				" LEFT JOIN r4_song_ratings ON (r4_song_ratings.song_id = r4_song_album.song_id AND r4_song_ratings.user_id = old.user_id) "
 			"GROUP BY old.album_id, old.user_id, old.album_fave, old.album_rating_complete ",
 			(self.id,))
+		
+	def reset_user_completed_flags(self):
+		db.c.update("UPDATE r4_album_ratings SET album_rating_complete = FALSE WHERE album_id = %s", (self.id,))
 
 	def _start_election_block_db(self, sid, num_elections):
 		if db.c.allows_join_on_update:
