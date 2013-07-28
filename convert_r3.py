@@ -17,7 +17,7 @@ db.open()
 
 class R3Song(rainwave.playlist.Song):
 	def load_r3_data(self):
-		r3_data = db.c.fetch_row("SELECT MIN(song_addedon) AS song_added_on, SUM(song_totalrequests) AS song_request_count, MAX(song_oa_multiplier) AS song_cool_multiply, MAX(song_oa_override) AS song_cool_override, MAX(song_rating_id) AS song_rating_id FROM rw_songs WHERE song_filename = %s AND r4_song_id IS NULL GROUP BY song_filename", (self.filename,))
+		r3_data = db.c.fetch_row("SELECT MIN(song_addedon) AS song_added_on, SUM(song_totalrequests) AS song_request_count, MAX(song_oa_multiplier) AS song_cool_multiply, MAX(song_oa_override) AS song_cool_override, MAX(song_rating_id) AS song_rating_id FROM rw_songs WHERE song_filename = %s GROUP BY song_filename", (self.filename,))
 		if not r3_data:
 			return 0
 		# db.c.update("UPDATE rw_songs SET r4_song_id = %s WHERE song_filename = %s", (self.id, self.filename))
@@ -25,7 +25,10 @@ class R3Song(rainwave.playlist.Song):
 		
 		updated_ratings = db.c.update(
 			"INSERT INTO r4_song_ratings(song_id, song_rating_user, user_id, song_rated_at, song_rated_at_rank, song_rated_at_count, song_fave) "
-			"SELECT %s AS song_id, rw_songratings.user_id AS user_id, rw_songratings.song_rating AS song_rating_user, rw_songratings.song_rated_at AS song_rated_at, rw_songratings.user_rating_rank AS song_rated_at_rank, rw_songratings.user_rating_snapshot AS song_rated_at_count, CASE WHEN rw_songfavourites.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS song_fave "
+			"SELECT %s AS song_id, rw_songratings.user_id AS user_id, rw_songratings.song_rating AS song_rating_user, "
+				"rw_songratings.song_rated_at AS song_rated_at, rw_songratings.user_rating_rank AS song_rated_at_rank, "
+				"rw_songratings.user_rating_snapshot AS song_rated_at_count, "
+				"CASE WHEN rw_songfavourites.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS song_fave "
 			"FROM rw_songratings "
 			"LEFT JOIN rw_songfavourites ON (rw_songratings.user_id = rw_songfavourites.user_id AND rw_songratings.song_rating_id = rw_songfavourites.song_rating_id) "
 			"WHERE rw_songratings.song_rating_id = %s",
@@ -65,8 +68,7 @@ for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums"):
 	album.load_r3_data()
 	translated_albums += 1
 	print "\rTranslated albums : ", translated_albums
-	sys.stdout.flush()
-	
+	sys.stdout.flush()	
 print
 print
 
