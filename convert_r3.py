@@ -55,15 +55,18 @@ for song_id in db.c.fetch_list("SELECT song_id FROM r4_songs"):
 	song = R3Song.load_from_id(song_id)
 	translated_ratings += song.load_r3_data()
 	translated_songs += 1
-print "Translated songs  : ", translated_songs
-print "Translated ratings: ", translated_ratings
+	print "Translating songs / ratings: %s / %s" % (translated_songs, translated_ratings),
+	sys.stdout.flush()
+print
 print
 	
 for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums"):
 	album = R3Album.load_from_id(album_id)
 	album.load_r3_data()
 	translated_albums += 1
-print "Translated albums : ", translated_albums
+	print "Translated albums : ", translated_albums
+	sys.stdout.flush()
+print
 print
 
 #translated_donations = 0
