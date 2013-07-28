@@ -866,17 +866,35 @@ class Album(AssociatedMetadata):
 		instance._assign_from_dict(row)
 		instance.sids = [ sid ]
 		if not user or user.is_anonymous():
-			instance.data['songs'] = db.c.fetch_all("SELECT r4_song_album.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, song_rating AS rating, 0 AS user_rating, FALSE AS fave, string_agg(artist_id || ':' || artist_name,  ',') AS artist_parseable  "
-													"FROM r4_song_album JOIN r4_song_sid USING (song_id) JOIN r4_songs USING (song_id) JOIN r4_song_artist USING (song_id) JOIN r4_artists USING (artist_id) "
-													"WHERE r4_song_album.album_id = %s "
-													"GROUP BY r4_song_album.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating",
-													(instance.id,))
+			instance.data['songs'] = db.c.fetch_all(
+				"SELECT r4_song_album.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
+					"song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, "
+					"song_rating AS rating, 0 AS user_rating, FALSE AS fave, "
+					"string_agg(r4_artists.artist_id || ':' || r4_artists.artist_name,  ',') AS artist_parseable "
+				"FROM r4_song_album "
+					"JOIN r4_songs USING (song_id) "
+					"JOIN r4_song_sid USING (song_id) "
+					"JOIN r4_song_artist USING (song_id) "
+					"JOIN r4_artists USING (artist_id) "
+				"WHERE r4_song_album.album_id = %s "
+				"GROUP BY r4_song_album.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating",
+				(instance.id,))
 		else:
-			instance.data['songs'] = db.c.fetch_all("SELECT r4_song_album.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiplty, song_cool_override AS cool_override, COALESCE(song_rating_user, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave, string_agg(artist_id || ':' || artist_name,  ',') AS artist_parseable  "
-													"FROM r4_song_album JOIN r4_song_sid USING (song_id) JOIN r4_songs USING (song_id) JOIN r4_song_artist USING (song_id) JOIN r4_artists USING (artist_id) LEFT JOIN r4_song_ratings ON (r4_song_album.song_id = r4_song_ratings.song_id) "
-													"WHERE r4_song_album.album_id = %s "
-													"GROUP BY r4_song_album.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply",
-													(instance.id,))
+			instance.data['songs'] = db.c.fetch_all(
+				"SELECT r4_song_album.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
+					"song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, "
+					"song_rating AS rating, song_cool_multiply AS cool_multiplty, song_cool_override AS cool_override, "
+					"COALESCE(song_rating_user, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave, "
+					"string_agg(r4_artists.artist_id || ':' || r4_artists.artist_name,  ',') AS artist_parseable "
+				"FROM r4_song_album "
+					"JOIN r4_songs USING (song_id) "
+					"JOIN r4_song_sid USING (song_id) "
+					"JOIN r4_song_artist USING (song_id) "
+					"JOIN r4_artists USING (artist_id) "
+					"LEFT JOIN r4_song_ratings ON (r4_song_album.song_id = r4_song_ratings.song_id AND user_id = %s) "
+				"WHERE r4_song_album.album_id = %s "
+				"GROUP BY r4_song_album.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply",
+				(user.id, instance.id))
 		return instance
 		
 	def __init__(self):
