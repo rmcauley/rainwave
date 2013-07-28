@@ -288,6 +288,7 @@ class Song(object):
 			s = klass.load_from_id(matched_entry['song_id'])
 			for metadata in s.albums:
 				if metadata.is_tag:
+					# TODO: Don't destroy user's rating_completed flag for albums here, somehow
 					metadata.disassociate_song_id(s.id)
 				else:
 					kept_albums.append(metadata)
@@ -1051,6 +1052,22 @@ class Album(AssociatedMetadata):
 		for row in table:
 			all_ratings[row['user_id']] = { "user_rating": row['album_rating_user'], "fave": row['album_fave'] }
 		return all_ratings
+	
+	def update_all_user_ratings(self):
+		db.c.update(
+			"WITH old AS ( "
+				"DELETE FROM r4_album_ratings "
+				"WHERE album_id = %s "
+				"RETURNING * "
+			") "
+			"INSERT INTO r4_album_ratings (album_id, user_id, album_fave, album_rating_complete, album_rating_user) "
+			"SELECT old.album_id AS album_id, old.user_id AS user_id, old.album_fave AS album_fave, "
+				"old.album_rating_complete AS album_rating_complete, AVG(song_rating_user) AS album_rating_user "
+			"FROM old "
+				"JOIN r4_song_album USING (album_id) "
+				" LEFT JOIN r4_song_ratings ON (r4_song_ratings.song_id = r4_song_album.song_id AND r4_song_ratings.user_id = old.user_id) "
+			"GROUP BY old.album_id, old.user_id, old.album_fave, old.album_rating_complete ",
+			(self.id,))
 
 	def _start_election_block_db(self, sid, num_elections):
 		if db.c.allows_join_on_update:
