@@ -290,7 +290,7 @@ def _create_elections(sid):
 		log.error("create_elec", "Total failure when creating elections.")
 	
 def _create_election(sid, start_time = None, target_length = None):
-	log.debug("create_elec", "Creating election.")
+	log.debug("create_elec", "Creating election, start time %s target length %s." % (start_time, target_length))
 	# Check to see if there are any events during this time
 	elec_scheduler = None
 	if start_time:

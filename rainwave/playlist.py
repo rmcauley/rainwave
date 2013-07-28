@@ -104,7 +104,7 @@ def get_age_cooldown_multiplier(added_on):
 			cool_age_multiplier = s2_min_multiplier + ((1.0 - s2_min_multiplier) * ((0.32436 - (s2_end / 288.0) + (math.pow(s2_end, 2.0) / 38170.0)) * math.log(2.0 * age_weeks + 1.0)))
 	return cool_age_multiplier
 
-def get_random_song_timed(sid, target_seconds, target_delta = 30):
+def get_random_song_timed(sid, target_seconds, target_delta):
 	"""
 	Fetch a random song abiding by all election block, request block, and
 	availability rules, but giving priority to the target song length
@@ -113,23 +113,22 @@ def get_random_song_timed(sid, target_seconds, target_delta = 30):
 	sql_query = ("FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) "
 		"WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0 AND song_request_only = FALSE AND song_length >= %s AND song_length <= %s")
 	num_available = db.c.fetch_var("SELECT COUNT(r4_song_sid.song_id) " + sql_query, (sid, sid, (target_seconds - target_delta), (target_seconds + target_delta)))
-	if num_available == 0:
+	if num_available == 0 and target_delta:
+		return get_random_song(sid, target_seconds)
+	elif num_available == 0:
 		return get_random_song(sid)
 	else:
 		offset = random.randint(1, num_available) - 1
 		song_id = db.c.fetch_var("SELECT r4_song_sid.song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, sid, (target_seconds - target_delta), (target_seconds + target_delta), offset))
 		return Song.load_from_id(song_id, sid)
 
-def get_random_song(sid, target_seconds = None, target_delta = None):
+def get_random_song(sid, target_seconds = None, target_delta = 30):
 	"""
 	Fetch a random song, abiding by all election block, request block, and
 	availability rules.  Falls back to get_random_ignore_requests on failure.
 	"""
 	if target_seconds:
-		if target_delta:
-			get_random_song_timed(sid, target_seconds, target_delta)
-		else:
-			get_random_song_timed(sid, target_seconds)
+		return get_random_song_timed(sid, target_seconds, target_delta)
 
 	sql_query = ("FROM r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) "
 		"WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_request_only = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0")

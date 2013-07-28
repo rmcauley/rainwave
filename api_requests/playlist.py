@@ -147,4 +147,4 @@ class StationSongCountRequest(RequestHandler):
 	def post(self):
 		return self.append(self.return_name, db.c.fetch_all(
 			"SELECT song_origin_sid AS sid, COUNT(song_id) AS song_count "
-			"FROM r4_songs WHERE song_verified = TRUE GROUP BY song_origin_sid")
+			"FROM r4_songs WHERE song_verified = TRUE GROUP BY song_origin_sid"))

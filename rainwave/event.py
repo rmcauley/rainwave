@@ -272,6 +272,9 @@ class Election(Event):
 		# ONLY RUN _ADD_REQUESTS ONCE PER FILL
 		self._add_requests()
 		for i in range(len(self.songs), self._num_songs):
+			if not target_song_length and len(self.songs) > 0 and 'length' in self.songs[0].data:
+				target_song_length = self.songs[0].data['length']
+				log.debug("elec_fill", "Second song in election, aligning to length %s" % target_song_length)
 			song = playlist.get_random_song(self.sid, target_song_length)
 			song.data['entry_votes'] = 0
 			song.data['entry_type'] = ElecSongTypes.normal

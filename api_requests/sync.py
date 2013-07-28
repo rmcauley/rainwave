@@ -30,10 +30,12 @@ class SyncUpdateAll(RequestHandler):
 		log.debug("sync_update_all", "Updating all sessions for sid %s" % self.sid)
 		cache.update_local_cache_for_sid(self.sid)
 		
+		session_count = 0
 		if self.sid in sessions:
 			for session in sessions[self.sid]:
+				session_count += 1
 				session.update()
-		log.debug("sync_update_all", "Updated %s sessions." % len(sessions[self.sid]))
+		log.debug("sync_update_all", "Updated %s sessions for sid %s." % (session_count, self.sid))
 		sessions[self.sid] = []
 		
 @handle_api_url("sync_update_user")
