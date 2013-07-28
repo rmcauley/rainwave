@@ -370,6 +370,7 @@ def create_tables():
 	c.create_delete_fk("r4_album_ratings", "r4_albums", "album_id", create_idx=False)
 	c.create_delete_fk("r4_album_ratings", "phpbb_users", "user_id", create_idx=False)
 
+	# TODO URGENT: Remove "sid" from this table.  It's too goddamned complicated.
 	c.update(" \
 		CREATE TABLE r4_song_album ( \
 			album_id				INTEGER		NOT NULL, \
