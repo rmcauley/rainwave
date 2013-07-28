@@ -335,6 +335,7 @@ class Election(Event):
 			self.start_actual = int(time.time())
 			self.in_progress = True
 			self.used = True
+			
 			for i in range(0, len(self.songs)):
 				self.songs[i].data['entry_position'] = i
 				db.c.update("UPDATE r4_election_entries SET entry_position = %s WHERE entry_id = %s", (i, self.songs[i].data['entry_id']))
@@ -424,13 +425,16 @@ class Election(Event):
 		self.in_progress = False
 		self.used = True
 		
+		db.c.update("UPDATE r4_elections SET elec_in_progress = FALSE, elec_used = TRUE WHERE elec_id = %s", (self.id,))
+		
 		self.songs[0].add_to_vote_count(self.songs[0].data['entry_votes'], self.sid)
 		self.songs[0].update_last_played(self.sid)
 		self.songs[0].start_cooldown(self.sid)
 	
 	def set_priority(self, priority):
-		# Do not update the actual local priority variable, that may be needed
-		# for sorting purposes
+		# Do not update the actual local priority variable, that may be needed for sorting purposes
+		# (e.g. sorting algorithms that will happen AFTER this is called)
+		# TODO: fix those stupid algorithms that need this to not be changed
 		if priority:
 			db.c.update("UPDATE r4_elections SET elec_priority = TRUE WHERE elec_id = %s", (self.id,))
 		else:
