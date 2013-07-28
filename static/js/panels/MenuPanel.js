@@ -108,7 +108,8 @@ panels.MenuPanel = {
 		};
 		
 		that.userAvatarCallback = function(avatar) {
-			that.changeAvatar(avatar);
+			// TODO: Remove this for production
+			that.changeAvatar("http://rainwave.cc" + avatar);
 		};
 		
 		that.helpClick = function() {
