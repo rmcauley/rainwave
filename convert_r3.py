@@ -26,7 +26,7 @@ class R3Song(rainwave.playlist.Song):
 		
 		updated_ratings = db.c.update(
 			"INSERT INTO r4_song_ratings(song_id, song_rating_user, user_id, song_rated_at, song_rated_at_rank, song_rated_at_count, song_fave) "
-			"SELECT %s AS song_id, rw_songratings.song_rating AS song_rating_user, rw_songratings.user_id AS user_id"
+			"SELECT %s AS song_id, rw_songratings.song_rating AS song_rating_user, rw_songratings.user_id AS user_id, "
 				"rw_songratings.song_rated_at AS song_rated_at, rw_songratings.user_rating_rank AS song_rated_at_rank, "
 				"rw_songratings.user_rating_snapshot AS song_rated_at_count, "
 				"CASE WHEN rw_songfavourites.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS song_fave "

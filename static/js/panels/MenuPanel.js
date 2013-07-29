@@ -109,7 +109,7 @@ panels.MenuPanel = {
 		
 		that.userAvatarCallback = function(avatar) {
 			// TODO: Remove this for production
-			that.changeAvatar("http://rainwave.cc" + avatar);
+			that.changeAvatar("http://rainwave.cc:80" + avatar);
 		};
 		
 		that.helpClick = function() {
