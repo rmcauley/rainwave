@@ -1053,7 +1053,7 @@ class Album(AssociatedMetadata):
 		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3.5 AND album_rating_user < 4 GROUP BY album_id", (self.id,));
 		if not neutralplus:
 			neutralplus = 0
-		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 4 GROUP BY song_id", (self.id,));
+		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 4 GROUP BY album_id", (self.id,));
 		if not likes:
 			likes = 0
 		rating_count = dislikes + neutrals + neutralplus + likes

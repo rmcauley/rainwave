@@ -11,6 +11,7 @@ import rainwave.playlist
 # Step 1: db_init.py
 # Step 2: rw_scanner.py --full
 # Step 3: this script
+# Step 4: CREATE INDEX ON rw_songratings (song_rating_id); if you haven't already
 	
 config.load()
 db.open()
@@ -54,14 +55,14 @@ os.nice(20)
 translated_songs = 0
 translated_albums = 0
 translated_ratings = 0
-for song_id in db.c.fetch_list("SELECT song_id FROM r4_songs"):
-	song = R3Song.load_from_id(song_id)
-	translated_ratings += song.load_r3_data()
-	translated_songs += 1
-	print "\rTranslating songs / ratings: %s / %s" % (translated_songs, translated_ratings),
-	sys.stdout.flush()
-print
-print
+#for song_id in db.c.fetch_list("SELECT song_id FROM r4_songs"):
+#	song = R3Song.load_from_id(song_id)
+#	translated_ratings += song.load_r3_data()
+#	translated_songs += 1
+#	print "\rTranslating songs / ratings: %s / %s" % (translated_songs, translated_ratings),
+#	sys.stdout.flush()
+#print
+#print
 	
 for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums"):
 	album = R3Album.load_from_id(album_id)
