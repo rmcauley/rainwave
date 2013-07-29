@@ -26,7 +26,7 @@ class R3Song(rainwave.playlist.Song):
 		
 		updated_ratings = db.c.update(
 			"INSERT INTO r4_song_ratings(song_id, song_rating_user, user_id, song_rated_at, song_rated_at_rank, song_rated_at_count, song_fave) "
-			"SELECT %s AS song_id, rw_songratings.user_id AS user_id, rw_songratings.song_rating AS song_rating_user, "
+			"SELECT %s AS song_id, rw_songratings.song_rating AS song_rating_user, rw_songratings.user_id AS user_id"
 				"rw_songratings.song_rated_at AS song_rated_at, rw_songratings.user_rating_rank AS song_rated_at_rank, "
 				"rw_songratings.user_rating_snapshot AS song_rated_at_count, "
 				"CASE WHEN rw_songfavourites.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS song_fave "
@@ -55,20 +55,20 @@ os.nice(20)
 translated_songs = 0
 translated_albums = 0
 translated_ratings = 0
-#for song_id in db.c.fetch_list("SELECT song_id FROM r4_songs"):
-#	song = R3Song.load_from_id(song_id)
-#	translated_ratings += song.load_r3_data()
-#	translated_songs += 1
-#	print "\rTranslating songs / ratings: %s / %s" % (translated_songs, translated_ratings),
-#	sys.stdout.flush()
-#print
-#print
+for song_id in db.c.fetch_list("SELECT song_id FROM r4_songs"):
+	song = R3Song.load_from_id(song_id)
+	translated_ratings += song.load_r3_data()
+	translated_songs += 1
+	print "\rTranslating songs / ratings: %s / %s" % (translated_songs, translated_ratings),
+	sys.stdout.flush()
+print
+print
 	
 for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums"):
 	album = R3Album.load_from_id(album_id)
 	album.load_r3_data()
 	translated_albums += 1
-	print "\rTranslated albums : ", translated_albums
+	print "\rTranslated albums : ", translated_albums,
 	sys.stdout.flush()	
 print
 print

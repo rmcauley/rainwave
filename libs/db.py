@@ -13,6 +13,10 @@ c_old = None
 # TODO: Deal with PostgreSQL deadlocks once and for all
 # Trap  psycopg2.extensions.TransactionRollbackError
 
+# TODO: The ENTIRE PROJECT needs a code review
+# since INSERT.. SELECT requires fields to be in the same order, not just the same name
+# this could prove disastrous
+
 # NOTE TO ALL:
 #
 # SQLite is UNUSABLE for production.  It is ONLY meant for testing
