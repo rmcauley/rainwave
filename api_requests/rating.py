@@ -37,7 +37,6 @@ class SubmitRatingRequest(RequestHandler):
 	def clear_rating(self, song_id):
 		albums = ratinglib.clear_song_rating(song_id, self.user.id)
 		return { "code": 1, "text": "Rating cleared.", "updated_album_ratings": albums, "song_id": song_id, "rating_user": None }
-	
 
 @handle_api_url('clear_rating')
 class ClearRating(SubmitRatingRequest):
@@ -48,4 +47,3 @@ class ClearRating(SubmitRatingRequest):
 	
 	def post(self):
 		self.append(self.return_name, self.clear_rating(self.get_argument("song_id")))
-
