@@ -128,7 +128,7 @@ def process_album_art(filename):
 	if not config.get("album_art_enabled"):
 		return True
 	directory = repr(os.path.dirname(filename))[2:-1]
-	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_album USING (song_id) WHERE song_filename LIKE %s || '%%' AND r4_song_album.album_is_tag = TRUE", (directory,))
+	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE song_filename LIKE %s || '%%'", (directory,))
 	if not album_ids or len(album_ids) == 0:
 		return False
 	im_original = Image.open(filename)

@@ -179,18 +179,21 @@ def sort_next(sid):
 	next[sid] = sorted(next[sid], key=lambda event: event.start)
 	
 def set_next_start_times(sid):
-	pass
-	# DISABLED
-	#
-	# Must be written to only overwrite sequential events or events that are very close to eachother
-	# The timeline is somewhat 'sparse' - it does not contain only sequential events.  It may contain
-	# 2 elections and an event that doesn't start for another 45 minutes, whose start time should not
-	# be changed.
-	#
-	# Calibrate the start points of each scheduled event
-	# next[sid][0].start = current[sid].start_actual + current[sid].length()
-	# for i in range(1, len(next[sid])):
-	#	next[sid][i].start = next[sid][i - 1].start + next[sid][i - 1].length()
+	"""
+	Calibrate the start points of each scheduled event until we reach the number of future elections planned.
+	This has not been fully tested and will likely require some tweaking to be done in the future.
+	"""
+	# TODO: Code review, I'm sure this function will break corner cases
+	if len(next[sid]) == 0 or config.get_station(sid, "num_planned_elections") == 0:
+		return
+	num_elections = 0
+	i = 1
+	# Next event will definitely start next
+	next[sid][0].start = current[sid].start_actual + current[sid].length()
+	while (num_elections < config.get_station(sid, "num_planned_elections")) and (i < len(next[sid])):
+		next[sid][i].start = next[sid][i - 1].start + next[sid][i - 1].length()
+		if next[sid][i].is_election:
+			num_elections += 1
 	
 def _create_elections(sid):
 	# Step, er, 0: Update the request cache first, so elections have the most recent data to work with

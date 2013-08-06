@@ -44,7 +44,7 @@ def prepare_cooldown_algorithm(sid):
 		return
 
 	# Variable names from here on down are from jf's proposal at: http://rainwave.cc/forums/viewtopic.php?f=13&t=1267
-	sum_aasl = db.c.fetch_var("SELECT SUM(aasl) FROM (SELECT AVG(song_length) AS aasl FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS jfiscrazy", (sid,))
+	sum_aasl = db.c.fetch_var("SELECT SUM(aasl) FROM (SELECT AVG(song_length) AS aasl FROM r4_album_sid JOIN r4_song_sid USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS jfiscrazy", (sid,))
 	if not sum_aasl:
 		sum_aasl = 100
 	log.debug("cooldown", "sumAASL: %s" % sum_aasl)
@@ -52,14 +52,15 @@ def prepare_cooldown_algorithm(sid):
 	if not avg_album_rating:
 		avg_album_rating = 3.5
 	log.debug("cooldown", "avg_album_rating: %s" % avg_album_rating)
-	multiplier_adjustment = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_cool_multiply) * AVG(song_length) AS tempvar FROM r4_album_sid JOIN r4_song_album USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
+	multiplier_adjustment = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_cool_multiply) * AVG(song_length) AS tempvar FROM r4_album_sid JOIN r4_song_sid USING (album_id) JOIN r4_songs USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
 	multiplier_adjustment = multiplier_adjustment / float(sum_aasl)
 	if not multiplier_adjustment:
 		multiplier_adjustment = 1
 	log.debug("cooldown", "multi: %s" % multiplier_adjustment)
 	base_album_cool = float(config.get_station(sid, "cooldown_percentage")) * float(sum_aasl) / float(multiplier_adjustment)
 	log.debug("cooldown", "base_album_cool: %s" % base_album_cool)
-	base_rating = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_rating) * AVG(song_length) AS tempvar FROM r4_albums JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) JOIN r4_song_album ON (r4_albums.album_id = r4_song_album.album_id) JOIN r4_songs USING (song_id) WHERE r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
+	# TODO: Code review this query, does it get the result we want?
+	base_rating = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_rating) * AVG(song_length) AS tempvar FROM r4_albums JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) JOIN r4_song_sid ON (r4_albums.album_id = r4_song_sid.album_id) JOIN r4_songs USING (song_id) WHERE r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
 	if not base_rating:
 		base_rating = 4
 	log.debug("cooldown", "base rating: %s" % base_rating)
@@ -110,7 +111,7 @@ def get_random_song_timed(sid, target_seconds, target_delta):
 	availability rules, but giving priority to the target song length
 	provided.  Falls back to get_random_ignore_requests on failure.
 	"""
-	sql_query = ("FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) "
+	sql_query = ("FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_album_sid USING (album_id) "
 		"WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0 AND song_request_only = FALSE AND song_length >= %s AND song_length <= %s")
 	num_available = db.c.fetch_var("SELECT COUNT(r4_song_sid.song_id) " + sql_query, (sid, sid, (target_seconds - target_delta), (target_seconds + target_delta)))
 	if num_available == 0 and target_delta:
@@ -130,7 +131,7 @@ def get_random_song(sid, target_seconds = None, target_delta = 30):
 	if target_seconds:
 		return get_random_song_timed(sid, target_seconds, target_delta)
 
-	sql_query = ("FROM r4_song_sid JOIN r4_song_album USING (song_id) JOIN r4_album_sid USING (album_id) "
+	sql_query = ("FROM r4_song_sid JOIN JOIN r4_album_sid USING (album_id) "
 		"WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_request_only = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0")
 	num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid, sid))
 	offset = 0
@@ -219,19 +220,19 @@ def reduce_song_blocks(sid):
 def get_unrated_songs_for_user(user_id):
 	return db.c.fetch_all(
 		"SELECT song_id AS id, song_title AS title, album_name "
-		"FROM r4_songs JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) "
+		"FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_albums USING (album_id) "
 		"LEFT OUTER JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
 		"WHERE song_verified = TRUE AND r4_song_ratings.song_id IS NULL ORDER BY album_name, song_title", (user_id,))
 
 def get_unrated_songs_for_requesting(user_id, sid, limit):
 	return db.c.fetch_list(
-		"SELECT MIN(song_id), album_id "
-		"FROM r4_song_sid JOIN r4_song_album USING (song_id) "
+		"SELECT MIN(song_id), r4_album_sid.album_id "
+		"FROM r4_song_sid JOIN r4_album_sid USING (album_id, sid) "
 		"LEFT OUTER JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
-		"WHERE song_verified = TRUE AND song_available = TRUE AND song_elec_blocked = FALSE "
+		"WHERE r4_song_sid.sid = %s song_verified = TRUE AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_exists = TRUE "
 		"AND r4_song_ratings.song_id IS NULL "
-		"GROUP BY album_id "
-		"LIMIT %s", (user_id, limit))
+		"GROUP BY r4_album_sid.album_id "
+		"LIMIT %s", (sid, sid, user_id, limit))
 
 class SongHasNoSIDsException(Exception):
 	pass
@@ -263,11 +264,7 @@ class Song(object):
 		s.data['rank'] = None
 		s._assign_from_dict(d)
 
-		if sid:
-			s.albums = Album.load_list_from_song_id_sid(id, sid)
-		else:
-			s.albums = Album.load_list_from_song_id(id)
-
+		s.albums = Album.load_list_from_song_id_sid(id, sid)
 		s.artists = Artist.load_list_from_song_id(id)
 		s.groups = SongGroup.load_list_from_song_id(id)
 
@@ -280,19 +277,13 @@ class Song(object):
 		All metadata is saved to the database and updated where necessary.
 		"""
 
-		kept_albums = []
 		kept_artists = []
 		kept_groups = []
 		old_albums = []
 		matched_entry = db.c.fetch_row("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
 		if matched_entry:
 			s = klass.load_from_id(matched_entry['song_id'])
-			for metadata in s.albums:
-				if metadata.is_tag:
-					old_albums.append(metadata.id)
-					metadata.disassociate_song_id(s.id)
-				else:
-					kept_albums.append(metadata)
+			old_albums = s.albums
 			for metadata in s.artists:
 				if metadata.is_tag:
 					metadata.disassociate_song_id(s.id)
@@ -312,22 +303,14 @@ class Song(object):
 		s.save(sids)
 
 		new_artists = Artist.load_list_from_tag(s.artist_tag)
-		new_albums = Album.load_list_from_tag(s.album_tag)
 		new_groups = SongGroup.load_list_from_tag(s.genre_tag)
 
-		for metadata in new_artists + new_groups:
+		for metadata in new_artists + new_groups + old_albums:
 			metadata.associate_song_id(s.id)
 
 		s.artists = new_artists + kept_artists
-		s.albums = new_albums + kept_albums
+		s.albums = old_albums
 		s.groups = new_groups + kept_groups
-
-		for metadata in s.albums:
-			metadata.associate_song_id(s.id, sids)
-			# This will reset the album_rating_completed flag on any albums this song
-			# has just been added to.
-			if not metadata.id in old_albums:
-				metadata.reset_user_completed_flags()
 
 		return s
 
@@ -469,7 +452,6 @@ class Song(object):
 				db.c.update("UPDATE r4_song_sid SET song_exists = TRUE WHERE song_id = %s AND sid = %s", (self.id, sid))
 			else:
 				db.c.update("INSERT INTO r4_song_sid (song_id, sid) VALUES (%s, %s)", (self.id, sid))
-
 
 	def disable(self):
 		db.c.update("UPDATE r4_songs SET song_verified = FALSE WHERE song_id = %s", (self.id,))
@@ -844,9 +826,9 @@ def warm_cooled_albums(sid):
 class Album(AssociatedMetadata):
 	select_by_name_query = "SELECT r4_albums.* FROM r4_albums WHERE album_name = %s"
 	select_by_id_query = "SELECT r4_albums.* FROM r4_albums WHERE album_id = %s"
-	select_by_song_id_query = "SELECT r4_albums.*, r4_song_album.album_is_tag FROM r4_song_album JOIN r4_albums USING (album_id) WHERE song_id = %s ORDER BY r4_albums.album_name"
-	disassociate_song_id_query = "DELETE FROM r4_song_album WHERE song_id = %s AND album_id = %s"
-	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_album WHERE song_id = %s AND album_id = %s"
+	select_by_song_id_query = "SELECT r4_albums.* FROM r4_song_sid JOIN r4_albums USING (album_id) WHERE song_id = %s ORDER BY r4_albums.album_name"
+	# disassociate_song_id_query = "UPDATE r4_song_sid SET album_id = NULL,  WHERE song_id = %s AND album_id = %s"
+	# has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_sid WHERE song_id = %s AND album_id = %s"
 	# This is a hack, but,umm..... yeah.  It'll do. :P  reconcile_sids handles these duties.
 	check_self_size_query = "SELECT 1, %s"
 	# delete_self_query will never run, but just in case
@@ -854,8 +836,10 @@ class Album(AssociatedMetadata):
 
 	@classmethod
 	def load_list_from_song_id_sid(cls, song_id, sid):
+		if not sid:
+			return cls.load_list_from_song_id(song_id)
 		instances = []
-		for row in db.c.fetch_all("SELECT r4_albums.*, r4_song_album.album_is_tag, album_cool_lowest, album_cool_multiply, album_cool_override, album_cool FROM r4_song_album JOIN r4_albums USING (album_id) JOIN r4_album_sid USING (album_id) WHERE song_id = %s  AND r4_song_album.sid = %s AND r4_album_sid.sid = %s ORDER BY r4_albums.album_name", (song_id, sid, sid)):
+		for row in db.c.fetch_all("SELECT r4_albums.*, album_cool_lowest, album_cool_multiply, album_cool_override, album_cool FROM r4_song_sid JOIN r4_albums USING (album_id) JOIN r4_album_sid USING (album_id) WHERE song_id = %s AND r4_song_sid.sid = %s AND r4_album_sid.sid = %s ORDER BY r4_albums.album_name", (song_id, sid, sid)):
 			instance = cls()
 			instance._assign_from_dict(row)
 			instance.sids = [ sid ]
@@ -882,33 +866,31 @@ class Album(AssociatedMetadata):
 		instance.sids = [ sid ]
 		if not user or user.is_anonymous():
 			instance.data['songs'] = db.c.fetch_all(
-				"SELECT r4_song_album.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
+				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
 					"song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, "
 					"song_rating AS rating, 0 AS user_rating, FALSE AS fave, "
 					"string_agg(r4_artists.artist_id || ':' || r4_artists.artist_name,  ',') AS artist_parseable "
-				"FROM r4_song_album "
+				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
-					"JOIN r4_song_sid USING (song_id) "
 					"JOIN r4_song_artist USING (song_id) "
 					"JOIN r4_artists USING (artist_id) "
-				"WHERE r4_song_album.album_id = %s "
-				"GROUP BY r4_song_album.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating",
+				"WHERE r4_song_sid.sid = %s AND r4_song_sid.album_id = %s "
+				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating",
 				(instance.id,))
 		else:
 			instance.data['songs'] = db.c.fetch_all(
-				"SELECT r4_song_album.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
+				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
 					"song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, "
 					"song_rating AS rating, song_cool_multiply AS cool_multiplty, song_cool_override AS cool_override, "
 					"COALESCE(song_rating_user, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave, "
 					"string_agg(r4_artists.artist_id || ':' || r4_artists.artist_name,  ',') AS artist_parseable "
-				"FROM r4_song_album "
+				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
-					"JOIN r4_song_sid USING (song_id) "
 					"JOIN r4_song_artist USING (song_id) "
 					"JOIN r4_artists USING (artist_id) "
-					"LEFT JOIN r4_song_ratings ON (r4_song_album.song_id = r4_song_ratings.song_id AND user_id = %s) "
-				"WHERE r4_song_album.album_id = %s "
-				"GROUP BY r4_song_album.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply",
+					"LEFT JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
+				"WHERE r4_song_sid.sid = %s AND r4_song_sid.album_id = %s "
+				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply",
 				(user.id, instance.id))
 		return instance
 		
@@ -965,39 +947,45 @@ class Album(AssociatedMetadata):
 			self.data[new_key] = default
 
 	def associate_song_id(self, song_id, sids, is_tag = None):
-		if is_tag == None:
-			is_tag = self.is_tag
-		else:
-			self.is_tag = is_tag
-		if db.c.fetch_var(self.has_song_id_query, (song_id, self.id)) > 0:
-			pass
-		else:
-			associate_song_id_query = "INSERT INTO r4_song_album (song_id, album_id, album_is_tag, sid) VALUES (%s, %s, %s, %s)"
-			for sid in sids:
-				db.c.update(associate_song_id_query, (song_id, self.id, is_tag, sid))
-		self.reconcile_sids()
+		do_reconciliation = False
+		for sid in sids:
+			if not db.c.fetch_var("SELECT COUNT(*) FROM r4_song_sid WHERE song_id = %s AND sid = %s", (song_id, sid)):
+				raise Exception("Song ID %s has not been associated with station %s yet." % (song_id, sid))
+			belongs = db.c.fetch_var("SELECT album_id FROM r4_song_sid WHERE song_id = %s AND album_id = %s AND sid = %s", (song_id, self.id, sid))
+			if not belongs or belongs != self.id:
+				self.reconcile_sids(belongs)
+				db.c.update("UPDATE r4_song_sid SET album_id = %s WHERE song_id = %s AND sid = %s", (self.id, song_id, sid))
+		if do_reconciliation:
+			self.reconcile_sids()
 
 	def disassociate_song_id(self, song_id):
-		super(Album, self).disassociate_song_id(song_id)
-		self.reconcile_sids()
+		"""
+		Removed.  Can be called, won't actually do anything.
+		Use associate_song_id to change an associated song's album ID.
+		"""
+		pass
+		#super(Album, self).disassociate_song_id(song_id)
+		#self.reconcile_sids()
 
-	def reconcile_sids(self):
-		new_sids = db.c.fetch_list("SELECT r4_song_album.sid FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid.song_exists = TRUE GROUP BY r4_song_album.sid", (self.id,))
-		current_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (self.id,))
-		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (self.id,))
+	def reconcile_sids(self, album_id = None):
+		if not album_id:
+			album_id = self.id
+		new_sids = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE album_id = %s AND song_exists = TRUE GROUP BY sid", (album_id,))
+		current_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (album_id,))
+		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (album_id,))
 		for sid in current_sids:
 			if not new_sids.count(sid):
-				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE WHERE album_id = %s AND sid = %s", (self.id, sid))
+				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE WHERE album_id = %s AND sid = %s", (album_id, sid))
 		for sid in new_sids:
 			if current_sids.count(sid):
 				pass
 			elif old_sids.count(sid):
-				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (self.id, sid))
+				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (album_id, sid))
 			else:
-				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (self.id, sid))
+				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (album_id, sid))
 		self.sids = new_sids
 		for sid in self.sids:
-			updated_album_ids[sid][self.id] = True
+			updated_album_ids[sid][album_id] = True
 
 	def start_cooldown(self, sid, cool_time = False):
 		global cooldown_config
@@ -1011,7 +999,7 @@ class Album(AssociatedMetadata):
 			if not cool_rating or cool_rating == 0:
 				cool_rating = 3
 			auto_cool = cooldown_config[sid]['min_album_cool'] + (((4 - (cool_rating - 1)) / 4.0) * (cooldown_config[sid]['max_album_cool'] - cooldown_config[sid]['min_album_cool']))
-			album_num_songs = db.c.fetch_var("SELECT COUNT(r4_song_album.song_id) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.sid = %s", (self.id, sid))
+			album_num_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE album_id = %s AND song_exists = TRUE AND sid = %s", (self.id, sid))
 			log.debug("cooldown", "min_album_cool: %s .. max_album_cool: %s .. auto_cool: %s .. album_num_songs: %s .. rating: %s" % (cooldown_config[sid]['min_album_cool'], cooldown_config[sid]['max_album_cool'], auto_cool, album_num_songs, cool_rating))
 			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_num_songs - config.get_station(sid, "cooldown_size_slope_start")))) / 2);
 			cool_age_multiplier = get_age_cooldown_multiplier(self.data['added_on'])
@@ -1026,16 +1014,15 @@ class Album(AssociatedMetadata):
 		cool_end = int(cool_time + time.time())
 		if db.c.allows_join_on_update:
 			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s "
-						"FROM r4_song_album "
-						"WHERE r4_song_sid.song_id = r4_song_album.song_id AND album_id = %s AND r4_song_sid.sid = %s AND song_cool_end < %s",
+						"WHERE album_id = %s AND sid = %s AND song_cool_end < %s",
 						(cool_end, self.id, sid, cool_end))
 		else:
-			songs = db.c.fetch_list("SELECT song_id FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND r4_song_sid.sid = %s AND r4_song_album.sid = %s AND song_exists = TRUE", (self.id, sid, sid))
+			songs = db.c.fetch_list("SELECT song_id FROM r4_song_sid WHERE album_id = %s AND sid = %s AND song_exists = TRUE", (self.id, sid))
 			for song_id in songs:
 				db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND song_cool_end < %s AND sid = %s", (cool_end, song_id, cool_end, sid))
 
 	def solve_cool_lowest(self, sid):
-		self.data['cool_lowest'] = db.c.fetch_var("SELECT MIN(song_cool_end) FROM r4_song_album JOIN r4_song_sid USING (song_id) WHERE r4_song_album.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE", (self.id, sid))
+		self.data['cool_lowest'] = db.c.fetch_var("SELECT MIN(song_cool_end) FROM r4_song_sid WHERE album_id = %s AND sid = %s AND song_exists = TRUE", (self.id, sid))
 		if self.data['cool_lowest'] > time.time():
 			self.data['cool'] = True
 		else:
@@ -1065,7 +1052,7 @@ class Album(AssociatedMetadata):
 		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (time.time(), self.id, sid))
 
 	def update_vote_total(self, sid):
-		vote_total = db.c.fetch_var("SELECT SUM(song_vote_total) FROM r4_song_sid JOIN r4_song_album USING (song_id) WHERE album_id = %s AND song_exists = TRUE", (self.id,))
+		vote_total = db.c.fetch_var("SELECT SUM(song_vote_total) FROM r4_song_sid WHERE album_id = %s AND song_exists = TRUE", (self.id,))
 		return db.c.update("UPDATE r4_album_sid SET album_vote_total = %s WHERE album_id = %s AND sid = %s", (vote_total, self.id, sid))
 
 	def get_all_ratings(self):
@@ -1077,21 +1064,27 @@ class Album(AssociatedMetadata):
 	
 	def update_all_user_ratings(self):
 		db.c.update(
+			# TODO: The statistically minded Rainwavers will likely notice and object
+			# to this query.  The "ratings" subquery does not DISTINCT ON song_id so that each
+			# song's rating is only picked up once, it's likely that the song ratings are
+			# being picked up multiple times here
+			# TODO: if I make this GROUP BY song_id, album_id, etc will it provide the desired result
+			# or do we need yet ANOTHER subquery to make sure this one behaves?
 			"WITH "
 				"faves AS ( "
-					"DELETE FROM r4_album_ratings WHERE album_id = %s RETURNING *) "
+					"DELETE FROM r4_album_ratings WHERE album_id = %s RETURNING * "
 				"), "
 				"ratings AS ( "
 					"SELECT album_id, FALSE AS album_fave, user_id, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user "
-					"FROM r4_song_album LEFT JOIN r4_song_ratings USING (song_id) "
-					"WHERE r4_song_album.album_id = %s "
+					"FROM r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) "
+					"WHERE r4_song_sid.album_id = %s "
 					"GROUP BY album_id, user_id "
 				") "
 			"INSERT INTO r4_album_ratings (album_id, user_id, album_fave, album_rating_user) "
 			"SELECT album_id, user_id, BOOL_OR(album_fave) AS album_fave, NULLIF(MAX(album_rating_user), 0) AS album_rating_user "
 			"FROM (SELECT * FROM (SELECT album_id, album_fave, user_id, 0 AS album_rating_user FROM faves) AS faves UNION ALL SELECT * FROM ratings) AS fused "
 			"GROUP BY album_id, user_id "
-			"HAVING BOOL_OR(album_fave) = TRUE OR MAX(album_rating_user) IS NOT NULL "
+			"HAVING BOOL_OR(album_fave) = TRUE OR MAX(album_rating_user) IS NOT NULL ",
 			(self.id, self.id))
 		
 	def reset_user_completed_flags(self):
@@ -1102,12 +1095,10 @@ class Album(AssociatedMetadata):
 			# refer to song.set_election_block for base SQL
 			db.c.update("UPDATE r4_song_sid "
 						"SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s "
-						"FROM r4_song_album "
-						"WHERE r4_song_sid.song_id = r4_song_album.song_id AND "
-						"r4_song_album.album_id = %s AND r4_song_sid.sid = %s AND song_elec_blocked_num <= %s",
+						"WHERE album_id = %s AND sid = %s AND song_elec_blocked_num <= %s",
 						('album', num_elections, self.id, sid, num_elections))
 		else:
-			table = db.c.fetch_all("SELECT song_id FROM r4_song_album WHERE album_id = %s AND sid = %s", (self.id, sid))
+			table = db.c.fetch_all("SELECT song_id FROM r4_song_sid WHERE album_id = %s AND sid = %s", (self.id, sid))
 			for row in table:
 				song = Song()
 				song.id = row['song_id']
@@ -1121,7 +1112,7 @@ class Album(AssociatedMetadata):
 
 		self.data['genres'] = db.c.fetch_all(
 			"SELECT DISTINCT group_id AS id, group_name AS name "
-			"FROM r4_song_album JOIN r4_song_group USING (song_id) JOIN r4_groups USING (group_id) "
+			"FROM r4_song_sid JOIN r4_song_group USING (song_id) JOIN r4_groups USING (group_id) "
 			"WHERE album_id = %s",
 			(self.id,))
 
@@ -1173,20 +1164,24 @@ class Artist(AssociatedMetadata):
 
 	def load_all_songs(self, sid, user_id = None):
 		# I'm not going to provide a list of Song objects here because the overhead of that could easily spiral out of control
-		if not user_id or user_id == 1:
-			self.data['songs'] = db.c.fetch_all("SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS requestable, 0 AS user_rating, FALSE AS fave "
-							"FROM r4_song_artist JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) "
-							"WHERE r4_song_artist.artist_id = %s "
-							"ORDER BY album_name, origin_sid, song_title",
-							(sid, self.id))
-		else:
-			self.data['songs'] = db.c.fetch_all("SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS requestable, COALESCE(song_rating_user, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave "
-							"FROM r4_song_artist JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id) "
-							"WHERE r4_song_artist.artist_id = %s "
-							"ORDER BY album_name, origin_sid, song_title",
-							(sid, self.id))
+		# TODO: if you want, make this also deliver songs that don't belong on this station
+		# TODO: also break this out into 2 queries, one to deliver to users, one to anon uesrs
+		# this one currently covers both but will have a (small) speed impact on anon users
+		self.data['songs'] = db.c.fetch_all(
+			"SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, "
+				"album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, "
+				"song_rating_user AS user_rating, song_fave AS fave "
+			"FROM r4_song_artist "
+				"JOIN r4_song_sid ON (r4_song_artist.song_id = r4_song_sid.artist_id AND r4_song_sid.sid = %s) "
+				"JOIN r4_songs USING (song_id) "
+				"JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id) "
+				"LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
+			"WHERE r4_song_artist.artist_id = %s "
+			"ORDER BY album_name, origin_sid, song_title",
+			(sid, user_id, self.id))
+
 		for song in self.data['songs']:
-			song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
+			song['album'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
 			song.pop('album_name', None)
 			song.pop('album_id', None)
 

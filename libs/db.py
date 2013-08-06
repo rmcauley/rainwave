@@ -304,7 +304,8 @@ def create_tables():
 			song_played_last			INTEGER		, \
 			song_exists				BOOLEAN		DEFAULT TRUE, \
 			song_request_only			BOOLEAN		DEFAULT FALSE, \
-			song_request_only_end		INTEGER	DEFAULT 0 \
+			song_request_only_end		INTEGER	DEFAULT 0, \
+			album_id					INTEGER \
 		)")
 	# c.create_idx("r4_song_sid", "song_id")	# handled by create_delete_fk
 	c.create_idx("r4_song_sid", "sid")
@@ -313,6 +314,7 @@ def create_tables():
 	c.create_idx("r4_song_sid", "song_exists")
 	c.create_idx("r4_song_sid", "song_request_only")
 	c.create_delete_fk("r4_song_sid", "r4_songs", "song_id")
+	c.create_null_fk("r4_song_sid", "r4_albums", "album_id")
 
 	c.update(" \
 		CREATE TABLE r4_song_ratings ( \
@@ -373,19 +375,6 @@ def create_tables():
 	c.create_idx("r4_album_ratings", "album_id")
 	c.create_delete_fk("r4_album_ratings", "r4_albums", "album_id", create_idx=False)
 	c.create_delete_fk("r4_album_ratings", "phpbb_users", "user_id", create_idx=False)
-
-	# TODO URGENT: Remove "sid" from this table.  It's too goddamned complicated.
-	c.update(" \
-		CREATE TABLE r4_song_album ( \
-			album_id				INTEGER		NOT NULL, \
-			song_id					INTEGER		NOT NULL, \
-			album_is_tag				BOOLEAN		DEFAULT TRUE, \
-			sid					SMALLINT	NOT NULL \
-		)")
-	# c.create_idx("r4_song_album", "album_id")		# handled by create_delete_fk
-	# c.create_idx("r4_song_album", "song_id")
-	c.create_delete_fk("r4_song_album", "r4_albums", "album_id")
-	c.create_delete_fk("r4_song_album", "r4_songs", "song_id")
 
 	c.update(" \
 		CREATE TABLE r4_artists		( \

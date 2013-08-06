@@ -303,17 +303,29 @@ class User(object):
 			return []
 		requests = cache.get_user(self, "requests")
 		if not requests:
-			requests = db.c.fetch_all("SELECT r4_request_store.song_id AS id, r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, song_exists AS valid, song_elec_blocked AS elec_blocked, song_elec_blocked_by AS elec_blocked_by, song_elec_blocked_num AS elec_blocked_num "
-							"FROM r4_request_store JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) "
-							"WHERE user_id = %s "
-							"ORDER BY reqstor_order, reqstor_id",
-							(self.request_sid, self.id))
+			requests = db.c.fetch_all(
+				"SELECT r4_request_store.song_id AS id, r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
+					"song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, "
+					"COALESCE(r4_song_sid.album_id, album_data.album_id) AS album_id, album_name "
+					"song_length AS length, r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, r4_song_sid.song_exists AS valid, "
+					"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
+					"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS requestable "
+				"FROM r4_request_store "
+					"JOIN r4_songs USING (song_id) "
+					"JOIN r4_song_sid AS album_data USING (song_id) "
+					"LEFT JOIN r4_song_sid ON (r4_song_sid.sid = 1 AND r4_songs.song_id = r4_song_sid.song_id) "
+					"LEFT JOIN r4_song_ratings ON (r4_song_sid.sid = 1 AND r4_songs.song_id = r4_song_sid.song_id) "
+					"JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id OR album_data.album_id = r4_albums.album_id) "
+				"WHERE r4_request_store.user_id = 1 "
+				"ORDER BY reqstor_order, reqstor_id",
+				(self.request_sid, self.id))
 			if not requests:
 				requests = []
 			for song in requests:
 				song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
 				song.pop('album_name', None)
 				song.pop('album_id', None)
+		cache.set_user(self, "requests")
 		return requests
 	
 	def set_request_tunein_expiry(self, t = None):

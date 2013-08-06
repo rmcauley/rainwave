@@ -74,13 +74,16 @@ class AllSongsRequestHandler(RequestHandler):
 	
 	def post(self):
 		order = "album_name, song_title"
+		distinct_on = "album_name, song_title"
 		if self.get_argument("order") == "rating":
-			order = "song_rating_user DESC"
+			order = "song_rating_user DESC, album_name, song_title"
+			distinct_on = "song_rating_user, album_name, song_title"
 		self.append(self.return_name, db.c.fetch_all(
-			"SELECT song_id AS id, song_title AS title, album_name, song_rating AS rating, song_rating_user AS rating_user, song_fave AS fave "
-			"FROM r4_songs JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) "
+			"SELECT DISTINCT ON (" + distinct_on + ") song_id AS id, song_title AS title, album_name, song_rating AS rating, song_rating_user AS rating_user, song_fave AS fave "
+			"FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_albums USING (album_id) "
 			"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
-			"WHERE song_verified = TRUE ORDER BY " + order, (self.user.id,)))
+			"WHERE song_verified = TRUE ORDER BY " + order + "", 
+			(self.user.id,)))
 		
 @handle_api_url("unrated_songs")
 class UnratedSongsRequestHandler(RequestHandler):
@@ -99,9 +102,10 @@ class Top100Songs(RequestHandler):
 	
 	def post(self):
 		self.append(self.return_name, db.c.fetch_all(
-			"SELECT song_id AS id, song_title AS title, album_name "
-			"FROM r4_songs JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) "
-			"ORDER BY song_rating DESC LIMIT 100"))
+			"SELECT DISTINCT ON (song_rating, song_id) song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, song_rating, song_rating_count "
+			"FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_albums USING (album_id) "
+			"WHERE song_rating_count > 20 AND song_verified = TRUE"
+			"ORDER BY song_rating DESC, song_id LIMIT 100"))
 
 @handle_api_url("all_faves")
 class AllFavRequestHandler(RequestHandler):
@@ -112,9 +116,9 @@ class AllFavRequestHandler(RequestHandler):
 	
 	def post(self):
 		self.append(self.return_name, db.c.fetch_all(
-			"SELECT r4_songs.song_id AS id, song_title AS title, album_name, song_rating AS rating, song_rating_user AS rating_user, TRUE as fave "
+			"SELECT DISTINCT ON (album_name, song_title) r4_songs.song_id AS id, song_title AS title, album_name, song_rating AS rating, song_rating_user AS rating_user, TRUE as fave "
 			"FROM r4_song_ratings JOIN r4_songs ON (song_fave = TRUE AND user_id = %s AND r4_song_ratings.song_id = r4_songs.song_id) "
-			"JOIN r4_song_album ON (r4_songs.song_id = r4_song_album.song_id) JOIN r4_albums USING (album_id) "
+			"JOIN r4_song_sid USING (album_id) JOIN r4_albums USING (album_id) "
 			"WHERE song_verified = TRUE ORDER BY album_name, song_title", (self.user.id,)))
 
 @handle_api_url("playback_history")
@@ -128,14 +132,16 @@ class PlaybackHistory(RequestHandler):
 		if self.user.is_anonymous():
 			self.append(self.return_name, db.c.fetch_all(
 				"SELECT song_id AS id, song_title AS title, album_name "
-				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) "
-				"ORDER BY songhist_id DESC LIMIT 100"))
+				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_song_sid USING (song_id, sid) JOIN r4_album_sid USING (album_id) JOIN r4_albums USING (album_id) "
+				"WHERE r4_song_history.sid = %s "
+				"ORDER BY songhist_id DESC LIMIT 100"), (self.sid, self.sid))
 		else:
 			self.append(self.return_name, db.c.fetch_all(
 				"SELECT song_id AS id, song_title AS title, album_name, song_rating_user AS rating_user, song_fave AS fave "
-				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_song_album USING (song_id) JOIN r4_albums USING (album_id) "
+				"FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id) "
 				"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
-				"ORDER BY songhist_id DESC LIMIT 100"))
+				"WHERE r4_song_history.sid = %s "
+				"ORDER BY songhist_id DESC LIMIT 100"), (self.sid,))
 
 @handle_api_url("station_song_count")
 class StationSongCountRequest(RequestHandler):

@@ -61,16 +61,22 @@ def clear_song_rating(song_id, user_id):
 	if existed:
 		return update_album_ratings(song_id, user_id)
 	else:
-		# TODO: Return an exception
+		# TODO: Return an exception?
 		return []
 	
 def update_album_ratings(song_id, user_id):
 	toreturn = []
-	for album_id in db.c.fetch_list("SELECT album_id FROM r4_song_album WHERE song_id = %s", (song_id,)):
-		user_data = db.c.fetch_row("SELECT ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS user_rating, COUNT(song_rating_user) AS user_rating_count FROM r4_song_album JOIN r4_song_ratings ON (album_id = %s AND r4_song_album.song_id = r4_song_ratings.song_id) "
-							  "WHERE user_id = %s",
-							  (album_id, user_id))
-		num_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_album WHERE album_id = %s", (album_id,))
+	for album_id in db.c.fetch_list("SELECT DISTINCT album_id FROM r4_song_sid WHERE song_id = %s", (song_id,)):
+		# TODO: Can this query be sped up in *any* way possible?
+		user_data = db.c.fetch_row(
+			"SELECT ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS user_rating, "
+				"COUNT(song_rating_user) AS user_rating_count "
+			"FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s) AS temp "
+				"JOIN r4_song_ratings USING (song_id) "
+			"WHERE user_id = %s",
+			(album_id, user_id))
+		# TODO PRIORITY: This query is going to be slow, we should cache this value, probably right in the database in the r4_albums table.
+		num_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s) AS temp", (album_id,))
 		rating_complete = False
 		if user_data['user_rating_count'] >= num_songs:
 			rating_complete = True
