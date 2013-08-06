@@ -212,7 +212,10 @@ class RequestHandler(tornado.web.RequestHandler):
 		super(RequestHandler, self).finish(chunk)
 
 	def write_error(self, status_code, **kwargs):
-		self._output = []
+		if self._output_array:
+			self._output = []
+		else:
+			self._output = {}
 		if kwargs.has_key("exc_info"):
 			exc = kwargs['exc_info'][1]
 			if isinstance(exc, APIException):
