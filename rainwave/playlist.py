@@ -105,33 +105,32 @@ def get_age_cooldown_multiplier(added_on):
 			cool_age_multiplier = s2_min_multiplier + ((1.0 - s2_min_multiplier) * ((0.32436 - (s2_end / 288.0) + (math.pow(s2_end, 2.0) / 38170.0)) * math.log(2.0 * age_weeks + 1.0)))
 	return cool_age_multiplier
 
-def get_random_song_timed(sid, target_seconds, target_delta):
+def get_random_song_timed(sid, target_seconds = None, target_delta = 30):
 	"""
 	Fetch a random song abiding by all election block, request block, and
 	availability rules, but giving priority to the target song length
-	provided.  Falls back to get_random_ignore_requests on failure.
+	provided.  Falls back to get_random_song on failure.
 	"""
+	if not target_seconds:
+		return get_random_song(sid)
+
 	sql_query = ("FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_album_sid USING (album_id) "
 		"WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0 AND song_request_only = FALSE AND song_length >= %s AND song_length <= %s")
 	num_available = db.c.fetch_var("SELECT COUNT(r4_song_sid.song_id) " + sql_query, (sid, sid, (target_seconds - target_delta), (target_seconds + target_delta)))
-	if num_available == 0 and target_delta:
-		return get_random_song(sid, target_seconds)
-	elif num_available == 0:
+	if num_available == 0:
 		return get_random_song(sid)
 	else:
 		offset = random.randint(1, num_available) - 1
 		song_id = db.c.fetch_var("SELECT r4_song_sid.song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, sid, (target_seconds - target_delta), (target_seconds + target_delta), offset))
 		return Song.load_from_id(song_id, sid)
 
-def get_random_song(sid, target_seconds = None, target_delta = 30):
+def get_random_song(sid):
 	"""
 	Fetch a random song, abiding by all election block, request block, and
 	availability rules.  Falls back to get_random_ignore_requests on failure.
 	"""
-	if target_seconds:
-		return get_random_song_timed(sid, target_seconds, target_delta)
 
-	sql_query = ("FROM r4_song_sid JOIN JOIN r4_album_sid USING (album_id) "
+	sql_query = ("FROM r4_song_sid JOIN r4_album_sid USING (album_id) "
 		"WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_request_only = FALSE AND song_elec_blocked = FALSE AND album_request_count = 0")
 	num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid, sid))
 	offset = 0
@@ -279,11 +278,9 @@ class Song(object):
 
 		kept_artists = []
 		kept_groups = []
-		old_albums = []
 		matched_entry = db.c.fetch_row("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
 		if matched_entry:
 			s = klass.load_from_id(matched_entry['song_id'])
-			old_albums = s.albums
 			for metadata in s.artists:
 				if metadata.is_tag:
 					metadata.disassociate_song_id(s.id)
@@ -304,12 +301,15 @@ class Song(object):
 
 		new_artists = Artist.load_list_from_tag(s.artist_tag)
 		new_groups = SongGroup.load_list_from_tag(s.genre_tag)
+		new_albums = Album.load_list_from_tag(s.album_tag)
 
-		for metadata in new_artists + new_groups + old_albums:
+		for metadata in new_artists + new_groups:
 			metadata.associate_song_id(s.id)
-
+		if len(new_albums) > 0:
+			new_albums[0].associate_song_id(s.id, sids)
+		
 		s.artists = new_artists + kept_artists
-		s.albums = old_albums
+		s.albums = new_albums[0]
 		s.groups = new_groups + kept_groups
 
 		return s
@@ -432,14 +432,13 @@ class Song(object):
 					song_file_mtime = %s \
 				WHERE song_id = %s",
 				(self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], file_mtime, self.id))
-			self.verified = True
 		else:
 			self.id = db.c.get_next_id("r4_songs", "song_id")
 			db.c.update("INSERT INTO r4_songs \
-				(song_id, song_filename, song_title, song_link, song_link_text, song_length, song_origin_sid, song_file_mtime) \
+				(song_id, song_filename, song_title, song_link, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned) \
 				VALUES \
-				(%s,      %s           , %s        , %s       , %s            , %s         , %s             , %s )",
-				(self.id, self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime))
+				(%s,      %s           , %s        , %s       , %s            , %s         , %s             , %s             , %s           , %s )",
+				(self.id, self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True))
 			self.verified = True
 			self.data['added_on'] = int(time.time())
 
@@ -951,9 +950,10 @@ class Album(AssociatedMetadata):
 		for sid in sids:
 			if not db.c.fetch_var("SELECT COUNT(*) FROM r4_song_sid WHERE song_id = %s AND sid = %s", (song_id, sid)):
 				raise Exception("Song ID %s has not been associated with station %s yet." % (song_id, sid))
-			belongs = db.c.fetch_var("SELECT album_id FROM r4_song_sid WHERE song_id = %s AND album_id = %s AND sid = %s", (song_id, self.id, sid))
-			if not belongs or belongs != self.id:
-				self.reconcile_sids(belongs)
+			# belongs = db.c.fetch_var("SELECT album_id FROM r4_song_sid WHERE song_id = %s AND album_id = %s AND sid = %s", (song_id, self.id, sid))
+			belongs = db.c.fetch_var("SELECT album_id FROM r4_song_sid WHERE song_id = %s AND sid = %s", (song_id, sid))
+			if not belongs: # belongs != self.id:
+				do_reconciliation = True
 				db.c.update("UPDATE r4_song_sid SET album_id = %s WHERE song_id = %s AND sid = %s", (self.id, song_id, sid))
 		if do_reconciliation:
 			self.reconcile_sids()

@@ -134,9 +134,6 @@ class Event(object):
 		if song:
 			song.update_last_played(self.sid)
 		
-	def get_song(self):
-		return None	
-		
 	def length(self):
 		if self.start_actual:
 			return self.start_actual - self.end
@@ -275,7 +272,7 @@ class Election(Event):
 			if not target_song_length and len(self.songs) > 0 and 'length' in self.songs[0].data:
 				target_song_length = self.songs[0].data['length']
 				log.debug("elec_fill", "Second song in election, aligning to length %s" % target_song_length)
-			song = playlist.get_random_song(self.sid, target_song_length)
+			song = playlist.get_random_song_timed(self.sid, target_song_length)
 			song.data['entry_votes'] = 0
 			song.data['entry_type'] = ElecSongTypes.normal
 			song.data['elec_request_user_id'] = 0
@@ -352,6 +349,8 @@ class Election(Event):
 		return self.songs[0].filename
 		
 	def get_song(self):
+		if len(self.songs) == 0:
+			return None
 		return self.songs[0]
 		
 	def _add_from_queue(self):

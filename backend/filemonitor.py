@@ -109,11 +109,12 @@ def _is_image(filename):
 def _scan_file(filename, sids, throw_exceptions = False):
 	try:
 		if _is_mp3(filename):
-			# print "Scanning %s" % filename
 			# Only scan the file if we don't have a previous mtime for it, or the mtime is different
-			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s", (filename,))
+			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s AND song_verified = TRUE", (filename,))
 			if not old_mtime or old_mtime != os.stat(filename)[8]:
 				playlist.Song.load_from_file(filename, sids)
+			elif old_mtime:
+				db.c.update("UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s", (filename,))
 		elif _is_image(filename):
 			process_album_art(filename)
 	except Exception as xception:

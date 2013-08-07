@@ -29,7 +29,7 @@ def load():
 		# If our cache is empty, pull from the DB
 		if not current[sid]:
 			current[sid] = get_event_in_progress(sid)
-		if not current[sid]:
+		if not current[sid] or not current[sid].get_song():
 			current[sid] = _create_election(sid)
 			
 		next[sid] = cache.get_station(sid, "sched_next")
