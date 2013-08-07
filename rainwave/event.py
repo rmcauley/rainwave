@@ -341,11 +341,13 @@ class Election(Event):
 				self.songs[i].data['entry_position'] = i
 				db.c.update("UPDATE r4_election_entries SET entry_position = %s WHERE entry_id = %s", (i, self.songs[i].data['entry_id']))
 			db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s, elec_used = TRUE WHERE elec_id = %s", (self.start_actual, self.id))
-			if db.c.allows_join_on_update:
+			if db.c.allows_join_on_update and len(self.songs) > 0:
 				db.c.update("UPDATE phpbb_users SET radio_winningvotes = radio_winningvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id = %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
 				db.c.update("UPDATE phpbb_users SET radio_losingvotes = radio_losingvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id != %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
 	
 	def get_filename(self):
+		if len(self.songs) == 0:
+			return None
 		return self.songs[0].filename
 		
 	def get_song(self):
@@ -430,10 +432,11 @@ class Election(Event):
 		
 		db.c.update("UPDATE r4_elections SET elec_in_progress = FALSE, elec_used = TRUE WHERE elec_id = %s", (self.id,))
 		
-		self.songs[0].add_to_vote_count(self.songs[0].data['entry_votes'], self.sid)
-		self.songs[0].update_last_played(self.sid)
-		self.songs[0].update_rating()
-		self.songs[0].start_cooldown(self.sid)
+		if len(self.songs) > 0:
+			self.songs[0].add_to_vote_count(self.songs[0].data['entry_votes'], self.sid)
+			self.songs[0].update_last_played(self.sid)
+			self.songs[0].update_rating()
+			self.songs[0].start_cooldown(self.sid)
 	
 	def set_priority(self, priority):
 		# Do not update the actual local priority variable, that may be needed for sorting purposes
