@@ -143,9 +143,9 @@ function Rating(p) {
 		var setfav = that.favourite ? "false" : "true";
 		var category_id = that.category + "_id";
 		var submithash = {};
-		submithash['fav'] = setfav;
+		submithash['fave'] = setfav;
 		submithash[that.category + "_id"] = that.id;
-		lyre.async_get("fav_" + that.category, submithash);
+		lyre.async_get("fave_" + that.category, submithash);
 	};
 	
 	that.draw();

@@ -100,22 +100,7 @@ class RequestHandler(tornado.web.RequestHandler):
 			self._output_array = False
 			
 		request_ok = True
-
-		for field, field_attribs in self.__class__.fields.iteritems():
-			type_cast, required = field_attribs
-			if required and field not in self.request.arguments:
-				self.append("error", api.returns.ErrorReturn(400, "Missing %s argument." % field))
-				request_ok = False
-			elif not required and field not in self.request.arguments:
-				pass
-			else:
-				parsed = type_cast(self.get_argument(field))
-				if parsed == None:
-					self.append("error", api.returns.ErrorReturn(400, "Invalid argument %s: %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__))))
-					request_ok = False
-				else:
-					self.cleaned_args[field] = parsed
-
+		
 		self.sid = None
 		if "sid" in self.request.arguments:
 			self.sid = int(self.get_argument("sid"))
@@ -125,6 +110,21 @@ class RequestHandler(tornado.web.RequestHandler):
 		if request_ok and self.sid and not self.sid in config.station_ids:
 			self.append("error", api.returns.ErrorReturn(400, "Invalid station ID."))
 			request_ok = False
+
+		for field, field_attribs in self.__class__.fields.iteritems():
+			type_cast, required = field_attribs
+			if required and field not in self.request.arguments:
+				self.append("error", api.returns.ErrorReturn(400, "Missing %s argument." % field))
+				request_ok = False
+			elif not required and field not in self.request.arguments:
+				pass
+			else:
+				parsed = type_cast(self.get_argument(field), self)
+				if parsed == None:
+					self.append("error", api.returns.ErrorReturn(400, "Invalid argument %s: %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__))))
+					request_ok = False
+				else:
+					self.cleaned_args[field] = parsed
 				
 		if request_ok:
 			authorized = self.rainwave_auth()

@@ -4,29 +4,45 @@ from api import fieldtypes
 from api.web import RequestHandler
 from api.server import handle_api_url
 
-@handle_api_url('fave')
-class SubmitFave(RequestHandler):
-	return_name = "fave_result"
+from rainwave import rating
+from libs import db
+
+@handle_api_url('fave_song')
+class SubmitSongFave(RequestHandler):
+	_fave_type = "song"
 	login_required = True
 	tunein_required = False
-	unlocked_listener_only = True
-	description = "Fave a song."
+	description = "Fave un-fave a song."
 	fields = {
-		"song_id": (fieldtypes.integer, True),
+		"song_id": (fieldtypes.song_id, True),
 		"fave": (fieldtypes.boolean, True)
 	}
 	
 	def post(self):
-		if self.fave(self, self.arguments["song_id"], self.arguments["fave"]):
-			self.append(self.return_name, { "code": 0, "text": "Fave submitted." })
-		else:
-			self.append(self.return_name, { "code": -1, "text": "Fave failed." })
-	
-	def fave(self, song_id, fave):
-		if db.c.fetch_var("SELECT song_id FROM r4_song_ratings WHERE song_id = %s AND user_id = %s LIMIT 1", (song_id, self.user.id)):
-			if not db.c.update("UPDATE r4_song_ratings SET song_fave = %s WHERE song_id = %s AND user_id = %s LIMIT 1", (fave, song_id, self.user.id)):
-				return False
-		else:
-			if not db.c.update("INSERT INTO r4_song_ratings (song_id, user_id, song_fave) VALUES (%s, %s, %s, %s, %s, %s)", (song_id, self.user.id, fave)):
-				return False
-		return True
+		code = -1
+		text = "Fave failed."
+		object_id = self.get_argument(self._fave_type + "_id")
+		fave = self.get_argument("fave")
+		result = False
+
+		if self._fave_type == "song":
+			result = rating.set_song_fave(object_id, self.user.id, fave)
+		elif self._fave_type == "album":
+			result = rating.set_song_fave(object_id, self.user.id, fave)
+		if result:
+			code = 1
+			if fave:
+				text = "Favourited " + self._fave_type + "."
+			else:
+				text = "Unfavourited" + self._fave_type + "."
+				
+		self.append(self.return_name, { "code": code, "text": text, self._fave_type + "_id": object_id, "fave": fave })
+
+@handle_api_url('fave_album')
+class SubmitAlbumFave(SubmitSongFave):
+	_fave_type = "album"
+	description = "Fave un-fave an album."
+	fields = {
+		"album_id": (fieldtypes.album_id, True),
+		"fave": (fieldtypes.boolean, True)
+	}

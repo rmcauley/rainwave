@@ -63,7 +63,7 @@ var ratingcontrol = function() {
 		if (result.id) {
 			for (var i in callbacks) {
 				if ((callbacks[i].category == result.fav_type) && (callbacks[i].id == result.id)) {
-					callbacks[i].favConfirm.call(callbacks[i], result.fav);
+					callbacks[i].favConfirm.call(callbacks[i], result.fave);
 				}
 			}
 		}
@@ -97,8 +97,8 @@ var ratingcontrol = function() {
 	prefs.addPref("rating", { name: "hidesite", callback: that.p_hideuntilrated, defaultvalue: false, type: "checkbox", refresh: true, dsection: "edi" });
 
 	lyre.addCallback(that.ratingUpdate, "rate_result");
-	lyre.addCallback(that.songFavUpdate, "fav_song_result");
-	lyre.addCallback(that.albumFavUpdate, "fav_album_result");
+	lyre.addCallback(that.songFavUpdate, "fave_song_result");
+	lyre.addCallback(that.albumFavUpdate, "fave_album_result");
 	lyre.addCallback(that.historyUpdate, "sched_history");
 	lyre.addCallback(that.cleanCallbacks, "sched_sync");
 

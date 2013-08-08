@@ -43,7 +43,7 @@ def set_song_rating(song_id, user_id, rating = None, fave = None):
 			(rating, fave, time.time(), rank, count, user_id, song_id))
 	else:
 		if not rating:
-			rating = 0
+			rating = None
 		if not fave:
 			fave = False
 		db.c.update("INSERT INTO r4_song_ratings "
@@ -63,6 +63,34 @@ def clear_song_rating(song_id, user_id):
 	else:
 		# TODO: Return an exception?
 		return []
+	
+def set_song_fave(song_id, user_id, fave):
+	to_return = _set_fave("song", song_id, user_id, fave)
+	
+def set_album_fave(album_id, user_id, fave):
+	to_return = _set_fave("album", album_id, user_id, fave)
+
+def _set_fave(category, object_id, user_id, fave):
+	if category != "album" and category != "song":
+		raise Exception("Invalid favourite category.")
+	
+	exists = db.c.fetch_row("SELECT * FROM r4_" + category + "_ratings WHERE " + category + "_id = %s AND user_id = %s", (object_id, user_id))
+	rating = None
+	album_complete = None
+	if not exists:
+		if not db.c.update("UPDATE r4_" + category + "_ratings SET " + category + "_fave = %s WHERE " + category + "_id = %s AND user_id = %s", (fave, object_id, user_id)):
+			return False
+	else:
+		rating = exists[category + "_rating_user"]
+		if "album_rating_complete" in exists:
+			album_complete = exists['album_rating_complete']
+		if not db.c.update("INSERT INTO r4_" + category + "_ratings (" + category + "_id, user_id, " + category + "_fave) VALUES (%s, %s, %s)", (object_id, user_id, fave)):
+			return False
+	if category == "album":
+		cache.set_album_rating(object_id, user_id, { "user_rating": rating, "fave": fave, "rating_complete": rating_complete })
+	elif category == "song":
+		cache.set_song_rating(object_id, user_id, { "user_rating": rating, "fave": fave })
+	return True
 	
 def update_album_ratings(song_id, user_id):
 	toreturn = []

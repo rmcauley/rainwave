@@ -158,7 +158,7 @@ var albumlist = function() {
 	that.afterUpdate = function(json, albums, sorted) {
 		if (!initialized) {
 			lyre.addCallback(that.ratingResult, "rate_result");
-			lyre.addCallback(that.favResult, "fav_album_result");
+			lyre.addCallback(that.favResult, "fave_album_result");
 			lyre.addCallback(that.update, "album_diff");
 			initialized = true;
 		}
@@ -221,15 +221,15 @@ var albumlist = function() {
 
 	that.favResult = function(result) {
 		if (result.id in that.data) {
-			that.data[result.id].td_fav.setAttribute("class", "pl_fav_" + result.fav);
-			that.data[result.id].album_favourite = result.fav;
+			that.data[result.id].td_fav.setAttribute("class", "pl_fav_" + result.fave);
+			that.data[result.id].album_favourite = result.fave;
 		}
 	};
 
 	that.favSwitch = function(evt) {
 		if (evt.target.album_id) {
 			var setfav = that.data[evt.target.album_id].fave ? false : true;
-			lyre.async_get("fav_album", { "fav": setfav, "album_id": evt.target.album_id });
+			lyre.async_get("fave_album", { "fave": setfav, "album_id": evt.target.album_id });
 		}
 	};
 
