@@ -462,7 +462,11 @@ class Song(object):
 		for key, val in d.iteritems():
 			if key.find("song_") == 0:
 				key = key[5:]
-			self.data[key] = val
+			# Skip any album-related values
+			if key.find("album_") == 0:
+				pass
+			else:
+				self.data[key] = val
 
 	def start_cooldown(self, sid):
 		"""
@@ -875,7 +879,7 @@ class Album(AssociatedMetadata):
 					"JOIN r4_artists USING (artist_id) "
 				"WHERE r4_song_sid.sid = %s AND r4_song_sid.album_id = %s "
 				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating",
-				(instance.id,))
+				(sid, instance.id,))
 		else:
 			instance.data['songs'] = db.c.fetch_all(
 				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
@@ -890,7 +894,7 @@ class Album(AssociatedMetadata):
 					"LEFT JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
 				"WHERE r4_song_sid.sid = %s AND r4_song_sid.album_id = %s "
 				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply",
-				(user.id, instance.id))
+				(user.id, sid, instance.id))
 		return instance
 		
 	def __init__(self):
@@ -1169,11 +1173,11 @@ class Artist(AssociatedMetadata):
 		# this one currently covers both but will have a (small) speed impact on anon users
 		self.data['songs'] = db.c.fetch_all(
 			"SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, "
-				"album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, "
+				"r4_song_sid.album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, "
 				"song_rating_user AS user_rating, song_fave AS fave "
 			"FROM r4_song_artist "
-				"JOIN r4_song_sid ON (r4_song_artist.song_id = r4_song_sid.artist_id AND r4_song_sid.sid = %s) "
-				"JOIN r4_songs USING (song_id) "
+				"JOIN r4_song_sid ON (r4_song_artist.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
+				"JOIN r4_songs ON (r4_song_sid.song_id = r4_songs.song_id) "
 				"JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id) "
 				"LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
 			"WHERE r4_song_artist.artist_id = %s "
@@ -1181,7 +1185,7 @@ class Artist(AssociatedMetadata):
 			(sid, user_id, self.id))
 
 		for song in self.data['songs']:
-			song['album'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
+			song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
 			song.pop('album_name', None)
 			song.pop('album_id', None)
 

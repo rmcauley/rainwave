@@ -306,7 +306,7 @@ class User(object):
 			requests = db.c.fetch_all(
 				"SELECT r4_request_store.song_id AS id, r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
 					"song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, "
-					"COALESCE(r4_song_sid.album_id, album_data.album_id) AS album_id, album_name "
+					"COALESCE(r4_song_sid.album_id, album_data.album_id) AS album_id, album_name, "
 					"song_length AS length, r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, r4_song_sid.song_exists AS valid, "
 					"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
 					"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS requestable "
@@ -325,7 +325,7 @@ class User(object):
 				song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
 				song.pop('album_name', None)
 				song.pop('album_id', None)
-		cache.set_user(self, "requests")
+			cache.set_user(self, "requests", requests)
 		return requests
 	
 	def set_request_tunein_expiry(self, t = None):
