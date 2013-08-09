@@ -19,8 +19,6 @@ class SubmitSongFave(RequestHandler):
 	}
 	
 	def post(self):
-		code = -1
-		text = "Fave failed."
 		object_id = self.get_argument(self._fave_type + "_id")
 		fave = self.get_argument("fave")
 		result = False
@@ -28,15 +26,17 @@ class SubmitSongFave(RequestHandler):
 		if self._fave_type == "song":
 			result = rating.set_song_fave(object_id, self.user.id, fave)
 		elif self._fave_type == "album":
-			result = rating.set_song_fave(object_id, self.user.id, fave)
+			result = rating.set_album_fave(object_id, self.user.id, fave)
 		if result:
-			code = 1
+			text = None
 			if fave:
 				text = "Favourited " + self._fave_type + "."
 			else:
-				text = "Unfavourited" + self._fave_type + "."
-				
-		self.append(self.return_name, { "code": code, "text": text, self._fave_type + "_id": object_id, "fave": fave })
+				text = "Unfavourited " + self._fave_type + "."
+			self.append(self.return_name, { "code": 0, "text": text, "id": object_id, "fave": fave })
+		else:
+			self.append(self.return_name, { "code": -1, "text": "Fave failed." })
+			
 
 @handle_api_url('fave_album')
 class SubmitAlbumFave(SubmitSongFave):

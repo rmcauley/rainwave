@@ -187,7 +187,7 @@ def remove_all_locks(sid):
 def get_all_albums_list(sid, user = None):
 	if not user or user.id == 1:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, FALSE AS fave, NULL AS user_rating "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, FALSE AS fave, NULL AS rating_user "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"WHERE r4_album_sid.sid = %s "
@@ -195,7 +195,7 @@ def get_all_albums_list(sid, user = None):
 			(sid,))
 	else:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS user_rating "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS rating_user "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
@@ -614,15 +614,15 @@ class Song(object):
 
 		self.data['rating_histogram'] = {}
 		histo = db.c.fetch_all("SELECT "
-							   "ROUND(((song_rating_user * 10) - (CAST(song_rating_user * 10 AS SMALLINT) %% 5))) / 10 AS user_rating_rnd, "
-							   "COUNT(song_rating_user) AS user_rating_count "
+							   "ROUND(((song_rating_user * 10) - (CAST(song_rating_user * 10 AS SMALLINT) %% 5))) / 10 AS rating_user_rnd, "
+							   "COUNT(song_rating_user) AS rating_user_count "
 							   "FROM r4_song_ratings JOIN phpbb_users USING (user_id) "
 							   "WHERE radio_inactive = FALSE AND song_id = %s "
 							   "GROUP BY song_rating_rnd "
 							   "ORDER BY song_rating_rnd",
 							   (self.id,))
 		for point in histo:
-			self.data['rating_histogram'][str(point['user_rating_rnd'])] = point['user_rating_count']
+			self.data['rating_histogram'][str(point['rating_user_rnd'])] = point['rating_user_count']
 
 	def to_dict(self, user = None):
 		self.data['id'] = self.id
@@ -638,7 +638,7 @@ class Song(object):
 		if self.groups:
 			for metadata in self.groups:
 				self.data['groups'].append(metadata.to_dict(user))
-		self.data['user_rating'] = None
+		self.data['rating_user'] = None
 		self.data['fave'] = False
 		if user:
 			self.data.update(rating.get_song_rating(self.id, user.id))
@@ -648,7 +648,7 @@ class Song(object):
 		table = db.c.fetch_all("SELECT song_rating_user, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
 		all_ratings = {}
 		for row in all_ratings:
-			all_ratings[row['user_id']] = { "user_rating": row['song_rating_user'], "fave": row['song_fave'] }
+			all_ratings[row['user_id']] = { "rating_user": row['song_rating_user'], "fave": row['song_fave'] }
 		return all_ratings
 
 	def update_last_played(self, sid):
@@ -871,7 +871,7 @@ class Album(AssociatedMetadata):
 			instance.data['songs'] = db.c.fetch_all(
 				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
 					"song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, "
-					"song_rating AS rating, 0 AS user_rating, FALSE AS fave, "
+					"song_rating AS rating, 0 AS rating_user, FALSE AS fave, "
 					"string_agg(r4_artists.artist_id || ':' || r4_artists.artist_name,  ',') AS artist_parseable "
 				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
@@ -885,7 +885,7 @@ class Album(AssociatedMetadata):
 				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
 					"song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, "
 					"song_rating AS rating, song_cool_multiply AS cool_multiplty, song_cool_override AS cool_override, "
-					"COALESCE(song_rating_user, 0) AS user_rating, COALESCE(song_fave, FALSE) AS fave, "
+					"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(song_fave, FALSE) AS fave, "
 					"string_agg(r4_artists.artist_id || ':' || r4_artists.artist_name,  ',') AS artist_parseable "
 				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
@@ -1063,7 +1063,7 @@ class Album(AssociatedMetadata):
 		table = db.c.fetch_all("SELECT album_rating_user, album_fave, user_id FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s", (self.id,))
 		all_ratings = {}
 		for row in table:
-			all_ratings[row['user_id']] = { "user_rating": row['album_rating_user'], "fave": row['album_fave'] }
+			all_ratings[row['user_id']] = { "rating_user": row['album_rating_user'], "fave": row['album_fave'] }
 		return all_ratings
 	
 	def update_all_user_ratings(self):
@@ -1137,7 +1137,7 @@ class Album(AssociatedMetadata):
 		if user:
 			self.data.update(rating.get_album_rating(self.id, user.id))
 		else:
-			d['user_rating'] = None
+			d['rating_user'] = None
 			d['fave'] = False
 		return d
 
@@ -1174,7 +1174,7 @@ class Artist(AssociatedMetadata):
 		self.data['songs'] = db.c.fetch_all(
 			"SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, "
 				"r4_song_sid.album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, "
-				"song_rating_user AS user_rating, song_fave AS fave "
+				"song_rating_user AS rating_user, song_fave AS fave "
 			"FROM r4_song_artist "
 				"JOIN r4_song_sid ON (r4_song_artist.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
 				"JOIN r4_songs ON (r4_song_sid.song_id = r4_songs.song_id) "

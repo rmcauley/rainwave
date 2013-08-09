@@ -194,7 +194,7 @@ var albumlist = function() {
 			else return 1;
 		}
 
-		if ((prefs.p.playlist.sortalbums.value == "user_rating") || (prefs.p.playlist.sortalbums.value == "rating")) {
+		if ((prefs.p.playlist.sortalbums.value == "rating_user") || (prefs.p.playlist.sortalbums.value == "rating")) {
 			if (that.data[a][prefs.p.playlist.sortalbums.value] < that.data[b][prefs.p.playlist.sortalbums.value]) return 1;
 			if (that.data[a][prefs.p.playlist.sortalbums.value] > that.data[b][prefs.p.playlist.sortalbums.value]) return -1;
 		}
@@ -210,9 +210,10 @@ var albumlist = function() {
 
 	that.ratingResult = function(result) {
 		if (result.updated_album_ratings) {
-			for (var album_rating in result.updated_album_ratings) {
+			for (var i = 0; i < result.updated_album_ratings.length; i++) {
+				var album_rating = result.updated_album_ratings[i];
 				if (that.data[album_rating.id]) {
-					that.data[album_rating.id].user_rating = album_rating.user_rating;
+					that.data[album_rating.id].rating_user = album_rating.rating_user;
 					that.drawRating(that.data[album_rating.id]);
 				}
 			}
@@ -240,7 +241,7 @@ var albumlist = function() {
 	that.drawEntry = function(album) {
 		album.tr._search_id = album.id;
 
-		var ratingx = album.user_rating * 10;
+		var ratingx = album.rating_user * 10;
 		album.td_name = document.createElement("td");
 		album.td_name.setAttribute("class", "pl_al_name");
 		album.td_name.setAttribute("title", album.name);
@@ -268,15 +269,18 @@ var albumlist = function() {
 		if (album.cool && ((album.cool_lowest - clock.now) > 0)) {
 			album.td_rating.textContent = formatHumanTime(album.cool_lowest - clock.now);
 		}
-		else if ("album_rating_user" in album) {
-			if (album.user_rating > 0) album.td_rating.textContent = album.user_rating.toFixed(1);
+		else if ("rating_user" in album) {
+			if (album.rating_user > 0) album.td_rating.textContent = album.rating_user.toFixed(1);
 			else album.td_rating.textContent = "";
 		}
 
-		if ("album_user_rating" in album) {
-			var ratingx = album.user_rating * 10;
-			if (album.user_rating == 0) ratingx = -200;
+		if ("rating_user" in album) {
+			var ratingx = album.rating_user * 10;
+			if (!album.rating_user) ratingx = -200;
 			album.td_name.style.backgroundPosition = "100% " + (-193 + ratingx) + "px";
+		}
+		else {
+			album.td_name.style.backgroundPosition = "100% -400px";
 		}
 	};
 
