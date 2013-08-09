@@ -32,6 +32,7 @@ class SubmitRequest(RequestHandler):
 	
 @handle_api_url('delete_request')
 class DeleteRequest(RequestHandler):
+	description = "Remove a request from your queue."
 	sid_required = False
 	login_required = True
 	tunein_required = True
@@ -49,6 +50,7 @@ class DeleteRequest(RequestHandler):
 
 @handle_api_url("order_requests")
 class OrderRequests(RequestHandler):
+	description = "Change the order of requests in your queue."
 	sid_required = False
 	login_required = True
 	tunein_required = True
@@ -67,6 +69,7 @@ class OrderRequests(RequestHandler):
 		
 @handle_api_url("request_unrated_songs")
 class RequestUnratedSongs(RequestHandler):
+	description = "Fill your request queue with unrated songs."
 	sid_required = True
 	login_required = True
 	tunein_required = True

@@ -19,6 +19,7 @@ def get_all_albums(sid, user = None):
 
 @handle_api_url("all_albums")
 class AllAlbumsRequestHandler(RequestHandler):
+	description = "Get a list of all albums on the station playlist."
 	return_name = "all_albums"
 
 	def post(self):
@@ -26,6 +27,7 @@ class AllAlbumsRequestHandler(RequestHandler):
 
 @handle_api_url("artist")
 class ArtistRequestHandler(RequestHandler):
+	description = "Get detailed information about an artist."
 	return_name = "artist"
 	fields = { "id": (fieldtypes.positive_integer, True) }
 
@@ -39,6 +41,7 @@ class ArtistRequestHandler(RequestHandler):
 
 @handle_api_url("album")
 class AlbumRequestHandler(RequestHandler):
+	description = "Get detailed information about an album, including a list of songs in the album."
 	return_name = "album"
 	fields = { "id": (fieldtypes.positive_integer, True) }
 
@@ -52,6 +55,7 @@ class AlbumRequestHandler(RequestHandler):
 
 @handle_api_url("song")
 class SongRequestHandler(RequestHandler):
+	description = "Get detailed information about a song."
 	return_name = "song"
 	fields = { "id": (fieldtypes.positive_integer, True) }
 
@@ -87,6 +91,7 @@ class AllSongsRequestHandler(RequestHandler):
 		
 @handle_api_url("unrated_songs")
 class UnratedSongsRequestHandler(RequestHandler):
+	description = "Get unrated songs."
 	return_name = "unrated_songs"
 	login_required = True
 	
@@ -95,6 +100,7 @@ class UnratedSongsRequestHandler(RequestHandler):
 		
 @handle_api_url("top_100")
 class Top100Songs(RequestHandler):
+	description = "Get the 100 highest-rated songs on the station."
 	return_name = 'top_100'
 	login_required = False
 	sid_required = False
@@ -109,6 +115,7 @@ class Top100Songs(RequestHandler):
 
 @handle_api_url("all_faves")
 class AllFavRequestHandler(RequestHandler):
+	description = "Get all songs that have been faved."
 	return_name = "all_faves"
 	login_required = True
 	sid_required = False
@@ -123,6 +130,7 @@ class AllFavRequestHandler(RequestHandler):
 
 @handle_api_url("playback_history")
 class PlaybackHistory(RequestHandler):
+	description = "Get the last 100 songs that played on the station."
 	return_name = "playback_history"
 	login_required = False
 	sid_required = True
@@ -145,6 +153,7 @@ class PlaybackHistory(RequestHandler):
 
 @handle_api_url("station_song_count")
 class StationSongCountRequest(RequestHandler):
+	description = "Get the total number of songs in the playlist on each station."
 	return_name = "station_song_count"
 	login_required = False
 	sid_required = False
