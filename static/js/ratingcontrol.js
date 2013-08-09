@@ -13,15 +13,15 @@ var ratingcontrol = function() {
 		if (result.song_id) {
 			for (var i in callbacks) {
 				if ((callbacks[i].category == "song") && (callbacks[i].id == result.song_id)) {
-					if (result.code == 1) callbacks[i].ratingConfirm(result.user_rating);
-					else callbacks[i].ratingBad(result.user_rating);
+					if (result.code == 1) callbacks[i].ratingConfirm(result.rating_user);
+					else callbacks[i].ratingBad(result.rating_user);
 				}
 			}
 			if ((result.code == 1) && result.updated_album_ratings) {
 				for (var h in result.updated_album_ratings) {
 					for (var i in callbacks) {
 						if ((callbacks[i].category == "album") && (callbacks[i].id == result.updated_album_ratings[h].id)) {
-							callbacks[i].ratingConfirm(result.updated_album_ratings[h].user_rating);
+							callbacks[i].ratingConfirm(result.updated_album_ratings[h].rating_user);
 						}
 					}
 				}

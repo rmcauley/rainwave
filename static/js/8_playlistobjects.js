@@ -43,7 +43,7 @@ var Song = {
 			"song_rank": json['rank'],
 			"song_rating_avg": json['rating'],
 			"song_rating_count": json['rating_count'],
-			"song_rating_user": json['user_rating'],
+			"song_rating_user": json['rating_user'],
 			"song_release_time": json['cool_end'],
 			"song_secondslong": json['length'],
 			"song_title": json['title'],
@@ -94,7 +94,7 @@ var Album = {
 			base['album_art'] = null;
 		}
 		base['album_favourite'] = json['fave'];
-		base['album_rating_user'] = json['user_rating'];
+		base['album_rating_user'] = json['rating_user'];
 		base['album_id'] = json['id'];
 		base['album_lastplayed'] = json['played_last'];
 		base['album_lowest_oa'] = json['cool_lowest'];
@@ -102,7 +102,7 @@ var Album = {
 		base['album_rank'] = json['rank'];
 		base['album_rating_avg'] = json['rating'];
 		base['album_rating_count'] = json['rating_count'];
-		base['album_rating_user'] = json['user_rating'];
+		base['album_rating_user'] = json['rating_user'];
 		base['album_totalvotes'] = json['vote_total'];
 		// obsoleted
 		base['album_timesdefeated'] = 0;

@@ -1042,7 +1042,7 @@ function _THEME() {
 
 			var tr = createEl("tr", false, wdow.hdrtable);
 			wdow.albumnametd = createEl("td", { "class": "pl_ad_albumnametd", "colspan": 2 }, tr);
-			wdow.albumrating = Rating({ category: "album", id: json.id, userrating: json.user_rating, siterating: json.album_rating, favourite: json.fave, scale: 1.2, register: true });
+			wdow.albumrating = Rating({ category: "album", id: json.id, userrating: json.rating_user, siterating: json.album_rating, favourite: json.fave, scale: 1.2, register: true });
 			wdow.albumnametd.appendChild(wdow.albumrating.el);
 			wdow.albumname = createEl("div", { "class": "pl_ad_albumname", "textContent": json.name }, wdow.albumnametd);
 			if (json.sid != user.p.sid) createEl("img", { "src": skindir + "/images/menu_logo_" + json.sid + ".png", "class": "pl_ad_albumname_station" }, wdow.albumname);
@@ -1287,11 +1287,11 @@ function _THEME() {
 					ns.tr.appendChild(ns.td_a);
 				}
 
-				if ("user_rating" in song_data[i]) {
+				if ("rating_user" in song_data[i]) {
 					ns.td_rating = document.createElement("td");
 					ns.td_rating.setAttribute("class", "pl_songlist_rating");
 					ns.td_rating.style.width = (that.Rating_width + 5) + "px";
-					ns.rating = Rating({ category: "song", id: song_data[i].id, userrating: song_data[i].user_rating, x: 0, y: 1, siterating: song_data[i].song_rating, favourite: song_data[i].fave, register: true });
+					ns.rating = Rating({ category: "song", id: song_data[i].id, userrating: song_data[i].rating_user, x: 0, y: 1, siterating: song_data[i].song_rating, favourite: song_data[i].fave, register: true });
 					ns.td_rating.appendChild(ns.rating.el);
 					ns.tr.appendChild(ns.td_rating);
 				}

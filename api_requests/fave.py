@@ -28,7 +28,7 @@ class SubmitSongFave(RequestHandler):
 		if self._fave_type == "song":
 			result = rating.set_song_fave(object_id, self.user.id, fave)
 		elif self._fave_type == "album":
-			result = rating.set_song_fave(object_id, self.user.id, fave)
+			result = rating.set_album_fave(object_id, self.user.id, fave)
 		if result:
 			code = 1
 			if fave:
