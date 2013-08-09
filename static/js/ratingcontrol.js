@@ -49,13 +49,11 @@ var ratingcontrol = function() {
 	
 	that.songFavUpdate = function(result) {
 		result['fav_type'] = "song";
-		result['id'] = result['song_id'];
 		that.favUpdate(result);
 	};
 	
 	that.albumFavUpdate = function(result) {
 		result['fav_type'] = "album";
-		result['id'] = result['album_id'];
 		that.favUpdate(result);
 	};
 

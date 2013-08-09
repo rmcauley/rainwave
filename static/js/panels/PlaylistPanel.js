@@ -210,7 +210,8 @@ var albumlist = function() {
 
 	that.ratingResult = function(result) {
 		if (result.updated_album_ratings) {
-			for (var album_rating in result.updated_album_ratings) {
+			for (var i = 0; i < result.updated_album_ratings.length; i++) {
+				var album_rating = result.updated_album_ratings[i];
 				if (that.data[album_rating.id]) {
 					that.data[album_rating.id].rating_user = album_rating.rating_user;
 					that.drawRating(that.data[album_rating.id]);
@@ -268,15 +269,18 @@ var albumlist = function() {
 		if (album.cool && ((album.cool_lowest - clock.now) > 0)) {
 			album.td_rating.textContent = formatHumanTime(album.cool_lowest - clock.now);
 		}
-		else if ("album_rating_user" in album) {
+		else if ("rating_user" in album) {
 			if (album.rating_user > 0) album.td_rating.textContent = album.rating_user.toFixed(1);
 			else album.td_rating.textContent = "";
 		}
 
-		if ("album_rating_user" in album) {
+		if ("rating_user" in album) {
 			var ratingx = album.rating_user * 10;
-			if (album.rating_user == 0) ratingx = -200;
+			if (!album.rating_user) ratingx = -200;
 			album.td_name.style.backgroundPosition = "100% " + (-193 + ratingx) + "px";
+		}
+		else {
+			album.td_name.style.backgroundPosition = "100% -400px";
 		}
 	};
 
