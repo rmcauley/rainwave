@@ -86,6 +86,11 @@ class SyncUpdateIP(RequestHandler):
 
 @handle_api_url("sync")
 class Sync(RequestHandler):
+	description = ("Get timeline information: what is currently playing, what "
+		"recently played, and upcoming elections or other events. Include the "
+		"argument 'init' to get an immediate response. Without 'init', the "
+		"connection will remain open and the response will be sent at the next "
+		"song change.")
 	auth_required = True
 	
 	@tornado.web.asynchronous

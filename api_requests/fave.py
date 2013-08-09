@@ -12,7 +12,7 @@ class SubmitSongFave(RequestHandler):
 	_fave_type = "song"
 	login_required = True
 	tunein_required = False
-	description = "Fave un-fave a song."
+	description = "Fave or un-fave a song."
 	fields = {
 		"song_id": (fieldtypes.song_id, True),
 		"fave": (fieldtypes.boolean, True)
@@ -41,7 +41,7 @@ class SubmitSongFave(RequestHandler):
 @handle_api_url('fave_album')
 class SubmitAlbumFave(SubmitSongFave):
 	_fave_type = "album"
-	description = "Fave un-fave an album."
+	description = "Fave or un-fave an album."
 	fields = {
 		"album_id": (fieldtypes.album_id, True),
 		"fave": (fieldtypes.boolean, True)
