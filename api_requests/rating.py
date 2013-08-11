@@ -40,7 +40,7 @@ class SubmitRatingRequest(RequestHandler):
 
 @handle_api_url('clear_rating')
 class ClearRating(SubmitRatingRequest):
-	description = "Erases a rating."
+	description = "Erase a rating."
 	fields = {
 		"song_id": (fieldtypes.integer, True)
 	}
