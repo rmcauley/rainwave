@@ -10,7 +10,6 @@ from api import fieldtypes
 from api.exceptions import APIException
 from libs import config
 from libs import log
-import api.returns
 
 # This is the Rainwave API main handling request class.  You'll inherit it in order to handle requests.
 # Does a lot of form checking and validation of user/etc.  There's a request class that requires no authentication at the bottom of this module.
@@ -22,7 +21,7 @@ import api.returns
 
 # Pass a string there for the URL to handle at /api/[url] and the server will do the rest of the work.
 
-class RequestHandler(tornado.web.RequestHandler):
+class RainwaveHandler(tornado.web.RequestHandler):
 	# The following variables can be overridden by you.
 	# Fields is a hash with { "form_name" => (fieldtypes.[something], True|False } format, so that automatic form validation can be done for you.  True/False values are for required/optional.
 	fields = {}
@@ -55,6 +54,10 @@ class RequestHandler(tornado.web.RequestHandler):
 	allow_get = False
 	# Hidden from public view in the help?
 	hidden = False
+	# Use phpBB session/token auth?
+	phpbb_auth = False
+	# Does the user need perks (donor/beta/etc) to see this request/page?
+	perks_required = False
 	
 	def initialize(self, **kwargs):
 		super(RequestHandler, self).initialize(**kwargs)
@@ -71,6 +74,9 @@ class RequestHandler(tornado.web.RequestHandler):
 		if name in self.cleaned_args:
 			return self.cleaned_args[name]
 		return super(RequestHandler, self).get_argument(name)
+	
+	def get_user_locale(self):
+		return self.get_cookie("r4_lang", "en_CA")
 
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):
@@ -98,93 +104,103 @@ class RequestHandler(tornado.web.RequestHandler):
 		else:
 			self._output = {}
 			self._output_array = False
-			
-		request_ok = True
-		
-		self.sid = None
+
+		self.sid = fieldtypes.integer(self.get_cookie("r4_sid", 1))
 		if "sid" in self.request.arguments:
 			self.sid = int(self.get_argument("sid"))
-		elif self.sid_required:
-			self.append("error", api.returns.ErrorReturn(400, "Missing station ID argument."))
-			request_ok = False
+		elif not self.sid:
+			for possible_sid in config.station_ids:
+				if self.request.host == config.get_station(possible_sid, "host"):
+					self.sid = possible_sid
+					break
+		if not self.sid and self.sid_required:
+			raise APIException("missing_station_id", "Missing station ID.", 400)
 		if request_ok and self.sid and not self.sid in config.station_ids:
-			self.append("error", api.returns.ErrorReturn(400, "Invalid station ID."))
-			request_ok = False
+			raise APIException("invalid_station_id", "Invalid station ID.", 400)
+		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 
 		for field, field_attribs in self.__class__.fields.iteritems():
 			type_cast, required = field_attribs
 			if required and field not in self.request.arguments:
-				self.append("error", api.returns.ErrorReturn(400, "Missing %s argument." % field))
-				request_ok = False
+				raise APIException("missing_argument", "Missing %s argument." % field, 400)
 			elif not required and field not in self.request.arguments:
 				pass
 			else:
 				parsed = type_cast(self.get_argument(field), self)
 				if parsed == None:
-					self.append("error", api.returns.ErrorReturn(400, "Invalid argument %s: %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__))))
-					request_ok = False
+					raise APIException("invalid_argument", "Invalid argument %s: %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__)), 400)
 				else:
 					self.cleaned_args[field] = parsed
 				
-		if request_ok:
-			authorized = self.rainwave_auth()
-			if self.auth_required and not authorized:
-				request_ok = False
+		if self.phpbb_auth:
+			self.phpbb_auth()
+		else:
+			self.rainwave_auth()
+		
+		if self.auth_required and not self.user:
+			raise APIException("auth_required", "Authorization required.", 403)
+
+		if self.login_required and (not self.user or self.user.is_anonymous()):
+			raise APIException("login_required", "Login required for %s." % self.url, 403)
+		if self.tunein_required and (not self.user or not self.user.is_tunedin()):
+			raise APIException("tunein_required", "You must be tuned in to use %s." % self.url, 403)
+		if self.admin_required and (not self.user or not self.user.is_admin()):
+			raise APIException("admin_required", "You must be an admin to use %s." % self.url, 403)
+		if self.dj_required and (not self.user or not self.user.is_dj()):
+			raise APIException("dj_required", "You must be DJing to use %s." % self.url, 403)
+		if self.perks_required and (not self.user or not self.user.has_perks()):
+			raise APIException("perks_required", "Must be a donor or VIP user to use %s." % self.url, 403)
 				
-		if self.unlocked_listener_only and self.user and self.user.data['listener_lock'] and self.user.data['listener_lock_sid'] != self.sid:
-			request_ok = False
-			self.append("error", api.returns.ErrorReturn(601, "User locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_counter'])))
-		elif self.unlocked_listener_only and not self.user:
-			request_ok = False
-			self.append("error", api.returns.ErrorReturn(601, "User cannot be locked to a station, but no user record found."))
-				
-		self.request_ok = request_ok
-		if not request_ok:
-			self.finish()
-	
+		if self.unlocked_listener_only and not self.user:
+			raise APIException("auth_required", "Authorization required.", 403)
+		elif self.unlocked_listener_only and self.user.data['listener_lock'] and self.user.data['listener_lock_sid'] != self.sid:
+			raise APIException("unlocked_only", "User locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_counter']), 403)
+
+	def phpbb_auth(self):
+		phpbb_cookie_name = config.get("phpbb_cookie_name")
+		self.user = None
+		if not fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", "")):
+			self.user = User(1)
+		else:
+			user_id = int(self.get_cookie(phpbb_cookie_name + "u"))
+			if self.get_cookie(phpbb_cookie_name + "sid") and self._update_phpbb_session():
+				self.user = User(user_id)
+				self.user.authorize(self.sid, None, None, True)
+
+			if not self.user and self.get_cookie(phpbb_cookie_name + "k"):
+				can_login = db.c_old.fetch_var("SELECT 1 FROM phpbb_sessions_keys WHERE key_id = %s AND user_id = %s", (hashlib.md5(self.get_cookie(phpbb_cookie_name + "k")).hexdigest(), user_id))
+				if can_login == 1:
+					self.user = User(user_id)
+					self.user.authorize(self.sid, None, None, True)
+					
+	def _update_phpbb_session(self):
+		session_id = db.c_old.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_id = %s AND session_user_id = %s", (self.get_cookie(phpbb_cookie_name + "sid"), user_id))
+		if session_id:
+			db.c_old.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(time.time()), "rainwave", session_id))
+		return session_id
+
 	def rainwave_auth(self):
-		request_ok = True
 		user_id_present = "user_id" in self.request.arguments
 		
 		if self.auth_required and not user_id_present:
-			self.append("error", api.returns.ErrorReturn(400, "Missing user_id argument."))
-			request_ok = False
+			raise APIException("missing_argument", "Missing user_id argument.", 400)
 		if user_id_present and not fieldtypes.numeric(self.get_argument("user_id")):
-			self.append("error", api.returns.ErrorReturn(400, "Invalid user ID %s."))
-			request_ok = False
+			# do not spit out the user ID back at them, that would create a potential XSS hack
+			raise APIException("invalid_argument", "Invalid user ID.", 400)
 		if (self.auth_required or user_id_present) and not "key" in self.request.arguments:
-			self.append("error", api.returns.ErrorReturn(400, "Missing 'key' argument."))
-			request_ok = False
+			raise APIException("missing_argument", "Missing 'key' argument.", 400)
 		
 		self.user = None
 		if request_ok and user_id_present:
 			self.user = User(long(self.get_argument("user_id")))
 			self.user.authorize(self.sid, self.request.remote_ip, self.get_argument("key"))
 			if not self.user.authorized:
-				self.append("error", api.returns.ErrorReturn(401, "Authorization failed."))
-				request_ok = False
+				raise APIException("auth_failed", "Authorization failed.", 403)
+				# In case the raise is suppressed
+				self.user = None
 			else:
+				self._update_phpbb_session()
 				self.sid = self.user.request_sid
-		
-		if self.auth_required and not self.user:
-			self.append("error", api.returns.ErrorReturn(401, "Authorization required."))
-			request_ok = False
-		
-		if self.user and request_ok:
-			if self.login_required and self.user.is_anonymous():
-				self.append("error", api.returns.ErrorReturn(401, "Login required for %s." % self.url))
-				request_ok = False
-			if self.tunein_required and not self.user.is_tunedin():
-				self.append("error", api.returns.ErrorReturn(602, "You must be tuned in to use %s." % self.url))
-				request_ok = False
-			if self.admin_required and not self.user.is_admin():
-				self.append("error", api.returns.ErrorReturn(403, "You must be an admin to use %s." % self.url))
-				request_ok = False
-			if self.dj_required and not self.user.is_dj():
-				self.append("error", api.returns.ErrorReturn(403, "You must be DJing to use %s." % self.url))
-				request_ok = False
-		
-		return request_ok
 
 	# Handles adding dictionaries for JSON output
 	# Will return a "code" if it exists in the hash passed in, if not, returns True
@@ -198,8 +214,11 @@ class RequestHandler(tornado.web.RequestHandler):
 		if "code" in hash:
 			return hash["code"]
 		return True
-
-	# Sends off the data to the user.
+	
+	def append_standard(self, tl_key, text, **kwargs):
+		self.append(self.return_name, kwargs.update({ "success": True, "tl_key": tl_key, "text": text }))
+	
+class APIHandler(RainwaveHandler):
 	def finish(self, chunk=None):
 		self.set_header("Content-Type", "application/json")
 		if hasattr(self, "_output"):
@@ -221,9 +240,12 @@ class RequestHandler(tornado.web.RequestHandler):
 			if isinstance(exc, APIException):
 				self.append(self.return_name, exc.jsonable())
 			elif exc.__class__.__name__ == "SongNonExistent":
-				self.append("error", { "code": 0, "key": "song_does_not_exist", "text": "Song does not exist." })
+				self.append("error", { "tl_key": "song_does_not_exist", "text": "Song does not exist." })
 			else:
-				self.append("error", { "code": 500, "key": "internal_error", "text": repr(exc) })
+				self.append("error", { "tl_key": "internal_error", "text": repr(exc) })
 		else:
-			self.append("error", { "code": status_code, "key": "internal_error", "text": self._reason } )
+			self.append("error", { "tl_key": "internal_error", "text": self._reason } )
 		self.finish()
+
+class HTMLRequest(RainwaveHandler):
+	phpbb_auth = True

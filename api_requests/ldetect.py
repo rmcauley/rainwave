@@ -1,7 +1,7 @@
 import re
 
 from api import fieldtypes
-from api.web import RequestHandler
+from api.web import APIHandler
 from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
@@ -16,7 +16,7 @@ from backend import sync_to_front
 # Sample Icecast query:
 # &server=myserver.com&port=8000&client=1&mount=/live&user=&pass=&ip=127.0.0.1&agent="My%20player"
 
-class IcecastHandler(RequestHandler):
+class IcecastHandler(APIHandler):
 	sid_required = False
 	auth_required = False
 	hidden = True
@@ -38,7 +38,7 @@ class IcecastHandler(RequestHandler):
 			self.append("%s is not a valid relay." % self.request.remote_ip)
 			self.finish()
 			return
-		super(RequestHandler, self).prepare()
+		super(IcecastHandler, self).prepare()
 		
 		if self.get_argument("mount"):
 			m = re.search(r"^/(?P<mount>[\d\w\-.]+)(\?(?P<user>\d+):(?P<key>[\d\w]+))?(?:\?\d+\.(?:mp3|ogg))?$", self.get_argument("mount"))
@@ -84,7 +84,7 @@ class IcecastHandler(RequestHandler):
 			self.set_status(200)
 			self.set_header("icecast-auth-user", "1")
 		log.debug("ldetect", "Finish!")
-		super(RequestHandler, self).finish()
+		super(IcecastHandler, self).finish()
 			
 	def append(self, message):
 		log.debug("ldetect", message)

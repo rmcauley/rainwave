@@ -7,7 +7,7 @@ import hashlib
 import os
 
 from api.server import handle_url
-from api.web import RequestHandler
+import api.web
 from api_requests import info
 from api import fieldtypes
 
@@ -69,10 +69,10 @@ for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../
 jsfiles.sort()
 
 @handle_url("/(?:index.html)?")
-class MainIndex(tornado.web.RequestHandler):
+class MainIndex(api.web.HTMLRequest):
 	def get_user_locale(self):
 		global translations
-		locale = self.get_cookie("r4lang", "en_CA")
+		locale = super(MainIndex, self).get_user_locale()
 		self.site_description = translations['en_CA'][self.sid]
 		if locale in translations:
 			if self.sid in translations[locale]:
@@ -80,46 +80,6 @@ class MainIndex(tornado.web.RequestHandler):
 			return locale
 		else:
 			return "en_CA"
-
-	def prepare(self):
-		self.json_payload = []
-		self.sid = fieldtypes.integer(self.get_cookie("r4sid", "1"))
-		if not self.sid:
-			self.sid = 1
-		
-		for possible_sid in config.station_ids:
-			if self.request.host == config.get_station(possible_sid, "host"):
-				self.sid = possible_sid
-				break
-
-		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
-		phpbb_cookie_name = config.get("phpbb_cookie_name")
-		self.user = None
-		if not fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", "")):
-			self.user = User(1)
-		else:
-			user_id = int(self.get_cookie(phpbb_cookie_name + "u"))
-			if self.get_cookie(phpbb_cookie_name + "sid"):
-				session_id = db.c_old.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_id = %s AND session_user_id = %s", (self.get_cookie(phpbb_cookie_name + "sid"), user_id))
-				if session_id:
-					db.c_old.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(time.time()), "rainwave", session_id))
-					self.user = User(user_id)
-					self.user.authorize(self.sid, None, None, True)
-
-			if not self.user and self.get_cookie(phpbb_cookie_name + "k"):
-				can_login = db.c_old.fetch_var("SELECT 1 FROM phpbb_sessions_keys WHERE key_id = %s AND user_id = %s", (hashlib.md5(self.get_cookie(phpbb_cookie_name + "k")).hexdigest(), user_id))
-				if can_login == 1:
-					self.user = User(user_id)
-					self.user.authorize(self.sid, None, None, True)
-
-		if not self.user:
-			self.user = User(1)
-		self.user.ensure_api_key(self.request.remote_ip)
-		self.user.data['sid'] = self.sid
-
-	# this is so that get_info can be called, makes us compatible with the custom web handler used elsewhere in RW
-	def append(self, key, value):
-		self.json_payload.append({ key: value })
 
 	def get(self):
 		info.attach_info_to_request(self, playlist=True, artists=True)
@@ -129,10 +89,9 @@ class MainIndex(tornado.web.RequestHandler):
 
 @handle_url("/beta/?")
 class BetaIndex(MainIndex):
+	perks_required = True
+	
 	def get(self):
-		if not config.get("developer_mode") and self.user.data['_group_id'] not in (5, 4, 8, 12, 15, 14, 17):
-			self.send_error(403)
-		else:
-			info.attach_info_to_request(self, playlist=True, artists=True)
-			self.append("api_info", { "time": int(time.time()) })
-			self.render("beta_index.html", request=self, jsfiles=jsfiles, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"), cookie_domain=config.get("cookie_domain"))
+		info.attach_info_to_request(self, playlist=True, artists=True)
+		self.append("api_info", { "time": int(time.time()) })
+		self.render("beta_index.html", request=self, jsfiles=jsfiles, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"), cookie_domain=config.get("cookie_domain"))

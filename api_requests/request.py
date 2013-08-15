@@ -1,6 +1,6 @@
 from tornado.web import HTTPError
 from api import fieldtypes
-from api.web import RequestHandler
+from api.web import APIHandler
 from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
@@ -13,7 +13,7 @@ from rainwave import playlist
 from rainwave import user as userlib
 
 @handle_api_url('request')
-class SubmitRequest(RequestHandler):
+class SubmitRequest(APIHandler):
 	sid_required = True
 	login_required = True
 	tunein_required = True
@@ -31,7 +31,7 @@ class SubmitRequest(RequestHandler):
 			raise HTTPError(500)
 	
 @handle_api_url('delete_request')
-class DeleteRequest(RequestHandler):
+class DeleteRequest(APIHandler):
 	description = "Remove a request from your queue."
 	sid_required = False
 	login_required = True
@@ -49,7 +49,7 @@ class DeleteRequest(RequestHandler):
 			raise HTTPError(500)
 
 @handle_api_url("order_requests")
-class OrderRequests(RequestHandler):
+class OrderRequests(APIHandler):
 	description = "Change the order of requests in your queue."
 	sid_required = False
 	login_required = True
@@ -68,7 +68,7 @@ class OrderRequests(RequestHandler):
 		self.append("requests", self.user.get_requests())
 		
 @handle_api_url("request_unrated_songs")
-class RequestUnratedSongs(RequestHandler):
+class RequestUnratedSongs(APIHandler):
 	description = "Fill your request queue with unrated songs."
 	sid_required = True
 	login_required = True

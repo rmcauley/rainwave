@@ -1,14 +1,15 @@
 import time
 import hashlib
 
-from api.web import RequestHandler
+from api.web import APIHandler
+from api.exceptions import APIException
 from api.server import handle_api_url
 
 from libs import config
 from libs import db
 
 @handle_api_url("test/create_anon_tuned_in/(\d+)")
-class CreateAnonTunedIn(RequestHandler):
+class CreateAnonTunedIn(APIHandler):
 	description = "Creates a fake tune-in record for an anonymous user at 127.0.0.1."
 	local_only = True
 	sid_required = False
@@ -18,11 +19,11 @@ class CreateAnonTunedIn(RequestHandler):
 	def post(self, sid):
 		if db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE listener_ip = '127.0.0.1' AND user_id = 1") == 0:
 			db.c.update("INSERT INTO r4_listeners (listener_ip, user_id, sid, listener_icecast_id) VALUES ('127.0.0.1', 1, %s, 1)", (int(sid),))
-			self.append("test_tunein_result", "Anonymous user tune in record completed.")
+			self.append_standard("dev_anon_user_tunein_ok", "Anonymous user tune in record completed.")
 		else:
-			self.append("test_tunein_result", "Anonymous user tune in record already exists.")
+			raise APIException(500, "internal_error", "Anonymous user tune in record already exists.")
 			
-class TestUserRequest(RequestHandler):
+class TestUserRequest(APIHandler):
 	local_only = True
 	sid_required = False
 	auth_required = False
@@ -41,7 +42,7 @@ class TestUserRequest(RequestHandler):
 		self.set_cookie(config.get("phpbb_cookie_name") + "u", user_id)
 		self.set_cookie(config.get("phpbb_cookie_name") + "sid", session_id)
 		self.execute(user_id, sid)
-		self.append("test_login_result", "You are now user ID %s session ID %s" % (user_id, session_id))
+		self.append_standard("dev_login_ok", "You are now user ID %s session ID %s" % (user_id, session_id))
 		
 	def execute(self):
 		pass

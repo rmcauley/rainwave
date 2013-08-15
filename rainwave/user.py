@@ -210,6 +210,9 @@ class User(object):
 		
 	def is_dj(self):
 		return self.data['radio_dj'] > 0 and self.official_ui
+	
+	def has_perks(self):
+		return self.data['radio_perks']
 		
 	def is_anonymous(self):
 		return self.id <= 1

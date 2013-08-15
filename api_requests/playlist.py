@@ -1,6 +1,6 @@
 import tornado.web
 
-from api.web import RequestHandler
+from api.web import APIHandler
 from api import fieldtypes
 from api.server import test_get
 from api.server import test_post
@@ -18,7 +18,7 @@ def get_all_albums(sid, user = None):
 		return playlist.get_all_albums_list(sid, user)
 
 @handle_api_url("all_albums")
-class AllAlbumsRequestHandler(RequestHandler):
+class AllAlbumsHandler(APIHandler):
 	description = "Get a list of all albums on the station playlist."
 	return_name = "all_albums"
 
@@ -26,7 +26,7 @@ class AllAlbumsRequestHandler(RequestHandler):
 		self.append(self.return_name, get_all_albums(self.sid, self.user))
 
 @handle_api_url("artist")
-class ArtistRequestHandler(RequestHandler):
+class ArtistHandler(APIHandler):
 	description = "Get detailed information about an artist."
 	return_name = "artist"
 	fields = { "id": (fieldtypes.positive_integer, True) }
@@ -40,7 +40,7 @@ class ArtistRequestHandler(RequestHandler):
 			self.append("error", { "code": "404", "description": "Artist not found." })
 
 @handle_api_url("album")
-class AlbumRequestHandler(RequestHandler):
+class AlbumHandler(APIHandler):
 	description = "Get detailed information about an album, including a list of songs in the album."
 	return_name = "album"
 	fields = { "id": (fieldtypes.positive_integer, True) }
@@ -54,7 +54,7 @@ class AlbumRequestHandler(RequestHandler):
 			self.append("error", { "code": "404", "description": "Album not found." })
 
 @handle_api_url("song")
-class SongRequestHandler(RequestHandler):
+class SongHandler(APIHandler):
 	description = "Get detailed information about a song."
 	return_name = "song"
 	fields = { "id": (fieldtypes.positive_integer, True) }
@@ -68,7 +68,7 @@ class SongRequestHandler(RequestHandler):
 			self.append("error", { "code": "404", "description": "Song not found." })
 
 @handle_api_url("all_songs")
-class AllSongsRequestHandler(RequestHandler):
+class AllSongsHandler(APIHandler):
 	return_name = "all_songs"
 	login_required = True
 	sid_required = False
@@ -90,7 +90,7 @@ class AllSongsRequestHandler(RequestHandler):
 			(self.user.id,)))
 		
 @handle_api_url("unrated_songs")
-class UnratedSongsRequestHandler(RequestHandler):
+class UnratedSongsHandler(APIHandler):
 	description = "Get unrated songs."
 	return_name = "unrated_songs"
 	login_required = True
@@ -99,7 +99,7 @@ class UnratedSongsRequestHandler(RequestHandler):
 		self.append(self.return_name, playlist.get_unrated_songs_for_user(self.user.id))
 		
 @handle_api_url("top_100")
-class Top100Songs(RequestHandler):
+class Top100Songs(APIHandler):
 	description = "Get the 100 highest-rated songs on the station."
 	return_name = 'top_100'
 	login_required = False
@@ -114,7 +114,7 @@ class Top100Songs(RequestHandler):
 			"ORDER BY song_rating DESC, song_id LIMIT 100"))
 
 @handle_api_url("all_faves")
-class AllFavRequestHandler(RequestHandler):
+class AllFavHandler(APIHandler):
 	description = "Get all songs that have been faved."
 	return_name = "all_faves"
 	login_required = True
@@ -129,7 +129,7 @@ class AllFavRequestHandler(RequestHandler):
 			"WHERE song_verified = TRUE ORDER BY album_name, song_title", (self.user.id,)))
 
 @handle_api_url("playback_history")
-class PlaybackHistory(RequestHandler):
+class PlaybackHistory(APIHandler):
 	description = "Get the last 100 songs that played on the station."
 	return_name = "playback_history"
 	login_required = False
@@ -152,7 +152,7 @@ class PlaybackHistory(RequestHandler):
 				"ORDER BY songhist_id DESC LIMIT 100"), (self.sid,))
 
 @handle_api_url("station_song_count")
-class StationSongCountRequest(RequestHandler):
+class StationSongCountRequest(APIHandler):
 	description = "Get the total number of songs in the playlist on each station."
 	return_name = "station_song_count"
 	login_required = False

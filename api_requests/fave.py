@@ -1,14 +1,15 @@
 import time
 
 from api import fieldtypes
-from api.web import RequestHandler
+from api.web import APIHandler
+from api.exceptions import APIException
 from api.server import handle_api_url
 
 from rainwave import rating
 from libs import db
 
 @handle_api_url('fave_song')
-class SubmitSongFave(RequestHandler):
+class SubmitSongFave(APIHandler):
 	_fave_type = "song"
 	login_required = True
 	tunein_required = False
@@ -33,10 +34,9 @@ class SubmitSongFave(RequestHandler):
 				text = "Favourited " + self._fave_type + "."
 			else:
 				text = "Unfavourited " + self._fave_type + "."
-			self.append(self.return_name, { "code": 0, "text": text, "id": object_id, "fave": fave })
+			self.append_standard("fave_success", text, id = object_id, fave = fave)
 		else:
-			self.append(self.return_name, { "code": -1, "text": "Fave failed." })
-			
+			raise APIException("fave_failed", "Fave failed.")
 
 @handle_api_url('fave_album')
 class SubmitAlbumFave(SubmitSongFave):

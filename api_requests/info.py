@@ -1,6 +1,6 @@
 import tornado.web
 
-from api.web import RequestHandler
+from api.web import APIHandler
 from api import fieldtypes
 from api.server import test_get
 from api.server import test_post
@@ -65,7 +65,7 @@ def attach_info_to_request(request, playlist = False, artists = False):
 
 @test_post
 @handle_api_url("info")
-class InfoRequest(RequestHandler):
+class InfoRequest(APIHandler):
 	auth_required = False
 	description = "Returns applicable user and station info."
 	fields = { "playlist": (fieldtypes.boolean, False), "artist_list": (fieldtypes.boolean, False) }

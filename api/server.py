@@ -52,7 +52,7 @@ def test_get(klass):
 def test_post(klass):
 	testable_requests.append({ "method": "POST", "class": klass })
 	
-class TestShutdownRequest(api.web.RequestHandler):
+class TestShutdownRequest(api.web.APIHandler):
 	auth_required = False
 	def get(self):
 		self.write("Shutting down server.")

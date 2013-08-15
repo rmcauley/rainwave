@@ -209,6 +209,9 @@ var lyre = function() {
 	};
 
 	var performCallback = function(json, segment) {
+		if ("success" in json)
+			json["code"] = json["success"] ? 0 : -1;
+		}
 		if (callbacks[segment]) {
 			for (var cb = 0; cb < callbacks[segment].length; cb++) {
 				if (callbacks[segment][cb]) {

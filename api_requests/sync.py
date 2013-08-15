@@ -1,7 +1,7 @@
 import tornado.web
 
 from api import fieldtypes
-from api.web import RequestHandler
+from api.web import APIHandler
 from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
@@ -15,7 +15,7 @@ from rainwave import playlist
 sessions = {}
 
 @handle_api_url("sync_update_all")
-class SyncUpdateAll(RequestHandler):
+class SyncUpdateAll(APIHandler):
 	local_only = True
 	auth_required = False
 			
@@ -39,7 +39,7 @@ class SyncUpdateAll(RequestHandler):
 		sessions[self.sid] = []
 		
 @handle_api_url("sync_update_user")
-class SyncUpdateUser(RequestHandler):
+class SyncUpdateUser(APIHandler):
 	sid_required = False
 	local_only = True
 
@@ -62,7 +62,7 @@ class SyncUpdateUser(RequestHandler):
 					return
 			
 @handle_api_url("sync_update_ip")
-class SyncUpdateIP(RequestHandler):
+class SyncUpdateIP(APIHandler):
 	sid_required = False
 	local_only = True
 			
@@ -85,7 +85,7 @@ class SyncUpdateIP(RequestHandler):
 					return
 
 @handle_api_url("sync")
-class Sync(RequestHandler):
+class Sync(APIHandler):
 	description = ("Get timeline information: what is currently playing, what "
 		"recently played, and upcoming elections or other events. Include the "
 		"argument 'init' to get an immediate response. Without 'init', the "

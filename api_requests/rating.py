@@ -1,5 +1,5 @@
 from api import fieldtypes
-from api.web import RequestHandler
+from api.web import APIHandler
 from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
@@ -11,7 +11,7 @@ from rainwave import playlist
 from rainwave import rating as ratinglib
 
 @handle_api_url('rate')
-class SubmitRatingRequest(RequestHandler):
+class SubmitRatingRequest(APIHandler):
 	sid_required = True
 	return_name = "rate_result"
 	login_required = True
