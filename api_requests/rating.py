@@ -11,7 +11,7 @@ from rainwave import playlist
 from rainwave import rating as ratinglib
 
 @handle_api_url('rate')
-class SubmitRatingRequest(APIHandlerr):
+class SubmitRatingRequest(APIHandler):
 	sid_required = True
 	return_name = "rate_result"
 	login_required = True
