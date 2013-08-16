@@ -231,7 +231,7 @@ class User(object):
 		if self.data['radio_perks']:
 			max_reqs = 12
 		if num_reqs >= max_reqs:
-			raise APIException(0, "too_many_requests", "You are limited to %s requests." % max_reqs)
+			raise APIException("too_many_requests")
 		return num_reqs - max_reqs
 		
 	def add_request(self, sid, song_id):
@@ -239,11 +239,11 @@ class User(object):
 		song = playlist.Song.load_from_id(song_id, sid)
 		for requested in self.get_requests():
 			if song.id == requested['id']:
-				raise APIException(0, "same_request", "You've already requested that song.")
+				raise APIException("same_request_exists")
 			for album in song.albums:
 				for requested_album in requested['albums']:
 					if album.id == requested_album['id']:
-						raise APIException(0, "same_request_album", "You've already requested a song from %s." % requested_album['name'])
+						raise APIException("same_request_album")
 		updated_rows = db.c.update("INSERT INTO r4_request_store (user_id, song_id) VALUES (%s, %s)", (self.id, song_id))
 		if self.data['sid'] == sid and self.is_tunedin():
 			self.put_in_request_line(sid)
@@ -259,7 +259,7 @@ class User(object):
 	def remove_request(self, song_id):
 		song_requested = db.c.fetch_var("SELECT reqstor_id FROM r4_request_store WHERE user_id = %s AND song_id = %s", (self.id, song_id))
 		if not song_requested:
-			raise APIException(0, "song_not_requested", "Song not requested.")
+			raise APIException("song_not_requested")
 		return db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (self.id, song_id))
 			
 	def put_in_request_line(self, sid):

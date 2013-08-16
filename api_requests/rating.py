@@ -11,7 +11,7 @@ from rainwave import playlist
 from rainwave import rating as ratinglib
 
 @handle_api_url('rate')
-class SubmitRatingRequest(APIHandler):
+class SubmitRatingRequest(APIHandlerr):
 	sid_required = True
 	return_name = "rate_result"
 	login_required = True
@@ -24,19 +24,19 @@ class SubmitRatingRequest(APIHandler):
 	}
 	
 	def post(self):
-		self.append(self.return_name, self.rate(self.get_argument("song_id"), self.get_argument("rating")))
+		self.rate(self.get_argument("song_id"), self.get_argument("rating"))
 
 	def rate(self, song_id, rating):
 		if not self.user.data['radio_rate_anything']:
 			acl = cache.get_station(self.sid, "user_rating_acl")
 			if not song_id in acl or not self.user.id in acl[song_id]:
-				return { "code": 0, "text": "Cannot rate that song at this time." }
+				self.append_standard("cannot_rate_now", "Cannot rate that song at this time.", False)
 		albums = ratinglib.set_song_rating(song_id, self.user.id, rating)
-		return { "code": 1, "text": "Rating successful.", "updated_album_ratings": albums, "song_id": song_id, "rating_user": rating }
+		self.append_standard("rating_submitted", "Rating submitted.", updated_album_ratings = albums, song_id = song_id, rating_user = rating)
 	
 	def clear_rating(self, song_id):
 		albums = ratinglib.clear_song_rating(song_id, self.user.id)
-		return { "code": 1, "text": "Rating cleared.", "updated_album_ratings": albums, "song_id": song_id, "rating_user": None }
+		self.append_standard("rating_cleared", "Rating cleared.", updated_album_ratings = albums, song_id = song_id, rating_user = None)
 
 @handle_api_url('clear_rating')
 class ClearRating(SubmitRatingRequest):
@@ -46,4 +46,4 @@ class ClearRating(SubmitRatingRequest):
 	}
 	
 	def post(self):
-		self.append(self.return_name, self.clear_rating(self.get_argument("song_id")))
+		self.clear_rating(self.get_argument("song_id"))

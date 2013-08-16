@@ -59,9 +59,9 @@ def attach_info_to_request(request, playlist = False, artists = False):
 				for history in user_vote_cache:
 					for event in (sched_history + sched_next + temp_current):
 						if history[0] == event['id']:
-							request.append("vote_result", { "elec_id": event['id'], "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": history[1], "try_again": False })
+							api_requests.vote.append_success_to_request(self, event['id'], history[1])
 		elif request.user.data['listener_voted_entry'] > 0 and request.user.data['listener_lock_sid'] == request.sid:
-			request.append("vote_result", { "elec_id": sched_next[0].id, "code": 700, "text": api_requests.vote.SubmitVote.return_codes[700], "entry_id": request.user.data['listener_voted_entry'], "try_again": False })
+			api_requests.vote.append_success_to_request(self, sched_next[0].id, request.user.data['listener_voted_entry'])
 
 @test_post
 @handle_api_url("info")
