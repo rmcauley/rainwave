@@ -14,6 +14,9 @@ from rainwave import playlist
 
 sessions = {}
 
+# TODO: Could we place something here to make use of RequestHandler.flush?
+# Maybe it'd help those unstable connections.
+
 @handle_api_url("sync_update_all")
 class SyncUpdateAll(APIHandler):
 	local_only = True

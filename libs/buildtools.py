@@ -19,46 +19,6 @@ def bake_css():
 	dest.write(css_content)
 	dest.close()
 
-# These comments exist here for now until I can find a better place for them.
-# /* Rainwave 3 en_CA MASTER Language File
-
- # |variables| are replaced by Rainwave's localization library
- # |S:variable| means to suffix a number-variable using the suffixes you define here. i.e. 4th, 5th, 6th, etc.  Works only on 1-10 number scales, made for English.
- # |P:variable,word| pluralizes a word (found in this file) based on variable.  Again made for English, it only uses the plural word for anything != 0 and > 1.
- 
- # Some examples:
- 
- # This song has |favourites| favourites                       -----> This song has 5 favourites
- # This song ranks |S:variables|                               -----> This song ranks 5th                    (5 followed by "suffix_5")
- # Has been favourited by |favourites| |P:favourites,person|   -----> Has been favouirted by 5 people        ("person_p" gets used)
- # Has been favourited by |favourites| |P:favourites,person|   -----> Has been favouirted by 1 person        ("person" gets used)
- 
- # No HTML or HTML codes allowed.  Only text.
- 
- # PLEASE MAKE SURE YOUR FILE IS ENCODED IN UTF-8.
- 
-def bake_languages():
-	master_file = open(os.path.join(os.path.dirname(__file__), "../static/lang/en_MASTER.json"))
-	master = json.load(master_file)
-	master_file.close()
-	
-	create_baked_directory()
-	
-	for root, subdir, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/lang")):
-		for file in files:
-			if file == "en_MASTER.json":
-				continue
-			f = codecs.open(os.path.join(os.path.dirname(__file__), "../static/lang/", file), "r", encoding="utf-8")
-			lang = json.load(f)
-			f.close()
-			
-			lang = dict(master.items() + lang.items())
-			f = codecs.open(os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), file[:-5] + ".js"), "w", encoding="utf-8")
-			f.write(u'\u4500')
-			f.seek(0)
-			f.write("var LOCALE = \"" + file[:-5] + "\"; var lang = " + (json.dumps(lang, ensure_ascii=False, encoding="utf-8", separators=(',',':'))) + ";")
-			f.close()
-
 bn = None
 def get_build_number():
 	global bn

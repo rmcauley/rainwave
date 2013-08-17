@@ -7,6 +7,7 @@ from rainwave.user import User
 from rainwave.playlist import SongNonExistent
 
 from api import fieldtypes
+from api import locale
 from api.exceptions import APIException
 from libs import config
 from libs import log
@@ -75,8 +76,29 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			return self.cleaned_args[name]
 		return super(RequestHandler, self).get_argument(name)
 	
-	def get_user_locale(self):
-		return self.get_cookie("r4_lang", "en_CA")
+	def get_browser_locale(self, default="en_US"):
+		"""Determines the user's locale from ``Accept-Language`` header.  Copied from Tornado, adapted slightly.
+		
+		See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+		"""
+		if "Accept-Language" in self.request.headers:
+			languages = self.request.headers["Accept-Language"].split(",")
+			locales = []
+			for language in languages:
+				parts = language.strip().split(";")
+				if len(parts) > 1 and parts[1].startswith("q="):
+					try:
+						score = float(parts[1][2:])
+					except (ValueError, TypeError):
+						score = 0.0
+				else:
+					score = 1.0
+				locales.append((parts[0], score))
+			if locales:
+				locales.sort(key=lambda pair: pair[1], reverse=True)
+				codes = [l[0] for l in locales]
+				return locale.get_closest(codes)
+		return locale.get("en_CA")
 
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):
@@ -114,21 +136,21 @@ class RainwaveHandler(tornado.web.RequestHandler):
 					self.sid = possible_sid
 					break
 		if not self.sid and self.sid_required:
-			raise APIException("missing_station_id", "Missing station ID.", 400)
+			raise APIException("missing_station_id", http_code=400)
 		if request_ok and self.sid and not self.sid in config.station_ids:
-			raise APIException("invalid_station_id", "Invalid station ID.", 400)
+			raise APIException("invalid_station_id", http_code=400)
 		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 
 		for field, field_attribs in self.__class__.fields.iteritems():
 			type_cast, required = field_attribs
 			if required and field not in self.request.arguments:
-				raise APIException("missing_argument", "Missing %s argument." % field, 400)
+				raise APIException("missing_argument", argument=field, http_code=400)
 			elif not required and field not in self.request.arguments:
 				pass
 			else:
 				parsed = type_cast(self.get_argument(field), self)
 				if parsed == None:
-					raise APIException("invalid_argument", "Invalid argument %s: %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__)), 400)
+					raise APIException("invalid_argument", argument=field, reason=getattr(fieldtypes, "%s_error" % type_cast.__name__), http_code=400)
 				else:
 					self.cleaned_args[field] = parsed
 				
@@ -138,23 +160,23 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self.rainwave_auth()
 		
 		if self.auth_required and not self.user:
-			raise APIException("auth_required", "Authorization required.", 403)
+			raise APIException("auth_required", http_code=403)
 
 		if self.login_required and (not self.user or self.user.is_anonymous()):
-			raise APIException("login_required", "Login required for %s." % self.url, 403)
+			raise APIException("login_required", http_code=403)
 		if self.tunein_required and (not self.user or not self.user.is_tunedin()):
-			raise APIException("tunein_required", "You must be tuned in to use %s." % self.url, 403)
+			raise APIException("tunein_required", http_code=403)
 		if self.admin_required and (not self.user or not self.user.is_admin()):
-			raise APIException("admin_required", "You must be an admin to use %s." % self.url, 403)
+			raise APIException("admin_required", http_code=403)
 		if self.dj_required and (not self.user or not self.user.is_dj()):
-			raise APIException("dj_required", "You must be DJing to use %s." % self.url, 403)
+			raise APIException("dj_required", http_code=403)
 		if self.perks_required and (not self.user or not self.user.has_perks()):
-			raise APIException("perks_required", "Must be a donor or VIP user to use %s." % self.url, 403)
+			raise APIException("perks_required", http_code=403)
 				
 		if self.unlocked_listener_only and not self.user:
-			raise APIException("auth_required", "Authorization required.", 403)
+			raise APIException("auth_required", http_code=403)
 		elif self.unlocked_listener_only and self.user.data['listener_lock'] and self.user.data['listener_lock_sid'] != self.sid:
-			raise APIException("unlocked_only", "User locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_counter']), 403)
+			raise APIException("unlocked_only", station=config.station_id_friendly[self.user.data['listener_lock_sid']], lock_counter=self.user.data['listener_lock_counter'], http_code=403)
 
 	def phpbb_auth(self):
 		phpbb_cookie_name = config.get("phpbb_cookie_name")
@@ -183,19 +205,19 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		user_id_present = "user_id" in self.request.arguments
 		
 		if self.auth_required and not user_id_present:
-			raise APIException("missing_argument", "Missing user_id argument.", 400)
+			raise APIException("missing_argument", argument="user_id", http_code=400)
 		if user_id_present and not fieldtypes.numeric(self.get_argument("user_id")):
 			# do not spit out the user ID back at them, that would create a potential XSS hack
-			raise APIException("invalid_argument", "Invalid user ID.", 400)
+			raise APIException("invalid_argument", argument="user_id", reason="not numeric.", http_code=400)
 		if (self.auth_required or user_id_present) and not "key" in self.request.arguments:
-			raise APIException("missing_argument", "Missing 'key' argument.", 400)
+			raise APIException("missing_argument", argument="key", http_code=400)
 		
 		self.user = None
 		if request_ok and user_id_present:
 			self.user = User(long(self.get_argument("user_id")))
 			self.user.authorize(self.sid, self.request.remote_ip, self.get_argument("key"))
 			if not self.user.authorized:
-				raise APIException("auth_failed", "Authorization failed.", 403)
+				raise APIException("auth_failed", http_code=403)
 				# In case the raise is suppressed
 				self.user = None
 			else:
@@ -216,7 +238,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		return True
 	
 	def append_standard(self, tl_key, text = None, success = True, **kwargs):
-		# TODO: Add translation layer here for when text is None
+		if not text:
+			text = self.locale.get(tl_key, kwargs)
 		self.append(self.return_name, kwargs.update({ "success": success, "tl_key": tl_key, "text": text }))
 	
 class APIHandler(RainwaveHandler):
@@ -239,9 +262,10 @@ class APIHandler(RainwaveHandler):
 		if kwargs.has_key("exc_info"):
 			exc = kwargs['exc_info'][1]
 			if isinstance(exc, APIException):
+				exc.localize(self.locale)
 				self.append(self.return_name, exc.jsonable())
 			elif exc.__class__.__name__ == "SongNonExistent":
-				self.append("error", { "tl_key": "song_does_not_exist", "text": "Song does not exist." })
+				self.append("error", { "tl_key": "song_does_not_exist", "text": self.locale.get("song_does_not_exist") })
 			else:
 				self.append("error", { "tl_key": "internal_error", "text": repr(exc) })
 		else:
