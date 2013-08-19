@@ -23,11 +23,10 @@ class SyncUpdateAll(APIHandler):
 	auth_required = False
 			
 	def post(self):
-		if self.request_ok:
-			self.append("sync_all_result", "Processing.")
+		self.append("sync_all_result", "Processing.")
 	
 	def on_finish(self):
-		if not self.request_ok:
+		if not self.get_status() == 200:
 			log.debug("sync_update_all", "sync_update_all request was not OK.")
 			return
 		log.debug("sync_update_all", "Updating all sessions for sid %s" % self.sid)
@@ -47,11 +46,10 @@ class SyncUpdateUser(APIHandler):
 	local_only = True
 
 	def post(self):
-		if self.request_ok:
-			self.append("sync_user_result", "Processing.")
+		self.append("sync_user_result", "Processing.")
 			
 	def on_finish(self):
-		if not self.request_ok:
+		if not self.get_status() == 200:
 			log.debug("sync_update_user", "sync_update_user request was not OK.")
 			return
 
@@ -70,11 +68,10 @@ class SyncUpdateIP(APIHandler):
 	local_only = True
 			
 	def post(self):
-		if self.request_ok:
-			self.append("sync_ip_result", "Processing.")
+		self.append("sync_ip_result", "Processing.")
 			
 	def on_finish(self):
-		if not self.request_ok:
+		if not self.get_status() == 200:
 			log.debug("sync_update_ip", "sync_update_ip request was not OK.")
 			return
 			

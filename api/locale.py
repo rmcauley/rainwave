@@ -2,6 +2,7 @@ import os
 import json
 import types
 import codecs
+import tornado.locale
 
 from libs import buildtools
 
@@ -40,7 +41,7 @@ def load_translations():
 			if file == "en_MASTER.json":
 				continue
 			f = codecs.open(os.path.join(os.path.dirname(__file__), "../static/lang/", file), "r", encoding="utf-8")
-			translations[file[:-5]] = RainwaveLocale(file[:-5], (master.items() + json.load(f).items()))
+			translations[file[:-5]] = RainwaveLocale(file[:-5], dict(master.items() + json.load(f).items()))
 			f.close()
 			
 def compile_static_language_files():
@@ -52,39 +53,50 @@ def compile_static_language_files():
 			f.seek(0)
 			f.write("var LOCALE = \"" + locale + "\"; var lang = " + (json.dumps(translation.dict, ensure_ascii=False, encoding="utf-8", separators=(',',':'))) + ";")
 			f.close()
-			
-def get(code):
-	return translations[code]
 
-def get_closest(codes):
-	global translations
+# I know this whole thing seems a bit wonkily-coded, but that's because we're staying Tornado compatible,
+# which has an entirely different setup
+class RainwaveLocale(tornado.locale.Locale):
+	@classmethod
+	def get(self, code):
+		global translations
+		return translations[code]
 	
-	for i in range(0, len(codes)):
-		if codes[i] in translations:
-			return translations[codes[i]]
+	@classmethod
+	def get_closest(self, *codes):
+		global translations
 		
-		parts = codes[i].split("_")	
-		for locale_name, translation in translations.iteritems():
-			if parts[0] == locale_name[:2]:
-				return translation	
+		if type(codes) == types.TupleType:
+			codes = codes[0]
 	
-	return translations['en_CA']
-
-class RainwaveLocale(object):
+		for i in range(0, len(codes)):
+			if codes[i] in translations:
+				return translations[codes[i]]
+			
+			parts = codes[i].split("_")	
+			for locale_name, translation in translations.iteritems():
+				if parts[0] == locale_name[:2]:
+					return translation	
+		
+		return translations['en_CA']	
+	
 	def __init__(self, code, translation):
 		self.dict = translation
+		self.code = code
 	
-	def get(self, key, **kwargs):
+	def translate(self, key, **kwargs):
 		if not key in self.dict:
+			print "WHOOPS %s" % key
 			return None
 		line = self.dict[key]
+		print line
 		for k, i in kwargs.iteritems():
 			line.replace("%(" + k + ")", i)
 			if type(i) == types.IntType or type(i) == types.LongType or type(i) == types.FloatType:
 				if line.find("#(" + k + ")"):
 					line.replace("#(" + k + ")", self.get_suffixed_number(i))
 			# TODO: Plurals
-		return string
+		return line
 	
 	def get_suffixed_number(self, number):
 		if not type(number) == types.StringType:

@@ -3,18 +3,24 @@ from libs import config
 from libs import db
 
 string_error = "must be a string."
-def string(str):
-	return str
+def string(in_string):
+	if not in_string:
+		return None
+	return string(in_string)
 
 # All _error variables start with no capital letter and end with a period.
 numeric_error = "must be a number."
 def numeric(str, request = None):
+	if not numeric:
+		return None
 	if not re.match('^\d+$', str):
 		return None
 	return str
 	
 integer_error = "must be a number."
 def integer(str, request = None):
+	if not str:
+		return None
 	if not re.match('^-?\d+$', str):
 		return None
 	return int(str)
@@ -22,6 +28,8 @@ def integer(str, request = None):
 # TODO: Go over the entire project and use this where necessary
 song_id_error = "must be a valid song ID."
 def song_id(str, request = None):
+	if not str:
+		return None
 	if not re.match('^\d+$', str):
 		return None
 	song_id = int(str)
@@ -31,6 +39,8 @@ def song_id(str, request = None):
 
 song_id_matching_sid_error = "must be a valid song ID that exists on the requested station ID."
 def song_id_matching_sid(str, request):
+	if not str or not request:
+		return None
 	if not re.match('^\d+$', str):
 		return None
 	song_id = int(str)
@@ -40,6 +50,8 @@ def song_id_matching_sid(str, request):
 
 album_id_error = "must be a valid album ID."
 def album_id(str, request = None):
+	if not str:
+		return None
 	if not re.match('^\d+$', str):
 		return None
 	album_id = int(str)
@@ -49,6 +61,8 @@ def album_id(str, request = None):
 	
 positive_integer_error = "must be a positive number."
 def positive_integer(str, request = None):
+	if not str:
+		return None
 	if not re.match('^\d+$', str):
 		return None
 	nmbr = int(str)
@@ -58,18 +72,24 @@ def positive_integer(str, request = None):
 	
 float_num_error = "must be a number."
 def float_num(str, request = None):
+	if not str:
+		return None
 	if not re.match('^\d+(.\d+)?$', str):
 		return None
 	return float(str)
 	
 long_num_error = "must be a number."
 def long_num(str, request = None):
+	if not str:
+		return None
 	if not re.match('^\d+$', str):
 		return None
 	return long(str)
 
 rating_error = "must >= 1.0 and <= 5.0 in increments of	0.5."
 def rating(str, request = None):
+	if not str:
+		return None
 	r = float_num(str)
 	if not r:
 		return None
@@ -81,6 +101,8 @@ def rating(str, request = None):
 
 boolean_error = "must be 'true' or 'false'."
 def boolean(str, request = None):
+	if not str:
+		return None
 	if str == "true":
 		return True
 	elif str == "false":
@@ -89,6 +111,8 @@ def boolean(str, request = None):
 	
 valid_relay_error = "must be a known and valid relay's IP address."
 def valid_relay(str, request = None):
+	if not str:
+		return None
 	for name, value in config.get("relays").iteritems():
 		if value['ip_address'] == str:
 			return name
@@ -96,6 +120,8 @@ def valid_relay(str, request = None):
 
 sid_error = "must be a valid station ID."
 def sid(str, request = None):
+	if not str:
+		return None
 	sid = integer(str, request)
 	if not sid:
 		return None
@@ -105,6 +131,8 @@ def sid(str, request = None):
 
 integer_list_error = "must be a comma-separated list of integers."
 def integer_list(str, request = None):
+	if not str:
+		return None
 	if not re.match('^(\d+)(,\d+)*$', str):
 		return None
 	l = []

@@ -98,6 +98,7 @@ class UnratedSongsHandler(APIHandler):
 	def post(self):
 		self.append(self.return_name, playlist.get_unrated_songs_for_user(self.user.id))
 		
+# TODO: Cache this shit maybe?
 @handle_api_url("top_100")
 class Top100Songs(APIHandler):
 	description = "Get the 100 highest-rated songs on the station."

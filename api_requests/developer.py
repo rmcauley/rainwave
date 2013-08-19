@@ -15,6 +15,7 @@ class CreateAnonTunedIn(APIHandler):
 	sid_required = False
 	auth_required = False
 	allow_get = True
+	return_name = "create_anon_tuned_in_result"
 	
 	def post(self, sid):
 		if db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE listener_ip = '127.0.0.1' AND user_id = 1") == 0:
@@ -51,6 +52,7 @@ class TestUserRequest(APIHandler):
 class CreateLoginTunedIn(TestUserRequest):
 	description = "Creates or uses a user account with a tuned in record and sets the appropriate cookies so you're that user."
 	auth_required = False
+	return_name = "login_tuned_in_result"
 
 	def execute(self, user_id, sid):
 		if db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (user_id,)) == 0:
@@ -60,6 +62,7 @@ class CreateLoginTunedIn(TestUserRequest):
 class CreateLoginTunedOut(TestUserRequest):
 	description = "Creates or uses a user account with no tuned in record sets the appropriate cookies so you're that user."
 	auth_required = False
+	return_name = "login_tuned_out_result"
 
 	def execute(self, user_id, sid):
 		if db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (user_id,)) > 0:

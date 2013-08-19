@@ -11,6 +11,7 @@ from api import locale
 from api.exceptions import APIException
 from libs import config
 from libs import log
+from libs import db
 
 # This is the Rainwave API main handling request class.  You'll inherit it in order to handle requests.
 # Does a lot of form checking and validation of user/etc.  There's a request class that requires no authentication at the bottom of this module.
@@ -61,7 +62,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	perks_required = False
 	
 	def initialize(self, **kwargs):
-		super(RequestHandler, self).initialize(**kwargs)
+		super(RainwaveHandler, self).initialize(**kwargs)
 		if config.get("developer_mode") or config.test_mode or self.allow_get:
 			self.get = self.post
 		self.cleaned_args = {}
@@ -69,14 +70,14 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	def set_cookie(self, name, value, **kwargs):
 		if isinstance(value, (int, long)):
 			value = repr(value)
-		super(RequestHandler, self).set_cookie(name, value, **kwargs)
+		super(RainwaveHandler, self).set_cookie(name, value, **kwargs)
 		
 	def get_argument(self, name):
 		if name in self.cleaned_args:
 			return self.cleaned_args[name]
-		return super(RequestHandler, self).get_argument(name)
+		return super(RainwaveHandler, self).get_argument(name)
 	
-	def get_browser_locale(self, default="en_US"):
+	def get_browser_locale(self, default="en_CA"):
 		"""Determines the user's locale from ``Accept-Language`` header.  Copied from Tornado, adapted slightly.
 		
 		See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
@@ -97,20 +98,21 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			if locales:
 				locales.sort(key=lambda pair: pair[1], reverse=True)
 				codes = [l[0] for l in locales]
-				return locale.get_closest(codes)
-		return locale.get("en_CA")
+				return locale.RainwaveLocale.get_closest(codes)
+		return locale.RainwaveLocale.get(default)
 
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):
 		self._startclock = time.clock()
-		self.request_ok = False
 		self.user = None
 		
 		if self.local_only and not self.request.remote_ip in config.get("api_trusted_ip_addresses"):
 			log.info("api", "Rejected %s request from %s" % (self.url, self.request.remote_ip))
-			self.failed = True
 			self.set_status(403)
 			self.finish()
+			
+		if not isinstance(self.locale, locale.RainwaveLocale):
+			self.locale = self.get_browser_locale()
 
 		if not self.return_name:
 			self.return_name = self.url[self.url.rfind("/")+1:] + "_result"
@@ -127,7 +129,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self._output = {}
 			self._output_array = False
 
-		self.sid = fieldtypes.integer(self.get_cookie("r4_sid", 1))
+		self.sid = fieldtypes.integer(self.get_cookie("r4_sid", "1"))
 		if "sid" in self.request.arguments:
 			self.sid = int(self.get_argument("sid"))
 		elif not self.sid:
@@ -137,7 +139,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 					break
 		if not self.sid and self.sid_required:
 			raise APIException("missing_station_id", http_code=400)
-		if request_ok and self.sid and not self.sid in config.station_ids:
+		if self.sid and not self.sid in config.station_ids:
 			raise APIException("invalid_station_id", http_code=400)
 		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 
@@ -155,7 +157,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 					self.cleaned_args[field] = parsed
 				
 		if self.phpbb_auth:
-			self.phpbb_auth()
+			self.do_phpbb_auth()
 		else:
 			self.rainwave_auth()
 		
@@ -178,14 +180,14 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		elif self.unlocked_listener_only and self.user.data['listener_lock'] and self.user.data['listener_lock_sid'] != self.sid:
 			raise APIException("unlocked_only", station=config.station_id_friendly[self.user.data['listener_lock_sid']], lock_counter=self.user.data['listener_lock_counter'], http_code=403)
 
-	def phpbb_auth(self):
+	def do_phpbb_auth(self):
 		phpbb_cookie_name = config.get("phpbb_cookie_name")
 		self.user = None
 		if not fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", "")):
 			self.user = User(1)
 		else:
 			user_id = int(self.get_cookie(phpbb_cookie_name + "u"))
-			if self.get_cookie(phpbb_cookie_name + "sid") and self._update_phpbb_session():
+			if self._update_phpbb_session():
 				self.user = User(user_id)
 				self.user.authorize(self.sid, None, None, True)
 
@@ -195,8 +197,20 @@ class RainwaveHandler(tornado.web.RequestHandler):
 					self.user = User(user_id)
 					self.user.authorize(self.sid, None, None, True)
 					
+	def _get_phpbb_session(self, user_id = None):
+		if not user_id and not self.user:
+			return None
+		if not user_id:
+			user_id = self.user.id
+		cookie_session = self.get_cookie(config.get("phpbb_cookie_name") + "sid")
+		if cookie_session:
+			if cookie_session == db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s AND session_id = %s", (user_id, cookie_session)):
+				return cookie_session
+		db_session = db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s ORDER BY session_last_visit DESC LIMIT 1", (self.user.id,))
+		return db_session
+
 	def _update_phpbb_session(self):
-		session_id = db.c_old.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_id = %s AND session_user_id = %s", (self.get_cookie(phpbb_cookie_name + "sid"), user_id))
+		session_id = self._get_phpbb_session()
 		if session_id:
 			db.c_old.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(time.time()), "rainwave", session_id))
 		return session_id
@@ -213,7 +227,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			raise APIException("missing_argument", argument="key", http_code=400)
 		
 		self.user = None
-		if request_ok and user_id_present:
+		if user_id_present:
 			self.user = User(long(self.get_argument("user_id")))
 			self.user.authorize(self.sid, self.request.remote_ip, self.get_argument("key"))
 			if not self.user.authorized:
@@ -239,8 +253,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	
 	def append_standard(self, tl_key, text = None, success = True, **kwargs):
 		if not text:
-			text = self.locale.get(tl_key, kwargs)
-		self.append(self.return_name, kwargs.update({ "success": success, "tl_key": tl_key, "text": text }))
+			text = self.locale.translate(tl_key, kwargs)
+		kwargs.update({ "success": success, "tl_key": tl_key, "text": text })
+		self.append(self.return_name, kwargs)
 	
 class APIHandler(RainwaveHandler):
 	def finish(self, chunk=None):
@@ -252,7 +267,7 @@ class APIHandler(RainwaveHandler):
 				exectime = -1
 			self.append("api_info", { "exectime": exectime, "time": round(time.time()) })
 			self.write(tornado.escape.json_encode(self._output))
-		super(RequestHandler, self).finish(chunk)
+		super(APIHandler, self).finish(chunk)
 
 	def write_error(self, status_code, **kwargs):
 		if self._output_array:
@@ -265,7 +280,7 @@ class APIHandler(RainwaveHandler):
 				exc.localize(self.locale)
 				self.append(self.return_name, exc.jsonable())
 			elif exc.__class__.__name__ == "SongNonExistent":
-				self.append("error", { "tl_key": "song_does_not_exist", "text": self.locale.get("song_does_not_exist") })
+				self.append("error", { "tl_key": "song_does_not_exist", "text": self.locale.translate("song_does_not_exist") })
 			else:
 				self.append("error", { "tl_key": "internal_error", "text": repr(exc) })
 		else:
@@ -274,3 +289,28 @@ class APIHandler(RainwaveHandler):
 
 class HTMLRequest(RainwaveHandler):
 	phpbb_auth = True
+
+	def write_error(self, status_code, **kwargs):
+		if kwargs.has_key("exc_info"):
+			exc = kwargs['exc_info'][1]
+			if isinstance(exc, APIException):
+				if not isinstance(self.locale, locale.RainwaveLocale):
+					exc.localize(locale.get("en_CA"))
+				else:
+					exc.localize(self.locale)
+			if isinstance(exc, APIException) or isinstance(exc, tornado.web.HTTPError):
+				self.write(self.render_string("basic_header.html", title="%s - %s" % (status_code, exc.reason)))
+			else:
+				self.write(self.render_string("basic_header.html", title="%s Error" % status_code))
+			if status_code == 500:
+				self.write("<p>")
+				self.write(self.locale.translate("html_unknown_error_message"))
+				self.write("</p><p>")
+				self.write(self.locale.translate("html_debug_information"))
+				self.write("</p><div class='json'>")
+				self.write(repr(kwargs['exc_info'][2]))
+				self.write("</div>")
+			else:
+				self.write("<p>")
+				self.write(self.locale.translate("html_generic_error_message"))
+				self.write("</p>")

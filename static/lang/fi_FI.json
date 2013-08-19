@@ -1,4 +1,9 @@
 {
+    "station_description_id_1": "Videopelimusiikkia soittava internet-radio.  Äänestä haluamaasi kappaletta!",
+    "station_description_id_2": "OverClocked Remix internet-radio.  Äänestä haluamaasi remixiä!",
+    "station_description_id_3": "Videopelimusiikkia soittavia coverbändejä ja pelimusiikkiremixejä.  Äänestä suosikkiesittäjääsi!",
+    "station_description_id_4": "Videopelien chiptune-tyylistä musiikkia soittava internet-radio.  Äänestä haluamiasi kappaleita!",
+    "station_description_id_5": "Videopelimusiikkia ja niiden remixejä soittava internet-radio.  Äänestä haluamiasi kappaleita!",
     "p_MainMPI": "Välilehdet",
     "p_MenuPanel": "Valikko",
     "p_PlaylistPanel": "Soittolista",

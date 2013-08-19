@@ -36,7 +36,7 @@ class DeleteRequest(APIHandler):
 	description = "Remove a request from your queue."
 	sid_required = False
 	login_required = True
-	tunein_required = True
+	tunein_required = False
 	unlocked_listener_only = False
 	fields = {
 		"song_id": (fieldtypes.integer, True)
@@ -54,7 +54,7 @@ class OrderRequests(APIHandler):
 	description = "Change the order of requests in your queue."
 	sid_required = False
 	login_required = True
-	tunein_required = True
+	tunein_required = False
 	unlocked_listener_only = False
 	fields = {
 		"order": (fieldtypes.integer_list, True)
