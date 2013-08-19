@@ -29,10 +29,9 @@
     "song_not_requested":		"Song not requested.",
     
     "already_voted_for_song":		"Already voted for that song.",
-    
-    "html_generic_error_message":	"Please fix your request and try again.",
-    "html_unknown_error_message":	"Sorry about that.  Please try again, or file a bug with the debug information below.  (this error has been logged)",
-    "html_debug_information":		"Debug information:",
+
+    "unknown_error_message":	"Sorry about that.  Please try again, or file a bug with the debug information below.  (this error has been logged)",
+    "debug_information":		"Debug information:",
     
     "__comment__": "The following are the old R3 translation lines, which will be replaced.  Some day. :(",
     

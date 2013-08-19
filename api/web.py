@@ -187,7 +187,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self.user = User(1)
 		else:
 			user_id = int(self.get_cookie(phpbb_cookie_name + "u"))
-			if self._update_phpbb_session():
+			if self._update_phpbb_session(user_id):
 				self.user = User(user_id)
 				self.user.authorize(self.sid, None, None, True)
 
@@ -209,8 +209,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		db_session = db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s ORDER BY session_last_visit DESC LIMIT 1", (self.user.id,))
 		return db_session
 
-	def _update_phpbb_session(self):
-		session_id = self._get_phpbb_session()
+	def _update_phpbb_session(self, user_id = None):
+		session_id = self._get_phpbb_session(user_id)
 		if session_id:
 			db.c_old.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(time.time()), "rainwave", session_id))
 		return session_id
@@ -304,13 +304,10 @@ class HTMLRequest(RainwaveHandler):
 				self.write(self.render_string("basic_header.html", title="%s Error" % status_code))
 			if status_code == 500:
 				self.write("<p>")
-				self.write(self.locale.translate("html_unknown_error_message"))
+				self.write(self.locale.translate("unknown_error_message"))
 				self.write("</p><p>")
-				self.write(self.locale.translate("html_debug_information"))
+				self.write(self.locale.translate("debug_information"))
 				self.write("</p><div class='json'>")
 				self.write(repr(kwargs['exc_info'][2]))
 				self.write("</div>")
-			else:
-				self.write("<p>")
-				self.write(self.locale.translate("html_generic_error_message"))
-				self.write("</p>")
+		self.finish()
