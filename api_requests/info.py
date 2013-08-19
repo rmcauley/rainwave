@@ -29,7 +29,7 @@ def attach_info_to_request(request, playlist = False, artists = False):
 		request.append("all_artists", cache.get_station(request.sid, 'all_artists'))
 
 	request.append("request_line", cache.get_station(request.sid, "request_line"))
-	request.append("calendar", cache.get("calendar"))
+	# request.append("calendar", cache.get("calendar"))
 	request.append("listeners_current", cache.get_station(request.sid, "listeners_current"))
 
 	sched_next = []
