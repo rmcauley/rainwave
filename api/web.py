@@ -1,5 +1,6 @@
 import tornado.web
 import tornado.escape
+import tornado.httputil
 import time
 import re
 
@@ -284,7 +285,7 @@ class APIHandler(RainwaveHandler):
 			else:
 				self.append("error", { "tl_key": "internal_error", "text": repr(exc) })
 		else:
-			self.append("error", { "tl_key": "internal_error", "text": self._reason } )
+			self.append("error", { "tl_key": "internal_error", "text": self.locale.translate("internal_error") } )
 		self.finish()
 
 class HTMLRequest(RainwaveHandler):
@@ -298,10 +299,10 @@ class HTMLRequest(RainwaveHandler):
 					exc.localize(locale.get("en_CA"))
 				else:
 					exc.localize(self.locale)
-			if isinstance(exc, APIException) or isinstance(exc, tornado.web.HTTPError):
+			if (isinstance(exc, APIException) or isinstance(exc, tornado.web.HTTPError)) and exc.reason:
 				self.write(self.render_string("basic_header.html", title="%s - %s" % (status_code, exc.reason)))
 			else:
-				self.write(self.render_string("basic_header.html", title="%s Error" % status_code))
+				self.write(self.render_string("basic_header.html", title="HTTP %s - %s" % (status_code, tornado.httputil.responses.get(status_code, 'Unknown'))))
 			if status_code == 500:
 				self.write("<p>")
 				self.write(self.locale.translate("unknown_error_message"))
