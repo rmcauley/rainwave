@@ -26,12 +26,27 @@ jsfiles.sort()
 
 @handle_url("/(?:index.html)?")
 class MainIndex(api.web.HTMLRequest):
+	def prepare(self):
+		super(MainIndex, self).prepare()
+
+		self.json_payload = []
+		if not self.user:
+			self.user = User(1)
+		self.user.ensure_api_key(self.request.remote_ip)
+		self.user.data['sid'] = self.sid
+
+	def append(self, key, value):
+		self.json_payload.append({ key: value })
+	
 	def get(self):
-		self.site_description = self.locale.translate("station_description_id_%s" % self.sid)
 		info.attach_info_to_request(self, playlist=True, artists=True)
 		self.append("api_info", { "time": int(time.time()) })
 		self.set_header("Content-Type", "text/plain")
-		self.render("index.html", request=self, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"), cookie_domain=config.get("cookie_domain"))
+		self.render("index.html", request=self,
+					site_description=self.locale.translate("station_description_id_%s" % self.sid),
+					revision_number=config.get("revision_number"),
+					api_url=config.get("api_external_url_prefix"),
+					cookie_domain=config.get("cookie_domain"))
 
 @handle_url("/beta/?")
 class BetaIndex(MainIndex):
@@ -40,4 +55,9 @@ class BetaIndex(MainIndex):
 	def get(self):
 		info.attach_info_to_request(self, playlist=True, artists=True)
 		self.append("api_info", { "time": int(time.time()) })
-		self.render("beta_index.html", request=self, jsfiles=jsfiles, revision_number=config.get("revision_number"), api_url=config.get("api_external_url_prefix"), cookie_domain=config.get("cookie_domain"))
+		self.render("beta_index.html", request=self,
+					site_description=self.locale.translate("station_description_id_%s" % self.sid),
+					jsfiles=jsfiles,
+					revision_number=config.get("revision_number"),
+					api_url=config.get("api_external_url_prefix"),
+					cookie_domain=config.get("cookie_domain"))

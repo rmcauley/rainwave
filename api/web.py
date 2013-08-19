@@ -3,6 +3,7 @@ import tornado.escape
 import tornado.httputil
 import time
 import re
+import traceback
 
 from rainwave.user import User
 from rainwave.playlist import SongNonExistent
@@ -64,8 +65,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	
 	def initialize(self, **kwargs):
 		super(RainwaveHandler, self).initialize(**kwargs)
-		if config.get("developer_mode") or config.test_mode or self.allow_get:
-			self.get = self.post
 		self.cleaned_args = {}
 			
 	def set_cookie(self, name, value, **kwargs):
@@ -259,6 +258,11 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		self.append(self.return_name, kwargs)
 	
 class APIHandler(RainwaveHandler):
+	def initialize(self, **kwargs):
+		super(APIHandler, self).initialize(**kwargs)
+		if config.get("developer_mode") or config.test_mode or self.allow_get:
+			self.get = self.post
+	
 	def finish(self, chunk=None):
 		self.set_header("Content-Type", "application/json")
 		if hasattr(self, "_output"):
@@ -290,6 +294,7 @@ class APIHandler(RainwaveHandler):
 
 class HTMLRequest(RainwaveHandler):
 	phpbb_auth = True
+	allow_get = True
 
 	def write_error(self, status_code, **kwargs):
 		if kwargs.has_key("exc_info"):
@@ -309,6 +314,7 @@ class HTMLRequest(RainwaveHandler):
 				self.write("</p><p>")
 				self.write(self.locale.translate("debug_information"))
 				self.write("</p><div class='json'>")
-				self.write(repr(kwargs['exc_info'][2]))
+				for line in traceback.format_exception(kwargs['exc_info'][0], kwargs['exc_info'][1], kwargs['exc_info'][2]):
+					self.write(line)
 				self.write("</div>")
 		self.finish()

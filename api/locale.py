@@ -86,10 +86,8 @@ class RainwaveLocale(tornado.locale.Locale):
 	
 	def translate(self, key, **kwargs):
 		if not key in self.dict:
-			print "WHOOPS %s" % key
 			return None
 		line = self.dict[key]
-		print line
 		for k, i in kwargs.iteritems():
 			line.replace("%(" + k + ")", i)
 			if type(i) == types.IntType or type(i) == types.LongType or type(i) == types.FloatType:

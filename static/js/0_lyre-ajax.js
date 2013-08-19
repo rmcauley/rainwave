@@ -209,7 +209,7 @@ var lyre = function() {
 	};
 
 	var performCallback = function(json, segment) {
-		if ("success" in json)
+		if ("success" in json) {
 			json["code"] = json["success"] ? 0 : -1;
 		}
 		if (callbacks[segment]) {
