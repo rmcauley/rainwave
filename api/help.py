@@ -26,7 +26,10 @@ class IndexRequest(tornado.web.RequestHandler):
 	def write_class_properties(self, url, handler):
 		self.write("<tr>")
 		for prop in url_properties:
-			self.write_property(prop[0], handler, prop[1])
+			if prop[0] == "auth_required" and getattr(handler, "phpbb_auth", False):
+				self.write("<td class='auth requirement'>phpbb</td>")
+			else:
+				self.write_property(prop[0], handler, prop[1])
 		display_url = url
 		if display_url.find("/api4/") == 0:
 			display_url = display_url[6:]
@@ -35,17 +38,23 @@ class IndexRequest(tornado.web.RequestHandler):
 	def get(self):
 		self.write(self.render_string("basic_header.html", request=self, title="Rainwave API Documentation"))
 		other_requests = {}
+		prettyprint_requests = {}
 		self.write("<h2>Requests</h2>")
 		self.write("<table class='help_legend'>")
 		self.write("<tr><th colspan='8'>JSON API Requests</th></tr>")
 		self.write("<tr><th>Allows GET<th>Auth Required</th><th>Station ID Required</th><th>Tune In Required</th><th>Login Required</th><th>DJs Only</th><th>Admins Only</th><th>URL</th></tr>")
 		for url, handler in sorted(help_classes.items()):
-			if issubclass(handler, api.web.APIHandler):
+			if issubclass(handler, api.web.PrettyPrintAPIMixin):
+				prettyprint_requests[url] = handler
+			elif issubclass(handler, api.web.APIHandler):
 				if not handler.hidden and not handler.local_only:
 					self.write_class_properties(url, handler)
 			else:
 				other_requests[url] = handler
-		self.write("<tr><th colspan='8'>Other Requests</th></tr>")
+		self.write("<tr><th colspan='8'>Pretty Printed API Requests</th></tr>")
+		for url, handler in sorted(prettyprint_requests.items()):
+			self.write_class_properties(url, handler)
+		self.write("<tr><th colspan='8'>HTML Page Requests</th></tr>")
 		for url, handler in sorted(other_requests.items()):
 			self.write_class_properties(url, handler)
 		self.write("</table>")
@@ -74,7 +83,9 @@ class HelpRequest(tornado.web.RequestHandler):
 		self.write("<p>%s</p>" % klass.description)
 		self.write("<ul>")
 		for prop in url_properties:
-			if getattr(klass, prop[0], False):
+			if prop[0] == "auth_required" and getattr(klass, "phpbb_auth", False):
+				self.write("<li>User must be requesting from Rainwave.cc and logged in to the Rainwave.cc forum system.")
+			elif getattr(klass, prop[0], False):
 				self.write("<li>" + prop[2] + "</li>")
 		self.write("</ul>")
 		

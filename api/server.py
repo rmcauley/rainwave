@@ -46,6 +46,10 @@ class handle_api_url(handle_url):
 	def __init__(self, url):
 		super(handle_api_url, self).__init__("/api4/" + url)
 		
+class handle_api_html_url(handle_url):
+	def __init__(self, url):
+		super(handle_api_html_url, self).__init__("/pages/" + url)
+		
 def test_get(klass):
 	testable_requests.append({ "method": "GET", "class": klass })
 	

@@ -1,10 +1,12 @@
 import tornado.web
 
 from api.web import APIHandler
+from api.web import PrettyPrintAPIMixin
 from api import fieldtypes
 from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
+from api.server import handle_api_html_url
 
 from libs import cache
 from libs import log
@@ -98,7 +100,11 @@ class UnratedSongsHandler(APIHandler):
 	def post(self):
 		self.append(self.return_name, playlist.get_unrated_songs_for_user(self.user.id))
 		
-# TODO: Cache this shit maybe?
+@handle_api_html_url("unrated_songs")
+class UnratedSongsHTML(PrettyPrintAPIMixin, UnratedSongsHandler):
+	pass
+		
+# TODO: Cache this maybe?
 @handle_api_url("top_100")
 class Top100Songs(APIHandler):
 	description = "Get the 100 highest-rated songs on the station."
@@ -109,10 +115,17 @@ class Top100Songs(APIHandler):
 	
 	def post(self):
 		self.append(self.return_name, db.c.fetch_all(
-			"SELECT DISTINCT ON (song_rating, song_id) song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, song_rating, song_rating_count "
-			"FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_albums USING (album_id) "
-			"WHERE song_rating_count > 20 AND song_verified = TRUE"
+			"SELECT DISTINCT ON (song_rating, song_id) "
+				"song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, song_rating, song_rating_count "
+			"FROM r4_songs "
+				"JOIN r4_song_sid USING (song_id) "
+				"JOIN r4_albums USING (album_id) "
+			"WHERE song_rating_count > 20 AND song_verified = TRUE "
 			"ORDER BY song_rating DESC, song_id LIMIT 100"))
+
+@handle_api_html_url("top_100")
+class Top100SongsHTML(PrettyPrintAPIMixin, Top100Songs):
+	pass
 
 @handle_api_url("all_faves")
 class AllFavHandler(APIHandler):
@@ -128,6 +141,10 @@ class AllFavHandler(APIHandler):
 			"FROM r4_song_ratings JOIN r4_songs ON (song_fave = TRUE AND user_id = %s AND r4_song_ratings.song_id = r4_songs.song_id) "
 			"JOIN r4_song_sid USING (album_id) JOIN r4_albums USING (album_id) "
 			"WHERE song_verified = TRUE ORDER BY album_name, song_title", (self.user.id,)))
+		
+@handle_api_html_url("all_faves")
+class AllFavHTML(PrettyPrintAPIMixin, AllFavHandler):
+	pass
 
 @handle_api_url("playback_history")
 class PlaybackHistory(APIHandler):
@@ -151,6 +168,10 @@ class PlaybackHistory(APIHandler):
 				"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
 				"WHERE r4_song_history.sid = %s "
 				"ORDER BY songhist_id DESC LIMIT 100"), (self.sid,))
+			
+@handle_api_html_url("playback_history")
+class PlaybackHistoryHTML(PrettyPrintAPIMixin, PlaybackHistory):
+	pass
 
 @handle_api_url("station_song_count")
 class StationSongCountRequest(APIHandler):

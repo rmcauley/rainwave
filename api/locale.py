@@ -86,7 +86,7 @@ class RainwaveLocale(tornado.locale.Locale):
 	
 	def translate(self, key, **kwargs):
 		if not key in self.dict:
-			return None
+			return "[[ " + key + " ]]"
 		line = self.dict[key]
 		for k, i in kwargs.iteritems():
 			line.replace("%(" + k + ")", i)

@@ -4,6 +4,7 @@ import tornado.httputil
 import time
 import re
 import traceback
+import types
 
 from rainwave.user import User
 from rainwave.playlist import SongNonExistent
@@ -76,6 +77,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if name in self.cleaned_args:
 			return self.cleaned_args[name]
 		return super(RainwaveHandler, self).get_argument(name)
+	
+	def set_argument(self, name, value):
+		self.cleaned_args[name] = value
 	
 	def get_browser_locale(self, default="en_CA"):
 		"""Determines the user's locale from ``Accept-Language`` header.  Copied from Tornado, adapted slightly.
@@ -318,3 +322,53 @@ class HTMLRequest(RainwaveHandler):
 					self.write(line)
 				self.write("</div>")
 		self.finish()
+		
+# this mixin will overwrite anything in APIHandler and RainwaveHandler so be careful wielding it
+class PrettyPrintAPIMixin(object):
+	phpbb_auth = True
+	allow_get = True
+
+	# reset the initialize to ignore overwriting self.get with anything
+	def initialize(self, **kwargs):
+		super(APIHandler, self).initialize(**kwargs)
+		# yaaaaaaay monkey patching :/
+		self._real_post = self.post
+		self.post = self.post_reject
+		
+	def get(self):
+		self._real_post()
+		self.write(self.render_string("basic_header.html", title=self.locale.translate(self.return_name)))
+		for output_key, json in self._output.iteritems():
+			if type(json) != types.ListType:
+				continue
+			self.write("<table><th>#</th>")
+			keys = self.sort_keys(json[0].keys())
+			for key in keys:
+				self.write("<th>%s</th>" % self.locale.translate(key))
+			self.write("</th>")
+			i = 1
+			for row in json:
+				self.write("<tr><td>%s</td>" % i)
+				for key in keys:
+					self.write("<td>%s</td>" % row[key])
+				self.write("</tr>")
+				i = i + 1
+			self.write("</table>")
+		
+	def sort_keys(self, keys):
+		new_keys = []
+		for key in [ "rating_user", "fave", "title", "album_rating_user", "album_name" ]:
+			if key in keys:
+				new_keys.append(key)
+				keys.remove(key)
+		new_keys.extend(keys)
+		return new_keys
+	
+	# no JSON output!!
+	def finish(self):
+		super(APIHandler, self).finish()
+
+	# see initialize, this will override the JSON POST function
+	def post_reject(self):
+		return None
+	
