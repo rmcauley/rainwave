@@ -267,6 +267,15 @@ def create_tables():
 		_create_test_tables()
 
 	c.update(" \
+		CREATE TABLE r4_albums ( \
+			album_id				SERIAL		PRIMARY KEY, \
+			album_name				TEXT		, \
+			album_rating				REAL		DEFAULT 0, \
+			album_rating_count			INTEGER		DEFAULT 0, \
+			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
+		)")
+
+	c.update(" \
 		CREATE TABLE r4_songs ( \
 			song_id					SERIAL		PRIMARY KEY, \
 			song_verified				BOOLEAN		DEFAULT TRUE, \
@@ -330,15 +339,6 @@ def create_tables():
 	# c.create_idx("r4_song_ratings", "song_id")
 	c.create_delete_fk("r4_song_ratings", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_ratings", "phpbb_users", "user_id")
-
-	c.update(" \
-		CREATE TABLE r4_albums ( \
-			album_id				SERIAL		PRIMARY KEY, \
-			album_name				TEXT		, \
-			album_rating				REAL		DEFAULT 0, \
-			album_rating_count			INTEGER		DEFAULT 0, \
-			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
-		)")
 
 	c.update(" \
 		CREATE TABLE r4_album_sid ( \
