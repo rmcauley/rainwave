@@ -371,4 +371,3 @@ class PrettyPrintAPIMixin(object):
 	# see initialize, this will override the JSON POST function
 	def post_reject(self):
 		return None
-	

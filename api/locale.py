@@ -89,10 +89,10 @@ class RainwaveLocale(tornado.locale.Locale):
 			return "[[ " + key + " ]]"
 		line = self.dict[key]
 		for k, i in kwargs.iteritems():
-			line.replace("%(" + k + ")", i)
+			line = line.replace("%(" + k + ")", i)
 			if type(i) == types.IntType or type(i) == types.LongType or type(i) == types.FloatType:
 				if line.find("#(" + k + ")"):
-					line.replace("#(" + k + ")", self.get_suffixed_number(i))
+					line = line.replace("#(" + k + ")", self.get_suffixed_number(i))
 			# TODO: Plurals
 		return line
 	

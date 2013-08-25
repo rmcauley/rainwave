@@ -1,9 +1,10 @@
 import re
+import socket
 from libs import config
 from libs import db
 
 string_error = "must be a string."
-def string(in_string):
+def string(in_string, request = None):
 	if not in_string:
 		return None
 	return string(in_string)
@@ -139,3 +140,57 @@ def integer_list(str, request = None):
 	for entry in str.split(","):
 		l.append(int(entry))
 	return l
+
+# Returns a set of (mount, user_id, listen_key)
+icecast_mount_error = "invalid Icecast origin."
+def icecast_mount(str, request = None):
+	if not str:
+		return None
+	m = re.search(r"^/(?P<mount>[\d\w\-.]+)(\?(?P<user>\d+):(?P<key>[\d\w]+))?(?:\?\d+\.(?:mp3|ogg))?$", str)
+	if not m:
+		return None
+	
+	rd = m.groupdict()
+	mount = rd["mount"]
+	user_id = 1
+	listen_key = None
+	if "user" in rd and rd["user"]:
+		user_id = long(rd["user"])
+		listen_key = rd["key"]
+	return (mount, user_id, listen_key)
+
+ip_address_error = "invalid IP address."
+def ip_address(addr, request = None):
+	if not addr:
+		return None
+	try:
+		socket.inet_aton(addr)
+		return addr
+	except socket.error:
+		return None
+	return None
+
+media_player_error = None
+def media_player(str, request = None):
+	ua = str.lower()
+	if ua.find("foobar"):
+		return "Foobar2000"
+	elif ua.find("winamp"):
+		return "Winamp"
+	elif ua.find("vlc") or ua.find("videolan"):
+		return "VLC"
+	elif ua.find("xine"):
+		return "Xine"
+	elif ua.find("fstream"):
+		return "Fstream"
+	elif ua.find("bass"):
+		return "BASS/XMplay"
+	elif ua.find("xion"):
+		return "Xion"
+	elif ua.find("itunes"):
+		return "iTunes"
+	elif ua.find('muses'):
+		return "Flash Player"
+	elif ua.find('windows'):
+		return "Windows Media"
+	return "Unknown"

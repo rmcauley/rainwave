@@ -3,8 +3,8 @@
     
     "missing_station_id": 		"Missing station ID.",
     "invalid_station_id":		"Invalid station ID.",
-    "missing_argument": 		"Missing %(argument) argument.",
-    "invalid_argument":			"Invalid argument %(argument): %(reason)",
+    "missing_argument": 		"Missing argument: '%(argument)'.",
+    "invalid_argument":			"Invalid argument '%(argument)': %(reason)",
     "auth_required":			"Authorization required.",
     "auth_failed":			"Authorization failed.",
     "login_required":			"Login required.",

@@ -16,5 +16,5 @@ class APIException(HTTPError):
 			self.reason = request_locale.translate(self.tl_key, **self.extra)
 
 	def jsonable(self):
-		self.extra.update({ "success": False, "tl_key": self.key, "text": self.reason })
+		self.extra.update({ "success": False, "tl_key": self.tl_key, "text": self.reason })
 		return self.extra

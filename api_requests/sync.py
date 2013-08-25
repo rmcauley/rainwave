@@ -21,6 +21,8 @@ sessions = {}
 class SyncUpdateAll(APIHandler):
 	local_only = True
 	auth_required = False
+	sid_required = False
+	hidden = True
 			
 	def post(self):
 		self.append("sync_all_result", "Processing.")
@@ -42,8 +44,12 @@ class SyncUpdateAll(APIHandler):
 		
 @handle_api_url("sync_update_user")
 class SyncUpdateUser(APIHandler):
-	sid_required = False
 	local_only = True
+	auth_required = False
+	sid_required = False
+	hidden = True
+	
+	fields = { "sync_user_id": (fieldtypes.integer, True)}
 
 	def post(self):
 		self.append("sync_user_result", "Processing.")
@@ -53,7 +59,7 @@ class SyncUpdateUser(APIHandler):
 			log.debug("sync_update_user", "sync_update_user request was not OK.")
 			return
 
-		user_id = long(self.request.arguments['user_id'])
+		user_id = self.get_argument("sync_user_id")
 		for sid in sessions:
 			for session in sessions[sid]:
 				if session.user.id == user_id:
@@ -64,8 +70,12 @@ class SyncUpdateUser(APIHandler):
 			
 @handle_api_url("sync_update_ip")
 class SyncUpdateIP(APIHandler):
-	sid_required = False
 	local_only = True
+	auth_required = False
+	sid_required = False
+	hidden = True
+	
+	fields = { "ip_address": (fieldtypes.ip_address, True) }
 			
 	def post(self):
 		self.append("sync_ip_result", "Processing.")
@@ -75,7 +85,7 @@ class SyncUpdateIP(APIHandler):
 			log.debug("sync_update_ip", "sync_update_ip request was not OK.")
 			return
 			
-		ip_address = long(self.request.arguments['ip_address'])
+		ip_address = self.get_argument("ip_address")
 		for sid in sessions:
 			for session in sessions[sid]:
 				if session.request.remote_ip == ip_address:

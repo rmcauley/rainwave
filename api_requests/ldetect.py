@@ -1,7 +1,8 @@
 import re
+import time
 
 from api import fieldtypes
-from api.web import APIHandler
+from api.web import RainwaveHandler
 from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
@@ -16,21 +17,13 @@ from backend import sync_to_front
 # Sample Icecast query:
 # &server=myserver.com&port=8000&client=1&mount=/live&user=&pass=&ip=127.0.0.1&agent="My%20player"
 
-class IcecastHandler(APIHandler):
-	sid_required = False
+class IcecastHandler(RainwaveHandler):
 	auth_required = False
+	sid_required = False
 	hidden = True
 	
 	def prepare(self):
-		self.failed = True    # Assume failure unless otherwise told
-		self.user_id = None
-		self.mount = None
-		self.agent = None
-		self.listen_key = None
-		self.user = None
-		self.listener_ip = None
-		# TODO: Scrub listener_ip
-		
+		self.failed = True    # Assume failure unless otherwise
 		self.relay = fieldtypes.valid_relay(self.request.remote_ip)
 		
 		if not self.relay:
@@ -38,43 +31,8 @@ class IcecastHandler(APIHandler):
 			self.append("%s is not a valid relay." % self.request.remote_ip)
 			self.finish()
 			return
+		
 		super(IcecastHandler, self).prepare()
-		
-		if self.get_argument("mount"):
-			m = re.search(r"^/(?P<mount>[\d\w\-.]+)(\?(?P<user>\d+):(?P<key>[\d\w]+))?(?:\?\d+\.(?:mp3|ogg))?$", self.get_argument("mount"))
-			if m:
-				rd = m.groupdict()
-				self.mount = rd["mount"]
-				if "user" in rd and rd["user"]:
-					self.user_id = long(rd["user"])
-					self.listen_key = rd["key"]
-				else:
-					self.user_id = 1
-		
-		if self.get_argument("agent"):	
-			ua = self.get_argument("agent").lower()
-			if ua.find("foobar"):
-				self.agent = "Foobar2000"
-			elif ua.find("winamp"):
-				self.agent = "Winamp"
-			elif ua.find("vlc") or ua.find("videolan"):
-				self.agent = "VLC"
-			elif ua.find("xine"):
-				self.agent = "Xine"
-			elif ua.find("fstream"):
-				self.agent = "Fstream"
-			elif ua.find("bass"):
-				self.agent = "BASS/XMplay"
-			elif ua.find("xion"):
-				self.agent = "Xion"
-			elif ua.find("itunes"):
-				self.agent = "iTunes"
-			elif ua.find('muses'):
-				self.agent = "Flash Player"
-			elif ua.find('windows'):
-				self.agent = "Windows Media"
-			else:
-				self.agent = "Unknown"
 	
 	def finish(self, chunk = None):
 		if self.failed:
@@ -83,7 +41,6 @@ class IcecastHandler(APIHandler):
 		else:
 			self.set_status(200)
 			self.set_header("icecast-auth-user", "1")
-		log.debug("ldetect", "Finish!")
 		super(IcecastHandler, self).finish()
 			
 	def append(self, message):
@@ -94,17 +51,17 @@ class IcecastHandler(APIHandler):
 @handle_api_url("listener_add/(\d+)")		
 class AddListener(IcecastHandler):
 	fields = {
-		"server": (fieldtypes.string, True),
-		"port": (fieldtypes.integer, True),
 		"client": (fieldtypes.integer, True),
-		"mount": (fieldtypes.string, True),
-		"user": (fieldtypes.string, True),
-		"pass": (fieldtypes.string, True),
-		"ip": (fieldtypes.string, True),
-		"agent": (fieldtypes.string, True)
+		"mount": (fieldtypes.icecast_mount, True),
+		"ip": (fieldtypes.ip_address, True),
+		"agent": (fieldtypes.media_player, True)
 	}
 		
 	def post(self, sid):
+		(self.mount, self.user_id, self.listen_key) = self.get_argument("mount")
+		self.agent = self.get_argument("agent")
+		self.listener_ip = self.get_argument("ip")
+		
 		sid = 1
 		if self.user_id > 1:
 			self.add_registered(int(sid))
@@ -158,24 +115,26 @@ class AddListener(IcecastHandler):
 			self.append("Anonymous user from IP %s record updated." % self.get_argument("ip"))
 			self.failed = False
 			
-@handle_api_url("listener_remove")
+# TODO: Remove the (\d+) here, it's for the misconfigured beta relay
+@handle_api_url("listener_remove/(\d+)")
 class RemoveListener(IcecastHandler):
 	fields = {
 		"client": (fieldtypes.integer, True),
 	}
 
-	def post(self):
-		listener = db.c.fetchrow("SELECT user_id, listener_ip FROM r4_listeners WHERE listener_icecast_id = %s AND list_relay = %s",
-								 (self.get_argument("relay"), self.get_argument("client")))
+	def post(self, sid):
+		listener = db.c.fetch_row("SELECT user_id, listener_ip FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
+								 (self.relay, self.get_argument("client")))
 		if not listener:
-			return self.append("No user record to delete for client %s on relay %s." % (self.get_argument("relay"), self.get_argument("client")))
+			return self.append("No user record to delete for client %s on relay %s." % (self.relay, self.get_argument("client")))
 
-		db.c.update("UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_icecast_id = %s AND listener_relay = %s", (self.get_argument("relay"), self.get_argument("client")))
-		db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s", (time.time(), listener['user_id']))
-		self.append("User ID %s relay %s flagged for removal." % (self.get_argument("client"), self.get_argument("relay")))
+		db.c.update("UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_relay = %s AND listener_icecast_id = %s", (self.relay, self.get_argument("client")))
 		if listener['user_id'] > 1:
-			sync_to_front.sync_frontend_user_id(listener['user_id'])
+			self.append("User ID %s flagged for removal." % (listener['user_id'],))
+			db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s", (time.time(), listener['user_id']))
 			cache.set_user(listener['user_id'], "listener_record", None)
+			sync_to_front.sync_frontend_user_id(listener['user_id'])
 		else:
+			self.append("Anonymous user, client ID %s relay %s flagged for removal." % (self.get_argument("client"), self.relay))
 			sync_to_front.sync_frontend_ip(listener['listener_ip'])
 		self.failed = False
