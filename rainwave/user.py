@@ -81,7 +81,7 @@ class User(object):
 				if not api_key in self._get_all_api_keys():
 					log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
 					return
-			if not api_key in keys:
+			elif not api_key in keys:
 				log.debug("auth", "Invalid user ID %s and/or API key %s from cache." % (self.id, api_key))
 				return
 
@@ -363,7 +363,6 @@ class User(object):
 		self.data['api_key'] = api_key
 
 	def generate_api_key(self, ip_address = None, expiry = None):
-		# TODO: Delete expired anonymous API keys
 		api_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
 		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_ip) VALUES (%s, %s, %s, %s)", (self.id, api_key, expiry, ip_address))
 		# this function updates the API key cache for us

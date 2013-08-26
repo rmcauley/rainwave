@@ -42,6 +42,7 @@ class KeyDelete(KeyIndex):
 
 	def get(self):
 		db.c.update("DELETE FROM r4_api_keys WHERE user_id = %s AND api_id = %s", (self.user.id, self.get_argument("delete_key")))
+		self.user._get_all_api_keys()
 		super(KeyDelete, self).get()
 
 @handle_url("/keys/create")

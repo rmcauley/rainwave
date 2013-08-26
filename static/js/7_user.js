@@ -62,7 +62,7 @@ var user = function() {
 			'radio_request_expiresat': json['radio_request_expires_at'],			
 			'radio_tunedin': json['radio_tuned_in'],
 			'api_key': json['api_key'],
-			'current_activity_allowed': json['listener_lock_in_effect'] ? false : true,
+			'current_activity_allowed': !json['radio_tuned_in'] || json['listener_lock_in_effect'] ? false : true,
 			'radio_statrestricted': json['listener_lock_in_effect']
 		};			
 		// END TRANSLATE

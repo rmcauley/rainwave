@@ -1125,7 +1125,7 @@ function _THEME() {
 
 			wdow.albumarttd = createEl("td", { "class": "pl_ad_albumart_td" }, tr);
 			if (json.art) {
-				createEl("img", { "src": json.art + "-120.jpg", "class": "pl_ad_albumart" }, wdow.albumarttd);
+				createEl("img", { "src": json.art + "_120.jpg", "class": "pl_ad_albumart" }, wdow.albumarttd);
 			}
 			else {
 				if (user.p.sid == 2) createEl("img", { "src": skindir + "/images/noart_2.jpg", "class": "pl_ad_albumart" }, wdow.albumarttd);
