@@ -46,7 +46,9 @@ def load_translations():
 			
 def compile_static_language_files():
 	global translations
-	
+
+	buildtools.create_baked_directory()
+
 	for locale, translation in translations.iteritems():
 			f = codecs.open(os.path.join(os.path.dirname(__file__), "../static/baked/", str(buildtools.get_build_number()), locale + ".js"), "w", encoding="utf-8")
 			f.write(u'\u4500')

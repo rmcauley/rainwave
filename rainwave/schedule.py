@@ -135,9 +135,8 @@ def post_process(sid):
 	_update_memcache(sid)
 
 	# must do this AFTER memcache gets updated, for hopefully obvious reasons
-	if not config.test_mode:
-		sync_to_front.sync_frontend_all(sid)
-	
+	sync_to_front.sync_frontend_all(sid)
+
 def _add_listener_count_record(sid):
 	lc_guests = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1", (sid,))
 	lc_users = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1", (sid,))
