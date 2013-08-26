@@ -89,12 +89,10 @@ class User(object):
 		# Pay attention to the "AS _variable" names in the SQL fields, they won't get exported to private JSONable dict
 		self.authorized = True
 		user_data = None
-		# user_data = cache.get_user(self, "db_data")
 		if not user_data:
 			user_data = db.c_old.fetch_row("SELECT user_id, username, user_new_privmsg, user_avatar, user_avatar_type AS _user_avatar_type, radio_listenkey AS radio_listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings "
 					"FROM phpbb_users WHERE user_id = %s",
 					(self.id,))
-			cache.set_user(self, "db_data", user_data)
 		self.data.update(user_data)
 			
 		if self.data['_user_avatar_type'] == 1:
@@ -346,7 +344,6 @@ class User(object):
 		
 	def update(self, hash):
 		self.data.update(hash)
-		# TODO: Update listener's cache record
 
 	def generate_listen_key(self):
 		listen_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))

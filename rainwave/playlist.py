@@ -1068,20 +1068,15 @@ class Album(AssociatedMetadata):
 	
 	def update_all_user_ratings(self):
 		db.c.update(
-			# TODO: The statistically minded Rainwavers will likely notice and object
-			# to this query.  The "ratings" subquery does not DISTINCT ON song_id so that each
-			# song's rating is only picked up once, it's likely that the song ratings are
-			# being picked up multiple times here
-			# TODO: if I make this GROUP BY song_id, album_id, etc will it provide the desired result
-			# or do we need yet ANOTHER subquery to make sure this one behaves?
 			"WITH "
 				"faves AS ( "
 					"DELETE FROM r4_album_ratings WHERE album_id = %s RETURNING * "
 				"), "
 				"ratings AS ( "
 					"SELECT album_id, FALSE AS album_fave, user_id, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user "
-					"FROM r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) "
-					"WHERE r4_song_sid.album_id = %s "
+					"FROM ("
+						"SELECT DISTINCT song_id, album_id FROM r4_song_sid WHERE album_id = %s"
+					") AS r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) "
 					"GROUP BY album_id, user_id "
 				") "
 			"INSERT INTO r4_album_ratings (album_id, user_id, album_fave, album_rating_user) "
@@ -1167,10 +1162,7 @@ class Artist(AssociatedMetadata):
 		pass
 
 	def load_all_songs(self, sid, user_id = None):
-		# I'm not going to provide a list of Song objects here because the overhead of that could easily spiral out of control
-		# TODO: if you want, make this also deliver songs that don't belong on this station
-		# TODO: also break this out into 2 queries, one to deliver to users, one to anon uesrs
-		# this one currently covers both but will have a (small) speed impact on anon users
+		# I'm not going to provide a list of Song objects here because the overhead of that would spiral out of control
 		self.data['songs'] = db.c.fetch_all(
 			"SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, "
 				"r4_song_sid.album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, "

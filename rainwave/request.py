@@ -91,6 +91,8 @@ def get_next(sid):
 			u.remove_from_request_line()
 			if u.has_requests():
 				u.put_in_request_line(u.get_top_request_sid())
+			# Update the user's request cache
+			u.get_requests()
 			cache.set_station(sid, "request_line", line, True)
 			# TODO: request_at_rank, request_at_count
 			db.c.update("DELETE FROM r4_request_store WHERE song_id = %s AND user_id = %s", (song.id, u.id))
