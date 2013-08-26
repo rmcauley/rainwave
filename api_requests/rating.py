@@ -19,7 +19,7 @@ class SubmitRatingRequest(APIHandler):
 	unlocked_listener_only = False
 	description = "Rate a song."
 	fields = {
-		"song_id": (fieldtypes.integer, True),
+		"song_id": (fieldtypes.song_id, True),
 		"rating": (fieldtypes.rating, True)
 	}
 	
@@ -42,7 +42,7 @@ class SubmitRatingRequest(APIHandler):
 class ClearRating(SubmitRatingRequest):
 	description = "Erase a rating."
 	fields = {
-		"song_id": (fieldtypes.integer, True)
+		"song_id": (fieldtypes.song_id, True)
 	}
 	
 	def post(self):

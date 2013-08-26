@@ -21,7 +21,7 @@ class SubmitRequest(APIHandler):
 	unlocked_listener_only = False
 	description = "Submit a request for a song."
 	fields = {
-		"song_id": (fieldtypes.integer, True)
+		"song_id": (fieldtypes.song_id, True)
 	}
 	
 	def post(self):
@@ -39,7 +39,7 @@ class DeleteRequest(APIHandler):
 	tunein_required = False
 	unlocked_listener_only = False
 	fields = {
-		"song_id": (fieldtypes.integer, True)
+		"song_id": (fieldtypes.song_id, True)
 	}
 	
 	def post(self):

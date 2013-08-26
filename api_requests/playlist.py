@@ -31,43 +31,34 @@ class AllAlbumsHandler(APIHandler):
 class ArtistHandler(APIHandler):
 	description = "Get detailed information about an artist."
 	return_name = "artist"
-	fields = { "id": (fieldtypes.positive_integer, True) }
+	fields = { "id": (fieldtypes.artist_id, True) }
 
 	def post(self):
-		try:
-			artist = playlist.Artist.load_from_id(self.get_argument("id"))
-			artist.load_all_songs(self.sid, self.user.id)
-			self.append("artist", artist.to_dict(self.user))
-		except playlist.MetadataNotFoundError:
-			self.append("error", { "code": "404", "description": "Artist not found." })
+		artist = playlist.Artist.load_from_id(self.get_argument("id"))
+		artist.load_all_songs(self.sid, self.user.id)
+		self.append("artist", artist.to_dict(self.user))
 
 @handle_api_url("album")
 class AlbumHandler(APIHandler):
 	description = "Get detailed information about an album, including a list of songs in the album."
 	return_name = "album"
-	fields = { "id": (fieldtypes.positive_integer, True) }
+	fields = { "id": (fieldtypes.album_id, True) }
 
 	def post(self):
-		try:
-			album = playlist.Album.load_from_id_with_songs(self.get_argument("id"), self.sid, self.user)
-			album.load_extra_detail(self.sid)
-			self.append("album", album.to_dict(self.user))
-		except playlist.MetadataNotFoundError:
-			self.append("error", { "code": "404", "description": "Album not found." })
+		album = playlist.Album.load_from_id_with_songs(self.get_argument("id"), self.sid, self.user)
+		album.load_extra_detail(self.sid)
+		self.append("album", album.to_dict(self.user))
 
 @handle_api_url("song")
 class SongHandler(APIHandler):
 	description = "Get detailed information about a song."
 	return_name = "song"
-	fields = { "id": (fieldtypes.positive_integer, True) }
+	fields = { "id": (fieldtypes.song_id, True) }
 
 	def post(self):
-		try:
-			song = playlist.Song.load_from_id(self.get_argument("id"), self.sid)
-			song.load_extra_detail()
-			self.append("song", song.to_dict(self.user))
-		except playlist.SongNonExistent:
-			self.append("error", { "code": "404", "description": "Song not found." })
+		song = playlist.Song.load_from_id(self.get_argument("id"), self.sid)
+		song.load_extra_detail()
+		self.append("song", song.to_dict(self.user))
 
 @handle_api_url("all_songs")
 class AllSongsHandler(APIHandler):
