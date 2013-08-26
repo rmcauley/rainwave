@@ -5,7 +5,6 @@ from api.exceptions import APIException
 from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
-import api.returns
 
 from libs import cache
 from libs import log
