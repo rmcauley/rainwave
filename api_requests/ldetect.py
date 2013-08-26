@@ -42,6 +42,10 @@ class IcecastHandler(RainwaveHandler):
 			self.set_status(200)
 			self.set_header("icecast-auth-user", "1")
 		super(IcecastHandler, self).finish()
+		
+	def write_error(self, status_code, **kwargs):
+		self.failed = True
+		super(IcecastHandler, self).finish()
 			
 	def append(self, message):
 		log.debug("ldetect", message)

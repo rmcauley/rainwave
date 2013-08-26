@@ -5,6 +5,7 @@ import time
 import re
 import traceback
 import types
+import hashlib
 
 from rainwave.user import User
 from rainwave.playlist import SongNonExistent
@@ -210,7 +211,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if cookie_session:
 			if cookie_session == db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s AND session_id = %s", (user_id, cookie_session)):
 				return cookie_session
-		db_session = db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s ORDER BY session_last_visit DESC LIMIT 1", (self.user.id,))
+		db_session = db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s ORDER BY session_last_visit DESC LIMIT 1", (user_id,))
 		return db_session
 
 	def _update_phpbb_session(self, user_id = None):
@@ -354,6 +355,7 @@ class PrettyPrintAPIMixin(object):
 				self.write("</tr>")
 				i = i + 1
 			self.write("</table>")
+		self.write(self.render_string("basic_footer.html"))
 		
 	def sort_keys(self, keys):
 		new_keys = []

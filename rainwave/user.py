@@ -68,22 +68,22 @@ class User(object):
 			self._auth_anon_user(ip_address, api_key, bypass)
 		if self.authorized:
 			self.refresh()
-
+			
+	def _get_all_api_keys(self):
+		keys = db.c.fetch_list("SELECT api_key FROM r4_api_keys WHERE user_id = %s ", (self.id,))
+		cache.set_user(self, "api_keys", keys)
+		return keys
+	
 	def _auth_registered_user(self, ip_address, api_key, bypass = False):
 		if not bypass:
-			# TODO: Users can have multiple keys, should we cache them all?
-			key = cache.get_user(self, "api_key")
-			if not key:
-				key = db.c.fetch_row("SELECT api_key, api_is_rainwave FROM r4_api_keys WHERE user_id = %s AND api_key = %s", (self.id, api_key))
-				if not key:
+			keys = cache.get_user(self, "api_keys")
+			if not keys:
+				if not api_key in self._get_all_api_keys():
 					log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
 					return
-				cache.set_user(self, "api_key", key)
-			if key['api_key'] != api_key:
+			if not api_key in keys:
 				log.debug("auth", "Invalid user ID %s and/or API key %s from cache." % (self.id, api_key))
 				return
-			if key['api_is_rainwave']:
-				self._official_ui = True
 
 		# Set as authorized and begin populating information
 		# Pay attention to the "AS _variable" names in the SQL fields, they won't get exported to private JSONable dict
@@ -357,16 +357,18 @@ class User(object):
 		if self.id == 1 and ip_address:
 			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (ip_address,))
 			if not api_key:
-				api_key = self.generate_api_key(True, ip_address, int(time.time()) + 86400)
+				api_key = self.generate_api_key(ip_address, int(time.time()) + 86400)
 		elif self.id > 1:
 			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = %s", (self.id,))
 			if not api_key:
-				api_key = self.generate_api_key(True)
+				api_key = self.generate_api_key()
 		# DO NOT USE self.update, we don't want this value in memcache or it'll get sucked into future request (which could expose it to other clients)
 		self.data['api_key'] = api_key
 
-	def generate_api_key(self, is_rainwave = False, ip_address = None, expiry = 0):
+	def generate_api_key(self, ip_address = None, expiry = None):
 		# TODO: Delete expired anonymous API keys
 		api_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
-		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_is_rainwave, api_expiry, api_ip) VALUES (%s, %s, %s, %s, %s)", (self.id, api_key, is_rainwave, expiry, ip_address))
+		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_ip) VALUES (%s, %s, %s, %s)", (self.id, api_key, expiry, ip_address))
+		# this function updates the API key cache for us
+		self._get_all_api_keys()
 		return api_key

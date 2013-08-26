@@ -33,6 +33,13 @@
     "unknown_error_message":		"Sorry about that.  Please try again, or file a bug with the debug information below.  (this error has been logged)",
     "debug_information":		"Debug information:",
     
+    "__comment__": "API Key Management",
+    
+    "api_key_manager":			"API Key Manager",
+    "api_key":				"API Key",
+    "qr_code":				"QR Code",
+    "create_api_key":			"Create API Key",
+    
     "__comment__": "Pretty Printed API Page Words",
     
     "unrated_songs":			"Unrated Songs",

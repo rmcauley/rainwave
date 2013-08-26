@@ -590,7 +590,6 @@ def create_tables():
 			user_id					INTEGER		NOT NULL, \
 			api_ip					TEXT		, \
 			api_key					VARCHAR(10) , \
-			api_is_rainwave				BOOLEAN		DEFAULT FALSE, \
 			api_expiry				INTEGER		\
 		)")
 	# c.create_idx("r4_api_keys", "user_id")		# handled by create_delete_fk
@@ -659,9 +658,9 @@ def _create_test_tables():
 def _fill_test_tables():
 	# Anonymous user
 	c.update("INSERT INTO phpbb_users (user_id, username) VALUES (1, 'Anonymous')")
-	c.update("INSERT INTO r4_api_keys (user_id, api_key, api_is_rainwave, api_ip) VALUES (1, 'TESTKEY', TRUE, '127.0.0.1')")
+	c.update("INSERT INTO r4_api_keys (user_id, api_key, api_ip) VALUES (1, 'TESTKEY', '127.0.0.1')")
 
 	# User ID 2: site admin
 	c.update("INSERT INTO phpbb_users (user_id, username, group_id) VALUES (2, 'Test', 5)")
-	c.update("INSERT INTO r4_api_keys (user_id, api_key, api_is_rainwave) VALUES (2, 'TESTKEY', TRUE)")
+	c.update("INSERT INTO r4_api_keys (user_id, api_key) VALUES (2, 'TESTKEY')")
 
