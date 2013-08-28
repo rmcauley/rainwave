@@ -74,10 +74,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			value = repr(value)
 		super(RainwaveHandler, self).set_cookie(name, value, **kwargs)
 		
-	def get_argument(self, name):
+	def get_argument(self, name, default=None):
 		if name in self.cleaned_args:
 			return self.cleaned_args[name]
-		return super(RainwaveHandler, self).get_argument(name)
+		return super(RainwaveHandler, self).get_argument(name, default)
 	
 	def set_argument(self, name, value):
 		self.cleaned_args[name] = value
