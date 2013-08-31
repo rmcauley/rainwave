@@ -91,11 +91,22 @@ class RainwaveLocale(tornado.locale.Locale):
 			return "[[ " + key + " ]]"
 		line = self.dict[key]
 		for k, i in kwargs.iteritems():
-			line = line.replace("%(" + k + ")", i)
+			if "%(" + k + ")" in line:
+				line = line.replace("%(" + k + ")", str(i))
 			if type(i) == types.IntType or type(i) == types.LongType or type(i) == types.FloatType:
-				if line.find("#(" + k + ")"):
+				if "#(" + k + ")" in line:
 					line = line.replace("#(" + k + ")", self.get_suffixed_number(i))
-			# TODO: Plurals
+				plural_check = "&(" + k + ":"
+				if plural_check in line:
+					found_plural = line.find(plural_check)
+					whole_plural = line[found_plural:line.find(")", found_plural) + 1]
+					single_plural = whole_plural[0:-1].split(":", 1)[1]
+					if not "/" in single_plural:
+						return "[[" + k + " plural error ]]"
+					if i == 1:
+						line = line.replace(whole_plural, single_plural.split("/", 1)[0])
+					else:
+						line = line.replace(whole_plural, single_plural.split("/", 1)[1])
 		return line
 	
 	def get_suffixed_number(self, number):
@@ -104,3 +115,4 @@ class RainwaveLocale(tornado.locale.Locale):
 		for i in range(0, len(number) - 1):
 			if ("suffix_" + number[i:]) in self.dict:
 				return number + self.dict['suffix_'+ number[i:]]
+		return number
