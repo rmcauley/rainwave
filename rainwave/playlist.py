@@ -960,6 +960,9 @@ class Album(AssociatedMetadata):
 				do_reconciliation = True
 				db.c.update("UPDATE r4_song_sid SET album_id = %s WHERE song_id = %s AND sid = %s", (self.id, song_id, sid))
 		if do_reconciliation:
+			# Update the cached number of songs this album has
+			num_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s) AS temp", (album_id,))
+			db.c.update("UPDATE r4_albums SET album_song_count = %s WHERE album_id = %s", (num_songs, self.id))
 			self.reconcile_sids()
 
 	def disassociate_song_id(self, song_id):

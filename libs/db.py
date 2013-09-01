@@ -268,7 +268,8 @@ def create_tables():
 			album_name				TEXT		, \
 			album_rating				REAL		DEFAULT 0, \
 			album_rating_count			INTEGER		DEFAULT 0, \
-			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
+			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
+			album_song_count			SMALLINT		DEFAULT 0, \
 		)")
 
 	c.update(" \

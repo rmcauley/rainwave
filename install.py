@@ -39,9 +39,9 @@ shutil.copy("rw_backend.py", "/opt/rainwave/rw_backend.py")
 shutil.copy("rw_scanner.py", "/opt/rainwave/rw_scanner.py")
 shutil.copy("rw_clear_cache.py", "/opt/rainwave/rw_clear_cache.py")
 shutil.copy("rw_get_next.py", "/opt/rainwave/rw_get_next.py")
-# TODO: What to do with tagset.py?
 
 shutil.copy("initscript", "/etc/init.d/rainwave")
 shutil.copy("rw_get_next.py", "/usr/local/bin/rw_get_next.py")
+shutil.copy("tagset.py", "/usr/local/bin/tagset.py")
 
 subprocess.check_call([ "/etc/init.d/rainwave", "start" ])
