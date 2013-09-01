@@ -1,4 +1,6 @@
 import tornado.web
+import tornado.ioloop
+import datetime
 
 from api import fieldtypes
 from api.web import APIHandler
@@ -13,9 +15,6 @@ from libs import log
 from rainwave import playlist
 
 sessions = {}
-
-# TODO: Could we place something here to make use of RequestHandler.flush?
-# Maybe it'd help those unstable connections.
 
 @handle_api_url("sync_update_all")
 class SyncUpdateAll(APIHandler):
@@ -106,6 +105,8 @@ class Sync(APIHandler):
 	@tornado.web.asynchronous
 	def post(self):
 		global sessions
+		self.keep_alive_handle = None
+		
 		self.set_header("Content-Type", "application/json")
 		if "init" in self.request.arguments:
 			self.update()
@@ -113,8 +114,11 @@ class Sync(APIHandler):
 			if not self.user.request_sid in sessions:
 				sessions[self.user.request_sid] = []
 			sessions[self.user.request_sid].append(self)
+			self.keep_alive()
 		
 	def update(self):
+		if self.keep_alive_handle:
+			tornado.ioloop.IOLoop.instance().remove_timeout(self.keep_alive_handle)
 		api_requests.info.attach_info_to_request(self)
 		self.finish()
 	
@@ -122,3 +126,7 @@ class Sync(APIHandler):
 		self.user.refresh()
 		self.append("user", self.user.to_private_dict())
 		self.finish()
+
+	def keep_alive(self):
+		self.write(" ")
+		self.keep_alive_handle = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=20), self.keep_alive)

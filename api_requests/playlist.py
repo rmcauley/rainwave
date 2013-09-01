@@ -94,8 +94,7 @@ class UnratedSongsHandler(APIHandler):
 @handle_api_html_url("unrated_songs")
 class UnratedSongsHTML(PrettyPrintAPIMixin, UnratedSongsHandler):
 	pass
-		
-# TODO: Cache this maybe?
+
 @handle_api_url("top_100")
 class Top100Songs(APIHandler):
 	description = "Get the 100 highest-rated songs on the station."
