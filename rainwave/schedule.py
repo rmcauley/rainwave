@@ -182,9 +182,9 @@ def set_next_start_times(sid):
 	Calibrate the start points of each scheduled event until we reach the number of future elections planned.
 	This has not been fully tested and will likely require some tweaking to be done in the future.
 	"""
-	# TODO: Code review, I'm sure this function will break corner cases
 	if len(next[sid]) == 0 or config.get_station(sid, "num_planned_elections") == 0:
 		return
+	# TODO: Code review, I'm sure this function will break corner cases
 	num_elections = 0
 	i = 1
 	# Next event will definitely start next

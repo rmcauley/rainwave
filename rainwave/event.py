@@ -441,11 +441,11 @@ class Election(Event):
 	def set_priority(self, priority):
 		# Do not update the actual local priority variable, that may be needed for sorting purposes
 		# (e.g. sorting algorithms that will happen AFTER this is called)
-		# TODO: fix those stupid algorithms that need this to not be changed locally
 		if priority:
 			db.c.update("UPDATE r4_elections SET elec_priority = TRUE WHERE elec_id = %s", (self.id,))
 		else:
 			db.c.update("UPDATE r4_elections SET elec_priority = FALSE WHERE elec_id = %s", (self.id,))
+		self.priority = priority
 			
 	def to_dict(self, user = None):
 		obj = super(Election, self).to_dict(user)
