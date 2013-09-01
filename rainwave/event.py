@@ -384,15 +384,6 @@ class Election(Event):
 		# If we're ready for a request sequence, start one
 		return_value = None
 		if _request_interval[self.sid] <= 0 and _request_sequence[self.sid] <= 0:
-			# TODO: Make the sequence and interval not start/reset until a request is actually fulfilled
-			# (this code does no checks to make sure a request is actually going in, it's only responsible
-			#  for starting both, not the greatest thing - BE CAREFUL how you fix this as it could cause
-			#  problems for classes inheriting/overwriting where interval and sequence are handled)
-			line_length = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_line WHERE sid = %s", (self.sid,))
-			log.debug("requests", "Ready for sequence, line length %s" % line_length)
-			_request_sequence[self.sid] = 1 + math.floor(line_length / config.get_station(self.sid, "request_sequence_scale"))
-			_request_interval[self.sid] = config.get_station(self.sid, "request_interval")
-			log.debug("requests", "Sequence length: %s" % _request_sequence[self.sid])
 			return_value = True
 		# If we are in a request sequence, do one
 		elif _request_sequence[self.sid] > 0:
@@ -407,11 +398,20 @@ class Election(Event):
 		cache.set_station(self.sid, "request_interval", _request_interval[self.sid])
 		cache.set_station(self.sid, "request_sequence", _request_sequence[self.sid])
 		return return_value
+	
+	def reset_request_sequence(self):
+		if _request_interval[self.sid] <= 0 and _request_sequence[self.sid] <= 0:
+			line_length = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_line WHERE sid = %s", (self.sid,))
+			log.debug("requests", "Ready for sequence, line length %s" % line_length)
+			_request_sequence[self.sid] = 1 + math.floor(line_length / config.get_station(self.sid, "request_sequence_scale"))
+			_request_interval[self.sid] = config.get_station(self.sid, "request_interval")
+			log.debug("requests", "Sequence length: %s" % _request_sequence[self.sid])
 		
 	def get_request(self):
 		song = request.get_next(self.sid)
 		if not song:
 			return None
+		self.reset_request_sequence()
 		song.data['entry_type'] = ElecSongTypes.request
 		return song		
 		
