@@ -89,9 +89,6 @@ def get_next(sid):
 			u = User(entry['user_id'])
 			db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (u.id, entry['song_id']))
 			u.remove_from_request_line()
-			# TODO: Move this to after a request finishes playing
-			if u.has_requests():
-				u.put_in_request_line(u.get_top_request_sid())
 			# Update the user's request cache
 			u.get_requests()
 			cache.set_station(sid, "request_line", line, True)

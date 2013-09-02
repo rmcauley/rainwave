@@ -8,6 +8,7 @@ from libs import cache
 from libs import log
 from rainwave import playlist
 from rainwave import request
+from rainwave import user
 
 """
 Election.create
@@ -281,17 +282,26 @@ class Election(Event):
 			self.add_song(song)
 			
 	def _check_song_for_conflict(self, song):
-		## TODO: Why doesn't this check for sid?  Needs to be completely rewritten and reviewed!
-		#requesting_user = db.c.fetch_var("SELECT username "
-		#	"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN r4_request_store USING (user_id) JOIN phpbb_users USING (user_id) "
-		#	"WHERE r4_listeners.sid = %s AND r4_request_line.sid = r4_listeners.sid AND song_id = %s "
-		#	"ORDER BY line_wait_start LIMIT 1",
-		#	(self.sid, song.id))
-		#if requesting_user:
-		#	# TODO: Have this stop a request being added to an election
-		#	song.data['entry_type'] = ElecSongTypes.request
-		#	song.data['request_username'] = requesting_user
-		#	return True
+		requesting_user = db.c.fetch_row("SELECT username, phpbb_users.user_id "
+			"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN r4_request_store USING (user_id) JOIN phpbb_users USING (user_id) "
+			"WHERE r4_listeners.sid = %s AND r4_request_line.sid = r4_listeners.sid AND song_id = %s "
+			"ORDER BY line_wait_start LIMIT 1",
+			(self.sid, song.id))
+		if requesting_user:
+			song.data['entry_type'] = ElecSongTypes.request
+			song.data['request_username'] = requesting_user['username']
+			song.data['request_user_id'] = requesting_user['user_id']
+			return True
+		
+		# THE CODE BELOW DOES NOT FUNCTION WELL
+		# After thinking about it I simply decided to remove it
+		# It's not the most important thing to show to the user, and the vast majority of users
+		# don't know what it is or are simply confused by it.
+		# In an effort to simply it all, I've just decided to make users with conflicts
+		# suffer the loss and move on.
+		#
+		# The election system itself will avoid a first-pick conflict for a user anyway.
+		# Good enough in my books.
 		#if song.albums and len(song.albums) > 0:
 		#	for album in song.albums:
 		#		conflicting_user = db.c.fetch_var("SELECT username "
@@ -325,10 +335,14 @@ class Election(Event):
 				for song_result in results:
 					if song_result['song_id'] == song.id:
 						song.data['entry_votes'] = song_result['entry_votes']
-					# Auto-votes for somebody's request
-					if song.data['entry_type'] == ElecSongTypes.request:
-						if db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (song.data['elec_request_user_id'], self.id)) == 0:
-							song.data['entry_votes'] += 1
+				# Auto-votes for somebody's request
+				if song.data['entry_type'] == ElecSongTypes.request:
+					if db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (song.data['elec_request_user_id'], self.id)) == 0:
+						song.data['entry_votes'] += 1
+					# be careful that this code doesn't get lost if you're inheriting/overwriting
+					u = User.load_from_id(song.data['elec_request_user_id'])
+					if u.has_requests():
+						u.put_in_request_line(u.get_top_request_sid())
 			random.shuffle(self.songs)
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_votes'])
