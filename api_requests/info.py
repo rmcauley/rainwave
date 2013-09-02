@@ -37,7 +37,6 @@ def attach_info_to_request(request, playlist = False, artists = False):
 	sched_current = {}
 	if request.user:
 		request.append("requests", request.user.get_requests())
-		# TODO: Some mixing of pre-dictionaried items here might help speed...?
 		sched_current = cache.get_station(request.sid, "sched_current").to_dict(request.user)
 		for evt in cache.get_station(request.sid, "sched_next"):
 			sched_next.append(evt.to_dict(request.user))

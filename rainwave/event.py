@@ -439,8 +439,6 @@ class Election(Event):
 			self.songs[0].start_cooldown(self.sid)
 	
 	def set_priority(self, priority):
-		# Do not update the actual local priority variable, that may be needed for sorting purposes
-		# (e.g. sorting algorithms that will happen AFTER this is called)
 		if priority:
 			db.c.update("UPDATE r4_elections SET elec_priority = TRUE WHERE elec_id = %s", (self.id,))
 		else:
