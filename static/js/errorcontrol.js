@@ -1,4 +1,3 @@
-// TODO: Finish standardizing API4 error handling, then redo this file
 var errorcontrol = function() {
 	var that = {};
 	var errors = {};
@@ -15,58 +14,16 @@ var errorcontrol = function() {
 	};
 	
 	that.setupCallbacks = function() {
-		lyre.addCallback(that.lyreError, "error");
-		lyre.addCallback(that.clearError2, "user");
-		lyre.addCallback(that.genericR4Result, "request_result");
-		lyre.addCallback(that.voteresult, "vote_result");
-		lyre.addCallback(that.rateresult, "rate_result");
-		lyre.addCallback(that.requestorderresult, "requests_reorder_result");
-		lyre.addCallback(that.genericError, "event_add_result");
-		lyre.addCallback(that.genericError, "event_delete_result");
-		lyre.addCallback(that.genericError, "event_start_result");
-		lyre.addCallback(that.genericError, "event_end_result");
-		lyre.addCallback(that.genericError, "oneshot_add_result");
-		lyre.addCallback(that.genericError, "oneshot_delete_result");
-		lyre.addCallback(that.genericError, "force_candidate_new_result");
-		lyre.addCallback(that.genericError, "force_candidate_delete_result");
-		lyre.addCallback(that.genericError, "admin_playlist_refresh_result");
-		lyre.addCallback(that.genericError, "admin_change_song_multiplier_result");
+		// only for permanently displayed stuff
+		lyre.addCallback(that.permanentHandler, "station_offline");
 	};
 	
-	that.genericError = function(json) {
-		if ((typeof(json.code) != "undefined") && json.text) {
-			that.doError(json.code, false, false, json.text, 2000);
-		}
-	};
-	
-	that.genericR4Result = function(json) {
-		// TODO: Use translation keys for error clearing instead of codes
-		if (json.code != 1) {
-			that.genericR4Error(json);
-		}
-		else if (json.code == 1) {
-			that.doError(json.code, false, "err_div_ok", _l(json.key), 1250);
-		}
+	that.permanentHandler = function(json) {
+		that.doError(json.tl_key, true);
 	};
 	
 	that.genericR4Error = function(json) {
-		if (json.code != 1) {
-			that.doError(json.code, false, false, json.text, 2000);
-		}
-	};
-	
-	that.lyreError = function(json) {
-		if (json.code) {
-			var perm = false;
-			var text = false;
-			if (json.code == 2) perm = true;
-			else if (json.code == 403) {
-				if (user.p.user_id == 1) text = _l("log_403_anon");
-				else text = _l("log_403_reg");
-				perm = true;
-			}
-			that.doError(json.code, perm, false, text);
-		}
+		that.doError(json.tl_key);
 	};
 	
 	that.doError = function(code, permanent, overrideclass, overridetext, overridetime) {
@@ -149,34 +106,6 @@ var errorcontrol = function() {
 	
 	that.deleteError = function(error) {
 		BODY.removeChild(error.el);
-	};
-	
-	that.clearError2 = function(garbage) {
-		that.clearError(2);
-	};
-	
-	that.requestnewresult = function(json) {
-		if (json.code == 1) {
-			that.doError(3500, false, "err_div_ok", _l("requestok"), 1250);
-		}
-	};
-	
-	that.voteresult = function(json) {
-		if ((typeof(json.code) != "undefined") && (json.code != 700)) {
-			that.doError(json.code);
-		}
-	};
-	
-	that.rateresult = function(json) {
-		if ((typeof(json.code) != "undefined") && (json.code <= 0)) {
-			that.doError(7000 + Math.abs(json.code));
-		}
-	};
-	
-	that.requestorderresult = function(json) {
-		if ((typeof(json.code) != "undefined") && (json.code <= 0)) {
-			that.doError(8000 + Math.abs(json.code));
-		}
 	};
 	
 	that.jsError = function(err, json) {

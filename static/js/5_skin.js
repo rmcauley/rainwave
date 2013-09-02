@@ -1550,7 +1550,7 @@ function _THEME() {
 
 			obj.text = document.createElement("span");
 
-			if (!overridetext) _l("log_" + code, false, obj.text);
+			if (!overridetext) _l(code, false, obj.text);
 			else obj.text.textContent = overridetext;
 			obj.el.appendChild(obj.text);
 

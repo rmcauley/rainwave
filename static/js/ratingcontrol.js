@@ -13,11 +13,11 @@ var ratingcontrol = function() {
 		if (result.song_id) {
 			for (var i in callbacks) {
 				if ((callbacks[i].category == "song") && (callbacks[i].id == result.song_id)) {
-					if (result.code == 1) callbacks[i].ratingConfirm(result.rating_user);
+					if (result.code == 0) callbacks[i].ratingConfirm(result.rating_user);
 					else callbacks[i].ratingBad(result.rating_user);
 				}
 			}
-			if ((result.code == 1) && result.updated_album_ratings) {
+			if ((result.code == 0) && result.updated_album_ratings) {
 				for (var h in result.updated_album_ratings) {
 					for (var i in callbacks) {
 						if ((callbacks[i].category == "album") && (callbacks[i].id == result.updated_album_ratings[h].id)) {
@@ -27,7 +27,7 @@ var ratingcontrol = function() {
 				}
 			}
 		}
-		if (result.code == 1) help.continueTutorialIfRunning("ratecurrentsong");
+		if (result.code == 0) help.continueTutorialIfRunning("ratecurrentsong");
 	};
 	
 	that.cleanCallbacks = function() {
@@ -65,7 +65,7 @@ var ratingcontrol = function() {
 				}
 			}
 		}
-		if (result.code == 1) help.continueTutorialIfRunning("setfavourite");
+		if (result.code == 0) help.continueTutorialIfRunning("setfavourite");
 	};
 	
 	that.historyUpdate = function(result) {

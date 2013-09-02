@@ -206,9 +206,14 @@ var lyre = function() {
 			}
 		}
 		if (sched_synced) performCallback({}, "sched_sync");
+		
+		if (('success' in json) && (!json.success)) {
+			errorcontrol.genericR4Error(json);
+		}
 	};
 
 	var performCallback = function(json, segment) {
+		// R4-to-R3 translation hack
 		if ("success" in json) {
 			json["code"] = json["success"] ? 0 : -1;
 		}

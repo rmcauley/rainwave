@@ -194,7 +194,7 @@ panels.TimelinePanel = {
 		};
 		
 		that.voteResultHandle = function(json) {
-			if ((json.code != 700) && ("entry_id" in json)) {
+			if ((json.code != 0) && ("entry_id" in json)) {
 				for (var i = 0; i < that.allevents.length; i++) {
 						if (that.allevents[i].p.sched_id == json.elec_id) {
 								that.allevents[i].registerFailedVote(json.entry_id);	
@@ -202,7 +202,7 @@ panels.TimelinePanel = {
 				}
 				
 			}
-			else if (json.code == 700) {
+			else if (json.code == 0) {
 				for (var i = 0; i < that.allevents.length; i++) {
 						if (that.allevents[i].p.sched_id == json.elec_id) {
 								that.allevents[i].registerVote(json.entry_id);

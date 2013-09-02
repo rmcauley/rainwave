@@ -47,7 +47,7 @@ class IndexRequest(tornado.web.RequestHandler):
 			if issubclass(handler, api.web.PrettyPrintAPIMixin):
 				prettyprint_requests[url] = handler
 			elif issubclass(handler, api.web.APIHandler):
-				if not handler.hidden and not handler.local_only:
+				if config.get("developer_mode") or (not handler.hidden and not handler.local_only):
 					self.write_class_properties(url, handler)
 			else:
 				other_requests[url] = handler

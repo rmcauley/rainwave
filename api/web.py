@@ -258,7 +258,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	
 	def append_standard(self, tl_key, text = None, success = True, **kwargs):
 		if not text:
-			text = self.locale.translate(tl_key, kwargs)
+			text = self.locale.translate(tl_key, **kwargs)
 		kwargs.update({ "success": success, "tl_key": tl_key, "text": text })
 		self.append(self.return_name, kwargs)
 	
