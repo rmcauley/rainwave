@@ -554,7 +554,6 @@ def create_tables():
 			request_fulfilled_at			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 			request_wait_time			INTEGER		, \
 			request_line_size			INTEGER		, \
-			request_at_rank				INTEGER		, \
 			request_at_count			INTEGER		\
 		)")
 	# c.create_idx("r4_request_history", "user_id")		# handled by create_delete_fk
