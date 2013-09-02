@@ -10,9 +10,6 @@ c = None
 connection = None
 c_old = None
 
-# TODO: Deal with PostgreSQL deadlocks once and for all
-# Trap  psycopg2.extensions.TransactionRollbackError
-
 # NOTE TO ALL:
 #
 # SQLite is UNUSABLE for production.  It is ONLY meant for testing

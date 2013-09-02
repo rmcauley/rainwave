@@ -1,4 +1,5 @@
 import os
+import psycopg2
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
@@ -14,16 +15,27 @@ from libs import chuser
 from libs import cache
 
 class AdvanceScheduleRequest(tornado.web.RequestHandler):
+	retried = False
+
 	def get(self, sid):
-		self.sid = None
 		self.success = False
+		self.sid = None
 		if int(sid) in config.station_ids:
 			self.sid = int(sid)
+		else:
+			return
+
+		try:			
 			schedule.advance_station(self.sid)
-			if not config.get("liquidsoap_annotations"):
-				self.write(schedule.get_current_file(self.sid))
-			else:
-				self.write(self._get_annotated(schedule.get_current_event(self.sid)))
+		except psycopg2.extensions.TransactionRollbackError as e:
+			if not self.retried:
+				self.retried = True
+				tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(milliseconds=350), self.get)
+		
+		if not config.get("liquidsoap_annotations"):
+			self.write(schedule.get_current_file(self.sid))
+		else:
+			self.write(self._get_annotated(schedule.get_current_event(self.sid)))
 		self.success = True
 				
 	def _get_annotated(self, e):

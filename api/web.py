@@ -291,6 +291,8 @@ class APIHandler(RainwaveHandler):
 				self.append(self.return_name, exc.jsonable())
 			elif exc.__class__.__name__ == "SongNonExistent":
 				self.append("error", { "tl_key": "song_does_not_exist", "text": self.locale.translate("song_does_not_exist") })
+			elif exc.__class__.__name__ == "TransactionRollbackError":
+				self.append("error", { "tl_key": "internal_error", "text": self.locale.translate("internal_error") } )
 			else:
 				self.append("error", { "tl_key": "internal_error", "text": repr(exc) })
 		else:
