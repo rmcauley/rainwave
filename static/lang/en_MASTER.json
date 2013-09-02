@@ -27,6 +27,7 @@
     "same_request_exists":		"Same request exists.",
     "same_request_album":		"You already requested a song from this album.",
     "song_not_requested":		"Song not requested.",
+    "station_offline":			"This station is currently offline.  Please check back later.",
     
     "already_voted_for_song":		"Already voted for that song.",
 

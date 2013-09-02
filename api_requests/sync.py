@@ -3,6 +3,7 @@ import tornado.ioloop
 import datetime
 
 from api import fieldtypes
+from api.exceptions import APIException
 from api.web import APIHandler
 from api.server import test_get
 from api.server import test_post
@@ -108,6 +109,9 @@ class Sync(APIHandler):
 	
 	@tornado.web.asynchronous
 	def post(self):
+		if not cache.get_station(self.user.request_sid, "backend_ok"):
+			raise APIException("station_offline")
+		
 		global sessions
 		self.keep_alive_handle = None
 		
@@ -121,12 +125,18 @@ class Sync(APIHandler):
 			self.keep_alive()
 		
 	def update(self):
+		if not cache.get_station(self.user.request_sid, "backend_ok"):
+			raise APIException("station_offline")
+
 		if self.keep_alive_handle:
 			tornado.ioloop.IOLoop.instance().remove_timeout(self.keep_alive_handle)
 		api_requests.info.attach_info_to_request(self)
 		self.finish()
 	
 	def update_user(self):
+		if not cache.get_station(self.user.request_sid, "backend_ok"):
+			raise APIException("station_offline")
+		
 		self.user.refresh()
 		self.append("user", self.user.to_private_dict())
 		self.finish()
