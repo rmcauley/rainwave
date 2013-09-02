@@ -186,15 +186,14 @@ def set_next_start_times(sid):
 	"""
 	if len(next[sid]) == 0 or config.get_station(sid, "num_planned_elections") == 0:
 		return
-	# TODO: Code review, I'm sure this function will break corner cases
-	num_elections = 0
 	i = 1
-	# Next event will definitely start next
-	next[sid][0].start = current[sid].start_actual + current[sid].length()
-	while (num_elections < config.get_station(sid, "num_planned_elections")) and (i < len(next[sid])):
-		next[sid][i].start = next[sid][i - 1].start + next[sid][i - 1].length()
-		if next[sid][i].is_election:
-			num_elections += 1
+	next[sid][0].start_predicted = current[sid].start_actual + current[sid].length()
+	while (i < len(next[sid])):
+		if ((next[sid][i].start_predicted - next[sid][i - 1].start_predicted) <= 30) or next[sid][i].is_election:
+			next[sid][i].start_predicted = next[sid][i - 1].start_predicted + next[sid][i - 1].length()
+			i += 1
+		else:
+			break
 	
 def _create_elections(sid):
 	# Step, er, 0: Update the request cache first, so elections have the most recent data to work with

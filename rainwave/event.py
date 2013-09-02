@@ -76,6 +76,7 @@ class Event(object):
 		evt.id = db.c.get_next_id("r4_schedule", "sched_id")
 		evt.start = start
 		evt.start_actual = None
+		evt.start_predicted = None
 		evt.end = end
 		if type:
 			evt.type = type
@@ -98,6 +99,8 @@ class Event(object):
 	def __init__(self):
 		self.id = None
 		self.start = None
+		self.start_actual = None
+		self.start_predicted = None
 		self.produces_elections = False
 		self.dj_user_id = None
 		self.use_crossfade = True
@@ -156,7 +159,8 @@ class Event(object):
 		obj = {
 			"id": self.id,
 			"start": self.start,
-			"start_actual": self.start_actual, 
+			"start_actual": self.start_actual,
+			"start_predicted": self.start_predicted,
 			"end": self.end,
 			"type": self.type,
 			"name": self.name,
@@ -205,6 +209,7 @@ class Election(Event):
 		elec.used = row['elec_used']
 		elec.start = None
 		elec.start_actual = row['elec_start_actual']
+		elec.start_predicted = None
 		elec.in_progress = row['elec_in_progress']
 		elec.sid = row['sid']
 		elec.songs = []
