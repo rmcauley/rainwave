@@ -87,11 +87,15 @@ class SyncUpdateIP(APIHandler):
 		ip_address = self.get_argument("ip_address")
 		for sid in sessions:
 			for session in sessions[sid]:
-				if session.request.remote_ip == ip_address:
+				if session.user.is_anonymous() and session.request.remote_ip == ip_address:
 					log.debug("sync_update_ip", "Updating IP %s" % ip_address)
 					session.update_user()
 					sessions[sid].remove(session)
 					return
+				elif session.request.remote_ip == ip_address:
+					log.debug("sync_update_ip", "Warning logged in user of potential mixup at IP %s" % ip_address)
+					if session.anon_registered_mixup_warn():
+						sessions[sid].remove(session)
 
 @handle_api_url("sync")
 class Sync(APIHandler):
@@ -130,3 +134,11 @@ class Sync(APIHandler):
 	def keep_alive(self):
 		self.write(" ")
 		self.keep_alive_handle = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=20), self.keep_alive)
+		
+	def anon_registered_mixup_warn(self):
+		self.user.refresh()
+		if not self.user.is_anonymous() and not self.user.is_tunedin():
+			self.append_standard("redownload_m3u")
+			return True
+		return False
+	

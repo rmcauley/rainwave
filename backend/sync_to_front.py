@@ -35,7 +35,6 @@ def sync_frontend_ip(ip_address):
 		http_client.fetch("http://localhost:%s/api4/sync_update_ip" % (config.get("api_base_port") + i,), sync_result, method='POST', body=params)
 
 def sync_frontend_user_id(user_id):
-	# TODO: Syncing a front-end user should ALSO search for an IP just in case the user hasn't redownloaded their M3U
 	http_client = AsyncHTTPClient()
 	params = urllib.urlencode({ "sync_user_id": user_id })
 	for i in range(0, config.get("api_num_processes")):

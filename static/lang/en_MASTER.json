@@ -47,6 +47,10 @@
     "album_name":			"Album Name",
     "id":				"ID",
     
+    "__comment__": "Other",
+    
+    "redownload_m3u":			"Are you tuning in?  If you just logged in, please redownload the playlist.",
+    
     "__comment__": "The following are the old R3 translation lines, which will be replaced.  Some day. :(",
     
     "station_description_id_1": 	"Streaming Video Game Music Radio.  Vote for the song you want to hear!",
