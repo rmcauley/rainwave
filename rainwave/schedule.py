@@ -53,7 +53,9 @@ def load():
 		history[sid] = cache.get_station(sid, "sched_history")
 		if not history[sid]:
 			history[sid] = []
-			# TODO: Load schedule/election history here in case of cache failure
+			# Only loads elections but this should be good enough for history 99% of the time.
+			for elec_id in db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE elec_start_actual < %s ORDER BY elec_start_actual DESC LIMIT 5", (current[sid].start_actual,)):
+				history[sid].insert(0, event.Election.load_by_id(elec_id))
 		
 		long_history[sid] = cache.get_station(sid, "long_history")
 		if not long_history[sid]:
