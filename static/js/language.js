@@ -1,93 +1,97 @@
-// Pass just "line" to receive a straight string back from the language file
-// Pass "line" and "object" to receive a translated string with variables filled in
+// Pass just "key" to receive a straight string back from the language file
+// Pass "key" and "args" to receive a translated string with variables filled in
 // Pass an element and the el will be filled with <span>s of each chunk of string
 //    Variables will be given class "lang_[line]_[variablename]" when filling in variables
-function _l(line, object, el, keep) {
-	if (!object && !el) {
-		if (lang[line]) {
-			if (el) {
-				if (!keep) while (el.hasChildNodes()) el.removeChild(el.firstChild);
-				createEl("span", { "textContent": lang[line] }, el);
-			}
-			return lang[line];
+function _l(key, args, el, keep) {
+	var parts = _tl_core(key, args);
+	
+	if (el && !keep) {
+		while (el.hasChildNodes()) {
+			el.removeChild(el.firstChild);
 		}
-		else return "|*" + line + "*|";
 	}
-	if ((typeof(lang[line]) != "undefined")) {
-		if (!object) object = {};
-		if (el && !keep) {
-			while (el.hasChildNodes()) el.removeChild(el.firstChild);
+	
+	var text = "";
+	for (var i = 0; i < parts.length; i++) {
+		text += parts[i].text;
+		if (el && parts[i].arg_key) {
+			createEl("span", { "textContent": parts[i].text, "class": "lang_" + key + "_" + parts[i].arg_key}, el);
 		}
-		var keystart = 0;
-		var keyend = lang[line].indexOf("|");
-		var key = false;
-		var key2 = false;
-		var word = false;
-		var span;
-		var str;
-		var wholestr = "";
-		var classname;
-		while (keyend != -1) {
-			str = undefined;
-			classname = "lang_" + line;
-			key = lang[line].substr(keystart, (keyend - keystart));
-			if (key == "br" && el) {
-				createEl("br", false, el);
-				createEl("br", false, el);
-			}
-			else if (key.substr(0, 2) == "S:") {
-				if (typeof(object[key.substr(2)]) != "undefined") {
-					classname += " lang_" + line + "_" + key.substr(2);
-					str = _lSuffixNumber(object[key.substr(2)])
-				}
-				else {
-					str = "|*" + key.substr(2) + "*|";
-				}
-			}
-			else if (key.substr(0, 2) == "P:") {
-				key2 = key.substr(2, key.indexOf(",") - 2);
-				word = key.substr(key.indexOf(",") + 1);
-				if (typeof(object[key2]) != "undefined") {
-					classname += " lang_" + line + "_" + word;
-					str = _lPlural(object[key2], word);
-				}
-				else {
-					str = "|*" + key2 + "*|";
-				}
-			}
-			else if (typeof(object[key]) != "undefined") {
-				classname += " lang_" + line + "_" + key;
-				str = object[key];
-			}
-			else {
-				str = key;
-			}
-			if (typeof(str) != "undefined") {
-				if (el) createEl("span", { "textContent": str, "class": classname }, el);
-				wholestr += str;
-			}
-			keystart = keyend + 1;
-			keyend = lang[line].indexOf("|", keystart);
+		else if (el) {
+			createEl("span", { "textContent": parts[i].text }, el);
 		}
-		if (keystart == 0) {
-			classname = "lang_" + line;
-			if (el) createEl("span", { "textContent": lang[line], "class": classname }, el);
-			wholestr = lang[line];
-		}
-		else {
-			classname = "lang_" + line;
-			str = lang[line].substr(keystart);
-			if (str > "") {
-				if (el) createEl("span", { "textContent": str, "class": classname }, el);
-				wholestr += str;
-			}
-		}
-		return wholestr;
 	}
-	else return "[*" + line + "*]";
+	return text;
+
 }
 
-function _lSuffixNumber(number) {
+function _tl_core(key, args) {
+	// returns a list of { text, arg_key } objects for processing usage
+	if (!key in lang) {
+		return [ { "text": "[[ " + key + " ]]", "arg_key": null } ];
+	}
+	
+	var line = lang[key];
+	if (!args) return [ { "text": line, "arg_key": null } ];
+	
+	var parts = [];
+	while (line.length > 0) {
+		var var_found = line.indexOf("%(");
+		var suffix_found = line.indexOf("#(");
+		var plural_found = line.indexOf("&(");
+		
+		// I feel so dirty but if we don't do this, the not-found strings will always come first
+		var_found = var_found === -1 ? 100000 : var_found;
+		suffix_found = suffix_found === -1 ? 100000 : suffix_found;
+		plural_found = plural_found === -1 ? 100000 : plural_found;
+		
+		if ((var_found !== 100000) && (var_found < suffix_found) && (var_found < plural_found)) {
+			arg_key = line.substr(var_found + 2, line.indexOf(")", var_found) - (var_found + 2));
+			if (arg_key in args) {
+				parts.push({ "text": line.substr(0, var_found), "arg_key": null });
+				parts.push({ "text": args[arg_key], "arg_key": arg_key });
+				line = line.substr(line.indexOf(")", var_found) + 1);
+			}
+		}
+		
+		else if ((suffix_found !== 100000) && (suffix_found < var_found) && (suffix_found < plural_found)) {
+			arg_key = line.substr(suffix_found + 2, line.indexOf(")", suffix_found) - (suffix_found + 2));
+			if (arg_key in args) {
+				parts.push({ "text": line.substr(0, suffix_found), "arg_key": null });
+				parts.push({ "text": _get_suffixed_number(args[arg_key]), "arg_key": arg_key });
+				line = line.substr(line.indexOf(")", suffix_found) + 1);
+			}
+		}
+		
+		else if ((plural_found !== 100000) && (plural_found < var_found) && (plural_found < suffix_found)) {
+			arg_key = line.substr(plural_found + 2, line.indexOf(")", plural_found) - (plural_found + 2));
+			if (arg_key in args) {
+				parts.push({ "text": line.substr(0, plural_found), "arg_key": null });
+				
+				var whole_plural = line.substr(plural_found + 2 + arg_key.length + 1);
+				whole_plural = line.substr(0, whole_plural.indexOf(")"));
+				if (whole_plural.indexOf("/") === -1) {
+					parts.push({ "text": "[[ plural error: " + arg_key + " ]]", "arg_key": null });
+				}
+				else if (args[arg_key] === 1) {
+					parts.push({ "text": whole_plural.split("/", 1)[0], "arg_key": arg_key });
+				}
+				else {
+					parts.push({ "text": whole_plural.split("/", 1)[1], "arg_key": arg_key });
+				}
+				
+				line = line.substr(line.indexOf(")", plural_found) + 1);
+			}
+		}
+		else {
+			parts.push({ "text": line, "arg_key": null })
+			line = "";
+		}
+	}
+	return parts;
+}
+
+function  _get_suffixed_number(number) {
 	if (("suffix_" + number) in lang) return number + lang["suffix_" + number];
 	var key;
 	for (var i = 100; i >= 10; i = i / 10) {
@@ -95,10 +99,4 @@ function _lSuffixNumber(number) {
 		if (key in lang) return number + lang[key];
 	}
 	return number;
-}
-
-function _lPlural(number, word) {
-	if ((number > 1) && (number != 0)) word += "_p";
-	if (typeof(lang[word]) != "undefined") return lang[word];
-	else return "[*" + word + "*]";
 }

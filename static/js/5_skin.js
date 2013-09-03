@@ -850,14 +850,14 @@ function _THEME() {
 
 			menup.td_forums = createEl("li", { "class": "menu_forums" }, menup.sub_menu);
 			var forumlink = linkify(createEl("a", { "target": "_blank", "href": "http://rainwave.cc/forums" }), true);
-			_l("forums", {}, forumlink);
+			_l("forums", null, forumlink);
 			menup.td_forums.appendChild(forumlink);
 
 			menup.td_chat = createEl("li", { "class": "menu_chat" }, menup.sub_menu);
 			var chatlink = linkify(createEl("a", { "textContent": _l("chat") }), false, true);
 			chatlink.addEventListener("click", menup.openChat, true);
 			// _l needs to be called with element due to wikipedia-style external link images
-			_l("chat", {}, chatlink);
+			_l("chat", null, chatlink);
 			menup.td_chat.appendChild(chatlink);
 
 			menup.station_list = createEl("ul", { "class": "station_list" }, station_td);
@@ -1105,7 +1105,7 @@ function _THEME() {
 			}
 			else if (json.genres.length > 1) {
 				tmp = document.createElement("div");
-				_l("pl_genres", {}, tmp);
+				_l("pl_genres", null, tmp);
 				var span = createEl("span", {}, tmp);
 				var maxgenres = json.genres.length;
 				var maxhit = false;

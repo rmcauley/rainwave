@@ -210,13 +210,13 @@ var help = function() {
 	that.changeHelpDiv = function(data, container, laststep) {
 		if (container.h) container.div.removeChild(container.h);
 		container.h = createEl("div", { "class": "help_header" });
-		_l(data.h, {}, container.h);
+		_l(data.h, null, container.h);
 		container.div.appendChild(container.h);
 
 		if (container.p) container.div.removeChild(container.p);
 		if (data.p) {
 			container.p = createEl("div", { "class": "help_paragraph" });
-			_l(data.p, {}, container.p);
+			_l(data.p, null, container.p);
 			container.div.appendChild(container.p);
 		}
 		else if (data.pf) {
@@ -225,13 +225,13 @@ var help = function() {
 		
 		if (container.next) {
 			if (alltopicsshown == 2) {
-				_l("helpstart", {}, container.next);
+				_l("helpstart", null, container.next);
 			}
 			else if (laststep) {
-				_l("helplast", {}, container.next);
+				_l("helplast", null, container.next);
 			}
 			else {
-				_l("helpnext", {}, container.next);
+				_l("helpnext", null, container.next);
 			}
 		}
 		
