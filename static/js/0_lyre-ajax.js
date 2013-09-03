@@ -118,7 +118,7 @@ var lyre = function() {
 				else eval("response = " + sync.responseText);
 			}
 			catch(err) {
-				that.errorCallback({ "code": 500, "text": "Error decoding JSON from API." });
+				that.errorCallback("internal_error");
 			}
 			if (response) {
 				sync_on = true;
@@ -129,7 +129,7 @@ var lyre = function() {
 		else if (sync.readyState == 4) {
 			errorcount++;
 			if (errorcount > 1) {
-				response = [ { "error": { "code": sync.status, "text": "HTTP Error.  Synchronization has stopped." } } ];
+				response = [ { "error": { "tl_key": "internal_error" } } ];
 				performCallbacks(response);
 			}
 			synctimeout = 5000;
@@ -164,7 +164,7 @@ var lyre = function() {
 			if (response) performCallbacks(response);
 		}
 		else if (async.readyState == 4) {
-			response = [ { "error": { "code": async.status, "text": "HTTP Error on asynchronous request." } } ];
+			response = [ { "error": { "tl_key": "internal_error" } } ];
 			performCallbacks(response);
 		}
 

@@ -16,7 +16,7 @@ class SubmitRatingRequest(APIHandler):
 	login_required = True
 	tunein_required = False
 	unlocked_listener_only = False
-	description = "Rate a song."
+	description = "Rate a song.  The user must have been tuned in for this song to rate it, or they must be tuned in if it's the currently playing song."
 	fields = {
 		"song_id": (fieldtypes.song_id, True),
 		"rating": (fieldtypes.rating, True)
@@ -32,8 +32,9 @@ class SubmitRatingRequest(APIHandler):
 			if not song_id in acl or not self.user.id in acl[song_id]:
 				self.append_standard("cannot_rate_now")
 				return
-		if not self.user.is_tunedin():
+		elif not self.user.is_tunedin():
 			self.append_standard("tunein_to_rate_current_song")
+			return
 		albums = ratinglib.set_song_rating(song_id, self.user.id, rating)
 		self.append_standard("rating_submitted", updated_album_ratings = albums, song_id = song_id, rating_user = rating)
 	

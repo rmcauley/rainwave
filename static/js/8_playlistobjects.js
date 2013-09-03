@@ -53,6 +53,7 @@ var Song = {
 			"song_urltext": json['link_text'],
 			"song_oa_multiplier": json['cool_multiply'],
 			"song_requestor": json['elec_request_username'],
+			"rating_allowed": json['rating_allowed'],
 
 			"elec_entry_id": json['entry_id'],
 			"elec_position": json['entry_position'],

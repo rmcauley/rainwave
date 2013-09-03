@@ -129,7 +129,7 @@ panels.TimelinePanel = {
 				else that.lastevents[i].hideHeader();
 				that.lastevents[i].disableVoting();
 				that.lastevents[i].clockRemove();
-				if (user.p.current_activity_allowed && that.lastevents[i].p.user_wastunedin) {
+				if (that.lastevents[i].p.song_data[0].rating_allowed) {
 					that.lastevents[i].enableRating();
 				}
 				else {

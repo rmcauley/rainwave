@@ -345,6 +345,7 @@ class Song(object):
 		self.data = {}
 		self.data['link'] = None
 		self.data['link_text'] = None
+		self.data['rating_allowed'] = False
 		self.fake = False
 
 	def load_tag_from_file(self, filename):
@@ -642,6 +643,8 @@ class Song(object):
 		self.data['fave'] = False
 		if user:
 			self.data.update(rating.get_song_rating(self.id, user.id))
+			if user.data['radio_rate_anything']:
+				self.data['rating_allowed'] = True
 		return self.data
 
 	def get_all_ratings(self):
@@ -658,6 +661,15 @@ class Song(object):
 
 	def add_to_vote_count(self, votes, sid):
 		return db.c.update("UPDATE r4_song_sid SET song_vote_total = song_vote_total + %s WHERE song_id = %s AND sid = %s", (votes, self.id, sid))
+	
+	def check_rating_acl(self, user_id):
+		if self.data['rating_allowed']:
+			return
+		acl = cache.get_station(self.sid, "user_rating_acl")
+		if self.id in acl and user_id in acl[self.id]:
+			self.data['rating_allowed'] = True
+		else:
+			self.data['rating_allowed'] = False
 
 # ################################################################### ASSOCIATED DATA TEMPLATE
 

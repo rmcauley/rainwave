@@ -128,7 +128,7 @@ def post_process(sid):
 	_create_elections(sid)
 		
 	_add_listener_count_record(sid)
-	cache.update_user_rating_acl(sid, current[sid].get_song().id)
+	cache.update_user_rating_acl(sid, history[sid][0].get_song().id)
 	_trim(sid)
 	user.trim_listeners(sid)
 	user.unlock_listeners(sid)

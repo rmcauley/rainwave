@@ -155,7 +155,7 @@ class Event(object):
 	def get_dj_user_id(self):
 		return self.dj_user_id
 		
-	def to_dict(self, user = None):
+	def to_dict(self, user = None, **kwargs):
 		obj = {
 			"id": self.id,
 			"start": self.start,
@@ -464,7 +464,7 @@ class Election(Event):
 			db.c.update("UPDATE r4_elections SET elec_priority = FALSE WHERE elec_id = %s", (self.id,))
 		self.priority = priority
 			
-	def to_dict(self, user = None):
+	def to_dict(self, user = None, check_rating_acl = False, **kwargs):
 		obj = super(Election, self).to_dict(user)
 		obj['used'] = self.used
 		obj['length'] = self.length()
@@ -476,6 +476,8 @@ class Election(Event):
 			obj['end'] = 0
 		obj['songs'] = []
 		for song in self.songs:
+			if check_rating_acl:
+				song.check_rating_acl(user.id)
 			obj['songs'].append(song.to_dict(user))
 		return obj
 		
@@ -531,7 +533,7 @@ class OneUp(Event):
 	def length(self):
 		return self.songs[0].length
 	
-	def to_dict(self, user = None):
+	def to_dict(self, user = None, **kwargs):
 		obj = super(OneUp, self).to_dict(user)
 		obj['songs'] = [ self.songs[0].to_dict(user) ]
 		return obj
