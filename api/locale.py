@@ -6,7 +6,7 @@ import tornado.locale
 
 from libs import buildtools
 
-"""
+locale_explanation = """
 Rainwave Localization Formatting
 
 RW localizations are stored in a JSON file and use the following syntax:
@@ -41,7 +41,7 @@ def load_translations():
 			if file == "en_MASTER.json":
 				continue
 			f = codecs.open(os.path.join(os.path.dirname(__file__), "../static/lang/", file), "r", encoding="utf-8")
-			translations[file[:-5]] = RainwaveLocale(file[:-5], dict(master.items() + json.load(f).items()))
+			translations[file[:-5]] = RainwaveLocale(file[:-5], master, json.load(f))
 			f.close()
 			
 def compile_static_language_files():
@@ -82,9 +82,14 @@ class RainwaveLocale(tornado.locale.Locale):
 		
 		return translations['en_CA']	
 	
-	def __init__(self, code, translation):
-		self.dict = translation
+	def __init__(self, code, master, translation):
+		self.dict = dict(master.items() + translation.items())
 		self.code = code
+		
+		self.missing = {}
+		for k, v in master.iteritems():
+			if not translation.has_key(k):
+				self.missing[k] = v
 	
 	def translate(self, key, **kwargs):
 		if not key in self.dict:

@@ -151,6 +151,19 @@ def integer_list(str, request = None):
 		l.append(int(entry))
 	return l
 
+# Careful, this one could get expensive with all the song ID queries
+song_id_list_error = "must be a comma-separated list of valid song IDs."
+def song_id_list(str, request = None):
+	if not str:
+		return None
+	l = integer_list(str)
+	if not l:
+		return None
+	for song_id in l:
+		if db.c.fetch_var("SELECT COUNT(*) FROM r4_songs WHERE song_id = %s AND song_verified = TRUE", (song_id,)) == 0:
+			return None
+	return l
+
 # Returns a set of (mount, user_id, listen_key)
 icecast_mount_error = "invalid Icecast origin."
 def icecast_mount(str, request = None):
