@@ -6,7 +6,6 @@ from libs import db
 
 all_returned = {}
 listener_ids = {}
-stream_names = [ None, "game", "ocremix", "covers", "chiptune", "all" ]
 
 def _process():
 	global all_returned
@@ -54,6 +53,10 @@ class IcecastSyncCallback(object):
 
 def start_icecast_sync():
 	global all_returned
+	
+	stream_names = {}
+	for sid in config.station_ids:
+		stream_names[sid] = config.get_station(sid)['stream_filename']
 	
 	if all_returned:
 		log.warn("icecast_sync", "Previous operation did not finish!")

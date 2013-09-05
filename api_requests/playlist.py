@@ -13,6 +13,7 @@ from libs import cache
 from libs import log
 from libs import db
 from rainwave import playlist
+from api_requests import tune_in
 
 def get_all_albums(sid, user = None):
 	if not user or user.is_anonymous():
@@ -184,16 +185,13 @@ class StationsRequest(APIHandler):
 	sid_required = False
 
 	def post(self):
-		stream_auth = ""
-		if self.user:
-			stream_auth = "?{}:{}".format(self.user.id, self.user.data["radio_listen_key"])
 		station_list = []
 		for station_id in config.station_ids:
 			station_list.append({
 				"id": station_id,
-				"name": config.get_station(station_id, "name"),
-				"description": config.get_station(station_id, "description"),
-				"stream": config.get_station(station_id, "stream") + stream_auth,
-				"oggstream": config.get_station(station_id, "oggstream") + stream_auth
+				"name": config.station_id_friendly[station_id],
+				"description": self.locale.translate("station_description_id_1"),
+				"stream": tune_in.get_round_robin_url(station_id, "mp3", self.user),
+				"oggstream": tune_in.get_round_robin_url(station_id, "ogg", self.user)
 			})
 		self.append(self.return_name, station_list)

@@ -8,10 +8,20 @@ import api.web
 from rainwave.user import User
 from libs import config
 
+def get_round_robin_url(sid, filetype, user = None):
+	return "http://%s/%s\n" % (config.get_station(sid, "round_robin_relay_host"), get_stream_filename(sid, filetype, user))
+
+def get_stream_filename(sid, filetype, user = None):
+	filename = config.get_station(self.output_sid, "stream_filename")
+	
+	if user.is_anonymous():
+		return "%s.%s" % (filename, filetype)
+	else:
+		return "%s.%s?%s:%s" % (filename, filetype, user.id, user.data['radio_listen_key'])
+
 @handle_url("/tune_in/(\w+|\d)\.(ogg|mp3)")
 class TuneInIndex(api.web.HTMLRequest):
 	output_sid = None
-	filename = None
 	after_the_slash = None
 	
 	def prepare(self):
@@ -36,19 +46,15 @@ class TuneInIndex(api.web.HTMLRequest):
 		if not self.output_sid in config.station_ids:
 			raise tornado.web.HTTPError(404)
 		
-		self.filename = config.station_id_friendly[self.output_sid].lower()
-		self.set_header("Content-Disposition", "inline; filename=\"rainwave_%s.m3u\"" % self.filename);
-		
-		if self.user.is_anonymous():
-			self.after_the_slash = "%s.%s" % (self.filename, filetype)
-		else:
-			self.after_the_slash = "%s.%s?%s:%s" % (self.filename, filetype, self.user.id, self.user.data['radio_listen_key'])
+		self.after_the_slash = get_stream_filename(self.output_sid, self.user)
+	
+		self.set_header("Content-Disposition", "inline; filename=\"rainwave_%s_%s.m3u\"" % (config.station_id_friendly[self.output_sid].lower(), filetype))
 	
 	def get(self, url_param, filetype):
 		self.set_sid(url_param, filetype)
 		
 		self.write("#EXTINF:0,Rainwave %s: %s\n" % (config.station_id_friendly[self.output_sid], self.locale.translate("random_relay")))
-		self.write("http://%s/%s\n" % (config.get_station(self.output_sid, "round_robin_relay_host"), self.after_the_slash))
+		self.write()
 		
 		for relay_name, relay in config.get("relays").iteritems():
 			if self.output_sid in relay['sids']:
