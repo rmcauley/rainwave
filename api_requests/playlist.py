@@ -8,6 +8,7 @@ from api.server import test_post
 from api.server import handle_api_url
 from api.server import handle_api_html_url
 
+from libs import config
 from libs import cache
 from libs import log
 from libs import db
@@ -174,3 +175,25 @@ class StationSongCountRequest(APIHandler):
 		self.append(self.return_name, db.c.fetch_all(
 			"SELECT song_origin_sid AS sid, COUNT(song_id) AS song_count "
 			"FROM r4_songs WHERE song_verified = TRUE GROUP BY song_origin_sid"))
+
+@handle_api_url("stations")
+class StationsRequest(APIHandler):
+	description = "Get information about all available stations."
+	auth_required = False
+	return_name = "stations"
+	sid_required = False
+
+	def post(self):
+		stream_auth = ""
+		if self.user:
+			stream_auth = "?{}:{}".format(self.user.id, self.user.data["radio_listen_key"])
+		station_list = []
+		for station_id in config.station_ids:
+			station_list.append({
+				"id": station_id,
+				"name": config.get_station(station_id, "name"),
+				"description": config.get_station(station_id, "description"),
+				"stream": config.get_station(station_id, "stream") + stream_auth,
+				"oggstream": config.get_station(station_id, "oggstream") + stream_auth
+			})
+		self.append(self.return_name, station_list)
