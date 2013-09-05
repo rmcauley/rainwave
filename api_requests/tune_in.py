@@ -12,7 +12,7 @@ def get_round_robin_url(sid, filetype, user = None):
 	return "http://%s/%s\n" % (config.get_station(sid, "round_robin_relay_host"), get_stream_filename(sid, filetype, user))
 
 def get_stream_filename(sid, filetype, user = None):
-	filename = config.get_station(self.output_sid, "stream_filename")
+	filename = config.get_station(sid, "stream_filename")
 	
 	if user.is_anonymous():
 		return "%s.%s" % (filename, filetype)
@@ -21,9 +21,6 @@ def get_stream_filename(sid, filetype, user = None):
 
 @handle_url("/tune_in/(\w+|\d)\.(ogg|mp3)")
 class TuneInIndex(api.web.HTMLRequest):
-	output_sid = None
-	after_the_slash = None
-	
 	def prepare(self):
 		super(TuneInIndex, self).prepare()
 		self.set_header("Content-Type", "audio/x-mpegurl")
@@ -36,27 +33,27 @@ class TuneInIndex(api.web.HTMLRequest):
 			if not url_param_int:
 				for k, v in config.station_id_friendly.iteritems():
 					if v.lower() == url_param.lower():
-						self.output_sid = k
+						self.sid = k
 						break
 			else:
-				self.output_sid = url_param_int
+				self.sid = url_param_int
 
-		if not self.output_sid:
+		if not self.sid:
 			raise tornado.web.HTTPError(404)
-		if not self.output_sid in config.station_ids:
+		if not self.sid in config.station_ids:
 			raise tornado.web.HTTPError(404)
-		
-		self.after_the_slash = get_stream_filename(self.output_sid, self.user)
 	
-		self.set_header("Content-Disposition", "inline; filename=\"rainwave_%s_%s.m3u\"" % (config.station_id_friendly[self.output_sid].lower(), filetype))
+		self.set_header("Content-Disposition", "inline; filename=\"rainwave_%s_%s.m3u\"" % (config.station_id_friendly[self.sid].lower(), filetype))
 	
 	def get(self, url_param, filetype):
 		self.set_sid(url_param, filetype)
 		
-		self.write("#EXTINF:0,Rainwave %s: %s\n" % (config.station_id_friendly[self.output_sid], self.locale.translate("random_relay")))
-		self.write()
+		stream_filename = get_stream_filename(self.sid, self.user)
+		
+		self.write("#EXTINF:0,Rainwave %s: %s\n" % (config.station_id_friendly[self.sid], self.locale.translate("random_relay")))
+		self.write(get_round_robin_url(self.sid, filetype, self.user))
 		
 		for relay_name, relay in config.get("relays").iteritems():
-			if self.output_sid in relay['sids']:
-				self.write("#EXTINF:0, Rainwave %s: %s Relay\n" % (config.station_id_friendly[self.output_sid], relay_name))
-				self.write("%s%s:%s/%s\n" % (relay['protocol'], relay['ip_address'], relay['port'], self.after_the_slash))
+			if self.sid in relay['sids']:
+				self.write("#EXTINF:0, Rainwave %s: %s Relay\n" % (config.station_id_friendly[self.sid], relay_name))
+				self.write("%s%s:%s/%s\n" % (relay['protocol'], relay['ip_address'], relay['port'], stream_filename))
