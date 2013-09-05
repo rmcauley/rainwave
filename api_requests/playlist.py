@@ -190,7 +190,7 @@ class StationsRequest(APIHandler):
 			station_list.append({
 				"id": station_id,
 				"name": config.station_id_friendly[station_id],
-				"description": self.locale.translate("station_description_id_1"),
+				"description": self.locale.translate("station_description_id_%s" % station_id),
 				"stream": tune_in.get_round_robin_url(station_id, "mp3", self.user),
 				"oggstream": tune_in.get_round_robin_url(station_id, "ogg", self.user)
 			})
