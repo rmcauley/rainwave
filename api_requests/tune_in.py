@@ -9,12 +9,12 @@ from rainwave.user import User
 from libs import config
 
 def get_round_robin_url(sid, filetype, user = None):
-	return "http://%s/%s\n" % (config.get_station(sid, "round_robin_relay_host"), get_stream_filename(sid, filetype, user))
+	return "http://%s/%s" % (config.get_station(sid, "round_robin_relay_host"), get_stream_filename(sid, filetype, user))
 
 def get_stream_filename(sid, filetype, user = None):
 	filename = config.get_station(sid, "stream_filename")
 	
-	if user.is_anonymous():
+	if user is None or user.is_anonymous():
 		return "%s.%s" % (filename, filetype)
 	else:
 		return "%s.%s?%s:%s" % (filename, filetype, user.id, user.data['radio_listen_key'])
@@ -48,10 +48,10 @@ class TuneInIndex(api.web.HTMLRequest):
 	def get(self, url_param, filetype):
 		self.set_sid(url_param, filetype)
 		
-		stream_filename = get_stream_filename(self.sid, self.user)
+		stream_filename = get_stream_filename(self.sid, filetype, self.user)
 		
 		self.write("#EXTINF:0,Rainwave %s: %s\n" % (config.station_id_friendly[self.sid], self.locale.translate("random_relay")))
-		self.write(get_round_robin_url(self.sid, filetype, self.user))
+		self.write(get_round_robin_url(self.sid, filetype, self.user) + "\n")
 		
 		for relay_name, relay in config.get("relays").iteritems():
 			if self.sid in relay['sids']:
