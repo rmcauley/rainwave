@@ -2,6 +2,7 @@ import time
 import hashlib
 
 from api.web import APIHandler
+from api.web import PrettyPrintAPIMixin
 from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
@@ -15,15 +16,17 @@ class HelloWorld(APIHandler):
 	sid_required = False
 	description = "A simple hello world to test your communication."
 	local_only = True
-	
+
 	def post(self):
 		self.append("hello_world", { "hello": "world" })
-		
+
 @handle_api_url("test/user")
-class User(APIHandler):
+class UserInfo(APIHandler):
 	sid_required = False
 	description = "A test request that displays the user's information."
 	local_only = True
-	
+	phpbb_auth = True
+
 	def post(self):
 		self.append("user", self.user.to_private_dict())
+

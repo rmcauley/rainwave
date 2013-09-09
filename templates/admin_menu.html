@@ -1,0 +1,4 @@
+{% include "bare_header.html" %}
+<h2>{% config.station_id_friendly[request.sid] %} {% title %}</h2>
+<div class="admin_menu">{% for sid in config.station_ids %}<a target="_top" href="?sid=%{ sid %}">{% config.station_id_friendly[sid] %} |</a>{% end %}</div>
+<hr />

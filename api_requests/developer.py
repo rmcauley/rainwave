@@ -16,14 +16,14 @@ class CreateAnonTunedIn(APIHandler):
 	auth_required = False
 	allow_get = True
 	return_name = "create_anon_tuned_in_result"
-	
+
 	def post(self, sid):
 		if db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE listener_ip = '127.0.0.1' AND user_id = 1") == 0:
 			db.c.update("INSERT INTO r4_listeners (listener_ip, user_id, sid, listener_icecast_id) VALUES ('127.0.0.1', 1, %s, 1)", (int(sid),))
 			self.append_standard("dev_anon_user_tunein_ok", "Anonymous user tune in record completed.")
 		else:
 			raise APIException(500, "internal_error", "Anonymous user tune in record already exists.")
-			
+
 class TestUserRequest(APIHandler):
 	local_only = True
 	sid_required = False
@@ -34,7 +34,7 @@ class TestUserRequest(APIHandler):
 		user_id = db.c.fetch_var("SELECT MAX(user_id) FROM phpbb_users")
 		if user_id < 2:
 			user_id = user_id + 1
-			db.c.update("INSERT INTO phpbb_users (username, user_id) VALUES ('Test" + str(user_id) + ", %s)", (user_id,))
+			db.c.update("INSERT INTO phpbb_users (username, user_id, group_id) VALUES ('Test" + str(user_id) + ", %s, 5)", (user_id,))
 		self.set_cookie(config.get("phpbb_cookie_name") + "u", user_id)
 		session_id = db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s", (user_id,))
 		if not session_id:
@@ -44,10 +44,10 @@ class TestUserRequest(APIHandler):
 		self.set_cookie(config.get("phpbb_cookie_name") + "sid", session_id)
 		self.execute(user_id, sid)
 		self.append_standard("dev_login_ok", "You are now user ID %s session ID %s" % (user_id, session_id))
-		
+
 	def execute(self):
 		pass
-	
+
 @handle_api_url("test/login_tuned_in/(\d+)")
 class CreateLoginTunedIn(TestUserRequest):
 	description = "Creates or uses a user account with a tuned in record and sets the appropriate cookies so you're that user."
