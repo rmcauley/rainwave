@@ -421,7 +421,8 @@ def create_tables():
 			sched_url				TEXT		, \
 			sched_in_progress			BOOLEAN		DEFAULT FALSE, \
 			sched_used				BOOLEAN		DEFAULT FALSE, \
-			sched_dj_user_id			INT \
+			sched_dj_user_id			INT, \
+			sched_creator_user_id		INT \
 		)")
 	c.create_idx("r4_schedule", "sched_in_progress")
 	c.create_idx("r4_schedule", "sched_public")

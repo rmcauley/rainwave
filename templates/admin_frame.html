@@ -9,7 +9,11 @@
 	function change_screen() {
 		window.frames.tool.location.href = "/admin/tools/" + current_tool + "?sid=" + current_station;
 		window.frames.selector.location.href="/admin/album_list/" + current_tool + "?restrict=" + current_restriction;
-	}
+	};
+
+	function api_call(call, args) {
+		// TODO: this function.
+	};
 </script>
 </head>
 <frameset rows="25%, 80%">

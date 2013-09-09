@@ -64,27 +64,27 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	phpbb_auth = False
 	# Does the user need perks (donor/beta/etc) to see this request/page?
 	perks_required = False
-	
+
 	def initialize(self, **kwargs):
 		super(RainwaveHandler, self).initialize(**kwargs)
 		self.cleaned_args = {}
-			
+
 	def set_cookie(self, name, value, **kwargs):
 		if isinstance(value, (int, long)):
 			value = repr(value)
 		super(RainwaveHandler, self).set_cookie(name, value, **kwargs)
-		
+
 	def get_argument(self, name):
 		if name in self.cleaned_args:
 			return self.cleaned_args[name]
 		return super(RainwaveHandler, self).get_argument(name)
-	
+
 	def set_argument(self, name, value):
 		self.cleaned_args[name] = value
-	
+
 	def get_browser_locale(self, default="en_CA"):
 		"""Determines the user's locale from ``Accept-Language`` header.  Copied from Tornado, adapted slightly.
-		
+
 		See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
 		"""
 		if "Accept-Language" in self.request.headers:
@@ -110,12 +110,12 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	def prepare(self):
 		self._startclock = time.clock()
 		self.user = None
-		
+
 		if self.local_only and not self.request.remote_ip in config.get("api_trusted_ip_addresses"):
 			log.info("api", "Rejected %s request from %s" % (self.url, self.request.remote_ip))
 			self.set_status(403)
 			self.finish()
-			
+
 		if not isinstance(self.locale, locale.RainwaveLocale):
 			self.locale = self.get_browser_locale()
 
@@ -123,10 +123,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self.return_name = self.url[self.url.rfind("/")+1:] + "_result"
 		else:
 			self.return_name = self.return_name
-			
+
 		if self.admin_required or self.dj_required:
 			self.login_required = True
-	
+
 		if 'in_order' in self.request.arguments:
 			self._output = []
 			self._output_array = True
@@ -160,12 +160,12 @@ class RainwaveHandler(tornado.web.RequestHandler):
 					raise APIException("invalid_argument", argument=field, reason=getattr(fieldtypes, "%s_error" % type_cast.__name__), http_code=400)
 				else:
 					self.cleaned_args[field] = parsed
-				
+
 		if self.phpbb_auth:
 			self.do_phpbb_auth()
 		else:
 			self.rainwave_auth()
-		
+
 		if self.auth_required and not self.user:
 			raise APIException("auth_required", http_code=403)
 
@@ -179,7 +179,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			raise APIException("dj_required", http_code=403)
 		if self.perks_required and (not self.user or not self.user.has_perks()):
 			raise APIException("perks_required", http_code=403)
-				
+
 		if self.unlocked_listener_only and not self.user:
 			raise APIException("auth_required", http_code=403)
 		elif self.unlocked_listener_only and self.user.data['listener_lock'] and self.user.data['listener_lock_sid'] != self.sid:
@@ -201,7 +201,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				if can_login == 1:
 					self.user = User(user_id)
 					self.user.authorize(self.sid, None, None, True)
-					
+
 	def _get_phpbb_session(self, user_id = None):
 		if not user_id and not self.user:
 			return None
@@ -222,7 +222,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 	def rainwave_auth(self):
 		user_id_present = "user_id" in self.request.arguments
-		
+
 		if self.auth_required and not user_id_present:
 			raise APIException("missing_argument", argument="user_id", http_code=400)
 		if user_id_present and not fieldtypes.numeric(self.get_argument("user_id")):
@@ -230,7 +230,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			raise APIException("invalid_argument", argument="user_id", reason="not numeric.", http_code=400)
 		if (self.auth_required or user_id_present) and not "key" in self.request.arguments:
 			raise APIException("missing_argument", argument="key", http_code=400)
-		
+
 		self.user = None
 		if user_id_present:
 			self.user = User(long(self.get_argument("user_id")))
@@ -255,19 +255,19 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if "code" in hash:
 			return hash["code"]
 		return True
-	
+
 	def append_standard(self, tl_key, text = None, success = True, **kwargs):
 		if not text:
 			text = self.locale.translate(tl_key, **kwargs)
 		kwargs.update({ "success": success, "tl_key": tl_key, "text": text })
 		self.append(self.return_name, kwargs)
-	
+
 class APIHandler(RainwaveHandler):
 	def initialize(self, **kwargs):
 		super(APIHandler, self).initialize(**kwargs)
 		if config.get("developer_mode") or config.test_mode or self.allow_get:
 			self.get = self.post
-	
+
 	def finish(self, chunk=None):
 		self.set_header("Content-Type", "application/json")
 		if hasattr(self, "_output"):
@@ -325,7 +325,7 @@ class HTMLRequest(RainwaveHandler):
 					self.write(line)
 				self.write("</div>")
 		self.finish()
-		
+
 # this mixin will overwrite anything in APIHandler and RainwaveHandler so be careful wielding it
 class PrettyPrintAPIMixin(object):
 	phpbb_auth = True
@@ -337,9 +337,12 @@ class PrettyPrintAPIMixin(object):
 		# yaaaaaaay monkey patching :/
 		self._real_post = self.post
 		self.post = self.post_reject
-		
-	def get(self):
+
+	def prepare(self):
+		super(APIHandler, self).prepare()
 		self._real_post()
+
+	def get(self):
 		self.write(self.render_string("basic_header.html", title=self.locale.translate(self.return_name)))
 		for output_key, json in self._output.iteritems():
 			if type(json) != types.ListType:
@@ -358,7 +361,7 @@ class PrettyPrintAPIMixin(object):
 				i = i + 1
 			self.write("</table>")
 		self.write(self.render_string("basic_footer.html"))
-		
+
 	def sort_keys(self, keys):
 		new_keys = []
 		for key in [ "rating_user", "fave", "title", "album_rating_user", "album_name" ]:
@@ -367,7 +370,7 @@ class PrettyPrintAPIMixin(object):
 				keys.remove(key)
 		new_keys.extend(keys)
 		return new_keys
-	
+
 	# no JSON output!!
 	def finish(self):
 		super(APIHandler, self).finish()
