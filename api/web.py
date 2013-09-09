@@ -209,9 +209,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			user_id = self.user.id
 		cookie_session = self.get_cookie(config.get("phpbb_cookie_name") + "sid")
 		if cookie_session:
-			if cookie_session == db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s AND session_id = %s", (user_id, cookie_session)):
+			if cookie_session == db.c_old.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s AND session_id = %s", (user_id, cookie_session)):
 				return cookie_session
-		db_session = db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s ORDER BY session_last_visit DESC LIMIT 1", (user_id,))
+		db_session = db.c_old.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s ORDER BY session_last_visit DESC LIMIT 1", (user_id,))
 		return db_session
 
 	def _update_phpbb_session(self, user_id = None):
