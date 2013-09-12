@@ -144,22 +144,23 @@ class PlaybackHistory(APIHandler):
 	login_required = False
 	sid_required = True
 	allow_get = True
-	
+
 	def post(self):
 		if self.user.is_anonymous():
 			self.append(self.return_name, db.c.fetch_all(
-				"SELECT song_id AS id, song_title AS title, album_name "
-				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_song_sid USING (song_id, sid) JOIN r4_album_sid USING (album_id) JOIN r4_albums USING (album_id) "
+				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name "
+				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_song_sid USING (song_id, sid) JOIN r4_albums USING (album_id) "
 				"WHERE r4_song_history.sid = %s "
-				"ORDER BY songhist_id DESC LIMIT 100"), (self.sid, self.sid))
+				"ORDER BY songhist_id DESC LIMIT 100",
+				(self.sid,)))
 		else:
 			self.append(self.return_name, db.c.fetch_all(
-				"SELECT song_id AS id, song_title AS title, album_name, song_rating_user AS rating_user, song_fave AS fave "
-				"FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id) "
-				"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
+				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, song_rating_user AS rating_user, song_fave AS fave "
+				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_song_sid USING (song_id, sid) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_ratings ON r4_song_history.song_id = r4_song_ratings.song_id AND user_id = %s "
 				"WHERE r4_song_history.sid = %s "
-				"ORDER BY songhist_id DESC LIMIT 100"), (self.sid,))
-			
+				"ORDER BY songhist_id DESC LIMIT 100",
+				(self.user.id, self.sid)))
+
 @handle_api_html_url("playback_history")
 class PlaybackHistoryHTML(PrettyPrintAPIMixin, PlaybackHistory):
 	pass
