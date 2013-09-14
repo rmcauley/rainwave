@@ -2,25 +2,54 @@
 <html>
 <head>
 <title>R4 Admin</title>
+<script src="/static/js/0_lyre-ajax.js" type="application/x-javascript"></script>
 <script type="application/x-javascript">
+	lyre.setURLPrefix("{{ api_url }}");
+	lyre.setUserID("{{ user_id }}");
+	lyre.setKey("{{ api_key }}");
 	var current_tool = "";
 	var current_station = 1;
 	var current_restriction = -1;
+
+	var first_debug = true;
+
+	function api_data_callback(json) {
+		if (first_debug) {
+				window.frames.debug.document.body.style.background = "black";
+				window.frames.debug.document.body.style.color = "white";
+		}
+		var str = "<table border=1>";
+		for (var i = 0; i < json.length; i++) {
+				for (var cb in json[i]) {
+						for (var key in json[i][cb]) {
+								str += "<tr><td>" + cb + "</td><td>" + key + "</td><td>" + json[i][cb][key] + "</td></tr>";
+						}
+				}
+		}
+		str += "</table>";
+		window.frames.debug.document.body.innerHTML = str
+		window.frames.tool.location.reload();
+	};
+	lyre.addUniversalCallback(api_data_callback);
+
 	function change_screen() {
+		lyre.setStationID(current_station);
 		window.frames.tool.location.href = "/admin/tools/" + current_tool + "?sid=" + current_station;
 		window.frames.selector.location.href="/admin/album_list/" + current_tool + "?restrict=" + current_restriction;
 	};
 
-	function api_call(call, args) {
-		// TODO: this function.
+	function call_api(call, args) {
+		lyre.async_get(call, args);
 	};
+</script>
 </script>
 </head>
 <frameset rows="25%, 80%">
-	<frameset cols="33%, 33%, *">
+	<frameset cols="15%, 15%, 15%, *">
 		<frame src="/admin/tool_list" name="tool_list" />
 		<frame src="/admin/station_list" name="station_list" />
 		<frame src="/admin/restrict_songs" name="restrict_songs" />
+		<frame src="about:blank" name="debug" />
 	</frameset>
 	<frameset cols="33%, *">
 		<frame src="about:blank" name="tool" />

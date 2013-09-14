@@ -350,6 +350,8 @@ class User(object):
 		self.update({ "radio_listen_key": listen_key })
 
 	def ensure_api_key(self, ip_address = None):
+		if 'api_key' in self.data and self.data['api_key']:
+			return self.data['api_key']
 		if self.id == 1 and ip_address:
 			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (ip_address,))
 			if not api_key:
@@ -358,8 +360,8 @@ class User(object):
 			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = %s", (self.id,))
 			if not api_key:
 				api_key = self.generate_api_key()
-		# DO NOT USE self.update, we don't want this value in memcache or it'll get sucked into future request (which could expose it to other clients)
 		self.data['api_key'] = api_key
+		return api_key
 
 	def generate_api_key(self, ip_address = None, expiry = None):
 		api_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))

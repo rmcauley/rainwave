@@ -12,6 +12,7 @@ var lyre = function() {
 	var async_ready = true;
 	var async_queue = new Array();
 	var callbacks = new Array();
+	var universal_callbacks = new Array();
 	var urlprefix = "http://rainwave.cc/api4/";
 
 	var rw_user_id = 1;
@@ -158,14 +159,10 @@ var lyre = function() {
 
 	var async_complete = function() {
 		var response;
-		if ((async.readyState == 4) && (async.status == 200)) {
+		if (async.readyState == 4) {
 			if (JSON) response = JSON.parse(async.responseText);
 			else eval("response = " + async.responseText);
 			if (response) performCallbacks(response);
-		}
-		else if (async.readyState == 4) {
-			response = [ { "error": { "tl_key": "internal_error" } } ];
-			performCallbacks(response);
 		}
 
 		if (async.readyState == 4) {
@@ -193,7 +190,12 @@ var lyre = function() {
 		var cb, i;
 		var sched_synced = false;
 		var sched_presynced = false;
-		for (var i = 0; i < json.length; i++) {
+
+		for (i = 0; i < universal_callbacks.length; i++) {
+			universal_callbacks[i](json);
+		}
+
+		for (i = 0; i < json.length; i++) {
 			for (var j in json[i]) {
 				if (j.indexOf("sched") == 0) {
 					sched_synced = true;
@@ -206,7 +208,7 @@ var lyre = function() {
 			}
 		}
 		if (sched_synced) performCallback({}, "sched_sync");
-		
+
 		if (('success' in json) && (!json.success)) {
 			errorcontrol.genericR4Error(json);
 		}
@@ -271,6 +273,12 @@ var lyre = function() {
 		if (!callbacks[lyreelement]) callbacks[lyreelement] = [];
 		callbacks[lyreelement][maxid] = method;
 		return maxid;
+	};
+
+
+	that.addUniversalCallback = function(method) {
+		universal_callbacks.push(method);
+		return universal_callbacks.length;
 	};
 
 	that.removeCallback = function(lyreelement, cbid) {

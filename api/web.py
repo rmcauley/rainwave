@@ -295,6 +295,7 @@ class APIHandler(RainwaveHandler):
 				self.append("error", { "tl_key": "internal_error", "text": self.locale.translate("internal_error") } )
 			else:
 				self.append("error", { "tl_key": "internal_error", "text": repr(exc) })
+				self.append("traceback", { "traceback": traceback.format_exception(kwargs['exc_info'][0], kwargs['exc_info'][1], kwargs['exc_info'][2]) })
 		else:
 			self.append("error", { "tl_key": "internal_error", "text": self.locale.translate("internal_error") } )
 		self.finish()

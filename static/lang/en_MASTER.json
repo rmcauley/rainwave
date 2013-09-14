@@ -1,6 +1,6 @@
 {
     "__comment__": "API Errors, can be skipped if you only want to translate the website.",
-    
+
     "missing_station_id": 		"Missing station ID.",
     "invalid_station_id":		"Invalid station ID.",
     "missing_argument": 		"Missing argument: '%(argument)'.",
@@ -15,11 +15,11 @@
     "unlocked_only":			"User locked to %(station) for %(lock_counter) more songs.",
     "internal_error":			"Internal server error.",
     "song_does_not_exist":		"Song does not exist.",
-    
+
     "__comment__": "API/Web errors - these are spit out by the API but will be shown on the website.",
-    
+
     "fave_failed":			"Fave failed.",
-    
+
     "request_failed":			"Request failed.",
     "request_delete_failed":		"Request delete failed.",
     "request_unrated_failed":		"Request unrated failed.",
@@ -28,7 +28,7 @@
     "same_request_album":		"You already requested a song from this album.",
     "song_not_requested":		"Song not requested.",
     "station_offline":			"This station is currently offline.  Please check back later.",
-    
+
     "already_voted_for_song":		"Already voted for that song.",
     "cannot_rate_now":			"Cannot rate that song at this time.",
     "tunein_to_rate_current_song":	"You must be tuned in to rate the currently playing song.",
@@ -37,28 +37,28 @@
 
     "unknown_error_message":		"Sorry about that.  Please try again, or file a bug with the debug information below.  (this error has been logged)",
     "debug_information":		"Debug information:",
-    
+
     "__comment__": "API Key Management",
-    
+
     "api_key_manager":			"API Key Manager",
     "api_key":				"API Key",
     "qr_code":				"QR Code",
     "create_api_key":			"Create API Key",
-    
+
     "__comment__": "Pretty Printed API Page Words",
-    
+
     "unrated_songs":			"Unrated Songs",
     "title":				"Title",
     "album_name":			"Album Name",
     "id":				"ID",
-    
+
     "__comment__": "Other",
-    
+
     "redownload_m3u":			"Are you tuning in?  If you just logged in, please redownload the playlist.",
     "random_relay":			"Random Relay",
-    
+
     "__comment__": "The following are the old R3 translation lines, which will be replaced.  Some day. :(",
-    
+
     "station_description_id_1": 	"Streaming Video Game Music Radio.  Vote for the song you want to hear!",
     "station_description_id_2":		"OverClocked Remix Radio.  Vote for your favourite remixes!",
     "station_description_id_3":		"Video game cover bands and remixes.  Vote for your favourite artists!",

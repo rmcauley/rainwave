@@ -31,7 +31,7 @@ def load():
 			current[sid] = get_event_in_progress(sid)
 		if not current[sid] or not current[sid].get_song():
 			current[sid] = _create_election(sid)
-			
+
 		next[sid] = cache.get_station(sid, "sched_next")
 		if not next[sid]:
 			# pdb.set_trace()
@@ -49,28 +49,28 @@ def load():
 				if next_event:
 					future_time += next_event.length()
 					next[sid].append(next_event)
-					
+
 		history[sid] = cache.get_station(sid, "sched_history")
 		if not history[sid]:
 			history[sid] = []
 			# Only loads elections but this should be good enough for history 99% of the time.
 			for elec_id in db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE elec_start_actual < %s ORDER BY elec_start_actual DESC LIMIT 5", (current[sid].start_actual,)):
 				history[sid].insert(0, event.Election.load_by_id(elec_id))
-		
+
 		long_history[sid] = cache.get_station(sid, "long_history")
 		if not long_history[sid]:
 			long_history[sid] = []
 			song_ids = db.c.fetch_list("SELECT song_id FROM r4_song_history WHERE sid = %s ORDER BY songhist_id DESC", (sid,))
 			for id in song_ids:
 				long_history[sid].append(playlist.Song.load_from_id(id, sid))
-		
+
 def get_event_in_progress(sid):
 	in_progress = db.c.fetch_row("SELECT sched_id, sched_type FROM r4_schedule WHERE sid = %s AND sched_in_progress = TRUE ORDER BY sched_start DESC LIMIT 1", (sid,))
 	if in_progress:
 		return event.load_by_id_and_type(in_progress['sched_id'], in_progress['sched_type'])
 	else:
 		return get_event_at_time(sid, int(time.time()), queued_events=True)
-		
+
 def get_event_at_time(sid, epoch_time, queued_events = False):
 	if queued_events:
 		in_queue = db.c.fetch_row("SELECT sched_id, sched_type FROM r4_schedule WHERE sid = %s AND sched_start = 0 ORDER BY sched_id LIMIT 1", (sid,))
@@ -91,7 +91,7 @@ def get_event_at_time(sid, epoch_time, queued_events = False):
 
 def get_current_file(sid):
 	return current[sid].get_filename()
-	
+
 def get_current_event(sid):
 	return current[sid]
 
@@ -100,19 +100,19 @@ def advance_station(sid):
 	playlist.clear_updated_albums(sid)
 
 	current[sid].finish()
-	
+
 	last_song = current[sid].get_song()
 	if last_song:
 		long_history[sid].insert(0, last_song)
 		db.c.update("INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)", (sid, last_song.id))
-		
+
 	while len(long_history[sid]) > 30:
 		long_history[sid].pop()
 
 	history[sid].insert(0, current[sid])
 	while len(history[sid]) > 5:
 		history[sid].pop()
-	
+
 	integrate_new_events(sid)
 	# If we need some emergency elections here (normal len(next[sid]) < 2 gets dealt with in post_process)
 	if len(next[sid]) == 0:
@@ -126,14 +126,14 @@ def post_process(sid):
 	request.update_line(sid)
 	playlist.reduce_song_blocks(sid)
 	_create_elections(sid)
-		
+
 	_add_listener_count_record(sid)
 	cache.update_user_rating_acl(sid, history[sid][0].get_song().id)
 	_trim(sid)
 	user.trim_listeners(sid)
 	user.unlock_listeners(sid)
 	playlist.warm_cooled_albums(sid)
-	
+
 	_update_memcache(sid)
 
 	# must do this AFTER memcache gets updated, for hopefully obvious reasons
@@ -145,11 +145,12 @@ def _add_listener_count_record(sid):
 	lc_guests_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1 AND listener_voted_entry IS NOT NULL", (sid,))
 	lc_users_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1 AND listener_voted_entry IS NOT NULL", (sid,))
 	return db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests, lc_users, lc_guests_active, lc_users_active) VALUES (%s, %s, %s, %s, %s)", (sid, lc_guests, lc_users, lc_guests_active, lc_users_active))
-	
+
 def integrate_new_events(sid):
 	max_sched_id = 0
 	max_elec_id = 0
 	num_elections = 0
+	# Find the maximum schedule ID we have here and only look to add newer schedule IDs.
 	for event in next[sid]:
 		if event.is_election:
 			num_elections += 1
@@ -161,7 +162,7 @@ def integrate_new_events(sid):
 	unused_sched_id = db.c.fetch_list("SELECT sched_id FROM r4_schedule WHERE sid = %s AND sched_id > %s AND sched_used = FALSE AND sched_start <= %s ORDER BY sched_start", (sid, max_sched_id, int(time.time()) + 86400))
 	for sched_id in unused_sched_id:
 		next[sid].append(event.load_by_id(sched_id))
-		
+
 	# Step 4: Insert "priority elections" ahead of anything else
 	priority_elec_ids = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND elec_id > %s AND elec_priority = TRUE ORDER BY elec_id DESC", (sid, max_elec_id))
 	for elec_id in priority_elec_ids:
@@ -172,13 +173,13 @@ def integrate_new_events(sid):
 			max_elec_id = event.id
 		num_elections += 1
 		event.set_priority(False)
-		
+
 	return (max_sched_id, max_elec_id, num_elections)
 
 def sort_next(sid):
 	global next
 	next[sid] = sorted(next[sid], key=lambda event: event.start)
-	
+
 def set_next_start_times(sid):
 	"""
 	Calibrate the start points of each scheduled event until we reach the number of future elections planned.
@@ -194,7 +195,7 @@ def set_next_start_times(sid):
 			i += 1
 		else:
 			break
-	
+
 def _create_elections(sid):
 	# Step, er, 0: Update the request cache first, so elections have the most recent data to work with
 	# (the entire requests module depends on its caches)
@@ -202,14 +203,14 @@ def _create_elections(sid):
 
 	max_sched_id, max_elec_id, num_elections = integrate_new_events(sid)
 	log.debug("create_elec", "Max sched ID: %s // Max elec ID: %s // Num elections already existing: %s // Size of next: %s" % (max_sched_id, max_elec_id, num_elections, len(next[sid])))
-	
+
 	# Step 2: Load up any elections that have been added while we've been idle (i.e. by admins) and append them to the list
 	unused_elec_id = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND elec_id > %s AND elec_priority = FALSE ORDER BY elec_id", (sid, max_elec_id))
 	unused_elecs = []
 	for elec_id in unused_elec_id:
 		log.debug("create_elec", "Appending an unused election.")
 		unused_elecs.append(event.Election.load_by_id(elec_id))
-	
+
 	# Step 3: Insert elections where there's time and adjust predicted start times as necessary, if num_elections < 2 then create them where necessary
 	i = 1
 	running_time = current[sid].start_actual + current[sid].length()
@@ -233,7 +234,7 @@ def _create_elections(sid):
 		# There are potential holes - it is not as comprehensive a scheduler as the previous
 		# Rainwave scheduler, however it is vastly simplified.
 		# One drawback is that you cannot schedule elections themselves to run at certain times.
-		
+
 		create_elecs = False
 		# If the event we're looking at collides with the previous event, adjust this event to start later
 		if gap <= 0:
@@ -265,9 +266,9 @@ def _create_elections(sid):
 			next[sid][i].start = running_time
 			running_time += next[sid][i].length()
 		i += 1
-		
+
 	log.debug("create_elec", "Filling in rest of elections.  Unused elecs: %s // Current num elections: %s // Next size: %s" % (len(unused_elecs), num_elections, len(next[sid])))
-	
+
 	needed_elecs = config.get_station(sid, "num_planned_elections") - num_elections
 	# Step 5: If we're at less than 2 elections available, create them (or use unused ones) and append them
 	# No timing is required here, since we're simply outright appending to the end
@@ -291,7 +292,7 @@ def _create_elections(sid):
 			failures += 1
 	if failures >= 2:
 		log.error("create_elec", "Total failure when creating elections.")
-	
+
 def _create_election(sid, start_time = None, target_length = None):
 	log.debug("create_elec", "Creating election, start time %s target length %s." % (start_time, target_length))
 	# Check to see if there are any events during this time
@@ -313,7 +314,7 @@ def _trim(sid):
 	db.c.update("DELETE FROM r4_elections WHERE elec_start_actual <= %s", (current_time - config.get("trim_election_age"),))
 	max_history_id = db.c.fetch_var("SELECT MAX(songhist_id) FROM r4_song_history")
 	db.c.update("DELETE FROM r4_song_history WHERE songhist_id <= %s", (max_history_id - config.get("trim_history_length"),))
-	
+
 def _update_memcache(sid):
 	cache.set_station(sid, "sched_current", current[sid], True)
 	cache.set_station(sid, "sched_next", next[sid], True)
