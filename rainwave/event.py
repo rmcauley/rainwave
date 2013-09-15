@@ -10,36 +10,6 @@ from rainwave import playlist
 from rainwave import request
 from rainwave import user
 
-"""
-Election.create
-	- Timing
-	- No timing
-Election.fill
-Election._check_song_for_conflict
-	- Album conflict
-	- Direct conflict
-Election.add_song
-Election.start
-	- Start
-	- After in progress already
-	- After used
-Election.get_filename
-Election.get_song
-Election._add_from_queue
-Election.add_requests
-Election.is_request_needed
-	- Nobody in line, no requests done yet
-	- Request due, nobody in line
-	- Request due, 1 person
-	- Request due, config.get_station(self.sid, "request_interval_scale")
-	- Request due, config.get_station etc * 2
-Election.get_request
-Election.length
-	- Before use
-	- After use
-Election.finish
-"""
-
 _request_interval = {}
 _request_sequence = {}
 
@@ -65,8 +35,8 @@ def load_by_id(sched_id):
 	load_by_id_and_type(sched_id, event_type)
 
 def load_by_id_and_type(sched_id, sched_type):
-	if sched_type == EventTypes.election:
-		return Election.load_by_id(sched_id)
+	if sched_type in globals():
+		return globals()[sched_type].load_by_id(sched_id)
 	raise InvalidScheduleType
 
 class Event(object):
@@ -78,10 +48,7 @@ class Event(object):
 		evt.start_actual = None
 		evt.start_predicted = None
 		evt.end = end
-		if type:
-			evt.type = type
-		else:
-			evt.type = evt.__class__.__name__
+		evt.type = evt.__class__.__name__
 		evt.name = name
 		evt.sid = sid
 		evt.public = public
@@ -514,8 +481,10 @@ class PVPElection(Election):
 
 class OneUp(Event):
 	@classmethod
-	def load_event_by_id(cls, sched_id):
+	def load_by_id(cls, sched_id):
 		row = db.c.fetch_row("SELECT * FROM r4_schedule JOIN r4_one_ups USING (sched_id) WHERE r4_schedule.sched_id = %s", (sched_id,))
+		if not row:
+			raise InvalidScheduleID
 		one_up = cls()
 		one_up._update_from_dict(row)
 		one_up.songs = [ playlist.Song.load_from_id(row['song_id'], one_up.sid) ]
@@ -525,6 +494,7 @@ class OneUp(Event):
 	def create(cls, sid, start, song_id):
 		song = playlist.Song.load_from_id(song_id, sid)
 		one_up = super(OneUp, cls).create(sid=sid, start=start, end=start+song.data['length'], public=False)
+		db.c.update("INSERT INTO r4_one_ups (sched_id, song_id) VALUES (%s, %s)", (one_up.id, song_id))
 		one_up.songs = [ song ]
 		return one_up
 
