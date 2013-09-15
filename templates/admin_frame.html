@@ -7,17 +7,20 @@
 	lyre.setURLPrefix("{{ api_url }}");
 	lyre.setUserID("{{ user_id }}");
 	lyre.setKey("{{ api_key }}");
+	lyre.catcherrors = true;
 	var current_tool = "";
 	var current_station = 1;
 	var current_restriction = -1;
 
-	var first_debug = true;
+	lyre.jsErrorCallback = function(err, json) {
+		window.frames.debug.document.body.style.background = "black";
+		window.frames.debug.document.body.style.color = "white";
+		window.frames.debug.document.body.innerHTML = "Javascript error.  This needs debugging.";
+	};
 
 	function api_data_callback(json) {
-		if (first_debug) {
-				window.frames.debug.document.body.style.background = "black";
-				window.frames.debug.document.body.style.color = "white";
-		}
+		window.frames.debug.document.body.style.background = "black";
+		window.frames.debug.document.body.style.color = "white";
 		var str = "<table border=1>";
 		for (var i = 0; i < json.length; i++) {
 				for (var cb in json[i]) {

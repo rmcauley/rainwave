@@ -94,7 +94,7 @@ class OneUpTool(api.web.PrettyPrintAPIMixin, GetOneUps):
 		if 'one_ups' in self._output and type(self._output['one_ups']) == types.ListType and len(self._output['one_ups']) > 0:
 			self.write("<ul>")
 			for one_up in self._output['one_ups']:
-				self.write("<li><div>Scheduled:")
+				self.write("<li><div>")
 				if not one_up['sched_start'] or one_up['sched_start'] == 0:
 					self.write("ASAP")
 				else:

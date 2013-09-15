@@ -22,7 +22,7 @@ from libs import db
 from libs import chuser
 from libs import cache
 
-request_classes = [ 
+request_classes = [
 	(r"/api4/?", api.help.IndexRequest),
 	(r"/api4/help/?", api.help.IndexRequest),
 	(r"/api4/help/(.+)", api.help.HelpRequest),
@@ -35,7 +35,7 @@ testable_requests = []
 class handle_url(object):
 	def __init__(self, url):
 		self.url = url
-	
+
 	def __call__(self, klass):
 		klass.url = self.url
 		request_classes.append((self.url, klass))
@@ -45,25 +45,25 @@ class handle_url(object):
 class handle_api_url(handle_url):
 	def __init__(self, url):
 		super(handle_api_url, self).__init__("/api4/" + url)
-		
+
 class handle_api_html_url(handle_url):
 	def __init__(self, url):
 		super(handle_api_html_url, self).__init__("/pages/" + url)
-		
+
 def test_get(klass):
 	testable_requests.append({ "method": "GET", "class": klass })
-	
+
 def test_post(klass):
 	testable_requests.append({ "method": "POST", "class": klass })
-	
+
 class TestShutdownRequest(api.web.APIHandler):
 	auth_required = False
 	def get(self):
 		self.write("Shutting down server.")
-	
+
 	def on_finish(self):
 		tornado.ioloop.IOLoop.instance().stop() #add_timeout(time.time() + 2, tornado.ioloop.IOLoop.instance().stop)
-		
+
 class APITestFailed(Exception):
 	def __init__(self, value):
 		self.value = value
@@ -76,11 +76,11 @@ class APIServer(object):
 		pid_file = open(config.get("api_pid_file"), 'w')
 		pid_file.write(str(pid))
 		pid_file.close()
-	
+
 	def _listen(self, task_id):
 		# task_ids start at zero, so we gobble up ports starting at the base port and work up
 		port_no = int(config.get("api_base_port")) + task_id
-		
+
 		# Log according to configured directory and port # we're operating on
 		log_file = "%s/rw_api_%s.log" % (config.get("api_log_dir"), port_no)
 		if config.test_mode and os.path.exists(log_file):
@@ -89,10 +89,10 @@ class APIServer(object):
 		log.debug("start", "Server booting, port %s." % port_no)
 		db.open()
 		cache.open()
-		
+
 		for sid in config.station_ids:
 			cache.update_local_cache_for_sid(sid)
-		
+
 		# If we're not in developer, remove development-related URLs
 		if not config.get("developer_mode"):
 			i = 0
@@ -101,8 +101,11 @@ class APIServer(object):
 					request_classes.pop(i)
 					i = i - 1
 				i = i + 1
-		
-		# Fire ze missiles!	
+
+		# Make sure all other errors get handled in an API-friendly way
+		request_classes.append((r".*", api.web.Error404Handler))
+
+		# Fire ze missiles!
 		app = tornado.web.Application(request_classes,
 			debug=(config.test_mode or config.get("developer_mode")),
 			template_path=os.path.join(os.path.dirname(__file__), "../templates"),
@@ -110,10 +113,10 @@ class APIServer(object):
 			autoescape=None)
 		http_server = tornado.httpserver.HTTPServer(app, xheaders = True)
 		http_server.listen(port_no)
-		
+
 		if config.get("api_user") and config.get("api_group"):
 			chuser.change_user(config.get("api_user"), config.get("api_group"))
-		
+
 		for request in request_classes:
 			log.debug("start", "   Handler: %s" % str(request))
 		log.info("start", "API server bootstrapped and ready to go.")
@@ -141,18 +144,18 @@ class APIServer(object):
 			# None from the config option getter (if the config didn't exist) will cause Tornado
 			# to spawn as many processes as there are cores on the server CPU(s).
 			tornado.process.fork_processes(config.get("api_num_processes"))
-			
+
 			task_id = tornado.process.task_id()
 			if task_id != None:
 				self._listen(task_id)
-			
+
 	def test(self):
-		# Fake a decorator call on the handle_url decorator 
+		# Fake a decorator call on the handle_url decorator
 		handle_obj = handle_url("shutdown")
 		handle_obj.__call__(TestShutdownRequest)
 
 		tornado.process.fork_processes(2, 0)
-		
+
 		task_id = tornado.process.task_id()
 		if task_id == 0:
 			self._listen(task_id)
@@ -166,7 +169,7 @@ class APIServer(object):
 			print "OK."
 			return True
 		return False
-			
+
 	def _run_tests(self):
 		passed = True
 		headers = ({"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain text/html text/javascript application/json application/javascript" })
@@ -190,18 +193,18 @@ class APIServer(object):
 				params['sid'] = 1
 				params = urllib.urlencode(params)
 				conn = httplib.HTTPConnection('localhost', config.get("api_base_port"))
-				
+
 				conn.request(request_pair['method'], "/api/%s" % request.url, params, headers)
 				response = conn.getresponse()
 				response_pass = True
 				if response.status == 200:
 					web_data = json.load(response)
 					del(web_data['api_info'])
-					
+
 					ref_file = open("api_tests/%s.json" % request.url)
 					ref_data = json.load(ref_file)
 					ref_file.close()
-					
+
 					if not dict_compare.print_differences(ref_data, web_data):
 						response_pass = False
 						print "JSON from server:"
@@ -224,7 +227,7 @@ class APIServer(object):
 		conn.request("GET", "/api/shutdown", params, headers)
 		conn.getresponse()
 		time.sleep(3)
-		
+
 		print
 		print "----------------------------------------------------------------------"
 		print "Ran %s tests." % len(testable_requests)

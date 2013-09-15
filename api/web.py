@@ -27,6 +27,19 @@ from libs import db
 
 # Pass a string there for the URL to handle at /api/[url] and the server will do the rest of the work.
 
+class Error404Handler(tornado.web.RequestHandler):
+	def get(self):
+		self.post()
+
+	def post(self):
+		self.set_status(404)
+		if "in_order" in self.request.arguments:
+			self.write("[")
+		self.write(tornado.escape.json_encode({ "error": { "tl_key": "http_404", "text": "404 Not Found" } }))
+		if "in_order" in self.request.arguments:
+			self.write("]")
+		self.finish()
+
 class RainwaveHandler(tornado.web.RequestHandler):
 	# The following variables can be overridden by you.
 	# Fields is a hash with { "form_name" => (fieldtypes.[something], True|False } format, so that automatic form validation can be done for you.  True/False values are for required/optional.
