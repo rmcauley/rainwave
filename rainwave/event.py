@@ -56,6 +56,7 @@ class Event(object):
 		evt.url = url
 		evt.in_progress = False
 		evt.dj_user_id = None
+		evt.used = False
 		evt.use_crossfade = use_crossfade
 		evt.use_tag_suffix = use_tag_suffix
 		db.c.update("INSERT INTO r4_schedule "
@@ -77,8 +78,10 @@ class Event(object):
 		self.name = None
 		self.end = None
 		self.url = None
+		self.used = False
 
 	def _update_from_dict(self, dict):
+		self.id = dict['sched_id']
 		self.start = dict['sched_start']
 		self.start_actual = dict['sched_start_actual']
 		self.end = dict['sched_end']
@@ -88,6 +91,7 @@ class Event(object):
 		self.public = dict['sched_public']
 		self.timed = dict['sched_timed']
 		self.url = dict['sched_url']
+		self.used = dict['sched_used']
 		self.in_progress = dict['sched_in_progress']
 		self.dj_user_id = dict['sched_dj_user_id']
 

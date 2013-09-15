@@ -83,6 +83,23 @@ class AddOneUp(api.web.APIHandler):
 		e = event.OneUp.create(self.sid, 0, self.get_argument("song_id"))
 		self.append(self.return_name, { "success": True, "sched_id": e.id, "text": "OneUp Added" })
 
+@handle_api_url("admin/delete_one_up")
+class DeleteOneUp(api.web.APIHandler):
+	admin_required = True
+	fields = { "sched_id": (fieldtypes.sched_id, True) }
+
+	def post(self):
+		e = event.OneUp.load_by_id(self.get_argument("sched_id"))
+		if e.used:
+			raise Exception("OneUp already used.")
+		print e.id
+		r = db.c.update("DELETE FROM r4_schedule WHERE sched_id = %s", (e.id,))
+		if r:
+			self.append(self.return_name, { "success": True, "text": "OneUp deleted." })
+		else:
+			self.append(self.return_name, { "success": False, "text": "OneUp not deleted." })
+
+
 @handle_url("/admin/tools/one_ups")
 class OneUpTool(api.web.PrettyPrintAPIMixin, GetOneUps):
 	admin_required = True
@@ -99,7 +116,7 @@ class OneUpTool(api.web.PrettyPrintAPIMixin, GetOneUps):
 					self.write("ASAP")
 				else:
 					self.write(time.strftime("%a %b %d/%Y %H:%M %Z", time.localtime(one_up['sched_start'])))
-				self.write(" -- <a onclick=\"window.top.call_api('admin/one_up_delete', { 'song_id': %s });\">Delete</a></div>" % one_up['song_id'])
+				self.write(" -- <a onclick=\"window.top.call_api('admin/delete_one_up', { 'sched_id': %s });\">Delete</a></div>" % one_up['sched_id'])
 				self.write("<div>%s</div>" % one_up['song_title'])
 				self.write("<div>%s</div>" % one_up['album_name'])
 				self.write("</li>")

@@ -17,7 +17,7 @@ def numeric(str, request = None):
 	if not re.match('^\d+$', str):
 		return None
 	return str
-	
+
 integer_error = "must be a number."
 def integer(str, request = None):
 	if not str:
@@ -69,7 +69,18 @@ def artist_id(str, request = None):
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_artists WHERE artist_id = %s", (artist_id,)) == 0:
 		return None
 	return artist_id
-	
+
+sched_id_error = "must be a valid schedule ID."
+def sched_id(str, request = None):
+	if not str:
+		return None
+	if not re.match('^\d+$', str):
+		return None
+	sched_id = int(str)
+	if db.c.fetch_var("SELECT COUNT(*) FROM r4_schedule WHERE sched_id = %s", (sched_id,)) == 0:
+		return None
+	return sched_id
+
 positive_integer_error = "must be a positive number."
 def positive_integer(str, request = None):
 	if not str:
@@ -80,7 +91,7 @@ def positive_integer(str, request = None):
 	if nmbr <= 0:
 		return None
 	return nmbr
-	
+
 float_num_error = "must be a number."
 def float_num(str, request = None):
 	if not str:
@@ -88,7 +99,7 @@ def float_num(str, request = None):
 	if not re.match('^\d+(.\d+)?$', str):
 		return None
 	return float(str)
-	
+
 long_num_error = "must be a number."
 def long_num(str, request = None):
 	if not str:
@@ -119,7 +130,7 @@ def boolean(str, request = None):
 	elif str == "false":
 		return False
 	return None
-	
+
 valid_relay_error = "must be a known and valid relay's IP address."
 def valid_relay(str, request = None):
 	if not str:
@@ -172,7 +183,7 @@ def icecast_mount(str, request = None):
 	m = re.search(r"^/(?P<mount>[\d\w\-.]+)(\?(?P<user>\d+):(?P<key>[\d\w]+))?(?:\?\d+\.(?:mp3|ogg))?$", str)
 	if not m:
 		return None
-	
+
 	rd = m.groupdict()
 	mount = rd["mount"]
 	user_id = 1
