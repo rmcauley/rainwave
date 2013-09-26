@@ -611,7 +611,7 @@ class Song(object):
 		self.data['fave_count'] = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings WHERE song_fave = TRUE AND song_id = %s", (self.id,))
 		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_rating > %s", (self.data['rating'],))
 		self.data['vote_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE sid = %s AND song_vote_total > %s", (self.data['sid'], self.data['vote_total']))
-		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE sid = %s AND song_request_count > %s", (self.data['sid'], self.data['request_count']))
+		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE sid = %s AND song_request_count > %s", (self.data['sid'], self.data['request_count']))
 
 		self.data['rating_histogram'] = {}
 		histo = db.c.fetch_all("SELECT "
@@ -619,8 +619,8 @@ class Song(object):
 							   "COUNT(song_rating_user) AS rating_user_count "
 							   "FROM r4_song_ratings JOIN phpbb_users USING (user_id) "
 							   "WHERE radio_inactive = FALSE AND song_id = %s "
-							   "GROUP BY song_rating_rnd "
-							   "ORDER BY song_rating_rnd",
+							   "GROUP BY rating_user_rnd "
+							   "ORDER BY rating_user_rnd",
 							   (self.id,))
 		for point in histo:
 			self.data['rating_histogram'][str(point['rating_user_rnd'])] = point['rating_user_count']
