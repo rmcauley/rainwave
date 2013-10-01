@@ -8,7 +8,7 @@ panels.MenuPanel = {
 	noborder: true,
 	title: _l("p_MenuPanel"),
 	cname: "menu",
-	
+
 	constructor: function(container) {
 		var that = {};
 		that.container = container;
@@ -16,35 +16,35 @@ panels.MenuPanel = {
 		that.el;
 
 		theme.Extend.MenuPanel(that);
-	
+
 		that.init = function() {
 			that.width = container.offsetWidth;
 			that.height = container.offsetHeight;
 			that.el = container;
 
 			that.draw();
-		
+
 			var pos = help.getElPosition(that.td_news);
 			errorcontrol.changeShowXY(pos.x, pos.y + that.height);
-			
+
 			user.addCallback(that.usernameCallback, "username");
 			user.addCallback(that.tunedinCallback, "radio_tunedin");
 			user.addCallback(that.userAvatarCallback, "user_avatar");
 		};
-		
+
 		that.usernameCallback = function(username) {
 			if (user.p.user_id == 1) that.showUsername("Anonymous");
 			else that.showUsername(username);
 		};
-		
+
 		that.tunedinCallback = function(tunedin) {
 			that.drawTuneInChange(tunedin);
 			if (tunedin) help.continueTutorialIfRunning("tunein");
 		};
-		
+
 		that.addPlayer = function(el) {
 			if (that.playeradded) return;
-			
+
 			var url;
 			var usrstr = user.p.user_id > 1 ? "?" + user.p.user_id + ":" + user.p.radio_listenkey : "";
 			if (user.p.sid == 1) url = "http://gamestream.rainwave.cc:8000/rainwave.mp3" + usrstr;
@@ -52,14 +52,14 @@ panels.MenuPanel = {
 			else if (user.p.sid == 3) url = "http://coverstream.rainwave.cc:8000/mixwave.mp3" + usrstr;
 			else if (user.p.sid == 4) url = "http://chipstream.rainwave.cc:8000/bitwave.mp3" + usrstr;
 			else if (user.p.sid == 5) url = "http://allstream.rainwave.cc:8000/omniwave.mp3" + usrstr;
-			
+
 			that.playerInitThemeHook();
-			
+
 			var flashvars = {
 				"url": url,
 				"lang": "en",
 				"codec": "mp3",
-				"volume": "100",
+				"volume": "50",
 				"autoplay": "true",
 				"tracking": "false",
 				"jsevents": "false",
@@ -79,10 +79,10 @@ panels.MenuPanel = {
 			that.embedded_swf_container = createEl("div", { "id": "embedded_swf_container" }, that.flash_container);
 			swfobject.embedSWF("ffmp3/muses-config.swf", that.embedded_swf_container.getAttribute("id"), "190", "32", "10.0.0", "ffmp3/expressInstall.swf", flashvars, params, attributes);
 			that.player.style.background = "none"
-			
+
 			that.playeradded = true;
 		};
-		
+
 		that.playerClick = function() {
 			if (!that.playeradded) that.addPlayer(that.flash_container);
 		};
@@ -91,11 +91,11 @@ panels.MenuPanel = {
 		that.tuneInClickMP3 = function() {
 			that.tuneInClick("");
 		}
-		
+
 		that.tuneInClickOgg = function() {
 			that.tuneInClick("?ogg=true");
 		}
-		
+
 		that.tuneInClick = function(querystr) {
 			var plugin = that.detectM3UHijack();
 			if (plugin) {
@@ -106,12 +106,12 @@ panels.MenuPanel = {
 			}
 			that.tuneInClickThemeHook();
 		};
-		
+
 		that.userAvatarCallback = function(avatar) {
 			// TODO: Remove this for production
 			that.changeAvatar("http://rainwave.cc:80" + avatar);
 		};
-		
+
 		that.helpClick = function() {
 			help.showAllTopics();
 		};
@@ -131,7 +131,7 @@ panels.MenuPanel = {
 			}
 			return false;
 		};
-		
+
 		that.openChat = function() {
 			var chaturl = "http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&server=irc.synirc.net&channel=%23rainwave&noServerNotices=true&noServerMotd=true&autoConnect=true";
 			if (user.p.user_id > 1) {
@@ -142,7 +142,7 @@ panels.MenuPanel = {
 			}
 			var popupWin = window.open(chaturl, 'rainwave_mibbit_window', 'width=750, height=550')
 		};
-		
+
 		that.changeStation = function(sid) {
 			if (sid == 1) window.location.href = "http://game.rainwave.cc";
 			if (sid == 2) window.location.href = "http://ocr.rainwave.cc";
@@ -150,7 +150,7 @@ panels.MenuPanel = {
 			if (sid == 4) window.location.href = "http://chiptune.rainwave.cc";
 			if (sid == 5) window.location.href = "http://all.rainwave.cc";
 		};
-	
+
 		return that;
 	}
 };
