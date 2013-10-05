@@ -96,6 +96,10 @@ def get_current_event(sid):
 	return current[sid]
 
 def advance_station(sid):
+	# This has been necessary during development and debugging.
+	# Do we want to add an "if config.get("developer_mode")" here so it crashes in production and we hunt down the bug?
+	# next[sid] = filter(None, next[sid])
+
 	playlist.prepare_cooldown_algorithm(sid)
 	playlist.clear_updated_albums(sid)
 
@@ -116,8 +120,9 @@ def advance_station(sid):
 	integrate_new_events(sid)
 	# If we need some emergency elections here (normal len(next[sid]) < 2 gets dealt with in post_process)
 	if len(next[sid]) == 0:
-		_create_elections(sid)
-	sort_next(sid)
+		next[sid].append(_create_election(sid))
+	else:
+		sort_next(sid)
 	current[sid] = next[sid].pop(0)
 	current[sid].start_event()
 
@@ -139,6 +144,12 @@ def post_process(sid):
 	# must do this AFTER memcache gets updated, for hopefully obvious reasons
 	sync_to_front.sync_frontend_all(sid)
 
+def refresh_schedule(sid):
+	integrate_new_events(sid)
+	sort_next(sid)
+	_update_memcache(sid)
+	sync_to_front.sync_frontend_all_timed(sid)
+
 def _add_listener_count_record(sid):
 	lc_guests = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1", (sid,))
 	lc_users = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1", (sid,))
@@ -146,38 +157,56 @@ def _add_listener_count_record(sid):
 	lc_users_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1 AND listener_voted_entry IS NOT NULL", (sid,))
 	return db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests, lc_users, lc_guests_active, lc_users_active) VALUES (%s, %s, %s, %s, %s)", (sid, lc_guests, lc_users, lc_guests_active, lc_users_active))
 
-def integrate_new_events(sid):
+def _get_schedule_stats(sid):
 	max_sched_id = 0
 	max_elec_id = 0
 	num_elections = 0
-	# Find the maximum schedule ID we have here and only look to add newer schedule IDs.
-	for event in next[sid]:
-		if event.is_election:
+	for e in next[sid]:
+		if e.is_election:
 			num_elections += 1
-			if event.id > max_elec_id:
-				max_elec_id = event.id
-		elif not event.is_election and event.id > max_sched_id:
-			max_sched_id = event.id
+			if e.id > max_elec_id:
+				max_elec_id = e.id
+		elif not e.is_election and e.id > max_sched_id:
+			max_sched_id = e.id
+	return (max_sched_id, max_elec_id, num_elections)
+
+def integrate_new_events(sid):
+	max_sched_id, max_elec_id, num_elections = _get_schedule_stats(sid)
+
+	# Will remove events that no longer have a schedule ID with them
+	new_next = []
+	for e in next[sid]:
+		if e.is_election and db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_id = %s" % e.id):
+			new_next.append(e)
+		elif db.c.fetch_var("SELECT sched_id FROM r4_schedule WHERE sched_id = %s" % e.id):
+			new_next.append(e)
+	next[sid] = new_next
+
 	# This is the line of code that loads in any upcoming events
 	unused_sched_id = db.c.fetch_list("SELECT sched_id FROM r4_schedule WHERE sid = %s AND sched_id > %s AND sched_used = FALSE AND sched_start <= %s ORDER BY sched_start", (sid, max_sched_id, int(time.time()) + 86400))
 	for sched_id in unused_sched_id:
-		next[sid].append(event.load_by_id(sched_id))
+		e = event.load_by_id(sched_id)
+		if not e:
+			log.warn("schedule", "Unused event ID %s was None." % sched_id)
+		else:
+			next[sid].append(e)
 
 	# Step 4: Insert "priority elections" ahead of anything else
 	priority_elec_ids = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND elec_id > %s AND elec_priority = TRUE ORDER BY elec_id DESC", (sid, max_elec_id))
 	for elec_id in priority_elec_ids:
-		event = playlist.Election.load_by_id(elec_id)
+		e = playlist.Election.load_by_id(elec_id)
 		# The client, through the API, sets start times, so we don't have to worry about where in the array it goes.  The sorter will take care of it.
-		next[sid].append(event)
-		if event.id > max_elec_id:
-			max_elec_id = event.id
+		next[sid].append(e)
+		if e.id > max_elec_id:
+			max_elec_id = e.id
 		num_elections += 1
-		event.set_priority(False)
+		e.set_priority(False)
 
 	return (max_sched_id, max_elec_id, num_elections)
 
 def sort_next(sid):
 	global next
+	next[sid] = filter(None, next[sid])
 	next[sid] = sorted(next[sid], key=lambda event: event.start)
 
 def set_next_start_times(sid):
@@ -190,7 +219,7 @@ def set_next_start_times(sid):
 	i = 1
 	next[sid][0].start_predicted = current[sid].start_actual + current[sid].length()
 	while (i < len(next[sid])):
-		if ((next[sid][i].start_predicted - next[sid][i - 1].start_predicted) <= 30) or next[sid][i].is_election:
+		if not next[sid][i].start_predicted or ((next[sid][i].start_predicted - next[sid][i - 1].start_predicted) <= 30) or next[sid][i].is_election:
 			next[sid][i].start_predicted = next[sid][i - 1].start_predicted + next[sid][i - 1].length()
 			i += 1
 		else:
@@ -201,14 +230,13 @@ def _create_elections(sid):
 	# (the entire requests module depends on its caches)
 	request.update_cache(sid)
 
-	max_sched_id, max_elec_id, num_elections = integrate_new_events(sid)
+	max_sched_id, max_elec_id, num_elections = _get_schedule_stats(sid)
 	log.debug("create_elec", "Max sched ID: %s // Max elec ID: %s // Num elections already existing: %s // Size of next: %s" % (max_sched_id, max_elec_id, num_elections, len(next[sid])))
 
 	# Step 2: Load up any elections that have been added while we've been idle (i.e. by admins) and append them to the list
 	unused_elec_id = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND elec_id > %s AND elec_priority = FALSE ORDER BY elec_id", (sid, max_elec_id))
 	unused_elecs = []
 	for elec_id in unused_elec_id:
-		log.debug("create_elec", "Appending an unused election.")
 		unused_elecs.append(event.Election.load_by_id(elec_id))
 
 	# Step 3: Insert elections where there's time and adjust predicted start times as necessary, if num_elections < 2 then create them where necessary
@@ -267,10 +295,9 @@ def _create_elections(sid):
 			running_time += next[sid][i].length()
 		i += 1
 
-	log.debug("create_elec", "Filling in rest of elections.  Unused elecs: %s // Current num elections: %s // Next size: %s" % (len(unused_elecs), num_elections, len(next[sid])))
-
 	needed_elecs = config.get_station(sid, "num_planned_elections") - num_elections
-	# Step 5: If we're at less than 2 elections available, create them (or use unused ones) and append them
+	log.debug("create_elec", "Before: Needed elecs: %s // Unused elecs: %s // Current num elections: %s // Next size: %s" % (needed_elecs, len(unused_elecs), num_elections, len(next[sid])))
+	# Step 5: If we're at less than X elections available, create them (or use unused ones) and append them
 	# No timing is required here, since we're simply outright appending to the end
 	# (any elections appearing before a scheduled item would be handled by the block above)
 	failures = 0
@@ -285,6 +312,7 @@ def _create_elections(sid):
 			next_elec.start = running_time
 			running_time += next_elec.length()
 			next[sid].append(next_elec)
+			num_elections += 1
 			needed_elecs -= 1
 		else:
 			log.error("create_elec", "Election ID %s was faulty - zero length.  Deleting.")
@@ -292,20 +320,27 @@ def _create_elections(sid):
 			failures += 1
 	if failures >= 2:
 		log.error("create_elec", "Total failure when creating elections.")
+	log.debug("create_elec", "After: Unused elecs: %s // Current num elections: %s // Next size: %s" % (len(unused_elecs), num_elections, len(next[sid])))
 
 def _create_election(sid, start_time = None, target_length = None):
 	log.debug("create_elec", "Creating election, start time %s target length %s." % (start_time, target_length))
-	# Check to see if there are any events during this time
-	elec_scheduler = None
-	if start_time:
-		elec_scheduler = get_event_at_time(sid, start_time)
-	# If there are, and it makes elections (e.g. PVP Hours), get it from there
-	if elec_scheduler and elec_scheduler.produces_elections:
-		elec_scheduler.create_election(sid)
-	else:
-		elec = event.Election.create(sid)
-	elec.fill(target_length)
-	return elec
+	db.c.update("START TRANSACTION")
+	try:
+		# Check to see if there are any events during this time
+		elec_scheduler = None
+		if start_time:
+			elec_scheduler = get_event_at_time(sid, start_time)
+		# If there are, and it makes elections (e.g. PVP Hours), get it from there
+		if elec_scheduler and elec_scheduler.produces_elections:
+			elec_scheduler.create_election(sid)
+		else:
+			elec = event.Election.create(sid)
+		elec.fill(target_length)
+		return elec
+	except:
+		db.c.update("ROLLBACK")
+		raise
+	db.c.update("COMMIT")
 
 def _trim(sid):
 	# Deletes any events in the schedule and elections tables that are old, according to the config

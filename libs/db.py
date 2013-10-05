@@ -223,7 +223,7 @@ def open():
 		if config.has("db_USE_LIVE_R3") and config.get("db_USE_LIVE_R3"):
 			c_old = None
 			connection = psycopg2.connect(base_connstr + "dbname=rainwave")
-			connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+			# connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 			connection.autocommit = True
 			c_old = connection.cursor(cursor_factory=PostgresCursor)
 		else:

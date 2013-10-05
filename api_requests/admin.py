@@ -7,6 +7,7 @@ from api.server import handle_api_url
 from api.server import handle_url
 from api.exceptions import APIException
 from api import fieldtypes
+from api import sync_to_back
 
 import api_requests.playlist
 
@@ -82,6 +83,7 @@ class AddOneUp(api.web.APIHandler):
 	def post(self):
 		e = event.OneUp.create(self.sid, 0, self.get_argument("song_id"))
 		self.append(self.return_name, { "success": True, "sched_id": e.id, "text": "OneUp Added" })
+		sync_to_back.refresh_schedule(self.sid)
 
 @handle_api_url("admin/delete_one_up")
 class DeleteOneUp(api.web.APIHandler):
@@ -92,13 +94,12 @@ class DeleteOneUp(api.web.APIHandler):
 		e = event.OneUp.load_by_id(self.get_argument("sched_id"))
 		if e.used:
 			raise Exception("OneUp already used.")
-		print e.id
 		r = db.c.update("DELETE FROM r4_schedule WHERE sched_id = %s", (e.id,))
 		if r:
 			self.append(self.return_name, { "success": True, "text": "OneUp deleted." })
+			sync_to_back.refresh_schedule(self.sid)
 		else:
 			self.append(self.return_name, { "success": False, "text": "OneUp not deleted." })
-
 
 @handle_url("/admin/tools/one_ups")
 class OneUpTool(api.web.PrettyPrintAPIMixin, GetOneUps):

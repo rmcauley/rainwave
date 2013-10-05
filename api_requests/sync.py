@@ -23,17 +23,17 @@ class SyncUpdateAll(APIHandler):
 	auth_required = False
 	sid_required = False
 	hidden = True
-			
+
 	def post(self):
 		self.append("sync_all_result", "Processing.")
-	
+
 	def on_finish(self):
 		if not self.get_status() == 200:
 			log.debug("sync_update_all", "sync_update_all request was not OK.")
 			return
 		log.debug("sync_update_all", "Updating all sessions for sid %s" % self.sid)
 		cache.update_local_cache_for_sid(self.sid)
-		
+
 		session_count = 0
 		if self.sid in sessions:
 			for session in sessions[self.sid]:
@@ -41,19 +41,19 @@ class SyncUpdateAll(APIHandler):
 				session.update()
 		log.debug("sync_update_all", "Updated %s sessions for sid %s." % (session_count, self.sid))
 		sessions[self.sid] = []
-		
+
 @handle_api_url("sync_update_user")
 class SyncUpdateUser(APIHandler):
 	local_only = True
 	auth_required = False
 	sid_required = False
 	hidden = True
-	
+
 	fields = { "sync_user_id": (fieldtypes.integer, True)}
 
 	def post(self):
 		self.append("sync_user_result", "Processing.")
-			
+
 	def on_finish(self):
 		if not self.get_status() == 200:
 			log.debug("sync_update_user", "sync_update_user request was not OK.")
@@ -67,24 +67,24 @@ class SyncUpdateUser(APIHandler):
 					session.update_user()
 					sessions[sid].remove(session)
 					return
-			
+
 @handle_api_url("sync_update_ip")
 class SyncUpdateIP(APIHandler):
 	local_only = True
 	auth_required = False
 	sid_required = False
 	hidden = True
-	
+
 	fields = { "ip_address": (fieldtypes.ip_address, True) }
-			
+
 	def post(self):
 		self.append("sync_ip_result", "Processing.")
-			
+
 	def on_finish(self):
 		if not self.get_status() == 200:
 			log.debug("sync_update_ip", "sync_update_ip request was not OK.")
 			return
-			
+
 		ip_address = self.get_argument("ip_address")
 		for sid in sessions:
 			for session in sessions[sid]:
@@ -106,15 +106,15 @@ class Sync(APIHandler):
 		"connection will remain open and the response will be sent at the next "
 		"song change.")
 	auth_required = True
-	
+
 	@tornado.web.asynchronous
 	def post(self):
 		if not cache.get_station(self.user.request_sid, "backend_ok"):
 			raise APIException("station_offline")
-		
+
 		global sessions
 		self.keep_alive_handle = None
-		
+
 		self.set_header("Content-Type", "application/json")
 		if "init" in self.request.arguments:
 			self.update()
@@ -123,7 +123,7 @@ class Sync(APIHandler):
 				sessions[self.user.request_sid] = []
 			sessions[self.user.request_sid].append(self)
 			self.keep_alive()
-		
+
 	def update(self):
 		if not cache.get_station(self.user.request_sid, "backend_ok"):
 			raise APIException("station_offline")
@@ -132,11 +132,11 @@ class Sync(APIHandler):
 			tornado.ioloop.IOLoop.instance().remove_timeout(self.keep_alive_handle)
 		api_requests.info.attach_info_to_request(self)
 		self.finish()
-	
+
 	def update_user(self):
 		if not cache.get_station(self.user.request_sid, "backend_ok"):
 			raise APIException("station_offline")
-		
+
 		self.user.refresh()
 		self.append("user", self.user.to_private_dict())
 		self.finish()
@@ -144,11 +144,11 @@ class Sync(APIHandler):
 	def keep_alive(self):
 		self.write(" ")
 		self.keep_alive_handle = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=20), self.keep_alive)
-		
+
 	def anon_registered_mixup_warn(self):
 		self.user.refresh()
 		if not self.user.is_anonymous() and not self.user.is_tunedin():
 			self.append_standard("redownload_m3u")
 			return True
 		return False
-	
+

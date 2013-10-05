@@ -32,7 +32,7 @@ def load_by_id(sched_id):
 	event_type = db.c.fetch_var("SELECT sched_type FROM r4_schedule WHERE sched_id = %s", (sched_id,))
 	if not event_type:
 		raise InvalidScheduleID
-	load_by_id_and_type(sched_id, event_type)
+	return load_by_id_and_type(sched_id, event_type)
 
 def load_by_id_and_type(sched_id, sched_type):
 	if sched_type in globals():
@@ -79,6 +79,7 @@ class Event(object):
 		self.end = None
 		self.url = None
 		self.used = False
+		self.is_election = False
 
 	def _update_from_dict(self, dict):
 		self.id = dict['sched_id']
@@ -325,17 +326,17 @@ class Election(Event):
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_votes'])
 			self.songs.reverse()
-			self.start_actual = int(time.time())
-			self.in_progress = True
-			self.used = True
 
 			for i in range(0, len(self.songs)):
 				self.songs[i].data['entry_position'] = i
 				db.c.update("UPDATE r4_election_entries SET entry_position = %s WHERE entry_id = %s", (i, self.songs[i].data['entry_id']))
-			db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s, elec_used = TRUE WHERE elec_id = %s", (self.start_actual, self.id))
 			if db.c.allows_join_on_update and len(self.songs) > 0:
 				db.c.update("UPDATE phpbb_users SET radio_winningvotes = radio_winningvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id = %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
 				db.c.update("UPDATE phpbb_users SET radio_losingvotes = radio_losingvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id != %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
+		self.start_actual = int(time.time())
+		self.in_progress = True
+		self.used = True
+		db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s, elec_used = TRUE WHERE elec_id = %s", (self.start_actual, self.id))
 
 	def get_filename(self):
 		if len(self.songs) == 0:
@@ -409,7 +410,10 @@ class Election(Event):
 
 	def length(self):
 		if self.used or self.in_progress:
-			return self.songs[0].data['length']
+			if len(self.songs) == 0:
+				return 0
+			else:
+				return self.songs[0].data['length']
 		else:
 			totalsec = 0
 			for song in self.songs:
@@ -509,7 +513,7 @@ class OneUp(Event):
 		return self.songs[0]
 
 	def length(self):
-		return self.songs[0].length
+		return self.songs[0].data['length']
 
 	def to_dict(self, user = None, **kwargs):
 		obj = super(OneUp, self).to_dict(user)
