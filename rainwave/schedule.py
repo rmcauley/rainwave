@@ -118,7 +118,7 @@ def advance_station(sid):
 		history[sid].pop()
 
 	integrate_new_events(sid)
-	# If we need some emergency elections here (normal len(next[sid]) < 2 gets dealt with in post_process)
+	# If we need some emergency elections here
 	if len(next[sid]) == 0:
 		next[sid].append(_create_election(sid))
 	else:
@@ -140,8 +140,6 @@ def post_process(sid):
 	playlist.warm_cooled_albums(sid)
 
 	_update_memcache(sid)
-
-	# must do this AFTER memcache gets updated, for hopefully obvious reasons
 	sync_to_front.sync_frontend_all(sid)
 
 def refresh_schedule(sid):
@@ -336,11 +334,11 @@ def _create_election(sid, start_time = None, target_length = None):
 		else:
 			elec = event.Election.create(sid)
 		elec.fill(target_length)
+		db.c.update("COMMIT")
 		return elec
 	except:
 		db.c.update("ROLLBACK")
 		raise
-	db.c.update("COMMIT")
 
 def _trim(sid):
 	# Deletes any events in the schedule and elections tables that are old, according to the config

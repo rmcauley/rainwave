@@ -322,6 +322,8 @@ class Election(Event):
 					u = User.load_from_id(song.data['elec_request_user_id'])
 					if u.has_requests():
 						u.put_in_request_line(u.get_top_request_sid())
+			# TODO: I've noticed that this seems to produce the same output continuously given the same inputs
+			# Code review!!
 			random.shuffle(self.songs)
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_votes'])
