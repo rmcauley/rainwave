@@ -4,13 +4,13 @@
 //    Variables will be given class "lang_[line]_[variablename]" when filling in variables
 function _l(key, args, el, keep) {
 	var parts = _tl_core(key, args);
-	
+
 	if (el && !keep) {
 		while (el.hasChildNodes()) {
 			el.removeChild(el.firstChild);
 		}
 	}
-	
+
 	var text = "";
 	for (var i = 0; i < parts.length; i++) {
 		text += parts[i].text;
@@ -30,30 +30,31 @@ function _tl_core(key, args) {
 	if (!key in lang) {
 		return [ { "text": "[[ " + key + " ]]", "arg_key": null } ];
 	}
-	
+
 	var line = lang[key];
 	if (!args) return [ { "text": line, "arg_key": null } ];
-	
+
 	var parts = [];
+	var var_found, suffix_found, plural_found, arg_key, start_of_plural, whole_plural;
 	while (line.length > 0) {
-		var var_found = line.indexOf("%(");
-		var suffix_found = line.indexOf("#(");
-		var plural_found = line.indexOf("&(");
-		
+		var_found = line.indexOf("%(");
+		suffix_found = line.indexOf("#(");
+		plural_found = line.indexOf("&(");
+
 		// I feel so dirty but if we don't do this, the not-found strings will always come first
 		var_found = var_found === -1 ? 100000 : var_found;
 		suffix_found = suffix_found === -1 ? 100000 : suffix_found;
 		plural_found = plural_found === -1 ? 100000 : plural_found;
-		
+
 		if ((var_found !== 100000) && (var_found < suffix_found) && (var_found < plural_found)) {
-			arg_key = line.substr(var_found + 2, line.indexOf(")", var_found) - (var_found + 2));
+			var arg_key = line.substr(var_found + 2, line.indexOf(")", var_found) - (var_found + 2));
 			if (arg_key in args) {
 				parts.push({ "text": line.substr(0, var_found), "arg_key": null });
 				parts.push({ "text": args[arg_key], "arg_key": arg_key });
 				line = line.substr(line.indexOf(")", var_found) + 1);
 			}
 		}
-		
+
 		else if ((suffix_found !== 100000) && (suffix_found < var_found) && (suffix_found < plural_found)) {
 			arg_key = line.substr(suffix_found + 2, line.indexOf(")", suffix_found) - (suffix_found + 2));
 			if (arg_key in args) {
@@ -62,14 +63,14 @@ function _tl_core(key, args) {
 				line = line.substr(line.indexOf(")", suffix_found) + 1);
 			}
 		}
-		
+
 		else if ((plural_found !== 100000) && (plural_found < var_found) && (plural_found < suffix_found)) {
-			arg_key = line.substr(plural_found + 2, line.indexOf(")", plural_found) - (plural_found + 2));
+			arg_key = line.substr(plural_found + 2, line.indexOf(":") - 3)
 			if (arg_key in args) {
 				parts.push({ "text": line.substr(0, plural_found), "arg_key": null });
-				
-				var whole_plural = line.substr(plural_found + 2 + arg_key.length + 1);
-				whole_plural = line.substr(0, whole_plural.indexOf(")"));
+
+				start_of_plural = plural_found + 2 + arg_key.length + 1
+				whole_plural = line.substr(start_of_plural, line.indexOf(")") - start_of_plural);
 				if (whole_plural.indexOf("/") === -1) {
 					parts.push({ "text": "[[ plural error: " + arg_key + " ]]", "arg_key": null });
 				}
@@ -79,7 +80,7 @@ function _tl_core(key, args) {
 				else {
 					parts.push({ "text": whole_plural.split("/", 1)[1], "arg_key": arg_key });
 				}
-				
+
 				line = line.substr(line.indexOf(")", plural_found) + 1);
 			}
 		}
