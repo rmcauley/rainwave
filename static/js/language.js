@@ -75,10 +75,10 @@ function _tl_core(key, args) {
 					parts.push({ "text": "[[ plural error: " + arg_key + " ]]", "arg_key": null });
 				}
 				else if (args[arg_key] === 1) {
-					parts.push({ "text": whole_plural.split("/", 1)[0], "arg_key": arg_key });
+					parts.push({ "text": whole_plural.split("/", 2)[0], "arg_key": arg_key });
 				}
 				else {
-					parts.push({ "text": whole_plural.split("/", 1)[1], "arg_key": arg_key });
+					parts.push({ "text": whole_plural.split("/", 2)[1], "arg_key": arg_key });
 				}
 
 				line = line.substr(line.indexOf(")", plural_found) + 1);
