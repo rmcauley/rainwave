@@ -193,6 +193,16 @@ def get_all_albums_list(sid, user = None):
 			"WHERE r4_album_sid.sid = %s "
 			"ORDER BY album_name",
 			(sid,))
+	elif user.is_admin():
+		# Same as a normal user, but add cooldown variables
+		return db.c.fetch_all(
+			"SELECT r4_albums.album_id AS id, album_cool_multiply AS cool_multiply, album_cool_override AS cool_override, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS rating_user "
+			"FROM r4_albums "
+			"JOIN r4_album_sid USING (album_id) "
+			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
+			"WHERE r4_album_sid.sid = %s "
+			"ORDER BY album_name",
+			(user.id, sid))
 	else:
 		return db.c.fetch_all(
 			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS rating_user "
@@ -897,7 +907,7 @@ class Album(AssociatedMetadata):
 			instance.data['songs'] = db.c.fetch_all(
 				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
 					"song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, "
-					"song_rating AS rating, song_cool_multiply AS cool_multiplty, song_cool_override AS cool_override, "
+					"song_rating AS rating, song_cool_multiply AS cool_multiply, song_cool_override AS cool_override, "
 					"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(song_fave, FALSE) AS fave, "
 					"string_agg(r4_artists.artist_id || ':' || r4_artists.artist_name,  ',') AS artist_parseable "
 				"FROM r4_song_sid "

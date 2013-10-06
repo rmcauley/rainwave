@@ -20,46 +20,6 @@ from rainwave import event
 # data, presentation, and so on.  It's for admins.  Not users.  QA and snazzy interfaces need not apply.
 # It only needs to work.
 
-@handle_url("/admin/")
-class AdminIndex(api.web.HTMLRequest):
-	admin_required = True
-
-	def get(self):
-		self.render("admin_frame.html", title="R4 Admin", api_url=config.get("api_external_url_prefix"), user_id=self.user.id, api_key=self.user.ensure_api_key())
-
-@handle_url("/admin/tool_list")
-class ToolList(api.web.HTMLRequest):
-	admin_required = True
-
-	def get(self):
-		self.write(self.render_string("bare_header.html", title="Tool List"))
-		self.write("<b>Do:</b><br />")
-		for item in [ ("One Ups", "one_ups") ]:
-			self.write("<a href=\"#\" onclick=\"top.current_tool = '%s'; top.change_screen();\">%s</a><br />" % (item[1], item[0]))
-		self.write(self.render_string("basic_footer.html"))
-
-@handle_url("/admin/station_list")
-class StationList(api.web.HTMLRequest):
-	admin_required = True
-
-	def get(self):
-		self.write(self.render_string("bare_header.html", title="Station List"))
-		self.write("<b>On station:</b><br>")
-		for sid in config.station_ids:
-			self.write("<a href=\"#\" onclick=\"top.current_station = %s; top.change_screen();\">%s</a><br />" % (sid, config.station_id_friendly[sid]))
-		self.write(self.render_string("basic_footer.html"))
-
-@handle_url("/admin/restrict_songs")
-class RestrictList(api.web.HTMLRequest):
-	admin_required = True
-
-	def get(self):
-		self.write(self.render_string("bare_header.html", title="Station List"))
-		self.write("<b>With songs from:</b><br>")
-		for sid in config.station_ids:
-			self.write("<a href=\"#\" onclick=\"top.current_restriction = %s; top.change_screen();\">%s</a><br />" % (sid, config.station_id_friendly[sid]))
-		self.write(self.render_string("basic_footer.html"))
-
 @handle_api_url("admin/get_one_ups")
 class GetOneUps(api.web.APIHandler):
 	admin_required = True
@@ -101,70 +61,74 @@ class DeleteOneUp(api.web.APIHandler):
 		else:
 			self.append(self.return_name, { "success": False, "text": "OneUp not deleted." })
 
-@handle_url("/admin/tools/one_ups")
-class OneUpTool(api.web.PrettyPrintAPIMixin, GetOneUps):
+@handle_api_url("admin/set_song_cooldown")
+class SetSongCooldown(api.web.APIHandler):
 	admin_required = True
+	sid_required = False
+	description = "Sets the song cooldown multiplier and override.  Passing null or false for either argument will retain its current setting. (non-destructive update)"
+	fields = { "song_id": (fieldtypes.song_id, True),
+		"multiply": (fieldtypes.float_num, None),
+		"override": (fieldtypes.integer, None) }
 
-	def get(self):
-		self.write(self.render_string("bare_header.html", title="%s One Up Tool" % config.station_id_friendly[self.sid]))
-		self.write("<h2>%s One-Up Tool</h2>" % config.station_id_friendly[self.sid])
+	def post(self):
+		if self.get_argument("multiply") and self.get_argument("override"):
+			db.c.update("UPDATE r4_songs SET song_cool_multiply = %s, song_cool_override = %s WHERE song_id = %s",
+						(self.get_argument("multiply"), self.get_argument("override"), self.get_argument("song_id")))
+			self.append(self.return_name, { "success": True, "text": "Song cooldown multiplier and override updated." })
+		elif self.get_argument("multiply"):
+			db.c.update("UPDATE r4_songs SET song_cool_multiply = %s WHERE song_id = %s",
+						(self.get_argument("multiply"), self.get_argument("song_id")))
+			self.append(self.return_name, { "success": True, "text": "Song cooldown multiplier updated.  Override untouched." })
+		elif self.get_argument("override"):
+			db.c.update("UPDATE r4_songs SET AND song_cool_override = %s WHERE song_id = %s",
+						(self.get_argument("override"), self.get_argument("song_id")))
+			self.append(self.return_name, { "success": True, "text": "Song cooldown override updated.  Multiplier untouched." })
+		else:
+			self.append(self.return_name, { "success": False, "text": "Neither multiply or override parameters set." })
 
-		if 'one_ups' in self._output and type(self._output['one_ups']) == types.ListType and len(self._output['one_ups']) > 0:
-			self.write("<ul>")
-			for one_up in self._output['one_ups']:
-				self.write("<li><div>")
-				if not one_up['sched_start'] or one_up['sched_start'] == 0:
-					self.write("ASAP")
-				else:
-					self.write(time.strftime("%a %b %d/%Y %H:%M %Z", time.localtime(one_up['sched_start'])))
-				self.write(" -- <a onclick=\"window.top.call_api('admin/delete_one_up', { 'sched_id': %s });\">Delete</a></div>" % one_up['sched_id'])
-				self.write("<div>%s</div>" % one_up['song_title'])
-				self.write("<div>%s</div>" % one_up['album_name'])
-				self.write("</li>")
+@handle_api_url("admin/reset_song_cooldown")
+class ResetSongCooldown(api.web.APIHandler):
+	admin_required = True
+	sid_required = False
+	description = "Sets song cooldown override to null and sets cooldown multiplier to 1."
+	fields = { "song_id": (fieldtypes.song_id, True) }
 
-@handle_url("/admin/album_list/one_ups")
-class AlbumList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AllAlbumsHandler):
-	fields = { "restrict": (fieldtypes.integer, True) }
+	def post(self):
+		db.c.update("UPDATE r4_songs SET song_cool_multiply = 1, song_cool_override = NULL WHERE song_id = %s",
+					(self.get_argument("song_id"),))
+		self.append(self.return_name, { "success": True, "text": "Song cooldown reset." })
 
-	def get(self):
-		self.write(self.render_string("bare_header.html", title="Album List"))
-		self.write("<table>")
-		for row in self._output['all_albums']:
-			self.write("<tr onclick=\"window.location.href = '/admin/song_list/' + window.top.current_tool + '?id=%s';\"><td>%s</td><td>" % (row['id'], row['name']))
-			if row['rating_user']:
-				self.write(str(row['rating_user']))
-			self.write("</td><td>")
-			if row['fave']:
-				self.write("Fave")
-			self.write("</td>")
-			self.render_row_special(row)
-			self.write("</tr>")
+@handle_api_url("admin/set_album_cooldown")
+class SetAlbumCooldown(api.web.APIHandler):
+	admin_required = True
+	description = "Sets the album cooldown multiplier and override PER STATION.  Passing null or false for either argument will retain its current setting. (non-destructive update)"
+	fields = { "album_id": (fieldtypes.album_id, True),
+		"multiply": (fieldtypes.float_num, None),
+		"override": (fieldtypes.integer, None) }
 
-	def render_row_special(self, row):
-		pass
+	def post(self):
+		if self.get_argument("multiply") and self.get_argument("override"):
+			db.c.update("UPDATE r4_album_sid SET album_cool_multiply = %s, album_cool_override = %s WHERE album_id = %s AND sid = %s",
+						(self.get_argument("multiply"), self.get_argument("override"), self.get_argument("album_id"), self.sid))
+			self.append(self.return_name, { "success": True, "text": "Album cooldown multiplier and override updated." })
+		elif self.get_argument("multiply"):
+			db.c.update("UPDATE r4_album_sid SET album_cool_multiply = %s WHERE album_id = %s AND sid = %s",
+						(self.get_argument("multiply"), self.get_argument("album_id"), self.sid))
+			self.append(self.return_name, { "success": True, "text": "Album cooldown multiplier updated.  Override untouched." })
+		elif self.get_argument("override"):
+			db.c.update("UPDATE r4_album_sid SET album_cool_override = %s WHERE album_id = %s AND sid = %s",
+						(self.get_argument("override"), self.get_argument("album_id"), self.sid))
+			self.append(self.return_name, { "success": True, "text": "Album cooldown override updated.  Override untouched." })
+		else:
+			self.append(self.return_name, { "success": False, "text": "Neither multiply or override parameters set." })
 
-class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
-	# fields are handled by AlbumHandler
+@handle_api_url("admin/reset_album_cooldown")
+class ResetAlbumCooldown(api.web.APIHandler):
+	admin_required = True
+	description = "Sets album cooldown override to null and sets cooldown multiplier to 1."
+	fields = { "album_id": (fieldtypes.album_id, True) }
 
-	def get(self):
-		self.write(self.render_string("bare_header.html", title="Song List"))
-		self.write("<h2>%s</h2>" % self._output['album']['name'])
-		self.write("<table>")
-		for row in self._output['album']['songs']:
-			self.write("<tr><td>%s</td><td>" % row['title'])
-			if row['rating_user']:
-				self.write(str(row['rating_user']))
-			self.write("</td><td>")
-			if row['fave']:
-				self.write("Fave")
-			self.write("</td>")
-			self.render_row_special(row)
-			self.write("</tr>")
-
-	def render_row_special(self, row):
-		pass
-
-@handle_url("/admin/song_list/one_ups")
-class OneUpSongList(SongList):
-	def render_row_special(self, row):
-		self.write("<td><a onclick=\"window.top.call_api('admin/add_one_up', { 'song_id': %s });\">Add OneUp</a></td>" % row['id'])
+	def post(self):
+		db.c.update("UPDATE r4_album_sid SET album_cool_multiply = 1, album_cool_override = NULL WHERE album_id = %s AND sid = %s",
+						(self.get_argument("album_id"), self.sid))
+		self.append(self.return_name, { "success": True, "text": "Album cooldown multiplier and override reset." })

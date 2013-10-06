@@ -42,7 +42,10 @@ class Error404Handler(tornado.web.RequestHandler):
 
 class RainwaveHandler(tornado.web.RequestHandler):
 	# The following variables can be overridden by you.
-	# Fields is a hash with { "form_name" => (fieldtypes.[something], True|False } format, so that automatic form validation can be done for you.  True/False values are for required/optional.
+	# Fields is a hash with { "form_name" => (fieldtypes.[something], True|False|None } format, so that automatic form validation can be done for you.  True/False values are for required/optional.
+	# A True requirement means it must be present and valid
+	# A False requirement means it is optional, but if present, must be valid
+	# A None requirement means it is optional, and if present and invalid, will be set to None
 	fields = {}
 	# This URL variable is setup by the server decorator - DON'T TOUCH IT.
 	url = False
@@ -169,7 +172,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				self.cleaned_args[field] = None
 			else:
 				parsed = type_cast(self.get_argument(field), self)
-				if parsed == None:
+				if parsed == None and required != None:
 					raise APIException("invalid_argument", argument=field, reason=getattr(fieldtypes, "%s_error" % type_cast.__name__), http_code=400)
 				else:
 					self.cleaned_args[field] = parsed
