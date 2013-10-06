@@ -1100,7 +1100,7 @@ function _THEME() {
 			if (json.genres.length == 1) {
 				tmp = document.createElement("div");
 				_l("pl_genre", false, tmp, true);
-				createEl("span", { "textContent": json.genres[0].genre_name + _l("pl_genre2") }, tmp);
+				createEl("span", { "textContent": json.genres[0].name + _l("pl_genre2") }, tmp);
 				stats.appendChild(tmp);
 			}
 			else if (json.genres.length > 1) {
@@ -1269,7 +1269,7 @@ function _THEME() {
 
 				ns.td_n = createEl("td", { "class": "pl_songlist_title" }, ns.tr);
 				ns.td_n_text = createEl("div", { "textContent": song_data[i].title }, ns.td_n);
-				
+
 				if ("artist_parseable" in song_data[i]) {
 					var artists = song_data[i].artist_parseable.split(',');
 					var artist_split;

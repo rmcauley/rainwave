@@ -33,7 +33,7 @@ function init() {
 	if (/MSIE (6|7|8)/i.test(navigator.userAgent)) browserfailed = true;
 	else if (!JSON) browserfailed = true;
 	else if (!XMLHttpRequest) browserfailed = true;
-	
+
 	if (browserfailed) {
 		createEl("p", false, BODY).innerHTML = "Sorry, your browser is too old to use Rainwave.  Please upgrade to <a href='http://getfirefox.com' class='external_link' style='color: #AAFFFF;'>Firefox</a> or <a href='http://google.com/chrome' class='external_link' style='color: #AAFFFF;'>Chrome</a>.";
 		createEl("p", false, BODY).innerHTML = "If you don't, or can't, you can still tune in to Rainwave using a media player with the following links:";
@@ -45,12 +45,12 @@ function init() {
 		li = createEl("li", false, ul);
 		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "Chiptune Only", "href": "http://chiptune.rainwave.cc/tunein" }, li);
 		li = createEl("li", false, ul);
-		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "Covers Only", "href": "http://covers.rainwave.cc/tunein" }, li);		
+		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "Covers Only", "href": "http://covers.rainwave.cc/tunein" }, li);
 		li = createEl("li", false, ul);
 		createEl("a", { "style": "color: #AAFFFF;", "class": "external_link", "textContent": "OverClocked ReMix", "href": "http://ocr.rainwave.cc/tunein.php" }, li);
 		return false;
 	}
-	
+
 	var save_lang_cookie = function(new_lang) {
 		var today = new Date();
 		var expiry = new Date(today.getTime() + 28 * 24 * 60 * 60 * 1000 * 13);
@@ -69,18 +69,7 @@ function init() {
 			{ "value": "se_SE", "option": "Svenska" }
 		], refresh: true, callback: save_lang_cookie });
 	prefs.addPref("help", { "name": "visited", "defaultvalue": false, "hidden": true });
-	
-	var deeplinkurl = decodeURI(location.href);
-	if (deeplinkurl.indexOf("#!/") >= 0) {
-		var pageargs = deeplinkurl.substring(deeplinkurl.indexOf("#!/") + 3).split("/");
-		var new_sid = CANONSTATIONS.indexOf(pageargs[0]);
-		pageargs = pageargs.slice(1);
-		if (new_sid) {
-			PRELOADED_SID = new_sid;
-			deeplinkcallbackid = lyre.addCallback(function() { deepLink(pageargs); }, "sched_sync");
-		}
-	}
-	
+
 	lyre.catcherrors = false;
 	lyre.jsErrorCallback = errorcontrol.jsError;
 	lyre.setStationID(PRELOADED_SID);
@@ -96,28 +85,26 @@ function init() {
 	lyre.setUserID(INITIAL_PAYLOAD[0].user.id);
 	lyre.setKey(INITIAL_PAYLOAD[0].user.api_key);
 	lyre.sync_start(INITIAL_PAYLOAD);
-	
+
 	for (var i in panels) {
 		panelcname[panels[i].cname] = i;
 	}
-	
+
 	if (!prefs.getPref("help", "visited") && !SIDEBAR) {
 		prefs.changePref("help", "visited", true);
 		prefs.savePrefs();
 		help.startTutorial("welcome");
 	}
-	
+
 	prefs.addPref("edi", { "name": "autoplay", "defaultvalue": false, "type": "checkbox" });
 	if (prefs.getPref("edi", "autoplay")) {
 		edi.openpanels["MenuPanel"].playerClick();
 	}
-}
 
-function deepLink(pageargs) {
-	// this tells edi to change the URL
-	pageargs.unshift(true);
-	edi.openPanelLink.apply(this, pageargs);
-	lyre.removeCallback("sched_sync", deeplinkcallbackid);
+	// this will trip any deep links
+	if (decodeURI(location.href).indexOf("#!/") >= 0) {
+		edi.forceUrlDetect();
+	}
 }
 
 window.addEventListener('load', init, true);

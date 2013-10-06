@@ -10,7 +10,7 @@ var edi = function() {
 	// }
 	that.openpanels = {};
 	var panellinks = {};
-	
+
 	that.getDefaultLayout = function() {
 		return [
 			[ { "panel": "MenuPanel", "rowspan": 1, "colspan": 2 } ],
@@ -18,7 +18,7 @@ var edi = function() {
 			[ false, { "panel": "MainMPI", "rowspan": 1, "colspan": 1 } ]
 		];
 	};
-	
+
 	that.urlChangeDetect = function() {
 		if (oldurl != location.href) {
 			var deeplinkurl = decodeURI(location.href);
@@ -31,7 +31,12 @@ var edi = function() {
 			}
 		}
 	};
-	
+
+	that.forceUrlDetect = function() {
+		oldurl = "";
+		that.urlChangeDetect();
+	};
+
 	that.openPanelLink = function(changeurl) {
 		// if the panel we're trying to call doesn't exist, leave
 		if (typeof(panelcname[arguments[1]]) == "undefined") return false;
@@ -57,15 +62,15 @@ var edi = function() {
 		}
 		return false;
 	};
-	
-	that.changeDeepLinkPanel = function(panel) {		
+
+	that.changeDeepLinkPanel = function(panel) {
 		var urlstring = panel;
 		if (panel in panellinks) {
 			urlstring = panellinks[panel];
 		}
 		that.changeDeepLink(urlstring);
 	};
-	
+
 	that.changeDeepLink = function(urlstring) {
 		// this stops changing the deep link before the page has even opened
 		if (!user.p.sid) return;
@@ -78,7 +83,7 @@ var edi = function() {
 		}
 		location.href = oldurl;
 	};
-	
+
 	// TODO: Scrub on load
 	that.loadLayouts = function() {
 		var cookie = prefs.loadCookie("edilayouts");
@@ -119,7 +124,7 @@ var edi = function() {
 		if (SIDEBAR) {
 			clayout = [ [ { "panel": "TimelinePanel", "rowspan": 1, "colspan": 1 } ] ];
 			panels.TimelinePanel.height = window.innerHeight;
-			
+
 		}
 		else if ((wantlayout != "_default") && (wantlayout in layouts)) {
 			clayout = layouts[wantlayout];
@@ -130,20 +135,20 @@ var edi = function() {
 			clayout = layouts['default'];
 		}
 		prefs.changePref("edi", "clayout", wantlayout);
-		
+
 		// TODO: When adding a callback for the changing the layout, DEFINE THE CALLBACK HERE.
 		// Putting it above this mark would cause an unnecessary reflow when starting up the page without cookies.
-		
+
 		for (var i in panels) {
 			panels[i].EDINAME = i;
 		}
-		
+
 		that.sizeLayout();
 		that.drawGrid(container);
-		
+
 		setInterval(that.urlChangeDetect, 200);
 	};
-	
+
 	that.resetLayout = function(value) {
 		if (value) {
 			layouts['default'] = that.getDefaultLayout();
@@ -151,13 +156,13 @@ var edi = function() {
 			prefs.changePref("edi", "clayout", "_default", true);
 		}
 	};
-	
+
 	prefs.addPref("edi", { "hidden": true, "name": "clayout", "defaultvalue": "_default" });
 	prefs.addPref("edi", { "name": "resetlayout", "type": "button", "defaultvalue": false, "callback": that.resetLayout, "refresh": true, "sessiononly": true });
-	
+
 	//*************************************************************************
 	// Sizing/drawing layouts
-	
+
 	var colw = [];
 	var rowh = [];
 	var mincolw = [];
@@ -185,7 +190,7 @@ var edi = function() {
 			mincolw[j] = 0;
 			maxcolw[j] = 10000;
 		}
-		
+
 		// Step 1: Find out the normal width/height for each column and row and the minimum width/height
 		for (var i = 0; i < clayout.length; i++) {
 			layout[i] = [];
@@ -213,7 +218,7 @@ var edi = function() {
 				}
 			}
 		}
-		
+
 		// Step 2: Get how large our current layout is
 		var ediwidth = 0;
 		var ediheight = 0;
@@ -227,7 +232,7 @@ var edi = function() {
 		// Step 3: Shrink or expand panels to fit screen
 		var xbudget = window.innerWidth - ediwidth;
 		var ybudget = window.innerHeight - ediheight;
-		
+
 		// Find out which columns and rows are slackable or maxable
 		for (var i = 0; i < layout.length; i++) rowflags[i] = "slack";
 		for (var j = 0; j < maxcols; j++) colflags[j] = "slack";
@@ -259,14 +264,14 @@ var edi = function() {
 				}
 			}
 		}
-		
+
 		colw = that.getGridSize(colw, mincolw, colflags, xbudget, theme.borderwidth);
 		rowh = that.getGridSize(rowh, minrowh, rowflags, ybudget, theme.borderheight);
 	};
-	
+
 	that.getGridSize = function(sizes, minsizes, flags, budget, bordersize) {
 		budget -= bordersize * (sizes.length - 1);
-	
+
 		// Find out how many max/slack cells we have
 		var nummax = 0;
 		var numslack = 0;
@@ -344,7 +349,7 @@ var edi = function() {
 					}
 				}
 			}
-			
+
 			if (budget < 0) {
 				// Find out how much other space can be squeezed evenly out of the other columns
 				var shrinkable = 0;
@@ -362,10 +367,10 @@ var edi = function() {
 				}
 			}
 		}
-		
+
 		return sizes;
 	};
-	
+
 	that.drawGrid = function(element) {
 		for (var i = 0; i < layout.length; i++) {
 			vborders[i] = new Array();
@@ -385,7 +390,7 @@ var edi = function() {
 					runningx += cellwidth + theme.borderwidth;
 					continue;
 				}
-				
+
 				var usevborder = false;
 				var usehborder = false;
 				var borderwidth = theme.borderwidth;
@@ -399,12 +404,12 @@ var edi = function() {
 					borderheight = Math.floor(borderheight / 2);
 					rowh[rowh.length - 1] += borderheight;
 				}
-				
+
 				var cellwidth = (layout[i][j].colspan - 1) * theme.borderwidth;
 				for (var k = j; k <= (j + layout[i][j].colspan - 1); k++) cellwidth += colw[k];
 				var cellheight = (layout[i][j].rowspan - 1) * theme.borderheight;
 				for (var k = i; k <= (i + layout[i][j].rowspan - 1); k++) cellheight += rowh[k];
-				
+
 				var dispwidth = (typeof(layout[i][j].initSizeX) == "function") ? layout[i][j].initSizeX(cellwidth, colw[j]) : cellwidth;
 				var dispheight = (typeof(layout[i][j].initSizeY) == "function") ? layout[i][j].initSizeY(cellheight, rowh[i]) : cellheight;
 				if ((dispwidth != cellwidth) || (dispheight != cellheight)) cirregular = true;
@@ -436,7 +441,7 @@ var edi = function() {
 					if (theme.borderHorizontal) theme.borderHorizontal(hborders[i][j]);
 					element.appendChild(hborders[i][j].el);
 				}*/
-				
+
 				var panelel = document.createElement("div");
 				panelel.setAttribute("style", "position: absolute; width: " + dispwidth + "px; height: " + dispheight + "px;");
 				that.openpanels[layout[i][j].EDINAME] = layout[i][j].constructor(panelel);
@@ -452,25 +457,25 @@ var edi = function() {
 				that.openpanels[layout[i][j].EDINAME].width = dispwidth;
 				that.openpanels[layout[i][j].EDINAME].parent = that;
 				that.openpanels[layout[i][j].EDINAME].init();
-				
+
 				that.openpanels[layout[i][j].EDINAME]._row = i;
 				that.openpanels[layout[i][j].EDINAME]._column = j;
 				that.openpanels[layout[i][j].EDINAME]._runningx = runningx;
 				that.openpanels[layout[i][j].EDINAME]._runningy = runningy;
 				that.openpanels[layout[i][j].EDINAME]._div = panelel;
-				
+
 				runningx += cellwidth + borderwidth;
 			}
 		runningy += rowh[i] + borderheight;
 		}
-		
+
 		for (i = 0; i < layout.length; i++) {
 			for (j = 0; j < layout[i].length; j++) {
 				if (typeof(layout[i][j]) != "object") continue;
 				if (that.openpanels[layout[i][j].EDINAME].onLoad) that.openpanels[layout[i][j].EDINAME].onLoad();
 			}
 		}
-		
+
 		/*for (var i = 0; i < (layout.length - 1); i++) {
 			for (var j = 0; j < (layout[i].length - 1); j++) {
 				if (typeof(cborders[i][j]) != "object") continue;
@@ -478,17 +483,17 @@ var edi = function() {
 			}
 		}*/
 	};
-	
+
 	//*************************************
 	//  Resizing
-	
+
 	var resize_mx;
 	var resize_my;
 	var resize_row = false;
 	var resize_col = false;
 	var resize_last_width = -1;
 	var resize_last_height = -1;
-	
+
 	that.startRowResize = function(evt, row) {
 		if (resize_row !== false) return;
 		resize_my = getMousePosY(evt);
@@ -497,7 +502,7 @@ var edi = function() {
 		document.addEventListener("mousemove", that.rollingRowResize, false);
 		document.addEventListener("mouseup", that.stopRowResize, false);
 	};
-	
+
 	that.rollingRowResize = function(evt) {
 		var my = getMousePosY(evt);
 		// TODO: vborders
@@ -539,7 +544,7 @@ var edi = function() {
 		}
 		resize_last_height = height;
 	};
-	
+
 	that.stopRowResize = function(evt) {
 		var rowdiff = resize_last_height - rowh[resize_row];
 		rowh[resize_row] = resize_last_height;
@@ -571,7 +576,7 @@ var edi = function() {
 		resize_row = false;
 		that.saveLayouts();
 	};
-	
+
 	that.startColumnResize = function(evt, col) {
 		if (resize_col !== false) return;
 		resize_mx = getMousePosX(evt);
@@ -580,7 +585,7 @@ var edi = function() {
 		document.addEventListener("mousemove", that.rollingColumnResize, false);
 		document.addEventListener("mouseup", that.stopColumnResize, false);
 	};
-	
+
 	that.rollingColumnResize = function(evt) {
 		var mx = getMousePosX(evt);
 		var width = colw[resize_col] + (mx - resize_mx);
@@ -663,6 +668,6 @@ var edi = function() {
 		resize_col = false;
 		that.saveLayouts();
 	};
-		
+
 	return that;
 }();
