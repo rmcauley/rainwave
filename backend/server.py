@@ -30,7 +30,12 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		except psycopg2.extensions.TransactionRollbackError as e:
 			if not self.retried:
 				self.retried = True
+				log.warn("backend", "Database transaction deadlock.  Re-opening database and setting retry timeout.")
+				db.close()
+				db.open()
 				tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(milliseconds=350), self.get)
+			else:
+				raise
 
 		if not config.get("liquidsoap_annotations"):
 			self.write(schedule.get_current_file(self.sid))

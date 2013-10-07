@@ -59,10 +59,11 @@ def prepare_cooldown_algorithm(sid):
 	log.debug("cooldown", "multi: %s" % multiplier_adjustment)
 	base_album_cool = float(config.get_station(sid, "cooldown_percentage")) * float(sum_aasl) / float(multiplier_adjustment)
 	log.debug("cooldown", "base_album_cool: %s" % base_album_cool)
-	# TODO: Code review this query, does it get the result we want?
-	base_rating = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_rating) * AVG(song_length) AS tempvar FROM r4_albums JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) JOIN r4_song_sid ON (r4_albums.album_id = r4_song_sid.album_id) JOIN r4_songs USING (song_id) WHERE r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
-	if not base_rating:
-		base_rating = 4
+	# TODO: the base_rating formula/algorithm is broken, default to 4
+	base_rating = 4
+	# base_rating = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_rating) * AVG(song_length) AS tempvar FROM r4_albums JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) JOIN r4_song_sid ON (r4_albums.album_id = r4_song_sid.album_id) JOIN r4_songs USING (song_id) WHERE r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
+	# if not base_rating:
+	#	base_rating = 4
 	log.debug("cooldown", "base rating: %s" % base_rating)
 	min_album_cool = config.get_station(sid, "cooldown_highest_rating_multiplier") * base_album_cool
 	log.debug("cooldown", "min_album_cool: %s" % min_album_cool)
@@ -183,6 +184,7 @@ def remove_all_locks(sid):
 	Removes all cooldown & election locks on songs.
 	"""
 	db.c.update("UPDATE r4_song_sid SET song_elec_blocked = FALSE, song_elec_blocked_num = 0, song_cool = FALSE, song_cool_end = 0 WHERE sid = %s", (sid,))
+	db.c.update("UPDATE r4_album_sid SET album_cool = FALSE AND album_cool_lowest = 0 WHERE sid = %s" % sid)
 
 def get_all_albums_list(sid, user = None):
 	if not user or user.id == 1:
@@ -497,6 +499,7 @@ class Song(object):
 			cool_time = auto_cool * get_age_cooldown_multiplier(self.data['added_on']) * self.data['cool_multiply']
 
 		cool_time = int(cool_time + time.time())
+		log.debug("cooldown", "Song ID %s Station ID %s cool_time period: %s" % (self.id, sid, cool_time))
 		db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_time, self.id, sid))
 		self.data['cool'] = True
 		self.data['cool_end'] = cool_time
@@ -766,6 +769,8 @@ class AssociatedMetadata(object):
 			self.elec_block = d["elec_block"]
 		if d.has_key("cool_time"):
 			self.cool_time = d["cool_time"]
+		if d.has_key("cool_override"):
+			self.cool_time = d['cool_override']
 
 	def save(self):
 		if not self.id and self.data['name']:
@@ -1034,7 +1039,7 @@ class Album(AssociatedMetadata):
 			log.debug("cooldown", "min_album_cool: %s .. max_album_cool: %s .. auto_cool: %s .. album_num_songs: %s .. rating: %s" % (cooldown_config[sid]['min_album_cool'], cooldown_config[sid]['max_album_cool'], auto_cool, album_num_songs, cool_rating))
 			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_num_songs - config.get_station(sid, "cooldown_size_slope_start")))) / 2);
 			cool_age_multiplier = get_age_cooldown_multiplier(self.data['added_on'])
-			cool_time = auto_cool * cool_size_multiplier * cool_age_multiplier * self.data['cool_multiply']
+			cool_time = int(auto_cool * cool_size_multiplier * cool_age_multiplier * self.data['cool_multiply'])
 			log.debug("cooldown", "auto_cool: %s .. cool_size_multiplier: %s .. cool_age_multiplier: %s .. cool_multiply: %s .. cool_time: %s" %
 					  (auto_cool, cool_size_multiplier, cool_age_multiplier, self.data['cool_multiply'], cool_time))
 		updated_album_ids[sid][self.id] = True
@@ -1226,7 +1231,8 @@ class SongGroup(AssociatedMetadata):
 		return db.c.update("UPDATE r4_groups SET group_name = %s WHERE group_id = %s", (self.name, self.id))
 
 	def _start_cooldown_db(self, sid, cool_time):
-		cool_end = cool_time + time.time()
+		cool_end = int(cool_time + time.time())
+		log.debug("cooldown", "Group ID %s Station ID %s cool_time period: %s" % (self.id, sid, cool_time))
 		# Make sure to update both the if and else SQL statements if doing any updates
 		if db.c.allows_join_on_update:
 			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s "
