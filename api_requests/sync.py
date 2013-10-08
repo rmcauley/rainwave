@@ -126,6 +126,8 @@ class Sync(APIHandler):
 		if not cache.get_station(self.user.request_sid, "backend_ok"):
 			raise APIException("station_offline")
 
+		self.user.refresh()
+
 		if self.keep_alive_handle:
 			tornado.ioloop.IOLoop.instance().remove_timeout(self.keep_alive_handle)
 		api_requests.info.attach_info_to_request(self)
