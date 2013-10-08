@@ -107,18 +107,25 @@ def advance_station(sid):
 		db.c.update("INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)", (sid, last_song.id))
 	log.debug("advance", "Last song insertion time: %s" % (time.clock() - start_time,))
 
+	start_time = time.clock()
 	history[sid].insert(0, current[sid])
 	while len(history[sid]) > 5:
 		history[sid].pop()
+	log.debug("advance", "History management: %s" % (time.clock() - start_time,))
 
+	start_time = time.clock()
 	integrate_new_events(sid)
 	# If we need some emergency elections here
 	if len(next[sid]) == 0:
 		next[sid].append(_create_election(sid))
 	else:
 		sort_next(sid)
+	log.debug("advance", "Next event management: %s" % (time.clock() - start_time,))
+
+	start_time = time.clock()
 	current[sid] = next[sid].pop(0)
 	current[sid].start_event()
+	log.debug("advance", "Current management: %s" % (time.clock() - start_time,))
 
 def post_process(sid):
 	set_next_start_times(sid)
