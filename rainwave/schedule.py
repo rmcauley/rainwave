@@ -18,7 +18,6 @@ from libs import log
 current = {}
 next = {}
 history = {}
-long_history = {}
 
 class ScheduleIsEmpty(Exception):
 	pass
@@ -57,13 +56,6 @@ def load():
 			for elec_id in db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE elec_start_actual < %s ORDER BY elec_start_actual DESC LIMIT 5", (current[sid].start_actual,)):
 				history[sid].insert(0, event.Election.load_by_id(elec_id))
 
-		long_history[sid] = cache.get_station(sid, "long_history")
-		if not long_history[sid]:
-			long_history[sid] = []
-			song_ids = db.c.fetch_list("SELECT song_id FROM r4_song_history WHERE sid = %s ORDER BY songhist_id DESC", (sid,))
-			for id in song_ids:
-				long_history[sid].append(playlist.Song.load_from_id(id, sid))
-
 def get_event_in_progress(sid):
 	in_progress = db.c.fetch_row("SELECT sched_id, sched_type FROM r4_schedule WHERE sid = %s AND sched_in_progress = TRUE ORDER BY sched_start DESC LIMIT 1", (sid,))
 	if in_progress:
@@ -100,18 +92,20 @@ def advance_station(sid):
 	# Do we want to add an "if config.get("developer_mode")" here so it crashes in production and we hunt down the bug?
 	# next[sid] = filter(None, next[sid])
 
+	start_time = time.clock()
 	playlist.prepare_cooldown_algorithm(sid)
 	playlist.clear_updated_albums(sid)
+	log.debug("advance", "Playlist prepare time: %s" % (time.clock() - start_time,))
 
+	start_time = time.clock()
 	current[sid].finish()
+	log.debug("advance", "Current finish time: %s" % (time.clock() - start_time,))
 
+	start_time = time.clock()
 	last_song = current[sid].get_song()
 	if last_song:
-		long_history[sid].insert(0, last_song)
 		db.c.update("INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)", (sid, last_song.id))
-
-	while len(long_history[sid]) > 30:
-		long_history[sid].pop()
+	log.debug("advance", "Last song insertion time: %s" % (time.clock() - start_time,))
 
 	history[sid].insert(0, current[sid])
 	while len(history[sid]) > 5:
@@ -352,7 +346,6 @@ def _update_memcache(sid):
 	cache.set_station(sid, "sched_current", current[sid], True)
 	cache.set_station(sid, "sched_next", next[sid], True)
 	cache.set_station(sid, "sched_history", history[sid], True)
-	cache.set_station(sid, "long_history", long_history[sid], True)
 	cache.set_station(sid, "sched_current_dict", current[sid].to_dict(), True)
 	next_dict_list = []
 	for event in next[sid]:
@@ -363,10 +356,6 @@ def _update_memcache(sid):
 		history_dict_list.append(event.to_dict())
 	cache.set_station(sid, "sched_history_dict", history_dict_list, True)
 	cache.prime_rating_cache_for_events([ current[sid] ] + next[sid] + history[sid])
-	long_history_dict_list = []
-	for song in long_history[sid]:
-		long_history_dict_list.append(song.to_dict())
-	cache.set_station(sid, "long_history_dict", long_history_dict_list, True)
 	cache.set_station(sid, "listeners_current", listeners.get_listeners_dict(sid), True)
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)
 	playlist.clear_updated_albums(sid)
