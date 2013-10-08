@@ -1,5 +1,7 @@
 import time
 import pprint
+import tornado.ioloop
+import datetime
 
 from backend import sync_to_front
 from rainwave import event
@@ -127,7 +129,10 @@ def advance_station(sid):
 	current[sid].start_event()
 	log.debug("advance", "Current management: %.6f" % (time.time() - start_time,))
 
+	tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(milliseconds=100), lambda: post_process(sid))
+
 def post_process(sid):
+	start_time = time.time()
 	set_next_start_times(sid)
 	request.update_line(sid)
 	playlist.reduce_song_blocks(sid)
@@ -142,6 +147,7 @@ def post_process(sid):
 
 	_update_memcache(sid)
 	sync_to_front.sync_frontend_all(sid)
+	log.debug("post", "Post-processing prepare time: %.6f" % (time.time() - start_time,))
 
 def refresh_schedule(sid):
 	integrate_new_events(sid)

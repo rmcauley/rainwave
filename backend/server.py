@@ -67,13 +67,6 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		string += ":" + e.get_filename()
 		return string
 
-	def on_finish(self):
-		if self.sid and self.success and not self.processed:
-			self.processed = True
-			schedule.post_process(self.sid)
-		elif self.processed:
-			raise Exception("Already processed - an infinite loop has occurred!")
-
 class RefreshScheduleRequest(tornado.web.RequestHandler):
 	def get(self, sid):
 		schedule.refresh_schedule(int(sid))
