@@ -69,7 +69,7 @@ def attach_info_to_request(request, playlist = False, artists = False):
 @handle_api_url("info")
 class InfoRequest(APIHandler):
 	auth_required = False
-	description = "Returns applicable user and station info."
+	description = "Returns current user and station information."
 	fields = { "playlist": (fieldtypes.boolean, False), "artist_list": (fieldtypes.boolean, False) }
 	allow_get = True
 

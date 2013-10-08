@@ -26,6 +26,8 @@ jsfiles.sort()
 
 @handle_url("/(?:index.html)?")
 class MainIndex(api.web.HTMLRequest):
+	description = "Main Rainwave page."
+
 	def prepare(self):
 		super(MainIndex, self).prepare()
 
@@ -37,7 +39,7 @@ class MainIndex(api.web.HTMLRequest):
 
 	def append(self, key, value):
 		self.json_payload.append({ key: value })
-	
+
 	def get(self):
 		info.attach_info_to_request(self, playlist=True, artists=True)
 		self.append("api_info", { "time": int(time.time()) })
@@ -48,10 +50,11 @@ class MainIndex(api.web.HTMLRequest):
 					api_url=config.get("api_external_url_prefix"),
 					cookie_domain=config.get("cookie_domain"))
 
-@handle_url("/beta/?")
+@handle_url("/beta/")
 class BetaIndex(MainIndex):
 	perks_required = True
-	
+	description = "Uses up-to-date, unbaked Javscript files to serve the site."
+
 	def get(self):
 		info.attach_info_to_request(self, playlist=True, artists=True)
 		self.append("api_info", { "time": int(time.time()) })

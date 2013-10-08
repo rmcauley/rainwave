@@ -23,6 +23,7 @@ from rainwave import event
 @handle_api_url("admin/get_one_ups")
 class GetOneUps(api.web.APIHandler):
 	admin_required = True
+	description = "Lists all unused OneUps."
 
 	def post(self):
 		self.append("one_ups", db.c.fetch_all("SELECT r4_schedule.*, r4_one_ups.song_id, song_title, album_name, username "
@@ -39,6 +40,7 @@ class GetOneUps(api.web.APIHandler):
 class AddOneUp(api.web.APIHandler):
 	admin_required = True
 	fields = { "song_id": (fieldtypes.song_id, True) }
+	description = "Adds a OneUp to the schedule."
 
 	def post(self):
 		e = event.OneUp.create(self.sid, 0, self.get_argument("song_id"))
@@ -49,6 +51,7 @@ class AddOneUp(api.web.APIHandler):
 class DeleteOneUp(api.web.APIHandler):
 	admin_required = True
 	fields = { "sched_id": (fieldtypes.sched_id, True) }
+	desrciption = "Deletes a OneUp from the schedule. (regardless of whether it's used or not)"
 
 	def post(self):
 		e = event.OneUp.load_by_id(self.get_argument("sched_id"))

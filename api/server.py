@@ -105,6 +105,9 @@ class APIServer(object):
 		# Make sure all other errors get handled in an API-friendly way
 		request_classes.append((r".*", api.web.Error404Handler))
 
+		# Initialize the help (rather than it scan all URL handlers every time someone hits it)
+		api.help.sectionize_requests()
+
 		# Fire ze missiles!
 		app = tornado.web.Application(request_classes,
 			debug=(config.test_mode or config.get("developer_mode")),

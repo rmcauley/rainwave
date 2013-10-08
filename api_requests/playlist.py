@@ -70,7 +70,7 @@ class AllSongsHandler(APIHandler):
 	allow_get = True
 	description = "Gets every song including a user's ratings.  Order field can be 'name', sorting by album and song title, or 'rating'."
 	fields = { "order": (fieldtypes.string, False) }
-	
+
 	def post(self):
 		order = "album_name, song_title"
 		distinct_on = "album_name, song_title"
@@ -81,39 +81,49 @@ class AllSongsHandler(APIHandler):
 			"SELECT DISTINCT ON (" + distinct_on + ") r4_songs.song_id AS id, song_title AS title, album_name, song_rating AS rating, song_rating_user AS rating_user, song_fave AS fave "
 			"FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_albums USING (album_id) "
 			"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
-			"WHERE song_verified = TRUE ORDER BY " + order + "", 
+			"WHERE song_verified = TRUE ORDER BY " + order + "",
 			(self.user.id,)))
-		
+
 @handle_api_url("unrated_songs")
 class UnratedSongsHandler(APIHandler):
-	description = "Get unrated songs."
+	description = "Get all of a user's unrated songs."
 	return_name = "unrated_songs"
 	login_required = True
-	
+
 	def post(self):
 		self.append(self.return_name, playlist.get_unrated_songs_for_user(self.user.id))
-		
+
 @handle_api_html_url("unrated_songs")
 class UnratedSongsHTML(PrettyPrintAPIMixin, UnratedSongsHandler):
 	pass
 
 @handle_api_url("top_100")
 class Top100Songs(APIHandler):
-	description = "Get the 100 highest-rated songs on the station."
+	description = "Get the 100 highest-rated songs on the entirety of Rainwave, or by station if a station ID is specified in the arguments."
 	return_name = 'top_100'
 	login_required = False
 	sid_required = False
 	allow_get = True
-	
+
 	def post(self):
-		self.append(self.return_name, db.c.fetch_all(
-			"SELECT DISTINCT ON (song_rating, song_id) "
-				"song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, song_rating, song_rating_count "
-			"FROM r4_songs "
-				"JOIN r4_song_sid USING (song_id) "
-				"JOIN r4_albums USING (album_id) "
-			"WHERE song_rating_count > 20 AND song_verified = TRUE "
-			"ORDER BY song_rating DESC, song_id LIMIT 100"))
+		if 'sid' in self.request.arguments:
+			self.append(self.return_name, db.c.fetch_all(
+				"SELECT DISTINCT ON (song_rating, song_id) "
+					"song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, song_rating, song_rating_count "
+				"FROM r4_song_sid "
+					"JOIN r4_songs USING (song_id) "
+					"JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id) "
+				"WHERE r4_song_sid.sid = %s AND song_rating_count > 20 AND song_verified = TRUE "
+				"ORDER BY song_rating DESC, song_id LIMIT 100"), (self.sid,))
+		else:
+			self.append(self.return_name, db.c.fetch_all(
+				"SELECT DISTINCT ON (song_rating, song_id) "
+					"song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, song_rating, song_rating_count "
+				"FROM r4_songs "
+					"JOIN r4_song_sid USING (song_id) "
+					"JOIN r4_albums USING (album_id) "
+				"WHERE song_rating_count > 20 AND song_verified = TRUE "
+				"ORDER BY song_rating DESC, song_id LIMIT 100"))
 
 @handle_api_html_url("top_100")
 class Top100SongsHTML(PrettyPrintAPIMixin, Top100Songs):
@@ -121,18 +131,18 @@ class Top100SongsHTML(PrettyPrintAPIMixin, Top100Songs):
 
 @handle_api_url("all_faves")
 class AllFavHandler(APIHandler):
-	description = "Get all songs that have been faved."
+	description = "Get all songs that have been faved by the user."
 	return_name = "all_faves"
 	login_required = True
 	sid_required = False
 	allow_get = True
-	
+
 	def post(self):
 		self.append(self.return_name, db.c.fetch_all(
 			"SELECT DISTINCT ON (album_name, song_title) song_id AS id, song_title AS title, album_name, song_rating AS rating, COALESCE(song_rating_user, 0) AS rating_user, TRUE AS fave "
 			"FROM r4_song_ratings JOIN r4_songs USING (song_id) JOIN r4_song_sid USING (song_id) JOIN r4_albums USING (album_id) "
 			"WHERE user_id = %s AND song_verified = TRUE ORDER BY album_name, song_title", (self.user.id,)))
-		
+
 @handle_api_html_url("all_faves")
 class AllFavHTML(PrettyPrintAPIMixin, AllFavHandler):
 	pass

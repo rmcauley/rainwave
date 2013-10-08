@@ -100,11 +100,8 @@ class SyncUpdateIP(APIHandler):
 
 @handle_api_url("sync")
 class Sync(APIHandler):
-	description = ("Get timeline information: what is currently playing, what "
-		"recently played, and upcoming elections or other events. Include the "
-		"argument 'init' to get an immediate response. Without 'init', the "
-		"connection will remain open and the response will be sent at the next "
-		"song change.")
+	description = ("Presents the same information as the 'info' requests, but will wait until the next song change in order to deliver the information. "
+					"Will send whitespace every 20 seconds in a bid to keep the connection alive.")
 	auth_required = True
 
 	@tornado.web.asynchronous
@@ -116,13 +113,10 @@ class Sync(APIHandler):
 		self.keep_alive_handle = None
 
 		self.set_header("Content-Type", "application/json")
-		if "init" in self.request.arguments:
-			self.update()
-		else:
-			if not self.user.request_sid in sessions:
-				sessions[self.user.request_sid] = []
-			sessions[self.user.request_sid].append(self)
-			self.keep_alive()
+		if not self.user.request_sid in sessions:
+			sessions[self.user.request_sid] = []
+		sessions[self.user.request_sid].append(self)
+		self.keep_alive()
 
 	def update(self):
 		if not cache.get_station(self.user.request_sid, "backend_ok"):

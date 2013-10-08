@@ -74,8 +74,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	unlocked_listener_only = False
 	# Do we allow GET HTTP requests to this URL?  (standard is "no")
 	allow_get = False
-	# Hidden from public view in the help?
-	hidden = False
 	# Use phpBB session/token auth?
 	phpbb_auth = False
 	# Does the user need perks (donor/beta/etc) to see this request/page?

@@ -89,26 +89,26 @@ panels.MenuPanel = {
 
 		// this is for m3u links
 		that.tuneInClickMP3 = function() {
-			that.tuneInClick("");
+			that.tuneInClick("mp3");
 		}
 
 		that.tuneInClickOgg = function() {
-			that.tuneInClick("?ogg=true");
+			that.tuneInClick("ogg");
 		}
 
-		that.tuneInClick = function(querystr) {
+		that.tuneInClick = function(audio_format) {
 			var plugin = that.detectM3UHijack();
 			if (plugin) {
 				errorcontrol.doError(3, false, false, _l("m3uhijack", { "plugin": plugin }));
 			}
 			else {
-				window.location.href = "tunein.php" + querystr;
+				window.location.href = "/tune_in/" + user.p.sid + "." + audio_format;
 			}
 			that.tuneInClickThemeHook();
 		};
 
 		that.userAvatarCallback = function(avatar) {
-			// TODO: Remove this for production
+			// TODO: Remove this for production and make it "/" + avatar
 			that.changeAvatar("http://rainwave.cc:80" + avatar);
 		};
 

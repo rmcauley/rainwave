@@ -25,6 +25,7 @@ class CreateAnonTunedIn(APIHandler):
 			raise APIException(500, "internal_error", "Anonymous user tune in record already exists.")
 
 class TestUserRequest(APIHandler):
+	description = "Login as a user."
 	local_only = True
 	sid_required = False
 	auth_required = False

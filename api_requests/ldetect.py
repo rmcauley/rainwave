@@ -19,20 +19,20 @@ from backend import sync_to_front
 class IcecastHandler(RainwaveHandler):
 	auth_required = False
 	sid_required = False
-	hidden = True
-	
+	description = "Accessible only to relays for the purpose of tracking listeners."
+
 	def prepare(self):
 		self.failed = True    # Assume failure unless otherwise
 		self.relay = fieldtypes.valid_relay(self.request.remote_ip)
-		
+
 		if not self.relay:
 			self.set_status(403)
 			self.append("%s is not a valid relay." % self.request.remote_ip)
 			self.finish()
 			return
-		
+
 		super(IcecastHandler, self).prepare()
-	
+
 	def finish(self, chunk = None):
 		if self.failed:
 			self.set_status(403)
@@ -41,17 +41,17 @@ class IcecastHandler(RainwaveHandler):
 			self.set_status(200)
 			self.set_header("icecast-auth-user", "1")
 		super(IcecastHandler, self).finish()
-		
+
 	def write_error(self, status_code, **kwargs):
 		self.failed = True
 		super(IcecastHandler, self).finish()
-			
+
 	def append(self, message):
 		log.debug("ldetect", message)
 		self.set_header("icecast-auth-message", message)
 		self.write(message)
 
-@handle_api_url("listener_add/(\d+)")		
+@handle_api_url("listener_add/(\d+)")
 class AddListener(IcecastHandler):
 	fields = {
 		"client": (fieldtypes.integer, True),
@@ -59,18 +59,18 @@ class AddListener(IcecastHandler):
 		"ip": (fieldtypes.ip_address, True),
 		"agent": (fieldtypes.media_player, True)
 	}
-		
+
 	def post(self, sid):
 		(self.mount, self.user_id, self.listen_key) = self.get_argument("mount")
 		self.agent = self.get_argument("agent")
 		self.listener_ip = self.get_argument("ip")
-		
+
 		sid = 1
 		if self.user_id > 1:
 			self.add_registered(int(sid))
 		else:
 			self.add_anonymous(int(sid))
-	
+
 	def add_registered(self, sid):
 		tunedin = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,))
 		if tunedin:
@@ -94,7 +94,7 @@ class AddListener(IcecastHandler):
 			if u.has_requests() and not u.is_in_request_line():
 				u.put_in_request_line(sid)
 		sync_to_front.sync_frontend_user_id(self.user_id)
-		
+
 	def add_anonymous(self, sid):
 		# Here we'll erase any extra records for the same IP address (shouldn't happen but you never know, especially
 		# if the system gets a reset).  There is a small flaw here; there's a chance we'll pull in 2 clients with the same client ID.
@@ -117,7 +117,7 @@ class AddListener(IcecastHandler):
 			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE WHERE listener_ip = %s", (self.get_argument("client"), self.get_argument("ip")))
 			self.append("Anonymous user from IP %s record updated." % self.get_argument("ip"))
 			self.failed = False
-			
+
 # TODO: Remove the (\d+) here, it's for the misconfigured beta relay
 @handle_api_url("listener_remove/(\d+)")
 class RemoveListener(IcecastHandler):

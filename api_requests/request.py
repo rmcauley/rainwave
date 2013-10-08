@@ -18,21 +18,21 @@ class SubmitRequest(APIHandler):
 	login_required = True
 	tunein_required = True
 	unlocked_listener_only = False
-	description = "Submit a request for a song."
+	description = "Submits a request for a song."
 	fields = {
 		"song_id": (fieldtypes.song_id, True)
 	}
-	
+
 	def post(self):
 		if self.user.add_request(self.sid, self.get_argument("song_id")):
 			self.append_standard("request_success")
 			self.append("requests", self.user.get_requests())
 		else:
 			raise APIException("request_failed")
-	
+
 @handle_api_url('delete_request')
 class DeleteRequest(APIHandler):
-	description = "Remove a request from your queue."
+	description = "Removes a request from the user's queue."
 	sid_required = False
 	login_required = True
 	tunein_required = False
@@ -40,7 +40,7 @@ class DeleteRequest(APIHandler):
 	fields = {
 		"song_id": (fieldtypes.song_id, True)
 	}
-	
+
 	def post(self):
 		if self.user.remove_request(self.get_argument("song_id")):
 			self.append_standard("request_deleted")
@@ -50,7 +50,7 @@ class DeleteRequest(APIHandler):
 
 @handle_api_url("order_requests")
 class OrderRequests(APIHandler):
-	description = "Change the order of requests in your queue."
+	description = "Change the order of requests in the user's queue.  Submit a comma-separated list of Song IDs, in desired order."
 	sid_required = False
 	login_required = True
 	tunein_required = False
@@ -58,7 +58,7 @@ class OrderRequests(APIHandler):
 	fields = {
 		"order": (fieldtypes.integer_list, True)
 	}
-	
+
 	def post(self):
 		order = 0
 		for song_id in self.get_argument("order"):
@@ -66,15 +66,15 @@ class OrderRequests(APIHandler):
 			order = order + 1
 		self.append_standard("requests_reordered")
 		self.append("requests", self.user.get_requests())
-		
+
 @handle_api_url("request_unrated_songs")
 class RequestUnratedSongs(APIHandler):
-	description = "Fill your request queue with unrated songs."
+	description = "Fills the user's request queue with unrated songs."
 	sid_required = True
 	login_required = True
 	tunein_required = True
 	unlocked_listener_only = False
-	
+
 	def post(self):
 		if self.user.add_unrated_requests(self.sid):
 			self.append_standard("request_unrated_songs_success")

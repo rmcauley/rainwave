@@ -21,9 +21,9 @@ def append_success_to_request(request, elec_id, entry_id):
 class SubmitVote(APIHandler):
 	return_name = "vote_result"
 	tunein_required = True
-	description = "Vote for a candidate in an election."
+	description = "Vote for a candidate in an election.  Cannot cancel/delete a vote.  If user has already voted, the vote will be changed to the submitted song."
 	fields = { "entry_id": (fieldtypes.integer, True) }
-	
+
 	def post(self):
 		events = cache.get_station(self.sid, "sched_next")
 		lock_count = 0
@@ -37,7 +37,7 @@ class SubmitVote(APIHandler):
 			if not self.user.data['radio_perks']:
 				break
 		append_success_to_request(self, elec_id, self.get_argument("entry_id"))
-		
+
 	def vote(self, entry_id, event, lock_count):
 		# Subtract a previous vote from the song's total if there was one
 		already_voted = False
@@ -60,7 +60,7 @@ class SubmitVote(APIHandler):
 				if not event.add_vote_to_entry(already_voted['entry_id'], -1):
 					log.warn("vote", "Could not subtract vote from entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
 					raise APIException("internal_error")
-		
+
 		# If this is a new vote, we need to check to make sure the listener is not locked.
 		if not already_voted and self.user.data['listener_lock'] and self.user.data['listener_lock_sid'] != self.sid:
 			raise APIException("user_locked", "User locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_counter']))
@@ -68,7 +68,7 @@ class SubmitVote(APIHandler):
 		if not self.user.lock_to_sid(self.sid, lock_count):
 			log.warn("vote", "Could not lock user: listener ID %s voting for entry ID %s, tried to lock for %s events." % (self.user.data['listener_id'], entry_id, lock_count))
 			raise APIException("internal_error", "Internal server error.  User is now locked to station ID %s." % self.sid)
-		
+
 		# Make sure the vote is tracked
 		track_success = False
 		if self.user.is_anonymous():
@@ -90,7 +90,7 @@ class SubmitVote(APIHandler):
 					"VALUES (%s, %s, %s, %s, %s, %s)",
 					(event.id, entry_id, self.user.id, event.get_entry(entry_id).id, rank, vote_count))
 			track_success = True
-			
+
 			user_vote_cache = cache.get_user(self.user, "vote_history")
 			if not user_vote_cache:
 				user_vote_cache = []
@@ -98,7 +98,7 @@ class SubmitVote(APIHandler):
 				user_vote_cache.pop(0)
 			user_vote_cache.append((event.id, entry_id))
 			cache.set_user(self.user, "vote_history", user_vote_cache)
-		
+
 		# Register vote
 		if not event.add_vote_to_entry(entry_id):
 			log.warn("vote", "Could not add vote to entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
