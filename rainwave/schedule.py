@@ -95,11 +95,11 @@ def advance_station(sid):
 	start_time = time.time()
 	playlist.prepare_cooldown_algorithm(sid)
 	playlist.clear_updated_albums(sid)
-	log.debug("advance", "Playlist prepare time: %s" % (time.time() - start_time,))
+	log.debug("advance", "Playlist prepare time: %.6f" % (time.time() - start_time,))
 
 	start_time = time.time()
 	current[sid].finish()
-	log.debug("advance", "Current finish time: %s" % (time.time() - start_time,))
+	log.debug("advance", "Current finish time: %.6f" % (time.time() - start_time,))
 
 	start_time = time.time()
 	last_song = current[sid].get_song()
@@ -111,7 +111,7 @@ def advance_station(sid):
 	history[sid].insert(0, current[sid])
 	while len(history[sid]) > 5:
 		history[sid].pop()
-	log.debug("advance", "History management: %s" % (time.time() - start_time,))
+	log.debug("advance", "History management: %.6f" % (time.time() - start_time,))
 
 	start_time = time.time()
 	integrate_new_events(sid)
@@ -120,12 +120,12 @@ def advance_station(sid):
 		next[sid].append(_create_election(sid))
 	else:
 		sort_next(sid)
-	log.debug("advance", "Next event management: %s" % (time.time() - start_time,))
+	log.debug("advance", "Next event management: %.6f" % (time.time() - start_time,))
 
 	start_time = time.time()
 	current[sid] = next[sid].pop(0)
 	current[sid].start_event()
-	log.debug("advance", "Current management: %s" % (time.time() - start_time,))
+	log.debug("advance", "Current management: %.6f" % (time.time() - start_time,))
 
 def post_process(sid):
 	set_next_start_times(sid)
