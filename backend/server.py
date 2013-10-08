@@ -16,6 +16,7 @@ from libs import cache
 
 class AdvanceScheduleRequest(tornado.web.RequestHandler):
 	retried = False
+	processed = False
 
 	def get(self, sid):
 		self.success = False
@@ -67,8 +68,11 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		return string
 
 	def on_finish(self):
-		if self.sid and self.success:
+		if self.sid and self.success and not self.processed:
+			self.processed = True
 			schedule.post_process(self.sid)
+		elif self.processed:
+			raise Exception("Already processed - an infinite loop has occurred!")
 
 class RefreshScheduleRequest(tornado.web.RequestHandler):
 	def get(self, sid):

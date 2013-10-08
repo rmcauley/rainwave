@@ -18,7 +18,7 @@ cache.open()
 
 params = urllib.urlencode({ "sid": args.sid })
 try:
-	conn = httplib.HTTPConnection(args.dest, config.get("backend_port"), timeout=3)
+	conn = httplib.HTTPConnection(args.dest, config.get("backend_port"), timeout=10)
 	conn.request("GET", "/advance/%s" % args.sid)
 	result = conn.getresponse()
 	if result.status == 200:

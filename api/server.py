@@ -21,6 +21,7 @@ from libs import dict_compare
 from libs import db
 from libs import chuser
 from libs import cache
+from rainwave import playlist
 
 request_classes = [
 	(r"/api4/?", api.help.IndexRequest),
@@ -107,6 +108,9 @@ class APIServer(object):
 
 		# Initialize the help (rather than it scan all URL handlers every time someone hits it)
 		api.help.sectionize_requests()
+
+		# Initialize playlist variables
+		playlist.prepare_cooldown_algorithm(sid)
 
 		# Fire ze missiles!
 		app = tornado.web.Application(request_classes,
