@@ -92,40 +92,40 @@ def advance_station(sid):
 	# Do we want to add an "if config.get("developer_mode")" here so it crashes in production and we hunt down the bug?
 	# next[sid] = filter(None, next[sid])
 
-	start_time = time.clock()
+	start_time = time.time()
 	playlist.prepare_cooldown_algorithm(sid)
 	playlist.clear_updated_albums(sid)
-	log.debug("advance", "Playlist prepare time: %s" % (time.clock() - start_time,))
+	log.debug("advance", "Playlist prepare time: %s" % (time.time() - start_time,))
 
-	start_time = time.clock()
+	start_time = time.time()
 	current[sid].finish()
-	log.debug("advance", "Current finish time: %s" % (time.clock() - start_time,))
+	log.debug("advance", "Current finish time: %s" % (time.time() - start_time,))
 
-	start_time = time.clock()
+	start_time = time.time()
 	last_song = current[sid].get_song()
 	if last_song:
 		db.c.update("INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)", (sid, last_song.id))
-	log.debug("advance", "Last song insertion time: %s" % (time.clock() - start_time,))
+	log.debug("advance", "Last song insertion time: %s" % (time.time() - start_time,))
 
-	start_time = time.clock()
+	start_time = time.time()
 	history[sid].insert(0, current[sid])
 	while len(history[sid]) > 5:
 		history[sid].pop()
-	log.debug("advance", "History management: %s" % (time.clock() - start_time,))
+	log.debug("advance", "History management: %s" % (time.time() - start_time,))
 
-	start_time = time.clock()
+	start_time = time.time()
 	integrate_new_events(sid)
 	# If we need some emergency elections here
 	if len(next[sid]) == 0:
 		next[sid].append(_create_election(sid))
 	else:
 		sort_next(sid)
-	log.debug("advance", "Next event management: %s" % (time.clock() - start_time,))
+	log.debug("advance", "Next event management: %s" % (time.time() - start_time,))
 
-	start_time = time.clock()
+	start_time = time.time()
 	current[sid] = next[sid].pop(0)
 	current[sid].start_event()
-	log.debug("advance", "Current management: %s" % (time.clock() - start_time,))
+	log.debug("advance", "Current management: %s" % (time.time() - start_time,))
 
 def post_process(sid):
 	set_next_start_times(sid)

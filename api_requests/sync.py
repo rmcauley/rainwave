@@ -119,6 +119,9 @@ class Sync(APIHandler):
 		self.keep_alive()
 
 	def update(self):
+		# Overwrite this value since who knows how long we've spent idling
+		self._startclock = time.clock()
+
 		if not cache.get_station(self.user.request_sid, "backend_ok"):
 			raise APIException("station_offline")
 
