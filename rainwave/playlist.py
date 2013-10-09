@@ -724,7 +724,7 @@ class AssociatedMetadata(object):
 	@classmethod
 	def load_from_id(klass, metadata_id):
 		instance = klass()
-		data = db.c.fetch_row(klass.select_by_id_query, (id,))
+		data = db.c.fetch_row(klass.select_by_id_query, (metadata_id,))
 		if not data:
 			raise MetadataNotFoundEror("%s ID %s could not be found." % (klass.__name__, metadata_id))
 		instance._assign_from_dict(data)
