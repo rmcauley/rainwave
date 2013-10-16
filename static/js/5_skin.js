@@ -877,22 +877,22 @@ function _THEME() {
 			menup.download_td = createEl("td", { "class": "menu_download_td" }, row);
 			menup.mp3_download = createEl("div", { "class": "menu_mp3" }, menup.download_td);
 			menup.mp3_download.appendChild(createEl("span", { "textContent": "MP3: " }));
-			var wmpa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_wmp" }, menup.mp3_download);
+			var wmpa = createEl("a", { "href": "/tune_in/" + user.p.sid + ".mp3", "onclick": "return false;", "class": "tunein_wmp" }, menup.mp3_download);
 			createEl("img", { "width": 16, "height": 16, "src": "static/images/blank.png" }, wmpa);
 			wmpa.addEventListener("click", menup.tuneInClickMP3, true);
-			var itunesa = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_itunes" }, menup.mp3_download);
+			var itunesa = createEl("a", { "href": "/tune_in/" + user.p.sid + ".mp3", "onclick": "return false;", "class": "tunein_itunes" }, menup.mp3_download);
 			createEl("img", { "width": 16, "height": 16, "src": "static/images/blank.png" }, itunesa);
 			itunesa.addEventListener("click", menup.tuneInClickMP3, true);
-			var vlca = createEl("a", { "href": "tunein.php", "onclick": "return false;", "class": "tunein_vlc" }, menup.mp3_download);
+			var vlca = createEl("a", { "href": "/tune_in/" + user.p.sid + ".mp3", "onclick": "return false;", "class": "tunein_vlc" }, menup.mp3_download);
 			createEl("img", { "width": 16, "height": 16, "src": "static/images/blank.png" }, vlca);
 			vlca.addEventListener("click", menup.tuneInClickOgg, true);
 
 			menup.ogg_download = createEl("div", { "class": "menu_ogg" }, menup.download_td);
 			menup.ogg_download.appendChild(createEl("span", { "textContent": "Ogg: " }));
-			var winampa = createEl("a", { "href": "tunein.php?ogg=true", "onclick": "return false;", "class": "tunein_winamp" }, menup.ogg_download);
+			var winampa = createEl("a", { "href": "/tune_in/" + user.p.sid + ".ogg", "onclick": "return false;", "class": "tunein_winamp" }, menup.ogg_download);
 			createEl("img", { "width": 16, "height": 16, "src": "static/images/blank.png" }, winampa);
 			winampa.addEventListener("click", menup.tuneInClickOgg, true);
-			var fb2ka = createEl("a", { "href": "tunein.php?ogg=true", "onclick": "return false;", "class": "tunein_fb2k" }, menup.ogg_download);
+			var fb2ka = createEl("a", { "href": "/tune_in/" + user.p.sid + ".ogg", "onclick": "return false;", "class": "tunein_fb2k" }, menup.ogg_download);
 			createEl("img", { "width": 16, "height": 16, "src": "static/images/blank.png" }, fb2ka);
 			fb2ka.addEventListener("click", menup.tuneInClickOgg, true);
 
