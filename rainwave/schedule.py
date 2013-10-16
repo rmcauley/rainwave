@@ -238,8 +238,8 @@ def _create_elections(sid):
 	max_sched_id, max_elec_id, num_elections = _get_schedule_stats(sid)
 	log.debug("create_elec", "Max sched ID: %s // Max elec ID: %s // Num elections already existing: %s // Size of next: %s" % (max_sched_id, max_elec_id, num_elections, len(next[sid])))
 
-	# Step 2: Load up any elections that have been added while we've been idle (i.e. by admins) and append them to the list
-	unused_elec_id = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND elec_id > %s AND elec_priority = FALSE ORDER BY elec_id", (sid, max_elec_id))
+	# Step 2: Load up any elections that have been added while we've been idle and append them to the list
+	unused_elec_id = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND elec_id > %s AND elec_used = FALSE AND elec_priority = FALSE ORDER BY elec_id", (sid, max_elec_id))
 	unused_elecs = []
 	for elec_id in unused_elec_id:
 		unused_elecs.append(event.Election.load_by_id(elec_id))
