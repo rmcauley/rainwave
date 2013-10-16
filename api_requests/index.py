@@ -56,7 +56,7 @@ class BetaIndex(MainIndex):
 	description = "Uses up-to-date, unbaked Javscript files to serve the site."
 
 	def prepare(self):
-		if not config.get("public_beta"):
+		if config.get("public_beta"):
 			self.perks_required = False
 		super(BetaIndex, self).prepare()
 
