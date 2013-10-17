@@ -143,6 +143,7 @@ def post_process(sid):
 	_trim(sid)
 	user.trim_listeners(sid)
 	user.unlock_listeners(sid)
+	playlist.warm_cooled_songs(sid)
 	playlist.warm_cooled_albums(sid)
 
 	_update_memcache(sid)
