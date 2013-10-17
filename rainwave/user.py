@@ -284,6 +284,9 @@ class User(object):
 	def get_top_request_sid(self):
 		return db.c.fetch_var("SELECT reqstor_id FROM r4_request_store WHERE user_id = %s ORDER BY reqstor_order, reqstor_id LIMIT 1", (self.id,))
 
+	def get_request_line_sid(self):
+		return db.c.fetch_var("SELECT sid FROM r4_request_line WHERE user_id = %s", (self.id,))
+
 	def get_request_line_position(self, sid):
 		if self.id <= 1:
 			return None
@@ -303,26 +306,29 @@ class User(object):
 			return []
 		requests = cache.get_user(self, "requests")
 		if refresh or (not requests or len(requests) == 0):
+			line_sid = self.get_request_line_sid()
 			requests = db.c.fetch_all(
 				"SELECT r4_request_store.song_id AS id, r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
-					"song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, "
-					"COALESCE(r4_song_sid.album_id, album_data.album_id) AS album_id, album_name, "
-					"song_length AS length, r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, r4_song_sid.song_exists AS valid, "
+					"song_rating AS rating, song_title AS title, song_length AS length, r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, "
 					"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
-					"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS requestable "
+					"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
+					"r4_song_sid.album_id AS album_id, r4_albums.album_name "
 				"FROM r4_request_store "
 					"JOIN r4_songs USING (song_id) "
-					"JOIN r4_song_sid AS album_data USING (song_id) "
 					"LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) "
-					"LEFT JOIN r4_song_ratings ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) "
-					"JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id OR album_data.album_id = r4_albums.album_id) "
+					"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id) "
+					"JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id) "
 				"WHERE r4_request_store.user_id = %s "
 				"ORDER BY reqstor_order, reqstor_id",
-				(self.request_sid, self.request_sid, self.id))
+				(line_sid, self.id))
 			if not requests:
 				requests = []
 			for song in requests:
-				song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
+				if not song['album_name']:
+					song['albums'] = [ { "id": song['album_id'],
+										"name": db.c.fetch_var("SELECT album_name FROM r4_albums WHERE album_id = %s", (song['album_id'],)) } ]
+				else:
+					song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
 				song.pop('album_name', None)
 				song.pop('album_id', None)
 			cache.set_user(self, "requests", requests)

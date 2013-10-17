@@ -7,11 +7,13 @@ from rainwave.user import User
 def update_cache(sid):
 	update_line(sid)
 	update_expire_times()
-	
+
 def update_line(sid):
 	# Get everyone in the line
 	line = db.c.fetch_all("SELECT username, user_id, line_expiry_tune_in, line_expiry_election, line_wait_start FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE sid = %s ORDER BY line_wait_start", (sid,))
 	new_line = []
+	# user_positions has user_id as a key and position as the value, this is cached for quick lookups by API requests
+	# so users know where they are in line
 	user_positions = {}
 	t = int(time.time())
 	position = 1
@@ -55,7 +57,7 @@ def update_line(sid):
 
 	cache.set_station(sid, "request_line", new_line, True)
 	cache.set_station(sid, "request_user_positions", user_positions, True)
-	
+
 def update_expire_times():
 	expiry_times = {}
 	for row in db.c.fetch_all("SELECT * FROM r4_request_line"):
@@ -69,7 +71,7 @@ def update_expire_times():
 		elif row['line_expiry_election'] <= row['line_expiry_tune_in']:
 			expiry_times[row['user_id']] = row['line_expiry_election']
 		else:
-			expiry_times[row['user_id']] = row['line_expiry_tune_in']	
+			expiry_times[row['user_id']] = row['line_expiry_tune_in']
 	cache.set("request_expire_times", expiry_times, True)
 
 def get_next(sid):
@@ -85,7 +87,7 @@ def get_next(sid):
 			song = playlist.Song.load_from_id(entry['song_id'], sid)
 			song.data['elec_request_user_id'] = entry['user_id']
 			song.data['elec_request_username'] = entry['username']
-			
+
 			u = User(entry['user_id'])
 			db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (u.id, entry['song_id']))
 			u.remove_from_request_line()

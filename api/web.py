@@ -234,7 +234,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				return cookie_session
 		return None
 
-	def _get_phpbb_session(user_id = None):
+	def _get_phpbb_session(self, user_id = None):
 		return db.c_old.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s ORDER BY session_last_visit DESC LIMIT 1", (user_id,))
 
 	def _update_phpbb_session(self, session_id):
