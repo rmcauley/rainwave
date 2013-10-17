@@ -99,7 +99,7 @@ panels.MenuPanel = {
 		that.tuneInClick = function(audio_format) {
 			var plugin = that.detectM3UHijack();
 			if (plugin) {
-				errorcontrol.doError(3, false, false, _l("m3uhijack", { "plugin": plugin }));
+				errorcontrol.doError(_l("m3uhijack", { "plugin": plugin }));
 			}
 			else {
 				window.location.href = "/tune_in/" + user.p.sid + "." + audio_format;

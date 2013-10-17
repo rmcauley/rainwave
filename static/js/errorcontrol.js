@@ -5,27 +5,28 @@ var errorcontrol = function() {
 	var showy = 24;
 	var timers = {};
 	var showing = {};
-	
+
 	theme.Extend.ErrorControl(that);
-	
+
 	that.changeShowXY = function(x, y) {
 		showx = x;
 		showy = y;
 	};
-	
+
 	that.setupCallbacks = function() {
 		// only for permanently displayed stuff
 		lyre.addCallback(that.permanentHandler, "station_offline");
+		lyre.addCallback(that.genericR4Error, "request_result");
 	};
-	
+
 	that.permanentHandler = function(json) {
 		that.doError(json.tl_key, true);
 	};
-	
+
 	that.genericR4Error = function(json) {
 		that.doError(json.tl_key);
 	};
-	
+
 	that.doError = function(code, permanent, overrideclass, overridetext, overridetime) {
 		if (!theme) {
 			var crap = document.createElement("div");
@@ -52,12 +53,12 @@ var errorcontrol = function() {
 				var fortime = overridetime ? overridetime: 5000;
 				timers[code] = setTimeout(function() { that.clearError(code); }, fortime);
 			}
-			
+
 			if (!permanent || (permanent !== true)) {
 				errors[code].el.addEventListener('click', function() { that.clearError(code); }, false);
 				errors[code].el.style.cursor = 'pointer';
 			}
-			
+
 			if (!permanent) {
 				var x = mouse.x;
 				var y = (mouse.y - (UISCALE * 2.5));
@@ -69,7 +70,7 @@ var errorcontrol = function() {
 			}
 		}
 	};
-	
+
 	that.repositionPermanent = function() {
 		var ry = parseInt(showy);
 		for (var code in showing) {
@@ -88,7 +89,7 @@ var errorcontrol = function() {
 			}
 		}
 	};
-	
+
 	that.clearError = function(code) {
 		if (errors[code]) {
 			that.unshowError(errors[code]);
@@ -103,11 +104,11 @@ var errorcontrol = function() {
 			that.positionErrors();
 		}
 	};
-	
+
 	that.deleteError = function(error) {
 		BODY.removeChild(error.el);
 	};
-	
+
 	that.jsError = function(err, json) {
 		var el = createEl("div", { "class": "err_div", "style": "z-index: 100000; top: 0px; left: 0px;" });
 		el.appendChild(createEl("div", { "textContent": _l("crashed"), "style": "padding-bottom: 1em;" }));

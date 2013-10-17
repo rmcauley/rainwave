@@ -17,12 +17,12 @@ function Rating(p) {
 	else that.register = false;
 	if (p.fake) that.fake = p.fake;
 	else that.fake = false;
-	
+
 	that.oldrating = that.userrating;
 
 	var lasttime = 0;
 	var lockeduntil = 0;
-	
+
 	that.el = false;
 	that.mousecatch = false;
 	that.favhover = false;
@@ -30,18 +30,18 @@ function Rating(p) {
 	var sitetext = "";
 
 	theme.Extend.Rating(that);
-	
+
 	that.enable = function() {
 		if (that.category == "song") that.ratable = true;
 	};
-	
+
 	that.disable = function() {
 		if (!user.p.radio_rate_anything) {
 			that.ratable = false;
 			that.resetUser();
 		}
 	};
-	
+
 	that.onMouseMove = function(evt) {
 		var r = that.userCoord(evt);
 		if (that.ratable && r) {
@@ -51,12 +51,12 @@ function Rating(p) {
 			that.resetUser();
 		}
 	};
-	
+
 	that.onMouseOut = function(evt) {
 		that.resetUser();
 		that.favMouseOut();
 	};
-	
+
 	that.onClick = function(evt) {
 		if (that.favhover) {
 			that.favClick();
@@ -86,7 +86,7 @@ function Rating(p) {
 			//TODO: else { alert user }
 		}
 	};
-	
+
 	that.ratingConfirm = function(rating) {
 		that.userrating = rating;
 		that.resetUser();
@@ -101,7 +101,7 @@ function Rating(p) {
 		that.showConfirmBad();
 		setTimeout(that.resetConfirm, 750);
 	};
-	
+
 	that.updateSiteRating = function(site) {
 		that.siterating = site;
 		if (ratingcontrol.hideuntilrated && !that.userrating) {
@@ -110,30 +110,30 @@ function Rating(p) {
 		}
 		that.setSite(site);
 	};
-	
+
 	that.scrubRating = function(rating) {
 		if (rating < 1) rating = 1;
 		else if (rating > 5) rating = 5;
 		return Math.round(rating * 2) / 2;
 	};
-	
+
 	that.favConfirm = function(state) {
 		that.favourite = state;
 		that.favChange(state);
 	};
-	
+
 	that.favMouseOver = function(evt) {
 		if (user.p.user_id <= 1) return;
 		that.favhover = true;
 		that.favChange(2);
 	};
-	
+
 	that.favMouseOut = function(evt) {
 		if (user.p.user_id <= 1) return;
 		that.favhover = false;
 		that.favChange(that.favourite);
 	};
-	
+
 	that.favClick = function(evt) {
 		if (that.fake) {
 			that.favConfirm(that.favourite ? false : true);
@@ -147,13 +147,13 @@ function Rating(p) {
 		submithash[that.category + "_id"] = that.id;
 		lyre.async_get("fave_" + that.category, submithash);
 	};
-	
+
 	that.draw();
-	
+
 	that.setUser(that.userrating);
 	that.updateSiteRating(that.siterating);
 	if (that.favourite) that.favChange(that.favourite);
-	
+
 	if (that.mousecatch) {
 		that.mousecatch.addEventListener("mousemove", that.onMouseMove, true);
 		that.mousecatch.addEventListener("mouseout", that.onMouseOut, true);
@@ -164,10 +164,9 @@ function Rating(p) {
 		// that.favcatch.addEventListener("mouseover", that.favMouseOver, true);
 		// that.favcatch.addEventListener("mouseout", that.favMouseOut, true);
 		// that.favcatch.addEventListener("click", that.favClick, true);
-	// }	
+	// }
 	if (that.ratable) that.enable();
-	else if (user.p.radio_rate_anything) that.enable();
-	
+
 	if (that.register) ratingcontrol.addCallback(that)
 
 	return that;

@@ -27,7 +27,7 @@ function _l(key, args, el, keep) {
 
 function _tl_core(key, args) {
 	// returns a list of { text, arg_key } objects for processing usage
-	if (!key in lang) {
+	if (!(key in lang)) {
 		return [ { "text": "[[ " + key + " ]]", "arg_key": null } ];
 	}
 

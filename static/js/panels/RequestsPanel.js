@@ -7,12 +7,12 @@ panels.RequestsPanel = {
 	minwidth: UISCALE * 8,
 	title: _l("p_RequestsPanel"),
 	cname: "requests",
-	
+
 	constructor: function(container) {
 		var that = {};
 		var list = RequestList(true);
 		var latest_json = null;
-		
+
 		for (var i = 0; i < INITIAL_PAYLOAD.length; i++) {
 			for (var j in INITIAL_PAYLOAD[i]) {
 				if (j == "requests") {
@@ -20,27 +20,27 @@ panels.RequestsPanel = {
 				}
 			}
 		}
-		
+
 		var latest_json_update = function(json) {
 				latest_json = json;
 		};
 		lyre.addCallback(latest_json_update, "requests");
 
 		//var line = AllRequestList();
-		
+
 		that.container = container;
 		that.el = createEl("div", { "class": "requestspanel_constrict" }, container);
-		
+
 		that.init = function() {
 			container.style.overflow = "auto";
-			
+
 			that.el.appendChild(list.el);
 			//that.el.appendChild(line.div);
 			lyre.addCallback(list.update, "requests");
 			list.update(latest_json);
 
 			//lyre.addCallback(line.update, "request_line");
-			
+
 			help.addStep("managingrequests", { "h": "managingrequests", "p": "managingrequests_p", "skipf": function() { edi.openPanelLink(false, "requests"); } });
 			if (edi.mpi) {
 				help.addStep("timetorequest", { "h": "timetorequest", "p": "timetorequest_p", "pointel": [ edi.tabs.panels["RequestsPanel"].el ] });
@@ -57,7 +57,7 @@ var AllRequestList = function() {
 	that.div = createEl("div", { "class": "allrequests" });
 	that.header = createEl("div", { "class": "allrequests_header" }, that.div);
 	that.el = createEl("ol", { "class": "allrequests_list" }, that.div);
-	
+
 	that.update = function(json) {
 		var i = 0;
 		var newli;
@@ -66,11 +66,11 @@ var AllRequestList = function() {
 			newli = that.makeLi(json[i]);
 			that.el.appendChild(newli.el);
 		}
-		
+
 		if (user.p.radio_request_position > 10) {
 			createEl("li", { "value": user.p.radio_request_position, "textContent": user.p.username }, that.el);
 		}
-		
+
 		if ((json.length > 0) && json[0].request_linelength && (json[0].request_linelength > 10)) {
 			_l("reqrequestlinelong", { "showing": 10, "linesize": json[0].request_linelength }, that.header);
 		}
@@ -78,7 +78,7 @@ var AllRequestList = function() {
 			_l("reqrequestline", false, that.header);
 		}
 	};
-	
+
 	that.makeLi = function(json) {
 		var li = {};
 		li.el = document.createElement("li");
@@ -88,7 +88,7 @@ var AllRequestList = function() {
 		that.updateLi(li, json);
 		return li;
 	};
-	
+
 	that.updateLi = function(li, json) {
 		li.p = json;
 		var expiry = 0;
@@ -111,7 +111,7 @@ var AllRequestList = function() {
 			delete(li.expires_on);
 		}
 	};
-	
+
 	return that;
 };
 
@@ -137,17 +137,17 @@ var RequestList = function(sortable) {
 		that.stopDrag(false, true);
 		that.p = []
 		for (var i = 0; i < json.length; i++) {
-			that.p.push(Request.r4translate(json[i]));	
+			that.p.push(Request.r4translate(json[i]));
 		}
 		json = that.p;
-		
+
 		if (json.length == 0) {
 			_l("reqnorequests", false, that.header);
 		}
 		else {
 			_l("reqmyrequests", false, that.header);
 		}
-		
+
 		var i = 0;
 		var j = 0;
 		var found = false;
@@ -178,7 +178,7 @@ var RequestList = function(sortable) {
 				newreq.fx_opacity.start(1);
 			}
 		}
-		
+
 		maxy = 0;
 		var reqid;
 		for (j = 0; j < reqs.length; j++) {
@@ -195,29 +195,29 @@ var RequestList = function(sortable) {
 				maxy += reqs[j].height + 3;
 			}
 		}
-		
+
 		reqs.sort(that.sortRequestArray);
 		that.positionReqs();
-		
+
 		elheight = that.el.offsetHeight;
-		
+
 		if (sortable && (reqs.length > 0)) {
 			help.changeStepPointEl("managingrequests", [ reqs[reqs.length - 1].el ]);
 		}
-		else {	
+		else {
 			help.changeStepPointEl("managingrequests", [ ]);
 		}
 	};
-	
+
 	that.purgeRequests = function() {
 		for (var i = 0; i < reqs.length; i++) {
 			if (reqs[i].purge) {
 				that.el.removeChild(reqs[i].el);
-				reqs.splice(i, 1);	
+				reqs.splice(i, 1);
 			}
 		}
 	};
-	
+
 	var reqmargin = 7;
 	that.positionReqs = function(nopurge) {
 		var runy = headerheight;
@@ -243,7 +243,7 @@ var RequestList = function(sortable) {
 		that.el.style.height = runy + "px";
 		if (!nopurge) setTimeout(that.purgeRequests, 250);
 	};
-	
+
 	that.startDrag = function(e) {
 		// find out what drag index we're using
 		dragidx = -1;
@@ -266,7 +266,7 @@ var RequestList = function(sortable) {
 		document.getElementById("body").addEventListener("mouseup", that.stopDrag, true);
 		dragging = true;
 	};
-	
+
 	that.figureDragValues = function() {
 		dragthreshup = -10;
 		if (dragidx > 0) {
@@ -277,7 +277,7 @@ var RequestList = function(sortable) {
 			dragthreshdown = reqs[dragidx + 1].desty + Math.round(reqs[dragidx + 1].height / 3);
 		}
 	};
-	
+
 	that.runDrag = function(e) {
 		var mousey = getMousePosY(e) - elposition - dragmouseoffset;
 		if (mousey > maxy) mousey = maxy;
@@ -298,7 +298,7 @@ var RequestList = function(sortable) {
 			that.figureDragValues();
 		}
 	};
-	
+
 	that.stopDrag = function(e, hardstop) {
 		if (!dragging) return;
 		document.getElementById("body").removeEventListener("mousemove", that.runDrag, true);
@@ -312,14 +312,14 @@ var RequestList = function(sortable) {
 		reqs.sort(that.sortRequestArray);
 		that.positionReqs();
 		if (origdragidx == dragidx) return;
-		
+
 		for (var i = 0; i < reqs.length; i++) {
 			if (i > 0) params += ",";
 			params += reqs[i].p.song_id;
 		}
 		lyre.async_get("order_requests", { "order": params });
 	};
-	
+
 	that.sortRequestArray = function(a, b) {
 		// if (a.p.song_available && !b.p.song_available) return -1;
 		// else if (!a.p.song_available && b.p.song_available) return 1;
@@ -351,62 +351,62 @@ var Request = {
 		s.group_electionblock = false;
 		if (json.elec_blocked) {
 			s.album_electionblock = json.elec_blocked_by == "album" ? true : false;
-			s.group_electionblock = json.elec_blocked_by == "group" ? true : false;	
+			s.group_electionblock = json.elec_blocked_by == "group" ? true : false;
 		}
 		s.elec_blocked_num = json.elec_blocked_num;
 		s.requestq_id = json.request_id;
 		s.requestq_order = json.order;
 		return s;
 	},
-	
+
 	linkify: function(song_id, el) {
 		el.style.cursor = "pointer";
-		el.addEventListener('click', function() { if (user.p.radio_tunedin) lyre.async_get("request", { "song_id": song_id }); else errorcontrol.doError(3002); }, true);
+		el.addEventListener('click', function() { if (user.p.radio_tunedin) lyre.async_get("request", { "song_id": song_id }); else errorcontrol.doError("must_login_to_request"); }, true);
 	},
-	
+
 	linkifyDelete: function(song_id, el) {
 		el.style.cursor = "pointer";
 		el.addEventListener('click', function(e) { hotkey.stopBubbling(e); lyre.async_get("delete_request", { "song_id": song_id }); }, true);
 	},
-	
+
 	make: function(json) {
 		var that = {};
 		that.el = document.createElement("div");
-		
+
 		//theme.Extend.Request(that);
 		//that.draw();
-		
+
 		/*that.songrating_svg = svg.make({ "width": theme.Rating_width, "height": UISCALE * 1.4 });
 		that.songrating_svg.setAttribute("class", "request_songrating");
 		that.songrating = Rating({ category: "song", id: json.song_id, userrating: json.song_rating_user, x: 0, y: 1, siterating: json.song_rating_avg, favourite: json.song_favourite, register: true });
 		that.songrating_svg.appendChild(that.songrating.el);
 		that.el.appendChild(that.songrating_svg);*/
-		
+
 		that.song_title = document.createElement("div");
 		that.song_title.setAttribute("class", "request_song_title");
-		
+
 		that.xbutton = document.createElement("span");
 		// another instance of "courier new not having the right character"
 		that.xbutton.textContent = "⨯";
 		that.xbutton.setAttribute("class", "request_xbutton");
 		Request.linkifyDelete(json.song_id, that.xbutton);
 		that.song_title.appendChild(that.xbutton);
-		
+
 		that.song_title_text = document.createElement("span");
 		that.song_title_text.setAttribute("class", "request_song_title_text");
 		that.song_title_text.textContent = json.song_title;
 		Song.linkify(json.song_id, that.song_title_text);
 		//that.song_title_text.addEventListener("mousedown", hotkey.stopBubbling, true);
 		that.song_title.appendChild(that.song_title_text);
-		
+
 		that.el.appendChild(that.song_title);
-		
+
 		/*that.albumrating_svg = svg.make({ "width": theme.Rating_width, "height": UISCALE * 1.4 });
 		that.albumrating_svg.setAttribute("class", "request_albumrating");
 		that.albumrating = Rating({ category: "album", id: json.album_id, userrating: json.album_rating_user, x: 0, y: 1, siterating: json.album_rating_avg, favourite: json.album_favourite, register: true });
 		that.albumrating_svg.appendChild(that.albumrating.el);
 		that.el.appendChild(that.albumrating_svg);*/
-		
+
 		that.album_name = document.createElement("div");
 		that.album_name.setAttribute("class", "request_album_name");
 		that.album_name_text = document.createElement("span");
@@ -415,7 +415,7 @@ var Request = {
 		Album.linkify(json.album_id, that.album_name_text);
 		that.album_name.addEventListener("mousedown", hotkey.stopBubbling, true);
 		that.el.appendChild(that.album_name);
-		
+
 		that.update = function(json) {
 			that.p = json;
 			/*if (json.request_expires_at > 0) {
@@ -463,15 +463,15 @@ var Request = {
 				that.el.removeChild(that.blocked);
 				delete(that.blocked);
 			}
-			
+
 			if (that.height) that.height = that.el.offsetHeight;
 		};
-		
+
 		that.update(json);
-		
+
 		return that;
 	},
-	
+
 	sortRequests: function(a, b) {
 		return 1;
 	}

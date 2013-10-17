@@ -1,7 +1,5 @@
 var user = function() {
-	
-	prefs.addPref("edi", { "name": "disable_rate_anything", "defaultvalue": false, "type": "checkbox" });
-	
+
 	var callbacks = [];
 	var maxid = 0;
 
@@ -30,10 +28,10 @@ var user = function() {
 		radio_rate_anything: false,
 		api_key: false
 	};
-	
+
 	that.ajaxHandle = function(json) {
 		var lastinfo = {};
-		
+
 		// R4TRANSLATE
 		// list_active no longer exists
 		// radio_lastnews no longer exists
@@ -59,18 +57,14 @@ var user = function() {
 			'radio_active_sid': json['radio_locked_sid'],
 			'radio_active_until': json['radio_locked_counter'],
 			'radio_listenkey': json['radio_listen_key'],
-			'radio_request_expiresat': json['radio_request_expires_at'],			
+			'radio_request_expiresat': json['radio_request_expires_at'],
 			'radio_tunedin': json['radio_tuned_in'],
 			'api_key': json['api_key'],
 			'current_activity_allowed': !json['radio_tuned_in'] || json['listener_lock_in_effect'] ? false : true,
 			'radio_statrestricted': json['listener_lock_in_effect']
-		};			
+		};
 		// END TRANSLATE
-		
-		if (prefs.getPref("edi", "disable_rate_anything")) {
-			json2['radio_rate_anything'] = false;
-		}
-		
+
 		for (var i in json2) {
 			lastinfo[i] = that.p[i];
 			that.p[i] = json2[i];
@@ -79,7 +73,7 @@ var user = function() {
 			if (json2[i] != lastinfo[i]) that.doCallback(i, json2[i]);
 		}
 	};
-	
+
 	that.doCallback = function(key, value) {
 		if (typeof(callbacks[key]) != "undefined") {
 			for (var cb in callbacks[key]) {
@@ -94,14 +88,14 @@ var user = function() {
 		maxid++;
 		return maxid - 1;
 	};
-	
+
 	that.deleteCallback = function(datum, id) {
 		delete(that.callbacks[datum][id]);
 	};
-	
-	that.addCallback(lyre.setUserID, "user_id");	
+
+	that.addCallback(lyre.setUserID, "user_id");
 	// that.addCallback(lyre.setKey, "api_key");
 	lyre.addCallback(that.ajaxHandle, "user");
-	
+
 	return that;
 }();
