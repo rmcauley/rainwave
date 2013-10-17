@@ -218,7 +218,7 @@ class User(object):
 		if self.id <= 1:
 			return False
 		elif sid:
-			return db.c.fetch_var("SELECT COUNT(*) FROM r4_request_store WHERE user_id = %s AND sid = %s", (sid, self.id))
+			return db.c.fetch_var("SELECT COUNT(*) FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND sid = %s", (self.id, sid))
 		else:
 			return db.c.fetch_var("SELECT COUNT(*) FROM r4_request_store WHERE user_id = %s", (self.id,))
 

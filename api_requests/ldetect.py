@@ -91,7 +91,7 @@ class AddListener(IcecastHandler):
 		if not self.failed:
 			u = user.User(self.user_id)
 			u.get_listener_record(use_cache=False)
-			if u.has_requests() and not u.is_in_request_line():
+			if u.has_requests():
 				u.put_in_request_line(sid)
 		sync_to_front.sync_frontend_user_id(self.user_id)
 
