@@ -387,7 +387,7 @@ var Request = {
 
 		that.xbutton = document.createElement("span");
 		// another instance of "courier new not having the right character"
-		that.xbutton.textContent = "⨯";
+		that.xbutton.textContent = "X";
 		that.xbutton.setAttribute("class", "request_xbutton");
 		Request.linkifyDelete(json.song_id, that.xbutton);
 		that.song_title.appendChild(that.xbutton);
