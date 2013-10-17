@@ -28,7 +28,7 @@
     "same_request_album":		"You already requested a song from this album.",
     "song_not_requested":		"Song not requested.",
     "station_offline":			"This station is currently offline.  Please check back later.",
-    "must_login_to_request":		"You need to login to request.",
+    "must_login_and_tune_in_to_request":"You need to login and tune in to request.",
 
     "already_voted_for_song":		"Already voted for that song.",
     "cannot_rate_now":			"Cannot rate that song at this time.",

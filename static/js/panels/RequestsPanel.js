@@ -361,7 +361,7 @@ var Request = {
 
 	linkify: function(song_id, el) {
 		el.style.cursor = "pointer";
-		el.addEventListener('click', function() { if (user.p.radio_tunedin) lyre.async_get("request", { "song_id": song_id }); else errorcontrol.doError("must_login_to_request"); }, true);
+		el.addEventListener('click', function() { if (user.p.radio_tunedin && (user.p.user_id > 1)) lyre.async_get("request", { "song_id": song_id }); else errorcontrol.doError("must_login_and_tune_in_to_request"); }, true);
 	},
 
 	linkifyDelete: function(song_id, el) {
