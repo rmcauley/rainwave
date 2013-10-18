@@ -215,6 +215,7 @@
     "escapetoclear": "[esc] to clear",
     "searchheader": "Search: ",
     "request_success": "Requested",
+    "not_in_line": "Not In Line",
     "reqexpiring": " (expiring!)",
     "reqfewminutes": " (a few minutes)",
     "reqsoon": " (soon)",

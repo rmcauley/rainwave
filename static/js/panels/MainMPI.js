@@ -8,7 +8,7 @@ panels.MainMPI = {
 	mpi: true,
 	title: _l("p_MainMPI"),
 	cname: "mpi",
-	
+
 	constructor: function(container) {
 		var that = {};
 		var savedpanels = {};	// saved panels that should be open in the MPI
@@ -21,12 +21,11 @@ panels.MainMPI = {
 		that.container = container;
 		var ucallbackid = false;
 		var containerheight = 0;
-		
+
 		var pos = 0;
 		var num = 0;
 		var total = 0;
 		var technicalhint = false;
-		var no1requestsid = 0;
 
 		theme.Extend.MainMPI(that);
 
@@ -34,11 +33,11 @@ panels.MainMPI = {
 			containerheight = container.offsetHeight;
 			that.panels = {};
 			that.tabs = theme.TabBar(container);
-			
+
 			for (var i in savedpanels) {
 				that.addPanel(i);
 			}
-			
+
 			// we needs tabs to have contents to measure the tab height, which is why we delay drawing and sizing divs until this point
 			that.tabheight = that.tabs.el.offsetHeight;
 			that.postDraw();
@@ -46,33 +45,33 @@ panels.MainMPI = {
 			if (lastpanel && panels[lastpanel] && savedpanels[lastpanel]) {
 				that.focusPanel(lastpanel);
 			}
-			
+
 			user.addCallback(that.updateRequestPos, "radio_request_position");
-			lyre.addCallback(that.updateRequestNum, "requests_user");
-			lyre.addCallback(that.updateRequestTitle, "requests_user");
+			lyre.addCallback(that.updateRequestNum, "requests");
+			lyre.addCallback(that.updateRequestTitle, "requests");
 		};
-		
+
 		that.onHeightResize = function(height) {
 			containerheight = height;
 			for (var i in that.panels) {
 				if (typeof(that.panels[i].onHeightResize) == "function") that.panels[i].onHeightResize(height);
 			}
 		};
-		
+
 		that.onWidthResize = function(width) {
 			for (var i in that.panels) {
 				if (typeof(that.panels[i].onWidthResize) == "function") that.panels[i].onWidthResize(height);
 			}
 		};
-		
+
 		that.divSize = function(el) {
 			el.style.height = (containerheight - that.tabheight) + "px";
 		};
-		
+
 		that.divPosition = function(el) {
 			el.style.top = that.tabheight + "px";
 		};
-		
+
 		that.addPanel = function(panelname) {
 			if (!panels[panelname]) return;
 			var panel = panels[panelname];
@@ -90,7 +89,7 @@ panels.MainMPI = {
 				return;
 			}
 		};
-		
+
 		that.initPanel = function(panelname, animate) {
 			var panel = panels[panelname];
 			if (that.panels[panelname]) return;
@@ -109,11 +108,11 @@ panels.MainMPI = {
 			that.panels[panelname].title = panels[panelname].title;
 			that.tabs.enableTab(panelname, animate);
 		};
-		
+
 		that.focusPanelEvent = function(evt) {
 			if (evt.target.panelname) that.focusPanel(evt.target.panelname);
 		};
-		
+
 		that.focusPanel = function(panelname) {
 			if (that.focused == panelname) return;
 			if (!that.panels[panelname]) that.initPanel(panelname, true);
@@ -129,11 +128,11 @@ panels.MainMPI = {
 			that.tabs.focusTab(that.focused);
 			edi.changeDeepLinkPanel(panels[that.focused].cname);
 		};
-		
+
 		that.changeTitle = function(panelname, newtitle) {
 			that.tabs.changeTitle(panelname, newtitle);
 		};
-		
+
 		that.openPanelLink = function() {
 			// the validity of the panel name is checked for us by Edi, but we still need to make sure it exists within the MPI
 			var panel = panelcname[arguments[0]];
@@ -146,7 +145,7 @@ panels.MainMPI = {
 			}
 			return false;
 		};
-		
+
 		that.updateRequestTitle = function() {
 			if (!that.tabs || !that.tabs.panels["RequestsPanel"]) return;
 			var str = "";
@@ -155,7 +154,7 @@ panels.MainMPI = {
 				numstring += num;
 				if (total != num) numstring += "/" + total;
 				var stationstring = "";
-				if (no1requestsid != user.p.sid) stationstring = SHORTSTATIONS[no1requestsid] + " ";
+				if ((pos > 0) && !(user.p.radio_request_position)) stationstring = _l("not_in_line") + " ";
 				if (pos > 0) str = _l("reqtechtitlefull", { "position": pos, "requestcount": numstring, "station": stationstring });
 				else if ((num > 0) || (total > 0)) str = _l("reqtechtitlesimple", { "requestcount": numstring, "station": stationstring });
 			}
@@ -163,7 +162,7 @@ panels.MainMPI = {
 				var str = "";
 				if (user.p.radio_request_expiresat) str = _l("reqexpiring");
 				else if (total == 0) str = "";
-				else if (no1requestsid != user.p.sid) str = _l("reqwrongstation");
+				else if ((pos > 0) && !(user.p.radio_request_position)) str = _l("not_in_line");
 				else if (user.p.radio_request_expiresat && (num == 0)) str = _l("reqexpiring");
 				else if ((num == 0) & (total > 0)) str = _l("reqoncooldown");
 				else if ((num == 0) && user.p.radio_request_position) str = _l("reqempty");
@@ -175,11 +174,11 @@ panels.MainMPI = {
 			}
 			that.changeTitle("RequestsPanel", panels.RequestsPanel.title + str);
 		};
-		
+
 		that.updateRequestPos = function(newpos) {
 			pos = newpos;
 		};
-		
+
 		that.updateRequestNum = function(json) {
 			num = 0;
 			total = 0;
@@ -187,15 +186,13 @@ panels.MainMPI = {
 				if (json[i].song_available) num++;
 				total++;
 			};
-			if (json.length > 0) no1requestsid = json[0].sid;
-			else no1requestsid = user.p.sid;
 		};
-		
+
 		that.p_technicalhint = function(techhint) {
 			technicalhint = techhint;
 			that.updateRequestTitle();
 		}
-		
+
 		that.p_savedpanels = function(nsavedpanels) {
 			savedpanels = nsavedpanels;
 		};
