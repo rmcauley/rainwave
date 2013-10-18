@@ -15,13 +15,13 @@ local = {}
 class TestModeCache(object):
 	def __init__(self):
 		self.vars = {}
-	
+
 	def get(self, key):
 		if not key in self.vars:
 			return None
 		else:
 			return self.vars[key]
-			
+
 	def set(self, key, value):
 		self.vars[key] = value
 
@@ -46,12 +46,12 @@ def open():
 		_memcache = TestModeCache()
 		_memcache_ratings = TestModeCache()
 		reset_station_caches()
-	
+
 def set(key, value, save_local = False):
 	if save_local or key in local:
 		local[key] = value
 	_memcache.set(key, value)
-	
+
 def get(key):
 	if key in local:
 		return local[key]
@@ -62,16 +62,16 @@ def set_user(user, key, value):
 		set("u%s_%s" % (user, key), value)
 	else:
 		set("u%s_%s" % (user.id, key), value)
-	
+
 def get_user(user, key):
 	if user.__class__.__name__ == 'int' or user.__class__.__name__ == 'long':
 		return get("u%s_%s" % (user, key))
 	else:
 		return get("u%s_%s" % (user.id, key))
-	
+
 def set_station(sid, key, value, save_local = False):
 	set("sid%s_%s" % (sid, key), value, save_local)
-	
+
 def get_station(sid, key):
 	return get("sid%s_%s" % (sid, key))
 
@@ -93,21 +93,21 @@ def prime_rating_cache_for_events(events, songs = []):
 			prime_rating_cache_for_song(song)
 	for song in songs:
 		prime_rating_cache_for_song(song)
-				
+
 def prime_rating_cache_for_song(song):
 	for user_id, rating in song.get_all_ratings().iteritems():
 		set_song_rating(song.id, user_id, rating)
 	for album in song.albums:
 		for user_id, rating in album.get_all_ratings().iteritems():
 			set_album_rating(album.id, user_id, rating)
-	
+
 def refresh_local(key):
 	local[key] = _memcache.get(key)
-	
+
 def refresh_local_station(sid, key):
 	# we can't use the normal get functions here since they'll ping what's already in local
 	local["sid%s_%s" % (sid, key)] = _memcache.get("sid%s_%s" % (sid, key))
-	
+
 def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "album_diff")
 	refresh_local_station(sid, "sched_next")
@@ -123,7 +123,7 @@ def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "user_rating_acl_song_index")
 	refresh_local("request_expire_times")
 	refresh_local("calendar")
-	
+
 def reset_station_caches():
 	set("request_expire_times", None, True)
 	set("calendar", [], True)
@@ -137,7 +137,7 @@ def reset_station_caches():
 		set_station(sid, "request_user_positions", None, True)
 		set_station(sid, "user_rating_acl", None, True)
 		set_station(sid, "user_rating_acl_song_index", None, True)
-	
+
 def update_user_rating_acl(sid, song_id):
 	users = get_station(sid, "user_rating_acl")
 	if not users:
@@ -152,9 +152,9 @@ def update_user_rating_acl(sid, song_id):
 			del users[to_remove]
 	songs.append(song_id)
 	users[song_id] = {}
-	
+
 	for user_id in db.c.fetch_list("SELECT user_id FROM r4_listeners WHERE sid = %s AND user_id > 1", (sid,)):
 		users[song_id][user_id] = True
-		
+
 	set_station(sid, "user_rating_acl", users, True)
 	set_station(sid, "user_rating_acl_song_index", songs, True)

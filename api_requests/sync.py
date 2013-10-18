@@ -119,7 +119,19 @@ class Sync(APIHandler):
 		sessions[self.user.request_sid].append(self)
 		self.keep_alive()
 
+	def on_connection_close(self):
+		try:
+			sessions[self.user.request_sid].remove(self)
+		except:
+			# If removing the session fails for some reason it'll get cleaned up on the total wipe-out in the sync_all handler
+			pass
+		# Tornado will finish() the connection for us
+
 	def update(self):
+		# Don't proceed if this connection is already closed
+		if self._finished:
+			return
+
 		# Overwrite this value since who knows how long we've spent idling
 		self._startclock = time.time()
 
