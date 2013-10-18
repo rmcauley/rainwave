@@ -1042,7 +1042,7 @@ function _THEME() {
 
 			var tr = createEl("tr", false, wdow.hdrtable);
 			wdow.albumnametd = createEl("td", { "class": "pl_ad_albumnametd", "colspan": 2 }, tr);
-			wdow.albumrating = Rating({ category: "album", id: json.id, userrating: json.rating_user, siterating: json.album_rating, favourite: json.fave, scale: 1.2, register: true });
+			wdow.albumrating = Rating({ category: "album", id: json.id, userrating: json.rating_user, siterating: json.rating, favourite: json.fave, scale: 1.2, register: true });
 			wdow.albumnametd.appendChild(wdow.albumrating.el);
 			wdow.albumname = createEl("div", { "class": "pl_ad_albumname", "textContent": json.name }, wdow.albumnametd);
 			if (json.sid != user.p.sid) createEl("img", { "src": skindir + "/images/menu_logo_" + json.sid + ".png", "class": "pl_ad_albumname_station" }, wdow.albumname);
