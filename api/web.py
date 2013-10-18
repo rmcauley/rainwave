@@ -295,6 +295,8 @@ class APIHandler(RainwaveHandler):
 				exectime = time.time() - self._startclock
 			else:
 				exectime = -1
+			if exectime > 0.5:
+				log.warn("long_request", "%s took %s to execute!" % (self.url, exectime))
 			self.append("api_info", { "exectime": exectime, "time": round(time.time()) })
 			self.write(tornado.escape.json_encode(self._output))
 		super(APIHandler, self).finish(chunk)
