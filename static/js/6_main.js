@@ -96,10 +96,10 @@ function init() {
 		help.startTutorial("welcome");
 	}
 
-	prefs.addPref("edi", { "name": "autoplay", "defaultvalue": false, "type": "checkbox" });
-	if (prefs.getPref("edi", "autoplay")) {
-		edi.openpanels["MenuPanel"].playerClick();
-	}
+	//prefs.addPref("edi", { "name": "autoplay", "defaultvalue": false, "type": "checkbox" });
+	//if (prefs.getPref("edi", "autoplay")) {
+	//	edi.openpanels["MenuPanel"].playerClick();
+	//}
 
 	// this will trip any deep links
 	if (decodeURI(location.href).indexOf("#!/") >= 0) {
