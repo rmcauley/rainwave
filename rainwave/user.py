@@ -136,18 +136,23 @@ class User(object):
 		self.authorized = True
 
 	def get_listener_record(self, use_cache=True):
-		#listener = None
-		#if self.id > 1 and use_cache:
-		#	listener = cache.get_user(self.id, "listener_record")
-		#if self.id == 1 or not use_cache or not listener:
-		listener = db.c.fetch_row("SELECT "
-			"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
-			"FROM r4_listeners "
-			"WHERE user_id = %s AND listener_purge = FALSE", (self.id,))
+		listener = None
+		if self.id > 1:
+			listener = cache.get_user(self.id, "listener_record")
+			if not listener or not use_cache:
+				listener = db.c.fetch_row("SELECT "
+					"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
+					"FROM r4_listeners "
+					"WHERE user_id = %s AND listener_purge = FALSE", (self.id,))
+		else:
+			listener = db.c.fetch_row("SELECT "
+				"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
+				"FROM r4_listeners "
+				"WHERE listener_ip = %s AND listener_purge = FALSE", (self.ip_address,))
 		if listener:
 			self.data.update(listener)
-		#if self.id > 1:
-		#	cache.set_user(self.id, "listener_record", listener)
+		if self.id > 1:
+			cache.set_user(self.id, "listener_record", listener)
 		return listener
 
 	def refresh(self):
