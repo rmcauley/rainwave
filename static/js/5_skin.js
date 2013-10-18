@@ -484,9 +484,9 @@ function _THEME() {
 				ts.song_requestor_wrap.style.height = timeline_elec_tdheight + "px";
 				ts.song_requestor_fx.height = timeline_elec_tdheight;
 				ts.song_requestor_fx.set(-timeline_elec_tdheight);
-				if (prefs.p.timeline.highlightrequests.value) {
+				//if (prefs.p.timeline.highlightrequests.value) {
 					ts.showRequestor();
-				}
+				//}
 			}
 
 			fx_swipe.set(timeline_elec_tdheight);
