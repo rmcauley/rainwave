@@ -105,8 +105,8 @@ class User(object):
 		# The numbers are the phpBB group IDs.
 		if self.data['_group_id'] in (5, 4, 8, 12, 15, 14, 17):
 			self.data['radio_perks'] = True
-		elif config.get("developer_mode"):
-			self.data['radio_perks'] = True
+		#elif config.get("developer_mode"):
+		#	self.data['radio_perks'] = True
 
 		# Admin and station manager groups
 		if self.data['_group_id'] in (5, 12, 15, 14, 17):
@@ -134,6 +134,14 @@ class User(object):
 				log.debug("user", "Anonymous user key %s does not match DB key %s." % (api_key, auth_against))
 				return
 		self.authorized = True
+
+	def get_tuned_in_sid(self):
+		if 'sid' in self.data:
+			return self.data['sid']
+		lrecord = self.get_listener_record()
+		if 'sid' in lrecord:
+			return lrecord['sid']
+		return None
 
 	def get_listener_record(self, use_cache=True):
 		listener = None
@@ -265,13 +273,13 @@ class User(object):
 		return db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (self.id, song_id))
 
 	def put_in_request_line(self, sid):
-		if self.id <= 1:
+		if self.id <= 1 or not sid:
 			return False
 		else:
 			already_lined = db.c.fetch_row("SELECT * FROM r4_request_line WHERE user_id = %s", (self.id,))
 			if already_lined and already_lined['sid'] == sid:
 				if already_lined['line_expiry_tune_in']:
-					db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = NULL WHERE user_id = %s", (time.time(), listener['user_id']))
+					db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = NULL WHERE user_id = %s", (listener['user_id'],))
 				return True
 			elif already_lined:
 				self.remove_from_request_line()
@@ -285,9 +293,6 @@ class User(object):
 
 	def get_top_request_song_id(self, sid):
 		return db.c.fetch_var("SELECT song_id FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_cool = FALSE AND song_elec_blocked = FALSE ORDER BY reqstor_order, reqstor_id", (self.id, sid))
-
-	def get_top_request_sid(self):
-		return db.c.fetch_var("SELECT reqstor_id FROM r4_request_store WHERE user_id = %s ORDER BY reqstor_order, reqstor_id LIMIT 1", (self.id,))
 
 	def get_request_line_sid(self):
 		return db.c.fetch_var("SELECT sid FROM r4_request_line WHERE user_id = %s", (self.id,))

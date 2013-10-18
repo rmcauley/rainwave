@@ -37,10 +37,10 @@ def update_line(sid):
 				# If they have no song and their line expiry has arrived, boot 'em
 				if not song_id and row['line_expiry_election'] and (row['line_expiry_election'] <= t):
 					u.remove_from_request_line()
-					# Give them a second chance if they still have requests, this is SID-indiscriminate
-					# they'll get added to whatever line is their top request
+					# Give them a second chance if they still have requests
+					# They'll get added to the line of whatever station they're tuned in to (if any!)
 					if u.has_requests():
-						u.put_in_request_line(u.get_top_request_sid())
+						u.put_in_request_line(u.get_tuned_in_sid())
 				# If they have no song, start the expiry countdown
 				elif not song_id:
 					row['line_expiry_election'] = t + 600
@@ -91,14 +91,17 @@ def get_next(sid):
 			u = User(entry['user_id'])
 			db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (u.id, entry['song_id']))
 			u.remove_from_request_line()
-			# Update the user's request cache
-			u.get_requests(refresh=True)
-			cache.set_station(sid, "request_line", line, True)
+			user_sid = u.get_tuned_in_sid()
+			if u.has_requests():
+				u.put_in_request_line(user_sid)
 			request_count = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_history WHERE user_id = %s", (u.id,)) + 1
 			db.c.update("DELETE FROM r4_request_store WHERE song_id = %s AND user_id = %s", (song.id, u.id))
 			db.c.update("INSERT INTO r4_request_history (user_id, song_id, request_wait_time, request_line_size, request_at_count) "
 						"VALUES (%s, %s, %s, %s, %s)",
 						(u.id, song.id, time.time() - entry['line_wait_start'], len(line), request_count))
+			# Update the user's request cache
+			u.get_requests(refresh=True)
+			cache.set_station(sid, "request_line", line, True)
 			break
 
 	return song
