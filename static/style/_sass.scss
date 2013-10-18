@@ -183,7 +183,7 @@ fieldset {
 .err_div {
 	background: $error_dark;
 	border: 1px solid $error_border;
-	
+
 	background: -moz-linear-gradient(100% 100% 90deg, $error_dark, $error_bright);
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from($error_bright), to($error_dark));
 }
@@ -191,7 +191,7 @@ fieldset {
 .err_div_ok {
 	background: $tooltip;
 	border: 1px solid $tooltip_border;
-	
+
 	background: -moz-linear-gradient(100% 100% 90deg, $tooltip_bright, $tooltip);
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from($tooltip), to($tooltip_bright));
 }
@@ -209,7 +209,7 @@ ul.tabs {
 ul.tabs li {
 	border-bottom: none;
 	display: inline;
-	padding: 0px 7px 1px 7px;	
+	padding: 0px 7px 1px 7px;
 	cursor: pointer;
 	-moz-user-select: none;
 	-webkit-user-select: none;
@@ -644,7 +644,7 @@ div.request {
 	background-position: bottom right;
 	background-repeat: no-repeat;
 	padding: .3em;
-	
+
 	border: 1px solid $request_border;
 	border-bottom: none;
 	margin-top: 1em;
@@ -654,12 +654,9 @@ div.request {
 	border-radius: 5px;
 }
 
-div.request_true {
-	background-color: $request_ok;
-}
-
 div.request_false {
-	background-color: $request_bad;
+	background-image: -moz-linear-gradient(100% 100% 90deg, $request_dark, $request_bad);
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from($request_bad), to($request_dark));
 }
 
 svg.request_songrating {
@@ -1080,7 +1077,7 @@ a.tunein_fb2k {
 	width: 74px;
 	height: 13px;
 	background: url('#{$img_dir}/rating_border.png');
-	margin-left: 2em; 
+	margin-left: 2em;
 	margin-top: 1px;
 	position: relative;
 	-moz-user-select: none;
@@ -1091,7 +1088,7 @@ a.tunein_fb2k {
 span.rating_text {
 	position: absolute;
 	margin-left: -1.5em;
-	margin-top: -1px; 
+	margin-top: -1px;
 	color: $text;
 }
 
@@ -1116,7 +1113,7 @@ span.rating_text {
 
 .rating_user_bar {
 	height: 8px;
-	width: 66px; 
+	width: 66px;
 	background: url('#{$img_dir}/rating_user_bar.png') no-repeat scroll;
 }
 
@@ -1350,7 +1347,7 @@ div.timeline_vote_swipe {
 	width: 0px;
 	background: transparent url('#{$img_dir}/timeline_voteswipe.png') repeat-x scroll 0px 0px;
 	margin-left: -3px;
-	margin-top: -1px;	
+	margin-top: -1px;
 }
 
 .Panel_NowPanel {

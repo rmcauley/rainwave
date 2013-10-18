@@ -422,7 +422,7 @@ var Request = {
 				delete(that.expires_on);
 			}*/
 			if (json.sid != user.p.sid) {
-				that.el.setAttribute("class", "request request_" + json.song_available + " request_station_" + json.sid);
+				that.el.setAttribute("class", "request request_" + json.song_available);
 			}
 			else {
 				that.el.setAttribute("class", "request request_" + json.song_available);
