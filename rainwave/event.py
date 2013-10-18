@@ -394,7 +394,10 @@ class Election(Event):
 		if _request_interval[self.sid] <= 0 and _request_sequence[self.sid] <= 0:
 			line_length = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_line WHERE sid = %s", (self.sid,))
 			log.debug("requests", "Ready for sequence, line length %s" % line_length)
-			_request_sequence[self.sid] = 1 + math.floor(line_length / config.get_station(self.sid, "request_sequence_scale"))
+			# This sequence variable gets set AFTER a request has already been marked as fulfilled
+			# If we have a +1 to this math we'll actually get 2 requests in a row, one now (is_request_needed will return true)
+			# and then again when sequence_length will go from 1 to 0.
+			_request_sequence[self.sid] = int(math.floor(line_length / config.get_station(self.sid, "request_sequence_scale")))
 			_request_interval[self.sid] = config.get_station(self.sid, "request_interval")
 			log.debug("requests", "Sequence length: %s" % _request_sequence[self.sid])
 
