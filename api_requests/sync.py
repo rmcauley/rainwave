@@ -154,8 +154,9 @@ class Sync(APIHandler):
 		self.finish()
 
 	def keep_alive(self):
-		self.write(" ")
-		self.keep_alive_handle = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=20), self.keep_alive)
+		if not self._finished:
+			self.write(" ")
+			self.keep_alive_handle = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=20), self.keep_alive)
 
 	def anon_registered_mixup_warn(self):
 		self.user.refresh()
