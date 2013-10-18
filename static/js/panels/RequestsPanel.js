@@ -11,20 +11,6 @@ panels.RequestsPanel = {
 	constructor: function(container) {
 		var that = {};
 		var list = RequestList(true);
-		var latest_json = null;
-
-		for (var i = 0; i < INITIAL_PAYLOAD.length; i++) {
-			for (var j in INITIAL_PAYLOAD[i]) {
-				if (j == "requests") {
-					latest_json = INITIAL_PAYLOAD[i][j];
-				}
-			}
-		}
-
-		var latest_json_update = function(json) {
-				latest_json = json;
-		};
-		lyre.addCallback(latest_json_update, "requests");
 
 		//var line = AllRequestList();
 
@@ -37,7 +23,14 @@ panels.RequestsPanel = {
 			that.el.appendChild(list.el);
 			//that.el.appendChild(line.div);
 			lyre.addCallback(list.update, "requests");
-			list.update(latest_json);
+
+			for (var i = 0; i < INITIAL_PAYLOAD.length; i++) {
+				for (var j in INITIAL_PAYLOAD[i]) {
+					if (j == "requests") {
+						list.update(INITIAL_PAYLOAD[i][j]);
+					}
+				}
+			}
 
 			//lyre.addCallback(line.update, "request_line");
 
