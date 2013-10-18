@@ -8,7 +8,7 @@ from libs import cache
 from libs import log
 from rainwave import playlist
 from rainwave import request
-from rainwave import user
+from rainwave.user import User
 
 _request_interval = {}
 _request_sequence = {}
@@ -319,7 +319,7 @@ class Election(Event):
 					if db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (song.data['elec_request_user_id'], self.id)) == 0:
 						song.data['entry_votes'] += 1
 					# be careful that this code doesn't get lost if you're inheriting/overwriting
-					u = User.load_from_id(song.data['elec_request_user_id'])
+					u = User(song.data['elec_request_user_id'])
 					if u.has_requests():
 						u.put_in_request_line(u.get_top_request_sid())
 			# TODO: I've noticed that this seems to produce the same output continuously given the same inputs
