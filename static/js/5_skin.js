@@ -1291,7 +1291,7 @@ function _THEME() {
 					ns.td_rating = document.createElement("td");
 					ns.td_rating.setAttribute("class", "pl_songlist_rating");
 					ns.td_rating.style.width = (that.Rating_width + 5) + "px";
-					ns.rating = Rating({ category: "song", id: song_data[i].id, userrating: song_data[i].rating_user, x: 0, y: 1, siterating: song_data[i].song_rating, favourite: song_data[i].fave, register: true });
+					ns.rating = Rating({ category: "song", id: song_data[i].id, userrating: song_data[i].rating_user, x: 0, y: 1, siterating: song_data[i].rating, favourite: song_data[i].fave, register: true });
 					ns.td_rating.appendChild(ns.rating.el);
 					ns.tr.appendChild(ns.td_rating);
 				}
