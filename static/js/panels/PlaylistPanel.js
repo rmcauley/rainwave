@@ -2,9 +2,8 @@ prefs.addPref("playlist", { "name": "sortfavfirst", "defaultvalue": false, "type
 prefs.addPref("playlist", { "name": "sortreadyfirst", "defaultvalue": true, "type": "checkbox" });
 prefs.addPref("playlist", { "name": "sortalbums", "defaultvalue": "album_name", "type": "dropdown", "options":
 	[ 	{ "value": "_searchname", "option": _l("pref_playlist_v_albumname") },
-		{ "value": "user_rating", "option": _l("pref_playlist_v_rating") },
+		{ "value": "rating_user", "option": _l("pref_playlist_v_rating") },
 		{ "value": "cool_lowest", "option": _l("pref_playlist_v_cooldown") },
-		{ "value": "rating", "option": _l("pref_playlist_v_globalrating") },
 		{ "value": "updated", "option": _l("pref_playlist_v_updated") }
 	] } );
 prefs.addPref("playlist", { "name": "opened", "defaultvalue": false, "hidden": true });
