@@ -189,7 +189,7 @@ var albumlist = function() {
 		}
 
 		if ((prefs.p.playlist.sortreadyfirst.value || (prefs.p.playlist.sortalbums.value == "cool_lowest")) && (that.data[a].cool != that.data[b].cool)) {
-			if (that.data[a].cool == true) return -1;
+			if (that.data[a].cool == false) return -1;
 			else return 1;
 		}
 
