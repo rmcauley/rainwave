@@ -12,7 +12,7 @@ import rainwave.playlist
 # Step 2: rw_scanner.py --full
 # Step 3: this script
 # Step 4: CREATE INDEX ON rw_songratings (song_rating_id); if you haven't already
-	
+
 config.load()
 db.open()
 
@@ -23,22 +23,22 @@ class R3Song(rainwave.playlist.Song):
 			return 0
 		# db.c.update("UPDATE rw_songs SET r4_song_id = %s WHERE song_filename = %s", (self.id, self.filename))
 		# db.c.update("UPDATE r4_songs SET song_request_count = %s, song_added_on = %s, song_cool_multiply = %s, song_cool_override = %s WHERE song_id = %s", (r3_data['song_request_count'], r3_data['song_added_on'], r3_data['song_cool_multiply'], r3_data['song_cool_override'], self.id))
-		
+
 		updated_ratings = db.c.update(
 			"INSERT INTO r4_song_ratings(song_id, song_rating_user, user_id, song_rated_at, song_rated_at_rank, song_rated_at_count, song_fave) "
 			"SELECT %s AS song_id, rw_songratings.song_rating AS song_rating_user, rw_songratings.user_id AS user_id, "
 				"rw_songratings.song_rated_at AS song_rated_at, rw_songratings.user_rating_rank AS song_rated_at_rank, "
 				"rw_songratings.user_rating_snapshot AS song_rated_at_count, "
-				"CASE WHEN rw_songfavourites.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS song_fave "
+				"CASE WHEN rw_songfavourites.user_id IS NOT NULL THEN TRUE ELSE NULL END AS song_fave "
 			"FROM rw_songratings "
 			"LEFT JOIN rw_songfavourites ON (rw_songratings.user_id = rw_songfavourites.user_id AND rw_songratings.song_rating_id = rw_songfavourites.song_rating_id) "
 			"WHERE rw_songratings.song_rating_id = %s",
 			(self.id, r3_data['song_rating_id']))
-		
+
 		self.update_rating(skip_album_update=True)
-		
+
 		return updated_ratings
-			
+
 class R3Album(rainwave.playlist.Album):
 	def load_r3_data(self):
 		db.c.update("INSERT INTO r4_album_ratings(user_id, album_id, album_fave) "
@@ -46,12 +46,12 @@ class R3Album(rainwave.playlist.Album):
 					"FROM rw_albums JOIN rw_albumfavourites USING (album_id) "
 					"WHERE album_name = %s GROUP BY user_id",
 					(self.id, self.data['name']))
-			
+
 		self.update_all_user_ratings()
 		self.update_rating()
-				
+
 os.nice(20)
-				
+
 translated_songs = 0
 translated_albums = 0
 translated_ratings = 0
@@ -63,13 +63,13 @@ for song_id in db.c.fetch_list("SELECT song_id FROM r4_songs"):
 	sys.stdout.flush()
 print
 print
-	
+
 for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums"):
 	album = R3Album.load_from_id(album_id)
 	album.load_r3_data()
 	translated_albums += 1
 	print "\rTranslated albums : ", translated_albums,
-	sys.stdout.flush()	
+	sys.stdout.flush()
 print
 print
 
@@ -78,11 +78,11 @@ print
 #	db.c.update("INSERT INTO r4_donations(user_id, donation_amount, donation_message, donation_private) VALUES (%s, %s, %s, %s)",
 #				(donation['user_id'], donation['donation_amount'], donation['donation_desc'], donation['donation_private_name']))
 #	translated_donations += 1
-#	
+#
 #print "Translated donat. : ", translated_donations
 #print
 #
-#translated_stats = 0	
+#translated_stats = 0
 #for stat in db.c.fetch_all("SELECT * FROM rw_listenerstats ORDER BY lstats_time"):
 #	db.c.update("INSERT INTO r4_listener_counts(lc_time, sid, lc_guests, lc_users, lc_users_active, lc_guests_active) VALUES (%s, %s, %s, %s, %s, %s)",
 #				(stat['lstats_time'], stat['sid'], stat['lstats_guests'], stat['lstats_regd'], stat['lstats_activeguests'], stat['lstats_activeregd']))

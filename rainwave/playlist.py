@@ -189,7 +189,7 @@ def remove_all_locks(sid):
 def get_all_albums_list(sid, user = None):
 	if not user or user.id == 1:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, FALSE AS fave, NULL AS rating_user "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, NULL AS fave, NULL AS rating_user "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"WHERE r4_album_sid.sid = %s "
@@ -653,7 +653,7 @@ class Song(object):
 			for metadata in self.groups:
 				self.data['groups'].append(metadata.to_dict(user))
 		self.data['rating_user'] = None
-		self.data['fave'] = False
+		self.data['fave'] = None
 		if user:
 			self.data.update(rating.get_song_rating(self.id, user.id))
 			if user.data['radio_rate_anything']:
@@ -898,7 +898,7 @@ class Album(AssociatedMetadata):
 			instance.data['songs'] = db.c.fetch_all(
 				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
 					"song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, "
-					"song_rating AS rating, 0 AS rating_user, FALSE AS fave, "
+					"song_rating AS rating, 0 AS rating_user, NULL AS fave, "
 					"string_agg(r4_artists.artist_id || ':' || r4_artists.artist_name,  ',') AS artist_parseable "
 				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
@@ -913,7 +913,7 @@ class Album(AssociatedMetadata):
 				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
 					"song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, "
 					"song_rating AS rating, song_cool_multiply AS cool_multiply, song_cool_override AS cool_override, "
-					"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(song_fave, FALSE) AS fave, "
+					"song_rating_user AS rating_user, song_fave AS fave, "
 					"string_agg(r4_artists.artist_id || ':' || r4_artists.artist_name,  ',') AS artist_parseable "
 				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
@@ -1105,7 +1105,7 @@ class Album(AssociatedMetadata):
 					"DELETE FROM r4_album_ratings WHERE album_id = %s RETURNING * "
 				"), "
 				"ratings AS ( "
-					"SELECT album_id, FALSE AS album_fave, user_id, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user "
+					"SELECT album_id, NULL AS album_fave, user_id, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user "
 					"FROM ("
 						"SELECT DISTINCT song_id, album_id FROM r4_song_sid WHERE album_id = %s"
 					") AS r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) "
@@ -1165,7 +1165,7 @@ class Album(AssociatedMetadata):
 			self.data.update(rating.get_album_rating(self.id, user.id))
 		else:
 			d['rating_user'] = None
-			d['fave'] = False
+			d['fave'] = None
 		return d
 
 class Artist(AssociatedMetadata):

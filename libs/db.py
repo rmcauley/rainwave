@@ -327,7 +327,7 @@ def create_tables():
 			song_rated_at				INTEGER		, \
 			song_rated_at_rank			INTEGER		, \
 			song_rated_at_count			INTEGER		, \
-			song_fave				BOOLEAN		DEFAULT FALSE \
+			song_fave				BOOLEAN, \
 		)")
 	# c.create_idx("r4_song_ratings", "user_id", "song_id")		# handled by create_delete_fk
 	# c.create_idx("r4_song_ratings", "song_id")
@@ -362,7 +362,7 @@ def create_tables():
 			album_id				INTEGER		NOT NULL, \
 			user_id					INTEGER		NOT NULL, \
 			album_rating_user		REAL		, \
-			album_fave				BOOLEAN		DEFAULT FALSE, \
+			album_fave				BOOLEAN, \
 			album_rating_complete	BOOLEAN		DEFAULT FALSE \
 		)")
 	c.create_idx("r4_album_ratings", "user_id", "album_id")
@@ -657,4 +657,3 @@ def _fill_test_tables():
 	# User ID 2: site admin
 	c.update("INSERT INTO phpbb_users (user_id, username, group_id) VALUES (2, 'Test', 5)")
 	c.update("INSERT INTO r4_api_keys (user_id, api_key) VALUES (2, 'TESTKEY')")
-
