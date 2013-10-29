@@ -38,7 +38,7 @@ class LocaleMissingLines(api.web.HTMLRequest):
 			raise tornado.web.HTTPError(404)
 
 		self.write(self.render_string("basic_header.html", title="%s Missing Lines" % request_locale))
-		self.write("<p><a href='https://github.com/rmcauley/rainwave/blob/r4/static/lang/%s.json'>GitHub JSON File</a></p>" % request_locale)
+		self.write("<p><a href='https://github.com/rmcauley/rainwave/blob/master/lang/%s.json'>GitHub JSON File</a></p>" % request_locale)
 		self.write("<p>The following lines are missing from this translation:</p>")
 
 		self.write("<div class='json'>")

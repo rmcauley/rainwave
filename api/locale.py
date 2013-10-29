@@ -20,7 +20,7 @@ RW localizations are stored in a JSON file and use the following syntax:
 				... in English this will result in a suffix of "rd"
 &(stuff:person is/people are)
 			- Uses the first part (split by the /) if "stuff" is 1, uses the latter half if stuff is != 1
-			
+
 The JSON files should be encoded in UTF-8.
 """
 
@@ -31,19 +31,19 @@ _supported_locales = []
 def load_translations():
 	global master
 	global translations
-	
-	master_file = open(os.path.join(os.path.dirname(__file__), "../static/lang/en_MASTER.json"))
+
+	master_file = open(os.path.join(os.path.dirname(__file__), "../lang/en_MASTER.json"))
 	master = json.load(master_file)
 	master_file.close()
-	
-	for root, subdir, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/lang")):
+
+	for root, subdir, files in os.walk(os.path.join(os.path.dirname(__file__), "../lang")):
 		for file in files:
 			if file == "en_MASTER.json":
 				continue
-			f = codecs.open(os.path.join(os.path.dirname(__file__), "../static/lang/", file), "r", encoding="utf-8")
+			f = codecs.open(os.path.join(os.path.dirname(__file__), "../lang/", file), "r", encoding="utf-8")
 			translations[file[:-5]] = RainwaveLocale(file[:-5], master, json.load(f))
 			f.close()
-			
+
 def compile_static_language_files():
 	global translations
 
@@ -63,34 +63,34 @@ class RainwaveLocale(tornado.locale.Locale):
 	def get(self, code):
 		global translations
 		return translations[code]
-	
+
 	@classmethod
 	def get_closest(self, *codes):
 		global translations
-		
+
 		if type(codes) == types.TupleType:
 			codes = codes[0]
-	
+
 		for i in range(0, len(codes)):
 			if codes[i] in translations:
 				return translations[codes[i]]
-			
-			parts = codes[i].split("_")	
+
+			parts = codes[i].split("_")
 			for locale_name, translation in translations.iteritems():
 				if parts[0] == locale_name[:2]:
-					return translation	
-		
-		return translations['en_CA']	
-	
+					return translation
+
+		return translations['en_CA']
+
 	def __init__(self, code, master, translation):
 		self.dict = dict(master.items() + translation.items())
 		self.code = code
-		
+
 		self.missing = {}
 		for k, v in master.iteritems():
 			if not translation.has_key(k):
 				self.missing[k] = v
-	
+
 	def translate(self, key, **kwargs):
 		if not key in self.dict:
 			return "[[ " + key + " ]]"
@@ -113,7 +113,7 @@ class RainwaveLocale(tornado.locale.Locale):
 					else:
 						line = line.replace(whole_plural, single_plural.split("/", 1)[1])
 		return line
-	
+
 	def get_suffixed_number(self, number):
 		if not type(number) == types.StringType:
 			number = str(number)
