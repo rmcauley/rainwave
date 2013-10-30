@@ -1,28 +1,32 @@
+'use strict';
+
 var ErrorHandler = function() {
 	var self = {};
-	var errors = {};
-	var showx = 0;
-	var showy = 24;
-	var timers = {};
-	var showing = {};
+	var container;
+	var permanent_errors = [];
 
-	that.changeShowXY = function(x, y) {
-		showx = x;
-		showy = y;
+	self.initialize = function() {
+		API.add_callback(that.permanent_error, "station_offline");
+		API.add_universal_callback(that.tooltip_error);
 	};
 
-	that.setupCallbacks = function() {
-		// only for permanently displayed stuff
-		lyre.addCallback(that.permanentHandler, "station_offline");
-		lyre.addCallback(that.genericR4Error, "request_result");
+	that.permanent_error = function(json) {
+		// TODO: this
 	};
 
-	that.permanentHandler = function(json) {
-		that.doError(json.tl_key, true);
-	};
+	// TODO: update this to be an actual modal error
+	that.modal_error = that.permanent_error;
 
-	that.genericR4Error = function(json) {
-		that.doError(json.tl_key);
+	that.tooltip_error = function(json) {
+		var err = $el("div", { "class": "error_tooltip", "textContent": json.text });
+
+		var x = Mouse.x;
+		var y = Mouse.y;
+		if (y < 30) y = 30;
+		if (x > (window.innerWidth - err.offsetWidth)) x = window.innerWidth - err.offsetWidth - 15;
+		if (y > (window.innerHeight - err.offsetHeight)) y = window.innerHeight - err.offsetHeight - 15;
+		err.style.left = x + "px";
+		err.style.top = y + "px";
 	};
 
 	that.doError = function(code, permanent, overrideclass, overridetext, overridetime) {
@@ -58,13 +62,7 @@ var ErrorHandler = function() {
 			}
 
 			if (!permanent) {
-				var x = mouse.x;
-				var y = (mouse.y - (UISCALE * 2.5));
-				if (y < (UISCALE * 2)) y = UISCALE * 2;
-				if (x > (window.innerWidth - errors[code].el.offsetWidth)) x = window.innerWidth - errors[code].el.offsetWidth - 15;
-				if (y > (window.innerHeight - errors[code].el.offsetHeight)) y = window.innerHeight - errors[code].el.offsetHeight - 15;
-				errors[code].el.style.left = x + "px";
-				errors[code].el.style.top = y + "px";
+
 			}
 		}
 	};

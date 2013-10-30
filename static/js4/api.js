@@ -1,3 +1,5 @@
+'use strict';
+
 var API = function() {
 	var sid, url, user_id, api_key;
 	var sync, sync_params, sync_abort, sync_timeout_id;
@@ -70,6 +72,7 @@ var API = function() {
 
 	var sync_error = function() {
 		// TODO: handle non-JSON errors here
+		// TODO: Retry if it's just a connection issue
 		self.sync_stop();
 	};
 

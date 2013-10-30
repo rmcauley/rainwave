@@ -1,3 +1,5 @@
+'use strict';
+
 var Fx = function() {
 	var self = {};
 

@@ -1,3 +1,5 @@
+'use strict';
+
 var Clock = function() {
 	var clocks = {};
 	var interval = 0;

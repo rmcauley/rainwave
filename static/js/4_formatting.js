@@ -1,15 +1,3 @@
-function createEl(type, attribs, appendto) {
-	var el = document.createElement(type);
-	if ((typeof(attribs) == "object") || (typeof(attribs) == "array")) {
-		for (var i in attribs) {
-			if (i == "textContent") el.textContent = attribs[i];
-			else el.setAttribute(i.replace(/_/g, "-"), attribs[i]);
-		}
-	}
-	if (appendto) appendto.appendChild(el);
-	return el;
-}
-
 function formatHumanTime(seconds, fulltime, disableseconds) {
 	if (seconds <= 0) return "-";
 	var humantime = "";
