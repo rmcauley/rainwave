@@ -12,10 +12,20 @@ def bake_css():
 	css_f = open(os.path.join(os.path.dirname(__file__), "../static/style/_sass.scss"), 'r')
 	css_content = Scss().compile(css_f.read())
 	css_f.close()
-	
+
 	create_baked_directory()
-	
+
 	dest = open(os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style.css"), 'w')
+	dest.write(css_content)
+	dest.close()
+
+	css_f = open(os.path.join(os.path.dirname(__file__), "../static/style4/_sass.scss"), 'r')
+	css_content = Scss().compile(css_f.read())
+	css_f.close()
+
+	create_baked_directory()
+
+	dest = open(os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style4.css"), 'w')
 	dest.write(css_content)
 	dest.close()
 
@@ -29,7 +39,7 @@ def get_build_number():
 	bn = int(bnf.read())
 	bnf.close()
 	return bn
-	
+
 def increment_build_number():
 	bn = get_build_number()	+ 1
 	bnf = open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), 'w')

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.code }}">
+<head>
+	<title>Rainwave 4 Beta</title>
+	<meta charset="UTF-8" />
+	<meta name="description" content="{{ site_description }}" />
+	<script type="text/javascript">
+		var COOKIE_DOMAIN = "{{ cookie_domain }}";
+		var INITIAL_PAYLOAD = {{ json_encode(request.json_payload) }};
+		var API_URL = "{{ api_url }}";
+	</script>
+	<link href="static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
+	<script src="static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
+</head>
+<body id="body">
+{% for file in jsfiles %}<script src="{{ file }}" type="application/javascript"></script>{% end %}
+<div id="menu">Menu will go here</div>
+<div id="messages">errors/notifications will go here</div>
+<div id="timeline"></div>
+</body>
+</html>

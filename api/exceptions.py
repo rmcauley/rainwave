@@ -10,11 +10,11 @@ class APIException(HTTPError):
 		self.status_code = http_code
 		self.log_message = None
 		self.args = []
-		
+
 	def localize(self, request_locale):
 		if not self.reason and request_locale:
 			self.reason = request_locale.translate(self.tl_key, **self.extra)
 
 	def jsonable(self):
-		self.extra.update({ "success": False, "tl_key": self.tl_key, "text": self.reason })
+		self.extra.update({ "code": self.status_code, "success": False, "tl_key": self.tl_key, "text": self.reason })
 		return self.extra
