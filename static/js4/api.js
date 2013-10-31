@@ -2,7 +2,7 @@
 
 var API = function() {
 	var sid, url, user_id, api_key;
-	var sync, sync_params, sync_abort, sync_timeout_id;
+	var sync, sync_params, sync_stopped, sync_timeout_id, sync_timeout_errors;
 	var async, async_queue;
 	var callbacks;
 	var universal_callbacks;
@@ -18,14 +18,14 @@ var API = function() {
 		sync = new XMLHttpRequest();
 		sync.onload = sync_complete;
 		sync.onerror = sync_error;
-		sync.onabort = sync_error;
+		sync.ontimeout = sync_timeout;
 		sync_params = self.serialize({ "sid": sid, "user_id": user_id, "key": api_key });
-		sync_abort = false;
+		sync_stopped = false;
+		sync_timeout_errors = 0;
 
 		async = new XMLHttpRequest();
 		async.onload = async_complete;
 		async.onerror = async_error;
-		async.onabort = async_error;
 		async_ready = true;
 		async_queue = new Array();
 
@@ -49,10 +49,11 @@ var API = function() {
 		if (sync_on === true) return false;
 		performCallbacks(initial_payload);
 		sync_get();
+		return true;
 	};
 
 	var sync_get = function() {
-		if (sync_abort) {
+		if (sync_stopped) {
 			return;
 		}
 
@@ -66,18 +67,28 @@ var API = function() {
 			clearTimeout(sync_timeout_id)
 			sync_timeout_id = null;
 		}
-		sync_abort = true;
+		sync_stopped = true;
 		sync.abort();
+		ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
 	};
 
 	var sync_error = function() {
 		// TODO: handle non-JSON errors here
-		// TODO: Retry if it's just a connection issue
 		self.sync_stop();
 	};
 
+	var sync_timeout = function() {
+		sync_timeout_errors++;
+		if (sync_timeout_errors > 2) {
+			ErrorHandler.permanent_error(ErrorHandler.make_error("api_timeout", 408));
+		}
+	};
+
 	var sync_complete = function() {
-		if (sync_abort) {
+		if (sync_stopped) {
+			return;
+		}
+		if (sync.readyState !== 4) {
 			return;
 		}
 		// if the API is outputting JSON it always outputs status code 200
@@ -94,16 +105,23 @@ var API = function() {
 		if ("error" in response) {
 			sync_restart_pause = 10000;
 			if (error.code != 200) {
-				sync_abort = true;
+				sync_stopped = true;
 			}
+		}
+		else {
+			ErrorHandler.remove_permanent_error("api_timeout");
+			ErrorHandler.remove_permanent_error("station_offline");
 		}
 
 		sync_timeout_id = setTimeout(sync_get, sync_restart_pause);
 	};
 
 	var async_complete = function() {
-		if (response) performCallbacks(JSON.parse(async.responseText));
-		async_queue_get();
+		if (sync.readyState !== 4) {
+			return;
+		}
+		perform_callbacks(JSON.parse(async.responseText));
+		async_get();
 	};
 
 	self.async_get = function(action, params) {

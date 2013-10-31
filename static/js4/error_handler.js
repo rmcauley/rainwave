@@ -3,21 +3,42 @@
 var ErrorHandler = function() {
 	var self = {};
 	var container;
-	var permanent_errors = [];
+	var permanent_errors = {};
 
 	self.initialize = function() {
-		API.add_callback(that.permanent_error, "station_offline");
-		API.add_universal_callback(that.tooltip_error);
+		API.add_callback(self.permanent_error, "station_offline");
+		API.add_universal_callback(self.tooltip_error);
+
+		container = $id("messages");
 	};
 
-	that.permanent_error = function(json) {
-		// TODO: this
+	self.make_error = function(tl_key, code) {
+		return { "tl_key": tl_key, "code": code, "text": $l(tl_key) };
+	};
+
+	self.permanent_error = function(json) {
+		if (!(json.tl_key in permanent_errors)) {
+			var err = json;
+			err.el = $el("div", [ "X", json.text ]);
+			err.el.children[0].addEventListener("click", function() { self.remove_permanent_error(err.tl_key); });
+			permanent_errors[json.tl_key] = err;
+		}
+	};
+
+	self.remove_permanent_error = function(tl_key) {
+		if (tl_key in permanent_errors) {
+			Fx.remove_element(permanent_errors[tl_key]);
+			delete permanent_errors[tl_key];
+		}
 	};
 
 	// TODO: update this to be an actual modal error
-	that.modal_error = that.permanent_error;
+	self.modal_error = function(title, el) {
+		API.sync_stop();
+		container.appendChild($el("div", { "class": "error_modal" }, [ el ]));
+	};
 
-	that.tooltip_error = function(json) {
+	self.tooltip_error = function(json) {
 		var err = $el("div", { "class": "error_tooltip", "textContent": json.text });
 
 		var x = Mouse.x;
@@ -27,95 +48,18 @@ var ErrorHandler = function() {
 		if (y > (window.innerHeight - err.offsetHeight)) y = window.innerHeight - err.offsetHeight - 15;
 		err.style.left = x + "px";
 		err.style.top = y + "px";
+
+		document.body.appendChild(err);
+		setTimeout(5000, function() { Fx.remove_element(err); });
 	};
 
-	that.doError = function(code, permanent, overrideclass, overridetext, overridetime) {
-		if (!theme) {
-			var crap = document.createElement("div");
-			crap.textContent = "FATAL ERROR CODE " + code + " - please use http://rainwave.cc/forums/ or irc://irc.synirc.net/#rainwave to report this.";
-			document.getElementById("body").appendChild(crap);
-			return;
-		}
-		if (errors[code] && (!permanent)) {
-			that.clearError(code);
-		}
-		if (!errors[code] || !permanent) {
-			errors[code] = {};
-			errors[code].el = document.createElement("div");
-			errors[code].el.setAttribute("class", "err_div");
-			if (overrideclass) errors[code].el.setAttribute("class", overrideclass);
-			errors[code].permanent = permanent;
-			that.positionErrors(errors[code]);
-			that.drawError(errors[code], code, overridetext);
-			if (permanent) {
-				showing[code] = true;
-				that.repositionPermanent();
-			}
-			else {
-				var fortime = overridetime ? overridetime: 5000;
-				timers[code] = setTimeout(function() { that.clearError(code); }, fortime);
-			}
-
-			if (!permanent || (permanent !== true)) {
-				errors[code].el.addEventListener('click', function() { that.clearError(code); }, false);
-				errors[code].el.style.cursor = 'pointer';
-			}
-
-			if (!permanent) {
-
-			}
-		}
+	self.javascript_error = function(err, json) {
+		var error_el = $el("div", { "class": "error_javascript" }, [
+			$el("strong", $l("submit_javascript_error")),
+			$el("textarea", err.message + "\n" + err.name + "\n\n" + err.stack + "\n\nServer response:\n" + JSON.stringify(json) + "\n")
+			]);
+		self.modal_error(_l("javascript_error"), error_el);
 	};
 
-	that.repositionPermanent = function() {
-		var ry = parseInt(showy);
-		for (var code in showing) {
-			errors[code].el.style.left = showx + "px";
-			errors[code].el.style.top = ry + "px";
-			ry += errors[code].el.offsetHeight + (UISCALE / 2);
-		}
-	};
-
-	that.positionErrors = function() {
-		var runy = 0;
-		for (var i in errors) {
-			if (errors[i].permanent) {
-				errors[i].el.style.top = showy + runy + "px";
-				runy += errors[i].el.offsetHeight;
-			}
-		}
-	};
-
-	that.clearError = function(code) {
-		if (errors[code]) {
-			that.unshowError(errors[code]);
-			delete(errors[code]);
-		}
-		if (timers[code]) {
-			clearTimeout(timers[code]);
-			delete(timers[code]);
-		}
-		if (showing[code]) {
-			delete(showing[code]);
-			that.positionErrors();
-		}
-	};
-
-	that.deleteError = function(error) {
-		BODY.removeChild(error.el);
-	};
-
-	that.jsError = function(err, json) {
-		var el = createEl("div", { "class": "err_div", "style": "z-index: 100000; top: 0px; left: 0px;" });
-		el.appendChild(createEl("div", { "textContent": _l("crashed"), "style": "padding-bottom: 1em;" }));
-		if (err.message && err.name && err.stack) {
-			el.appendChild(createEl("div", { "textContent": _l("submiterror"), "style": "padding-bottom: 1em;" }));
-			el.appendChild(createEl("textarea", { "textContent": err.message + "\n" + err.name + "\n\n" + err.stack + "\n\nServer response:\n" + JSON.stringify(json) + "\n", "style": "width: 40em; height: 15em; margin-bottom: 1em;" }));
-		}
-		el.appendChild(createEl("div", { "textContent": _l("pleaserefresh") }));
-		BODY.appendChild(el);
-		lyre.sync_stop = true;
-	};
-
-	return that;
+	return self;
 }();
