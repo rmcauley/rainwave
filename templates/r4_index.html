@@ -5,9 +5,12 @@
 	<meta charset="UTF-8" />
 	<meta name="description" content="{{ site_description }}" />
 	<script type="text/javascript">
-		var COOKIE_DOMAIN = "{{ cookie_domain }}";
-		var INITIAL_PAYLOAD = {{ json_encode(request.json_payload) }};
-		var API_URL = "{{ api_url }}";
+		var BOOTSTRAP = {
+				"cookie_domain": "{{ cookie_domain }}",
+				"api_url": "{{ api_url }}",
+				"sid": "{{ request.sid }}",
+				"json": {{ json_encode(request.json_payload) }}
+		};
 	</script>
 	<link href="static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
 	<script src="static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>

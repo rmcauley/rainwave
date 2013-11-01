@@ -43,7 +43,7 @@ var API = function() {
 			str.push(p + "=" + encodeURIComponent(obj[p]));
 		}
 		return str.join("&");
-	}
+	};
 
 	self.sync_start = function() {
 		if (sync_on === true) return false;

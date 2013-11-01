@@ -6,7 +6,8 @@ var Mouse = function() {
 	self.y = 0;
 
 	// stolen from quirksmode.org
-	var update_mouse_x = function(e) {
+	// though, this level of compatibility may not be required anymore
+	var update_mouse = function(e) {
 		var posx = 0;
 		if (!e) e = window.event;
 		if (e.pageX) {
@@ -15,12 +16,8 @@ var Mouse = function() {
 		else if (e.clientX) {
 			self.x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
 		}
-	}
 
-	// more stealing from quirksmode.org
-	var update_mouse_y = function(e) {
 		var posy = 0;
-		if (!e) e = window.event;
 		if (e.pageY) {
 			self.y = e.pageY;
 		}
@@ -29,6 +26,7 @@ var Mouse = function() {
 		}
 	}
 
-	window.addEventListener('mousedown', update_mouse_x, true);
-	window.addEventListener('mousedown', update_mouse_y, true);
+	// ONLY ON CLICK, not on move!
+	// This is mostly used to track where the mouse is to help tooltip error displays
+	window.addEventListener('mousedown', update_mouse, true);
 }();

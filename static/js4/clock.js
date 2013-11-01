@@ -11,7 +11,7 @@ var Clock = function() {
 	that.now = 0;
 
 	that.initialize = function() {
-		API.add_callback(that.clockSync, "api_info");
+		API.add_callback(that.resync, "api_info");
 	};
 
 	that.time = function() {
@@ -19,16 +19,16 @@ var Clock = function() {
 		return Math.round(newdate.getTime() / 1000);
 	};
 
-	that.getTimeDiff = function() {
+	that.get_time_diff = function() {
 		return timediff;
 	}
 
-	that.hiResTime = function() {
+	that.hi_res_time = function() {
 		var newdate = new Date();
 		return newdate.getTime();
 	};
 
-	that.clockSync = function(json) {
+	that.resync = function(json) {
 		timediff = json.time - that.time();
 		that.now = that.time() + timediff;
 		ready = true;
@@ -55,7 +55,6 @@ var Clock = function() {
 				}
 				else c++;
 			}
-			//console.log("Clock count: " + c + "/" + cb);
 		}
 	};
 
