@@ -4,8 +4,8 @@ var API = function() {
 	var sid, url, user_id, api_key;
 	var sync, sync_params, sync_stopped, sync_timeout_id, sync_timeout_errors;
 	var async, async_queue;
-	var callbacks;
-	var universal_callbacks;
+	var callbacks = {};
+	var universal_callbacks = [];
 
 	var self = {};
 
@@ -27,10 +27,7 @@ var API = function() {
 		async.onload = async_complete;
 		async.onerror = async_error;
 		async_ready = true;
-		async_queue = new Array();
-
-		callbacks = new Array();
-		universal_callbacks = new Array();
+		async_queue = [];
 
 		perform_callbacks(json);
 		sync_get();
@@ -101,6 +98,7 @@ var API = function() {
 		var sync_restart_pause = 3000;
 		var response = JSON.parse(sync.responseText);
 		perform_callbacks(response);
+		perform_callbacks({ "_SYNC_COMPLETE": true });
 
 		if ("error" in response) {
 			sync_restart_pause = 10000;
