@@ -128,6 +128,7 @@ def advance_station(sid):
 	current[sid] = next[sid].pop(0)
 	current[sid].start_event()
 	log.debug("advance", "Current management: %.6f" % (time.time() - start_time,))
+	_update_schedule_memcache(sid)
 
 	tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(milliseconds=100), lambda: post_process(sid))
 
@@ -359,10 +360,13 @@ def _trim(sid):
 	max_history_id = db.c.fetch_var("SELECT MAX(songhist_id) FROM r4_song_history")
 	db.c.update("DELETE FROM r4_song_history WHERE songhist_id <= %s", (max_history_id - config.get("trim_history_length"),))
 
-def _update_memcache(sid):
+def _update_schedule_memcache(sid):
 	cache.set_station(sid, "sched_current", current[sid], True)
 	cache.set_station(sid, "sched_next", next[sid], True)
 	cache.set_station(sid, "sched_history", history[sid], True)
+
+def _update_memcache(sid):
+	_update_schedule_memcache(sid)
 	cache.set_station(sid, "sched_current_dict", current[sid].to_dict(), True)
 	next_dict_list = []
 	for event in next[sid]:
