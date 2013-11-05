@@ -263,6 +263,7 @@ def _create_elections(sid):
 				next_elec = j
 				next_elec_length = next[sid][j].length()
 				break
+			j = j + 1
 		if not next_elec_i and len(unused_elecs) > 0:
 			next_elec_length = unused_elecs[0].length()
 
