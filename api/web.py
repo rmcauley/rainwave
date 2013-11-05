@@ -78,6 +78,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	phpbb_auth = False
 	# Does the user need perks (donor/beta/etc) to see this request/page?
 	perks_required = False
+	# hide from help, meant really only for things like redirect pages
+	help_hidden = False
 
 	def initialize(self, **kwargs):
 		super(RainwaveHandler, self).initialize(**kwargs)

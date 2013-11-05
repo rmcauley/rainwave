@@ -22,7 +22,9 @@ sections = { "Core JSON": {},
 
 def sectionize_requests():
 	for url, handler in help_classes.items():
-		if handler.local_only:
+		if handler.help_hidden:
+			pass
+		elif handler.local_only:
 			if config.get("developer_mode"):
 				sections["Other"][url] = handler
 		elif issubclass(handler, api.web.PrettyPrintAPIMixin):

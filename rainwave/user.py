@@ -326,11 +326,11 @@ class User(object):
 				"FROM r4_request_store "
 					"JOIN r4_songs USING (song_id) "
 					"LEFT JOIN r4_song_sid ON (r4_song_sid.sid = %s AND r4_songs.song_id = r4_song_sid.song_id) "
-					"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id) "
+					"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
 					"JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id) "
 				"WHERE r4_request_store.user_id = %s "
 				"ORDER BY reqstor_order, reqstor_id",
-				(line_sid, self.id))
+				(line_sid, self.id, self.id))
 			if not requests:
 				requests = []
 			for song in requests:

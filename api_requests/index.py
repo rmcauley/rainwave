@@ -50,6 +50,13 @@ class MainIndex(api.web.HTMLRequest):
 					api_url=config.get("api_external_url_prefix"),
 					cookie_domain=config.get("cookie_domain"))
 
+@handle_url("/beta")
+class BetaRedirect(tornado.web.RequestHandler):
+	help_hidden = True
+	
+	def prepare(self):
+		self.redirect("/beta/", permanent=True)
+
 @handle_url("/beta/")
 class BetaIndex(MainIndex):
 	perks_required = True
