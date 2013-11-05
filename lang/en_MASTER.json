@@ -23,6 +23,7 @@
     "request_failed":			"Request failed.",
     "request_delete_failed":		"Request delete failed.",
     "request_unrated_failed":		"Request unrated failed.",
+    "request_is_blocked":		"Blocked for %(blocked_num) elections.",
     "too_many_requests":		"Too many requests.",
     "same_request_exists":		"Same request exists.",
     "same_request_album":		"You already requested a song from this album.",

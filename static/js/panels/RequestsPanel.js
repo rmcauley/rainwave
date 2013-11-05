@@ -441,13 +441,13 @@ var Request = {
 				delete(that.cooldown);
 			}
 			if (json.album_electionblock && !that.blocked) {
-				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("reqalbumblocked") + json.elec_blocked_num }, that.el);
+				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("request_is_blocked", { "blocked_num": json.elec_blocked_num }) }, that.el);
 			}
 			else if (json.album_electionblock && that.blocked) {
-				that.blocked.textContent = _l("reqalbumblocked") + json.elec_blocked_num;
+				that.blocked.textContent = _l("request_is_blocked", { "blocked_num": json.elec_blocked_num });
 			}
 			else if (json.group_electionblock && !that.blocked) {
-				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("reqgroupblocked") + json.elec_blocked_num }, that.el);
+				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("request_is_blocked", { "blocked_num": json.elec_blocked_num }) }, that.el);
 			}
 			else if (json.group_electionblock && that.blocked) {
 				that.blocked.textContent = _l("reqgroupblocked");

@@ -111,6 +111,8 @@ class Event(object):
 		song = self.get_song()
 		if song:
 			song.update_last_played(self.sid)
+			if ((self.sid == song.sid) or (self.sid in song.sids)):
+				song.start_cooldown(self.sid)
 
 	def length(self):
 		if self.start_actual:

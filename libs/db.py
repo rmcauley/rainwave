@@ -391,7 +391,7 @@ def create_tables():
 		CREATE TABLE r4_groups ( \
 			group_id				SERIAL		PRIMARY KEY, \
 			group_name				TEXT		, \
-			group_elec_block		SMALLINT	DEFAULT 5, \
+			group_elec_block		SMALLINT, \
 			group_cool_time			SMALLINT	DEFAULT 900 \
 		)")
 
