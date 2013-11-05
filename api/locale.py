@@ -3,6 +3,7 @@ import json
 import types
 import codecs
 import tornado.locale
+import tornado.escape
 
 from libs import buildtools
 
@@ -27,15 +28,18 @@ The JSON files should be encoded in UTF-8.
 master = None
 translations = {}
 _supported_locales = []
+locale_names_json = ""
 
 def load_translations():
 	global master
 	global translations
+	global locale_names_json
 
 	master_file = open(os.path.join(os.path.dirname(__file__), "../lang/en_MASTER.json"))
 	master = json.load(master_file)
 	master_file.close()
 
+	locale_names = {}
 	for root, subdir, files in os.walk(os.path.join(os.path.dirname(__file__), "../lang")):
 		for file in files:
 			if file == "en_MASTER.json":
@@ -43,6 +47,9 @@ def load_translations():
 			f = codecs.open(os.path.join(os.path.dirname(__file__), "../lang/", file), "r", encoding="utf-8")
 			translations[file[:-5]] = RainwaveLocale(file[:-5], master, json.load(f))
 			f.close()
+			locale_names[file[:-5]] = translations[file[:-5]].dict['language_name']
+
+	locale_names_json = tornado.escape.json_encode(locale_names)
 
 def compile_static_language_files():
 	global translations
@@ -63,7 +70,7 @@ class RainwaveLocale(tornado.locale.Locale):
 	def exists(self, code):
 		global translations
 		return code in translations
-	
+
 	@classmethod
 	def get(self, code):
 		global translations

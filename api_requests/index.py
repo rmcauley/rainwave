@@ -6,8 +6,9 @@ import time
 import hashlib
 import os
 
-from api.server import handle_url
 import api.web
+import api.locale
+from api.server import handle_url
 from api_requests import info
 from api import fieldtypes
 
@@ -48,12 +49,13 @@ class MainIndex(api.web.HTMLRequest):
 					site_description=self.locale.translate("station_description_id_%s" % self.sid),
 					revision_number=config.get("revision_number"),
 					api_url=config.get("api_external_url_prefix"),
-					cookie_domain=config.get("cookie_domain"))
+					cookie_domain=config.get("cookie_domain"),
+					locales=api.locale.locale_names_json)
 
 @handle_url("/beta")
 class BetaRedirect(tornado.web.RequestHandler):
 	help_hidden = True
-	
+
 	def prepare(self):
 		self.redirect("/beta/", permanent=True)
 
@@ -75,4 +77,36 @@ class BetaIndex(MainIndex):
 					jsfiles=jsfiles,
 					revision_number=config.get("revision_number"),
 					api_url=config.get("api_external_url_prefix"),
-					cookie_domain=config.get("cookie_domain"))
+					cookie_domain=config.get("cookie_domain"),
+					locales=api.locale.locale_names_json)
+
+@handle_url("/r4/")
+class R4Index(BetaIndex):
+	perks_required = True
+	description = "The next version of the Rainwave UI."
+
+	def prepare(self):
+		if config.get("public_beta"):
+			self.perks_required = False
+		super(BetaIndex, self).prepare()
+		self.json_payload = {}
+
+		self.js4files = []
+		for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js4")):
+			for file in files:
+				self.js4files.append(os.path.join(root[root.find("static/js4"):], file))
+		buildtools.bake_css()
+
+	def append(self, key, value):
+		self.json_payload[key] = value
+
+	def get(self):
+		info.attach_info_to_request(self, playlist=True, artists=True)
+		self.append("api_info", { "time": int(time.time()) })
+		self.render("r4_index.html", request=self,
+					site_description=self.locale.translate("station_description_id_%s" % self.sid),
+					jsfiles=self.js4files,
+					revision_number=config.get("revision_number"),
+					api_url=config.get("api_external_url_prefix"),
+					cookie_domain=config.get("cookie_domain"),
+					locales=api.locale.locale_names_json)

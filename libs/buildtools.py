@@ -9,23 +9,19 @@ def create_baked_directory():
 		os.makedirs(dir)
 
 def bake_css():
-	css_f = open(os.path.join(os.path.dirname(__file__), "../static/style/_sass.scss"), 'r')
+	create_baked_directory()
+	_bake_css_file(os.path.join(os.path.dirname(__file__), "../static/style/_sass.scss"),
+				   os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style.css"))
+	_bake_css_file(os.path.join(os.path.dirname(__file__), "../static/style4/_sass.scss"),
+				   os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style4.css"))
+
+
+def _bake_css_file(input_filename, output_filename):
+	css_f = open(input_filename, 'r')
 	css_content = Scss().compile(css_f.read())
 	css_f.close()
 
-	create_baked_directory()
-
-	dest = open(os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style.css"), 'w')
-	dest.write(css_content)
-	dest.close()
-
-	css_f = open(os.path.join(os.path.dirname(__file__), "../static/style4/_sass.scss"), 'r')
-	css_content = Scss().compile(css_f.read())
-	css_f.close()
-
-	create_baked_directory()
-
-	dest = open(os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style4.css"), 'w')
+	dest = open(output_filename, 'w')
 	dest.write(css_content)
 	dest.close()
 
