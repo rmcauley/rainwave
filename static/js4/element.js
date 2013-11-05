@@ -12,14 +12,14 @@ function $el(type, attribs, sub_elements) {
 		attribs = null;
 	}
 	if (sub_elements) {
-		for (i = 0; i < attribs.length; i++) {
-			if (typeof(attribs[i]) == "string") {
+		for (i = 0; i < sub_elements.length; i++) {
+			if (typeof(sub_elements[i]) == "string") {
 				var el2 = document.createElement("span");
-				el2.textContent = attribs[i];
+				el2.textContent = sub_elements[i];
 				el.appendChild(el2);
 			}
 			else {
-				el.appendChild(attribs[i]);
+				el.appendChild(sub_elements[i]);
 			}
 		}
 	}
@@ -28,12 +28,17 @@ function $el(type, attribs, sub_elements) {
 	}
 	else if (attribs) {
 		for (i in attribs) {
-			if (i == "textContent") el.textContent = attribs[i];
-			else el.setAttribute(i.replace(/_/g, "-"), attribs[i]);
+			if (i == "textContent") {
+			    el.textContent = attribs[i];
+			}
+			else {
+			    el.setAttribute(i.replace(/_/g, "-"), attribs[i]);
+			}
 		}
 	}
 	return el;
 }
 
-
-$id = document.getElementById;
+function $id(id) {
+    return document.getElementById(id);
+}

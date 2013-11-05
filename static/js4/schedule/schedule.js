@@ -1,7 +1,7 @@
 'use strict';
 
 var Schedule = function() {
-	var self;
+	var self = {};
 	self.events = [];
 
 	var sched_next;
@@ -44,13 +44,5 @@ var Schedule = function() {
 		return self.create_event_object(event_json);
 	};
 
-	self.create_event_object = function(event_json) {
-		if (event_json.type == "Election") {
-			return Election.initialize(event_json);
-		}
-		else if (event_json.type == "OneUp") {
-			return OneUp.initialize(event_json);
-		}
-		return null;
-	};
-};
+	return self;
+}();

@@ -26,7 +26,6 @@ var API = function() {
 		async = new XMLHttpRequest();
 		async.onload = async_complete;
 		async.onerror = async_error;
-		async_ready = true;
 		async_queue = [];
 
 		perform_callbacks(json);
@@ -114,6 +113,10 @@ var API = function() {
 		sync_timeout_id = setTimeout(sync_get, sync_restart_pause);
 	};
 
+    var async_error = function() {
+		ErrorHandler.tooltip_error(ErrorHandler.make_error("internal_error", 500));
+    };
+
 	var async_complete = function() {
 		if (sync.readyState !== 4) {
 			return;
@@ -160,12 +163,12 @@ var API = function() {
 
 	self.add_callback = function(js_func, api_name) {
 		if (!callbacks[api_name]) callbacks[api_name] = [];
-		callbacks[api_name].push(method);
+		callbacks[api_name].push(js_func);
 	};
 
 
-	self.add_universal_callback = function(method) {
-		universal_callbacks.push(method);
+	self.add_universal_callback = function(js_func) {
+		universal_callbacks.push(js_func);
 	};
 
 	return self;

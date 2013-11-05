@@ -24,5 +24,5 @@ var DocTitleUpdater = function() {
 		sv_ready = true;
 	};
 
-	return that;
+	return self;
 }();

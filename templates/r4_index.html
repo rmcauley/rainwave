@@ -9,16 +9,22 @@
 				"cookie_domain": "{{ cookie_domain }}",
 				"api_url": "{{ api_url }}",
 				"sid": "{{ request.sid }}",
-				"json": {{ json_encode(request.json_payload) }}
+				"json": {{ json_encode(request.json_payload) }},
+				"locales": {{ locales }}
 		};
 	</script>
-	<link href="static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
-	<script src="static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
+	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
+	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
 </head>
-<body id="body">
-{% for file in jsfiles %}<script src="{{ file }}" type="application/javascript"></script>{% end %}
-<div id="menu">Menu will go here</div>
-<div id="messages">errors/notifications will go here</div>
-<div id="timeline"></div>
+<body onload="initialize();">
+		{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
+		<div id="menu">Menu will go here</div>
+		<div id="messages"></div>
+		<div id="sizable_body">
+				<div id="timeline">Timeline</div>
+				<div id="album_list">Album list</div>
+				<div id="album_view">Album view</div>
+				<div id="requests">Requests</div>
+		</div>
 </body>
 </html>

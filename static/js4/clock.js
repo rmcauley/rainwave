@@ -40,7 +40,12 @@ var Clock = function() {
 		var cb;
 		for (cb in clocks) {
 			try {
-				clocks[cb].func(clocks[cb].end - that.now + clocks[cb].offset);
+				if (clocks[cb].func) {
+					clocks[cb].func(clocks[cb].end - that.now + clocks[cb].offset);
+				}
+				else if (clocks[cb].el) {
+					clocks[cb].el.textContent = Formatting.minute_clock(clocks[cb].end - that.now + clocks[cb].offset);
+				}
 			}
 			catch(err) {
 				clearInterval(interval);
