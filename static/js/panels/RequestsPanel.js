@@ -450,7 +450,7 @@ var Request = {
 				that.blocked = createEl("div", { "class": "request_cooldown", "textContent": _l("request_is_blocked", { "blocked_num": json.elec_blocked_num }) }, that.el);
 			}
 			else if (json.group_electionblock && that.blocked) {
-				that.blocked.textContent = _l("reqgroupblocked");
+				that.blocked.textContent = _l("request_is_blocked", { "blocked_num": json.elec_blocked_num });
 			}
 			else if (that.blocked) {
 				that.el.removeChild(that.blocked);
