@@ -84,6 +84,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	def initialize(self, **kwargs):
 		super(RainwaveHandler, self).initialize(**kwargs)
 		self.cleaned_args = {}
+		self.cookie_prefs = {}
 
 	def set_cookie(self, name, value, **kwargs):
 		if isinstance(value, (int, long)):
@@ -103,6 +104,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 		See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
 		"""
+		if "rw_lang" in self.cookies:
+			if locale.RainwaveLocale.exists(self.cookies['rw_lang'].value):
+				return locale.RainwaveLocale.get(self.cookies['rw_lang'].value)
 		if "Accept-Language" in self.request.headers:
 			languages = self.request.headers["Accept-Language"].split(",")
 			locales = []
@@ -131,6 +135,15 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			log.info("api", "Rejected %s request from %s" % (self.url, self.request.remote_ip))
 			self.set_status(403)
 			self.finish()
+
+		# Tornado doesn't want to read the JSON cookies at all; have to look into why and work around it.
+		#if self.get_cookie("r3prefs"):
+		#	try:
+		#		self.cookie_prefs = tornado.escape.json_decode(self.get_cookie("r3prefs"))
+		#	except Exception as e:
+		#		print self.cookies
+		#		print self.get_cookie("r3prefs")
+		#		print e
 
 		if not isinstance(self.locale, locale.RainwaveLocale):
 			self.locale = self.get_browser_locale()

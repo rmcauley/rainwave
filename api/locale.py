@@ -60,6 +60,11 @@ def compile_static_language_files():
 # which has an entirely different setup
 class RainwaveLocale(tornado.locale.Locale):
 	@classmethod
+	def exists(self, code):
+		global translations
+		return code in translations
+	
+	@classmethod
 	def get(self, code):
 		global translations
 		return translations[code]

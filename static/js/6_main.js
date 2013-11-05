@@ -54,7 +54,7 @@ function init() {
 	var save_lang_cookie = function(new_lang) {
 		var today = new Date();
 		var expiry = new Date(today.getTime() + 28 * 24 * 60 * 60 * 1000 * 13);
-		var thecookie = "r4lang=" + new_lang;
+		var thecookie = "rw_lang=" + new_lang;
 		document.cookie = thecookie + ";path=/;domain=" + COOKIE_DOMAIN + ";expires=" + expiry.toGMTString();
 	};
 
@@ -65,8 +65,9 @@ function init() {
 			{ "value": "fr_CA", "option": "Français (Canada)" },
 			{ "value": "nl_NL", "option": "Nederlands" },
 			{ "value": "pt_BR", "option": "Português (Brasil)" },
+			{ "value": "ru_RU", "option": "ру́сский язы́к" },
 			{ "value": "fi_FI", "option": "Suomi" },
-			{ "value": "se_SE", "option": "Svenska" }
+			{ "value": "se_SE", "option": "Svenska" },
 		], refresh: true, callback: save_lang_cookie });
 	prefs.addPref("help", { "name": "visited", "defaultvalue": false, "hidden": true });
 

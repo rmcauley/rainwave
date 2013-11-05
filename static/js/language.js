@@ -35,7 +35,7 @@ function _tl_core(key, args) {
 	if (!args) return [ { "text": line, "arg_key": null } ];
 
 	var parts = [];
-	var var_found, suffix_found, plural_found, arg_key, start_of_plural, whole_plural;
+	var var_found, suffix_found, plural_found, arg_key, start_of_plural, whole_plural, colon_index;
 	while (line.length > 0) {
 		var_found = line.indexOf("%(");
 		suffix_found = line.indexOf("#(");
@@ -47,12 +47,15 @@ function _tl_core(key, args) {
 		plural_found = plural_found === -1 ? 100000 : plural_found;
 
 		if ((var_found !== 100000) && (var_found < suffix_found) && (var_found < plural_found)) {
-			var arg_key = line.substr(var_found + 2, line.indexOf(")", var_found) - (var_found + 2));
+			arg_key = line.substr(var_found + 2, line.indexOf(")", var_found) - (var_found + 2));
 			if (arg_key in args) {
 				parts.push({ "text": line.substr(0, var_found), "arg_key": null });
 				parts.push({ "text": args[arg_key], "arg_key": arg_key });
-				line = line.substr(line.indexOf(")", var_found) + 1);
 			}
+			else {
+				parts.push({ "text": "[[ " + arg_key + " ]]", "arg_key": arg_key });
+			}
+			line = line.substr(line.indexOf(")", var_found) + 1);
 		}
 
 		else if ((suffix_found !== 100000) && (suffix_found < var_found) && (suffix_found < plural_found)) {
@@ -60,13 +63,20 @@ function _tl_core(key, args) {
 			if (arg_key in args) {
 				parts.push({ "text": line.substr(0, suffix_found), "arg_key": null });
 				parts.push({ "text": _get_suffixed_number(args[arg_key]), "arg_key": arg_key });
-				line = line.substr(line.indexOf(")", suffix_found) + 1);
 			}
+			else {
+				parts.push({ "text": "[[ " + arg_key + " ]]", "arg_key": arg_key });
+			}
+			line = line.substr(line.indexOf(")", suffix_found) + 1);
 		}
 
 		else if ((plural_found !== 100000) && (plural_found < var_found) && (plural_found < suffix_found)) {
-			arg_key = line.substr(plural_found + 2, line.indexOf(":") - 3)
-			if (arg_key in args) {
+			colon_index = line.indexOf(":");
+			arg_key = line.substr(plural_found + 2, colon_index - 3)
+			if (colon_index == -1) {
+				parts.push({ "text": "[[ translation error ]]", "arg_key": null });
+			}
+			else if (arg_key in args) {
 				parts.push({ "text": line.substr(0, plural_found), "arg_key": null });
 
 				start_of_plural = plural_found + 2 + arg_key.length + 1
@@ -80,9 +90,11 @@ function _tl_core(key, args) {
 				else {
 					parts.push({ "text": whole_plural.split("/", 2)[1], "arg_key": arg_key });
 				}
-
-				line = line.substr(line.indexOf(")", plural_found) + 1);
 			}
+			else {
+				parts.push({ "text": "[[ " + arg_key + " ]]", "arg_key": arg_key });
+			}
+			line = line.substr(line.indexOf(")", plural_found) + 1);
 		}
 		else {
 			parts.push({ "text": line, "arg_key": null })

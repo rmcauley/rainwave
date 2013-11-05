@@ -1,6 +1,6 @@
 {
     "__comment__": "API Errors, can be skipped if you only want to translate the website.",
-    
+
     "missing_station_id": 		"Отсутствует ID станции.",
     "invalid_station_id":		"Неправильный ID станции.",
     "missing_argument": 		"Отсутствует аргумент: '%(argument)'.",
@@ -15,11 +15,11 @@
     "unlocked_only":			"Пользователь привязан к станции %(station) еще на %(lock_counter) треков.",
     "internal_error":			"Внутренняя ошибка сервера.",
     "song_does_not_exist":		"Трек не существует.",
-    
+
     "__comment__": "API/Web errors - these are spit out by the API but will be shown on the website.",
-    
+
     "fave_failed":			"Не удалось добавить трек в избранное.",
-    
+
     "request_failed":			"Не удалось добавить заявку.",
     "request_delete_failed":		"Не удалось удалить заявку.",
     "request_unrated_failed":		"Не удалось добавить треки без рейтинга.",
@@ -28,7 +28,7 @@
     "same_request_album":		"Вы уже запросили трек с этого альбома.",
     "song_not_requested":		"Трек не заявлен.",
     "station_offline":			"Станция в данный момент не доступна. Пожалуйста, попробуйте позже.",
-    
+
     "already_voted_for_song":		"Вы уже проголосовали за этот трек.",
     "cannot_rate_now":			"Невозможно оценить трек в данный моемнт.",
     "tunein_to_rate_current_song":	"Чтобы оценить текущий трек необходимо подключиться к станции.",
@@ -37,28 +37,28 @@
 
     "unknown_error_message":		"Пожалуйста, попробуйте снова или отправьте баг-репорт вместе с последующей информацией.  (Эта ошибка добавлена в лог)",
     "debug_information":		"Отладочная информация:",
-    
+
     "__comment__": "API Key Management",
-    
+
     "api_key_manager":			"Менеджер ключей API",
     "api_key":				"API Ключ",
     "qr_code":				"QR Код",
     "create_api_key":			"Создать API ключ",
-    
+
     "__comment__": "Pretty Printed API Page Words",
-    
+
     "unrated_songs":			"Треки без оценки",
     "title":				"Название",
     "album_name":			"Название альбома",
     "id":				"ID",
-    
+
     "__comment__": "Other",
-    
+
     "redownload_m3u":			"Вы пытаетесь подключиться? Если вы только что залогинились, пожалуйста, скачайте заного плейлист.",
     "random_relay":			"Произвольный сервер",
-    
+
     "__comment__": "The following are the old R3 translation lines, which will be replaced.  Some day. :(",
-    
+
     "station_description_id_1": 	"Радио музыки из видео-игр. Голосуйте за треки которые хотите услышать!",
     "station_description_id_2":		"OverClocked Remix Радио.  Голосуйте за ваши любимые ремиксы!",
     "station_description_id_3":		"Кавер-группы и ремиксы. Голосуйте за любимых исполнителей!",
@@ -84,10 +84,10 @@
     "overclockedremixes": "OverClocked Remixes",
     "mixwavesongs": "Mixwave Songs",
     "pl_oncooldown": "Недоступно еще в течение %(time).",
-    "pl_ranks": "Средняя оценка %(rating), место в рейтинге &(rank).",
+    "pl_ranks": "Средняя оценка %(rating), место в рейтинге #(rank).",
     "pl_favourited": "Добавлен в избранное %(count) &(count:person/__missing__).",
     "pl_wins": "Побеждает в %(percent)% голосований",
-    "pl_requested": "Количество заявок %(count) &(count:time_count/__missing__), занимает &(rank) место.",
+    "pl_requested": "Количество заявок %(count) &(count:time_count/__missing__), занимает #(rank) место.",
     "pl_genre": "Принадлежит к группе: ",
     "pl_genre2": ".",
     "pl_genres": "Принадлежит к группам: ",
@@ -223,7 +223,7 @@
     "reqoncooldown": " (Недоступно)",
     "reqempty": " (пусто)",
     "reqwrongstation": " (другая станция)",
-    "reqtechtitlefull": " (%(station)&(position) with %(requestcount))",
+    "reqtechtitlefull": " (%(station)#(position) with %(requestcount))",
     "reqtechtitlesimple": " (%(station)%(requestcount))",
     "reqexpiresin": " (место в очереди истекает через %(expiretime))",
     "reqexpiresnext": " (место в очереди заканчивается после следующей заявки)",
