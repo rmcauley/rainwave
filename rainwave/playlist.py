@@ -684,6 +684,9 @@ class Song(object):
 		else:
 			self.data['rating_allowed'] = False
 
+	def length(self):
+		return self.data['length']
+
 # ################################################################### ASSOCIATED DATA TEMPLATE
 
 class MetadataInsertionError(Exception):

@@ -115,7 +115,12 @@ class Event(object):
 				song.start_cooldown(self.sid)
 
 	def length(self):
-		if self.start_actual:
+		if not self.used and hasattr(self, "songs"):
+			l = 0
+			for song in self.songs:
+				l += song.length()
+			return l
+		elif self.start_actual:
 			return self.start_actual - self.end
 		return self.start - self.end
 
@@ -147,6 +152,11 @@ class Event(object):
 		if user and user.data['radio_admin'] > 0:
 			obj['public'] = self.public
 			obj['timed'] = self.timed
+		if hasattr(self, "songs"):
+			if self.start_actual:
+				obj['end'] = self.start_actual + self.length()
+			elif self.start:
+				obj['end'] = self.start + self.length()
 		return obj;
 
 class ElectionScheduler(Event):
@@ -448,12 +458,6 @@ class Election(Event):
 		obj = super(Election, self).to_dict(user)
 		obj['used'] = self.used
 		obj['length'] = self.length()
-		if self.start_actual:
-			obj['end'] = self.start_actual + obj['length']
-		elif self.start:
-			obj['end'] = self.start + obj['length']
-		else:
-			obj['end'] = 0
 		obj['songs'] = []
 		for song in self.songs:
 			if check_rating_acl:
@@ -499,6 +503,7 @@ class OneUp(Event):
 		one_up = cls()
 		one_up._update_from_dict(row)
 		one_up.songs = [ playlist.Song.load_from_id(row['song_id'], one_up.sid) ]
+		one_up.end = one_up.start + one_up.length()
 		return one_up
 
 	@classmethod
