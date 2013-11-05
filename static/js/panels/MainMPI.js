@@ -183,7 +183,7 @@ panels.MainMPI = {
 			num = 0;
 			total = 0;
 			for (var i = 0; i < json.length; i++) {
-				if (json[i].song_available) num++;
+				if (!json[i].cool) num++;
 				total++;
 			};
 		};
