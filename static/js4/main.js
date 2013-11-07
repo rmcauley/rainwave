@@ -13,5 +13,5 @@ function initialize() {
 	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
 
 	_on_resize(null);
-	document.body.addEventListener("resize", _on_resize);
+	window.addEventListener("resize", _on_resize, false);
 };

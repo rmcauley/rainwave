@@ -675,9 +675,14 @@ class Song(object):
 	def add_to_vote_count(self, votes, sid):
 		return db.c.update("UPDATE r4_song_sid SET song_vote_total = song_vote_total + %s WHERE song_id = %s AND sid = %s", (votes, self.id, sid))
 
-	def check_rating_acl(self, user_id):
+	def check_rating_acl(self, user):
 		if self.data['rating_allowed']:
 			return
+			
+		if user.data['radio_rate_anything']:
+			self.data['rating_allowed'] = True
+			return
+
 		acl = cache.get_station(self.sid, "user_rating_acl")
 		if self.id in acl and user_id in acl[self.id]:
 			self.data['rating_allowed'] = True

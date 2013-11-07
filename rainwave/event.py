@@ -461,7 +461,7 @@ class Election(Event):
 		obj['songs'] = []
 		for song in self.songs:
 			if check_rating_acl:
-				song.check_rating_acl(user.id)
+				song.check_rating_acl(user)
 			obj['songs'].append(song.to_dict(user))
 		return obj
 
