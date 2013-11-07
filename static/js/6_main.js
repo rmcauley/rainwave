@@ -65,7 +65,7 @@ function init() {
 			{ "value": "fr_CA", "option": "Français (Canada)" },
 			{ "value": "nl_NL", "option": "Nederlands" },
 			{ "value": "pt_BR", "option": "Português (Brasil)" },
-			{ "value": "ru_RU", "option": "ру́сский язы́к" },
+			{ "value": "ru_RU", "option": "Русский" },
 			{ "value": "fi_FI", "option": "Suomi" },
 			{ "value": "se_SE", "option": "Svenska" },
 		], refresh: true, callback: save_lang_cookie });
