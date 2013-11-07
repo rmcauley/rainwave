@@ -327,7 +327,7 @@ def create_tables():
 			song_rated_at				INTEGER		, \
 			song_rated_at_rank			INTEGER		, \
 			song_rated_at_count			INTEGER		, \
-			song_fave				BOOLEAN, \
+			song_fave				BOOLEAN \
 		)")
 	# c.create_idx("r4_song_ratings", "user_id", "song_id")		# handled by create_delete_fk
 	# c.create_idx("r4_song_ratings", "song_id")

@@ -165,7 +165,10 @@ function Rating(p) {
 		// that.favcatch.addEventListener("mouseout", that.favMouseOut, true);
 		// that.favcatch.addEventListener("click", that.favClick, true);
 	// }
-	if (that.ratable) that.enable();
+	if (user.p.radio_rate_anything) {
+		that.enable();
+	}
+	else if (that.ratable) that.enable();
 
 	if (that.register) ratingcontrol.addCallback(that)
 

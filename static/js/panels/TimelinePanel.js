@@ -789,6 +789,13 @@ function TimelineSong(json, parent, x, y, songnum) {
 		that.p = json;
 		that.song_rating.updateSiteRating(that.p.song_rating_avg);
 		that.album_rating.updateSiteRating(that.p.album_rating_avg);
+
+		if (json.rating_allowed) {
+			that.enableRating();
+		}
+		else {
+			that.disableRating();
+		}
 	};
 
 	that.enableVoting = function() {
