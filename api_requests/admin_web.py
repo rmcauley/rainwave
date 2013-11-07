@@ -97,7 +97,8 @@ class AlbumList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AllAlbumsHand
 		self.write("<h2>%s Playlist</h2>" % config.station_id_friendly[self.get_argument('restrict')])
 		self.write("<table>")
 		for row in self._output['all_albums']:
-			self.write("<tr><td onclick=\"window.location.href = '/admin/song_list/' + window.top.current_tool + '?id=%s';\" style='cursor: pointer;'>%s</td><td>" % (row['id'], row['name']))
+			self.write("<tr><td>%s</td>" % row['id'])
+			self.write("<td onclick=\"window.location.href = '/admin/song_list/' + window.top.current_tool + '?id=%s';\" style='cursor: pointer;'>%s</td><td>" % (row['id'], row['name']))
 			if row['rating_user']:
 				self.write(str(row['rating_user']))
 			self.write("</td><td>")
@@ -119,7 +120,7 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 		self.write("<h2>%s</h2>" % self._output['album']['name'])
 		self.write("<table>")
 		for row in self._output['album']['songs']:
-			self.write("<tr><td>%s</td><td>" % row['title'])
+			self.write("<tr><td>%s</th><td>%s</td><td>" % (row['id'], row['title']))
 			if row['rating_user']:
 				self.write(str(row['rating_user']))
 			self.write("</td><td>")

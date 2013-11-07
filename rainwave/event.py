@@ -80,6 +80,7 @@ class Event(object):
 		self.url = None
 		self.used = False
 		self.is_election = False
+		self.admin_inserted = False
 
 	def _update_from_dict(self, dict):
 		self.id = dict['sched_id']
@@ -202,6 +203,7 @@ class Election(Event):
 		elec.priority = row['elec_priority']
 		elec.public = True
 		elec.timed = False
+		elec.admin_inserted = False
 		for song_row in db.c.fetch_all("SELECT * FROM r4_election_entries WHERE elec_id = %s", (sched_id,)):
 			song = playlist.Song.load_from_id(song_row['song_id'], elec.sid)
 			song.data['entry_id'] = song_row['entry_id']
@@ -245,6 +247,7 @@ class Election(Event):
 		elec.priority = False
 		elec.public = True
 		elec.timed = True
+		elec.admin_inserted = False
 		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid) VALUES (%s, %s, %s, %s)", (elec_id, False, elec.type, elec.sid))
 		return elec
 
@@ -330,8 +333,6 @@ class Election(Event):
 				if song.data['entry_type'] == ElecSongTypes.request:
 					if db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (song.data['elec_request_user_id'], self.id)) == 0:
 						song.data['entry_votes'] += 1
-			# TODO: I've noticed that this seems to produce the same output continuously given the same inputs
-			# Code review!!
 			random.shuffle(self.songs)
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_votes'])

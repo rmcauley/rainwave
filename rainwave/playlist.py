@@ -839,6 +839,9 @@ def clear_updated_albums(sid):
 
 def get_updated_albums_dict(sid):
 	global updated_album_ids
+	if not sid in updated_album_ids:
+		return []
+
 	previous_newest_album = cache.get_station(sid, "newest_album")
 	if not previous_newest_album:
 		cache.set_station(sid, "newest_album", time.time())

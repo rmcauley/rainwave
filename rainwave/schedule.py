@@ -198,14 +198,13 @@ def integrate_new_events(sid):
 		if not e:
 			log.warn("schedule", "Unused event ID %s was None." % sched_id)
 		else:
-			next[sid].append(e)
+			_integrate_new_admin_inserted(next[sid], e)
 
 	# Step 4: Insert "priority elections" ahead of anything else
 	priority_elec_ids = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sid = %s AND elec_id > %s AND elec_priority = TRUE ORDER BY elec_id DESC", (sid, max_elec_id))
 	for elec_id in priority_elec_ids:
 		e = playlist.Election.load_by_id(elec_id)
-		# The client, through the API, sets start times, so we don't have to worry about where in the array it goes.  The sorter will take care of it.
-		next[sid].append(e)
+		_integrate_new_admin_inserted(next[sid], e)
 		if e.id > max_elec_id:
 			max_elec_id = e.id
 		num_elections += 1
@@ -213,10 +212,19 @@ def integrate_new_events(sid):
 
 	return (max_sched_id, max_elec_id, num_elections)
 
+def _integrate_new_admin_inserted(n, e):
+	i = 0
+	reached = False
+	while not reached and i < len(n):
+		if not hasattr(n[i], "admin_inserted") or not n[i].admin_inserted:
+			reached = True
+		i += 1
+	n.insert(i, e)
+
 def sort_next(sid):
 	global next
-	next[sid] = filter(None, next[sid])
-	next[sid] = sorted(next[sid], key=lambda event: event.start)
+	next[sid] = filter(None, next[sid]) 
+	next[sid] = sorted(next[sid], key=lambda event: event.start_predicted)
 
 def set_next_start_times(sid):
 	"""

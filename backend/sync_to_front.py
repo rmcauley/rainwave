@@ -55,7 +55,7 @@ def sync_frontend_all_timed(sid):
 
 	if sid in front_sched_sync_timers and front_sched_sync_timers[sid]:
 		_sync_frontend_all_timed_stop(sid)
-	front_sched_sync_timers[sid] = IOLoop.instance().add_timeout(datetime.timedelta(seconds=15), lambda: sync_frontend_all(sid))
+	front_sched_sync_timers[sid] = IOLoop.instance().add_timeout(datetime.timedelta(seconds=5), lambda: sync_frontend_all(sid))
 
 def _sync_frontend_all_timed_stop(sid):
 	if sid in front_sched_sync_timers and front_sched_sync_timers[sid]:
