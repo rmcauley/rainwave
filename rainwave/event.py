@@ -461,7 +461,7 @@ class Election(Event):
 		obj['length'] = self.length()
 		obj['songs'] = []
 		for song in self.songs:
-			if check_rating_acl:
+			if check_rating_acl and not user.is_anonymous():
 				song.check_rating_acl(user)
 			obj['songs'].append(song.to_dict(user))
 		return obj
