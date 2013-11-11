@@ -31,7 +31,10 @@ class InvalidElectionID(Exception):
 def load_by_id(sched_id):
 	event_type = db.c.fetch_var("SELECT sched_type FROM r4_schedule WHERE sched_id = %s", (sched_id,))
 	if not event_type:
-		raise InvalidScheduleID
+		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_id = %s", (sched_id,))
+		if not elec_id:
+			raise InvalidScheduleID
+		return Election.load_by_id(elec_id)
 	return load_by_id_and_type(sched_id, event_type)
 
 def load_by_id_and_type(sched_id, sched_type):
@@ -80,7 +83,7 @@ class Event(object):
 		self.url = None
 		self.used = False
 		self.is_election = False
-		self.admin_inserted = False
+		self.has_priority = False
 
 	def _update_from_dict(self, dict):
 		self.id = dict['sched_id']
@@ -200,10 +203,9 @@ class Election(Event):
 		elec.in_progress = row['elec_in_progress']
 		elec.sid = row['sid']
 		elec.songs = []
-		elec.priority = row['elec_priority']
+		elec.has_priority = row['elec_priority']
 		elec.public = True
 		elec.timed = False
-		elec.admin_inserted = False
 		for song_row in db.c.fetch_all("SELECT * FROM r4_election_entries WHERE elec_id = %s", (sched_id,)):
 			song = playlist.Song.load_from_id(song_row['song_id'], elec.sid)
 			song.data['entry_id'] = song_row['entry_id']
@@ -244,10 +246,9 @@ class Election(Event):
 		elec.sid = sid
 		elec.start = None
 		elec.songs = []
-		elec.priority = False
+		elec.has_priority = False
 		elec.public = True
 		elec.timed = True
-		elec.admin_inserted = False
 		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid) VALUES (%s, %s, %s, %s)", (elec_id, False, elec.type, elec.sid))
 		return elec
 
@@ -453,7 +454,7 @@ class Election(Event):
 			db.c.update("UPDATE r4_elections SET elec_priority = TRUE WHERE elec_id = %s", (self.id,))
 		else:
 			db.c.update("UPDATE r4_elections SET elec_priority = FALSE WHERE elec_id = %s", (self.id,))
-		self.priority = priority
+		self.has_priority = priority
 
 	def to_dict(self, user = None, check_rating_acl = False, **kwargs):
 		obj = super(Election, self).to_dict(user)
