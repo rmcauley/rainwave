@@ -113,9 +113,9 @@ var API = function() {
 		sync_timeout_id = setTimeout(sync_get, sync_restart_pause);
 	};
 
-    var async_error = function() {
+	var async_error = function() {
 		ErrorHandler.tooltip_error(ErrorHandler.make_error("internal_error", 500));
-    };
+	};
 
 	var async_complete = function() {
 		if (sync.readyState !== 4) {

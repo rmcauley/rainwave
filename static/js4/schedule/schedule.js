@@ -31,6 +31,8 @@ var Schedule = function() {
 		for (i = 0; i < sched_history.length; i++) {
 			new_events.push(find_and_update_event(sched_history[i]));
 		}
+
+		Clock.set_page_title(sched_current.name, sched_current.end);
 	};
 
 	var find_and_update_event = function(event_json) {
@@ -41,7 +43,7 @@ var Schedule = function() {
 				return events[i];
 			}
 		}
-		return self.create_event_object(event_json);
+		return Event.load(event_json);
 	};
 
 	return self;

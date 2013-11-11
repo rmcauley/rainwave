@@ -1,5 +1,6 @@
 var Event = function() {
 	var e_self = {};
+
 	e_self.load = function(json) {
 		if (json.type == "Election") {
 			return Election(json);
@@ -15,14 +16,15 @@ var Event = function() {
 var EventBase = function(json) {
 	var self = {};
 	self.data = json;
-	self.el = null;
 	self.id = json.id;
 	self.type = json.type;
 	self.length = json.length;
+	self.end = json.end;
 	self.pending_delete = false;
-
-	var clock_id;
-	var height;
+	self.name = null;
+	self.height = null;
+	self.el = null;
+	self.elements = {};
 
 	self.songs = [];
 	if ("songs" in json) {
@@ -31,13 +33,19 @@ var EventBase = function(json) {
 		}
 	}
 
-	self.start_clock = function() {
-		if (self.clock) {
-			clock_id = clock.add_clock(self.clock, null, self.data.start, -2);
-		}
-	};
+	self.draw = function() {
+		self.el = $el("div", { "class": "timeline_event timeline_" + self.type })
+		self.elements.clock = $el("div", { "class": "timeline_clock" })
+		self.elements.header = $el("div", { "class": "timeline_event_header"})
+		Clock.add_clock(self.elements.clock, self.data.start);
+	}
 
-
+	self.update = function(json) {
+		self.data.end = json.end;
+		self.data.start = json.start;
+		self.data.predicted_start = json.predicted_start;
+		self.elements.clock._clock_end = self.data.predicted_start;
+	}
 
 	return self;
 };

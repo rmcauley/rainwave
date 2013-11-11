@@ -47,6 +47,7 @@ var Formatting = function() {
 	};
 
 	self.minute_clock = function(seconds) {
+		if (seconds <= 0) { return "0:00"; }
 		var minutes = Math.floor(seconds / 60);
 		var secs = seconds - (minutes * 60);
 		if (secs < 10) secs = "0" + secs;

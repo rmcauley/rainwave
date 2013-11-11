@@ -5,87 +5,67 @@ var Clock = function() {
 	var interval = 0;
 	var timediff = 0;
 	var ready = false;
-	var maxid = 0;
+	var page_title;
+	var page_title_end;
+	var max_id = 0;
 
-	var that = {};
-	that.now = 0;
+	var self = {};
+	self.now = 0;
 
-	that.initialize = function() {
-		API.add_callback(that.resync, "api_info");
+	self.initialize = function() {
+		API.add_callback(self.resync, "api_info");
 	};
 
-	that.time = function() {
-		var newdate = new Date();
-		return Math.round(newdate.getTime() / 1000);
+	self.time = function() {
+		return Math.round(Date().getTime() / 1000);
 	};
 
-	that.get_time_diff = function() {
+	self.get_time_diff = function() {
 		return timediff;
 	}
 
-	that.hi_res_time = function() {
-		var newdate = new Date();
-		return newdate.getTime();
+	self.hi_res_time = function() {
+		return Date().getTime();
 	};
 
-	that.resync = function(json) {
-		timediff = json.time - that.time();
-		that.now = that.time() + timediff;
+	self.resync = function(json) {
+		timediff = json.time - self.time() + 2;
 		ready = true;
-	};
 
-	that.loop = function() {
-		if (ready == false) return;
-		that.now = that.time() + timediff;
-		var cb;
-		for (cb in clocks) {
-			try {
-				if (clocks[cb].func) {
-					clocks[cb].func(clocks[cb].end - that.now + clocks[cb].offset);
-				}
-				else if (clocks[cb].el) {
-					clocks[cb].el.textContent = Formatting.minute_clock(clocks[cb].end - that.now + clocks[cb].offset);
-				}
-			}
-			catch(err) {
-				clearInterval(interval);
-				errorcontrol.jsError(err);
-			}
-		}
-		if ((that.now % 60) == 0) {
-			var c = 0;
-			for (var cb in clocks) {
-				if (clocks[cb].el && !document.getElementById("clock_" + cb)) {
-					delete(clocks[cb]);
-				}
-				else c++;
+		for (var i in clocks) {
+			if (!document.getElementById("_clock_" + i)) {
+				delete(clocks[i]);
 			}
 		}
 	};
 
-	that.update_clock_end = function(idx, newend) {
-		if (clocks[idx]) clocks[idx].end = newend;
-	};
-
-	that.add_clock = function(el, method, end, offset) {
-		maxid++;
-		if (typeof(offset) == "undefined") offset = 0;
-		if (el) el.setAttribute("id", "clock_" + maxid);
-		var newclock = {
-			"el": el,
-			"func": method,
-			"end": end,
-			"finished": false,
-			"offset": offset
-		};
-		clocks[maxid] = newclock;
-		return maxid;
-	};
-
-	that.now = that.time() + timediff;
-	if (interval == 0) {
-		interval = setInterval(that.loop, 1000);
+	self.set_page_title = function(new_title, new_end_time) {
+		page_title = new_title;
+		page_title_end = new_end_time;
 	}
 
-	return that;
+	self.loop = function() {
+		if (ready == false) return;
+		self.now = self.time() + timediff;
+
+		for (var i in clocks) {
+			clocks[i].textContent = Formatting.minute_clock(clocks[i]._clock_end - self.now);
+		}
+
+		if (page_title) {
+			document.title = "[" + Formatting.minute_clock(page_title_end - self.now) + "] " + page_title;
+		}
+	};
+
+	self.add_clock = function(el, end_time) {
+		max_id++;
+		el.setAttribute('id', "_clock_" + max_id);
+		el._clock_end = end_time;
+	};
+
+	if (interval == 0) {
+		interval = setInterval(self.loop, 1000);
+	}
+
+	return self;
 }();
