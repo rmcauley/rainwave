@@ -16,6 +16,7 @@ def update_line(sid):
 	# so users know where they are in line
 	user_positions = {}
 	t = int(time.time())
+	albums_with_requests = []
 	position = 1
 	# For each person
 	for row in line:
@@ -48,6 +49,7 @@ def update_line(sid):
 					add_to_line = True
 				# Keep 'em in line
 				else:
+					albums_with_requests.append(db.c.fetch_var("SELECT album_id FROM r4_song_sid WHERE song_id = %s", (song_id,)))
 					row['song_id'] = song_id
 					add_to_line = True
 		if add_to_line:
@@ -57,6 +59,10 @@ def update_line(sid):
 
 	cache.set_station(sid, "request_line", new_line, True)
 	cache.set_station(sid, "request_user_positions", user_positions, True)
+
+	db.c.update("UPDATE r4_album_sid SET album_requests_pending = NULL WHERE album_requests_pending = TRUE AND sid = %s", (sid,))
+	for album_id in albums_with_requests:
+		db.c.update("UPDATE r4_album_sid SET album_requests_pending = TRUE WHERE album_id = %s AND sid = %s", (album_id, sid))
 
 def update_expire_times():
 	expiry_times = {}

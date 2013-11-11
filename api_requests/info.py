@@ -65,6 +65,8 @@ def attach_info_to_request(request, playlist = False, artists = False):
 		elif request.user.data['listener_voted_entry'] > 0 and request.user.data['listener_lock_sid'] == request.sid:
 			api_requests.vote.append_success_to_request(request, sched_next[0].id, request.user.data['listener_voted_entry'])
 
+	request.append("all_stations_current", cache.get("all_stations_info"))
+
 @test_post
 @handle_api_url("info")
 class InfoRequest(APIHandler):
@@ -75,3 +77,12 @@ class InfoRequest(APIHandler):
 
 	def post(self):
 		attach_info_to_request(self)
+
+@handle_api_url("info_all")
+class InfoAllRequest(APIHandler):
+	auth_required = False
+	description = "Returns a basic dict containing rudimentary information on what is currently playing on all stations."
+	allow_get = True
+
+	def post(self):
+		self.append("all_stations_current", cache.get("all_stations_info"))

@@ -342,6 +342,7 @@ def create_tables():
 			album_played_last			INTEGER		DEFAULT 0, \
 			album_played_times			INTEGER		DEFAULT 0, \
 			album_request_count			INTEGER		DEFAULT 0, \
+			album_requests_pending		BOOLEAN, \
 			album_cool					BOOLEAN		DEFAULT FALSE, \
 			album_cool_multiply			REAL		DEFAULT 1, \
 			album_cool_override			INTEGER		, \
@@ -354,6 +355,7 @@ def create_tables():
 		)")
 	c.create_idx("r4_album_sid", "album_exists")
 	c.create_idx("r4_album_sid", "sid")
+	c.create_idx("r4_album_sid", "album_requests_pending")
 	# c.create_idx("r4_album_sid", "album_id")		# handled by create_delete_fk
 	c.create_delete_fk("r4_album_sid", "r4_albums", "album_id")
 
