@@ -16,6 +16,12 @@ html, body {
     padding: 0;
 }
 
+#measure_box {
+	position: absolute;
+	top: -2000px;
+	left: -2000px;
+}
+
 #menu {
 	background: #500;
 }
