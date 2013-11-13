@@ -1,12 +1,15 @@
 from PIL import Image
 
-sheet = Image.new("RGBA", (2600, 48), None)
+user_sheet = Image.new("RGBA", (100, 780), None)
+all_sheet = Image.new("RGBA", (100, 780), None)
 
 for i in range(0, 26):
 	sprite = Image.open("bar_%05d.png" % i)
-	sheet.paste(sprite, (i * 100, 0))
+	user_sheet.paste(sprite.copy().crop((0, 0, 100, 23)), (0, i * 30))
+	all_sheet.paste(sprite.copy().crop((0, 24, 100, 48)), (0, i * 30))
 
-sheet.save("sheet-hdpi.png", optimize=True)
+user_sheet.save("bright_hdpi.png", optimize=True)
+all_sheet.save("dark_hdpi.png", optimize=True)
 
-sheet_ldpi = sheet.resize((1300, 24), Image.ANTIALIAS)
-sheet_ldpi.save("sheet-ldpi.png", optimize=True)
+user_sheet.resize((50, 390), Image.ANTIALIAS).save("bright_ldpi.png", optimize=True)
+all_sheet.resize((60, 468), Image.ANTIALIAS).save("dark_ldpi.png", optimize=True)
