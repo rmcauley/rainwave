@@ -92,6 +92,10 @@ class AlbumList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AllAlbumsHand
 	admin_required = True
 	fields = { "restrict": (fieldtypes.integer, True) }
 
+	def prepare(self):
+		self.sid = self.get_argument('restrict')
+		super(AlbumList, self).prepare()
+
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="Album List"))
 		self.write("<h2>%s Playlist</h2>" % config.station_id_friendly[self.get_argument('restrict')])

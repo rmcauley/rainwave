@@ -303,6 +303,7 @@ def sort_next(sid, do_elections = False):
 		i += 1
 
 	if do_elections:
+		log.debug("sort_next", "Number of elections currently in next: %s" % num_elections)
 		# Create elections to append directly to next[sid] at the end, if we haven't hit the necessary number of elections yet
 		while num_elections < config.get_station(sid, "num_planned_elections"):
 			time_to_next = None
@@ -332,7 +333,7 @@ def sort_next(sid, do_elections = False):
 		next[sid].append(timed_events.pop(0))
 
 def _create_election(sid, start_time = None, target_length = None):
-	log.debug("create_elec", "Creating election, start time %s target length %s." % (start_time, target_length))
+	log.debug("create_elec", "Creating election for sid %s, start time %s target length %s." % (sid, start_time, target_length))
 	db.c.update("START TRANSACTION")
 	try:
 		# Check to see if there are any events during this time
