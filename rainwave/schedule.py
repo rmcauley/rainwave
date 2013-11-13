@@ -252,24 +252,9 @@ def sort_next(sid, do_elections = False):
 	# Filter out any None events (this has happened, despite the fact that it shouldn't, due to caching and other issues.  I'm not perfect.)
 	# next[sid] = filter(None, next[sid])
 	num_elections = 0
-	# No work to do if the next pile is zero length.
 	if len(next[sid]) == 0:
 		log.warn("sort_next", "Length of next events on sid %s is %s [problem: is zero] :: %s" % (sid, len(next[sid]), next[sid]))
 		if config.get_station(sid, "num_planned_elections") > 0:
-			for i in range(0, config.get_station(sid, "num_planned_elections")):
-				_create_election(sid)
-				num_elections += 1
-		else:
-			return
-
-	next[sid][0].start_predicted = current[sid].start_actual + current[sid].length()
-	if next[sid][0].is_election:
-		num_elections += 1
-	
-	# No further work to do on predicted start times if there's only 1 event.
-	if len(next[sid]) == 1:
-		log.warn("sort_next", "Length of next events on sid %s is %s [problem: less than 1] :: %s" % (sid, len(next[sid]), next[sid]))
-		if config.get_station(sid, "num_planned_elections") > num_elections:
 			for i in range(0, config.get_station(sid, "num_planned_elections")):
 				_create_election(sid)
 				num_elections += 1
@@ -280,31 +265,29 @@ def sort_next(sid, do_elections = False):
 	# This resists admins tampering with the flow that would result in bouncing scheduled events too far behind their
 	# intended start time
 	timed_events = []
-	for i in range(len(next[sid]), 1):
+	for i in range(len(next[sid]), 0):
 		if next[sid][i].start != 0:
 			timed_events.append(next[sid].pop(i))
 	# Sort events by their scheduled times.  In later loops this helps, since we only have to look at index 0 for the next event.
 	timed_events = sorted(timed_events, key=lambda e: e.start)
 
 	# This loop determines predicted start times and re-inserts scheduled/timed events in the most appropriate place
-	i = 1
+	i = 0
 	while i < len(next[sid]):
-		# The predicted start time at the current point in the flow
-		predicted = next[sid][i - 1].start_predicted + next[sid][i - 1].length()
-		if len(timed_events) > 0:
+		# ARGH ARGH ARGH ARGH ARGH ARGH ARGH ARGH DIRTY DIRTY DIRTY DIRTY
+		if i == 0:
+			next[sid][i].start_predicted = current[sid].start_actual + current[sid].length()
+		else:
+			next[sid][i].start_predicted = next[sid][i - 1].start_predicted + next[sid][i - 1].length()
+		if (len(timed_events) > 0):
 			# Calculate what's closer to the closest timed event: before this event, or after this event
-			this_time_diff_to_event = abs(timed_events[0].start - predicted)
-			next_time_diff_to_event = abs(timed_events[0].start - predicted + next[sid][i].length())
+			this_time_diff_to_event = abs(timed_events[0].start - next[sid][i].start_predicted)
+			next_time_diff_to_event = abs(timed_events[0].start - next[sid][i].start_predicted + next[sid][i].length())
 			# Our current point in the flow is sooner - insert the timed event here
 			if this_time_diff_to_event < next_time_diff_to_event:
-				timed_events[0].start_predicted = predicted
+				timed_events[0].start_predicted = next[sid][i].start_predicted
+				next[sid][i].start_predicted += timed_events[0].length()
 				next[sid].insert(i, timed_events.pop(0))
-			# Otherwise, leave the timed event for the next point in the flow
-			else:
-				next[sid][i].start_predicted = predicted
-		# No timed events, carry on.
-		else:
-			next[sid][i].start_predicted = predicted
 		if next[sid][i].is_election:
 			num_elections += 1
 		i += 1

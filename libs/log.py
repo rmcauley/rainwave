@@ -37,7 +37,7 @@ def _massage_line(key, message, user):
 		user_info = "u%s" % user.user_id
 	elif user:
 		user_info = "a%s" % user.ip_address
-	return " %-15s [%-10s] %s" % (user_info, key, message)
+	return " %-15s [%-15s] %s" % (user_info, key, message)
 	return line
 	
 def debug(key, message, user = None):
