@@ -504,13 +504,13 @@ class OneUp(Event):
 			raise InvalidScheduleID
 		one_up = cls()
 		one_up._update_from_dict(row)
-		one_up.songs = [ playlist.Song.load_from_id(row['song_id'], one_up.sid) ]
+		one_up.songs = [ playlist.Song.load_from_id(row['song_id']) ]
 		one_up.end = one_up.start + one_up.length()
 		return one_up
 
 	@classmethod
 	def create(cls, sid, start, song_id):
-		song = playlist.Song.load_from_id(song_id, sid)
+		song = playlist.Song.load_from_id(song_id)
 		one_up = super(OneUp, cls).create(sid=sid, start=start, end=start+song.data['length'], public=False)
 		db.c.update("INSERT INTO r4_one_ups (sched_id, song_id) VALUES (%s, %s)", (one_up.id, song_id))
 		one_up.songs = [ song ]

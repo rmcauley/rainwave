@@ -26,15 +26,10 @@ class GetOneUps(api.web.APIHandler):
 	description = "Lists all unused OneUps."
 
 	def post(self):
-		self.append("one_ups", db.c.fetch_all("SELECT r4_schedule.*, r4_one_ups.song_id, song_title, album_name, username "
-								"FROM r4_schedule "
-									"JOIN r4_one_ups USING (sched_id) "
-									"JOIN r4_songs USING (song_id) "
-									"JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_schedule.sid = r4_song_sid.sid) "
-									"JOIN r4_albums USING (album_id) "
-									"LEFT JOIN phpbb_users ON (r4_schedule.sched_creator_user_id = phpbb_users.user_id)"
-								"WHERE r4_schedule.sid = %s AND sched_used = FALSE ORDER BY sched_start",
-								(self.sid,)))
+		one_ups = []
+		for sched_id in db.c.fetch_list("SELECT r4_schedule.sched_id FROM r4_schedule WHERE sid = %s AND sched_used = FALSE ORDER BY sched_start, sched_id", (self.sid,)):
+			one_ups.append(event.load_by_id(sched_id).to_dict(self.user))
+		self.append("one_ups", one_ups)
 
 @handle_api_url("admin/add_one_up")
 class AddOneUp(api.web.APIHandler):

@@ -70,13 +70,13 @@ class OneUpTool(api.web.PrettyPrintAPIMixin, api_requests.admin.GetOneUps):
 			self.write("<ul>")
 			for one_up in self._output['one_ups']:
 				self.write("<li><div>")
-				if not one_up['sched_start'] or one_up['sched_start'] == 0:
+				if not one_up['start'] or one_up['start'] == 0:
 					self.write("ASAP")
 				else:
-					self.write(time.strftime("%a %b %d/%Y %H:%M %Z", time.localtime(one_up['sched_start'])))
-				self.write(" -- <a onclick=\"window.top.call_api('admin/delete_one_up', { 'sched_id': %s });\">Delete</a></div>" % one_up['sched_id'])
-				self.write("<div>%s</div>" % one_up['song_title'])
-				self.write("<div>%s</div>" % one_up['album_name'])
+					self.write(time.strftime("%a %b %d/%Y %H:%M %Z", time.localtime(one_up.start)))
+				self.write(" -- <a onclick=\"window.top.call_api('admin/delete_one_up', { 'sched_id': %s });\">Delete</a></div>" % one_up['id'])
+				self.write("<div>%s</div>" % one_up['songs'][0]['title'])
+				self.write("<div>%s</div>" % one_up['songs'][0]['albums'][0]['name'])
 				self.write("</li>")
 		self.write(self.render_string("basic_footer.html"))
 
@@ -89,21 +89,18 @@ class CooldownTool(api.web.HTMLRequest):
 		self.write("<h2>%s Cooldown Tool</h2>" % config.station_id_friendly[self.sid])
 		self.write(self.render_string("basic_footer.html"))
 
-class AlbumList(api.web.PrettyPrintAPIMixin, api.web.APIHandler):
+class AlbumList(api.web.HTMLRequest):
 	admin_required = True
 	allow_get = True
 	fields = { "restrict": (fieldtypes.integer, True) }
 	
-	def post(self):
-		pass
-
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="Album List"))
 		self.write("<h2>%s Playlist</h2>" % config.station_id_friendly[self.get_argument('restrict')])
 		self.write("<table>")
 		for row in playlist.get_all_albums_list(self.get_argument('restrict'), self.user):
 			self.write("<tr><td>%s</td>" % row['id'])
-			self.write("<td onclick=\"window.location.href = '/admin/song_list/' + window.top.current_tool + '?id=%s';\" style='cursor: pointer;'>%s</td><td>" % (row['id'], row['name']))
+			self.write("<td onclick=\"window.location.href = '/admin/song_list/' + window.top.current_tool + '?sid=%s&id=%s';\" style='cursor: pointer;'>%s</td><td>" % (self.get_argument('restrict'), row['id'], row['name']))
 			if row['rating_user']:
 				self.write(str(row['rating_user']))
 			self.write("</td><td>")
