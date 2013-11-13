@@ -15,6 +15,7 @@ import api_requests.admin
 from libs import config
 from libs import db
 from rainwave import event
+from rainwave import playlist
 
 @handle_url("/admin/")
 class AdminIndex(api.web.HTMLRequest):
@@ -88,19 +89,19 @@ class CooldownTool(api.web.HTMLRequest):
 		self.write("<h2>%s Cooldown Tool</h2>" % config.station_id_friendly[self.sid])
 		self.write(self.render_string("basic_footer.html"))
 
-class AlbumList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AllAlbumsHandler):
+class AlbumList(api.web.PrettyPrintAPIMixin, api.web.APIHandler):
 	admin_required = True
+	allow_get = True
 	fields = { "restrict": (fieldtypes.integer, True) }
-
-	def prepare(self):
-		self.sid = self.get_argument('restrict')
-		super(AlbumList, self).prepare()
+	
+	def post(self):
+		pass
 
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="Album List"))
 		self.write("<h2>%s Playlist</h2>" % config.station_id_friendly[self.get_argument('restrict')])
 		self.write("<table>")
-		for row in self._output['all_albums']:
+		for row in playlist.get_all_albums_list(self.get_argument('restrict'), self.user):
 			self.write("<tr><td>%s</td>" % row['id'])
 			self.write("<td onclick=\"window.location.href = '/admin/song_list/' + window.top.current_tool + '?id=%s';\" style='cursor: pointer;'>%s</td><td>" % (row['id'], row['name']))
 			if row['rating_user']:
