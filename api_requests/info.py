@@ -41,8 +41,10 @@ def attach_info_to_request(request, playlist = False, artists = False):
 		if request.user.is_tunedin():
 			sched_current.get_song().data['rating_allowed'] = True
 		sched_current = sched_current.to_dict(request.user)
+		sched_next = []
 		for evt in cache.get_station(request.sid, "sched_next"):
 			sched_next.append(evt.to_dict(request.user))
+		sched_history = []
 		for evt in cache.get_station(request.sid, "sched_history"):
 			sched_history.append(evt.to_dict(request.user, check_rating_acl=True))
 	else:
