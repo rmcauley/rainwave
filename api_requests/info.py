@@ -32,9 +32,9 @@ def attach_info_to_request(request, playlist = False, artists = False):
 	# request.append("calendar", cache.get("calendar"))
 	request.append("listeners_current", cache.get_station(request.sid, "listeners_current"))
 
-	sched_next = []
-	sched_history = []
-	sched_current = {}
+	sched_next = None
+	sched_history = None
+	sched_current = None
 	if request.user:
 		request.append("requests", request.user.get_requests())
 		sched_current = cache.get_station(request.sid, "sched_current")

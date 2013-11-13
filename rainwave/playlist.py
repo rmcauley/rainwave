@@ -429,7 +429,7 @@ class Song(object):
 
 		if sids_override:
 			self.data['sids'] = sids_override
-		elif len(self.sids) == 0:
+		elif len(self.data['sids']) == 0:
 			raise SongHasNoSIDsException
 		self.data['origin_sid'] = self.data['sids'][0]
 
@@ -887,7 +887,7 @@ class Album(AssociatedMetadata):
 		for row in db.c.fetch_all("SELECT r4_albums.*, album_cool_lowest, album_cool_multiply, album_cool_override, album_cool FROM r4_song_sid JOIN r4_albums USING (album_id) JOIN r4_album_sid USING (album_id) WHERE song_id = %s AND r4_song_sid.sid = %s AND r4_album_sid.sid = %s ORDER BY r4_albums.album_name", (song_id, sid, sid)):
 			instance = cls()
 			instance._assign_from_dict(row)
-			instance.sids = [ sid ]
+			instance.data['sids'] = [ sid ]
 			instances.append(instance)
 		return instances
 
@@ -898,7 +898,7 @@ class Album(AssociatedMetadata):
 			raise MetadataNotFoundError("%s ID %s could not be found." % (cls.__name__, album_id))
 		instance = cls()
 		instance._assign_from_dict(row)
-		instance.sids = [ sid ]
+		instance.data['sids'] = [ sid ]
 		return instance
 
 	@classmethod
@@ -908,7 +908,7 @@ class Album(AssociatedMetadata):
 			raise MetadataNotFoundError("%s ID %s could not be found." % (cls.__name__, album_id))
 		instance = cls()
 		instance._assign_from_dict(row)
-		instance.sids = [ sid ]
+		instance.data['sids'] = [ sid ]
 		if not user or user.is_anonymous():
 			instance.data['songs'] = db.c.fetch_all(
 				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
@@ -943,14 +943,14 @@ class Album(AssociatedMetadata):
 
 	def __init__(self):
 		super(Album, self).__init__()
-		self.sids = []
+		self.data['sids'] = []
 
 	def _insert_into_db(self):
 		global updated_album_ids
 
 		self.id = db.c.get_next_id("r4_albums", "album_id")
 		success = db.c.update("INSERT INTO r4_albums (album_id, album_name) VALUES (%s, %s)", (self.id, self.data['name']))
-		for sid in self.sids:
+		for sid in self.data['sids']:
 			updated_album_ids[sid][self.id] = True
 		return success
 
@@ -958,7 +958,7 @@ class Album(AssociatedMetadata):
 		global updated_album_ids
 
 		success = db.c.update("UPDATE r4_albums SET album_name = %s, album_rating = %s WHERE album_id = %s", (self.data['name'], self.data['rating'], self.id))
-		for sid in self.sids:
+		for sid in self.data['sids']:
 			updated_album_ids[sid][self.id] = True
 		return success
 
@@ -1034,8 +1034,8 @@ class Album(AssociatedMetadata):
 				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (album_id, sid))
 			else:
 				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (album_id, sid))
-		self.sids = new_sids
-		for sid in self.sids:
+		self.data['sids'] = new_sids
+		for sid in self.data['sids']:
 			updated_album_ids[sid][album_id] = True
 
 	def start_cooldown(self, sid, cool_time = False):

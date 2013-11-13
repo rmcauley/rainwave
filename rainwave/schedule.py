@@ -169,7 +169,10 @@ def _add_listener_count_record(sid):
 	return db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests, lc_users, lc_guests_active, lc_users_active) VALUES (%s, %s, %s, %s, %s)", (sid, lc_guests, lc_users, lc_guests_active, lc_users_active))
 
 def _get_schedule_stats(sid):
-	max_sched_id = 0
+	global next
+	global current
+	
+	max_sched_id = current[sid].id
 	max_elec_id = 0
 	num_elections = 0
 	for e in next[sid]:
