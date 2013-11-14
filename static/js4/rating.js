@@ -1,172 +1,134 @@
-function Rating(type, id, user_rating, rating, fave) {
+'use strict';
+
+function Rating(type, id, rating_user, rating, fave, ratable) {
 	if ((type != "song") && (type != "album")) return undefined;
 	if (isNaN(id)) return undefined;
-	if (user_rating && ((user_rating < 1) || (user_rating > 5))) user_rating = null;
+	if (rating_user && ((rating_user < 1) || (rating_user > 5))) rating_user = null;
 	if (rating && ((rating < 1) || (rating > 5)) rating = null;
+	if (type != "song") ratable = false;
 
 	var self = {
-		"data":
-			"type": type,
-			"id": id,
-			"user_rating": user_rating,
-			"rating": rating,
-			"fave": fave
+		"type": type,
+		"id": id,
+		"rating_user": rating_user,
+		"rating": rating,
+		"fave": fave,
+		"ratable": ratable
+		"el": $el("div")
+	};
+
+	var fave_el = self.el.appendChild($el("img", { "src": "/static/images4/fave.png"}));
+	var current_rating;
+	var effect = Fx.legacy_effect(Fx.Rating, self.el, 400);
+
+	self.reset_rating = function() {
+		if (self.rating_user) {
+			effect.change_to_rating_user();
+			current_rating = self.rating_user;
+		}
+		else {
+			effect.change_to_site_rating();
+			current_rating = self.rating;
+		}
+		effect.set_rating(current_rating);
+		effect.set_fave(self.fave);
+	};
+
+	var get_rating_from_mouse = function(evt) {
+		var x = 0;
+		var y = 0;
+		if (evt.offsetX) { x = evt.offsetX;	y = evt.offsetY; }
+		else if (evt.layerX) { x = evt.layerX; y = evt.layerY; }
+		// This normalizes the slant to the same place regardless of Y
+		x = x - y;
+
+		if (x < 15) {
+			effect.fave_mouse_over();
+		}
+		else {
+			effect.fave_mouse_out();
+		}
+
+		if (x < 15) return null;
+		else if (x >= 50) rating = 5;
+		return Math.round(((x - 15) / 10) * 2) / 2;
+	};
+
+	var on_mouse_move = function(evt) {
+		if (!self.ratable) return;
+		var tr = get_rating_from_mouse(evt);
+		if (tr) {
+			effect.change_to_rating_user();
+			effect.set_rating(tr);
+		}
+		else {
+			effect.set_rating(current_rating);
 		}
 	};
 
-	var backup_rating = user_rating;
-
-	var lasttime = 0;
-	var lockeduntil = 0;
-
-	that.el = false;
-	that.mousecatch = false;
-	that.favhover = false;
-
-	var sitetext = "";
-
-	theme.Extend.Rating(that);
-
-	that.enable = function() {
-		if (that.category == "song") that.ratable = true;
-	};
-
-	that.disable = function() {
-		if (!user.p.radio_rate_anything) {
-			that.ratable = false;
-			that.resetUser();
-		}
-	};
-
-	that.onMouseMove = function(evt) {
-		var r = that.userCoord(evt);
-		if (that.ratable && r) {
-			that.setUser(that.scrubRating(r));
-		}
-		else if (that.ratable && !r) {
-			that.resetUser();
-		}
-	};
-
-	that.onMouseOut = function(evt) {
-		that.resetUser();
-		that.favMouseOut();
-	};
-
-	that.onClick = function(evt) {
-		if (that.favhover) {
-			that.favClick();
-		}
-		else if (that.ratable) {
-			var now = clock.now;
-			var newrating = 0;
-			if (now > lockeduntil) {
-				if ((lasttime + 5) >= now) {
-					lockeduntil = now + 5;
-				}
-				lasttime = now;
-				var newrating = that.userCoord(evt)
-				if (newrating == 0) return;
-				newrating = that.scrubRating(newrating);
-				that.oldrating = that.userrating;
-				that.userrating = newrating;
-				that.setUser(newrating);
-				if (that.fake) {
-					that.ratingConfirm(newrating);
-				}
-				else {
-					lyre.async_get("rate", { "rating": newrating, "song_id": that.id });
-				}
-				//that.showConfirmClick();
+	var click = function(evt) {
+		if (!self.ratable) return;
+		new_rating = get_rating_from_mouse(evt);
+		// fave toggle
+		if (!new_rating) {
+			effect.set_fave(!self.fave);
+			if (self.type == "song") {
+				API.async_get("fave_song", { "fave": !self.fave, "song_id": id })
 			}
-			//TODO: else { alert user }
+			else if (self.type == "album") {
+				API.async_get("fave_album", { "fave": !self.fave, "album_id": id })
+			}
+		}
+		else {
+			effect.set_rating(new_rating);
+			API.async_get("rate", { "rating": new_rating, "song_id": id });
 		}
 	};
 
-	that.ratingConfirm = function(rating) {
-		that.userrating = rating;
-		that.resetUser();
-		that.showConfirmOK();
-		setTimeout(that.resetConfirm, 750);
-		that.updateSiteRating(that.siterating);
+	self.update_user_rating = function(rating_user) {
+		self.rating_user = rating_user;
+		self.reset_rating();
 	};
 
-	that.ratingBad = function(rating) {
-		that.userrating = that.oldrating;
-		that.resetUser();
-		that.showConfirmBad();
-		setTimeout(that.resetConfirm, 750);
-	};
-
-	that.updateSiteRating = function(site) {
-		that.siterating = site;
-		if (ratingcontrol.hideuntilrated && !that.userrating) {
-			that.setSite(0);
-			return;
-		}
-		that.setSite(site);
-	};
-
-	that.scrubRating = function(rating) {
-		if (rating < 1) rating = 1;
-		else if (rating > 5) rating = 5;
-		return Math.round(rating * 2) / 2;
-	};
-
-	that.favConfirm = function(state) {
-		that.favourite = state;
-		that.favChange(state);
-	};
-
-	that.favMouseOver = function(evt) {
-		if (user.p.user_id <= 1) return;
-		that.favhover = true;
-		that.favChange(2);
-	};
-
-	that.favMouseOut = function(evt) {
-		if (user.p.user_id <= 1) return;
-		that.favhover = false;
-		that.favChange(that.favourite);
-	};
-
-	that.favClick = function(evt) {
-		if (that.fake) {
-			that.favConfirm(that.favourite ? false : true);
-			return;
-		}
-		if (user.p.user_id <= 1) return;
-		var setfav = that.favourite ? "false" : "true";
-		var category_id = that.category + "_id";
-		var submithash = {};
-		submithash['fave'] = setfav;
-		submithash[that.category + "_id"] = that.id;
-		lyre.async_get("fave_" + that.category, submithash);
-	};
-
-	that.draw();
-
-	that.setUser(that.userrating);
-	that.updateSiteRating(that.siterating);
-	if (that.favourite) that.favChange(that.favourite);
-
-	if (that.mousecatch) {
-		that.mousecatch.addEventListener("mousemove", that.onMouseMove, true);
-		that.mousecatch.addEventListener("mouseout", that.onMouseOut, true);
-		that.mousecatch.addEventListener("click", that.onClick, true);
+	self.update_fave = function(fave) {
+		self.fave = fave;
+		self.reset_rating();
 	}
 
-	// if (that.favcatch) {
-		// that.favcatch.addEventListener("mouseover", that.favMouseOver, true);
-		// that.favcatch.addEventListener("mouseout", that.favMouseOut, true);
-		// that.favcatch.addEventListener("click", that.favClick, true);
-	// }
-	if (user.p.radio_rate_anything) {
-		that.enable();
+	self.update_rating = function(rating) {
+		self.rating = rating;
+		self.reset_rating();
 	}
-	else if (that.ratable) that.enable();
 
-	if (that.register) ratingcontrol.addCallback(that)
+	self.update_ratable = function(ratable) {
+		self.ratable = ratable;
+	}
+
+	self.update = function(rating_user, rating, fave, ratable) {
+		self.rating_user = rating_user;
+		self.rating = rating;
+		self.fave = fave;
+		self.reset_rating();
+	}
+
+	self.reset_rating();
+
+	if (type == "song") {
+		self.el.addEventListener("mousemove", self.on_mouse_move, true);
+		self.el.addEventListener("mouseout", self.reset_rating, true);
+		self.el.addEventListener("click", click, true);
+	}
+
+	// TODO: rating control
+	// RatingControl.add(self)
 
 	return that;
 };
+
+function SongRating(json) {
+	return Rating("song", json.rating_user, json.rating, json.fave, json.rating_allowed);
+}
+
+function AlbumRating(json) {
+	return Rating("album", json.rating_user, json.rating, json.fave, false);
+}

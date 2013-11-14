@@ -8,6 +8,9 @@ function TimelineSong(json) {
 	var voting_enabled = false;
 	var html_classes = [ "TimelineSong" ];
 
+	var song_rating = SongRating(json);
+	var album_rating = AlbumRating(json.albums[0]);
+
 	var vote = function(e) {
 		if (!voting_enabled) {
 			return;
@@ -47,7 +50,7 @@ function TimelineSong(json) {
 		}
 		self.elements.art = self.el.appendChild($el("img", { "class": "art", "src": self.data.albums[0].art }));
 		
-		// TODO: song rating
+		self.elements.song_rating = self.el.appendChild(song_rating.el);
 		self.elements.title = self.el.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
 		self.elements.title.addEventListener("click", vote, false);
 		
@@ -58,7 +61,7 @@ function TimelineSong(json) {
 			}));
 		}
 		
-		// TODO: album rating
+		self.elements.album_rating = self.el.appendChild(album_rating.el);
 		self.elements.album = self.el.appendChild($el("div", { "class": "album", "textContent": self.data.albums[0].name }));
 		// TODO: linkify album
 		
@@ -71,7 +74,8 @@ function TimelineSong(json) {
 		if (self.data.entry_votes) {
 			self.elements.votes.textContent = self.data.entry_votes;
 		}
-		// update ratings / check rating_allowed
+		song_rating.update(new_json.rating_user, new_json.rating, new_json.fave, new_json.rating_allowed);
+		album_rating.update(new_json.albums[0].rating_user, new_json.albums[0].rating, new_json.albums[0].fave, false);
 	};
 
 	self.enable_voting = function() {

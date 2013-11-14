@@ -2,6 +2,13 @@
 
 var Fx = function() {
 	var self = {};
+	var delayed_css = [];
+
+	var requestAnimationFrame = windows.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+	var performance = window.performance || { "now": function() { return new Date().getTime(); } };
+	if (!requestAnimationFrame) {
+		requestAnimationFrame = function(callback) { window.setTimeout(callback, 40); };
+	}
 
 	//*****************************************************************************
 	//
@@ -16,6 +23,20 @@ var Fx = function() {
 	//		return p;
 	//	}
 	//}
+
+	var do_delayed_css = function() {
+		for (var i = 0; i < delayed_css.length; i++) {
+			delayed_css[i].el.style[delayed_css[i].attribute] = delayed_css[i].value;
+		}
+		delayed_css = [];
+	}
+
+	self.delay_css_setting = function(el, attribute, value) {
+		delayed_css.push({ "el": el, "attribute": attribute, "value": value });
+		if (delayed_css.length == 1) {
+			requestFrameAnimation(do_delayed_css);
+		}
+	}
 
 	var animation_ends = [ "animationend", "webkitAnimationEnd", "oanimationend", "MSAnimationEnd" ]
 	self.remove_element = function(el) {
@@ -40,12 +61,6 @@ var Fx = function() {
 	fxOne.set(1);
 	fxOne.start(0);
 	*/
-
-	var requestAnimationFrame = windows.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
-	var performance = window.performance || { "now": function() { return new Date().getTime(); } };
-	if (!requestAnimationFrame) {
-		requestAnimationFrame = function(callback) { window.setTimeout(callback, 40); };
-	}
 	
 	self.legacy_effect = function(effect, el, duration) {
 		var newfx;
@@ -121,7 +136,7 @@ var Fx = function() {
 
 				newfx.update(now);
 				newfx.now = now;
-				requestFrame(step);
+				requestFrameAnimation(step);
 			}
 			else {
 				now = to;
@@ -134,30 +149,46 @@ var Fx = function() {
 	};
 	
 	// ************************************************************** ANIMATION FUNCTIONS
-	
-	self.BackgroundPosX = function(element) {
-		var bx = {};
-		if (!element._fx_bkgy) element._fx_bkgy = 0;
 
-		bx.update = function(now) {
-			element.style.backgroundPosition = now + "px " + element._fx_bkgy + "px";
-			element._fx_bkgx = now;
+	self.Rating = function(element) {
+		var r = {};
+		r.fave_is_on = false;
+		var current_rating;
+		var fave_class;
+		var rating_class;
+
+		r.set_rating = function(new_rating) {
+			current_rating = new_rating;
+			r.start()
 		};
-		
-		return bx;
-	};
-	
-	self.BackgroundPosY = function(element) {
-		var by = {};
-		if (!element._fx_bkgx) element._fx_bkgx = 0;
 
-		by.update = function(now) {
-			element.style.backgroundPosition = element._fx_bkgx + "px " + now + "px";
-			element._fx_bkgy = now;
+		r.change_to_site_rating = function() {
+			rating_class = "rating_site";
+			element.setAttribute("class", rating_class + " " + fave_class);
 		};
-		
-		return by;
-	};
 
+		r.change_to_user_rating = function() {
+			element.setAttribute("class", rating_class + " " + fave_class);
+		};
+
+		r.set_fave = function(fave) {
+			if (fave) fave_class = "rating_fave";
+			else fave_class = "";
+			element.setAttribute("class", rating_class + " " + fave_class);
+		};
+
+		r.fave_mouse_over = function() {
+			element.setAttribute("class", rating_class + " fave_hover");
+		};
+
+		r.fave_mouse_out = function() {
+			element.setAttribute("class", rating_class + " " + fave_class);
+		};
+
+		r.update = function(now) {
+			element.style.backgroundPosition = (Math.round((Math.round(now * 10) / 2)) * 30) + "px 0px";
+		};
+	}
+	
 	return self;
 }();
