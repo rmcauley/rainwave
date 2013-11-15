@@ -119,11 +119,15 @@ def get_random_song_timed(sid, target_seconds = None, target_delta = 30):
 	if not target_seconds:
 		return get_random_song(sid)
 
-	sql_query = ("FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_album_sid USING (album_id) "
-		"WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_requests_pending != TRUE AND song_request_only = FALSE AND song_length >= %s AND song_length <= %s")
-	num_available = db.c.fetch_var("SELECT COUNT(r4_song_sid.song_id) " + sql_query, (sid, sid, (target_seconds - (target_delta / 2), (target_seconds + (target_delta / 2))))
+	sql_query = ("SELECT COUNT(r4_song_sid.song_id) "
+				"FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_album_sid USING (album_id) "
+				"WHERE r4_song_sid.sid = %s AND r4_album_sid.sid = %s AND "
+					"song_cool = FALSE AND song_elec_blocked = FALSE AND album_requests_pending != TRUE "
+					"AND song_request_only = FALSE AND song_length >= %s AND song_length <= %s")
+	num_available = db.c.fetch_var(sql_query, (sid, sid, (target_seconds - (target_delta / 2)), (target_seconds + (target_delta / 2))))
 	if num_available == 0:
-		log.info("song_select", "No songs available with target_seconds %s and target_delta %s". % (target_seconds, target_delta))
+		log.info("song_select", "No songs available with target_seconds %s and target_delta %s." % (target_seconds, target_delta))
+		log.debug("song_select", "Song select query: %s" % (sql_query % (sid, sid, (target_seconds - (target_delta / 2)), (target_seconds + (target_delta / 2)))))
 		return get_random_song(sid)
 	else:
 		offset = random.randint(1, num_available) - 1

@@ -1,3 +1,5 @@
+'use strict';
+
 var Event = function() {
 	var e_self = {};
 
