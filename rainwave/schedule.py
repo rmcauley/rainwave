@@ -31,7 +31,7 @@ def load():
 		if not current[sid]:
 			current[sid] = get_event_in_progress(sid)
 		if not current[sid] or not current[sid].get_song():
-			current[sid] = _create_election(sid)
+			current[sid] = _get_or_create_election(sid)
 
 		next[sid] = cache.get_station(sid, "sched_next")
 		if not next[sid]:
@@ -46,7 +46,7 @@ def load():
 					if len(next_elecs) > 0:
 						next_event = next_elecs.pop(0)
 					else:
-						next_event = _create_election(sid, future_time)
+						next_event = _get_or_create_election(sid, future_time)
 				if next_event:
 					future_time += next_event.length()
 					next[sid].append(next_event)
@@ -119,7 +119,7 @@ def advance_station(sid):
 	integrate_new_events(sid)
 	# If we need some emergency elections here
 	if len(next[sid]) == 0:
-		next[sid].append(_create_election(sid))
+		next[sid].append(_get_or_create_election(sid))
 	else:
 		sort_next(sid)
 	log.debug("advance", "Next event management: %.6f" % (time.time() - start_time,))
@@ -172,16 +172,17 @@ def _get_schedule_stats(sid):
 	global next
 	global current
 	
-	max_sched_id = current[sid].id
+	max_sched_id = current[sid].id if sid in current and current[sid] else 0
 	max_elec_id = 0
 	num_elections = 0
-	for e in next[sid]:
-		if e.is_election:
-			num_elections += 1
-			if e.id > max_elec_id:
-				max_elec_id = e.id
-		elif not e.is_election and e.id > max_sched_id:
-			max_sched_id = e.id
+	if sid in next:
+		for e in next[sid]:
+			if e.is_election:
+				num_elections += 1
+				if e.id > max_elec_id:
+					max_elec_id = e.id
+			elif not e.is_election and e.id > max_sched_id:
+				max_sched_id = e.id
 	return (max_sched_id, max_elec_id, num_elections)
 
 def integrate_new_events(sid):
@@ -256,7 +257,7 @@ def sort_next(sid, do_elections = False):
 		log.warn("sort_next", "Length of next events on sid %s is %s [problem: is zero] :: %s" % (sid, len(next[sid]), next[sid]))
 		if config.get_station(sid, "num_planned_elections") > 0:
 			for i in range(0, config.get_station(sid, "num_planned_elections")):
-				_create_election(sid)
+				_get_or_create_election(sid)
 				num_elections += 1
 		else:
 			return
@@ -304,7 +305,7 @@ def sort_next(sid, do_elections = False):
 					target_length = time_to_next
 				elif time_to_next < (playlist.get_average_song_length(sid) * 2.5):
 					target_length = playlist.get_average_song_length(sid)
-			elec = _create_election(sid, target_length=target_length)
+			elec = _get_or_create_election(sid, target_length=target_length)
 			num_elections += 1
 			# If the election length is longer than the predicted time to the timed event,
 			# it'd be more accurate to put the timed event BEFORE the created election
@@ -321,6 +322,16 @@ def sort_next(sid, do_elections = False):
 	while len(timed_events) > 0:
 		timed_events[0].start_predicted = timed_events[0].start
 		next[sid].append(timed_events.pop(0))
+
+def _get_or_create_election(sid, start_time = None, target_length = None):
+	max_sched_id, max_elec_id, num_elections = _get_schedule_stats(sid)
+
+	unused_elecs = event.Election.load_unused(sid, min_elec_id=max_elec_id, limit=1)
+	if len(unused_elecs) > 0:
+		log.debug("get_election", "SID %s returning unused election ID %s" % (sid, unused_elecs[0].id))
+		return unused_elecs[0]
+	else:
+		return _create_election(sid, start_time, target_length)
 
 def _create_election(sid, start_time = None, target_length = None):
 	log.debug("create_elec", "Creating election for sid %s, start time %s target length %s." % (sid, start_time, target_length))

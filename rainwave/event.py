@@ -226,8 +226,10 @@ class Election(Event):
 		return cls.load_by_id(elec_id)
 
 	@classmethod
-	def load_unused(cls, sid):
-		ids = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE elec_used = FALSE AND sid = %s ORDER BY elec_id", (sid,))
+	def load_unused(cls, sid, min_elec_id = 0, limit = None):
+		if not limit:
+			limit = config.get_station(sid, "num_planned_elections")
+		ids = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE elec_used = FALSE AND sid = %s AND elec_id > %s ORDER BY elec_id LIMIT %s", (sid, min_elec_id, limit))
 		elecs = []
 		for unused_id in ids:
 			elecs.append(cls.load_by_id(unused_id))
