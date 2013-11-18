@@ -64,6 +64,9 @@ var Fx = function() {
 	
 	self.legacy_effect = function(effect, el, duration) {
 		var newfx;
+		if (!duration) {
+			duration = 700;
+		}
 		if (arguments.length > 3) {
 			var args = [ el ];
 			for (var i = 3; i < arguments.length; i++) { args.push(arguments[i]); }
@@ -159,7 +162,7 @@ var Fx = function() {
 
 		r.set_rating = function(new_rating) {
 			current_rating = new_rating;
-			r.start()
+			r.start(current_rating);
 		};
 
 		r.change_to_site_rating = function() {
@@ -168,6 +171,7 @@ var Fx = function() {
 		};
 
 		r.change_to_user_rating = function() {
+			rating_class = "rating_user";
 			element.setAttribute("class", rating_class + " " + fave_class);
 		};
 
@@ -186,7 +190,7 @@ var Fx = function() {
 		};
 
 		r.update = function(now) {
-			element.style.backgroundPosition = (Math.round((Math.round(now * 10) / 2)) * 30) + "px 0px";
+			element.style.backgroundPosition = "-" + (Math.round((Math.round(now * 10) / 2)) * 25) + "px 0px";
 		};
 
 		return r;

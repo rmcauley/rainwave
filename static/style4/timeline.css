@@ -2,12 +2,26 @@
 	float: left;
 	height: 100%;
 	min-width: 35%;
+	transition: width $transtime;
 }
 
 .timeline_event {
-	transition: height 1s, opacity 1s;
+	transition: height $transtime;
+	overflow: hidden;
 }
 
-.timeline_event + .timeline_event {
-	margin-top: 1em;
+.timeline_song {
+	clear: left;
+}
+
+.timeline_song .title, .timeline_song .album, .timeline_song .artists {
+	margin-left: 52px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.timeline_song .art {
+	float: left;
+	max-width: 48px;
+	max-height: 48px;
 }

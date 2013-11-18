@@ -7,6 +7,9 @@ $vdarktext: #777777;
 $vvdarktext: #444444;
 $link: #6cf6ff;
 $donorcolor: #FFFF00;
+$transtime: 700ms ease-out;
+
+@import "fonts.css";
 
 body {
     height: 100%;
@@ -20,8 +23,8 @@ body {
 
 #measure_box {
 	position: absolute;
-	top: -2000px;
-	left: -2000px;
+	visibility: hidden;
+	width: 100%;
 }
 
 #menu {
@@ -31,6 +34,8 @@ body {
 #messages {
 	position: absolute;
 }
+
+@import "ratings.css";
 
 @import "timeline.css";
 

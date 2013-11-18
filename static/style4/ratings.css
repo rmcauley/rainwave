@@ -1,0 +1,41 @@
+.rating_site, .rating_user {
+	float: right;
+	clear: right;
+	background-repeat: no-repeat;
+	width: 65px;
+}
+
+.rating_site {
+	background-image: url("/static/images4/rating_bar/dark_ldpi.png");
+}
+
+.rating_user {
+	background-image: url("/static/images4/rating_bar/bright_ldpi.png");
+}
+
+.fave_lined {
+	transition: opacity 400ms ease-out;
+	opacity: 0;
+}
+
+.fave_solid {
+	position: absolute;
+	transition: opacity 400ms ease-out;
+	opacity: 0;
+}
+
+.fave_hover .fave_lined {
+	opacity: 1;
+}
+
+.fave_hover .fave_solid {
+	opacity: 0.5;
+}
+
+.rating_fave .fave_solid {
+	opacity: 1;
+}
+
+.rating_fave .fave_lined {
+	opacity: 0;
+}

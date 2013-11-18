@@ -30,7 +30,7 @@ var API = function() {
 
 		perform_callbacks(json);
 		perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
-		sync_get();
+		//sync_get();
 	}
 
 	// easy to solve, but stolen from http://stackoverflow.com/questions/1714786/querystring-encoding-of-a-javascript-object

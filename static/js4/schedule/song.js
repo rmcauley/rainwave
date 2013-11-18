@@ -6,7 +6,7 @@ function TimelineSong(json) {
 	self.elements = {};
 
 	var voting_enabled = false;
-	var html_classes = [ "TimelineSong" ];
+	var html_classes = [ "timeline_song" ];
 
 	var song_rating = SongRating(json);
 	var album_rating = AlbumRating(json.albums[0]);
@@ -47,7 +47,7 @@ function TimelineSong(json) {
 		}
 
 		if (!self.data.albums[0].art) {
-			self.data.albums[0].art = "/images/noart_1.jpg";
+			self.data.albums[0].art = "/static/images4/noart_1.jpg";
 		}
 		self.elements.art = self.el.appendChild($el("img", { "class": "art", "src": self.data.albums[0].art }));
 		
