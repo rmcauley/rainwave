@@ -1,0 +1,13 @@
+#timeline {
+	float: left;
+	height: 100%;
+	min-width: 35%;
+}
+
+.timeline_event {
+	transition: height 1s, opacity 1s;
+}
+
+.timeline_event + .timeline_event {
+	margin-top: 1em;
+}

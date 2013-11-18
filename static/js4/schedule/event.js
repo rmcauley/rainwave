@@ -51,8 +51,8 @@ var EventBase = function(json) {
 
 			}
 		}
-		self.height = $measure_el(self.el);
-		self.el.style.height = 0;
+		self.height = $measure_el(self.el).height;
+		self.el.style.height = "0px";
 	}
 
 	self.update = function(json) {
@@ -82,7 +82,8 @@ var EventBase = function(json) {
 	self.change_to_history = function() {
 		if (!self.songs) return;
 		if (self.songs.length == 1) return;
-		self.height = $measure_el(self.songs[0].el).x;
+		self.height = $measure_el(self.songs[0].el).height;
+		self.el.style.height = self.height + "px";
 	};
 
 	self.enable_voting = function() {

@@ -1,7 +1,10 @@
+import scss
 from scss import Scss
 import json
 import os
 import codecs
+
+scss.config.LOAD_PATHS = os.path.dirname(__file__) + "/../static/style4"
 
 def create_baked_directory():
 	dir = os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()))

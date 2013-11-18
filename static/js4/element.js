@@ -54,5 +54,5 @@ function $measure_el(el) {
 	if (boxed) {
 		$id("measure_box").removeChild(el);
 	}
-	return { "x": x, "y": y };
+	return { "width": x, "height": y };
 }

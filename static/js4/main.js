@@ -10,7 +10,7 @@ function initialize() {
 	Clock.initialize();
 	Schedule.initialize();
 	// API comes last since it will do all the callbacks to initialized
-	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
+	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.user_id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
 
 	_on_resize(null);
 	window.addEventListener("resize", _on_resize, false);

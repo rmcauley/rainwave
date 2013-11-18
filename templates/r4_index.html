@@ -13,16 +13,17 @@
 				"locales": {{ locales }}
 		};
 	</script>
+	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
 	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
 	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
 </head>
 <body onload="initialize();">
 		{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
 		<div id="measure_box"></div>
-		<div id="menu">Menu will go here</div>
+		<div id="menu"></div>
 		<div id="messages"></div>
 		<div id="sizable_body">
-				<div id="timeline">Timeline</div>
+				<div id="timeline"></div>
 				<div id="album_list">Album list</div>
 				<div id="album_view">Album view</div>
 				<div id="requests">Requests</div>

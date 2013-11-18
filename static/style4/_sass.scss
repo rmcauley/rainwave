@@ -8,12 +8,14 @@ $vvdarktext: #444444;
 $link: #6cf6ff;
 $donorcolor: #FFFF00;
 
-html, body {
+body {
     height: 100%;
     background: $background;
     color: $text;
     margin: 0;
     padding: 0;
+
+    font-family: Roboto Condensed, Segoe UI, Helvetica, Arial, sans-serif;
 }
 
 #measure_box {
@@ -23,33 +25,28 @@ html, body {
 }
 
 #menu {
-	background: #500;
+	background: $background;
 }
 
 #messages {
 	position: absolute;
 }
 
-#timeline {
-	float: left;
-	height: 100%;
-	background: #055;
-}
+@import "timeline.css";
 
 #album_list {
-	min-width: 25em;
-	max-width: 40em;
+	width: 20em;
 	height: 100%;
 	float: left;
-	background: #050;
 }
 
 #album_view {
 	height: 100%;
 	width: 100%;
-	background: #005;
 }
 
 #requests {
-	display: none;
+	float: right;
+	width: 0%;
+	overflow: hidden;
 }

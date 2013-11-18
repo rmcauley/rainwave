@@ -29,7 +29,7 @@ var API = function() {
 		async_queue = [];
 
 		perform_callbacks(json);
-		perform_callbacks({ "_SYNC_COMPLETE": true });
+		perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
 		sync_get();
 	}
 
@@ -98,7 +98,7 @@ var API = function() {
 		var sync_restart_pause = 3000;
 		var response = JSON.parse(sync.responseText);
 		perform_callbacks(response);
-		perform_callbacks({ "_SYNC_COMPLETE": true });
+		perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
 
 		if ("error" in response) {
 			sync_restart_pause = 10000;

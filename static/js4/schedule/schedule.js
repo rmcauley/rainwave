@@ -39,11 +39,11 @@ var Schedule = function() {
 
 		for (i = 0; i < self.events.length; i++) {
 			if (self.events[i].pending_delete) {
-				self.events[i].el.style.height = 0;
+				self.events[i].el.style.height = "0";
 				Fx.remove_element(self.events[i].el);
 			}
 			else {
-				Fx.delay_css_setting(self.events[i].el, "height", self.events[i].height)
+				Fx.delay_css_setting(self.events[i].el, "height", self.events[i].height + "px")
 			}
 			timeline_el.appendChild(self.events[i].el);
 		}
