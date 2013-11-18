@@ -1,7 +1,7 @@
 'use strict';
 
 function TimelineSong(json) {
-	var self;
+	var self = {};
 	self.data = json;
 	self.elements = {};
 
@@ -20,7 +20,8 @@ function TimelineSong(json) {
 	}
 
 	var remove_html_class = function(cls) {
-		if (var i = html_classes.indexOf(cls)) {
+		var i = html_classes.indexOf(cls)
+		if (i != -1) {
 			html_classes.splice(i, 1);
 			update_html_classes();
 		}
@@ -101,6 +102,8 @@ function TimelineSong(json) {
 	self.unregister_vote = function() {
 		remove_html_class("voting_registered");
 	}
+
+	draw();
 
 	return self;
 };

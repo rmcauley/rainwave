@@ -4,7 +4,7 @@ var Fx = function() {
 	var self = {};
 	var delayed_css = [];
 
-	var requestAnimationFrame = windows.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+	var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
 	var performance = window.performance || { "now": function() { return new Date().getTime(); } };
 	if (!requestAnimationFrame) {
 		requestAnimationFrame = function(callback) { window.setTimeout(callback, 40); };
@@ -34,7 +34,7 @@ var Fx = function() {
 	self.delay_css_setting = function(el, attribute, value) {
 		delayed_css.push({ "el": el, "attribute": attribute, "value": value });
 		if (delayed_css.length == 1) {
-			requestFrameAnimation(do_delayed_css);
+			requestAnimationFrame(do_delayed_css);
 		}
 	}
 
@@ -43,10 +43,10 @@ var Fx = function() {
 		var end_func = function() {
 			el.parentNode.removeChild(el);
 		};
-		for (animation_end in animation_ends) {
+		for (var animation_end in animation_ends) {
 			el.addEventListener(animation_end, end_func, false);
 		}
-		el.style.opacity = "0";
+		self.delay_css_setting(el, "opacity", 0);
 	};
 
 	//*****************************************************************************
@@ -67,10 +67,10 @@ var Fx = function() {
 		if (arguments.length > 3) {
 			var args = [ el ];
 			for (var i = 3; i < arguments.length; i++) { args.push(arguments[i]); }
-			newfx = func.apply(this, args);
+			newfx = effect.apply(this, args);
 		}
 		else {
-			newfx = func(el);
+			newfx = effect(el);
 		}
 
 		var from = 0;
@@ -136,7 +136,7 @@ var Fx = function() {
 
 				newfx.update(now);
 				newfx.now = now;
-				requestFrameAnimation(step);
+				requestAnimationFrame(step);
 			}
 			else {
 				now = to;
@@ -188,6 +188,8 @@ var Fx = function() {
 		r.update = function(now) {
 			element.style.backgroundPosition = (Math.round((Math.round(now * 10) / 2)) * 30) + "px 0px";
 		};
+
+		return r;
 	}
 	
 	return self;

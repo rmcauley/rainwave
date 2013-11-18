@@ -50,7 +50,7 @@ var ErrorHandler = function() {
 		err.style.top = y + "px";
 
 		document.body.appendChild(err);
-		setTimeout(5000, function() { Fx.remove_element(err); });
+		setTimeout(function() { Fx.remove_element(err); }, 5000);
 	};
 
 	self.javascript_error = function(err, json) {

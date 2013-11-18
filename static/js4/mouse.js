@@ -29,4 +29,6 @@ var Mouse = function() {
 	// ONLY ON CLICK, not on move!
 	// This is mostly used to track where the mouse is to help tooltip error displays
 	window.addEventListener('mousedown', update_mouse, true);
+
+	return self;
 }();

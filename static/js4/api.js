@@ -29,6 +29,7 @@ var API = function() {
 		async_queue = [];
 
 		perform_callbacks(json);
+		perform_callbacks({ "_SYNC_COMPLETE": true });
 		sync_get();
 	}
 
@@ -144,19 +145,19 @@ var API = function() {
 		var cb, key;
 		for (key in json) {
 			if (key in callbacks) {
-				try {
+				// try {
 					for (cb = 0; cb < callbacks[key].length; cb++) {
-						callbacks[key][cb](json);
+						callbacks[key][cb](json[key]);
 					}
 					for (cb = 0; cb < universal_callbacks.length; cb++) {
-						universal_callbacks[cb](key, json);
+						universal_callbacks[cb](key, json[key]);
 					}
-				}
-				catch(err) {
+				// }
+/*				catch(err) {
 					// TODO: JS error callback: error(err, json)
 					self.sync_stop();
 					return;
-				}
+				}*/
 			}
 		}
 	};

@@ -11,7 +11,7 @@ var Event = function() {
 		else if (json.type == "OneUp") {
 			return OneUp(json);
 		}
-		return null;
+		throw("Unknown event type '" + json.type + "'");
 	}
 	return e_self;
 }();
@@ -33,8 +33,8 @@ var EventBase = function(json) {
 	if (json.songs) {
 		self.songs = [];
 		if ("songs" in json) {
-			for (var i = 0; i < json.songs.length ||; i++) {
-				self.songs.push(Song(json.songs[i]));
+			for (var i = 0; i < json.songs.length; i++) {
+				self.songs.push(TimelineSong(json.songs[i]));
 			}
 		}
 	}
@@ -46,12 +46,13 @@ var EventBase = function(json) {
 			if (self.type.indexOf("election") != -1) {
 				shuffle(self.songs);
 			}
-			for (var i = 0; ((i < json.songs.length) || (i < 5)) ; i++) {
+			for (var i = 0; ((i < self.songs.length) && (i < 5)) ; i++) {
 				self.el.appendChild(self.songs[i].el);
 
 			}
 		}
 		self.height = $measure_el(self.el);
+		self.el.style.height = 0;
 	}
 
 	self.update = function(json) {

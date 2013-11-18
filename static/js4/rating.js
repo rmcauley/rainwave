@@ -4,7 +4,7 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 	if ((type != "song") && (type != "album")) return undefined;
 	if (isNaN(id)) return undefined;
 	if (rating_user && ((rating_user < 1) || (rating_user > 5))) rating_user = null;
-	if (rating && ((rating < 1) || (rating > 5)) rating = null;
+	if (rating && ((rating < 1) || (rating > 5))) rating = null;
 	if (type != "song") ratable = false;
 
 	var self = {
@@ -13,7 +13,7 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 		"rating_user": rating_user,
 		"rating": rating,
 		"fave": fave,
-		"ratable": ratable
+		"ratable": ratable,
 		"el": $el("div")
 	};
 
@@ -122,7 +122,7 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 	// TODO: rating control
 	// RatingControl.add(self)
 
-	return that;
+	return self;
 };
 
 function SongRating(json) {

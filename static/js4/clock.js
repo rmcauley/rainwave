@@ -17,7 +17,7 @@ var Clock = function() {
 	};
 
 	self.time = function() {
-		return Math.round(Date().getTime() / 1000);
+		return Math.round(new Date().getTime() / 1000);
 	};
 
 	self.get_time_diff = function() {
@@ -25,7 +25,7 @@ var Clock = function() {
 	}
 
 	self.hi_res_time = function() {
-		return Date().getTime();
+		return new Date().getTime();
 	};
 
 	self.resync = function(json) {
