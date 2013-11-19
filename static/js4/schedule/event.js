@@ -72,10 +72,17 @@ var EventBase = function(json, header_text) {
 	}
 
 	self.update = function(json) {
+		self.data = json;
 		self.end = json.end;
 		self.start = json.start;
 		self.predicted_start = json.predicted_start;
 		self.start_actual = json.start_actual
+		if (self.data.voting_allowed) {
+			self.enable_voting();
+		}
+		else {
+			self.disable_voting();
+		}
 
 		if (self.songs) {
 			for (var i = 0; i < self.songs.length; i++) {
@@ -162,5 +169,8 @@ var EventBase = function(json, header_text) {
 	};
 
 	draw();
+	if (self.data.voting_allowed) {
+		self.enable_voting();
+	}
 	return self;
 };

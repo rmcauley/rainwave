@@ -151,7 +151,8 @@ class Event(object):
 			"name": self.name,
 			"sid": self.sid,
 			"url": self.url,
-			"dj_user_id": self.dj_user_id
+			"dj_user_id": self.dj_user_id,
+			"voting_allowed": False
 		}
 		if user and user.data['radio_admin'] > 0:
 			obj['public'] = self.public
