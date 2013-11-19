@@ -16,7 +16,7 @@ var Event = function() {
 	return e_self;
 }();
 
-var EventBase = function(json, header_text) {
+var EventBase = function(json) {
 	var self = {};
 	self.data = json;
 	self.id = json.id;
@@ -31,7 +31,6 @@ var EventBase = function(json, header_text) {
 	self.songs = null;
 
 	var changed_to_history = false;
-	var header_height;
 	var song_height;
 
 	if (json.songs) {
@@ -43,18 +42,8 @@ var EventBase = function(json, header_text) {
 		}
 	}
 
-	var set_class = function(new_class) {
-		if (!new_class) new_class = "";
-		self.el.setAttribute("class", "timeline_event timeline_" + self.type + " " + new_class);
-	}
-
 	var draw = function() {
-		self.el = $el("div");
-		set_class();
-		self.elements.header = $el("div", { "class": "timeline_header", "textContent": header_text });
-		header_height = $measure_el(self.elements.header).height;
-		self.el.appendChild(self.elements.header);
-
+		self.el = $el("div", { "class": "timeline_event timeline_" + self.type });
 		if (self.songs) {
 			song_height = $measure_el(self.songs[0].el).height;
 			// shuffle our songs to draw in the array
@@ -96,8 +85,6 @@ var EventBase = function(json, header_text) {
 	}
 
 	self.change_to_now_playing = function() {
-		set_class("timeline_now_playing");
-		self.elements.header.textContent = $l("Now_Playing");
 		self.name = self.songs[0].data.albums[0].name + " - " + self.songs[0].data.title;
 		if (!self.songs || (self.songs.length == 1)) return;
 
@@ -107,26 +94,13 @@ var EventBase = function(json, header_text) {
 		}
 	};
 
-	self.change_to_history = function(keep_header) {
+	self.change_to_history = function() {
 		if (changed_to_history) return;
-		if (keep_header) {
-			if (self.songs) {
-				self.height = song_height + header_height;
-			}
-			self.elements.header.textContent = $l("History");
-			set_class("timeline_first_history");
+		if (self.songs) {
+			self.height = song_height;
+			self.el.style.height = self.height + "px";
 		}
-		else {
-			if (!self.songs) {
-				self.height -= header_height;
-			}
-			else {
-				self.height = song_height;
-			}
-			set_class("timeline_history");
-			changed_to_history = true;
-		}
-		self.el.style.height = self.height + "px";
+		changed_to_history = true;
 	};
 
 	self.enable_voting = function() {

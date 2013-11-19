@@ -16,12 +16,21 @@ var Schedule = function() {
 		API.add_callback(function(json) { sched_next = json; }, "sched_next");
 		API.add_callback(function(json) { sched_history = json; }, "sched_history");
 		API.add_callback(update, "_SYNC_COMPLETE");
+
+		$id("timeline_header_history").textContent = $l("History");
+		$id("timeline_header_now_playing").textContent = $l("Now_Playing");
+		$id("timeline_header_coming_up").textContent = $l("Coming_Up");
+
+		Fx.delay_css_setting($id("timeline_header_history"), "opacity", 1)
+		Fx.delay_css_setting($id("timeline_header_now_playing"), "opacity", 1)
+		Fx.delay_css_setting($id("timeline_header_coming_up"), "opacity", 1)
 	};
 
 	var update = function() {
 		var new_events = [];
 		var new_current_event;
 		var i;
+		var running_height = 0;
 
 		// Mark everything for deletion - this flag will get updated to false as events do
 		for (i = 0; i < self.events.length; i++) {
@@ -36,27 +45,46 @@ var Schedule = function() {
 		var temp_evt;
 		for (i = sched_next.length - 1; i >= 0; i--) {
 			temp_evt = find_and_update_event(sched_next[i]);
+			$add_class(temp_evt.el, "timeline_next");
 			if (i == sched_next.length - 1) {
-				self.el.insertBefore(temp_evt.el, self.el.firstChild);
+				self.el.insertBefore(temp_evt.el, $id("timeline_header_history").nextSibling);
 			}
 			else {
 				self.el.insertBefore(temp_evt.el, new_events[new_events.length - 1].el.nextSibling);
 			}
+			running_height += temp_evt.height;
 			new_events.push(temp_evt);
+			Fx.delay_css_setting(temp_evt.el, "opacity", 1);
 		}
+		running_height += 65;
 
 		temp_evt = find_and_update_event(sched_current);
+		$remove_class(temp_evt.el, "timeline_next");
+		$add_class(temp_evt.el, "timeline_now_playing");
 		self.el.insertBefore(temp_evt.el, new_events[new_events.length - 1].el.nextSibling);
+		$id("timeline_header_now_playing").style.marginTop = running_height + "px";
+		running_height += temp_evt.height;
 		new_events.push(temp_evt);
 		temp_evt.change_to_now_playing();
 		Clock.set_page_title(temp_evt.name, temp_evt.end);
 		new_current_event = temp_evt;
+		Fx.delay_css_setting(temp_evt.el, "opacity", 1);
+		running_height += 65;
 
 		for (i = 0; i < sched_history.length; i++) {
 			temp_evt = find_and_update_event(sched_history[i]);
-			temp_evt.change_to_history(i == 0);
+			temp_evt.change_to_history()
+			$remove_class(temp_evt.el, "timeline_now_playing");
+			$add_class(temp_evt.el, "timeline_history");
 			self.el.insertBefore(temp_evt.el, new_events[new_events.length - 1].el.nextSibling);
 			new_events.push(temp_evt);
+			if (i == 0) {
+				Fx.delay_css_setting(temp_evt.el, "opacity", 0.8);
+				$id("timeline_header_history").style.marginTop = running_height + "px";
+			}
+			else {
+				Fx.delay_css_setting(temp_evt.el, "opacity", 0.6);
+			}
 		}
 
 		// Erase old elements out before we replace the self.events with new_events

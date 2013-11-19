@@ -2,28 +2,44 @@
 	float: left;
 	height: 100%;
 	min-width: 35%;
+	padding: 0px 10px 0px 10px;
 	transition: width $transtime;
+}
+
+#timeline > div:nth-child(4) {
+	margin-top: 30px;
 }
 
 .timeline_event {
 	transition: height $transtime, opacity $transtime;
 	overflow: hidden;
+	opacity: 0;
 }
 
-.timeline_first_history {
-	opacity: .75;
+.timeline_next + .timeline_next {
+	margin-top: 20px;
+}
+
+.timeline_next + .timeline_now_playing {
+	margin-top: 37px;
+}
+
+.timeline_now_playing + .timeline_history {
+	margin-top: 37px;
 }
 
 .timeline_history {
-	opacity: .55;
+	opacity: .8;
 }
 
 .timeline_song {
 	clear: left;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
 .timeline_song .title, .timeline_song .album, .timeline_song .artists {
-	margin-left: 52px;
+	margin-left: 60px;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
@@ -31,26 +47,25 @@
 
 .timeline_song .art {
 	float: left;
-	max-width: 48px;
-	max-height: 48px;
+	max-width: 52px;
+	max-height: 52px;
 }
 
 .timeline_header {
+	z-index: -1;
 	transition: height $transtime, color $transtime, opacity $transtime;
+	position: absolute;
+	margin-top: 0px;
 	height: 1.5em;
 	color: $vdarktext;
 	overflow: hidden;
-	opacity: 1;
+	opacity: 0;
 }
 
-.timeline_now_playing .timeline_header {
+#timeline_header_now_playing {
 	color: $highlight;
 }
 
-.timeline_history .timeline_header {
-	height: 0em;
-	opacity: 0;
-}
 
 .timeline_progress_bar_outside {
 	background-color: $vvdarktext;

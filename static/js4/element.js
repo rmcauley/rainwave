@@ -56,3 +56,18 @@ function $measure_el(el) {
 	}
 	return { "width": x, "height": y };
 }
+
+function $add_class(el, class_name) {
+	var classes = el.getAttribute("class").split(" ");
+	if (classes.indexOf(class_name) == -1) {
+		el.setAttribute("class", el.getAttribute("class") + " " + class_name);
+	}
+}
+
+function $remove_class(el, class_name) {
+	var classes = el.getAttribute("class").split(" ");
+	if (classes.indexOf(class_name) != -1) {
+		classes.splice(classes.indexOf(class_name), 1);
+		el.setAttribute("class", classes.join(" "));
+	}
+}
