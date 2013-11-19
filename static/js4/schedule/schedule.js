@@ -19,19 +19,27 @@ var Schedule = function() {
 
 	var update = function() {
 		var new_events = [];
+		var history_events_temp = [];
+		var history_event_temp;
+		var current_event_temp;
 		var i;
 
+		// Mark everything for deletion - this flag will get updated to false as events do
 		for (i = 0; i < self.events.length; i++) {
 			events[i].pending_delete = true;
 		}
 
-		// reverse order to get HTML order correct on sched_next
+		// Load events (pulling from already existing self.events or creating new objects as necessary)
+		// reverse order on sched_next so array works in HTML order instead of time order
 		for (i = sched_next.length - 1; i >= 0; i--) {
 			new_events.push(find_and_update_event(sched_next[i]));
 		}
-		new_events.push(find_and_update_event(sched_current));
+		current_event_temp = find_and_update_event(sched_current);
+		new_events.push(current_event_temp);
 		for (i = 0; i < sched_history.length; i++) {
-			new_events.push(find_and_update_event(sched_history[i]));
+			history_event_temp = find_and_update_event(sched_history[i]);
+			new_events.push(history_event_temp);
+			history_events_temp.push(history_event_temp);
 		}
 		self.events = new_events;
 
@@ -42,17 +50,24 @@ var Schedule = function() {
 				self.events[i].el.style.height = "0px";
 				Fx.remove_element(self.events[i].el);
 			}
-			else {
-				Fx.delay_css_setting(self.events[i].el, "height", self.events[i].height + "px");
-			}
 			timeline_el.appendChild(self.events[i].el);
-
 		}
 
 		for (i = self.events.length - 1; i >= 0; i--) {
 			if (self.events[i].pending_delete) {
 				self.events.splice(i, 1);
 			}
+		}
+
+		// These must go here since they cause reflow and have to happen after they've been appended to the page
+		current_event_temp.change_to_now_playing();
+		for (i = 0; i < history_events_temp.length; i++) {
+			history_events_temp[i].change_to_history(i == 0);
+		}
+
+		// Finally, set the height on everything
+		for (i = 0; i < self.events.length; i++) {
+			Fx.delay_css_setting(self.events[i].el, "height", self.events[i].height + "px");
 		}
 	};
 

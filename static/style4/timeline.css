@@ -6,8 +6,16 @@
 }
 
 .timeline_event {
-	transition: height $transtime;
+	transition: height $transtime, opacity $transtime;
 	overflow: hidden;
+}
+
+.timeline_first_history {
+	opacity: .75;
+}
+
+.timeline_history {
+	opacity: .55;
 }
 
 .timeline_song {
@@ -24,4 +32,21 @@
 	float: left;
 	max-width: 48px;
 	max-height: 48px;
+}
+
+.timeline_header {
+	transition: height $transtime, color $transtime, opacity $transtime;
+	height: 1.5em;
+	color: $text;
+	overflow: hidden;
+	opacity: 1;
+}
+
+.timeline_now_playing .timeline_header {
+	color: $highlight;
+}
+
+.timeline_history .timeline_header {
+	height: 0em;
+	opacity: 0;
 }

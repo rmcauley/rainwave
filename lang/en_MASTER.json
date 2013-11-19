@@ -4,16 +4,16 @@
 
     "__comment__": "API Errors, can be skipped if you only want to translate the website.",
 
-    "missing_station_id": 		"Missing station ID.",
+    "missing_station_id":       "Missing station ID.",
     "invalid_station_id":		"Invalid station ID.",
     "missing_argument": 		"Missing argument: '%(argument)'.",
     "invalid_argument":			"Invalid argument '%(argument)': %(reason)",
-    "auth_required":			"Authorization required.",
-    "auth_failed":			"Authorization failed.",
+    "auth_required":            "Authorization required.",
+    "auth_failed":              "Authorization failed.",
     "login_required":			"Login required.",
     "tunein_required":			"You must be tuned in.",
     "admin_required":			"You must be an admin.",
-    "dj_required":			"You must be a DJ.",
+    "dj_required":              "You must be a DJ.",
     "perks_required":			"Must be a VIP user.",
     "unlocked_only":			"User locked to %(station) for %(lock_counter) more songs.",
     "internal_error":			"Internal server error.",
@@ -56,6 +56,12 @@
     "title":				"Title",
     "album_name":			"Album Name",
     "id":				"ID",
+
+    "__comment__": "Timeline",
+
+    "Election":                 "Election",
+    "Now_Playing":              "Now Playing",
+    "History":                  "History",
 
     "__comment__": "Other",
 

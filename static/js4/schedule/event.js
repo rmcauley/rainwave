@@ -6,17 +6,17 @@ var Event = function() {
 	e_self.load = function(json) {
 		if (json.type == "election") {
 			// nothing special for elections right now
-			return EventBase(json);
+			return EventBase(json, $l("Election"));
 		}
 		else if (json.type == "OneUp") {
-			return OneUp(json);
+			return OneUp(json, $l("OneUp"));;
 		}
 		throw("Unknown event type '" + json.type + "'");
 	}
 	return e_self;
 }();
 
-var EventBase = function(json) {
+var EventBase = function(json, header_text) {
 	var self = {};
 	self.data = json;
 	self.id = json.id;
@@ -30,6 +30,8 @@ var EventBase = function(json) {
 	self.elements = {};
 	self.songs = null;
 
+	var changed_to_history = false;
+
 	if (json.songs) {
 		self.songs = [];
 		if ("songs" in json) {
@@ -39,8 +41,15 @@ var EventBase = function(json) {
 		}
 	}
 
+	var set_class = function(new_class) {
+		if (!new_class) new_class = "";
+		self.el.setAttribute("class", "timeline_event timeline_" + self.type + " " + new_class);
+	}
+
 	var draw = function() {
-		self.el = $el("div", { "class": "timeline_event timeline_" + self.type });
+		self.el = $el("div");
+		set_class();
+		self.elements.header = self.el.appendChild($el("div", { "class": "timeline_header", "textContent": header_text }));
 		if (self.songs) {
 			// shuffle our songs to draw in the array
 			if (self.type.indexOf("election") != -1) {
@@ -72,6 +81,8 @@ var EventBase = function(json) {
 	}
 
 	self.change_to_now_playing = function(new_song_array) {
+		set_class("timeline_now_playing");
+		self.elements.header.textContent = $l("Now_Playing");
 		if (!self.songs || !new_song_array || (self.songs.length == 1)) return;
 		self.songs.sort(function(a, b) { return a.data.entry_position - b.data.entry_position; });
 		for (var i = 0; i < self.songs.length; i++) {
@@ -79,10 +90,25 @@ var EventBase = function(json) {
 		}
 	};
 
-	self.change_to_history = function() {
-		if (!self.songs) return;
-		if (self.songs.length == 1) return;
-		self.height = $measure_el(self.songs[0].el).height;
+	self.change_to_history = function(keep_header) {
+		if (changed_to_history) return;
+		if (keep_header) {
+			if (self.songs) {
+				self.height = $measure_el(self.songs[0].el).height + $measure_el(self.elements.header).height;	
+			}
+			self.elements.header.textContent = $l("History");
+			set_class("timeline_first_history");
+		}
+		else {
+			if (!self.songs) {
+				self.height -= $measure_el(self.elements.header).height;
+			}
+			else {
+				self.height = $measure_el(self.songs[0].el).height;
+			}
+			set_class("timeline_history");
+			changed_to_history = true;
+		}
 		self.el.style.height = self.height + "px";
 	};
 
