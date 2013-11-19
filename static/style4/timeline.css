@@ -51,3 +51,16 @@
 	height: 0em;
 	opacity: 0;
 }
+
+.timeline_progress_bar_outside {
+	background-color: $vvdarktext;
+	height: 2px;
+	padding: 0px;
+}
+
+.timeline_progress_bar_inside {
+	background-color: $highlight;
+	height: 2px;
+	margin: 0px;
+	padding: 0px;
+}

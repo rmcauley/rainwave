@@ -8,6 +8,7 @@ var Schedule = function() {
 	var sched_next;
 	var sched_current;
 	var sched_history;
+	var time_bar;
 
 	self.initialize = function() {
 		self.el = $id("timeline");
@@ -19,6 +20,7 @@ var Schedule = function() {
 
 	var update = function() {
 		var new_events = [];
+		var new_current_event;
 		var i;
 
 		// Mark everything for deletion - this flag will get updated to false as events do
@@ -48,6 +50,7 @@ var Schedule = function() {
 		new_events.push(temp_evt);
 		temp_evt.change_to_now_playing();
 		Clock.set_page_title(temp_evt.name, temp_evt.end);
+		new_current_event = temp_evt;
 
 		for (i = 0; i < sched_history.length; i++) {
 			temp_evt = find_and_update_event(sched_history[i]);
@@ -68,6 +71,18 @@ var Schedule = function() {
 		// Finally, set the height on everything
 		for (i = 0; i < self.events.length; i++) {
 			Fx.delay_css_setting(self.events[i].el, "height", self.events[i].height + "px");
+		}
+
+		if (time_bar) {
+			Fx.remove_element(time_bar);
+		}
+		if ((new_current_event.end - Clock.time()) > 0) {
+			time_bar = $el("div", { "class": "timeline_progress_bar_outside" });
+			var time_bar_progress = time_bar.appendChild($el("div", { "class": "timeline_progress_bar_inside"}));
+			time_bar_progress.style.width = Math.round(((new_current_event.end - Clock.time()) / new_current_event.data.songs[0].length) * 100) + "%";
+			time_bar_progress.style.transition = "width " + (new_current_event.end - Clock.time()) + "s linear";
+			Fx.delay_css_setting(time_bar_progress, "width", "0%");
+			self.el.insertBefore(time_bar, new_current_event.el.nextSibling);
 		}
 	};
 
