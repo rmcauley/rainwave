@@ -47,6 +47,7 @@ var Schedule = function() {
 		self.el.insertBefore(temp_evt.el, new_events[new_events.length - 1].el.nextSibling);
 		new_events.push(temp_evt);
 		temp_evt.change_to_now_playing();
+		Clock.set_page_title(temp_evt.name, temp_evt.end);
 
 		for (i = 0; i < sched_history.length; i++) {
 			temp_evt = find_and_update_event(sched_history[i]);
@@ -63,8 +64,6 @@ var Schedule = function() {
 			}
 		}
 		self.events = new_events;
-
-		Clock.set_page_title(sched_current.name, sched_current.end);
 
 		// Finally, set the height on everything
 		for (i = 0; i < self.events.length; i++) {

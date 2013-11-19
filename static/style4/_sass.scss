@@ -1,7 +1,7 @@
 $img_dir: ../../images;
 
 $background: #000000;
-$text: #FFFFFF;
+$text: rgb(240, 240, 240);
 $darktext: #CCCCCC;
 $vdarktext: #777777;
 $vvdarktext: #444444;
@@ -10,8 +10,6 @@ $link: #6cf6ff;
 $donorcolor: #FFFF00;
 $transtime: 700ms ease-out;
 
-@import "fonts.css";
-
 body {
     height: 100%;
     background: $background;
@@ -19,7 +17,7 @@ body {
     margin: 0;
     padding: 0;
 
-    font-family: Roboto Condensed, Segoe UI, Helvetica, Arial, sans-serif;
+    
 }
 
 #measure_box {

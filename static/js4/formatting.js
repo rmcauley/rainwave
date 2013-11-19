@@ -160,5 +160,6 @@ var Formatting = function() {
 		}
 		return str;
 	};
-};
 
+	return self;
+}();

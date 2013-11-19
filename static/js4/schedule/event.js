@@ -24,7 +24,7 @@ var EventBase = function(json, header_text) {
 	self.length = json.length;
 	self.end = json.end;
 	self.pending_delete = false;
-	self.name = null;
+	self.name = json.name || null;
 	self.height = null;
 	self.el = null;
 	self.elements = {};
@@ -72,9 +72,10 @@ var EventBase = function(json, header_text) {
 	}
 
 	self.update = function(json) {
-		self.data.end = json.end;
-		self.data.start = json.start;
-		self.data.predicted_start = json.predicted_start;
+		self.end = json.end;
+		self.start = json.start;
+		self.predicted_start = json.predicted_start;
+		self.start_actual = json.start_actual
 
 		if (self.songs) {
 			for (var i = 0; i < self.songs.length; i++) {
@@ -87,10 +88,12 @@ var EventBase = function(json, header_text) {
 		}
 	}
 
-	self.change_to_now_playing = function(new_song_array) {
+	self.change_to_now_playing = function() {
 		set_class("timeline_now_playing");
 		self.elements.header.textContent = $l("Now_Playing");
-		if (!self.songs || !new_song_array || (self.songs.length == 1)) return;
+		self.name = self.songs[0].data.albums[0].name + " - " + self.songs[0].data.title;
+		if (!self.songs || (self.songs.length == 1)) return;
+
 		self.songs.sort(function(a, b) { return a.data.entry_position - b.data.entry_position; });
 		for (var i = 0; i < self.songs.length; i++) {
 			self.el.appendChild(self.songs[i].el);

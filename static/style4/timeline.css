@@ -26,6 +26,7 @@
 	margin-left: 52px;
 	text-overflow: ellipsis;
 	overflow: hidden;
+	white-space: nowrap;
 }
 
 .timeline_song .art {
@@ -37,7 +38,7 @@
 .timeline_header {
 	transition: height $transtime, color $transtime, opacity $transtime;
 	height: 1.5em;
-	color: $text;
+	color: $vdarktext;
 	overflow: hidden;
 	opacity: 1;
 }
