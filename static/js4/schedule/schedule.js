@@ -3,14 +3,14 @@
 var Schedule = function() {
 	var self = {};
 	self.events = [];
-	var timeline_el;
+	self.el = null;
 
 	var sched_next;
 	var sched_current;
 	var sched_history;
 
 	self.initialize = function() {
-		timeline_el = $id("timeline");
+		self.el = $id("timeline");
 		API.add_callback(function(json) { sched_current = json; }, "sched_current");
 		API.add_callback(function(json) { sched_next = json; }, "sched_next");
 		API.add_callback(function(json) { sched_history = json; }, "sched_history");
@@ -19,51 +19,52 @@ var Schedule = function() {
 
 	var update = function() {
 		var new_events = [];
-		var history_events_temp = [];
-		var history_event_temp;
-		var current_event_temp;
 		var i;
 
 		// Mark everything for deletion - this flag will get updated to false as events do
 		for (i = 0; i < self.events.length; i++) {
-			events[i].pending_delete = true;
+			self.events[i].pending_delete = true;
 		}
 
-		// Load events (pulling from already existing self.events or creating new objects as necessary)
+		// Loading events is next (pulling from already existing self.events or creating new objects as necessary)
+		// Appending events to the DOM here is tricky because we have to make sure to retain order, EVEN FOR ITEMS BEING DELETED
+		// Items being erased must retain their position in order to smoothly animate out without jerking everything around
+
 		// reverse order on sched_next so array works in HTML order instead of time order
+		var temp_evt;
 		for (i = sched_next.length - 1; i >= 0; i--) {
-			new_events.push(find_and_update_event(sched_next[i]));
+			temp_evt = find_and_update_event(sched_next[i]);
+			if (i == sched_next.length - 1) {
+				self.el.insertBefore(temp_evt.el, self.el.firstChild);
+			}
+			else {
+				self.el.insertBefore(temp_evt.el, new_events[new_events.length - 1].el.nextSibling);
+			}
+			new_events.push(temp_evt);
 		}
-		current_event_temp = find_and_update_event(sched_current);
-		new_events.push(current_event_temp);
+
+		temp_evt = find_and_update_event(sched_current);
+		self.el.insertBefore(temp_evt.el, new_events[new_events.length - 1].el.nextSibling);
+		new_events.push(temp_evt);
+		temp_evt.change_to_now_playing();
+
 		for (i = 0; i < sched_history.length; i++) {
-			history_event_temp = find_and_update_event(sched_history[i]);
-			new_events.push(history_event_temp);
-			history_events_temp.push(history_event_temp);
+			temp_evt = find_and_update_event(sched_history[i]);
+			temp_evt.change_to_history(i == 0);
+			self.el.insertBefore(temp_evt.el, new_events[new_events.length - 1].el.nextSibling);
+			new_events.push(temp_evt);
 		}
-		self.events = new_events;
 
-		Clock.set_page_title(sched_current.name, sched_current.end);
-
+		// Erase old elements out before we replace the self.events with new_events
 		for (i = 0; i < self.events.length; i++) {
 			if (self.events[i].pending_delete) {
 				self.events[i].el.style.height = "0px";
 				Fx.remove_element(self.events[i].el);
 			}
-			timeline_el.appendChild(self.events[i].el);
 		}
+		self.events = new_events;
 
-		for (i = self.events.length - 1; i >= 0; i--) {
-			if (self.events[i].pending_delete) {
-				self.events.splice(i, 1);
-			}
-		}
-
-		// These must go here since they cause reflow and have to happen after they've been appended to the page
-		current_event_temp.change_to_now_playing();
-		for (i = 0; i < history_events_temp.length; i++) {
-			history_events_temp[i].change_to_history(i == 0);
-		}
+		Clock.set_page_title(sched_current.name, sched_current.end);
 
 		// Finally, set the height on everything
 		for (i = 0; i < self.events.length; i++) {
@@ -76,7 +77,7 @@ var Schedule = function() {
 			if (event_json.id == self.events[i].id) {
 				self.events[i].update(event_json);
 				self.events[i].pending_delete = false;
-				return events[i];
+				return self.events[i];
 			}
 		}
 		return Event.load(event_json);

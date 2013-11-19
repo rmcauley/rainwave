@@ -31,6 +31,8 @@ var EventBase = function(json, header_text) {
 	self.songs = null;
 
 	var changed_to_history = false;
+	var header_height;
+	var song_height;
 
 	if (json.songs) {
 		self.songs = [];
@@ -49,8 +51,12 @@ var EventBase = function(json, header_text) {
 	var draw = function() {
 		self.el = $el("div");
 		set_class();
-		self.elements.header = self.el.appendChild($el("div", { "class": "timeline_header", "textContent": header_text }));
+		self.elements.header = $el("div", { "class": "timeline_header", "textContent": header_text });
+		header_height = $measure_el(self.elements.header).height;
+		self.el.appendChild(self.elements.header);
+
 		if (self.songs) {
+			song_height = $measure_el(self.songs[0].el).height;
 			// shuffle our songs to draw in the array
 			if (self.type.indexOf("election") != -1) {
 				shuffle(self.songs);
@@ -60,6 +66,7 @@ var EventBase = function(json, header_text) {
 
 			}
 		}
+
 		self.height = $measure_el(self.el).height;
 		self.el.style.height = "0px";
 	}
@@ -72,8 +79,8 @@ var EventBase = function(json, header_text) {
 		if (self.songs) {
 			for (var i = 0; i < self.songs.length; i++) {
 				for (var j = 0; j < json.songs.length; j++) {
-					if (songs[i].id == json.songs[j].id) {
-						songs[i].update(json.songs[j].id);
+					if (self.songs[i].id == json.songs[j].id) {
+						self.songs[i].update(json.songs[j].id);
 					}
 				}
 			}
@@ -94,17 +101,17 @@ var EventBase = function(json, header_text) {
 		if (changed_to_history) return;
 		if (keep_header) {
 			if (self.songs) {
-				self.height = $measure_el(self.songs[0].el).height + $measure_el(self.elements.header).height;	
+				self.height = song_height + header_height;
 			}
 			self.elements.header.textContent = $l("History");
 			set_class("timeline_first_history");
 		}
 		else {
 			if (!self.songs) {
-				self.height -= $measure_el(self.elements.header).height;
+				self.height -= header_height;
 			}
 			else {
-				self.height = $measure_el(self.songs[0].el).height;
+				self.height = song_height;
 			}
 			set_class("timeline_history");
 			changed_to_history = true;
