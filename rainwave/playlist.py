@@ -772,8 +772,8 @@ class AssociatedMetadata(object):
 	def __init__(self):
 		self.id = None
 		self.is_tag = False
-		self.elec_block = False
-		self.cool_time = False
+		self.elec_block = None
+		self.cool_time = None
 
 		self.data = {}
 		self.data['name'] = None
@@ -783,11 +783,11 @@ class AssociatedMetadata(object):
 		self.data['name'] = d["name"]
 		if d.has_key("is_tag"):
 			self.is_tag = d["is_tag"]
-		if d.has_key("elec_block"):
+		if d.has_key("elec_block") and d['elec_block'] is not None:
 			self.elec_block = d["elec_block"]
-		if d.has_key("cool_time"):
+		if d.has_key("cool_time") and d['cool_time'] is not None:
 			self.cool_time = d["cool_time"]
-		if d.has_key("cool_override"):
+		if d.has_key("cool_override") and d['cool_override'] is not None:
 			self.cool_time = d['cool_override']
 
 	def save(self):
@@ -807,16 +807,20 @@ class AssociatedMetadata(object):
 		return False
 
 	def start_election_block(self, sid, num_elections = False):
-		if num_elections:
+		print "***** %s" % self.elec_block
+		if self.elec_block is not None:
+			if self.elec_block > 0:
+				log.debug("elec_block", "%s SID %s blocking ID %s for override %s" % (self.__class__.__name__, sid, self.id, self.elec_block))
+				self._start_election_block_db(sid, self.elec_block)
+		elif num_elections:
+			log.debug("elec_block", "%s SID %s blocking ID %s for normal %s" % (self.__class__.__name__, sid, self.id, num_elections))
 			self._start_election_block_db(sid, num_elections)
-		elif self.elec_block and self.elec_block > 0:
-			self._start_election_block_db(sid, self.elec_block)
 
 	def start_cooldown(self, sid, cool_time = False):
-		if cool_time and cool_time > 0:
-			self._start_cooldown_db(sid, cool_time)
-		elif self.cool_time and self.cool_time > 0:
+		if self.cool_time is not None:
 			self._start_cooldown_db(sid, self.cool_time)
+		elif cool_time and cool_time > 0:
+			self._start_cooldown_db(sid, cool_time)	
 
 	def associate_song_id(self, song_id, is_tag = None):
 		if is_tag == None:
@@ -1237,8 +1241,8 @@ class Artist(AssociatedMetadata):
 			song.pop('album_id', None)
 
 class SongGroup(AssociatedMetadata):
-	select_by_name_query = "SELECT group_id AS id, group_name AS name FROM r4_groups WHERE group_name = %s"
-	select_by_id_query = "SELECT group_id AS id, group_name AS name FROM r4_groups WHERE group_id = %s"
+	select_by_name_query = "SELECT group_id AS id, group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time FROM r4_groups WHERE group_name = %s"
+	select_by_id_query = "SELECT group_id AS id, group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time FROM r4_groups WHERE group_id = %s"
 	select_by_song_id_query = "SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time, group_is_tag AS is_tag FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s"
 	disassociate_song_id_query = "DELETE FROM r4_song_group WHERE song_id = %s AND group_id = %s"
 	associate_song_id_query = "INSERT INTO r4_song_group (song_id, group_id, group_is_tag) VALUES (%s, %s, %s)"
