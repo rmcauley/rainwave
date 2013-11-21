@@ -1177,13 +1177,13 @@ function _THEME() {
 				drawntables[i] = [];
 			}
 			for (i = 0; i < json.songs.length; i++) {
-				if ((json.songs[i].albums[0].id != album_id) && (((album_sid != 2) && (album_sid != 3)) || (album_sid != json.songs[i].origin_sid))) {
+				if (json.songs[i].albums[0].id != album_id) {
 					if (album.length > 0) {
 						drawntables[album_sid].push(pp.drawArtistTable(wdow, album, album_id, album_name, album_sid));
 					}
 					album_id = json.songs[i].albums[0].id;
 					album_name = json.songs[i].albums[0].name;
-					album_sid = json.songs[i].origin_sid;
+					album_sid = json.songs[i].sid;
 					album = [];
 				}
 				album.push(json.songs[i]);
@@ -1238,6 +1238,7 @@ function _THEME() {
 
 				requestable = false;
 				if (("origin_sid" in song_data[i]) && (song_data[i].origin_sid == user.p.sid)) requestable = true;
+				if (("sid" in song_data[i]) && (song_data[i].sid == user.p.sid)) requestable = true;
 				if (("requestable" in song_data[i]) && (song_data[i].requestable)) requestable = true;
 
 				if (!requestable) {

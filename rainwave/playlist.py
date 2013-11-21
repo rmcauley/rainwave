@@ -1236,17 +1236,17 @@ class Artist(AssociatedMetadata):
 	def load_all_songs(self, sid, user_id = None):
 		# I'm not going to provide a list of Song objects here because the overhead of that would spiral out of control
 		self.data['songs'] = db.c.fetch_all(
-			"SELECT r4_song_artist.song_id AS id, song_origin_sid AS origin_sid, song_rating AS rating, song_title AS title, "
-				"r4_song_sid.album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, "
+			"SELECT r4_song_artist.song_id AS id, r4_song_sid.sid AS sid, song_rating AS rating, song_title AS title, "
+				"r4_song_sid.album_id AS album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, "
 				"song_rating_user AS rating_user, song_fave AS fave "
 			"FROM r4_song_artist "
-				"JOIN r4_song_sid ON (r4_song_artist.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
-				"JOIN r4_songs ON (r4_song_sid.song_id = r4_songs.song_id) "
-				"JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id) "
+				"JOIN r4_songs USING (song_id) "
+				"JOIN r4_song_sid USING (song_id) "
+				"JOIN r4_albums USING (album_id) "
 				"LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
 			"WHERE r4_song_artist.artist_id = %s "
-			"ORDER BY album_name, origin_sid, song_title",
-			(sid, user_id, self.id))
+			"ORDER BY r4_song_sid.sid, album_name, song_title",
+			(user_id, self.id))
 
 		for song in self.data['songs']:
 			song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
