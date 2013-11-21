@@ -193,7 +193,7 @@ var albumlist = function() {
 			else return 1;
 		}
 
-		if ((prefs.p.playlist.sortalbums.value == "rating_user") || (prefs.p.playlist.sortalbums.value == "rating")) {
+		if ((prefs.p.playlist.sortalbums.value == "updated") || (prefs.p.playlist.sortalbums.value == "rating_user") || (prefs.p.playlist.sortalbums.value == "rating")) {
 			if (that.data[a][prefs.p.playlist.sortalbums.value] < that.data[b][prefs.p.playlist.sortalbums.value]) return 1;
 			if (that.data[a][prefs.p.playlist.sortalbums.value] > that.data[b][prefs.p.playlist.sortalbums.value]) return -1;
 		}
