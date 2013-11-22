@@ -7,6 +7,12 @@ function _on_resize(e) {
 }
 
 function initialize() {
+	var get_vars = {};
+	// http://papermashup.com/read-url-get-variables-withjavascript/
+	var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+		get_vars[key] = value;
+	});
+
 	User = BOOTSTRAP.json.user;
 	API.add_callback(function(json) { User = json; }, "user");
 
@@ -20,4 +26,8 @@ function initialize() {
 
 	_on_resize(null);
 	window.addEventListener("resize", _on_resize, false);
+
+	if (("fps" in get_vars) && (get_vars['fps']) && ("mozPaintCount" in window)) {
+		FPSCounter.initialize();
+	}
 };

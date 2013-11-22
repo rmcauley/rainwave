@@ -15,9 +15,17 @@ body {
     background: $background;
     color: $text;
     margin: 0;
-    padding: 0;
+    padding: 0;   
+}
 
-    
+#fpscounter {
+	position: absolute;
+	top: 0px;
+	left: 100%;
+	margin-left: -3.5em;
+	background: $vvdarktext;
+	color: $text;
+	border: solid 1px $vdarktext;
 }
 
 #measure_box {
