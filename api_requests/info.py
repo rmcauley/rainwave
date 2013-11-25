@@ -44,7 +44,7 @@ def attach_info_to_request(request, playlist = False, artists = False):
 		sched_next = []
 		for evt in cache.get_station(request.sid, "sched_next"):
 			sched_next.append(evt.to_dict(request.user))
-		if request.user.is_tunedin():
+		if len(sched_next) > 0 and request.user.is_tunedin():
 			sched_next[0]['voting_allowed'] = True
 		if request.user.has_perks():
 			for i in range(1, len(sched_next)):
@@ -69,7 +69,7 @@ def attach_info_to_request(request, playlist = False, artists = False):
 					for event in (sched_history + sched_next + temp_current):
 						if history[0] == event['id']:
 							api_requests.vote.append_success_to_request(request, event['id'], history[1])
-		elif request.user.data['listener_voted_entry'] > 0 and request.user.data['listener_lock_sid'] == request.sid:
+		elif len(sched_next) > 0 and request.user.data['listener_voted_entry'] > 0 and request.user.data['listener_lock_sid'] == request.sid:
 			api_requests.vote.append_success_to_request(request, sched_next[0].id, request.user.data['listener_voted_entry'])
 
 	request.append("all_stations_current", cache.get("all_stations_info"))

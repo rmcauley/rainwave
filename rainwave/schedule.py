@@ -252,13 +252,11 @@ def sort_next(sid, do_elections = False):
 	global next
 	# Filter out any None events (this has happened, despite the fact that it shouldn't, due to caching and other issues.  I'm not perfect.)
 	# next[sid] = filter(None, next[sid])
-	num_elections = 0
 	if len(next[sid]) == 0:
 		log.warn("sort_next", "Length of next events on sid %s is %s [problem: is zero] :: %s" % (sid, len(next[sid]), next[sid]))
 		if config.get_station(sid, "num_planned_elections") > 0:
 			for i in range(0, config.get_station(sid, "num_planned_elections")):
 				_get_or_create_election(sid)
-				num_elections += 1
 		else:
 			return
 
@@ -274,6 +272,7 @@ def sort_next(sid, do_elections = False):
 
 	# This loop determines predicted start times and re-inserts scheduled/timed events in the most appropriate place
 	i = 0
+	num_elections = 0
 	while i < len(next[sid]):
 		# ARGH ARGH ARGH ARGH ARGH ARGH ARGH ARGH DIRTY DIRTY DIRTY DIRTY
 		if i == 0:
