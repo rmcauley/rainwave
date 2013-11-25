@@ -1197,36 +1197,35 @@ function _THEME() {
 			}
 
 			for (i = 0; i < drawntables.length; i++) {
-				if (i != user.p.sid) {
+				if ((i != user.p.sid) && (i != 2)) {
 					for (j = 0; j < drawntables[i].length; j++) {
 						wdow.div.appendChild(drawntables[i][j]);
 					}
 				}
 			}
+			// overclocked last
+			for (j = 0; j < drawntables[2].length; j++) {
+				wdow.div.appendChild(drawntables[2][j]);
+			}
+
 		};
 
 		pp.drawArtistTable = function(wdow, album, album_id, album_name, album_sid) {
 			var encloseddiv = createEl("div");
-			if (album_sid == 2) {
-				album_name = _l("overclockedremixes");
-				album_id = -1;
-			}
-			else if (album_sid == 3) {
-				album_name = STATIONS[3];
-			}
-			var hdr = createEl("div", { "class": "pl_songlist_hdr", "textcontent": STATIONS[album_sid] }, encloseddiv);
-			//createEl("img", { "src": skindir + "/images/menu_logo_" + album_sid + ".png", "style": "float: right;" }, hdr);
+			encloseddiv.appendChild(createEl("img", { "src": "/static/images/station_select_" + album_sid + ".png", "style": "float: right;"}));
+			var hdr = createEl("div", { "class": "pl_songlist_hdr" }, encloseddiv);
+			hdr.textcontent = STATIONS[album_sid];
 			var album_hdr = createEl("span", { "textContent": album_name }, hdr);
 			if (album_id != -1) Album.linkify(album_id, album_hdr);
 			var tbl = createEl("table", { "class": "pl_songlist" }, encloseddiv);
 			var useless = [];
-			that.drawAlbumTable(tbl, useless, album);
+			that.drawAlbumTable(tbl, useless, album, true);
 			return encloseddiv;
 		};
 	};
 
 	// Pass a table already created, an empty array, and JSON song_data in
-	that.drawAlbumTable = function(table, songarray, song_data) {
+	that.drawAlbumTable = function(table, songarray, song_data, do_not_draw_album) {
 		var ns;
 		var trclass;
 		var requestable;
@@ -1252,7 +1251,7 @@ function _THEME() {
 					ns.tr.appendChild(ns.td_r);
 				}
 
-				if ("albums" in song_data[i]) {
+				if (("albums" in song_data[i]) && (!do_not_draw_album)) {
 					ns.td_album_name = createEl("td", { "class": "pl_songlist_album_name" }, ns.tr);
 					ns.td_album_name_text = createEl("div", { "textContent": song_data[i].albums[0].name }, ns.td_album_name);
 					Album.linkify(song_data[i].albums[0].id, ns.td_album_name_text);
