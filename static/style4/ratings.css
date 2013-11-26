@@ -24,15 +24,16 @@
 	position: absolute;
 	@include transition(opacity);
 	opacity: 0;
+	margin-top: 1px;
 }
 
 .fave_hover .fave_lined {
 	opacity: 1;
 }
 
-.fave_hover .fave_solid {
+/*.fave_hover .fave_solid {
 	opacity: 0.5;
-}
+}*/
 
 .rating_fave .fave_solid {
 	opacity: 1;

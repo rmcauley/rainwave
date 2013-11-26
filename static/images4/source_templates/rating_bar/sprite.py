@@ -11,5 +11,5 @@ for i in range(0, 26):
 user_sheet.save("bright_hdpi.png", optimize=True)
 all_sheet.save("dark_hdpi.png", optimize=True)
 
-user_sheet.resize((50, 728), Image.ANTIALIAS).save("bright_ldpi.png", optimize=True)
-all_sheet.resize((50, 728), Image.ANTIALIAS).save("dark_ldpi.png", optimize=True)
+user_sheet.resize((50, 780), Image.ANTIALIAS).save("bright_ldpi.png", optimize=True)
+all_sheet.resize((50, 780), Image.ANTIALIAS).save("dark_ldpi.png", optimize=True)
