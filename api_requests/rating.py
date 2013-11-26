@@ -27,13 +27,13 @@ class SubmitRatingRequest(APIHandler):
 		self.rate(self.get_argument("song_id"), self.get_argument("rating"))
 
 	def rate(self, song_id, rating):
-		# if not self.user.data['radio_rate_anything']:
-		acl = cache.get_station(self.sid, "user_rating_acl")
-		if not cache.get_station(self.sid, "sched_current").get_song().id == song_id:
-			if not song_id in acl or not self.user.id in acl[song_id]:
-				raise APIException("cannot_rate_now")
-		elif not self.user.is_tunedin():
-			raise APIException("tunein_to_rate_current_song")
+		if not self.user.data['radio_rate_anything']:
+			acl = cache.get_station(self.sid, "user_rating_acl")
+			if not cache.get_station(self.sid, "sched_current").get_song().id == song_id:
+				if not song_id in acl or not self.user.id in acl[song_id]:
+					raise APIException("cannot_rate_now")
+			elif not self.user.is_tunedin():
+				raise APIException("tunein_to_rate_current_song")
 		albums = ratinglib.set_song_rating(song_id, self.user.id, rating)
 		self.append_standard("rating_submitted", updated_album_ratings = albums, song_id = song_id, rating_user = rating)
 
