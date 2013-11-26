@@ -16,13 +16,21 @@ var Fx = function() {
 	//
 	//*****************************************************************************
 
-	//var transforms = [ "transform", "WebkitTransform", "msTransform", "MozTransform", "OTransform" ];
-	//var p;
-	//while (p = transforms.shift()) {
-	//	if (typeof el.style[p] != 'undefined') {
-	//		return p;
-	//	}
-	//}
+	var transform_string;
+
+	var get_transform_string = function() {
+		var transforms = [ "transform", "WebkitTransform", "msTransform", "MozTransform", "OTransform" ];
+		var p;
+		while (p = transforms.shift()) {
+			if (typeof $id("measure_box").style[p] != 'undefined') {
+				return p;
+			}
+		}
+	}
+
+	self.initialize = function() {
+		transform_string = get_transform_string();
+	}
 
 	var do_delayed_css = function() {
 		for (var i = 0; i < delayed_css.length; i++) {
@@ -32,6 +40,9 @@ var Fx = function() {
 	}
 
 	self.delay_css_setting = function(el, attribute, value) {
+		if (attribute == "transform") {
+			attribute = transform_string;
+		}
 		delayed_css.push({ "el": el, "attribute": attribute, "value": value });
 		if (delayed_css.length == 1) {
 			requestAnimationFrame(do_delayed_css);
@@ -70,7 +81,7 @@ var Fx = function() {
 		if (arguments.length > 3) {
 			var args = [ el ];
 			for (var i = 3; i < arguments.length; i++) { args.push(arguments[i]); }
-			newfx = effect.apply(this, args);
+			newfx = effect.apply(self, args);
 		}
 		else {
 			newfx = effect(el);

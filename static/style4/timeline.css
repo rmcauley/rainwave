@@ -8,10 +8,10 @@
 }
 
 .timeline_event {
-	transition: height $transtime, opacity $transtime, transform $transtime;
+	@include transition(height, opacity, transform);
 	opacity: 0;
 	position: absolute;
-	transform: translateY(0px);
+	@include transform(translateY(0px));
 	width: 100%;
 }
 
@@ -40,8 +40,8 @@
 
 .timeline_header {
 	z-index: -1;
-	transition: transform $transtime;
-	transform: translateY(0px);
+	@include transition(transform);
+	@include transform(translateY(0px));
 	position: absolute;
 	color: $vdarktext;
 	opacity: 0;

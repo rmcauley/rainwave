@@ -17,6 +17,7 @@ function initialize() {
 	API.add_callback(function(json) { User = json; }, "user");
 
 	// Prefs does not need an initialize() - it's loaded with the page
+	Fx.initialize();
 	ErrorHandler.initialize();
 	Clock.initialize();
 	Schedule.initialize();
