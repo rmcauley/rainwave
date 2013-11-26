@@ -2,7 +2,7 @@
 
 var API = function() {
 	var sid, url, user_id, api_key;
-	var sync, sync_params, sync_stopped, sync_timeout_id, sync_timeout_errors;
+	var sync, sync_params, sync_stopped, sync_timeout_id, sync_timeout_count, sync_error_count;
 	var async, async_queue;
 	var callbacks = {};
 	var universal_callbacks = [];
@@ -21,7 +21,8 @@ var API = function() {
 		sync.ontimeout = sync_timeout;
 		sync_params = self.serialize({ "sid": sid, "user_id": user_id, "key": api_key });
 		sync_stopped = false;
-		sync_timeout_errors = 0;
+		sync_timeout_count = 0;
+		sync_error_count = 0;
 
 		async = new XMLHttpRequest();
 		async.onload = async_complete;
@@ -71,13 +72,23 @@ var API = function() {
 
 	var sync_error = function() {
 		// TODO: handle non-JSON errors here
-		self.sync_stop();
+		sync_error_count++;
+		if (sync_error_count > 3) {
+			ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
+			self.sync_stop();
+		}
+		else {
+			sync_timeout_id = setTimeout(sync_get, 6000);
+		}
 	};
 
 	var sync_timeout = function() {
-		sync_timeout_errors++;
-		if (sync_timeout_errors > 2) {
+		sync_timeout_count++;
+		if (sync_timeout_count > 2) {
 			ErrorHandler.permanent_error(ErrorHandler.make_error("api_timeout", 408));
+		}
+		else {
+			sync_timeout_id = setTimeout(sync_get, 6000);
 		}
 	};
 
@@ -101,7 +112,7 @@ var API = function() {
 		perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
 
 		if ("error" in response) {
-			sync_restart_pause = 10000;
+			sync_restart_pause = 6000;
 			if (error.code != 200) {
 				sync_stopped = true;
 			}

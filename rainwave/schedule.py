@@ -311,7 +311,10 @@ def sort_next(sid, do_elections = False):
 			if time_to_next and elec.length() > time_to_next:
 				timed_events[0].start_predicted = next[sid][-1].start_predicted + next[sid][-1].length()
 				next[sid].append(timed_events.pop(0))
-			elec.start_predicted = next[sid][-1].start_predicted + next[sid][-1].length()
+			if len(next[sid]) > 0:
+				elec.start_predicted = next[sid][-1].start_predicted + next[sid][-1].length()
+			else:
+				elec.start_predicted = current[sid].start_predicted + current[sid].length()
 			next[sid].append(elec)
 
 	# We're going to have some leftover timed events that are just too far in the future

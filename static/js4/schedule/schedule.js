@@ -86,7 +86,7 @@ var Schedule = function() {
 		Fx.delay_css_setting(history_header, "transform", "translateY(" + running_height + "px)");
 		running_height += header_height + padding;
 
-		var o = 0.9;
+		var o = 1.0;
 		for (i = 0; i < sched_history.length; i++) {
 			temp_evt = find_and_update_event(sched_history[i]);
 			temp_evt.change_to_history()

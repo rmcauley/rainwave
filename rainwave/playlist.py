@@ -131,7 +131,7 @@ def get_random_song_timed(sid, target_seconds = None, target_delta = 30):
 	num_available = db.c.fetch_var("SELECT COUNT(r4_song_sid.song_id) " + sql_query, (sid, (target_seconds - (target_delta / 2)), (target_seconds + (target_delta / 2))))
 	if num_available == 0:
 		log.info("song_select", "No songs available with target_seconds %s and target_delta %s." % (target_seconds, target_delta))
-		log.debug("song_select", "Song select query: SELECT COUNT(r4_song_sid.song_id) %s" % (sql_query % (sid, sid, (target_seconds - (target_delta / 2)), (target_seconds + (target_delta / 2)))))
+		log.debug("song_select", "Song select query: SELECT COUNT(r4_song_sid.song_id) " + sql_query % (sid, (target_seconds - (target_delta / 2)), (target_seconds + (target_delta / 2))))
 		return get_random_song(sid)
 	else:
 		offset = random.randint(1, num_available) - 1
