@@ -4,6 +4,7 @@ var ErrorHandler = function() {
 	var self = {};
 	var container;
 	var permanent_errors = {};
+	var number_of_debug_divs = -1;
 
 	self.initialize = function() {
 		API.add_callback(self.permanent_error, "station_offline");
@@ -62,6 +63,11 @@ var ErrorHandler = function() {
 			]);
 		self.modal_error(_l("javascript_error"), error_el);
 	};
+
+	self.make_debug_div = function() {
+		number_of_debug_divs++;
+		return document.getElementsByTagName("body")[0].appendChild($el("div", { "class": "debug_div", "style": "top: " + (number_of_debug_divs * 20) + "px;" }));
+	}
 
 	return self;
 }();

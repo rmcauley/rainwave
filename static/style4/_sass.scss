@@ -41,13 +41,12 @@ html, body {
     padding: 0;   
 }
 
-#fpscounter {
+.debug_div {
 	position: absolute;
-	top: 0px;
 	left: 100%;
-	margin-left: -3.5em;
+	margin-left: -8em;
+	text-align: left;
 	background: $vvdarktext;
-	color: $text;
 	border: solid 1px $vdarktext;
 }
 

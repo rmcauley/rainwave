@@ -2,7 +2,7 @@
 	float: right;
 	clear: right;
 	background-repeat: no-repeat;
-	width: 65px;
+	width: 70px;
 }
 
 .rating_site {
@@ -14,13 +14,15 @@
 }
 
 .fave_lined {
-	transition: opacity 400ms ease-out;
+	@include transition(opacity);
 	opacity: 0;
+	margin-top: 1px;
 }
 
 .fave_solid {
+	z-index: 1;
 	position: absolute;
-	transition: opacity 400ms ease-out;
+	@include transition(opacity);
 	opacity: 0;
 }
 

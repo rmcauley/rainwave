@@ -3,6 +3,8 @@
 // Optimizaton notes:
 // It would optimize a little to only perform rating_reset on mouseout when something has actually changed
 
+var rating_dbg = ErrorHandler.make_debug_div();
+
 function Rating(type, id, rating_user, rating, fave, ratable) {
 	if ((type != "song") && (type != "album")) return undefined;
 	if (isNaN(id)) return undefined;
@@ -23,7 +25,7 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 	var fave_solid = self.el.appendChild($el("img", { "class": "fave_solid", "src": "/static/images4/heart_solid.png"}));
 	var fave_lined = self.el.appendChild($el("img", { "class": "fave_lined", "src": "/static/images4/heart_lined.png"}));
 	var current_rating;
-	var effect = Fx.legacy_effect(Fx.Rating, self.el, 400);
+	var effect = Fx.legacy_effect(Fx.Rating, self.el, 100);
 
 	self.reset_rating = function() {
 		if (self.rating_user) {
@@ -35,26 +37,30 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 			current_rating = self.rating;
 		}
 		effect.set_rating(current_rating);
-		effect.set_fave(self.fave);
 	};
+
+	self.reset_fave = function() {
+		effect.set_fave(self.fave);
+	}
 
 	var get_rating_from_mouse = function(evt) {
 		var x = 0;
 		var y = 0;
 		if (evt.offsetX) { x = evt.offsetX;	y = evt.offsetY; }
 		else if (evt.layerX) { x = evt.layerX; y = evt.layerY; }
-		// This normalizes the slant to the same place regardless of Y
-		//x = x - y;
 
-		if (x < 15) return null;
-		else if (x >= 50) rating = 5;
+		rating_dbg.textContent = x + " -> " + (Math.round(((x - 15) / 10) * 2) / 2);
+
+		if (x <= 18) return 0;		// fave switching
+		else if ((x > 18) && (x <= 24)) return 1;
+		else if (x >= 68) return 5;
 		return Math.round(((x - 15) / 10) * 2) / 2;
 	};
 
 	var on_mouse_move = function(evt) {
 		if (!self.ratable && !User.radio_rate_anything) return;
 		var tr = get_rating_from_mouse(evt);
-		if (tr) {
+		if (tr >= 1) {
 			effect.change_to_user_rating();
 			effect.start(tr);
 		}
@@ -67,7 +73,7 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 		if (!self.ratable) return;
 		var new_rating = get_rating_from_mouse(evt);
 		// fave toggle
-		if (!new_rating) {
+		if (new_rating == 0) {
 			effect.set_fave(!self.fave);
 			if (self.type == "song") {
 				API.async_get("fave_song", { "fave": !self.fave, "song_id": id })
@@ -89,7 +95,7 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 
 	self.update_fave = function(fave) {
 		self.fave = fave;
-		self.reset_rating();
+		effect.set_fave(self.fave);
 	}
 
 	self.update_rating = function(rating) {
@@ -106,19 +112,21 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 		self.rating = rating;
 		self.fave = fave;
 		self.reset_rating();
+		self.reset_fave();
 	}
 
 	self.reset_rating();
+	self.reset_fave();
 
-	if ((type == "song") && (User.id != 1)) {
+	if (User.user_id > 1) {
 		fave_solid.addEventListener("mouseover", effect.fave_mouse_over, false);
-		fave_solid.addEventListener("mousemove", on_mouse_move, false);
-		fave_solid.addEventListener("mouseout", self.reset_rating, false);
-		fave_solid.addEventListener("click", click, false);
-	}
-	else if ((type == "album") && (User.id != 1)) {
-		fave_solid.addEventListener("mouseover", effect.fave_mouse_over, false);
-		fave_solid.addEventListener("mouseout", effect.fave_mouse_out, false);
+		fave_solid.addEventListener("mouseout", self.reset_fave, false);
+
+		if (type == "song") {
+			fave_solid.addEventListener("mousemove", on_mouse_move, false);
+			fave_solid.addEventListener("mouseout", self.reset_rating, false);
+			fave_solid.addEventListener("click", click, false);	
+		}
 	}
 
 	// TODO: rating control

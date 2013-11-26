@@ -3,7 +3,7 @@
 	height: 100%;
 	min-width: 35%;
 	padding: 0px 10px 0px 10px;
-	transition: width $transtime;
+	@include transition(width);
 	position: relative;
 }
 

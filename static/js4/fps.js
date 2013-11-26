@@ -15,7 +15,7 @@ FPSCounter = function() {
 	}
 
 	self.initialize = function() {
-		el = document.getElementsByTagName("body")[0].appendChild($el("div", { "id": "fpscounter"}));
+		el = ErrorHandler.make_debug_div();
 		last_frame_count = 0;
 		last_frame_time = Clock.hi_res_time();
 		setInterval(loop, 1000);

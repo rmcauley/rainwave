@@ -171,6 +171,12 @@ var Fx = function() {
 		var fave_class;
 		var rating_class;
 
+		r.change_class = function() {
+			if (element.className != rating_class + " " + fave_class) {
+				element.setAttribute("class", rating_class + " " + fave_class);
+			}
+		}
+
 		r.set_rating = function(new_rating) {
 			current_rating = new_rating;
 			r.start(current_rating);
@@ -178,30 +184,29 @@ var Fx = function() {
 
 		r.change_to_site_rating = function() {
 			rating_class = "rating_site";
-			element.setAttribute("class", rating_class + " " + fave_class);
+			r.change_class();
 		};
 
 		r.change_to_user_rating = function() {
 			rating_class = "rating_user";
-			element.setAttribute("class", rating_class + " " + fave_class);
+			r.change_class();
 		};
 
 		r.set_fave = function(fave) {
 			if (fave) fave_class = "rating_fave";
 			else fave_class = "";
-			element.setAttribute("class", rating_class + " " + fave_class);
+			r.change_class();
 		};
 
 		r.fave_mouse_over = function() {
-			element.setAttribute("class", rating_class + " fave_hover");
-		};
-
-		r.fave_mouse_out = function() {
-			element.setAttribute("class", rating_class + " " + fave_class);
+			fave_class = "fave_hover";
+			r.change_class();
 		};
 
 		r.update = function(now) {
-			element.style.backgroundPosition = "-" + (Math.round((Math.round(now * 10) / 2)) * 25) + "px 0px";
+			var current_px = -(Math.round((Math.round(now * 10) / 2)) * 28);
+			if (current_px > 4) current_px -= 4;
+			element.style.backgroundPosition = "18px " + current_px + "px";
 		};
 
 		return r;
