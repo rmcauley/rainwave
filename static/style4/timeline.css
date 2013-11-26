@@ -4,28 +4,15 @@
 	min-width: 35%;
 	padding: 0px 10px 0px 10px;
 	transition: width $transtime;
-}
-
-#timeline > div:nth-child(4) {
-	margin-top: 30px;
+	position: relative;
 }
 
 .timeline_event {
-	transition: height $transtime, opacity $transtime;
-	overflow: hidden;
+	transition: height $transtime, opacity $transtime, transform $transtime;
 	opacity: 0;
-}
-
-.timeline_next + .timeline_next {
-	margin-top: 20px;
-}
-
-.timeline_next + .timeline_now_playing {
-	margin-top: 37px;
-}
-
-.timeline_now_playing + .timeline_history {
-	margin-top: 37px;
+	position: absolute;
+	transform: translateY(0px);
+	width: 100%;
 }
 
 .timeline_history {
@@ -53,19 +40,16 @@
 
 .timeline_header {
 	z-index: -1;
-	transition: height $transtime, color $transtime, opacity $transtime;
+	transition: transform $transtime;
+	transform: translateY(0px);
 	position: absolute;
-	margin-top: 0px;
-	height: 1.5em;
 	color: $vdarktext;
-	overflow: hidden;
 	opacity: 0;
 }
 
 #timeline_header_now_playing {
 	color: $highlight;
 }
-
 
 .timeline_progress_bar_outside {
 	background-color: $vvdarktext;

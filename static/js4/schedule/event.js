@@ -31,7 +31,6 @@ var EventBase = function(json) {
 	self.songs = null;
 
 	var changed_to_history = false;
-	var song_height;
 
 	if (json.songs) {
 		self.songs = [];
@@ -45,19 +44,19 @@ var EventBase = function(json) {
 	var draw = function() {
 		self.el = $el("div", { "class": "timeline_event timeline_" + self.type });
 		if (self.songs) {
-			song_height = $measure_el(self.songs[0].el).height;
 			// shuffle our songs to draw in the array
-			if (self.type.indexOf("election") != -1) {
+			if (!self.data.used && (self.type.indexOf("election") != -1)) {
 				shuffle(self.songs);
 			}
-			for (var i = 0; ((i < self.songs.length) && (i < 5)) ; i++) {
+			var max_index = self.data.used ? 1 : Math.min(self.songs.length, 5);
+			for (var i = 0; i < max_index; i++) {
 				self.el.appendChild(self.songs[i].el);
-
+			}
+			if (self.data.used) {
+				changed_to_history = true;
 			}
 		}
-
 		self.height = $measure_el(self.el).height;
-		self.el.style.height = "0px";
 	}
 
 	self.update = function(json) {
@@ -97,8 +96,10 @@ var EventBase = function(json) {
 	self.change_to_history = function() {
 		if (changed_to_history) return;
 		if (self.songs) {
-			self.height = song_height;
-			self.el.style.height = self.height + "px";
+			for (var i = 1; i < self.songs.length; i++) {
+				Fx.remove_element(self.songs[i].el);
+			}
+			self.height = $measure_el(self.songs[0].el).height;
 		}
 		changed_to_history = true;
 	};
@@ -140,6 +141,10 @@ var EventBase = function(json) {
 				self.songs[i].unregister_vote();
 			}
 		}
+	};
+
+	self.move_to_y = function(new_y) {
+		Fx.delay_css_setting(self.el, "transform", "translateY(" + new_y + "px)");
 	};
 
 	draw();
