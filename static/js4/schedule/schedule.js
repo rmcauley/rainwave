@@ -31,9 +31,10 @@ var Schedule = function() {
 
 		header_height = $measure_el(next_header).height;
 
-		Fx.delay_css_setting($id("timeline_header_history"), "opacity", 1)
-		Fx.delay_css_setting($id("timeline_header_now_playing"), "opacity", 1)
-		Fx.delay_css_setting($id("timeline_header_coming_up"), "opacity", 1)
+		Fx.delay_css_setting($id("timeline_header_history"), "opacity", 1);
+		Fx.delay_css_setting($id("timeline_header_now_playing"), "opacity", 1);
+		Fx.delay_css_setting($id("timeline_header_coming_up"), "transform", "translateY(5px)");
+		Fx.delay_css_setting($id("timeline_header_coming_up"), "opacity", 1);
 	};
 
 	var update = function() {
@@ -41,7 +42,7 @@ var Schedule = function() {
 		var new_current_event;
 		var i;
 		var padding = 15;
-		var running_height = header_height + padding;
+		var running_height = 5 + header_height + padding;
 
 		// Mark everything for deletion - this flag will get updated to false as events do
 		for (i = 0; i < self.events.length; i++) {
@@ -58,9 +59,9 @@ var Schedule = function() {
 		var temp_evt;
 		for (i = 0; i < sched_next.length; i++) {
 			temp_evt = find_and_update_event(sched_next[i]);
-			$add_class(temp_evt.el, "timeline_next");
-			self.el.insertBefore(temp_evt.el, next_header.nextSibling);
+			temp_evt.change_to_coming_up();
 			temp_evt.move_to_y(running_height);
+			self.el.insertBefore(temp_evt.el, next_header.nextSibling);
 			running_height += temp_evt.height + padding;
 			// use splice to put this in at the beginning
 			// remember about array orders: new_events is chronological (furthest away -> next -> now -> most recent -> oldest)
@@ -68,24 +69,19 @@ var Schedule = function() {
 			new_events.splice(0, 0, temp_evt);
 			Fx.delay_css_setting(temp_evt.el, "opacity", 1);
 		}
-		running_height += padding;
 
 		Fx.delay_css_setting(current_header, "transform", "translateY(" + running_height + "px)");
 		running_height += header_height + padding;
 
 		var element_to_insert_at = temp_evt ? temp_evt.el.nextSibling : next_header;
 		temp_evt = find_and_update_event(sched_current);
-		$remove_class(temp_evt.el, "timeline_next");
-		$add_class(temp_evt.el, "timeline_now_playing");
+		temp_evt.change_to_now_playing();
 		self.el.insertBefore(temp_evt.el, element_to_insert_at);
 		temp_evt.move_to_y(running_height);
 		running_height += temp_evt.height + padding;
 		new_events.push(temp_evt);
-		temp_evt.change_to_now_playing();
-		Clock.set_page_title(temp_evt.name, temp_evt.end);
 		new_current_event = temp_evt;
 		Fx.delay_css_setting(temp_evt.el, "opacity", 1);
-		running_height += padding + header_height + padding;
 
 		Fx.delay_css_setting(history_header, "transform", "translateY(" + running_height + "px)");
 		running_height += header_height + padding;
@@ -119,6 +115,8 @@ var Schedule = function() {
 			Fx.remove_element(time_bar);
 		}
 		if ((new_current_event.end - Clock.time()) > 0) {
+			Clock.set_page_title(temp_evt.name, temp_evt.end);
+
 			time_bar = $el("div", { "class": "timeline_progress_bar_outside" });
 			var time_bar_progress = time_bar.appendChild($el("div", { "class": "timeline_progress_bar_inside"}));
 			time_bar_progress.style.width = Math.round(((new_current_event.end - Clock.time()) / new_current_event.data.songs[0].length) * 100) + "%";

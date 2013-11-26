@@ -8,11 +8,11 @@
 }
 
 .timeline_event {
-	@include transition(height, opacity, transform);
 	opacity: 0;
 	position: absolute;
-	@include transform(translateY(0px));
 	width: 100%;
+	@include transform(translateY(-160px));
+	@include transition(height, opacity, transform);
 }
 
 .timeline_history {
@@ -23,6 +23,7 @@
 	clear: left;
 	padding-left: 5px;
 	padding-right: 5px;
+	min-height: 52px;
 }
 
 .timeline_song .title, .timeline_song .album, .timeline_song .artists {
@@ -39,9 +40,9 @@
 }
 
 .timeline_header {
-	z-index: -1;
-	@include transition(transform);
-	@include transform(translateY(0px));
+	z-index: 100;
+	@include transition(transform, opacity);
+	@include transform(translateY(-25px));
 	position: absolute;
 	color: $vdarktext;
 	opacity: 0;
