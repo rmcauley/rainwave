@@ -59,11 +59,14 @@ var Scrollbar = function() {
 			original_scroll_top = element.scrollTop;
 			window.addEventListener("mousemove", mouse_move, false);
 			window.addEventListener("mouseup", mouse_up, false);
+			// window.onmouseout has issues in Fx
+			//window.addEventListener("mouseout", mouse_up, false);
 		};
 
 		var mouse_up = function(e) {
 			window.removeEventListener("mousemove", mouse_move, false);
-			window.removeEventListener("mouseup", mouse_move, false);
+			window.removeEventListener("mouseup", mouse_up, false);
+			//window.removeEventListener("mouseout", mouse_up, false);
 			$remove_class(document.body, "unselectable");
 			scrolling = false;
 		};

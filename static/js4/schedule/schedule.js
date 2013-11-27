@@ -9,6 +9,7 @@ var Schedule = function() {
 	var sched_current;
 	var sched_history;
 	var time_bar;
+	var time_bar_progress;
 
 	var next_header;
 	var current_header;
@@ -39,6 +40,9 @@ var Schedule = function() {
 		Fx.delay_css_setting($id("timeline_header_coming_up"), "opacity", 1);
 
 		timeline_scrollbar = Scrollbar.new(self.el);
+		
+		time_bar = self.el.appendChild($el("div", { "class": "timeline_progress_bar_outside" }));
+		time_bar_progress = time_bar.appendChild($el("div", { "class": "timeline_progress_bar_inside"}));
 	};
 
 	var update = function() {
@@ -47,6 +51,7 @@ var Schedule = function() {
 		var i;
 		var padding = 15;
 		var running_height = 5 + header_height + padding;
+		var time_bar_y;
 
 		// Mark everything for deletion - this flag will get updated to false as events do
 		for (i = 0; i < self.events.length; i++) {
@@ -81,7 +86,9 @@ var Schedule = function() {
 		temp_evt.change_to_now_playing();
 		self.el.appendChild(temp_evt.el);
 		temp_evt.move_to_y(running_height);
-		running_height += temp_evt.height + padding;
+		running_height += temp_evt.height;
+		time_bar_y = running_height + 10;
+		running_height = time_bar_y + 5 + padding;
 		new_events.push(temp_evt);
 		new_current_event = temp_evt;
 		Fx.delay_css_setting(temp_evt.el, "opacity", 1);
@@ -114,19 +121,15 @@ var Schedule = function() {
 		}
 		self.events = new_events;
 
-		if (time_bar) {
-			Fx.remove_element(time_bar);
-		}
 		if ((new_current_event.end - Clock.time()) > 0) {
-			Clock.set_page_title(temp_evt.name, temp_evt.end);
+			Clock.set_page_title(new_current_event.name, new_current_event.end);
 
-			time_bar = $el("div", { "class": "timeline_progress_bar_outside" });
-			var time_bar_progress = time_bar.appendChild($el("div", { "class": "timeline_progress_bar_inside"}));
 			time_bar_progress.style.width = Math.round(((new_current_event.end - Clock.time()) / new_current_event.data.songs[0].length) * 100) + "%";
 			time_bar_progress.style.transition = "width " + (new_current_event.end - Clock.time()) + "s linear";
 			Fx.delay_css_setting(time_bar_progress, "width", "0%");
 			self.el.insertBefore(time_bar, new_current_event.el.nextSibling);
 		}
+		Fx.delay_css_setting(time_bar, "transform", "translateY(" + time_bar_y + "px)");
 
 		timeline_scrollbar.update_scroll_height(running_height);
 	};

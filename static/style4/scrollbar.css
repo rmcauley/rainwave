@@ -18,14 +18,16 @@
 }
 
 .scrollbar:hover {
-	background: #558;
+	background: #AAB;
 	width: 10px;
 	opacity: 1;
+	border-color: #000;
 	@include transform(translateX(-12px));
 }
 
 .scrollbar:active {
-	background-color: #BBC;
+	background-color: #556;
+	border-color: #000;
 	width: 10px;
 	opacity: 1;
 	@include transform(translateX(-12px));
