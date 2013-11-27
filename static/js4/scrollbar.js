@@ -3,6 +3,8 @@
 // Used this as a template: http://www.script-tutorials.com/custom-scrollbars-cross-browser-solution/
 // Heavily modified to update it to CSS3 and my coding style
 
+var scrldbg = ErrorHandler.make_debug_div();
+
 var Scrollbar = function() {
 	var self = {};
 
@@ -19,14 +21,17 @@ var Scrollbar = function() {
 		var handle = element.insertBefore($el("div", { "class": "scrollbar"}), element.firstChild);
 		var scroll_height;
 		var offset_height;
+		var max_scroll_top;
 		var scrollpx_per_handlepx;
 		var handlepx_per_scrollpx;
 		var scrolling = false;
 		var original_mouse_y;
+		var original_scroll_top;
 
 		self.update_scroll_height = function(force_height) {
 			scroll_height = force_height || element.scrollHeight;
 			offset_height = element.offsetHeight;
+			max_scroll_top = scroll_height - offset_height; 
 			scrollpx_per_handlepx = scroll_height / offset_height;
 			handlepx_per_scrollpx = offset_height / scroll_height;
 
@@ -46,26 +51,36 @@ var Scrollbar = function() {
 		};
 
 		var mouse_move = function(e) {
-			element.scrollTop = element.scrollTop - ((e.screenY - original_mouse_y) * scrollpx_per_handlepx)
+			scrldbg.textContent = (e.screenY - original_mouse_y);
+			element.scrollTop = original_scroll_top + ((e.screenY - original_mouse_y) * scrollpx_per_handlepx)
 			update_handle_position();
 		};
 
 		var mouse_down = function(e) {
 			if (scrolling) return;
+			$add_class(element, "unselectable");
 			scrolling = true;
 			original_mouse_y = e.screenY;
+			original_scroll_top = element.scrollTop;
 			window.addEventListener("mousemove", mouse_move, false);
 			window.addEventListener("mouseup", mouse_up, false);
 		};
 
 		var mouse_up = function(e) {
-			scrolling = false;
 			window.removeEventListener("mousemove", mouse_move, false);
 			window.removeEventListener("mouseup", mouse_move, false);
+			$remove_class(element, "unselectable");
+			scrolling = false;
 		};
 
 		var mouse_wheel = function(e) {
-			element.scrollTop = element.scrollTop + (e.deltaY * 6);
+			var new_scroll_top = element.scrollTop + (e.deltaY * 6);
+			if (new_scroll_top > max_scroll_top) {
+				element.scrollTop = max_scroll_top;
+			}
+			else {
+				element.scrollTop = new_scroll_top;
+			}
 			update_handle_position();
 		};
 
