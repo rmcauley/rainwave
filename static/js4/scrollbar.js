@@ -1,10 +1,5 @@
 'use strict';
 
-// Used this as a template: http://www.script-tutorials.com/custom-scrollbars-cross-browser-solution/
-// Heavily modified to update it to CSS3 and my coding style
-
-var scrldbg = ErrorHandler.make_debug_div();
-
 var Scrollbar = function() {
 	var self = {};
 
@@ -51,14 +46,13 @@ var Scrollbar = function() {
 		};
 
 		var mouse_move = function(e) {
-			scrldbg.textContent = (e.screenY - original_mouse_y);
 			element.scrollTop = original_scroll_top + ((e.screenY - original_mouse_y) * scrollpx_per_handlepx)
 			update_handle_position();
 		};
 
 		var mouse_down = function(e) {
 			if (scrolling) return;
-			$add_class(element, "unselectable");
+			$add_class(document.body, "unselectable");
 			scrolling = true;
 			original_mouse_y = e.screenY;
 			original_scroll_top = element.scrollTop;
@@ -69,7 +63,7 @@ var Scrollbar = function() {
 		var mouse_up = function(e) {
 			window.removeEventListener("mousemove", mouse_move, false);
 			window.removeEventListener("mouseup", mouse_move, false);
-			$remove_class(element, "unselectable");
+			$remove_class(document.body, "unselectable");
 			scrolling = false;
 		};
 
