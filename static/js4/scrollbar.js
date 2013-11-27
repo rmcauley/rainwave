@@ -32,10 +32,11 @@ var Scrollbar = function() {
 
 			// updates the handle to be the correct percentage of the screen, never less than 10% for size issues
 			if ((scroll_height == 0) || (offset_height == 0) || (scrollpx_per_handlepx <= 1)) {
-				handle.style.opacity = "0";
+				$add_class(handle, "scrollbar_invisible");
+				handle.style.height = "0px";
 			}
 			else {
-				handle.style.opacity = "0.5";
+				$remove_class(handle, "scrollbar_invisible");
 				handle.style.height = (Math.round(Math.max(handlepx_per_scrollpx, 0.1) * offset_height) - 3) + "px";
 				update_handle_position();
 			}
