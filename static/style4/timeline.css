@@ -11,7 +11,7 @@
 .timeline_event {
 	opacity: 0;
 	position: absolute;
-	width: 99%;
+	width: 96%;
 	@include transform(translateY(-160px));
 	@include transition(height, opacity, transform);
 }
