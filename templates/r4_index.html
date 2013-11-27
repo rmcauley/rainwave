@@ -17,21 +17,22 @@
 	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
 </head>
 <body onload="initialize();">
-		{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
-		<div id="measure_box"></div>
-		<div id="menu"></div>
-		<div id="messages"></div>
-		<div id="sizable_body">
-			<div id="timeline">
-				<div id="timeline_header_coming_up" class="timeline_header"></div>
-				<div id="timeline_header_now_playing" class="timeline_header"></div>
-				<div id="timeline_header_history" class="timeline_header"></div>
-			</div>
-				<div id="album_list">
-					<div id="album_filter"></div>
-				</div>
-				<div id="album_view">Album view</div>
-				<div id="requests">Requests</div>
+	{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
+	<div id="measure_box"></div>
+	<div id="menu"></div>
+	<div id="messages"></div>
+	<div id="sizable_body">
+		<div id="timeline">
+			<div id="timeline_header_coming_up" class="timeline_header"></div>
+			<div id="timeline_header_now_playing" class="timeline_header"></div>
+			<div id="timeline_header_history" class="timeline_header"></div>
 		</div>
+			<div id="album_list">
+				<div id="album_filter"></div>
+			</div>
+			<div id="album_view">Album view</div>
+			<div id="requests">Requests</div>
+	</div>
+	<div style="position: absolute; left: 100%; top: 100%; transform: translate(-400px, -20px); -webkit-transform: transform: translate(-20px, -400px); color: #FFF; background: #D00; width: 400px;">WORK IN PROGRESS - DO NOT REPORT BUGS</div>
 </body>
 </html>
