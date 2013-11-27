@@ -1,23 +1,25 @@
 .scrollbar {
-	@include transition(margin-top, margin-right, width, opacity);
+	z-index: 100;
 	background: #000;
 	border: solid 1px #CCC;
 	position: absolute;
-	width: 5px;
-	margin-right: 0px;
+	left: 100%;
+	width: 6px;
 	opacity: 0;
+	@include transform(translateX(-8px));
+	@include transition-wtime(200ms, width, opacity, transform);
 }
 
 .scrollbar:active {
 	background: #CCC;
-	margin-right: -3px;
-	width: 8px;
+	width: 10px;
 	opacity: 1;
+	@include transform(translateX(-12px));
 }
 
 .scrollbar:hover {
 	background: #00C;
-	margin-right: -3px;
-	width: 8px;
+	width: 10px;
 	opacity: 1;
+	@include transform(translateX(-12px));
 }

@@ -65,7 +65,7 @@ var Schedule = function() {
 			temp_evt = find_and_update_event(sched_next[i]);
 			temp_evt.change_to_coming_up();
 			temp_evt.move_to_y(running_height);
-			self.el.insertBefore(temp_evt.el, next_header.nextSibling);
+			self.el.appendChild(temp_evt.el);
 			running_height += temp_evt.height + padding;
 			// use splice to put this in at the beginning
 			// remember about array orders: new_events is chronological (furthest away -> next -> now -> most recent -> oldest)
@@ -77,10 +77,9 @@ var Schedule = function() {
 		Fx.delay_css_setting(current_header, "transform", "translateY(" + running_height + "px)");
 		running_height += header_height + padding;
 
-		var element_to_insert_at = temp_evt ? temp_evt.el.nextSibling : next_header;
 		temp_evt = find_and_update_event(sched_current);
 		temp_evt.change_to_now_playing();
-		self.el.insertBefore(temp_evt.el, element_to_insert_at);
+		self.el.appendChild(temp_evt.el);
 		temp_evt.move_to_y(running_height);
 		running_height += temp_evt.height + padding;
 		new_events.push(temp_evt);
@@ -96,7 +95,7 @@ var Schedule = function() {
 			temp_evt.change_to_history()
 			$remove_class(temp_evt.el, "timeline_now_playing");
 			$add_class(temp_evt.el, "timeline_history");
-			self.el.insertBefore(temp_evt.el, new_events[new_events.length - 1].el.nextSibling);
+			self.el.appendChild(temp_evt.el);
 			new_events.push(temp_evt);
 			if (o > 0.6) {
 				o -= 0.1;

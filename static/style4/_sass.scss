@@ -16,21 +16,25 @@ $transtime: 700ms ease-out;
 	transform: $transform_string;
 }
 
-@mixin transition($trans...) {
+@mixin transition-wtime($customtime, $trans...) {
 	$nice_rules: null;
 	$webkit_rules: null;
 	@each $rule in $trans {
-		$nice_rules: append($nice_rules, $rule $transtime);
+		$nice_rules: append($nice_rules, $rule $customtime);
 		@if $rule == transform { 
-			$webkit_rules: append($webkit_rules, -webkit-transform $transtime);
+			$webkit_rules: append($webkit_rules, -webkit-transform $customtime);
 		}
 		@else {
-			$webkit_rules: append($webkit_rules, $rule $transtime);
+			$webkit_rules: append($webkit_rules, $rule $customtime);
 		}
 	}
 	-webkit-transition: $webkit_rules;
 	-ms-transition: $nice_rules;
 	transition: $nice_rules;
+}
+
+@mixin transition($trans...) {
+	@include transition-wtime($transtime, $trans...);
 }
 
 html, body {

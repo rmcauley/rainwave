@@ -36,13 +36,13 @@ var Scrollbar = function() {
 			}
 			else {
 				handle.style.opacity = "0.5";
-				handle.style.height = Math.round(Math.max(handlepx_per_scrollpx, 0.1) * offset_height) + "px";
+				handle.style.height = (Math.round(Math.max(handlepx_per_scrollpx, 0.1) * offset_height) - 3) + "px";
 				update_handle_position();
 			}
 		};
 
 		var update_handle_position = function() {
-			handle.style.marginTop = Math.round(element.scrollTop * handlepx_per_scrollpx) + "px";
+			handle.style.top = element.scrollTop + Math.max(Math.round(element.scrollTop * handlepx_per_scrollpx), 3) + "px";
 		};
 
 		var mouse_move = function(e) {
@@ -52,12 +52,14 @@ var Scrollbar = function() {
 
 		var mouse_down = function(e) {
 			if (scrolling) return;
+			scrolling = true;
 			original_mouse_y = e.screenY;
 			window.addEventListener("mousemove", mouse_move, false);
 			window.addEventListener("mouseup", mouse_up, false);
 		};
 
 		var mouse_up = function(e) {
+			scrolling = false;
 			window.removeEventListener("mousemove", mouse_move, false);
 			window.removeEventListener("mouseup", mouse_move, false);
 		};
