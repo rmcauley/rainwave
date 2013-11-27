@@ -1,9 +1,10 @@
 #timeline {
 	float: left;
 	height: 100%;
-	min-width: 35%;
+	min-width: 30%;
 	padding: 0px 10px 0px 10px;
 	@include transition(width);
+	overflow: hidden;
 	position: relative;
 }
 

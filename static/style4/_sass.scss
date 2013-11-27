@@ -38,7 +38,11 @@ html, body {
     background: $background;
     color: $text;
     margin: 0;
-    padding: 0;   
+    padding: 0; 
+}
+
+#sizable_body {
+	overflow: hidden;
 }
 
 .debug_div {
@@ -63,6 +67,8 @@ html, body {
 #messages {
 	position: absolute;
 }
+
+@import "scrollbar.css";
 
 @import "ratings.css";
 

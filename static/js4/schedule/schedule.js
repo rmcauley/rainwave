@@ -15,6 +15,8 @@ var Schedule = function() {
 	var history_header;
 	var header_height;
 
+	var timeline_scrollbar;
+
 	self.initialize = function() {
 		self.el = $id("timeline");
 		API.add_callback(function(json) { sched_current = json; }, "sched_current");
@@ -35,6 +37,8 @@ var Schedule = function() {
 		Fx.delay_css_setting($id("timeline_header_now_playing"), "opacity", 1);
 		Fx.delay_css_setting($id("timeline_header_coming_up"), "transform", "translateY(5px)");
 		Fx.delay_css_setting($id("timeline_header_coming_up"), "opacity", 1);
+
+		timeline_scrollbar = Scrollbar.new(self.el);
 	};
 
 	var update = function() {
@@ -124,6 +128,8 @@ var Schedule = function() {
 			Fx.delay_css_setting(time_bar_progress, "width", "0%");
 			self.el.insertBefore(time_bar, new_current_event.el.nextSibling);
 		}
+
+		timeline_scrollbar.update_scroll_height(running_height);
 	};
 
 	var find_and_update_event = function(event_json) {

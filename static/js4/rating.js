@@ -3,7 +3,7 @@
 // Optimizaton notes:
 // It would optimize a little to only perform rating_reset on mouseout when something has actually changed
 
-var rating_dbg = ErrorHandler.make_debug_div();
+//var rating_dbg = ErrorHandler.make_debug_div();
 
 function Rating(type, id, rating_user, rating, fave, ratable) {
 	if ((type != "song") && (type != "album")) return undefined;
@@ -49,7 +49,7 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 		if (evt.offsetX) { x = evt.offsetX;	y = evt.offsetY; }
 		else if (evt.layerX) { x = evt.layerX; y = evt.layerY; }
 
-		rating_dbg.textContent = x + " -> " + (Math.round(((x - 15) / 10) * 2) / 2);
+		// rating_dbg.textContent = x + " -> " + (Math.round(((x - 15) / 10) * 2) / 2);
 
 		if (x <= 18) return 0;		// fave switching
 		else if ((x > 18) && (x <= 24)) return 1;

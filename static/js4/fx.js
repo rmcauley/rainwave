@@ -205,7 +205,6 @@ var Fx = function() {
 
 		r.update = function(now) {
 			var current_px = -(Math.round((Math.round(now * 10) / 2)) * 30) + 2;
-			//if (current_px < -4) current_px -= 4;
 			element.style.backgroundPosition = "18px " + current_px + "px";
 		};
 
