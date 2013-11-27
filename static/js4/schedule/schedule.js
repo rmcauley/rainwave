@@ -61,7 +61,7 @@ var Schedule = function() {
 		// sched_next[0] is the next immediate event, sched_next[1] is chronologically after
 		// this actually plays nicely into how .insertBefore works in DOM
 		var temp_evt;
-		for (i = 0; i < sched_next.length; i++) {
+		for (i = sched_next.length - 1; i >= 0; i--) {
 			temp_evt = find_and_update_event(sched_next[i]);
 			temp_evt.change_to_coming_up();
 			temp_evt.move_to_y(running_height);
@@ -70,7 +70,7 @@ var Schedule = function() {
 			// use splice to put this in at the beginning
 			// remember about array orders: new_events is chronological (furthest away -> next -> now -> most recent -> oldest)
 			// so the last entry in sched_next must go in index 0 here
-			new_events.splice(0, 0, temp_evt);
+			new_events.push(temp_evt);
 			Fx.delay_css_setting(temp_evt.el, "opacity", 1);
 		}
 
