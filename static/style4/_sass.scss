@@ -44,6 +44,7 @@ html, body {
     margin: 0;
     padding: 0; 
     font-family: Helvetica, sans-serif;
+    overflow: hidden;
 }
 
 #sizable_body {
@@ -73,33 +74,30 @@ html, body {
 	position: absolute;
 }
 
-@import "scrollbar.css";
-
-@import "ratings.css";
-
-@import "timeline.css";
-
-#album_list {
-	width: 20em;
-	height: 100%;
-	float: left;
-}
-
-#album_view {
-	height: 100%;
-	width: 100%;
-}
-
-#requests {
-	float: right;
-	width: 0%;
-	overflow: hidden;
-}
-
 .unselectable * {
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-o-user-select: none;
 	user-select: none;
+}
+
+@import "scrollbar.css";
+
+@import "ratings.css";
+
+@import "timeline.css";
+
+@import "playlist_list.css";
+
+#album_view {
+	height: 100%;
+	width: 100%;
+	background: #1c1d1f;
+}
+
+#requests {
+	float: right;
+	width: 0%;
+	overflow: hidden;
 }

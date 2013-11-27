@@ -8,7 +8,7 @@
 	left: 100%;
 	width: 5px;
 	opacity: 0.5;
-	@include transform(translateX(-7px));
+	@include transform(translateX(-10px));
 	@include transition-wtime(200ms, width, opacity, transform, border-color, background-color);
 }
 
@@ -22,7 +22,7 @@
 	width: 10px;
 	opacity: 1;
 	border-color: #000;
-	@include transform(translateX(-12px));
+	@include transform(translateX(-15px));
 }
 
 .scrollbar:active {
@@ -30,5 +30,5 @@
 	border-color: #000;
 	width: 10px;
 	opacity: 1;
-	@include transform(translateX(-12px));
+	@include transform(translateX(-15px));
 }

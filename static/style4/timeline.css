@@ -6,12 +6,13 @@
 	@include transition(width);
 	overflow: hidden;
 	position: relative;
+	background-color: #131416;
 }
 
 .timeline_event {
 	opacity: 0;
 	position: absolute;
-	width: 96%;
+	width: 95%;
 	@include transform(translateY(-160px));
 	@include transition(height, opacity, transform);
 }
@@ -54,12 +55,13 @@
 }
 
 .timeline_progress_bar_outside {
+	z-index: 100;
 	position: absolute;
 	background-color: $vvdarktext;
 	height: 2px;
 	padding: 0px;
 	margin: 0px;
-	width: 95%;
+	width: 94%;
 	@include transform(translateY(-25px));
 }
 
