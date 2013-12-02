@@ -377,14 +377,15 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_artists		( \
 			artist_id				SERIAL		NOT NULL PRIMARY KEY, \
-			artist_name				TEXT		\
+			artist_name				TEXT		, \
+			artist_name_searchable	TEXT 		\
 		)")
 
 	c.update(" \
 		CREATE TABLE r4_song_artist	( \
 			song_id					INTEGER		NOT NULL, \
 			artist_id				INTEGER		NOT NULL, \
-			artist_is_tag				BOOLEAN		DEFAULT TRUE \
+			artist_is_tag			BOOLEAN		DEFAULT TRUE \
 		)")
 	# c.create_idx("r4_song_artist", "song_id")		# handled by create_delete_fk
 	# c.create_idx("r4_song_artist", "artist_id")
@@ -395,6 +396,7 @@ def create_tables():
 		CREATE TABLE r4_groups ( \
 			group_id				SERIAL		PRIMARY KEY, \
 			group_name				TEXT		, \
+			group_name_searchable	TEXT 		, \
 			group_elec_block		SMALLINT, \
 			group_cool_time			SMALLINT	DEFAULT 900 \
 		)")
@@ -403,7 +405,7 @@ def create_tables():
 		CREATE TABLE r4_song_group ( \
 			song_id					INTEGER		NOT NULL, \
 			group_id				INTEGER		NOT NULL, \
-			group_is_tag				BOOLEAN		DEFAULT TRUE \
+			group_is_tag			BOOLEAN		DEFAULT TRUE \
 		)")
 	# c.create_idx("r4_song_group", "song_id")		# handled by create_delete_fk
 	# c.create_idx("r4_song_group", "group_id")

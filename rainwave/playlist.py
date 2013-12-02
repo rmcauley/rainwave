@@ -801,6 +801,8 @@ class AssociatedMetadata(object):
 			self.cool_time = d["cool_time"]
 		if d.has_key("cool_override") and d['cool_override'] is not None:
 			self.cool_time = d['cool_override']
+		if d.has_key("name_searchable"):
+			self.data['name_searchable'] = d['name_searchable']
 
 	def save(self):
 		if not self.id and self.data['name']:
@@ -1223,10 +1225,10 @@ class Artist(AssociatedMetadata):
 
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_artists", "artist_id")
-		return db.c.update("INSERT INTO r4_artists (artist_id, artist_name) VALUES (%s, %s)", (self.id, self.data['name']))
+		return db.c.update("INSERT INTO r4_artists (artist_id, artist_name, artist_name_searchable) VALUES (%s, %s, %s)", (self.id, self.data['name'], make_searchable_string(self.data['name'])))
 
 	def _update_db(self):
-		return db.c.update("UPDATE r4_artists SET artist_name = %s WHERE artist_id = %s", (self.name, self.id))
+		return db.c.update("UPDATE r4_artists SET artist_name = %s, artist_name_searchable = %s WHERE artist_id = %s", (self.data['name'], make_searchable_string(self.data['name']), self.id))
 
 	def _start_cooldown_db(self, sid, cool_time):
 		# Artists don't have cooldowns on Rainwave.
@@ -1268,10 +1270,10 @@ class SongGroup(AssociatedMetadata):
 
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_groups", "group_id")
-		return db.c.update("INSERT INTO r4_groups (group_id, group_name) VALUES (%s, %s)", (self.id, self.data['name']))
+		return db.c.update("INSERT INTO r4_groups (group_id, group_name, group_name_searchable) VALUES (%s, %s)", (self.id, self.data['name'], make_searchable_string(self.data['name'])))
 
 	def _update_db(self):
-		return db.c.update("UPDATE r4_groups SET group_name = %s WHERE group_id = %s", (self.name, self.id))
+		return db.c.update("UPDATE r4_groups SET group_name = %s, group_name_searchable = %s WHERE group_id = %s", (self.data['name'], make_searchable_string(self.data['name']), self.id))
 
 	def _start_cooldown_db(self, sid, cool_time):
 		cool_end = int(cool_time + time.time())
