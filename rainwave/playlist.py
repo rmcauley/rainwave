@@ -4,6 +4,7 @@ import random
 import math
 import subprocess
 
+from unidecode import unidecode
 from mutagen.mp3 import MP3
 
 from libs import db
@@ -213,25 +214,15 @@ def remove_all_locks(sid):
 def get_all_albums_list(sid, user = None):
 	if not user or user.id == 1:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, NULL AS fave, NULL AS rating_user "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, NULL AS fave, NULL AS rating_user "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"WHERE r4_album_sid.sid = %s "
 			"ORDER BY album_name",
 			(sid,))
-	elif user.is_admin():
-		# Same as a normal user, but add cooldown variables
-		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_cool_multiply AS cool_multiply, album_cool_override AS cool_override, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS rating_user "
-			"FROM r4_albums "
-			"JOIN r4_album_sid USING (album_id) "
-			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
-			"WHERE r4_album_sid.sid = %s "
-			"ORDER BY album_name",
-			(user.id, sid))
 	else:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS rating_user "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS rating_user "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
@@ -268,6 +259,12 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 		"AND r4_song_ratings.song_id IS NULL "
 		"GROUP BY r4_album_sid.album_id "
 		"LIMIT %s", (sid, sid, user_id, limit))
+
+def make_searchable_string(s):
+	if not isinstance(s, unicode):
+		s = unicode(s)
+	s = unidecode(s).lower().replace(" ", "")
+	return ''.join(e for e in s if e.isalnum())
 
 class SongHasNoSIDsException(Exception):
 	pass
@@ -461,6 +458,7 @@ class Song(object):
 			db.c.update("UPDATE r4_songs \
 				SET	song_filename = %s, \
 					song_title = %s, \
+					song_title_searchable = %s, \
 					song_link = %s, \
 					song_link_text = %s, \
 					song_length = %s, \
@@ -468,14 +466,14 @@ class Song(object):
 					song_verified = TRUE, \
 					song_file_mtime = %s \
 				WHERE song_id = %s",
-				(self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], file_mtime, self.id))
+				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['link'], self.data['link_text'], self.data['length'], file_mtime, self.id))
 		else:
 			self.id = db.c.get_next_id("r4_songs", "song_id")
 			db.c.update("INSERT INTO r4_songs \
-				(song_id, song_filename, song_title, song_link, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned) \
+				(song_id, song_filename, song_title, song_title_searchable, song_link, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned) \
 				VALUES \
 				(%s,      %s           , %s        , %s       , %s            , %s         , %s             , %s             , %s           , %s )",
-				(self.id, self.filename, self.data['title'], self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True))
+				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True))
 			self.verified = True
 			self.data['added_on'] = int(time.time())
 
@@ -980,7 +978,11 @@ class Album(AssociatedMetadata):
 	def _update_db(self):
 		global updated_album_ids
 
-		success = db.c.update("UPDATE r4_albums SET album_name = %s, album_rating = %s WHERE album_id = %s", (self.data['name'], self.data['rating'], self.id))
+		success = db.c.update(
+			"UPDATE r4_albums "
+			"SET album_name = %s, album_name_searchable = %s, album_rating = %s "
+			"WHERE album_id = %s", 
+			(self.data['name'], make_searchable_string(self.data['name']), self.data['rating'], self.id))
 		for sid in self.data['sids']:
 			updated_album_ids[sid][self.id] = True
 		return success
@@ -999,6 +1001,7 @@ class Album(AssociatedMetadata):
 		self._dict_check_assign(d, "album_vote_total", 0)
 		self._dict_check_assign(d, "album_request_count", 0)
 		self._dict_check_assign(d, "album_cool", False)
+		self._dict_check_assign(d, "album_name_searchable", self.data['name'])
 		if d.has_key('sid'):
 			self.data['sid'] = d['sid']
 		if d.has_key('album_is_tag'):

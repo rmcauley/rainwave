@@ -12,6 +12,7 @@ Required on all systems:
 - psutil (nice and ionice)
 - pyScss (CSS/SASS compiling)
 - jsmin
+- unidecode
 
 Required on POSIX:
 - pyinotify (filesystem monitoring)
