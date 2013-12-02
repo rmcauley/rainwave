@@ -1,14 +1,17 @@
 'use strict';
 
 // REQUIRED EXTERNAL DEFINITIONS FOR USING THIS OBJECT FACTORY:
-//	draw_entry(item);				// return a new element (will be using display: block, you SHOULD make a div)
-//  update_item_element(item);		// return nothing, just update text/etc in the element you created above
-
-// OPTIONAL FUNCTIONS you can overwrite:
-//	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses id_key)
+//	draw_entry(item);				// return an element
+//  update_item_element(item);		// return nothing
 
-function SearchList(id_key, sort_key, container, search_box, scrollbar) {
+//	drawNavChange(entry_data, is_current_nav);
+//	searchAction(id);
+
+// OPTIONAL FUNCTIONS:
+//	after_update(json, data, sorted_data);
+
+function SearchTable(id_key, sort_key, container, search_box) {
 	var self = {};
 	self.sort_key = sort_key;
 	self.search_key = id_key;
@@ -22,8 +25,7 @@ function SearchList(id_key, sort_key, container, search_box, scrollbar) {
 
 	var search_string = "";
 	var current_key_nav_element = false;
-	var current_key_nav_old_class = "";
-	var scroll_offset = 100;
+	var scroll_offset = 15 * 5;
 
 	// LIST MANAGEMENT ***********************************************
 
@@ -51,8 +53,7 @@ function SearchList(id_key, sort_key, container, search_box, scrollbar) {
 		else {
 			json._searchname = Formatting.sanitize_string(json[search_key]).toLowerCase();
 			json._el = self.draw_entry(json);
-			json._el._id = json[id_key];
-			json._el._hidden = false;
+			json._el._rw_id = json[id_key];
 		}
 		data[json[id_key]] = json;
 		self.queue_reinsert(json[id_key]);
@@ -122,29 +123,19 @@ function SearchList(id_key, sort_key, container, search_box, scrollbar) {
 
 	self.remove_key_nav_highlight = function() {
 		if (current_key_nav_element) {
-			current_key_nav_element.className = current_key_nav_old_class;
-			current_key_nav_old_class = "";
+			current_key_nav_element.className = "";
 			current_key_nav_element = false;
 		}
 	};
 
-	self.key_nav_highlight = function() {
-		current_key_nav_old_class = current_key_nav_element.className;
-		current_key_nav_element.className = "searchtable_key_nav_hover";
-	}
-
 	var key_nav_arrow_action = function(up, down) {
 		if (!current_key_nav_element) {
-			// select the first child
 			current_key_nav_element = container.firstChild;
-			// find the next non-hidden child (if the firstChild isn't)
-			while (current_key_nav_element._hidden && current_key_nav_element.nextSibling) { 
-				current_key_nav_element = current_key_nav_element.nextSibling;
-			}
 		}
 		else {
-			current_key_nav_element.className = current_key_nav_old_class;
-			// go in the appropriate direction through the DOM
+			if (current_key_nav_element.className == "searchtable_key_nav_hover") {
+				current_key_nav_element.className = "";
+			}
 			if (down) {
 				current_key_nav_element = current_key_nav_element.nextSibling;
 				while (current_key_nav_element._hidden && current_key_nav_element.nextSibling) { 
@@ -158,7 +149,7 @@ function SearchList(id_key, sort_key, container, search_box, scrollbar) {
 				}	
 			}
 		}
-		self.key_nav_highlight();
+		current_key_nav_element.className = "searchtable_key_nav_hover";
 		return true;
 	}
 	
@@ -232,55 +223,105 @@ function SearchList(id_key, sort_key, container, search_box, scrollbar) {
 
 	// SCROLL **************************
 
-	// scroll_offset is how many pixels are above the current key navigation element
-	// it's important to retain this so the scrollTop isn't shoved 100px in one direction
-	// when a user clicks on an album that isn't the key nav item
-
-	self.update_scroll_offset_by_evt = function(evt) {
-		self.set_scroll_offset(evt.target.offsetTop - container.scrollTop);
+	self.updateScrollOffsetByEvt = function(evt) {
+		self.setScrollOffset(evt.target.offsetTop - container.scrollTop);
 	};
 
-	self.update_scroll_offset_by_id = function(id) {
-		if (id in data) self.update_scroll_offset(data[id]);
+	self.updateScrollOffsetByID = function(id) {
+		if (id in data) self.updateScrollOffset(data[id]);
 	};
 
-	self.update_scroll_offset_by_item = function(data_item) {
-		self.set_scroll_offset(data_item._el.offsetTop - container.scrollTop);
+	self.updateScrollOffset = function(entry) {
+		self.setScrollOffset(entry.tr.offsetTop - container.scrollTop);
 	};
 
-	self.set_scroll_offset = function(offset) {
-		scroll_offset = (offset && (offset > 70)) ? offset : 70;
+	self.setScrollOffset = function(offset) {
+		if (offset && (offset > UISCALE * 5)) {
+			scrolloffset = offset;
+		}
+		else {
+			scrolloffset = UISCALE * 5;
+		}
 	};
 
-	self.scroll_to_id = function(data_id) {
-		if (data_id in data) self.scroll_to(data[data_id]);
+	self.scrollToID = function(entry_id) {
+		if (entry_id in data) self.scrollTo(data[entry_id]);
 	};
 
-	self.scroll_to_key_nav = function() {
-		if (current_key_nav_element) self.scrollTo(data[current_key_nav_element._search_id]);
+	self.scrollToCurrent = function() {
+		if (currentnav) self.scrollTo(data[currentnav._search_id]);
 	};
 
-	self.scroll_to = function(data_item) {
-		if (data_item) {
-			container.scrollTop = data_item._el.offsetTop - scroll_offset;
+	self.scrollTo = function(entry) {
+		if (entry) {
+			container.scrollTop = entry.tr.offsetTop - scrolloffset;
 		}
 	};
 
 	// NAV *****************************
 
-	self.nav_to_id = function(id) {
-		if (id in data) {
-			self.nav_to(data[id]);
-			return true;
-		}
-		return false;
+	self.navGet = function() {
+		if (!keynavtimer) return 0;
+		if (currentnav) return currentnav._search_id;
+		return 0;
 	};
 
-	self.nav_to = function(data_item) {
-		self.remove_key_nav_highlight();
-		current_key_nav_element = data_item._el;
-		self.key_nav_highlight();
-		self.scroll_to(data_item);
+	self.preNavCheck = function() {
+		if (currentnav && (currentnav.style.display == "none")) {
+			self.drawNavChange(data[currentnav._search_id], false);
+			currentnav = false;
+		}
+		if (!currentnav) {
+			currentnav = table.firstChild;
+			while (currentnav.style.display == "none") {
+				if ((currentnav == table.lastChild) && (currentnav.style.display == "none")) return false;
+				currentnav = currentnav.nextSibling;
+			}
+			self.drawNavChange(data[currentnav._search_id], true);
+			return false;
+		}
+		return true;
+	};
+
+	self.navClear = function() {
+		if (keynavtimer) clearTimeout(keynavtimer);
+		keynavtimer = false;
+		if (currentnav) self.drawNavChange(data[currentnav._search_id], false);
+	};
+
+	self.navToID = function(id) {
+		if (id in data) self.navTo(data[id].tr);
+		else self.navClear();
+	};
+
+	self.navTo = function(newnav) {
+		if (currentnav) self.drawNavChange(data[currentnav._search_id], false);
+		currentnav = newnav;
+		self.drawNavChange(data[currentnav._search_id], true);
+		self.scrollTo(data[currentnav._search_id]);
+	};
+
+	self.navDown = function() {
+		if (!self.preNavCheck()) return false;
+		if (!currentnav.nextSibling) return false;
+		var next = currentnav.nextSibling;
+		while (next.style.display == "none") {
+			if (next == table.lastChild) return false;
+			next = next.nextSibling;
+		}
+		self.navTo(next);
+		return true;
+	};
+
+	self.navUp = function() {
+		if (!self.preNavCheck()) return;
+		if (!currentnav.previousSibling) return;
+		var prev = currentnav.previousSibling;
+		while (prev.style.display == "none") {
+			if (prev == table.firstChild) return false;
+			prev = prev.previousSibling;
+		}
+		self.navTo(prev);
 	};
 
 	return self;
