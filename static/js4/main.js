@@ -25,6 +25,7 @@ function initialize() {
 	ErrorHandler.initialize();
 	Clock.initialize();
 	Schedule.initialize();
+	PlaylistLists.initialize();
 
 	// API comes last since it will do all the callbacks to initialized
 	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.user_id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);

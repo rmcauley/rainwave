@@ -1,6 +1,7 @@
 'use strict';
 
-var PlaylistKeyHandler = function() {
+//var PlaylistKeyHandler = 
+{
 	var self = {};
 
 	var backspace_trap = false;
@@ -59,7 +60,7 @@ var PlaylistKeyHandler = function() {
 	// user releases backspace, then 1 second later we release our backspace trap flag.
 	// this stops the user from accidentally browsing away from the site while using
 	// type to find, but doesn't stop them from leaving the site otherwise
-	that.on_key_up = function(evt) {
+	self.on_key_up = function(evt) {
 		if (backspace_trap && (evt.keyCode == 8)) {
 			self.enable_backspace_trap();
 			self.prevent_default(evt);
@@ -67,7 +68,7 @@ var PlaylistKeyHandler = function() {
 		}
 	};
 	
-	that.is_ignorable = function(evt) {
+	self.is_ignorable = function(evt) {
 		if (evt.ctrlKey || evt.altKey || evt.metaKey) return true;
 		// we can't trap anything beyond here for opera without losing important keys
 		if (!('charCode' in evt)) return false;
@@ -76,7 +77,7 @@ var PlaylistKeyHandler = function() {
 		return false;
 	};
 
-	that.handle_event = function(evt) {
+	self.handle_event = function(evt) {
 		// thanks Quirksmode, not sure how relevant it is with present browsers though, but keeping it around
 		var targ;
 		if (!evt) evt = window.event;
@@ -107,7 +108,7 @@ var PlaylistKeyHandler = function() {
 	self.route_key = function(key_code, chr) {
 		if (!PlaylistLists.active_list) return false;
 
-		if key_code == 40) {			// down arrow
+		if (key_code == 40) {			// down arrow
 			return PlaylistLists.active_list.search_table.key_nav_down();
 		}
 		else if (key_code == 38) {		// up arrow
@@ -125,7 +126,7 @@ var PlaylistKeyHandler = function() {
 		else if (key_code == 8) {		// backspace
 			return PlaylistLists.active_list.search_table.key_nav_backspace();
 		}
-		else if (key_code == 27)) {		// escape
+		else if (key_code == 27) {		// escape
 			PlaylistLists.active_list.search_table.key_nav_escape();
 			return true;				// always return true for escape or browsers will halt AJAX requests (escape == stop in a browser!)
 		}
@@ -137,5 +138,5 @@ var PlaylistKeyHandler = function() {
 	window.addEventListener('keypress', self.on_key_press, false);
 	window.addEventListener('keyup', self.on_key_up, false);
 
-	return self;
+	//return self;
 };

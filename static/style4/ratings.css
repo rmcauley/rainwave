@@ -14,7 +14,7 @@
 }
 
 .fave_lined {
-	@include transition-wtime(200, opacity);
+	@include transition-wtime(200ms, opacity);
 	opacity: 0;
 	margin-top: 1px;
 }
@@ -22,7 +22,7 @@
 .fave_solid {
 	z-index: 1;
 	position: absolute;
-	@include transition-wtime(200, opacity);
+	@include transition-wtime(200ms, opacity);
 	opacity: 0;
 	margin-top: 1px;
 }

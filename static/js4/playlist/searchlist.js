@@ -1,22 +1,22 @@
 'use strict';
 
 // REQUIRED EXTERNAL DEFINITIONS FOR USING THIS OBJECT FACTORY:
-//  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses id_key)
-//	draw_entry(item);				// return an element
-//  update_item_element(item);		// return nothing
+//	draw_entry(item);				// return a new element (will be using display: block, you SHOULD make a div)
+//  update_item_element(item);		// return nothing, just update text/etc in the element you created above
 
-//	drawNavChange(entry_data, is_current_nav);
-//	searchAction(id);
-
-// OPTIONAL FUNCTIONS:
+// OPTIONAL FUNCTIONS you can overwrite:
 //	after_update(json, data, sorted_data);
+//  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses id_key)
 
-function SearchTable(id_key, sort_key, container, search_box) {
+function SearchList(id_key, sort_key, search_key) {
 	var self = {};
 	self.sort_key = sort_key;
-	self.search_key = id_key;
+	self.search_key = search_key || id_key;
 	self.auto_trim = false;
 	self.after_update = null;
+	self.el = $el("div", { "class": "searchlist" });
+	var scrollbar = Scrollbar.new(self.el);
+	var search_box = self.el.appendChild($el("div", { "class": "searchlist_input_box" }));
 
 	var data = {};				// raw data
 	var sorted = [];			// list of IDs sorted by the sort_function (always maintained, contains all IDs)
@@ -24,8 +24,10 @@ function SearchTable(id_key, sort_key, container, search_box) {
 	var hidden = [];			// list of IDs unsorted - currently hidden from view during a search
 
 	var search_string = "";
+	var real_search_string = "";
 	var current_key_nav_element = false;
-	var scroll_offset = 15 * 5;
+	var current_key_nav_old_class = "";
+	var scroll_offset = 100;
 
 	// LIST MANAGEMENT ***********************************************
 
@@ -51,9 +53,10 @@ function SearchTable(id_key, sort_key, container, search_box) {
 			self.update_item_element(json);
 		}
 		else {
-			json._searchname = Formatting.sanitize_string(json[search_key]).toLowerCase();
+			json._searchname = json[search_key];
 			json._el = self.draw_entry(json);
-			json._el._rw_id = json[id_key];
+			json._el._id = json[id_key];
+			json._el._hidden = false;
 		}
 		data[json[id_key]] = json;
 		self.queue_reinsert(json[id_key]);
@@ -72,7 +75,7 @@ function SearchTable(id_key, sort_key, container, search_box) {
 	self.reflow_container = function() {
 		sorted.sort(self.sort_function);
 		for (var i = 0; i < sorted.length; i++) {
-			container.appendChild(data[sorted[i]]._el);
+			self.el.appendChild(data[sorted[i]]._el);
 		}
 	};
 
@@ -89,12 +92,12 @@ function SearchTable(id_key, sort_key, container, search_box) {
 		var next_reinsert_id = reinsert.pop();
 		for (var i = sorted.length - 1; i >= 0; i--) {
 			if (data[sorted[i]]._delete) {
-				container.removeChild(data[sorted[i]]._el);
+				self.el.removeChild(data[sorted[i]]._el);
 				delete(data[sorted[i]]);
 				sorted.splice(i, 1);
 			}
 			else if (next_reinsert_id && (self.sort_function(reinsert[next_reinsert_id], sorted[i]) == 1)) {
-				container.insertBefore(data[next_reinsert_id]._el, data[sorted[i]]._el);
+				self.el.insertBefore(data[next_reinsert_id]._el, data[sorted[i]]._el);
 				sorted.splice(i - 1, 0, next_reinsert_id);
 				next_reinsert_id = reinsert.pop();
 			}
@@ -102,7 +105,7 @@ function SearchTable(id_key, sort_key, container, search_box) {
 		// finish adding any leftovers at the bottom of the pile
 		while (next_reinsert_id) {
 			sorted.push(next_reinsert_id);
-			container.appendChild(data[next_reinsert_id._el);
+			self.el.appendChild(data[next_reinsert_id]._el);
 			next_reinsert_id = reinsert.pop();
 		}
 	};
@@ -113,29 +116,33 @@ function SearchTable(id_key, sort_key, container, search_box) {
 		return 0;
 	};
 
-	self.reverse_sort_function = function(a, b) {
-		if (data[a][sort_key] < data[b][sort_key]) return 1;
-		else if (data[a][sort_key] > data[b][sort_key]) return -1;
-		return 0;
-	};
-
 	// SEARCHING ****************************
 
 	self.remove_key_nav_highlight = function() {
 		if (current_key_nav_element) {
-			current_key_nav_element.className = "";
+			current_key_nav_element.className = current_key_nav_old_class;
+			current_key_nav_old_class = "";
 			current_key_nav_element = false;
 		}
 	};
 
+	self.key_nav_highlight = function() {
+		current_key_nav_old_class = current_key_nav_element.className;
+		current_key_nav_element.className = "searchtable_key_nav_hover";
+	}
+
 	var key_nav_arrow_action = function(up, down) {
 		if (!current_key_nav_element) {
-			current_key_nav_element = container.firstChild;
+			// select the first child
+			current_key_nav_element = self.el.firstChild;
+			// find the next non-hidden child (if the firstChild isn't)
+			while (current_key_nav_element._hidden && current_key_nav_element.nextSibling) { 
+				current_key_nav_element = current_key_nav_element.nextSibling;
+			}
 		}
 		else {
-			if (current_key_nav_element.className == "searchtable_key_nav_hover") {
-				current_key_nav_element.className = "";
-			}
+			current_key_nav_element.className = current_key_nav_old_class;
+			// go in the appropriate direction through the DOM
 			if (down) {
 				current_key_nav_element = current_key_nav_element.nextSibling;
 				while (current_key_nav_element._hidden && current_key_nav_element.nextSibling) { 
@@ -149,7 +156,8 @@ function SearchTable(id_key, sort_key, container, search_box) {
 				}	
 			}
 		}
-		current_key_nav_element.className = "searchtable_key_nav_hover";
+		self.key_nav_highlight();
+		scrollbar.update_handle_position();
 		return true;
 	}
 	
@@ -181,28 +189,36 @@ function SearchTable(id_key, sort_key, container, search_box) {
 		else if (search_string.length > 1) {
 			resettimer = true;
 			search_string = search_string.substring(0, search_string.length - 1);
+			// THIS COULD POTENTIALLY CAUSE PROBLEMS WITH UTF-8 DEPENDING ON THE BROWSER
+			// double width characters and all that.  needs to be tested.
+			real_search_string = real_search_string.substring(0, real_search_string.length - 1);
 			search_box.textContent = search_string;
+			var use_search_string = Formatting.remove_non_alphanum(real_search_string);
 			for (var i = hidden.length - 1; i >= 0; i++) {
-				if (data[hidden[i]]._searchname.indexOf(search_string) > -1) {
+				if (data[hidden[i]]._searchname.indexOf(use_search_string) > -1) {
 					data[hidden[i]]._el._hidden = false;
 					data[hidden[i]]._el.style.display = "block";
 					hidden.splice(i, 1);
 				}
 			}
+			scrollbar.update_scroll_height();
 			return true;
 		}
 		return false;
 	};
 
 	self.key_nav_add_character = function(character) {
-		search_string = search_string + Formatting.sanitize_string(character);
+		search_string = search_string + character;
+		real_search_string = real_search_string + Formatting.sanitize_string(character);
+		var use_search_string = Formatting.remove_non_alphanum(real_search_string);
 		for (var i = 0; i < sorted.length; i++) {
-			if (data[sorted[i]]._searchname.indexOf(search_string) == -1) {
+			if (!data[sorted[i]]._el._hidden && (data[sorted[i]]._searchname.indexOf(use_search_string) == -1)) {
 				data[sorted[i]]._el._hidden = true;
 				data[hidden[i]]._el.style.display = "none";
 				hidden.push(sorted[i]);
 			}
 		}
+		scrollbar.update_scroll_height();
 		search_box.textContent = search_string;
 	};
 
@@ -223,105 +239,56 @@ function SearchTable(id_key, sort_key, container, search_box) {
 
 	// SCROLL **************************
 
-	self.updateScrollOffsetByEvt = function(evt) {
-		self.setScrollOffset(evt.target.offsetTop - container.scrollTop);
+	// scroll_offset is how many pixels are above the current key navigation element
+	// it's important to retain this so the scrollTop isn't shoved 100px in one direction
+	// when a user clicks on an album that isn't the key nav item
+
+	self.update_scroll_offset_by_evt = function(evt) {
+		self.set_scroll_offset(evt.target.offsetTop - self.el.scrollTop);
 	};
 
-	self.updateScrollOffsetByID = function(id) {
-		if (id in data) self.updateScrollOffset(data[id]);
+	self.update_scroll_offset_by_id = function(id) {
+		if (id in data) self.update_scroll_offset(data[id]);
 	};
 
-	self.updateScrollOffset = function(entry) {
-		self.setScrollOffset(entry.tr.offsetTop - container.scrollTop);
+	self.update_scroll_offset_by_item = function(data_item) {
+		self.set_scroll_offset(data_item._el.offsetTop - self.el.scrollTop);
 	};
 
-	self.setScrollOffset = function(offset) {
-		if (offset && (offset > UISCALE * 5)) {
-			scrolloffset = offset;
-		}
-		else {
-			scrolloffset = UISCALE * 5;
-		}
+	self.set_scroll_offset = function(offset) {
+		scroll_offset = (offset && (offset > 70)) ? offset : 70;
 	};
 
-	self.scrollToID = function(entry_id) {
-		if (entry_id in data) self.scrollTo(data[entry_id]);
+	self.scroll_to_id = function(data_id) {
+		if (data_id in data) self.scroll_to(data[data_id]);
 	};
 
-	self.scrollToCurrent = function() {
-		if (currentnav) self.scrollTo(data[currentnav._search_id]);
+	self.scroll_to_key_nav = function() {
+		if (current_key_nav_element) self.scroll_to(data[current_key_nav_element._search_id]);
 	};
 
-	self.scrollTo = function(entry) {
-		if (entry) {
-			container.scrollTop = entry.tr.offsetTop - scrolloffset;
+	self.scroll_to = function(data_item) {
+		if (data_item) {
+			self.el.scrollTop = data_item._el.offsetTop - scroll_offset;
+			scrollbar.update_handle_position();
 		}
 	};
 
 	// NAV *****************************
 
-	self.navGet = function() {
-		if (!keynavtimer) return 0;
-		if (currentnav) return currentnav._search_id;
-		return 0;
-	};
-
-	self.preNavCheck = function() {
-		if (currentnav && (currentnav.style.display == "none")) {
-			self.drawNavChange(data[currentnav._search_id], false);
-			currentnav = false;
+	self.nav_to_id = function(id) {
+		if (id in data) {
+			self.nav_to(data[id]);
+			return true;
 		}
-		if (!currentnav) {
-			currentnav = table.firstChild;
-			while (currentnav.style.display == "none") {
-				if ((currentnav == table.lastChild) && (currentnav.style.display == "none")) return false;
-				currentnav = currentnav.nextSibling;
-			}
-			self.drawNavChange(data[currentnav._search_id], true);
-			return false;
-		}
-		return true;
+		return false;
 	};
 
-	self.navClear = function() {
-		if (keynavtimer) clearTimeout(keynavtimer);
-		keynavtimer = false;
-		if (currentnav) self.drawNavChange(data[currentnav._search_id], false);
-	};
-
-	self.navToID = function(id) {
-		if (id in data) self.navTo(data[id].tr);
-		else self.navClear();
-	};
-
-	self.navTo = function(newnav) {
-		if (currentnav) self.drawNavChange(data[currentnav._search_id], false);
-		currentnav = newnav;
-		self.drawNavChange(data[currentnav._search_id], true);
-		self.scrollTo(data[currentnav._search_id]);
-	};
-
-	self.navDown = function() {
-		if (!self.preNavCheck()) return false;
-		if (!currentnav.nextSibling) return false;
-		var next = currentnav.nextSibling;
-		while (next.style.display == "none") {
-			if (next == table.lastChild) return false;
-			next = next.nextSibling;
-		}
-		self.navTo(next);
-		return true;
-	};
-
-	self.navUp = function() {
-		if (!self.preNavCheck()) return;
-		if (!currentnav.previousSibling) return;
-		var prev = currentnav.previousSibling;
-		while (prev.style.display == "none") {
-			if (prev == table.firstChild) return false;
-			prev = prev.previousSibling;
-		}
-		self.navTo(prev);
+	self.nav_to = function(data_item) {
+		self.remove_key_nav_highlight();
+		current_key_nav_element = data_item._el;
+		self.key_nav_highlight();
+		self.scroll_to(data_item);
 	};
 
 	return self;
