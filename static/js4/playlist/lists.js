@@ -36,6 +36,7 @@ var PlaylistLists = function() {
 				// pass for now
 			};
 		}
+		el.appendChild(list.el);
 		return list;
 	};
 

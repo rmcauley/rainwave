@@ -36,7 +36,7 @@
 	};
 	
 	self.on_key_down = function(evt) {
-		if (self.is_ignoable(evt)) return true;
+		if (self.is_ignorable(evt)) return true;
 		// Short-circuit backspace on Webkit - which fires its backspace handler at the end of the keyDown bubble.
 		if (evt.keyCode == 8) {
 			// set backspace trap to on if backspace was handled by handle_event, or keep true if backspace trap is active
