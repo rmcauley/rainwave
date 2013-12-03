@@ -13,6 +13,7 @@ var Scrollbar = function() {
 
 	self.new = function(element) {
 		var self = {};
+		self.scroll_top = 0;
 		var handle = element.insertBefore($el("div", { "class": "scrollbar"}), element.firstChild);
 		var scroll_height;
 		var offset_height;
@@ -22,6 +23,12 @@ var Scrollbar = function() {
 		var scrolling = false;
 		var original_mouse_y;
 		var original_scroll_top;
+
+		self.scroll_to = function(new_scroll_top) {
+			self.scroll_top = new_scroll_top;
+			element.scrollTop = new_scroll_top;
+			self.update_handle_position();
+		}
 
 		self.update_scroll_height = function(force_height) {
 			scroll_height = force_height || element.scrollHeight;
@@ -43,11 +50,19 @@ var Scrollbar = function() {
 		};
 
 		var update_handle_position = function() {
-			handle.style.top = element.scrollTop + Math.max(Math.round(element.scrollTop * handlepx_per_scrollpx), 3) + "px";
+			handle.style.top = self.scroll_top + Math.max(Math.round(self.scroll_top * handlepx_per_scrollpx), 3) + "px";
 		};
 
 		var mouse_move = function(e) {
-			element.scrollTop = original_scroll_top + ((e.screenY - original_mouse_y) * scrollpx_per_handlepx)
+			var new_scroll_top = original_scroll_top + ((e.screenY - original_mouse_y) * scrollpx_per_handlepx)
+			if (new_scroll_top > max_scroll_top) {
+				new_scroll_top = max_scroll_top;
+			}
+			else if (new_scroll_top < 0) {
+				new_scroll_top = 0;
+			}
+			self.scroll_top = new_scroll_top;
+			element.scrollTop = self.scroll_top;
 			update_handle_position();
 		};
 
@@ -56,7 +71,7 @@ var Scrollbar = function() {
 			$add_class(document.body, "unselectable");
 			scrolling = true;
 			original_mouse_y = e.screenY;
-			original_scroll_top = element.scrollTop;
+			original_scroll_top = self.scroll_top;
 			window.addEventListener("mousemove", mouse_move, false);
 			window.addEventListener("mouseup", mouse_up, false);
 			// window.onmouseout has issues in Fx
@@ -72,13 +87,15 @@ var Scrollbar = function() {
 		};
 
 		var mouse_wheel = function(e) {
-			var new_scroll_top = element.scrollTop + (e.deltaY * 6);
+			var new_scroll_top = self.scroll_top + (e.deltaY * 14);
 			if (new_scroll_top > max_scroll_top) {
-				element.scrollTop = max_scroll_top;
+				new_scroll_top = max_scroll_top;
 			}
-			else {
-				element.scrollTop = new_scroll_top;
+			else if (new_scroll_top < 0) {
+				new_scroll_top = 0;
 			}
+			self.scroll_top = new_scroll_top;
+			element.scrollTop = new_scroll_top;
 			update_handle_position();
 		};
 

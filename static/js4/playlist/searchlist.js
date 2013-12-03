@@ -8,14 +8,14 @@
 //	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses id_key)
 
-function SearchList(id_key, sort_key, search_key) {
+function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 	var self = {};
+	self.list_name = list_name;
 	self.sort_key = sort_key;
 	self.search_key = search_key || id_key;
 	self.auto_trim = false;
 	self.after_update = null;
 	self.el = $el("div", { "class": "searchlist" });
-	var scrollbar = Scrollbar.new(self.el);
 	var search_box = self.el.appendChild($el("div", { "class": "searchlist_input_box" }));
 
 	var data = {};				// raw data
@@ -77,6 +77,7 @@ function SearchList(id_key, sort_key, search_key) {
 		for (var i = 0; i < sorted.length; i++) {
 			self.el.appendChild(data[sorted[i]]._el);
 		}
+		scrollbar.update_scroll_height(list_name);
 	};
 
 	self.update_view = function() {
@@ -108,11 +109,13 @@ function SearchList(id_key, sort_key, search_key) {
 			self.el.appendChild(data[next_reinsert_id]._el);
 			next_reinsert_id = reinsert.pop();
 		}
+		//scrollbar.update_scroll_height($measure_el(self.el).height, list_name);
+		scrollbar.update_scroll_height(false, list_name);
 	};
 
 	self.sort_function = function(a, b) {
-		if (data[a][sort_key] < data[b][sort_key]) return -1;
-		else if (data[a][sort_key] > data[b][sort_key]) return 1;
+		if (data[a][sort_key] < data[b][sort_key]) return 1;
+		else if (data[a][sort_key] > data[b][sort_key]) return -1;
 		return 0;
 	};
 
@@ -157,7 +160,7 @@ function SearchList(id_key, sort_key, search_key) {
 			}
 		}
 		self.key_nav_highlight();
-		scrollbar.update_handle_position();
+		scrollbar.update_handle_position(list_name);
 		return true;
 	}
 	
@@ -201,7 +204,7 @@ function SearchList(id_key, sort_key, search_key) {
 					hidden.splice(i, 1);
 				}
 			}
-			scrollbar.update_scroll_height();
+			scrollbar.update_scroll_height(list_name);
 			return true;
 		}
 		return false;
@@ -218,7 +221,7 @@ function SearchList(id_key, sort_key, search_key) {
 				hidden.push(sorted[i]);
 			}
 		}
-		scrollbar.update_scroll_height();
+		scrollbar.update_scroll_height(list_name);
 		search_box.textContent = search_string;
 	};
 
@@ -244,7 +247,7 @@ function SearchList(id_key, sort_key, search_key) {
 	// when a user clicks on an album that isn't the key nav item
 
 	self.update_scroll_offset_by_evt = function(evt) {
-		self.set_scroll_offset(evt.target.offsetTop - self.el.scrollTop);
+		self.set_scroll_offset(evt.target.offsetTop - scrollbar.scroll_top);
 	};
 
 	self.update_scroll_offset_by_id = function(id) {
@@ -252,7 +255,7 @@ function SearchList(id_key, sort_key, search_key) {
 	};
 
 	self.update_scroll_offset_by_item = function(data_item) {
-		self.set_scroll_offset(data_item._el.offsetTop - self.el.scrollTop);
+		self.set_scroll_offset(data_item._el.offsetTop - scrollbar.scroll_top);
 	};
 
 	self.set_scroll_offset = function(offset) {
@@ -269,8 +272,8 @@ function SearchList(id_key, sort_key, search_key) {
 
 	self.scroll_to = function(data_item) {
 		if (data_item) {
-			self.el.scrollTop = data_item._el.offsetTop - scroll_offset;
-			scrollbar.update_handle_position();
+			scrollbar.scroll_to(data_item._el.offsetTop - scroll_offset);
+			scrollbar.update_handle_position(list_name);
 		}
 	};
 

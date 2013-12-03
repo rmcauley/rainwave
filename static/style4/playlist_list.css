@@ -2,5 +2,31 @@
 	width: 20em;
 	height: 100%;
 	float: left;
+	position: relative;
+	overflow: hidden;
+	background: #1c1d1f;
+}
+
+ul.lists_tabs {
+	list-style: none;
+	display: none;
+}
+
+ul.lists_tabs li {
+	display: inline;
+}
+
+div.searchlist {
 	background: #1f2022;
+	width: 95%;
+}
+
+div.searchlist_entry {
+	/* nothing */
+}
+
+div.searchlist_name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }

@@ -50,7 +50,7 @@ function $measure_el(el) {
 		boxed = true;
 	}
 	var x = el.offsetWidth;
-	var y = el.offsetHeight;
+	var y = el.scrollHeight || el.offsetHeight;
 	if (boxed) {
 		$id("measure_box").removeChild(el);
 	}
