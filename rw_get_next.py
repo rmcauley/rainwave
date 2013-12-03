@@ -4,6 +4,7 @@ import httplib
 import urllib
 import argparse
 import os.path
+import time
 from libs import cache
 from libs import config
 
@@ -33,4 +34,5 @@ except Exception as e:
 	cache.set_station(args.sid, "backend_status", repr(e))
 	if conn:
 		conn.close()
+	time.sleep(3)
 	raise
