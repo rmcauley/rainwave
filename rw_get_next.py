@@ -23,7 +23,10 @@ try:
 	conn.request("GET", "/advance/%s" % args.sid)
 	result = conn.getresponse()
 	if result.status == 200:
-		print result.read()
+		next_song_filename = result.read()
+		if not next_song_filename or len(next_song_filename) == 0:
+			raise Exception("Got zero-length filename from backend!")
+		print next_song_filename
 	else:
 		raise Exception("Backend HTTP Error %s" % result.status)
 	cache.set_station(args.sid, "backend_ok", True)
