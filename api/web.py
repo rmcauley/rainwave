@@ -6,6 +6,7 @@ import re
 import traceback
 import types
 import hashlib
+import psycopg2
 
 from rainwave.user import User
 from rainwave.playlist import SongNonExistent
@@ -323,13 +324,21 @@ class APIHandler(RainwaveHandler):
 			self._output = {}
 		if kwargs.has_key("exc_info"):
 			exc = kwargs['exc_info'][1]
-			if isinstance(exc, APIException):
+
+			# Restart DB on a connection error if that's what we're handling
+			if isinstance(exc, (psycopg2.OperationalError, psycopg2.InterfaceError)):
+				try:
+					db.close()
+					db.open()
+					self.append("error", { "code": 500, "tl_key": "db_error_retry", "text": self.locale.translate("db_error_retry") })
+				except:
+					self.append("error", { "code": 500, "tl_key": "db_error_permanent", "text": self.locale.translate("db_error_permanent") })
+					pass
+			elif isinstance(exc, APIException):
 				exc.localize(self.locale)
 				self.append(self.return_name, exc.jsonable())
 			elif exc.__class__.__name__ == "SongNonExistent":
 				self.append("error", { "code": status_code, "tl_key": "song_does_not_exist", "text": self.locale.translate("song_does_not_exist") })
-			elif exc.__class__.__name__ == "TransactionRollbackError":
-				self.append("error", { "code": status_code, "tl_key": "internal_error", "text": self.locale.translate("internal_error") } )
 			else:
 				self.append("error", { "code": status_code, "tl_key": "internal_error", "text": repr(exc) })
 				self.append("traceback", { "traceback": traceback.format_exception(kwargs['exc_info'][0], kwargs['exc_info'][1], kwargs['exc_info'][2]) })
@@ -344,7 +353,17 @@ class HTMLRequest(RainwaveHandler):
 	def write_error(self, status_code, **kwargs):
 		if kwargs.has_key("exc_info"):
 			exc = kwargs['exc_info'][1]
-			if isinstance(exc, APIException):
+
+			# Restart DB on a connection error if that's what we're handling
+			if isinstance(exc, (psycopg2.OperationalError, psycopg2.InterfaceError)):
+				try:
+					db.close()
+					db.open()
+					self.append("error", { "code": 500, "tl_key": "db_error_retry", "text": self.locale.translate("db_error_retry") })
+				except:
+					self.append("error", { "code": 500, "tl_key": "db_error_permanent", "text": self.locale.translate("db_error_permanent") })
+					pass
+			elif isinstance(exc, APIException):
 				if not isinstance(self.locale, locale.RainwaveLocale):
 					exc.localize(locale.get("en_CA"))
 				else:

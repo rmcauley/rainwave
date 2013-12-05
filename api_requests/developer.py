@@ -35,7 +35,7 @@ class TestUserRequest(APIHandler):
 		user_id = db.c.fetch_var("SELECT MAX(user_id) FROM phpbb_users")
 		if user_id < 2:
 			user_id = user_id + 1
-			db.c.update("INSERT INTO phpbb_users (username, user_id, group_id) VALUES ('Test" + str(user_id) + ", %s, 5)", (user_id,))
+			db.c.update("INSERT INTO phpbb_users (username, user_id, group_id) VALUES ('Test" + str(user_id) + "', %s, 5)", (user_id,))
 		self.set_cookie(config.get("phpbb_cookie_name") + "u", user_id)
 		session_id = db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s", (user_id,))
 		if not session_id:

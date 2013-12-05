@@ -18,7 +18,6 @@ from libs import cache
 sid_output = {}
 
 class AdvanceScheduleRequest(tornado.web.RequestHandler):
-	retried = False
 	processed = False
 
 	def get(self, sid):
@@ -31,22 +30,24 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 
 		# We don't need to worry about any different situations here..
 		# .. AS LONG AS WE ASSUME THE BACKEND TO BE SINGLE-THREADED...
-		if cache.get_station(self.sid, "get_next_socket_timeout"):
+		if cache.get_station(self.sid, "get_next_socket_timeout") and sid_output[self.sid]:
 			log.warn("backend", "Using previous output to prevent flooding.")
 			self.write(sid_output[self.sid])
+			sid_output[self.sid] = None
 			self.success = True
 		else:
 			try:
 				schedule.advance_station(self.sid)
+			except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
+				logy.warn("backend", e.diag.message_primary)
+				db.close()
+				db.open()
+				raise
 			except psycopg2.extensions.TransactionRollbackError as e:
-				if not self.retried:
-					self.retried = True
-					log.warn("backend", "Database transaction deadlock.  Re-opening database and setting retry timeout.")
-					db.close()
-					db.open()
-					tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(milliseconds=350), self.get)
-				else:
-					raise
+				log.warn("backend", "Database transaction deadlock.  Re-opening database and setting retry timeout.")
+				db.close()
+				db.open()
+				raise
 
 			to_send = None
 			if not config.get("liquidsoap_annotations"):
