@@ -39,7 +39,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			try:
 				schedule.advance_station(self.sid)
 			except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
-				logy.warn("backend", e.diag.message_primary)
+				log.warn("backend", e.diag.message_primary)
 				db.close()
 				db.open()
 				raise
