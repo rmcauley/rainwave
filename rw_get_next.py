@@ -38,7 +38,7 @@ except socket.timeout as e:
 	cache.set_station(args.sid, "backend_ok", False)
 	cache.set_station(args.sid, "backend_status", repr(e))
 	cache.set_station(args.sid, "get_next_socket_timeout", True)
-	time.sleep(1)
+	time.sleep(2)
 	raise
 except Exception as e:
 	cache.set_station(args.sid, "backend_ok", False)
@@ -46,5 +46,5 @@ except Exception as e:
 	cache.set_station(args.sid, "get_next_socket_timeout", True)
 	if conn:
 		conn.close()
-	time.sleep(1)
+	time.sleep(2)
 	raise
