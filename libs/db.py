@@ -16,6 +16,11 @@ c_old = None
 # and offers zero data consistency - important values (sequences, etc)
 # are reset between startups.
 
+# TODO: OperationalError: server closed the connection unexpectedly
+        # This probably means the server terminated abnormally
+        # before or while processing the request.
+
+
 class PostgresCursor(psycopg2.extras.RealDictCursor):
 	allows_join_on_update = True
 	is_postgres = True

@@ -5,6 +5,7 @@ import urllib
 import argparse
 import os.path
 import time
+import socket
 from libs import cache
 from libs import config
 
@@ -19,7 +20,7 @@ cache.open()
 
 params = urllib.urlencode({ "sid": args.sid })
 try:
-	conn = httplib.HTTPConnection(args.dest, config.get("backend_port"), timeout=10)
+	conn = httplib.HTTPConnection(args.dest, config.get("backend_port"), timeout=3)
 	conn.request("GET", "/advance/%s" % args.sid)
 	result = conn.getresponse()
 	if result.status == 200:
@@ -31,11 +32,19 @@ try:
 		raise Exception("Backend HTTP Error %s" % result.status)
 	cache.set_station(args.sid, "backend_ok", True)
 	cache.set_station(args.sid, "backend_message", "OK")
+	cache.set_station(args.sid, "get_next_socket_timeout", False)
 	conn.close()
+except socket.timeout as e:
+	cache.set_station(args.sid, "backend_ok", False)
+	cache.set_station(args.sid, "backend_status", repr(e))
+	cache.set_station(args.sid, "get_next_socket_timeout", True)
+	time.sleep(1)
+	raise
 except Exception as e:
 	cache.set_station(args.sid, "backend_ok", False)
 	cache.set_station(args.sid, "backend_status", repr(e))
+	cache.set_station(args.sid, "get_next_socket_timeout", True)
 	if conn:
 		conn.close()
-	time.sleep(3)
+	time.sleep(1)
 	raise

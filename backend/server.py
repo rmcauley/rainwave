@@ -1,5 +1,6 @@
 import os
 import psycopg2
+import time
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
@@ -14,6 +15,8 @@ from libs import db
 from libs import chuser
 from libs import cache
 
+sid_output = {}
+
 class AdvanceScheduleRequest(tornado.web.RequestHandler):
 	retried = False
 	processed = False
@@ -26,23 +29,34 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		else:
 			return
 
-		try:
-			schedule.advance_station(self.sid)
-		except psycopg2.extensions.TransactionRollbackError as e:
-			if not self.retried:
-				self.retried = True
-				log.warn("backend", "Database transaction deadlock.  Re-opening database and setting retry timeout.")
-				db.close()
-				db.open()
-				tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(milliseconds=350), self.get)
-			else:
-				raise
-
-		if not config.get("liquidsoap_annotations"):
-			self.write(schedule.get_current_file(self.sid))
+		# We don't need to worry about any different situations here..
+		# .. AS LONG AS WE ASSUME THE BACKEND TO BE SINGLE-THREADED...
+		if cache.get_station(self.sid, "get_next_socket_timeout"):
+			log.warn("backend", "Using previous output to prevent flooding.")
+			self.write(sid_output[self.sid])
+			self.success = True
 		else:
-			self.write(self._get_annotated(schedule.get_current_event(self.sid)))
-		self.success = True
+			try:
+				schedule.advance_station(self.sid)
+			except psycopg2.extensions.TransactionRollbackError as e:
+				if not self.retried:
+					self.retried = True
+					log.warn("backend", "Database transaction deadlock.  Re-opening database and setting retry timeout.")
+					db.close()
+					db.open()
+					tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(milliseconds=350), self.get)
+				else:
+					raise
+
+			to_send = None
+			if not config.get("liquidsoap_annotations"):
+				to_send = schedule.get_current_file(self.sid)
+			else:
+				to_send = self._get_annotated(schedule.get_current_event(self.sid))
+			sid_output[self.sid] = to_send
+			self.success = True
+			if not cache.get_station(self.sid, "get_next_socket_timeout"):
+				self.write(to_send)
 
 	def _get_annotated(self, e):
 		string = "annotate:crossfade=\""
@@ -77,6 +91,9 @@ def start():
 	if config.test_mode:
 		playlist.remove_all_locks(1)
 
+	for sid in config.station_ids:
+		sid_output[sid] = None
+
 	app = tornado.web.Application([
 		(r"/advance/([0-9]+)", AdvanceScheduleRequest),
 		(r"/refresh/([0-9]+)", RefreshScheduleRequest)
@@ -95,10 +112,10 @@ def start():
 
 	schedule.load()
 
-	log.debug("start", "Backend server bootstrapped, port %s, ready to go." % int(config.get("backend_port")))
-
 	for sid in config.station_ids:
 		playlist.prepare_cooldown_algorithm(sid)
+
+	log.debug("start", "Backend server bootstrapped, port %s, ready to go." % int(config.get("backend_port")))
 
 	try:
 		tornado.ioloop.IOLoop.instance().start()
