@@ -955,7 +955,7 @@ class Album(AssociatedMetadata):
 				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
 					"song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, "
 					"song_rating AS rating, song_cool_multiply AS cool_multiply, song_cool_override AS cool_override, "
-					"song_rating_user AS rating_user, song_fave AS fave, "
+					"song_rating_user AS rating_user, song_fave AS fave, song_request_only AS request_only, "
 					"string_agg(r4_artists.artist_id || ':' || r4_artists.artist_name,  ',') AS artist_parseable "
 				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
@@ -963,7 +963,7 @@ class Album(AssociatedMetadata):
 					"JOIN r4_artists USING (artist_id) "
 					"LEFT JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
 				"WHERE r4_song_sid.sid = %s AND r4_song_sid.album_id = %s "
-				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply "
+				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply, song_request_only "
 				"ORDER BY song_title",
 				(user.id, sid, instance.id))
 		return instance

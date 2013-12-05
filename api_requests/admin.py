@@ -130,3 +130,18 @@ class ResetAlbumCooldown(api.web.APIHandler):
 		db.c.update("UPDATE r4_album_sid SET album_cool_multiply = 1, album_cool_override = NULL WHERE album_id = %s AND sid = %s",
 						(self.get_argument("album_id"), self.sid))
 		self.append(self.return_name, { "success": True, "text": "Album cooldown multiplier and override reset." })
+
+@handle_api_url("admin/set_song_request_only")
+class SetSongRequestOnly(api.web.APIHandler):
+	admin_required = True
+	sid_required = True
+	desription = "Sets a song to be played only by request."
+	fields = { "song_id": (fieldtypes.song_id, True), "request_only": (fieldtypes.boolean, True) }
+
+	def post(self):
+		if self.get_argument("request_only"):
+			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE WHERE song_id = %s AND sid = %s", (self.get_argument("song_id"), self.sid))
+			self.append(self.return_name, { "success": True, "text": "Song ID %s is now request only." % self.get_argument("song_id") })
+		else:
+			db.c.update("UPDATE r4_song_sid SET song_request_only = FALSE WHERE song_id = %s AND sid = %s", (self.get_argument("song_id"), self.sid))
+			self.append(self.return_name, { "success": True, "text": "Song ID %s is not request only." % self.get_argument("song_id") })
