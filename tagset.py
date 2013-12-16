@@ -1,11 +1,12 @@
 #!/usr/bin/python
 
 import argparse
+import math
 from rainwave.playlist import Song
 from libs import config
 
-parser = argparse.ArgumentParser(description="Read or set tags using Rainwave's ID3 tag code.  To set tags, supply any on the commandline.")
-parser.add_argument("file", metavar='N', help = "File or directory. (recursive)")
+parser = argparse.ArgumentParser(description="Read tags using Rainwave's ID3 tag code.")
+parser.add_argument("file", metavar='N', help = "File to read.")
 parser.add_argument("--album")
 parser.add_argument("--artist")
 parser.add_argument("--genre")
@@ -13,14 +14,17 @@ parser.add_argument("--track")
 parser.add_argument("--title")
 parser.add_argument("--length")
 parser.add_argument("--year")
+parser.add_argument("--gain", action="store_true")
 
 args = parser.parse_args()
-config.set_value("mp3gain_scan", True)
+config.set_value("mp3gain_scan", args.gain)
 
 s = Song()
 s.load_tag_from_file(args.file)
 
-for k, v in s.to_dict().iteritems():
-	print "%s: %s" % (k.ljust(20), v)
-
-print "%s: %s" % ("gain".ljust(20), s.replay_gain)
+print "Title".ljust(10), ":", s.data['title']
+print "Album".ljust(10), ":", s.album_tag
+print "Artist".ljust(10), ":", s.artist_tag
+print "Link".ljust(10), ":", s.data['link']
+print "Length".ljust(10), ":", "%s:%s" % (int(math.floor(s.data['length'] / 60)), (s.data['length'] % 60))
+print "Gain".ljust(10), ":", s.replay_gain

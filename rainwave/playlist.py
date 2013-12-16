@@ -416,10 +416,12 @@ class Song(object):
 		elif "WXXX" in keys:
 			self.data['link'] = f["WXXX"][0]
 		
-		if not "TXXX:REPLAYGAIN_TRACK_GAIN" in keys and not "TXXX:replaygain_track_gain" in keys and config.get("mp3gain_scan"):
+		if (not "TXXX:REPLAYGAIN_TRACK_GAIN" in keys and not "TXXX:replaygain_track_gain" in keys) and config.get("mp3gain_scan"):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
-			print "Gaining: mp3gain -q -s i -p -k \"%s\"" % self.filename
-			process = subprocess.check_call([_mp3gain_path, "-q", "-s i", "-p", "-k", self.filename ])
+			devnull = open('/dev/null', 'w')
+			process = subprocess.Popen([_mp3gain_path, "-q", "-s", "i", "-p", "-k", self.filename ], stdout=devnull)
+			process.wait()
+			devnull.close()
 			# Reload the file to get the MP3 gain data
 			f = MP3(filename)
 		
