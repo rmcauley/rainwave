@@ -40,11 +40,11 @@ var fx = function() {
 	var performance;
 	if (window.requestAnimationFrame) {
 		requestFrame = window.requestAnimationFrame;
-		performance = window.performance;
+		performance = window.performance || function() { "now": function() { return new Date().getTime(); } };
 	}
 	else {
 		requestFrame = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
-		var performance = {	"now": function() { return new Date().getTime(); } };
+		performance = {	"now": function() { return new Date().getTime(); } };
 	}
 	if (!requestFrame) {
 		requestFrame = function(callback) {
