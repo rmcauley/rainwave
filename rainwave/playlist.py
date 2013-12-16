@@ -419,7 +419,7 @@ class Song(object):
 		if not "TXXX:REPLAYGAIN_TRACK_GAIN" in keys and not "TXXX:replaygain_track_gain" in keys and config.get("mp3gain_scan"):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
 			print "Gaining: mp3gain -q -s i -p -k \"%s\"" % self.filename
-			process = subprocess.check_call("%s -q -s i -p -k \"%s\"" % (_mp3gain_path, self.filename))
+			process = subprocess.check_call([_mp3gain_path, "-q", "-s i", "-p", "-k", self.filename ])
 			# Reload the file to get the MP3 gain data
 			f = MP3(filename)
 		
