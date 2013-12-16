@@ -83,6 +83,12 @@ def get_event_at_time(sid, epoch_time, queued_events = False):
 		else:
 			return None
 
+def get_advancing_file(sid):
+	return next[sid][0].get_filename()
+
+def get_advancing_event(sid):
+	return next[sid][0]
+
 def get_current_file(sid):
 	return current[sid].get_filename()
 
@@ -95,27 +101,6 @@ def advance_station(sid):
 	# next[sid] = filter(None, next[sid])
 
 	start_time = time.time()
-	playlist.prepare_cooldown_algorithm(sid)
-	playlist.clear_updated_albums(sid)
-	log.debug("advance", "Playlist prepare time: %.6f" % (time.time() - start_time,))
-
-	start_time = time.time()
-	current[sid].finish()
-	log.debug("advance", "Current finish time: %.6f" % (time.time() - start_time,))
-
-	start_time = time.time()
-	last_song = current[sid].get_song()
-	if last_song:
-		db.c.update("INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)", (sid, last_song.id))
-	log.debug("advance", "Last song insertion time: %s" % (time.time() - start_time,))
-
-	start_time = time.time()
-	history[sid].insert(0, current[sid])
-	while len(history[sid]) > 5:
-		history[sid].pop()
-	log.debug("advance", "History management: %.6f" % (time.time() - start_time,))
-
-	start_time = time.time()
 	integrate_new_events(sid)
 	# If we need some emergency elections here
 	if len(next[sid]) == 0:
@@ -125,14 +110,39 @@ def advance_station(sid):
 	log.debug("advance", "Next event management: %.6f" % (time.time() - start_time,))
 
 	start_time = time.time()
-	current[sid] = next[sid].pop(0)
-	current[sid].start_event()
-	log.debug("advance", "Current management: %.6f" % (time.time() - start_time,))
+	next[sid][0].prepare_event()
+	log.debug("advance", "Next[0] preparation time: %.6f" % (time.time() - start_time,))
 	_update_schedule_memcache(sid)
 
 	tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(milliseconds=100), lambda: post_process(sid))
 
 def post_process(sid):
+	start_time = time.time()
+	playlist.prepare_cooldown_algorithm(sid)
+	playlist.clear_updated_albums(sid)
+	log.debug("post", "Playlist prepare time: %.6f" % (time.time() - start_time,))
+
+	start_time = time.time()
+	current[sid].finish()
+	log.debug("post", "Current finish time: %.6f" % (time.time() - start_time,))
+
+	start_time = time.time()
+	last_song = current[sid].get_song()
+	if last_song:
+		db.c.update("INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)", (sid, last_song.id))
+	log.debug("post", "Last song insertion time: %s" % (time.time() - start_time,))
+
+	start_time = time.time()
+	history[sid].insert(0, current[sid])
+	while len(history[sid]) > 5:
+		history[sid].pop()
+	log.debug("post", "History management: %.6f" % (time.time() - start_time,))
+
+	start_time = time.time()
+	current[sid] = next[sid].pop(0)
+	current[sid].start_event()
+	log.debug("advance", "Current management: %.6f" % (time.time() - start_time,))
+
 	start_time = time.time()
 	# update_cache updates both the line and expiry times
 	request.update_cache(sid)

@@ -84,6 +84,7 @@ class Event(object):
 		self.used = False
 		self.is_election = False
 		self.has_priority = False
+		self.replay_gain = None
 
 	def _update_from_dict(self, dict):
 		self.id = dict['sched_id']
@@ -105,6 +106,9 @@ class Event(object):
 
 	def get_song(self):
 		pass
+
+	def prepare_event(self):
+		self.replay_gain = self.get_song().replay_gain
 
 	def finish(self):
 		self.used = True
@@ -326,7 +330,7 @@ class Election(Event):
 		self.songs.append(song)
 		return True
 
-	def start_event(self):
+	def prepare_event(self):
 		if not self.used and not self.in_progress:
 			results = db.c.fetch_all("SELECT song_id, entry_votes FROM r4_election_entries WHERE elec_id = %s", (self.id,))
 			for song in self.songs:
@@ -341,7 +345,10 @@ class Election(Event):
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
 			self.songs = sorted(self.songs, key=lambda song: song.data['entry_votes'])
 			self.songs.reverse()
+			self.replay_gain = self.songs[0].replay_gain
 
+	def start_event(self):
+		if not self.used and not self.in_progress:
 			for i in range(0, len(self.songs)):
 				self.songs[i].data['entry_position'] = i
 				db.c.update("UPDATE r4_election_entries SET entry_position = %s WHERE entry_id = %s", (i, self.songs[i].data['entry_id']))

@@ -51,9 +51,9 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 
 			to_send = None
 			if not config.get("liquidsoap_annotations"):
-				to_send = schedule.get_current_file(self.sid)
+				to_send = schedule.get_advancing_file(self.sid)
 			else:
-				to_send = self._get_annotated(schedule.get_current_event(self.sid))
+				to_send = self._get_annotated(schedule.get_advancing_event(self.sid))
 			sid_output[self.sid] = to_send
 			self.success = True
 			if not cache.get_station(self.sid, "get_next_socket_timeout"):
@@ -78,6 +78,9 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 
 		if e.name:
 			string += ",title=\"%s\"" % event.name
+
+		if hasattr(e, "replay_gain") and e.replay_gain:
+			string += ",replay_gain=\"%s\"" % e.replay_gain
 
 		string += ":" + e.get_filename()
 		return string
