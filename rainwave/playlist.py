@@ -383,6 +383,7 @@ class Song(object):
 		self.data['link'] = None
 		self.data['link_text'] = None
 		self.data['rating_allowed'] = False
+		self.replay_gain = False
 		self.fake = False
 
 	def load_tag_from_file(self, filename):
@@ -409,10 +410,19 @@ class Song(object):
 			self.data['link'] = f["WXXX:URL"].url
 		elif "WXXX" in keys:
 			self.data['link'] = f["WXXX"][0]
-		if not "TXXX:REPLAYGAIN_TRACK_GAIN" in keys and config.get("mp3gain_scan"):
+		
+		if not "TXXX:REPLAYGAIN_TRACK_GAIN" in keys and not "TXXX:replaygain_track_gain" in keys and config.get("mp3gain_scan"):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
 			process = subprocess.Popen([ "mp3gain", "-q", "-k", "-o", "-p", self.filename ], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			process.wait()
+			# Reload the file to get the MP3 gain data
+			f = MP3(filename)
+		
+		if "TXXX:REPLAYGAIN_TRACK_GAIN" in keys:
+			self.data['replay_gain'] = f["TXXX:REPLAYGAIN_TRACK_GAIN"]
+		elif "TXXX:replaygain_track_gain" in keys:
+			self.data['replay_gain'] = f["TXXX:replaygain_track_gain"]
+
 		self.data['length'] = int(f.info.length)
 
 	def is_valid(self):

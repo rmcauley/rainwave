@@ -2,6 +2,7 @@
 
 import argparse
 from rainwave.playlist import Song
+from libs import config
 
 parser = argparse.ArgumentParser(description="Read or set tags using Rainwave's ID3 tag code.  To set tags, supply any on the commandline.")
 parser.add_argument("file", metavar='N', help = "File or directory. (recursive)")
@@ -14,9 +15,12 @@ parser.add_argument("--length")
 parser.add_argument("--year")
 
 args = parser.parse_args()
+config.set("mp3gain_scan", True)
 
 s = Song()
 s.load_tag_from_file(args.file)
 
 for k, v in s.to_dict().iteritems():
-	print "%s: %s" % (k, v)
+	print "%s: %s" % (k.ljust(20), v)
+
+print "%s: %s" % ("gain".ljust(20), s.replay_gain)

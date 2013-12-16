@@ -61,6 +61,10 @@ def require(key):
 def get(key):
 	require(key)
 	return _opts[key]
+
+def set(key, value):
+	_opts[key] = value
+	return value
 	
 def override(key, value):
 	_opts[key] = value
