@@ -418,17 +418,16 @@ class Song(object):
 		
 		if (not "TXXX:REPLAYGAIN_TRACK_GAIN" in keys and not "TXXX:replaygain_track_gain" in keys) and config.get("mp3gain_scan"):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
-			devnull = open('/dev/null', 'w')
-			process = subprocess.Popen([_mp3gain_path, "-q", "-s", "i", "-p", "-k", self.filename ], stdout=devnull)
-			process.wait()
-			devnull.close()
-			# Reload the file to get the MP3 gain data
-			f = MP3(filename)
-		
-		if "TXXX:REPLAYGAIN_TRACK_GAIN" in keys:
+			gain_std, gain_error = subprocess.Popen([_mp3gain_path, "-o", "-q", "-s", "i", "-p", "-k", self.filename ], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+			if len(gain_error) > 0:
+				raise Exception("Error when replay gaining \"%s\": %s" % (filename, gain_error))
+			self.replay_gain = "%s dB" % float(gain_std.split("\n")[1].split("\t")[2])
+			print self.replay_gain
+		elif "TXXX:REPLAYGAIN_TRACK_GAIN" in keys:
 			self.replay_gain = f["TXXX:REPLAYGAIN_TRACK_GAIN"][0]
 		elif "TXXX:replaygain_track_gain" in keys:
 			self.replay_gain = f["TXXX:replaygain_track_gain"][0]
+
 
 		self.data['length'] = int(f.info.length)
 
