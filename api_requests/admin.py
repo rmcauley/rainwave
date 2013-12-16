@@ -13,6 +13,7 @@ import api_requests.playlist
 
 from libs import config
 from libs import db
+from libs import cache
 from rainwave import event
 
 # This entire module is hastily thrown together and discards many of the standard API features
@@ -145,3 +146,13 @@ class SetSongRequestOnly(api.web.APIHandler):
 		else:
 			db.c.update("UPDATE r4_song_sid SET song_request_only = FALSE WHERE song_id = %s AND sid = %s", (self.get_argument("song_id"), self.sid))
 			self.append(self.return_name, { "success": True, "text": "Song ID %s is not request only." % self.get_argument("song_id") })
+
+@handle_api_url("admin/backend_scan_errors")
+class BackendScanErrors(api.web.APIHandler):
+	return_name = "backend_scan_errors"
+	admin_required = True
+	sid_required = False
+	description = "A list of errors that have occurred while scanning music."
+
+	def post(self):
+		self.append(self.return_name, cache.get("backend_scan_errors"))

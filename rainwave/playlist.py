@@ -422,7 +422,6 @@ class Song(object):
 			if len(gain_error) > 0:
 				raise Exception("Error when replay gaining \"%s\": %s" % (filename, gain_error))
 			self.replay_gain = "%s dB" % float(gain_std.split("\n")[1].split("\t")[2])
-			print self.replay_gain
 		elif "TXXX:REPLAYGAIN_TRACK_GAIN" in keys:
 			self.replay_gain = f["TXXX:REPLAYGAIN_TRACK_GAIN"][0]
 		elif "TXXX:replaygain_track_gain" in keys:

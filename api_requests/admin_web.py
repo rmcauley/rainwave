@@ -1,6 +1,7 @@
 import time
 import hashlib
 import types
+import datetime
 
 import api.web
 from api.server import handle_api_url
@@ -14,8 +15,21 @@ import api_requests.admin
 
 from libs import config
 from libs import db
+from libs import cache
 from rainwave import event
 from rainwave import playlist
+
+def relative_time(epoch_time):
+	diff = datetime.timedelta(seconds=time.time() - epoch_time)
+	if diff.days > 0:
+		return "%sd" % diff.days
+	elif diff.seconds > 3600:
+		return "%shr" % int(diff.seconds / 3600)
+	elif diff.seconds > 60:
+		return "%sm" % int(diff.seconds / 60)
+	elif diff.seconds > 0:
+		return "%ss" % diff.seconds
+	return "now"
 
 @handle_url("/admin/")
 class AdminIndex(api.web.HTMLRequest):
@@ -32,7 +46,7 @@ class ToolList(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Tool List"))
 		self.write("<b>Do:</b><br />")
 		# [ ( "Link Title", "admin_url" ) ]
-		for item in [ ("One Ups", "one_ups"), ("Cooldown", "cooldown"), ("Request Only Songs", "song_request_only") ]:
+		for item in [ ("Scan Results", "scan_results"), ("One Ups", "one_ups"), ("Cooldown", "cooldown"), ("Request Only Songs", "song_request_only") ]:
 			self.write("<a href=\"#\" onclick=\"top.current_tool = '%s'; top.change_screen();\">%s</a><br />" % (item[1], item[0]))
 		self.write(self.render_string("basic_footer.html"))
 
@@ -56,6 +70,30 @@ class RestrictList(api.web.HTMLRequest):
 		self.write("<b>With songs from:</b><br>")
 		for sid in config.station_ids:
 			self.write("<a href=\"#\" onclick=\"top.current_restriction = %s; top.change_screen();\">%s</a><br />" % (sid, config.station_id_friendly[sid]))
+		self.write(self.render_string("basic_footer.html"))
+
+@handle_url("/admin/album_list/scan_results")
+class ScanResults(api.web.PrettyPrintAPIMixin, api_requests.admin.BackendScanErrors):
+	admin_required = True
+
+	def get(self):
+		new_results = []
+		for row in self._output[self.return_name]:
+			row['time'] = relative_time(row['time'])
+			new_results.append(row)
+		self._output[self.return_name] = new_results
+		super(ScanResults, self).get()
+
+@handle_url("/admin/tools/scan_results")
+class LatestSongs(api.web.HTMLRequest):
+	admin_required = True
+
+	def get(self):
+		self.write(self.render_string("basic_header.html", title="Latest Songs"))
+		self.write("<style type='text/css'>div { margin-bottom: 8px; border-bottom: solid 1px #888; }</style>")
+
+		for fn in db.c.fetch_list("SELECT song_filename FROM r4_songs ORDER BY song_file_mtime DESC LIMIT 20"):
+			self.write("<div>%s</div>" % fn)
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/tools/one_ups")
@@ -89,7 +127,7 @@ class CooldownTool(api.web.HTMLRequest):
 		self.write("<h2>%s Cooldown Tool</h2>" % config.station_id_friendly[self.sid])
 		self.write(self.render_string("basic_footer.html"))
 
-@handle_url("/admin/tools/song_request_only")
+@handle_url("/admin/la/song_request_only")
 class SongRequestOnlyTool(api.web.HTMLRequest):
 	admin_required = True
 
