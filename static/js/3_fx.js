@@ -40,7 +40,7 @@ var fx = function() {
 	var performance;
 	if (window.requestAnimationFrame) {
 		requestFrame = window.requestAnimationFrame;
-		performance = window.performance || function() { "now": function() { return new Date().getTime(); } };
+		performance = window.performance || function() { return new Date().getTime(); };
 	}
 	else {
 		requestFrame = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;

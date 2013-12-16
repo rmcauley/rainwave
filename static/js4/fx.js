@@ -5,7 +5,7 @@ var Fx = function() {
 	var delayed_css = [];
 
 	var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
-	performance = window.performance || function() { "now": function() { return new Date().getTime(); } };
+	performance = window.performance || function() { return new Date().getTime(); };
 	if (!requestAnimationFrame) {
 		requestAnimationFrame = function(callback) { window.setTimeout(callback, 40); };
 	}
