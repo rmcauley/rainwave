@@ -22,6 +22,7 @@ from rainwave import playlist
 _directories = {}
 _scan_errors = None
 mimetypes.init()
+_mp3gain_path = None 		# This is also checked after the definition of the 'which' function further down in the file
 
 def start(full_scan):
 	global _directories
@@ -82,6 +83,9 @@ def _fix_codepage_1252(filename, path = None):
 def _scan_directories():
 	global _scan_errors
 	global _directories
+
+	if config.get("mp3gain_scan") and not _mp3gain_path:
+		raise Exception("mp3gain_scan flag in config is enabled, but could not find mp3gain executable.")
 
 	leftovers = []
 	for directory, sids in _directories.iteritems():
@@ -221,3 +225,24 @@ def monitor():
 	print "Monitoring"
 	asyncore.loop()
 	cache.set("backend_scan", "off")
+
+# http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python/377028#377028
+def which(program):
+    import os
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+
+    return None
+
+_mp3gain_path = which("mp3gain")
