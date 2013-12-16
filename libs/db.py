@@ -286,7 +286,8 @@ def create_tables():
 			song_origin_sid				SMALLINT	NOT NULL, \
 			song_artist_tag				TEXT		, \
 			song_request_count			INT			DEFAULT 0, \
-			song_file_mtime				INTEGER		\
+			song_file_mtime				INTEGER		, \
+			song_replay_gain			TEXT 		\
 		)")
 	c.create_idx("r4_songs", "song_verified")
 

@@ -295,6 +295,7 @@ class Song(object):
 		s.sid = sid
 		s.filename = d['song_filename']
 		s.verified = d['song_verified']
+		s.replay_gain = d['song_replay_gain']
 		s.data['sids'] = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (song_id,))
 		s.data['sid'] = sid
 		s.data['rank'] = None
@@ -383,7 +384,7 @@ class Song(object):
 		self.data['link'] = None
 		self.data['link_text'] = None
 		self.data['rating_allowed'] = False
-		self.replay_gain = False
+		self.replay_gain = None
 		self.fake = False
 
 	def load_tag_from_file(self, filename):
@@ -396,6 +397,8 @@ class Song(object):
 		keys = f.keys()
 		if "TIT2" in keys:
 			self.data['title'] = f["TIT2"][0]
+		else:
+			raise Exception("Song filename \"%s\" has no title tag." % filename)
 		if "TPE1" in keys:
 			self.artist_tag = f["TPE1"][0]
 		if "TALB" in keys:
@@ -419,9 +422,9 @@ class Song(object):
 			f = MP3(filename)
 		
 		if "TXXX:REPLAYGAIN_TRACK_GAIN" in keys:
-			self.data['replay_gain'] = f["TXXX:REPLAYGAIN_TRACK_GAIN"]
+			self.replay_gain = f["TXXX:REPLAYGAIN_TRACK_GAIN"][0]
 		elif "TXXX:replaygain_track_gain" in keys:
-			self.data['replay_gain'] = f["TXXX:replaygain_track_gain"]
+			self.replay_gain = f["TXXX:replaygain_track_gain"][0]
 
 		self.data['length'] = int(f.info.length)
 
@@ -478,16 +481,17 @@ class Song(object):
 					song_length = %s, \
 					song_scanned = TRUE, \
 					song_verified = TRUE, \
-					song_file_mtime = %s \
+					song_file_mtime = %s, \
+					song_replay_gain = %s \
 				WHERE song_id = %s",
-				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['link'], self.data['link_text'], self.data['length'], file_mtime, self.id))
+				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['link'], self.data['link_text'], self.data['length'], file_mtime, self.replay_gain, self.id))
 		else:
 			self.id = db.c.get_next_id("r4_songs", "song_id")
 			db.c.update("INSERT INTO r4_songs \
-				(song_id, song_filename, song_title, song_title_searchable, song_link, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned) \
+				(song_id, song_filename, song_title, song_title_searchable, song_link, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain) \
 				VALUES \
-				(%s,      %s           , %s        , %s       , %s            , %s         , %s             , %s             , %s           , %s )",
-				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True))
+				(%s     , %s           , %s        , %s                   , %s       , %s            , %s         , %s             , %s             , %s           , %s          , %s )",
+				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True, self.replay_gain))
 			self.verified = True
 			self.data['added_on'] = int(time.time())
 
@@ -1284,7 +1288,7 @@ class SongGroup(AssociatedMetadata):
 
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_groups", "group_id")
-		return db.c.update("INSERT INTO r4_groups (group_id, group_name, group_name_searchable) VALUES (%s, %s)", (self.id, self.data['name'], make_searchable_string(self.data['name'])))
+		return db.c.update("INSERT INTO r4_groups (group_id, group_name, group_name_searchable) VALUES (%s, %s, %s)", (self.id, self.data['name'], make_searchable_string(self.data['name'])))
 
 	def _update_db(self):
 		return db.c.update("UPDATE r4_groups SET group_name = %s, group_name_searchable = %s WHERE group_id = %s", (self.data['name'], make_searchable_string(self.data['name']), self.id))

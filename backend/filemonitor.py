@@ -92,7 +92,7 @@ def _scan_directories():
 		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
 			for filename in files:
 				try:
-					_scan_file(_fix_codepage_1252(filename, root), sids)
+					_scan_file(_fix_codepage_1252(filename, root), sids, throw_exceptions=True)
 				except Exception as e:
 					type_, value_, traceback_ = sys.exc_info()
 					print "\r%s: %s" % (filename.decode("utf-8", errors="ignore"), value_)
@@ -120,7 +120,7 @@ def _scan_file(filename, sids, throw_exceptions = False):
 			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s AND song_verified = TRUE", (filename,))
 			if not old_mtime or old_mtime != os.stat(filename)[8]:
 				playlist.Song.load_from_file(filename, sids)
-			elif old_mtime:
+			else:
 				db.c.update("UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s", (filename,))
 		elif _is_image(filename):
 			process_album_art(filename)
@@ -140,6 +140,8 @@ def process_album_art(filename):
 	if not album_ids or len(album_ids) == 0:
 		return False
 	im_original = Image.open(filename)
+	if im_original.mode != "RGB":
+		im_original = im_original.convert()
 	if not im_original:
 		_add_scan_error(filename, "Could not open album art.")
 		return False

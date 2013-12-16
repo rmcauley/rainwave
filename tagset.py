@@ -15,7 +15,7 @@ parser.add_argument("--length")
 parser.add_argument("--year")
 
 args = parser.parse_args()
-config.set("mp3gain_scan", True)
+config.set_value("mp3gain_scan", True)
 
 s = Song()
 s.load_tag_from_file(args.file)

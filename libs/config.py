@@ -62,7 +62,7 @@ def get(key):
 	require(key)
 	return _opts[key]
 
-def set(key, value):
+def set_value(key, value):
 	_opts[key] = value
 	return value
 	
