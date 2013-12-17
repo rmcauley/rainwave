@@ -156,7 +156,7 @@ var Formatting = function() {
 
 	self.sanitize_string = function(str) {
 		for (var i = 0; i < diacritic_map.length; i++) {
-			str = str.replace(diacritic_map[i].letters, changes[i].base);
+			str = str.replace(diacritic_map[i].letters, diacritic_map[i].base);
 		}
 		return str;
 	};

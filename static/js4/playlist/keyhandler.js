@@ -8,7 +8,7 @@
 	var backspace_timer = false;
 
 	self.prevent_default = function(evt) {
-		evt.preventDefault();
+		evt.preventDefault(evt);
 	}
 
 	self.enable_backspace_trap = function() {
@@ -29,7 +29,7 @@
 			return self.handle_event(evt);
 		}
 		if (backspace_trap && (evt.keyCode == 8)) {
-			self.prevent_default();
+			self.prevent_default(evt);
 			// no need to set enable_backspace_trap - that will already have been handled by key_down
 			return false;
 		}
@@ -98,7 +98,7 @@
 
 		// a true return here means subroutines did actually handle the keys, and we need to preventDefault...
 		if (self.route_key(evt.keyCode, chr)) {
-			self.prevent_default();
+			self.prevent_default(evt);
 			// ... which is unfortunately backwards from browsers, which expect "false" to stop the event bubble
 			return false;
 		}
@@ -109,25 +109,25 @@
 		if (!PlaylistLists.active_list) return false;
 
 		if (key_code == 40) {			// down arrow
-			return PlaylistLists.active_list.search_table.key_nav_down();
+			return PlaylistLists.active_list.key_nav_down();
 		}
 		else if (key_code == 38) {		// up arrow
-			return PlaylistLists.active_list.search_table.key_nav_up();
+			return PlaylistLists.active_list.key_nav_up();
 		}
 		else if (key_code == 13) {		// enter
-			return PlaylistLists.active_list.search_table.key_nav_enter();
+			return PlaylistLists.active_list.key_nav_enter();
 		}
 		else if (/[\d\w\-.&':+~,]+/.test(chr)) {
-			return PlaylistLists.active_list.search_table.add_character(chr);
+			return PlaylistLists.active_list.key_nav_add_character(chr);
 		}
 		else if (chr == " ") {			// spacebar
-			return PlaylistLists.active_list.search_table.add_character(" ");
+			return PlaylistLists.active_list.key_nav_add_character(" ");
 		}
 		else if (key_code == 8) {		// backspace
-			return PlaylistLists.active_list.search_table.key_nav_backspace();
+			return PlaylistLists.active_list.key_nav_backspace();
 		}
 		else if (key_code == 27) {		// escape
-			PlaylistLists.active_list.search_table.key_nav_escape();
+			PlaylistLists.active_list.key_nav_escape();
 			return true;				// always return true for escape or browsers will halt AJAX requests (escape == stop in a browser!)
 		}
 

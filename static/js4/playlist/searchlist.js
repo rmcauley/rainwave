@@ -24,7 +24,6 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 	var hidden = [];			// list of IDs unsorted - currently hidden from view during a search
 
 	var search_string = "";
-	var real_search_string = "";
 	var current_key_nav_element = false;
 	var current_key_nav_old_class = "";
 	var scroll_offset = 100;
@@ -137,26 +136,37 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 	var key_nav_arrow_action = function(up, down) {
 		if (!current_key_nav_element) {
 			// select the first child
-			current_key_nav_element = self.el.firstChild;
+			current_key_nav_element = self.el.firstChild.nextSibling;
+			if (!current_key_nav_element) {
+				return false;
+			}
 			// find the next non-hidden child (if the firstChild isn't)
 			while (current_key_nav_element._hidden && current_key_nav_element.nextSibling) { 
 				current_key_nav_element = current_key_nav_element.nextSibling;
 			}
 		}
 		else {
-			current_key_nav_element.className = current_key_nav_old_class;
+			if (current_key_nav_old_class) {
+				current_key_nav_element.className = current_key_nav_old_class;
+			}
+			else {
+				current_key_nav_element.removeAttribute("class");	
+			}
 			// go in the appropriate direction through the DOM
-			if (down) {
+			if (down && current_key_nav_element.nextSibling) {
 				current_key_nav_element = current_key_nav_element.nextSibling;
 				while (current_key_nav_element._hidden && current_key_nav_element.nextSibling) { 
 					current_key_nav_element = current_key_nav_element.nextSibling;
 				}
 			}
-			else if (up) {
+			else if (up && current_key_nav_element.previousSibling && (current_key_nav_element.previousSibling != search_box)) {
 				current_key_nav_element = current_key_nav_element.previousSibling;
 				while (current_key_nav_element._hidden && current_key_nav_element.previousSibling) { 
 					current_key_nav_element = current_key_nav_element.previousSibling;
 				}	
+			}
+			else {
+				return false;
 			}
 		}
 		self.key_nav_highlight();
@@ -190,14 +200,10 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 			return true;
 		}
 		else if (search_string.length > 1) {
-			resettimer = true;
 			search_string = search_string.substring(0, search_string.length - 1);
-			// THIS COULD POTENTIALLY CAUSE PROBLEMS WITH UTF-8 DEPENDING ON THE BROWSER
-			// double width characters and all that.  needs to be tested.
-			real_search_string = real_search_string.substring(0, real_search_string.length - 1);
 			search_box.textContent = search_string;
-			var use_search_string = Formatting.remove_non_alphanum(real_search_string);
-			for (var i = hidden.length - 1; i >= 0; i++) {
+			var use_search_string = Formatting.remove_non_alphanum(Formatting.sanitize_string(search_string));
+			for (var i = hidden.length - 1; i >= 0; i--) {
 				if (data[hidden[i]]._searchname.indexOf(use_search_string) > -1) {
 					data[hidden[i]]._el._hidden = false;
 					data[hidden[i]]._el.style.display = "block";
@@ -212,12 +218,11 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 
 	self.key_nav_add_character = function(character) {
 		search_string = search_string + character;
-		real_search_string = real_search_string + Formatting.sanitize_string(character);
-		var use_search_string = Formatting.remove_non_alphanum(real_search_string);
+		var use_search_string = Formatting.remove_non_alphanum(Formatting.sanitize_string(search_string));
 		for (var i = 0; i < sorted.length; i++) {
 			if (!data[sorted[i]]._el._hidden && (data[sorted[i]]._searchname.indexOf(use_search_string) == -1)) {
 				data[sorted[i]]._el._hidden = true;
-				data[hidden[i]]._el.style.display = "none";
+				data[sorted[i]]._el.style.display = "none";
 				hidden.push(sorted[i]);
 			}
 		}
@@ -228,6 +233,7 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 	self.clear_search = function() {
 		search_string = "";
 		self.remove_key_nav_highlight();
+		search_box.textContent = "";
 
 		for (var i = 0; i < hidden.length; i++) {
 			data[hidden[i]]._el._hidden = false;

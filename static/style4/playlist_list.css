@@ -21,12 +21,12 @@ div.searchlist {
 	width: 95%;
 }
 
-div.searchlist_entry {
-	/* nothing */
-}
-
 div.searchlist_name {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+div.searchtable_key_nav_hover {
+	background: #3A3D40;
 }
