@@ -46,7 +46,7 @@ class ToolList(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Tool List"))
 		self.write("<b>Do:</b><br />")
 		# [ ( "Link Title", "admin_url" ) ]
-		for item in [ ("Scan Results", "scan_results"), ("One Ups", "one_ups"), ("Cooldown", "cooldown"), ("Request Only Songs", "song_request_only") ]:
+		for item in [ ("Scan Results", "scan_results"), ("One Ups", "one_ups"), ("DJ Elections", "dj_election"), ("Cooldown", "cooldown"), ("Request Only Songs", "song_request_only") ]:
 			self.write("<a href=\"#\" onclick=\"top.current_tool = '%s'; top.change_screen();\">%s</a><br />" % (item[1], item[0]))
 		self.write(self.render_string("basic_footer.html"))
 
@@ -127,7 +127,31 @@ class CooldownTool(api.web.HTMLRequest):
 		self.write("<h2>%s Cooldown Tool</h2>" % config.station_id_friendly[self.sid])
 		self.write(self.render_string("basic_footer.html"))
 
-@handle_url("/admin/la/song_request_only")
+@handle_url("/admin/tools/dj_election")
+class DJElectionTool(api.web.HTMLRequest):
+	admin_required = True
+
+	def get(self):
+		self.write(self.render_string("bare_header.html", title="%s One Up Tool" % config.station_id_friendly[self.sid]))
+		self.write("<h2>%s DJ Election Tool</h2>" % config.station_id_friendly[self.sid])
+		self.write("<ul><li>Once committed, the election cannot be changed.</li>")
+		self.write("<li>Pulling songs from other stations is possible and will not affect cooldown on the other station. (it will affect voting stats)")
+		self.write("</ul>")
+
+		songs = cache.get_user(self.user.id, "dj_election")
+		if not songs:
+			self.write("<p>No election started yet.</p>")
+		else:
+			self.write("<ul>")
+			for song in songs:
+				self.write("<li>%s<br>%s<br><a onclick=\"window.top.call_api('admin/remove_from_dj_election', { 'song_id': %s });\">Remove</a></li>"
+					% (song.data['title'], song.albums[0].data['name'], song.id))
+			self.write("</ul>")
+			self.write("<a onclick=\"window.to.call_api('admin/commit_dj_election', { 'priority': false });\">Commit Behind Existing Elections</a><br><br>")
+			self.write("<a onclick=\"window.to.call_api('admin/commit_dj_election', { 'priority': true });\">Commit In Front Of Everything</a>")
+		self.write(self.render_string("basic_footer.html"))
+
+@handle_url("/admin/tools/song_request_only")
 class SongRequestOnlyTool(api.web.HTMLRequest):
 	admin_required = True
 
@@ -190,6 +214,10 @@ class OneUpAlbumList(AlbumList):
 class SongRequestOnlyAlbumList(AlbumList):
 	pass
 
+@handle_url("/admin/album_list/dj_election")
+class DJElectionAlbumList(AlbumList):
+	pass
+
 @handle_url("/admin/song_list/one_ups")
 class OneUpSongList(SongList):
 	def render_row_special(self, row):
@@ -222,3 +250,8 @@ class SongRequestOnlyList(SongList):
 			self.write("<td style='background: #880000;'><a onclick=\"window.top.call_api('admin/set_song_request_only', { 'song_id': %s, 'request_only': false })\">DISABLE</a>" % (row['id']))
 		else:
 			self.write("<td><a onclick=\"window.top.call_api('admin/set_song_request_only', { 'song_id': %s, 'request_only': true })\">enable</a>" % (row['id']))
+
+@handle_url("/admin/song_list/dj_election")
+class DJElectionSongList(SongList):
+	def render_row_special(self, row):
+		self.write("<td><a onclick=\"window.top.call_api('admin/add_to_dj_election', { 'song_id': %s, 'song_sid': %s });\">queue up</a>" % (row['id'], self.sid))

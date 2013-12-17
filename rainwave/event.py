@@ -119,8 +119,7 @@ class Event(object):
 		song = self.get_song()
 		if song:
 			song.update_last_played(self.sid)
-			if ((self.sid == song.sid) or (self.sid in song.data['sids'])):
-				song.start_cooldown(self.sid)
+			song.start_cooldown(self.sid)
 
 	def length(self):
 		if not self.used and hasattr(self, "songs"):
@@ -505,6 +504,11 @@ class PVPElection(Election):
 		global _request_sequence
 		_request_sequence[self.sid] = 0
 		return True
+
+# An election that's setup by a DJ/admin, with predefined songs
+class DJElection(Election):
+	def is_request_needed(self):
+		return False
 
 class OneUp(Event):
 	@classmethod

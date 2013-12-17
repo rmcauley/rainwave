@@ -527,7 +527,11 @@ class Song(object):
 		"""
 		Calculates cooldown based on jfinalfunk's crazy algorithms.
 		Cooldown may be overriden by song_cool_* rules found in database.
+		Cooldown is only applied if the song exists on the given station
 		"""
+
+		if (self.sid != self.sid) and (not self.sid in self.data['sids']):
+			return
 
 		cool_time = cooldown_config[sid]['max_song_cool']
 		if self.data['cool_override']:
