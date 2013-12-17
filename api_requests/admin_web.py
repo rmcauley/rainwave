@@ -169,7 +169,14 @@ class AlbumList(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Album List"))
 		self.write("<h2>%s Playlist</h2>" % config.station_id_friendly[self.get_argument('restrict')])
 		self.write("<table>")
-		for row in playlist.get_all_albums_list(self.get_argument('restrict'), self.user):
+		albums = db.c.fetch_all("SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS rating_user, album_cool_multiply AS cool_multiply, album_cool_override AS cool_override "
+			"FROM r4_albums "
+			"JOIN r4_album_sid USING (album_id) "
+			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
+			"WHERE r4_album_sid.sid = %s "
+			"ORDER BY album_name",
+			(self.user.id, self.sid))
+		for row in albums:
 			self.write("<tr><td>%s</td>" % row['id'])
 			self.write("<td onclick=\"window.location.href = '/admin/song_list/' + window.top.current_tool + '?sid=%s&id=%s';\" style='cursor: pointer;'>%s</td><td>" % (self.get_argument('restrict'), row['id'], row['name']))
 			if row['rating_user']:
