@@ -4,7 +4,7 @@ var Event = function() {
 	var e_self = {};
 
 	e_self.load = function(json) {
-		if (json.type == "election") {
+		if (json.type == "Election") {
 			// nothing special for elections right now
 			return EventBase(json, $l("Election"));
 		}

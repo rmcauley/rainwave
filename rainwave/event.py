@@ -245,7 +245,7 @@ class Election(Event):
 		elec = cls(sid)
 		elec.is_election = True
 		elec.id = elec_id
-		elec.type = cls.__name__.lower()
+		elec.type = cls.__name__
 		elec.used = False
 		elec.start_actual = None
 		elec.in_progress = False
@@ -507,6 +507,10 @@ class PVPElection(Election):
 
 # An election that's setup by a DJ/admin, with predefined songs
 class DJElection(Election):
+	def __init__(self):
+		super(DJElectin, self).__init__()
+		self.type = "Election"
+
 	def is_request_needed(self):
 		return False
 
