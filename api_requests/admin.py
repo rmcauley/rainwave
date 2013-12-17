@@ -219,10 +219,11 @@ class CommitDJElection(api.web.APIHandler):
 		songs = cache.get_user(self.user.id, "dj_election")
 		if not songs:
 			raise APIException("no_dj_election", "No songs found queued for a DJ election.")
-		elec = events.DJElection.create(self.sid)
+		elec = event.DJElection.create(self.sid)
 		for song in songs:
 			elec.add_song(song)
 		if self.get_argument("priority"):
 			elec.set_priority(True)
 		cache.set_user(self.user.id, "dj_election", None)
 		self.append(self.return_name, { "success": True })
+		sync_to_back.refresh_schedule(self.sid)

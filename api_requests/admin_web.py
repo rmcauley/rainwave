@@ -136,6 +136,7 @@ class DJElectionTool(api.web.HTMLRequest):
 		self.write("<h2>%s DJ Election Tool</h2>" % config.station_id_friendly[self.sid])
 		self.write("<ul><li>Once committed, the election cannot be changed.</li>")
 		self.write("<li>Pulling songs from other stations is possible and will not affect cooldown on the other station. (it will affect voting stats)")
+		self.write("<li>Song order in elections is randomized for each user.</li>")
 		self.write("</ul>")
 
 		songs = cache.get_user(self.user.id, "dj_election")
@@ -147,8 +148,8 @@ class DJElectionTool(api.web.HTMLRequest):
 				self.write("<li>%s<br>%s<br><a onclick=\"window.top.call_api('admin/remove_from_dj_election', { 'song_id': %s });\">Remove</a></li>"
 					% (song.data['title'], song.albums[0].data['name'], song.id))
 			self.write("</ul>")
-			self.write("<a onclick=\"window.to.call_api('admin/commit_dj_election', { 'priority': false });\">Commit Behind Existing Elections</a><br><br>")
-			self.write("<a onclick=\"window.to.call_api('admin/commit_dj_election', { 'priority': true });\">Commit In Front Of Everything</a>")
+			self.write("<a onclick=\"window.top.call_api('admin/commit_dj_election', { 'priority': false });\">Commit Behind Existing Elections</a><br><br>")
+			self.write("<a onclick=\"window.top.call_api('admin/commit_dj_election', { 'priority': true });\">Commit In Front Of Everything</a>")
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/tools/song_request_only")
