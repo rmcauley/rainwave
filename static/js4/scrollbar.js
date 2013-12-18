@@ -26,6 +26,7 @@ var Scrollbar = function() {
 		var wheel_delta;
 
 		self.scroll_to = function(new_scroll_top) {
+			if (max_scroll_top < new_scroll_top) new_scroll_top = max_scroll_top;
 			self.scroll_top = new_scroll_top;
 			element.scrollTop = new_scroll_top;
 			self.update_handle_position();
@@ -53,7 +54,7 @@ var Scrollbar = function() {
 		};
 
 		self.parent_update_handle_position = function() {
-			handle.style.top = self.scroll_top + Math.max(Math.round(self.scroll_top * handlepx_per_scrollpx), 3) + "px";
+			handle.style.top = Math.max(self.scroll_top + Math.max(Math.round(self.scroll_top * handlepx_per_scrollpx), 3), 3) + "px";
 		};
 
 		self.update_handle_position = self.parent_update_handle_position;

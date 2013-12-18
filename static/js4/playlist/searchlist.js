@@ -133,36 +133,56 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 		current_key_nav_element.className = "searchtable_key_nav_hover";
 	}
 
-	var key_nav_arrow_action = function(up, down) {
+	self.key_nav_first_item = function() {
+		current_key_nav_element = self.el.firstChild.nextSibling;
 		if (!current_key_nav_element) {
-			// select the first child
-			current_key_nav_element = self.el.firstChild.nextSibling;
-			if (!current_key_nav_element) {
-				return false;
-			}
-			// find the next non-hidden child (if the firstChild isn't)
-			while (current_key_nav_element._hidden && current_key_nav_element.nextSibling) { 
-				current_key_nav_element = current_key_nav_element.nextSibling;
-			}
+			return false;
+		}
+		// find the next non-hidden child (if the firstChild isn't)
+		while (current_key_nav_element._hidden && current_key_nav_element.nextSibling) { 
+			current_key_nav_element = current_key_nav_element.nextSibling;
+		}
+	};
+
+	self.key_nav_last_item = function() {
+		current_key_nav_element = self.el.lastChild;
+		if (!current_key_nav_element) {
+			return false;
+		}
+		// find the next non-hidden child (if the firstChild isn't)
+		while (current_key_nav_element._hidden && current_key_nav_element.previousSibling) { 
+			current_key_nav_element = current_key_nav_element.previousSibling;
+		}
+	};
+
+	var key_nav_arrow_action = function(up, down, jump) {
+		if (!current_key_nav_element) {
+			self.key_nav_first_item();
 		}
 		else {
+			var current_jump = 0;
+			var sibling = down ? "nextSibling" : "previousSibling";
 			var old_key_nav = current_key_nav_element;
-			// go in the appropriate direction through the DOM
-			if (down && current_key_nav_element.nextSibling) {
-				var n = current_key_nav_element.nextSibling;
-				while (n._hidden && n.nextSibling) { 
-					n = n.nextSibling;
+			if (current_key_nav_element[sibling] && (current_key_nav_element[sibling] != search_box)) {
+				var n = current_key_nav_element;
+				while ((current_jump < jump) && (n = n[sibling])) { 
+					if (!n._hidden) {
+						current_jump++;
+					}
 				}
-				if (n._hidden) return false;
-				current_key_nav_element = n;
-			}
-			else if (up && current_key_nav_element.previousSibling && (current_key_nav_element.previousSibling != search_box)) {
-				var n = current_key_nav_element.previousSibling;
-				while (n._hidden && n.previousSibling) { 
-					n = n.previousSibling;
+				
+				if (!n && up) {
+					self.key_nav_first_item();
 				}
-				if (n._hidden || (n == search_box)) return false;
-				current_key_nav_element = n;
+				else if (!n && down) {
+					self.key_nav_last_item();
+				}
+				else if (n._hidden || (n == search_box)) {
+					return false;
+				}
+				else {
+					current_key_nav_element = n;
+				}
 			}
 			else {
 				return false;
@@ -176,16 +196,24 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 			}
 		}
 		self.key_nav_highlight();
-		scrollbar.update_handle_position(list_name);
+		self.scroll_to_key_nav();
 		return true;
 	}
 	
 	self.key_nav_down = function() {
-		return key_nav_arrow_action(false, true);
+		return key_nav_arrow_action(false, true, 1);
 	};
 
 	self.key_nav_up = function() {
-		return key_nav_arrow_action(true, false);
+		return key_nav_arrow_action(true, false, 1);
+	};
+
+	self.key_nav_page_down = function() {
+		return key_nav_arrow_action(false, true, 10);
+	};
+
+	self.key_nav_page_up = function() {
+		return key_nav_arrow_action(true, false, 10);
 	};
 
 	self.key_nav_enter = function() {
@@ -282,7 +310,7 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 	};
 
 	self.scroll_to_key_nav = function() {
-		if (current_key_nav_element) self.scroll_to(data[current_key_nav_element._search_id]);
+		if (current_key_nav_element) self.scroll_to(data[current_key_nav_element._id]);
 	};
 
 	self.scroll_to = function(data_item) {

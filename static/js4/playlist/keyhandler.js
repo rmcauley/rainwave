@@ -123,6 +123,12 @@
 		else if (chr == " ") {			// spacebar
 			return PlaylistLists.active_list.key_nav_add_character(" ");
 		}
+		else if (key_code == 34) {		// page down
+			return PlaylistLists.active_list.key_nav_page_down();
+		}
+		else if (key_code == 33) {		// page up
+			return PlaylistLists.active_list.key_nav_page_up();
+		}
 		else if (key_code == 8) {		// backspace
 			return PlaylistLists.active_list.key_nav_backspace();
 		}
