@@ -3,6 +3,7 @@ import time
 import random
 import math
 import subprocess
+import re
 
 from unidecode import unidecode
 from mutagen.mp3 import MP3
@@ -269,8 +270,8 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 def make_searchable_string(s):
 	if not isinstance(s, unicode):
 		s = unicode(s)
-	s = unidecode(s).lower().replace(" ", "")
-	return ''.join(e for e in s if e.isalnum())
+	s = unidecode(s).lower()
+	return ''.join(e for e in s if (e.isalnum() or e == ' '))
 
 class SongHasNoSIDsException(Exception):
 	pass

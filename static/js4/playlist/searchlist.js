@@ -76,7 +76,7 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 		for (var i = 0; i < sorted.length; i++) {
 			self.el.appendChild(data[sorted[i]]._el);
 		}
-		scrollbar.update_scroll_height(list_name);
+		scrollbar.update_scroll_height();
 	};
 
 	self.update_view = function() {
@@ -109,7 +109,7 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 			next_reinsert_id = reinsert.pop();
 		}
 		//scrollbar.update_scroll_height($measure_el(self.el).height, list_name);
-		scrollbar.update_scroll_height(false, list_name);
+		scrollbar.update_scroll_height();
 	};
 
 	self.sort_function = function(a, b) {
@@ -202,15 +202,15 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 		else if (search_string.length > 1) {
 			search_string = search_string.substring(0, search_string.length - 1);
 			search_box.textContent = search_string;
-			var use_search_string = Formatting.remove_non_alphanum(Formatting.sanitize_string(search_string));
+			var use_search_string = Formatting.make_searchable_string(search_string);
 			for (var i = hidden.length - 1; i >= 0; i--) {
 				if (data[hidden[i]]._searchname.indexOf(use_search_string) > -1) {
 					data[hidden[i]]._el._hidden = false;
-					data[hidden[i]]._el.style.display = "block";
+					data[hidden[i]]._el.removeAttribute("style");
 					hidden.splice(i, 1);
 				}
 			}
-			scrollbar.update_scroll_height(list_name);
+			scrollbar.update_scroll_height();
 			return true;
 		}
 		return false;
@@ -218,7 +218,7 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 
 	self.key_nav_add_character = function(character) {
 		search_string = search_string + character;
-		var use_search_string = Formatting.remove_non_alphanum(Formatting.sanitize_string(search_string));
+		var use_search_string = Formatting.make_searchable_string(search_string);
 		for (var i = 0; i < sorted.length; i++) {
 			if (!data[sorted[i]]._el._hidden && (data[sorted[i]]._searchname.indexOf(use_search_string) == -1)) {
 				data[sorted[i]]._el._hidden = true;
@@ -226,7 +226,7 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 				hidden.push(sorted[i]);
 			}
 		}
-		scrollbar.update_scroll_height(list_name);
+		scrollbar.update_scroll_height();
 		search_box.textContent = search_string;
 	};
 

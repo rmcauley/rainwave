@@ -52,9 +52,11 @@ var Scrollbar = function() {
 			wheel_delta = Math.min(200, Math.max(scroll_height * .05, 30));
 		};
 
-		self.update_handle_position = function() {
+		self.parent_update_handle_position = function() {
 			handle.style.top = self.scroll_top + Math.max(Math.round(self.scroll_top * handlepx_per_scrollpx), 3) + "px";
 		};
+
+		self.update_handle_position = self.parent_update_handle_position;
 
 		var mouse_move = function(e) {
 			var new_scroll_top = original_scroll_top + ((e.screenY - original_mouse_y) * scrollpx_per_handlepx)
@@ -66,7 +68,7 @@ var Scrollbar = function() {
 			}
 			self.scroll_top = new_scroll_top;
 			element.scrollTop = self.scroll_top;
-			self.update_handle_position();
+			self.parent_update_handle_position();
 		};
 
 		var mouse_down = function(e) {
@@ -100,7 +102,7 @@ var Scrollbar = function() {
 			}
 			self.scroll_top = new_scroll_top;
 			element.scrollTop = new_scroll_top;
-			self.update_handle_position();
+			self.parent_update_handle_position();
 		};
 
 		handle.addEventListener("mousedown", mouse_down, false);

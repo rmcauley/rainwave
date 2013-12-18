@@ -166,7 +166,7 @@ var Formatting = function() {
 	}
 
 	self.make_searchable_string = function(str) {
-		return self.remove_non_alphanum(self.sanitize_string(str));
+		return self.sanitize_string(str).replace(/[^\w ]/g, '').toLowerCase();
 	}
 
 	return self;

@@ -40,14 +40,13 @@ var PlaylistLists = function() {
 
 var PlaylistScrollbar = function(element) {
 	var self = Scrollbar.new(element);
-	self.parent_update_scroll_height = self.update_scroll_height;
-	self.parent_update_handle_position = self.update_handle_position;
+	// self.parent_update_scroll_height = self.update_scroll_height;
 
-	self.update_scroll_height = function(force_height, list_name) {
-		if (list_name == PlaylistLists.active_list.list_name) {
-			self.parent_update_scroll_height();
-		}
-	};
+	// self.update_scroll_height = function(force_height, list_name) {
+	// 	if (list_name == PlaylistLists.active_list.list_name) {
+	// 		self.parent_update_scroll_height();
+	// 	}
+	// };
 
 	self.update_handle_position = function(list_name) {
 		if (list_name == PlaylistLists.active_list.list_name) {
