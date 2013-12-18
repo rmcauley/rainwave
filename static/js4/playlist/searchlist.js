@@ -146,27 +146,33 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 			}
 		}
 		else {
-			if (current_key_nav_old_class) {
-				current_key_nav_element.className = current_key_nav_old_class;
-			}
-			else {
-				current_key_nav_element.removeAttribute("class");	
-			}
+			var old_key_nav = current_key_nav_element;
 			// go in the appropriate direction through the DOM
 			if (down && current_key_nav_element.nextSibling) {
-				current_key_nav_element = current_key_nav_element.nextSibling;
-				while (current_key_nav_element._hidden && current_key_nav_element.nextSibling) { 
-					current_key_nav_element = current_key_nav_element.nextSibling;
+				var n = current_key_nav_element.nextSibling;
+				while (n._hidden && n.nextSibling) { 
+					n = n.nextSibling;
 				}
+				if (n._hidden) return false;
+				current_key_nav_element = n;
 			}
 			else if (up && current_key_nav_element.previousSibling && (current_key_nav_element.previousSibling != search_box)) {
-				current_key_nav_element = current_key_nav_element.previousSibling;
-				while (current_key_nav_element._hidden && current_key_nav_element.previousSibling) { 
-					current_key_nav_element = current_key_nav_element.previousSibling;
-				}	
+				var n = current_key_nav_element.previousSibling;
+				while (n._hidden && n.previousSibling) { 
+					n = n.previousSibling;
+				}
+				if (n._hidden || (n == search_box)) return false;
+				current_key_nav_element = n;
 			}
 			else {
 				return false;
+			}
+
+			if (current_key_nav_old_class) {
+				old_key_nav.className = current_key_nav_old_class;
+			}
+			else {
+				old_key_nav.removeAttribute("class");	
 			}
 		}
 		self.key_nav_highlight();
@@ -243,6 +249,9 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 
 		if (reinsert.length > 0) {
 			self.update_view();
+		}
+		else {
+			scrollbar.update_scroll_height();
 		}
 	};
 
