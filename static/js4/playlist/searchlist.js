@@ -103,7 +103,7 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 				delete(data[sorted[i]]);
 				sorted.splice(i, 1);
 			}
-			else if (next_reinsert_id && (self.sort_function(reinsert[next_reinsert_id], sorted[i]) == 1)) {
+			else if (next_reinsert_id && (self.sort_function(next_reinsert_id, sorted[i]) == 1)) {
 				self.el.insertBefore(data[next_reinsert_id]._el, data[sorted[i]]._el);
 				sorted.splice(i - 1, 0, next_reinsert_id);
 				next_reinsert_id = reinsert.pop();
