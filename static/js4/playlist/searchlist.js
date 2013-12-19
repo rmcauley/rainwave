@@ -56,9 +56,16 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 			json._el = self.draw_entry(json);
 			json._el._id = json[id_key];
 			json._el._hidden = false;
+			self.update_item_element(json);
 		}
 		data[json[id_key]] = json;
 		self.queue_reinsert(json[id_key]);
+	};
+
+	self.update_all_item_elements = function() {
+		for (i in data) {
+			self.update_item_element(data[i]);
+		}
 	};
 
 	self.queue_reinsert = function(id) {
@@ -240,7 +247,7 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 			for (var i = hidden.length - 1; i >= 0; i--) {
 				if (data[hidden[i]]._searchname.indexOf(use_search_string) > -1) {
 					data[hidden[i]]._el._hidden = false;
-					data[hidden[i]]._el.removeAttribute("style");
+					data[hidden[i]]._el.style.display = "block";
 					hidden.splice(i, 1);
 				}
 			}

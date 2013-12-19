@@ -204,8 +204,8 @@ var Fx = function() {
 		};
 
 		r.update = function(now) {
-			var current_px = -(Math.round((Math.round(now * 10) / 2)) * 30) + 2;
-			element.style.backgroundPosition = "18px " + current_px + "px";
+			// when updating here also make sure to update lists.js::AlbumList.update_item_element
+			element.style.backgroundPosition = "18px " + (-(Math.round((Math.round(now * 10) / 2)) * 30) + 3) + "px";
 		};
 
 		return r;

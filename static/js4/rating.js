@@ -5,6 +5,8 @@
 
 //var rating_dbg = ErrorHandler.make_debug_div();
 
+// ******* SEE fx.js FOR RATING EFFECT
+
 function Rating(type, id, rating_user, rating, fave, ratable) {
 	if ((type != "song") && (type != "album")) return undefined;
 	if (isNaN(id)) return undefined;

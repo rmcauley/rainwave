@@ -21,10 +21,13 @@ div.searchlist {
 	width: 95%;
 }
 
-div.searchlist_name {
+div.searchlist > div {
 	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	background-repeat: no-repeat;
+	word-break: break-all;
+	height: 1.3em;
+	padding-right: 60px;
+	box-sizing: border-box;
 }
 
 div.searchtable_key_nav_hover {
