@@ -260,11 +260,11 @@ def create_tables():
 		CREATE TABLE r4_albums ( \
 			album_id				SERIAL		PRIMARY KEY, \
 			album_name				TEXT		, \
-			album_name_searchable	TEXt 		, \
+			album_name_searchable	TEXT 		, \
 			album_rating				REAL		DEFAULT 0, \
 			album_rating_count			INTEGER		DEFAULT 0, \
 			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-			album_song_count			SMALLINT		DEFAULT 0 \, \
+			album_song_count			SMALLINT		DEFAULT 0 \
 		)")
 
 	c.update(" \
