@@ -48,7 +48,7 @@ class AddOneUp(api.web.APIHandler):
 class DeleteOneUp(api.web.APIHandler):
 	admin_required = True
 	fields = { "sched_id": (fieldtypes.sched_id, True) }
-	desrciption = "Deletes a OneUp from the schedule. (regardless of whether it's used or not)"
+	description = "Deletes a OneUp from the schedule. (regardless of whether it's used or not)"
 
 	def post(self):
 		e = event.OneUp.load_by_id(self.get_argument("sched_id"))
@@ -137,7 +137,7 @@ class ResetAlbumCooldown(api.web.APIHandler):
 class SetSongRequestOnly(api.web.APIHandler):
 	admin_required = True
 	sid_required = True
-	desription = "Sets a song to be played only by request."
+	description = "Sets a song to be played only by request."
 	fields = { "song_id": (fieldtypes.song_id, True), "request_only": (fieldtypes.boolean, True) }
 
 	def post(self):
