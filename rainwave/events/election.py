@@ -9,178 +9,10 @@ from libs import log
 from rainwave import playlist
 from rainwave import request
 from rainwave.user import User
+from rainwave.events import event
 
 _request_interval = {}
 _request_sequence = {}
-
-class InvalidScheduleID(Exception):
-	pass
-
-class InvalidScheduleType(Exception):
-	pass
-
-class ElectionDoesNotExist(Exception):
-	pass
-
-class EventAlreadyUsed(Exception):
-	pass
-
-class InvalidElectionID(Exception):
-	pass
-
-def load_by_id(sched_id):
-	event_type = db.c.fetch_var("SELECT sched_type FROM r4_schedule WHERE sched_id = %s", (sched_id,))
-	if not event_type:
-		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_id = %s", (sched_id,))
-		if not elec_id:
-			raise InvalidScheduleID
-		return Election.load_by_id(elec_id)
-	return load_by_id_and_type(sched_id, event_type)
-
-def load_by_id_and_type(sched_id, sched_type):
-	if sched_type in globals():
-		return globals()[sched_type].load_by_id(sched_id)
-	raise InvalidScheduleType
-
-class Event(object):
-	@classmethod
-	def create(cls, sid, start, end, type = None, name = None, public = True, timed = False, url = None, use_crossfade = True, use_tag_suffix = True):
-		evt = cls()
-		evt.id = db.c.get_next_id("r4_schedule", "sched_id")
-		evt.start = start
-		evt.start_actual = None
-		evt.start_predicted = None
-		evt.end = end
-		evt.type = evt.__class__.__name__
-		evt.name = name
-		evt.sid = sid
-		evt.public = public
-		evt.timed = timed
-		evt.url = url
-		evt.in_progress = False
-		evt.dj_user_id = None
-		evt.used = False
-		evt.use_crossfade = use_crossfade
-		evt.use_tag_suffix = use_tag_suffix
-		db.c.update("INSERT INTO r4_schedule "
-					"(sched_id, sched_start, sched_end, sched_type, sched_name, sid, sched_public, sched_timed, sched_url, sched_in_progress) VALUES "
-					"(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-					(evt.id, evt.start, evt.end, evt.type, evt.name, evt.sid, evt.public, evt.timed, evt.url, evt.in_progress))
-
-		return evt
-
-	def __init__(self):
-		self.id = None
-		self.start = None
-		self.start_actual = None
-		self.start_predicted = None
-		self.produces_elections = False
-		self.dj_user_id = None
-		self.use_crossfade = True
-		self.use_tag_suffix = True
-		self.name = None
-		self.end = None
-		self.url = None
-		self.used = False
-		self.is_election = False
-		self.has_priority = False
-		self.replay_gain = None
-
-	def _update_from_dict(self, dict):
-		self.id = dict['sched_id']
-		self.start = dict['sched_start']
-		self.start_actual = dict['sched_start_actual']
-		self.end = dict['sched_end']
-		self.type = dict['sched_type']
-		self.name = dict['sched_name']
-		self.sid = dict['sid']
-		self.public = dict['sched_public']
-		self.timed = dict['sched_timed']
-		self.url = dict['sched_url']
-		self.used = dict['sched_used']
-		self.in_progress = dict['sched_in_progress']
-		self.dj_user_id = dict['sched_dj_user_id']
-
-	def get_filename(self):
-		pass
-
-	def get_song(self):
-		pass
-
-	def prepare_event(self):
-		self.replay_gain = self.get_song().replay_gain
-
-	def finish(self):
-		self.used = True
-		self.in_progress = False
-		self.end = int(time.time())
-		db.c.update("UPDATE r4_schedule SET sched_used = TRUE, sched_in_progress = FALSE, sched_end_actual = %s WHERE sched_id = %s", (self.end, self.id))
-
-		song = self.get_song()
-		if song:
-			song.update_last_played(self.sid)
-			song.start_cooldown(self.sid)
-
-	def length(self):
-		if not self.used and hasattr(self, "songs"):
-			l = 0
-			for song in self.songs:
-				l += song.length()
-			return l
-		elif self.start_actual:
-			return self.start_actual - self.end
-		return self.start - self.end
-
-	def start_event(self):
-		if self.in_progress and not self.used:
-			return
-		elif self.used:
-			raise EventAlreadyUsed
-		self.start_actual = int(time.time())
-		self.in_progress = True
-		db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (self.start_actual, self.id))
-
-	def get_dj_user_id(self):
-		return self.dj_user_id
-
-	def to_dict(self, user = None, **kwargs):
-		obj = {
-			"id": self.id,
-			"start": self.start,
-			"start_actual": self.start_actual,
-			"start_predicted": self.start_predicted,
-			"end": self.end,
-			"type": self.type,
-			"name": self.name,
-			"sid": self.sid,
-			"url": self.url,
-			"dj_user_id": self.dj_user_id,
-			"voting_allowed": False
-		}
-		if user and user.data['radio_admin'] > 0:
-			obj['public'] = self.public
-			obj['timed'] = self.timed
-		if hasattr(self, "songs"):
-			if self.start_actual:
-				obj['end'] = self.start_actual + self.length()
-			elif self.start:
-				obj['end'] = self.start + self.length()
-		return obj;
-
-class ElectionScheduler(Event):
-	def __init__(self):
-		super(ElectionScheduler, self).__init__()
-		self.produces_elections = True
-
-	def create_election(self, sid):
-		return PVPElection.create(sid)
-
-class PVPElectionScheduler(ElectionScheduler):
-	def create_election(self, sid):
-		return PVPElection.create(sid)
-
-def add_to_election_queue(sid, song):
-	db.c.update("INSERT INTO r4_election_queue (sid, song_id) VALUES (%s, %s)", (sid, song.id))
 
 class ElecSongTypes(object):
 	conflict = 0
@@ -189,15 +21,52 @@ class ElecSongTypes(object):
 	queue = 3
 	request = 4
 
+class InvalidElectionID(Exception):
+	pass
+
+class ElectionDoesNotExist(Exception):
+	pass
+
+@event.register_producer
+class ElectionProducer(object):
+	elec_type = 'Election'
+	elec_class = Election
+
+	def __init__(self, sid):
+		super(ElectionProducer, self).__init__(sid)
+		self.sid = sid
+		self.plan_ahead_limit = config.get_station(sid, "num_planned_elections")
+
+	def load_next_event(self, start_time, target_length, min_elec_id):
+		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = '%s' and elec_used = FALSE AND sid = %s AND elec_id > %s ORDER BY elec_id LIMIT 1", (elec_type, self.sid, min_elec_id))
+		if elec_id:
+			return Election.load_by_id(elec_id)
+		else:
+			return _create_election(start_time, target_length)
+
+	def _create_election(sid, start_time, target_length):
+		log.debug("create_elec", "Creating election type %s for sid %s, start time %s target length %s." % (elec_type, sid, start_time, target_length))
+		db.c.update("START TRANSACTION")
+		try:
+			elec = elec_class.create(sid)
+			elec.fill(target_length)
+			if elec.length() == 0:
+				raise Exception("Created zero-length election.")
+			db.c.update("COMMIT")
+			return elec
+		except:
+			db.c.update("ROLLBACK")
+			raise
+
 # Normal election
 class Election(Event):
 	@classmethod
-	def load_by_id(cls, sched_id):
+	def load_by_id(cls, elec_id):
 		elec = cls()
-		row = db.c.fetch_row("SELECT * FROM r4_elections WHERE elec_id = %s", (sched_id,))
+		row = db.c.fetch_row("SELECT * FROM r4_elections WHERE elec_id = %s", (elec_id,))
 		if not row:
 			raise InvalidElectionID
-		elec.id = sched_id
+		elec.id = elec_id
 		elec.is_election = True
 		elec.type = row['elec_type']
 		elec.used = row['elec_used']
@@ -210,7 +79,7 @@ class Election(Event):
 		elec.has_priority = row['elec_priority']
 		elec.public = True
 		elec.timed = False
-		for song_row in db.c.fetch_all("SELECT * FROM r4_election_entries WHERE elec_id = %s", (sched_id,)):
+		for song_row in db.c.fetch_all("SELECT * FROM r4_election_entries WHERE elec_id = %s", (elec_id,)):
 			song = playlist.Song.load_from_id(song_row['song_id'], elec.sid)
 			song.data['entry_id'] = song_row['entry_id']
 			song.data['entry_type'] = song_row['entry_type']
@@ -223,25 +92,8 @@ class Election(Event):
 		return elec
 
 	@classmethod
-	def load_by_type(cls, sid, type):
-		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_used = FALSE AND sid = %s ORDER BY elec_id", (type, sid))
-		if not elec_id:
-			raise ElectionDoesNotExist("No election of type %s exists" % type)
-		return cls.load_by_id(elec_id)
-
-	@classmethod
-	def load_unused(cls, sid, min_elec_id = 0, limit = None):
-		if not limit:
-			limit = config.get_station(sid, "num_planned_elections")
-		ids = db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE elec_used = FALSE AND sid = %s AND elec_id > %s ORDER BY elec_id LIMIT %s", (sid, min_elec_id, limit))
-		elecs = []
-		for unused_id in ids:
-			elecs.append(cls.load_by_id(unused_id))
-		return elecs
-
-	@classmethod
 	def create(cls, sid):
-		elec_id = db.c.get_next_id("r4_schedule", "sched_id")
+		elec_id = db.c.get_next_id("r4_elections", "elec_id")
 		elec = cls(sid)
 		elec.is_election = True
 		elec.id = elec_id
@@ -379,6 +231,7 @@ class Election(Event):
 		# ONLY RUN IS_REQUEST_NEEDED ONCE
 		if self.is_request_needed() and len(self.songs) < self._num_songs:
 			log.debug("requests", "Ready for requests, filling %s." % self._num_requests)
+			# TODO: Do requests need to be timed to the target?
 			for i in range(0, self._num_requests):
 				self.add_song(self.get_request())
 
@@ -494,66 +347,3 @@ class Election(Event):
 
 	def delete(self):
 		return db.c.update("DELETE FROM r4_elections WHERE elec_id = %s", (self.id,))
-
-class PVPElection(Election):
-	def __init__(self):
-		self._num_requests = 2
-		self._num_songs = 2
-
-	def is_request_needed(self):
-		global _request_sequence
-		_request_sequence[self.sid] = 0
-		return True
-
-# An election that's setup by a DJ/admin, with predefined songs
-class DJElection(Election):
-	def __init__(self):
-		super(DJElectin, self).__init__()
-		self.type = "Election"
-
-	def is_request_needed(self):
-		return False
-
-class OneUp(Event):
-	@classmethod
-	def load_by_id(cls, sched_id):
-		row = db.c.fetch_row("SELECT * FROM r4_schedule JOIN r4_one_ups USING (sched_id) WHERE r4_schedule.sched_id = %s", (sched_id,))
-		if not row:
-			raise InvalidScheduleID
-		one_up = cls()
-		one_up._update_from_dict(row)
-		one_up.songs = [ playlist.Song.load_from_id(row['song_id']) ]
-		one_up.end = one_up.start + one_up.length()
-		return one_up
-
-	@classmethod
-	def create(cls, sid, start, song_id):
-		song = playlist.Song.load_from_id(song_id)
-		one_up = super(OneUp, cls).create(sid=sid, start=start, end=start+song.data['length'], public=False)
-		db.c.update("INSERT INTO r4_one_ups (sched_id, song_id) VALUES (%s, %s)", (one_up.id, song_id))
-		one_up.songs = [ song ]
-		return one_up
-
-	def get_filename(self):
-		return self.songs[0].filename
-
-	def get_song(self):
-		return self.songs[0]
-
-	def length(self):
-		return self.songs[0].data['length']
-
-	def to_dict(self, user = None, **kwargs):
-		obj = super(OneUp, self).to_dict(user)
-		obj['songs'] = [ self.songs[0].to_dict(user) ]
-		return obj
-
-# How this works is TBD.
-class OneUpSeries(object):
-	def __init__(self):
-		pass
-
-	def add_song(self, song):
-		pass
-
-# Other events (Jingle, LiveShow) will be developed later.

@@ -1,0 +1,178 @@
+import random
+import math
+import time
+
+from libs import db
+from libs import config
+from libs import cache
+from libs import log
+from rainwave import playlist
+from rainwave import request
+from rainwave.user import User
+
+all_producers = {}
+
+class register_producer(object):
+	def __call__(self, cls):
+		global all_producers
+		all_producers[cls.__name__] = cls
+		return cls
+
+class InvalidScheduleID(Exception):
+	pass
+
+class InvalidScheduleType(Exception):
+	pass
+
+class EventAlreadyUsed(Exception):
+	pass
+
+class BaseProducer(object):
+	@classmethod
+	def load_producer_by_id(cls, sched_id):
+		row = db.c.fetch_row("SELECT * FROM r4_schedule WHERE sched_id = %s")
+		p = None
+		if row['type'] in all_producers:
+			p = all_producers[row['type']](row['sid'])
+		else:
+			raise Exception("Unknown producer type %s." % row['type'])
+		p.start = row['sched_start']
+		p.start_actual = row['sched_start_actual']
+		p.end = row['sched_end']
+		p.end_actual = row['sched_end_actual']
+		p.name = row['sched_name']
+		p.public = row['sched_public']
+		p.timed = row['sched_timed']
+		p.in_progress = row['sched_in_progress']
+		p.used = row['sched_used']
+		p.use_crossfade = row['sched_use_crossfade']
+		p.use_tag_suffix = row['sched_use_tag_sufix']
+		return p
+
+	@classmethod
+	def create(cls, sid, start, end, name = None, public = True, timed = False, url = None, use_crossfade = True, use_tag_suffix = True):
+		evt = cls(sid)
+		evt.id = db.c.get_next_id("r4_schedule", "sched_id")
+		evt.start = start
+		evt.end = end
+		evt.name = name
+		evt.sid = sid
+		evt.public = public
+		evt.timed = timed
+		evt.url = url
+		evt.use_crossfade = use_crossfade
+		evt.use_tag_suffix = use_tag_suffix
+		db.c.update("INSERT INTO r4_schedule "
+					"(sched_id, sched_start, sched_end, sched_type, sched_name, sid, sched_public, sched_timed, sched_url, sched_use_crossfade, sched_use_tag_suffix) VALUES "
+					"(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+					(evt.id, evt.start, evt.end, evt.type, evt.name, evt.sid, evt.public, evt.timed, evt.url, evt.use_crossfade, evt.use_tag_suffix))
+
+	def __init__(self, sid):
+		self.sid = sid
+		self.id = None
+		self.start = 0
+		self.start_actual = None
+		self.end = None
+		self.end_actual = None
+		self.type = self.__class__.__name__
+		self.name = None
+		self.public = True
+		self.timed = True
+		self.url = None
+		self.in_progress = False
+		self.used = False
+		self.use_crossfade = True
+		self.use_tag_suffix = True
+		self.plan_ahead_limit = 1
+
+	def load_next_event(self, start_time, target_length, min_elec_id):
+		raise Exception("No event type specified.")
+
+	def start(self):
+		self.start_actual = int(time.time())
+		if self.id:
+			db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (self.start_actual, self.id))
+
+	def finish(self):
+		self.end_actual = int(time.time())
+		if self.id:
+			db.c.update("UPDATE r4_schedule SET sched_used = TRUE, sched_in_progress = FALSE, sched_end_actual = %s WHERE sched_id = %s", (self.end_actual, self.id))
+
+class BaseEvent(object):
+	def __init__(self):
+		self.id = None
+		self.type = self.__class__.__name__
+		self.start = None
+		self.start_actual = None
+		self.start_predicted = None
+		self.use_crossfade = True
+		self.use_tag_suffix = True
+		self.end = None
+		self.end_actual = None
+		self.used = False
+		self.url = None
+		self.is_election = False
+		self.replay_gain = None
+
+	def _update_from_dict(self, dict):
+		pass
+
+	def get_filename(self):
+		pass
+
+	def get_song(self):
+		pass
+
+	def prepare_event(self):
+		self.replay_gain = self.get_song().replay_gain
+
+	def finish(self):
+		self.used = True
+		self.in_progress = False
+		self.end = int(time.time())
+
+		song = self.get_song()
+		if song:
+			song.update_last_played(self.sid)
+			song.start_cooldown(self.sid)
+
+	def length(self):
+		if not self.used and hasattr(self, "songs"):
+			l = 0
+			for song in self.songs:
+				l += song.length()
+			return l
+		elif self.start_actual:
+			return self.start_actual - self.end
+		return self.start - self.end
+
+	def start_event(self):
+		if self.in_progress and not self.used:
+			return
+		elif self.used:
+			raise EventAlreadyUsed
+		self.start_actual = int(time.time())
+		self.in_progress = True
+
+	def to_dict(self, user = None, **kwargs):
+		obj = {
+			"id": self.id,
+			"start": self.start,
+			"start_actual": self.start_actual,
+			"start_predicted": self.start_predicted,
+			"end": self.end_actual or self.end,
+			"type": self.type,
+			"name": self.name,
+			"sid": self.sid,
+			"url": self.url,
+			"voting_allowed": False
+		}
+		if user and user.data['radio_admin'] > 0:
+			obj['public'] = self.public
+			obj['timed'] = self.timed
+		if hasattr(self, "songs"):
+			if self.start_actual:
+				obj['end'] = self.start_actual + self.length()
+			elif self.start:
+				obj['end'] = self.start + self.length()
+		return obj;

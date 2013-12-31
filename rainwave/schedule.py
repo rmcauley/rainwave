@@ -345,28 +345,6 @@ def _get_or_create_election(sid, start_time = None, target_length = None):
 	else:
 		return _create_election(sid, start_time, target_length)
 
-def _create_election(sid, start_time = None, target_length = None):
-	log.debug("create_elec", "Creating election for sid %s, start time %s target length %s." % (sid, start_time, target_length))
-	db.c.update("START TRANSACTION")
-	try:
-		# Check to see if there are any events during this time
-		elec_scheduler = None
-		if start_time:
-			elec_scheduler = get_event_at_time(sid, start_time)
-		# If there are, and it makes elections (e.g. PVP Hours), get it from there
-		if elec_scheduler and elec_scheduler.produces_elections:
-			elec_scheduler.create_election(sid)
-		else:
-			elec = event.Election.create(sid)
-		elec.fill(target_length)
-		if elec.length() == 0:
-			raise Exception("Created zero-length election.")
-		db.c.update("COMMIT")
-		return elec
-	except:
-		db.c.update("ROLLBACK")
-		raise
-
 def _trim(sid):
 	# Deletes any events in the schedule and elections tables that are old, according to the config
 	current_time = int(time.time())

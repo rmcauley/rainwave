@@ -414,39 +414,35 @@ def create_tables():
 		CREATE TABLE r4_schedule ( \
 			sched_id				SERIAL		PRIMARY KEY, \
 			sched_start				INTEGER		, \
-			sched_start_actual			INTEGER		, \
+			sched_start_actual		INTEGER		, \
 			sched_end				INTEGER		, \
-			sched_end_actual			INTEGER		, \
-			sched_type				TEXT	, \
+			sched_end_actual		INTEGER		, \
+			sched_type				TEXT		, \
 			sched_name				TEXT		, \
-			sid					SMALLINT	NOT NULL, \
-			sched_public				BOOLEAN		DEFAULT TRUE, \
+			sid						SMALLINT	NOT NULL, \
+			sched_public			BOOLEAN		DEFAULT TRUE, \
 			sched_timed				BOOLEAN		DEFAULT TRUE, \
-			sched_url				TEXT		, \
-			sched_in_progress			BOOLEAN		DEFAULT FALSE, \
+			sched_in_progress		BOOLEAN		DEFAULT FALSE, \
 			sched_used				BOOLEAN		DEFAULT FALSE, \
-			sched_dj_user_id			INT, \
-			sched_creator_user_id		INT \
+			sched_use_crossfade		BOOLEAN		DEFAULT TRUE, \
+			sched_use_tag_suffix	BOOLEAN		DEFAULT TRUE \
+			sched_creator_user_id	INT \
 		)")
+	c.create_idx("r4_schedule", "sched_used")
 	c.create_idx("r4_schedule", "sched_in_progress")
 	c.create_idx("r4_schedule", "sched_public")
 	c.create_idx("r4_schedule", "sched_start_actual")
 
 	c.update(" \
 		CREATE TABLE r4_elections ( \
-			elec_id					INTEGER		PRIMARY KEY, \
+			elec_id					SERIAL		PRIMARY KEY, \
 			elec_used				BOOLEAN		DEFAULT FALSE, \
-			elec_in_progress			BOOLEAN		DEFAULT FALSE, \
-			elec_start_actual			INTEGER		, \
+			elec_in_progress		BOOLEAN		DEFAULT FALSE, \
+			elec_start_actual		INTEGER		, \
 			elec_type				TEXT		, \
-			elec_priority				BOOLEAN		DEFAULT FALSE, \
-			sid					SMALLINT	NOT NULL \
+			elec_priority			BOOLEAN		DEFAULT FALSE, \
+			sid						SMALLINT	NOT NULL \
 		)")
-	# If we're using Postgres, make the Election ID use the same sequence
-	# as schedule_id for unique numbers so there's one unified "event ID".
-	if c.is_postgres:
-		c.update("ALTER TABLE r4_elections ALTER COLUMN elec_id SET DEFAULT nextval('r4_schedule_sched_id_seq')")
-		c.update("ALTER TABLE r4_elections ALTER COLUMN elec_id SET NOT NULL")
 	c.create_idx("r4_elections", "elec_used")
 	c.create_idx("r4_elections", "sid")
 
@@ -465,18 +461,11 @@ def create_tables():
 	c.create_delete_fk("r4_election_entries", "r4_elections", "elec_id")
 
 	c.update(" \
-		CREATE TABLE r4_election_queue ( \
-			elecq_id				SERIAL		PRIMARY KEY, \
-			song_id					INTEGER		, \
-			sid					SMALLINT	NOT NULL \
-		)")
-	# c.create_idx("r4_election_queue", "song_id")		# handled by create_delete_fk
-	c.create_delete_fk("r4_election_queue", "r4_songs", "song_id")
-
-	c.update(" \
 		CREATE TABLE r4_one_ups ( \
 			sched_id				INTEGER		NOT NULL, \
-			song_id					INTEGER		NOT NULL \
+			song_id					INTEGER		NOT NULL, \
+			one_up_order			SMALLINT	, \
+			one_up_used				BOOLEAN		DEFAULT FALSE \
 		)")
 	# c.create_idx("r4_one_ups", "sched_id")		# handled by create_delete_fk
 	# c.create_idx("r4_one_ups", "song_id")
@@ -486,16 +475,16 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_listeners ( \
 			listener_id				SERIAL		PRIMARY KEY, \
-			sid					SMALLINT	NOT NULL, \
+			sid						SMALLINT	NOT NULL, \
 			listener_ip				TEXT		, \
-			listener_relay				TEXT		, \
-			listener_agent				TEXT		, \
-			listener_icecast_id			INTEGER		NOT NULL, \
-			listener_lock				BOOLEAN		DEFAULT FALSE, \
-			listener_lock_sid			SMALLINT	, \
-			listener_lock_counter			SMALLINT	DEFAULT 0, \
-			listener_purge				BOOLEAN		DEFAULT FALSE, \
-			listener_voted_entry			INTEGER		, \
+			listener_relay			TEXT		, \
+			listener_agent			TEXT		, \
+			listener_icecast_id		INTEGER		NOT NULL, \
+			listener_lock			BOOLEAN		DEFAULT FALSE, \
+			listener_lock_sid		SMALLINT	, \
+			listener_lock_counter	SMALLINT	DEFAULT 0, \
+			listener_purge			BOOLEAN		DEFAULT FALSE, \
+			listener_voted_entry	INTEGER		, \
 			user_id					INTEGER		DEFAULT 1 \
 		)")
 	c.create_idx("r4_listeners", "sid")
