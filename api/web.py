@@ -399,24 +399,26 @@ class PrettyPrintAPIMixin(object):
 		super(APIHandler, self).prepare()
 		self._real_post()
 
-	def get(self):
-		self.write(self.render_string("basic_header.html", title=self.locale.translate(self.return_name)))
+	def get(self, write_header=True):
+		if write_header:
+			self.write(self.render_string("basic_header.html", title=self.locale.translate(self.return_name)))
 		for output_key, json in self._output.iteritems():
 			if type(json) != types.ListType:
 				continue
-			self.write("<table><th>#</th>")
-			keys = self.sort_keys(json[0].keys())
-			for key in keys:
-				self.write("<th>%s</th>" % self.locale.translate(key))
-			self.write("</th>")
-			i = 1
-			for row in json:
-				self.write("<tr><td>%s</td>" % i)
+			if len(json) > 0:
+				self.write("<table><th>#</th>")
+				keys = self.sort_keys(json[0].keys())
 				for key in keys:
-					self.write("<td>%s</td>" % row[key])
-				self.write("</tr>")
-				i = i + 1
-			self.write("</table>")
+					self.write("<th>%s</th>" % self.locale.translate(key))
+				self.write("</th>")
+				i = 1
+				for row in json:
+					self.write("<tr><td>%s</td>" % i)
+					for key in keys:
+						self.write("<td>%s</td>" % row[key])
+					self.write("</tr>")
+					i = i + 1
+				self.write("</table>")
 		self.write(self.render_string("basic_footer.html"))
 
 	def sort_keys(self, keys):
