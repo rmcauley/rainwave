@@ -36,6 +36,7 @@ class BaseProducer(object):
 			p = all_producers[row['type']](row['sid'])
 		else:
 			raise Exception("Unknown producer type %s." % row['type'])
+		p.id = row['sched_id']
 		p.start = row['sched_start']
 		p.start_actual = row['sched_start_actual']
 		p.end = row['sched_end']
@@ -47,6 +48,7 @@ class BaseProducer(object):
 		p.used = row['sched_used']
 		p.use_crossfade = row['sched_use_crossfade']
 		p.use_tag_suffix = row['sched_use_tag_sufix']
+		p.load()
 		return p
 
 	@classmethod
@@ -97,6 +99,9 @@ class BaseProducer(object):
 		self.end_actual = int(time.time())
 		if self.id:
 			db.c.update("UPDATE r4_schedule SET sched_used = TRUE, sched_in_progress = FALSE, sched_end_actual = %s WHERE sched_id = %s", (self.end_actual, self.id))
+
+	def load(self):
+		pass
 
 class BaseEvent(object):
 	def __init__(self):

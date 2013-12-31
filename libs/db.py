@@ -584,23 +584,6 @@ def create_tables():
 	c.create_delete_fk("r4_api_keys", "phpbb_users", "user_id")
 
 	c.update(" \
-		CREATE TABLE r4_oneup_lists ( \
-			oneuplist_id				SERIAL		PRIMARY KEY, \
-			sched_id				INTEGER		\
-		)")
-	# c.create_idx("r4_oneup_lists", "sched_id")		# handled by create_delete_fk
-	c.create_delete_fk("r4_oneup_lists", "r4_schedule", "sched_id")
-
-	c.update(" \
-		CREATE TABLE r4_oneup_list_content ( \
-			oneuplist_id				INTEGER		NOT NULL, \
-			song_id					INTEGER		NOT NULL, \
-			oneup_position				SMALLINT	\
-		)")
-	c.create_delete_fk("r4_oneup_list_content", "r4_songs", "song_id")
-	c.create_delete_fk("r4_oneup_list_content", "r4_oneup_lists", "oneuplist_id")
-
-	c.update(" \
 		CREATE TABLE r4_song_history ( \
 			songhist_id				SERIAL		PRIMARY KEY, \
 			songhist_time			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \

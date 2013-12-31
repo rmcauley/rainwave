@@ -13,7 +13,20 @@ from rainwave.events import event
 
 @event.register_producer
 class OneUpProducer(event.baseProducer):
-	pass
+	def load_next_event(self, start_time, target_length, min_elec_id):
+		next_song_id = db.c.fetch_var("SELECT song_id FROM r4_one_ups WHERE sched_id = %s AND one_up_used = FALSE ORDER BY one_up_order LIMIT 1", (self.id,))
+		if next_song_id:
+			db.c.update("UPDATE r4_one_ups SET one_up_used = TRUE WHERE sched_id = %s and song_id = %s", (self.id, next_song_id))
+			return playlist.Song.load_from_id(next_song_id, self.sid)
+		else:
+			return None
+
+	def add_song_id(self, song_id, order = None):
+		if not order:
+			order = db.c.fetch_var("SELECT MAX(one_up_order) FROM r4_one_ups WHERE sched_id = %s GROUP BY sched_id", (self.id,))
+			if not order:
+				order = 0
+		db.c.update("INSERT INTO r4_one_ups (sched_id, song_id, one_up_order) VALUES (%s, %s, %s)", (self.id, song_id, order))
 
 class OneUp(event.BaseEvent):
 	@classmethod
