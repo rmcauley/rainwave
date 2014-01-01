@@ -42,7 +42,7 @@ def load():
 			# TODO: Have this load a list of empty "song" events, since this is a last resort
 			history[sid] = []
 			# Only loads elections but this should be good enough for history 99% of the time.
-			for elec_id in db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE elec_start_actual < %s ORDER BY elec_start_actual DESC LIMIT 5", (current[sid].start_actual,)):
+			for elec_id in db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE elec_used = TRUE AND elec_start_actual < %s ORDER BY elec_start_actual DESC LIMIT 5", (current[sid].start_actual,)):
 				history[sid].insert(0, election.Election.load_by_id(elec_id))
 
 def get_event_in_progress(sid):
@@ -85,7 +85,6 @@ def advance_station(sid):
 	start_time = time.time()
 	next[sid][0].prepare_event()
 	log.debug("advance", "Next[0] preparation time: %.6f" % (time.time() - start_time,))
-	_update_schedule_memcache(sid)
 
 	tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(milliseconds=150), lambda: post_process(sid))
 
@@ -131,7 +130,7 @@ def post_process(sid):
 	user.trim_listeners(sid)
 	cache.update_user_rating_acl(sid, history[sid][0].get_song().id)
 	user.unlock_listeners(sid)
-	log.debug("advance", "User management: %.6f" % (time.time() - start_time,))
+	log.debug("advance", "User management and trimming: %.6f" % (time.time() - start_time,))
 
 	start_time = time.time()
 	playlist.warm_cooled_songs(sid)
@@ -159,6 +158,7 @@ def _get_schedule_stats(sid):
 	global current
 	
 	max_sched_id = 0
+	max_elec_id = None
 	end_time = int(time.time())
 	if sid in current and current[sid]:
 		max_sched_id = current[sid].id
@@ -166,7 +166,8 @@ def _get_schedule_stats(sid):
 			end_time = current[sid].start + current[sid].length()
 		else:
 			end_time += current[sid].length()
-	max_elec_id = 0
+		if current[sid].is_election:
+			max_elec_id = current[sid].id
 	num_elections = 0
 
 	if sid in next:
@@ -178,18 +179,25 @@ def _get_schedule_stats(sid):
 			elif not e.is_election and e.id > max_sched_id:
 				max_sched_id = e.id
 			end_time += e.length()
+
+	if not max_elec_id:
+		max_elec_id = db.c.fetch_row("SELECT elec_id FROM r4_elections WHERE elec_used = TRUE ORDER BY elec_id DESC LIMIT 1")
+
 	return (max_sched_id, max_elec_id, num_elections, end_time)
 
 def manage_next(sid):
 	max_sched_id, max_elec_id, num_elections, max_future_time = _get_schedule_stats(sid)
 	next_producer = get_producer_at_time(sid, max_future_time)
 	while len(next[sid]) < next_producer.plan_ahead_limit:
-		next_event = next_producer.load_next_event()
-		if next_event:
-			next[sid].append(next_producer.load_next_event())
-		else:
+		# TODO: target_length
+		target_length = None
+		next_event = next_producer.load_next_event(target_length, max_elec_id)
+		if not next_event:
 			ep = election.ElectionProducer(sid)
-			next[sid].append(ep.load_next_event())
+			next_event = ep.load_next_event(target_length, max_elec_id)
+		next[sid].append(next_event)
+		if next_event.is_election and next_event.id > max_elec_id:
+			max_elec_id = next_event.id
 		max_future_time += next[sid][-1].length()
 		next_producer = get_producer_at_time(sid, max_future_time)
 
