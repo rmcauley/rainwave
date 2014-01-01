@@ -120,6 +120,7 @@ class BaseEvent(object):
 		self.url = None
 		self.is_election = False
 		self.replay_gain = None
+		self.name = None
 
 	def _update_from_dict(self, dict):
 		pass

@@ -183,9 +183,6 @@ class User(object):
 			self.data['radio_tuned_in'] = False
 
 		if (self.id > 1) and cache.get_station(self.request_sid, "sched_current"):
-			if cache.get_station(self.request_sid, "sched_current").get_dj_user_id() == self.id:
-				self.data['radio_dj'] = True
-
 			self.data['radio_request_position'] = self.get_request_line_position(self.data['sid'])
 			self.data['radio_request_expires_at'] = self.get_request_expiry()
 

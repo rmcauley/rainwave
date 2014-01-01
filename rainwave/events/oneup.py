@@ -47,3 +47,10 @@ class OneUp(event.BaseEvent):
 	def start(self):
 		super(OneUp, self).start()
 		db.c.update("UPDATE r4_one_ups SET one_up_used = TRUE WHERE sched_id = %s AND song_id = %s", (self.id, self.songs[0].id))
+		self.used = True
+	
+	def finish(self):
+		if not self.used:
+			db.c.update("UPDATE r4_one_ups SET one_up_used = TRUE WHERE sched_id = %s AND song_id = %s", (self.id, self.songs[0].id))
+			self.used = True
+		super(OneUp, self).finish()

@@ -181,8 +181,8 @@ def _get_schedule_stats(sid):
 	return (max_sched_id, max_elec_id, num_elections, end_time)
 
 def manage_next(sid):
-	max_sched_id, max_elec_id, num_elections, future_time = _get_schedule_stats(sid)
-	next_producer = get_producer_at_time(sid, future_time)
+	max_sched_id, max_elec_id, num_elections, max_future_time = _get_schedule_stats(sid)
+	next_producer = get_producer_at_time(sid, max_future_time)
 	while len(next[sid]) < next_producer.plan_ahead_limit:
 		next_event = next_producer.load_next_event()
 		if next_event:
@@ -190,8 +190,17 @@ def manage_next(sid):
 		else:
 			ep = election.ElectionProducer(sid)
 			next[sid].append(ep.load_next_event())
-		future_time += next[sid][-1].length()
-		next_producer = get_producer_at_time(sid, future_time)
+		max_future_time += next[sid][-1].length()
+		next_producer = get_producer_at_time(sid, max_future_time)
+
+	future_time = None
+	if current[sid].start:
+		future_time = current[sid].start + current[sid].length()
+	else:
+		future_time = int(time.time() + current[sid].length())
+	for evt in next[sid]:
+		evt.start = future_time
+		future_time += evt.length()
 
 def _get_or_create_election(sid, target_length = None):
 	max_sched_id, max_elec_id, num_elections, next_end_time = _get_schedule_stats(sid)

@@ -81,7 +81,6 @@ class Election(event.BaseEvent):
 		elec.used = row['elec_used']
 		elec.start = None
 		elec.start_actual = row['elec_start_actual']
-		elec.start_predicted = None
 		elec.in_progress = row['elec_in_progress']
 		elec.sid = row['sid']
 		elec.songs = []
