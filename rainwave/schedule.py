@@ -193,97 +193,11 @@ def manage_next(sid):
 		future_time += next[sid][-1].length()
 		next_producer = get_producer_at_time(sid, future_time)
 
-
-def sort_next(sid, do_elections = False):
-	return None;
-	"""
-	DEPRECATED AND DISABLED.  Sort the next events list, and calibrate the start points of each event.
-	"""
-	# global next
-	# # Filter out any None events (this has happened, despite the fact that it shouldn't, due to caching and other issues.  I'm not perfect.)
-	# # next[sid] = filter(None, next[sid])
-	# if len(next[sid]) == 0:
-	# 	log.warn("sort_next", "Length of next events on sid %s is %s [problem: is zero] :: %s" % (sid, len(next[sid]), next[sid]))
-	# 	if config.get_station(sid, "num_planned_elections") > 0:
-	# 		for i in range(0, config.get_station(sid, "num_planned_elections")):
-	# 			_get_or_create_election(sid)
-	# 	else:
-	# 		return
-
-	# # Rip out anything with a scheduled start time, so we can insert it at the most appropriate time in the flow later
-	# # This resists admins tampering with the flow that would result in bouncing scheduled events too far behind their
-	# # intended start time
-	# timed_events = []
-	# for i in range(len(next[sid]), 0):
-	# 	if next[sid][i].start != 0:
-	# 		timed_events.append(next[sid].pop(i))
-	# # Sort events by their scheduled times.  In later loops this helps, since we only have to look at index 0 for the next event.
-	# timed_events = sorted(timed_events, key=lambda e: e.start)
-
-	# # This loop determines predicted start times and re-inserts scheduled/timed events in the most appropriate place
-	# i = 0
-	# num_elections = 0
-	# while i < len(next[sid]):
-	# 	# ARGH ARGH ARGH ARGH ARGH ARGH ARGH ARGH DIRTY DIRTY DIRTY DIRTY
-	# 	if i == 0:
-	# 		next[sid][i].start_predicted = current[sid].start_actual + current[sid].length()
-	# 	else:
-	# 		next[sid][i].start_predicted = next[sid][i - 1].start_predicted + next[sid][i - 1].length()
-	# 	if (len(timed_events) > 0):
-	# 		# Calculate what's closer to the closest timed event: before this event, or after this event
-	# 		this_time_diff_to_event = abs(timed_events[0].start - next[sid][i].start_predicted)
-	# 		next_time_diff_to_event = abs(timed_events[0].start - next[sid][i].start_predicted + next[sid][i].length())
-	# 		# Our current point in the flow is sooner - insert the timed event here
-	# 		if this_time_diff_to_event < next_time_diff_to_event:
-	# 			timed_events[0].start_predicted = next[sid][i].start_predicted
-	# 			next[sid][i].start_predicted += timed_events[0].length()
-	# 			next[sid].insert(i, timed_events.pop(0))
-	# 	if next[sid][i].is_election:
-	# 		num_elections += 1
-	# 	i += 1
-
-	# if do_elections:
-	# 	log.debug("sort_next", "Number of elections currently in next: %s" % num_elections)
-	# 	# Create elections to append directly to next[sid] at the end, if we haven't hit the necessary number of elections yet
-	# 	while num_elections < config.get_station(sid, "num_planned_elections"):
-	# 		time_to_next = None
-	# 		target_length = None
-	# 		if len(timed_events) > 0:
-	# 			time_to_next = timed_events[0].start - next[sid][-1].start_predicted
-	# 			if time_to_next < (playlist.get_average_song_length(sid) * 1.5):
-	# 				target_length = time_to_next
-	# 			elif time_to_next < (playlist.get_average_song_length(sid) * 2.5):
-	# 				target_length = playlist.get_average_song_length(sid)
-	# 		elec = _get_or_create_election(sid, target_length=target_length)
-	# 		num_elections += 1
-	# 		# If the election length is longer than the predicted time to the timed event,
-	# 		# it'd be more accurate to put the timed event BEFORE the created election
-	# 		if time_to_next and elec.length() > time_to_next:
-	# 			timed_events[0].start_predicted = next[sid][-1].start_predicted + next[sid][-1].length()
-	# 			next[sid].append(timed_events.pop(0))
-	# 		if len(next[sid]) > 0:
-	# 			elec.start_predicted = next[sid][-1].start_predicted + next[sid][-1].length()
-	# 		else:
-	# 			elec.start_predicted = current[sid].start_predicted + current[sid].length()
-	# 		next[sid].append(elec)
-
-	# # We're going to have some leftover timed events that are just too far in the future
-	# # for us to worry about at the moment.  We'll set their predicted start times to their scheduled
-	# # start times and append them to the schedule.  Clients will have to decide how to deal
-	# # with displaying them on their own.
-	# while len(timed_events) > 0:
-	# 	timed_events[0].start_predicted = timed_events[0].start
-	# 	next[sid].append(timed_events.pop(0))
-
-def _get_or_create_election(sid, start_time = None, target_length = None):
+def _get_or_create_election(sid, target_length = None):
 	max_sched_id, max_elec_id, num_elections, next_end_time = _get_schedule_stats(sid)
 
-	unused_elecs = event.Election.load_unused(sid, min_elec_id=max_elec_id, limit=1)
-	if len(unused_elecs) > 0:
-		log.debug("get_election", "SID %s returning unused election ID %s" % (sid, unused_elecs[0].id))
-		return unused_elecs[0]
-	else:
-		return _create_election(sid, start_time, target_length)
+	ep = event.election.ElectionProducer(sid)
+	return ep.load_next_event(target_length=target_length, min_elec_id=max_elec_id)
 
 def _trim(sid):
 	# Deletes any events in the schedule and elections tables that are old, according to the config
