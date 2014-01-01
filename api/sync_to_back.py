@@ -11,7 +11,7 @@ def sync_result(response):
 		log.warn("sync_back", "Response: %s" % response.body)
 		log.warn("sync_back", "Error %s syncing to backend at URL %s." % (response.code, response.request.url))
 
-def refresh_schedule(sid):
-	http_client = AsyncHTTPClient()
-	http_client.fetch("http://localhost:%s/refresh/%s" % (config.get("backend_port"), sid), sync_result, method='GET')
-	log.debug("sync_back", "Sent refresh_schedule to backend port %s" % config.get("backend_port"))
+# def refresh_schedule(sid):
+# 	http_client = AsyncHTTPClient()
+# 	http_client.fetch("http://localhost:%s/refresh/%s" % (config.get("backend_port"), sid), sync_result, method='GET')
+# 	log.debug("sync_back", "Sent refresh_schedule to backend port %s" % config.get("backend_port"))

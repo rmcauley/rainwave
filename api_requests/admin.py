@@ -14,7 +14,7 @@ import api_requests.playlist
 from libs import config
 from libs import db
 from libs import cache
-from rainwave import event
+from rainwave import events
 from rainwave import playlist
 
 # This entire module is hastily thrown together and discards many of the standard API features
@@ -22,44 +22,44 @@ from rainwave import playlist
 # data, presentation, and so on.  It's for admins.  Not users.  QA and snazzy interfaces need not apply.
 # It only needs to work.
 
-@handle_api_url("admin/get_one_ups")
-class GetOneUps(api.web.APIHandler):
-	admin_required = True
-	description = "Lists all unused OneUps."
+# @handle_api_url("admin/get_one_ups")
+# class GetOneUps(api.web.APIHandler):
+# 	admin_required = True
+# 	description = "Lists all unused OneUps."
 
-	def post(self):
-		one_ups = []
-		for sched_id in db.c.fetch_list("SELECT r4_schedule.sched_id FROM r4_schedule WHERE sid = %s AND sched_used = FALSE ORDER BY sched_start, sched_id", (self.sid,)):
-			one_ups.append(event.load_by_id(sched_id).to_dict(self.user))
-		self.append("one_ups", one_ups)
+# 	def post(self):
+# 		one_ups = []
+# 		for sched_id in db.c.fetch_list("SELECT r4_schedule.sched_id FROM r4_schedule WHERE sid = %s AND sched_used = FALSE ORDER BY sched_start, sched_id", (self.sid,)):
+# 			one_ups.append(event.load_by_id(sched_id).to_dict(self.user))
+# 		self.append("one_ups", one_ups)
 
-@handle_api_url("admin/add_one_up")
-class AddOneUp(api.web.APIHandler):
-	admin_required = True
-	fields = { "song_id": (fieldtypes.song_id, True) }
-	description = "Adds a OneUp to the schedule."
+# @handle_api_url("admin/add_one_up")
+# class AddOneUp(api.web.APIHandler):
+# 	admin_required = True
+# 	fields = { "song_id": (fieldtypes.song_id, True) }
+# 	description = "Adds a OneUp to the schedule."
 
-	def post(self):
-		e = event.OneUp.create(self.sid, 0, self.get_argument("song_id"))
-		self.append(self.return_name, { "success": True, "sched_id": e.id, "text": "OneUp Added" })
-		sync_to_back.refresh_schedule(self.sid)
+# 	def post(self):
+# 		e = event.OneUp.create(self.sid, 0, self.get_argument("song_id"))
+# 		self.append(self.return_name, { "success": True, "sched_id": e.id, "text": "OneUp Added" })
+# 		sync_to_back.refresh_schedule(self.sid)
 
-@handle_api_url("admin/delete_one_up")
-class DeleteOneUp(api.web.APIHandler):
-	admin_required = True
-	fields = { "sched_id": (fieldtypes.sched_id, True) }
-	description = "Deletes a OneUp from the schedule. (regardless of whether it's used or not)"
+# @handle_api_url("admin/delete_one_up")
+# class DeleteOneUp(api.web.APIHandler):
+# 	admin_required = True
+# 	fields = { "sched_id": (fieldtypes.sched_id, True) }
+# 	description = "Deletes a OneUp from the schedule. (regardless of whether it's used or not)"
 
-	def post(self):
-		e = event.OneUp.load_by_id(self.get_argument("sched_id"))
-		if e.used:
-			raise Exception("OneUp already used.")
-		r = db.c.update("DELETE FROM r4_schedule WHERE sched_id = %s", (e.id,))
-		if r:
-			self.append(self.return_name, { "success": True, "text": "OneUp deleted." })
-			sync_to_back.refresh_schedule(self.sid)
-		else:
-			self.append(self.return_name, { "success": False, "text": "OneUp not deleted." })
+# 	def post(self):
+# 		e = event.OneUp.load_by_id(self.get_argument("sched_id"))
+# 		if e.used:
+# 			raise Exception("OneUp already used.")
+# 		r = db.c.update("DELETE FROM r4_schedule WHERE sched_id = %s", (e.id,))
+# 		if r:
+# 			self.append(self.return_name, { "success": True, "text": "OneUp deleted." })
+# 			sync_to_back.refresh_schedule(self.sid)
+# 		else:
+# 			self.append(self.return_name, { "success": False, "text": "OneUp not deleted." })
 
 @handle_api_url("admin/set_song_cooldown")
 class SetSongCooldown(api.web.APIHandler):
@@ -219,7 +219,7 @@ class CommitDJElection(api.web.APIHandler):
 		songs = cache.get_user(self.user.id, "dj_election")
 		if not songs:
 			raise APIException("no_dj_election", "No songs found queued for a DJ election.")
-		elec = event.DJElection.create(self.sid)
+		elec = events.election.Election.create(self.sid)
 		for song in songs:
 			elec.add_song(song)
 		if self.get_argument("priority"):

@@ -27,28 +27,37 @@ class InvalidElectionID(Exception):
 class ElectionDoesNotExist(Exception):
 	pass
 
-@event.register_producer
-class ElectionProducer(object):
-	elec_type = 'Election'
-	elec_class = Election
+import pdb
+# pdb.set_trace()
 
+@event.register_producer
+class ElectionProducer(event.BaseProducer):
 	def __init__(self, sid):
 		super(ElectionProducer, self).__init__(sid)
 		self.sid = sid
 		self.plan_ahead_limit = config.get_station(sid, "num_planned_elections")
+		self.elec_type = "Election"
+		self.elec_class = Election
 
-	def load_next_event(self, start_time, target_length, min_elec_id):
-		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = '%s' and elec_used = FALSE AND sid = %s AND elec_id > %s ORDER BY elec_id LIMIT 1", (elec_type, self.sid, min_elec_id))
+	def load_next_event(self, target_length = None, min_elec_id = 0):
+		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s ORDER BY elec_id LIMIT 1", (self.elec_type, self.sid, min_elec_id))
 		if elec_id:
-			return Election.load_by_id(elec_id)
+			return self.elec_class.load_by_id(elec_id)
 		else:
-			return _create_election(start_time, target_length)
+			return self._create_election(target_length)
 
-	def _create_election(sid, start_time, target_length):
-		log.debug("create_elec", "Creating election type %s for sid %s, start time %s target length %s." % (elec_type, sid, start_time, target_length))
+	def load_event_in_progress(self):
+		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s ORDER BY elec_id DESC LIMIT 1", (self.elec_type, self.sid))
+		if elec_id:
+			return self.elec_class.load_by_id(elec_id)
+		else:
+			return self.load_next_event()
+
+	def _create_election(self, target_length):
+		log.debug("create_elec", "Creating election type %s for sid %s, target length %s." % (self.elec_type, self.sid, target_length))
 		db.c.update("START TRANSACTION")
 		try:
-			elec = elec_class.create(sid)
+			elec = self.elec_class.create(self.sid)
 			elec.fill(target_length)
 			if elec.length() == 0:
 				raise Exception("Created zero-length election.")
@@ -59,7 +68,7 @@ class ElectionProducer(object):
 			raise
 
 # Normal election
-class Election(Event):
+class Election(event.BaseEvent):
 	@classmethod
 	def load_by_id(cls, elec_id):
 		elec = cls()
@@ -117,6 +126,7 @@ class Election(Event):
 			self._num_songs = config.get_station(sid, "songs_in_election")
 		else:
 			self._num_songs = 3
+		self.is_election = True
 
 	def fill(self, target_song_length = None):
 		self._add_from_queue()

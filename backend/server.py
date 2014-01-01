@@ -85,9 +85,9 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		string += ":" + e.get_filename()
 		return string
 
-class RefreshScheduleRequest(tornado.web.RequestHandler):
-	def get(self, sid):
-		schedule.refresh_schedule(int(sid))
+# class RefreshScheduleRequest(tornado.web.RequestHandler):
+# 	def get(self, sid):
+# 		schedule.refresh_schedule(int(sid))
 
 def start():
 	db.open()
@@ -98,9 +98,9 @@ def start():
 	for sid in config.station_ids:
 		sid_output[sid] = None
 
+	# (r"/refresh/([0-9]+)", RefreshScheduleRequest)
 	app = tornado.web.Application([
 		(r"/advance/([0-9]+)", AdvanceScheduleRequest),
-		(r"/refresh/([0-9]+)", RefreshScheduleRequest)
 		], debug=(config.test_mode or config.get("developer_mode")))
 
 	server = tornado.httpserver.HTTPServer(app)

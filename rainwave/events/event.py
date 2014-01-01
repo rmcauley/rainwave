@@ -12,11 +12,10 @@ from rainwave.user import User
 
 all_producers = {}
 
-class register_producer(object):
-	def __call__(self, cls):
-		global all_producers
-		all_producers[cls.__name__] = cls
-		return cls
+def register_producer(cls):
+	global all_producers
+	all_producers[cls.__name__] = cls
+	return cls
 
 class InvalidScheduleID(Exception):
 	pass
@@ -30,6 +29,7 @@ class EventAlreadyUsed(Exception):
 class BaseProducer(object):
 	@classmethod
 	def load_producer_by_id(cls, sched_id):
+		global all_producers
 		row = db.c.fetch_row("SELECT * FROM r4_schedule WHERE sched_id = %s")
 		p = None
 		if row['type'] in all_producers:
@@ -87,7 +87,10 @@ class BaseProducer(object):
 		self.use_tag_suffix = True
 		self.plan_ahead_limit = 1
 
-	def load_next_event(self, start_time, target_length, min_elec_id):
+	def load_next_event(self, target_length = None, min_elec_id = None):
+		raise Exception("No event type specified.")
+
+	def load_event_in_progress(self):
 		raise Exception("No event type specified.")
 
 	def start(self):
@@ -104,12 +107,11 @@ class BaseProducer(object):
 		pass
 
 class BaseEvent(object):
-	def __init__(self):
+	def __init__(self, sid = None):
 		self.id = None
 		self.type = self.__class__.__name__
 		self.start = None
 		self.start_actual = None
-		self.start_predicted = None
 		self.use_crossfade = True
 		self.use_tag_suffix = True
 		self.end = None
@@ -123,10 +125,14 @@ class BaseEvent(object):
 		pass
 
 	def get_filename(self):
-		pass
+		if hasattr(self, "songs"):
+			return self.songs[0].filename
+		return None
 
 	def get_song(self):
-		pass
+		if hasattr(self, "songs"):
+			return self.songs[0]
+		return None
 
 	def prepare_event(self):
 		self.replay_gain = self.get_song().replay_gain
@@ -143,10 +149,7 @@ class BaseEvent(object):
 
 	def length(self):
 		if not self.used and hasattr(self, "songs"):
-			l = 0
-			for song in self.songs:
-				l += song.length()
-			return l
+			return self.songs[0].data['length']
 		elif self.start_actual:
 			return self.start_actual - self.end
 		return self.start - self.end
@@ -164,7 +167,6 @@ class BaseEvent(object):
 			"id": self.id,
 			"start": self.start,
 			"start_actual": self.start_actual,
-			"start_predicted": self.start_predicted,
 			"end": self.end_actual or self.end,
 			"type": self.type,
 			"name": self.name,
@@ -180,4 +182,7 @@ class BaseEvent(object):
 				obj['end'] = self.start_actual + self.length()
 			elif self.start:
 				obj['end'] = self.start + self.length()
+			obj['songs'] = []
+			for song in self.songs:
+				obj['songs'].append(song.to_dict(user))
 		return obj;

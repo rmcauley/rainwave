@@ -452,7 +452,7 @@ def create_tables():
 			song_id					INTEGER		NOT NULL, \
 			elec_id					INTEGER		NOT NULL, \
 			entry_type				SMALLINT	DEFAULT 2, \
-			entry_position				SMALLINT	, \
+			entry_position			SMALLINT	, \
 			entry_votes				SMALLINT	DEFAULT 0 \
 		)")
 	# c.create_idx("r4_election_entries", "song_id")	# handled by create_delete_fk

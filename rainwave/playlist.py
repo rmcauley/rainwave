@@ -159,7 +159,7 @@ def get_random_song(sid):
 	offset = 0
 	if num_available == 0:
 		log.info("song_select", "No songs available while ignoring request blocking rules.")
-		log.debug("song_select", "Song select query: SELECT COUNT(song_id) " + sql_query, (sid,))
+		log.debug("song_select", "Song select query: SELECT COUNT(song_id) " + (sql_query %  (sid,)))
 		return get_random_song_ignore_requests(sid)
 	else:
 		offset = random.randint(1, num_available) - 1
@@ -180,7 +180,7 @@ def get_random_song_ignore_requests(sid):
 	offset = 0
 	if num_available == 0:
 		log.info("song_select", "No songs available.")
-		log.debug("song_select", "Song select query: SELECT COUNT(song_id) " + sql_query, (sid,))
+		log.debug("song_select", "Song select query: SELECT COUNT(song_id) " + (sql_query %  (sid,)))
 		return get_random_song_ignore_all(sid)
 	else:
 		offset = random.randint(1, num_available) - 1
@@ -197,7 +197,7 @@ def get_random_song_ignore_all(sid):
 	offset = 0
 	if num_available == 0:
 		log.critical("song_select", "No songs exist.")
-		log.debug("song_select", "Song select query: SELECT COUNT(song_id) " + sql_query, (sid,))
+		log.debug("song_select", "Song select query: SELECT COUNT(song_id) " + (sql_query %  (sid,)))
 		raise Exception("Could not find any songs to play.")
 	else:
 		offset = random.randint(1, num_available) - 1
