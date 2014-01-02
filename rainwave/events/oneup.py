@@ -12,7 +12,7 @@ from rainwave.user import User
 from rainwave.events import event
 
 @event.register_producer
-class OneUpProducer(event.baseProducer):
+class OneUpProducer(event.BaseProducer):
 	def load_next_event(self, target_length = None, min_elec_id = None):
 		next_song_id = db.c.fetch_var("SELECT song_id FROM r4_one_ups WHERE sched_id = %s AND one_up_used = FALSE ORDER BY one_up_order LIMIT 1", (self.id,))
 		if next_song_id:
@@ -24,7 +24,9 @@ class OneUpProducer(event.baseProducer):
 	def load_in_progress_event(self):
 		next_song_id = db.c.fetch_var("SELECT song_id FROM r4_one_ups WHERE sched_id = %s AND one_up_used = TRUE ORDER BY one_up_order DESC LIMIT 1", (self.id,))
 		if next_song_id:
-			return 
+			return OneUp.load_by_id(self.id, next_song_id)
+		else:
+			return None
 
 	def add_song_id(self, song_id, order = None):
 		if not order:
@@ -32,6 +34,29 @@ class OneUpProducer(event.baseProducer):
 			if not order:
 				order = 0
 		db.c.update("INSERT INTO r4_one_ups (sched_id, song_id, one_up_order) VALUES (%s, %s, %s)", (self.id, song_id, order))
+		return True
+
+	def remove_song_id(self, song_id):
+		if db.c.update("DELETE FROM r4_one_ups WHERE song_id = %s AND sched_id = %s", (song_id, self.id)) >= 1:
+			return True
+		return False
+
+	def shuffle_songs(self):
+		song_ids = db.c.fetch_list("SELECT song_id FROM r4_one_ups WHERE sched_id = %s", (self.id,))
+		random.shuffle(song_ids)
+		i = 0
+		for song_id in song_ids:
+			db.c.update("UPDATE r4_one_ups SET one_up_order = %s WHERE sched_id = %s AND song_id = %s", (i, self.id, song_id))
+		return True
+
+	def load_all_songs(self):
+		self.songs = []
+		for song_id in db.c.fetch_list("SELECT song_id FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order", (self.id,)):
+			self.songs.append(playlist.Song.load_from_id(song_id, self.sid))
+
+	def to_dict(self):
+		self.load_all_songs()
+		return super(OneUpProducer, self).to_dict()
 
 class OneUp(event.BaseEvent):
 	@classmethod

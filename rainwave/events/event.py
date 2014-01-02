@@ -106,6 +106,31 @@ class BaseProducer(object):
 	def load(self):
 		pass
 
+	def to_dict(self):
+		obj = {
+			"sid": self.sid,
+			"id": self.id,
+			"start": self.start,
+			"start_actual": self.start_actual,
+			"end": self.end,
+			"end_actual": self.end_actual,
+			"type": self.type,
+			"name": self.name,
+			"public": self.public,
+			"timed": self.timed,
+			"url": self.url,
+			"in_progress": self.in_progress,
+			"used": self.used,
+			"use_crossfade": self.use_crossfade,
+			"use_tag_suffix": self.use_tag_suffix,
+			"plan_ahead_limit": self.plan_ahead_limit
+		}
+		if hasattr(self, "songs"):
+			obj['songs'] = []
+			for song in self.songs:
+				obj['songs'].append(song.to_dict())
+		return obj
+
 class BaseEvent(object):
 	def __init__(self, sid = None):
 		self.id = None
