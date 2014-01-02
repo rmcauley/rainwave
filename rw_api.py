@@ -6,6 +6,8 @@ import sys
 import api.server
 import api.locale
 from api_requests import *
+from api_requests.admin import *
+from api_requests.admin_web import *
 import libs.buildtools
 import libs.config
 
