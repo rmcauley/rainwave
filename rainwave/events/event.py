@@ -91,11 +91,11 @@ class BaseProducer(object):
 		self.plan_ahead_limit = 1
 
 	def change_start(self, new_start):
-		if not used:
+		if not self.used:
 			length = self.end - self.start
 			self.start = new_start
 			self.end = self.start + length
-			db.c.update("UPDATE r4_schedule SET sched_start = %s, self_end = %s WHERE sched_id = %s", (self.start, self.end, self.id))
+			db.c.update("UPDATE r4_schedule SET sched_start = %s, sched_end = %s WHERE sched_id = %s", (self.start, self.end, self.id))
 		else:
 			raise Exception("Cannot change the start time of a used producer.")
 

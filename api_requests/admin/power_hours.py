@@ -93,11 +93,11 @@ class ChangeProducerStartTime(api.web.APIHandler):
 	return_name = "producer"
 	admin_required = True
 	sid_required = True
-	fields = { "sched_id": (fieldtypes.sched_id, True), "utc_new_start": (fieldtypes.positive_integer, True) }
+	fields = { "sched_id": (fieldtypes.sched_id, True), "utc_time": (fieldtypes.positive_integer, True) }
 
 	def post(self):
 		producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
-		producer.change_start(self.get_argument("utc_new_start"))
+		producer.change_start(self.get_argument("utc_time"))
 		self.append(self.return_name, producer.to_dict())
 
 @handle_api_url("admin/delete_producer")
@@ -110,7 +110,7 @@ class DeleteProducer(api.web.APIHandler):
 		producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
 		if not producer:
 			raise APIException("internal_error", "Producer ID %s not found." % self.get_argument("sched_id"))
-		db.c.update("DELETE FROM r4_schedule WHERE sched_id = %s", (self.get_argument("sched_id")))
+		db.c.update("DELETE FROM r4_schedule WHERE sched_id = %s", (self.get_argument("sched_id"),))
 		self.append_standard("success", "Producer deleted.")
 
 @handle_api_url("admin/change_producer_name")

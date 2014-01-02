@@ -44,15 +44,16 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 			return
 		ph = self._output[self.return_name]
 		self.write(self.render_string("bare_header.html", title="%s" % ph['name']))
+		self.write("<script>window.top.current_sched_id = %s;</script>" % ph['id'])
 		self.write("<h2>%s</h2>" % ph['name'])
-		self.write("<span>Times:</span><br>")
+		self.write("<span>Times from the server:</span><br>")
 		self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(ph['start'], timezone('US/Eastern')).strftime("%a %b %d/%Y %H:%M %Z"))
 		self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(ph['start'], timezone('US/Pacific')).strftime("%a %b %d/%Y %H:%M %Z"))
 		self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(ph['start'], timezone('Europe/London')).strftime("%a %b %d/%Y %H:%M %Z (UK)"))
 
 		self.write("<br><span>Change time.  Use YOUR timezone.</span><br>")
 		index.write_html_time_form(self, "power_hour", ph['start'])
-		self.write("<br><button onclick=\"window.top.call_api('admin/change_start_time', ")
+		self.write("<br><button onclick=\"window.top.call_api('admin/change_producer_start_time', ")
 		self.write("{ 'utc_time': document.getElementById('power_hour_timestamp').value, 'sched_id': %s });\"" % ph['id'])
 		self.write(">Change Time</button></div><hr>")
 
@@ -62,3 +63,18 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 		self.write("<button onclick=\"window.top.call_api('admin/change_producer_name', { 'sched_id': %s, 'name': document.getElementById('new_ph_name').value });\">Change Name</button><hr>" % ph['id'])
 
 		self.write("<button onclick=\"window.top.call_api('admin/shuffle_power_hour', { 'sched_id': %s });\">Shuffle the Song Order</button><hr>" % ph['id'])
+
+		self.write("<ol>")
+		for song in ph['songs']:
+			self.write("<li><div>%s</div><div>%s</div>" % (song['title'], song['albums'][0]['name']))
+			self.write("<div><a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'sched_id': %s, 'song_id': %s });\">Delete</a></div></li>" % (ph['id'], song['id']))
+		self.write("</ol>")
+
+@handle_url("/admin/album_list/power_hours")
+class PowerHourAlbumList(AlbumList):
+	pass
+
+@handle_url("/admin/song_list/power_hours")
+class PowerHourSongList(SongList):
+	def render_row_special(self, row):
+		self.write("<td><a onclick=\"window.top.call_api('admin/add_to_power_hour', { 'song_id': %s, 'sched_id': window.top.current_sched_id });\">Add to PH</a>" % row['id'])
