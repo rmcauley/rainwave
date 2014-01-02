@@ -1,3 +1,5 @@
+import datetime
+import calendar
 from libs import config
 from libs import db
 import api.web
@@ -5,6 +7,13 @@ from api.server import handle_api_url
 from api.server import handle_url
 from api import fieldtypes
 import api_requests.playlist
+
+def write_html_time_form(request, html_id, at_time = None):
+	current_time = datetime.datetime.today()
+	at_time = datetime.datetime.fromtimestamp(at_time)
+	if not at_time:
+		at_time = current_time
+	request.write(request.render_string("admin_time_select.html", at_time=at_time, html_id=html_id))
 
 @handle_url("/admin/")
 class AdminIndex(api.web.HTMLRequest):
@@ -21,7 +30,7 @@ class ToolList(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Tool List"))
 		self.write("<b>Do:</b><br />")
 		# [ ( "Link Title", "admin_url" ) ]
-		for item in [ ("Scan Results", "scan_results"), ("One Ups", "one_ups"), ("DJ Elections", "dj_election"), ("Cooldown", "cooldown"), ("Request Only Songs", "song_request_only"), ("Donations", "donations") ]:
+		for item in [ ("Scan Results", "scan_results"), ("Power Hours", "power_hours"), ("DJ Elections", "dj_election"), ("Cooldown", "cooldown"), ("Request Only Songs", "song_request_only"), ("Donations", "donations") ]:
 			self.write("<a href=\"#\" onclick=\"top.current_tool = '%s'; top.change_screen();\">%s</a><br />" % (item[1], item[0]))
 		self.write(self.render_string("basic_footer.html"))
 

@@ -30,12 +30,14 @@ class BaseProducer(object):
 	@classmethod
 	def load_producer_by_id(cls, sched_id):
 		global all_producers
-		row = db.c.fetch_row("SELECT * FROM r4_schedule WHERE sched_id = %s")
+		row = db.c.fetch_row("SELECT * FROM r4_schedule WHERE sched_id = %s", (sched_id,))
+		if not row or len(row) == 0:
+			return None
 		p = None
-		if row['type'] in all_producers:
-			p = all_producers[row['type']](row['sid'])
+		if row['sched_type'] in all_producers:
+			p = all_producers[row['sched_type']](row['sid'])
 		else:
-			raise Exception("Unknown producer type %s." % row['type'])
+			raise Exception("Unknown producer type %s." % row['sched_type'])
 		p.id = row['sched_id']
 		p.start = row['sched_start']
 		p.start_actual = row['sched_start_actual']
@@ -47,7 +49,7 @@ class BaseProducer(object):
 		p.in_progress = row['sched_in_progress']
 		p.used = row['sched_used']
 		p.use_crossfade = row['sched_use_crossfade']
-		p.use_tag_suffix = row['sched_use_tag_sufix']
+		p.use_tag_suffix = row['sched_use_tag_suffix']
 		p.load()
 		return p
 
@@ -68,6 +70,7 @@ class BaseProducer(object):
 					"(sched_id, sched_start, sched_end, sched_type, sched_name, sid, sched_public, sched_timed, sched_url, sched_use_crossfade, sched_use_tag_suffix) VALUES "
 					"(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
 					(evt.id, evt.start, evt.end, evt.type, evt.name, evt.sid, evt.public, evt.timed, evt.url, evt.use_crossfade, evt.use_tag_suffix))
+		return evt
 
 	def __init__(self, sid):
 		self.sid = sid
@@ -86,6 +89,15 @@ class BaseProducer(object):
 		self.use_crossfade = True
 		self.use_tag_suffix = True
 		self.plan_ahead_limit = 1
+
+	def change_start(self, new_start):
+		if not used:
+			length = self.end - self.start
+			self.start = new_start
+			self.end = self.start + length
+			db.c.update("UPDATE r4_schedule SET sched_start = %s, self_end = %s WHERE sched_id = %s", (self.start, self.end, self.id))
+		else:
+			raise Exception("Cannot change the start time of a used producer.")
 
 	def load_next_event(self, target_length = None, min_elec_id = None):
 		raise Exception("No event type specified.")

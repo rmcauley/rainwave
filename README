@@ -13,6 +13,7 @@ Required on all systems:
 - pyScss (CSS/SASS compiling)
 - jsmin
 - unidecode
+- pytz
 
 Required on POSIX:
 - pyinotify (filesystem monitoring)
