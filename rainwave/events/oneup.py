@@ -17,14 +17,27 @@ class OneUpProducer(event.BaseProducer):
 		next_song_id = db.c.fetch_var("SELECT song_id FROM r4_one_ups WHERE sched_id = %s AND one_up_used = FALSE ORDER BY one_up_order LIMIT 1", (self.id,))
 		if next_song_id:
 			db.c.update("UPDATE r4_one_ups SET one_up_used = TRUE WHERE sched_id = %s and song_id = %s", (self.id, next_song_id))
-			return OneUp.load_by_id(self.id, next_song_id)
+			return OneUp.load_by_id(self.id, next_song_id, self.sid)
 		else:
 			return None
+		if not self.start_actual:
+			self.start_actual = time.time()
+			self._update_length()
 
-	def load_in_progress_event(self):
+	def _update_length(self):
+		length = db.c.fetch_var("SELECT SUM(song_length) FROM r4_one_ups JOIN r4_songs USING (song_id) WHERE sched_id = %s GROUP BY sched_id", (self.id,))
+		if not length:
+			length = 0
+		if self.start_actual:
+			self.end = self.start_actual + length
+		else:
+			self.end = self.start + length
+		db.c.update("UPDATE r4_schedule SET sched_end = %s WHERE sched_id = %s", (self.end, self.id))
+
+	def load_event_in_progress(self):
 		next_song_id = db.c.fetch_var("SELECT song_id FROM r4_one_ups WHERE sched_id = %s AND one_up_used = TRUE ORDER BY one_up_order DESC LIMIT 1", (self.id,))
 		if next_song_id:
-			return OneUp.load_by_id(self.id, next_song_id)
+			return OneUp.load_by_id(self.id, next_song_id, self.sid)
 		else:
 			return None
 
@@ -34,10 +47,11 @@ class OneUpProducer(event.BaseProducer):
 			if not order:
 				order = 0
 		db.c.update("INSERT INTO r4_one_ups (sched_id, song_id, one_up_order) VALUES (%s, %s, %s)", (self.id, song_id, order))
-		return True
+		self._update_length()
 
 	def remove_song_id(self, song_id):
 		if db.c.update("DELETE FROM r4_one_ups WHERE song_id = %s AND sched_id = %s", (song_id, self.id)) >= 1:
+			self._update_length()
 			return True
 		return False
 
@@ -60,13 +74,14 @@ class OneUpProducer(event.BaseProducer):
 
 class OneUp(event.BaseEvent):
 	@classmethod
-	def load_by_id(cls, sched_id, song_id):
+	def load_by_id(cls, sched_id, song_id, sid):
 		row = db.c.fetch_row("SELECT * FROM r4_one_ups WHERE sched_id = %s AND song_id = %s", (sched_id,song_id))
 		if not row:
 			raise Exception("OneUp schedule ID %s song ID %s not found." % (sched_id, song_id))
 		one_up = cls()
 		one_up.id = sched_id
-		one_up.songs = [ playlist.Song.load_from_id(row['song_id']) ]
+		one_up.songs = [ playlist.Song.load_from_id(row['song_id'], sid) ]
+		one_up.sid = sid;
 		return one_up
 
 	def start(self):

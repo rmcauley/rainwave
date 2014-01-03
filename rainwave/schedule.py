@@ -5,7 +5,6 @@ import datetime
 
 from backend import sync_to_front
 from rainwave import events
-from rainwave.events import election
 from rainwave import playlist
 from rainwave import listeners
 from rainwave import request
@@ -14,6 +13,12 @@ from libs import db
 from libs import config
 from libs import cache
 from libs import log
+
+from rainwave.events import election
+
+# This is to make sure the code gets loaded and producers get registered
+import rainwave.events.oneup
+import rainwave.events.pvpelection
 
 # Events for each station
 current = {}
@@ -55,13 +60,16 @@ def get_current_producer(sid):
 
 def get_producer_at_time(sid, at_time):
 	# pdb.set_trace()
-	sched_id = db.c.fetch_row(	"SELECT sched_id "
+	sched_id = db.c.fetch_var(	"SELECT sched_id "
 								"FROM r4_schedule "
 								"WHERE sid = %s AND sched_start <= %s AND sched_end > %s "
 								"ORDER BY sched_id "
 								"LIMIT 1", (sid, at_time + 15, at_time))
-	if sched_id:
-		return events.event.BaseProducer.load_producer_by_id(sched_id)
+	try:
+		if sched_id:
+			return events.event.BaseProducer.load_producer_by_id(sched_id)
+	except Exception as e:
+		log.exception("get_producer", "Failed to get an appropriate producer.", e)
 	return election.ElectionProducer(sid)
 
 def get_advancing_file(sid):
@@ -80,7 +88,7 @@ def advance_station(sid):
 	start_time = time.time()
 	# If we need some emergency elections here
 	if len(next[sid]) == 0:
-		next[sid].append(_get_or_create_election(sid))
+		manage_next(sid)
 
 	start_time = time.time()
 	next[sid][0].prepare_event()
@@ -162,8 +170,8 @@ def _get_schedule_stats(sid):
 	end_time = int(time.time())
 	if sid in current and current[sid]:
 		max_sched_id = current[sid].id
-		if current[sid].start:
-			end_time = current[sid].start + current[sid].length()
+		if current[sid].start_actual:
+			end_time = current[sid].start_actual + current[sid].length()
 		else:
 			end_time += current[sid].length()
 		if current[sid].is_election:
@@ -213,7 +221,7 @@ def manage_next(sid):
 def _get_or_create_election(sid, target_length = None):
 	max_sched_id, max_elec_id, num_elections, next_end_time = _get_schedule_stats(sid)
 
-	ep = event.election.ElectionProducer(sid)
+	ep = election.ElectionProducer(sid)
 	return ep.load_next_event(target_length=target_length, min_elec_id=max_elec_id)
 
 def _trim(sid):

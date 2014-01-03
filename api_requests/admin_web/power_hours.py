@@ -33,6 +33,7 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 				self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(producer['start'], timezone('US/Eastern')).strftime("%a %b %d/%Y %H:%M %Z"))
 				self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(producer['start'], timezone('US/Pacific')).strftime("%a %b %d/%Y %H:%M %Z"))
 				self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(producer['start'], timezone('Europe/London')).strftime("%a %b %d/%Y %H:%M %Z (UK)"))
+				self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(producer['start'], timezone('Asia/Tokyo')).strftime("%a %b %d/%Y %H:%M %Z"))
 				self.write("</div></li>")
 		self.write(self.render_string("basic_footer.html"))
 
@@ -50,6 +51,7 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 		self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(ph['start'], timezone('US/Eastern')).strftime("%a %b %d/%Y %H:%M %Z"))
 		self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(ph['start'], timezone('US/Pacific')).strftime("%a %b %d/%Y %H:%M %Z"))
 		self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(ph['start'], timezone('Europe/London')).strftime("%a %b %d/%Y %H:%M %Z (UK)"))
+		self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(ph['start'], timezone('Asia/Tokyo')).strftime("%a %b %d/%Y %H:%M %Z"))
 
 		self.write("<br><span>Change time.  Use YOUR timezone.</span><br>")
 		index.write_html_time_form(self, "power_hour", ph['start'])

@@ -155,6 +155,7 @@ class BaseEvent(object):
 		self.end_actual = None
 		self.used = False
 		self.url = None
+		self.in_progress = False
 		self.is_election = False
 		self.replay_gain = None
 		self.name = None
@@ -212,9 +213,6 @@ class BaseEvent(object):
 			"url": self.url,
 			"voting_allowed": False
 		}
-		if user and user.data['radio_admin'] > 0:
-			obj['public'] = self.public
-			obj['timed'] = self.timed
 		if hasattr(self, "songs"):
 			if self.start_actual:
 				obj['end'] = self.start_actual + self.length()

@@ -1,9 +1,12 @@
 from rainwave.events import election
+from rainwave.events import event
 
 @event.register_producer
 class PVPElectionProducer(election.ElectionProducer):
-	elec_type = 'PVPElection'
-	elec_class = PVPElection
+	def __init__(self, sid):
+		super(PVPElectionProducer, self).__init__(sid)
+		self.elec_type = "PVPElection"
+		self.elec_class = PVPElection
 
 class PVPElection(election.Election):
 	def __init__(self, sid = None):
