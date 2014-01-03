@@ -189,7 +189,7 @@ def _get_schedule_stats(sid):
 			end_time += e.length()
 
 	if not max_elec_id:
-		max_elec_id = db.c.fetch_row("SELECT elec_id FROM r4_elections WHERE elec_used = TRUE ORDER BY elec_id DESC LIMIT 1")
+		max_elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_used = TRUE ORDER BY elec_id DESC LIMIT 1")
 
 	return (max_sched_id, max_elec_id, num_elections, end_time)
 
@@ -260,13 +260,13 @@ def _update_memcache(sid):
 		other_station = cache.get_station(other_sid, "sched_current_dict")
 		if other_station:
 			all_stations[other_sid] = {}
-			if other_station['name']:
-				all_stations[other_sid]['title'] = other_station['name']
-				all_stations[other_sid]['album'] = ""
-				all_stations[other_sid]['art']
-			else:
+			if 'songs' in other_station:
 				all_stations[other_sid]['title'] = other_station['songs'][0]['title']
 				all_stations[other_sid]['album'] = other_station['songs'][0]['albums'][0]['name']
 				all_stations[other_sid]['art'] = other_station['songs'][0]['albums'][0]['art']
+			else:
+				all_stations[other_sid]['title'] = other_station['name']
+				all_stations[other_sid]['album'] = ""
+				all_stations[other_sid]['art'] = None
 			all_stations[other_sid]['end'] = other_station['end']
 	cache.set("all_stations_info", all_stations, True)

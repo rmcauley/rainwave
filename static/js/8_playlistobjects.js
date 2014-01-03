@@ -183,7 +183,6 @@ var Schedule = {
 			"sched_actualtime": json['start_actual'],
 			"sched_starttime": json['start'],
 			"sid": json['sid'],
-			"user_id": json['dj_user_id'],
 			"sched_id": json['id'],
 			"sched_endtime": json['end'],
 			"sched_type": type,

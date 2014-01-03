@@ -13,11 +13,17 @@ from rainwave.events import event
 
 @event.register_producer
 class OneUpProducer(event.BaseProducer):
+	def __init__(self, sid):
+		super(OneUpProducer, self).__init__(sid)
+		self.plan_ahead_limit = 3
+
 	def load_next_event(self, target_length = None, min_elec_id = None):
 		next_song_id = db.c.fetch_var("SELECT song_id FROM r4_one_ups WHERE sched_id = %s AND one_up_used = FALSE ORDER BY one_up_order LIMIT 1", (self.id,))
 		if next_song_id:
 			db.c.update("UPDATE r4_one_ups SET one_up_used = TRUE WHERE sched_id = %s and song_id = %s", (self.id, next_song_id))
-			return OneUp.load_by_id(self.id, next_song_id, self.sid)
+			up = OneUp.load_by_id(self.id, next_song_id, self.sid)
+			up.name = self.name
+			return up
 		else:
 			return None
 		if not self.start_actual:

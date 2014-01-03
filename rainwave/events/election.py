@@ -34,7 +34,6 @@ import pdb
 class ElectionProducer(event.BaseProducer):
 	def __init__(self, sid):
 		super(ElectionProducer, self).__init__(sid)
-		self.sid = sid
 		self.plan_ahead_limit = config.get_station(sid, "num_planned_elections")
 		self.elec_type = "Election"
 		self.elec_class = Election

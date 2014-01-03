@@ -374,16 +374,8 @@ function _THEME() {
 
 	that.Extend.TimelineOneShot = function(tos) {
 		tos.draw = function() {
-			var hltitle = _l("onetimeplay");
-			if (tos.p.username) hltitle += " " + _l("from", { "username": tos.p.username } );
+			var hltitle = _l("onetimeplay", { "name": tos.p.sched_name });
 			that.drawTimelineTable(tos, hltitle, "normal");
-
-			if (tos.p.user_id == user.p.user_id) {
-				tos.header_text.textContent = _l("deleteonetime");
-				tos.header_text.style.cursor = "pointer";
-				tos.header_text.addEventListener("click", tos.deleteOneShot, true);
-			}
-
 			tos.defineFx();
 		};
 	};

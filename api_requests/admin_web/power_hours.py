@@ -45,7 +45,6 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 			return
 		ph = self._output[self.return_name]
 		self.write(self.render_string("bare_header.html", title="%s" % ph['name']))
-		self.write("<script>window.top.current_sched_id = %s;</script>" % ph['id'])
 		self.write("<h2>%s</h2>" % ph['name'])
 		self.write("<span>Times from the server:</span><br>")
 		self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(ph['start'], timezone('US/Eastern')).strftime("%a %b %d/%Y %H:%M %Z"))
@@ -64,13 +63,15 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 		self.write("Name: <input type='text' id='new_ph_name' value='%s'><br>" % ph['name'])
 		self.write("<button onclick=\"window.top.call_api('admin/change_producer_name', { 'sched_id': %s, 'name': document.getElementById('new_ph_name').value });\">Change Name</button><hr>" % ph['id'])
 
-		self.write("<button onclick=\"window.top.call_api('admin/shuffle_power_hour', { 'sched_id': %s });\">Shuffle the Song Order</button><hr>" % ph['id'])
+		self.write("<button onclick=\"window.top.call_api('admin/shuffle_power_hour', { 'sched_id': %s });\">Shuffle the Song Order</button><hr>\n\n" % ph['id'])
 
 		self.write("<ol>")
 		for song in ph['songs']:
-			self.write("<li><div>%s</div><div>%s</div>" % (song['title'], song['albums'][0]['name']))
-			self.write("<div><a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'sched_id': %s, 'song_id': %s });\">Delete</a></div></li>" % (ph['id'], song['id']))
-		self.write("</ol>")
+			self.write("<li><div>%s</div><div>%s</div>\n" % (song['title'], song['albums'][0]['name']))
+			self.write("<div><a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'sched_id': %s, 'song_id': %s });\">Delete</a></div></li>\n" % (ph['id'], song['id']))
+		self.write("</ol>\n")
+		self.write("<script>window.top.current_sched_id = %s;</script>\n\n" % ph['id'])
+		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/album_list/power_hours")
 class PowerHourAlbumList(AlbumList):

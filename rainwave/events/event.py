@@ -211,7 +211,9 @@ class BaseEvent(object):
 			"name": self.name,
 			"sid": self.sid,
 			"url": self.url,
-			"voting_allowed": False
+			"voting_allowed": False,
+			"used": self.used,
+			"length": self.length()
 		}
 		if hasattr(self, "songs"):
 			if self.start_actual:

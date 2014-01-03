@@ -74,10 +74,10 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			string += "0"
 		string += "\""
 
-		string += ",suffix=\"%s\"" % config.get_station(self.sid, "stream_suffix")
-
-		if e.name:
-			string += ",title=\"%s\"" % event.name
+		if hasattr(e, 'songs'):
+			string += ",suffix=\"%s\"" % config.get_station(self.sid, "stream_suffix")
+		elif e.name:
+			string += ",title=\"%s\"" % e.name
 
 		if hasattr(e, "replay_gain") and e.replay_gain:
 			string += ",replay_gain=\"%s\"" % e.replay_gain
