@@ -52,8 +52,8 @@
 
 	function change_screen() {
 		lyre.setStationID(current_station);
-		window.frames.tool.location.href = "/admin/tools/" + current_tool + "?sid=" + current_station;
-		window.frames.selector.location.href="/admin/album_list/" + current_tool + "?restrict=" + current_restriction;
+		window.frames.tool.location.href = "tools/" + current_tool + "?sid=" + current_station;
+		window.frames.selector.location.href="album_list/" + current_tool + "?restrict=" + current_restriction;
 
 		var t = window.frames.tool_list.document.getElementsByTagName("a");
 		for (var i = 0; i < t.length; i++) {
@@ -82,14 +82,14 @@
 </head>
 <frameset rows="25%, 80%">
 	<frameset cols="15%, 15%, 15%, *">
-		<frame src="/admin/tool_list" name="tool_list" />
-		<frame src="/admin/station_list" name="station_list" />
-		<frame src="/admin/restrict_songs" name="restrict_songs" />
+		<frame src="tool_list" name="tool_list" />
+		<frame src="station_list" name="station_list" />
+		<frame src="restrict_songs" name="restrict_songs" />
 		<frame src="about:blank" name="debug" />
 	</frameset>
 	<frameset cols="33%, *">
-		<frame src="/admin/tools/scan_results" name="tool" />
-		<frame src="/admin/album_list/scan_results" name="selector" />
+		<frame src="tools/scan_results" name="tool" />
+		<frame src="album_list/scan_results" name="selector" />
 	</frameset>
 
 	<noframes>
