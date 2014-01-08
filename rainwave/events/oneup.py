@@ -27,6 +27,7 @@ class OneUpProducer(event.BaseProducer):
 			up.name = self.name
 			return up
 		else:
+			db.c.update("UPDATE r4_schedule SET sched_used = TRUE WHERE sched_id = %s", (self.id,))
 			return None
 		if not self.start_actual:
 			self.start_actual = time.time()

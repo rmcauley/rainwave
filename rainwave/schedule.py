@@ -66,7 +66,7 @@ def get_producer_at_time(sid, at_time):
 	sched_id = db.c.fetch_var(	"SELECT sched_id "
 								"FROM r4_schedule "
 								"WHERE sid = %s AND sched_start <= %s AND sched_end > %s "
-								"ORDER BY sched_id "
+								"ORDER BY sched_id DESC "
 								"LIMIT 1", (sid, at_time + 15, at_time))
 	try:
 		to_ret = events.event.BaseProducer.load_producer_by_id(sched_id)

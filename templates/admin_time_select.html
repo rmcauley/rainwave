@@ -1,4 +1,14 @@
 <script>
+function {{ html_id }}_set_time_from_server(epoch_time) {
+	var d = new Date((epoch_time * 1000) + new Date().getTimezoneOffset());
+	document.getElementById('{{ html_id }}_year').value = d.getYear();
+	document.getElementById('{{ html_id }}_month').value = d.getMonth();
+	document.getElementById('{{ html_id }}_day').value = d.getDay();
+	document.getElementById('{{ html_id }}_hour').value = d.getHours();
+	document.getElementById('{{ html_id }}_minute').value = d.getMinutes() + 1;
+	{{ html_id }}_fix_time();
+}
+
 function {{ html_id }}_fix_time() {
 	var d = new Date();
 	d.setYear(parseInt(document.getElementById('{{ html_id }}_year').value));
@@ -14,35 +24,35 @@ function {{ html_id }}_fix_time() {
 
 YY/MM//DD: <select id='{{ html_id }}_year' onchange='{{ html_id }}_fix_time();'>
 {% for m in range(2014, 2021) %}
-	<option value='{{ m }}' {% if m == at_time.year %}selected{% end %}>{{ m }}</option>
+	<option value='{{ m }}'>{{ m }}</option>
 {% end %}
 </select>
 /
 <select id='{{ html_id }}_month' onchange='{{ html_id }}_fix_time();'>
 {% for m in range(1, 13) %}
-	<option value='{{ m }}' {% if m == at_time.month %}selected{% end %}>{{ m }}</option>
+	<option value='{{ m }}'>{{ m }}</option>
 {% end %}
 </select>
 /
 <select id='{{ html_id }}_day' onchange='{{ html_id }}_fix_time();'>>
 {% for m in range(1, 32) %}
-	<option value='{{ m }}' {% if m == at_time.day %}selected{% end %}>{{ m }}</option>
+	<option value='{{ m }}'>{{ m }}</option>
 {% end %}
 </select>
 
 <br>
 Time: <select id='{{ html_id }}_hour' onchange='{{ html_id }}_fix_time();'>>
 {% for m in range(0, 24) %}
-	<option value='{{ m }}' {% if m == at_time.hour %}selected{% end %}>{{ m }}</option>
+	<option value='{{ m }}'>{{ m }}</option>
 {% end %}
 </select>
 :
 <select id='{{ html_id }}_minute' onchange='{{ html_id }}_fix_time();'>>
 {% for m in range(0, 60) %}
-	<option value='{{ m }}' {% if m == at_time.minute %}selected{% end %}>{{ m }}</option>
+	<option value='{{ m }}'>{{ m }}</option>
 {% end %}
 </select>
 <br>
 Epoch: 
 <input type='text' id='{{ html_id }}_timestamp' size=12 disabled='disabled'/>
-<script>{{ html_id }}_fix_time()</script>
+<script>{{ html_id }}_set_time_from_server({{ at_time }});</script>

@@ -27,7 +27,7 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 
 		self.write("<div>Input date and time in YOUR timezone.<br>")
 		self.write("Name: <input id='new_ph_name' type='text' /><br>")
-		index.write_html_time_form(self, "new_ph", time.time())
+		index.write_html_time_form(self, "new_ph")
 		self.write("<br><button onclick=\"window.top.call_api('admin/create_power_hour', ")
 		self.write("{ 'utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value });\"")
 		self.write(">Create new Power Hour</button></div><hr>")
@@ -76,6 +76,8 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 			self.write("<li><div>%s" % song['title'])
 			if song['one_up_used']:
 				self.write(" <b>(PLAYED)</b>")
+			elif song['one_up_queued']:
+				self.write(" (queued)")
 			self.write("</div><div>%s</div>\n" % song['albums'][0]['name'])
 			self.write("<div><a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">Delete</a></div></li>\n" % song['one_up_id'])
 		self.write("</ol>\n")
