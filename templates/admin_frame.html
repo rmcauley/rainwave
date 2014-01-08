@@ -12,6 +12,7 @@
 	var current_station = 1;
 	var current_restriction = 1;
 	var current_sched_id = null;
+	var refresh_all_screens = false;
 
 	lyre.jsErrorCallback = function(err, json) {
 		window.frames.debug.document.body.style.background = "#660000";
@@ -43,6 +44,9 @@
 		str += "</table>";
 		window.frames.debug.document.body.innerHTML = str
 		window.frames.tool.location.reload();
+		if (refresh_all_screens) {
+			window.frames.selector.reload();
+		}
 	};
 	lyre.addUniversalCallback(api_data_callback);
 
@@ -50,6 +54,24 @@
 		lyre.setStationID(current_station);
 		window.frames.tool.location.href = "/admin/tools/" + current_tool + "?sid=" + current_station;
 		window.frames.selector.location.href="/admin/album_list/" + current_tool + "?restrict=" + current_restriction;
+
+		var t = window.frames.tool_list.document.getElementsByTagName("a");
+		for (var i = 0; i < t.length; i++) {
+			if (t[i].id == current_tool) t[i].style.background = "#006";
+			else t[i].style.background = "#000";
+		}
+		
+		var s = window.frames.station_list.document.getElementsByTagName("a");
+		for (var i = 0; i < s.length; i++) {
+			if (s[i].id == "sid_" + current_station) s[i].style.background = "#006";
+			else s[i].style.background = "#000";
+		}
+
+		var r = window.frames.restrict_songs.document.getElementsByTagName("a");
+		for (var i = 0; i < r.length; i++) {
+			if (r[i].id == "sid_" + current_restriction) r[i].style.background = "#006";
+			else r[i].style.background = "#000";
+		}
 	};
 
 	function call_api(call, args) {

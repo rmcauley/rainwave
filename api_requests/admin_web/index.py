@@ -30,7 +30,7 @@ class ToolList(api.web.HTMLRequest):
 		self.write("<b>Do:</b><br />")
 		# [ ( "Link Title", "admin_url" ) ]
 		for item in [ ("Scan Results", "scan_results"), ("Power Hours", "power_hours"), ("DJ Elections", "dj_election"), ("Cooldown", "cooldown"), ("Request Only Songs", "song_request_only"), ("Donations", "donations") ]:
-			self.write("<a href=\"#\" onclick=\"top.current_tool = '%s'; top.change_screen();\">%s</a><br />" % (item[1], item[0]))
+			self.write("<a style='display: block' id=\"%s\" href=\"#\" onclick=\"top.current_tool = '%s'; top.change_screen();\">%s</a>" % (item[1], item[1], item[0]))
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/station_list")
@@ -41,7 +41,7 @@ class StationList(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Station List"))
 		self.write("<b>On station:</b><br>")
 		for sid in config.station_ids:
-			self.write("<a href=\"#\" onclick=\"top.current_station = %s; top.change_screen();\">%s</a><br />" % (sid, config.station_id_friendly[sid]))
+			self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"top.current_station = %s; top.change_screen();\">%s</a>" % (sid, sid, config.station_id_friendly[sid]))
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/restrict_songs")
@@ -52,7 +52,7 @@ class RestrictList(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Station List"))
 		self.write("<b>With songs from:</b><br>")
 		for sid in config.station_ids:
-			self.write("<a href=\"#\" onclick=\"top.current_restriction = %s; top.change_screen();\">%s</a><br />" % (sid, config.station_id_friendly[sid]))
+			self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"top.current_restriction = %s; top.change_screen();\">%s</a>" % (sid, sid, config.station_id_friendly[sid]))
 		self.write(self.render_string("basic_footer.html"))
 
 class AlbumList(api.web.HTMLRequest):
@@ -82,6 +82,7 @@ class AlbumList(api.web.HTMLRequest):
 			self.write("</td>")
 			self.render_row_special(row)
 			self.write("</tr>")
+		self.write(self.render_string("basic_footer.html"))
 
 	def render_row_special(self, row):
 		pass
@@ -104,6 +105,7 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 			self.write("</td>")
 			self.render_row_special(row)
 			self.write("</tr>")
+		self.write(self.render_string("basic_footer.html"))
 
 	def render_row_special(self, row):
 		pass

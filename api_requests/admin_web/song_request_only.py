@@ -13,7 +13,8 @@ class SongRequestOnlyTool(api.web.HTMLRequest):
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="%s Request Only Tool" % config.station_id_friendly[self.sid]))
 		self.write("<h2>%s Request Only Tool</h2>" % config.station_id_friendly[self.sid])
-		self.write("<p>Please match 'On Station' with 'With Songs From' when using this tool to ensure proper functioning.</p><p>The album screen will not refresh itself after making a change.</p>")
+		self.write("<script>\nif (window.top.current_station != window.top.current_restriction) {\n document.body.style.background = '#660000';\n document.write('Match your selected station to \"with songs from\" or Rob will be angry with you.'); }\n</script>")
+		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/album_list/song_request_only")
 class SongRequestOnlyAlbumList(AlbumList):
