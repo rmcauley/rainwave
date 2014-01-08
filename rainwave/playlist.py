@@ -286,10 +286,10 @@ class Song(object):
 	@classmethod
 	def load_from_id(klass, song_id, sid = None):
 		d = None
-		if not sid:
-			d = db.c.fetch_row("SELECT * FROM r4_songs WHERE song_id = %s", (song_id,))
-		else:
+		if sid:
 			d = db.c.fetch_row("SELECT * FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_id = %s AND r4_song_sid.sid = %s", (song_id, sid))
+		if not d:
+			d = db.c.fetch_row("SELECT * FROM r4_songs WHERE song_id = %s", (song_id,))
 		if not d:
 			raise SongNonExistent
 

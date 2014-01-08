@@ -12,8 +12,6 @@ def write_html_time_form(request, html_id, at_time = None):
 	current_time = calendar.timegm(time.gmtime())
 	if not at_time:
 		at_time = current_time
-	# else:
-		# at_time = int(at_time)
 	request.write(request.render_string("admin_time_select.html", at_time=at_time, html_id=html_id))
 
 @handle_url("/admin/")
@@ -60,7 +58,7 @@ class RestrictList(api.web.HTMLRequest):
 class AlbumList(api.web.HTMLRequest):
 	admin_required = True
 	allow_get = True
-	fields = { "restrict": (fieldtypes.integer, True) }
+	fields = { "restrict": (fieldtypes.sid, True) }
 	
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="Album List"))
@@ -72,7 +70,7 @@ class AlbumList(api.web.HTMLRequest):
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
 			"WHERE r4_album_sid.sid = %s "
 			"ORDER BY album_name",
-			(self.user.id, self.sid))
+			(self.user.id, self.get_argument("restrict")))
 		for row in albums:
 			self.write("<tr><td>%s</td>" % row['id'])
 			self.write("<td onclick=\"window.location.href = '/admin/song_list/' + window.top.current_tool + '?sid=%s&id=%s';\" style='cursor: pointer;'>%s</td><td>" % (self.get_argument('restrict'), row['id'], row['name']))
@@ -94,7 +92,7 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="Song List"))
-		self.write("<h2>%s</h2>" % self._output['album']['name'])
+		self.write("<h2>%s (%s)</h2>" % (self._output['album']['name'], config.station_id_friendly[self.sid]))
 		self.write("<table>")
 		for row in self._output['album']['songs']:
 			self.write("<tr><td>%s</th><td>%s</td><td>" % (row['id'], row['title']))

@@ -470,7 +470,8 @@ def create_tables():
 			song_id					INTEGER		NOT NULL, \
 			one_up_order			SMALLINT	, \
 			one_up_used				BOOLEAN		DEFAULT FALSE, \
-			one_up_queued			BOOLEAN		DEFAULT FALSE \
+			one_up_queued			BOOLEAN		DEFAULT FALSE, \
+			one_up_sid				SMALLINT	NOT NULL \
 		)")
 	if c.is_postgres:
 		c.update("ALTER TABLE r4_one_ups ALTER COLUMN one_up_id SET DEFAULT nextval('r4_schedule_sched_id_seq')")

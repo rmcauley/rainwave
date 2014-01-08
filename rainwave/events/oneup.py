@@ -50,12 +50,21 @@ class OneUpProducer(event.BaseProducer):
 		else:
 			return None
 
-	def add_song_id(self, song_id, order = None):
+	def add_song_id(self, song_id, sid, order = None):
 		if not order:
 			order = db.c.fetch_var("SELECT MAX(one_up_order) + 1 FROM r4_one_ups WHERE sched_id = %s", (self.id,))
 			if not order:
 				order = 0
-		db.c.update("INSERT INTO r4_one_ups (sched_id, song_id, one_up_order) VALUES (%s, %s, %s)", (self.id, song_id, order))
+		db.c.update("INSERT INTO r4_one_ups (sched_id, song_id, one_up_order, one_up_sid) VALUES (%s, %s, %s, %s)", (self.id, song_id, order, sid))
+		self._update_length()
+
+	def add_album_id(self, album_id, sid, order = None):
+		order = db.c.fetch_var("SELECT MAX(one_up_order) + 1 FROM r4_one_ups WHERE sched_id = %s", (self.id,))
+		if not order:
+			order = 0
+		for song_id in db.c.fetch_list("SELECT song_id FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE sid = %s AND album_id = %s ORDER BY song_title", (sid, album_id)):
+			self.add_song_id(song_id, order, sid)
+			order += 1
 		self._update_length()
 
 	def remove_one_up(self, one_up_id):
@@ -75,7 +84,7 @@ class OneUpProducer(event.BaseProducer):
 	def load_all_songs(self):
 		self.songs = []
 		for song_row in db.c.fetch_all("SELECT * FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order", (self.id,)):
-			s = playlist.Song.load_from_id(song_row['song_id'], self.sid)
+			s = playlist.Song.load_from_id(song_row['song_id'], song_row['one_up_sid'])
 			s.data['one_up_used'] = song_row['one_up_used']
 			s.data['one_up_queued'] = song_row['one_up_queued']
 			s.data['one_up_id'] = song_row['one_up_id']
@@ -94,7 +103,7 @@ class OneUp(event.BaseEvent):
 		one_up = cls()
 		one_up.id = row['one_up_id']
 		one_up.used = row['one_up_used']
-		one_up.songs = [ playlist.Song.load_from_id(row['song_id'], sid) ]
+		one_up.songs = [ playlist.Song.load_from_id(row['song_id'], row['one_up_sid']) ]
 		one_up.sid = sid;
 		return one_up
 

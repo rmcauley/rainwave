@@ -71,6 +71,7 @@ def get_producer_at_time(sid, at_time):
 	try:
 		to_ret = events.event.BaseProducer.load_producer_by_id(sched_id)
 	except Exception as e:
+		log.warn("get_producer", "Failed to obtain producer.")
 		log.exception("get_producer", "Failed to get an appropriate producer.", e)
 	if not to_ret:
 		return election.ElectionProducer(sid)
@@ -211,6 +212,7 @@ def manage_next(sid):
 		target_length = None
 		next_event = next_producer.load_next_event(target_length, max_elec_id)
 		if not next_event:
+			log.info("manage_next", "Producer ID %s type %s did not produce an event." % (next_producer.id, next_producer.type))
 			ep = election.ElectionProducer(sid)
 			next_event = ep.load_next_event(target_length, max_elec_id)
 		next[sid].append(next_event)

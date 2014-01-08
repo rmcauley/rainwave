@@ -86,9 +86,10 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 
 @handle_url("/admin/album_list/power_hours")
 class PowerHourAlbumList(AlbumList):
-	pass
+	def render_row_special(self, row):
+		self.write("<td><a onclick=\"window.top.call_api('admin/add_album_to_power_hour', { 'album_id': %s, 'sched_id': window.top.current_sched_id, 'album_sid': window.top.current_restriction });\">Add to PH</a>" % row['id'])
 
 @handle_url("/admin/song_list/power_hours")
 class PowerHourSongList(SongList):
 	def render_row_special(self, row):
-		self.write("<td><a onclick=\"window.top.call_api('admin/add_to_power_hour', { 'song_id': %s, 'sched_id': window.top.current_sched_id });\">Add to PH</a>" % row['id'])
+		self.write("<td><a onclick=\"window.top.call_api('admin/add_song_to_power_hour', { 'song_id': %s, 'sched_id': window.top.current_sched_id, 'song_sid': window.top.current_restriction });\">Add to PH</a>" % row['id'])

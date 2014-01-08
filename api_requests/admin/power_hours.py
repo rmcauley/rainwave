@@ -52,16 +52,28 @@ class GetPowerHour(api.web.APIHandler):
 		else:
 			self.append(self.return_name, None)
 
-@handle_api_url("admin/add_to_power_hour")
-class AddToPowerHour(api.web.APIHandler):
+@handle_api_url("admin/add_song_to_power_hour")
+class AddSongToPowerHour(api.web.APIHandler):
 	return_name = "power_hour"
 	admin_required = True
 	sid_required = True
-	fields = { "sched_id": (fieldtypes.sched_id, True), "song_id": (fieldtypes.song_id, True) }
+	fields = { "sched_id": (fieldtypes.sched_id, True), "song_id": (fieldtypes.song_id, True), "song_sid": (fieldtypes.sid, True) }
 
 	def post(self):
 		ph =  OneUpProducer.load_producer_by_id(self.get_argument("sched_id"))
-		ph.add_song_id(self.get_argument("song_id"))
+		ph.add_song_id(self.get_argument("song_id"), self.get_argument("song_sid"))
+		self.append(self.return_name, ph.to_dict())
+
+@handle_api_url("admin/add_album_to_power_hour")
+class AddAlbumToPowerHour(api.web.APIHandler):
+	return_name = "power_hour"
+	admin_required = True
+	sid_required = True
+	fields = { "sched_id": (fieldtypes.sched_id, True), "album_id": (fieldtypes.album_id, True), "album_sid": (fieldtypes.sid, True) }
+
+	def post(self):
+		ph =  OneUpProducer.load_producer_by_id(self.get_argument("sched_id"))
+		ph.add_album_id(self.get_argument("album_id"), self.get_argument("album_sid"))
 		self.append(self.return_name, ph.to_dict())
 
 @handle_api_url("admin/remove_from_power_hour")
