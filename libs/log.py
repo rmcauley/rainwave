@@ -9,12 +9,12 @@ def init(logfile, loglevel = "warning"):
 	
 	handler = logging.handlers.RotatingFileHandler(logfile, maxBytes = 20000000, backupCount = 1)
 	handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
-	logging.getLogger().addHandler(handler)
+	logging.getLogger("rainwave").addHandler(handler)
 	
 	if loglevel == "print":
 		print_handler = logging.StreamHandler(sys.stdout)
 		print_handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
-		logging.getLogger().addHandler(print_handler)
+		logging.getLogger("rainwave").addHandler(print_handler)
 
 	log = logging.getLogger("rainwave")
 	if loglevel == "critical":
