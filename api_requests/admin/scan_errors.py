@@ -14,5 +14,5 @@ class BackendScanErrors(api.web.APIHandler):
 	description = "A list of errors that have occurred while scanning music."
 
 	def post(self):
-		errors = cache.get("backend_scan_errors") or [ { "time": time.time(), "nothing": "No errors in memory." } ]
+		errors = cache.get("backend_scan_errors") or [ { "time": time.time(), "backend_scan_errors": "No errors in memory." } ]
 		self.append(self.return_name, errors)

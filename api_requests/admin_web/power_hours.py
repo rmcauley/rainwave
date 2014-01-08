@@ -3,6 +3,7 @@ import time
 import types
 from pytz import timezone
 
+from libs import log
 from libs import config
 import api.web
 from api.server import handle_api_url
@@ -71,17 +72,22 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 
 		self.write("<button onclick=\"window.top.call_api('admin/shuffle_power_hour', { 'sched_id': %s });\">Shuffle the Song Order</button><hr>\n\n" % ph['id'])
 
-		self.write("<ol>")
-		for song in ph['songs']:
-			self.write("<li><div>%s" % song['title'])
-			if song['one_up_used']:
-				self.write(" <b>(PLAYED)</b>")
-			elif song['one_up_queued']:
-				self.write(" (queued)")
-			self.write("</div><div>%s</div>\n" % song['albums'][0]['name'])
-			self.write("<div><a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">Delete</a></div></li>\n" % song['one_up_id'])
-		self.write("</ol>\n")
-		self.write("<script>window.top.current_sched_id = %s;</script>\n\n" % ph['id'])
+		try:
+			self.write("<ol>")
+			for song in ph['songs']:
+				self.write("<li><div>%s" % song['title'])
+				if song['one_up_used']:
+					self.write(" <b>(PLAYED)</b>")
+				elif song['one_up_queued']:
+					self.write(" (queued)")
+				self.write("</div><div>%s</div>\n" % song['albums'][0]['name'])
+				self.write("<div><a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">Delete</a></div></li>\n" % song['one_up_id'])
+			self.write("</ol>\n")
+			self.write("<script>window.top.current_sched_id = %s;</script>\n\n" % ph['id'])
+		except Exception as e:
+			self.write("</ol>")
+			self.write("<div>ERROR DISPLAYING SONG LIST.  Something is wrong.  Consult Rob.  Do not play this Power Hour.</div>")
+			log.exception("admin", "Could not display song list.", e)
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/album_list/power_hours")

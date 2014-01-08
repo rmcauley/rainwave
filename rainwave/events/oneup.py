@@ -62,8 +62,8 @@ class OneUpProducer(event.BaseProducer):
 		order = db.c.fetch_var("SELECT MAX(one_up_order) + 1 FROM r4_one_ups WHERE sched_id = %s", (self.id,))
 		if not order:
 			order = 0
-		for song_id in db.c.fetch_list("SELECT song_id FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE sid = %s AND album_id = %s ORDER BY song_title", (sid, album_id)):
-			self.add_song_id(song_id, order, sid)
+		for song in playlist.Album.load_from_id_with_songs(album_id, sid).data['songs']:
+			self.add_song_id(song['id'], sid, order)
 			order += 1
 		self._update_length()
 
