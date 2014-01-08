@@ -531,7 +531,7 @@ class Song(object):
 		Cooldown is only applied if the song exists on the given station
 		"""
 
-		if (self.sid != self.sid) or (not self.sid in self.data['sids']):
+		if (self.sid != sid) or (not self.sid in self.data['sids']):
 			return
 
 		cool_time = cooldown_config[sid]['max_song_cool']
