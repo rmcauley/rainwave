@@ -435,7 +435,7 @@ def create_tables():
 
 	c.update(" \
 		CREATE TABLE r4_elections ( \
-			elec_id					SERIAL		PRIMARY KEY, \
+			elec_id					INTEGER		NOT NULL, \
 			elec_used				BOOLEAN		DEFAULT FALSE, \
 			elec_in_progress		BOOLEAN		DEFAULT FALSE, \
 			elec_start_actual		INTEGER		, \
@@ -443,6 +443,9 @@ def create_tables():
 			elec_priority			BOOLEAN		DEFAULT FALSE, \
 			sid						SMALLINT	NOT NULL \
 		)")
+	if c.is_postgres:
+		c.update("ALTER TABLE r4_elections ALTER COLUMN elec_id SET DEFAULT nextval('r4_schedule_sched_id_seq')")
+	c.create_idx("r4_elections", "elec_id")
 	c.create_idx("r4_elections", "elec_used")
 	c.create_idx("r4_elections", "sid")
 
@@ -462,11 +465,15 @@ def create_tables():
 
 	c.update(" \
 		CREATE TABLE r4_one_ups ( \
+			one_up_id				INTEGER		NOT NULL, \
 			sched_id				INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL, \
 			one_up_order			SMALLINT	, \
-			one_up_used				BOOLEAN		DEFAULT FALSE \
+			one_up_used				BOOLEAN		DEFAULT FALSE, \
+			one_up_queued			BOOLEAN		DEFAULT FALSE \
 		)")
+	if c.is_postgres:
+		c.update("ALTER TABLE r4_one_ups ALTER COLUMN one_up_id SET DEFAULT nextval('r4_schedule_sched_id_seq')")
 	# c.create_idx("r4_one_ups", "sched_id")		# handled by create_delete_fk
 	# c.create_idx("r4_one_ups", "song_id")
 	c.create_delete_fk("r4_one_ups", "r4_schedule", "sched_id")

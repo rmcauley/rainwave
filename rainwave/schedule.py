@@ -36,6 +36,8 @@ def load():
 		# If our cache is empty, pull from the DB
 		if not current[sid]:
 			current[sid] = get_event_in_progress(sid)
+		if not current[sid]:
+			raise Exception("Could not load any events!")
 
 		next[sid] = cache.get_station(sid, "sched_next")
 		if not next[sid]:
@@ -60,17 +62,19 @@ def get_current_producer(sid):
 
 def get_producer_at_time(sid, at_time):
 	# pdb.set_trace()
+	to_ret = None
 	sched_id = db.c.fetch_var(	"SELECT sched_id "
 								"FROM r4_schedule "
 								"WHERE sid = %s AND sched_start <= %s AND sched_end > %s "
 								"ORDER BY sched_id "
 								"LIMIT 1", (sid, at_time + 15, at_time))
 	try:
-		if sched_id:
-			return events.event.BaseProducer.load_producer_by_id(sched_id)
+		to_ret = events.event.BaseProducer.load_producer_by_id(sched_id)
 	except Exception as e:
 		log.exception("get_producer", "Failed to get an appropriate producer.", e)
-	return election.ElectionProducer(sid)
+	if not to_ret:
+		return election.ElectionProducer(sid)
+	return to_ret
 
 def get_advancing_file(sid):
 	return next[sid][0].get_filename()
@@ -90,8 +94,14 @@ def advance_station(sid):
 	if len(next[sid]) == 0:
 		manage_next(sid)
 
+	while next[sid][0].used:
+		next[sid].pop()
+		if len(next[sid]) == 0:
+			manage_next(sid)		
+
 	start_time = time.time()
 	next[sid][0].prepare_event()
+
 	log.debug("advance", "Next[0] preparation time: %.6f" % (time.time() - start_time,))
 
 	tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(milliseconds=150), lambda: post_process(sid))

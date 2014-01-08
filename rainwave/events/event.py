@@ -174,7 +174,15 @@ class BaseEvent(object):
 		return None
 
 	def prepare_event(self):
+		if self.in_progress and not self.used:
+			return
+		elif self.used:
+			raise EventAlreadyUsed
 		self.replay_gain = self.get_song().replay_gain
+
+	def start_event(self):
+		self.start_actual = int(time.time())
+		self.in_progress = True
 
 	def finish(self):
 		self.used = True
@@ -187,19 +195,18 @@ class BaseEvent(object):
 			song.start_cooldown(self.sid)
 
 	def length(self):
+		# These go in descending order of accuracy
 		if not self.used and hasattr(self, "songs"):
 			return self.songs[0].data['length']
 		elif self.start_actual:
 			return self.start_actual - self.end
-		return self.start - self.end
-
-	def start_event(self):
-		if self.in_progress and not self.used:
-			return
-		elif self.used:
-			raise EventAlreadyUsed
-		self.start_actual = int(time.time())
-		self.in_progress = True
+		elif self.start and self.end:
+			return self.start - self.end
+		elif hasattr(self, "songs"):
+			return self.songs[0].data['length']
+		else:
+			log.warn("event", "Event ID %s (type %s) failed on length calculation.  Used: %s / Songs: %s / Start Actual: %s / Start: %s / End: %s" % (self.id, self.type, self.used, len(self.songs), self.start_actual, self.start, self.end))
+			return 0
 
 	def to_dict(self, user = None, **kwargs):
 		obj = {

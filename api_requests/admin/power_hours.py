@@ -22,7 +22,7 @@ class ListPowerHours(api.web.APIHandler):
 
 	def post(self):
 		self.append(self.return_name,
-			db.c.fetch_all("SELECT sched_id AS id, sched_name AS name, sched_start AS start "
+			db.c.fetch_all("SELECT sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end "
 						"FROM r4_schedule "
 						"WHERE sched_type = 'OneUpProducer' AND sched_used = FALSE AND sid = %s ORDER BY sched_start",
 						(self.sid,)))
@@ -69,11 +69,14 @@ class RemoveFromPowerHour(api.web.APIHandler):
 	return_name = "power_hour"
 	admin_required = True
 	sid_required = True
-	fields = { "sched_id": (fieldtypes.sched_id, True), "song_id": (fieldtypes.song_id, True) }
+	fields = { "one_up_id": (fieldtypes.song_id, True) }
 
 	def post(self):
-		ph =  OneUpProducer.load_producer_by_id(self.get_argument("sched_id"))
-		ph.remove_song_id(self.get_argument("song_id"))
+		ph_id = db.c.fetch_var("SELECT sched_id FROM r4_one_ups WHERE one_up_id = %s", (self.get_argument("one_up_id"),))
+		if not ph_id:
+			raise APIException("invalid_argument", "Invalid One Up ID.")
+		ph = OneUpProducer.load_producer_by_id(ph_id)
+		ph.remove_one_up(self.get_argument("one_up_id"))
 		self.append(self.return_name, ph.to_dict())
 
 @handle_api_url("admin/shuffle_power_hour")

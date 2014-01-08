@@ -13,13 +13,19 @@ from api_requests.admin_web.index import SongList
 from api_requests.admin import power_hours
 from api_requests.admin_web import index
 
+def get_ph_formatted_time(start_time, end_time, timezone_name):
+	return "%s to %s" % (
+		datetime.datetime.fromtimestamp(start_time, timezone(timezone_name)).strftime("%a %b %d/%Y %H:%M"),
+		datetime.datetime.fromtimestamp(end_time, timezone(timezone_name)).strftime("%H:%M %Z"))
+
 @handle_url("/admin/tools/power_hours")
 class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours):
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="%s Power Hours" % config.station_id_friendly[self.sid]))
 		self.write("<h2>%s Power Hours</h2>" % config.station_id_friendly[self.sid])
+		self.write("<script>window.top.current_sched_id = null;</script>\n\n")
 
-		self.write("<div><u>Create New</u><br><br>Input date and time in YOUR timezone.<br>")
+		self.write("<div>Input date and time in YOUR timezone.<br>")
 		self.write("Name: <input id='new_ph_name' type='text' /><br>")
 		index.write_html_time_form(self, "new_ph", time.time())
 		self.write("<br><button onclick=\"window.top.call_api('admin/create_power_hour', ")
@@ -30,10 +36,10 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 			self.write("<ul>")
 			for producer in self._output[self.return_name]:
 				self.write("<li><div><b><a href='/admin/tools/power_hour_detail?sid=%s&sched_id=%s'>%s</a></b></div>" % (self.sid, producer['id'], producer['name']))
-				self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(producer['start'], timezone('US/Eastern')).strftime("%a %b %d/%Y %H:%M %Z"))
-				self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(producer['start'], timezone('US/Pacific')).strftime("%a %b %d/%Y %H:%M %Z"))
-				self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(producer['start'], timezone('Europe/London')).strftime("%a %b %d/%Y %H:%M %Z (UK)"))
-				self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(producer['start'], timezone('Asia/Tokyo')).strftime("%a %b %d/%Y %H:%M %Z"))
+				self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(producer['start'], producer['end'], 'US/Eastern'))
+				self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(producer['start'], producer['end'], 'US/Pacific'))
+				self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(producer['start'], producer['end'], 'Europe/London'))
+				self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(producer['start'], producer['end'], 'Asia/Tokyo'))
 				self.write("</div></li>")
 		self.write(self.render_string("basic_footer.html"))
 
@@ -47,10 +53,10 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 		self.write(self.render_string("bare_header.html", title="%s" % ph['name']))
 		self.write("<h2>%s</h2>" % ph['name'])
 		self.write("<span>Times from the server:</span><br>")
-		self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(ph['start'], timezone('US/Eastern')).strftime("%a %b %d/%Y %H:%M %Z"))
-		self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(ph['start'], timezone('US/Pacific')).strftime("%a %b %d/%Y %H:%M %Z"))
-		self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(ph['start'], timezone('Europe/London')).strftime("%a %b %d/%Y %H:%M %Z (UK)"))
-		self.write("<div style='font-family: monospace;'>%s</div>" % datetime.datetime.fromtimestamp(ph['start'], timezone('Asia/Tokyo')).strftime("%a %b %d/%Y %H:%M %Z"))
+		self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(ph['start'], ph['end'], 'US/Eastern'))
+		self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(ph['start'], ph['end'], 'US/Pacific'))
+		self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(ph['start'], ph['end'], 'Europe/London'))
+		self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(ph['start'], ph['end'], 'Asia/Tokyo'))
 
 		self.write("<br><span>Change time.  Use YOUR timezone.</span><br>")
 		index.write_html_time_form(self, "power_hour", ph['start'])
@@ -67,8 +73,11 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 
 		self.write("<ol>")
 		for song in ph['songs']:
-			self.write("<li><div>%s</div><div>%s</div>\n" % (song['title'], song['albums'][0]['name']))
-			self.write("<div><a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'sched_id': %s, 'song_id': %s });\">Delete</a></div></li>\n" % (ph['id'], song['id']))
+			self.write("<li><div>%s" % song['title'])
+			if song['one_up_used']:
+				self.write(" <b>(PLAYED)</b>")
+			self.write("</div><div>%s</div>\n" % song['albums'][0]['name'])
+			self.write("<div><a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">Delete</a></div></li>\n" % song['one_up_id'])
 		self.write("</ol>\n")
 		self.write("<script>window.top.current_sched_id = %s;</script>\n\n" % ph['id'])
 		self.write(self.render_string("basic_footer.html"))

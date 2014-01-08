@@ -42,13 +42,15 @@ def attach_info_to_request(request, playlist = False, artists = False):
 			sched_current.get_song().data['rating_allowed'] = True
 		sched_current = sched_current.to_dict(request.user)
 		sched_next = []
-		for evt in cache.get_station(request.sid, "sched_next"):
+		sched_next_objects = cache.get_station(request.sid, "sched_next")
+		for evt in sched_next_objects:
 			sched_next.append(evt.to_dict(request.user))
-		if len(sched_next) > 0 and request.user.is_tunedin():
+		if len(sched_next) > 0 and request.user.is_tunedin() and sched_next_objects[0].is_election:
 			sched_next[0]['voting_allowed'] = True
 		if request.user.has_perks():
 			for i in range(1, len(sched_next)):
-				sched_next[i]['voting_allowed'] = True
+				if sched_next_objects[i].is_election:
+					sched_next[i]['voting_allowed'] = True
 		sched_history = []
 		for evt in cache.get_station(request.sid, "sched_history"):
 			sched_history.append(evt.to_dict(request.user, check_rating_acl=True))
