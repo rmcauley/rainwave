@@ -41,6 +41,7 @@ class LatestSongs(api.web.HTMLRequest):
 	def get(self):
 		self.write(self.render_string("basic_header.html", title="Latest Songs"))
 		self.write("<style type='text/css'>div { margin-bottom: 8px; border-bottom: solid 1px #888; }</style>")
+		self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")
 
 		for fn in db.c.fetch_list("SELECT song_filename FROM r4_songs ORDER BY song_file_mtime DESC LIMIT 20"):
 			self.write("<div>%s</div>" % fn)

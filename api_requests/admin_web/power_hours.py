@@ -25,6 +25,7 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 		self.write(self.render_string("bare_header.html", title="%s Power Hours" % config.station_id_friendly[self.sid]))
 		self.write("<h2>%s Power Hours</h2>" % config.station_id_friendly[self.sid])
 		self.write("<script>window.top.current_sched_id = null;</script>\n\n")
+		self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")
 
 		self.write("<div>Input date and time in YOUR timezone.<br>")
 		self.write("Name: <input id='new_ph_name' type='text' /><br>")
@@ -36,7 +37,7 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 		if self.return_name in self._output and type(self._output[self.return_name]) == types.ListType and len(self._output[self.return_name]) > 0:
 			self.write("<ul>")
 			for producer in self._output[self.return_name]:
-				self.write("<li><div><b><a href='/admin/tools/power_hour_detail?sid=%s&sched_id=%s'>%s</a></b></div>" % (self.sid, producer['id'], producer['name']))
+				self.write("<li><div><b><a href='power_hour_detail?sid=%s&sched_id=%s'>%s</a></b></div>" % (self.sid, producer['id'], producer['name']))
 				self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(producer['start'], producer['end'], 'US/Eastern'))
 				self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(producer['start'], producer['end'], 'US/Pacific'))
 				self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(producer['start'], producer['end'], 'Europe/London'))
@@ -48,10 +49,11 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 	def get(self):
 		if not self._output or not self.return_name in self._output:
-			self.write("<a href='/admin/tools/power_hours?sid=%s'>No such Power Hour.  Click here to go back to the listing.</a>" % self.sid)
+			self.write("<a href='power_hours?sid=%s'>No such Power Hour.  Click here to go back to the listing.</a>" % self.sid)
 			return
 		ph = self._output[self.return_name]
 		self.write(self.render_string("bare_header.html", title="%s" % ph['name']))
+		self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")
 		self.write("<h2>%s</h2>" % ph['name'])
 		self.write("<span>Times from the server:</span><br>")
 		self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(ph['start'], ph['end'], 'US/Eastern'))

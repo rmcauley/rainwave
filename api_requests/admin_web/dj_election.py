@@ -12,6 +12,7 @@ class DJElectionTool(api.web.HTMLRequest):
 
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="%s One Up Tool" % config.station_id_friendly[self.sid]))
+		self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")
 		self.write("<h2>%s DJ Election Tool</h2>" % config.station_id_friendly[self.sid])
 		self.write("<ul><li>Once committed, the election cannot be changed.</li>")
 		self.write("<li>Pulling songs from other stations is possible and will not affect cooldown on the other station. (it will affect voting stats)")

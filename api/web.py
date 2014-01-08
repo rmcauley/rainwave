@@ -368,7 +368,7 @@ def _html_write_error(self, status_code, **kwargs):
 			self.write(self.render_string("basic_header.html", title="%s - %s" % (status_code, exc.reason)))
 		else:
 			self.write(self.render_string("basic_header.html", title="HTTP %s - %s" % (status_code, tornado.httputil.responses.get(status_code, 'Unknown'))))
-		if status_code == 500:
+		if status_code == 500 or config.get("developer_mode"):
 			self.write("<p>")
 			self.write(self.locale.translate("unknown_error_message"))
 			self.write("</p><p>")

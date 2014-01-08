@@ -11,6 +11,7 @@ class CooldownTool(api.web.HTMLRequest):
 
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="%s Cooldown Tool" % config.station_id_friendly[self.sid]))
+		self.write("<script>\nwindow.top.refresh_all_screens = true;\n</script>")
 		self.write("<h2>%s Cooldown Tool</h2>" % config.station_id_friendly[self.sid])
 		self.write("<script>\nif (window.top.current_station != window.top.current_restriction) {\n document.body.style.background = '#660000';\n document.write('Match your selected station to \"with songs from\" or Rob will be angry with you.'); }\n</script>")
 		self.write(self.render_string("basic_footer.html"))
