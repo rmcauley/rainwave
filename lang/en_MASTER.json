@@ -71,6 +71,8 @@
    "tip_jar_instruction_2"                           : "Send us your username and a message as a comment.",
    "tip_jar_instruction_3"                           : "Please indicate if you'd like your name to be kept anonymous.",
    "tip_jar_opener_end"                              : "After we process your tip, you'll be given Donor status on the site.  This allows you to queue up more requests and the ability to vote on more than 1 election at a time.",
+   "amount"                                          : "Amount",
+   "message"                                         : "Message",
 
    "__comment__"                 : "Other",
 

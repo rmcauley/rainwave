@@ -131,6 +131,15 @@ def boolean(str, request = None):
 		return False
 	return None
 
+user_id_error = "must be a valid user ID."
+def user_id(str, request = None):
+	u = positive_integer(str, request)
+	if not u:
+		return None
+	if not db.c.fetch_var("SELECT user_id FROM phpbb_users WHERE user_id = %s", (u,)):
+		return None
+	return u
+
 valid_relay_error = "must be a known and valid relay's IP address."
 def valid_relay(str, request = None):
 	if not str:

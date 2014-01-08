@@ -74,11 +74,12 @@ class OneUpProducer(event.BaseProducer):
 		return False
 
 	def shuffle_songs(self):
-		song_ids = db.c.fetch_list("SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s", (self.id,))
-		random.shuffle(song_ids)
+		one_up_ids = db.c.fetch_list("SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s", (self.id,))
+		random.shuffle(one_up_ids)
 		i = 0
-		for song_id in song_ids:
-			db.c.update("UPDATE r4_one_ups SET one_up_order = %s WHERE one_up_id = %s", (i, self.id, song_id))
+		for one_up_id in one_up_ids:
+			db.c.update("UPDATE r4_one_ups SET one_up_order = %s WHERE one_up_id = %s", (i, one_up_id))
+			i += 1
 		return True
 
 	def load_all_songs(self):
