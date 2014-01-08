@@ -531,7 +531,7 @@ class Song(object):
 		Cooldown is only applied if the song exists on the given station
 		"""
 
-		if (self.sid != self.sid) and (not self.sid in self.data['sids']):
+		if (self.sid != self.sid) or (not self.sid in self.data['sids']):
 			return
 
 		cool_time = cooldown_config[sid]['max_song_cool']
@@ -943,7 +943,7 @@ class Album(AssociatedMetadata):
 	def load_from_id_sid(cls, album_id, sid):
 		row = db.c.fetch_row("SELECT r4_albums.*, album_cool, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.album_id = %s AND r4_album_sid.sid = %s", (album_id, sid))
 		if not row:
-			raise MetadataNotFoundError("%s ID %s could not be found." % (cls.__name__, album_id))
+			raise MetadataNotFoundError("%s ID %s for sid %s could not be found." % (cls.__name__, album_id, sid))
 		instance = cls()
 		instance._assign_from_dict(row)
 		instance.data['sids'] = [ sid ]
@@ -965,8 +965,8 @@ class Album(AssociatedMetadata):
 					"string_agg(r4_artists.artist_id || ':' || r4_artists.artist_name,  ',') AS artist_parseable "
 				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
-					"JOIN r4_song_artist USING (song_id) "
-					"JOIN r4_artists USING (artist_id) "
+					"LEFT JOIN r4_song_artist USING (song_id) "
+					"LEFT JOIN r4_artists USING (artist_id) "
 				"WHERE r4_song_sid.sid = %s AND r4_song_sid.album_id = %s "
 				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating "
 				"ORDER BY song_title",
@@ -980,8 +980,8 @@ class Album(AssociatedMetadata):
 					"string_agg(r4_artists.artist_id || ':' || r4_artists.artist_name,  ',') AS artist_parseable "
 				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
-					"JOIN r4_song_artist USING (song_id) "
-					"JOIN r4_artists USING (artist_id) "
+					"LEFT JOIN r4_song_artist USING (song_id) "
+					"LEFT JOIN r4_artists USING (artist_id) "
 					"LEFT JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
 				"WHERE r4_song_sid.sid = %s AND r4_song_sid.album_id = %s "
 				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply, song_request_only "
