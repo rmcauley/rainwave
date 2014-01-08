@@ -346,47 +346,49 @@ class APIHandler(RainwaveHandler):
 			self.append("error", { "tl_key": "internal_error", "text": self.locale.translate("internal_error") } )
 		self.finish()
 
+def _html_write_error(self, status_code, **kwargs):
+	if kwargs.has_key("exc_info"):
+		exc = kwargs['exc_info'][1]
+
+		# Restart DB on a connection error if that's what we're handling
+		if isinstance(exc, (psycopg2.OperationalError, psycopg2.InterfaceError)):
+			try:
+				db.close()
+				db.open()
+				self.append("error", { "code": 500, "tl_key": "db_error_retry", "text": self.locale.translate("db_error_retry") })
+			except:
+				self.append("error", { "code": 500, "tl_key": "db_error_permanent", "text": self.locale.translate("db_error_permanent") })
+				pass
+		elif isinstance(exc, APIException):
+			if not isinstance(self.locale, locale.RainwaveLocale):
+				exc.localize(locale.get("en_CA"))
+			else:
+				exc.localize(self.locale)
+		if (isinstance(exc, APIException) or isinstance(exc, tornado.web.HTTPError)) and exc.reason:
+			self.write(self.render_string("basic_header.html", title="%s - %s" % (status_code, exc.reason)))
+		else:
+			self.write(self.render_string("basic_header.html", title="HTTP %s - %s" % (status_code, tornado.httputil.responses.get(status_code, 'Unknown'))))
+		if status_code == 500:
+			self.write("<p>")
+			self.write(self.locale.translate("unknown_error_message"))
+			self.write("</p><p>")
+			self.write(self.locale.translate("debug_information"))
+			self.write("</p><div class='json'>")
+			for line in traceback.format_exception(kwargs['exc_info'][0], kwargs['exc_info'][1], kwargs['exc_info'][2]):
+				self.write(line)
+			self.write("</div>")
+	self.finish()
+
 class HTMLRequest(RainwaveHandler):
 	phpbb_auth = True
 	allow_get = True
-
-	def write_error(self, status_code, **kwargs):
-		if kwargs.has_key("exc_info"):
-			exc = kwargs['exc_info'][1]
-
-			# Restart DB on a connection error if that's what we're handling
-			if isinstance(exc, (psycopg2.OperationalError, psycopg2.InterfaceError)):
-				try:
-					db.close()
-					db.open()
-					self.append("error", { "code": 500, "tl_key": "db_error_retry", "text": self.locale.translate("db_error_retry") })
-				except:
-					self.append("error", { "code": 500, "tl_key": "db_error_permanent", "text": self.locale.translate("db_error_permanent") })
-					pass
-			elif isinstance(exc, APIException):
-				if not isinstance(self.locale, locale.RainwaveLocale):
-					exc.localize(locale.get("en_CA"))
-				else:
-					exc.localize(self.locale)
-			if (isinstance(exc, APIException) or isinstance(exc, tornado.web.HTTPError)) and exc.reason:
-				self.write(self.render_string("basic_header.html", title="%s - %s" % (status_code, exc.reason)))
-			else:
-				self.write(self.render_string("basic_header.html", title="HTTP %s - %s" % (status_code, tornado.httputil.responses.get(status_code, 'Unknown'))))
-			if status_code == 500:
-				self.write("<p>")
-				self.write(self.locale.translate("unknown_error_message"))
-				self.write("</p><p>")
-				self.write(self.locale.translate("debug_information"))
-				self.write("</p><div class='json'>")
-				for line in traceback.format_exception(kwargs['exc_info'][0], kwargs['exc_info'][1], kwargs['exc_info'][2]):
-					self.write(line)
-				self.write("</div>")
-		self.finish()
+	write_error = _html_write_error
 
 # this mixin will overwrite anything in APIHandler and RainwaveHandler so be careful wielding it
 class PrettyPrintAPIMixin(object):
 	phpbb_auth = True
 	allow_get = True
+	write_error = _html_write_error
 
 	# reset the initialize to ignore overwriting self.get with anything
 	def initialize(self, **kwargs):
