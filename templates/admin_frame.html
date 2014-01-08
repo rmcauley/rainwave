@@ -20,26 +20,24 @@
 	};
 
 	function api_data_callback(json) {
-		if ('error' in json) {
-			window.frames.debug.document.body.style.background = "#660000";
-		}
-		else {
-			window.frames.debug.document.body.style.background = "black";
-		}
+		window.frames.debug.document.body.style.background = "black";
 		window.frames.debug.document.body.style.color = "white";
 		var str = "<table border=1>";
 		for (var i = 0; i < json.length; i++) {
 				for (var cb in json[i]) {
-						for (var key in json[i][cb]) {
-							if ((key == 'success') && !json[i][cb][key]) {
-								window.frames.debug.document.body.style.background = "#660000";
-							}
-							str += "<tr><td>" + cb + "</td><td>" + key + "</td><td";
-							if (key == 'traceback') {
-								str += " style='font-family: monospace; white-space: pre;'>";
-							}
-							str += ">" + json[i][cb][key] + "</td></tr>";
+					if (cb == 'error') {
+						window.frames.debug.document.body.style.background = "#660000";
+					}
+					for (var key in json[i][cb]) {
+						if ((key == 'success') && !json[i][cb][key]) {
+							window.frames.debug.document.body.style.background = "#660000";
 						}
+						str += "<tr><td>" + cb + "</td><td>" + key + "</td><td";
+						if (key == 'traceback') {
+							str += " style='font-family: monospace; white-space: pre;'";
+						}
+						str += ">" + json[i][cb][key] + "</td></tr>";
+					}
 				}
 		}
 		str += "</table>";

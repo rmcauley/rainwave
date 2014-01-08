@@ -5,6 +5,7 @@ from api.server import handle_url
 from api.exceptions import APIException
 from api import fieldtypes
 from rainwave import playlist
+from rainwave import events
 
 class GetCachedSongList(api.web.APIHandler):
 	admin_required = True
@@ -67,7 +68,6 @@ class RemoveFromDJElection(RemoveFromCachedSongList):
 class CommitDJElection(api.web.APIHandler):
 	admin_required = True
 	description = "Commit the DJ Election the user is editing."
-	fields = { "priority": (fieldtypes.boolean, True) }
 
 	def post(self):
 		songs = cache.get_user(self.user.id, "dj_election")
@@ -76,8 +76,5 @@ class CommitDJElection(api.web.APIHandler):
 		elec = events.election.Election.create(self.sid)
 		for song in songs:
 			elec.add_song(song)
-		if self.get_argument("priority"):
-			elec.set_priority(True)
 		cache.set_user(self.user.id, "dj_election", None)
 		self.append(self.return_name, { "success": True })
-		sync_to_back.refresh_schedule(self.sid)

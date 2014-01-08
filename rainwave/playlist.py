@@ -305,6 +305,8 @@ class Song(object):
 		s._assign_from_dict(d)
 
 		s.albums = Album.load_list_from_song_id_sid(song_id, sid)
+		if len(s.albums) == 0:
+			s.albums = Album.load_list_from_song_id_sid(song_id, d['song_origin_sid'])
 		s.artists = Artist.load_list_from_song_id(song_id)
 		s.groups = SongGroup.load_list_from_song_id(song_id)
 
