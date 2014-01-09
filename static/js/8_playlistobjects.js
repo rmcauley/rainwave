@@ -166,7 +166,7 @@ var Username = {
 var Schedule = {
 	r4translate: function(json) {
 		var type = 0;
-		if (json['type'] == "OneUp") type = 4;
+		if ((json['type'] == "OneUp") || (json['type'] == "SingleSong")) type = 4;
 		var sd = [];
 		for (var i = 0; i < json['songs'].length; i++) {
 			sd.push(Song.r4translate(json['songs'][i]));

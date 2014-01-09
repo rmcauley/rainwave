@@ -114,10 +114,10 @@ def start():
 	pidfile.write(str(pid))
 	pidfile.close()
 
-	schedule.load()
-
 	for sid in config.station_ids:
 		playlist.prepare_cooldown_algorithm(sid)
+
+	schedule.load()
 
 	log.debug("start", "Backend server bootstrapped, port %s, ready to go." % int(config.get("backend_port")))
 

@@ -28,12 +28,6 @@ def get_shortest_song(sid):
 	# Should we take into account song_elec_blocked here?
 	return db.c.fetch_var("SELECT MIN(song_length) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE song_exists = TRUE AND r4_song_sid.sid = %s AND song_cool = FALSE", (sid,))
 
-def get_average_song_length(sid = None):
-	"""
-	Calculates the average song length of available songs in the database.
-	"""
-	return db.c.fetch_var("SELECT AVG(song_length) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE song_exists = TRUE AND r4_song_sid.sid = %s AND song_cool = FALSE", (sid,))
-
 def prepare_cooldown_algorithm(sid):
 	"""
 	Prepares pre-calculated variables that relate to calculating cooldown.
@@ -74,18 +68,18 @@ def prepare_cooldown_algorithm(sid):
 	max_album_cool = min_album_cool + ((5 - 2.5) * ((base_album_cool - min_album_cool) / (5 - base_rating)))
 	log.debug("cooldown", "SID %s: max_album_cool: %s" % (sid, max_album_cool))
 
-	cooldown_config[sid]['sum_aasl'] = sum_aasl
-	cooldown_config[sid]['avg_album_rating'] = avg_album_rating
-	cooldown_config[sid]['multiplier_adjustment'] = multiplier_adjustment
-	cooldown_config[sid]['base_album_cool'] = base_album_cool
-	cooldown_config[sid]['base_rating'] = base_rating
-	cooldown_config[sid]['min_album_cool'] = min_album_cool
-	cooldown_config[sid]['max_album_cool'] = max_album_cool
+	cooldown_config[sid]['sum_aasl'] = int(sum_aasl)
+	cooldown_config[sid]['avg_album_rating'] = float(avg_album_rating)
+	cooldown_config[sid]['multiplier_adjustment'] = float(multiplier_adjustment)
+	cooldown_config[sid]['base_album_cool'] = int(base_album_cool)
+	cooldown_config[sid]['base_rating'] = float(base_rating)
+	cooldown_config[sid]['min_album_cool'] = int(min_album_cool)
+	cooldown_config[sid]['max_album_cool'] = int(max_album_cool)
 	cooldown_config[sid]['time'] = int(time.time())
 
 	average_song_length = db.c.fetch_var("SELECT AVG(song_length) FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE song_exists = TRUE AND sid = %s", (sid,))
 	log.debug("cooldown", "SID %s: average_song_length: %s" % (sid, average_song_length))
-	cooldown_config[sid]['average_song_length'] = average_song_length
+	cooldown_config[sid]['average_song_length'] = float(average_song_length)
 	if not average_song_length:
 		average_song_length = 160
 	number_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE song_exists = TRUE AND sid = %s", (sid,))
@@ -114,7 +108,7 @@ def get_age_cooldown_multiplier(added_on):
 def get_average_song_length(sid):
 	return cooldown_config[sid]['average_song_length']
 
-def get_random_song_timed(sid, target_seconds = None, target_delta = 30):
+def get_random_song_timed(sid, target_seconds = None, target_delta = 20):
 	"""
 	Fetch a random song abiding by all election block, request block, and
 	availability rules, but giving priority to the target song length
@@ -165,6 +159,20 @@ def get_random_song(sid):
 		offset = random.randint(1, num_available) - 1
 		song_id = db.c.fetch_var("SELECT song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, offset))
 		return Song.load_from_id(song_id, sid)
+
+def get_shortest_song(sid):
+	"""
+	Fetch the shortest song available abiding by election block and availability rules.
+	"""
+	sql_query = ("FROM r4_song_sid "
+					"JOIN r4_songs USING (song_id) "
+				"WHERE r4_song_sid.sid = %s "
+					"AND song_cool = FALSE "
+					"AND song_request_only = FALSE "
+					"AND song_elec_blocked = FALSE "
+				"ORDER BY song_length")
+	song_id = db.c.fetch_var("SELECT song_id " + sql_query + " LIMIT 1", (sid,))
+	return Song.load_from_id(song_id, sid)	
 
 def get_random_song_ignore_requests(sid):
 	"""

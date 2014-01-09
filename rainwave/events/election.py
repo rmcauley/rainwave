@@ -38,12 +38,12 @@ class ElectionProducer(event.BaseProducer):
 		self.elec_type = "Election"
 		self.elec_class = Election
 
-	def load_next_event(self, target_length = None, min_elec_id = 0):
+	def load_next_event(self, target_length = None, min_elec_id = 0, skip_requests = False):
 		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s ORDER BY elec_id LIMIT 1", (self.elec_type, self.sid, min_elec_id))
 		if elec_id:
 			return self.elec_class.load_by_id(elec_id)
 		else:
-			return self._create_election(target_length)
+			return self._create_election(target_length, skip_requests)
 
 	def load_event_in_progress(self):
 		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s ORDER BY elec_id DESC LIMIT 1", (self.elec_type, self.sid))
@@ -52,12 +52,12 @@ class ElectionProducer(event.BaseProducer):
 		else:
 			return self.load_next_event()
 
-	def _create_election(self, target_length):
+	def _create_election(self, target_length, skip_requests):
 		log.debug("create_elec", "Creating election type %s for sid %s, target length %s." % (self.elec_type, self.sid, target_length))
 		db.c.update("START TRANSACTION")
 		try:
 			elec = self.elec_class.create(self.sid)
-			elec.fill(target_length)
+			elec.fill(target_length, skip_requests)
 			if elec.length() == 0:
 				raise Exception("Created zero-length election.")
 			db.c.update("COMMIT")
@@ -104,7 +104,7 @@ class Election(event.BaseEvent):
 		elec = cls(sid)
 		elec.is_election = True
 		elec.id = elec_id
-		elec.type = cls.__name__
+		elec.type = "Election"
 		elec.used = False
 		elec.start_actual = None
 		elec.in_progress = False
@@ -126,21 +126,25 @@ class Election(event.BaseEvent):
 			self._num_songs = 3
 		self.is_election = True
 
-	def fill(self, target_song_length = None):
+	def fill(self, target_song_length = None, skip_requests = False):
 		self._add_from_queue()
 		# ONLY RUN _ADD_REQUESTS ONCE PER FILL
-		self._add_requests()
+		if not skip_requests:
+			self._add_requests()
 		for i in range(len(self.songs), self._num_songs):
 			if not target_song_length and len(self.songs) > 0 and 'length' in self.songs[0].data:
 				target_song_length = self.songs[0].data['length']
 				log.debug("elec_fill", "Second song in election, aligning to length %s" % target_song_length)
-			song = playlist.get_random_song_timed(self.sid, target_song_length)
+			song = self._fill_get_song(target_song_length)
 			song.data['entry_votes'] = 0
 			song.data['entry_type'] = ElecSongTypes.normal
 			song.data['elec_request_user_id'] = 0
 			song.data['elec_request_username'] = None
 			self._check_song_for_conflict(song)
 			self.add_song(song)
+
+	def _fill_get_song(self, target_song_length):
+		return playlist.get_random_song_timed(self.sid, target_song_length)
 
 	def _check_song_for_conflict(self, song):
 		requesting_user = db.c.fetch_row("SELECT username, phpbb_users.user_id "
@@ -239,7 +243,6 @@ class Election(event.BaseEvent):
 		# ONLY RUN IS_REQUEST_NEEDED ONCE
 		if self.is_request_needed() and len(self.songs) < self._num_songs:
 			log.debug("requests", "Ready for requests, filling %s." % self._num_requests)
-			# TODO: Do requests need to be timed to the target?
 			for i in range(0, self._num_requests):
 				self.add_song(self.get_request())
 

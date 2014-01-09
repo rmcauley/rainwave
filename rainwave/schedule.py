@@ -19,6 +19,7 @@ from rainwave.events import election
 # This is to make sure the code gets loaded and producers get registered
 import rainwave.events.oneup
 import rainwave.events.pvpelection
+import rainwave.events.shortest_election
 
 # Events for each station
 current = {}
@@ -46,11 +47,9 @@ def load():
 
 		history[sid] = cache.get_station(sid, "sched_history")
 		if not history[sid]:
-			# TODO: Have this load a list of empty "song" events, since this is a last resort
 			history[sid] = []
-			# Only loads elections but this should be good enough for history 99% of the time.
-			for elec_id in db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE elec_used = TRUE AND elec_start_actual < %s ORDER BY elec_start_actual DESC LIMIT 5", (current[sid].start_actual,)):
-				history[sid].insert(0, election.Election.load_by_id(elec_id))
+			for song_id in db.c.fetch_list("SELECT song_id FROM r4_song_history WHERE sid = %s ORDER BY songhist_time DESC LIMIT 5", (sid,)):
+				history[sid].insert(0, events.event.SingleSong(song_id, sid))
 
 def get_event_in_progress(sid):
 	producer = get_current_producer(sid)
@@ -61,13 +60,12 @@ def get_current_producer(sid):
 	return get_producer_at_time(sid, int(time.time()))
 
 def get_producer_at_time(sid, at_time):
-	# pdb.set_trace()
 	to_ret = None
 	sched_id = db.c.fetch_var(	"SELECT sched_id "
 								"FROM r4_schedule "
 								"WHERE sid = %s AND sched_start <= %s AND sched_end > %s "
 								"ORDER BY sched_id DESC "
-								"LIMIT 1", (sid, at_time + 15, at_time))
+								"LIMIT 1", (sid, at_time + 20, at_time))
 	try:
 		to_ret = events.event.BaseProducer.load_producer_by_id(sched_id)
 	except Exception as e:
@@ -207,9 +205,26 @@ def _get_schedule_stats(sid):
 def manage_next(sid):
 	max_sched_id, max_elec_id, num_elections, max_future_time = _get_schedule_stats(sid)
 	next_producer = get_producer_at_time(sid, max_future_time)
+	nextnext_producer_start = db.c.fetch_var("SELECT sched_start FROM r4_schedule WHERE sid = %s AND sched_used = FALSE AND sched_start > %s AND sched_timed = TRUE", (sid, max_future_time))
+	time_to_future_producer = None
+	if nextnext_producer_start:
+		time_to_future_producer = nextnext_producer_start - max_future_time
+	else:
+		time_to_future_producer = 86400
 	while len(next[sid]) < next_producer.plan_ahead_limit:
-		# TODO: target_length
 		target_length = None
+		skip_requests = False
+		if time < 20:
+			pass
+		if time_to_future_producer < 40:
+			target_length = time_to_future_producer
+			skip_requests = True
+			next_producer = rainwave.events.shortest_election.ShortestElectionProducer(sid)
+		elif time_to_future_producer < (playlist.get_average_song_length(sid) * 1.3):
+			target_length = time_to_future_producer
+			skip_requests = True
+		elif time_to_future_producer < (playlist.get_average_song_length(sid) * 2.2):
+			target_length = playlist.get_average_song_length(sid)
 		next_event = next_producer.load_next_event(target_length, max_elec_id)
 		if not next_event:
 			log.info("manage_next", "Producer ID %s type %s did not produce an event." % (next_producer.id, next_producer.type))
@@ -219,6 +234,7 @@ def manage_next(sid):
 		if next_event.is_election and next_event.id > max_elec_id:
 			max_elec_id = next_event.id
 		max_future_time += next[sid][-1].length()
+		time_to_future_producer -= next[sid][-1].length()
 		next_producer = get_producer_at_time(sid, max_future_time)
 
 	future_time = None

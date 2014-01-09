@@ -54,7 +54,7 @@ class BaseProducer(object):
 		return p
 
 	@classmethod
-	def create(cls, sid, start, end, name = None, public = True, timed = False, url = None, use_crossfade = True, use_tag_suffix = True):
+	def create(cls, sid, start, end, name = None, public = True, timed = True, url = None, use_crossfade = True, use_tag_suffix = True):
 		evt = cls(sid)
 		evt.id = db.c.get_next_id("r4_schedule", "sched_id")
 		evt.start = start
@@ -159,6 +159,7 @@ class BaseEvent(object):
 		self.is_election = False
 		self.replay_gain = None
 		self.name = None
+		self.sid = sid
 
 	def _update_from_dict(self, dict):
 		pass
@@ -231,3 +232,12 @@ class BaseEvent(object):
 			for song in self.songs:
 				obj['songs'].append(song.to_dict(user))
 		return obj;
+
+class SingleSong(BaseEvent):
+	incrementer = 0
+
+	def __init__(self, song_id, sid):
+		super(SingleSong, self).__init__(sid)
+		self.songs = [ playlist.Song.load_from_id(song_id, sid) ]
+		self.id = SingleSong.incrementer
+		SingleSong.incrementer += 1

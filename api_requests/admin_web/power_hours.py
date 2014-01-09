@@ -47,10 +47,12 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 
 @handle_url("/admin/tools/power_hour_detail")
 class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
+	def write_error(self, status_code, **kwargs):
+		self.write(self.render_string("bare_header.html", title="No Such Power Hour"))
+		self.write("<a href='power_hours?sid=%s'>Power hour non-existent or deleted.  Click this line to go back.</a>" % self.sid)
+		self.write(self.render_string("basic_footer.html"))
+
 	def get(self):
-		if not self._output or not self.return_name in self._output:
-			self.write("<a href='power_hours?sid=%s'>No such Power Hour.  Click here to go back to the listing.</a>" % self.sid)
-			return
 		ph = self._output[self.return_name]
 		self.write(self.render_string("bare_header.html", title="%s" % ph['name']))
 		self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")

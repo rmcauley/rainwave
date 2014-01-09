@@ -8,7 +8,7 @@ var Event = function() {
 			// nothing special for elections right now
 			return EventBase(json, $l("Election"));
 		}
-		else if (json.type == "OneUp") {
+		else if ((json.type == "OneUp") || (json.type == 'SingleSong')) {
 			return OneUp(json, $l("OneUp"));;
 		}
 		throw("Unknown event type '" + json.type + "'");
