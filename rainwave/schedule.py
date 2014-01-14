@@ -216,15 +216,19 @@ def manage_next(sid):
 		skip_requests = False
 		if time < 20:
 			pass
+			log.debug("timing", "SID %s <20 seconds to next event, not using timing." % sid)
 		if time_to_future_producer < 40:
 			target_length = time_to_future_producer
 			skip_requests = True
 			next_producer = rainwave.events.shortest_election.ShortestElectionProducer(sid)
+			log.debug("timing", "SID %s <40 seconds to next event, using shortest elections." % sid)
 		elif time_to_future_producer < (playlist.get_average_song_length(sid) * 1.3):
 			target_length = time_to_future_producer
 			skip_requests = True
+			log.debug("timing", "SID %s close to event, timing to %s seconds long." % (sid, target_length))
 		elif time_to_future_producer < (playlist.get_average_song_length(sid) * 2.2):
 			target_length = playlist.get_average_song_length(sid)
+			log.debug("timing", "SID %s has an upcoming event, timing to %s seconds long." % (sid, target_length))
 		next_event = next_producer.load_next_event(target_length, max_elec_id)
 		if not next_event:
 			log.info("manage_next", "Producer ID %s type %s did not produce an event." % (next_producer.id, next_producer.type))
