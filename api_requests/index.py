@@ -19,11 +19,7 @@ from libs import db
 from libs import buildtools
 from rainwave.user import User
 
-jsfiles = []
-for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js")):
-	for file in files:
-		jsfiles.append(os.path.join(root[root.find("static/js"):], file))
-jsfiles.sort()
+jsfiles = buildtools.get_js_file_list_url()
 
 @handle_url("/(?:index.html)?")
 class MainIndex(api.web.HTMLRequest):
@@ -44,10 +40,9 @@ class MainIndex(api.web.HTMLRequest):
 	def get(self):
 		info.attach_info_to_request(self, playlist=True, artists=True)
 		self.append("api_info", { "time": int(time.time()) })
-		self.set_header("Content-Type", "text/plain")
 		self.render("index.html", request=self,
 					site_description=self.locale.translate("station_description_id_%s" % self.sid),
-					revision_number=config.get("revision_number"),
+					revision_number=config.build_number,
 					api_url=config.get("api_external_url_prefix"),
 					cookie_domain=config.get("cookie_domain"),
 					locales=api.locale.locale_names_json)
@@ -75,7 +70,7 @@ class BetaIndex(MainIndex):
 		self.render("beta_index.html", request=self,
 					site_description=self.locale.translate("station_description_id_%s" % self.sid),
 					jsfiles=jsfiles,
-					revision_number=config.get("revision_number"),
+					revision_number=config.build_number,
 					api_url=config.get("api_external_url_prefix"),
 					cookie_domain=config.get("cookie_domain"),
 					locales=api.locale.locale_names_json)
@@ -106,7 +101,7 @@ class R4Index(BetaIndex):
 		self.render("r4_index.html", request=self,
 					site_description=self.locale.translate("station_description_id_%s" % self.sid),
 					jsfiles=self.js4files,
-					revision_number=config.get("revision_number"),
+					revision_number=config.build_number,
 					api_url=config.get("api_external_url_prefix"),
 					cookie_domain=config.get("cookie_domain"),
 					locales=api.locale.locale_names_json)

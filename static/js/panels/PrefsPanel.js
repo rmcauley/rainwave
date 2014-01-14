@@ -19,13 +19,13 @@ panels.PrefsPanel = {
 			var i, k;
 			for (i in prefs.p) {
 				for (k in prefs.p[i]) {
-					if (prefs.p[i][k].type && !displaying["pref_" + i + "_" + k]) that.newPrefCallback(i, prefs.p[i][k]);
+					if (prefs.p[i][k].type && !displaying["pref_" + i + "_" + k]) { that.newPrefCallback(i, prefs.p[i][k]); }
 				}
 			}
 		};
 		
 		that.newPrefCallback = function(section, prefdata) {
-			if (prefdata.hidden) return;
+			if (prefdata.hidden) { return; }
 			var tr = document.createElement("tr");
 			var td = document.createElement("td");
 			td.textContent = _l("pref_" + section + "_" + prefdata.name) + ": ";
@@ -38,8 +38,8 @@ panels.PrefsPanel = {
 				var cb = document.createElement("input");
 				cb.setAttribute("type", "checkbox");
 				cb.setAttribute("name", "pref_" + section + "_" + prefdata.name);
-				if (prefdata.value) cb.checked = true;
-				else cb.checked = false;
+				if (prefdata.value) { cb.checked = true; }
+				else { cb.checked = false; }
 				cb.addEventListener("click", that.prefCheckboxChange, true);
 				td.appendChild(cb);
 				prefs.addPrefCallback(section, prefdata.name, function(v) { cb.checked = v; });
@@ -47,8 +47,8 @@ panels.PrefsPanel = {
 			else if (prefdata.type == "dropdown") {
 				var select = document.createElement("select");
 				select.setAttribute("name", "pref_" + section + "_" + prefdata.name);
-				var opt;
-				for (var i = 0; i < prefdata.options.length; i++) {
+				var opt, i;
+				for (i = 0; i < prefdata.options.length; i++) {
 					opt = document.createElement("option");
 					opt.setAttribute("value", prefdata.options[i].value);
 					opt.textContent = prefdata.options[i].option;
@@ -74,36 +74,37 @@ panels.PrefsPanel = {
 			}
 			tr.appendChild(td);*/
 			if (prefdata.dsection) {
-				if (!stables[prefdata.dsection]) that.newSectionCallback(prefdata.dsection);
+				if (!stables[prefdata.dsection]) { that.newSectionCallback(prefdata.dsection); }
 				stables[prefdata.dsection].appendChild(tr);
 			}
 			else {
-				if (!stables[section]) that.newSectionCallback(section);
+				if (!stables[section]) { that.newSectionCallback(section); }
 				stables[section].appendChild(tr);
 			}
 		};
 		
 		that.dropdownMatch = function(select, value) {
-			if (!select) return;
-			for (var i = 0; i < select.options.length; i++) {
-				if (select.options[i].value == value) select.selectedIndex = i;
+			var i;
+			if (!select) { return; }
+			for (i = 0; i < select.options.length; i++) {
+				if (select.options[i].value == value) { select.selectedIndex = i; }
 			}
 		};
 		
 		that.prefCheckboxChange = function(e) {
-			if (!e.target) return;
+			if (!e.target) { return; }
 			var data = e.target.getAttribute("name").split("_", 3);
 			prefs.changePref(data[1], data[2], e.target.checked);
 		};
 		
 		that.prefDropdownChange = function(e) {
-			if (!e.target) return;
+			if (!e.target) { return; }
 			var data = e.target.getAttribute("name").split("_", 3);
 			prefs.changePref(data[1], data[2], e.target[e.target.selectedIndex].value);
 		};
 		
 		that.newSectionCallback = function(section) {
-			if (stables[section]) return;
+			if (stables[section]) { return; }
 			var tbl = createEl("table", { "class": "pref_table" }, container);
 			var row = createEl("tr", false, tbl);
 			createEl("th", { "textContent": _l("pref_" + section), "colspan": 2 }, row);
@@ -115,4 +116,4 @@ panels.PrefsPanel = {
 		
 		return that;
 	}
-}
+};

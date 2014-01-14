@@ -3,6 +3,7 @@ from scss import Scss
 import json
 import os
 import codecs
+from jsmin import jsmin
 
 scss.config.LOAD_PATHS = os.path.dirname(__file__) + "/../static/style4"
 
@@ -28,12 +29,33 @@ def _bake_css_file(input_filename, output_filename):
 	dest.write(css_content)
 	dest.close()
 
-bn = None
-def get_build_number():
-	global bn
-	if bn:
-		return bn
+def get_js_file_list():
+	jsfiles = []
+	for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "..", "static", "js")):
+		for f in files:
+			jsfiles.append(os.path.join(root[root.find("..") + 3:], f))
+	sorted(jsfiles)
+	return jsfiles
 
+def get_js_file_list_url():
+	if os.sep != "/":
+		jsfiles = get_js_file_list()
+		result = []
+		for fn in jsfiles:
+			result.append(fn.replace(os.sep, "/"))
+		return result
+	return get_js_file_list()
+
+def bake_js():
+	create_baked_directory()
+	o = open(os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "script.js"), "w")
+	for fn in get_js_file_list():
+		jsfile = open(os.path.join(os.path.dirname(__file__), "..", fn))
+		o.write(jsmin(jsfile.read()))
+		jsfile.close()
+	o.close()
+
+def get_build_number():
 	bnf = open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), 'r')
 	bn = int(bnf.read())
 	bnf.close()

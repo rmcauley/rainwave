@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ request.locale.code }}">
 <head>
-	<title>Rainwave 4 Beta</title>
+	<title>Rainwave Beta</title>
 	<meta charset="UTF-8" />
 	<meta name="description" content="{{ site_description }}" />
 	<script type="text/javascript">
@@ -13,7 +13,7 @@
 </head>
 <body id="body">
 {% for file in jsfiles %}
-	<script src="{{ file }}" type="application/javascript"></script>
+	<script src="../{{ file }}" type="application/javascript"></script>
 {% end %}
 <script type="application/x-javascript">
 	lyre.setURLPrefix("{{ api_url }}");

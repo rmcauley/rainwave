@@ -11,7 +11,7 @@ Required on all systems:
 - PIL (album art) [Debian: python-imaging, Gentoo: dev-python/imaging, pip: pil]
 - psutil (nice and ionice)
 - pyScss (CSS/SASS compiling)
-- jsmin
+- jsmin (>2.0.6)
 - unidecode
 - pytz
 

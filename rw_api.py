@@ -19,5 +19,6 @@ if __name__ == "__main__":
 	api.locale.compile_static_language_files()
 	libs.config.load(args.config)
 	libs.buildtools.bake_css()
+	libs.buildtools.bake_js()
 	server = api.server.APIServer()
 	sys.exit(server.start())

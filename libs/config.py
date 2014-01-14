@@ -5,6 +5,7 @@ from libs import buildtools
 
 # Options hash - please don't access this externally in case the storage method changes
 _opts = {}
+build_number = 0
 
 # This is used as a global flag.  Modules that require slightly different functionality
 # under test purposes (e.g. bypass song verification) will look here to see if we're
@@ -31,6 +32,7 @@ def get_config_file(testmode = False):
 def load(file = None, testmode = False):
 	global _opts
 	global test_mode
+	global build_number
 	
 	if not file:
 		file = get_config_file(testmode)
@@ -48,8 +50,8 @@ def load(file = None, testmode = False):
 	set_station_ids(get("song_dirs"), get("station_id_friendly"))
 	if get("test_mode") == True:
 		test_mode = True
-		
-	_opts["revision_number"] = buildtools.get_build_number()
+
+	build_number = buildtools.get_build_number()
 		
 def has(key):
 	return key in _opts
