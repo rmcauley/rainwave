@@ -6,6 +6,7 @@ from api.web import RainwaveHandler
 from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
+from api.server import handle_url
 
 from libs import cache
 from libs import log
@@ -118,8 +119,7 @@ class AddListener(IcecastHandler):
 			self.append("Anonymous user from IP %s record updated." % self.get_argument("ip"))
 			self.failed = False
 
-# TODO: Remove the (\d+) here, it's for the misconfigured beta relay
-@handle_api_url("listener_remove/(\d+)")
+@handle_api_url("listener_remove")
 class RemoveListener(IcecastHandler):
 	fields = {
 		"client": (fieldtypes.integer, True),
@@ -141,3 +141,18 @@ class RemoveListener(IcecastHandler):
 			self.append("Anonymous user, client ID %s relay %s flagged for removal." % (self.get_argument("client"), self.relay))
 			sync_to_front.sync_frontend_ip(listener['listener_ip'])
 		self.failed = False
+
+# Compatible with R4 beta relay
+@handle_api_url("listener_remove/(\d+)")
+class RemoveListener_ForR4Beta(RemoveListener):
+	pass
+
+# Compatible with R3 relays
+@handle_url("/async/(\d+)/listener_add")
+class AddListener_R3Relay(AddListener):
+	pass
+
+# Compatible with R3 relays
+@handle_url("/async/(\d+)/listener_remove")
+class RemoveListener_R3Relay(RemoveListener):
+	pass
