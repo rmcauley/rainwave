@@ -1,6 +1,5 @@
-'use strict';
-
 var Schedule = function() {
+	"use strict";
 	var self = {};
 	self.events = [];
 	self.el = null;
@@ -99,7 +98,7 @@ var Schedule = function() {
 		var o = 1.0;
 		for (i = 0; i < sched_history.length; i++) {
 			temp_evt = find_and_update_event(sched_history[i]);
-			temp_evt.change_to_history()
+			temp_evt.change_to_history();
 			$remove_class(temp_evt.el, "timeline_now_playing");
 			$add_class(temp_evt.el, "timeline_history");
 			self.el.appendChild(temp_evt.el);

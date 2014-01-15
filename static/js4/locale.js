@@ -3,6 +3,7 @@
 // Pass an element and the el will be filled with <span>s of each chunk of string
 //    Variables will be given class "lang_[line]_[variablename]" when filling in variables
 function $l(key, args, el, clear_el) {
+	"use strict";
 	var parts = _tl_core(key, args);
 
 	if (el && clear_el) {
@@ -26,6 +27,7 @@ function $l(key, args, el, clear_el) {
 }
 
 function _tl_core(key, args) {
+	"use strict";
 	// returns a list of { text, arg_key } objects for processing usage
 	if (!(key in lang)) {
 		return [ { "text": "[[ " + key + " ]]", "arg_key": null } ];
@@ -72,14 +74,14 @@ function _tl_core(key, args) {
 
 		else if ((plural_found !== 100000) && (plural_found < var_found) && (plural_found < suffix_found)) {
 			colon_index = line.indexOf(":");
-			arg_key = line.substr(plural_found + 2, colon_index - 3)
+			arg_key = line.substr(plural_found + 2, colon_index - 3);
 			if (colon_index == -1) {
 				parts.push({ "text": "[[ translation error ]]", "arg_key": null });
 			}
 			else if (arg_key in args) {
 				parts.push({ "text": line.substr(0, plural_found), "arg_key": null });
 
-				start_of_plural = plural_found + 2 + arg_key.length + 1
+				start_of_plural = plural_found + 2 + arg_key.length + 1;
 				whole_plural = line.substr(start_of_plural, line.indexOf(")") - start_of_plural);
 				if (whole_plural.indexOf("/") === -1) {
 					parts.push({ "text": "[[ plural error: " + arg_key + " ]]", "arg_key": null });
@@ -97,7 +99,7 @@ function _tl_core(key, args) {
 			line = line.substr(line.indexOf(")", plural_found) + 1);
 		}
 		else {
-			parts.push({ "text": line, "arg_key": null })
+			parts.push({ "text": line, "arg_key": null });
 			line = "";
 		}
 	}
@@ -105,6 +107,7 @@ function _tl_core(key, args) {
 }
 
 function  _get_suffixed_number(number) {
+	"use strict";
 	if (("suffix_" + number) in lang) return number + lang["suffix_" + number];
 	var key;
 	for (var i = 100; i >= 10; i = i / 10) {

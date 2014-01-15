@@ -1,6 +1,5 @@
-'use strict';
-
 var Scrollbar = function() {
+	"use strict";
 	var self = {};
 
 	var scrollbars = [];
@@ -30,7 +29,7 @@ var Scrollbar = function() {
 			self.scroll_top = new_scroll_top;
 			element.scrollTop = new_scroll_top;
 			self.update_handle_position();
-		}
+		};
 
 		self.update_scroll_height = function(force_height) {
 			scroll_height = force_height || element.scrollHeight;
@@ -40,7 +39,7 @@ var Scrollbar = function() {
 			handlepx_per_scrollpx = offset_height / scroll_height;
 
 			// updates the handle to be the correct percentage of the screen, never less than 10% for size issues
-			if ((scroll_height == 0) || (offset_height == 0) || (scrollpx_per_handlepx <= 1)) {
+			if ((scroll_height === 0) || (offset_height === 0) || (scrollpx_per_handlepx <= 1)) {
 				$add_class(handle, "scrollbar_invisible");
 				handle.style.height = "0px";
 			}
@@ -50,7 +49,7 @@ var Scrollbar = function() {
 				self.update_handle_position();
 			}
 
-			wheel_delta = Math.min(200, Math.max(scroll_height * .05, 30));
+			wheel_delta = Math.min(200, Math.max(scroll_height * 0.05, 30));
 		};
 
 		self.parent_update_handle_position = function() {
@@ -60,7 +59,7 @@ var Scrollbar = function() {
 		self.update_handle_position = self.parent_update_handle_position;
 
 		var mouse_move = function(e) {
-			var new_scroll_top = original_scroll_top + ((e.screenY - original_mouse_y) * scrollpx_per_handlepx)
+			var new_scroll_top = original_scroll_top + ((e.screenY - original_mouse_y) * scrollpx_per_handlepx);
 			if (new_scroll_top > max_scroll_top) {
 				new_scroll_top = max_scroll_top;
 			}

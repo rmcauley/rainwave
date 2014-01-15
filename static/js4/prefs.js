@@ -1,7 +1,9 @@
 var Prefs = function() {
+	"use strict";
 	var meta = {};
 	var values = {};
 	var self = {};
+	var callbacks = {};
 
 	// a small set of characters need to be escaped, not all, and not all of these are caught by escape() and escape() bloats the JSON object to 2x the size
 	// a better idea is to use encodeURIComponent, but again, we get 2x the cookie size as a result.
@@ -33,7 +35,7 @@ var Prefs = function() {
 		var begin = dc.indexOf("; " + cname);
 		if (begin == -1) {
 			begin = dc.indexOf(cname);
-			if (begin != 0) return null;
+			if (begin !== 0) return null;
 		}
 		else {
 			begin += 2;
@@ -73,7 +75,7 @@ var Prefs = function() {
 			return false;
 		}
 		return values[name];
-	}
+	};
 
 	self.change = function(name, value, skip_callbacks) {
 		if (!(name in meta)) {
@@ -128,7 +130,7 @@ var Prefs = function() {
 
 	var do_callbacks = function(name, value) {
 		for (var i in callbacks[name]) {
-			callbacks[name](value);
+			callbacks[name][i](value);
 		}
 	};
 

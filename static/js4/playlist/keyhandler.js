@@ -1,7 +1,5 @@
-'use strict';
-
-//var PlaylistKeyHandler = 
-{
+(function() {
+	"use strict";
 	var self = {};
 
 	var backspace_trap = false;
@@ -9,17 +7,17 @@
 
 	self.prevent_default = function(evt) {
 		evt.preventDefault(evt);
-	}
+	};
 
 	self.enable_backspace_trap = function() {
 		if (backspace_timer) clearTimeout(backspace_timer);
 		backspace_timer = setTimeout(self.disable_backspace_trap, 2000);
-	}
+	};
 
 	self.disable_backspace_trap = function() {
 		backspace_timer = false;
 		backspace_trap = false;
-	}
+	};
 	
 	self.on_key_press = function(evt) {
 		if (self.is_ignorable(evt)) return true;
@@ -73,7 +71,7 @@
 		// we can't trap anything beyond here for opera without losing important keys
 		if (!('charCode' in evt)) return false;
 		// F1 to F12 keys
-		if ((evt.charCode == 0) && (evt.keyCode >= 112) && (evt.keyCode <= 123)) return true;
+		if ((evt.charCode === 0) && (evt.keyCode >= 112) && (evt.keyCode <= 123)) return true;
 		return false;
 	};
 
@@ -83,8 +81,8 @@
 		if (!evt) evt = window.event;
 		if (evt.target) targ = evt.target;
 		else if (evt.srcElement) targ = evt.srcElement;
-		if (targ.nodeType == 3) targ = targ.parentNode;	 // defeat Safari bug
-		if (targ.tagName == "input") return true;	// do nothing for input fields
+		if (targ.nodeType == 3) targ = targ.parentNode;  // defeat Safari bug
+		if (targ.tagName == "input") return true;  // do nothing for input fields
 
 		if (self.is_ignorable(evt)) return true;
 
@@ -143,6 +141,4 @@
 	window.addEventListener('keydown', self.on_key_down, false);
 	window.addEventListener('keypress', self.on_key_press, false);
 	window.addEventListener('keyup', self.on_key_up, false);
-
-	//return self;
-};
+}());

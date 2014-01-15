@@ -1,6 +1,5 @@
-'use strict';
-
 var Formatting = function() {
+	"use strict";
 	var self = {};
 
 	self.cooldown = function(seconds) {
@@ -8,42 +7,42 @@ var Formatting = function() {
 		var humantime = "";
 		var detail = 0;
 		if (seconds >= 604800) {
-			humantime += Math.floor(seconds / 604800) + lang["timeformat_w"] + " ";
+			humantime += Math.floor(seconds / 604800) + lang.timeformat_w + " ";
 			seconds = seconds % 604800;
 			detail++;
 		}
 		if (seconds >= 86400) {
-			humantime += Math.floor(seconds / 86400) + lang["timeformat_d"] + " ";
+			humantime += Math.floor(seconds / 86400) + lang.timeformat_d + " ";
 			seconds = seconds % 86400;
 			detail++;
 		}
 		if (seconds >= 3600) {
-			humantime += Math.floor(seconds / 3600) + lang["timeformat_h"] + " ";
+			humantime += Math.floor(seconds / 3600) + lang.timeformat_h + " ";
 			seconds = seconds % 3600;
 			detail++;
 		}
 		if ((seconds >= 60) && (detail < 3)) {
-			humantime += Math.floor(seconds / 60) + lang["timeformat_m"] + " ";
+			humantime += Math.floor(seconds / 60) + lang.timeformat_m + " ";
 			seconds = seconds % 60;
 		}
 		return humantime.substr(0, humantime.length - 1);
 	};
 
-	self.cooldown_glance = function(seconds, fulltime) {
+	self.cooldown_glance = function(seconds) {
 		if (seconds < 60) return "";
 		if (seconds >= 604800) {
-			return Math.floor(seconds / 604800) + lang["timeformat_w"];
+			return Math.floor(seconds / 604800) + lang.timeformat_w;
 		}
 		if (seconds >= 86400) {
-			return Math.floor(seconds / 86400) + lang["timeformat_d"];
+			return Math.floor(seconds / 86400) + lang.timeformat_d;
 		}
 		if (seconds >= 3600) {
-			return Math.floor(seconds / 3600) + lang["timeformat_h"];
+			return Math.floor(seconds / 3600) + lang.timeformat_h;
 		}
 		if ((seconds >= 60) && (detail < 3)) {
-			return Math.floor(seconds / 60) + lang["timeformat_m"];
+			return Math.floor(seconds / 60) + lang.timeformat_m;
 		}
-		return seconds + lang["timeformat_s"];
+		return seconds + lang.timeformat_s;
 	};
 
 	self.minute_clock = function(seconds) {
@@ -63,7 +62,7 @@ var Formatting = function() {
 	};
 
 	self.linkify = function(el) {
-		el.setAttribute("class", el.getAttribute("class") + " link")
+		el.setAttribute("class", el.getAttribute("class") + " link");
 	};
 
 	// from lehelk: http://web.archive.org/web/20120918093154/http://lehelk.com/2011/05/06/script-to-remove-diacritics/
@@ -163,11 +162,11 @@ var Formatting = function() {
 
 	self.remove_non_alphanum = function(str) {
 		return str.replace(/\W/g, '');
-	}
+	};
 
 	self.make_searchable_string = function(str) {
 		return self.sanitize_string(str).replace(/[^\w ]/g, '').toLowerCase();
-	}
+	};
 
 	return self;
 }();

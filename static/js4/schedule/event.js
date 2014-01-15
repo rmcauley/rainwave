@@ -1,6 +1,5 @@
-'use strict';
-
 var Event = function() {
+	"use strict";
 	var e_self = {};
 
 	e_self.load = function(json) {
@@ -9,14 +8,16 @@ var Event = function() {
 			return EventBase(json, $l("Election"));
 		}
 		else if ((json.type == "OneUp") || (json.type == 'SingleSong')) {
-			return OneUp(json, $l("OneUp"));;
+			return OneUp(json, $l("OneUp"));
 		}
 		throw("Unknown event type '" + json.type + "'");
-	}
+	};
+
 	return e_self;
 }();
 
 var EventBase = function(json) {
+	"use strict";
 	var self = {};
 	self.data = json;
 	self.id = json.id;
@@ -57,14 +58,14 @@ var EventBase = function(json) {
 			}
 		}
 		self.height = $measure_el(self.el).height;
-	}
+	};
 
 	self.update = function(json) {
 		self.data = json;
 		self.end = json.end;
 		self.start = json.start;
 		self.predicted_start = json.predicted_start;
-		self.start_actual = json.start_actual
+		self.start_actual = json.start_actual;
 		if (self.data.voting_allowed) {
 			self.enable_voting();
 		}
@@ -81,11 +82,11 @@ var EventBase = function(json) {
 				}
 			}
 		}
-	}
+	};
 
 	self.change_to_coming_up = function() {
 		$add_class(self.el, "timeline_next");
-	}
+	};
 
 	self.change_to_now_playing = function() {
 		$remove_class(self.el, "timeline_next");
@@ -127,7 +128,7 @@ var EventBase = function(json) {
 		for (var i = 0; i < self.songs; i++) {
 			self.songs[i].clear_voting_status();
 		}	
-	}
+	};
 
 	self.disable_voting = function() {
 		if (!self.songs) {

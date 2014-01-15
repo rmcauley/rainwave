@@ -1,6 +1,5 @@
-'use strict';
-
-function TimelineSong(json) {
+var TimelineSong = function(json) {
+	"use strict";
 	var self = {};
 	self.data = json;
 	self.elements = {};
@@ -11,32 +10,32 @@ function TimelineSong(json) {
 	var song_rating = SongRating(json);
 	var album_rating = AlbumRating(json.albums[0]);
 
-	var vote = function(e) {
+	var vote = function(evt) {
 		if (!voting_enabled) {
 			return;
 		}
 		add_html_class("voting_clicked");
 		API.async_get("vote", { "entry_id": self.data.entry_id });
-	}
+	};
 
 	var remove_html_class = function(cls) {
-		var i = html_classes.indexOf(cls)
+		var i = html_classes.indexOf(cls);
 		if (i != -1) {
 			html_classes.splice(i, 1);
 			update_html_classes();
 		}
-	}
+	};
 
 	var add_html_class = function() {
 		if (html_classes.indexOf("voting_voted") == -1) {
 			html_classes.push("voting_voted");
 			update_html_classes();
 		}
-	}
+	};
 
 	var update_html_classes = function() {
 		self.el.setAttribute("class", html_classes.join(" "));
-	}
+	};
 
 	var draw = function() {
 		self.el = $el("div");
@@ -84,26 +83,26 @@ function TimelineSong(json) {
 	self.enable_voting = function() {
 		voting_enabled = true;
 		add_html_class("voting_enabled");
-	}
+	};
 
 	self.disable_voting = function() {
 		voting_enabled = false;
 		remove_html_class("voting_enabled");
-	}
+	};
 
 	self.clear_voting_status = function() {
 		remove_html_class("voting_clicked");
 		remove_html_class("voting_registered");
 		remove_html_class("voting_enabled");
-	}
+	};
 
 	self.register_vote = function() {
 		add_html_class("voting_registered");
-	}
+	};
 
 	self.unregister_vote = function() {
 		remove_html_class("voting_registered");
-	}
+	};
 
 	draw();
 

@@ -1,6 +1,5 @@
-'use strict';
-
 var API = function() {
+	"use strict";
 	var sid, url, user_id, api_key;
 	var sync, sync_params, sync_stopped, sync_timeout_id, sync_timeout_count, sync_error_count;
 	var async, async_queue;
@@ -32,7 +31,7 @@ var API = function() {
 		perform_callbacks(json);
 		perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
 		sync_get();
-	}
+	};
 
 	// easy to solve, but stolen from http://stackoverflow.com/questions/1714786/querystring-encoding-of-a-javascript-object
 	self.serialize = function(obj) {
@@ -43,26 +42,19 @@ var API = function() {
 		return str.join("&");
 	};
 
-	self.sync_start = function() {
-		if (sync_on === true) return false;
-		performCallbacks(initial_payload);
-		sync_get();
-		return true;
-	};
-
 	var sync_get = function() {
 		if (sync_stopped) {
 			return;
 		}
 
-		sync.open("POST", url + "sync", true)
+		sync.open("POST", url + "sync", true);
 		sync.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		sync.send(sync_params);
 	};
 
 	self.sync_stop = function() {
 		if (sync_timeout_id) {
-			clearTimeout(sync_timeout_id)
+			clearTimeout(sync_timeout_id);
 			sync_timeout_id = null;
 		}
 		sync_stopped = true;
@@ -113,7 +105,7 @@ var API = function() {
 
 		if ("error" in response) {
 			sync_restart_pause = 6000;
-			if (error.code != 200) {
+			if (response.error.code != 200) {
 				sync_stopped = true;
 			}
 		}
@@ -134,7 +126,7 @@ var API = function() {
 			return;
 		}
 		perform_callbacks(JSON.parse(async.responseText));
-		async_get();
+		self.async_get();
 	};
 
 	self.async_get = function(action, params) {
@@ -142,13 +134,15 @@ var API = function() {
 			async_queue.push({ "action": action, "params": params });
 		}
 		if (async.readyState == 4) {
-			to_do = async_queue.shift()
-			async.open("POST", url + to_do.action, true);
-			async.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			to_do.params.sid = sid;
-			to_do.params.user_id = user_id;
-			to_do.params.key = api_key;
-			async.send(self.serialize(to_do.params));
+			var to_do = async_queue.shift();
+			if (to_do) {
+				async.open("POST", url + to_do.action, true);
+				async.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+				to_do.params.sid = sid;
+				to_do.params.user_id = user_id;
+				to_do.params.key = api_key;
+				async.send(self.serialize(to_do.params));
+			}
 		}
 	};
 

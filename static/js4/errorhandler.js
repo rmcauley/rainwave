@@ -1,6 +1,5 @@
-'use strict';
-
 var ErrorHandler = function() {
+	"use strict";
 	var self = {};
 	var container;
 	var permanent_errors = {};
@@ -67,7 +66,7 @@ var ErrorHandler = function() {
 	self.make_debug_div = function() {
 		number_of_debug_divs++;
 		return document.getElementsByTagName("body")[0].appendChild($el("div", { "class": "debug_div", "style": "top: " + (number_of_debug_divs * 20) + "px;" }));
-	}
+	};
 
 	return self;
 }();

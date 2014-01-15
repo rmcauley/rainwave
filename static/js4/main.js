@@ -1,13 +1,13 @@
-'use strict';
-
 var User;
 
 function _on_resize(e) {
+	"use strict";
     $id('sizable_body').style.height = (window.innerHeight - $id('menu').offsetHeight) + "px";
     Scrollbar.refresh_all_scrollbars();
 }
 
 function initialize() {
+	"use strict";
 	var get_vars = {};
 	// http://papermashup.com/read-url-get-variables-withjavascript/
 	var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -30,7 +30,7 @@ function initialize() {
 	// API comes last since it will do all the callbacks to initialized
 	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.user_id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
 
-	if (("fps" in get_vars) && (get_vars['fps']) && ("mozPaintCount" in window)) {
+	if (("fps" in get_vars) && (get_vars.fps) && ("mozPaintCount" in window)) {
 		FPSCounter.initialize();
 	}
 };

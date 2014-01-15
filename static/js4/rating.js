@@ -1,5 +1,3 @@
-'use strict';
-
 // Optimizaton notes:
 // It would optimize a little to only perform rating_reset on mouseout when something has actually changed
 
@@ -7,7 +5,8 @@
 
 // ******* SEE fx.js FOR RATING EFFECT
 
-function Rating(type, id, rating_user, rating, fave, ratable) {
+var Rating = function(type, id, rating_user, rating, fave, ratable) {
+	"use strict";
 	if ((type != "song") && (type != "album")) return undefined;
 	if (isNaN(id)) return undefined;
 	if (rating_user && ((rating_user < 1) || (rating_user > 5))) rating_user = null;
@@ -43,7 +42,7 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 
 	self.reset_fave = function() {
 		effect.set_fave(self.fave);
-	}
+	};
 
 	var get_rating_from_mouse = function(evt) {
 		var x = 0;
@@ -75,13 +74,13 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 		if (!self.ratable) return;
 		var new_rating = get_rating_from_mouse(evt);
 		// fave toggle
-		if (new_rating == 0) {
+		if (new_rating === 0) {
 			effect.set_fave(!self.fave);
 			if (self.type == "song") {
-				API.async_get("fave_song", { "fave": !self.fave, "song_id": id })
+				API.async_get("fave_song", { "fave": !self.fave, "song_id": id });
 			}
 			else if (self.type == "album") {
-				API.async_get("fave_album", { "fave": !self.fave, "album_id": id })
+				API.async_get("fave_album", { "fave": !self.fave, "album_id": id });
 			}
 		}
 		else {
@@ -98,24 +97,25 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 	self.update_fave = function(fave) {
 		self.fave = fave;
 		effect.set_fave(self.fave);
-	}
+	};
 
 	self.update_rating = function(rating) {
 		self.rating = rating;
 		self.reset_rating();
-	}
+	};
 
 	self.update_ratable = function(ratable) {
 		self.ratable = ratable;
-	}
+	};
 
 	self.update = function(rating_user, rating, fave, ratable) {
 		self.rating_user = rating_user;
 		self.rating = rating;
 		self.fave = fave;
+		self.ratable = ratable;
 		self.reset_rating();
 		self.reset_fave();
-	}
+	};
 
 	self.reset_rating();
 	self.reset_fave();
@@ -137,10 +137,10 @@ function Rating(type, id, rating_user, rating, fave, ratable) {
 	return self;
 };
 
-function SongRating(json) {
+var SongRating = function(json) {
 	return Rating("song", json.id, json.rating_user, json.rating, json.fave, json.rating_allowed);
-}
+};
 
-function AlbumRating(json) {
+var AlbumRating = function(json) {
 	return Rating("album", json.id, json.rating_user, json.rating, json.fave, false);
-}
+};

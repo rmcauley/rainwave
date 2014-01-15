@@ -1,6 +1,5 @@
-'use strict';
-
 var PlaylistLists = function() {
+	"use strict";
 	var self = {};
 	self.active_list = false;
 
@@ -37,20 +36,21 @@ var PlaylistLists = function() {
 
 	self.on_resize = function() {
 		lists.albums.on_resize();
-	}
+	};
 
 	return self;
 }();
 
 var PlaylistScrollbar = function(element) {
+	"use strict";
 	var self = Scrollbar.new(element);
 	// self.parent_update_scroll_height = self.update_scroll_height;
 
-	// self.update_scroll_height = function(force_height, list_name) {
-	// 	if (list_name == PlaylistLists.active_list.list_name) {
-	// 		self.parent_update_scroll_height();
-	// 	}
-	// };
+	//	self.update_scroll_height = function(force_height, list_name) {
+	//		if (list_name == PlaylistLists.active_list.list_name) {
+	//			self.parent_update_scroll_height();
+	//		}
+	//	};
 
 	self.update_handle_position = function(list_name) {
 		if (list_name == PlaylistLists.active_list.list_name) {
@@ -62,9 +62,10 @@ var PlaylistScrollbar = function(element) {
 };
 
 var AlbumList = function(scroller, offset_width) {
+	"use strict";
 	var self = SearchList("album_list", "id", "name", "name_searchable", scroller);
 	self.tab_el = $el("li", { "textContent": $l("album_list") });
-	self.tab_el.addEventListener("click", function() { PlaylistLists.change_visible_list(list); }, false);
+	self.tab_el.addEventListener("click", function() { PlaylistLists.change_visible_list(self); }, false);
 
 	self.draw_entry = function(item) {
 		var item_el = document.createElement("div", { "class": "searchlist_entry" });

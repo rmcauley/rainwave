@@ -1,10 +1,9 @@
-'use strict';
-
 // Pass an array as attribs to use them as sub_elements
 // Use a string in sub_elements to add a <span> with the string
 // Pass an object to add attributes to the element
 // If attribs is a string it'll just add textContent
 function $el(type, attribs, sub_elements) {
+	"use strict";
 	var el = document.createElement(type);
 	var i;
 	if (Array.isArray(attribs)) {
@@ -29,10 +28,10 @@ function $el(type, attribs, sub_elements) {
 	else if (attribs) {
 		for (i in attribs) {
 			if (i == "textContent") {
-			    el.textContent = attribs[i];
+				el.textContent = attribs[i];
 			}
 			else {
-			    el.setAttribute(i.replace(/_/g, "-"), attribs[i]);
+				el.setAttribute(i.replace(/_/g, "-"), attribs[i]);
 			}
 		}
 	}
@@ -40,10 +39,12 @@ function $el(type, attribs, sub_elements) {
 }
 
 function $id(id) {
-    return document.getElementById(id);
+	"use strict";
+	return document.getElementById(id);
 }
 
 function $measure_el(el) {
+	"use strict";
 	var boxed = false;
 	if (!el.parentNode) {
 		$id("measure_box").appendChild(el);
@@ -58,6 +59,7 @@ function $measure_el(el) {
 }
 
 function $add_class(el, class_name) {
+	"use strict";
 	// best to use className here - getAttribute will return null if empty, className returns an empty string
 	var classes = el.className.split(" ");
 	if (classes.indexOf(class_name) == -1) {
@@ -66,6 +68,7 @@ function $add_class(el, class_name) {
 }
 
 function $remove_class(el, class_name) {
+	"use strict";
 	var classes = el.className.split(" ");
 	if (classes.indexOf(class_name) != -1) {
 		classes.splice(classes.indexOf(class_name), 1);

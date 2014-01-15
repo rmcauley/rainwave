@@ -1,4 +1,5 @@
 FPSCounter = function() {
+	"use strict";
 	var self = {};
 	var el;
 
@@ -12,7 +13,7 @@ FPSCounter = function() {
 		}
 		last_frame_time = Clock.hi_res_time();
 		last_frame_count = window.mozPaintCount;
-	}
+	};
 
 	self.initialize = function() {
 		el = ErrorHandler.make_debug_div();

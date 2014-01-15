@@ -1,6 +1,5 @@
-'use strict';
-
 var Clock = function() {
+	"use strict";
 	var clocks = {};
 	var interval = 0;
 	var timediff = 0;
@@ -22,7 +21,7 @@ var Clock = function() {
 
 	self.get_time_diff = function() {
 		return timediff;
-	}
+	};
 
 	self.hi_res_time = function() {
 		return new Date().getTime();
@@ -42,10 +41,10 @@ var Clock = function() {
 	self.set_page_title = function(new_title, new_end_time) {
 		page_title = new_title;
 		page_title_end = new_end_time;
-	}
+	};
 
 	self.loop = function() {
-		if (ready == false) return;
+		if (ready === false) return;
 		self.now = self.time() + timediff;
 
 		for (var i in clocks) {
@@ -63,7 +62,7 @@ var Clock = function() {
 		el._clock_end = end_time;
 	};
 
-	if (interval == 0) {
+	if (interval === 0) {
 		interval = setInterval(self.loop, 1000);
 	}
 

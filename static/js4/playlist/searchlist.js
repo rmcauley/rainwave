@@ -1,5 +1,3 @@
-'use strict';
-
 // REQUIRED EXTERNAL DEFINITIONS FOR USING THIS OBJECT FACTORY:
 //	draw_entry(item);				// return a new element (will be using display: block, you SHOULD make a div)
 //  update_item_element(item);		// return nothing, just update text/etc in the element you created above
@@ -8,7 +6,8 @@
 //	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses id_key)
 
-function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
+var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
+	"use strict";
 	var self = {};
 	self.list_name = list_name;
 	self.sort_key = sort_key;
@@ -63,7 +62,7 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 	};
 
 	self.update_all_item_elements = function() {
-		for (i in data) {
+		for (var i in data) {
 			self.update_item_element(data[i]);
 		}
 	};
@@ -71,7 +70,7 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 	self.queue_reinsert = function(id) {
 		var io = sorted.indexOf(id);
 		if (io >= 0) {
-			sorted.splice(io, 1)[0];
+			sorted.splice(io, 1);
 		}
 		if (reinsert.indexOf(id) == -1) {
 			reinsert.push(id);
@@ -138,7 +137,7 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 	self.key_nav_highlight = function() {
 		current_key_nav_old_class = current_key_nav_element.className;
 		current_key_nav_element.className = "searchtable_key_nav_hover";
-	}
+	};
 
 	self.key_nav_first_item = function() {
 		current_key_nav_element = self.el.firstChild.nextSibling;
@@ -205,7 +204,7 @@ function SearchList(list_name, id_key, sort_key, search_key, scrollbar) {
 		self.key_nav_highlight();
 		self.scroll_to_key_nav();
 		return true;
-	}
+	};
 	
 	self.key_nav_down = function() {
 		return key_nav_arrow_action(false, true, 1);

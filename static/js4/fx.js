@@ -1,6 +1,5 @@
-'use strict';
-
 var Fx = function() {
+	"use strict";
 	var self = {};
 	var delayed_css = [];
 
@@ -26,18 +25,18 @@ var Fx = function() {
 				return p;
 			}
 		}
-	}
+	};
 
 	self.initialize = function() {
 		transform_string = get_transform_string();
-	}
+	};
 
 	var do_delayed_css = function() {
 		for (var i = 0; i < delayed_css.length; i++) {
 			delayed_css[i].el.style[delayed_css[i].attribute] = delayed_css[i].value;
 		}
 		delayed_css = [];
-	}
+	};
 
 	self.delay_css_setting = function(el, attribute, value) {
 		if (attribute == "transform") {
@@ -47,9 +46,9 @@ var Fx = function() {
 		if (delayed_css.length == 1) {
 			requestAnimationFrame(do_delayed_css);
 		}
-	}
+	};
 
-	var animation_ends = [ "animationend", "webkitAnimationEnd", "oanimationend", "MSAnimationEnd" ]
+	var animation_ends = [ "animationend", "webkitAnimationEnd", "oanimationend", "MSAnimationEnd" ];
 	self.remove_element = function(el) {
 		var end_func = function() {
 			el.parentNode.removeChild(el);
@@ -175,7 +174,7 @@ var Fx = function() {
 			if (element.className != rating_class + " " + fave_class) {
 				element.setAttribute("class", rating_class + " " + fave_class);
 			}
-		}
+		};
 
 		r.set_rating = function(new_rating) {
 			current_rating = new_rating;
@@ -209,7 +208,7 @@ var Fx = function() {
 		};
 
 		return r;
-	}
+	};
 	
 	return self;
 }();
