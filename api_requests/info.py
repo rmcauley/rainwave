@@ -10,6 +10,7 @@ import api_requests.playlist
 
 from libs import cache
 from libs import log
+from libs import config
 from rainwave import playlist
 
 def attach_info_to_request(request, playlist = False, artists = False):
@@ -74,7 +75,10 @@ def attach_info_to_request(request, playlist = False, artists = False):
 		elif len(sched_next) > 0 and request.user.data['listener_voted_entry'] > 0 and request.user.data['listener_lock_sid'] == request.sid:
 			api_requests.vote.append_success_to_request(request, sched_next[0].id, request.user.data['listener_voted_entry'])
 
-	request.append("all_stations_current", cache.get("all_stations_info"))
+	all_stations = {}
+	for station_id in config.station_ids:
+		all_stations[station_id] = cache.get_station(station_id, "all_station_info")
+	request.append("all_stations_info", all_stations)
 
 @test_post
 @handle_api_url("info")

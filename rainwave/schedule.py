@@ -271,7 +271,8 @@ def _update_schedule_memcache(sid):
 
 def _update_memcache(sid):
 	_update_schedule_memcache(sid)
-	cache.set_station(sid, "sched_current_dict", current[sid].to_dict(), True)
+	sched_current_dict = current[sid].to_dict()
+	cache.set_station(sid, "sched_current_dict", sched_current_dict, True)
 	next_dict_list = []
 	for event in next[sid]:
 		next_dict_list.append(event.to_dict())
@@ -287,18 +288,13 @@ def _update_memcache(sid):
 	cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
 	cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)
 
-	all_stations = {}
-	for other_sid in config.station_ids:
-		other_station = cache.get_station(other_sid, "sched_current_dict")
-		if other_station:
-			all_stations[other_sid] = {}
-			if 'songs' in other_station:
-				all_stations[other_sid]['title'] = other_station['songs'][0]['title']
-				all_stations[other_sid]['album'] = other_station['songs'][0]['albums'][0]['name']
-				all_stations[other_sid]['art'] = other_station['songs'][0]['albums'][0]['art']
-			else:
-				all_stations[other_sid]['title'] = other_station['name']
-				all_stations[other_sid]['album'] = ""
-				all_stations[other_sid]['art'] = None
-			all_stations[other_sid]['end'] = other_station['end']
-	cache.set("all_stations_info", all_stations, True)
+	all_station = {}
+	if 'songs' in sched_current_dict:
+		all_station['title'] = sched_current_dict['songs'][0]['title']
+		all_station['album'] = sched_current_dict['songs'][0]['albums'][0]['name']
+		all_station['art'] = sched_current_dict['songs'][0]['albums'][0]['art']
+	else:
+		all_station['title'] = sched_current_dict['name']
+		all_station['album'] = ""
+		all_station['art'] = None
+	cache.set_station(sid, "all_station_info", all_station, True)

@@ -19,7 +19,7 @@ def get_config_file(testmode = False):
 	if os.path.isfile("etc/%s.conf" % getpass.getuser()):
 		return ("etc/%s.conf" % getpass.getuser())
 	elif testmode and os.path.isfile("etc/rainwave_test.conf"):
-		return ("etc/rainwave_tes.conf")
+		return ("etc/rainwave_test.conf")
 	elif os.path.isfile("etc/rainwave.conf"):
 		return ("etc/rainwave.conf")
 	elif os.path.isfile("/etc/rainwave.conf"):
