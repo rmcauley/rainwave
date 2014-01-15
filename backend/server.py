@@ -89,39 +89,61 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 # 	def get(self, sid):
 # 		schedule.refresh_schedule(int(sid))
 
-def start():
-	db.open()
-	cache.open()
-	if config.test_mode:
-		playlist.remove_all_locks(1)
+class BackendServer(object):
+	def __init__(self):
+		pid = os.getpid()
+		pid_file = open(config.get("backend_pid_file"), 'w')
+		pid_file.write(str(pid))
+		pid_file.close()
 
-	for sid in config.station_ids:
-		sid_output[sid] = None
+	def _listen(self, sid):
+		db.open()
+		cache.open()
+		log.init("%s/rw_%s.log" % (config.get("log_dir"), config.station_id_friendly[sid]), config.get("log_level"))
 
-	# (r"/refresh/([0-9]+)", RefreshScheduleRequest)
-	app = tornado.web.Application([
-		(r"/advance/([0-9]+)", AdvanceScheduleRequest),
-		], debug=(config.test_mode or config.get("developer_mode")))
+		if config.test_mode:
+			playlist.remove_all_locks(sid)
 
-	server = tornado.httpserver.HTTPServer(app)
-	server.listen(int(config.get("backend_port")), address='127.0.0.1')
+		# (r"/refresh/([0-9]+)", RefreshScheduleRequest)
+		app = tornado.web.Application([
+			(r"/advance/([0-9]+)", AdvanceScheduleRequest),
+			], debug=(config.test_mode or config.get("developer_mode")))
 
-	if config.get("backend_user") or config.get("backend_group"):
-		chuser.change_user(config.get("backend_user"), config.get("backend_group"))
+		server = tornado.httpserver.HTTPServer(app)
+		server.listen(int(config.get("backend_port")) + sid, address='127.0.0.1')
+		
+		for station_id in config.station_ids:
+			playlist.prepare_cooldown_algorithm(station_id)
+		schedule.load()
+		log.debug("start", "Backend server bootstrapped, station %s port %s, ready to go." % (config.station_id_friendly[sid], config.get("backend_port")))
 
-	pid = os.getpid()
-	pidfile = open(config.get("backend_pid_file"), 'w')
-	pidfile.write(str(pid))
-	pidfile.close()
+		ioloop = tornado.ioloop.IOLoop.instance()
+		try:
+			ioloop.start()
+		finally:
+			ioloop.stop()
+			http_server.stop()
+			db.close()
+			log.info("stop", "Backend has been shutdown.")
+			log.close()
 
-	for sid in config.station_ids:
-		playlist.prepare_cooldown_algorithm(sid)
+	def _import_cron_modules(self):
+		import backend.api_key_pruning
+		import backend.icecast_sync
 
-	schedule.load()
+	def start(self):
+		for sid in config.station_ids:
+			sid_output[sid] = None
 
-	log.debug("start", "Backend server bootstrapped, port %s, ready to go." % int(config.get("backend_port")))
+		stations = list(config.station_ids)
+		if not hasattr(os, "fork"):
+			self._import_cron_modules()
+			self._listen(stations[0])
+		else:
+			tornado.process.fork_processes(len(stations))
 
-	try:
-		tornado.ioloop.IOLoop.instance().start()
-	finally:
-		db.close()
+			task_id = tornado.process.task_id()
+			if task_id == 0:
+				self._import_cron_modules()
+			if task_id != None:
+				self._listen(stations[task_id])

@@ -3,6 +3,7 @@
 import httplib
 import urllib
 import argparse
+import os
 import os.path
 import time
 import socket
@@ -20,7 +21,14 @@ cache.open()
 
 params = urllib.urlencode({ "sid": args.sid })
 try:
-	conn = httplib.HTTPConnection(args.dest, config.get("backend_port"), timeout=3)
+	dest_port = config.get("backend_port")
+	# Linux, multiprocessing is on
+	if hasattr(os, "fork"):
+		dest_port += int(args.sid)
+	# Windows, no multiprocessing
+	else:
+		dest_port += int(list(config.station_ids)[0])
+	conn = httplib.HTTPConnection(args.dest, config.get("backend_port") + int(args.sid), timeout=3)
 	conn.request("GET", "/advance/%s" % args.sid)
 	result = conn.getresponse()
 	if result.status == 200:

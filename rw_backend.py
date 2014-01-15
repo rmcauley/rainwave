@@ -9,16 +9,11 @@ import libs.chuser
 import libs.log
 import libs.config
 
-# these next modules are essentially crons
-import backend.api_key_pruning
-import backend.icecast_sync
-
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Rainwave backend daemon.")
 	parser.add_argument("--config", default=None)
 	args = parser.parse_args()
 	libs.config.load(args.config)
-	
-	libs.log.init("%s/rw_backend.log" % libs.config.get("log_dir"), libs.config.get("log_level"))
-	
-	sys.exit(backend.server.start())
+
+	server = backend.server.BackendServer()
+	server.start()

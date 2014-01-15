@@ -93,6 +93,7 @@ class APIServer(object):
 
 		for sid in config.station_ids:
 			cache.update_local_cache_for_sid(sid)
+			playlist.prepare_cooldown_algorithm(sid)
 
 		# If we're not in developer, remove development-related URLs
 		if not config.get("developer_mode"):
@@ -108,9 +109,6 @@ class APIServer(object):
 
 		# Initialize the help (rather than it scan all URL handlers every time someone hits it)
 		api.help.sectionize_requests()
-
-		# Initialize playlist variables
-		playlist.prepare_cooldown_algorithm(sid)
 
 		# Fire ze missiles!
 		app = tornado.web.Application(request_classes,
