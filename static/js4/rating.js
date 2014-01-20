@@ -26,7 +26,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable) {
 	var fave_solid = self.el.appendChild($el("img", { "class": "fave_solid", "src": "/static/images4/heart_solid.png"}));
 	var fave_lined = self.el.appendChild($el("img", { "class": "fave_lined", "src": "/static/images4/heart_lined.png"}));
 	var current_rating;
-	var effect = Fx.legacy_effect(Fx.Rating, self.el, 100);
+	var effect = Fx.legacy_effect(Fx.Rating, self.el, 400);
 
 	self.reset_rating = function() {
 		if (self.rating_user) {
@@ -63,7 +63,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable) {
 		var tr = get_rating_from_mouse(evt);
 		if (tr >= 1) {
 			effect.change_to_user_rating();
-			effect.start(tr);
+			effect.set(tr);
 		}
 		else {
 			effect.set_rating(current_rating);
