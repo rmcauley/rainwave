@@ -15,7 +15,9 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 	self.auto_trim = false;
 	self.after_update = null;
 	self.el = $el("div", { "class": "searchlist" });
-	var search_box = self.el.appendChild($el("div", { "class": "searchlist_input_box" }));
+	self.search_box_input = $el("div", { "class": "searchlist_input", "textContent": $l("filter") });
+	self.search_box_input.addEventListener("keypress", function(e) { e.preventDefault(); });
+	// see bottom of this object for event binding
 
 	var data = {};				// raw data
 	var sorted = [];			// list of IDs sorted by the sort_function (always maintained, contains all IDs)
@@ -114,7 +116,6 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 			self.el.appendChild(data[next_reinsert_id]._el);
 			next_reinsert_id = reinsert.pop();
 		}
-		//scrollbar.update_scroll_height($measure_el(self.el).height, list_name);
 		scrollbar.update_scroll_height();
 	};
 
@@ -169,7 +170,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 			var current_jump = 0;
 			var sibling = down ? "nextSibling" : "previousSibling";
 			var old_key_nav = current_key_nav_element;
-			if (current_key_nav_element[sibling] && (current_key_nav_element[sibling] != search_box)) {
+			if (current_key_nav_element[sibling]) {
 				var n = current_key_nav_element;
 				while ((current_jump < jump) && (n = n[sibling])) { 
 					if (!n._hidden) {
@@ -183,7 +184,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 				else if (!n && down) {
 					self.key_nav_last_item();
 				}
-				else if (n._hidden || (n == search_box)) {
+				else if (n._hidden) {
 					return false;
 				}
 				else {
@@ -241,7 +242,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 		}
 		else if (search_string.length > 1) {
 			search_string = search_string.substring(0, search_string.length - 1);
-			search_box.textContent = search_string;
+			self.search_box_input.textContent = search_string;
 			var use_search_string = Formatting.make_searchable_string(search_string);
 			for (var i = hidden.length - 1; i >= 0; i--) {
 				if (data[hidden[i]]._searchname.indexOf(use_search_string) > -1) {
@@ -258,6 +259,8 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 
 	self.key_nav_add_character = function(character) {
 		search_string = search_string + character;
+		self.search_box_input.textContent = search_string;
+		$add_class(self.search_box_input, "searchlist_input_active");
 		var use_search_string = Formatting.make_searchable_string(search_string);
 		for (var i = 0; i < sorted.length; i++) {
 			if (!data[sorted[i]]._el._hidden && (data[sorted[i]]._searchname.indexOf(use_search_string) == -1)) {
@@ -267,13 +270,13 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 			}
 		}
 		scrollbar.update_scroll_height();
-		search_box.textContent = search_string;
 	};
 
 	self.clear_search = function() {
 		search_string = "";
+		self.search_box_input.textContent = $l("filter");
+		$remove_class(self.search_box_input, "searchlist_input_active");
 		self.remove_key_nav_highlight();
-		search_box.textContent = "";
 
 		for (var i = 0; i < hidden.length; i++) {
 			data[hidden[i]]._el._hidden = false;
@@ -342,6 +345,24 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 		self.key_nav_highlight();
 		self.scroll_to(data_item);
 	};
+
+	// FAKING A TEXT FIELD **************
+
+	var input_click = function(e) {
+		if (search_string == "") {
+			self.search_box_input.textContent = "";
+			window.addEventListener("click", input_blur, true);
+		}
+	}
+
+	var input_blur = function(e) {
+		if (self.search_box_input.textContent == "") {
+			self.search_box_input.textContent = $l("filter");
+		}
+		window.removeEventListener("click", input_blur, true);
+	}
+
+	self.search_box_input.addEventListener("click", input_click);
 
 	return self;
 };

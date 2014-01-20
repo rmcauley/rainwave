@@ -6,17 +6,29 @@ var PlaylistLists = function() {
 	var el;
 	var lists = {};
 	var tabs_el;
+	var search_cancel;
+	var search_box;
 	var scroller;
 
 	self.initialize = function() {
 		el = $id("lists");
 		tabs_el = el.appendChild($el("ul", { "class": "lists_tabs" }));
+		search_box = el.appendChild($el("div", { "class": "searchlist_searchbox" }));
+		search_cancel = search_box.appendChild($el("img", { "src": "/static/images4/cancel_ldpi.png", "class": "searchlist_cancel" }))
+		search_cancel.addEventListener("click", function() { self.active_list.clear_search(); });
 		scroller = PlaylistScrollbar(el);
 
 		lists.albums = AlbumList(scroller, el.offsetWidth - 20);
+		lists.albums._scroll_position = 0;
 		tabs_el.appendChild(lists.albums.tab_el);
 		el.appendChild(lists.albums.el);
-		self.active_list = lists.albums;
+
+		self.change_visible_list(lists.albums);
+
+		var margin_top = tabs_el.offsetHeight + search_box.offsetHeight + 5;
+		for (var list in lists) {
+			lists[list].el.style.marginTop = margin_top + "px";
+		}
 
 		API.add_callback(lists.albums.update, "all_albums");
 		API.add_callback(lists.albums.update, "album_diff");
@@ -27,15 +39,15 @@ var PlaylistLists = function() {
 			self.active_list.el.style.display = "none";
 			self.active_list.tab_el.className = "";
 			self.active_list._scroll_position = scroller.scroll_top;
+			search_box.replaceChild(change_to.search_box_input, self.active_list.search_box_input);
+		}
+		else {
+			search_box.insertBefore(change_to.search_box_input, search_cancel.nextSibling);
 		}
 		self.active_list = change_to;
 		self.active_list.el.style.display = "block";
 		self.active_list.tab_el.className = "list_tab_open";
 		scroller.scroll_to(self.active_list._scroll_position);
-	};
-
-	self.on_resize = function() {
-		lists.albums.on_resize();
 	};
 
 	return self;

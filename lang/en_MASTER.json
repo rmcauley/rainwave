@@ -295,5 +295,6 @@
    "use"                                             : "use:",
    "menu_morestations_v2"                            : "All Stations »",
    "managekeys"                                      : "Manage API Keys",
-   "listenerprofile"                                 : "Listener Profile"
+   "listenerprofile"                                 : "Listener Profile",
+   "filter"                                          : "Type Anywhere to Filter"
 }

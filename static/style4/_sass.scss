@@ -2,12 +2,12 @@ $img_dir: ../../images;
 
 $background: #000000;
 $text: #FFF;
-$darktext: #CCCCCC;
-$vdarktext: #777777;
-$vvdarktext: #444444;
+$darktext: #CCC;
+$vdarktext: #777;
+$vvdarktext: #444;
 $highlight: #1f95e5;
 $link: #6cf6ff;
-$donorcolor: #FFFF00;
+$donorcolor: #FF0;
 $transtime: 700ms ease-out;
 
 @mixin transform($transform_string) {
@@ -89,12 +89,6 @@ html, body {
 @import "timeline.css";
 
 @import "playlist_list.css";
-
-#album_view {
-	height: 100%;
-	width: 100%;
-	background: #1c1d1f;
-}
 
 #requests {
 	float: right;

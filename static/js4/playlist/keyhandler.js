@@ -138,7 +138,7 @@
 		return false;
 	};
 
-	window.addEventListener('keydown', self.on_key_down, false);
-	window.addEventListener('keypress', self.on_key_press, false);
-	window.addEventListener('keyup', self.on_key_up, false);
+	window.addEventListener('keydown', self.on_key_down, true);
+	window.addEventListener('keypress', self.on_key_press, true);
+	window.addEventListener('keyup', self.on_key_up, true);
 }());
