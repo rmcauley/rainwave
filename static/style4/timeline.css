@@ -26,6 +26,7 @@
 	padding-left: 5px;
 	padding-right: 5px;
 	min-height: 52px;
+	@include transition(opacity);
 }
 
 .timeline_song .title, .timeline_song .album, .timeline_song .artists {

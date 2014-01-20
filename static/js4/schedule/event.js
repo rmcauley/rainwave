@@ -49,7 +49,7 @@ var EventBase = function(json) {
 			if (!self.data.used && (self.type.indexOf("election") != -1)) {
 				shuffle(self.songs);
 			}
-			var max_index = self.data.used ? 1 : Math.min(self.songs.length, 5);
+			var max_index = self.data.used ? 1 : self.songs.length;
 			for (var i = 0; i < max_index; i++) {
 				self.el.appendChild(self.songs[i].el);
 			}
@@ -99,6 +99,7 @@ var EventBase = function(json) {
 			self.el.appendChild(self.songs[i].el);
 		}
 		self.height = $measure_el(self.el).height;
+		changed_to_history = false;
 	};
 
 	self.change_to_history = function() {
