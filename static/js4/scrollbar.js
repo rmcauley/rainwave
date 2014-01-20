@@ -56,7 +56,7 @@ var Scrollbar = function() {
 			}
 			else {
 				$remove_class(handle, "scrollbar_invisible");
-				handle.style.height = Math.round(handlepx_per_scrollpx * offset_height) - 3) + "px";
+				handle.style.height = Math.round((handlepx_per_scrollpx * offset_height) - 3) + "px";
 				self.parent_update_handle_position();
 				scroll_enabled = true;
 			}
