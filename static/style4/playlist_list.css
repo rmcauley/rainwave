@@ -45,6 +45,7 @@ img.searchlist_cancel {
 	opacity: 0.7;
 	margin-top: 5px;
 	margin-right: 10px;
+	cursor: pointer;
 }
 
 div.searchlist {
@@ -60,6 +61,8 @@ div.searchlist > div {
 	box-sizing: border-box;
 }
 
-div.searchtable_key_nav_hover {
-	background: #3A3D40;
+div.searchlist > div.searchtable_key_nav_hover {
+	background-color: #3A3D40;
+	padding-left: 15px;
+	border-bottom: solid 1px $highlight;
 }

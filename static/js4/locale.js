@@ -26,6 +26,10 @@ function $l(key, args, el, clear_el) {
 
 }
 
+function $l_has(key) {
+	return (key in lang);
+}
+
 function _tl_core(key, args) {
 	"use strict";
 	// returns a list of { text, arg_key } objects for processing usage

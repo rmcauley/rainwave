@@ -54,18 +54,24 @@
 	color: $highlight;
 }
 
-.timeline_progress_bar_outside {
+#timeline_header_now_playing_bar, .timeline_header_bar {
 	z-index: 100;
 	position: absolute;
 	background-color: $vvdarktext;
-	height: 2px;
+	height: 1px;
 	padding: 0px;
 	margin: 0px;
 	width: 94%;
+	opacity: 0;
 	@include transform(translateY(-25px));
+	@include transition(transform, opacity);
 }
 
-.timeline_progress_bar_inside {
+#timeline_header_now_playing_bar {
+	height: 2px;
+}
+
+#timeline_header_now_playing_bar_inside {
 	background-color: $highlight;
 	height: 2px;
 	margin: 0px;

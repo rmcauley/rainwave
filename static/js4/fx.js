@@ -48,15 +48,24 @@ var Fx = function() {
 		}
 	};
 
-	var animation_ends = [ "animationend", "webkitAnimationEnd", "oanimationend", "MSAnimationEnd" ];
-	self.remove_element = function(el) {
-		var end_func = function() {
-			el.parentNode.removeChild(el);
-		};
-		for (var animation_end in animation_ends) {
-			el.addEventListener(animation_end, end_func, false);
+	// var animation_ends = [ "animationend", "webkitAnimationEnd", "oanimationend", "MSAnimationEnd" ];
+	var transition_ends = [ "transitionend", "webkitTransitionEnd", "otransitionend" ];
+	// limitation: can only chain once
+	self.chain_transition = function(el, property, value, end_func) {
+		var end_func_wrapper = function() {
+			end_func();
+			for (var i in transition_ends) {
+				el.removeEventListener(transition_ends[i], end_func_wrapper, false);
+			}
 		}
-		self.delay_css_setting(el, "opacity", 0);
+		for (var i in transition_ends) {
+			el.addEventListener(transition_ends[i], end_func_wrapper, false);
+		}
+		self.delay_css_setting(el, property, value);
+	};
+
+	self.remove_element = function(el) {
+		self.chain_transition(el, "opacity", 0, function() { el.parentNode.removeChild(el); });
 	};
 
 	//*****************************************************************************

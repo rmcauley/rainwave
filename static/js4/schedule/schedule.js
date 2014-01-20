@@ -10,9 +10,10 @@ var Schedule = function() {
 	var time_bar;
 	var time_bar_progress;
 
-	var next_header;
+	var next_headers = [];
 	var current_header;
 	var history_header;
+	var history_bar;
 	var header_height;
 
 	var timeline_scrollbar;
@@ -28,20 +29,41 @@ var Schedule = function() {
 		history_header.textContent = $l("History");
 		current_header = $id("timeline_header_now_playing");
 		current_header.textContent = $l("Now_Playing");
-		next_header = $id("timeline_header_coming_up");
-		next_header.textContent = $l("Coming_Up");
+		time_bar = $id("timeline_header_now_playing_bar");
+		time_bar_progress = $id("timeline_header_now_playing_bar_inside");
+		history_bar = $id("timeline_header_history_bar");
 
-		header_height = $measure_el(next_header).height;
+		header_height = $measure_el(history_header).height;
 
 		Fx.delay_css_setting($id("timeline_header_history"), "opacity", 1);
 		Fx.delay_css_setting($id("timeline_header_now_playing"), "opacity", 1);
-		Fx.delay_css_setting($id("timeline_header_coming_up"), "transform", "translateY(5px)");
-		Fx.delay_css_setting($id("timeline_header_coming_up"), "opacity", 1);
+		Fx.delay_css_setting(history_bar, "opacity", 1);
+		Fx.delay_css_setting(time_bar, "opacity", 1);
 
 		timeline_scrollbar = Scrollbar.new(self.el);
-		
-		time_bar = self.el.appendChild($el("div", { "class": "timeline_progress_bar_outside" }));
-		time_bar_progress = time_bar.appendChild($el("div", { "class": "timeline_progress_bar_inside"}));
+	};
+
+	var shift_next_header = function() {
+		if (next_headers.length == 0) {
+			var new_header = $el("div", { "class": "timeline_header" });
+			Fx.delay_css_setting(new_header, "opacity", 1);
+			var new_bar = $el("div", { "class": "timeline_header_bar" });
+			Fx.delay_css_setting(new_bar, "opacity", 1);
+			return { "header": new_header, "bar": new_bar };
+		}
+		return next_headers.shift();
+	};
+
+	var set_next_header_text = function(next_header, evt) {
+		if (evt.type == "OneUp") {
+			next_header.textContent = $l("Coming_Up") + " - " + evt.name + " " + $l("Power_Hour");
+		}
+		else if ($l_has(evt.type)) {
+			next_header.textContent = $l("Coming_Up") + " - " + $l(evt.type);
+		}
+		else {
+			next_header.textContent = $l("Coming_Up");
+		}
 	};
 
 	var update = function() {
@@ -49,7 +71,8 @@ var Schedule = function() {
 		var new_current_event;
 		var i;
 		var padding = 15;
-		var running_height = 5 + header_height + padding;
+		var header_padding_pullback = 6;
+		var running_height = 5;
 		var time_bar_y;
 
 		// Mark everything for deletion - this flag will get updated to false as events do
@@ -64,36 +87,73 @@ var Schedule = function() {
 		// CAREFUL ABOUT THE ARRAY ORDER WHEN READING THIS
 		// sched_next[0] is the next immediate event, sched_next[1] is chronologically after
 		// this actually plays nicely into how .insertBefore works in DOM
+		var new_next_headers = [];
+		var this_next_header;
+		var this_next_
 		var temp_evt;
 		for (i = sched_next.length - 1; i >= 0; i--) {
 			temp_evt = find_and_update_event(sched_next[i]);
 			temp_evt.change_to_coming_up();
+			// event that's furthest away in the future, we need a header here for sure
+			if (i == sched_next.length - 1) {
+				this_next_header = shift_next_header();
+			}
+			// if there's no name (i.e. election!), if the types match, or the names don't match, use a header
+			else if (!sched_next[i].name || (sched_next[i].type != sched_next[i + 1].type) || (sched_next[i].name != sched_next[i + 1].name)) {
+				this_next_header = shift_next_header();
+			}
+			else {
+				this_next_header = null;
+			}
+			if (this_next_header) {
+				set_next_header_text(this_next_header.header, temp_evt);
+				new_next_headers.push(this_next_header);
+				Fx.delay_css_setting(this_next_header.header, "transform", "translateY(" + running_height + "px");
+				running_height += header_height + 3;
+				Fx.delay_css_setting(this_next_header.bar, "transform", "translateY(" + running_height + "px");
+				running_height += padding - header_padding_pullback;
+				self.el.appendChild(this_next_header.header);
+				self.el.appendChild(this_next_header.bar);
+			}
 			temp_evt.move_to_y(running_height);
 			self.el.appendChild(temp_evt.el);
-			running_height += temp_evt.height + padding;
-			// use splice to put this in at the beginning
-			// remember about array orders: new_events is chronological (furthest away -> next -> now -> most recent -> oldest)
-			// so the last entry in sched_next must go in index 0 here
+			running_height += temp_evt.height;
+			if (this_next_header) {
+				running_height += padding;
+			}
+			else {
+				running_height += 5;
+			}
 			new_events.push(temp_evt);
 			Fx.delay_css_setting(temp_evt.el, "opacity", 1);
 		}
 
+		// Remove old headers
+		for (i = 0; i < next_headers.length; i++) {
+			Fx.remove_element(next_headers[i]);
+		}
+		next_headers = new_next_headers;
+		
+		// Now playing header positioning
 		Fx.delay_css_setting(current_header, "transform", "translateY(" + running_height + "px)");
-		running_height += header_height + padding;
+		time_bar_y = running_height + header_height + 3;
+		running_height = time_bar_y + padding - header_padding_pullback;
 
+		// Current event positioning and updating
 		temp_evt = find_and_update_event(sched_current);
 		temp_evt.change_to_now_playing();
 		self.el.appendChild(temp_evt.el);
 		temp_evt.move_to_y(running_height);
-		running_height += temp_evt.height;
-		time_bar_y = running_height + 10;
-		running_height = time_bar_y + 5 + padding;
+		running_height += temp_evt.height + padding;
 		new_events.push(temp_evt);
 		new_current_event = temp_evt;
 		Fx.delay_css_setting(temp_evt.el, "opacity", 1);
 
+		// History header positioning
 		Fx.delay_css_setting(history_header, "transform", "translateY(" + running_height + "px)");
-		running_height += header_height + padding;
+		running_height += header_height + 3;
+		Fx.delay_css_setting(history_bar, "transform", "translateY(" + running_height + "px");
+		running_height += padding - header_padding_pullback;
 
 		var o = 1.0;
 		for (i = 0; i < sched_history.length; i++) {
@@ -123,10 +183,12 @@ var Schedule = function() {
 		if ((new_current_event.end - Clock.time()) > 0) {
 			Clock.set_page_title(new_current_event.name, new_current_event.end);
 
-			time_bar_progress.style.width = Math.round(((new_current_event.end - Clock.time()) / new_current_event.data.songs[0].length) * 100) + "%";
-			time_bar_progress.style.transition = "width " + (new_current_event.end - Clock.time()) + "s linear";
-			Fx.delay_css_setting(time_bar_progress, "width", "0%");
-			self.el.insertBefore(time_bar, new_current_event.el.nextSibling);
+			time_bar_progress.style.transition = "width 700ms ease-out";
+			Fx.chain_transition(time_bar_progress, "width", "100%", function() {
+				time_bar_progress.style.transition = "width " + (new_current_event.end - Clock.time()) + "s linear";
+				time_bar_progress.style.width = Math.round(((new_current_event.end - Clock.time()) / (new_current_event.data.songs[0].length - 1)) * 100) + "%";
+				Fx.delay_css_setting(time_bar_progress, "width", "0%");
+			});
 		}
 		Fx.delay_css_setting(time_bar, "transform", "translateY(" + time_bar_y + "px)");
 

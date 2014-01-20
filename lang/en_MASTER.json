@@ -62,6 +62,8 @@
    "Coming_Up"                                       : "Coming Up",
    "Now_Playing"                                     : "Now Playing",
    "History"                                         : "History",
+   "Election"                                        : "Election",
+   "Power Hour"                                      : "Power Hour",
 
    "__comment__"                 : "Tip Jar",
 
@@ -296,5 +298,6 @@
    "menu_morestations_v2"                            : "All Stations »",
    "managekeys"                                      : "Manage API Keys",
    "listenerprofile"                                 : "Listener Profile",
-   "filter"                                          : "Type Anywhere to Filter"
+   "filter"                                          : "Type Anywhere to Filter",
+   "clearfilter"                                     : "Clear Filter"
 }
