@@ -84,7 +84,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 		for (var i = 0; i < sorted.length; i++) {
 			self.el.appendChild(data[sorted[i]]._el);
 		}
-		scrollbar.update_scroll_height();
+		scrollbar.update_scroll_height(null, list_name);
 	};
 
 	self.update_view = function() {
@@ -116,7 +116,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 			self.el.appendChild(data[next_reinsert_id]._el);
 			next_reinsert_id = reinsert.pop();
 		}
-		scrollbar.update_scroll_height();
+		scrollbar.update_scroll_height(null, list_name);
 	};
 
 	self.sort_function = function(a, b) {
@@ -251,7 +251,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 					hidden.splice(i, 1);
 				}
 			}
-			scrollbar.update_scroll_height();
+			scrollbar.update_scroll_height(null, list_name);
 			return true;
 		}
 		return false;
@@ -269,7 +269,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 				hidden.push(sorted[i]);
 			}
 		}
-		scrollbar.update_scroll_height();
+		scrollbar.update_scroll_height(null, list_name);
 	};
 
 	self.clear_search = function() {
@@ -288,7 +288,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 			self.update_view();
 		}
 		else {
-			scrollbar.update_scroll_height();
+			scrollbar.update_scroll_height(null, list_name);
 		}
 	};
 

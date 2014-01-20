@@ -29,6 +29,7 @@ var PlaylistLists = function() {
 		for (var list in lists) {
 			lists[list].el.style.marginTop = margin_top + "px";
 		}
+		scroller.top_margin = margin_top - 3;
 
 		API.add_callback(lists.albums.update, "all_albums");
 		API.add_callback(lists.albums.update, "album_diff");
@@ -56,13 +57,12 @@ var PlaylistLists = function() {
 var PlaylistScrollbar = function(element) {
 	"use strict";
 	var self = Scrollbar.new(element);
-	// self.parent_update_scroll_height = self.update_scroll_height;
 
-	//	self.update_scroll_height = function(force_height, list_name) {
-	//		if (list_name == PlaylistLists.active_list.list_name) {
-	//			self.parent_update_scroll_height();
-	//		}
-	//	};
+	self.update_scroll_height = function(force_height, list_name) {
+		if (list_name == PlaylistLists.active_list.list_name) {
+			self.parent_update_scroll_height(force_height);
+		}
+	};
 
 	self.update_handle_position = function(list_name) {
 		if (list_name == PlaylistLists.active_list.list_name) {
