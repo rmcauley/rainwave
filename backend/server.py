@@ -28,8 +28,9 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		else:
 			return
 
-		# We don't need to worry about any different situations here..
-		# .. AS LONG AS WE ASSUME THE BACKEND TO BE SINGLE-THREADED...
+		# This program must be run on 1 station for 1 instance, which would allow this operation to be safe.
+		# Also works if 1 process is serving all stations.  Pinging any instance for any station
+		# would break the program here, though.
 		if cache.get_station(self.sid, "get_next_socket_timeout") and sid_output[self.sid]:
 			log.warn("backend", "Using previous output to prevent flooding.")
 			self.write(sid_output[self.sid])
@@ -122,7 +123,7 @@ class BackendServer(object):
 			ioloop.start()
 		finally:
 			ioloop.stop()
-			http_server.stop()
+			server.stop()
 			db.close()
 			log.info("stop", "Backend has been shutdown.")
 			log.close()
