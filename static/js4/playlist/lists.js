@@ -29,7 +29,7 @@ var PlaylistLists = function() {
 		for (var list in lists) {
 			lists[list].el.style.marginTop = margin_top + "px";
 		}
-		scroller.top_margin = margin_top - 3;
+		scroller.margin_top = margin_top - 3;
 
 		API.add_callback(lists.albums.update, "all_albums");
 		API.add_callback(lists.albums.update, "album_diff");
@@ -48,6 +48,7 @@ var PlaylistLists = function() {
 		self.active_list = change_to;
 		self.active_list.el.style.display = "block";
 		self.active_list.tab_el.className = "list_tab_open";
+		scroller.update_scroll_height(null, self.active_list.list_name);
 		scroller.scroll_to(self.active_list._scroll_position);
 	};
 

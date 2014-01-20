@@ -13,7 +13,7 @@ var Scrollbar = function() {
 	self.new = function(element) {
 		var self = {};
 		self.scroll_top = 0;
-		self.top_margin = 0;
+		self.margin_top = 0;
 		var handle = element.insertBefore($el("div", { "class": "scrollbar"}), element.firstChild);
 		var scroll_height;
 		var offset_height;
@@ -45,8 +45,8 @@ var Scrollbar = function() {
 			scroll_height = force_height || element.scrollHeight;
 			offset_height = element.offsetHeight;
 			max_scroll_top = scroll_height - offset_height; 
-			scrollpx_per_handlepx = (scroll_height - self.top_margin) / offset_height;
-			handlepx_per_scrollpx = offset_height / (scroll_height - self.top_margin);
+			scrollpx_per_handlepx = scroll_height / (offset_height - self.margin_top);
+			handlepx_per_scrollpx = (offset_height - self.margin_top) / scroll_height;
 
 			// updates the handle to be the correct percentage of the screen, never less than 10% for size issues
 			if ((scroll_height === 0) || (offset_height === 0) || (scrollpx_per_handlepx <= 1)) {
@@ -56,7 +56,7 @@ var Scrollbar = function() {
 			}
 			else {
 				$remove_class(handle, "scrollbar_invisible");
-				handle.style.height = (Math.round(Math.max(handlepx_per_scrollpx, 0.1) * offset_height) - 3) + "px";
+				handle.style.height = Math.round((Math.max(handlepx_per_scrollpx, 0.1) * offset_height) - 3) + "px";
 				self.parent_update_handle_position();
 				scroll_enabled = true;
 			}
@@ -67,7 +67,7 @@ var Scrollbar = function() {
 		self.update_scroll_height = self.parent_update_scroll_height;
 
 		self.parent_update_handle_position = function() {
-			handle.style.top = self.top_margin + Math.max(self.scroll_top + Math.max(Math.round(self.scroll_top * handlepx_per_scrollpx), 3), 3) + "px";
+			handle.style.top = self.margin_top + Math.max(self.scroll_top + Math.max(Math.round(self.scroll_top * handlepx_per_scrollpx), 3), 3) + "px";
 		};
 
 		self.update_handle_position = self.parent_update_handle_position;
