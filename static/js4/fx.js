@@ -61,11 +61,21 @@ var Fx = function() {
 		for (var i in transition_ends) {
 			el.addEventListener(transition_ends[i], end_func_wrapper, false);
 		}
+		el._end_func_wrapper = end_func_wrapper;
 		self.delay_css_setting(el, property, value);
 	};
 
+	self.stop_chain = function(el) {
+		if (("_end_func_wrapper" in el) && (el._end_func_wrapper)) {
+			for (var i in transition_ends) {
+				el.removeEventListener(transition_ends[i], el._end_func_wrapper, false);
+			}
+			el._end_func_wrapper = null;
+		}
+	}
+
 	self.remove_element = function(el) {
-		self.chain_transition(el, "opacity", 0, function() { el.parentNode.removeChild(el); });
+		self.chain_transition(el, "opacity", 0, function() { if (el.parentNode) el.parentNode.removeChild(el); });
 	};
 
 	//*****************************************************************************

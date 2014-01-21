@@ -80,6 +80,8 @@ var Schedule = function() {
 			self.events[i].pending_delete = true;
 		}
 
+		set_header_to_top_zindex();
+
 		// Loading events is next (pulling from already existing self.events or creating new objects as necessary)
 		// Appending events to the DOM here is tricky because we have to make sure to retain order, EVEN FOR ITEMS BEING DELETED
 		// Items being erased must retain their position in order to smoothly animate out without jerking everything around
@@ -134,8 +136,8 @@ var Schedule = function() {
 		}
 		next_headers = new_next_headers;
 		
-		// Now playing header positioning
-		Fx.delay_css_setting(current_header, "transform", "translateY(" + running_height + "px)");
+		// Now playing header positioning, and setup the z-index correction chain
+		Fx.chain_transition(current_header, "transform", "translateY(" + running_height + "px)", set_header_to_normal_zindex);
 		time_bar_y = running_height + header_height + 3;
 		running_height = time_bar_y + padding - header_padding_pullback;
 
@@ -193,6 +195,26 @@ var Schedule = function() {
 		Fx.delay_css_setting(time_bar, "transform", "translateY(" + time_bar_y + "px)");
 
 		timeline_scrollbar.update_scroll_height(running_height);
+	};
+
+	var set_header_to_top_zindex = function() {
+		for (var i = 0; i < next_headers.length; i++) {
+			next_headers[i].header.style.zIndex = 2;
+		}
+		history_header.style.zIndex = 2;
+		current_header.style.zIndex = 2;
+		time_bar.style.zIndex = 2;
+		history_bar.style.zIndex = 2;
+	};
+
+	var set_header_to_normal_zindex = function() {
+		for (var i = 0; i < next_headers.length; i++) {
+			next_headers[i].header.style.zIndex = "auto";
+		}
+		history_header.style.zIndex = "auto";
+		current_header.style.zIndex = "auto";
+		time_bar.style.zIndex = "auto";
+		history_bar.style.zIndex = "auto";
 	};
 
 	var find_and_update_event = function(event_json) {

@@ -1,9 +1,11 @@
 // Optimizaton notes:
 // It would optimize a little to only perform rating_reset on mouseout when something has actually changed
 
+// This module is a bit of a mess due to the reliance on the legacy Fx library.
+
 //var rating_dbg = ErrorHandler.make_debug_div();
 
-// ******* SEE fx.js FOR RATING EFFECT
+// ******* SEE fx.js FOR BACKGROUND POSITIONING AND FAVE SHOWING/HIDING
 
 var Rating = function(type, id, rating_user, rating, fave, ratable) {
 	"use strict";
@@ -23,6 +25,8 @@ var Rating = function(type, id, rating_user, rating, fave, ratable) {
 		"el": $el("div")
 	};
 
+	var hover_box = $el("div", { "class": "rating_hover" });
+	var hover_number = hover_box.appendChild($el("div", { "class": "rating_hover_number" }));
 	var fave_solid = self.el.appendChild($el("img", { "class": "fave_solid", "src": "/static/images4/heart_solid.png"}));
 	var fave_lined = self.el.appendChild($el("img", { "class": "fave_lined", "src": "/static/images4/heart_lined.png"}));
 	var current_rating;
@@ -64,6 +68,14 @@ var Rating = function(type, id, rating_user, rating, fave, ratable) {
 		if (tr >= 1) {
 			effect.change_to_user_rating();
 			effect.set(tr);
+			if (tr * 10 % 10 == 0) hover_number.textContent = tr + ".0";
+			else hover_number.textContent = tr;
+			hover_box.style.width = Math.max(tr * 10 - 3, 20) + "px";
+			if (!hover_box.parentNode) {
+				Fx.stop_chain(hover_box);
+				self.el.insertBefore(hover_box, self.el.firstChild);
+				hover_box.style.opacity = "1";
+			}
 		}
 		else {
 			effect.set_rating(current_rating);
@@ -117,6 +129,15 @@ var Rating = function(type, id, rating_user, rating, fave, ratable) {
 		self.reset_fave();
 	};
 
+	self.show_hover = function() {
+		self.el.insertBefore(self.el.firstChild, hover_box);
+		hover_box.style.opacity = 1;
+	};
+
+	self.hide_hover = function() {
+		Fx.remove_element(hover_box);
+	};
+
 	self.reset_rating();
 	self.reset_fave();
 
@@ -125,6 +146,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable) {
 		fave_solid.addEventListener("mouseout", self.reset_fave, false);
 
 		if (type == "song") {
+			fave_solid.addEventListener("mouseout", self.hide_hover);
 			fave_solid.addEventListener("mousemove", on_mouse_move, false);
 			fave_solid.addEventListener("mouseout", self.reset_rating, false);
 			fave_solid.addEventListener("click", click, false);	
