@@ -200,6 +200,7 @@ var Schedule = function() {
 	var set_header_to_top_zindex = function() {
 		for (var i = 0; i < next_headers.length; i++) {
 			next_headers[i].header.style.zIndex = 2;
+			next_headers[i].bar.style.zIndex = 2;
 		}
 		history_header.style.zIndex = 2;
 		current_header.style.zIndex = 2;
@@ -210,6 +211,7 @@ var Schedule = function() {
 	var set_header_to_normal_zindex = function() {
 		for (var i = 0; i < next_headers.length; i++) {
 			next_headers[i].header.style.zIndex = "auto";
+			next_headers[i].bar.style.zIndex = "auto";
 		}
 		history_header.style.zIndex = "auto";
 		current_header.style.zIndex = "auto";
