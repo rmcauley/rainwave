@@ -20,13 +20,13 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 	// see bottom of this object for event binding
 
 	var data = {};				// raw data
+	self.data = data;
 	var sorted = [];			// list of IDs sorted by the sort_function (always maintained, contains all IDs)
 	var reinsert = [];			// list of IDs unsorted - will be resorted in the list when the user is not in a search
 	var hidden = [];			// list of IDs unsorted - currently hidden from view during a search
 
 	var search_string = "";
 	var current_key_nav_element = false;
-	var current_key_nav_old_class = "";
 	var scroll_offset = 100;
 
 	// LIST MANAGEMENT ***********************************************
@@ -57,6 +57,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 			json._el = self.draw_entry(json);
 			json._el._id = json[id_key];
 			json._el._hidden = false;
+			json._lower_case_sort_keyed = json[sort_key].toLowerCase();
 			self.update_item_element(json);
 		}
 		data[json[id_key]] = json;
@@ -120,8 +121,8 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 	};
 
 	self.sort_function = function(a, b) {
-		if (data[a][sort_key] < data[b][sort_key]) return 1;
-		else if (data[a][sort_key] > data[b][sort_key]) return -1;
+		if (data[a][sort_key]._lower_case_sort_keyed < data[b][sort_key]._lower_case_sort_keyed) return 1;
+		else if (data[a][sort_key]._lower_case_sort_keyed > data[b][sort_key]._lower_case_sort_keyed) return -1;
 		return 0;
 	};
 
@@ -129,15 +130,13 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 
 	self.remove_key_nav_highlight = function() {
 		if (current_key_nav_element) {
-			current_key_nav_element.className = current_key_nav_old_class;
-			current_key_nav_old_class = "";
+			$remove_class(current_key_nav_element, "searchtable_key_nav_hover");
 			current_key_nav_element = false;
 		}
 	};
 
 	self.key_nav_highlight = function() {
-		current_key_nav_old_class = current_key_nav_element.className;
-		current_key_nav_element.className = "searchtable_key_nav_hover";
+		$add_class(current_key_nav_element, "searchtable_key_nav_hover");
 	};
 
 	self.key_nav_first_item = function() {
@@ -195,12 +194,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 				return false;
 			}
 
-			if (current_key_nav_old_class) {
-				old_key_nav.className = current_key_nav_old_class;
-			}
-			else {
-				old_key_nav.removeAttribute("class");	
-			}
+			$remove_class(old_key_nav, "searchtable_key_nav_hover");
 		}
 		self.key_nav_highlight();
 		self.scroll_to_key_nav();

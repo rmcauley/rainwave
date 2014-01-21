@@ -66,3 +66,10 @@ div.searchlist > div.searchtable_key_nav_hover {
 	padding-left: 15px;
 	border-bottom: solid 1px $highlight;
 }
+
+div.searchlist_open_item {
+}
+
+div.searchlist_cooldown {
+	background-color: #1f2041;
+}

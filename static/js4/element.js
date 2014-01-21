@@ -75,3 +75,10 @@ function $remove_class(el, class_name) {
 		el.className = classes.join(" ");
 	}
 }
+
+function $has_class(el, class_name) {
+	if (classes.indexOf(class_name) == -1) {
+		return false;
+	}
+	return true;
+}

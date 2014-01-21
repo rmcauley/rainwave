@@ -5,6 +5,10 @@ var Prefs = function() {
 	var self = {};
 	var callbacks = {};
 
+	// the following preferences are for speed-critical functions
+	self.playlist_sort_faves_first = false;
+	self.playlist_sort_available_first = true;
+
 	// a small set of characters need to be escaped, not all, and not all of these are caught by escape() and escape() bloats the JSON object to 2x the size
 	// a better idea is to use encodeURIComponent, but again, we get 2x the cookie size as a result.
 	// unfortunately, for Opera users, we have to use encodeURIComponent because Opera silently fails to save the cookie due to apparently some illegal chars.

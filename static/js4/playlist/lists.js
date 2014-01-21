@@ -23,7 +23,7 @@ var PlaylistLists = function() {
 		tabs_el.appendChild(lists.albums.tab_el);
 		el.appendChild(lists.albums.el);
 
-		self.change_visible_list(lists.albums);
+		self.change_visible_list(lists.albums, true);
 
 		var margin_top = tabs_el.offsetHeight + search_box.offsetHeight + 5;
 		for (var list in lists) {
@@ -35,7 +35,7 @@ var PlaylistLists = function() {
 		API.add_callback(lists.albums.update, "album_diff");
 	};
 
-	self.change_visible_list = function(change_to) {
+	self.change_visible_list = function(change_to, skip_scrollbar_update) {
 		if (self.active_list) {
 			self.active_list.el.style.display = "none";
 			self.active_list.tab_el.className = "";
@@ -48,7 +48,9 @@ var PlaylistLists = function() {
 		self.active_list = change_to;
 		self.active_list.el.style.display = "block";
 		self.active_list.tab_el.className = "list_tab_open";
-		scroller.update_scroll_height(null, self.active_list.list_name);
+		if (!skip_scrollbar_update) {
+			scroller.update_scroll_height(null, self.active_list.list_name);
+		}
 		scroller.scroll_to(self.active_list._scroll_position);
 	};
 
@@ -82,14 +84,17 @@ var AlbumList = function(scroller, offset_width) {
 
 	self.draw_entry = function(item) {
 		var item_el = document.createElement("div", { "class": "searchlist_entry" });
-		// item._rating = AlbumRating(item);
-		// item_el.appendChild(item._rating.el);
-		// item_el.appendChild($el("div", { "class": "searchlist_name", "textContent": item.name }));
 		item_el.textContent = item.name;
 		return item_el;
 	};
 
 	self.update_item_element = function(item) {
+		if (item.cool) {
+			$add_class(item._el, "searchlist_cooldown");
+		}
+		else {
+			$remove_class(item._el, "searchlist_cooldown");
+		}
 		if (item.rating_user) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
 			item._el.style.backgroundPosition = (offset_width - 50) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + 3) + "px";
@@ -100,10 +105,62 @@ var AlbumList = function(scroller, offset_width) {
 		}
 	};
 
-	self.on_resize = function() {
-		offset_width = self.el.offsetWidth;
-		self.update_all_item_elements();
+	// there's lots of copy-paste code in the following functions because these are critical-path, called thousands of times
+	self.sort_by_available = function(a, b) {
+		if (Prefs.playlist_sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+			if (self.data[a].fave) return -1;
+			else return 1;
+		}
+
+		if (self.data[a].cool !== self.data[b].cool) {
+			if (self.data[a].cool === false) return 1;
+			else return 0;
+		}
+
+		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return 1;
+		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return -1;
+		return 0;
 	};
+
+	self.sort_by_updated = function(a, b) {
+		if (Prefs.playlisf_sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+			if (self.data[a].fave) return -1;
+			else return 1;
+		}
+
+		if (Prefs.playlist_sort_available_first && (self.data[a].cool !== self.data[b].cool)) {
+			if (self.data[a].cool === false) return 1;
+			else return 0;
+		}
+		
+		if (self.data[a].updated < self.data[b].updated) return 1;
+		if (self.data[a].updated > self.data[b].updated) return -1;
+
+		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return 1;
+		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return -1;
+		return 0;
+	};
+
+	self.sort_by_rating_user = function(a, b) {
+		if (Prefs.playlist_sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+			if (self.data[a].fave) return -1;
+			else return 1;
+		}
+
+		if (Prefs.playlist_sort_available_first && (self.data[a].cool !== self.data[b].cool)) {
+			if (self.data[a].cool === false) return 1;
+			else return 0;
+		}
+
+		if (self.data[a].rating_user < self.data[b].rating_user) return 1;
+		if (self.data[a].rating_user > self.data[b].rating_user) return -1;
+
+		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return 1;
+		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return -1;
+		return 0;
+	};
+
+	self.sort_function = self.sort_by_available;
 
 	return self;
 };

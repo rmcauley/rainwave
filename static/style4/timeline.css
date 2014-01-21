@@ -49,6 +49,9 @@
 	position: absolute;
 	color: $vdarktext;
 	opacity: 0;
+	background-color: #131416;
+	width: 95%;
+	padding-bottom: 8px;
 }
 
 #timeline_header_now_playing {
