@@ -13,11 +13,11 @@
 				"locales": {{ locales }}
 		};
 	</script>
-	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
-	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
+	<link href="../static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
+	<script src="../static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
 </head>
 <body onload="initialize();">
-	{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
+	{% for file in jsfiles %}<script src="../{{ file }}" type="application/javascript"></script>{% end %}
 	<div id="measure_box"></div>
 	<div id="menu"></div>
 	<div id="messages"></div>
