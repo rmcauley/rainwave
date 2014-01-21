@@ -63,7 +63,7 @@ var Scrollbar = function() {
 				scroll_enabled = true;
 			}
 
-			wheel_delta = Math.min(250, Math.max(scroll_height * 0.05, 30));
+			wheel_delta = Math.min(300, Math.max(scroll_height * 0.08, 30));
 		};
 
 		self.update_scroll_height = self.parent_update_scroll_height;
