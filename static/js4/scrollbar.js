@@ -18,13 +18,14 @@ var Scrollbar = function() {
 		var scroll_height;
 		var offset_height;
 		var max_scroll_top = 0;
-		var scrollpx_per_handlepx;
-		var handlepx_per_scrollpx;
+		var scrollpx_per_handlepx = 1;
+		var handle_height = 0;
 		var scrolling = false;
 		var original_mouse_y;
 		var original_scroll_top;
 		var wheel_delta;
 		var scroll_enabled = false;
+		// this function will handle a browser's automatic re-scroll when the page finishes loading
 		var first_scroll = function() {
 			self.scroll_top = element.scrollTop;
 			self.parent_update_handle_position();
@@ -35,6 +36,7 @@ var Scrollbar = function() {
 		element.addEventListener("scroll", first_scroll);
 
 		self.scroll_to = function(new_scroll_top) {
+			if (!scroll_enabled) return false;
 			if (max_scroll_top < new_scroll_top) new_scroll_top = max_scroll_top;
 			self.scroll_top = new_scroll_top;
 			element.scrollTop = new_scroll_top;
@@ -44,30 +46,30 @@ var Scrollbar = function() {
 		self.parent_update_scroll_height = function(force_height) {
 			scroll_height = force_height || element.scrollHeight;
 			offset_height = element.offsetHeight;
-			max_scroll_top = scroll_height - offset_height; 
-			scrollpx_per_handlepx = scroll_height / (offset_height - self.margin_top);
-			handlepx_per_scrollpx = (offset_height - self.margin_top) / scroll_height;
+			max_scroll_top = scroll_height - offset_height;
 
 			// updates the handle to be the correct percentage of the screen, never less than 10% for size issues
-			if ((scroll_height === 0) || (offset_height === 0) || (scrollpx_per_handlepx <= 1)) {
+			if ((scroll_height === 0) || (offset_height === 0) || (scroll_height <= offset_height)) {
 				$add_class(handle, "scrollbar_invisible");
 				handle.style.height = "0px";
 				scroll_enabled = false;
 			}
 			else {
 				$remove_class(handle, "scrollbar_invisible");
-				handle.style.height = Math.round((handlepx_per_scrollpx * offset_height) - 3) + "px";
+				handle_height = Math.max(Math.round((offset_height - self.margin_top) / scroll_height * offset_height), 70);
+				scrollpx_per_handlepx = max_scroll_top / (offset_height - self.margin_top - handle_height - 3);
+				handle.style.height = handle_height + "px";
 				self.parent_update_handle_position();
 				scroll_enabled = true;
 			}
 
-			wheel_delta = Math.min(200, Math.max(scroll_height * 0.05, 30));
+			wheel_delta = Math.min(250, Math.max(scroll_height * 0.05, 30));
 		};
 
 		self.update_scroll_height = self.parent_update_scroll_height;
 
 		self.parent_update_handle_position = function() {
-			handle.style.top = self.scroll_top + self.margin_top + Math.max(Math.round((self.scroll_top / scroll_height) * (offset_height - self.margin_top)), 3) + "px";
+			handle.style.top = self.scroll_top + self.margin_top + Math.max(Math.round((self.scroll_top / max_scroll_top) * (offset_height - self.margin_top - handle_height - 3)), 3) + "px";
 		};
 
 		self.update_handle_position = self.parent_update_handle_position;
