@@ -2,6 +2,7 @@ import re
 import socket
 from libs import config
 from libs import db
+import rainwave.events.event
 
 string_error = "must be a string."
 def string(in_string, request = None):
@@ -237,3 +238,9 @@ def media_player(str, request = None):
 	elif ua.find('windows'):
 		return "Windows Media"
 	return "Unknown"
+
+producer_type_error = None
+def producer_type(str, request = None):
+	if str not in rainwave.events.event.all_producers:
+		return None
+	return str

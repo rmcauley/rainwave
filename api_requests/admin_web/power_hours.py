@@ -29,9 +29,10 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 
 		self.write("<div>Input date and time in YOUR timezone.<br>")
 		self.write("Name: <input id='new_ph_name' type='text' /><br>")
+		self.write("URL: <input id='new_ph_url' type='text' /><br>")
 		index.write_html_time_form(self, "new_ph")
-		self.write("<br><button onclick=\"window.top.call_api('admin/create_power_hour', ")
-		self.write("{ 'utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value });\"")
+		self.write("<br><button onclick=\"window.top.call_api('admin/create_producer', ")
+		self.write("{ 'producer_type': 'OneUpProducer', 'end_utc_time': document.getElementById('new_ph_timestamp').value, 'start_utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\"")
 		self.write(">Create new Power Hour</button></div><hr>")
 
 		if self.return_name in self._output and type(self._output[self.return_name]) == types.ListType and len(self._output[self.return_name]) > 0:
@@ -73,6 +74,9 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 
 		self.write("Name: <input type='text' id='new_ph_name' value='%s'><br>" % ph['name'])
 		self.write("<button onclick=\"window.top.call_api('admin/change_producer_name', { 'sched_id': %s, 'name': document.getElementById('new_ph_name').value });\">Change Name</button><hr>" % ph['id'])
+
+		self.write("URL: <input type='text' id='new_ph_url' value='%s'><br>" % (ph['url'] or ""))
+		self.write("<button onclick=\"window.top.call_api('admin/change_producer_url', { 'sched_id': %s, 'url': document.getElementById('new_ph_url').value });\">Change URL</button><hr>" % ph['id'])
 
 		self.write("<button onclick=\"window.top.call_api('admin/shuffle_power_hour', { 'sched_id': %s });\">Shuffle the Song Order</button><hr>\n\n" % ph['id'])
 

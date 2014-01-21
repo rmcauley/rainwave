@@ -187,7 +187,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			else:
 				parsed = type_cast(self.get_argument(field), self)
 				if parsed == None and required != None:
-					raise APIException("invalid_argument", argument=field, reason=getattr(fieldtypes, "%s_error" % type_cast.__name__), http_code=400)
+					raise APIException("invalid_argument", argument=field, reason="%s %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__)), http_code=400)
 				else:
 					self.cleaned_args[field] = parsed
 
@@ -412,16 +412,24 @@ class PrettyPrintAPIMixin(object):
 				keys = self.sort_keys(json[0].keys())
 				for key in keys:
 					self.write("<th>%s</th>" % self.locale.translate(key))
+				self.header_special()
 				self.write("</th>")
 				i = 1
 				for row in json:
 					self.write("<tr><td>%s</td>" % i)
 					for key in keys:
 						self.write("<td>%s</td>" % row[key])
+					self.row_special(row)
 					self.write("</tr>")
 					i = i + 1
 				self.write("</table>")
 		self.write(self.render_string("basic_footer.html"))
+
+	def header_special(self):
+		pass
+
+	def row_special(self, row):
+		pass
 
 	def sort_keys(self, keys):
 		new_keys = []

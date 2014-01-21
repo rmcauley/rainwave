@@ -25,6 +25,7 @@ class OneUpProducer(event.BaseProducer):
 			db.c.update("UPDATE r4_one_ups SET one_up_queued = TRUE WHERE one_up_id = %s", (next_up_id,))
 			up = OneUp.load_by_id(next_up_id, self.sid)
 			up.name = self.name
+			up.url = up.url
 			return up
 		else:
 			db.c.update("UPDATE r4_schedule SET sched_used = TRUE WHERE sched_id = %s", (self.id,))
@@ -46,7 +47,10 @@ class OneUpProducer(event.BaseProducer):
 	def load_event_in_progress(self):
 		next_song_id = db.c.fetch_var("SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = TRUE ORDER BY one_up_order DESC LIMIT 1", (self.id,))
 		if next_song_id:
-			return OneUp.load_by_id(self.id, next_song_id, self.sid)
+			up = OneUp.load_by_id(self.id, next_song_id, self.sid)
+			up.name = self.name
+			up.url = self.url
+			return up
 		else:
 			return None
 

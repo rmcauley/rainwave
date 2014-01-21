@@ -41,14 +41,20 @@ class ElectionProducer(event.BaseProducer):
 	def load_next_event(self, target_length = None, min_elec_id = 0, skip_requests = False):
 		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s ORDER BY elec_id LIMIT 1", (self.elec_type, self.sid, min_elec_id))
 		if elec_id:
-			return self.elec_class.load_by_id(elec_id)
+			elec = self.elec_class.load_by_id(elec_id)
+			elec.url = self.url
+			elec.name = self.name
+			return elec
 		else:
 			return self._create_election(target_length, skip_requests)
 
 	def load_event_in_progress(self):
 		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s ORDER BY elec_id DESC LIMIT 1", (self.elec_type, self.sid))
 		if elec_id:
-			return self.elec_class.load_by_id(elec_id)
+			elec = self.elec_class.load_by_id(elec_id)
+			elec.name = self.name
+			elec.url = self.url
+			return elec
 		else:
 			return self.load_next_event()
 
@@ -57,6 +63,8 @@ class ElectionProducer(event.BaseProducer):
 		db.c.update("START TRANSACTION")
 		try:
 			elec = self.elec_class.create(self.sid)
+			elec.url = self.url
+			elec.name = self.name
 			elec.fill(target_length, skip_requests)
 			if elec.length() == 0:
 				raise Exception("Created zero-length election.")

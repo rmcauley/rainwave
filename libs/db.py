@@ -419,6 +419,7 @@ def create_tables():
 			sched_end_actual		INTEGER		, \
 			sched_type				TEXT		, \
 			sched_name				TEXT		, \
+			sched_url				TEXT 		, \
 			sid						SMALLINT	NOT NULL, \
 			sched_public			BOOLEAN		DEFAULT TRUE, \
 			sched_timed				BOOLEAN		DEFAULT TRUE, \
