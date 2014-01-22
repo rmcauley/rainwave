@@ -59,14 +59,17 @@ class ChangeProducerName(api.web.APIHandler):
 class ChangeProducerURL(api.web.APIHandler):
 	admin_required = True
 	sid_required = False
-	fields = { "sched_id": (fieldtypes.sched_id, True), "url": (fieldtypes.string, True) }
+	fields = { "sched_id": (fieldtypes.sched_id, True), "url": (fieldtypes.string, None) }
 
 	def post(self):
 		producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
 		if not producer:
 			raise APIException("internal_error", "Producer ID %s not found." % self.get_argument("sched_id"))
 		db.c.update("UPDATE r4_schedule SET sched_url = %s WHERE sched_id = %s", (self.get_argument("url"), self.get_argument("sched_id")))
-		self.append_standard("success", "Producer URL changed to '%s'." % self.get_argument("url"))
+		if self.get_argument("url"):
+			self.append_standard("success", "Producer URL changed to '%s'." % self.get_argument("url"))
+		else:
+			self.append_standard("success", "Producer URL removed.")
 
 @handle_api_url("admin/change_producer_start_time")
 class ChangeProducerStartTime(api.web.APIHandler):
@@ -78,6 +81,18 @@ class ChangeProducerStartTime(api.web.APIHandler):
 	def post(self):
 		producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
 		producer.change_start(self.get_argument("utc_time"))
+		self.append(self.return_name, producer.to_dict())
+
+@handle_api_url("admin/change_producer_end_time")
+class ChangeProducerEndTime(api.web.APIHandler):
+	return_name = "producer"
+	admin_required = True
+	sid_required = True
+	fields = { "sched_id": (fieldtypes.sched_id, True), "utc_time": (fieldtypes.positive_integer, True) }
+
+	def post(self):
+		producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
+		producer.change_end(self.get_argument("utc_time"))
 		self.append(self.return_name, producer.to_dict())
 
 @handle_api_url("admin/delete_producer")

@@ -50,6 +50,7 @@ class BaseProducer(object):
 		p.used = row['sched_used']
 		p.use_crossfade = row['sched_use_crossfade']
 		p.use_tag_suffix = row['sched_use_tag_suffix']
+		p.url = row['sched_url']
 		p.load()
 		return p
 
@@ -92,10 +93,15 @@ class BaseProducer(object):
 
 	def change_start(self, new_start):
 		if not self.used:
-			length = self.end - self.start
 			self.start = new_start
-			self.end = self.start + length
-			db.c.update("UPDATE r4_schedule SET sched_start = %s, sched_end = %s WHERE sched_id = %s", (self.start, self.end, self.id))
+			db.c.update("UPDATE r4_schedule SET sched_start = %s WHERE sched_id = %s", (self.start, self.id))
+		else:
+			raise Exception("Cannot change the start time of a used producer.")
+
+	def change_end(self, new_end):
+		if not self.used:
+			self.end = new_end
+			db.c.update("UPDATE r4_schedule SET sched_end = %s WHERE sched_id = %s", (self.end, self.id))
 		else:
 			raise Exception("Cannot change the start time of a used producer.")
 

@@ -34,6 +34,15 @@ class OneUpProducer(event.BaseProducer):
 			self.start_actual = time.time()
 			self._update_length()
 
+	def change_start(self, new_start):
+		if not self.used:
+			length = self.end - self.start
+			self.start = new_start
+			self.end = self.start + length
+			db.c.update("UPDATE r4_schedule SET sched_start = %s, sched_end = %s WHERE sched_id = %s", (self.start, self.end, self.id))
+		else:
+			raise Exception("Cannot change the start time of a used producer.")
+
 	def _update_length(self):
 		length = db.c.fetch_var("SELECT SUM(song_length) FROM r4_one_ups JOIN r4_songs USING (song_id) WHERE sched_id = %s GROUP BY sched_id", (self.id,))
 		if not length:
