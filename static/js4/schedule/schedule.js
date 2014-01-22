@@ -45,7 +45,7 @@ var Schedule = function() {
 
 	var shift_next_header = function() {
 		if (next_headers.length == 0) {
-			var new_header = $el("div", { "class": "timeline_header" });
+			var new_header = $el("a", { "class": "timeline_header" });
 			Fx.delay_css_setting(new_header, "opacity", 1);
 			var new_bar = $el("div", { "class": "timeline_header_bar" });
 			Fx.delay_css_setting(new_bar, "opacity", 1);
@@ -60,9 +60,25 @@ var Schedule = function() {
 		}
 		else if ($l_has(evt.type)) {
 			next_header.textContent = $l("Coming_Up") + " - " + $l(evt.type);
+			if (evt.name) {
+				next_header.textContent += " - " + evt.name;
+			}
+		}
+		else if (evt.name) {
+			next_header.textContent = $l("Coming_Up") + " - " + evt.name;
 		}
 		else {
 			next_header.textContent = $l("Coming_Up");
+		}
+		if (evt.data.url) {
+			next_header.setAttribute("href", evt.data.url);
+			next_header.setAttribute("target", "_blank");
+			Formatting.linkify_external(next_header);
+		}
+		else {
+			Formatting.unlinkify(next_header);
+			next_header.removeAttribute("href");
+			next_header.removeAttribute("target");
 		}
 	};
 
@@ -100,8 +116,8 @@ var Schedule = function() {
 			if (i == sched_next.length - 1) {
 				this_next_header = shift_next_header();
 			}
-			// if there's no name (i.e. election!), if the types match, or the names don't match, use a header
-			else if (!sched_next[i].name || (sched_next[i].type != sched_next[i + 1].type) || (sched_next[i].name != sched_next[i + 1].name)) {
+			// if there's no name, if the types don't match, or the names don't match, use a header
+			else if ((sched_next[i].type == "Election") || !sched_next[i].name || (sched_next[i].type != sched_next[i + 1].type) || (sched_next[i].name != sched_next[i + 1].name)) {
 				this_next_header = shift_next_header();
 			}
 			else {

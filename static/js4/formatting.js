@@ -54,16 +54,17 @@ var Formatting = function() {
 	};
 
 	self.linkify_external = function(el) {
-		el.setAttribute("class", el.getAttribute("class") + " new_window");
-	};
-
-	self.linkify_popup = function(el) {
-		el.setAttribute("class", el.getAttribute("class") + " external_link");
+		$add_class(el, "link_external");
 	};
 
 	self.linkify = function(el) {
-		el.setAttribute("class", el.getAttribute("class") + " link");
+		$add_class(el, "link");
 	};
+
+	self.unlinkify = function(el) {
+		$remove_class(el, "link");
+		$remove_class(el, "link_external");
+	}
 
 	// from lehelk: http://web.archive.org/web/20120918093154/http://lehelk.com/2011/05/06/script-to-remove-diacritics/
 	var diacritic_map = [

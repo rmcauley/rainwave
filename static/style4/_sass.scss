@@ -74,6 +74,10 @@ html, body {
 	position: absolute;
 }
 
+a {
+	text-decoration: none;
+}
+
 .unselectable * {
 	-webkit-user-select: none;
 	-khtml-user-select: none;
