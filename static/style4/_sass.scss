@@ -47,6 +47,10 @@ html, body {
     overflow: hidden;
 }
 
+body.small_screen {
+	font-size: smaller;
+}
+
 #sizable_body {
 	overflow: hidden;
 }

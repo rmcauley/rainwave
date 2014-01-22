@@ -29,17 +29,38 @@
 	@include transition(opacity);
 }
 
-.timeline_song .title, .timeline_song .album, .timeline_song .artists {
-	margin-left: 60px;
+.timeline_song .title_group, .timeline_song .album_group {
+	clear: right;
+}
+
+.timeline_song .title, .timeline_song .album, .timeline_song .artists, .timeline_song .requester {
+	margin-left: 80px;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
 }
 
+body.small_screen .timeline_song .title, body.small_screen .timeline_song .album, body.small_screen .timeline_song .artists, body.small_screen .timeline_song .requester {
+	margin-left: 65px;
+}
+
 .timeline_song .art {
 	float: left;
-	max-width: 52px;
-	max-height: 52px;
+	max-width: 70px;
+	max-height: 70px;
+}
+
+body.small_screen .timeline_song .art {
+	max-width: 55px;
+	max-height: 55px;
+}
+
+.timeline_song .requester {
+	margin-left: 95px;
+}
+
+body.small_screen .timeline_song .requester {
+	margin-left: 80px;
 }
 
 .timeline_header {

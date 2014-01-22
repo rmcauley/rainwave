@@ -8,6 +8,11 @@ function _on_resize(e) {
 
 function initialize() {
 	"use strict";
+
+	if (document.documentElement.clientWidth <= 1440) {
+		$add_class(document.body, "small_screen");
+	} 
+
 	var get_vars = {};
 	// http://papermashup.com/read-url-get-variables-withjavascript/
 	var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -21,6 +26,7 @@ function initialize() {
 	API.add_callback(function(json) { User = json; }, "user");
 
 	// Prefs does not need an initialize() - it's loaded with the page
+	RatingControl.initialize();
 	Fx.initialize();
 	ErrorHandler.initialize();
 	Clock.initialize();

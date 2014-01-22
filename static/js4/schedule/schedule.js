@@ -54,31 +54,31 @@ var Schedule = function() {
 		return next_headers.shift();
 	};
 
-	var set_next_header_text = function(next_header, evt) {
+	var set_header_text = function(default_text, header, evt) {
 		if (evt.type == "OneUp") {
-			next_header.textContent = $l("Coming_Up") + " - " + evt.name + " " + $l("Power_Hour");
+			header.textContent = default_text + " - " + evt.name + " " + $l("Power_Hour");
 		}
 		else if ($l_has(evt.type)) {
-			next_header.textContent = $l("Coming_Up") + " - " + $l(evt.type);
+			header.textContent = default_text + " - " + $l(evt.type);
 			if (evt.name) {
-				next_header.textContent += " - " + evt.name;
+				header.textContent += " - " + evt.name;
 			}
 		}
 		else if (evt.name) {
-			next_header.textContent = $l("Coming_Up") + " - " + evt.name;
+			header.textContent = default_text + " - " + evt.name;
 		}
 		else {
-			next_header.textContent = $l("Coming_Up");
+			header.textContent = default_text;
 		}
 		if (evt.data.url) {
-			next_header.setAttribute("href", evt.data.url);
-			next_header.setAttribute("target", "_blank");
-			Formatting.linkify_external(next_header);
+			header.setAttribute("href", evt.data.url);
+			header.setAttribute("target", "_blank");
+			Formatting.linkify_external(header);
 		}
 		else {
-			Formatting.unlinkify(next_header);
-			next_header.removeAttribute("href");
-			next_header.removeAttribute("target");
+			Formatting.unlinkify(header);
+			header.removeAttribute("href");
+			header.removeAttribute("target");
 		}
 	};
 
@@ -124,7 +124,7 @@ var Schedule = function() {
 				this_next_header = null;
 			}
 			if (this_next_header) {
-				set_next_header_text(this_next_header.header, temp_evt);
+				set_header_text($l("Coming_Up"), this_next_header.header, temp_evt);
 				new_next_headers.push(this_next_header);
 				Fx.delay_css_setting(this_next_header.header, "transform", "translateY(" + running_height + "px");
 				running_height += header_height + 3;
@@ -159,6 +159,7 @@ var Schedule = function() {
 
 		// Current event positioning and updating
 		temp_evt = find_and_update_event(sched_current);
+		set_header_text($l("Now_Playing"), current_header, temp_evt);
 		temp_evt.change_to_now_playing();
 		self.el.appendChild(temp_evt.el);
 		temp_evt.move_to_y(running_height);

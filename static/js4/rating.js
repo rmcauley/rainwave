@@ -153,8 +153,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable) {
 		}
 	}
 
-	// TODO: rating control
-	// RatingControl.add(self)
+	RatingControl.add(self);
 
 	return self;
 };

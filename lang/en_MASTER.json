@@ -262,7 +262,7 @@
    "nowplaying"                                      : "Now Playing",
    "remixdetails"                                    : "Remix Details",
    "songhomepage"                                    : "Song Homepage",
-   "requestedby"                                     : "Requested by %(requester)",
+   "requestedby"                                     : "requested by %(requester)",
    "oncooldownfor"                                   : "On cooldown for %(cooldown).",
    "conflictedwith"                                  : "Conflicted with request by %(requester)",
    "conflictswith"                                   : "Conflicts with request by %(requester).",

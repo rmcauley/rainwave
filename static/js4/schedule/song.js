@@ -52,20 +52,22 @@ var TimelineSong = function(json) {
 			self.elements.art = self.el.appendChild($el("img", { "class": "art", "src": self.data.albums[0].art + "_120.jpg" }));
 		}
 		
-		self.elements.song_rating = self.el.appendChild(song_rating.el);
-		self.elements.title = self.el.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
-		self.elements.title.addEventListener("click", vote, false);
+		self.elements.title_group = self.el.appendChild($el("div", { "class": "title_group" }));
+		self.elements.song_rating = self.elements.title_group.appendChild(song_rating.el);
+		self.elements.title = self.elements.title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
+		self.elements.title.addEventListener("click", vote);
 		
+		self.elements.album_group = self.el.appendChild($el("div", { "class": "album_group" }));
+		self.elements.album_rating = self.elements.album_group.appendChild(album_rating.el);
+		self.elements.album = self.elements.album_group.appendChild($el("div", { "class": "album", "textContent": self.data.albums[0].name }));
+		// TODO: linkify album
+
 		if (self.data.elec_request_username) {
 			self.elements.requester = self.el.appendChild($el("div", { 
 				"class": "requester",
 				"textContent": $l("requestedby", { "requester": self.data.elec_request_username })
 			}));
 		}
-		
-		self.elements.album_rating = self.el.appendChild(album_rating.el);
-		self.elements.album = self.el.appendChild($el("div", { "class": "album", "textContent": self.data.albums[0].name }));
-		// TODO: linkify album
 		
 		// TODO: artists
 		update_html_classes();
