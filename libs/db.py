@@ -383,6 +383,7 @@ def create_tables():
 		CREATE TABLE r4_song_artist	( \
 			song_id					INTEGER		NOT NULL, \
 			artist_id				INTEGER		NOT NULL, \
+			artist_order			SMALLINT    DEFAULT 0, \
 			artist_is_tag			BOOLEAN		DEFAULT TRUE \
 		)")
 	# c.create_idx("r4_song_artist", "song_id")		# handled by create_delete_fk

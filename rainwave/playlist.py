@@ -354,7 +354,11 @@ class Song(object):
 		new_groups = SongGroup.load_list_from_tag(s.genre_tag)
 		new_albums = Album.load_list_from_tag(s.album_tag)
 
-		for metadata in new_artists + new_groups:
+		i = 0;
+		for metadata in new_artists:
+			metadata.associate_song_id(s.id, order=i)
+			i += 1
+		for metedata in new_groups:
 			metadata.associate_song_id(s.id)
 		if len(new_albums) > 0:
 			new_albums[0].associate_song_id(s.id, sids)
@@ -838,6 +842,8 @@ class AssociatedMetadata(object):
 			self.cool_time = d['cool_override']
 		if d.has_key("name_searchable"):
 			self.data['name_searchable'] = d['name_searchable']
+		if d.has_key("order"):
+			self.data['order'] = d['order']
 
 	def save(self):
 		if not self.id and self.data['name']:
@@ -1251,12 +1257,32 @@ class Album(AssociatedMetadata):
 class Artist(AssociatedMetadata):
 	select_by_name_query = "SELECT artist_id AS id, artist_name AS name, artist_name_searchable AS name_searchable FROM r4_artists WHERE artist_name = %s"
 	select_by_id_query = "SELECT artist_id AS id, artist_name AS name, artist_name_searchable AS name_searchable FROM r4_artists WHERE artist_id = %s"
-	select_by_song_id_query = "SELECT r4_artists.artist_id AS id, r4_artists.artist_name AS name, r4_artists.artist_name_searchable AS name_searchable, r4_song_artist.artist_is_tag AS is_tag FROM r4_song_artist JOIN r4_artists USING (artist_id) WHERE song_id = %s"
+	select_by_song_id_query = "SELECT r4_artists.artist_id AS id, r4_artists.artist_name AS name, r4_artists.artist_name_searchable AS name_searchable, r4_song_artist.artist_is_tag AS is_tag, artist_order AS order FROM r4_song_artist JOIN r4_artists USING (artist_id) WHERE song_id = %s ORDER BY artist_order"
 	disassociate_song_id_query = "DELETE FROM r4_song_artist WHERE song_id = %s AND artist_id = %s"
-	associate_song_id_query = "INSERT INTO r4_song_artist (song_id, artist_id, artist_is_tag) VALUES (%s, %s, %s)"
+	associate_song_id_query = "INSERT INTO r4_song_artist (song_id, artist_id, artist_is_tag, artist_order) VALUES (%s, %s, %s, %s)"
 	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_artist WHERE song_id = %s AND artist_id = %s"
 	check_self_size_query = "SELECT COUNT(song_id) FROM r4_song_artist JOIN r4_songs USING (song_id) WHERE artist_id = %s AND song_verified = TRUE"
 	delete_self_query = "DELETE FROM r4_artists WHERE artist_id = %s"
+
+	# needs to be specialized because of artist_order
+	def associate_song_id(self, song_id, is_tag = None, order = None):
+		if not order and (not "order" in self.data or not self.data['order']):
+			order = db.c.fetch_var("SELECT MAX(artist_order) FROM r4_song_artist WHERE song_id = %s", (song_id,))
+			if not order:
+				order = -1
+			order += 1
+		elif not order:
+			order = self.data['order']
+		self.data['order'] = order
+		if is_tag == None:
+			is_tag = self.is_tag
+		else:
+			self.is_tag = is_tag
+		if db.c.fetch_var(self.has_song_id_query, (song_id, self.id)) > 0:
+			pass
+		else:
+			if not db.c.update(self.associate_song_id_query, (song_id, self.id, is_tag, order)):
+				raise MetadataUpdateError("Cannot associate song ID %s with %s ID %s" % (song_id, self.__class__.__name__, self.id))
 
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_artists", "artist_id")
