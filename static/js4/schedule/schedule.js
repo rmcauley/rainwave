@@ -209,14 +209,14 @@ var Schedule = function() {
 		self.events = new_events;
 
 		if ((new_current_event.end - Clock.time()) > 0) {
-			Clock.set_page_title(new_current_event.name, new_current_event.end);
+			Clock.set_page_title(new_current_event.songs[0].data.albums[0].name + " - " + new_current_event.songs[0].data.title, new_current_event.end);
 
 			time_bar_progress.style.transition = "width 700ms ease-out";
-			Fx.chain_transition(time_bar_progress, "width", "100%", function() {
-				time_bar_progress.style.transition = "width " + (new_current_event.end - Clock.time()) + "s linear";
-				time_bar_progress.style.width = Math.round(((new_current_event.end - Clock.time()) / (new_current_event.data.songs[0].length - 1)) * 100) + "%";
+			time_bar_progress.style.width = Math.round(((new_current_event.end - Clock.time()) / (new_current_event.data.songs[0].length - 1)) * 100) + "%";
+			setTimeout(function() {
+				Fx.delay_css_setting(time_bar_progress, "transition", "width " + (new_current_event.end - Clock.time()) + "s linear");
 				Fx.delay_css_setting(time_bar_progress, "width", "0%");
-			});
+			}, 1000);
 		}
 		Fx.delay_css_setting(time_bar, "transform", "translateY(" + time_bar_y + "px)");
 
