@@ -5,7 +5,6 @@ var TimelineSong = function(json) {
 	self.elements = {};
 
 	var voting_enabled = false;
-	var html_classes = [ "timeline_song" ];
 
 	var song_rating = SongRating(json);
 	var album_rating = AlbumRating(json.albums[0]);
@@ -14,31 +13,12 @@ var TimelineSong = function(json) {
 		if (!voting_enabled) {
 			return;
 		}
-		add_html_class("voting_clicked");
+		$add_class(self.el, "voting_clicked");
 		API.async_get("vote", { "entry_id": self.data.entry_id });
 	};
 
-	var remove_html_class = function(cls) {
-		var i = html_classes.indexOf(cls);
-		if (i != -1) {
-			html_classes.splice(i, 1);
-			update_html_classes();
-		}
-	};
-
-	var add_html_class = function() {
-		if (html_classes.indexOf("voting_voted") == -1) {
-			html_classes.push("voting_voted");
-			update_html_classes();
-		}
-	};
-
-	var update_html_classes = function() {
-		self.el.setAttribute("class", html_classes.join(" "));
-	};
-
 	var draw = function() {
-		self.el = $el("div");
+		self.el = $el("div", { "class": "timeline_song" });
 		
 		self.elements.votes = self.el.appendChild($el("div", { "class": "votes" }));
 		if (self.data.entry_votes) {
@@ -70,8 +50,13 @@ var TimelineSong = function(json) {
 			}));
 		}
 		
-		// TODO: artists
-		update_html_classes();
+		self.elements.artist_group = self.el.appendChild($el("div", { "class": "artist_group" }));
+		Artists.append_spans_from_json(self.elements.artist_group, self.data.artists);
+
+		if (self.data.url && self.data.link_text) {
+			self.elements.xlink = self.el.appendChild($el("a", { "target": "_blank", "href": self.data.url, "textContent": self.data.link_text }));
+			Formatting.linkify_external(self.elements.xlink);
+		}
 	};
 
 	self.update = function(new_json) {
@@ -85,26 +70,26 @@ var TimelineSong = function(json) {
 
 	self.enable_voting = function() {
 		voting_enabled = true;
-		add_html_class("voting_enabled");
+		$add_class(self.el, "voting_enabled");
 	};
 
 	self.disable_voting = function() {
 		voting_enabled = false;
-		remove_html_class("voting_enabled");
+		$remove_class(self.el, "voting_enabled");
 	};
 
 	self.clear_voting_status = function() {
-		remove_html_class("voting_clicked");
-		remove_html_class("voting_registered");
-		remove_html_class("voting_enabled");
+		$remove_class(self.el, "voting_clicked");
+		$remove_class(self.el, "voting_registered");
+		$remove_class(self.el, "voting_enabled");
 	};
 
 	self.register_vote = function() {
-		add_html_class("voting_registered");
+		$add_class(self.el, "voting_registered");
 	};
 
 	self.unregister_vote = function() {
-		remove_html_class("voting_registered");
+		$add_class(self.el, "voting_registered");
 	};
 
 	draw();

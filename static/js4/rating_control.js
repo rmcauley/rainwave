@@ -5,7 +5,7 @@ var RatingControl = function() {
 	var album_ratings = {};
 	
 	var self = {};
-	self.padding_top = $has_class(document.body, "small_screen") ? 1 : 3;
+	self.padding_top = SmallScreen ? 1 : 3;
 
 	self.initialize = function() {
 		API.add_callback(self.rating_user_callback, "rate_result");

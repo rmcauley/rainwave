@@ -32,6 +32,9 @@ var EventBase = function(json) {
 	self.songs = null;
 
 	var changed_to_history = false;
+	var song_normal_height = 70;
+	var song_small_height = 55;
+	var song_height = SmallScreen ? song_small_height : song_normal_height;
 
 	if (json.songs) {
 		self.songs = [];
@@ -53,11 +56,15 @@ var EventBase = function(json) {
 			for (var i = 0; i < max_index; i++) {
 				self.el.appendChild(self.songs[i].el);
 			}
+			self.height = song_height * self.songs.length;
 			if (self.data.used) {
 				changed_to_history = true;
+				self.height = song_height;
 			}
 		}
-		self.height = $measure_el(self.el).height;
+		else {
+			self.height = $measure_el(self.el).height;
+		}
 	};
 
 	self.update = function(json) {
@@ -88,17 +95,29 @@ var EventBase = function(json) {
 		$add_class(self.el, "timeline_next");
 	};
 
+	var solve_now_playing_height = function() {
+		// we must assume 130px when dealing with now playing thanks to transitions eating into time
+		// TODO: alter this preset number for small_body
+		self.height = SmallScreen ? 90 : 130;
+		// assume all song heights are the same (THEY SHOULD BE...)
+		// yes it makes me a bit iffy but I refuse to incur any more offsetHeight reflow penalties here
+		self.height = self.height + (song_height * (self.songs.length - 1));
+	};
+
 	self.change_to_now_playing = function() {
 		$remove_class(self.el, "timeline_next");
-		$add_class(self.el, "timeline_now_playing");
-		if (!self.songs || (self.songs.length == 1)) return;
-
-		self.songs.sort(function(a, b) { return a.data.entry_position - b.data.entry_position; });
-		for (var i = 0; i < self.songs.length; i++) {
-			self.el.appendChild(self.songs[i].el);
-		}
-		self.height = $measure_el(self.el).height;
 		changed_to_history = false;
+		if (self.songs && (self.songs.length > 0)) {
+			// re-order song positioning so the now playing item is on top
+			// TODO: make this animated and spiffo!
+			self.songs.sort(function(a, b) { return a.data.entry_position - b.data.entry_position; });
+			for (var i = 0; i < self.songs.length; i++) {
+				self.el.appendChild(self.songs[i].el);
+			}
+			solve_now_playing_height();
+			$add_class(self.songs[0].el, "timeline_now_playing_song");
+		}
+		$add_class(self.el, "timeline_now_playing");
 	};
 
 	self.change_to_history = function() {
@@ -107,14 +126,25 @@ var EventBase = function(json) {
 			for (var i = 1; i < self.songs.length; i++) {
 				Fx.remove_element(self.songs[i].el);
 			}
-			self.height = $measure_el(self.songs[0].el).height;
+			self.height = song_height;
 		}
 		changed_to_history = true;
+
+		$remove_class(self.el, "timeline_now_playing");
+		if (self.songs && (self.songs.length > 0)) {
+			$remove_class(self.songs[0].el, "timeline_now_playing_song");
+		}
+		$remove_class(self.el, "timeline_next");
+		$add_class(self.el, "timeline_history");
 	};
 
 	self.reflow = function() {
-		if (changed_to_history && self.songs) {
-			self.height = $measure_el(self.songs[0].el).height;	
+		song_height = SmallScreen ? song_small_height : song_normal_height;
+		if ($has_class(self.el, "timeline_now_playing")) {
+			solve_now_playing_height();
+		}
+		else if (changed_to_history && self.songs) {
+			self.height = song_height;
 		}
 		else {
 			self.height = $measure_el(self.el).height;

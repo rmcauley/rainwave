@@ -46,7 +46,12 @@ var Scrollbar = function() {
 		self.parent_update_scroll_height = function(force_height) {
 			scroll_height = force_height || element.scrollHeight;
 			offset_height = element.offsetHeight;
-			max_scroll_top = scroll_height - offset_height;
+			max_scroll_top = Math.max(scroll_height - offset_height, 0);
+
+			if (self.scroll_top > max_scroll_top) {
+				self.scroll_top = max_scroll_top;
+				element.scrollTop = max_scroll_top;
+			}
 
 			// updates the handle to be the correct percentage of the screen, never less than 10% for size issues
 			if ((scroll_height === 0) || (offset_height === 0) || (scroll_height <= offset_height)) {

@@ -17,15 +17,10 @@
 	@include transition(height, opacity, transform);
 }
 
-.timeline_history {
-	opacity: .8;
-}
-
 .timeline_song {
 	clear: left;
 	padding-left: 5px;
 	padding-right: 5px;
-	min-height: 52px;
 	@include transition(opacity);
 }
 
@@ -33,31 +28,37 @@
 	clear: right;
 }
 
-.timeline_song .title, .timeline_song .album, .timeline_song .artists, .timeline_song .requester {
-	margin-left: 80px;
+.timeline_song .title_group, .timeline_song .album_group, .timeline_song .artist_group, .timeline_song .requester, .timeline_song .artist_group {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
 }
 
-body.small_screen .timeline_song .title, body.small_screen .timeline_song .album, body.small_screen .timeline_song .artists, body.small_screen .timeline_song .requester {
-	margin-left: 65px;
-}
-
 .timeline_song .art_container {
 	float: left;
+	margin-right: 10px;
 	width: 70px;
 	height: 70px;
 	text-align: center;
-	background: #000;
+	@include transition(width);
 }
 
 .art_container .art {
 	max-width: 70px;
 	max-height: 70px;
+	@include transition(max-width, max-height);
 }
 
-body.small_screen .timeline_song .art {
+.timeline_song .artist_group {
+	display: none;
+}
+
+body.small_screen .art_container {
+	width: 55px;
+	height: 55px;
+}
+
+body.small_screen .art {
 	max-width: 55px;
 	max-height: 55px;
 }
@@ -69,6 +70,51 @@ body.small_screen .timeline_song .art {
 body.small_screen .timeline_song .requester {
 	margin-left: 80px;
 }
+
+/* NOW PLAYING MODIFICATIONS */
+
+.timeline_now_playing .timeline_song {
+	opacity: 0.7;
+}
+
+.timeline_now_playing .timeline_now_playing_song {
+	opacity: 1;
+}
+
+.timeline_now_playing_song .artist_group {
+	display: block;
+}
+
+.timeline_now_playing_song .art_container {
+ 	width: 120px;
+ 	height: 120px;
+ 	margin-bottom: 10px;
+}
+
+.timeline_now_playing_song .art {
+ 	max-width: 120px;
+ 	max-height: 120px;
+}
+
+body.small_screen .timeline_now_playing_song .art_container {
+	width: 85px;
+	height: 85px;
+}
+
+body.small_screen .timeline_now_playing_song .art {
+	max-width: 85px;
+	max-height: 85px;
+}
+
+.timeline_now_playing_song .title_group {
+	font-weight: bold;
+}
+
+.timeline_now_playing_song > div {
+	margin-bottom: 5px;
+}
+
+/* END NOW PLAYING MODIFICATIONS */
 
 .timeline_header {
 	z-index: 100;

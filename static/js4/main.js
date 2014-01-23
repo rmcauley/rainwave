@@ -1,19 +1,27 @@
 var User;
+var SmallScreen = false;
 
 function _on_resize(e) {
 	"use strict";
-    $id('sizable_body').style.height = (window.innerHeight - $id('menu').offsetHeight) + "px";
-    if ((document.documentElement.clientWidth <= 1400) && !($has_class(document.body, "small_screen"))) {
+	$id('sizable_body').style.height = (window.innerHeight - $id('menu').offsetHeight) + "px";
+	var screen_size_changed = false;
+	if ((document.documentElement.clientWidth <= 1400) && !SmallScreen) {
 		$add_class(document.body, "small_screen");
-		Schedule.reflow();
+		SmallScreen = true;
+		screen_size_changed = true;
 		RatingControl.change_padding_top(1);
 	} 
-	else if ((document.documentElement.clientWidth > 1400) && $has_class(document.body, "small_screen")) {
+	else if ((document.documentElement.clientWidth > 1400) && SmallScreen) {
 		$remove_class(document.body, "small_screen");
-		Schedule.reflow();
+		SmallScreen = false;
+		screen_size_changed = true;
 		RatingControl.change_padding_top(3);
 	}
-    Scrollbar.refresh_all_scrollbars();
+	Scrollbar.refresh_all_scrollbars();
+	// this has to go after due to scrollbar funkiness with the schedule
+	if (screen_size_changed) {
+		Schedule.reflow();
+	}
 }
 
 function initialize() {

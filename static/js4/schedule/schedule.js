@@ -116,7 +116,6 @@ var Schedule = function() {
 		// this actually plays nicely into how .insertBefore works in DOM
 		var new_next_headers = [];
 		var this_next_header;
-		var this_next_
 		var temp_evt;
 		for (i = sched_next.length - 1; i >= 0; i--) {
 			temp_evt = find_and_update_event(sched_next[i]);
@@ -139,11 +138,11 @@ var Schedule = function() {
 				running_height += header_height + 3;
 				Fx.delay_css_setting(this_next_header.bar, "transform", "translateY(" + running_height + "px");
 				running_height += padding - header_padding_pullback;
-				self.el.appendChild(this_next_header.header);
-				self.el.appendChild(this_next_header.bar);
+				if (!this_next_header.header.parentNode) self.el.appendChild(this_next_header.header);
+				if (!this_next_header.bar.parentNode) self.el.appendChild(this_next_header.bar);
 			}
 			temp_evt.move_to_y(running_height);
-			self.el.appendChild(temp_evt.el);
+			if (!temp_evt.el.parentNode) self.el.appendChild(temp_evt.el);
 			running_height += temp_evt.height;
 			if (this_next_header) {
 				running_height += padding;
@@ -169,8 +168,8 @@ var Schedule = function() {
 		// Current event positioning and updating
 		temp_evt = find_and_update_event(sched_current);
 		set_header_text($l("Now_Playing"), current_header, temp_evt);
+		if (!temp_evt.el.parentNode) self.el.appendChild(temp_evt.el);
 		temp_evt.change_to_now_playing();
-		self.el.appendChild(temp_evt.el);
 		temp_evt.move_to_y(running_height);
 		running_height += temp_evt.height + padding;
 		new_events.push(temp_evt);
@@ -189,7 +188,7 @@ var Schedule = function() {
 			temp_evt.change_to_history();
 			$remove_class(temp_evt.el, "timeline_now_playing");
 			$add_class(temp_evt.el, "timeline_history");
-			self.el.appendChild(temp_evt.el);
+			if (!temp_evt.el.parentNode) self.el.appendChild(temp_evt.el);
 			new_events.push(temp_evt);
 			if (o > 0.6) {
 				o -= 0.1;
