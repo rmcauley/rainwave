@@ -44,8 +44,15 @@ body.small_screen .timeline_song .title, body.small_screen .timeline_song .album
 	margin-left: 65px;
 }
 
-.timeline_song .art {
+.timeline_song .art_container {
 	float: left;
+	width: 70px;
+	height: 70px;
+	text-align: center;
+	background: #000;
+}
+
+.art_container .art {
 	max-width: 70px;
 	max-height: 70px;
 }

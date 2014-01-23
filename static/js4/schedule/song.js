@@ -45,11 +45,12 @@ var TimelineSong = function(json) {
 			self.elements.votes.textContent = self.data.entry_votes;
 		}
 
+		self.elements.art_container = self.el.appendChild($el("div", { "class": "art_container" }));
 		if (!self.data.albums[0].art) {
-			self.elements.art = self.el.appendChild($el("img", { "class": "art", "src": "/static/images4/noart_1.jpg" }));
+			self.elements.art = self.elements.art_container.appendChild($el("img", { "class": "art", "src": "/static/images4/noart_1.jpg" }));
 		}
 		else {
-			self.elements.art = self.el.appendChild($el("img", { "class": "art", "src": self.data.albums[0].art + "_120.jpg" }));
+			self.elements.art = self.elements.art_container.appendChild($el("img", { "class": "art", "src": self.data.albums[0].art + "_120.jpg" }));
 		}
 		
 		self.elements.title_group = self.el.appendChild($el("div", { "class": "title_group" }));
