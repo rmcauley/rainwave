@@ -77,7 +77,7 @@ function $remove_class(el, class_name) {
 }
 
 function $has_class(el, class_name) {
-	if (classes.indexOf(class_name) == -1) {
+	if (el.className.split(" ").indexOf(class_name) == -1) {
 		return false;
 	}
 	return true;

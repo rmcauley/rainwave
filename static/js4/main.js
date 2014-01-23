@@ -3,15 +3,21 @@ var User;
 function _on_resize(e) {
 	"use strict";
     $id('sizable_body').style.height = (window.innerHeight - $id('menu').offsetHeight) + "px";
+    if ((document.documentElement.clientWidth <= 1400) && !($has_class(document.body, "small_screen"))) {
+		$add_class(document.body, "small_screen");
+		Schedule.reflow();
+		RatingControl.change_padding_top(1);
+	} 
+	else if ((document.documentElement.clientWidth > 1400) && $has_class(document.body, "small_screen")) {
+		$remove_class(document.body, "small_screen");
+		Schedule.reflow();
+		RatingControl.change_padding_top(3);
+	}
     Scrollbar.refresh_all_scrollbars();
 }
 
 function initialize() {
 	"use strict";
-
-	if (document.documentElement.clientWidth <= 1440) {
-		$add_class(document.body, "small_screen");
-	} 
 
 	var get_vars = {};
 	// http://papermashup.com/read-url-get-variables-withjavascript/
@@ -19,7 +25,7 @@ function initialize() {
 		get_vars[key] = value;
 	});
 
-	_on_resize(null);
+	_on_resize(null, true);
 	window.addEventListener("resize", _on_resize, false);
 
 	User = BOOTSTRAP.json.user;

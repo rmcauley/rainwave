@@ -58,7 +58,6 @@ div.searchlist > div {
 	word-break: break-all;
 	height: 1.3em;
 	padding: 2px 60px 1px 0px;
-	box-sizing: border-box;
 }
 
 div.searchlist > div.searchtable_key_nav_hover {

@@ -1,10 +1,9 @@
 .rating_site, .rating_user {
 	float: right;
-	clear: right;
 	background-repeat: no-repeat;
-	width: 70px;
+	width: 73px;
 	padding: 0;
-	margin: 4px 0 0 0;
+	margin: 0;
 	height: 1.2em;
 }
 
@@ -24,6 +23,11 @@ body.small_screen .rating_site, body.small_screen .rating_user {
 	@include transition-wtime(200ms, opacity);
 	opacity: 0;
 	position: absolute;
+	padding-top: 3px;
+}
+
+body.small_screen .fave_lined {
+	padding-top: 1px;
 }
 
 .fave_solid {
@@ -31,6 +35,11 @@ body.small_screen .rating_site, body.small_screen .rating_user {
 	position: absolute;
 	@include transition-wtime(200ms, opacity);
 	opacity: 0;
+	padding-top: 3px;
+}
+
+body.small_screen .fave_solid {
+	padding-top: 1px;
 }
 
 .fave_hover .fave_lined {
@@ -63,6 +72,10 @@ body.small_screen .rating_site, body.small_screen .rating_user {
 	padding: 0;
 }
 
+body.small_screen .rating_hover {
+	margin-top: -16px;
+}
+
 .rating_hover_number {
 	text-align: right;
 	font-size: smaller;
@@ -70,4 +83,8 @@ body.small_screen .rating_site, body.small_screen .rating_user {
 	color: $highlight;
 	margin-top: -1px;
 	padding-right: 3px;
+}
+
+body.small_screen .rating_hover {
+	font-size: medium;
 }

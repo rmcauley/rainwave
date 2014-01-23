@@ -31,6 +31,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable) {
 	var fave_lined = self.el.appendChild($el("img", { "class": "fave_lined", "src": "/static/images4/heart_lined.png"}));
 	var current_rating;
 	var effect = Fx.legacy_effect(Fx.Rating, self.el, 400);
+	var offset_left;
 
 	self.reset_rating = function() {
 		if (self.rating_user) {
@@ -49,21 +50,24 @@ var Rating = function(type, id, rating_user, rating, fave, ratable) {
 	};
 
 	var get_rating_from_mouse = function(evt) {
+		if (!offset_left) offset_left = evt.target.offsetLeft;
 		var x = 0;
 		var y = 0;
-		if (evt.offsetX) { x = evt.offsetX;	y = evt.offsetY; }
-		else if (evt.layerX) { x = evt.layerX; y = evt.layerY; }
-
-		// rating_dbg.textContent = x + " -> " + (Math.round(((x - 15) / 10) * 2) / 2);
+		if (evt.offsetX) { x = evt.offsetX - offset_left; y = evt.offsetY; }
+		else if (evt.layerX) { x = evt.layerX - offset_left; y = evt.layerY; }
 
 		if (x <= 18) return 0;		// fave switching
-		else if ((x > 18) && (x <= 24)) return 1;
-		else if (x >= 68) return 5;
-		return Math.round(((x - 15) / 10) * 2) / 2;
+
+		var result = Math.round(((x - 20 + ((18 - y) * .5)) / 10) * 2) / 2;
+		//rating_dbg.textContent = x + " / " + y + " -> " + result;
+		if (result <= 1) return 1;
+		else if (result >= 5) return 5;
+		return result;
 	};
 
 	var on_mouse_move = function(evt) {
 		if (!self.ratable && !User.radio_rate_anything) return;
+
 		var tr = get_rating_from_mouse(evt);
 		if (tr >= 1) {
 			effect.change_to_user_rating();
@@ -142,14 +146,15 @@ var Rating = function(type, id, rating_user, rating, fave, ratable) {
 	self.reset_fave();
 
 	if (User.user_id > 1) {
-		fave_solid.addEventListener("mouseover", effect.fave_mouse_over, false);
-		fave_solid.addEventListener("mouseout", self.reset_fave, false);
+		self.el.addEventListener("mouseover", effect.fave_mouse_over);
+		self.el.addEventListener("mouseout", self.reset_fave);
 
 		if (type == "song") {
-			fave_solid.addEventListener("mouseout", self.hide_hover);
-			fave_solid.addEventListener("mousemove", on_mouse_move, false);
-			fave_solid.addEventListener("mouseout", self.reset_rating, false);
-			fave_solid.addEventListener("click", click, false);	
+			self.el.addEventListener("mouseout", self.hide_hover);
+			self.el.addEventListener("mousemove", on_mouse_move);
+			self.el.addEventListener("mouseout", self.reset_rating);
+			self.el.addEventListener("click", click);
+			self.el.addEventListener("mouseout", function() { offset_left = null });
 		}
 	}
 

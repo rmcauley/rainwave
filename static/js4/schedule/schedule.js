@@ -23,7 +23,7 @@ var Schedule = function() {
 		API.add_callback(function(json) { sched_current = json; }, "sched_current");
 		API.add_callback(function(json) { sched_next = json; }, "sched_next");
 		API.add_callback(function(json) { sched_history = json; }, "sched_history");
-		API.add_callback(update, "_SYNC_COMPLETE");
+		API.add_callback(self.update, "_SYNC_COMPLETE");
 
 		history_header = $id("timeline_header_history");
 		history_header.textContent = $l("History");
@@ -82,7 +82,16 @@ var Schedule = function() {
 		}
 	};
 
-	var update = function() {
+	self.reflow = function() {
+		if (!header_height) return;
+		header_height = $measure_el(history_header).height - 8;	// -8 ties into the .header_height definition in timeline.css
+		for (var i in self.events) {
+			self.events[i].reflow();
+		}
+		self.update();
+	};
+
+	self.update = function() {
 		var new_events = [];
 		var new_current_event;
 		var i;

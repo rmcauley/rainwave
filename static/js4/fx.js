@@ -223,7 +223,7 @@ var Fx = function() {
 
 		r.update = function(now) {
 			// when updating here also make sure to update lists.js::AlbumList.update_item_element
-			element.style.backgroundPosition = "18px " + (-(Math.round((Math.round(now * 10) / 2)) * 30)) + "px";
+			element.style.backgroundPosition = "18px " + (-(Math.round((Math.round(now * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
 		};
 
 		return r;

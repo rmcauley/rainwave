@@ -91,7 +91,6 @@ var EventBase = function(json) {
 	self.change_to_now_playing = function() {
 		$remove_class(self.el, "timeline_next");
 		$add_class(self.el, "timeline_now_playing");
-		self.name = self.songs[0].data.albums[0].name + " - " + self.songs[0].data.title;
 		if (!self.songs || (self.songs.length == 1)) return;
 
 		self.songs.sort(function(a, b) { return a.data.entry_position - b.data.entry_position; });
@@ -111,6 +110,15 @@ var EventBase = function(json) {
 			self.height = $measure_el(self.songs[0].el).height;
 		}
 		changed_to_history = true;
+	};
+
+	self.reflow = function() {
+		if (changed_to_history && self.songs) {
+			self.height = $measure_el(self.songs[0].el).height;	
+		}
+		else {
+			self.height = $measure_el(self.el).height;
+		}
 	};
 
 	self.enable_voting = function() {

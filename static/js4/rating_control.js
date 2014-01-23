@@ -5,6 +5,7 @@ var RatingControl = function() {
 	var album_ratings = {};
 	
 	var self = {};
+	self.padding_top = $has_class(document.body, "small_screen") ? 1 : 3;
 
 	self.initialize = function() {
 		API.add_callback(self.rating_user_callback, "rate_result");
@@ -97,6 +98,21 @@ var RatingControl = function() {
 		rating.el.setAttribute("id", rating.html_id);
 		return rating.html_id;
 	};
+
+	self.change_padding_top = function(new_padding_top) {
+		self.padding_top = new_padding_top;
+		var i, j;
+		for (i in song_ratings) {
+			for (j in song_ratings[i]) {
+				song_ratings[i][j].reset_rating();
+			}
+		}
+		for (i in album_ratings) {
+			for (j in album_ratings[i]) {
+				album_ratings[i][j].reset_rating();
+			}
+		}
+	}
 
 	return self;
 }();
