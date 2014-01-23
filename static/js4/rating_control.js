@@ -29,8 +29,8 @@ var RatingControl = function() {
 	var rating_update_song = function(song_id, rating, rating_user) {
 		if (song_id in song_ratings) {
 			for (var i = 0; i < song_ratings[song_id].length; i++) {
-				if (rating_user) song_ratings[song_id].update_user_rating(rating_user);
-				if (rating) song_ratings[song_id].update_user_rating(rating);
+				if (rating_user) song_ratings[song_id][i].update_user_rating(rating_user);
+				if (rating) song_ratings[song_id][i].update_user_rating(rating);
 			}
 		}
 	};
