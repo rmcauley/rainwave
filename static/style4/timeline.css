@@ -28,7 +28,7 @@
 	clear: right;
 }
 
-.timeline_song .title_group, .timeline_song .album_group, .timeline_song .artist_group, .timeline_song .requester, .timeline_song .artist_group {
+.timeline_song .title, .timeline_song .album, .timeline_song .artist_group, .timeline_song .requester {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
