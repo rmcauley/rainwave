@@ -50,7 +50,7 @@ var Scrollbar = function() {
 			var original_scroll_place = self.scroll_top == 0 ? 0 : self.scroll_top / max_scroll_top;
 			scroll_height = force_height;
 			if (!scroll_height) {
-				handle.style.top = "0px";
+				handle.style.top = self.margin_top + "px";
 				scroll_height = element.scrollHeight;
 			}
 			offset_height = element.offsetHeight;
