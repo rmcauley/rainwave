@@ -58,6 +58,7 @@ div.searchlist > div {
 	word-break: break-all;
 	height: 1.3em;
 	padding: 2px 60px 1px 0px;
+	border-bottom: solid 1px #1f2022;
 }
 
 div.searchlist > div.searchtable_key_nav_hover {

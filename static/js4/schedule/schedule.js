@@ -41,6 +41,7 @@ var Schedule = function() {
 		Fx.delay_css_setting(time_bar, "opacity", 1);
 
 		timeline_scrollbar = Scrollbar.new(self.el);
+		timeline_scrollbar.auto_resize = false;
 	};
 
 	var shift_next_header = function() {

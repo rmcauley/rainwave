@@ -6,12 +6,15 @@ var Scrollbar = function() {
 
 	self.refresh_all_scrollbars = function() {
 		for (var i = 0; i < scrollbars.length; i++) {
-			scrollbars[i].parent_update_scroll_height();
+			if (scrollbars[i].auto_resize) {
+				scrollbars[i].parent_update_scroll_height();
+			}
 		}
 	};
 
 	self.new = function(element) {
 		var self = {};
+		self.auto_resize = true;
 		self.scroll_top = 0;
 		self.margin_top = 0;
 		var handle = element.insertBefore($el("div", { "class": "scrollbar"}), element.firstChild);
@@ -44,7 +47,12 @@ var Scrollbar = function() {
 		};
 
 		self.parent_update_scroll_height = function(force_height) {
-			scroll_height = force_height || element.scrollHeight;
+			var original_scroll_place = self.scroll_top == 0 ? 0 : self.scroll_top / max_scroll_top;
+			scroll_height = force_height;
+			if (!scroll_height) {
+				handle.style.top = "0px";
+				scroll_height = element.scrollHeight;
+			}
 			offset_height = element.offsetHeight;
 			max_scroll_top = Math.max(scroll_height - offset_height, 0);
 
@@ -57,6 +65,7 @@ var Scrollbar = function() {
 			if ((scroll_height === 0) || (offset_height === 0) || (scroll_height <= offset_height)) {
 				$add_class(handle, "scrollbar_invisible");
 				handle.style.height = "0px";
+				self.scroll_to(0);
 				scroll_enabled = false;
 			}
 			else {
@@ -64,7 +73,7 @@ var Scrollbar = function() {
 				handle_height = Math.max(Math.round((offset_height - self.margin_top) / scroll_height * offset_height), 70);
 				scrollpx_per_handlepx = max_scroll_top / (offset_height - self.margin_top - handle_height - 3);
 				handle.style.height = handle_height + "px";
-				self.parent_update_handle_position();
+				self.scroll_to(original_scroll_place * max_scroll_top);
 				scroll_enabled = true;
 			}
 
@@ -80,7 +89,7 @@ var Scrollbar = function() {
 		self.update_handle_position = self.parent_update_handle_position;
 
 		var mouse_move = function(e) {
-			var new_scroll_top = original_scroll_top + ((e.screenY - original_mouse_y) * scrollpx_per_handlepx);
+			var new_scroll_top = Math.round(original_scroll_top + ((e.screenY - original_mouse_y) * scrollpx_per_handlepx));
 			if (new_scroll_top > max_scroll_top) {
 				new_scroll_top = max_scroll_top;
 			}
