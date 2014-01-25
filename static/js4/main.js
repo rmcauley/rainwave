@@ -17,6 +17,7 @@ function _on_resize(e) {
 		screen_size_changed = true;
 		RatingControl.change_padding_top(3);
 	}
+	PlaylistLists.on_resize();
 	Scrollbar.refresh_all_scrollbars();
 	// this has to go after due to scrollbar funkiness with the schedule
 	if (screen_size_changed) {
@@ -33,7 +34,7 @@ function initialize() {
 		get_vars[key] = value;
 	});
 
-	_on_resize(null, true);
+	_on_resize(null);
 	window.addEventListener("resize", _on_resize, false);
 
 	User = BOOTSTRAP.json.user;
