@@ -88,9 +88,6 @@ var API = function() {
 		if (sync_stopped) {
 			return;
 		}
-		if (sync.readyState !== 4) {
-			return;
-		}
 		// if the API is outputting JSON it always outputs status code 200
 		// the error code, if any, lives in error.code
 		if (sync.status != 200) {
@@ -122,9 +119,6 @@ var API = function() {
 	};
 
 	var async_complete = function() {
-		if (sync.readyState !== 4) {
-			return;
-		}
 		perform_callbacks(JSON.parse(async.responseText));
 		self.async_get();
 	};
@@ -133,7 +127,7 @@ var API = function() {
 		if (action && params) {
 			async_queue.push({ "action": action, "params": params });
 		}
-		if (async.readyState == 4) {
+		if ((async.readyState === 0) || (async.readyState === 4)) {
 			var to_do = async_queue.shift();
 			if (to_do) {
 				async.open("POST", url + to_do.action, true);

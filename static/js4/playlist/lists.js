@@ -82,6 +82,15 @@ var AlbumList = function(scroller, offset_width) {
 	self.tab_el = $el("li", { "textContent": $l("album_list") });
 	self.tab_el.addEventListener("click", function() { PlaylistLists.change_visible_list(self); }, false);
 
+	var update_rating = function(album_id, rating, rating_user) {
+		if (album_id in self.data) {
+			if (rating) self.data[album_id].rating = rating;
+			if (rating_user) self.data[album_id].rating_user = rating_user;
+			self.update_item_element(self.data[album_id]);
+		}
+	};
+	RatingControl.album_rating_callback = update_rating;
+
 	self.draw_entry = function(item) {
 		var item_el = document.createElement("div", { "class": "searchlist_entry" });
 		item_el.textContent = item.name;

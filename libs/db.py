@@ -260,7 +260,7 @@ def create_tables():
 		CREATE TABLE r4_albums ( \
 			album_id				SERIAL		PRIMARY KEY, \
 			album_name				TEXT		, \
-			album_name_searchable	TEXT 		, \
+			album_name_searchable	TEXT 		NOT NULL, \
 			album_rating				REAL		DEFAULT 0, \
 			album_rating_count			INTEGER		DEFAULT 0, \
 			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
@@ -274,7 +274,7 @@ def create_tables():
 			song_scanned				BOOLEAN		DEFAULT TRUE, \
 			song_filename				TEXT		, \
 			song_title				TEXT		, \
-			song_title_searchable	TEXT		, \
+			song_title_searchable	TEXT		NOT NULL, \
 			song_link				TEXT		, \
 			song_link_text				TEXT		, \
 			song_length				SMALLINT	, \
@@ -376,7 +376,7 @@ def create_tables():
 		CREATE TABLE r4_artists		( \
 			artist_id				SERIAL		NOT NULL PRIMARY KEY, \
 			artist_name				TEXT		, \
-			artist_name_searchable	TEXT 		\
+			artist_name_searchable	TEXT 		NOT NULL \
 		)")
 
 	c.update(" \
@@ -395,7 +395,7 @@ def create_tables():
 		CREATE TABLE r4_groups ( \
 			group_id				SERIAL		PRIMARY KEY, \
 			group_name				TEXT		, \
-			group_name_searchable	TEXT 		, \
+			group_name_searchable	TEXT 		NOT NULL, \
 			group_elec_block		SMALLINT, \
 			group_cool_time			SMALLINT	DEFAULT 900 \
 		)")
