@@ -252,6 +252,9 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 	};
 
 	self.key_nav_add_character = function(character) {
+		if (search_string.length == 0) {
+			scrollbar.scroll_to(0);
+		}
 		search_string = search_string + character;
 		self.search_box_input.textContent = search_string;
 		$add_class(self.search_box_input, "searchlist_input_active");
