@@ -97,8 +97,19 @@ var AlbumList = function(scroller, offset_width) {
 	};
 	RatingControl.album_rating_callback = update_rating;
 
+	var open_element = function(e) {
+		if ("_id" in e.target) {
+			self.open_id(e.target._id);
+		}
+	};
+	self.el.addEventListener("click", open_element);
+
+	self.open_id = function(id) {
+		DetailView.open_album(id);
+	};
+
 	self.draw_entry = function(item) {
-		var item_el = document.createElement("div", { "class": "searchlist_entry" });
+		var item_el = document.createElement("div");
 		item_el.textContent = item.name;
 		return item_el;
 	};

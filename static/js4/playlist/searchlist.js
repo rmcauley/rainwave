@@ -1,6 +1,7 @@
 // REQUIRED EXTERNAL DEFINITIONS FOR USING THIS OBJECT FACTORY:
 //	draw_entry(item);				// return a new element (will be using display: block, you SHOULD make a div)
 //  update_item_element(item);		// return nothing, just update text/etc in the element you created above
+//  open_id(id);					// open what the user has selected
 
 // OPTIONAL FUNCTIONS you can overwrite:
 //	after_update(json, data, sorted_data);
@@ -219,7 +220,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 
 	self.key_nav_enter = function() {
 		if (current_key_nav_element) {
-			// TODO: open album
+			self.open_id(current_key_nav_element._id);
 			return true;
 		}
 		return false;

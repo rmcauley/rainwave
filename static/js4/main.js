@@ -19,6 +19,7 @@ function _on_resize(e) {
 	}
 	PlaylistLists.on_resize();
 	Scrollbar.refresh_all_scrollbars();
+	DetailView.on_resize();
 	// this has to go after due to scrollbar funkiness with the schedule
 	if (screen_size_changed) {
 		Schedule.reflow();
@@ -47,6 +48,7 @@ function initialize() {
 	Clock.initialize();
 	Schedule.initialize();
 	PlaylistLists.initialize();
+	DetailView.initialize();
 
 	// API comes last since it will do all the callbacks to initialized
 	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.user_id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);

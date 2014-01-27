@@ -7,7 +7,7 @@
 
 // ******* SEE fx.js FOR BACKGROUND POSITIONING AND FAVE SHOWING/HIDING
 
-var Rating = function(type, id, rating_user, rating, fave, ratable) {
+var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) {
 	"use strict";
 	if ((type != "song") && (type != "album")) return undefined;
 	if (isNaN(id)) return undefined;
@@ -24,6 +24,10 @@ var Rating = function(type, id, rating_user, rating, fave, ratable) {
 		"ratable": ratable,
 		"el": $el("div")
 	};
+
+	if (force_hdpi) {
+		$add_class(self.el, "hdpi");
+	}
 
 	var hover_box = $el("div", { "class": "rating_hover" });
 	var hover_number = hover_box.appendChild($el("div", { "class": "rating_hover_number" }));

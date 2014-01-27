@@ -38,13 +38,13 @@ $transtime: 700ms ease-out;
 }
 
 html, body {
-    height: 100%;
-    background: $background;
-    color: $text;
-    margin: 0;
-    padding: 0; 
-    font-family: Helvetica, sans-serif;
-    overflow: hidden;
+	height: 100%;
+	color: $text;
+	margin: 0;
+	padding: 0; 
+	font-family: Helvetica, sans-serif;
+	overflow: hidden;
+	background: #1c1d1f;
 }
 
 body.small_screen {

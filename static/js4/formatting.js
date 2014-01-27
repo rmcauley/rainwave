@@ -55,15 +55,18 @@ var Formatting = function() {
 
 	self.linkify_external = function(el) {
 		$add_class(el, "link_external");
+		return el;
 	};
 
 	self.linkify = function(el) {
 		$add_class(el, "link");
+		return el;
 	};
 
 	self.unlinkify = function(el) {
 		$remove_class(el, "link");
 		$remove_class(el, "link_external");
+		return el;
 	}
 
 	// from lehelk: http://web.archive.org/web/20120918093154/http://lehelk.com/2011/05/06/script-to-remove-diacritics/
