@@ -89,7 +89,7 @@ var TimelineSong = function(json) {
 	};
 
 	self.unregister_vote = function() {
-		$add_class(self.el, "voting_registered");
+		$remove_class(self.el, "voting_registered");
 	};
 
 	draw();

@@ -155,7 +155,7 @@ var EventBase = function(json) {
 		if (!self.songs) {
 			return;
 		}
-		for (var i = 0; i < self.songs; i++) {
+		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].enable_voting();
 		}
 	};
@@ -164,7 +164,7 @@ var EventBase = function(json) {
 		if (!self.songs) {
 			return;
 		}
-		for (var i = 0; i < self.songs; i++) {
+		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].clear_voting_status();
 		}	
 	};
@@ -173,15 +173,15 @@ var EventBase = function(json) {
 		if (!self.songs) {
 			return;
 		}
-		for (var i = 0; i < self.songs; i++) {
+		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].disable_voting();
 		}
 	};
 
-	self.register_vote = function(song_id) {
+	self.register_vote = function(entry_id) {
 		if (!self.songs) return;
-		for (var i = 0; i < self.songs; i++) {
-			if (song_id == self.songs[i].id) {
+		for (var i = 0; i < self.songs.length; i++) {
+			if (entry_id == self.songs[i].data.entry_id) {
 				self.songs[i].register_vote();
 			}
 			else {

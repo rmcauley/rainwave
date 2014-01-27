@@ -25,6 +25,8 @@ var Schedule = function() {
 		API.add_callback(function(json) { sched_history = json; }, "sched_history");
 		API.add_callback(self.update, "_SYNC_COMPLETE");
 
+		API.add_callback(self.register_vote, "vote_result");
+
 		history_header = $id("timeline_header_history");
 		history_header.textContent = $l("History");
 		current_header = $id("timeline_header_now_playing");
@@ -254,6 +256,16 @@ var Schedule = function() {
 			}
 		}
 		return Event.load(event_json);
+	};
+
+	self.register_vote = function(json) {
+		// TODO: error handling here
+		if (!json.success) return;
+		for (var i = 0; i < self.events.length; i++) {
+			if (self.events[i].id == json.elec_id) {
+				self.events[i].register_vote(json.entry_id);
+			}
+		}
 	};
 
 	return self;

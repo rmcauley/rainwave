@@ -30,6 +30,9 @@ var API = function() {
 
 		perform_callbacks(json);
 		perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
+		if ("vote_result" in json) {
+			perform_callbacks({ "vote_result": json.vote_result });
+		}
 		sync_get();
 	};
 

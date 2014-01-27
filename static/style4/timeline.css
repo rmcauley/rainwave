@@ -19,6 +19,7 @@
 
 .timeline_song {
 	clear: left;
+	cursor: default;
 	padding-left: 5px;
 	padding-right: 5px;
 	@include transition(opacity);
@@ -32,6 +33,10 @@
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
+}
+
+.timeline_song .title {
+	@include transition-wtime(300ms, background-color);
 }
 
 .timeline_song .art_container {
@@ -65,6 +70,10 @@ body.small_screen .art {
 
 .timeline_song .requester {
 	margin-left: 95px;
+}
+
+.timeline_song .votes {
+	display: none;
 }
 
 body.small_screen .timeline_song .requester {
@@ -155,4 +164,16 @@ body.small_screen .timeline_now_playing_song .art {
 	margin: 0px;
 	padding: 0px;
 	width: 0px;
+}
+
+.voting_enabled .title {
+	cursor: pointer;
+}
+
+.voting_enabled .title:hover {
+	background-color: #000088;
+}
+
+.voting_registered .title {
+	background-color: #444488;
 }
