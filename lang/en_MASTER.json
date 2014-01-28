@@ -82,6 +82,13 @@
    "random_relay"                                    : "Random Relay",
    "backend_scan_errors"                             : "Backend Scan Errors",
 
+   "__comment__"                 : "Playlist View",
+
+   "filter"                                          : "Type Anywhere to Filter",
+   "clearfilter"                                     : "Clear Filter",
+   "album_rating_ranked_at"                          : "Rated at %(rating), ranking #(rank).",
+   "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",
+
    "__comment__"                 : "The following are the old R3 translation lines, which will be replaced.  Some day. :(",
 
    "station_description_id_1"                        : "Streaming Video Game Music Radio.  Vote for the song you want to hear!",
@@ -109,7 +116,6 @@
    "overclockedremixes"                              : "OverClocked Remixes",
    "mixwavesongs"                                    : "Mixwave Songs",
    "pl_oncooldown"                                   : "On cooldown for %(time).",
-   "pl_ranks"                                        : "Rated at %(rating), ranking #(rank).",
    "pl_favourited"                                   : "Favourited by %(count) &(count:person/people).",
    "pl_wins"                                         : "Wins %(percent)% of the elections it's in.",
    "pl_requested"                                    : "Requested %(count) &(count:time/times), ranking #(rank).",
@@ -298,6 +304,5 @@
    "menu_morestations_v2"                            : "All Stations »",
    "managekeys"                                      : "Manage API Keys",
    "listenerprofile"                                 : "Listener Profile",
-   "filter"                                          : "Type Anywhere to Filter",
-   "clearfilter"                                     : "Clear Filter"
+   "pl_ranks"                                        : "Rated at %(rating), ranking #(rank)."
 }

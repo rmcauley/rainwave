@@ -16,7 +16,7 @@ var Artists = function() {
 		var json = [];
 		for (var i = 0; i < artists.length; i++) {
 			artist = artists[i].split("|");
-			json.push({ "name": artist[0], "id": parseInt(artist[1]) });
+			json.push({ "name": artist[1], "id": parseInt(artist[0]) });
 		}
 		return self.append_spans_from_json(el, json);
 	};

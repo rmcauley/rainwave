@@ -48,7 +48,7 @@
 	@include transition(width);
 }
 
-.art_container .art {
+.timeline_song .art_container .art {
 	max-width: 70px;
 	max-height: 70px;
 	@include transition(max-width, max-height);
@@ -58,12 +58,12 @@
 	display: none;
 }
 
-body.small_screen .art_container {
+body.small_screen .timeline_song .art_container {
 	width: 55px;
 	height: 55px;
 }
 
-body.small_screen .art {
+body.small_screen .timeline_song .art {
 	max-width: 55px;
 	max-height: 55px;
 }
@@ -100,7 +100,7 @@ body.small_screen .timeline_song .requester {
  	margin-bottom: 10px;
 }
 
-.timeline_now_playing_song .art {
+.timeline_now_playing_song .art_container .art {
  	max-width: 120px;
  	max-height: 120px;
 }
@@ -110,7 +110,7 @@ body.small_screen .timeline_now_playing_song .art_container {
 	height: 85px;
 }
 
-body.small_screen .timeline_now_playing_song .art {
+body.small_screen .timeline_now_playing_song .art_container .art {
 	max-width: 85px;
 	max-height: 85px;
 }

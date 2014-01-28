@@ -1,5 +1,44 @@
 #detail {
-	height: 100%;
-	width: 100%;
-	background: #1c1d1f;
+	overflow: hidden;
+	padding-top: 10px;
+}
+
+#detail .art_container {
+	float: left;
+	margin-right: 10px;
+}
+
+#detail h1 {
+	font-size: 1.6em;
+	padding-bottom: 10px;
+	border-bottom: solid 1px #555;
+	margin-bottom: 10px;
+}
+
+.albumview_header {
+	min-height: 130px;
+}
+
+.albumview_info {
+	color: $darktext;
+	font-size: 0.8em;
+}
+
+table.songlist {
+	background: #1f2022;
+	border-collapse: collapse;
+	text-align: left;
+	vertical-align: top;
+	border-spacing: 0;
+	margin-top: 10px;
+}
+
+td.songlist_title, td.songlist_artists {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+td.songlist_title:hover, td.songlist_artists:hover {
+	white-space: normal;
 }

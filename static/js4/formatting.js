@@ -67,7 +67,7 @@ var Formatting = function() {
 		$remove_class(el, "link");
 		$remove_class(el, "link_external");
 		return el;
-	}
+	};
 
 	// from lehelk: http://web.archive.org/web/20120918093154/http://lehelk.com/2011/05/06/script-to-remove-diacritics/
 	var diacritic_map = [
