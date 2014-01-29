@@ -1,5 +1,5 @@
 .scrollbar {
-	z-index: 100;
+	z-index: 2;
 	background-color: inherit;
 	border-width: 1px;
 	border-style: solid;

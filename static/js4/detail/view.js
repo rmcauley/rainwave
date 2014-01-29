@@ -45,7 +45,7 @@ var DetailView = function() {
 	};
 
 	self.on_resize = function() {
-		if (scroller) scroller.update_scroll_height();
+		// if (scroller) scroller.update_scroll_height();
 	};
 
 	var draw_album = function(json) {

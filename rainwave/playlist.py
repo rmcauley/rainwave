@@ -1005,6 +1005,12 @@ class Album(AssociatedMetadata):
 				(user.id, sid, instance.id))
 		return instance
 
+	@classmethod
+	def get_art_url(self, id):
+		if os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % id)):
+			return "%s/%s" % (config.get("album_art_url_path"), id)
+		return None
+
 	def __init__(self):
 		super(Album, self).__init__()
 		self.data['sids'] = []
@@ -1049,10 +1055,7 @@ class Album(AssociatedMetadata):
 			self.data['sid'] = d['sid']
 		if d.has_key('album_is_tag'):
 			self.is_tag = d['album_is_tag']
-		if os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % self.id)):
-			self.data['art'] = config.get("album_art_url_path") + "/" + str(self.id)
-		else:
-			self.data['art'] = None
+		self.data['art'] = Album.get_art_url(self.id)
 
 	def _dict_check_assign(self, d, key, default = None, new_key = None):
 		if not new_key and key.find("album_") == 0:

@@ -3,7 +3,8 @@ var SmallScreen = false;
 
 function _on_resize(e) {
 	"use strict";
-	$id('sizable_body').style.height = (window.innerHeight - $id('menu').offsetHeight) + "px";
+	var new_height = (window.innerHeight - $id('menu').offsetHeight);
+	$id('sizable_body').style.height = new_height + "px";
 	var screen_size_changed = false;
 	if ((document.documentElement.clientWidth <= 1400) && !SmallScreen) {
 		$add_class(document.body, "small_screen");
@@ -20,6 +21,7 @@ function _on_resize(e) {
 	PlaylistLists.on_resize();
 	Scrollbar.refresh_all_scrollbars();
 	DetailView.on_resize();
+	Requests.on_resize(new_height);
 	// this has to go after due to scrollbar funkiness with the schedule
 	if (screen_size_changed) {
 		Schedule.reflow();
@@ -49,6 +51,7 @@ function initialize() {
 	Schedule.initialize();
 	PlaylistLists.initialize();
 	DetailView.initialize();
+	Requests.initialize();
 
 	// API comes last since it will do all the callbacks to initialized
 	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.user_id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);

@@ -100,8 +100,4 @@ a {
 
 @import "detail_view.css";
 
-#requests {
-	float: right;
-	width: 0%;
-	overflow: hidden;
-}
+@import "requests.css";

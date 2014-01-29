@@ -15,8 +15,9 @@ var SongsTable = function(songs, columns) {
 		if (("requestable" in songs[i]) && (songs[i].requestable)) requestable = true;
 
 		if (requestable) {
-			row.appendChild($el("td", { "class": "songlist_requestable", "textContent": $l("Request") }));
-			// TODO: make requestable
+			cell = $el("td", { "class": "songlist_requestable", "textContent": $l("Request") });
+			row.appendChild(cell);
+			Requests.make_clickable(cell, songs[i].id);
 		}
 		else {
 			row.appendChild($el("td", { "class": "songlist_not_requestable" }));

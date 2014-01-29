@@ -82,6 +82,7 @@ table.songlist td.songlist_requestable {
 	width: 70px;
 	overflow: hidden;
 	background-position: 0px 6px;
+	cursor: pointer;
 }
 
 body.small_screen table.songlist td.songlist_requestable {

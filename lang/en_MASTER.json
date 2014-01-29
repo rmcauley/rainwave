@@ -89,6 +89,7 @@
    "album_rating_ranked_at"                          : "Rated at %(rating), ranking #(rank).",
    "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",
    "Request"                                         : "Request",
+   "Requests"                                        : "Requests",
 
    "__comment__"                 : "The following are the old R3 translation lines, which will be replaced.  Some day. :(",
 

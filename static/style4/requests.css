@@ -1,0 +1,37 @@
+#requests.nonsticky {
+	z-index: 5;
+	width: 350px;
+	position: absolute;
+	left: 100%;
+	background: #444;
+	@include transition-wtime(300ms, transform);
+	@include transform(translateX(-5px));
+}
+
+#requests.nonsticky:hover, #requests.fake_hover {
+	@include transform(translateX(-350px));
+}
+
+#requests.sticky {
+	width: 350px;
+	position: relative;
+	left: auto;
+	float: right;
+}
+
+#requests_list {
+	overflow: hidden;
+}
+
+#requests_header {
+	@include transition-wtime(300ms, transform, width);
+	background: #666;
+}
+
+#requests.nonsticky #requests_header {
+	@include transform(translateX(-100px));
+}
+
+#requests.nonsticky:hover #requests_header, #requests.fake_hover #requests_header {
+	@include transform(translateX(0px));	
+}

@@ -44,8 +44,10 @@ var TimelineSong = function(json) {
 			}));
 		}
 		
-		self.elements.artist_group = self.el.appendChild($el("div", { "class": "artist_group" }));
-		Artists.append_spans_from_json(self.elements.artist_group, self.data.artists);
+		if ("artists" in self.data) {
+			self.elements.artist_group = self.el.appendChild($el("div", { "class": "artist_group" }));
+			Artists.append_spans_from_json(self.elements.artist_group, self.data.artists);
+		}
 
 		if (self.data.url && self.data.link_text) {
 			self.elements.xlink = self.el.appendChild($el("a", { "target": "_blank", "href": self.data.url, "textContent": self.data.link_text }));

@@ -17,6 +17,7 @@ var Scrollbar = function() {
 		self.auto_resize = true;
 		self.scroll_top = 0;
 		self.margin_top = 0;
+		self.use_fixed = false;
 		var handle = element.insertBefore($el("div", { "class": "scrollbar"}), element.firstChild);
 		var scroll_height;
 		var offset_height;
@@ -83,8 +84,10 @@ var Scrollbar = function() {
 		self.update_scroll_height = self.parent_update_scroll_height;
 
 		self.parent_update_handle_position = function() {
-			if (!self.scroll_top || !max_scroll_top) return;
-			handle.style.top = self.scroll_top + self.margin_top + Math.max(Math.round((self.scroll_top / max_scroll_top) * (offset_height - self.margin_top - handle_height - 3)), 3) + "px";
+			if (!self.scroll_top || !max_scroll_top) handle.style.top = "0px";
+			var new_top = self.margin_top + Math.max(Math.round((self.scroll_top / max_scroll_top) * (offset_height - self.margin_top - handle_height - 3)), 3);
+			if (!self.use_fixed) new_top += self.scroll_top;
+			handle.style.top = new_top + "px";
 		};
 
 		self.update_handle_position = self.parent_update_handle_position;
