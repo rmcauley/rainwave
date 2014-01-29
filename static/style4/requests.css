@@ -35,3 +35,11 @@
 #requests.nonsticky:hover #requests_header, #requests.fake_hover #requests_header {
 	@include transform(translateX(0px));	
 }
+
+.timeline_song .request_tools {
+	float: right;
+}
+
+.timeline_song_request_cancel_hover {
+	background-color: #300;
+}

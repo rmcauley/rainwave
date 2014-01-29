@@ -21,9 +21,11 @@ class LocaleIndex(api.web.HTMLRequest):
 		self.write(self.render_string("basic_header.html", title="Locale/Translation Information"))
 		self.write("<p style='white-space: pre;'>")
 		self.write(locale.locale_explanation)
-		self.write("</p>")
+		self.write("</p><hr>")
 
-		self.write("<ul>")
+		self.write("<p>Translating a new language?  Start with the <a href='https://github.com/rmcauley/rainwave/blob/master/lang/en_MASTER.json'>Github Translation File Template</a>.</p>")
+
+		self.write("<hr><p>The following languages exist, but may have missinglines: <ul>")
 		for k, v in locale.translations.iteritems():
 			if k != "en_CA":
 				self.write("<li><a href='/locale/%s'>%s</a> - %s missing lines</a>" % (k, k, len(v.missing.keys())))
@@ -43,3 +45,5 @@ class LocaleMissingLines(api.web.HTMLRequest):
 
 		self.write("<div class='json'>")
 		self.write(json.dumps(locale.translations[request_locale].missing, sort_keys=True, indent=4, separators=(',', ': ')))
+		self.write("</div>")
+		self.write(self.render_string("basic_footer.html"))

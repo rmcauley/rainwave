@@ -22,10 +22,10 @@
 	cursor: default;
 	padding-left: 5px;
 	padding-right: 5px;
-	@include transition(opacity);
+	@include transition(opacity, background-color, transform);
 }
 
-.timeline_song .title_group, .timeline_song .album_group {
+.timeline_song .album_group {
 	clear: right;
 }
 

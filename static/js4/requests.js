@@ -48,6 +48,10 @@ var Requests = function() {
 		API.async_get("request", { "song_id": song_id });
 	};
 
+	self.delete = function(song_id) {
+		API.async_get("delete_request", { "song_id": song_id });
+	}
+
 	self.make_clickable = function(el, song_id) {
 		el.addEventListener("click", function() { self.add(song_id); } );
 	};
@@ -59,19 +63,23 @@ var Requests = function() {
 		}
 
 		var new_songs = [];
-		for (i = 0; i < json.length; i++) {
+		for (i = json.length - 1; i >= 0; i--) {
 			found = false;
-			for (j = 0; j < songs.length; j++) {
+			for (j = songs.length - 1; j >= 0; j--) {
 				if (json[i].id == songs[j].data.id) {
 					songs[j].update(json[i]);
 					new_songs.push(songs[j]);
+					songs.splice(j, 1);
 					found = true;
+					break;
 				}
 			}
 			if (!found) {
-				new_songs.push(TimelineSong(json[i]));
-				new_songs.push(TimelineSong(json[i]));
+				new_songs.push(TimelineSong(json[i], true));
 			}
+		}
+		for (i = songs.length - 1; i >= 0; i--) {
+			Fx.remove_element(songs[i].el);
 		}
 
 		for (i = 0; i < new_songs.length; i++) {

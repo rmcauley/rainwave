@@ -48,7 +48,7 @@ def attach_info_to_request(request, playlist = False, artists = False):
 			sched_next.append(evt.to_dict(request.user))
 		if len(sched_next) > 0 and request.user.is_tunedin() and sched_next_objects[0].is_election:
 			sched_next[0]['voting_allowed'] = True
-		if request.user.has_perks():
+		if request.user.is_tunedin() and request.user.has_perks():
 			for i in range(1, len(sched_next)):
 				if sched_next_objects[i].is_election:
 					sched_next[i]['voting_allowed'] = True

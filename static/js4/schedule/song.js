@@ -1,4 +1,4 @@
-var TimelineSong = function(json) {
+var TimelineSong = function(json, request_mode) {
 	"use strict";
 	var self = {};
 	self.data = json;
@@ -20,9 +20,19 @@ var TimelineSong = function(json) {
 	var draw = function() {
 		self.el = $el("div", { "class": "timeline_song" });
 		
-		self.elements.votes = self.el.appendChild($el("div", { "class": "votes" }));
-		if (self.data.entry_votes) {
-			self.elements.votes.textContent = self.data.entry_votes;
+		if (!request_mode) {
+			self.elements.votes = self.el.appendChild($el("div", { "class": "votes" }));
+			if (self.data.entry_votes) {
+				self.elements.votes.textContent = self.data.entry_votes;
+			}
+		}
+		else {
+			self.elements.request_tools = self.el.appendChild($el("div", { "class": "request_tools" }));
+			self.elements.request_cancel = $el("img", { "src": "/static/images4/cancel_ldpi.png", "alt": "X", "title": $l("cancel_request") });
+			self.elements.request_cancel.addEventListener("mouseover", function() { $add_class(self.el, "timeline_song_request_cancel_hover"); });
+			self.elements.request_cancel.addEventListener("mouseout", function() { $remove_class(self.el, "timeline_song_request_cancel_hover"); });
+			self.elements.request_cancel.addEventListener("click", function() { Requests.delete(self.data.id); });
+			self.elements.request_tools.appendChild(self.elements.request_cancel);
 		}
 
 		self.elements.album_art = self.el.appendChild(Albums.art_html(self.data.albums[0]));

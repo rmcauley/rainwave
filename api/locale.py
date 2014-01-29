@@ -7,8 +7,7 @@ import tornado.escape
 
 from libs import buildtools
 
-locale_explanation = """
-Rainwave Localization Formatting
+locale_explanation = """Rainwave Localization Formatting
 
 RW localizations are stored in a JSON file and use the following syntax:
 %(stuff)	- will display the variable inside ()

@@ -16,7 +16,7 @@ from rainwave import user as userlib
 class SubmitRequest(APIHandler):
 	sid_required = True
 	login_required = True
-	tunein_required = True
+	tunein_required = False
 	unlocked_listener_only = False
 	description = "Submits a request for a song."
 	fields = {
@@ -72,7 +72,7 @@ class RequestUnratedSongs(APIHandler):
 	description = "Fills the user's request queue with unrated songs."
 	sid_required = True
 	login_required = True
-	tunein_required = True
+	tunein_required = False
 	unlocked_listener_only = False
 
 	def post(self):
