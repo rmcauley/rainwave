@@ -1,6 +1,7 @@
 #detail {
 	overflow: hidden;
-	padding-top: 10px;
+	position: relative;
+	height: 100%;
 }
 
 #detail .art_container {
@@ -27,10 +28,15 @@
 table.songlist {
 	background: #1f2022;
 	border-collapse: collapse;
-	text-align: left;
-	vertical-align: top;
 	border-spacing: 0;
 	margin-top: 10px;
+	width: 100%;
+	table-layout: fixed;
+}
+
+table.songlist td {
+	vertical-align: top;
+	padding: 3px;
 }
 
 td.songlist_title, td.songlist_artists {
@@ -40,5 +46,48 @@ td.songlist_title, td.songlist_artists {
 }
 
 td.songlist_title:hover, td.songlist_artists:hover {
+	background: #444;
+	position: absolute;
 	white-space: normal;
+}
+
+td.songlist_rating {
+	width: 70px;
+}
+
+td.songlist_length {
+	width: 30px;
+}
+
+td.songlist_url {
+	width: 15px;
+}
+
+td.songlist_cooldown {
+	width: 20px;
+}
+
+td.songlist_artists {
+	max-width: 150px;
+	min-width: 80px;
+}
+
+td.songlist_title {
+	max-width: 200px;
+}
+
+table.songlist td.songlist_requestable {
+	background: url(/static/images4/request.png) no-repeat;
+	padding-left: 17px;
+	width: 70px;
+	overflow: hidden;
+	background-position: 0px 6px;
+}
+
+body.small_screen table.songlist td.songlist_requestable {
+	background-position: 0px 3px;
+}
+
+table.songlist_requested td.songlist_requestable {
+	width: 15px;
 }

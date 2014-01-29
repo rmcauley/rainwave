@@ -15,15 +15,21 @@ var SongsTable = function(songs, columns) {
 		if (("requestable" in songs[i]) && (songs[i].requestable)) requestable = true;
 
 		if (requestable) {
-			row.appendChild($el("td"), { "class": "songlist_requestable", "textContent": $l("Request") });
+			row.appendChild($el("td", { "class": "songlist_requestable", "textContent": $l("Request") }));
 			// TODO: make requestable
 		}
 		else {
-			row.appendChild($el("td"), { "class": "songlist_not_requestable" });
+			row.appendChild($el("td", { "class": "songlist_not_requestable" }));
 		}
 
 		if (songs[i].url) {
-			row.appendChild($el("td", { "class": "songlist_" + columns[key] }, songlist_Formatting.linkify_external($el("a", { "target": "_blank", "href": songs[i].url, "textContent": "" }))));
+			cell = $el("td", { "class": "songlist_url" },
+						$el("a", { "href": songs[i].url, "target": "_blank" },
+							$el("img", { "src": "/static/images4/link_window.png" })));
+			row.appendChild(cell);
+		}
+		else {
+			row.appendChild($el("td", { "class": "songlist_url" }));
 		}
 
 		for (var key = 0; key < columns.length; key++) {

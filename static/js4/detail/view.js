@@ -4,6 +4,7 @@ var DetailView = function() {
 	var el;
 	var open_views = [];
 	var scroller;
+	var visible_view;
 
 	self.initialize = function() {
 		el = $id("detail");
@@ -11,13 +12,13 @@ var DetailView = function() {
 		API.add_callback(draw_album, "album");
 	};
 	
-	var create = function(type, id) {
+	var create = function(type, id, render_function, json) {
 		while (open_views.length > 30) {
-			el.removeChild(open_views[0].el);
 			open_views.shift();
 		}
 		var n = { "el": $el("div"), "type": type, "id": id, "visible": false, "clocks": [] };
 		open_views.push(n);
+		render_function(n, json);
 		return n;
 	};
 
@@ -31,14 +32,14 @@ var DetailView = function() {
 	};
 
 	var switch_to = function(view) {
-		for (var i = 0; i < open_views.length; i++) {
-			if ((open_views[i].type !== view.type) || (open_views[i].id !== view.id)) {
-				open_views[i].el.style.display = "none";
-				open_views[i].visible = false;
-			}
+		if (visible_view) {
+			el.removeChild(visible_view.el);
+			visible_view.visible = false;
 		}
+		visible_view = view;
 		view.visible = true;
 		view.el.style.display = "block";
+		el.appendChild(view.el);
 		scroller.update_scroll_height();
 		return view;
 	};
@@ -48,14 +49,12 @@ var DetailView = function() {
 	};
 
 	var draw_album = function(json) {
-		var n = switch_to(create("album", json.id));
-		el.appendChild(AlbumView(n, json));
+		switch_to(create("album", json.id, AlbumView, json));
 	};
 
 	self.reopen_album = function(id) {
 		var existing_view = exists("album", id);
 		if (existing_view) {
-			open_views.removeChild(existing_view.el);
 			open_views.shift(open_views.indexOf(existing_view));
 			if (existing_view.visible) {
 				self.open_album(id);

@@ -10,6 +10,6 @@ var AlbumView = function(view, json) {
 		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_requests_ranked_at", { "count": json.request_count, "rank": json.request_rank }) }));
 	}
 	view.el.appendChild(d);
-	view.el.appendChild(SongsTable(json.songs, [ "title", "artists", "link", "length", "cooldown", "rating" ]));
+	view.el.appendChild(SongsTable(json.songs, [ "title", "artists", "length", "cooldown", "rating" ]));
 	return view.el;
 };
