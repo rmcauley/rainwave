@@ -6,6 +6,7 @@ var RatingControl = function() {
 	
 	var self = {};
 	self.album_rating_callback = null;
+	self.fave_callback = null;
 	self.padding_top = SmallScreen ? 1 : 3;
 
 	self.initialize = function() {
@@ -42,9 +43,9 @@ var RatingControl = function() {
 				if (rating_user) album_ratings[album_id][i].update_user_rating(rating_user);
 				if (rating) album_ratings[album_id][i].update_rating(rating);
 			}
-		}
-		if (self.album_rating_callback) {
-			self.album_rating_callback(album_id, rating, rating_user);
+			if (self.album_rating_callback) {
+				self.album_rating_callback(album_id, rating, rating_user);
+			}
 		}
 	};
 	
@@ -81,6 +82,9 @@ var RatingControl = function() {
 		if (json.id in album_ratings) {
 			for (var i = 0; i < album_ratings[json.id].length; i++) {
 				album_ratings[json.id][i].update_fave(json.fave);
+			}
+			if (self.fave_callback) {
+				self.fave_callback(json.id, json.fave);
 			}
 		}
 	};

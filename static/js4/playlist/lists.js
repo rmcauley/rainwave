@@ -11,6 +11,8 @@ var PlaylistLists = function() {
 	var scroller;
 
 	self.initialize = function() {
+		Prefs.define("searchlist_show_cooldown");
+
 		el = $id("lists");
 		tabs_el = el.appendChild($el("ul", { "class": "lists_tabs" }));
 		search_box = el.appendChild($el("div", { "class": "searchlist_searchbox" }));
@@ -88,6 +90,12 @@ var AlbumList = function(scroller, offset_width) {
 	self.tab_el = $el("li", { "textContent": $l("album_list") });
 	self.tab_el.addEventListener("click", function() { PlaylistLists.change_visible_list(self); }, false);
 
+	var change_cooldown_visible = function(visible) {
+		if (visible) $add_class(self.el, "searchlist_cooldown_visible");
+		else $remove_class(self.el, "searchlist_cooldown_visible");
+	};
+	Prefs.add_callback("searchlist_show_cooldown");
+
 	var update_rating = function(album_id, rating, rating_user) {
 		if (album_id in self.data) {
 			if (rating) self.data[album_id].rating = rating;
@@ -97,23 +105,55 @@ var AlbumList = function(scroller, offset_width) {
 	};
 	RatingControl.album_rating_callback = update_rating;
 
+	var update_fave = function(album_id, fave) {
+		if (album_id in self.data) {
+			self.data[album_id].fave = fave;
+			self.update_item_element(self.data[album_id]);
+		}
+	};
+	RatingControl.fave_callback = update_fave;
+
+	var change_fave = function(evt) {
+		if ("_fave_id" in evt.target) {
+			API.async_get("fave_album", { "fave": !self.data[evt.target._fave_id].fave, "album_id": evt.target._fave_id });
+		}
+	}
+
 	var open_element = function(e) {
 		if ("_id" in e.target) {
 			self.open_id(e.target._id);
 		}
 	};
-	self.el.addEventListener("click", open_element);
 
 	self.open_id = function(id) {
 		DetailView.open_album(id);
 	};
 
 	self.draw_entry = function(item) {
-		var item_el = document.createElement("div");
-		var text_span = $el("span", { "textContent": item.name });
-		text_span._id = item.id;
-		item_el.appendChild(text_span);
-		return item_el;
+		item._el = document.createElement("div");
+		item._el_cool = item._el.appendChild($el("span", { "class": "searchlist_cooldown_time" }));
+		item._el_fave = item._el.appendChild($el("span", { "class": "searchlist_fave" }));
+		// don't call it _id or the album-opener-clicker will pick it up! ;)
+		//item._el_fave._fave_id = item.id;
+		item._el_fave.addEventListener("click", change_fave);
+		item._el_fave.appendChild($el("img", { "class": "searchlist_fave_solid", "src": "/static/images4/heart_solid.png" }));
+		var lined = $el("img", { "class": "searchlist_fave_lined", "src": "/static/images4/heart_lined.png" });
+		lined._fave_id = item.id;
+		item._el_fave.appendChild(lined);
+		item._el_text_span = $el("span", { "class": "searchlist_name", "textContent": item.name });
+		item._el_text_span._id = item.id;
+		item._el_text_span.addEventListener("click", open_element);
+		self.update_cool(item);
+		item._el.appendChild(item._el_text_span);
+	};
+
+	self.update_cool = function(item) {
+		if (item.cool && (item.cool_lowest > Clock.now)) {
+			item._el_cool.textContent = Formatting.cooldown_glance(item.cool_lowest - Clock.now);
+		}
+		else {
+			item._el_cool.innerHTML = "&nbsp;";
+		}
 	};
 
 	self.update_item_element = function(item) {
@@ -122,6 +162,18 @@ var AlbumList = function(scroller, offset_width) {
 		}
 		else {
 			$remove_class(item._el, "searchlist_cooldown");
+		}
+		if (item.fave) {
+			$add_class(item._el, "searchlist_fave_on");
+		}
+		else {
+			$remove_class(item._el, "searchlist_fave_on");
+		}
+		if (item.rating_complete) { 
+			$add_class(item._el, "searchlist_rating_complete");
+		}
+		else {
+			$remove_class(item._el, "searchlist_rating_complete");
 		}
 		if (item.rating_user) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";

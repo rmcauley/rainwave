@@ -28,8 +28,11 @@ var API = function() {
 		async.onerror = async_error;
 		async_queue = [];
 
+		// Make sure the clock gets initialized first
+		perform_callbacks({ "api_info": json.api_info });
 		perform_callbacks(json);
 		perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
+		// Make sure any vote results are registered now (after the schedule has been loaded)
 		if ("vote_result" in json) {
 			perform_callbacks({ "vote_result": json.vote_result });
 		}

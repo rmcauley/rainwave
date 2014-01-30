@@ -1,5 +1,5 @@
 #lists {
-	width: 20em;
+	width: 21em;
 	height: 100%;
 	float: left;
 	position: relative;
@@ -58,7 +58,7 @@ div.searchlist > div {
 	background-repeat: no-repeat;
 	word-break: break-all;
 	height: 1.3em;
-	padding: 2px 60px 1px 0px;
+	padding: 1px 60px 1px 0px;
 	border-bottom: solid 1px #1f2022;
 	cursor: pointer;
 	white-space: nowrap;
@@ -76,4 +76,51 @@ div.searchlist_open_item {
 
 div.searchlist_cooldown {
 	background-color: #1f2041;
+}
+
+span.searchlist_fave {
+	display: inline-block;
+	width: 20px;
+	height: 1em;
+	min-height: 14px;
+}
+
+img.searchlist_fave_solid {
+	position: absolute;
+	margin-top: 4px;
+	opacity: 0;
+	@include transition-wtime(300ms, opacity);
+}
+
+body.small_screen img.searchlist_fave_solid {
+	margin-top: 1px;
+}
+
+.searchlist_fave_on img.searchlist_fave_solid {
+	opacity: 1;
+}
+
+img.searchlist_fave_lined {
+	position: absolute;
+	margin-top: 4px;
+	opacity: 0;
+	@include transition-wtime(300ms, opacity);
+}
+
+body.small_screen img.searchlist_fave_lined {
+	margin-top: 1px;
+}
+
+img.searchlist_fave_lined:hover {
+	opacity: 1;
+}
+
+span.searchlist_cooldown_time {
+	cursor: text;
+	display: none;
+	width: 2em;
+}
+
+div.searchlist_cooldown_visible span.searchlist_cooldown_time {
+	display: inline-block;
 }

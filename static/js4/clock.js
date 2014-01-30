@@ -36,6 +36,8 @@ var Clock = function() {
 				delete(clocks[i]);
 			}
 		}
+
+		self.now = self.time() + timediff;
 	};
 
 	self.set_page_title = function(new_title, new_end_time) {

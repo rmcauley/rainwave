@@ -44,26 +44,35 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 		}
 		if (self.after_update) self.after_update(json, data, sorted);
 		self.update_view();
+		if (self.update_cool) {
+			for (i in data) {
+				self.update_cool(data[i]);
+			}
+		}
 	};
 
 	self.update_item = function(json) {
+		var i;
 		json._delete = false;
 		if (json[id_key] in data) {
-			json._searchname = data[json[id_key]]._searchname;
-			json._el = data[json[id_key]]._el;
-			self.update_item_element(json);
+			for (i in json) {
+				self.data[json[id_key]][i] = json[i];
+			}
+			self.update_item_element(self.data[json[id_key]]);
 		}
 		else {
 			json._searchname = json[search_key];
-			json._el = self.draw_entry(json);
+			self.draw_entry(json);
 			json._el._id = json[id_key];
 			json._el._hidden = false;
 			json._lower_case_sort_keyed = json[sort_key].toLowerCase();
 			self.update_item_element(json);
+			data[json[id_key]] = json;
 		}
-		data[json[id_key]] = json;
 		self.queue_reinsert(json[id_key]);
 	};
+
+	self.update_cool = null;
 
 	self.update_all_item_elements = function() {
 		for (var i in data) {
