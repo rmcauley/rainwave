@@ -55,6 +55,10 @@ td.songlist_rating {
 	width: 70px;
 }
 
+td.songlist_rating > div {
+	position: absolute;
+}
+
 td.songlist_length {
 	width: 30px;
 }

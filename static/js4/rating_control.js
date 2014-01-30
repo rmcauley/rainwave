@@ -71,7 +71,7 @@ var RatingControl = function() {
 		if (!json.success) return;
 		if (json.id in song_ratings) {
 			for (var i = 0; i < song_ratings[json.id].length; i++) {
-				song_ratings[json.id].update_fave(json.fave);
+				song_ratings[json.id][i].update_fave(json.fave);
 			}
 		}
 	};
@@ -80,7 +80,7 @@ var RatingControl = function() {
 		if (!json.success) return;
 		if (json.id in album_ratings) {
 			for (var i = 0; i < album_ratings[json.id].length; i++) {
-				album_ratings[json.id].update_fave(json.fave);
+				album_ratings[json.id][i].update_fave(json.fave);
 			}
 		}
 	};

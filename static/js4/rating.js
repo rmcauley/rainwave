@@ -3,7 +3,7 @@
 
 // This module is a bit of a mess due to the reliance on the legacy Fx library.
 
-// var rating_dbg = ErrorHandler.make_debug_div();
+//var rating_dbg = ErrorHandler.make_debug_div();
 
 // ******* SEE fx.js FOR BACKGROUND POSITIONING AND FAVE SHOWING/HIDING
 
@@ -64,10 +64,11 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 		if (!self.absolute_x) x -= offset_left;
 		if (!self.absolute_y) y -= offset_top;
 
+		//rating_dbg.innerHTML = "layerX: " + (evt.layerX || evt.offsetX) + " / layerY: " + (evt.layerY || evt.offsetY) + "<br>offset_left: " + offset_left + " / offset_top:" + offset_top + "<br>x: " + x + " / y: " + y + " -> ";
 		if (x <= 18) return 0;		// fave switching
 
 		var result = Math.round(((x - 20 + ((18 - y) * .5)) / 10) * 2) / 2;
-		// rating_dbg.innerHTML = "layerX: " + (evt.layerX || evt.offsetX) + " / layerY: " + (evt.layerY || evt.offsetY) + "<br>offset_left: " + offset_left + " / offset_top:" + offset_top + "<br>x: " + x + " / y: " + y + " -> " + result;
+		//rating_dbg.innerHTML += result;
 		if (result <= 1) return 1;
 		else if (result >= 5) return 5;
 		return result;

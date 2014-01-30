@@ -2,7 +2,7 @@ var SongsTable = function(songs, columns) {
 	"use strict";
 	var el = $el("table", { "class": "songlist" });
 
-	var row, cell;
+	var row, cell, r;
 	for (var i = 0; i < songs.length; i++) {
 		row = $el("tr");
 		if (("cool" in songs[i]) && songs[i].cool) {
@@ -40,7 +40,10 @@ var SongsTable = function(songs, columns) {
 			else if (columns[key] in songs[i]) {
 				if (columns[key] == "rating") {
 					cell = $el("td", { "class": "songlist_" + columns[key] });
-					cell.appendChild(Rating("song", songs[i].id, songs[i].rating_user, songs[i].rating, songs[i].fave, User.radio_rate_anything).el);
+					r = Rating("song", songs[i].id, songs[i].rating_user, songs[i].rating, songs[i].fave, User.radio_rate_anything);
+					r.absolute_x = true;
+					r.absolute_y = true;
+					cell.appendChild(r.el);
 					row.appendChild(cell);
 				}
 				else if (columns[key] == "cool_end") {
