@@ -83,10 +83,16 @@ td.songlist_title {
 table.songlist td.songlist_requestable {
 	background: url(/static/images4/request.png) no-repeat;
 	padding-left: 17px;
-	width: 70px;
+	padding-right: 0px;
+	width: 0px;
 	overflow: hidden;
 	background-position: 0px 6px;
 	cursor: pointer;
+	@include transition(width);
+}
+
+div.songlist_request_hint table.songlist td.songlist_requestable {
+	width: 70px;
 }
 
 body.small_screen table.songlist td.songlist_requestable {

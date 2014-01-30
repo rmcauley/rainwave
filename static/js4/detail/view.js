@@ -7,10 +7,21 @@ var DetailView = function() {
 	var visible_view;
 
 	self.initialize = function() {
+		Prefs.define("request_made");
 		el = $id("detail");
+		if (!Prefs.get("request_made")) {
+			$add_class(el, "songlist_request_hint");
+			Prefs.add_callback("request_made", request_made_changed);
+		}
 		scroller = Scrollbar.new(el);
 		API.add_callback(draw_album, "album");
 	};
+
+	var request_made_changed = function(request_made) {
+		if (request_made) {
+			$remove_class(el, "songlist_request_hint");
+		}
+	}
 	
 	var create = function(type, id, render_function, json) {
 		while (open_views.length > 30) {

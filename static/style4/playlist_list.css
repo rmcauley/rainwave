@@ -61,6 +61,8 @@ div.searchlist > div {
 	padding: 2px 60px 1px 0px;
 	border-bottom: solid 1px #1f2022;
 	cursor: pointer;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 div.searchlist > div.searchtable_key_nav_hover {

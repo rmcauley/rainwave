@@ -15,9 +15,16 @@ var SongsTable = function(songs, columns) {
 		if (("requestable" in songs[i]) && (songs[i].requestable)) requestable = true;
 
 		if (requestable) {
-			cell = $el("td", { "class": "songlist_requestable", "textContent": $l("Request") });
+			cell = $el("td", { "class": "songlist_requestable" });
+			if (!Prefs.get("request_made")) {
+				cell.textContent = $l("Request");
+				cell.addEventListener("click", function() {
+					Prefs.change("request_made", true);
+				});
+			}
 			row.appendChild(cell);
 			Requests.make_clickable(cell, songs[i].id);
+
 		}
 		else {
 			row.appendChild($el("td", { "class": "songlist_not_requestable" }));

@@ -4,6 +4,7 @@ var Prefs = function() {
 	var values = {};
 	var self = {};
 	var callbacks = {};
+	var cookie_domain = BOOTSTRAP.cookie_domain;
 
 	// the following preferences are for speed-critical functions
 	self.playlist_sort_faves_first = false;
@@ -18,7 +19,7 @@ var Prefs = function() {
 	self.save = function(name, object) {
 		var today = new Date();
 		var expiry = new Date(today.getTime() + 28 * 24 * 60 * 60 * 1000 * 13);
-		var sfied = JSON.stringify(object);
+		var sfied = JSON.stringify(values);
 		if (heavyencode) {
 			sfied = encodeURIComponent(sfied);
 		}
@@ -30,7 +31,7 @@ var Prefs = function() {
 			sfied = sfied.replace(",", "%2C");
 		}
 		var thecookie = name + "=" + sfied;
-		document.cookie = thecookie + ";path=/;domain=" + COOKIE_DOMAIN + ";expires=" + expiry.toGMTString();
+		document.cookie = thecookie + ";path=/;domain=" + cookie_domain + ";expires=" + expiry.toGMTString();
 	};
 
 	self.load = function(name) {
@@ -74,7 +75,7 @@ var Prefs = function() {
 	self.get = function(name) {
 		if (!(name in values)) {
 			if (name in meta) {
-				return meta[name].values[0];
+				return meta[name].legal_values[0];
 			}
 			return false;
 		}
@@ -85,12 +86,13 @@ var Prefs = function() {
 		if (!(name in meta)) {
 			return false;
 		}
+		if (value === self.get(name)) return;
 		if (meta[name].verify_function) {
 			if (!meta[name].verify_functon(value)) {
 				return false;
 			}
 		}
-		if (meta[name].legal_values.length > 0) {
+		if (meta[name].legal_values) {
 			var valid = false;
 			for (var i in meta[name].legal_values) {
 				if (value === meta[name].legal_values[name][i]) {
@@ -119,11 +121,12 @@ var Prefs = function() {
 	};
 
 	self.define = function(name, legal_values, verify_function) {
+		if (meta[name]) return;
 		meta[name] = {};
 		meta[name].legal_values = legal_values;
 		meta[name].verify_function = verify_function ? verify_function : null;
 		if (!(name in values)) {
-			values[name] = legal_values[0];
+			values[name] = legal_values ? legal_values[0] : false;
 		}
 		callbacks[name] = [];
 	};
