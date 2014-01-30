@@ -12,6 +12,7 @@ var Artists = function() {
 	};
 
 	self.append_spans_from_string = function(el, string) {
+		if (!string) return $el("span");
 		var artists = string.split(",");
 		var artist;
 		var json = [];

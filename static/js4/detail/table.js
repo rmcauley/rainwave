@@ -43,8 +43,13 @@ var SongsTable = function(songs, columns) {
 					cell.appendChild(Rating("song", songs[i].id, songs[i].rating_user, songs[i].rating, songs[i].fave, User.radio_rate_anything).el);
 					row.appendChild(cell);
 				}
-				else if (columns[key] == "song_cool_end" && (songs[i].song_cool_end > Clock.now)) {
-					row.appendChild($el("td", { "class": "songlist_" + columns[key], "textContent": Formatting.cooldown_glance(songs[i].song_cool_end - Clock.now) } ));
+				else if (columns[key] == "cool_end") {
+					if (songs[i].cool_end > Clock.now) {
+						row.appendChild($el("td", { "class": "songlist_" + columns[key], "textContent": Formatting.cooldown_glance(songs[i].cool_end - Clock.now) } ));
+					}
+					else {
+						row.appendChild($el("td", { "class": "songlist_" + columns[key] }));
+					}
 				}
 				else if (columns[key] == "length") {
 					row.appendChild($el("td", { "class": "songlist_" + columns[key], "textContent": Formatting.minute_clock(songs[i].length) }));

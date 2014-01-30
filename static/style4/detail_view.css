@@ -63,8 +63,8 @@ td.songlist_url {
 	width: 15px;
 }
 
-td.songlist_cooldown {
-	width: 20px;
+td.songlist_cool_end {
+	width: 40px;
 }
 
 td.songlist_artists {
