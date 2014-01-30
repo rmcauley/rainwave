@@ -32,6 +32,7 @@ table.songlist {
 	margin-top: 10px;
 	width: 100%;
 	table-layout: fixed;
+	empty-cells: show;
 }
 
 table.songlist td {
@@ -82,9 +83,9 @@ td.songlist_title {
 
 table.songlist td.songlist_requestable {
 	background: url(/static/images4/request.png) no-repeat;
-	padding-left: 17px;
+	padding-left: 16px;
 	padding-right: 0px;
-	width: 0px;
+	width: 1px;
 	overflow: hidden;
 	background-position: 0px 6px;
 	cursor: pointer;

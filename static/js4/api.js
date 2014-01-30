@@ -145,23 +145,22 @@ var API = function() {
 
 	var perform_callbacks = function(json) {
 		var cb, key;
+		// try {
 		for (key in json) {
 			if (key in callbacks) {
-				// try {
-					for (cb = 0; cb < callbacks[key].length; cb++) {
-						callbacks[key][cb](json[key]);
-					}
-					for (cb = 0; cb < universal_callbacks.length; cb++) {
-						universal_callbacks[cb](key, json[key]);
-					}
-				// }
-/*				catch(err) {
-					// TODO: JS error callback: error(err, json)
-					self.sync_stop();
-					return;
-				}*/
+				for (cb = 0; cb < callbacks[key].length; cb++) {
+					callbacks[key][cb](json[key]);
+				}
+			}
+			for (cb = 0; cb < universal_callbacks.length; cb++) {
+				universal_callbacks[cb](key, json[key]);
 			}
 		}
+		// catch(err) {
+		// TODO: JS error callback: error(err, json)
+		// self.sync_stop();
+		// return;
+		// }
 	};
 
 	self.add_callback = function(js_func, api_name) {

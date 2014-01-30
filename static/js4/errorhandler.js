@@ -42,15 +42,17 @@ var ErrorHandler = function() {
 		if (("success" in json) && (!json.success)) {
 			var err = $el("div", { "class": "error_tooltip", "textContent": json.text });
 
-			var x = Mouse.x;
-			var y = Mouse.y;
+			var m = $measure_el(err);
+			var x = Mouse.x - 5;
+			var y = Mouse.y - m.height - 2;
 			if (y < 30) y = 30;
-			if (x > (window.innerWidth - err.offsetWidth)) x = window.innerWidth - err.offsetWidth - 15;
-			if (y > (window.innerHeight - err.offsetHeight)) y = window.innerHeight - err.offsetHeight - 15;
+			if (x > (window.innerWidth - m.width)) x = window.innerWidth - err.offsetWidth - 15;
+			if (y > (window.innerHeight - m.height)) y = window.innerHeight - err.offsetHeight - 15;
 			err.style.left = x + "px";
 			err.style.top = y + "px";
 
 			document.body.appendChild(err);
+			Fx.delay_css_setting(err, "opacity", 1);
 			setTimeout(function() { Fx.remove_element(err); }, 5000);
 		}
 	};
