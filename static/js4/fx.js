@@ -1,6 +1,7 @@
 var Fx = function() {
 	"use strict";
 	var self = {};
+	self.transform_string = "transform";
 	var delayed_css = [];
 
 	var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -15,8 +16,6 @@ var Fx = function() {
 	//
 	//*****************************************************************************
 
-	var transform_string;
-
 	var get_transform_string = function() {
 		var transforms = [ "transform", "WebkitTransform", "msTransform", "MozTransform", "OTransform" ];
 		var p;
@@ -28,7 +27,7 @@ var Fx = function() {
 	};
 
 	self.initialize = function() {
-		transform_string = get_transform_string();
+		self.transform_string = get_transform_string();
 	};
 
 	var do_delayed_css = function() {
@@ -40,7 +39,7 @@ var Fx = function() {
 
 	self.delay_css_setting = function(el, attribute, value) {
 		if (attribute == "transform") {
-			attribute = transform_string;
+			attribute = self.transform_string;
 		}
 		delayed_css.push({ "el": el, "attribute": attribute, "value": value });
 		if (delayed_css.length == 1) {

@@ -23,6 +23,13 @@
 	overflow: hidden;
 }
 
+#requests_list .timeline_song {
+	position: absolute;
+	padding: 0;
+	margin-left: 7px;
+	width: 96%;
+}
+
 #requests_header {
 	@include transition-wtime(300ms, transform, width);
 	background: #666;

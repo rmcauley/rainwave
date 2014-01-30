@@ -32,15 +32,12 @@ var EventBase = function(json) {
 	self.songs = null;
 
 	var changed_to_history = false;
-	var song_normal_height = 70;
-	var song_small_height = 55;
-	var song_height = SmallScreen ? song_small_height : song_normal_height;
 
 	if (json.songs) {
 		self.songs = [];
 		if ("songs" in json) {
 			for (var i = 0; i < json.songs.length; i++) {
-				self.songs.push(TimelineSong(json.songs[i]));
+				self.songs.push(TimelineSong.new(json.songs[i]));
 			}
 		}
 	}
@@ -56,10 +53,10 @@ var EventBase = function(json) {
 			for (var i = 0; i < max_index; i++) {
 				self.el.appendChild(self.songs[i].el);
 			}
-			self.height = song_height * self.songs.length;
+			self.height = TimelineSong.height * self.songs.length;
 			if (self.data.used) {
 				changed_to_history = true;
-				self.height = song_height;
+				self.height = TimelineSong.height;
 			}
 		}
 		else {
@@ -101,7 +98,7 @@ var EventBase = function(json) {
 		self.height = SmallScreen ? 90 : 130;
 		// assume all song heights are the same (THEY SHOULD BE...)
 		// yes it makes me a bit iffy but I refuse to incur any more offsetHeight reflow penalties here
-		self.height = self.height + (song_height * (self.songs.length - 1));
+		self.height = self.height + (TimelineSong.height * (self.songs.length - 1));
 	};
 
 	self.change_to_now_playing = function() {
@@ -126,7 +123,7 @@ var EventBase = function(json) {
 			for (var i = 1; i < self.songs.length; i++) {
 				Fx.remove_element(self.songs[i].el);
 			}
-			self.height = song_height;
+			self.height = TimelineSong.height;
 		}
 		changed_to_history = true;
 
@@ -139,12 +136,12 @@ var EventBase = function(json) {
 	};
 
 	self.reflow = function() {
-		song_height = SmallScreen ? song_small_height : song_normal_height;
+		TimelineSong.height = SmallScreen ? song_small_height : song_normal_height;
 		if ($has_class(self.el, "timeline_now_playing")) {
 			solve_now_playing_height();
 		}
 		else if (changed_to_history && self.songs) {
-			self.height = song_height;
+			self.height = TimelineSong.height;
 		}
 		else {
 			self.height = $measure_el(self.el).height;

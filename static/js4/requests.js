@@ -38,12 +38,6 @@ var Requests = function() {
 		API.add_callback(self.update, "requests");
 	};
 
-	self.on_resize = function(new_height) {
-		if (new_height) height = new_height
-		if (el && $has_class(container, "nonsticky")) el.style.height = height + "px";
-		else if (el) el.style.height = "auto";
-	};
-
 	self.add = function(song_id) {
 		API.async_get("request", { "song_id": song_id });
 	};
@@ -57,7 +51,7 @@ var Requests = function() {
 	};
 
 	self.update = function(json) {
-		var i, j, found;
+		var i, j, found, n;
 		if (json.length != songs.length) {
 			fake_hover();
 		}
@@ -68,24 +62,38 @@ var Requests = function() {
 			for (j = songs.length - 1; j >= 0; j--) {
 				if (json[i].id == songs[j].data.id) {
 					songs[j].update(json[i]);
-					new_songs.push(songs[j]);
+					new_songs.unshift(songs[j]);
 					songs.splice(j, 1);
 					found = true;
 					break;
 				}
 			}
 			if (!found) {
-				new_songs.push(TimelineSong(json[i], true));
+				n = TimelineSong.new(json[i], true);
+				n.el.style[Fx.transform_string] = "translateY(" + height + "px)";
+				new_songs.unshift(n);
+				el.appendChild(n.el);
 			}
 		}
 		for (i = songs.length - 1; i >= 0; i--) {
 			Fx.remove_element(songs[i].el);
 		}
-
-		for (i = 0; i < new_songs.length; i++) {
-			el.appendChild(new_songs[i].el);
-		}
 		songs = new_songs;
+		self.reflow();
+	};
+
+	self.on_resize = function(new_height) {
+		if (new_height) height = new_height
+		if (el && $has_class(container, "nonsticky")) el.style.height = height + "px";
+		else if (el) el.style.height = "auto";
+	};
+
+	self.reflow = function() {
+		var running_height = 5;
+		for (var i = 0; i < songs.length; i++) {
+			Fx.delay_css_setting(songs[i].el, "transform", "translateY(" + running_height + "px)");
+			running_height += TimelineSong.height;
+		}
 		scroller.update_scroll_height();
 	};
 

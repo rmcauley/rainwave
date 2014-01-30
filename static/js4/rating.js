@@ -3,7 +3,7 @@
 
 // This module is a bit of a mess due to the reliance on the legacy Fx library.
 
-//var rating_dbg = ErrorHandler.make_debug_div();
+// var rating_dbg = ErrorHandler.make_debug_div();
 
 // ******* SEE fx.js FOR BACKGROUND POSITIONING AND FAVE SHOWING/HIDING
 
@@ -22,7 +22,9 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 		"rating": rating,
 		"fave": fave,
 		"ratable": ratable,
-		"el": $el("div")
+		"el": $el("div"),
+		"absolute_x": false,
+		"absolute_y": false
 	};
 
 	if (force_hdpi) {
@@ -36,6 +38,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 	var current_rating;
 	var effect = Fx.legacy_effect(Fx.Rating, self.el, 400);
 	var offset_left;
+	var offset_top;
 
 	self.reset_rating = function() {
 		if (self.rating_user) {
@@ -54,16 +57,17 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 	};
 
 	var get_rating_from_mouse = function(evt) {
-		if (!offset_left) offset_left = evt.target.offsetLeft;
-		var x = 0;
-		var y = 0;
-		if (evt.offsetX) { x = evt.offsetX - offset_left; y = evt.offsetY; }
-		else if (evt.layerX) { x = evt.layerX - offset_left; y = evt.layerY; }
+		if (!offset_left && !self.absolute_x) offset_left = evt.target.offsetLeft;
+		if (!offset_top && !self.absolute_y) offset_top = evt.target.offsetTop;
+		var x = evt.layerX || evt.offsetX || evt.x;
+		var y = evt.layerY || evt.offsetY || evt.y;
+		if (!self.absolute_x) x -= offset_left;
+		if (!self.absolute_y) y -= offset_top;
 
 		if (x <= 18) return 0;		// fave switching
 
 		var result = Math.round(((x - 20 + ((18 - y) * .5)) / 10) * 2) / 2;
-		//rating_dbg.textContent = x + " / " + y + " -> " + result;
+		// rating_dbg.innerHTML = "layerX: " + (evt.layerX || evt.offsetX) + " / layerY: " + (evt.layerY || evt.offsetY) + "<br>offset_left: " + offset_left + " / offset_top:" + offset_top + "<br>x: " + x + " / y: " + y + " -> " + result;
 		if (result <= 1) return 1;
 		else if (result >= 5) return 5;
 		return result;
@@ -158,7 +162,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 			self.el.addEventListener("mousemove", on_mouse_move);
 			self.el.addEventListener("mouseout", self.reset_rating);
 			self.el.addEventListener("click", click);
-			self.el.addEventListener("mouseout", function() { offset_left = null });
+			self.el.addEventListener("mouseout", function() { offset_left = null; offset_top = null; });
 		}
 	}
 

@@ -18,6 +18,7 @@ function _on_resize(e) {
 		screen_size_changed = true;
 		RatingControl.change_padding_top(3);
 	}
+	TimelineSong.calculate_height();
 	PlaylistLists.on_resize();
 	Scrollbar.refresh_all_scrollbars();
 	DetailView.on_resize();
@@ -25,6 +26,7 @@ function _on_resize(e) {
 	// this has to go after due to scrollbar funkiness with the schedule
 	if (screen_size_changed) {
 		Schedule.reflow();
+		Requests.reflow();
 	}
 }
 
