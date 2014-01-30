@@ -229,7 +229,7 @@ def remove_all_locks(sid):
 def get_all_albums_list(sid, user = None):
 	if not user or user.id == 1:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, NULL AS fave, NULL AS rating_user "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, FALSE AS fave, 0 AS rating_user, FALSE AS rating_complete "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"WHERE r4_album_sid.sid = %s "
@@ -237,7 +237,7 @@ def get_all_albums_list(sid, user = None):
 			(sid,))
 	else:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS rating_user "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, COALESCE(album_fave, FALSE) AS fave, COALESCE(album_rating_user, 0) AS rating_user, COALESCE(album_rating_complete, FALSE) AS rating_complete "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
@@ -1067,6 +1067,7 @@ class Album(AssociatedMetadata):
 
 	def associate_song_id(self, song_id, sids, is_tag = None):
 		do_reconciliation = False
+		original_num_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s) AS temp", (self.id,))
 		for sid in sids:
 			if not db.c.fetch_var("SELECT COUNT(*) FROM r4_song_sid WHERE song_id = %s AND sid = %s", (song_id, sid)):
 				raise Exception("Song ID %s has not been associated with station %s yet." % (song_id, sid))
@@ -1077,9 +1078,11 @@ class Album(AssociatedMetadata):
 				db.c.update("UPDATE r4_song_sid SET album_id = %s WHERE song_id = %s AND sid = %s", (self.id, song_id, sid))
 		if do_reconciliation:
 			# Update the cached number of songs this album has
-			num_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s) AS temp", (self.id,))
-			db.c.update("UPDATE r4_albums SET album_song_count = %s WHERE album_id = %s", (num_songs, self.id))
+			new_num_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s) AS temp", (self.id,))
+			db.c.update("UPDATE r4_albums SET album_song_count = %s WHERE album_id = %s", (new_num_songs, self.id))
 			self.reconcile_sids()
+			if new_num_songs != original_num_songs:
+				self.reset_user_completed_flags()
 
 	def disassociate_song_id(self, song_id):
 		"""
