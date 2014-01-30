@@ -59,8 +59,8 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 	var get_rating_from_mouse = function(evt) {
 		if (!offset_left && !self.absolute_x) offset_left = evt.target.offsetLeft;
 		if (!offset_top && !self.absolute_y) offset_top = evt.target.offsetTop;
-		var x = evt.layerX || evt.offsetX || evt.x;
-		var y = evt.layerY || evt.offsetY || evt.y;
+		var x = evt.offsetX || evt.layerX || evt.x;
+		var y = evt.offsetY || evt.layerY || evt.y;
 		if (!self.absolute_x) x -= offset_left;
 		if (!self.absolute_y) y -= offset_top;
 
