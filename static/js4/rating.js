@@ -123,7 +123,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 
 	self.update_fave = function(fave) {
 		self.fave = fave;
-		effect.set_fave(self.fave);
+		self.reset_fave();
 	};
 
 	self.update_rating = function(rating) {

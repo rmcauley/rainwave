@@ -110,7 +110,7 @@ var AlbumList = function(scroller, offset_width) {
 
 	self.draw_entry = function(item) {
 		var item_el = document.createElement("div");
-		item_el.textContent = item.name;
+		item_el.appendChild($el("span", { "textContent": item.name }));
 		return item_el;
 	};
 
