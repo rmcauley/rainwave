@@ -50,10 +50,13 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 			current_rating = self.rating;
 		}
 		effect.set_rating(current_rating);
+		self.update_ratable(self.ratable);
 	};
 
 	self.reset_fave = function() {
-		effect.set_fave(self.fave);
+		if (self.fave) $add_class(self.el, "rating_fave");
+		else $remove_class(self.el, "rating_fave");
+		$remove_class(self.el, "fave_hover");
 	};
 
 	var get_rating_from_mouse = function(evt) {
@@ -96,11 +99,10 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 	};
 
 	var click = function(evt) {
-		if (!self.ratable) return;
 		var new_rating = get_rating_from_mouse(evt);
 		// fave toggle
 		if (new_rating === 0) {
-			effect.set_fave(!self.fave);
+			// effect.set_fave(!self.fave);
 			if (self.type == "song") {
 				API.async_get("fave_song", { "fave": !self.fave, "song_id": id });
 			}
@@ -108,7 +110,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 				API.async_get("fave_album", { "fave": !self.fave, "album_id": id });
 			}
 		}
-		else {
+		else if (self.ratable) {
 			effect.set_rating(new_rating);
 			API.async_get("rate", { "rating": new_rating, "song_id": id });
 		}
@@ -131,6 +133,8 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 
 	self.update_ratable = function(ratable) {
 		self.ratable = ratable;
+		if (self.ratable) $add_class(self.el, "ratable");
+		else $remove_class(self.el, "ratable");
 	};
 
 	self.update = function(rating_user, rating, fave, ratable) {
@@ -142,6 +146,10 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 		self.reset_fave();
 	};
 
+	self.fave_mouse_over = function() {
+		$add_class(self.el, "fave_hover");
+	};
+
 	self.show_hover = function() {
 		self.el.insertBefore(self.el.firstChild, hover_box);
 		hover_box.style.opacity = 1;
@@ -149,21 +157,23 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 
 	self.hide_hover = function() {
 		Fx.remove_element(hover_box);
+		 offset_left = null;
+		 offset_top = null;
 	};
 
 	self.reset_rating();
 	self.reset_fave();
 
 	if (User.user_id > 1) {
-		self.el.addEventListener("mouseover", effect.fave_mouse_over);
+		self.el.addEventListener("mouseover", self.fave_mouse_over);
 		self.el.addEventListener("mouseout", self.reset_fave);
+		self.el.addEventListener("click", click);
+		$add_class(fave_solid, "faveable");
 
 		if (type == "song") {
 			self.el.addEventListener("mouseout", self.hide_hover);
 			self.el.addEventListener("mousemove", on_mouse_move);
 			self.el.addEventListener("mouseout", self.reset_rating);
-			self.el.addEventListener("click", click);
-			self.el.addEventListener("mouseout", function() { offset_left = null; offset_top = null; });
 		}
 	}
 

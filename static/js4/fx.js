@@ -183,41 +183,19 @@ var Fx = function() {
 
 	self.Rating = function(element) {
 		var r = {};
-		r.fave_is_on = false;
-		var current_rating;
-		var fave_class;
-		var rating_class;
-
-		r.change_class = function() {
-			if (element.className != rating_class + " " + fave_class) {
-				element.setAttribute("class", rating_class + " " + fave_class);
-			}
-		};
 
 		r.set_rating = function(new_rating) {
-			current_rating = new_rating;
-			r.start(current_rating);
+			r.start(new_rating);
 		};
 
 		r.change_to_site_rating = function() {
-			rating_class = "rating_site";
-			r.change_class();
+			$remove_class(element, "rating_user");
+			$add_class(element, "rating_site");
 		};
 
 		r.change_to_user_rating = function() {
-			rating_class = "rating_user";
-			r.change_class();
-		};
-
-		r.set_fave = function(fave) {
-			if (fave) fave_class = "rating_fave";
-			else fave_class = "";
-			r.change_class();
-		};
-
-		r.fave_mouse_over = function() {
-			fave_class = "fave_hover";
-			r.change_class();
+			$remove_class(element, "rating_site");
+			$add_class(element, "rating_user");
 		};
 
 		r.update = function(now) {

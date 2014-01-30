@@ -7,6 +7,10 @@
 	height: 1.2em;
 }
 
+.ratable {
+	cursor: pointer;
+}
+
 body.small_screen .rating_site, body.small_screen .rating_user {
 	margin-top: 1px;
 }
@@ -36,6 +40,10 @@ body.small_screen .fave_lined {
 	@include transition-wtime(200ms, opacity);
 	opacity: 0;
 	padding-top: 3px;
+}
+
+.faveable {
+	cursor: pointer;
 }
 
 body.small_screen .fave_solid {
