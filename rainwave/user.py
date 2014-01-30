@@ -115,7 +115,9 @@ class User(object):
 		elif self.id == 9575:
 			self.data['radio_admin'] = True
 
-		if self.data['_total_ratings'] > config.get("rating_allow_all_threshold"):
+		if self.data['radio_perks']:
+			self.data['radio_rate_anything'] = True
+		elif self.data['_total_ratings'] > config.get("rating_allow_all_threshold"):
 			self.data['radio_rate_anything'] = True
 
 		if not self.data['radio_listen_key']:
