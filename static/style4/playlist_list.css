@@ -59,23 +59,26 @@ div.searchlist > div {
 	word-break: break-all;
 	height: 1.3em;
 	padding: 1px 60px 1px 0px;
-	border-bottom: solid 1px #1f2022;
+	border-bottom: solid 1px transparent;
 	cursor: pointer;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
 
-div.searchlist > div.searchtable_key_nav_hover {
-	background-color: #3A3D40;
-	padding-left: 15px;
-	border-bottom: solid 1px $highlight;
-}
-
-div.searchlist_open_item {
-}
-
 div.searchlist_cooldown {
 	background-color: #1f2041;
+}
+
+div.searhlist_rating_complete {
+	background-color: #18331c;
+}
+
+div.searchlist_cooldown.searchlist_rating_complete {
+	background-color: #000;
+}
+
+div.searchlist > div:hover span.searchlist_name {
+	padding-left: 7px;
 }
 
 span.searchlist_fave {
@@ -123,4 +126,19 @@ span.searchlist_cooldown_time {
 
 div.searchlist_cooldown_visible span.searchlist_cooldown_time {
 	display: inline-block;
+}
+
+div.searchlist > div:hover, div.searchlist div.searchtable_key_nav_hover {
+	border-bottom: solid 1px #1a435e;
+	background-color: #143347;
+}
+
+div.searchlist > div:hover span.searchlist_name, div.searchlist div.searchtable_key_nav_hover span.searchlist_name {
+	padding-left: 7px;
+}
+
+div.searchlist div.searchlist_open_item {
+	background-color: #1f4f70;
+	padding-left: 13px;
+	border-bottom: solid 1px #245b80;
 }

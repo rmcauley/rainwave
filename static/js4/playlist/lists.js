@@ -117,12 +117,6 @@ var AlbumList = function(scroller, offset_width) {
 		if ("_fave_id" in evt.target) {
 			API.async_get("fave_album", { "fave": !self.data[evt.target._fave_id].fave, "album_id": evt.target._fave_id });
 		}
-	}
-
-	var open_element = function(e) {
-		if ("_id" in e.target) {
-			self.open_id(e.target._id);
-		}
 	};
 
 	self.open_id = function(id) {
@@ -142,7 +136,6 @@ var AlbumList = function(scroller, offset_width) {
 		item._el_fave.appendChild(lined);
 		item._el_text_span = $el("span", { "class": "searchlist_name", "textContent": item.name });
 		item._el_text_span._id = item.id;
-		item._el_text_span.addEventListener("click", open_element);
 		self.update_cool(item);
 		item._el.appendChild(item._el_text_span);
 	};

@@ -28,6 +28,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 
 	var search_string = "";
 	var current_key_nav_element = false;
+	var current_open_element = false;
 	var scroll_offset = 100;
 
 	// LIST MANAGEMENT ***********************************************
@@ -136,6 +137,18 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 		return 0;
 	};
 
+	var open_element = function(e) {
+		if ("_id" in e.target) {
+			if (current_open_element) {
+				$remove_class(current_open_element, "searchlist_open_item");
+			}
+			current_open_element = self.data[e.target._id]._el;
+			$add_class(current_open_element, "searchlist_open_item");
+			self.open_id(e.target._id);
+		}
+	};
+	self.el.addEventListener("click", open_element);
+
 	// SEARCHING ****************************
 
 	self.remove_key_nav_highlight = function() {
@@ -229,7 +242,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 
 	self.key_nav_enter = function() {
 		if (current_key_nav_element) {
-			self.open_id(current_key_nav_element._id);
+			self.open_element({ "target": current_key_nav_element });
 			return true;
 		}
 		return false;
