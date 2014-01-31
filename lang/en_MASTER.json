@@ -116,6 +116,7 @@
    "timeformat_h"                                    : "h ",
    "timeformat_m"                                    : "m ",
    "timeformat_s"                                    : "s ",
+   "timeformat_w"                                    : "w ",
 
    "pltab_albums"                                    : "Albums",
    "pltab_artists"                                   : "Artists",
