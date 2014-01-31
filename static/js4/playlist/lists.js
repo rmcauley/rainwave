@@ -96,10 +96,11 @@ var AlbumList = function(scroller, offset_width) {
 	};
 	Prefs.add_callback("searchlist_show_cooldown");
 
-	var update_rating = function(album_id, rating, rating_user) {
+	var update_rating = function(album_id, rating, rating_user, rating_complete) {
 		if (album_id in self.data) {
 			if (rating) self.data[album_id].rating = rating;
 			if (rating_user) self.data[album_id].rating_user = rating_user;
+			if (rating_complete !== null) self.data[album_id].rating_complete = rating_complete;
 			self.update_item_element(self.data[album_id]);
 		}
 	};

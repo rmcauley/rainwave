@@ -22,6 +22,7 @@ div.searchlist_searchbox {
 	border-bottom: solid 1px $vdarktext;
 	position: fixed;
 	width: inherit;
+	z-index: 2;
 	background: #1f2022;
 	margin-left: -10px;
 	padding-top: 5px;
@@ -69,7 +70,7 @@ div.searchlist_cooldown {
 	background-color: #1f2041;
 }
 
-div.searhlist_rating_complete {
+div.searchlist_rating_complete {
 	background-color: #18331c;
 }
 

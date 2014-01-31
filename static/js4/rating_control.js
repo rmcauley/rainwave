@@ -24,7 +24,7 @@ var RatingControl = function() {
 		rating_update_song(json.song_id, json.rating_user, null);
 
 		for (var i = 0; i < json.updated_album_ratings.length; i++) {
-			rating_update_album(json.updated_album_ratings[i].id, null, json.updated_album_ratings[i].rating_user);
+			rating_update_album(json.updated_album_ratings[i].id, null, json.updated_album_ratings[i].rating_user, json.updated_album_ratings[i].rating_complete);
 		}
 	};
 
@@ -37,7 +37,7 @@ var RatingControl = function() {
 		}
 	};
 
-	var rating_update_album = function(album_id, rating, rating_user) {
+	var rating_update_album = function(album_id, rating, rating_user, rating_complete) {
 		if (album_id in album_ratings) {
 			for (var i = 0; i < album_ratings[album_id].length; i++) {
 				if (rating_user) album_ratings[album_id][i].update_user_rating(rating_user);
@@ -45,7 +45,7 @@ var RatingControl = function() {
 			}
 		}
 		if (self.album_rating_callback) {
-			self.album_rating_callback(album_id, rating, rating_user);
+			self.album_rating_callback(album_id, rating, rating_user, rating_complete);
 		}
 	};
 	
@@ -92,7 +92,7 @@ var RatingControl = function() {
 	self.history_update = function(json) {
 		if (json.length > 0) {
 			if (("songs" in json[0]) && (json[0].songs.length > 0)) {
-				rating_update_album(json[0].songs[0].albums[0].id, null, json[0].songs[0].albums[0].rating);
+				rating_update_album(json[0].songs[0].albums[0].id, null, json[0].songs[0].albums[0].rating, null);
 				rating_update_song(json[0].songs[0].id, null, json[0].songs[0].rating);
 			}
 		}
