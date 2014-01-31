@@ -27,7 +27,7 @@ var DetailView = function() {
 		while (open_views.length > 30) {
 			open_views.shift();
 		}
-		var n = { "el": $el("div"), "type": type, "id": id, "visible": false, "clocks": [] };
+		var n = { "el": $el("div"), "type": type, "id": id, "visible": false, "scroll_top": 0 };
 		open_views.push(n);
 		render_function(n, json);
 		return n;
@@ -44,6 +44,7 @@ var DetailView = function() {
 
 	var switch_to = function(view) {
 		if (visible_view) {
+			visible_view.scroll_top = scroller.scroll_top;
 			el.removeChild(visible_view.el);
 			visible_view.visible = false;
 		}
@@ -52,6 +53,7 @@ var DetailView = function() {
 		view.el.style.display = "block";
 		el.appendChild(view.el);
 		scroller.update_scroll_height();
+		scroller.scroll_to(view.scroll_top);
 		return view;
 	};
 

@@ -922,7 +922,11 @@ def get_updated_albums_dict(sid):
 	for album_id in updated_album_ids[sid]:
 		album = Album.load_from_id_sid(album_id, sid)
 		album.solve_cool_lowest(sid)
-		album_diff.append(album.to_dict())
+		tmp = album.to_dict()
+		# Remove user-related stuff since this gets stuffed straight down the pipe
+		tmp.pop('rating_user', None)
+		tmp.pop('fave', None)
+		album_diff.append(tmp)
 	return album_diff
 
 def warm_cooled_albums(sid):
@@ -977,7 +981,7 @@ class Album(AssociatedMetadata):
 			instance.data['songs'] = db.c.fetch_all(
 				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
 					"song_cool AS cool, song_cool_end AS cool_end, song_url AS url, song_link_text AS link_text, "
-					"song_rating AS rating, 0 AS rating_user, NULL AS fave, "
+					"song_rating AS rating, 0 AS rating_user, FALSE AS fave, "
 					"string_agg(r4_artists.artist_id || '|' || r4_artists.artist_name,  ',') AS artist_parseable "
 				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
@@ -992,7 +996,7 @@ class Album(AssociatedMetadata):
 				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
 					"song_cool AS cool, song_cool_end AS cool_end, song_url AS url, song_link_text AS link_text, "
 					"song_rating AS rating, song_cool_multiply AS cool_multiply, song_cool_override AS cool_override, "
-					"song_rating_user AS rating_user, song_fave AS fave, song_request_only AS request_only, "
+					"COALESCE(song_rating_user, 0) AS rating_user, COALESCE (song_fave, FALSE) AS fave, song_request_only AS request_only, "
 					"string_agg(r4_artists.artist_id || '|' || r4_artists.artist_name,  ',') AS artist_parseable "
 				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
@@ -1310,7 +1314,7 @@ class Artist(AssociatedMetadata):
 		self.data['songs'] = db.c.fetch_all(
 			"SELECT r4_song_artist.song_id AS id, r4_song_sid.sid AS sid, song_rating AS rating, song_title AS title, "
 				"r4_song_sid.album_id AS album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, "
-				"song_rating_user AS rating_user, song_fave AS fave "
+				"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(song_fave, FALSE) AS fave "
 			"FROM r4_song_artist "
 				"JOIN r4_songs USING (song_id) "
 				"JOIN r4_song_sid USING (song_id) "

@@ -53,7 +53,7 @@ var TimelineSong = function() {
 			self.elements.album_group = self.el.appendChild($el("div", { "class": "album_group" }));
 			self.elements.album_rating = self.elements.album_group.appendChild(album_rating.el);
 			self.elements.album = self.elements.album_group.appendChild($el("div", { "class": "album", "textContent": self.data.albums[0].name }));
-			// TODO: linkify album
+			self.elements.album.addEventListener("click", function() { API.async_get("album", { "id": self.data.albums[0].id }); });
 
 			if (self.data.elec_request_username) {
 				self.elements.requester = self.el.appendChild($el("div", { 

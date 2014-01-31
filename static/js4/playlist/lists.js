@@ -170,11 +170,11 @@ var AlbumList = function(scroller, offset_width) {
 		}
 		if (item.rating_user) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
-			item._el.style.backgroundPosition = (offset_width - 50) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
+			item._el.style.backgroundPosition = (offset_width - 58) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
 		}
 		else if (item.rating) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
-			item._el.style.backgroundPosition = (offset_width - 50) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";	
+			item._el.style.backgroundPosition = (offset_width - 58) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";	
 		}
 	};
 
