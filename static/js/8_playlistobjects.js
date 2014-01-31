@@ -49,7 +49,7 @@ var Song = {
 			"song_title": json['title'],
 			"song_totalvotes": json['vote_total'],
 			"song_totalrequests": json['request_count'],
-			"song_url": json['link'],
+			"song_url": json['url'],
 			"song_urltext": json['link_text'],
 			"song_oa_multiplier": json['cool_multiply'],
 			"song_requestor": json['elec_request_username'],
