@@ -80,8 +80,8 @@ var EventBase = function(json) {
 		if (self.songs) {
 			for (var i = 0; i < self.songs.length; i++) {
 				for (var j = 0; j < json.songs.length; j++) {
-					if (self.songs[i].id == json.songs[j].id) {
-						self.songs[i].update(json.songs[j].id);
+					if (self.songs[i].data.id == json.songs[j].id) {
+						self.songs[i].update(json.songs[j]);
 					}
 				}
 			}
@@ -107,7 +107,7 @@ var EventBase = function(json) {
 		if (self.songs && (self.songs.length > 0)) {
 			// re-order song positioning so the now playing item is on top
 			// TODO: make this animated and spiffo!
-			self.songs.sort(function(a, b) { return a.data.entry_position - b.data.entry_position; });
+			self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
 			for (var i = 0; i < self.songs.length; i++) {
 				self.el.appendChild(self.songs[i].el);
 			}
