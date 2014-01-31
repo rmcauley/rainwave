@@ -33,7 +33,7 @@ class SongTest(unittest.TestCase):
 		self.assertEqual(song.album_tag, "Test Album 1")
 		self.assertEqual(song.genre_tag, "Test Group 1")
 		self.assertEqual(song.data['link_text'], "Rainwave")
-		self.assertEqual(song.data['link'], "rainwave.cc")
+		self.assertEqual(song.data['url'], "rainwave.cc")
 
 	def test_save_and_load(self):
 		song_saved = playlist.Song.load_from_file("tests/test1.mp3", [1])
@@ -44,7 +44,7 @@ class SongTest(unittest.TestCase):
 		self.assertEqual(song_saved.filename, song_loaded.filename)
 		self.assertEqual(song_saved.id, song_loaded.id)
 		self.assertEqual(song_saved.data['title'], song_loaded.data['title'])
-		self.assertEqual(song_saved.data['link'], song_loaded.data['link'])
+		self.assertEqual(song_saved.data['url'], song_loaded.data['link'])
 		self.assertEqual(song_saved.data['link_text'], song_loaded.data['link_text'])
 		self.assertEqual(song_saved.data['length'], song_loaded.data['length'])
 		self.assertEqual(song_saved.verified, song_loaded.verified)

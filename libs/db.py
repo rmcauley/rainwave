@@ -275,7 +275,7 @@ def create_tables():
 			song_filename				TEXT		, \
 			song_title				TEXT		, \
 			song_title_searchable	TEXT		NOT NULL, \
-			song_link				TEXT		, \
+			song_url				TEXT		, \
 			song_link_text				TEXT		, \
 			song_length				SMALLINT	, \
 			song_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \

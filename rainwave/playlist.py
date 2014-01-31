@@ -398,7 +398,7 @@ class Song(object):
 		self.album_tag = None
 		self.genre_tag = None
 		self.data = {}
-		self.data['link'] = None
+		self.data['url'] = None
 		self.data['link_text'] = None
 		self.data['rating_allowed'] = False
 		self.replay_gain = None
@@ -427,9 +427,9 @@ class Song(object):
 		elif "COMM::'XXX'" in keys:
 			self.data['link_text'] = f["COMM::'XXX'"][0]
 		if "WXXX:URL" in keys:
-			self.data['link'] = f["WXXX:URL"].url
+			self.data['url'] = f["WXXX:URL"].url
 		elif "WXXX" in keys:
-			self.data['link'] = f["WXXX"][0]
+			self.data['url'] = f["WXXX"][0]
 		
 		if (not "TXXX:REPLAYGAIN_TRACK_GAIN" in keys and not "TXXX:replaygain_track_gain" in keys) and config.get("mp3gain_scan"):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
@@ -493,7 +493,7 @@ class Song(object):
 				SET	song_filename = %s, \
 					song_title = %s, \
 					song_title_searchable = %s, \
-					song_link = %s, \
+					song_url = %s, \
 					song_link_text = %s, \
 					song_length = %s, \
 					song_scanned = TRUE, \
@@ -501,14 +501,14 @@ class Song(object):
 					song_file_mtime = %s, \
 					song_replay_gain = %s \
 				WHERE song_id = %s",
-				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['link'], self.data['link_text'], self.data['length'], file_mtime, self.replay_gain, self.id))
+				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], file_mtime, self.replay_gain, self.id))
 		else:
 			self.id = db.c.get_next_id("r4_songs", "song_id")
 			db.c.update("INSERT INTO r4_songs \
-				(song_id, song_filename, song_title, song_title_searchable, song_link, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain) \
+				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain) \
 				VALUES \
 				(%s     , %s           , %s        , %s                   , %s       , %s            , %s         , %s             , %s             , %s           , %s          , %s )",
-				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['link'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True, self.replay_gain))
+				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True, self.replay_gain))
 			self.verified = True
 			self.data['added_on'] = int(time.time())
 
@@ -976,7 +976,7 @@ class Album(AssociatedMetadata):
 		if not user or user.is_anonymous():
 			instance.data['songs'] = db.c.fetch_all(
 				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
-					"song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, "
+					"song_cool AS cool, song_cool_end AS cool_end, song_url AS url, song_link_text AS link_text, "
 					"song_rating AS rating, 0 AS rating_user, NULL AS fave, "
 					"string_agg(r4_artists.artist_id || '|' || r4_artists.artist_name,  ',') AS artist_parseable "
 				"FROM r4_song_sid "
@@ -984,13 +984,13 @@ class Album(AssociatedMetadata):
 					"LEFT JOIN r4_song_artist USING (song_id) "
 					"LEFT JOIN r4_artists USING (artist_id) "
 				"WHERE r4_song_sid.sid = %s AND r4_song_sid.album_id = %s "
-				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating "
+				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_url, song_link_text, song_rating "
 				"ORDER BY song_title",
 				(sid, instance.id,))
 		else:
 			instance.data['songs'] = db.c.fetch_all(
 				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
-					"song_cool AS cool, song_cool_end AS cool_end, song_link AS link, song_link_text AS link_text, "
+					"song_cool AS cool, song_cool_end AS cool_end, song_url AS url, song_link_text AS link_text, "
 					"song_rating AS rating, song_cool_multiply AS cool_multiply, song_cool_override AS cool_override, "
 					"song_rating_user AS rating_user, song_fave AS fave, song_request_only AS request_only, "
 					"string_agg(r4_artists.artist_id || '|' || r4_artists.artist_name,  ',') AS artist_parseable "
@@ -1000,7 +1000,7 @@ class Album(AssociatedMetadata):
 					"LEFT JOIN r4_artists USING (artist_id) "
 					"LEFT JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
 				"WHERE r4_song_sid.sid = %s AND r4_song_sid.album_id = %s "
-				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_link, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply, song_request_only "
+				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_url, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply, song_request_only "
 				"ORDER BY song_title",
 				(user.id, sid, instance.id))
 		return instance
