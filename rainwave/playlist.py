@@ -1069,9 +1069,12 @@ class Album(AssociatedMetadata):
 		else:
 			self.data[new_key] = default
 
+	def get_num_songs(self):
+		return db.c.fetch_var("SELECT COUNT(song_id) FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s) AS temp", (self.id,))
+
 	def associate_song_id(self, song_id, sids, is_tag = None):
 		do_reconciliation = False
-		original_num_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s) AS temp", (self.id,))
+		original_num_songs = self.get_num_songs()
 		for sid in sids:
 			if not db.c.fetch_var("SELECT COUNT(*) FROM r4_song_sid WHERE song_id = %s AND sid = %s", (song_id, sid)):
 				raise Exception("Song ID %s has not been associated with station %s yet." % (song_id, sid))
@@ -1082,10 +1085,10 @@ class Album(AssociatedMetadata):
 				db.c.update("UPDATE r4_song_sid SET album_id = %s WHERE song_id = %s AND sid = %s", (self.id, song_id, sid))
 		if do_reconciliation:
 			# Update the cached number of songs this album has
-			new_num_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s) AS temp", (self.id,))
+			new_num_songs = self.get_num_songs()
 			db.c.update("UPDATE r4_albums SET album_song_count = %s WHERE album_id = %s", (new_num_songs, self.id))
 			self.reconcile_sids()
-			if new_num_songs != original_num_songs:
+			if new_num_songs > original_num_songs:
 				self.reset_user_completed_flags()
 
 	def disassociate_song_id(self, song_id):
@@ -1195,21 +1198,22 @@ class Album(AssociatedMetadata):
 		return all_ratings
 
 	def update_all_user_ratings(self):
+		num_songs = self.get_num_songs()
 		db.c.update(
 			"WITH "
 				"faves AS ( "
 					"DELETE FROM r4_album_ratings WHERE album_id = %s RETURNING * "
 				"), "
 				"ratings AS ( "
-					"SELECT album_id, NULL AS album_fave, user_id, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user "
+					"SELECT album_id, FALSE AS album_fave, user_id, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user, COUNT(song_rating_user) AS song_rating_user_count "
 					"FROM ("
 						"SELECT DISTINCT song_id, album_id FROM r4_song_sid WHERE album_id = %s"
 					") AS r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) "
 					"GROUP BY album_id, user_id "
 				") "
-			"INSERT INTO r4_album_ratings (album_id, user_id, album_fave, album_rating_user) "
-			"SELECT album_id, user_id, BOOL_OR(album_fave) AS album_fave, NULLIF(MAX(album_rating_user), 0) AS album_rating_user "
-			"FROM (SELECT * FROM (SELECT album_id, album_fave, user_id, 0 AS album_rating_user FROM faves) AS faves UNION ALL SELECT * FROM ratings) AS fused "
+			"INSERT INTO r4_album_ratings (album_id, user_id, album_fave, album_rating_user, album_rating_complete) "
+			"SELECT album_id, user_id, BOOL_OR(album_fave) AS album_fave, NULLIF(MAX(album_rating_user), 0) AS album_rating_user, CASE WHEN MAX(song_rating_user_count) = 7 THEN TRUE ELSE FALSE END AS album_rating_complete "
+			"FROM (SELECT * FROM (SELECT album_id, album_fave, user_id, 0 AS album_rating_user, 0 AS song_rating_user_count FROM faves) AS faves UNION ALL SELECT * FROM ratings) AS fused "
 			"GROUP BY album_id, user_id "
 			"HAVING BOOL_OR(album_fave) = TRUE OR MAX(album_rating_user) IS NOT NULL ",
 			(self.id, self.id))
