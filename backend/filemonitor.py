@@ -21,6 +21,8 @@ from rainwave import playlist
 
 _directories = {}
 _scan_errors = None
+_album_art_queue = None
+_use_album_art_queue = False
 mimetypes.init()
 
 def start(full_scan):
@@ -43,14 +45,28 @@ def start(full_scan):
 		monitor()
 
 def full_update():
+	global _use_album_art_queue
+	global _album_art_queue
+
 	cache.set("backend_scan", "full scan")
 	db.c.update("UPDATE r4_songs SET song_scanned = FALSE")
+	_album_art_queue = []
+	_use_album_art_queue = True
 	_scan_directories()
 
+	print "\n",
+	for i in range(0, len(_album_art_queue)):
+		print "\rAlbum art: %s/%s" % (i + 1, len(_album_art_queue)),
+		process_album_art(_album_art_queue[i])
+	_album_art_queue = []
+
+	print "\nDisabling missing songs...",
 	dead_songs = db.c.fetch_list("SELECT song_id FROM r4_songs WHERE song_scanned = FALSE AND song_verified = TRUE")
 	for song_id in dead_songs:
 		song = playlist.Song.load_from_id(song_id)
 		song.disable()
+	print "\rMissing songs disabled.   "
+	print "Complete."
 
 	cache.set("backend_scan", "off")
 
@@ -117,6 +133,8 @@ def _is_image(filename):
 	return False
 
 def _scan_file(filename, sids, throw_exceptions = False):
+	global _album_art_queue
+	global _use_album_art_queue
 	try:
 		if _is_mp3(filename):
 			# Only scan the file if we don't have a previous mtime for it, or the mtime is different
@@ -126,7 +144,10 @@ def _scan_file(filename, sids, throw_exceptions = False):
 			else:
 				db.c.update("UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s", (filename,))
 		elif _is_image(filename):
-			process_album_art(filename)
+			if _use_album_art_queue:
+				_album_art_queue.append(filename)
+			else:
+				process_album_art(filename)
 	except Exception as xception:
 		_add_scan_error(filename, xception)
 		if throw_exceptions:
