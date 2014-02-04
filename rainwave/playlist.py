@@ -1023,7 +1023,7 @@ class Album(AssociatedMetadata):
 		global updated_album_ids
 
 		self.id = db.c.get_next_id("r4_albums", "album_id")
-		success = db.c.update("INSERT INTO r4_albums (album_id, album_name) VALUES (%s, %s)", (self.id, self.data['name']))
+		success = db.c.update("INSERT INTO r4_albums (album_id, album_name, album_name_searchable) VALUES (%s, %s, %s)", (self.id, self.data['name'], make_searchable_string(self.data['name'])))
 		for sid in self.data['sids']:
 			updated_album_ids[sid][self.id] = True
 		return success
