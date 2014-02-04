@@ -189,8 +189,6 @@ def process_album_art(filename):
 		return True
 	except Exception as xception:
 		_add_scan_error(filename, xception)
-		if throw_exceptions:
-			raise
 		return False
 
 def _disable_file(filename):
