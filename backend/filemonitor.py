@@ -214,6 +214,11 @@ def monitor():
 		def process_IN_DELETE(self, event):
 			_disable_file(event.pathname)
 
+	pid = os.getpid()
+	pid_file = open(config.get("scanner_pid_file"), 'w')
+	pid_file.write(str(pid))
+	pid_file.close()
+
 	cache.set("backend_scan", "monitoring")
 	mask = pyinotify.IN_DELETE | pyinotify.IN_CREATE | pyinotify.IN_MODIFY
 	notifiers = []

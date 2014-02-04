@@ -1,40 +1,42 @@
 #! /bin/sh
 ### BEGIN INIT INFO
 # Provides:          rw_scanner rw_backend rw_api
-# Required-Start:    $remote_fs $network postgresql memcache
-# Required-Stop:     $remote_fs
+# Required-Start:    $remote_fs $network $time $syslog postgresql memcache nginx
+# Required-Stop:     $remote_fs $network $time $syslog postgresql memcache nginx
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Starts the icecast audio streaming server daemon
+# Short-Description: Rainwave services
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-D_OPTS="--config /etc/rainwave.conf"
-D_SCANNER=/opt/rainwave/rw_scanner.py
-D_API=/opt/rainwave/rw_api.py
-D_BACKEND=/opt/rainwave/rw_backend.py
 
 set -e
 
 case "$1" in
   start)
-	echo -n "Starting Rainwave: "
-	# start-stop-daemon --start --background --exec $D_SCANNER -- $D_OPTS
-	# start-stop-daemon --start --background --exec $D_API -- $D_OPTS
-	start-stop-daemon --start --background --exec $D_BACKEND -- $D_OPTS
+	echo -n "Starting Rainwave Scanner: "
+	start-stop-daemon --start --background --exec /usr/bin/pypy /opt/rainwave/rw_scanner.py
+	echo "OK"
+	echo -n "Starting Rainwave API: "
+	start-stop-daemon --start --background --exec /usr/bin/pypy /opt/rainwave/rw_api.py
+	echo "OK"
+	echo -n "Starting Rainwave Backend: "
+	start-stop-daemon --start --background --exec /usr/bin/pypy /opt/rainwave/rw_backend.py
 	echo "OK"
 	;;
   stop)
-	echo -n "Stopping Rainwave: "
 	for pidfile in `ls /var/run/rainwave`
 	do
-		start-stop-daemon --stop --pidfile /var/run/rainwave/$pidfile
+		echo -n "Stopping $pidfile: "
+		start-stop-daemon --oknodo --stop --pidfile /var/run/rainwave/$pidfile
 		if [ $? -eq 0 ]
 		then
 			rm /var/run/rainwave/$pidfile
+			echo "OK"
+		else
+			echo "**bad**"
 		fi
 	done
-	echo "OK"
 	;;
   *)
 	echo "Usage: $0 {start|stop}" >&2

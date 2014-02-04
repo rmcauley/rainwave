@@ -21,8 +21,8 @@ class R3Song(rainwave.playlist.Song):
 		r3_data = db.c.fetch_row("SELECT MIN(song_addedon) AS song_added_on, SUM(song_totalrequests) AS song_request_count, MAX(song_oa_multiplier) AS song_cool_multiply, MAX(song_oa_override) AS song_cool_override, MAX(song_rating_id) AS song_rating_id FROM rw_songs WHERE song_filename = %s GROUP BY song_filename", (self.filename,))
 		if not r3_data:
 			return 0
-		# db.c.update("UPDATE rw_songs SET r4_song_id = %s WHERE song_filename = %s", (self.id, self.filename))
-		# db.c.update("UPDATE r4_songs SET song_request_count = %s, song_added_on = %s, song_cool_multiply = %s, song_cool_override = %s WHERE song_id = %s", (r3_data['song_request_count'], r3_data['song_added_on'], r3_data['song_cool_multiply'], r3_data['song_cool_override'], self.id))
+		db.c.update("UPDATE rw_songs SET r4_song_id = %s WHERE song_filename = %s", (self.id, self.filename))
+		db.c.update("UPDATE r4_songs SET song_request_count = %s, song_added_on = %s, song_cool_multiply = %s, song_cool_override = %s WHERE song_id = %s", (r3_data['song_request_count'], r3_data['song_added_on'], r3_data['song_cool_multiply'], r3_data['song_cool_override'], self.id))
 
 		updated_ratings = db.c.update(
 			"INSERT INTO r4_song_ratings(song_id, song_rating_user, user_id, song_rated_at, song_rated_at_rank, song_rated_at_count, song_fave) "
@@ -73,42 +73,42 @@ for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums"):
 print
 print
 
-#translated_donations = 0
-#for donation in db.c.fetch_all("SELECT * FROM rw_donations ORDER BY donation_id"):
-#	db.c.update("INSERT INTO r4_donations(user_id, donation_amount, donation_message, donation_private) VALUES (%s, %s, %s, %s)",
-#				(donation['user_id'], donation['donation_amount'], donation['donation_desc'], donation['donation_private_name']))
-#	translated_donations += 1
-#
-#print "Translated donat. : ", translated_donations
-#print
-#
-#translated_stats = 0
-#for stat in db.c.fetch_all("SELECT * FROM rw_listenerstats ORDER BY lstats_time"):
-#	db.c.update("INSERT INTO r4_listener_counts(lc_time, sid, lc_guests, lc_users, lc_users_active, lc_guests_active) VALUES (%s, %s, %s, %s, %s, %s)",
-#				(stat['lstats_time'], stat['sid'], stat['lstats_guests'], stat['lstats_regd'], stat['lstats_activeguests'], stat['lstats_activeregd']))
-#	translated_stats += 1
-#print "Translated stats   : %s" % translated_stats
-#
-#discarded_requests = 0
-#translated_requests = 0
-#for request in db.c.fetch_all("SELECT rw_requests.*, r4_song_id FROM rw_requests JOIN rw_songs USING (song_id) ORDER BY request_id"):
-#	if request['r4_song_id']:
-#		db.c.update("INSERT INTO r4_request_history(user_id, song_id, request_fulfilled_at, request_line_size, request_at_rank, request_at_count) VALUES (%s, %s, %s, %s, %s, %s)",
-#			(request['user_id'], request['r4_song_id'], request['request_fulfilled_at'], request['rqlen_fulfilled_at'], request['user_request_rank'], request['user_request_snapshot']))
-#		translated_requests += 1
-#	else:
-#		discarded_requests += 1
-#print "Discarded requests : %s" % discarded_requests
-#print "Translated requests: %s" % translated_requests
-#
-#translated_votes = 0
-#discarded_votes = 0
-#for vote in db.c.fetch_all("SELECT rw_votehistory.*, r4_song_id FROM rw_votehistory JOIN rw_songs USING (song_id) ORDER BY vhist_time"):
-#	if vote['r4_song_id']:
-#		db.c.update("INSERT INTO r4_votehistory(vote_time, user_id, song_id, vote_at_rank, vote_at_count) VALUES (%s, %s, %s, %s, %s)",
-#					(vote['vhist_time'], vote['user_id'], vote['r4_song_id'], vote['user_rank'], vote['user_vote_snapshot']))
-#		translated_votes += 1
-#	else:
-#		discarded_votes += 1
-#print "Discarded votes    : %s" % discarded_votes
-#print "Translated votes   : %s" % translated_votes
+translated_donations = 0
+for donation in db.c.fetch_all("SELECT * FROM rw_donations ORDER BY donation_id"):
+	db.c.update("INSERT INTO r4_donations(user_id, donation_amount, donation_message, donation_private) VALUES (%s, %s, %s, %s)",
+				(donation['user_id'], donation['donation_amount'], donation['donation_desc'], donation['donation_private_name']))
+	translated_donations += 1
+
+print "Translated donat. : ", translated_donations
+print
+
+translated_stats = 0
+for stat in db.c.fetch_all("SELECT * FROM rw_listenerstats ORDER BY lstats_time"):
+	db.c.update("INSERT INTO r4_listener_counts(lc_time, sid, lc_guests, lc_users, lc_users_active, lc_guests_active) VALUES (%s, %s, %s, %s, %s, %s)",
+				(stat['lstats_time'], stat['sid'], stat['lstats_guests'], stat['lstats_regd'], stat['lstats_activeguests'], stat['lstats_activeregd']))
+	translated_stats += 1
+print "Translated stats   : %s" % translated_stats
+
+discarded_requests = 0
+translated_requests = 0
+for request in db.c.fetch_all("SELECT rw_requests.*, r4_song_id FROM rw_requests JOIN rw_songs USING (song_id) ORDER BY request_id"):
+	if request['r4_song_id']:
+		db.c.update("INSERT INTO r4_request_history(user_id, song_id, request_fulfilled_at, request_line_size, request_at_rank, request_at_count) VALUES (%s, %s, %s, %s, %s, %s)",
+			(request['user_id'], request['r4_song_id'], request['request_fulfilled_at'], request['rqlen_fulfilled_at'], request['user_request_rank'], request['user_request_snapshot']))
+		translated_requests += 1
+	else:
+		discarded_requests += 1
+print "Discarded requests : %s" % discarded_requests
+print "Translated requests: %s" % translated_requests
+
+translated_votes = 0
+discarded_votes = 0
+for vote in db.c.fetch_all("SELECT rw_votehistory.*, r4_song_id FROM rw_votehistory JOIN rw_songs USING (song_id) ORDER BY vhist_time"):
+	if vote['r4_song_id']:
+		db.c.update("INSERT INTO r4_votehistory(vote_time, user_id, song_id, vote_at_rank, vote_at_count) VALUES (%s, %s, %s, %s, %s)",
+					(vote['vhist_time'], vote['user_id'], vote['r4_song_id'], vote['user_rank'], vote['user_vote_snapshot']))
+		translated_votes += 1
+	else:
+		discarded_votes += 1
+print "Discarded votes    : %s" % discarded_votes
+print "Translated votes   : %s" % translated_votes

@@ -33,7 +33,6 @@ shutil.copytree("etc", installdir + "/etc")
 shutil.copytree("static", installdir + "/static")
 shutil.copytree("templates", installdir + "/templates")
 
-shutil.copy("icecast_sync.py", "/opt/rainwave/icecast_sync.py")
 shutil.copy("rw_api.py", "/opt/rainwave/rw_api.py")
 shutil.copy("rw_backend.py", "/opt/rainwave/rw_backend.py")
 shutil.copy("rw_scanner.py", "/opt/rainwave/rw_scanner.py")
@@ -44,4 +43,4 @@ shutil.copy("initscript", "/etc/init.d/rainwave")
 shutil.copy("rw_get_next.py", "/usr/local/bin/rw_get_next.py")
 shutil.copy("tagset.py", "/usr/local/bin/tagset.py")
 
-subprocess.check_call([ "/etc/init.d/rainwave", "start" ])
+# subprocess.check_call([ "/etc/init.d/rainwave", "start" ])

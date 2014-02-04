@@ -427,7 +427,7 @@ def create_tables():
 			sched_in_progress		BOOLEAN		DEFAULT FALSE, \
 			sched_used				BOOLEAN		DEFAULT FALSE, \
 			sched_use_crossfade		BOOLEAN		DEFAULT TRUE, \
-			sched_use_tag_suffix	BOOLEAN		DEFAULT TRUE \
+			sched_use_tag_suffix	BOOLEAN		DEFAULT TRUE, \
 			sched_creator_user_id	INT \
 		)")
 	c.create_idx("r4_schedule", "sched_used")
@@ -437,7 +437,7 @@ def create_tables():
 
 	c.update(" \
 		CREATE TABLE r4_elections ( \
-			elec_id					INTEGER		NOT NULL, \
+			elec_id					INTEGER		PRIMARY KEY, \
 			elec_used				BOOLEAN		DEFAULT FALSE, \
 			elec_in_progress		BOOLEAN		DEFAULT FALSE, \
 			elec_start_actual		INTEGER		, \
