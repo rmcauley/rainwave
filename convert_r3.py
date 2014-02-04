@@ -83,11 +83,11 @@ print "Translated donat. : ", translated_donations
 print
 
 translated_stats = 0
-for stat in db.c.fetch_all("SELECT * FROM rw_listenerstats ORDER BY lstats_time"):
+for stat in db.c.fetch_all("SELECT * FROM rw_listenerstats ORDER BY lstats_time LIMIT 300"):
 	db.c.update("INSERT INTO r4_listener_counts(lc_time, sid, lc_guests, lc_users, lc_users_active, lc_guests_active) VALUES (%s, %s, %s, %s, %s, %s)",
 				(stat['lstats_time'], stat['sid'], stat['lstats_guests'], stat['lstats_regd'], stat['lstats_activeguests'], stat['lstats_activeregd']))
 	translated_stats += 1
-print "Translated stats   : %s" % translated_stats
+	print "\rTranslated stats   : %s" % translated_stats,
 
 discarded_requests = 0
 translated_requests = 0
@@ -96,10 +96,10 @@ for request in db.c.fetch_all("SELECT rw_requests.*, r4_song_id FROM rw_requests
 		db.c.update("INSERT INTO r4_request_history(user_id, song_id, request_fulfilled_at, request_line_size, request_at_rank, request_at_count) VALUES (%s, %s, %s, %s, %s, %s)",
 			(request['user_id'], request['r4_song_id'], request['request_fulfilled_at'], request['rqlen_fulfilled_at'], request['user_request_rank'], request['user_request_snapshot']))
 		translated_requests += 1
+		print "\rTranslated requests: %s" % translated_requests,
 	else:
 		discarded_requests += 1
 print "Discarded requests : %s" % discarded_requests
-print "Translated requests: %s" % translated_requests
 
 translated_votes = 0
 discarded_votes = 0
@@ -108,7 +108,7 @@ for vote in db.c.fetch_all("SELECT rw_votehistory.*, r4_song_id FROM rw_votehist
 		db.c.update("INSERT INTO r4_votehistory(vote_time, user_id, song_id, vote_at_rank, vote_at_count) VALUES (%s, %s, %s, %s, %s)",
 					(vote['vhist_time'], vote['user_id'], vote['r4_song_id'], vote['user_rank'], vote['user_vote_snapshot']))
 		translated_votes += 1
+		print "\rTranslated votes   : %s" % translated_votes,
 	else:
 		discarded_votes += 1
 print "Discarded votes    : %s" % discarded_votes
-print "Translated votes   : %s" % translated_votes
