@@ -157,35 +157,41 @@ def process_album_art(filename):
 	# There's an ugly bug here where psycopg isn't correctly escaping the path's \ on Windows
 	# So we need to repr() in order to get the proper number of \ and then chop the leading and trailing single-quotes
 	# Nasty bug.  This workaround needs to be tested on a POSIX system.
-	if not config.get("album_art_enabled"):
+	try:
+		if not config.get("album_art_enabled"):
+			return True
+		directory = repr(os.path.dirname(filename))[2:-1]
+		album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE song_filename LIKE %s || '%%'", (directory,))
+		if not album_ids or len(album_ids) == 0:
+			return False
+		im_original = Image.open(filename)
+		if im_original.mode != "RGB":
+			im_original = im_original.convert()
+		if not im_original:
+			_add_scan_error(filename, "Could not open album art.")
+			return False
+		im_320 = im_original
+		im_240 = im_original
+		im_120 = im_original
+		if im_original.size[0] > 420 or im_original.size[1] > 420:
+			im_320 = im_original.copy()
+			im_320.thumbnail((320, 320), Image.ANTIALIAS)
+		if im_original.size[0] > 260 or im_original.size[1] > 260:
+			im_240 = im_original.copy()
+			im_240.thumbnail((240, 240), Image.ANTIALIAS)
+		if im_original.size[0] > 160 or im_original.size[1] > 160:
+			im_120 = im_original.copy()
+			im_120.thumbnail((120, 120), Image.ANTIALIAS)
+		for album_id in album_ids:
+			im_120.save("%s/%s_120.jpg" % (config.get("album_art_file_path"), album_id))
+			im_240.save("%s/%s_240.jpg" % (config.get("album_art_file_path"), album_id))
+			im_320.save("%s/%s.jpg" % (config.get("album_art_file_path"), album_id))
 		return True
-	directory = repr(os.path.dirname(filename))[2:-1]
-	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE song_filename LIKE %s || '%%'", (directory,))
-	if not album_ids or len(album_ids) == 0:
+	except Exception as xception:
+		_add_scan_error(filename, xception)
+		if throw_exceptions:
+			raise
 		return False
-	im_original = Image.open(filename)
-	if im_original.mode != "RGB":
-		im_original = im_original.convert()
-	if not im_original:
-		_add_scan_error(filename, "Could not open album art.")
-		return False
-	im_320 = im_original
-	im_240 = im_original
-	im_120 = im_original
-	if im_original.size[0] > 420 or im_original.size[1] > 420:
-		im_320 = im_original.copy()
-		im_320.thumbnail((320, 320), Image.ANTIALIAS)
-	if im_original.size[0] > 260 or im_original.size[1] > 260:
-		im_240 = im_original.copy()
-		im_240.thumbnail((240, 240), Image.ANTIALIAS)
-	if im_original.size[0] > 160 or im_original.size[1] > 160:
-		im_120 = im_original.copy()
-		im_120.thumbnail((120, 120), Image.ANTIALIAS)
-	for album_id in album_ids:
-		im_120.save("%s/%s_120.jpg" % (config.get("album_art_file_path"), album_id))
-		im_240.save("%s/%s_240.jpg" % (config.get("album_art_file_path"), album_id))
-		im_320.save("%s/%s.jpg" % (config.get("album_art_file_path"), album_id))
-	return True
 
 def _disable_file(filename):
 	try:
