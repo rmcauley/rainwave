@@ -64,7 +64,7 @@ var Scrollbar = function() {
 			max_scroll_top = Math.max(scroll_height - offset_height, 0);
 
 			if (resizer) {
-				resizer.style.height = offset_height + "px";
+				resizer.style.height = scroll_height + "px";
 			}
 
 			if (self.scroll_top > max_scroll_top) {
