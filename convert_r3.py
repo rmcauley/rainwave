@@ -82,33 +82,20 @@ for donation in db.c.fetch_all("SELECT * FROM rw_donations ORDER BY donation_id"
 print "Translated donat. : ", translated_donations
 print
 
-translated_stats = 0
-for stat in db.c.fetch_all("SELECT * FROM rw_listenerstats ORDER BY lstats_time LIMIT 300"):
-	db.c.update("INSERT INTO r4_listener_counts(lc_time, sid, lc_guests, lc_users, lc_users_active, lc_guests_active) VALUES (%s, %s, %s, %s, %s, %s)",
-				(stat['lstats_time'], stat['sid'], stat['lstats_guests'], stat['lstats_regd'], stat['lstats_activeguests'], stat['lstats_activeregd']))
-	translated_stats += 1
-	print "\rTranslated stats   : %s" % translated_stats,
+# translated_stats = 0
+# for stat in db.c.fetch_all("SELECT * FROM rw_listenerstats ORDER BY lstats_time LIMIT 300"):
+# 	db.c.update("INSERT INTO r4_listener_counts(lc_time, sid, lc_guests, lc_users, lc_users_active, lc_guests_active) VALUES (%s, %s, %s, %s, %s, %s)",
+# 				(stat['lstats_time'], stat['sid'], stat['lstats_guests'], stat['lstats_regd'], stat['lstats_activeguests'], stat['lstats_activeregd']))
+# 	translated_stats += 1
+# 	print "\rTranslated stats   : %s" % translated_stats,
 
-discarded_requests = 0
-translated_requests = 0
-for request in db.c.fetch_all("SELECT rw_requests.*, r4_song_id FROM rw_requests JOIN rw_songs USING (song_id) ORDER BY request_id"):
-	if request['r4_song_id']:
-		db.c.update("INSERT INTO r4_request_history(user_id, song_id, request_fulfilled_at, request_line_size, request_at_rank, request_at_count) VALUES (%s, %s, %s, %s, %s, %s)",
-			(request['user_id'], request['r4_song_id'], request['request_fulfilled_at'], request['rqlen_fulfilled_at'], request['user_request_rank'], request['user_request_snapshot']))
-		translated_requests += 1
-		print "\rTranslated requests: %s" % translated_requests,
-	else:
-		discarded_requests += 1
-print "Discarded requests : %s" % discarded_requests
+print "Processing requests in database...",
+translated_requests = db.c.update("INSERT INTO r4_request_history(user_id, song_id, request_fulfilled_at, request_line_size, request_at_count) SELECT user_id, r4_song_id AS song_id, request_fulfilled_at, rqlen_fulfilled_at AS request_line_size, user_request_snapshot AS request_at_count FROM rw_requests JOIN rw_songs USING (song_id) WHERE r4_song_id IS NOT NULL ORDER BY request_id")
+print "\rTranslated requests: %s" % translated_requests
 
-translated_votes = 0
-discarded_votes = 0
-for vote in db.c.fetch_all("SELECT rw_votehistory.*, r4_song_id FROM rw_votehistory JOIN rw_songs USING (song_id) ORDER BY vhist_time"):
-	if vote['r4_song_id']:
-		db.c.update("INSERT INTO r4_votehistory(vote_time, user_id, song_id, vote_at_rank, vote_at_count) VALUES (%s, %s, %s, %s, %s)",
-					(vote['vhist_time'], vote['user_id'], vote['r4_song_id'], vote['user_rank'], vote['user_vote_snapshot']))
-		translated_votes += 1
-		print "\rTranslated votes   : %s" % translated_votes,
-	else:
-		discarded_votes += 1
-print "Discarded votes    : %s" % discarded_votes
+print "Processing votes in database....",
+translated_votes = "INSERT INTO r4_vote_history(vote_time, user_id, song_id, vote_at_rank, vote_at_count) SELECT vhist_time AS vote_time, user_id, r4_song_id AS song_id, user_rank AS vote_at_rank, user_vote_snapshot AS vote_at_count FROM rw_votehistory JOIN rw_songs USING (song_id) WHERE r4_song_id IS NOT NULL ORDER BY vhist_time"
+print "\rTranslated votes: %s" % translated_requests
+print
+
+print "R4: Ready to Launch"
