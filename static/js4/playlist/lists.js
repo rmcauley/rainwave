@@ -19,6 +19,8 @@ var PlaylistLists = function() {
 		search_cancel = search_box.appendChild($el("img", { "src": "/static/images4/cancel_ldpi.png", "class": "searchlist_cancel", "alt": "X", "title": $l("clearfilter") }))
 		search_cancel.addEventListener("click", function() { self.active_list.clear_search(); });
 		scroller = PlaylistScrollbar(el);
+		scroller.add_resizer("playlist", 10, false, 250);
+		scroller.post_resize_callback = self.on_resize;
 
 		lists.albums = AlbumList(scroller, el.offsetWidth - 20);
 		lists.albums._scroll_position = 0;

@@ -18,6 +18,7 @@ var Scrollbar = function() {
 		self.scroll_top = 0;
 		self.margin_top = 0;
 		self.use_fixed = false;
+		self.post_resize_callback;
 		var handle = element.insertBefore($el("div", { "class": "scrollbar"}), element.firstChild);
 		var scroll_height;
 		var offset_height;
@@ -25,17 +26,22 @@ var Scrollbar = function() {
 		var scrollpx_per_handlepx = 1;
 		var handle_height = 0;
 		var scrolling = false;
-		var original_mouse_y;
-		var original_scroll_top;
+		var original_mouse_y, original_mouse_x, original_transition;
+		var original_scroll_top, original_width;
 		var wheel_delta;
 		var scroll_enabled = false;
+		var resizer, resizer_name;
+		var resizer_max = 5000;
+		var resizer_min = 0;
+		var resizer_margin = 0;
+
 		// this function will handle a browser's automatic re-scroll when the page finishes loading
 		var first_scroll = function() {
 			self.scroll_top = element.scrollTop;
 			self.parent_update_handle_position();
 			element.removeEventListener("scroll", first_scroll);
 			first_scroll = null;
-		}
+		};
 
 		element.addEventListener("scroll", first_scroll);
 
@@ -56,6 +62,10 @@ var Scrollbar = function() {
 			}
 			offset_height = element.offsetHeight;
 			max_scroll_top = Math.max(scroll_height - offset_height, 0);
+
+			if (resizer) {
+				resizer.style.height = offset_height + "px";
+			}
 
 			if (self.scroll_top > max_scroll_top) {
 				self.scroll_top = max_scroll_top;
@@ -145,7 +155,53 @@ var Scrollbar = function() {
 			self.parent_update_handle_position();
 		};
 
-		handle.addEventListener("mousedown", mouse_down, false);
+		self.add_resizer = function(new_resizer_name, new_resizer_margin, new_resizer_max, new_resizer_min) {
+			if (resizer) return;
+			if (new_resizer_max) resizer_max = new_resizer_max;
+			if (new_resizer_min) resizer_min = new_resizer_min;
+			resizer_margin = new_resizer_margin ? new_resizer_margin : 0;
+			resizer_name = new_resizer_name;
+			Prefs.define("resizer_" + resizer_name);
+			resizer = element.insertBefore($el("div", { "class": "resizer" }), element.firstChild);
+			resizer.addEventListener("mousedown", resizer_mouse_down);
+			original_width = Prefs.get("resizer_" + resizer_name);
+			if (!original_width) original_width = element.offsetWidth;
+			else element.style.width = original_width + "px";
+		};
+
+		var resizer_mouse_down = function(e) {
+			if (scrolling) return;
+			$add_class(document.body, "unselectable");
+			$add_class(element, "resizing");
+			scrolling = true;
+			original_mouse_x = e.screenX;
+			window.addEventListener("mousemove", resizer_mouse_move);
+			window.addEventListener("mouseup", resizer_mouse_up);
+		};
+
+		var resizer_mouse_up = function(e) {
+			window.removeEventListener("mousemove", resizer_mouse_move);
+			window.removeEventListener("mouseup", resizer_mouse_up);
+			$remove_class(document.body, "unselectable");
+			$remove_class(element, "resizing");
+			scrolling = false;
+			original_width = element.offsetWidth;
+			Prefs.change("resizer_" + resizer_name, original_width - resizer_margin);
+			if (self.post_resize_callback) self.post_resize_callback();
+		};
+
+		var resizer_mouse_move = function(e) {
+			var resizer_new_width = Math.round(original_width + (e.screenX - original_mouse_x));
+			if (resizer_new_width > resizer_max) {
+				resizer_new_width = resizer_max;
+			}
+			else if (resizer_new_width < resizer_min) {
+				resizer_new_width = resizer_min;
+			}
+			element.style.width = resizer_new_width + "px";
+		};
+
+		handle.addEventListener("mousedown", mouse_down);
 		addWheelListener(element, mouse_wheel);
 
 		scrollbars.push(self);

@@ -1,12 +1,16 @@
 #timeline {
 	float: left;
 	height: 100%;
-	min-width: 30%;
+	min-width: 19em;
 	padding: 0px 10px 0px 10px;
 	@include transition(width);
 	overflow: hidden;
 	position: relative;
 	background-color: #131416;
+}
+
+#timeline.resizing {
+	transition: none;
 }
 
 .timeline_event {

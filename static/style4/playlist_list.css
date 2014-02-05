@@ -1,5 +1,6 @@
 #lists {
-	width: 21em;
+	width: 300px;
+	min-width: 250px;
 	height: 100%;
 	float: left;
 	position: relative;
@@ -64,6 +65,10 @@ div.searchlist > div {
 	cursor: pointer;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+}
+
+.resizing div.searchlist > div {
+	background-image: none !important;
 }
 
 div.searchlist_cooldown {
