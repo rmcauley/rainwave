@@ -43,4 +43,6 @@ shutil.copy("initscript", "/etc/init.d/rainwave")
 shutil.copy("rw_get_next.py", "/usr/local/bin/rw_get_next.py")
 shutil.copy("tagset.py", "/usr/local/bin/tagset.py")
 
+print "Rainwave installed to /opt/rainwave."
+
 # subprocess.check_call([ "/etc/init.d/rainwave", "start" ])
