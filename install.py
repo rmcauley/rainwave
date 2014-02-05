@@ -11,7 +11,7 @@ if os.getuid() != 0:
 
 installdir = "/opt/rainwave"
 user = "rainwave"
-group = "rainwave"
+group = "root"
 
 if not os.path.exists("/etc/rainwave.conf"):
 	raise Exception("Configuration not found at /etc/rainwave.conf.  Please create a config.")
@@ -27,6 +27,7 @@ if not os.path.isdir(installdir):
 shutil.copytree("api", installdir + "/api", ignore=shutil.ignore_patterns("*.pyc"))
 shutil.copytree("api_requests", installdir + "/api_requests", ignore=shutil.ignore_patterns("*.pyc"))
 shutil.copytree("backend", installdir + "/backend", ignore=shutil.ignore_patterns("*.pyc"))
+shutil.copytree("lang", installdir + "/lang")
 shutil.copytree("libs", installdir + "/libs", ignore=shutil.ignore_patterns("*.pyc"))
 shutil.copytree("rainwave", installdir + "/rainwave", ignore=shutil.ignore_patterns("*.pyc"))
 shutil.copytree("etc", installdir + "/etc")
@@ -42,6 +43,8 @@ shutil.copy("rw_get_next.py", "/opt/rainwave/rw_get_next.py")
 shutil.copy("initscript", "/etc/init.d/rainwave")
 shutil.copy("rw_get_next.py", "/usr/local/bin/rw_get_next.py")
 shutil.copy("tagset.py", "/usr/local/bin/tagset.py")
+
+subprocess.call(["chown", "-R", "%s:%s" % (user, group), installdir ])
 
 print "Rainwave installed to /opt/rainwave."
 
