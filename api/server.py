@@ -72,15 +72,14 @@ class APITestFailed(Exception):
 		return repr(self.value)
 
 class APIServer(object):
-	def __init__(self):
-		pid = os.getpid()
-		pid_file = open(config.get("api_pid_file"), 'w')
-		pid_file.write(str(pid))
-		pid_file.close()
-
 	def _listen(self, task_id):
 		# task_ids start at zero, so we gobble up ports starting at the base port and work up
 		port_no = int(config.get("api_base_port")) + task_id
+
+		pid = os.getpid()
+		pid_file = open("%s/api_%s.pid" % (config.get("pid_dir"), port_no), 'w')
+		pid_file.write(str(pid))
+		pid_file.close()
 
 		# Log according to configured directory and port # we're operating on
 		log_file = "%s/rw_api_%s.log" % (config.get("api_log_dir"), port_no)
@@ -105,7 +104,9 @@ class APIServer(object):
 				i = i + 1
 
 		# Make sure all other errors get handled in an API-friendly way
-		request_classes.append((r".*", api.web.Error404Handler))
+		request_classes.append((r"/api/.*", api.web.Error404Handler))
+		request_classes.append((r"/api4/.*", api.web.Error404Handler))
+		request_classes.append((r".*", api.web.HTMLError404Handler))
 
 		# Initialize the help (rather than it scan all URL handlers every time someone hits it)
 		api.help.sectionize_requests()

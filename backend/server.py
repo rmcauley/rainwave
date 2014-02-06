@@ -91,16 +91,15 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 # 		schedule.refresh_schedule(int(sid))
 
 class BackendServer(object):
-	def __init__(self):
+	def _listen(self, sid):
 		pid = os.getpid()
-		pid_file = open(config.get("backend_pid_file"), 'w')
+		pid_file = open("%s/backend_%s.pid" % (config.get("pid_dir"), config.station_id_friendly[sid].lower()), 'w')
 		pid_file.write(str(pid))
 		pid_file.close()
 
-	def _listen(self, sid):
 		db.open()
 		cache.open()
-		log.init("%s/rw_%s.log" % (config.get("log_dir"), config.station_id_friendly[sid]), config.get("log_level"))
+		log.init("%s/rw_%s.log" % (config.get("log_dir"), config.station_id_friendly[sid].lower()), config.get("log_level"))
 
 		if config.test_mode:
 			playlist.remove_all_locks(sid)

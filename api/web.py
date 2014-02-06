@@ -41,6 +41,17 @@ class Error404Handler(tornado.web.RequestHandler):
 			self.write("]")
 		self.finish()
 
+class HTMLError404Handler(tornado.web.RequestHandler):
+	def get(self):
+		self.post()
+
+	def post(self):
+		self.set_status(404)
+		self.write(self.render_string("basic_header.html", title="HTTP 404 - File Not Found"))
+		self.write("<p><a href='http://rainwave.cc' target='_top'>Return to the front page.</a></p>")
+		self.write(self.render_string("basic_footer.html"))
+		self.finish()
+
 class RainwaveHandler(tornado.web.RequestHandler):
 	# The following variables can be overridden by you.
 	# Fields is a hash with { "form_name" => (fieldtypes.[something], True|False|None } format, so that automatic form validation can be done for you.  True/False values are for required/optional.

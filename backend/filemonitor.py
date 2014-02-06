@@ -240,7 +240,7 @@ def monitor():
 			_disable_file(event.pathname)
 
 	pid = os.getpid()
-	pid_file = open(config.get("scanner_pid_file"), 'w')
+	pid_file = open("%s/scanner.pid" % config.get("pid_dir"), 'w')
 	pid_file.write(str(pid))
 	pid_file.close()
 
