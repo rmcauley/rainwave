@@ -108,7 +108,7 @@ class Election(event.BaseEvent):
 
 	@classmethod
 	def create(cls, sid):
-		elec_id = db.c.get_next_id("r4_elections", "elec_id")
+		elec_id = db.c.get_next_id("r4_schedule", "sched_id")
 		elec = cls(sid)
 		elec.is_election = True
 		elec.id = elec_id
