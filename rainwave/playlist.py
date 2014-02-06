@@ -682,10 +682,10 @@ class Song(object):
 		raise SongMetadataUnremovable("Found no tag by name %s that wasn't assigned by ID3." % name)
 
 	def load_extra_detail(self):
-		self.data['fave_count'] = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings WHERE song_fave = TRUE AND song_id = %s", (self.id,))
+		# self.data['fave_count'] = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings WHERE song_fave = TRUE AND song_id = %s", (self.id,))
+		self.data['fave_count'] = None
 		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_rating > %s", (self.data['rating'],))
-		self.data['vote_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE sid = %s AND song_vote_total > %s", (self.data['sid'], self.data['vote_total']))
-		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE sid = %s AND song_request_count > %s", (self.data['sid'], self.data['request_count']))
+		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_request_count > %s", (self.data['request_count'],))
 
 		self.data['rating_histogram'] = {}
 		histo = db.c.fetch_all("SELECT "
@@ -734,7 +734,7 @@ class Song(object):
 		return db.c.update("UPDATE r4_song_sid SET song_played_last = %s WHERE song_id = %s AND sid = %s", (time.time(), self.id, sid))
 
 	def add_to_vote_count(self, votes, sid):
-		return db.c.update("UPDATE r4_song_sid SET song_vote_total = song_vote_total + %s WHERE song_id = %s AND sid = %s", (votes, self.id, sid))
+		return db.c.update("UPDATE r4_songs SET song_vote_count = song_vote_count + %s WHERE song_id = %s", (votes, self.id))
 
 	def check_rating_acl(self, user):
 		if self.data['rating_allowed']:
@@ -1051,7 +1051,7 @@ class Album(AssociatedMetadata):
 		self._dict_check_assign(d, "album_cool_override")
 		self._dict_check_assign(d, "album_cool_lowest", 0)
 		self._dict_check_assign(d, "album_played_last", 0)
-		self._dict_check_assign(d, "album_vote_total", 0)
+		self._dict_check_assign(d, "album_vote_count", 0)
 		self._dict_check_assign(d, "album_request_count", 0)
 		self._dict_check_assign(d, "album_cool", False)
 		self._dict_check_assign(d, "album_name_searchable", self.data['name'])
@@ -1187,8 +1187,8 @@ class Album(AssociatedMetadata):
 		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (time.time(), self.id, sid))
 
 	def update_vote_total(self, sid):
-		vote_total = db.c.fetch_var("SELECT SUM(song_vote_total) FROM r4_song_sid WHERE album_id = %s AND song_exists = TRUE", (self.id,))
-		return db.c.update("UPDATE r4_album_sid SET album_vote_total = %s WHERE album_id = %s AND sid = %s", (vote_total, self.id, sid))
+		vote_total = db.c.fetch_var("SELECT SUM(song_vote_count) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND song_exists = TRUE", (self.id,))
+		return db.c.update("UPDATE r4_albums SET album_vote_count = %s WHERE album_id = %s", (vote_total, self.id))
 
 	def get_all_ratings(self):
 		table = db.c.fetch_all("SELECT album_rating_user, album_fave, user_id FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s", (self.id,))
@@ -1236,10 +1236,10 @@ class Album(AssociatedMetadata):
 				song.set_election_block(sid, 'album', num_elections)
 
 	def load_extra_detail(self, sid):
-		self.data['fave_count'] = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings WHERE album_id = %s AND album_fave = TRUE", (self.id,))
+		# self.data['fave_count'] = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings WHERE album_id = %s AND album_fave = TRUE", (self.id,))
+		self.data['fave_count'] = None
 		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_albums WHERE album_rating > %s", (self.data['rating'],))
-		self.data['vote_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE sid = %s AND album_vote_total > %s", (sid, self.data['vote_total']))
-		self.data['request_rank'] = 1+ db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE sid = %s AND album_request_count > %s", (sid, self.data['request_count']))
+		self.data['request_rank'] = 1+ db.c.fetch_var("SELECT COUNT(album_id) FROM r4_albums WHERE album_request_count > %s", (self.data['request_count'],))
 
 		self.data['genres'] = db.c.fetch_all(
 			"SELECT DISTINCT group_id AS id, group_name AS name "

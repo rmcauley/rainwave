@@ -263,33 +263,46 @@ def create_tables():
 			album_name_searchable	TEXT 		NOT NULL, \
 			album_rating				REAL		DEFAULT 0, \
 			album_rating_count			INTEGER		DEFAULT 0, \
+			album_fave_count			INTEGER		DEFAULT 0, \
 			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-			album_song_count			SMALLINT		DEFAULT 0 \
+			album_song_count			SMALLINT		DEFAULT 0, \
+			album_request_count			INTEGER		DEFAULT 0, \
+			album_vote_count			INTEGER		DEFAULT 0, \
+			album_votes_seen			INTEGER		DEFAULT 0, \
+			album_vote_share			REAL 		\
 		)")
+	c.create_idx("r4_albums", "album_rating")
+	c.create_idx("r4_albums", "album_request_count")
 
 	c.update(" \
 		CREATE TABLE r4_songs ( \
-			song_id					SERIAL		PRIMARY KEY, \
+			song_id						SERIAL		PRIMARY KEY, \
+			song_origin_sid				SMALLINT	NOT NULL, \
 			song_verified				BOOLEAN		DEFAULT TRUE, \
 			song_scanned				BOOLEAN		DEFAULT TRUE, \
 			song_filename				TEXT		, \
-			song_title				TEXT		, \
-			song_title_searchable	TEXT		NOT NULL, \
-			song_url				TEXT		, \
+			song_title					TEXT		, \
+			song_title_searchable		TEXT		NOT NULL, \
+			song_artist_tag				TEXT		, \
+			song_url					TEXT		, \
 			song_link_text				TEXT		, \
-			song_length				SMALLINT	, \
+			song_length					SMALLINT	, \
 			song_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-			song_rating				REAL		DEFAULT 0, \
+			song_rating					REAL		DEFAULT 0, \
 			song_rating_count			INTEGER		DEFAULT 0, \
+			song_fave_count				INTEGER		DEFAULT 0, \
+			song_request_count			INT			DEFAULT 0, \
 			song_cool_multiply			REAL		DEFAULT 1, \
 			song_cool_override			INTEGER		, \
-			song_origin_sid				SMALLINT	NOT NULL, \
-			song_artist_tag				TEXT		, \
-			song_request_count			INT			DEFAULT 0, \
 			song_file_mtime				INTEGER		, \
-			song_replay_gain			TEXT 		\
-		)")
+			song_replay_gain			TEXT 		, \
+			song_vote_count				INTEGER		DEFAULT 0, \
+			song_votes_seen				INTEGER		DEFAULT 0, \
+			song_vote_share				REAL 		\
+ 		)")
 	c.create_idx("r4_songs", "song_verified")
+	c.create_idx("r4_songs", "song_rating")
+	c.create_idx("r4_songs", "song_request_count")
 
 	c.update(" \
 		CREATE TABLE r4_song_sid ( \
@@ -302,8 +315,6 @@ def create_tables():
 			song_elec_blocked			BOOLEAN 	DEFAULT FALSE, \
 			song_elec_blocked_num			SMALLINT	DEFAULT 0, \
 			song_elec_blocked_by			TEXT		, \
-			song_vote_share				REAL		, \
-			song_vote_total				INTEGER		, \
 			song_played_last			INTEGER		, \
 			song_exists				BOOLEAN		DEFAULT TRUE, \
 			song_request_only			BOOLEAN		DEFAULT FALSE, \
@@ -340,8 +351,6 @@ def create_tables():
 			album_id				INTEGER		NOT NULL, \
 			sid					SMALLINT	NOT NULL, \
 			album_played_last			INTEGER		DEFAULT 0, \
-			album_played_times			INTEGER		DEFAULT 0, \
-			album_request_count			INTEGER		DEFAULT 0, \
 			album_requests_pending		BOOLEAN, \
 			album_cool					BOOLEAN		DEFAULT FALSE, \
 			album_cool_multiply			REAL		DEFAULT 1, \
@@ -349,9 +358,6 @@ def create_tables():
 			album_cool_lowest			INTEGER		DEFAULT 0, \
 			album_updated				INTEGER		DEFAULT 0, \
 			album_elec_last				INTEGER		DEFAULT 0, \
-			album_elec_appearances			INTEGER		DEFAULT 0, \
-			album_vote_share			REAL		DEFAULT 0, \
-			album_vote_total			INTEGER		DEFAULT 0\
 		)")
 	c.create_idx("r4_album_sid", "album_exists")
 	c.create_idx("r4_album_sid", "sid")

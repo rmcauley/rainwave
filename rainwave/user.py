@@ -236,9 +236,9 @@ class User(object):
 
 	def _check_too_many_requests(self):
 		num_reqs = self.has_requests()
-		max_reqs = 6
+		max_reqs = 12
 		if self.data['radio_perks']:
-			max_reqs = 12
+			max_reqs = 24
 		if num_reqs >= max_reqs:
 			raise APIException("too_many_requests")
 		return num_reqs - max_reqs
