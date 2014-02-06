@@ -18,14 +18,17 @@ case "$1" in
 	start-stop-daemon --start --background --exec /opt/rainwave/rw_scanner.py
 	echo "OK"
 	echo -n "Starting Rainwave API: "
-	start-stop-daemon --start --background --exec /opt/rainwave/rw_api.py
+	start-stop-daemon --make-pidfile --pidfile /var/run/rainwave/_api_core.pid --start --background --exec /opt/rainwave/rw_api.py
 	echo "OK"
 	echo -n "Starting Rainwave Backend: "
-	start-stop-daemon --start --background --exec /opt/rainwave/rw_backend.py
+	start-stop-daemon --make-pidfile --pidfile /var/run/rainwave/_backend_core.pid --start --background --exec /opt/rainwave/rw_backend.py
 	echo "OK"
 	;;
   stop)
-	for pidfile in `ls /var/run/rainwave`
+	start-stop-daemon --stop --oknodo --pidfile /var/run/rainwave/_api_core.pid
+	start-stop-daemon --stop --oknodo --pidfile /var/run/rainwave/_backend_core.pid
+	sleep 1
+	for pidfile in `ls --ignore=_* /var/run/rainwave`
 	do
 		echo -n "Stopping $pidfile: "
 		start-stop-daemon --oknodo --stop --pidfile /var/run/rainwave/$pidfile
