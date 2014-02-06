@@ -135,7 +135,6 @@ class Election(event.BaseEvent):
 		self.is_election = True
 
 	def fill(self, target_song_length = None, skip_requests = False):
-		self._add_from_queue()
 		# ONLY RUN _ADD_REQUESTS ONCE PER FILL
 		if not skip_requests:
 			self._add_requests()
@@ -240,12 +239,6 @@ class Election(event.BaseEvent):
 		if len(self.songs) == 0:
 			return None
 		return self.songs[0]
-
-	def _add_from_queue(self):
-		for row in db.c.fetch_all("SELECT elecq_id, song_id FROM r4_election_queue WHERE sid = %s ORDER BY elecq_id LIMIT %s" % (self.sid, self._num_songs)):
-			db.c.update("DELETE FROM r4_election_queue WHERE elecq_id = %s" % (row['elecq_id'],))
-			song = playlist.Song.load_from_id(row['song_id'], self.sid)
-			self.add_song(song)
 
 	def _add_requests(self):
 		# ONLY RUN IS_REQUEST_NEEDED ONCE
