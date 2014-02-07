@@ -74,7 +74,11 @@ var Fx = function() {
 	}
 
 	self.remove_element = function(el) {
-		self.chain_transition(el, "opacity", 0, function() { if (el.parentNode) el.parentNode.removeChild(el); });
+		self.chain_transition(el, "opacity", 0, 
+			function() { 
+				if (el.parentNode) el.parentNode.removeChild(el);
+			}
+		);
 	};
 
 	//*****************************************************************************

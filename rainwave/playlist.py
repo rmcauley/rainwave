@@ -358,7 +358,7 @@ class Song(object):
 		for metadata in new_artists:
 			metadata.associate_song_id(s.id, order=i)
 			i += 1
-		for metedata in new_groups:
+		for metadata in new_groups:
 			metadata.associate_song_id(s.id)
 		if len(new_albums) > 0:
 			new_albums[0].associate_song_id(s.id, sids)
@@ -682,8 +682,6 @@ class Song(object):
 		raise SongMetadataUnremovable("Found no tag by name %s that wasn't assigned by ID3." % name)
 
 	def load_extra_detail(self):
-		# self.data['fave_count'] = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings WHERE song_fave = TRUE AND song_id = %s", (self.id,))
-		self.data['fave_count'] = None
 		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_rating > %s", (self.data['rating'],))
 		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_request_count > %s", (self.data['request_count'],))
 
@@ -749,6 +747,20 @@ class Song(object):
 			self.data['rating_allowed'] = True
 		else:
 			self.data['rating_allowed'] = False
+
+	def update_request_count(self):
+		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_history WHERE song_id = %s", (self.id,))
+		db.c.update("UPDATE r4_songs SET song_request_count = %s WHERE song_id = %s", (count, self.id,))
+
+		for album in self.albums:
+			album.update_request_count()
+
+	def update_fave_count(self):
+		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings WHERE song_fave = TRUE AND song_id = %s", (self.id,))
+		db.c.update("UPDATE r4_songs SET song_fave_count = %s WHERE song_id = %s", (count, self.id,))
+
+		for album in self.albums:
+			album.update_fave_count()
 
 	def length(self):
 		return self.data['length']
@@ -1051,6 +1063,7 @@ class Album(AssociatedMetadata):
 		self._dict_check_assign(d, "album_cool_override")
 		self._dict_check_assign(d, "album_cool_lowest", 0)
 		self._dict_check_assign(d, "album_played_last", 0)
+		self._dict_check_assign(d, "album_fave_count", 0)
 		self._dict_check_assign(d, "album_vote_count", 0)
 		self._dict_check_assign(d, "album_request_count", 0)
 		self._dict_check_assign(d, "album_cool", False)
@@ -1236,8 +1249,6 @@ class Album(AssociatedMetadata):
 				song.set_election_block(sid, 'album', num_elections)
 
 	def load_extra_detail(self, sid):
-		# self.data['fave_count'] = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings WHERE album_id = %s AND album_fave = TRUE", (self.id,))
-		self.data['fave_count'] = None
 		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_albums WHERE album_rating > %s", (self.data['rating'],))
 		self.data['request_rank'] = 1+ db.c.fetch_var("SELECT COUNT(album_id) FROM r4_albums WHERE album_request_count > %s", (self.data['request_count'],))
 
@@ -1258,6 +1269,14 @@ class Album(AssociatedMetadata):
 							   (self.id,))
 		for point in histo:
 			self.data['rating_histogram'][str(point['rating_rnd'])] = point['rating_count']
+
+	def update_request_count(self):
+		count = db.c.fetch_var("SELECT COUNT(*) FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s) AS songs JOIN r4_request_history USING (song_id)", (self.id,))
+		return db.c.update("UPDATE r4_albums SET album_request_count = %s WHERE album_id = %s", (count, self.id))
+
+	def update_fave_count(self):
+		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings WHERE album_fave = TRUE AND album_id = %s", (self.id,))
+		return db.c.update("UPDATE r4_albums SET album_fave_count = %s WHERE album_id = %s", (count, self.id,))
 
 	def to_dict(self, user = None):
 		d = super(Album, self).to_dict(user)

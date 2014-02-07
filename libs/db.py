@@ -19,6 +19,7 @@ c_old = None
 class PostgresCursor(psycopg2.extras.RealDictCursor):
 	allows_join_on_update = True
 	is_postgres = True
+	in_tx = False
 
 	def fetch_var(self, query, params = None):
 		self.execute(query, params)
@@ -78,6 +79,22 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		name = "%s_%s_idx" % (table, '_'.join(map(str, args)))
 		columns = ','.join(map(str, args))
 		self.execute("CREATE INDEX %s ON %s (%s)" % (name, table, columns))
+
+	def start_transaction(self):
+		if not self.in_tx:
+			return
+		self.execute("START TRANSACTION")
+		self.in_tx = True
+
+	def commit(self):
+		if not self.in_tx:
+			return
+		self.execute("COMMIT")
+		self.in_tx = False
+
+	def rollback(self):
+		self.execute("ROLLBACK")
+		self.in_tx = False
 
 class SQLiteCursor(object):
 	allows_join_on_update = False
@@ -188,6 +205,12 @@ class SQLiteCursor(object):
 	def create_idx(self, table, *args):
 		pass
 
+	def start_transaction(self):
+		pass
+
+	def commit(self):
+		pass
+
 def open():
 	global connection
 	global c
@@ -244,8 +267,11 @@ def close():
 	global c_old
 
 	if c_old and (c_old != c):
+		c_old.rollback()
 		c_old.close()
 	if c:
+		# forgot to commit?  too bad.
+		c.rollback()
 		c.close()
 	if connection:
 		connection.close()
@@ -253,6 +279,9 @@ def close():
 	return True
 
 def create_tables():
+	if c.is_postgres:
+		c.update("START TRANSACTION")
+
 	if config.test_mode:
 		_create_test_tables()
 
@@ -357,7 +386,7 @@ def create_tables():
 			album_cool_override			INTEGER		, \
 			album_cool_lowest			INTEGER		DEFAULT 0, \
 			album_updated				INTEGER		DEFAULT 0, \
-			album_elec_last				INTEGER		DEFAULT 0, \
+			album_elec_last				INTEGER		DEFAULT 0 \
 		)")
 	c.create_idx("r4_album_sid", "album_exists")
 	c.create_idx("r4_album_sid", "sid")
@@ -588,6 +617,22 @@ def create_tables():
 	c.create_delete_fk("r4_vote_history", "phpbb_users", "user_id")
 
 	c.update(" \
+		CREATE TABLE r4_vote_history_archived ( \
+			vote_id					SERIAL		PRIMARY KEY, \
+			vote_time				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
+			elec_id					INTEGER		, \
+			user_id					INTEGER		NOT NULL, \
+			song_id					INTEGER		NOT NULL, \
+			vote_at_rank				INTEGER		, \
+			vote_at_count				INTEGER		, \
+			entry_id				INTEGER		\
+		)")
+	c.create_null_fk("r4_vote_history_archived", "r4_election_entries", "entry_id")
+	c.create_null_fk("r4_vote_history_archived", "r4_elections", "elec_id")
+	c.create_null_fk("r4_vote_history_archived", "r4_songs", "song_id")
+	c.create_delete_fk("r4_vote_history_archived", "phpbb_users", "user_id")
+
+	c.update(" \
 		CREATE TABLE r4_api_keys ( \
 			api_id					SERIAL		PRIMARY KEY, \
 			user_id					INTEGER		NOT NULL, \
@@ -611,6 +656,9 @@ def create_tables():
 
 	if config.test_mode:
 		_fill_test_tables()
+
+	if c.is_postgres:
+		c.update("COMMIT")
 
 def _create_test_tables():
 	c.update(" \

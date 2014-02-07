@@ -105,6 +105,7 @@ def get_next(sid):
 			db.c.update("INSERT INTO r4_request_history (user_id, song_id, request_wait_time, request_line_size, request_at_count) "
 						"VALUES (%s, %s, %s, %s, %s)",
 						(u.id, song.id, time.time() - entry['line_wait_start'], len(line), request_count))
+			song.update_request_count()
 			# Update the user's request cache
 			u.get_requests(refresh=True)
 			cache.set_station(sid, "request_line", line, True)

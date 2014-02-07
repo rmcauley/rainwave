@@ -219,9 +219,26 @@ class Election(event.BaseEvent):
 
 	def start_event(self):
 		if not self.used and not self.in_progress:
+			total_votes = 0
 			for i in range(0, len(self.songs)):
 				self.songs[i].data['entry_position'] = i
+				total_votes += self.songs[i].data['entry_votes']
 				db.c.update("UPDATE r4_election_entries SET entry_position = %s WHERE entry_id = %s", (i, self.songs[i].data['entry_id']))
+			if total_votes > 0:
+				for song in self.songs:
+					db.c.update("UPDATE r4_songs SET "
+						"song_vote_share = ((song_vote_count + %s) / (song_votes_seen + %s)), "
+						"song_vote_count = song_vote_count + %s, "
+						"song_votes_seen = song_votes_seen + %s "
+						"WHERE song_id = %s",
+						 (song.data['entry_votes'], total_votes, song.data['entry_votes'], total_votes, song.id))
+					for album in song.albums:
+						db.c.update("UPDATE r4_albums SET "
+							"album_vote_share = ((album_vote_count + %s) / (album_votes_seen + %s)), "
+							"album_vote_count = album_vote_count + %s, "
+							"album_votes_seen = album_votes_seen + %s "
+							"WHERE album_id = %s",
+							 (song.data['entry_votes'], total_votes, song.data['entry_votes'], total_votes, album.id))
 			if db.c.allows_join_on_update and len(self.songs) > 0:
 				db.c.update("UPDATE phpbb_users SET radio_winningvotes = radio_winningvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id = %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
 				db.c.update("UPDATE phpbb_users SET radio_losingvotes = radio_losingvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id != %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))

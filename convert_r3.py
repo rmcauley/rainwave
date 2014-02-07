@@ -18,11 +18,11 @@ db.open()
 
 class R3Song(rainwave.playlist.Song):
 	def load_r3_data(self):
-		r3_data = db.c.fetch_row("SELECT MIN(song_addedon) AS song_added_on, SUM(song_totalrequests) AS song_request_count, MAX(song_oa_multiplier) AS song_cool_multiply, MAX(song_oa_override) AS song_cool_override, MAX(song_rating_id) AS song_rating_id FROM rw_songs WHERE song_filename = %s GROUP BY song_filename", (self.filename,))
+		r3_data = db.c.fetch_row("SELECT MIN(song_addedon) AS song_added_on, MAX(song_oa_multiplier) AS song_cool_multiply, MAX(song_oa_override) AS song_cool_override, MAX(song_rating_id) AS song_rating_id FROM rw_songs WHERE song_filename = %s GROUP BY song_filename", (self.filename,))
 		if not r3_data:
 			return 0
 		db.c.update("UPDATE rw_songs SET r4_song_id = %s WHERE song_filename = %s", (self.id, self.filename))
-		db.c.update("UPDATE r4_songs SET song_request_count = %s, song_added_on = %s, song_cool_multiply = %s, song_cool_override = %s WHERE song_id = %s", (r3_data['song_request_count'], r3_data['song_added_on'], r3_data['song_cool_multiply'], r3_data['song_cool_override'], self.id))
+		db.c.update("UPDATE r4_songs SET song_added_on = %s, song_cool_multiply = %s, song_cool_override = %s WHERE song_id = %s", (r3_data['song_added_on'], r3_data['song_cool_multiply'], r3_data['song_cool_override'], self.id))
 
 		updated_ratings = db.c.update(
 			"INSERT INTO r4_song_ratings(song_id, song_rating_user, user_id, song_rated_at, song_rated_at_rank, song_rated_at_count, song_fave) "
@@ -55,7 +55,8 @@ os.nice(20)
 translated_songs = 0
 translated_albums = 0
 translated_ratings = 0
-for song_id in db.c.fetch_list("SELECT song_id FROM r4_songs"):
+all_r4_song_ids = db.c.fetch_list("SELECT song_id FROM r4_songs")
+for song_id in all_r4_song_ids:
 	song = R3Song.load_from_id(song_id)
 	translated_ratings += song.load_r3_data()
 	translated_songs += 1
@@ -94,8 +95,16 @@ translated_requests = db.c.update("INSERT INTO r4_request_history(user_id, song_
 print "Translated."
 
 print "Processing votes in database...."
-translated_votes = "INSERT INTO r4_vote_history(vote_time, user_id, song_id, vote_at_rank, vote_at_count) SELECT vhist_time AS vote_time, user_id, r4_song_id AS song_id, user_rank AS vote_at_rank, user_vote_snapshot AS vote_at_count FROM rw_votehistory JOIN rw_songs USING (song_id) WHERE r4_song_id IS NOT NULL ORDER BY vhist_time"
+translated_votes = "INSERT INTO r4_vote_history_archived(vote_time, user_id, song_id, vote_at_rank, vote_at_count) SELECT vhist_time AS vote_time, user_id, r4_song_id AS song_id, user_rank AS vote_at_rank, user_vote_snapshot AS vote_at_count FROM rw_votehistory JOIN rw_songs USING (song_id) WHERE r4_song_id IS NOT NULL ORDER BY vhist_time"
 print "Translated."
 print
 
+reprocessed = 0
+for song_id in all_r4_song_ids:
+	song = rainwave.playlist.Song.load_from_id(song_id)
+	song.update_request_count()
+	song.update_fave_count()
+	reprocessed += 1
+	print "Reprocessing statistics: %s / %s", (reprocessed, len(all_r4_song_ids))
+print
 print "R4: Ready to Launch"
