@@ -22,6 +22,7 @@ var Requests = function() {
 	};
 
 	self.initialize = function() {
+		Prefs.define("requests_sticky");
 		el = $id("requests_list");
 		container = $id("requests");
 		if (!Prefs.get("requests_sticky")) {
@@ -33,7 +34,8 @@ var Requests = function() {
 		container.addEventListener("mouseover", mouse_over);
 		scroller = Scrollbar.new(el);
 		scroller.use_fixed = true;
-		$id("requests_header").textContent = $l("Requests");
+		$id("requests_pin").addEventListener("click", self.swap_sticky);
+		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
 		self.on_resize();
 		API.add_callback(self.update, "requests");
 	};
@@ -44,7 +46,24 @@ var Requests = function() {
 
 	self.delete = function(song_id) {
 		API.async_get("delete_request", { "song_id": song_id });
-	}
+	};
+
+	self.swap_sticky = function() {
+		if ($has_class(container, "nonsticky")) {
+			$add_class(container, "sticky");
+			$remove_class(container, "nonsticky");
+			Prefs.change("requests_sticky", true);
+		}
+		else {
+			// this little flip prevents the transition on non-sticky behaviour from screwing with the visuals here
+			// CAREFUL ORDERING OF THE CSS VALUES is required in requests.css to make sure this is pulled off
+			$add_class(container, "nonsticky");
+			container.style.transition = "none";
+			$remove_class(container, "sticky");
+			Fx.delay_css_setting(container, "transition", null);
+			Prefs.change("requests_sticky", false);
+		}
+	};
 
 	self.make_clickable = function(el, song_id) {
 		el.addEventListener("click", function() { self.add(song_id); } );
@@ -84,8 +103,7 @@ var Requests = function() {
 
 	self.on_resize = function(new_height) {
 		if (new_height) height = new_height
-		if (el && $has_class(container, "nonsticky")) el.style.height = height + "px";
-		else if (el) el.style.height = "auto";
+		if (el) el.style.height = height + "px";
 	};
 
 	self.reflow = function() {

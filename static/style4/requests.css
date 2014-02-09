@@ -1,9 +1,12 @@
+#requests {
+	width: 350px;
+	background: #444;
+}
+
 #requests.nonsticky {
 	z-index: 5;
-	width: 350px;
 	position: absolute;
 	left: 100%;
-	background: #444;
 	@include transition-wtime(300ms, transform);
 	@include transform(translateX(-5px));
 }
@@ -13,10 +16,12 @@
 }
 
 #requests.sticky {
-	width: 350px;
 	position: relative;
 	left: auto;
 	float: right;
+	height: 100%;
+	@include transition(none);
+	@include transform(translateX(0px));
 }
 
 #requests_list {
@@ -31,7 +36,7 @@
 }
 
 #requests_header {
-	@include transition-wtime(300ms, transform, width);
+	@include transition-wtime(300ms, transform);
 	background: #666;
 }
 
@@ -41,6 +46,19 @@
 
 #requests.nonsticky:hover #requests_header, #requests.fake_hover #requests_header {
 	@include transform(translateX(0px));	
+}
+
+#requests #requests_pin {
+	float: right;
+	margin-top: 1px;
+	border: solid 1px transparent;
+	margin-top: 1px;
+	padding: 1px;
+}
+
+#requests.sticky #requests_pin {
+	border: inset 1px #333;
+	background: #444;
 }
 
 .timeline_song .request_tools {

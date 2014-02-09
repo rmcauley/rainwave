@@ -10,6 +10,11 @@ var Fx = function() {
 		requestAnimationFrame = function(callback) { window.setTimeout(callback, 40); };
 	}
 
+	// Fx throws a fit without this wrapper
+	self.requestAnimationFrame = function(func) {
+		requestAnimationFrame(func);
+	};
+
 	//*****************************************************************************
 	//
 	//  CSS3 Animation Support
