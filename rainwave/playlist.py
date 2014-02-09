@@ -748,19 +748,29 @@ class Song(object):
 		else:
 			self.data['rating_allowed'] = False
 
-	def update_request_count(self):
+	def update_request_count(self, update_albums = True):
 		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_history WHERE song_id = %s", (self.id,))
 		db.c.update("UPDATE r4_songs SET song_request_count = %s WHERE song_id = %s", (count, self.id,))
 
-		for album in self.albums:
-			album.update_request_count()
+		if update_albums:
+			for album in self.albums:
+				album.update_request_count()
 
-	def update_fave_count(self):
+	def update_fave_count(self, update_albums = True):
 		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings WHERE song_fave = TRUE AND song_id = %s", (self.id,))
 		db.c.update("UPDATE r4_songs SET song_fave_count = %s WHERE song_id = %s", (count, self.id,))
 
-		for album in self.albums:
-			album.update_fave_count()
+		if update_albums:
+			for album in self.albums:
+				album.update_fave_count()
+
+	def update_vote_count(self, update_albums = True):
+		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE vote_time > %s AND song_id = %s", (config.get("song_vote_count_cutoff_time"), self.id))
+		db.c.update("UPDATE r4_songs SET song_vote_count = %s WHERE song_id = %s", (count, self.id,))
+
+		if update_albums:
+			for album in self.albums:
+				album.update_vote_count()
 
 	def length(self):
 		return self.data['length']
@@ -1277,6 +1287,10 @@ class Album(AssociatedMetadata):
 	def update_fave_count(self):
 		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings WHERE album_fave = TRUE AND album_id = %s", (self.id,))
 		return db.c.update("UPDATE r4_albums SET album_fave_count = %s WHERE album_id = %s", (count, self.id,))
+
+	def update_vote_count(self):
+		count = db.c.fetch_var("SELECT COUNT(*) FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s) AS songs JOIN r4_vote_history USING (song_id)", (self.id,))
+		return db.c.update("UPDATE r4_albums SET album_vote_count = %s WHERE album_id = %s", (count, self.id))
 
 	def to_dict(self, user = None):
 		d = super(Album, self).to_dict(user)

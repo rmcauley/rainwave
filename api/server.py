@@ -82,7 +82,7 @@ class APIServer(object):
 		pid_file.close()
 
 		# Log according to configured directory and port # we're operating on
-		log_file = "%s/rw_api_%s.log" % (config.get("api_log_dir"), port_no)
+		log_file = "%s/rw_api_%s.log" % (config.get("log_dir"), port_no)
 		if config.test_mode and os.path.exists(log_file):
 			os.remove(log_file)
 		log.init(log_file, config.get("log_level"))
