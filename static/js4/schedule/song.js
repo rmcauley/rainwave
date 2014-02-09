@@ -14,7 +14,6 @@ var TimelineSong = function() {
 		var voting_enabled = false;
 
 		var song_rating = SongRating(json);
-		//if (request_mode) song_rating.absolute_y = true;
 		var album_rating = AlbumRating(json.albums[0]);
 
 		var vote = function(evt) {
@@ -34,23 +33,27 @@ var TimelineSong = function() {
 					self.elements.votes.textContent = self.data.entry_votes;
 				}
 			}
-			else {
-				self.elements.request_tools = self.el.appendChild($el("div", { "class": "request_tools" }));
-				self.elements.request_cancel = $el("img", { "src": "/static/images4/cancel_ldpi.png", "alt": "X", "title": $l("cancel_request") });
-				self.elements.request_cancel.addEventListener("mouseover", function() { $add_class(self.el, "timeline_song_request_cancel_hover"); });
-				self.elements.request_cancel.addEventListener("mouseout", function() { $remove_class(self.el, "timeline_song_request_cancel_hover"); });
-				self.elements.request_cancel.addEventListener("click", function() { Requests.delete(self.data.id); });
-				self.elements.request_tools.appendChild(self.elements.request_cancel);
-			}
 
 			self.elements.album_art = self.el.appendChild(Albums.art_html(self.data.albums[0]));
 			
 			self.elements.title_group = self.el.appendChild($el("div", { "class": "title_group" }));
+			if (request_mode) {
+				self.elements.request_cancel = $el("img", { "class": "request_cancel", "src": "/static/images4/cancel_ldpi.png", "alt": "X", "title": $l("cancel_request") });
+				self.elements.request_cancel.addEventListener("mouseover", function() { $add_class(self.el, "timeline_song_request_cancel_hover"); });
+				self.elements.request_cancel.addEventListener("mouseout", function() { $remove_class(self.el, "timeline_song_request_cancel_hover"); });
+				self.elements.request_cancel.addEventListener("click", function() { Requests.delete(self.data.id); });
+				self.elements.title_group.appendChild(self.elements.request_cancel);
+			}
 			self.elements.song_rating = self.elements.title_group.appendChild(song_rating.el);
 			self.elements.title = self.elements.title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
 			self.elements.title.addEventListener("click", vote);
 			
 			self.elements.album_group = self.el.appendChild($el("div", { "class": "album_group" }));
+			if (request_mode) {
+				self.elements.request_drag = $el("img", { "class": "request_reorder", "src": "/static/images4/pin_hdpi.png", "width": 14, "height": 14, "alt": "<>" });
+				self.elements.request_drag._song_id = json.id;
+				self.elements.album_group.appendChild(self.elements.request_drag);
+			}
 			self.elements.album_rating = self.elements.album_group.appendChild(album_rating.el);
 			self.elements.album = self.elements.album_group.appendChild($el("div", { "class": "album", "textContent": self.data.albums[0].name }));
 			self.elements.album.addEventListener("click", function() { API.async_get("album", { "id": self.data.albums[0].id }); });

@@ -94,6 +94,7 @@
 
    "Requests"                                        : "Requests",
    "cancel_request"                                  : "Cancel Request",
+   "requests_reordered"                              : "Requests Reordered",
 
    "__comment__"                 : "The following are the old R3 translation lines, which will be replaced.  Some day. :(",
 

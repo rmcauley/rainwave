@@ -35,6 +35,12 @@
 	width: 96%;
 }
 
+#requests .timeline_song.dragging {
+	transition: none;
+	z-index: 2;
+	background: #446;
+}
+
 #requests_header {
 	@include transition-wtime(300ms, transform);
 	background: #666;
@@ -61,8 +67,20 @@
 	background: #444;
 }
 
-.timeline_song .request_tools {
+.request_cancel {
 	float: right;
+	margin-left: 5px;
+	cursor: pointer;
+}
+
+.request_reorder {
+	float: right;
+	margin-left: 5px;
+	cursor: grab;
+}
+
+.dragging .request_reorder {
+	cursor: grabbing;
 }
 
 .timeline_song_request_cancel_hover {

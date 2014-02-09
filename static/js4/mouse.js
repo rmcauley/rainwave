@@ -9,6 +9,10 @@ var Mouse = function() {
 		self.y = e.pageY ? e.pageY : e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 	};
 
+	self.get_y = function(e) {
+		return e.pageY ? e.pageY : e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+	};
+
 	// ONLY ON DOWN, not on move!
 	// This is mostly used to track where the mouse is to help tooltip error displays
 	window.addEventListener('mousedown', update_mouse, true);

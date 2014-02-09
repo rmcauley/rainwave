@@ -56,7 +56,7 @@ class OrderRequests(APIHandler):
 	tunein_required = False
 	unlocked_listener_only = False
 	fields = {
-		"order": (fieldtypes.integer_list, True)
+		"order": (fieldtypes.song_id_list, True)
 	}
 
 	def post(self):
