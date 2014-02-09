@@ -61,4 +61,6 @@ function initialize() {
 	if (("fps" in get_vars) && (get_vars.fps) && ("mozPaintCount" in window)) {
 		FPSCounter.initialize();
 	}
+
+	DeepLinker.detect_url_change();
 };

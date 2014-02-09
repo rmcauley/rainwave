@@ -15,6 +15,7 @@ var DetailView = function() {
 		}
 		scroller = Scrollbar.new(el);
 		API.add_callback(draw_album, "album");
+		DeepLinker.register_route("album", open_album_internal);
 	};
 
 	var request_made_changed = function(request_made) {
@@ -70,12 +71,17 @@ var DetailView = function() {
 		if (existing_view) {
 			open_views.shift(open_views.indexOf(existing_view));
 			if (existing_view.visible) {
-				self.open_album(id);
+				open_album_internal(id);
 			}
 		}
 	}
-	
+
 	self.open_album = function(id) {
+		DeepLinker.change_url("album", id);
+	};
+	
+	var open_album_internal = function(id) {
+		id = parseInt(id);
 		var existing_view = exists("album", id);
 		if (existing_view) {
 			switch_to(existing_view);
@@ -84,7 +90,7 @@ var DetailView = function() {
 		API.async_get("album", { "id": id });
 	};
 
-	// TODO: clocks
+	// TODO: clocks?
 
 	return self;
 }();
