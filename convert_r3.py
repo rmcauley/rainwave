@@ -105,6 +105,6 @@ for song_id in all_r4_song_ids:
 	song.update_request_count()
 	song.update_fave_count()
 	reprocessed += 1
-	print "Reprocessing statistics: %s / %s", (reprocessed, len(all_r4_song_ids))
+	print "\rReprocessing statistics: %s / %s" % (reprocessed, len(all_r4_song_ids)),
 print
 print "R4: Ready to Launch"
