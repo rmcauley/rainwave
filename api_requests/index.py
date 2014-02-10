@@ -55,35 +55,14 @@ class BetaRedirect(tornado.web.RequestHandler):
 		self.redirect("/beta/", permanent=True)
 
 @handle_url("/beta/")
-class BetaIndex(MainIndex):
-	perks_required = True
-	description = "Uses up-to-date, unbaked Javscript files to serve the site."
-
-	def prepare(self):
-		if config.get("public_beta"):
-			self.perks_required = False
-		super(BetaIndex, self).prepare()
-
-	def get(self):
-		info.attach_info_to_request(self, playlist=True, artists=True)
-		self.append("api_info", { "time": int(time.time()) })
-		self.render("beta_index.html", request=self,
-					site_description=self.locale.translate("station_description_id_%s" % self.sid),
-					jsfiles=jsfiles,
-					revision_number=config.build_number,
-					api_url=config.get("api_external_url_prefix"),
-					cookie_domain=config.get("cookie_domain"),
-					locales=api.locale.locale_names_json)
-
-@handle_url("/r4/")
-class R4Index(BetaIndex):
+class R4Index(MainIndex):
 	perks_required = True
 	description = "The next version of the Rainwave UI."
 
 	def prepare(self):
 		if config.get("public_beta"):
 			self.perks_required = False
-		super(BetaIndex, self).prepare()
+		super(R4Index, self).prepare()
 		self.json_payload = {}
 
 		self.js4files = []
