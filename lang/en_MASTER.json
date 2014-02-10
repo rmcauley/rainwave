@@ -84,6 +84,7 @@
    "sync_stopped"                                    : "Rainwave stopped working. :( The error is: ",
    "lost_connection"                                 : "Lost connection to server.",
    "sync_retrying"                                   : "Having trouble talking with the Rainwave server, please wait...",
+   "deeplink_error"                                  : "Error understanding the URL entered.",
 
    "__comment__"                 : "Playlist View",
 

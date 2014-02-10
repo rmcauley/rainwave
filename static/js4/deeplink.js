@@ -23,7 +23,9 @@ var DeepLinker = function() {
 
 	self.open_route = function(route, args) {
 		if (route in routes) {
-			routes[route].apply(this, args);
+			if (!routes[route].apply(this, args)) {
+				ErrorHandler.permanent_error(ErrorHandler.make_error("deeplink_error", 404))
+			}
 		}
 	};
 

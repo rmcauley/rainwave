@@ -89,12 +89,16 @@ var DetailView = function() {
 	
 	var open_album_internal = function(id) {
 		id = parseInt(id);
+		if (!id || id == NaN) {
+			return false;
+		}
 		var existing_view = exists("album", id);
 		if (existing_view) {
 			switch_to(existing_view);
 			return existing_view;
 		}
 		API.async_get("album", { "id": id });
+		return true;
 	};
 
 	// TODO: clocks?
