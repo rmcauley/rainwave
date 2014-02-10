@@ -136,7 +136,6 @@ var EventBase = function(json) {
 	};
 
 	self.reflow = function() {
-		TimelineSong.height = SmallScreen ? song_small_height : song_normal_height;
 		if ($has_class(self.el, "timeline_now_playing")) {
 			solve_now_playing_height();
 		}

@@ -10,7 +10,7 @@ $link: #6cf6ff;
 $donorcolor: #FF0;
 $transtime: 700ms ease-out;
 
-@mixin transform($transform_string) {
+@mixin transform($transform_string...) {
 	-webkit-transform: $transform_string;
 	-ms-transform: $transform_string;
 	transform: $transform_string;
