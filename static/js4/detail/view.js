@@ -15,6 +15,7 @@ var DetailView = function() {
 		}
 		scroller = Scrollbar.new(el);
 		API.add_callback(draw_album, "album");
+		API.add_callback(album_diff_handler, "album_diff");
 		DeepLinker.register_route("album", open_album_internal);
 	};
 
@@ -66,14 +67,16 @@ var DetailView = function() {
 		switch_to(create("album", json.id, AlbumView, json));
 	};
 
-	self.album_diff_handler = function(json) {
-		//
+	var album_diff_handler = function(json) {
+		for (var i = 0; i < json.length; i++) {
+			self.reopen_album(json[i].id);
+		}
 	};
 
 	self.reopen_album = function(id) {
 		var existing_view = exists("album", id);
 		if (existing_view) {
-			open_views.shift(open_views.indexOf(existing_view));
+			open_views.splice(open_views.indexOf(existing_view), 1);
 			if (existing_view.visible) {
 				open_album_internal(id);
 			}

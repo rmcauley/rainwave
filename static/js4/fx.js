@@ -82,7 +82,7 @@ var Fx = function() {
 		var check = getComputedStyle(el);
 		if (!check.getPropertyValue("transition-property") || (check.getPropertyValue("transition-property").indexOf("opacity") == -1)) {
 			if (typeof(console) != "undefined") {
-				console.error("Element is missing an opacity transform!");
+				console.error("Element is missing an opacity transition!");
 			}
 			el.style.transition = "1s opacity";
 		}

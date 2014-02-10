@@ -30,7 +30,6 @@ var ErrorHandler = function() {
 
 	self.remove_permanent_error = function(tl_key) {
 		if (tl_key in permanent_errors) {
-			permanent_errors[tl_key].el.style.position = "absolute";
 			Fx.remove_element(permanent_errors[tl_key].el);
 			delete permanent_errors[tl_key];
 		}

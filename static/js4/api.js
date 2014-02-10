@@ -151,9 +151,7 @@ var API = function() {
 	self.force_sync = function() {
 		sync_clear_timeout();
 		sync_stopped = false;
-		if ((sync.readyState != 0) && (sync.readyState != 4)) {
-			sync.abort();
-		}
+		sync.abort();
 		sync_get();
 	};
 
