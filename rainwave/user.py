@@ -81,9 +81,8 @@ class User(object):
 					log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
 					return
 			elif not api_key in keys:
-				if not api_key in self._get_all_api_keys():
-					log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
-					return
+				log.debug("auth", "Invalid user ID %s and/or API key %s (from cache)." % (self.id, api_key))
+				return
 
 		# Set as authorized and begin populating information
 		# Pay attention to the "AS _variable" names in the SQL fields, they won't get exported to private JSONable dict
