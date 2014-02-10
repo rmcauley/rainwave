@@ -81,6 +81,9 @@
    "redownload_m3u"                                  : "Are you tuning in?  If you just logged in, please redownload the playlist.",
    "random_relay"                                    : "Random Relay",
    "backend_scan_errors"                             : "Backend Scan Errors",
+   "sync_stopped"                                    : "Rainwave stopped working. :( The error is: ",
+   "lost_connection"                                 : "Lost connection to server.",
+   "sync_retrying"                                   : "Having trouble talking with the Rainwave server, please wait...",
 
    "__comment__"                 : "Playlist View",
 

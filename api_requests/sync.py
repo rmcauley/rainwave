@@ -104,10 +104,11 @@ class Sync(APIHandler):
 	description = ("Presents the same information as the 'info' requests, but will wait until the next song change in order to deliver the information. "
 					"Will send whitespace every 20 seconds in a bid to keep the connection alive.")
 	auth_required = True
+	fields = { "offline_ack": (fieldtypes.boolean, None) }
 
 	@tornado.web.asynchronous
 	def post(self):
-		if not cache.get_station(self.user.request_sid, "backend_ok"):
+		if not cache.get_station(self.user.request_sid, "backend_ok") and not self.get_argument("offline_ack"):
 			raise APIException("station_offline")
 
 		global sessions

@@ -19,15 +19,19 @@ var ErrorHandler = function() {
 	self.permanent_error = function(json) {
 		if (!(json.tl_key in permanent_errors)) {
 			var err = json;
-			err.el = $el("div", [ "X", json.text ]);
-			err.el.children[0].addEventListener("click", function() { self.remove_permanent_error(err.tl_key); });
+			err.el = $el("div", { "class": "error" });
+			err.hide = err.el.appendChild($el("img", { "src": "/static/images4/cancel_ldpi.png", "alt": "X" }));
+			err.hide.addEventListener("click", function() { self.remove_permanent_error(err.tl_key); });
+			err.el.appendChild($el("span", { "textContent": err.text }));
+			container.appendChild(err.el);
 			permanent_errors[json.tl_key] = err;
 		}
 	};
 
 	self.remove_permanent_error = function(tl_key) {
 		if (tl_key in permanent_errors) {
-			Fx.remove_element(permanent_errors[tl_key]);
+			permanent_errors[tl_key].el.style.position = "absolute";
+			Fx.remove_element(permanent_errors[tl_key].el);
 			delete permanent_errors[tl_key];
 		}
 	};

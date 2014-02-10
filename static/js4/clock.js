@@ -7,6 +7,7 @@ var Clock = function() {
 	var page_title;
 	var page_title_end;
 	var max_id = 0;
+	var force_sync_ok = false;
 
 	var self = {};
 	self.now = 0;
@@ -41,6 +42,9 @@ var Clock = function() {
 	};
 
 	self.set_page_title = function(new_title, new_end_time) {
+		if ((new_end_time != page_title_end) && (new_end_time > self.now)) {
+			force_sync_ok = true;
+		}
 		page_title = new_title;
 		page_title_end = new_end_time;
 	};
@@ -55,6 +59,10 @@ var Clock = function() {
 
 		if (page_title) {
 			document.title = "[" + Formatting.minute_clock(page_title_end - self.now) + "] " + page_title;
+			if (force_sync_ok && (page_title_end - self.now < -10)) {
+				force_sync_ok = false;
+				API.force_sync();
+			}
 		}
 	};
 

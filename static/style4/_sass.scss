@@ -77,6 +77,18 @@ body.small_screen {
 
 #messages {
 	position: absolute;
+	z-index: 1000;
+	width: 100%;
+}
+
+#messages div {
+	padding: .3em;
+}
+
+#messages img {
+	margin: 2px 5px;
+	float: left;
+	cursor: pointer;
 }
 
 a {
@@ -97,9 +109,11 @@ a {
 	z-index: 10000;
 	border-radius: 5px;
 	opacity: 0;
-
-	background: #660000;
 	border: 1px solid #FF0000;
+}
+
+.error {
+	background: #660000;
 	background: -moz-linear-gradient(100% 100% 90deg, #660000, #DD0000);
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DD0000), to(#660000));
 }

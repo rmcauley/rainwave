@@ -1,10 +1,11 @@
 var API = function() {
 	"use strict";
 	var sid, url, user_id, api_key;
-	var sync, sync_params, sync_stopped, sync_timeout_id, sync_timeout_count, sync_error_count;
+	var sync, sync_params, sync_stopped, sync_timeout_id, sync_error_count;
 	var async, async_queue;
 	var callbacks = {};
 	var universal_callbacks = [];
+	var offline_ack = false;
 
 	var self = {};
 
@@ -17,10 +18,9 @@ var API = function() {
 		sync = new XMLHttpRequest();
 		sync.onload = sync_complete;
 		sync.onerror = sync_error;
-		sync.ontimeout = sync_timeout;
+		sync.ontimeout = sync_error;
 		sync_params = self.serialize({ "sid": sid, "user_id": user_id, "key": api_key });
 		sync_stopped = false;
-		sync_timeout_count = 0;
 		sync_error_count = 0;
 
 		async = new XMLHttpRequest();
@@ -55,35 +55,55 @@ var API = function() {
 
 		sync.open("POST", url + "sync", true);
 		sync.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		sync.send(sync_params);
+		if (offline_ack) {
+			sync.send(sync_params + "&offline_ack=true");
+		}
+		else {
+			sync.send(sync_params);
+		}
 	};
 
 	self.sync_stop = function() {
-		if (sync_timeout_id) {
-			clearTimeout(sync_timeout_id);
-			sync_timeout_id = null;
-		}
+		sync_clear_timeout();
 		sync_stopped = true;
 		sync.abort();
 		ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
 	};
 
-	var sync_error = function() {
-		// TODO: handle non-JSON errors here
-		sync_error_count++;
-		if (sync_error_count > 3) {
-			ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
-			self.sync_stop();
-		}
-		else {
-			sync_timeout_id = setTimeout(sync_get, 6000);
+	var sync_clear_timeout = function() {
+		if (sync_timeout_id) {
+			clearTimeout(sync_timeout_id);
+			sync_timeout_id = null;
 		}
 	};
 
-	var sync_timeout = function() {
-		sync_timeout_count++;
-		if (sync_timeout_count > 2) {
-			ErrorHandler.permanent_error(ErrorHandler.make_error("api_timeout", 408));
+	var sync_error = function() {
+		// TODO: handle non-JSON errors here
+		var result;
+		try {
+			if (sync.responseText) {
+				result = JSON.parse(sync.responseText);
+			}
+		}
+		catch (exc) {
+			// do nothing
+		}
+		sync_error_count++;
+		if (sync_error_count > 4) {
+			ErrorHandler.remove_permanent_error("sync_retrying");
+			var e = ErrorHandler.make_error("sync_stopped", 500);
+			if (result) {
+				e.text += $l(result.sync_result.tl_key);
+			}
+			else {
+				e.text += $l("lost_connection");
+			}
+			ErrorHandler.permanent_error(e);
+			self.sync_stop();
+		}
+		else if (sync_error_count > 1) {
+			ErrorHandler.permanent_error(ErrorHandler.make_error("sync_retrying", 408));
+			sync_timeout_id = setTimeout(sync_get, 6000);
 		}
 		else {
 			sync_timeout_id = setTimeout(sync_get, 6000);
@@ -103,21 +123,38 @@ var API = function() {
 
 		var sync_restart_pause = 3000;
 		var response = JSON.parse(sync.responseText);
-		perform_callbacks(response);
-		perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
 
-		if ("error" in response) {
-			sync_restart_pause = 6000;
-			if (response.error.code != 200) {
-				sync_stopped = true;
-			}
+		if (("sync_result" in response) && (response.sync_result.tl_key == "station_offline")) {
+			ErrorHandler.permanent_error(response.sync_result);
+			offline_ack = true;
+			sync_restart_pause = 0;
 		}
 		else {
-			ErrorHandler.remove_permanent_error("api_timeout");
-			ErrorHandler.remove_permanent_error("station_offline");
+			offline_ack = false;
+			perform_callbacks(response);
+			perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
+			if ("error" in response) {
+				sync_restart_pause = 6000;
+				if (response.error.code != 200) {
+					sync_stopped = true;
+				}
+			}
+			else {
+				ErrorHandler.remove_permanent_error("sync_retrying");
+				ErrorHandler.remove_permanent_error("station_offline");
+			}
 		}
 
 		sync_timeout_id = setTimeout(sync_get, sync_restart_pause);
+	};
+
+	self.force_sync = function() {
+		sync_clear_timeout();
+		sync_stopped = false;
+		if ((sync.readyState != 0) && (sync.readyState != 4)) {
+			sync.abort();
+		}
+		sync_get();
 	};
 
 	var async_error = function() {

@@ -66,6 +66,10 @@ var DetailView = function() {
 		switch_to(create("album", json.id, AlbumView, json));
 	};
 
+	self.album_diff_handler = function(json) {
+		//
+	};
+
 	self.reopen_album = function(id) {
 		var existing_view = exists("album", id);
 		if (existing_view) {
@@ -74,7 +78,7 @@ var DetailView = function() {
 				open_album_internal(id);
 			}
 		}
-	}
+	};
 
 	self.open_album = function(id) {
 		DeepLinker.change_url("album", id);
