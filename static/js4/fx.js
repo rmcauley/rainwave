@@ -79,6 +79,13 @@ var Fx = function() {
 	}
 
 	self.remove_element = function(el) {
+		var check = getComputedStyle(el);
+		if (!check.getPropertyValue("transition-property") || (check.getPropertyValue("transition-property").indexOf("opacity") == -1)) {
+			if (typeof(console) != "undefined") {
+				console.error("Element is missing an opacity transform!");
+			}
+			el.style.transition = "1s opacity";
+		}
 		self.chain_transition(el, "opacity", 0, 
 			function() { 
 				if (el.parentNode) el.parentNode.removeChild(el);

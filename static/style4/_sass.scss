@@ -112,7 +112,8 @@ a {
 	border: 1px solid #FF0000;
 }
 
-.error {
+.error, .error_tooltip {
+	@include transition-wtime(300ms, opacity);
 	background: #660000;
 	background: -moz-linear-gradient(100% 100% 90deg, #660000, #DD0000);
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DD0000), to(#660000));
