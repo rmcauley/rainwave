@@ -255,6 +255,6 @@ def group_id(str, request = None):
 	if not re.match('^\d+$', str):
 		return None
 	group_id = int(str)
-	if db.c.fetch_var("SELECT COUNT(*) FROM r4_groups WHERE group_id = %s", (group_id,)) == 0:
+	if db.c.fetch_var("SELECT COUNT(*) FROM r4_song_group WHERE group_id = %s", (group_id,)) == 0:
 		return None
 	return group_id
