@@ -21,12 +21,23 @@
 	@include transition(height, opacity, transform);
 }
 
+.timeline_event:hover {
+	z-index: 3;
+	opacity: 1 !important;
+}
+
 .timeline_song {
+	position: relative;
 	clear: left;
 	cursor: default;
 	padding-left: 5px;
 	padding-right: 5px;
 	@include transition(opacity, background-color, transform);
+}
+
+.timeline_event .timeline_song:hover {
+	z-index: 2;
+	opacity: 1 !important;
 }
 
 .timeline_song .album_group {
@@ -43,19 +54,57 @@
 	@include transition-wtime(300ms, background-color);
 }
 
-.timeline_song .art_container {
+.timeline_song .album {
+	cursor: pointer;
+}
+
+.art_container {
 	float: left;
 	margin-right: 10px;
 	width: 70px;
 	height: 70px;
-	text-align: center;
-	@include transition(width);
+	@include transition-wtime(300ms, width, height);
 }
 
-.timeline_song .art_container .art {
+.art_container .art {
+	position: absolute;
 	max-width: 70px;
 	max-height: 70px;
-	@include transition(max-width, max-height);
+	border-color: #222;
+	border-width: 0px;
+	border-style: solid;
+	@include transition-wtime(300ms, max-width, max-height, transform, border-width);
+}
+
+.art_expandable:hover .art {
+	max-width: 80px;
+	max-height: 80px;
+	border-width: 2px;
+	@include transform(translate(-5px, -5px));
+}
+
+.art_expandable .art_expand_left .art, .art_expand_right .art {
+	border-width: 8px;
+	width: 250px;
+	height: 250px;
+	max-width: 250px;
+	max-height: 250px;
+}
+
+.art_expand_left.art_expand_up .art {
+	@include transform(translate(-250px, -200px));
+}
+
+.art_expand_left.art_expand_down .art {
+	@include transform(translate(-250px, -5px));
+}
+
+.art_expand_right.art_expand_up .art {
+	@include transform(translate(-5px, -200px));
+}
+
+.art_expand_right.art_expand_down .art {
+	@include transform(translate(-5px, -5px));
 }
 
 .timeline_song .artist_group {
@@ -130,7 +179,6 @@ body.small_screen .timeline_now_playing_song .art_container .art {
 /* END NOW PLAYING MODIFICATIONS */
 
 .timeline_header {
-	z-index: 100;
 	@include transition(transform, opacity);
 	@include transform(translateY(-25px));
 	position: absolute;
@@ -146,7 +194,6 @@ body.small_screen .timeline_now_playing_song .art_container .art {
 }
 
 #timeline_header_now_playing_bar, .timeline_header_bar {
-	z-index: 100;
 	position: absolute;
 	background-color: $vvdarktext;
 	height: 1px;

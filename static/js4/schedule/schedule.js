@@ -165,7 +165,7 @@ var Schedule = function() {
 		next_headers = new_next_headers;
 		
 		// Now playing header positioning, and setup the z-index correction chain
-		Fx.chain_transition(current_header, "transform", "translateY(" + running_height + "px)", set_header_to_normal_zindex);
+		Fx.chain_transition_css(current_header, "transform", "translateY(" + running_height + "px)", set_header_to_normal_zindex);
 		time_bar_y = running_height + header_height + 3;
 		running_height = time_bar_y + padding - header_padding_pullback;
 

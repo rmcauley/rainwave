@@ -52,10 +52,8 @@ var Fx = function() {
 		}
 	};
 
-	// var animation_ends = [ "animationend", "webkitAnimationEnd", "oanimationend", "MSAnimationEnd" ];
 	var transition_ends = [ "transitionend", "webkitTransitionEnd", "otransitionend" ];
-	// limitation: can only chain once
-	self.chain_transition = function(el, property, value, end_func) {
+	self.chain_transition = function(el, end_func) {
 		var end_func_wrapper = function() {
 			end_func();
 			for (var i in transition_ends) {
@@ -66,6 +64,11 @@ var Fx = function() {
 			el.addEventListener(transition_ends[i], end_func_wrapper, false);
 		}
 		el._end_func_wrapper = end_func_wrapper;
+	}
+
+	// limitation: can only chain once
+	self.chain_transition_css = function(el, property, value, end_func) {
+		self.chain_transition(el, end_func);
 		self.delay_css_setting(el, property, value);
 	};
 
@@ -86,7 +89,7 @@ var Fx = function() {
 			}
 			el.style.transition = "1s opacity";
 		}
-		self.chain_transition(el, "opacity", 0, 
+		self.chain_transition_css(el, "opacity", 0, 
 			function() { 
 				if (el.parentNode) el.parentNode.removeChild(el);
 			}
