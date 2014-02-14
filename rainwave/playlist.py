@@ -267,13 +267,13 @@ def get_unrated_songs_for_user(user_id):
 
 def get_unrated_songs_for_requesting(user_id, sid, limit):
 	return db.c.fetch_list(
-		"SELECT MIN(song_id), r4_album_sid.album_id "
+		"SELECT MIN(r4_song_sid.song_id) AS song_id, r4_album_sid.album_id "
 		"FROM r4_song_sid JOIN r4_album_sid USING (album_id, sid) "
 		"LEFT OUTER JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
-		"WHERE r4_song_sid.sid = %s song_verified = TRUE AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_exists = TRUE "
+		"WHERE r4_song_sid.sid = %s AND song_exists = TRUE AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_exists = TRUE "
 		"AND r4_song_ratings.song_id IS NULL "
 		"GROUP BY r4_album_sid.album_id "
-		"LIMIT %s", (sid, sid, user_id, limit))
+		"LIMIT %s", (user_id, sid, limit))
 
 def make_searchable_string(s):
 	if not isinstance(s, unicode):

@@ -51,7 +51,7 @@
 	background: #383a3d;
 }
 
-#requests #requests_pin {
+#requests #requests_pin, #requests #requests_menu_toggle {
 	float: right;
 	margin-top: 1px;
 	border: solid 1px transparent;
@@ -59,21 +59,41 @@
 	padding: 1px;
 }
 
-#requests.sticky #requests_pin {
+#requests.sticky #requests_pin, #requests.menu_showing #requests_menu_toggle {
 	border: inset 1px #222;
 	background: #111;
 }
 
 #requests_options {
+	overflow: hidden;
+	height: 0px;
 	list-style: none;
 	margin: 0;
 	padding: 0;
 	width: 100%;
+	@include transition(height);
 }
 
 #requests_options li {
-	width: 50%;
+	width: 31%;
 	text-align: center;
+	display: inline-block;
+}
+
+#requests_options li a {
+	cursor: pointer;
+}
+
+#requests_pause_queue {
+	@include transition-wtime(300ms, background-color);
+}
+
+.request_queue_paused {
+	background-color: #25263c;
+}
+
+#requests.menu_showing #requests_options {
+	height: 1.2em;
 }
 
 .request_cancel {

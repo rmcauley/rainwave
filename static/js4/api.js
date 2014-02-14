@@ -165,7 +165,8 @@ var API = function() {
 	};
 
 	self.async_get = function(action, params) {
-		if (action && params) {
+		if (action) {
+			if (!params) params = {};
 			async_queue.push({ "action": action, "params": params });
 		}
 		if ((async.readyState === 0) || (async.readyState === 4)) {

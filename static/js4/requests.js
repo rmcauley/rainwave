@@ -27,6 +27,7 @@ var Requests = function() {
 
 	self.initialize = function() {
 		Prefs.define("requests_sticky");
+		Prefs.define("requests_menu_showing");
 		el = $id("requests_list");
 		container = $id("requests");
 		if (!Prefs.get("requests_sticky")) {
@@ -35,13 +36,51 @@ var Requests = function() {
 		else {
 			container.className = "sticky";
 		}
+		if (Prefs.get("requests_menu_showing")) {
+			$add_class(container, "menu_showing");
+		}
 		container.addEventListener("mouseover", mouse_over);
 		scroller = Scrollbar.new(el);
 		scroller.use_fixed = true;
 		$id("requests_pin").addEventListener("click", self.swap_sticky);
 		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
+		var pause_link = $id("requests_pause_queue").appendChild($el("a", { "textContent": $l("pause_request_queue") }));
+		pause_link.addEventListener("click", self.pause_queue);
+		var clear_link = $id("requests_clear_queue").appendChild($el("a", { "textContent": $l("clear_request_queue") }));
+		clear_link.addEventListener("click", self.clear_requests);
+		var unrated_link = $id("requests_unrated_fill").appendChild($el("a", { "textContent": $l("request_fill_with_unrated") }));
+		unrated_link.addEventListener("click", self.fill_with_unrated);
+		$id("requests_menu_toggle").addEventListener("click", self.swap_menu_showing);
 		self.on_resize();
+
 		API.add_callback(self.update, "requests");
+		API.add_callback(self.show_queue_paused, "user");
+	};
+
+	self.show_queue_paused = function(user_json) {
+		if (user_json.radio_requests_paused) {
+			$add_class($id("requests_pause_queue"), "request_queue_paused");
+		}
+		else {
+			$remove_class($id("requests_pause_queue"), "request_queue_paused");
+		}
+	};
+
+	self.pause_queue = function() {
+		if (User.radio_requests_paused) {
+			API.async_get("unpause_request_queue");
+		}
+		else {
+			API.async_get("pause_request_queue");
+		}
+	};
+
+	self.clear_requests = function() {
+		API.async_get("clear_requests");
+	};
+
+	self.fill_with_unrated = function() {
+		API.async_get("request_unrated_songs");
 	};
 
 	self.add = function(song_id) {
@@ -50,6 +89,17 @@ var Requests = function() {
 
 	self.delete = function(song_id) {
 		API.async_get("delete_request", { "song_id": song_id });
+	};
+
+	self.swap_menu_showing = function() {
+		if ($has_class(container, "menu_showing")) {
+			$remove_class(container, "menu_showing");
+			Prefs.change("requests_menu_showing", false);
+		}
+		else {
+			$add_class(container, "menu_showing");
+			Prefs.change("requests_menu_showing", true);
+		}
 	};
 
 	self.swap_sticky = function() {

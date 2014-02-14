@@ -104,11 +104,16 @@
    "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",
    "Request"                                         : "Request",
 
-   "__comment__"                 : "Requests View",
+   "__comment__"                 : "Requests",
 
    "Requests"                                        : "Requests",
    "cancel_request"                                  : "Cancel Request",
    "requests_reordered"                              : "Requests Reordered",
+   "clear_request_queue"                             : "Clear All",
+   "pause_request_queue"                             : "Pause",
+   "request_queue_paused"                            : "Request queue paused.",
+   "request_queue_unpaused"                          : "Request queue unpaused.",
+   "request_fill_with_unrated"                       : "Unrated Fill",
 
    "__comment__"                 : "The following are the old R3 translation lines, which will be replaced.  Some day. :(",
 

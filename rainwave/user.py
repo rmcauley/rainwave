@@ -39,6 +39,7 @@ class User(object):
 		self.data['radio_request_position'] = 0
 		self.data['radio_request_expires_at'] = 0
 		self.data['radio_rate_anything'] = False
+		self.data['radio_requests_paused'] = False
 		self.data['user_avatar'] = "images/blank.png"
 		self.data['user_new_privmsg'] = 0
 		self.data['radio_listen_key'] = None
@@ -89,7 +90,7 @@ class User(object):
 		self.authorized = True
 		user_data = None
 		if not user_data:
-			user_data = db.c_old.fetch_row("SELECT user_id, username, user_new_privmsg, user_avatar, user_avatar_type AS _user_avatar_type, radio_listenkey AS radio_listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings "
+			user_data = db.c_old.fetch_row("SELECT user_id, username, user_new_privmsg, user_avatar, radio_requests_paused, user_avatar_type AS _user_avatar_type, radio_listenkey AS radio_listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings "
 					"FROM phpbb_users WHERE user_id = %s",
 					(self.id,))
 		self.data.update(user_data)
@@ -241,7 +242,7 @@ class User(object):
 			max_reqs = 24
 		if num_reqs >= max_reqs:
 			raise APIException("too_many_requests")
-		return num_reqs - max_reqs
+		return max_reqs - num_reqs
 
 	def add_request(self, sid, song_id):
 		self._check_too_many_requests()
@@ -260,7 +261,7 @@ class User(object):
 
 	def add_unrated_requests(self, sid):
 		limit = self._check_too_many_requests()
-		added_songs = 0
+		added_requests = 0
 		for song_id in playlist.get_unrated_songs_for_requesting(self.id, sid, limit):
 			added_requests += self.add_request(sid, song_id)
 		return added_requests
@@ -271,10 +272,31 @@ class User(object):
 			raise APIException("song_not_requested")
 		return db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (self.id, song_id))
 
+	def clear_all_requests(self):
+		return db.c.update("DELETE FROM r4_request_store WHERE user_id = %s", (self.id,))
+
+	def pause_requests(self):
+		self.remove_from_request_line()
+		if db.c.update("UPDATE phpbb_users SET radio_requests_paused = TRUE WHERE user_id = %s", (self.id,)) != 0:
+			self.data['radio_requests_paused'] = True
+			return True
+		return False
+
+	def unpause_requests(self, sid):
+		if db.c.update("UPDATE phpbb_users SET radio_requests_paused = FALSE WHERE user_id = %s", (self.id,)) != 0:
+			self.data['radio_requests_paused'] = False
+			self.put_in_request_line(sid)
+			return True
+		return False
+
 	def put_in_request_line(self, sid):
 		if self.id <= 1 or not sid:
 			return False
 		else:
+			# this function may not always be called when all user data is loaded, so this has to be a DB operation
+			# don't add to the line if the user is paused
+			if db.c.fetch_var("SELECT radio_requests_paused FROM phpbb_users WHERE user_id = %s", (self.id,)):
+				return
 			already_lined = db.c.fetch_row("SELECT * FROM r4_request_line WHERE user_id = %s", (self.id,))
 			if already_lined and already_lined['sid'] == sid:
 				if already_lined['line_expiry_tune_in']:
@@ -315,6 +337,7 @@ class User(object):
 			return []
 		requests = cache.get_user(self, "requests")
 		if refresh or (not requests or len(requests) == 0):
+			print "DURB A DURB"
 			line_sid = self.get_request_line_sid()
 			requests = db.c.fetch_all(
 				"SELECT r4_request_store.song_id AS id, r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
