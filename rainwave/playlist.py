@@ -1235,11 +1235,11 @@ class Album(AssociatedMetadata):
 					"GROUP BY album_id, user_id "
 				") "
 			"INSERT INTO r4_album_ratings (album_id, user_id, album_fave, album_rating_user, album_rating_complete) "
-			"SELECT album_id, user_id, BOOL_OR(album_fave) AS album_fave, NULLIF(MAX(album_rating_user), 0) AS album_rating_user, CASE WHEN MAX(song_rating_user_count) = 7 THEN TRUE ELSE FALSE END AS album_rating_complete "
+			"SELECT album_id, user_id, BOOL_OR(album_fave) AS album_fave, NULLIF(MAX(album_rating_user), 0) AS album_rating_user, CASE WHEN MAX(song_rating_user_count) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete "
 			"FROM (SELECT * FROM (SELECT album_id, album_fave, user_id, 0 AS album_rating_user, 0 AS song_rating_user_count FROM faves) AS faves UNION ALL SELECT * FROM ratings) AS fused "
 			"GROUP BY album_id, user_id "
 			"HAVING BOOL_OR(album_fave) = TRUE OR MAX(album_rating_user) IS NOT NULL ",
-			(self.id, self.id))
+			(self.id, self.id, num_songs))
 
 	def reset_user_completed_flags(self):
 		db.c.update("UPDATE r4_album_ratings SET album_rating_complete = FALSE WHERE album_id = %s", (self.id,))
