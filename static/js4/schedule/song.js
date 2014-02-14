@@ -1,9 +1,9 @@
 var TimelineSong = function() {
 	var cls = {};
 	cls.calculate_height = function() {
-		return SmallScreen ? 55 : 70;
+		cls.height = SmallScreen ? 55 : 70;
 	};
-	cls.height  = cls.calculate_height();
+	cls.calculate_height();
 
 	cls.new = function(json, request_mode) {
 		"use strict";

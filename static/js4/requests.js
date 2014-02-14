@@ -120,7 +120,7 @@ var Requests = function() {
 			}
 			running_height += TimelineSong.height;
 		}
-		scroller.update_scroll_height();
+		if (scroller) scroller.update_scroll_height();
 	};
 
 	// DRAG AND DROP *********************************************************
