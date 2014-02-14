@@ -10,7 +10,9 @@
 				"api_url": "{{ api_url }}",
 				"sid": "{{ request.sid }}",
 				"json": {{ json_encode(request.json_payload) }},
-				"locales": {{ locales }}
+				"locales": {{ locales }},
+				"relays": {{ relays }},
+				"stream_filename": "{{ stream_filename }}"
 		};
 	</script>
 	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
@@ -18,8 +20,20 @@
 </head>
 <body onload="initialize();">
 	{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
+	<audio preload="none" id="audio"></audio>
 	<div id="measure_box"></div>
-	<div id="menu"></div>
+	<div id="menu">
+		<div id="rainwave_logo">...</div>
+		<ul id="station_select">
+			<li id="station_select_5"><a id="station_select_5_link" href="http://all.rainwave.cc"></a><div class="station_select_info" id="station_select_5_info"></div></li>
+			<li id="station_select_1"><a id="station_select_1_link" href="http://game.rainwave.cc"></a><div class="station_select_info"  id="station_select_1_info"></div></li>
+			<li id="station_select_4"><a id="station_select_4_link" href="http://chiptune.rainwave.cc"></a><div class="station_select_info"  id="station_select_4_info"></div></li>
+			<li id="station_select_3"><a id="station_select_3_link" href="http://covers.rainwave.cc"></a><div class="station_select_info"  id="station_select_3_info"></div></li>
+			<li id="station_select_2"><a id="station_select_2_link" href="http://ocremix.rainwave.cc"></a><div class="station_select_info"  id="station_select_2_info"></div></li>
+		</ul>
+		<div id="user_information"></div>
+		<div id="player"><a onclick="R4Audio.play();">Play</a><a onclick="R4Audio.stop()">Stop</a></div>
+	</div>
 	<div id="messages"></div>
 	<div id="sizable_body">
 		<div id="requests">

@@ -83,4 +83,6 @@ class R4Index(MainIndex):
 					revision_number=config.build_number,
 					api_url=config.get("api_external_url_prefix"),
 					cookie_domain=config.get("cookie_domain"),
-					locales=api.locale.locale_names_json)
+					locales=api.locale.locale_names_json,
+					relays=config.public_relays_json[self.sid],
+					stream_filename=config.get_station(self.sid, "stream_filename"))

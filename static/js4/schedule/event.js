@@ -49,14 +49,27 @@ var EventBase = function(json) {
 			if (!self.data.used && (self.type.indexOf("election") != -1)) {
 				shuffle(self.songs);
 			}
+			else if (self.data.used) {
+				changed_to_history = true;
+			}
 			var max_index = self.data.used ? 1 : self.songs.length;
 			for (var i = 0; i < max_index; i++) {
 				self.el.appendChild(self.songs[i].el);
 			}
-			self.height = TimelineSong.height * self.songs.length;
-			if (self.data.used) {
-				changed_to_history = true;
+		}
+		solve_height();
+	};
+
+	var solve_height = function() {
+		if (self.songs) {
+			if ($has_class(self.el, "timeline_now_playing")) {
+				self.height = (SmallScreen ? 90 : 130) + (TimelineSong.height * (self.songs.length - 1));
+			}
+			else if (changed_to_history && self.songs) {
 				self.height = TimelineSong.height;
+			}
+			else {
+				self.height = TimelineSong.height * self.songs.length;
 			}
 		}
 		else {
@@ -92,15 +105,6 @@ var EventBase = function(json) {
 		$add_class(self.el, "timeline_next");
 	};
 
-	var solve_now_playing_height = function() {
-		// we must assume 130px when dealing with now playing thanks to transitions eating into time
-		// TODO: alter this preset number for small_body
-		self.height = SmallScreen ? 90 : 130;
-		// assume all song heights are the same (THEY SHOULD BE...)
-		// yes it makes me a bit iffy but I refuse to incur any more offsetHeight reflow penalties here
-		self.height = self.height + (TimelineSong.height * (self.songs.length - 1));
-	};
-
 	self.change_to_now_playing = function() {
 		$remove_class(self.el, "timeline_next");
 		changed_to_history = false;
@@ -111,10 +115,10 @@ var EventBase = function(json) {
 			for (var i = 0; i < self.songs.length; i++) {
 				self.el.appendChild(self.songs[i].el);
 			}
-			solve_now_playing_height();
 			$add_class(self.songs[0].el, "timeline_now_playing_song");
 		}
 		$add_class(self.el, "timeline_now_playing");
+		solve_height();
 	};
 
 	self.change_to_history = function() {
@@ -123,7 +127,6 @@ var EventBase = function(json) {
 			for (var i = 1; i < self.songs.length; i++) {
 				Fx.remove_element(self.songs[i].el);
 			}
-			self.height = TimelineSong.height;
 		}
 		changed_to_history = true;
 
@@ -133,18 +136,11 @@ var EventBase = function(json) {
 		}
 		$remove_class(self.el, "timeline_next");
 		$add_class(self.el, "timeline_history");
+		solve_height();
 	};
 
 	self.reflow = function() {
-		if ($has_class(self.el, "timeline_now_playing")) {
-			solve_now_playing_height();
-		}
-		else if (changed_to_history && self.songs) {
-			self.height = TimelineSong.height;
-		}
-		else {
-			self.height = $measure_el(self.el).height;
-		}
+		solve_height();
 	};
 
 	self.enable_voting = function() {

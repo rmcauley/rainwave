@@ -57,6 +57,14 @@
    "album_name"                                      : "Album Name",
    "id"                                              : "ID",
 
+   "__comment__"                 : "Menu",
+
+   "station_name_game"                               : "Game",
+   "station_name_ocremix"                            : "OCRemix",
+   "station_name_covers"                             : "Covers",
+   "station_name_chiptune"                           : "Chiptune",
+   "station_name_all"                                : "All",
+
    "__comment__"                 : "Timeline",
 
    "Coming_Up"                                       : "Coming Up",
@@ -85,6 +93,8 @@
    "lost_connection"                                 : "Lost connection to server.",
    "sync_retrying"                                   : "Having trouble talking with the Rainwave server, please wait...",
    "deeplink_error"                                  : "Error understanding the URL entered.",
+   "audio_not_supported"                             : "Your browser does not support HTML5 audio.",
+   "audio_error"                                     : "Could not play audio in the browser - please download the playlist.",
 
    "__comment__"                 : "Playlist View",
 

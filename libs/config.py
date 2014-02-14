@@ -1,6 +1,7 @@
 import json
 import os
 import getpass
+import tornado.escape
 from libs import buildtools
 
 # Options hash - please don't access this externally in case the storage method changes
@@ -14,6 +15,8 @@ test_mode = False
 
 station_ids = set()
 station_id_friendly = {}
+public_relays = None
+public_relays_json = {}
 
 def get_config_file(testmode = False):
 	if os.path.isfile("etc/%s.conf" % getpass.getuser()):
@@ -33,6 +36,9 @@ def load(file = None, testmode = False):
 	global _opts
 	global test_mode
 	global build_number
+	global public_relays
+	global public_relays_json
+	global station_ids
 	
 	if not file:
 		file = get_config_file(testmode)
@@ -50,6 +56,16 @@ def load(file = None, testmode = False):
 	set_station_ids(get("song_dirs"), get("station_id_friendly"))
 	if get("test_mode") == True:
 		test_mode = True
+
+	public_relays = {}
+	for sid in station_ids:
+		stream_filename = get_station(sid, "stream_filename")
+		public_relays[sid] = []
+		public_relays[sid].append({ "name": "Random", "protocol": "http://", "hostname": get_station(sid, "round_robin_relay_host"), "port": get_station(sid, "round_robin_relay_port") })
+		for relay_name, relay in get("relays").iteritems():
+			if sid in relay['sids']:
+				public_relays[sid].append({ "name": relay_name, "protocol": relay['protocol'], "hostname": relay['ip_address'], "port": relay['port'] })
+		public_relays_json[sid] = tornado.escape.json_encode(public_relays[sid])
 
 	build_number = buildtools.get_build_number()
 		

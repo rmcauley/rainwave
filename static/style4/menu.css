@@ -1,0 +1,17 @@
+#station_select {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#station_select li {
+	display: inline;
+}
+
+#station_select .station_select_info {
+	position: absolute;
+}
+
+#rainwave_logo {
+	float: right;
+}
