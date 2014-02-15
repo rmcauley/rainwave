@@ -44,6 +44,8 @@ var TimelineSong = function() {
 				self.elements.request_cancel.addEventListener("click", function() { Requests.delete(self.data.id); });
 				self.elements.title_group.appendChild(self.elements.request_cancel);
 			}
+			self.elements.title_group.addEventListener("mouseover", self.title_mouse_over);
+			self.elements.title_group.addEventListener("mouseout", self.title_mouse_out);
 			self.elements.song_rating = self.elements.title_group.appendChild(song_rating.el);
 			self.elements.title = self.elements.title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
 			self.elements.title.addEventListener("click", vote);
@@ -80,6 +82,16 @@ var TimelineSong = function() {
 				self.update_cooldown_info();
 			}
 		};
+
+		self.title_mouse_over = function(e) {
+			if (voting_enabled) {
+				$add_class(self.el, "voting_hover");
+			}
+		};
+
+		self.title_mouse_out = function(e) {
+			$remove_class(self.el, "voting_hover");
+		}
 
 		self.update = function(new_json) {
 			self.data = json;

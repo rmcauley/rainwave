@@ -32,7 +32,15 @@
 	cursor: default;
 	padding-left: 5px;
 	padding-right: 5px;
-	@include transition(opacity, background-color, transform);
+	transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 400ms ease-out 0s;
+	background-image: url(/static/images4/vote_hover.png);
+	background-position: -678px 0px;
+	background-repeat: no-repeat;
+	height: 70px;
+}
+
+body.small_screen .timeline_song {
+	height: 55px;
 }
 
 .timeline_song_is_cool {
@@ -232,10 +240,10 @@ body.small_screen .timeline_now_playing_song .art_container .art {
 	cursor: pointer;
 }
 
-.voting_enabled .title:hover {
-	background-color: #000088;
+.voting_hover {
+	background-position: 0px 0px;
 }
 
-.voting_registered .title {
-	background-color: #444488;
+.voting_registered {
+	background-position: 0px -107px;
 }

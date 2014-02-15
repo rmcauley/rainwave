@@ -44,7 +44,7 @@ var Schedule = function() {
 
 		timeline_scrollbar = Scrollbar.new(self.el);
 		timeline_scrollbar.auto_resize = false;
-		timeline_scrollbar.add_resizer("timeline", 20);
+		timeline_scrollbar.add_resizer("timeline", 20, 600);
 	};
 
 	var shift_next_header = function() {
