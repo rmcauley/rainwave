@@ -90,13 +90,13 @@
 
 .request_cancel {
 	float: right;
-	margin-left: 5px;
+	margin: 0 5px;
 	cursor: pointer;
 }
 
 .request_reorder {
 	float: right;
-	margin-left: 5px;
+	margin: 0 5px;
 	cursor: grab;
 }
 

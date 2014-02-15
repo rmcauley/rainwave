@@ -152,6 +152,7 @@ var API = function() {
 			sync_restart_pause = 0;
 		}
 		else {
+			sync_error_count = 0;
 			offline_ack = false;
 			perform_callbacks(response);
 			perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });

@@ -114,6 +114,9 @@
    "request_queue_paused"                            : "Request queue paused.",
    "request_queue_unpaused"                          : "Request queue unpaused.",
    "request_fill_with_unrated"                       : "Unrated Fill",
+   "request_on_cooldown_for"                         : "On cooldown for %(cool_time).",
+   "request_on_cooldown_ends_soon"                   : "Coming off cooldown.",
+   "request_in_election"                             : "%(blocked_by) is in an election.",
 
    "__comment__"                 : "The following are the old R3 translation lines, which will be replaced.  Some day. :(",
 

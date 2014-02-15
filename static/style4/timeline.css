@@ -35,6 +35,10 @@
 	@include transition(opacity, background-color, transform);
 }
 
+.timeline_song_is_cool {
+	background-color: #002;
+}
+
 .timeline_event .timeline_song:hover {
 	z-index: 2;
 	opacity: 1 !important;
@@ -44,7 +48,7 @@
 	clear: right;
 }
 
-.timeline_song .title, .timeline_song .album, .timeline_song .artist_group, .timeline_song .requester {
+.timeline_song .title, .timeline_song .album, .timeline_song .artist_group, .timeline_song .requester, .timeline_song .cooldown_info {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
@@ -121,15 +125,20 @@ body.small_screen .timeline_song .art {
 	max-height: 55px;
 }
 
-.timeline_song .requester {
+.timeline_song .requester, .timeline_song .cooldown_info {
 	margin-left: 95px;
 }
 
-.timeline_song .votes {
+.timeline_song .votes, .timeline_song .cooldown_info {
 	display: none;
 }
 
-body.small_screen .timeline_song .requester {
+.timeline_song_is_cool .cooldown_info {
+	color: $highlight;
+	display: block;
+}
+
+body.small_screen .timeline_song .requester, body.small_screen .timeline_song .cooldown_info {
 	margin-left: 80px;
 }
 

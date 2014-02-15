@@ -74,6 +74,11 @@ var TimelineSong = function() {
 				self.elements.xlink = self.el.appendChild($el("a", { "target": "_blank", "href": self.data.url, "textContent": self.data.link_text }));
 				Formatting.linkify_external(self.elements.xlink);
 			}
+
+			if (request_mode) {
+				self.elements.cooldown = self.el.appendChild($el("div", { "class": "cooldown_info" }));
+				self.update_cooldown_info();
+			}
 		};
 
 		self.update = function(new_json) {
@@ -84,6 +89,29 @@ var TimelineSong = function() {
 			self.data.entry_position = new_json.entry_position;
 			song_rating.update(new_json.rating_user, new_json.rating, new_json.fave, new_json.rating_allowed);
 			album_rating.update(new_json.albums[0].rating_user, new_json.albums[0].rating, new_json.albums[0].fave, false);
+			self.update_cooldown_info();
+		};
+
+		self.update_cooldown_info = function() {
+			if (!self.elements.cooldown) {
+				// nothing
+			}
+			else if (self.data.cool && (self.data.cool_end > (Clock.now + 20))) {
+				$add_class(self.el, "timeline_song_is_cool");
+				self.elements.cooldown.textContent = $l("request_on_cooldown_for", { "cool_time": Formatting.cooldown(self.data.cool_end - Clock.now) });
+			}
+			else if (self.data.cool) {
+				$add_class(self.el, "timeline_song_is_cool");
+				self.elements.cooldown.textContent = $l("request_on_cooldown_ends_soon");
+			}
+			else if (self.data.elec_blocked) {
+				$add_class(self.el, "timeline_song_is_cool");
+				self.data.elec_blocked_by = self.data.elec_blocked_by.charAt(0).toUpperCase() + self.data.elec_blocked_by.slice(1);
+				self.elements.cooldown.textContent = $l("request_in_election", { "blocked_by": self.data.elec_blocked_by });
+			}
+			else {
+				$remove_class(self.el, "timeline_song_is_cool");
+			}
 		};
 
 		self.enable_voting = function() {
