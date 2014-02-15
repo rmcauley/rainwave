@@ -32,7 +32,7 @@
 	cursor: default;
 	padding-left: 5px;
 	padding-right: 5px;
-	transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 400ms ease-out 0s;
+	transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
 	background-image: url(/static/images4/vote_hover.png);
 	background-position: -678px 0px;
 	background-repeat: no-repeat;
@@ -157,7 +157,12 @@ body.small_screen .timeline_song .requester, body.small_screen .timeline_song .c
 }
 
 .timeline_now_playing .timeline_now_playing_song {
+	height: 120px;
 	opacity: 1;
+}
+
+body.small_screen .timeline_now_playing .timeline_now_playing_song {
+	height: 85px;
 }
 
 .timeline_now_playing_song .artist_group {

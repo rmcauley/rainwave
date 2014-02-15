@@ -42,7 +42,7 @@ class SubmitVote(APIHandler):
 		# Subtract a previous vote from the song's total if there was one
 		already_voted = False
 		if self.user.is_anonymous():
-			log.debug("vote", "Anon already voted: %s" % (self.user.id, self.user.data['listener_voted_entry']))
+			# log.debug("vote", "Anon already voted: %s" % (self.user.id, self.user.data['listener_voted_entry']))
 			if self.user.data['listener_voted_entry'] and self.user.data['listener_voted_entry'] == entry_id:
 				# immediately return and a success will be registere
 				return
@@ -53,12 +53,12 @@ class SubmitVote(APIHandler):
 					raise APIException("internal_error")
 		else:
 			already_voted = db.c.fetch_row("SELECT entry_id, vote_id, song_id FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (self.user.id, event.id))
-			log.debug("vote", "Already voted: %s" % repr(already_voted))
+			# log.debug("vote", "Already voted: %s" % repr(already_voted))
 			if already_voted and already_voted['entry_id'] == entry_id:
 				# immediately return and a success will be registere
 				return
 			elif already_voted:
-				log.debug("vote", "Subtracting vote from %s" % already_voted['entry_id'])
+				# log.debug("vote", "Subtracting vote from %s" % already_voted['entry_id'])
 				if not event.add_vote_to_entry(already_voted['entry_id'], -1):
 					log.warn("vote", "Could not subtract vote from entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
 					raise APIException("internal_error")
