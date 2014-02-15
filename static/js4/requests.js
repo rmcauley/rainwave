@@ -27,7 +27,6 @@ var Requests = function() {
 
 	self.initialize = function() {
 		Prefs.define("requests_sticky");
-		Prefs.define("requests_menu_showing");
 		el = $id("requests_list");
 		container = $id("requests");
 		if (!Prefs.get("requests_sticky")) {
@@ -36,21 +35,17 @@ var Requests = function() {
 		else {
 			container.className = "sticky";
 		}
-		if (Prefs.get("requests_menu_showing")) {
-			$add_class(container, "menu_showing");
-		}
 		container.addEventListener("mouseover", mouse_over);
 		scroller = Scrollbar.new(el);
 		scroller.use_fixed = true;
 		$id("requests_pin").addEventListener("click", self.swap_sticky);
 		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
-		var pause_link = $id("requests_pause_queue").appendChild($el("a", { "textContent": $l("pause_request_queue") }));
-		pause_link.addEventListener("click", self.pause_queue);
-		var clear_link = $id("requests_clear_queue").appendChild($el("a", { "textContent": $l("clear_request_queue") }));
-		clear_link.addEventListener("click", self.clear_requests);
-		var unrated_link = $id("requests_unrated_fill").appendChild($el("a", { "textContent": $l("request_fill_with_unrated") }));
-		unrated_link.addEventListener("click", self.fill_with_unrated);
-		$id("requests_menu_toggle").addEventListener("click", self.swap_menu_showing);
+		$id("requests_pause").setAttribute("title", $l("pause_request_queue"));
+		$id("requests_pause").addEventListener("click", self.pause_queue);
+		$id("requests_clear").setAttribute("title", $l("clear_request_queue"));
+		$id("requests_clear").addEventListener("click", self.clear_requests);
+		$id("requests_unrated").setAttribute("title", $l("request_fill_with_unrated"));
+		$id("requests_unrated").addEventListener("click", self.fill_with_unrated);
 		self.on_resize();
 
 		API.add_callback(self.update, "requests");
@@ -59,10 +54,10 @@ var Requests = function() {
 
 	self.show_queue_paused = function(user_json) {
 		if (user_json.radio_requests_paused) {
-			$add_class($id("requests_pause_queue"), "request_queue_paused");
+			$add_class(container, "request_queue_paused");
 		}
 		else {
-			$remove_class($id("requests_pause_queue"), "request_queue_paused");
+			$remove_class(container, "request_queue_paused");
 		}
 	};
 
@@ -89,17 +84,6 @@ var Requests = function() {
 
 	self.delete = function(song_id) {
 		API.async_get("delete_request", { "song_id": song_id });
-	};
-
-	self.swap_menu_showing = function() {
-		if ($has_class(container, "menu_showing")) {
-			$remove_class(container, "menu_showing");
-			Prefs.change("requests_menu_showing", false);
-		}
-		else {
-			$add_class(container, "menu_showing");
-			Prefs.change("requests_menu_showing", true);
-		}
 	};
 
 	self.swap_sticky = function() {

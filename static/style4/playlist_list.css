@@ -65,6 +65,11 @@ div.searchlist > div {
 	cursor: pointer;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	@include transition-wtime(200ms, background-color, border-color)
+}
+
+span.searchlist_name {
+	@include transition-wtime(200ms, padding)
 }
 
 .resizing div.searchlist > div {
@@ -135,7 +140,7 @@ div.searchlist_cooldown_visible span.searchlist_cooldown_time {
 }
 
 div.searchlist > div:hover, div.searchlist div.searchtable_key_nav_hover {
-	border-bottom: solid 1px #1a435e;
+	border-color: #1a435e;
 	background-color: #143347;
 }
 
@@ -146,5 +151,5 @@ div.searchlist > div:hover span.searchlist_name, div.searchlist div.searchtable_
 div.searchlist div.searchlist_open_item {
 	background-color: #1f4f70;
 	padding-left: 13px;
-	border-bottom: solid 1px #245b80;
+	border-color: #245b80;
 }

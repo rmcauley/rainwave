@@ -5,6 +5,12 @@
 	border-width: 0px;
 	border-style: solid;
 	overflow: hidden;
+	@include transition(background-color, border-color);
+}
+
+#requests.request_queue_paused {
+	border-color: #4b590c;
+	background-color: #333326;
 }
 
 #requests.nonsticky {
@@ -12,7 +18,7 @@
 	position: absolute;
 	left: 100%;
 	border-left-width: 4px;
-	@include transition-wtime(300ms, transform, border-left-width);
+	@include transition-wtime(300ms, transform, border-left-width, background-color, border-color);
 	@include transform(translateX(-5px));
 }
 
@@ -26,7 +32,7 @@
 	float: right;
 	height: 100%;
 	border-left-width: 0px;
-	@include transition(border-left-width);
+	@include transition(border-left-width, background-color, border-color);
 	@include transform(translateX(0px));
 }
 
@@ -48,40 +54,24 @@
 
 #requests_header {
 	padding-left: 7px;
-	background: #383a3d;
+	background-color: #383a3d;
+	@include transition(background-color);
 }
 
-#requests #requests_pin, #requests #requests_menu_toggle {
+#requests.request_queue_paused #requests_header {
+	background-color: #3d3d2e;
+}
+
+#requests #requests_pin {
 	float: right;
-	margin-top: 1px;
+	margin: 1px 3px;
 	border: solid 1px transparent;
-	margin-top: 1px;
 	padding: 1px;
 }
 
-#requests.sticky #requests_pin, #requests.menu_showing #requests_menu_toggle {
+#requests.sticky #requests_pin, #requests.request_queue_paused #requests_pause {
 	border: inset 1px #222;
 	background: #111;
-}
-
-#requests_options {
-	overflow: hidden;
-	height: 0px;
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	width: 100%;
-	@include transition(height);
-}
-
-#requests_options li {
-	width: 31%;
-	text-align: center;
-	display: inline-block;
-}
-
-#requests_options li a {
-	cursor: pointer;
 }
 
 #requests_pause_queue {
@@ -92,8 +82,9 @@
 	background-color: #25263c;
 }
 
-#requests.menu_showing #requests_options {
-	height: 1.2em;
+.requests_advanced {
+	float: right;
+	margin: 3px 3px 0px 3px;
 }
 
 .request_cancel {
