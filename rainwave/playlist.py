@@ -266,14 +266,43 @@ def get_unrated_songs_for_user(user_id):
 		"WHERE song_verified = TRUE AND r4_song_ratings.song_id IS NULL ORDER BY album_name, song_title LIMIT 100", (user_id,))
 
 def get_unrated_songs_for_requesting(user_id, sid, limit):
-	return db.c.fetch_list(
-		"SELECT MIN(r4_song_sid.song_id) AS song_id, r4_album_sid.album_id "
-		"FROM r4_song_sid JOIN r4_album_sid USING (album_id, sid) "
-		"LEFT OUTER JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
-		"WHERE r4_song_sid.sid = %s AND song_exists = TRUE AND song_cool = FALSE AND song_elec_blocked = FALSE AND album_exists = TRUE "
-		"AND r4_song_ratings.song_id IS NULL "
-		"GROUP BY r4_album_sid.album_id "
-		"LIMIT %s", (user_id, sid, limit))
+	unrated = db.c.fetch_all(
+		"WITH rated_songs AS (SELECT song_id FROM r4_song_ratings WHERE user_id = %s), "
+		"unrated_songs AS (SELECT song_id, album_id, song_cool, song_cool_end FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE song_verified IS TRUE AND sid = %s and song_id NOT IN (SELECT song_id FROM rated_songs)), "
+		"album_unrated_counts AS (SELECT album_id, COUNT(song_id) AS unrated_songs_in_album FROM r4_song_sid WHERE song_id IN (SELECT song_id FROM unrated_songs) GROUP BY album_id) "
+		"SELECT song_id, album_id, song_cool, song_cool_end, unrated_songs_in_album "
+		"FROM unrated_songs JOIN album_unrated_counts USING (album_id)", (user_id, sid))
+
+	def _split_list(unrated, split_on):
+		split_true = list()
+		split_false = list()
+		for record in unrated:
+			if record.get(split_on):
+				split_true.append(record)
+			else:
+				split_false.append(record)
+		return split_true, split_false
+	def unrated_songs_in_album_key(record):
+		return record.get("unrated_songs_in_album")
+	def song_cool_end_key(record):
+		return record.get("song_cool_end")
+
+	unavailable, available = _split_list(unrated, "song_cool")
+	available.sort(key=unrated_songs_in_album_key, reverse=True)
+	unavailable.sort(key=song_cool_end_key)
+	unrated = available + unavailable
+
+	return_list = list()
+	i = 0
+	while i < limit:
+		if len(unrated) > 0:
+			song = unrated.pop(0)
+			unrated[:] = [d for d in unrated if d.get("album_id") != song.get("album_id")]
+			return_list.append(song.get("song_id"))
+		else:
+			return return_list
+		i += 1
+	return return_list
 
 def make_searchable_string(s):
 	if not isinstance(s, unicode):
