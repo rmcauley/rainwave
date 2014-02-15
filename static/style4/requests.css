@@ -23,7 +23,7 @@
 }
 
 #requests.nonsticky:hover, #requests.fake_hover {
-	@include transform(translateX(-355px));
+	@include transform(translateX(-354px));
 }
 
 #requests.sticky {
