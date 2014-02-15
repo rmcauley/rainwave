@@ -96,10 +96,12 @@ var Requests = function() {
 			// this little flip prevents the transition on non-sticky behaviour from screwing with the visuals here
 			// CAREFUL ORDERING OF THE CSS VALUES is required in requests.css to make sure this is pulled off
 			$add_class(container, "nonsticky");
+			$add_class(container, "fake_hover");
 			container.style.transition = "none";
 			$remove_class(container, "sticky");
 			Fx.delay_css_setting(container, "transition", null);
 			Prefs.change("requests_sticky", false);
+			setTimeout(function() { $remove_class(container, "fake_hover"); }, 100);
 		}
 	};
 

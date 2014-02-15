@@ -18,7 +18,7 @@
 	position: absolute;
 	left: 100%;
 	border-left-width: 4px;
-	@include transition-wtime(300ms, transform, border-left-width, background-color, border-color);
+	@include transition-wtime(300ms, transform, background-color, border-color);
 	@include transform(translateX(-5px));
 }
 
@@ -32,7 +32,7 @@
 	float: right;
 	height: 100%;
 	border-left-width: 0px;
-	@include transition(border-left-width, background-color, border-color);
+	@include transition(background-color, border-color);
 	@include transform(translateX(0px));
 }
 
