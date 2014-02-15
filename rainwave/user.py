@@ -260,12 +260,10 @@ class User(object):
 		return updated_rows
 
 	def add_unrated_requests(self, sid):
-		# TODO: Make sure that the get_unrated_songs function does not return songs already in the user's list
-		# Then short-circuit add_request, since that's mant for single songs and does many expensive operations
 		limit = self._check_too_many_requests()
 		added_requests = 0
 		for song_id in playlist.get_unrated_songs_for_requesting(self.id, sid, limit):
-			added_requests += self.add_request(sid, song_id)
+			added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
 		return added_requests
 
 	def remove_request(self, song_id):

@@ -84,27 +84,27 @@
 }
 
 .art_expandable .art_expand_left .art, .art_expand_right .art {
-	border-width: 8px;
+	border-width: 8px !important;
 	width: 250px;
 	height: 250px;
-	max-width: 250px;
-	max-height: 250px;
+	max-width: 250px !important;
+	max-height: 250px !important;
 }
 
 .art_expand_left.art_expand_up .art {
-	@include transform(translate(-250px, -200px));
+	@include transform(translate(-250px, -200px) !important);
 }
 
 .art_expand_left.art_expand_down .art {
-	@include transform(translate(-250px, -5px));
+	@include transform(translate(-250px, -5px) !important);
 }
 
 .art_expand_right.art_expand_up .art {
-	@include transform(translate(-5px, -200px));
+	@include transform(translate(-5px, -200px) !important);
 }
 
 .art_expand_right.art_expand_down .art {
-	@include transform(translate(-5px, -5px));
+	@include transform(translate(-5px, -5px) !important);
 }
 
 .timeline_song .artist_group {
@@ -156,6 +156,8 @@ body.small_screen .timeline_song .requester {
 .timeline_now_playing_song .art_container .art {
  	max-width: 120px;
  	max-height: 120px;
+ 	border-width: 0;
+ 	@include transform(none);
 }
 
 body.small_screen .timeline_now_playing_song .art_container {

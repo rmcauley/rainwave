@@ -85,6 +85,7 @@
 .requests_advanced {
 	float: right;
 	margin: 3px 3px 0px 3px;
+	cursor: pointer;
 }
 
 .request_cancel {
