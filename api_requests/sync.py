@@ -102,9 +102,10 @@ class SyncUpdateIP(APIHandler):
 @handle_api_url("sync")
 class Sync(APIHandler):
 	description = ("Presents the same information as the 'info' requests, but will wait until the next song change in order to deliver the information. "
-					"Will send whitespace every 20 seconds in a bid to keep the connection alive.")
+					"Will send whitespace every 20 seconds in a bid to keep the connection alive.  Use offline_ack to have the connection long poll until "
+					"the station is back online, and use resync to get all information immediately rather than waiting.")
 	auth_required = True
-	fields = { "offline_ack": (fieldtypes.boolean, None) }
+	fields = { "offline_ack": (fieldtypes.boolean, None), "resync": (fieldtypes.boolean, None) }
 
 	@tornado.web.asynchronous
 	def post(self):
@@ -118,7 +119,10 @@ class Sync(APIHandler):
 		if not self.user.request_sid in sessions:
 			sessions[self.user.request_sid] = []
 		sessions[self.user.request_sid].append(self)
-		self.keep_alive()
+		if not self.get_argument("resync"):
+			self.keep_alive()
+		else:
+			self.update()
 
 	def on_connection_close(self):
 		try:

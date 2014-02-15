@@ -1,7 +1,8 @@
 var API = function() {
 	"use strict";
 	var sid, url, user_id, api_key;
-	var sync, sync_params, sync_stopped, sync_timeout_id, sync_error_count;
+	var sync, sync_params, sync_stopped, sync_timeout_id, sync_error_count, sync_resync;
+	var sync_timeout_error_removal_timeout;
 	var async, async_queue;
 	var callbacks = {};
 	var universal_callbacks = [];
@@ -21,6 +22,7 @@ var API = function() {
 		sync.ontimeout = sync_error;
 		sync_params = self.serialize({ "sid": sid, "user_id": user_id, "key": api_key });
 		sync_stopped = false;
+		sync_resync = false;
 		sync_error_count = 0;
 
 		async = new XMLHttpRequest();
@@ -55,15 +57,33 @@ var API = function() {
 
 		sync.open("POST", url + "sync", true);
 		sync.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		clear_sync_timeout_error_removal_timeout();
+		sync_timeout_error_removal_timeout = setTimeout(clear_sync_timeout_error, 10000);
+		var local_sync_params = sync_params;
 		if (offline_ack) {
-			sync.send(sync_params + "&offline_ack=true");
+			local_sync_params += "&offline_ack=true";
 		}
-		else {
-			sync.send(sync_params);
+		if (sync_resync) {
+			local_sync_params += "&resync=true";
+			sync_resync = false;
 		}
+		sync.send(local_sync_params);
+	};
+
+	var clear_sync_timeout_error_removal_timeout = function() {
+		if (sync_timeout_error_removal_timeout) {
+			clearTimeout(sync_timeout_error_removal_timeout);
+		}
+		sync_timeout_error_removal_timeout = null;
+	};
+
+	var clear_sync_timeout_error = function() {
+		sync_timeout_error_removal_timeout = null;
+		ErrorHandler.remove_permanent_error("sync_retrying");
 	};
 
 	self.sync_stop = function() {
+		clear_sync_timeout_error_removal_timeout();
 		sync_clear_timeout();
 		sync_stopped = true;
 		sync.abort();
@@ -78,7 +98,7 @@ var API = function() {
 	};
 
 	var sync_error = function() {
-		// TODO: handle non-JSON errors here
+		clear_sync_timeout_error_removal_timeout();
 		var result;
 		try {
 			if (sync.responseText) {
@@ -88,6 +108,7 @@ var API = function() {
 		catch (exc) {
 			// do nothing
 		}
+		sync_resync = true;
 		sync_error_count++;
 		if (sync_error_count > 4) {
 			ErrorHandler.remove_permanent_error("sync_retrying");
@@ -111,6 +132,7 @@ var API = function() {
 	};
 
 	var sync_complete = function() {
+		clear_sync_timeout_error_removal_timeout();
 		if (sync_stopped) {
 			return;
 		}
@@ -140,7 +162,7 @@ var API = function() {
 				}
 			}
 			else {
-				ErrorHandler.remove_permanent_error("sync_retrying");
+				clear_sync_timeout_error();
 				ErrorHandler.remove_permanent_error("station_offline");
 			}
 		}
