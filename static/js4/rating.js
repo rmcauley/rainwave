@@ -111,8 +111,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 			}
 		}
 		else if (self.ratable) {
-			effect.set_rating(new_rating);
-			API.async_get("rate", { "rating": new_rating, "song_id": id });
+			self.rate(new_rating);
 		}
 	};
 
@@ -144,6 +143,12 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 		self.ratable = ratable;
 		self.reset_rating();
 		self.reset_fave();
+	};
+
+	self.rate = function(new_rating) {
+		if (!self.ratable) return;
+		effect.set_rating(new_rating);
+		API.async_get("rate", { "rating": new_rating, "song_id": id });
 	};
 
 	self.fave_mouse_over = function() {

@@ -30,17 +30,29 @@ div.searchlist_searchbox {
 }
 
 div.searchlist_input {
-	background: #0e0e0f;
+	background-color: #0e0e0f;
 	border: none;
 	color: $vdarktext;
 	margin: 0 5px 5px 5px;
 	padding: 2px 4px 5px 5px;
 	cursor: text;
 	height: 1.2em;
+	@include transition-wtime(300ms, background-color);
 }
 
 div.searchlist_input_active {
 	color: $text;
+}
+
+div.searchlist_input.hotkey_mode {
+	color: $text;
+	background-color: #0e0e3f;
+	@include transition-wtime(300ms, background-color, color);
+}
+
+div.searchlist_input.hotkey_mode_error {
+	color: $text;
+	background-color: #3f0e0e;
 }
 
 img.searchlist_cancel {

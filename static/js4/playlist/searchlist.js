@@ -25,6 +25,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 	var sorted = [];			// list of IDs sorted by the sort_function (always maintained, contains all IDs)
 	var reinsert = [];			// list of IDs unsorted - will be resorted in the list when the user is not in a search
 	var hidden = [];			// list of IDs unsorted - currently hidden from view during a search
+	var hotkey_mode_on = false;
 
 	var search_string = "";
 	var current_key_nav_element = false;
@@ -97,6 +98,57 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 			self.el.appendChild(data[sorted[i]]._el);
 		}
 		scrollbar.update_scroll_height(null, list_name);
+	};
+
+	var hotkey_mode_enable = function() {
+		hotkey_mode_on = true;
+		$add_class(self.search_box_input, "hotkey_mode");
+		self.search_box_input.textContent = $l("hotkey_mode");
+	};
+
+	var hotkey_mode_disable = function() {
+		hotkey_mode_on = false;
+		$remove_class(self.search_box_input, "hotkey_mode");
+		self.search_box_input.textContent = $l("filter");
+	};
+
+	var hotkey_mode_handle = function(character) {
+		try {
+			if ((parseInt(character) >= 1) && (parseInt(character) <= 5)) {
+				Schedule.rate_current_song(parseInt(character));
+			}
+			else if (character == "q") Schedule.vote(0, 0);
+			else if (character == "a") Schedule.vote(0, 1);
+			else if (character == "z") Schedule.vote(0, 2);
+			else if (character == "w") Schedule.vote(1, 0); 
+			else if (character == "s") Schedule.vote(1, 1);
+			else if (character == "x") Schedule.vote(1, 2);
+			else { 
+				hotkey_mode_disable();
+				return false;
+			}
+			hotkey_mode_disable();
+			return true;
+		}
+		catch (err) {
+			if ("is_rw" in err) {
+				hotkey_mode_error(err.tl_key);
+				return true;
+			}
+			else {
+				throw(err);
+			}
+		}
+	};
+
+	var hotkey_mode_error = function(tl_key) {
+		hotkey_mode_disable();
+		$add_class(self.search_box_input, "hotkey_mode_error");
+		self.search_box_input.textContent = $l(tl_key);
+		setTimeout(function() { 
+			$remove_class(self.search_box_input, "hotkey_mode_error");
+			self.search_box_input.textContent = $l("filter");
+			}, 6000);
 	};
 
 	self.update_view = function() {
@@ -275,6 +327,15 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 	};
 
 	self.key_nav_add_character = function(character) {
+		if (hotkey_mode_on) {
+			if (hotkey_mode_handle(character)) {
+				return true;
+			}
+		}
+		else if ((search_string.length == 0) && (character == " ")) {
+			hotkey_mode_enable();
+			return true;
+		}
 		if (search_string.length == 0) {
 			scrollbar.scroll_to(0);
 		}
@@ -290,9 +351,11 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 			}
 		}
 		scrollbar.update_scroll_height(null, list_name);
+		return true;
 	};
 
 	self.clear_search = function() {
+		hotkey_mode_disable();
 		search_string = "";
 		self.search_box_input.textContent = $l("filter");
 		$remove_class(self.search_box_input, "searchlist_input_active");

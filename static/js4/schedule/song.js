@@ -16,7 +16,7 @@ var TimelineSong = function() {
 		var song_rating = SongRating(json);
 		var album_rating = AlbumRating(json.albums[0]);
 
-		var vote = function(evt) {
+		self.vote = function(evt) {
 			if (!voting_enabled) {
 				return;
 			}
@@ -48,7 +48,7 @@ var TimelineSong = function() {
 			self.elements.title_group.addEventListener("mouseout", self.title_mouse_out);
 			self.elements.song_rating = self.elements.title_group.appendChild(song_rating.el);
 			self.elements.title = self.elements.title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
-			self.elements.title.addEventListener("click", vote);
+			self.elements.title.addEventListener("click", self.vote);
 			
 			self.elements.album_group = self.el.appendChild($el("div", { "class": "album_group" }));
 			if (request_mode) {
@@ -148,6 +148,10 @@ var TimelineSong = function() {
 
 		self.unregister_vote = function() {
 			$remove_class(self.el, "voting_registered");
+		};
+
+		self.rate = function(new_rating) {
+			song_rating.rate(new_rating);
 		};
 
 		draw();

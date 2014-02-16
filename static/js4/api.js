@@ -58,7 +58,7 @@ var API = function() {
 		sync.open("POST", url + "sync", true);
 		sync.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		clear_sync_timeout_error_removal_timeout();
-		sync_timeout_error_removal_timeout = setTimeout(clear_sync_timeout_error, 10000);
+		sync_timeout_error_removal_timeout = setTimeout(clear_sync_timeout_error, 15000);
 		var local_sync_params = sync_params;
 		if (offline_ack) {
 			local_sync_params += "&offline_ack=true";
@@ -75,6 +75,7 @@ var API = function() {
 			clearTimeout(sync_timeout_error_removal_timeout);
 		}
 		sync_timeout_error_removal_timeout = null;
+		sync_error_count = 0;
 	};
 
 	var clear_sync_timeout_error = function() {

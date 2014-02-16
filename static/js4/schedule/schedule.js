@@ -9,6 +9,7 @@ var Schedule = function() {
 	var sched_history;
 	var time_bar;
 	var time_bar_progress;
+	var current_event;
 
 	var next_headers = [];
 	var current_header;
@@ -171,6 +172,7 @@ var Schedule = function() {
 
 		// Current event positioning and updating
 		temp_evt = find_and_update_event(sched_current);
+		current_event = temp_evt;
 		set_header_text($l("Now_Playing"), current_header, temp_evt);
 		if (!temp_evt.el.parentNode) self.el.appendChild(temp_evt.el);
 		temp_evt.change_to_now_playing();
@@ -260,13 +262,41 @@ var Schedule = function() {
 	};
 
 	self.register_vote = function(json) {
-		// TODO: error handling here
 		if (!json.success) return;
 		for (var i = 0; i < self.events.length; i++) {
 			if (self.events[i].id == json.elec_id) {
 				self.events[i].register_vote(json.entry_id);
 			}
 		}
+	};
+
+	self.rate_current_song = function(new_rating) {
+		if (current_event.songs[0].data.rating_allowed) {
+			current_event.songs[0].rate(new_rating);
+		}
+		else {
+			throw({ "is_rw": true, "tl_key": "cannot_rate_now" });
+		}
+	};
+
+	self.vote = function(which_election, song_position) {
+		var i = self.events.indexOf(current_event) - 1;
+		while ((i >= 0) && (which_election > 0)) {
+			if ((self.events[i].data.type == "Election") && self.events[i].data.voting_allowed) {
+				which_election -= 1;
+			}
+			i -= 1;
+		}
+		if ((i >= 0) && (self.events[i].data.type == "Election") && self.events[i].data.voting_allowed) {
+			if (self.events[i].songs.length > song_position) {
+				self.events[i].songs[song_position].vote();
+				return;
+			}
+			else {
+				throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote" });
+			}
+		}
+		throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote" });
 	};
 
 	return self;
