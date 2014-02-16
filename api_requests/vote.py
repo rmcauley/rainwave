@@ -14,8 +14,7 @@ from libs import db
 from rainwave import playlist
 
 def append_success_to_request(request, elec_id, entry_id):
-	request.append("vote_result", { "success": True, "tl_key": "vote_submitted", "text": "Vote submitted.",
-									"elec_id": elec_id,	"entry_id": entry_id, "text": "Vote submitted."})
+	request.append_standard("vote_submitted", return_name="vote_result", elec_id=elec_id, entry_id=entry_id)
 
 @handle_api_url("vote")
 class SubmitVote(APIHandler):
@@ -27,16 +26,20 @@ class SubmitVote(APIHandler):
 	def post(self):
 		events = cache.get_station(self.sid, "sched_next")
 		lock_count = 0
+		voted = False
 		elec_id = None
 		for event in events:
 			lock_count += 1
 			if event.is_election and event.has_entry_id(self.get_argument("entry_id")):
 				elec_id = event.id
-				self.vote(self.get_argument("entry_id"), event, lock_count)
+				voted = self.vote(self.get_argument("entry_id"), event, lock_count)
 				break
 			if not self.user.data['radio_perks']:
 				break
-		append_success_to_request(self, elec_id, self.get_argument("entry_id"))
+		if voted:
+			append_success_to_request(self, elec_id, self.get_argument("entry_id"))
+		else:
+			self.append_standard("cannot_vote_for_this_now", success=False, elec_id=elec_id, entry_id=self.get_argument("entry_id"))
 
 	def vote(self, entry_id, event, lock_count):
 		# Subtract a previous vote from the song's total if there was one
@@ -71,14 +74,11 @@ class SubmitVote(APIHandler):
 			log.warn("vote", "Could not lock user: listener ID %s voting for entry ID %s, tried to lock for %s events." % (self.user.data['listener_id'], entry_id, lock_count))
 			raise APIException("internal_error", "Internal server error.  User is now locked to station ID %s." % self.sid)
 
-		# Make sure the vote is tracked
-		track_success = False
 		if self.user.is_anonymous():
 			if not db.c.update("UPDATE r4_listeners SET listener_voted_entry = %s WHERE listener_id = %s", (entry_id, self.user.data['listener_id'])):
 				log.warn("vote", "Could not set voted_entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
 				raise APIException("internal_error")
 			self.user.update({ "listener_voted_entry": entry_id })
-			track_success = True
 		else:
 			if already_voted:
 				db.c.update("UPDATE r4_vote_history SET song_id = %s, entry_id = %s WHERE vote_id = %s", (event.get_entry(entry_id).id, entry_id, already_voted['vote_id']))
@@ -91,7 +91,6 @@ class SubmitVote(APIHandler):
 					"INSERT INTO r4_vote_history (elec_id, entry_id, user_id, song_id, vote_at_rank, vote_at_count) "
 					"VALUES (%s, %s, %s, %s, %s, %s)",
 					(event.id, entry_id, self.user.id, event.get_entry(entry_id).id, rank, vote_count))
-			track_success = True
 
 			user_vote_cache = cache.get_user(self.user, "vote_history")
 			if not user_vote_cache:
@@ -106,3 +105,4 @@ class SubmitVote(APIHandler):
 			log.warn("vote", "Could not add vote to entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
 			raise APIException("internal_error")
 
+		return True

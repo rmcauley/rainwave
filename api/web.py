@@ -303,11 +303,14 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			return hash["code"]
 		return True
 
-	def append_standard(self, tl_key, text = None, success = True, **kwargs):
+	def append_standard(self, tl_key, text = None, success = True, return_name = None, **kwargs):
 		if not text:
 			text = self.locale.translate(tl_key, **kwargs)
 		kwargs.update({ "success": success, "tl_key": tl_key, "text": text })
-		self.append(self.return_name, kwargs)
+		if return_name:
+			self.append(return_name, kwargs)
+		else:
+			self.append(self.return_name, kwargs)
 
 class APIHandler(RainwaveHandler):
 	def initialize(self, **kwargs):
