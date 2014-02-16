@@ -36,8 +36,8 @@ var Requests = function() {
 			container.className = "sticky";
 		}
 		container.addEventListener("mouseover", mouse_over);
-		scroller = Scrollbar.new(el);
-		scroller.use_fixed = true;
+		scroller = Scrollbar.new(container);
+		scroller.margin_top = 22;
 		$id("requests_pin").addEventListener("click", self.swap_sticky);
 		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
 		$id("requests_pause").setAttribute("title", $l("pause_request_queue"));
@@ -144,7 +144,7 @@ var Requests = function() {
 
 	self.on_resize = function(new_height) {
 		if (new_height) height = new_height
-		if (el) el.style.height = height + "px";
+		if (container) container.style.height = height + "px";
 	};
 
 	self.reflow = function() {

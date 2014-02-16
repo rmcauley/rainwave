@@ -148,8 +148,11 @@ div.searchlist > div:hover span.searchlist_name, div.searchlist div.searchtable_
 	padding-left: 7px;
 }
 
+div.searchlist > div.searchlist_open_item span.searchlist_name {
+	padding-left: 13px;
+}
+
 div.searchlist div.searchlist_open_item {
 	background-color: #1f4f70;
-	padding-left: 13px;
 	border-color: #245b80;
 }
