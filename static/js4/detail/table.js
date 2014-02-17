@@ -2,8 +2,8 @@ var SongsTable = function(songs, columns) {
 	"use strict";
 	var el = $el("table", { "class": "songlist" });
 
-	var row, cell, r;
-	for (var i = 0; i < songs.length; i++) {
+	var row, cell, r, i, div;
+	for (i = 0; i < songs.length; i++) {
 		row = $el("tr");
 		if (("cool" in songs[i]) && songs[i].cool) {
 			row.className = "songlist_cool";
@@ -16,6 +16,7 @@ var SongsTable = function(songs, columns) {
 
 		if (requestable) {
 			cell = $el("td", { "class": "songlist_requestable" });
+			cell.appendChild($el("img", { "src": "/static/images4/request.png" }));
 			if (!Prefs.get("request_made")) {
 				cell.textContent = $l("Request");
 				cell.addEventListener("click", function() {
@@ -42,10 +43,20 @@ var SongsTable = function(songs, columns) {
 
 		for (var key = 0; key < columns.length; key++) {
 			if ((columns[key] == "artists") && ("artist_parseable" in songs[i])) {
-				Artists.append_spans_from_string(row.appendChild($el("td", { "class": "songlist_" + columns[key] })), songs[i].artist_parseable);
+				cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] }));
+				div = $el("div", { "class": "songlist_" + columns[key] + "_text" });
+				Artists.append_spans_from_string(div, songs[i].artist_parseable);
+				Formatting.add_overflow_tooltip(div);
+				cell.appendChild(div);
 			}
 			else if (columns[key] in songs[i]) {
-				if (columns[key] == "rating") {
+				if (columns[key] == "title") {
+					cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] } ));
+					div = $el("div", { "class": "songlist_" + columns[key] + "_text", "textContent": songs[i][columns[key]] });
+					Formatting.add_overflow_tooltip(div);
+					cell.appendChild(div);
+				}
+				else if (columns[key] == "rating") {
 					cell = $el("td", { "class": "songlist_" + columns[key] });
 					r = Rating("song", songs[i].id, songs[i].rating_user, songs[i].rating, songs[i].fave, User.radio_rate_anything);
 					r.absolute_x = true;
@@ -72,6 +83,5 @@ var SongsTable = function(songs, columns) {
 
 		el.appendChild(row);
 	}
-
 	return el;
 };

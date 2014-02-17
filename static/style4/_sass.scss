@@ -119,6 +119,14 @@ a {
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DD0000), to(#660000));
 }
 
+.overflow_tooltip {
+	position: absolute;
+	overflow: visible;
+	white-space: normal;
+	z-index: 3;
+	display: block;
+}
+
 @import "menu.css";
 
 @import "scrollbar.css";

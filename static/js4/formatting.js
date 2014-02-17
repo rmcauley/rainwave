@@ -69,6 +69,30 @@ var Formatting = function() {
 		return el;
 	};
 
+	var do_overflow_tooltip = function(evt) {
+		var el = evt.target;
+		// cache a scrollWidth value to reduce the number of reflows necessary
+		// the plus 7 is necessary because of margin issues when browsers have text-overflow: ellipsis
+		if (!el._offsetWidth) el._offsetWidth = el.offsetWidth + 5;
+		var width = el.parentNode.offsetWidth;
+		if (!el._offsetWidth || (width >= el._offsetWidth)) {
+			return;
+		}
+		var clone = el.cloneNode(true);
+		clone.style.width = (width + 20) + "px";
+		$add_class(clone, "overflow_tooltip");
+		el.parentNode.insertBefore(clone, el);
+		var mouse_out = function() {
+			clone.parentNode.removeChild(clone);
+			clone.removeEventListener("mouseout", mouse_out, true);
+		};
+		clone.addEventListener("mouseout", mouse_out, true);
+	};
+
+	self.add_overflow_tooltip = function(el) {
+		el.addEventListener("mouseover", do_overflow_tooltip);
+	};
+
 	// from lehelk: http://web.archive.org/web/20120918093154/http://lehelk.com/2011/05/06/script-to-remove-diacritics/
 	var diacritic_map = [
 		{'base':'A', 'letters':/[\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F]/g},

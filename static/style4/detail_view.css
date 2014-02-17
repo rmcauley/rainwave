@@ -7,6 +7,18 @@
 #detail .art_container {
 	float: left;
 	margin-right: 10px;
+	height: 120px;
+	width: 120px;
+}
+
+#detail .art_container .art {
+	max-height: 120px;
+	max-width: 120px;
+}
+
+#detail .art_expandable:hover .art {
+	border-width: 0px;
+	@include transform(none);
 }
 
 #detail h1 {
@@ -26,7 +38,7 @@
 }
 
 table.songlist {
-	background: #1f2022;
+	background-color: #1f2022;
 	border-collapse: collapse;
 	border-spacing: 0;
 	margin-top: 10px;
@@ -38,6 +50,19 @@ table.songlist {
 table.songlist td {
 	vertical-align: top;
 	padding: 3px;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: transparent;
+	@include transition-wtime(300ms, width, background-color, border-bottom-color);
+}
+
+table.songlist tr:hover td {
+	background-color: #212236;
+	border-bottom-color: #2f314d;
+}
+
+table.songlist tr td:hover {
+	z-index: 2;
 }
 
 td.songlist_title, td.songlist_artists {
@@ -46,10 +71,16 @@ td.songlist_title, td.songlist_artists {
 	text-overflow: ellipsis;
 }
 
-td.songlist_title:hover, td.songlist_artists:hover {
-	background: #444;
-	position: absolute;
-	white-space: normal;
+div.songlist_title_text, div.songlist_artists_text {
+	display: inline;
+}
+
+table.songlist div.overflow_tooltip {
+	display: block;
+	background-color: #2F304D;
+    border: 1px solid #3E4066;
+    padding: 3px;
+    transform: translate(-4px, -4px);
 }
 
 td.songlist_rating {
@@ -82,24 +113,11 @@ td.songlist_title {
 }
 
 table.songlist td.songlist_requestable {
-	background: url(/static/images4/request.png) no-repeat;
-	padding-left: 16px;
-	padding-right: 0px;
-	width: 1px;
+	width: 16px;
 	overflow: hidden;
-	background-position: 0px 6px;
 	cursor: pointer;
-	@include transition(width);
 }
 
 div.songlist_request_hint table.songlist td.songlist_requestable {
 	width: 70px;
-}
-
-body.small_screen table.songlist td.songlist_requestable {
-	background-position: 0px 3px;
-}
-
-table.songlist_requested td.songlist_requestable {
-	width: 15px;
 }
