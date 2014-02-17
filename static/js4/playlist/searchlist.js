@@ -117,12 +117,12 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 			if ((parseInt(character) >= 1) && (parseInt(character) <= 5)) {
 				Schedule.rate_current_song(parseInt(character));
 			}
-			else if (character == "q") Schedule.vote(0, 0);
-			else if (character == "a") Schedule.vote(0, 1);
-			else if (character == "z") Schedule.vote(0, 2);
-			else if (character == "w") Schedule.vote(1, 0); 
-			else if (character == "s") Schedule.vote(1, 1);
-			else if (character == "x") Schedule.vote(1, 2);
+			else if (character == "a") Schedule.vote(0, 0);
+			else if (character == "s") Schedule.vote(0, 1);
+			else if (character == "d") Schedule.vote(0, 2);
+			else if (character == "q") Schedule.vote(1, 0); 
+			else if (character == "w") Schedule.vote(1, 1);
+			else if (character == "e") Schedule.vote(1, 2);
 			else { 
 				hotkey_mode_disable();
 				return false;

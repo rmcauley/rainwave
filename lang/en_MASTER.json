@@ -98,7 +98,7 @@
    "deeplink_error"                                  : "Error understanding the URL entered.",
    "audio_not_supported"                             : "Your browser does not support HTML5 audio.",
    "audio_error"                                     : "Could not play audio in the browser - please download the playlist.",
-   "hotkey_mode"                                     : "Hotkeys On: 1-5 to Rate, Q/A/Z to Vote",
+   "hotkey_mode"                                     : "Hotkeys On: 1-5 to Rate, A/S/D to Vote",
 
    "__comment__"                 : "Playlist View",
 
