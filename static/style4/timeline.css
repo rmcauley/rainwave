@@ -86,6 +86,7 @@ body.small_screen .timeline_song {
 	border-width: 0px;
 	border-style: solid;
 	@include transition-wtime(300ms, max-width, max-height, transform, border-width);
+	cursor: pointer;
 }
 
 .art_expandable:hover .art {

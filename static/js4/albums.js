@@ -2,6 +2,10 @@ var Albums = function() {
 	var self = {};
 
 	var expand_art = function(e) {
+		if (e.target.parentNode._expanded) {
+			normalize_art(e);
+			return;
+		}
 		$remove_class(e.target.parentNode, "art_expandable");
 		e.target.addEventListener("mouseout", normalize_art);
 		if (Mouse.x < (document.documentElement.clientWidth - 250)) {
@@ -16,6 +20,7 @@ var Albums = function() {
 		else {
 			$add_class(e.target.parentNode, "art_expand_up");
 		}
+		e.target.parentNode._expanded = true;
 
 		if (("_album_art" in e.target) && e.target._album_art) {
 			var full_res = $el("img", { "class": "art", "src": e.target._album_art + ".jpg" });
@@ -42,6 +47,7 @@ var Albums = function() {
 	};
 
 	var normalize_art = function(e) {
+		e.target.parentNode._expanded = false;
 		$add_class(e.target.parentNode, "art_expandable");
 		$remove_class(e.target.parentNode, "art_expand_right");
 		$remove_class(e.target.parentNode, "art_expand_left");
