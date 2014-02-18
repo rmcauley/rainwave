@@ -91,8 +91,14 @@ body.small_screen {
 	cursor: pointer;
 }
 
-a {
+a, a:visited, .link {
 	text-decoration: none;
+	color: $text;
+	@include transition-wtime(150ms, color);
+}
+
+a:hover, .link:hover {
+	color: #a7e1ff;
 }
 
 .unselectable * {

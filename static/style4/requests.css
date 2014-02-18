@@ -1,6 +1,6 @@
 #requests {
 	width: 350px;
-	background: #2e3033;
+	background: #27292b;
 	border-color: #0c3b59;
 	border-width: 0px;
 	border-style: solid;
@@ -54,7 +54,7 @@
 
 #requests_header {
 	padding-left: 7px;
-	background-color: #383a3d;
+	background-color: #32353b;
 	@include transition(background-color);
 }
 

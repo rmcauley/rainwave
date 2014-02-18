@@ -40,7 +40,7 @@ class User(object):
 		self.data['radio_request_expires_at'] = 0
 		self.data['radio_rate_anything'] = False
 		self.data['radio_requests_paused'] = False
-		self.data['user_avatar'] = "images/blank.png"
+		self.data['user_avatar'] = "/static/images4/anonymous.png"
 		self.data['user_new_privmsg'] = 0
 		self.data['radio_listen_key'] = None
 		self.data['user_id'] = 1
@@ -100,7 +100,7 @@ class User(object):
 		elif self.data['_user_avatar_type'] > 0:
 			pass
 		else:
-			self.data['user_avatar'] = "images/blank.png"
+			self.data['user_avatar'] = "static/images4/anonymous.png"
 
 		# Privileged folk - donors, admins, etc - get perks.
 		# The numbers are the phpBB group IDs.

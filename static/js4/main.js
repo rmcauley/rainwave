@@ -55,7 +55,7 @@ function initialize() {
 	DetailView.initialize();
 	Requests.initialize();
 	R4Audio.initialize(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
-	Menu.initialize();
+	Menu.initialize(BOOTSTRAP.station_list);
 
 	// API comes last since it will do all the callbacks to initialized
 	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.user_id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);

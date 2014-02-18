@@ -2,16 +2,77 @@
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
+	background: #00004c;
+	background: -moz-linear-gradient(top, #00004c 0%, #2257a3 100%);
+	background: -webkit-linear-gradient(top, #00004c 0%, #2257a3 100%);
+	background: -o-linear-gradient(top, #00004c 0%, #2257a3 100%);
+	background: -ms-linear-gradient(top, #00004c 0%, #2257a3 100%);
+	background: linear-gradient(to bottom, #00004c 0%, #2257a3 100%);
+	height: 20px;
 }
 
 #station_select li {
+	position: relative;
 	display: inline;
 }
 
-#station_select .station_select_info {
+#station_select li a {
+	display: inline-block;
+	text-align: center;
+	width: 5em;
+	border-right: solid 2px #2257a3;
+}
+
+#station_select div.info {
+	padding: 0;
+	margin: 0;
+	@include transition-wtime(300ms, opacity, transform, height);
+	opacity: 0;
 	position: absolute;
+	width: 380px;
+	height: 0;
+	border: solid 1px #2257a3;
+	background-color: #00004c;
+}
+
+#station_select li:hover {
+	z-index: 100;
+}
+
+#station_select li:hover div.info {
+	opacity: 1;
+	height: 80px;
+}
+
+#station_select img {
+	margin: 5px 0 0 5px;
+}
+
+#station_select div.info div.title {
+	margin: 5px 5px 2px 5px;
+}
+
+#station_select div.info div.title, #station_select div.info div.album {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 #rainwave_logo {
 	float: right;
+	height: 16px;
+	width: 130px;
+	margin-top: 2px;
+}
+
+#player {
+	background: #383a3d;
+	height: 36px;
+}
+
+#player .avatar {
+	float: right;
+	max-height: 32px;
+	max-width: 32px;
+	margin: 2px;
 }

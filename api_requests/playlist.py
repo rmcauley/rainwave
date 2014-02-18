@@ -187,22 +187,3 @@ class StationSongCountRequest(APIHandler):
 		self.append(self.return_name, db.c.fetch_all(
 			"SELECT song_origin_sid AS sid, COUNT(song_id) AS song_count "
 			"FROM r4_songs WHERE song_verified = TRUE GROUP BY song_origin_sid"))
-
-@handle_api_url("stations")
-class StationsRequest(APIHandler):
-	description = "Get information about all available stations."
-	auth_required = False
-	return_name = "stations"
-	sid_required = False
-
-	def post(self):
-		station_list = []
-		for station_id in config.station_ids:
-			station_list.append({
-				"id": station_id,
-				"name": config.station_id_friendly[station_id],
-				"description": self.locale.translate("station_description_id_%s" % station_id),
-				"stream": tune_in.get_round_robin_url(station_id, "mp3", self.user),
-				"oggstream": tune_in.get_round_robin_url(station_id, "ogg", self.user)
-			})
-		self.append(self.return_name, station_list)

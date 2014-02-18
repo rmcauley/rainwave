@@ -2,6 +2,7 @@ var Albums = function() {
 	var self = {};
 
 	var expand_art = function(e) {
+		if (!$has_class(e.target.parentNode, "art_expandable")) return;
 		if (e.target.parentNode._expanded) {
 			normalize_art(e);
 			return;
@@ -67,9 +68,25 @@ var Albums = function() {
 			$add_class(c, "art_expandable")
 			img = c.appendChild($el("img", { "class": "art", "src": json.art + "_" + size + ".jpg" }));
 			img._album_art = json.art;
+			img.addEventListener("click", expand_art);
 		}
-		img.addEventListener("click", expand_art);
 		return c;
+	};
+
+	self.change_art = function(art_container, new_art_url, size) {
+		if (!size) size = 120;
+		if (new_art_url) {
+			$add_class(art_container, "art_expandable");
+			art_container.firstChild._album_art = new_art_url;
+			art_container.firstChild.setAttribute("src", new_art_url + "_" + size + ".jpg");
+			art_container.firstChild.addEventListener("click", expand_art);
+		}
+		else {
+			$remove_class(art_container, "art_expandable");
+			art_container.firstChild._album_art = null;
+			art_container.firstChild.removeEventListener("click", expand_art);
+			art_container.firstChild.setAttribute("src", "/static/images4/noart_1.jpg");
+		}
 	};
 
 	return self;

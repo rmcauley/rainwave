@@ -17,6 +17,7 @@ station_ids = set()
 station_id_friendly = {}
 public_relays = None
 public_relays_json = {}
+station_list_json = {}
 
 def get_config_file(testmode = False):
 	if os.path.isfile("etc/%s.conf" % getpass.getuser()):
@@ -39,6 +40,7 @@ def load(file = None, testmode = False):
 	global public_relays
 	global public_relays_json
 	global station_ids
+	global station_list_json
 	
 	if not file:
 		file = get_config_file(testmode)
@@ -66,6 +68,15 @@ def load(file = None, testmode = False):
 			if sid in relay['sids']:
 				public_relays[sid].append({ "name": relay_name, "protocol": relay['protocol'], "hostname": relay['ip_address'], "port": relay['port'] })
 		public_relays_json[sid] = tornado.escape.json_encode(public_relays[sid])
+
+	station_list = {}
+	for station_id in station_ids:
+		station_list[station_id] = {
+			"id": station_id,
+			"name": station_id_friendly[station_id],
+			"url": "http://%s" % get_station(station_id, "host")
+		}
+	station_list_json = tornado.escape.json_encode(station_list)
 
 	build_number = buildtools.get_build_number()
 		

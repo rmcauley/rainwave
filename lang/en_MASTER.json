@@ -59,11 +59,11 @@
 
    "__comment__"                 : "Menu",
 
-   "station_name_game"                               : "Game",
-   "station_name_ocremix"                            : "OCRemix",
-   "station_name_covers"                             : "Covers",
-   "station_name_chiptune"                           : "Chiptune",
-   "station_name_all"                                : "All",
+   "station_name_1"                                  : "Game",
+   "station_name_2"                                  : "OCRemix",
+   "station_name_3"                                  : "Covers",
+   "station_name_4"                                  : "Chiptune",
+   "station_name_5"                                  : "All",
 
    "__comment__"                 : "Timeline",
 
