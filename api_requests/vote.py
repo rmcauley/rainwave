@@ -88,9 +88,9 @@ class SubmitVote(APIHandler):
 				db.c.execute("SELECT user_id, COUNT(song_id) AS c FROM r4_vote_history WHERE vote_time > %s GROUP BY user_id HAVING COUNT(song_id) > %s", (time_window, vote_count))
 				rank = db.c.rowcount + 1
 				db.c.update(
-					"INSERT INTO r4_vote_history (elec_id, entry_id, user_id, song_id, vote_at_rank, vote_at_count) "
-					"VALUES (%s, %s, %s, %s, %s, %s)",
-					(event.id, entry_id, self.user.id, event.get_entry(entry_id).id, rank, vote_count))
+					"INSERT INTO r4_vote_history (elec_id, entry_id, user_id, song_id, vote_at_rank, vote_at_count, sid) "
+					"VALUES (%s, %s, %s, %s, %s, %s, %s)",
+					(event.id, entry_id, self.user.id, event.get_entry(entry_id).id, rank, vote_count, event.sid))
 
 			user_vote_cache = cache.get_user(self.user, "vote_history")
 			if not user_vote_cache:

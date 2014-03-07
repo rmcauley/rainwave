@@ -607,7 +607,8 @@ def create_tables():
 			song_id					INTEGER		NOT NULL, \
 			vote_at_rank				INTEGER		, \
 			vote_at_count				INTEGER		, \
-			entry_id				INTEGER		\
+			entry_id				INTEGER		, \
+			sid  					SMALLINT \
 		)")
 	# c.create_idx("r4_vote_history", "user_id")		# handled by create_delete_fk
 	# c.create_idx("r4_vote_history", "song_id")
