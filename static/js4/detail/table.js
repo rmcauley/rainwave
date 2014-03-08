@@ -58,7 +58,7 @@ var SongsTable = function(songs, columns) {
 				}
 				else if (columns[key] == "rating") {
 					cell = $el("td", { "class": "songlist_" + columns[key] });
-					r = Rating("song", songs[i].id, songs[i].rating_user, songs[i].rating, songs[i].fave, User.radio_rate_anything);
+					r = Rating("song", songs[i].id, songs[i].rating_user, songs[i].rating, songs[i].fave, User.rate_anything);
 					r.absolute_x = true;
 					r.absolute_y = true;
 					cell.appendChild(r.el);

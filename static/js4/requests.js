@@ -62,7 +62,7 @@ var Requests = function() {
 	};
 
 	self.pause_queue = function() {
-		if (User.radio_requests_paused) {
+		if (User.requests_paused) {
 			API.async_get("unpause_request_queue");
 		}
 		else {

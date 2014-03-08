@@ -58,7 +58,7 @@ function initialize() {
 	Menu.initialize(BOOTSTRAP.station_list);
 
 	// API comes last since it will do all the callbacks to initialized
-	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.user_id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
+	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
 
 	if (("fps" in get_vars) && (get_vars.fps) && ("mozPaintCount" in window)) {
 		FPSCounter.initialize();

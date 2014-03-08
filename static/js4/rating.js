@@ -78,7 +78,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 	};
 
 	var on_mouse_move = function(evt) {
-		if (!self.ratable && !User.radio_rate_anything) return;
+		if (!self.ratable && !User.rate_anything) return;
 
 		var tr = get_rating_from_mouse(evt);
 		if (tr >= 1) {
@@ -169,7 +169,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 	self.reset_rating();
 	self.reset_fave();
 
-	if (User.user_id > 1) {
+	if (User.id > 1) {
 		self.el.addEventListener("mouseover", self.fave_mouse_over);
 		self.el.addEventListener("mouseout", self.reset_fave);
 		self.el.addEventListener("click", click);

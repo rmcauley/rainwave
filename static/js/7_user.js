@@ -38,30 +38,30 @@ var user = function() {
 		// api_key is new ONLY AS PART OF THE INITIAL PAYLOAD at the index page of RW, not as part of the normal payload
 		var json2 = {
 			// the same as the R3 API:
-			"username": json['username'],
-			'user_id': json['user_id'],
-			'user_new_privmsg': json['user_new_privmsg'],
-			'user_avatar': json['user_avatar'],
-			'radio_perks': json['radio_perks'],
+			"username": json['name'],
+			'user_id': json['id'],
+			'user_new_privmsg': json['new_privmsg'],
+			'user_avatar': json['avatar'],
+			'radio_perks': json['perks'],
 			'sid': json['sid'],
-			'radio_request_position': json['radio_request_position'],
-			'radio_rate_anything': json['radio_rate_anything'],
+			'radio_request_position': json['request_position'],
+			'radio_rate_anything': json['rate_anything'],
 			// funny translations:
 			// radio_admin in R4 is a boolean value, previous it was the value of the station ID
-			'radio_admin': json['radio_admin'] ? json['sid'] : 0,
+			'radio_admin': json['admin'] ? json['sid'] : 0,
 			// radio_live_admin used to be something but honestly I don't think I ever used it, but now it's also a boolean!
-			'radio_live_admin': json['radio_dj'],
+			'radio_live_admin': false,
 			// direct translations from older variable names:
 			'list_id': json['listener_id'],
-			'list_voted_entry_id': json['listener_voted_entry'],
-			'radio_active_sid': json['radio_locked_sid'],
-			'radio_active_until': json['radio_locked_counter'],
-			'radio_listenkey': json['radio_listen_key'],
-			'radio_request_expiresat': json['radio_request_expires_at'],
-			'radio_tunedin': json['radio_tuned_in'],
+			'list_voted_entry_id': json['voted_entry'],
+			'radio_active_sid': json['locked_sid'],
+			'radio_active_until': json['locked_counter'],
+			'radio_listenkey': json['listen_key'],
+			'radio_request_expiresat': json['request_expires_at'],
+			'radio_tunedin': json['tuned_in'],
 			'api_key': json['api_key'],
-			'current_activity_allowed': !json['radio_tuned_in'] || json['listener_lock_in_effect'] ? false : true,
-			'radio_statrestricted': json['listener_lock_in_effect']
+			'current_activity_allowed': !json['tuned_in'] || json['lock_in_effect'] ? false : true,
+			'radio_statrestricted': json['lock_in_effect']
 		};
 		// END TRANSLATE
 

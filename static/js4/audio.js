@@ -21,8 +21,8 @@ var R4Audio = function() {
 			return;
 		}
 		supported = true;
-		if (User.radio_listen_key) {
-			stream_filename += "?" + User.user_id + ":" + User.radio_listen_key;
+		if (User.listen_key) {
+			stream_filename += "?" + User.id + ":" + User.listen_key;
 		}
 		for (var i in relays) {
 			audio_el.appendChild($el("source", { "src": relays[i].protocol + relays[i].hostname + ":" + relays[i].port + "/" + stream_filename, "type": filetype }));

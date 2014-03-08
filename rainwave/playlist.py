@@ -770,7 +770,7 @@ class Song(object):
 		self.data['fave'] = None
 		if user:
 			self.data.update(rating.get_song_rating(self.id, user.id))
-			if user.data['radio_rate_anything']:
+			if user.data['rate_anything']:
 				self.data['rating_allowed'] = True
 		return self.data
 
@@ -793,7 +793,7 @@ class Song(object):
 		if self.data['rating_allowed']:
 			return
 			
-		if user.data['radio_rate_anything']:
+		if user.data['rate_anything']:
 			self.data['rating_allowed'] = True
 			return
 
