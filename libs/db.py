@@ -591,7 +591,8 @@ def create_tables():
 			request_fulfilled_at			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 			request_wait_time			INTEGER		, \
 			request_line_size			INTEGER		, \
-			request_at_count			INTEGER		\
+			request_at_count			INTEGER		, \
+			sid                         SMALLINT    \
 		)")
 	# c.create_idx("r4_request_history", "user_id")		# handled by create_delete_fk
 	# c.create_idx("r4_request_history", "song_id")
@@ -605,14 +606,15 @@ def create_tables():
 			elec_id					INTEGER		, \
 			user_id					INTEGER		NOT NULL, \
 			song_id					INTEGER		NOT NULL, \
-			vote_at_rank				INTEGER		, \
-			vote_at_count				INTEGER		, \
+			vote_at_rank			INTEGER		, \
+			vote_at_count			INTEGER		, \
 			entry_id				INTEGER		, \
 			sid  					SMALLINT \
 		)")
 	# c.create_idx("r4_vote_history", "user_id")		# handled by create_delete_fk
 	# c.create_idx("r4_vote_history", "song_id")
 	# c.create_idx("r4_vote_history", "entry_id")
+	c.create_idx("r4_vote_history", "sid")
 	c.create_null_fk("r4_vote_history", "r4_election_entries", "entry_id")
 	c.create_null_fk("r4_vote_history", "r4_elections", "elec_id")
 	c.create_null_fk("r4_vote_history", "r4_songs", "song_id")
@@ -680,6 +682,8 @@ def _create_test_tables():
 			user_new_privmsg			INT		DEFAULT 0, \
 			user_avatar				TEXT		DEFAULT '', \
 			user_avatar_type			INT		DEFAULT 0, \
+			user_colour             TEXT        DEFAULT 'FFFFFF', \
+			user_rank               INTEGER     DEFAULT 0, \
 			radio_inactive			BOOLEAN		DEFAULT FALSE, \
 			radio_requests_paused	BOOLEAN		DEFAULT FALSE \
 		)")
@@ -692,7 +696,11 @@ def _create_test_tables():
 
 	c.update("CREATE TABLE phpbb_session_keys(key_id TEXT, user_id INT)")
 
+	c.update("CREATE TABLE phpbb_ranks(rank_id SERIAL PRIMARY KEY, rank_title TEXT)")
+
 def _fill_test_tables():
+	c.update("INSERT INTO phpbb_ranks (rank_title) VALUES ('Test')")
+
 	# Anonymous user
 	c.update("INSERT INTO phpbb_users (user_id, username) VALUES (1, 'Anonymous')")
 	c.update("INSERT INTO r4_api_keys (user_id, api_key, api_ip) VALUES (1, 'TESTKEY', '127.0.0.1')")

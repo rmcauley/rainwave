@@ -91,7 +91,7 @@ print
 # 	print "\rTranslated stats   : %s" % translated_stats,
 
 print "Processing requests in database..."
-translated_requests = db.c.update("INSERT INTO r4_request_history(user_id, song_id, request_fulfilled_at, request_line_size, request_at_count) SELECT user_id, r4_song_id AS song_id, request_fulfilled_at, rqlen_fulfilled_at AS request_line_size, user_request_snapshot AS request_at_count FROM rw_requests JOIN rw_songs USING (song_id) WHERE r4_song_id IS NOT NULL ORDER BY request_id")
+translated_requests = db.c.update("INSERT INTO r4_request_history(user_id, song_id, request_fulfilled_at, request_line_size, request_at_count, sid) SELECT user_id, r4_song_id AS song_id, request_fulfilled_at, rqlen_fulfilled_at AS request_line_size, user_request_snapshot AS request_at_count, sid FROM rw_requests JOIN rw_songs USING (song_id) WHERE r4_song_id IS NOT NULL ORDER BY request_id")
 print "Translated."
 
 print "Processing votes in database...."
