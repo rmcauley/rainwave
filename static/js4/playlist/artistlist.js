@@ -22,7 +22,7 @@ var ArtistList = function(scroller, offset_width) {
 	};
 
 	self.open_id = function(id) {
-		// under construction
+		DetailView.open_artist(id);
 	};
 
 	return self;

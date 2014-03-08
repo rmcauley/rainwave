@@ -16,7 +16,11 @@ var DetailView = function() {
 		scroller = Scrollbar.new(el);
 		API.add_callback(draw_album, "album");
 		API.add_callback(album_diff_handler, "album_diff");
+		API.add_callback(draw_artist, "artist");
+		API.add_callback(draw_listener, "listener");
 		DeepLinker.register_route("album", open_album_internal);
+		DeepLinker.register_route("artist", open_artist_internal);
+		DeepLinker.register_route("listener", open_listener_internal);
 	};
 
 	var request_made_changed = function(request_made) {
@@ -67,6 +71,14 @@ var DetailView = function() {
 		switch_to(create("album", json.id, AlbumView, json));
 	};
 
+	var draw_artist = function(json) {
+		switch_to(create("artist", json.id, ArtistView, json));
+	};
+
+	var draw_listener = function(json) {
+		switch_to(create("listener", json.id, ListenerView, json));
+	};
+
 	var album_diff_handler = function(json) {
 		for (var i = 0; i < json.length; i++) {
 			self.reopen_album(json[i].id);
@@ -86,21 +98,32 @@ var DetailView = function() {
 	self.open_album = function(id) {
 		DeepLinker.change_url("album", id);
 	};
+
+	self.open_artist = function(id) {
+		DeepLinker.change_url("artist", id);
+	};
+
+	self.open_listener = function(id) {
+		DeepLinker.change_url("listener", id);
+	};
+
+	var open_album_internal = function(id) { return open_internal("album", id); };
+	var open_artist_internal = function(id) { return open_internal("artist", id); };
+	var open_listener_internal = function(id) { return open_internal("listener", id); };
 	
-	var open_album_internal = function(id) {
+	var open_internal = function(type, id) {
 		id = parseInt(id);
 		if (!id || id == NaN) {
 			return false;
 		}
-		var existing_view = exists("album", id);
+		var existing_view = exists(type, id);
 		if (existing_view) {
 			switch_to(existing_view);
 			return existing_view;
 		}
-		API.async_get("album", { "id": id });
+		API.async_get(type, { "id": id });
 		return true;
 	};
-
 	// TODO: clocks?
 
 	return self;

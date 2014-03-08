@@ -1208,7 +1208,7 @@ function _THEME() {
 			var hdr = createEl("div", { "class": "pl_songlist_hdr" }, encloseddiv);
 			hdr.textcontent = STATIONS[album_sid];
 			var album_hdr = createEl("span", { "textContent": album_name }, hdr);
-			if (album_id != -1) Album.linkify(album_id, album_hdr);
+			// if (album_id != -1) Album.linkify(album_id, album_hdr);
 			var tbl = createEl("table", { "class": "pl_songlist" }, encloseddiv);
 			var useless = [];
 			that.drawAlbumTable(tbl, useless, album, true);
@@ -1246,7 +1246,7 @@ function _THEME() {
 				if (("albums" in song_data[i]) && (!do_not_draw_album)) {
 					ns.td_album_name = createEl("td", { "class": "pl_songlist_album_name" }, ns.tr);
 					ns.td_album_name_text = createEl("div", { "textContent": song_data[i].albums[0].name }, ns.td_album_name);
-					Album.linkify(song_data[i].albums[0].id, ns.td_album_name_text);
+					//Album.linkify(song_data[i].albums[0].id, ns.td_album_name_text);
 				}
 
 				if (("link" in song_data[i]) && (song_data[i].link) && (song_data[i].link.length > 0)) {

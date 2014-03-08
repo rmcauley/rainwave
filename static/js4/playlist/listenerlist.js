@@ -29,7 +29,7 @@ var ListenersList = function(scroller, offset_width) {
 	};
 
 	self.open_id = function(id) {
-		// under construction
+		DetailView.open_listener(id);
 	};
 
 	return self;

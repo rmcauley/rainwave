@@ -37,6 +37,14 @@
 	font-size: 0.8em;
 }
 
+div.albumview_subheader {
+	border-bottom: solid 1px $vdarktext;
+}
+
+table.songlist + div.albumview_subheader {
+	margin-top: 1.3em;
+}
+
 table.songlist {
 	background-color: #1f2022;
 	border-collapse: collapse;
@@ -116,6 +124,10 @@ table.songlist td.songlist_requestable {
 	width: 16px;
 	overflow: hidden;
 	cursor: pointer;
+}
+
+table.songlist td.songlist_not_requestable {
+	width: 16px;	
 }
 
 div.songlist_request_hint table.songlist td.songlist_requestable {

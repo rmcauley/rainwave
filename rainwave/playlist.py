@@ -543,6 +543,10 @@ class Song(object):
 		if not self.fake:
 			file_mtime = os.stat(self.filename)[8]
 
+		artist_parseable = ""
+		for artist in self.artists:
+			artist_parseable += "%s|%s" % (artist.id, artist.data['name'])
+
 		if update:
 			db.c.update("UPDATE r4_songs \
 				SET	song_filename = %s, \
@@ -554,16 +558,19 @@ class Song(object):
 					song_scanned = TRUE, \
 					song_verified = TRUE, \
 					song_file_mtime = %s, \
-					song_replay_gain = %s \
+					song_replay_gain = %s, \
+					song_artist_parseable = %s \
 				WHERE song_id = %s",
-				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], file_mtime, self.replay_gain, self.id))
+				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], file_mtime, self.replay_gain, artist_parseable, self.id))
+			if self.artist_tag:
+				db.c.update("UPDATE r4_songs SET song_artist_tag = %s WHERE song_id = %s", (self.artist_tag, self.id))
 		else:
 			self.id = db.c.get_next_id("r4_songs", "song_id")
 			db.c.update("INSERT INTO r4_songs \
-				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain) \
+				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain, song_artist_tag, song_artist_parseable) \
 				VALUES \
-				(%s     , %s           , %s        , %s                   , %s       , %s            , %s         , %s             , %s             , %s           , %s          , %s )",
-				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True, self.replay_gain))
+				(%s     , %s           , %s        , %s                   , %s       , %s            , %s         , %s             , %s             , %s           , %s          , %s             , %s             , %s )",
+				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True, self.replay_gain, self.artist_tag, artist_parseable))
 			self.verified = True
 			self.data['added_on'] = int(time.time())
 
@@ -1048,42 +1055,24 @@ class Album(AssociatedMetadata):
 
 	@classmethod
 	def load_from_id_with_songs(cls, album_id, sid, user = None):
-		row = db.c.fetch_row("SELECT * FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.album_id = %s AND r4_album_sid.sid = %s", (album_id, sid))
-		if not row:
-			raise MetadataNotFoundError("%s ID %s could not be found." % (cls.__name__, album_id))
+		row = db.c.fetch_row("SELECT * FROM r4_albums WHERE album_id = %s", (album_id,))
 		instance = cls()
 		instance._assign_from_dict(row)
 		instance.data['sids'] = [ sid ]
-		if not user or user.is_anonymous():
-			instance.data['songs'] = db.c.fetch_all(
-				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
-					"song_cool AS cool, song_cool_end AS cool_end, song_url AS url, song_link_text AS link_text, "
-					"song_rating AS rating, 0 AS rating_user, FALSE AS fave, "
-					"string_agg(r4_artists.artist_id || '|' || r4_artists.artist_name,  ',') AS artist_parseable "
-				"FROM r4_song_sid "
-					"JOIN r4_songs USING (song_id) "
-					"LEFT JOIN r4_song_artist USING (song_id) "
-					"LEFT JOIN r4_artists USING (artist_id) "
-				"WHERE r4_song_sid.sid = %s AND r4_song_sid.album_id = %s "
-				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_url, song_link_text, song_rating "
-				"ORDER BY song_title",
-				(sid, instance.id,))
-		else:
-			instance.data['songs'] = db.c.fetch_all(
-				"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
-					"song_cool AS cool, song_cool_end AS cool_end, song_url AS url, song_link_text AS link_text, "
-					"song_rating AS rating, song_cool_multiply AS cool_multiply, song_cool_override AS cool_override, "
-					"COALESCE(song_rating_user, 0) AS rating_user, COALESCE (song_fave, FALSE) AS fave, song_request_only AS request_only, "
-					"string_agg(r4_artists.artist_id || '|' || r4_artists.artist_name,  ',') AS artist_parseable "
-				"FROM r4_song_sid "
-					"JOIN r4_songs USING (song_id) "
-					"LEFT JOIN r4_song_artist USING (song_id) "
-					"LEFT JOIN r4_artists USING (artist_id) "
-					"LEFT JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
-				"WHERE r4_song_sid.sid = %s AND r4_song_sid.album_id = %s "
-				"GROUP BY r4_song_sid.song_id, song_length, song_origin_sid, song_title, song_cool, song_cool_end, song_url, song_link_text, song_rating, song_rating_user, song_fave, song_cool_override, song_cool_multiply, song_request_only "
-				"ORDER BY song_title",
-				(user.id, sid, instance.id))
+		user_id = None if not user else user.id
+		requestable = True if user else False
+		instance.data['songs'] = db.c.fetch_all(
+			"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
+				"song_url AS url, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiply, "
+				"song_cool_override AS cool_override, %s AS requestable, song_cool AS cool, song_cool_end AS cool_end, "
+				"song_request_only AS request_only, song_artist_parseable AS artist_parseable, "
+				"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(song_fave, FALSE) AS fave "
+			"FROM r4_song_sid "
+				"JOIN r4_songs USING (song_id) "
+				"LEFT JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
+			"WHERE r4_song_sid.album_id = %s AND r4_song_sid.sid = %s "
+			"ORDER BY song_title",
+			(requestable, user_id, instance.id, sid))
 		return instance
 
 	@classmethod
@@ -1403,23 +1392,41 @@ class Artist(AssociatedMetadata):
 
 	def load_all_songs(self, sid, user_id = None):
 		# I'm not going to provide a list of Song objects here because the overhead of that would spiral out of control
+		# You may think you can do this in a smaller or easier statement, but there's actually a number of challenges here
+		# 1. Users can request from the results of this query, so the origin_sid doesn't matter as much as "does it exist on that station"
+		# 2. Users can open albums from this page, which means the album ID and album name MUST match and if it's available on
+		#       the request station it must be opened to the relevant album ON THAT STATION (not what it may be assigned to on another)
+		requestable = True if user_id else False
 		self.data['songs'] = db.c.fetch_all(
-			"SELECT r4_song_artist.song_id AS id, r4_song_sid.sid AS sid, song_rating AS rating, song_title AS title, "
-				"r4_song_sid.album_id AS album_id, album_name, song_length AS length, song_cool AS cool, song_cool_end AS cool_end, "
-				"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(song_fave, FALSE) AS fave "
+			"SELECT r4_song_artist.song_id AS id, r4_songs.song_origin_sid AS sid, MAX(song_title) AS title, MAX(song_rating) AS rating, "
+				"BOOL_OR(CASE WHEN r4_song_sid.sid = %s THEN %s ELSE FALSE END) AS requestable, "
+				"MAX(CASE WHEN r4_song_sid.sid = %s THEN album_id ELSE NULL END) AS real_album_id, "
+				"MAX(CASE WHEN r4_song_sid.sid = %s THEN album_name ELSE NULL END) AS real_album_name, "
+				"MAX(album_name) AS album_name, MAX(album_id) AS album_id, "
+				"MAX(song_length) AS length, "
+				"BOOL_OR(CASE WHEN r4_song_sid.sid = %s THEN song_cool ELSE FALSE END) AS cool, "
+				"MAX(CASE WHEN r4_song_sid.sid = %s THEN song_cool_end ELSE 0 END) AS cool_end, "
+				"MAX(COALESCE(song_rating_user, 0)) AS rating_user, BOOL_OR(COALESCE(song_fave, FALSE)) AS fave "
 			"FROM r4_song_artist "
 				"JOIN r4_songs USING (song_id) "
 				"JOIN r4_song_sid USING (song_id) "
 				"JOIN r4_albums USING (album_id) "
 				"LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
 			"WHERE r4_song_artist.artist_id = %s "
-			"ORDER BY r4_song_sid.sid, album_name, song_title",
-			(user_id, self.id))
-
+			"GROUP BY r4_song_artist.song_id, r4_songs.song_origin_sid "
+			"ORDER BY requestable DESC, album_name, MAX(song_title) ",
+			(sid, requestable, sid, sid, sid, sid, user_id, self.id))
+		# And of course, now we have to burn extra CPU cycles to make sure the right album name is used and that we present the data
+		# in the same format seen everywhere else on the API.  Still, much faster then loading individual song objects.
 		for song in self.data['songs']:
-			song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
-			song.pop('album_name', None)
-			song.pop('album_id', None)
+			if (song['real_album_id']):
+				song['albums'] = [ { "name": song['real_album_name'], "id": song['real_album_id'] } ]
+			else:
+				song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
+			song.pop('album_name')
+			song.pop('album_id')
+			song.pop('real_album_name')
+			song.pop('real_album_id')
 
 class SongGroup(AssociatedMetadata):
 	select_by_name_query = "SELECT group_id AS id, group_name AS name, group_name_searchable AS name_searchable, group_elec_block AS elec_block, group_cool_time AS cool_time FROM r4_groups WHERE group_name = %s"

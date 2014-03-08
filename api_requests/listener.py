@@ -15,7 +15,7 @@ from rainwave import user as UserLib
 class ListenerDetailRequest(APIHandler):
 	sid_required = False
 	login_required = False
-	fields = { "user_id": (fieldtypes.user_id, True) }
+	fields = { "id": (fieldtypes.user_id, True) }
 	
 	def post(self):
 		user = db.fetch_row(
@@ -24,30 +24,30 @@ class ListenerDetailRequest(APIHandler):
 				"radio_totalrequests AS total_requests, radio_winningvotes AS winning_votes, radio_losingvotes AS losing_votes, "
 				"radio_winningrequests AS winning_requests, radio_losingrequests AS losing_requests"
 			"FROM phpbb_users JOIN phpbb_ranks ON (user_rank = rank_id) WHERE user_id = %s",
-			(user_id,))
+			(self.get_argument("id"),))
 
 		user['avatar'] = UserLib.solve_avatar(user['avatar_type'], user['avatar'])
 		user.pop("avatar_type")
 
-		user['top_albums'] = db.fetch_all("SELECT album_name, album_rating FROM rw_album_ratings JOIN rw_albums USING (album_id) WHERE user_id = %s ORDER BY album_rating DESC LIMIT 10", (user_id,))
+		user['top_albums'] = db.fetch_all("SELECT album_name, album_rating FROM rw_album_ratings JOIN rw_albums USING (album_id) WHERE user_id = %s ORDER BY album_rating DESC LIMIT 10", (self.get_argument("id"),))
 
 		user['votes_by_station'] = db.c.fetch_all("SELECT song_origin_sid AS sid, COUNT(vote_id) "
 												"FROM r4_vote_history JOIN r4_songs USING (song_id) "
 												"WHERE user_id = %s "
 												"GROUP BY song_origin_sid",
-												(self.get_argument("user_id"),))
+												(self.get_argument("id"),))
 
 		user['requests_by_station'] = db.c.fetch_all("SELECT song_origin_sid AS sid, COUNT(request_id) "
 													"FROM r4_request_history JOIN r4_songs USING (song_id) "
 													"WHERE user_id = %s "
 													"GROUP BY song_origin_sid",
-													(self.get_argument("user_id"),))
+													(self.get_argument("id"),))
 
 		user['ratings_by_station'] = db.c.fetch_all("SELECT song_origin_sid AS sid, AVG(song_rating_user) AS average_rating "
 													"FROM r4_song_ratings JOIN r4_songs USING (song_id) "
 													"WHERE user_id = %s "
 													"GROUP BY song_origin_sid",
-													(self.get_argument("user_id"),))
+													(self.get_argument("id"),))
 
 		self.append("listener", user)
 
