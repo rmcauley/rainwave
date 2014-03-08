@@ -30,7 +30,7 @@ def update_line(sid):
 		else:
 			u.refresh()
 			# do nothing if they're not tuned in
-			if not u.data['radio_tuned_in']:
+			if not u.is_tunedin():
 				pass
 			else:
 				# Get their top song ID

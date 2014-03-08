@@ -54,4 +54,4 @@ class AnonymousUserRefresh(unittest.TestCase):
 		self.assertEqual(self.user.data['sid'], 5)
 	
 	def test_tune_in(self):
-		self.assertEqual(self.user.data['radio_tuned_in'], False)
+		self.assertEqual(self.user.data['tuned_in'], False)

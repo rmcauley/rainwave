@@ -72,8 +72,8 @@ def attach_info_to_request(request, playlist = False, artists = False):
 					for event in (sched_history + sched_next + temp_current):
 						if history[0] == event['id']:
 							api_requests.vote.append_success_to_request(request, event['id'], history[1])
-		elif len(sched_next) > 0 and request.user.data['listener_voted_entry'] > 0 and request.user.data['listener_lock_sid'] == request.sid:
-			api_requests.vote.append_success_to_request(request, sched_next[0].id, request.user.data['listener_voted_entry'])
+		elif len(sched_next) > 0 and request.user.data['voted_entry'] > 0 and request.user.data['lock_sid'] == request.sid:
+			api_requests.vote.append_success_to_request(request, sched_next[0].id, request.user.data['voted_entry'])
 
 	all_stations = {}
 	for station_id in config.station_ids:

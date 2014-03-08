@@ -101,7 +101,7 @@ class PauseRequestQueue(APIHandler):
 	def post(self):
 		self.user.pause_requests()
 		self.append("user", self.user.to_private_dict())
-		if self.user.data['radio_requests_paused']:
+		if self.user.data['requests_paused']:
 			self.append_standard("radio_requests_paused")
 		else:
 			self.append_standard("radio_requests_unpaused")
@@ -117,7 +117,7 @@ class UnPauseRequestQueue(APIHandler):
 	def post(self):
 		self.user.unpause_requests(self.sid)
 		self.append("user", self.user.to_private_dict())
-		if self.user.data['radio_requests_paused']:
+		if self.user.data['requests_paused']:
 			self.append_standard("radio_requests_paused")
 		else:
 			self.append_standard("radio_requests_unpaused")

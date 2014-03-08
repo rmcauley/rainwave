@@ -34,7 +34,7 @@ class SubmitVote(APIHandler):
 				elec_id = event.id
 				voted = self.vote(self.get_argument("entry_id"), event, lock_count)
 				break
-			if not self.user.data['radio_perks']:
+			if not self.user.data['perks']:
 				break
 		if voted:
 			append_success_to_request(self, elec_id, self.get_argument("entry_id"))
@@ -45,11 +45,11 @@ class SubmitVote(APIHandler):
 		# Subtract a previous vote from the song's total if there was one
 		already_voted = False
 		if self.user.is_anonymous():
-			# log.debug("vote", "Anon already voted: %s" % (self.user.id, self.user.data['listener_voted_entry']))
-			if self.user.data['listener_voted_entry'] and self.user.data['listener_voted_entry'] == entry_id:
+			# log.debug("vote", "Anon already voted: %s" % (self.user.id, self.user.data['voted_entry']))
+			if self.user.data['voted_entry'] and self.user.data['voted_entry'] == entry_id:
 				# immediately return and a success will be registere
 				return
-			if self.user.data['listener_voted_entry']:
+			if self.user.data['voted_entry']:
 				already_voted = True
 				if not event.add_vote_to_entry(entry_id, -1):
 					log.warn("vote", "Could not subtract vote from entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
@@ -67,8 +67,8 @@ class SubmitVote(APIHandler):
 					raise APIException("internal_error")
 
 		# If this is a new vote, we need to check to make sure the listener is not locked.
-		if not already_voted and self.user.data['listener_lock'] and self.user.data['listener_lock_sid'] != self.sid:
-			raise APIException("user_locked", "User locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['listener_lock_sid']], self.user.data['listener_lock_counter']))
+		if not already_voted and self.user.data['lock'] and self.user.data['lock_sid'] != self.sid:
+			raise APIException("user_locked", "User locked to %s for %s more songs." % (config.station_id_friendly[self.user.data['lock_sid']], self.user.data['lock_counter']))
 		# Issue the listener lock (will extend a lock if necessary)
 		if not self.user.lock_to_sid(self.sid, lock_count):
 			log.warn("vote", "Could not lock user: listener ID %s voting for entry ID %s, tried to lock for %s events." % (self.user.data['listener_id'], entry_id, lock_count))

@@ -27,7 +27,7 @@ class SubmitRatingRequest(APIHandler):
 		self.rate(self.get_argument("song_id"), self.get_argument("rating"))
 
 	def rate(self, song_id, rating):
-		if not self.user.data['radio_rate_anything']:
+		if not self.user.data['rate_anything']:
 			acl = cache.get_station(self.sid, "user_rating_acl")
 			if not cache.get_station(self.sid, "sched_current").get_song().id == song_id:
 				if not song_id in acl or not self.user.id in acl[song_id]:

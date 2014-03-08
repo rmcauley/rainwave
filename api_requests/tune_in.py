@@ -17,7 +17,7 @@ def get_stream_filename(sid, filetype, user = None):
 	if user is None or user.is_anonymous():
 		return "%s.%s" % (filename, filetype)
 	else:
-		return "%s.%s?%s:%s" % (filename, filetype, user.id, user.data['radio_listen_key'])
+		return "%s.%s?%s:%s" % (filename, filetype, user.id, user.data['listen_key'])
 
 @handle_url("/tune_in/(\w+|\d)\.(ogg|mp3)")
 class TuneInIndex(api.web.HTMLRequest):

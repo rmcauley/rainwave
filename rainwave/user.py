@@ -14,6 +14,7 @@ from rainwave import playlist
 from api.exceptions import APIException
 
 _AVATAR_PATH = "/forums/download/file.php?avatar=%s"
+_DEFAULT_AVATAR = "/static/images4/anonymous.png"
 
 def trim_listeners(sid):
 	db.c.update("DELETE FROM r4_listeners WHERE sid = %s AND listener_purge = TRUE", (sid,))
@@ -21,6 +22,14 @@ def trim_listeners(sid):
 def unlock_listeners(sid):
 	db.c.update("UPDATE r4_listeners SET listener_lock_counter = listener_lock_counter - 1 WHERE listener_lock = TRUE AND listener_lock_sid = %s", (sid,))
 	db.c.update("UPDATE r4_listeners SET listener_lock = FALSE WHERE listener_lock_counter <= 0")
+
+def solve_avatar(avatar_type, avatar):
+	if avatar_type == 1:
+		return _AVATAR_PATH % avatar
+	elif avatar_type > 0:
+		return avatar
+	else:
+		return _DEFAULT_AVATAR
 
 class User(object):
 	def __init__(self, user_id):
@@ -32,25 +41,24 @@ class User(object):
 		self.api_key = False
 
 		self.data = {}
-		self.data['radio_admin'] = False
-		self.data['radio_dj'] = False
-		self.data['radio_tuned_in'] = False
-		self.data['radio_perks'] = False
-		self.data['radio_request_position'] = 0
-		self.data['radio_request_expires_at'] = 0
-		self.data['radio_rate_anything'] = False
-		self.data['radio_requests_paused'] = False
-		self.data['user_avatar'] = "/static/images4/anonymous.png"
-		self.data['user_new_privmsg'] = 0
-		self.data['radio_listen_key'] = None
-		self.data['user_id'] = 1
-		self.data['username'] = "Anonymous"
+		self.data['admin'] = False
+		self.data['tuned_in'] = False
+		self.data['perks'] = False
+		self.data['request_position'] = 0
+		self.data['request_expires_at'] = 0
+		self.data['rate_anything'] = False
+		self.data['requests_paused'] = False
+		self.data['avatar'] = _DEFAULT_AVATAR
+		self.data['new_privmsg'] = 0
+		self.data['listen_key'] = None
+		self.data['id'] = 1
+		self.data['name'] = "Anonymous"
 		self.data['sid'] = 0
-		self.data['listener_lock'] = False
-		self.data['listener_lock_in_effect'] = False
-		self.data['listener_lock_sid'] = None
-		self.data['listener_lock_counter'] = 0
-		self.data['listener_voted_entry'] = 0
+		self.data['lock'] = False
+		self.data['lock_in_effect'] = False
+		self.data['lock_sid'] = None
+		self.data['lock_counter'] = 0
+		self.data['voted_entry'] = 0
 		self.data['listener_id'] = 0
 		self.data['_group_id'] = None
 
@@ -90,38 +98,39 @@ class User(object):
 		self.authorized = True
 		user_data = None
 		if not user_data:
-			user_data = db.c_old.fetch_row("SELECT user_id, username, user_new_privmsg, user_avatar, radio_requests_paused, user_avatar_type AS _user_avatar_type, radio_listenkey AS radio_listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings "
-					"FROM phpbb_users WHERE user_id = %s",
-					(self.id,))
+			user_data = db.c_old.fetch_row(
+				"SELECT user_id AS id, username AS name, user_new_privmsg AS new_privmsg, user_avatar AS avatar, radio_requests_paused AS requests_paused, "
+					"user_avatar_type AS _avatar_type, radio_listenkey AS listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings "
+				"FROM phpbb_users WHERE user_id = %s",
+				(self.id,)
+			)
 		self.data.update(user_data)
 
-		if self.data['_user_avatar_type'] == 1:
-			self.data['user_avatar'] = _AVATAR_PATH % self.data['user_avatar']
-		elif self.data['_user_avatar_type'] > 0:
-			pass
-		else:
-			self.data['user_avatar'] = "static/images4/anonymous.png"
+		self.data['avatar'] = solve_avatar(self.data['_avatar_type'], self.data['avatar'])
+		self.data.pop("_avatar_type")
 
 		# Privileged folk - donors, admins, etc - get perks.
 		# The numbers are the phpBB group IDs.
 		if self.data['_group_id'] in (5, 4, 8, 12, 15, 14, 17):
-			self.data['radio_perks'] = True
+			self.data['perks'] = True
 		#elif config.get("developer_mode"):
 		#	self.data['radio_perks'] = True
 
 		# Admin and station manager groups
 		if self.data['_group_id'] in (5, 12, 15, 14, 17):
-			self.data['radio_admin'] = True
+			self.data['admin'] = True
 		# jfinalfunk is a special case since he floats around outside the main admin groups
 		elif self.id == 9575:
-			self.data['radio_admin'] = True
+			self.data['admin'] = True
+		self.data.pop("_group_id")
 
-		if self.data['radio_perks']:
-			self.data['radio_rate_anything'] = True
+		if self.data['perks']:
+			self.data['rate_anything'] = True
 		elif self.data['_total_ratings'] > config.get("rating_allow_all_threshold"):
-			self.data['radio_rate_anything'] = True
+			self.data['rate_anything'] = True
+		self.data.pop("_total_ratings")
 
-		if not self.data['radio_listen_key']:
+		if not self.data['listen_key']:
 			self.generate_listen_key()
 
 	def _auth_anon_user(self, ip_address, api_key, bypass = False):
@@ -152,12 +161,12 @@ class User(object):
 			listener = cache.get_user(self.id, "listener_record")
 			if not listener or not use_cache:
 				listener = db.c.fetch_row("SELECT "
-					"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
+					"listener_id, sid, listener_lock AS lock, listener_lock_sid AS lock_sid, listener_lock_counter AS lock_counter, listener_voted_entry AS voted_entry "
 					"FROM r4_listeners "
 					"WHERE user_id = %s AND listener_purge = FALSE", (self.id,))
 		else:
 			listener = db.c.fetch_row("SELECT "
-				"listener_id, sid, listener_lock, listener_lock_sid, listener_lock_counter, listener_voted_entry "
+				"listener_id, sid, listener_lock AS lock, listener_lock_sid AS lock_sid, listener_lock_counter AS lock_counter, listener_voted_entry AS voted_entry "
 				"FROM r4_listeners "
 				"WHERE listener_ip = %s AND listener_purge = FALSE", (self.ip_address,))
 		if listener:
@@ -170,59 +179,46 @@ class User(object):
 		listener = self.get_listener_record()
 		if listener:
 			if self.data['sid'] == self.request_sid:
-				self.data['radio_tuned_in'] = True
+				self.data['tuned_in'] = True
 			elif self.request_sid == 0:
 				self.request_sid = self.data['sid']
-				self.data['radio_tuned_in'] = True
+				self.data['tuned_in'] = True
 			else:
 				self.data['sid'] = self.request_sid
 		# Default to All if no sid is given
 		elif self.request_sid == 0:
 			self.request_sid = 5
 			self.data['sid'] = 5
-			self.data['radio_tuned_in'] = False
+			self.data['tuned_in'] = False
 		else:
 			self.data['sid'] = self.request_sid
-			self.data['radio_tuned_in'] = False
+			self.data['tuned_in'] = False
 
 		if (self.id > 1) and cache.get_station(self.request_sid, "sched_current"):
-			self.data['radio_request_position'] = self.get_request_line_position(self.data['sid'])
-			self.data['radio_request_expires_at'] = self.get_request_expiry()
+			self.data['request_position'] = self.get_request_line_position(self.data['sid'])
+			self.data['request_expires_at'] = self.get_request_expiry()
 
-			if self.data['radio_tuned_in'] and not self.is_in_request_line() and self.has_requests():
+			if self.data['tuned_in'] and not self.is_in_request_line() and self.has_requests():
 				self.put_in_request_line(self.data['sid'])
 
-		if self.data['listener_lock'] and self.request_sid != self.data['listener_lock_sid']:
-			self.data['listener_lock_in_effect'] = True
+		if self.data['lock'] and self.request_sid != self.data['lock_sid']:
+			self.data['lock_in_effect'] = True
 
 	def to_private_dict(self):
 		"""
 		Returns a JSONable dict containing data that the user will want to see or make use of.
 		NOT for other users to see.
 		"""
-		public = {}
-		for k, v in self.data.iteritems():
-			if k[0] != '_':
-				public[k] = v
-		return public
-
-	def to_public_dict(self):
-		"""
-		Returns a JSONable dict containing data that other users are allowed to see.
-		"""
-		pass
+		return self.data
 
 	def is_tunedin(self):
-		return self.data['radio_tuned_in']
+		return self.data['tuned_in']
 
 	def is_admin(self):
-		return self.data['radio_admin'] > 0
-
-	def is_dj(self):
-		return self.data['radio_dj'] > 0
+		return self.data['admin'] > 0
 
 	def has_perks(self):
-		return self.data['radio_perks']
+		return self.data['perks']
 
 	def is_anonymous(self):
 		return self.id <= 1
@@ -238,7 +234,7 @@ class User(object):
 	def _check_too_many_requests(self):
 		num_reqs = self.has_requests()
 		max_reqs = 12
-		if self.data['radio_perks']:
+		if self.data['perks']:
 			max_reqs = 24
 		if num_reqs >= max_reqs:
 			raise APIException("too_many_requests")
@@ -278,13 +274,13 @@ class User(object):
 	def pause_requests(self):
 		self.remove_from_request_line()
 		if db.c.update("UPDATE phpbb_users SET radio_requests_paused = TRUE WHERE user_id = %s", (self.id,)) != 0:
-			self.data['radio_requests_paused'] = True
+			self.data['requests_paused'] = True
 			return True
 		return False
 
 	def unpause_requests(self, sid):
 		if db.c.update("UPDATE phpbb_users SET radio_requests_paused = FALSE WHERE user_id = %s", (self.id,)) != 0:
-			self.data['radio_requests_paused'] = False
+			self.data['requests_paused'] = False
 			self.put_in_request_line(sid)
 			return True
 		return False
@@ -378,9 +374,9 @@ class User(object):
 		return db.c.update("UPDATE r4_listeners SET line_expiry_tunein = %s WHERE user_id = %s", (t, self.id))
 
 	def lock_to_sid(self, sid, lock_count):
-		self.data['listener_lock'] = True
-		self.data['listener_lock_sid'] = sid
-		self.data['listener_lock_counter'] = lock_count
+		self.data['lock'] = True
+		self.data['lock_sid'] = sid
+		self.data['lock_counter'] = lock_count
 		return db.c.update("UPDATE r4_listeners SET listener_lock = TRUE, listener_lock_sid = %s, listener_lock_counter = %s WHERE listener_id = %s", (sid, lock_count, self.data['listener_id']))
 
 	def update(self, hash):

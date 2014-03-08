@@ -223,8 +223,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 		if self.unlocked_listener_only and not self.user:
 			raise APIException("auth_required", http_code=403)
-		elif self.unlocked_listener_only and self.user.data['listener_lock'] and self.user.data['listener_lock_sid'] != self.sid:
-			raise APIException("unlocked_only", station=config.station_id_friendly[self.user.data['listener_lock_sid']], lock_counter=self.user.data['listener_lock_counter'], http_code=403)
+		elif self.unlocked_listener_only and self.user.data['lock'] and self.user.data['lock_sid'] != self.sid:
+			raise APIException("unlocked_only", station=config.station_id_friendly[self.user.data['lock_sid']], lock_counter=self.user.data['lock_counter'], http_code=403)
 
 	def do_phpbb_auth(self):
 		phpbb_cookie_name = config.get("phpbb_cookie_name")
