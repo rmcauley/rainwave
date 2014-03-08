@@ -2,11 +2,11 @@ var Albums = function() {
 	var self = {};
 
 	var expand_art = function(e) {
-		if (!$has_class(e.target.parentNode, "art_expandable")) return;
 		if (e.target.parentNode._expanded) {
 			normalize_art(e);
 			return;
 		}
+		if (!$has_class(e.target.parentNode, "art_expandable")) return;
 		$remove_class(e.target.parentNode, "art_expandable");
 		e.target.addEventListener("mouseout", normalize_art);
 		if (Mouse.x < (document.documentElement.clientWidth - 250)) {

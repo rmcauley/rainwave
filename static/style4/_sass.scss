@@ -20,9 +20,14 @@ $transtime: 700ms ease-out;
 	$nice_rules: null;
 	$webkit_rules: null;
 	@each $rule in $trans {
-		$nice_rules: append($nice_rules, $rule $customtime);
+		$transtime = $customtime
+		@if $rule == LINKCOLOR {
+			$rule = color;
+			$transtime = 150ms;
+		}
+		$nice_rules: append($nice_rules, $rule $transtime);
 		@if $rule == transform { 
-			$webkit_rules: append($webkit_rules, -webkit-transform $customtime);
+			$webkit_rules: append($webkit_rules, -webkit-transform $transtime);
 		}
 		@else {
 			$webkit_rules: append($webkit_rules, $rule $customtime);
@@ -91,13 +96,14 @@ body.small_screen {
 	cursor: pointer;
 }
 
-a, a:visited, .link {
+a:link, a:visited, .link {
+	cursor: pointer;
 	text-decoration: none;
 	color: $text;
-	@include transition-wtime(150ms, color);
+	@include transition(LINKCOLOR);
 }
 
-a:hover, .link:hover {
+a:link:hover, .link:hover {
 	color: #a7e1ff;
 }
 

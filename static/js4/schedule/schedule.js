@@ -79,11 +79,13 @@ var Schedule = function() {
 			header.setAttribute("href", evt.data.url);
 			header.setAttribute("target", "_blank");
 			Formatting.linkify_external(header);
+			$add_class(header, "link");
 		}
 		else {
 			Formatting.unlinkify(header);
 			header.removeAttribute("href");
 			header.removeAttribute("target");
+			$remove_class(header, "link");
 		}
 	};
 

@@ -121,3 +121,11 @@ table.songlist td.songlist_requestable {
 div.songlist_request_hint table.songlist td.songlist_requestable {
 	width: 70px;
 }
+
+#detail .scrollbar {
+	@include transform(translateX(-15px));
+}
+
+#detail .scrollbar:hover {
+	@include transform(translateX(-17px));
+}

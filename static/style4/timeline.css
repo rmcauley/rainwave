@@ -204,7 +204,7 @@ body.small_screen .timeline_now_playing_song .art_container .art {
 /* END NOW PLAYING MODIFICATIONS */
 
 .timeline_header {
-	@include transition(transform, opacity);
+	@include transition(transform, opacity, LINKCOLOR);
 	@include transform(translateY(-25px));
 	position: absolute;
 	color: $vdarktext;

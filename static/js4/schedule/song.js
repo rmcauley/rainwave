@@ -50,14 +50,14 @@ var TimelineSong = function() {
 			self.elements.title = self.elements.title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
 			self.elements.title.addEventListener("click", self.vote);
 			
-			self.elements.album_group = self.el.appendChild($el("div", { "class": "album_group link" }));
+			self.elements.album_group = self.el.appendChild($el("div", { "class": "album_group" }));
 			if (request_mode) {
 				self.elements.request_drag = $el("img", { "class": "request_reorder", "src": "/static/images4/pin_hdpi.png", "width": 14, "height": 14, "alt": "<>" });
 				self.elements.request_drag._song_id = json.id;
 				self.elements.album_group.appendChild(self.elements.request_drag);
 			}
 			self.elements.album_rating = self.elements.album_group.appendChild(album_rating.el);
-			self.elements.album = self.elements.album_group.appendChild($el("div", { "class": "album", "textContent": self.data.albums[0].name }));
+			self.elements.album = self.elements.album_group.appendChild($el("div", { "class": "album link", "textContent": self.data.albums[0].name }));
 			self.elements.album.addEventListener("click", function() { API.async_get("album", { "id": self.data.albums[0].id }); });
 
 			if (self.data.elec_request_username) {
