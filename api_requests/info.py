@@ -13,7 +13,7 @@ from libs import log
 from libs import config
 from rainwave import playlist
 
-def attach_info_to_request(request, playlist = False, artists = False):
+def attach_info_to_request(request, extra_list = None, all_lists = False):
 	# Front-load all non-animated content ahead of the schedule content
 	# Since the schedule content is the most animated on R3, setting this content to load
 	# first has a good impact on the perceived animation smoothness since table redrawing
@@ -22,16 +22,19 @@ def attach_info_to_request(request, playlist = False, artists = False):
 	if request.user:
 		request.append("user", request.user.to_private_dict())
 
-	if playlist or 'all_albums' in request.request.arguments:
+	if all_lists or (extra_list == "all_albums") or 'all_albums' in request.request.arguments:
 		request.append("all_albums", api_requests.playlist.get_all_albums(request.sid, request.user))
 	else:
 		request.append("album_diff", cache.get_station(request.sid, 'album_diff'))
-	if artists or 'all_artists' in request.request.arguments:
-		request.append("all_artists", cache.get_station(request.sid, 'all_artists'))
+
+	if all_lists or (extra_list == "all_artists") or 'all_artists' in request.request.arguments:
+		request.append("all_artists", api_requests.playlist.get_all_artists(request.sid))
+	
+	if all_lists or (extra_list == "current_listeners") or 'current_listeners' in request.request.arguments:
+		request.append("current_listeners", cache.get_station(request.sid, "current_listeners"))
 
 	request.append("request_line", cache.get_station(request.sid, "request_line"))
 	# request.append("calendar", cache.get("calendar"))
-	request.append("listeners_current", cache.get_station(request.sid, "listeners_current"))
 
 	sched_next = None
 	sched_history = None
@@ -85,7 +88,7 @@ def attach_info_to_request(request, playlist = False, artists = False):
 class InfoRequest(APIHandler):
 	auth_required = False
 	description = "Returns current user and station information."
-	fields = { "playlist": (fieldtypes.boolean, False), "artist_list": (fieldtypes.boolean, False) }
+	fields = { "all_albums": (fieldtypes.boolean, False), "all_albums": (fieldtypes.boolean, False), "current_listeners": (fieldtypes.boolean, False) }
 	allow_get = True
 
 	def post(self):

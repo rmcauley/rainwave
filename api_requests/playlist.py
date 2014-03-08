@@ -21,6 +21,9 @@ def get_all_albums(sid, user = None):
 	else:
 		return playlist.get_all_albums_list(sid, user)
 
+def get_all_artists(sid):
+	return cache.get_station(sid, "all_artists")
+
 @handle_api_url("all_albums")
 class AllAlbumsHandler(APIHandler):
 	description = "Get a list of all albums on the station playlist."
@@ -28,6 +31,14 @@ class AllAlbumsHandler(APIHandler):
 
 	def post(self):
 		self.append(self.return_name, get_all_albums(self.sid, self.user))
+
+@handle_api_url("all_artists")
+class AllArtistsHandler(APIHandler):
+	description = "Get a list of all artists on the station playlist."
+	return_name = "all_artists"
+
+	def post(self):
+		self.append(self.return_name, get_all_artists(self.sid))
 
 @handle_api_url("artist")
 class ArtistHandler(APIHandler):

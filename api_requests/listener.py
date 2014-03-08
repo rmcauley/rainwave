@@ -56,4 +56,4 @@ class CurrentListenersRequest(APIHandler):
 	sid_required = True
 
 	def post(self):
-		self.append("current_listeners", cache.get_station(self.sid, "listeners_current"))
+		self.append("current_listeners", cache.get_station(self.sid, "current_listeners"))

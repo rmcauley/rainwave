@@ -4,17 +4,6 @@ var Prefs = function() {
 	var values = {};
 	var self = {};
 	var callbacks = {};
-	var cookie_domain = BOOTSTRAP.cookie_domain;
-
-	// the following preferences are for speed-critical functions
-	self.playlist_sort_faves_first = false;
-	self.playlist_sort_available_first = true;
-
-	// a small set of characters need to be escaped, not all, and not all of these are caught by escape() and escape() bloats the JSON object to 2x the size
-	// a better idea is to use encodeURIComponent, but again, we get 2x the cookie size as a result.
-	// unfortunately, for Opera users, we have to use encodeURIComponent because Opera silently fails to save the cookie due to apparently some illegal chars.
-	var heavyencode = false;
-	if (navigator.userAgent.toLowerCase().indexOf("opera") > 0) heavyencode = true;
 
 	self.save = function(name, object) {
 		var today = new Date();
@@ -30,38 +19,11 @@ var Prefs = function() {
 			sfied = sfied.replace(";", "%3B");
 			sfied = sfied.replace(",", "%2C");
 		}
-		var thecookie = name + "=" + sfied;
-		document.cookie = thecookie + ";path=/;domain=" + cookie_domain + ";expires=" + expiry.toGMTString();
+		docCookies.setItem(name, sfied, Infinity, "/", BOOTSTRAP.cookie_domain);
 	};
 
 	self.load = function(name) {
-		var dc = document.cookie;
-		var cname = name + "=";
-		var begin = dc.indexOf("; " + cname);
-		if (begin == -1) {
-			begin = dc.indexOf(cname);
-			if (begin !== 0) return null;
-		}
-		else {
-			begin += 2;
-		}
-		var end = document.cookie.indexOf(";", begin);
-		if (end == -1) {
-			end = dc.length;
-		}
-		var mmm_cookie = dc.substring(begin, end);
-		if (!mmm_cookie) return null;
-		mmm_cookie = mmm_cookie.substring(mmm_cookie.indexOf("=") + 1);
-		if (heavyencode) {
-			mmm_cookie = decodeURIComponent(mmm_cookie);
-		}
-		else {
-			mmm_cookie = mmm_cookie.replace("%3B", ";");
-			mmm_cookie = mmm_cookie.replace("%3D", "=");
-			mmm_cookie = mmm_cookie.replace("%2B", "+");
-			mmm_cookie = mmm_cookie.replace("%25", "%");
-			mmm_cookie = mmm_cookie.replace("%2C", ",");
-		}
+		var mmm_cookie = docCookies.getItem(name);
 		try {
 			values = JSON.parse(mmm_cookie);
 		}

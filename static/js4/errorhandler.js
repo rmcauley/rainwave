@@ -42,6 +42,7 @@ var ErrorHandler = function() {
 	};
 
 	self.tooltip_error = function(callback_name, json) {
+		if (!json) return;
 		if (("success" in json) && (!json.success)) {
 			var err = $el("div", { "class": "error_tooltip", "textContent": json.text });
 

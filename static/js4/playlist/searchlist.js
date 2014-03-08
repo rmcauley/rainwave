@@ -22,6 +22,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 
 	var data = {};				// raw data
 	self.data = data;
+	self.loaded = false;
 	var sorted = [];			// list of IDs sorted by the sort_function (always maintained, contains all IDs)
 	var reinsert = [];			// list of IDs unsorted - will be resorted in the list when the user is not in a search
 	var hidden = [];			// list of IDs unsorted - currently hidden from view during a search
@@ -35,6 +36,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 	// LIST MANAGEMENT ***********************************************
 
 	self.update = function(json) {
+		self.loaded = true;
 		var i;
 		if (self.auto_trim) {
 			for (i in data) {
@@ -184,8 +186,8 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 	};
 
 	self.sort_function = function(a, b) {
-		if (data[a][sort_key]._lower_case_sort_keyed < data[b][sort_key]._lower_case_sort_keyed) return 1;
-		else if (data[a][sort_key]._lower_case_sort_keyed > data[b][sort_key]._lower_case_sort_keyed) return -1;
+		if (data[a]._lower_case_sort_keyed < data[b]._lower_case_sort_keyed) return 1;
+		else if (data[a]._lower_case_sort_keyed > data[b]._lower_case_sort_keyed) return -1;
 		return 0;
 	};
 

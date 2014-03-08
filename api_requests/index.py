@@ -38,7 +38,7 @@ class MainIndex(api.web.HTMLRequest):
 		self.json_payload.append({ key: value })
 
 	def get(self):
-		info.attach_info_to_request(self, playlist=True, artists=True)
+		info.attach_info_to_request(self, all_lists=True)
 		self.append("api_info", { "time": int(time.time()) })
 		self.render("index.html", request=self,
 					site_description=self.locale.translate("station_description_id_%s" % self.sid),
@@ -75,7 +75,7 @@ class R4Index(MainIndex):
 		self.json_payload[key] = value
 
 	def get(self):
-		info.attach_info_to_request(self, playlist=True, artists=True)
+		info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
 		self.append("api_info", { "time": int(time.time()) })
 		self.render("r4_index.html", request=self,
 					site_description=self.locale.translate("station_description_id_%s" % self.sid),

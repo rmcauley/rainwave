@@ -12,21 +12,36 @@
 
 ul.lists_tabs {
 	list-style: none;
-	display: none;
+	height: 1.5em;
+	margin: 0;
+	padding: 3px 0 0;
+	position: fixed;
+	background: #1f2022;
+	width: inherit;
 }
 
 ul.lists_tabs li {
+	padding: 0 10px 0 0;
 	display: inline;
+	cursor: default;
+	color: $vdarktext;
+	@include transition(LINKCOLOR, background-color, opacity);
+}
+
+ul.lists_tabs li.list_tab_open {
+	color: $highlight;
 }
 
 div.searchlist_searchbox {
-	border-bottom: solid 1px $vdarktext;
+	border-top: solid 1px $vdarktext;
+	border-bottom: solid 1px $vvdarktext;
 	position: fixed;
 	width: inherit;
 	z-index: 2;
 	background: #1f2022;
 	margin-left: -10px;
 	padding-top: 5px;
+	margin-top: 1.5em;
 }
 
 div.searchlist_input {

@@ -107,6 +107,11 @@
    "album_rating_ranked_at"                          : "Rated at %(rating), ranking #(rank).",
    "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",
    "Request"                                         : "Request",
+   "Albums"                                          : "Albums",
+   "Artists"                                         : "Artists",
+   "Users"                                           : "Users",
+   "Groups"                                          : "Groups",
+   "Listeners"                                       : "Listeners",
 
    "__comment__"                 : "Requests",
 
@@ -122,13 +127,15 @@
    "request_on_cooldown_ends_soon"                   : "Coming off cooldown.",
    "request_in_election"                             : "%(blocked_by) is in an election.",
 
-   "__comment__"                 : "The following are the old R3 translation lines, which will be replaced.  Some day. :(",
+   "__comment__"                 : "Station Descriptions",
 
    "station_description_id_1"                        : "Streaming Video Game Music Radio.  Vote for the song you want to hear!",
    "station_description_id_2"                        : "OverClocked Remix Radio.  Vote for your favourite remixes!",
    "station_description_id_3"                        : "Video game cover bands and remixes.  Vote for your favourite artists!",
    "station_description_id_4"                        : "Streaming original game chiptunes.  Vote for the songs you want to hear!",
    "station_description_id_5"                        : "Streaming game music and remixes.  Vote for the songs you want to hear!",
+
+   "__comment__"                 : "Old R3 translation lines, to be removed when the transition is complete.",
 
    "p_MainMPI"                                       : "Tabs",
    "p_MenuPanel"                                     : "Menu",
