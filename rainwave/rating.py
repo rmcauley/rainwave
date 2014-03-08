@@ -41,6 +41,7 @@ def set_song_rating(song_id, user_id, rating = None, fave = None):
 			"SET song_rating_user = %s, song_fave = %s, song_rated_at = %s, song_rated_at_rank = %s, song_rated_at_count = %s "
 			"WHERE user_id = %s AND song_id = %s",
 			(rating, fave, time.time(), rank, count, user_id, song_id))
+		db.c.update("UPDATE phpbb_users SET radio_totalmindchange = radio_totalmindchange + 1 WHERE user_id = %s", (user_id,))
 	else:
 		if not rating:
 			rating = None
