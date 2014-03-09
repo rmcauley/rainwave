@@ -66,7 +66,7 @@ def load(file = None, testmode = False):
 		public_relays[sid].append({ "name": "Random", "protocol": "http://", "hostname": get_station(sid, "round_robin_relay_host"), "port": get_station(sid, "round_robin_relay_port") })
 		for relay_name, relay in get("relays").iteritems():
 			if sid in relay['sids']:
-				public_relays[sid].append({ "name": relay_name, "protocol": relay['protocol'], "hostname": relay['ip_address'], "port": relay['port'] })
+				public_relays[sid].append({ "name": relay_name, "protocol": relay['protocol'], "hostname": relay['hostname'], "port": relay['port'] })
 		public_relays_json[sid] = tornado.escape.json_encode(public_relays[sid])
 
 	station_list = {}
