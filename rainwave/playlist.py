@@ -418,6 +418,8 @@ class Song(object):
 		if len(new_albums) > 0:
 			new_albums[0].associate_song_id(s.id, sids)
 
+		s.update_artist_parseable()
+
 		s.artists = new_artists + kept_artists
 		s.albums = new_albums[0]
 		s.groups = new_groups + kept_groups
@@ -497,7 +499,6 @@ class Song(object):
 		elif "TXXX:replaygain_track_gain" in keys:
 			self.replay_gain = f["TXXX:replaygain_track_gain"][0]
 
-
 		self.data['length'] = int(f.info.length)
 
 	def is_valid(self):
@@ -514,6 +515,14 @@ class Song(object):
 		else:
 			self.verified = False
 			return False
+
+	def update_artist_parseable(self):
+		if not self.artists:
+			return
+		artist_parseable = ""
+		for artist in self.artists:
+			artist_parseable += "%s|%s" % (artist.id, artist.data['name'])
+		db.c.update("UPDATE r4_songs SET song_artist_parseable = %s WHERE song_id = %s", (artist_parseable, self.id))
 
 	def save(self, sids_override = False):
 		"""
@@ -543,10 +552,6 @@ class Song(object):
 		if not self.fake:
 			file_mtime = os.stat(self.filename)[8]
 
-		artist_parseable = ""
-		for artist in self.artists:
-			artist_parseable += "%s|%s" % (artist.id, artist.data['name'])
-
 		if update:
 			db.c.update("UPDATE r4_songs \
 				SET	song_filename = %s, \
@@ -558,19 +563,18 @@ class Song(object):
 					song_scanned = TRUE, \
 					song_verified = TRUE, \
 					song_file_mtime = %s, \
-					song_replay_gain = %s, \
-					song_artist_parseable = %s \
+					song_replay_gain = %s \
 				WHERE song_id = %s",
-				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], file_mtime, self.replay_gain, artist_parseable, self.id))
+				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], file_mtime, self.replay_gain, self.id))
 			if self.artist_tag:
 				db.c.update("UPDATE r4_songs SET song_artist_tag = %s WHERE song_id = %s", (self.artist_tag, self.id))
 		else:
 			self.id = db.c.get_next_id("r4_songs", "song_id")
 			db.c.update("INSERT INTO r4_songs \
-				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain, song_artist_tag, song_artist_parseable) \
+				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain, song_artist_tag) \
 				VALUES \
-				(%s     , %s           , %s        , %s                   , %s       , %s            , %s         , %s             , %s             , %s           , %s          , %s             , %s             , %s )",
-				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True, self.replay_gain, self.artist_tag, artist_parseable))
+				(%s     , %s           , %s        , %s                   , %s       , %s            , %s         , %s             , %s             , %s           , %s          , %s             , %s)",
+				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True, self.replay_gain, self.artist_tag))
 			self.verified = True
 			self.data['added_on'] = int(time.time())
 
@@ -679,7 +683,9 @@ class Song(object):
 				album.update_rating()
 
 	def add_artist(self, name):
-		return self._add_metadata(self.artists, name, Artist)
+		toret = self._add_metadata(self.artists, name, Artist)
+		self.update_artist_parseable()
+		return to_ret
 
 	def add_album(self, name, sids = None):
 		if not sids and not 'sids' in self.data:
@@ -707,7 +713,9 @@ class Song(object):
 		return True
 
 	def remove_artist_id(self, metadata_id):
-		return self._remove_metadata_id(self.artists, metadata_id)
+		toret = self._remove_metadata_id(self.artists, metadata_id)
+		self.update_artist_parseable()
+		return toret
 
 	def remove_album_id(self, metadata_id):
 		return self._remove_metadata_id(self.albums, metadata_id)
@@ -723,7 +731,9 @@ class Song(object):
 		raise SongMetadataUnremovable("Found no tag by ID %s that wasn't assigned by ID3." % metadata_id)
 
 	def remove_artist(self, name):
-		return self._remove_metadata(self.artists, name)
+		toret = self._remove_metadata(self.artists, name)
+		self.update_artist_parseable()
+		return toret
 
 	def remove_album(self, name):
 		return self._remove_metadata(self.albums, name)
