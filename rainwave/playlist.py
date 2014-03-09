@@ -418,11 +418,11 @@ class Song(object):
 		if len(new_albums) > 0:
 			new_albums[0].associate_song_id(s.id, sids)
 
-		s.update_artist_parseable()
-
 		s.artists = new_artists + kept_artists
 		s.albums = new_albums[0]
 		s.groups = new_groups + kept_groups
+
+		s.update_artist_parseable()
 
 		return s
 
@@ -520,8 +520,10 @@ class Song(object):
 		if not self.artists:
 			return
 		artist_parseable = ""
-		for artist in self.artists:
-			artist_parseable += "%s|%s" % (artist.id, artist.data['name'])
+		for i in range(0, len(self.artists)):
+			if i != 0:
+				artist_parseable += ","
+			artist_parseable += "%s|%s" % (self.artists[i].id, self.artists[i].data['name'])
 		db.c.update("UPDATE r4_songs SET song_artist_parseable = %s WHERE song_id = %s", (artist_parseable, self.id))
 
 	def save(self, sids_override = False):
