@@ -218,6 +218,7 @@ class Election(event.BaseEvent):
 			self.replay_gain = self.songs[0].replay_gain
 
 	def start_event(self):
+		# at this point, self.songs[0] is the winner
 		if not self.used and not self.in_progress:
 			total_votes = 0
 			for i in range(0, len(self.songs)):
@@ -239,6 +240,12 @@ class Election(event.BaseEvent):
 							"album_votes_seen = album_votes_seen + %s "
 							"WHERE album_id = %s",
 							 (song.data['entry_votes'], total_votes, song.data['entry_votes'], total_votes, album.id))
+					if 'elec_request_user_id' in song.data:
+						if song == self.songs[0]:
+							db.c.update("UPDATE phpbb_users SET radio_winningrequests = radio_winningrequests + 1 WHERE user_id = %s", (song.data['elec_request_user_id'],))
+						else:
+							db.c.update("UPDATE phpbb_users SET radio_losingrequests = radio_losingrequests + 1 WHERE user_id = %s", (song.data['elec_request_user_id'],))
+
 			if db.c.allows_join_on_update and len(self.songs) > 0:
 				db.c.update("UPDATE phpbb_users SET radio_winningvotes = radio_winningvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id = %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
 				db.c.update("UPDATE phpbb_users SET radio_losingvotes = radio_losingvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id != %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
