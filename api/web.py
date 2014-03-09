@@ -312,6 +312,13 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		else:
 			self.append(self.return_name, kwargs)
 
+	def write_error(self, status_code, **kwargs):
+		if kwargs.has_key("exc_info"):
+			exc = kwargs['exc_info'][1]
+			if isinstance(exc, APIException):
+				exc.localize(self.locale)
+				log.debug("exception", exc.reason)
+
 class APIHandler(RainwaveHandler):
 	def initialize(self, **kwargs):
 		super(APIHandler, self).initialize(**kwargs)
