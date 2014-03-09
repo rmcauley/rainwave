@@ -45,6 +45,11 @@ class IcecastHandler(RainwaveHandler):
 
 	def write_error(self, status_code, **kwargs):
 		self.failed = True
+		if kwargs.has_key("exc_info"):
+			exc = kwargs['exc_info'][1]
+			if isinstance(exc, APIException):
+				exc.localize(self.locale)
+				self.set_header("icecast-auth-message", message)
 		super(IcecastHandler, self).finish()
 
 	def append(self, message):
