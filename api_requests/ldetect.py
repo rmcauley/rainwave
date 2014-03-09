@@ -148,11 +148,11 @@ class RemoveListener_ForR4Beta(RemoveListener):
 	pass
 
 # Compatible with R3 relays
-@handle_url("/async/(\d+)/listener_add")
+@handle_url("/sync/(\d+)/listener_add")
 class AddListener_R3Relay(AddListener):
 	pass
 
 # Compatible with R3 relays
-@handle_url("/async/(\d+)/listener_remove")
+@handle_url("/sync/(\d+)/listener_remove")
 class RemoveListener_R3Relay(RemoveListener):
 	pass
