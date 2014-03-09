@@ -839,7 +839,7 @@ class Song(object):
 				album.update_fave_count()
 
 	def update_vote_count(self, update_albums = True):
-		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE vote_time > %s AND song_id = %s", (config.get("song_vote_count_cutoff_time"), self.id))
+		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history AND song_id = %s", (self.id,))
 		db.c.update("UPDATE r4_songs SET song_vote_count = %s WHERE song_id = %s", (count, self.id,))
 
 		if update_albums:
