@@ -686,7 +686,7 @@ def _create_test_tables():
 			user_avatar_type			INT		DEFAULT 0, \
 			user_colour             TEXT        DEFAULT 'FFFFFF', \
 			user_rank               INTEGER     DEFAULT 0, \
-			radio_inactive			BOOLEAN		DEFAULT FALSE, \
+			radio_inactive			BOOLEAN		DEFAULT TRUE, \
 			radio_requests_paused	BOOLEAN		DEFAULT FALSE \
 		)")
 

@@ -1,4 +1,5 @@
 from xml.etree import ElementTree
+import tornado.ioloop
 import tornado.httpclient
 from libs import config
 from libs import log

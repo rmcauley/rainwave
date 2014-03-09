@@ -130,6 +130,7 @@ class BackendServer(object):
 	def _import_cron_modules(self):
 		import backend.api_key_pruning
 		import backend.icecast_sync
+		import backend.inactive
 
 	def start(self):
 		for sid in config.station_ids:
