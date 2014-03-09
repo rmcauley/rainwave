@@ -56,5 +56,5 @@ class TuneInIndex(api.web.HTMLRequest):
 		self.write(get_round_robin_url(self.sid, filetype, self.user) + "\n")
 
 		for relay in config.public_relays[self.sid]:
-			self.write("#EXTINF:0, Rainwave %s: %s Relay\n" % (config.station_id_friendly[self.sid], relay_name))
+			self.write("#EXTINF:0, Rainwave %s: %s Relay\n" % (config.station_id_friendly[self.sid], relay['name']))
 			self.write("%s%s:%s/%s\n" % (relay['protocol'], relay['ip_address'], relay['port'], stream_filename))
