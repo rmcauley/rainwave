@@ -144,6 +144,10 @@ panels.MenuPanel = {
 		};
 
 		that.changeStation = function(sid) {
+			var today = new Date();
+			var expiry = new Date(today.getTime() + 28 * 24 * 60 * 60 * 1000 * 13);
+			var thecookie = "r3sid=" + sid;
+			document.cookie = thecookie + ";path=/;domain=" + COOKIE_DOMAIN + ";expires=" + expiry.toGMTString();
 			if (sid == 1) window.location.href = "http://game.rainwave.cc";
 			if (sid == 2) window.location.href = "http://ocr.rainwave.cc";
 			if (sid == 3) window.location.href = "http://cover.rainwave.cc";

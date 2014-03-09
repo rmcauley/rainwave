@@ -7,6 +7,7 @@ from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
 from api.server import handle_url
+from api.exceptions import APIException
 
 from libs import cache
 from libs import log
@@ -49,7 +50,7 @@ class IcecastHandler(RainwaveHandler):
 			exc = kwargs['exc_info'][1]
 			if isinstance(exc, APIException):
 				exc.localize(self.locale)
-				self.set_header("icecast-auth-message", message)
+				self.set_header("icecast-auth-message", exc.reason)
 		super(IcecastHandler, self).finish()
 
 	def append(self, message):
@@ -62,7 +63,7 @@ class AddListener(IcecastHandler):
 	fields = {
 		"client": (fieldtypes.integer, True),
 		"mount": (fieldtypes.icecast_mount, True),
-		"ip": (fieldtypes.ip_address, True),
+		"ip": (fieldtypes.string, True),
 		"agent": (fieldtypes.media_player, True)
 	}
 
@@ -113,7 +114,7 @@ class AddListener(IcecastHandler):
 					"VALUES (%s, %s, %s, %s, %s, %s)",
 				(sid, self.get_argument("ip"), 1, self.relay, self.get_argument("agent"), self.get_argument("client")))
 			sync_to_front.sync_frontend_ip(self.get_argument("ip"))
-			self.append("Anonymous user from IP %s is now tuned in with record." % self.get_argument("ip_address"))
+			self.append("Anonymous user from IP %s is now tuned in with record." % self.get_argument("ip"))
 			self.failed = False
 		else:
 			while len(records) > 1:
