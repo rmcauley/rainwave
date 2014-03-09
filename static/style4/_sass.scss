@@ -20,17 +20,17 @@ $transtime: 700ms ease-out;
 	$nice_rules: null;
 	$webkit_rules: null;
 	@each $rule in $trans {
-		$transtime = $customtime
+		$finaltranstime = $customtime
 		@if $rule == LINKCOLOR {
 			$rule = color;
-			$transtime = 150ms;
+			$finaltranstime = 150ms;
 		}
-		$nice_rules: append($nice_rules, $rule $transtime);
+		$nice_rules: append($nice_rules, $rule $finaltranstime);
 		@if $rule == transform { 
-			$webkit_rules: append($webkit_rules, -webkit-transform $transtime);
+			$webkit_rules: append($webkit_rules, -webkit-transform $finaltranstime);
 		}
 		@else {
-			$webkit_rules: append($webkit_rules, $rule $customtime);
+			$webkit_rules: append($webkit_rules, $rule $finaltranstime);
 		}
 	}
 	-webkit-transition: $webkit_rules;
