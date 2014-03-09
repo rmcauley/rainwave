@@ -9,14 +9,18 @@ def inactive_checking():
 	last_time = 0
 	if os.path.isfile("%s/r4_inactive_check" % tempfile.gettempdir()):
 		f = open("%s/r4_inactive_check" % tempfile.gettempdir())
-		last_time = int(f.read())
+		t = f.read()
 		f.close()
+		try:
+			last_time = int(t)
+		except Exception:
+			pass
 	if (not last_time) or (last_time < (time.time() - 86400)):
 		_update_inactive()
 
 def _update_inactive():
 	f = open("%s/r4_inactive_check" % tempfile.gettempdir(), 'w')
-	f.write(time.time())
+	f.write(str(int(time.time())))
 	f.close()
 	vote_threshold = time.time() - (86400 * 30)
 	db.c.update("UPDATE phpbb_users SET radio_inactive = TRUE "
