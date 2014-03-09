@@ -16,17 +16,17 @@ def init(logfile, loglevel = "warning"):
 		print_handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
 		logging.getLogger("rainwave").addHandler(print_handler)
 
-	log = logging.getLogger("rainwave")
-	if loglevel == "critical":
-		log.setLevel(logging.CRITICAL)
-	elif loglevel == "error":
-		log.setLevel(logging.ERROR)
-	elif loglevel == "info":
-		log.setLevel(logging.INFO)
-	elif loglevel == "debug" or loglevel == "print":
-		log.setLevel(logging.DEBUG)
-	else:
-		log.setLevel(logging.WARNING)
+	# log = logging.getLogger("rainwave")
+	# if loglevel == "critical":
+	# 	log.setLevel(logging.CRITICAL)
+	# elif loglevel == "error":
+	# 	log.setLevel(logging.ERROR)
+	# elif loglevel == "info":
+	# 	log.setLevel(logging.INFO)
+	# elif loglevel == "debug" or loglevel == "print":
+	# 	log.setLevel(logging.DEBUG)
+	# else:
+	# 	log.setLevel(logging.WARNING)
 		
 def close():
 	logging.shutdown()
