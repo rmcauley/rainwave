@@ -13,10 +13,10 @@ var Menu = function() {
 			li.appendChild($el("a", { "href": station_list[order[i]].url, "textContent": $l("station_name_" + station_list[order[i]].id ) }));
 			info = li.appendChild($el("div", { "class": "info" }));
 			info.style.left = (5 * (i - 1)) + "em";	// I hate you browsers, I hate you so much
-			elements[i] = {};
-			elements[i].art = info.appendChild(Albums.art_html({ "art": null }));
-			elements[i].title = info.appendChild($el("div", { "class": "title" }));
-			elements[i].album = info.appendChild($el("div", { "class": "album" }));
+			elements[order[i]] = {};
+			elements[order[i]].art = info.appendChild(Albums.art_html({ "art": null }));
+			elements[order[i]].title = info.appendChild($el("div", { "class": "title" }));
+			elements[order[i]].album = info.appendChild($el("div", { "class": "album" }));
 		}
 		API.add_callback(update_station_info, "all_stations_info");
 	};
