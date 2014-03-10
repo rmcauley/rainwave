@@ -26,6 +26,20 @@ class SubmitRequest(APIHandler):
 	def post(self):
 		if self.user.add_request(self.sid, self.get_argument("song_id")):
 			self.append("requests", self.user.get_requests(refresh=True))
+			"""
+				Added this code to add a request_result in the return
+				json so that "Requested." will be displayed when
+				you successfully request a song. There might be
+				cleaner ways to do it, but that's up to you!
+				-Blorp
+			"""
+			resp=[ { 
+				"code" : 200,
+				"success" : true,
+				"text" : "Requested.",
+				"tl_key" : ""
+			} ]
+			self.append("request_result", resp)
 		else:
 			raise APIException("request_failed")
 
