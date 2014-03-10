@@ -149,7 +149,7 @@ var Prefs = function() {
 		meta[name] = {};
 		meta[name].legal_values = legal_values;
 		meta[name].verify_function = verify_function ? verify_function : null;
-		if (!(name in values)) {
+		if (values && !(name in values)) {
 			values[name] = legal_values ? legal_values[0] : false;
 		}
 		callbacks[name] = [];
