@@ -63,7 +63,7 @@ panels.MenuPanel = {
 				"autoplay": "true",
 				"tracking": "false",
 				"jsevents": "false",
-				"skin": "ffmp3/ffmp3-rainwave.xml",
+				"skin": "/static/ffmp3/ffmp3-rainwave.xml",
 				"title": STATIONS[user.p.sid]
 			};
 			var params = {
@@ -77,7 +77,7 @@ panels.MenuPanel = {
 				"id": "embedded_swf"
 			};
 			that.embedded_swf_container = createEl("div", { "id": "embedded_swf_container" }, that.flash_container);
-			swfobject.embedSWF("ffmp3/muses-config.swf", that.embedded_swf_container.getAttribute("id"), "190", "32", "10.0.0", "ffmp3/expressInstall.swf", flashvars, params, attributes);
+			swfobject.embedSWF("/static/ffmp3/muses-config.swf", that.embedded_swf_container.getAttribute("id"), "190", "32", "10.0.0", "static/ffmp3/expressInstall.swf", flashvars, params, attributes);
 			that.player.style.background = "none"
 
 			that.playeradded = true;

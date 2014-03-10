@@ -1037,7 +1037,7 @@ function _THEME() {
 			wdow.albumrating = Rating({ category: "album", id: json.id, userrating: json.rating_user, siterating: json.rating, favourite: json.fave, scale: 1.2, register: true });
 			wdow.albumnametd.appendChild(wdow.albumrating.el);
 			wdow.albumname = createEl("div", { "class": "pl_ad_albumname", "textContent": json.name }, wdow.albumnametd);
-			if (json.sid != user.p.sid) createEl("img", { "src": skindir + "/images/menu_logo_" + json.sid + ".png", "class": "pl_ad_albumname_station" }, wdow.albumname);
+			// if (json.sid != user.p.sid) createEl("img", { "src": skindir + "/images/menu_logo_" + json.sid + ".png", "class": "pl_ad_albumname_station" }, wdow.albumname);
 
 			tr = createEl("tr", false, wdow.hdrtable);
 			wdow.albumdetailtd = createEl("td", { "class": "pl_ad_albumdetailtd" }, tr);
@@ -1267,7 +1267,7 @@ function _THEME() {
 					var artist_split;
 					song_data[i].artists = []
 					for (var artist_i = 0; artist_i < artists.length; artist_i++) {
-						artist_split = artists[artist_i].split(":", 2);
+						artist_split = artists[artist_i].split("|", 2);
 						song_data[i].artists.push({ "id": parseInt(artist_split[0]), "name": artist_split[1] });
 					}
 				}

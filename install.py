@@ -11,7 +11,7 @@ if os.getuid() != 0:
 
 installdir = "/opt/rainwave"
 user = "rainwave"
-group = "root"
+group = "www-data"
 
 if not os.path.exists("/etc/rainwave.conf"):
 	raise Exception("Configuration not found at /etc/rainwave.conf.  Please create a config.")

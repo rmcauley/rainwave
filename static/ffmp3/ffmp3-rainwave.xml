@@ -1,4 +1,4 @@
-<ffmp3-skin folder="ffmp3-rainwave">
+<ffmp3-skin folder="/static/ffmp3/ffmp3-rainwave">
   <bg image="bkg.png" x="0" y="0" ></bg>
   <play image="play.png" x="1" y="1" clickimage="playclick.png" />
   <stop image="stop.png" x="31" y="1" clickimage="stopclick.png" />

@@ -83,12 +83,12 @@ for donation in db.c.fetch_all("SELECT * FROM rw_donations ORDER BY donation_id"
 print "Translated donat. : ", translated_donations
 print
 
-# translated_stats = 0
-# for stat in db.c.fetch_all("SELECT * FROM rw_listenerstats ORDER BY lstats_time LIMIT 300"):
-# 	db.c.update("INSERT INTO r4_listener_counts(lc_time, sid, lc_guests, lc_users, lc_users_active, lc_guests_active) VALUES (%s, %s, %s, %s, %s, %s)",
-# 				(stat['lstats_time'], stat['sid'], stat['lstats_guests'], stat['lstats_regd'], stat['lstats_activeguests'], stat['lstats_activeregd']))
-# 	translated_stats += 1
-# 	print "\rTranslated stats   : %s" % translated_stats,
+translated_stats = 0
+for stat in db.c.fetch_all("SELECT * FROM rw_listenerstats ORDER BY lstats_time LIMIT 300"):
+	db.c.update("INSERT INTO r4_listener_counts(lc_time, sid, lc_guests, lc_users, lc_users_active, lc_guests_active) VALUES (%s, %s, %s, %s, %s, %s)",
+				(stat['lstats_time'], stat['sid'], stat['lstats_guests'], stat['lstats_regd'], stat['lstats_activeguests'], stat['lstats_activeregd']))
+	translated_stats += 1
+	print "\rTranslated stats   : %s" % translated_stats,
 
 print "Processing requests in database..."
 translated_requests = db.c.update("INSERT INTO r4_request_history(user_id, song_id, request_fulfilled_at, request_line_size, request_at_count, sid) SELECT user_id, r4_song_id AS song_id, request_fulfilled_at, rqlen_fulfilled_at AS request_line_size, user_request_snapshot AS request_at_count, rw_requests.sid AS sid FROM rw_requests JOIN rw_songs USING (song_id) WHERE r4_song_id IS NOT NULL ORDER BY request_id")
