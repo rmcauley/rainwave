@@ -177,9 +177,11 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self._output_array = False
 
 		if not self.sid:
-			self.sid = fieldtypes.integer(self.get_cookie("r4_sid")) or fieldtypes.integer(self.get_cookie("r3sid")) or 1
+			self.sid = fieldtypes.integer(self.get_cookie("r4_sid", 5))
 		if "sid" in self.request.arguments:
-			self.sid = fieldtypes.integer(self.get_argument("sid"))
+			possible_sid = fieldtypes.integer(self.get_argument("sid"))
+			if possible_sid in config.station_ids:
+				self.sid = possible_sid
 		if not self.sid in config.station_ids:
 			self.sid = None
 		if not self.sid:
@@ -190,6 +192,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 					break
 		if not self.sid and self.sid_required:
 			raise APIException("missing_station_id", http_code=400)
+		elif not self.sid:
+			self.sid = 5
 		if self.sid and not self.sid in config.station_ids:
 			raise APIException("invalid_station_id", http_code=400)
 		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
