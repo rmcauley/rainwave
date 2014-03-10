@@ -22,8 +22,6 @@ def sync_result(response):
 		except Exception as e:
 			pass
 		log.warn("sync_front", "Error %s syncing to frontend at URL %s." % (response.code, response.request.url))
-	else:
-		log.debug("sync_front", "Sync to front successful.")
 
 def sync_frontend_all(sid):
 	_sync_frontend_all_timed_stop(sid)
