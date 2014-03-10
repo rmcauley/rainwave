@@ -96,6 +96,7 @@ var Prefs = function() {
 	};
 
 	self.get = function(name) {
+		if (!values) return false;
 		if (!(name in values)) {
 			if (name in meta) {
 				return meta[name].legal_values[0];

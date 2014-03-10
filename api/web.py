@@ -97,6 +97,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		super(RainwaveHandler, self).initialize(**kwargs)
 		self.cleaned_args = {}
 		self.cookie_prefs = {}
+		self.sid = None
 
 	def set_cookie(self, name, value, **kwargs):
 		if isinstance(value, (int, long)):
@@ -175,7 +176,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self._output = {}
 			self._output_array = False
 
-		self.sid = fieldtypes.integer(self.get_cookie("r4_sid")) or fieldtypes.integer(self.get_cookie("r3sid")) or 1
+		if not self.sid:
+			self.sid = fieldtypes.integer(self.get_cookie("r4_sid")) or fieldtypes.integer(self.get_cookie("r3sid")) or 1
 		if "sid" in self.request.arguments:
 			self.sid = int(self.get_argument("sid"))
 		elif not self.sid:
