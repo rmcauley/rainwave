@@ -150,7 +150,7 @@ panels.MenuPanel = {
 			document.cookie = thecookie + ";path=/;domain=" + COOKIE_DOMAIN + ";expires=" + expiry.toGMTString();
 			if (sid == 1) window.location.href = "http://game.rainwave.cc";
 			if (sid == 2) window.location.href = "http://ocr.rainwave.cc";
-			if (sid == 3) window.location.href = "http://cover.rainwave.cc";
+			if (sid == 3) window.location.href = "http://covers.rainwave.cc";
 			if (sid == 4) window.location.href = "http://chiptune.rainwave.cc";
 			if (sid == 5) window.location.href = "http://all.rainwave.cc";
 		};
