@@ -8,7 +8,8 @@ log = None
 
 class RWFormatter(logging.Formatter):
 	def format(self, record):
-		return "%s - %s - %s" % (datetime.datetime.now().strftime('%m-%d %H:%M:%S'), record.levelname.ljust(8), record.msg)
+		msg = logging.Formatter.format(self, record)
+		return "%s - %s - %s" % (datetime.datetime.now().strftime('%m-%d %H:%M:%S'), record.levelname.ljust(8), msg)
 
 def init(logfile, loglevel = "warning"):
 	global log
