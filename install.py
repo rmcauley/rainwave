@@ -48,4 +48,5 @@ subprocess.call(["chown", "-R", "%s:%s" % (user, group), installdir ])
 
 print "Rainwave installed to /opt/rainwave."
 
-# subprocess.check_call([ "/etc/init.d/rainwave", "start" ])
+if os.path.exists("/etc/init.d/rainwave"):
+	subprocess.check_call([ "/etc/init.d/rainwave", "start" ])
