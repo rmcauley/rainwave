@@ -26,13 +26,6 @@ var TimelineSong = function() {
 
 		var draw = function() {
 			self.el = $el("div", { "class": "timeline_song" });
-			
-			if (!request_mode) {
-				self.elements.votes = self.el.appendChild($el("div", { "class": "votes" }));
-				if (self.data.entry_votes) {
-					self.elements.votes.textContent = self.data.entry_votes;
-				}
-			}
 
 			self.elements.album_art = self.el.appendChild(Albums.art_html(self.data.albums[0]));
 			
@@ -59,17 +52,24 @@ var TimelineSong = function() {
 			self.elements.album_rating = self.elements.album_group.appendChild(album_rating.el);
 			self.elements.album = self.elements.album_group.appendChild($el("div", { "class": "album link", "textContent": self.data.albums[0].name }));
 			self.elements.album.addEventListener("click", function() { API.async_get("album", { "id": self.data.albums[0].id }); });
+			
+			if ("artists" in self.data) {
+				self.elements.artist_group = self.el.appendChild($el("div", { "class": "artist_group" }));
+				Artists.append_spans_from_json(self.elements.artist_group, self.data.artists);
+			}
+
+			if (!request_mode) {
+				self.elements.votes = self.el.appendChild($el("div", { "class": "votes" }));
+				if (self.data.entry_votes) {
+					self.elements.votes.textContent = self.data.entry_votes;
+				}
+			}
 
 			if (self.data.elec_request_username) {
 				self.elements.requester = self.el.appendChild($el("div", { 
 					"class": "requester",
 					"textContent": $l("requestedby", { "requester": self.data.elec_request_username })
 				}));
-			}
-			
-			if ("artists" in self.data) {
-				self.elements.artist_group = self.el.appendChild($el("div", { "class": "artist_group" }));
-				Artists.append_spans_from_json(self.elements.artist_group, self.data.artists);
 			}
 
 			if (self.data.url && self.data.link_text) {
