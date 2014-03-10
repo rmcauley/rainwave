@@ -73,14 +73,19 @@ class AddListener(IcecastHandler):
 		self.agent = self.get_argument("agent")
 		self.listener_ip = self.get_argument("ip")
 
-		if self.mount in config.station_mounts:
-			self.sid = config.station_mounts[self.mount]
+		# if self.mount in config.station_mounts:
+		# 	self.sid = config.station_mounts[self.mount]
+		if sid:
+			try:
+				self.sid = int(sid)
+			except Exception as e:
+				raise APIException("invalid_station_id", http_code=400)
 		else:
 			raise APIException("invalid_station_id", http_code=400)
 		if self.user_id > 1:
-			self.add_registered(int(sid))
+			self.add_registered(self.sid)
 		else:
-			self.add_anonymous(int(sid))
+			self.add_anonymous(self.sid
 
 	def add_registered(self, sid):
 		tunedin = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,))
