@@ -207,6 +207,8 @@ ip_address_error = "invalid IP address."
 def ip_address(addr, request = None):
 	if not addr:
 		return None
+	else:
+		return string(addr, request)
 	try:
 		if addr.find(":"):
 			socket.inet_pton(socket.AF_INET6, addr)

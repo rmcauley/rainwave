@@ -63,7 +63,7 @@ class AddListener(IcecastHandler):
 	fields = {
 		"client": (fieldtypes.integer, True),
 		"mount": (fieldtypes.icecast_mount, True),
-		"ip": (fieldtypes.string, True),
+		"ip": (fieldtypes.ip_address, True),
 		"agent": (fieldtypes.media_player, True)
 	}
 
