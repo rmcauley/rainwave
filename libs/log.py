@@ -2,22 +2,27 @@ import logging
 import logging.handlers
 import tornado.log
 import sys
+import datetime
 
 log = None
 
+class RWFormatter(logging.Formatter):
+	def format(self, record):
+		return "%s - %s - %s" % (datetime.datetime.now().strftime('%m-%d %H:%M:%S'), record.levelname.ljust(8), record.msg)
+
 def init(logfile, loglevel = "warning"):
 	global log
+	logging.getLogger().setLevel(logging.DEBUG)
 	
 	handler = logging.handlers.RotatingFileHandler(logfile, maxBytes = 20000000, backupCount = 1)
-	handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
-	print_handler = logging.StreamHandler(sys.stdout)
-	print_handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
+	handler.setFormatter(RWFormatter())
+	print_handler = logging.StreamHandler()
+	print_handler.setFormatter(RWFormatter())
 	print_handler.setLevel(logging.DEBUG)
 
 	logging.getLogger("tornado.general").addHandler(handler)
 	log = logging.getLogger("tornado.application")
 	log.addHandler(handler)
-	log.setLevel(logging.DEBUG)
 	
 	if loglevel == "print":	
 		log.addHandler(print_handler)
@@ -25,19 +30,19 @@ def init(logfile, loglevel = "warning"):
 
 	if loglevel == "critical":
 		handler.setLevel(logging.CRITICAL)
-		print_handler.setLevel(logging.CRITICAL)
 	elif loglevel == "error":
 		handler.setLevel(logging.ERROR)
-		print_handler.setLevel(logging.ERROR)
 	elif loglevel == "info":
 		handler.setLevel(logging.INFO)
-		print_handler.setLevel(logging.INFO)
-	elif loglevel == "debug" or loglevel == "print":
+	elif loglevel == "debug":
 		handler.setLevel(logging.DEBUG)
-		print_handler.setLevel(logging.DEBUG)
 	else:
 		handler.setLevel(logging.WARNING)
-		print_handler.setLevel(logging.WARNING)
+	debug("test", "Debug test.")
+	info("test", "Info test.")
+	warn("test", "Warn test.")
+	error("test", "Error test.")
+	critical("test", "Critical test.")
 		
 def close():
 	logging.shutdown()

@@ -29,18 +29,6 @@ class MainIndex(api.web.HTMLRequest):
 	sid_required = False
 
 	def prepare(self):
-		host = self.request.headers.get('Host', None)
-		if host == "game.rainwave.cc":
-			self.sid = 1
-		elif host == "ocr.rainwave.cc":
-			self.sid = 2
-		elif host == "covers.rainwave.cc":
-			self.sid = 3
-		elif host == "chiptune.rainwave.cc":
-			self.sid = 4
-		elif host == "all.rainwave.cc":
-			self.sid = 5
-
 		super(MainIndex, self).prepare()
 
 		self.json_payload = []
