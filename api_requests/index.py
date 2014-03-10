@@ -26,7 +26,7 @@ class MainIndex(api.web.HTMLRequest):
 	description = "Main Rainwave page."
 
 	def prepare(self):
-		host = self.request.headers.get('Host', None):
+		host = self.request.headers.get('Host', None)
 		log.debug("request", host)
 		if host == "game.rainwave.cc":
 			self.sid = 1
