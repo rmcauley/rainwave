@@ -296,7 +296,7 @@ class User(object):
 			already_lined = db.c.fetch_row("SELECT * FROM r4_request_line WHERE user_id = %s", (self.id,))
 			if already_lined and already_lined['sid'] == sid:
 				if already_lined['line_expiry_tune_in']:
-					db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = NULL WHERE user_id = %s", (listener['user_id'],))
+					db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = NULL WHERE user_id = %s", (self.id,))
 				return True
 			elif already_lined:
 				self.remove_from_request_line()
