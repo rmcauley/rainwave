@@ -30,13 +30,13 @@ class MainIndex(api.web.HTMLRequest):
 		log.debug("request", host)
 		if host == "game.rainwave.cc":
 			self.sid = 1
-		else if host == "ocr.rainwave.cc":
+		elif host == "ocr.rainwave.cc":
 			self.sid = 2
-		else if host == "covers.rainwave.cc":
+		elif host == "covers.rainwave.cc":
 			self.sid = 3
-		else if host == "chiptune.rainwave.cc":
+		elif host == "chiptune.rainwave.cc":
 			self.sid = 4
-		else if host == "all.rainwave.cc":
+		elif host == "all.rainwave.cc":
 			self.sid = 5
 
 		super(MainIndex, self).prepare()
