@@ -72,7 +72,10 @@ class AddListener(IcecastHandler):
 		self.agent = self.get_argument("agent")
 		self.listener_ip = self.get_argument("ip")
 
-		sid = 1
+		if self.mount in config.station_mounts:
+			self.sid = config.station_mounts[self.mount]
+		else:
+			raise APIException("invalid_station_id", http_code=400)
 		if self.user_id > 1:
 			self.add_registered(int(sid))
 		else:
@@ -100,7 +103,7 @@ class AddListener(IcecastHandler):
 			u.get_listener_record(use_cache=False)
 			if u.has_requests():
 				u.put_in_request_line(sid)
-		sync_to_front.sync_frontend_user_id(self.user_id)
+			sync_to_front.sync_frontend_user_id(self.user_id)
 
 	def add_anonymous(self, sid):
 		# Here we'll erase any extra records for the same IP address (shouldn't happen but you never know, especially

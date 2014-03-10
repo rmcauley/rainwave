@@ -18,6 +18,7 @@ station_id_friendly = {}
 public_relays = None
 public_relays_json = {}
 station_list_json = {}
+station_mounts = {}
 
 def get_config_file(testmode = False):
 	if os.path.isfile("etc/%s.conf" % getpass.getuser()):
@@ -76,6 +77,8 @@ def load(file = None, testmode = False):
 			"name": station_id_friendly[station_id],
 			"url": "http://%s" % get_station(station_id, "host")
 		}
+		station_mounts[get_station(station_id, "stream_filename") + ".mp3"] = station_id
+		station_mounts[get_station(station_id, "stream_filename") + ".ogg"] = station_id
 	station_list_json = tornado.escape.json_encode(station_list)
 
 	build_number = buildtools.get_build_number()
