@@ -104,7 +104,7 @@ class AddListener(IcecastHandler):
 			u.get_listener_record(use_cache=False)
 			if u.has_requests():
 				u.put_in_request_line(sid)
-			sync_to_front.sync_frontend_user_id(self.user_id)
+		sync_to_front.sync_frontend_user_id(self.user_id)
 
 	def add_anonymous(self, sid):
 		# Here we'll erase any extra records for the same IP address (shouldn't happen but you never know, especially
@@ -128,6 +128,7 @@ class AddListener(IcecastHandler):
 			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE WHERE listener_ip = %s", (self.get_argument("client"), self.get_argument("ip")))
 			self.append("Anonymous user from IP %s record updated." % self.get_argument("ip"))
 			self.failed = False
+		sync_to_front.sync_frontend_ip(self.get_argument("ip"))
 
 @handle_api_url("listener_remove")
 class RemoveListener(IcecastHandler):
