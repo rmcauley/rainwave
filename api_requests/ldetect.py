@@ -88,7 +88,7 @@ class AddListener(IcecastHandler):
 			self.add_anonymous(self.sid)
 
 	def add_registered(self, sid):
-		real_key = db.c.fetch_var("SELECT radio_listen_key FROM phpbb_users WHERE user_id = %s", (self.user_id,))
+		real_key = db.c.fetch_var("SELECT radio_listenkey FROM phpbb_users WHERE user_id = %s", (self.user_id,))
 		if real_key != self.listen_key:
 			raise APIException("invalid_argument", reason="mismatched listen_key.")
 		tunedin = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,))
