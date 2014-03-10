@@ -12,6 +12,7 @@ from api.exceptions import APIException
 from libs import cache
 from libs import log
 from libs import db
+from libs import config
 from rainwave import user
 from backend import sync_to_front
 
