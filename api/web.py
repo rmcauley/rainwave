@@ -179,8 +179,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if not self.sid:
 			self.sid = fieldtypes.integer(self.get_cookie("r4_sid")) or fieldtypes.integer(self.get_cookie("r3sid")) or 1
 		if "sid" in self.request.arguments:
-			self.sid = int(self.get_argument("sid"))
-		elif not self.sid:
+			self.sid = fieldtypes.integer(self.get_argument("sid"))
+		if not self.sid:
 			for possible_sid in config.station_ids:
 				if self.request.host == config.get_station(possible_sid, "host"):
 					self.sid = possible_sid

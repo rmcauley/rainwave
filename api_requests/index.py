@@ -24,6 +24,9 @@ jsfiles = buildtools.get_js_file_list_url()
 @handle_url("/(?:index.html)?")
 class MainIndex(api.web.HTMLRequest):
 	description = "Main Rainwave page."
+	auth_required = False
+	login_required = False
+	sid_required = False
 
 	def prepare(self):
 		host = self.request.headers.get('Host', None)
