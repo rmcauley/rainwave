@@ -85,7 +85,7 @@ class APIServer(object):
 		log_file = "%s/rw_api_%s.log" % (config.get("log_dir"), port_no)
 		if config.test_mode and os.path.exists(log_file):
 			os.remove(log_file)
-		log.init(log_file, config.get("log_level"))
+		log.init(log_file)
 		log.debug("start", "Server booting, port %s." % port_no)
 		db.open()
 		cache.open()
