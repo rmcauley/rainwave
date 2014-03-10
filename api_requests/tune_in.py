@@ -22,6 +22,8 @@ def get_stream_filename(sid, filetype, user = None):
 @handle_url("/tune_in/(\w+|\d)\.(ogg|mp3)")
 class TuneInIndex(api.web.HTMLRequest):
 	description = "Provides the user with an M3U file containing Ogg or MP3 URLs to relays."
+	login_required = False
+	auth_required = False
 
 	def prepare(self):
 		super(TuneInIndex, self).prepare()
