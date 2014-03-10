@@ -85,7 +85,7 @@ class AddListener(IcecastHandler):
 		if self.user_id > 1:
 			self.add_registered(self.sid)
 		else:
-			self.add_anonymous(self.sid
+			self.add_anonymous(self.sid)
 
 	def add_registered(self, sid):
 		tunedin = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,))
