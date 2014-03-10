@@ -207,17 +207,16 @@ ip_address_error = "invalid IP address."
 def ip_address(addr, request = None):
 	if not addr:
 		return None
-	else:
-		return string(addr, request)
-	try:
-		if addr.find(":"):
-			socket.inet_pton(socket.AF_INET6, addr)
-		else:
-			socket.inet_pton(socket.AF_INET, addr)
-		return addr
-	except socket.error:
-		return None
-	return None
+	return addr
+	# try:
+	# 	if addr.find(":"):
+	# 		socket.inet_pton(socket.AF_INET6, addr)
+	# 	else:
+	# 		socket.inet_pton(socket.AF_INET, addr)
+	# 	return addr
+	# except socket.error:
+	# 	return None
+	# return None
 
 media_player_error = None
 def media_player(str, request = None):
