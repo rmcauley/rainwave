@@ -97,9 +97,8 @@ def get_next(sid):
 			u = User(entry['user_id'])
 			db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (u.id, entry['song_id']))
 			u.remove_from_request_line()
-			user_sid = u.get_tuned_in_sid()
 			if u.has_requests():
-				u.put_in_request_line(user_sid)
+				u.put_in_request_line(u.get_tuned_in_sid())
 			request_count = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_history WHERE user_id = %s", (u.id,)) + 1
 			db.c.update("DELETE FROM r4_request_store WHERE song_id = %s AND user_id = %s", (song.id, u.id))
 			db.c.update("INSERT INTO r4_request_history (user_id, song_id, request_wait_time, request_line_size, request_at_count) "
@@ -109,7 +108,7 @@ def get_next(sid):
 			song.update_request_count()
 			# Update the user's request cache
 			u.get_requests(refresh=True)
-			cache.set_station(sid, "request_line", line, True)
+			update_line(sid)
 			break
 
 	return song
