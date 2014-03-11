@@ -92,6 +92,7 @@ var Prefs = function() {
 			// silently fail, resetting all preferences to their defaults
 			values = {};
 		}
+		if (!values) values = {};
 		return true;
 	};
 
