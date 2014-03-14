@@ -22,28 +22,30 @@ def update_line(sid):
 	for row in line:
 		add_to_line = False
 		u = User(row['user_id'])
-		u.refresh_sid = sid
 		row['song_id'] = None
 		# If their time is up, remove them and don't add them to the new line
 		if row['line_expiry_tune_in'] and row['line_expiry_tune_in'] <= t:
+			log.debug("request_line", "%s: Removed user ID %s from line for tune in timeout, expiry time %s current time %s" % (sid, u.id, row['line_expiry_tune_in'], t))
 			u.remove_from_request_line()
 		else:
-			u.refresh()
+			tuned_in_sid = db.c.fetch_var("SELECT sid FROM r4_listeners WHERE user_id = %s AND sid = %s AND listener_purge = FALSE", (u.id, sid))
+			tuned_in = True if tuned_in_sid == sid else False
 			# do nothing if they're not tuned in
-			if not u.is_tunedin():
+			if tuned_in and not row['line_expiry_tune_in']:
 				pass
-			else:
+			elif tuned_in:
 				# Get their top song ID
 				song_id = u.get_top_request_song_id(sid)
 				# If they have no song and their line expiry has arrived, boot 'em
 				if not song_id and row['line_expiry_election'] and (row['line_expiry_election'] <= t):
+					log.debug("request_line", "%s: Removed user ID %s from line for election timeout, expiry time %s current time %s" % (sid, u.id, row['line_expiry_election'], t))
 					u.remove_from_request_line()
-					# Give them a second chance if they still have requests
+					# Give them more chances if they still have requests
 					# They'll get added to the line of whatever station they're tuned in to (if any!)
 					if u.has_requests():
 						u.put_in_request_line(u.get_tuned_in_sid())
 				# If they have no song, start the expiry countdown
-				elif not song_id:
+				elif not song_id and not row['line_expiry_election']:
 					row['line_expiry_election'] = t + 600
 					db.c.update("UPDATE r4_request_line SET line_expiry_election = %s WHERE user_id = %s", (row['line_expiry_election'], row['user_id']))
 					add_to_line = True
@@ -59,6 +61,7 @@ def update_line(sid):
 
 	cache.set_station(sid, "request_line", new_line, True)
 	cache.set_station(sid, "request_user_positions", user_positions, True)
+	return new_line
 
 	db.c.update("UPDATE r4_album_sid SET album_requests_pending = NULL WHERE album_requests_pending = TRUE AND sid = %s", (sid,))
 	for album_id in albums_with_requests:
@@ -87,8 +90,10 @@ def get_next(sid):
 	song = None
 	for pos in range(0, len(line)):
 		if not line[pos] or not line[pos]['song_id']:
+			log.debug("request", "Passing on user %s since they have no valid first song." % entry['username'])
 			pass
 		else:
+			log.debug("request", "Fulfilling %s's request." % entry['username'])
 			entry = line.pop(pos)
 			song = playlist.Song.load_from_id(entry['song_id'], sid)
 			song.data['elec_request_user_id'] = entry['user_id']
@@ -108,7 +113,9 @@ def get_next(sid):
 			song.update_request_count()
 			# Update the user's request cache
 			u.get_requests(refresh=True)
-			update_line(sid)
+			# If we fully update the line, the user may sneak in and get 2 requests in the same election.
+			# This is not a good idea, so we leave it to the scheduler to issue the full cache update.
+			cache.set_station(sid, "request_line", line, True)
 			break
 
 	return song
