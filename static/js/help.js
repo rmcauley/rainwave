@@ -388,7 +388,7 @@ function drawAboutScreen(div) {
 	html += "<tr><td style='padding-top: 1em;'>" + _l("poweredby") + ":</td><td style='padding-top: 1em;'>" + _l("customsoftware") + ", <a href='http://icecast.org' class='new_window' target='_blank' onclick='return false;'>Icecast</a>, <a href='http://savonet.sourceforge.net' target='_blank' class='new_window' onclick='return false;'>Liquidsoap</a></td></tr>";
 	tbl.innerHTML = html;
 	div.appendChild(tbl);
-	var a1 = createEl("a", { "href": "/donations.php", "textContent": _l("donationinformation"), "class": "help_paragraph new_window", "style": "margin-top: 1em; display: block", "target": "_blank" });
+	var a1 = createEl("a", { "href": "/pages/tip_jar", "textContent": _l("donationinformation"), "class": "help_paragraph new_window", "style": "margin-top: 1em; display: block", "target": "_blank" });
 	div.appendChild(a1);
 	//var a2 = createEl("a", { "href": "/api", "textContent": _l("apiinformation"), "class": "help_paragraph", "style": "margin-top: 1em; display: block", "target": "_blank", "onclick": "return false;" });
 	//a2.appendChild(createEl("img", { "src": "images/new_window_icon.png", "alt": "->" }));
