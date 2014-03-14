@@ -129,6 +129,7 @@ var Fx = function() {
 		var delta = 0;
 		var started = 0;
 		
+		newfx.element = el;
 		newfx.duration = duration;
 		newfx.unstoppable = false;
 		newfx.stop_timer = false;
@@ -199,6 +200,30 @@ var Fx = function() {
 	};
 	
 	// ************************************************************** ANIMATION FUNCTIONS
+
+	self.CSSNumeric = function(element, attribute, unit) {
+		var cssnfx = {};
+		if (!unit) unit = "";
+		cssnfx.transition_name = attribute;
+		
+		if (attribute == "opacity") {		
+			cssnfx.update = function(now) {
+				element.style[attribute] = now.toFixed(2) + unit;
+			};
+		}
+		else if (unit == "px") {
+			cssnfx.update = function(now) {
+				element.style[attribute] = Math.round(now) + "px";
+			};
+		}
+		else {
+			cssnfx.update = function(now) {
+				element.style[attribute] = now + unit;
+			};
+		}
+		
+		return cssnfx;
+	};
 
 	self.Rating = function(element) {
 		var r = {};

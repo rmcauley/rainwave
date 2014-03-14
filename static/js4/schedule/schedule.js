@@ -9,6 +9,7 @@ var Schedule = function() {
 	var sched_history;
 	var time_bar;
 	var time_bar_progress;
+	var time_bar_progress_timer = false;
 	var current_event;
 
 	var next_headers = [];
@@ -33,7 +34,7 @@ var Schedule = function() {
 		current_header = $id("timeline_header_now_playing");
 		current_header.textContent = $l("Now_Playing");
 		time_bar = $id("timeline_header_now_playing_bar");
-		time_bar_progress = $id("timeline_header_now_playing_bar_inside");
+		time_bar_progress = Fx.legacy_effect(Fx.CSSNumeric, $id("timeline_header_now_playing_bar_inside"), 700, "width", "%");
 		history_bar = $id("timeline_header_history_bar");
 
 		header_height = $measure_el(history_header).height - 8;	// -8 ties into the .header_height definition in timeline.css
@@ -100,7 +101,6 @@ var Schedule = function() {
 
 	self.update = function() {
 		var new_events = [];
-		var new_current_event;
 		var i;
 		var padding = 15;
 		var header_padding_pullback = 6;
@@ -181,7 +181,6 @@ var Schedule = function() {
 		temp_evt.move_to_y(running_height);
 		running_height += temp_evt.height + padding;
 		new_events.push(temp_evt);
-		new_current_event = temp_evt;
 		Fx.delay_css_setting(temp_evt.el, "opacity", 1);
 
 		// History header positioning
@@ -215,19 +214,36 @@ var Schedule = function() {
 		}
 		self.events = new_events;
 
-		if ((new_current_event.end - Clock.time()) > 0) {
-			Clock.set_page_title(new_current_event.songs[0].data.albums[0].name + " - " + new_current_event.songs[0].data.title, new_current_event.end);
+		// The now playing bar
+		if ((current_event.end - Clock.now) > 0) {
+			Clock.set_page_title(current_event.songs[0].data.albums[0].name + " - " + current_event.songs[0].data.title, current_event.end);
 
-			time_bar_progress.style.transition = "width 700ms ease-out";
-			time_bar_progress.style.width = Math.round(((new_current_event.end - Clock.time()) / (new_current_event.data.songs[0].length - 1)) * 100) + "%";
-			setTimeout(function() {
-				Fx.delay_css_setting(time_bar_progress, "transition", "width " + (new_current_event.end - Clock.time()) + "s linear");
-				Fx.delay_css_setting(time_bar_progress, "width", "0%");
-			}, 1000);
+			if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
+			time_bar_progress.element.style.transition = "";
+			time_bar_progress.onComplete = start_time_bar_progress;
+			time_bar_progress.start(((current_event.end - Clock.now) / (current_event.data.songs[0].length - 1)) * 100);
 		}
 		Fx.delay_css_setting(time_bar, "transform", "translateY(" + time_bar_y + "px)");
 
 		timeline_scrollbar.update_scroll_height(running_height);
+	};
+
+	var start_time_bar_progress = function() {
+		time_bar_progress.element.style.transition = "none";
+		time_bar_progress.onComplete = false;
+		time_bar_progress_timer = setInterval(update_time_bar_progress, 1000);
+	};
+
+	var update_time_bar_progress = function() {
+		var new_val = ((current_event.end - Clock.now) / (current_event.data.songs[0].length - 1)) * 100;
+		if (new_val <= 0) {
+			if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
+			time_bar_progress_timer = false;
+			time_bar_progress.set(0);
+		}
+		else {
+			time_bar_progress.set(new_val);
+		}
 	};
 
 	var set_header_to_top_zindex = function() {
