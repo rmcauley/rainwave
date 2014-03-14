@@ -1,6 +1,7 @@
 import time
 from libs import db
 from libs import cache
+from libs import log
 from rainwave import playlist
 from rainwave.user import User
 
