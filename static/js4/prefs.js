@@ -69,18 +69,7 @@ var Prefs = function() {
 	self.save = function(name, object) {
 		var today = new Date();
 		var expiry = new Date(today.getTime() + 28 * 24 * 60 * 60 * 1000 * 13);
-		var sfied = JSON.stringify(values);
-		if (heavyencode) {
-			sfied = encodeURIComponent(sfied);
-		}
-		else {
-			sfied = sfied.replace("%", "%25");
-			sfied = sfied.replace("+", "%2B");
-			sfied = sfied.replace("=", "%3D");
-			sfied = sfied.replace(";", "%3B");
-			sfied = sfied.replace(",", "%2C");
-		}
-		docCookies.setItem(name, sfied, Infinity, "/", BOOTSTRAP.cookie_domain);
+		docCookies.setItem(name, JSON.stringify(values), Infinity, "/", BOOTSTRAP.cookie_domain);
 	};
 
 	self.load = function(name) {
