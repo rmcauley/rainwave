@@ -34,6 +34,7 @@
 	border: solid 1px #2257a3;
 	background-color: #00004c;
 	overflow: hidden;
+	left: 0px;
 }
 
 #station_select div.info:hover {

@@ -12,7 +12,6 @@ var Menu = function() {
 			li = ul.appendChild($el("li"));
 			li.appendChild($el("a", { "href": station_list[order[i]].url, "textContent": $l("station_name_" + station_list[order[i]].id ) }));
 			info = li.appendChild($el("div", { "class": "info" }));
-			info.style.left = (5 * (i - 1)) + "em";	// I hate you browsers, I hate you so much
 			elements[order[i]] = {};
 			elements[order[i]].art = info.appendChild(Albums.art_html({ "art": null }));
 			elements[order[i]].title = info.appendChild($el("div", { "class": "title" }));
