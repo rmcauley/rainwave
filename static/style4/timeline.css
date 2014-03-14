@@ -1,3 +1,5 @@
+$song_subinfo_color = #CCC;
+
 #timeline {
 	float: left;
 	height: 100%;
@@ -7,6 +9,7 @@
 	overflow: hidden;
 	position: relative;
 	background-color: #131416;
+	width: 26em;
 }
 
 #timeline.resizing {
@@ -68,6 +71,7 @@ body.small_screen .timeline_song {
 
 .timeline_song .album {
 	cursor: pointer;
+	color: $song_subinfo_color;
 }
 
 .art_container {
@@ -122,6 +126,7 @@ body.small_screen .timeline_song {
 
 .timeline_song .artist_group {
 	display: none;
+	color: $song_subinfo_color;
 }
 
 body.small_screen .timeline_song .art_container {
@@ -136,6 +141,7 @@ body.small_screen .timeline_song .art {
 
 .timeline_song .requester, .timeline_song .cooldown_info {
 	margin-left: 95px;
+	color: $song_subinfo_color;
 }
 
 .timeline_song .votes, .timeline_song .cooldown_info {
