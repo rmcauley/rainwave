@@ -14,6 +14,7 @@ var DetailView = function() {
 			Prefs.add_callback("request_made", request_made_changed);
 		}
 		scroller = Scrollbar.new(el);
+		scroller.update_scroll_height();
 		API.add_callback(draw_album, "album");
 		API.add_callback(album_diff_handler, "album_diff");
 		API.add_callback(draw_artist, "artist");
