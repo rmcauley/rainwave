@@ -29,7 +29,7 @@ class WebCreateProducer(api.web.HTMLRequest):
 
 		# it says 'ph' because I super-lazily copy/pasted this from the power hour creator code
 		self.write("<div>Type: <select id='new_ph_type'/>")
-		for producer_type in event.all_producers.keys():
+		for producer_type in event.get_admin_creatable_producers():
 			self.write("<option value='%s'>%s</option>" % (producer_type, producer_type))
 		self.write("</select><br>")
 		self.write("Name: <input id='new_ph_name' type='text' /><br>")
@@ -43,7 +43,7 @@ class WebCreateProducer(api.web.HTMLRequest):
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/album_list/producers")
-class WebListPowerHours(api.web.PrettyPrintAPIMixin, producers.ListProducers):
+class WebListProducers(api.web.PrettyPrintAPIMixin, producers.ListProducers):
 	def header_special(self):
 		self.write("<th>Time</th><th></th><th></th>")
 

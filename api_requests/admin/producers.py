@@ -29,7 +29,7 @@ class ListProducerTypes(api.web.APIHandler):
 	sid_required = False
 
 	def post(self):
-		self.append(self.return_name, event.all_producers.keys())
+		self.append(self.return_name, event.get_admin_createable_producers())
 
 @handle_api_url("admin/create_producer")
 class CreateProducer(api.web.APIHandler):

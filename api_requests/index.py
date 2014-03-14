@@ -21,6 +21,15 @@ from rainwave.user import User
 
 jsfiles = buildtools.get_js_file_list_url()
 
+@handle_url("/blank")
+class Blank(api.web.HTMLRequest):
+	auth_required = False
+	login_required = False
+
+	def get(self):
+		self.write(self.render_string("bare_header.html", title="Blank"))
+		self.write(self.render_string("basic_footer.html"))
+
 @handle_url("/(?:index.html)?")
 class MainIndex(api.web.HTMLRequest):
 	description = "Main Rainwave page."
