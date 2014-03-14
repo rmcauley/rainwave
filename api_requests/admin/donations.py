@@ -15,7 +15,7 @@ class AddDonationHandler(api.web.APIHandler):
 
 	def post(self):
 		if db.c.update("INSERT INTO r4_donations (user_id, donation_amount, donation_message, donation_private) values (%s, %s, %s, %s)", 
-			(self.get_argument("user_id"), self.get_argument("amount"), self.get_argument("message"), self.get_argument("private"))):
+			(self.get_argument("donor_id"), self.get_argument("amount"), self.get_argument("message"), self.get_argument("private"))):
 			self.append_standard("donation_added", "Donation added.")
 		else:
 			raise APIException("donation_failed")
