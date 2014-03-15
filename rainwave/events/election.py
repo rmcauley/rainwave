@@ -154,10 +154,14 @@ class Election(event.BaseEvent):
 		return playlist.get_random_song_timed(self.sid, target_song_length)
 
 	def _check_song_for_conflict(self, song):
-		requesting_user = db.c.fetch_row("SELECT username, phpbb_users.user_id "
-			"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN r4_request_store USING (user_id) JOIN phpbb_users USING (user_id) "
-			"WHERE r4_listeners.sid = %s AND r4_request_line.sid = r4_listeners.sid AND song_id = %s "
-			"ORDER BY line_wait_start LIMIT 1",
+		requesting_user = db.c.fetch_row(
+			"SELECT username, phpbb_users.user_id AS user_id"
+				"FROM r4_request_store "
+					"JOIN r4_listeners ON (r4_request_store.user_id = r4_listeners.user_id AND r4_listeners.sid = %s) "
+					"JOIN r4_request_line ON (r4_listeners.user_id = r4_request_line.user_id AND r4_listeners.sid = r4_request_line.sid) "
+					"JOIN phpbb_users (r4_request_line.user_id = phpbb_users.user_id)  "
+				"WHERE r4_request_store.song_id = %s "
+				"ORDER BY line_wait_start LIMIT 1",
 			(self.sid, song.id))
 		if requesting_user:
 			song.data['entry_type'] = ElecSongTypes.request
