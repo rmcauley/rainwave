@@ -471,29 +471,29 @@ class Song(object):
 
 		w = f.tags.getall('TIT2')
 		if len(w) > 0:
-		 	self.data['title'] = w[0]
+		 	self.data['title'] = unicode(w[0])
 		else:
 		 	raise Exception("Song filename \"%s\" has no title tag." % filename)
 		w = f.tags.getall('TPE1')
 		if len(w) > 0:
-			self.artist_tag = w[0]
+			self.artist_tag = unicode(w[0])
 		w = f.tags.getall('TALB')
 		if len(w) > 0:
-		 	self.album_tag = w[0]
+		 	self.album_tag = unicode(w[0])
 		w = f.tags.getall('TCON')
 		if len(w) > 0:
-			self.genre_tag = w[0]
+			self.genre_tag = unicode(w[0])
 		w = f.tags.getall('COMM')
 		if len(w) > 0:
-			self.data['link_text'] = w[0]
+			self.data['link_text'] = unicode(w[0])
 		w = f.tags.getall('WXXX')
 		if len(w) > 0:
-			self.data['url'] = w[0]
+			self.data['url'] = unicode(w[0])
 
 		self.replay_gain = None
 		for txxx in f.tags.getall("TXXX"):
 			if txxx.desc.lower() == "replaygain_track_gain":
-				self.replay_gain = txxx
+				self.replay_gain = str(txxx)
 
 		if not self.replay_gain and config.get("mp3gain_scan"):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
