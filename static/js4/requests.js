@@ -53,7 +53,7 @@ var Requests = function() {
 	};
 
 	self.show_queue_paused = function(user_json) {
-		if (user_json.radio_requests_paused) {
+		if (user_json.requests_paused) {
 			$add_class(container, "request_queue_paused");
 		}
 		else {
