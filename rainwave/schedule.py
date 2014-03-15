@@ -282,24 +282,18 @@ def _update_schedule_memcache(sid):
 	cache.set_station(sid, "sched_next", next[sid], True)
 	cache.set_station(sid, "sched_history", history[sid], True)
 
-def _update_memcache(sid):
-	_update_schedule_memcache(sid)
 	sched_current_dict = current[sid].to_dict()
 	cache.set_station(sid, "sched_current_dict", sched_current_dict, True)
+	
 	next_dict_list = []
 	for event in next[sid]:
 		next_dict_list.append(event.to_dict())
 	cache.set_station(sid, "sched_next_dict", next_dict_list, True)
+	
 	history_dict_list = []
 	for event in history[sid]:
 		history_dict_list.append(event.to_dict())
 	cache.set_station(sid, "sched_history_dict", history_dict_list, True)
-	cache.prime_rating_cache_for_events([ current[sid] ] + next[sid] + history[sid])
-	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict(sid), True)
-	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)
-	playlist.clear_updated_albums(sid)
-	cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
-	cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)
 
 	all_station = {}
 	if 'songs' in sched_current_dict:
@@ -311,3 +305,12 @@ def _update_memcache(sid):
 		all_station['album'] = ""
 		all_station['art'] = None
 	cache.set_station(sid, "all_station_info", all_station, True)
+
+def _update_memcache(sid):
+	_update_schedule_memcache(sid)
+	cache.prime_rating_cache_for_events([ current[sid] ] + next[sid] + history[sid])
+	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict(sid), True)
+	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)
+	playlist.clear_updated_albums(sid)
+	cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
+	cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)

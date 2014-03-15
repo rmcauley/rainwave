@@ -39,7 +39,7 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 	sched_next = None
 	sched_history = None
 	sched_current = None
-	if request.user:
+	if request.user and not request.user.is_anonymous():
 		request.append("requests", request.user.get_requests())
 		sched_current = cache.get_station(request.sid, "sched_current")
 		if request.user.is_tunedin():
@@ -75,8 +75,10 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 					for event in (sched_history + sched_next + temp_current):
 						if history[0] == event['id']:
 							api_requests.vote.append_success_to_request(request, event['id'], history[1])
-		elif len(sched_next) > 0 and request.user.data['voted_entry'] > 0 and request.user.data['lock_sid'] == request.sid:
-			api_requests.vote.append_success_to_request(request, sched_next[0]['id'], request.user.data['voted_entry'])
+		else:
+			print sched_next
+			if len(sched_next) > 0 and request.user.data['voted_entry'] > 0 and request.user.data['lock_sid'] == request.sid:
+				api_requests.vote.append_success_to_request(request, sched_next[0]['id'], request.user.data['voted_entry'])
 
 	all_stations = {}
 	for station_id in config.station_ids:
