@@ -31,10 +31,7 @@ def update_line(sid):
 		else:
 			tuned_in_sid = db.c.fetch_var("SELECT sid FROM r4_listeners WHERE user_id = %s AND sid = %s AND listener_purge = FALSE", (u.id, sid))
 			tuned_in = True if tuned_in_sid == sid else False
-			# do nothing if they're not tuned in
-			if tuned_in and not row['line_expiry_tune_in']:
-				pass
-			elif tuned_in:
+			if tuned_in:
 				# Get their top song ID
 				song_id = u.get_top_request_song_id(sid)
 				# If they have no song and their line expiry has arrived, boot 'em
@@ -62,11 +59,12 @@ def update_line(sid):
 
 	cache.set_station(sid, "request_line", new_line, True)
 	cache.set_station(sid, "request_user_positions", user_positions, True)
-	return new_line
 
 	db.c.update("UPDATE r4_album_sid SET album_requests_pending = NULL WHERE album_requests_pending = TRUE AND sid = %s", (sid,))
 	for album_id in albums_with_requests:
 		db.c.update("UPDATE r4_album_sid SET album_requests_pending = TRUE WHERE album_id = %s AND sid = %s", (album_id, sid))
+
+	return new_line
 
 def update_expire_times():
 	expiry_times = {}
@@ -90,12 +88,13 @@ def get_next(sid):
 		return None
 	song = None
 	for pos in range(0, len(line)):
-		if not line[pos] or not line[pos]['song_id']:
-			log.debug("request", "Passing on user %s since they have no valid first song." % entry['username'])
-			pass
+		if not line[pos]:
+			pass  # ?!?!
+		elif not line[pos]['song_id']:
+			log.debug("request", "Passing on user %s since they have no valid first song." % line[pos]['username'])
 		else:
-			log.debug("request", "Fulfilling %s's request." % entry['username'])
 			entry = line.pop(pos)
+			log.debug("request", "Fulfilling %s's request." % entry['username'])
 			song = playlist.Song.load_from_id(entry['song_id'], sid)
 			song.data['elec_request_user_id'] = entry['user_id']
 			song.data['elec_request_username'] = entry['username']
