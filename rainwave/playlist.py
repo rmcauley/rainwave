@@ -468,36 +468,39 @@ class Song(object):
 
 		f = MP3(filename)
 		self.filename = filename
-		keys = f.keys()
-		if "TIT2" in keys:
-			self.data['title'] = f["TIT2"][0]
+
+		w = f.tags.getall('TIT2')
+		if len(w) > 0:
+		 	self.data['title'] = w[0]
 		else:
-			raise Exception("Song filename \"%s\" has no title tag." % filename)
-		if "TPE1" in keys:
-			self.artist_tag = f["TPE1"][0]
-		if "TALB" in keys:
-			self.album_tag = f["TALB"][0]
-		if "TCON" in keys:
-			self.genre_tag = f["TCON"][0]
-		if "COMM" in keys:
-			self.data['link_text'] = f["COMM"][0]
-		elif "COMM::'XXX'" in keys:
-			self.data['link_text'] = f["COMM::'XXX'"][0]
-		if "WXXX:URL" in keys:
-			self.data['url'] = f["WXXX:URL"].url
-		elif "WXXX" in keys:
-			self.data['url'] = f["WXXX"][0]
-		
-		if (not "TXXX:REPLAYGAIN_TRACK_GAIN" in keys and not "TXXX:replaygain_track_gain" in keys) and config.get("mp3gain_scan"):
+		 	raise Exception("Song filename \"%s\" has no title tag." % filename)
+		w = f.tags.getall('TPE1')
+		if len(w) > 0:
+			self.artist_tag = w[0]
+		w = f.tags.getall('TALB')
+		if len(w) > 0:
+		 	self.album_tag = w[0]
+		w = f.tags.getall('TCON')
+		if len(w) > 0:
+			self.genre_tag = w[0]
+		w = f.tags.getall('COMM')
+		if len(w) > 0:
+			self.data['link_text'] = w[0]
+		w = f.tags.getall('WXXX')
+		if len(w) > 0:
+			self.data['url'] = w[0]
+
+		self.replay_gain = None
+		for txxx in f.tags.getall("TXXX"):
+			if txxx.desc.lower() == "replaygain_track_gain":
+				self.replay_gain = txxx
+
+		if not self.replay_gain and config.get("mp3gain_scan"):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
 			gain_std, gain_error = subprocess.Popen([_mp3gain_path, "-o", "-q", "-s", "i", "-p", "-k", self.filename ], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 			if len(gain_error) > 0:
 				raise Exception("Error when replay gaining \"%s\": %s" % (filename, gain_error))
 			self.replay_gain = "%s dB" % float(gain_std.split("\n")[1].split("\t")[2])
-		elif "TXXX:REPLAYGAIN_TRACK_GAIN" in keys:
-			self.replay_gain = f["TXXX:REPLAYGAIN_TRACK_GAIN"][0]
-		elif "TXXX:replaygain_track_gain" in keys:
-			self.replay_gain = f["TXXX:replaygain_track_gain"][0]
 
 		self.data['length'] = int(f.info.length)
 

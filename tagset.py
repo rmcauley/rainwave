@@ -25,6 +25,8 @@ s.load_tag_from_file(args.file)
 print "Title".ljust(10), ":", s.data['title']
 print "Album".ljust(10), ":", s.album_tag
 print "Artist".ljust(10), ":", s.artist_tag
+print "Genre Tag".ljust(10), ":", s.genre_tag
+print "Link Name".ljust(10), ":", s.data['link_text']
 print "Link".ljust(10), ":", s.data['url']
 print "Length".ljust(10), ":", "%s:%s" % (int(math.floor(s.data['length'] / 60)), (s.data['length'] % 60))
 print "Gain".ljust(10), ":", s.replay_gain

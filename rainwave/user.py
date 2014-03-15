@@ -392,7 +392,7 @@ class User(object):
 		if self.id == 1 and ip_address:
 			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (ip_address,))
 			if not api_key:
-				api_key = self.generate_api_key(ip_address, int(time.time()) + 86400)
+				api_key = self.generate_api_key(ip_address, int(time.time()) + 172800)
 				cache.set("ip_%s_api_key" % ip_address, api_key)
 		elif self.id > 1:
 			if 'api_key' in self.data and self.data['api_key']:
