@@ -78,9 +78,10 @@ class User(object):
 			self.refresh()
 
 	def _get_all_api_keys(self):
-		keys = db.c.fetch_list("SELECT api_key FROM r4_api_keys WHERE user_id = %s ", (self.id,))
-		cache.set_user(self, "api_keys", keys)
-		return keys
+		if self.id > 1:
+			keys = db.c.fetch_list("SELECT api_key FROM r4_api_keys WHERE user_id = %s ", (self.id,))
+			cache.set_user(self, "api_keys", keys)
+			return keys
 
 	def _auth_registered_user(self, ip_address, api_key, bypass = False):
 		if not bypass:
@@ -143,7 +144,7 @@ class User(object):
 					return
 				cache.set("ip_%s_api_key" % ip_address, auth_against)
 			if auth_against != api_key:
-				log.debug("user", "Anonymous user key %s does not match DB key %s." % (api_key, auth_against))
+				log.debug("user", "Anonymous user key %s does not match key %s." % (api_key, auth_against))
 				return
 		self.authorized = True
 
@@ -388,13 +389,14 @@ class User(object):
 		self.update({ "radio_listen_key": listen_key })
 
 	def ensure_api_key(self, ip_address = None):
-		if 'api_key' in self.data and self.data['api_key']:
-			return self.data['api_key']
 		if self.id == 1 and ip_address:
 			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (ip_address,))
 			if not api_key:
 				api_key = self.generate_api_key(ip_address, int(time.time()) + 86400)
+				cache.set("ip_%s_api_key" % ip_address, api_key)
 		elif self.id > 1:
+			if 'api_key' in self.data and self.data['api_key']:
+				return self.data['api_key']
 			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = %s", (self.id,))
 			if not api_key:
 				api_key = self.generate_api_key()
