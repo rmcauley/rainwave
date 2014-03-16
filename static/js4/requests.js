@@ -41,10 +41,13 @@ var Requests = function() {
 		$id("requests_pin").addEventListener("click", self.swap_sticky);
 		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
 		$id("requests_pause").setAttribute("title", $l("pause_request_queue"));
+		$id("requests_pause").setAttribute("alt", $l("pause_request_queue"));
 		$id("requests_pause").addEventListener("click", self.pause_queue);
 		$id("requests_clear").setAttribute("title", $l("clear_request_queue"));
+		$id("requests_clear").setAttribute("alt", $l("clear_request_queue"));
 		$id("requests_clear").addEventListener("click", self.clear_requests);
 		$id("requests_unrated").setAttribute("title", $l("request_fill_with_unrated"));
+		$id("requests_unrated").setAttribute("alt", $l("request_fill_with_unrated"));
 		$id("requests_unrated").addEventListener("click", self.fill_with_unrated);
 		self.on_resize();
 
