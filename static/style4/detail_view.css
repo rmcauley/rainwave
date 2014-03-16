@@ -130,8 +130,17 @@ table.songlist td.songlist_not_requestable {
 	width: 16px;	
 }
 
+table.songlist td.songlist_requestable span {
+	display: none;
+}
+
 div.songlist_request_hint table.songlist td.songlist_requestable {
-	width: 70px;
+	width: 80px;
+}
+
+div.songlist_request_hint table.songlist td.songlist_requestable span {
+	display: inline-block;
+	padding-left: 3px;
 }
 
 #detail .scrollbar {

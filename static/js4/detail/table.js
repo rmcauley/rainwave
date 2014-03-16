@@ -18,7 +18,7 @@ var SongsTable = function(songs, columns) {
 			cell = $el("td", { "class": "songlist_requestable" });
 			cell.appendChild($el("img", { "src": "/static/images4/request.png" }));
 			if (!Prefs.get("request_made")) {
-				cell.textContent = $l("Request");
+				cell.appendChild($el("span", { "textContent": $l("Request") }));
 				cell.addEventListener("click", function() {
 					Prefs.change("request_made", true);
 				});
