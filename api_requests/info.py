@@ -76,7 +76,6 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 						if history[0] == event['id']:
 							api_requests.vote.append_success_to_request(request, event['id'], history[1])
 		else:
-			print sched_next
 			if len(sched_next) > 0 and request.user.data['voted_entry'] > 0 and request.user.data['lock_sid'] == request.sid:
 				api_requests.vote.append_success_to_request(request, sched_next[0]['id'], request.user.data['voted_entry'])
 
