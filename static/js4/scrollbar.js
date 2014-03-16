@@ -63,10 +63,6 @@ var Scrollbar = function() {
 			offset_height = element.offsetHeight;
 			max_scroll_top = Math.max(scroll_height - offset_height, 0);
 
-			if (resizer) {
-				resizer.style.height = scroll_height + "px";
-			}
-
 			if (self.scroll_top > max_scroll_top) {
 				self.scroll_top = max_scroll_top;
 				element.scrollTop = max_scroll_top;
@@ -157,6 +153,10 @@ var Scrollbar = function() {
 
 		self.add_resizer = function(new_resizer_name, new_resizer_margin, new_resizer_max, new_resizer_min) {
 			if (resizer) return;
+			if (self.margin_top == 0) {
+				self.margin_top = 32;
+				self.parent_update_handle_position();
+			}
 			if (new_resizer_max) resizer_max = new_resizer_max;
 			if (new_resizer_min) resizer_min = new_resizer_min;
 			resizer_margin = new_resizer_margin ? new_resizer_margin : 0;

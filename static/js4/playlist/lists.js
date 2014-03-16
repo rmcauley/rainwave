@@ -19,8 +19,6 @@ var PlaylistLists = function() {
 		search_cancel = search_box.appendChild($el("img", { "src": "/static/images4/cancel_ldpi.png", "class": "searchlist_cancel", "alt": "X", "title": $l("clearfilter") }))
 		search_cancel.addEventListener("click", function() { self.active_list.clear_search(); });
 		scroller = PlaylistScrollbar(el);
-		scroller.add_resizer("playlist", 10, false, 250);
-		scroller.post_resize_callback = self.on_resize;
 
 		lists.all_albums = AlbumList(scroller, el.offsetWidth - 20);
 		lists.all_albums._scroll_position = 0;
@@ -47,6 +45,9 @@ var PlaylistLists = function() {
 			lists[list].el.style.marginTop = margin_top + "px";
 		}
 		scroller.margin_top = margin_top - 3;
+		scroller.add_resizer("playlist", 10, false, 250);
+		scroller.post_resize_callback = self.on_resize;
+		scroller.parent_update_handle_position();
 	};
 
 	self.change_visible_list = function(change_to, skip_scrollbar_update) {
