@@ -20,6 +20,9 @@ var TimelineSong = function() {
 			if (!voting_enabled) {
 				return;
 			}
+			if ($has_class(self.el, "voting_registered")) {
+				return;
+			}
 			$add_class(self.el, "voting_clicked");
 			API.async_get("vote", { "entry_id": self.data.entry_id });
 		};

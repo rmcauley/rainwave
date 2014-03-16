@@ -58,7 +58,7 @@ class SubmitVote(APIHandler):
 			already_voted = db.c.fetch_row("SELECT entry_id, vote_id, song_id FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (self.user.id, event.id))
 			# log.debug("vote", "Already voted: %s" % repr(already_voted))
 			if already_voted and already_voted['entry_id'] == entry_id:
-				# immediately return and a success will be registere
+				# immediately return and a success will be registered
 				return
 			elif already_voted:
 				# log.debug("vote", "Subtracting vote from %s" % already_voted['entry_id'])
