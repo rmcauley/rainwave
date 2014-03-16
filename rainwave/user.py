@@ -256,8 +256,12 @@ class User(object):
 			self.put_in_request_line(sid)
 		return updated_rows
 
-	def add_unrated_requests(self, sid):
-		limit = self._check_too_many_requests()
+	def add_unrated_requests(self, sid, limit = None):
+		max_limit = self._check_too_many_requests()
+		if not limit:
+			limit = max_limit
+		elif (max_limit > limit):
+			limit = max_limit
 		added_requests = 0
 		for song_id in playlist.get_unrated_songs_for_requesting(self.id, sid, limit):
 			added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
