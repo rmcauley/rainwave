@@ -76,7 +76,7 @@ class AlbumList(api.web.HTMLRequest):
 			self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?sid=%s&id=%s';\" style='cursor: pointer;'>%s</td><td>" % (self.get_argument('restrict'), row['id'], row['name']))
 			if row['rating_user']:
 				self.write(str(row['rating_user']))
-			self.write("</td><td>")
+			self.write("</td><td>(%s)</td><td>" % row['rating'])
 			if row['fave']:
 				self.write("Fave")
 			self.write("</td>")
@@ -99,7 +99,7 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 			self.write("<tr><td>%s</th><td>%s</td><td>" % (row['id'], row['title']))
 			if row['rating_user']:
 				self.write(str(row['rating_user']))
-			self.write("</td><td>")
+			self.write("</td><td>(%s)</td><td>" % row['rating'])
 			if row['fave']:
 				self.write("Fave")
 			self.write("</td>")
