@@ -1249,10 +1249,10 @@ function _THEME() {
 					//Album.linkify(song_data[i].albums[0].id, ns.td_album_name_text);
 				}
 
-				if (("link" in song_data[i]) && (song_data[i].link) && (song_data[i].link.length > 0)) {
+				if (("url" in song_data[i]) && (song_data[i].url) && (song_data[i].url.length > 0)) {
 					ns.td_u = document.createElement("td");
 					ns.td_u.setAttribute("class", "pl_songlist_url");
-					ns.td_u_a = createEl("a", { "class": "link", "href": song_data[i].link, "target": "_blank", "textContent": " " }, ns.td_u);
+					ns.td_u_a = createEl("a", { "class": "link", "href": song_data[i].url, "target": "_blank", "textContent": " " }, ns.td_u);
 					ns.tr.appendChild(ns.td_u);
 				}
 				else {

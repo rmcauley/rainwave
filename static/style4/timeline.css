@@ -139,12 +139,12 @@ body.small_screen .timeline_song .art {
 	max-height: 55px;
 }
 
-.timeline_song .requester, .timeline_song .cooldown_info {
+.timeline_song .requester, .timeline_song .cooldown_info, .timeline_now_playing_song .song_link {
 	margin-left: 95px;
 	color: $song_subinfo_color;
 }
 
-.timeline_song .votes, .timeline_song .cooldown_info {
+.timeline_song .votes, .timeline_song .cooldown_info, .timeline_now_playing_song .song_link  {
 	display: none;
 }
 
@@ -205,6 +205,10 @@ body.small_screen .timeline_now_playing_song .art_container .art {
 
 .timeline_now_playing_song > div {
 	margin-bottom: 5px;
+}
+
+.timeline_now_playing_song .song_link {
+	display: block;
 }
 
 /* END NOW PLAYING MODIFICATIONS */

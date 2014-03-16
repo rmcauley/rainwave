@@ -2,7 +2,7 @@ var SongsTable = function(songs, columns) {
 	"use strict";
 	var el = $el("table", { "class": "songlist" });
 
-	var row, cell, r, i, div;
+	var row, cell, r, i, div, link;
 	for (i = 0; i < songs.length; i++) {
 		row = $el("tr");
 		if (("cool" in songs[i]) && songs[i].cool) {
@@ -14,7 +14,7 @@ var SongsTable = function(songs, columns) {
 		if (("sid" in songs[i]) && (songs[i].sid == User.sid)) requestable = true;
 		if (("requestable" in songs[i]) && (songs[i].requestable)) requestable = true;
 
-		if (requestable) {
+		if (requestable && (User.id > 1)) {
 			cell = $el("td", { "class": "songlist_requestable" });
 			cell.appendChild($el("img", { "src": "/static/images4/request.png" }));
 			if (!Prefs.get("request_made")) {
@@ -32,9 +32,10 @@ var SongsTable = function(songs, columns) {
 		}
 
 		if (songs[i].url) {
-			cell = $el("td", { "class": "songlist_url" },
-						$el("a", { "href": songs[i].url, "target": "_blank" },
-							$el("img", { "src": "/static/images4/link_window.png" })));
+			link = $el("a", { "href": songs[i].url, "target": "_blank" });
+			link.appendChild($el("img", { "src": "/static/images4/link_window.png" }));
+			cell = $el("td", { "class": "songlist_url" });
+			cell.appendChild(link);
 			row.appendChild(cell);
 		}
 		else {
