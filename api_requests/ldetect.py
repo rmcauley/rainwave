@@ -148,7 +148,7 @@ class RemoveListener(IcecastHandler):
 		listener = db.c.fetch_row("SELECT user_id, listener_ip FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
 								 (self.relay, self.get_argument("client")))
 		if not listener:
-			return self.append("No user record to delete for client %s on relay %s." % (self.relay, self.get_argument("client")))
+			return self.append("No user record to delete for client %s on relay %s." % (self.get_argument("client"), self.relay))
 
 		db.c.update("UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_relay = %s AND listener_icecast_id = %s", (self.relay, self.get_argument("client")))
 		if listener['user_id'] > 1:

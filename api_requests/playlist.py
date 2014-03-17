@@ -80,6 +80,7 @@ class AllSongsHandler(APIHandler):
 	sid_required = False
 	allow_get = True
 	description = "Gets every song including a user's ratings.  Order field can be 'name', sorting by album and song title, or 'rating'."
+	pagination = True
 	fields = { "order": (fieldtypes.string, False) }
 
 	def post(self):
@@ -92,17 +93,22 @@ class AllSongsHandler(APIHandler):
 			"SELECT DISTINCT ON (" + distinct_on + ") r4_songs.song_id AS id, song_title AS title, album_name, song_rating AS rating, song_rating_user AS rating_user, song_fave AS fave "
 			"FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_albums USING (album_id) "
 			"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
-			"WHERE song_verified = TRUE ORDER BY " + order + "",
+			"WHERE song_verified = TRUE ORDER BY " + order + " " + self.get_sql_limit_string(),
 			(self.user.id,)))
+
+@handle_api_html_url("all_songs")
+class UnratedSongsHTMLwagg(PrettyPrintAPIMixin, AllSongsHandler):
+	pass
 
 @handle_api_url("unrated_songs")
 class UnratedSongsHandler(APIHandler):
 	description = "Get all of a user's unrated songs."
 	return_name = "unrated_songs"
 	login_required = True
+	pagination = True
 
 	def post(self):
-		self.append(self.return_name, playlist.get_unrated_songs_for_user(self.user.id))
+		self.append(self.return_name, playlist.get_unrated_songs_for_user(self.user.id, self.get_sql_limit_string()))
 
 @handle_api_html_url("unrated_songs")
 class UnratedSongsHTML(PrettyPrintAPIMixin, UnratedSongsHandler):
@@ -147,12 +153,13 @@ class AllFavHandler(APIHandler):
 	login_required = True
 	sid_required = False
 	allow_get = True
+	pagination = True
 
 	def post(self):
 		self.append(self.return_name, db.c.fetch_all(
 			"SELECT DISTINCT ON (album_name, song_title) song_id AS id, song_title AS title, album_name, song_rating AS rating, COALESCE(song_rating_user, 0) AS rating_user, TRUE AS fave "
 			"FROM r4_song_ratings JOIN r4_songs USING (song_id) JOIN r4_song_sid USING (song_id) JOIN r4_albums USING (album_id) "
-			"WHERE user_id = %s AND song_verified = TRUE ORDER BY album_name, song_title", (self.user.id,)))
+			"WHERE user_id = %s AND song_verified = TRUE ORDER BY album_name, song_title " + self.get_sql_limit_string(), (self.user.id,)))
 
 @handle_api_html_url("all_faves")
 class AllFavHTML(PrettyPrintAPIMixin, AllFavHandler):

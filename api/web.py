@@ -92,12 +92,17 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	perks_required = False
 	# hide from help, meant really only for things like redirect pages
 	help_hidden = False
+	# automatically add pagination to an API request.  use self.get_sql_limit_string()!
+	pagination = False
 
 	def initialize(self, **kwargs):
 		super(RainwaveHandler, self).initialize(**kwargs)
 		self.cleaned_args = {}
 		self.cookie_prefs = {}
 		self.sid = None
+		if self.pagination:
+ 			self.fields['per_page'] = (fieldtypes.zero_or_greater_integer, False)
+ 			self.fields['page_start'] = (fieldtypes.zero_or_greater_integer, False)
 
 	def set_cookie(self, name, value, **kwargs):
 		if isinstance(value, (int, long)):
@@ -328,6 +333,21 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				exc.localize(self.locale)
 				log.debug("exception", exc.reason)
 
+	def get_sql_limit_string(self):
+		if not self.pagination:
+			return ""
+		limit = ""
+		if self.get_argument("per_page") != None:
+			if self.get_argument("per_page") == "0":
+				limit = "LIMIT ALL"
+			else:
+				limit = "LIMIT %s" % self.get_argument("per_page")
+		else:
+			limit = "LIMIT 100"
+		if self.get_argument("page_start"):
+			limit += " OFFSET %s" % self.get_argument("page_start")
+		return limit
+
 class APIHandler(RainwaveHandler):
 	def initialize(self, **kwargs):
 		super(APIHandler, self).initialize(**kwargs)
@@ -434,6 +454,35 @@ class PrettyPrintAPIMixin(object):
 	def get(self, write_header=True):
 		if write_header:
 			self.write(self.render_string("basic_header.html", title=self.locale.translate(self.return_name)))
+		per_page = None
+		per_page_link = None
+		previous_page_start = None
+		next_page_start = None
+		if "per_page" in self.fields and self.get_argument("per_page") != 0:
+			per_page = self.get_argument("per_page")
+			if not per_page:
+				per_page = 100
+			if self.get_argument("page_start"):
+				previous_page_start = self.get_argument("page_start") - per_page
+				next_page_start = self.get_argument("page_start") + per_page
+			else:
+				next_page_start = per_page
+
+			per_page_link = "%s?" % self.url
+			for field in self.fields.keys():
+				if field == "page_start":
+					pass
+				elif field == "per_page":
+					per_page_link += "%s=%s&" % (field, per_page)
+				else:
+					per_page_link += "%s=%s&" % (field, self.get_argument(field))
+
+			if self.get_argument("page_start") and self.get_argument("page_start") > 0:
+				self.write("<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>" % (per_page_link, previous_page_start))
+			if self.return_name in self._output and len(self._output[self.return_name]) >= per_page:
+				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
+			elif not self.return_name in self._output:
+				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
 		for output_key, json in self._output.iteritems():
 			if type(json) != types.ListType:
 				continue
@@ -453,6 +502,13 @@ class PrettyPrintAPIMixin(object):
 					self.write("</tr>")
 					i = i + 1
 				self.write("</table>")
+		if "per_page" in self.fields and self.get_argument("per_page") != 0:
+			if self.get_argument("page_start") and self.get_argument("page_start") > 0:
+				self.write("<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>" % (per_page_link, previous_page_start))
+			if self.return_name in self._output and len(self._output[self.return_name]) >= per_page:
+				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
+			elif not self.return_name in self._output:
+				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
 		self.write(self.render_string("basic_footer.html"))
 
 	def header_special(self):

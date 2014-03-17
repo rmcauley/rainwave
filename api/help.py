@@ -11,7 +11,8 @@ url_properties = ( ("allow_get", "GET", "Allows HTTP GET requests in addition to
 	("tunein_required", "tunein", "User is required to be tuned in to use command."),
 	("login_required", "login", "User must be logged in to a registered account to use command."),
 	("dj_required", "dj", "User must be the active DJ for the station to use command."),
-	("admin_required", "admin", "User must be an administrator to use command."))
+	("admin_required", "admin", "User must be an administrator to use command."),
+	("pagination", "pagination", "Request can be paginated using 'per_page' and 'page_start' fields."))
 section_order = ( "Core JSON", "HTML Pages", "Statistic HTML", "Admin JSON", "Admin HTML", "Other" )
 sections = { "Core JSON": {},
 			"HTML Pages": {},
@@ -60,13 +61,15 @@ class IndexRequest(tornado.web.RequestHandler):
 		for prop in url_properties:
 			if prop[0] == "auth_required" and getattr(handler, "phpbb_auth", False):
 				self.write("<td class='auth requirement'>phpbb</td>")
+			elif prop[0] == "auth_required" and getattr(handler, "auth_required", False):
+				self.write("<td class='auth requirement'>API key</td>")
 			else:
 				self.write_property(prop[0], handler, prop[1])
 		display_url = url
 		if display_url.find("/api4/") == 0:
 			display_url = display_url[6:]
 		self.write("<td><a href='/api4/help%s'>%s</a></td>" % (url, display_url))
-		if issubclass(handler, api.web.HTMLRequest) and url.find("(") == -1:
+		if (issubclass(handler, api.web.HTMLRequest) or issubclass(handler, api.web.PrettyPrintAPIMixin)) and url.find("(") == -1:
 			self.write("<td><a href='%s'>Link</a></td>" % url)
 		else:
 			self.write("<td>&nbsp;</td>")
@@ -81,8 +84,8 @@ class IndexRequest(tornado.web.RequestHandler):
 		self.write("<h2>Requests</h2>")
 		self.write("<table class='help_legend'>")
 		for section in section_order:
-			self.write("<tr><th colspan='9'>%s</th></tr>" % section)
-			self.write("<tr><th>Allows GET<th>Auth Required</th><th>Station ID Required</th><th>Tune In Required</th><th>Login Required</th><th>DJs Only</th><th>Admins Only</th><th>URL / Info</th><th>Link</th></tr>")
+			self.write("<tr><th colspan='10'>%s</th></tr>" % section)
+			self.write("<tr><th>Allows GET<th>Auth Required</th><th>Station ID Required</th><th>Tune In Required</th><th>Login Required</th><th>DJ</th><th>Admin</th><th>Pagination</th><th>URL / Info</th><th>Link</th></tr>")
 			for url, handler in sorted(sections[section].items()):
 				self.write_class_properties(url, handler)
 		self.write("</table>")
@@ -137,13 +140,13 @@ class HelpRequest(tornado.web.RequestHandler):
 				self.write("</tr>")
 			self.write("</table>")
 
-		if (os.path.exists("api_tests/%s.json" % url)):
-			self.write("<h2>Sample Output</h2>")
-			self.write("<div class='json'>")
-			json_file = open("api_tests/%s.json" % url)
-			json_data = json.load(json_file)
-			self.write(json.dumps(json_data, sort_keys=True, indent=4))
-			json_file.close()
-			self.write("</div>")
+		# if (os.path.exists("api_tests/%s.json" % url)):
+		# 	self.write("<h2>Sample Output</h2>")
+		# 	self.write("<div class='json'>")
+		# 	json_file = open("api_tests/%s.json" % url)
+		# 	json_data = json.load(json_file)
+		# 	self.write(json.dumps(json_data, sort_keys=True, indent=4))
+		# 	json_file.close()
+		# 	self.write("</div>")
 
 		self.write(self.render_string("basic_footer.html"))

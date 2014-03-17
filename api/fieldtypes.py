@@ -93,6 +93,17 @@ def positive_integer(str, request = None):
 		return None
 	return nmbr
 
+zero_or_greater_integer_error = "must be positive number or zero."
+def zero_or_greater_integer(str, request = None):
+	if not str:
+		return None
+	if not re.match('^\d+$', str):
+		return None
+	nmbr = int(str)
+	if nmbr < 0:
+		return None
+	return nmbr
+
 float_num_error = "must be a number."
 def float_num(str, request = None):
 	if not str:
