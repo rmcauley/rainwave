@@ -613,7 +613,7 @@ function _THEME() {
 		var tr = createEl("tr", {}, table);
 		table.album_art = createEl("td", { "class": "nowplaying_album_art", "rowspan": 4 }, tr);
 		if (json && json.album_art) {
-			table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": json.album_art + "_120.jpg" }, table.album_art);
+			table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": json.album_art }, table.album_art);
 		}
 		else {
 			if (user.p.sid == 2) table.album_art_img = createEl("img", { "class": "nowplaying_album_art_img", "src": skindir + "/images/noart_2.jpg" }, table.album_art);

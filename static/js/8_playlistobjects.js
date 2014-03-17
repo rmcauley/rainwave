@@ -88,8 +88,8 @@ var Album = {
 
 	r4translate: function(json, base) {
 		if (!base) base = {};
-		if (json['album_art']) {
-			base['album_art'] = json['album_art'] + "_120.jpg";
+		if (json['art']) {
+			base['album_art'] = json['art'] + "_120.jpg";
 		}
 		else {
 			base['album_art'] = null;
