@@ -122,7 +122,7 @@ var Prefs = function() {
 			do_callbacks(name, value);
 		}
 		// do this AFTER callbacks in case a callback triggers a JS error
-		self.save();
+		self.save("r4_prefs");
 		if (meta[name].reload_trigger) {
 			window.location.reload();
 		}
@@ -157,7 +157,7 @@ var Prefs = function() {
 
 	// One of the few times we don't have an initialize() in R4
 	// prefs should be loaded before anything else
-	self.load();
+	self.load("r4_prefs");
 
 	return self;
 }();
