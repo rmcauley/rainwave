@@ -18,7 +18,7 @@ var Scrollbar = function() {
 		var self = {};
 		self.auto_resize = true;
 		self.scroll_top = 0;
-		self.margin_top = 0;
+		self.margin_top = margin_top;
 		self.use_fixed = false;
 		self.post_resize_callback; 
 		var handle = element.insertBefore($el("div", { "class": "scrollbar"}), element.firstChild);
@@ -49,6 +49,7 @@ var Scrollbar = function() {
 
 		self.scroll_to = function(new_scroll_top) {
 			if (!scroll_enabled) return false;
+			if (new_scroll_top < 0) new_scroll_top = 0;
 			if (max_scroll_top < new_scroll_top) new_scroll_top = max_scroll_top;
 			self.scroll_top = new_scroll_top;
 			element.scrollTop = new_scroll_top;
@@ -85,8 +86,8 @@ var Scrollbar = function() {
 				handle_height = Math.max(Math.round((offset_height - self.margin_top) / scroll_height * offset_height), 70);
 				scrollpx_per_handlepx = max_scroll_top / (offset_height - self.margin_top - handle_height - 3);
 				handle.style.height = handle_height + "px";
-				self.scroll_to(original_scroll_place * max_scroll_top);
 				scroll_enabled = true;
+				self.scroll_to(original_scroll_place * max_scroll_top);			
 			}
 
 			wheel_delta = Math.min(300, Math.max(scroll_height * 0.08, 30));
@@ -95,7 +96,7 @@ var Scrollbar = function() {
 		self.update_scroll_height = self.parent_update_scroll_height;
 
 		self.parent_update_handle_position = function() {
-			if (!self.scroll_top || !max_scroll_top) {
+			if (!self.scroll_top || !max_scroll_top || (self.scroll_top < 0)) {
 				handle.style.top = self.margin_top + "px";
 				return;
 			}
