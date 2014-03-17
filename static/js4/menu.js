@@ -7,10 +7,11 @@ var Menu = function() {
 		var order = [ 5, 1, 4, 3, 2 ];
 		var ul = $id("station_select");
 		var li, info;
+		var beta_add = window.location.href.indexOf("beta") !== -1 ? "/beta/" : "";
 		for (var i = 0; i <= order.length; i++) {
 			if (!(order[i] in station_list)) continue;
 			li = ul.appendChild($el("li"));
-			li.appendChild($el("a", { "href": station_list[order[i]].url, "textContent": $l("station_name_" + station_list[order[i]].id ) }));
+			li.appendChild($el("a", { "href": station_list[order[i]].url + beta_add, "textContent": $l("station_name_" + station_list[order[i]].id ) }));
 			info = li.appendChild($el("div", { "class": "info" }));
 			elements[order[i]] = {};
 			elements[order[i]].art = info.appendChild(Albums.art_html({ "art": null }));
