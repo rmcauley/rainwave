@@ -37,6 +37,7 @@ panels.MainMPI = {
 			for (var i in savedpanels) {
 				that.addPanel(i);
 			}
+			that.initPanel("RequestsPanel");
 
 			// we needs tabs to have contents to measure the tab height, which is why we delay drawing and sizing divs until this point
 			that.tabheight = that.tabs.el.offsetHeight;
