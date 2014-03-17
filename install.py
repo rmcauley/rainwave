@@ -39,6 +39,7 @@ shutil.copy("rw_backend.py", "/opt/rainwave/rw_backend.py")
 shutil.copy("rw_scanner.py", "/opt/rainwave/rw_scanner.py")
 shutil.copy("rw_clear_cache.py", "/opt/rainwave/rw_clear_cache.py")
 shutil.copy("rw_get_next.py", "/opt/rainwave/rw_get_next.py")
+shutil.copy("rw_icecast_sync.py", "/opt/rainwave/rw_icecast_sync.py")
 
 shutil.copy("initscript", "/etc/init.d/rainwave")
 shutil.copy("rw_get_next.py", "/usr/local/bin/rw_get_next.py")
