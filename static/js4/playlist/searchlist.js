@@ -31,7 +31,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 	var search_string = "";
 	var current_key_nav_element = false;
 	var current_open_element = false;
-	var scroll_offset = 100;
+	var scroll_offset = 140;
 
 	// LIST MANAGEMENT ***********************************************
 
@@ -193,11 +193,6 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 
 	var open_element = function(e) {
 		if ("_id" in e.target) {
-			if (current_open_element) {
-				$remove_class(current_open_element, "searchlist_open_item");
-			}
-			current_open_element = self.data[e.target._id]._el;
-			$add_class(current_open_element, "searchlist_open_item");
 			self.open_id(e.target._id);
 		}
 	};
@@ -296,7 +291,7 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 
 	self.key_nav_enter = function() {
 		if (current_key_nav_element) {
-			self.open_element({ "target": current_key_nav_element });
+			open_element({ "target": current_key_nav_element });
 			return true;
 		}
 		return false;
@@ -396,7 +391,10 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 	};
 
 	self.set_scroll_offset = function(offset) {
-		scroll_offset = (offset && (offset > 70)) ? offset : 70;
+		if (!offset) offset = 140;
+		else if (offset > (self.el.parentNode.offsetHeight - 70)) return;
+		else if (offset < 140) offset = 140;
+		scroll_offset = offset;
 	};
 
 	self.scroll_to_id = function(data_id) {
@@ -430,6 +428,19 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 		self.key_nav_highlight();
 		self.scroll_to(data_item);
 	};
+
+	self.set_new_open = function(id) {
+		if (!id in data) return;
+		if (current_open_element) {
+			$remove_class(current_open_element, "searchlist_open_item");
+		}
+		current_open_element = data[id]._el;
+		self.remove_key_nav_highlight();
+		current_key_nav_element = data[id]._el;
+		$add_class(current_open_element, "searchlist_open_item");
+		self.update_scroll_offset_by_item(data[id]);
+		self.scroll_to(data[id]);
+	}
 
 	// FAKING A TEXT FIELD **************
 

@@ -45,7 +45,7 @@ var PlaylistLists = function() {
 			lists[list].el.style.marginTop = margin_top + "px";
 		}
 		scroller.margin_top = margin_top - 3;
-		scroller.add_resizer("playlist", 10, false, 250);
+		scroller.add_resizer("playlist", 10, 450, 250);
 		scroller.post_resize_callback = self.on_resize;
 		scroller.parent_update_handle_position();
 	};
@@ -73,6 +73,12 @@ var PlaylistLists = function() {
 	self.on_resize = function() {
 		if ("albums" in lists) {
 			lists.albums.on_resize(el.offsetWidth - 20);
+		}
+	};
+
+	self.set_new_open = function(list_name, id) {
+		if (list_name in lists) {
+			lists[list_name].set_new_open(id);
 		}
 	};
 

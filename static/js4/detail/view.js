@@ -98,19 +98,30 @@ var DetailView = function() {
 
 	self.open_album = function(id) {
 		DeepLinker.change_url("album", id);
+		PlaylistLists.set_new_open("all_albums", id);
 	};
 
 	self.open_artist = function(id) {
 		DeepLinker.change_url("artist", id);
+		PlaylistLists.set_new_open("all_artists", id);
 	};
 
 	self.open_listener = function(id) {
 		DeepLinker.change_url("listener", id);
+		PlaylistLists.set_new_open("current_listeners", id);
 	};
 
-	var open_album_internal = function(id) { return open_internal("album", id); };
-	var open_artist_internal = function(id) { return open_internal("artist", id); };
-	var open_listener_internal = function(id) { return open_internal("listener", id); };
+	var open_album_internal = function(id) { 
+		return open_internal("album", id);
+	};
+
+	var open_artist_internal = function(id) {
+		return open_internal("artist", id);
+	};
+
+	var open_listener_internal = function(id) {
+		return open_internal("listener", id);
+	};
 	
 	var open_internal = function(type, id) {
 		id = parseInt(id);

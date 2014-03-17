@@ -97,6 +97,7 @@ var Scrollbar = function() {
 			var new_top = self.margin_top + Math.max(Math.round((self.scroll_top / max_scroll_top) * (offset_height - self.margin_top - handle_height - 3)), 3);
 			if (!self.use_fixed) new_top += self.scroll_top;
 			handle.style.top = new_top + "px";
+			if (resizer) resizer.style.top = self.scroll_top + "px";
 		};
 
 		self.update_handle_position = self.parent_update_handle_position;

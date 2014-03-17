@@ -54,7 +54,7 @@ var TimelineSong = function() {
 			}
 			self.elements.album_rating = self.elements.album_group.appendChild(album_rating.el);
 			self.elements.album = self.elements.album_group.appendChild($el("div", { "class": "album link", "textContent": self.data.albums[0].name }));
-			self.elements.album.addEventListener("click", function() { API.async_get("album", { "id": self.data.albums[0].id }); });
+			self.elements.album.addEventListener("click", function() { DetailView.open_album(self.data.albums[0].id ); });
 			
 			if ("artists" in self.data) {
 				self.elements.artist_group = self.el.appendChild($el("div", { "class": "artist_group" }));

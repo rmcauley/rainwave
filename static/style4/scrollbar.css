@@ -44,7 +44,7 @@
 	left: 100%;
 	width: 5px;
 	height: 30px;
-	opacity: 0.5;
+	opacity: 0;
 	cursor: col-resize;
 	@include transform(translateX(-10px));
 	@include transition-wtime(200ms, width, opacity, transform, border-color, background-color);

@@ -6,7 +6,6 @@
 	position: relative;
 	overflow: hidden;
 	background: #1f2022;
-	padding-left: 10px;
 	margin-right: 10px;
 }
 
@@ -14,7 +13,7 @@ ul.lists_tabs {
 	list-style: none;
 	height: 1.5em;
 	margin: 0;
-	padding: 3px 0 0;
+	padding: 3px 0 0 10px;
 	position: fixed;
 	background: #1f2022;
 	width: inherit;
@@ -39,7 +38,6 @@ div.searchlist_searchbox {
 	width: inherit;
 	z-index: 2;
 	background: #1f2022;
-	margin-left: -10px;
 	padding-top: 5px;
 	margin-top: 1.5em;
 }
@@ -76,10 +74,6 @@ img.searchlist_cancel {
 	margin-top: 5px;
 	margin-right: 10px;
 	cursor: pointer;
-}
-
-div.searchlist {
-	width: 95%;
 }
 
 div.searchlist > div {
