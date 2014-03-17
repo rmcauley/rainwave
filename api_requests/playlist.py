@@ -96,10 +96,6 @@ class AllSongsHandler(APIHandler):
 			"WHERE song_verified = TRUE ORDER BY " + order + " " + self.get_sql_limit_string(),
 			(self.user.id,)))
 
-@handle_api_html_url("all_songs")
-class UnratedSongsHTMLwagg(PrettyPrintAPIMixin, AllSongsHandler):
-	pass
-
 @handle_api_url("unrated_songs")
 class UnratedSongsHandler(APIHandler):
 	description = "Get all of a user's unrated songs."
