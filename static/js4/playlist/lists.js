@@ -44,7 +44,7 @@ var PlaylistLists = function() {
 		for (var list in lists) {
 			lists[list].el.style.marginTop = margin_top + "px";
 		}
-		scroller.margin_top = margin_top - 3;
+		scroller.margin_top = margin_top;
 		scroller.add_resizer("playlist", 10, 450, 250);
 		scroller.post_resize_callback = self.on_resize;
 		scroller.parent_update_handle_position();
@@ -87,7 +87,7 @@ var PlaylistLists = function() {
 
 var PlaylistScrollbar = function(element) {
 	"use strict";
-	var self = Scrollbar.new(element);
+	var self = Scrollbar.new(element, 0, true);
 
 	self.update_scroll_height = function(force_height, list_name) {
 		if (list_name == PlaylistLists.active_list.list_name) {

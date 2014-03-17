@@ -12,13 +12,15 @@ var Scrollbar = function() {
 		}
 	};
 
-	self.new = function(element) {
+	self.new = function(element, margin_top, include_margin_top_in_height) {
+		if (!margin_top) margin_top = 0;
+		if (!include_margin_top_in_height) include_margin_top_in_height = false;
 		var self = {};
 		self.auto_resize = true;
 		self.scroll_top = 0;
 		self.margin_top = 0;
 		self.use_fixed = false;
-		self.post_resize_callback;
+		self.post_resize_callback; 
 		var handle = element.insertBefore($el("div", { "class": "scrollbar"}), element.firstChild);
 		var scroll_height;
 		var offset_height;
@@ -59,6 +61,9 @@ var Scrollbar = function() {
 			if (!scroll_height) {
 				handle.style.top = self.margin_top + "px";
 				scroll_height = element.scrollHeight;
+			}
+			if (include_margin_top_in_height) {
+				scroll_height += self.margin_top;
 			}
 			offset_height = element.offsetHeight;
 			max_scroll_top = Math.max(scroll_height - offset_height, 0);
