@@ -48,7 +48,7 @@ var TimelineSong = function() {
 			
 			self.elements.album_group = self.el.appendChild($el("div", { "class": "album_group" }));
 			if (request_mode) {
-				self.elements.request_drag = $el("img", { "class": "request_reorder", "src": "/static/images4/pin_hdpi.png", "width": 14, "height": 14, "alt": "<>" });
+				self.elements.request_drag = $el("img", { "class": "request_reorder", "src": "/static/images4/sortgrab_hdpi.png", "width": 14, "height": 16 });
 				self.elements.request_drag._song_id = json.id;
 				self.elements.album_group.appendChild(self.elements.request_drag);
 			}
