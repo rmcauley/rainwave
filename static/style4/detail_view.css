@@ -64,7 +64,7 @@ table.songlist td {
 	@include transition-wtime(300ms, width, background-color, border-bottom-color);
 }
 
-table.songlist_cool td {
+tr.songlist_cool td {
 	background-color: #111;
 }
 
