@@ -129,7 +129,8 @@ class BackendServer(object):
 
 	def _import_cron_modules(self):
 		import backend.api_key_pruning
-		import backend.icecast_sync
+		# DO NOT IMPORT - icecast_sync is not an async, "cron" module at the moment
+		# import backend.icecast_sync
 		import backend.inactive
 
 	def start(self):
