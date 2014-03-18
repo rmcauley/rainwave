@@ -333,17 +333,21 @@ var Schedule = function() {
 		if (!sched_next) return;
 		if (json.tuned_in && (!json.locked || (json.lock_sid == BOOTSTRAP.sid))) {
 			for (i = 0; i < sched_next.length; i++) {
-				evt = find_event(sched_next[i].id)
-				evt.data.voting_allowed = true;
-				evt.enable_voting();
+				evt = find_event(sched_next[i].id);
+				if (evt) {
+					evt.data.voting_allowed = true;
+					evt.enable_voting();
+				}
 				if (!json.perks) break;
 			}
 		}
 		else {
 			for (i = 0; i < sched_next.length; i++) {
 				evt = find_event(sched_next[i].id)
-				evt.data.voting_allowed = false;
-				evt.disable_voting();
+				if (evt) {
+					evt.data.voting_allowed = false;
+					evt.disable_voting();
+				}
 			}
 		}
 	};
