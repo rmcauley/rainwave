@@ -28,6 +28,7 @@ var Schedule = function() {
 		API.add_callback(self.update, "_SYNC_COMPLETE");
 
 		API.add_callback(self.register_vote, "vote_result");
+		API.add_callback(self.tune_in_voting_allowed_check, "user");
 
 		history_header = $id("timeline_header_history");
 		history_header.textContent = $l("History");
@@ -268,15 +269,25 @@ var Schedule = function() {
 		history_bar.style.zIndex = "auto";
 	};
 
-	var find_and_update_event = function(event_json) {
+	var find_event = function(id) {
 		for (var i = 0; i < self.events.length; i++) {
-			if (event_json.id == self.events[i].id) {
-				self.events[i].update(event_json);
-				self.events[i].pending_delete = false;
+			if (id == self.events[i].id) {
 				return self.events[i];
 			}
 		}
-		return Event.load(event_json);
+		return null;
+	};
+
+	var find_and_update_event = function(event_json) {
+		var evt = find_event(event_json.id);
+		if (!evt) {
+			return Event.load(event_json);	
+		}
+		else {
+			evt.update(event_json);
+			evt.pending_delete = false;
+			return evt;
+		}
 	};
 
 	self.register_vote = function(json) {
@@ -315,6 +326,26 @@ var Schedule = function() {
 			}
 		}
 		throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote" });
+	};
+
+	self.tune_in_voting_allowed_check = function(json) {
+		var evt, i;
+		if (!sched_next) return;
+		if (json.tuned_in && (!json.locked || (json.lock_sid == BOOTSTRAP.sid))) {
+			for (i = 0; i < sched_next.length; i++) {
+				evt = find_event(sched_next[i].id)
+				evt.data.voting_allowed = true;
+				evt.enable_voting();
+				if (!json.perks) break;
+			}
+		}
+		else {
+			for (i = 0; i < sched_next.length; i++) {
+				evt = find_event(sched_next[i].id)
+				evt.data.voting_allowed = false;
+				evt.disable_voting();
+			}
+		}
 	};
 
 	return self;

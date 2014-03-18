@@ -60,7 +60,7 @@ class SyncUpdateUser(APIHandler):
 			log.debug("sync_update_user", "sync_update_user request was not OK.")
 			return
 
-		user_id = self.get_argument("sync_user_id")
+		user_id = long(self.get_argument("sync_user_id"))
 		for sid in sessions:
 			for session in sessions[sid]:
 				if session.user.id == user_id:

@@ -68,6 +68,11 @@ class AddListener(IcecastHandler):
 		"agent": (fieldtypes.media_player, True)
 	}
 
+	# local testing only
+	# allow_get = True
+	# def get(self, sid):
+	# 	self.post(sid)
+
 	def post(self, sid):
 		(self.mount, self.user_id, self.listen_key) = self.get_argument("mount")
 		self.agent = self.get_argument("agent")
@@ -143,6 +148,11 @@ class RemoveListener(IcecastHandler):
 	fields = {
 		"client": (fieldtypes.integer, True),
 	}
+
+	# local testing only
+	# allow_get = True
+	# def get(self, sid):
+	# 	self.post(sid)
 
 	def post(self, sid):
 		listener = db.c.fetch_row("SELECT user_id, listener_ip FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
