@@ -107,6 +107,10 @@ class Sync(APIHandler):
 	auth_required = True
 	fields = { "offline_ack": (fieldtypes.boolean, None), "resync": (fieldtypes.boolean, None) }
 
+	def initialize(self, **kwargs):
+		super(Sync, self).initialize(**kwargs)
+		self.keep_alive_handle = None
+
 	@tornado.web.asynchronous
 	def post(self):
 		if not cache.get_station(self.user.request_sid, "backend_ok") and not self.get_argument("offline_ack"):
@@ -157,7 +161,7 @@ class Sync(APIHandler):
 			return
 
 		self._startclock = time.time()
-		
+
 		if not cache.get_station(self.user.request_sid, "backend_ok"):
 			raise APIException("station_offline")
 
