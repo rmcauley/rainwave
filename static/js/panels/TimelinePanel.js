@@ -213,9 +213,23 @@ panels.TimelinePanel = {
 		};
 
 		that.activityAllowedChange = function(allowed) {
-			that.historyHandle();
-			that.currentHandle();
-			that.nextHandle();
+			var i;
+			for (i = 0; i < that.nextevents.length; i++) {
+				if (user.p.current_activity_allowed && ((i == 0) || user.p.radio_perks)) {
+					that.nextevents[i].enableVoting();
+				}
+				else {
+					that.nextevents[i].disableVoting();
+				}
+			}
+			for (i = 0; i < that.currentevents.length; i++) {
+				if (user.p.current_activity_allowed) {
+					that.currentevents[i].enableRating();
+				}
+				else {
+					that.currentevents[i].disableRating();
+				}
+			}
 		};
 
 		that.addEvent = function(json) {
