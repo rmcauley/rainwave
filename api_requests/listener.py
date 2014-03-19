@@ -7,6 +7,7 @@ from api.server import test_post
 from api.server import handle_api_url
 
 from libs import cache
+from libs import db
 from libs import log
 from libs import config
 from rainwave import user as UserLib
