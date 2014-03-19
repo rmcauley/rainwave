@@ -45,13 +45,17 @@ def update_line(sid):
 				# If they have no song, start the expiry countdown
 				elif not song_id and not row['line_expiry_election']:
 					row['line_expiry_election'] = t + 600
-					db.c.update("UPDATE r4_request_line SET line_expiry_election = %s WHERE user_id = %s", (row['line_expiry_election'], row['user_id']))
+					db.c.update("UPDATE r4_request_line SET line_expiry_election = %s WHERE user_id = %s", ((t + 900), row['user_id']))
 					add_to_line = True
 				# Keep 'em in line
 				else:
-					albums_with_requests.append(db.c.fetch_var("SELECT album_id FROM r4_song_sid WHERE song_id = %s", (song_id,)))
+					if song_id:
+						albums_with_requests.append(db.c.fetch_var("SELECT album_id FROM r4_song_sid WHERE song_id = %s", (song_id,)))
 					row['song_id'] = song_id
 					add_to_line = True
+			elif not row['line_expiry_tune_in'] or row['line_expiry_tune_in'] == 0:
+				db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s", ((t + 900), row['user_id']))
+				add_to_line = True
 		if add_to_line:
 			new_line.append(row)
 			user_positions[u.id] = position
