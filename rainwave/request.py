@@ -56,6 +56,8 @@ def update_line(sid):
 			elif not row['line_expiry_tune_in'] or row['line_expiry_tune_in'] == 0:
 				db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s", ((t + 900), row['user_id']))
 				add_to_line = True
+			else:
+				add_to_line = True
 		if add_to_line:
 			new_line.append(row)
 			user_positions[u.id] = position
