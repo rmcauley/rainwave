@@ -619,6 +619,14 @@ class Song(object):
 		if (self.sid != sid) or (not self.sid in self.data['sids']):
 			return
 
+		for metadata in self.groups:
+			log.debug("song_cooldown", "Starting group cooldown on group %s" % metadata.id)
+			metadata.start_cooldown(sid)
+		# Albums always have to go last since album records in the DB store cached cooldown values
+		for metadata in self.albums:
+			log.debug("song_cooldown", "Starting album cooldown on group %s" % metadata.id)
+			metadata.start_cooldown(sid)
+
 		cool_time = cooldown_config[sid]['max_song_cool']
 		if self.data['cool_override']:
 			cool_time = self.data['cool_override']
@@ -630,9 +638,9 @@ class Song(object):
 			auto_cool = cooldown_config[sid]['min_song_cool'] + (((4 - (cool_rating - 1)) / 4.0) * (cooldown_config[sid]['max_song_cool'] - cooldown_config[sid]['min_song_cool']))
 			cool_time = auto_cool * get_age_cooldown_multiplier(self.data['added_on']) * self.data['cool_multiply']
 
-		cool_time = int(cool_time + time.time())
 		log.debug("cooldown", "Song ID %s Station ID %s cool_time period: %s" % (self.id, sid, cool_time))
-		db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_time, self.id, sid))
+		cool_time = int(cool_time + time.time())
+		db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s AND song_cool_end < %s", (cool_time, self.id, sid, cool_time))
 		self.data['cool'] = True
 		self.data['cool_end'] = cool_time
 
@@ -640,14 +648,6 @@ class Song(object):
 			self.data['request_only_end'] = self.data['cool_end'] + config.get_station(sid, "cooldown_request_only_period")
 			self.data['request_only'] = True
 			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s WHERE song_id = %s AND sid = %s", (self.data['request_only_end'], self.id, sid))
-
-		for metadata in self.groups:
-			log.debug("song_cooldown", "Starting group cooldown on group %s" % metadata.id)
-			metadata.start_cooldown(sid)
-		# Albums always have to go last since album records in the DB store cached cooldown values
-		for metadata in self.albums:
-			log.debug("song_cooldown", "Starting album cooldown on group %s" % metadata.id)
-			metadata.start_cooldown(sid)
 
 	def start_election_block(self, sid, num_elections):
 		for metadata in self.groups:
@@ -1237,7 +1237,7 @@ class Album(AssociatedMetadata):
 						"WHERE album_id = %s AND sid = %s AND song_cool_end < %s",
 						(cool_end, self.id, sid, cool_end))
 		else:
-			songs = db.c.fetch_list("SELECT song_id FROM r4_song_sid WHERE album_id = %s AND sid = %s AND song_exists = TRUE", (self.id, sid))
+			songs = db.c.fetch_list("SELECT song_id FROM r4_song_sid WHERE album_id = %s AND sid = %s AND song_exists = TRUE AND song_cool_end < %s", (self.id, sid, cool_end))
 			for song_id in songs:
 				db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND song_cool_end < %s AND sid = %s", (cool_end, song_id, cool_end, sid))
 
