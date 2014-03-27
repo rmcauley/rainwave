@@ -16,5 +16,5 @@ def do_memory_dump():
 	sys.stdout = real_stdout
 	temp_stdout.close()
 
-memtrace = tornado.ioloop.PeriodicCallback(do_memory_dump, 5000)
+memtrace = tornado.ioloop.PeriodicCallback(do_memory_dump, 300000)
 memtrace.start()
