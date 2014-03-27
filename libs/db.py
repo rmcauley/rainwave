@@ -583,6 +583,8 @@ def create_tables():
 	c.create_idx("r4_request_line", "sid")
 	c.create_idx("r4_request_line", "line_wait_start")
 	c.create_delete_fk("r4_request_line", "phpbb_users", "user_id")
+	if c.is_postgres:
+		c.update("ALTER TABLE r4_request_line ADD CONSTRAINT unique_user_id UNIQUE (user_id)")
 
 	c.update(" \
 		CREATE TABLE r4_request_history ( \
