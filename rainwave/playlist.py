@@ -1472,7 +1472,7 @@ class SongGroup(AssociatedMetadata):
 						"FROM r4_song_group "
 						"WHERE r4_song_sid.song_id = r4_song_group.song_id AND r4_song_group.group_id = %s "
 						"AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end <= %s",
-						(cool_end, self.id, sid, time.time() - cool_time))
+						(cool_end, self.id, sid, cool_end))
 		else:
 			song_ids = db.c.fetch_list(
 				"SELECT song_id "
