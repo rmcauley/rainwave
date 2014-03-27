@@ -127,6 +127,10 @@ class APIServer(object):
 			log.debug("start", "   Handler: %s" % str(request))
 		log.info("start", "API server bootstrapped and ready to go.")
 		self.ioloop = tornado.ioloop.IOLoop.instance()
+
+		if config.has("memory_trace") and config.get("memory_trace"):
+			from api import memory_trace
+
 		try:
 			self.ioloop.start()
 		finally:
