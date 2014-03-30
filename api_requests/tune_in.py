@@ -8,10 +8,10 @@ import api.web
 from rainwave.user import User
 from libs import config
 
-def get_round_robin_url(sid, filetype, user = None):
+def get_round_robin_url(sid, filetype = "mp3", user = None):
 	return "http://%s/%s" % (config.get_station(sid, "round_robin_relay_host"), get_stream_filename(sid, filetype, user))
 
-def get_stream_filename(sid, filetype, user = None):
+def get_stream_filename(sid, filetype = "mp3", user = None):
 	filename = config.get_station(sid, "stream_filename")
 
 	if user is None or user.is_anonymous():

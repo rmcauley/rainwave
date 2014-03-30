@@ -7,6 +7,7 @@ from api.server import test_post
 from api.server import handle_api_url
 import api_requests.vote
 import api_requests.playlist
+import api_requests.tune_in
 
 from libs import cache
 from libs import log
@@ -118,7 +119,6 @@ class StationsRequest(APIHandler):
 				"id": station_id,
 				"name": config.station_id_friendly[station_id],
 				"description": self.locale.translate("station_description_id_%s" % station_id),
-				"stream": "http://%s/%s" % (config.get_station(sid, "round_robin_relay_host"), get_stream_filename(sid, filetype, user)),
-				"oggstream": tune_in.get_round_robin_url(station_id, "ogg", self.user)
+				"stream": "http://%s/%s" % (config.get_station(self.sid, "round_robin_relay_host"), api_requests.tune_in.get_stream_filename(self.sid, user=self.user)),
 			})
 		self.append(self.return_name, station_list)
