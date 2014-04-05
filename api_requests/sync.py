@@ -103,9 +103,11 @@ class SyncUpdateIP(APIHandler):
 class Sync(APIHandler):
 	description = ("Presents the same information as the 'info' requests, but will wait until the next song change in order to deliver the information. "
 					"Will send whitespace every 20 seconds in a bid to keep the connection alive.  Use offline_ack to have the connection long poll until "
-					"the station is back online, and use resync to get all information immediately rather than waiting.")
+					"the station is back online, and use resync to get all information immediately rather than waiting.  known_event_id can be added "
+					"to the request - if the currently playing event ID (i.e. sched_current.id) is different than the one provided, information will be sent immediately. "
+					"This allows for gaps inbetween requests to be handled elegantly.")
 	auth_required = True
-	fields = { "offline_ack": (fieldtypes.boolean, None), "resync": (fieldtypes.boolean, None) }
+	fields = { "offline_ack": (fieldtypes.boolean, None), "resync": (fieldtypes.boolean, None), "known_event_id": (fieldtypes.positive_integer, None) }
 
 	def initialize(self, **kwargs):
 		super(Sync, self).initialize(**kwargs)
@@ -120,11 +122,15 @@ class Sync(APIHandler):
 		self.keep_alive_handle = None
 
 		self.set_header("Content-Type", "application/json")
-		if not self.user.request_sid in sessions:
-			sessions[self.user.request_sid] = []
-		sessions[self.user.request_sid].append(self)
+		
 		if not self.get_argument("resync"):
-			self.keep_alive()
+			if self.get_argument("known_event_id") and (cache.get_station(self.sid, "sched_current_dict")['id'] != self.get_argument("known_event_id")):
+				self.update()
+			else:
+				self.keep_alive()
+				if not self.user.request_sid in sessions:
+					sessions[self.user.request_sid] = []
+				sessions[self.user.request_sid].append(self)
 		else:
 			self.update()
 

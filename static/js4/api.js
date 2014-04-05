@@ -7,6 +7,7 @@ var API = function() {
 	var callbacks = {};
 	var universal_callbacks = [];
 	var offline_ack = false;
+	var known_event_id = 0;
 
 	var self = {};
 
@@ -29,6 +30,11 @@ var API = function() {
 		async.onload = async_complete;
 		async.onerror = async_error;
 		async_queue = [];
+
+		if ("sched_current" in json) {
+			known_event_id = json.sched_current.id;
+		}
+		self.add_callback(function(json) { known_event_id = json.id; }, "sched_current");
 
 		// Make sure the clock gets initialized first
 		perform_callbacks({ "api_info": json.api_info });
@@ -67,6 +73,7 @@ var API = function() {
 			local_sync_params += "&resync=true";
 			sync_resync = false;
 		}
+		local_sync_params += "&known_event_id=" + known_event_id;
 		sync.send(local_sync_params);
 	};
 
