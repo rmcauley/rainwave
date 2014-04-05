@@ -264,7 +264,8 @@ class User(object):
 			limit = max_limit
 		added_requests = 0
 		for song_id in playlist.get_unrated_songs_for_requesting(self.id, sid, limit):
-			added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
+			if song_id:
+				added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
 		return added_requests
 
 	def remove_request(self, song_id):

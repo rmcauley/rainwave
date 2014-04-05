@@ -379,9 +379,8 @@ var help = function() {
 
 function drawAboutScreen(div) {
 	var tbl = createEl("table", { "class": "about help_paragraph" });
-	var html = "<tr><td style='width: 10em;'>" + _l("rainwave3version") + ":</td><td>" + _l("revision") + " " + BUILDNUM + "</td></tr>";
-	html += "<tr><td>" + _l("creator") + ":</td><td>LiquidRain</td></tr>";
-	html += "<tr><td>" + _l("staff") + ":</td><td>Ten19 and Metal-Ridley (game)<br />SOcean255 (covers)<br />Schneau and Natural-Chemical (chiptunes)<br />William and jfinalfunk (special projects)</td></tr>";
+	var html = "<tr><td>" + _l("creator") + ":</td><td>Robert McAuley</td></tr>";
+	html += "<tr><td>" + _l("staff") + ":</td><td>Ten19 and Metal-Ridley (game)<br />SOcean255 (covers)<br />Schneau and Nat (chiptunes)<br />William and jfinalfunk (special projects)</td></tr>";
 	html += "<tr><td>" + _l("relayadmins") + ":</td><td>Lyfe, Tanaric, Dracoirs</td></tr>";
 	html += "<tr><td>" + _l("translators") + ":</td><td>Metal-Geo (NL), Metal-Ridley (FR), quarterlife (FI), Steppo (SE), DarkLink (DE), BreadMaker (ES), ocrfan (PT).</td></tr>";
 	html += "<tr><td style='padding-top: 1em;'>" + _l("specialthanks") + ":</td><td style='padding-top: 1em;'>strwrsxprt, heschi, Brayniac, Salty, efiloN, Steppo, Vyzov.</td></tr>";
