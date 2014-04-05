@@ -13,7 +13,9 @@ function _l(key, args, el, keep) {
 
 	var text = "";
 	for (var i = 0; i < parts.length; i++) {
-		if (parts[i].text) parts[i].text = parts[i].text.replace("%(br)", "  ");
+		if (parts[i].text && (typeof(parts[i].text) == "string")) {
+			parts[i].text = parts[i].text.replace("%(br)", "  ");
+		}
 		text += parts[i].text;
 		if (el && parts[i].arg_key) {
 			createEl("span", { "textContent": parts[i].text, "class": "lang_" + key + "_" + parts[i].arg_key}, el);

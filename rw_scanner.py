@@ -14,6 +14,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Rainwave song scanning daemon.")
 	parser.add_argument("--config", default=None)
 	parser.add_argument("--full", action="store_true")
+	parser.add_argument("--art", action="store_true")
 	args = parser.parse_args()
 	libs.config.load(args.config)
 	if libs.config.get("log_level") == "print":
@@ -30,7 +31,11 @@ if __name__ == "__main__":
 		libs.chuser.change_user(libs.config.get("scanner_user"), libs.config.get("scanner_group"))
 
 	try:
-		backend.filemonitor.start(args.full)
+		if args.art:
+			print "Scanning art..."
+			backend.filemonitor.start(art_scan=True)
+		else:
+			backend.filemonitor.start(full_scan=args.full)
 	finally:
 		libs.db.close()
 		libs.log.close()

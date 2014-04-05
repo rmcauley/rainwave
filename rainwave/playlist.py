@@ -1056,7 +1056,7 @@ class Album(AssociatedMetadata):
 		instances = []
 		for row in db.c.fetch_all("SELECT r4_albums.*, album_cool_lowest, album_cool_multiply, album_cool_override, album_cool FROM r4_song_sid JOIN r4_albums USING (album_id) JOIN r4_album_sid USING (album_id) WHERE song_id = %s AND r4_song_sid.sid = %s AND r4_album_sid.sid = %s ORDER BY r4_albums.album_name", (song_id, sid, sid)):
 			instance = cls()
-			instance._assign_from_dict(row)
+			instance._assign_from_dict(row, sid)
 			instance.data['sids'] = [ sid ]
 			instances.append(instance)
 		return instances
@@ -1067,7 +1067,7 @@ class Album(AssociatedMetadata):
 		if not row:
 			raise MetadataNotFoundError("%s ID %s for sid %s could not be found." % (cls.__name__, album_id, sid))
 		instance = cls()
-		instance._assign_from_dict(row)
+		instance._assign_from_dict(row, sid)
 		instance.data['sids'] = [ sid ]
 		return instance
 
@@ -1075,7 +1075,7 @@ class Album(AssociatedMetadata):
 	def load_from_id_with_songs(cls, album_id, sid, user = None):
 		row = db.c.fetch_row("SELECT * FROM r4_albums WHERE album_id = %s", (album_id,))
 		instance = cls()
-		instance._assign_from_dict(row)
+		instance._assign_from_dict(row, sid)
 		instance.data['sids'] = [ sid ]
 		user_id = None if not user else user.id
 		requestable = True if user else False
@@ -1094,7 +1094,10 @@ class Album(AssociatedMetadata):
 		return instance
 
 	@classmethod
-	def get_art_url(self, id):
+	def get_art_url(self, id, sid = None):
+		print "Album art call %s %s" % (id, sid)
+		if sid and os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s_%s.jpg" % (sid, id))):
+			return "%s/%s_%s" % (config.get("album_art_url_path"), sid, id)
 		if os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % id)):
 			return "%s/%s" % (config.get("album_art_url_path"), id)
 		return None
@@ -1124,7 +1127,7 @@ class Album(AssociatedMetadata):
 			updated_album_ids[sid][self.id] = True
 		return success
 
-	def _assign_from_dict(self, d):
+	def _assign_from_dict(self, d, sid = None):
 		self.id = d['album_id']
 		self.data['name'] = d['album_name']
 		self.data['rating'] = d['album_rating']
@@ -1144,7 +1147,7 @@ class Album(AssociatedMetadata):
 			self.data['sid'] = d['sid']
 		if d.has_key('album_is_tag'):
 			self.is_tag = d['album_is_tag']
-		self.data['art'] = Album.get_art_url(self.id)
+		self.data['art'] = Album.get_art_url(self.id, sid)
 
 	def _dict_check_assign(self, d, key, default = None, new_key = None):
 		if not new_key and key.find("album_") == 0:

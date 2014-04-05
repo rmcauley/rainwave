@@ -25,7 +25,7 @@ _album_art_queue = None
 _use_album_art_queue = False
 mimetypes.init()
 
-def start(full_scan):
+def start(full_scan = False, art_scan = False):
 	global _directories
 	global _scan_errors
 
@@ -39,10 +39,15 @@ def start(full_scan):
 		p.set_nice(10)
 		p.set_ionice(psutil.IOPRIO_CLASS_IDLE)
 
-	if full_scan:
+	if art_scan:
+		full_art_update()
+	elif full_scan:
 		full_update()
 	else:
 		monitor()
+
+def full_art_update():
+	_scan_directories(album_art_only=True)
 
 def full_update():
 	global _use_album_art_queue
@@ -95,7 +100,7 @@ def _fix_codepage_1252(filename, path = None):
 		raise
 	return fqfn
 
-def _scan_directories():
+def _scan_directories(album_art_only = False):
 	global _scan_errors
 	global _directories
 
@@ -111,7 +116,7 @@ def _scan_directories():
 		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
 			for filename in files:
 				try:
-					_scan_file(_fix_codepage_1252(filename, root), sids, throw_exceptions=True)
+					_scan_file(_fix_codepage_1252(filename, root), sids, throw_exceptions=True, album_art_only=album_art_only)
 				except Exception as e:
 					type_, value_, traceback_ = sys.exc_info()
 					print "\r%s: %s" % (filename.decode("utf-8", errors="ignore"), value_)
@@ -132,11 +137,11 @@ def _is_image(filename):
 		return True
 	return False
 
-def _scan_file(filename, sids, throw_exceptions = False):
+def _scan_file(filename, sids, throw_exceptions = False, album_art_only = False):
 	global _album_art_queue
 	global _use_album_art_queue
 	try:
-		if _is_mp3(filename):
+		if _is_mp3(filename) and not album_art_only:
 			# Only scan the file if we don't have a previous mtime for it, or the mtime is different
 			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s AND song_verified = TRUE", (filename,))
 			if not old_mtime or old_mtime != os.stat(filename)[8]:
@@ -145,15 +150,15 @@ def _scan_file(filename, sids, throw_exceptions = False):
 				db.c.update("UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s", (filename,))
 		elif _is_image(filename):
 			if _use_album_art_queue:
-				_album_art_queue.append(filename)
+				_album_art_queue.append(filename, sids)
 			else:
-				process_album_art(filename)
+				process_album_art(filename, sids)
 	except Exception as xception:
 		_add_scan_error(filename, xception)
 		if throw_exceptions:
 			raise
 
-def process_album_art(filename):
+def process_album_art(filename, sids):
 	# There's an ugly bug here where psycopg isn't correctly escaping the path's \ on Windows
 	# So we need to repr() in order to get the proper number of \ and then chop the leading and trailing single-quotes
 	# Nasty bug.  This workaround needs to be tested on a POSIX system.
@@ -183,6 +188,9 @@ def process_album_art(filename):
 			im_120 = im_original.copy()
 			im_120.thumbnail((120, 120), Image.ANTIALIAS)
 		for album_id in album_ids:
+			im_120.save("%s/%s_%s_120.jpg" % (config.get("album_art_file_path"), sids[0], album_id))
+			im_240.save("%s/%s_%s_240.jpg" % (config.get("album_art_file_path"), sids[0], album_id))
+			im_320.save("%s/%s_%s.jpg" % (config.get("album_art_file_path"), sids[0], album_id))
 			im_120.save("%s/%s_120.jpg" % (config.get("album_art_file_path"), album_id))
 			im_240.save("%s/%s_240.jpg" % (config.get("album_art_file_path"), album_id))
 			im_320.save("%s/%s.jpg" % (config.get("album_art_file_path"), album_id))
