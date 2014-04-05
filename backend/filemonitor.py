@@ -236,7 +236,7 @@ def monitor():
 			try:
 				_scan_file(_fix_codepage_1252(event.pathname, self.sids))
 			except Exception as e:
-				_add_scan_error(filename, e)
+				_add_scan_error(event.pathname, e)
 
 		def process_IN_CREATE(self, event):
 			self._rw_process(event)
@@ -259,6 +259,5 @@ def monitor():
 	for dir, sids in _directories.iteritems():
 		notifiers.append(pyinotify.AsyncNotifier(_wm, EventHandler(sids)))
 		descriptors.append(_wm.add_watch(dir, mask, rec=True, auto_add=True))
-	print "Monitoring"
 	asyncore.loop()
 	cache.set("backend_scan", "off")

@@ -1088,17 +1088,16 @@ class Album(AssociatedMetadata):
 			"FROM r4_song_sid "
 				"JOIN r4_songs USING (song_id) "
 				"LEFT JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
-			"WHERE r4_song_sid.album_id = %s AND r4_song_sid.sid = %s "
+			"WHERE r4_song_sid.song_exists = TRUE AND r4_songs.song_verified = TRUE AND r4_song_sid.album_id = %s AND r4_song_sid.sid = %s "
 			"ORDER BY song_title",
 			(requestable, user_id, instance.id, sid))
 		return instance
 
 	@classmethod
 	def get_art_url(self, id, sid = None):
-		print "Album art call %s %s" % (id, sid)
 		if sid and os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s_%s.jpg" % (sid, id))):
 			return "%s/%s_%s" % (config.get("album_art_url_path"), sid, id)
-		if os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % id)):
+		elif os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % id)):
 			return "%s/%s" % (config.get("album_art_url_path"), id)
 		return None
 
@@ -1433,7 +1432,7 @@ class Artist(AssociatedMetadata):
 				"JOIN r4_song_sid USING (song_id) "
 				"JOIN r4_albums USING (album_id) "
 				"LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
-			"WHERE r4_song_artist.artist_id = %s "
+			"WHERE r4_song_artist.artist_id = %s AND r4_songs.song_verified = TRUE "
 			"GROUP BY r4_song_artist.song_id, r4_songs.song_origin_sid "
 			"ORDER BY requestable DESC, album_name, MAX(song_title) ",
 			(sid, requestable, sid, sid, sid, sid, user_id, self.id))
