@@ -147,7 +147,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):
 		#TODO: Shove this output into the trash.
-		objgraph.show_growth() #grab a snapshot of the data we have in place (to detect leaks)
+		# objgraph.show_growth() #grab a snapshot of the data we have in place (to detect leaks)
 		
 		self._startclock = time.time()
 		self.user = None
@@ -351,19 +351,17 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			limit += " OFFSET %s" % self.get_argument("page_start")
 		return limit
 		
-	def finish():
-		real_stdout = sys.stdout
-		temp_stdout = StringIO.StringIO()
-		sys.stdout = temp_stdout
-		if config.get("developer_mode") or config.test_mode:
-			log.debug("action", "API call happened")
-		objgraph.show_growth()
-		#I'm hoping the stuff in the {} of the next line is the name of the api call.
-		log.debug("memtrace", "\n {self.request.uri} API call happened. Leaks: \n" + sys.stdout.getvalue())
-		sys.stdout = real_stdout
-		temp_stdout.close()
-		super(RainwaveHandler, self).finish()
-
+	# def finish():
+	# 	if config.get("developer_mode") or config.test_mode:
+	# 		real_stdout = sys.stdout
+	# 		temp_stdout = StringIO.StringIO()
+	# 		sys.stdout = temp_stdout
+	# 		objgraph.show_growth()
+	# 		#I'm hoping the stuff in the {} of the next line is the name of the api call.
+	# 		log.debug("memtrace", "\n {self.request.uri} API call happened. Leaks: \n" + sys.stdout.getvalue())
+	# 		sys.stdout = real_stdout
+	# 		temp_stdout.close()
+	# 		super(RainwaveHandler, self).finish()
 
 class APIHandler(RainwaveHandler):
 	def initialize(self, **kwargs):
