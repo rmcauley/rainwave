@@ -426,6 +426,15 @@ class Song(object):
 		return s
 
 	@classmethod
+	def load_from_deleted_file(klass, filename):
+		matched_entry = db.c.fetch_row("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
+		if matched_entry:
+			s = klass.load_from_id(matched_entry['song_id'])
+		else:
+			s = klass()
+		return s
+
+	@classmethod
 	def create_fake(klass, sid):
 		if not config.test_mode:
 			raise Exception("Tried to create a fake song when not in test mode.")
