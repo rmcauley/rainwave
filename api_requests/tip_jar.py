@@ -18,6 +18,7 @@ from libs import db
 class TipJarContents(APIHandler):
 	return_name = "tip_jar"
 	allow_get = True
+	login_required = False
 
 	def post(self):
 		self.append(self.return_name, db.c.fetch_all("SELECT donation_id AS id, donation_amount AS amount, donation_message AS message, "
