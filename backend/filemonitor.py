@@ -62,7 +62,7 @@ def full_update():
 	print "\n",
 	for i in range(0, len(_album_art_queue)):
 		print "\rAlbum art: %s/%s" % (i + 1, len(_album_art_queue)),
-		process_album_art(_album_art_queue[i])
+		process_album_art(*_album_art_queue[i])
 	_album_art_queue = []
 
 	print "\nDisabling missing songs...",
@@ -138,6 +138,7 @@ def _is_image(filename):
 	return False
 
 def _scan_file(filename, sids, throw_exceptions = False, album_art_only = False):
+	log.debug("scan", "Scanning file: {}".format(filename))
 	global _album_art_queue
 	global _use_album_art_queue
 	try:
@@ -150,7 +151,7 @@ def _scan_file(filename, sids, throw_exceptions = False, album_art_only = False)
 				db.c.update("UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s", (filename,))
 		elif _is_image(filename):
 			if _use_album_art_queue:
-				_album_art_queue.append(filename, sids)
+				_album_art_queue.append([filename, sids])
 			else:
 				process_album_art(filename, sids)
 	except Exception as xception:
@@ -200,9 +201,10 @@ def process_album_art(filename, sids):
 		return False
 
 def _disable_file(filename):
+	log.debug("scan", "Attempting to disable file: {}".format(filename))
 	try:
 		if _is_mp3(filename):
-			song = playlist.Song.load_from_file(filename, [])
+			song = playlist.Song.load_from_deleted_file(filename)
 			song.disable()
 	except Exception as xception:
 		_add_scan_error(filename, xception)
@@ -234,17 +236,26 @@ def monitor():
 
 		def _rw_process(self, event):
 			try:
-				_scan_file(_fix_codepage_1252(event.pathname, self.sids))
+				_scan_file(_fix_codepage_1252(event.pathname), self.sids)
 			except Exception as e:
 				_add_scan_error(event.pathname, e)
 
+		def process_IN_MOVED_FROM(self, event):
+			self.process_IN_DELETE(event)
+
+		def process_IN_MOVED_TO(self, event):
+			self.process_IN_CREATE(event)
+
 		def process_IN_CREATE(self, event):
+			log.debug("scan", "Detected file creation {}".format(event.pathname))
 			self._rw_process(event)
 
-		def process_IN_MODIFY(self, event):
+		def process_IN_CLOSE_WRITE(self, event):
+			log.debug("scan", "Detected file modification {}".format(event.pathname))
 			self._rw_process(event)
 
 		def process_IN_DELETE(self, event):
+			log.debug("scan", "Detected file deletion {}".format(event.pathname))
 			_disable_file(event.pathname)
 
 	pid = os.getpid()
@@ -253,10 +264,11 @@ def monitor():
 	pid_file.close()
 
 	cache.set("backend_scan", "monitoring")
-	mask = pyinotify.IN_DELETE | pyinotify.IN_CREATE | pyinotify.IN_MODIFY
+	mask = pyinotify.IN_DELETE | pyinotify.IN_CREATE | pyinotify.IN_MOVED_FROM | pyinotify.IN_MOVED_TO | pyinotify.IN_CLOSE_WRITE
 	notifiers = []
 	descriptors = []
 	for dir, sids in _directories.iteritems():
+		log.debug("scan", "Adding directory {} to watch list".format(dir))
 		notifiers.append(pyinotify.AsyncNotifier(_wm, EventHandler(sids)))
 		descriptors.append(_wm.add_watch(dir, mask, rec=True, auto_add=True))
 	asyncore.loop()
