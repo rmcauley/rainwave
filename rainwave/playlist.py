@@ -381,10 +381,12 @@ class Song(object):
 		All metadata is saved to the database and updated where necessary.
 		"""
 
+		log.debug("playlist", "sids {} loading song from file {}".format(sids, filename))
 		kept_artists = []
 		kept_groups = []
 		matched_entry = db.c.fetch_row("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
 		if matched_entry:
+			log.debug("playlist", "this filename matches an existing database entry, song_id {}".format(matched_entry['song_id']))
 			s = klass.load_from_id(matched_entry['song_id'])
 			for metadata in s.artists:
 				if metadata.is_tag:
@@ -474,6 +476,7 @@ class Song(object):
 		Reads ID3 tags and sets object-level variables.
 		"""
 
+		log.debug("playlist", "reading tag info from {}".format(filename))
 		f = MP3(filename)
 		self.filename = filename
 
@@ -541,6 +544,8 @@ class Song(object):
 		"""
 		Save song to the database.  Does NOT associate metadata.
 		"""
+
+		log.debug("playlist", "saving song to database; manual sids? {}".format(sids_override))
 		update = False
 		if self.id:
 			update = True
@@ -566,6 +571,7 @@ class Song(object):
 			file_mtime = os.stat(self.filename)[8]
 
 		if update:
+			log.debug("playlist", "updating existing song_id {}".format(self.id))
 			db.c.update("UPDATE r4_songs \
 				SET	song_filename = %s, \
 					song_title = %s, \
@@ -584,6 +590,7 @@ class Song(object):
 				db.c.update("UPDATE r4_songs SET song_artist_tag = %s WHERE song_id = %s", (self.artist_tag, self.id))
 		else:
 			self.id = db.c.get_next_id("r4_songs", "song_id")
+			log.debug("playlist", "inserting a new song with id {}".format(self.id))
 			db.c.update("INSERT INTO r4_songs \
 				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain, song_artist_tag) \
 				VALUES \
@@ -593,6 +600,7 @@ class Song(object):
 			self.data['added_on'] = int(time.time())
 
 		current_sids = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (self.id,))
+		log.debug("playlist", "database sids: {}, actual sids: {}".format(current_sids, self.data['sids']))
 		for sid in current_sids:
 			if not self.data['sids'].count(sid):
 				db.c.update("UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s AND sid = %s", (self.id, sid))
