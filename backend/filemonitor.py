@@ -233,12 +233,14 @@ def monitor():
 		raise "Cannot monitor on Windows, or without pyinotify."
 
 	class EventHandler(pyinotify.ProcessEvent):
-		def __init__(self, sids):
-			self.sids = sids
-
 		def _rw_process(self, event):
+			dir_sids = None
+			for directory, sids in _directories.iteritems():
+				if event.pathname.startswith(directory):
+					dir_sids = sids
+			log.debug("scan", "Processing an event on {} for sids {}".format(event.pathname, dir_sids))
 			try:
-				_scan_file(_fix_codepage_1252(event.pathname), self.sids)
+				_scan_file(_fix_codepage_1252(event.pathname), dir_sids)
 			except Exception as e:
 				_add_scan_error(event.pathname, e)
 
@@ -267,11 +269,10 @@ def monitor():
 
 	cache.set("backend_scan", "monitoring")
 	mask = pyinotify.IN_DELETE | pyinotify.IN_CREATE | pyinotify.IN_MOVED_FROM | pyinotify.IN_MOVED_TO | pyinotify.IN_CLOSE_WRITE
-	notifiers = []
+	notifier = pyinotify.AsyncNotifier(_wm, EventHandler())
 	descriptors = []
-	for dir, sids in _directories.iteritems():
-		log.debug("scan", "Adding directory {} to watch list for sids {}".format(dir, sids))
-		notifiers.append(pyinotify.AsyncNotifier(_wm, EventHandler(sids)))
-		descriptors.append(_wm.add_watch(dir, mask, rec=True, auto_add=True))
+	for directory, sids in _directories.iteritems():
+		log.debug("scan", "Adding directory {} to watch list for sids {}".format(directory, sids))
+		descriptors.append(_wm.add_watch(directory, mask, rec=True, auto_add=True))
 	asyncore.loop()
 	cache.set("backend_scan", "off")
