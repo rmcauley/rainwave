@@ -231,7 +231,7 @@ def get_all_albums_list(sid, user = None):
 			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, FALSE AS fave, 0 AS rating_user, FALSE AS rating_complete "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
-			"WHERE r4_album_sid.sid = %s "
+			"WHERE r4_album_sid.sid = %s AND r4_album_sid.album_exists = TRUE "
 			"ORDER BY album_name",
 			(sid,))
 	else:
@@ -240,7 +240,7 @@ def get_all_albums_list(sid, user = None):
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
-			"WHERE r4_album_sid.sid = %s "
+			"WHERE r4_album_sid.sid = %s AND r4_album_sid.album_exists = TRUE "
 			"ORDER BY album_name",
 			(user.id, sid))
 
