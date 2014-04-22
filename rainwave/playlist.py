@@ -120,6 +120,7 @@ def get_random_song_timed(sid, target_seconds = None, target_delta = 20):
 					"JOIN r4_song_sid USING (song_id) "
 					"JOIN r4_album_sid ON (r4_album_sid.album_id = r4_song_sid.album_id AND r4_album_sid.sid = r4_song_sid.sid) "
 				"WHERE r4_song_sid.sid = %s "
+					"AND song_exists = TRUE "
 					"AND song_cool = FALSE "
 					"AND song_elec_blocked = FALSE "
 					"AND album_requests_pending IS NULL "
