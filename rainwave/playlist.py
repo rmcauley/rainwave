@@ -502,19 +502,24 @@ class Song(object):
 		if len(w) > 0:
 			self.data['url'] = unicode(w[0])
 
-		self.replay_gain = None
-		for txxx in f.tags.getall("TXXX"):
-			if txxx.desc.lower() == "replaygain_track_gain":
-				self.replay_gain = str(txxx)
+		self.replay_gain = self._get_replaygain(f)
 
 		if not self.replay_gain and config.get("mp3gain_scan"):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
 			gain_std, gain_error = subprocess.Popen([_mp3gain_path, "-o", "-q", "-s", "i", "-p", "-k", self.filename ], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 			if len(gain_error) > 0:
 				raise Exception("Error when replay gaining \"%s\": %s" % (filename, gain_error))
-			self.replay_gain = "%s dB" % float(gain_std.split("\n")[1].split("\t")[2])
+			f = MP3(filename)
+			self.replay_gain = self._get_replaygain(f)
 
 		self.data['length'] = int(f.info.length)
+
+	def _get_replaygain(self, f):
+		replay_gain = None
+		for txxx in f.tags.getall("TXXX"):
+			if txxx.desc.lower() == "replaygain_track_gain":
+				replay_gain = str(txxx)
+		return replay_gain
 
 	def is_valid(self):
 		"""
