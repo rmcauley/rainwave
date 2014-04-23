@@ -599,7 +599,7 @@ def create_tables():
 		)")
 	# c.create_idx("r4_request_history", "user_id")		# handled by create_delete_fk
 	# c.create_idx("r4_request_history", "song_id")
-	c.create_null_fk("r4_request_history", "r4_songs", "song_id")
+	c.create_delete_fk("r4_request_history", "r4_songs", "song_id")
 	c.create_delete_fk("r4_request_history", "phpbb_users", "user_id")
 
 	c.update(" \
@@ -620,7 +620,7 @@ def create_tables():
 	c.create_idx("r4_vote_history", "sid")
 	c.create_null_fk("r4_vote_history", "r4_election_entries", "entry_id")
 	c.create_null_fk("r4_vote_history", "r4_elections", "elec_id")
-	c.create_null_fk("r4_vote_history", "r4_songs", "song_id")
+	c.create_delete_fk("r4_vote_history", "r4_songs", "song_id")
 	c.create_delete_fk("r4_vote_history", "phpbb_users", "user_id")
 
 	c.update(" \
