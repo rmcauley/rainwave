@@ -35,6 +35,10 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
 		self.write("<li>%s</li>" % self.locale.translate("tip_jar_instruction_2"))
 		self.write("<li>%s</li></ul>" % self.locale.translate("tip_jar_instruction_3"))
 		self.write("<p>%s</p>" % self.locale.translate("tip_jar_opener_end"))
+
+		all_donations = db.c.fetch_var("SELECT SUM(donation_amount) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0")
+		self.write("<p>Total amount to date: %s</p>" % all_donations)
+
 		super(TipJarHTML, self).get(write_header=False)
 
 	def sort_keys(self, keys):
