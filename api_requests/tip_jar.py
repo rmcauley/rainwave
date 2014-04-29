@@ -37,7 +37,10 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
 		self.write("<p>%s</p>" % self.locale.translate("tip_jar_opener_end"))
 
 		all_donations = db.c.fetch_var("SELECT SUM(donation_amount) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0")
-		self.write("<p>Total amount to date: %s</p>" % all_donations)
+		self.write("<p>%s: %s</p>" % (self.locale.translate("tip_jar_all_donations"), all_donations))
+
+		balance = db.c.fetch_var("SELECT SUM(donation_amount) FROM r4_donations")
+		self.write("<p>%s: %s</p>" % (self.locale.translate("tip_jar_balance"), balance))
 
 		super(TipJarHTML, self).get(write_header=False)
 

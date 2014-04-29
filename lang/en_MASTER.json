@@ -49,6 +49,7 @@
    "api_key"                                         : "API Key",
    "qr_code"                                         : "QR Code",
    "create_api_key"                                  : "Create API Key",
+   "your_numeric_user_id"                            : "Your numeric user ID",
 
    "__comment__"                 : "Pretty Printed API Page Words",
 
@@ -86,6 +87,8 @@
    "tip_jar_opener_end"                              : "After we process your tip, you'll be given Donor status on the site.  This allows you to queue up more requests and the ability to vote on more than 1 election at a time.",
    "amount"                                          : "Amount",
    "message"                                         : "Message",
+   "tip_jar_balance"                                 : "Current balance",
+   "tip_jar_all_donations"                           : "Total amount of donations to date",
 
    "__comment__"                 : "Other",
 
