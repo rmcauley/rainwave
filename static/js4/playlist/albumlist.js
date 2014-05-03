@@ -63,19 +63,38 @@ var AlbumList = function(scroller, offset_width) {
 	};
 
 	self.draw_entry = function(item) {
+		// careful not to use $el() in here - this function gets called thousands of times
+		// and we do NOT need the slowdown
 		item._el = document.createElement("div");
-		item._el_cool = item._el.appendChild($el("span", { "class": "searchlist_cooldown_time" }));
-		item._el_fave = item._el.appendChild($el("span", { "class": "searchlist_fave" }));
+
+		item._el_cool = document.createElement("span");
+		item._el_cool.className = "searchlist_cooldown_time";
+		item._el.appendChild(item._el_cool);
+		
+		item._el_fave = document.createElement("span");
+		item._el_fave.className = "searchlist_fave";
 		// don't call it _id or the album-opener-clicker will pick it up! ;)
 		//item._el_fave._fave_id = item.id;
 		item._el_fave.addEventListener("click", change_fave);
-		item._el_fave.appendChild($el("img", { "class": "searchlist_fave_solid", "src": "/static/images4/heart_solid.png" }));
-		var lined = $el("img", { "class": "searchlist_fave_lined", "src": "/static/images4/heart_lined.png" });
+		item._el_fave_img = document.createElement("img");
+		item._el_fave_img.className = "searchlist_fave_solid";
+		item._el_fave_img.src = "/static/images4/heart_solid.png";
+		item._el_fave.appendChild(item._el_fave_img);
+		item._el.appendChild(item._el_fave);
+
+		var lined = document.createElement("img");
+		lined.className = "searchlist_fave_lined";
+		lined.src = "/static/images4/heart_lined.png";
 		lined._fave_id = item.id;
 		item._el_fave.appendChild(lined);
-		item._el_text_span = $el("span", { "class": "searchlist_name", "textContent": item.name });
+
+		item._el_text_span = document.createElement("span");
+		item._el_text_span.className = "searchlist_name";
+		item._el_text_span.textContent = item.name;
 		item._el_text_span._id = item.id;
-		self.update_cool(item);
+		// save a function call if we can with an if statement here
+		if (item.cool && (item.cool_lowest > Clock.now)) self.update_cool(item);
+
 		item._el.appendChild(item._el_text_span);
 	};
 
@@ -84,7 +103,7 @@ var AlbumList = function(scroller, offset_width) {
 			item._el_cool.textContent = Formatting.cooldown_glance(item.cool_lowest - Clock.now);
 		}
 		else {
-			item._el_cool.innerHTML = "&nbsp;";
+			item._el_cool.textContent = "";
 		}
 	};
 
