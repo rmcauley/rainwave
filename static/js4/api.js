@@ -38,6 +38,19 @@ var API = function() {
 
 		// Make sure the clock gets initialized first
 		perform_callbacks({ "api_info": json.api_info });
+
+		// Call back the heavy playlist functions first
+		var lists = [ "all_albums", "all_artists", "current_listeners" ];
+		var temp_json;
+		for (var i = 0; i < lists.length; i++) {
+			if (lists[i] in json) {
+				temp_json = {};
+				temp_json[lists[i]] = json[lists[i]];
+				perform_callbacks(temp_json);
+				delete(json[lists[i]]);
+			}
+		}
+
 		perform_callbacks(json);
 		perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
 		// Make sure any vote results are registered now (after the schedule has been loaded)
