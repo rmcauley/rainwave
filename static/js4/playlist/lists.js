@@ -13,11 +13,12 @@ var PlaylistLists = function() {
 	self.initialize = function() {
 		Prefs.define("searchlist_show_cooldown");
 
-		el = $id("lists");
-		tabs_el = el.appendChild($el("ul", { "class": "lists_tabs" }));
-		search_box = el.appendChild($el("div", { "class": "searchlist_searchbox" }));
+		tabs_el = $id("lists_tabs").appendChild($el("ul", { "class": "lists_tabs" }));
+		search_box = $id("lists_searchbox").appendChild($el("div", { "class": "searchlist_searchbox" }));
 		search_cancel = search_box.appendChild($el("img", { "src": "/static/images4/cancel_ldpi.png", "class": "searchlist_cancel", "alt": "X", "title": $l("clearfilter") }))
 		search_cancel.addEventListener("click", function() { self.active_list.clear_search(); });
+		
+		el = $id("lists_container");
 		scroller = PlaylistScrollbar(el);
 
 		lists.all_albums = AlbumList(scroller, el.offsetWidth - 20);
@@ -40,13 +41,15 @@ var PlaylistLists = function() {
 			self.change_visible_list(lists[cookie_list], true);
 		}
 
-		var margin_top = tabs_el.offsetHeight + search_box.offsetHeight + 5;
-		for (var list in lists) {
-			lists[list].el.style.marginTop = margin_top + "px";
-		}
-		scroller.margin_top = margin_top;
-		scroller.add_resizer("playlist", 10, 450, 250);
-		scroller.post_resize_callback = self.on_resize;
+		// the scrollbar in the new table layout isn't working properly
+
+		// var margin_top = tabs_el.offsetHeight + search_box.offsetHeight + 5;
+		// for (var list in lists) {
+		// 	lists[list].el.style.marginTop = margin_top + "px";
+		// }
+		// scroller.margin_top = margin_top;
+		// scroller.add_resizer("playlist", 10, 450, 250);
+		// scroller.post_resize_callback = self.on_resize;
 		scroller.parent_update_handle_position();
 	};
 

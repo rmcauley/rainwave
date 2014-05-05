@@ -7,16 +7,28 @@
 	overflow: hidden;
 	background: #1f2022;
 	margin-right: 10px;
+	table-layout: fixed;
+}
+
+#lists td {
+	vertical-align: middle
+}
+
+#lists_tabs, #lists_searchbox {
+	height: 1.5em;
+}
+
+#lists_container {
+	overflow: hidden;
+	padding-right: 10px;
 }
 
 ul.lists_tabs {
 	list-style: none;
 	height: 1.5em;
 	margin: 0;
-	padding: 3px 0 0 10px;
-	position: fixed;
+	padding: 0 0 0 10px;
 	background: #1f2022;
-	width: inherit;
 }
 
 ul.lists_tabs li {
@@ -34,12 +46,7 @@ ul.lists_tabs li.list_tab_open {
 div.searchlist_searchbox {
 	border-top: solid 1px $vdarktext;
 	border-bottom: solid 1px $vvdarktext;
-	position: fixed;
-	width: inherit;
-	z-index: 2;
 	background: #1f2022;
-	padding-top: 5px;
-	margin-top: 1.5em;
 }
 
 div.searchlist_input {
@@ -81,16 +88,20 @@ div.searchlist > div {
 	background-repeat: no-repeat;
 	word-break: break-all;
 	height: 1.3em;
-	padding: 1px 60px 1px 0px;
+	padding: 0;
 	border-bottom: solid 1px transparent;
 	cursor: pointer;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	@include transition-wtime(200ms, background-color, border-color)
+	@include transition-wtime(200ms, background-color, border-color);
+	width: 95%;
 }
 
 span.searchlist_name {
-	@include transition-wtime(200ms, padding, color)
+	@include transition-wtime(200ms, padding, color);
+	background-repeat: no-repeat;
+	background-position: 2px 2px;
+	padding-left: 20px;
 }
 
 .resizing div.searchlist > div {
@@ -109,46 +120,14 @@ div.searchlist_cooldown.searchlist_rating_complete {
 	background-color: #15162b;
 }
 
+div.searchlist_fave_on span.searchlist_name {
+	background-image: url("/static/images4/heart_solid.png");
+}
+
 div.searchlist > div:hover span.searchlist_name {
-	padding-left: 7px;
+	padding-left: 27px;
 	color: $link;
-}
-
-span.searchlist_fave {
-	display: inline-block;
-	width: 20px;
-	height: 1em;
-	min-height: 14px;
-}
-
-img.searchlist_fave_solid {
-	position: absolute;
-	margin-top: 4px;
-	opacity: 0;
-	@include transition-wtime(300ms, opacity);
-}
-
-body.small_screen img.searchlist_fave_solid {
-	margin-top: 1px;
-}
-
-.searchlist_fave_on img.searchlist_fave_solid {
-	opacity: 1;
-}
-
-img.searchlist_fave_lined {
-	position: absolute;
-	margin-top: 4px;
-	opacity: 0;
-	@include transition-wtime(300ms, opacity);
-}
-
-body.small_screen img.searchlist_fave_lined {
-	margin-top: 1px;
-}
-
-img.searchlist_fave_lined:hover {
-	opacity: 1;
+	background-image: url("/static/images4/heart_lined.png");
 }
 
 span.searchlist_cooldown_time {
@@ -167,11 +146,11 @@ div.searchlist > div:hover, div.searchlist div.searchtable_key_nav_hover {
 }
 
 div.searchlist > div:hover span.searchlist_name, div.searchlist div.searchtable_key_nav_hover span.searchlist_name {
-	padding-left: 7px;
+	padding-left: 27px;
 }
 
 div.searchlist > div.searchlist_open_item span.searchlist_name {
-	padding-left: 13px;
+	padding-left: 33px;
 }
 
 div.searchlist div.searchlist_open_item {

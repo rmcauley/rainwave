@@ -5,14 +5,14 @@
 
 // OPTIONAL FUNCTIONS you can overwrite:
 //	after_update(json, data, sorted_data);
-//  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses id_key)
+//  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses 'id')
 
-var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
+var SearchList = function(list_name, sort_key, search_key, scrollbar) {
 	"use strict";
 	var self = {};
 	self.list_name = list_name;
 	self.sort_key = sort_key;
-	self.search_key = search_key || id_key;
+	self.search_key = search_key || "id";
 	self.auto_trim = false;
 	self.after_update = null;
 	self.el = $el("div", { "class": "searchlist" });
@@ -58,22 +58,21 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 	self.update_item = function(json) {
 		var i;
 		json._delete = false;
-		if (json[id_key] in data) {
+		if (json.id in data) {
 			for (i in json) {
-				self.data[json[id_key]][i] = json[i];
+				self.data[json.id[i]] = json[i];
 			}
-			self.update_item_element(self.data[json[id_key]]);
+			self.update_item_element(self.data[json.id]);
 		}
 		else {
-			json._searchname = json[search_key];
 			self.draw_entry(json);
-			json._el._id = json[id_key];
+			json._searchname = json[search_key];
+			json._el._id = json.id
 			json._el._hidden = false;
 			json._lower_case_sort_keyed = json[sort_key].toLowerCase();
-			self.update_item_element(json);
-			data[json[id_key]] = json;
+			data[json.id] = json;
 		}
-		self.queue_reinsert(json[id_key]);
+		self.queue_reinsert(json.id);
 	};
 
 	self.update_cool = null;
@@ -191,12 +190,13 @@ var SearchList = function(list_name, id_key, sort_key, search_key, scrollbar) {
 		return 0;
 	};
 
-	var open_element = function(e) {
-		if ("_id" in e.target) {
+	self.open_element_check = function(e, id) { return true; };
+	self.open_element = function(e) {
+		if ("_id" in e.target && self.open_element_check(e, e.target._id)) {
 			self.open_id(e.target._id);
 		}
 	};
-	self.el.addEventListener("click", open_element);
+	self.el.addEventListener("click", self.open_element);
 
 	// SEARCHING ****************************
 

@@ -19,7 +19,7 @@ function _on_resize(e) {
 		RatingControl.change_padding_top(3);
 	}
 	TimelineSong.calculate_height();
-	PlaylistLists.on_resize();
+	//PlaylistLists.on_resize();
 	Scrollbar.refresh_all_scrollbars();
 	DetailView.on_resize();
 	Requests.on_resize(new_height);

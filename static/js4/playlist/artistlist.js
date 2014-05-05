@@ -1,6 +1,6 @@
 var ArtistList = function(scroller, offset_width) {
 	"use strict";
-	var self = SearchList("all_artists", "id", "name", "name_searchable", scroller);
+	var self = SearchList("all_artists", "name", "name_searchable", scroller);
 	self.tab_el = $el("li", { "textContent": $l("Artists"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
 		if (!self.loaded) {

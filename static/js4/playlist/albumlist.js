@@ -15,7 +15,7 @@ var AlbumList = function(scroller, offset_width) {
 
 	// Actual app logic
 
-	var self = SearchList("all_albums", "id", "name", "name_searchable", scroller);
+	var self = SearchList("all_albums", "name", "name_searchable", scroller);
 	self.tab_el = $el("li", { "textContent": $l("Albums"), "class": "link" });
 	self.tab_el.addEventListener("click", function() { 
 		if (!self.loaded) {
@@ -52,12 +52,6 @@ var AlbumList = function(scroller, offset_width) {
 	};
 	RatingControl.fave_callback = update_fave;
 
-	var change_fave = function(evt) {
-		if ("_fave_id" in evt.target) {
-			API.async_get("fave_album", { "fave": !self.data[evt.target._fave_id].fave, "album_id": evt.target._fave_id });
-		}
-	};
-
 	self.open_id = function(id) {
 		DetailView.open_album(id);
 	};
@@ -70,50 +64,53 @@ var AlbumList = function(scroller, offset_width) {
 		item._el_cool = document.createElement("span");
 		item._el_cool.className = "searchlist_cooldown_time";
 		item._el.appendChild(item._el_cool);
-		
-		item._el_fave = document.createElement("span");
-		item._el_fave.className = "searchlist_fave";
-		// don't call it _id or the album-opener-clicker will pick it up! ;)
-		//item._el_fave._fave_id = item.id;
-		item._el_fave.addEventListener("click", change_fave);
-		item._el_fave_img = document.createElement("img");
-		item._el_fave_img.className = "searchlist_fave_solid";
-		item._el_fave_img.src = "/static/images4/heart_solid.png";
-		item._el_fave.appendChild(item._el_fave_img);
-		item._el.appendChild(item._el_fave);
-
-		var lined = document.createElement("img");
-		lined.className = "searchlist_fave_lined";
-		lined.src = "/static/images4/heart_lined.png";
-		lined._fave_id = item.id;
-		item._el_fave.appendChild(lined);
 
 		item._el_text_span = document.createElement("span");
 		item._el_text_span.className = "searchlist_name";
 		item._el_text_span.textContent = item.name;
 		item._el_text_span._id = item.id;
+		
 		// save a function call if we can with an if statement here
 		if (item.cool && (item.cool_lowest > Clock.now)) self.update_cool(item);
 
+		// this is duplicate functionality from update_item_element, again to try and streamline
+		// a heavy process
+		if (item.fave) item._el.className += " searchlist_fave_on";
+		if (item.rating_complete) item._el.className += " searchlist_rating_complete";
+		if (item.rating_user) {
+			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
+			item._el.style.backgroundPosition = (offset_width - 58) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
+		}
+		else if (item.rating) {
+			item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
+			item._el.style.backgroundPosition = (offset_width - 58) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";	
+		}
+
 		item._el.appendChild(item._el_text_span);
+	};
+
+	// favourites happen in here!
+	self.open_element_check = function(e, id) {
+		var x = e.offsetX || e.layerX || e.x || 0;
+		if (x < 16) {
+			API.async_get("fave_album", { "fave": !self.data[id].fave, "album_id": id });
+			return false;
+		}
+		return true;
 	};
 
 	self.update_cool = function(item) {
 		if (item.cool && (item.cool_lowest > Clock.now)) {
 			item._el_cool.textContent = Formatting.cooldown_glance(item.cool_lowest - Clock.now);
+			$add_class(item._el, "searchlist_cooldown");
 		}
 		else {
 			item._el_cool.textContent = "";
+			$remove_class(item._el, "searchlist_cooldown");
 		}
 	};
 
 	self.update_item_element = function(item) {
-		if (item.cool) {
-			$add_class(item._el, "searchlist_cooldown");
-		}
-		else {
-			$remove_class(item._el, "searchlist_cooldown");
-		}
 		if (item.fave) {
 			$add_class(item._el, "searchlist_fave_on");
 		}
