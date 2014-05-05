@@ -10,24 +10,22 @@
 	table-layout: fixed;
 }
 
-#lists td {
-	vertical-align: middle
+#lists_tabs {
+	padding: 4px 0 0 0;
 }
 
-#lists_tabs, #lists_searchbox {
-	height: 1.5em;
+#lists_searchbox {
+	padding: 5px 0 5px 0;
 }
 
 #lists_container {
 	overflow: hidden;
-	padding-right: 10px;
 }
 
 ul.lists_tabs {
 	list-style: none;
-	height: 1.5em;
-	margin: 0;
-	padding: 0 0 0 10px;
+	margin: 0 0 0 5px;
+	padding: 0;
 	background: #1f2022;
 }
 
@@ -53,7 +51,7 @@ div.searchlist_input {
 	background-color: #0e0e0f;
 	border: none;
 	color: $vdarktext;
-	margin: 0 5px 5px 5px;
+	margin: 0;
 	padding: 2px 4px 5px 5px;
 	cursor: text;
 	height: 1.2em;
@@ -81,6 +79,12 @@ img.searchlist_cancel {
 	margin-top: 5px;
 	margin-right: 10px;
 	cursor: pointer;
+}
+
+div.searchlist {
+	position: relative;
+	overflow: hidden;
+	height: 100%;
 }
 
 div.searchlist > div {

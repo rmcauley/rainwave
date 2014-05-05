@@ -8,7 +8,7 @@ var PlaylistLists = function() {
 	var tabs_el;
 	var search_cancel;
 	var search_box;
-	var scroller;
+	var margin_top;
 
 	self.initialize = function() {
 		Prefs.define("searchlist_show_cooldown");
@@ -19,19 +19,18 @@ var PlaylistLists = function() {
 		search_cancel.addEventListener("click", function() { self.active_list.clear_search(); });
 		
 		el = $id("lists_container");
-		scroller = PlaylistScrollbar(el);
 
-		lists.all_albums = AlbumList(scroller, el.offsetWidth - 20);
+		lists.all_albums = AlbumList(el.offsetWidth - 20);
 		lists.all_albums._scroll_position = 0;
 		tabs_el.appendChild(lists.all_albums.tab_el);
 		el.appendChild(lists.all_albums.el);
 
-		lists.all_artists = ArtistList(scroller, el.offsetWidth - 20);
+		lists.all_artists = ArtistList(el.offsetWidth - 20);
 		lists.all_artists._scroll_position = 0;
 		tabs_el.appendChild(lists.all_artists.tab_el);
 		el.appendChild(lists.all_artists.el);
 
-		lists.current_listeners = ListenersList(scroller, el.offsetWidth - 20);
+		lists.current_listeners = ListenersList(el.offsetWidth - 20);
 		lists.current_listeners._scroll_position = 0;
 		tabs_el.appendChild(lists.current_listeners.tab_el);
 		el.appendChild(lists.current_listeners.el);
@@ -49,15 +48,16 @@ var PlaylistLists = function() {
 		// }
 		// scroller.margin_top = margin_top;
 		// scroller.add_resizer("playlist", 10, 450, 250);
-		// scroller.post_resize_callback = self.on_resize;
-		scroller.parent_update_handle_position();
+		// scroller.post_resize_callback = self.on_scroll_resize;
+		// scroller.parent_update_handle_position();
+
+		margin_top = $measure_el($id("lists_tabs")).height + $measure_el($id("lists_searchbox")).height
 	};
 
 	self.change_visible_list = function(change_to, skip_scrollbar_update) {
 		if (self.active_list) {
 			self.active_list.el.style.display = "none";
 			self.active_list.tab_el.className = "";
-			self.active_list._scroll_position = scroller.scroll_top;
 			search_box.replaceChild(change_to.search_box_input, self.active_list.search_box_input);
 		}
 		else {
@@ -67,13 +67,21 @@ var PlaylistLists = function() {
 		self.active_list.el.style.display = "block";
 		self.active_list.tab_el.className = "list_tab_open";
 		if (!skip_scrollbar_update) {
-			scroller.update_scroll_height(null, self.active_list.list_name);
+			self.active_list.scrollbar.update_scroll_height();
 		}
-		scroller.scroll_to(self.active_list._scroll_position);
 		docCookies.setItem("r4_active_list", change_to.list_name, Infinity, "/", BOOTSTRAP.cookie_domain)
 	};
 
-	self.on_resize = function() {
+	self.on_resize = function(new_height) {
+		if (el) {
+			el.style.height = new_height - margin_top + "px";
+			for (var key in lists) {
+				lists[key].scrollbar.update_scroll_height();
+			}
+		}
+	};
+
+	self.on_scroll_resize = function() {
 		if ("albums" in lists) {
 			lists.albums.on_resize(el.offsetWidth - 20);
 		}

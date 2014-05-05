@@ -1,4 +1,4 @@
-var AlbumList = function(scroller, offset_width) {
+var AlbumList = function(offset_width) {
 	"use strict";
 
 	// Preferences handling
@@ -15,7 +15,7 @@ var AlbumList = function(scroller, offset_width) {
 
 	// Actual app logic
 
-	var self = SearchList("all_albums", "name", "name_searchable", scroller);
+	var self = SearchList("all_albums", "name", "name_searchable");
 	self.tab_el = $el("li", { "textContent": $l("Albums"), "class": "link" });
 	self.tab_el.addEventListener("click", function() { 
 		if (!self.loaded) {

@@ -1,6 +1,6 @@
-var ListenersList = function(scroller, offset_width) {
+var ListenersList = function(offset_width) {
 	"use strict";
-	var self = SearchList("current_listeners", "name", "name", scroller);
+	var self = SearchList("current_listeners", "name", "name");
 	self.tab_el = $el("li", { "textContent": $l("Listeners"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
 		if (!self.loaded) {
