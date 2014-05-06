@@ -8,6 +8,8 @@
 	left: 100%;
 	width: 5px;
 	opacity: 0.5;
+	padding: 0;
+	margin: 0;
 	@include transform(translateX(-10px));
 	@include transition-wtime(200ms, width, opacity, transform, border-color, background-color);
 }

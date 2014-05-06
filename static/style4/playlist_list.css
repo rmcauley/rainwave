@@ -88,24 +88,25 @@ div.searchlist {
 }
 
 div.searchlist > div {
-	overflow: hidden;
 	background-repeat: no-repeat;
-	word-break: break-all;
 	height: 1.3em;
-	padding: 0;
+	padding: 0 65px 0 0;
+	margin-right: 10px;
 	border-bottom: solid 1px transparent;
 	cursor: pointer;
-	white-space: nowrap;
-	text-overflow: ellipsis;
 	@include transition-wtime(200ms, background-color, border-color);
-	width: 95%;
 }
 
 span.searchlist_name {
+	display: block;
 	@include transition-wtime(200ms, padding, color);
 	background-repeat: no-repeat;
 	background-position: 2px 2px;
 	padding-left: 20px;
+	overflow: hidden;
+	word-break: break-all;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .resizing div.searchlist > div {
