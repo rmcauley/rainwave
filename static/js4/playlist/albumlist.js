@@ -5,6 +5,7 @@ var AlbumList = function(offset_width) {
 
 	var playlist_sort_faves_first = false;
 	var playlist_sort_available_first = true;
+	var rating_offset = 25;
 
 	Prefs.define("playlist_sort_faves_first", [ false, true ]);
 	Prefs.define("playlist_sort_available_first", [ true, false ]);
@@ -79,11 +80,11 @@ var AlbumList = function(offset_width) {
 		if (item.rating_complete) item._el.className += " searchlist_rating_complete";
 		if (item.rating_user) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
-			item._el.style.backgroundPosition = (offset_width - 58) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
+			item._el.style.backgroundPosition = (offset_width - rating_offset) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
 		}
 		else if (item.rating) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
-			item._el.style.backgroundPosition = (offset_width - 58) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";	
+			item._el.style.backgroundPosition = (offset_width - rating_offset) + "px " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top) + "px";	
 		}
 
 		item._el.appendChild(item._el_text_span);
@@ -125,11 +126,11 @@ var AlbumList = function(offset_width) {
 		}
 		if (item.rating_user) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
-			item._el.style.backgroundPosition = (offset_width - 58) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
+			item._el.style.backgroundPosition = (offset_width - rating_offset) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
 		}
 		else if (item.rating) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
-			item._el.style.backgroundPosition = (offset_width - 58) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";	
+			item._el.style.backgroundPosition = (offset_width - rating_offset) + "px " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top) + "px";	
 		}
 	};
 
