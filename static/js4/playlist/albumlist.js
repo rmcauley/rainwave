@@ -61,6 +61,7 @@ var AlbumList = function(offset_width, parent_el) {
 		// careful not to use $el() in here - this function gets called thousands of times
 		// and we do NOT need the slowdown
 		item._el = document.createElement("div");
+		item._el.className = "searchlist_item";
 
 		item._el_cool = document.createElement("span");
 		item._el_cool.className = "searchlist_cooldown_time";
