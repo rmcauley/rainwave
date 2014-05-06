@@ -34,6 +34,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	var current_key_nav_element = false;
 	var current_open_element = false;
 	var scroll_offset = 140;
+	var item_height;
 
 	// LIST MANAGEMENT ***********************************************
 
@@ -54,9 +55,6 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			for (i in data) {
 				self.update_cool(data[i]);
 			}
-		}
-		if (!self.el.parentNode) {
-			parent_el.appendChild(self.el);
 		}
 	};
 
@@ -103,7 +101,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		for (var i = 0; i < sorted.length; i++) {
 			self.el.appendChild(data[sorted[i]]._el);
 		}
-		scrollbar.update_scroll_height(null, list_name);
+		self.update_scroll_height();
 	};
 
 	var hotkey_mode_enable = function() {
@@ -186,7 +184,22 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			self.el.appendChild(data[next_reinsert_id]._el);
 			next_reinsert_id = reinsert.pop();
 		}
-		scrollbar.update_scroll_height(null, list_name);
+
+		// add the node to the parent (this defers rendering to the last possible moment)
+		if (!self.el.parentNode) {
+			parent_el.appendChild(self.el);
+		}
+
+		// now calculate 1 item's height. we'll use this to sidestep calculating the entire
+		// height of all elements on update_scroll_height.
+		if (!item_height) {
+			item_height = data[sorted[0]]._el.offsetHeight;
+		}
+		self.update_scroll_height();
+	};
+
+	self.update_scroll_height = function() {
+		scrollbar.update_scroll_height(item_height * (sorted.length - hidden.length - 2) + 5, list_name);
 	};
 
 	self.sort_function = function(a, b) {
@@ -322,7 +335,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 					hidden.splice(i, 1);
 				}
 			}
-			scrollbar.update_scroll_height(null, list_name);
+			self.update_scroll_height();
 			return true;
 		}
 		return false;
@@ -352,7 +365,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 				hidden.push(sorted[i]);
 			}
 		}
-		scrollbar.update_scroll_height(null, list_name);
+		self.update_scroll_height();
 		return true;
 	};
 
@@ -373,7 +386,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			self.update_view();
 		}
 		else {
-			scrollbar.update_scroll_height(null, list_name);
+			self.update_scroll_height();
 		}
 	};
 
