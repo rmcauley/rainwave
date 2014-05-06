@@ -20,20 +20,18 @@ var PlaylistLists = function() {
 		
 		el = $id("lists_container");
 
-		lists.all_albums = AlbumList(el.offsetWidth - 20);
+		var ow = el.offsetWidth - 20;
+		lists.all_albums = AlbumList(ow - 20, el);
 		lists.all_albums._scroll_position = 0;
 		tabs_el.appendChild(lists.all_albums.tab_el);
-		el.appendChild(lists.all_albums.el);
 
-		lists.all_artists = ArtistList(el.offsetWidth - 20);
+		lists.all_artists = ArtistList(ow - 20, el);
 		lists.all_artists._scroll_position = 0;
 		tabs_el.appendChild(lists.all_artists.tab_el);
-		el.appendChild(lists.all_artists.el);
 
-		lists.current_listeners = ListenersList(el.offsetWidth - 20);
+		lists.current_listeners = ListenersList(ow - 20, el);
 		lists.current_listeners._scroll_position = 0;
 		tabs_el.appendChild(lists.current_listeners.tab_el);
-		el.appendChild(lists.current_listeners.el);
 
 		var cookie_list = docCookies.getItem("r4_active_list");
 		if (cookie_list in lists) {

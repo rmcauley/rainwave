@@ -7,7 +7,7 @@
 //	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses 'id')
 
-var SearchList = function(list_name, sort_key, search_key) {
+var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	"use strict";
 	var self = {};
 	self.list_name = list_name;
@@ -54,6 +54,9 @@ var SearchList = function(list_name, sort_key, search_key) {
 			for (i in data) {
 				self.update_cool(data[i]);
 			}
+		}
+		if (!self.el.parentNode) {
+			parent_el.appendChild(self.el);
 		}
 	};
 
