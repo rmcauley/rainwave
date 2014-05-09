@@ -45,9 +45,9 @@ var Schedule = function() {
 		Fx.delay_css_setting(history_bar, "opacity", 1);
 		Fx.delay_css_setting(time_bar, "opacity", 1);
 
-		timeline_scrollbar = Scrollbar.new(self.el);
-		timeline_scrollbar.auto_resize = false;
-		timeline_scrollbar.add_resizer("timeline", 20, 600);
+		// timeline_scrollbar = Scrollbar.new(self.el);
+		// timeline_scrollbar.auto_resize = false;
+		// timeline_scrollbar.add_resizer("timeline", 20, 600);
 	};
 
 	var shift_next_header = function() {
@@ -167,7 +167,7 @@ var Schedule = function() {
 			Fx.remove_element(next_headers[i]);
 		}
 		next_headers = new_next_headers;
-		
+
 		// Now playing header positioning, and setup the z-index correction chain
 		Fx.chain_transition_css(current_header, "transform", "translateY(" + running_height + "px)", set_header_to_normal_zindex);
 		time_bar_y = running_height + header_height + 3;
@@ -226,7 +226,7 @@ var Schedule = function() {
 		}
 		Fx.delay_css_setting(time_bar, "transform", "translateY(" + time_bar_y + "px)");
 
-		timeline_scrollbar.update_scroll_height(running_height);
+		//timeline_scrollbar.update_scroll_height(running_height);
 	};
 
 	var start_time_bar_progress = function() {
@@ -281,7 +281,7 @@ var Schedule = function() {
 	var find_and_update_event = function(event_json) {
 		var evt = find_event(event_json.id);
 		if (!evt) {
-			return Event.load(event_json);	
+			return Event.load(event_json);
 		}
 		else {
 			evt.update(event_json);

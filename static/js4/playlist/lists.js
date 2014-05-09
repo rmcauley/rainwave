@@ -17,7 +17,7 @@ var PlaylistLists = function() {
 		search_box = $id("lists_searchbox").appendChild($el("div", { "class": "searchlist_searchbox" }));
 		search_cancel = search_box.appendChild($el("img", { "src": "/static/images4/cancel_ldpi.png", "class": "searchlist_cancel", "alt": "X", "title": $l("clearfilter") }))
 		search_cancel.addEventListener("click", function() { self.active_list.clear_search(); });
-		
+
 		el = $id("lists_container");
 
 		var ow = el.offsetWidth - 20;
@@ -64,18 +64,18 @@ var PlaylistLists = function() {
 		self.active_list = change_to;
 		self.active_list.el.style.display = "block";
 		self.active_list.tab_el.className = "list_tab_open";
-		if (!skip_scrollbar_update) {
-			self.active_list.scrollbar.update_scroll_height();
-		}
+		// if (!skip_scrollbar_update) {
+		// 	self.active_list.scrollbar.update_scroll_height();
+		// }
 		docCookies.setItem("r4_active_list", change_to.list_name, Infinity, "/", BOOTSTRAP.cookie_domain)
 	};
 
 	self.on_resize = function(new_height) {
 		if (el) {
 			el.style.height = new_height - margin_top + "px";
-			for (var key in lists) {
-				lists[key].scrollbar.update_scroll_height();
-			}
+			// for (var key in lists) {
+			// 	lists[key].scrollbar.update_scroll_height();
+			// }
 		}
 	};
 

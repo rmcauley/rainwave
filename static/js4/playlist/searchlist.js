@@ -16,8 +16,8 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	self.auto_trim = false;
 	self.after_update = null;
 	self.el = $el("div", { "class": "searchlist" });
-	self.scrollbar = Scrollbar.new(self.el);
-	var scrollbar = self.scrollbar;
+	// self.scrollbar = Scrollbar.new(self.el);
+	// var scrollbar = self.scrollbar;
 	self.search_box_input = $el("div", { "class": "searchlist_input", "textContent": $l("filter") });
 	self.search_box_input.addEventListener("keypress", function(e) { e.preventDefault(); });
 	// see bottom of this object for event binding
@@ -124,10 +124,10 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			else if (character == "a") Schedule.vote(0, 0);
 			else if (character == "s") Schedule.vote(0, 1);
 			else if (character == "d") Schedule.vote(0, 2);
-			else if (character == "q") Schedule.vote(1, 0); 
+			else if (character == "q") Schedule.vote(1, 0);
 			else if (character == "w") Schedule.vote(1, 1);
 			else if (character == "e") Schedule.vote(1, 2);
-			else { 
+			else {
 				hotkey_mode_disable();
 				return false;
 			}
@@ -149,7 +149,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		hotkey_mode_disable();
 		$add_class(self.search_box_input, "hotkey_mode_error");
 		self.search_box_input.textContent = $l(tl_key);
-		setTimeout(function() { 
+		setTimeout(function() {
 			$remove_class(self.search_box_input, "hotkey_mode_error");
 			self.search_box_input.textContent = $l("filter");
 			}, 6000);
@@ -199,7 +199,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	};
 
 	self.update_scroll_height = function() {
-		scrollbar.update_scroll_height(item_height * (sorted.length - hidden.length - 2) + 5, list_name);
+		// scrollbar.update_scroll_height(item_height * (sorted.length - hidden.length - 2) + 5, list_name);
 	};
 
 	self.sort_function = function(a, b) {
@@ -235,7 +235,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			return false;
 		}
 		// find the next non-hidden child (if the firstChild isn't)
-		while (current_key_nav_element._hidden && current_key_nav_element.nextSibling) { 
+		while (current_key_nav_element._hidden && current_key_nav_element.nextSibling) {
 			current_key_nav_element = current_key_nav_element.nextSibling;
 		}
 	};
@@ -246,7 +246,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			return false;
 		}
 		// find the next non-hidden child (if the firstChild isn't)
-		while (current_key_nav_element._hidden && current_key_nav_element.previousSibling) { 
+		while (current_key_nav_element._hidden && current_key_nav_element.previousSibling) {
 			current_key_nav_element = current_key_nav_element.previousSibling;
 		}
 	};
@@ -261,12 +261,12 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			var old_key_nav = current_key_nav_element;
 			if (current_key_nav_element[sibling]) {
 				var n = current_key_nav_element;
-				while ((current_jump < jump) && (n = n[sibling])) { 
+				while ((current_jump < jump) && (n = n[sibling])) {
 					if (!n._hidden) {
 						current_jump++;
 					}
 				}
-				
+
 				if (!n && up) {
 					self.key_nav_first_item();
 				}
@@ -290,7 +290,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		self.scroll_to_key_nav();
 		return true;
 	};
-	
+
 	self.key_nav_down = function() {
 		return key_nav_arrow_action(false, true, 1);
 	};
@@ -351,9 +351,9 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			hotkey_mode_enable();
 			return true;
 		}
-		if (search_string.length == 0) {
-			scrollbar.scroll_to(0);
-		}
+		// if (search_string.length == 0) {
+		// 	scrollbar.scroll_to(0);
+		// }
 		search_string = search_string + character;
 		self.search_box_input.textContent = search_string;
 		$add_class(self.search_box_input, "searchlist_input_active");
@@ -397,7 +397,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	// when a user clicks on an album that isn't the key nav item
 
 	self.update_scroll_offset_by_evt = function(evt) {
-		self.set_scroll_offset(evt.target.offsetTop - scrollbar.scroll_top);
+		self.set_scroll_offset(evt.target.offsetTop - self.el.scrollTop);
 	};
 
 	self.update_scroll_offset_by_id = function(id) {
@@ -405,7 +405,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	};
 
 	self.update_scroll_offset_by_item = function(data_item) {
-		self.set_scroll_offset(data_item._el.offsetTop - scrollbar.scroll_top);
+		self.set_scroll_offset(data_item._el.offsetTop - self.el.scrollTop);
 	};
 
 	self.set_scroll_offset = function(offset) {
@@ -425,8 +425,8 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 
 	self.scroll_to = function(data_item) {
 		if (data_item) {
-			scrollbar.scroll_to(data_item._el.offsetTop - scroll_offset);
-			scrollbar.update_handle_position(list_name);
+			self.el.scrollTop = (data_item._el.offsetTop - scroll_offset);
+			// scrollbar.update_handle_position(list_name);
 		}
 	};
 

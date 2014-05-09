@@ -9,7 +9,7 @@ function _size_calculate() {
 		SmallScreen = true;
 		screen_size_changed = true;
 		RatingControl.change_padding_top(1);
-	} 
+	}
 	else if ((document.documentElement.clientWidth > 1400) && SmallScreen) {
 		$remove_class(document.body, "small_screen");
 		SmallScreen = false;
@@ -26,7 +26,7 @@ function _on_resize() {
 	$id('sizable_body').style.height = new_height + "px";
 	TimelineSong.calculate_height();
 	PlaylistLists.on_resize(new_height);
-	Scrollbar.refresh_all_scrollbars();
+	// Scrollbar.refresh_all_scrollbars();
 	DetailView.on_resize();
 	Requests.on_resize(new_height);
 	// this has to go after due to scrollbar funkiness with the schedule
