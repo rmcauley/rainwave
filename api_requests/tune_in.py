@@ -9,7 +9,7 @@ from rainwave.user import User
 from libs import config
 
 def get_round_robin_url(sid, filetype = "mp3", user = None):
-	return "http://%s/%s:8000" % (config.get_station(sid, "round_robin_relay_host"), get_stream_filename(sid, filetype, user))
+	return "http://%s:8000/%s" % (config.get_station(sid, "round_robin_relay_host"), get_stream_filename(sid, filetype, user))
 
 def get_stream_filename(sid, filetype = "mp3", user = None):
 	filename = config.get_station(sid, "stream_filename")
