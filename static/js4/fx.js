@@ -45,11 +45,11 @@ var Fx = function() {
 	};
 
 	var do_delayed_fx = function() {
+		self.delay_legacy_fx = false;
 		for (var i = 0; i < delayed_fx.length; i++) {
 			delayed_fx[i]();
 		}
 		delayed_fx = [];
-		self.delay_legacy_fx = false;
 	}
 
 	self.delay_css_setting = function(el, attribute, value) {
