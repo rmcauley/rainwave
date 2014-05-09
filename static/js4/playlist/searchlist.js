@@ -63,7 +63,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		json._delete = false;
 		if (json.id in data) {
 			for (i in json) {
-				self.data[json.id[i]] = json[i];
+				self.data[json.id][i] = json[i];
 			}
 			self.update_item_element(self.data[json.id]);
 		}
@@ -192,9 +192,9 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 
 		// now calculate 1 item's height. we'll use this to sidestep calculating the entire
 		// height of all elements on update_scroll_height.
-		if (!item_height) {
-			item_height = data[sorted[0]]._el.offsetHeight;
-		}
+		// if (!item_height) {
+		// 	item_height = data[sorted[0]]._el.offsetHeight;
+		// }
 		self.update_scroll_height();
 	};
 

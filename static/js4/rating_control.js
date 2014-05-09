@@ -3,20 +3,21 @@ var RatingControl = function() {
 
 	var song_ratings = {};
 	var album_ratings = {};
-	
+
 	var self = {};
 	self.album_rating_callback = null;
 	self.fave_callback = null;
 	self.padding_top = SmallScreen ? 1 : 3;
+	var gc_timer = false;
 
 	self.initialize = function() {
 		API.add_callback(self.rating_user_callback, "rate_result");
 		API.add_callback(self.song_fave_update, "fave_song_result");
 		API.add_callback(self.album_fave_update, "fave_album_result");
 		API.add_callback(self.history_update, "sched_history");
-		API.add_callback(function() { setTimeout(self.garbage_collection, 2000); }, "_SYNC_COMPLETE");
+		API.add_callback(function() { gc_timer = setTimeout(self.garbage_collection, 10000); }, "_SYNC_COMPLETE");
 	};
-	
+
 	self.rating_user_callback = function(json) {
 		// TODO: Show an error, maybe?  Is it handled by API.js...?
 		if (!json.success) return;
@@ -48,8 +49,10 @@ var RatingControl = function() {
 			self.album_rating_callback(album_id, rating, rating_user, rating_complete);
 		}
 	};
-	
+
 	self.garbage_collection = function() {
+		if (!gc_timer) return;
+		gc_timer = false;
 		var song_id, album_id, i;
 		for (song_id in song_ratings) {
 			for (i = song_ratings[song_id].length - 1; i >= 0; i--) {
@@ -58,7 +61,7 @@ var RatingControl = function() {
 				}
 			}
 		}
-		
+
 		for (album_id in album_ratings) {
 			for (i = album_ratings[album_id].length - 1; i >= 0; i--) {
 				if (!document.getElementById(album_ratings[album_id][i].html_id)) {
@@ -67,7 +70,7 @@ var RatingControl = function() {
 			}
 		}
 	};
-	
+
 	self.song_fave_update = function(json) {
 		if (!json.success) return;
 		if (json.id in song_ratings) {
@@ -76,7 +79,7 @@ var RatingControl = function() {
 			}
 		}
 	};
-	
+
 	self.album_fave_update = function(json) {
 		if (!json.success) return;
 		if (json.id in album_ratings) {
@@ -88,7 +91,7 @@ var RatingControl = function() {
 			self.fave_callback(json.id, json.fave);
 		}
 	};
-	
+
 	self.history_update = function(json) {
 		if (json.length > 0) {
 			if (("songs" in json[0]) && (json[0].songs.length > 0)) {
@@ -97,7 +100,7 @@ var RatingControl = function() {
 			}
 		}
 	};
-	
+
 	self.add = function(rating) {
 		var collection = rating.type == "song" ? song_ratings : album_ratings;
 		if (!(rating.id in collection)) collection[rating.id] = [];

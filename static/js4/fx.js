@@ -2,7 +2,9 @@ var Fx = function() {
 	"use strict";
 	var self = {};
 	self.transform_string = "transform";
+	self.delay_legacy_fx = false;
 	var delayed_css = [];
+	var delayed_fx = [];
 
 	var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
 	var performance = window.performance || { "now": function() { return new Date().getTime(); } };
@@ -42,13 +44,21 @@ var Fx = function() {
 		delayed_css = [];
 	};
 
+	var do_delayed_fx = function() {
+		for (var i = 0; i < delayed_fx.length; i++) {
+			delayed_fx[i]();
+		}
+		delayed_fx = [];
+		self.delay_legacy_fx = false;
+	}
+
 	self.delay_css_setting = function(el, attribute, value) {
 		if (attribute == "transform") {
 			attribute = self.transform_string;
 		}
 		delayed_css.push({ "el": el, "attribute": attribute, "value": value });
 		if (delayed_css.length == 1) {
-			requestAnimationFrame(do_delayed_css);
+			setTimeout(function() { requestAnimationFrame(do_delayed_css); }, 1);
 		}
 	};
 
@@ -89,8 +99,8 @@ var Fx = function() {
 			}
 			el.style.transition = "1s opacity";
 		}
-		self.chain_transition_css(el, "opacity", 0, 
-			function() { 
+		self.chain_transition_css(el, "opacity", 0,
+			function() {
 				if (el.parentNode) el.parentNode.removeChild(el);
 			}
 		);
@@ -108,7 +118,7 @@ var Fx = function() {
 	fxOne.set(1);
 	fxOne.start(0);
 	*/
-	
+
 	self.legacy_effect = function(effect, el, duration) {
 		var newfx;
 		if (!duration) {
@@ -128,7 +138,7 @@ var Fx = function() {
 		var now = 0;
 		var delta = 0;
 		var started = 0;
-		
+
 		newfx.element = el;
 		newfx.duration = duration;
 		newfx.unstoppable = false;
@@ -136,14 +146,14 @@ var Fx = function() {
 		if (!("onStart" in newfx)) newfx.onStart = false;
 		if (!("onComplete" in newfx)) newfx.onComplete = false;
 		if (!("onSet" in newfx)) newfx.onSet = false;
-		
+
 		// these are the same for all types of transforms
 		newfx.stop = function() {
 			if (newfx.stop_timer) clearTimeout(newfx.stop_timer);
 			if (newfx.onComplete) newfx.onComplete(now);
 			newfx.now = now;
 		};
-		
+
 		newfx.set = function(nn) {
 			now = nn;
 			to = nn;
@@ -151,8 +161,15 @@ var Fx = function() {
 			newfx.update(nn);
 			newfx.now = now;
 		};
-		
+
 		newfx.start = function(stopat) {
+			if (self.delay_legacy_fx) {
+				delayed_fx.push(function() { newfx.start(stopat); });
+				if (delayed_fx.length == 1) {
+					setTimeout(function() { requestAnimationFrame(do_delayed_fx); }, 1);
+				}
+				return;
+			}
 			var temptime = performance.now();
 			if (arguments.length == 2) {
 				now = arguments[0];
@@ -170,10 +187,10 @@ var Fx = function() {
 			if (newfx.onStart) newfx.onStart(now);
 			step(started);
 		};
-		
+
 		var step = function(steptime) {
 			if (!steptime) steptime = new Date().getTime();
-			
+
 			if ((steptime < (started + duration)) && (now != to)) {
 				// This is all Robert Penner's work, as you might imagine...
 				// First formula: sinOut
@@ -198,15 +215,15 @@ var Fx = function() {
 
 		return newfx;
 	};
-	
+
 	// ************************************************************** ANIMATION FUNCTIONS
 
 	self.CSSNumeric = function(element, attribute, unit) {
 		var cssnfx = {};
 		if (!unit) unit = "";
 		cssnfx.transition_name = attribute;
-		
-		if (attribute == "opacity") {		
+
+		if (attribute == "opacity") {
 			cssnfx.update = function(now) {
 				element.style[attribute] = now.toFixed(2) + unit;
 			};
@@ -221,7 +238,7 @@ var Fx = function() {
 				element.style[attribute] = now + unit;
 			};
 		}
-		
+
 		return cssnfx;
 	};
 
@@ -249,6 +266,6 @@ var Fx = function() {
 
 		return r;
 	};
-	
+
 	return self;
 }();
