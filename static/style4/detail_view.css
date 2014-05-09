@@ -78,7 +78,8 @@ table.songlist tr td:hover {
 }
 
 td.songlist_title, td.songlist_artists {
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: scroll;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
@@ -131,7 +132,7 @@ table.songlist td.songlist_requestable {
 }
 
 table.songlist td.songlist_not_requestable {
-	width: 16px;	
+	width: 16px;
 }
 
 table.songlist td.songlist_requestable span {
