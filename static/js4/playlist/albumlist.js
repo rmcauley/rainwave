@@ -73,7 +73,7 @@ var AlbumList = function(offset_width, parent_el) {
 		item._el_text_span._id = item.id;
 
 		// save a function call if we can with an if statement here
-		if (item.cool && (item.cool_lowest > Clock.now)) self.update_cool(item);
+		if (item.cool && (item.cool_lowest > Clock.now)) self.update_cool_delayed(item);
 
 		// this is duplicate functionality from update_item_element, again to try and streamline
 		// a heavy process
