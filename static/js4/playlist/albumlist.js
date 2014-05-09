@@ -18,7 +18,7 @@ var AlbumList = function(offset_width, parent_el) {
 
 	var self = SearchList("all_albums", "name", "name_searchable", parent_el);
 	self.tab_el = $el("li", { "textContent": $l("Albums"), "class": "link" });
-	self.tab_el.addEventListener("click", function() { 
+	self.tab_el.addEventListener("click", function() {
 		if (!self.loaded) {
 			API.async_get("all_albums");
 		}
@@ -71,7 +71,7 @@ var AlbumList = function(offset_width, parent_el) {
 		item._el_text_span.className = "searchlist_name";
 		item._el_text_span.textContent = item.name;
 		item._el_text_span._id = item.id;
-		
+
 		// save a function call if we can with an if statement here
 		if (item.cool && (item.cool_lowest > Clock.now)) self.update_cool(item);
 
@@ -81,11 +81,11 @@ var AlbumList = function(offset_width, parent_el) {
 		if (item.rating_complete) item._el.className += " searchlist_rating_complete";
 		if (item.rating_user) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
-			item._el.style.backgroundPosition = (offset_width - rating_offset) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
+			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
 		}
 		else if (item.rating) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
-			item._el.style.backgroundPosition = (offset_width - rating_offset) + "px " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top) + "px";	
+			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
 		}
 
 		item._el.appendChild(item._el_text_span);
@@ -101,7 +101,7 @@ var AlbumList = function(offset_width, parent_el) {
 		return true;
 	};
 
-	self.update_cool = function(item) {
+	self.update_cool_delayed = function(item) {
 		if (item.cool && (item.cool_lowest > Clock.now)) {
 			item._el_cool.textContent = Formatting.cooldown_glance(item.cool_lowest - Clock.now);
 			$add_class(item._el, "searchlist_cooldown");
@@ -119,7 +119,7 @@ var AlbumList = function(offset_width, parent_el) {
 		else {
 			$remove_class(item._el, "searchlist_fave_on");
 		}
-		if (item.rating_complete) { 
+		if (item.rating_complete) {
 			$add_class(item._el, "searchlist_rating_complete");
 		}
 		else {
@@ -131,7 +131,7 @@ var AlbumList = function(offset_width, parent_el) {
 		}
 		else if (item.rating) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
-			item._el.style.backgroundPosition = (offset_width - rating_offset) + "px " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top) + "px";	
+			item._el.style.backgroundPosition = (offset_width - rating_offset) + "px " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
 		}
 	};
 
@@ -169,7 +169,7 @@ var AlbumList = function(offset_width, parent_el) {
 			if (self.data[a].cool === false) return 1;
 			else return 0;
 		}
-		
+
 		if (self.data[a].updated < self.data[b].updated) return 1;
 		if (self.data[a].updated > self.data[b].updated) return -1;
 

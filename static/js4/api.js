@@ -175,8 +175,10 @@ var API = function() {
 		else {
 			sync_error_count = 0;
 			offline_ack = false;
+			Fx.delay_legacy_fx = true;
 			perform_callbacks(response);
 			perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
+			Fx.do_delayed_fx();
 			if ("error" in response) {
 				sync_restart_pause = 6000;
 				if (response.error.code != 200) {

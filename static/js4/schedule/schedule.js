@@ -38,7 +38,7 @@ var Schedule = function() {
 		time_bar_progress = Fx.legacy_effect(Fx.CSSNumeric, $id("timeline_header_now_playing_bar_inside"), 700, "width", "%");
 		history_bar = $id("timeline_header_history_bar");
 
-		header_height = $measure_el(history_header).height - 8;	// -8 ties into the .header_height definition in timeline.css
+		header_height = $measure_el($id("timeline_height_measure")).height - 8;	// -8 ties into the .header_height definition in timeline.css
 
 		Fx.delay_css_setting($id("timeline_header_history"), "opacity", 1);
 		Fx.delay_css_setting($id("timeline_header_now_playing"), "opacity", 1);

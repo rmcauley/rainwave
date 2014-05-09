@@ -13,14 +13,14 @@ var PlaylistLists = function() {
 	self.initialize = function() {
 		Prefs.define("searchlist_show_cooldown");
 
-		tabs_el = $id("lists_tabs").appendChild($el("ul", { "class": "lists_tabs" }));
+		tabs_el = $id("lists_tabs");
 		search_box = $id("lists_searchbox").appendChild($el("div", { "class": "searchlist_searchbox" }));
 		search_cancel = search_box.appendChild($el("img", { "src": "/static/images4/cancel_ldpi.png", "class": "searchlist_cancel", "alt": "X", "title": $l("clearfilter") }))
 		search_cancel.addEventListener("click", function() { self.active_list.clear_search(); });
 
 		el = $id("lists_container");
 
-		var ow = el.offsetWidth - 20;
+		var ow = 20;
 		lists.all_albums = AlbumList(ow - 20, el);
 		lists.all_albums._scroll_position = 0;
 		tabs_el.appendChild(lists.all_albums.tab_el);

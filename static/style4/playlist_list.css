@@ -12,6 +12,21 @@
 
 #lists_tabs {
 	padding: 4px 0 0 0;
+	list-style: none;
+	margin: 0 0 0 5px;
+	background: #1f2022;
+}
+
+#lists_tabs li {
+	padding: 0 10px 0 0;
+	display: inline;
+	cursor: default;
+	color: $vdarktext;
+	@include transition(LINKCOLOR, background-color, opacity);
+}
+
+#lists_tabs li.list_tab_open {
+	color: $highlight;
 }
 
 #lists_searchbox {
@@ -22,32 +37,13 @@
 	overflow: hidden;
 }
 
-ul.lists_tabs {
-	list-style: none;
-	margin: 0 0 0 5px;
-	padding: 0;
-	background: #1f2022;
-}
-
-ul.lists_tabs li {
-	padding: 0 10px 0 0;
-	display: inline;
-	cursor: default;
-	color: $vdarktext;
-	@include transition(LINKCOLOR, background-color, opacity);
-}
-
-ul.lists_tabs li.list_tab_open {
-	color: $highlight;
-}
-
 div.searchlist_searchbox {
 	border-top: solid 1px $vdarktext;
 	border-bottom: solid 1px $vvdarktext;
 	background: #1f2022;
 }
 
-div.searchlist_input {
+#searchlist_input {
 	background-color: #0e0e0f;
 	border: none;
 	color: $vdarktext;

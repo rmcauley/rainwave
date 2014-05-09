@@ -56,6 +56,9 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 				self.update_cool(data[i]);
 			}
 		}
+		else if (self.update_cool_delayed) {
+			self.update_cool = self.update_cool_delayed;
+		}
 	};
 
 	self.update_item = function(json) {

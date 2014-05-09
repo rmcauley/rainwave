@@ -45,6 +45,7 @@ function initialize() {
 		get_vars[key] = value;
 	});
 
+	Fx.delay_legacy_fx = true;
 	_size_calculate();
 	window.addEventListener("resize", _on_resize, false);
 

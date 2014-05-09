@@ -22,7 +22,9 @@
 <body onload="initialize();">
 	{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
 	<audio preload="none" id="audio"></audio>
-	<div id="measure_box"></div>
+	<div id="measure_box">
+		<div id="timeline_height_measure" class="timeline_header">Hello</div>
+	</div>
 	<div id="menu">
 		<img src="/static/images4/logo.png" id="rainwave_logo"></img>
 		<ul id="station_select"></ul>
@@ -48,8 +50,10 @@
 			<div id="timeline_header_history_bar" class="timeline_header_bar"></div>
 		</div>
 		<div id="lists">
-			<div id="lists_tabs"></div>
-			<div id="lists_searchbox"></div>
+			<ul id="lists_tabs"></ul>
+			<div id="lists_searchbox">
+				<div id="searchlist_input"></div>
+			</div>
 			<div id="lists_container"></div>
 		</div>
 		<div id="detail"></div>
