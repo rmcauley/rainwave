@@ -95,22 +95,22 @@ var PlaylistLists = function() {
 	return self;
 }();
 
-var PlaylistScrollbar = function(element) {
-	"use strict";
-	var self = Scrollbar.new(element, 0, true);
+// var PlaylistScrollbar = function(element) {
+// 	"use strict";
+// 	var self = Scrollbar.new(element, 0, true);
 
-	self.update_scroll_height = function(force_height, list_name) {
-		if (list_name == PlaylistLists.active_list.list_name) {
-			if (force_height) self.parent_update_scroll_height(force_height);
-			else self.parent_update_scroll_height(PlaylistLists.active_list.el.scrollHeight);
-		}
-	};
+// 	self.update_scroll_height = function(force_height, list_name) {
+// 		if (list_name == PlaylistLists.active_list.list_name) {
+// 			if (force_height) self.parent_update_scroll_height(force_height);
+// 			else self.parent_update_scroll_height(PlaylistLists.active_list.el.scrollHeight);
+// 		}
+// 	};
 
-	self.update_handle_position = function(list_name) {
-		if (list_name == PlaylistLists.active_list.list_name) {
-			self.parent_update_handle_position();
-		}
-	};
+// 	self.update_handle_position = function(list_name) {
+// 		if (list_name == PlaylistLists.active_list.list_name) {
+// 			self.parent_update_handle_position();
+// 		}
+// 	};
 
-	return self;
-};
+// 	return self;
+// };

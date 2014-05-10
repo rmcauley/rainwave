@@ -40,6 +40,7 @@ var Scrollbar = function() {
 		// this function will handle a browser's automatic re-scroll when the page finishes loading
 		var first_scroll = function() {
 			self.scroll_top = element.scrollTop;
+			this.set_scrollTop(self.scroll_top);
 			self.parent_update_handle_position();
 			element.removeEventListener("scroll", first_scroll);
 			first_scroll = null;

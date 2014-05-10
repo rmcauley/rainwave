@@ -19,6 +19,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	self.el = $el("div", { "class": "searchlist" });
 	self.scrollbar = Scrollbar.new(self.el);
 	var scrollbar = self.scrollbar;
+	scrollbar.use_fixed = true;
 	self.search_box_input = $el("div", { "class": "searchlist_input", "textContent": $l("filter") });
 	self.search_box_input.addEventListener("keypress", function(e) { e.preventDefault(); });
 	// see bottom of this object for event binding
@@ -27,6 +28,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	self.data = data;
 	self.loaded = false;
 	var sorted = [];			// list of IDs sorted by the sort_function (always maintained, contains all IDs)
+	var visible = [];			// list of IDs sorted by the sort_function (visible on screen)
 	var reinsert = [];			// list of IDs unsorted - will be resorted in the list when the user is not in a search
 	var hidden = [];			// list of IDs unsorted - currently hidden from view during a search
 	var hotkey_mode_on = false;
@@ -34,10 +36,9 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	var search_string = "";
 	var current_key_nav_element = false;
 	var current_open_element = false;
-	var scroll_offset = 140;
+	var scroll_offset = 10;
 	var item_height;
 	var num_items_to_display;
-	var rendering = false;
 	var waiting_for_render = false;
 	var scroll_index = false;
 
@@ -191,6 +192,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			sorted.push(next_reinsert_id);
 			next_reinsert_id = reinsert.pop();
 		}
+		visible = sorted.slice(0);
 
 		// add the node to the parent (this defers rendering to the last possible moment)
 		if (!self.el.parentNode) {
@@ -201,9 +203,8 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	};
 
 	self.update_scroll_height = function() {
-		var full_height = item_height * (sorted.length - hidden.length - 2) + 5;
+		var full_height = item_height * visible.length;
 		num_items_to_display = Math.ceil(self.offset_height / item_height);
-		scroll_index = false;
 		scrollbar.update_scroll_height(full_height, list_name);
 	};
 
@@ -332,14 +333,31 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		else if (search_string.length > 1) {
 			search_string = search_string.substring(0, search_string.length - 1);
 			self.search_box_input.textContent = search_string;
+		
 			var use_search_string = Formatting.make_searchable_string(search_string);
+			var revisible = [];
 			for (var i = hidden.length - 1; i >= 0; i--) {
 				if (data[hidden[i]]._searchname.indexOf(use_search_string) > -1) {
 					data[hidden[i]]._el._hidden = false;
-					data[hidden[i]]._el.style.display = "block";
-					hidden.splice(i, 1);
+					revisible.push(hidden.splice(i, 1)[0]);
 				}
 			}
+		
+			// o(n) sorted insert like update_view
+			revisible.sort(self.sort_function);
+			var next_reinsert_id = revisible.pop();
+			for (var i = visible.length - 1; i >= 0; i--) {
+				if (next_reinsert_id && (self.sort_function(next_reinsert_id, visible[i]) == -1)) {
+					visible.splice(i - 1, 0, next_reinsert_id);
+					next_reinsert_id = revisible.pop();
+				}
+			}
+			while (next_reinsert_id) {
+				visible.push(next_reinsert_id);
+				next_reinsert_id = revisible.pop();
+			}
+
+			scroll_index = false;
 			self.update_scroll_height();
 			return true;
 		}
@@ -356,20 +374,17 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			hotkey_mode_enable();
 			return true;
 		}
-		if (search_string.length == 0) {
-			scrollbar.scroll_to(0);
-		}
 		search_string = search_string + character;
 		self.search_box_input.textContent = search_string;
 		$add_class(self.search_box_input, "searchlist_input_active");
 		var use_search_string = Formatting.make_searchable_string(search_string);
-		for (var i = 0; i < sorted.length; i++) {
-			if (!data[sorted[i]]._el._hidden && (data[sorted[i]]._searchname.indexOf(use_search_string) == -1)) {
-				data[sorted[i]]._el._hidden = true;
-				data[sorted[i]]._el.style.display = "none";
-				hidden.push(sorted[i]);
+		for (var i = visible.length - 1; i >= 0; i--) {
+			if (data[visible[i]]._searchname.indexOf(use_search_string) == -1) {
+				data[visible[i]]._el._hidden = true;
+				hidden.push(visible.splice(i, 1)[0]);
 			}
 		}
+		scroll_index = false;
 		self.update_scroll_height();
 		return true;
 	};
@@ -377,20 +392,20 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	self.clear_search = function() {
 		hotkey_mode_disable();
 		search_string = "";
-		self.search_box_input.textContent = $l("filter");
 		$remove_class(self.search_box_input, "searchlist_input_active");
 		self.remove_key_nav_highlight();
 
 		for (var i = 0; i < hidden.length; i++) {
 			data[hidden[i]]._el._hidden = false;
-			data[hidden[i]]._el.style.display = "block";
 		}
 		hidden = [];
+		visible = sorted.slice(0);
 
 		if (reinsert.length > 0) {
 			self.update_view();
 		}
 		else {
+			scroll_index = false;
 			self.update_scroll_height();
 		}
 	};
@@ -401,22 +416,26 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	// it's important to retain this so the scrollTop isn't shoved 100px in one direction
 	// when a user clicks on an album that isn't the key nav item
 
-	self.update_scroll_offset_by_evt = function(evt) {
-		self.set_scroll_offset(evt.target.offsetTop - scrollbar.scroll_top);
-	};
+	// self.update_scroll_offset_by_evt = function(evt) {
+	// 	self.set_scroll_offset(Math.floor(evt.target.offsetTop / item_height));
+	// };
 
-	self.update_scroll_offset_by_id = function(id) {
-		if (id in data) self.update_scroll_offset(data[id]);
-	};
+	// self.update_scroll_offset_by_id = function(id) {
+	// 	if (id in data) self.update_scroll_offset_by_item(data[id]);
+	// };
 
 	self.update_scroll_offset_by_item = function(data_item) {
-		self.set_scroll_offset(data_item._el.offsetTop - scrollbar.scroll_top);
+		// element is currently onscreen - set new offset
+		if (data_item._el.parentNode) {
+			self.set_scroll_offset(Math.floor(data_item._el.offsetTop / item_height));	
+		}
 	};
 
 	self.set_scroll_offset = function(offset) {
-		if (!offset) offset = 140;
-		else if (offset > (self.offset_height - 70)) return;
-		else if (offset < 140) offset = 140;
+		var magic_number = Math.round(num_items_to_display / 5);
+		if (!offset) offset = magic_number;
+		else if (offset > (num_items_to_display - magic_number)) return;
+		else if (offset < magic_number) offset = magic_number;
 		scroll_offset = offset;
 	};
 
@@ -430,39 +449,62 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 
 	self.scroll_to = function(data_item) {
 		if (data_item) {
-			scrollbar.scroll_to(data_item._el.offsetTop - scroll_offset);
-			scrollbar.update_handle_position(list_name);
+			self.scroll_to_index(visible.indexOf(data_item.id));
 		}
 	};
 
 	scrollbar.set_scrollTop = function(scroll_top) {
-		if (rendering) {
-			waiting_for_render = true;
-			return;
-		}
-		rendering = true;
-		var visible_range_start = Math.floor(scroll_top / item_height);
+		self.scroll_to_index(Math.floor(scroll_top / item_height));
+	};
 
+	//var dbgd = ErrorHandler.make_debug_div();
+	self.scroll_to_index = function(new_index) {
+		if (new_index >= (visible.length - num_items_to_display)) {
+			new_index = visible.length - num_items_to_display;
+		}
+		if (new_index < 0) {
+			new_index = 0;
+		}
+
+		var display_count;
+		//dbgd.textContent = new_index + " - " + scrollbar.scroll_top + " - " + scroll_offset;
 		var i = 0;
 		// full reset
-		if (!scroll_index) {
-			while (self.el.firstChild) {
-    			self.el.removeChild(self.el.firstChild);
+		if (scroll_index === false) {
+			while (self.el.firstChild.nextSibling) {
+    			self.el.removeChild(self.el.lastChild);
 			}
-			while ((i <= num_items_to_display) && (i + visible_range_start < sorted.length)) {
-				self.el.appendChild(data[sorted[i + visible_range_start]]._el);
-				i++;
+			display_count = 0;
+			for (i = new_index; (i < (new_index + num_items_to_display)) && (i < visible.length); i++) {
+				self.el.appendChild(data[visible[i]]._el);
 			}
 		}
 		// scrolling up
-		else if (visible_range_start < scroll_index) {
-
+		else if (new_index < scroll_index) {
+			for (i = scroll_index; i >= new_index; i--) {
+				self.el.insertBefore(data[visible[i]]._el, self.el.firstChild.nextSibling);
+			}
+			display_count = self.el.childNodes.length - 1;
+			while (display_count > num_items_to_display) {
+				self.el.removeChild(self.el.lastChild);
+				display_count--;
+			}
 		}
-		// scrolling down
-		else if (visible_range_start > scroll_index) {
-
+		// scrolling down (or starting fresh)
+		else if (new_index > scroll_index) {
+			for (i = (scroll_index + num_items_to_display); ((i < (new_index + num_items_to_display)) && (i < visible.length)) ; i++) {
+				self.el.appendChild(data[visible[i]]._el);
+			}
+			display_count = self.el.childNodes.length - 1;
+			while (display_count > num_items_to_display) {
+				self.el.removeChild(self.el.firstChild.nextSibling);
+				display_count--;
+			}
 		}
-		rendering = false;
+		scroll_index = new_index;
+
+		scrollbar.scroll_top = new_index * item_height;
+		scrollbar.update_handle_position();
 	};
 
 	// NAV *****************************
