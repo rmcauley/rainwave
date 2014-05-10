@@ -36,7 +36,7 @@ var Requests = function() {
 			container.className = "sticky";
 		}
 		container.addEventListener("mouseover", mouse_over);
-		//scroller = Scrollbar.new(container, 22);
+		scroller = Scrollbar.new(container, 22);
 		$id("requests_pin").addEventListener("click", self.swap_sticky);
 		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
 		$id("requests_pause").setAttribute("title", $l("pause_request_queue"));
@@ -158,7 +158,7 @@ var Requests = function() {
 			}
 			running_height += TimelineSong.height;
 		}
-		//if (scroller) scroller.update_scroll_height(running_height);
+		if (scroller) scroller.update_scroll_height(running_height);
 	};
 
 	// DRAG AND DROP *********************************************************

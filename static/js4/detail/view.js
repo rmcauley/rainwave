@@ -13,8 +13,8 @@ var DetailView = function() {
 			$add_class(el, "songlist_request_hint");
 			Prefs.add_callback("request_made", request_made_changed);
 		}
-		// scroller = Scrollbar.new(el);
-		// scroller.update_scroll_height();
+		scroller = Scrollbar.new(el);
+		scroller.update_scroll_height();
 		API.add_callback(draw_album, "album");
 		API.add_callback(album_diff_handler, "album_diff");
 		API.add_callback(draw_artist, "artist");
@@ -29,7 +29,7 @@ var DetailView = function() {
 			$remove_class(el, "songlist_request_hint");
 		}
 	}
-
+	
 	var create = function(type, id, render_function, json) {
 		while (open_views.length > 30) {
 			open_views.shift();
@@ -108,7 +108,7 @@ var DetailView = function() {
 		DeepLinker.change_url("listener", id);
 	};
 
-	var open_album_internal = function(id) {
+	var open_album_internal = function(id) { 
 		PlaylistLists.set_new_open("all_albums", id);
 		return open_internal("album", id);
 	};
@@ -122,7 +122,7 @@ var DetailView = function() {
 		PlaylistLists.set_new_open("current_listeners", id);
 		return open_internal("listener", id);
 	};
-
+	
 	var open_internal = function(type, id) {
 		id = parseInt(id);
 		if (!id || id == NaN) {
