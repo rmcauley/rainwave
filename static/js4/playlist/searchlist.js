@@ -11,6 +11,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	"use strict";
 	var self = {};
 	self.list_name = list_name;
+	self.offset_height;
 	self.sort_key = sort_key;
 	self.search_key = search_key || "id";
 	self.auto_trim = false;
@@ -35,6 +36,10 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	var current_open_element = false;
 	var scroll_offset = 140;
 	var item_height;
+	var num_items_to_display;
+	var rendering = false;
+	var waiting_for_render = false;
+	var scroll_index = false;
 
 	// LIST MANAGEMENT ***********************************************
 
@@ -48,6 +53,11 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		}
 		for (i in json) {
 			self.update_item(json[i]);
+		}
+		// now calculate 1 item's height. we'll use this to sidestep calculating the entire
+		// height of all elements on update_scroll_height.
+		if (!item_height) {
+			item_height = $measure_el(json[0]._el).height;
 		}
 		if (self.after_update) self.after_update(json, data, sorted);
 		self.update_view();
@@ -101,9 +111,6 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 
 	self.reflow_container = function() {
 		sorted.sort(self.sort_function);
-		for (var i = 0; i < sorted.length; i++) {
-			self.el.appendChild(data[sorted[i]]._el);
-		}
 		self.update_scroll_height();
 	};
 
@@ -171,12 +178,10 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		var next_reinsert_id = reinsert.pop();
 		for (var i = sorted.length - 1; i >= 0; i--) {
 			if (data[sorted[i]]._delete) {
-				self.el.removeChild(data[sorted[i]]._el);
 				delete(data[sorted[i]]);
 				sorted.splice(i, 1);
 			}
 			else if (next_reinsert_id && (self.sort_function(next_reinsert_id, sorted[i]) == -1)) {
-				self.el.insertBefore(data[next_reinsert_id]._el, data[sorted[i]]._el.nextSibling);
 				sorted.splice(i - 1, 0, next_reinsert_id);
 				next_reinsert_id = reinsert.pop();
 			}
@@ -184,7 +189,6 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		// finish adding any leftovers at the bottom of the pile
 		while (next_reinsert_id) {
 			sorted.push(next_reinsert_id);
-			self.el.appendChild(data[next_reinsert_id]._el);
 			next_reinsert_id = reinsert.pop();
 		}
 
@@ -193,16 +197,14 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			parent_el.appendChild(self.el);
 		}
 
-		// now calculate 1 item's height. we'll use this to sidestep calculating the entire
-		// height of all elements on update_scroll_height.
-		// if (!item_height) {
-		// 	item_height = data[sorted[0]]._el.offsetHeight;
-		// }
 		self.update_scroll_height();
 	};
 
 	self.update_scroll_height = function() {
-		scrollbar.update_scroll_height(item_height * (sorted.length - hidden.length - 2) + 5, list_name);
+		var full_height = item_height * (sorted.length - hidden.length - 2) + 5;
+		num_items_to_display = Math.ceil(self.offset_height / item_height);
+		scroll_index = false;
+		scrollbar.update_scroll_height(full_height, list_name);
 	};
 
 	self.sort_function = function(a, b) {
@@ -413,7 +415,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 
 	self.set_scroll_offset = function(offset) {
 		if (!offset) offset = 140;
-		else if (offset > (self.el.parentNode.offsetHeight - 70)) return;
+		else if (offset > (self.offset_height - 70)) return;
 		else if (offset < 140) offset = 140;
 		scroll_offset = offset;
 	};
@@ -431,6 +433,36 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			scrollbar.scroll_to(data_item._el.offsetTop - scroll_offset);
 			scrollbar.update_handle_position(list_name);
 		}
+	};
+
+	scrollbar.set_scrollTop = function(scroll_top) {
+		if (rendering) {
+			waiting_for_render = true;
+			return;
+		}
+		rendering = true;
+		var visible_range_start = Math.floor(scroll_top / item_height);
+
+		var i = 0;
+		// full reset
+		if (!scroll_index) {
+			while (self.el.firstChild) {
+    			self.el.removeChild(self.el.firstChild);
+			}
+			while ((i <= num_items_to_display) && (i + visible_range_start < sorted.length)) {
+				self.el.appendChild(data[sorted[i + visible_range_start]]._el);
+				i++;
+			}
+		}
+		// scrolling up
+		else if (visible_range_start < scroll_index) {
+
+		}
+		// scrolling down
+		else if (visible_range_start > scroll_index) {
+
+		}
+		rendering = false;
 	};
 
 	// NAV *****************************

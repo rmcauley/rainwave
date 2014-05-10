@@ -52,7 +52,7 @@ var Scrollbar = function() {
 			if (new_scroll_top < 0) new_scroll_top = 0;
 			if (max_scroll_top < new_scroll_top) new_scroll_top = max_scroll_top;
 			self.scroll_top = new_scroll_top;
-			element.scrollTop = new_scroll_top;
+			self.set_scrollTop(new_scroll_top);
 			self.parent_update_handle_position(); 
 		};
 
@@ -71,7 +71,7 @@ var Scrollbar = function() {
 
 			if (self.scroll_top > max_scroll_top) {
 				self.scroll_top = max_scroll_top;
-				element.scrollTop = max_scroll_top;
+				self.set_scrollTop(max_scroll_top);
 			}
 
 			// updates the handle to be the correct percentage of the screen, never less than 10% for size issues
@@ -106,6 +106,10 @@ var Scrollbar = function() {
 			if (resizer) resizer.style.top = self.scroll_top + "px";
 		};
 
+		self.set_scrollTop = function(scroll_top) {
+			element.scrollTop = scroll_top;
+		}
+
 		self.update_handle_position = self.parent_update_handle_position;
 
 		var mouse_move = function(e) {
@@ -117,7 +121,7 @@ var Scrollbar = function() {
 				new_scroll_top = 0;
 			}
 			self.scroll_top = new_scroll_top;
-			element.scrollTop = self.scroll_top;
+			self.set_scrollTop(self.scroll_top);
 			self.parent_update_handle_position();
 		};
 
@@ -154,7 +158,7 @@ var Scrollbar = function() {
 				new_scroll_top = 0;
 			}
 			self.scroll_top = new_scroll_top;
-			element.scrollTop = new_scroll_top;
+			self.set_scrollTop(new_scroll_top);
 			self.parent_update_handle_position();
 		};
 
@@ -207,6 +211,8 @@ var Scrollbar = function() {
 			}
 			element.style.width = resizer_new_width + "px";
 		};
+
+
 
 		handle.addEventListener("mousedown", mouse_down);
 		addWheelListener(element, mouse_wheel);

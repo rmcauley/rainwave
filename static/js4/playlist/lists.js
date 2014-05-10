@@ -74,6 +74,7 @@ var PlaylistLists = function() {
 		if (el) {
 			el.style.height = new_height - margin_top + "px";
 			for (var key in lists) {
+				lists[key].offset_height = new_height;
 				lists[key].scrollbar.update_scroll_height();
 			}
 		}
