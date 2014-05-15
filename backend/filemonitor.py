@@ -7,6 +7,8 @@ import asyncore
 import psutil
 from PIL import Image
 
+# This will be checked later on to make sure that we've actually successfully
+# imported WatchManager.  (notably, WatchManager is not available on Windows)
 _wm = None
 if os.name != "nt":
 	import pyinotify
@@ -20,12 +22,22 @@ from libs import db
 from rainwave import playlist
 
 _directories = {}
+# Scan errors is pulled from/pushed to cache and is volatile. (not saved to db)
 _scan_errors = None
+# The album art queue is used on a full scan to wait until the END of the scan
+# to process album art.  Art can scan before an album has been created, so we
+# need to account for that.
 _album_art_queue = None
 _use_album_art_queue = False
 mimetypes.init()
 
 def start(full_scan = False, art_scan = False):
+	# Starts watching or scanning directories.
+	# full_scan will mean no watching/inotify and will do a full scan of all files
+	# art_scan is the same idea - but only for image files, not for music + images.
+	#
+	# I'm not sure why there's a full_art_update AND album_art_queue.
+	# Sounds like you don't need one without the other.  Derp.
 	global _directories
 	global _scan_errors
 
@@ -34,6 +46,7 @@ def start(full_scan = False, art_scan = False):
 		_scan_errors = []
 	_directories = config.get("song_dirs")
 
+	# Can't nice and ionice on Windows.
 	if os.name != "nt":
 		p = psutil.Process(os.getpid())
 		p.set_nice(10)
@@ -53,10 +66,12 @@ def full_update():
 	global _use_album_art_queue
 	global _album_art_queue
 
-	cache.set("backend_scan", "full scan")
+	# Flags all songs as unscanned - any songs left at the end of the scan with this
+	# flag still as FALSE have been deleted.
 	db.c.update("UPDATE r4_songs SET song_scanned = FALSE")
 	_album_art_queue = []
 	_use_album_art_queue = True
+	# Scan the MP3s!
 	_scan_directories()
 
 	print "\n",
@@ -73,9 +88,10 @@ def full_update():
 	print "\rMissing songs disabled.   "
 	print "Complete."
 
-	cache.set("backend_scan", "off")
-
 def _fix_codepage_1252(filename, path = None):
+	# Goddamned codepage 1252 and its stupid crap mucking up my filenames.
+	# The streaming program hates anything not ASCII when reading in filenames,
+	# so this function strips non-ASCII characters out of the filename.
 	fqfn = filename
 	if path:
 		fqfn = os.path.normpath(path + os.sep + filename)
@@ -101,6 +117,7 @@ def _fix_codepage_1252(filename, path = None):
 	return fqfn
 
 def _scan_directories(album_art_only = False):
+	# Scans all directories.  NON-RECURSIVE.
 	global _scan_errors
 	global _directories
 
@@ -162,12 +179,14 @@ def _scan_file(filename, sids, throw_exceptions = False, album_art_only = False)
 			raise
 
 def process_album_art(filename, sids):
-	# There's an ugly bug here where psycopg isn't correctly escaping the path's \ on Windows
-	# So we need to repr() in order to get the proper number of \ and then chop the leading and trailing single-quotes
-	# Nasty bug.  This workaround needs to be tested on a POSIX system.
+	# Processes album art by finding the album IDs that are associated with the songs that exist
+	# in the same directory as the image file.
 	try:
 		if not config.get("album_art_enabled"):
 			return True
+		# There's an ugly bug here where psycopg isn't correctly escaping the path's \ on Windows
+		# So we need to repr() in order to get the proper number of \ and then chop the leading and trailing single-quotes
+		# Nasty bug.  This workaround needs to be more thoroughly tested, admittedly, but appears to work fine on Linux as well.
 		directory = repr(os.path.dirname(filename) + os.sep)[2:-1]
 		album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE song_filename LIKE %s || '%%'", (directory,))
 		if not album_ids or len(album_ids) == 0:
@@ -203,6 +222,7 @@ def process_album_art(filename, sids):
 		return False
 
 def _disable_file(filename):
+	# aka "delete this off the playlist"
 	log.debug("scan", "Attempting to disable file: {}".format(filename))
 	try:
 		if _is_mp3(filename):
@@ -212,6 +232,7 @@ def _disable_file(filename):
 		_add_scan_error(filename, xception)
 
 def _add_scan_error(filename, xception):
+	# we had an oopsie, log it
 	global _scan_errors
 
 	_scan_errors.insert(0, { "time": int(time.time()), "file": filename, "type": xception.__class__.__name__, "error": str(xception) })
@@ -228,6 +249,7 @@ def _save_scan_errors():
 	cache.set("backend_scan_errors", _scan_errors)
 
 def monitor():
+	# Monitor file deletions, additions, and moves in all music directories.
 	global _wm
 	if not _wm:
 		raise "Cannot monitor on Windows, or without pyinotify."
@@ -267,7 +289,6 @@ def monitor():
 	pid_file.write(str(pid))
 	pid_file.close()
 
-	cache.set("backend_scan", "monitoring")
 	mask = pyinotify.IN_DELETE | pyinotify.IN_CREATE | pyinotify.IN_MOVED_FROM | pyinotify.IN_MOVED_TO | pyinotify.IN_CLOSE_WRITE
 	notifier = pyinotify.AsyncNotifier(_wm, EventHandler())
 	descriptors = []
@@ -275,4 +296,3 @@ def monitor():
 		log.debug("scan", "Adding directory {} to watch list for sids {}".format(directory, sids))
 		descriptors.append(_wm.add_watch(directory, mask, rec=True, auto_add=True))
 	asyncore.loop()
-	cache.set("backend_scan", "off")
