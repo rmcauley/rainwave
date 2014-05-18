@@ -8,7 +8,6 @@ from libs import log
 
 c = None
 connection = None
-c_old = None
 
 # NOTE TO ALL:
 #
@@ -214,9 +213,8 @@ class SQLiteCursor(object):
 def open():
 	global connection
 	global c
-	global c_old
 
-	if c or c_old:
+	if c:
 		close()
 
 	type = config.get("db_type")
@@ -242,19 +240,9 @@ def open():
 		connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 		connection.autocommit = True
 		c = connection.cursor(cursor_factory=PostgresCursor)
-
-		if config.has("db_USE_LIVE_R3") and config.get("db_USE_LIVE_R3"):
-			c_old = None
-			connection = psycopg2.connect(base_connstr + "dbname=rainwave")
-			connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
-			connection.autocommit = True
-			c_old = connection.cursor(cursor_factory=PostgresCursor)
-		else:
-			c_old = c
 	elif type == "sqlite":
 		log.debug("dbopen", "Opening SQLite DB %s" % name)
 		c = SQLiteCursor(name)
-		c_old = c
 	else:
 		log.critical("dbopen", "Invalid DB type %s!" % type)
 		return False
@@ -264,11 +252,7 @@ def open():
 def close():
 	global connection
 	global c
-	global c_old
 
-	if c_old and (c_old != c):
-		c_old.rollback()
-		c_old.close()
 	if c:
 		# forgot to commit?  too bad.
 		c.rollback()

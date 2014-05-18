@@ -99,7 +99,7 @@ class User(object):
 		self.authorized = True
 		user_data = None
 		if not user_data:
-			user_data = db.c_old.fetch_row(
+			user_data = db.c.fetch_row(
 				"SELECT user_id AS id, username AS name, user_new_privmsg AS new_privmsg, user_avatar AS avatar, radio_requests_paused AS requests_paused, "
 					"user_avatar_type AS _avatar_type, radio_listenkey AS listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings "
 				"FROM phpbb_users WHERE user_id = %s",
@@ -390,7 +390,7 @@ class User(object):
 
 	def generate_listen_key(self):
 		listen_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
-		db.c_old.update("UPDATE phpbb_users SET radio_listenkey = %s WHERE user_id = %s", (listen_key, self.id))
+		db.c.update("UPDATE phpbb_users SET radio_listenkey = %s WHERE user_id = %s", (listen_key, self.id))
 		self.update({ "radio_listen_key": listen_key })
 
 	def ensure_api_key(self, ip_address = None):

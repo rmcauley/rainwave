@@ -257,7 +257,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				return True
 
 			if not self.user and self.get_cookie(phpbb_cookie_name + "k"):
-				can_login = db.c_old.fetch_var("SELECT 1 FROM phpbb_sessions_keys WHERE key_id = %s AND user_id = %s", (hashlib.md5(self.get_cookie(phpbb_cookie_name + "k")).hexdigest(), user_id))
+				can_login = db.c.fetch_var("SELECT 1 FROM phpbb_sessions_keys WHERE key_id = %s AND user_id = %s", (hashlib.md5(self.get_cookie(phpbb_cookie_name + "k")).hexdigest(), user_id))
 				if can_login == 1:
 					self._update_phpbb_session(self._get_phpbb_session(user_id))
 					self.user = User(user_id)
@@ -273,16 +273,16 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			user_id = self.user.id
 		cookie_session = self.get_cookie(config.get("phpbb_cookie_name") + "sid")
 		if cookie_session:
-			if cookie_session == db.c_old.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s AND session_id = %s", (user_id, cookie_session)):
+			if cookie_session == db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s AND session_id = %s", (user_id, cookie_session)):
 				self._update_phpbb_session(cookie_session)
 				return cookie_session
 		return None
 
 	def _get_phpbb_session(self, user_id = None):
-		return db.c_old.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s ORDER BY session_last_visit DESC LIMIT 1", (user_id,))
+		return db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s ORDER BY session_last_visit DESC LIMIT 1", (user_id,))
 
 	def _update_phpbb_session(self, session_id):
-		db.c_old.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(time.time()), "rainwave", session_id))
+		db.c.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(time.time()), "rainwave", session_id))
 
 	def rainwave_auth(self):
 		user_id_present = "user_id" in self.request.arguments
