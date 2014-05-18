@@ -60,7 +60,7 @@ if not args.apionly:
 	if libs.config.get("db_type") == "sqlite":
 	    libs.db.create_tables()
 	libs.cache.open()
-	libs.log.init("%s/rw_backend.%s.log" % (libs.config.get("log_dir"), username), libs.config.get("log_level"))
+	libs.log.init("%s/rw_backend.%s.log" % (libs.config.get_directory("log_dir"), username), libs.config.get("log_level"))
 
 	libs.cache.set_station(1, "sched_current", rainwave.event.Event())
 	rainwave.request.update_cache(1)

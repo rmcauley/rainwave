@@ -18,9 +18,9 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 	libs.config.load(args.config)
 	if libs.config.get("log_level") == "print":
-		libs.log.init("%s/rw_scanner.log" % libs.config.get("log_dir"), "debug")
+		libs.log.init("%s/rw_scanner.log" % libs.config.get_directory("log_dir"), "debug")
 	else:
-		libs.log.init("%s/rw_scanner.log" % libs.config.get("log_dir"), libs.config.get("log_level"))
+		libs.log.init("%s/rw_scanner.log" % libs.config.get_directory("log_dir"), libs.config.get("log_level"))
 	libs.db.open()
 	libs.cache.open()
 

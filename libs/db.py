@@ -282,7 +282,7 @@ def create_tables():
 	if c.is_postgres:
 		c.update("START TRANSACTION")
 
-	if config.test_mode:
+	if config.get("standalone_mode"):
 		_create_test_tables()
 
 	c.update(" \
@@ -661,7 +661,7 @@ def create_tables():
 	c.create_idx("r4_song_history", "sid")
 	c.create_delete_fk("r4_song_history", "r4_songs", "song_id")
 
-	if config.test_mode:
+	if config.get("standalone_mode"):
 		_fill_test_tables()
 
 	if c.is_postgres:

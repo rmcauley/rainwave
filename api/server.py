@@ -22,6 +22,7 @@ from libs import db
 from libs import chuser
 from libs import cache
 from rainwave import playlist
+from rainwave import schedule
 
 request_classes = [
 	(r"/api4/?", api.help.IndexRequest),
@@ -77,12 +78,12 @@ class APIServer(object):
 		port_no = int(config.get("api_base_port")) + task_id
 
 		pid = os.getpid()
-		pid_file = open("%s/api_%s.pid" % (config.get("pid_dir"), port_no), 'w')
+		pid_file = open("%s/api_%s.pid" % (config.get_directory("pid_dir"), port_no), 'w')
 		pid_file.write(str(pid))
 		pid_file.close()
 
 		# Log according to configured directory and port # we're operating on
-		log_file = "%s/rw_api_%s.log" % (config.get("log_dir"), port_no)
+		log_file = "%s/rw_api_%s.log" % (config.get_directory("log_dir"), port_no)
 		if config.test_mode and os.path.exists(log_file):
 			os.remove(log_file)
 		log.init(log_file, config.get("log_level"))
@@ -90,6 +91,17 @@ class APIServer(object):
 		db.open()
 		cache.open()
 
+		if config.get("web_developer_mode"):
+			for station_id in config.station_ids:
+				playlist.prepare_cooldown_algorithm(station_id)
+			# automatically loads every station ID and fills things in if there's no data
+			schedule.load()
+			for station_id in config.station_ids:
+				schedule._update_memcache(station_id)
+				cache.set_station(station_id, "backend_ok", True)
+				cache.set_station(station_id, "backend_message", "OK")
+				cache.set_station(station_id, "get_next_socket_timeout", False)
+		
 		for sid in config.station_ids:
 			cache.update_local_cache_for_sid(sid)
 			playlist.prepare_cooldown_algorithm(sid)
@@ -142,7 +154,7 @@ class APIServer(object):
 
 	def start(self):
 		# Bypass Tornado's forking processes for Windows machines if num_processes is set to 1
-		if config.get("api_num_processes") == 1:
+		if config.get("api_num_processes") == 1 or config.get("web_developer_mode"):
 			self._listen(0)
 		else:
 			# The way this works, is that the parent PID is hijacked away from us and everything after this

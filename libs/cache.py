@@ -31,7 +31,11 @@ def open():
 
 	if _memcache:
 		return
-	if not config.test_mode or config.get("test_use_memcache"):
+	if config.get("memcache_fake") or config.get("web_developer_mode"):
+	 	_memcache = TestModeCache()
+		_memcache_ratings = TestModeCache()
+		reset_station_caches()
+	else:
 		if __using_libmc:
 			_memcache = libmc.Client(config.get("memcache_servers"), binary = True)
 			_memcache.behaviors = { "tcp_nodelay": True, "ketama": config.get("memcache_ketama") }
@@ -42,10 +46,6 @@ def open():
 			_memcache_ratings = libmc.Client(config.get("memcache_ratings_servers"))
 		if not _memcache_ratings:
 			_memcache_ratings = _memcache
-	else:
-		_memcache = TestModeCache()
-		_memcache_ratings = TestModeCache()
-		reset_station_caches()
 
 def set(key, value, save_local = False):
 	if save_local or key in local:

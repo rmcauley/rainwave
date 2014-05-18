@@ -2,6 +2,7 @@ import json
 import os
 import getpass
 import tornado.escape
+import tempfile
 from libs import buildtools
 
 # Options hash - please don't access this externally in case the storage method changes
@@ -10,7 +11,7 @@ build_number = 0
 
 # This is used as a global flag.  Modules that require slightly different functionality
 # under test purposes (e.g. bypass song verification) will look here to see if we're
-# running in a test environment.
+# running unit tests.
 test_mode = False
 
 station_ids = set()
@@ -93,6 +94,12 @@ def require(key):
 def get(key):
 	require(key)
 	return _opts[key]
+
+def get_directory(key):
+	value = get(key)
+	if not value:
+		return tempfile.gettempdir()
+	return value
 
 def set_value(key, value):
 	_opts[key] = value
