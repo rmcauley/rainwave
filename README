@@ -2,8 +2,7 @@ This is the git project for the Rainwave website, http://rainwave.cc.
 
 == Quick Module Install for Debian/Ubuntu
 
-$ sudo apt-get install python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pyinotify python-pylibmc python-tornado python-objgraph
-$ sudo pip install pyScss
+$ sudo apt-get install python-pyscss python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pyinotify python-pylibmc python-tornado python-objgraph
 $ sudo pip install jsmin
 $ sudo pip install pytz
 

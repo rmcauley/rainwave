@@ -155,7 +155,7 @@ def _is_image(filename):
 	return False
 
 def _scan_file(filename, sids, throw_exceptions = False, album_art_only = False):
-	log.debug("scan", "sids: {} Scanning file: {}".format(sids, filename))
+	# log.debug("scan", u"sids: {} Scanning file: {}".format(sids, filename))
 	global _album_art_queue
 	global _use_album_art_queue
 	try:
@@ -163,10 +163,10 @@ def _scan_file(filename, sids, throw_exceptions = False, album_art_only = False)
 			# Only scan the file if we don't have a previous mtime for it, or the mtime is different
 			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s AND song_verified = TRUE", (filename,))
 			if not old_mtime or old_mtime != os.stat(filename)[8]:
-				log.debug("scan", "mtime mismatch, scanning for changes")
+				# log.debug("scan", "mtime mismatch, scanning for changes")
 				playlist.Song.load_from_file(filename, sids)
 			else:
-				log.debug("scan", "mtime match, no action taken")
+				# log.debug("scan", "mtime match, no action taken")
 				db.c.update("UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s", (filename,))
 		elif _is_image(filename):
 			if _use_album_art_queue:
@@ -232,7 +232,6 @@ def _disable_file(filename):
 		_add_scan_error(filename, xception)
 
 def _add_scan_error(filename, xception):
-	# we had an oopsie, log it
 	global _scan_errors
 
 	_scan_errors.insert(0, { "time": int(time.time()), "file": filename, "type": xception.__class__.__name__, "error": str(xception) })

@@ -382,7 +382,7 @@ class Song(object):
 		All metadata is saved to the database and updated where necessary.
 		"""
 
-		log.debug("playlist", "sids {} loading song from file {}".format(sids, filename))
+		# log.debug("playlist", u"sids {} loading song from file {}".format(sids, filename))
 		kept_artists = []
 		kept_groups = []
 		matched_entry = db.c.fetch_row("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
@@ -477,9 +477,12 @@ class Song(object):
 		Reads ID3 tags and sets object-level variables.
 		"""
 
-		log.debug("playlist", "reading tag info from {}".format(filename))
+		# log.debug("playlist", u"reading tag info from {}".format(filename))
 		f = MP3(filename)
 		self.filename = filename
+
+		if not f.tags:
+			raise Exception("Song filename \"%s\" has no tags." % filename)
 
 		w = f.tags.getall('TIT2')
 		if len(w) > 0:
