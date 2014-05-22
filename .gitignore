@@ -1,6 +1,3 @@
-*.pyc
-static/baked
-
 # Following is from github:
 ###################
 # Compiled source #
@@ -37,3 +34,9 @@ static/baked
 ehthumbs.db
 Icon?
 Thumbs.db
+
+*.pyc
+static/baked
+etc/*.conf
+!etc/rainwave_dev.conf
+!etc/rainwave_reference.conf

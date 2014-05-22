@@ -1,66 +1,59 @@
-This is the git project for the Rainwave website at http://rainwave.cc
+This is the git project for the Rainwave website, http://rainwave.cc.
 
-== Required Modules and Executables
+== Quick Module Install for Debian/Ubuntu
+
+$ sudo apt-get install python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pyinotify python-pylibmc python-tornado python-objgraph
+$ sudo pip install pyScss
+$ sudo pip install jsmin
+$ sudo pip install pytz
+
+== Getting Started for Web Development
+
+$ git clone git@github.com:rmcauley/rainwave.git
+$ cp etc/rainwave-dev.conf etc/[your username].conf
+$ python rw_api.py
+
+That's it!
+
+HTML files can be found in templates.
+CSS files are in static/style4 and compiled using SCSS.
+JS files are in static/js4 and are not minified for beta development.
+
+All files are refreshed (not served from cache) as you edit them, no need
+to restart the server.
+
+== Getting Started for Backend Development
+
+Setup PostgreSQL on your system and change your Rainwave config file
+to use Postgres instead of SQLite.  The Rainwave Pg role must have the ability
+to create tables.  You must also have your own MP3 collection, and change the
+song_dirs configuration in your rainwave.conf to point to your collection.
+Tags are important!
+
+$ python db_init.py
+$ python rw_scanner.py --full
+
+Once done, run the backend (rw_backend.py) and the API (rw_api.py)
+at the same time. When you want to trigger a song switch,
+use rw_get_next.py.
+
+== Required Modules and Executables in Detail
 
 Required on all systems:
-- tornado (webserver, minimum version 2.3)
-- sqlite3 (database)
-- psycopg 2.x (database)
-- mutagen (ID3 tag reader)
-- nose (test library)
-- PIL (album art) [Debian: python-imaging, Gentoo: dev-python/imaging, pip: pil]
-- psutil (nice and ionice)
-- pyScss (CSS/SASS compiling)
+- tornado
+- sqlite3
+- psycopg2
+- mutagen
+- nose
+- PIL [Debian: python-imaging, Gentoo: dev-python/imaging, pip: pil]
+- psutil
+- pyScss
 - jsmin (>2.0.6)
 - unidecode
 - pytz
 - objgraph
-
-Required on POSIX:
-- pyinotify (filesystem monitoring)
-- pylibmc (preferred, C wrapper) or python-memcached (pure Python)
-
-Required on Windows:
-- python-memcached
+- pyinotify (POSIX only)
+- pylibmc (POSIX) or python-memcached (Windows/PyPy)
 
 To let Rainwave automatically mp3gain your collection, you will need to enable it
 in the configs and also have the "mp3gain" executable in your path.
-
-== Debian Module Installation
-
-apt-get install python-psycopg python-mutagen python-nose python-imaging python-psutil python-unidecode python-pyinotify python-libmc
-pip install pyScss
-pip install jsmin
-pip install pytz
-
-== Git
-
-Recommended .git/hooks/pre-commit:
-	#!/bin/bash
-	python runtests.py --api
-	exit $?
-
-To see the TODO list, just grep the code:
-	grep -r TODO
-	
-== SQLite Support for the Test Suite
-
-Rainwave supports SQLite for testing, and only Postgres in production environments.
-Important data (notably sequences/unique IDs) are not held across program restarts
-with SQLite.
-
-== Running sqlite tests
-
-1. Copy rainwave_test.conf to [your username].conf
-2. Modify the config for your OS (assumes Linux by default)
-3. runtests.py
-
-== Initial setup for Postgres testing environment
-
-1. Install Python, Postgres, memcached, and Python modules
-2. Copy rainwave_reference.conf to [your username].conf
-3. Modify config to fit your environment and OS
-4. Modify the config to point at your music collection (MP3 only, sorry)
-5. db_init.py --config etc/[username].conf
-6. rw_scanner.py --full --config /etc/[username].conf
-7. runtests.py

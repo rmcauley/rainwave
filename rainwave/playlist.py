@@ -172,7 +172,7 @@ def get_shortest_song(sid):
 					"AND song_elec_blocked = FALSE "
 				"ORDER BY song_length")
 	song_id = db.c.fetch_var("SELECT song_id " + sql_query + " LIMIT 1", (sid,))
-	return Song.load_from_id(song_id, sid)	
+	return Song.load_from_id(song_id, sid)
 
 def get_random_song_ignore_requests(sid):
 	"""
@@ -840,7 +840,7 @@ class Song(object):
 
 		if self.data['rating_allowed']:
 			return
-			
+
 		if user.data['rate_anything']:
 			self.data['rating_allowed'] = True
 			return
@@ -999,7 +999,7 @@ class AssociatedMetadata(object):
 		if self.cool_time is not None:
 			self._start_cooldown_db(sid, self.cool_time)
 		elif cool_time and cool_time > 0:
-			self._start_cooldown_db(sid, cool_time)	
+			self._start_cooldown_db(sid, cool_time)
 
 	def associate_song_id(self, song_id, is_tag = None):
 		if is_tag == None:
@@ -1118,11 +1118,13 @@ class Album(AssociatedMetadata):
 
 	@classmethod
 	def get_art_url(self, id, sid = None):
-		if sid and os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s_%s.jpg" % (sid, id))):
+		if not config.get("album_art_file_path"):
+			return ""
+		elif sid and os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s_%s.jpg" % (sid, id))):
 			return "%s/%s_%s" % (config.get("album_art_url_path"), sid, id)
 		elif os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % id)):
 			return "%s/%s" % (config.get("album_art_url_path"), id)
-		return None
+		return ""
 
 	def __init__(self):
 		super(Album, self).__init__()
@@ -1143,7 +1145,7 @@ class Album(AssociatedMetadata):
 		success = db.c.update(
 			"UPDATE r4_albums "
 			"SET album_name = %s, album_name_searchable = %s, album_rating = %s "
-			"WHERE album_id = %s", 
+			"WHERE album_id = %s",
 			(self.data['name'], make_searchable_string(self.data['name']), self.data['rating'], self.id))
 		for sid in self.data['sids']:
 			updated_album_ids[sid][self.id] = True
