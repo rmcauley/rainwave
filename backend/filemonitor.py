@@ -5,14 +5,9 @@ import mimetypes
 import sys
 import asyncore
 import psutil
+import watchdog.events
+import watchdog.observers
 from PIL import Image
-
-# This will be checked later on to make sure that we've actually successfully
-# imported WatchManager.  (notably, WatchManager is not available on Windows)
-_wm = None
-if os.name != "nt":
-	import pyinotify
-	_wm = pyinotify.WatchManager()
 
 from libs import config
 from libs import log
@@ -21,76 +16,100 @@ from libs import db
 
 from rainwave import playlist
 
-_directories = {}
-# Scan errors is pulled from/pushed to cache and is volatile. (not saved to db)
+# Scan errors is pulled from/pushed to cache and is not saved to db.
 _scan_errors = None
-# The album art queue is used on a full scan to wait until the END of the scan
-# to process album art.  Art can scan before an album has been created, so we
-# need to account for that.
-_album_art_queue = None
-_use_album_art_queue = False
+# Art can be scanned before the music itself is scanned, in which case the art will
+# have no home.  We need to account for that by using an album art queue.
+# It's a hack, but a necessary one.
+_album_art_queue = []
+# A flag that's easier than passing around an argument a million times
+_art_only = False
 mimetypes.init()
 
-def start(full_scan = False, art_scan = False):
-	# Starts watching or scanning directories.
-	# full_scan will mean no watching/inotify and will do a full scan of all files
-	# art_scan is the same idea - but only for image files, not for music + images.
-	#
-	# I'm not sure why there's a full_art_update AND album_art_queue.
-	# Sounds like you don't need one without the other.  Derp.
-	global _directories
-	global _scan_errors
-
-	_scan_errors = cache.get("backend_scan_errors")
-	if not _scan_errors:
-		_scan_errors = []
-	_directories = config.get("song_dirs")
-
-	# Can't nice and ionice on Windows.
-	if os.name != "nt":
-		p = psutil.Process(os.getpid())
-		p.set_nice(10)
-		p.set_ionice(psutil.IOPRIO_CLASS_IDLE)
-
-	if art_scan:
-		full_art_update()
-	elif full_scan:
-		full_update()
-	else:
-		monitor()
-
 def full_art_update():
-	_scan_directories(album_art_only=True)
+	global _art_only
+	_art_only = True
+	_common_init()
+	_scan_directories()
+	_process_album_art_queue()
 
-def full_update():
-	global _use_album_art_queue
-	global _album_art_queue
-
-	# Flags all songs as unscanned - any songs left at the end of the scan with this
-	# flag still as FALSE have been deleted.
+def full_music_scan():
+	_common_init()
 	db.c.update("UPDATE r4_songs SET song_scanned = FALSE")
-	_album_art_queue = []
-	_use_album_art_queue = True
-	# Scan the MP3s!
+
 	_scan_directories()
 
-	print "\n",
-	for i in range(0, len(_album_art_queue)):
-		print "\rAlbum art: %s/%s" % (i + 1, len(_album_art_queue)),
-		process_album_art(*_album_art_queue[i])
-	_album_art_queue = []
-
-	print "\nDisabling missing songs...",
+	# This procedure is slow but steady and easy to use.
 	dead_songs = db.c.fetch_list("SELECT song_id FROM r4_songs WHERE song_scanned = FALSE AND song_verified = TRUE")
 	for song_id in dead_songs:
 		song = playlist.Song.load_from_id(song_id)
 		song.disable()
-	print "\rMissing songs disabled.   "
-	print "Complete."
+
+	print "Processing album art..."
+	_process_album_art_queue()
+	print "Complete."	
+
+def _common_init():
+	global _scan_errors
+	_scan_errors = cache.get("backend_scan_errors")
+	if not _scan_errors:
+		_scan_errors = []
+	
+	try:
+		p = psutil.Process(os.getpid())
+		p.set_nice(10)
+	except:
+		pass
+
+	try:
+		p = psutil.Process(os.getpid())
+		p.set_ionice(psutil.IOPRIO_CLASS_IDLE)
+	except:
+		pass
+
+def _scan_directories():
+	# Scans all directories.  THIS FUNCTION IS NOT TO BE CALLED RECURSIVELY.
+	# The walk happens within the single function!
+	global _scan_errors
+
+	if config.get("mp3gain_scan") and not playlist._mp3gain_path:
+		raise Exception("mp3gain_scan flag in config is enabled, but could not find mp3gain executable.")
+
+	leftovers = []
+	for directory, sids in config.get("song_dirs").iteritems():
+		total_files = 0
+		file_counter = 0
+		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
+			total_files += len(files)
+		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
+			for filename in files:
+				try:
+					_scan_file(_fix_codepage_1252(filename, root), sids)
+				except Exception as e:
+					type_, value_, traceback_ = sys.exc_info()
+					print "\r%s: %s" % (filename.decode("utf-8", errors="ignore"), value_)
+				file_counter += 1
+				print '\r%s %s / %s' % (directory, file_counter, total_files),
+				sys.stdout.flush()
+	print "\n"
+	sys.stdout.flush()
+	_save_scan_errors()
+
+def _is_mp3(filename):
+	filetype = mimetypes.guess_type(filename)
+	if len(filetype) > 0 and filetype[0] and (filetype[0] == "audio/x-mpg" or filetype[0] == "audio/mpeg"):
+		return True
+	return False
+
+def _is_image(filename):
+	filetype = mimetypes.guess_type(filename)
+	if len(filetype) > 0 and filetype[0] and filetype[0].count("image") == 1:
+		return True
+	return False
 
 def _fix_codepage_1252(filename, path = None):
 	# Goddamned codepage 1252 and its stupid crap mucking up my filenames.
-	# The streaming program hates anything not ASCII when reading in filenames,
+	# The streaming program hates anything not ASCII or UTF-8 when reading in filenames,
 	# so this function strips non-ASCII characters out of the filename.
 	fqfn = filename
 	if path:
@@ -116,50 +135,13 @@ def _fix_codepage_1252(filename, path = None):
 		raise
 	return fqfn
 
-def _scan_directories(album_art_only = False):
-	# Scans all directories.  NON-RECURSIVE.
-	global _scan_errors
-	global _directories
-
-	if config.get("mp3gain_scan") and not playlist._mp3gain_path:
-		raise Exception("mp3gain_scan flag in config is enabled, but could not find mp3gain executable.")
-
-	leftovers = []
-	for directory, sids in _directories.iteritems():
-		total_files = 0
-		file_counter = 0
-		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
-			total_files += len(files)
-		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
-			for filename in files:
-				try:
-					_scan_file(_fix_codepage_1252(filename, root), sids, throw_exceptions=True, album_art_only=album_art_only)
-				except Exception as e:
-					type_, value_, traceback_ = sys.exc_info()
-					print "\r%s: %s" % (filename.decode("utf-8", errors="ignore"), value_)
-				file_counter += 1
-				print '\r%s %s / %s' % (directory, file_counter, total_files),
-				sys.stdout.flush()
-	_save_scan_errors()
-
-def _is_mp3(filename):
-	filetype = mimetypes.guess_type(filename)
-	if len(filetype) > 0 and filetype[0] and (filetype[0] == "audio/x-mpg" or filetype[0] == "audio/mpeg"):
-		return True
-	return False
-
-def _is_image(filename):
-	filetype = mimetypes.guess_type(filename)
-	if len(filetype) > 0 and filetype[0] and filetype[0].count("image") == 1:
-		return True
-	return False
-
-def _scan_file(filename, sids, throw_exceptions = False, album_art_only = False):
+def _scan_file(filename, sids):
 	# log.debug("scan", u"sids: {} Scanning file: {}".format(sids, filename))
 	global _album_art_queue
-	global _use_album_art_queue
+	global _art_only
+
 	try:
-		if _is_mp3(filename) and not album_art_only:
+		if _is_mp3(filename) and not _art_only:
 			# Only scan the file if we don't have a previous mtime for it, or the mtime is different
 			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s AND song_verified = TRUE", (filename,))
 			if not old_mtime or old_mtime != os.stat(filename)[8]:
@@ -169,16 +151,17 @@ def _scan_file(filename, sids, throw_exceptions = False, album_art_only = False)
 				# log.debug("scan", "mtime match, no action taken")
 				db.c.update("UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s", (filename,))
 		elif _is_image(filename):
-			if _use_album_art_queue:
-				_album_art_queue.append([filename, sids])
-			else:
-				process_album_art(filename, sids)
+			_album_art_queue.append([filename, sids])
 	except Exception as xception:
 		_add_scan_error(filename, xception)
-		if throw_exceptions:
-			raise
 
-def process_album_art(filename, sids):
+def _process_album_art_queue():
+	global _album_art_queue
+	for i in range(0, len(_album_art_queue)):
+		_process_album_art(*_album_art_queue[i])
+	_album_art_queue = []
+
+def _process_album_art(filename, sids):
 	# Processes album art by finding the album IDs that are associated with the songs that exist
 	# in the same directory as the image file.
 	try:
@@ -247,51 +230,59 @@ def _save_scan_errors():
 		_scan_errors = _scan_errors[0:100]
 	cache.set("backend_scan_errors", _scan_errors)
 
+class FileEventHandler(watchdog.events.FileSystemEventHandler):
+	def __init__(self, directory, sids):
+		self.directory = directory
+		self.sids = sids
+
+	# TODO: Redo the below functions
+	def _rw_process(self, event):
+		dir_sids = None
+		for directory, sids in config.get("song_dirs").iteritems():
+			if event.pathname.startswith(directory):
+				dir_sids = sids
+		log.debug("scan", "Processing an event on {} for sids {}".format(event.pathname, dir_sids))
+		try:
+			_scan_file(_fix_codepage_1252(event.pathname), dir_sids)
+		except Exception as e:
+			_add_scan_error(event.pathname, e)
+
+	def process_IN_MOVED_FROM(self, event):
+		self.process_IN_DELETE(event)
+
+	def process_IN_MOVED_TO(self, event):
+		self.process_IN_CREATE(event)
+
+	def process_IN_CREATE(self, event):
+		log.debug("scan", "Detected file creation {}".format(event.pathname))
+		self._rw_process(event)
+
+	def process_IN_CLOSE_WRITE(self, event):
+		log.debug("scan", "Detected file modification {}".format(event.pathname))
+		self._rw_process(event)
+
+	def process_IN_DELETE(self, event):
+		log.debug("scan", "Detected file deletion {}".format(event.pathname))
+		_disable_file(event.pathname)
+
 def monitor():
-	# Monitor file deletions, additions, and moves in all music directories.
-	global _wm
-	if not _wm:
-		raise "Cannot monitor on Windows, or without pyinotify."
-
-	class EventHandler(pyinotify.ProcessEvent):
-		def _rw_process(self, event):
-			dir_sids = None
-			for directory, sids in _directories.iteritems():
-				if event.pathname.startswith(directory):
-					dir_sids = sids
-			log.debug("scan", "Processing an event on {} for sids {}".format(event.pathname, dir_sids))
-			try:
-				_scan_file(_fix_codepage_1252(event.pathname), dir_sids)
-			except Exception as e:
-				_add_scan_error(event.pathname, e)
-
-		def process_IN_MOVED_FROM(self, event):
-			self.process_IN_DELETE(event)
-
-		def process_IN_MOVED_TO(self, event):
-			self.process_IN_CREATE(event)
-
-		def process_IN_CREATE(self, event):
-			log.debug("scan", "Detected file creation {}".format(event.pathname))
-			self._rw_process(event)
-
-		def process_IN_CLOSE_WRITE(self, event):
-			log.debug("scan", "Detected file modification {}".format(event.pathname))
-			self._rw_process(event)
-
-		def process_IN_DELETE(self, event):
-			log.debug("scan", "Detected file deletion {}".format(event.pathname))
-			_disable_file(event.pathname)
+	_common_init()
 
 	pid = os.getpid()
 	pid_file = open("%s/scanner.pid" % config.get_directory("pid_dir"), 'w')
 	pid_file.write(str(pid))
 	pid_file.close()
 
-	mask = pyinotify.IN_DELETE | pyinotify.IN_CREATE | pyinotify.IN_MOVED_FROM | pyinotify.IN_MOVED_TO | pyinotify.IN_CLOSE_WRITE
-	notifier = pyinotify.AsyncNotifier(_wm, EventHandler())
-	descriptors = []
-	for directory, sids in _directories.iteritems():
-		log.debug("scan", "Adding directory {} to watch list for sids {}".format(directory, sids))
-		descriptors.append(_wm.add_watch(directory, mask, rec=True, auto_add=True))
-	asyncore.loop()
+	observers = []
+	for directory, sids in config.get("song_dirs").iteritems():
+		observer = watchdog.observers.Observer()
+		observer.schedule(FileEventHandler(directory, sids), directory, recursive=True)
+		observer.start()
+
+	try:
+		while True:
+			time.sleep(60)
+			_process_album_art_queue()
+	except:
+		observer.stop()
+	observer.join()

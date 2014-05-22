@@ -32,10 +32,11 @@ if __name__ == "__main__":
 
 	try:
 		if args.art:
-			print "Scanning art..."
-			backend.filemonitor.start(art_scan=True)
+			backend.filemonitor.full_art_update()
+		elif args.full:
+			backend.filemonitor.full_music_scan()
 		else:
-			backend.filemonitor.start(full_scan=args.full)
+			backend.filemonitor.monitor()
 	finally:
 		libs.db.close()
 		libs.log.close()
