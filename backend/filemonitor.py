@@ -30,14 +30,14 @@ def full_art_update():
 	global _art_only
 	_art_only = True
 	_common_init()
-	_scan_directories()
+	_scan_all_directories()
 	_process_album_art_queue()
 
 def full_music_scan():
 	_common_init()
 	db.c.update("UPDATE r4_songs SET song_scanned = FALSE")
 
-	_scan_directories()
+	_scan_all_directories()
 
 	# This procedure is slow but steady and easy to use.
 	dead_songs = db.c.fetch_list("SELECT song_id FROM r4_songs WHERE song_scanned = FALSE AND song_verified = TRUE")
@@ -47,14 +47,14 @@ def full_music_scan():
 
 	print "Processing album art..."
 	_process_album_art_queue()
-	print "Complete."	
+	print "Complete."
 
 def _common_init():
 	global _scan_errors
 	_scan_errors = cache.get("backend_scan_errors")
 	if not _scan_errors:
 		_scan_errors = []
-	
+
 	try:
 		p = psutil.Process(os.getpid())
 		p.set_nice(10)
@@ -67,7 +67,11 @@ def _common_init():
 	except:
 		pass
 
-def _scan_directories():
+def _scan_all_directories():
+	for directory, sids in config.get("song_dirs").iteritems():
+		_scan_directory(directory, sids, toscreen=True)
+
+def _scan_directory(directory, sids, toscreen=False):
 	# Scans all directories.  THIS FUNCTION IS NOT TO BE CALLED RECURSIVELY.
 	# The walk happens within the single function!
 	global _scan_errors
@@ -76,22 +80,24 @@ def _scan_directories():
 		raise Exception("mp3gain_scan flag in config is enabled, but could not find mp3gain executable.")
 
 	leftovers = []
-	for directory, sids in config.get("song_dirs").iteritems():
-		total_files = 0
-		file_counter = 0
-		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
-			total_files += len(files)
-		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
-			for filename in files:
-				try:
-					_scan_file(_fix_codepage_1252(filename, root), sids)
-				except Exception as e:
-					type_, value_, traceback_ = sys.exc_info()
+	total_files = 0
+	file_counter = 0
+	for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
+		total_files += len(files)
+	for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
+		for filename in files:
+			try:
+				_scan_file(_fix_codepage_1252(filename, root), sids)
+			except Exception as e:
+				type_, value_, traceback_ = sys.exc_info()
+				if toscreen:
 					print "\r%s: %s" % (filename.decode("utf-8", errors="ignore"), value_)
-				file_counter += 1
+			file_counter += 1
+			if toscreen:
 				print '\r%s %s / %s' % (directory, file_counter, total_files),
-				sys.stdout.flush()
-	print "\n"
+			sys.stdout.flush()
+	if toscreen:
+		print "\n"
 	sys.stdout.flush()
 	_save_scan_errors()
 
@@ -231,39 +237,36 @@ def _save_scan_errors():
 	cache.set("backend_scan_errors", _scan_errors)
 
 class FileEventHandler(watchdog.events.FileSystemEventHandler):
-	def __init__(self, directory, sids):
-		self.directory = directory
+	def __init__(self, root_directory, sids):
+		self.root_directory = root_directory
 		self.sids = sids
 
-	# TODO: Redo the below functions
-	def _rw_process(self, event):
-		dir_sids = None
-		for directory, sids in config.get("song_dirs").iteritems():
-			if event.pathname.startswith(directory):
-				dir_sids = sids
-		log.debug("scan", "Processing an event on {} for sids {}".format(event.pathname, dir_sids))
-		try:
-			_scan_file(_fix_codepage_1252(event.pathname), dir_sids)
-		except Exception as e:
-			_add_scan_error(event.pathname, e)
+	def _handle_directory(self, directory):
+		_scan_directory(directory, self.sids)
 
-	def process_IN_MOVED_FROM(self, event):
-		self.process_IN_DELETE(event)
+	def _handle_file(self, file):
+		_scan_file(_fix_codepage_1252(event.pathname), self.sids)
 
-	def process_IN_MOVED_TO(self, event):
-		self.process_IN_CREATE(event)
+	def _src_path_handler(self, event):
+		if event.is_directory:
+			self._handle_directory(event.src_path)
+		else:
+			self._handle_file(event.src_path)
 
-	def process_IN_CREATE(self, event):
-		log.debug("scan", "Detected file creation {}".format(event.pathname))
-		self._rw_process(event)
+	def on_moved(self, event):
+		if event.is_directory:
+			self._handle_directory(event.dest_path)
+		else:
+			self._handle_file(event.dest_path)
 
-	def process_IN_CLOSE_WRITE(self, event):
-		log.debug("scan", "Detected file modification {}".format(event.pathname))
-		self._rw_process(event)
+	def on_created(self, event):
+		self._src_path_handler(event)
 
-	def process_IN_DELETE(self, event):
-		log.debug("scan", "Detected file deletion {}".format(event.pathname))
-		_disable_file(event.pathname)
+	def on_deleted(self, event):
+		self._src_path_handler(event)
+
+	def on_modified(self, event):
+		self._src_path_handler(event)
 
 def monitor():
 	_common_init()
