@@ -31,6 +31,7 @@ def full_art_update():
 	_art_only = True
 	_common_init()
 	_scan_all_directories()
+	_art_only = False
 	_process_album_art_queue()
 
 def full_music_scan():
@@ -242,10 +243,12 @@ class FileEventHandler(watchdog.events.FileSystemEventHandler):
 		self.sids = sids
 
 	def _handle_directory(self, directory):
+		log.debug("scanner", u"Scanning directory: %s" % directory)
 		_scan_directory(directory, self.sids)
 
-	def _handle_file(self, file):
-		_scan_file(_fix_codepage_1252(event.pathname), self.sids)
+	def _handle_file(self, filename):
+		log.debug("scanner", u"Scanning file: %s" % filename)
+		_scan_file(_fix_codepage_1252(filename), self.sids)
 
 	def _src_path_handler(self, event):
 		if event.is_directory:
@@ -260,9 +263,14 @@ class FileEventHandler(watchdog.events.FileSystemEventHandler):
 			self._handle_file(event.dest_path)
 
 	def on_created(self, event):
-		self._src_path_handler(event)
+		# We don't need to scan empty directories
+		# New files are automatically reported after the new directory call anyway
+		if not event.is_directory:
+			self._src_path_handler(event)
 
 	def on_deleted(self, event):
+		# Unlike on_created, on_deleted will ONLY report a folder delete.
+		# It will not report every file inside that directory as deleted.
 		self._src_path_handler(event)
 
 	def on_modified(self, event):

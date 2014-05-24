@@ -17,7 +17,7 @@ if __name__ == "__main__":
 	parser.add_argument("--art", action="store_true")
 	args = parser.parse_args()
 	libs.config.load(args.config)
-	if libs.config.get("log_level") == "print":
+	if libs.config.get("log_level") == "print" and (args.art or args.full):
 		libs.log.init("%s/rw_scanner.log" % libs.config.get_directory("log_dir"), "debug")
 	else:
 		libs.log.init("%s/rw_scanner.log" % libs.config.get_directory("log_dir"), libs.config.get("log_level"))
