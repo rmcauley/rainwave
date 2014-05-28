@@ -140,11 +140,11 @@ class User(object):
 			if not auth_against:
 				auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (ip_address,))
 				if not auth_against:
-					log.debug("user", "Anonymous user key %s not found." % api_key)
+					# log.debug("user", "Anonymous user key %s not found." % api_key)
 					return
 				cache.set("ip_%s_api_key" % ip_address, auth_against)
 			if auth_against != api_key:
-				log.debug("user", "Anonymous user key %s does not match key %s." % (api_key, auth_against))
+				# log.debug("user", "Anonymous user key %s does not match key %s." % (api_key, auth_against))
 				return
 		self.authorized = True
 
@@ -358,9 +358,9 @@ class User(object):
 			if not requests:
 				requests = []
 			for song in requests:
-				song['albums'] = [ { 
-					"name": song['album_name'], 
-					"id": song['album_id'], 
+				song['albums'] = [ {
+					"name": song['album_name'],
+					"id": song['album_id'],
 					"rating": song['album_rating'],
 					"rating_user": song['album_rating_user'],
 					"art": playlist.Album.get_art_url(song['album_id'])
