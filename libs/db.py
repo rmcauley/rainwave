@@ -210,6 +210,9 @@ class SQLiteCursor(object):
 	def commit(self):
 		pass
 
+	def rollback(self):
+		pass
+
 def open():
 	global connection
 	global c
@@ -264,7 +267,7 @@ def close():
 
 def create_tables():
 	if c.is_postgres:
-		c.update("START TRANSACTION")
+		c.start_transaction()
 
 	if config.get("standalone_mode"):
 		_create_test_tables()
@@ -648,8 +651,7 @@ def create_tables():
 	if config.get("standalone_mode"):
 		_fill_test_tables()
 
-	if c.is_postgres:
-		c.update("COMMIT")
+	c.commit()
 
 def _create_test_tables():
 	c.update(" \
