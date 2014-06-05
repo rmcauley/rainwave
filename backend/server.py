@@ -115,7 +115,7 @@ class BackendServer(object):
 		for station_id in config.station_ids:
 			playlist.prepare_cooldown_algorithm(station_id)
 		schedule.load()
-		log.debug("start", "Backend server bootstrapped, station %s port %s, ready to go." % (config.station_id_friendly[sid], config.get("backend_port")))
+		log.debug("start", "Backend server started, station %s port %s, ready to go." % (config.station_id_friendly[sid], config.get("backend_port")))
 
 		ioloop = tornado.ioloop.IOLoop.instance()
 		try:

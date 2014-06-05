@@ -1,11 +1,11 @@
 This is the git project for the Rainwave website, http://rainwave.cc.
 
-== Quick Install for Debian/Ubuntu
+== Python Setup for Debian/Ubuntu
 
 $ sudo apt-get install python-pyscss python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-objgraph
 $ sudo pip install jsmin pytz watchdog
 
-== Quick Install for Windows
+== Python Setup for Windows
 
 1. Download and install Python 2.7 for Windows:
 	https://www.python.org/download/
@@ -25,9 +25,17 @@ $ git clone git@github.com:rmcauley/rainwave.git
 $ cp etc/rainwave-dev.conf etc/[your username].conf
 $ python rw_api.py
 
-Then open the beta URL: http://localhost:20000/beta/
+Wait until you see "API server on port 20000 ready to go."  Depending on your
+PC, this may take a minute or so.
+
+Then open the beta URL: http://localhost:20000/beta/?sid=1
 
 Done!
+
+If you want to emulate being logged in, go to this URL:
+http://localhost:20000/api4/test/login_tuned_in/1
+
+To emulate being anonymous, just close and re-open your browser.
 
 HTML files can be found in the templates directory.
 CSS files are in static/style4 and compiled using SCSS.
@@ -37,6 +45,9 @@ Image files are in static/images4
 All files are refreshed as you edit them, no need to restart the server.
 
 == Getting Started for Backend Development
+
+$ git clone git@github.com:rmcauley/rainwave.git
+$ cp etc/rainwave_reference.conf etc/[your username].conf
 
 Setup PostgreSQL on your system and change your Rainwave config file
 to use Postgres instead of SQLite.  The Rainwave Pg role must have the ability
@@ -50,6 +61,12 @@ $ python rw_scanner.py --full
 Once done, run the backend (rw_backend.py) and the API (rw_api.py)
 at the same time. When you want to trigger a song switch,
 use rw_get_next.py.
+
+It shouldn't need saying, but SQLite is not considered supported for
+production environments.  The SQLite code in Rainwave takes a lot of
+shortcuts and liberties and some corner code cases are just
+completely uncovered.  SQLite is only meant for unit testing
+and front-end-only web developers.
 
 == Required Modules and Executables in Detail
 
