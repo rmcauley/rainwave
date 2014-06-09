@@ -9,11 +9,7 @@ from libs import log
 c = None
 connection = None
 
-# NOTE TO ALL:
-#
-# SQLite is UNUSABLE for production.  It is ONLY meant for testing
-# and offers zero data consistency - important values (sequences, etc)
-# are reset between startups.
+# DO NOT USE SQLITE FOR PRODUCTION USE IN ANY WAY
 
 class PostgresCursor(psycopg2.extras.RealDictCursor):
 	allows_join_on_update = True
@@ -176,17 +172,27 @@ class SQLiteCursor(object):
 		# If the query can't be done or properly to SQLite,
 		# silently drop it.  This is mostly for table creation, things like foreign keys.
 		if not query:
-			return
-		if params:
-			self.cur.execute(query, params)
-		else:
-			self.cur.execute(query)
+			log.critical("sqlite", "Query has not been made SQLite friendly: %s" % query)
+			raise Exception("Query has not been made SQLite friendly: %s" % query)
+		try:
+			if params:
+				self.cur.execute(query, params)
+			else:
+				self.cur.execute(query)
+		except Exception as e:
+			log.critical("sqlite", query)
+			log.critical("sqlite", repr(params))
+			log.exception("sqlite", "Failed query.", e)
+			raise
 		self.rowcount = self.cur.rowcount
 
 	def get_next_id(self, table, column):
-		val = self.fetch_var("SELECT MAX(" + column + ") + 1 FROM " + table)
-		if not val:
-			return 1
+		val = self.fetch_var("SELECT MAX(" + column + ") + 1 FROM " + table) or 1
+		# the schedule IDs are shared amongst many tables, thus, we must insert fake
+		# rows in order to maintain proper order.
+		# HEY, DON'T USE SQLITE IN PRODUCTION ANYWAY
+		if table == "r4_schedule":
+			c.update("INSERT INTO r4_schedule (sched_id, sid, sched_start) VALUES (%s, %s, %s)", (val, 0, 0)) 
 		return val
 
 	def fetchone(self):
@@ -208,6 +214,9 @@ class SQLiteCursor(object):
 		pass
 
 	def commit(self):
+		pass
+
+	def rollback(self):
 		pass
 
 def open():
@@ -264,7 +273,7 @@ def close():
 
 def create_tables():
 	if c.is_postgres:
-		c.update("START TRANSACTION")
+		c.start_transaction()
 
 	if config.get("standalone_mode"):
 		_create_test_tables()
@@ -648,8 +657,7 @@ def create_tables():
 	if config.get("standalone_mode"):
 		_fill_test_tables()
 
-	if c.is_postgres:
-		c.update("COMMIT")
+	c.commit()
 
 def _create_test_tables():
 	c.update(" \

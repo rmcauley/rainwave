@@ -138,7 +138,7 @@ class APIServer(object):
 
 		for request in request_classes:
 			log.debug("start", "   Handler: %s" % str(request))
-		log.info("start", "API server bootstrapped and ready to go.")
+		log.info("start", "API server on port %s ready to go." % port_no)
 		self.ioloop = tornado.ioloop.IOLoop.instance()
 
 		if config.has("memory_trace") and config.get("memory_trace"):

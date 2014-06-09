@@ -60,7 +60,7 @@ class ElectionProducer(event.BaseProducer):
 
 	def _create_election(self, target_length, skip_requests):
 		log.debug("create_elec", "Creating election type %s for sid %s, target length %s." % (self.elec_type, self.sid, target_length))
-		db.c.update("START TRANSACTION")
+		db.c.start_transaction()
 		try:
 			elec = self.elec_class.create(self.sid)
 			elec.url = self.url
@@ -68,10 +68,10 @@ class ElectionProducer(event.BaseProducer):
 			elec.fill(target_length, skip_requests)
 			if elec.length() == 0:
 				raise Exception("Created zero-length election.")
-			db.c.update("COMMIT")
+			db.c.commit()
 			return elec
 		except:
-			db.c.update("ROLLBACK")
+			db.c.rollback()
 			raise
 
 # Normal election
