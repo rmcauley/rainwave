@@ -42,6 +42,7 @@ class SyncUpdateAll(APIHandler):
 				session.update()
 		log.debug("sync_update_all", "Updated %s sessions for sid %s." % (session_count, self.sid))
 		sessions[self.sid] = []
+		super(SyncUpdateAll, self).on_finish()
 
 @handle_api_url("sync_update_user")
 class SyncUpdateUser(APIHandler):
@@ -68,6 +69,8 @@ class SyncUpdateUser(APIHandler):
 					session.update_user()
 					sessions[sid].remove(session)
 					return
+
+		super(SyncUpdateUser, self).on_finish()
 
 @handle_api_url("sync_update_ip")
 class SyncUpdateIP(APIHandler):
@@ -98,6 +101,8 @@ class SyncUpdateIP(APIHandler):
 					log.debug("sync_update_ip", "Warning logged in user of potential mixup at IP %s" % ip_address)
 					if session.anon_registered_mixup_warn():
 						sessions[sid].remove(session)
+
+		super(SyncUpdateIP, self).on_finish()
 
 @handle_api_url("sync")
 class Sync(APIHandler):
