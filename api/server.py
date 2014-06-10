@@ -155,6 +155,9 @@ class APIServer(object):
 			log.close()
 
 	def start(self):
+		# Setup variables for the long poll module
+		import api_requests.sync
+		api_requests.sync.init()
 		# Bypass Tornado's forking processes for Windows machines if num_processes is set to 1
 		if config.get("api_num_processes") == 1 or config.get("web_developer_mode"):
 			self._listen(0)

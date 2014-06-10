@@ -6,17 +6,20 @@ import time
 from api import fieldtypes
 from api.exceptions import APIException
 from api.web import APIHandler
-from api.server import test_get
-from api.server import test_post
 from api.server import handle_api_url
 from api import fieldtypes
 import api_requests.info
 
 from libs import cache
 from libs import log
+from libs import config
 from rainwave import playlist
 
 sessions = {}
+
+def init():
+	for sid in config.station_ids:
+		sessions[sid] = []
 
 @handle_api_url("sync_update_all")
 class SyncUpdateAll(APIHandler):
@@ -42,6 +45,8 @@ class SyncUpdateAll(APIHandler):
 				session.update()
 		log.debug("sync_update_all", "Updated %s sessions for sid %s." % (session_count, self.sid))
 		# You might think this is weird but this module has had memory leak issues
+		# YES I UNDERSTAND HOW GARBAGE COLLECTIONS WORKS I am just being ultra paranoid and hoping
+		# ~magic~ solves this.
 		del sessions[self.sid]
 		sessions[self.sid] = []
 		super(SyncUpdateAll, self).on_finish()
@@ -137,8 +142,6 @@ class Sync(APIHandler):
 
 	def add_to_sessions(self):
 		global sessions
-		if not self.user.request_sid in sessions:
-			sessions[self.user.request_sid] = []
 		sessions[self.user.request_sid].append(self)
 
 	def remove_from_sessions(self):
