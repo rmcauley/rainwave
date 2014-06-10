@@ -2,11 +2,15 @@ import time
 import sys
 import sqlite3
 import tornado.ioloop
+import linecache
 from pympler.asizeof import asizeof
 
 from libs import config
 
 sqlite = None
+
+def clear_caches():
+	linecache.clearcache()
 
 def setup(db_file):
 	if not config.get("memory_trace"):
@@ -22,8 +26,9 @@ def setup(db_file):
 		c.execute("CREATE TABLE memory_trace(time INTEGER, module TEXT, size INTEGER)")
 		sqlite.commit()
 
-	record_loop = tornado.ioloop.PeriodicCallback(record_sizes, 900000)
-	# record_loop = tornado.ioloop.PeriodicCallback(record_sizes, 30000)
+	record_loop = tornado.ioloop.PeriodicCallback(record_sizes, 15 * 60 * 1000)
+	clear_cache_loop = tornado.ioloop.PeriodicCallback(record_sizes, 120 * 60 * 1000)
+	# record_loop = tornado.ioloop.PeriodicCallback(record_sizes, 30 * 60 * 1000)
 	record_loop.start()
 
 def record_sizes():
