@@ -101,7 +101,7 @@ class BackendServer(object):
 		db.open()
 		cache.open()
 		log.init("%s/rw_%s.log" % (config.get_directory("log_dir"), config.station_id_friendly[sid].lower()), config.get("log_level"))
-		memory_trace.setup("%s/rw_%s.sqlite" % (config.get_directory("log_dir"), port_no))
+		memory_trace.setup("%s/rw_%s.sqlite" % (config.get_directory("log_dir"), config.station_id_friendly[sid].lower()))
 
 		if config.test_mode:
 			playlist.remove_all_locks(sid)
