@@ -24,6 +24,7 @@ from libs import cache
 from libs import memory_trace
 from rainwave import playlist
 from rainwave import schedule
+import rainwave.request
 
 request_classes = [
 	(r"/api4/?", api.help.IndexRequest),
@@ -101,6 +102,7 @@ class APIServer(object):
 			schedule.load()
 			for station_id in config.station_ids:
 				schedule._update_memcache(station_id)
+				rainwave.request.update_cache(station_id)
 				cache.set_station(station_id, "backend_ok", True)
 				cache.set_station(station_id, "backend_message", "OK")
 				cache.set_station(station_id, "get_next_socket_timeout", False)

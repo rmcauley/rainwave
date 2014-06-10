@@ -35,7 +35,6 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 		request.append("current_listeners", cache.get_station(request.sid, "current_listeners"))
 
 	request.append("request_line", cache.get_station(request.sid, "request_line"))
-	# request.append("calendar", cache.get("calendar"))
 
 	sched_next = None
 	sched_history = None
