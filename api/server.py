@@ -21,6 +21,7 @@ from libs import dict_compare
 from libs import db
 from libs import chuser
 from libs import cache
+from libs import memory_trace
 from rainwave import playlist
 from rainwave import schedule
 
@@ -91,6 +92,7 @@ class APIServer(object):
 		log.debug("start", "Server booting, port %s." % port_no)
 		db.open()
 		cache.open()
+		memory_trace.setup("%s/rw_api_%s.sqlite" % (config.get_directory("log_dir"), port_no))
 
 		if config.get("web_developer_mode"):
 			for station_id in config.station_ids:
@@ -140,9 +142,6 @@ class APIServer(object):
 			log.debug("start", "   Handler: %s" % str(request))
 		log.info("start", "API server on port %s ready to go." % port_no)
 		self.ioloop = tornado.ioloop.IOLoop.instance()
-
-		if config.has("memory_trace") and config.get("memory_trace"):
-			from api import memory_trace
 
 		try:
 			self.ioloop.start()
