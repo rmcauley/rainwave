@@ -15,6 +15,7 @@ from libs import cache
 from libs import db
 
 from rainwave import playlist
+from rainwave.playlist_objects.song import PassableScanError
 
 # Scan errors is pulled from/pushed to cache and is not saved to db.
 _scan_errors = None
@@ -24,7 +25,10 @@ _scan_errors = None
 _album_art_queue = []
 # A flag that's easier than passing around an argument a million times
 _art_only = False
+_raise_scan_errors = False
 mimetypes.init()
+invalid_filename_characters = (":", )
+invalid_characters = ("?", )
 
 def full_art_update():
 	global _art_only
@@ -35,7 +39,10 @@ def full_art_update():
 	_process_album_art_queue()
 
 def full_music_scan():
+	global _raise_scan_errors
+
 	_common_init()
+	_raise_scan_errors = True
 	db.c.update("UPDATE r4_songs SET song_scanned = FALSE")
 
 	_scan_all_directories()
@@ -91,8 +98,14 @@ def _scan_directory(directory, sids, toscreen=False):
 				_scan_file(_fix_codepage_1252(filename, root), sids)
 			except Exception as e:
 				type_, value_, traceback_ = sys.exc_info()
-				if toscreen:
-					print "\r%s: %s" % (filename.decode("utf-8", errors="ignore"), value_)
+				if toscreen and not isinstance(e, UnicodeDecodeError) and not isinstance(e, PassableScanError):
+					print "\n%s" % filename
+					raise
+				elif toscreen:
+					debug_line = "%s:\n\t %s" % (filename.decode("utf-8", errors="ignore"), value_)
+					debug_line += " " * (80 - len(debug_line))
+					print "\r" + (" " * 80)
+					print debug_line
 			file_counter += 1
 			if toscreen:
 				print '\r%s %s / %s' % (directory, file_counter, total_files),
@@ -118,12 +131,24 @@ def _fix_codepage_1252(filename, path = None):
 	# Goddamned codepage 1252 and its stupid crap mucking up my filenames.
 	# The streaming program hates anything not ASCII or UTF-8 when reading in filenames,
 	# so this function strips non-ASCII characters out of the filename.
+
+	global invalid_characters
+
 	fqfn = filename
 	if path:
 		fqfn = os.path.normpath(path + os.sep + filename)
+
+	if True in [c in filename for c in invalid_filename_characters] or True in [c in fqfn for c in invalid_characters]:
+		# This ensures that the stack trace stays intact for this moment
+		# and other times that _add_scan_error gets called.
+		try:
+			raise PassableScanError("Invalid filename.")
+		except Exception as e:
+			_add_scan_error(fqfn.decode("utf-8", errors="ignore"), e)
+
 	try:
 		fqfn = fqfn.decode("utf-8")
-	except UnicodeDecodeError:
+	except UnicodeDecodeError as unidecode_e:
 		if config.get("scanner_rename_files"):
 			try:
 				os.rename(fqfn, fqfn.decode("utf-8", errors="ignore"))
@@ -131,15 +156,12 @@ def _fix_codepage_1252(filename, path = None):
 			except OSError as e:
 				new_e = Exception("Permissions or file error renaming non-UTF-8 filename.  Please rename or fix permissions.")
 				_add_scan_error(fqfn.decode("utf-8", errors="ignore"), new_e)
-				raise new_e
 			except Exception as e:
 				_add_scan_error(fqfn.decode("utf-8", errors="ignore"), e)
-				raise
 		else:
-			raise
+			_add_scan_error(fqfn.decode("utf-8", errors="ignore"), unidecode_e)
 	except Exception as e:
 		_add_scan_error(fqfn.decode("utf-8", errors="ignore"), e)
-		raise
 	return fqfn
 
 def _scan_file(filename, sids):
@@ -222,13 +244,13 @@ def _disable_file(filename):
 		_add_scan_error(filename, xception)
 
 def _add_scan_error(filename, xception):
-	global _scan_errors
+	global _scan_errors, _raise_scan_errors
 
 	_scan_errors.insert(0, { "time": int(time.time()), "file": filename, "type": xception.__class__.__name__, "error": str(xception) })
 	log.exception("scan", "Error scanning %s" % filename, xception)
 
-	if config.test_mode:
-		raise xception
+	if config.test_mode or _raise_scan_errors:
+		raise
 
 def _save_scan_errors():
 	global _scan_errors
