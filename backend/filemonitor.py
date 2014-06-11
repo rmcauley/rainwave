@@ -154,7 +154,7 @@ def _fix_codepage_1252(filename, path = None):
 				os.rename(fqfn, fqfn.decode("utf-8", errors="ignore"))
 				fqfn = fqfn.decode("utf-8", errors="ignore")
 			except OSError as e:
-				new_e = Exception("Permissions or file error renaming non-UTF-8 filename.  Please rename or fix permissions.")
+				new_e = PassableScanError("Permissions or file error renaming non-UTF-8 filename.  Please rename or fix permissions.")
 				_add_scan_error(fqfn.decode("utf-8", errors="ignore"), new_e)
 			except Exception as e:
 				_add_scan_error(fqfn.decode("utf-8", errors="ignore"), e)
