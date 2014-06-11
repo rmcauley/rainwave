@@ -185,7 +185,6 @@ class SQLiteCursor(object):
 			log.exception("sqlite", "Failed query.", e)
 			raise
 		self.rowcount = self.cur.rowcount
-		self.con.commit()
 
 	def get_next_id(self, table, column):
 		val = self.fetch_var("SELECT MAX(" + column + ") + 1 FROM " + table) or 1
