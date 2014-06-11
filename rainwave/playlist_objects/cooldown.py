@@ -4,7 +4,7 @@ from libs import config
 from libs import log
 from libs import db
 
-config = { }
+cooldown_config = { }
 
 def prepare_cooldown_algorithm(sid):
 	"""
@@ -12,11 +12,11 @@ def prepare_cooldown_algorithm(sid):
 	Should pull all variables fresh from the DB, for algorithm
 	refer to jfinalfunk.
 	"""
-	global config
+	global cooldown_config
 
-	if not sid in config:
-		config[sid] = { "time": 0 }
-	if config[sid]['time'] > (time.time() - 3600):
+	if not sid in cooldown_config:
+		cooldown_config[sid] = { "time": 0 }
+	if cooldown_config[sid]['time'] > (time.time() - 3600):
 		return
 
 	# Variable names from here on down are from jf's proposal at: http://rainwave.cc/forums/viewtopic.php?f=13&t=1267
@@ -45,23 +45,39 @@ def prepare_cooldown_algorithm(sid):
 	max_album_cool = min_album_cool + ((5 - 2.5) * ((base_album_cool - min_album_cool) / (5 - base_rating)))
 	log.debug("cooldown", "SID %s: max_album_cool: %s" % (sid, max_album_cool))
 
-	config[sid]['sum_aasl'] = int(sum_aasl)
-	config[sid]['avg_album_rating'] = float(avg_album_rating)
-	config[sid]['multiplier_adjustment'] = float(multiplier_adjustment)
-	config[sid]['base_album_cool'] = int(base_album_cool)
-	config[sid]['base_rating'] = float(base_rating)
-	config[sid]['min_album_cool'] = int(min_album_cool)
-	config[sid]['max_album_cool'] = int(max_album_cool)
-	config[sid]['time'] = int(time.time())
+	cooldown_config[sid]['sum_aasl'] = int(sum_aasl)
+	cooldown_config[sid]['avg_album_rating'] = float(avg_album_rating)
+	cooldown_config[sid]['multiplier_adjustment'] = float(multiplier_adjustment)
+	cooldown_config[sid]['base_album_cool'] = int(base_album_cool)
+	cooldown_config[sid]['base_rating'] = float(base_rating)
+	cooldown_config[sid]['min_album_cool'] = int(min_album_cool)
+	cooldown_config[sid]['max_album_cool'] = int(max_album_cool)
+	cooldown_config[sid]['time'] = int(time.time())
 
 	average_song_length = db.c.fetch_var("SELECT AVG(song_length) FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE song_exists = TRUE AND sid = %s", (sid,))
 	log.debug("cooldown", "SID %s: average_song_length: %s" % (sid, average_song_length))
-	config[sid]['average_song_length'] = float(average_song_length)
+	cooldown_config[sid]['average_song_length'] = float(average_song_length)
 	if not average_song_length:
 		average_song_length = 160
 	number_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE song_exists = TRUE AND sid = %s", (sid,))
 	if not number_songs:
 		number_songs = 1
 	log.debug("cooldown", "SID %s: number_songs: %s" % (sid, number_songs))
-	config[sid]['max_song_cool'] = float(average_song_length) * (number_songs * config.get_station(sid, "cooldown_song_max_multiplier"))
-	config[sid]['min_song_cool'] = config[sid]['max_song_cool'] * config.get_station(sid, "cooldown_song_min_multiplier")
+	cooldown_config[sid]['max_song_cool'] = float(average_song_length) * (number_songs * config.get_station(sid, "cooldown_song_max_multiplier"))
+	cooldown_config[sid]['min_song_cool'] = cooldown_config[sid]['max_song_cool'] * config.get_station(sid, "cooldown_song_min_multiplier")
+
+def get_age_cooldown_multiplier(added_on):
+	age_weeks = (int(time.time()) - added_on) / 604800.0
+	cool_age_multiplier = 1.0
+	if age_weeks < config.get("cooldown_age_threshold"):
+		s2_end = config.get("cooldown_age_threshold")
+		s2_start = config.get("cooldown_age_stage2_start")
+		s2_min_multiplier = config.get("cooldown_age_stage2_min_multiplier")
+		s1_min_multiplier = config.get("cooldown_age_stage1_min_multiplier")
+		# Age Cooldown Stage 1
+		if age_weeks <= s2_start:
+			cool_age_multiplier = (age_weeks / s2_start) * (s2_min_multiplier - s1_min_multiplier) + s1_min_multiplier;
+		# Age Cooldown Stage 2
+		else:
+			cool_age_multiplier = s2_min_multiplier + ((1.0 - s2_min_multiplier) * ((0.32436 - (s2_end / 288.0) + (math.pow(s2_end, 2.0) / 38170.0)) * math.log(2.0 * age_weeks + 1.0)))
+	return cool_age_multiplier

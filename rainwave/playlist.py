@@ -12,9 +12,16 @@ from rainwave import rating
 
 from rainwave.playlist_objects.song import Song
 from rainwave.playlist_objects.album import Album
+# These sorts of single-function imports shouldn't be here
+# I should make sure the whole project is properly refactored.
+# But it's 1am and I need sleep.
+from rainwave.playlist_objects.album import warm_cooled_albums
+from rainwave.playlist_objects.album import get_updated_albums_dict
 from rainwave.playlist_objects.artist import Artist
-from rainwave.playlist_objects.cooldown import config as cooldown_config
 from rainwave.playlist_objects.songgroup import SongGroup
+
+from rainwave.playlist_objects.cooldown import prepare_cooldown_algorithm
+from rainwave.playlist_objects import cooldown
 
 class NoAvailableSongsException(Exception):
 	pass
@@ -26,24 +33,8 @@ def get_shortest_song(sid):
 	# Should we take into account song_elec_blocked here?
 	return db.c.fetch_var("SELECT MIN(song_length) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE song_exists = TRUE AND r4_song_sid.sid = %s AND song_cool = FALSE", (sid,))
 
-def get_age_cooldown_multiplier(added_on):
-	age_weeks = (int(time.time()) - added_on) / 604800.0
-	cool_age_multiplier = 1.0
-	if age_weeks < config.get("cooldown_age_threshold"):
-		s2_end = config.get("cooldown_age_threshold")
-		s2_start = config.get("cooldown_age_stage2_start")
-		s2_min_multiplier = config.get("cooldown_age_stage2_min_multiplier")
-		s1_min_multiplier = config.get("cooldown_age_stage1_min_multiplier")
-		# Age Cooldown Stage 1
-		if age_weeks <= s2_start:
-			cool_age_multiplier = (age_weeks / s2_start) * (s2_min_multiplier - s1_min_multiplier) + s1_min_multiplier;
-		# Age Cooldown Stage 2
-		else:
-			cool_age_multiplier = s2_min_multiplier + ((1.0 - s2_min_multiplier) * ((0.32436 - (s2_end / 288.0) + (math.pow(s2_end, 2.0) / 38170.0)) * math.log(2.0 * age_weeks + 1.0)))
-	return cool_age_multiplier
-
 def get_average_song_length(sid):
-	return cooldown_config[sid]['average_song_length']
+	return cooldown.cooldown_config[sid]['average_song_length']
 
 def get_random_song_timed(sid, target_seconds = None, target_delta = 20):
 	"""

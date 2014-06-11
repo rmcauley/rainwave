@@ -5,6 +5,7 @@ import datetime
 from backend import sync_to_front
 from rainwave import events
 from rainwave import playlist
+import rainwave.playlist_objects.album
 from rainwave import listeners
 from rainwave import request
 from rainwave import user
@@ -115,7 +116,7 @@ def post_process(sid):
 		db.c.start_transaction()
 		start_time = time.time()
 		playlist.prepare_cooldown_algorithm(sid)
-		playlist.clear_updated_albums(sid)
+		rainwave.playlist_objects.album.clear_updated_albums(sid)
 		log.debug("post", "Playlist prepare time: %.6f" % (time.time() - start_time,))
 
 		start_time = time.time()
@@ -311,6 +312,6 @@ def _update_memcache(sid):
 	cache.prime_rating_cache_for_events([ current[sid] ] + next[sid] + history[sid])
 	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict(sid), True)
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)
-	playlist.clear_updated_albums(sid)
+	rainwave.playlist_objects.album.clear_updated_albums(sid)
 	cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
 	cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)

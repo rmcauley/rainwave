@@ -9,7 +9,7 @@ import hashlib
 import psycopg2
 
 from rainwave.user import User
-from rainwave.playlist import SongNonExistent
+from rainwave.playlist_objects.song import SongNonExistent
 
 from api import fieldtypes
 from api import locale
@@ -387,7 +387,7 @@ class APIHandler(RainwaveHandler):
 			elif isinstance(exc, APIException):
 				exc.localize(self.locale)
 				self.append(self.return_name, exc.jsonable())
-			elif exc.__class__.__name__ == "SongNonExistent":
+			elif isinstance(exc, SongNonExistent):
 				self.append("error", { "code": status_code, "tl_key": "song_does_not_exist", "text": self.locale.translate("song_does_not_exist") })
 			else:
 				self.append("error", { "code": status_code, "tl_key": "internal_error", "text": repr(exc) })

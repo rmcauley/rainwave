@@ -1,3 +1,7 @@
+import os
+import time
+import math
+
 from libs import db
 from libs import log
 from libs import config
@@ -6,6 +10,7 @@ from rainwave import rating
 
 from rainwave.playlist_objects.metadata import AssociatedMetadata
 from rainwave.playlist_objects.metadata import make_searchable_string
+from rainwave.playlist_objects import cooldown
 
 updated_album_ids = {}
 
@@ -216,8 +221,6 @@ class Album(AssociatedMetadata):
 			updated_album_ids[sid][album_id] = True
 
 	def start_cooldown(self, sid, cool_time = False):
-		global cooldown_config
-
 		if cool_time:
 			pass
 		elif self.data['cool_override']:
@@ -227,12 +230,12 @@ class Album(AssociatedMetadata):
 			if not cool_rating or cool_rating == 0:
 				cool_rating = 3
 			# AlbumCD = minAlbumCD + ((maxAlbumR - albumR)/(maxAlbumR - minAlbumR)*(maxAlbumCD - minAlbumCD))
-			# old: auto_cool = cooldown_config[sid]['min_album_cool'] + (((4 - (cool_rating - 1)) / 4.0) * (cooldown_config[sid]['max_album_cool'] - cooldown_config[sid]['min_album_cool']))
-			auto_cool = cooldown_config[sid]['min_album_cool'] + (((5 - cool_rating) / 4.0) * (cooldown_config[sid]['max_album_cool'] - cooldown_config[sid]['min_album_cool']))
+			# old: auto_cool = cooldown.cooldown_config[sid]['min_album_cool'] + (((4 - (cool_rating - 1)) / 4.0) * (cooldown.cooldown_config[sid]['max_album_cool'] - cooldown.cooldown_config[sid]['min_album_cool']))
+			auto_cool = cooldown.cooldown_config[sid]['min_album_cool'] + (((5 - cool_rating) / 4.0) * (cooldown.cooldown_config[sid]['max_album_cool'] - cooldown.cooldown_config[sid]['min_album_cool']))
 			album_num_songs = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE album_id = %s AND song_exists = TRUE AND sid = %s", (self.id, sid))
-			log.debug("cooldown", "min_album_cool: %s .. max_album_cool: %s .. auto_cool: %s .. album_num_songs: %s .. rating: %s" % (cooldown_config[sid]['min_album_cool'], cooldown_config[sid]['max_album_cool'], auto_cool, album_num_songs, cool_rating))
+			log.debug("cooldown", "min_album_cool: %s .. max_album_cool: %s .. auto_cool: %s .. album_num_songs: %s .. rating: %s" % (cooldown.cooldown_config[sid]['min_album_cool'], cooldown.cooldown_config[sid]['max_album_cool'], auto_cool, album_num_songs, cool_rating))
 			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_num_songs - config.get_station(sid, "cooldown_size_slope_start")))) / 2);
-			cool_age_multiplier = get_age_cooldown_multiplier(self.data['added_on'])
+			cool_age_multiplier = cooldown.get_age_cooldown_multiplier(self.data['added_on'])
 			cool_time = int(auto_cool * cool_size_multiplier * cool_age_multiplier * self.data['cool_multiply'])
 			log.debug("cooldown", "auto_cool: %s .. cool_size_multiplier: %s .. cool_age_multiplier: %s .. cool_multiply: %s .. cool_time: %s" %
 					  (auto_cool, cool_size_multiplier, cool_age_multiplier, self.data['cool_multiply'], cool_time))

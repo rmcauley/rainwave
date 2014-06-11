@@ -15,6 +15,7 @@ import libs.log
 import rainwave.playlist
 import rainwave.event
 import rainwave.request
+import rainwave.playlist_objects.album
 
 from api_requests import *
 
@@ -69,7 +70,7 @@ if not args.apionly:
 
 	# Prevents KeyError from occurring in playlist
 	for sid in range(1, 10):
-		rainwave.playlist.clear_updated_albums(sid)
+		rainwave.playlist_objects.album.clear_updated_albums(sid)
 
 	# I found Nose impossible to configure programmatically so I'm resorting
 	# to faking argv to pass in.  Terrible.  Absolutely terrible.

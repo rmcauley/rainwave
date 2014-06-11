@@ -15,6 +15,7 @@ from rainwave.playlist_objects.artist import Artist
 from rainwave.playlist_objects.album import Album
 from rainwave.playlist_objects.songgroup import SongGroup
 from rainwave.playlist_objects.metadata import make_searchable_string
+from rainwave.playlist_objects import cooldown
 
 _mp3gain_path = filetools.which("mp3gain")
 
@@ -340,16 +341,16 @@ class Song(object):
 			log.debug("song_cooldown", "Starting album cooldown on group %s" % metadata.id)
 			metadata.start_cooldown(sid)
 
-		cool_time = cooldown_config[sid]['max_song_cool']
+		cool_time = cooldown.cooldown_config[sid]['max_song_cool']
 		if self.data['cool_override']:
 			cool_time = self.data['cool_override']
 		else:
 			cool_rating = self.data['rating']
 			# If no rating exists, give it a middle rating
 			if not self.data['rating'] or self.data['rating'] == 0:
-				cool_rating = cooldown_config[sid]['base_rating']
-			auto_cool = cooldown_config[sid]['min_song_cool'] + (((4 - (cool_rating - 1)) / 4.0) * (cooldown_config[sid]['max_song_cool'] - cooldown_config[sid]['min_song_cool']))
-			cool_time = auto_cool * get_age_cooldown_multiplier(self.data['added_on']) * self.data['cool_multiply']
+				cool_rating = cooldown.cooldown_config[sid]['base_rating']
+			auto_cool = cooldown.cooldown_config[sid]['min_song_cool'] + (((4 - (cool_rating - 1)) / 4.0) * (cooldown.cooldown_config[sid]['max_song_cool'] - cooldown.cooldown_config[sid]['min_song_cool']))
+			cool_time = auto_cool * cooldown.get_age_cooldown_multiplier(self.data['added_on']) * self.data['cool_multiply']
 
 		log.debug("cooldown", "Song ID %s Station ID %s cool_time period: %s" % (self.id, sid, cool_time))
 		cool_time = int(cool_time + time.time())

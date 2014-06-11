@@ -47,7 +47,7 @@ class SyncUpdateAll(APIHandler):
 		# You might think this is weird but this module has had memory leak issues
 		# YES I UNDERSTAND HOW GARBAGE COLLECTIONS WORKS I am just being ultra paranoid and hoping
 		# ~magic~ solves this.
-		del sessions[self.sid]
+		# del sessions[self.sid]
 		sessions[self.sid] = []
 		super(SyncUpdateAll, self).on_finish()
 
@@ -118,16 +118,17 @@ class Sync(APIHandler):
 	auth_required = True
 	fields = { "offline_ack": (fieldtypes.boolean, None), "resync": (fieldtypes.boolean, None), "known_event_id": (fieldtypes.positive_integer, None) }
 
-	# def initialize(self, **kwargs):
-	# 	super(Sync, self).initialize(**kwargs)
-		# self.keep_alive_handle = None
+	def initialize(self, **kwargs):
+		super(Sync, self).initialize(**kwargs)
+		self.keep_alive_handle = None
 
 	@tornado.web.asynchronous
 	def post(self):
 		if not cache.get_station(self.user.request_sid, "backend_ok") and not self.get_argument("offline_ack"):
 			raise APIException("station_offline")
 
-		# self.keep_alive_handle = None
+		global sessions
+		self.keep_alive_handle = None
 
 		self.set_header("Content-Type", "application/json")
 		
@@ -135,8 +136,10 @@ class Sync(APIHandler):
 			if self.get_argument("known_event_id") and (cache.get_station(self.sid, "sched_current_dict")['id'] != self.get_argument("known_event_id")):
 				self.update()
 			else:
-				# self.keep_alive()
-				self.add_to_sessions()
+				self.keep_alive()
+				if not self.user.request_sid in sessions:
+					sessions[self.user.request_sid] = []
+				sessions[self.user.request_sid].append(self)
 		else:
 			self.update()
 
@@ -151,6 +154,7 @@ class Sync(APIHandler):
 		except:
 			# If removing the session fails (ValueError, etc) it'll get cleaned up on the total wipe-out in the sync_all handler
 			pass
+		# Tornado will finish() the connection for us
 
 	def on_connection_close(self, *args, **kwargs):
 		self.remove_from_sessions()
@@ -173,14 +177,12 @@ class Sync(APIHandler):
 		api_requests.info.attach_info_to_request(self)
 		self.finish()
 
-	# def finish(self):
-	# 	# if self.keep_alive_handle:
-	# 	# 	tornado.ioloop.IOLoop.instance().remove_timeout(self.keep_alive_handle)
-	# 	super(Sync, self).finish()
+	def finish(self):
+		if self.keep_alive_handle:
+			tornado.ioloop.IOLoop.instance().remove_timeout(self.keep_alive_handle)
+		super(Sync, self).finish()
 
 	def update_user(self):
-		self.remove_from_sessions()
-
 		if self._finished:
 			return
 
@@ -193,10 +195,10 @@ class Sync(APIHandler):
 		self.append("user", self.user.to_private_dict())
 		self.finish()
 
-	# def keep_alive(self):
-	# 	if not self._finished:
-	# 		self.write(" ")
-	# 		self.keep_alive_handle = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=20), self.keep_alive)
+	def keep_alive(self):
+		if not self._finished:
+			self.write(" ")
+			self.keep_alive_handle = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=20), self.keep_alive)
 
 	def anon_registered_mixup_warn(self):
 		self.user.refresh()
