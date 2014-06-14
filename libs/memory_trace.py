@@ -39,9 +39,6 @@ def setup(db_file):
 		c.execute("CREATE TABLE memory_trace(time INTEGER, module TEXT, size INTEGER)")
 		sqlite.commit()
 
-	clean_caches_loop = tornado.ioloop.PeriodicCallback(record_sizes, 120 * 60 * 1000)
-	clean_caches_loop.start()
-
 	record_loop = tornado.ioloop.PeriodicCallback(record_sizes, 60 * 60 * 1000)
 	record_loop.start()
 
