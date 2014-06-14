@@ -2,7 +2,7 @@ This is the git project for the Rainwave website, http://rainwave.cc.
 
 == Python Setup for Debian/Ubuntu
 
-$ sudo apt-get install python-pyscss python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae
+$ sudo apt-get install python-pip python-pyscss python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae
 $ sudo pip install jsmin pytz watchdog pympler
 
 == Python Setup for Windows
