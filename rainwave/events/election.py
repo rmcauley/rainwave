@@ -238,12 +238,12 @@ class Election(event.BaseEvent):
 						"WHERE song_id = %s",
 						 (song.data['entry_votes'], total_votes, song.data['entry_votes'], total_votes, song.id))
 					for album in song.albums:
-						db.c.update("UPDATE r4_albums SET "
+						db.c.update("UPDATE r4_album_sid SET "
 							"album_vote_share = ((album_vote_count + %s) / (album_votes_seen + %s)), "
 							"album_vote_count = album_vote_count + %s, "
 							"album_votes_seen = album_votes_seen + %s "
-							"WHERE album_id = %s",
-							 (song.data['entry_votes'], total_votes, song.data['entry_votes'], total_votes, album.id))
+							"WHERE album_id = %s AND sid = %s",
+							 (song.data['entry_votes'], total_votes, song.data['entry_votes'], total_votes, album.id, self.sid))
 					if 'elec_request_user_id' in song.data:
 						if song == self.songs[0]:
 							db.c.update("UPDATE phpbb_users SET radio_winningrequests = radio_winningrequests + 1 WHERE user_id = %s", (song.data['elec_request_user_id'],))

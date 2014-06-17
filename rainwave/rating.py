@@ -17,10 +17,10 @@ def get_song_rating(song_id, user_id):
 	cache.set_song_rating(song_id, user_id, rating)
 	return rating
 
-def get_album_rating(album_id, user_id):
+def get_album_rating(album_id, user_id, sid):
 	rating = cache.get_album_rating(album_id, user_id)
 	if not rating:
-		rating = db.c.fetch_row("SELECT album_rating_user AS rating_user, album_fave AS fave FROM r4_album_ratings WHERE user_id = %s AND album_id = %s", (user_id, album_id))
+		rating = db.c.fetch_row("SELECT album_rating_user AS rating_user, album_fave AS fave FROM r4_album_ratings WHERE user_id = %s AND album_id = %s AND sid = %s", (user_id, album_id, sid))
 		if not rating:
 			rating = { "rating_user": 0, "fave": None }
 	cache.set_album_rating(album_id, user_id, rating)
@@ -98,17 +98,17 @@ def _set_fave(category, object_id, user_id, fave):
 		cache.set_song_rating(object_id, user_id, { "rating_user": rating, "fave": fave })
 	return True
 
-def update_album_ratings(song_id, user_id):
+def update_album_ratings(song_id, user_id, sid):
 	toreturn = []
 	for album_id in db.c.fetch_list("SELECT DISTINCT album_id FROM r4_song_sid WHERE song_id = %s", (song_id,)):
 		user_data = db.c.fetch_row(
 			"SELECT ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS rating_user, "
 				"COUNT(song_rating_user) AS rating_user_count "
-			"FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s) AS temp "
+			"FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s AND sid = %s AND song_exists = TRUE) AS temp "
 				"JOIN r4_song_ratings USING (song_id) "
 			"WHERE user_id = %s",
 			(album_id, user_id))
-		num_songs = db.c.fetch_var("SELECT album_song_count FROM r4_albums WHERE album_id = %s", (album_id,))
+		num_songs = db.c.fetch_var("SELECT album_song_count FROM r4_album_sid WHERE album_id = %s", (album_id,))
 		rating_complete = False
 		if user_data['rating_user_count'] >= num_songs:
 			rating_complete = True

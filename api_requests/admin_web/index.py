@@ -67,7 +67,7 @@ class AlbumList(api.web.HTMLRequest):
 		albums = db.c.fetch_all("SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS rating_user, album_cool_multiply AS cool_multiply, album_cool_override AS cool_override "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
-			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s) "
+			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s AND r4_album_ratings.sid = r4_album_sid.sid) "
 			"WHERE r4_album_sid.sid = %s "
 			"ORDER BY album_name",
 			(self.user.id, self.get_argument("restrict")))

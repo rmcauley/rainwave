@@ -55,9 +55,7 @@ class Song(object):
 		s.data['rank'] = None
 		s._assign_from_dict(d)
 
-		s.albums = Album.load_list_from_song_id_sid(song_id, sid)
-		if len(s.albums) == 0:
-			s.albums = Album.load_list_from_song_id_sid(song_id, d['song_origin_sid'])
+		s.albums = Album.load_from_id_sid(d['album_id'], s.sid)
 		s.artists = Artist.load_list_from_song_id(song_id)
 		s.groups = SongGroup.load_list_from_song_id(song_id)
 
@@ -97,7 +95,7 @@ class Song(object):
 
 		new_artists = Artist.load_list_from_tag(s.artist_tag)
 		new_groups = SongGroup.load_list_from_tag(s.genre_tag)
-		new_albums = Album.load_list_from_tag(s.album_tag)
+		s.albums = [ Album.load_from_name(s.album_tag) ]
 
 		i = 0;
 		for metadata in new_artists:
@@ -105,11 +103,8 @@ class Song(object):
 			i += 1
 		for metadata in new_groups:
 			metadata.associate_song_id(s.id)
-		if len(new_albums) > 0:
-			new_albums[0].associate_song_id(s.id, sids)
 
 		s.artists = new_artists + kept_artists
-		s.albums = new_albums[0]
 		s.groups = new_groups + kept_groups
 
 		s.update_artist_parseable()
