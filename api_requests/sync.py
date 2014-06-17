@@ -7,19 +7,71 @@ from api import fieldtypes
 from api.exceptions import APIException
 from api.web import APIHandler
 from api.server import handle_api_url
-from api import fieldtypes
 import api_requests.info
 
 from libs import cache
 from libs import log
 from libs import config
-from rainwave import playlist
+
+class SessionBank(object):
+	def __init__(self):
+		super(SessionBank, self).__init__()
+		self.sessions = []
+		self.to_remove = []
+
+	def __iter__(self):
+		for item in self.sessions:
+			yield item
+
+	def append(self, session):
+		self.sessions.append(session)
+
+	def remove(self, session):
+		self.to_remove.append(session)
+
+	def clean(self):
+		for session in self.to_remove:
+			if self.sessions.count(session) > 0:
+				self.sessions.remove(session)
+		self.to_remove[:] = []
+
+	def clear(self):
+		self.sessions[:] = []
+		self.to_remove[:] = []
+
+	def find_user(self, user_id):
+		for session in self.sessions:
+			if session.user.id == user_id:
+				return [ session ]
+		return []
+
+	def find_ip(self, ip_address):
+		toret = []
+		for session in self.sessions:
+			if session.request.remote_ip == ip_address:
+				toret.append(session)
+		return toret
+
+	def keep_alive(self):
+		for session in self.sessions:
+			try:
+				session.keep_alive()
+			except Exception as e:
+				self.remove(session)
+				log.exception("sync", "Session failed keepalive.", e)
 
 sessions = {}
 
 def init():
+	global sessions
 	for sid in config.station_ids:
-		sessions[sid] = []
+		sessions[sid] = SessionBank()
+	tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=30), _keep_all_alive)
+
+def _keep_all_alive():
+	global sessions
+	for sid in sessions:
+		sessions[sid].keep_alive()
 
 @handle_api_url("sync_update_all")
 class SyncUpdateAll(APIHandler):
@@ -32,23 +84,29 @@ class SyncUpdateAll(APIHandler):
 		self.append("sync_all_result", "Processing.")
 
 	def on_finish(self):
+		global sessions
+
 		if not self.get_status() == 200:
 			log.debug("sync_update_all", "sync_update_all request was not OK.")
 			return
 		log.debug("sync_update_all", "Updating all sessions for sid %s" % self.sid)
 		cache.update_local_cache_for_sid(self.sid)
 
+		print cache.get_station(self.sid, "sched_current_dict")['id']
+
 		session_count = 0
-		if self.sid in sessions:
-			for session in sessions[self.sid]:
-				session_count += 1
+		session_failed_count = 0
+		sessions[self.sid].clean()
+		for session in sessions[self.sid]:
+			try:
 				session.update()
-		log.debug("sync_update_all", "Updated %s sessions for sid %s." % (session_count, self.sid))
-		# You might think this is weird but this module has had memory leak issues
-		# YES I UNDERSTAND HOW GARBAGE COLLECTIONS WORKS I am just being ultra paranoid and hoping
-		# ~magic~ solves this.
-		# del sessions[self.sid]
-		sessions[self.sid] = []
+				session_count += 1
+			except RuntimeError as e:
+				session_failed_count += 1
+				log.exception("sync", "Failed to update session.", e)
+		log.debug("sync_update_all", "Updated %s sessions (%s failed) for sid %s." % (session_count, session_failed_count, self.sid))
+		sessions[self.sid].clear()
+
 		super(SyncUpdateAll, self).on_finish()
 
 @handle_api_url("sync_update_user")
@@ -64,17 +122,23 @@ class SyncUpdateUser(APIHandler):
 		self.append("sync_user_result", "Processing.")
 
 	def on_finish(self):
+		global sessions
+
 		if not self.get_status() == 200:
 			log.debug("sync_update_user", "sync_update_user request was not OK.")
 			return
 
 		user_id = long(self.get_argument("sync_user_id"))
 		for sid in sessions:
-			for session in sessions[sid]:
-				if session.user.id == user_id:
+			sessions[sid].clean()
+			for session in sessions[sid].find_user(user_id):
+				try:
 					log.debug("sync_update_user", "Updating user %s session." % user_id)
 					session.update_user()
-					break
+				except Exception as e:
+					sessions[sid].remove(session)
+					log.exception("sync", "Session failed to be updated during update_user.", e)
+			sessions[sid].clean()
 
 		super(SyncUpdateUser, self).on_finish()
 
@@ -91,20 +155,27 @@ class SyncUpdateIP(APIHandler):
 		self.append("sync_ip_result", "Processing.")
 
 	def on_finish(self):
+		global sessions
+
 		if not self.get_status() == 200:
 			log.debug("sync_update_ip", "sync_update_ip request was not OK.")
 			return
 
 		ip_address = self.get_argument("ip_address")
 		for sid in sessions:
-			for session in sessions[sid]:
-				if session.user.is_anonymous() and session.request.remote_ip == ip_address:
-					log.debug("sync_update_ip", "Updating IP %s" % ip_address)
-					session.update_user()
-				elif session.request.remote_ip == ip_address:
-					log.debug("sync_update_ip", "Warning logged in user of potential mixup at IP %s" % ip_address)
-					if session.anon_registered_mixup_warn():
+			sessions[sid].clean()
+			for session in sessions[sid].find_ip(ip_address):
+				try:
+					if session.user.is_anonymous():
+						log.debug("sync_update_ip", "Updating IP %s" % ip_address)
 						session.update_user()
+					else:
+						log.debug("sync_update_ip", "Warning logged in user of potential mixup at IP %s" % ip_address)
+						session.anon_registered_mixup_warn()
+				except Exception as e:
+					sessions[sid].remove(session)
+					log.exception("sync", "Session failed to be updated during update_user.", e)
+			sessions[sid].clean()
 
 		super(SyncUpdateIP, self).on_finish()
 
@@ -120,15 +191,13 @@ class Sync(APIHandler):
 
 	def initialize(self, **kwargs):
 		super(Sync, self).initialize(**kwargs)
-		self.keep_alive_handle = None
 
 	@tornado.web.asynchronous
 	def post(self):
+		global sessions
+
 		if not cache.get_station(self.user.request_sid, "backend_ok") and not self.get_argument("offline_ack"):
 			raise APIException("station_offline")
-
-		global sessions
-		self.keep_alive_handle = None
 
 		self.set_header("Content-Type", "application/json")
 		
@@ -136,37 +205,24 @@ class Sync(APIHandler):
 			if self.get_argument("known_event_id") and (cache.get_station(self.sid, "sched_current_dict")['id'] != self.get_argument("known_event_id")):
 				self.update()
 			else:
-				self.keep_alive()
-				if not self.user.request_sid in sessions:
-					sessions[self.user.request_sid] = []
-				sessions[self.user.request_sid].append(self)
+				sessions[self.sid].append(self)
 		else:
 			self.update()
 
-	def add_to_sessions(self):
-		global sessions
-		sessions[self.user.request_sid].append(self)
-
-	def remove_from_sessions(self):
-		global sessions
-		try:
-			sessions[self.user.request_sid].remove(self)
-		except:
-			# If removing the session fails (ValueError, etc) it'll get cleaned up on the total wipe-out in the sync_all handler
-			pass
-		# Tornado will finish() the connection for us
+	def keep_alive(self):
+		self.write(" ")
 
 	def on_connection_close(self, *args, **kwargs):
-		self.remove_from_sessions()
+		global sessions
+		sessions[self.sid].remove(self)
 		super(Sync, self).on_connection_close(*args, **kwargs)
 
+	def on_finish(self, *args, **kwargs):
+		global sessions
+		sessions[self.sid].remove(self)
+		super(Sync, self).on_finish(*args, **kwargs)
+
 	def update(self):
-		self.remove_from_sessions()
-
-		# Don't proceed if this connection is already closed
-		if self._finished:
-			return
-
 		# Overwrite this value since who knows how long we've spent idling
 		self._startclock = time.time()
 
@@ -177,15 +233,7 @@ class Sync(APIHandler):
 		api_requests.info.attach_info_to_request(self)
 		self.finish()
 
-	def finish(self):
-		if self.keep_alive_handle:
-			tornado.ioloop.IOLoop.instance().remove_timeout(self.keep_alive_handle)
-		super(Sync, self).finish()
-
 	def update_user(self):
-		if self._finished:
-			return
-
 		self._startclock = time.time()
 
 		if not cache.get_station(self.user.request_sid, "backend_ok"):
@@ -195,15 +243,10 @@ class Sync(APIHandler):
 		self.append("user", self.user.to_private_dict())
 		self.finish()
 
-	def keep_alive(self):
-		if not self._finished:
-			self.write(" ")
-			self.keep_alive_handle = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=20), self.keep_alive)
-
 	def anon_registered_mixup_warn(self):
 		self.user.refresh()
 		if not self.user.is_anonymous() and not self.user.is_tunedin():
 			self.append_standard("redownload_m3u")
-			return True
+			self.finish()
 		return False
 

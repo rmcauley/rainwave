@@ -93,7 +93,7 @@ class APIServer(object):
 		log.debug("start", "Server booting, port %s." % port_no)
 		db.open()
 		cache.open()
-		memory_trace.setup("%s/rw_api_%s.sqlite" % (config.get_directory("log_dir"), port_no))
+		memory_trace.setup(port_no)
 
 		if config.get("web_developer_mode"):
 			for station_id in config.station_ids:

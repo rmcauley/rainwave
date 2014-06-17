@@ -1,7 +1,6 @@
 # Necessary includes
 import time
 import sys
-import sqlite3
 import tornado.ioloop
 
 # Memory clearing includes
@@ -10,7 +9,6 @@ import linecache
 
 # Meliae memory profiling (serious business, Linux only)
 import os
-import sys
 import tempfile
 try:
 	import meliae.scanner
@@ -21,8 +19,12 @@ except:
 from libs import config
 
 sqlite = None
+_prefix = ""
 
-def setup(db_file):
+def setup(unique_prefix):
+	global _prefix
+	_prefix = unique_prefix
+
 	if not config.get("memory_trace") or not "meliae" in sys.modules:
 		return
 
@@ -30,8 +32,13 @@ def setup(db_file):
 	record_loop.start()
 
 def record_sizes():
+	global _prefix
+	
 	gc.collect()
 	linecache.clearcache()
 
-	d = os.path.join(tempfile.gettempdir(), "rw_memory_%s.json" % int(time.time()))
-	meliae.scanner.dump_all_objects(d)
+	try:
+		d = os.path.join(tempfile.gettempdir(), "rw_memory_%s_%s.json" % (_prefix, int(time.time())))
+		meliae.scanner.dump_all_objects(d)
+	except:
+		pass
