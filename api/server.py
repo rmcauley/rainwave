@@ -77,6 +77,9 @@ class APITestFailed(Exception):
 
 class APIServer(object):
 	def _listen(self, task_id):
+		import api_requests.sync
+		api_requests.sync.init()
+		
 		# task_ids start at zero, so we gobble up ports starting at the base port and work up
 		port_no = int(config.get("api_base_port")) + task_id
 
@@ -156,8 +159,6 @@ class APIServer(object):
 
 	def start(self):
 		# Setup variables for the long poll module
-		import api_requests.sync
-		api_requests.sync.init()
 		# Bypass Tornado's forking processes for Windows machines if num_processes is set to 1
 		if config.get("api_num_processes") == 1 or config.get("web_developer_mode"):
 			self._listen(0)
