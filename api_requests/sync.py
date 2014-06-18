@@ -198,7 +198,7 @@ class SyncUpdateUser(APIHandler):
 		user_id = long(self.get_argument("sync_user_id"))
 		for sid in sessions:
 			sessions[sid].clean()
-			sessions[sid].user_update(user_id)
+			sessions[sid].update_user(user_id)
 
 		super(SyncUpdateUser, self).on_finish()
 
