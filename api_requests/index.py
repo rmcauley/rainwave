@@ -3,19 +3,14 @@
 import tornado.web
 import tornado.escape
 import time
-import hashlib
 import os
 
 import api.web
 import api.locale
 from api.server import handle_url
 from api_requests import info
-from api import fieldtypes
 
 from libs import config
-from libs import cache
-from libs import log
-from libs import db
 from libs import buildtools
 from rainwave.user import User
 
@@ -91,8 +86,8 @@ class R4Index(MainIndex):
 
 		self.js4files = []
 		for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js4")):
-			for file in files:
-				self.js4files.append(os.path.join(root[root.find("static/js4"):], file))
+			for f in files:
+				self.js4files.append(os.path.join(root[root.find("static/js4"):], f))
 		buildtools.bake_css()
 
 	def append(self, key, value):

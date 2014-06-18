@@ -40,13 +40,13 @@ def load_translations():
 
 	locale_names = {}
 	for root, subdir, files in os.walk(os.path.join(os.path.dirname(__file__), "../lang")):
-		for file in files:
-			if file == "en_MASTER.json":
+		for filename in files:
+			if filename == "en_MASTER.json":
 				continue
-			f = codecs.open(os.path.join(os.path.dirname(__file__), "../lang/", file), "r", encoding="utf-8")
-			translations[file[:-5]] = RainwaveLocale(file[:-5], master, json.load(f))
+			f = codecs.open(os.path.join(os.path.dirname(__file__), "../lang/", filename), "r", encoding="utf-8")
+			translations[filename[:-5]] = RainwaveLocale(filename[:-5], master, json.load(f))
 			f.close()
-			locale_names[file[:-5]] = translations[file[:-5]].dict['language_name']
+			locale_names[filename[:-5]] = translations[filename[:-5]].dict['language_name']
 
 	locale_names_json = tornado.escape.json_encode(locale_names)
 

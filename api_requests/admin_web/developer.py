@@ -49,7 +49,7 @@ class TestUserRequest(APIHandler):
 		self.execute(user_id, sid)
 		self.append_standard("dev_login_ok", "You are now user ID %s session ID %s" % (user_id, session_id))
 
-	def execute(self):
+	def execute(self, user_id, sid):
 		pass
 
 @handle_api_url("test/login_tuned_in/(\d+)")

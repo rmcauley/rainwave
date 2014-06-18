@@ -1,9 +1,6 @@
-from libs import cache
 from libs import db
-from libs import config
 import api.web
 from api.server import handle_api_url
-from api.server import handle_url
 from api.exceptions import APIException
 from api import fieldtypes
 from rainwave.events import event
@@ -29,7 +26,7 @@ class ListProducerTypes(api.web.APIHandler):
 	sid_required = False
 
 	def post(self):
-		self.append(self.return_name, event.get_admin_createable_producers())
+		self.append(self.return_name, event.get_admin_creatable_producers())
 
 @handle_api_url("admin/create_producer")
 class CreateProducer(api.web.APIHandler):

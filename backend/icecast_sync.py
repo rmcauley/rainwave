@@ -26,6 +26,7 @@ def _process():
 				log.debug("icecast_sync", "Pruning listener ID %s from relay %s." % (listener_id, relay))
 				pruned += 1
 				db.c.update("DELETE FROM r4_listeners WHERE listener_icecast_id = %s AND listener_relay = %s", (listener_id, relay))
+	log.debug("icecast_sync", "Total: Checked %s listeners, pruned %s." % (checked, pruned))
 	all_returned = {}
 	listener_ids = {}
 
@@ -93,7 +94,7 @@ def start_icecast_sync():
 			http_client2.fetch(relay_base_url + stream_names[sid] + ".ogg",
 				                         auth_username=relay_info['admin_username'],
 										 auth_password=relay_info['admin_password'],
-			                             callback=handler.respond)
+			                             callback=handler2.respond)
 	_process()
 							  
 

@@ -1,5 +1,3 @@
-import os
-import json
 import tornado.web
 import api.web
 from libs import config
@@ -78,9 +76,6 @@ class IndexRequest(tornado.web.RequestHandler):
 	def get(self):
 		self.write(self.render_string("basic_header.html", request=self, title="Rainwave API Documentation"))
 
-		other_requests = {}
-		prettyprint_requests = {}
-
 		self.write("<h2>Requests</h2>")
 		self.write("<table class='help_legend'>")
 		for section in section_order:
@@ -98,8 +93,8 @@ class IndexRequest(tornado.web.RequestHandler):
 		self.write("</ul>")
 		self.write("<h2>Station ID For 'sid' Argument</h2>")
 		self.write("<ul>")
-		for id in config.station_ids:
-			self.write("<li>%s: %s</li>" % (id, config.station_id_friendly[id]))
+		for sid in config.station_ids:
+			self.write("<li>%s: %s</li>" % (sid, config.station_id_friendly[sid]))
 		self.write("</ul>")
 		self.write(self.render_string("basic_footer.html"))
 

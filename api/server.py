@@ -5,7 +5,6 @@ import urllib
 import json
 import time
 import traceback
-import re
 
 import tornado.httpserver
 import tornado.ioloop
@@ -62,7 +61,9 @@ def test_post(klass):
 
 class TestShutdownRequest(api.web.APIHandler):
 	auth_required = False
-	def get(self):
+	allow_get = True
+
+	def post(self):
 		self.write("Shutting down server.")
 
 	def on_finish(self):
@@ -76,6 +77,9 @@ class APITestFailed(Exception):
 		return repr(self.value)
 
 class APIServer(object):
+	def __init__(self):
+		self.ioloop = None
+
 	def _listen(self, task_id):
 		import api_requests.sync
 		api_requests.sync.init()
@@ -94,8 +98,8 @@ class APIServer(object):
 			os.remove(log_file)
 		log.init(log_file, config.get("log_level"))
 		log.debug("start", "Server booting, port %s." % port_no)
-		db.open()
-		cache.open()
+		db.connect()
+		cache.connect()
 		memory_trace.setup(port_no)
 
 		if config.get("web_developer_mode"):
@@ -104,7 +108,7 @@ class APIServer(object):
 			# automatically loads every station ID and fills things in if there's no data
 			schedule.load()
 			for station_id in config.station_ids:
-				schedule._update_memcache(station_id)
+				schedule.update_memcache(station_id)
 				rainwave.request.update_cache(station_id)
 				cache.set_station(station_id, "backend_ok", True)
 				cache.set_station(station_id, "backend_message", "OK")

@@ -1,13 +1,9 @@
 from api import fieldtypes
 from api.web import APIHandler
 from api.exceptions import APIException
-from api.server import test_get
-from api.server import test_post
 from api.server import handle_api_url
 
 from libs import cache
-from libs import log
-from rainwave import playlist
 from rainwave import rating as ratinglib
 
 @handle_api_url('rate')

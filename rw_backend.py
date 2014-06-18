@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
 import argparse
-import sys
-import os
 
 import backend.server
 import libs.chuser

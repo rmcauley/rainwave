@@ -1,19 +1,12 @@
-import tornado.web
-
 from api.web import APIHandler
 from api.web import PrettyPrintAPIMixin
 from api import fieldtypes
-from api.server import test_get
-from api.server import test_post
 from api.server import handle_api_url
 from api.server import handle_api_html_url
 
-from libs import config
 from libs import cache
-from libs import log
 from libs import db
 from rainwave import playlist
-from api_requests import tune_in
 
 def get_all_albums(sid, user = None):
 	if not user or user.is_anonymous():
@@ -120,14 +113,16 @@ class Top100Songs(APIHandler):
 
 	def post(self):
 		if 'sid' in self.request.arguments:
-			self.append(self.return_name, db.c.fetch_all(
-				"SELECT DISTINCT ON (song_rating, song_id) "
-					"song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, song_rating, song_rating_count "
-				"FROM r4_song_sid "
-					"JOIN r4_songs USING (song_id) "
-					"JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id) "
-				"WHERE r4_song_sid.sid = %s AND song_rating_count > 20 AND song_verified = TRUE "
-				"ORDER BY song_rating DESC, song_id LIMIT 100"), (self.sid,))
+			self.append(self.return_name, 
+				db.c.fetch_all(
+					"SELECT DISTINCT ON (song_rating, song_id) "
+						"song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, song_rating, song_rating_count "
+					"FROM r4_song_sid "
+						"JOIN r4_songs USING (song_id) "
+						"JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id) "
+					"WHERE r4_song_sid.sid = %s AND song_rating_count > 20 AND song_verified = TRUE "
+					"ORDER BY song_rating DESC, song_id LIMIT 100", (self.sid,))
+				)
 		else:
 			self.append(self.return_name, db.c.fetch_all(
 				"SELECT DISTINCT ON (song_rating, song_id) "

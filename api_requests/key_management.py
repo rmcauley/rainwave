@@ -1,15 +1,8 @@
-from tornado import escape
-
 import api.web
 from api.server import handle_url
-from api_requests import info
 from api import fieldtypes
 
-from libs import config
-from libs import cache
-from libs import log
 from libs import db
-from rainwave.user import User
 
 qr_service = "http://chart.apis.google.com/chart?cht=qr&chs=350x350&choe=ISO-8859-1&chl=%s"
 mini_qr_service = "http://chart.apis.google.com/chart?cht=qr&chs=75x75&choe=ISO-8859-1&chld=L|0&chl=%s"
@@ -44,7 +37,7 @@ class KeyDelete(KeyIndex):
 
 	def get(self):
 		db.c.update("DELETE FROM r4_api_keys WHERE user_id = %s AND api_id = %s", (self.user.id, self.get_argument("delete_key")))
-		self.user._get_all_api_keys()
+		self.user.get_all_api_keys()
 		super(KeyDelete, self).get()
 
 @handle_url("/keys/create")

@@ -1,8 +1,6 @@
 from libs import db
 import api.web
 from api.server import handle_api_url
-from api.server import handle_url
-from api.exceptions import APIException
 from api import fieldtypes
 
 @handle_api_url("admin/set_song_request_only")

@@ -77,7 +77,7 @@ def get_age_cooldown_multiplier(added_on):
 		s1_min_multiplier = config.get("cooldown_age_stage1_min_multiplier")
 		# Age Cooldown Stage 1
 		if age_weeks <= s2_start:
-			cool_age_multiplier = (age_weeks / s2_start) * (s2_min_multiplier - s1_min_multiplier) + s1_min_multiplier;
+			cool_age_multiplier = (age_weeks / s2_start) * (s2_min_multiplier - s1_min_multiplier) + s1_min_multiplier
 		# Age Cooldown Stage 2
 		else:
 			cool_age_multiplier = s2_min_multiplier + ((1.0 - s2_min_multiplier) * ((0.32436 - (s2_end / 288.0) + (math.pow(s2_end, 2.0) / 38170.0)) * math.log(2.0 * age_weeks + 1.0)))

@@ -1,14 +1,8 @@
-import random
-import math
 import time
 
 from libs import db
-from libs import config
-from libs import cache
 from libs import log
 from rainwave import playlist
-from rainwave import request
-from rainwave.user import User
 
 all_producers = {}
 
@@ -99,6 +93,7 @@ class BaseProducer(object):
 		self.use_crossfade = True
 		self.use_tag_suffix = True
 		self.plan_ahead_limit = 1
+		self.songs = None
 
 	def change_start(self, new_start):
 		if not self.used:
@@ -120,7 +115,7 @@ class BaseProducer(object):
 	def load_event_in_progress(self):
 		raise Exception("No event type specified.")
 
-	def start(self):
+	def start_producer(self):
 		self.start_actual = int(time.time())
 		if self.id:
 			db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (self.start_actual, self.id))
@@ -175,8 +170,9 @@ class BaseEvent(object):
 		self.replay_gain = None
 		self.name = None
 		self.sid = sid
+		self.songs = None
 
-	def _update_from_dict(self, dict):
+	def _update_from_dict(self, dct):
 		pass
 
 	def get_filename(self):
@@ -224,7 +220,7 @@ class BaseEvent(object):
 			log.warn("event", "Event ID %s (type %s) failed on length calculation.  Used: %s / Songs: %s / Start Actual: %s / Start: %s / End: %s" % (self.id, self.type, self.used, len(self.songs), self.start_actual, self.start, self.end))
 			return 0
 
-	def to_dict(self, user = None, **kwargs):
+	def to_dict(self, user = None):
 		obj = {
 			"id": self.id,
 			"start": self.start,
@@ -246,7 +242,7 @@ class BaseEvent(object):
 			obj['songs'] = []
 			for song in self.songs:
 				obj['songs'].append(song.to_dict(user))
-		return obj;
+		return obj
 
 class SingleSong(BaseEvent):
 	incrementer = 0

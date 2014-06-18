@@ -1,17 +1,8 @@
-import tornado.web
-
 from api.web import APIHandler
-from api.web import HTMLRequest
 from api.web import PrettyPrintAPIMixin
-from api import fieldtypes
-from api.server import test_get
-from api.server import test_post
 from api.server import handle_api_url
 from api.server import handle_api_html_url
 
-from libs import config
-from libs import cache
-from libs import log
 from libs import db
 
 @handle_api_url("tip_jar")
@@ -35,6 +26,17 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
 		self.write("<li>%s</li>" % self.locale.translate("tip_jar_instruction_2"))
 		self.write("<li>%s</li></ul>" % self.locale.translate("tip_jar_instruction_3"))
 		self.write("<p>%s</p>" % self.locale.translate("tip_jar_opener_end"))
+
+		self.write("""
+			<div style='text-align: center'>
+			<form method="post" action="https://www.paypal.com/cgi-bin/webscr" target="paypal">
+			<input type="hidden" name="cmd" value="_xclick">
+			<input type="hidden" name="business" value="rmcauley@rainwave.cc.com">
+			<input type="hidden" name="item_name" value="">
+			<input type="hidden" name="bn"  value="ButtonFactory.PayPal.001">
+			<input type="image" name="add" src="/static/images4/paypal.gif">
+			</form>
+			</div>""")
 
 		all_donations = db.c.fetch_var("SELECT SUM(donation_amount) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0")
 		self.write("<p>%s: %s</p>" % (self.locale.translate("tip_jar_all_donations"), all_donations))

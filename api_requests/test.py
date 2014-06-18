@@ -1,14 +1,5 @@
-import time
-import hashlib
-
 from api.web import APIHandler
-from api.web import PrettyPrintAPIMixin
-from api.server import test_get
-from api.server import test_post
 from api.server import handle_api_url
-
-from libs import config
-from libs import db
 
 @handle_api_url("test/hello_world")
 class HelloWorld(APIHandler):

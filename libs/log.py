@@ -1,7 +1,5 @@
 import logging
 import logging.handlers
-import tornado.log
-import sys
 import datetime
 
 log = None

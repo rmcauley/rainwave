@@ -1,10 +1,8 @@
 from libs import config
 import api.web
-from api.server import handle_api_url
 from api.server import handle_url
 from api_requests.admin_web.index import AlbumList
 from api_requests.admin_web.index import SongList
-
 
 @handle_url("/admin/tools/song_request_only")
 class SongRequestOnlyTool(api.web.HTMLRequest):

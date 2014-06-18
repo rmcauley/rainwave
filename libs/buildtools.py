@@ -1,16 +1,14 @@
 import scss
 from scss import Scss
-import json
 import os
-import codecs
 from jsmin import jsmin
 
 scss.config.LOAD_PATHS = os.path.dirname(__file__) + "/../static/style4"
 
 def create_baked_directory():
-	dir = os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()))
-	if not os.path.exists(dir):
-		os.makedirs(dir)
+	d = os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()))
+	if not os.path.exists(d):
+		os.makedirs(d)
 
 def bake_css():
 	create_baked_directory()

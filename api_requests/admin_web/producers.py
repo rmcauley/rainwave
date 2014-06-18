@@ -1,13 +1,6 @@
-import datetime
-import time
-import types
-from pytz import timezone
-
-from libs import log
 from libs import config
 import api.web
 from api import fieldtypes
-from api.server import handle_api_url
 from api.server import handle_url
 from api_requests.admin import producers
 from rainwave.events import event
@@ -15,6 +8,7 @@ from api_requests.admin_web import index
 from api_requests.admin_web.power_hours import get_ph_formatted_time
 
 # this makes sure all the event modules get loaded correctly
+# DO NOT REMOVE despite what pylinter might tell you!
 from rainwave import schedule
 
 @handle_url("/admin/tools/producers")

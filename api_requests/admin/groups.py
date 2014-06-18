@@ -12,7 +12,7 @@ class AddGroupToSong(api.web.APIHandler):
 		"group_name": (fieldtypes.string, True)}
 
 	def post(self):
-		s = Song.load_from_id(self.get_argument("song_id"));
+		s = Song.load_from_id(self.get_argument("song_id"))
 		#If comma-separated values, will do each individually
 		for group in self.get_argument("group").split(","):
 			s.add_group(group.strip())
@@ -27,6 +27,6 @@ class RemoveGroupFromSong(api.web.APIHandler):
 		"group_id": (fieldtypes.group_id, True) }
 
 	def post(self):
-		s = Song.load_from_id(self.get_argument("song_id"));
+		s = Song.load_from_id(self.get_argument("song_id"))
 		s.remove_group_id(self.get_argument("group_id"))
 		self.append(self.return_name, { "success": "true", "tl_key": "Group removed from song ID." })

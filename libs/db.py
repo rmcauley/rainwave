@@ -1,7 +1,6 @@
 import psycopg2
-from psycopg2 import extras
+import psycopg2.extras
 import sqlite3
-import re
 
 from libs import config
 from libs import log
@@ -220,21 +219,21 @@ class SQLiteCursor(object):
 	def rollback(self):
 		pass
 
-def open():
+def connect():
 	global connection
 	global c
 
 	if c:
 		close()
 
-	type = config.get("db_type")
+	dbtype = config.get("db_type")
 	name = config.get("db_name")
 	host = config.get("db_host")
 	port = config.get("db_port")
 	user = config.get("db_user")
 	password = config.get("db_password")
 
-	if type == "postgres":
+	if dbtype == "postgres":
 		psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 		psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 		base_connstr = "sslmode=disable "
@@ -250,11 +249,11 @@ def open():
 		connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 		connection.autocommit = True
 		c = connection.cursor(cursor_factory=PostgresCursor)
-	elif type == "sqlite":
+	elif dbtype == "sqlite":
 		log.debug("dbopen", "Opening SQLite DB %s" % name)
 		c = SQLiteCursor(name)
 	else:
-		log.critical("dbopen", "Invalid DB type %s!" % type)
+		log.critical("dbopen", "Invalid DB type %s!" % dbtype)
 		return False
 
 	return True

@@ -1,7 +1,6 @@
 import tornado.ioloop
 import time
 from libs import db
-from libs import log
 import tempfile
 import os
 

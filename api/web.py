@@ -2,7 +2,6 @@ import tornado.web
 import tornado.escape
 import tornado.httputil
 import time
-import re
 import traceback
 import types
 import hashlib
@@ -95,24 +94,31 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	# automatically add pagination to an API request.  use self.get_sql_limit_string()!
 	pagination = False
 
-	def initialize(self, **kwargs):
-		super(RainwaveHandler, self).initialize(**kwargs)
+	def __init__(self, *args, **kwargs):
+		super(RainwaveHandler, self).__init__(*args, **kwargs)
 		self.cleaned_args = {}
 		self.cookie_prefs = {}
 		self.sid = None
+		self._startclock = time.time()
+		self.user = None
+		self._output = None
+		self._output_array = False
+
+	def initialize(self, **kwargs):
+		super(RainwaveHandler, self).initialize(**kwargs)
 		if self.pagination:
  			self.fields['per_page'] = (fieldtypes.zero_or_greater_integer, False)
  			self.fields['page_start'] = (fieldtypes.zero_or_greater_integer, False)
 
-	def set_cookie(self, name, value, **kwargs):
+	def set_cookie(self, name, value, *args, **kwargs):
 		if isinstance(value, (int, long)):
 			value = repr(value)
-		super(RainwaveHandler, self).set_cookie(name, value, **kwargs)
+		super(RainwaveHandler, self).set_cookie(name, value, *args, **kwargs)
 
-	def get_argument(self, name):
+	def get_argument(self, name, *args, **kwargs):
 		if name in self.cleaned_args:
 			return self.cleaned_args[name]
-		return super(RainwaveHandler, self).get_argument(name)
+		return super(RainwaveHandler, self).get_argument(name, *args, **kwargs)
 
 	def set_argument(self, name, value):
 		self.cleaned_args[name] = value
@@ -146,9 +152,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):
-		self._startclock = time.time()
-		self.user = None
-
 		if self.local_only and not self.request.remote_ip in config.get("api_trusted_ip_addresses"):
 			log.info("api", "Rejected %s request from %s" % (self.url, self.request.remote_ip))
 			self.set_status(403)
@@ -179,7 +182,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self._output_array = True
 		else:
 			self._output = {}
-			self._output_array = False
 
 		if not self.sid:
 			self.sid = fieldtypes.integer(self.get_cookie("r4_sid", "5"))
@@ -298,23 +300,21 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self.user.authorize(self.sid, self.request.remote_ip, self.get_argument("key"))
 			if not self.user.authorized:
 				raise APIException("auth_failed", http_code=403)
-				# In case the raise is suppressed
-				self.user = None
 			else:
 				self._update_phpbb_session(self._get_phpbb_session(self.user.id))
 				self.sid = self.user.request_sid
 
 	# Handles adding dictionaries for JSON output
 	# Will return a "code" if it exists in the hash passed in, if not, returns True
-	def append(self, key, hash):
-		if hash == None:
+	def append(self, key, dct):
+		if dct == None:
 			return
 		if self._output_array:
-			self._output.append({ key: hash })
+			self._output.append({ key: dct })
 		else:
-			self._output[key] = hash
-		if "code" in hash:
-			return hash["code"]
+			self._output[key] = dct
+		if "code" in dct:
+			return dct["code"]
 		return True
 
 	def append_standard(self, tl_key, text = None, success = True, return_name = None, **kwargs):
@@ -379,11 +379,10 @@ class APIHandler(RainwaveHandler):
 			if isinstance(exc, (psycopg2.OperationalError, psycopg2.InterfaceError)):
 				try:
 					db.close()
-					db.open()
+					db.connect()
 					self.append("error", { "code": 500, "tl_key": "db_error_retry", "text": self.locale.translate("db_error_retry") })
 				except:
 					self.append("error", { "code": 500, "tl_key": "db_error_permanent", "text": self.locale.translate("db_error_permanent") })
-					pass
 			elif isinstance(exc, APIException):
 				exc.localize(self.locale)
 				self.append(self.return_name, exc.jsonable())
@@ -404,14 +403,13 @@ def _html_write_error(self, status_code, **kwargs):
 		if isinstance(exc, (psycopg2.OperationalError, psycopg2.InterfaceError)):
 			try:
 				db.close()
-				db.open()
+				db.connect()
 				self.append("error", { "code": 500, "tl_key": "db_error_retry", "text": self.locale.translate("db_error_retry") })
 			except:
 				self.append("error", { "code": 500, "tl_key": "db_error_permanent", "text": self.locale.translate("db_error_permanent") })
-				pass
 		elif isinstance(exc, APIException):
 			if not isinstance(self.locale, locale.RainwaveLocale):
-				exc.localize(locale.get("en_CA"))
+				exc.localize(locale.RainwaveLocale.get("en_CA"))
 			else:
 				exc.localize(self.locale)
 		if (isinstance(exc, APIException) or isinstance(exc, tornado.web.HTTPError)) and exc.reason:
@@ -441,8 +439,9 @@ class PrettyPrintAPIMixin(object):
 	write_error = _html_write_error
 
 	# reset the initialize to ignore overwriting self.get with anything
-	def initialize(self, **kwargs):
-		super(APIHandler, self).initialize(**kwargs)
+	# TODO: stop fucking monkeypatching you dipshit
+	def initialize(self, *args, **kwargs):
+		super(APIHandler, self).initialize(*args, **kwargs)
 		# yaaaaaaay monkey patching :/
 		self._real_post = self.post
 		self.post = self.post_reject

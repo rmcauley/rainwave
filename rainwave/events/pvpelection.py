@@ -15,5 +15,5 @@ class PVPElection(election.Election):
 		self._num_songs = 2
 
 	def is_request_needed(self):
-		election._request_sequence[self.sid] = 0
-		return True
+		election.force_request(self.sid)
+		return super(PVPElection, self).is_request_needed()

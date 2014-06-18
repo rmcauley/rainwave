@@ -1,6 +1,5 @@
 import os
 import psycopg2
-import time
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
@@ -12,7 +11,6 @@ from rainwave import playlist
 from libs import log
 from libs import config
 from libs import db
-from libs import chuser
 from libs import cache
 from libs import memory_trace
 
@@ -43,12 +41,12 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
 				log.warn("backend", e.diag.message_primary)
 				db.close()
-				db.open()
+				db.connect()
 				raise
 			except psycopg2.extensions.TransactionRollbackError as e:
 				log.warn("backend", "Database transaction deadlock.  Re-opening database and setting retry timeout.")
 				db.close()
-				db.open()
+				db.connect()
 				raise
 
 			to_send = None
@@ -98,8 +96,8 @@ class BackendServer(object):
 		pid_file.write(str(pid))
 		pid_file.close()
 
-		db.open()
-		cache.open()
+		db.connect()
+		cache.connect()
 		log.init("%s/rw_%s.log" % (config.get_directory("log_dir"), config.station_id_friendly[sid].lower()), config.get("log_level"))
 		memory_trace.setup(config.station_id_friendly[sid].lower())
 
@@ -129,10 +127,10 @@ class BackendServer(object):
 			log.info("stop", "Backend has been shutdown.")
 			log.close()
 
+	# This method breaks pylint and quite on purpose, its job is to just load
+	# the cron jobs that run occasionally.
 	def _import_cron_modules(self):
 		import backend.api_key_pruning
-		# DO NOT IMPORT - icecast_sync is not an async, "cron" module at the moment
-		# import backend.icecast_sync
 		import backend.inactive
 
 	def start(self):

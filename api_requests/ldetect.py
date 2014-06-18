@@ -1,10 +1,7 @@
-import re
 import time
 
 from api import fieldtypes
 from api.web import RainwaveHandler
-from api.server import test_get
-from api.server import test_post
 from api.server import handle_api_url
 from api.server import handle_url
 from api.exceptions import APIException
@@ -12,7 +9,6 @@ from api.exceptions import APIException
 from libs import cache
 from libs import log
 from libs import db
-from libs import config
 from rainwave import user
 from backend import sync_to_front
 
@@ -54,7 +50,7 @@ class IcecastHandler(RainwaveHandler):
 				self.set_header("icecast-auth-message", exc.reason)
 		super(IcecastHandler, self).finish()
 
-	def append(self, message):
+	def append(self, message, dct):
 		log.debug("ldetect", message)
 		self.set_header("icecast-auth-message", message)
 		self.write(message)
@@ -83,7 +79,7 @@ class AddListener(IcecastHandler):
 		if sid:
 			try:
 				self.sid = int(sid)
-			except Exception as e:
+			except ValueError:
 				raise APIException("invalid_station_id", http_code=400)
 		else:
 			raise APIException("invalid_station_id", http_code=400)
@@ -134,8 +130,10 @@ class AddListener(IcecastHandler):
 			self.append("Anonymous user from IP %s is now tuned in with record." % self.get_argument("ip"))
 			self.failed = False
 		else:
+			# Keep one valid entry on file for the listener by popping once
+			records.pop()
+			# Erase the rest
 			while len(records) > 1:
-				extra_record = records.pop()
 				db.c.update("DELETE FROM r4_listeners WHERE listener_icecast_id = %s", (records.pop(),))
 				log.debug("ldetect", "Deleted extra record for icecast ID %s from IP %s." % (self.get_argument("client"), self.get_argument("ip")))
 			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE WHERE listener_ip = %s", (self.get_argument("client"), self.get_argument("ip")))

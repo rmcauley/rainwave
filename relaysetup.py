@@ -17,11 +17,6 @@ Has been modified from the original to:
  5. Removed everything but the <mount> and <alias> parts of the config
 """
 
-import random
-import optparse
-import subprocess
-import time
-
 STATIONS = {
 	'game': {
 		'station_source_relay': 'rwrelay.mp3',

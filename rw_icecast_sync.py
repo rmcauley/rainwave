@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import argparse
-import sys
 from libs import config
 from libs import db
 from libs import cache
@@ -15,6 +14,6 @@ if __name__ == "__main__":
 	config.load(args.config)
 	log_file = "%s/rw_icecast_sync.log" % (config.get_directory("log_dir"),)
 	log.init(log_file, config.get("log_level"))
-	db.open()
-	cache.open()
+	db.connect()
+	cache.connect()
 	icecast_sync.start_icecast_sync()

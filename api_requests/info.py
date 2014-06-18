@@ -1,8 +1,5 @@
-import tornado.web
-
 from api.web import APIHandler
 from api import fieldtypes
-from api.server import test_get
 from api.server import test_post
 from api.server import handle_api_url
 import api_requests.vote
@@ -10,9 +7,7 @@ import api_requests.playlist
 import api_requests.tune_in
 
 from libs import cache
-from libs import log
 from libs import config
-from rainwave import playlist
 
 def attach_info_to_request(request, extra_list = None, all_lists = False):
 	# Front-load all non-animated content ahead of the schedule content
@@ -89,7 +84,7 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 class InfoRequest(APIHandler):
 	auth_required = False
 	description = "Returns current user and station information."
-	fields = { "all_albums": (fieldtypes.boolean, False), "all_albums": (fieldtypes.boolean, False), "current_listeners": (fieldtypes.boolean, False) }
+	fields = { "all_albums": (fieldtypes.boolean, False), "current_listeners": (fieldtypes.boolean, False) }
 	allow_get = True
 
 	def post(self):

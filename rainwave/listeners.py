@@ -1,5 +1,3 @@
-import time
-
 from libs import db
 
 def get_listeners_dict(sid):

@@ -17,7 +17,7 @@ parser.add_argument("--config", "-c", required=False, default=None)
 args = parser.parse_args()
 
 config.load(args.config)
-cache.open()
+cache.connect()
 
 params = urllib.urlencode({ "sid": args.sid })
 try:
