@@ -191,14 +191,13 @@ class SyncUpdateUser(APIHandler):
 
 		if not self.get_status() == 200:
 			log.debug("sync_update_user", "sync_update_user request was not OK.")
-			return
+			return super(SyncUpdateUser, self).on_finish()
 
 		user_id = long(self.get_argument("sync_user_id"))
 		for sid in sessions:
-			sessions[sid].clean()
 			sessions[sid].update_user(user_id)
 
-		super(SyncUpdateUser, self).on_finish()
+		return super(SyncUpdateUser, self).on_finish()
 
 @handle_api_url("sync_update_ip")
 class SyncUpdateIP(APIHandler):
@@ -234,9 +233,6 @@ class Sync(APIHandler):
 					"This allows for gaps inbetween requests to be handled elegantly.")
 	auth_required = True
 	fields = { "offline_ack": (fieldtypes.boolean, None), "resync": (fieldtypes.boolean, None), "known_event_id": (fieldtypes.positive_integer, None) }
-
-	def initialize(self, **kwargs):
-		super(Sync, self).initialize(**kwargs)
 
 	@tornado.web.asynchronous
 	def post(self):

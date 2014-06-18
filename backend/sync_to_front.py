@@ -10,6 +10,8 @@ from libs import config
 # These HTTP calls must be asynchronous, otherwise if an API instance tries to call itself we'll wind up with
 # a nasty case of deadlock.
 
+# TODO: start using ZeroMQ maybe?
+
 front_sched_sync_timers = {}
 
 def sync_result(response):

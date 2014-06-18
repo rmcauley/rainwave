@@ -15,6 +15,8 @@ from backend import sync_to_front
 # Sample Icecast query:
 # &server=myserver.com&port=8000&client=1&mount=/live&user=&pass=&ip=127.0.0.1&agent="My%20player"
 
+# TODO: we need to separate tune in records by station ID maybe?
+
 class IcecastHandler(RainwaveHandler):
 	auth_required = False
 	sid_required = False
@@ -160,7 +162,7 @@ class RemoveListener(IcecastHandler):
 
 		db.c.update("UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_relay = %s AND listener_icecast_id = %s", (self.relay, self.get_argument("client")))
 		if listener['user_id'] > 1:
-			self.append("User ID %s flagged for removal." % (listener['user_id'],))
+			self.append("Registered user ID %s flagged for removal." % (listener['user_id'],))
 			db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s", (time.time() + 600, listener['user_id']))
 			cache.set_user(listener['user_id'], "listener_record", None)
 			sync_to_front.sync_frontend_user_id(listener['user_id'])
