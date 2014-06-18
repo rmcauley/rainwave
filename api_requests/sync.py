@@ -91,7 +91,7 @@ class SessionBank(object):
 
 	def update_user(self, user_id):
 		if not user_id in self.user_update_timers or not self.user_update_timers[user_id]:
-			self.user_update_timers[user_id] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=2), lambda: self._do_user_update(user_id))
+			self.user_update_timers[user_id] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=4), lambda: self._do_user_update(user_id))
 
 	def _do_user_update(self, user_id):
 		# clear() might wipe out the timeouts - let's make sure we don't waste resources
@@ -116,7 +116,7 @@ class SessionBank(object):
 
 	def update_ip_address(self, ip_address):
 		if not ip_address in self.ip_update_timers or not self.ip_update_timers[ip_address]:
-			self.ip_update_timers[ip_address] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=2), lambda: self._do_ip_update(ip_address))
+			self.ip_update_timers[ip_address] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=4), lambda: self._do_ip_update(ip_address))
 
 
 	def _do_ip_update(self, ip_address):
