@@ -50,7 +50,7 @@ class IcecastHandler(RainwaveHandler):
 				self.set_header("icecast-auth-message", exc.reason)
 		super(IcecastHandler, self).finish()
 
-	def append(self, message, dct):
+	def append(self, message, dct = None):
 		log.debug("ldetect", message)
 		self.set_header("icecast-auth-message", message)
 		self.write(message)
