@@ -84,14 +84,14 @@ class SessionBank(object):
 				except:
 					pass
 				session_failed_count += 1
-				log.exception("sync", "Failed to update session.", e)
+				log.exception("sync_update_all", "Failed to update session.", e)
 		log.debug("sync_update_all", "Updated %s sessions (%s failed) for sid %s." % (session_count, session_failed_count, sid))
 
 		self.clear()
 
 	def update_user(self, user_id):
 		if not user_id in self.user_update_timers or not self.user_update_timers[user_id]:
-			self.user_update_timers[user_id] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=4), lambda: self._do_user_update(user_id))
+			self.user_update_timers[user_id] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=2), lambda: self._do_user_update(user_id))
 
 	def _do_user_update(self, user_id):
 		# clear() might wipe out the timeouts - let's make sure we don't waste resources
@@ -102,21 +102,19 @@ class SessionBank(object):
 		del self.user_update_timers[user_id]
 		for session in self.find_user(user_id):
 			try:
-				log.debug("sync_update_user", "Updating user %s session." % session.user.id)
 				session.update_user()
+				log.debug("sync_update_user", "Updated user %s session." % session.user.id)
 			except Exception as e:
 				try:
 					session.finish()
 				except:
 					pass
-				log.exception("sync", "Session failed to be updated during update_user.", e)
-			finally:
-				self.remove(session)
+				log.exception("sync_update_user", "Session failed to be updated during update_user.", e)
 		self.clean()
 
 	def update_ip_address(self, ip_address):
 		if not ip_address in self.ip_update_timers or not self.ip_update_timers[ip_address]:
-			self.ip_update_timers[ip_address] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=4), lambda: self._do_ip_update(ip_address))
+			self.ip_update_timers[ip_address] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=2), lambda: self._do_ip_update(ip_address))
 
 
 	def _do_ip_update(self, ip_address):
@@ -127,8 +125,8 @@ class SessionBank(object):
 		for session in self.find_ip(ip_address):
 			try:
 				if session.user.is_anonymous():
-					log.debug("sync_update_ip", "Updating IP %s" % session.request.remote_ip)
 					session.update_user()
+					log.debug("sync_update_ip", "Updated IP %s" % session.request.remote_ip)
 				else:
 					log.debug("sync_update_ip", "Warning logged in user of potential mixup at IP %s" % session.request.remote_ip)
 					session.anon_registered_mixup_warn()
@@ -193,14 +191,13 @@ class SyncUpdateUser(APIHandler):
 
 		if not self.get_status() == 200:
 			log.debug("sync_update_user", "sync_update_user request was not OK.")
-			return
+			return super(SyncUpdateUser, self).on_finish()
 
 		user_id = long(self.get_argument("sync_user_id"))
 		for sid in sessions:
-			sessions[sid].clean()
 			sessions[sid].update_user(user_id)
 
-		super(SyncUpdateUser, self).on_finish()
+		return super(SyncUpdateUser, self).on_finish()
 
 @handle_api_url("sync_update_ip")
 class SyncUpdateIP(APIHandler):
@@ -236,9 +233,6 @@ class Sync(APIHandler):
 					"This allows for gaps inbetween requests to be handled elegantly.")
 	auth_required = True
 	fields = { "offline_ack": (fieldtypes.boolean, None), "resync": (fieldtypes.boolean, None), "known_event_id": (fieldtypes.positive_integer, None) }
-
-	def initialize(self, **kwargs):
-		super(Sync, self).initialize(**kwargs)
 
 	@tornado.web.asynchronous
 	def post(self):

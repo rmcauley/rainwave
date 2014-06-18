@@ -88,23 +88,21 @@ panels.MenuPanel = {
 		};
 
 		// this is for m3u links
-		that.tuneInClickMP3 = function() {
-			that.tuneInClick("mp3");
+		that.tuneInClickMP3 = function(e) {
+			that.tuneInClick(e, "mp3");
 		}
 
-		that.tuneInClickOgg = function() {
-			that.tuneInClick("ogg");
+		that.tuneInClickOgg = function(e) {
+			that.tuneInClick(e, "ogg");
 		}
 
-		that.tuneInClick = function(audio_format) {
+		that.tuneInClick = function(e, audio_format) {
 			var plugin = that.detectM3UHijack();
 			if (plugin) {
 				errorcontrol.doError(_l("m3uhijack", { "plugin": plugin }));
+				e.preventDefault();
+				e.stopPropagation();
 			}
-			else {
-				window.location.href = "/tune_in/" + user.p.sid + "." + audio_format;
-			}
-			that.tuneInClickThemeHook();
 		};
 
 		that.userAvatarCallback = function(avatar) {
