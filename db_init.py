@@ -11,7 +11,7 @@ parser.add_argument("--config", default=None)
 args = parser.parse_args()
 libs.config.load(args.config)
 
-libs.db.open()
+libs.db.connect()
 libs.db.create_tables()
 
 sys.exit(0)

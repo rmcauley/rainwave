@@ -25,12 +25,13 @@ class MetadataNotFoundError(MetadataInsertionError):
 
 class AssociatedMetadata(object):
 	select_by_name_query = None 		# one %s argument: name
-	select_by_id_query = None			# one %s argument: id
+	select_by_id_query = None			# one %s argument: self.id
 	select_by_song_id_query = None		# one %s argument: song_id
-	disassociate_song_id_query = None	# two %s argument: song_id, id
-	associate_song_id_query = None		# three %s argument: song_id, id, is_tag
-	check_self_size_query = None			# one argument: id
-	delete_self_query = None		# one argument: id
+	disassociate_song_id_query = None	# two %s argument: song_id, self.id
+	associate_song_id_query = None		# three %s argument: song_id, self.id, is_tag
+	check_self_size_query = None		# one argument: self.id
+	delete_self_query = None			# one argument: self.id
+	has_song_id_query = None 			# two arguments: song_id, self.id
 
 	@classmethod
 	def load_from_name(klass, name):
@@ -48,7 +49,7 @@ class AssociatedMetadata(object):
 		instance = klass()
 		data = db.c.fetch_row(klass.select_by_id_query, (metadata_id,))
 		if not data:
-			raise MetadataNotFoundEror("%s ID %s could not be found." % (klass.__name__, metadata_id))
+			raise MetadataNotFoundError("%s ID %s could not be found." % (klass.__name__, metadata_id))
 		instance._assign_from_dict(data)
 		return instance
 
@@ -108,10 +109,10 @@ class AssociatedMetadata(object):
 		else:
 			raise MetadataNotNamedError("Tried to save a %s without a name" % self.__class__.__name__)
 
-	def _insert_into_db():
+	def _insert_into_db(self):
 		return False
 
-	def _update_db():
+	def _update_db(self):
 		return False
 
 	def start_election_block(self, sid, num_elections = False):
@@ -123,11 +124,17 @@ class AssociatedMetadata(object):
 			log.debug("elec_block", "%s SID %s blocking ID %s for normal %s" % (self.__class__.__name__, sid, self.id, num_elections))
 			self._start_election_block_db(sid, num_elections)
 
+	def _start_election_block_db(self, sid, num_elections):
+		pass
+
 	def start_cooldown(self, sid, cool_time = False):
 		if self.cool_time is not None:
 			self._start_cooldown_db(sid, self.cool_time)
 		elif cool_time and cool_time > 0:
 			self._start_cooldown_db(sid, cool_time)
+
+	def _start_cooldown_db(self, sid, cool_time):
+		pass
 
 	def associate_song_id(self, song_id, is_tag = None):
 		if is_tag == None:

@@ -1,12 +1,9 @@
-import time
-
 from api import fieldtypes
 from api.web import APIHandler
 from api.exceptions import APIException
 from api.server import handle_api_url
 
 from rainwave import rating
-from libs import db
 
 @handle_api_url('fave_song')
 class SubmitSongFave(APIHandler):

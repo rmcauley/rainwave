@@ -1,11 +1,9 @@
 import tornado.web
 import tornado.escape
-import time
 
 from api.server import handle_url
 import api.web
 
-from rainwave.user import User
 from libs import config
 
 def get_round_robin_url(sid, filetype = "mp3", user = None):

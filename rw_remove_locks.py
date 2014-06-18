@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-import os
-import sys
 import argparse
 
 import libs.db
@@ -12,5 +10,5 @@ parser.add_argument("--config", default=None)
 parser.add_argument("--sid", type=int)
 args = parser.parse_args()
 libs.config.load(args.config)
-libs.db.open()
+libs.db.connect()
 rainwave.playlist.remove_all_locks(args.sid)

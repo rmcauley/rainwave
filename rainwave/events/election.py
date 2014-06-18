@@ -8,7 +8,6 @@ from libs import cache
 from libs import log
 from rainwave import playlist
 from rainwave import request
-from rainwave.user import User
 from rainwave.events import event
 
 _request_interval = {}
@@ -27,8 +26,11 @@ class InvalidElectionID(Exception):
 class ElectionDoesNotExist(Exception):
 	pass
 
-import pdb
-# pdb.set_trace()
+def force_request(sid):
+	global _request_interval
+	global _request_sequence
+	_request_interval[sid] = 0
+	_request_sequence[sid] = 0
 
 @event.register_producer
 class ElectionProducer(event.BaseProducer):

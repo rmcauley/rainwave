@@ -25,7 +25,7 @@ class TestModeCache(object):
 	def set(self, key, value):
 		self.vars[key] = value
 
-def open():
+def connect():
 	global _memcache
 	global _memcache_ratings
 
@@ -87,12 +87,13 @@ def set_album_rating(album_id, user_id, rating):
 def get_album_rating(album_id, user_id):
 	return _memcache_ratings.get("rating_album_%s_%s" % (album_id, user_id))
 
-def prime_rating_cache_for_events(events, songs = []):
+def prime_rating_cache_for_events(events, songs = None):
 	for e in events:
 		for song in e.songs:
 			prime_rating_cache_for_song(song)
-	for song in songs:
-		prime_rating_cache_for_song(song)
+	if songs:
+		for song in songs:
+			prime_rating_cache_for_song(song)
 
 def prime_rating_cache_for_song(song):
 	for user_id, rating in song.get_all_ratings().iteritems():

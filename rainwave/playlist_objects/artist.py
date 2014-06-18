@@ -1,8 +1,6 @@
 from libs import db
-from libs import log
 
-from rainwave.playlist_objects.metadata import AssociatedMetadata
-from rainwave.playlist_objects.metadata import make_searchable_string
+from rainwave.playlist_objects.metadata import AssociatedMetadata, MetadataUpdateError, make_searchable_string
 
 class Artist(AssociatedMetadata):
 	select_by_name_query = "SELECT artist_id AS id, artist_name AS name, artist_name_searchable AS name_searchable FROM r4_artists WHERE artist_name = %s"

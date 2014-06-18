@@ -1,18 +1,10 @@
-from libs import cache
 from libs import db
-from libs import config
 import api.web
 from api.server import handle_api_url
-from api.server import handle_url
 from api.exceptions import APIException
 from api import fieldtypes
-from api_requests.admin.dj_election import GetCachedSongList
-from api_requests.admin.dj_election import AddToCachedSongList
-from api_requests.admin.dj_election import RemoveFromCachedSongList
 
 from rainwave.events.oneup import OneUpProducer
-from rainwave.events.oneup import OneUp
-from rainwave.events.event import BaseProducer
 
 @handle_api_url("admin/list_power_hours")
 class ListPowerHours(api.web.APIHandler):

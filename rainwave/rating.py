@@ -1,10 +1,6 @@
-import os
 import time
-import random
-import math
 
 from libs import db
-from libs import config
 from libs import log
 from libs import cache
 
@@ -79,14 +75,14 @@ def _set_fave(category, object_id, user_id, fave):
 	rating_complete = None
 	if not exists:
 		if db.c.update("INSERT INTO r4_" + category + "_ratings (" + category + "_id, user_id, " + category + "_fave) VALUES (%s, %s, %s)", (object_id, user_id, fave)) == 0:
-			log.debug("rating", "Failed to insert record for fave %s %s, fave is: %s." (category, object_id, fave))
+			log.debug("rating", "Failed to insert record for fave %s %s, fave is: %s." % (category, object_id, fave))
 			return False
 	else:
 		rating = exists[category + "_rating_user"]
 		if "album_rating_complete" in exists:
 			rating_complete = exists['album_rating_complete']
 		if db.c.update("UPDATE r4_" + category + "_ratings SET " + category + "_fave = %s WHERE " + category + "_id = %s AND user_id = %s", (fave, object_id, user_id)) == 0:
-			log.debug("rating", "Failed to update record for fave %s %s, fave is: %s." (category, object_id, fave))
+			log.debug("rating", "Failed to update record for fave %s %s, fave is: %s." % (category, object_id, fave))
 			return False
 	if (not exists and fave) or (not exists[category + "_fave"] and fave):
 		db.c.update("UPDATE r4_" + category + "s SET " + category + "_fave_count = " + category + "_fave_count + 1 WHERE " + category + "_id = %s", (object_id,))

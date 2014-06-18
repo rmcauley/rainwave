@@ -2,7 +2,6 @@
 
 import os
 import sys
-import os
 
 from libs import config
 from libs import db
@@ -14,7 +13,7 @@ import rainwave.playlist
 # Step 4: CREATE INDEX ON rw_songratings (song_rating_id); if you haven't already
 
 config.load()
-db.open()
+db.connect()
 
 class R3Song(rainwave.playlist.Song):
 	def load_r3_data(self):

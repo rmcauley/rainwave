@@ -1,5 +1,4 @@
 import re
-import socket
 from libs import config
 from libs import db
 import rainwave.events.event

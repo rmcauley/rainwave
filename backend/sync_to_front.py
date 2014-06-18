@@ -19,7 +19,7 @@ def sync_result(response):
 			for k, v in js.iteritems():
 				if u"text" in v:
 					log.warn("sync_front", "%s: %s" % (k, v['text']))
-		except Exception as e:
+		except:
 			pass
 		log.warn("sync_front", "Error %s syncing to frontend at URL %s." % (response.code, response.request.url))
 

@@ -1,12 +1,10 @@
 import datetime
-import time
 import types
 from pytz import timezone
 
 from libs import log
 from libs import config
 import api.web
-from api.server import handle_api_url
 from api.server import handle_url
 from api_requests.admin_web.index import AlbumList
 from api_requests.admin_web.index import SongList
@@ -48,7 +46,7 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 
 @handle_url("/admin/tools/power_hour_detail")
 class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
-	def write_error(self, status_code, **kwargs):
+	def write_error(self, status_code, *args, **kwargs):
 		self.write(self.render_string("bare_header.html", title="No Such Power Hour"))
 		self.write("<a href='power_hours?sid=%s'>Power hour non-existent or deleted.  Click this line to go back.</a>" % self.sid)
 		self.write(self.render_string("basic_footer.html"))

@@ -1,14 +1,8 @@
 import random
-import math
 import time
 
 from libs import db
-from libs import config
-from libs import cache
-from libs import log
 from rainwave import playlist
-from rainwave import request
-from rainwave.user import User
 from rainwave.events import event
 
 @event.register_producer
@@ -56,7 +50,7 @@ class OneUpProducer(event.BaseProducer):
 	def load_event_in_progress(self):
 		next_song_id = db.c.fetch_var("SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = TRUE ORDER BY one_up_order DESC LIMIT 1", (self.id,))
 		if next_song_id:
-			up = OneUp.load_by_id(self.id, next_song_id, self.sid)
+			up = OneUp.load_by_id(self.id, self.sid)
 			up.name = self.name
 			up.url = self.url
 			return up
@@ -113,12 +107,12 @@ class OneUp(event.BaseEvent):
 	def load_by_id(cls, one_up_id, sid):
 		row = db.c.fetch_row("SELECT * FROM r4_one_ups WHERE one_up_id = %s", (one_up_id,))
 		if not row:
-			raise Exception("OneUp schedule ID %s song ID %s not found." % (sched_id, song_id))
+			raise Exception("OneUp schedule ID %s not found." % one_up_id)
 		one_up = cls()
 		one_up.id = row['one_up_id']
 		one_up.used = row['one_up_used']
 		one_up.songs = [ playlist.Song.load_from_id(row['song_id'], row['one_up_sid']) ]
-		one_up.sid = sid;
+		one_up.sid = sid
 		return one_up
 
 	def start_event(self):

@@ -23,10 +23,8 @@ import rainwave.events.shortest_election
 
 # Events for each station
 current = {}
-next = {}
+upnext = {}
 history = {}
-
-import pdb
 
 class ScheduleIsEmpty(Exception):
 	pass
@@ -40,9 +38,9 @@ def load():
 		if not current[sid]:
 			raise Exception("Could not load any events!")
 
-		next[sid] = cache.get_station(sid, "sched_next")
-		if not next[sid]:
-			next[sid] = []
+		upnext[sid] = cache.get_station(sid, "sched_next")
+		if not upnext[sid]:
+			upnext[sid] = []
 			manage_next(sid)
 
 		history[sid] = cache.get_station(sid, "sched_history")
@@ -76,10 +74,10 @@ def get_producer_at_time(sid, at_time):
 	return to_ret
 
 def get_advancing_file(sid):
-	return next[sid][0].get_filename()
+	return upnext[sid][0].get_filename()
 
 def get_advancing_event(sid):
-	return next[sid][0]
+	return upnext[sid][0]
 
 def get_current_file(sid):
 	return current[sid].get_filename()
@@ -92,19 +90,19 @@ def advance_station(sid):
 	try:
 		start_time = time.time()
 		# If we need some emergency elections here
-		if len(next[sid]) == 0:
+		if len(upnext[sid]) == 0:
 			manage_next(sid)
 
-		while next[sid][0].used:
-			next[sid].pop()
-			if len(next[sid]) == 0:
+		while upnext[sid][0].used:
+			upnext[sid].pop()
+			if len(upnext[sid]) == 0:
 				manage_next(sid)		
 
 		start_time = time.time()
-		next[sid][0].prepare_event()
+		upnext[sid][0].prepare_event()
 		db.c.commit()
 
-		log.debug("advance", "Next[0] preparation time: %.6f" % (time.time() - start_time,))
+		log.debug("advance", "upnext[0] preparation time: %.6f" % (time.time() - start_time,))
 
 		tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(milliseconds=150), lambda: post_process(sid))
 	except:
@@ -136,7 +134,7 @@ def post_process(sid):
 		log.debug("post", "History management: %.6f" % (time.time() - start_time,))
 
 		start_time = time.time()
-		current[sid] = next[sid].pop(0)
+		current[sid] = upnext[sid].pop(0)
 		current[sid].start_event()
 		log.debug("advance", "Current management: %.6f" % (time.time() - start_time,))
 
@@ -148,7 +146,7 @@ def post_process(sid):
 		playlist.reduce_song_blocks(sid)
 		# add to the event list / update start times for events
 		manage_next(sid)
-		log.debug("advance", "Request and next management: %.6f" % (time.time() - start_time,))
+		log.debug("advance", "Request and upnext management: %.6f" % (time.time() - start_time,))
 
 		start_time = time.time()
 		_add_listener_count_record(sid)
@@ -163,7 +161,7 @@ def post_process(sid):
 		playlist.warm_cooled_albums(sid)
 		log.debug("advance", "Cooldown warming: %.6f" % (time.time() - start_time,))
 
-		_update_memcache(sid)
+		update_memcache(sid)
 		sync_to_front.sync_frontend_all(sid)
 		db.c.commit()
 	except:
@@ -173,7 +171,7 @@ def post_process(sid):
 # def refresh_schedule(sid):
 # 	integrate_new_events(sid)
 # 	sort_next(sid)
-# 	_update_memcache(sid)
+# 	update_memcache(sid)
 # 	sync_to_front.sync_frontend_all_timed(sid)
 
 def _add_listener_count_record(sid):
@@ -184,7 +182,7 @@ def _add_listener_count_record(sid):
 	return db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests, lc_users, lc_guests_active, lc_users_active) VALUES (%s, %s, %s, %s, %s)", (sid, lc_guests, lc_users, lc_guests_active, lc_users_active))
 
 def _get_schedule_stats(sid):
-	global next
+	global upnext
 	global current
 	
 	max_sched_id = 0
@@ -200,8 +198,8 @@ def _get_schedule_stats(sid):
 			max_elec_id = current[sid].id
 	num_elections = 0
 
-	if sid in next:
-		for e in next[sid]:
+	if sid in upnext:
+		for e in upnext[sid]:
 			if e.is_election:
 				num_elections += 1
 				if e.id > max_elec_id:
@@ -224,20 +222,16 @@ def manage_next(sid):
 		time_to_future_producer = nextnext_producer_start - max_future_time
 	else:
 		time_to_future_producer = 86400
-	while len(next[sid]) < next_producer.plan_ahead_limit:
+	while len(upnext[sid]) < next_producer.plan_ahead_limit:
 		target_length = None
-		skip_requests = False
 		if time < 20:
-			pass
-			log.debug("timing", "SID %s <20 seconds to next event, not using timing." % sid)
+			log.debug("timing", "SID %s <20 seconds to upnext event, not using timing." % sid)
 		if time_to_future_producer < 40:
 			target_length = time_to_future_producer
-			skip_requests = True
 			next_producer = rainwave.events.shortest_election.ShortestElectionProducer(sid)
-			log.debug("timing", "SID %s <40 seconds to next event, using shortest elections." % sid)
+			log.debug("timing", "SID %s <40 seconds to upnext event, using shortest elections." % sid)
 		elif time_to_future_producer < (playlist.get_average_song_length(sid) * 1.3):
 			target_length = time_to_future_producer
-			skip_requests = True
 			log.debug("timing", "SID %s close to event, timing to %s seconds long." % (sid, target_length))
 		elif time_to_future_producer < (playlist.get_average_song_length(sid) * 2.2):
 			target_length = playlist.get_average_song_length(sid)
@@ -247,11 +241,11 @@ def manage_next(sid):
 			log.info("manage_next", "Producer ID %s type %s did not produce an event." % (next_producer.id, next_producer.type))
 			ep = election.ElectionProducer(sid)
 			next_event = ep.load_next_event(target_length, max_elec_id)
-		next[sid].append(next_event)
+		upnext[sid].append(next_event)
 		if next_event.is_election and next_event.id > max_elec_id:
 			max_elec_id = next_event.id
-		max_future_time += next[sid][-1].length()
-		time_to_future_producer -= next[sid][-1].length()
+		max_future_time += upnext[sid][-1].length()
+		time_to_future_producer -= upnext[sid][-1].length()
 		next_producer = get_producer_at_time(sid, max_future_time)
 
 	future_time = None
@@ -259,7 +253,7 @@ def manage_next(sid):
 		future_time = current[sid].start + current[sid].length()
 	else:
 		future_time = int(time.time() + current[sid].length())
-	for evt in next[sid]:
+	for evt in upnext[sid]:
 		evt.start = future_time
 		future_time += evt.length()
 
@@ -280,14 +274,14 @@ def _trim(sid):
 
 def _update_schedule_memcache(sid):
 	cache.set_station(sid, "sched_current", current[sid], True)
-	cache.set_station(sid, "sched_next", next[sid], True)
+	cache.set_station(sid, "sched_next", upnext[sid], True)
 	cache.set_station(sid, "sched_history", history[sid], True)
 
 	sched_current_dict = current[sid].to_dict()
 	cache.set_station(sid, "sched_current_dict", sched_current_dict, True)
 	
 	next_dict_list = []
-	for event in next[sid]:
+	for event in upnext[sid]:
 		next_dict_list.append(event.to_dict())
 	cache.set_station(sid, "sched_next_dict", next_dict_list, True)
 	
@@ -307,9 +301,9 @@ def _update_schedule_memcache(sid):
 		all_station['art'] = None
 	cache.set_station(sid, "all_station_info", all_station, True)
 
-def _update_memcache(sid):
+def update_memcache(sid):
 	_update_schedule_memcache(sid)
-	cache.prime_rating_cache_for_events([ current[sid] ] + next[sid] + history[sid])
+	cache.prime_rating_cache_for_events([ current[sid] ] + upnext[sid] + history[sid])
 	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict(sid), True)
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)
 	rainwave.playlist_objects.album.clear_updated_albums(sid)

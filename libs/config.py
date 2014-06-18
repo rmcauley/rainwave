@@ -31,9 +31,9 @@ def get_config_file(testmode = False):
 	elif os.path.isfile("/etc/rainwave.conf"):
 		return ("/etc/rainwave.conf")
 	elif testmode:
-		raise RuntimeError, "Could not find a configuration file at etc/rainwave_test.conf."
+		raise RuntimeError("Could not find a configuration file at etc/rainwave_test.conf.")
 	else:
-		raise RuntimeError, "Could not find a configuration file at etc/rainwave.conf or /etc/rainwave.conf"
+		raise RuntimeError("Could not find a configuration file at etc/rainwave.conf or /etc/rainwave.conf")
 
 def load(file = None, testmode = False):
 	global _opts
@@ -63,7 +63,6 @@ def load(file = None, testmode = False):
 
 	public_relays = {}
 	for sid in station_ids:
-		stream_filename = get_station(sid, "stream_filename")
 		public_relays[sid] = []
 		public_relays[sid].append({ "name": "Random", "protocol": "http://", "hostname": get_station(sid, "round_robin_relay_host"), "port": get_station(sid, "round_robin_relay_port") })
 		for relay_name, relay in get("relays").iteritems():
@@ -120,11 +119,11 @@ def set_station_ids(dirs, friendly):
 	global station_id_friendly
 	
 	sid_array = []
-	for dir, sids in dirs.iteritems():
+	for d, sids in dirs.iteritems():
 		for sid in sids:
 			if sid_array.count(sid) == 0:
 				sid_array.append(sid)
 	station_ids = set(sid_array)
 	
-	for id, friendly in friendly.iteritems():
-		station_id_friendly[int(id)] = friendly
+	for sid, friendly in friendly.iteritems():
+		station_id_friendly[int(sid)] = friendly

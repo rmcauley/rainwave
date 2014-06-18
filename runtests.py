@@ -13,7 +13,7 @@ import libs.cache
 import api.server
 import libs.log
 import rainwave.playlist
-import rainwave.event
+from rainwave.events.election import ElectionProducer
 import rainwave.request
 import rainwave.playlist_objects.album
 
@@ -57,13 +57,13 @@ libs.config.load(args.config, testmode=True)
 if not args.apionly:
 	if libs.config.get("db_type") == "sqlite":
 		libs.config.override("db_name", sqlite_file)
-	libs.db.open()
+	libs.db.connect()
 	if libs.config.get("db_type") == "sqlite":
 	    libs.db.create_tables()
-	libs.cache.open()
+	libs.cache.connect()
 	libs.log.init("%s/rw_backend.%s.log" % (libs.config.get_directory("log_dir"), username), libs.config.get("log_level"))
 
-	libs.cache.set_station(1, "sched_current", rainwave.event.Event())
+	libs.cache.set_station(1, "sched_current", ElectionProducer(1).load_next_event())
 	rainwave.request.update_cache(1)
 	rainwave.playlist.prepare_cooldown_algorithm(1)
 	libs.cache.update_local_cache_for_sid(1)

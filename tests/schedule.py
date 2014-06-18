@@ -12,7 +12,7 @@ from rainwave import schedule
 def reset_schedule(sid):
 	# Reset the schedule
 	schedule.current = {}
-	schedule.next = {}
+	schedule.upnext = {}
 	schedule.history = {}
 	cache.set_station(sid, "sched_current", None, True)
 	cache.set_station(sid, "sched_next", None, True)

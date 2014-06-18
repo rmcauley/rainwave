@@ -1,6 +1,5 @@
 import api.web
 from api.server import handle_url
-from libs import db
 
 @handle_url("/admin/tools/donations")
 class UserSearchTool(api.web.HTMLRequest):

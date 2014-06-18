@@ -3,15 +3,7 @@ import json
 
 import api.web
 from api.server import handle_url
-from api_requests import info
-from api import fieldtypes
 from api import locale
-
-from libs import config
-from libs import cache
-from libs import log
-from libs import db
-from rainwave.user import User
 
 @handle_url("/locale/")
 class LocaleIndex(api.web.HTMLRequest):

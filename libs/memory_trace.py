@@ -18,7 +18,6 @@ except:
 # Other includes
 from libs import config
 
-sqlite = None
 _prefix = ""
 
 def setup(unique_prefix):

@@ -1,12 +1,8 @@
 import time
 import datetime
-from libs import cache
 from libs import db
 import api.web
-from api.server import handle_api_url
 from api.server import handle_url
-from api_requests.admin_web.index import AlbumList
-from api_requests.admin_web.index import SongList
 
 from api_requests.admin.scan_errors import BackendScanErrors
 

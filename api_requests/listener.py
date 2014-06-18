@@ -1,15 +1,9 @@
-import tornado.web
-
 from api.web import APIHandler
 from api import fieldtypes
-from api.server import test_get
-from api.server import test_post
 from api.server import handle_api_url
 
 from libs import cache
 from libs import db
-from libs import log
-from libs import config
 from rainwave import user as UserLib
 
 @handle_api_url("listener")
@@ -19,7 +13,7 @@ class ListenerDetailRequest(APIHandler):
 	fields = { "id": (fieldtypes.user_id, True) }
 	
 	def post(self):
-		user = db.fetch_row(
+		user = db.c.fetch_row(
 			"SELECT user_id, username AS name, user_avatar AS avatar, user_avatar_type AS avatar_type, user_colour AS colour, rank_title AS rank, "
 				"radio_totalvotes AS total_votes, radio_totalratings AS total_ratings, radio_totalmindchange AS mind_changes, "
 				"radio_totalrequests AS total_requests, radio_winningvotes AS winning_votes, radio_losingvotes AS losing_votes, "
@@ -30,7 +24,7 @@ class ListenerDetailRequest(APIHandler):
 		user['avatar'] = UserLib.solve_avatar(user['avatar_type'], user['avatar'])
 		user.pop("avatar_type")
 
-		user['top_albums'] = db.fetch_all("SELECT album_name, album_rating FROM rw_album_ratings JOIN rw_albums USING (album_id) WHERE user_id = %s ORDER BY album_rating DESC LIMIT 10", (self.get_argument("id"),))
+		user['top_albums'] = db.c.fetch_all("SELECT album_name, album_rating FROM rw_album_ratings JOIN rw_albums USING (album_id) WHERE user_id = %s ORDER BY album_rating DESC LIMIT 10", (self.get_argument("id"),))
 
 		user['votes_by_station'] = db.c.fetch_all("SELECT song_origin_sid AS sid, COUNT(vote_id) "
 												"FROM r4_vote_history JOIN r4_songs USING (song_id) "

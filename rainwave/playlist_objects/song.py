@@ -7,7 +7,7 @@ from mutagen.mp3 import MP3
 from libs import db
 from libs import config
 from libs import cache
-from libs import filetools
+
 from libs import log
 from rainwave import rating
 
@@ -16,8 +16,6 @@ from rainwave.playlist_objects.album import Album
 from rainwave.playlist_objects.songgroup import SongGroup
 from rainwave.playlist_objects.metadata import make_searchable_string
 from rainwave.playlist_objects import cooldown
-
-_mp3gain_path = filetools.which("mp3gain")
 
 # Usable if you want to throw an exception on a file but still continue
 # scanning other files.
@@ -97,7 +95,7 @@ class Song(object):
 		new_groups = SongGroup.load_list_from_tag(s.genre_tag)
 		s.albums = [ Album.load_from_name(s.album_tag) ]
 
-		i = 0;
+		i = 0
 		for metadata in new_artists:
 			metadata.associate_song_id(s.id, order=i)
 			i += 1
@@ -378,13 +376,13 @@ class Song(object):
 		dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user < 3 GROUP BY song_id", (self.id,))
 		if not dislikes:
 			dislikes = 0
-		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3 AND song_rating_user < 3.5 GROUP BY song_id", (self.id,));
+		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3 AND song_rating_user < 3.5 GROUP BY song_id", (self.id,))
 		if not neutrals:
 			neutrals = 0
-		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3.5 AND song_rating_user < 4 GROUP BY song_id", (self.id,));
+		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3.5 AND song_rating_user < 4 GROUP BY song_id", (self.id,))
 		if not neutralplus:
 			neutralplus = 0
-		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 4 GROUP BY song_id", (self.id,));
+		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 4 GROUP BY song_id", (self.id,))
 		if not likes:
 			likes = 0
 		rating_count = dislikes + neutrals + neutralplus + likes
@@ -397,7 +395,7 @@ class Song(object):
 				album.update_rating()
 
 	def add_artist(self, name):
-		toret = self._add_metadata(self.artists, name, Artist)
+		to_ret = self._add_metadata(self.artists, name, Artist)
 		self.update_artist_parseable()
 		return to_ret
 
@@ -508,7 +506,7 @@ class Song(object):
 	def get_all_ratings(self):
 		table = db.c.fetch_all("SELECT song_rating_user, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
 		all_ratings = {}
-		for row in all_ratings:
+		for row in table:
 			all_ratings[row['user_id']] = { "rating_user": row['song_rating_user'], "fave": row['song_fave'] }
 		return all_ratings
 

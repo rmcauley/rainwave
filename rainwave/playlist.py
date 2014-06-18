@@ -1,37 +1,25 @@
-import os
 import time
 import random
-import math
-import subprocess
-import re
 
 from libs import db
-from libs import config
 from libs import log
-from rainwave import rating
 
 from rainwave.playlist_objects.song import Song
+from rainwave.playlist_objects import cooldown
+
+# These sorts of single-function imports are to make sure
+# that any non-refactored code works with the way this module used to be.
+# (this module used to be gargantuan)
+# pylint will flag these as unused but TRUST ME, KEEP THEM HERE
 from rainwave.playlist_objects.album import Album
-# These sorts of single-function imports shouldn't be here
-# I should make sure the whole project is properly refactored.
-# But it's 1am and I need sleep.
 from rainwave.playlist_objects.album import warm_cooled_albums
 from rainwave.playlist_objects.album import get_updated_albums_dict
 from rainwave.playlist_objects.artist import Artist
 from rainwave.playlist_objects.songgroup import SongGroup
-
 from rainwave.playlist_objects.cooldown import prepare_cooldown_algorithm
-from rainwave.playlist_objects import cooldown
 
 class NoAvailableSongsException(Exception):
 	pass
-
-def get_shortest_song(sid):
-	"""
-	This function gets the shortest available song to us from the database.
-	"""
-	# Should we take into account song_elec_blocked here?
-	return db.c.fetch_var("SELECT MIN(song_length) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE song_exists = TRUE AND r4_song_sid.sid = %s AND song_cool = FALSE", (sid,))
 
 def get_average_song_length(sid):
 	return cooldown.cooldown_config[sid]['average_song_length']

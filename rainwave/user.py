@@ -1,4 +1,3 @@
-import copy
 import time
 import re
 import random
@@ -77,7 +76,7 @@ class User(object):
 		if self.authorized:
 			self.refresh()
 
-	def _get_all_api_keys(self):
+	def get_all_api_keys(self):
 		if self.id > 1:
 			keys = db.c.fetch_list("SELECT api_key FROM r4_api_keys WHERE user_id = %s ", (self.id,))
 			cache.set_user(self, "api_keys", keys)
@@ -87,7 +86,7 @@ class User(object):
 		if not bypass:
 			keys = cache.get_user(self, "api_keys")
 			if not keys:
-				if not api_key in self._get_all_api_keys():
+				if not api_key in self.get_all_api_keys():
 					log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
 					return
 			elif not api_key in keys:
@@ -217,6 +216,9 @@ class User(object):
 
 	def is_admin(self):
 		return self.data['admin'] > 0
+
+	def is_dj(self):
+		return False
 
 	def has_perks(self):
 		return self.data['perks']
@@ -386,8 +388,8 @@ class User(object):
 		self.data['lock_counter'] = lock_count
 		return db.c.update("UPDATE r4_listeners SET listener_lock = TRUE, listener_lock_sid = %s, listener_lock_counter = %s WHERE listener_id = %s", (sid, lock_count, self.data['listener_id']))
 
-	def update(self, hash):
-		self.data.update(hash)
+	def update(self, data):
+		self.data.update(data)
 
 	def generate_listen_key(self):
 		listen_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
@@ -413,5 +415,5 @@ class User(object):
 		api_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
 		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_ip) VALUES (%s, %s, %s, %s)", (self.id, api_key, expiry, ip_address))
 		# this function updates the API key cache for us
-		self._get_all_api_keys()
+		self.get_all_api_keys()
 		return api_key

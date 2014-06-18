@@ -3,15 +3,12 @@ import time
 from api import fieldtypes
 from api.web import APIHandler
 from api.exceptions import APIException
-from api.server import test_get
-from api.server import test_post
 from api.server import handle_api_url
-from api.exceptions import APIException
 
 from libs import cache
+from libs import config
 from libs import log
 from libs import db
-from rainwave import playlist
 
 def append_success_to_request(request, elec_id, entry_id):
 	request.append_standard("vote_submitted", return_name="vote_result", elec_id=elec_id, entry_id=entry_id)

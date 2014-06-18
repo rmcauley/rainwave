@@ -92,8 +92,6 @@ class SyncUpdateAll(APIHandler):
 		log.debug("sync_update_all", "Updating all sessions for sid %s" % self.sid)
 		cache.update_local_cache_for_sid(self.sid)
 
-		print cache.get_station(self.sid, "sched_current_dict")['id']
-
 		session_count = 0
 		session_failed_count = 0
 		sessions[self.sid].clean()

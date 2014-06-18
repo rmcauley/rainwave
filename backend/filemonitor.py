@@ -3,7 +3,6 @@ import os.path
 import time
 import mimetypes
 import sys
-import asyncore
 import psutil
 import watchdog.events
 import watchdog.observers
@@ -17,6 +16,9 @@ from libs import db
 from rainwave import playlist
 from rainwave.playlist_objects.song import PassableScanError
 
+from libs import filetools
+
+mp3gain_path = filetools.which("mp3gain")
 # Scan errors is pulled from/pushed to cache and is not saved to db.
 _scan_errors = None
 # Art can be scanned before the music itself is scanned, in which case the art will
@@ -84,10 +86,9 @@ def _scan_directory(directory, sids, toscreen=False):
 	# The walk happens within the single function!
 	global _scan_errors
 
-	if config.get("mp3gain_scan") and not playlist._mp3gain_path:
+	if config.get("mp3gain_scan") and not mp3gain_path:
 		raise Exception("mp3gain_scan flag in config is enabled, but could not find mp3gain executable.")
 
-	leftovers = []
 	total_files = 0
 	file_counter = 0
 	for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
@@ -311,11 +312,14 @@ def monitor():
 		observer = watchdog.observers.Observer()
 		observer.schedule(FileEventHandler(directory, sids), directory, recursive=True)
 		observer.start()
+		observers.append(observer)
 
 	try:
 		while True:
 			time.sleep(60)
 			_process_album_art_queue()
 	except:
-		observer.stop()
-	observer.join()
+		for observer in observers:
+			observer.stop()
+	for observer in observers:
+		observer.join()

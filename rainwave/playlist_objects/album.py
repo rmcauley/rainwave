@@ -8,6 +8,7 @@ from libs import config
 from libs import cache
 from rainwave import rating
 
+from rainwave.playlist_objects.metadata import MetadataNotFoundError
 from rainwave.playlist_objects.metadata import AssociatedMetadata
 from rainwave.playlist_objects.metadata import make_searchable_string
 from rainwave.playlist_objects import cooldown
@@ -98,13 +99,13 @@ class Album(AssociatedMetadata):
 		return instance
 
 	@classmethod
-	def get_art_url(self, id, sid = None):
+	def get_art_url(self, album_id, sid = None):
 		if not config.get("album_art_file_path"):
 			return ""
-		elif sid and os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s_%s.jpg" % (sid, id))):
-			return "%s/%s_%s" % (config.get("album_art_url_path"), sid, id)
-		elif os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % id)):
-			return "%s/%s" % (config.get("album_art_url_path"), id)
+		elif sid and os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s_%s.jpg" % (sid, album_id))):
+			return "%s/%s_%s" % (config.get("album_art_url_path"), sid, album_id)
+		elif os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % album_id)):
+			return "%s/%s" % (config.get("album_art_url_path"), album_id)
 		return ""
 
 	def __init__(self):
@@ -191,7 +192,7 @@ class Album(AssociatedMetadata):
 			auto_cool = cooldown.cooldown_config[sid]['min_album_cool'] + (((5 - cool_rating) / 4.0) * (cooldown.cooldown_config[sid]['max_album_cool'] - cooldown.cooldown_config[sid]['min_album_cool']))
 			album_num_songs = self.get_num_songs()
 			log.debug("cooldown", "min_album_cool: %s .. max_album_cool: %s .. auto_cool: %s .. album_num_songs: %s .. rating: %s" % (cooldown.cooldown_config[sid]['min_album_cool'], cooldown.cooldown_config[sid]['max_album_cool'], auto_cool, album_num_songs, cool_rating))
-			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_num_songs - config.get_station(sid, "cooldown_size_slope_start")))) / 2);
+			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_num_songs - config.get_station(sid, "cooldown_size_slope_start")))) / 2)
 			cool_age_multiplier = cooldown.get_age_cooldown_multiplier(self.data['added_on'])
 			cool_time = int(auto_cool * cool_size_multiplier * cool_age_multiplier * self.data['cool_multiply'])
 			log.debug("cooldown", "auto_cool: %s .. cool_size_multiplier: %s .. cool_age_multiplier: %s .. cool_multiply: %s .. cool_time: %s" %
@@ -226,13 +227,13 @@ class Album(AssociatedMetadata):
 		dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user < 3 GROUP BY album_id", (self.id,))
 		if not dislikes:
 			dislikes = 0
-		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3 AND album_rating_user < 3.5 GROUP BY album_id", (self.id,));
+		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3 AND album_rating_user < 3.5 GROUP BY album_id", (self.id,))
 		if not neutrals:
 			neutrals = 0
-		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3.5 AND album_rating_user < 4 GROUP BY album_id", (self.id,));
+		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3.5 AND album_rating_user < 4 GROUP BY album_id", (self.id,))
 		if not neutralplus:
 			neutralplus = 0
-		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 4 GROUP BY album_id", (self.id,));
+		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 4 GROUP BY album_id", (self.id,))
 		if not likes:
 			likes = 0
 		rating_count = dislikes + neutrals + neutralplus + likes
@@ -287,12 +288,13 @@ class Album(AssociatedMetadata):
 							"FROM r4_songs "
 							"WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_elec_blocked_num <= %s",
 						('album', num_elections, self.id, sid, num_elections))
-		else:
-			table = db.c.fetch_all("SELECT song_id FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s", (self.id, sid))
-			for row in table:
-				song = Song()
-				song.id = row['song_id']
-				song.set_election_block(sid, 'album', num_elections)
+		# Disabled for SQLite to avoid circular module importing
+		# else:
+		# 	table = db.c.fetch_all("SELECT song_id FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s", (self.id, sid))
+		# 	for row in table:
+		# 		song = Song()
+		# 		song.id = row['song_id']
+		# 		song.set_election_block(sid, 'album', num_elections)
 
 	def load_extra_detail(self, sid):
 		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE album_rating > %s AND sid = %s", (self.data['rating'], sid))
