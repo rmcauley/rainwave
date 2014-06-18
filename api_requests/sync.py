@@ -18,6 +18,8 @@ class SessionBank(object):
 		super(SessionBank, self).__init__()
 		self.sessions = []
 		self.to_remove = []
+		self.user_update_timers = {}
+		self.ip_update_timers = {}
 
 	def __iter__(self):
 		for item in self.sessions:
@@ -38,12 +40,19 @@ class SessionBank(object):
 	def clear(self):
 		self.sessions[:] = []
 		self.to_remove[:] = []
+		for user_id, timer in self.user_update_timers.iteritems():
+			tornado.ioloop.IOLoop.instance().remove_timeout(timer)
+		self.user_update_timers = {}
+		for ip_address, timer in self.ip_update_timers.iteritems():
+			tornado.ioloop.IOLoop.instance().remove_timeout(timer)
+		self.ip_update_timers = {}
 
 	def find_user(self, user_id):
+		toret = []
 		for session in self.sessions:
 			if session.user.id == user_id:
-				return [ session ]
-		return []
+				toret.append(session)
+		return toret
 
 	def find_ip(self, ip_address):
 		toret = []
@@ -59,6 +68,78 @@ class SessionBank(object):
 			except Exception as e:
 				self.remove(session)
 				log.exception("sync", "Session failed keepalive.", e)
+
+	def update_all(self, sid):
+		self.clean()
+
+		session_count = 0
+		session_failed_count = 0
+		for session in self.sessions:
+			try:
+				session.update()
+				session_count += 1
+			except Exception as e:
+				try:
+					session.finish()
+				except:
+					pass
+				session_failed_count += 1
+				log.exception("sync", "Failed to update session.", e)
+		log.debug("sync_update_all", "Updated %s sessions (%s failed) for sid %s." % (session_count, session_failed_count, sid))
+
+		self.clear()
+
+	def update_user(self, user_id):
+		if not user_id in self.user_update_timers or not self.user_update_timers[user_id]:
+			self.user_update_timers[user_id] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=4), lambda: self._do_user_update(user_id))
+
+	def _do_user_update(self, user_id):
+		# clear() might wipe out the timeouts - let's make sure we don't waste resources
+		# doing unnecessary updates
+		if not user_id in self.user_update_timers or not self.user_update_timers[user_id]:
+			return
+
+		del self.user_update_timers[user_id]
+		for session in self.find_user(user_id):
+			try:
+				log.debug("sync_update_user", "Updating user %s session." % session.user.id)
+				session.update_user()
+			except Exception as e:
+				try:
+					session.finish()
+				except:
+					pass
+				log.exception("sync", "Session failed to be updated during update_user.", e)
+			finally:
+				self.remove(session)
+		self.clean()
+
+	def update_ip_address(self, ip_address):
+		if not ip_address in self.ip_update_timers or not self.ip_update_timers[ip_address]:
+			self.ip_update_timers[ip_address] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=4), lambda: self._do_ip_update(ip_address))
+
+
+	def _do_ip_update(self, ip_address):
+		if not ip_address in self.ip_update_timers or not self.ip_update_timers[ip_address]:
+			return
+
+		del self.ip_update_timers[ip_address]
+		for session in self.find_ip(ip_address):
+			try:
+				if session.user.is_anonymous():
+					log.debug("sync_update_ip", "Updating IP %s" % session.request.remote_ip)
+					session.update_user()
+				else:
+					log.debug("sync_update_ip", "Warning logged in user of potential mixup at IP %s" % session.request.remote_ip)
+					session.anon_registered_mixup_warn()
+			except Exception as e:
+				try:
+					session.finish()
+				except:
+					pass
+				self.remove(session)
+				log.exception("sync", "Session failed to be updated during update_user.", e)
+		self.clean()
 
 sessions = {}
 
@@ -91,19 +172,7 @@ class SyncUpdateAll(APIHandler):
 			return
 		log.debug("sync_update_all", "Updating all sessions for sid %s" % self.sid)
 		cache.update_local_cache_for_sid(self.sid)
-
-		session_count = 0
-		session_failed_count = 0
-		sessions[self.sid].clean()
-		for session in sessions[self.sid]:
-			try:
-				session.update()
-				session_count += 1
-			except RuntimeError as e:
-				session_failed_count += 1
-				log.exception("sync", "Failed to update session.", e)
-		log.debug("sync_update_all", "Updated %s sessions (%s failed) for sid %s." % (session_count, session_failed_count, self.sid))
-		sessions[self.sid].clear()
+		sessions[self.sid].update_all(self.sid)
 
 		super(SyncUpdateAll, self).on_finish()
 
@@ -129,14 +198,7 @@ class SyncUpdateUser(APIHandler):
 		user_id = long(self.get_argument("sync_user_id"))
 		for sid in sessions:
 			sessions[sid].clean()
-			for session in sessions[sid].find_user(user_id):
-				try:
-					log.debug("sync_update_user", "Updating user %s session." % user_id)
-					session.update_user()
-				except Exception as e:
-					sessions[sid].remove(session)
-					log.exception("sync", "Session failed to be updated during update_user.", e)
-			sessions[sid].clean()
+			sessions[sid].update_user(user_id)
 
 		super(SyncUpdateUser, self).on_finish()
 
@@ -161,19 +223,7 @@ class SyncUpdateIP(APIHandler):
 
 		ip_address = self.get_argument("ip_address")
 		for sid in sessions:
-			sessions[sid].clean()
-			for session in sessions[sid].find_ip(ip_address):
-				try:
-					if session.user.is_anonymous():
-						log.debug("sync_update_ip", "Updating IP %s" % ip_address)
-						session.update_user()
-					else:
-						log.debug("sync_update_ip", "Warning logged in user of potential mixup at IP %s" % ip_address)
-						session.anon_registered_mixup_warn()
-				except Exception as e:
-					sessions[sid].remove(session)
-					log.exception("sync", "Session failed to be updated during update_user.", e)
-			sessions[sid].clean()
+			sessions[sid].update_ip_address(ip_address)			
 
 		super(SyncUpdateIP, self).on_finish()
 
@@ -209,6 +259,7 @@ class Sync(APIHandler):
 
 	def keep_alive(self):
 		self.write(" ")
+		self.flush()
 
 	def on_connection_close(self, *args, **kwargs):
 		global sessions
@@ -246,5 +297,5 @@ class Sync(APIHandler):
 		if not self.user.is_anonymous() and not self.user.is_tunedin():
 			self.append_standard("redownload_m3u")
 			self.finish()
+			return True
 		return False
-
