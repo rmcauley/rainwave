@@ -51,7 +51,7 @@ class SessionBank(object):
 		toret = []
 		for session in self.sessions:
 			if session.user.id == user_id:
-				return toret.append(session)
+				toret.append(session)
 		return toret
 
 	def find_ip(self, ip_address):
