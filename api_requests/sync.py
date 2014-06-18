@@ -84,7 +84,7 @@ class SessionBank(object):
 				except:
 					pass
 				session_failed_count += 1
-				log.exception("sync", "Failed to update session.", e)
+				log.exception("sync_update_all", "Failed to update session.", e)
 		log.debug("sync_update_all", "Updated %s sessions (%s failed) for sid %s." % (session_count, session_failed_count, sid))
 
 		self.clear()
@@ -102,16 +102,14 @@ class SessionBank(object):
 		del self.user_update_timers[user_id]
 		for session in self.find_user(user_id):
 			try:
-				log.debug("sync_update_user", "Updating user %s session." % session.user.id)
 				session.update_user()
+				log.debug("sync_update_user", "Updated user %s session." % session.user.id)
 			except Exception as e:
 				try:
 					session.finish()
 				except:
 					pass
-				log.exception("sync", "Session failed to be updated during update_user.", e)
-			finally:
-				self.remove(session)
+				log.exception("sync_update_user", "Session failed to be updated during update_user.", e)
 		self.clean()
 
 	def update_ip_address(self, ip_address):
@@ -127,8 +125,8 @@ class SessionBank(object):
 		for session in self.find_ip(ip_address):
 			try:
 				if session.user.is_anonymous():
-					log.debug("sync_update_ip", "Updating IP %s" % session.request.remote_ip)
 					session.update_user()
+					log.debug("sync_update_ip", "Updated IP %s" % session.request.remote_ip)
 				else:
 					log.debug("sync_update_ip", "Warning logged in user of potential mixup at IP %s" % session.request.remote_ip)
 					session.anon_registered_mixup_warn()
