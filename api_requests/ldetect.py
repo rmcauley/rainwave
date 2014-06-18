@@ -101,7 +101,7 @@ class AddListener(IcecastHandler):
 				"SET sid = %s, listener_ip = %s, listener_purge = FALSE, listener_icecast_id = %s, listener_relay = %s, listener_agent = %s "
 				"WHERE user_id = %s",
 				(sid, self.get_argument("ip"), self.get_argument("client"), self.relay, self.agent, self.user_id))
-			self.append("Registered user %s record updated." % self.user_id)
+			self.append("Registered user %s record updated to be tuned in to %s." % (self.user_id, sid))
 			self.failed = False
 		else:
 			db.c.update("INSERT INTO r4_listeners "

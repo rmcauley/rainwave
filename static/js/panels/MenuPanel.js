@@ -103,7 +103,6 @@ panels.MenuPanel = {
 				e.preventDefault();
 				e.stopPropagation();
 			}
-			that.tuneInClickThemeHook();
 		};
 
 		that.userAvatarCallback = function(avatar) {
