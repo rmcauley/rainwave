@@ -119,7 +119,7 @@ class Top100Songs(APIHandler):
 						"song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, song_rating, song_rating_count "
 					"FROM r4_song_sid "
 						"JOIN r4_songs USING (song_id) "
-						"JOIN r4_albums ON (r4_song_sid.album_id = r4_albums.album_id) "
+						"JOIN r4_albums USING (album_id) "
 					"WHERE r4_song_sid.sid = %s AND song_rating_count > 20 AND song_verified = TRUE "
 					"ORDER BY song_rating DESC, song_id LIMIT 100", (self.sid,))
 				)
@@ -149,7 +149,7 @@ class AllFavHandler(APIHandler):
 	def post(self):
 		self.append(self.return_name, db.c.fetch_all(
 			"SELECT DISTINCT ON (album_name, song_title) song_id AS id, song_title AS title, album_name, song_rating AS rating, COALESCE(song_rating_user, 0) AS rating_user, TRUE AS fave "
-			"FROM r4_song_ratings JOIN r4_songs USING (song_id) JOIN r4_song_sid USING (song_id) JOIN r4_albums USING (album_id) "
+			"FROM r4_song_ratings JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 			"WHERE user_id = %s AND song_verified = TRUE ORDER BY album_name, song_title " + self.get_sql_limit_string(), (self.user.id,)))
 
 @handle_api_html_url("all_faves")
@@ -168,14 +168,15 @@ class PlaybackHistory(APIHandler):
 		if self.user.is_anonymous():
 			self.append(self.return_name, db.c.fetch_all(
 				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name "
-				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_song_sid USING (song_id, sid) JOIN r4_albums USING (album_id) "
+				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 				"WHERE r4_song_history.sid = %s "
 				"ORDER BY songhist_id DESC LIMIT 100",
 				(self.sid,)))
 		else:
 			self.append(self.return_name, db.c.fetch_all(
 				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, song_rating_user AS rating_user, song_fave AS fave "
-				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_song_sid USING (song_id, sid) JOIN r4_albums USING (album_id) LEFT JOIN r4_song_ratings ON r4_song_history.song_id = r4_song_ratings.song_id AND user_id = %s "
+				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
+					"LEFT JOIN r4_song_ratings ON r4_song_history.song_id = r4_song_ratings.song_id AND user_id = %s "
 				"WHERE r4_song_history.sid = %s "
 				"ORDER BY songhist_id DESC LIMIT 100",
 				(self.user.id, self.sid)))

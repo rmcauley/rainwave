@@ -44,43 +44,35 @@ class Artist(AssociatedMetadata):
 		pass
 
 	def _start_election_block_db(self, sid, num_elections):
-		# Artists don't block elections either (OR DO THEY)
+		# Artists don't block elections either (OR DO THEY) (they don't)
 		pass
 
-	def load_all_songs(self, sid, user_id = None):
-		# I'm not going to provide a list of Song objects here because the overhead of that would spiral out of control
-		# You may think you can do this in a smaller or easier statement, but there's actually a number of challenges here
-		# 1. Users can request from the results of this query, so the origin_sid doesn't matter as much as "does it exist on that station"
-		# 2. Users can open albums from this page, which means the album ID and album name MUST match and if it's available on
-		#       the request station it must be opened to the relevant album ON THAT STATION (not what it may be assigned to on another)
-		requestable = True if user_id else False
+	def load_all_songs(self, sid, user_id = 1):
 		self.data['songs'] = db.c.fetch_all(
-			"SELECT r4_song_artist.song_id AS id, r4_songs.song_origin_sid AS sid, MAX(song_title) AS title, MAX(song_rating) AS rating, "
-				"BOOL_OR(CASE WHEN r4_song_sid.sid = %s THEN %s ELSE FALSE END) AS requestable, "
-				"MAX(CASE WHEN r4_song_sid.sid = %s THEN album_id ELSE NULL END) AS real_album_id, "
-				"MAX(CASE WHEN r4_song_sid.sid = %s THEN album_name ELSE NULL END) AS real_album_name, "
-				"MAX(album_name) AS album_name, MAX(album_id) AS album_id, "
-				"MAX(song_length) AS length, "
-				"BOOL_OR(CASE WHEN r4_song_sid.sid = %s THEN song_cool ELSE FALSE END) AS cool, "
-				"MAX(CASE WHEN r4_song_sid.sid = %s THEN song_cool_end ELSE 0 END) AS cool_end, "
-				"MAX(COALESCE(song_rating_user, 0)) AS rating_user, BOOL_OR(COALESCE(song_fave, FALSE)) AS fave "
+			"SELECT r4_song_artist.song_id AS id, "
+			 	"r4_songs.song_origin_sid AS origin_sid, "
+			 	"song_title AS title, "
+			 	"song_rating AS rating, "
+				"song_exists AS requestable, "
+				"song_length AS length, "
+				"song_cool AS cool, "
+				"song_cool_end AS cool_end, "
+				"COALESCE(song_rating_user, 0) AS rating_user, "
+				"COALESCE(song_fave, FALSE) AS fave, "
+				"album_name, "
+				"album_exists AS album_openable "
 			"FROM r4_song_artist "
 				"JOIN r4_songs USING (song_id) "
-				"JOIN r4_song_sid USING (song_id) "
 				"JOIN r4_albums USING (album_id) "
+				"LEFT JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) "
+				"LEFT JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
 				"LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
 			"WHERE r4_song_artist.artist_id = %s AND r4_songs.song_verified = TRUE "
-			"GROUP BY r4_song_artist.song_id, r4_songs.song_origin_sid "
-			"ORDER BY requestable DESC, album_name, MAX(song_title) ",
-			(sid, requestable, sid, sid, sid, sid, user_id, self.id))
+			"ORDER BY song_exists DESC, album_name, song_title ",
+			(sid, sid, user_id, self.id))
 		# And of course, now we have to burn extra CPU cycles to make sure the right album name is used and that we present the data
 		# in the same format seen everywhere else on the API.  Still, much faster then loading individual song objects.
+		requestable = True if user_id > 1 else False
 		for song in self.data['songs']:
-			if (song['real_album_id']):
-				song['albums'] = [ { "name": song['real_album_name'], "id": song['real_album_id'] } ]
-			else:
-				song['albums'] = [ { "name": song['album_name'], "id": song['album_id'] } ]
-			song.pop('album_name')
-			song.pop('album_id')
-			song.pop('real_album_name')
-			song.pop('real_album_id')
+			song['requestable'] = requestable and song['requestable']
+			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id') } ]

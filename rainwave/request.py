@@ -50,7 +50,7 @@ def update_line(sid):
 				# Keep 'em in line
 				else:
 					if song_id:
-						albums_with_requests.append(db.c.fetch_var("SELECT album_id FROM r4_song_sid WHERE song_id = %s", (song_id,)))
+						albums_with_requests.append(db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,)))
 					row['song_id'] = song_id
 					add_to_line = True
 			elif not row['line_expiry_tune_in'] or row['line_expiry_tune_in'] == 0:

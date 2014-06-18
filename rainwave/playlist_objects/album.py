@@ -18,6 +18,14 @@ from rainwave.playlist_objects import cooldown
 # do a project wide search for r4_song_sid
 # fix API help page so I don't have to explain what it is when someone visits it
 # finish the migrate script
+# add more indexes to the ratings tables? maybe some sid indexes too...
+	# - c.create_idx("r4_song_ratings", "user_id", "song_id")
+	# - c.create_idx("r4_album_ratings", "user_id", "album_id") ????? already created?!
+	# - c.create_idx("r4_album_ratings", "sid")
+
+# CHECK FOR STASHED / LOST WORK ON WORKSTATION
+# cache.py
+# rating.py
 
 updated_album_ids = {}
 

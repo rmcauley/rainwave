@@ -7,7 +7,7 @@ from mutagen.mp3 import MP3
 from libs import db
 from libs import config
 from libs import cache
-
+from libs import filetools
 from libs import log
 from rainwave import rating
 
@@ -16,6 +16,8 @@ from rainwave.playlist_objects.album import Album
 from rainwave.playlist_objects.songgroup import SongGroup
 from rainwave.playlist_objects.metadata import make_searchable_string
 from rainwave.playlist_objects import cooldown
+
+_mp3gain_path = filetools.which("mp3gain")
 
 # Usable if you want to throw an exception on a file but still continue
 # scanning other files.
@@ -37,7 +39,7 @@ class Song(object):
 		d = None
 		if sid:
 			d = db.c.fetch_row("SELECT * FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_id = %s AND r4_song_sid.sid = %s", (song_id, sid))
-		if not d:
+		else:
 			d = db.c.fetch_row("SELECT * FROM r4_songs WHERE song_id = %s", (song_id,))
 		if not d:
 			raise SongNonExistent
@@ -53,7 +55,7 @@ class Song(object):
 		s.data['rank'] = None
 		s._assign_from_dict(d)
 
-		s.albums = Album.load_from_id_sid(d['album_id'], s.sid)
+		s.albums = [ Album.load_from_id_sid(d['album_id'], s.sid) ]
 		s.artists = Artist.load_list_from_song_id(song_id)
 		s.groups = SongGroup.load_list_from_song_id(song_id)
 
@@ -95,7 +97,7 @@ class Song(object):
 		new_groups = SongGroup.load_list_from_tag(s.genre_tag)
 		s.albums = [ Album.load_from_name(s.album_tag) ]
 
-		i = 0
+		i = 0;
 		for metadata in new_artists:
 			metadata.associate_song_id(s.id, order=i)
 			i += 1
@@ -331,7 +333,7 @@ class Song(object):
 			metadata.start_cooldown(sid)
 		# Albums always have to go last since album records in the DB store cached cooldown values
 		for metadata in self.albums:
-			log.debug("song_cooldown", "Starting album cooldown on group %s" % metadata.id)
+			log.debug("song_cooldown", "Starting album cooldown on album %s" % metadata.id)
 			metadata.start_cooldown(sid)
 
 		cool_time = cooldown.cooldown_config[sid]['max_song_cool']
@@ -376,13 +378,13 @@ class Song(object):
 		dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user < 3 GROUP BY song_id", (self.id,))
 		if not dislikes:
 			dislikes = 0
-		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3 AND song_rating_user < 3.5 GROUP BY song_id", (self.id,))
+		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3 AND song_rating_user < 3.5 GROUP BY song_id", (self.id,));
 		if not neutrals:
 			neutrals = 0
-		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3.5 AND song_rating_user < 4 GROUP BY song_id", (self.id,))
+		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3.5 AND song_rating_user < 4 GROUP BY song_id", (self.id,));
 		if not neutralplus:
 			neutralplus = 0
-		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 4 GROUP BY song_id", (self.id,))
+		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 4 GROUP BY song_id", (self.id,));
 		if not likes:
 			likes = 0
 		rating_count = dislikes + neutrals + neutralplus + likes
@@ -395,7 +397,7 @@ class Song(object):
 				album.update_rating()
 
 	def add_artist(self, name):
-		to_ret = self._add_metadata(self.artists, name, Artist)
+		toret = self._add_metadata(self.artists, name, Artist)
 		self.update_artist_parseable()
 		return to_ret
 
@@ -404,6 +406,8 @@ class Song(object):
 			raise TypeError("add_album() requires a station ID list if song was not loaded/saved into database")
 		elif not sids:
 			sids = self.data['sids']
+		if len(self.albums) >= 1:
+			raise Exception("Cannot add more than 1 album association to a song.")
 		for metadata in self.albums:
 			if metadata.data['name'] == name:
 				return True
@@ -454,7 +458,7 @@ class Song(object):
 		return self._remove_metadata(self.groups, name)
 
 	def remove_nontag_metadata(self):
-		for metadata in (self.albums + self.artists + self.groups):
+		for metadata in (self.artists + self.groups):
 			if not metadata.is_tag:
 				metadata.disassociate_song_id(self.id)
 
@@ -506,7 +510,7 @@ class Song(object):
 	def get_all_ratings(self):
 		table = db.c.fetch_all("SELECT song_rating_user, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
 		all_ratings = {}
-		for row in table:
+		for row in all_ratings:
 			all_ratings[row['user_id']] = { "rating_user": row['song_rating_user'], "fave": row['song_fave'] }
 		return all_ratings
 

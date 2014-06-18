@@ -33,9 +33,9 @@ def get_random_song_timed(sid, target_seconds = None, target_delta = 20):
 	if not target_seconds:
 		return get_random_song(sid)
 
-	sql_query = ("FROM r4_songs "
-					"JOIN r4_song_sid USING (song_id) "
-					"JOIN r4_album_sid ON (r4_album_sid.album_id = r4_song_sid.album_id AND r4_album_sid.sid = r4_song_sid.sid) "
+	sql_query = ("FROM r4_song_sid "
+					"JOIN r4_songs USING (song_id) "
+					"JOIN r4_album_sid ON (r4_album_sid.album_id = r4_songs.album_id AND r4_album_sid.sid = r4_song_sid.sid) "
 				"WHERE r4_song_sid.sid = %s "
 					"AND song_exists = TRUE "
 					"AND song_cool = FALSE "
@@ -60,7 +60,8 @@ def get_random_song(sid):
 	"""
 
 	sql_query = ("FROM r4_song_sid "
-					"JOIN r4_album_sid ON (r4_album_sid.album_id = r4_song_sid.album_id AND r4_album_sid.sid = r4_song_sid.sid) "
+					"JOIN r4_songs USING (song_id) "
+					"JOIN r4_album_sid ON (r4_album_sid.album_id = r4_songs.album_id AND r4_album_sid.sid = r4_song_sid.sid) "
 				"WHERE r4_song_sid.sid = %s "
 					"AND song_cool = FALSE "
 					"AND song_request_only = FALSE "
@@ -178,7 +179,7 @@ def reduce_song_blocks(sid):
 def get_unrated_songs_for_user(user_id, limit = "LIMIT ALL"):
 	return db.c.fetch_all(
 		"SELECT r4_songs.song_id AS id, song_title AS title, album_name "
-		"FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_albums USING (album_id) "
+		"FROM r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 		"LEFT OUTER JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
 		"WHERE song_verified = TRUE AND r4_song_ratings.song_id IS NULL ORDER BY album_name, song_title " + limit, (user_id,))
 
@@ -192,19 +193,20 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 					"JOIN r4_song_sid ON "
 						"(r4_request_store.song_id = r4_song_sid.song_id "
 						"AND r4_request_store.sid = r4_song_sid.sid) ) "
+					"JOIN r4_songs USING (song_id) "
 			"SELECT MIN(r4_song_sid.song_id) AS song_id, COUNT(r4_song_sid.song_id) AS unrated_count, r4_song_sid.album_id "
-				"FROM r4_song_sid "
+				"FROM r4_song_sid JOIN r4_songs USING (song_id) "
 					"LEFT OUTER JOIN r4_song_ratings ON "
 						"(r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
 					"LEFT JOIN requested_albums ON "
-						"(requested_albums.album_id = r4_song_sid.album_id) "
+						"(requested_albums.album_id = r4_songs.album_id) "
 				"WHERE r4_song_sid.sid = %s "
 					"AND song_exists = TRUE "
 					"AND song_cool = FALSE "
 					"AND song_elec_blocked = FALSE "
 					"AND r4_song_ratings.song_id IS NULL "
 					"AND requested_albums.album_id IS NULL "
-			"GROUP BY r4_song_sid.album_id "
+			"GROUP BY r4_songs.album_id "
 			"ORDER BY unrated_count "
 			"LIMIT %s", (user_id, sid, limit)):
 		unrated.append(row['song_id'])
@@ -218,12 +220,15 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 						"JOIN r4_song_sid ON "
 							"(r4_request_store.song_id = r4_song_sid.song_id "
 							"AND r4_request_store.sid = r4_song_sid.sid) ) "
+						"JOIN r4_songs USING (song_id) "
 				"SELECT r4_song_sid.album_id, MIN(song_cool_end) "
-					"FROM r4_song_sid JOIN r4_album_sid USING (album_id, sid) "
+					"FROM r4_song_sid "
+						"JOIN r4_songs USING (song_id) "
+						"JOIN r4_album_sid ON (r4_album_sid.album_id = r4_songs.album_id AND r4_album_sid.sid = r4_song_sid.sid) "
 						"LEFT OUTER JOIN r4_song_ratings ON "
 							"(r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
 						"LEFT JOIN requested_albums ON "
-							"(requested_albums.album_id = r4_song_sid.album_id) "
+							"(requested_albums.album_id = r4_songs.album_id) "
 					"WHERE r4_song_sid.sid = %s "
 						"AND song_exists = TRUE "
 						"AND song_cool = TRUE "
@@ -235,14 +240,15 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 				"LIMIT %s", (user_id, sid, (limit - len(unrated)))):
 			song_id = db.c.fetch_var(
 				"SELECT r4_song_sid.song_id "
-					"FROM r4_song_sid LEFT OUTER JOIN r4_song_ratings ON "
+					"FROM r4_songs JOIN r4_song_sid USING (song_id) LEFT OUTER JOIN r4_song_ratings ON "
 						"(r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
-					"WHERE r4_song_sid.album_id = %s "
+					"WHERE r4_songs.album_id = %s "
+						"AND r4_song_sid.sid = %s "
 						"AND song_exists = TRUE "
 						"AND song_cool = TRUE "
 						"AND song_elec_blocked = FALSE "
 						"AND r4_song_ratings.song_id IS NULL "
 					"ORDER BY song_cool_end "
-					"LIMIT 1", (album_row['album_id'], user_id))
+					"LIMIT 1", (album_row['album_id'], user_id, sid))
 			unrated.append(song_id)
 	return unrated

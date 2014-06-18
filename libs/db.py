@@ -356,8 +356,7 @@ def create_tables():
 			song_rated_at_count			INTEGER		, \
 			song_fave				BOOLEAN \
 		)")
-	# c.create_idx("r4_song_ratings", "user_id", "song_id")		# handled by create_delete_fk
-	# c.create_idx("r4_song_ratings", "song_id")
+	c.create_idx("r4_song_ratings", "user_id", "song_id")
 	c.create_delete_fk("r4_song_ratings", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_ratings", "phpbb_users", "user_id")
 
@@ -398,7 +397,7 @@ def create_tables():
 			album_rating_complete	BOOLEAN		DEFAULT FALSE \
 		)")
 	c.create_idx("r4_album_ratings", "user_id", "album_id")
-	c.create_idx("r4_album_ratings", "album_id")
+	c.create_idx("r4_album_ratings", "sid")
 	c.create_delete_fk("r4_album_ratings", "r4_albums", "album_id", create_idx=False)
 	c.create_delete_fk("r4_album_ratings", "phpbb_users", "user_id", create_idx=False)
 

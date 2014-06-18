@@ -170,27 +170,6 @@ class Election(event.BaseEvent):
 			song.data['request_username'] = requesting_user['username']
 			song.data['request_user_id'] = requesting_user['user_id']
 			return True
-
-		# THE CODE BELOW DOES NOT FUNCTION WELL
-		# After thinking about it I simply decided to remove it
-		# It's not the most important thing to show to the user, and the vast majority of users
-		# don't know what it is or are simply confused by it.
-		# In an effort to simply it all, I've just decided to make users with conflicts
-		# suffer the loss and move on.
-		#
-		# The election system itself will avoid a first-pick conflict for a user anyway.
-		# Good enough in my books.
-		#if song.albums and len(song.albums) > 0:
-		#	for album in song.albums:
-		#		conflicting_user = db.c.fetch_var("SELECT username "
-		#			"FROM r4_listeners JOIN r4_request_line USING (user_id) JOIN r4_song_album ON (line_top_song_id = r4_song_album.song_id) JOIN phpbb_users ON (r4_listeners.user_id = phpbb_users.user_id) "
-		#			"WHERE r4_listeners.sid = %s AND r4_request_line.sid = %s AND r4_song_album.sid = %s AND r4_song_album.album_id = %s "
-		#			"ORDER BY line_wait_start LIMIT 1",
-		#			(self.sid, self.sid, self.sid, album.id))
-		#		if conflicting_user:
-		#			song.data['entry_type'] = ElecSongTypes.conflict
-		#			song.data['request_username'] = conflicting_user
-		#			return True
 		return False
 
 	def add_song(self, song):
