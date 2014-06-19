@@ -14,20 +14,9 @@ from rainwave.playlist_objects.metadata import make_searchable_string
 from rainwave.playlist_objects import cooldown
 
 # REFACTORING TODO:
-# update_album_ratings / get_album_rating must be updated
-# do a project wide search for r4_song_sid
-# fix API help page so I don't have to explain what it is when someone visits it
-# finish the migrate script
-# still need reconcile back
-# add more indexes to the ratings tables? maybe some sid indexes too...
-	# - c.create_idx("r4_song_ratings", "user_id", "song_id")
-	# - c.create_idx("r4_album_ratings", "user_id", "album_id") ????? already created?!
-	# - c.create_idx("r4_album_ratings", "sid")
-# fave count as well has moved
+# what about when a song gets added/removed from the playlist and we need to change sizes and check rating completeness
 
-# CHECK FOR STASHED / LOST WORK ON WORKSTATION
-# cache.py
-# rating.py
+# fix API help page so I don't have to explain what it is when someone visits it
 
 updated_album_ids = {}
 
@@ -71,10 +60,8 @@ class Album(AssociatedMetadata):
 	select_by_id_query = "SELECT r4_albums.* FROM r4_albums WHERE album_id = %s"
 	select_by_song_id_query = "SELECT r4_albums.* FROM r4_songs JOIN r4_albums USING (album_id) WHERE song_id = %s"
 	has_song_id_query = "SELECT COUNT(song_id) FROM r4_songs WHERE song_id = %s AND album_id = %s"
-	# This is a hack, but,umm..... yeah.  It'll do. :P  reconcile_sids handles these duties.
-	check_self_size_query = "SELECT 1, %s"
-	# delete_self_query will never run, but just in case
-	delete_self_query = "SELECT 1, %s"
+	check_self_size_query = "SELECT COUNT(*) FROM r4_songs WHERE album_id = %s"
+	delete_self_query = "UPDATE r4_album_sid SET album_exists = FALSE WHERE album_id = %s"
 
 	@classmethod
 	def load_from_id_sid(cls, album_id, sid):
@@ -83,7 +70,7 @@ class Album(AssociatedMetadata):
 			raise MetadataNotFoundError("%s ID %s for sid %s could not be found." % (cls.__name__, album_id, sid))
 		instance = cls()
 		instance._assign_from_dict(row, sid)
-		instance.data['sids'] = [ sid ]
+		instance.sid = sid
 		return instance
 
 	@classmethod
@@ -91,7 +78,7 @@ class Album(AssociatedMetadata):
 		row = db.c.fetch_row("SELECT * FROM r4_albums WHERE album_id = %s", (album_id,))
 		instance = cls()
 		instance._assign_from_dict(row, sid)
-		instance.data['sids'] = [ sid ]
+		instance.sid = sid
 		user_id = None if not user else user.id
 		requestable = True if user else False
 		instance.data['songs'] = db.c.fetch_all(
@@ -120,15 +107,14 @@ class Album(AssociatedMetadata):
 
 	def __init__(self):
 		super(Album, self).__init__()
-		self.data['sids'] = []
+		self.is_tag = True
 
 	def _insert_into_db(self):
 		global updated_album_ids
 
 		self.id = db.c.get_next_id("r4_albums", "album_id")
 		success = db.c.update("INSERT INTO r4_albums (album_id, album_name, album_name_searchable) VALUES (%s, %s, %s)", (self.id, self.data['name'], make_searchable_string(self.data['name'])))
-		for sid in self.data['sids']:
-			updated_album_ids[sid][self.id] = True
+		updated_album_ids[self.sid][self.id] = True
 		return success
 
 	def _update_db(self):
@@ -139,8 +125,7 @@ class Album(AssociatedMetadata):
 			"SET album_name = %s, album_name_searchable = %s, album_rating = %s "
 			"WHERE album_id = %s",
 			(self.data['name'], make_searchable_string(self.data['name']), self.data['rating'], self.id))
-		for sid in self.data['sids']:
-			updated_album_ids[sid][self.id] = True
+		updated_album_ids[self.sid][self.id] = True
 		return success
 
 	def _assign_from_dict(self, d, sid = None):
@@ -160,9 +145,7 @@ class Album(AssociatedMetadata):
 		self._dict_check_assign(d, "album_cool", False)
 		self._dict_check_assign(d, "album_name_searchable", self.data['name'])
 		if d.has_key('sid'):
-			self.data['sid'] = d['sid']
-		if d.has_key('album_is_tag'):
-			self.is_tag = d['album_is_tag']
+			self.sid = d['sid']
 		self.data['art'] = Album.get_art_url(self.id, sid)
 
 	def _dict_check_assign(self, d, key, default = None, new_key = None):
@@ -176,17 +159,37 @@ class Album(AssociatedMetadata):
 	def get_num_songs(self, sid):
 		return db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s", (self.id, sid))
 
-	def associate_song_id(self, song_id, sids, is_tag = None):
-		# Deprecated
-		pass
+	def associate_song_id(self, song_id, is_tag = None):
+		existing_album = Album.load_list_from_song_id(song_id)[0]
+		if existing_album.id = self.id:
+			return
+		db.c.update("UPDATE r4_songs SET album_id = %s WHERE song_id = %s", (self.id, song_id))
+		self.reconcile_sids()
+		existing_album.reconcile_sids()
 
-	def disassociate_song_id(self, song_id):
-		# Deprecated
+	def disassociate_song_id(self, *args):
+		# You can't do this.  You can only associated something new, which
+		# will trigger a 'swap' of albums if necessary.
 		pass
 
 	def reconcile_sids(self, album_id = None):
-		# Deprecated
-		pass
+		if not album_id:
+			album_id = self.id
+		new_sids = db.c.fetch_list("SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND song_exists = TRUE", (album_id,))
+		current_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (album_id,))
+		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (album_id,))
+		for sid in current_sids:
+			if not new_sids.count(sid):
+				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE WHERE album_id = %s AND sid = %s", (album_id, sid))
+		for sid in new_sids:
+			if current_sids.count(sid):
+				pass
+			elif old_sids.count(sid):
+				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (album_id, sid))
+			else:
+				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (album_id, sid))
+		for sid in new_sids:
+			updated_album_ids[sid][album_id] = True
 
 	def start_cooldown(self, sid, cool_time = False):
 		if cool_time:
@@ -343,7 +346,7 @@ class Album(AssociatedMetadata):
 	def to_dict(self, user = None):
 		d = super(Album, self).to_dict(user)
 		if user:
-			self.data.update(rating.get_album_rating(self.id, user.id))
+			self.data.update(rating.get_album_rating(self.sid, self.id, user.id))
 		else:
 			d['rating_user'] = None
 			d['fave'] = None

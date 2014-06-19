@@ -95,7 +95,6 @@ class Song(object):
 
 		new_artists = Artist.load_list_from_tag(s.artist_tag)
 		new_groups = SongGroup.load_list_from_tag(s.genre_tag)
-		s.albums = [ Album.load_from_name(s.album_tag) ]
 
 		i = 0;
 		for metadata in new_artists:
@@ -106,6 +105,9 @@ class Song(object):
 
 		s.artists = new_artists + kept_artists
 		s.groups = new_groups + kept_groups
+
+		s.albums = [ Album.load_from_name(s.album_tag) ]
+		s.albums[0].associate_song_id(s.id)
 
 		s.update_artist_parseable()
 
