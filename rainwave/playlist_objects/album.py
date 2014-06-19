@@ -23,6 +23,7 @@ from rainwave.playlist_objects import cooldown
 	# - c.create_idx("r4_song_ratings", "user_id", "song_id")
 	# - c.create_idx("r4_album_ratings", "user_id", "album_id") ????? already created?!
 	# - c.create_idx("r4_album_ratings", "sid")
+# fave count as well has moved
 
 # CHECK FOR STASHED / LOST WORK ON WORKSTATION
 # cache.py
@@ -199,7 +200,7 @@ class Album(AssociatedMetadata):
 			# AlbumCD = minAlbumCD + ((maxAlbumR - albumR)/(maxAlbumR - minAlbumR)*(maxAlbumCD - minAlbumCD))
 			# old: auto_cool = cooldown.cooldown_config[sid]['min_album_cool'] + (((4 - (cool_rating - 1)) / 4.0) * (cooldown.cooldown_config[sid]['max_album_cool'] - cooldown.cooldown_config[sid]['min_album_cool']))
 			auto_cool = cooldown.cooldown_config[sid]['min_album_cool'] + (((5 - cool_rating) / 4.0) * (cooldown.cooldown_config[sid]['max_album_cool'] - cooldown.cooldown_config[sid]['min_album_cool']))
-			album_num_songs = self.get_num_songs()
+			album_num_songs = self.get_num_songs(sid)
 			log.debug("cooldown", "min_album_cool: %s .. max_album_cool: %s .. auto_cool: %s .. album_num_songs: %s .. rating: %s" % (cooldown.cooldown_config[sid]['min_album_cool'], cooldown.cooldown_config[sid]['max_album_cool'], auto_cool, album_num_songs, cool_rating))
 			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_num_songs - config.get_station(sid, "cooldown_size_slope_start")))) / 2)
 			cool_age_multiplier = cooldown.get_age_cooldown_multiplier(self.data['added_on'])

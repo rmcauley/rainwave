@@ -81,11 +81,11 @@ def set_song_rating(song_id, user_id, rating):
 def get_song_rating(song_id, user_id):
 	return _memcache_ratings.get("rating_song_%s_%s" % (song_id, user_id))
 
-def set_album_rating(album_id, user_id, rating):
-	_memcache_ratings.set("rating_album_%s_%s" % (album_id, user_id), rating)
+def set_album_rating(sid, album_id, user_id, rating):
+	_memcache_ratings.set("rating_album_%s_%s_%s" % (sid, album_id, user_id), rating)
 
-def get_album_rating(album_id, user_id):
-	return _memcache_ratings.get("rating_album_%s_%s" % (album_id, user_id))
+def get_album_rating(sid, album_id, user_id):
+	return _memcache_ratings.get("rating_album_%s_%s_%s" % (sid, album_id, user_id))
 
 def prime_rating_cache_for_events(events, songs = None):
 	for e in events:

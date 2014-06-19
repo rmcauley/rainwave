@@ -283,7 +283,6 @@ def create_tables():
 			album_id				SERIAL		PRIMARY KEY, \
 			album_name				TEXT		, \
 			album_name_searchable	TEXT 		NOT NULL, \
-			album_fave_count			INTEGER		DEFAULT 0, \
 			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 		)")
 	c.create_idx("r4_albums", "album_rating")
@@ -377,6 +376,7 @@ def create_tables():
 			album_rating				REAL		DEFAULT 0, \
 			album_rating_count			INTEGER		DEFAULT 0, \
 			album_request_count			INTEGER		DEFAULT 0, \
+			album_fave_count			INTEGER		DEFAULT 0, \
 			album_vote_count			INTEGER		DEFAULT 0, \
 			album_votes_seen			INTEGER		DEFAULT 0, \
 			album_vote_share			REAL 		\

@@ -13,13 +13,13 @@ def get_song_rating(song_id, user_id):
 	cache.set_song_rating(song_id, user_id, rating)
 	return rating
 
-def get_album_rating(album_id, user_id, sid):
-	rating = cache.get_album_rating(album_id, user_id)
+def get_album_rating(sid, album_id, user_id):
+	rating = cache.get_album_rating(sid, album_id, user_id)
 	if not rating:
 		rating = db.c.fetch_row("SELECT album_rating_user AS rating_user, album_fave AS fave FROM r4_album_ratings WHERE user_id = %s AND album_id = %s AND sid = %s", (user_id, album_id, sid))
 		if not rating:
 			rating = { "rating_user": 0, "fave": None }
-	cache.set_album_rating(album_id, user_id, rating)
+	cache.set_album_rating(sid, album_id, user_id, rating)
 	return rating
 
 def set_song_rating(song_id, user_id, rating = None, fave = None):
@@ -61,12 +61,50 @@ def clear_song_rating(song_id, user_id):
 		return []
 
 def set_song_fave(song_id, user_id, fave):
-	return _set_fave("song", song_id, user_id, fave)
+	exists = db.c.fetch_row("SELECT * FROM r4_song_ratings WHERE song_id = %s AND user_id = %s", (song_id, user_id))
+	rating = None
+	if not exists:
+		if db.c.update("INSERT INTO r4_song_ratings (song_id, user_id, song_fave) VALUES (%s, %s, %s)", (song_id, user_id, fave)) == 0:
+			log.debug("rating", "Failed to insert record for song fave %s, fave is: %s." % (song_id, fave))
+			return False
+	else:
+		rating = exists["song_rating_user"]
+		if db.c.update("UPDATE r4_song_ratings SET song_fave = %s WHERE song_id = %s AND user_id = %s", (fave, song_id, user_id)) == 0:
+			log.debug("rating", "Failed to update record for fave song %s, fave is: %s." % (song_id, fave))
+			return False
+	if (not exists and fave) or (not exists["song_fave"] and fave):
+		db.c.update("UPDATE r4_songs SET song_fave_count = song_fave_count + 1 WHERE song_id = %s", (song_id,))
+	elif (exists and exists["song_fave"] and not fave):
+		db.c.update("UPDATE r4_songs SET song_fave_count = song_fave_count - 1 WHERE song_id = %s", (song_id,))
+	cache.set_song_rating(song_id, user_id, { "rating_user": rating, "fave": fave })
+	return True
 
-def set_album_fave(album_id, user_id, fave):
-	return _set_fave("album", album_id, user_id, fave)
+def set_album_fave(album_id, user_id, fave, sid):
+	category = "album"
+	exists = db.c.fetch_row("SELECT * FROM r4_" + category + "_ratings WHERE " + category + "_id = %s AND user_id = %s AND sid = %s", (album_id, user_id, sid))
+	rating = None
+	rating_complete = None
+	if not exists:
+		if db.c.update("INSERT INTO r4_" + category + "_ratings (" + category + "_id, user_id, " + category + "_fave, sid) VALUES (%s, %s, %s, %s)", (album_id, user_id, fave, sid)) == 0:
+			log.debug("rating", "Failed to insert record for fave %s %s, fave is: %s." % (category, album_id, fave))
+			return False
+	else:
+		rating = exists[category + "_rating_user"]
+		rating_complete = exists['album_rating_complete']
+		if db.c.update("UPDATE r4_" + category + "_ratings SET " + category + "_fave = %s WHERE " + category + "_id = %s AND user_id = %s AND sid = %s", (fave, album_id, user_id, sid)) == 0:
+			log.debug("rating", "Failed to update record for fave %s %s, fave is: %s." % (category, album_id, fave))
+			return False
+	if (not exists and fave) or (not exists[category + "_fave"] and fave):
+		db.c.update("UPDATE r4_" + category + "_sid SET " + category + "_fave_count = " + category + "_fave_count + 1 WHERE " + category + "_id = %s AND sid = %s", (album_id, sid))
+	elif (exists and exists[category + "_fave"] and not fave):
+		db.c.update("UPDATE r4_" + category + "_sid SET " + category + "_fave_count = " + category + "_fave_count - 1 WHERE " + category + "_id = %s AND sid = %s", (album_id, sid))
+	if category == "album":
+		cache.set_album_rating(sid, album_id, user_id, { "rating_user": rating, "fave": fave, "rating_complete": rating_complete })
+	elif category == "song":
+		cache.set_song_rating(sid, album_id, user_id, { "rating_user": rating, "fave": fave })
+	return True
 
-def _set_fave(category, object_id, user_id, fave):
+def _set_fave(category, object_id, user_id, fave, sid = None):
 	if category != "album" and category != "song":
 		raise Exception("Invalid favourite category.")
 
