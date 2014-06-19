@@ -220,7 +220,7 @@ class BaseEvent(object):
 			log.warn("event", "Event ID %s (type %s) failed on length calculation.  Used: %s / Songs: %s / Start Actual: %s / Start: %s / End: %s" % (self.id, self.type, self.used, len(self.songs), self.start_actual, self.start, self.end))
 			return 0
 
-	def to_dict(self, user = None):
+	def to_dict(self, user = None, check_rating_acl=False):
 		obj = {
 			"id": self.id,
 			"start": self.start,
@@ -241,6 +241,8 @@ class BaseEvent(object):
 				obj['end'] = self.start + self.length()
 			obj['songs'] = []
 			for song in self.songs:
+				if check_rating_acl:
+					song.check_rating_acl(user)
 				obj['songs'].append(song.to_dict(user))
 		return obj
 

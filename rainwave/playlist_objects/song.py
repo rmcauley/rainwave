@@ -524,7 +524,7 @@ class Song(object):
 		return db.c.update("UPDATE r4_songs SET song_vote_count = song_vote_count + %s WHERE song_id = %s", (votes, self.id))
 
 	def check_rating_acl(self, user):
-		if self.id == 1:
+		if user.id == 1:
 			return
 
 		if self.data['rating_allowed']:

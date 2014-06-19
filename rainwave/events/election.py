@@ -361,7 +361,7 @@ class Election(event.BaseEvent):
 			db.c.update("UPDATE r4_elections SET elec_priority = FALSE WHERE elec_id = %s", (self.id,))
 		self.has_priority = priority
 
-	def to_dict(self, user = None, check_rating_acl = False, **kwargs):
+	def to_dict(self, user = None, check_rating_acl = False):
 		obj = super(Election, self).to_dict(user)
 		obj['used'] = self.used
 		obj['length'] = self.length()
