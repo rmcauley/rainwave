@@ -133,29 +133,27 @@ def _set_fave(category, object_id, user_id, fave, sid = None):
 	return True
 
 def update_album_ratings(song_id, user_id, sid):
-	toreturn = []
-	for album_id in db.c.fetch_list("SELECT DISTINCT album_id FROM r4_song_sid WHERE song_id = %s", (song_id,)):
-		user_data = db.c.fetch_row(
-			"SELECT ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS rating_user, "
-				"COUNT(song_rating_user) AS rating_user_count "
-			"FROM (SELECT DISTINCT song_id FROM r4_song_sid WHERE album_id = %s AND sid = %s AND song_exists = TRUE) AS temp "
-				"JOIN r4_song_ratings USING (song_id) "
-			"WHERE user_id = %s",
-			(album_id, user_id))
-		num_songs = db.c.fetch_var("SELECT album_song_count FROM r4_album_sid WHERE album_id = %s", (album_id,))
-		rating_complete = False
-		if user_data['rating_user_count'] >= num_songs:
-			rating_complete = True
-		album_rating = float(user_data['rating_user'])
-		toreturn.append({ "id": album_id, "rating_user": album_rating, "rating_complete": rating_complete })
-		album_fave = None
-		existing_rating = db.c.fetch_row("SELECT album_rating_user, album_fave FROM r4_album_ratings WHERE album_id = %s AND user_id = %s", (album_id, user_id))
-		if existing_rating:
-			album_fave = existing_rating['album_fave']
-			db.c.update("UPDATE r4_album_ratings SET album_rating_user = %s, album_fave = %s, album_rating_complete = %s WHERE user_id = %s AND album_id = %s",
-						(album_rating, album_fave, rating_complete, user_id, album_id))
-		else:
-			db.c.update("INSERT INTO r4_album_ratings (album_rating_user, album_fave, album_rating_complete, user_id, album_id) VALUES (%s, %s, %s, %s, %s)",
-						(album_rating, album_fave, rating_complete, user_id, album_id))
-		cache.set_album_rating(album_id, user_id, { "rating_user": album_rating, "fave": album_fave, "rating_complete": rating_complete })
-	return toreturn
+	album_id = db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,))
+	user_data = db.c.fetch_row(
+		"SELECT ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS rating_user, "
+			"COUNT(song_rating_user) AS rating_user_count "
+		"FROM JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s AND song_exists = TRUE "
+			"JOIN r4_song_ratings USING (song_id) "
+		"WHERE user_id = %s",
+		(album_id, user_id))
+	num_songs = db.c.fetch_var("SELECT album_song_count FROM r4_album_sid WHERE album_id = %s", (album_id,))
+	rating_complete = False
+	if user_data['rating_user_count'] >= num_songs:
+		rating_complete = True
+	album_rating = float(user_data['rating_user'])
+	album_fave = None
+	existing_rating = db.c.fetch_row("SELECT album_rating_user, album_fave FROM r4_album_ratings WHERE album_id = %s AND user_id = %s", (album_id, user_id))
+	if existing_rating:
+		album_fave = existing_rating['album_fave']
+		db.c.update("UPDATE r4_album_ratings SET album_rating_user = %s, album_fave = %s, album_rating_complete = %s WHERE user_id = %s AND album_id = %s",
+					(album_rating, album_fave, rating_complete, user_id, album_id))
+	else:
+		db.c.update("INSERT INTO r4_album_ratings (album_rating_user, album_fave, album_rating_complete, user_id, album_id) VALUES (%s, %s, %s, %s, %s)",
+					(album_rating, album_fave, rating_complete, user_id, album_id))
+	cache.set_album_rating(album_id, user_id, { "rating_user": album_rating, "fave": album_fave, "rating_complete": rating_complete })
+	return { "sid": sid, "id": album_id, "rating_user": album_rating, "rating_complete": rating_complete }
