@@ -291,7 +291,7 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_songs ( \
 			song_id						SERIAL		PRIMARY KEY, \
-			album_id 					INTEGER		NOT NULL, \
+			album_id 					INTEGER, \
 			song_origin_sid				SMALLINT	NOT NULL, \
 			song_verified				BOOLEAN		DEFAULT TRUE, \
 			song_scanned				BOOLEAN		DEFAULT TRUE, \

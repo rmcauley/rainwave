@@ -131,10 +131,9 @@ class Album(AssociatedMetadata):
 	def _assign_from_dict(self, d, sid = None):
 		self.id = d['album_id']
 		self.data['name'] = d['album_name']
-		self.data['rating'] = d['album_rating']
-		self.data['rating_count'] = d['album_rating_count']
 		self.data['added_on'] = d['album_added_on']
-		self._dict_check_assign(d, "album_added_on")
+		self._dict_check_assign(d, "album_rating")
+		self._dict_check_assign(d, "album_rating_count")
 		self._dict_check_assign(d, "album_cool_multiply", 1)
 		self._dict_check_assign(d, "album_cool_override")
 		self._dict_check_assign(d, "album_cool_lowest", 0)
@@ -157,11 +156,11 @@ class Album(AssociatedMetadata):
 			self.data[new_key] = default
 
 	def get_num_songs(self, sid):
-		return db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s", (self.id, sid))
+		return db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE r4_songs.album_id = %s AND sid = %s", (self.id, sid))
 
 	def associate_song_id(self, song_id, is_tag = None):
 		existing_album = Album.load_list_from_song_id(song_id)[0]
-		if existing_album.id = self.id:
+		if existing_album.id == self.id:
 			return
 		db.c.update("UPDATE r4_songs SET album_id = %s WHERE song_id = %s", (self.id, song_id))
 		self.reconcile_sids()
@@ -175,7 +174,7 @@ class Album(AssociatedMetadata):
 	def reconcile_sids(self, album_id = None):
 		if not album_id:
 			album_id = self.id
-		new_sids = db.c.fetch_list("SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND song_exists = TRUE", (album_id,))
+		new_sids = db.c.fetch_list("SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND song_exists = TRUE", (album_id,))
 		current_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (album_id,))
 		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (album_id,))
 		for sid in current_sids:
@@ -257,10 +256,6 @@ class Album(AssociatedMetadata):
 	def update_last_played(self, sid):
 		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (time.time(), self.id, sid))
 
-	def update_vote_total(self, sid):
-		vote_total = db.c.fetch_var("SELECT SUM(song_vote_count) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND song_exists = TRUE", (self.id,))
-		return db.c.update("UPDATE r4_album_sid SET album_vote_count = %s WHERE album_id = %s AND sid = %s", (vote_total, self.id, sid))
-
 	def get_all_ratings(self):
 		table = db.c.fetch_all("SELECT album_rating_user, album_fave, user_id FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s", (self.id,))
 		all_ratings = {}
@@ -279,15 +274,16 @@ class Album(AssociatedMetadata):
 					"ratings AS ( "
 						"SELECT album_id, sid, FALSE AS album_fave, user_id, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user, COUNT(song_rating_user) AS song_rating_user_count "
 						"FROM ("
-							"SELECT song_id, sid, album_id FROM r4_song_sid JOIN r4_songs WHERE album_id = %s AND sid = %s"
+							"SELECT song_id, sid, r4_songs.album_id FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE r4_songs.album_id = %s AND sid = %s AND song_exists = TRUE AND song_verified = TRUE"
 						") AS r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) "
-						"GROUP BY album_id, user_id "
+						"GROUP BY album_id, sid, user_id "
 					") "
 				"INSERT INTO r4_album_ratings (sid, album_id, user_id, album_fave, album_rating_user, album_rating_complete) "
 				"SELECT sid, album_id, user_id, BOOL_OR(album_fave) AS album_fave, NULLIF(MAX(album_rating_user), 0) AS album_rating_user, CASE WHEN MAX(song_rating_user_count) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete "
-				"FROM (SELECT * FROM (SELECT album_id, album_fave, user_id, 0 AS album_rating_user, 0 AS song_rating_user_count FROM faves) AS faves UNION ALL SELECT * FROM ratings) AS fused "
-				"GROUP BY sid, album_id, user_id "
-				"HAVING BOOL_OR(album_fave) = TRUE OR MAX(album_rating_user) IS NOT NULL ",
+					"FROM (SELECT * FROM (SELECT sid, album_id, album_fave, user_id, 0 AS album_rating_user, 0 AS song_rating_user_count FROM faves) AS faves "
+					"UNION ALL SELECT * FROM ratings) AS fused "
+					"GROUP BY sid, album_id, user_id "
+					"HAVING BOOL_OR(album_fave) = TRUE OR MAX(album_rating_user) IS NOT NULL ",
 				(self.id, sid, self.id, num_songs))
 
 	def reset_user_completed_flags(self, sid):
@@ -332,7 +328,7 @@ class Album(AssociatedMetadata):
 			self.data['rating_histogram'][str(point['rating_rnd'])] = point['rating_count']
 
 	def update_request_count(self, sid):
-		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_songs JOIN r4_request_history USING (song_id) WHERE album_id = %s AND sid = %s USING (song_id)", (self.id, sid))
+		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_songs JOIN r4_request_history USING (song_id) WHERE album_id = %s AND sid = %s", (self.id, sid))
 		return db.c.update("UPDATE r4_album_sid SET album_request_count = %s WHERE album_id = %s AND sid = %s", (count, self.id, sid))
 
 	def update_fave_count(self, sid):
@@ -340,7 +336,7 @@ class Album(AssociatedMetadata):
 		return db.c.update("UPDATE r4_album_sid SET album_fave_count = %s WHERE album_id = %s AND sid = %s", (count, self.id, sid))
 
 	def update_vote_count(self, sid):
-		count = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) JOIN r4_vote_history USING (song_id) album_id = %s AND sid = %s A JOIN r4_vote_history USING (song_id)", (self.id,))
+		count = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_vote_history JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s", (self.id, sid))
 		return db.c.update("UPDATE r4_album_sid SET album_vote_count = %s WHERE album_id = %s AND sid = %s", (count, self.id, sid))
 
 	def to_dict(self, user = None):

@@ -69,7 +69,7 @@ if not args.apionly:
 	libs.cache.update_local_cache_for_sid(1)
 
 	# Prevents KeyError from occurring in playlist
-	for sid in range(1, 10):
+	for sid in libs.config.station_ids:
 		rainwave.playlist_objects.album.clear_updated_albums(sid)
 
 	# I found Nose impossible to configure programmatically so I'm resorting
