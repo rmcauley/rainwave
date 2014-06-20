@@ -62,7 +62,7 @@ class RemoveFromPowerHour(api.web.APIHandler):
 	return_name = "power_hour"
 	admin_required = True
 	sid_required = True
-	fields = { "one_up_id": (fieldtypes.song_id, True) }
+	fields = { "one_up_id": (fieldtypes.positive_integer, True) }
 
 	def post(self):
 		ph_id = db.c.fetch_var("SELECT sched_id FROM r4_one_ups WHERE one_up_id = %s", (self.get_argument("one_up_id"),))
