@@ -46,7 +46,7 @@ var SongsTable = function(songs, columns) {
 			if ((columns[key] == "artists") && ("artist_parseable" in songs[i])) {
 				cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] }));
 				div = $el("div", { "class": "songlist_" + columns[key] + "_text" });
-				Artists.append_spans_from_string(div, songs[i].artist_parseable);
+				Artists.append_spans_from_json(div, JSON.parse(songs[i].artist_parseable));
 				Formatting.add_overflow_tooltip(div);
 				cell.appendChild(div);
 			}

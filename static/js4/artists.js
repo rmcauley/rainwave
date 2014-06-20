@@ -11,17 +11,5 @@ var Artists = function() {
 		return el;
 	};
 
-	self.append_spans_from_string = function(el, string) {
-		if (!string) return $el("span");
-		var artists = string.split(",");
-		var artist;
-		var json = [];
-		for (var i = 0; i < artists.length; i++) {
-			artist = artists[i].split("|");
-			json.push({ "name": artist[1], "id": parseInt(artist[0]) });
-		}
-		return self.append_spans_from_json(el, json);
-	};
-
 	return self;
 }();

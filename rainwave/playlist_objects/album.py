@@ -269,22 +269,24 @@ class Album(AssociatedMetadata):
 			db.c.update(
 				"WITH "
 					"faves AS ( "
-						"DELETE FROM r4_album_ratings WHERE album_id = %s RETURNING * "
+						"SELECT album_id, sid, album_fave, user_id, NULL::numeric AS album_rating_user, 0::bigint AS song_rating_user_count FROM r4_album_ratings WHERE album_id = %s AND sid = %s AND album_fave = TRUE "
+					"), "
+					"deleted AS ( "
+						"DELETE FROM r4_album_ratings WHERE album_id = %s AND sid = %s RETURNING *"
 					"), "
 					"ratings AS ( "
 						"SELECT album_id, sid, FALSE AS album_fave, user_id, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user, COUNT(song_rating_user) AS song_rating_user_count "
 						"FROM ("
-							"SELECT song_id, sid, r4_songs.album_id FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE r4_songs.album_id = %s AND sid = %s AND song_exists = TRUE AND song_verified = TRUE"
+							"SELECT song_id, sid, r4_songs.album_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_verified = TRUE "
 						") AS r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) "
 						"GROUP BY album_id, sid, user_id "
 					") "
-				"INSERT INTO r4_album_ratings (sid, album_id, user_id, album_fave, album_rating_user, album_rating_complete) "
-				"SELECT sid, album_id, user_id, BOOL_OR(album_fave) AS album_fave, NULLIF(MAX(album_rating_user), 0) AS album_rating_user, CASE WHEN MAX(song_rating_user_count) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete "
-					"FROM (SELECT * FROM (SELECT sid, album_id, album_fave, user_id, 0 AS album_rating_user, 0 AS song_rating_user_count FROM faves) AS faves "
-					"UNION ALL SELECT * FROM ratings) AS fused "
+				"INSERT INTO r4_album_ratings (sid, album_id, album_fave, user_id, album_rating_user, album_rating_complete) "
+				"SELECT sid, album_id, BOOL_OR(album_fave) AS album_fave, user_id, NULLIF(MAX(album_rating_user), 0) AS album_rating_user, CASE WHEN MAX(song_rating_user_count) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete "
+					"FROM (SELECT * FROM faves UNION ALL SELECT * FROM ratings) AS result "
 					"GROUP BY sid, album_id, user_id "
-					"HAVING BOOL_OR(album_fave) = TRUE OR MAX(album_rating_user) IS NOT NULL ",
-				(self.id, sid, self.id, num_songs))
+					"HAVING BOOL_OR(album_fave) = TRUE OR NULLIF(MAX(album_rating_user), 0) IS NOT NULL ",
+				(self.id, sid, self.id, sid, self.id, sid, num_songs))
 
 	def reset_user_completed_flags(self, sid):
 		db.c.update("UPDATE r4_album_ratings SET album_rating_complete = FALSE WHERE album_id = %s AND sid = %s", (self.id, sid))

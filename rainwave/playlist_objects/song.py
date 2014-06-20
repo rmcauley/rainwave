@@ -1,6 +1,7 @@
 import os
 import time
 import subprocess
+import json
 
 from mutagen.mp3 import MP3
 
@@ -227,11 +228,10 @@ class Song(object):
 	def update_artist_parseable(self):
 		if not self.artists:
 			return
-		artist_parseable = ""
-		for i in range(0, len(self.artists)):
-			if i != 0:
-				artist_parseable += ","
-			artist_parseable += "%s|%s" % (self.artists[i].id, self.artists[i].data['name'])
+		artist_parseable = []
+		for artist in self.artists:
+			artist_parseable.append({ "id": artist.id, "name": artist.name })
+		artist_parseable = json.dumps(artist_parseable)
 		db.c.update("UPDATE r4_songs SET song_artist_parseable = %s WHERE song_id = %s", (artist_parseable, self.id))
 
 	def save(self, sids_override = False):
