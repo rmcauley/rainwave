@@ -110,11 +110,8 @@ class Album(AssociatedMetadata):
 		self.is_tag = True
 
 	def _insert_into_db(self):
-		global updated_album_ids
-
 		self.id = db.c.get_next_id("r4_albums", "album_id")
 		success = db.c.update("INSERT INTO r4_albums (album_id, album_name, album_name_searchable) VALUES (%s, %s, %s)", (self.id, self.data['name'], make_searchable_string(self.data['name'])))
-		updated_album_ids[self.sid][self.id] = True
 		return success
 
 	def _update_db(self):
@@ -159,12 +156,14 @@ class Album(AssociatedMetadata):
 		return db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE r4_songs.album_id = %s AND sid = %s", (self.id, sid))
 
 	def associate_song_id(self, song_id, is_tag = None):
-		existing_album = Album.load_list_from_song_id(song_id)[0]
-		if existing_album.id == self.id:
+		existing_album = Album.load_list_from_song_id(song_id)
+		if len(existing_album) > 0 and existing_album[0].id == self.id:
 			return
 		db.c.update("UPDATE r4_songs SET album_id = %s WHERE song_id = %s", (self.id, song_id))
-		self.reconcile_sids()
-		existing_album.reconcile_sids()
+		for sid in self.reconcile_sids():
+			updated_album_ids[sid][self.id] = True
+		if len(existing_album) > 0:
+			existing_album[0].reconcile_sids()
 
 	def disassociate_song_id(self, *args):
 		# You can't do this.  You can only associated something new, which
@@ -189,6 +188,7 @@ class Album(AssociatedMetadata):
 				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (album_id, sid))
 		for sid in new_sids:
 			updated_album_ids[sid][album_id] = True
+		return new_sids
 
 	def start_cooldown(self, sid, cool_time = False):
 		if cool_time:

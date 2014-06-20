@@ -283,10 +283,8 @@ def create_tables():
 			album_id				SERIAL		PRIMARY KEY, \
 			album_name				TEXT		, \
 			album_name_searchable	TEXT 		NOT NULL, \
-			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
+			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
 		)")
-	c.create_idx("r4_albums", "album_rating")
-	c.create_idx("r4_albums", "album_request_count")
 
 	c.update(" \
 		CREATE TABLE r4_songs ( \
@@ -323,19 +321,19 @@ def create_tables():
 
 	c.update(" \
 		CREATE TABLE r4_song_sid ( \
-			song_id					INTEGER		NOT NULL, \
-			sid					SMALLINT	NOT NULL, \
-			song_cool				BOOLEAN		DEFAULT FALSE, \
+			song_id						INTEGER		NOT NULL, \
+			sid							SMALLINT	NOT NULL, \
+			song_cool					BOOLEAN		DEFAULT FALSE, \
 			song_cool_end				INTEGER		DEFAULT 0, \
-			song_elec_appearances			INTEGER		DEFAULT 0, \
+			song_elec_appearances		INTEGER		DEFAULT 0, \
 			song_elec_last				INTEGER		DEFAULT 0, \
 			song_elec_blocked			BOOLEAN 	DEFAULT FALSE, \
-			song_elec_blocked_num			SMALLINT	DEFAULT 0, \
-			song_elec_blocked_by			TEXT		, \
+			song_elec_blocked_num		SMALLINT	DEFAULT 0, \
+			song_elec_blocked_by		TEXT		, \
 			song_played_last			INTEGER		, \
-			song_exists				BOOLEAN		DEFAULT TRUE, \
+			song_exists					BOOLEAN		DEFAULT TRUE, \
 			song_request_only			BOOLEAN		DEFAULT FALSE, \
-			song_request_only_end		INTEGER	DEFAULT 0, \
+			song_request_only_end		INTEGER		DEFAULT 0 \
 		)")
 	# c.create_idx("r4_song_sid", "song_id")	# handled by create_delete_fk
 	c.create_idx("r4_song_sid", "sid")
@@ -381,10 +379,11 @@ def create_tables():
 			album_votes_seen			INTEGER		DEFAULT 0, \
 			album_vote_share			REAL 		\
 		)")
+	c.create_idx("r4_album_sid", "album_rating")
+	c.create_idx("r4_album_sid", "album_request_count")
 	c.create_idx("r4_album_sid", "album_exists")
 	c.create_idx("r4_album_sid", "sid")
 	c.create_idx("r4_album_sid", "album_requests_pending")
-	# c.create_idx("r4_album_sid", "album_id")		# handled by create_delete_fk
 	c.create_delete_fk("r4_album_sid", "r4_albums", "album_id")
 
 	c.update(" \

@@ -56,7 +56,10 @@ class Song(object):
 		s.data['rank'] = None
 		s._assign_from_dict(d)
 
-		s.albums = [ Album.load_from_id_sid(d['album_id'], s.sid) ]
+		if sid:
+			s.albums = [ Album.load_from_id_sid(d['album_id'], s.sid) ]
+		else:
+			s.albums = [ Album.load_from_id(d['album_id']) ]
 		s.artists = Artist.load_list_from_song_id(song_id)
 		s.groups = SongGroup.load_list_from_song_id(song_id)
 
@@ -230,7 +233,7 @@ class Song(object):
 			return
 		artist_parseable = []
 		for artist in self.artists:
-			artist_parseable.append({ "id": artist.id, "name": artist.name })
+			artist_parseable.append({ "id": artist.id, "name": artist.data['name'] })
 		artist_parseable = json.dumps(artist_parseable)
 		db.c.update("UPDATE r4_songs SET song_artist_parseable = %s WHERE song_id = %s", (artist_parseable, self.id))
 
