@@ -544,29 +544,29 @@ class Song(object):
 		else:
 			self.data['rating_allowed'] = False
 
-	def update_request_count(self, update_albums = True):
+	def update_request_count(self, sid, update_albums = True):
 		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_history WHERE song_id = %s", (self.id,))
 		db.c.update("UPDATE r4_songs SET song_request_count = %s WHERE song_id = %s", (count, self.id,))
 
 		if update_albums:
 			for album in self.albums:
-				album.update_request_count()
+				album.update_request_count(sid)
 
-	def update_fave_count(self, update_albums = True):
+	def update_fave_count(self, sid, update_albums = True):
 		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings WHERE song_fave = TRUE AND song_id = %s", (self.id,))
 		db.c.update("UPDATE r4_songs SET song_fave_count = %s WHERE song_id = %s", (count, self.id,))
 
 		if update_albums:
 			for album in self.albums:
-				album.update_fave_count()
+				album.update_fave_count(sid)
 
-	def update_vote_count(self, update_albums = True):
+	def update_vote_count(self, sid, update_albums = True):
 		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history AND song_id = %s", (self.id,))
 		db.c.update("UPDATE r4_songs SET song_vote_count = %s WHERE song_id = %s", (count, self.id,))
 
 		if update_albums:
 			for album in self.albums:
-				album.update_vote_count()
+				album.update_vote_count(sid)
 
 	def length(self):
 		return self.data['length']

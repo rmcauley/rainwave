@@ -45,19 +45,25 @@ def full_music_scan():
 
 	_common_init()
 	_raise_scan_errors = True
-	db.c.update("UPDATE r4_songs SET song_scanned = FALSE")
+	db.c.start_transaction()
+	try:
+		db.c.update("UPDATE r4_songs SET song_scanned = FALSE")
 
-	_scan_all_directories()
+		_scan_all_directories()
 
-	# This procedure is slow but steady and easy to use.
-	dead_songs = db.c.fetch_list("SELECT song_id FROM r4_songs WHERE song_scanned = FALSE AND song_verified = TRUE")
-	for song_id in dead_songs:
-		song = playlist.Song.load_from_id(song_id)
-		song.disable()
+		# This procedure is slow but steady and easy to use.
+		dead_songs = db.c.fetch_list("SELECT song_id FROM r4_songs WHERE song_scanned = FALSE AND song_verified = TRUE")
+		for song_id in dead_songs:
+			song = playlist.Song.load_from_id(song_id)
+			song.disable()
 
-	print "Processing album art..."
-	_process_album_art_queue()
-	print "Complete."
+		print "Processing album art..."
+		_process_album_art_queue()
+		print "Complete."
+		db.c.commit()
+	except:
+		db.c.rollback()
+		raise
 
 def _common_init():
 	global _scan_errors

@@ -303,7 +303,7 @@ def _update_schedule_memcache(sid):
 
 def update_memcache(sid):
 	_update_schedule_memcache(sid)
-	cache.prime_rating_cache_for_events([ current[sid] ] + upnext[sid] + history[sid])
+	cache.prime_rating_cache_for_events(sid, [ current[sid] ] + upnext[sid] + history[sid])
 	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict(sid), True)
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)
 	rainwave.playlist_objects.album.clear_updated_albums(sid)

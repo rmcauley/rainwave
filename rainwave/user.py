@@ -354,6 +354,7 @@ class User(object):
 					"FROM r4_request_store "
 						"JOIN r4_songs USING (song_id) "
 						"JOIN r4_albums USING (album_id) "
+						"JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_request_store.sid = r4_album_sid.sid) "
 						"JOIN r4_song_sid ON (r4_song_sid.sid = r4_request_store.sid AND r4_song_sid.song_id = r4_request_store.song_id) "
 						"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
 						"LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = r4_request_store.sid) "
@@ -365,7 +366,7 @@ class User(object):
 			for song in requests:
 				song['albums'] = [ {
 					"name": song.pop('album_name'),
-					"id": song.pop('album_id'),
+					"id": song['album_id'],
 					"rating": song.pop('album_rating'),
 					"rating_user": song.pop('album_rating_user'),
 					"art": playlist.Album.get_art_url(song.pop('album_id'))

@@ -34,7 +34,7 @@ if __name__ == "__main__":
 	
 	print "Adding columns to database..."
 
-	db.c.update("ALTER TABLE r4_album_sid ADD COLUMN album_rating REAL DEFAULT 0")
+	db.c.update("ALTER TABLE r4_album_sid ADD COLUMN album_rating REAL NOT NULL DEFAULT 0")
 	db.c.update("ALTER TABLE r4_album_sid ADD COLUMN album_rating_count INTEGER DEFAULT 0")
 	db.c.update("ALTER TABLE r4_album_sid ADD COLUMN album_fave_count INTEGER DEFAULT 0")
 	db.c.update("ALTER TABLE r4_album_sid ADD COLUMN album_request_count INTEGER DEFAULT 0")

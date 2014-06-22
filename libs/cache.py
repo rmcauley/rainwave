@@ -87,20 +87,20 @@ def set_album_rating(sid, album_id, user_id, rating):
 def get_album_rating(sid, album_id, user_id):
 	return _memcache_ratings.get("rating_album_%s_%s_%s" % (sid, album_id, user_id))
 
-def prime_rating_cache_for_events(events, songs = None):
+def prime_rating_cache_for_events(sid, events, songs = None):
 	for e in events:
 		for song in e.songs:
-			prime_rating_cache_for_song(song)
+			prime_rating_cache_for_song(song, sid)
 	if songs:
 		for song in songs:
-			prime_rating_cache_for_song(song)
+			prime_rating_cache_for_song(song, sid)
 
-def prime_rating_cache_for_song(song):
+def prime_rating_cache_for_song(song, sid):
 	for user_id, rating in song.get_all_ratings().iteritems():
 		set_song_rating(song.id, user_id, rating)
 	for album in song.albums:
 		for user_id, rating in album.get_all_ratings().iteritems():
-			set_album_rating(album.id, user_id, rating)
+			set_album_rating(sid, album.id, user_id, rating)
 
 def refresh_local(key):
 	local[key] = _memcache.get(key)

@@ -50,7 +50,7 @@ class Artist(AssociatedMetadata):
 	def load_all_songs(self, sid, user_id = 1):
 		self.data['songs'] = db.c.fetch_all(
 			"SELECT r4_song_artist.song_id AS id, "
-			 	"r4_songs.song_origin_sid AS origin_sid, "
+			 	"r4_songs.song_origin_sid AS sid, "
 			 	"song_title AS title, "
 			 	"song_rating AS rating, "
 				"song_exists AS requestable, "
@@ -59,7 +59,7 @@ class Artist(AssociatedMetadata):
 				"song_cool_end AS cool_end, "
 				"COALESCE(song_rating_user, 0) AS rating_user, "
 				"COALESCE(song_fave, FALSE) AS fave, "
-				"album_name, "
+				"album_name, r4_albums.album_id, "
 				"album_exists AS album_openable "
 			"FROM r4_song_artist "
 				"JOIN r4_songs USING (song_id) "

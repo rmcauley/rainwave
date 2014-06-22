@@ -371,7 +371,7 @@ def create_tables():
 			album_cool_lowest			INTEGER		DEFAULT 0, \
 			album_updated				INTEGER		DEFAULT 0, \
 			album_elec_last				INTEGER		DEFAULT 0, \
-			album_rating				REAL		DEFAULT 0, \
+			album_rating				REAL		NOT NULL DEFAULT 0, \
 			album_rating_count			INTEGER		DEFAULT 0, \
 			album_request_count			INTEGER		DEFAULT 0, \
 			album_fave_count			INTEGER		DEFAULT 0, \

@@ -15,6 +15,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Rainwave song scanning daemon.")
 	parser.add_argument("--config", default=None)
 	parser.add_argument("--full", action="store_true")
+	parser.add_argument("--reset", action="store_true")
 	parser.add_argument("--art", action="store_true")
 	args = parser.parse_args()
 	libs.config.load(args.config)
@@ -32,6 +33,10 @@ if __name__ == "__main__":
 		libs.chuser.change_user(libs.config.get("scanner_user"), libs.config.get("scanner_group"))
 
 	try:
+		if args.reset:
+			print "Resetting all songs to unscanned state."
+			libs.db.c.update("UPDATE r4_songs SET song_file_mtime = 0")
+
 		if args.art:
 			backend.filemonitor.full_art_update()
 		elif args.full:

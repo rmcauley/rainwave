@@ -116,7 +116,7 @@ def get_next(sid):
 						"VALUES (%s, %s, %s, %s, %s)",
 						(u.id, song.id, time.time() - entry['line_wait_start'], len(line), request_count))
 			db.c.update("UPDATE phpbb_users SET radio_totalrequests = %s WHERE user_id = %s", (request_count, u.id))
-			song.update_request_count()
+			song.update_request_count(sid)
 			# Update the user's request cache
 			u.get_requests(refresh=True)
 			# If we fully update the line, the user may sneak in and get 2 requests in the same election.

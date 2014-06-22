@@ -65,7 +65,7 @@ class Album(AssociatedMetadata):
 
 	@classmethod
 	def load_from_id_sid(cls, album_id, sid):
-		row = db.c.fetch_row("SELECT r4_albums.*, album_cool, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.album_id = %s AND r4_album_sid.sid = %s", (album_id, sid))
+		row = db.c.fetch_row("SELECT r4_albums.*, album_rating, album_rating_count, album_cool, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.album_id = %s AND r4_album_sid.sid = %s", (album_id, sid))
 		if not row:
 			raise MetadataNotFoundError("%s ID %s for sid %s could not be found." % (cls.__name__, album_id, sid))
 		instance = cls()
@@ -75,7 +75,7 @@ class Album(AssociatedMetadata):
 
 	@classmethod
 	def load_from_id_with_songs(cls, album_id, sid, user = None):
-		row = db.c.fetch_row("SELECT * FROM r4_albums WHERE album_id = %s", (album_id,))
+		row = db.c.fetch_row("SELECT * FROM r4_albums JOIN r4_album_sid USING (album_id) WHERE album_id = %s AND sid = %s", (album_id, sid))
 		instance = cls()
 		instance._assign_from_dict(row, sid)
 		instance.sid = sid
@@ -157,13 +157,10 @@ class Album(AssociatedMetadata):
 
 	def associate_song_id(self, song_id, is_tag = None):
 		existing_album = Album.load_list_from_song_id(song_id)
-		if len(existing_album) > 0 and existing_album[0].id == self.id:
-			return
-		db.c.update("UPDATE r4_songs SET album_id = %s WHERE song_id = %s", (self.id, song_id))
-		for sid in self.reconcile_sids():
-			updated_album_ids[sid][self.id] = True
-		if len(existing_album) > 0:
-			existing_album[0].reconcile_sids()
+		if len(existing_album) != 0 or existing_album[0].id != self.id:
+			db.c.update("UPDATE r4_songs SET album_id = %s WHERE song_id = %s", (self.id, song_id))
+			existing_album[0].reconcile_sids(self.id)
+		existing_album[0].reconcile_sids()
 
 	def disassociate_song_id(self, *args):
 		# You can't do this.  You can only associated something new, which
@@ -173,7 +170,7 @@ class Album(AssociatedMetadata):
 	def reconcile_sids(self, album_id = None):
 		if not album_id:
 			album_id = self.id
-		new_sids = db.c.fetch_list("SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND song_exists = TRUE", (album_id,))
+		new_sids = db.c.fetch_list("SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND song_exists = TRUE GROUP BY sid", (album_id,))
 		current_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (album_id,))
 		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (album_id,))
 		for sid in current_sids:
@@ -186,8 +183,7 @@ class Album(AssociatedMetadata):
 				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (album_id, sid))
 			else:
 				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (album_id, sid))
-		for sid in new_sids:
-			updated_album_ids[sid][album_id] = True
+				updated_album_ids[sid][album_id] = True
 		return new_sids
 
 	def start_cooldown(self, sid, cool_time = False):
@@ -313,9 +309,13 @@ class Album(AssociatedMetadata):
 
 		self.data['genres'] = db.c.fetch_all(
 			"SELECT DISTINCT group_id AS id, group_name AS name "
-			"FROM r4_song_sid JOIN r4_songs USING (song_id) r4_song_group USING (song_id) JOIN r4_groups USING (group_id) "
+			"FROM r4_albums "
+				"JOIN r4_songs USING (album_id) "
+				"JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
+				"JOIN r4_song_group ON (r4_songs.song_id = r4_song_group.song_id) "
+				"JOIN r4_groups USING (group_id) "
 			"WHERE album_id = %s",
-			(self.id,))
+			(sid, self.id))
 
 		self.data['rating_histogram'] = {}
 		histo = db.c.fetch_all("SELECT "

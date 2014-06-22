@@ -21,7 +21,15 @@ def prepare_cooldown_algorithm(sid):
 		return
 
 	# Variable names from here on down are from jf's proposal at: http://rainwave.cc/forums/viewtopic.php?f=13&t=1267
-	sum_aasl = db.c.fetch_var("SELECT SUM(aasl) FROM (SELECT AVG(song_length) AS aasl FROM r4_album_sid JOIN r4_songs USING (album_id) JOIN r4_song_sid USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS jfiscrazy", (sid,))
+	sum_aasl = db.c.fetch_var(
+		"SELECT SUM(aasl) FROM ("
+			"SELECT AVG(song_length) AS aasl "
+			"FROM r4_album_sid "
+				"JOIN r4_songs USING (album_id) "
+				"JOIN r4_song_sid USING (song_id) "
+			"WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE "
+			"GROUP BY r4_album_sid.album_id) AS jfiscrazy",
+		(sid,))
 	if not sum_aasl:
 		sum_aasl = 100000
 	log.debug("cooldown", "SID %s: sumAASL: %s" % (sid, sum_aasl))
@@ -36,7 +44,16 @@ def prepare_cooldown_algorithm(sid):
 	log.debug("cooldown", "SID %s: multi: %s" % (sid, multiplier_adjustment))
 	base_album_cool = float(config.get_station(sid, "cooldown_percentage")) * float(sum_aasl) / float(multiplier_adjustment)
 	log.debug("cooldown", "SID %s: base_album_cool: %s" % (sid, base_album_cool))
-	base_rating = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_rating) * AVG(song_length) AS tempvar FROM r4_albums JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) r4_songs USING (album_id) JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
+	base_rating = db.c.fetch_var(
+			"SELECT SUM(tempvar) FROM ("
+				"SELECT r4_album_sid.album_id, AVG(album_rating) * AVG(song_length) AS tempvar "
+				"FROM r4_album_sid "
+					"JOIN r4_songs USING (album_id) "
+					"JOIN r4_song_sid USING (song_id) "
+				"WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE "
+				"GROUP BY r4_album_sid.album_id"
+			") AS hooooboy",
+			(sid,))
 	base_rating = float(base_rating) / float(sum_aasl)
 	if not base_rating:
 		base_rating = 4
