@@ -341,6 +341,7 @@ def create_tables():
 	c.create_idx("r4_song_sid", "song_elec_blocked")
 	c.create_idx("r4_song_sid", "song_exists")
 	c.create_idx("r4_song_sid", "song_request_only")
+	c.create_idx("r4_song_sid", "song_fave")
 	c.create_delete_fk("r4_song_sid", "r4_songs", "song_id")
 
 	c.update(" \
@@ -384,6 +385,7 @@ def create_tables():
 	c.create_idx("r4_album_sid", "album_exists")
 	c.create_idx("r4_album_sid", "sid")
 	c.create_idx("r4_album_sid", "album_requests_pending")
+	c.create_idx("r4_album_sid", "album_fave")
 	c.create_delete_fk("r4_album_sid", "r4_albums", "album_id")
 
 	c.update(" \

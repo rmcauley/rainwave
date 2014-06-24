@@ -74,10 +74,7 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 			if len(sched_next) > 0 and request.user.data['voted_entry'] > 0 and request.user.data['lock_sid'] == request.sid:
 				api_requests.vote.append_success_to_request(request, sched_next[0]['id'], request.user.data['voted_entry'])
 
-	all_stations = {}
-	for station_id in config.station_ids:
-		all_stations[station_id] = cache.get_station(station_id, "all_station_info")
-	request.append("all_stations_info", all_stations)
+	request.append("all_stations_info", cache.get("all_stations_info"))
 
 @test_post
 @handle_api_url("info")
@@ -97,7 +94,7 @@ class InfoAllRequest(APIHandler):
 	allow_get = True
 
 	def post(self):
-		self.append("all_stations_current", cache.get("all_stations_info"))
+		self.append("all_stations_info", cache.get("all_stations_info"))
 
 @handle_api_url("stations")
 class StationsRequest(APIHandler):

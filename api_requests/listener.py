@@ -1,4 +1,5 @@
 from api.web import APIHandler
+from api.exceptions import APIException
 from api import fieldtypes
 from api.server import handle_api_url
 
@@ -17,14 +18,22 @@ class ListenerDetailRequest(APIHandler):
 			"SELECT user_id, username AS name, user_avatar AS avatar, user_avatar_type AS avatar_type, user_colour AS colour, rank_title AS rank, "
 				"radio_totalvotes AS total_votes, radio_totalratings AS total_ratings, radio_totalmindchange AS mind_changes, "
 				"radio_totalrequests AS total_requests, radio_winningvotes AS winning_votes, radio_losingvotes AS losing_votes, "
-				"radio_winningrequests AS winning_requests, radio_losingrequests AS losing_requests"
-			"FROM phpbb_users JOIN phpbb_ranks ON (user_rank = rank_id) WHERE user_id = %s",
+				"radio_winningrequests AS winning_requests, radio_losingrequests AS losing_requests "
+			"FROM phpbb_users LEFT JOIN phpbb_ranks ON (user_rank = rank_id) WHERE user_id = %s",
 			(self.get_argument("id"),))
 
 		user['avatar'] = UserLib.solve_avatar(user['avatar_type'], user['avatar'])
 		user.pop("avatar_type")
 
-		user['top_albums'] = db.c.fetch_all("SELECT album_name, album_rating FROM rw_album_ratings JOIN rw_album_sid USING (album_id) JOIN rw_albums USING (album_id) WHERE user_id = %s AND rw_album_ratings.sid = %s AND album_exists = TRUE ORDER BY album_rating DESC LIMIT 10", (self.get_argument("id"), self.sid))
+		user['top_albums'] = db.c.fetch_all(
+			"SELECT album_name, album_rating_user, album_rating "
+			"FROM r4_album_ratings "
+				"JOIN r4_album_sid USING (album_id) "
+				"JOIN r4_albums USING (album_id) "
+			"WHERE user_id = %s AND r4_album_ratings.sid = %s AND album_exists = TRUE "
+			"ORDER BY album_rating DESC "
+			"LIMIT 20",
+			(self.get_argument("id"), self.sid))
 
 		user['votes_by_station'] = db.c.fetch_all("SELECT song_origin_sid AS sid, COUNT(vote_id) "
 												"FROM r4_vote_history JOIN r4_songs USING (song_id) "

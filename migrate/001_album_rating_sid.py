@@ -115,4 +115,8 @@ if __name__ == "__main__":
 	db.c.update("ALTER TABLE r4_albums DROP COLUMN album_vote_count")
 	db.c.update("ALTER TABLE r4_albums DROP COLUMN album_votes_seen")
 	db.c.update("ALTER TABLE r4_albums DROP COLUMN album_vote_share")
+
+	db.c.create_idx("r4_album_ratings", "album_fave")
+	db.c.create_idx("r4_song_ratings", "song_fave")
+
 	db.c.commit()

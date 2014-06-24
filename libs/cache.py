@@ -123,6 +123,11 @@ def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "user_rating_acl")
 	refresh_local_station(sid, "user_rating_acl_song_index")
 	refresh_local("request_expire_times")
+	
+	all_stations = {}
+	for station_id in config.station_ids:
+		all_stations[station_id] = get_station(station_id, "all_station_info")
+	set("all_stations_info", all_stations)
 
 def reset_station_caches():
 	set("request_expire_times", None, True)

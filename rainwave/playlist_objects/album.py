@@ -157,10 +157,10 @@ class Album(AssociatedMetadata):
 
 	def associate_song_id(self, song_id, is_tag = None):
 		existing_album = Album.load_list_from_song_id(song_id)
-		if len(existing_album) != 0 or existing_album[0].id != self.id:
+		if len(existing_album) != 0 and existing_album[0].id != self.id:
 			db.c.update("UPDATE r4_songs SET album_id = %s WHERE song_id = %s", (self.id, song_id))
-			existing_album[0].reconcile_sids(self.id)
-		existing_album[0].reconcile_sids()
+			existing_album[0].reconcile_sids()
+		self.reconcile_sids()
 
 	def disassociate_song_id(self, *args):
 		# You can't do this.  You can only associated something new, which
