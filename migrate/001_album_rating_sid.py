@@ -30,7 +30,7 @@ if __name__ == "__main__":
 	for row in db.c.fetch_all("SELECT DISTINCT ON(song_id) song_id, album_id FROM r4_song_sid"):
 		song_to_album[row['song_id']] = row['album_id']
 
-	album_faves = db.c.fetch_all("SELECT user_id, album_id, album_fave FROM r4_album_ratings WHERE album_fave = TRUE")
+	album_faves = db.c.fetch_all("SELECT user_id, album_id, album_fave FROM r4_album_ratings WHERE album_fave = TRUE ORDER BY album_id")
 	
 	print "Adding columns to database..."
 
@@ -74,28 +74,37 @@ if __name__ == "__main__":
 
 	max_album_id = db.c.fetch_var("SELECT MAX(album_id) FROM r4_albums")
 
+	print
+	for row in album_faves:
+		print "\rRe-applying favourites for %s/%s" % (row['album_id'], max_album_id),
+		query = "INSERT INTO r4_album_ratings (album_id, user_id, album_fave, sid) VALUES "
+		values = [ ]
+		for sid in config.station_ids:
+			query += "(%s, %s, %s, %s),"
+			values.extend([ row['album_id'], row['user_id'], True, sid ])
+		# drop that trailing comma
+		query = query[:-1]
+		db.c.update(query, values)
+
+	print
 	for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums ORDER BY album_id"):
 		a = Album.load_from_id(album_id)
 		print "\rUpdating %s/%s" % (a.id, max_album_id),
 		a.reconcile_sids()
 		for sid in config.station_ids:
-			a.reset_user_completed_flags(sid)
 			a.update_request_count(sid)
 			a.update_vote_count(sid)
 		a.update_all_user_ratings()
 		a.update_rating()
-
-	print
-	print "Re-applying favourites..."
-	for row in album_faves:
-		for sid in config.station_ids:
-			rating.set_album_fave(sid, row['album_id'], row['user_id'], True)
 	
-	for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums"):
+	print
+	for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums ORDER BY album_id"):
+		print "\rUpdating counts for %s/%s" % (album_id, max_album_id),
 		a = Album.load_from_id(album_id)
 		for sid in config.station_ids:
 			a.update_fave_count(sid)
-
+	
+	print
 	print "Removing old columns..."
 	db.c.update("ALTER TABLE r4_song_sid DROP COLUMN album_id")
 	db.c.update("ALTER TABLE r4_albums DROP COLUMN album_rating")
