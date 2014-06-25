@@ -118,20 +118,20 @@ def update_album_ratings(target_sid, song_id, user_id):
 				"JOIN r4_song_ratings USING (song_id) "
 			"WHERE album_id = %s AND sid = %s AND song_exists = TRUE AND user_id = %s",
 			(album_id, sid, user_id))
-		num_songs = db.c.fetch_var("SELECT album_song_count FROM r4_album_sid WHERE album_id = %s", (album_id,))
+		num_songs = db.c.fetch_var("SELECT album_song_count FROM r4_album_sid WHERE album_id = %s AND sid = %s", (album_id, sid))
 		rating_complete = False
 		if user_data['rating_user_count'] >= num_songs:
 			rating_complete = True
 		album_rating = float(user_data['rating_user'])
 		album_fave = None
-		existing_rating = db.c.fetch_row("SELECT album_rating_user, album_fave FROM r4_album_ratings WHERE album_id = %s AND user_id = %s", (album_id, user_id))
+		existing_rating = db.c.fetch_row("SELECT album_rating_user, album_fave FROM r4_album_ratings WHERE album_id = %s AND user_id = %s AND sid = %s", (album_id, user_id, sid))
 		if existing_rating:
 			album_fave = existing_rating['album_fave']
-			db.c.update("UPDATE r4_album_ratings SET album_rating_user = %s, album_fave = %s, album_rating_complete = %s WHERE user_id = %s AND album_id = %s",
-						(album_rating, album_fave, rating_complete, user_id, album_id))
+			db.c.update("UPDATE r4_album_ratings SET album_rating_user = %s, album_fave = %s, album_rating_complete = %s WHERE user_id = %s AND album_id = %s AND sid = %s",
+						(album_rating, album_fave, rating_complete, user_id, album_id, sid))
 		else:
-			db.c.update("INSERT INTO r4_album_ratings (album_rating_user, album_fave, album_rating_complete, user_id, album_id) VALUES (%s, %s, %s, %s, %s)",
-						(album_rating, album_fave, rating_complete, user_id, album_id))
+			db.c.update("INSERT INTO r4_album_ratings (album_rating_user, album_fave, album_rating_complete, user_id, album_id, sid) VALUES (%s, %s, %s, %s, %s, %s)",
+						(album_rating, album_fave, rating_complete, user_id, album_id, sid))
 		cache.set_album_rating(sid, album_id, user_id, { "rating_user": album_rating, "fave": album_fave, "rating_complete": rating_complete })
 		if target_sid == sid:
 			toret = { "sid": sid, "id": album_id, "rating_user": album_rating, "rating_complete": rating_complete }
