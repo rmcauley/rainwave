@@ -183,18 +183,21 @@ def get_unrated_songs_for_user(user_id, limit = "LIMIT ALL"):
 		"LEFT OUTER JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
 		"WHERE song_verified = TRUE AND r4_song_ratings.song_id IS NULL ORDER BY album_name, song_title " + limit, (user_id,))
 
+def _get_requested_albums_sql(user_id, sid):
+	return ("WITH requested_albums AS ("
+		"SELECT r4_songs.album_id "
+		"FROM r4_request_store "
+			"JOIN r4_song_sid ON "
+				"(r4_request_store.song_id = r4_song_sid.song_id "
+				"AND r4_request_store.sid = r4_song_sid.sid) "
+			"JOIN r4_songs ON (r4_songs.song_id = r4_request_store.song_id)) ")
+
 def get_unrated_songs_for_requesting(user_id, sid, limit):
 	# This insane bit of SQL fetches the user's largest unrated albums that aren't on cooldown
 	unrated = []
 	for row in db.c.fetch_all(
-			"WITH requested_albums AS ("
-				"SELECT album_id "
-				"FROM r4_request_store "
-					"JOIN r4_song_sid ON "
-						"(r4_request_store.song_id = r4_song_sid.song_id "
-						"AND r4_request_store.sid = r4_song_sid.sid) "
-					"JOIN r4_songs ON (r4_songs.song_id = r4_request_store.song_id)) "
-			"SELECT MIN(r4_song_sid.song_id) AS song_id, COUNT(r4_song_sid.song_id) AS unrated_count, r4_songs.album_id "
+			_get_requested_albums_sql(user_id, sid) +
+			("SELECT MIN(r4_song_sid.song_id) AS song_id, COUNT(r4_song_sid.song_id) AS unrated_count, r4_songs.album_id "
 				"FROM r4_song_sid JOIN r4_songs USING (song_id) "
 					"LEFT OUTER JOIN r4_song_ratings ON "
 						"(r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
@@ -208,20 +211,14 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 					"AND requested_albums.album_id IS NULL "
 			"GROUP BY r4_songs.album_id "
 			"ORDER BY unrated_count "
-			"LIMIT %s", (user_id, sid, limit)):
+			"LIMIT %s"), (user_id, sid, limit)):
 		unrated.append(row['song_id'])
 
 	# Similar to the above, but this time we take whatever's on shortest cooldown (ignoring album unrated count)
 	if len(unrated) < limit:
 		for album_row in db.c.fetch_all(
-				"WITH requested_albums AS ("
-					"SELECT album_id "
-					"FROM r4_request_store "
-						"JOIN r4_song_sid ON "
-							"(r4_request_store.song_id = r4_song_sid.song_id "
-							"AND r4_request_store.sid = r4_song_sid.sid) "
-						"JOIN r4_songs USING (song_id)) "
-				"SELECT r4_songs.album_id, MIN(song_cool_end) "
+				_get_requested_albums_sql(user_id, sid) +
+				("SELECT r4_songs.album_id, MIN(song_cool_end) "
 					"FROM r4_song_sid "
 						"JOIN r4_songs USING (song_id) "
 						"JOIN r4_album_sid ON (r4_album_sid.album_id = r4_songs.album_id AND r4_album_sid.sid = r4_song_sid.sid) "
@@ -235,9 +232,9 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 						"AND song_elec_blocked = FALSE "
 						"AND r4_song_ratings.song_id IS NULL "
 						"AND requested_albums.album_id IS NULL "
-				"GROUP BY r4_song_sid.album_id "
+				"GROUP BY r4_songs.album_id "
 				"ORDER BY MIN(song_cool_end) "
-				"LIMIT %s", (user_id, sid, (limit - len(unrated)))):
+				"LIMIT %s"), (user_id, sid, (limit - len(unrated)))):
 			song_id = db.c.fetch_var(
 				"SELECT r4_song_sid.song_id "
 					"FROM r4_songs JOIN r4_song_sid USING (song_id) LEFT OUTER JOIN r4_song_ratings ON "
