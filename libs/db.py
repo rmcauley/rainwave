@@ -341,7 +341,6 @@ def create_tables():
 	c.create_idx("r4_song_sid", "song_elec_blocked")
 	c.create_idx("r4_song_sid", "song_exists")
 	c.create_idx("r4_song_sid", "song_request_only")
-	c.create_idx("r4_song_sid", "song_fave")
 	c.create_delete_fk("r4_song_sid", "r4_songs", "song_id")
 
 	c.update(" \
@@ -355,6 +354,7 @@ def create_tables():
 			song_fave				BOOLEAN \
 		)")
 	c.create_idx("r4_song_ratings", "user_id", "song_id")
+	c.create_idx("r4_song_ratings", "song_fave")
 	c.create_delete_fk("r4_song_ratings", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_ratings", "phpbb_users", "user_id")
 
@@ -385,7 +385,6 @@ def create_tables():
 	c.create_idx("r4_album_sid", "album_exists")
 	c.create_idx("r4_album_sid", "sid")
 	c.create_idx("r4_album_sid", "album_requests_pending")
-	c.create_idx("r4_album_sid", "album_fave")
 	c.create_delete_fk("r4_album_sid", "r4_albums", "album_id")
 
 	c.update(" \
@@ -399,6 +398,7 @@ def create_tables():
 		)")
 	c.create_idx("r4_album_ratings", "user_id", "album_id")
 	c.create_idx("r4_album_ratings", "sid")
+	c.create_idx("r4_album_ratings", "album_fave")
 	c.create_delete_fk("r4_album_ratings", "r4_albums", "album_id", create_idx=False)
 	c.create_delete_fk("r4_album_ratings", "phpbb_users", "user_id", create_idx=False)
 
