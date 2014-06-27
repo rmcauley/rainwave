@@ -58,3 +58,9 @@ class SongGroup(AssociatedMetadata):
 		# 		song = Song()
 		# 		song.id = row['song_id']
 		# 		song.set_election_block(sid, 'group', num_elections)
+
+	def set_elec_block(self, num_elections):
+		db.c.update("UPDATE r4_groups SET group_elec_block = %s WHERE group_id = %s", (num_elections, self.id))
+
+	def set_cooldown(self, cooldown):
+		db.c.update("UPDATE r4_groups SET group_cool_time = %s WHERE group_id = %s", (cooldown, self.id))

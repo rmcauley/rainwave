@@ -47,11 +47,11 @@ class AssociateGroupToolFinish(api.web.HTMLRequest):
 
 	def get(self, group_id):
 		group = SongGroup.load_from_id(group_id)
-		songs = cache.get_user(self.user, "admin_associate_groups_songs")
+		songs = cache.get_user(self.user, "admin_associate_groups_songs") or []
 		cache.set_user(self.user, "admin_associate_groups_songs", [])
 		for song_id in songs:
 			group.associate_song_id(song_id)
-		albums = cache.get_user(self.user, "admin_associate_groups_albums")
+		albums = cache.get_user(self.user, "admin_associate_groups_albums") or []
 		cache.set_user(self.user, "admin_associate_groups_albums", [])
 		for album_set in albums:
 			album = Album.load_from_id_with_songs(album_set[0], album_set[1])
@@ -59,6 +59,18 @@ class AssociateGroupToolFinish(api.web.HTMLRequest):
 				group.associate_song_id(song['id'])
 		self.write(self.render_string("bare_header.html", title="Added Groups"))
 		self.write("<p>Now associated.</p><p><a href='/admin/tools/associate_groups'>Start over.</a></p>")
+		self.write(self.render_string("basic_footer.html"))
+
+@handle_url("/admin/tools/associate_groups_cache_reset")
+class AssociateGroupToolFinish(api.web.HTMLRequest):
+	admin_required = True
+	sid_required = False
+
+	def get(self):
+		cache.set_user(self.user, "admin_associate_groups_songs", [])
+		cache.set_user(self.user, "admin_associate_groups_albums", [])
+		self.write(self.render_string("bare_header.html", title="Added Groups"))
+		self.write("<p>Reset.</p><p><a href='/admin/tools/associate_groups'>Start over.</a></p>")
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/tools/associate_groups")
@@ -84,6 +96,7 @@ class AssociateGroupTool(api.web.HTMLRequest):
 			self.write("<option value='%s'>%s</option>" % (row['group_id'], row['group_name']))
 		self.write("</select><br />")
 		self.write("<button onclick=\"window.location.href='/admin/tools/associate_groups_finish/' + document.getElementById('associate_group_id').value\">Associate</button>")
+		self.write("<br /><br /><a href='/admin/tools/associate_groups_cache_reset'>Reset the list above.</a>")
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/album_list/associate_groups")
@@ -126,10 +139,12 @@ class GroupEditList(api.web.HTMLRequest):
 				(self.sid,))
 		for row in groups:
 			self.write("<tr><td>%s</td>" % row['id'])
-			self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?id=%s';\" style='cursor: pointer;'>%s</td><td>" % (row['id'], row['name']))
+			# self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?id=%s';\" style='cursor: pointer;'>%s</td><td>" % (row['id'], row['name']))
+			self.write("<td>%s</td>" % row['name'])
 			self.write("<td>%s songs</td>" % row['num_songs'])
-			self.write("<td>%s</td>" % row['elec_block'])
-			self.write("<td>%s</td>" % row['cool_time'])
+			self.write("<td><input type='text' id='elec_block_%s' value='%s' /><button onclick=\"window.top.call_api('admin/edit_group_elec_block', { 'group_id': %s, 'elec_block': document.getElementById('elec_block_%s').value })\">BLK</button></td>" % (row['id'], row['elec_block'] or '', row['id'], row['id'] ))
+			self.write("<td><input type='text' id='cooldown_%s' value='%s' /><button onclick=\"window.top.call_api('admin/edit_group_cooldown', { 'group_id': %s, 'cooldown': document.getElementById('cooldown_%s').value })\">CD</button></td>" % (row['id'], row['cool_time'] or '', row['id'], row['id'] ))
+			self.write("<td><a onclick=\"window.top.call_api('admin/\"></td>")
 			self.write("</tr>")
 		self.write(self.render_string("basic_footer.html"))
 
@@ -150,8 +165,8 @@ class DisassociateGroupAlbumList(AlbumList):
 class DisassociateGroupSongList(SongList):
 	def render_row_special(self, row):
 		self.write("<td>")
-		for group in db.c.fetch_all("SELECT r4_groups.group_id, group_name, group_is_tag FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s ORDER BY group_is_tag, group_name", (row['id'],)):
-			if group['group_is_tag']:
+		for group in db.c.fetch_all("SELECT r4_groups.group_id, group_name, group_is_tag FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s ORDER BY group_is_tag DESC, group_name", (row['id'],)):
+			if not group['group_is_tag']:
 				self.write("<a class='group_name group_delete' onclick=\"window.top.call_api('admin/remove_group_from_song', { 'song_id': %s, 'group_id': %s });\">%s (X)</a> " % (row['id'], group['group_id'], group['group_name']))
 			else:
 				self.write("<span class='group_name'>%s</span>" % (group['group_name'],))
