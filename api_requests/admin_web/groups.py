@@ -139,13 +139,30 @@ class GroupEditList(api.web.HTMLRequest):
 				(self.sid,))
 		for row in groups:
 			self.write("<tr><td>%s</td>" % row['id'])
-			# self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?id=%s';\" style='cursor: pointer;'>%s</td><td>" % (row['id'], row['name']))
-			self.write("<td>%s</td>" % row['name'])
+			self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?id=%s';\" style='cursor: pointer;'>%s</td><td>" % (row['id'], row['name']))
 			self.write("<td>%s songs</td>" % row['num_songs'])
 			self.write("<td><input type='text' id='elec_block_%s' value='%s' /><button onclick=\"window.top.call_api('admin/edit_group_elec_block', { 'group_id': %s, 'elec_block': document.getElementById('elec_block_%s').value })\">BLK</button></td>" % (row['id'], row['elec_block'] or '', row['id'], row['id'] ))
 			self.write("<td><input type='text' id='cooldown_%s' value='%s' /><button onclick=\"window.top.call_api('admin/edit_group_cooldown', { 'group_id': %s, 'cooldown': document.getElementById('cooldown_%s').value })\">CD</button></td>" % (row['id'], row['cool_time'] or '', row['id'], row['id'] ))
 			self.write("<td><a onclick=\"window.top.call_api('admin/\"></td>")
 			self.write("</tr>")
+		self.write(self.render_string("basic_footer.html"))
+
+@handle_url("/admin/song_list/group_edit")
+class DisassociateGroupSongList(api.web.HTMLRequest):
+	admin_required = True
+	fields = { "id": (api.web.fieldtypes.group_id, True) }
+
+	def get(self):
+		group = SongGroup.load_from_id(self.get_argument("id"))
+		self.write(self.render_string("bare_header.html", title="Song List"))
+		self.write("<h2>%s Songs</h2>" % (group.data['name']))
+		self.write("<table>")
+		for row in db.c.fetch_all("SELECT r4_songs.song_id AS id, song_title AS title, album_name, group_is_tag FROM r4_song_group JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) WHERE group_id = %s ORDER BY group_is_tag, album_name, title", (group.id,)):
+			self.write("<tr><td>%s</th><td>%s</td><td>" % (row['id'], row['album_name']))
+			self.write("</td><td>%s</td><td>" % row['title'])
+			if not row['group_is_tag']:
+				self.write("<a class='group_name group_delete' onclick=\"window.top.call_api('admin/remove_group_from_song', { 'song_id': %s, 'group_id': %s });\">%s (X)</a> " % (row['id'], group.id, group.data['name']))
+			self.write("</td></tr>")
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/tools/disassociate_groups")
