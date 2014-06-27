@@ -108,8 +108,8 @@ def set_album_fave(sid, album_id, user_id, fave):
 
 def update_album_ratings(target_sid, song_id, user_id):
 	toret = None
+	album_id = db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,))
 	for sid in db.c.fetch_list("SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_id = %s", (song_id,)):
-		album_id = db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,))
 		user_data = db.c.fetch_row(
 			"SELECT ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS rating_user, "
 				"COUNT(song_rating_user) AS rating_user_count "
