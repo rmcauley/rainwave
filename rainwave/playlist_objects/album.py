@@ -156,10 +156,11 @@ class Album(AssociatedMetadata):
 		return db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE r4_songs.album_id = %s AND sid = %s", (self.id, sid))
 
 	def associate_song_id(self, song_id, is_tag = None):
-		existing_album = Album.load_list_from_song_id(song_id)
-		if len(existing_album) != 0 and existing_album[0].id != self.id:
+		existing_album = db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,))
+		if not existing_album or existing_album != self.id:
 			db.c.update("UPDATE r4_songs SET album_id = %s WHERE song_id = %s", (self.id, song_id))
-			existing_album[0].reconcile_sids()
+		if existing_album and existing_album != self.id:
+			self.reconcile_sids(existing_album)
 		self.reconcile_sids()
 
 	def disassociate_song_id(self, *args):
