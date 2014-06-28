@@ -21,6 +21,7 @@ var Scrollbar = function() {
 		self.margin_top = margin_top;
 		self.use_fixed = false;
 		self.post_resize_callback; 
+		self.max_scroll_top = 1;
 		var handle = element.insertBefore($el("div", { "class": "scrollbar"}), element.firstChild);
 		var scroll_height;
 		var offset_height;
@@ -68,7 +69,9 @@ var Scrollbar = function() {
 				scroll_height += self.margin_top;
 			}
 			offset_height = element.offsetHeight;
+			self.offset_height = offset_height;
 			max_scroll_top = Math.max(scroll_height - offset_height, 0);
+			self.max_scroll_top = max_scroll_top;
 
 			if (self.scroll_top > max_scroll_top) {
 				self.scroll_top = max_scroll_top;

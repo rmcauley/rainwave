@@ -93,6 +93,7 @@ var AlbumList = function(offset_width, parent_el) {
 
 	// favourites happen in here!
 	self.open_element_check = function(e, id) {
+		if ("enter_key" in e) return true;
 		var x = e.offsetX || e.layerX || e.x || 0;
 		if (x < 16) {
 			API.async_get("fave_album", { "fave": !self.data[id].fave, "album_id": id });

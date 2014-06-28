@@ -17,9 +17,6 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	self.auto_trim = false;
 	self.after_update = null;
 	self.el = $el("div", { "class": "searchlist" });
-	self.scrollbar = Scrollbar.new(self.el);
-	var scrollbar = self.scrollbar;
-	scrollbar.use_fixed = true;
 	self.search_box_input = $el("div", { "class": "searchlist_input", "textContent": $l("filter") });
 	self.search_box_input.addEventListener("keypress", function(e) { e.preventDefault(); });
 	// see bottom of this object for event binding
@@ -42,6 +39,15 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	var waiting_for_render = false;
 	var scroll_index = false;
 
+	// CUSTOM SCROLLBAR **********************************************
+
+	self.scrollbar = Scrollbar.new(self.el);
+	var scrollbar = self.scrollbar;
+	scrollbar.use_fixed = true;
+	scrollbar.set_scrollTop = function(scroll_top) {
+		self.scroll_to_index(Math.floor(scroll_top / scrollbar.max_scroll_top * (visible.length - num_items_to_display + 1)));
+	};
+
 	// LIST MANAGEMENT ***********************************************
 
 	self.update = function(json) {
@@ -58,7 +64,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		// now calculate 1 item's height. we'll use this to sidestep calculating the entire
 		// height of all elements on update_scroll_height.
 		if (!item_height) {
-			item_height = $measure_el(json[0]._el).height;
+			item_height = $measure_el(json[0]._el).height + 1;
 		}
 		if (self.after_update) self.after_update(json, data, sorted);
 		self.update_view();
@@ -204,8 +210,8 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 
 	self.update_scroll_height = function() {
 		var full_height = item_height * visible.length;
-		num_items_to_display = Math.ceil(self.offset_height / item_height);
-		scrollbar.update_scroll_height(full_height, list_name);
+		scrollbar.update_scroll_height(full_height + item_height, list_name);
+		num_items_to_display = Math.ceil(scrollbar.offset_height / item_height);
 	};
 
 	self.sort_function = function(a, b) {
@@ -315,7 +321,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 
 	self.key_nav_enter = function() {
 		if (current_key_nav_element) {
-			open_element({ "target": current_key_nav_element });
+			self.open_element({ "target": current_key_nav_element, "enter_key": true });
 			return true;
 		}
 		return false;
@@ -449,19 +455,25 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 
 	self.scroll_to = function(data_item) {
 		if (data_item) {
-			self.scroll_to_index(visible.indexOf(data_item.id));
+			var new_index = visible.indexOf(data_item.id);
+			if ((new_index > scroll_index) && (new_index < (scroll_index + num_items_to_display) - 2)) {
+				self.set_scroll_offset(new_index - scroll_index);
+			}
+			new_index -= scroll_offset;
+			self.scroll_to_index(new_index);
+			scrollbar.scroll_top = new_index * item_height;
+			scrollbar.update_handle_position();
 		}
-	};
-
-	scrollbar.set_scrollTop = function(scroll_top) {
-		self.scroll_to_index(Math.floor(scroll_top / item_height));
 	};
 
 	//var dbgd = ErrorHandler.make_debug_div();
 	self.scroll_to_index = function(new_index) {
-		if (new_index >= (visible.length - num_items_to_display)) {
-			new_index = visible.length - num_items_to_display;
-		}
+		if (isNaN(new_index)) return;
+		// max boundary check
+		// if (new_index > (visible.length - num_items_to_display)) {
+		// 	new_index = visible.length - num_items_to_display;
+		// }
+		// min boundary check
 		if (new_index < 0) {
 			new_index = 0;
 		}
@@ -496,15 +508,12 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 				self.el.appendChild(data[visible[i]]._el);
 			}
 			display_count = self.el.childNodes.length - 1;
-			while (display_count > num_items_to_display) {
+			while (display_count > Math.min(visible.length - new_index, num_items_to_display)) {
 				self.el.removeChild(self.el.firstChild.nextSibling);
 				display_count--;
 			}
 		}
 		scroll_index = new_index;
-
-		scrollbar.scroll_top = new_index * item_height;
-		scrollbar.update_handle_position();
 	};
 
 	// NAV *****************************
