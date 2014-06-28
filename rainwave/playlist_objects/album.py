@@ -15,6 +15,7 @@ from rainwave.playlist_objects import cooldown
 
 # REFACTORING TODO:
 # what about when a song gets added/removed from the playlist and we need to change sizes and check rating completeness
+# update album_song_count
 
 # fix API help page so I don't have to explain what it is when someone visits it
 

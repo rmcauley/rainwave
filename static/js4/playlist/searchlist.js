@@ -7,6 +7,8 @@
 //	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses 'id')
 
+// scrolling using the keys while the current scroll position is off screen causes problems
+
 var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	"use strict";
 	var self = {};

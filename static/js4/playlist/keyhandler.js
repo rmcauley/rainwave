@@ -105,6 +105,7 @@
 
 	self.route_key = function(key_code, chr) {
 		if (!PlaylistLists.active_list) return false;
+		if (!PlaylistLists.active_list.loaded) return false;
 
 		if (key_code == 40) {			// down arrow
 			return PlaylistLists.active_list.key_nav_down();
