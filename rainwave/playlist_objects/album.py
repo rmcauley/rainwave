@@ -14,9 +14,6 @@ from rainwave.playlist_objects.metadata import make_searchable_string
 from rainwave.playlist_objects import cooldown
 
 # REFACTORING TODO:
-# what about when a song gets added/removed from the playlist and we need to change sizes and check rating completeness
-# update album_song_count
-
 # fix API help page so I don't have to explain what it is when someone visits it
 
 updated_album_ids = {}
@@ -138,6 +135,7 @@ class Album(AssociatedMetadata):
 		self._dict_check_assign(d, "album_played_last", 0)
 		self._dict_check_assign(d, "album_fave_count", 0)
 		self._dict_check_assign(d, "album_vote_count", 0)
+		self._dict_check_assign(d, "album_song_count", 0)
 		self._dict_check_assign(d, "album_request_count", 0)
 		self._dict_check_assign(d, "album_cool", False)
 		self._dict_check_assign(d, "album_name_searchable", self.data['name'])
@@ -186,6 +184,9 @@ class Album(AssociatedMetadata):
 			else:
 				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (album_id, sid))
 				updated_album_ids[sid][album_id] = True
+			num_songs = db.c.fetch_var("SELECT COUNT(*) FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND sid = %s", (album_id, sid))
+			db.c.update("UPDATE r4_album_sid SET album_song_count = %s WHERE album_id = %s AND sid = %s", (num_songs, album_id, sid))
+		self.reset_user_completed_flags()
 		return new_sids
 
 	def start_cooldown(self, sid, cool_time = False):
@@ -278,7 +279,7 @@ class Album(AssociatedMetadata):
 						"FROM ("
 							"SELECT song_id, sid, r4_songs.album_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_verified = TRUE "
 						") AS r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) "
-						"GROUP BY album_id, sid, user_id "
+						"GROUP BY album_id, album_song_count, sid, user_id "
 					") "
 				"INSERT INTO r4_album_ratings (sid, album_id, album_fave, user_id, album_rating_user, album_rating_complete) "
 				"SELECT sid, album_id, BOOL_OR(album_fave) AS album_fave, user_id, NULLIF(MAX(album_rating_user), 0) AS album_rating_user, CASE WHEN MAX(song_rating_user_count) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete "
@@ -287,8 +288,20 @@ class Album(AssociatedMetadata):
 					"HAVING BOOL_OR(album_fave) = TRUE OR NULLIF(MAX(album_rating_user), 0) IS NOT NULL ",
 				(self.id, sid, self.id, sid, self.id, sid, num_songs))
 
-	def reset_user_completed_flags(self, sid):
-		db.c.update("UPDATE r4_album_ratings SET album_rating_complete = FALSE WHERE album_id = %s AND sid = %s", (self.id, sid))
+	def reset_user_completed_flags(self):
+		if db.c.allows_join_on_update:
+			db.c.update(
+				"WITH status AS ( "
+					"SELECT CASE WHEN COUNT(song_rating) >= album_song_count THEN TRUE ELSE FALSE END AS rating_complete, r4_songs.album_id, r4_song_sid.sid, user_id "
+					"FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_song_ratings USING (song_id) JOIN r4_album_sid ON (r4_songs.album_id = r4_album_sid.album_id AND r4_song_sid.sid = r4_album_sid.sid) "
+					"WHERE r4_songs.album_id = %s "
+					"GROUP BY r4_songs.album_id, album_song_count, r4_song_sid.sid, user_id  "
+				") "
+				"UPDATE r4_album_ratings "
+					"SET album_rating_complete = status.rating_complete "
+				"FROM status "
+				"WHERE r4_album_ratings.album_id = status.album_id AND r4_album_ratings.sid = status.sid AND r4_album_ratings.user_id = status.user_id "
+				, (self.id,))
 
 	def _start_election_block_db(self, sid, num_elections):
 		if db.c.allows_join_on_update:

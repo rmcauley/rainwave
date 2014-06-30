@@ -108,8 +108,10 @@ def set_album_fave(sid, album_id, user_id, fave):
 
 def update_album_ratings(target_sid, song_id, user_id):
 	toret = None
-	album_id = db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,))
-	for sid in db.c.fetch_list("SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_id = %s", (song_id,)):
+	for row in db.c.fetch_list("SELECT r4_songs.album_id, sid, album_song_count FROM r4_songs JOIN r4_album_sid USING (album_id) WHERE r4_songs.song_id = %s AND album_exists = TRUE", (song_id,)):
+		album_id = row['album_id']
+		sid = row['sid']
+		num_songs = row['album_song_count']
 		user_data = db.c.fetch_row(
 			"SELECT ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS rating_user, "
 				"COUNT(song_rating_user) AS rating_user_count "
@@ -118,7 +120,6 @@ def update_album_ratings(target_sid, song_id, user_id):
 				"JOIN r4_song_ratings USING (song_id) "
 			"WHERE album_id = %s AND sid = %s AND song_exists = TRUE AND user_id = %s",
 			(album_id, sid, user_id))
-		num_songs = db.c.fetch_var("SELECT album_song_count FROM r4_album_sid WHERE album_id = %s AND sid = %s", (album_id, sid))
 		rating_complete = False
 		if user_data['rating_user_count'] >= num_songs:
 			rating_complete = True
