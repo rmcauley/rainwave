@@ -108,7 +108,7 @@ def set_album_fave(sid, album_id, user_id, fave):
 
 def update_album_ratings(target_sid, song_id, user_id):
 	toret = None
-	for row in db.c.fetch_list("SELECT r4_songs.album_id, sid, album_song_count FROM r4_songs JOIN r4_album_sid USING (album_id) WHERE r4_songs.song_id = %s AND album_exists = TRUE", (song_id,)):
+	for row in db.c.fetch_all("SELECT r4_songs.album_id, sid, album_song_count FROM r4_songs JOIN r4_album_sid USING (album_id) WHERE r4_songs.song_id = %s AND album_exists = TRUE", (song_id,)):
 		album_id = row['album_id']
 		sid = row['sid']
 		num_songs = row['album_song_count']
