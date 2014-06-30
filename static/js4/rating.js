@@ -60,12 +60,19 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 	};
 
 	var get_rating_from_mouse = function(evt) {
-		if (!offset_left && !self.absolute_x) offset_left = evt.target.offsetLeft;
-		if (!offset_top && !self.absolute_y) offset_top = evt.target.offsetTop;
-		var x = evt.offsetX || evt.layerX || evt.x;
-		var y = evt.offsetY || evt.layerY || evt.y;
-		if (!self.absolute_x) x -= offset_left;
-		if (!self.absolute_y) y -= offset_top;
+		var x, y;
+		if (evt.offsetX && evt.offsetY) {
+			x = evt.offsetX;
+			y = evt.offsetY;
+		}
+		else {
+			if (!offset_left && !self.absolute_x) offset_left = evt.target.offsetLeft;
+			if (!offset_top && !self.absolute_y) offset_top = evt.target.offsetTop;
+			x = evt.layerX || evt.x;
+			y = evt.layerY || evt.y;
+			if (!self.absolute_x) x -= offset_left;
+			if (!self.absolute_y) y -= offset_top;
+		}
 
 		//rating_dbg.innerHTML = "layerX: " + (evt.layerX || evt.offsetX) + " / layerY: " + (evt.layerY || evt.offsetY) + "<br>offset_left: " + offset_left + " / offset_top:" + offset_top + "<br>x: " + x + " / y: " + y + " -> ";
 		if (x <= 18) return 0;		// fave switching

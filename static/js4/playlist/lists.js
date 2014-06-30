@@ -14,7 +14,7 @@ var PlaylistLists = function() {
 		Prefs.define("searchlist_show_cooldown");
 
 		tabs_el = $id("lists_tabs");
-		search_box = $id("lists_searchbox").appendChild($el("div", { "class": "searchlist_searchbox" }));
+		search_box = $id("searchlist_input").appendChild($el("div", { "class": "searchlist_searchbox" }));
 		search_cancel = search_box.appendChild($el("img", { "src": "/static/images4/cancel_ldpi.png", "class": "searchlist_cancel", "alt": "X", "title": $l("clearfilter") }))
 		search_cancel.addEventListener("click", function() { self.active_list.clear_search(); });
 		

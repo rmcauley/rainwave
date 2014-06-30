@@ -40,6 +40,8 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	var num_items_to_display;
 	var waiting_for_render = false;
 	var scroll_index = false;
+	var pre_search_scroll_index = false;
+	var scroll_to_open_item_on_clear = false;
 
 	// CUSTOM SCROLLBAR **********************************************
 
@@ -77,6 +79,9 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		}
 		else if (self.update_cool_delayed) {
 			self.update_cool = self.update_cool_delayed;
+		}
+		if (scroll_index === false) {
+			self.scroll_to_index(0);
 		}
 	};
 
@@ -225,6 +230,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	self.open_element_check = function(e, id) { return true; };
 	self.open_element = function(e) {
 		if ("_id" in e.target && self.open_element_check(e, e.target._id)) {
+			if (search_string != "") scroll_to_open_item_on_clear = true;
 			self.open_id(e.target._id);
 		}
 	};
@@ -367,6 +373,8 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 
 			scroll_index = false;
 			self.update_scroll_height();
+			if (current_open_element) self.scroll_to_id(current_open_element);
+			else self.scroll_to_id(scroll_index);
 			return true;
 		}
 		return false;
@@ -382,6 +390,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 			hotkey_mode_enable();
 			return true;
 		}
+		if (search_string == "") pre_search_scroll_index = scroll_index;
 		search_string = search_string + character;
 		self.search_box_input.textContent = search_string;
 		$add_class(self.search_box_input, "searchlist_input_active");
@@ -392,8 +401,10 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 				hidden.push(visible.splice(i, 1)[0]);
 			}
 		}
+		self.remove_key_nav_highlight();
 		scroll_index = false;
 		self.update_scroll_height();
+		self.scroll_to_index(scroll_index);
 		return true;
 	};
 
@@ -415,6 +426,11 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		else {
 			scroll_index = false;
 			self.update_scroll_height();
+			if (scroll_to_open_item_on_clear) self.scroll_to_id(current_open_element._id);
+			else if (pre_search_scroll_index) self.scroll_to_index(pre_search_scroll_index);
+			else self.scroll_to_index(scroll_index);
+			pre_search_scroll_index = false;
+			scroll_to_open_item_on_clear = false;
 		}
 	};
 
@@ -472,9 +488,9 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	self.scroll_to_index = function(new_index) {
 		if (isNaN(new_index)) return;
 		// max boundary check
-		// if (new_index > (visible.length - num_items_to_display)) {
-		// 	new_index = visible.length - num_items_to_display;
-		// }
+		if (new_index > (visible.length - num_items_to_display + 1)) {
+			new_index = visible.length - num_items_to_display;
+		}
 		// min boundary check
 		if (new_index < 0) {
 			new_index = 0;
