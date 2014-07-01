@@ -38,7 +38,7 @@ var History = function() {
 		container.addEventListener("mouseover", mouse_over);
 		scroller = Scrollbar.new(container, 22);
 		$id("history_pin").addEventListener("click", self.swap_sticky);
-		$id("history_header").appendChild($el("span", { "textContent": $l("Previously Played") }));
+		$id("history_header").appendChild($el("span", { "textContent": $l("Recently Played") }));
 		self.on_resize();
 
 		API.add_callback(self.update, "sched_history");
@@ -64,35 +64,32 @@ var History = function() {
 	};
 
 	self.update = function(json) {
-		var found;
-		for (var i = 0; i < json.length; i++) {
-			
-		}
-
+		var found, i, j;
 		var new_songs = [];
-		for (i = json.length - 1; i >= 0; i--) {
+		for (i = 0; i < json.length; i++) {
 			found = false;
-			for (j = songs.length - 1; j >= 0; j--) {
-				if (json[i].id == songs[j].data.id) {
-					songs[j].update(json[i]);
-					new_songs.unshift(songs[j]);
+			for (j = 0; j < songs.length; j++) {
+				if (songs[j].data.id == json[i].songs[0].id) {
+					new_songs.push(songs[j]);
 					songs.splice(j, 1);
 					found = true;
 					break;
 				}
 			}
 			if (!found) {
-				n = TimelineSong.new(json[i], true);
-				n.elements.request_drag.addEventListener("mousedown", start_drag);
-				n.el.style[Fx.transform_string] = "translateY(" + height + "px)";
-				new_songs.unshift(n);
-				el.appendChild(n.el);
+				new_songs.push(TimelineSong.new(json[i].songs[0]));
 			}
 		}
+
 		for (i = songs.length - 1; i >= 0; i--) {
 			Fx.remove_element(songs[i].el);
 		}
+		
 		songs = new_songs;
+		for (i = 0; i < songs.length; i++) {
+			el.appendChild(songs[i].el)
+		}
+
 		self.reflow();
 	};
 
@@ -104,10 +101,8 @@ var History = function() {
 	self.reflow = function() {
 		var running_height = 5;
 		for (var i = 0; i < songs.length; i++) {
-			if (dragging_song != songs[i]) {
-				songs[i]._request_y = running_height;
-				Fx.delay_css_setting(songs[i].el, "transform", "translateY(" + running_height + "px)");
-			}
+			songs[i]._y = running_height;
+			Fx.delay_css_setting(songs[i].el, "transform", "translateY(" + running_height + "px)");
 			running_height += TimelineSong.height;
 		}
 		if (scroller) scroller.update_scroll_height(running_height);

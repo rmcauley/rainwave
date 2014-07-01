@@ -6,7 +6,7 @@ var Schedule = function() {
 
 	var sched_next;
 	var sched_current;
-	var sched_history;
+	var sched_history = [];
 	var time_bar;
 	var time_bar_progress;
 	var time_bar_progress_timer = false;
@@ -24,7 +24,7 @@ var Schedule = function() {
 		self.el = $id("timeline");
 		API.add_callback(function(json) { sched_current = json; }, "sched_current");
 		API.add_callback(function(json) { sched_next = json; }, "sched_next");
-		API.add_callback(function(json) { sched_history = json; }, "sched_history");
+		//API.add_callback(function(json) { sched_history = json; }, "sched_history");
 		API.add_callback(self.update, "_SYNC_COMPLETE");
 
 		API.add_callback(self.register_vote, "vote_result");

@@ -29,10 +29,12 @@ function _on_resize() {
 	Scrollbar.refresh_all_scrollbars();
 	DetailView.on_resize();
 	Requests.on_resize(new_height);
+	History.on_resize(new_height);
 	// this has to go after due to scrollbar funkiness with the schedule
 	if (screen_size_changed) {
 		Schedule.reflow();
 		Requests.reflow();
+		History.reflow();
 	}
 }
 
@@ -61,6 +63,7 @@ function initialize() {
 	PlaylistLists.initialize();
 	DetailView.initialize();
 	Requests.initialize();
+	History.initialize();
 	R4Audio.initialize(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
 	Menu.initialize(BOOTSTRAP.station_list);
 	_on_resize();

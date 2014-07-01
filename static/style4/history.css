@@ -1,0 +1,58 @@
+#history {
+	position: absolute;
+	left: -350px;
+	width: 350px;
+	background: #27292b;
+	border-color: #0c3b59;
+	border-width: 0px;
+	border-style: solid;
+	overflow: hidden;
+	@include transition(background-color, border-color);
+}
+
+#history.nonsticky {
+	z-index: 5;
+	border-right-width: 4px;
+	@include transition-wtime(300ms, transform, background-color, border-color);
+	@include transform(translateX(0px));
+}
+
+#history.nonsticky:hover, #history.fake_hover {
+	@include transform(translateX(350px));
+}
+
+#history.sticky {
+	position: relative;
+	float: left;
+	height: 100%;
+	border-left-width: 0px;
+	@include transition(background-color, border-color);
+	@include transform(translateX(350px));
+}
+
+#history_list {
+	margin-left: 5px;
+}
+
+#history_list .timeline_song {
+	position: absolute;
+	padding: 0;
+	width: 96%;
+}
+
+#history_header {
+	padding-left: 7px;
+	background-color: #32353b;
+}
+
+#history #history_pin {
+	float: right;
+	margin: 1px 3px;
+	border: solid 1px transparent;
+	padding: 1px;
+}
+
+#history.sticky #history_pin {
+	border: inset 1px #222;
+	background: #111;
+}
