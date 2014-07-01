@@ -4,8 +4,6 @@ from libs import db
 from libs import log
 from libs import cache
 
-# every function in this module needs to be checked across all files for proper usage now
-
 def get_song_rating(song_id, user_id):
 	rating = cache.get_song_rating(song_id, user_id)
 	if not rating:

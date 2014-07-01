@@ -13,9 +13,6 @@ from rainwave.playlist_objects.metadata import AssociatedMetadata
 from rainwave.playlist_objects.metadata import make_searchable_string
 from rainwave.playlist_objects import cooldown
 
-# REFACTORING TODO:
-# fix API help page so I don't have to explain what it is when someone visits it
-
 updated_album_ids = {}
 
 def clear_updated_albums(sid):
