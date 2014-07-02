@@ -17,6 +17,7 @@
 .scrollbar_invisible, div.searchlist > div.scrollbar_invisible {
 	display: none;
 	height: 0px;
+	opacity: 0;
 }
 
 .scrollbar:hover, div.searchlist > div.scrollbar:hover {

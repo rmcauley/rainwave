@@ -41,13 +41,21 @@
 }
 
 #history_header {
-	padding-left: 7px;
-	background-color: #32353b;
+    background-color: #32353b;
+    float: right;
+    font-size: smaller;
+    left: 100%;
+    position: absolute;
+    transform: rotate(90deg);
+    transform-origin: left top 0;
+    width: 20em;
+    padding-left: 5px;
+    height: 16px;
 }
 
 #history #history_pin {
 	float: right;
-	margin: 1px 3px;
+	margin: 1px 20px;
 	border: solid 1px transparent;
 	padding: 1px;
 }

@@ -8,7 +8,7 @@ $vvdarktext: #444;
 $highlight: #1f95e5;
 $link: #6cf6ff;
 $donorcolor: #FF0;
-$transtime: 700ms ease-out;
+$transtime: 700ms cubic-bezier(0.165, 0.84, 0.44, 1);
 
 @mixin transform($transform_string...) {
 	-webkit-transform: $transform_string;

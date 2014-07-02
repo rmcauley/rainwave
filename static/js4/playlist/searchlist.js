@@ -582,5 +582,12 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 
 	self.search_box_input.addEventListener("click", input_click);
 
+	self.on_resize = function() {
+		if (self.loaded) {
+			item_height = $measure_el(data[sorted[0]]._el).height + 1;
+			self.update_scroll_height();
+		}
+	};
+
 	return self;
 };

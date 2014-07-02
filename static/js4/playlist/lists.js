@@ -38,17 +38,6 @@ var PlaylistLists = function() {
 			self.change_visible_list(lists[cookie_list], true);
 		}
 
-		// the scrollbar in the new table layout isn't working properly
-
-		// var margin_top = tabs_el.offsetHeight + search_box.offsetHeight + 5;
-		// for (var list in lists) {
-		// 	lists[list].el.style.marginTop = margin_top + "px";
-		// }
-		// scroller.margin_top = margin_top;
-		// scroller.add_resizer("playlist", 10, 450, 250);
-		// scroller.post_resize_callback = self.on_scroll_resize;
-		// scroller.parent_update_handle_position();
-
 		margin_top = $measure_el($id("lists_tabs")).height + $measure_el($id("lists_searchbox")).height
 	};
 
@@ -74,8 +63,7 @@ var PlaylistLists = function() {
 		if (el) {
 			el.style.height = new_height - margin_top + "px";
 			for (var key in lists) {
-				lists[key].offset_height = new_height;
-				lists[key].scrollbar.update_scroll_height();
+				lists[key].on_resize();
 			}
 		}
 	};
@@ -94,23 +82,3 @@ var PlaylistLists = function() {
 
 	return self;
 }();
-
-// var PlaylistScrollbar = function(element) {
-// 	"use strict";
-// 	var self = Scrollbar.new(element, 0, true);
-
-// 	self.update_scroll_height = function(force_height, list_name) {
-// 		if (list_name == PlaylistLists.active_list.list_name) {
-// 			if (force_height) self.parent_update_scroll_height(force_height);
-// 			else self.parent_update_scroll_height(PlaylistLists.active_list.el.scrollHeight);
-// 		}
-// 	};
-
-// 	self.update_handle_position = function(list_name) {
-// 		if (list_name == PlaylistLists.active_list.list_name) {
-// 			self.parent_update_handle_position();
-// 		}
-// 	};
-
-// 	return self;
-// };

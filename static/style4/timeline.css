@@ -4,7 +4,7 @@ $song_subinfo_color = #CCC;
 	float: left;
 	height: 100%;
 	min-width: 19em;
-	padding: 0px 10px 0px 10px;
+	padding: 5px 10px 0px 10px;
 	@include transition(width);
 	overflow: hidden;
 	position: relative;
@@ -17,11 +17,19 @@ $song_subinfo_color = #CCC;
 }
 
 .timeline_event {
-	opacity: 0;
-	position: absolute;
+	position: relative;
+	top: 100%;
+	opacity: 1;
 	width: 95%;
-	@include transform(translateY(-160px));
-	@include transition(height, opacity, transform);
+	@include transition(height, opacity, transform, top);
+}
+
+.timeline_event + .timeline_event {
+	margin-top: 15px;
+}
+
+body.small_screen .timeline_event + body.small_screen + .timeline_event {
+	margin-top: 10px;
 }
 
 .timeline_event:hover {
@@ -215,12 +223,9 @@ body.small_screen .timeline_now_playing_song .art_container .art {
 
 .timeline_header {
 	@include transition(transform, opacity, LINKCOLOR);
-	@include transform(translateY(-25px));
-	position: absolute;
 	color: $vdarktext;
-	opacity: 0;
+	opacity: 1;
 	background-color: #131416;
-	width: 95%;
 	padding-bottom: 8px;
 }
 
@@ -229,14 +234,8 @@ body.small_screen .timeline_now_playing_song .art_container .art {
 }
 
 #timeline_header_now_playing_bar, .timeline_header_bar {
-	position: absolute;
 	background-color: $vvdarktext;
 	height: 1px;
-	padding: 0px;
-	margin: 0px;
-	width: 94%;
-	opacity: 0;
-	@include transform(translateY(-25px));
 	@include transition(transform, opacity);
 }
 

@@ -7,10 +7,6 @@ var History = function() {
 	var height;
 	var fake_hover_timeout;
 	var songs = [];
-	var dragging_song;
-	var dragging_index;
-	var order_changed = false;
-	var original_mouse_y;
 
 	var mouse_over = function(e) {
 		$remove_class(container, "fake_hover");

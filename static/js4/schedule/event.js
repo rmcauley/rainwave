@@ -31,7 +31,17 @@ var EventBase = function(json) {
 	self.elements = {};
 	self.songs = null;
 
-	var changed_to_history = false;
+	var header = $el("div", { "class": "timeline_header" });
+	var header_text = $el("a");
+	var header_bar = $el("div", { "class": "timeline_header_bar" });
+	var header_inside_bar = $el("div", { "class": "timeline_header_bar_inside" });
+	header.appendChild(header_text);
+	header_bar.appendChild(header_inside_bar);
+	header.appendChild(header_bar);
+	var time_bar_progress = Fx.legacy_effect(Fx.CSSNumeric, $id("timeline_header_now_playing_bar_inside"), 700, "width", "%");
+	var time_bar_progress_timer;
+	self.header_height = 0;
+	self.header_text;
 
 	if (json.songs) {
 		self.songs = [];
@@ -44,29 +54,23 @@ var EventBase = function(json) {
 
 	var draw = function() {
 		self.el = $el("div", { "class": "timeline_event timeline_" + self.type });
+		self.el.appendChild(header);
 		if (self.songs) {
-			// shuffle our songs to draw in the array
+			// shuffle our songs to draw in the array if it's not used yet
 			if (!self.data.used && (self.type.indexOf("election") != -1)) {
 				shuffle(self.songs);
 			}
-			else if (self.data.used) {
-				changed_to_history = true;
-			}
-			var max_index = self.data.used ? 1 : self.songs.length;
-			for (var i = 0; i < max_index; i++) {
+			for (var i = 0; i < self.songs.length; i++) {
 				self.el.appendChild(self.songs[i].el);
 			}
 		}
-		solve_height();
+		//solve_height();
 	};
 
 	var solve_height = function() {
 		if (self.songs) {
 			if ($has_class(self.el, "timeline_now_playing")) {
 				self.height = (SmallScreen ? 90 : 130) + (TimelineSong.height * (self.songs.length - 1));
-			}
-			else if (changed_to_history && self.songs) {
-				self.height = TimelineSong.height;
 			}
 			else {
 				self.height = TimelineSong.height * self.songs.length;
@@ -103,11 +107,12 @@ var EventBase = function(json) {
 
 	self.change_to_coming_up = function() {
 		$add_class(self.el, "timeline_next");
+		self.set_header_text($l("Coming_Up"));
 	};
 
 	self.change_to_now_playing = function() {
 		$remove_class(self.el, "timeline_next");
-		changed_to_history = false;
+		self.set_header_text($l("Now_Playing"));
 		if (self.songs && (self.songs.length > 0)) {
 			// re-order song positioning so the now playing item is on top
 			// TODO: make this animated and spiffo!
@@ -118,29 +123,11 @@ var EventBase = function(json) {
 			$add_class(self.songs[0].el, "timeline_now_playing_song");
 		}
 		$add_class(self.el, "timeline_now_playing");
-		solve_height();
-	};
-
-	self.change_to_history = function() {
-		if (changed_to_history) return;
-		if (self.songs) {
-			for (var i = 1; i < self.songs.length; i++) {
-				Fx.remove_element(self.songs[i].el);
-			}
-		}
-		changed_to_history = true;
-
-		$remove_class(self.el, "timeline_now_playing");
-		if (self.songs && (self.songs.length > 0)) {
-			$remove_class(self.songs[0].el, "timeline_now_playing_song");
-		}
-		$remove_class(self.el, "timeline_next");
-		$add_class(self.el, "timeline_history");
-		solve_height();
+		//solve_height();
 	};
 
 	self.reflow = function() {
-		solve_height();
+		//solve_height();
 	};
 
 	self.enable_voting = function() {
@@ -186,9 +173,82 @@ var EventBase = function(json) {
 		Fx.delay_css_setting(self.el, "transform", "translateY(" + new_y + "px)");
 	};
 
+	self.set_header_text = function(default_text) {
+		if (self.type == "OneUp") {
+			header_text.textContent = default_text + " - " + self.name + " " + $l("Power_Hour");
+		}
+		else if ($l_has(self.type)) {
+			header_text.textContent = default_text + " - " + $l(self.type);
+			if (self.name) {
+				header_text.textContent += " - " + self.name;
+			}
+		}
+		else if (self.name) {
+			header_text.textContent = default_text + " - " + self.name;
+		}
+		else {
+			header_text.textContent = default_text;
+		}
+		if (self.data.url) {
+			header_text.setAttribute("href", self.data.url);
+			header_text.setAttribute("target", "_blank");
+			Formatting.linkify_external(header_text);
+			$add_class(header_text, "link");
+		}
+		else {
+			Formatting.unlinkify(header_text);
+			header_text.removeAttribute("href");
+			header_text.removeAttribute("target");
+			$remove_class(header_text, "link");
+		}
+		self.header_text = header_text.textContent;
+	};
+
+	self.hide_header = function() {
+		Fx.delay_css_setting(header, "opacity", 0);	
+		Fx.delay_css_setting(header, "height", 0);
+		self.header_height = 0;
+	};
+
+	self.show_header = function() {
+		Fx.delay_css_setting(header, "opacity", 1);
+		Fx.delay_css_setting(header, "height", Schedule.header_height + "px");
+		self.header_height = Schedule.header_height;
+	};
+
+	self.progress_bar_start = function() {
+		if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
+		time_bar_progress.element.style.transition = "";
+		time_bar_progress.onComplete = start_time_bar_progress;
+		time_bar_progress.start(((self.end - Clock.now) / (self.data.songs[0].length - 1)) * 100);
+	};
+
+	self.progress_bar_stop = function() {
+		if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
+	};
+
+	var start_time_bar_progress = function() {
+		time_bar_progress.element.style.transition = "none";
+		time_bar_progress.onComplete = false;
+		time_bar_progress_timer = setInterval(update_time_bar_progress, 1000);
+	};
+
+	var update_time_bar_progress = function() {
+		var new_val = ((current_event.end - Clock.now) / (current_event.data.songs[0].length - 1)) * 100;
+		if (new_val <= 0) {
+			if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
+			time_bar_progress_timer = false;
+			time_bar_progress.set(0);
+		}
+		else {
+			time_bar_progress.set(new_val);
+		}
+	};
+
 	draw();
 	if (self.data.voting_allowed) {
 		self.enable_voting();
 	}
 	return self;
 };
+ 
