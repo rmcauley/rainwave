@@ -34,7 +34,7 @@ var History = function() {
 		container.addEventListener("mouseover", mouse_over);
 		scroller = Scrollbar.new(container, 22);
 		$id("history_pin").addEventListener("click", self.swap_sticky);
-		$id("history_header").appendChild($el("span", { "textContent": $l("Recently Played") }));
+		$id("history_header").appendChild($el("span", { "textContent": $l("Previously Played") + " ▼"}));
 		self.on_resize();
 
 		API.add_callback(self.update, "sched_history");

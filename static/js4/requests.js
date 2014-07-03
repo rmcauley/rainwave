@@ -15,14 +15,23 @@ var Requests = function() {
 	var mouse_over = function(e) {
 		$remove_class(container, "fake_hover");
 		if (fake_hover_timeout) {
-			clearTimeout(fake_hover_timeout);
+			if (fake_hover_timeout !== true) clearTimeout(fake_hover_timeout);
 			fake_hover_timeout = null;
 		}
 	};
 
 	var fake_hover = function() {
-		fake_hover_timeout = setTimeout(function() { $remove_class(container, "fake_hover"); fake_hover_timeout = null; }, 3000);
-		$add_class(container, "fake_hover");
+		if (!fake_hover) {
+			fake_hover_timeout = setTimeout(function() { $remove_class(container, "fake_hover"); fake_hover_timeout = null; }, 3000);
+			$add_class(container, "fake_hover");
+		}
+	};
+
+	var once_mouse_out = function() {
+		fake_hover_timeout = null;
+		container.style.transition = null;
+		container.removeEventListener("mouseout", once_mouse_out);
+		$remove_class(container, "fake_hover");
 	};
 
 	self.initialize = function() {
@@ -38,7 +47,7 @@ var Requests = function() {
 		container.addEventListener("mouseover", mouse_over);
 		scroller = Scrollbar.new(container, 22);
 		$id("requests_pin").addEventListener("click", self.swap_sticky);
-		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
+		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") + " ▲" }));
 		$id("requests_pause").setAttribute("title", $l("pause_request_queue"));
 		$id("requests_pause").setAttribute("alt", $l("pause_request_queue"));
 		$id("requests_pause").addEventListener("click", self.pause_queue);
@@ -89,21 +98,16 @@ var Requests = function() {
 	};
 
 	self.swap_sticky = function() {
-		if ($has_class(container, "nonsticky")) {
-			$add_class(container, "sticky");
-			$remove_class(container, "nonsticky");
+		if (!Prefs.get("requests_sticky")) {
+			container.className = "sticky";
 			Prefs.change("requests_sticky", true);
 		}
 		else {
-			// this little flip prevents the transition on non-sticky behaviour from screwing with the visuals here
-			// CAREFUL ORDERING OF THE CSS VALUES is required in requests.css to make sure this is pulled off
-			$add_class(container, "nonsticky");
-			$add_class(container, "fake_hover");
+			fake_hover = true;
 			container.style.transition = "none";
-			$remove_class(container, "sticky");
-			Fx.delay_css_setting(container, "transition", null);
+			container.className = "nonsticky fake_hover";
+			container.addEventListener("mouseout", once_mouse_out);
 			Prefs.change("requests_sticky", false);
-			setTimeout(function() { $remove_class(container, "fake_hover"); }, 100);
 		}
 	};
 

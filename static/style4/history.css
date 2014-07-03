@@ -1,33 +1,52 @@
 #history {
+	z-index: 5;
 	position: absolute;
 	left: -350px;
 	width: 350px;
-	background: #27292b;
-	border-color: #0c3b59;
-	border-width: 0px;
-	border-style: solid;
 	overflow: hidden;
-	@include transition(background-color, border-color);
+	opacity: 1;
+	@include transition-wtime(300ms, transform, background-color, opacity);
+
+	background: rgb(0,0,0);
+	background: -moz-linear-gradient(left, rgba(0,0,0,1) 95%, rgba(30,81,153,1) 100%);
+	background: -webkit-linear-gradient(left, rgba(0,0,0,1) 95%,rgba(30,81,153,1) 100%);
+	background: -ms-linear-gradient(left, rgba(0,0,0,1) 95%,rgba(30,81,153,1) 100%);
+	background: linear-gradient(to right, rgba(0,0,0,1) 95%,rgba(30,81,153,1) 100%);
 }
 
 #history.nonsticky {
 	z-index: 5;
-	border-right-width: 4px;
-	@include transition-wtime(300ms, transform, background-color, border-color);
-	@include transform(translateX(0px));
+	opacity: .7;
+	@include transform(translateX(15px));
 }
 
 #history.nonsticky:hover, #history.fake_hover {
+	opacity: 1;
 	@include transform(translateX(350px));
+}
+
+#history.nonsticky + #timeline {
+	margin-left: 10px;
 }
 
 #history.sticky {
 	position: relative;
 	float: left;
 	height: 100%;
-	border-left-width: 0px;
 	@include transition(background-color, border-color);
 	@include transform(translateX(350px));
+}
+
+#history_header {
+    float: right;
+    font-size: smaller;
+    left: 100%;
+    position: absolute;
+    transform: rotate(90deg);
+    transform-origin: left top 0;
+    width: 20em;
+    padding-left: 5px;
+    height: 16px;
 }
 
 #history_list {
@@ -38,19 +57,6 @@
 	position: absolute;
 	padding: 0;
 	width: 96%;
-}
-
-#history_header {
-    background-color: #32353b;
-    float: right;
-    font-size: smaller;
-    left: 100%;
-    position: absolute;
-    transform: rotate(90deg);
-    transform-origin: left top 0;
-    width: 20em;
-    padding-left: 5px;
-    height: 16px;
 }
 
 #history #history_pin {
