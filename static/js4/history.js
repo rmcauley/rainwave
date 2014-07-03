@@ -34,7 +34,7 @@ var History = function() {
 		container.addEventListener("mouseover", mouse_over);
 		scroller = Scrollbar.new(container, 22);
 		$id("history_pin").addEventListener("click", self.swap_sticky);
-		$id("history_header").appendChild($el("span", { "textContent": $l("Previously Played") + " ▼"}));
+		$id("history_header").appendChild($el("span", { "textContent": $l("Previous Songs") + " ▼"}));
 		self.on_resize();
 
 		API.add_callback(self.update, "sched_history");
@@ -86,7 +86,7 @@ var History = function() {
 			el.appendChild(songs[i].el)
 		}
 
-		self.reflow();
+		// self.reflow();
 	};
 
 	self.on_resize = function(new_height) {
@@ -94,15 +94,15 @@ var History = function() {
 		if (container) container.style.height = height + "px";
 	};
 
-	self.reflow = function() {
-		var running_height = 5;
-		for (var i = 0; i < songs.length; i++) {
-			songs[i]._y = running_height;
-			Fx.delay_css_setting(songs[i].el, "transform", "translateY(" + running_height + "px)");
-			running_height += TimelineSong.height;
-		}
-		if (scroller) scroller.update_scroll_height(running_height);
-	};
+	// self.reflow = function() {
+	// 	var running_height = 5;
+	// 	for (var i = 0; i < songs.length; i++) {
+	// 		songs[i]._y = running_height;
+	// 		Fx.delay_css_setting(songs[i].el, "transform", "translateY(" + running_height + "px)");
+	// 		running_height += TimelineSong.height;
+	// 	}
+	// 	if (scroller) scroller.update_scroll_height(running_height);
+	// };
 
 	return self;
 }();

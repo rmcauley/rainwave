@@ -30,17 +30,13 @@
 }
 
 #lists_searchbox {
-	padding: 5px 0 5px 0;
+	border-top: solid 1px $vdarktext;
+	margin: 2px 0 0 3px;
+	padding: 5px;
 }
 
 #lists_container {
 	overflow: hidden;
-}
-
-div.searchlist_searchbox {
-	border-top: solid 1px $vdarktext;
-	border-bottom: solid 1px $vvdarktext;
-	background: #1f2022;
 }
 
 #searchlist_input {
@@ -73,8 +69,12 @@ img.searchlist_cancel {
 	float: right;
 	opacity: 0.7;
 	margin-top: 5px;
-	margin-right: 10px;
+	margin-right: 5px;
 	cursor: pointer;
+}
+
+body.small_screen img.searchlist_cancel {
+	margin-top: 2px;
 }
 
 div.searchlist {

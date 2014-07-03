@@ -21,7 +21,7 @@ var Requests = function() {
 	};
 
 	var fake_hover = function() {
-		if (!fake_hover) {
+		if (!fake_hover_timeout && !Prefs.get("requests_sticky")) {
 			fake_hover_timeout = setTimeout(function() { $remove_class(container, "fake_hover"); fake_hover_timeout = null; }, 3000);
 			$add_class(container, "fake_hover");
 		}

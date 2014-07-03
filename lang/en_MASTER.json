@@ -76,7 +76,7 @@
    "vote_submitted"                                  : "Vote Submitted",
    "cannot_vote_for_this_now"                        : "Cannot vote for this song right now.",
    "invalid_hotkey_vote"                             : "Hotkey does not correspond to a song.",
-   "Previously Played"                               : "Previously Played",
+   "Previous Songs"                                  : "Previously Songs",
 
    "__comment__"                 : "Tip Jar",
 
@@ -106,7 +106,7 @@
 
    "__comment__"                 : "Playlist View",
 
-   "filter"                                          : "Type Anywhere to Filter",
+   "filter"                                          : "Type to Filter",
    "clearfilter"                                     : "Clear Filter",
    "album_rating_ranked_at"                          : "Rated at %(rating), ranking #(rank).",
    "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",
