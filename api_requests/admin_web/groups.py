@@ -107,7 +107,14 @@ class AssociateGroupAlbumList(AlbumList):
 @handle_url("/admin/song_list/associate_groups")
 class AssociateGroupSongList(SongList):
 	def render_row_special(self, row):
-		self.write("<td><a onclick=\"window.top.call_api('admin/associate_groups_add_song', { 'song_id': %s });\">Add to List</a>" % row['id'])
+		self.write("<td><a onclick=\"window.top.call_api('admin/associate_groups_add_song', { 'song_id': %s });\">Add to List</a></td>" % row['id'])
+		self.write("<td>")
+		for group in db.c.fetch_all("SELECT r4_groups.group_id, group_name, group_is_tag FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s ORDER BY group_is_tag DESC, group_name", (row['id'],)):
+			if not group['group_is_tag']:
+				self.write("<a class='group_name group_delete' onclick=\"window.top.call_api('admin/remove_group_from_song', { 'song_id': %s, 'group_id': %s });\">%s (X)</a> " % (row['id'], group['group_id'], group['group_name']))
+			else:
+				self.write("<span class='group_name'>%s</span>" % (group['group_name'],))
+		self.write("</td>")
 
 @handle_url("/admin/tools/group_edit")
 class GroupEditTool(api.web.HTMLRequest):
@@ -121,7 +128,7 @@ class GroupEditTool(api.web.HTMLRequest):
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/album_list/group_edit")
-class GroupEditList(api.web.HTMLRequest):
+class GroupEditGroupList(api.web.HTMLRequest):
 	admin_required = True
 	allow_get = True
 	
@@ -148,7 +155,7 @@ class GroupEditList(api.web.HTMLRequest):
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/song_list/group_edit")
-class DisassociateGroupSongList(api.web.HTMLRequest):
+class GroupEditSongList(api.web.HTMLRequest):
 	admin_required = True
 	fields = { "id": (api.web.fieldtypes.group_id, True) }
 
