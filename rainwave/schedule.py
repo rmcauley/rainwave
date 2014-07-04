@@ -95,7 +95,7 @@ def advance_station(sid):
 			manage_next(sid)
 
 		while upnext[sid][0].used or len(upnext[sid][0].songs) == 0:
-			log.warn("advance", "Event ID %s was already used or has zero songs.  Removing.")
+			log.warn("advance", "Event ID %s was already used or has zero songs.  Removing." % upnext[sid][0].id)
 			upnext[sid].pop(0)
 			if len(upnext[sid]) == 0:
 				manage_next(sid)
@@ -105,6 +105,7 @@ def advance_station(sid):
 		db.c.commit()
 
 		log.debug("advance", "upnext[0] preparation time: %.6f" % (time.time() - start_time,))
+		log.info("advance", "Next song: %s" % get_advancing_file(sid))
 
 		tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(milliseconds=150), lambda: post_process(sid))
 	except:

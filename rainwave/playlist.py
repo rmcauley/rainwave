@@ -44,8 +44,9 @@ def get_random_song_timed(sid, target_seconds = None, target_delta = 20):
 					"AND song_request_only = FALSE "
 					"AND song_length >= %s AND song_length <= %s")
 	num_available = db.c.fetch_var("SELECT COUNT(r4_song_sid.song_id) " + sql_query, (sid, (target_seconds - (target_delta / 2)), (target_seconds + (target_delta / 2))))
+	log.info("song_select", "Song pool size (cooldown, blocks, requests, timed) [target %s delta %s]: %s" % (target_seconds, target_delta, num_available))
 	if num_available == 0:
-		log.info("song_select", "No songs available with target_seconds %s and target_delta %s." % (target_seconds, target_delta))
+		log.warn("song_select", "No songs available with target_seconds %s and target_delta %s." % (target_seconds, target_delta))
 		log.debug("song_select", "Song select query: SELECT COUNT(r4_song_sid.song_id) " + sql_query % (sid, (target_seconds - (target_delta / 2)), (target_seconds + (target_delta / 2))))
 		return get_random_song(sid)
 	else:
@@ -68,9 +69,10 @@ def get_random_song(sid):
 					"AND song_elec_blocked = FALSE "
 					"AND album_requests_pending IS NULL")
 	num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
+	log.info("song_select", "Song pool size (cooldown, blocks, requests): %s" % num_available)
 	offset = 0
 	if num_available == 0:
-		log.info("song_select", "No songs available while ignoring request blocking rules.")
+		log.warn("song_select", "No songs available despite no timing rules.")
 		log.debug("song_select", "Song select query: SELECT COUNT(song_id) " + (sql_query %  (sid,)))
 		return get_random_song_ignore_requests(sid)
 	else:
@@ -103,9 +105,10 @@ def get_random_song_ignore_requests(sid):
 				"AND song_request_only = FALSE "
 				"AND song_elec_blocked = FALSE ")
 	num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
+	log.debug("song_select", "Song pool size (cooldown, blocks): %s" % num_available)
 	offset = 0
 	if num_available == 0:
-		log.info("song_select", "No songs available.")
+		log.warn("song_select", "No songs available while ignoring pending requests.")
 		log.debug("song_select", "Song select query: SELECT COUNT(song_id) " + (sql_query %  (sid,)))
 		return get_random_song_ignore_all(sid)
 	else:
