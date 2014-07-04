@@ -88,13 +88,15 @@ def get_current_event(sid):
 def advance_station(sid):
 	db.c.start_transaction()
 	try:
+		log.debug("advance", "Advancing station %s". % sid)
 		start_time = time.time()
 		# If we need some emergency elections here
 		if len(upnext[sid]) == 0:
 			manage_next(sid)
 
 		while upnext[sid][0].used or len(upnext[sid][0].songs) == 0:
-			upnext[sid].pop()
+			log.warn("advance", "Event ID %s was already used or has zero songs.  Removing.")
+			upnext[sid].pop(0)
 			if len(upnext[sid]) == 0:
 				manage_next(sid)
 
