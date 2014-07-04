@@ -93,10 +93,10 @@ def advance_station(sid):
 		if len(upnext[sid]) == 0:
 			manage_next(sid)
 
-		while upnext[sid][0].used:
+		while upnext[sid][0].used or len(upnext[sid][0].songs) == 0:
 			upnext[sid].pop()
 			if len(upnext[sid]) == 0:
-				manage_next(sid)		
+				manage_next(sid)
 
 		start_time = time.time()
 		upnext[sid][0].prepare_event()
