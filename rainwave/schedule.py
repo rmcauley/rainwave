@@ -88,7 +88,7 @@ def get_current_event(sid):
 def advance_station(sid):
 	db.c.start_transaction()
 	try:
-		log.debug("advance", "Advancing station %s". % sid)
+		log.debug("advance", "Advancing station %s." % sid)
 		start_time = time.time()
 		# If we need some emergency elections here
 		if len(upnext[sid]) == 0:

@@ -109,13 +109,14 @@ class BackendServer(object):
 			(r"/advance/([0-9]+)", AdvanceScheduleRequest),
 			], debug=(config.test_mode or config.get("developer_mode")))
 
+		port = int(config.get("backend_port")) + sid
 		server = tornado.httpserver.HTTPServer(app)
-		server.listen(int(config.get("backend_port")) + sid, address='127.0.0.1')
+		server.listen(port, address='127.0.0.1')
 		
 		for station_id in config.station_ids:
 			playlist.prepare_cooldown_algorithm(station_id)
 		schedule.load()
-		log.debug("start", "Backend server started, station %s port %s, ready to go." % (config.station_id_friendly[sid], config.get("backend_port") + sid))
+		log.debug("start", "Backend server started, station %s port %s, ready to go." % (config.station_id_friendly[sid], port))
 
 		ioloop = tornado.ioloop.IOLoop.instance()
 		try:
