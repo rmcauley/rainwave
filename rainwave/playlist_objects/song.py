@@ -37,7 +37,6 @@ class SongMetadataUnremovable(Exception):
 class Song(object):
 	@classmethod
 	def load_from_id(klass, song_id, sid = None):
-		d = None
 		if sid:
 			d = db.c.fetch_row("SELECT * FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_id = %s AND r4_song_sid.sid = %s", (song_id, sid))
 		else:
@@ -45,24 +44,29 @@ class Song(object):
 		if not d:
 			raise SongNonExistent
 
-		s = klass()
-		s.id = song_id
-		s.sid = sid
-		s.filename = d['song_filename']
-		s.verified = d['song_verified']
-		s.replay_gain = d['song_replay_gain']
-		s.data['sids'] = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (song_id,))
-		s.data['sid'] = sid
-		s.data['rank'] = None
-		s._assign_from_dict(d)
+		try:
+			s = klass()
+			s.id = song_id
+			s.sid = sid
+			s.filename = d['song_filename']
+			s.verified = d['song_verified']
+			s.replay_gain = d['song_replay_gain']
+			s.data['sids'] = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (song_id,))
+			s.data['sid'] = sid
+			s.data['rank'] = None
+			s._assign_from_dict(d)
 
-		if 'album_id' in d and d['album_id']:
-			if sid:
-				s.albums = [ Album.load_from_id_sid(d['album_id'], s.sid) ]
-			else:
-				s.albums = [ Album.load_from_id(d['album_id']) ]
-		s.artists = Artist.load_list_from_song_id(song_id)
-		s.groups = SongGroup.load_list_from_song_id(song_id)
+			if 'album_id' in d and d['album_id']:
+				if sid:
+					s.albums = [ Album.load_from_id_sid(d['album_id'], s.sid) ]
+				else:
+					s.albums = [ Album.load_from_id(d['album_id']) ]
+			s.artists = Artist.load_list_from_song_id(song_id)
+			s.groups = SongGroup.load_list_from_song_id(song_id)
+		except Exception as e:
+			log.exception("song", "Song failed to load.", e)
+			db.c.update("UPDATE r4_songs SET song_verified = FALSE WHERE song_id = song_id")
+			raise
 
 		return s
 
@@ -175,24 +179,28 @@ class Song(object):
 			raise PassableScanError("Song filename \"%s\" has no tags." % filename)
 
 		w = f.tags.getall('TIT2')
-		if len(w) > 0:
+		if len(w) > 0 and len(unicode(w[0])) > 0:
 		 	self.data['title'] = unicode(w[0])
 		else:
-		 	raise Exception("Song filename \"%s\" has no title tag." % filename)
+		 	raise PassableScanError("Song filename \"%s\" has no title tag." % filename)
 		w = f.tags.getall('TPE1')
-		if len(w) > 0:
+		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.artist_tag = unicode(w[0])
+		else:
+		 	raise PassableScanError("Song filename \"%s\" has no artist tag." % filename)
 		w = f.tags.getall('TALB')
-		if len(w) > 0:
+		if len(w) > 0 and len(unicode(w[0])) > 0:
 		 	self.album_tag = unicode(w[0])
+		else:
+			raise PassableScanError("Song filename \"%s\" has no album tag." % filename)
 		w = f.tags.getall('TCON')
-		if len(w) > 0:
+		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.genre_tag = unicode(w[0])
 		w = f.tags.getall('COMM')
-		if len(w) > 0:
+		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.data['link_text'] = unicode(w[0])
 		w = f.tags.getall('WXXX')
-		if len(w) > 0:
+		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.data['url'] = unicode(w[0])
 
 		self.replay_gain = self._get_replaygain(f)

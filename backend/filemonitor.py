@@ -254,6 +254,7 @@ def _add_scan_error(filename, xception):
 	global _scan_errors, _raise_scan_errors
 
 	_scan_errors.insert(0, { "time": int(time.time()), "file": filename, "type": xception.__class__.__name__, "error": str(xception) })
+	_save_scan_errors()
 	log.exception("scan", "Error scanning %s" % filename, xception)
 
 	if config.test_mode or _raise_scan_errors:

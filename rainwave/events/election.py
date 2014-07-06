@@ -26,6 +26,9 @@ class InvalidElectionID(Exception):
 class ElectionDoesNotExist(Exception):
 	pass
 
+class ElectionEmptyException(Exception):
+	pass
+
 def force_request(sid):
 	global _request_interval
 	global _request_sequence
@@ -141,16 +144,22 @@ class Election(event.BaseEvent):
 		if not skip_requests:
 			self._add_requests()
 		for i in range(len(self.songs), self._num_songs):
-			if not target_song_length and len(self.songs) > 0 and 'length' in self.songs[0].data:
-				target_song_length = self.songs[0].data['length']
-				log.debug("elec_fill", "Second song in election, aligning to length %s" % target_song_length)
-			song = self._fill_get_song(target_song_length)
-			song.data['entry_votes'] = 0
-			song.data['entry_type'] = ElecSongTypes.normal
-			song.data['elec_request_user_id'] = 0
-			song.data['elec_request_username'] = None
-			self._check_song_for_conflict(song)
-			self.add_song(song)
+			try:
+				if not target_song_length and len(self.songs) > 0 and 'length' in self.songs[0].data:
+					target_song_length = self.songs[0].data['length']
+					log.debug("elec_fill", "Second song in election, aligning to length %s" % target_song_length)
+				song = self._fill_get_song(target_song_length)
+				song.data['entry_votes'] = 0
+				song.data['entry_type'] = ElecSongTypes.normal
+				song.data['elec_request_user_id'] = 0
+				song.data['elec_request_username'] = None
+				self._check_song_for_conflict(song)
+				self.add_song(song)
+			except Exception as e:
+				log.exception("elec_fill", "Song failed to fill in an election.", e)
+				pass
+		if len(self.songs) == 0:
+			raise ElectionEmptyException
 
 	def _fill_get_song(self, target_song_length):
 		return playlist.get_random_song_timed(self.sid, target_song_length)
