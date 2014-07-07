@@ -4,7 +4,7 @@ import os
 import shutil
 import subprocess
 
-# from libs import config
+from libs import buildtools
 
 if os.getuid() != 0:
 	raise Exception("Installer must be run as root.")
@@ -44,6 +44,8 @@ shutil.copy("rw_icecast_sync.py", "/opt/rainwave/rw_icecast_sync.py")
 shutil.copy("initscript", "/etc/init.d/rainwave")
 shutil.copy("rw_get_next.py", "/usr/local/bin/rw_get_next.py")
 shutil.copy("tagset.py", "/usr/local/bin/tagset.py")
+
+os.makedirs(os.path.join(installdir, "static", "baked", str(buildtools.get_build_number()) ))
 
 subprocess.call(["chown", "-R", "%s:%s" % (user, group), installdir ])
 
