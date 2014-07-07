@@ -195,21 +195,22 @@ class Election(event.BaseEvent):
 		return True
 
 	def prepare_event(self):
-		if not self.used and not self.in_progress:
-			results = db.c.fetch_all("SELECT song_id, entry_votes FROM r4_election_entries WHERE elec_id = %s", (self.id,))
-			for song in self.songs:
-				for song_result in results:
-					if song_result['song_id'] == song.id:
-						song.data['entry_votes'] = song_result['entry_votes']
-				# Auto-votes for somebody's request
-				if song.data['entry_type'] == ElecSongTypes.request:
-					if db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (song.data['elec_request_user_id'], self.id)) == 0:
-						song.data['entry_votes'] += 1
-			random.shuffle(self.songs)
-			self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
-			self.songs = sorted(self.songs, key=lambda song: song.data['entry_votes'])
-			self.songs.reverse()
-			self.replay_gain = self.songs[0].replay_gain
+		results = db.c.fetch_all("SELECT song_id, entry_votes FROM r4_election_entries WHERE elec_id = %s", (self.id,))
+		for song in self.songs:
+			for song_result in results:
+				if song_result['song_id'] == song.id:
+					song.data['entry_votes'] = song_result['entry_votes']
+			if not 'entry_votes' in song.data:
+				song.data['entry_votes'] = 0
+			# Auto-votes for somebody's request
+			if song.data['entry_type'] == ElecSongTypes.request:
+				if db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (song.data['elec_request_user_id'], self.id)) == 0:
+					song.data['entry_votes'] += 1
+		random.shuffle(self.songs)
+		self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
+		self.songs = sorted(self.songs, key=lambda song: song.data['entry_votes'])
+		self.songs.reverse()
+		self.replay_gain = self.songs[0].replay_gain
 
 	def start_event(self):
 		# at this point, self.songs[0] is the winner
