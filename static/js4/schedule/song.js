@@ -1,4 +1,5 @@
 var TimelineSong = function() {
+	"use strict";
 	var cls = {};
 	cls.calculate_height = function() {
 		cls.height = SmallScreen ? 55 : 70;
@@ -6,7 +7,6 @@ var TimelineSong = function() {
 	cls.calculate_height();
 
 	cls.new = function(json, request_mode) {
-		"use strict";
 		var self = {};
 		self.data = json;
 		self.elements = {};
@@ -29,61 +29,66 @@ var TimelineSong = function() {
 
 		var draw = function() {
 			self.el = $el("div", { "class": "timeline_song" });
-
-			self.elements.album_art = self.el.appendChild(Albums.art_html(self.data.albums[0]));
 			
-			self.elements.title_group = self.el.appendChild($el("div", { "class": "title_group" }));
 			if (request_mode) {
-				self.elements.request_cancel = $el("img", { "class": "request_cancel", "src": "/static/images4/cancel_ldpi.png", "alt": "X", "title": $l("cancel_request") });
-				self.elements.request_cancel.addEventListener("mouseover", function() { $add_class(self.el, "timeline_song_request_cancel_hover"); });
-				self.elements.request_cancel.addEventListener("mouseout", function() { $remove_class(self.el, "timeline_song_request_cancel_hover"); });
+				self.elements.request_cancel = $el("div", { "class": "request_cancel", "textContent": "x" });
 				self.elements.request_cancel.addEventListener("click", function() { Requests.delete(self.data.id); });
-				self.elements.title_group.appendChild(self.elements.request_cancel);
+				self.el.appendChild(self.elements.request_cancel);
 			}
-			self.elements.title_group.addEventListener("mouseover", self.title_mouse_over);
-			self.elements.title_group.addEventListener("mouseout", self.title_mouse_out);
-			self.elements.song_rating = self.elements.title_group.appendChild(song_rating.el);
-			self.elements.title = self.elements.title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
-			self.elements.title.addEventListener("click", self.vote);
-			
-			self.elements.album_group = self.el.appendChild($el("div", { "class": "album_group" }));
+
+			self.elements.album_art = self.el.appendChild(Albums.art_html(self.data.albums[0], null, request_mode));
 			if (request_mode) {
-				self.elements.request_drag = $el("img", { "class": "request_reorder", "src": "/static/images4/sortgrab_hdpi.png", "width": 14, "height": 16 });
+				self.elements.request_drag = $el("img", { "class": "request_reorder", "src": "/static/images4/sortgrab_hdpi.png" });
 				self.elements.request_drag._song_id = json.id;
-				self.elements.album_group.appendChild(self.elements.request_drag);
+				self.elements.album_art.insertBefore(self.elements.request_drag, self.elements.album_art.firstChild);
 			}
-			self.elements.album_rating = self.elements.album_group.appendChild(album_rating.el);
-			self.elements.album = self.elements.album_group.appendChild($el("div", { "class": "album link", "textContent": self.data.albums[0].name }));
+
+			// c for content, this stuff should be pushed aside from the album art 
+			var c = $el("div", { "class": "timeline_song_content" });
+			
+			c.appendChild(song_rating.el);
+
+			self.elements.title = c.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
+			self.elements.title.addEventListener("mouseover", self.title_mouse_over);
+			self.elements.title.addEventListener("mouseout", self.title_mouse_out);
+			self.elements.title.addEventListener("click", self.vote);
+
+			c.appendChild(album_rating.el);
+			
+			self.elements.album = c.appendChild($el("div", { "class": "album link", "textContent": self.data.albums[0].name }));
 			self.elements.album.addEventListener("click", function() { DetailView.open_album(self.data.albums[0].id ); });
 			
 			if ("artists" in self.data) {
-				self.elements.artist_group = self.el.appendChild($el("div", { "class": "artist_group" }));
-				Artists.append_spans_from_json(self.elements.artist_group, self.data.artists);
+				self.elements.artists = c.appendChild($el("div", { "class": "artist" }));
+				Artists.append_spans_from_json(self.elements.artists, self.data.artists);
 			}
 
 			if (!request_mode) {
-				self.elements.votes = self.el.appendChild($el("div", { "class": "votes" }));
+				self.elements.votes = c.appendChild($el("div", { "class": "votes" }));
 				if (self.data.entry_votes) {
 					self.elements.votes.textContent = self.data.entry_votes;
 				}
 			}
 
 			if (self.data.elec_request_username) {
-				self.elements.requester = self.el.appendChild($el("div", { 
-					"class": "requester",
-					"textContent": $l("requestedby", { "requester": self.data.elec_request_username })
-				}));
+				$add_class(self.el, "requested")
+			// 	self.elements.requester = c.appendChild($el("div", { 
+			// 		"class": "requester",
+			// 		"textContent": $l("requestedby", { "requester": self.data.elec_request_username })
+			// 	}));
 			}
 
 			if (self.data.url && self.data.link_text) {
-				self.elements.xlink = self.el.appendChild($el("a", { "class": "song_link", "target": "_blank", "href": self.data.url, "textContent": self.data.link_text }));
+				self.elements.xlink = c.appendChild($el("a", { "class": "song_link", "target": "_blank", "href": self.data.url, "textContent": self.data.link_text }));
 				Formatting.linkify_external(self.elements.xlink);
 			}
 
 			if (request_mode) {
-				self.elements.cooldown = self.el.appendChild($el("div", { "class": "cooldown_info" }));
+				self.elements.cooldown = c.appendChild($el("div", { "class": "cooldown_info" }));
 				self.update_cooldown_info();
 			}
+
+			self.el.appendChild(c);
 		};
 
 		self.title_mouse_over = function(e) {

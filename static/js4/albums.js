@@ -57,7 +57,7 @@ var Albums = function() {
 		e.target.removeEventListener("mouseout", normalize_art);
 	};
 
-	self.art_html = function(json, size) {
+	self.art_html = function(json, size, not_expandable) {
 		if (!size) size = 120;
 		var c = $el("div", { "class": "art_container" });
 		var img;
@@ -65,10 +65,12 @@ var Albums = function() {
 			img = c.appendChild($el("img", { "class": "art", "src": "/static/images4/noart_1.jpg" }));
 		}
 		else {
-			$add_class(c, "art_expandable")
 			img = c.appendChild($el("img", { "class": "art", "src": json.art + "_" + size + ".jpg" }));
-			img._album_art = json.art;
-			img.addEventListener("click", expand_art);
+			if (!not_expandable) {
+				$add_class(c, "art_expandable")
+				img._album_art = json.art;
+				img.addEventListener("click", expand_art);
+			}
 		}
 		return c;
 	};
