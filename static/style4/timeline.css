@@ -4,7 +4,7 @@ $song_subinfo_color = #CCC;
 	float: left;
 	height: 100%;
 	min-width: 19em;
-	padding: 5px 10px 0px 10px;
+	padding: 5px 15px 0px 10px;
 	@include transition(width);
 	overflow: hidden;
 	position: relative;
@@ -18,14 +18,8 @@ $song_subinfo_color = #CCC;
 
 .timeline_event {
 	position: relative;
-	top: 100%;
-	opacity: 1;
-	width: 95%;
-	@include transition(height, opacity, transform, top);
-}
-
-.timeline_event + .timeline_event {
-	margin-top: 15px;
+	width: 100%;
+	@include transition(height, opacity, transform, margin-top);
 }
 
 body.small_screen .timeline_event + body.small_screen + .timeline_event {
@@ -41,8 +35,6 @@ body.small_screen .timeline_event + body.small_screen + .timeline_event {
 	position: relative;
 	clear: left;
 	cursor: default;
-	padding-left: 5px;
-	padding-right: 5px;
 	transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
 	background-image: url(/static/images4/vote_hover.png);
 	background-position: -678px 0px;
@@ -60,34 +52,48 @@ body.small_screen .timeline_song {
 
 .timeline_event .timeline_song:hover {
 	z-index: 2;
-	opacity: 1 !important;
 }
 
-.timeline_song .album_group {
-	clear: right;
-}
-
-.timeline_song .title, .timeline_song .album, .timeline_song .artist_group, .timeline_song .requester, .timeline_song .cooldown_info {
+.timeline_song .title, .timeline_song .album, .timeline_song .artist, .timeline_song .cooldown_info, .timeline_song .song_link {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
 }
 
-.timeline_song .title {
-	@include transition-wtime(300ms, background-color);
-}
-
 .timeline_song .album {
 	cursor: pointer;
+}
+
+.timeline_song_content {
+	margin-left: 80px;
+}
+
+body.small_screen .timeline_song_content {
+	margin-left: 80px;
+}
+
+.timeline_song_content > div {
 	color: $song_subinfo_color;
+}
+
+.timeline_song_content .title {
+	color: $text;
+}
+
+.timeline_song_content .artist, .timeline_song_content .votes, .timeline_song_content .cooldown_info, .timeline_song .song_link {
+	display: none;
 }
 
 .art_container {
 	float: left;
-	margin-right: 10px;
 	width: 70px;
 	height: 70px;
 	@include transition-wtime(300ms, width, height);
+}
+
+body.small_screen .timeline_song .art_container {
+	width: 55px;
+	height: 55px;
 }
 
 .art_container .art {
@@ -98,6 +104,14 @@ body.small_screen .timeline_song {
 	border-width: 0px;
 	border-style: solid;
 	@include transition-wtime(300ms, max-width, max-height, transform, border-width);
+}
+
+body.small_screen .timeline_song .art {
+	max-width: 55px;
+	max-height: 55px;
+}
+
+.art_expandable {
 	cursor: pointer;
 }
 
@@ -132,43 +146,14 @@ body.small_screen .timeline_song {
 	@include transform(translate(-5px, -5px) !important);
 }
 
-.timeline_song .artist_group {
-	display: none;
-	color: $song_subinfo_color;
-}
-
-body.small_screen .timeline_song .art_container {
-	width: 55px;
-	height: 55px;
-}
-
-body.small_screen .timeline_song .art {
-	max-width: 55px;
-	max-height: 55px;
-}
-
-.timeline_song .requester, .timeline_song .cooldown_info, .timeline_song .song_link {
-	margin-left: 95px;
-	color: $song_subinfo_color;
-}
-
-.timeline_song .votes, .timeline_song .cooldown_info, .timeline_song .song_link  {
-	display: none;
-}
-
-.timeline_song_is_cool .cooldown_info {
-	color: $highlight;
-	display: block;
-}
-
-body.small_screen .timeline_song .requester, body.small_screen .timeline_song .cooldown_info {
-	margin-left: 80px;
-}
-
 /* NOW PLAYING MODIFICATIONS */
 
 .timeline_now_playing .timeline_song {
 	opacity: 0.7;
+}
+
+.timeline_now_playing .timeline_song:hover {
+	opacity: 1.0;
 }
 
 .timeline_now_playing .timeline_now_playing_song {
@@ -180,7 +165,11 @@ body.small_screen .timeline_now_playing .timeline_now_playing_song {
 	height: 85px;
 }
 
-.timeline_now_playing_song .artist_group {
+.timeline_now_playing_song .timeline_song_content {
+	margin-left: 125px;
+}
+
+.timeline_now_playing_song .timeline_song_content > div {
 	display: block;
 }
 
@@ -211,15 +200,23 @@ body.small_screen .timeline_now_playing_song .art_container .art {
 	font-weight: bold;
 }
 
-.timeline_now_playing_song > div {
+.timeline_now_playing_song .timeline_song_content > div {
+	display: block;
 	margin-bottom: 5px;
 }
 
-.timeline_now_playing_song .song_link {
+/* TIMELINE SONG COOLDOWN */
+
+.timeline_song_is_cool .album, .timeline_song_is_cool .album_rating {
+	display: none;
+}
+
+.timeline_song_is_cool .timeline_song_content .cooldown_info {
+	color: $highlight;
 	display: block;
 }
 
-/* END NOW PLAYING MODIFICATIONS */
+/* HEADERS, ETC */
 
 .timeline_header {
 	@include transition(transform, opacity, LINKCOLOR);

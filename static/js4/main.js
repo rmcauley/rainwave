@@ -1,9 +1,11 @@
 var User;
 var SmallScreen = false;
+var SCREEN_HEIGHT;
 
 function _size_calculate() {
 	"use strict";
 	var screen_size_changed = false;
+
 	if ((document.documentElement.clientWidth <= 1400) && !SmallScreen) {
 		$add_class(document.body, "small_screen");
 		SmallScreen = true;
@@ -16,6 +18,7 @@ function _size_calculate() {
 		screen_size_changed = true;
 		RatingControl.change_padding_top(3);
 	}
+	SCREEN_HEIGHT = document.documentElement.clientHeight;
 	return screen_size_changed;
 }
 
@@ -29,12 +32,12 @@ function _on_resize() {
 	Scrollbar.refresh_all_scrollbars();
 	DetailView.on_resize();
 	Requests.on_resize(new_height);
-	History.on_resize(new_height);
+	//History.on_resize(new_height);
 	// this has to go after due to scrollbar funkiness with the schedule
 	if (screen_size_changed) {
 		Schedule.reflow();
 		Requests.reflow();
-		History.reflow();
+		//History.reflow();
 	}
 }
 
@@ -63,7 +66,7 @@ function initialize() {
 	PlaylistLists.initialize();
 	DetailView.initialize();
 	Requests.initialize();
-	History.initialize();
+	//History.initialize();
 	R4Audio.initialize(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
 	Menu.initialize(BOOTSTRAP.station_list);
 	_on_resize();

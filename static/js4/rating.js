@@ -22,7 +22,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 		"rating": rating,
 		"fave": fave,
 		"ratable": ratable,
-		"el": $el("div"),
+		"el": $el("div", { "class": "rating " + type + "_rating" }),
 		"absolute_x": false,
 		"absolute_y": false
 	};

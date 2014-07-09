@@ -4,6 +4,7 @@ var Schedule = function() {
 	self.events = [];
 	self.el = null;
 
+	var first_time = true;
 	var sched_next;
 	var sched_current;
 	var current_event;
@@ -37,7 +38,10 @@ var Schedule = function() {
 
 		current_event = find_and_update_event(sched_current);
 		current_event.change_to_now_playing();
-		Fx.delay_css_setting(current_event.el, "top", "0");
+		if (first_time) {
+			current_event.el.style.marginTop = SCREEN_HEIGHT + "px";
+		}
+		Fx.delay_css_setting(current_event.el, "marginTop", "0px");
 		new_events.push(current_event);
 		self.el.appendChild(current_event.el);
 
@@ -51,10 +55,16 @@ var Schedule = function() {
 			else {
 				temp_evt.show_header();
 			}
-			self.el.appendChild(temp_evt.el);
 			new_events.push(temp_evt);
 			previous_evt = temp_evt;
-			Fx.delay_css_setting(temp_evt.el, "top", "0");
+			if (first_time) {
+				temp_evt.el.style.marginTop = "100%";
+			}
+			else {
+				temp_evt.el.style.marginTop = SCREEN_HEIGHT + "px";
+			}
+			Fx.delay_css_setting(temp_evt.el, "marginTop", "15px");
+			self.el.appendChild(temp_evt.el);
 		}
 
 		// Erase old elements out before we replace the self.events with new_events
@@ -66,6 +76,10 @@ var Schedule = function() {
 			}
 		}
 		self.events = new_events;
+
+		if (first_time) {
+			first_time = false;
+		}
 
 		// The now playing bar
 		if ((current_event.end - Clock.now) > 0) {
