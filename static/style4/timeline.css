@@ -13,6 +13,8 @@ $song_subinfo_color = #CCC;
 }
 
 #timeline.resizing {
+	-webkit-transition: none;
+	-ms-transition: none;
 	transition: none;
 }
 
@@ -35,6 +37,8 @@ body.small_screen .timeline_event + body.small_screen + .timeline_event {
 	position: relative;
 	clear: left;
 	cursor: default;
+	-webkit-transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
+	-ms-transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
 	transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
 	background-image: url(/static/images4/vote_hover.png);
 	background-position: -678px 0px;
@@ -104,6 +108,11 @@ body.small_screen .timeline_song .art_container {
 	border-width: 0px;
 	border-style: solid;
 	@include transition-wtime(300ms, max-width, max-height, transform, border-width);
+}
+
+.art_container .no_art {
+	-webkit-transition: none;
+	transition: none;
 }
 
 body.small_screen .timeline_song .art {

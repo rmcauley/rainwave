@@ -62,7 +62,7 @@ var Albums = function() {
 		var c = $el("div", { "class": "art_container" });
 		var img;
 		if (!json.art) {
-			img = c.appendChild($el("img", { "class": "art", "src": "/static/images4/noart_1.jpg" }));
+			img = c.appendChild($el("img", { "class": "art no_art", "src": "/static/images4/noart_1.jpg" }));
 		}
 		else {
 			img = c.appendChild($el("img", { "class": "art", "src": json.art + "_" + size + ".jpg" }));

@@ -67,19 +67,19 @@ var EventBase = function(json) {
 		//solve_height();
 	};
 
-	var solve_height = function() {
-		if (self.songs) {
-			if ($has_class(self.el, "timeline_now_playing")) {
-				self.height = (SmallScreen ? 90 : 130) + (TimelineSong.height * (self.songs.length - 1));
-			}
-			else {
-				self.height = TimelineSong.height * self.songs.length;
-			}
-		}
-		else {
-			self.height = $measure_el(self.el).height;
-		}
-	};
+	// var solve_height = function() {
+	// 	if (self.songs) {
+	// 		if ($has_class(self.el, "timeline_now_playing")) {
+	// 			self.height = (SmallScreen ? 90 : 130) + (TimelineSong.height * (self.songs.length - 1));
+	// 		}
+	// 		else {
+	// 			self.height = TimelineSong.height * self.songs.length;
+	// 		}
+	// 	}
+	// 	else {
+	// 		self.height = $measure_el(self.el).height;
+	// 	}
+	// };
 
 	self.update = function(json) {
 		self.data = json;

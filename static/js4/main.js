@@ -1,24 +1,26 @@
 var User;
 var SmallScreen = false;
 var SCREEN_HEIGHT;
+var SCREEN_WIDTH;
 
 function _size_calculate() {
 	"use strict";
 	var screen_size_changed = false;
 
-	if ((document.documentElement.clientWidth <= 1400) && !SmallScreen) {
+	SCREEN_HEIGHT = document.documentElement.clientHeight;
+	SCREEN_WIDTH = document.documentElement.clienWidth;
+	if ((SCREEN_WIDTH <= 1400) && !SmallScreen) {
 		$add_class(document.body, "small_screen");
 		SmallScreen = true;
 		screen_size_changed = true;
 		RatingControl.change_padding_top(1);
 	} 
-	else if ((document.documentElement.clientWidth > 1400) && SmallScreen) {
+	else if ((SCREEN_WIDTH > 1400) && SmallScreen) {
 		$remove_class(document.body, "small_screen");
 		SmallScreen = false;
 		screen_size_changed = true;
 		RatingControl.change_padding_top(3);
 	}
-	SCREEN_HEIGHT = document.documentElement.clientHeight;
 	return screen_size_changed;
 }
 

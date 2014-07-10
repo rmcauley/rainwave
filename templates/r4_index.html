@@ -18,12 +18,20 @@
 	</script>
 	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
 	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
+	<script src="/static/baked/{{ revision_number }}/script4.js" type="application/javascript"></script>
 </head>
 <body onload="initialize();">
-	{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
 	<audio preload="none" id="audio"></audio>
 	<div id="measure_box">
-		<div id="timeline_height_measure" class="timeline_header">Hello</div>
+		<div id="playlist_item_height" class="searchlist_item">Hello</div>
+		<img src="/static/images4/cancel_ldpi.png" />
+		<img src="/static/images4/heart_solid.png" />
+		<img src="/static/images4/noart_1.jpg" />
+		<img src="/static/images4/anonymous.png" />
+		<img src="/static/images4/heart_lined.png" />
+		<img src="/static/images4/vote_hover.png" />
+		<img src="/static/images4/rating_bar/dark_ldpi.png" />
+		<img src="/static/images4/rating_bar/bright_ldpi.png" />
 	</div>
 	<div id="menu">
 		<img src="/static/images4/logo.png" id="rainwave_logo"></img>
