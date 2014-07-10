@@ -149,8 +149,9 @@ class BaseProducer(object):
 		}
 		if hasattr(self, "songs"):
 			obj['songs'] = []
-			for song in self.songs:
-				obj['songs'].append(song.to_dict())
+			if self.songs:
+				for song in self.songs:
+					obj['songs'].append(song.to_dict())
 		return obj
 
 class BaseEvent(object):
