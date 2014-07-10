@@ -14,8 +14,6 @@ from libs import config
 from libs import buildtools
 from rainwave.user import User
 
-jsfiles = buildtools.get_js_file_list_url()
-
 @handle_url("/blank")
 class Blank(api.web.HTMLRequest):
 	auth_required = False
@@ -83,13 +81,10 @@ class R4Index(MainIndex):
 			self.perks_required = False
 		super(R4Index, self).prepare()
 		self.json_payload = {}
-		
-		self.js4files = []
-		for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js4")):
-			for f in files:
-				self.js4files.append(os.path.join(root[root.find("static/js4"):], f))
+
 		if config.get("web_developer_mode") or config.get("developer_mode") or config.get("test_mode"):
 			buildtools.bake_css()
+			buildtools.bake_beta_js()
 
 	def append(self, key, value):
 		self.json_payload[key] = value
@@ -99,7 +94,6 @@ class R4Index(MainIndex):
 		self.append("api_info", { "time": int(time.time()) })
 		self.render("r4_index.html", request=self,
 					site_description=self.locale.translate("station_description_id_%s" % self.sid),
-					jsfiles=self.js4files,
 					revision_number=config.build_number,
 					api_url=config.get("api_external_url_prefix"),
 					cookie_domain=config.get("cookie_domain"),
