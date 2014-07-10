@@ -47,7 +47,7 @@ class EditGroup(api.web.APIHandler):
 class EditGroupCooldown(api.web.APIHandler):
 	admin_required = True
 	sid_required = False
-	fields = { "group_id": (fieldtypes.group_id, True), "cooldown": (fieldtypes.positive_integer, True) }
+	fields = { "group_id": (fieldtypes.group_id, True), "cooldown": (fieldtypes.zero_or_greater_integer, True) }
 
 	def post(self):
 		g = SongGroup.load_from_id(self.get_argument("group_id"))
