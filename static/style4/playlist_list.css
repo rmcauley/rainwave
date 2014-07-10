@@ -85,12 +85,16 @@ div.searchlist {
 
 div.searchlist_item {
 	background-repeat: no-repeat;
-	height: 1.3em;
+	height: 22px;
 	padding: 0 65px 0 0;
 	margin-right: 10px;
 	border-bottom: solid 1px transparent;
 	cursor: pointer;
 	@include transition-wtime(200ms, background-color, border-color);
+}
+
+body.small_screen div.searchlist_item {
+	height: 18px;
 }
 
 div.resizing div.searchlist_item {

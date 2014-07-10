@@ -81,10 +81,14 @@ class R4Index(MainIndex):
 			self.perks_required = False
 		super(R4Index, self).prepare()
 		self.json_payload = {}
+		self.jsfiles = None
 
 		if config.get("web_developer_mode") or config.get("developer_mode") or config.get("test_mode"):
 			buildtools.bake_css()
-			buildtools.bake_beta_js()
+			self.jsfiles = []
+			for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js4")):
+				for f in files:
+					self.jsfiles.append(os.path.join(root[root.find("static/js4"):], f))
 
 	def append(self, key, value):
 		self.json_payload[key] = value
@@ -95,6 +99,7 @@ class R4Index(MainIndex):
 		self.render("r4_index.html", request=self,
 					site_description=self.locale.translate("station_description_id_%s" % self.sid),
 					revision_number=config.build_number,
+					jsfiles=self.jsfiles,
 					api_url=config.get("api_external_url_prefix"),
 					cookie_domain=config.get("cookie_domain"),
 					locales=api.locale.locale_names_json,

@@ -36,7 +36,7 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 	var current_key_nav_element = false;
 	var current_open_element = false;
 	var scroll_offset = 10;
-	var item_height;
+	var item_height = SmallScreen ? 18 : 22;
 	var num_items_to_display;
 	var waiting_for_render = false;
 	var scroll_index = false;
@@ -64,11 +64,6 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		}
 		for (i in json) {
 			self.update_item(json[i]);
-		}
-		// now calculate 1 item's height. we'll use this to sidestep calculating the entire
-		// height of all elements on update_scroll_height.
-		if (!item_height) {
-			item_height = $measure_el(json[0]._el).height + 1;
 		}
 		if (self.after_update) self.after_update(json, data, sorted);
 		self.update_view();
@@ -501,8 +496,10 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		var i = 0;
 		// full reset
 		if (scroll_index === false) {
-			while (self.el.firstChild.nextSibling) {
-    			self.el.removeChild(self.el.lastChild);
+			if (self.el.firstChild) {
+				while (self.el.firstChild.nextSibling) {
+	    			self.el.removeChild(self.el.lastChild);
+				}
 			}
 			display_count = 0;
 			for (i = new_index; (i < (new_index + num_items_to_display)) && (i < visible.length); i++) {
@@ -584,7 +581,9 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 
 	self.on_resize = function() {
 		if (self.loaded) {
-			item_height = $measure_el(data[sorted[0]]._el).height + 1;
+			if (SmallScreen) item_height = 17;
+			else item_height = 22;
+			// item_height = $measure_el(data[sorted[0]]._el).height + 1;
 			self.update_scroll_height();
 		}
 	};

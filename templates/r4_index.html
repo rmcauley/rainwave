@@ -18,7 +18,11 @@
 	</script>
 	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
 	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
-	<script src="/static/baked/{{ revision_number }}/script4.js" type="application/javascript"></script>
+	{% if jsfiles %}
+		{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
+	{% else %}
+		<script src="/static/baked/{{ revision_number }}/script4.js" type="application/javascript"></script>
+	{% end %}
 </head>
 <body onload="initialize();">
 	<audio preload="none" id="audio"></audio>
@@ -59,7 +63,10 @@
 		<div id="lists">
 			<ul id="lists_tabs"></ul>
 			<div id="lists_searchbox">
-				<div id="searchlist_input"></div>
+				<div id="searchlist_input">
+					<div id="searchlist_searchbox" class="searchlist_searchbox"></div>
+					<img id="searchlist_cancel" src="/static/images4/cancel_ldpi.png" class="searchlist_cancel" alt="x" />
+				</div>
 			</div>
 			<div id="lists_container"></div>
 		</div>

@@ -5,6 +5,7 @@ var Fx = function() {
 	self.delay_legacy_fx = false;
 	var delayed_css = [];
 	var delayed_fx = [];
+	var reflow_batch = [];
 
 	var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
 	var performance = window.performance || { "now": function() { return new Date().getTime(); } };
@@ -101,6 +102,23 @@ var Fx = function() {
 				if (el.parentNode) el.parentNode.removeChild(el);
 			}
 		);
+	};
+
+	//*****************************************************************************
+	//
+	//  Reflow Batching
+	//
+	//*****************************************************************************
+
+	self.delay_reflow = function(f) {
+		reflow_batch.push(f);
+	};
+
+	self.flush_reflow = function(f) {
+		for (var i = 0; i < reflow_batch.length; i++) {
+			f();
+		}
+		reflow_batch = [];
 	};
 
 	//*****************************************************************************
