@@ -36,9 +36,30 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 	var fave_solid = self.el.appendChild($el("img", { "class": "fave_solid", "src": "/static/images4/heart_solid.png"}));
 	var fave_lined = self.el.appendChild($el("img", { "class": "fave_lined", "src": "/static/images4/heart_lined.png"}));
 	var current_rating;
-	var effect = Fx.legacy_effect(Fx.Rating, self.el, 400);
 	var offset_left;
 	var offset_top;
+
+	// this mimics an old effects library I used to use myself
+	var effect = function() {
+		var e = {};
+		e.change_to_user_rating = function() {
+			$remove_class(element, "rating_site");
+			$add_class(element, "rating_user");
+		};
+		e.change_to_site_rating = function() {
+			$remove_class(element, "rating_user");
+			$add_class(element, "rating_site");
+		};
+		e.set_rating = function(rating) {
+			self.el.style.backgroundPosition = "18px " + (-(Math.round((Math.round(rating * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
+		};
+		e.set = function(rating) {
+			self.el.style.transition = "none";
+			e.set_rating(rating);
+			self.el.style.transition = null;
+		};
+		return e;
+	}();
 
 	self.reset_rating = function() {
 		if (self.rating_user) {

@@ -5,6 +5,7 @@
 	padding: 0;
 	margin: 0;
 	height: 1.2em;
+	@include transition-wtime(200ms, background-position);
 }
 
 .ratable {
