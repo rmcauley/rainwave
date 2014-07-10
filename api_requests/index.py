@@ -83,12 +83,13 @@ class R4Index(MainIndex):
 			self.perks_required = False
 		super(R4Index, self).prepare()
 		self.json_payload = {}
-
+		
 		self.js4files = []
 		for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js4")):
 			for f in files:
 				self.js4files.append(os.path.join(root[root.find("static/js4"):], f))
-		buildtools.bake_css()
+		if config.get("web_developer_mode") or config.get("developer_mode") or config.get("test_mode"):
+			buildtools.bake_css()
 
 	def append(self, key, value):
 		self.json_payload[key] = value
