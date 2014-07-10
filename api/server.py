@@ -21,6 +21,7 @@ from libs import db
 from libs import chuser
 from libs import cache
 from libs import memory_trace
+from libs import buildtools
 from rainwave import playlist
 from rainwave import schedule
 import rainwave.request
@@ -146,6 +147,10 @@ class APIServer(object):
 
 		if config.get("api_user") and config.get("api_group"):
 			chuser.change_user(config.get("api_user"), config.get("api_group"))
+
+		if task_id == 0:
+			buildtools.bake_css()
+			buildtools.bake_js()
 
 		for request in request_classes:
 			log.debug("start", "   Handler: %s" % str(request))
