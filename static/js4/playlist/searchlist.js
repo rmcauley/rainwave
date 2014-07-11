@@ -9,16 +9,13 @@
 
 // scrolling using the keys while the current scroll position is off screen causes problems
 
-var SearchList = function(list_name, sort_key, search_key, parent_el) {
+var SearchList = function(el, sort_key, search_key) {
 	"use strict";
 	var self = {};
-	self.list_name = list_name;
-	self.offset_height;
 	self.sort_key = sort_key;
 	self.search_key = search_key || "id";
 	self.auto_trim = false;
-	self.after_update = null;
-	self.el = $el("div", { "class": "searchlist" });
+	self.el = el;
 	self.search_box_input = $el("div", { "class": "searchlist_input", "textContent": $l("filter") });
 	self.search_box_input.addEventListener("keypress", function(e) { e.preventDefault(); });
 	// see bottom of this object for event binding
@@ -583,7 +580,6 @@ var SearchList = function(list_name, sort_key, search_key, parent_el) {
 		if (self.loaded) {
 			if (SmallScreen) item_height = 17;
 			else item_height = 22;
-			// item_height = $measure_el(data[sorted[0]]._el).height + 1;
 			self.update_scroll_height();
 		}
 	};

@@ -56,6 +56,10 @@ body.small_screen {
 	font-size: smaller;
 }
 
+body.loading div {
+	background: #000 !important;
+}
+
 #sizable_body {
 	overflow: hidden;
 }

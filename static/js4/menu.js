@@ -2,7 +2,7 @@ var Menu = function() {
 	var self = {};
 	var elements = {};
 
-	self.initialize = function(station_list) {
+	self.draw = function(station_list) {
 		$id("player").insertBefore($el("img", { "class": "avatar", "src": User.avatar }), $id("player").firstChild);
 		var order = [ 5, 1, 4, 3, 2 ];
 		var ul = $id("station_select");

@@ -9,10 +9,6 @@ var DetailView = function() {
 	self.initialize = function() {
 		Prefs.define("request_made");
 		el = $id("detail");
-		if (!Prefs.get("request_made")) {
-			$add_class(el, "songlist_request_hint");
-			Prefs.add_callback("request_made", request_made_changed);
-		}
 		scroller = Scrollbar.new(el);
 		scroller.update_scroll_height();
 		API.add_callback(draw_album, "album");
@@ -22,6 +18,13 @@ var DetailView = function() {
 		DeepLinker.register_route("album", open_album_internal);
 		DeepLinker.register_route("artist", open_artist_internal);
 		DeepLinker.register_route("listener", open_listener_internal);
+	};
+
+	self.draw = function() {
+		if (!Prefs.get("request_made")) {
+			$add_class(el, "songlist_request_hint");
+			Prefs.add_callback("request_made", request_made_changed);
+		}
 	};
 
 	var request_made_changed = function(request_made) {

@@ -64,22 +64,7 @@ var EventBase = function(json) {
 				self.el.appendChild(self.songs[i].el);
 			}
 		}
-		//solve_height();
 	};
-
-	// var solve_height = function() {
-	// 	if (self.songs) {
-	// 		if ($has_class(self.el, "timeline_now_playing")) {
-	// 			self.height = (SmallScreen ? 90 : 130) + (TimelineSong.height * (self.songs.length - 1));
-	// 		}
-	// 		else {
-	// 			self.height = TimelineSong.height * self.songs.length;
-	// 		}
-	// 	}
-	// 	else {
-	// 		self.height = $measure_el(self.el).height;
-	// 	}
-	// };
 
 	self.update = function(json) {
 		self.data = json;
@@ -123,11 +108,6 @@ var EventBase = function(json) {
 			$add_class(self.songs[0].el, "timeline_now_playing_song");
 		}
 		$add_class(self.el, "timeline_now_playing");
-		//solve_height();
-	};
-
-	self.reflow = function() {
-		//solve_height();
 	};
 
 	self.enable_voting = function() {

@@ -1,85 +1,93 @@
+/*  REWRITE BRAIN DUMP
+- All scrollbar instances need to be rewritten
+- All resizer instances need to be rewritten
+- Search list needs to be rewritten as elements already exist on the page
+- All files need to be checked for forced paints
+- CSS3 rating bars need to be tested
+- Timeline progress bar needs to be rewritten
+- Small screen layout fails with current timeline CSS
+- New requests HTML completely untested
+- Scrollbar CSS completely not updated
+
+*/
+
 var User;
 var SmallScreen = false;
 var SCREEN_HEIGHT;
 var SCREEN_WIDTH;
+var INIT_HEIGHT_USED = false;
 
 function _size_calculate() {
 	"use strict";
-	var screen_size_changed = false;
-
 	SCREEN_HEIGHT = document.documentElement.clientHeight;
 	SCREEN_WIDTH = document.documentElement.clienWidth;
 	if ((SCREEN_WIDTH <= 1400) && !SmallScreen) {
-		$add_class(document.body, "small_screen");
+		Fx.delay_reflow(function() { $add_class(document.body, "small_screen") });
 		SmallScreen = true;
-		screen_size_changed = true;
 		RatingControl.change_padding_top(1);
-	} 
+	}
 	else if ((SCREEN_WIDTH > 1400) && SmallScreen) {
-		$remove_class(document.body, "small_screen");
+		Fx.delay_reflow(function() { $remove_class(document.body, "small_screen") });
 		SmallScreen = false;
-		screen_size_changed = true;
 		RatingControl.change_padding_top(3);
 	}
-	return screen_size_changed;
 }
 
 function _on_resize() {
+	// this function causes a 2-paint reflow but the development cost of
+	// getting this down to a single reflow would be astronomical in code complexity
 	"use strict";
-	var screen_size_changed	= _size_calculate();
-	var new_height = (window.innerHeight - $id('menu').offsetHeight);
+	if (INIT_HEIGHT_USED) _size_calculate();
+	INIT_HEIGHT_USED = true;
+	var new_height = SCREEN_HEIGHT - 56;
+	Fx.flush_reflow();
+
 	$id('sizable_body').style.height = new_height + "px";
-	TimelineSong.calculate_height();
+	Scrollbar.recalculate();
 	PlaylistLists.on_resize(new_height);
-	Scrollbar.refresh_all_scrollbars();
-	DetailView.on_resize();
-	Requests.on_resize(new_height);
-	//History.on_resize(new_height);
-	// this has to go after due to scrollbar funkiness with the schedule
-	if (screen_size_changed) {
-		Schedule.reflow();
-		Requests.reflow();
-		//History.reflow();
-	}
 }
 
 function initialize() {
 	"use strict";
 
-	var get_vars = {};
-	// http://papermashup.com/read-url-get-variables-withjavascript/
-	var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-		get_vars[key] = value;
-	});
-
-	Fx.delay_legacy_fx = true;
-	_size_calculate();
-	window.addEventListener("resize", _on_resize, false);
-
+	// ****************** DATA HANDLING
 	User = BOOTSTRAP.json.user;
 	API.add_callback(function(json) { User = json; }, "user");
 
-	// Prefs does not need an initialize() - it's loaded with the page
 	RatingControl.initialize();
-	Fx.initialize();
 	ErrorHandler.initialize();
 	Clock.initialize();
 	Schedule.initialize();
-	PlaylistLists.initialize();
 	DetailView.initialize();
+	PlaylistLists.initialize();
 	Requests.initialize();
-	//History.initialize();
-	R4Audio.initialize(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
-	Menu.initialize(BOOTSTRAP.station_list);
-	_on_resize();
 
-	// API comes last since it will do all the callbacks to initialized
+	// ****************** PAGE LAYOUT
+	// PREP: Applies the small_screen class if necessary
+	Fx.flush_reflow();
+
+	// PAINT 1: Measure scrollbar width, setup scrollbar variables
+	Scrollbar.calculate_scrollbar_width();
+	Schedule.scroll_init();
+	Requests.scroll_init();
+	PlaylistLists.scroll_init();
+	Scrollbar.resizer_calculate();
+
+	// DIRTY THE LAYOUT
+	Scrollbar.resizer_refresh();
+	DetailView.draw();
+	PlaylistLists.draw();
+	Menu.draw(BOOTSTRAP.station_list);
+	R4Audio.draw(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
 	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
+	$remove_class(document.body, "loading");
+	Fx.flush_reflow();
+	Scrollbar.refresh();
+
+	// Leave the final paint to the browser
+
+	// ****************** DATA CLEANUP
 	delete(BOOTSTRAP.json);
-
-	if (("fps" in get_vars) && (get_vars.fps) && ("mozPaintCount" in window)) {
-		FPSCounter.initialize();
-	}
-
 	DeepLinker.detect_url_change();
+	window.addEventListener("resize", _on_resize, false);
 };

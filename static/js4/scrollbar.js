@@ -1,132 +1,90 @@
 var Scrollbar = function() {
 	"use strict";
-	var self = {};
-
+	var cls = {};
 	var scrollbars = [];
+	var resizers = [];
 
-	self.refresh_all_scrollbars = function() {
+	var scrollbar_width;
+
+	// A WORD ABOUT REFLOWING/DIRTYING THE LAYOUT
+	// the Recalculate functions measure widths/etc and so will trigger reflows
+	// the refresh functions here will dirty the layout
+	// call them very carefully
+
+	cls.calculate_scrollbar_width = function() {
+		scrollbar_width = 100 - $id("div_with_scroll").offsetWidth;
+	}
+
+	cls.recalculate = function() {
 		for (var i = 0; i < scrollbars.length; i++) {
-			if (scrollbars[i].auto_resize) {
-				scrollbars[i].parent_update_scroll_height();
-			}
+			scrollbars[i].recalculate();
 		}
 	};
 
-	self.new = function(element, margin_top, include_margin_top_in_height) {
-		if (!margin_top) margin_top = 0;
-		if (!include_margin_top_in_height) include_margin_top_in_height = false;
+	cls.refresh = function() {
+		for (var i = 0; i < scrollbars.length; i++) {
+			scrollbars[i].refresh();
+		}
+		for (i = 0; i < resizers.length; i++) {
+			resizers[i].reposition();
+		}
+	};
+
+	cls.resizer_calculate = function() {
+		for (var i = 0; i < resizers.length; i++) {
+			resizers[i].calculate();
+		}
+	};
+
+	cls.resizer_refresh = function() {
+		for (var i = 0; i < resizers.length; i++) {
+			resizers[i].resize();
+		}
+	};
+
+	cls.new = function(scrollblock, scrollable, handle, handle_margin_top) {
+		if (!handle_margin_top) handle_margin_top = 3;
+		var handle_margin_bottom = 3;
+
 		var self = {};
-		self.auto_resize = true;
-		self.scroll_top = 0;
-		self.margin_top = margin_top;
-		self.use_fixed = false;
-		self.post_resize_callback; 
-		self.max_scroll_top = 1;
-		var handle = element.insertBefore($el("div", { "class": "scrollbar"}), element.firstChild);
-		var scroll_height;
-		var offset_height;
-		var max_scroll_top = 0;
-		var scrollpx_per_handlepx = 1;
-		var handle_height = 0;
+		self.scroll_top = null;
+		self.scroll_top_max = null;
+		self.scroll_height = null;
+		self.offset_height = null;
+
 		var scrolling = false;
-		var original_mouse_y, original_mouse_x, original_transition;
-		var original_scroll_top, original_width;
-		var wheel_delta;
-		var scroll_enabled = false;
-		var resizer, resizer_name;
-		var resizer_max = 5000;
-		var resizer_min = 0;
-		var resizer_margin = 0;
+		var visible = false;
+		var scroll_top_fresh = false;
+		var scrollpx_per_handlepx, original_mouse_y, original_scroll_top;
 
-		// this function will handle a browser's automatic re-scroll when the page finishes loading
-		var first_scroll = function() {
-			self.scroll_top = element.scrollTop;
-			self.set_scrollTop(self.scroll_top);
-			self.parent_update_handle_position();
-			element.removeEventListener("scroll", first_scroll);
-			first_scroll = null;
+		self.recalculate = function() {
+			self.scroll_height = scrollable.scrollHeight;
+			self.offset_height = scrollable.offsetHeight;
+			self.scroll_top = scrollable.scrollTop;
+			self.scroll_top_max = scrollable.scrollTopMax;
+			scroll_top_fresh = true;
 		};
 
-		element.addEventListener("scroll", first_scroll);
-
-		self.scroll_to = function(new_scroll_top) {
-			if (!scroll_enabled) return false;
-			if (new_scroll_top < 0) new_scroll_top = 0;
-			if (max_scroll_top < new_scroll_top) new_scroll_top = max_scroll_top;
-			self.scroll_top = new_scroll_top;
-			self.set_scrollTop(new_scroll_top);
-			self.parent_update_handle_position(); 
-		};
-
-		self.parent_update_scroll_height = function(force_height) {
-			var original_scroll_place = self.scroll_top == 0 ? 0 : self.scroll_top / max_scroll_top;
-			scroll_height = force_height;
-			if (!scroll_height) {
-				handle.style.top = self.margin_top + "px";
-				scroll_height = element.scrollHeight;
-			}
-			if (include_margin_top_in_height) {
-				scroll_height += self.margin_top;
-			}
-			offset_height = element.offsetHeight;
-			self.offset_height = offset_height;
-			max_scroll_top = Math.max(scroll_height - offset_height, 0);
-			self.max_scroll_top = max_scroll_top;
-
-			if (self.scroll_top > max_scroll_top) {
-				self.scroll_top = max_scroll_top;
-				self.set_scrollTop(max_scroll_top);
-			}
-
-			// updates the handle to be the correct percentage of the screen, never less than 10% for size issues
-			if ((scroll_height === 0) || (offset_height === 0) || (scroll_height <= offset_height)) {
-				$add_class(handle, "scrollbar_invisible");
-				handle.style.height = "0px";
-				self.scroll_to(0);
-				scroll_enabled = false;
+		self.refresh = function() {
+			if ((self.scroll_height === 0) || (self.offset_height === 0) || (self.scroll_height <= self.offset_height)) {
+				if (visible) $add_class(handle, "scrollbar_invisible");
+				visible = false;
 			}
 			else {
-				$remove_class(handle, "scrollbar_invisible");
-				handle_height = Math.max(Math.round((offset_height - self.margin_top) / scroll_height * offset_height), 70);
-				scrollpx_per_handlepx = max_scroll_top / (offset_height - self.margin_top - handle_height - 3);
+				if (!visible) $remove_class(handle, "scrollbar_invisible");
+				visible = true;
+
+				handle_height = Math.max(Math.round((self.offset_height - handle_margin_top - handle_margin_bottom) / self.scroll_height * self.offset_height), 70);
+				scrollpx_per_handlepx = self.scroll_top_max / self.offset_height;
 				handle.style.height = handle_height + "px";
-				scroll_enabled = true;
-				self.scroll_to(original_scroll_place * max_scroll_top);			
 			}
-
-			wheel_delta = Math.min(250, Math.max(scroll_height * 0.08, 30));
 		};
 
-		self.update_scroll_height = self.parent_update_scroll_height;
-
-		self.parent_update_handle_position = function() {
-			if (!self.scroll_top || !max_scroll_top || (self.scroll_top < 0)) {
-				handle.style.top = self.margin_top + "px";
-				return;
-			}
-			var new_top = self.margin_top + Math.max(Math.round((self.scroll_top / max_scroll_top) * (offset_height - self.margin_top - handle_height - 3)), 3);
-			if (!self.use_fixed) new_top += self.scroll_top;
-			handle.style.top = new_top + "px";
-			if (resizer) resizer.style.top = self.scroll_top + "px";
-		};
-
-		self.set_scrollTop = function(scroll_top) {
-			element.scrollTop = scroll_top;
-		}
-
-		self.update_handle_position = self.parent_update_handle_position;
-
-		var mouse_move = function(e) {
-			var new_scroll_top = Math.round(original_scroll_top + ((e.screenY - original_mouse_y) * scrollpx_per_handlepx));
-			if (new_scroll_top > max_scroll_top) {
-				new_scroll_top = max_scroll_top;
-			}
-			else if (new_scroll_top < 0) {
-				new_scroll_top = 0;
-			}
-			self.scroll_top = new_scroll_top;
-			self.set_scrollTop(self.scroll_top);
-			self.parent_update_handle_position();
+		self.reposition = function(e) {
+			if (!visible) return;
+			if (!scroll_top_fresh) self.scroll_top = scrollable.scrollTop;
+			else scroll_top_fresh = false;
+			handle.style.top = (handle_margin_top + (Math.round((self.scroll_top / self.scroll_top_max) * (self.offset_height - 6))) + "px";
 		};
 
 		var mouse_down = function(e) {
@@ -141,6 +99,12 @@ var Scrollbar = function() {
 			//window.addEventListener("mouseout", mouse_up, false);
 		};
 
+		var mouse_move = function(e) {
+			var new_scroll_top = Math.round(original_scroll_top + ((e.screenY - original_mouse_y) * scrollpx_per_handlepx));
+			new_scroll_top = Math.max(Math.min(new_scroll_top, self.scroll_top_max), 0);
+			scrollable.scrollTop = new_scroll_top;
+		};
+
 		var mouse_up = function(e) {
 			window.removeEventListener("mousemove", mouse_move, false);
 			window.removeEventListener("mouseup", mouse_up, false);
@@ -149,149 +113,70 @@ var Scrollbar = function() {
 			scrolling = false;
 		};
 
-		var mouse_wheel = function(e) {
-			if (!scroll_enabled) {
-				return;
-			}
-			var delta = e.deltaY < 0 ? -wheel_delta : wheel_delta;
-			var new_scroll_top = self.scroll_top + delta;
-			if (new_scroll_top > max_scroll_top) {
-				new_scroll_top = max_scroll_top;
-			}
-			else if (new_scroll_top < 0) {
-				new_scroll_top = 0;
-			}
-			self.scroll_top = new_scroll_top;
-			self.set_scrollTop(new_scroll_top);
-			self.parent_update_handle_position();
-		};
-
-		self.add_resizer = function(new_resizer_name, new_resizer_margin, new_resizer_max, new_resizer_min) {
-			if (resizer) return;
-			if (self.margin_top == 0) {
-				self.margin_top = 32;
-				self.parent_update_handle_position();
-			}
-			if (new_resizer_max) resizer_max = new_resizer_max;
-			if (new_resizer_min) resizer_min = new_resizer_min;
-			resizer_margin = new_resizer_margin ? new_resizer_margin : 0;
-			resizer_name = new_resizer_name;
-			Prefs.define("resizer_" + resizer_name);
-			resizer = element.insertBefore($el("div", { "class": "resizer" }), element.firstChild);
-			resizer.addEventListener("mousedown", resizer_mouse_down);
-			original_width = Prefs.get("resizer_" + resizer_name);
-			if (!original_width) original_width = element.offsetWidth;
-			else element.style.width = original_width + "px";
-		};
-
-		var resizer_mouse_down = function(e) {
-			if (scrolling) return;
-			$add_class(document.body, "unselectable");
-			$add_class(element, "resizing");
-			scrolling = true;
-			original_mouse_x = e.screenX;
-			window.addEventListener("mousemove", resizer_mouse_move);
-			window.addEventListener("mouseup", resizer_mouse_up);
-		};
-
-		var resizer_mouse_up = function(e) {
-			window.removeEventListener("mousemove", resizer_mouse_move);
-			window.removeEventListener("mouseup", resizer_mouse_up);
-			$remove_class(document.body, "unselectable");
-			$remove_class(element, "resizing");
-			scrolling = false;
-			original_width = element.offsetWidth;
-			Prefs.change("resizer_" + resizer_name, original_width - resizer_margin);
-			if (self.post_resize_callback) self.post_resize_callback();
-		};
-
-		var resizer_mouse_move = function(e) {
-			var resizer_new_width = Math.round(original_width + (e.screenX - original_mouse_x));
-			if (resizer_new_width > resizer_max) {
-				resizer_new_width = resizer_max;
-			}
-			else if (resizer_new_width < resizer_min) {
-				resizer_new_width = resizer_min;
-			}
-			element.style.width = resizer_new_width + "px";
-		};
-
-
-
 		handle.addEventListener("mousedown", mouse_down);
-		addWheelListener(element, mouse_wheel);
-
+		scrollable.addEventListener("scroll", reposition);
 		scrollbars.push(self);
 		return self;
 	};
 
-	return self;
+	cls.new_resizer = function(scrollblock, scrollable, resizer) {
+		var self = {};
+		var scrollables = [ scrollable ];
+		var original_mouse_x;
+		var resizing = false;
+
+		Prefs.define("resize_" + element.id);
+		self.size = Prefs.get("resize_" + element.id);
+
+		self.add_scrollable = function(scrollable) {
+			scrollables.push(scrollable);
+		};
+
+		self.save = function() {
+			Prefs.set("resize_" + element.id, self.size);
+		};
+		
+		self.calculate = function() {
+			if (!self.size) {
+				self.size = scrollblock.offsetWidth;
+				self.save();
+			}
+		};
+
+		self.resize = function(new_size) {
+			new_size = new_size || self.size;
+			scrollblock.style.width = new_size + "px";
+			for (var i = 0; i < scrollables.length; i++) {
+				scrollable.style.width = (new_size + scrollbar_width) + "px";
+			}
+		};
+
+		var mouse_down = function(e) {
+			if (resizing) return;
+			$add_class(document.body, "unselectable");
+			resizing = true;
+			original_mouse_x = e.screenX;
+			window.addEventListener("mousemove", mouse_move);
+			window.addEventListener("mouseup", mouse_up);
+		};
+
+		var mouse_move = function(e) {
+			self.resize(Math.round(self.size + (e.screenX - original_mouse_x)));
+		};
+
+		var mouse_up = function(e) {
+			window.removeEventListener("mousemove", mouse_move);
+			window.removeEventListener("mouseup", mouse_up);
+			$remove_class(document.body, "unselectable");
+			resizing = false;
+			self.size = resizer.offsetWidth;
+			Prefs.change("resizer_" + resizer.id, self.size);
+			self.save();
+		};
+
+		resizer.addEventListener("mousedown", mouse_down);
+		return self;
+	};
+
+	return cls;
 }();
-
-// ************* MOUSE WHEEL SUPPORT
-// https://developer.mozilla.org/en-US/docs/Web/Reference/Events/wheel?redirectlocale=en-US&redirectslug=DOM%2FMozilla_event_reference%2Fwheel
-
-// creates a global "addWheelListener" method
-// example: addWheelListener( elem, function( e ) { console.log( e.deltaY ); e.preventDefault(); } );
-(function(window,document) {
-
-    var prefix = "", _addEventListener, onwheel, support;
-
-    // detect event model
-    if ( window.addEventListener ) {
-        _addEventListener = "addEventListener";
-    } else {
-        _addEventListener = "attachEvent";
-        prefix = "on";
-    }
-
-    // detect available wheel event
-    support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
-              document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
-              "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
-
-    window.addWheelListener = function( elem, callback, useCapture ) {
-        _addWheelListener( elem, support, callback, useCapture );
-
-        // handle MozMousePixelScroll in older Firefox
-        if( support == "DOMMouseScroll" ) {
-            _addWheelListener( elem, "MozMousePixelScroll", callback, useCapture );
-        }
-    };
-
-    function _addWheelListener( elem, eventName, callback, useCapture ) {
-        elem[ _addEventListener ]( prefix + eventName, support == "wheel" ? callback : function( originalEvent ) {
-            !originalEvent && ( originalEvent = window.event );
-
-            // create a normalized event object
-            var event = {
-                // keep a ref to the original event object
-                originalEvent: originalEvent,
-                target: originalEvent.target || originalEvent.srcElement,
-                type: "wheel",
-                deltaMode: originalEvent.type == "MozMousePixelScroll" ? 0 : 1,
-                deltaX: 0,
-                delatZ: 0,
-                preventDefault: function() {
-                    originalEvent.preventDefault ?
-                        originalEvent.preventDefault() :
-                        originalEvent.returnValue = false;
-                }
-            };
-            
-            // calculate deltaY (and deltaX) according to the event
-            if ( support == "mousewheel" ) {
-                event.deltaY = - 1/40 * originalEvent.wheelDelta;
-                // Webkit also support wheelDeltaX
-                originalEvent.wheelDeltaX && ( event.deltaX = - 1/40 * originalEvent.wheelDeltaX );
-            } else {
-                event.deltaY = originalEvent.detail;
-            }
-
-            // it's time to fire the callback
-            return callback( event );
-
-        }, useCapture || false );
-    }
-
-})(window,document);

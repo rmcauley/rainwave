@@ -23,19 +23,17 @@
 	{% else %}
 		<script src="/static/baked/{{ revision_number }}/script4.js" type="application/javascript"></script>
 	{% end %}
+	<script type="text/javascript">
+		_size_calculate();
+	</script>
 </head>
-<body onload="initialize();">
+<body class="loading" onload="initialize();">
 	<audio preload="none" id="audio"></audio>
+	<div id="div_with_scroll" style="position: absolute; top:-1500px; width: 100px; overflow: auto; height: 50px;">
+		<div style="height: 100px; width: 10px;">
+	</div>
 	<div id="measure_box">
 		<div id="playlist_item_height" class="searchlist_item">Hello</div>
-		<img src="/static/images4/cancel_ldpi.png" />
-		<img src="/static/images4/heart_solid.png" />
-		<img src="/static/images4/noart_1.jpg" />
-		<img src="/static/images4/anonymous.png" />
-		<img src="/static/images4/heart_lined.png" />
-		<img src="/static/images4/vote_hover.png" />
-		<img src="/static/images4/rating_bar/dark_ldpi.png" />
-		<img src="/static/images4/rating_bar/bright_ldpi.png" />
 	</div>
 	<div id="menu">
 		<img src="/static/images4/logo.png" id="rainwave_logo"></img>
@@ -45,6 +43,7 @@
 	<div id="messages"></div>
 	<div id="sizable_body">
 		<div id="requests">
+			<div id="requests_scrollbar" class="scollbar"></div>
 			<div id="requests_header"></div>
 			<div id="requests_toolbar">
 				<img id="requests_pin" src="/static/images4/pin_hdpi.png" width="14" height="14" />
@@ -52,15 +51,23 @@
 				<img id="requests_unrated" class="requests_advanced" src="/static/images4/request_unrated.png" width="14" height="14" />
 				<img id="requests_clear" class="requests_advanced" src="/static/images4/request_clear.png" width="14" height="14" />
 			</div>
-			<div id="requests_list"></div>
+			<div id="requests_list_scrollblock">
+				<div id="requests_list"></div>
+			</div>
 		</div>
 		<!--<div id="history">
 			<img id="history_pin" src="/static/images4/pin_hdpi.png" width="14" height="14" />
 			<div id="history_header"></div>
 			<div id="history_list"></div>
 		</div>-->
-		<div id="timeline"></div>
+		<div id="timeline_scrollblock">
+			<div id="timeline">
+				<div id="timeline_scrollbar" class="scollbar"></div>
+				<div id="timeline_resizer" class="resizer"></div>
+			</div>
+		</div>
 		<div id="lists">
+			<div id="lists_resizer" class="resizer"></div>
 			<ul id="lists_tabs"></ul>
 			<div id="lists_searchbox">
 				<div id="searchlist_input">
@@ -68,9 +75,18 @@
 					<img id="searchlist_cancel" src="/static/images4/cancel_ldpi.png" class="searchlist_cancel" alt="x" />
 				</div>
 			</div>
-			<div id="lists_container"></div>
+			<div id="lists_container">
+				<div id="lists_albums" class="searchlist">
+					<div id="lists_albums_scrollbar" class="scollbar"></div>
+				</div>
+				<div id="lists_artists" class="searchlist">
+					<div id="lists_artists_scrollbar" class="scollbar"></div>
+				</div>
+			</div>
 		</div>
-		<div id="detail"></div>
+		<div id="detail_scrollblock">
+			<div id="detail"></div>
+		</div>
 	</div>
 </body>
 </html>

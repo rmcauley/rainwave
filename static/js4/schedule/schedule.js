@@ -10,19 +10,21 @@ var Schedule = function() {
 	var current_event;
 
 	var timeline_scrollbar;
+	var timeline_resizer;
+
+	self.scroll_init = function() {
+		self.el = $id("timeline");
+		timeline_scrollbar = Scrollbar.new($id("timeline_scrollblock"), self.el, $timeline("timeline_scrollbar"), 30);
+		timeline_resizer = Scrollbar.new_resizer($id("timeline_scrollblock"), self.el, $id("timeline_resizer"));
+	};
 
 	self.initialize = function() {
-		self.el = $id("timeline");
 		API.add_callback(function(json) { sched_current = json; }, "sched_current");
 		API.add_callback(function(json) { sched_next = json; }, "sched_next");
 		API.add_callback(self.update, "_SYNC_COMPLETE");
 
 		API.add_callback(self.register_vote, "vote_result");
 		API.add_callback(self.tune_in_voting_allowed_check, "user");
-
-		timeline_scrollbar = Scrollbar.new(self.el);
-		timeline_scrollbar.auto_resize = false;
-		timeline_scrollbar.add_resizer("timeline", 20, 600);
 	};
 
 	self.reflow = function() {};
