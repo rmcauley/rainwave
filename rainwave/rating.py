@@ -121,7 +121,9 @@ def update_album_ratings(target_sid, song_id, user_id):
 		rating_complete = False
 		if user_data['rating_user_count'] >= num_songs:
 			rating_complete = True
-		album_rating = float(user_data['rating_user'])
+		album_rating = None
+		if user_data['rating_user']:
+			album_rating = float(user_data['rating_user'])
 		album_fave = None
 		existing_rating = db.c.fetch_row("SELECT album_rating_user, album_fave FROM r4_album_ratings WHERE album_id = %s AND user_id = %s AND sid = %s", (album_id, user_id, sid))
 		if existing_rating:
