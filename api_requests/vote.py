@@ -21,11 +21,10 @@ class SubmitVote(APIHandler):
 	fields = { "entry_id": (fieldtypes.integer, True) }
 
 	def post(self):
-		events = cache.get_station(self.sid, "sched_next")
 		lock_count = 0
 		voted = False
 		elec_id = None
-		for event in events:
+		for event in cache.get_station(self.sid, "sched_next"):
 			lock_count += 1
 			if event.is_election and event.has_entry_id(self.get_argument("entry_id")):
 				elec_id = event.id
@@ -44,7 +43,7 @@ class SubmitVote(APIHandler):
 		if self.user.is_anonymous():
 			# log.debug("vote", "Anon already voted: %s" % (self.user.id, self.user.data['voted_entry']))
 			if self.user.data['voted_entry'] and self.user.data['voted_entry'] == entry_id:
-				# immediately return and a success will be registere
+				# immediately return and a success will be registered
 				return
 			if self.user.data['voted_entry']:
 				already_voted = True
@@ -71,36 +70,42 @@ class SubmitVote(APIHandler):
 			log.warn("vote", "Could not lock user: listener ID %s voting for entry ID %s, tried to lock for %s events." % (self.user.data['listener_id'], entry_id, lock_count))
 			raise APIException("internal_error", "Internal server error.  User is now locked to station ID %s." % self.sid)
 
-		if self.user.is_anonymous():
-			if not db.c.update("UPDATE r4_listeners SET listener_voted_entry = %s WHERE listener_id = %s", (entry_id, self.user.data['listener_id'])):
-				log.warn("vote", "Could not set voted_entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
-				raise APIException("internal_error")
-			self.user.update({ "listener_voted_entry": entry_id })
-		else:
-			if already_voted:
-				db.c.update("UPDATE r4_vote_history SET song_id = %s, entry_id = %s WHERE vote_id = %s", (event.get_entry(entry_id).id, entry_id, already_voted['vote_id']))
+		db.c.start_transaction()
+		try:
+			if self.user.is_anonymous():
+				if not db.c.update("UPDATE r4_listeners SET listener_voted_entry = %s WHERE listener_id = %s", (entry_id, self.user.data['listener_id'])):
+					log.warn("vote", "Could not set voted_entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
+					raise APIException("internal_error")
+				self.user.update({ "listener_voted_entry": entry_id })
 			else:
-				time_window = int(time.time()) - 1209600
-				vote_count = db.c.fetch_var("SELECT COUNT(vote_id) FROM r4_vote_history WHERE vote_time > %s AND user_id = %s", (time_window, self.user.id))
-				db.c.execute("SELECT user_id, COUNT(song_id) AS c FROM r4_vote_history WHERE vote_time > %s GROUP BY user_id HAVING COUNT(song_id) > %s", (time_window, vote_count))
-				rank = db.c.rowcount + 1
-				db.c.update(
-					"INSERT INTO r4_vote_history (elec_id, entry_id, user_id, song_id, vote_at_rank, vote_at_count, sid) "
-					"VALUES (%s, %s, %s, %s, %s, %s, %s)",
-					(event.id, entry_id, self.user.id, event.get_entry(entry_id).id, rank, vote_count, event.sid))
-				db.c.update("UPDATE phpbb_users SET radio_inactive = FALSE, radio_totalvotes = %s WHERE user_id = %s", (vote_count, self.user.id))
+				if already_voted:
+					db.c.update("UPDATE r4_vote_history SET song_id = %s, entry_id = %s WHERE vote_id = %s", (event.get_entry(entry_id).id, entry_id, already_voted['vote_id']))
+				else:
+					time_window = int(time.time()) - 1209600
+					vote_count = db.c.fetch_var("SELECT COUNT(vote_id) FROM r4_vote_history WHERE vote_time > %s AND user_id = %s", (time_window, self.user.id))
+					db.c.execute("SELECT user_id, COUNT(song_id) AS c FROM r4_vote_history WHERE vote_time > %s GROUP BY user_id HAVING COUNT(song_id) > %s", (time_window, vote_count))
+					rank = db.c.rowcount + 1
+					db.c.update(
+						"INSERT INTO r4_vote_history (elec_id, entry_id, user_id, song_id, vote_at_rank, vote_at_count, sid) "
+						"VALUES (%s, %s, %s, %s, %s, %s, %s)",
+						(event.id, entry_id, self.user.id, event.get_entry(entry_id).id, rank, vote_count, event.sid))
+					db.c.update("UPDATE phpbb_users SET radio_inactive = FALSE, radio_totalvotes = %s WHERE user_id = %s", (vote_count, self.user.id))
 
-			user_vote_cache = cache.get_user(self.user, "vote_history")
-			if not user_vote_cache:
-				user_vote_cache = []
-			while len(user_vote_cache) > 5:
-				user_vote_cache.pop(0)
-			user_vote_cache.append((event.id, entry_id))
-			cache.set_user(self.user, "vote_history", user_vote_cache)
+				user_vote_cache = cache.get_user(self.user, "vote_history")
+				if not user_vote_cache:
+					user_vote_cache = []
+				while len(user_vote_cache) > 5:
+					user_vote_cache.pop(0)
+				user_vote_cache.append((event.id, entry_id))
+				cache.set_user(self.user, "vote_history", user_vote_cache)
 
-		# Register vote
-		if not event.add_vote_to_entry(entry_id):
-			log.warn("vote", "Could not add vote to entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
-			raise APIException("internal_error")
+			# Register vote
+			if not event.add_vote_to_entry(entry_id):
+				log.warn("vote", "Could not add vote to entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
+				raise APIException("internal_error")
+			db.c.commit()
+		except:
+			db.c.rollback()
+			raise
 
 		return True

@@ -23,45 +23,58 @@ def get_album_rating(sid, album_id, user_id):
 	return rating
 
 def set_song_rating(sid, song_id, user_id, rating = None, fave = None):
-	existing_rating = db.c.fetch_row("SELECT song_rating_user, song_fave FROM r4_song_ratings WHERE song_id = %s AND user_id = %s", (song_id, user_id))
-	print existing_rating
-	count = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings WHERE user_id = %s", (user_id,))
-	if not existing_rating:
-		count += 1
-	rank = db.c.fetch_var("SELECT COUNT(*) FROM phpbb_users WHERE radio_totalratings > %s", (count,))
-	if existing_rating:
-		if not rating:
-			rating = existing_rating["song_rating_user"]
-		if not fave:
-			fave = existing_rating["song_fave"]
-		db.c.update("UPDATE r4_song_ratings "
-			"SET song_rating_user = %s, song_fave = %s, song_rated_at = %s, song_rated_at_rank = %s, song_rated_at_count = %s "
-			"WHERE user_id = %s AND song_id = %s",
-			(rating, fave, time.time(), rank, count, user_id, song_id))
-		db.c.update("UPDATE phpbb_users SET radio_totalmindchange = radio_totalmindchange + 1 WHERE user_id = %s", (user_id,))
-	else:
-		if not rating:
-			rating = None
-		if not fave:
-			fave = None
-		db.c.update("INSERT INTO r4_song_ratings "
-					"(song_rating_user, song_fave, song_rated_at, song_rated_at_rank, song_rated_at_count, user_id, song_id) "
-					"VALUES (%s, %s, %s, %s, %s, %s, %s)",
-					(rating, fave, time.time(), rank, count, user_id, song_id))
+	db.c.start_transaction()
+	try:
+		existing_rating = db.c.fetch_row("SELECT song_rating_user, song_fave FROM r4_song_ratings WHERE song_id = %s AND user_id = %s", (song_id, user_id))
+		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings WHERE user_id = %s", (user_id,))
+		if not existing_rating:
+			count += 1
+		rank = db.c.fetch_var("SELECT COUNT(*) FROM phpbb_users WHERE radio_totalratings > %s", (count,))
+		if existing_rating:
+			if not rating:
+				rating = existing_rating["song_rating_user"]
+			if not fave:
+				fave = existing_rating["song_fave"]
+			db.c.update("UPDATE r4_song_ratings "
+				"SET song_rating_user = %s, song_fave = %s, song_rated_at = %s, song_rated_at_rank = %s, song_rated_at_count = %s "
+				"WHERE user_id = %s AND song_id = %s",
+				(rating, fave, time.time(), rank, count, user_id, song_id))
+			db.c.update("UPDATE phpbb_users SET radio_totalmindchange = radio_totalmindchange + 1 WHERE user_id = %s", (user_id,))
+		else:
+			if not rating:
+				rating = None
+			if not fave:
+				fave = None
+			db.c.update("INSERT INTO r4_song_ratings "
+						"(song_rating_user, song_fave, song_rated_at, song_rated_at_rank, song_rated_at_count, user_id, song_id) "
+						"VALUES (%s, %s, %s, %s, %s, %s, %s)",
+						(rating, fave, time.time(), rank, count, user_id, song_id))
 
-	db.c.update("UPDATE phpbb_users SET radio_totalratings = %s WHERE user_id = %s", (count, user_id))
-	cache.set_song_rating(song_id, user_id, { "rating_user": rating, "fave": fave })
+		db.c.update("UPDATE phpbb_users SET radio_totalratings = %s WHERE user_id = %s", (count, user_id))
 
-	return update_album_ratings(sid, song_id, user_id)
+		albums = update_album_ratings(sid, song_id, user_id)
+		db.c.commit()
+		cache.set_song_rating(song_id, user_id, { "rating_user": rating, "fave": fave })
+		return albums
+	except:
+		db.c.rollback()
+		raise
 
 def clear_song_rating(sid, song_id, user_id):
 	existed = db.c.update("DELETE FROM r4_song_ratings WHERE song_id = %s AND user_id = %s", (song_id, user_id))
 	if existed:
-		return update_album_ratings(sid, song_id, user_id)
+		db.c.start_transaction()
+		try:
+			albums = update_album_ratings(sid, song_id, user_id)
+			db.c.commit()
+		except:
+			db.c.rollback()
+			raise
 	else:
 		return []
 
 def set_song_fave(song_id, user_id, fave):
+	db.c.start_transaction()
 	exists = db.c.fetch_row("SELECT * FROM r4_song_ratings WHERE song_id = %s AND user_id = %s", (song_id, user_id))
 	rating = None
 	if not exists:
@@ -79,8 +92,10 @@ def set_song_fave(song_id, user_id, fave):
 		db.c.update("UPDATE r4_songs SET song_fave_count = song_fave_count - 1 WHERE song_id = %s", (song_id,))
 	cache.set_song_rating(song_id, user_id, { "rating_user": rating, "fave": fave })
 	return True
+	db.c.commit()
 
 def set_album_fave(sid, album_id, user_id, fave):
+	db.c.start_transaction()
 	exists = db.c.fetch_row("SELECT * FROM r4_album_ratings WHERE album_id = %s AND user_id = %s AND sid = %s", (album_id, user_id, sid))
 	rating = None
 	rating_complete = None
@@ -103,6 +118,7 @@ def set_album_fave(sid, album_id, user_id, fave):
 	elif "album" == "song":
 		cache.set_song_rating(album_id, user_id, { "rating_user": rating, "fave": fave })
 	return True
+	db.c.commit()
 
 def update_album_ratings(target_sid, song_id, user_id):
 	toret = None
