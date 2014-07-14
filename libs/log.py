@@ -14,7 +14,7 @@ def init(logfile, loglevel = "warning"):
 	logging.getLogger().setLevel(logging.DEBUG)
 	logging.getLogger("tornado.access").setLevel(logging.CRITICAL)
 
-	handler = logging.handlers.RotatingFileHandler(logfile, maxBytes = 20000000, backupCount = 1)
+	handler = logging.handlers.RotatingFileHandler(logfile, maxBytes = 10000000, backupCount = 0)
 	handler.setFormatter(RWFormatter())
 	print_handler = logging.StreamHandler()
 	print_handler.setFormatter(RWFormatter())
