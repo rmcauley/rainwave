@@ -13,7 +13,7 @@ class SubmitRequest(APIHandler):
 	unlocked_listener_only = False
 	description = "Submits a request for a song."
 	fields = {
-		"song_id": (fieldtypes.song_id, True)
+		"song_id": (fieldtypes.song_id_matching_sid, True)
 	}
 
 	def post(self):
