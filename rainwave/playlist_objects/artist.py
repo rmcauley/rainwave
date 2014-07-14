@@ -1,4 +1,5 @@
 from libs import db
+from libs import config
 
 from rainwave.playlist_objects.metadata import AssociatedMetadata, MetadataUpdateError, make_searchable_string
 
@@ -72,7 +73,12 @@ class Artist(AssociatedMetadata):
 			(sid, sid, user_id, self.id))
 		# And of course, now we have to burn extra CPU cycles to make sure the right album name is used and that we present the data
 		# in the same format seen everywhere else on the API.  Still, much faster then loading individual song objects.
+		self.data['all_songs']
+		for sid in config.station_ids:
+			all_songs[sid] = []
 		requestable = True if user_id > 1 else False
 		for song in self.data['songs']:
 			song['requestable'] = requestable and song['requestable']
 			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id') } ]
+			self.data['all_songs'][song['sid']].append(song)
+		self.data['all_songs'] = songs
