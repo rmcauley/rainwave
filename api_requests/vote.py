@@ -78,7 +78,7 @@ class SubmitVote(APIHandler):
 				self.user.update({ "listener_voted_entry": entry_id })
 			else:
 				if already_voted:
-					db.c.update("UPDATE r4_vote_history SET song_id = %s, entry_id = %s WHERE vote_id = %s", (event.get_entry(entry_id).id, entry_id, already_voted['vote_id']))
+					db.c.update("UPDATE r4_vote_history SET song_id = %s, entry_id = %s WHERE user_id = %s and entry_id = %s", (event.get_entry(entry_id).id, entry_id, self.user.id, already_voted))
 				else:
 					time_window = int(time.time()) - 1209600
 					vote_count = db.c.fetch_var("SELECT COUNT(vote_id) FROM r4_vote_history WHERE vote_time > %s AND user_id = %s", (time_window, self.user.id))
