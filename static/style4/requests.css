@@ -82,9 +82,7 @@
 }
 
 #requests .timeline_song.dragging {
-	-webkit-transition: none;
-	-ms-transition: none;
-	transition: none;
+	@include no-transition();
 	z-index: 2;
 	background: #25263c;
 }

@@ -9,7 +9,7 @@
 
 // scrolling using the keys while the current scroll position is off screen causes problems
 
-var SearchList = function(el, sort_key, search_key) {
+var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key) {
 	"use strict";
 	var self = {};
 	self.sort_key = sort_key;
@@ -36,7 +36,7 @@ var SearchList = function(el, sort_key, search_key) {
 	var item_height = SmallScreen ? 18 : 22;
 	var num_items_to_display;
 	var waiting_for_render = false;
-	var scroll_index = false;
+	var scroll_index = 0;
 	var pre_search_scroll_index = false;
 	var scroll_to_open_item_on_clear = false;
 
@@ -44,15 +44,15 @@ var SearchList = function(el, sort_key, search_key) {
 
 	self.scrollbar = Scrollbar.new(self.el);
 	var scrollbar = self.scrollbar;
-	scrollbar.use_fixed = true;
-	scrollbar.set_scrollTop = function(scroll_top) {
-		self.scroll_to_index(Math.floor(scroll_top / scrollbar.max_scroll_top * (visible.length - num_items_to_display + 1)));
+	scrollbar.original_reposition = scrollbar.reposition;
+	scrollbar.reposition = function() {
+		scrollbar.original_reposition();
+		self.scroll_to_index(Math.floor(scrollbar.scroll_top / scrollbar.scroll_top_max * (visible.length - num_items_to_display + 1)));
 	};
 
 	// LIST MANAGEMENT ***********************************************
 
 	self.update = function(json) {
-		self.loaded = true;
 		var i;
 		if (self.auto_trim) {
 			for (i in data) {
@@ -71,9 +71,6 @@ var SearchList = function(el, sort_key, search_key) {
 		}
 		else if (self.update_cool_delayed) {
 			self.update_cool = self.update_cool_delayed;
-		}
-		if (scroll_index === false) {
-			self.scroll_to_index(0);
 		}
 	};
 
@@ -209,7 +206,8 @@ var SearchList = function(el, sort_key, search_key) {
 
 	self.update_scroll_height = function() {
 		var full_height = item_height * visible.length;
-		scrollbar.update_scroll_height(full_height + item_height, list_name);
+		stretching_el.style.height = full_height + "px";
+		scrollbar.recalculate();
 		num_items_to_display = Math.ceil(scrollbar.offset_height / item_height);
 	};
 
@@ -396,7 +394,6 @@ var SearchList = function(el, sort_key, search_key) {
 		self.remove_key_nav_highlight();
 		scroll_index = false;
 		self.update_scroll_height();
-		self.scroll_to_index(scroll_index);
 		return true;
 	};
 
@@ -419,8 +416,8 @@ var SearchList = function(el, sort_key, search_key) {
 			scroll_index = false;
 			self.update_scroll_height();
 			if (scroll_to_open_item_on_clear) self.scroll_to_id(current_open_element._id);
-			else if (pre_search_scroll_index) self.scroll_to_index(pre_search_scroll_index);
-			else self.scroll_to_index(scroll_index);
+			else if (pre_search_scroll_index) el.scrollTop = pre_search_scroll_index * item_height;
+			else el.scrollTop = scroll_index * item_height;
 			pre_search_scroll_index = false;
 			scroll_to_open_item_on_clear = false;
 		}
@@ -470,9 +467,7 @@ var SearchList = function(el, sort_key, search_key) {
 				self.set_scroll_offset(new_index - scroll_index);
 			}
 			new_index -= scroll_offset;
-			self.scroll_to_index(new_index);
-			scrollbar.scroll_top = new_index * item_height;
-			scrollbar.update_handle_position();
+			el.scrollTop = new_index * item_height;
 		}
 	};
 

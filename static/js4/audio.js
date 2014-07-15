@@ -3,7 +3,7 @@ var R4Audio = function() {
 	var audio_el;
 	var supported = false;
 
-	self.initialize = function(stream_filename, relays) {
+	self.draw = function(stream_filename, relays) {
 		audio_el = $id("audio");
 		if (!("canPlayType" in audio_el)) {
 			return;

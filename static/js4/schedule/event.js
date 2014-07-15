@@ -38,8 +38,8 @@ var EventBase = function(json) {
 	header.appendChild(header_text);
 	header_bar.appendChild(header_inside_bar);
 	header.appendChild(header_bar);
-	var time_bar_progress = Fx.legacy_effect(Fx.CSSNumeric, $id("timeline_header_now_playing_bar_inside"), 700, "width", "%");
-	var time_bar_progress_timer;
+	//var time_bar_progress = Fx.legacy_effect(Fx.CSSNumeric, $id("timeline_header_now_playing_bar_inside"), 700, "width", "%");
+	//var time_bar_progress_timer;
 	self.header_height = 0;
 	self.header_text;
 
@@ -197,32 +197,32 @@ var EventBase = function(json) {
 	};
 
 	self.progress_bar_start = function() {
-		if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
-		time_bar_progress.element.style.transition = "";
-		time_bar_progress.onComplete = start_time_bar_progress;
-		time_bar_progress.start(((self.end - Clock.now) / (self.data.songs[0].length - 1)) * 100);
+		// if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
+		// time_bar_progress.element.style.transition = "";
+		// time_bar_progress.onComplete = start_time_bar_progress;
+		// time_bar_progress.start(((self.end - Clock.now) / (self.data.songs[0].length - 1)) * 100);
 	};
 
 	self.progress_bar_stop = function() {
-		if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
+		// if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
 	};
 
 	var start_time_bar_progress = function() {
-		time_bar_progress.element.style.transition = "none";
-		time_bar_progress.onComplete = false;
-		time_bar_progress_timer = setInterval(update_time_bar_progress, 1000);
+		// time_bar_progress.element.style.transition = "none";
+		// time_bar_progress.onComplete = false;
+		// time_bar_progress_timer = setInterval(update_time_bar_progress, 1000);
 	};
 
 	var update_time_bar_progress = function() {
-		var new_val = ((current_event.end - Clock.now) / (current_event.data.songs[0].length - 1)) * 100;
-		if (new_val <= 0) {
-			if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
-			time_bar_progress_timer = false;
-			time_bar_progress.set(0);
-		}
-		else {
-			time_bar_progress.set(new_val);
-		}
+		// var new_val = ((current_event.end - Clock.now) / (current_event.data.songs[0].length - 1)) * 100;
+		// if (new_val <= 0) {
+		// 	if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
+		// 	time_bar_progress_timer = false;
+		// 	time_bar_progress.set(0);
+		// }
+		// else {
+		// 	time_bar_progress.set(new_val);
+		// }
 	};
 
 	draw();

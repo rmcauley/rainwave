@@ -43,21 +43,17 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 	var effect = function() {
 		var e = {};
 		e.change_to_user_rating = function() {
-			$remove_class(element, "rating_site");
-			$add_class(element, "rating_user");
+			$remove_class(self.el, "rating_site");
+			$add_class(self.el, "rating_user");
 		};
 		e.change_to_site_rating = function() {
-			$remove_class(element, "rating_user");
-			$add_class(element, "rating_site");
+			$remove_class(self.el, "rating_user");
+			$add_class(self.el, "rating_site");
 		};
 		e.set_rating = function(rating) {
 			self.el.style.backgroundPosition = "18px " + (-(Math.round((Math.round(rating * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
 		};
-		e.set = function(rating) {
-			self.el.style.transition = "none";
-			e.set_rating(rating);
-			self.el.style.transition = null;
-		};
+		e.set = e.set_rating;
 		return e;
 	}();
 

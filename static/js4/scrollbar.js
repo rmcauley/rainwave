@@ -13,7 +13,11 @@ var Scrollbar = function() {
 
 	cls.calculate_scrollbar_width = function() {
 		scrollbar_width = 100 - $id("div_with_scroll").offsetWidth;
-	}
+	};
+
+	cls.get_scrollbar_width = function() {
+		return scrollbar_width;
+	};
 
 	cls.recalculate = function() {
 		for (var i = 0; i < scrollbars.length; i++) {
@@ -42,7 +46,7 @@ var Scrollbar = function() {
 		}
 	};
 
-	cls.new = function(scrollblock, scrollable, handle, handle_margin_top) {
+	cls.new = function(scrollable, handle, handle_margin_top) {
 		if (!handle_margin_top) handle_margin_top = 3;
 		var handle_margin_bottom = 3;
 
@@ -80,11 +84,11 @@ var Scrollbar = function() {
 			}
 		};
 
-		self.reposition = function(e) {
+		self.reposition = function() {
 			if (!visible) return;
 			if (!scroll_top_fresh) self.scroll_top = scrollable.scrollTop;
 			else scroll_top_fresh = false;
-			handle.style.top = (handle_margin_top + (Math.round((self.scroll_top / self.scroll_top_max) * (self.offset_height - 6))) + "px";
+			handle.style.top = (handle_margin_top + (Math.round((self.scroll_top / self.scroll_top_max) * (self.offset_height - 6)))) + "px";
 		};
 
 		var mouse_down = function(e) {
@@ -114,7 +118,7 @@ var Scrollbar = function() {
 		};
 
 		handle.addEventListener("mousedown", mouse_down);
-		scrollable.addEventListener("scroll", reposition);
+		scrollable.addEventListener("scroll", self.reposition);
 		scrollbars.push(self);
 		return self;
 	};
@@ -125,15 +129,15 @@ var Scrollbar = function() {
 		var original_mouse_x;
 		var resizing = false;
 
-		Prefs.define("resize_" + element.id);
-		self.size = Prefs.get("resize_" + element.id);
+		Prefs.define("resize_" + scrollblock.id);
+		self.size = Prefs.get("resize_" + scrollblock.id);
 
 		self.add_scrollable = function(scrollable) {
 			scrollables.push(scrollable);
 		};
 
 		self.save = function() {
-			Prefs.set("resize_" + element.id, self.size);
+			Prefs.set("resize_" + scrollblock.id, self.size);
 		};
 		
 		self.calculate = function() {

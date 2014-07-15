@@ -27,7 +27,8 @@ var Fx = function() {
 	self.transform_string = function() {
 		var transforms = [ "transform", "WebkitTransform", "msTransform", "MozTransform", "OTransform" ];
 		var div = document.createElement("div");
-		while (var p = transforms.shift()) {
+		var p;
+		while (p = transforms.shift()) {
 			if (typeof(div.style[p]) != 'undefined') {
 				return p;
 			}
@@ -107,12 +108,12 @@ var Fx = function() {
 	//*****************************************************************************
 
 	self.delay_draw = function(f) {
-		reflow_batch.push(f);
+		draw_batch.push(f);
 	};
 
 	self.flush_draws = function(f) {
 		for (var i = 0; i < draw_batch.length; i++) {
-			f();
+			draw_batch[i]();
 		}
 		draw_batch = [];
 	};

@@ -12,6 +12,10 @@
 	cursor: pointer;
 }
 
+.ratable:hover {
+	@include no-transition();
+}
+
 body.small_screen .rating_site, body.small_screen .rating_user {
 	margin-top: 1px;
 }

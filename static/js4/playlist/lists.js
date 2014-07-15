@@ -1,4 +1,4 @@
-var PlaylistLists = function() {
+PlaylistLists = function() {
 	"use strict";
 	var self = {};
 	self.active_list = false;
@@ -9,6 +9,12 @@ var PlaylistLists = function() {
 	var search_cancel;
 	var search_box;
 
+	self.scroll_init = function() {
+		var resizer = Scrollbar.new_resizer(el, $id("lists_albums"), $id("lists_resizer"));
+		resizer.add_scrollable($id("lists_artists"));
+		// resizer.add_scrollable(lists.current_listeners.el)
+	};
+
 	self.initialize = function() {
 		Prefs.define("searchlist_show_cooldown");
 
@@ -18,20 +24,14 @@ var PlaylistLists = function() {
 		search_cancel = $id("searchlist_cancel");
 		search_cancel.addEventListener("click", function() { self.active_list.clear_search(); });
 
-		lists.all_albums = AlbumList(el);
-		lists.all_artists = ArtistList(el);
+		//lists.all_albums = AlbumList(el);
+		//lists.all_artists = ArtistList(el);
 		//lists.current_listeners = ListenersList(el);
 	};
 
-	self.scroll_init = function() {
-		var resizer = Scrollbar.new_resizer(el, lists.all_albums.el, $id("lists_resizer"));
-		resizer.add_scrollable(lists.all_artists.el);
-		// resizer.add_scrollable(lists.current_listeners.el)
-	};
-
 	self.draw = function() {		
-		tabs_el.appendChild(lists.all_albums.tab_el);
-		tabs_el.appendChild(lists.all_artists.tab_el);
+		//tabs_el.appendChild(lists.all_albums.tab_el);
+		//tabs_el.appendChild(lists.all_artists.tab_el);
 		//tabs_el.appendChild(lists.current_listeners.tab_el);
 
 		var cookie_list = docCookies.getItem("r4_active_list");

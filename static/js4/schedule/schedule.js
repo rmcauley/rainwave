@@ -14,7 +14,7 @@ var Schedule = function() {
 
 	self.scroll_init = function() {
 		self.el = $id("timeline");
-		timeline_scrollbar = Scrollbar.new($id("timeline_scrollblock"), self.el, $timeline("timeline_scrollbar"), 30);
+		timeline_scrollbar = Scrollbar.new($id("timeline_scrollblock"), self.el, $id("timeline_scrollbar"), 30);
 		timeline_resizer = Scrollbar.new_resizer($id("timeline_scrollblock"), self.el, $id("timeline_resizer"));
 	};
 
@@ -88,8 +88,6 @@ var Schedule = function() {
 			Clock.set_page_title(current_event.songs[0].data.albums[0].name + " - " + current_event.songs[0].data.title, current_event.end);
 			current_event.progress_bar_start();
 		}
-		
-		setTimeout(function() { timeline_scrollbar.update_scroll_height(); }, 2000);
 	};
 
 	var find_event = function(id) {

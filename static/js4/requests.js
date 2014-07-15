@@ -12,29 +12,12 @@ var Requests = function() {
 	var order_changed = false;
 	var original_mouse_y;
 
-	var mouse_over = function(e) {
-		$remove_class(container, "fake_hover");
-		if (fake_hover_timeout) {
-			if (fake_hover_timeout !== true) clearTimeout(fake_hover_timeout);
-			fake_hover_timeout = null;
-		}
-	};
+	self.scroll_init = function() {
 
-	var fake_hover = function() {
-		if (!fake_hover_timeout && !Prefs.get("requests_sticky")) {
-			fake_hover_timeout = setTimeout(function() { $remove_class(container, "fake_hover"); fake_hover_timeout = null; }, 3000);
-			$add_class(container, "fake_hover");
-		}
-	};
-
-	var once_mouse_out = function() {
-		fake_hover_timeout = null;
-		container.style.transition = null;
-		container.removeEventListener("mouseout", once_mouse_out);
-		$remove_class(container, "fake_hover");
 	};
 
 	self.initialize = function() {
+		return;
 		Prefs.define("requests_sticky");
 		el = $id("requests_list");
 		container = $id("requests");
@@ -61,6 +44,32 @@ var Requests = function() {
 
 		API.add_callback(self.update, "requests");
 		API.add_callback(self.show_queue_paused, "user");
+	};
+
+	self.draw = function() {
+
+	};
+
+	var mouse_over = function(e) {
+		$remove_class(container, "fake_hover");
+		if (fake_hover_timeout) {
+			if (fake_hover_timeout !== true) clearTimeout(fake_hover_timeout);
+			fake_hover_timeout = null;
+		}
+	};
+
+	var fake_hover = function() {
+		if (!fake_hover_timeout && !Prefs.get("requests_sticky")) {
+			fake_hover_timeout = setTimeout(function() { $remove_class(container, "fake_hover"); fake_hover_timeout = null; }, 3000);
+			$add_class(container, "fake_hover");
+		}
+	};
+
+	var once_mouse_out = function() {
+		fake_hover_timeout = null;
+		container.style.transition = null;
+		container.removeEventListener("mouseout", once_mouse_out);
+		$remove_class(container, "fake_hover");
 	};
 
 	self.show_queue_paused = function(user_json) {

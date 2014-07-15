@@ -1,14 +1,12 @@
 /*  REWRITE BRAIN DUMP
-- All scrollbar instances need to be rewritten
-- All resizer instances need to be rewritten
 - Search list needs to be rewritten as elements already exist on the page
-- All files need to be checked for forced paints
-- CSS3 rating bars need to be tested
+- Requests needs to be rewritten
+
 - Timeline progress bar needs to be rewritten
 - Small screen layout fails with current timeline CSS
-- New requests HTML completely untested
 - Scrollbar CSS completely not updated
 
+- CSS3 rating bars need to be tested
 */
 
 var User;
@@ -20,16 +18,16 @@ var INIT_HEIGHT_USED = false;
 function _size_calculate() {
 	"use strict";
 	SCREEN_HEIGHT = document.documentElement.clientHeight;
-	SCREEN_WIDTH = document.documentElement.clienWidth;
+	SCREEN_WIDTH = document.documentElement.clientWidth;
 	if ((SCREEN_WIDTH <= 1400) && !SmallScreen) {
-		Fx.delay_reflow(function() { $add_class(document.body, "small_screen") });
 		SmallScreen = true;
-		RatingControl.change_padding_top(1);
+		Fx.delay_draw(function() { $add_class(document.body, "small_screen") });
+		Fx.delay_draw(function() { RatingControl.change_padding_top(1); });
 	}
 	else if ((SCREEN_WIDTH > 1400) && SmallScreen) {
-		Fx.delay_reflow(function() { $remove_class(document.body, "small_screen") });
 		SmallScreen = false;
-		RatingControl.change_padding_top(3);
+		Fx.delay_draw(function() { $remove_class(document.body, "small_screen") });
+		Fx.delay_draw(function() { RatingControl.change_padding_top(3); });
 	}
 }
 
@@ -40,11 +38,12 @@ function _on_resize() {
 	if (INIT_HEIGHT_USED) _size_calculate();
 	INIT_HEIGHT_USED = true;
 	var new_height = SCREEN_HEIGHT - 56;
-	Fx.flush_reflow();
-
+	
+	Fx.flush_draws();
 	$id('sizable_body').style.height = new_height + "px";
-	Scrollbar.recalculate();
 	PlaylistLists.on_resize(new_height);
+
+	Scrollbar.recalculate();
 }
 
 function initialize() {
@@ -64,16 +63,18 @@ function initialize() {
 
 	// ****************** PAGE LAYOUT
 	// PREP: Applies the small_screen class if necessary
-	Fx.flush_reflow();
+	Fx.flush_draws();
 
-	// PAINT 1: Measure scrollbar width, setup scrollbar variables
+	// PAINT 1: Measure scrollbar width, setup scrollbars
 	Scrollbar.calculate_scrollbar_width();
 	Schedule.scroll_init();
 	Requests.scroll_init();
 	PlaylistLists.scroll_init();
+	DetailView.scroll_init();
 	Scrollbar.resizer_calculate();
 
 	// DIRTY THE LAYOUT
+
 	Scrollbar.resizer_refresh();
 	DetailView.draw();
 	PlaylistLists.draw();
@@ -81,10 +82,10 @@ function initialize() {
 	R4Audio.draw(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
 	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
 	$remove_class(document.body, "loading");
-	Fx.flush_reflow();
-	Scrollbar.refresh();
 
-	// Leave the final paint to the browser
+	// FINAL PAINT
+	Fx.flush_draws();
+	Scrollbar.refresh();
 
 	// ****************** DATA CLEANUP
 	delete(BOOTSTRAP.json);

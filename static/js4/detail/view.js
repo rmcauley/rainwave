@@ -9,8 +9,6 @@ var DetailView = function() {
 	self.initialize = function() {
 		Prefs.define("request_made");
 		el = $id("detail");
-		scroller = Scrollbar.new(el);
-		scroller.update_scroll_height();
 		API.add_callback(draw_album, "album");
 		API.add_callback(album_diff_handler, "album_diff");
 		API.add_callback(draw_artist, "artist");
@@ -25,6 +23,11 @@ var DetailView = function() {
 			$add_class(el, "songlist_request_hint");
 			Prefs.add_callback("request_made", request_made_changed);
 		}
+	};
+
+	self.scroll_init = function() {
+		scroller = Scrollbar.new(el, $id("detail_scrollbar"));
+		Fx.delay_draw(function() { el.style.paddingRight = Scrollbar.get_scrollbar_width(); });
 	};
 
 	var request_made_changed = function(request_made) {

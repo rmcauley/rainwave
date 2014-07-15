@@ -13,9 +13,7 @@ $song_subinfo_color = #CCC;
 }
 
 #timeline.resizing {
-	-webkit-transition: none;
-	-ms-transition: none;
-	transition: none;
+	@include no-transition();
 }
 
 .timeline_event {
@@ -111,8 +109,7 @@ body.small_screen .timeline_song .art_container {
 }
 
 .art_container .no_art {
-	-webkit-transition: none;
-	transition: none;
+	@include no-transition();
 }
 
 body.small_screen .timeline_song .art {

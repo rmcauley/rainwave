@@ -1,6 +1,6 @@
-var ArtistList = function(offset_width, parent_el) {
+var ArtistList = function() {
 	"use strict";
-	var self = SearchList("all_artists", "name", "name_searchable", parent_el);
+	var self = SearchList($id("lists_artists_items"), $el("lists_artists_scrollbar"), $id("lists_artists_stretcher"), "name", "name_searchable");
 	self.tab_el = $el("li", { "textContent": $l("Artists"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
 		if (!self.loaded) {
