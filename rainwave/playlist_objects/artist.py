@@ -81,4 +81,3 @@ class Artist(AssociatedMetadata):
 			song['requestable'] = requestable and song['requestable']
 			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id') } ]
 			self.data['all_songs'][song['sid']].append(song)
-		self.data['all_songs'] = songs
