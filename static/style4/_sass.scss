@@ -52,7 +52,8 @@ html, body {
 	height: 100%;
 	color: $text;
 	margin: 0;
-	padding: 0; 
+	padding: 0;
+	opacity: 1;
 	font-family: Helvetica, sans-serif;
 	overflow: hidden;
 	background: #1c1d1f;
@@ -62,8 +63,8 @@ body.small_screen {
 	font-size: smaller;
 }
 
-body.loading div {
-	background: #000 !important;
+body.loading {
+	opacity: 0;
 }
 
 #sizable_body {

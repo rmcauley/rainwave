@@ -29,9 +29,6 @@ var Scrollbar = function() {
 		for (var i = 0; i < scrollbars.length; i++) {
 			scrollbars[i].refresh();
 		}
-		for (i = 0; i < resizers.length; i++) {
-			resizers[i].reposition();
-		}
 	};
 
 	cls.resizer_calculate = function() {
@@ -137,7 +134,7 @@ var Scrollbar = function() {
 		};
 
 		self.save = function() {
-			Prefs.set("resize_" + scrollblock.id, self.size);
+			Prefs.change("resize_" + scrollblock.id, self.size);
 		};
 		
 		self.calculate = function() {
@@ -173,12 +170,12 @@ var Scrollbar = function() {
 			window.removeEventListener("mouseup", mouse_up);
 			$remove_class(document.body, "unselectable");
 			resizing = false;
-			self.size = resizer.offsetWidth;
-			Prefs.change("resizer_" + resizer.id, self.size);
+			self.size = Math.round(self.size + (e.screenX - original_mouse_x));
 			self.save();
 		};
 
 		resizer.addEventListener("mousedown", mouse_down);
+		resizers.push(self);
 		return self;
 	};
 

@@ -13,7 +13,6 @@ var User;
 var SmallScreen = false;
 var SCREEN_HEIGHT;
 var SCREEN_WIDTH;
-var INIT_HEIGHT_USED = false;
 
 function _size_calculate() {
 	"use strict";
@@ -35,8 +34,7 @@ function _on_resize() {
 	// this function causes a 2-paint reflow but the development cost of
 	// getting this down to a single reflow would be astronomical in code complexity
 	"use strict";
-	if (INIT_HEIGHT_USED) _size_calculate();
-	INIT_HEIGHT_USED = true;
+	_size_calculate();
 	var new_height = SCREEN_HEIGHT - 56;
 	
 	Fx.flush_draws();
@@ -62,8 +60,9 @@ function initialize() {
 	Requests.initialize();
 
 	// ****************** PAGE LAYOUT
-	// PREP: Applies the small_screen class if necessary
+	// PREP: Applies the small_screen class if necessary and sizes everything
 	Fx.flush_draws();
+	$id('sizable_body').style.height = SCREEN_HEIGHT + "px";
 
 	// PAINT 1: Measure scrollbar width, setup scrollbars
 	Scrollbar.calculate_scrollbar_width();
@@ -82,6 +81,7 @@ function initialize() {
 	R4Audio.draw(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
 	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
 	$remove_class(document.body, "loading");
+	setTimeout(2000, function() { $remove_class(document.body, "unselectable"); });
 
 	// FINAL PAINT
 	Fx.flush_draws();

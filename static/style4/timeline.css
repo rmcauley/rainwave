@@ -1,6 +1,6 @@
 $song_subinfo_color = #CCC;
 
-#timeline {
+#timeline_scrollblock {
 	float: left;
 	height: 100%;
 	min-width: 19em;
@@ -12,17 +12,22 @@ $song_subinfo_color = #CCC;
 	width: 26em;
 }
 
+.unselectable #timeline_scrollblock {
+	@include no-transition();
+}
+
 #timeline.resizing {
 	@include no-transition();
 }
 
 .timeline_event {
+	clear: left;
 	position: relative;
 	width: 100%;
 	@include transition(height, opacity, transform, margin-top);
 }
 
-body.small_screen .timeline_event + body.small_screen + .timeline_event {
+.timeline_event + .timeline_event {
 	margin-top: 10px;
 }
 
@@ -32,8 +37,8 @@ body.small_screen .timeline_event + body.small_screen + .timeline_event {
 }
 
 .timeline_song {
+	clear: both;
 	position: relative;
-	clear: left;
 	cursor: default;
 	-webkit-transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
 	-ms-transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
@@ -41,11 +46,8 @@ body.small_screen .timeline_event + body.small_screen + .timeline_event {
 	background-image: url(/static/images4/vote_hover.png);
 	background-position: -678px 0px;
 	background-repeat: no-repeat;
-	height: 70px;
-}
-
-body.small_screen .timeline_song {
-	height: 55px;
+	z-index: 1;
+	overflow: hidden;
 }
 
 .timeline_song_is_cool {
@@ -62,16 +64,12 @@ body.small_screen .timeline_song {
 	white-space: nowrap;
 }
 
+.timeline_song .album_group {
+	clear: right;
+}
+
 .timeline_song .album {
 	cursor: pointer;
-}
-
-.timeline_song_content {
-	margin-left: 80px;
-}
-
-body.small_screen .timeline_song_content {
-	margin-left: 80px;
 }
 
 .timeline_song_content > div {
@@ -88,6 +86,7 @@ body.small_screen .timeline_song_content {
 
 .art_container {
 	float: left;
+	margin-right: 10px;
 	width: 70px;
 	height: 70px;
 	@include transition-wtime(300ms, width, height);
@@ -162,23 +161,6 @@ body.small_screen .timeline_song .art {
 	opacity: 1.0;
 }
 
-.timeline_now_playing .timeline_now_playing_song {
-	height: 120px;
-	opacity: 1;
-}
-
-body.small_screen .timeline_now_playing .timeline_now_playing_song {
-	height: 85px;
-}
-
-.timeline_now_playing_song .timeline_song_content {
-	margin-left: 125px;
-}
-
-.timeline_now_playing_song .timeline_song_content > div {
-	display: block;
-}
-
 .timeline_now_playing_song .art_container {
  	width: 120px;
  	height: 120px;
@@ -213,7 +195,7 @@ body.small_screen .timeline_now_playing_song .art_container .art {
 
 /* TIMELINE SONG COOLDOWN */
 
-.timeline_song_is_cool .album, .timeline_song_is_cool .album_rating {
+.timeline_song_is_cool .album_group {
 	display: none;
 }
 
@@ -232,26 +214,36 @@ body.small_screen .timeline_now_playing_song .art_container .art {
 	padding-bottom: 8px;
 }
 
-#timeline_header_now_playing {
+.timeline_now_playing .timeline_header {
 	color: $highlight;
 }
 
-#timeline_header_now_playing_bar, .timeline_header_bar {
+.timeline_header_bar {
 	background-color: $vvdarktext;
 	height: 1px;
+	margin-bottom: 1px;
+	margin-top: 3px;
 	@include transition(transform, opacity);
 }
 
-#timeline_header_now_playing_bar {
+.timeline_now_playing .timeline_header_bar {
 	height: 2px;
+	margin-bottom: 0px;
 }
 
-#timeline_header_now_playing_bar_inside {
+.timeline_header_now_playing_bar_inside {
 	background-color: $highlight;
-	height: 2px;
+	height: 1px;
 	margin: 0px;
 	padding: 0px;
-	width: 0px;
+	opacity: 0;
+	width: 100%;
+	@include transition(opacity);
+}
+
+.timeline_now_playing .timeline_header_now_playing_bar_inside {
+	height: 2px;
+	opacity: 1;
 }
 
 .voting_enabled .title {

@@ -46,16 +46,20 @@ var TimelineSong = function() {
 			// c for content, this stuff should be pushed aside from the album art 
 			var c = $el("div", { "class": "timeline_song_content" });
 			
-			c.appendChild(song_rating.el);
+			var title_group = c.appendChild($el("div", { "class": "title_group" }));
 
-			self.elements.title = c.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
+			title_group.appendChild(song_rating.el);
+
+			self.elements.title = title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
 			self.elements.title.addEventListener("mouseover", self.title_mouse_over);
 			self.elements.title.addEventListener("mouseout", self.title_mouse_out);
 			self.elements.title.addEventListener("click", self.vote);
 
-			c.appendChild(album_rating.el);
+			var album_group = c.appendChild($el("div", { "class": "album_group" }));
+
+			album_group.appendChild(album_rating.el);
 			
-			self.elements.album = c.appendChild($el("div", { "class": "album link", "textContent": self.data.albums[0].name }));
+			self.elements.album = album_group.appendChild($el("div", { "class": "album link", "textContent": self.data.albums[0].name }));
 			self.elements.album.addEventListener("click", function() { DetailView.open_album(self.data.albums[0].id ); });
 			
 			if ("artists" in self.data) {
