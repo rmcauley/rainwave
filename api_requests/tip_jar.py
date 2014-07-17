@@ -10,12 +10,17 @@ class TipJarContents(APIHandler):
 	return_name = "tip_jar"
 	allow_get = True
 	login_required = False
+	pagination = True
 
 	def post(self):
-		self.append(self.return_name, db.c.fetch_all("SELECT donation_id AS id, donation_amount AS amount, donation_message AS message, "
-										"CASE WHEN donation_private IS TRUE THEN 'Anonymous' ELSE username END AS name "
-									"FROM r4_donations LEFT JOIN phpbb_users USING (user_id) "
-									"ORDER BY donation_id DESC LIMIT 100"))
+		self.append(self.return_name,
+					db.c.fetch_all(
+						"SELECT donation_id AS id, donation_amount AS amount, donation_message AS message, "
+							"CASE WHEN donation_private IS TRUE THEN 'Anonymous' ELSE username END AS name "
+						"FROM r4_donations LEFT JOIN phpbb_users USING (user_id) "
+						"ORDER BY donation_id DESC " + self.get_sql_limit_string()
+					)
+		)
 
 @handle_api_html_url("tip_jar")
 class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
