@@ -4,12 +4,15 @@ $song_subinfo_color = #CCC;
 	float: left;
 	height: 100%;
 	min-width: 19em;
-	padding: 5px 15px 0px 10px;
 	@include transition(width);
-	overflow: hidden;
 	position: relative;
 	background-color: #131416;
 	width: 26em;
+}
+
+#timeline {
+	padding: 0px 5px 0px 5px;
+	height: 100%;
 }
 
 .unselectable #timeline_scrollblock {
@@ -24,11 +27,8 @@ $song_subinfo_color = #CCC;
 	clear: left;
 	position: relative;
 	width: 100%;
-	@include transition(height, opacity, transform, margin-top);
-}
-
-.timeline_event + .timeline_event {
 	margin-top: 10px;
+	@include transition(height, opacity, transform, margin-top);
 }
 
 .timeline_event:hover {
@@ -72,7 +72,7 @@ $song_subinfo_color = #CCC;
 	cursor: pointer;
 }
 
-.timeline_song_content > div {
+.timeline_song_content > div, .timeline_song_content .album_group .link {
 	color: $song_subinfo_color;
 }
 
@@ -157,6 +157,10 @@ body.small_screen .timeline_song .art {
 	opacity: 0.7;
 }
 
+.timeline_now_playing .timeline_now_playing_song {
+	opacity: 1.0;
+}
+
 .timeline_now_playing .timeline_song:hover {
 	opacity: 1.0;
 }
@@ -209,7 +213,6 @@ body.small_screen .timeline_now_playing_song .art_container .art {
 .timeline_header {
 	@include transition(transform, opacity, LINKCOLOR);
 	color: $vdarktext;
-	opacity: 1;
 	background-color: #131416;
 	padding-bottom: 8px;
 }
@@ -236,14 +239,11 @@ body.small_screen .timeline_now_playing_song .art_container .art {
 	height: 1px;
 	margin: 0px;
 	padding: 0px;
-	opacity: 0;
 	width: 100%;
-	@include transition(opacity);
 }
 
 .timeline_now_playing .timeline_header_now_playing_bar_inside {
 	height: 2px;
-	opacity: 1;
 }
 
 .voting_enabled .title {

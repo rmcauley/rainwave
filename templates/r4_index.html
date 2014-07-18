@@ -29,8 +29,8 @@
 </head>
 <body class="loading unselectable" onload="initialize();">
 	<audio preload="none" id="audio"></audio>
-	<div id="div_with_scroll" style="position: absolute; top:-1500px; width: 100px; overflow: auto; height: 50px;">
-		<div style="height: 100px; width: 10px;"></div>
+	<div id="div_with_scroll" style="position: absolute; top:-1500px; width: 100px; overflow: scroll; height: 50px;">
+		<div style="height: 100px; width: 10px;">&nbsp;</div>
 	</div>
 	<div id="measure_box">
 		<div id="playlist_item_height" class="searchlist_item">Hello</div>
@@ -42,8 +42,8 @@
 	</div>
 	<div id="messages"></div>
 	<div id="sizable_body">
-		<div id="requests">
-			<div id="requests_scrollbar" class="scollbar"></div>
+		<div id="requests" class="scrollable">
+			<div id="requests_scrollbar" class="scrollbar scrollbar_invisible"></div>
 			<div id="requests_header"></div>
 			<div id="requests_toolbar">
 				<img id="requests_pin" src="/static/images4/pin_hdpi.png" width="14" height="14" />
@@ -60,9 +60,9 @@
 			<div id="history_header"></div>
 			<div id="history_list"></div>
 		</div>-->
-		<div id="timeline_scrollblock">
-			<div id="timeline">
-				<div id="timeline_scrollbar" class="scollbar"></div>
+		<div id="timeline_scrollblock" class="scrollblock">
+			<div id="timeline" class="scrollable">
+				<div id="timeline_scrollbar" class="scrollbar scrollbar_invisible"></div>
 				<div id="timeline_resizer" class="resizer"></div>
 			</div>
 		</div>
@@ -75,21 +75,21 @@
 					<img id="searchlist_cancel" src="/static/images4/cancel_ldpi.png" class="searchlist_cancel" alt="x" />
 				</div>
 			</div>
-			<div id="lists_container">
-				<div id="lists_albums" class="searchlist">
+			<div id="lists_container" class="scrollblock">
+				<div id="lists_albums" class="searchlist scrollable">
 					<div id="lists_albums_items"></div>
-					<div id="lists_albums_scrollbar" class="scollbar"></div>
+					<div id="lists_albums_scrollbar" class="scrollbar scrollbar_invisible"></div>
 					<div id="lists_albums_stretcher"></div>
 				</div>
-				<div id="lists_artists" class="searchlist">
+				<div id="lists_artists" class="searchlist scrollable">
 					<div id="lists_artists_items"></div>
-					<div id="lists_artists_scrollbar" class="scollbar"></div>
+					<div id="lists_artists_scrollbar" class="scrollbar scrollbar_invisible"></div>
 					<div id="lists_artists_stretcher"></div>
 				</div>
 			</div>
 		</div>
-		<div id="detail">
-			<div id="detail_scrollbar" class="scrollbar"></div>			
+		<div id="detail" class="scrollable">
+			<div id="detail_scrollbar" class="scrollbar scrollbar_invisible"></div>			
 		</div>
 	</div>
 </body>

@@ -62,7 +62,7 @@ function initialize() {
 	// ****************** PAGE LAYOUT
 	// PREP: Applies the small_screen class if necessary and sizes everything
 	Fx.flush_draws();
-	$id('sizable_body').style.height = SCREEN_HEIGHT + "px";
+	$id('sizable_body').style.height = (SCREEN_HEIGHT - 56) + "px";
 
 	// PAINT 1: Measure scrollbar width, setup scrollbars
 	Scrollbar.calculate_scrollbar_width();
@@ -81,14 +81,14 @@ function initialize() {
 	R4Audio.draw(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
 	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
 	$remove_class(document.body, "loading");
-	setTimeout(2000, function() { $remove_class(document.body, "unselectable"); });
+	Fx.flush_draws();
 
 	// FINAL PAINT
-	Fx.flush_draws();
-	Scrollbar.refresh();
+	Scrollbar.recalculate();
 
 	// ****************** DATA CLEANUP
 	delete(BOOTSTRAP.json);
 	DeepLinker.detect_url_change();
-	window.addEventListener("resize", _on_resize, false);
+	// window.addEventListener("resize", _on_resize, false);
+	setTimeout(function() { $remove_class(document.body, "unselectable"); }, 1500);
 };

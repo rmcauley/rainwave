@@ -14,7 +14,7 @@ var Schedule = function() {
 
 	self.scroll_init = function() {
 		self.el = $id("timeline");
-		timeline_scrollbar = Scrollbar.new($id("timeline_scrollblock"), self.el, $id("timeline_scrollbar"), 30);
+		timeline_scrollbar = Scrollbar.new(self.el, $id("timeline_scrollbar"), 30);
 		timeline_resizer = Scrollbar.new_resizer($id("timeline_scrollblock"), self.el, $id("timeline_resizer"));
 	};
 
@@ -26,8 +26,6 @@ var Schedule = function() {
 		API.add_callback(self.register_vote, "vote_result");
 		API.add_callback(self.tune_in_voting_allowed_check, "user");
 	};
-
-	self.reflow = function() {};
 
 	self.update = function() {
 		var new_events = [];
@@ -43,7 +41,7 @@ var Schedule = function() {
 		if (first_time) {
 			current_event.el.style.marginTop = SCREEN_HEIGHT + "px";
 		}
-		Fx.delay_css_setting(current_event.el, "marginTop", "0px");
+		Fx.delay_css_setting(current_event.el, "marginTop", "10px");
 		new_events.push(current_event);
 		self.el.appendChild(current_event.el);
 
@@ -88,6 +86,12 @@ var Schedule = function() {
 			Clock.set_page_title(current_event.songs[0].data.albums[0].name + " - " + current_event.songs[0].data.title, current_event.end);
 			current_event.progress_bar_start();
 		}
+
+		timeline_scrollbar.pending_self_update = true;
+		setTimeout(function() {
+			 timeline_scrollbar.recalculate();
+			 timeline_scrollbar.refresh();
+		}, 1000);
 	};
 
 	var find_event = function(id) {
