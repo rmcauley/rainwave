@@ -19,15 +19,15 @@ div.scrollbar {
 	border-color: #888;
 	left: 100%;
 	width: 5px;
+	height: 0px;
 	opacity: 0.5;
 	padding: 0;
 	margin: 0;
 	@include transform(translateX(-10px));
-	@include transition-wtime(250ms, width, opacity, transform, border-color, background-color);
+	@include transition-wtime(250ms, width, opacity, transform, border-color, background-color, height);
 }
 
 div.scrollbar_invisible {
-	height: 0px;
 	opacity: 0;
 }
 

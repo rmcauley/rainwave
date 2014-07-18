@@ -42,6 +42,8 @@ function _on_resize() {
 	PlaylistLists.on_resize(new_height);
 
 	Scrollbar.recalculate();
+	Scrollbar.refresh();
+	Scrollbar.reposition();
 }
 
 function initialize() {
@@ -89,6 +91,6 @@ function initialize() {
 	// ****************** DATA CLEANUP
 	delete(BOOTSTRAP.json);
 	DeepLinker.detect_url_change();
-	// window.addEventListener("resize", _on_resize, false);
+	window.addEventListener("resize", _on_resize, false);
 	setTimeout(function() { $remove_class(document.body, "unselectable"); }, 1500);
 };
