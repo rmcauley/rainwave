@@ -42,6 +42,7 @@ function _on_resize() {
 	PlaylistLists.on_resize(new_height);
 
 	Scrollbar.recalculate();
+	Schedule.now_playing_size_calculate();
 	Scrollbar.refresh();
 	Scrollbar.reposition();
 }
@@ -87,6 +88,7 @@ function initialize() {
 
 	// FINAL PAINT
 	Scrollbar.recalculate();
+	Schedule.now_playing_size_calculate();
 
 	// ****************** DATA CLEANUP
 	delete(BOOTSTRAP.json);

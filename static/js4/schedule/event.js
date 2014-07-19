@@ -35,11 +35,9 @@ var EventBase = function(json) {
 	var header_text = $el("a");
 	var header_bar = $el("div", { "class": "timeline_header_bar" });
 	var header_inside_bar = $el("div", { "class": "timeline_header_bar_inside" });
-	header.appendChild(header_text);
+	var time_bar_progress_timer = false;
 	header_bar.appendChild(header_inside_bar);
-	header.appendChild(header_bar);
-	//var time_bar_progress = Fx.legacy_effect(Fx.CSSNumeric, $id("timeline_header_now_playing_bar_inside"), 700, "width", "%");
-	//var time_bar_progress_timer;
+	header.appendChild(header_text);
 	self.header_height = 0;
 	self.header_text;
 
@@ -64,6 +62,7 @@ var EventBase = function(json) {
 				self.el.appendChild(self.songs[i].el);
 			}
 		}
+		self.el.appendChild(header_bar);
 	};
 
 	self.update = function(json) {
@@ -99,13 +98,11 @@ var EventBase = function(json) {
 		$remove_class(self.el, "timeline_next");
 		self.set_header_text($l("Now_Playing"));
 		if (self.songs && (self.songs.length > 0)) {
-			// re-order song positioning so the now playing item is on top
-			// TODO: make this animated and spiffo!
-			self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
 			for (var i = 0; i < self.songs.length; i++) {
-				self.el.appendChild(self.songs[i].el);
+				if (self.songs[i].data.entry_position == 1) {
+					$add_class(self.songs[i].el, "timeline_now_playing_song");
+				}
 			}
-			$add_class(self.songs[0].el, "timeline_now_playing_song");
 		}
 		$add_class(self.el, "timeline_now_playing");
 	};
@@ -197,32 +194,26 @@ var EventBase = function(json) {
 	};
 
 	self.progress_bar_start = function() {
-		// if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
-		// time_bar_progress.element.style.transition = "";
-		// time_bar_progress.onComplete = start_time_bar_progress;
-		// time_bar_progress.start(((self.end - Clock.now) / (self.data.songs[0].length - 1)) * 100);
+		if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
+		progress_bar_update();
+		header_inside_bar.style.opacity = 1;
+		time_bar_progress_timer = setInterval(progress_bar_update, 1000);
 	};
 
 	self.progress_bar_stop = function() {
-		// if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
+		if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
 	};
 
-	var start_time_bar_progress = function() {
-		// time_bar_progress.element.style.transition = "none";
-		// time_bar_progress.onComplete = false;
-		// time_bar_progress_timer = setInterval(update_time_bar_progress, 1000);
-	};
-
-	var update_time_bar_progress = function() {
-		// var new_val = ((current_event.end - Clock.now) / (current_event.data.songs[0].length - 1)) * 100;
-		// if (new_val <= 0) {
-		// 	if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
-		// 	time_bar_progress_timer = false;
-		// 	time_bar_progress.set(0);
-		// }
-		// else {
-		// 	time_bar_progress.set(new_val);
-		// }
+	var progress_bar_update = function() {
+		var new_val = ((self.end - Clock.now) / (self.data.songs[0].length - 1)) * 100;
+		if (new_val <= 0) {
+			if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
+			time_bar_progress_timer = false;
+			header_inside_bar.style.width = "0%";
+		}
+		else {
+			header_inside_bar.style.width = new_val + "%";
+		}
 	};
 
 	draw();

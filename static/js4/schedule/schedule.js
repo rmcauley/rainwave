@@ -12,6 +12,12 @@ var Schedule = function() {
 	var timeline_scrollbar;
 	var timeline_resizer;
 
+	var now_playing_size = 0;
+
+	self.now_playing_size_calculate = function() {
+		now_playing_size = current_event.el.offsetHeight;
+	};
+
 	self.scroll_init = function() {
 		self.el = $id("timeline");
 		timeline_scrollbar = Scrollbar.new(self.el, $id("timeline_scrollbar"), 30);
@@ -43,7 +49,7 @@ var Schedule = function() {
 		}
 		Fx.delay_css_setting(current_event.el, "marginTop", "10px");
 		new_events.push(current_event);
-		self.el.appendChild(current_event.el);
+		if (!current_event.el.parentNode) self.el.appendChild(current_event.el);
 
 		var temp_evt, previous_evt;
 		for (i = 0; i < sched_next.length; i++) {
@@ -60,17 +66,17 @@ var Schedule = function() {
 			if (first_time) {
 				temp_evt.el.style.marginTop = "100%";
 			}
-			else {
+			else if (!temp_evt.el.style.marginTop) {
 				temp_evt.el.style.marginTop = SCREEN_HEIGHT + "px";
 			}
-			Fx.delay_css_setting(temp_evt.el, "marginTop", "15px");
-			self.el.appendChild(temp_evt.el);
+			Fx.delay_css_setting(temp_evt.el, "marginTop", "30px");
+			if (!temp_evt.el.parentNode) self.el.appendChild(temp_evt.el);
 		}
 
 		// Erase old elements out before we replace the self.events with new_events
 		for (i = 0; i < self.events.length; i++) {
 			if (self.events[i].pending_delete) {
-				self.events[i].el.style.height = "0px";
+				self.events[i].el.style.marginTop = "-" + now_playing_size + "px";
 				self.events[i].progress_bar_stop();
 				Fx.remove_element(self.events[i].el);
 			}

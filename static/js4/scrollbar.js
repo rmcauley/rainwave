@@ -82,7 +82,7 @@ var Scrollbar = function() {
 			else {
 				if (!visible) $remove_class(handle, "scrollbar_invisible");
 				visible = true;
-				scrollable.style.paddingRight = cls.paddingRight + "px";
+				scrollable.style.paddingRight = (cls.paddingRight + 10) + "px";
 
 				handle_height = Math.round((self.offset_height - handle_margin_top - handle_margin_bottom) * (self.offset_height / self.scroll_height));
 				handle_height = Math.max(handle_height, 50);

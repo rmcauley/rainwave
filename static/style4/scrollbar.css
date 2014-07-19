@@ -8,6 +8,7 @@ div.scrollable {
 	overflow: auto;
 	overflow-y: auto;
 	overflow-x: hidden;
+	@include transform(padding);
 }
 
 div.scrollbar {

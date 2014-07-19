@@ -4,7 +4,6 @@ var Fx = function() {
 	self.transform_string = "transform";
 	self.delay_legacy_fx = false;
 	var delayed_css = [];
-	var delayed_fx = [];
 	var draw_batch = [];
 
 	var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -41,14 +40,6 @@ var Fx = function() {
 		}
 		delayed_css = [];
 	};
-
-	var do_delayed_fx = function() {
-		self.delay_legacy_fx = false;
-		for (var i = 0; i < delayed_fx.length; i++) {
-			delayed_fx[i]();
-		}
-		delayed_fx = [];
-	}
 
 	self.delay_css_setting = function(el, attribute, value) {
 		if (attribute == "transform") {
