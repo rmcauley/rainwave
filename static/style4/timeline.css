@@ -212,7 +212,7 @@ img.art_image {
  	height: 120px;
 }
 
-div.timeline_now_playing_song div.art_container.art_expandable :hover {
+div.timeline_now_playing_song div.art_expandable:hover {
 	width: 140px;
  	height: 140px;
 }
