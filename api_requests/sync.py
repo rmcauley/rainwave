@@ -244,7 +244,7 @@ class Sync(APIHandler):
 		self.set_header("Content-Type", "application/json")
 		
 		if not self.get_argument("resync"):
-			if self.get_argument("known_event_id") and (cache.get_station(self.sid, "sched_current_dict")['id'] != self.get_argument("known_event_id")):
+			if self.get_argument("known_event_id") and cache.get_station(self.sid, "sched_current_dict") and (cache.get_station(self.sid, "sched_current_dict")['id'] != self.get_argument("known_event_id")):
 				self.update()
 			else:
 				sessions[self.sid].append(self)
