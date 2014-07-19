@@ -122,9 +122,12 @@ div.art_container {
 	border-width: 0px;
 	border-style: solid;
 	background-color: inherit;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: contain;
 	width: $art_thumbnail_size;
 	height: $art_thumbnail_size;
-	@include transition-wtime(300ms, width, height, border-width, box-shadow, background-color, transform);
+	@include transition-wtime(300ms, width, height, border-width, box-shadow, background-color, transform, background-image);
 }
 
 div.art_container:hover {
@@ -209,7 +212,7 @@ img.art_image {
  	height: 120px;
 }
 
-div.timeline_now_playing_song div.art_container:hover {
+div.timeline_now_playing_song div.art_container.art_expandable :hover {
 	width: 140px;
  	height: 140px;
 }
@@ -225,7 +228,7 @@ body.small_screen div.timeline_now_playing_song div.art_container, body.small_sc
 	height: 85px;
 }
 
-body.small_screen div.timeline_now_playing_song div.art_container:hover {
+body.small_screen div.timeline_now_playing_song div.art_container.art_expandable:hover {
 	width: 100px;
 	height: 100px;
 }
