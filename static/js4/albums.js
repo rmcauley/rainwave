@@ -66,7 +66,7 @@ var Albums = function() {
 		}
 		else {
 			ac = c.appendChild($el("div", { "class": "art_container" }));
-			img = c.appendChild($el("img", { "class": "art_image", "src": json.art + "_" + size + ".jpg" }));
+			img = ac.appendChild($el("img", { "class": "art_image", "src": json.art + "_" + size + ".jpg" }));
 			if (!not_expandable) {
 				$add_class(ac, "art_expandable")
 				ac._album_art = json.art || "/static/images4/test";
