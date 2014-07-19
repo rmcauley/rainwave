@@ -58,7 +58,7 @@ var Albums = function() {
 				ac.addEventListener("click", expand_art);
 				ac.addEventListener("mouseout", normalize_art);
 			}
-		// }
+		}
 		return c;
 	};
 
