@@ -44,7 +44,6 @@ function _on_resize() {
 	Scrollbar.recalculate();
 	setTimeout(function() { Schedule.now_playing_size_calculate(); }, 1500);
 	Scrollbar.refresh();
-	Scrollbar.reposition();
 }
 
 function initialize() {

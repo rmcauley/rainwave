@@ -24,7 +24,7 @@ var Menu = function() {
 	var update_station_info = function(json) {
 		for (var key in json) {
 			if (json[key]) {
-				Albums.change_art(elements[key].art, json[key].art);
+				elements[key].art.parentNode.replaceChild(Albums.art_html(json[key], null, true), elements[key].art);
 				elements[key].title.textContent = json[key].title;
 				elements[key].album.textContent = json[key].album;
 			}

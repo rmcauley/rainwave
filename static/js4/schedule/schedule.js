@@ -76,6 +76,7 @@ var Schedule = function() {
 		// Erase old elements out before we replace the self.events with new_events
 		for (i = 0; i < self.events.length; i++) {
 			if (self.events[i].pending_delete) {
+				$add_class(self.events[i].el, "timeline_event_closing");
 				self.events[i].el.style.marginTop = "-" + now_playing_size + "px";
 				self.events[i].progress_bar_stop();
 				Fx.remove_element(self.events[i].el);
@@ -97,7 +98,7 @@ var Schedule = function() {
 		setTimeout(function() {
 			 timeline_scrollbar.recalculate();
 			 timeline_scrollbar.refresh();
-		}, 1000);
+		}, 1100);
 	};
 
 	var find_event = function(id) {
