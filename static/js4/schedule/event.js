@@ -103,7 +103,7 @@ var EventBase = function(json) {
 			self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
 
 			for (var i = 0; i < self.songs.length; i++) {
-				if (self.songs[i].data.entry_position == 1) {
+				if (self.songs[i].data.entry_position == 0) {
 					$add_class(self.songs[i].el, "timeline_now_playing_song");
 				}
 			}
