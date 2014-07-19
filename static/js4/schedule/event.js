@@ -98,6 +98,10 @@ var EventBase = function(json) {
 		$remove_class(self.el, "timeline_next");
 		self.set_header_text($l("Now_Playing"));
 		if (self.songs && (self.songs.length > 0)) {
+			// other places in the code rely on songs[0] to be the winning song
+			// make sure we sort properly for that condition here
+			self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
+
 			for (var i = 0; i < self.songs.length; i++) {
 				if (self.songs[i].data.entry_position == 1) {
 					$add_class(self.songs[i].el, "timeline_now_playing_song");

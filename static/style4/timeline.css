@@ -163,7 +163,7 @@ body.small_screen .timeline_song .art {
 
 /* NOW PLAYING MODIFICATIONS */
 
-.timeline_now_playing .timeline_song {
+.timeline_now_playing .timeline_song, body.small_screen .timeline_now_playing .timeline_song {
 	opacity: 0;
 	height: 0px;
 }
@@ -188,8 +188,9 @@ body.small_screen .timeline_song .art {
  	@include transform(none);
 }
 
-body.small_screen .timeline_now_playing_song {
+body.small_screen .timeline_now_playing .timeline_now_playing_song {
 	height: 85px;
+	opacity: 1;
 }
 
 body.small_screen .timeline_now_playing_song .art_container {

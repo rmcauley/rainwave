@@ -42,7 +42,7 @@ function _on_resize() {
 	PlaylistLists.on_resize(new_height);
 
 	Scrollbar.recalculate();
-	Schedule.now_playing_size_calculate();
+	setTimeout(function() { Schedule.now_playing_size_calculate(); }, 1500);
 	Scrollbar.refresh();
 	Scrollbar.reposition();
 }
