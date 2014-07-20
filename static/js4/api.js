@@ -175,7 +175,6 @@ var API = function() {
 		else {
 			sync_error_count = 0;
 			offline_ack = false;
-			Fx.delay_legacy_fx = true;
 			perform_callbacks(response);
 			perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
 			if ("error" in response) {

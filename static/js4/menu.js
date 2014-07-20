@@ -22,9 +22,12 @@ var Menu = function() {
 	};
 
 	var update_station_info = function(json) {
+		var new_art;
 		for (var key in json) {
 			if (json[key]) {
-				elements[key].art.parentNode.replaceChild(Albums.art_html(json[key], null, true), elements[key].art);
+				new_art = Albums.art_html(json[key], null, true);
+				elements[key].art.parentNode.replaceChild(new_art, elements[key].art);
+				elements[key].art = new_art;
 				elements[key].title.textContent = json[key].title;
 				elements[key].album.textContent = json[key].album;
 			}
