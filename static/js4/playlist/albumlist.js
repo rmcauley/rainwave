@@ -12,18 +12,19 @@ var AlbumList = function() {
 	Prefs.add_callback("playlist_sort_faves_first", function(nv) { playlist_sort_faves_first = nv; });
 	Prefs.add_callback("playlist_sort_available_first", function(nv) { playlist_sort_available_first = nv; });
 
-	// TODO: change sorting methods
-
 	// Actual app logic
 
 	var self = SearchList($id("lists_albums_items"), $el("lists_albums_scrollbar"), $id("lists_albums_stretcher"), "name", "name_searchable");
-	self.tab_el = $el("li", { "textContent": $l("Albums"), "class": "link" });
+	
+	self.tab_el = $id("lists_tab_album");
+	self.tab_el.textContent = $l("Albums");
 	self.tab_el.addEventListener("click", function() {
 		if (!self.loaded) {
 			API.async_get("all_albums");
 		}
 		PlaylistLists.change_visible_list(self); }
 	);
+
 	API.add_callback(self.update, "all_albums");
 	API.add_callback(function(json) {
 		if (self.loaded) self.update(json);
@@ -73,7 +74,7 @@ var AlbumList = function() {
 		item._el_text_span._id = item.id;
 
 		// save a function call if we can with an if statement here
-		if (item.cool && (item.cool_lowest > Clock.now)) self.update_cool_delayed(item);
+		if (item.cool && (item.cool_lowest > Clock.now)) self.update_cool(item);
 
 		// this is duplicate functionality from update_item_element, again to try and streamline
 		// a heavy process
@@ -102,7 +103,7 @@ var AlbumList = function() {
 		return true;
 	};
 
-	self.update_cool_delayed = function(item) {
+	self.update_cool = function(item) {
 		if (item.cool && (item.cool_lowest > Clock.now)) {
 			item._el_cool.textContent = Formatting.cooldown_glance(item.cool_lowest - Clock.now);
 			$add_class(item._el, "searchlist_cooldown");
@@ -128,19 +129,19 @@ var AlbumList = function() {
 		}
 		if (item.rating_user) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
-			item._el.style.backgroundPosition = (offset_width - rating_offset) + "px " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
+			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
 		}
 		else if (item.rating) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
-			item._el.style.backgroundPosition = (offset_width - rating_offset) + "px " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
+			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
 		}
 	};
 
 	self.on_resize = function(new_offset_width) {
-		offset_width = new_offset_width;
-		for (var i in self.data) {
-			self.update_item_element(self.data[i]);
-		}
+		// offset_width = new_offset_width;
+		// for (var i in self.data) {
+		// 	self.update_item_element(self.data[i]);
+		// }
 	};
 
 	// there's lots of copy-paste code in the following functions because these are critical-path, called thousands of times

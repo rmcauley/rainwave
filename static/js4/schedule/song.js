@@ -67,12 +67,12 @@ var TimelineSong = function() {
 				Artists.append_spans_from_json(self.elements.artists, self.data.artists);
 			}
 
-			if (!request_mode) {
-				self.elements.votes = c.appendChild($el("div", { "class": "votes" }));
-				if (self.data.entry_votes) {
-					self.elements.votes.textContent = self.data.entry_votes;
-				}
-			}
+			// if (!request_mode) {
+			// 	self.elements.votes = c.appendChild($el("div", { "class": "votes" }));
+			// 	if (self.data.entry_votes) {
+			// 		self.elements.votes.textContent = self.data.entry_votes;
+			// 	}
+			// }
 
 			if (self.data.elec_request_username) {
 				$add_class(self.el, "requested")

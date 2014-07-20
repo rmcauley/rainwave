@@ -48,6 +48,17 @@ $transtime: 700ms cubic-bezier(0.165, 0.84, 0.44, 1);
 	@include transition-wtime($transtime, $trans...);
 }
 
+@mixin simple-gradient($from_color, $to_color, $direction, $opacity_stop) {
+	$opacity_stop: 100% !default;
+	$webkit_direction: $direction;
+    @if $direction == top { $webkit_direction: bottom; }
+    @else if $direction == bottom { $webkit_direction: top; }
+    @else if $direction == left { $webkit_direction: right; }
+    @else if $direction == right { $webkit_direction: left; }
+	background: -webkit-linear-gradient($webkit_direction, $from_color 0%, $to_color $opacity_stop);
+	background:         linear-gradient(to $direction, $from_color 0%, $to_color $opacity_stop);
+}
+
 html, body {
 	height: 100%;
 	color: $text;
@@ -115,7 +126,7 @@ a:link, a:visited, .link {
 }
 
 a:link:hover, .link:hover {
-	color: #a7e1ff;
+	color: #a7e1ff !important;
 }
 
 .unselectable * {

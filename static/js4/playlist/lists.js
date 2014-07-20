@@ -8,11 +8,13 @@ PlaylistLists = function() {
 	var tabs_el;
 	var search_cancel;
 	var search_box;
+	var tabs_el_height;
 
 	self.scroll_init = function() {
-		var resizer = Scrollbar.new_resizer(el, $id("lists_albums"), $id("lists_resizer"));
+		var resizer = Scrollbar.new_resizer($id("lists"), $id("lists_albums"), $id("lists_resizer"));
 		resizer.add_scrollable($id("lists_artists"));
 		// resizer.add_scrollable(lists.current_listeners.el)
+		tabs_el_height = tabs_el.offsetHeight;
 	};
 
 	self.initialize = function() {
@@ -24,13 +26,13 @@ PlaylistLists = function() {
 		search_cancel = $id("searchlist_cancel");
 		search_cancel.addEventListener("click", function() { self.active_list.clear_search(); });
 
-		//lists.all_albums = AlbumList(el);
+		lists.all_albums = AlbumList(el);
 		//lists.all_artists = ArtistList(el);
 		//lists.current_listeners = ListenersList(el);
 	};
 
 	self.draw = function() {		
-		//tabs_el.appendChild(lists.all_albums.tab_el);
+		tabs_el.appendChild(lists.all_albums.tab_el);
 		//tabs_el.appendChild(lists.all_artists.tab_el);
 		//tabs_el.appendChild(lists.current_listeners.tab_el);
 
@@ -38,6 +40,8 @@ PlaylistLists = function() {
 		if (cookie_list in lists) {
 			self.change_visible_list(lists[cookie_list], true);
 		}
+
+		el.style.height = (MAIN_HEIGHT - tabs_el_height) + "px";
 	};
 
 	self.change_visible_list = function(change_to) {
@@ -47,7 +51,7 @@ PlaylistLists = function() {
 			search_box.replaceChild(change_to.search_box_input, self.active_list.search_box_input);
 		}
 		else {
-			search_box.insertBefore(change_to.search_box_input, search_cancel.nextSibling);
+			search_box.appendChild(change_to.search_box_input);
 		}
 		self.active_list = change_to;
 		self.active_list.el.style.display = "block";
@@ -59,6 +63,7 @@ PlaylistLists = function() {
 		for (var key in lists) {
 			lists[key].on_resize();
 		}
+		el.style.height = (MAIN_HEIGHT - tabs_el_height) + "px";
 	};
 
 	self.set_new_open = function(list_name, id) {

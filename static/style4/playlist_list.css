@@ -6,58 +6,75 @@
 	position: relative;
 	overflow: hidden;
 	background: #1f2022;
-	margin-right: 10px;
-	table-layout: fixed;
 }
 
 #lists_tabs {
-	padding: 4px 0 0 0;
+	position: relative;
+	margin: 5px 0;
+	padding: 5px 0;
 	list-style: none;
-	margin: 0 0 0 5px;
-	background: #1f2022;
+	width: 100%;
+	border-bottom: solid 1px $darktext;
 }
 
 #lists_tabs li {
-	padding: 0 10px 0 0;
+	border-left-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 0px;
+	border-top-width: 0px;
+	border-style: solid;
+	-webkit-border-image: -webkit-linear-gradient(bottom, $darktext, rgba(0, 0, 0, 0)) 1 100%;
+	-moz-border-image: -moz-linear-gradient(bottom, $darktext, rgba(0, 0, 0, 0)) 1 100%;
+	border-image: linear-gradient(to top, $darktext, rgba(0, 0, 0, 0)) 1 100%;
+	background-repeat: no-repeat;
+
+	padding: 5px 10px;
 	display: inline;
-	cursor: default;
-	color: $vdarktext;
-	@include transition(LINKCOLOR, background-color, opacity);
+	cursor: pointer;
+	color: $darktext;
+	@include transition(LINKCOLOR, background, opacity);
+}
+
+#lists_tab li + li {
+	border-left-width: 0px;
 }
 
 #lists_tabs li.list_tab_open {
 	color: $highlight;
+	@include simple-gradient($vdarktext, rgba(0, 0, 0, 0), top, 40%);
 }
+
+/* SEARCH BOX */
 
 #lists_searchbox {
-	border-top: solid 1px $vdarktext;
-	margin: 2px 0 0 3px;
-	padding: 5px;
-}
-
-#lists_container {
+	margin: 10px;
+	padding: 0px;
+	border: solid 1px $vvdarktext;
 	overflow: hidden;
 }
 
-#searchlist_input {
-	background-color: #0e0e0f;
-	border: none;
-	color: $vdarktext;
-	margin: 0;
+#searchlist_searchbox > div {
 	padding: 2px 4px 5px 5px;
-	cursor: text;
 	height: 1.2em;
-	@include transition-wtime(300ms, background-color);
+	margin: 0;
+}
+
+#searchlist_input {
+	color: $vdarktext;
+	cursor: text;
+	background-color: rgb(25, 25, 25);
+	@include transition-wtime(300ms, background-color, color);
+	font-style: italic;
 }
 
 div.searchlist_input_active {
 	color: $text;
+	font-style: normal;
 }
 
 div.searchlist_input.hotkey_mode {
 	color: $text;
 	background-color: #0e0e3f;
-	@include transition-wtime(300ms, background-color, color);
 }
 
 div.searchlist_input.hotkey_mode_error {
@@ -65,28 +82,37 @@ div.searchlist_input.hotkey_mode_error {
 	background-color: #3f0e0e;
 }
 
-img.searchlist_cancel {
+#searchlist_searchbox #searchlist_cancel {
+	padding-top: 0px;
 	float: right;
-	opacity: 0.7;
-	margin-top: 5px;
-	margin-right: 5px;
-	cursor: pointer;
+	opacity: 0;
+	@include transition(opacity);
 }
 
-body.small_screen img.searchlist_cancel {
-	margin-top: 2px;
+div.searchlist_input_active #searchlist_cancel {
+	opacity: 1;
+	font-style: normal;
 }
+
+#searchlist_searchbox #searchlist_icon {
+	padding-top: 0px;
+	margin-bottom: 2px;
+	float: left;
+	font-style: normal;
+}
+
+/* SEARCH LIST */
 
 div.searchlist {
 	position: relative;
-	overflow: hidden;
 	height: 100%;
+	padding: 0px 5px;
 }
 
 div.searchlist_item {
 	background-repeat: no-repeat;
 	height: 22px;
-	padding: 0 65px 0 0;
+	padding: 1px 65px 0 0;
 	margin-right: 10px;
 	border-bottom: solid 1px transparent;
 	cursor: pointer;
@@ -97,8 +123,10 @@ body.small_screen div.searchlist_item {
 	height: 18px;
 }
 
-div.resizing div.searchlist_item {
-	background-image: none !important;
+div.searchlist_stretcher {
+	position: absolute;
+	width: 1px;
+	display: block;
 }
 
 span.searchlist_name {

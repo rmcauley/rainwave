@@ -7,9 +7,7 @@
 //	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses 'id')
 
-// scrolling using the keys while the current scroll position is off screen causes problems
-
-var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key) {
+var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_key) {
 	"use strict";
 	var self = {};
 	self.sort_key = sort_key;
@@ -18,37 +16,25 @@ var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key)
 	self.el = el;
 	self.search_box_input = $el("div", { "class": "searchlist_input", "textContent": $l("filter") });
 	self.search_box_input.addEventListener("keypress", function(e) { e.preventDefault(); });
+	var scrollbar = Scrollbar.new(stretching_el.parentNode, scrollbar_handle);
 	// see bottom of this object for event binding
 
-	var data = {};				// raw data
-	self.data = data;
+	var data = {}
+	self.data = data;				// keys() are the object IDs (e.g. data[album.id])
 	self.loaded = false;
-	var sorted = [];			// list of IDs sorted by the sort_function (always maintained, contains all IDs)
+	
 	var visible = [];			// list of IDs sorted by the sort_function (visible on screen)
-	var reinsert = [];			// list of IDs unsorted - will be resorted in the list when the user is not in a search
 	var hidden = [];			// list of IDs unsorted - currently hidden from view during a search
+
 	var hotkey_mode_on = false;
-
 	var search_string = "";
-	var current_key_nav_element = false;
-	var current_open_element = false;
-	var scroll_offset = 10;
-	var item_height = SmallScreen ? 18 : 22;
+	var current_key_nav_id = false;
+	var current_open_id = false;
+	var item_height = SmallScreen ? 19 : 23;
 	var num_items_to_display;
-	var waiting_for_render = false;
-	var scroll_index = 0;
-	var pre_search_scroll_index = false;
-	var scroll_to_open_item_on_clear = false;
 
-	// CUSTOM SCROLLBAR **********************************************
-
-	self.scrollbar = Scrollbar.new(self.el);
-	var scrollbar = self.scrollbar;
-	scrollbar.original_reposition = scrollbar.reposition;
-	scrollbar.reposition = function() {
-		scrollbar.original_reposition();
-		self.scroll_to_index(Math.floor(scrollbar.scroll_top / scrollbar.scroll_top_max * (visible.length - num_items_to_display + 1)));
-	};
+	var current_scroll_index = 0;
+	var current_margined_element;
 
 	// LIST MANAGEMENT ***********************************************
 
@@ -62,15 +48,13 @@ var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key)
 		for (i in json) {
 			self.update_item(json[i]);
 		}
-		if (self.after_update) self.after_update(json, data, sorted);
 		self.update_view();
+		hidden = [];
+
 		if (self.update_cool) {
 			for (i in data) {
 				self.update_cool(data[i]);
 			}
-		}
-		else if (self.update_cool_delayed) {
-			self.update_cool = self.update_cool_delayed;
 		}
 	};
 
@@ -87,7 +71,6 @@ var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key)
 			self.draw_entry(json);
 			json._searchname = json[search_key];
 			json._el._id = json.id
-			json._el._hidden = false;
 			json._lower_case_sort_keyed = json[sort_key].toLowerCase();
 			data[json.id] = json;
 		}
@@ -96,25 +79,14 @@ var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key)
 
 	self.update_cool = null;
 
-	self.update_all_item_elements = function() {
-		for (var i in data) {
-			self.update_item_element(data[i]);
-		}
-	};
-
 	self.queue_reinsert = function(id) {
-		var io = sorted.indexOf(id);
+		var io = visible.indexOf(id);
 		if (io >= 0) {
-			sorted.splice(io, 1);
+			visible.splice(io, 1);
 		}
-		if (reinsert.indexOf(id) == -1) {
-			reinsert.push(id);
+		if (hidden.indexOf(id) == -1) {
+			hidden.push(id);
 		}
-	};
-
-	self.reflow_container = function() {
-		sorted.sort(self.sort_function);
-		self.update_scroll_height();
 	};
 
 	var hotkey_mode_enable = function() {
@@ -168,43 +140,45 @@ var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key)
 			}, 6000);
 	};
 
-	self.update_view = function() {
+	self.update_view = function(to_reshow) {
+		to_reshow = to_reshow || hidden;
+
 		// wait for searching to be over before re-arranging the list on the user
 		if (search_string.length > 0) return;
 
 		// Sort the reinsert pile for efficiency when re-inserting
-		reinsert.sort(self.sort_function);
+		to_reshow.sort(self.sort_function);
 
-		// First we walk ONCE through the sorted list, re-inserting entries as necessary
-		// into the sorted pile where necessary.  This ensures we're o(n).
-		// Could be better than o(n) though, will have to scratch my head on this
-		var next_reinsert_id = reinsert.pop();
-		for (var i = sorted.length - 1; i >= 0; i--) {
-			if (data[sorted[i]]._delete) {
-				delete(data[sorted[i]]);
-				sorted.splice(i, 1);
+		if (visible.length == 0) {
+			visible = to_reshow;
+		}
+		else {
+			// First we walk ONCE through the visible list, re-inserting entries as necessary
+			// into the visible pile where necessary.  This ensures we're o(n) on the insertion.
+			var next_reinsert_id = to_reshow.pop();
+			for (var i = visible.length - 1; i >= 0; i--) {
+				if (data[visible[i]]._delete) {
+					delete(data[visible[i]]);
+					visible.splice(i, 1);
+				}
+				else if (next_reinsert_id && (self.sort_function(next_reinsert_id, visible[i]) == -1)) {
+					visible.splice(i - 1, 0, next_reinsert_id);
+					next_reinsert_id = to_reshow.pop();
+				}
 			}
-			else if (next_reinsert_id && (self.sort_function(next_reinsert_id, sorted[i]) == -1)) {
-				sorted.splice(i - 1, 0, next_reinsert_id);
-				next_reinsert_id = reinsert.pop();
+			// finish adding any leftovers at the bottom of the pile
+			while (next_reinsert_id) {
+				visible.push(next_reinsert_id);
+				next_reinsert_id = to_reshow.pop();
 			}
 		}
-		// finish adding any leftovers at the bottom of the pile
-		while (next_reinsert_id) {
-			sorted.push(next_reinsert_id);
-			next_reinsert_id = reinsert.pop();
-		}
-		visible = sorted.slice(0);
 
-		// add the node to the parent (this defers rendering to the last possible moment)
-		if (!self.el.parentNode) {
-			parent_el.appendChild(self.el);
-		}
-
-		self.update_scroll_height();
+		current_scroll_index = false;
+		self.recalculate();
+		self.reposition();
 	};
 
-	self.update_scroll_height = function() {
+	self.recalculate = function() {
 		var full_height = item_height * visible.length;
 		stretching_el.style.height = full_height + "px";
 		scrollbar.recalculate();
@@ -229,84 +203,58 @@ var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key)
 	// SEARCHING ****************************
 
 	self.remove_key_nav_highlight = function() {
-		if (current_key_nav_element) {
-			$remove_class(current_key_nav_element, "searchtable_key_nav_hover");
-			current_key_nav_element = false;
+		if (current_key_nav_id) {
+			$remove_class(data[current_key_nav_id]._el, "searchtable_key_nav_hover");
+			current_key_nav_id = null;
 		}
 	};
 
-	self.key_nav_highlight = function() {
-		$add_class(current_key_nav_element, "searchtable_key_nav_hover");
+	self.key_nav_highlight = function(id) {
+		current_key_nav_id = id;
+		$add_class(data[current_key_nav_id]._el, "searchtable_key_nav_hover");
+		self.scroll_to_id(id);
 	};
 
 	self.key_nav_first_item = function() {
-		current_key_nav_element = self.el.firstChild.nextSibling;
-		if (!current_key_nav_element) {
-			return false;
-		}
-		// find the next non-hidden child (if the firstChild isn't)
-		while (current_key_nav_element._hidden && current_key_nav_element.nextSibling) { 
-			current_key_nav_element = current_key_nav_element.nextSibling;
-		}
+		self.remove_key_nav_highlight();
+		self.key_nav_highlight(visible[0]);
 	};
 
 	self.key_nav_last_item = function() {
-		current_key_nav_element = self.el.lastChild;
-		if (!current_key_nav_element) {
-			return false;
-		}
-		// find the next non-hidden child (if the firstChild isn't)
-		while (current_key_nav_element._hidden && current_key_nav_element.previousSibling) { 
-			current_key_nav_element = current_key_nav_element.previousSibling;
-		}
+		self.remove_key_nav_highlight();
+		self.key_nav_highlight(visible[visible.length - 1]);
 	};
 
 	var key_nav_arrow_action = function(up, down, jump) {
-		if (!current_key_nav_element) {
+		jump = jump || 1;
+		if (!current_key_nav_id) {
 			self.key_nav_first_item();
+			return;
 		}
-		else {
-			var current_jump = 0;
-			var sibling = down ? "nextSibling" : "previousSibling";
-			var old_key_nav = current_key_nav_element;
-			if (current_key_nav_element[sibling]) {
-				var n = current_key_nav_element;
-				while ((current_jump < jump) && (n = n[sibling])) { 
-					if (!n._hidden) {
-						current_jump++;
-					}
-				}
-				
-				if (!n && up) {
-					self.key_nav_first_item();
-				}
-				else if (!n && down) {
-					self.key_nav_last_item();
-				}
-				else if (n._hidden) {
-					return false;
-				}
-				else {
-					current_key_nav_element = n;
-				}
-			}
-			else {
-				return false;
-			}
-
-			$remove_class(old_key_nav, "searchtable_key_nav_hover");
+		var current_idx = visible.indexOf(current_key_nav_id);
+		if (!current_idx && jump && down) {
+			self.remove_key_nav_highlight();
+			self.key_nav_highlight(visible[Math.min(visible.length - 1, jump)]);
+			return;
 		}
-		self.key_nav_highlight();
-		self.scroll_to_key_nav();
+		else if (!current_idx) {
+			self.key_nav_first_item();
+			return;
+		}
+		var new_index = current_idx;
+		if (up) new_index = Math.min(0, new_index - jump);
+		else new_index = Math.max(visible.length - 1, new_index + jump);
+		self.remove_key_nav_highlight();
+		self.key_nav_highlight(new_index);
 		return true;
 	};
 	
 	self.key_nav_down = function() {
-		return key_nav_arrow_action(false, true, 1);
+		return key_nav_arrow_action(false, true);
 	};
 
 	self.key_nav_up = function() {
-		return key_nav_arrow_action(true, false, 1);
+		return key_nav_arrow_action(true, false);
 	};
 
 	self.key_nav_page_down = function() {
@@ -318,8 +266,8 @@ var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key)
 	};
 
 	self.key_nav_enter = function() {
-		if (current_key_nav_element) {
-			self.open_element({ "target": current_key_nav_element, "enter_key": true });
+		if (current_key_nav_id) {
+			self.open_element({ "target": data[current_key_nav_id]._el, "enter_key": true });
 			return true;
 		}
 		return false;
@@ -342,29 +290,19 @@ var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key)
 			var revisible = [];
 			for (var i = hidden.length - 1; i >= 0; i--) {
 				if (data[hidden[i]]._searchname.indexOf(use_search_string) > -1) {
-					data[hidden[i]]._el._hidden = false;
 					revisible.push(hidden.splice(i, 1)[0]);
 				}
 			}
-		
-			// o(n) sorted insert like update_view
-			revisible.sort(self.sort_function);
-			var next_reinsert_id = revisible.pop();
-			for (var i = visible.length - 1; i >= 0; i--) {
-				if (next_reinsert_id && (self.sort_function(next_reinsert_id, visible[i]) == -1)) {
-					visible.splice(i - 1, 0, next_reinsert_id);
-					next_reinsert_id = revisible.pop();
+			self.update_view(revisible);
+			if (visible.indexOf(current_key_nav_id)) {
+				self.scroll_to_id(current_key_nav_id);
+			}
+			else {
+				if (visible.indexOf(current_open_id)) {
+					self.scroll_to_id(current_open_id);
 				}
+				self.scroll_to_pixel(0);
 			}
-			while (next_reinsert_id) {
-				visible.push(next_reinsert_id);
-				next_reinsert_id = revisible.pop();
-			}
-
-			scroll_index = false;
-			self.update_scroll_height();
-			if (current_open_element) self.scroll_to_id(current_open_element);
-			else self.scroll_to_id(scroll_index);
 			return true;
 		}
 		return false;
@@ -380,147 +318,103 @@ var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key)
 			hotkey_mode_enable();
 			return true;
 		}
-		if (search_string == "") pre_search_scroll_index = scroll_index;
 		search_string = search_string + character;
 		self.search_box_input.textContent = search_string;
-		$add_class(self.search_box_input, "searchlist_input_active");
+		$add_class(self.search_box_input.parentNode, "searchlist_input_active");
 		var use_search_string = Formatting.make_searchable_string(search_string);
 		for (var i = visible.length - 1; i >= 0; i--) {
 			if (data[visible[i]]._searchname.indexOf(use_search_string) == -1) {
-				data[visible[i]]._el._hidden = true;
 				hidden.push(visible.splice(i, 1)[0]);
 			}
 		}
-		self.remove_key_nav_highlight();
-		scroll_index = false;
-		self.update_scroll_height();
-		return true;
+		if (!visible.indexOf(current_key_nav_id)) {
+			self.remove_key_nav_highlight();
+		}
 	};
 
 	self.clear_search = function() {
 		hotkey_mode_disable();
 		search_string = "";
-		$remove_class(self.search_box_input, "searchlist_input_active");
+		$remove_class(self.search_box_input.parentNode, "searchlist_input_active");
 		self.remove_key_nav_highlight();
-
-		for (var i = 0; i < hidden.length; i++) {
-			data[hidden[i]]._el._hidden = false;
-		}
-		hidden = [];
-		visible = sorted.slice(0);
-
-		if (reinsert.length > 0) {
-			self.update_view();
-		}
-		else {
-			scroll_index = false;
-			self.update_scroll_height();
-			if (scroll_to_open_item_on_clear) self.scroll_to_id(current_open_element._id);
-			else if (pre_search_scroll_index) el.scrollTop = pre_search_scroll_index * item_height;
-			else el.scrollTop = scroll_index * item_height;
-			pre_search_scroll_index = false;
-			scroll_to_open_item_on_clear = false;
-		}
+		self.update_view();
 	};
 
 	// SCROLL **************************
-
-	// scroll_offset is how many pixels are above the current key navigation element
-	// it's important to retain this so the scrollTop isn't shoved 100px in one direction
-	// when a user clicks on an album that isn't the key nav item
-
-	// self.update_scroll_offset_by_evt = function(evt) {
-	// 	self.set_scroll_offset(Math.floor(evt.target.offsetTop / item_height));
-	// };
-
-	// self.update_scroll_offset_by_id = function(id) {
-	// 	if (id in data) self.update_scroll_offset_by_item(data[id]);
-	// };
-
-	self.update_scroll_offset_by_item = function(data_item) {
-		// element is currently onscreen - set new offset
-		if (data_item._el.parentNode) {
-			self.set_scroll_offset(Math.floor(data_item._el.offsetTop / item_height));	
-		}
-	};
-
-	self.set_scroll_offset = function(offset) {
-		var magic_number = Math.round(num_items_to_display / 5);
-		if (!offset) offset = magic_number;
-		else if (offset > (num_items_to_display - magic_number)) return;
-		else if (offset < magic_number) offset = magic_number;
-		scroll_offset = offset;
-	};
 
 	self.scroll_to_id = function(data_id) {
 		if (data_id in data) self.scroll_to(data[data_id]);
 	};
 
 	self.scroll_to_key_nav = function() {
-		if (current_key_nav_element) self.scroll_to(data[current_key_nav_element._id]);
+		if (current_key_nav_element) self.scroll_to(data[current_key_nav_id]);
 	};
 
 	self.scroll_to = function(data_item) {
 		if (data_item) {
 			var new_index = visible.indexOf(data_item.id);
-			if ((new_index > scroll_index) && (new_index < (scroll_index + num_items_to_display) - 2)) {
-				self.set_scroll_offset(new_index - scroll_index);
+			if ((new_index > (current_scroll_index + 5)) && (new_index < (current_scroll_index + num_items_to_display - 5))) {
+				// nothing necessary
 			}
-			new_index -= scroll_offset;
-			el.scrollTop = new_index * item_height;
+			if (new_index > (current_scroll_index + num_items_to_display - 5)) {
+				stretching_el.parentNode.scrollTop = Math.max(scrollbar.scroll_top_max, (new_index - num_items_to_display + 5) * item_height);
+			}
+			else {
+				stretching_el.parentNode.scrollTop = Math.max(scrollbar.scroll_top_max, (new_index - 5) * item_height);
+			}
 		}
 	};
 
-	//var dbgd = ErrorHandler.make_debug_div();
-	self.scroll_to_index = function(new_index) {
-		if (isNaN(new_index)) return;
-		// max boundary check
-		if (new_index > (visible.length - num_items_to_display + 1)) {
-			new_index = visible.length - num_items_to_display;
-		}
-		// min boundary check
-		if (new_index < 0) {
-			new_index = 0;
+	self.reposition = function() {
+		var new_index = Math.floor(scrollbar.scroll_top / item_height);
+		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
+		var new_margin = (scrollbar.scroll_top - (item_height * new_index));
+		new_margin = new_margin ? -new_margin : 0;
+		data[visible[new_index]]._el.style.marginTop = new_margin + "px";
+		
+		if (current_scroll_index === new_index) {
+			return;
 		}
 
-		var display_count;
-		//dbgd.textContent = new_index + " - " + scrollbar.scroll_top + " - " + scroll_offset;
-		var i = 0;
+		if (current_margined_element) {
+			current_margined_element.style.marginTop = "inherit";
+		}
+		current_margined_element = data[visible[new_index]]._el;
+
+		if (current_scroll_index) {
+			if (new_index < current_scroll_index - num_items_to_display) current_scroll_index = false;
+			else if (new_index > current_scroll_index + (num_items_to_display * 2)) current_scroll_index = false;
+		}
+
+		var i;
 		// full reset
-		if (scroll_index === false) {
-			if (self.el.firstChild) {
-				while (self.el.firstChild.nextSibling) {
-	    			self.el.removeChild(self.el.lastChild);
-				}
+		if (current_scroll_index === false) {
+			while (self.el.firstChild) {
+	    		self.el.removeChild(self.el.lastChild);
 			}
-			display_count = 0;
 			for (i = new_index; (i < (new_index + num_items_to_display)) && (i < visible.length); i++) {
 				self.el.appendChild(data[visible[i]]._el);
 			}
 		}
 		// scrolling up
-		else if (new_index < scroll_index) {
-			for (i = scroll_index; i >= new_index; i--) {
-				self.el.insertBefore(data[visible[i]]._el, self.el.firstChild.nextSibling);
+		else if (new_index < current_scroll_index) {
+			for (i = current_scroll_index; i >= new_index; i--) {
+				self.el.insertBefore(data[visible[i]]._el, self.el.firstChild);
 			}
-			display_count = self.el.childNodes.length - 1;
-			while (display_count > num_items_to_display) {
+			while ((self.el.childNodes.length - 1) > num_items_to_display) {
 				self.el.removeChild(self.el.lastChild);
-				display_count--;
 			}
 		}
 		// scrolling down (or starting fresh)
-		else if (new_index > scroll_index) {
-			for (i = (scroll_index + num_items_to_display); ((i < (new_index + num_items_to_display)) && (i < visible.length)) ; i++) {
+		else if (new_index > current_scroll_index) {
+			for (i = (current_scroll_index + num_items_to_display); ((i < (new_index + num_items_to_display)) && (i < visible.length)) ; i++) {
 				self.el.appendChild(data[visible[i]]._el);
 			}
-			display_count = self.el.childNodes.length - 1;
-			while (display_count > Math.min(visible.length - new_index, num_items_to_display)) {
-				self.el.removeChild(self.el.firstChild.nextSibling);
-				display_count--;
+			while ((self.el.childNodes.length - 1) > Math.min(visible.length - new_index, num_items_to_display)) {
+				self.el.removeChild(self.el.firstChild);
 			}
 		}
-		scroll_index = new_index;
+		current_scroll_index = new_index;
 	};
 
 	// NAV *****************************
@@ -535,22 +429,19 @@ var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key)
 
 	self.nav_to = function(data_item) {
 		self.remove_key_nav_highlight();
-		current_key_nav_element = data_item._el;
-		self.key_nav_highlight();
+		self.key_nav_highlight(data_item.id);
 		self.scroll_to(data_item);
 	};
 
 	self.set_new_open = function(id) {
 		if (!id in data) return;
-		if (current_open_element) {
-			$remove_class(current_open_element, "searchlist_open_item");
+		if (current_open_id) {
+			$remove_class(data[current_open_id]._el, "searchlist_open_item");
 		}
-		current_open_element = data[id]._el;
-		self.remove_key_nav_highlight();
-		current_key_nav_element = data[id]._el;
-		$add_class(current_open_element, "searchlist_open_item");
-		self.update_scroll_offset_by_item(data[id]);
-		self.scroll_to(data[id]);
+		$add_class(data[id]._el, "searchlist_open_item");
+		current_open_id = id;
+		self.key_nav_highlight(id);
+		self.scroll_to_id(id);
 	}
 
 	// FAKING A TEXT FIELD **************
@@ -573,11 +464,12 @@ var SearchList = function(el, scrollbar_el, stretching_el, sort_key, search_key)
 
 	self.on_resize = function() {
 		if (self.loaded) {
-			if (SmallScreen) item_height = 17;
-			else item_height = 22;
-			self.update_scroll_height();
+			if (SmallScreen) item_height = 19;
+			else item_height = 23;
 		}
 	};
+
+	stretching_el.parentNode.addEventListener("scroll", self.reposition);
 
 	return self;
 };

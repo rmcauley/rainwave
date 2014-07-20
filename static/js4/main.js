@@ -13,33 +13,38 @@ var User;
 var SmallScreen = false;
 var SCREEN_HEIGHT;
 var SCREEN_WIDTH;
+var MAIN_HEIGHT;
 
 function _size_calculate() {
 	"use strict";
+	var old_height = SCREEN_HEIGHT;
 	SCREEN_HEIGHT = document.documentElement.clientHeight;
 	SCREEN_WIDTH = document.documentElement.clientWidth;
+	MAIN_HEIGHT = SCREEN_HEIGHT - 56;
 	if ((SCREEN_WIDTH <= 1400) && !SmallScreen) {
 		SmallScreen = true;
 		Fx.delay_draw(function() { $add_class(document.body, "small_screen") });
 		Fx.delay_draw(function() { RatingControl.change_padding_top(1); });
+		return true;
 	}
 	else if ((SCREEN_WIDTH > 1400) && SmallScreen) {
 		SmallScreen = false;
 		Fx.delay_draw(function() { $remove_class(document.body, "small_screen") });
 		Fx.delay_draw(function() { RatingControl.change_padding_top(3); });
+		return true;
 	}
+	return old_height != SCREEN_HEIGHT;
 }
 
 function _on_resize() {
 	// this function causes a 2-paint reflow but the development cost of
 	// getting this down to a single reflow would be astronomical in code complexity
 	"use strict";
-	_size_calculate();
-	var new_height = SCREEN_HEIGHT - 56;
+	if (!_size_calculate()) return;
 	
 	Fx.flush_draws();
-	$id('sizable_body').style.height = new_height + "px";
-	PlaylistLists.on_resize(new_height);
+	$id('sizable_body').style.height = MAIN_HEIGHT + "px";
+	PlaylistLists.on_resize();
 
 	Scrollbar.recalculate();
 	setTimeout(function() { Schedule.now_playing_size_calculate(); }, 1500);
@@ -64,7 +69,7 @@ function initialize() {
 	// ****************** PAGE LAYOUT
 	// PREP: Applies the small_screen class if necessary and sizes everything
 	Fx.flush_draws();
-	$id('sizable_body').style.height = (SCREEN_HEIGHT - 56) + "px";
+	$id('sizable_body').style.height = MAIN_HEIGHT + "px";
 
 	// PAINT 1: Measure scrollbar width, setup scrollbars
 	Scrollbar.calculate_scrollbar_width();

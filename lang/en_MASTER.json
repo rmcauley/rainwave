@@ -106,7 +106,7 @@
 
    "__comment__"                 : "Playlist View",
 
-   "filter"                                          : "Type to Filter",
+   "filter"                                          : "Type to filter",
    "clearfilter"                                     : "Clear Filter",
    "album_rating_ranked_at"                          : "Rated at %(rating), ranking #(rank).",
    "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",
