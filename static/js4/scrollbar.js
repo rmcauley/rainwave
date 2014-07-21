@@ -6,8 +6,6 @@ var Scrollbar = function() {
 
 	var scrollbar_width;
 
-	cls.paddingRight = 5;
-
 	// A WORD ABOUT REFLOWING/DIRTYING THE LAYOUT
 	// the Recalculate functions measure widths/etc and so will trigger reflows
 	// the refresh functions here will dirty the layout
@@ -75,14 +73,12 @@ var Scrollbar = function() {
 		self.refresh = function() {
 			if ((self.scroll_height === 0) || (self.offset_height === 0) || (self.scroll_height <= self.offset_height)) {
 				if (visible) $add_class(handle, "scrollbar_invisible");
-				scrollable.style.paddingRight = (scrollbar_width + cls.paddingRight) + "px";
 				handle.style.height = null;
 				visible = false;
 			}
 			else {
 				if (!visible) $remove_class(handle, "scrollbar_invisible");
 				visible = true;
-				scrollable.style.paddingRight = (cls.paddingRight + 10) + "px";
 
 				handle_height = Math.round((self.offset_height - handle_margin_top - handle_margin_bottom) * (self.offset_height / self.scroll_height));
 				handle_height = Math.max(handle_height, 50);

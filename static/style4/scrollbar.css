@@ -6,7 +6,7 @@ div.scrollblock {
 div.scrollable {
 	box-sizing: border-box;
 	overflow: auto;
-	overflow-y: auto;
+	overflow-y: scroll;
 	overflow-x: hidden;
 	@include transform(padding);
 }
