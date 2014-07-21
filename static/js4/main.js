@@ -44,11 +44,12 @@ function _on_resize() {
 	
 	Fx.flush_draws();
 	$id('sizable_body').style.height = MAIN_HEIGHT + "px";
-	PlaylistLists.on_resize();
-
 	Scrollbar.recalculate();
-	setTimeout(function() { Schedule.now_playing_size_calculate(); }, 1500);
+
+	PlaylistLists.on_resize();
 	Scrollbar.refresh();
+
+	setTimeout(function() { Schedule.now_playing_size_calculate(); }, 1500);
 }
 
 function initialize() {
@@ -70,6 +71,7 @@ function initialize() {
 	// PREP: Applies the small_screen class if necessary and sizes everything
 	Fx.flush_draws();
 	$id('sizable_body').style.height = MAIN_HEIGHT + "px";
+	PlaylistLists.on_resize();
 
 	// PAINT 1: Measure scrollbar width, setup scrollbars
 	Scrollbar.calculate_scrollbar_width();
@@ -78,9 +80,11 @@ function initialize() {
 	PlaylistLists.scroll_init();
 	DetailView.scroll_init();
 	Scrollbar.resizer_calculate();
+	Scrollbar.recalculate();
 
 	// DIRTY THE LAYOUT
 
+	Scrollbar.hold_all_recalculations = true;
 	Scrollbar.resizer_refresh();
 	DetailView.draw();
 	PlaylistLists.draw();
@@ -91,8 +95,10 @@ function initialize() {
 	Fx.flush_draws();
 
 	// FINAL PAINT
-	Scrollbar.recalculate();
+	Scrollbar.hold_all_recalculations = false;
 	Schedule.now_playing_size_calculate();
+	Scrollbar.recalculate();
+	Scrollbar.refresh();
 
 	// ****************** DATA CLEANUP
 	delete(BOOTSTRAP.json);

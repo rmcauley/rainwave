@@ -8,13 +8,12 @@ PlaylistLists = function() {
 	var tabs_el;
 	var search_cancel;
 	var search_box;
-	var tabs_el_height;
+	var tabs_el_height = 53;
 
 	self.scroll_init = function() {
 		var resizer = Scrollbar.new_resizer($id("lists"), $id("lists_albums"), $id("lists_resizer"));
 		resizer.add_scrollable($id("lists_artists"));
 		// resizer.add_scrollable(lists.current_listeners.el)
-		tabs_el_height = tabs_el.offsetHeight;
 	};
 
 	self.initialize = function() {

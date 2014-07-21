@@ -4,6 +4,8 @@ var Scrollbar = function() {
 	var scrollbars = [];
 	var resizers = [];
 
+	cls.hold_all_recalculations = false;
+
 	var scrollbar_width;
 
 	// A WORD ABOUT REFLOWING/DIRTYING THE LAYOUT
@@ -46,7 +48,7 @@ var Scrollbar = function() {
 	};
 
 	cls.new = function(scrollable, handle, handle_margin_top) {
-		if (!handle_margin_top) handle_margin_top = 3;
+		if (!handle_margin_top && (handle_margin_top !== 0)) handle_margin_top = 3;
 		var handle_margin_bottom = 3;
 
 		var self = {};
@@ -62,6 +64,7 @@ var Scrollbar = function() {
 		var handle_height, original_mouse_y, original_scroll_top;
 
 		self.recalculate = function() {
+			if (cls.hold_all_recalculations) return;
 			self.scroll_height = scrollable.scrollHeight;
 			self.offset_height = scrollable.parentNode.offsetHeight;
 			self.scroll_top = scrollable.scrollTop;
@@ -91,8 +94,8 @@ var Scrollbar = function() {
 			if (!visible) return;
 			if (!scroll_top_fresh) self.scroll_top = scrollable.scrollTop;
 			else scroll_top_fresh = false;
-			var top = (self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height)
-			handle.style.top = handle_margin_top + Math.round(top) + "px";
+			var top = (self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
+			handle.style.top = self.scroll_top + handle_margin_top + Math.round(top) + "px";
 		};
 
 		var mouse_down = function(e) {

@@ -14,7 +14,8 @@ var AlbumList = function() {
 
 	// Actual app logic
 
-	var self = SearchList($id("lists_albums_items"), $el("lists_albums_scrollbar"), $id("lists_albums_stretcher"), "name", "name_searchable");
+	var self = SearchList($id("lists_albums_items"), $id("lists_albums_scrollbar"), $id("lists_albums_stretcher"), "name", "name_searchable");
+	self.list_name = "all_albums";
 	
 	self.tab_el = $id("lists_tab_album");
 	self.tab_el.textContent = $l("Albums");
@@ -137,13 +138,6 @@ var AlbumList = function() {
 		}
 	};
 
-	self.on_resize = function(new_offset_width) {
-		// offset_width = new_offset_width;
-		// for (var i in self.data) {
-		// 	self.update_item_element(self.data[i]);
-		// }
-	};
-
 	// there's lots of copy-paste code in the following functions because these are critical-path, called thousands of times
 	self.sort_by_available = function(a, b) {
 		if (playlist_sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
@@ -152,12 +146,12 @@ var AlbumList = function() {
 		}
 
 		if (self.data[a].cool !== self.data[b].cool) {
-			if (self.data[a].cool === false) return 1;
-			else return 0;
+			if (self.data[a].cool === false) return -1;
+			else return 1;
 		}
 
-		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return 1;
-		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return -1;
+		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return -1;
+		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return 1;
 		return 0;
 	};
 

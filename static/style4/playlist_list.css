@@ -10,8 +10,9 @@
 
 #lists_tabs {
 	position: relative;
-	margin: 5px 0;
-	padding: 5px 0;
+	height: 25px;
+	padding-left: 0;
+	margin: 10px 0 0 0;
 	list-style: none;
 	width: 100%;
 	border-bottom: solid 1px $darktext;
@@ -55,7 +56,7 @@
 
 #searchlist_searchbox > div {
 	padding: 2px 4px 5px 5px;
-	height: 1.2em;
+	height: 18px;
 	margin: 0;
 }
 
@@ -106,14 +107,16 @@ div.searchlist_input_active #searchlist_cancel {
 div.searchlist {
 	position: relative;
 	height: 100%;
-	padding: 0px 5px;
+}
+
+div.searchlist_items {
+	position: relative;
 }
 
 div.searchlist_item {
 	background-repeat: no-repeat;
 	height: 22px;
 	padding: 1px 65px 0 0;
-	margin-right: 10px;
 	border-bottom: solid 1px transparent;
 	cursor: pointer;
 	@include transition-wtime(200ms, background-color, border-color);

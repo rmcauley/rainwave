@@ -16,11 +16,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.el = el;
 	self.search_box_input = $el("div", { "class": "searchlist_input", "textContent": $l("filter") });
 	self.search_box_input.addEventListener("keypress", function(e) { e.preventDefault(); });
-	var scrollbar = Scrollbar.new(stretching_el.parentNode, scrollbar_handle);
+	var scrollbar = Scrollbar.new(stretching_el.parentNode, scrollbar_handle, 0);
 	// see bottom of this object for event binding
 
 	var data = {}
-	self.data = data;				// keys() are the object IDs (e.g. data[album.id])
+	self.data = data;			// keys() are the object IDs (e.g. data[album.id])
 	self.loaded = false;
 	
 	var visible = [];			// list of IDs sorted by the sort_function (visible on screen)
@@ -34,7 +34,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	var num_items_to_display;
 
 	var current_scroll_index = 0;
-	var current_margined_element;
+	var current_height;
 
 	// LIST MANAGEMENT ***********************************************
 
@@ -56,6 +56,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 				self.update_cool(data[i]);
 			}
 		}
+		self.loaded = true;
 	};
 
 	self.update_item = function(json) {
@@ -180,8 +181,10 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 	self.recalculate = function() {
 		var full_height = item_height * visible.length;
-		stretching_el.style.height = full_height + "px";
-		scrollbar.recalculate();
+		if (full_height != current_height) {
+			stretching_el.style.height = full_height + "px";
+			scrollbar.recalculate();
+		}
 		num_items_to_display = Math.ceil(scrollbar.offset_height / item_height);
 	};
 
@@ -368,18 +371,15 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.reposition = function() {
 		var new_index = Math.floor(scrollbar.scroll_top / item_height);
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
+		
 		var new_margin = (scrollbar.scroll_top - (item_height * new_index));
-		new_margin = new_margin ? -new_margin : 0;
-		data[visible[new_index]]._el.style.marginTop = new_margin + "px";
+		new_margin = new_margin ? -new_margin : 0;	
+		self.el.style.marginTop = new_margin + "px";
+		self.el.style.top = scrollbar.scroll_top + "px";
 		
 		if (current_scroll_index === new_index) {
 			return;
 		}
-
-		if (current_margined_element) {
-			current_margined_element.style.marginTop = "inherit";
-		}
-		current_margined_element = data[visible[new_index]]._el;
 
 		if (current_scroll_index) {
 			if (new_index < current_scroll_index - num_items_to_display) current_scroll_index = false;
@@ -401,7 +401,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			for (i = current_scroll_index; i >= new_index; i--) {
 				self.el.insertBefore(data[visible[i]]._el, self.el.firstChild);
 			}
-			while ((self.el.childNodes.length - 1) > num_items_to_display) {
+			while (self.el.childNodes.length > num_items_to_display) {
 				self.el.removeChild(self.el.lastChild);
 			}
 		}
@@ -410,7 +410,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			for (i = (current_scroll_index + num_items_to_display); ((i < (new_index + num_items_to_display)) && (i < visible.length)) ; i++) {
 				self.el.appendChild(data[visible[i]]._el);
 			}
-			while ((self.el.childNodes.length - 1) > Math.min(visible.length - new_index, num_items_to_display)) {
+			while (self.el.childNodes.length > Math.min(visible.length - new_index, num_items_to_display)) {
 				self.el.removeChild(self.el.firstChild);
 			}
 		}
@@ -463,10 +463,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.search_box_input.addEventListener("click", input_click);
 
 	self.on_resize = function() {
-		if (self.loaded) {
-			if (SmallScreen) item_height = 19;
-			else item_height = 23;
-		}
+		if (SmallScreen) item_height = 19;
+		else item_height = 23;
 	};
 
 	stretching_el.parentNode.addEventListener("scroll", self.reposition);
