@@ -228,44 +228,36 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		self.key_nav_highlight(visible[visible.length - 1]);
 	};
 
-	var key_nav_arrow_action = function(up, down, jump) {
-		jump = jump || 1;
+	var key_nav_arrow_action = function(jump) {
 		if (!current_key_nav_id) {
 			self.key_nav_first_item();
 			return;
 		}
 		var current_idx = visible.indexOf(current_key_nav_id);
-		if (!current_idx && jump && down) {
-			self.remove_key_nav_highlight();
-			self.key_nav_highlight(visible[Math.min(visible.length - 1, jump)]);
-			return;
-		}
-		else if (!current_idx) {
+		if (!current_idx && (current_idx !== 0)) {
 			self.key_nav_first_item();
 			return;
 		}
-		var new_index = current_idx;
-		if (up) new_index = Math.min(0, new_index - jump);
-		else new_index = Math.max(visible.length - 1, new_index + jump);
+		var new_index = Math.max(0, Math.min(current_idx + jump, visible.length - 1));
 		self.remove_key_nav_highlight();
-		self.key_nav_highlight(new_index);
+		self.key_nav_highlight(visible[new_index]);
 		return true;
 	};
 	
 	self.key_nav_down = function() {
-		return key_nav_arrow_action(false, true);
+		return key_nav_arrow_action(1);
 	};
 
 	self.key_nav_up = function() {
-		return key_nav_arrow_action(true, false);
+		return key_nav_arrow_action(-1);
 	};
 
 	self.key_nav_page_down = function() {
-		return key_nav_arrow_action(false, true, 10);
+		return key_nav_arrow_action(15);
 	};
 
 	self.key_nav_page_up = function() {
-		return key_nav_arrow_action(true, false, 10);
+		return key_nav_arrow_action(-15);
 	};
 
 	self.key_nav_enter = function() {
@@ -356,14 +348,14 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.scroll_to = function(data_item) {
 		if (data_item) {
 			var new_index = visible.indexOf(data_item.id);
-			if ((new_index > (current_scroll_index + 5)) && (new_index < (current_scroll_index + num_items_to_display - 5))) {
+			if ((new_index > (current_scroll_index + 5)) && (new_index < (current_scroll_index + num_items_to_display - 6))) {
 				// nothing necessary
 			}
-			if (new_index > (current_scroll_index + num_items_to_display - 5)) {
-				stretching_el.parentNode.scrollTop = Math.max(scrollbar.scroll_top_max, (new_index - num_items_to_display + 5) * item_height);
+			else if (new_index >= (current_scroll_index + num_items_to_display - 6)) {
+				stretching_el.parentNode.scrollTop = Math.min(scrollbar.scroll_top_max, (new_index - num_items_to_display + 6) * item_height);
 			}
 			else {
-				stretching_el.parentNode.scrollTop = Math.max(scrollbar.scroll_top_max, (new_index - 5) * item_height);
+				stretching_el.parentNode.scrollTop = Math.max(0, (new_index - 6) * item_height);
 			}
 		}
 	};
