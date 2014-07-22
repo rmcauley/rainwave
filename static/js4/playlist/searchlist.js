@@ -32,6 +32,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	var current_open_id = false;
 	var item_height = SmallScreen ? 20 : 24;
 	var num_items_to_display;
+	var original_scroll_top;
+	var original_key_nav;
 
 	var current_scroll_index = 0;
 	var current_height;
@@ -59,7 +61,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 		current_scroll_index = false;
 		self.recalculate();
-		self.scroll_to_default();
+		self.reposition();
 		self.loaded = true;
 	};
 
@@ -162,6 +164,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		if (full_height != current_height) {
 			stretching_el.style.height = full_height + "px";
 			scrollbar.recalculate();
+			current_height = full_height;
 		}
 		num_items_to_display = Math.ceil(scrollbar.offset_height / item_height) + 1;
 	};
@@ -189,11 +192,12 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		}
 	};
 
-	self.key_nav_highlight = function(id) {
+	self.key_nav_highlight = function(id, no_scroll) {
+		original_key_nav = false;
 		self.remove_key_nav_highlight();
 		current_key_nav_id = id;
 		$add_class(data[current_key_nav_id]._el, "searchtable_key_nav_hover");
-		self.scroll_to_id(id);
+		if (!no_scroll) self.scroll_to(data[id]);
 	};
 
 	self.key_nav_first_item = function() {
@@ -268,7 +272,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 			current_scroll_index = false;
 			self.recalculate();
-			self.scroll_to_default();
+			self.reposition();
 			return true;
 		}
 		return false;
@@ -283,6 +287,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		else if ((search_string.length == 0) && (character == " ")) {
 			hotkey_mode_enable();
 			return true;
+		}
+		var first_time = search_string.length == 0 ? true : false;
+		if (first_time) {
+			original_key_nav = current_key_nav_id;
+			self.remove_key_nav_highlight();
 		}
 		search_string = search_string + character;
 		self.search_box_input.textContent = search_string;
@@ -302,12 +311,22 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			self.remove_key_nav_highlight();
 		}
 		current_scroll_index = false;
+		if (first_time) {
+			original_scroll_top = scrollbar.scroll_top;
+		}
 		self.recalculate();
-		self.scroll_to_default();
+		if (first_time) {
+			scrollbar.scroll_to(0);
+		}
+		else {
+			self.reposition();
+		}
 		return true;
 	};
 
 	self.clear_search = function() {
+		if (hidden.length == 0) return;
+
 		hotkey_mode_disable();
 		search_string = "";
 		$remove_class(self.search_box_input.parentNode, "searchlist_input_active");
@@ -317,50 +336,47 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 		current_scroll_index = false;
 		self.recalculate();
-		self.reposition();
+		if (original_key_nav) {
+			self.key_nav_highlight(original_key_nav, true);
+		}
+		if (original_scroll_top) {
+		 	scrollbar.scroll_to(original_scroll_top);
+		 	original_scroll_top = false;
+		}
+		else {
+			self.scroll_to_default();
+		}
 	};
 
 	// SCROLL **************************
 
-	self.scroll_to_id = function(data_id) {
-		if (data_id in data) self.scroll_to(data[data_id]);
-	};
-
-	self.scroll_to_key_nav = function() {
-		if (current_key_nav_id) self.scroll_to(data[current_key_nav_id]);
-	};
-
 	self.scroll_to = function(data_item) {
 		if (data_item) {
 			var new_index = visible.indexOf(data_item.id);
-			if ((new_index > (current_scroll_index + 5)) && (new_index < (current_scroll_index + num_items_to_display - 6))) {
+			if ((new_index > (current_scroll_index + 7)) && (new_index < (current_scroll_index + num_items_to_display - 7))) {
 				// nothing necessary
 			}
-			else if (new_index >= (current_scroll_index + num_items_to_display - 6)) {
-				scrollbar.scroll_to(Math.min(scrollbar.scroll_top_max, (new_index - num_items_to_display + 6) * item_height));
+			else if (new_index >= (current_scroll_index + num_items_to_display - 7)) {
+				scrollbar.scroll_to(Math.min(scrollbar.scroll_top_max, (new_index - num_items_to_display + 7) * item_height));
 			}
 			else {
-				scrollbar.scroll_to(Math.max(0, (new_index - 6) * item_height));
+				scrollbar.scroll_to(Math.max(0, (new_index - 7) * item_height));
 			}
 		}
 	};
 
 	self.scroll_to_default = function() {
-		if (!scrollbar.scrolled_flag || (scrollbar.scroll_top === 0)) {
-			if (current_key_nav_id && visible.indexOf(current_key_nav_id)) {
-				self.scroll_to_id(current_key_nav_id);
-			}
-			else if (current_open_id && visible.indexOf(current_open_id)) {
-				self.scroll_to_id(current_open_id);
-			}
-			else {
-				self.reposition();
-			}
+		if (current_key_nav_id && visible.indexOf(current_key_nav_id)) {
+			self.scroll_to(data[current_key_nav_id]);
+		}
+		else if (current_open_id && visible.indexOf(current_open_id)) {
+			current_key_nav_id = current_open_id;
+			self.scroll_to(data[current_open_id]);
 		}
 		else {
 			self.reposition();
 		}
-	}
+	};
 
 	self.reposition = function() {
 		var new_index = Math.floor(scrollbar.scroll_top / item_height);
@@ -413,20 +429,6 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 	// NAV *****************************
 
-	self.nav_to_id = function(id) {
-		if (id in data) {
-			self.nav_to(data[id]);
-			return true;
-		}
-		return false;
-	};
-
-	self.nav_to = function(data_item) {
-		self.remove_key_nav_highlight();
-		self.key_nav_highlight(data_item.id);
-		self.scroll_to(data_item);
-	};
-
 	self.set_new_open = function(id) {
 		if (!id in data) return;
 		if (current_open_id) {
@@ -435,7 +437,6 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		$add_class(data[id]._el, "searchlist_open_item");
 		current_open_id = id;
 		self.key_nav_highlight(id);
-		self.scroll_to_key_nav();
 	}
 
 	// FAKING A TEXT FIELD **************
@@ -461,7 +462,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		else item_height = 24;
 	};
 
-	stretching_el.parentNode.addEventListener("scroll", self.reposition);
+	scrollbar.reposition_hook = self.reposition;
 
 	return self;
 };
