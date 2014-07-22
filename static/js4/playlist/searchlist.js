@@ -156,22 +156,19 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		else {
 			// First we walk ONCE through the visible list, re-inserting entries as necessary
 			// into the visible pile where necessary.  This ensures we're o(n) on the insertion.
-			var next_reinsert_id = to_reshow.pop();
-			for (var i = visible.length - 1; i >= 0; i--) {
+			var next_reinsert_id = to_reshow.shift();
+			for (var i = 0; i < visible.length; i++) {
 				if (data[visible[i]]._delete) {
 					delete(data[visible[i]]);
 					visible.splice(i, 1);
 				}
-				else if (next_reinsert_id && (self.sort_function(next_reinsert_id, visible[i]) == -1)) {
-					visible.splice(i - 1, 0, next_reinsert_id);
-					next_reinsert_id = to_reshow.pop();
+				else if (next_reinsert_id && (self.sort_function(visible[i], next_reinsert_id) == -1)) {
+					visible.splice(i + 1, 0, next_reinsert_id);
+					next_reinsert_id = to_reshow.shift();
 				}
 			}
-			// finish adding any leftovers at the bottom of the pile
-			while (next_reinsert_id) {
-				visible.push(next_reinsert_id);
-				next_reinsert_id = to_reshow.pop();
-			}
+			if (next_reinsert_id) visible.push(next_reinsert_id);
+			if (to_reshow.length > 0) visible = visible.concat(to_reshow);
 		}
 
 		current_scroll_index = false;
