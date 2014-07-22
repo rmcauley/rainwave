@@ -57,10 +57,12 @@ var Scrollbar = function() {
 		self.scroll_height = null;
 		self.offset_height = null;
 		self.pending_self_update = false;
+		self.scrolled_flag = false;
 
 		var scrolling = false;
 		var visible = false;
 		var scroll_top_fresh = false;
+		var next_scroll_not_the_user = false;
 		var handle_height, original_mouse_y, original_scroll_top, scroll_per_px;
 
 		self.recalculate = function() {
@@ -91,10 +93,22 @@ var Scrollbar = function() {
 			}
 		};
 
+		self.scroll_to = function(px) {
+			if (visible) {
+				next_scroll_not_the_user = true;
+				scrollable.scrollTop = px;
+			}
+		};
+
 		self.reposition = function() {
 			if (!visible) return;
+
 			if (!scroll_top_fresh) self.scroll_top = scrollable.scrollTop;
 			else scroll_top_fresh = false;
+
+			if (!next_scroll_not_the_user) self.scrolled_flag = true;
+			else next_scroll_not_the_user = false;
+
 			var top = (self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
 			handle.style.top = self.scroll_top + handle_margin_top + Math.round(top) + "px";
 		};

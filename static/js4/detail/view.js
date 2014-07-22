@@ -65,8 +65,8 @@ var DetailView = function() {
 		view.visible = true;
 		view.el.style.display = "block";
 		el.appendChild(view.el);
-		scroller.update_scroll_height();
-		scroller.scroll_to(view.scroll_top);
+		scroller.recalculate();
+		scroller.scroll_to(view.scroll_top || 0);
 		return view;
 	};
 
@@ -115,16 +115,19 @@ var DetailView = function() {
 	};
 
 	var open_album_internal = function(id) { 
+		id = parseInt(id);
 		PlaylistLists.set_new_open("all_albums", id);
 		return open_internal("album", id);
 	};
 
 	var open_artist_internal = function(id) {
+		id = parseInt(id);
 		PlaylistLists.set_new_open("all_artists", id);
 		return open_internal("artist", id);
 	};
 
 	var open_listener_internal = function(id) {
+		id = parseInt(id);
 		PlaylistLists.set_new_open("current_listeners", id);
 		return open_internal("listener", id);
 	};

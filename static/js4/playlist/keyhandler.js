@@ -23,9 +23,11 @@
 		if (self.is_ignorable(evt)) return true;
 		// these 4 key codes are handled by on_key_down, as browser's default behaviour 
 		// tend to act on them at that stage rather than on_key_press
+		//   backspace               escape                 down                    up
 		if ((evt.keyCode != 8) && (evt.keyCode != 27) && (evt.keyCode != 38) && (evt.keyCode != 40)) {
 			return self.handle_event(evt);
 		}
+		// trap backspace so users don't accidentally navigate away from the site
 		if (backspace_trap && (evt.keyCode == 8)) {
 			self.prevent_default(evt);
 			// no need to set enable_backspace_trap - that will already have been handled by key_down
