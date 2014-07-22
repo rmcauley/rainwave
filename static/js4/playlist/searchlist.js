@@ -30,7 +30,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	var search_string = "";
 	var current_key_nav_id = false;
 	var current_open_id = false;
-	var item_height = SmallScreen ? 19 : 23;
+	var item_height = SmallScreen ? 20 : 24;
 	var num_items_to_display;
 
 	var current_scroll_index = 0;
@@ -185,7 +185,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			stretching_el.style.height = full_height + "px";
 			scrollbar.recalculate();
 		}
-		num_items_to_display = Math.ceil(scrollbar.offset_height / item_height);
+		num_items_to_display = Math.ceil(scrollbar.offset_height / item_height) + 1;
 	};
 
 	self.sort_function = function(a, b) {
@@ -463,8 +463,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.search_box_input.addEventListener("click", input_click);
 
 	self.on_resize = function() {
-		if (SmallScreen) item_height = 19;
-		else item_height = 23;
+		if (SmallScreen) item_height = 20;
+		else item_height = 24;
 	};
 
 	stretching_el.parentNode.addEventListener("scroll", self.reposition);

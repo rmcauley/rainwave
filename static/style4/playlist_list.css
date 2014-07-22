@@ -19,6 +19,13 @@
 }
 
 #lists_tabs li {
+	display: inline-block;
+	height: 25px;
+	padding: 0 10px;
+	cursor: pointer;
+	color: $darktext;
+	@include transition(LINKCOLOR, background, opacity);
+
 	border-left-width: 1px;
 	border-right-width: 1px;
 	border-bottom-width: 0px;
@@ -28,12 +35,6 @@
 	-moz-border-image: -moz-linear-gradient(bottom, $darktext, rgba(0, 0, 0, 0)) 1 100%;
 	border-image: linear-gradient(to top, $darktext, rgba(0, 0, 0, 0)) 1 100%;
 	background-repeat: no-repeat;
-
-	padding: 5px 10px;
-	display: inline;
-	cursor: pointer;
-	color: $darktext;
-	@include transition(LINKCOLOR, background, opacity);
 }
 
 #lists_tab li + li {
@@ -48,24 +49,26 @@
 /* SEARCH BOX */
 
 #lists_searchbox {
-	margin: 10px;
-	padding: 0px;
-	border: solid 1px $vvdarktext;
+	padding: 10px;
 	overflow: hidden;
 }
 
-#searchlist_searchbox > div {
-	padding: 2px 4px 5px 5px;
-	height: 18px;
-	margin: 0;
-}
-
 #searchlist_input {
+	height: 25px;
+	border: solid 1px $vvdarktext;
 	color: $vdarktext;
 	cursor: text;
 	background-color: rgb(25, 25, 25);
 	@include transition-wtime(300ms, background-color, color);
 	font-style: italic;
+}
+
+div.searchlist_input {
+	padding-top: 4px;
+}
+
+body.small_screen div.searchlist_input {
+	padding-top: 3px;
 }
 
 div.searchlist_input_active {
@@ -96,10 +99,13 @@ div.searchlist_input_active #searchlist_cancel {
 }
 
 #searchlist_searchbox #searchlist_icon {
-	padding-top: 0px;
-	margin-bottom: 2px;
+	padding: 0 3px 0 3px;
 	float: left;
 	font-style: normal;
+}
+
+body.small_screen #searchlist_searchbox #searchlist_icon {
+	padding-top: 1px;
 }
 
 /* SEARCH LIST */

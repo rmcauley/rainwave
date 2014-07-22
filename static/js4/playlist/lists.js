@@ -8,7 +8,7 @@ PlaylistLists = function() {
 	var tabs_el;
 	var search_cancel;
 	var search_box;
-	var tabs_el_height = 53;
+	var tabs_el_height = 83;
 
 	self.scroll_init = function() {
 		var resizer = Scrollbar.new_resizer($id("lists"), $id("lists_albums"), $id("lists_resizer"));
