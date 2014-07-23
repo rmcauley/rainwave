@@ -98,7 +98,7 @@ var Schedule = function() {
 		setTimeout(function() {
 			 timeline_scrollbar.recalculate();
 			 timeline_scrollbar.refresh();
-		}, 1100);
+		}, 1700);
 	};
 
 	var find_event = function(id) {
@@ -141,23 +141,23 @@ var Schedule = function() {
 	};
 
 	self.vote = function(which_election, song_position) {
-		var i = self.events.indexOf(current_event) - 1;
-		while ((i >= 0) && (which_election > 0)) {
-			if ((self.events[i].data.type == "Election") && self.events[i].data.voting_allowed) {
-				which_election -= 1;
-			}
-			i -= 1;
+		if ((which_election < 0) || (which_election >= sched_next.length)) {
+			throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote" });
 		}
-		if ((i >= 0) && (self.events[i].data.type == "Election") && self.events[i].data.voting_allowed) {
-			if (self.events[i].songs.length > song_position) {
-				self.events[i].songs[song_position].vote();
-				return;
-			}
-			else {
-				throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote" });
-			}
+
+		if (!(sched_next[which_election].type == "Election")) {
+			throw({ "is_rw": true, "tl_key": "not_an_election" });
 		}
-		throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote" });
+
+		if (!sched_next[which_election].voting_allowed) {
+			throw({ "is_rw": true, "tl_key": "cannot_vote_for_this_now"});
+		}
+
+		if ((song_position < 0) || (song_position > sched_next[which_election].songs.length)) {
+			throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote"});
+		}
+
+		find_event(sched_next[which_election].id).songs[song_position].vote();
 	};
 
 	self.tune_in_voting_allowed_check = function(json) {

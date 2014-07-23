@@ -67,45 +67,58 @@ div.searchlist_input {
 	padding-top: 4px;
 }
 
-body.small_screen div.searchlist_input {
-	padding-top: 3px;
-}
-
 div.searchlist_input_active {
 	color: $text;
 	font-style: normal;
 }
 
-div.searchlist_input.hotkey_mode {
+#searchlist_input.hotkey_mode {
 	color: $text;
 	background-color: #0e0e3f;
 }
 
-div.searchlist_input.hotkey_mode_error {
+#searchlist_input.hotkey_mode_error {
 	color: $text;
 	background-color: #3f0e0e;
 }
 
 #searchlist_searchbox #searchlist_cancel {
-	padding-top: 0px;
 	float: right;
 	opacity: 0;
-	@include transition(opacity);
+	font-style: normal;
+	margin: 5px 5px 0px 5px;
+	border: solid 1px white;
+	padding: 2px;
+	font-size: smaller;
+	height: 10px;
+	text-align: center;
+	line-height: .8em;
+	cursor: pointer;
+	@include transition-wtime(300ms, opacity);
 }
 
-div.searchlist_input_active #searchlist_cancel {
+#searchlist_searchbox.searchlist_input_active #searchlist_cancel {
 	opacity: 1;
-	font-style: normal;
+}
+
+#searchlist_searchbox.no_escape_button #searchlist_cancel {
+	display: none;
 }
 
 #searchlist_searchbox #searchlist_icon {
-	padding: 0 3px 0 3px;
+	background-image: url("/static/images4/search.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	height: 1em;
+	width: 1em;
+	margin: 6px 5px 0 5px;
 	float: left;
-	font-style: normal;
+	opacity: .5;
+	@include transition-wtime(300ms, opacity);
 }
 
-body.small_screen #searchlist_searchbox #searchlist_icon {
-	padding-top: 1px;
+#searchlist_input.hotkey_mode #searchlist_icon, #searchlist_input.hotkey_mode_error #searchlist_icon {
+	opacity: 0;
 }
 
 /* SEARCH LIST */

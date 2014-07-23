@@ -74,7 +74,7 @@
    "Election"                                        : "Election",
    "Power Hour"                                      : "Power Hour",
    "vote_submitted"                                  : "Vote Submitted",
-   "cannot_vote_for_this_now"                        : "Cannot vote for this song right now.",
+   "cannot_vote_for_this_now"                        : "Cannot vote for that song right now.",
    "invalid_hotkey_vote"                             : "Hotkey does not correspond to a song.",
    "Previous Songs"                                  : "Previously Songs",
 
@@ -103,10 +103,13 @@
    "audio_not_supported"                             : "Your browser does not support HTML5 audio.",
    "audio_error"                                     : "Could not play audio in the browser - please download the playlist.",
    "hotkey_mode"                                     : "Hotkeys On: 1-5 to Rate, A/S/D to Vote",
+   "invalid_hotkey"                                  : "Hotkeys Are: 1-5 to Rate, A/S/D to Vote",
+   "not_an_election"                                 : "You can't vote on what's next right now.",
 
    "__comment__"                 : "Playlist View",
 
-   "filter"                                          : "Type to filter",
+   "filter"                                          : "Type anywhere to filter",
+   "typeanywhere"                                    : "This isn't a search box!  Just type anywhere!",
    "clearfilter"                                     : "Clear Filter",
    "album_rating_ranked_at"                          : "Rated at %(rating), ranking #(rank).",
    "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",

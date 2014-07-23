@@ -18,6 +18,7 @@ PlaylistLists = function() {
 
 	self.initialize = function() {
 		Prefs.define("searchlist_show_cooldown");
+		Prefs.define("used_escape_to_clear_search");
 
 		el = $id("lists_container");
 		tabs_el = $id("lists_tabs");
@@ -41,6 +42,10 @@ PlaylistLists = function() {
 		}
 
 		el.style.height = (MAIN_HEIGHT - tabs_el_height) + "px";
+
+		if (Prefs.get("used_escape_to_clear_search")) {
+			$add_class(search_box, "no_escape_button");
+		}
 	};
 
 	self.change_visible_list = function(change_to) {

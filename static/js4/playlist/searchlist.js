@@ -15,7 +15,6 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.auto_trim = false;
 	self.el = el;
 	self.search_box_input = $el("div", { "class": "searchlist_input", "textContent": $l("filter") });
-	self.search_box_input.addEventListener("keypress", function(e) { e.preventDefault(); });
 	var scrollbar = Scrollbar.new(stretching_el.parentNode, scrollbar_handle, 0);
 	// see bottom of this object for event binding
 
@@ -100,13 +99,13 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 	var hotkey_mode_enable = function() {
 		hotkey_mode_on = true;
-		$add_class(self.search_box_input, "hotkey_mode");
+		$add_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
 		self.search_box_input.textContent = $l("hotkey_mode");
 	};
 
 	var hotkey_mode_disable = function() {
 		hotkey_mode_on = false;
-		$remove_class(self.search_box_input, "hotkey_mode");
+		$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
 		self.search_box_input.textContent = $l("filter");
 	};
 
@@ -115,15 +114,20 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			if ((parseInt(character) >= 1) && (parseInt(character) <= 5)) {
 				Schedule.rate_current_song(parseInt(character));
 			}
+			else if (character == 'q') Schedule.rate_current_song(1.5);
+			else if (character == 'w') Schedule.rate_current_song(2.5);
+			else if (character == 'e') Schedule.rate_current_song(3.5);
+			else if (character == 'r') Schedule.rate_current_song(4.5);
+
 			else if (character == "a") Schedule.vote(0, 0);
 			else if (character == "s") Schedule.vote(0, 1);
 			else if (character == "d") Schedule.vote(0, 2);
-			else if (character == "q") Schedule.vote(1, 0); 
-			else if (character == "w") Schedule.vote(1, 1);
-			else if (character == "e") Schedule.vote(1, 2);
+			else if (character == "z") Schedule.vote(1, 0); 
+			else if (character == "x") Schedule.vote(1, 1);
+			else if (character == "c") Schedule.vote(1, 2);
 			else { 
-				hotkey_mode_disable();
-				return false;
+				hotkey_mode_error("invalid_hotkey");
+				return true;
 			}
 			hotkey_mode_disable();
 			return true;
@@ -141,10 +145,10 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 	var hotkey_mode_error = function(tl_key) {
 		hotkey_mode_disable();
-		$add_class(self.search_box_input, "hotkey_mode_error");
+		$add_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
 		self.search_box_input.textContent = $l(tl_key);
 		setTimeout(function() { 
-			$remove_class(self.search_box_input, "hotkey_mode_error");
+			$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
 			self.search_box_input.textContent = $l("filter");
 			}, 6000);
 	};
@@ -250,6 +254,10 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.key_nav_escape = function() {
+		if (!Prefs.get("used_escape_to_clear_search")) {
+			$add_class(self.search_box_input.parentNode, "no_escape_button");
+			Prefs.change("used_escape_to_clear_search", true);
+		}
 		self.clear_search();
 		return true;
 	};
@@ -327,11 +335,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.clear_search = function() {
-		if (hidden.length == 0) return;
-
 		hotkey_mode_disable();
 		search_string = "";
 		$remove_class(self.search_box_input.parentNode, "searchlist_input_active");
+
+		if (hidden.length == 0) return;
 
 		self.update_view();
 		hidden = [];
@@ -444,14 +452,14 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	// FAKING A TEXT FIELD **************
 
 	var input_click = function(e) {
-		if (search_string == "") {
-			self.search_box_input.textContent = "";
+		if (search_string.length == 0) {
+			self.search_box_input.textContent = $l("typeanywhere");
 			window.addEventListener("click", input_blur, true);
 		}
 	}
 
 	var input_blur = function(e) {
-		if (self.search_box_input.textContent == "") {
+		if (search_string.length == 0) {
 			self.search_box_input.textContent = $l("filter");
 		}
 		window.removeEventListener("click", input_blur, true);
