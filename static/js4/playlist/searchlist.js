@@ -50,8 +50,10 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		for (i in json) {
 			self.update_item(json[i]);
 		}
-		self.update_view();
-		hidden = [];
+		if (search_string.length == 0) {
+			self.update_view();
+			hidden = [];
+		}
 
 		if (self.update_cool) {
 			for (i in data) {
