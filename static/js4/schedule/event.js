@@ -55,7 +55,7 @@ var EventBase = function(json) {
 		self.el.appendChild(header);
 		if (self.songs) {
 			// shuffle our songs to draw in the array if it's not used yet
-			if (!self.data.used && (self.type.indexOf("election") != -1)) {
+			if (!self.data.used && (self.type.toLowerCase().indexOf("election") != -1)) {
 				shuffle(self.songs);
 			}
 			for (var i = 0; i < self.songs.length; i++) {
