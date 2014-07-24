@@ -67,7 +67,7 @@ class AlbumList(api.web.HTMLRequest):
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s AND r4_album_ratings.sid = r4_album_sid.sid) "
-			"WHERE r4_album_sid.sid = %s "
+			"WHERE r4_album_sid.sid = %s AND r4_album_sid.album_exists = TRUE "
 			"ORDER BY album_name",
 			(self.user.id, self.get_argument("restrict")))
 		for row in albums:
