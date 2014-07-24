@@ -169,7 +169,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		var full_height = item_height * visible.length;
 		if (full_height != current_height) {
 			stretching_el.style.height = full_height + "px";
-			scrollbar.recalculate();
+			scrollbar.recalculate(full_height);
+			scrollbar.refresh();
 			current_height = full_height;
 		}
 		num_items_to_display = Math.ceil(scrollbar.offset_height / item_height) + 1;

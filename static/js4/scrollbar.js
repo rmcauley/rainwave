@@ -64,12 +64,12 @@ var Scrollbar = function() {
 		var scroll_top_fresh = false;
 		var handle_height, original_mouse_y, original_scroll_top, scroll_per_px;
 
-		self.recalculate = function() {
+		self.recalculate = function(force_height) {
 			if (cls.hold_all_recalculations) return;
-			self.scroll_height = scrollable.scrollHeight;
+			self.scroll_height = force_height || scrollable.scrollHeight;
 			self.offset_height = scrollable.parentNode.offsetHeight;
 			self.scroll_top = scrollable.scrollTop;
-			self.scroll_top_max = scrollable.scrollTopMax || (self.scroll_height - self.offset_height);
+			self.scroll_top_max = (self.scroll_height - self.offset_height);
 			scroll_top_fresh = true;
 			self.pending_self_update = false;
 		};
