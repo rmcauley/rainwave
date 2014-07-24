@@ -65,6 +65,9 @@
 
 div.searchlist_input {
 	padding-top: 4px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 div.searchlist_input_active {
@@ -160,6 +163,7 @@ span.searchlist_name {
 	overflow: hidden;
 	word-break: break-all;
 	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 div.searchlist_item:hover span.searchlist_name {
@@ -194,9 +198,13 @@ div.searchlist_cooldown_visible span.searchlist_cooldown_time {
 	display: inline-block;
 }
 
-div.searchlist_item:hover, div.searchlist div.searchtable_key_nav_hover {
+div.searchlist_item:hover, div.searchtable_key_nav_hover {
 	border-color: #1a435e;
 	background-color: #143347;
+}
+
+div.searchtable_key_nav_hover {
+	@include no-transition();
 }
 
 div.searchlist_item:hover span.searchlist_name, div.searchtable_key_nav_hover span.searchlist_name {

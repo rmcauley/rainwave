@@ -75,7 +75,7 @@
    "Power Hour"                                      : "Power Hour",
    "vote_submitted"                                  : "Vote Submitted",
    "cannot_vote_for_this_now"                        : "Cannot vote for that song right now.",
-   "invalid_hotkey_vote"                             : "Hotkey does not correspond to a song.",
+   "invalid_hotkey_vote"                             : "Invalid choice, try again.",
    "Previous Songs"                                  : "Previously Songs",
 
    "__comment__"                 : "Tip Jar",
@@ -102,9 +102,9 @@
    "deeplink_error"                                  : "Error understanding the URL entered.",
    "audio_not_supported"                             : "Your browser does not support HTML5 audio.",
    "audio_error"                                     : "Could not play audio in the browser - please download the playlist.",
-   "hotkey_mode"                                     : "Hotkeys On: 1-5 to Rate, A/S/D to Vote",
-   "invalid_hotkey"                                  : "Hotkeys Are: 1-5 to Rate, A/S/D to Vote",
-   "not_an_election"                                 : "You can't vote on what's next right now.",
+   "hotkey_mode"                                     : "1-5 to Rate, A/S/D to Vote",
+   "invalid_hotkey"                                  : "Invalid hotkey.",
+   "not_an_election"                                 : "Not an election.",
 
    "__comment__"                 : "Playlist View",
 

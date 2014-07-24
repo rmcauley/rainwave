@@ -7,6 +7,17 @@
 //	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses 'id')
 
+/* 
+
+- Searching for 1 character is broken (especially when scrolled down)
+- Show 'no results' when there are none!
+- Now playing needs URL links
+- An on-page clock?
+- Clear hotkey errors and timeouts better
+
+*/
+
+
 var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_key) {
 	"use strict";
 	var self = {};
@@ -367,9 +378,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			if ((new_index > (current_scroll_index + 7)) && (new_index < (current_scroll_index + num_items_to_display - 7))) {
 				// nothing necessary
 			}
-			else if (new_index >= (current_scroll_index + num_items_to_display - 7)) {
-				scrollbar.scroll_to(Math.min(scrollbar.scroll_top_max, (new_index - num_items_to_display + 7) * item_height));
+			// position at the lower edge
+			else if (new_index >= (current_scroll_index + num_items_to_display - 8)) {
+				scrollbar.scroll_to(Math.min(scrollbar.scroll_top_max, (new_index - num_items_to_display + 8) * item_height));
 			}
+			// position at the higher edge
 			else {
 				scrollbar.scroll_to(Math.max(0, (new_index - 7) * item_height));
 			}
