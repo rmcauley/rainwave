@@ -35,7 +35,7 @@ def scan_file(args, filename):
 		print "CD Group".ljust(10), ":", s.genre_tag
 		print "Link Name".ljust(10), ":", s.data['link_text']
 		print "Link".ljust(10), ":", s.data['url']
-		print "Length".ljust(10), ":", "%s:%s" % (int(math.floor(s.data['length'] / 60)), (s.data['length'] % 60))
+		print "Length".ljust(10), ":", "%s:%02u" % (int(math.floor(s.data['length'] / 60)), (s.data['length'] % 60))
 		print "Gain".ljust(10), ":", s.replay_gain	
 
 def scan_directory(args, dirname):

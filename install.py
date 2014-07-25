@@ -34,16 +34,16 @@ shutil.copytree("etc", installdir + "/etc")
 shutil.copytree("static", installdir + "/static")
 shutil.copytree("templates", installdir + "/templates")
 
-shutil.copy("rw_api.py", "/opt/rainwave/rw_api.py")
-shutil.copy("rw_backend.py", "/opt/rainwave/rw_backend.py")
-shutil.copy("rw_scanner.py", "/opt/rainwave/rw_scanner.py")
-shutil.copy("rw_clear_cache.py", "/opt/rainwave/rw_clear_cache.py")
-shutil.copy("rw_get_next.py", "/opt/rainwave/rw_get_next.py")
-shutil.copy("rw_icecast_sync.py", "/opt/rainwave/rw_icecast_sync.py")
+shutil.copy("rw_api.py", installdir + "/rw_api.py")
+shutil.copy("rw_backend.py", installdir + "/rw_backend.py")
+shutil.copy("rw_scanner.py", installdir + "/rw_scanner.py")
+shutil.copy("rw_clear_cache.py", installdir + "/rw_clear_cache.py")
+shutil.copy("rw_get_next.py", installdir + "/rw_get_next.py")
+shutil.copy("rw_icecast_sync.py", installdir + "/rw_icecast_sync.py")
+shutil.copy("tagset.py", installdir + "/tagset.py")
 
 shutil.copy("initscript", "/etc/init.d/rainwave")
 shutil.copy("rw_get_next.py", "/usr/local/bin/rw_get_next.py")
-shutil.copy("tagset.py", "/usr/local/bin/tagset.py")
 
 os.makedirs(os.path.join(installdir, "static", "baked", str(buildtools.get_build_number()) ))
 
