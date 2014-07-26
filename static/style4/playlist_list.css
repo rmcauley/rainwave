@@ -80,7 +80,7 @@ div.searchlist_input_active {
 	background-color: #0e0e3f;
 }
 
-#searchlist_input.hotkey_mode_error {
+#searchlist_input.hotkey_mode_error, #searchlist_input.no_results {
 	color: $text;
 	background-color: #3f0e0e;
 }

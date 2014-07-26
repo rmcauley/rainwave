@@ -7,16 +7,6 @@
 //	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses 'id')
 
-/* 
-
-- Searching for 1 character is broken (especially when scrolled down)
-- Show 'no results' when there are none!
-- Now playing needs URL links
-- An on-page clock?
-
-*/
-
-
 var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_key) {
 	"use strict";
 	var self = {};
@@ -290,6 +280,9 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 					revisible.push(hidden.splice(i, 1)[0]);
 				}
 			}
+			if (revisible.length > 0) {
+				$remove_class(self.search_box_input.parentNode.parentNode, "no_results");
+			}
 			self.update_view(revisible);
 
 			current_scroll_index = false;
@@ -333,17 +326,16 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		if (!visible.indexOf(current_key_nav_id)) {
 			self.remove_key_nav_highlight();
 		}
+		if (visible.length === 0) {
+			$add_class(self.search_box_input.parentNode.parentNode, "no_results");
+		}
 		current_scroll_index = false;
 		if (first_time) {
 			original_scroll_top = scrollbar.scroll_top;
-		}
-		self.recalculate();
-		if (first_time) {
 			scrollbar.scroll_to(0);
 		}
-		else {
-			self.reposition();
-		}
+		self.recalculate();
+		self.reposition();
 		return true;
 	};
 

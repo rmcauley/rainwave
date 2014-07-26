@@ -1,6 +1,5 @@
 var Clock = function() {
 	"use strict";
-	var clocks = {};
 	var interval = 0;
 	var timediff = 0;
 	var ready = false;
@@ -11,6 +10,8 @@ var Clock = function() {
 
 	var self = {};
 	self.now = 0;
+	self.pageclock = null;
+	self.pageclock_bar_function = null;
 
 	self.initialize = function() {
 		API.add_callback(self.resync, "api_info");
@@ -32,12 +33,6 @@ var Clock = function() {
 		timediff = json.time - self.time() + 2;
 		ready = true;
 
-		for (var i in clocks) {
-			if (!document.getElementById("_clock_" + i)) {
-				delete(clocks[i]);
-			}
-		}
-
 		self.now = self.time() + timediff;
 	};
 
@@ -51,25 +46,25 @@ var Clock = function() {
 
 	self.loop = function() {
 		if (ready === false) return;
+		if (page_title_end < 0 || isNaN(page_title_end - self.now)) return;
 		self.now = self.time() + timediff;
 
-		for (var i in clocks) {
-			clocks[i].textContent = Formatting.minute_clock(clocks[i]._clock_end - self.now);
-		}
-
+		var c = Formatting.minute_clock(page_title_end - self.now);
 		if (page_title) {
-			document.title = "[" + Formatting.minute_clock(page_title_end - self.now) + "] " + page_title;
+			document.title = "[" + c + "] " + page_title;
 			if (force_sync_ok && (page_title_end - self.now < -10)) {
 				force_sync_ok = false;
 				API.force_sync();
 			}
 		}
-	};
 
-	self.add_clock = function(el, end_time) {
-		max_id++;
-		el.setAttribute('id', "_clock_" + max_id);
-		el._clock_end = end_time;
+		if (self.pageclock) {
+			self.pageclock.textContent = c;
+		}
+
+		if (self.pageclock_bar_function) { 
+			self.pageclock_bar_function(page_title_end, self.now);
+		}
 	};
 
 	if (interval === 0) {

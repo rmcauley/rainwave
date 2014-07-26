@@ -100,8 +100,8 @@ def get_next(sid):
 			log.debug("request", "Passing on user %s since they have no valid first song." % line[pos]['username'])
 		else:
 			entry = line.pop(pos)
-			log.debug("request", "Fulfilling %s's request." % entry['username'])
 			song = playlist.Song.load_from_id(entry['song_id'], sid)
+			log.debug("request", "Fulfilling %s's request for %s." % (entry['username'], song.filename))
 			song.data['elec_request_user_id'] = entry['user_id']
 			song.data['elec_request_username'] = entry['username']
 

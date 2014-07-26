@@ -78,7 +78,6 @@ var Schedule = function() {
 			if (self.events[i].pending_delete) {
 				$add_class(self.events[i].el, "timeline_event_closing");
 				self.events[i].el.style.marginTop = "-" + now_playing_size + "px";
-				self.events[i].progress_bar_stop();
 				Fx.remove_element(self.events[i].el);
 			}
 		}

@@ -32,11 +32,12 @@ var EventBase = function(json) {
 	self.songs = null;
 
 	var header = $el("div", { "class": "timeline_header" });
+	self.elements.header_clock = $el("span", { "class": "timeline_header_clock" });
 	var header_text = $el("a");
 	var header_bar = $el("div", { "class": "timeline_header_bar" });
 	var header_inside_bar = $el("div", { "class": "timeline_header_bar_inside" });
-	var time_bar_progress_timer = false;
 	header_bar.appendChild(header_inside_bar);
+	header.appendChild(self.elements.header_clock);
 	header.appendChild(header_text);
 	self.header_height = 0;
 	self.header_text;
@@ -97,6 +98,7 @@ var EventBase = function(json) {
 	self.change_to_now_playing = function() {
 		$remove_class(self.el, "timeline_next");
 		self.set_header_text($l("Now_Playing"));
+		Clock.pageclock = self.elements.header_clock;
 		if (self.songs && (self.songs.length > 0)) {
 			// other places in the code rely on songs[0] to be the winning song
 			// make sure we sort properly for that condition here
@@ -198,26 +200,14 @@ var EventBase = function(json) {
 	};
 
 	self.progress_bar_start = function() {
-		if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
 		progress_bar_update();
 		header_inside_bar.style.opacity = 1;
-		time_bar_progress_timer = setInterval(progress_bar_update, 1000);
-	};
-
-	self.progress_bar_stop = function() {
-		if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
+		Clock.pageclock_bar_function = progress_bar_update;
 	};
 
 	var progress_bar_update = function() {
 		var new_val = ((self.end - Clock.now) / (self.data.songs[0].length - 1)) * 100;
-		if (new_val <= 0) {
-			if (time_bar_progress_timer) clearInterval(time_bar_progress_timer);
-			time_bar_progress_timer = false;
-			header_inside_bar.style.width = "0%";
-		}
-		else {
-			header_inside_bar.style.width = new_val + "%";
-		}
+		header_inside_bar.style.width = new_val + "%";
 	};
 
 	draw();
