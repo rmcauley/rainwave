@@ -13,24 +13,28 @@ var Requests = function() {
 	var original_mouse_y;
 
 	self.scroll_init = function() {
-
+		scroller = Scrollbar.new(container, $id("requests_scrollbar"), 22);
 	};
 
 	self.initialize = function() {
-		return;
 		Prefs.define("requests_sticky");
 		el = $id("requests_list");
 		container = $id("requests");
+		container.addEventListener("mouseover", mouse_over);
+
+		API.add_callback(self.update, "requests");
+		API.add_callback(self.show_queue_paused, "user");
+	};
+
+	self.draw = function() {
 		if (!Prefs.get("requests_sticky")) {
-			container.className = "nonsticky";
+			$add_class(container, "nonsticky");
 		}
 		else {
-			container.className = "sticky";
+			$add_class(container, "sticky");
 		}
-		container.addEventListener("mouseover", mouse_over);
-		scroller = Scrollbar.new(container, 22);
 		$id("requests_pin").addEventListener("click", self.swap_sticky);
-		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") + " ▲" }));
+		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
 		$id("requests_pause").setAttribute("title", $l("pause_request_queue"));
 		$id("requests_pause").setAttribute("alt", $l("pause_request_queue"));
 		$id("requests_pause").addEventListener("click", self.pause_queue);
@@ -41,13 +45,6 @@ var Requests = function() {
 		$id("requests_unrated").setAttribute("alt", $l("request_fill_with_unrated"));
 		$id("requests_unrated").addEventListener("click", self.fill_with_unrated);
 		self.on_resize();
-
-		API.add_callback(self.update, "requests");
-		API.add_callback(self.show_queue_paused, "user");
-	};
-
-	self.draw = function() {
-
 	};
 
 	var mouse_over = function(e) {
@@ -157,9 +154,8 @@ var Requests = function() {
 		self.reflow();
 	};
 
-	self.on_resize = function(new_height) {
-		if (new_height) height = new_height
-		if (container) container.style.height = height + "px";
+	self.on_resize = function() {
+		if (container) container.style.height = MAIN_HEIGHT + "px";
 	};
 
 	self.reflow = function() {
@@ -171,7 +167,10 @@ var Requests = function() {
 			}
 			running_height += TimelineSong.height;
 		}
-		if (scroller) scroller.update_scroll_height(running_height);
+		if (scroller) {
+			scroller.recalculate(running_height);
+			scroller.refresh();
+		}
 	};
 
 	// DRAG AND DROP *********************************************************

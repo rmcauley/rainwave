@@ -1,38 +1,26 @@
-#requests {
-	display: none;
-	width: 335px;
-	overflow: hidden;
-	z-index: 5;
-	padding-left: 15px;
+#requests_scrollblock {
+	box-sizing: border-box;
+	width: 340px;
+	z-index: 100;
 	opacity: 1;
-	@include transition-wtime(300ms, background, opacity);
+	border-left: solid 5px rgb(30,81,153);
 
-	background: rgb(0,0,0);
-	background: -moz-linear-gradient(right, rgba(0,0,0,1) 95%, rgba(30,81,153,1) 100%);
-	background: -webkit-linear-gradient(right, rgba(0,0,0,1) 95%,rgba(30,81,153,1) 100%);
-	background: -ms-linear-gradient(right, rgba(0,0,0,1) 95%,rgba(30,81,153,1) 100%);
-	background: linear-gradient(to left, rgba(0,0,0,1) 95%,rgba(30,81,153,1) 100%);
+	@include transition-wtime(300ms, transform, border-color);
 }
 
 #requests.request_queue_paused {
-	background: #333326;
-	background: -moz-linear-gradient(right, rgba(51,51,38,1) 95%, rgba(144,150,30,1) 100%);
-	background: -webkit-linear-gradient(right, rgba(51,51,38,1) 95%,rgba(144,150,30,1) 100%);
-	background: -ms-linear-gradient(right, rgba(51,51,38,1) 95%,rgba(144,150,30,1) 100%);
-	background: linear-gradient(to left, rgba(51,51,38,1) 95%,rgba(144,150,30,1) 100%);
+	border-color: yellow;
 }
 
 #requests.nonsticky {
 	display: block;
 	position: absolute;
 	left: 100%;
-	opacity: 0.7;
 	@include transition-wtime(300ms, transform, background, opacity);
 	@include transform(translateX(-15px));
 }
 
 #requests.nonsticky:hover, #requests.fake_hover {
-	opacity: 1;
 	@include transform(translateX(-350px));
 }
 

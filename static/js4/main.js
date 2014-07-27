@@ -1,14 +1,3 @@
-/*  REWRITE BRAIN DUMP
-- Search list needs to be rewritten as elements already exist on the page
-- Requests needs to be rewritten
-
-- Timeline progress bar needs to be rewritten
-- Small screen layout fails with current timeline CSS
-- Scrollbar CSS completely not updated
-
-- CSS3 rating bars need to be tested
-*/
-
 var User;
 var SmallScreen = false;
 var SCREEN_HEIGHT;
