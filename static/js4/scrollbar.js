@@ -58,6 +58,7 @@ var Scrollbar = function() {
 		self.offset_height = null;
 		self.pending_self_update = false;
 		self.reposition_hook = false;
+		self.unrelated_positioning = false;
 
 		var scrolling = false;
 		var visible = false;
@@ -105,7 +106,8 @@ var Scrollbar = function() {
 			else scroll_top_fresh = false;
 
 			var top = (self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
-			handle.style.top = self.scroll_top + handle_margin_top + Math.round(top) + "px";
+			if (!self.unrelated_positioning) top += self.scroll_top;
+			handle.style.top = handle_margin_top + Math.round(top) + "px";
 
 			if (self.reposition_hook) self.reposition_hook();
 		};

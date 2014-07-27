@@ -40,15 +40,26 @@ function _on_resize() {
 	// this function causes a 2-paint reflow but the development cost of
 	// getting this down to a single reflow would be astronomical in code complexity
 	"use strict";
+	// paint 1 :(
 	if (!_size_calculate()) return;
 	
+	// draw 1 :(
 	Fx.flush_draws();
 	$id('sizable_body').style.height = MAIN_HEIGHT + "px";
-	Scrollbar.recalculate();
 
+	// paint 2 :(
+	Schedule.scrollbar_recalculate();
+	Scrollbar.recalculate();
+	DetailView.on_resize_calculate();
+	// scrollbar recalculation has to come before PlaylistLists.on_resize
 	PlaylistLists.on_resize();
+
+	// draw 2 :(
+	DetailView.on_resize_draw();
 	Scrollbar.refresh();
 
+	// hacks, argh, the np size calculate needs to be done after any and all animation
+	// has finished, which means we need to introduce this delay.
 	setTimeout(function() { Schedule.now_playing_size_calculate(); }, 1500);
 }
 
@@ -78,9 +89,9 @@ function initialize() {
 	Schedule.scroll_init();
 	Requests.scroll_init();
 	PlaylistLists.scroll_init();
-	DetailView.scroll_init();
 	Scrollbar.resizer_calculate();
 	Scrollbar.recalculate();
+	DetailView.scroll_init();
 
 	// DIRTY THE LAYOUT
 

@@ -71,26 +71,29 @@ var Formatting = function() {
 
 	var do_overflow_tooltip = function(evt) {
 		var el = evt.target;
-		// cache a scrollWidth value to reduce the number of reflows necessary
-		// the plus 7 is necessary because of margin issues when browsers have text-overflow: ellipsis
-		if (!el._offsetWidth) el._offsetWidth = el.offsetWidth + 5;
-		var width = el.parentNode.offsetWidth;
-		if (!el._offsetWidth || (width >= el._offsetWidth)) {
-			return;
-		}
+		// this is here to subvert the fact that artists are displayed as spans,
+		// not divs, in song list tables. getting the parentNode div gets us the real
+		// widths of the element.
+		while (el.nodeName != "DIV") el = el.parentNode;
+		if (el.offsetWidth >= (el.scrollWidth - 7)) return;
+		
+		var width = el.offsetWidth;
+		var maxwidth = el.scrollWidth + 10;
 		var clone = el.cloneNode(true);
-		clone.style.width = (width + 20) + "px";
+		clone.style.width = Math.max(Math.min(maxwidth, 200), (width + 20)) + "px";
 		$add_class(clone, "overflow_tooltip");
 		el.parentNode.insertBefore(clone, el);
 		var mouse_out = function() {
-			clone.parentNode.removeChild(clone);
 			clone.removeEventListener("mouseout", mouse_out, true);
+			clone.parentNode.removeEventListener("click", mouse_out, true);
+			clone.parentNode.removeChild(clone);
 		};
 		clone.addEventListener("mouseout", mouse_out, true);
+		clone.parentNode.addEventListener("click", mouse_out, true);
 	};
 
 	self.add_overflow_tooltip = function(el) {
-		el.addEventListener("mouseover", do_overflow_tooltip);
+		el.addEventListener("click", do_overflow_tooltip);
 	};
 
 	// from lehelk: http://web.archive.org/web/20120918093154/http://lehelk.com/2011/05/06/script-to-remove-diacritics/

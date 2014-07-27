@@ -477,6 +477,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.on_resize = function() {
 		if (SmallScreen) item_height = 20;
 		else item_height = 24;
+		self.recalculate();
+		self.reposition();
 	};
 
 	scrollbar.reposition_hook = self.reposition;

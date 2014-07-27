@@ -93,12 +93,16 @@ var Schedule = function() {
 			current_event.progress_bar_start();
 		}
 
+		self.scrollbar_recalculate();
+	};
+
+	self.scrollbar_recalculate = function() {
 		timeline_scrollbar.pending_self_update = true;
 		setTimeout(function() {
 			 timeline_scrollbar.recalculate();
 			 timeline_scrollbar.refresh();
 		}, 1700);
-	};
+	}
 
 	var find_event = function(id) {
 		for (var i = 0; i < self.events.length; i++) {

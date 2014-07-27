@@ -15,8 +15,12 @@ $art_full_size = 320px;
 }
 
 #timeline {
-	padding: 0px 5px 0px 5px;
+	padding: 0 10px;
 	height: 100%;
+}
+
+body.small_screen #timeline {
+	padding: 0 5px;
 }
 
 body.unselectable #timeline_scrollblock {
@@ -91,6 +95,8 @@ div.timeline_song_content div.title {
 div.timeline_song_content div.artist, div.timeline_song_content div.votes, div.timeline_song_content div.cooldown_info, div.timeline_song a.song_link {
 	display: none;
 }
+
+/* ART */
 
 div.art_anchor {
 	position: relative;

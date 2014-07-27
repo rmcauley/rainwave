@@ -1,35 +1,54 @@
-#detail {
-	overflow: hidden;
+#detail_scrollblock {
 	position: relative;
+	box-sizing: content-box;
+	height: 100%;
+	overflow: hidden;
+}
+
+#detail {
 	height: 100%;
 }
 
-#detail .art_container {
+div.detail_view {
+	position: relative;
+	padding: 10px;
+}
+
+#detail .scrollbar {
+	@include transform(translateX(-15px));
+}
+
+#detail .scrollbar:hover {
+	@include transform(translateX(-17px));
+}
+
+/* ART */
+
+#detail div.art_anchor {
 	float: left;
-	margin-right: 10px;
-	height: 120px;
-	width: 120px;
 }
 
-#detail .art_container .art {
-	max-height: 120px;
-	max-width: 120px;
+#detail div.art_container, #detail div.art_anchor {
+ 	width: 120px;
+ 	height: 120px;
 }
 
-#detail .art_expandable:hover .art {
-	border-width: 0px;
-	@include transform(none);
+#detail div.art_expandable:hover {
+	width: 140px;
+ 	height: 140px;
 }
+
+/* HEADER */
 
 #detail h1 {
 	font-size: 1.6em;
-	padding-bottom: 10px;
 	border-bottom: solid 1px #555;
-	margin-bottom: 10px;
+	margin-top: 0;
 }
 
-.albumview_header {
+div.albumview_header {
 	min-height: 130px;
+	margin-left: 130px;
 }
 
 .albumview_info {
@@ -37,19 +56,12 @@
 	font-size: 0.8em;
 }
 
-div.albumview_subheader {
-	border-bottom: solid 1px $vdarktext;
-}
-
-table.songlist + div.albumview_subheader {
-	margin-top: 1.3em;
-}
+/* SONGLIST */
 
 table.songlist {
 	background-color: #1f2022;
 	border-collapse: collapse;
 	border-spacing: 0;
-	margin-top: 10px;
 	width: 100%;
 	table-layout: fixed;
 	empty-cells: show;
@@ -65,26 +77,19 @@ table.songlist td {
 }
 
 tr.songlist_cool td {
-	background-color: #111;
+	background-color: $cooldown-color;
 }
 
 table.songlist tr:hover td {
-	background-color: #212236;
-	border-bottom-color: #2f314d;
-}
-
-table.songlist tr td:hover {
-	z-index: 2;
-}
-
-td.songlist_title, td.songlist_artists {
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
+	background-color: $hovercolor;
+	border-bottom-color: $hovercolor-border;
+	@include no-transition();
 }
 
 div.songlist_title_text, div.songlist_artists_text {
-	display: inline;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 table.songlist div.overflow_tooltip {
@@ -93,9 +98,13 @@ table.songlist div.overflow_tooltip {
     border: 1px solid #3E4066;
     padding: 3px;
     transform: translate(-4px, -4px);
+    white-space: normal;
+    text-overflow: clip;
+    box-shadow: 3px 3px 5px #000;
 }
 
 td.songlist_rating {
+	padding-left: 5px;
 	width: 70px;
 }
 
@@ -104,7 +113,8 @@ td.songlist_rating > div {
 }
 
 td.songlist_length {
-	width: 30px;
+	width: 35px;
+	padding-right: 5px;
 }
 
 td.songlist_url {
@@ -145,12 +155,4 @@ div.songlist_request_hint table.songlist td.songlist_requestable {
 div.songlist_request_hint table.songlist td.songlist_requestable span {
 	display: inline-block;
 	padding-left: 3px;
-}
-
-#detail .scrollbar {
-	@include transform(translateX(-15px));
-}
-
-#detail .scrollbar:hover {
-	@include transform(translateX(-17px));
 }

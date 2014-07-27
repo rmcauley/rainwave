@@ -3,12 +3,16 @@ var DetailView = function() {
 	var self = {};
 	var el;
 	var open_views = [];
+	var scrollblock;
 	var scroller;
+	var resizer;
 	var visible_view;
+	var internal_width = false;
 
 	self.initialize = function() {
 		Prefs.define("request_made");
 		el = $id("detail");
+		scrollblock = $id("detail_scrollblock");
 		API.add_callback(draw_album, "album");
 		API.add_callback(album_diff_handler, "album_diff");
 		API.add_callback(draw_artist, "artist");
@@ -27,7 +31,8 @@ var DetailView = function() {
 
 	self.scroll_init = function() {
 		scroller = Scrollbar.new(el, $id("detail_scrollbar"));
-		Fx.delay_draw(function() { el.style.paddingRight = Scrollbar.get_scrollbar_width(); });
+		scroller.unrelated_positioning = true;
+		Fx.delay_draw(self.on_resize_draw);
 	};
 
 	var request_made_changed = function(request_made) {
@@ -37,10 +42,15 @@ var DetailView = function() {
 	}
 	
 	var create = function(type, id, render_function, json) {
+		if (internal_width === false) {
+			self.on_resize_calculate();
+			self.on_resize_draw();
+			$add_class(el, "scrollable");
+		}
 		while (open_views.length > 30) {
 			open_views.shift();
 		}
-		var n = { "el": $el("div"), "type": type, "id": id, "visible": false, "scroll_top": 0 };
+		var n = { "el": $el("div", { "class": "detail_view" }), "type": type, "id": id, "visible": false, "scroll_top": 0 };
 		open_views.push(n);
 		render_function(n, json);
 		return n;
@@ -67,11 +77,16 @@ var DetailView = function() {
 		el.appendChild(view.el);
 		scroller.recalculate();
 		scroller.scroll_to(view.scroll_top || 0);
+		scroller.refresh();
 		return view;
 	};
 
-	self.on_resize = function() {
-		// if (scroller) scroller.update_scroll_height();
+	self.on_resize_calculate = function() {
+		internal_width = scrollblock.offsetWidth;
+	};
+	
+	self.on_resize_draw = function() {
+		el.style.width = (internal_width + Scrollbar.get_scrollbar_width()) + "px";
 	};
 
 	var draw_album = function(json) {

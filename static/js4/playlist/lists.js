@@ -64,10 +64,10 @@ PlaylistLists = function() {
 	};
 
 	self.on_resize = function() {
-		for (var key in lists) {
-			lists[key].on_resize();
-		}
 		el.style.height = (MAIN_HEIGHT - tabs_el_height) + "px";
+		for (var key in lists) {
+			lists[key].on_resize((MAIN_HEIGHT - tabs_el_height));
+		}
 	};
 
 	self.set_new_open = function(list_name, id) {
