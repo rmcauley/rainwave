@@ -59,6 +59,7 @@ var Scrollbar = function() {
 		self.pending_self_update = false;
 		self.reposition_hook = false;
 		self.unrelated_positioning = false;
+		self.delay_force_height = null;
 
 		var scrolling = false;
 		var visible = false;
@@ -67,7 +68,8 @@ var Scrollbar = function() {
 
 		self.recalculate = function(force_height) {
 			if (cls.hold_all_recalculations) return;
-			self.scroll_height = force_height || scrollable.scrollHeight;
+			self.scroll_height = force_height || self.delay_force_height || scrollable.scrollHeight;
+			if (self.delay_force_height) self.delay_force_height = null;
 			self.offset_height = scrollable.parentNode.offsetHeight;
 			self.scroll_top = scrollable.scrollTop;
 			self.scroll_top_max = (self.scroll_height - self.offset_height);

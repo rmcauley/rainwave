@@ -1,50 +1,49 @@
+/* POSITIONING */
+
 #requests_scrollblock {
 	box-sizing: border-box;
-	width: 340px;
+	width: 360px;
 	z-index: 100;
 	opacity: 1;
-	border-left: solid 5px rgb(30,81,153);
+	border-left: solid 5px #133563;
+	background: #05101E;
 
-	@include transition-wtime(300ms, transform, border-color);
+	@include transition-wtime(500ms, transform, border-color, background-color);
 }
 
-#requests.request_queue_paused {
+#requests_scrollblock.request_queue_paused {
 	border-color: yellow;
 }
 
-#requests.nonsticky {
+#requests_scrollblock.nonsticky {
 	display: block;
 	position: absolute;
 	left: 100%;
-	@include transition-wtime(300ms, transform, background, opacity);
-	@include transform(translateX(-15px));
+	@include transform(translateX(-5px));
 }
 
-#requests.nonsticky:hover, #requests.fake_hover {
-	@include transform(translateX(-350px));
+#requests_scrollblock.nonsticky:hover {
+	@include transition-wtime(300ms, transform);
 }
 
-#requests.sticky {
-	display: block;
-	position: relative;
-	left: auto;
-	float: right;
+#requests_scrollblock.nonsticky:hover, #requests_scrollblock.fake_hover, div.permanent_requests #requests_scrollblock {
+	@include transform(translateX(-360px));
+}
+
+#requests {
 	height: 100%;
 }
 
+/* REQUEST-ONLY ELEMENTS */
+
 #requests_header {
-    float: left;
-    font-size: smaller;
-    position: absolute;
-    transform: rotate(90deg);
-    transform-origin: left top 0;
-    padding-left: 5px;
-    width: 20em;
-    height: 16px;
+	padding: 2px 0 3px 7px;
+	background: #112F56;
 }
 
 #requests_toolbar {
-	float: left;
+	padding: 2px 7px 0 0;
+	float: right;
 }
 
 #requests_pin {
@@ -58,32 +57,39 @@
 	background: #111;
 }
 
+/* LIST CONTAINER STYLE */
+
 #requests_list {
-	margin-left: 5px;
-	margin-top: 20px;
+	padding: 7px;
 }
 
-#requests_list .timeline_song {
+/* SONG STYLE MODIFICATIONS */
+
+#requests_list div.timeline_song {
 	position: absolute;
-	padding: 0;
-	width: 96%;
+	box-sizing: border-box;
+	padding-right: 30px;
+	width: 100%;
 }
 
-#requests .timeline_song.dragging {
+div.request_sort_grab {
+	display: none;
+	position: absolute;
+	width: 120px;
+	height: 120px;
+	background: #000;
+	background-image: url("/static/images4/sort_grab.png");
+	background-repeat: repeat-y;
+	cursor: grab;
+}
+
+#requests div.timeline_song.dragging {
 	@include no-transition();
 	z-index: 2;
 	background: #25263c;
 }
 
-.requests_advanced {
-	float: right;
-	margin: 3px 3px 0px 3px;
-	cursor: pointer;
-}
-
-.request_cancel {
-	float: right;
-	margin: 0 5px;
+div.request_cancel {
 	cursor: pointer;
 }
 

@@ -38,7 +38,7 @@ var TimelineSong = function() {
 
 			self.elements.album_art = self.el.appendChild(Albums.art_html(self.data.albums[0], null, request_mode));
 			if (request_mode) {
-				self.elements.request_drag = $el("img", { "class": "request_reorder", "src": "/static/images4/sortgrab_hdpi.png" });
+				self.elements.request_drag = $el("div", { "class": "request_sort_grab" });
 				self.elements.request_drag._song_id = json.id;
 				self.elements.album_art.insertBefore(self.elements.request_drag, self.elements.album_art.firstChild);
 			}

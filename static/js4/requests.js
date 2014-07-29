@@ -2,9 +2,9 @@ var Requests = function() {
 	"use strict";
 	var self = {};
 	var el;
+	var scroll_container;
 	var container;
 	var scroller;
-	var height;
 	var fake_hover_timeout;
 	var songs = [];
 	var dragging_song;
@@ -13,13 +13,14 @@ var Requests = function() {
 	var original_mouse_y;
 
 	self.scroll_init = function() {
-		scroller = Scrollbar.new(container, $id("requests_scrollbar"), 22);
+		scroll_container = $id("requests");
+		scroller = Scrollbar.new(scroll_container, $id("requests_scrollbar"), 22);
 	};
 
 	self.initialize = function() {
 		Prefs.define("requests_sticky");
 		el = $id("requests_list");
-		container = $id("requests");
+		container = $id("requests_scrollblock");
 		container.addEventListener("mouseover", mouse_over);
 
 		API.add_callback(self.update, "requests");
@@ -142,7 +143,7 @@ var Requests = function() {
 			if (!found) {
 				n = TimelineSong.new(json[i], true);
 				n.elements.request_drag.addEventListener("mousedown", start_drag);
-				n.el.style[Fx.transform_string] = "translateY(" + height + "px)";
+				n.el.style[Fx.transform_string] = "translateY(" + SCREEN_HEIGHT + "px)";
 				new_songs.unshift(n);
 				el.appendChild(n.el);
 			}
@@ -155,10 +156,27 @@ var Requests = function() {
 	};
 
 	self.on_resize = function() {
-		if (container) container.style.height = MAIN_HEIGHT + "px";
+		if (container) {
+			container.style.height = MAIN_HEIGHT + "px";
+		}
+		if (scroll_container) {
+			scroll_container.style.width = Scrollbar.get_scrollbar_width() + 355 + "px";
+		}
 	};
 
 	self.reflow = function() {
+		var running_height = 5;
+		for (var i = 0; i < songs.length; i++) {
+			songs[i]._request_y = running_height;
+			songs[i].el.style.transform = "translateY(" + (running_height + (SCREEN_HEIGHT * i)) + "px)";
+			Fx.delay_css_setting(songs[i].el, "transform", "translateY(" + running_height + "px)");
+			running_height += TimelineSong.height;
+		}
+		scroller.delay_force_height = running_height;
+		self.reflow = self.real_reflow;
+	};
+
+	self.real_reflow = function() {
 		var running_height = 5;
 		for (var i = 0; i < songs.length; i++) {
 			if (dragging_song != songs[i]) {
@@ -167,10 +185,8 @@ var Requests = function() {
 			}
 			running_height += TimelineSong.height;
 		}
-		if (scroller) {
-			scroller.recalculate(running_height);
-			scroller.refresh();
-		}
+		scroller.recalculate(running_height);
+		scroller.refresh();
 	};
 
 	// DRAG AND DROP *********************************************************

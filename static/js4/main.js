@@ -87,6 +87,7 @@ function initialize() {
 
 	Scrollbar.hold_all_recalculations = true;
 	R4Audio.draw();
+	Requests.draw();
 	Scrollbar.resizer_refresh();
 	DetailView.draw();
 	PlaylistLists.draw();
@@ -95,10 +96,12 @@ function initialize() {
 	$remove_class(document.body, "loading");
 	Fx.flush_draws();
 
-	// FINAL PAINT
+	// PAINT 2: Scrollbar bullshit
 	Scrollbar.hold_all_recalculations = false;
 	Schedule.now_playing_size_calculate();
 	Scrollbar.recalculate();
+
+	// FINAL DIRTY: Move/size the scrollbars
 	Scrollbar.refresh();
 
 	// ****************** DATA CLEANUP
