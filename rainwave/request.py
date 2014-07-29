@@ -44,7 +44,7 @@ def update_line(sid):
 						u.put_in_request_line(u.get_tuned_in_sid())
 				# If they have no song, start the expiry countdown
 				elif not song_id and not row['line_expiry_election']:
-					row['line_expiry_election'] = t + 600
+					row['line_expiry_election'] = t + 900
 					db.c.update("UPDATE r4_request_line SET line_expiry_election = %s WHERE user_id = %s", ((t + 900), row['user_id']))
 					add_to_line = True
 				# Keep 'em in line
