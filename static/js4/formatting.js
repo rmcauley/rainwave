@@ -39,7 +39,7 @@ var Formatting = function() {
 		if (seconds >= 3600) {
 			return Math.floor(seconds / 3600) + lang.timeformat_h;
 		}
-		if ((seconds >= 60) && (detail < 3)) {
+		if (seconds >= 60) {
 			return Math.floor(seconds / 60) + lang.timeformat_m;
 		}
 		return seconds + lang.timeformat_s;
