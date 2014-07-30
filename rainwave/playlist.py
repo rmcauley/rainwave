@@ -3,6 +3,7 @@ import random
 
 from libs import db
 from libs import log
+from libs import config
 
 from rainwave.playlist_objects.song import Song
 from rainwave.playlist_objects import cooldown
@@ -24,7 +25,7 @@ class NoAvailableSongsException(Exception):
 def get_average_song_length(sid):
 	return cooldown.cooldown_config[sid]['average_song_length']
 
-def get_random_song_timed(sid, target_seconds = None, target_delta = 20):
+def get_random_song_timed(sid, target_seconds = None, target_delta = None):
 	"""
 	Fetch a random song abiding by all election block, request block, and
 	availability rules, but giving priority to the target song length
@@ -32,6 +33,8 @@ def get_random_song_timed(sid, target_seconds = None, target_delta = 20):
 	"""
 	if not target_seconds:
 		return get_random_song(sid)
+	if not target_delta:
+		target_delta = config.get_station(sid, "song_lookup_length_delta")
 
 	sql_query = ("FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
