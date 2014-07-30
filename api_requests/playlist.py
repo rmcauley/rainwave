@@ -148,9 +148,9 @@ class AllFavHandler(APIHandler):
 
 	def post(self):
 		self.append(self.return_name, db.c.fetch_all(
-			"SELECT DISTINCT ON (album_name, song_title) song_id AS id, song_title AS title, album_name, song_rating AS rating, COALESCE(song_rating_user, 0) AS rating_user, TRUE AS fave "
+			"SELECT r4_song_ratings.song_id AS id, song_title AS title, r4_albums.album_id, album_name, song_rating AS rating, COALESCE(song_rating_user, 0) AS rating_user, song_fave AS fave "
 			"FROM r4_song_ratings JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
-			"WHERE user_id = %s AND song_verified = TRUE ORDER BY album_name, song_title " + self.get_sql_limit_string(), (self.user.id,)))
+			"WHERE user_id = %s AND song_verified = TRUE AND song_fave = TRUE ORDER BY album_name, song_title " + self.get_sql_limit_string(), (self.user.id,)))
 
 @handle_api_html_url("all_faves")
 class AllFavHTML(PrettyPrintAPIMixin, AllFavHandler):
