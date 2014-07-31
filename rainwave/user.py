@@ -111,16 +111,11 @@ class User(object):
 
 		# Privileged folk - donors, admins, etc - get perks.
 		# The numbers are the phpBB group IDs.
-		if self.data['_group_id'] in (5, 4, 8, 12, 15, 14, 17):
+		if self.data['_group_id'] in (5, 4, 8, 18):
 			self.data['perks'] = True
-		#elif config.get("developer_mode"):
-		#	self.data['radio_perks'] = True
 
 		# Admin and station manager groups
-		if self.data['_group_id'] in (5, 12, 15, 14, 17):
-			self.data['admin'] = True
-		# jfinalfunk is a special case since he floats around outside the main admin groups
-		elif self.id == 9575:
+		if self.data['_group_id'] in (5, 18):
 			self.data['admin'] = True
 		self.data.pop("_group_id")
 
