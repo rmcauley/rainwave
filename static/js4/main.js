@@ -1,3 +1,6 @@
+// attribution to do:
+// sort design icon by http://www.thenounproject.com/NemanjaIvanovic
+
 var User;
 var SmallScreen = false;
 var SCREEN_HEIGHT;

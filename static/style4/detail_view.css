@@ -12,15 +12,25 @@
 div.detail_view {
 	position: relative;
 	padding: 10px;
+	@include transition(padding);
 }
 
-#detail .scrollbar {
+body.requests_sticky div.detail_view {
+	padding-right: 380px;
+}
+
+#detail_scrollbar {
 	@include transform(translateX(-15px));
 }
 
-#detail .scrollbar:hover {
+#detail_scrollbar:hover {
 	@include transform(translateX(-17px));
 }
+
+body.requests_sticky #detail_scrollbar {
+	@include transform(translateX(-370px));
+}
+
 
 /* ART */
 

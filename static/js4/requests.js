@@ -28,11 +28,8 @@ var Requests = function() {
 	};
 
 	self.draw = function() {
-		if (!Prefs.get("requests_sticky")) {
-			$add_class(container, "nonsticky");
-		}
-		else {
-			$add_class(container, "sticky");
+		if (Prefs.get("requests_sticky")) {
+			$add_class(document.body, "requests_sticky");
 		}
 		$id("requests_pin").addEventListener("click", self.swap_sticky);
 		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
@@ -106,13 +103,14 @@ var Requests = function() {
 
 	self.swap_sticky = function() {
 		if (!Prefs.get("requests_sticky")) {
-			container.className = "sticky";
+			$add_class(document.body, "requests_sticky");
 			Prefs.change("requests_sticky", true);
 		}
 		else {
 			fake_hover = true;
 			container.style.transition = "none";
-			container.className = "nonsticky fake_hover";
+			container.className = "fake_hover";
+			$remove_class(document.body, "requests_sticky");
 			container.addEventListener("mouseout", once_mouse_out);
 			Prefs.change("requests_sticky", false);
 		}
@@ -192,9 +190,10 @@ var Requests = function() {
 	// DRAG AND DROP *********************************************************
 
 	var start_drag = function(e) {
-		if (("_song_id" in e.target) && (e.target._song_id)) {
+		var song_id = e.target._song_id || e.target.parentNode._song_id;
+		if (song_id) {
 			for (var i = 0; i < songs.length; i++) {
-				if (e.target._song_id == songs[i].data.id) {
+				if (song_id == songs[i].data.id) {
 					dragging_song = songs[i];
 					dragging_index = i;
 					break;

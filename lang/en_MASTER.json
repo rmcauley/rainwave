@@ -109,7 +109,7 @@
    "__comment__"                 : "Playlist View",
 
    "filter"                                          : "Type anywhere to filter",
-   "typeanywhere"                                    : "This isn't a search box!  Just type anywhere!",
+   "typeanywhere"                                    : "Just start typing!",
    "clearfilter"                                     : "Clear Filter",
    "album_rating_ranked_at"                          : "Rated at %(rating), ranking #(rank).",
    "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",
