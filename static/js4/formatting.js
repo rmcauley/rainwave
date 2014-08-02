@@ -25,7 +25,7 @@ var Formatting = function() {
 			humantime += Math.floor(seconds / 60) + lang.timeformat_m + " ";
 			seconds = seconds % 60;
 		}
-		return humantime.substr(0, humantime.length - 1);
+		return humantime.substr(0, humantime.length - 1).trim();
 	};
 
 	self.cooldown_glance = function(seconds) {
@@ -42,7 +42,7 @@ var Formatting = function() {
 		if (seconds >= 60) {
 			return Math.floor(seconds / 60) + lang.timeformat_m;
 		}
-		return seconds + lang.timeformat_s;
+		return (seconds + lang.timeformat_s).trim();
 	};
 
 	self.minute_clock = function(seconds) {
