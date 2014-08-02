@@ -83,11 +83,11 @@ var AlbumList = function() {
 		if (item.rating_complete) item._el.className += " searchlist_rating_complete";
 		if (item.rating_user) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
-			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
+			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top + 1) + "px";
 		}
 		else if (item.rating) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
-			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
+			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top + 1) + "px";
 		}
 
 		item._el.appendChild(item._el_text_span);
