@@ -160,7 +160,7 @@ var EventBase = function(json) {
 		if (self.type == "OneUp") {
 			header_text.textContent = default_text + " - " + self.name + " " + $l("Power_Hour");
 		}
-		else if ($l_has(self.type)) {
+		else if ((default_text != $l("Now_Playing") || self.type != "Election") && $l_has(self.type)) {
 			header_text.textContent = default_text + " - " + $l(self.type);
 			if (self.name) {
 				header_text.textContent += " - " + self.name;
