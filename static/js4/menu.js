@@ -3,15 +3,43 @@ var Menu = function() {
 	var elements = {};
 
 	self.draw = function(station_list) {
-		$id("player").insertBefore($el("img", { "class": "avatar", "src": User.avatar }), $id("player").firstChild);
-		var order = [ 5, 1, 4, 3, 2 ];
+		// Localization
+		$id("chat_link").textContent = $l("chat");
+		$id("history_link").textContent = $l("Previous Songs");
+		$id("forums_link").textContent = $l("forums");
+
+		// Setup user info
+		elements.user_info = $id("user_info");
+		if (User.id > 1) {
+			if (User.avatar) {
+				elements.user_info.appendChild($el("img", { "class": "avatar", "src": User.avatar }));
+			}
+			else {
+				elements.user_info.appendChild($el("img", { "class": "avatar", "src": "/static/images4/user.svg" }));	
+			}
+			elements.user_info.appendChild($el("span", { "textContent": User.name }));
+		}
+		else {
+			elements.user_info.appendChild($el("img", { "class": "avatar", "src": "/static/images4/user.svg" }));
+			elements.user_info.appendChild($el("a", { "href": "http://rainwave.cc/forums/ucp.php?mode=login&redirect=/", "textContent": $l("login") }));
+		}
+
+		// Setup station select menu
+		var order = [ 5, 1, 4, 2, 3 ];
 		var ul = $id("station_select");
-		var li, info;
+		var a, li, info;
 		var beta_add = window.location.href.indexOf("beta") !== -1 ? "/beta/" : "";
-		for (var i = 0; i <= order.length; i++) {
-			if (!(order[i] in station_list)) continue;
+		for (var i = 0; i < order.length; i++) {
 			li = ul.appendChild($el("li"));
-			li.appendChild($el("a", { "href": station_list[order[i]].url + beta_add, "textContent": $l("station_name_" + station_list[order[i]].id ) }));
+			a = $el("a", { "textContent": $l("station_name_" + order[i] ) });
+			if (order[i] in station_list) {
+				a.setAttribute("href", station_list[order[i]].url + beta_add);
+			}
+			li.appendChild(a);
+			
+			if (i == User.sid) {
+				$add_class(li, "selected");
+			}
 			info = li.appendChild($el("div", { "class": "info" }));
 			elements[order[i]] = {};
 			elements[order[i]].art = info.appendChild(Albums.art_html({ "art": null }));

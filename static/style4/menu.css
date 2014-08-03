@@ -1,26 +1,71 @@
-#station_select {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	background: #00004c;
-	background: -moz-linear-gradient(top, #00004c 0%, #2257a3 100%);
-	background: -webkit-linear-gradient(top, #00004c 0%, #2257a3 100%);
-	background: -o-linear-gradient(top, #00004c 0%, #2257a3 100%);
-	background: -ms-linear-gradient(top, #00004c 0%, #2257a3 100%);
-	background: linear-gradient(to bottom, #00004c 0%, #2257a3 100%);
+@font-face {
+	font-family: 'Rainwave';
+	src: url('/static/phantomrw.woff');
+}
+
+$menu_height: 56px;
+$menu_height_small: 25px;
+
+#logo {
+	float: right;
+	font-family: 'Rainwave';
+	margin-top: 2px;
+}
+
+#top_menu {
+	box-sizing: border-box;
+	background: #000;
+	height: $menu_height;
+}
+
+body.small_menu #top_menu {
+	height: $menu_height_small;
+}
+
+#top_menu img {
 	height: 20px;
 }
 
-#station_select li {
+#station_select, #top_icons, #main_icons {
+	box-sizing: border-box;
+	height: $menu_height_small;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#station_select {
+	float: left;
+}
+
+#top_icons, #main_icons {
+	float: right;
+}
+
+#main_icons {
+	clear: both;
+}
+
+#station_select li, #top_icons li, #main_icons li {
+	box-sizing: border-box;
 	position: relative;
 	display: inline;
+	height: $menu_height_small;
+	padding: 3px 1em 2px 1em;
+	border-bottom: solid 1px #000;
 }
 
 #station_select li a {
+	margin-top: 2px;
+	font-family: 'Rainwave', sans-serif;
 	display: inline-block;
 	text-align: center;
-	width: 5em;
-	border-right: solid 2px #2257a3;
+	color: $darktext;
+}
+
+#station_select li.selected a {
+	color: $highlight;
+	border-color: $highlight;
 }
 
 #station_select div.info {
@@ -64,21 +109,12 @@
 	text-overflow: ellipsis;
 }
 
-#rainwave_logo {
-	float: right;
-	height: 16px;
-	width: 130px;
-	margin-top: 2px;
-}
-
 #player {
+	clear: left;
 	background: #383a3d;
-	height: 36px;
+	height: 31px;
 }
 
-#player .avatar {
-	float: right;
-	max-height: 32px;
-	max-width: 32px;
-	margin: 2px;
+body.small_menu #player {
+	height: $menu_height_small;
 }

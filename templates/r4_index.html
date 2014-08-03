@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ request.locale.code }}">
 <head>
-	<title>Rainwave 4 Beta</title>
+	<title>Rainwave</title>
 	<meta charset="UTF-8" />
 	<meta name="description" content="{{ site_description }}" />
 	<script type="text/javascript">
@@ -35,10 +35,48 @@
 	<div id="measure_box">
 		<div id="playlist_item_height" class="searchlist_item">Hello</div>
 	</div>
-	<div id="menu">
-		<img src="/static/images4/logo.png" id="rainwave_logo"></img>
+	<div id="top_menu">
+		<div id="logo">Rainwave</div>
+		
+		<!-- Forum icon by: http://www.thenounproject.com/bryan@typeamachines.com Brayn Allen
+			Chat icon by: http://www.thenounproject.com/parasamuralikrishna  Murali Krishna
+			Help icon by: http://www.thenounproject.com/Eak Eakarius
+			Gear icon by: http://www.thenounproject.com/r0 Ryan Oksenhorn
+			History icon by: http://www.thenounproject.com/JuanGarces Juan Garces
+			8-bit user icon by: http://www.thenounproject.com/kolchan Dima Kolchan
+		-->
+		<ul id="top_icons">
+			<li>
+				<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&server=irc.synirc.net&channel=%23rainwave&noServerNotices=true&noServerMotd=true&autoConnect=true" target="_blank">
+					<img src="/static/images4/chat.svg" />
+					<span id="chat_link"></span>
+				</a>
+			</li>
+			<li>
+				<a href="http://rainwave.cc/forums" target="_blank">
+					<img src="/static/images4/forums.svg" />
+					<span id="forums_link"></span>
+				</a>
+			</li>
+			<li id="user_info"></li>
+			<li>
+				<img id="settings_link" src="/static/images4/settings.svg" />
+			</li>
+		</ul>
+
 		<ul id="station_select"></ul>
-		<div id="player"><a onclick="R4Audio.play();">Play</a><a onclick="R4Audio.stop()">Stop</a></div>
+
+		<ul id="main_icons">
+			<li id="history_link_container">
+				<img src="/static/images4/history.svg" />
+				<span id="history_link"></span>
+			</li>
+		</ul>
+		
+		<div id="player">
+			<a onclick="R4Audio.play();">Play</a>
+			<a onclick="R4Audio.stop()">Stop</a>
+		</div>
 	</div>
 	<div id="messages"></div>
 	<div id="sizable_body">

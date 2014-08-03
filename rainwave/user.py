@@ -13,7 +13,7 @@ from rainwave import playlist
 from api.exceptions import APIException
 
 _AVATAR_PATH = "/forums/download/file.php?avatar=%s"
-_DEFAULT_AVATAR = "/static/images4/anonymous.png"
+_DEFAULT_AVATAR = "/static/images4/user.svg"
 
 def trim_listeners(sid):
 	db.c.update("DELETE FROM r4_listeners WHERE sid = %s AND listener_purge = TRUE", (sid,))

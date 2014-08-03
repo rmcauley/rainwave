@@ -76,7 +76,7 @@
    "vote_submitted"                                  : "Vote Submitted",
    "cannot_vote_for_this_now"                        : "Cannot vote for that song right now.",
    "invalid_hotkey_vote"                             : "Invalid choice, try again.",
-   "Previous Songs"                                  : "Previously Songs",
+   "Previous Songs"                                  : "Previously Played",
 
    "__comment__"                 : "Tip Jar",
 
