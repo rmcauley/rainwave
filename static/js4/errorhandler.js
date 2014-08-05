@@ -16,13 +16,14 @@ var ErrorHandler = function() {
 		return { "tl_key": tl_key, "code": code, "text": $l(tl_key) };
 	};
 
-	self.permanent_error = function(json) {
+	self.permanent_error = function(json, append_element) {
 		if (!(json.tl_key in permanent_errors)) {
 			var err = json;
 			err.el = $el("div", { "class": "error" });
 			err.hide = err.el.appendChild($el("img", { "src": "/static/images4/cancel_ldpi.png", "alt": "X" }));
 			err.hide.addEventListener("click", function() { self.remove_permanent_error(err.tl_key); });
-			err.el.appendChild($el("span", { "textContent": err.text }));
+			err.el.appendChild($el("span", { "textContent": err.text + " " }));
+			if (append_element) err.el.appendChild(append_element);
 			container.appendChild(err.el);
 			permanent_errors[json.tl_key] = err;
 		}

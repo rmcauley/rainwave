@@ -109,6 +109,9 @@ body.small_menu #top_menu {
 	text-overflow: ellipsis;
 }
 
+$audio_vsize: 13px;
+$audio_hsize: 17px;
+
 #player {
 	clear: left;
 	background: #383a3d;
@@ -117,4 +120,42 @@ body.small_menu #top_menu {
 
 body.small_menu #player {
 	height: $menu_height_small;
+}
+
+#audio_icon {
+    position: absolute;
+	width: 0; 
+	height: 0;
+    @include transition(border, border-radius, margin-left);
+    border-style: solid;
+    border-color: transparent;
+	border-top-width: $audio_vsize;
+	border-bottom-width: $audio_vsize;
+	border-left: $audio_hsize solid #FFF;
+    border-radius: 0px;
+    margin-top: 2px;
+    margin-left: 10px;
+}
+
+#audio_icon.audio_playing {
+    border-color: $link;
+    border-right: $audio_hsize solid $link;
+    border-left-width: $audio_hsize;
+    margin-left: 0px;
+}
+
+#audio_icon.audio_connecting {
+    border-color: #FFCC33;
+    border-radius: $audio_vsize;
+    border-width: $audio_vsize;
+    margin-left: 0px;
+}
+
+#audio_status {
+	font-family: 'Rainwave';
+	text-transform: capitalize;
+	position: relative;
+	font-size: 26px;
+    padding-left: 30px;
+    line-height: 26px;
 }

@@ -47,7 +47,7 @@
 		-->
 		<ul id="top_icons">
 			<li>
-				<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&server=irc.synirc.net&channel=%23rainwave&noServerNotices=true&noServerMotd=true&autoConnect=true" target="_blank">
+				<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
 					<img src="/static/images4/chat.svg" />
 					<span id="chat_link"></span>
 				</a>
@@ -74,8 +74,10 @@
 		</ul>
 		
 		<div id="player">
-			<a onclick="R4Audio.play();">Play</a>
-			<a onclick="R4Audio.stop()">Stop</a>
+			<a id="player_link" href="/tune_in/{{ request.sid }}.mp3" status="_blank">
+				<div id="audio_icon"></div>
+				<div id="audio_status"></div>
+			</div>
 		</div>
 	</div>
 	<div id="messages"></div>

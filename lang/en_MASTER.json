@@ -100,11 +100,15 @@
    "lost_connection"                                 : "Lost connection to server.",
    "sync_retrying"                                   : "Having trouble talking with the Rainwave server, please wait...",
    "deeplink_error"                                  : "Error understanding the URL entered.",
-   "audio_not_supported"                             : "Your browser does not support HTML5 audio.",
-   "audio_error"                                     : "Could not play audio in the browser - please download the playlist.",
    "hotkey_mode"                                     : "1-5 to Rate, A/S/D to Vote",
    "invalid_hotkey"                                  : "Invalid hotkey.",
    "not_an_election"                                 : "Not an election.",
+
+   "audio_not_supported"                             : "Your browser does not support HTML5 audio.",
+   "audio_error"                                     : "Could not tune in from your browser!",
+   "audio_connect_error"                             : "Currently having difficulties connecting to the radio server.",
+   "try_external_player"                             : "Click here to try using an app to tune in.",
+   "stop"                                            : "Stop",
 
    "__comment__"                 : "Playlist View",
 
