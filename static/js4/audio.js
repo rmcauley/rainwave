@@ -63,7 +63,7 @@ var R4Audio = function() {
 
 		audio_el = $id("measure_box").appendChild(document.createElement("audio"));
 		audio_el.addEventListener('stop', self.on_stop);
-		audio_el.addEventListener('loadstart', self.on_connecting);
+		//audio_el.addEventListener('loadstart', self.on_connecting);
 		audio_el.addEventListener('play', self.on_play);
 		audio_el.addEventListener('stall', self.on_stall);
 		var source;
@@ -87,6 +87,7 @@ var R4Audio = function() {
 		while (audio_el.firstChild) audio_el.removeChild(audio_el.firstChild);
 		audio_el.parentNode.removeChild(audio_el);
 		audio_el = null;
+		self.on_stop();
 	};
 
 	self.on_stop = function() {

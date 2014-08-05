@@ -9,7 +9,11 @@ $menu_height_small: 25px;
 #logo {
 	float: right;
 	font-family: 'Rainwave';
+	text-transform: uppercase;
 	margin-top: 2px;
+	color: $highlight;
+	padding-left: 1em;
+	padding-right: 5px;
 }
 
 #top_menu {
@@ -18,12 +22,51 @@ $menu_height_small: 25px;
 	height: $menu_height;
 }
 
+#user_info {
+	@include transition-wtime(150ms, color);
+}
+
 body.small_menu #top_menu {
 	height: $menu_height_small;
 }
 
+#top_menu svg, #top_menu img {
+	height: 18px;
+	margin: 0;
+	padding: 0;
+	position: relative;
+	top: 3px;
+}
+
+#top_menu svg path {
+	@include transition-wtime(150ms, fill);
+	fill: $vdarktext;
+}
+
+#top_menu li:hover, #top_menu li:hover a {
+	color: $text;
+}
+
+/* Firefox bug */
+#top_menu li:hover a:hover {
+	color: $linkhover;
+}
+
+#top_menu li:hover svg path {
+	fill: $text;
+}
+
+#top_menu li a:hover svg path {
+	fill: $linkhover;
+}
+
 #top_menu img {
-	height: 20px;
+	@include transition-wtime(150ms, opacity);
+	opacity: 0.6;
+}
+
+#top_menu li:hover img {
+	opacity: 1;
 }
 
 #station_select, #top_icons, #main_icons {
@@ -34,6 +77,14 @@ body.small_menu #top_menu {
 	padding: 0;
 }
 
+#main_icons {
+	margin-top: 3px;
+}
+
+body.small_menu #main_icons {
+	margin-top: 3px;
+}
+
 #station_select {
 	float: left;
 }
@@ -42,11 +93,28 @@ body.small_menu #top_menu {
 	float: right;
 }
 
+#top_icons, #top_icons a {
+	color: $vdarktext;
+}
+
+#top_icons a:hover {
+	color: $linkhover;
+}
+
 #main_icons {
 	clear: both;
 }
 
-#station_select li, #top_icons li, #main_icons li {
+#main_icons li {
+	display: inline;
+	padding: 2px 1em 2px 1em;
+}
+
+#main_icons svg path {
+	fill: $text;
+}
+
+#station_select li, #top_icons li, body.small_menu #main_icons li {
 	box-sizing: border-box;
 	position: relative;
 	display: inline;
@@ -55,17 +123,35 @@ body.small_menu #top_menu {
 	border-bottom: solid 1px #000;
 }
 
+#top_icons li.small_link {
+	padding-left: .4em;
+	padding-right: .4em;
+}
+
+#station_select li:first-child {
+	padding-left: 10px;
+}
+
 #station_select li a {
+	text-transform: uppercase;
 	margin-top: 2px;
 	font-family: 'Rainwave', sans-serif;
 	display: inline-block;
 	text-align: center;
-	color: $darktext;
+	color: $vdarktext;
+}
+
+#station_select li.selected {
+	border-color: $highlight;
 }
 
 #station_select li.selected a {
 	color: $highlight;
-	border-color: $highlight;
+}
+
+/* Fix a Firefox bug */
+#station_select li a:hover, #station_select li.selected a:hover {
+	color: #a7e1ff;
 }
 
 #station_select div.info {
@@ -109,8 +195,8 @@ body.small_menu #top_menu {
 	text-overflow: ellipsis;
 }
 
-$audio_vsize: 13px;
-$audio_hsize: 17px;
+$audio_vsize: 12px;
+$audio_hsize: 16px;
 
 #player {
 	clear: left;
@@ -126,34 +212,44 @@ body.small_menu #player {
     position: absolute;
 	width: 0; 
 	height: 0;
-    @include transition(border, border-radius, margin-left);
+    @include transition(border, border-radius, margin);
     border-style: solid;
     border-color: transparent;
 	border-top-width: $audio_vsize;
 	border-bottom-width: $audio_vsize;
 	border-left: $audio_hsize solid #FFF;
     border-radius: 0px;
-    margin-top: 2px;
+    margin-top: 3px;
     margin-left: 10px;
 }
 
+#player:hover #audio_icon {
+	border-left-color: $linkhover;
+}
+
 #audio_icon.audio_playing {
-    border-color: $link;
-    border-right: $audio_hsize solid $link;
-    border-left-width: $audio_hsize;
-    margin-left: 0px;
+    border-color: $text;
+    border-right: $audio_hsize solid $text;
+    border-width: 10px;
+    margin-top: 5px;
+    margin-left: 6px;
+}
+
+#player:hover #audio_icon.audio_playing {
+	border-color: $linkhover;
 }
 
 #audio_icon.audio_connecting {
-    border-color: #FFCC33;
+    border-color: #FFCC33 !important;
     border-radius: $audio_vsize;
     border-width: $audio_vsize;
-    margin-left: 0px;
+    margin-left: 7px;
 }
 
 #audio_status {
+	display: inline;
 	font-family: 'Rainwave';
-	text-transform: capitalize;
+	text-transform: uppercase;
 	position: relative;
 	font-size: 26px;
     padding-left: 30px;
