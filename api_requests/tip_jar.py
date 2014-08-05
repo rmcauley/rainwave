@@ -36,7 +36,7 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
 			<div style='text-align: center'>
 			<form method="post" action="https://www.paypal.com/cgi-bin/webscr" target="paypal">
 			<input type="hidden" name="cmd" value="_xclick">
-			<input type="hidden" name="business" value="rmcauley@rainwave.cc.com">
+			<input type="hidden" name="business" value="rmcauley@gmail.com">
 			<input type="hidden" name="item_name" value="">
 			<input type="hidden" name="bn"  value="ButtonFactory.PayPal.001">
 			<input type="image" name="add" src="/static/images4/paypal.gif">
