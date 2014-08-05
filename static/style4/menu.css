@@ -223,7 +223,7 @@ body.small_menu #player {
     margin-left: 10px;
 }
 
-#player:hover #audio_icon {
+#player a:hover #audio_icon {
 	border-left-color: $linkhover;
 }
 

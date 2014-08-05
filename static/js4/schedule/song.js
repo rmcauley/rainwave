@@ -108,9 +108,6 @@ var TimelineSong = function() {
 
 		self.update = function(new_json) {
 			self.data = json;
-			if (self.data.entry_votes) {
-				self.elements.votes.textContent = self.data.entry_votes;
-			}
 			self.data.entry_position = new_json.entry_position;
 			song_rating.update(new_json.rating_user, new_json.rating, new_json.fave, new_json.rating_allowed);
 			album_rating.update(new_json.albums[0].rating_user, new_json.albums[0].rating, new_json.albums[0].fave, false);
