@@ -157,15 +157,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self.set_status(403)
 			self.finish()
 
-		# Tornado doesn't want to read the JSON cookies at all; have to look into why and work around it.
-		#if self.get_cookie("r3prefs"):
-		#	try:
-		#		self.cookie_prefs = tornado.escape.json_decode(self.get_cookie("r3prefs"))
-		#	except Exception as e:
-		#		print self.cookies
-		#		print self.get_cookie("r3prefs")
-		#		print e
-
 		if not isinstance(self.locale, locale.RainwaveLocale):
 			self.locale = self.get_browser_locale()
 
@@ -183,27 +174,17 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		else:
 			self._output = {}
 
-		if not self.sid:
-			self.sid = fieldtypes.integer(self.get_cookie("r4_sid", "5"))
-		if "sid" in self.request.arguments:
-			possible_sid = fieldtypes.integer(self.get_argument("sid"))
-			if possible_sid in config.station_ids:
-				self.sid = possible_sid
-		if not self.sid in config.station_ids:
+		self.sid = fieldtypes.integer(self.get_cookie("r4_sid", None))
+		hostname = self.request.headers.get('Host', None)
+		if hostname:
+			hostname = unicode(hostname).split(":")[0]
+			if hostname in config.station_hostnames:
+				self.sid = config.station_hostnames[hostname]
+		self.sid = fieldtypes.integer(self.get_argument("sid", None)) or self.sid
+		if self.sid and not self.sid in config.station_ids:
 			self.sid = None
-		if not self.sid:
-			host = self.request.headers.get('Host', 'game.rainwave.cc')
-			for possible_sid in config.station_ids:
-				if host == config.get_station(possible_sid, "host"):
-					self.sid = possible_sid
-					break
 		if not self.sid and self.sid_required:
 			raise APIException("missing_station_id", http_code=400)
-		elif not self.sid:
-			self.sid = 5
-		if self.sid and not self.sid in config.station_ids:
-			raise APIException("invalid_station_id", http_code=400)
-		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 
 		for field, field_attribs in self.__class__.fields.iteritems():
 			type_cast, required = field_attribs
@@ -222,6 +203,14 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self.do_phpbb_auth()
 		else:
 			self.rainwave_auth()
+
+		if self.user and not self.sid:
+			self.sid = self.user.request_sid
+		elif not self.sid and not self.auth_required:
+			self.sid = 5
+		if not self.sid in config.station_ids:
+			raise APIException("invalid_station_id", http_code=400)
+		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 
 		if self.auth_required and not self.user:
 			raise APIException("auth_required", http_code=403)
@@ -302,7 +291,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				raise APIException("auth_failed", http_code=403)
 			else:
 				self._update_phpbb_session(self._get_phpbb_session(self.user.id))
-				self.sid = self.user.request_sid
 
 	# Handles adding dictionaries for JSON output
 	# Will return a "code" if it exists in the hash passed in, if not, returns True

@@ -16,6 +16,7 @@ test_mode = False
 
 station_ids = set()
 station_id_friendly = {}
+station_hostnames = {}
 public_relays = None
 public_relays_json = {}
 station_list_json = {}
@@ -43,6 +44,7 @@ def load(file = None, testmode = False):
 	global public_relays_json
 	global station_ids
 	global station_list_json
+	global station_hostnames
 	
 	if not file:
 		file = get_config_file(testmode)
@@ -69,6 +71,7 @@ def load(file = None, testmode = False):
 			if sid in relay['sids']:
 				public_relays[sid].append({ "name": relay_name, "protocol": relay['protocol'], "hostname": relay['hostname'], "port": relay['port'] })
 		public_relays_json[sid] = tornado.escape.json_encode(public_relays[sid])
+		station_hostnames[get_station(sid, "host")] = sid
 
 	station_list = {}
 	for station_id in station_ids:

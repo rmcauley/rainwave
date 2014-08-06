@@ -175,13 +175,13 @@ class User(object):
 		if listener:
 			if self.data['sid'] == self.request_sid:
 				self.data['tuned_in'] = True
-			elif self.request_sid == 0:
+			elif not self.request_sid:
 				self.request_sid = self.data['sid']
 				self.data['tuned_in'] = True
 			else:
 				self.data['sid'] = self.request_sid
 		# Default to All if no sid is given
-		elif self.request_sid == 0:
+		elif not self.request_sid:
 			self.request_sid = 5
 			self.data['sid'] = 5
 			self.data['tuned_in'] = False
