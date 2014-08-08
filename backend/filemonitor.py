@@ -123,6 +123,9 @@ def _scan_directory(directory, sids, toscreen=False):
 	_save_scan_errors()
 
 def _is_mp3(filename):
+	# ignore mp3gain temporary files
+	if filename.endswith(".TMP"):
+		return False
 	filetype = mimetypes.guess_type(filename)
 	if len(filetype) > 0 and filetype[0] and (filetype[0] == "audio/x-mpg" or filetype[0] == "audio/mpeg"):
 		return True
