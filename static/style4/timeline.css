@@ -70,10 +70,6 @@ div.timeline_song div.album_group {
 	clear: right;
 }
 
-div.timeline_song div.album {
-	cursor: pointer;
-}
-
 div.timeline_song_content {
 	position: relative;
 	top: 50%;

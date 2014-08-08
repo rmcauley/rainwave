@@ -154,16 +154,20 @@ body.small_menu #main_icons {
 	color: #a7e1ff;
 }
 
+/* DROPDOWN STATION INFO */
+
 #station_select div.info {
-	padding: 0;
-	margin: 0;
+	box-sizing: border-box;
+	padding: 5px 10px 10px 10px;
+	margin: 3px 0 0 0;
 	@include transition-wtime(300ms, opacity, transform, height);
 	opacity: 0;
 	position: absolute;
 	width: 380px;
 	height: 0;
-	border: solid 1px #2257a3;
-	background-color: #00004c;
+	background-color: #000;
+	border: solid 1px #777;
+	box-shadow: 3px 3px 3px 4px #000;
 	overflow: hidden;
 	left: 0px;
 }
@@ -176,24 +180,32 @@ body.small_menu #main_icons {
 	z-index: 100;
 }
 
+div.menu_now_playing {
+	color: $highlight;
+	font-size: smaller;
+	text-transform: uppercase;
+}
+
+#station_select div.timeline_song {
+	margin-bottom: 10px;
+}
+
+#station_select div.station_menu_description {
+	clear: both;
+	padding-top: 5px;
+	margin-top: 5px;
+	border-top: solid 1px #777;
+	text-align: center;
+	font-style: italic;
+	font-size: smaller;
+}
+
 #station_select li:hover div.info {
 	opacity: 1;
-	height: 80px;
+	height: 140px;
 }
 
-#station_select img {
-	margin: 5px 0 0 5px;
-}
-
-#station_select div.info div.title {
-	margin: 5px 5px 2px 5px;
-}
-
-#station_select div.info div.title, #station_select div.info div.album {
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
+/* PLAYER */
 
 $audio_vsize: 12px;
 $audio_hsize: 16px;

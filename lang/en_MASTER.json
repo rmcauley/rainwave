@@ -153,6 +153,7 @@
    "station_menu_description_id_3"                   : "Official and fan-made remixes.",
    "station_menu_description_id_4"                   : "Original game chiptune soundtracks.",
    "station_menu_description_id_5"                   : "The entire Rainwave playlist.",
+   "now_playing_on_..."                              : "Now Playing On %(station)",
 
    "__comment__"                 : "Old R3 translation lines, to be removed when the transition is complete.",
 

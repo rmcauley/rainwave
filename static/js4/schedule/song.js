@@ -13,8 +13,8 @@ var TimelineSong = function() {
 
 		var voting_enabled = false;
 
-		var song_rating = SongRating(json);
-		var album_rating = AlbumRating(json.albums[0]);
+		var song_rating = "song_rating" in json ? SongRating(json) : null;
+		var album_rating = "album_ratnig" in json? AlbumRating(json.albums[0]) : null;
 
 		self.vote = function(evt) {
 			if (!voting_enabled) {
@@ -49,7 +49,7 @@ var TimelineSong = function() {
 			
 			var title_group = c.appendChild($el("div", { "class": "title_group" }));
 
-			title_group.appendChild(song_rating.el);
+			if (song_rating) title_group.appendChild(song_rating.el);
 
 			self.elements.title = title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
 			self.elements.title.addEventListener("mouseover", self.title_mouse_over);
@@ -58,10 +58,13 @@ var TimelineSong = function() {
 
 			var album_group = c.appendChild($el("div", { "class": "album_group" }));
 
-			album_group.appendChild(album_rating.el);
-			
-			self.elements.album = album_group.appendChild($el("div", { "class": "album link", "textContent": self.data.albums[0].name }));
-			self.elements.album.addEventListener("click", function() { DetailView.open_album(self.data.albums[0].id ); });
+			if (album_rating) album_group.appendChild(album_rating.el);
+
+			self.elements.album = album_group.appendChild($el("div", { "class": "album", "textContent": self.data.albums[0].name }));			
+			if (self.data.albums[0].id) {
+				self.elements.album.className = "album link";
+				self.elements.album.addEventListener("click", function() { DetailView.open_album(self.data.albums[0].id ); });
+			}
 			
 			if ("artists" in self.data) {
 				self.elements.artists = c.appendChild($el("div", { "class": "artist" }));
