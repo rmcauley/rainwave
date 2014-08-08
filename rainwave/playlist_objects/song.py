@@ -180,7 +180,7 @@ class Song(object):
 
 		w = f.tags.getall('TIT2')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
-		 	self.data['title'] = unicode(w[0])
+		 	self.data['title'] = unicode(w[0]).strip()
 		else:
 		 	raise PassableScanError("Song filename \"%s\" has no title tag." % filename)
 		w = f.tags.getall('TPE1')
@@ -190,7 +190,7 @@ class Song(object):
 		 	raise PassableScanError("Song filename \"%s\" has no artist tag." % filename)
 		w = f.tags.getall('TALB')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
-		 	self.album_tag = unicode(w[0])
+		 	self.album_tag = unicode(w[0]).strip()
 		else:
 			raise PassableScanError("Song filename \"%s\" has no album tag." % filename)
 		w = f.tags.getall('TCON')
@@ -198,10 +198,10 @@ class Song(object):
 			self.genre_tag = unicode(w[0])
 		w = f.tags.getall('COMM')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
-			self.data['link_text'] = unicode(w[0])
+			self.data['link_text'] = unicode(w[0]).strip()
 		w = f.tags.getall('WXXX')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
-			self.data['url'] = unicode(w[0])
+			self.data['url'] = unicode(w[0]).strip()
 
 		self.replay_gain = self._get_replaygain(f)
 
