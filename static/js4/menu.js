@@ -41,6 +41,7 @@ var Menu = function() {
 				$add_class(li, "selected");
 			}
 			info = li.appendChild($el("div", { "class": "info" }));
+			info.appendChild($el("div", { "class": "station_menu_description", "textContent": $l("station_menu_description_id_" + order[i]) }));
 			elements[order[i]] = {};
 			elements[order[i]].art = info.appendChild(Albums.art_html({ "art": null }));
 			elements[order[i]].title = info.appendChild($el("div", { "class": "title" }));

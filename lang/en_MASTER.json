@@ -146,6 +146,14 @@
    "station_description_id_4"                        : "Streaming original game chiptunes.  Vote for the songs you want to hear!",
    "station_description_id_5"                        : "Streaming game music and remixes.  Vote for the songs you want to hear!",
 
+   "__comment__"                 : "Station Descriptions For The Menu (short messages)",
+
+   "station_menu_description_id_1"                   : "Original game soundtracks, SNES and up.",
+   "station_menu_description_id_2"                   : "All official OverClocked ReMix tracks.",
+   "station_menu_description_id_3"                   : "Official and fan-made remixes.",
+   "station_menu_description_id_4"                   : "Original game chiptune soundtracks.",
+   "station_menu_description_id_5"                   : "The entire Rainwave playlist.",
+
    "__comment__"                 : "Old R3 translation lines, to be removed when the transition is complete.",
 
    "p_MainMPI"                                       : "Tabs",
