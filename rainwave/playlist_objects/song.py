@@ -128,7 +128,7 @@ class Song(object):
 		if matched_entry:
 			s = klass.load_from_id(matched_entry['song_id'])
 		else:
-			s = klass()
+			s = None
 		return s
 
 	@classmethod
