@@ -107,7 +107,7 @@ div.request_sort_grab {
 }
 
 div.timeline_song:hover div.request_sort_grab {
-	opacity: 0.5;
+	opacity: 0.75;
 }
 
 div.request_sort_grab img {

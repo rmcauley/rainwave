@@ -7,7 +7,6 @@ var History = function() {
 	var songs = [];
 	var css_left = 0;
 	var scroll_update_timeout;
-	var updated = false;
 	var shown = false;
 
 	var mouse_over = function(e) {
@@ -27,7 +26,13 @@ var History = function() {
 		scrollblock = $id("history");
 		el = $id("history_list");
 		API.add_callback(self.update, "sched_history");
-		$id("history_link_container").addEventListener("mouseover", self.show);
+		var li = $id("history_link_container");
+		if ('onmouseenter' in li) {
+			li.addEventListener("mouseenter", self.show);
+		}
+		else {
+			li.addEventListener("mouseover", self.show);
+		}
 	};
 
 	self.scroll_init = function() {
@@ -40,7 +45,8 @@ var History = function() {
 	};
 
 	self.show = function() {
-		if (!updated && shown) return;
+		if (shown) return;
+		shown = true;
 		if (!css_left) {
 			css_left = 380 - $id("history_link_container").offsetWidth + 10;
 			scrollblock.style[Fx.transform_string] = "translateX(-" + css_left + "px)";
@@ -50,13 +56,13 @@ var History = function() {
 			el.insertBefore(songs[i].header, el.firstChild);
 		}
 		// has to be *4 because of the header also being a child of el
-		while (el.children.length > (songs.length * 4)) {
+		while (el.childNodes.length > (songs.length * 4)) {
 			el.removeChild(el.lastChild);	// header!
 			el.removeChild(el.lastChild);
 		}
-		for (i = 0; i < e.children.length; i++) {
-			if (el.children[i]._start_actual) {
-				el.children[i].textContent = $l("played_ago", { "time": Formatting.cooldown_glance(Clock.now - (json[i].start_actual + Clock.get_time_diff())) });
+		for (i = 0; i < el.childNodes.length; i++) {
+			if (el.childNodes[i]._start_actual) {
+				el.childNodes[i].textContent = $l("played_ago", { "time": Formatting.cooldown_glance(Clock.now - (el.childNodes[i]._start_actual + Clock.get_time_diff())) });
 			}
 		}
 		scroller.recalculate(null, 650);
@@ -64,7 +70,6 @@ var History = function() {
 	};
 
 	self.update = function(json) {
-		updated = true;
 		shown = false;
 		var found, i, j, new_song;
 		var new_songs = [];

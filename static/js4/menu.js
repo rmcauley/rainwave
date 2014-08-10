@@ -28,12 +28,13 @@ var Menu = function() {
 		// Setup station select menu
 		var order = [ 5, 1, 4, 2, 3 ];
 		var ul = $id("station_select");
+		var mouseenter = "onmouseenter" in ul;
 		var a, li, info;
 		var beta_add = window.location.href.indexOf("beta") !== -1 ? "/beta/" : "";
 		for (var i = 0; i < order.length; i++) {
 			li = ul.appendChild($el("li"));
 			li._station_id = parseInt(order[i]);		// ugh gotta make sure this is a COPY of the integer
-			li.addEventListener("mouseover", show_station_info);
+			li.addEventListener(mouseenter ? "mouseenter" : "mouseover", show_station_info);
 			a = $el("a", { "textContent": $l("station_name_" + order[i] ) });
 			if (order[i] in station_list) {
 				a.setAttribute("href", station_list[order[i]].url + beta_add);
@@ -54,6 +55,8 @@ var Menu = function() {
 	var show_station_info = function(e) {
 		var sid = this._station_id || e.target._station_id || e.target.parentNode._station_id;
 		if (!sid || !songs[sid]) return;
+		if (songs[sid]._shown) return;
+		songs[sid]._shown = true;
 
 		if (elements[sid].firstChild.nextSibling.className == "timeline_song") {
 			elements[sid].replaceChild(songs[sid].el, elements[sid].firstChild.nextSibling);
@@ -68,6 +71,7 @@ var Menu = function() {
 			if (json[key]) {
 				json[key].albums = [ { "art": json[key].art, "name": json[key].album } ];
 				songs[key] = TimelineSong.new(json[key]);
+				songs[key]._shown = false;
 			}
 		}
 	};
