@@ -30,7 +30,7 @@ body.small_menu #top_menu {
 	height: $menu_height_small;
 }
 
-#top_menu svg, #top_menu img {
+#top_menu svg, #top_menu img.icon {
 	height: 18px;
 	margin: 0;
 	padding: 0;
@@ -60,12 +60,12 @@ body.small_menu #top_menu {
 	fill: $linkhover;
 }
 
-#top_menu img {
+#top_menu img.icon {
 	@include transition-wtime(150ms, opacity);
 	opacity: 0.6;
 }
 
-#top_menu li:hover img {
+#top_menu li:hover img.icon {
 	opacity: 1;
 }
 
@@ -184,6 +184,7 @@ div.menu_now_playing {
 	color: $highlight;
 	font-size: smaller;
 	text-transform: uppercase;
+	margin-bottom: 5px;
 }
 
 #station_select div.timeline_song {
@@ -202,7 +203,7 @@ div.menu_now_playing {
 
 #station_select li:hover div.info {
 	opacity: 1;
-	height: 140px;
+	height: 145px;
 }
 
 /* PLAYER */

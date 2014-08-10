@@ -13,8 +13,8 @@ var TimelineSong = function() {
 
 		var voting_enabled = false;
 
-		var song_rating = "song_rating" in json ? SongRating(json) : null;
-		var album_rating = "album_ratnig" in json? AlbumRating(json.albums[0]) : null;
+		var song_rating = "rating" in json ? SongRating(json) : null;
+		var album_rating = "rating" in json.albums[0] ? AlbumRating(json.albums[0]) : null;
 
 		self.vote = function(evt) {
 			if (!voting_enabled) {

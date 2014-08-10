@@ -109,6 +109,7 @@
    "audio_connect_error"                             : "Currently having difficulties connecting to the radio server.",
    "try_external_player"                             : "Click here to try using an app to tune in.",
    "stop"                                            : "Stop",
+   "played_ago"                                      : "%(time) Ago",
 
    "__comment__"                 : "Playlist View",
 
@@ -155,7 +156,7 @@
    "station_menu_description_id_5"                   : "The entire Rainwave playlist.",
    "now_playing_on_..."                              : "Now Playing On %(station)",
 
-   "__comment__"                 : "Old R3 translation lines, to be removed when the transition is complete.",
+   "__comment__"                 : "Old R3 translation lines.",
 
    "p_MainMPI"                                       : "Tabs",
    "p_MenuPanel"                                     : "Menu",

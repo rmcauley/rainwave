@@ -70,6 +70,7 @@ function initialize() {
 	PlaylistLists.initialize();
 	Requests.initialize();
 	R4Audio.initialize(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
+	History.initialize();
 
 	// ****************** PAGE LAYOUT
 	// PREP: Applies the small_screen class if necessary and sizes everything
@@ -85,6 +86,7 @@ function initialize() {
 	Scrollbar.resizer_calculate();
 	Scrollbar.recalculate();
 	DetailView.scroll_init();
+	History.scroll_init();
 
 	// DIRTY THE LAYOUT
 
@@ -94,6 +96,7 @@ function initialize() {
 	Scrollbar.resizer_refresh();
 	DetailView.draw();
 	PlaylistLists.draw();
+	History.draw();
 	Menu.draw(BOOTSTRAP.station_list);
 	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
 	$remove_class(document.body, "loading");

@@ -13,15 +13,15 @@ var Menu = function() {
 		elements.user_info = $id("user_info");
 		if (User.id > 1) {
 			if (User.avatar) {
-				elements.user_info.appendChild($el("img", { "class": "avatar", "src": User.avatar }));
+				elements.user_info.appendChild($el("img", { "class": "avatar icon", "src": User.avatar }));
 			}
 			else {
-				elements.user_info.appendChild($el("img", { "class": "avatar", "src": "/static/images4/user.svg" }));	
+				elements.user_info.appendChild($el("img", { "class": "avatar icon", "src": "/static/images4/user.svg" }));	
 			}
 			elements.user_info.appendChild($el("span", { "textContent": User.name }));
 		}
 		else {
-			elements.user_info.appendChild($el("img", { "class": "avatar", "src": "/static/images4/user.svg" }));
+			elements.user_info.appendChild($el("img", { "class": "avatar icon", "src": "/static/images4/user.svg" }));
 			elements.user_info.appendChild($el("a", { "href": "http://rainwave.cc/forums/ucp.php?mode=login&redirect=/", "textContent": $l("login") }));
 		}
 
