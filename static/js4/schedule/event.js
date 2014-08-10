@@ -99,7 +99,7 @@ var EventBase = function(json) {
 		$remove_class(self.el, "timeline_next");
 		self.set_header_text($l("Now_Playing"));
 		Clock.pageclock = self.elements.header_clock;
-		if (self.songs && (self.songs.length > 0)) {
+		if (self.songs && (self.songs.length > 1)) {
 			// other places in the code rely on songs[0] to be the winning song
 			// make sure we sort properly for that condition here
 			self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
@@ -109,6 +109,9 @@ var EventBase = function(json) {
 					$add_class(self.songs[i].el, "timeline_now_playing_song");
 				}
 			}
+		}
+		else if (self.songs && (self.songs.length > 0)) {
+			$add_class(self.songs[0].el, "timeline_now_playing_song");
 		}
 		$add_class(self.el, "timeline_now_playing");
 	};

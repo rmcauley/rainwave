@@ -177,11 +177,12 @@ div.searchlist_cooldown {
 }
 
 div.searchlist_rating_complete {
-	background-color: #18331c;
+	background-color: #381e3d;
 }
 
 div.searchlist_cooldown.searchlist_rating_complete {
-	background-color: #15162b;
+	background-color: #2a162e;
+	color: $darktext;
 }
 
 div.searchlist_fave_on span.searchlist_name {

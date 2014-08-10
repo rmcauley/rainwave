@@ -43,6 +43,17 @@ var TimelineSong = function() {
 				self.elements.request_drag.appendChild($el("img", { "src": "/static/images4/sort.svg" }));
 				self.elements.album_art.insertBefore(self.elements.request_drag, self.elements.album_art.firstChild);
 			}
+			else if (self.data.elec_request_username) {
+				$add_class(self.el, "requested");
+				self.elements.requester = self.elements.album_art.firstChild.appendChild($el("div", { 
+					"class": "requester",
+					"textContent": $l("timeline_art__request_indicator")
+				}));
+				if (self.data.elec_request_user_id == User.id) {
+					$add_class(self.elements.requester, "your_request");
+					self.elements.requester.textContent = $l("timeline_art__your_request_indicator");
+				}
+			}
 
 			// c for content, this stuff should be pushed aside from the album art 
 			var c = $el("div", { "class": "timeline_song_content" });
@@ -69,21 +80,6 @@ var TimelineSong = function() {
 			if ("artists" in self.data) {
 				self.elements.artists = c.appendChild($el("div", { "class": "artist" }));
 				Artists.append_spans_from_json(self.elements.artists, self.data.artists);
-			}
-
-			// if (!request_mode) {
-			// 	self.elements.votes = c.appendChild($el("div", { "class": "votes" }));
-			// 	if (self.data.entry_votes) {
-			// 		self.elements.votes.textContent = self.data.entry_votes;
-			// 	}
-			// }
-
-			if (self.data.elec_request_username) {
-				$add_class(self.el, "requested")
-			// 	self.elements.requester = c.appendChild($el("div", { 
-			// 		"class": "requester",
-			// 		"textContent": $l("requestedby", { "requester": self.data.elec_request_username })
-			// 	}));
 			}
 
 			if (self.data.url && self.data.link_text) {
@@ -120,6 +116,10 @@ var TimelineSong = function() {
 		self.update_cooldown_info = function() {
 			if (!self.elements.cooldown) {
 				// nothing
+			}
+			else if (("valid" in self.data) && !self.data.valid) {
+				$add_class(self.el, "timeline_song_invalid");
+				self.elements.cooldown.textContent = $l("request_not_available");
 			}
 			else if (self.data.cool && (self.data.cool_end > (Clock.now + 20))) {
 				$add_class(self.el, "timeline_song_is_cool");

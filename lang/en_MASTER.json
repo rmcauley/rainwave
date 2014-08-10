@@ -111,6 +111,10 @@
    "stop"                                            : "Stop",
    "played_ago"                                      : "Played %(time) Ago",
 
+   "power_hour"                                      : "Power Hour",
+   "timeline_art__request_indicator"                 : "REQUEST",
+   "timeline_art__your_request_indicator"            : "YOURS",
+
    "__comment__"                 : "Playlist View",
 
    "filter"                                          : "Type anywhere to filter",
@@ -138,6 +142,7 @@
    "request_on_cooldown_for"                         : "On cooldown for %(cool_time).",
    "request_on_cooldown_ends_soon"                   : "Coming off cooldown.",
    "request_in_election"                             : "%(blocked_by) is in an election.",
+   "request_not_available"                           : "Song is on a different station.",
 
    "__comment__"                 : "Station Descriptions",
 

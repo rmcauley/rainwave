@@ -88,6 +88,32 @@ div.timeline_song_content div.artist, div.timeline_song_content div.votes, div.t
 	display: none;
 }
 
+div.timeline_song div.requester {
+	position: absolute;
+	@include transition(opacity);
+	@include transform(rotate(-90deg) translateX(-100%)); 
+	-webkit-transform-origin: 0% 0%;
+	        transform-origin: 0% 0%;
+	width: 100%;
+	font-size: x-small;
+	z-index: 5;
+	text-align: center;
+	background: $highlight;
+	opacity: 0.5;
+}
+
+div.timeline_song div.art_expandable:hover div.requester {
+	opacity: 1;
+}
+
+div.timeline_song div.art_expandable.art_expanded div.requester {
+	opacity: 0;
+}
+
+div.timeline_song div.your_request {
+	background: #18a485;
+}
+
 /* ART */
 
 div.art_anchor {
@@ -159,15 +185,15 @@ div.art_expandable.art_expanded, div.art_epandable.art_expanded:hover {
 }
 
 div.art_expand_left.art_expand_up {
-	@include transform(translate(-270px, -270px) !important);
+	@include transform(translate(-250px, -250px) !important);
 }
 
 div.art_expand_left.art_expand_down {
-	@include transform(translate(-270px, 0) !important);
+	@include transform(translate(-250px, 0) !important);
 }
 
 div.art_expand_right.art_expand_up {
-	@include transform(translate(0, -270px) !important);
+	@include transform(translate(0, -250px) !important);
 }
 
 div.art_expand_right.art_expand_down {
