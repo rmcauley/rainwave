@@ -24,6 +24,7 @@ $menu_height_small: 25px;
 
 #user_info {
 	@include transition-wtime(150ms, color);
+	margin-right: 1em;
 }
 
 body.small_menu #top_menu {
