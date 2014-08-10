@@ -54,6 +54,11 @@ var History = function() {
 			el.removeChild(el.lastChild);	// header!
 			el.removeChild(el.lastChild);
 		}
+		for (i = 0; i < e.children.length; i++) {
+			if (el.children[i]._start_actual) {
+				el.children[i].textContent = $l("played_ago", { "time": Formatting.cooldown_glance(Clock.now - (json[i].start_actual + Clock.get_time_diff())) });
+			}
+		}
 		scroller.recalculate(null, 650);
 		scroller.refresh();
 	};
@@ -75,12 +80,8 @@ var History = function() {
 			}
 			if (!found) {
 				new_song = TimelineSong.new(json[i].songs[0]);
-				if (json[i].start_actual) {
-					new_song.header = $el("div", { "class": "history_song_header", "textContent": $l("played_ago", { "time": Formatting.cooldown_glance(Clock.now - (json[i].start_actual + Clock.get_time_diff())) })  });
-				}
-				else {
-					new_song.header = $el("div", { "class": "history_song_header", "textContent": $l("previouslyplayed") });
-				}
+				new_song.header = $el("div", { "class": "history_song_header", "textContent": $l("previouslyplayed") });
+				new_song.header._start_actual = json[i].start_actual;
 				new_songs.push(new_song);
 			}
 		}

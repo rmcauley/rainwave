@@ -1,8 +1,7 @@
 #history {
 	box-sizing: border-box;
-	padding: 10px;
 	margin: 0;
-	@include transition-wtime(300ms, opacity, height);
+	@include transition-wtime(300ms, opacity, height, padding);
 	opacity: 0;
 	position: absolute;
 	width: 380px;
@@ -10,16 +9,14 @@
 	background-color: #000;
 	border: solid 1px #777;
 	box-shadow: 3px 3px 3px 4px #000;
-}
-
-#history_link_container:hover {
 	z-index: 100;
+	padding: 0;
 }
 
 #history_link_container:hover #history, #history:hover, #history_link_container.hover_test #history {
 	opacity: 1;
 	height: 650px;
-	z-index: 100;
+	padding: 10px;
 }
 
 #history_list {

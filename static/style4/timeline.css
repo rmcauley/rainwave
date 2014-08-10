@@ -150,7 +150,7 @@ body.small_screen div.art_expandable:hover {
 }
 
 div.art_expandable.art_expanded, div.art_epandable.art_expanded:hover {
-	z-index: 3 !important;
+	z-index: 3;
 	width: $art_full_size !important;
 	height: $art_full_size !important;
 	border-width: 3px;

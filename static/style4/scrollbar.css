@@ -13,7 +13,7 @@ div.scrollable {
 
 div.scrollbar {
 	position: absolute;
-	z-index: 99;
+	z-index: 90;
 	background-color: inherit;
 	border-width: 1px;
 	border-style: solid;

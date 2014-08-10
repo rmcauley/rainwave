@@ -212,7 +212,7 @@ div.searchlist_item:hover div.searchlist_open_item span.searchlist_name {
 	padding-left: 33px;
 }
 
-div.searchlist_open_item {
+div.searchlist_open_item, div.searchlist_cooldown.searchlist_open_item {
 	background-color: #1f4f70;
 	border-color: #245b80;
 }

@@ -107,7 +107,6 @@ var Requests = function() {
 			Prefs.change("requests_sticky", true);
 		}
 		else {
-			fake_hover = true;
 			container.style.transition = "none";
 			container.className = "fake_hover";
 			$remove_class(document.body, "requests_sticky");

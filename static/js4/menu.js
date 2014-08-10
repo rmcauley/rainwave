@@ -40,7 +40,7 @@ var Menu = function() {
 			}
 			li.appendChild(a);
 			
-			if (i == User.sid) {
+			if (order[i] == User.sid) {
 				$add_class(li, "selected");
 			}
 			info = li.appendChild($el("div", { "class": "info" }));

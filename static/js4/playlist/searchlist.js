@@ -260,6 +260,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			$add_class(self.search_box_input.parentNode, "no_escape_button");
 			Prefs.change("used_escape_to_clear_search", true);
 		}
+		if (hotkey_mode_on) hotkey_mode_disable();
 		self.clear_search();
 		return true;
 	};
