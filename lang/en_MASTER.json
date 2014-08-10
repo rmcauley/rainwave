@@ -109,7 +109,7 @@
    "audio_connect_error"                             : "Currently having difficulties connecting to the radio server.",
    "try_external_player"                             : "Click here to try using an app to tune in.",
    "stop"                                            : "Stop",
-   "played_ago"                                      : "%(time) Ago",
+   "played_ago"                                      : "Played %(time) Ago",
 
    "__comment__"                 : "Playlist View",
 
@@ -152,7 +152,7 @@
    "station_menu_description_id_1"                   : "Original game soundtracks, SNES and up.",
    "station_menu_description_id_2"                   : "All official OverClocked ReMix tracks.",
    "station_menu_description_id_3"                   : "Official and fan-made remixes.",
-   "station_menu_description_id_4"                   : "Original game chiptune soundtracks.",
+   "station_menu_description_id_4"                   : "Original and game music chiptunes.",
    "station_menu_description_id_5"                   : "The entire Rainwave playlist.",
    "now_playing_on_..."                              : "Now Playing On %(station)",
 

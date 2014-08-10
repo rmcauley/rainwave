@@ -6,6 +6,9 @@ var History = function() {
 	var scroller;
 	var songs = [];
 	var css_left = 0;
+	var scroll_update_timeout;
+	var updated = false;
+	var shown = false;
 
 	var mouse_over = function(e) {
 		$remove_class(container, "fake_hover");
@@ -29,6 +32,7 @@ var History = function() {
 
 	self.scroll_init = function() {
 		scroller = Scrollbar.new(el, $id("history_scrollbar"));
+		scroller.unrelated_positioning = true;
 	};
 
 	self.draw = function() {
@@ -36,19 +40,27 @@ var History = function() {
 	};
 
 	self.show = function() {
+		if (!updated && shown) return;
 		if (!css_left) {
 			css_left = 380 - $id("history_link_container").offsetWidth + 10;
 			scrollblock.style[Fx.transform_string] = "translateX(-" + css_left + "px)";
 		}
-		for (var i = 0; i < songs.length; i++) {
-			el.appendChild(songs[i].header);
-			el.appendChild(songs[i].el);
+		for (var i = songs.length - 1; i >= 0; i--) {
+			el.insertBefore(songs[i].el, el.firstChild);
+			el.insertBefore(songs[i].header, el.firstChild);
 		}
-		scroller.recalculate();
+		// has to be *4 because of the header also being a child of el
+		while (el.children.length > (songs.length * 4)) {
+			el.removeChild(el.lastChild);	// header!
+			el.removeChild(el.lastChild);
+		}
+		scroller.recalculate(null, 650);
 		scroller.refresh();
 	};
 
 	self.update = function(json) {
+		updated = true;
+		shown = false;
 		var found, i, j, new_song;
 		var new_songs = [];
 		for (i = 0; i < json.length; i++) {

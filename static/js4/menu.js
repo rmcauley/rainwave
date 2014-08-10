@@ -32,7 +32,7 @@ var Menu = function() {
 		var beta_add = window.location.href.indexOf("beta") !== -1 ? "/beta/" : "";
 		for (var i = 0; i < order.length; i++) {
 			li = ul.appendChild($el("li"));
-			li._station_id = parseInt(i);		// ugh gotta make sure this is a COPY of the integer
+			li._station_id = parseInt(order[i]);		// ugh gotta make sure this is a COPY of the integer
 			li.addEventListener("mouseover", show_station_info);
 			a = $el("a", { "textContent": $l("station_name_" + order[i] ) });
 			if (order[i] in station_list) {

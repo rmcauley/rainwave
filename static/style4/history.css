@@ -18,8 +18,12 @@
 
 #history_link_container:hover #history, #history:hover, #history_link_container.hover_test #history {
 	opacity: 1;
-	height: 70%;
+	height: 650px;
 	z-index: 100;
+}
+
+#history_list {
+	height: 100%;
 }
 
 #history div.timeline_song {

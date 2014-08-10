@@ -171,6 +171,7 @@ body.small_menu #main_icons {
 	box-shadow: 3px 3px 3px 4px #000;
 	overflow: hidden;
 	left: 0px;
+	z-index: 2;
 }
 
 #station_select div.info:hover {

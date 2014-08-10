@@ -365,6 +365,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		if (hotkey_timeout) {
 			clearTimeout(hotkey_timeout);
 		}
+		$remove_class(self.search_box_input.parentNode.parentNode, "no_results");
 		$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
 		$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
 		$remove_class(self.search_box_input.parentNode, "searchlist_input_active");

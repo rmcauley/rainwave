@@ -66,11 +66,11 @@ var Scrollbar = function() {
 		var scroll_top_fresh = false;
 		var handle_height, original_mouse_y, original_scroll_top, scroll_per_px;
 
-		self.recalculate = function(force_height) {
+		self.recalculate = function(force_height, offset_height) {
 			if (cls.hold_all_recalculations) return;
 			self.scroll_height = force_height || self.delay_force_height || scrollable.scrollHeight;
 			if (self.delay_force_height) self.delay_force_height = null;
-			self.offset_height = scrollable.parentNode.offsetHeight;
+			self.offset_height = offset_height || scrollable.parentNode.offsetHeight;
 			self.scroll_top = scrollable.scrollTop;
 			self.scroll_top_max = (self.scroll_height - self.offset_height);
 			scroll_top_fresh = true;
