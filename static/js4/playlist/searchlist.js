@@ -261,7 +261,9 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			Prefs.change("used_escape_to_clear_search", true);
 		}
 		if (hotkey_mode_on) hotkey_mode_disable();
-		self.clear_search();
+		if (search_string.length > 0) {
+			self.clear_search();
+		}
 		return true;
 	};
 

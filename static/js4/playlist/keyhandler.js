@@ -16,7 +16,7 @@
 
 	self.enable_backspace_trap = function() {
 		if (backspace_timer) clearTimeout(backspace_timer);
-		backspace_timer = setTimeout(self.disable_backspace_trap, 2000);
+		backspace_timer = setTimeout(self.disable_backspace_trap, 3000);
 	};
 
 	self.disable_backspace_trap = function() {
@@ -42,8 +42,12 @@
 		if (self.is_ignorable(evt)) return true;
 		// Short-circuit backspace on Webkit - which fires its backspace handler at the end of the keyDown bubble.
 		if (evt.keyCode == 8) {
-			// set backspace trap to on if backspace was handled by handle_event, or keep true if backspace trap is active
-			backspace_trap = self.handle_event(evt) || backspace_trap;
+			// if event was handled, don't trap back
+			backspace_trap = !self.handle_event(evt) || backspace_trap;
+			if (backspace_trap) {
+				self.enable_backspace_trap();
+				self.prevent_default(evt);
+			}
 			return !backspace_trap;
 		}
 		// Code 27 is escape, and this stops esc from cancelling our AJAX requests by cutting it off early
@@ -60,7 +64,7 @@
 	};
 	
 	// this exists just to handle the timeout for when the user releases the backspace
-	// user releases backspace, then 1 second later we release our backspace trap flag.
+	// user releases backspace, then X seconds later we release our backspace trap flag.
 	// this stops the user from accidentally browsing away from the site while using
 	// type to find, but doesn't stop them from leaving the site otherwise
 	self.on_key_up = function(evt) {
