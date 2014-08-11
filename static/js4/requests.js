@@ -5,6 +5,7 @@ var Requests = function() {
 	var scroll_container;
 	var container;
 	var scroller;
+	var header;
 	var fake_hover_timeout;
 	var songs = [];
 	var dragging_song;
@@ -32,7 +33,7 @@ var Requests = function() {
 			$add_class(document.body, "requests_sticky");
 		}
 		$id("requests_pin").addEventListener("click", self.swap_sticky);
-		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
+		header = $id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
 		$id("requests_pause").setAttribute("title", $l("pause_request_queue"));
 		$id("requests_pause").setAttribute("alt", $l("pause_request_queue"));
 		$id("requests_pause").addEventListener("click", self.pause_queue);
@@ -73,6 +74,19 @@ var Requests = function() {
 		}
 		else {
 			$remove_class(container, "request_queue_paused");
+		}
+
+		if (user_json.request_expires_at <= (Clock.now + 300)) {
+			header.textContent = $l("requests_expiring");
+			$add_class(container, "request_warning");
+		}
+		else if (user_json.request_position && (user_json.request_position > 0)) {
+			$remove_class(container, "request_warning");
+			header.textContent = $l("request_you_are_x_in_line", { "position": user_json.request_position });
+		}
+		else {
+			$remove_class(container, "request_warning");
+			header.textContent = $l("Requests");
 		}
 	};
 

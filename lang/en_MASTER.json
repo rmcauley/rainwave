@@ -77,6 +77,7 @@
    "cannot_vote_for_this_now"                        : "Cannot vote for that song right now.",
    "invalid_hotkey_vote"                             : "Invalid choice, try again.",
    "Previous Songs"                                  : "Previously Played",
+   "voting_results_were"                             : "vote results:",
 
    "__comment__"                 : "Tip Jar",
 
@@ -143,6 +144,8 @@
    "request_on_cooldown_ends_soon"                   : "Coming off cooldown.",
    "request_in_election"                             : "%(blocked_by) is in an election.",
    "request_not_available"                           : "Song is on a different station.",
+   "requests_expiring"                               : "You're about to lose your place!",
+   "request_you_are_x_in_line"                       : "Requests - #(position) In Line",
 
    "__comment__"                 : "Station Descriptions",
 

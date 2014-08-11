@@ -33,6 +33,7 @@ var EventBase = function(json) {
 
 	var header = $el("div", { "class": "timeline_header" });
 	self.elements.header_clock = $el("span", { "class": "timeline_header_clock" });
+	var header_vote_result = $el("div", { "class": "timeline_header_vote_result" });
 	var header_text = $el("a");
 	var header_bar = $el("div", { "class": "timeline_header_bar" });
 	var header_inside_bar = $el("div", { "class": "timeline_header_bar_inside" });
@@ -103,8 +104,19 @@ var EventBase = function(json) {
 			// other places in the code rely on songs[0] to be the winning song
 			// make sure we sort properly for that condition here
 			self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
-
+			var use_header = self.songs[0].data.entry_votes ? true : false;
+			if (use_header) {
+				self.el.insertBefore(header_vote_result, header_bar);
+				header_vote_result.appendChild($el("span", { "textContent": $l("voting_results_were") + " " }));
+			}
 			for (var i = 0; i < self.songs.length; i++) {
+				if (use_header) {
+					header_vote_result.appendChild($el("span", { "textContent": self.songs[i].data.entry_votes }));
+					if (i != (self.songs.length - 1)) header_vote_result.lastChild.textContent += " - ";
+					if ($has_class(self.songs[i].el, "voting_registered")) {
+						header_vote_result.lastChild.className = "self_voted_result";
+					}
+				}
 				if (self.songs[i].data.entry_position == 0) {
 					$add_class(self.songs[i].el, "timeline_now_playing_song");
 				}

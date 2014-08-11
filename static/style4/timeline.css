@@ -261,6 +261,18 @@ div.timeline_now_playing_song div.timeline_song_content > div, div.timeline_now_
 	margin-bottom: 5px;
 }
 
+div.timeline_header_vote_result {
+	margin-top: 30px;
+	text-align: center;
+	color: $darktext;
+	font-size: small;
+}
+
+div.timeline_header_vote_result span.self_voted_result {
+	font-weight: bold;
+	font-style: italic;
+}
+
 /* NOW PLAYING PROGRESS BAR */
 
 div.timeline_header_bar {
@@ -274,6 +286,10 @@ div.timeline_header_bar {
 div.timeline_now_playing div.timeline_header_bar {
 	height: 2px;
 	margin-top: 30px;
+}
+
+div.timeline_now_playing div.timeline_header_vote_result + div.timeline_header_bar {
+	margin-top: 5px;
 }
 
 div.timeline_header_bar_inside {
