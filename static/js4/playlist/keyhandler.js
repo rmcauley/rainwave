@@ -5,6 +5,11 @@
 	var backspace_trap = false;
 	var backspace_timer = false;
 
+	// these key codes are handled by on_key_down, as browser's default behaviour 
+	// tend to act on them at that stage rather than on_key_press
+	// backspace, escape, down, up, page up, page down
+	var keydown_handled = [ 8, 27, 38, 40, 33, 34 ];
+
 	self.prevent_default = function(evt) {
 		evt.preventDefault(evt);
 	};
@@ -21,10 +26,8 @@
 	
 	self.on_key_press = function(evt) {
 		if (self.is_ignorable(evt)) return true;
-		// these 4 key codes are handled by on_key_down, as browser's default behaviour 
-		// tend to act on them at that stage rather than on_key_press
-		//   backspace               escape                 down                    up
-		if ((evt.keyCode != 8) && (evt.keyCode != 27) && (evt.keyCode != 38) && (evt.keyCode != 40)) {
+		
+		if (keydown_handled.indexOf(evt.keyCode) == -1) {
 			return self.handle_event(evt);
 		}
 		// trap backspace so users don't accidentally navigate away from the site
@@ -46,7 +49,7 @@
 		// Code 27 is escape, and this stops esc from cancelling our AJAX requests by cutting it off early
 		// Codes 38 and 40 are arrow keys, since Webkit browsers don't fire keyPress events on them and need to be handled here
 		// All other codes should be handled by on_key_press
-		if ((evt.keyCode == 27) || (evt.keyCode == 38) || (evt.keyCode == 40)) {
+		else if (keydown_handled.indexOf(evt.keyCode) != -1) {
 			self.handle_event(evt);
 			// these keys should always return false and prevent default
 			// escape, as mentioned, will cause AJAX requests to stop
