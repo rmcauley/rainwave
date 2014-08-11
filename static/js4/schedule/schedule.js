@@ -187,5 +187,9 @@ var Schedule = function() {
 		}
 	};
 
+	self.get_current_song_rating = function() {
+		return sched_current.songs[0].song_rating.rating_user;
+	}
+
 	return self;
 }();

@@ -14,6 +14,8 @@ var TimelineSong = function() {
 		var voting_enabled = false;
 
 		var song_rating = "rating" in json ? SongRating(json) : null;
+		// ugh, had to add this in way late in development
+		self.song_rating = song_rating;
 		var album_rating = "rating" in json.albums[0] ? AlbumRating(json.albums[0]) : null;
 
 		self.vote = function(evt) {

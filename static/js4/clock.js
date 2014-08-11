@@ -14,6 +14,7 @@ var Clock = function() {
 	self.pageclock_bar_function = null;
 
 	self.initialize = function() {
+		Prefs.define("show_rating_in_titlebar")
 		API.add_callback(self.resync, "api_info");
 	};
 
@@ -51,6 +52,11 @@ var Clock = function() {
 
 		var c = Formatting.minute_clock(page_title_end - self.now);
 		if (page_title) {
+			if (Prefs.get("show_rating_in_titlebar")) {
+				var rating = Schedule.get_current_song_rating();
+				if (rating) page_title = "[" + rating + "] " + page_title;
+				else page_title = "*** " + page_title;
+			}
 			document.title = "[" + c + "] " + page_title;
 			if (force_sync_ok && (page_title_end - self.now < -10)) {
 				force_sync_ok = false;
