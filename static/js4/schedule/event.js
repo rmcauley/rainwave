@@ -173,7 +173,7 @@ var EventBase = function(json) {
 
 	self.set_header_text = function(default_text) {
 		if (self.type == "OneUp") {
-			header_text.textContent = default_text + " - " + self.name + " " + $l("Power_Hour");
+			header_text.textContent = default_text + " - " + self.name + " " + $l("power_hour");
 		}
 		else if ((default_text != $l("Now_Playing") || self.type != "Election") && $l_has(self.type)) {
 			header_text.textContent = default_text + " - " + $l(self.type);
