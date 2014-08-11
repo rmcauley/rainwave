@@ -21,6 +21,7 @@ public_relays = None
 public_relays_json = {}
 station_list_json = {}
 station_mounts = {}
+station_mount_filenames = {}
 
 def get_config_file(testmode = False):
 	if os.path.isfile("etc/%s.conf" % getpass.getuser()):
@@ -45,7 +46,8 @@ def load(file = None, testmode = False):
 	global station_ids
 	global station_list_json
 	global station_hostnames
-	
+	global station_mount_filenames
+
 	if not file:
 		file = get_config_file(testmode)
 	
@@ -66,12 +68,25 @@ def load(file = None, testmode = False):
 	public_relays = {}
 	for sid in station_ids:
 		public_relays[sid] = []
-		public_relays[sid].append({ "name": "Random", "protocol": "http://", "hostname": get_station(sid, "round_robin_relay_host"), "port": get_station(sid, "round_robin_relay_port") })
+		public_relays[sid].append({
+			"name": "Random",
+			"protocol": "http://",
+			"hostname": get_station(sid, "round_robin_relay_host"),
+			"port": get_station(sid, "round_robin_relay_port"),
+			#"url": "http://%s:%s" % (get_station(sid, "round_robin_relay_host"), get_station(sid, "round_robin_relay_port"))
+		})
 		for relay_name, relay in get("relays").iteritems():
 			if sid in relay['sids']:
-				public_relays[sid].append({ "name": relay_name, "protocol": relay['protocol'], "hostname": relay['hostname'], "port": relay['port'] })
+				public_relays[sid].append({
+					"name": relay_name, 
+					"protocol": relay['protocol'], 
+					"hostname": relay['hostname'], 
+					"port": relay['port'], 
+					#'url': "http://%s:%s" % (relay['hostname'], relay['port'])
+				})
 		public_relays_json[sid] = tornado.escape.json_encode(public_relays[sid])
 		station_hostnames[get_station(sid, "host")] = sid
+		station_mount_filenames[sid] = get_station(sid, "stream_filename")
 
 	station_list = {}
 	for station_id in station_ids:

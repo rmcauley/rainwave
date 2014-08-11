@@ -58,3 +58,23 @@ class TuneInIndex(api.web.HTMLRequest):
 		for relay in config.public_relays[self.sid]:
 			self.write("#EXTINF:0, Rainwave %s: %s Relay\n" % (config.station_id_friendly[self.sid], relay['name']))
 			self.write("%s%s:%s/%s\n" % (relay['protocol'], relay['hostname'], relay['port'], stream_filename))
+
+@handle_url("/pages/embed.js")
+class EmbedInfo(api.web.HTMLRequest):
+	phpbb_auth = False
+	sid_required = False
+	auth_required = False
+
+	def get(self):
+		self.set_header("Content-Type", "application/javascript")
+		f = open('static/js4/audio.js')
+		wholejs = f.read()
+		f.close()
+
+		self.write(wholejs)
+		self.write("\n\n")
+		self.write("var R4AudioRelays = ")
+		self.write(repr(config.public_relays_json))
+		self.write("\n\n")
+		self.write("var R4AudioMounts = ")
+		self.write(repr(config.station_mount_filenames))

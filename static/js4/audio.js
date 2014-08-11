@@ -1,3 +1,32 @@
+/* Usage Instructions
+	
+	Download and include this Javascript file to your page.  No jQuery required, and
+	no conflicts will happen with existing code.
+
+	Create a simple HTML block on your page:
+
+	<div id='r4_audio_player'>
+		<div id='audio_icon'></div>
+		<div id='audio_status'></div>
+	</div>
+	
+	Style the page as you see fit.
+		- No class present on audio_icon means the player is stopped
+		- Class "audio_playing" will be applied to #audio_icon when playing
+
+	Next pick your station ID:
+		1 = Game
+		2 = OC Remix
+		3 = Covers
+		4 = Chiptunes
+		5 = All
+
+	Put the following in your page startup, replacing 1 with the station ID you picked:
+		R4Audio.initialize(R4AudioMounts[1], R4AudioRelays[1])
+
+	When the user clicks your r4_audio_player div, the music will start playing.
+*/
+
 var R4Audio = function() {
 	var self = {};
 	self.supported = false;
@@ -26,14 +55,15 @@ var R4Audio = function() {
 	audio_el = null;
 
 	self.initialize = function(stream_filename, relays) {
-		icon_el = $id("audio_icon");
-		text_el = $id("audio_status");
+		icon_el = document.getElementById("audio_icon");
+		text_el = document.getElementById("audio_status");
 		if (!self.supported) return;
 
-		$id("player_link").addEventListener("click", self.play_stop);
+		var container = document.getElementById("player_link") || document.getElementById("r4_audio_player");
+		container.addEventListener("click", self.play_stop);
 		if (self.type == "Vorbis") stream_filename += ".ogg";
 		else if (self.type == "MP3") stream_filename += ".mp3";
-		if (User.listen_key) {
+		if (User && User.listen_key) {
 			stream_filename += "?" + User.id + ":" + User.listen_key;
 		}
 		for (var i in relays) {
@@ -42,10 +72,11 @@ var R4Audio = function() {
 	};
 
 	self.draw = function() {
-		text_el.textContent = $l("tunein");
+		text_el.textContent = $l ? $l("tunein") : "Tune In";
 	};
 
 	self.clear_audio_errors = function(e) {
+		if (!ErrorHandler) return;
 		ErrorHandler.remove_permanent_error("audio_error");
 		ErrorHandler.remove_permanent_error("audio_connect_error");
 	};
@@ -61,14 +92,16 @@ var R4Audio = function() {
 
 		if (audio_el) return;
 
-		audio_el = $id("measure_box").appendChild(document.createElement("audio"));
+		audio_el = document.getElementById("measure_box").appendChild(document.createElement("audio"));
 		audio_el.addEventListener('stop', self.on_stop);
 		//audio_el.addEventListener('loadstart', self.on_connecting);
 		audio_el.addEventListener('play', self.on_play);
 		audio_el.addEventListener('stall', self.on_stall);
 		var source;
 		for (var i in stream_urls) {
-			source = $el("source", { "src": stream_urls[i], "type": filetype });
+			source = document.createElement("source");
+			source.setAttribute("src", stream_urls[i]);
+			source.setAttribute("type", filetype);
 			source.addEventListener('playing', self.clear_audio_errors);
 			audio_el.appendChild(source);
 		}
@@ -92,7 +125,7 @@ var R4Audio = function() {
 
 	self.on_stop = function() {
 		icon_el.className = "";
-		text_el.textContent = $l("tunein");
+		text_el.textContent = $l ? $l("tunein") : "Tune In";
 		self.stop();
 	};
 
@@ -102,11 +135,12 @@ var R4Audio = function() {
 
 	self.on_play = function() {
 		icon_el.className = "audio_playing";
-		text_el.textContent = $l("stop");
+		text_el.textContent = $l ? $l("stop") : "Stop";
 		self.clear_audio_errors();
 	};
 
 	self.on_stall = function() {
+		if (!ErrorHandler) return;
 		icon_el.className = "audio_connecting";
 		var a = $el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": $l("try_external_player") });
 		a.addEventListener("click", function() {
@@ -117,6 +151,7 @@ var R4Audio = function() {
 	};
 
 	self.on_error = function() {
+		if (!ErrorHandler) return;
 		var a = $el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": $l("try_external_player") });
 		a.addEventListener("click", function() {
 			self.clear_audio_errors();
