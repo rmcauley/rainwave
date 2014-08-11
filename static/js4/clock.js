@@ -14,7 +14,8 @@ var Clock = function() {
 	self.pageclock_bar_function = null;
 
 	self.initialize = function() {
-		Prefs.define("show_rating_in_titlebar")
+		Prefs.define("show_rating_in_titlebar");
+		Prefs.define("do_not_update_titlebar");
 		API.add_callback(self.resync, "api_info");
 	};
 
@@ -57,7 +58,9 @@ var Clock = function() {
 				if (rating) page_title = "[" + rating + "] " + page_title;
 				else page_title = "*** " + page_title;
 			}
-			document.title = "[" + c + "] " + page_title;
+			if (!Prefs.get("do_not_update_titlebar")) {
+				document.title = "[" + c + "] " + page_title;
+			}
 			if (force_sync_ok && (page_title_end - self.now < -10)) {
 				force_sync_ok = false;
 				API.force_sync();

@@ -129,6 +129,8 @@
    "Users"                                           : "Users",
    "Groups"                                          : "Groups",
    "Listeners"                                       : "Listeners",
+   "songs_from"                                      : "Songs from %(station)",
+   "songs_on"                                        : "Songs on %(station)",
 
    "__comment__"                 : "Requests",
 

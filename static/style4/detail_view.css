@@ -12,6 +12,7 @@
 div.detail_view {
 	position: relative;
 	padding: 10px;
+	margin-right: 10px;
 	@include transition(padding);
 }
 
@@ -54,6 +55,13 @@ body.requests_sticky #detail_scrollbar {
 	font-size: 1.6em;
 	border-bottom: solid 1px #555;
 	margin-top: 0;
+}
+
+#detail h2 {
+	font-size: larger;
+	border-bottom: 1px solid #444;
+	margin-bottom: 5px;
+	padding-bottom: 2px;
 }
 
 div.albumview_header {
