@@ -63,8 +63,9 @@ PlaylistLists = function() {
 		docCookies.setItem("r4_active_list", change_to.list_name, Infinity, "/", BOOTSTRAP.cookie_domain)
 	};
 
-	self.on_resize = function() {
+	self.on_resize = function(skip_list_resizes) {
 		el.style.height = (MAIN_HEIGHT - tabs_el_height) + "px";
+		if (skip_list_resizes) return;
 		for (var key in lists) {
 			lists[key].on_resize((MAIN_HEIGHT - tabs_el_height));
 		}

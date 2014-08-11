@@ -76,7 +76,7 @@ function initialize() {
 	// PREP: Applies the small_screen class if necessary and sizes everything
 	Fx.flush_draws();
 	$id('sizable_body').style.height = MAIN_HEIGHT + "px";
-	PlaylistLists.on_resize();
+	PlaylistLists.on_resize(true);
 
 	// PAINT 1: Measure scrollbar width, setup scrollbars
 	Scrollbar.calculate_scrollbar_width();
