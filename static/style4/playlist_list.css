@@ -55,7 +55,7 @@
 
 #searchlist_input {
 	height: 25px;
-	border: solid 1px $vvdarktext;
+	/*border: solid 1px $vvdarktext;*/
 	color: $vdarktext;
 	cursor: text;
 	background-color: rgb(25, 25, 25);
@@ -64,7 +64,7 @@
 }
 
 div.searchlist_input {
-	padding-top: 4px;
+	padding-top: 3px;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
