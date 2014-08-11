@@ -99,10 +99,6 @@ div.timeline_song div.requester {
 	z-index: 5;
 	text-align: center;
 	background: $highlight;
-	/* opacity: 0.75; */
-}
-
-div.timeline_song div.art_expandable:hover div.requester {
 	opacity: 1;
 }
 
