@@ -332,41 +332,57 @@ class User(object):
 		return None
 
 	def get_requests(self, refresh = False):
+		# refresh variable is deprecated
 		if self.id <= 1:
 			return []
-		requests = cache.get_user(self, "requests")
-		if refresh or (not requests or len(requests) == 0):
-			if db.c.is_postgres:
-				requests = db.c.fetch_all(
-					"SELECT r4_request_store.song_id AS id, "
-						"r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
-						"song_rating AS rating, song_title AS title, song_length AS length, "
-						"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, "
-						"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
-						"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
-						"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
-						"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating "
-					"FROM r4_request_store "
-						"JOIN r4_songs USING (song_id) "
-						"JOIN r4_albums USING (album_id) "
-						"JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_request_store.sid = r4_album_sid.sid) "
-						"JOIN r4_song_sid ON (r4_song_sid.sid = r4_request_store.sid AND r4_song_sid.song_id = r4_request_store.song_id) "
-						"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
-						"LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = r4_request_store.sid) "
-					"WHERE r4_request_store.user_id = %s "
-					"ORDER BY reqstor_order, reqstor_id",
-					(self.id, self.id, self.id))
-			if not requests:
-				requests = []
-			for song in requests:
-				song['albums'] = [ {
-					"name": song.pop('album_name'),
-					"id": song['album_id'],
-					"rating": song.pop('album_rating'),
-					"rating_user": song.pop('album_rating_user'),
-					"art": playlist.Album.get_art_url(song.pop('album_id'))
-				 } ]
-			cache.set_user(self, "requests", requests)
+		requests = []
+		if db.c.is_postgres:
+			requests = db.c.fetch_all(
+				"SELECT r4_request_store.song_id AS id, "
+					"r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
+					"song_title AS title, song_length AS length, "
+					"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, "
+					"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
+					"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
+					"r4_songs.album_id AS album_id, r4_albums.album_name "
+				"FROM r4_request_store "
+					"JOIN r4_song_sid USING (sid, song_id) "
+					"JOIN r4_songs USING (song_id) "
+					"JOIN r4_albums USING (album_id) "
+				"WHERE r4_request_store.user_id = %s "
+				"ORDER BY reqstor_order, reqstor_id",
+				(self.id,))
+			# Lovely but too heavy considering this SQL query sits in the way of a page refresh
+			# requests = db.c.fetch_all(
+			# 	"SELECT r4_request_store.song_id AS id, "
+			# 		"r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
+			# 		"song_rating AS rating, song_title AS title, song_length AS length, "
+			# 		"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, "
+			# 		"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
+			# 		"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
+			# 		"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
+			# 		"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating "
+			# 	"FROM r4_request_store "
+			# 		"JOIN r4_songs USING (song_id) "
+			# 		"JOIN r4_albums USING (album_id) "
+			# 		"JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_request_store.sid = r4_album_sid.sid) "
+			# 		"JOIN r4_song_sid ON (r4_song_sid.sid = r4_request_store.sid AND r4_song_sid.song_id = r4_request_store.song_id) "
+			# 		"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
+			# 		"LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = r4_request_store.sid) "
+			# 	"WHERE r4_request_store.user_id = %s "
+			# 	"ORDER BY reqstor_order, reqstor_id",
+			# 	(self.id, self.id, self.id))
+		if not requests:
+			requests = []
+		for song in requests:
+			song['albums'] = [ {
+				"name": song.pop('album_name'),
+				"id": song['album_id'],
+				#"rating": song.pop('album_rating'),
+				#"rating_user": song.pop('album_rating_user'),
+				"art": playlist.Album.get_art_url(song.pop('album_id'))
+			 } ]
+		cache.set_user(self, "requests", requests)
 		return requests
 
 	def set_request_tunein_expiry(self, t = None):
