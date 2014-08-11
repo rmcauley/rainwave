@@ -76,7 +76,7 @@ var Requests = function() {
 			$remove_class(container, "request_queue_paused");
 		}
 
-		if (user_json.request_expires_at <= (Clock.now + 300)) {
+		if (user_json.request_position && user_json.request_expires_at && (user_json.request_expires_at <= (Clock.now + 300))) {
 			header.textContent = $l("requests_expiring");
 			$add_class(container, "request_warning");
 		}
