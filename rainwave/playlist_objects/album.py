@@ -276,7 +276,7 @@ class Album(AssociatedMetadata):
 						"FROM ("
 							"SELECT song_id, sid, r4_songs.album_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_verified = TRUE "
 						") AS r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) "
-						"GROUP BY album_id, album_song_count, sid, user_id "
+						"GROUP BY album_id, sid, user_id "
 					") "
 				"INSERT INTO r4_album_ratings (sid, album_id, album_fave, user_id, album_rating_user, album_rating_complete) "
 				"SELECT sid, album_id, BOOL_OR(album_fave) AS album_fave, user_id, NULLIF(MAX(album_rating_user), 0) AS album_rating_user, CASE WHEN MAX(song_rating_user_count) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete "
