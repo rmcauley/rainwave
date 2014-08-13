@@ -15,7 +15,8 @@ var Clock = function() {
 
 	self.initialize = function() {
 		Prefs.define("show_rating_in_titlebar");
-		Prefs.define("do_not_update_titlebar");
+		Prefs.define("show_clock_in_titlebar", [ true, false ]);
+		Prefs.define("show_title_in_titlebar", [ true, false ]);
 		API.add_callback(self.resync, "api_info");
 	};
 
@@ -52,20 +53,19 @@ var Clock = function() {
 		self.now = self.time() + timediff;
 
 		var c = Formatting.minute_clock(page_title_end - self.now);
-		if (page_title) {
-			if (Prefs.get("show_rating_in_titlebar")) {
-				var rating = Schedule.get_current_song_rating();
-				if (rating) page_title = "[" + rating + "] " + page_title;
-				else page_title = "*** " + page_title;
-			}
-			if (!Prefs.get("do_not_update_titlebar")) {
-				document.title = "[" + c + "] " + page_title;
-			}
-			if (force_sync_ok && (page_title_end - self.now < -10)) {
-				force_sync_ok = false;
-				API.force_sync();
-			}
+		if (!page_title || !Prefs.get("show_title_in_titlebar")) page_title = "Rainwave " + $l("station_name_" + User.sid);
+		if (Prefs.get("show_rating_in_titlebar")) {
+			var rating = Schedule.get_current_song_rating();
+			if (rating) page_title = "[" + rating + "] " + page_title;
+			else page_title = "*** " + page_title;
 		}
+		if (Prefs.get("show_clock_in_titlebar")) {
+			document.title = "[" + c + "] " + page_title;
+		}
+		if (force_sync_ok && (page_title_end - self.now < -10)) {
+			force_sync_ok = false;
+			API.force_sync();
+		}		
 
 		if (self.pageclock) {
 			self.pageclock.textContent = c;

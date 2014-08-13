@@ -344,3 +344,47 @@ div.tuned_in #audio_status:hover {
 div.tuned_in #audio_volume_indicator {
 	fill: $highlight;
 }
+
+/* SETTINGS WINDOW */
+
+#top_menu #settings_window {
+	width: 300px;
+	@include transform(translateX(-200px));
+	padding: 0 !important;
+}
+
+#top_menu li:hover #settings_window {
+	height: 17em;
+}
+
+#settings_window div.setting_group:first-child {
+	margin-top: 3px;
+}
+
+#settings_window div.setting_group {
+	padding: 3px 6px 3px 10px;
+}
+
+#settings_window div.setting_group:hover {
+	background: #333;
+}
+
+#settings_window div.setting_group input, #settings_window div.setting_group select {
+	float: right;
+}
+
+#settings_window div.setting_group label {
+	display: block;
+}
+
+#settings_window h4 {
+	margin: 5px;
+	padding: 0px;
+	border-bottom: 1px solid #444;
+	font-size: 100%;
+	font-weight: bold;
+}
+
+#settings_window div.setting_group + h4 {
+	margin-top: 10px;
+}

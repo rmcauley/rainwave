@@ -68,6 +68,12 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		self.loaded = true;
 	};
 
+	self.refresh_all_items = function() {
+		for (var i in data) {
+			self.update_item_element(data[i]);
+		}
+	};
+
 	self.update_item = function(json) {
 		var i;
 		json._delete = false;
@@ -408,6 +414,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		else {
 			self.reposition();
 		}
+	};
+
+	self.redraw_current_position = function() {
+		current_scroll_index = false;
+		self.reposition();
 	};
 
 	self.reposition = function() {

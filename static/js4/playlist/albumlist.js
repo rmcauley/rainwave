@@ -1,20 +1,41 @@
 var AlbumList = function() {
 	"use strict";
 
+	var self = SearchList($id("lists_albums_items"), $id("lists_albums_scrollbar"), $id("lists_albums_stretcher"), "name", "name_searchable");
+
 	// Preferences handling
+	var playlist_sort_solver = function(nv) {
+		if (PlaylistLists.sorting_methods.indexOf(nv) == -1) Prefs.change("playlist_sort", PlaylistLists.sorting_methods[0]);
+		if (nv == "alpha") self.sort_function = self.sort_by_alpha;
+		if (nv == "updated") self.sort_function = self.sort_by_updated;
+		if (nv == "rating_user") self.sort_function = self.sort_by_rating_user;
+	}
+	Prefs.add_callback("playlist_sort", function(nv) {
+		playlist_sort_solver(nv);
+		self.update_view([]);
+		self.redraw_current_position();
+	});
 
-	var playlist_sort_faves_first = false;
-	var playlist_sort_available_first = true;
-	var rating_offset = 25;
-
-	Prefs.define("playlist_sort_faves_first", [ false, true ]);
-	Prefs.define("playlist_sort_available_first", [ true, false ]);
-	Prefs.add_callback("playlist_sort_faves_first", function(nv) { playlist_sort_faves_first = nv; });
-	Prefs.add_callback("playlist_sort_available_first", function(nv) { playlist_sort_available_first = nv; });
+	var playlist_sort_faves_first = Prefs.get("playlist_sort_faves_first");
+	var playlist_sort_available_first = Prefs.get("playlist_sort_available_first");
+	var playlist_show_rating_complete = Prefs.get("playlist_show_rating_complete");
+	Prefs.add_callback("playlist_sort_faves_first", function(nv) {
+		playlist_sort_faves_first = nv;
+		self.update_view([]);
+		self.redraw_current_position();
+	});
+	Prefs.add_callback("playlist_sort_available_first", function(nv) {
+		playlist_sort_available_first = nv;
+		self.update_view([]);
+		self.redraw_current_position();
+	});
+	Prefs.add_callback("playlist_show_rating_complete", function(nv) {
+		playlist_show_rating_complete = nv;
+		self.refresh_all_items();
+	});
 
 	// Actual app logic
 
-	var self = SearchList($id("lists_albums_items"), $id("lists_albums_scrollbar"), $id("lists_albums_stretcher"), "name", "name_searchable");
 	self.list_name = "all_albums";
 	
 	self.tab_el = $id("lists_tab_album");
@@ -80,7 +101,7 @@ var AlbumList = function() {
 		// this is duplicate functionality from update_item_element, again to try and streamline
 		// a heavy process
 		if (item.fave) item._el.className += " searchlist_fave_on";
-		if (item.rating_complete) item._el.className += " searchlist_rating_complete";
+		if (playlist_show_rating_complete && item.rating_complete) item._el.className += " searchlist_rating_complete";
 		if (item.rating_user) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
 			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top + 1) + "px";
@@ -122,7 +143,7 @@ var AlbumList = function() {
 		else {
 			$remove_class(item._el, "searchlist_fave_on");
 		}
-		if (item.rating_complete) {
+		if (playlist_show_rating_complete && item.rating_complete) {
 			$add_class(item._el, "searchlist_rating_complete");
 		}
 		else {
@@ -139,13 +160,13 @@ var AlbumList = function() {
 	};
 
 	// there's lots of copy-paste code in the following functions because these are critical-path, called thousands of times
-	self.sort_by_available = function(a, b) {
+	self.sort_by_alpha = function(a, b) {
 		if (playlist_sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
 			if (self.data[a].fave) return -1;
 			else return 1;
 		}
 
-		if (self.data[a].cool !== self.data[b].cool) {
+		if (playlist_sort_available_first && (self.data[a].cool !== self.data[b].cool)) {
 			if (self.data[a].cool === false) return -1;
 			else return 1;
 		}
@@ -156,21 +177,21 @@ var AlbumList = function() {
 	};
 
 	self.sort_by_updated = function(a, b) {
-		if (playlisf_sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+		if (playlist_sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
 			if (self.data[a].fave) return -1;
 			else return 1;
 		}
 
 		if (playlist_sort_available_first && (self.data[a].cool !== self.data[b].cool)) {
-			if (self.data[a].cool === false) return 1;
-			else return 0;
+			if (self.data[a].cool === false) return -1;
+			else return 1;
 		}
 
 		if (self.data[a].updated < self.data[b].updated) return 1;
 		if (self.data[a].updated > self.data[b].updated) return -1;
 
-		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return 1;
-		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return -1;
+		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return -1;
+		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return 1;
 		return 0;
 	};
 
@@ -181,19 +202,19 @@ var AlbumList = function() {
 		}
 
 		if (playlist_sort_available_first && (self.data[a].cool !== self.data[b].cool)) {
-			if (self.data[a].cool === false) return 1;
-			else return 0;
+			if (self.data[a].cool === false) return -1;
+			else return 1;
 		}
 
 		if (self.data[a].rating_user < self.data[b].rating_user) return 1;
 		if (self.data[a].rating_user > self.data[b].rating_user) return -1;
 
-		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return 1;
-		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return -1;
+		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return -1;
+		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return 1;
 		return 0;
 	};
 
-	self.sort_function = self.sort_by_available;
+	playlist_sort_solver(Prefs.get("playlist_sort"));
 
 	return self;
 };

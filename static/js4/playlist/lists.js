@@ -10,6 +10,8 @@ PlaylistLists = function() {
 	var search_box;
 	var tabs_el_height = 83;
 
+	self.sorting_methods = [ "alpha", "rating_user" ];
+
 	self.scroll_init = function() {
 		var resizer = Scrollbar.new_resizer($id("lists"), $id("lists_albums"), $id("lists_resizer"));
 		resizer.add_scrollable($id("lists_artists"));
@@ -17,6 +19,10 @@ PlaylistLists = function() {
 	};
 
 	self.initialize = function() {
+		Prefs.define("playlist_sort", self.sorting_methods);
+		Prefs.define("playlist_sort_faves_first", [ false, true ]);
+		Prefs.define("playlist_sort_available_first", [ true, false ]);
+		Prefs.define("playlist_show_rating_complete", [ false, true ]);
 		Prefs.define("searchlist_show_cooldown");
 		Prefs.define("used_escape_to_clear_search");
 

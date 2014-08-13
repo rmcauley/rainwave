@@ -169,6 +169,21 @@
    "station_menu_description_id_5"                   : "The entire Rainwave playlist.",
    "now_playing_on_..."                              : "Now Playing On %(station)",
 
+   "__comment__"                 : "Preferences",
+
+   "tab_title_preferences"                           : "Tab Title",
+   "prefs_show_clock_in_titlebar"                    : "Show Clock",
+   "prefs_show_rating_in_titlebar"                   : "Show Rating",
+   "prefs_show_song_in_titlebar"                     : "Show Song Title",
+   "playlist_preferences"                            : "Album List",
+   "prefs_playlist_sort_available_first"             : "Sort with Cooldown Last",
+   "prefs_playlist_sort_faves_first"                 : "Sort with Faves First",
+   "prefs_playlist_show_rating_complete"             : "Show Ratings Completion",
+   "prefs_playlist_sort_by"                          : "Sort By",
+   "prefs_sort_playlist_by_alpha"                    : "Alphabet",
+   "prefs_sort_playlist_by_updated"                  : "Newest",
+   "prefs_sort_playlist_by_rating_user"              : "Rating",
+
    "__comment__"                 : "Old R3 translation lines.",
 
    "p_MainMPI"                                       : "Tabs",

@@ -1,24 +1,4 @@
-/*\
-|*|
-|*|  :: cookies.js ::
-|*|
-|*|  A complete cookies reader/writer framework with full unicode support.
-|*|
-|*|  https://developer.mozilla.org/en-US/docs/DOM/document.cookie
-|*|
-|*|  This framework is released under the GNU Public License, version 3 or later.
-|*|  http://www.gnu.org/licenses/gpl-3.0-standalone.html
-|*|
-|*|  Syntaxes:
-|*|
-|*|  * docCookies.setItem(name, value[, end[, path[, domain[, secure]]]])
-|*|  * docCookies.getItem(name)
-|*|  * docCookies.removeItem(name[, path], domain)
-|*|  * docCookies.hasItem(name)
-|*|  * docCookies.keys()
-|*|
-\*/
-
+// docCookies, by Mozilla.
 var docCookies = {
   getItem: function (sKey) {
     return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
@@ -57,6 +37,11 @@ var docCookies = {
   }
 };
 
+// Remove legacy settings
+docCookies.removeItem("r4_prefs", "/", BOOTSTRAP.cookie_domain);
+docCookies.removeItem("r3sid", "/", BOOTSTRAP.cookie_domain);
+docCookies.removeItem("r3prefs", "/", BOOTSTRAP.cookie_domain);
+
 /* Preferences for R4 */
 
 var Prefs = function() {
@@ -67,22 +52,11 @@ var Prefs = function() {
 	var callbacks = {};
 
 	self.save = function(name, object) {
-		var today = new Date();
-		var expiry = new Date(today.getTime() + 28 * 24 * 60 * 60 * 1000 * 13);
-		docCookies.setItem(name, JSON.stringify(values), Infinity, "/", BOOTSTRAP.cookie_domain);
+		localStorage.setItem(name, JSON.stringify(values));
 	};
 
 	self.load = function(name) {
-		var mmm_cookie = docCookies.getItem(name);
-		try {
-			values = JSON.parse(mmm_cookie);
-		}
-		catch (err) {
-			// silently fail, resetting all preferences to their defaults
-			values = {};
-		}
-		if (!values) values = {};
-		return true;
+		values = JSON.parse(localStorage.getItem(name)) || {};
 	};
 
 	self.get = function(name) {
@@ -106,17 +80,17 @@ var Prefs = function() {
 				return false;
 			}
 		}
-		if (meta[name].legal_values) {
-			var valid = false;
-			for (var i in meta[name].legal_values) {
-				if (value === meta[name].legal_values[name][i]) {
-					valid = true;
-				}
-			}
-			if (!valid) {
-				return false;
-			}
-		}
+		// if (meta[name].legal_values) {
+		// 	var valid = false;
+		// 	for (var i in meta[name].legal_values) {
+		// 		if (value === meta[name].legal_values[name][i]) {
+		// 			valid = true;
+		// 		}
+		// 	}
+		// 	if (!valid) {
+		// 		return false;
+		// 	}
+		// }
 		values[name] = value;
 		if (!skip_callbacks) {
 			do_callbacks(name, value);
@@ -158,6 +132,66 @@ var Prefs = function() {
 	// One of the few times we don't have an initialize() in R4
 	// prefs should be loaded before anything else
 	self.load("r4_prefs");
+
+	return self;
+}();
+
+var SettingsWindow = function() {
+	var el;
+	var self = {};
+
+	self.initialize = function() {
+		el = $id("settings_window");
+	};
+
+	self.draw = function() {
+		el.appendChild($el("h4", { "textContent": $l("tab_title_preferences") }));
+		draw_cb_list([
+			"show_clock_in_titlebar",
+			"show_rating_in_titlebar",
+			"show_song_in_titlebar"
+		]);
+		el.appendChild($el("h4", { "textContent": $l("playlist_preferences") }));
+		var div = el.appendChild($el("div", { "class": "setting_group" }));
+		var playlist_sort = $el("select", { "id": "prefs_playlist_sort_by" });
+		var option;
+		for (var i = 0; i < PlaylistLists.sorting_methods.length; i++) {
+			option = $el("option", { "value": PlaylistLists.sorting_methods[i], "textContent": $l("prefs_sort_playlist_by_" + PlaylistLists.sorting_methods[i]) });
+			if (PlaylistLists.sorting_methods[i] == Prefs.get("playlist_sort")) {
+				option.setAttribute("selected", "selected");
+			}
+			playlist_sort.appendChild(option);
+		}
+		playlist_sort.addEventListener("change", change_sorting_method);
+		div.appendChild(playlist_sort);
+		div.appendChild($el("label", { "for": "prefs_playlist_sort_by", "textContent": $l("prefs_playlist_sort_by") }));
+		draw_cb_list([
+			"playlist_sort_available_first",
+			"playlist_sort_faves_first",
+			"playlist_show_rating_complete"
+		]);
+	};
+
+	var draw_cb_list = function(pref_list) {
+		var cb, div, label;
+		for (var i = 0; i < pref_list.length; i++) {
+			div = $el("div", { "class": "setting_group" });
+			cb = div.appendChild($el("input", { "type": "checkbox", "id": "prefs_" + pref_list[i] }));
+			cb._pref_name = pref_list[i];
+			cb.addEventListener("change", checkbox_changed);
+			if (Prefs.get(pref_list[i])) cb.setAttribute("checked", true);
+			label = div.appendChild($el("label", { "for": "prefs_" + pref_list[i], "textContent": $l("prefs_" + pref_list[i]) }));
+			el.appendChild(div);
+		}
+	}
+
+	var checkbox_changed = function(pref_list) {
+		Prefs.change(this._pref_name, this.checked);
+	};
+
+	var change_sorting_method = function(evt) {
+		Prefs.change("playlist_sort", this.value);
+	};
 
 	return self;
 }();
