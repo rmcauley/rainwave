@@ -110,6 +110,7 @@
    "audio_not_supported"                             : "Your browser does not support HTML5 audio.",
    "audio_error"                                     : "Could not tune in from your browser!",
    "audio_connect_error"                             : "Currently having difficulties connecting to the radio server.",
+   "audio_connect_error_reattempting"                : "You're losing your ability to vote because of connection issues.  We're trying to keep you connected properly.",
    "try_external_player"                             : "Click here to try using an app to tune in.",
    "stop"                                            : "Stop",
    "played_ago"                                      : "Played %(time) Ago",

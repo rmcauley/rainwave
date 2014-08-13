@@ -30,15 +30,17 @@
 var R4Audio = function() {
 	var self = {};
 	self.supported = false;
-	self.type = null;
+	self.type = null;	
 	var filetype;
 	var stream_urls = [];
+	var playing_status = false;
 
 	var icon_el;
 	var text_el;
 	var volume_el;
 	var volume_rect;
 	var offset_width;
+	var last_user_tunein_check = 0;
 
 	var audio_el = document.createElement('audio');
 	if ("canPlayType" in audio_el) {
@@ -56,6 +58,10 @@ var R4Audio = function() {
 		}
 	}
 	audio_el = null;
+
+	self.get_playing_status = function() {
+		return playing_status;
+	};
 
 	self.initialize = function(stream_filename, relays) {
 		icon_el = document.getElementById("audio_icon");
@@ -77,6 +83,20 @@ var R4Audio = function() {
 		if (volume_el) {
 			volume_rect = document.getElementById("audio_volume_indicator");
 			volume_el.addEventListener("mousedown", volume_control_mousedown);
+		}
+
+		API.add_callback(user_tunein_check, "user");
+	};
+
+	var user_tunein_check = function(json) {
+		if (!playing_status) return;
+		if (last_user_tunein_check < (Clock.now - 300)) {
+			last_user_tunein_check = parseInt(Clock.now);
+			if (!json.tuned_in) {
+				ErrorHandler.remove_permanent_error("audio_connect_error_reattempting");
+				self.stop();
+				self.play();
+			}
 		}
 	};
 
@@ -122,6 +142,7 @@ var R4Audio = function() {
 		audio_el.lastChild.addEventListener('error', self.on_error);
 
 		audio_el.play();
+		playing_status = true;
 	};
 
 	self.stop = function(evt) {
@@ -133,6 +154,7 @@ var R4Audio = function() {
 		while (audio_el.firstChild) audio_el.removeChild(audio_el.firstChild);
 		audio_el = null;
 		self.on_stop();
+		playing_status = false;
 	};
 
 	self.on_stop = function() {
