@@ -65,6 +65,8 @@
    "station_name_3"                                  : "Covers",
    "station_name_4"                                  : "Chiptune",
    "station_name_5"                                  : "All",
+   "logout_in_forums"                                : "Please visit the forums to logout.",
+   "your_mobile_app_qr"                              : "Your Android App QR Code",
 
    "__comment__"                 : "Timeline",
 

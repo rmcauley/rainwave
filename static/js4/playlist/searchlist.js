@@ -34,6 +34,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	var num_items_to_display;
 	var original_scroll_top;
 	var original_key_nav;
+	var ignore_original_scroll_top;
 
 	var current_scroll_index = 0;
 	var current_height;
@@ -354,14 +355,16 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		self.recalculate();
 		if (original_key_nav) {
 			self.key_nav_highlight(original_key_nav, true);
+			original_key_nav = false;
 		}
-		if (original_scroll_top) {
+		if (original_scroll_top && !ignore_original_scroll_top) {
 		 	scrollbar.scroll_to(original_scroll_top);
 		 	original_scroll_top = false;
 		}
 		else {
 			self.scroll_to_default();
 		}
+		ignore_original_scroll_top = false;
 	};
 
 	var clear_searchbar = function() {
@@ -466,6 +469,9 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		$add_class(data[id]._el, "searchlist_open_item");
 		current_open_id = id;
 		self.key_nav_highlight(id);
+		if (search_string.length > 0) {
+			ignore_original_scroll_top = true;
+		}
 	}
 
 	// FAKING A TEXT FIELD **************

@@ -157,7 +157,7 @@ body.small_menu #main_icons {
 
 /* DROPDOWN STATION INFO */
 
-#station_select div.info {
+#top_menu div.info {
 	box-sizing: border-box;
 	margin: 3px 0 0 0;
 	@include transition-wtime(300ms, opacity, transform, height, padding);
@@ -173,11 +173,11 @@ body.small_menu #main_icons {
 	z-index: 2;
 }
 
-#station_select div.info:hover {
+#top_menu div.info:hover {
 	overflow: visible;
 }
 
-#station_select li:hover {
+#top_menu li:hover {
 	z-index: 100;
 }
 
@@ -202,10 +202,45 @@ div.menu_now_playing {
 	font-size: smaller;
 }
 
-#station_select li:hover div.info {
+#top_menu li:hover div.info {
 	opacity: 1;
 	height: 145px;
 	padding: 5px 10px 10px 10px;
+}
+
+#user_info div.info {
+	width: 250px;
+	@include transform(translateX(-40px));
+	text-align: center;
+}
+
+#user_info #user_qr_code {
+	position: absolute;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-color: #FFF;
+	background-position: center center;
+	width: 300px;
+	height: 0px;
+	z-index: 1;
+	opacity: 0;
+	@include transition(opacity, height);
+	@include transform(translateX(-40px));
+	border: solid 1px #777;
+	box-shadow: 3px 3px 3px 4px #000;
+}
+
+#user_info #user_qr_code_hover:hover #user_qr_code {
+	display: block;
+	opacity: 1;
+	height: 300px;
+}
+
+#user_info #logout_link {
+	display: block;
+	padding-bottom: 5px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #777;
 }
 
 /* PLAYER */

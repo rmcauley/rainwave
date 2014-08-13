@@ -158,8 +158,8 @@ span.searchlist_name {
 	display: block;
 	@include transition-wtime(200ms, padding, color);
 	background-repeat: no-repeat;
-	background-position: 2px 2px;
-	padding-left: 20px;
+	background-position: 5px 3px;
+	padding-left: 27px;
 	overflow: hidden;
 	word-break: break-all;
 	white-space: nowrap;
@@ -167,7 +167,6 @@ span.searchlist_name {
 }
 
 div.searchlist_item:hover span.searchlist_name {
-	padding-left: 27px;
 	color: $link;
 	background-image: url("/static/images4/heart_lined.png");
 }
@@ -189,6 +188,10 @@ div.searchlist_fave_on span.searchlist_name {
 	background-image: url("/static/images4/heart_solid.png");
 }
 
+div.searchlist_fave_on.searchlist_item:hover span.searchlist_name {
+	background-image: url("/static/images4/heart_solid.png");
+}
+
 span.searchlist_cooldown_time {
 	cursor: text;
 	display: none;
@@ -199,21 +202,21 @@ div.searchlist_cooldown_visible span.searchlist_cooldown_time {
 	display: inline-block;
 }
 
-div.searchlist_item:hover, div.searchtable_key_nav_hover {
+div.searchlist_item:hover, div.searchtable_key_nav_hover, div.searchlist_cooldown.searchtable_key_nav_hover {
 	border-color: $hovercolor-border;
 	background-color: $hovercolor;
 	@include no-transition();
 }
 
 div.searchlist_item:hover span.searchlist_name, div.searchtable_key_nav_hover span.searchlist_name {
-	padding-left: 27px;
-}
-
-div.searchlist_item:hover div.searchlist_open_item span.searchlist_name {
-	padding-left: 33px;
+	padding-left: 35px;
 }
 
 div.searchlist_open_item, div.searchlist_cooldown.searchlist_open_item {
 	background-color: #1f4f70;
 	border-color: #245b80;
+}
+
+div.searchlist_open_item span.searchlist_name, div.searchlist_item.searchlist_open_item:hover span.searchlist_name {
+	padding-left: 40px;
 }

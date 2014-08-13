@@ -24,6 +24,11 @@ var Menu = function() {
 			elements.user_info.appendChild($el("img", { "class": "avatar icon", "src": "/static/images4/user.svg" }));
 			elements.user_info.appendChild($el("a", { "href": "http://rainwave.cc/forums/ucp.php?mode=login&redirect=/", "textContent": $l("login") }));
 		}
+		var user_links = elements.user_info.appendChild($el("div", { "class": "info" }));
+		user_links.appendChild($el("a", { "id": "logout_link", "href": "http://rainwave.cc/forums/", "textContent": $l("logout_in_forums") }));
+		var qr_code_container = user_links.appendChild($el("div", { "id": "user_qr_code_hover", "textContent": $l("your_mobile_app_qr") }));
+		var qr_code = qr_code_container.appendChild($el("div", { "id": "user_qr_code" }));
+		qr_code_container.addEventListener("mouseover", add_user_qr_code);
 
 		// Setup station select menu
 		var order = [ 5, 1, 4, 2, 3 ];
@@ -74,6 +79,11 @@ var Menu = function() {
 				songs[key]._shown = false;
 			}
 		}
+	};
+
+	var add_user_qr_code = function(evt) {
+		this.removeEventListener("mouseover", add_user_qr_code);
+		$id("user_qr_code").style.backgroundImage = "url(http://chart.apis.google.com/chart?cht=qr&chs=300x300&choe=ISO-8859-1&chl=" + User.api_key + ")";
 	};
 
 	return self;

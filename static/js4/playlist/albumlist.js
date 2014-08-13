@@ -97,7 +97,7 @@ var AlbumList = function() {
 	self.open_element_check = function(e, id) {
 		if ("enter_key" in e) return true;
 		var x = e.offsetX || e.layerX || e.x || 0;
-		if (x < 16) {
+		if (x < 22) {
 			API.async_get("fave_album", { "fave": !self.data[id].fave, "album_id": id });
 			return false;
 		}
@@ -130,11 +130,11 @@ var AlbumList = function() {
 		}
 		if (item.rating_user) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
-			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
+			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top + 1) + "px";
 		}
 		else if (item.rating) {
 			item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
-			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top) + "px";
+			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top + 1) + "px";
 		}
 	};
 
