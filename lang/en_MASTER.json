@@ -119,6 +119,21 @@
    "timeline_art__request_indicator"                 : "REQUEST",
    "timeline_art__your_request_indicator"            : "YOURS",
 
+   "__comment__"                 : "About Window",
+
+   "staff_list_header"                               : "Staff",
+   "relay_sponsors_header"                           : "Relay Sponsors",
+   "translators_header"                              : "Translators",
+   "icon_attribution"                                : "Icon Attribution",
+   "special_thanks"                                  : "Special Thanks",
+   "forum_icon_desc"                                 : "Forum Icon By",
+   "chat_icon_desc"                                  : "Chat Icon By",
+   "help_icon_desc"                                  : "Help Icon By",
+   "gear_icon_desc"                                  : "Gear Icon By",
+   "history_icon_desc"                               : "History Icon By",
+   "user_icon_desc"                                  : "User Icon By",
+   "facebook_icon_desc"                              : "Facebook Icon By",
+
    "__comment__"                 : "Playlist View",
 
    "filter"                                          : "Type anywhere to filter",
@@ -173,9 +188,9 @@
    "__comment__"                 : "Preferences",
 
    "tab_title_preferences"                           : "Tab Title",
-   "prefs_show_clock_in_titlebar"                    : "Show Clock",
-   "prefs_show_rating_in_titlebar"                   : "Show Rating",
-   "prefs_show_song_in_titlebar"                     : "Show Song Title",
+   "prefs_show_clock_in_titlebar"                    : "Show Clock In Tab Title",
+   "prefs_show_rating_in_titlebar"                   : "Show Rating In Tab Title",
+   "prefs_show_song_in_titlebar"                     : "Show Song Title In Tab Title",
    "playlist_preferences"                            : "Album List",
    "prefs_playlist_sort_available_first"             : "Sort with Cooldown Last",
    "prefs_playlist_sort_faves_first"                 : "Sort with Faves First",

@@ -7,13 +7,14 @@
 	width: 380px;
 	height: 0;
 	background-color: #000;
-	border: solid 1px #777;
+	border: solid 0px #000;
 	box-shadow: 3px 3px 3px 4px #000;
 	z-index: 100;
 	padding: 0;
 }
 
 #history_link_container:hover #history, #history:hover, #history_link_container.hover_test #history {
+	border: solid 1px #777;
 	opacity: 1;
 	height: 650px;
 	padding: 10px;

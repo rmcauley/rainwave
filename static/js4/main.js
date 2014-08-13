@@ -100,6 +100,7 @@ function initialize() {
 	History.draw();
 	Menu.draw(BOOTSTRAP.station_list);
 	SettingsWindow.draw();
+	AboutWindow.draw();
 	API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
 	$remove_class(document.body, "loading");
 	Fx.flush_draws();
