@@ -46,7 +46,10 @@ var R4Audio = function() {
 	if ("canPlayType" in audio_el) {
 		var can_vorbis = audio_el.canPlayType('audio/ogg; codecs="vorbis"');
 		var can_mp3 = audio_el.canPlayType('audio/mpeg; codecs="mp3"');
-		if ((can_vorbis == "maybe") || (can_vorbis == "probably")) {
+		// we have to check for Mozilla support specifically
+		// because Webkit will choke on Vorbis and stop playing after
+		// a single song switch, and thus, we have to forcefeed it MP3.
+		if (navigator.mozIsLocallyAvailable && (can_vorbis == "maybe") || (can_vorbis == "probably")) {
 			filetype = "audio/ogg";
 			self.type = "Vorbis";
 			self.supported = true;
