@@ -117,7 +117,7 @@ var EventBase = function(json) {
 						header_vote_result.lastChild.className = "self_voted_result";
 					}
 					if (i != (self.songs.length - 1)) {
-						header_vote_result.appendChild($el("span"), { "textContent": " - " });
+						header_vote_result.appendChild($el("span", { "textContent": " - " }));
 					}
 				}
 				if (self.songs[i].data.entry_position == 0) {
