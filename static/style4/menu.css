@@ -273,12 +273,13 @@ body.small_menu #player {
     margin-left: 10px;
 }
 
+/* !important to cover up another Firefox CSS-rule-collision bug */
 div.tuned_in #audio_icon {
-	border-left-color: $highlight;
+	border-left-color: $highlight !important;
 }
 
 #player a:hover #audio_icon {
-	border-left-color: $linkhover;
+	border-left-color: $linkhover !important;
 }
 
 #audio_icon.audio_playing {
