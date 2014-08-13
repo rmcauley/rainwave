@@ -11,7 +11,7 @@ class UserSearchTool(api.web.HTMLRequest):
 		self.write("<h2>User Search Tool</h2>")
 
 		self.write("<input type='text' id='username'><br>")
-		self.write("<button onclick=\"window.top.call_api('admin/user_search', { 'username': document.getElementById('username').value });\">Search for user</button>")
+		self.write("<button onclick=\"window.top.call_api('user_search', { 'username': document.getElementById('username').value });\">Search for user</button>")
 
 		self.write(self.render_string("basic_footer.html"))
 

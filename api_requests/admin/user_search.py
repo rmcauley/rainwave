@@ -3,9 +3,8 @@ import api.web
 from api.server import handle_api_url
 from api import fieldtypes
 
-@handle_api_url("admin/user_search")
+@handle_api_url("user_search")
 class UserSearchRequest(api.web.APIHandler):
-	admin_required = True
 	fields = { "username": (fieldtypes.string, True) }
 
 	def post(self):
