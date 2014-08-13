@@ -149,7 +149,8 @@
    "request_on_cooldown_ends_soon"                   : "Coming off cooldown.",
    "request_in_election"                             : "%(blocked_by) is in an election.",
    "request_not_available"                           : "Song is on a different station.",
-   "requests_expiring"                               : "You're about to lose your place!",
+   "requests_expiring"                               : "Requests - Losing Your Place!",
+   "requests_all_on_cooldown"                        : "Requests - No Good Requests!",
    "request_you_are_x_in_line"                       : "Requests - #(position) In Line",
 
    "__comment__"                 : "Station Descriptions",

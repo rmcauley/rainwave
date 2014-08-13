@@ -76,11 +76,23 @@ var Requests = function() {
 			$remove_class(container, "request_queue_paused");
 		}
 
-		if (user_json.request_position && user_json.request_expires_at && (user_json.request_expires_at <= (Clock.now + 300))) {
+		var all_cooldown = true;
+		for (var i = 0; i < songs.length; i++) {
+			if (!$has_class(songs[i].el, "timeline_song_invalid") && (!$has_class(songs[i].el, "timeline_song_is_cool"))) {
+				all_cooldown = false;
+				break;
+			}
+		}
+
+		if (!user_json.requests_paused && user_json.tuned_in && user_json.request_position && user_json.request_expires_at && (user_json.request_expires_at <= (Clock.now + 600)) && (user_json.request_expires_at > Clock.now)) {
 			header.textContent = $l("requests_expiring");
 			$add_class(container, "request_warning");
 		}
-		else if (user_json.request_position && (user_json.request_position > 0)) {
+		else if (!user_json.requests_paused && user_json.tuned_in && all_cooldown) {
+			header.textContent = $l("requests_all_on_cooldown");
+			$add_class(container, "request_warning");
+		}
+		else if (!user_json.requests_paused && user_json.request_position && (user_json.request_position > 0)) {
 			$remove_class(container, "request_warning");
 			header.textContent = $l("request_you_are_x_in_line", { "position": user_json.request_position });
 		}
