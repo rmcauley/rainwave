@@ -55,6 +55,8 @@ var Menu = function() {
 			info.appendChild($el("div", { "class": "station_menu_description", "textContent": $l("station_menu_description_id_" + order[i]) }));
 		}
 		API.add_callback(update_station_info, "all_stations_info");
+
+		API.add_callback(update_tuned_in_status, "user");
 	};
 
 	var show_station_info = function(e) {
@@ -84,6 +86,15 @@ var Menu = function() {
 	var add_user_qr_code = function(evt) {
 		this.removeEventListener("mouseover", add_user_qr_code);
 		$id("user_qr_code").style.backgroundImage = "url(http://chart.apis.google.com/chart?cht=qr&chs=300x300&choe=ISO-8859-1&chl=" + User.api_key + ")";
+	};
+
+	var update_tuned_in_status = function(user_json) {
+		if (user_json.tuned_in) {
+			$add_class($id("top_menu"), "tuned_in");
+		}
+		else {
+			$remove_class($id("top_menu"), "tuned_in");
+		}
 	};
 
 	return self;

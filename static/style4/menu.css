@@ -273,6 +273,10 @@ body.small_menu #player {
     margin-left: 10px;
 }
 
+div.tuned_in #audio_icon {
+	border-left: $audio_hsize solid $highlight;
+}
+
 #player a:hover #audio_icon {
 	border-left-color: $linkhover;
 }
@@ -283,6 +287,10 @@ body.small_menu #player {
     border-width: 10px;
     margin-top: 5px;
     margin-left: 6px;
+}
+
+div.tuned_in #audio_icon.audio_playing {
+	border-color: $highlight;
 }
 
 #player:hover #audio_icon.audio_playing {
@@ -304,4 +312,13 @@ body.small_menu #player {
 	font-size: 26px;
     padding-left: 30px;
     line-height: 26px;
+    @include transition(LINKCOLOR);
+}
+
+div.tuned_in #audio_status {
+	color: $highlight;
+}
+
+div.tuned_in #audio_status:hover {
+	color: $link;
 }
