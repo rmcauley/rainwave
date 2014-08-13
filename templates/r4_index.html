@@ -116,11 +116,21 @@
 			</li>
 		</ul>
 		
-		<div id="player">
+		<div id="player" class="unselectable">
 			<a id="player_link" href="/tune_in/{{ request.sid }}.mp3" status="_blank">
 				<div id="audio_icon"></div>
 				<div id="audio_status"></div>
 			</a>
+			<svg id="audio_volume" viewBox="0 0 100 100" preserveAspectRatio="none">
+				<clipPath id="volume_bars">
+					<rect x="0" y="80"  width="17" height="20"  />
+					<rect x="20" y="60" width="17" height="40"  />
+					<rect x="40" y="40" width="17" height="60"  />
+					<rect x="60" y="20" width="17" height="80"  />
+					<rect x="80" y="0"  width="17" height="100" />
+				</clipPath>
+				<rect id="audio_volume_indicator" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)" />
+			</svg>
 		</div>
 	</div>
 	<div id="messages"></div>

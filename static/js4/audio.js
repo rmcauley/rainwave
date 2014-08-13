@@ -36,6 +36,9 @@ var R4Audio = function() {
 
 	var icon_el;
 	var text_el;
+	var volume_el;
+	var volume_rect;
+	var offset_width;
 
 	var audio_el = document.createElement('audio');
 	if ("canPlayType" in audio_el) {
@@ -69,6 +72,12 @@ var R4Audio = function() {
 		for (var i in relays) {
 			stream_urls.push(relays[i].protocol + relays[i].hostname + ":" + relays[i].port + "/" + stream_filename);
 		}
+
+		volume_el = document.getElementById("audio_volume");
+		if (volume_el) {
+			volume_rect = document.getElementById("audio_volume_indicator");
+			volume_el.addEventListener("mousedown", volume_control_mousedown);
+		}
 	};
 
 	self.draw = function() {
@@ -97,6 +106,10 @@ var R4Audio = function() {
 		//audio_el.addEventListener('loadstart', self.on_connecting);
 		audio_el.addEventListener('play', self.on_play);
 		audio_el.addEventListener('stall', self.on_stall);
+		// this doesn't appear to work correctly in Firefox
+		// if (volume_el) {
+		// 	audio_el.addEventListener("volumechange", draw_volume);
+		// }
 		var source;
 		for (var i in stream_urls) {
 			source = document.createElement("source");
@@ -125,6 +138,7 @@ var R4Audio = function() {
 
 	self.on_stop = function() {
 		icon_el.className = "";
+		if (volume_el) volume_el.setAttribute("class", "");
 		text_el.textContent = $l ? $l("tunein") : "Tune In";
 		self.stop();
 	};
@@ -135,6 +149,7 @@ var R4Audio = function() {
 
 	self.on_play = function() {
 		icon_el.className = "audio_playing";
+		if (volume_el) volume_el.setAttribute("class", "audio_playing_volume");
 		text_el.textContent = $l ? $l("stop") : "Stop";
 		self.clear_audio_errors();
 	};
@@ -159,6 +174,35 @@ var R4Audio = function() {
 		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_error", 500), a);
 		self.on_stop();
 		self.supported = false;
+	};
+
+	var volume_control_mousedown = function(evt) {
+		if (!audio_el) return;
+		if (evt.button !== 0) return;
+		offset_width = parseInt(window.getComputedStyle(volume_el, null).getPropertyValue("width"));
+		change_volume_from_mouse(evt);
+		volume_el.addEventListener("mousemove", change_volume_from_mouse);
+		document.addEventListener("mouseup", volume_control_mouseup);
+	};
+
+	var volume_control_mouseup = function(evt) {
+		volume_el.removeEventListener("mousemove", change_volume_from_mouse);
+		document.removeEventListener("mouseup", volume_control_mouseup);	
+	};
+
+	var change_volume_from_mouse = function(evt) {
+		var x = evt.layerX || evt.offsetX;
+		var v = Math.min(Math.max((x / offset_width), 0), 1);
+		if (v < 0.05) v = 0;
+		if (v > 0.95) v = 1;
+		if (!v || isNaN(v)) v = 0;
+		audio_el.volume = v;
+		console.log(v);
+		draw_volume(v);
+	}
+
+	var draw_volume = function(v) {
+		volume_rect.setAttribute("width", 100 * v);
 	};
 
 	return self;

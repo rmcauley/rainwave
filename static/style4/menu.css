@@ -274,7 +274,7 @@ body.small_menu #player {
 }
 
 div.tuned_in #audio_icon {
-	border-left: $audio_hsize solid $highlight;
+	border-left-color: $highlight;
 }
 
 #player a:hover #audio_icon {
@@ -293,7 +293,7 @@ div.tuned_in #audio_icon.audio_playing {
 	border-color: $highlight;
 }
 
-#player:hover #audio_icon.audio_playing {
+#player a:hover #audio_icon.audio_playing {
 	border-color: $linkhover;
 }
 
@@ -321,4 +321,26 @@ div.tuned_in #audio_status {
 
 div.tuned_in #audio_status:hover {
 	color: $link;
+}
+
+#top_menu #audio_volume {
+	width: 50px;
+	height: 1em;
+	top: 0;
+	opacity: 0;
+	@include transition(opacity);
+	-webkit-transition-delay: 1s;
+            transition-delay: 1s;
+}
+
+#top_menu #audio_volume.audio_playing_volume {
+	opacity: 1;
+}
+
+#audio_volume_indicator {
+	fill: $text;
+}
+
+div.tuned_in #audio_volume_indicator {
+	fill: $highlight;
 }
