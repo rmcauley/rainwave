@@ -56,7 +56,7 @@ var History = function() {
 			el.insertBefore(songs[i].header, el.firstChild);
 		}
 		// has to be *4 because of the header also being a child of el
-		while (el.childNodes.length > (songs.length * 4)) {
+		while (el.childNodes.length >= (songs.length * 4)) {
 			el.removeChild(el.lastChild);	// header!
 			el.removeChild(el.lastChild);
 		}
