@@ -65,6 +65,7 @@
    "station_name_3"                                  : "Covers",
    "station_name_4"                                  : "Chiptune",
    "station_name_5"                                  : "All",
+   "events_calendar_link"                            : "Radio Events",
    "logout_in_forums"                                : "Please visit the forums to logout.",
    "your_mobile_app_qr"                              : "Your Android App QR Code",
 
@@ -133,6 +134,7 @@
    "history_icon_desc"                               : "History Icon By",
    "user_icon_desc"                                  : "User Icon By",
    "facebook_icon_desc"                              : "Facebook Icon By",
+   "calendar_icon_desc"                              : "Calendar Icon By",
 
    "__comment__"                 : "Playlist View",
 

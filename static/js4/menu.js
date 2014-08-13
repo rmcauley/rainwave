@@ -8,6 +8,7 @@ var Menu = function() {
 		$id("chat_link").textContent = $l("chat");
 		$id("history_link").textContent = $l("Previous Songs");
 		$id("forums_link").textContent = $l("forums");
+		$id("calendar_link").textContent = $l("events_calendar_link");
 
 		// Setup user info
 		elements.user_info = $id("user_info");
@@ -18,7 +19,7 @@ var Menu = function() {
 			else {
 				elements.user_info.appendChild($el("img", { "class": "avatar icon", "src": "/static/images4/user.svg" }));	
 			}
-			elements.user_info.appendChild($el("span", { "textContent": User.name }));
+			elements.user_info.appendChild($el("span", { "class": "icon_description", "textContent": User.name }));
 		}
 		else {
 			elements.user_info.appendChild($el("img", { "class": "avatar icon", "src": "/static/images4/user.svg" }));

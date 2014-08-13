@@ -35,7 +35,7 @@ body.small_menu #top_menu {
 	top: 3px;
 }
 
-#top_menu svg path {
+#top_menu svg path, #top_menu svg rect {
 	@include transition-wtime(150ms, fill);
 	fill: $vdarktext;
 }
@@ -49,11 +49,11 @@ body.small_menu #top_menu {
 	color: $linkhover;
 }
 
-#top_menu li:hover svg path {
+#top_menu li:hover svg path, #top_menu li:hover svg rect {
 	fill: $text;
 }
 
-#top_menu li a:hover svg path {
+#top_menu li a:hover svg path, #top_menu li a:hover svg rect {
 	fill: $linkhover;
 }
 
@@ -396,7 +396,7 @@ div.tuned_in #audio_volume_indicator {
 }
 
 #top_menu li:hover #about_window {
-	height: 41em;
+	height: 42em;
 }
 
 #about_window .info_right {
