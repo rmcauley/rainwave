@@ -97,6 +97,7 @@ var EventBase = function(json) {
 	};
 
 	self.change_to_now_playing = function() {
+		if ($has_class(self.el, "timeline_now_playing")) return;
 		$remove_class(self.el, "timeline_next");
 		self.set_header_text($l("Now_Playing"));
 		Clock.pageclock = self.elements.header_clock;
@@ -112,9 +113,11 @@ var EventBase = function(json) {
 			for (var i = 0; i < self.songs.length; i++) {
 				if (use_header) {
 					header_vote_result.appendChild($el("span", { "textContent": self.songs[i].data.entry_votes }));
-					if (i != (self.songs.length - 1)) header_vote_result.lastChild.textContent += " - ";
 					if ($has_class(self.songs[i].el, "voting_registered")) {
 						header_vote_result.lastChild.className = "self_voted_result";
+					}
+					if (i != (self.songs.length - 1)) {
+						header_vote_result.appendChild($el("span"), { "textContent": " - " });
 					}
 				}
 				if (self.songs[i].data.entry_position == 0) {

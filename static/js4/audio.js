@@ -101,7 +101,7 @@ var R4Audio = function() {
 
 		if (audio_el) return;
 
-		audio_el = document.getElementById("measure_box").appendChild(document.createElement("audio"));
+		audio_el = document.createElement("audio");
 		audio_el.addEventListener('stop', self.on_stop);
 		//audio_el.addEventListener('loadstart', self.on_connecting);
 		audio_el.addEventListener('play', self.on_play);
@@ -131,7 +131,6 @@ var R4Audio = function() {
 
 		audio_el.pause();
 		while (audio_el.firstChild) audio_el.removeChild(audio_el.firstChild);
-		audio_el.parentNode.removeChild(audio_el);
 		audio_el = null;
 		self.on_stop();
 	};
