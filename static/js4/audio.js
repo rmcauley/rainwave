@@ -197,7 +197,6 @@ var R4Audio = function() {
 		if (v > 0.95) v = 1;
 		if (!v || isNaN(v)) v = 0;
 		audio_el.volume = v;
-		console.log(v);
 		draw_volume(v);
 	}
 
