@@ -128,16 +128,9 @@
    "relay_sponsors_header"                           : "Relay Sponsors",
    "translators_header"                              : "Translators",
    "icon_attribution"                                : "Icon Attribution",
-   "special_thanks"                                  : "Special Thanks",
-   "forum_icon_desc"                                 : "Forum Icon By",
-   "chat_icon_desc"                                  : "Chat Icon By",
-   "help_icon_desc"                                  : "Help Icon By",
-   "gear_icon_desc"                                  : "Gear Icon By",
-   "history_icon_desc"                               : "History Icon By",
-   "user_icon_desc"                                  : "User Icon By",
-   "facebook_icon_desc"                              : "Facebook Icon By",
-   "calendar_icon_desc"                              : "Calendar Icon By",
+   "design_by"                                       : "Site Design",
    "donate_and_paypal_info"                          : "Click Here For Our Tip Jar/PayPal",
+   "open_sourced_at_github"                          : "Rainwave is Open Sourced At GitHub",
 
    "__comment__"                 : "Playlist View",
 

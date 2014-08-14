@@ -186,12 +186,17 @@ div.menu_now_playing {
 	margin-bottom: 10px;
 }
 
-#station_select div.station_menu_description, #donation_information, #intro_mode_link {
+#station_select div.station_menu_description, #donation_information, #intro_mode_link, #github_link {
+	display: block;
 	clear: both;
 	padding-top: 5px;
 	margin-top: 5px;
+	margin-bottom: 2px;
 	border-top: solid 1px #777;
 	text-align: center;
+}
+
+#station_select div.station_menu_description {
 	font-style: italic;
 	font-size: smaller;
 }
@@ -428,7 +433,7 @@ div.tuned_in #audio_volume_indicator {
 }
 
 #top_menu li:hover #about_window {
-	height: 48em;
+	height: 38.5em;
 }
 
 #about_window .info_right, #settings_window .info_right {
