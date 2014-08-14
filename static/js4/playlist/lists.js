@@ -54,7 +54,11 @@ PlaylistLists = function() {
 		}
 	};
 
-	self.change_visible_list = function(change_to) {
+	self.intro_mode_first_open = function() {
+		self.change_visible_list(lists.all_albums);
+	}
+
+	self.change_visible_list = function(change_to, do_not_hit_api) {
 		if (self.active_list) {
 			self.active_list.el.style.display = "none";
 			self.active_list.tab_el.className = null;
@@ -66,6 +70,7 @@ PlaylistLists = function() {
 		self.active_list = change_to;
 		self.active_list.el.style.display = "block";
 		self.active_list.tab_el.className = "list_tab_open";
+		if (!do_not_hit_api && !self.active_list.loaded) self.active_list.load_from_api();
 		docCookies.setItem("r4_active_list", change_to.list_name, Infinity, "/", BOOTSTRAP.cookie_domain)
 	};
 

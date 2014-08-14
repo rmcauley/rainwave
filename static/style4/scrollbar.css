@@ -63,6 +63,10 @@ div.resizer {
 	@include transition-wtime(200ms, width, opacity, transform, border-color, background-color);
 }
 
+body.stage_0 div.resizer, body.stage_1 div.resizer, body.stage_2 div.resizer {
+	display: none;
+}
+
 #lists_resizer.resizer {
 	@include transform(translateX(-5px));
 }

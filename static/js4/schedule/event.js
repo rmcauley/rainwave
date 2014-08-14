@@ -224,7 +224,7 @@ var EventBase = function(json) {
 	};
 
 	var progress_bar_update = function() {
-		var new_val = ((self.end - Clock.now) / (self.data.songs[0].length - 1)) * 100;
+		var new_val = Math.min(Math.max(Math.floor(((self.end - Clock.now) / (self.data.songs[0].length - 1)) * 100), 0), 100);
 		header_inside_bar.style.width = new_val + "%";
 	};
 

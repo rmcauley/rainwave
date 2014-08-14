@@ -2,10 +2,13 @@ var ListenersList = function(offset_width, parent_el) {
 	"use strict";
 	var self = SearchList("current_listeners", "name", "name", parent_el);
 	self.list_name = "current_listeners";
+	self.load_from_api = function() {
+		API.async_get("current_listeners");
+	}
 	self.tab_el = $el("li", { "textContent": $l("Listeners"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
 		if (!self.loaded) {
-			API.async_get("current_listeners");
+			self.load_from_api();
 		}
 		PlaylistLists.change_visible_list(self); }
 	);

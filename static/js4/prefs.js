@@ -185,7 +185,27 @@ var SettingsWindow = function() {
 		div = el.appendChild($el("div", { "class": "setting_group" }));
 		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".ogg", "textContent": "opus.ogg.m3u", "class": "info_right" }));
 		div.appendChild($el("div", { "textContent": "Foobar2000" }));
+
+		intro_mode_swap();
+		Prefs.add_callback("stage", intro_mode_swap);
 	};
+
+	var intro_mode_swap = function(nv) {
+		nv = nv || Prefs.get("stage");
+		if ($id("intro_mode_link")) {
+			$id("intro_mode_link").parentNode.removeChild($id("intro_mode_link"));
+		}
+		if (nv < 3) {
+			var iml = $el("div", { "id": "intro_mode_link", "textContent": $l("skip_intro_mode") });
+			iml.addEventListener("click", function() { Prefs.change("stage", 4); });
+			el.appendChild(iml);
+		}
+		else {
+			var iml = $el("div", { "id": "intro_mode_link", "textContent": $l("do_intro_mode") });
+			iml.addEventListener("click", function() { Prefs.change("stage", 2); });
+			el.appendChild(iml);
+		}
+	}
 
 	var draw_cb_list = function(pref_list) {
 		var cb, div, label;

@@ -82,6 +82,12 @@ body.loading {
 	opacity: 0;
 }
 
+body.loading * {
+	-webkit-transition: none !important;
+	-ms-transition: none !important;
+	transition: none !important;
+}
+
 #sizable_body {
 	overflow: hidden;
 }

@@ -8,15 +8,38 @@ $art_full_size = 320px;
 	float: left;
 	height: 100%;
 	min-width: 20em;
-	@include transition(width);
+	@include transition(width, transform, left);
 	position: relative;
 	background-color: #131416;
 	width: 25%;
+	z-index: 1;
+	left: 0;
+	max-width: 1024px;
+}
+
+body.stage_0 #timeline_scrollblock, body.stage_1 #timeline_scrollblock, body.stage_2 #timeline_scrollblock {
+	width: 100% !important;
+	left: 50%;
+	@include transform(translateX(-50%));
 }
 
 #timeline {
 	padding: 0 15px 0px 10px;
 	height: 100%;
+	@include transition(width);
+}
+
+body.stage_0 #timeline, body.stage_1 #timeline, body.stage_2 #timeline {
+	width: 100% !important;
+	overflow: hidden;
+}
+
+body.stage_3 #timeline {
+	overflow: hidden;
+}
+
+body.stage_0 #timeline_scrollbar, body.stage_1 #timeline_scrollbar, body.stage_2 #timeline_scrollbar {
+	display: none;
 }
 
 body.small_screen #timeline {
@@ -37,6 +60,17 @@ div.timeline_event {
 	width: 100%;
 	margin-top: 10px;
 	@include transition-wtime(1s, opacity, transform, margin-top);
+	opacity: 1;
+}
+
+body.stage_0 div.timeline_event:nth-child(n+4), body.stage_1 div.timeline_event:nth-child(n+4) {
+	opacity: 0;
+	visibility: hidden;
+}
+
+body.stage_2 div.timeline_event:nth-child(n+5), body.stage_3 div.timeline_event:nth-child(n+5) {
+	opacity: 0;
+	visibility: hidden;
 }
 
 div.timeline_event_closing {
@@ -343,4 +377,23 @@ div.voting_hover {
 
 div.voting_registered {
 	background-position: 0px -107px;
+}
+
+#vote_cta {
+	box-sizing: border-box;
+	padding: 1em;
+	position: absolute;
+	z-index: 100;
+	left: 50%;
+	top: 100%;
+	width: 100%;
+	max-width: 1004px;
+	opacity: 0;
+	@include transition(opacity);
+	@include transform(translate(-50%, -120%));
+	border: solid 3px $highlight;
+	color: $text;
+	text-align: center;
+	border-radius: 3px;
+	cursor: pointer;
 }

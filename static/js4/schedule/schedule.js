@@ -24,6 +24,15 @@ var Schedule = function() {
 		timeline_resizer = Scrollbar.new_resizer($id("timeline_scrollblock"), self.el, $id("timeline_resizer"));
 	};
 
+	self.stage_padding_check = function() {
+		if ($has_class(document.body, "stage_3")) {
+			self.el.style.paddingRight = Scrollbar.get_scrollbar_width() + 15 + "px";
+		}
+		else {
+			self.el.style.paddingRight = "";
+		}
+	};
+
 	self.initialize = function() {
 		API.add_callback(function(json) { sched_current = json; }, "sched_current");
 		API.add_callback(function(json) { sched_next = json; }, "sched_next");

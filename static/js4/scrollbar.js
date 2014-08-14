@@ -102,7 +102,7 @@ var Scrollbar = function() {
 			scroll_top_fresh = true;
 		};
 
-		self.reposition = function() {
+		self.reposition = function(e) {
 			if (!visible) return;
 			if (!scroll_top_fresh) self.scroll_top = scrollable.scrollTop;
 			else scroll_top_fresh = false;
@@ -111,7 +111,7 @@ var Scrollbar = function() {
 			if (!self.unrelated_positioning) top += self.scroll_top;
 			handle.style.top = handle_margin_top + Math.round(top) + "px";
 
-			if (self.reposition_hook) self.reposition_hook();
+			if (e && self.reposition_hook) self.reposition_hook();
 		};
 
 		var mouse_down = function(e) {

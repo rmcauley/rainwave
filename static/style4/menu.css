@@ -100,7 +100,8 @@ div.normal_menu #main_icons {
 }
 
 div.normal_menu #main_icons li {
-	display: inline;
+	position: relative;
+	display: inline-block;
 	padding: 2px 1em 2px 1em;
 }
 
@@ -185,7 +186,7 @@ div.menu_now_playing {
 	margin-bottom: 10px;
 }
 
-#station_select div.station_menu_description, #donation_information {
+#station_select div.station_menu_description, #donation_information, #intro_mode_link {
 	clear: both;
 	padding-top: 5px;
 	margin-top: 5px;
@@ -379,7 +380,7 @@ div.tuned_in #audio_volume_indicator {
 }
 
 #top_menu li:hover #settings_window {
-	height: 26em;
+	height: 28em;
 }
 
 #settings_window div.setting_group:first-child {
@@ -412,6 +413,10 @@ div.tuned_in #audio_volume_indicator {
 
 #settings_window div.setting_group + h4 {
 	margin-top: 10px;
+}
+
+#intro_mode_link {
+	cursor: pointer;
 }
 
 /* ABOUT WINDOW (minus that h4 stuff above) */
@@ -470,4 +475,14 @@ div.tuned_in #audio_volume_indicator {
 
 #top_menu li:hover #twitter_dropdown {
 	height: 620px;
-};
+}
+
+#request_cta {
+	opacity: 0;
+	@include transition(opacity);
+	cursor: pointer;
+}
+
+#request_cta img {
+	margin-right: 5px;
+}

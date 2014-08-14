@@ -36,7 +36,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	var original_key_nav;
 	var ignore_original_scroll_top;
 
-	var current_scroll_index = 0;
+	var current_scroll_index = false;
 	var current_height;
 
 	// LIST MANAGEMENT ***********************************************
@@ -473,7 +473,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	// NAV *****************************
 
 	self.set_new_open = function(id) {
-		if (!id in data) return;
+		if (!(id in data)) return;
 		if (current_open_id) {
 			$remove_class(data[current_open_id]._el, "searchlist_open_item");
 		}
@@ -498,6 +498,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.on_resize = function() {
 		if (SmallScreen) item_height = 20;
 		else item_height = 24;
+		current_scroll_index = false;
 		self.recalculate();
 		self.reposition();
 	};

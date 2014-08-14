@@ -113,6 +113,8 @@
 	};
 
 	self.route_key = function(key_code, chr) {
+		if (Prefs.get("stage") < 3) return false;
+
 		if (!PlaylistLists.active_list) return false;
 		if (!PlaylistLists.active_list.loaded) return false;
 

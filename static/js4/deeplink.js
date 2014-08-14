@@ -9,6 +9,11 @@ var DeepLinker = function() {
 		routes[route] = callback;
 	};
 
+	self.has_deep_link = function() {
+		var deeplinkurl = decodeURI(location.href);
+		return (deeplinkurl.indexOf("#!/") >= 0);
+	};
+
 	self.detect_url_change = function() {
 		if (old_url != location.href) {
 			var deeplinkurl = decodeURI(location.href);

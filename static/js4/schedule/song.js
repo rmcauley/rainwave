@@ -54,6 +54,9 @@ var TimelineSong = function() {
 				if (self.data.elec_request_user_id == User.id) {
 					$add_class(self.elements.requester, "your_request");
 					self.elements.requester.textContent = $l("timeline_art__your_request_indicator");
+					if (Prefs.get("stage") < 4) {
+						Prefs.change("stage", 4);
+					}
 				}
 			}
 

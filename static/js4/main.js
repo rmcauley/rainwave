@@ -57,12 +57,68 @@ function _on_resize() {
 	setTimeout(function() { Schedule.now_playing_size_calculate(); }, 1500);
 }
 
+function vote_cta_check() {
+	if ((User.tuned_in) && (Prefs.get("stage") < 2)) {
+		if (!$id("vote_cta")) {
+			var cta = $el("div", { "id": "vote_cta", "textContent": $l("click_here_to_start_voting") });
+			cta.addEventListener("click", function() {
+				Prefs.change("stage", 2);
+				Fx.remove_element(cta);
+			});
+			document.body.appendChild(cta);
+			Fx.delay_css_setting(cta, "opacity", 1);
+		}
+	}
+	else if ($id("vote_cta")) {
+		$id("vote_cta").parentNode.removeChild($id("vote_cta"));
+	}
+}
+
+function request_cta_check() {
+	if ((User.id > 1) && (Prefs.get("stage") == 2)) {
+		if (!$id("request_cta")) {
+			var cta = $el("li", { "id": "request_cta" });
+			cta.appendChild($el("img", { "src": "/static/images4/request.png" }));
+			cta.appendChild($el("span", { "textContent": $l("request_song_to_vote_for") }));
+			$id("main_icons").insertBefore(cta, $id("main_icons").firstChild);
+			cta.addEventListener("click", function() {
+				Prefs.change("stage", 3);
+				Fx.remove_element(cta);
+				PlaylistLists.intro_mode_first_open();
+			});
+			Fx.delay_css_setting(cta, "opacity", 1);
+		}
+	}
+	else if ($id("request_cta")) {
+		$id("request_cta").parentNode.removeChild($id("request_cta"));
+	}
+}
+
+function stage_switch(nv) { 
+	if ((nv == 3) && User.perks) {
+		Prefs.change("stage", 4);
+		return;
+	}
+	for (var i = 0; i <= 4; i++) {
+		$remove_class(document.body, "stage_" + i);
+	}
+	$add_class(document.body, "stage_" + nv);
+	vote_cta_check();
+	request_cta_check();
+	Schedule.stage_padding_check();
+}
+
 function initialize() {
 	"use strict";
 
 	// ****************** DATA HANDLING
 	User = BOOTSTRAP.json.user;
 	API.add_callback(function(json) { User = json; }, "user");
+
+	Prefs.define("stage", [ 1, 2, 3, 4 ]);
+	if (!User.tuned_in && (Prefs.get("stage") < 2)) {
+		API.add_callback(function(json) { vote_cta_check(); }, "user");
+	}
 
 	Menu.initialize();
 	RatingControl.initialize();
@@ -95,6 +151,12 @@ function initialize() {
 	History.scroll_init();
 
 	// DIRTY THE LAYOUT
+
+	if (DeepLinker.has_deep_link() && (Prefs.get("stage") < 3)) {
+		Prefs.change("stage", 3);
+	}
+	stage_switch(Prefs.get("stage"));
+	Prefs.add_callback("stage", stage_switch);
 
 	Scrollbar.hold_all_recalculations = true;
 	R4Audio.draw();

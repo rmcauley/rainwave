@@ -6,6 +6,14 @@
 	position: relative;
 	overflow: hidden;
 	background: #1f2022;
+	@include transition(transform);
+	-webkit-transition-delay: 1s;
+	        transition-delay: 1s;
+}
+
+body.stage_0 #lists, body.stage_1 #lists, body.stage_2 #lists {
+	@include transform(translateX(-100%));
+	display: none;
 }
 
 #lists_tabs {

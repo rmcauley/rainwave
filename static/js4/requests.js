@@ -76,7 +76,7 @@ var Requests = function() {
 			$remove_class(container, "request_queue_paused");
 		}
 
-		var all_cooldown = true;
+		var all_cooldown = songs.length > 0 ? true : false;
 		for (var i = 0; i < songs.length; i++) {
 			if (!$has_class(songs[i].el, "timeline_song_invalid") && (!$has_class(songs[i].el, "timeline_song_is_cool"))) {
 				all_cooldown = false;

@@ -37,12 +37,16 @@ var AlbumList = function() {
 	// Actual app logic
 
 	self.list_name = "all_albums";
+
+	self.load_from_api = function() {
+		API.async_get("all_albums");
+	}
 	
 	self.tab_el = $id("lists_tab_album");
 	self.tab_el.textContent = $l("Albums");
 	self.tab_el.addEventListener("click", function() {
 		if (!self.loaded) {
-			API.async_get("all_albums");
+			self.load_from_api();
 		}
 		PlaylistLists.change_visible_list(self); }
 	);

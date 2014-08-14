@@ -2,11 +2,15 @@
 	position: relative;
 	box-sizing: content-box;
 	height: 100%;
-	overflow: hidden;
+}
+
+body.stage_0 #detail_scrollblock, body.stage_1 #detail_scrollblock, body.stage_2 #detail_scrollblock {
+	display: none;
 }
 
 #detail {
 	height: 100%;
+	overflow-y: scroll;
 }
 
 div.detail_view {

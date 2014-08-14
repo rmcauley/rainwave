@@ -68,6 +68,7 @@
    "events_calendar_link"                            : "Radio Events",
    "logout_in_forums"                                : "Please visit the forums to logout.",
    "your_mobile_app_qr"                              : "Your Android App QR Code",
+   "request_song_to_vote_for"                        : "Request A Song To Vote For",
 
    "__comment__"                 : "Timeline",
 
@@ -81,6 +82,7 @@
    "invalid_hotkey_vote"                             : "Invalid choice, try again.",
    "Previous Songs"                                  : "Previously Played",
    "voting_results_were"                             : "vote results:",
+   "click_here_to_start_voting"                      : "Click here to vote for what song you want to hear next!",
 
    "__comment__"                 : "Tip Jar",
 
@@ -204,6 +206,8 @@
    "prefs_sort_playlist_by_updated"                  : "Newest",
    "prefs_sort_playlist_by_rating_user"              : "Rating",
    "m3u_downloads"                                   : "M3U Downloads",
+   "skip_intro_mode"                                 : "Skip Intro Mode",
+   "do_intro_mode"                                   : "Go back to Intro Mode",
 
    "__comment__"                 : "Old R3 translation lines.",
 
