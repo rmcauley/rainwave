@@ -102,8 +102,8 @@
    "redownload_m3u"                                  : "Are you tuning in?  If you just logged in, please redownload the playlist.",
    "random_relay"                                    : "Random Relay",
    "backend_scan_errors"                             : "Backend Scan Errors",
-   "sync_stopped"                                    : "Rainwave stopped working. :( The error is: ",
-   "lost_connection"                                 : "Lost connection to server.",
+   "sync_stopped"                                    : "You've found a bug, and now Rainwave can't connect to the server again. :(  Please refresh and try again.",
+   "lost_connection"                                 : "Lost connection to server.  Please refresh and try again.",
    "sync_retrying"                                   : "Having trouble talking with the Rainwave server, please wait...",
    "deeplink_error"                                  : "Error understanding the URL entered.",
    "hotkey_mode"                                     : "1-5 to Rate, A/S/D to Vote",
@@ -117,6 +117,9 @@
    "try_external_player"                             : "Click here to try using an app to tune in.",
    "stop"                                            : "Stop",
    "played_ago"                                      : "Played %(time) Ago",
+
+   "catastrophic_error"                              : "Rainwave Has Crashed :(",
+   "submit_javascript_error"                         : "Please submit the bug report below to the forums, so we can fix it.",
 
    "power_hour"                                      : "Power Hour",
    "timeline_art__request_indicator"                 : "REQUEST",

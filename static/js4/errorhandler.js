@@ -36,10 +36,11 @@ var ErrorHandler = function() {
 		}
 	};
 
-	// TODO: update this to be an actual modal error
-	self.modal_error = function(title, el) {
+	self.modal_error = function(el) {
 		API.sync_stop();
-		container.appendChild($el("div", { "class": "error_modal" }, [ el ]));
+		if ($id("modal_background")) return;
+		document.body.insertBefore($el("div", { "id": "modal_background" }), document.body.firstChild);
+		document.body.insertBefore(el, document.body.firstChild);
 	};
 
 	self.tooltip_error = function(callback_name, json) {
@@ -63,11 +64,12 @@ var ErrorHandler = function() {
 	};
 
 	self.javascript_error = function(err, json) {
-		var error_el = $el("div", { "class": "error_javascript" }, [
-			$el("strong", $l("submit_javascript_error")),
-			$el("textarea", err.message + "\n" + err.name + "\n\n" + err.stack + "\n\nServer response:\n" + JSON.stringify(json) + "\n")
-			]);
-		self.modal_error(_l("javascript_error"), error_el);
+		var error_el = $el("div", { "id": "error_javascript" }, [
+			$el("h4", { "textContent": $l("catastrophic_error") }),
+			$el("a", { "href": "http://rainwave.cc/forums/viewforum.php?f=27", "textContent": $l("submit_javascript_error") }),
+			$el("textarea", { "textContent": err.message + "\n" + err.name + "\n\n" + err.stack + "\n\nServer response:\n" + JSON.stringify(json) + "\n" })
+		]);
+		self.modal_error(error_el);
 	};
 
 	self.make_debug_div = function() {
