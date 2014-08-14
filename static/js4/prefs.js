@@ -38,7 +38,6 @@ var docCookies = {
 };
 
 // Remove legacy settings
-docCookies.removeItem("r4_prefs", "/", BOOTSTRAP.cookie_domain);
 docCookies.removeItem("r3sid", "/", BOOTSTRAP.cookie_domain);
 docCookies.removeItem("r3prefs", "/", BOOTSTRAP.cookie_domain);
 
@@ -52,11 +51,20 @@ var Prefs = function() {
 	var callbacks = {};
 
 	self.save = function(name, object) {
-		localStorage.setItem(name, JSON.stringify(values));
+		docCookies.setItem(name, JSON.stringify(values), Infinity, "/", BOOTSTRAP.cookie_domain);
 	};
 
 	self.load = function(name) {
-		values = JSON.parse(localStorage.getItem(name)) || {};
+		var mmm_cookie = docCookies.getItem(name);
+		try {
+			values = JSON.parse(mmm_cookie);
+		}
+		catch (err) {
+			// silently fail, resetting all preferences to their defaults
+			values = {};
+		}
+		if (!values) values = {};
+		return true;
 	};
 
 	self.get = function(name) {
