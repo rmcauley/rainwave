@@ -19,5 +19,7 @@ var AboutWindow = {
 		$id("special_thanks").textContent = $l("special_thanks");
 		$id("translators_header").textContent = $l("translators_header");
 		$id("icon_attribution").textContent = $l("icon_attribution");
+
+		$id("donation_information").textContent = $l("donate_and_paypal_info");
 	}
 };

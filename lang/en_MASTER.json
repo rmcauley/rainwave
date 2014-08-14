@@ -93,7 +93,7 @@
    "amount"                                          : "Amount",
    "message"                                         : "Message",
    "tip_jar_balance"                                 : "Current balance",
-   "tip_jar_all_donations"                           : "Total amount of donations to date",
+   "tip_jar_all_donations"                           : "Total amount of donations since July 2007",
 
    "__comment__"                 : "Other",
 
@@ -135,6 +135,7 @@
    "user_icon_desc"                                  : "User Icon By",
    "facebook_icon_desc"                              : "Facebook Icon By",
    "calendar_icon_desc"                              : "Calendar Icon By",
+   "donate_and_paypal_info"                          : "Click Here For Our Tip Jar/PayPal",
 
    "__comment__"                 : "Playlist View",
 
