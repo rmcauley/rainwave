@@ -53,10 +53,10 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 		self.update_ratable(self.ratable);
 	};
 
-	self.reset_fave = function() {
+	self.reset_fave = function(evt) {
 		if (self.fave) $add_class(self.el, "rating_fave");
 		else $remove_class(self.el, "rating_fave");
-		$remove_class(self.el, "fave_hover");
+		if (evt) $remove_class(self.el, "fave_hover");
 	};
 
 	var get_rating_from_mouse = function(evt) {

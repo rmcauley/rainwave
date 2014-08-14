@@ -69,6 +69,7 @@
    "logout_in_forums"                                : "Please visit the forums to logout.",
    "your_mobile_app_qr"                              : "Your Android App QR Code",
    "request_song_to_vote_for"                        : "Request A Song To Vote For",
+   "m3u_hijack_right_click"                          : "A plugin is trying to hijack your browser.  Please right click the player and click Save As to tune in.",
 
    "__comment__"                 : "Timeline",
 

@@ -101,6 +101,10 @@ var R4Audio = function() {
 				self.play();
 			}
 		}
+
+		if (json.tuned_in) {
+			ErrorHandler.remove_permanent_error("m3u_hijack_right_click");
+		}
 	};
 
 	self.draw = function() {
@@ -119,7 +123,12 @@ var R4Audio = function() {
 	};
 
 	self.play = function(evt) {
-		if (!self.supported) return;
+		if (!self.supported) {
+			if (!self.detect_hijack() || !ErrorHandler) return;
+			if (evt) evt.preventDefault();
+			ErrorHandler.permanent_error(ErrorHandler.make_error(400, "m3u_hijack_right_click"));
+			return;
+		}
 		if (evt) evt.preventDefault();
 
 		if (audio_el) return;
@@ -226,6 +235,21 @@ var R4Audio = function() {
 
 	var draw_volume = function(v) {
 		volume_rect.setAttribute("width", 100 * v);
+	};
+
+	self.detect_hijack = function() {
+		if (navigator.plugins && (navigator.plugins.length > 0)) {
+			for (var i = 0; i < navigator.plugins.length; i++ ) {
+				if (navigator.plugins[i]) {
+					for (var j = 0; j < navigator.plugins[i].length; j++) {
+						if (navigator.plugins[i][j].type) {
+							if (navigator.plugins[i][j].type == "audio/x-mpegurl") return navigator.plugins[i][j].enabledPlugin.name;
+						}
+					}
+				}
+			}
+		}
+		return false;
 	};
 
 	return self;
