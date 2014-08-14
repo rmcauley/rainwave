@@ -187,8 +187,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.sort_function = function(a, b) {
-		if (data[a]._lower_case_sort_keyed < data[b]._lower_case_sort_keyed) return 1;
-		else if (data[a]._lower_case_sort_keyed > data[b]._lower_case_sort_keyed) return -1;
+		if (data[a]._lower_case_sort_keyed < data[b]._lower_case_sort_keyed) return -1;
+		else if (data[a]._lower_case_sort_keyed > data[b]._lower_case_sort_keyed) return 1;
 		return 0;
 	};
 
