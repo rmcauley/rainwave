@@ -167,6 +167,7 @@ span.searchlist_name {
 	@include transition-wtime(200ms, padding, color);
 	background-repeat: no-repeat;
 	background-position: 5px 3px;
+	background-size: 14px 13px;
 	padding-left: 27px;
 	overflow: hidden;
 	word-break: break-all;

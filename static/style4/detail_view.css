@@ -161,6 +161,11 @@ table.songlist td.songlist_requestable {
 	cursor: pointer;
 }
 
+table.songlist td.songlist_requestable img {
+	height: 14px;
+	width: 14px;
+}
+
 table.songlist td.songlist_not_requestable {
 	width: 16px;	
 }
