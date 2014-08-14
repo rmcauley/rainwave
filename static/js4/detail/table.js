@@ -33,7 +33,7 @@ var SongsTable = function(songs, columns) {
 
 		if (songs[i].url) {
 			link = $el("a", { "href": songs[i].url, "target": "_blank" });
-			link.appendChild($el("img", { "src": "/static/images4/link_window.png" }));
+			link.appendChild($el("img", { "src": "/static/images4/link_external.svg", "class": "link_external" }));
 			cell = $el("td", { "class": "songlist_url" });
 			cell.appendChild(link);
 			row.appendChild(cell);

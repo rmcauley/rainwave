@@ -124,6 +124,11 @@ table.songlist div.overflow_tooltip {
     box-shadow: 3px 3px 5px #000;
 }
 
+table.songlist img.link_external {
+	height: 14px;
+	width: 14px;
+}
+
 td.songlist_rating {
 	padding-left: 5px;
 	width: 70px;
