@@ -352,7 +352,7 @@ div.tuned_in #audio_volume_indicator {
 }
 
 #top_menu li:hover #settings_window {
-	height: 17em;
+	height: 24em;
 }
 
 #settings_window div.setting_group:first-child {
@@ -399,7 +399,7 @@ div.tuned_in #audio_volume_indicator {
 	height: 42em;
 }
 
-#about_window .info_right {
+#about_window .info_right, #settings_window .info_right {
 	float: right;
 	padding-right: 15px;
 }
@@ -411,3 +411,31 @@ div.tuned_in #audio_volume_indicator {
 #about_window div {
 	padding-left: 15px;
 }
+
+/* CALENDAR */
+
+#top_menu li #calendar_dropdown {
+	width: 350px;
+}
+
+#top_menu li:hover #calendar_dropdown {
+	height: 520px;
+}
+
+#calendar_dropdown iframe {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 500px;
+}
+
+/* TWEETBOXIN' */
+
+#twitter_dropdown {
+	transform: translateX(-350px);
+	width: 400px;
+}
+
+#top_menu li:hover #twitter_dropdown {
+	height: 620px;
+};

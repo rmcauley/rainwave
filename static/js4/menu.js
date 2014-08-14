@@ -58,6 +58,25 @@ var Menu = function() {
 		API.add_callback(update_station_info, "all_stations_info");
 
 		API.add_callback(update_tuned_in_status, "user");
+
+		$id("calendar_menu_item").addEventListener("mouseover", insert_calendar_iframe);
+		$id("twitter_menu_item").addEventListener("mouseover", insert_twitter_widget);
+	};
+
+	var insert_calendar_iframe = function(e) {
+		$id("calendar_menu_item").removeEventListener("mouseover", insert_calendar_iframe);
+		$id("calendar_dropdown").appendChild($el("iframe", { "class": "calendar_iframe", "src": "https://www.google.com/calendar/embed?showTitle=0&showNav=0&showDate=0&showPrint=0&showCalendars=0&mode=AGENDA&height=500&wkst=1&bgcolor=%23ffffff&src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com&color=%232952A3&ctz=America%2FToronto", "frameborder": "0", "scrolling": "no" }));
+	};
+
+	var insert_twitter_widget = function(e) {
+		$id("twitter_menu_item").removeEventListener("mouseover", insert_twitter_widget);
+		var script = $el("script", { "src": "http://platform.twitter.com/widgets.js", "type": "application/javascript" });
+		script.addEventListener("load", create_twitter_widget);
+		document.getElementsByTagName("head")[0].appendChild(script);
+	};
+
+	var create_twitter_widget = function(e) {
+		twttr.widgets.load($id("twitter_dropdown"));
 	};
 
 	var show_station_info = function(e) {

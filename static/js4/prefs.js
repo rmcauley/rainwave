@@ -151,6 +151,7 @@ var SettingsWindow = function() {
 			"show_rating_in_titlebar",
 			"show_song_in_titlebar"
 		]);
+		
 		el.appendChild($el("h4", { "textContent": $l("playlist_preferences") }));
 		var div = el.appendChild($el("div", { "class": "setting_group" }));
 		var playlist_sort = $el("select", { "id": "prefs_playlist_sort_by" });
@@ -165,11 +166,23 @@ var SettingsWindow = function() {
 		playlist_sort.addEventListener("change", change_sorting_method);
 		div.appendChild(playlist_sort);
 		div.appendChild($el("label", { "for": "prefs_playlist_sort_by", "textContent": $l("prefs_playlist_sort_by") }));
+
 		draw_cb_list([
 			"playlist_sort_available_first",
 			"playlist_sort_faves_first",
 			"playlist_show_rating_complete"
 		]);
+
+		el.appendChild($el("h4", { "textContent": $l("m3u_downloads") }));
+		div = el.appendChild($el("div", { "class": "setting_group" }));
+		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "mp3.m3u", "class": "info_right" }));
+		div.appendChild($el("div", { "textContent": "iTunes/Winamp" }));
+		div = el.appendChild($el("div", { "class": "setting_group" }));
+		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "mp3.m3u", "class": "info_right" }));
+		div.appendChild($el("div", { "textContent": "Windows Media" }));
+		div = el.appendChild($el("div", { "class": "setting_group" }));
+		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".ogg", "textContent": "opus.ogg.m3u", "class": "info_right" }));
+		div.appendChild($el("div", { "textContent": "Foobar2000" }));
 	};
 
 	var draw_cb_list = function(pref_list) {

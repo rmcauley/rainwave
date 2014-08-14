@@ -56,7 +56,7 @@
 					<span class="icon_description" id="forums_link"></span>
 				</a>
 			</li>
-			<li>
+			<li id="calendar_menu_item">
 				<a href="https://www.google.com/calendar/embed?src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com" target="_blank">
 					<svg viewBox="0 0 80.5 77.5">
 							<path d="M71.7,19.597H8.715V7H71.7V19.597z"/>
@@ -76,6 +76,7 @@
 					</svg>
 					<span class="icon_description" id="calendar_link"></span>
 				</a>
+				<div id="calendar_dropdown" class="info"></div>
 			</li>
 			<li id="user_info"></li>
 			<li class="small_link">
@@ -84,7 +85,7 @@
 				</svg>
 				<div id="settings_window" class="info"></div>
 			</li>
-			<li class="small_link">
+			<li id="twitter_menu_item" class="small_link">
 				<a href="http://twitter.com/rainwavecc" target="_blank">
 					<svg viewBox="0 0 190 160">
 						<g transform="translate(-282.32053,-380)">
@@ -92,6 +93,9 @@
 						</g>
 					</svg>
 				</a>
+				<div id="twitter_dropdown" class="info">
+					<a id="twitter_timeline" class="twitter-timeline" data-dnt="true" href="https://twitter.com/Rainwavecc"  data-widget-id="499806455336144896"></a>
+				</div>
 			</li>
 			<li class="small_link">
 				<a href="http://facebook.com/rainwavecc" target="_blank">
@@ -114,7 +118,7 @@
 					<div>Jon Funk</div>
 					<div>Nat</div>
 					<div>Rob McAuley</div>
-					<div>Schneau</div>
+					<div>Tom Helmuth</div>
 					<div>William Jackson</div>
 
 					<h4 id="relay_sponsors_header"></h4>
@@ -168,9 +172,7 @@
 				</svg>
 				<span id="history_link"></span>
 				<div id="history" class="scrollblock">
-					<div id="history_list" class="scrollable">
-						<div id="history_scrollbar" class="scrollbar scrollbar_invisible"></div>
-					</div>
+					<div id="history_list" class="scrollable"><div id="history_scrollbar" class="scrollbar scrollbar_invisible"></div></div>
 				</div>
 			</li>
 		</ul>

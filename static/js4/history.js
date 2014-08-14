@@ -52,8 +52,9 @@ var History = function() {
 			scrollblock.style[Fx.transform_string] = "translateX(-" + css_left + "px)";
 		}
 		for (var i = songs.length - 1; i >= 0; i--) {
-			el.insertBefore(songs[i].el, el.firstChild);
-			el.insertBefore(songs[i].header, el.firstChild);
+			// gotta use next sibling because the first element is the scrollbar!
+			el.insertBefore(songs[i].el, el.firstChild.nextSibling);
+			el.insertBefore(songs[i].header, el.firstChild.nextSibling);
 		}
 		// has to be *4 because of the header also being a child of el
 		while (el.childNodes.length >= (songs.length * 4)) {

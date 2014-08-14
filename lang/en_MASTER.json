@@ -201,6 +201,7 @@
    "prefs_sort_playlist_by_alpha"                    : "Alphabet",
    "prefs_sort_playlist_by_updated"                  : "Newest",
    "prefs_sort_playlist_by_rating_user"              : "Rating",
+   "m3u_downloads"                                   : "M3U Downloads",
 
    "__comment__"                 : "Old R3 translation lines.",
 
