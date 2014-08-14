@@ -192,7 +192,7 @@
    "tab_title_preferences"                           : "Tab Title",
    "prefs_show_clock_in_titlebar"                    : "Show Clock In Tab Title",
    "prefs_show_rating_in_titlebar"                   : "Show Rating In Tab Title",
-   "prefs_show_song_in_titlebar"                     : "Show Song Title In Tab Title",
+   "prefs_show_title_in_titlebar"                     : "Show Song Title In Tab Title",
    "playlist_preferences"                            : "Album List",
    "prefs_playlist_sort_available_first"             : "Sort with Cooldown Last",
    "prefs_playlist_sort_faves_first"                 : "Sort with Faves First",

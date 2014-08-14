@@ -188,7 +188,10 @@ var Schedule = function() {
 	};
 
 	self.get_current_song_rating = function() {
-		return sched_current.songs[0].song_rating.rating_user;
+		if (current_event && current_event.songs && (current_event.songs.length > 0)) {
+			return current_event.songs[0].song_rating.rating_user;
+		}
+		return null;
 	}
 
 	return self;

@@ -14,7 +14,7 @@ var TimelineSong = function() {
 		var voting_enabled = false;
 
 		var song_rating = "rating" in json ? SongRating(json) : null;
-		// ugh, had to add this in way late in development
+		// ugh, had to add this in way late in development to allow Schedule to see the real, current song rating
 		self.song_rating = song_rating;
 		var album_rating = "rating" in json.albums[0] ? AlbumRating(json.albums[0]) : null;
 
