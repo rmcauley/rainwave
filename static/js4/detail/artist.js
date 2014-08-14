@@ -1,28 +1,27 @@
+var ArtistViewRenderSid = function(view, json, sid) {
+	"use strict";
+	for (var album_id in json) {
+		var subheader = $el("h2", { "class": "artistview_subheader", "textContent": $l("album_on_station", { "station": $l("station_name_" + sid), "album": json[album_id][0].albums[0].name }) });
+		if (json[album_id][0].albums[0].openable) {
+			subheader.className += " link";
+			subheader._album_id = json[album_id][0].albums[0].id;
+			subheader.addEventListener("click", function(e) { DetailView.open_album(e.target._album_id); });
+		}
+		view.el.appendChild(subheader);
+		view.el.appendChild(SongsTable(json[album_id], [ "title", "length", "rating", "cool_end" ]));
+	}
+}
+
 var ArtistView = function(view, json) {
 	"use strict";
-	var d = $el("div", { "class": "albumview_header" });
-	d.appendChild($el("h1", { "textContent": json.name }));
-	view.el.appendChild(d);
-	var temp_album = [];
-	var current_album_id = json.songs[0].albums[0].id;
-	for (var i = 0; i < json.songs.length; i++) {
-		if (current_album_id != json.songs[i].albums[0].id) {
-			var subheader = $el("div", { "class": "albumview_subheader", "textContent": json.songs[i - 1].albums[0].name });
-			if (json.songs[i - 1].sid == User.sid) {
-				subheader.className += " link";
-				subheader._album_id = current_album_id;
-				subheader.addEventListener("click", function(e) { DetailView.open_album(e.target._album_id); });
-			}
-			view.el.appendChild(subheader);
-			view.el.appendChild(SongsTable(temp_album, [ "title", "length", "rating", "cool_end" ]));
-			current_album_id = json.songs[i].albums[0].id;
-			temp_album = [];
-		}
-		temp_album.push(json.songs[i]);
-	}
-	if (temp_album.length > 0) {
-		view.el.appendChild($el("div", { "class": "albumview_subheader", "textContent": json.songs[i - 1].albums[0].name }));
-		view.el.appendChild(SongsTable(temp_album, [ "title", "length", "rating", "cool_end" ]));
+	view.el.appendChild($el("h1", { "textContent": json.name }));
+	
+	if (json.all_songs[User.sid]) ArtistViewRenderSid(view, json.all_songs[User.sid], User.sid);
+
+	var sid, album_id;
+	for (sid in json.all_songs) {
+		if (sid == User.sid) continue;
+		ArtistViewRenderSid(view, json.all_songs[sid], sid);
 	}
 	
 	return view.el;

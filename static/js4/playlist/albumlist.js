@@ -90,9 +90,9 @@ var AlbumList = function() {
 		item._el = document.createElement("div");
 		item._el.className = "searchlist_item";
 
-		item._el_cool = document.createElement("span");
-		item._el_cool.className = "searchlist_cooldown_time";
-		item._el.appendChild(item._el_cool);
+		// item._el_cool = document.createElement("span");
+		// item._el_cool.className = "searchlist_cooldown_time";
+		// item._el.appendChild(item._el_cool);
 
 		item._el_text_span = document.createElement("span");
 		item._el_text_span.className = "searchlist_name";
@@ -100,7 +100,7 @@ var AlbumList = function() {
 		item._el_text_span._id = item.id;
 
 		// save a function call if we can with an if statement here
-		if (item.cool && (item.cool_lowest > Clock.now)) self.update_cool(item);
+		//if (item.cool && (item.cool_lowest > Clock.now)) self.update_cool(item);
 
 		// this is duplicate functionality from update_item_element, again to try and streamline
 		// a heavy process
@@ -129,16 +129,16 @@ var AlbumList = function() {
 		return true;
 	};
 
-	self.update_cool = function(item) {
-		if (item.cool && (item.cool_lowest > Clock.now)) {
-			item._el_cool.textContent = Formatting.cooldown_glance(item.cool_lowest - Clock.now);
-			$add_class(item._el, "searchlist_cooldown");
-		}
-		else {
-			item._el_cool.textContent = "";
-			$remove_class(item._el, "searchlist_cooldown");
-		}
-	};
+	// self.update_cool = function(item) {
+	// 	if (item.cool && (item.cool_lowest > Clock.now)) {
+	// 		item._el_cool.textContent = Formatting.cooldown_glance(item.cool_lowest - Clock.now);
+	// 		$add_class(item._el, "searchlist_cooldown");
+	// 	}
+	// 	else {
+	// 		item._el_cool.textContent = "";
+	// 		$remove_class(item._el, "searchlist_cooldown");
+	// 	}
+	// };
 
 	self.update_item_element = function(item) {
 		if (item.fave) {

@@ -9,6 +9,8 @@
 
 var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_key) {
 	"use strict";
+	el.parentNode.style.display = "none";
+
 	var self = {};
 	self.sort_key = sort_key;
 	self.search_key = search_key || "id";
@@ -173,9 +175,9 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		}
 	};
 
-	self.recalculate = function() {
+	self.recalculate = function(force_height_check) {
 		var full_height = item_height * visible.length;
-		if (full_height != current_height) {
+		if (force_height_check || (full_height != current_height)) {
 			stretching_el.style.height = full_height + "px";
 			scrollbar.recalculate(full_height);
 			scrollbar.refresh();

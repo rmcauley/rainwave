@@ -32,14 +32,14 @@ PlaylistLists = function() {
 		search_cancel = $id("searchlist_cancel");
 		search_cancel.addEventListener("click", function() { self.active_list.clear_search(); });
 
-		lists.all_albums = AlbumList(el);
-		//lists.all_artists = ArtistList(el);
+		lists.all_albums = AlbumList();
+		lists.all_artists = ArtistList();
 		//lists.current_listeners = ListenersList(el);
 	};
 
 	self.draw = function() {		
 		tabs_el.appendChild(lists.all_albums.tab_el);
-		//tabs_el.appendChild(lists.all_artists.tab_el);
+		tabs_el.appendChild(lists.all_artists.tab_el);
 		//tabs_el.appendChild(lists.current_listeners.tab_el);
 
 		var cookie_list = docCookies.getItem("r4_active_list");
@@ -60,7 +60,7 @@ PlaylistLists = function() {
 
 	self.change_visible_list = function(change_to, do_not_hit_api) {
 		if (self.active_list) {
-			self.active_list.el.style.display = "none";
+			self.active_list.el.parentNode.style.display = "none";
 			self.active_list.tab_el.className = null;
 			search_box.replaceChild(change_to.search_box_input, self.active_list.search_box_input);
 		}
@@ -68,10 +68,12 @@ PlaylistLists = function() {
 			search_box.appendChild(change_to.search_box_input);
 		}
 		self.active_list = change_to;
-		self.active_list.el.style.display = "block";
+		self.active_list.el.parentNode.style.display = "block";
 		self.active_list.tab_el.className = "list_tab_open";
 		if (!do_not_hit_api && !self.active_list.loaded) self.active_list.load_from_api();
 		docCookies.setItem("r4_active_list", change_to.list_name, Infinity, "/", BOOTSTRAP.cookie_domain)
+		self.active_list.recalculate(true);
+		self.active_list.reposition();
 	};
 
 	self.on_resize = function(skip_list_resizes) {

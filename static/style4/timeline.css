@@ -110,7 +110,7 @@ div.timeline_song_content {
 	@include transform(translateY(-50%));
 }
 
-div.timeline_song_content > div, div.timeline_song_content div.album_group .link {
+div.timeline_song_content > div, div.timeline_song_content div.album_group .link, div.timeline_song_content div.artist .link {
 	color: $song_subinfo_color;
 }
 

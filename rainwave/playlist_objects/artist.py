@@ -75,9 +75,12 @@ class Artist(AssociatedMetadata):
 		# in the same format seen everywhere else on the API.  Still, much faster then loading individual song objects.
 		self.data['all_songs'] = {}
 		for sid in config.station_ids:
-			self.data['all_songs'][sid] = []
+			self.data['all_songs'][sid] = {}
 		requestable = True if user_id > 1 else False
 		for song in self.data['songs']:
 			song['requestable'] = requestable and song['requestable']
-			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id') } ]
-			self.data['all_songs'][song['sid']].append(song)
+			if not song['album_id'] in self.data['all_songs'][song['sid']]:
+				self.data['all_songs'][song['sid']][song['album_id']] = []
+			self.data['all_songs'][song['sid']][song['album_id']].append(song)
+			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id'), "openable": song.pop('album_openable') } ]
+			

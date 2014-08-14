@@ -16,7 +16,10 @@ var ArtistList = function() {
 
 	self.draw_entry = function(item) {
 		item._el = document.createElement("div");
-		item._el_text_span = $el("span", { "class": "searchlist_name", "textContent": item.name });
+		item._el.className = "searchlist_item";
+		item._el_text_span = document.createElement("span");
+		item._el_text_span.className = "searchlist_name";
+		item._el_text_span.textContent = item.name;
 		item._el_text_span._id = item.id;
 		item._el.appendChild(item._el_text_span);
 	};
