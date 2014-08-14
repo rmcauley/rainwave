@@ -3,7 +3,31 @@ var Menu = function() {
 	var elements = {};
 	var songs = {};
 
+	self.initialize = function() {
+		Prefs.define("small_menu");
+		Prefs.add_callback("small_menu", function(val) {
+			solve_menu_size(val);
+			SCREEN_HEIGHT = false;
+			_on_resize();
+		});
+		solve_menu_size(Prefs.get("small_menu"));
+	};
+
+	var solve_menu_size = function(val) {
+		if (val) {
+			MENU_HEIGHT = 25;
+			Fx.delay_draw(function() { $add_class($id("top_menu"), "small_menu") });
+			Fx.delay_draw(function() { $remove_class($id("top_menu"), "normal_menu") });
+		}
+		else {
+			MENU_HEIGHT = 56;
+			Fx.delay_draw(function() { $remove_class($id("top_menu"), "small_menu") });
+			Fx.delay_draw(function() { $add_class($id("top_menu"), "normal_menu") });
+		}
+	};
+
 	self.draw = function(station_list) {
+
 		// Localization
 		$id("chat_link").textContent = $l("chat");
 		$id("history_link").textContent = $l("Previous Songs");
@@ -19,7 +43,7 @@ var Menu = function() {
 			else {
 				elements.user_info.appendChild($el("img", { "class": "avatar icon", "src": "/static/images4/user.svg" }));	
 			}
-			elements.user_info.appendChild($el("span", { "class": "icon_description", "textContent": User.name }));
+			elements.user_info.appendChild($el("span", { "textContent": User.name }));
 		}
 		else {
 			elements.user_info.appendChild($el("img", { "class": "avatar icon", "src": "/static/images4/user.svg" }));

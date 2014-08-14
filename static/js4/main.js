@@ -6,13 +6,14 @@ var SmallScreen = false;
 var SCREEN_HEIGHT;
 var SCREEN_WIDTH;
 var MAIN_HEIGHT;
+var MENU_HEIGHT = 56;
 
 function _size_calculate() {
 	"use strict";
 	var old_height = SCREEN_HEIGHT;
 	SCREEN_HEIGHT = document.documentElement.clientHeight;
 	SCREEN_WIDTH = document.documentElement.clientWidth;
-	MAIN_HEIGHT = SCREEN_HEIGHT - 56;
+	MAIN_HEIGHT = SCREEN_HEIGHT - MENU_HEIGHT;
 	if ((SCREEN_WIDTH <= 1400) && !SmallScreen) {
 		SmallScreen = true;
 		Fx.delay_draw(function() { $add_class(document.body, "small_screen") });
@@ -45,6 +46,7 @@ function _on_resize() {
 	DetailView.on_resize_calculate();
 	// scrollbar recalculation has to come before PlaylistLists.on_resize
 	PlaylistLists.on_resize();
+	Requests.on_resize();
 
 	// draw 2 :(
 	DetailView.on_resize_draw();
@@ -62,6 +64,7 @@ function initialize() {
 	User = BOOTSTRAP.json.user;
 	API.add_callback(function(json) { User = json; }, "user");
 
+	Menu.initialize();
 	RatingControl.initialize();
 	ErrorHandler.initialize();
 	Clock.initialize();
@@ -74,8 +77,10 @@ function initialize() {
 	SettingsWindow.initialize();
 
 	// ****************** PAGE LAYOUT
-	// PREP: Applies the small_screen class if necessary and sizes everything
+	// PREP: Applies the small_screen and small_menu classes if necessary and sizes everything
 	Fx.flush_draws();
+	// copy/pasted from _size_calculate because _size_calculate does not get called and menu height may have changed
+	MAIN_HEIGHT = SCREEN_HEIGHT - MENU_HEIGHT;
 	$id('sizable_body').style.height = MAIN_HEIGHT + "px";
 	PlaylistLists.on_resize(true);
 

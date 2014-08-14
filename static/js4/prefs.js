@@ -145,6 +145,8 @@ var SettingsWindow = function() {
 	};
 
 	self.draw = function() {
+		draw_cb_list([ "small_menu" ]);
+
 		el.appendChild($el("h4", { "textContent": $l("tab_title_preferences") }));
 		draw_cb_list([
 			"show_title_in_titlebar",

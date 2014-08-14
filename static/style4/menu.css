@@ -18,13 +18,13 @@ $menu_height_small: 25px;
 	height: $menu_height;
 }
 
+#top_menu.small_menu {
+	height: $menu_height_small;
+}
+
 #user_info {
 	@include transition-wtime(150ms, color);
 	margin-right: 1em;
-}
-
-body.small_menu #top_menu {
-	height: $menu_height_small;
 }
 
 #top_menu svg, #top_menu img.icon {
@@ -62,6 +62,10 @@ body.small_menu #top_menu {
 	opacity: 0.6;
 }
 
+#top_menu.small_menu .icon_description {
+	display: none;
+}
+
 #top_menu li:hover img.icon {
 	opacity: 1;
 }
@@ -74,14 +78,6 @@ body.small_menu #top_menu {
 	padding: 0;
 }
 
-#main_icons {
-	margin-top: 3px;
-}
-
-body.small_menu #main_icons {
-	margin-top: 3px;
-}
-
 #station_select {
 	float: left;
 }
@@ -90,7 +86,7 @@ body.small_menu #main_icons {
 	float: right;
 }
 
-#top_icons, #top_icons a {
+#top_icons, #top_icons a, div.small_menu #main_icons {
 	color: $vdarktext;
 }
 
@@ -98,20 +94,21 @@ body.small_menu #main_icons {
 	color: $linkhover;
 }
 
-#main_icons {
+div.normal_menu #main_icons {
 	clear: both;
+	margin-top: 3px;
 }
 
-#main_icons li {
+div.normal_menu #main_icons li {
 	display: inline;
 	padding: 2px 1em 2px 1em;
 }
 
-#main_icons svg path {
+div.normal_menu #main_icons svg path {
 	fill: $text;
 }
 
-#station_select li, #top_icons li, body.small_menu #main_icons li {
+#station_select li, #top_icons li, div.small_menu #main_icons li {
 	box-sizing: border-box;
 	position: relative;
 	display: inline;
@@ -242,6 +239,7 @@ div.menu_now_playing {
 
 /* PLAYER */
 
+$audio_ssize: 7px;
 $audio_vsize: 12px;
 $audio_hsize: 16px;
 
@@ -251,8 +249,14 @@ $audio_hsize: 16px;
 	height: 31px;
 }
 
-body.small_menu #player {
+div.small_menu #player {
+	clear: none;
 	height: $menu_height_small;
+	background: transparent;
+	padding: 2px 1em 0px 1em;
+	height: 25px;
+	display: inline-block;
+	box-sizing: border-box;
 }
 
 #audio_icon {
@@ -270,6 +274,12 @@ body.small_menu #player {
     margin-left: 10px;
 }
 
+div.small_menu #audio_icon {
+	border-top-width: $audio_ssize;
+	border-bottom-width: $audio_ssize;
+	border-left: $audio_vsize solid #FFF;
+}
+
 /* !important to cover up another Firefox CSS-rule-collision bug */
 div.tuned_in #audio_icon {
 	border-left-color: $highlight !important;
@@ -285,6 +295,12 @@ div.tuned_in #audio_icon {
     border-width: 10px;
     margin-top: 5px;
     margin-left: 6px;
+}
+
+div.small_menu #audio_icon.audio_playing {
+	border-right: $audio_ssize solid $text;
+	border-left: $audio_ssize solid $text;
+	margin-top: 3px;
 }
 
 div.tuned_in #audio_icon.audio_playing {
@@ -313,6 +329,12 @@ div.tuned_in #audio_icon.audio_playing {
     @include transition(LINKCOLOR);
 }
 
+div.small_menu #audio_status {
+	font-size: 100%;
+	padding-left: 24px;
+	line-height: inherit;
+}
+
 div.tuned_in #audio_status {
 	color: $highlight;
 }
@@ -329,6 +351,11 @@ div.tuned_in #audio_status:hover {
 	@include transition(opacity);
 	-webkit-transition-delay: 1s;
             transition-delay: 1s;
+}
+
+#top_menu.small_menu #audio_volume {
+	height: 0.7em;
+	width: 30px;
 }
 
 #top_menu #audio_volume.audio_playing_volume {
@@ -352,7 +379,7 @@ div.tuned_in #audio_volume_indicator {
 }
 
 #top_menu li:hover #settings_window {
-	height: 24em;
+	height: 26em;
 }
 
 #settings_window div.setting_group:first-child {
