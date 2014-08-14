@@ -68,8 +68,8 @@ var Requests = function() {
 		$remove_class(container, "fake_hover");
 	};
 
-	self.show_queue_paused = function(user_json) {
-		if (user_json.requests_paused) {
+	self.show_queue_paused = function() {
+		if (User.requests_paused) {
 			$add_class(container, "request_queue_paused");
 		}
 		else {
@@ -84,17 +84,17 @@ var Requests = function() {
 			}
 		}
 
-		if (!user_json.requests_paused && user_json.tuned_in && user_json.request_position && user_json.request_expires_at && (user_json.request_expires_at <= (Clock.now + 600)) && (user_json.request_expires_at > Clock.now)) {
+		if (!User.requests_paused && User.tuned_in && User.request_position && User.request_expires_at && (User.request_expires_at <= (Clock.now + 600)) && (User.request_expires_at > Clock.now)) {
 			header.textContent = $l("requests_expiring");
 			$add_class(container, "request_warning");
 		}
-		else if (!user_json.requests_paused && user_json.tuned_in && all_cooldown) {
+		else if (!User.requests_paused && User.tuned_in && all_cooldown) {
 			header.textContent = $l("requests_all_on_cooldown");
 			$add_class(container, "request_warning");
 		}
-		else if (!user_json.requests_paused && user_json.request_position && (user_json.request_position > 0)) {
+		else if (!User.requests_paused && User.request_position && (User.request_position > 0)) {
 			$remove_class(container, "request_warning");
-			header.textContent = $l("request_you_are_x_in_line", { "position": user_json.request_position });
+			header.textContent = $l("request_you_are_x_in_line", { "position": User.request_position });
 		}
 		else {
 			$remove_class(container, "request_warning");
@@ -175,6 +175,7 @@ var Requests = function() {
 			Fx.remove_element(songs[i].el);
 		}
 		songs = new_songs;
+		self.show_queue_paused();
 		self.reflow();
 	};
 

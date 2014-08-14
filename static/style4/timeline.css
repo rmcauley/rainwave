@@ -43,7 +43,7 @@ body.stage_0 #timeline_scrollbar, body.stage_1 #timeline_scrollbar, body.stage_2
 }
 
 body.small_screen #timeline {
-	padding: 0 5px;
+	padding: 0 10px;
 }
 
 body.unselectable #timeline_scrollblock {
