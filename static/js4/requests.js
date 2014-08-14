@@ -15,7 +15,7 @@ var Requests = function() {
 
 	self.scroll_init = function() {
 		scroll_container = $id("requests");
-		scroller = Scrollbar.new(scroll_container, $id("requests_scrollbar"), 22);
+		scroller = Scrollbar.new(scroll_container, $id("requests_scrollbar"), 28);
 	};
 
 	self.initialize = function() {
@@ -196,6 +196,7 @@ var Requests = function() {
 			running_height += TimelineSong.height;
 		}
 		scroller.delay_force_height = running_height;
+		el.style.height = running_height + "px";
 		self.reflow = self.real_reflow;
 	};
 
@@ -208,6 +209,7 @@ var Requests = function() {
 			}
 			running_height += TimelineSong.height;
 		}
+		el.style.height = running_height + "px";
 		scroller.recalculate(running_height);
 		scroller.refresh();
 	};

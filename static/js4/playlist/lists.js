@@ -55,7 +55,7 @@ PlaylistLists = function() {
 	};
 
 	self.intro_mode_first_open = function() {
-		self.change_visible_list(lists.all_albums);
+		if (!self.active_list) self.change_visible_list(lists.all_albums);
 	}
 
 	self.change_visible_list = function(change_to, do_not_hit_api) {
