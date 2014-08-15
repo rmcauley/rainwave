@@ -84,6 +84,11 @@ var DetailView = function() {
 		return view;
 	};
 
+	self.on_resize = function() {
+		self.on_resize_calculate();
+		self.on_resize_draw();
+	}	
+
 	self.on_resize_calculate = function() {
 		internal_width = scrollblock.offsetWidth;
 	};

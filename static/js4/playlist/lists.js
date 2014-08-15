@@ -17,6 +17,7 @@ PlaylistLists = function() {
 		resizer.add_scrollable($id("lists_artists"));
 		resizer.add_scrollable($id("lists_groups"));
 		resizer.add_scrollable($id("lists_listeners"));
+		resizer.callback = DetailView.on_resize;
 	};
 
 	self.initialize = function() {

@@ -151,6 +151,8 @@ var Scrollbar = function() {
 		var scrollables = [ scrollable ];
 		var original_mouse_x;
 		var resizing = false;
+		var min_width = 280;
+		var done_min_width;
 
 		Prefs.define("resize_" + scrollblock.id);
 		self.size = Prefs.get("resize_" + scrollblock.id);
@@ -174,8 +176,11 @@ var Scrollbar = function() {
 			new_size = new_size || self.size;
 			scrollblock.style.width = new_size + "px";
 			for (var i = 0; i < scrollables.length; i++) {
+				if (!done_min_width) scrollables[i].style.minWidth = (min_width + scrollbar_width) + "px";
 				scrollables[i].style.width = (new_size + scrollbar_width) + "px";
 			}
+			done_min_width = true;
+			if (self.callback) self.callback();
 		};
 
 		var mouse_down = function(e) {

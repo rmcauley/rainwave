@@ -7,7 +7,8 @@ $art_full_size = 320px;
 #timeline_scrollblock {
 	float: left;
 	height: 100%;
-	min-width: 20em;
+	/* update scrollbar.js when you update this min-width */
+	min-width: 280px;
 	@include transition(width, transform, left);
 	position: relative;
 	background-color: #131416;
@@ -27,6 +28,10 @@ body.stage_0 #timeline_scrollblock, body.stage_1 #timeline_scrollblock, body.sta
 	padding: 0 15px 0px 10px;
 	height: 100%;
 	@include transition(width);
+}
+
+body.unselectable #timeline {
+	@include no-transition();
 }
 
 body.stage_0 #timeline, body.stage_1 #timeline, body.stage_2 #timeline {
