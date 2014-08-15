@@ -101,9 +101,9 @@
 
    "__comment__"                 : "User Detail",
 
-   "votes_across_stations"                           : "Vote % By Station",
-   "requests_across_stations"                        : "Request % By Station",
-   "rating_counts_across_stations"                   : "Rating % By Station",
+   "votes_across_stations"                           : "Votes By Source Stn.",
+   "requests_across_stations"                        : "Requests By Source Stn.",
+   "rating_counts_across_stations"                   : "Ratings By Source Stn.",
    "ratings_completion_rate"                         : "Rating Completion",
    "rating_spread"                                   : "Rating Spread",
    "average_rating_by_station"                       : "Avg. Rating By Station",
