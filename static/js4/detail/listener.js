@@ -50,8 +50,8 @@ var ListenerView = function(view, json) {
 	var data = [];
 	var v, sid, idx;
 	var total_data = 0;
-	for (idx in colors) {
-		sid = colors[idx];
+	for (idx in order) {
+		sid = order[idx];
 		if (sid == 5) continue;
 		data.push({ "value": json.rating_completion[sid] || 0, "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });
 		total_data += json.rating_completion[sid] || 0;
