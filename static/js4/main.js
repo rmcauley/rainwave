@@ -120,12 +120,14 @@ function initialize() {
 		API.add_callback(function(json) { vote_cta_check(); }, "user");
 	}
 
+	
 	Chart.defaults.global.scaleLineColor = "rgba(255,255,255,0.5)";
 	Chart.defaults.global.scaleBeginAtZero = true;
 	Chart.defaults.Doughnut.segmentStrokeColor = "#000";
 	Chart.defaults.Doughnut.animationEasing = "easeOutQuart";
+	Chart.defaults.PolarArea.scaleShowLabels = false;
 	Chart.defaults.PolarArea.scaleBackdropColor = "rgba(255,255,255,0.75)",
-	Chart.defaults.PolarArea.segmentStrokeColor = "#777";
+	Chart.defaults.PolarArea.segmentStrokeColor = "#000";
 	Chart.defaults.PolarArea.animationEasing = "easeOutQuart";
 
 	Menu.initialize();

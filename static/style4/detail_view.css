@@ -228,6 +228,7 @@ ul.user_detail_legend li {
 	border-radius: 3px;
 	display: inline;
 	padding: .4em .7em;
+	font-weight: bold;
 }
 
 ul.user_detail_legend li + li {

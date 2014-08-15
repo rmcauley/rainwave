@@ -209,8 +209,8 @@ div.menu_now_playing {
 }
 
 #user_info div.info {
-	width: 250px;
-	@include transform(translateX(-40px));
+	width: 300px;
+	@include transform(translateX(-70px));
 	text-align: center;
 }
 
