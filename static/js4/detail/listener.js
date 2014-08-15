@@ -25,7 +25,8 @@ var ListenerView = function(view, json) {
 	var draw_chart = function(jd, key, header) {
 		var data = [];
 		var idx, i, sid;
-		for (sid in order) {
+		for (idx in order) {
+			sid = order[idx];
 			for (i = 0; i < jd.length; i++) {
 				if (jd[i].sid == sid) {
 					data.push({ "value": jd[i][key], "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });	
