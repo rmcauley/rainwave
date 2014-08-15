@@ -70,6 +70,7 @@
    "your_mobile_app_qr"                              : "Your Android App QR Code",
    "request_song_to_vote_for"                        : "Request A Song To Vote For",
    "m3u_hijack_right_click"                          : "A plugin is trying to hijack your browser.  Please right click the player and click Save As to tune in.",
+   "your_statistics"                                 : "Your statistics",
 
    "__comment__"                 : "Timeline",
 
@@ -97,6 +98,13 @@
    "message"                                         : "Message",
    "tip_jar_balance"                                 : "Current balance",
    "tip_jar_all_donations"                           : "Total amount of donations since July 2007",
+
+   "__comment__"                 : "User Detail",
+
+   "votes_across_stations"                           : "Vote % By Station",
+   "requests_across_stations"                        : "Request % By Station",
+   "rating_counts_across_stations"                   : "Rating % By Station",
+   "ratings_completion_rate"                         : "Rating Completion",
 
    "__comment__"                 : "Other",
 

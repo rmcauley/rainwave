@@ -46,6 +46,8 @@ var Menu = function() {
 			elements.user_info.appendChild($el("span", { "textContent": User.name }));
 
 			var user_links = elements.user_info.appendChild($el("div", { "class": "info" }));
+			user_links.appendChild($el("a", { "class": "link link_obvious", "id": "user_info_link", "textContent": $l("your_statistics") }));
+			user_links.lastChild.addEventListener("click", function() { DetailView.open_listener(User.id); });
 			user_links.appendChild($el("a", { "class": "link_obvious", "id": "logout_link", "href": "http://rainwave.cc/forums/", "textContent": $l("logout_in_forums") }));
 			var qr_code_container = user_links.appendChild($el("div", { "id": "user_qr_code_hover", "textContent": $l("your_mobile_app_qr") }));
 			var qr_code = qr_code_container.appendChild($el("div", { "id": "user_qr_code" }));

@@ -46,7 +46,12 @@ var Albums = function() {
 		if (!size) size = 120;
 		var c = $el("div", { "class": "art_anchor" });
 		var img, ac;
-		if (!json.art) {
+		if (json.secret_user_sauce) {
+			ac = c.appendChild($el("div", { "class": "art_container" }));
+			if (json.secret_user_sauce.indexOf("svg") == -1) ac.className = "art_container avatar";
+			ac.style.backgroundImage = "url(" + json.secret_user_sauce + ")";	
+		}
+		else if (!json.art) {
 			ac = c.appendChild($el("div", { "class": "art_container" }));
 			ac.style.backgroundImage = "url(/static/images4/noart_1.jpg)";
 		}

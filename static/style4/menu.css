@@ -236,7 +236,7 @@ div.menu_now_playing {
 	height: 300px;
 }
 
-#user_info #logout_link {
+#user_info #logout_link, #user_info #user_info_link {
 	display: block;
 	padding-bottom: 5px;
 	margin-bottom: 10px;
@@ -490,4 +490,6 @@ div.tuned_in #audio_volume_indicator {
 
 #request_cta img {
 	margin-right: 5px;
+	width: 14px;
+	height: 14px;
 }

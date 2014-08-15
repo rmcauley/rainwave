@@ -53,7 +53,7 @@ var DetailView = function() {
 		while (open_views.length > 30) {
 			open_views.shift();
 		}
-		var n = { "el": $el("div", { "class": "detail_view" }), "type": type, "id": id, "visible": false, "scroll_top": 0 };
+		var n = { "el": $el("div", { "class": "detail_view detail_view_" + type }), "type": type, "id": id, "visible": false, "scroll_top": 0 };
 		open_views.push(n);
 		render_function(n, json);
 		return n;

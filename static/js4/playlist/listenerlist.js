@@ -1,6 +1,7 @@
-var ListenersList = function(offset_width, parent_el) {
+var ListenersList = function() {
 	"use strict";
-	var self = SearchList("current_listeners", "name", "name", parent_el);
+	var self = SearchList($id("lists_listeners_items"), $id("lists_listeners_scrollbar"), $id("lists_listeners_stretcher"), "name", "name");
+	self.auto_trim = true;
 	self.list_name = "current_listeners";
 	self.load_from_api = function() {
 		API.async_get("current_listeners");
@@ -12,18 +13,14 @@ var ListenersList = function(offset_width, parent_el) {
 		}
 		PlaylistLists.change_visible_list(self); }
 	);
-
-	self.update_parent = self.update;
-	self.update = function(json) {
-		if (!json) return;
-		self.update_parent(json.users);
-	}
-
 	API.add_callback(self.update, "current_listeners");
 
 	self.draw_entry = function(item) {
 		item._el = document.createElement("div");
-		item._el_text_span = $el("span", { "class": "searchlist_name", "textContent": item.name });
+		item._el.className = "searchlist_item";
+		item._el_text_span = document.createElement("span");
+		item._el_text_span.className = "searchlist_name";
+		item._el_text_span.textContent = item.name;
 		item._el_text_span._id = item.id;
 		item._el.appendChild(item._el_text_span);
 	};

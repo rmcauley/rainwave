@@ -18,7 +18,10 @@
 // 	    ]
 // 	};
 // 	var chart = new Chart(ctx).Bar(data, { "barValueSpacing": 3 });
-// };
+// // };	Chart.defaults.global.showScale = false;
+// 	Chart.defaults.global.scaleShowLabels = false;
+// 	Chart.defaults.global.scaleLineColor = "rgba(255,255,255,.3)";
+// 	Chart.defaults.global.scaleBeginAtZero = true;
 
 var AlbumViewRatingPieChart = function(ctx, json) {
 	"use strict";
@@ -37,7 +40,7 @@ var AlbumViewRatingPieChart = function(ctx, json) {
 		if (i in json.rating_histogram) data.push({ "value": json.rating_histogram[i], "color": colors[i], "highlight": "#FFF", "label": i });
 	}
 	if (data.length == 0) return;
-	var chart = new Chart(ctx).Doughnut(data, { "segmentStrokeColor": "#000", "segmentStrokeWidth": 1, "animationEasing": "easeOutQuart" });
+	var chart = new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1 });
 };
 
 var AlbumView = function(view, json) {

@@ -16,7 +16,7 @@ PlaylistLists = function() {
 		var resizer = Scrollbar.new_resizer($id("lists"), $id("lists_albums"), $id("lists_resizer"));
 		resizer.add_scrollable($id("lists_artists"));
 		resizer.add_scrollable($id("lists_groups"));
-		// resizer.add_scrollable(lists.current_listeners.el)
+		resizer.add_scrollable($id("lists_listeners"));
 	};
 
 	self.initialize = function() {
@@ -36,14 +36,14 @@ PlaylistLists = function() {
 		lists.all_albums = AlbumList();
 		lists.all_artists = ArtistList();
 		lists.all_groups = GroupList();
-		//lists.current_listeners = ListenersList(el);
+		lists.current_listeners = ListenersList();
 	};
 
 	self.draw = function() {		
 		tabs_el.appendChild(lists.all_albums.tab_el);
 		tabs_el.appendChild(lists.all_artists.tab_el);
 		tabs_el.appendChild(lists.all_groups.tab_el);
-		//tabs_el.appendChild(lists.current_listeners.tab_el);
+		tabs_el.appendChild(lists.current_listeners.tab_el);
 
 		var cookie_list = docCookies.getItem("r4_active_list");
 		if (cookie_list in lists) {
