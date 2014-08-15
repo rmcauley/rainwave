@@ -70,6 +70,10 @@ body.requests_sticky #detail_scrollbar {
  	height: 140px;
 }
 
+#detail div.detail_view_listener div.art_container {
+	background-color: #000;
+}
+
 /* HEADER */
 
 #detail h1 {

@@ -5,7 +5,7 @@ var ListenerView = function(view, json) {
 	d.appendChild($el("h1", { "textContent": json.name }));
 	view.el.appendChild(d);
 
-	var order = [ 5, 1, 4, 2, 3 ];
+	var order = [ 1, 4, 2, 3, 5 ];
 	var colors = {
 		1: "#1f95e5",  // Rainwave blue (yeah I'm playing favourites)
 		2: "#f9bf22",  // OCR Orange
