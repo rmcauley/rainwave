@@ -181,11 +181,22 @@ def get_all_artists_list(sid):
 def get_all_groups_list(sid):
 	return db.c.fetch_all(
 		"SELECT group_name AS name, group_name_searchable AS group_searchable, group_id AS id, COUNT(*) AS song_count "
-		"FROM r4_groups JOIN r4_song_group USING (group_id) JOIN r4_song_sid using (song_id) "
+			"FROM ("
+				"SELECT group_name, group_name_searchable, group_id, COUNT(DISTINCT(album_id)) "
+					"FROM r4_groups "
+						"JOIN r4_song_group USING (group_id) "
+						"JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
+						"JOIN r4_songs ON (r4_song_group.song_id = r4_songs.song_id) "
+						"JOIN r4_albums USING (album_id) "
+					"GROUP BY group_id, group_name_searchable, group_name "
+					"HAVING COUNT(DISTINCT(album_id)) > 1 "
+				") AS multi_album_groups "
+			"JOIN r4_song_group USING (group_id) "
+			"JOIN r4_song_sid using (song_id) "
 		"WHERE r4_song_sid.sid = %s AND song_exists = TRUE "
-		"GROUP BY group_id, group_name "
+		"GROUP BY group_id, group_name, group_name_searchable "
 		"ORDER BY group_name",
-		(sid,))
+		(sid, sid,))
 
 def reduce_song_blocks(sid):
 	db.c.update("UPDATE r4_song_sid SET song_elec_blocked_num = song_elec_blocked_num - 1 WHERE song_elec_blocked = TRUE AND sid = %s", (sid,))
