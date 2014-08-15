@@ -48,9 +48,10 @@ var ListenerView = function(view, json) {
 	draw_chart(json.ratings_by_station, "ratings", $l("rating_counts_across_stations"));
 
 	var data = [];
-	var v, sid;
+	var v, sid, idx;
 	var total_data = 0;
-	for (sid in colors) {
+	for (idx in colors) {
+		sid = colors[idx];
 		if (sid == 5) continue;
 		data.push({ "value": json.rating_completion[sid] || 0, "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });
 		total_data += json.rating_completion[sid] || 0;
@@ -63,7 +64,7 @@ var ListenerView = function(view, json) {
 	}
 
 	var data = [];
-	var found, idx, any_found;
+	var found, any_found;
 	for (idx in order) {
 		sid = order[idx];
 		if (sid == 5) continue;
