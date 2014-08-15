@@ -164,7 +164,7 @@ var R4Audio = function() {
 
 		audio_el.pause(0);
 		while (audio_el.firstChild) audio_el.removeChild(audio_el.firstChild);
-		audio.src = "";
+		audio_el.src = "";
 		audio_el.load();
 		audio_el = null;
 		self.on_stop();
