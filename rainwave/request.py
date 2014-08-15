@@ -112,9 +112,9 @@ def get_next(sid):
 				u.put_in_request_line(u.get_tuned_in_sid())
 			request_count = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_history WHERE user_id = %s", (u.id,)) + 1
 			db.c.update("DELETE FROM r4_request_store WHERE song_id = %s AND user_id = %s", (song.id, u.id))
-			db.c.update("INSERT INTO r4_request_history (user_id, song_id, request_wait_time, request_line_size, request_at_count) "
-						"VALUES (%s, %s, %s, %s, %s)",
-						(u.id, song.id, time.time() - entry['line_wait_start'], len(line), request_count))
+			db.c.update("INSERT INTO r4_request_history (user_id, song_id, request_wait_time, request_line_size, request_at_count, sid) "
+						"VALUES (%s, %s, %s, %s, %s, %s)",
+						(u.id, song.id, time.time() - entry['line_wait_start'], len(line), request_count, sid))
 			db.c.update("UPDATE phpbb_users SET radio_totalrequests = %s WHERE user_id = %s", (request_count, u.id))
 			song.update_request_count(sid)
 			# Update the user's request cache

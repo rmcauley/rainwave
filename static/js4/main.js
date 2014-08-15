@@ -43,10 +43,10 @@ function _on_resize() {
 	// paint 2 :(
 	Schedule.scrollbar_recalculate();
 	Scrollbar.recalculate();
-	DetailView.on_resize_calculate();
 	// scrollbar recalculation has to come before PlaylistLists.on_resize
 	PlaylistLists.on_resize();
 	Requests.on_resize();
+	DetailView.on_resize_calculate();
 
 	// draw 2 :(
 	DetailView.on_resize_draw();

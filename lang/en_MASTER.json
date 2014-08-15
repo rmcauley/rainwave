@@ -101,9 +101,11 @@
 
    "__comment__"                 : "User Detail",
 
-   "votes_across_stations"                           : "Votes By Source Stn.",
-   "requests_across_stations"                        : "Requests By Source Stn.",
-   "rating_counts_across_stations"                   : "Ratings By Source Stn.",
+   "votes_by_station"                                : "Votes By Station",
+   "votes_by_source_station"                         : "Votes by Source Stn.",
+   "requests_by_station"                             : "Requests By Station",
+   "requests_by_source_station"                      : "Requests by Source Stn.",
+   "rating_counts_across_stations"                   : "Ratings by Source Stn.",
    "ratings_completion_rate"                         : "Rating Completion",
    "rating_spread"                                   : "Rating Spread",
    "average_rating_by_station"                       : "Avg. Rating By Station",
