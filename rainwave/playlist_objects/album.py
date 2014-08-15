@@ -338,7 +338,7 @@ class Album(AssociatedMetadata):
 							   "ROUND(((album_rating_user * 10) - (CAST(album_rating_user * 10 AS SMALLINT) %% 5))) / 10 AS rating_rnd, "
 							   "COUNT(album_rating_user) AS rating_count "
 							   "FROM r4_album_ratings JOIN phpbb_users USING (user_id) "
-							   "WHERE radio_inactive = FALSE AND album_id = %s AND sid = %s "
+							   "WHERE album_id = %s AND sid = %s "
 							   "GROUP BY rating_rnd "
 							   "ORDER BY rating_rnd",
 							   (self.id, sid))
