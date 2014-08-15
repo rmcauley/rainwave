@@ -14,9 +14,8 @@ body.stage_0 #detail_scrollblock, body.stage_1 #detail_scrollblock, body.stage_2
 }
 
 #detail canvas {
-	float: right;
+	float: left;
 	position: relative;
-	top: -10px;
 }
 
 #detail div.canvas_header {
@@ -77,6 +76,7 @@ body.requests_sticky #detail_scrollbar {
 	font-size: 1.6em;
 	border-bottom: solid 1px #555;
 	margin-top: 0;
+	margin-bottom: 5px;
 }
 
 #detail h2 {
