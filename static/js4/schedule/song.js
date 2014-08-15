@@ -42,7 +42,7 @@ var TimelineSong = function() {
 			if (request_mode) {
 				self.elements.request_drag = $el("div", { "class": "request_sort_grab" });
 				self.elements.request_drag._song_id = json.id;
-				self.elements.request_drag.appendChild($el("img", { "src": "/static/images4/sort.svg", "height": "14", "width": "14" }));
+				self.elements.request_drag.appendChild($el("img", { "src": "/static/images4/sort.svg" }));
 				self.elements.album_art.insertBefore(self.elements.request_drag, self.elements.album_art.firstChild);
 			}
 			else if (self.data.elec_request_username) {
