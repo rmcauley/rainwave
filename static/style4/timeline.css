@@ -294,6 +294,12 @@ div.timeline_now_playing_song div.title_group {
 	font-weight: bold;
 }
 
+img.link_external {
+	height: 14px;
+	width: 14px;
+	margin-right: 5px;
+}
+
 div.timeline_now_playing_song div.timeline_song_content > div, div.timeline_now_playing_song div.timeline_song_content > a {
 	display: block;
 	margin-bottom: 5px;
