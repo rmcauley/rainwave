@@ -432,9 +432,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		self.el.style.marginTop = new_margin + "px";
 		self.el.style.top = scrollbar.scroll_top + "px";
 		
-		if (current_scroll_index === new_index) {
-			return;
-		}
+		if (current_scroll_index === new_index) return;
+		if (visible.length === 0) return;
 
 		if (current_scroll_index) {
 			if (new_index < current_scroll_index - num_items_to_display) current_scroll_index = false;
