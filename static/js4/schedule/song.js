@@ -141,7 +141,7 @@ var TimelineSong = function() {
 			else if (self.data.elec_blocked) {
 				$add_class(self.el, "timeline_song_is_cool");
 				self.data.elec_blocked_by = self.data.elec_blocked_by.charAt(0).toUpperCase() + self.data.elec_blocked_by.slice(1);
-				self.elements.cooldown.textContent = $l("request_in_election", { "blocked_by": $l("blocked_by_name__" + self.data.elec_blocked_by) });
+				self.elements.cooldown.textContent = $l("request_in_election", { "blocked_by": $l("blocked_by_name__" + self.data.elec_blocked_by.toLowerCase()) });
 			}
 			else {
 				$remove_class(self.el, "timeline_song_is_cool");

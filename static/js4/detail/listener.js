@@ -55,5 +55,20 @@ var ListenerView = function(view, json) {
 	var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
 	var chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 20, "scaleStartValue": 0 });
 
+	data = [];
+	for (v in AlbumViewColors) {
+		for (i = 0; i < json.rating_spread.length; i++) {
+			if (v == json.rating_spread[i].rating) {
+				data.push({ "value": json.rating_spread[i].ratings, "color": AlbumViewColors[v], "highlight": "#FFF", "label": v });	
+			}
+		}
+	}
+	if (data.length > 0) {
+		d = view.el.appendChild($el("div", { "class": "user_detail_segment" }));
+		d.appendChild($el("h3", { "textContent": $l("rating_spread") }));
+		var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
+		var chart = new Chart(cnvs.getContext("2d")).Doughnut(data);
+	}	
+
 	return view.el;
 };

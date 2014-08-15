@@ -60,6 +60,8 @@ class ListenerDetailRequest(APIHandler):
 		for row in user['ratings_by_station']:
 			user['rating_completion'][row['sid']] = math.ceil(float(row['ratings']) / float(playlist.num_songs[row['sid']]) * 100)
 
+		user['rating_spread'] = db.c.fetch_all("SELECT COUNT(song_id) AS ratings, song_rating_user AS rating FROM r4_song_ratings WHERE user_id = %s AND song_rating_user IS NOT NULL GROUP BY song_rating_user ORDER BY song_rating_user", (self.get_argument("id"), ))
+
 		self.append("listener", user)
 
 @handle_api_url("current_listeners")
