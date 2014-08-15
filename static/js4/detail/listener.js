@@ -8,7 +8,7 @@ var ListenerView = function(view, json) {
 	var order = [ 5, 1, 4, 2, 3 ];
 	var colors = {
 		1: "#1f95e5",  // Rainwave blue (yeah I'm playing favourites)
-		2: "#e5a11f",  // OCR Orange
+		2: "#f9bf22",  // OCR Orange
 		3: "#b91fe5",  // Purple
 		4: "#5ad9e8",  // Cyan
 		5: "#1fe53b",  // green
