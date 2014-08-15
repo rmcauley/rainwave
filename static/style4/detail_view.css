@@ -13,6 +13,24 @@ body.stage_0 #detail_scrollblock, body.stage_1 #detail_scrollblock, body.stage_2
 	overflow-y: scroll;
 }
 
+#detail canvas {
+	float: right;
+	position: relative;
+	top: -10px;
+}
+
+#detail div.canvas_header {
+	float: right;
+	font-size: small;
+	@include transform(rotate(-90deg) translateY(-110%) translateX(10px));
+	-webkit-transform-origin: top right;
+	        transform-origin: top right;
+	text-align: center;
+	width: 80px;
+	margin: 0;
+	padding: 0;
+}
+
 div.detail_view {
 	position: relative;
 	padding: 10px;

@@ -152,6 +152,7 @@
    "songs_from"                                      : "Songs from %(station)",
    "songs_on"                                        : "Songs on %(station)",
    "album_on_station"                                : "On %(station): %(album)",
+   "ratings_detail"                                  : "Ratings",
 
    "__comment__"                 : "Requests",
 

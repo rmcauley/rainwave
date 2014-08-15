@@ -120,6 +120,10 @@ function initialize() {
 		API.add_callback(function(json) { vote_cta_check(); }, "user");
 	}
 
+	Chart.defaults.global.showScale = false;
+	Chart.defaults.global.scaleShowLabels = false;
+	Chart.defaults.global.scaleLineColor = "rgba(255,255,255,.3)";
+	Chart.defaults.global.scaleBeginAtZero = true;
 	Menu.initialize();
 	RatingControl.initialize();
 	ErrorHandler.initialize();
