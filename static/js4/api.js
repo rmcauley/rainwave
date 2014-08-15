@@ -95,7 +95,6 @@ var API = function() {
 			clearTimeout(sync_timeout_error_removal_timeout);
 		}
 		sync_timeout_error_removal_timeout = null;
-		sync_error_count = 0;
 	};
 
 	var clear_sync_timeout_error = function() {
@@ -131,14 +130,20 @@ var API = function() {
 		}
 		sync_resync = true;
 		sync_error_count++;
-		if (sync_error_count > 4) {
+		if (sync_error_count > 2) {
 			ErrorHandler.remove_permanent_error("sync_retrying");
 			var e = ErrorHandler.make_error("sync_stopped", 500);
-			if (result) {
-				e.text += $l(result.sync_result.tl_key);
+			if (result && result.sync_result && result.sync_result.tl_key) {
+				e.text += " (" + $l(result.sync_result.tl_key) + ")";
+			}
+			else if (result && result.error && result.error.tl_key) {
+				e.text += " (" + $l(result.error.tl_key) + ")";	
+			}
+			else if (result && result[0] && result[0].error && result[0].error.tl_key) {
+				e.text += " (" + $l(result[0].error.tl_key) + ")";	
 			}
 			else {
-				e.text += $l("lost_connection");
+				e.text += " (" + $l("lost_connection") + ")";
 			}
 			ErrorHandler.permanent_error(e);
 			self.sync_stop();

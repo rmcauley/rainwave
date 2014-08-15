@@ -204,12 +204,12 @@ var SettingsWindow = function() {
 			$id("intro_mode_link").parentNode.removeChild($id("intro_mode_link"));
 		}
 		if (nv < 3) {
-			var iml = $el("div", { "id": "intro_mode_link", "textContent": $l("skip_intro_mode") });
+			var iml = $el("div", { "class": "link_obvious", "id": "intro_mode_link", "textContent": $l("skip_intro_mode") });
 			iml.addEventListener("click", function() { Prefs.change("stage", 4); });
 			el.appendChild(iml);
 		}
 		else {
-			var iml = $el("div", { "id": "intro_mode_link", "textContent": $l("do_intro_mode") });
+			var iml = $el("div", { "class": "link_obvious", "id": "intro_mode_link", "textContent": $l("do_intro_mode") });
 			iml.addEventListener("click", function() { Prefs.change("stage", 2); });
 			el.appendChild(iml);
 		}

@@ -10,6 +10,7 @@ var ErrorHandler = function() {
 		API.add_universal_callback(self.tooltip_error);
 
 		container = $id("messages");
+		$id("measure_box").appendChild($el("img", { "src": "/static/images4/cancel.png", "alt": "X", "width": "14", "height": "14" }));
 	};
 
 	self.make_error = function(tl_key, code) {
@@ -20,7 +21,7 @@ var ErrorHandler = function() {
 		if (!(json.tl_key in permanent_errors)) {
 			var err = json;
 			err.el = $el("div", { "class": "error" });
-			err.hide = err.el.appendChild($el("img", { "src": "/static/images4/cancel_ldpi.png", "alt": "X" }));
+			err.hide = err.el.appendChild($el("img", { "src": "/static/images4/cancel.png", "alt": "X", "width": "14", "height": "14" }));
 			err.hide.addEventListener("click", function() { self.remove_permanent_error(err.tl_key); });
 			err.el.appendChild($el("span", { "textContent": err.text + " " }));
 			if (append_element) err.el.appendChild(append_element);

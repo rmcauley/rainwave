@@ -140,6 +140,10 @@ a:link:hover, .link:hover {
 	color: $linkhover !important;
 }
 
+.link_obvious {
+	color: $link !important;
+}
+
 .unselectable *, .unselectable {
 	-webkit-user-select: none;
 	-khtml-user-select: none;
