@@ -33,8 +33,8 @@ var AlbumViewRatingPieChart = function(ctx, json) {
 					"4.5": "#497bb6",
 					"5.0": "#1f95e4"
 				};
-	for (var i in json.rating_histogram) {
-		data.push({ "value": json.rating_histogram[i], "color": colors[i], "highlight": "#FFF", "label": i });
+	for (var i in colors) {
+		if (i in json.rating_histogram) data.push({ "value": json.rating_histogram[i], "color": colors[i], "highlight": "#FFF", "label": i });
 	}
 	if (data.length == 0) return;
 	var chart = new Chart(ctx).Doughnut(data, { "segmentStrokeColor": "#000", "segmentStrokeWidth": 1, "animationEasing": "easeOutQuart" });
