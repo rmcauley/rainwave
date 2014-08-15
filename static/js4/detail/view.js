@@ -17,8 +17,10 @@ var DetailView = function() {
 		API.add_callback(album_diff_handler, "album_diff");
 		API.add_callback(draw_artist, "artist");
 		API.add_callback(draw_listener, "listener");
+		API.add_callback(draw_group, "group");
 		DeepLinker.register_route("album", open_album_internal);
 		DeepLinker.register_route("artist", open_artist_internal);
+		DeepLinker.register_route("group", open_group_internal);
 		DeepLinker.register_route("listener", open_listener_internal);
 	};
 
@@ -98,6 +100,10 @@ var DetailView = function() {
 		switch_to(create("artist", json.id, ArtistView, json));
 	};
 
+	var draw_group = function(json) {
+		switch_to(create("group", json.id, GroupView, json));
+	};
+
 	var draw_listener = function(json) {
 		switch_to(create("listener", json.id, ListenerView, json));
 	};
@@ -126,6 +132,10 @@ var DetailView = function() {
 		DeepLinker.change_url("artist", id);
 	};
 
+	self.open_group = function(id) {
+		DeepLinker.change_url("group", id);
+	};
+
 	self.open_listener = function(id) {
 		DeepLinker.change_url("listener", id);
 	};
@@ -140,6 +150,12 @@ var DetailView = function() {
 		id = parseInt(id);
 		PlaylistLists.set_new_open("all_artists", id);
 		return open_internal("artist", id);
+	};
+
+	var open_group_internal = function(id) {
+		id = parseInt(id);
+		PlaylistLists.set_new_open("all_groups", id);
+		return open_internal("group", id);
 	};
 
 	var open_listener_internal = function(id) {

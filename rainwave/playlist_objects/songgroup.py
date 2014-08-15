@@ -64,3 +64,36 @@ class SongGroup(AssociatedMetadata):
 
 	def set_cooldown(self, cooldown):
 		db.c.update("UPDATE r4_groups SET group_cool_time = %s WHERE group_id = %s", (cooldown, self.id))
+
+	def load_songs_from_sid(self, sid, user_id):
+		all_songs = db.c.fetch_all(
+			"SELECT r4_song_group.song_id AS id, song_title AS title, "
+			 	"song_rating AS rating, "
+				"TRUE AS requestable, "
+				"song_length AS length, "
+				"song_cool AS cool, "
+				"song_cool_end AS cool_end, "
+				"song_url as url, song_link_text as link_text "
+				"COALESCE(song_rating_user, 0) AS rating_user, "
+				"COALESCE(song_fave, FALSE) AS fave, "
+				"album_name, r4_albums.album_id, "
+				"album_exists AS album_openable "
+			"FROM r4_song_group "
+				"JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
+				"JOIN r4_songs ON (r4_song_group.song_id = r4_songs.song_id) "
+				"JOIN r4_albums USING (album_id) "
+				"LEFT JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) "
+				"LEFT JOIN r4_song_ratings ON (r4_song_group.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
+			"WHERE r4_song_group.group_id = %s AND r4_songs.song_verified = TRUE "
+			"ORDER BY song_exists DESC, album_name, song_title ",
+			(sid, sid, user_id, self.id))
+		# And of course, now we have to burn extra CPU cycles to make sure the right album name is used and that we present the data
+		# in the same format seen everywhere else on the API.  Still, much faster then loading individual song objects.
+		self.data['all_songs_for_sid'] = {}
+		requestable = True if user_id > 1 else False
+		for song in all_songs:
+			song['requestable'] = requestable and song['requestable']
+			if not song['album_id'] in self.data['all_songs_for_sid']:
+				self.data['all_songs_for_sid'][song['album_id']] = []
+			self.data['all_songs_for_sid'][song['album_id']].append(song)
+			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id'), "openable": song.pop('album_openable') } ]

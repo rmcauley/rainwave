@@ -90,7 +90,9 @@ var TimelineSong = function() {
 			}
 
 			if (self.data.url && self.data.link_text) {
-				self.elements.xlink = c.appendChild($el("a", { "class": "song_link", "target": "_blank", "href": self.data.url, "textContent": self.data.link_text }));
+				self.elements.xlink = c.appendChild($el("a", { "class": "song_link", "target": "_blank", "href": self.data.url }));
+				self.elements.xlink.appendChild($el("img", { "src": "/static/images4/link_external.svg", "class": "link_external" }));
+				self.elements.xlink.appendChild($el("span", { "textContent": self.data.link_text }));
 				Formatting.linkify_external(self.elements.xlink);
 			}
 

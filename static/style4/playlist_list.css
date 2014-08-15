@@ -45,7 +45,7 @@ body.stage_0 #lists, body.stage_1 #lists, body.stage_2 #lists {
 	background-repeat: no-repeat;
 }
 
-#lists_tab li + li {
+#lists_tabs li + li {
 	border-left-width: 0px;
 }
 
@@ -175,7 +175,7 @@ span.searchlist_name {
 	text-overflow: ellipsis;
 }
 
-div.searchlist_item:hover span.searchlist_name {
+#lists_albums_items div.searchlist_item:hover span.searchlist_name {
 	color: $link;
 	background-image: url("/static/images4/heart_lined.png");
 }

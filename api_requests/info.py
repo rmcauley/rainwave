@@ -25,6 +25,9 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 
 	if all_lists or (extra_list == "all_artists") or 'all_artists' in request.request.arguments:
 		request.append("all_artists", api_requests.playlist.get_all_artists(request.sid))
+
+	if all_lists or (extra_list == "all_groups") or 'all_groups' in request.request.arguments:
+		request.append("all_groups", api_requests.playlist.get_all_groups(request.sid))
 	
 	if all_lists or (extra_list == "current_listeners") or 'current_listeners' in request.request.arguments:
 		request.append("current_listeners", cache.get_station(request.sid, "current_listeners"))

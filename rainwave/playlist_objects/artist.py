@@ -58,6 +58,7 @@ class Artist(AssociatedMetadata):
 				"song_length AS length, "
 				"song_cool AS cool, "
 				"song_cool_end AS cool_end, "
+				"song_url as url, song_link_text as link_text "
 				"COALESCE(song_rating_user, 0) AS rating_user, "
 				"COALESCE(song_fave, FALSE) AS fave, "
 				"album_name, r4_albums.album_id, "

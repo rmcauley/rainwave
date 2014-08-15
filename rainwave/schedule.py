@@ -313,3 +313,4 @@ def update_memcache(sid):
 	rainwave.playlist_objects.album.clear_updated_albums(sid)
 	cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
 	cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)
+	cache.set_station(sid, "all_groups", playlist.get_all_groups_list(sid), True)

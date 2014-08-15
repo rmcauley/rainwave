@@ -17,6 +17,9 @@ def get_all_albums(sid, user = None):
 def get_all_artists(sid):
 	return cache.get_station(sid, "all_artists")
 
+def get_all_groups(sid):
+	return cache.get_station(sid, "all_groups")
+
 @handle_api_url("all_albums")
 class AllAlbumsHandler(APIHandler):
 	description = "Get a list of all albums on the station playlist."
@@ -33,6 +36,14 @@ class AllArtistsHandler(APIHandler):
 	def post(self):
 		self.append(self.return_name, get_all_artists(self.sid))
 
+@handle_api_url("all_groups")
+class AllGroupsHandler(APIHandler):
+	description = "Get a list of all song groups on the station playlist."
+	return_name = "all_groups"
+
+	def post(self):
+		self.append(self.return_name, get_all_groups(self.sid))
+
 @handle_api_url("artist")
 class ArtistHandler(APIHandler):
 	description = "Get detailed information about an artist."
@@ -42,7 +53,18 @@ class ArtistHandler(APIHandler):
 	def post(self):
 		artist = playlist.Artist.load_from_id(self.get_argument("id"))
 		artist.load_all_songs(self.sid, self.user.id)
-		self.append("artist", artist.to_dict(self.user))
+		self.append(self.return_name, artist.to_dict(self.user))
+
+@handle_api_url("group")
+class GroupHandler(APIHandler):
+	description = "Get detailed information about a song group."
+	return_name = "group"
+	fields = { "id": (fieldtypes.group_id, True) }
+
+	def post(self):
+		group = playlist.SongGroup.load_from_id(self.get_argument("id"))
+		group.load_songs_from_sid(self.sid, self.user.id)
+		self.append(self.return_name, group.to_dict(self.user))
 
 @handle_api_url("album")
 class AlbumHandler(APIHandler):

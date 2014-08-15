@@ -162,8 +162,10 @@ var R4Audio = function() {
 		if (evt) evt.preventDefault();
 		if (!audio_el) return;
 
-		audio_el.pause();
+		audio_el.pause(0);
 		while (audio_el.firstChild) audio_el.removeChild(audio_el.firstChild);
+		audio.src = "";
+		audio_el.load();
 		audio_el = null;
 		self.on_stop();
 		playing_status = false;
