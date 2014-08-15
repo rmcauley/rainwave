@@ -394,6 +394,7 @@ div.tuned_in #audio_volume_indicator {
 
 #settings_window div.setting_group {
 	padding: 3px 6px 3px 10px;
+	clear: right;
 }
 
 #settings_window div.setting_group:hover {

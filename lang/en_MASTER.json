@@ -106,6 +106,7 @@
    "rating_counts_across_stations"                   : "Rating % By Station",
    "ratings_completion_rate"                         : "Rating Completion",
    "rating_spread"                                   : "Rating Spread",
+   "average_rating_by_station"                       : "Avg. Rating By Station",
 
    "__comment__"                 : "Other",
 

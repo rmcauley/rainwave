@@ -45,8 +45,8 @@ var ListenerView = function(view, json) {
 	draw_chart(json.ratings_by_station, "ratings", $l("rating_counts_across_stations"));
 
 	var data = [];
-	var v;
-	for (var sid in colors) {
+	var v, sid;
+	for (sid in colors) {
 		if (sid == 5) continue;
 		data.push({ "value": json.rating_completion[sid] || 0, "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });	
 	}
@@ -55,10 +55,30 @@ var ListenerView = function(view, json) {
 	var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
 	var chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 20, "scaleStartValue": 0 });
 
+	var data = [];
+	var found, idx;
+	for (idx in order) {
+		sid = order[idx];
+		if (sid == 5) continue;
+		found = false;
+		for (i = 0; i < json.ratings_by_station.length; i++) {
+			if (json.ratings_by_station[i].sid == sid) {
+				data.push({ "value": json.ratings_by_station[i].average_rating, "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });	
+				found = true;
+			}
+		}
+		if (!found) data.push({ "value": 0, "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });	
+	}
+	d = view.el.appendChild($el("div", { "class": "user_detail_segment" }));
+	d.appendChild($el("h3", { "textContent": $l("average_rating_by_station") }));
+	var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
+	var chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 1, "scaleStartValue": 0 });
+
 	data = [];
 	for (v in AlbumViewColors) {
 		for (i = 0; i < json.rating_spread.length; i++) {
 			if (v == json.rating_spread[i].rating) {
+				found = true;
 				data.push({ "value": json.rating_spread[i].ratings, "color": AlbumViewColors[v], "highlight": "#FFF", "label": v });	
 			}
 		}
