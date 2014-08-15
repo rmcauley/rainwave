@@ -59,7 +59,7 @@ var ListenerView = function(view, json) {
 		d = view.el.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("ratings_completion_rate") }));
 		var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
-		var chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 20, "scaleStartValue": 0 });
+		var chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 20, "scaleStartValue": 0, "tooltipTemplate": "<%=label%>: <%= value %>%" });
 	}
 
 	var data = [];

@@ -62,7 +62,7 @@ class ListenerDetailRequest(APIHandler):
 													"GROUP BY song_origin_sid",
 													(self.get_argument("id"),))
 
-		user['ratings_by_station'] = db.c.fetch_all("SELECT song_origin_sid AS sid, AVG(song_rating_user) AS average_rating, COUNT(song_rating_user) AS ratings "
+		user['ratings_by_station'] = db.c.fetch_all("SELECT song_origin_sid AS sid, TO_CHAR(AVG(song_rating_user), 'FM9.99') AS average_rating, COUNT(song_rating_user) AS ratings "
 													"FROM r4_song_ratings JOIN r4_songs USING (song_id) "
 													"WHERE user_id = %s "
 													"GROUP BY song_origin_sid",
