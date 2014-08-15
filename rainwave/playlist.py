@@ -19,8 +19,14 @@ from rainwave.playlist_objects.artist import Artist
 from rainwave.playlist_objects.songgroup import SongGroup
 from rainwave.playlist_objects.cooldown import prepare_cooldown_algorithm
 
+num_songs = {}
+
 class NoAvailableSongsException(Exception):
 	pass
+
+def update_num_songs():
+	for sid in config.station_ids:
+		num_songs[sid] = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE song_exists = TRUE AND sid = %s", (sid,))
 
 def get_average_song_length(sid):
 	return cooldown.cooldown_config[sid]['average_song_length']

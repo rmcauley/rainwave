@@ -8,6 +8,7 @@ from api.exceptions import APIException
 from api.web import APIHandler
 from api.server import handle_api_url
 import api_requests.info
+import rainwave.playlist
 
 from libs import cache
 from libs import log
@@ -169,6 +170,8 @@ class SyncUpdateAll(APIHandler):
 			log.debug("sync_update_all", "sync_update_all request was not OK.")
 			return
 		log.debug("sync_update_all", "Updating all sessions for sid %s" % self.sid)
+		rainwave.playlist.update_num_songs()
+		rainwave.playlist.prepare_cooldown_algorithm(self.sid)
 		cache.update_local_cache_for_sid(self.sid)
 		sessions[self.sid].update_all(self.sid)
 
