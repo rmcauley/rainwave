@@ -23,15 +23,15 @@
 // 	Chart.defaults.global.scaleLineColor = "rgba(255,255,255,.3)";
 // 	Chart.defaults.global.scaleBeginAtZero = true;
 
-var AlbumViewColors = { "1.0": "#bf3334",
-						"1.5": "#bf3334",
-						"2.0": "#a04655",
-						"2.5": "#a04655",
-						"3.0": "#6f648b",
-						"3.5": "#6f648b",
-						"4.0": "#497bb6",
-						"4.5": "#497bb6",
-						"5.0": "#1f95e4"
+var AlbumViewColors = { "1.0": "#e74a4a",
+						"1.5": "#ba3c3c",
+						"2.0": "#8e2e2e",
+						"2.5": "#6b3535",
+						"3.0": "#62696d",
+						"3.5": "#799db5",
+						"4.0": "#1f95e4",
+						"4.5": "#1fb4e4",
+						"5.0": "#5dd7ff"
 					};
 
 var AlbumViewRatingPieChart = function(ctx, json) {
