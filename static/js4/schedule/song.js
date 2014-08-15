@@ -71,6 +71,7 @@ var TimelineSong = function() {
 			self.elements.title.addEventListener("mouseover", self.title_mouse_over);
 			self.elements.title.addEventListener("mouseout", self.title_mouse_out);
 			self.elements.title.addEventListener("click", self.vote);
+			if (song_rating) song_rating.rating_title_el = self.elements.title;
 
 			var album_group = c.appendChild($el("div", { "class": "album_group" }));
 
@@ -81,6 +82,7 @@ var TimelineSong = function() {
 				self.elements.album.className = "album link";
 				self.elements.album.addEventListener("click", function() { DetailView.open_album(self.data.albums[0].id ); });
 			}
+			if (album_rating) album_rating.rating_title_el = self.elements.album;
 			
 			if ("artists" in self.data) {
 				self.elements.artists = c.appendChild($el("div", { "class": "artist" }));

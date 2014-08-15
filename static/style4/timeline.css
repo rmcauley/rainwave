@@ -114,8 +114,16 @@ div.timeline_song_content > div, div.timeline_song_content div.album_group .link
 	color: $song_subinfo_color;
 }
 
+div.timeline_song_content div.album_group .link.rating_title_el_fave {
+	color: $fave_color;
+}
+
 div.timeline_song_content div.title {
 	color: $text;
+}
+
+div.timeline_song_content div.title.rating_title_el_fave {
+	color: $fave_color;
 }
 
 div.timeline_song_content div.artist, div.timeline_song_content div.votes, div.timeline_song_content div.cooldown_info, div.timeline_song a.song_link {
