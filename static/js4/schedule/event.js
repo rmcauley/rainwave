@@ -177,7 +177,7 @@ var EventBase = function(json) {
 		if (self.type == "OneUp") {
 			header_text.textContent = default_text + " - " + self.name + " " + $l("power_hour");
 		}
-		else if ((default_text != $l("now_playing") || self.type != "Election") && $l_has(self.type)) {
+		else if ((default_text != $l("now_playing") || self.type != "Election") && $l_has(self.type.toLowerCase())) {
 			header_text.textContent = default_text + " - " + $l(self.type.toLowerCase());
 			if (self.name) {
 				header_text.textContent += " - " + self.name;

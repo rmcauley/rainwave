@@ -105,13 +105,23 @@ var AlbumList = function() {
 		// this is duplicate functionality from update_item_element, again to try and streamline
 		// a heavy process
 		if (item.fave) item._el.className += " searchlist_fave_on";
-		if (playlist_show_rating_complete && item.rating_complete) item._el.className += " searchlist_rating_complete";
-		if (item.rating_user) {
-			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
+		//if (playlist_show_rating_complete && item.rating_complete) item._el.className += " searchlist_rating_complete";
+		if (item.rating_user && (item.rating_user > 0)) {
+			if (playlist_show_rating_complete && !item.rating_complete) {
+				item._el.style.backgroundImage = "url(/static/images4/rating_bar/unrated_ldpi.png)";
+			}
+			else {
+				item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
+			}
 			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top + 1) + "px";
 		}
 		else if (item.rating) {
-			item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
+			if (playlist_show_rating_complete && !item.rating_complete) {
+				item._el.style.backgroundImage = "url(/static/images4/rating_bar/unrated_ldpi.png)";
+			}
+			else {
+				item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
+			}
 			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top + 1) + "px";
 		}
 
@@ -147,18 +157,28 @@ var AlbumList = function() {
 		else {
 			$remove_class(item._el, "searchlist_fave_on");
 		}
-		if (playlist_show_rating_complete && item.rating_complete) {
-			$add_class(item._el, "searchlist_rating_complete");
-		}
-		else {
-			$remove_class(item._el, "searchlist_rating_complete");
-		}
-		if (item.rating_user) {
-			item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
+		// if (playlist_show_rating_complete && item.rating_complete) {
+		// 	$add_class(item._el, "searchlist_rating_complete");
+		// }
+		// else {
+		// 	$remove_class(item._el, "searchlist_rating_complete");
+		// }
+		if (item.rating_user && (item.rating_user > 0)) {
+			if (playlist_show_rating_complete && !item.rating_complete) {
+				item._el.style.backgroundImage = "url(/static/images4/rating_bar/unrated_ldpi.png)";
+			}
+			else {
+				item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
+			}
 			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top + 1) + "px";
 		}
 		else if (item.rating) {
-			item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
+			if (playlist_show_rating_complete && !item.rating_complete) {
+				item._el.style.backgroundImage = "url(/static/images4/rating_bar/unrated_ldpi.png)";
+			}
+			else {
+				item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
+			}
 			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top + 1) + "px";
 		}
 	};
