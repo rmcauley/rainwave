@@ -103,10 +103,8 @@ function stage_switch(nv) {
 		$remove_class(document.body, "stage_" + i);
 	}
 	if (nv == 4) {
-		console.log("Setting overflow hidden on timeline.");
 		$id("timeline").style.overflowY = "hidden";
 		Fx.chain_transition($id("timeline_scrollblock"), function() {
-			console.log("Setting overflow back to normal.");
 			$id("timeline").style.overflowY = "";
 		})
 	}
