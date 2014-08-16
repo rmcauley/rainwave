@@ -41,7 +41,7 @@ var AlbumViewRatingPieChart = function(ctx, json) {
 		if (i in json.rating_histogram) data.push({ "value": json.rating_histogram[i], "color": AlbumViewColors[i], "highlight": "#FFF", "label": i });
 	}
 	if (data.length == 0) return;
-	var chart = new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1 });
+	var chart = new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1, "animationSteps": 40 });
 };
 
 var AlbumView = function(view, json) {

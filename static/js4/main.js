@@ -128,7 +128,6 @@ function initialize() {
 		API.add_callback(function(json) { vote_cta_check(); }, "user");
 	}
 
-	
 	Chart.defaults.global.scaleLineColor = "rgba(255,255,255,0.5)";
 	Chart.defaults.global.scaleBeginAtZero = true;
 	Chart.defaults.Doughnut.segmentStrokeColor = "#000";

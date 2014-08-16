@@ -385,7 +385,7 @@ div.tuned_in #audio_volume_indicator {
 }
 
 #top_menu li:hover #settings_window {
-	height: 28em;
+	height: 30em;
 }
 
 #settings_window div.setting_group:first-child {

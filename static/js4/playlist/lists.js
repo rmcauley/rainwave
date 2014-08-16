@@ -83,7 +83,6 @@ PlaylistLists = function() {
 	self.on_resize = function(skip_list_resizes) {
 		el.style.height = (MAIN_HEIGHT - tabs_el_height) + "px";
 		if (skip_list_resizes) return;
-		console.log("Resizing lists");
 		for (var key in lists) {
 			lists[key].on_resize((MAIN_HEIGHT - tabs_el_height));
 		}
