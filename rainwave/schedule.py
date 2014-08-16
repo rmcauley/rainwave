@@ -52,6 +52,9 @@ def load():
 def get_event_in_progress(sid):
 	producer = get_current_producer(sid)
 	evt = producer.load_event_in_progress()
+	if not evt:
+		producer = election.ElectionProducer(sid)
+		evt = producer.load_event_in_progress()
 	return evt
 
 def get_current_producer(sid):

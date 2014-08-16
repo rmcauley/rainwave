@@ -8,10 +8,10 @@ var ListenerView = function(view, json) {
 	var order = [ 1, 4, 2, 3, 5 ];
 	var colors = {
 		1: "#1f95e5",  // Rainwave blue (yeah I'm playing favourites)
-		2: "#f9bf22",  // OCR Orange
-		3: "#b91fe5",  // Purple
-		4: "#5ad9e8",  // Cyan
-		5: "#1fe53b",  // green
+		2: "#de641b",  // OCR Orange
+		3: "#b7000f",  // Red
+		4: "#6e439d",  // Indigo
+		5: "#a8cb2b",  // greenish
 	};
 	var chart_width = 300;
 	var chart_height = 200;

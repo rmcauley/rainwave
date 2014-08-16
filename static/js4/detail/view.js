@@ -90,7 +90,8 @@ var DetailView = function() {
 	}	
 
 	self.on_resize_calculate = function() {
-		internal_width = scrollblock.offsetWidth;
+		var tmp = scrollblock.offsetWidth;
+		if (tmp && (tmp > 0)) internal_width = tmp;
 	};
 	
 	self.on_resize_draw = function() {

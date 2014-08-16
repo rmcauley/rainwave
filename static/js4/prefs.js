@@ -55,16 +55,16 @@ var Prefs = function() {
 	};
 
 	self.load = function(name) {
-		var mmm_cookie = docCookies.getItem(name);
-		try {
-			values = JSON.parse(mmm_cookie);
-		}
-		catch (err) {
-			// silently fail, resetting all preferences to their defaults
-			values = {};
-		}
-		if (!values) values = {};
-		return true;
+		// var mmm_cookie = docCookies.getItem(name);
+		// try {
+		// 	values = JSON.parse(mmm_cookie);
+		// }
+		// catch (err) {
+		// 	// silently fail, resetting all preferences to their defaults
+		// 	values = {};
+		// }
+		// if (!values) values = {};
+		// return true;
 	};
 
 	self.get = function(name) {

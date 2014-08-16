@@ -500,7 +500,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		if (SmallScreen) item_height = 20;
 		else item_height = 24;
 		current_scroll_index = false;
-		self.recalculate();
+		self.recalculate(true);
 		self.reposition();
 	};
 

@@ -78,14 +78,14 @@ body.requests_sticky #detail_scrollbar {
 
 #detail h1 {
 	font-size: 1.6em;
-	border-bottom: solid 1px #555;
+	border-bottom: solid 1px $darktext;
 	margin-top: 0;
 	margin-bottom: 5px;
 }
 
 #detail h2 {
 	font-size: larger;
-	border-bottom: 1px solid #444;
+	border-bottom: 1px solid $vdarktext;
 	margin-bottom: 5px;
 	padding-bottom: 2px;
 }

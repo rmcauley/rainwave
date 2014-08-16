@@ -45,7 +45,6 @@ var History = function() {
 	};
 
 	self.show = function() {
-		if (shown) return;
 		shown = true;
 		if (!css_left) {
 			css_left = $id("history_link_container").offsetWidth + 55;
@@ -71,7 +70,6 @@ var History = function() {
 	};
 
 	self.update = function(json) {
-		shown = false;
 		var found, i, j, new_song;
 		var new_songs = [];
 		for (i = 0; i < json.length; i++) {
@@ -92,6 +90,7 @@ var History = function() {
 			}
 		}
 		songs = new_songs;
+		if (shown) self.show();
 	};
 
 	self.on_resize = function() {};

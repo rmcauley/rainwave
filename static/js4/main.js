@@ -102,6 +102,14 @@ function stage_switch(nv) {
 	for (var i = 0; i <= 4; i++) {
 		$remove_class(document.body, "stage_" + i);
 	}
+	if (nv == 4) {
+		console.log("Setting overflow hidden on timeline.");
+		$id("timeline").style.overflowY = "hidden";
+		Fx.chain_transition($id("timeline_scrollblock"), function() {
+			console.log("Setting overflow back to normal.");
+			$id("timeline").style.overflowY = "";
+		})
+	}
 	$add_class(document.body, "stage_" + nv);
 	vote_cta_check();
 	request_cta_check();

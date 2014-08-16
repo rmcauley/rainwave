@@ -11,7 +11,7 @@ class OneUpProducer(event.BaseProducer):
 
 	def __init__(self, sid):
 		super(OneUpProducer, self).__init__(sid)
-		self.plan_ahead_limit = 3
+		self.plan_ahead_limit = 5
 
 	def load_next_event(self, target_length = None, min_elec_id = None):
 		next_up_id = db.c.fetch_var("SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE ORDER BY one_up_order LIMIT 1", (self.id,))
@@ -20,6 +20,7 @@ class OneUpProducer(event.BaseProducer):
 			up = OneUp.load_by_id(next_up_id, self.sid)
 			up.name = self.name
 			up.url = up.url
+			up.core_event_id = self.id
 			return up
 		else:
 			db.c.update("UPDATE r4_schedule SET sched_used = TRUE WHERE sched_id = %s", (self.id,))
@@ -53,6 +54,7 @@ class OneUpProducer(event.BaseProducer):
 			up = OneUp.load_by_id(self.id, self.sid)
 			up.name = self.name
 			up.url = self.url
+			up.core_event_id = self.id
 			return up
 		else:
 			return None

@@ -40,7 +40,6 @@ var EventBase = function(json) {
 	header_bar.appendChild(header_inside_bar);
 	header.appendChild(self.elements.header_clock);
 	header.appendChild(header_text);
-	self.header_height = 0;
 	self.header_text;
 
 	if (json.songs) {
@@ -206,15 +205,17 @@ var EventBase = function(json) {
 	};
 
 	self.hide_header = function() {
-		Fx.delay_css_setting(header, "opacity", 0);	
+		if (!$add_class(self.el, "timeline_event_sequence")) return;
+		Fx.delay_css_setting(header, "opacity", 0);
 		Fx.delay_css_setting(header, "height", 0);
-		self.header_height = 0;
+		Fx.delay_css_setting(header, "padding", 0);
 	};
 
 	self.show_header = function() {
-		Fx.delay_css_setting(header, "opacity", 1);
-		Fx.delay_css_setting(header, "height", Schedule.header_height + "px");
-		self.header_height = Schedule.header_height;
+		if (!$remove_class(self.el, "timeline_event_sequence")) return;
+		Fx.delay_css_setting(header, "opacity", null);
+		Fx.delay_css_setting(header, "height", null);
+		Fx.delay_css_setting(header, "padding", null);
 	};
 
 	self.progress_bar_start = function() {
