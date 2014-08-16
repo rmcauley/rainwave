@@ -30,7 +30,7 @@ var Menu = function() {
 
 		// Localization
 		$id("chat_link").textContent = $l("chat");
-		$id("history_link").textContent = $l("Previous Songs");
+		$id("history_link").textContent = $l("previouslyplayed");
 		$id("forums_link").textContent = $l("forums");
 		$id("calendar_link").textContent = $l("events_calendar_link");
 

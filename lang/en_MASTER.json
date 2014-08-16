@@ -219,7 +219,7 @@
    "playlist_preferences"                            : "Album List",
    "prefs_playlist_sort_available_first"             : "Sort with Cooldown Last",
    "prefs_playlist_sort_faves_first"                 : "Sort with Faves First",
-   "prefs_playlist_show_rating_complete"             : "Show Uncompleted Ratings",
+   "prefs_playlist_show_rating_complete"             : "Show Incomplete Ratings",
    "prefs_playlist_sort_by"                          : "Sort By",
    "prefs_sort_playlist_by_alpha"                    : "Alphabet",
    "prefs_sort_playlist_by_rating_user"              : "Rating",
