@@ -1,0 +1,120 @@
+{
+   "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
+
+
+   "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
+
+
+   "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
+
+
+   "__comment__"                 : "API Key Management",
+
+
+   "__comment__"                 : "Pretty Printed API Page Words",
+
+
+   "__comment__"                 : "Menu",
+
+   "events_calendar_link"                            : "Radio Events",
+   "logout_in_forums"                                : "Please visit the forums to logout.",
+   "your_mobile_app_qr"                              : "Your Android App QR Code",
+   "request_song_to_vote_for"                        : "Request A Song To Vote For",
+   "your_statistics"                                 : "Your statistics",
+
+   "__comment__"                 : "Timeline",
+
+   "Coming_Up"                                       : "Coming Up",
+   "Now_Playing"                                     : "Now Playing",
+   "Election"                                        : "Election",
+   "Power Hour"                                      : "Power Hour",
+   "Previous Songs"                                  : "Previously Played",
+   "voting_results_were"                             : "vote results:",
+   "click_here_to_start_voting"                      : "Click here to vote for what song you want to hear next!",
+
+   "__comment__"                 : "Tip Jar",
+
+
+   "__comment__"                 : "User Detail",
+
+   "votes_by_station"                                : "Votes By Station",
+   "votes_by_source_station"                         : "Votes by Source Stn.",
+   "requests_by_station"                             : "Requests By Station",
+   "requests_by_source_station"                      : "Requests by Source Stn.",
+   "rating_counts_across_stations"                   : "Ratings by Source Stn.",
+   "ratings_completion_rate"                         : "Rating Completion",
+   "rating_spread"                                   : "Rating Spread",
+   "average_rating_by_station"                       : "Avg. Rating By Station",
+
+   "__comment__"                 : "Other",
+
+   "lost_connection"                                 : "Lost connection to server.",
+   "hotkey_mode"                                     : "1-5 to Rate, A/S/D to Vote",
+
+   "try_external_player"                             : "Click here to try using an app to tune in.",
+   "stop"                                            : "Stop",
+
+   "catastrophic_error"                              : "Rainwave Has Crashed :(",
+   "submit_javascript_error"                         : "Please submit the bug report below to the forums, so we can fix it.",
+
+   "power_hour"                                      : "Power Hour",
+   "timeline_art__request_indicator"                 : "REQUEST",
+   "timeline_art__your_request_indicator"            : "YOURS",
+
+   "__comment__"                 : "About Window",
+
+   "staff_list_header"                               : "Staff",
+   "relay_sponsors_header"                           : "Relay Sponsors",
+   "translators_header"                              : "Translators",
+   "icon_attribution"                                : "Icon Attribution",
+   "design_by"                                       : "Site Design",
+   "donate_and_paypal_info"                          : "Click Here For Our Tip Jar/PayPal",
+   "open_sourced_at_github"                          : "Rainwave is Open Sourced At GitHub",
+
+   "__comment__"                 : "Playlist View",
+
+   "filter"                                          : "Type anywhere to filter",
+   "typeanywhere"                                    : "Just start typing!",
+   "Request"                                         : "Request",
+   "Albums"                                          : "Albums",
+   "Artists"                                         : "Artists",
+   "Listeners"                                       : "Listeners",
+   "ratings_detail"                                  : "Ratings",
+   "groups_tab_title"                                : "Categories",
+
+   "__comment__"                 : "Requests",
+
+   "Requests"                                        : "Requests",
+   "clear_request_queue"                             : "Clear All",
+   "pause_request_queue"                             : "Pause",
+   "request_fill_with_unrated"                       : "Unrated Fill",
+   "request_on_cooldown_ends_soon"                   : "Coming off cooldown.",
+   "request_not_available"                           : "Song is on a different station.",
+   "requests_expiring"                               : "Requests - Losing Your Place!",
+   "requests_all_on_cooldown"                        : "Requests - No Good Requests!",
+
+   "__comment__"                 : "Station Descriptions",
+
+
+   "__comment__"                 : "Station Descriptions For The Menu (short messages)",
+
+
+   "__comment__"                 : "Preferences",
+
+   "tab_title_preferences"                           : "Tab Title",
+   "playlist_preferences"                            : "Album List",
+   "prefs_playlist_sort_by"                          : "Sort By",
+   "m3u_downloads"                                   : "M3U Downloads",
+   "skip_intro_mode"                                 : "Skip Intro Mode",
+   "do_intro_mode"                                   : "Go back to Intro Mode",
+   "change_language"                                 : "Language",
+
+   "__comment__"                 : "Old R3 translation lines.",
+
+
+   "tunein"                                          : "Tune In",
+   "previouslyplayed"                                : "Previously Played",
+   "forums"                                          : "Forums",
+   "login"                                           : "Login",
+   "chat"                                            : "Chat",
+}

@@ -71,6 +71,11 @@
    "request_song_to_vote_for"                        : "Request A Song To Vote For",
    "m3u_hijack_right_click"                          : "A plugin is trying to hijack your browser.  Please right click the player and click Save As to tune in.",
    "your_statistics"                                 : "Your statistics",
+   "tunein"                                          : "Tune In",
+   "previouslyplayed"                                : "Previously Played",
+   "forums"                                          : "Forums",
+   "login"                                           : "Login",
+   "chat"                                            : "Chat",
 
    "__comment__"                 : "Timeline",
 
@@ -222,8 +227,9 @@
    "m3u_downloads"                                   : "M3U Downloads",
    "skip_intro_mode"                                 : "Skip Intro Mode",
    "do_intro_mode"                                   : "Go back to Intro Mode",
+   "change_language"                                 : "Language",
 
-   "__comment__"                 : "Old R3 translation lines.",
+   "__comment__"                 : "Old R3 translation lines.  DO NOT TRANSLATE THE LINES BELOW.",
 
    "p_MainMPI"                                       : "Tabs",
    "p_MenuPanel"                                     : "Menu",
