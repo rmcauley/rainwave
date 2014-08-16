@@ -92,13 +92,13 @@ var EventBase = function(json) {
 
 	self.change_to_coming_up = function() {
 		$add_class(self.el, "timeline_next");
-		self.set_header_text($l("Coming_Up"));
+		self.set_header_text($l("coming_up"));
 	};
 
 	self.change_to_now_playing = function() {
 		if ($has_class(self.el, "timeline_now_playing")) return;
 		$remove_class(self.el, "timeline_next");
-		self.set_header_text($l("Now_Playing"));
+		self.set_header_text($l("now_playing"));
 		Clock.pageclock = self.elements.header_clock;
 		if (self.songs && (self.songs.length > 1)) {
 			// other places in the code rely on songs[0] to be the winning song
@@ -177,8 +177,8 @@ var EventBase = function(json) {
 		if (self.type == "OneUp") {
 			header_text.textContent = default_text + " - " + self.name + " " + $l("power_hour");
 		}
-		else if ((default_text != $l("Now_Playing") || self.type != "Election") && $l_has(self.type)) {
-			header_text.textContent = default_text + " - " + $l(self.type);
+		else if ((default_text != $l("now_playing") || self.type != "Election") && $l_has(self.type)) {
+			header_text.textContent = default_text + " - " + $l(self.type.toLowerCase());
 			if (self.name) {
 				header_text.textContent += " - " + self.name;
 			}

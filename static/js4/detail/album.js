@@ -53,7 +53,6 @@ var AlbumView = function(view, json) {
 	d.appendChild($el("h1", { "textContent": json.name }));
 
 	var cnvs = d.appendChild($el("canvas", { "width": 100, "height": 80 }));
-	//d.appendChild($el("div", { "class": "canvas_header", "textContent": $l("ratings_detail") }));
 	AlbumViewRatingPieChart(cnvs.getContext("2d"), json);
 
 	if (json.rating > 0) {
