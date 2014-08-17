@@ -1,5 +1,10 @@
 {
-   "language_name"                                   : "Español (Chile)",
+   "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
+
+   "language_name"                                   : "Español",
+
+   "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
+
    "missing_station_id"                              : "ID de estación ausente.",
    "invalid_station_id"                              : "ID de estación inválido.",
    "missing_argument"                                : "Argumento ausente: '%(argument)'.",
@@ -16,6 +21,9 @@
    "song_does_not_exist"                             : "La canción no existe.",
    "db_error_retry"                                  : "Error interno de la base de datos - intente nuevamente.",
    "db_error_permanent"                              : "Error del servidor - la base de datos interna no está en línea.",
+
+   "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
+
    "fave_failed"                                     : "Ha fallado el registro del favorito.",
    "request_failed"                                  : "Ha fallado la petición.",
    "request_delete_failed"                           : "Ha fallado la eliminación de la petición.",
@@ -34,33 +42,112 @@
    "rating_cleared"                                  : "Valoración borrada.",
    "unknown_error_message"                           : "Lo sentimos.  Intente nuevamente o registre la incidencia con la información de depuración a continuación.  (este error ha sido registrado)",
    "debug_information"                               : "Información de depuración:",
+
+   "__comment__"                 : "API Key Management",
+
    "api_key_manager"                                 : "Administrador de Claves de API",
    "api_key"                                         : "Clave de API",
    "qr_code"                                         : "Código QR",
    "create_api_key"                                  : "Crear Clave de API",
+   "your_numeric_user_id"                            : "Tu ID (numérico) de usuario",
+
+   "__comment__"                 : "Pretty Printed API Page Words",
+
    "unrated_songs"                                   : "Canciones sin Clasificar",
    "title"                                           : "Título",
    "album_name"                                      : "Nombre del Álbum",
    "id"                                              : "ID",
+
+   "__comment__"                 : "Menu",
+
+   "station_name_1"                                  : "Videojuegos",
+   "station_name_2"                                  : "OCRemix",
+   "station_name_3"                                  : "Covers",
+   "station_name_4"                                  : "Chiptune",
+   "station_name_5"                                  : "Todo",
+
+   "__comment__"                 : "Timeline",
+
    "Coming_Up"                                       : "A Continuación",
    "Now_Playing"                                     : "Ahora Reproduciendo",
    "History"                                         : "Historial",
+   "Election"                                        : "Votación",
+   "Power Hour"                                      : "Power Hour",
+   "vote_submitted"                                  : "Voto Enviado",
+   "cannot_vote_for_this_now"                        : "No puede votar por esa canción en este momento.",
+   "invalid_hotkey_vote"                             : "Opción inválida, intente nuevamente.",
+   "Previous Songs"                                  : "Anteriormente Reproducido",
+
+   "__comment__"                 : "Tip Jar",
+
    "tip_jar"                                         : "Jarro de Propinas",
    "tip_jar_opener"                                  : "Rainwave seguirá funcionando independientemente de lo que haya en el jarro de propinas.  Si deseas echarle unas monedas, es muy sencillo:",
    "tip_jar_instruction_1"                           : "Envía un regalo de PayPal a rmcauley@rainwave.cc en dólares estadounidenses o canadienses.",
    "tip_jar_instruction_2"                           : "Envíanos tu nombre de usuario y un mensaje como comentario.",
    "tip_jar_instruction_3"                           : "Por favor, indique si desea que su nombre se mantenga anónimo.",
-   "tip_jar_opener_end"                              : "Luego de procesar su propina, se le dará el estado de Donante en el sitio.  Esto le permitirá agregar más peticiones a la cola y la posibilidad de votar en más de una elección a la vez.",
+   "tip_jar_opener_end"                              : "Luego de procesar su propina, se le dará el estado de Donante (Donor) en el sitio.  Esto le permitirá agregar más peticiones a la cola y la posibilidad de votar en más de una elección a la vez.",
    "amount"                                          : "Cantidad",
    "message"                                         : "Mensaje",
-   "redownload_m3u"                                  : "¿Está sintonizando?  Si acabas de iniciar sesión, vuelve a descargar la lista de reproducción.",
+   "tip_jar_balance"                                 : "Balance Actual",
+   "tip_jar_all_donations"                           : "Monto total de donativos hasta la fecha",
+
+   "__comment__"                 : "Other",
+
+   "redownload_m3u"                                  : "¿Estás sintonizando?  Si acabas de iniciar sesión, vuelve a descargar la lista de reproducción.",
    "random_relay"                                    : "Servidor Repetidor al Azar",
    "backend_scan_errors"                             : "Errores del Analizador de Backend",
-   "station_description_id_1"                        : "Radio por Internet de Música de Videojuegos.  ¡Vota por las canciones que quieres escuchar!",
+   "sync_stopped"                                    : "Rainwave dejó de funcionar. :( El error es: ",
+   "lost_connection"                                 : "Se ha perdido la conexión al servidor.",
+   "sync_retrying"                                   : "Hay problemas con el servidor del Rainwave, un momento, por favor...",
+   "deeplink_error"                                  : "Error al analizar la URL introducida.",
+   "hotkey_mode"                                     : "1-5 para Valorar, A/S/D para Votar",
+   "invalid_hotkey"                                  : "Tecla rápida inválida.",
+   "not_an_election"                                 : "No es una votación.",
+
+   "audio_not_supported"                             : "Su navegador no soporta audio HTML5.",
+   "audio_error"                                     : "¡No se pudo sintonizar desde su navegador!",
+   "audio_connect_error"                             : "De momento hay dificultades conectando al servidor de la radio.",
+   "try_external_player"                             : "Clic aquí para intentar usar una aplicación para sintonizar.",
+   "stop"                                            : "Detener",
+
+   "__comment__"                 : "Playlist View",
+
+   "filter"                                          : "Escriba dónde sea para filtrar",
+   "typeanywhere"                                    : "¡Comience a escribir!",
+   "clearfilter"                                     : "Limpiar Filtro",
+   "album_rating_ranked_at"                          : "Valoración: %(rating), Nº(rank) en el ránking.",
+   "album_requests_ranked_at"                        : "Pedido %(count) &(count:vez/veces), Nº(rank) en el ránking.",
+   "Request"                                         : "Pedir",
+   "Albums"                                          : "Álbumes",
+   "Artists"                                         : "Artistss",
+   "Users"                                           : "Usuarios",
+   "Groups"                                          : "Grupos",
+   "Listeners"                                       : "Escuchas",
+
+   "__comment__"                 : "Requests",
+
+   "Requests"                                        : "Peticiones",
+   "cancel_request"                                  : "Cancelar Petición",
+   "requests_reordered"                              : "Peticiones Reordenadas",
+   "clear_request_queue"                             : "Borrar Todo",
+   "pause_request_queue"                             : "Pausa",
+   "request_queue_paused"                            : "Cola de peticiones pausada.",
+   "request_queue_unpaused"                          : "Cola de peticiones reanudada.",
+   "request_fill_with_unrated"                       : "Llenar cola con canciones sin Valorar",
+   "request_on_cooldown_for"                         : "En enfriamiento por %(cool_time).",
+   "request_on_cooldown_ends_soon"                   : "Saliendo del enfriamiento.",
+   "request_in_election"                             : "%(blocked_by) está en una votación.",
+
+   "__comment__"                 : "Station Descriptions",
+
+   "station_description_id_1"                        : "Transmitiendo Música de Videojuegos.  ¡Vota por las canciones que quieres escuchar!",
    "station_description_id_2"                        : "La Radio de OverClocked Remix.  ¡Vota por tus remixes favoritos!",
    "station_description_id_3"                        : "Covers y Remixes de Música de Videojuegos.  ¡Vota por tus artistas favoritos!",
    "station_description_id_4"                        : "Transmitiendo chiptunes originales de videojuegos.  ¡Vota por las canciones que quieres escuchar!",
    "station_description_id_5"                        : "Transmitiendo música original y remixes de videojuegos.  ¡Vota por las canciones que quieres escuchar!",
+
+   "__comment__"                 : "Old R3 translation lines, to be removed when the transition is complete.",
+
    "p_MainMPI"                                       : "Pestañas",
    "p_MenuPanel"                                     : "Menú",
    "p_PlaylistPanel"                                 : "Lista de canciones",
