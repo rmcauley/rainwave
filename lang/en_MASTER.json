@@ -169,7 +169,6 @@
    "Groups"                                          : "Categories",
    "Listeners"                                       : "Listeners",
    "songs_from"                                      : "Songs from %(station)",
-   "songs_on"                                        : "Songs on %(station)",
    "album_on_station"                                : "On %(station): %(album)",
    "groups_tab_title"                                : "Categories",
 
