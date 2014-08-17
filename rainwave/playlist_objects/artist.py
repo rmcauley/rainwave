@@ -49,7 +49,7 @@ class Artist(AssociatedMetadata):
 		pass
 
 	def load_all_songs(self, sid, user_id = 1):
-		self.data['songs'] = db.c.fetch_all(
+		all_songs = db.c.fetch_all(
 			"SELECT r4_song_artist.song_id AS id, "
 			 	"r4_songs.song_origin_sid AS sid, "
 			 	"song_title AS title, "
@@ -78,7 +78,7 @@ class Artist(AssociatedMetadata):
 		for sid in config.station_ids:
 			self.data['all_songs'][sid] = {}
 		requestable = True if user_id > 1 else False
-		for song in self.data['songs']:
+		for song in all_songs:
 			song['requestable'] = requestable and song['requestable']
 			if not song['album_id'] in self.data['all_songs'][song['sid']]:
 				self.data['all_songs'][song['sid']][song['album_id']] = []

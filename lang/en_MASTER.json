@@ -135,6 +135,8 @@
    "sync_stopped"                                    : "Rainwave has stopped working.  Please refresh and try again.",
    "lost_connection"                                 : "Lost connection to server.",
    "sync_retrying"                                   : "Having trouble talking with the Rainwave server, please wait...",
+   "mobile_sync_retrying"                            : "Connection timeout issues, please refresh or try later.",
+   "async_error"                                     : "Error talking to server.  Please try again or refresh.",
    "deeplink_error"                                  : "Error understanding the URL entered.",
    "hotkey_mode"                                     : "1-5 to Rate, A/S/D to Vote",
    "invalid_hotkey"                                  : "Invalid hotkey.",

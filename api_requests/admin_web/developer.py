@@ -56,6 +56,7 @@ class TestUserRequest(APIHandler):
 class CreateLoginTunedIn(TestUserRequest):
 	description = "Creates or uses a user account with a tuned in record and sets the appropriate cookies so you're that user."
 	auth_required = False
+	sid_required = False
 	return_name = "login_tuned_in_result"
 
 	def execute(self, user_id, sid):

@@ -32,44 +32,12 @@ class MainIndex(api.web.HTMLRequest):
 
 	def prepare(self):
 		super(MainIndex, self).prepare()
+		self.json_payload = {}
+		self.jsfiles = None
 
-		self.json_payload = []
 		if not self.user:
 			self.user = User(1)
 		self.user.ensure_api_key(self.request.remote_ip)
-		self.user.data['sid'] = self.sid
-
-	def append(self, key, value):
-		self.json_payload.append({ key: value })
-
-	def get(self):
-		info.attach_info_to_request(self, all_lists=True)
-		self.append("api_info", { "time": int(time.time()) })
-		self.render("index.html", request=self,
-					site_description=self.locale.translate("station_description_id_%s" % self.sid),
-					revision_number=config.build_number,
-					api_url=config.get("api_external_url_prefix"),
-					cookie_domain=config.get("cookie_domain"),
-					locales=api.locale.locale_names_json)
-
-@handle_url("/beta")
-class BetaRedirect(tornado.web.RequestHandler):
-	help_hidden = True
-
-	def prepare(self):
-		self.redirect("/beta/", permanent=True)
-
-@handle_url("/beta/")
-class R4Index(MainIndex):
-	perks_required = True
-	description = "The next version of the Rainwave UI."
-
-	def prepare(self):
-		if config.get("public_beta"):
-			self.perks_required = False
-		super(R4Index, self).prepare()
-		self.json_payload = {}
-		self.jsfiles = None
 
 		if config.get("web_developer_mode") or config.get("developer_mode") or config.get("test_mode"):
 			buildtools.bake_css()
@@ -94,5 +62,11 @@ class R4Index(MainIndex):
 					relays=config.public_relays_json[self.sid],
 					stream_filename=config.get_station(self.sid, "stream_filename"),
 					station_list=config.station_list_json,
-					mobile=True)
-					#mobile=self.request.headers.get("User-Agent").lower().find("mobile") != -1)
+					mobile=self.request.headers.get("User-Agent").lower().find("mobile") != -1)
+
+@handle_url("/beta")
+class BetaRedirect(tornado.web.RequestHandler):
+	help_hidden = True
+
+	def prepare(self):
+		self.redirect("/beta/", permanent=True)

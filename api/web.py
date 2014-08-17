@@ -153,7 +153,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):
 		if self.local_only and not self.request.remote_ip in config.get("api_trusted_ip_addresses"):
-			log.info("api", "Rejected %s request from %s" % (self.url, self.request.remote_ip))
+			log.info("api", "Rejected %s request from %s, untrusted address." % (self.url, self.request.remote_ip))
+			raise APIException("rejected", text="You are not coming from a trusted address.")
 			self.set_status(403)
 			self.finish()
 
