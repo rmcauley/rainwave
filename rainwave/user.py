@@ -186,7 +186,7 @@ class User(object):
 			self.data['sid'] = 5
 			self.data['tuned_in'] = False
 		else:
-			self.data['sid'] = self.request_sid
+			self.data['sid'] = self.request_sid or 5
 			self.data['tuned_in'] = False
 
 		if (self.id > 1) and cache.get_station(self.request_sid, "sched_current"):
