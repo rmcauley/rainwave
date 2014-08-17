@@ -81,6 +81,9 @@ body.requests_sticky #detail_scrollbar {
 	border-bottom: solid 1px $darktext;
 	margin-top: 0;
 	margin-bottom: 5px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 #detail h2 {
@@ -88,6 +91,9 @@ body.requests_sticky #detail_scrollbar {
 	border-bottom: 1px solid $vdarktext;
 	margin-bottom: 5px;
 	padding-bottom: 2px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 div.albumview_header {
