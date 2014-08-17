@@ -99,9 +99,10 @@ var Prefs = function() {
 		// 		return false;
 		// 	}
 		// }
+		var old_value = values[name];
 		values[name] = value;
 		if (!skip_callbacks) {
-			do_callbacks(name, value);
+			do_callbacks(name, value, old_value);
 		}
 		// do this AFTER callbacks in case a callback triggers a JS error
 		self.save("r4_prefs");
@@ -131,9 +132,9 @@ var Prefs = function() {
 		callbacks[name].push(method);
 	};
 
-	var do_callbacks = function(name, value) {
+	var do_callbacks = function(name, value, old_value) {
 		for (var i in callbacks[name]) {
-			callbacks[name][i](value);
+			callbacks[name][i](value, old_value);
 		}
 	};
 

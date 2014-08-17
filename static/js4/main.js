@@ -94,7 +94,7 @@ function request_cta_check() {
 	}
 }
 
-function stage_switch(nv) { 
+function stage_switch(nv, ov) { 
 	if ((nv == 3) && User.perks) {
 		Prefs.change("stage", 4);
 		return;
@@ -102,7 +102,7 @@ function stage_switch(nv) {
 	for (var i = 0; i <= 4; i++) {
 		$remove_class(document.body, "stage_" + i);
 	}
-	if (nv == 4) {
+	if ((nv == 4) && (ov != 4)) {
 		$id("timeline").style.overflowY = "hidden";
 		Fx.chain_transition($id("timeline_scrollblock"), function() {
 			$id("timeline").style.overflowY = "";

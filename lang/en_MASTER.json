@@ -15,7 +15,7 @@
    "tunein_required"                                 : "You must be tuned in.",
    "admin_required"                                  : "You must be an admin.",
    "dj_required"                                     : "You must be a DJ.",
-   "perks_required"                                  : "Must be a VIP user.",
+   "perks_required"                                  : "You must be a donor.",
    "unlocked_only"                                   : "User locked to %(station) for %(lock_counter) more songs.",
    "internal_error"                                  : "Internal server error.",
    "song_does_not_exist"                             : "Song does not exist.",
@@ -76,7 +76,7 @@
 
    "logout_in_forums"                                : "Please visit the forums to logout.",
    "your_statistics"                                 : "Your statistics",
-   "your_mobile_app_qr"                              : "Your Android App QR Code",
+   "your_mobile_app_qr"                              : "Your Android app QR code",
    
    "request_song_to_vote_for"                        : "Request A Song To Vote For",
    "previouslyplayed"                                : "Previously Played",
@@ -227,6 +227,14 @@
    "skip_intro_mode"                                 : "Skip Intro Mode",
    "do_intro_mode"                                   : "Go back to Intro Mode",
 
+   "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
+
+   "timeformat_w"                                    : "w ",
+   "timeformat_d"                                    : "d ",
+   "timeformat_h"                                    : "h ",
+   "timeformat_m"                                    : "m ",
+   "timeformat_s"                                    : "s ",
+
    "__comment__"                 : "Old R3 translation lines.  DO NOT TRANSLATE THE LINES BELOW.",
 
    "p_MainMPI"                                       : "Tabs",
@@ -238,12 +246,6 @@
    "p_RequestsPanel"                                 : "Requests",
    "p_TimelinePanel"                                 : "Timeline",
    "p_ListenersPanel"                                : "Listeners",
-   "timeformat_d"                                    : "d ",
-   "timeformat_h"                                    : "h ",
-   "timeformat_m"                                    : "m ",
-   "timeformat_s"                                    : "s ",
-   "timeformat_w"                                    : "w ",
-
    "pltab_albums"                                    : "Albums",
    "pltab_artists"                                   : "Artists",
    "overclockedremixes"                              : "OverClocked Remixes",
