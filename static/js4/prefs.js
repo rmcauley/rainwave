@@ -152,6 +152,18 @@ var SettingsWindow = function() {
 
 	self.initialize = function() {
 		el = $id("settings_window");
+		Prefs.add_callback("show_title_in_titlebar", self.enable_disable_title_options);
+	};
+
+	self.enable_disable_title_options = function(nv) {
+		if (nv) {
+			$id("prefs_show_clock_in_titlebar").parentNode.style.opacity = 1;
+			$id("prefs_show_rating_in_titlebar").parentNode.style.opacity = 1;
+		}
+		else {
+			$id("prefs_show_clock_in_titlebar").parentNode.style.opacity = 0.5;
+			$id("prefs_show_rating_in_titlebar").parentNode.style.opacity = 0.5;
+		}
 	};
 
 	self.change_language = function(e) {
@@ -220,6 +232,7 @@ var SettingsWindow = function() {
 		div.appendChild($el("div", { "textContent": "Foobar2000" }));
 
 		intro_mode_swap();
+		self.enable_disable_title_options(Prefs.get("show_title_in_titlebar"));
 		Prefs.add_callback("stage", intro_mode_swap);
 	};
 
