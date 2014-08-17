@@ -7,8 +7,9 @@ var AlbumList = function() {
 	var playlist_sort_solver = function(nv) {
 		if (PlaylistLists.sorting_methods.indexOf(nv) == -1) Prefs.change("playlist_sort", PlaylistLists.sorting_methods[0]);
 		if (nv == "alpha") self.sort_function = self.sort_by_alpha;
-		if (nv == "updated") self.sort_function = self.sort_by_updated;
+		//if (nv == "updated") self.sort_function = self.sort_by_updated;
 		if (nv == "rating_user") self.sort_function = self.sort_by_rating_user;
+		if (nv == "cool") self.sort_function = self.sort_by_cool_time;
 	}
 	Prefs.add_callback("playlist_sort", function(nv) {
 		playlist_sort_solver(nv);
@@ -234,6 +235,26 @@ var AlbumList = function() {
 
 		if (self.data[a].rating_user < self.data[b].rating_user) return 1;
 		if (self.data[a].rating_user > self.data[b].rating_user) return -1;
+
+		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return -1;
+		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return 1;
+		return 0;
+	};
+
+	self.sort_by_cool_time = function(a, b) {
+		if (playlist_sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+			if (self.data[a].fave) return -1;
+			else return 1;
+		}
+
+		if (playlist_sort_available_first && (self.data[a].cool !== self.data[b].cool)) {
+			if (self.data[a].cool === false) return -1;
+			else return 1;
+		}
+		else if (self.data[a].cool && self.data[b].cool) {
+			if (self.data[a].cool_lowest < self.data[b].cool_lowest) return -1;
+			if (self.data[a].cool_lowest > self.data[b].cool_lowest) return 1;
+		}
 
 		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return -1;
 		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return 1;

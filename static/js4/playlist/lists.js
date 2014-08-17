@@ -10,7 +10,7 @@ PlaylistLists = function() {
 	var search_box;
 	var tabs_el_height = 83;
 
-	self.sorting_methods = [ "alpha", "rating_user" ];
+	self.sorting_methods = [ "alpha", "rating_user", "cool" ];
 
 	self.scroll_init = function() {
 		var resizer = Scrollbar.new_resizer($id("lists"), $id("lists_albums"), $id("lists_resizer"));

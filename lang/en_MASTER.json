@@ -224,6 +224,7 @@
    "prefs_playlist_sort_by"                          : "Sort By",
    "prefs_sort_playlist_by_alpha"                    : "Alphabet",
    "prefs_sort_playlist_by_rating_user"              : "Rating",
+   "prefs_sort_playlist_by_cool"                     : "Cooldown",
    "m3u_downloads"                                   : "M3U Downloads",
    "skip_intro_mode"                                 : "Skip Intro Mode",
    "do_intro_mode"                                   : "Go back to Intro Mode",
