@@ -181,12 +181,13 @@ class User(object):
 			else:
 				self.data['sid'] = self.request_sid
 		# Default to All if no sid is given
-		elif not self.request_sid:
+		elif not self.request_sid or self.request_sid == 0:
 			self.request_sid = 5
 			self.data['sid'] = 5
 			self.data['tuned_in'] = False
 		else:
-			self.data['sid'] = self.request_sid or 5
+			self.request_sid = self.request_sid or 5
+			self.data['sid'] = self.request_sid
 			self.data['tuned_in'] = False
 
 		if (self.id > 1) and cache.get_station(self.request_sid, "sched_current"):

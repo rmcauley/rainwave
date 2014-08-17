@@ -205,10 +205,12 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		else:
 			self.rainwave_auth()
 
-		if self.user and not self.sid:
+		if self.user and not self.sid and self.user.request_sid:
 			self.sid = self.user.request_sid
 		if not self.sid and not self.sid_required:
 			self.sid = 5
+			self.user.data['sid'] = 5
+			self.user.request_sid = 5
 		if not self.sid in config.station_ids:
 			raise APIException("invalid_station_id", http_code=400)
 		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
