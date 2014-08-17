@@ -93,10 +93,6 @@ body.requests_sticky #requests_pin, div.request_queue_paused #requests_pause {
 	opacity: 0.4;
 }
 
-#requests_list div.timeline_song_invalid {
-	opacity: 0.4;
-}
-
 #requests_list div.timeline_song_is_cool:hover {
 	opacity: 1;
 }

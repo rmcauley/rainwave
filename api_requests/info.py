@@ -38,7 +38,7 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 	sched_history = None
 	sched_current = None
 	if request.user and not request.user.is_anonymous():
-		request.append("requests", request.user.get_requests())
+		request.append("requests", request.user.get_requests(request.sid))
 		sched_current = cache.get_station(request.sid, "sched_current")
 		if request.user.is_tunedin():
 			sched_current.get_song().data['rating_allowed'] = True
