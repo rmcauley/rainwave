@@ -10,6 +10,7 @@ var MENU_HEIGHT = 56;
 
 function _size_calculate() {
 	"use strict";
+	if (MOBILE) return;
 	var old_height = SCREEN_HEIGHT;
 	SCREEN_HEIGHT = document.documentElement.clientHeight;
 	SCREEN_WIDTH = document.documentElement.clientWidth;
@@ -33,6 +34,8 @@ function _on_resize() {
 	// this function causes a 2-paint reflow but the development cost of
 	// getting this down to a single reflow would be astronomical in code complexity
 	"use strict";
+	if (MOBILE) return;
+
 	// paint 1 :(
 	if (!_size_calculate()) return;
 	
@@ -95,6 +98,11 @@ function request_cta_check() {
 }
 
 function stage_switch(nv, ov) { 
+	if (MOBILE) {
+		$add_class(document.body, "stage_2");	
+		return;
+	}
+
 	if ((nv == 3) && User.perks) {
 		Prefs.change("stage", 4);
 		return;
@@ -122,7 +130,7 @@ function initialize() {
 	API.add_callback(function(json) { User = json; }, "user");
 
 	Prefs.define("stage", [ 1, 2, 3, 4 ]);
-	if (!User.tuned_in && (Prefs.get("stage") < 2)) {
+	if (!MOBILE && !User.tuned_in && (Prefs.get("stage") < 2)) {
 		API.add_callback(function(json) { vote_cta_check(); }, "user");
 	}
 
@@ -149,6 +157,10 @@ function initialize() {
 
 	// ****************** PAGE LAYOUT
 	// PREP: Applies the small_screen and small_menu classes if necessary and sizes everything
+	if (MOBILE) {
+		$add_class(document.body, "small_screen");
+		SmallScreen = true;
+	}
 	Fx.flush_draws();
 	// copy/pasted from _size_calculate because _size_calculate does not get called and menu height may have changed
 	MAIN_HEIGHT = SCREEN_HEIGHT - MENU_HEIGHT;

@@ -12,7 +12,7 @@ var ArtistList = function() {
 		}
 		PlaylistLists.change_visible_list(self); }
 	);
-	API.add_callback(self.update, "all_artists");
+	if (!MOBILE) API.add_callback(self.update, "all_artists");
 
 	self.draw_entry = function(item) {
 		item._el = document.createElement("div");

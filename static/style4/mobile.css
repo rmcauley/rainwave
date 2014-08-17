@@ -1,0 +1,60 @@
+html, body, body.small_screen {
+	overflow: auto !important;
+	background-color: #131416;
+	font-size: 100%;
+}
+
+#sizable_body {
+	overflow: auto !important;
+}
+
+#messages {
+	position: relative !important;
+}
+
+#lists, #detail_scrollblock, #top_icons, #main_icons, #requests_scrollblock  {
+	display: none !important;
+}
+
+div.scrollblock {
+	overflow: auto !important;
+}
+
+div.resizer, div.scrollbar {
+	display: none !important;
+}
+
+#timeline_scrollblock {
+	float: none !important;
+	width: 100% !important;
+	background: none !important;
+}
+
+#top_menu {
+	height: auto !important;
+}
+
+div.scrollable {
+	overflow: auto !important;
+}
+
+#station_select {
+	-webkit-transition: height 700ms cubic-bezier(0.165, 0.84, 0.44, 1);
+	    -ms-transition: height 700ms cubic-bezier(0.165, 0.84, 0.44, 1);
+	        transition: height 700ms cubic-bezier(0.165, 0.84, 0.44, 1);
+	width: 100% !important;
+	overflow: hidden !important;
+	float: none !important;
+}
+
+#station_select li {
+	display: block !important;
+}
+
+#station_select li a {
+	margin-top: 0 !important;
+}
+
+#audio_volume {
+	display: none !important;
+}

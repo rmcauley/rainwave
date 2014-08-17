@@ -25,7 +25,7 @@ var History = function() {
 	self.initialize = function() {
 		scrollblock = $id("history");
 		el = $id("history_list");
-		API.add_callback(self.update, "sched_history");
+		if (!MOBILE) API.add_callback(self.update, "sched_history");
 		var li = $id("history_link_container");
 		if ('onmouseenter' in li) {
 			li.addEventListener("mouseenter", self.show);

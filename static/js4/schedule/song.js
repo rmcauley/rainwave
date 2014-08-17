@@ -68,9 +68,16 @@ var TimelineSong = function() {
 			if (song_rating) title_group.appendChild(song_rating.el);
 
 			self.elements.title = title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
-			self.elements.title.addEventListener("mouseover", self.title_mouse_over);
-			self.elements.title.addEventListener("mouseout", self.title_mouse_out);
-			self.elements.title.addEventListener("click", self.vote);
+			if (!MOBILE) {
+				self.elements.title.addEventListener("mouseover", self.title_mouse_over);
+				self.elements.title.addEventListener("mouseout", self.title_mouse_out);
+				self.elements.title.addEventListener("click", self.vote);
+			}
+			else {
+				c.addEventListener("mouseover", self.title_mouse_over);
+				c.addEventListener("mouseout", self.title_mouse_out);
+				c.addEventListener("click", self.vote);	
+			}
 			if (song_rating) song_rating.rating_title_el = self.elements.title;
 
 			var album_group = c.appendChild($el("div", { "class": "album_group" }));
@@ -78,7 +85,7 @@ var TimelineSong = function() {
 			if (album_rating) album_group.appendChild(album_rating.el);
 
 			self.elements.album = album_group.appendChild($el("div", { "class": "album", "textContent": self.data.albums[0].name }));			
-			if (self.data.albums[0].id) {
+			if (self.data.albums[0].id && !MOBILE) {
 				self.elements.album.className = "album link";
 				self.elements.album.addEventListener("click", function() { DetailView.open_album(self.data.albums[0].id ); });
 			}

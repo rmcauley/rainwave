@@ -179,7 +179,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 	self.reset_rating();
 	self.reset_fave();
 
-	if (User.id > 1) {
+	if (User.id > 1 && !MOBILE) {
 		self.el.addEventListener("mouseover", self.fave_mouse_over);
 		self.el.addEventListener("mouseout", self.reset_fave);
 		self.el.addEventListener("click", click);

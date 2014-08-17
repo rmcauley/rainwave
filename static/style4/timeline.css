@@ -367,7 +367,6 @@ div.timeline_song_is_cool div.timeline_song_content div.cooldown_info {
 div.timeline_header {
 	@include transition(transform, opacity, LINKCOLOR, padding);
 	color: $vdarktext;
-	background-color: #131416;
 	padding-bottom: 4px;
 	font-size: smaller;
 	text-transform: uppercase;

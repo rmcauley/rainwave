@@ -24,8 +24,10 @@ var Requests = function() {
 		container = $id("requests_scrollblock");
 		container.addEventListener("mouseover", mouse_over);
 
-		API.add_callback(self.update, "requests");
-		API.add_callback(self.show_queue_paused, "user");
+		if (!MOBILE) {
+			API.add_callback(self.update, "requests");
+			API.add_callback(self.show_queue_paused, "user");
+		}
 	};
 
 	self.draw = function() {

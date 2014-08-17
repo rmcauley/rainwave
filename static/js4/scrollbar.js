@@ -166,6 +166,7 @@ var Scrollbar = function() {
 		};
 		
 		self.calculate = function() {
+			if (MOBILE) return;
 			if (!self.size) {
 				self.size = scrollblock.offsetWidth;
 				self.save();
@@ -173,6 +174,7 @@ var Scrollbar = function() {
 		};
 
 		self.resize = function(new_size) {
+			if (MOBILE) return;
 			new_size = new_size || self.size;
 			scrollblock.style.width = new_size + "px";
 			for (var i = 0; i < scrollables.length; i++) {

@@ -51,10 +51,12 @@ var AlbumList = function() {
 		PlaylistLists.change_visible_list(self); }
 	);
 
-	API.add_callback(self.update, "all_albums");
-	API.add_callback(function(json) {
-		if (self.loaded) self.update(json);
-	}, "album_diff");
+	if (!MOBILE) {
+		API.add_callback(self.update, "all_albums");
+		API.add_callback(function(json) {
+			if (self.loaded) self.update(json);
+		}, "album_diff");
+	}
 
 	var change_cooldown_visible = function(visible) {
 		if (visible) $add_class(self.el, "searchlist_cooldown_visible");

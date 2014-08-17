@@ -245,9 +245,9 @@ div.menu_now_playing {
 
 /* PLAYER */
 
-$audio_ssize: 7px;
-$audio_vsize: 12px;
-$audio_hsize: 16px;
+$audio_ssize: 6px;
+$audio_vsize: 11px;
+$audio_hsize: 15px;
 
 #player {
 	clear: left;
@@ -265,8 +265,14 @@ div.small_menu #player {
 	box-sizing: border-box;
 }
 
+#player_link {
+	position: relative;
+}
+
 #audio_icon {
-    position: absolute;
+    float: left;
+    position: relative;
+    margin: .3em 0 0 10px;
 	width: 0; 
 	height: 0;
     @include transition(border, border-radius, margin);
@@ -276,8 +282,6 @@ div.small_menu #player {
 	border-bottom-width: $audio_vsize;
 	border-left: $audio_hsize solid #FFF;
     border-radius: 0px;
-    margin-top: 3px;
-    margin-left: 10px;
 }
 
 div.small_menu #audio_icon {
@@ -330,8 +334,6 @@ div.tuned_in #audio_icon.audio_playing {
 	text-transform: uppercase;
 	position: relative;
 	font-size: 26px;
-    padding-left: 30px;
-    line-height: 26px;
     @include transition(LINKCOLOR);
 }
 

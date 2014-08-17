@@ -12,7 +12,7 @@ var GroupList = function() {
 		}
 		PlaylistLists.change_visible_list(self); }
 	);
-	API.add_callback(self.update, "all_groups");
+	if (!MOBILE) API.add_callback(self.update, "all_groups");
 
 	self.draw_entry = function(item) {
 		item._el = document.createElement("div");

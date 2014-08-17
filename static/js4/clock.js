@@ -62,9 +62,14 @@ var Clock = function() {
 			self.pageclock_bar_function(page_title_end, self.now);
 		}
 
-		if (force_sync_ok && (page_title_end - self.now < -10)) {
+		if (!MOBILE && force_sync_ok && (page_title_end - self.now < -10)) {
 			force_sync_ok = false;
 			API.force_sync();
+			return;
+		}
+		else if (MOBILE && (page_title_end < self.now) && (Math.abs(page_title_end - self.now) % 5 == 0)) {
+			API.force_sync();
+			return;
 		}
 
 		if (!Prefs.get("show_title_in_titlebar") || !page_title) {

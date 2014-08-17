@@ -13,15 +13,17 @@ var DetailView = function() {
 		Prefs.define("request_made");
 		el = $id("detail");
 		scrollblock = $id("detail_scrollblock");
-		API.add_callback(draw_album, "album");
-		API.add_callback(album_diff_handler, "album_diff");
-		API.add_callback(draw_artist, "artist");
-		API.add_callback(draw_listener, "listener");
-		API.add_callback(draw_group, "group");
-		DeepLinker.register_route("album", open_album_internal);
-		DeepLinker.register_route("artist", open_artist_internal);
-		DeepLinker.register_route("group", open_group_internal);
-		DeepLinker.register_route("listener", open_listener_internal);
+		if (!MOBILE) {
+			API.add_callback(draw_album, "album");
+			API.add_callback(album_diff_handler, "album_diff");
+			API.add_callback(draw_artist, "artist");
+			API.add_callback(draw_listener, "listener");
+			API.add_callback(draw_group, "group");
+			DeepLinker.register_route("album", open_album_internal);
+			DeepLinker.register_route("artist", open_artist_internal);
+			DeepLinker.register_route("group", open_group_internal);
+			DeepLinker.register_route("listener", open_listener_internal);
+		}
 	};
 
 	self.draw = function() {

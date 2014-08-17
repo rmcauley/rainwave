@@ -93,4 +93,6 @@ class R4Index(MainIndex):
 					locales=api.locale.locale_names_json,
 					relays=config.public_relays_json[self.sid],
 					stream_filename=config.get_station(self.sid, "stream_filename"),
-					station_list=config.station_list_json)
+					station_list=config.station_list_json,
+					mobile=True)
+					#mobile=self.request.headers.get("User-Agent").lower().find("mobile") != -1)

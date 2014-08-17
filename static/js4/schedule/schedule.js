@@ -88,6 +88,7 @@ var Schedule = function() {
 			}
 			Fx.delay_css_setting(temp_evt.el, "marginTop", sequenced_margin ? "0px" : "30px");
 			if (!temp_evt.el.parentNode) self.el.appendChild(temp_evt.el);
+			if (MOBILE) break;
 		}
 
 		// Erase old elements out before we replace the self.events with new_events
@@ -105,8 +106,8 @@ var Schedule = function() {
 		}
 
 		// The now playing bar
+		Clock.set_page_title(current_event.songs[0].data.albums[0].name + " - " + current_event.songs[0].data.title, current_event.end);
 		if ((current_event.end - Clock.now) > 0) {
-			Clock.set_page_title(current_event.songs[0].data.albums[0].name + " - " + current_event.songs[0].data.title, current_event.end);
 			current_event.progress_bar_start();
 		}
 	};

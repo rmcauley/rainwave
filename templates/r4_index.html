@@ -4,6 +4,7 @@
 	<title>Rainwave</title>
 	<meta charset="UTF-8" />
 	<meta name="description" content="{{ site_description }}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<script type="text/javascript">
 		var BOOTSTRAP = {
 				"cookie_domain": "{{ cookie_domain }}",
@@ -17,6 +18,16 @@
 		};
 	</script>
 	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
+	{% if mobile %}
+		<link href="/static/style4/mobile.css" type="text/css" rel="stylesheet" />
+		<script type="application/javascript">
+			var MOBILE = true;
+		</script>
+	{% else %}
+	<script type="application/javascript">
+		var MOBILE = false;
+	</script>
+	{% end %}
 	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
 	{% if jsfiles %}
 		{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}

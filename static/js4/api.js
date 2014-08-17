@@ -8,6 +8,7 @@ var API = function() {
 	var universal_callbacks = [];
 	var offline_ack = false;
 	var known_event_id = 0;
+	var mobile_syncing;
 
 	var self = {};
 
@@ -29,6 +30,7 @@ var API = function() {
 		async = new XMLHttpRequest();
 		async.onload = async_complete;
 		async.onerror = async_error;
+		async.ontimeout = async_timeout;
 		async_queue = [];
 
 		if ("sched_current" in json) {
@@ -57,7 +59,8 @@ var API = function() {
 		if ("vote_result" in json) {
 			perform_callbacks({ "vote_result": json.vote_result });
 		}
-		sync_get();
+
+		if (!MOBILE) sync_get();
 	};
 
 	// easy to solve, but stolen from http://stackoverflow.com/questions/1714786/querystring-encoding-of-a-javascript-object
@@ -198,18 +201,37 @@ var API = function() {
 	};
 
 	self.force_sync = function() {
-		sync_clear_timeout();
-		sync_stopped = false;
-		sync.abort();
-		sync_get();
+		if (!MOBILE) {
+			sync_clear_timeout();
+			sync_stopped = false;
+			sync.abort();
+			sync_get();
+		}
+		else {
+			if ((async.readyState !== 0) && (async.readyState !== 4)) {
+				async.abort();
+			}
+			mobile_syncing = true;
+			self.async_get("info");
+		}
+	};
+
+	var async_timeout = function() {
+		ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
 	};
 
 	var async_error = function() {
-		ErrorHandler.tooltip_error(ErrorHandler.make_error("internal_error", 500));
+		ErrorHandler.permanent_error(ErrorHandler.make_error("async_error", 500));
 	};
 
 	var async_complete = function() {
 		perform_callbacks(JSON.parse(async.responseText));
+		ErrorHandler.remove_permanent_error("async_error");
+		if (MOBILE && mobile_syncing) {
+			mobile_syncing = false;
+			perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
+			ErrorHandler.remove_permanent_error("mobile_sync_retrying");
+		}
 		self.async_get();
 	};
 

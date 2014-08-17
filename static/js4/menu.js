@@ -2,6 +2,7 @@ var Menu = function() {
 	var self = {};
 	var elements = {};
 	var songs = {};
+	var mobile_height_toggled = false;
 
 	self.initialize = function() {
 		Prefs.define("small_menu");
@@ -14,7 +15,7 @@ var Menu = function() {
 	};
 
 	var solve_menu_size = function(val) {
-		if (val) {
+		if (val && !MOBILE) {
 			MENU_HEIGHT = 25;
 			Fx.delay_draw(function() { $add_class($id("top_menu"), "small_menu") });
 			Fx.delay_draw(function() { $remove_class($id("top_menu"), "normal_menu") });
@@ -27,6 +28,12 @@ var Menu = function() {
 	};
 
 	self.draw = function(station_list) {
+		API.add_callback(update_tuned_in_status, "user");
+
+		if (MOBILE) {
+			self.mobile_draw(station_list);
+			return;
+		}
 
 		// Localization
 		$id("chat_link").textContent = $l("chat");
@@ -84,10 +91,48 @@ var Menu = function() {
 		}
 		API.add_callback(update_station_info, "all_stations_info");
 
-		API.add_callback(update_tuned_in_status, "user");
-
 		$id("calendar_menu_item").addEventListener("mouseover", insert_calendar_iframe);
 		$id("twitter_menu_item").addEventListener("mouseover", insert_twitter_widget);
+	};
+
+	self.mobile_draw = function(station_list) {
+		if (User.id > 1) {
+			$id("top_menu").insertBefore($el("div", { "textContent": User.name, "style": "color: #777; font-size: smaller; margin: 5px 0 0 0; padding-right: 5px; position: absolute; transform: translateX(-100%); left: 100%; z-index: 1;" }), $id("top_menu").firstChild);
+		}
+
+		var order = [ 5, 1, 4, 2, 3 ];
+		order.splice(order.indexOf(User.sid), 1);
+		order.unshift(User.sid);
+		var ul = $id("station_select");
+		var a, li;
+		var beta_add = window.location.href.indexOf("beta") !== -1 ? "/beta/" : "";
+		for (var i = 0; i < order.length; i++) {
+			li = ul.appendChild($el("li"));
+			li._station_id = parseInt(order[i]);		// ugh gotta make sure this is a COPY of the integer
+			a = li.appendChild($el("a", { "textContent": "Rainwave " + $l("station_name_" + order[i] ) }));
+			if ((order[i] in station_list) && (order[i] != User.sid)) {
+				a.setAttribute("href", station_list[order[i]].url + beta_add);
+			}
+			else if (order[i] == User.sid) {
+				a.parentNode.addEventListener("click", self.toggle_mobile_pulldown);
+				a.parentNode.style.cursor = "pointer";
+			}
+			
+			if (order[i] == User.sid) {
+				$add_class(li, "selected");
+			}
+		}
+	};
+
+	self.toggle_mobile_pulldown = function(e) {
+		if (mobile_height_toggled) {
+			mobile_height_toggled = false
+			$id("station_select").style.height = null;
+		}
+		else {
+			mobile_height_toggled = true;
+			$id("station_select").style.height = $id("station_select").scrollHeight + "px";
+		}
 	};
 
 	var insert_calendar_iframe = function(e) {
