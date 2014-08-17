@@ -45,11 +45,14 @@ var R4Audio = function() {
 	var audio_el = document.createElement('audio');
 	if ("canPlayType" in audio_el) {
 		// circumvent Ogg here since it'll be far more battery draining than MP3 for mobile devices
-		var can_opus = MOBILE ? false : audio_el.canPlayType('audio/ogg; codecs="opus"');
+		var can_vorbis = MOBILE ? false : audio_el.canPlayType('audio/ogg; codecs="vorbis"');
 		var can_mp3 = audio_el.canPlayType('audio/mpeg; codecs="mp3"');
-		if ((can_opus == "maybe") || (can_opus == "probably")) {
+		// we have to check for Mozilla support specifically
+		// because Webkit will choke on Vorbis and stop playing after
+		// a single song switch, and thus, we have to forcefeed it MP3.
+		if (navigator.mozIsLocallyAvailable && ((can_vorbis == "maybe") || (can_vorbis == "probably"))) {
 			filetype = "audio/ogg";
-			self.type = "Opus";
+			self.type = "Vorbis";
 			self.supported = true;
 		}
 		else if ((can_mp3 == "maybe") || (can_mp3 == "probably")) {
@@ -71,7 +74,7 @@ var R4Audio = function() {
 
 		var container = document.getElementById("player_link") || document.getElementById("r4_audio_player");
 		container.addEventListener("click", self.play_stop);
-		if (self.type == "Opus") stream_filename += ".ogg";
+		if (self.type == "Vorbis") stream_filename += ".ogg";
 		else if (self.type == "MP3") stream_filename += ".mp3";
 		if (User && User.listen_key) {
 			stream_filename += "?" + User.id + ":" + User.listen_key;
