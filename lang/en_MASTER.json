@@ -190,6 +190,7 @@
    "request_in_election"                             : "%(blocked_by) is in an election.",
    "blocked_by_name__group"                          : "Category",
    "blocked_by_name__album"                          : "Album",
+   "blocked_by_name__in_election"                    : "Song",
    "request_only_on_x"                               : "Available on %(station).",
 
    "__comment__"                 : "Station Descriptions (long format, used for Google page descriptions)",
