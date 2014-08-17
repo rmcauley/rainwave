@@ -339,8 +339,6 @@ div.tuned_in #audio_icon.audio_playing {
 
 div.small_menu #audio_status {
 	font-size: 100%;
-	padding-left: 24px;
-	line-height: inherit;
 }
 
 div.tuned_in #audio_status {
