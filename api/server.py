@@ -110,7 +110,8 @@ class APIServer(object):
 			schedule.load()
 			for station_id in config.station_ids:
 				schedule.update_memcache(station_id)
-				rainwave.request.update_cache(station_id)
+				rainwave.request.update_line(station_id)
+				rainwave.request.update_expire_times()
 				cache.set_station(station_id, "backend_ok", True)
 				cache.set_station(station_id, "backend_message", "OK")
 				cache.set_station(station_id, "get_next_socket_timeout", False)

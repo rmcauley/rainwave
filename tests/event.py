@@ -54,6 +54,7 @@ class ElectionTest(unittest.TestCase):
 		db.c.update("INSERT INTO r4_listeners (sid, user_id, listener_icecast_id) VALUES (1, %s, 1)", (u.id,))
 		db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, 1)", (u.id, self.song1.id))
 		request.update_cache(1)
+		request.update_expire_times()
 		cache.update_local_cache_for_sid(1)
 		self.assertEqual(True, e._check_song_for_conflict(self.song1))
 		self.assertEqual(True, e._check_song_for_conflict(self.song5))

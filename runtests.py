@@ -64,7 +64,8 @@ if not args.apionly:
 	libs.log.init("%s/rw_backend.%s.log" % (libs.config.get_directory("log_dir"), username), libs.config.get("log_level"))
 
 	libs.cache.set_station(1, "sched_current", ElectionProducer(1).load_next_event())
-	rainwave.request.update_cache(1)
+	rainwave.request.update_line(1)
+	rainwave.request.update_expire_times()
 	rainwave.playlist.prepare_cooldown_algorithm(1)
 	libs.cache.update_local_cache_for_sid(1)
 

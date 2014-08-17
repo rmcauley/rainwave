@@ -163,9 +163,11 @@ def post_process(sid):
 		# update_cache updates both the line and expiry times
 		# this is expensive and not necessary to do more than once
 		# DO THIS AFTER EVERYTHING ELSE, RIGHT BEFORE NEXT MANAGEMENT, OR PEOPLE'S REQUESTS SLIP THROUGH THE CRACKS
-		request.update_cache(sid)
+		request.update_line(sid)
 		# add to the event list / update start times for events
 		manage_next(sid)
+		# update expire times AFTER manage_next, so people who aren't in line anymore don't see expiry times
+		request.update_expire_times()
 		log.debug("advance", "Request and upnext management: %.6f" % (time.time() - start_time,))
 
 		update_memcache(sid)
