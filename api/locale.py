@@ -19,7 +19,7 @@ RW localizations are stored in a JSON file and use the following syntax:
 					- 3
 				... in English this will result in a suffix of "rd"
 &(stuff:person is/people are)
-			- Uses the first part (split by the /) if "stuff" is 1, uses the latter half if stuff is != 1
+			- Uses the first part (split by the /) if "stuff" is 1, uses the latter half if stuff is != 1 (sorry, plurals are restricted to English grammar)
 
 The JSON files should be encoded in UTF-8.
 """
@@ -98,7 +98,7 @@ class RainwaveLocale(tornado.locale.Locale):
 		# remove lines that are no longer in the master file
 		to_pop = []
 		for k, v in translation.iteritems():
-			if not master.has_key(k):
+			if not master.has_key(k) and not k.startswith("suffix_"):
 				to_pop.append(k)
 		for k in to_pop:
 			translation.pop(k)
