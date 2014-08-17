@@ -10,13 +10,13 @@ var Albums = function() {
 		}
 		
 		$add_class(tgt, "art_expanded");
-		if (Mouse.x < (SCREEN_WIDTH - 270)) {
+		if (MOBILE || (Mouse.x < (SCREEN_WIDTH - 270))) {
 			$add_class(tgt, "art_expand_right");
 		}
 		else {
 			$add_class(tgt, "art_expand_left");
 		}
-		if (Mouse.y < (SCREEN_HEIGHT - 270)) {
+		if (MOBILE || (Mouse.y < (SCREEN_HEIGHT - 270))) {
 			$add_class(tgt, "art_expand_down");
 		}
 		else {
