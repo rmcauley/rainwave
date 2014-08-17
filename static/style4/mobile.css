@@ -5,7 +5,7 @@ html, body, body.small_screen {
 }
 
 #sizable_body {
-	overflow: auto !important;
+	overflow: visible !important;
 }
 
 #messages {
@@ -17,7 +17,7 @@ html, body, body.small_screen {
 }
 
 div.scrollblock {
-	overflow: auto !important;
+	overflow: visible !important;
 }
 
 div.resizer, div.scrollbar {
@@ -35,7 +35,7 @@ div.resizer, div.scrollbar {
 }
 
 div.scrollable {
-	overflow: auto !important;
+	overflow: visible !important;
 }
 
 #station_select {
