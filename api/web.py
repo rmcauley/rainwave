@@ -289,7 +289,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			if not self.user.authorized:
 				raise APIException("auth_failed", http_code=403)
 			else:
-				self._update_phpbb_session(self._get_phpbb_session(self.user.id))I
+				self._update_phpbb_session(self._get_phpbb_session(self.user.id))
 
 	# Handles adding dictionaries for JSON output
 	# Will return a "code" if it exists in the hash passed in, if not, returns True
