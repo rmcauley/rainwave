@@ -275,7 +275,7 @@ class Sync(APIHandler):
 		if not cache.get_station(self.sid, "backend_ok"):
 			raise APIException("station_offline")
 
-		self.user.refresh()
+		self.user.refresh(self.sid)
 		api_requests.info.attach_info_to_request(self)
 		self.finish()
 
@@ -285,12 +285,12 @@ class Sync(APIHandler):
 		if not cache.get_station(self.sid, "backend_ok"):
 			raise APIException("station_offline")
 
-		self.user.refresh()
+		self.user.refresh(self.sid)
 		self.append("user", self.user.to_private_dict())
 		self.finish()
 
 	def anon_registered_mixup_warn(self):
-		self.user.refresh()
+		self.user.refresh(self.sid)
 		if not self.user.is_anonymous() and not self.user.is_tunedin():
 			self.append_standard("redownload_m3u")
 			self.finish()
