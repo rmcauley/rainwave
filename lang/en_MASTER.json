@@ -64,7 +64,7 @@
    "__comment__"                 : "Menu",
 
    "station_name_1"                                  : "Game",
-   "station_name_2"                                  : "OCRemix",
+   "station_name_2"                                  : "OC ReMix",
    "station_name_3"                                  : "Covers",
    "station_name_4"                                  : "Chiptune",
    "station_name_5"                                  : "All",
@@ -195,7 +195,7 @@
    "__comment__"                 : "Station Descriptions (long format, used for Google page descriptions)",
 
    "station_description_id_1"                        : "Video game original soundtrack radio.  Vote for the song you want to hear!",
-   "station_description_id_2"                        : "OverClocked Remix Radio, the best in video game remixes.  Vote for your favourite remixes!",
+   "station_description_id_2"                        : "OverClocked ReMix Radio, the best in video game remixes.  Vote for your favourite remixes!",
    "station_description_id_3"                        : "Video game official and fan-made remixes, streaming 24/7.  Vote for your favourite artists!",
    "station_description_id_4"                        : "Video game and original chiptune soudtracks, streaming 24/7.  Vote for the songs you want to hear!",
    "station_description_id_5"                        : "Video game music online radio, including remixes and original soundtracks!  Vote for the songs you want to hear!",

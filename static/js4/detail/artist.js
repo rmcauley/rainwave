@@ -34,10 +34,12 @@ var ArtistView = function(view, json) {
 	
 	if (json.all_songs[User.sid]) ArtistViewRenderSid(view, json.all_songs[User.sid], User.sid);
 
-	var sid, album_id;
-	for (sid in json.all_songs) {
+	var i, sid, album_id;
+	var order = [ 1, 4, 2, 3 ];
+	for (i in order) {
+		sid = order[i];
 		if (sid == User.sid) continue;
-		ArtistViewRenderSid(view, json.all_songs[sid], sid);
+		if (json.all_songs[sid]) ArtistViewRenderSid(view, json.all_songs[sid], sid);
 	}
 	
 	return view.el;

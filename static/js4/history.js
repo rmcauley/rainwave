@@ -47,7 +47,7 @@ var History = function() {
 	self.show = function() {
 		shown = true;
 		if (!css_left) {
-			css_left = $id("history_link_container").offsetWidth + 55;
+			css_left = $id("history_link_container").offsetWidth + (SmallScreen ? 75 : 55);
 			scrollblock.style[Fx.transform_string] = "translateX(-" + css_left + "px)";
 		}
 		for (var i = songs.length - 1; i >= 0; i--) {
