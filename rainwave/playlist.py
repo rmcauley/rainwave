@@ -52,15 +52,17 @@ def get_random_song_timed(sid, target_seconds = None, target_delta = None):
 					"AND album_requests_pending IS NULL "
 					"AND song_request_only = FALSE "
 					"AND song_length >= %s AND song_length <= %s")
-	num_available = db.c.fetch_var("SELECT COUNT(r4_song_sid.song_id) " + sql_query, (sid, (target_seconds - (target_delta / 2)), (target_seconds + (target_delta / 2))))
+	lower_target_bound = target_seconds - (target_delta / 2)
+	upper_target_bound = target_seconds + (target_delta / 2)
+	num_available = db.c.fetch_var("SELECT COUNT(r4_song_sid.song_id) " + sql_query, (sid, lower_target_bound, upper_target_bound))
 	log.info("song_select", "Song pool size (cooldown, blocks, requests, timed) [target %s delta %s]: %s" % (target_seconds, target_delta, num_available))
 	if num_available == 0:
 		log.warn("song_select", "No songs available with target_seconds %s and target_delta %s." % (target_seconds, target_delta))
-		log.debug("song_select", "Song select query: SELECT COUNT(r4_song_sid.song_id) " + sql_query % (sid, (target_seconds - (target_delta / 2)), (target_seconds + (target_delta / 2))))
+		log.debug("song_select", "Song select query: SELECT COUNT(r4_song_sid.song_id) " + sql_query % (sid, lower_target_bound, upper_target_bound))
 		return get_random_song(sid)
 	else:
 		offset = random.randint(1, num_available) - 1
-		song_id = db.c.fetch_var("SELECT r4_song_sid.song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, (target_seconds - target_delta), (target_seconds + target_delta), offset))
+		song_id = db.c.fetch_var("SELECT r4_song_sid.song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, lower_target_bound, upper_target_bound, offset))
 		return Song.load_from_id(song_id, sid)
 
 def get_random_song(sid):
@@ -73,6 +75,7 @@ def get_random_song(sid):
 					"JOIN r4_songs USING (song_id) "
 					"JOIN r4_album_sid ON (r4_album_sid.album_id = r4_songs.album_id AND r4_album_sid.sid = r4_song_sid.sid) "
 				"WHERE r4_song_sid.sid = %s "
+					"AND song_exists = TRUE "
 					"AND song_cool = FALSE "
 					"AND song_request_only = FALSE "
 					"AND song_elec_blocked = FALSE "
@@ -96,6 +99,7 @@ def get_shortest_song(sid):
 	sql_query = ("FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
 				"WHERE r4_song_sid.sid = %s "
+					"AND song_exists = TRUE "
 					"AND song_cool = FALSE "
 					"AND song_request_only = FALSE "
 					"AND song_elec_blocked = FALSE "
@@ -110,6 +114,7 @@ def get_random_song_ignore_requests(sid):
 	"""
 	sql_query = ("FROM r4_song_sid "
 			"WHERE r4_song_sid.sid = %s "
+				"AND song_exists = TRUE "
 				"AND song_cool = FALSE "
 				"AND song_request_only = FALSE "
 				"AND song_elec_blocked = FALSE ")
@@ -130,7 +135,7 @@ def get_random_song_ignore_all(sid):
 	Fetches the most stale song (longest time since it's been played) in the db,
 	ignoring all availability and election block rules.
 	"""
-	sql_query = "FROM r4_song_sid WHERE r4_song_sid.sid = %s"
+	sql_query = "FROM r4_song_sid WHERE r4_song_sid.sid = %s AND song_exists = TRUE "
 	num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
 	offset = 0
 	if num_available == 0:
