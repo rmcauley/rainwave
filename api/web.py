@@ -200,22 +200,16 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				else:
 					self.cleaned_args[field] = parsed
 
+		if not self.sid and not self.sid_required:
+			self.sid = 5
+		if not self.sid in config.station_ids:
+			raise APIException("invalid_station_id", http_code=400)
+		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
+
 		if self.phpbb_auth:
 			self.do_phpbb_auth()
 		else:
 			self.rainwave_auth()
-
-		if self.user and not self.sid and self.user.request_sid:
-			self.sid = self.user.request_sid
-		if not self.sid and not self.sid_required:
-			self.sid = 5
-		if self.user and not self.user.data['sid']:
-			self.user.data['sid'] = self.sid
-			self.user.request_sid = self.sid
-
-		if not self.sid in config.station_ids:
-			raise APIException("invalid_station_id", http_code=400)
-		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 
 		if self.auth_required and not self.user:
 			raise APIException("auth_required", http_code=403)

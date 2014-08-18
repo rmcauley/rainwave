@@ -36,7 +36,6 @@ class User(object):
 		self.authorized = False
 		self.ip_address = False
 
-		self.request_sid = 0
 		self.api_key = False
 
 		self.data = {}
@@ -62,7 +61,6 @@ class User(object):
 		self.data['_group_id'] = None
 
 	def authorize(self, sid, ip_address, api_key, bypass = False):
-		self.request_sid = sid
 		self.ip_address = ip_address
 		self.api_key = api_key
 
@@ -74,7 +72,7 @@ class User(object):
 		else:
 			self._auth_anon_user(ip_address, api_key, bypass)
 		if self.authorized:
-			self.refresh()
+			self.refresh(sid)
 
 	def get_all_api_keys(self):
 		if self.id > 1:
@@ -170,34 +168,24 @@ class User(object):
 			cache.set_user(self.id, "listener_record", listener)
 		return listener
 
-	def refresh(self):
+	def refresh(self, sid):
 		listener = self.get_listener_record(use_cache=False)
 		if listener:
-			if self.data['sid'] == self.request_sid:
-				self.data['tuned_in'] = True
-			elif not self.request_sid:
-				self.request_sid = self.data['sid']
+			if self.data['sid'] == sid:
 				self.data['tuned_in'] = True
 			else:
-				self.data['sid'] = self.request_sid
-		# Default to All if no sid is given
-		elif not self.request_sid or self.request_sid == 0:
-			self.request_sid = 5
-			self.data['sid'] = 5
-			self.data['tuned_in'] = False
+				self.data['sid'] = sid
 		else:
-			self.request_sid = self.request_sid or 5
-			self.data['sid'] = self.request_sid
-			self.data['tuned_in'] = False
+			self.data['sid'] = sid
 
-		if (self.id > 1) and cache.get_station(self.request_sid, "sched_current"):
+		if (self.id > 1) and cache.get_station(sid, "sched_current"):
 			self.data['request_position'] = self.get_request_line_position(self.data['sid'])
 			self.data['request_expires_at'] = self.get_request_expiry()
 
 			if self.data['tuned_in'] and not self.is_in_request_line() and self.has_requests():
 				self.put_in_request_line(self.data['sid'])
 
-		if self.data['lock'] and self.request_sid != self.data['lock_sid']:
+		if self.data['lock'] and sid != self.data['lock_sid']:
 			self.data['lock_in_effect'] = True
 
 	def to_private_dict(self):
