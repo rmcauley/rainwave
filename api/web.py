@@ -235,6 +235,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		self.user = None
 		if not fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", "")):
 			self.user = User(1)
+			self.user.ip_address = self.request.remote_ip
 		else:
 			user_id = int(self.get_cookie(phpbb_cookie_name + "u"))
 			if self._verify_phpbb_session(user_id):
