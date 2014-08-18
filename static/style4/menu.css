@@ -4,9 +4,11 @@
 }
 
 $menu_height: 56px;
-$menu_height_small: 25px;
+$menu_height_small: 22px;
+$main_icon_height: 33px;
 
 #logo_name {
+	cursor: default;
 	font-family: 'Rainwave';
 	color: $highlight;
 	text-transform: uppercase;
@@ -16,6 +18,7 @@ $menu_height_small: 25px;
 	box-sizing: border-box;
 	background: #000;
 	height: $menu_height;
+	padding-top: 1px;
 }
 
 #top_menu.small_menu {
@@ -28,11 +31,12 @@ $menu_height_small: 25px;
 }
 
 #top_menu svg, #top_menu img.icon {
-	height: 18px;
+	height: 16px;
 	margin: 0;
 	padding: 0;
 	position: relative;
-	top: 3px;
+	top: -1px;
+	vertical-align: middle;
 }
 
 #top_menu svg path, #top_menu svg rect {
@@ -95,14 +99,18 @@ $menu_height_small: 25px;
 }
 
 div.normal_menu #main_icons {
+	z-index: 1;
 	clear: both;
-	margin-top: 3px;
+	position: relative;
+	top: $main_icon_height / 2;
+	@include transform(translateY(-50%));
 }
 
 div.normal_menu #main_icons li {
 	position: relative;
 	display: inline;
-	padding: 2px 1em 2px 1em;
+	padding: 1px 1em 0px 1em;
+	cursor: default;
 }
 
 div.normal_menu #main_icons svg path {
@@ -112,10 +120,11 @@ div.normal_menu #main_icons svg path {
 #station_select li, #top_icons li, div.small_menu #main_icons li {
 	box-sizing: border-box;
 	position: relative;
-	display: inline;
 	height: $menu_height_small;
-	padding: 3px 1em 2px 1em;
-	border-bottom: solid 1px #000;
+	padding: 0px 1em 0px;
+	border-bottom: 1px solid #000;
+	float: left;
+	margin: 0;
 }
 
 #top_icons li.small_link {
@@ -250,35 +259,44 @@ $audio_hsize: 15px;
 #player {
 	clear: left;
 	background: #383a3d;
-	height: 31px;
+	height: $main_icon_height;
 }
 
 div.small_menu #player {
 	clear: none;
-	height: $menu_height_small;
 	background: transparent;
-	padding: 2px 1em 0px 1em;
-	height: 25px;
+	padding: 0px 1em;
 	display: inline;
-	box-sizing: border-box;
 }
 
 #player_link {
 	position: relative;
 }
 
+#player_alignment {
+	position: relative;
+	margin-left: 10px;
+}
+
+div.small_menu #player_alignment {
+	display: inline;
+	margin-left: 1em;
+	height: auto;
+}
+
 #audio_icon {
     float: left;
     position: relative;
-    margin: .3em 0 0 10px;
 	width: 0; 
 	height: 0;
+	top: $main_icon_height / 2 - $audio_vsize - 1;
     @include transition(border, border-radius, margin);
     border-style: solid;
     border-color: transparent;
 	border-top-width: $audio_vsize;
 	border-bottom-width: $audio_vsize;
 	border-left: $audio_hsize solid #FFF;
+	border-right: 0px solid transparent;
     border-radius: 0px;
 }
 
@@ -286,6 +304,8 @@ div.small_menu #audio_icon {
 	border-top-width: $audio_ssize;
 	border-bottom-width: $audio_ssize;
 	border-left: $audio_vsize solid #FFF;
+	top: $menu_height_small / 2 - $audio_ssize - 1;
+	left: 1em;
 }
 
 /* !important to cover up another Firefox CSS-rule-collision bug */
@@ -301,15 +321,13 @@ div.tuned_in #audio_icon {
     border-color: $text;
     border-right: $audio_hsize solid $text;
     border-width: 10px;
-    margin-top: 6px;
-    margin-left: 7px;
-    margin-right: 5px;
 }
 
 div.small_menu #audio_icon.audio_playing {
-	border-right: $audio_ssize solid $text;
+	border-right-style: solid;
+	border-right-color: $text;
+	border-right-width: $audio_ssize - 1;
 	border-left: $audio_ssize solid $text;
-	margin-top: 3px;
 }
 
 div.tuned_in #audio_icon.audio_playing {
@@ -329,15 +347,17 @@ div.tuned_in #audio_icon.audio_playing {
 
 #audio_status {
 	display: inline;
+	position: relative;
 	font-family: 'Rainwave';
 	text-transform: uppercase;
-	position: relative;
 	font-size: 26px;
     @include transition(LINKCOLOR);
 }
 
 div.small_menu #audio_status {
 	font-size: 100%;
+	left: -13px;
+	top: 0;
 }
 
 div.tuned_in #audio_status {

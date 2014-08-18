@@ -99,6 +99,10 @@ body.small_screen div.timeline_song {
 	height: $art_small_thumbnail_size;
 }
 
+div.timeline_song div.album {
+	display: inline;
+}
+
 div.timeline_song div.title, div.timeline_song div.album, div.timeline_song div.artist, div.timeline_song div.cooldown_info, div.timeline_song a.song_link {
 	text-overflow: ellipsis;
 	overflow: hidden;
