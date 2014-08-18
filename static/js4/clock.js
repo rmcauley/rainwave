@@ -72,8 +72,8 @@ var Clock = function() {
 			return;
 		}
 
-		if (!Prefs.get("show_title_in_titlebar") || !page_title) {
-			if (document.title != "Rainwave") document.title = "Rainwave " + $l("station_name_" + User.sid);
+		if (!Prefs.get("show_title_in_titlebar") || !page_title || MOBILE) {
+			if (document.title != "Rainwave") document.title = "Rainwave";
 			return;
 		}
 
