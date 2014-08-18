@@ -106,6 +106,10 @@ div.normal_menu #main_icons {
 	@include transform(translateY(-50%));
 }
 
+div.normal_menu #main_icons:hover {
+	z-index: 101;
+}
+
 div.normal_menu #main_icons li {
 	position: relative;
 	display: inline;

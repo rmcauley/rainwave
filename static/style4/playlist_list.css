@@ -17,15 +17,20 @@ body.stage_0 #lists, body.stage_1 #lists, body.stage_2 #lists {
 	display: none;
 }
 
+#lists_tabs_container {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+}
+
 #lists_tabs {
 	position: relative;
 	height: 25px;
 	padding-left: 0;
 	margin: 10px 0 0 0;
 	list-style: none;
-	width: 100%;
 	border-bottom: solid 1px $darktext;
-	overflow: hidden;
+	white-space: nowrap;
 }
 
 #lists_tabs li {

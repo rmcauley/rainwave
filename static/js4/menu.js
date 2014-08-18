@@ -177,7 +177,7 @@ var Menu = function() {
 
 	var add_user_qr_code = function(evt) {
 		this.removeEventListener("mouseover", add_user_qr_code);
-		$id("user_qr_code").style.backgroundImage = "url(http://chart.apis.google.com/chart?cht=qr&chs=300x300&choe=ISO-8859-1&chl=" + User.api_key + ")";
+		$id("user_qr_code").style.backgroundImage = "url(http://chart.apis.google.com/chart?cht=qr&chs=300x300&choe=ISO-8859-1&chl=" + "rw://" + User.id + ":" + User.api_key + "@rainwave.cc" + ")";
 	};
 
 	var update_tuned_in_status = function(user_json) {
