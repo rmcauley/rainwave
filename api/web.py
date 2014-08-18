@@ -211,7 +211,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 		if self.auth_required and not self.user:
 			raise APIException("auth_required", http_code=403)
-
+		elif not self.auth_required:
+			self.user = User(1)
+			self.user.ip_address = self.request.remote_ip
+		
 		self.user.refresh(self.sid)
 
 		if self.login_required and (not self.user or self.user.is_anonymous()):
@@ -232,10 +235,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 	def do_phpbb_auth(self):
 		phpbb_cookie_name = config.get("phpbb_cookie_name")
-		self.user = None
 		if not fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", "")):
-			self.user = User(1)
-			self.user.ip_address = self.request.remote_ip
+			pass
 		else:
 			user_id = int(self.get_cookie(phpbb_cookie_name + "u"))
 			if self._verify_phpbb_session(user_id):
@@ -251,7 +252,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 					self.user = User(user_id)
 					self.user.authorize(self.sid, None, None, True)
 					return True
-		return False
 
 	def _verify_phpbb_session(self, user_id = None):
 		# TODO: Do we want to enhance this with IP checking and other bits and pieces like phpBB does?
@@ -283,14 +283,13 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if (self.auth_required or user_id_present) and not "key" in self.request.arguments:
 			raise APIException("missing_argument", argument="key", http_code=400)
 
-		self.user = None
 		if user_id_present:
 			self.user = User(long(self.get_argument("user_id")))
 			self.user.authorize(self.sid, self.request.remote_ip, self.get_argument("key"))
 			if not self.user.authorized:
 				raise APIException("auth_failed", http_code=403)
 			else:
-				self._update_phpbb_session(self._get_phpbb_session(self.user.id))
+				self._update_phpbb_session(self._get_phpbb_session(self.user.id))I
 
 	# Handles adding dictionaries for JSON output
 	# Will return a "code" if it exists in the hash passed in, if not, returns True
