@@ -64,7 +64,7 @@
    "__comment__"                 : "Menu",
 
    "station_name_1"                                  : "Videojuegos",
-   "station_name_2"                                  : "OCRemix",
+   "station_name_2"                                  : "OC ReMix",
    "station_name_3"                                  : "Covers",
    "station_name_4"                                  : "Chiptune",
    "station_name_5"                                  : "Todo",
@@ -135,15 +135,15 @@
    "sync_stopped"                                    : "Rainwave ha dejado de funcionar.  Actualice la página y vuelva a intentarlo.",
    "lost_connection"                                 : "Se ha perdido la conexión al servidor.",
    "sync_retrying"                                   : "Hay problemas con el servidor del Rainwave, un momento, por favor...",
-   "mobile_sync_retrying"                            : "Connection timeout issues, please refresh or try later.",
-   "async_error"                                     : "Error talking to server.  Please try again or refresh.",
+   "mobile_sync_retrying"                            : "Tiempo de espera agotado, actualice la página o intente más tarde.",
+   "async_error"                                     : "Error en la comunicación con el servidor.  Intente nuevamente o actualice la página.",
    "deeplink_error"                                  : "Error al analizar la URL introducida.",
    "hotkey_mode"                                     : "1-5 para Valorar, A/S/D para Votar",
    "invalid_hotkey"                                  : "Tecla rápida inválida.",
    "not_an_election"                                 : "No es una votación.",
 
-   "catastrophic_error"                              : "Rainwave Has Crashed :(",
-   "submit_javascript_error"                         : "Please submit the bug report below to the forums, so we can fix it.",
+   "catastrophic_error"                              : "Rainwave ha Fallado :(",
+   "submit_javascript_error"                         : "Por favor envíe el informe de error a los foros, para que podamos arreglarlo.",
 
    "__comment__"                 : "About Window",
 
@@ -211,7 +211,7 @@
 
    "__comment__"                 : "Preferences",
 
-   "prefs_small_menu"                                : "Menú en una línea",
+   "prefs_small_menu"                                : "Menú Pequeño",
    "change_language"                                 : "Idioma",
    "tab_title_preferences"                           : "Título de Pestaña",
    "prefs_show_clock_in_titlebar"                    : "Mostrar Reloj en Título de Pestaña",
