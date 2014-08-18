@@ -155,8 +155,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if self.local_only and not self.request.remote_ip in config.get("api_trusted_ip_addresses"):
 			log.info("api", "Rejected %s request from %s, untrusted address." % (self.url, self.request.remote_ip))
 			raise APIException("rejected", text="You are not coming from a trusted address.")
-			self.set_status(403)
-			self.finish()
 
 		if not isinstance(self.locale, locale.RainwaveLocale):
 			self.locale = self.get_browser_locale()
@@ -213,6 +211,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 		if self.auth_required and not self.user:
 			raise APIException("auth_required", http_code=403)
+
+		self.user.refresh(self.sid)
 
 		if self.login_required and (not self.user or self.user.is_anonymous()):
 			raise APIException("login_required", http_code=403)

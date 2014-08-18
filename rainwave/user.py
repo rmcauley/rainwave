@@ -71,8 +71,6 @@ class User(object):
 			self._auth_registered_user(ip_address, api_key, bypass)
 		else:
 			self._auth_anon_user(ip_address, api_key, bypass)
-		if self.authorized:
-			self.refresh(sid)
 
 	def get_all_api_keys(self):
 		if self.id > 1:
