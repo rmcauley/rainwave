@@ -209,9 +209,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		else:
 			self.rainwave_auth()
 
-		if self.auth_required and not self.user:
+		if not self.user and self.auth_required:
 			raise APIException("auth_required", http_code=403)
-		elif not self.auth_required:
+		elif not self.user and not self.auth_required:
 			self.user = User(1)
 			self.user.ip_address = self.request.remote_ip
 		
@@ -235,10 +235,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 	def do_phpbb_auth(self):
 		phpbb_cookie_name = config.get("phpbb_cookie_name")
-		if not fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", "")):
+		user_id = fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", ""))
+		if not user_id:
 			pass
 		else:
-			user_id = int(self.get_cookie(phpbb_cookie_name + "u"))
 			if self._verify_phpbb_session(user_id):
 				# update_phpbb_session is done by verify_phpbb_session if successful
 				self.user = User(user_id)
@@ -252,6 +252,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 					self.user = User(user_id)
 					self.user.authorize(self.sid, None, None, True)
 					return True
+		return False
 
 	def _verify_phpbb_session(self, user_id = None):
 		# TODO: Do we want to enhance this with IP checking and other bits and pieces like phpBB does?
