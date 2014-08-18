@@ -101,7 +101,7 @@ div.normal_menu #main_icons {
 
 div.normal_menu #main_icons li {
 	position: relative;
-	display: inline-block;
+	display: inline;
 	padding: 2px 1em 2px 1em;
 }
 
@@ -129,9 +129,7 @@ div.normal_menu #main_icons svg path {
 
 #station_select li a {
 	text-transform: uppercase;
-	margin-top: 2px;
 	font-family: 'Rainwave', sans-serif;
-	display: inline-block;
 	text-align: center;
 	color: $vdarktext;
 }
@@ -261,7 +259,7 @@ div.small_menu #player {
 	background: transparent;
 	padding: 2px 1em 0px 1em;
 	height: 25px;
-	display: inline-block;
+	display: inline;
 	box-sizing: border-box;
 }
 
@@ -389,6 +387,10 @@ div.tuned_in #audio_volume_indicator {
 	height: 30em;
 }
 
+body.small_screen #top_menu li:hover #settings_window {
+	height: 33em;
+}
+
 #settings_window div.setting_group:first-child {
 	margin-top: 3px;
 }
@@ -438,6 +440,10 @@ div.tuned_in #audio_volume_indicator {
 	height: 39.5em;
 }
 
+body.small_screen #top_menu li:hover #about_window {
+	height: 42em;
+}
+
 #about_window .info_right, #settings_window .info_right {
 	float: right;
 	padding-right: 15px;
@@ -481,7 +487,7 @@ div.tuned_in #audio_volume_indicator {
 }
 
 #top_menu li:hover #twitter_dropdown {
-	height: 620px;
+	height: 550px;
 }
 
 #request_cta {
