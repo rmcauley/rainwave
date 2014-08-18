@@ -3,10 +3,11 @@ import api.web
 from api.server import handle_api_url
 from api import fieldtypes
 
-@handle_api_url("admin/user_search")
+@handle_api_url("user_search")
 class UserSearchRequest(api.web.APIHandler):
-	admin_required = True
 	fields = { "username": (fieldtypes.string, True) }
+	auth_required = False
+	sid_required = False
 
 	def post(self):
 		possible_id = db.c.fetch_var("SELECT user_id FROM phpbb_users WHERE username = %s", (self.get_argument("username"),))

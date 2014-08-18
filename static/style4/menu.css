@@ -6,14 +6,10 @@
 $menu_height: 56px;
 $menu_height_small: 25px;
 
-#logo {
-	float: right;
+#logo_name {
 	font-family: 'Rainwave';
-	text-transform: uppercase;
-	margin-top: 2px;
 	color: $highlight;
-	padding-left: 1em;
-	padding-right: 5px;
+	text-transform: uppercase;
 }
 
 #top_menu {
@@ -22,15 +18,16 @@ $menu_height_small: 25px;
 	height: $menu_height;
 }
 
-#user_info {
-	@include transition-wtime(150ms, color);
-}
-
-body.small_menu #top_menu {
+#top_menu.small_menu {
 	height: $menu_height_small;
 }
 
-#top_menu svg, #top_menu img {
+#user_info {
+	@include transition-wtime(150ms, color);
+	margin-right: 1em;
+}
+
+#top_menu svg, #top_menu img.icon {
 	height: 18px;
 	margin: 0;
 	padding: 0;
@@ -38,7 +35,7 @@ body.small_menu #top_menu {
 	top: 3px;
 }
 
-#top_menu svg path {
+#top_menu svg path, #top_menu svg rect {
 	@include transition-wtime(150ms, fill);
 	fill: $vdarktext;
 }
@@ -52,20 +49,24 @@ body.small_menu #top_menu {
 	color: $linkhover;
 }
 
-#top_menu li:hover svg path {
+#top_menu li:hover svg path, #top_menu li:hover svg rect {
 	fill: $text;
 }
 
-#top_menu li a:hover svg path {
+#top_menu li a:hover svg path, #top_menu li a:hover svg rect {
 	fill: $linkhover;
 }
 
-#top_menu img {
+#top_menu img.icon {
 	@include transition-wtime(150ms, opacity);
 	opacity: 0.6;
 }
 
-#top_menu li:hover img {
+#top_menu.small_menu .icon_description {
+	display: none;
+}
+
+#top_menu li:hover img.icon {
 	opacity: 1;
 }
 
@@ -77,14 +78,6 @@ body.small_menu #top_menu {
 	padding: 0;
 }
 
-#main_icons {
-	margin-top: 3px;
-}
-
-body.small_menu #main_icons {
-	margin-top: 3px;
-}
-
 #station_select {
 	float: left;
 }
@@ -93,7 +86,7 @@ body.small_menu #main_icons {
 	float: right;
 }
 
-#top_icons, #top_icons a {
+#top_icons, #top_icons a, div.small_menu #main_icons {
 	color: $vdarktext;
 }
 
@@ -101,20 +94,22 @@ body.small_menu #main_icons {
 	color: $linkhover;
 }
 
-#main_icons {
+div.normal_menu #main_icons {
 	clear: both;
+	margin-top: 3px;
 }
 
-#main_icons li {
-	display: inline;
+div.normal_menu #main_icons li {
+	position: relative;
+	display: inline-block;
 	padding: 2px 1em 2px 1em;
 }
 
-#main_icons svg path {
+div.normal_menu #main_icons svg path {
 	fill: $text;
 }
 
-#station_select li, #top_icons li, body.small_menu #main_icons li {
+#station_select li, #top_icons li, div.small_menu #main_icons li {
 	box-sizing: border-box;
 	position: relative;
 	display: inline;
@@ -154,49 +149,105 @@ body.small_menu #main_icons {
 	color: #a7e1ff;
 }
 
-#station_select div.info {
-	padding: 0;
-	margin: 0;
-	@include transition-wtime(300ms, opacity, transform, height);
+/* DROPDOWN STATION INFO */
+
+#top_menu div.info {
+	box-sizing: border-box;
+	margin: 2px 0 0 0;
+	@include transition-wtime(300ms, opacity, transform, height, padding, border);
 	opacity: 0;
 	position: absolute;
 	width: 380px;
 	height: 0;
-	border: solid 1px #2257a3;
-	background-color: #00004c;
+	background-color: #000;
+	border: solid 0px #000;
+	box-shadow: 3px 3px 3px 4px #000;
 	overflow: hidden;
 	left: 0px;
+	z-index: 2;
 }
 
-#station_select div.info:hover {
+#top_menu div.info:hover {
 	overflow: visible;
 }
 
-#station_select li:hover {
+#top_menu li:hover {
 	z-index: 100;
 }
 
-#station_select li:hover div.info {
+div.menu_now_playing {
+	color: $highlight;
+	font-size: smaller;
+	text-transform: uppercase;
+	margin-bottom: 5px;
+}
+
+#station_select div.timeline_song {
+	margin-bottom: 10px;
+}
+
+#station_select div.station_menu_description, #donation_information, #intro_mode_link, #github_link {
+	display: block;
+	clear: both;
+	padding-top: 5px;
+	margin-top: 5px;
+	margin-bottom: 2px;
+	border-top: solid 1px #777;
+	text-align: center;
+}
+
+#station_select div.station_menu_description {
+	font-style: italic;
+	font-size: smaller;
+}
+
+#top_menu li:hover div.info {
+	border: solid 1px #777;
 	opacity: 1;
-	height: 80px;
+	height: 145px;
+	padding: 5px 10px 10px 10px;
 }
 
-#station_select img {
-	margin: 5px 0 0 5px;
+#user_info div.info {
+	width: 300px;
+	@include transform(translateX(-70px));
+	text-align: center;
 }
 
-#station_select div.info div.title {
-	margin: 5px 5px 2px 5px;
+#user_info #user_qr_code {
+	position: absolute;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-color: #FFF;
+	background-position: center center;
+	width: 300px;
+	height: 0px;
+	z-index: 1;
+	opacity: 0;
+	@include transition(opacity, height);
+	@include transform(translateX(-40px));
+	border: solid 1px #777;
+	box-shadow: 3px 3px 3px 4px #000;
 }
 
-#station_select div.info div.title, #station_select div.info div.album {
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
+#user_info #user_qr_code_hover:hover #user_qr_code {
+	display: block;
+	opacity: 1;
+	height: 300px;
 }
 
-$audio_vsize: 12px;
-$audio_hsize: 16px;
+#user_info #logout_link, #user_info #user_info_link {
+	display: block;
+	padding-bottom: 5px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #777;
+}
+
+/* PLAYER */
+
+$audio_ssize: 6px;
+$audio_vsize: 11px;
+$audio_hsize: 15px;
 
 #player {
 	clear: left;
@@ -204,12 +255,24 @@ $audio_hsize: 16px;
 	height: 31px;
 }
 
-body.small_menu #player {
+div.small_menu #player {
+	clear: none;
 	height: $menu_height_small;
+	background: transparent;
+	padding: 2px 1em 0px 1em;
+	height: 25px;
+	display: inline-block;
+	box-sizing: border-box;
+}
+
+#player_link {
+	position: relative;
 }
 
 #audio_icon {
-    position: absolute;
+    float: left;
+    position: relative;
+    margin: .3em 0 0 10px;
 	width: 0; 
 	height: 0;
     @include transition(border, border-radius, margin);
@@ -219,23 +282,43 @@ body.small_menu #player {
 	border-bottom-width: $audio_vsize;
 	border-left: $audio_hsize solid #FFF;
     border-radius: 0px;
-    margin-top: 3px;
-    margin-left: 10px;
+}
+
+div.small_menu #audio_icon {
+	border-top-width: $audio_ssize;
+	border-bottom-width: $audio_ssize;
+	border-left: $audio_vsize solid #FFF;
+}
+
+/* !important to cover up another Firefox CSS-rule-collision bug */
+div.tuned_in #audio_icon {
+	border-left-color: $highlight !important;
 }
 
 #player a:hover #audio_icon {
-	border-left-color: $linkhover;
+	border-left-color: $linkhover !important;
 }
 
 #audio_icon.audio_playing {
     border-color: $text;
     border-right: $audio_hsize solid $text;
     border-width: 10px;
-    margin-top: 5px;
-    margin-left: 6px;
+    margin-top: 6px;
+    margin-left: 7px;
+    margin-right: 5px;
 }
 
-#player:hover #audio_icon.audio_playing {
+div.small_menu #audio_icon.audio_playing {
+	border-right: $audio_ssize solid $text;
+	border-left: $audio_ssize solid $text;
+	margin-top: 3px;
+}
+
+div.tuned_in #audio_icon.audio_playing {
+	border-color: $highlight;
+}
+
+#player a:hover #audio_icon.audio_playing {
 	border-color: $linkhover;
 }
 
@@ -252,6 +335,163 @@ body.small_menu #player {
 	text-transform: uppercase;
 	position: relative;
 	font-size: 26px;
-    padding-left: 30px;
-    line-height: 26px;
+    @include transition(LINKCOLOR);
+}
+
+div.small_menu #audio_status {
+	font-size: 100%;
+}
+
+div.tuned_in #audio_status {
+	color: $highlight;
+}
+
+div.tuned_in #audio_status:hover {
+	color: $link;
+}
+
+#top_menu #audio_volume {
+	width: 50px;
+	height: 1em;
+	top: 0;
+	opacity: 0;
+	@include transition(opacity);
+	-webkit-transition-delay: 1s;
+            transition-delay: 1s;
+}
+
+#top_menu.small_menu #audio_volume {
+	height: 0.7em;
+	width: 30px;
+}
+
+#top_menu #audio_volume.audio_playing_volume {
+	opacity: 1;
+}
+
+#audio_volume_indicator {
+	fill: $text;
+}
+
+div.tuned_in #audio_volume_indicator {
+	fill: $highlight;
+}
+
+/* SETTINGS WINDOW */
+
+#top_menu #settings_window {
+	width: 300px;
+	@include transform(translateX(-200px));
+	padding: 0 !important;
+}
+
+#top_menu li:hover #settings_window {
+	height: 30em;
+}
+
+#settings_window div.setting_group:first-child {
+	margin-top: 3px;
+}
+
+#settings_window div.setting_group {
+	padding: 3px 6px 3px 10px;
+	clear: right;
+}
+
+#settings_window div.setting_group:hover {
+	background: #333;
+}
+
+#settings_window div.setting_group input, #settings_window div.setting_group select {
+	float: right;
+}
+
+#settings_window div.setting_group label {
+	display: block;
+}
+
+#settings_window h4, #about_window h4 {
+	margin: 5px;
+	padding: 0px;
+	border-bottom: 1px solid $vdarktext;
+	font-size: 100%;
+	font-weight: bold;
+}
+
+#settings_window div.setting_group + h4 {
+	margin-top: 10px;
+}
+
+#intro_mode_link {
+	cursor: pointer;
+}
+
+/* ABOUT WINDOW (minus that h4 stuff above) */
+
+#top_menu #about_window {
+	position: absolute;
+	left: 100%;
+	@include transform(translateX(-390px));
+}
+
+#top_menu li:hover #about_window {
+	height: 39.5em;
+}
+
+#about_window .info_right, #settings_window .info_right {
+	float: right;
+	padding-right: 15px;
+}
+
+#about_window div + h4 {
+ 	margin-top: 20px;
+}
+
+#about_window div {
+	padding-left: 15px;
+}
+
+/* CALENDAR */
+
+#top_menu li #calendar_dropdown {
+	width: 350px;
+}
+
+#top_menu li:hover #calendar_dropdown {
+	height: 520px;
+}
+
+#calendar_dropdown iframe {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 500px;
+}
+
+#donation_information {
+	display: block;
+	margin-top: 20px;
+}
+
+/* TWEETBOXIN' */
+
+#twitter_dropdown {
+	transform: translateX(-350px);
+	width: 400px;
+}
+
+#top_menu li:hover #twitter_dropdown {
+	height: 620px;
+}
+
+#request_cta {
+	opacity: 0;
+	@include transition(opacity);
+	cursor: pointer;
+}
+
+#request_cta img {
+	margin-right: 5px;
+	width: 14px;
+	height: 14px;
 }

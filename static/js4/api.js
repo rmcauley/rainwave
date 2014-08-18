@@ -8,6 +8,7 @@ var API = function() {
 	var universal_callbacks = [];
 	var offline_ack = false;
 	var known_event_id = 0;
+	var mobile_syncing;
 
 	var self = {};
 
@@ -29,6 +30,7 @@ var API = function() {
 		async = new XMLHttpRequest();
 		async.onload = async_complete;
 		async.onerror = async_error;
+		async.ontimeout = async_timeout;
 		async_queue = [];
 
 		if ("sched_current" in json) {
@@ -57,7 +59,8 @@ var API = function() {
 		if ("vote_result" in json) {
 			perform_callbacks({ "vote_result": json.vote_result });
 		}
-		sync_get();
+
+		if (!MOBILE) sync_get();
 	};
 
 	// easy to solve, but stolen from http://stackoverflow.com/questions/1714786/querystring-encoding-of-a-javascript-object
@@ -95,7 +98,6 @@ var API = function() {
 			clearTimeout(sync_timeout_error_removal_timeout);
 		}
 		sync_timeout_error_removal_timeout = null;
-		sync_error_count = 0;
 	};
 
 	var clear_sync_timeout_error = function() {
@@ -131,14 +133,20 @@ var API = function() {
 		}
 		sync_resync = true;
 		sync_error_count++;
-		if (sync_error_count > 4) {
+		if (sync_error_count > 2) {
 			ErrorHandler.remove_permanent_error("sync_retrying");
 			var e = ErrorHandler.make_error("sync_stopped", 500);
-			if (result) {
-				e.text += $l(result.sync_result.tl_key);
+			if (result && result.sync_result && result.sync_result.tl_key) {
+				e.text += " (" + $l(result.sync_result.tl_key) + ")";
+			}
+			else if (result && result.error && result.error.tl_key) {
+				e.text += " (" + $l(result.error.tl_key) + ")";	
+			}
+			else if (result && result[0] && result[0].error && result[0].error.tl_key) {
+				e.text += " (" + $l(result[0].error.tl_key) + ")";	
 			}
 			else {
-				e.text += $l("lost_connection");
+				e.text += " (" + $l("lost_connection") + ")";
 			}
 			ErrorHandler.permanent_error(e);
 			self.sync_stop();
@@ -193,18 +201,37 @@ var API = function() {
 	};
 
 	self.force_sync = function() {
-		sync_clear_timeout();
-		sync_stopped = false;
-		sync.abort();
-		sync_get();
+		if (!MOBILE) {
+			sync_clear_timeout();
+			sync_stopped = false;
+			sync.abort();
+			sync_get();
+		}
+		else {
+			if ((async.readyState !== 0) && (async.readyState !== 4)) {
+				async.abort();
+			}
+			mobile_syncing = true;
+			self.async_get("info");
+		}
+	};
+
+	var async_timeout = function() {
+		ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
 	};
 
 	var async_error = function() {
-		ErrorHandler.tooltip_error(ErrorHandler.make_error("internal_error", 500));
+		ErrorHandler.permanent_error(ErrorHandler.make_error("async_error", 500));
 	};
 
 	var async_complete = function() {
 		perform_callbacks(JSON.parse(async.responseText));
+		ErrorHandler.remove_permanent_error("async_error");
+		if (MOBILE && mobile_syncing) {
+			mobile_syncing = false;
+			perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
+			ErrorHandler.remove_permanent_error("mobile_sync_retrying");
+		}
 		self.async_get();
 	};
 
@@ -228,22 +255,23 @@ var API = function() {
 
 	var perform_callbacks = function(json) {
 		var cb, key;
-		// try {
-		for (key in json) {
-			if (key in callbacks) {
-				for (cb = 0; cb < callbacks[key].length; cb++) {
-					callbacks[key][cb](json[key]);
+		try {
+			for (key in json) {
+				if (key in callbacks) {
+					for (cb = 0; cb < callbacks[key].length; cb++) {
+						callbacks[key][cb](json[key]);
+					}
+				}
+				for (cb = 0; cb < universal_callbacks.length; cb++) {
+					universal_callbacks[cb](key, json[key]);
 				}
 			}
-			for (cb = 0; cb < universal_callbacks.length; cb++) {
-				universal_callbacks[cb](key, json[key]);
-			}
 		}
-		// catch(err) {
-		// TODO: JS error callback: error(err, json)
-		// self.sync_stop();
-		// return;
-		// }
+		catch(err) {
+			self.sync_stop();
+			ErrorHandler.javascript_error(err, json);
+			setTimeout(function() { throw(err) }, 1);
+		}
 	};
 
 	self.add_callback = function(js_func, api_name) {

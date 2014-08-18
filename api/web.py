@@ -153,7 +153,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):
 		if self.local_only and not self.request.remote_ip in config.get("api_trusted_ip_addresses"):
-			log.info("api", "Rejected %s request from %s" % (self.url, self.request.remote_ip))
+			log.info("api", "Rejected %s request from %s, untrusted address." % (self.url, self.request.remote_ip))
+			raise APIException("rejected", text="You are not coming from a trusted address.")
 			self.set_status(403)
 			self.finish()
 
@@ -204,10 +205,14 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		else:
 			self.rainwave_auth()
 
-		if self.user and not self.sid:
+		if self.user and not self.sid and self.user.request_sid:
 			self.sid = self.user.request_sid
-		elif not self.sid and not self.auth_required:
+		if not self.sid and not self.sid_required:
 			self.sid = 5
+			if self.user:
+				self.user.data['sid'] = 5
+				self.user.request_sid = 5
+
 		if not self.sid in config.station_ids:
 			raise APIException("invalid_station_id", http_code=400)
 		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))

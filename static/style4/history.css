@@ -1,71 +1,40 @@
 #history {
-	z-index: 5;
+	box-sizing: border-box;
+	margin: 0;
+	@include transition-wtime(300ms, opacity, height, padding);
+	opacity: 0;
 	position: absolute;
-	left: -350px;
-	width: 350px;
-	overflow: hidden;
+	width: 380px;
+	height: 0;
+	background-color: #000;
+	border: solid 0px #000;
+	box-shadow: 3px 3px 3px 4px #000;
+	z-index: 100;
+	padding: 0;
+}
+
+#history_link_container:hover #history, #history:hover, #history_link_container.hover_test #history {
+	border: solid 1px #777;
 	opacity: 1;
-	@include transition-wtime(300ms, transform, background-color, opacity);
-
-	background: rgb(0,0,0);
-	background: -moz-linear-gradient(left, rgba(0,0,0,1) 95%, rgba(30,81,153,1) 100%);
-	background: -webkit-linear-gradient(left, rgba(0,0,0,1) 95%,rgba(30,81,153,1) 100%);
-	background: -ms-linear-gradient(left, rgba(0,0,0,1) 95%,rgba(30,81,153,1) 100%);
-	background: linear-gradient(to right, rgba(0,0,0,1) 95%,rgba(30,81,153,1) 100%);
-}
-
-#history.nonsticky {
-	z-index: 5;
-	opacity: .7;
-	@include transform(translateX(15px));
-}
-
-#history.nonsticky:hover, #history.fake_hover {
-	opacity: 1;
-	@include transform(translateX(350px));
-}
-
-#history.nonsticky + #timeline {
-	margin-left: 10px;
-}
-
-#history.sticky {
-	position: relative;
-	float: left;
-	height: 100%;
-	@include transition(background-color, border-color);
-	@include transform(translateX(350px));
-}
-
-#history_header {
-    float: right;
-    font-size: smaller;
-    left: 100%;
-    position: absolute;
-    transform: rotate(90deg);
-    transform-origin: left top 0;
-    width: 20em;
-    padding-left: 5px;
-    height: 16px;
+	height: 650px;
+	padding: 10px;
 }
 
 #history_list {
-	margin-left: 5px;
+	height: 100%;
 }
 
-#history_list .timeline_song {
-	padding: 0;
-	width: 96%;
+#history div.timeline_song {
+	width: 350px;
 }
 
-#history #history_pin {
-	float: right;
-	margin: 1px 20px;
-	border: solid 1px transparent;
-	padding: 1px;
+div.history_song_header {
+	font-size: smaller;
+	color: $highlight;
+	text-transform: uppercase;
+	margin-bottom: 5px;
 }
 
-#history.sticky #history_pin {
-	border: inset 1px #222;
-	background: #111;
+div.timeline_song + div.history_song_header {
+	margin-top: 2em;
 }

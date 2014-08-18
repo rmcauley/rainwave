@@ -19,14 +19,13 @@ RW localizations are stored in a JSON file and use the following syntax:
 					- 3
 				... in English this will result in a suffix of "rd"
 &(stuff:person is/people are)
-			- Uses the first part (split by the /) if "stuff" is 1, uses the latter half if stuff is != 1
+			- Uses the first part (split by the /) if "stuff" is 1, uses the latter half if stuff is != 1 (sorry, plurals are restricted to English grammar)
 
 The JSON files should be encoded in UTF-8.
 """
 
 master = None
 translations = {}
-_supported_locales = []
 locale_names_json = ""
 
 def load_translations():
@@ -42,6 +41,8 @@ def load_translations():
 	for root, subdir, files in os.walk(os.path.join(os.path.dirname(__file__), "../lang")):
 		for filename in files:
 			if filename == "en_MASTER.json":
+				continue
+			if not filename.endswith(".json"):
 				continue
 			f = codecs.open(os.path.join(os.path.dirname(__file__), "../lang/", filename), "r", encoding="utf-8")
 			translations[filename[:-5]] = RainwaveLocale(filename[:-5], master, json.load(f))
@@ -94,9 +95,18 @@ class RainwaveLocale(tornado.locale.Locale):
 		return translations['en_CA']
 
 	def __init__(self, code, master, translation):
+		# remove lines that are no longer in the master file
+		to_pop = []
+		for k, v in translation.iteritems():
+			if not master.has_key(k) and not k.startswith("suffix_"):
+				to_pop.append(k)
+		for k in to_pop:
+			translation.pop(k)
+
 		self.dict = dict(master.items() + translation.items())
 		self.code = code
 
+		# document lines missing
 		self.missing = {}
 		for k, v in master.iteritems():
 			if not translation.has_key(k):

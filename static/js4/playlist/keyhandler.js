@@ -5,13 +5,18 @@
 	var backspace_trap = false;
 	var backspace_timer = false;
 
+	// these key codes are handled by on_key_down, as browser's default behaviour 
+	// tend to act on them at that stage rather than on_key_press
+	// backspace, escape, down, up, page up, page down
+	var keydown_handled = [ 8, 27, 38, 40, 33, 34 ];
+
 	self.prevent_default = function(evt) {
 		evt.preventDefault(evt);
 	};
 
 	self.enable_backspace_trap = function() {
 		if (backspace_timer) clearTimeout(backspace_timer);
-		backspace_timer = setTimeout(self.disable_backspace_trap, 2000);
+		backspace_timer = setTimeout(self.disable_backspace_trap, 3000);
 	};
 
 	self.disable_backspace_trap = function() {
@@ -21,10 +26,8 @@
 	
 	self.on_key_press = function(evt) {
 		if (self.is_ignorable(evt)) return true;
-		// these 4 key codes are handled by on_key_down, as browser's default behaviour 
-		// tend to act on them at that stage rather than on_key_press
-		//   backspace               escape                 down                    up
-		if ((evt.keyCode != 8) && (evt.keyCode != 27) && (evt.keyCode != 38) && (evt.keyCode != 40)) {
+		
+		if (keydown_handled.indexOf(evt.keyCode) == -1) {
 			return self.handle_event(evt);
 		}
 		// trap backspace so users don't accidentally navigate away from the site
@@ -39,14 +42,18 @@
 		if (self.is_ignorable(evt)) return true;
 		// Short-circuit backspace on Webkit - which fires its backspace handler at the end of the keyDown bubble.
 		if (evt.keyCode == 8) {
-			// set backspace trap to on if backspace was handled by handle_event, or keep true if backspace trap is active
-			backspace_trap = self.handle_event(evt) || backspace_trap;
+			// if event was handled, don't trap back
+			backspace_trap = !self.handle_event(evt) || backspace_trap;
+			if (backspace_trap) {
+				self.enable_backspace_trap();
+				self.prevent_default(evt);
+			}
 			return !backspace_trap;
 		}
 		// Code 27 is escape, and this stops esc from cancelling our AJAX requests by cutting it off early
 		// Codes 38 and 40 are arrow keys, since Webkit browsers don't fire keyPress events on them and need to be handled here
 		// All other codes should be handled by on_key_press
-		if ((evt.keyCode == 27) || (evt.keyCode == 38) || (evt.keyCode == 40)) {
+		else if (keydown_handled.indexOf(evt.keyCode) != -1) {
 			self.handle_event(evt);
 			// these keys should always return false and prevent default
 			// escape, as mentioned, will cause AJAX requests to stop
@@ -57,7 +64,7 @@
 	};
 	
 	// this exists just to handle the timeout for when the user releases the backspace
-	// user releases backspace, then 1 second later we release our backspace trap flag.
+	// user releases backspace, then X seconds later we release our backspace trap flag.
 	// this stops the user from accidentally browsing away from the site while using
 	// type to find, but doesn't stop them from leaving the site otherwise
 	self.on_key_up = function(evt) {
@@ -106,6 +113,8 @@
 	};
 
 	self.route_key = function(key_code, chr) {
+		if (Prefs.get("stage") < 3) return false;
+
 		if (!PlaylistLists.active_list) return false;
 		if (!PlaylistLists.active_list.loaded) return false;
 

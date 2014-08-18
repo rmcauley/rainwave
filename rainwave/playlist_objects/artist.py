@@ -49,7 +49,7 @@ class Artist(AssociatedMetadata):
 		pass
 
 	def load_all_songs(self, sid, user_id = 1):
-		self.data['songs'] = db.c.fetch_all(
+		all_songs = db.c.fetch_all(
 			"SELECT r4_song_artist.song_id AS id, "
 			 	"r4_songs.song_origin_sid AS sid, "
 			 	"song_title AS title, "
@@ -58,6 +58,7 @@ class Artist(AssociatedMetadata):
 				"song_length AS length, "
 				"song_cool AS cool, "
 				"song_cool_end AS cool_end, "
+				"song_url as url, song_link_text as link_text, "
 				"COALESCE(song_rating_user, 0) AS rating_user, "
 				"COALESCE(song_fave, FALSE) AS fave, "
 				"album_name, r4_albums.album_id, "
@@ -75,9 +76,12 @@ class Artist(AssociatedMetadata):
 		# in the same format seen everywhere else on the API.  Still, much faster then loading individual song objects.
 		self.data['all_songs'] = {}
 		for sid in config.station_ids:
-			self.data['all_songs'][sid] = []
+			self.data['all_songs'][sid] = {}
 		requestable = True if user_id > 1 else False
-		for song in self.data['songs']:
+		for song in all_songs:
 			song['requestable'] = requestable and song['requestable']
-			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id') } ]
-			self.data['all_songs'][song['sid']].append(song)
+			if not song['album_id'] in self.data['all_songs'][song['sid']]:
+				self.data['all_songs'][song['sid']][song['album_id']] = []
+			self.data['all_songs'][song['sid']][song['album_id']].append(song)
+			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id'), "openable": song.pop('album_openable') } ]
+			

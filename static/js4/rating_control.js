@@ -11,6 +11,7 @@ var RatingControl = function() {
 	var gc_timer = false;
 
 	self.initialize = function() {
+		if (MOBILE) return;
 		API.add_callback(self.rating_user_callback, "rate_result");
 		API.add_callback(self.song_fave_update, "fave_song_result");
 		API.add_callback(self.album_fave_update, "fave_album_result");

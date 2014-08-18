@@ -41,3 +41,4 @@ etc/*.conf
 !etc/rainwave_dev.conf
 !etc/rainwave_reference.conf
 *.sqlite-journal
+out.json

@@ -7,7 +7,7 @@
 
 // ******* SEE fx.js FOR BACKGROUND POSITIONING AND FAVE SHOWING/HIDING
 
-var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) {
+var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title_el) {
 	"use strict";
 	if ((type != "song") && (type != "album")) return undefined;
 	if (isNaN(id)) return undefined;
@@ -24,12 +24,9 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 		"ratable": ratable,
 		"el": $el("div", { "class": "rating " + type + "_rating" }),
 		"absolute_x": false,
-		"absolute_y": false
+		"absolute_y": false,
+		"rating_title_el": rating_title_el
 	};
-
-	if (force_hdpi) {
-		$add_class(self.el, "hdpi");
-	}
 
 	var hover_box = $el("div", { "class": "rating_hover" });
 	var hover_number = hover_box.appendChild($el("div", { "class": "rating_hover_number" }));
@@ -53,10 +50,16 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 		self.update_ratable(self.ratable);
 	};
 
-	self.reset_fave = function() {
-		if (self.fave) $add_class(self.el, "rating_fave");
-		else $remove_class(self.el, "rating_fave");
-		$remove_class(self.el, "fave_hover");
+	self.reset_fave = function(evt) {
+		if (self.fave) {
+			$add_class(self.el, "rating_fave");
+			if (self.rating_title_el) $add_class(self.rating_title_el, "rating_title_el_fave");
+		}
+		else {
+			$remove_class(self.el, "rating_fave");
+			if (self.rating_title_el) $remove_class(self.rating_title_el, "rating_title_el_fave");
+		}
+		if (evt) $remove_class(self.el, "fave_hover");
 	};
 
 	var get_rating_from_mouse = function(evt) {
@@ -176,7 +179,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 	self.reset_rating();
 	self.reset_fave();
 
-	if (User.id > 1) {
+	if (User.id > 1 && !MOBILE) {
 		self.el.addEventListener("mouseover", self.fave_mouse_over);
 		self.el.addEventListener("mouseout", self.reset_fave);
 		self.el.addEventListener("click", click);
@@ -194,10 +197,10 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, force_hdpi) 
 	return self;
 };
 
-var SongRating = function(json) {
-	return Rating("song", json.id, json.rating_user, json.rating, json.fave, json.rating_allowed);
+var SongRating = function(json, rating_title_el) {
+	return Rating("song", json.id, json.rating_user, json.rating, json.fave, json.rating_allowed, rating_title_el);
 };
 
-var AlbumRating = function(json) {
-	return Rating("album", json.id, json.rating_user, json.rating, json.fave, false);
+var AlbumRating = function(json, rating_title_el) {
+	return Rating("album", json.id, json.rating_user, json.rating, json.fave, false, rating_title_el);
 };

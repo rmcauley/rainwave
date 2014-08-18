@@ -32,6 +32,16 @@ mimetypes.init()
 invalid_filename_characters = (":", )
 invalid_characters = ("?", )
 
+# http://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
+def in_directory(file, directory):
+    #make both absolute    
+    directory = os.path.join(os.path.realpath(directory), '')
+    file = os.path.realpath(file)
+
+    #return true, if the common prefix of both is equal to directory
+    #e.g. /a/b/c/d.rst and directory is /a/b, the common prefix is /a/b
+    return os.path.commonprefix([file, directory]) == directory
+
 def full_art_update():
 	global _art_only
 	_art_only = True
@@ -123,6 +133,9 @@ def _scan_directory(directory, sids, toscreen=False):
 	_save_scan_errors()
 
 def _is_mp3(filename):
+	# ignore mp3gain temporary files
+	if filename.endswith(".TMP"):
+		return False
 	filetype = mimetypes.guess_type(filename)
 	if len(filetype) > 0 and filetype[0] and (filetype[0] == "audio/x-mpg" or filetype[0] == "audio/mpeg"):
 		return True
@@ -145,11 +158,17 @@ def _fix_codepage_1252(filename, path = None):
 	if path:
 		fqfn = os.path.normpath(path + os.sep + filename)
 
-	if True in [c in filename for c in invalid_filename_characters] or True in [c in fqfn for c in invalid_characters]:
+	if path and True in [c in filename for c in invalid_filename_characters]:
 		# This ensures that the stack trace stays intact for this moment
 		# and other times that _add_scan_error gets called.
 		try:
-			raise PassableScanError("Invalid filename.")
+			raise PassableScanError("Invalid filename %s." % filename)
+		except Exception as e:
+			_add_scan_error(fqfn.decode("utf-8", errors="ignore"), e)
+
+	if True in [c in fqfn for c in invalid_characters]:
+		try:
+			raise PassableScanError("Invalid full path %s." % filename)
 		except Exception as e:
 			_add_scan_error(fqfn.decode("utf-8", errors="ignore"), e)
 
@@ -188,6 +207,15 @@ def _scan_file(filename, sids):
 				db.c.update("UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s", (filename,))
 		elif _is_image(filename):
 			_album_art_queue.append([filename, sids])
+	except (OSError, WindowsError, IOError) as e:
+		# deleted file
+		if e.errno == 2:
+			log.debug("scan", "File has been moved/deleted: %s" % filename)
+			s = playlist.Song.load_from_deleted_file(filename)
+			if s:
+				s.disable()
+		else:
+			_add_scan_error(filename, xception)
 	except Exception as xception:
 		_add_scan_error(filename, xception)
 
@@ -281,10 +309,15 @@ class FileEventHandler(watchdog.events.FileSystemEventHandler):
 			self._handle_file(event.src_path)
 
 	def on_moved(self, event):
-		if event.is_directory:
-			self._handle_directory(event.dest_path)
-		else:
-			self._handle_file(event.dest_path)
+		print "Handling src path move: %s" % event.src_path
+		self._src_path_handler(event)
+
+		if in_directory(event.dest_path, self.root_directory):
+			print "Handling dest path move: %s" % event.dest_path
+			if event.is_directory:
+				self._handle_directory(event.dest_path)
+			else:
+				self._handle_file(event.dest_path)
 
 	def on_created(self, event):
 		# We don't need to scan empty directories
@@ -293,12 +326,11 @@ class FileEventHandler(watchdog.events.FileSystemEventHandler):
 			self._src_path_handler(event)
 
 	def on_deleted(self, event):
-		# Unlike on_created, on_deleted will ONLY report a folder delete.
-		# It will not report every file inside that directory as deleted.
 		self._src_path_handler(event)
 
 	def on_modified(self, event):
-		self._src_path_handler(event)
+		if not event.is_directory:
+			self._src_path_handler(event)
 
 def monitor():
 	_common_init()

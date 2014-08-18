@@ -2,11 +2,12 @@ var History = function() {
 	"use strict";
 	var self = {};
 	var el;
-	var container;
+	var scrollblock;
 	var scroller;
-	var height;
-	var fake_hover_timeout;
 	var songs = [];
+	var css_left = 0;
+	var scroll_update_timeout;
+	var shown = false;
 
 	var mouse_over = function(e) {
 		$remove_class(container, "fake_hover");
@@ -22,45 +23,54 @@ var History = function() {
 	};
 
 	self.initialize = function() {
-		Prefs.define("history_sticky");
+		scrollblock = $id("history");
 		el = $id("history_list");
-		container = $id("history");
-		if (!Prefs.get("history_sticky")) {
-			container.className = "nonsticky";
+		if (!MOBILE) API.add_callback(self.update, "sched_history");
+		var li = $id("history_link_container");
+		if ('onmouseenter' in li) {
+			li.addEventListener("mouseenter", self.show);
 		}
 		else {
-			container.className = "sticky";
+			li.addEventListener("mouseover", self.show);
 		}
-		container.addEventListener("mouseover", mouse_over);
-		scroller = Scrollbar.new(container, 22);
-		$id("history_pin").addEventListener("click", self.swap_sticky);
-		$id("history_header").appendChild($el("span", { "textContent": $l("Previous Songs") + " ▼"}));
-		self.on_resize();
-
-		API.add_callback(self.update, "sched_history");
 	};
 
-	self.swap_sticky = function() {
-		if ($has_class(container, "nonsticky")) {
-			$add_class(container, "sticky");
-			$remove_class(container, "nonsticky");
-			Prefs.change("history_sticky", true);
+	self.scroll_init = function() {
+		scroller = Scrollbar.new(el, $id("history_scrollbar"));
+		scroller.unrelated_positioning = true;
+	};
+
+	self.draw = function() {
+		el.style.width = 380 + Scrollbar.get_scrollbar_width() + "px";
+	};
+
+	self.show = function() {
+		shown = true;
+		if (!css_left) {
+			css_left = $id("history_link_container").offsetWidth + 55;
+			scrollblock.style[Fx.transform_string] = "translateX(-" + css_left + "px)";
 		}
-		else {
-			// this little flip prevents the transition on non-sticky behaviour from screwing with the visuals here
-			// CAREFUL ORDERING OF THE CSS VALUES is required in requests.css to make sure this is pulled off
-			$add_class(container, "nonsticky");
-			$add_class(container, "fake_hover");
-			container.style.transition = "none";
-			$remove_class(container, "sticky");
-			Fx.delay_css_setting(container, "transition", null);
-			Prefs.change("history_sticky", false);
-			setTimeout(function() { $remove_class(container, "fake_hover"); }, 100);
+		for (var i = songs.length - 1; i >= 0; i--) {
+			// gotta use next sibling because the first element is the scrollbar!
+			el.insertBefore(songs[i].el, el.firstChild.nextSibling);
+			el.insertBefore(songs[i].header, el.firstChild.nextSibling);
 		}
+		// has to be *4 because of the header also being a child of el
+		while (el.childNodes.length >= (songs.length * 4)) {
+			el.removeChild(el.lastChild);	// header!
+			el.removeChild(el.lastChild);
+		}
+		for (i = 0; i < el.childNodes.length; i++) {
+			if (el.childNodes[i]._start_actual) {
+				el.childNodes[i].textContent = $l("played_ago", { "time": Formatting.cooldown_glance(Clock.now - (el.childNodes[i]._start_actual + Clock.get_time_diff())) });
+			}
+		}
+		scroller.recalculate(null, 650);
+		scroller.refresh();
 	};
 
 	self.update = function(json) {
-		var found, i, j;
+		var found, i, j, new_song;
 		var new_songs = [];
 		for (i = 0; i < json.length; i++) {
 			found = false;
@@ -73,36 +83,17 @@ var History = function() {
 				}
 			}
 			if (!found) {
-				new_songs.push(TimelineSong.new(json[i].songs[0]));
+				new_song = TimelineSong.new(json[i].songs[0]);
+				new_song.header = $el("div", { "class": "history_song_header", "textContent": $l("previouslyplayed") });
+				new_song.header._start_actual = json[i].start_actual;
+				new_songs.push(new_song);
 			}
 		}
-
-		for (i = songs.length - 1; i >= 0; i--) {
-			Fx.remove_element(songs[i].el);
-		}
-		
 		songs = new_songs;
-		for (i = 0; i < songs.length; i++) {
-			el.appendChild(songs[i].el)
-		}
-
-		// self.reflow();
+		if (shown) self.show();
 	};
 
-	self.on_resize = function(new_height) {
-		if (new_height) height = new_height
-		if (container) container.style.height = height + "px";
-	};
-
-	// self.reflow = function() {
-	// 	var running_height = 5;
-	// 	for (var i = 0; i < songs.length; i++) {
-	// 		songs[i]._y = running_height;
-	// 		Fx.delay_css_setting(songs[i].el, "transform", "translateY(" + running_height + "px)");
-	// 		running_height += TimelineSong.height;
-	// 	}
-	// 	if (scroller) scroller.update_scroll_height(running_height);
-	// };
+	self.on_resize = function() {};
 
 	return self;
 }();

@@ -172,6 +172,7 @@ class BaseEvent(object):
 		self.name = None
 		self.sid = sid
 		self.songs = None
+		self.core_event_id = None
 
 	def _update_from_dict(self, dct):
 		pass
@@ -233,7 +234,8 @@ class BaseEvent(object):
 			"url": self.url,
 			"voting_allowed": False,
 			"used": self.used,
-			"length": self.length()
+			"length": self.length(),
+			"core_event_id": self.core_event_id
 		}
 		if hasattr(self, "songs"):
 			if self.start_actual:

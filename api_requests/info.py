@@ -25,6 +25,9 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 
 	if all_lists or (extra_list == "all_artists") or 'all_artists' in request.request.arguments:
 		request.append("all_artists", api_requests.playlist.get_all_artists(request.sid))
+
+	if all_lists or (extra_list == "all_groups") or 'all_groups' in request.request.arguments:
+		request.append("all_groups", api_requests.playlist.get_all_groups(request.sid))
 	
 	if all_lists or (extra_list == "current_listeners") or 'current_listeners' in request.request.arguments:
 		request.append("current_listeners", cache.get_station(request.sid, "current_listeners"))
@@ -35,7 +38,7 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 	sched_history = None
 	sched_current = None
 	if request.user and not request.user.is_anonymous():
-		request.append("requests", request.user.get_requests())
+		request.append("requests", request.user.get_requests(request.sid))
 		sched_current = cache.get_station(request.sid, "sched_current")
 		if request.user.is_tunedin():
 			sched_current.get_song().data['rating_allowed'] = True

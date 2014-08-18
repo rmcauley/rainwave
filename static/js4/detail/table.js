@@ -2,7 +2,7 @@ var SongsTable = function(songs, columns) {
 	"use strict";
 	var el = $el("table", { "class": "songlist" });
 
-	var row, cell, r, i, div, link;
+	var row, cell, r, i, div, link, title_el;
 	for (i = 0; i < songs.length; i++) {
 		row = $el("tr");
 		if (("cool" in songs[i]) && songs[i].cool) {
@@ -33,7 +33,7 @@ var SongsTable = function(songs, columns) {
 
 		if (songs[i].url) {
 			link = $el("a", { "href": songs[i].url, "target": "_blank" });
-			link.appendChild($el("img", { "src": "/static/images4/link_window.png" }));
+			link.appendChild($el("img", { "src": "/static/images4/link_external.svg", "class": "link_external" }));
 			cell = $el("td", { "class": "songlist_url" });
 			cell.appendChild(link);
 			row.appendChild(cell);
@@ -42,6 +42,7 @@ var SongsTable = function(songs, columns) {
 			row.appendChild($el("td", { "class": "songlist_url" }));
 		}
 
+		title_el = null;
 		for (var key = 0; key < columns.length; key++) {
 			if ((columns[key] == "artists") && ("artist_parseable" in songs[i])) {
 				cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] }));
@@ -54,12 +55,13 @@ var SongsTable = function(songs, columns) {
 				if (columns[key] == "title") {
 					cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] } ));
 					div = $el("div", { "class": "songlist_" + columns[key] + "_text", "textContent": songs[i][columns[key]] });
+					title_el = div
 					Formatting.add_overflow_tooltip(div);
 					cell.appendChild(div);
 				}
 				else if (columns[key] == "rating") {
 					cell = $el("td", { "class": "songlist_" + columns[key] });
-					r = Rating("song", songs[i].id, songs[i].rating_user, songs[i].rating, songs[i].fave, User.rate_anything);
+					r = Rating("song", songs[i].id, songs[i].rating_user, songs[i].rating, songs[i].fave, User.rate_anything, title_el);
 					r.absolute_x = true;
 					r.absolute_y = true;
 					cell.appendChild(r.el);

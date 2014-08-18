@@ -4,7 +4,7 @@
 	display: block;
 	position: absolute;
 	left: 100%;
-	z-index: 100;
+	z-index: 99;
 	box-sizing: border-box;
 	width: 360px;
 	background: #05101E;
@@ -12,6 +12,10 @@
 	
 	@include transition-wtime(350ms, transform, border-color, background-color);
 	@include transform(translateX(-5px));
+}
+
+body.stage_0 #requests_scrollblock, body.stage_1 #requests_scrollblock, body.stage_2 #requests_scrollblock {
+	display: none;
 }
 
 #requests_scrollblock.request_queue_paused {
@@ -30,6 +34,7 @@
 
 #requests {
 	height: 100%;
+	position: relative;
 }
 
 /* REQUEST-ONLY ELEMENTS */
@@ -98,22 +103,19 @@ div.request_sort_grab {
 	width: 100%;
 	height: 100%;
 	background-color: #000;
-	background-image: url("/static/images4/sort_grab.png");
-	background-repeat: no-repeat;
-	background-position: 0px 5px;
 	cursor: grab;
 	opacity: 0;
 	@include transition(opacity);
 }
 
 div.timeline_song:hover div.request_sort_grab {
-	opacity: 0.5;
+	opacity: 0.75;
 }
 
 div.request_sort_grab img {
 	position: relative;
-	top: 6px;
-	left: 14px;
+	top: 20px;
+	left: 20px;
 	height: 30px;
 	width: 30px;
 }
@@ -121,7 +123,7 @@ div.request_sort_grab img {
 #requests div.timeline_song.dragging {
 	@include no-transition();
 	z-index: 2;
-	background: #25263c;
+	background-color: #25263c;
 }
 
 div.request_cancel {

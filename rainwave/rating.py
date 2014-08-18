@@ -39,7 +39,7 @@ def set_song_rating(sid, song_id, user_id, rating = None, fave = None):
 				"SET song_rating_user = %s, song_fave = %s, song_rated_at = %s, song_rated_at_rank = %s, song_rated_at_count = %s "
 				"WHERE user_id = %s AND song_id = %s",
 				(rating, fave, time.time(), rank, count, user_id, song_id))
-			db.c.update("UPDATE phpbb_users SET radio_totalmindchange = radio_totalmindchange + 1 WHERE user_id = %s", (user_id,))
+			db.c.update("UPDATE phpbb_users SET radio_totalmindchange = radio_totalmindchange + 1, radio_inactive = FALSE, radio_last_active = %s WHERE user_id = %s", (time.time(), user_id,))
 		else:
 			if not rating:
 				rating = None
@@ -50,7 +50,7 @@ def set_song_rating(sid, song_id, user_id, rating = None, fave = None):
 						"VALUES (%s, %s, %s, %s, %s, %s, %s)",
 						(rating, fave, time.time(), rank, count, user_id, song_id))
 
-		db.c.update("UPDATE phpbb_users SET radio_totalratings = %s WHERE user_id = %s", (count, user_id))
+		db.c.update("UPDATE phpbb_users SET radio_totalratings = %s, radio_inactive = FALSE, radio_last_active = %s WHERE user_id = %s", (count, time.time(), user_id))
 
 		albums = update_album_ratings(sid, song_id, user_id)
 		db.c.commit()

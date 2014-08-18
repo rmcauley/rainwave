@@ -7,20 +7,48 @@ $art_full_size = 320px;
 #timeline_scrollblock {
 	float: left;
 	height: 100%;
-	min-width: 19em;
-	@include transition(width);
+	/* update scrollbar.js when you update this min-width */
+	min-width: 280px;
+	@include transition(width, transform, left);
 	position: relative;
 	background-color: #131416;
-	width: 26em;
+	width: 25%;
+	z-index: 1;
+	left: 0;
+	max-width: 1024px;
+}
+
+body.stage_0 #timeline_scrollblock, body.stage_1 #timeline_scrollblock, body.stage_2 #timeline_scrollblock {
+	width: 100% !important;
+	left: 50%;
+	@include transform(translateX(-50%));
 }
 
 #timeline {
-	padding: 0 10px;
+	padding: 0 15px 0px 10px;
 	height: 100%;
+	@include transition(width);
+}
+
+body.unselectable #timeline {
+	@include no-transition();
+}
+
+body.stage_0 #timeline, body.stage_1 #timeline, body.stage_2 #timeline {
+	width: 100% !important;
+	overflow: hidden;
+}
+
+body.stage_3 #timeline {
+	overflow: hidden;
+}
+
+body.stage_0 #timeline_scrollbar, body.stage_1 #timeline_scrollbar, body.stage_2 #timeline_scrollbar {
+	display: none;
 }
 
 body.small_screen #timeline {
-	padding: 0 5px;
+	padding: 0 10px;
 }
 
 body.unselectable #timeline_scrollblock {
@@ -37,6 +65,17 @@ div.timeline_event {
 	width: 100%;
 	margin-top: 10px;
 	@include transition-wtime(1s, opacity, transform, margin-top);
+	opacity: 1;
+}
+
+body.stage_0 div.timeline_event:nth-child(n+4), body.stage_1 div.timeline_event:nth-child(n+4) {
+	opacity: 0;
+	visibility: hidden;
+}
+
+body.stage_2 div.timeline_event:nth-child(n+5), body.stage_3 div.timeline_event:nth-child(n+5) {
+	opacity: 0;
+	visibility: hidden;
 }
 
 div.timeline_event_closing {
@@ -70,26 +109,52 @@ div.timeline_song div.album_group {
 	clear: right;
 }
 
-div.timeline_song div.album {
-	cursor: pointer;
-}
-
 div.timeline_song_content {
 	position: relative;
 	top: 50%;
 	@include transform(translateY(-50%));
 }
 
-div.timeline_song_content > div, div.timeline_song_content div.album_group .link {
+div.timeline_song_content > div, div.timeline_song_content div.album_group .link, div.timeline_song_content div.artist .link {
 	color: $song_subinfo_color;
+}
+
+div.timeline_song_content div.album_group .link.rating_title_el_fave {
+	color: $fave_color;
 }
 
 div.timeline_song_content div.title {
 	color: $text;
 }
 
+div.timeline_song_content div.title.rating_title_el_fave {
+	color: $fave_color;
+}
+
 div.timeline_song_content div.artist, div.timeline_song_content div.votes, div.timeline_song_content div.cooldown_info, div.timeline_song a.song_link {
 	display: none;
+}
+
+div.timeline_song div.requester {
+	position: absolute;
+	@include transition(opacity);
+	@include transform(rotate(-90deg) translateX(-100%)); 
+	-webkit-transform-origin: 0% 0%;
+	        transform-origin: 0% 0%;
+	width: 100%;
+	font-size: x-small;
+	z-index: 5;
+	text-align: center;
+	background: $highlight;
+	opacity: 1;
+}
+
+div.timeline_song div.art_expandable.art_expanded div.requester {
+	opacity: 0;
+}
+
+div.timeline_song div.your_request {
+	background: #18a485;
 }
 
 /* ART */
@@ -154,7 +219,7 @@ body.small_screen div.art_expandable:hover {
 }
 
 div.art_expandable.art_expanded, div.art_epandable.art_expanded:hover {
-	z-index: 3 !important;
+	z-index: 3;
 	width: $art_full_size !important;
 	height: $art_full_size !important;
 	border-width: 3px;
@@ -163,15 +228,15 @@ div.art_expandable.art_expanded, div.art_epandable.art_expanded:hover {
 }
 
 div.art_expand_left.art_expand_up {
-	@include transform(translate(-270px, -270px) !important);
+	@include transform(translate(-250px, -250px) !important);
 }
 
 div.art_expand_left.art_expand_down {
-	@include transform(translate(-270px, 0) !important);
+	@include transform(translate(-250px, 0) !important);
 }
 
 div.art_expand_right.art_expand_up {
-	@include transform(translate(0, -270px) !important);
+	@include transform(translate(0, -250px) !important);
 }
 
 div.art_expand_right.art_expand_down {
@@ -234,9 +299,27 @@ div.timeline_now_playing_song div.title_group {
 	font-weight: bold;
 }
 
+img.link_external {
+	height: 14px;
+	width: 14px;
+	margin-right: 5px;
+}
+
 div.timeline_now_playing_song div.timeline_song_content > div, div.timeline_now_playing_song div.timeline_song_content > a {
 	display: block;
 	margin-bottom: 5px;
+}
+
+div.timeline_header_vote_result {
+	margin-top: 30px;
+	text-align: center;
+	color: $darktext;
+	font-size: small;
+}
+
+div.timeline_header_vote_result span.self_voted_result {
+	font-weight: bold;
+	font-style: italic;
 }
 
 /* NOW PLAYING PROGRESS BAR */
@@ -252,6 +335,10 @@ div.timeline_header_bar {
 div.timeline_now_playing div.timeline_header_bar {
 	height: 2px;
 	margin-top: 30px;
+}
+
+div.timeline_now_playing div.timeline_header_vote_result + div.timeline_header_bar {
+	margin-top: 5px;
 }
 
 div.timeline_header_bar_inside {
@@ -278,12 +365,13 @@ div.timeline_song_is_cool div.timeline_song_content div.cooldown_info {
 /* HEADERS, ETC */
 
 div.timeline_header {
-	@include transition(transform, opacity, LINKCOLOR);
+	@include transition(transform, opacity, LINKCOLOR, padding);
 	color: $vdarktext;
-	background-color: #131416;
 	padding-bottom: 4px;
 	font-size: smaller;
 	text-transform: uppercase;
+	overflow: hidden;
+	height: 1.2em;
 }
 
 div.timeline_now_playing div.timeline_header {
@@ -309,4 +397,23 @@ div.voting_hover {
 
 div.voting_registered {
 	background-position: 0px -107px;
+}
+
+#vote_cta {
+	box-sizing: border-box;
+	padding: 1em;
+	position: absolute;
+	z-index: 100;
+	left: 50%;
+	top: 100%;
+	width: 100%;
+	max-width: 1004px;
+	opacity: 0;
+	@include transition(opacity);
+	@include transform(translate(-50%, -120%));
+	border: solid 3px $highlight;
+	color: $text;
+	text-align: center;
+	border-radius: 3px;
+	cursor: pointer;
 }

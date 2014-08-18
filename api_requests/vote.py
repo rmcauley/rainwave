@@ -88,7 +88,7 @@ class SubmitVote(APIHandler):
 						"INSERT INTO r4_vote_history (elec_id, entry_id, user_id, song_id, vote_at_rank, vote_at_count, sid) "
 						"VALUES (%s, %s, %s, %s, %s, %s, %s)",
 						(event.id, entry_id, self.user.id, event.get_entry(entry_id).id, rank, vote_count, event.sid))
-					db.c.update("UPDATE phpbb_users SET radio_inactive = FALSE, radio_totalvotes = %s WHERE user_id = %s", (vote_count, self.user.id))
+					db.c.update("UPDATE phpbb_users SET radio_inactive = FALSE, radio_last_active = %s, radio_totalvotes = %s WHERE user_id = %s", (time.time(), vote_count, self.user.id))
 
 				user_vote_cache = cache.get_user(self.user, "vote_history")
 				if not user_vote_cache:

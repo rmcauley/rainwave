@@ -1,4 +1,4 @@
-.rating_site, .rating_user {
+div.rating_site, div.rating_user {
 	float: right;
 	background-repeat: no-repeat;
 	width: 73px;
@@ -7,38 +7,43 @@
 	height: 1.2em;
 }
 
-.ratable {
+div.ratable {
 	cursor: pointer;
 }
 
-.ratable:hover {
+div.ratable:hover {
 	@include no-transition();
 }
 
-body.small_screen .rating_site, body.small_screen .rating_user {
+body.small_screen div.rating_site, body.small_screen div.rating_user {
 	margin-top: 1px;
 }
 
-.rating_site {
+div.rating_site {
 	background-image: url("/static/images4/rating_bar/dark_ldpi.png");
 }
 
-.rating_user {
+div.rating_user {
 	background-image: url("/static/images4/rating_bar/bright_ldpi.png");
 }
 
-.fave_lined {
+div.rating img {
+	width: 14px;
+	height: 13px;
+}
+
+img.fave_lined {
 	@include transition-wtime(200ms, opacity);
 	opacity: 0;
 	position: absolute;
 	padding-top: 3px;
 }
 
-body.small_screen .fave_lined {
+body.small_screen img.fave_lined {
 	padding-top: 1px;
 }
 
-.fave_solid {
+img.fave_solid {
 	z-index: 1;
 	position: absolute;
 	@include transition-wtime(200ms, opacity);
@@ -46,31 +51,27 @@ body.small_screen .fave_lined {
 	padding-top: 3px;
 }
 
-.faveable {
+img.faveable {
 	cursor: pointer;
 }
 
-body.small_screen .fave_solid {
+body.small_screen img.fave_solid {
 	padding-top: 1px;
 }
 
-.fave_hover .fave_lined {
+div.fave_hover img.fave_lined {
 	opacity: 1;
 }
 
-/*.fave_hover .fave_solid {
-	opacity: 0.5;
-}*/
-
-.rating_fave .fave_solid {
+div.rating_fave img.fave_solid {
 	opacity: 1;
 }
 
-.rating_fave .fave_lined {
+div.rating_fave img.fave_lined {
 	opacity: 0;
 }
 
-.rating_hover {
+div.rating_hover {
 	position: absolute;
 	margin-top: -14px;
 	margin-left: 17px;
@@ -84,11 +85,11 @@ body.small_screen .fave_solid {
 	padding: 0;
 }
 
-body.small_screen .rating_hover {
+body.small_screen div.rating_hover {
 	margin-top: -16px;
 }
 
-.rating_hover_number {
+div.rating_hover_number {
 	text-align: right;
 	font-size: smaller;
 	height: 14px;
@@ -97,6 +98,6 @@ body.small_screen .rating_hover {
 	padding-right: 3px;
 }
 
-body.small_screen .rating_hover {
+body.small_screen div.rating_hover {
 	font-size: medium;
 }

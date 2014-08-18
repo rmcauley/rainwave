@@ -52,6 +52,9 @@ def load():
 def get_event_in_progress(sid):
 	producer = get_current_producer(sid)
 	evt = producer.load_event_in_progress()
+	if not evt:
+		producer = election.ElectionProducer(sid)
+		evt = producer.load_event_in_progress()
 	return evt
 
 def get_current_producer(sid):
@@ -160,9 +163,11 @@ def post_process(sid):
 		# update_cache updates both the line and expiry times
 		# this is expensive and not necessary to do more than once
 		# DO THIS AFTER EVERYTHING ELSE, RIGHT BEFORE NEXT MANAGEMENT, OR PEOPLE'S REQUESTS SLIP THROUGH THE CRACKS
-		request.update_cache(sid)
+		request.update_line(sid)
 		# add to the event list / update start times for events
 		manage_next(sid)
+		# update expire times AFTER manage_next, so people who aren't in line anymore don't see expiry times
+		request.update_expire_times()
 		log.debug("advance", "Request and upnext management: %.6f" % (time.time() - start_time,))
 
 		update_memcache(sid)
@@ -313,3 +318,4 @@ def update_memcache(sid):
 	rainwave.playlist_objects.album.clear_updated_albums(sid)
 	cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
 	cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)
+	cache.set_station(sid, "all_groups", playlist.get_all_groups_list(sid), True)

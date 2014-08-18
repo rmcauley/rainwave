@@ -110,7 +110,8 @@ class APIServer(object):
 			schedule.load()
 			for station_id in config.station_ids:
 				schedule.update_memcache(station_id)
-				rainwave.request.update_cache(station_id)
+				rainwave.request.update_line(station_id)
+				rainwave.request.update_expire_times()
 				cache.set_station(station_id, "backend_ok", True)
 				cache.set_station(station_id, "backend_message", "OK")
 				cache.set_station(station_id, "get_next_socket_timeout", False)
@@ -118,6 +119,7 @@ class APIServer(object):
 		for sid in config.station_ids:
 			cache.update_local_cache_for_sid(sid)
 			playlist.prepare_cooldown_algorithm(sid)
+			playlist.update_num_songs()
 
 		# If we're not in developer, remove development-related URLs
 		if not config.get("developer_mode"):

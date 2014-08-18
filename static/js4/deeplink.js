@@ -9,6 +9,11 @@ var DeepLinker = function() {
 		routes[route] = callback;
 	};
 
+	self.has_deep_link = function() {
+		var deeplinkurl = decodeURI(location.href);
+		return (deeplinkurl.indexOf("#!/") >= 0);
+	};
+
 	self.detect_url_change = function() {
 		if (old_url != location.href) {
 			var deeplinkurl = decodeURI(location.href);
@@ -25,6 +30,9 @@ var DeepLinker = function() {
 		if (route in routes) {
 			if (!routes[route].apply(this, args)) {
 				ErrorHandler.permanent_error(ErrorHandler.make_error("deeplink_error", 404))
+			}
+			if (Prefs.get("stage") < 3) {
+				Prefs.change("stage", 3);
 			}
 		}
 	};

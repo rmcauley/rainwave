@@ -33,7 +33,7 @@ class WebCreateProducer(api.web.HTMLRequest):
 		index.write_html_time_form(self, "new_ph_end")
 		self.write("<br><br><button onclick=\"window.top.call_api('admin/create_producer', ")
 		self.write("{ 'producer_type': document.getElementById('new_ph_type').value, 'end_utc_time': document.getElementById('new_ph_end_timestamp').value, 'start_utc_time': document.getElementById('new_ph_start_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\"")
-		self.write(">Create new Power Hour</button></div>")
+		self.write(">Create new Producer</button></div>")
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/album_list/producers")

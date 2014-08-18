@@ -1,11 +1,9 @@
 import os
 import glob
 
-files = [ os.path.basename(f) for f in glob.glob("./lang/*.json") ]
-
-for filename in files:
-	original_file = open("./lang/%s" % filename, 'r')
-	out_file = open("./lang2/%s" % filename, 'w')
+def format(in_filename, out_filename):
+	original_file = open(in_filename, 'r')
+	out_file = open(out_filename, 'w')
 	for line in original_file:
 		if line.find(":") == -1:
 			out_file.write("%s\n" % line.strip())
@@ -17,3 +15,8 @@ for filename in files:
 				out_file.write("   %-50s: %s\n" % (s[0].strip(), s[1].strip()))
 	original_file.close()
 	out_file.close()
+
+if __name__ == "__main__":
+	files = [ os.path.basename(f) for f in glob.glob("./lang/*.json") ]
+	for filename in files:
+		format("./lang/%s" % filename, "./lang2/%s" % filename)

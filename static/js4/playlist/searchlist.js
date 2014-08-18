@@ -9,6 +9,8 @@
 
 var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_key) {
 	"use strict";
+	el.parentNode.style.display = "none";
+
 	var self = {};
 	self.sort_key = sort_key;
 	self.search_key = search_key || "id";
@@ -34,8 +36,9 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	var num_items_to_display;
 	var original_scroll_top;
 	var original_key_nav;
+	var ignore_original_scroll_top;
 
-	var current_scroll_index = 0;
+	var current_scroll_index = false;
 	var current_height;
 
 	// LIST MANAGEMENT ***********************************************
@@ -65,6 +68,12 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		self.recalculate();
 		self.reposition();
 		self.loaded = true;
+	};
+
+	self.refresh_all_items = function() {
+		for (var i in data) {
+			self.update_item_element(data[i]);
+		}
 	};
 
 	self.update_item = function(json) {
@@ -166,9 +175,9 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		}
 	};
 
-	self.recalculate = function() {
+	self.recalculate = function(force_height_check) {
 		var full_height = item_height * visible.length;
-		if (full_height != current_height) {
+		if (force_height_check || (full_height != current_height)) {
 			stretching_el.style.height = full_height + "px";
 			scrollbar.recalculate(full_height);
 			scrollbar.refresh();
@@ -178,8 +187,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.sort_function = function(a, b) {
-		if (data[a]._lower_case_sort_keyed < data[b]._lower_case_sort_keyed) return 1;
-		else if (data[a]._lower_case_sort_keyed > data[b]._lower_case_sort_keyed) return -1;
+		if (data[a]._lower_case_sort_keyed < data[b]._lower_case_sort_keyed) return -1;
+		else if (data[a]._lower_case_sort_keyed > data[b]._lower_case_sort_keyed) return 1;
 		return 0;
 	};
 
@@ -260,7 +269,10 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			$add_class(self.search_box_input.parentNode, "no_escape_button");
 			Prefs.change("used_escape_to_clear_search", true);
 		}
-		self.clear_search();
+		if (hotkey_mode_on) hotkey_mode_disable();
+		if (search_string.length > 0) {
+			self.clear_search();
+		}
 		return true;
 	};
 
@@ -351,20 +363,23 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		self.recalculate();
 		if (original_key_nav) {
 			self.key_nav_highlight(original_key_nav, true);
+			original_key_nav = false;
 		}
-		if (original_scroll_top) {
+		if (original_scroll_top && !ignore_original_scroll_top) {
 		 	scrollbar.scroll_to(original_scroll_top);
 		 	original_scroll_top = false;
 		}
 		else {
 			self.scroll_to_default();
 		}
+		ignore_original_scroll_top = false;
 	};
 
 	var clear_searchbar = function() {
 		if (hotkey_timeout) {
 			clearTimeout(hotkey_timeout);
 		}
+		$remove_class(self.search_box_input.parentNode.parentNode, "no_results");
 		$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
 		$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
 		$remove_class(self.search_box_input.parentNode, "searchlist_input_active");
@@ -403,6 +418,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		}
 	};
 
+	self.redraw_current_position = function() {
+		current_scroll_index = false;
+		self.reposition();
+	};
+
 	self.reposition = function() {
 		var new_index = Math.floor(scrollbar.scroll_top / item_height);
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
@@ -412,9 +432,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		self.el.style.marginTop = new_margin + "px";
 		self.el.style.top = scrollbar.scroll_top + "px";
 		
-		if (current_scroll_index === new_index) {
-			return;
-		}
+		if (current_scroll_index === new_index) return;
+		if (visible.length === 0) return;
 
 		if (current_scroll_index) {
 			if (new_index < current_scroll_index - num_items_to_display) current_scroll_index = false;
@@ -455,13 +474,16 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	// NAV *****************************
 
 	self.set_new_open = function(id) {
-		if (!id in data) return;
+		if (!(id in data)) return;
 		if (current_open_id) {
 			$remove_class(data[current_open_id]._el, "searchlist_open_item");
 		}
 		$add_class(data[id]._el, "searchlist_open_item");
 		current_open_id = id;
 		self.key_nav_highlight(id);
+		if (search_string.length > 0) {
+			ignore_original_scroll_top = true;
+		}
 	}
 
 	// FAKING A TEXT FIELD **************
@@ -477,7 +499,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.on_resize = function() {
 		if (SmallScreen) item_height = 20;
 		else item_height = 24;
-		self.recalculate();
+		current_scroll_index = false;
+		self.recalculate(true);
 		self.reposition();
 	};
 

@@ -33,13 +33,13 @@ var EventBase = function(json) {
 
 	var header = $el("div", { "class": "timeline_header" });
 	self.elements.header_clock = $el("span", { "class": "timeline_header_clock" });
+	var header_vote_result = $el("div", { "class": "timeline_header_vote_result" });
 	var header_text = $el("a");
 	var header_bar = $el("div", { "class": "timeline_header_bar" });
 	var header_inside_bar = $el("div", { "class": "timeline_header_bar_inside" });
 	header_bar.appendChild(header_inside_bar);
 	header.appendChild(self.elements.header_clock);
 	header.appendChild(header_text);
-	self.header_height = 0;
 	self.header_text;
 
 	if (json.songs) {
@@ -92,23 +92,40 @@ var EventBase = function(json) {
 
 	self.change_to_coming_up = function() {
 		$add_class(self.el, "timeline_next");
-		self.set_header_text($l("Coming_Up"));
+		self.set_header_text($l("coming_up"));
 	};
 
 	self.change_to_now_playing = function() {
+		if ($has_class(self.el, "timeline_now_playing")) return;
 		$remove_class(self.el, "timeline_next");
-		self.set_header_text($l("Now_Playing"));
+		self.set_header_text($l("now_playing"));
 		Clock.pageclock = self.elements.header_clock;
-		if (self.songs && (self.songs.length > 0)) {
+		if (self.songs && (self.songs.length > 1)) {
 			// other places in the code rely on songs[0] to be the winning song
 			// make sure we sort properly for that condition here
 			self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
-
+			var use_header = self.songs[0].data.entry_votes ? true : false;
+			if (use_header) {
+				self.el.insertBefore(header_vote_result, header_bar);
+				header_vote_result.appendChild($el("span", { "textContent": $l("voting_results_were") + " " }));
+			}
 			for (var i = 0; i < self.songs.length; i++) {
+				if (use_header) {
+					header_vote_result.appendChild($el("span", { "textContent": self.songs[i].data.entry_votes }));
+					if ($has_class(self.songs[i].el, "voting_registered")) {
+						header_vote_result.lastChild.className = "self_voted_result";
+					}
+					if (i != (self.songs.length - 1)) {
+						header_vote_result.appendChild($el("span", { "textContent": " - " }));
+					}
+				}
 				if (self.songs[i].data.entry_position == 0) {
 					$add_class(self.songs[i].el, "timeline_now_playing_song");
 				}
 			}
+		}
+		else if (self.songs && (self.songs.length > 0)) {
+			$add_class(self.songs[0].el, "timeline_now_playing_song");
 		}
 		$add_class(self.el, "timeline_now_playing");
 	};
@@ -158,10 +175,10 @@ var EventBase = function(json) {
 
 	self.set_header_text = function(default_text) {
 		if (self.type == "OneUp") {
-			header_text.textContent = default_text + " - " + self.name + " " + $l("Power_Hour");
+			header_text.textContent = default_text + " - " + self.name + " " + $l("power_hour");
 		}
-		else if ((default_text != $l("Now_Playing") || self.type != "Election") && $l_has(self.type)) {
-			header_text.textContent = default_text + " - " + $l(self.type);
+		else if ((default_text != $l("now_playing") || self.type != "Election") && $l_has(self.type.toLowerCase())) {
+			header_text.textContent = default_text + " - " + $l(self.type.toLowerCase());
 			if (self.name) {
 				header_text.textContent += " - " + self.name;
 			}
@@ -188,15 +205,17 @@ var EventBase = function(json) {
 	};
 
 	self.hide_header = function() {
-		Fx.delay_css_setting(header, "opacity", 0);	
+		if (!$add_class(self.el, "timeline_event_sequence")) return;
+		Fx.delay_css_setting(header, "opacity", 0);
 		Fx.delay_css_setting(header, "height", 0);
-		self.header_height = 0;
+		Fx.delay_css_setting(header, "padding", 0);
 	};
 
 	self.show_header = function() {
-		Fx.delay_css_setting(header, "opacity", 1);
-		Fx.delay_css_setting(header, "height", Schedule.header_height + "px");
-		self.header_height = Schedule.header_height;
+		if (!$remove_class(self.el, "timeline_event_sequence")) return;
+		Fx.delay_css_setting(header, "opacity", null);
+		Fx.delay_css_setting(header, "height", null);
+		Fx.delay_css_setting(header, "padding", null);
 	};
 
 	self.progress_bar_start = function() {
@@ -206,7 +225,7 @@ var EventBase = function(json) {
 	};
 
 	var progress_bar_update = function() {
-		var new_val = ((self.end - Clock.now) / (self.data.songs[0].length - 1)) * 100;
+		var new_val = Math.min(Math.max(Math.floor(((self.end - Clock.now) / (self.data.songs[0].length - 1)) * 100), 0), 100);
 		header_inside_bar.style.width = new_val + "%";
 	};
 

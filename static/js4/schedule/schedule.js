@@ -21,7 +21,18 @@ var Schedule = function() {
 	self.scroll_init = function() {
 		self.el = $id("timeline");
 		timeline_scrollbar = Scrollbar.new(self.el, $id("timeline_scrollbar"), 30);
+		timeline_scrollbar.pending_self_update = true;
 		timeline_resizer = Scrollbar.new_resizer($id("timeline_scrollblock"), self.el, $id("timeline_resizer"));
+		timeline_resizer.callback = DetailView.on_resize;
+	};
+
+	self.stage_padding_check = function() {
+		if ($has_class(document.body, "stage_3")) {
+			self.el.style.paddingRight = Scrollbar.get_scrollbar_width() + 15 + "px";
+		}
+		else {
+			self.el.style.paddingRight = "";
+		}
 	};
 
 	self.initialize = function() {
@@ -48,18 +59,24 @@ var Schedule = function() {
 			current_event.el.style.marginTop = SCREEN_HEIGHT + "px";
 		}
 		Fx.delay_css_setting(current_event.el, "marginTop", "10px");
+		timeline_scrollbar.pending_self_update = true;
+		Fx.chain_transition(current_event.el, function(e) {
+			setTimeout(function() { self.scrollbar_recalculate(); }, 1100);
+		});
 		new_events.push(current_event);
 		if (!current_event.el.parentNode) self.el.appendChild(current_event.el);
 
-		var temp_evt, previous_evt;
+		var temp_evt, previous_evt, sequenced_margin;
 		for (i = 0; i < sched_next.length; i++) {
 			temp_evt = find_and_update_event(sched_next[i]);
 			temp_evt.change_to_coming_up();
-			if (previous_evt && (previous_evt.id == temp_evt.id)) {
+			if (previous_evt && temp_evt.data.core_event_id && (previous_evt.data.core_event_id === temp_evt.data.core_event_id)) {
 				temp_evt.hide_header();
+				sequenced_margin = true;
 			}
 			else {
 				temp_evt.show_header();
+				sequenced_margin = false;
 			}
 			new_events.push(temp_evt);
 			previous_evt = temp_evt;
@@ -69,8 +86,9 @@ var Schedule = function() {
 			else if (!temp_evt.el.style.marginTop) {
 				temp_evt.el.style.marginTop = SCREEN_HEIGHT + "px";
 			}
-			Fx.delay_css_setting(temp_evt.el, "marginTop", "30px");
+			Fx.delay_css_setting(temp_evt.el, "marginTop", sequenced_margin ? "0px" : "30px");
 			if (!temp_evt.el.parentNode) self.el.appendChild(temp_evt.el);
+			if (MOBILE) break;
 		}
 
 		// Erase old elements out before we replace the self.events with new_events
@@ -88,21 +106,16 @@ var Schedule = function() {
 		}
 
 		// The now playing bar
+		Clock.set_page_title(current_event.songs[0].data.albums[0].name + " - " + current_event.songs[0].data.title, current_event.end);
 		if ((current_event.end - Clock.now) > 0) {
-			Clock.set_page_title(current_event.songs[0].data.albums[0].name + " - " + current_event.songs[0].data.title, current_event.end);
 			current_event.progress_bar_start();
 		}
-
-		self.scrollbar_recalculate();
 	};
 
 	self.scrollbar_recalculate = function() {
-		timeline_scrollbar.pending_self_update = true;
-		setTimeout(function() {
-			 timeline_scrollbar.recalculate();
-			 timeline_scrollbar.refresh();
-		}, 1700);
-	}
+		timeline_scrollbar.recalculate();
+		timeline_scrollbar.refresh();
+	};
 
 	var find_event = function(id) {
 		for (var i = 0; i < self.events.length; i++) {
@@ -186,6 +199,13 @@ var Schedule = function() {
 			}
 		}
 	};
+
+	self.get_current_song_rating = function() {
+		if (current_event && current_event.songs && (current_event.songs.length > 0)) {
+			return current_event.songs[0].song_rating.rating_user;
+		}
+		return null;
+	}
 
 	return self;
 }();

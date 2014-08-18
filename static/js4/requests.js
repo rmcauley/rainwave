@@ -5,6 +5,7 @@ var Requests = function() {
 	var scroll_container;
 	var container;
 	var scroller;
+	var header;
 	var fake_hover_timeout;
 	var songs = [];
 	var dragging_song;
@@ -14,7 +15,7 @@ var Requests = function() {
 
 	self.scroll_init = function() {
 		scroll_container = $id("requests");
-		scroller = Scrollbar.new(scroll_container, $id("requests_scrollbar"), 22);
+		scroller = Scrollbar.new(scroll_container, $id("requests_scrollbar"), 28);
 	};
 
 	self.initialize = function() {
@@ -23,8 +24,10 @@ var Requests = function() {
 		container = $id("requests_scrollblock");
 		container.addEventListener("mouseover", mouse_over);
 
-		API.add_callback(self.update, "requests");
-		API.add_callback(self.show_queue_paused, "user");
+		if (!MOBILE) {
+			API.add_callback(self.update, "requests");
+			API.add_callback(self.show_queue_paused, "user");
+		}
 	};
 
 	self.draw = function() {
@@ -32,7 +35,7 @@ var Requests = function() {
 			$add_class(document.body, "requests_sticky");
 		}
 		$id("requests_pin").addEventListener("click", self.swap_sticky);
-		$id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
+		header = $id("requests_header").appendChild($el("span", { "textContent": $l("Requests") }));
 		$id("requests_pause").setAttribute("title", $l("pause_request_queue"));
 		$id("requests_pause").setAttribute("alt", $l("pause_request_queue"));
 		$id("requests_pause").addEventListener("click", self.pause_queue);
@@ -67,12 +70,37 @@ var Requests = function() {
 		$remove_class(container, "fake_hover");
 	};
 
-	self.show_queue_paused = function(user_json) {
-		if (user_json.requests_paused) {
+	self.show_queue_paused = function() {
+		if (User.requests_paused) {
 			$add_class(container, "request_queue_paused");
 		}
 		else {
 			$remove_class(container, "request_queue_paused");
+		}
+
+		var all_cooldown = songs.length > 0 ? true : false;
+		for (var i = 0; i < songs.length; i++) {
+			if (!$has_class(songs[i].el, "timeline_song_is_cool")) {
+				all_cooldown = false;
+				break;
+			}
+		}
+
+		if (!User.requests_paused && User.tuned_in && User.request_position && User.request_expires_at && (User.request_expires_at <= (Clock.now + 600)) && (User.request_expires_at > Clock.now)) {
+			header.textContent = $l("requests_expiring");
+			$add_class(container, "request_warning");
+		}
+		else if (!User.requests_paused && User.tuned_in && all_cooldown) {
+			header.textContent = $l("requests_all_on_cooldown");
+			$add_class(container, "request_warning");
+		}
+		else if (!User.requests_paused && User.request_position && (User.request_position > 0)) {
+			$remove_class(container, "request_warning");
+			header.textContent = $l("request_you_are_x_in_line", { "position": User.request_position });
+		}
+		else {
+			$remove_class(container, "request_warning");
+			header.textContent = $l("Requests");
 		}
 	};
 
@@ -107,7 +135,6 @@ var Requests = function() {
 			Prefs.change("requests_sticky", true);
 		}
 		else {
-			fake_hover = true;
 			container.style.transition = "none";
 			container.className = "fake_hover";
 			$remove_class(document.body, "requests_sticky");
@@ -150,6 +177,7 @@ var Requests = function() {
 			Fx.remove_element(songs[i].el);
 		}
 		songs = new_songs;
+		self.show_queue_paused();
 		self.reflow();
 	};
 
@@ -171,6 +199,7 @@ var Requests = function() {
 			running_height += TimelineSong.height;
 		}
 		scroller.delay_force_height = running_height;
+		el.style.height = running_height + "px";
 		self.reflow = self.real_reflow;
 	};
 
@@ -183,6 +212,7 @@ var Requests = function() {
 			}
 			running_height += TimelineSong.height;
 		}
+		el.style.height = running_height + "px";
 		scroller.recalculate(running_height);
 		scroller.refresh();
 	};

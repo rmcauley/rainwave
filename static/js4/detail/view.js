@@ -13,13 +13,17 @@ var DetailView = function() {
 		Prefs.define("request_made");
 		el = $id("detail");
 		scrollblock = $id("detail_scrollblock");
-		API.add_callback(draw_album, "album");
-		API.add_callback(album_diff_handler, "album_diff");
-		API.add_callback(draw_artist, "artist");
-		API.add_callback(draw_listener, "listener");
-		DeepLinker.register_route("album", open_album_internal);
-		DeepLinker.register_route("artist", open_artist_internal);
-		DeepLinker.register_route("listener", open_listener_internal);
+		if (!MOBILE) {
+			API.add_callback(draw_album, "album");
+			API.add_callback(album_diff_handler, "album_diff");
+			API.add_callback(draw_artist, "artist");
+			API.add_callback(draw_listener, "listener");
+			API.add_callback(draw_group, "group");
+			DeepLinker.register_route("album", open_album_internal);
+			DeepLinker.register_route("artist", open_artist_internal);
+			DeepLinker.register_route("group", open_group_internal);
+			DeepLinker.register_route("listener", open_listener_internal);
+		}
 	};
 
 	self.draw = function() {
@@ -33,6 +37,7 @@ var DetailView = function() {
 		scroller = Scrollbar.new(el, $id("detail_scrollbar"));
 		scroller.unrelated_positioning = true;
 		Fx.delay_draw(self.on_resize_draw);
+		self.on_resize_calculate();
 	};
 
 	var request_made_changed = function(request_made) {
@@ -50,7 +55,7 @@ var DetailView = function() {
 		while (open_views.length > 30) {
 			open_views.shift();
 		}
-		var n = { "el": $el("div", { "class": "detail_view" }), "type": type, "id": id, "visible": false, "scroll_top": 0 };
+		var n = { "el": $el("div", { "class": "detail_view detail_view_" + type }), "type": type, "id": id, "visible": false, "scroll_top": 0 };
 		open_views.push(n);
 		render_function(n, json);
 		return n;
@@ -81,8 +86,14 @@ var DetailView = function() {
 		return view;
 	};
 
+	self.on_resize = function() {
+		self.on_resize_calculate();
+		self.on_resize_draw();
+	}	
+
 	self.on_resize_calculate = function() {
-		internal_width = scrollblock.offsetWidth;
+		var tmp = scrollblock.offsetWidth;
+		if (tmp && (tmp > 0)) internal_width = tmp;
 	};
 	
 	self.on_resize_draw = function() {
@@ -95,6 +106,10 @@ var DetailView = function() {
 
 	var draw_artist = function(json) {
 		switch_to(create("artist", json.id, ArtistView, json));
+	};
+
+	var draw_group = function(json) {
+		switch_to(create("group", json.id, GroupView, json));
 	};
 
 	var draw_listener = function(json) {
@@ -125,6 +140,10 @@ var DetailView = function() {
 		DeepLinker.change_url("artist", id);
 	};
 
+	self.open_group = function(id) {
+		DeepLinker.change_url("group", id);
+	};
+
 	self.open_listener = function(id) {
 		DeepLinker.change_url("listener", id);
 	};
@@ -139,6 +158,12 @@ var DetailView = function() {
 		id = parseInt(id);
 		PlaylistLists.set_new_open("all_artists", id);
 		return open_internal("artist", id);
+	};
+
+	var open_group_internal = function(id) {
+		id = parseInt(id);
+		PlaylistLists.set_new_open("all_groups", id);
+		return open_internal("group", id);
 	};
 
 	var open_listener_internal = function(id) {

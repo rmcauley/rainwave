@@ -1,19 +1,18 @@
-var ListenersList = function() {
+var GroupList = function() {
 	"use strict";
-	var self = SearchList($id("lists_listeners_items"), $id("lists_listeners_scrollbar"), $id("lists_listeners_stretcher"), "name", "name");
-	self.auto_trim = true;
-	self.list_name = "current_listeners";
+	var self = SearchList($id("lists_groups_items"), $id("lists_groups_scrollbar"), $id("lists_groups_stretcher"), "name", "name_searchable");
+	self.list_name = "all_groups";
 	self.load_from_api = function() {
-		API.async_get("current_listeners");
+		API.async_get("all_groups");
 	}
-	self.tab_el = $el("li", { "textContent": $l("Listeners"), "class": "link" });
+	self.tab_el = $el("li", { "textContent": $l("groups_tab_title"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
 		if (!self.loaded) {
 			self.load_from_api();
 		}
 		PlaylistLists.change_visible_list(self); }
 	);
-	if (!MOBILE) API.add_callback(self.update, "current_listeners");
+	if (!MOBILE) API.add_callback(self.update, "all_groups");
 
 	self.draw_entry = function(item) {
 		item._el = document.createElement("div");
@@ -30,7 +29,7 @@ var ListenersList = function() {
 	};
 
 	self.open_id = function(id) {
-		DetailView.open_listener(id);
+		DetailView.open_group(id);
 	};
 
 	return self;

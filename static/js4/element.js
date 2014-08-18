@@ -64,7 +64,9 @@ function $add_class(el, class_name) {
 	var classes = el.className.split(" ");
 	if (classes.indexOf(class_name) == -1) {
 		el.className = el.className + " " + class_name;
+		return true;
 	}
+	return false;
 }
 
 function $remove_class(el, class_name) {
@@ -73,7 +75,9 @@ function $remove_class(el, class_name) {
 	if (classes.indexOf(class_name) != -1) {
 		classes.splice(classes.indexOf(class_name), 1);
 		el.className = classes.join(" ");
+		return true;
 	}
+	return false;
 }
 
 function $has_class(el, class_name) {

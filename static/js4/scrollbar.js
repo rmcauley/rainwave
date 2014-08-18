@@ -66,11 +66,11 @@ var Scrollbar = function() {
 		var scroll_top_fresh = false;
 		var handle_height, original_mouse_y, original_scroll_top, scroll_per_px;
 
-		self.recalculate = function(force_height) {
+		self.recalculate = function(force_height, offset_height) {
 			if (cls.hold_all_recalculations) return;
 			self.scroll_height = force_height || self.delay_force_height || scrollable.scrollHeight;
 			if (self.delay_force_height) self.delay_force_height = null;
-			self.offset_height = scrollable.parentNode.offsetHeight;
+			self.offset_height = offset_height || scrollable.parentNode.offsetHeight;
 			self.scroll_top = scrollable.scrollTop;
 			self.scroll_top_max = (self.scroll_height - self.offset_height);
 			scroll_top_fresh = true;
@@ -102,7 +102,7 @@ var Scrollbar = function() {
 			scroll_top_fresh = true;
 		};
 
-		self.reposition = function() {
+		self.reposition = function(e) {
 			if (!visible) return;
 			if (!scroll_top_fresh) self.scroll_top = scrollable.scrollTop;
 			else scroll_top_fresh = false;
@@ -111,7 +111,7 @@ var Scrollbar = function() {
 			if (!self.unrelated_positioning) top += self.scroll_top;
 			handle.style.top = handle_margin_top + Math.round(top) + "px";
 
-			if (self.reposition_hook) self.reposition_hook();
+			if (e && self.reposition_hook) self.reposition_hook();
 		};
 
 		var mouse_down = function(e) {
@@ -151,6 +151,8 @@ var Scrollbar = function() {
 		var scrollables = [ scrollable ];
 		var original_mouse_x;
 		var resizing = false;
+		var min_width = 280;
+		var done_min_width;
 
 		Prefs.define("resize_" + scrollblock.id);
 		self.size = Prefs.get("resize_" + scrollblock.id);
@@ -164,6 +166,7 @@ var Scrollbar = function() {
 		};
 		
 		self.calculate = function() {
+			if (MOBILE) return;
 			if (!self.size) {
 				self.size = scrollblock.offsetWidth;
 				self.save();
@@ -171,11 +174,15 @@ var Scrollbar = function() {
 		};
 
 		self.resize = function(new_size) {
+			if (MOBILE) return;
 			new_size = new_size || self.size;
 			scrollblock.style.width = new_size + "px";
 			for (var i = 0; i < scrollables.length; i++) {
+				if (!done_min_width) scrollables[i].style.minWidth = (min_width + scrollbar_width) + "px";
 				scrollables[i].style.width = (new_size + scrollbar_width) + "px";
 			}
+			done_min_width = true;
+			if (self.callback) self.callback();
 		};
 
 		var mouse_down = function(e) {

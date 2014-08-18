@@ -8,6 +8,8 @@ from api import locale
 @handle_url("/locale/")
 class LocaleIndex(api.web.HTMLRequest):
 	description = "Lists the currently available Rainwave locales/translations and how many lines are missing in them, as compared to the English master locale."
+	auth_required = False
+	sid_required = False
 
 	def get(self):
 		self.write(self.render_string("basic_header.html", title="Locale/Translation Information"))
@@ -17,7 +19,7 @@ class LocaleIndex(api.web.HTMLRequest):
 
 		self.write("<p>Translating a new language?  Start with the <a href='https://github.com/rmcauley/rainwave/blob/master/lang/en_MASTER.json'>Github Translation File Template</a>.</p>")
 
-		self.write("<hr><p>The following languages exist, but may have missinglines: <ul>")
+		self.write("<hr><p>The following languages exist, but may have missing lines: <ul>")
 		for k, v in locale.translations.iteritems():
 			if k != "en_CA":
 				self.write("<li><a href='/locale/%s'>%s</a> - %s missing lines</a>" % (k, k, len(v.missing.keys())))
@@ -27,6 +29,9 @@ class LocaleIndex(api.web.HTMLRequest):
 @handle_url("/locale/(\w+)")
 class LocaleMissingLines(api.web.HTMLRequest):
 	description = "Lists all the missing lines in a locale/translation file."
+	auth_required = False
+	sid_required = False
+
 	def get(self, request_locale):
 		if not request_locale in locale.translations:
 			raise tornado.web.HTTPError(404)

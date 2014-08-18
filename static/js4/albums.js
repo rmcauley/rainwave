@@ -3,31 +3,32 @@ var Albums = function() {
 	var self = {};
 
 	var expand_art = function(e) {
-		if ($has_class(e.target, "art_expanded")) {
+		var tgt = this;
+		if ($has_class(tgt, "art_expanded")) {
 			normalize_art(e);
 			return;
 		}
 		
-		$add_class(e.target, "art_expanded");
-		if (Mouse.x < (SCREEN_WIDTH - 270)) {
-			$add_class(e.target, "art_expand_right");
+		$add_class(tgt, "art_expanded");
+		if (MOBILE || (Mouse.x < (SCREEN_WIDTH - 270))) {
+			$add_class(tgt, "art_expand_right");
 		}
 		else {
-			$add_class(e.target, "art_expand_left");
+			$add_class(tgt, "art_expand_left");
 		}
-		if (Mouse.y < (SCREEN_HEIGHT - 270)) {
-			$add_class(e.target, "art_expand_down");
+		if (MOBILE || (Mouse.y < (SCREEN_HEIGHT - 270))) {
+			$add_class(tgt, "art_expand_down");
 		}
 		else {
-			$add_class(e.target, "art_expand_up");
+			$add_class(tgt, "art_expand_up");
 		}
 
-		if (("_album_art" in e.target) && e.target._album_art) {
-			var full_res = $el("img", { "class": "art_image", "src": e.target._album_art + ".jpg" });
+		if (("_album_art" in tgt) && tgt._album_art) {
+			var full_res = $el("img", { "class": "art_image", "src": tgt._album_art + ".jpg" });
 			full_res.onload = function() {
-				e.target.style.backgroundImage = "url(" + full_res.getAttribute("src") + ")";
+				tgt.style.backgroundImage = "url(" + full_res.getAttribute("src") + ")";
 			};
-			e.target._album_art = null;
+			tgt._album_art = null;
 		}
 	};
 
@@ -45,7 +46,12 @@ var Albums = function() {
 		if (!size) size = 120;
 		var c = $el("div", { "class": "art_anchor" });
 		var img, ac;
-		if (!json.art) {
+		if (json.secret_user_sauce) {
+			ac = c.appendChild($el("div", { "class": "art_container" }));
+			if (json.secret_user_sauce.indexOf("svg") == -1) ac.className = "art_container avatar";
+			ac.style.backgroundImage = "url(" + json.secret_user_sauce + ")";	
+		}
+		else if (!json.art) {
 			ac = c.appendChild($el("div", { "class": "art_container" }));
 			ac.style.backgroundImage = "url(/static/images4/noart_1.jpg)";
 		}

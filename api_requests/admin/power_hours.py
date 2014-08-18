@@ -1,3 +1,4 @@
+import time
 from libs import db
 import api.web
 from api.server import handle_api_url
@@ -16,8 +17,8 @@ class ListPowerHours(api.web.APIHandler):
 		self.append(self.return_name,
 			db.c.fetch_all("SELECT sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url "
 						"FROM r4_schedule "
-						"WHERE sched_type = 'OneUpProducer' AND sched_used = FALSE AND sid = %s ORDER BY sched_start",
-						(self.sid,)))
+						"WHERE sched_type = 'OneUpProducer' AND sched_used = FALSE AND sid = %s AND sched_start > %s ORDER BY sched_start DESC",
+						(self.sid, time.time() - (86400 * 26))))
 
 @handle_api_url("admin/get_power_hour")
 class GetPowerHour(api.web.APIHandler):
