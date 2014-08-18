@@ -209,9 +209,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self.sid = self.user.request_sid
 		if not self.sid and not self.sid_required:
 			self.sid = 5
-			if self.user:
-				self.user.data['sid'] = 5
-				self.user.request_sid = 5
+		if self.user and not self.user.data['sid']:
+			self.user.data['sid'] = self.sid
+			self.user.request_sid = self.sid
 
 		if not self.sid in config.station_ids:
 			raise APIException("invalid_station_id", http_code=400)

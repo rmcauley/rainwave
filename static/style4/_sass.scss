@@ -91,6 +91,8 @@ body.loading * {
 
 #sizable_body {
 	overflow: hidden;
+	position: relative;
+	width: 100%;
 }
 
 .debug_div {
