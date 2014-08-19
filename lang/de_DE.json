@@ -107,11 +107,11 @@
    "__comment__"                 : "Tip Jar",
 
    "tip_jar"                                         : "Trinkgeld-Sparschwein",
-   "tip_jar_opener"                                  : "Rainwave wird es weiterhin geben, egal wie viel im Sparschwein ist.  Wenn du aber ein paar Münzen hineinwerfen willst, ist es ganz einfach:",
-   "tip_jar_instruction_1"                           : "Übwerweise mit PayPal den gewünschten Betrag an rmcauley@rainwave.cc in US oder Kanadischen Dollar, oder benutz den Paypal Button weiter unten.",
+   "tip_jar_opener"                                  : "Rainwave wird es weiter geben, egal wie viel im Sparschwein ist.  Wenn du aber ein paar Münzen hineinwerfen möchtest, dann ist es ganz einfach:",
+   "tip_jar_instruction_1"                           : "Übwerweise mit PayPal den gewünschten Betrag an rmcauley@rainwave.cc in US- oder Kanadischen-Dollar, oder klicke auf den Paypal Button weiter unten.",
    "tip_jar_instruction_2"                           : "Schreibe deinen Benutzernamen und eine Nachricht in den Kommentar.",
-   "tip_jar_instruction_3"                           : "Gib an, wenn du anonym bleiben möchtest.",
-   "tip_jar_opener_end"                              : "Nachdem dein Trinkgeld von uns gesehen wurde, erhältst du deinen Spender Status auf der Seite.  Das erlaubt es die mehr Wünsche gleichzeitig in deiner Wunschliste abzulegen und für mehr als eine Abstimmung deine Stimme abzugeben.",
+   "tip_jar_instruction_3"                           : "Gib uns einen Hinweis, wenn du anonym bleiben möchtest.",
+   "tip_jar_opener_end"                              : "Nachdem dein Trinkgeld bei uns eingegangen ist und gesehen wurde, erhältst du deinen Spender Status auf der Seite.  Das erlaubt es dir mehr Wünsche gleichzeitig in deiner Wunschliste abzulegen und für mehr als eine Abstimmung deine Stimme abzugeben.",
    "amount"                                          : "Betrag",
    "message"                                         : "Nachricht",
    "tip_jar_balance"                                 : "Aktueller Kontostand",
@@ -204,8 +204,8 @@
 
    "station_menu_description_id_1"                   : "Original Spiele Soundtracks, SNES und neuer.",
    "station_menu_description_id_2"                   : "Alle offiziellen OverClocked ReMix Tracks.",
-   "station_menu_description_id_3"                   : "Offizielle and von Fans erstellte Remixes.",
-   "station_menu_description_id_4"                   : "Originale and Spielmusik Chiptunes.",
+   "station_menu_description_id_3"                   : "Offizielle und von Fans erstellte Remixes.",
+   "station_menu_description_id_4"                   : "Originale und Spielmusik Chiptunes.",
    "station_menu_description_id_5"                   : "Die komplette Rainwave Wiedergabeliste.",
    "now_playing_on_..."                              : "Auf %(station) läuft gerade",
 
