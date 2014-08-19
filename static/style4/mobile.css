@@ -52,6 +52,7 @@ div.scrollable {
 }
 
 #station_select li a {
+	text-align: left !important;
 	margin-top: 0 !important;
 }
 

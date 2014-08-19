@@ -57,7 +57,12 @@ var Albums = function() {
 		}
 		else {
 			ac = c.appendChild($el("div", { "class": "art_container" }));
-			ac.style.backgroundImage = "url(" + json.art + "_" + size + ".jpg)";
+			if (!MOBILE && window.devicePixelRatio && (window.devicePixelRatio > 1.5)) {
+				ac.style.backgroundImage = "url(" + json.art + ".jpg)";
+			}
+			else {
+				ac.style.backgroundImage = "url(" + json.art + "_" + size + ".jpg)";
+			}
 			if (!not_expandable) {
 				$add_class(ac, "art_expandable")
 				ac._album_art = json.art;

@@ -155,8 +155,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if self.local_only and not self.request.remote_ip in config.get("api_trusted_ip_addresses"):
 			log.info("api", "Rejected %s request from %s, untrusted address." % (self.url, self.request.remote_ip))
 			raise APIException("rejected", text="You are not coming from a trusted address.")
-			self.set_status(403)
-			self.finish()
 
 		if not isinstance(self.locale, locale.RainwaveLocale):
 			self.locale = self.get_browser_locale()
@@ -200,25 +198,24 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				else:
 					self.cleaned_args[field] = parsed
 
+		if not self.sid and not self.sid_required:
+			self.sid = 5
+		if not self.sid in config.station_ids:
+			raise APIException("invalid_station_id", http_code=400)
+		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
+
 		if self.phpbb_auth:
 			self.do_phpbb_auth()
 		else:
 			self.rainwave_auth()
 
-		if self.user and not self.sid and self.user.request_sid:
-			self.sid = self.user.request_sid
-		if not self.sid and not self.sid_required:
-			self.sid = 5
-		if self.user and not self.user.data['sid']:
-			self.user.data['sid'] = self.sid
-			self.user.request_sid = self.sid
-
-		if not self.sid in config.station_ids:
-			raise APIException("invalid_station_id", http_code=400)
-		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
-
-		if self.auth_required and not self.user:
+		if not self.user and self.auth_required:
 			raise APIException("auth_required", http_code=403)
+		elif not self.user and not self.auth_required:
+			self.user = User(1)
+			self.user.ip_address = self.request.remote_ip
+		
+		self.user.refresh(self.sid)
 
 		if self.login_required and (not self.user or self.user.is_anonymous()):
 			raise APIException("login_required", http_code=403)
@@ -238,11 +235,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 	def do_phpbb_auth(self):
 		phpbb_cookie_name = config.get("phpbb_cookie_name")
-		self.user = None
-		if not fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", "")):
-			self.user = User(1)
+		user_id = fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", ""))
+		if not user_id:
+			pass
 		else:
-			user_id = int(self.get_cookie(phpbb_cookie_name + "u"))
 			if self._verify_phpbb_session(user_id):
 				# update_phpbb_session is done by verify_phpbb_session if successful
 				self.user = User(user_id)
@@ -288,7 +284,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if (self.auth_required or user_id_present) and not "key" in self.request.arguments:
 			raise APIException("missing_argument", argument="key", http_code=400)
 
-		self.user = None
 		if user_id_present:
 			self.user = User(long(self.get_argument("user_id")))
 			self.user.authorize(self.sid, self.request.remote_ip, self.get_argument("key"))

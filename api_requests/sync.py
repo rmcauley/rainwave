@@ -241,7 +241,7 @@ class Sync(APIHandler):
 	def post(self):
 		global sessions
 
-		if not cache.get_station(self.user.request_sid, "backend_ok") and not self.get_argument("offline_ack"):
+		if not cache.get_station(self.sid, "backend_ok") and not self.get_argument("offline_ack"):
 			raise APIException("station_offline")
 
 		self.set_header("Content-Type", "application/json")
@@ -272,25 +272,25 @@ class Sync(APIHandler):
 		# Overwrite this value since who knows how long we've spent idling
 		self._startclock = time.time()
 
-		if not cache.get_station(self.user.request_sid, "backend_ok"):
+		if not cache.get_station(self.sid, "backend_ok"):
 			raise APIException("station_offline")
 
-		self.user.refresh()
+		self.user.refresh(self.sid)
 		api_requests.info.attach_info_to_request(self)
 		self.finish()
 
 	def update_user(self):
 		self._startclock = time.time()
 
-		if not cache.get_station(self.user.request_sid, "backend_ok"):
+		if not cache.get_station(self.sid, "backend_ok"):
 			raise APIException("station_offline")
 
-		self.user.refresh()
+		self.user.refresh(self.sid)
 		self.append("user", self.user.to_private_dict())
 		self.finish()
 
 	def anon_registered_mixup_warn(self):
-		self.user.refresh()
+		self.user.refresh(self.sid)
 		if not self.user.is_anonymous() and not self.user.is_tunedin():
 			self.append_standard("redownload_m3u")
 			self.finish()

@@ -241,7 +241,7 @@ var SettingsWindow = function() {
 		if ($id("intro_mode_link")) {
 			$id("intro_mode_link").parentNode.removeChild($id("intro_mode_link"));
 		}
-		if (nv < 4) {
+		if (nv < 3) {
 			var iml = $el("div", { "class": "link_obvious", "id": "intro_mode_link", "textContent": $l("skip_intro_mode") });
 			iml.addEventListener("click", function() { Prefs.change("stage", 4); });
 			el.appendChild(iml);

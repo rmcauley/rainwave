@@ -38,6 +38,12 @@ var DeepLinker = function() {
 	};
 
 	self.change_url = function(route, args) {
+		// I don't like putting this here as it's a bit of a hack, and it really should *only* belong
+		// in open route, but there are corner cases where someone may click the same URL to
+		// open an album if they're going between intro and full modes
+		if (Prefs.get("stage") < 3) {
+			Prefs.change("stage", 3);
+		}
 		var r = route + "/";
 		for (var i = 1; i < arguments.length; i++) {
 			r += arguments[i];
