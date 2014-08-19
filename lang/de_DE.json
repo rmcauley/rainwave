@@ -231,9 +231,9 @@
 
    "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
 
-   "timeformat_w"                                    : "w ",
-   "timeformat_d"                                    : "t ",
-   "timeformat_h"                                    : "s ",
+   "timeformat_w"                                    : "W ",
+   "timeformat_d"                                    : "T ",
+   "timeformat_h"                                    : "S ",
    "timeformat_m"                                    : "m ",
    "timeformat_s"                                    : "s "
 }
