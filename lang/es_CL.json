@@ -164,7 +164,7 @@
    "album_requests_ranked_at"                        : "Pedido %(count) &(count:vez/veces), en la pisición Nº %(rank).",
    "Request"                                         : "Pedir",
    "Albums"                                          : "Álbumes",
-   "Artists"                                         : "Artistss",
+   "Artists"                                         : "Artistas",
    "Users"                                           : "Usuarios",
    "Groups"                                          : "Categorías",
    "Listeners"                                       : "Auditores",
