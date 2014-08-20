@@ -25,16 +25,16 @@
    "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
 
    "fave_failed"                                     : "Falha ao favoritar.",
-   "request_failed"                                  : "Falha ao requisitar.",
-   "request_delete_failed"                           : "Falha ao remover requisição.",
-   "request_unrated_failed"                          : "Falha ao requisitar não avaliado.",
+   "request_failed"                                  : "Falha ao pedir.",
+   "request_delete_failed"                           : "Falha ao remover pedido.",
+   "request_unrated_failed"                          : "Falha ao pedir não avaliadas.",
    "request_is_blocked"                              : "Bloqueado por %(blocked_num) eleiçoes.",
-   "too_many_requests"                               : "Muitas requisiçoes.",
-   "same_request_exists"                             : "Música já requisitada.",
-   "same_request_album"                              : "Álbum já requisitado.",
-   "song_not_requested"                              : "Música não solicitada.",
+   "too_many_requests"                               : "Muitos pedidos.",
+   "same_request_exists"                             : "Música já pedida.",
+   "same_request_album"                              : "Álbum já pedido.",
+   "song_not_requested"                              : "Música não pedida.",
    "station_offline"                                 : "Essa estação está fora do ar. Por favor tente novamente mais tarde.",
-   "must_login_and_tune_in_to_request"               : "É necessário efetuar login e estar tocando para requisitar.",
+   "must_login_and_tune_in_to_request"               : "É necessário efetuar login e estar tocando para pedir.",
    "already_voted_for_song"                          : "Já votou para essa música.",
    "cannot_rate_now"                                 : "Não é possível avaliar essa música nesse momento.",
    "tunein_to_rate_current_song"                     : "Você precisa estar tocando para avaliar a música em execução.",
@@ -42,9 +42,9 @@
    "rating_cleared"                                  : "Avaliação removida.",
    "unknown_error_message"                           : "Sinto muito por isso. Por favor tente novamente ou reporte um bug com as informaçoes abaixo. (esse erro foi registrado)",
    "debug_information"                               : "Informações de debug:",
-   "requests_reordered"                              : "Requisiçoes reordenadas",
-   "request_queue_paused"                            : "Fila de requisições pausada.",
-   "request_queue_unpaused"                          : "Fila de requisiçoes despausada.",
+   "requests_reordered"                              : "Pedidos reordenado.",
+   "request_queue_paused"                            : "Fila de pedidos pausada.",
+   "request_queue_unpaused"                          : "Fila de pedidos despausada.",
 
    "__comment__"                 : "API Key Management",
 
@@ -78,7 +78,7 @@
    "your_statistics"                                 : "Suas estatísticas",
    "your_mobile_app_qr"                              : "Seu código QR para a aplicação Android",
    
-   "request_song_to_vote_for"                        : "Requisite uma música para ser votada",
+   "request_song_to_vote_for"                        : "Peça uma música para ser votada",
    "previouslyplayed"                                : "Tocado anteriormente",
    
    "tunein"                                          : "Tocar",
@@ -87,22 +87,22 @@
    "audio_connect_error"                             : "Estamos tendo dificuldades para conectar ao servidor da rádio.",
    "audio_connect_error_reattempting"                : "Você não está conseguindo votar por problemas de conexão. Estamos tentando reestabelecer sua conexão.",
    "try_external_player"                             : "Clique aqui para tentar utilizar um programa para tocar.",
-   "m3u_hijack_right_click"                          : "A plugin is trying to hijack your browser.  Please right click the player and click Save As to tune in.", # FIXME
+   "m3u_hijack_right_click"                          : "Um plugin está tentando interceptar o download. Por favor clique com o botão direito e clique em Salvar Como para tocar.", # FIXME
 
    "__comment__"                 : "Timeline",
 
    "coming_up"                                       : "A seguir",
    "now_playing"                                     : "Agora",
    "election"                                        : "Eleição",
-   "power_hour"                                      : "Power Hour", # FIXME
+   "power_hour"                                      : "Power Hour",
    "vote_submitted"                                  : "Voto enviado",
    "cannot_vote_for_this_now"                        : "Não é possível votar para essa música nesse momento.",
    "invalid_hotkey_vote"                             : "Escolha inválida, tente novamente.",
-   "voting_results_were"                             : "vote results:", # FIXME
+   "voting_results_were"                             : "Resultado dos votos:",
    "click_here_to_start_voting"                      : "Clique aqui para votar em qual música você quer ouvir a seguir!",
    "played_ago"                                      : "Tocada há %(time)",
-   "timeline_art__request_indicator"                 : "REQUISITADA",
-   "timeline_art__your_request_indicator"            : "YOURS", # FIXME
+   "timeline_art__request_indicator"                 : "PEDIDO",
+   "timeline_art__your_request_indicator"            : "SEU",
 
    "__comment__"                 : "Tip Jar",
 
@@ -111,7 +111,7 @@
    "tip_jar_instruction_1"                           : "Envie uma doação por PayPal para rmcaulay@rainwave.cc em dólares americanos ou canadenses, ou use o botão abaixo.",
    "tip_jar_instruction_2"                           : "Nos envie seu nome de usuário e uma mensagem como comentário.",
    "tip_jar_instruction_3"                           : "Por favor mencione se gostaria que seu nome seja mantido anônimo.",
-   "tip_jar_opener_end"                              : "Depois que processarmos sua doação você receberá status de Doador no site. Isso permite que você faça mais requisições e a habilidade de votar em mais de uma eleição ao mesmo tempo.",
+   "tip_jar_opener_end"                              : "Depois que processarmos sua doação você receberá status de Doador no site. Isso permite que você faça mais pedidos e a habilidade de votar em mais de uma eleição ao mesmo tempo.",
    "amount"                                          : "Valor",
    "message"                                         : "Mensagem",
    "tip_jar_balance"                                 : "Saldo atual",
@@ -121,11 +121,11 @@
 
    "votes_by_station"                                : "Votos por estação",
    "votes_by_source_station"                         : "Votos por estação de origem",
-   "requests_by_station"                             : "Requisições por estação",
-   "requests_by_source_station"                      : "Requisições por estação de origem",
+   "requests_by_station"                             : "Pedidos por estação",
+   "requests_by_source_station"                      : "Pedidos por estação de origem",
    "rating_counts_across_stations"                   : "Avaliações por estação de origem",
    "ratings_completion_rate"                         : "Percentual avaliado",
-   "rating_spread"                                   : "Rating Spread", #FIXME
+   "rating_spread"                                   : "Distribuição da avaliação",
    "average_rating_by_station"                       : "Avaliação média por estação",
 
    "__comment__"                 : "Other",
@@ -161,8 +161,8 @@
    "typeanywhere"                                    : "Basta começar a digitar!",
    "clearfilter"                                     : "Limpar filtro",
    "album_rating_ranked_at"                          : "Avaliado em %(rating), #(rank) no ranking.",
-   "album_requests_ranked_at"                        : "Requisitada %(count) &(count:vez/vezes), #(rank) no ranking.",
-   "Request"                                         : "Requisitar",
+   "album_requests_ranked_at"                        : "Pedida %(count) &(count:vez/vezes), #(rank) no ranking.",
+   "Request"                                         : "Pedir",
    "Albums"                                          : "Álbuns",
    "Artists"                                         : "Artistas",
    "Users"                                           : "Usuários",
@@ -178,14 +178,14 @@
    "pause_request_queue"                             : "Pausar",
    "request_fill_with_unrated"                       : "Encher com não avaliadas",
 
-   "Requests"                                        : "Requisições",
-   "requests_expiring"                               : "Requisições - Perdendo seu lugar na fila!",
-   "requests_all_on_cooldown"                        : "Requisições - Nenhuma requisição disponível!",
-   "request_you_are_x_in_line"                       : "Requisições - #(position) na fila",
+   "Requests"                                        : "Pedidos",
+   "requests_expiring"                               : "Pedidos - Perdendo seu lugar na fila!",
+   "requests_all_on_cooldown"                        : "Pedidos - Nenhum pedido disponível!",
+   "request_you_are_x_in_line"                       : "Pedidos - #(position) na fila",
    
-   "cancel_request"                                  : "Cancelar requisição",
-   "request_on_cooldown_for"                         : "On cooldown for %(cool_time).", # FIXME
-   "request_on_cooldown_ends_soon"                   : "Coming off cooldown.", # FIXME
+   "cancel_request"                                  : "Cancelar pedido",
+   "request_on_cooldown_for"                         : "Em repouso por %(cool_time).",
+   "request_on_cooldown_ends_soon"                   : "Saindo do repouso.",
    "request_in_election"                             : "%(blocked_by) está em uma eleição.",
    "blocked_by_name__group"                          : "Categoria",
    "blocked_by_name__album"                          : "Álbum",
@@ -218,13 +218,13 @@
    "prefs_show_rating_in_titlebar"                   : "Exibir avaliação no título",
    "prefs_show_title_in_titlebar"                    : "Exibir nome da música no título",
    "playlist_preferences"                            : "Lista de álbuns",
-   "prefs_playlist_sort_available_first"             : "Sort with Cooldown Last", # FIXME
+   "prefs_playlist_sort_available_first"             : "Ordenar repousados por último",
    "prefs_playlist_sort_faves_first"                 : "Ordenar favoritos primeiro",
    "prefs_playlist_show_rating_complete"             : "Exibir avaliações incompletas",
    "prefs_playlist_sort_by"                          : "Ordenar por",
    "prefs_sort_playlist_by_alpha"                    : "Nome",
    "prefs_sort_playlist_by_rating_user"              : "Avaliação",
-   "prefs_sort_playlist_by_cool"                     : "Cooldown", # FIXME
+   "prefs_sort_playlist_by_cool"                     : "Repouso",
    "m3u_downloads"                                   : "Downloads de M3U",
    "skip_intro_mode"                                 : "Pular modo introdutório",
    "do_intro_mode"                                   : "Voltar ao modo introdutório",
