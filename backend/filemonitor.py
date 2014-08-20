@@ -245,17 +245,23 @@ def _process_album_art(filename, sids):
 			_add_scan_error(filename, "Could not open album art.")
 			return False
 		im_320 = im_original
+		im_240 = im_original
 		im_120 = im_original
 		if im_original.size[0] > 420 or im_original.size[1] > 420:
 			im_320 = im_original.copy()
 			im_320.thumbnail((320, 320), Image.ANTIALIAS)
+		if im_original.size[0] > 240 or im_original.size[1] > 240:
+			im_240 = im_original.copy()
+			im_240.thumbnail((240, 240), Image.ANTIALIAS)
 		if im_original.size[0] > 160 or im_original.size[1] > 160:
 			im_120 = im_original.copy()
 			im_120.thumbnail((120, 120), Image.ANTIALIAS)
 		for album_id in album_ids:
 			im_120.save("%s/%s_%s_120.jpg" % (config.get("album_art_file_path"), sids[0], album_id))
+			im_240.save("%s/%s_%s_240.jpg" % (config.get("album_art_file_path"), sids[0], album_id))
 			im_320.save("%s/%s_%s.jpg" % (config.get("album_art_file_path"), sids[0], album_id))
 			im_120.save("%s/%s_120.jpg" % (config.get("album_art_file_path"), album_id))
+			im_240.save("%s/%s_240.jpg" % (config.get("album_art_file_path"), album_id))
 			im_320.save("%s/%s.jpg" % (config.get("album_art_file_path"), album_id))
 		return True
 	except Exception as xception:
@@ -295,11 +301,11 @@ class FileEventHandler(watchdog.events.FileSystemEventHandler):
 		self.sids = sids
 
 	def _handle_directory(self, directory):
-		log.debug("scanner", u"Scanning directory: %s" % directory)
+		# log.debug("scanner", u"Scanning directory: %s" % directory)
 		_scan_directory(directory, self.sids)
 
 	def _handle_file(self, filename):
-		log.debug("scanner", u"Scanning file: %s" % filename)
+		# log.debug("scanner", u"Scanning file: %s" % filename)
 		_scan_file(_fix_codepage_1252(filename), self.sids)
 
 	def _src_path_handler(self, event):
