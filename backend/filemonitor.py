@@ -191,12 +191,12 @@ def _fix_codepage_1252(filename, path = None):
 	return fqfn
 
 def _scan_file(filename, sids):
-	# log.debug("scan", u"sids: {} Scanning file: {}".format(sids, filename))
 	global _album_art_queue
 	global _art_only
 
 	try:
 		if _is_mp3(filename) and not _art_only:
+			log.debug("scan", u"sids: {} Scanning file: {}".format(sids, filename))
 			# Only scan the file if we don't have a previous mtime for it, or the mtime is different
 			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s AND song_verified = TRUE", (filename,))
 			if not old_mtime or old_mtime != os.stat(filename)[8]:

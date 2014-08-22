@@ -124,3 +124,6 @@ class OneUp(event.BaseEvent):
 	def finish(self):
 		super(OneUp, self).finish()
 		db.c.update("UPDATE r4_one_ups SET one_up_used = TRUE WHERE one_up_id = %s", (self.id,))
+
+	def delete(self):
+		return db.c.update("DELETE FROM r4_one_ups WHERE one_up_id = %s", (self.id,))

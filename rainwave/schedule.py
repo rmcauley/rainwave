@@ -98,7 +98,8 @@ def advance_station(sid):
 			manage_next(sid)
 
 		while upnext[sid][0].used or len(upnext[sid][0].songs) == 0:
-			log.warn("advance", "Event ID %s was already used or has zero songs.  Removing." % upnext[sid][0].id)
+			log.warn("advance", "Event ID %s was already used or has zero songs.  Deleting." % upnext[sid][0].id)
+			upnext[sid][0].delete()
 			upnext[sid].pop(0)
 			if len(upnext[sid]) == 0:
 				manage_next(sid)

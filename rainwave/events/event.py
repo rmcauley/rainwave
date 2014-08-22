@@ -249,6 +249,9 @@ class BaseEvent(object):
 				obj['songs'].append(song.to_dict(user))
 		return obj
 
+	def delete(self):
+		pass
+
 class SingleSong(BaseEvent):
 	incrementer = 0
 
