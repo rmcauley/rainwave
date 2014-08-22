@@ -201,7 +201,10 @@ def _scan_file(filename, sids):
 			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s AND song_verified = TRUE", (filename,))
 			if not old_mtime or old_mtime != os.stat(filename)[8]:
 				# log.debug("scan", "mtime mismatch, scanning for changes")
-				playlist.Song.load_from_file(filename, sids)
+				s = playlist.Song.load_from_file(filename, sids)
+				if not db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (s.id,)):
+					log.warn("scan", "%s was scanned but has no album ID." % s.filename)
+					s.disable()
 			else:
 				# log.debug("scan", "mtime match, no action taken")
 				db.c.update("UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s", (filename,))
