@@ -244,7 +244,6 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 				"WHERE r4_song_sid.sid = %s "
 					"AND song_exists = TRUE "
 					"AND song_cool = FALSE "
-					"AND song_elec_blocked = FALSE "
 					"AND r4_song_ratings.song_id IS NULL "
 					"AND requested_albums.album_id IS NULL "
 			"GROUP BY r4_songs.album_id "
@@ -267,7 +266,6 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 					"WHERE r4_song_sid.sid = %s "
 						"AND song_exists = TRUE "
 						"AND song_cool = TRUE "
-						"AND song_elec_blocked = FALSE "
 						"AND r4_song_ratings.song_id IS NULL "
 						"AND requested_albums.album_id IS NULL "
 				"GROUP BY r4_songs.album_id "
@@ -281,7 +279,6 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 						"AND r4_song_sid.sid = %s "
 						"AND song_exists = TRUE "
 						"AND song_cool = TRUE "
-						"AND song_elec_blocked = FALSE "
 						"AND r4_song_ratings.song_id IS NULL "
 					"ORDER BY song_cool_end "
 					"LIMIT 1", (album_row['album_id'], user_id, sid))
