@@ -203,7 +203,7 @@ def _scan_file(filename, sids):
 				# log.debug("scan", "mtime mismatch, scanning for changes")
 				s = playlist.Song.load_from_file(filename, sids)
 				if not db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (s.id,)):
-					log.warn("scan", "%s was scanned but has no album ID." % s.filename)
+					_add_scan_error(s.filename, "%s was scanned but has no album ID." % s.filename)
 					s.disable()
 			else:
 				# log.debug("scan", "mtime match, no action taken")
