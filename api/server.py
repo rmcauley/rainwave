@@ -14,6 +14,7 @@ import tornado.options
 
 import api.web
 import api.help
+import api.locale
 from libs import log
 from libs import config
 from libs import dict_compare
@@ -102,6 +103,9 @@ class APIServer(object):
 		db.connect()
 		cache.connect()
 		memory_trace.setup(port_no)
+
+		api.locale.load_translations()
+		api.locale.compile_static_language_files()
 
 		if config.get("web_developer_mode"):
 			for station_id in config.station_ids:

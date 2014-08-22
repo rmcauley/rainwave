@@ -6,6 +6,7 @@ import tornado.locale
 import tornado.escape
 
 from libs import buildtools
+from libs import log
 
 locale_explanation = """Rainwave Localization Formatting
 
@@ -44,10 +45,13 @@ def load_translations():
 				continue
 			if not filename.endswith(".json"):
 				continue
-			f = codecs.open(os.path.join(os.path.dirname(__file__), "../lang/", filename), "r", encoding="utf-8")
-			translations[filename[:-5]] = RainwaveLocale(filename[:-5], master, json.load(f))
-			f.close()
-			locale_names[filename[:-5]] = translations[filename[:-5]].dict['language_name']
+			try:
+				f = codecs.open(os.path.join(os.path.dirname(__file__), "../lang/", filename), "r", encoding="utf-8")
+				translations[filename[:-5]] = RainwaveLocale(filename[:-5], master, json.load(f))
+				f.close()
+				locale_names[filename[:-5]] = translations[filename[:-5]].dict['language_name']
+			except:
+				log.warn("locale", "%s is not a valid JSON file." % filename[:-5])
 
 	locale_names_json = tornado.escape.json_encode(locale_names)
 
