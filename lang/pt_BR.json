@@ -87,7 +87,7 @@
    "audio_connect_error"                             : "Estamos tendo dificuldades para conectar ao servidor da rádio.",
    "audio_connect_error_reattempting"                : "Você não está conseguindo votar por problemas de conexão. Estamos tentando reestabelecer sua conexão.",
    "try_external_player"                             : "Clique aqui para tentar utilizar um programa para tocar.",
-   "m3u_hijack_right_click"                          : "Um plugin está tentando interceptar o download. Por favor clique com o botão direito e clique em Salvar Como para tocar.", # FIXME
+   "m3u_hijack_right_click"                          : "Um plugin está tentando interceptar o download. Por favor clique com o botão direito e clique em Salvar Como para tocar.",
 
    "__comment__"                 : "Timeline",
 
