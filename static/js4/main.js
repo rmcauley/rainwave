@@ -126,6 +126,7 @@ function initialize() {
 	"use strict";
 
 	// ****************** DATA HANDLING
+	Fx.initialize();
 	User = BOOTSTRAP.json.user;
 	API.add_callback(function(json) { User = json; }, "user");
 
