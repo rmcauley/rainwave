@@ -109,6 +109,15 @@ div.timeline_song div.album_group {
 	clear: right;
 }
 
+div.timeline_song span.album_name {
+	@include transition-wtime(250ms, background-color, padding);
+}
+
+div.timeline_song span.album_name:hover {
+	background-color: #264499;
+	padding: 0 10px;
+}
+
 div.timeline_song_content {
 	position: relative;
 	top: 50%;
@@ -387,7 +396,7 @@ body.show_pageclock span.timeline_header_clock {
 	display: block;
 }
 
-div.voting_enabled div.title {
+div.voting_enabled {
 	cursor: pointer;
 }
 

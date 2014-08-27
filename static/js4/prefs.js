@@ -217,7 +217,8 @@ var SettingsWindow = function() {
 		draw_cb_list([
 			"playlist_sort_available_first",
 			"playlist_sort_faves_first",
-			"playlist_show_rating_complete"
+			"playlist_show_rating_complete",
+			"playlist_show_escape_icon",
 		]);
 
 		el.appendChild($el("h4", { "textContent": $l("m3u_downloads") }));

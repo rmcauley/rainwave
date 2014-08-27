@@ -37,7 +37,7 @@ var ListenerView = function(view, json) {
 			d = view.el.appendChild($el("div", { "class": "user_detail_segment" }));
 			d.appendChild($el("h3", { "textContent": header }));
 			var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
-			var chart = new Chart(cnvs.getContext("2d")).Doughnut(data);
+			var chart = new Chart(cnvs.getContext("2d")).Doughnut(data, { "animationSteps": 40 });
 		}
 	};
 

@@ -265,10 +265,6 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.key_nav_escape = function() {
-		if (!Prefs.get("used_escape_to_clear_search")) {
-			$add_class(self.search_box_input.parentNode, "no_escape_button");
-			Prefs.change("used_escape_to_clear_search", true);
-		}
 		if (hotkey_mode_on) hotkey_mode_disable();
 		if (search_string.length > 0) {
 			self.clear_search();
@@ -433,7 +429,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		self.el.style.top = scrollbar.scroll_top + "px";
 		
 		if (current_scroll_index === new_index) return;
-		if (visible.length === 0) return;
+		if ((visible.length === 0) && (hidden.length === 0)) return;
 
 		if (current_scroll_index) {
 			if (new_index < current_scroll_index - num_items_to_display) current_scroll_index = false;

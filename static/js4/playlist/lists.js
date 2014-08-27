@@ -26,7 +26,7 @@ PlaylistLists = function() {
 		Prefs.define("playlist_sort_available_first", [ true, false ]);
 		Prefs.define("playlist_show_rating_complete", [ false, true ]);
 		Prefs.define("searchlist_show_cooldown");
-		Prefs.define("used_escape_to_clear_search");
+		Prefs.define("playlist_show_escape_icon", [ true, false ]);
 
 		el = $id("lists_container");
 		tabs_el = $id("lists_tabs");
@@ -53,8 +53,16 @@ PlaylistLists = function() {
 
 		el.style.height = (MAIN_HEIGHT - tabs_el_height) + "px";
 
-		if (Prefs.get("used_escape_to_clear_search")) {
-			$add_class(search_box, "no_escape_button");
+		check_playlist_show_escape_icon(Prefs.get("playlist_show_escape_icon"));
+		Prefs.add_callback("playlist_show_escape_icon", check_playlist_show_escape_icon);
+	};
+
+	var check_playlist_show_escape_icon = function(nv) {
+		if (nv) {
+			$remove_class(search_box, "no_escape_button");
+		}
+		else {
+			$add_class(search_box, "no_escape_button");	
 		}
 	};
 

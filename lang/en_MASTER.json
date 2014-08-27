@@ -222,6 +222,7 @@
    "prefs_playlist_sort_faves_first"                 : "Sort with Faves First",
    "prefs_playlist_show_rating_complete"             : "Show Incomplete Ratings",
    "prefs_playlist_sort_by"                          : "Sort By",
+   "prefs_playlist_show_escape_icon"                 : "Show ESC Icon",
    "prefs_sort_playlist_by_alpha"                    : "Alphabet",
    "prefs_sort_playlist_by_rating_user"              : "Rating",
    "prefs_sort_playlist_by_cool"                     : "Cooldown",
