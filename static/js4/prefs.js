@@ -229,7 +229,7 @@ var SettingsWindow = function() {
 		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "mp3.m3u", "class": "info_right link_obvious" }));
 		div.appendChild($el("div", { "textContent": "Windows Media" }));
 		div = el.appendChild($el("div", { "class": "setting_group" }));
-		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".ogg", "textContent": "opus.ogg.m3u", "class": "info_right link_obvious" }));
+		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".ogg", "textContent": "ogg.m3u", "class": "info_right link_obvious" }));
 		div.appendChild($el("div", { "textContent": "Foobar2000" }));
 
 		intro_mode_swap();
