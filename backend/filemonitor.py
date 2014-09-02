@@ -48,10 +48,12 @@ def _common_init():
 	except:
 		pass
 
-def full_music_scan():
+def full_music_scan(full_reset):
 	_common_init()
 	db.c.start_transaction()
 	try:
+		if full_reset:
+			db.c.update("UPDATE r4_songs SET song_file_mtime = 0")
 		db.c.update("UPDATE r4_songs SET song_scanned = FALSE")
 
 		_scan_all_directories()
@@ -62,9 +64,7 @@ def full_music_scan():
 			song = playlist.Song.load_from_id(song_id)
 			song.disable()
 
-		print "Processing album art..."
-		_process_album_art_queue()
-		print "Complete."
+		_process_album_art_queue(on_screen=True)
 		db.c.commit()
 	except:
 		db.c.rollback()
@@ -80,7 +80,7 @@ def _print_to_screen_inline(txt):
 	txt += " " * (80 - len(txt))
 	print "\r" + txt,
 
-def _scan_all_directories(art_only=True):
+def _scan_all_directories(art_only=False):
 	total_files = 0
 	file_counter = 0
 	for directory, sids in config.get("song_dirs").iteritems():
@@ -148,7 +148,6 @@ def _scan_file(filename, sids, raise_exceptions=False):
 	s = None
 	try:
 		_check_codepage_1252(filename)
-
 		if _is_mp3(filename):
 			log.debug("scan", u"sids: {} Scanning file: {}".format(sids, filename))
 			# Only scan the file if we don't have a previous mtime for it, or the mtime is different
@@ -197,7 +196,9 @@ def _process_album_art_queue(on_screen=False):
 				print "\n%s:\n\t %s" % (_album_art_queue[i][0], value_)
 				sys.stdout.flush()
 		if on_screen:
-			_print_to_screen_inline("Album art: %s/%s" % (i, len(_album_art_queue)))
+			_print_to_screen_inline("Album art: %s/%s" % (i, len(_album_art_queue) - 1))
+	if on_screen:
+		print
 	_album_art_queue = []
 
 def _process_album_art(filename, sids):
