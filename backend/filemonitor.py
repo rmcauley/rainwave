@@ -81,11 +81,6 @@ def _print_to_screen_inline(txt):
 	print "\r" + txt,
 
 def _scan_all_directories(art_only=True):
-	# This function loops through all directories and 
-
-	global _scan_errors
-
-	# Grab count of all files
 	total_files = 0
 	file_counter = 0
 	for directory, sids in config.get("song_dirs").iteritems():
@@ -95,11 +90,12 @@ def _scan_all_directories(art_only=True):
 	for directory, sids in config.get("song_dirs").iteritems():		
 		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
 			for filename in files:
+				filename = os.path.normpath(root + os.sep + filename)
 				try:
-					if art_only and not _is_image(_check_codepage_1252(filename, root)):
+					if art_only and not _is_image(filename):
 						pass
 					else:
-						_scan_file(_check_codepage_1252(filename, root), sids)
+						_scan_file(filename, sids, raise_exceptions=True)
 				except Exception as e:
 					type_, value_, traceback_ = sys.exc_info()
 					if not isinstance(e, PassableScanError):
@@ -108,10 +104,8 @@ def _scan_all_directories(art_only=True):
 						print "UNKNOWN ERROR WHILE SCANNING"
 						print os.path.join(root, filename)
 						print "*****************"
-						_add_scan_error(filename, "Fatal error: %s - %s" % (type_, value_))
 						raise
 					else:
-						_add_scan_error(filename, value_)
 						print "\n%s:\n\t %s" % (filename.decode("utf-8", errors="ignore"), value_)
 						sys.stdout.flush()
 
@@ -121,38 +115,60 @@ def _scan_all_directories(art_only=True):
 		print "\n"
 		sys.stdout.flush()
 
-def _check_codepage_1252(filename, path = None):
-	fqfn = filename
-	if path:
-		fqfn = os.path.normpath(path + os.sep + filename)
-	
+def _check_codepage_1252(filename):
 	try:
-		fqfn = fqfn.decode("utf-8")
-	except UnicodeDecodeError as e:
+		filename = filename.decode("utf-8")
+	except UnicodeDecodeError:
 		raise PassableScanError("Invalid filename. (possible cp1252 or obscure unicode)")
-	return fqfn
 
-def _scan_file(filename, sids):
+def _scan_directory(directory, sids):
+	# Windows workaround eww, damnable directory names
+	if os.name == "nt":
+		directory = os.path.normpath(directory).replace("\\", "\\\\")
+	
+	songs = db.c.fetch_list("SELECT song_id FROM r4_songs WHERE song_filename LIKE %s || '%%' AND song_verified = TRUE", (directory,))
+	for song_id in songs:
+		# log.debug("scan", "Marking Song ID %s for possible deletion." % song_id)
+		db.c.update("UPDATE r4_songs SET song_scanned = FALSE WHERE song_id = %s", (song_id,))
+
+	for root, subdirs, files in os.walk(directory, followlinks = True):
+		for filename in files:
+			filename = os.path.normpath(root + os.sep + filename)
+			_scan_file(filename, sids)
+
+	songs = db.c.fetch_list("SELECT song_id FROM r4_songs WHERE song_filename LIKE %s || '%%' AND song_scanned = FALSE AND song_verified = TRUE", (directory,))
+	for song_id in songs:
+		s = playlist.Song.load_from_id(song_id)
+		log.debug("scan", "Disabling song: %s" % s.filename)
+		s.disable()
+
+def _scan_file(filename, sids, raise_exceptions=False):
 	global _album_art_queue
 
+	s = None
 	try:
+		_check_codepage_1252(filename)
+
 		if _is_mp3(filename):
 			log.debug("scan", u"sids: {} Scanning file: {}".format(sids, filename))
 			# Only scan the file if we don't have a previous mtime for it, or the mtime is different
 			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s AND song_verified = TRUE", (filename,))
 			if not old_mtime or old_mtime != os.stat(filename)[8]:
-				# log.debug("scan", "mtime mismatch, scanning for changes")
+				log.debug("scan", "mtime mismatch, scanning for changes")
 				s = playlist.Song.load_from_file(filename, sids)
 				if not db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (s.id,)):
-					_add_scan_error(s.filename, "%s was scanned but has no album ID." % s.filename)
+					_add_scan_error(s.filename, PassableScanError("%s was scanned but has no album ID." % s.filename))
 					s.disable()
 			else:
-				# log.debug("scan", "mtime match, no action taken")
+				log.debug("scan", "mtime match, no action taken.")
 				db.c.update("UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s", (filename,))
 		elif _is_image(filename):
 			_album_art_queue.append([filename, sids])
-	except IOError as e:
-		raise PassableScanError("IOError: possibly permissions or bad filename.")
+	except Exception as e:
+		_disable_file(filename)
+		_add_scan_error(filename, e)
+		if raise_exceptions:
+			raise
 
 def _is_mp3(filename):
 	# ignore mp3gain temporary files
@@ -200,7 +216,7 @@ def _process_album_art(filename, sids):
 	if im_original.mode != "RGB":
 		im_original = im_original.convert()
 	if not im_original:
-		_add_scan_error(filename, "Could not open album art.")
+		_add_scan_error(filename, PassableScanError("Could not open album art. (bad image?)"))
 		return
 	im_320 = im_original
 	im_240 = im_original
@@ -226,11 +242,12 @@ def _disable_file(filename):
 	# aka "delete this off the playlist"
 	log.debug("scan", "Attempting to disable file: {}".format(filename))
 	try:
-		if _is_mp3(filename):
-			song = playlist.Song.load_from_deleted_file(filename)
+		song = playlist.Song.load_from_deleted_file(filename)
+		if song:
 			song.disable()
-	except Exception as xception:
-		_add_scan_error(filename, xception)
+		log.debug("scan", "Song disabled: {}".format(filename))
+	except Exception as e:
+		_add_scan_error(filename, e)
 
 def _add_scan_error(filename, xception):
 	global _scan_errors
@@ -252,43 +269,39 @@ class FileEventHandler(watchdog.events.FileSystemEventHandler):
 		self.sids = sids
 
 	def _handle_file(self, filename):
-		# log.debug("scanner", u"Scanning file: %s" % filename)
-		try:
-			_scan_file(_check_codepage_1252(filename), self.sids)
-		except Exception as e:
-			type_, value_, traceback_ = sys.exc_info()
-			if not isinstance(e, PassableScanError):
-				_add_scan_error(filename, "%s - %s" % (type_, value_))
+		_scan_file(filename, self.sids)
+
+	def _handle_directory(self, directory):
+		_scan_directory(directory, self.sids)
+
+	def _handle_event(self, event):
+		if check_file_is_in_directory(event.src_path, self.root_directory):
+			if not os.path.isdir(event.src_path) and not event.event_type == 'deleted':
+				log.debug("scan_event", "%s for file %s" % (event.event_type, event.src_path))
+				self._handle_file(event.src_path)
 			else:
-				_add_scan_error(filename, value_)
-				_print_to_screen_inline("%s:\n\t %s" % (filename.decode("utf-8", errors="ignore"), value_))
-				sys.stdout.flush()
+				log.debug("scan_event", "%s for dir %s" % (event.event_type, event.src_path))
+				self._handle_directory(event.src_path)
 
-	def _src_path_handler(self, event):
-		if not event.is_directory:
-			self._handle_file(event.src_path)
-
-	def _dest_path_handler(self, event):
-		if not event.is_directory:
-			self.handle_file(event.dest_path)
+		if hasattr(event, "dest_path") and check_file_is_in_directory(event.dest_path, self.root_directory):
+			if not os.path.isdir(event.dest_path) and not event.event_type == 'deleted':
+				log.debug("scan_event", "%s for file %s" % (event.event_type, event.dest_path))
+				self._handle_file(event.dest_path)
+			else:
+				log.debug("scan_event", "%s for dir %s" % (event.event_type, event.dest_path))
+				self._handle_directory(event.dest_path)
 
 	def on_moved(self, event):
-		if check_file_is_in_directory(event.src_path, self.root_directory):
-			log.debug("scan", "Root dir %s handling src path move: %s" % (self.root_directory, event.src_path))
-			self._src_path_handler(event)
-
-		if check_file_is_in_directory(event.dest_path, self.root_directory):
-			log.debug("scan", "Root dir %s handling dest path move: %s" % (self.root_directory, event.dest_path))
-			self._dest_path_handler(event)
+		self._handle_event(event)
 
 	def on_created(self, event):
-		self._src_path_handler(event)
+		self._handle_event(event)
 
 	def on_deleted(self, event):
-		self._src_path_handler(event)
+		self._handle_event(event)
 
 	def on_modified(self, event):
-		self._src_path_handler(event)
+		self._handle_event(event)
 
 def monitor():
 	_common_init()
@@ -303,6 +316,7 @@ def monitor():
 		observer = watchdog.observers.Observer()
 		observer.schedule(FileEventHandler(directory, sids), directory, recursive=True)
 		observer.start()
+		log.info("scan", "Observing %s with sids %s" % (directory, repr(sids)))
 		observers.append(observer)
 
 	try:

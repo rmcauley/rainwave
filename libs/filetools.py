@@ -1,3 +1,5 @@
+import os
+
 # http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python/377028#377028
 def which(program):
     import os
