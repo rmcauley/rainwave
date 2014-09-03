@@ -64,8 +64,8 @@ class Song(object):
 			s.artists = Artist.load_list_from_song_id(song_id)
 			s.groups = SongGroup.load_list_from_song_id(song_id)
 		except Exception as e:
-			log.exception("song", "Song failed to load.", e)
-			db.c.update("UPDATE r4_songs SET song_verified = FALSE WHERE song_id = song_id")
+			log.exception("song", "Song ID %s failed to load, sid %s." % (song_id, sid), e)
+			s.disable()
 			raise
 
 		return s
@@ -317,10 +317,15 @@ class Song(object):
 				db.c.update("INSERT INTO r4_song_sid (song_id, sid) VALUES (%s, %s)", (self.id, sid))
 
 	def disable(self):
+		if not self.id:
+			log.critical("song_disable", "Tried to disable a song without a song ID.")
+			return
+		log.info("song_disable", "Disabling ID %s / file %s" % (self.id, self.filename))
 		db.c.update("UPDATE r4_songs SET song_verified = FALSE WHERE song_id = %s", (self.id,))
 		db.c.update("UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s", (self.id,))
-		for metadata in self.albums:
-			metadata.reconcile_sids()
+		if self.albums:
+			for metadata in self.albums:
+				metadata.reconcile_sids()
 
 	def _assign_from_dict(self, d):
 		for key, val in d.iteritems():
