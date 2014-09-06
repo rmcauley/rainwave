@@ -402,6 +402,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	var clear_searchbar = function() {
+		search_string = "";
 		self.do_searchbar_style();
 	};
 
