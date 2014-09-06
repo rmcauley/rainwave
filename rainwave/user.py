@@ -149,7 +149,7 @@ class User(object):
 	def get_listener_record(self, use_cache=True):
 		listener = None
 		if self.id > 1:
-			listener = cache.get_user(self.id, "listener_record")
+			# listener = cache.get_user(self.id, "listener_record")
 			if not listener or not use_cache:
 				listener = db.c.fetch_row("SELECT "
 					"listener_id, sid, listener_lock AS lock, listener_lock_sid AS lock_sid, listener_lock_counter AS lock_counter, listener_voted_entry AS voted_entry "
@@ -162,8 +162,8 @@ class User(object):
 				"WHERE listener_ip = %s AND listener_purge = FALSE", (self.ip_address,))
 		if listener:
 			self.data.update(listener)
-		if self.id > 1:
-			cache.set_user(self.id, "listener_record", listener)
+		# if self.id > 1:
+			# cache.set_user(self.id, "listener_record", listener)
 		return listener
 
 	def refresh(self, sid):
