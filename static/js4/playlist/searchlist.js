@@ -391,7 +391,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			$remove_class(self.search_box_input.parentNode.parentNode, "no_results");	
 		}
 
-		if (search_string) {
+		if (search_string.length > 0) {
 			self.search_box_input.textContent = search_string;
 			$add_class(self.search_box_input.parentNode, "searchlist_input_active");
 		}
