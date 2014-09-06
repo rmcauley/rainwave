@@ -109,14 +109,15 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 	var hotkey_mode_enable = function() {
 		hotkey_mode_on = true;
-		$add_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
-		self.search_box_input.textContent = $l("hotkey_mode");
+		self.do_searchbar_style();
 	};
 
 	var hotkey_mode_disable = function() {
 		hotkey_mode_on = false;
 		clear_searchbar();
 	};
+
+	self.hotkey_mode_disable = hotkey_mode_disable;
 
 	var hotkey_mode_handle = function(character) {
 		try {
@@ -371,15 +372,37 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		ignore_original_scroll_top = false;
 	};
 
-	var clear_searchbar = function() {
-		if (hotkey_timeout) {
-			clearTimeout(hotkey_timeout);
-		}
-		$remove_class(self.search_box_input.parentNode.parentNode, "no_results");
+	self.do_searchbar_style = function() {
+		if (hotkey_timeout) clearTimeout(hotkey_timeout);
 		$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
-		$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
-		$remove_class(self.search_box_input.parentNode, "searchlist_input_active");
-		self.search_box_input.textContent = $l("filter");
+		if (hotkey_mode_on) {
+			$add_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
+			self.search_box_input.textContent = $l("hotkey_mode");
+			return;
+		}
+		else {
+			$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
+		}
+
+		if (search_string && (visible.length === 0)) {
+			$add_class(self.search_box_input.parentNode.parentNode, "no_results");
+		}
+		else {
+			$remove_class(self.search_box_input.parentNode.parentNode, "no_results");	
+		}
+
+		if (search_string) {
+			self.search_box_input.textContent = search_string;
+			$add_class(self.search_box_input.parentNode, "searchlist_input_active");
+		}
+		else {
+			self.search_box_input.textContent = $l("filter");
+			$remove_class(self.search_box_input.parentNode, "searchlist_input_active");
+		}
+	};
+
+	var clear_searchbar = function() {
+		self.do_searchbar_style();
 	};
 
 	// SCROLL **************************

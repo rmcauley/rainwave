@@ -15,7 +15,8 @@ var Requests = function() {
 
 	self.scroll_init = function() {
 		scroll_container = $id("requests");
-		scroller = Scrollbar.new(scroll_container, $id("requests_scrollbar"), 28);
+		scroller = Scrollbar.new(scroll_container, $id("requests_scrollbar"), 35);
+		scroller.set_handle_margin_bottom(30);
 	};
 
 	self.initialize = function() {

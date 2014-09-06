@@ -43,7 +43,8 @@ var Albums = function() {
 	};
 
 	self.art_html = function(json, size, not_expandable) {
-		if (!size) size = 120;
+		if (!size && MOBILE) size = 240;
+		else if (!size) size = 120;
 		var c = $el("div", { "class": "art_anchor" });
 		var img, ac;
 		if (json.secret_user_sauce) {

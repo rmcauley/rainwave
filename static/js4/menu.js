@@ -41,6 +41,9 @@ var Menu = function() {
 		$id("forums_link").textContent = $l("forums");
 		$id("calendar_link").textContent = $l("events_calendar_link");
 
+		$id("logo").addEventListener("click", function() { $id("about_window").className = "info"; });
+		$id("logo").addEventListener("mouseout", function() { $id("about_window").className = "hidden_info info"; });
+
 		// Setup user info
 		elements.user_info = $id("user_info");
 		if (User.id > 1) {

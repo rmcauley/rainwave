@@ -72,6 +72,7 @@ PlaylistLists = function() {
 
 	self.change_visible_list = function(change_to, do_not_hit_api) {
 		if (self.active_list) {
+			self.active_list.hotkey_mode_disable();
 			self.active_list.el.parentNode.style.display = "none";
 			$remove_class(self.active_list.tab_el, "list_tab_open");
 			search_box.replaceChild(change_to.search_box_input, self.active_list.search_box_input);
@@ -84,6 +85,7 @@ PlaylistLists = function() {
 		$add_class(self.active_list.tab_el, "list_tab_open");
 		if (!do_not_hit_api && !self.active_list.loaded) self.active_list.load_from_api();
 		docCookies.setItem("r4_active_list", change_to.list_name, Infinity, "/", BOOTSTRAP.cookie_domain)
+		self.active_list.do_searchbar_style();
 		self.active_list.recalculate(true);
 		self.active_list.reposition();
 	};

@@ -75,7 +75,7 @@ var Formatting = function() {
 		// not divs, in song list tables. getting the parentNode div gets us the real
 		// widths of the element.
 		while (el.nodeName != "DIV") el = el.parentNode;
-		if (el.offsetWidth >= (el.scrollWidth - 15)) return;
+		if (el.offsetWidth >= (el.scrollWidth - 20)) return;
 		
 		var width = el.offsetWidth;
 		var maxwidth = el.scrollWidth + 10;

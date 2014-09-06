@@ -66,6 +66,10 @@ var Scrollbar = function() {
 		var scroll_top_fresh = false;
 		var handle_height, original_mouse_y, original_scroll_top, scroll_per_px;
 
+		self.set_handle_margin_bottom = function(n) {
+			handle_margin_bottom = n;
+		};
+
 		self.recalculate = function(force_height, offset_height) {
 			if (cls.hold_all_recalculations) return;
 			self.scroll_height = force_height || self.delay_force_height || scrollable.scrollHeight;
@@ -87,7 +91,7 @@ var Scrollbar = function() {
 				if (!visible) $remove_class(handle, "scrollbar_invisible");
 				visible = true;
 
-				handle_height = Math.round((self.offset_height - handle_margin_top - handle_margin_bottom) * (self.offset_height / self.scroll_height));
+				handle_height = Math.floor((self.offset_height - handle_margin_top - handle_margin_bottom) * (self.offset_height / self.scroll_height));
 				handle_height = Math.max(handle_height, 50);
 				scroll_per_px = self.scroll_top_max / (self.offset_height - handle_margin_top - handle_margin_bottom - handle_height);
 				handle.style.height = handle_height + "px";
@@ -109,7 +113,7 @@ var Scrollbar = function() {
 
 			var top = (self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
 			if (!self.unrelated_positioning) top += self.scroll_top;
-			handle.style.top = handle_margin_top + Math.round(top) + "px";
+			handle.style.top = handle_margin_top + Math.floor(top) + "px";
 
 			if (e && self.reposition_hook) self.reposition_hook();
 		};
@@ -127,7 +131,7 @@ var Scrollbar = function() {
 		};
 
 		var mouse_move = function(e) {
-			var new_scroll_top = Math.round(original_scroll_top + ((e.screenY - original_mouse_y) * scroll_per_px));
+			var new_scroll_top = Math.floor(original_scroll_top + ((e.screenY - original_mouse_y) * scroll_per_px));
 			new_scroll_top = Math.max(Math.min(new_scroll_top, self.scroll_top_max), 0);
 			scrollable.scrollTop = new_scroll_top;
 		};

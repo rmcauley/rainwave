@@ -29,6 +29,7 @@ class MainIndex(api.web.HTMLRequest):
 	auth_required = False
 	login_required = False
 	sid_required = False
+	beta = False
 
 	def prepare(self):
 		super(MainIndex, self).prepare()
@@ -39,7 +40,7 @@ class MainIndex(api.web.HTMLRequest):
 			self.user = User(1)
 		self.user.ensure_api_key(self.request.remote_ip)
 
-		if config.get("web_developer_mode") or config.get("developer_mode") or config.get("test_mode"):
+		if self.beta or config.get("web_developer_mode") or config.get("developer_mode") or config.get("test_mode"):
 			buildtools.bake_css()
 			self.jsfiles = []
 			for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js4")):
@@ -70,3 +71,7 @@ class BetaRedirect(tornado.web.RequestHandler):
 
 	def prepare(self):
 		self.redirect("/beta/", permanent=True)
+
+@handle_url("/beta/")
+class BetaIndex(MainIndex):
+	beta = True
