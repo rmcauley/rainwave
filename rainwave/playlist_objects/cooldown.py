@@ -41,8 +41,8 @@ def prepare_cooldown_algorithm(sid):
 	multiplier_adjustment = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_cool_multiply) * AVG(song_length) AS tempvar FROM r4_album_sid JOIN r4_songs USING (album_id) JOIN r4_song_sid USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
 	if not multiplier_adjustment:
 		multiplier_adjustment = 1
-	multiplier_adjustment = min(max(0.5, multiplier_adjustment), 4)
 	multiplier_adjustment = multiplier_adjustment / float(sum_aasl)
+	multiplier_adjustment = min(max(0.5, multiplier_adjustment), 4)
 	log.debug("cooldown", "SID %s: multi: %s" % (sid, multiplier_adjustment))
 	base_album_cool = float(config.get_station(sid, "cooldown_percentage")) * float(sum_aasl) / float(multiplier_adjustment)
 	base_album_cool = max(min(base_album_cool, 1000000), 1)
