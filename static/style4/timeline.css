@@ -113,7 +113,7 @@ div.timeline_song span.album_name {
 	@include transition-wtime(250ms, background-color, padding);
 }
 
-div.timeline_song span.album_name:hover {
+#timeline div.timeline_song.voting_enabled span.album_name:hover {
 	background-color: #264499;
 	padding: 0 10px;
 }

@@ -92,6 +92,7 @@
    "__comment__"                 : "Timeline",
 
    "coming_up"                                       : "Coming Up",
+   "vote_now"                                        : "Vote Now",
    "now_playing"                                     : "Now Playing",
    "election"                                        : "Election",
    "power_hour"                                      : "Power Hour",
