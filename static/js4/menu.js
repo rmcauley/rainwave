@@ -27,6 +27,13 @@ var Menu = function() {
 		}
 	};
 
+	var remove_about_window = function(e) {
+		if (Mouse.is_mouse_leave(e, $id("logo"))) {
+			$id("about_window").className = "hidden_info info";
+			$id("logo").removeEventListener("mouseout", remove_about_window);
+		}
+	};
+
 	self.draw = function(station_list) {
 		API.add_callback(update_tuned_in_status, "user");
 
@@ -41,8 +48,10 @@ var Menu = function() {
 		$id("forums_link").textContent = $l("forums");
 		$id("calendar_link").textContent = $l("events_calendar_link");
 
-		$id("logo").addEventListener("click", function() { $id("about_window").className = "info"; });
-		$id("logo").addEventListener("mouseout", function() { $id("about_window").className = "hidden_info info"; });
+		$id("logo").addEventListener("click", function() { 
+			$id("about_window").className = "info";
+			$id("logo").addEventListener("mouseout", remove_about_window);
+		});
 
 		// Setup user info
 		elements.user_info = $id("user_info");
