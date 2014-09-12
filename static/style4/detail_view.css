@@ -141,6 +141,10 @@ div.songlist_title_text, div.songlist_artists_text {
 	text-overflow: ellipsis;
 }
 
+div.songlist_title_text:hover, div.songlist_artists_text:hover {
+	white-space: normal;
+}
+
 table.songlist div.overflow_tooltip {
 	display: block;
 	background-color: #2F304D;
