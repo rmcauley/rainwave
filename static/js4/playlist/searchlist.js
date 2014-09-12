@@ -114,7 +114,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 	var hotkey_mode_disable = function() {
 		hotkey_mode_on = false;
-		clear_searchbar();
+		self.do_searchbar_style();
 	};
 
 	self.hotkey_mode_disable = hotkey_mode_disable;

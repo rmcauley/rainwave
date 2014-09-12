@@ -71,6 +71,9 @@ PlaylistLists = function() {
 	}
 
 	self.change_visible_list = function(change_to, do_not_hit_api) {
+		if (self.active_list == change_to) {
+			return;
+		}
 		if (self.active_list) {
 			self.active_list.hotkey_mode_disable();
 			self.active_list.el.parentNode.style.display = "none";
