@@ -284,3 +284,28 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 					"LIMIT 1", (album_row['album_id'], user_id, sid))
 			unrated.append(song_id)
 	return unrated
+
+def get_favorited_songs_for_requesting(user_id, sid, limit):
+	# This SQL fetches ALL the favourites, 1 per album, and shuffles them. Then sends back the first X results, where X is the limit.
+	favorited = []
+	for row in db.c.fetch_all(
+			_get_requested_albums_sql() +
+			("SELECT MIN(r4_song_sid.song_id) AS song_id, COUNT(r4_song_sid.song_id) AS unrated_count, r4_songs.album_id "
+				"FROM r4_song_sid JOIN r4_songs USING (song_id) "
+					"LEFT OUTER JOIN r4_song_ratings ON "
+						"(r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
+					"LEFT JOIN requested_albums ON "
+						"(requested_albums.album_id = r4_songs.album_id) "
+				"WHERE r4_song_sid.sid = %s "
+					"AND song_exists = TRUE "
+					"AND song_cool = FALSE "
+					"AND r4_song_ratings.song_fave = TRUE "
+					"AND requested_albums.album_id IS NULL "
+				"GROUP BY r4_songs.album_id "), (user_id, user_id, sid)):
+		favorited.append(row['song_id'])
+
+	#Shuffles the favourites and sends back based on the limit
+	random.shuffle(favorited)
+	if len(favorited) > limit:
+		return favorited[0,limit]
+	return favorited

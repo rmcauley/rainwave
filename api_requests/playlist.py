@@ -169,7 +169,13 @@ class AllFavHandler(APIHandler):
 	pagination = True
 
 	def post(self):
-		self.append(self.return_name, db.c.fetch_all(
+		if 'sid' in self.request.arguments:
+			self.append(self.return_name, db.c.fetch_all(
+			"SELECT r4_song_ratings.song_id AS id, song_title AS title, r4_albums.album_id, album_name, song_rating AS rating, COALESCE(song_rating_user, 0) AS rating_user, song_fave AS fave, r4_song_sid.song_cool_end AS end_cooldown "
+			"FROM r4_song_ratings JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) JOIN r4_song_sid USING (song_id)"
+			"WHERE user_id = %s AND song_verified = TRUE AND song_fave = TRUE AND r4_song_sid.sid = %s ORDER BY album_name, song_title " + self.get_sql_limit_string(), (self.user.id, self.sid,)))
+		else:
+			self.append(self.return_name, db.c.fetch_all(
 			"SELECT r4_song_ratings.song_id AS id, song_title AS title, r4_albums.album_id, album_name, song_rating AS rating, COALESCE(song_rating_user, 0) AS rating_user, song_fave AS fave "
 			"FROM r4_song_ratings JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 			"WHERE user_id = %s AND song_verified = TRUE AND song_fave = TRUE ORDER BY album_name, song_title " + self.get_sql_limit_string(), (self.user.id,)))

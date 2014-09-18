@@ -252,6 +252,18 @@ class User(object):
 				added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
 		return added_requests
 
+	def add_favorited_requests(self, sid, limit = None):
+		max_limit = self._check_too_many_requests()
+		if not limit:
+			limit = max_limit
+		elif (max_limit > limit):
+			limit = max_limit
+		added_requests = 0
+		for song_id in playlist.get_favorited_songs_for_requesting(self.id, sid, limit):
+			if song_id:
+				added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
+		return added_requests
+
 	def remove_request(self, song_id):
 		song_requested = db.c.fetch_var("SELECT reqstor_id FROM r4_request_store WHERE user_id = %s AND song_id = %s", (self.id, song_id))
 		if not song_requested:
