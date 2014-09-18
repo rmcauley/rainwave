@@ -307,5 +307,5 @@ def get_favorited_songs_for_requesting(user_id, sid, limit):
 	#Shuffles the favourites and sends back based on the limit
 	random.shuffle(favorited)
 	if len(favorited) > limit:
-		return favorited[0,limit]
+		return favorited[0:limit]
 	return favorited
