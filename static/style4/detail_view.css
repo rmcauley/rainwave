@@ -227,7 +227,7 @@ div.rating_title_el_fave {
 /* USER DETAILS */
 
 div.detail_view_listener div.art_container.avatar {
-	background-size: auto;
+	background-size: contain;
 }
 
 ul.user_detail_legend {
