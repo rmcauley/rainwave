@@ -189,7 +189,7 @@ span.searchlist_name {
 }
 
 div.searchlist_cooldown {
-	background-color: $cooldown-color;
+	background-color: $cooldown-albumlist-color;
 }
 
 div.searchlist_rating_complete {

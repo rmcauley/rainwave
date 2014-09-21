@@ -43,6 +43,9 @@ body.stage_0 #requests_scrollblock, body.stage_1 #requests_scrollblock, body.sta
 	padding: 2px 0 3px 7px;
 	background: #112F56;
 	@include transition(background-color);
+	position: absolute;
+	width: 100%;
+	z-index: 1;
 }
 
 div.request_queue_paused #requests_header {
@@ -55,7 +58,10 @@ div.request_warning #requests_header {
 
 #requests_toolbar {
 	padding: 3px 5px 0 0;
-	float: right;
+	position: absolute;
+	z-index: 2;
+	width: 100%;
+	text-align: right;
 }
 
 #requests_toolbar img {
