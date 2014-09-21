@@ -58,7 +58,7 @@ var AlbumView = function(view, json) {
 	var d = $el("div", { "class": "albumview_header" });
 	var r = AlbumRating(json);
 	var h = $el("h1");
-	h.appendChild($el("span", { "textContent": json.name }));
+	h.appendChild($el("span", { "textContent": json.name, "title": json.name }));
 	d.appendChild(h);
 	d.appendChild(r.el);
 

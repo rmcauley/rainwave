@@ -68,7 +68,7 @@ var TimelineSong = function() {
 
 			if (song_rating) title_group.appendChild(song_rating.el);
 
-			self.elements.title = title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
+			self.elements.title = title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title, "title": self.data.title }));
 			self.el.addEventListener("mouseover", self.title_mouse_over);
 			self.el.addEventListener("mouseout", self.title_mouse_out);
 			self.el.addEventListener("click", self.vote);	
@@ -79,7 +79,7 @@ var TimelineSong = function() {
 			if (album_rating) album_group.appendChild(album_rating.el);
 
 			self.elements.album = album_group.appendChild($el("div", { "class": "album" }));
-			self.elements.album_name = self.elements.album.appendChild($el("span", { "textContent": self.data.albums[0].name, "class": "album_name" }));
+			self.elements.album_name = self.elements.album.appendChild($el("span", { "textContent": self.data.albums[0].name, "class": "album_name", "title": self.data.albums[0].name }));
 			if (self.data.albums[0].id && !MOBILE) {
 				self.elements.album_name.className = "album_name link";
 				self.elements.album_name.addEventListener("click", function(e) { e.stopPropagation(); DetailView.open_album(self.data.albums[0].id ); });
