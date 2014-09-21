@@ -37,11 +37,17 @@ var AlbumViewColors = { "1.0": "#FF6801",
 var AlbumViewRatingPieChart = function(ctx, json) {
 	"use strict";
 	var data = [];
+	var max_count = 0;
 	for (var i in AlbumViewColors) {
-		if (i in json.rating_histogram) data.push({ "value": json.rating_histogram[i], "color": AlbumViewColors[i], "highlight": "#FFF", "label": i });
+		if (i in json.rating_histogram) {
+			max_count += json.rating_histogram[i];
+		}
+	}
+	for (var i in AlbumViewColors) {
+		if (i in json.rating_histogram) data.push({ "value": Math.round(json.rating_histogram[i] / max_count * 100), "color": AlbumViewColors[i], "highlight": "#FFF", "label": i });
 	}
 	if (data.length == 0) return;
-	var chart = new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1, "animationSteps": 40 });
+	var chart = new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1, "animationSteps": 40, "tooltipTemplate": "<%if (label){%><%=label%>: <%}%><%= value %>%", });
 };
 
 var AlbumView = function(view, json) {
@@ -50,7 +56,11 @@ var AlbumView = function(view, json) {
 	var i;
 
 	var d = $el("div", { "class": "albumview_header" });
-	d.appendChild($el("h1", { "textContent": json.name }));
+	var r = AlbumRating(json);
+	var h = $el("h1");
+	h.appendChild($el("span", { "textContent": json.name }));
+	d.appendChild(h);
+	d.appendChild(r.el);
 
 	var cnvs = d.appendChild($el("canvas", { "width": 100, "height": 80 }));
 	AlbumViewRatingPieChart(cnvs.getContext("2d"), json);
@@ -61,7 +71,14 @@ var AlbumView = function(view, json) {
 	if (json.request_count > 0) {
 		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_requests_ranked_at", { "count": json.request_count, "rank": json.request_rank }) }));
 	}
+
+	var cats = $el("div");
+	cats.appendChild($el("span", { "textContent": $l("relevant_categories") }));
+	Groups.append_spans_from_json(cats, json.genres);
+	d.appendChild(cats);
+
 	view.el.appendChild(d);
+
 
 	if (User.sid == 5) {
 		var s = {};

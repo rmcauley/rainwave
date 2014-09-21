@@ -371,6 +371,15 @@ div.timeline_song_is_cool div.timeline_song_content div.cooldown_info {
 	display: block;
 }
 
+div.timeline_song_is_cool:hover div.timeline_song_content div.cooldown_info {
+	display: none;
+}
+
+div.timeline_song_is_cool:hover div.album_group {
+	display: block;
+}
+
+
 /* HEADERS, ETC */
 
 div.timeline_header {

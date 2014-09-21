@@ -172,6 +172,7 @@
    "songs_from"                                      : "Songs from %(station)",
    "album_on_station"                                : "On %(station): %(album)",
    "groups_tab_title"                                : "Categories",
+   "relevant_categories"                             : "Relevant categories: ",
 
    "__comment__"                 : "Requests",
 

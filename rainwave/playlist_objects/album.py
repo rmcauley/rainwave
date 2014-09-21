@@ -334,16 +334,24 @@ class Album(AssociatedMetadata):
 			(sid, self.id))
 
 		self.data['rating_histogram'] = {}
-		histo = db.c.fetch_all("SELECT "
-							   "ROUND(((album_rating_user * 10) - (CAST(album_rating_user * 10 AS SMALLINT) %% 5))) / 10 AS rating_rnd, "
-							   "COUNT(album_rating_user) AS rating_count "
-							   "FROM r4_album_ratings JOIN phpbb_users USING (user_id) "
-							   "WHERE album_id = %s AND sid = %s "
-							   "GROUP BY rating_rnd "
-							   "ORDER BY rating_rnd",
-							   (self.id, sid))
+		# histo = db.c.fetch_all("SELECT "
+		# 					   "ROUND(((album_rating_user * 10) - (CAST(album_rating_user * 10 AS SMALLINT) %% 5))) / 10 AS rating_rnd, "
+		# 					   "COUNT(album_rating_user) AS rating_count "
+		# 					   "FROM r4_album_ratings JOIN phpbb_users USING (user_id) "
+		# 					   "WHERE album_id = %s AND sid = %s "
+		# 					   "GROUP BY rating_rnd "
+		# 					   "ORDER BY rating_rnd",
+		# 					   (self.id, sid))
+		histo = db.c.fetch_all(
+			"SELECT song_rating_user, COUNT(song_rating) AS rating_count "
+			"FROM r4_song_ratings "
+				"JOIN r4_song_sid ON (r4_song_ratings.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
+				"JOIN r4_songs ON (r4_song_ratings.song_id = r4_songs.song_id) "
+			"WHERE album_id = %s "
+			"GROUP BY song_rating_user",
+			(sid, self.id))
 		for point in histo:
-			self.data['rating_histogram'][str(point['rating_rnd'])] = point['rating_count']
+			self.data['rating_histogram'][str(point['song_rating_user'])] = point['rating_count']
 
 	def update_request_count(self, sid):
 		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_songs JOIN r4_request_history USING (song_id) WHERE album_id = %s AND sid = %s", (self.id, sid))
