@@ -88,7 +88,7 @@ def get_next(sid, start_at_position = 0):
 	line = cache.get_station(sid, "request_line")
 	if not line:
 		return None
-	if start_at_position > 0 and len(line) == 1:
+	if start_at_position > 0 and len(line) <= 3:
 		start_at_position = 0
 	song = None
 	for pos in range(start_at_position, len(line)):
