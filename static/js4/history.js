@@ -60,7 +60,7 @@ var History = function() {
 		var ago;
 		for (i = 0; i < el.childNodes.length; i++) {
 			if (el.childNodes[i]._start_actual) {
-				ago = Clock.now - (el.childNodes[i]._start_actual + Clock.get_time_diff());
+				ago = Clock.now - el.childNodes[i]._start_actual;
 				if (ago < 60) ago = 60;
 				el.childNodes[i].textContent = $l("played_ago", { "time": Formatting.cooldown_glance(ago) });
 			}
