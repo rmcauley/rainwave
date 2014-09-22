@@ -501,6 +501,7 @@ body.small_screen #top_menu li:hover #about_window {
 
 #top_menu li #calendar_dropdown {
 	width: 350px;
+	@include transform(translateX(-100px));
 }
 
 #top_menu li:hover #calendar_dropdown {
