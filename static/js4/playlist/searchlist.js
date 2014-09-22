@@ -133,6 +133,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			else if (character == "s") Schedule.vote(0, 1);
 			else if (character == "d") Schedule.vote(0, 2);
 			else if (character == "z") Schedule.vote(1, 0); 
+			else if (character == "y") Schedule.vote(1, 0); 		// quertz layout
 			else if (character == "x") Schedule.vote(1, 1);
 			else if (character == "c") Schedule.vote(1, 2);
 			else { 
