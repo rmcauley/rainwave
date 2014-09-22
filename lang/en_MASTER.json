@@ -181,9 +181,13 @@
    "request_fill_with_unrated"                       : "Unrated Fill",
 
    "Requests"                                        : "Requests",
-   "requests_expiring"                               : "Requests - Losing Your Place!",
-   "requests_all_on_cooldown"                        : "Requests - No Good Requests!",
-   "request_you_are_x_in_line"                       : "Requests - #(position) In Line",
+   "requests_expiring"                               : "Place In Line Will Expire!",
+   "requests_all_on_cooldown"                        : "No Good Requests!",
+   "request_you_are_x_in_line"                       : "#(position) In Line",
+
+   "request_grab_tag__warning"                       : "Warning",
+   "request_grab_tag__paused"                        : "Paused",
+   "requests_grab_tab__num_requests"                 : "%(num_requests) &(num_requests:Request/Requests)",
    
    "cancel_request"                                  : "Cancel Request",
    "request_on_cooldown_for"                         : "On cooldown for %(cool_time).",
