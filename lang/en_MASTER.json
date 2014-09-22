@@ -54,13 +54,6 @@
    "create_api_key"                                  : "Create API Key",
    "your_numeric_user_id"                            : "Your numeric user ID",
 
-   "__comment__"                 : "Pretty Printed API Page Words",
-
-   "unrated_songs"                                   : "Unrated Songs",
-   "title"                                           : "Title",
-   "album_name"                                      : "Album Name",
-   "id"                                              : "ID",
-
    "__comment__"                 : "Menu",
 
    "station_name_1"                                  : "Game",
@@ -242,5 +235,33 @@
    "timeformat_d"                                    : "d ",
    "timeformat_h"                                    : "h ",
    "timeformat_m"                                    : "m ",
-   "timeformat_s"                                    : "s "
+   "timeformat_s"                                    : "s ",
+
+   "__comment__"                 : "Raw API Pages (statistics, etc)",
+
+   "unrated_songs"                                   : "Unrated Songs",
+   "title"                                           : "Title",
+   "album_name"                                      : "Album Name",
+   "id"                                              : "ID",
+   "delete"                                          : "Delete",
+   "all_faves"                                       : "All Favourites",
+   "rating_user"                                     : "User Rating",
+   "fave"                                            : "Fave",
+   "rating"                                          : "Avg. Rating",
+   "album_id"                                        : "Album ID",
+   "playback_history"                                : "Previously Played - Extended",
+   "name"                                            : "Name",
+   "song_rating_count"                               : "# Ratings",
+   "origin_sid"                                      : "Station",
+   "user_recent_votes"                               : "Your Recent Votes",
+   "user_requested_history"                          : "Your Request History",
+
+   "__comment__"                 : "Admin Panel Lines (translation not required)",
+
+   "time"                                            : "Time",
+   "type"                                            : "Type",
+   "file"                                            : "File",
+   "error"                                           : "Error",
+   "url"                                             : "URL",
+   "sched_length_minutes"                            : "Length (min.)"
 }
