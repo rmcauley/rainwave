@@ -246,7 +246,7 @@ class AllRequestedSongs(APIHandler):
 				"JOIN r4_songs USING (song_id) "
 				"JOIN r4_albums USING (album_id) "
 				"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = r4_request_history.user_id) "
-			"WHERE r4_request_history.sid = %s AND r4_request_history.user_id = %s AND song_verified = TRUE ORDER BY request_fulfilled_at " + self.get_sql_limit_string(),
+			"WHERE r4_request_history.sid = %s AND r4_request_history.user_id = %s AND song_verified = TRUE ORDER BY request_fulfilled_at DESC " + self.get_sql_limit_string(),
 			(self.sid, self.user.id)))
 
 @handle_api_html_url("user_requested_history")
@@ -270,7 +270,7 @@ class RecentlyVotedSongs(APIHandler):
 				"JOIN r4_songs USING (song_id) "
 				"JOIN r4_albums USING (album_id) "
 				"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = r4_vote_history.user_id) "
-			"WHERE r4_vote_history.sid = %s AND r4_vote_history.user_id = %s AND song_verified = TRUE ORDER BY vote_id " + self.get_sql_limit_string(),
+			"WHERE r4_vote_history.sid = %s AND r4_vote_history.user_id = %s AND song_verified = TRUE ORDER BY vote_id DESC " + self.get_sql_limit_string(),
 			(self.sid, self.user.id)))
 
 @handle_api_html_url("user_recent_votes")
