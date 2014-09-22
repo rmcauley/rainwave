@@ -264,14 +264,25 @@ div.menu_now_playing {
 
 /* PLAYER */
 
-$audio_ssize: 6px;
-$audio_vsize: 11px;
-$audio_hsize: 15px;
-
 #player {
 	clear: left;
 	background: #383a3d;
 	height: $main_icon_height;
+	color: $text;
+	@include transition(LINKCOLOR);
+}
+
+a#player_link {
+	position: relative;
+	top: -4px;
+}
+
+div.tuned_in #player a {
+	color: $highlight;
+}
+
+#player:hover, div.tuned_in #player a:hover {
+	color: $link;
 }
 
 div.small_menu #player {
@@ -281,103 +292,44 @@ div.small_menu #player {
 	display: inline;
 }
 
-#player_link {
-	position: relative;
-}
-
-#player_alignment {
-	position: relative;
-	margin-left: 10px;
-}
-
-div.small_menu #player_alignment {
+#audio_icon, #audio_status {
+	font-size: 26px;
 	display: inline;
-	margin-left: 1em;
-	height: auto;
+}
+
+div.small_menu #audio_icon, div.small_menu #audio_status {
+	font-size: 100%;
 }
 
 #audio_icon {
-    float: left;
-    position: relative;
-	width: 0; 
-	height: 0;
-	top: $main_icon_height / 2 - $audio_vsize - 1;
-    @include transition(border, border-radius, margin);
-    border-style: solid;
-    border-color: transparent;
-	border-top-width: $audio_vsize;
-	border-bottom-width: $audio_vsize;
-	border-left: $audio_hsize solid #FFF;
-	border-right: 0px solid transparent;
-    border-radius: 0px;
-}
-
-div.small_menu #audio_icon {
-	border-top-width: $audio_ssize;
-	border-bottom-width: $audio_ssize;
-	border-left: $audio_vsize solid #FFF;
-	top: $menu_height_small / 2 - $audio_ssize - 1;
-	left: 1em;
-}
-
-/* !important to cover up another Firefox CSS-rule-collision bug */
-div.tuned_in #audio_icon {
-	border-left-color: $highlight !important;
-}
-
-#player a:hover #audio_icon {
-	border-left-color: $linkhover !important;
-}
-
-#audio_icon.audio_playing {
-    border-color: $text;
-    border-right: $audio_hsize solid $text;
-    border-width: 10px;
-}
-
-div.small_menu #audio_icon.audio_playing {
-	border-right-style: solid;
-	border-right-color: $text;
-	border-right-width: $audio_ssize - 1;
-	border-left: $audio_ssize solid $text;
-}
-
-div.tuned_in #audio_icon.audio_playing {
-	border-color: $highlight;
-}
-
-#player a:hover #audio_icon.audio_playing {
-	border-color: $linkhover;
-}
-
-#audio_icon.audio_connecting {
-    border-color: #FFCC33 !important;
-    border-radius: $audio_vsize;
-    border-width: $audio_vsize;
-    margin-left: 7px;
+	margin-left: 5px;
+	display: inline-block;
+	width: 26px;
+	height: 26px;
+	text-align: center;
 }
 
 #audio_status {
-	display: inline;
-	position: relative;
 	font-family: 'Rainwave';
 	text-transform: uppercase;
-	font-size: 26px;
-    @include transition(LINKCOLOR);
 }
 
-div.small_menu #audio_status {
-	font-size: 100%;
-	left: -13px;
-	top: 0;
+#audio_icon span.audio_icon_play {
+	@include transition(OPACITY);
+	position: absolute;
 }
 
-div.tuned_in #audio_status {
-	color: $highlight;
+#audio_icon span.audio_icon_stop {
+	@include transition(OPACITY);
+	opacity: 0;
 }
 
-div.tuned_in #audio_status:hover {
-	color: $link;
+#audio_icon.audio_playing span.audio_icon_play {
+	opacity: 0;
+}
+
+#audio_icon.audio_playing span.audio_icon_stop {
+	opacity: 1;
 }
 
 #top_menu #audio_volume {

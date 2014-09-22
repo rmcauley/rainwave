@@ -30,6 +30,7 @@
 	{% end %}
 	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
 	{% if jsfiles %}
+		<!--<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,400italic,700,700italic' rel='stylesheet' type='text/css'>-->
 		{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
 	{% else %}
 		<script src="/static/baked/{{ revision_number }}/script4.js" type="application/javascript"></script>
@@ -184,7 +185,10 @@
 		<div id="player" class="unselectable">
 			<div id="player_alignment">
 				<a id="player_link" href="/tune_in/{{ request.sid }}.mp3" target="_blank">
-					<div id="audio_icon"></div>
+					<div id="audio_icon">
+						<span class="audio_icon_play">&#9654;</span>
+						<span class="audio_icon_stop">&#9724;</span>
+					</div>
 					<div id="audio_status"></div>
 				</a>
 				<svg id="audio_volume" viewBox="0 0 100 100" preserveAspectRatio="none">
