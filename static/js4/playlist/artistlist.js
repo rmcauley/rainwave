@@ -4,16 +4,16 @@ var ArtistList = function() {
 	var loading = false;
 	self.list_name = "all_artists";
 	self.load_from_api = function() {
-		API.async_get("all_artists");
+		if (!self.loaded && !loading) {
+			loading = true;
+			API.async_get("all_artists");
+		}
 	}
 	self.tab_el = $el("li", { "textContent": $l("Artists"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
-		if (!self.loaded && !loading) {
-			loading = true;
-			self.load_from_api();
-		}
-		PlaylistLists.change_visible_list(self); }
-	);
+		self.load_from_api();
+		PlaylistLists.change_visible_list(self);
+	});
 	if (!MOBILE) API.add_callback(self.update, "all_artists");
 
 	self.draw_entry = function(item) {

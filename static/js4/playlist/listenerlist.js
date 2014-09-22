@@ -5,16 +5,16 @@ var ListenersList = function() {
 	self.auto_trim = true;
 	self.list_name = "current_listeners";
 	self.load_from_api = function() {
-		API.async_get("current_listeners");
+		if (!self.loaded && !loading) {
+			loading = true;
+			API.async_get("current_listeners");
+		}
 	}
 	self.tab_el = $el("li", { "textContent": $l("Listeners"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
-		if (!self.loaded && !loading) {
-			loading = true;
-			self.load_from_api();
-		}
-		PlaylistLists.change_visible_list(self); }
-	);
+		self.load_from_api();
+		PlaylistLists.change_visible_list(self);
+	});
 	if (!MOBILE) API.add_callback(self.update, "current_listeners");
 
 	self.draw_entry = function(item) {
