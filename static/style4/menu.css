@@ -85,6 +85,7 @@ $main_icon_height: 33px;
 
 #station_select {
 	float: left;
+	margin-right: 1em;
 }
 
 #top_icons, #main_icons {
@@ -288,7 +289,10 @@ div.tuned_in #player a {
 div.small_menu #player {
 	clear: none;
 	background: transparent;
-	padding: 0px 1em;
+	padding-top: 3px;
+}
+
+div.small_menu #player_alignment {
 	display: inline;
 }
 
@@ -307,6 +311,10 @@ div.small_menu #audio_icon, div.small_menu #audio_status {
 	width: 26px;
 	height: 26px;
 	text-align: center;
+}
+
+div.small_menu #audio_icon {
+	width: 15px;
 }
 
 #audio_status {
@@ -345,6 +353,8 @@ div.small_menu #audio_icon, div.small_menu #audio_status {
 #top_menu.small_menu #audio_volume {
 	height: 0.7em;
 	width: 30px;
+	top; -5px;
+	margin-left: 1em;
 }
 
 #top_menu #audio_volume.audio_playing_volume {
