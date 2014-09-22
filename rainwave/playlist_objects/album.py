@@ -149,7 +149,7 @@ class Album(AssociatedMetadata):
 			self.data[new_key] = default
 
 	def get_num_songs(self, sid):
-		return db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE r4_songs.album_id = %s AND sid = %s", (self.id, sid))
+		return db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE r4_songs.album_id = %s AND sid = %s AND song_exists = TRUE AND song_verified = TRUE", (self.id, sid))
 
 	def associate_song_id(self, song_id, is_tag = None):
 		existing_album = db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,))
@@ -181,7 +181,7 @@ class Album(AssociatedMetadata):
 			else:
 				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (album_id, sid))
 				updated_album_ids[sid][album_id] = True
-			num_songs = db.c.fetch_var("SELECT COUNT(*) FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND sid = %s AND song_exists = TRUE", (album_id, sid))
+			num_songs = self.get_num_songs(sid)
 			db.c.update("UPDATE r4_album_sid SET album_song_count = %s WHERE album_id = %s AND sid = %s", (num_songs, album_id, sid))
 		self.reset_user_completed_flags()
 		return new_sids
