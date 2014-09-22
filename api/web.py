@@ -481,7 +481,7 @@ class PrettyPrintAPIMixin(object):
 				self.header_special()
 				self.write("</th>")
 				i = 1
-				if self.get_argument("page_start"):
+				if "page_start" in self.request.arguments:
 					i += self.get_argument("page_start")
 				for row in json:
 					self.write("<tr><td>%s</td>" % i)
