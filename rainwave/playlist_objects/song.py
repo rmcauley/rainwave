@@ -207,7 +207,7 @@ class Song(object):
 
 		if not self.replay_gain and config.get("mp3gain_scan"):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
-			gain_std, gain_error = subprocess.Popen([_mp3gain_path, "-o", "-q", "-s", "i", "-p", "-k", self.filename ], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+			gain_std, gain_error = subprocess.Popen([_mp3gain_path, "-o", "-q", "-s", "i", "-p", "-k", "-T", self.filename ], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 			if len(gain_error) > 0:
 				raise Exception("Error when replay gaining \"%s\": %s" % (filename, gain_error))
 			f = MP3(filename)
