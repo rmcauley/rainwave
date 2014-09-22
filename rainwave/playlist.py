@@ -191,7 +191,7 @@ def get_all_artists_list(sid):
 
 def get_all_groups_list(sid):
 	return db.c.fetch_all(
-		"SELECT group_name AS name, group_name_searchable AS group_searchable, group_id AS id, COUNT(*) AS song_count "
+		"SELECT group_name AS name, group_name_searchable AS name_searchable, group_id AS id, COUNT(*) AS song_count "
 			"FROM ("
 				"SELECT group_name, group_name_searchable, group_id, COUNT(DISTINCT(album_id)) "
 					"FROM r4_groups "
