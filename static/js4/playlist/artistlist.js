@@ -1,13 +1,15 @@
 var ArtistList = function() {
 	"use strict";
 	var self = SearchList($id("lists_artists_items"), $id("lists_artists_scrollbar"), $id("lists_artists_stretcher"), "name", "name_searchable");
+	var loading = false;
 	self.list_name = "all_artists";
 	self.load_from_api = function() {
 		API.async_get("all_artists");
 	}
 	self.tab_el = $el("li", { "textContent": $l("Artists"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
-		if (!self.loaded) {
+		if (!self.loaded && !loading) {
+			loading = true;
 			self.load_from_api();
 		}
 		PlaylistLists.change_visible_list(self); }

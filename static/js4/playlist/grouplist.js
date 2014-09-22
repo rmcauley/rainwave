@@ -1,13 +1,15 @@
 var GroupList = function() {
 	"use strict";
 	var self = SearchList($id("lists_groups_items"), $id("lists_groups_scrollbar"), $id("lists_groups_stretcher"), "name", "name_searchable");
+	var loading = false;
 	self.list_name = "all_groups";
 	self.load_from_api = function() {
 		API.async_get("all_groups");
 	}
 	self.tab_el = $el("li", { "textContent": $l("groups_tab_title"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
-		if (!self.loaded) {
+		if (!self.loaded && !loading) {
+			loading = true;
 			self.load_from_api();
 		}
 		PlaylistLists.change_visible_list(self); }
