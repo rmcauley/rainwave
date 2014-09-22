@@ -254,7 +254,7 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 	# Similar to the above, but this time we take whatever's on shortest cooldown (ignoring album unrated count)
 	if len(unrated) < limit:
 		for album_row in db.c.fetch_all(
-				_get_requested_albums_sql() +
+				_get_requested_albums_sql() + 
 				("SELECT r4_songs.album_id, MIN(song_cool_end) "
 					"FROM r4_song_sid "
 						"JOIN r4_songs USING (song_id) "
@@ -281,7 +281,7 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 						"AND song_cool = TRUE "
 						"AND r4_song_ratings.song_id IS NULL "
 					"ORDER BY song_cool_end "
-					"LIMIT 1", (album_row['album_id'], user_id, sid))
+					"LIMIT 1", (user_id, album_row['album_id'], sid))
 			unrated.append(song_id)
 	return unrated
 
