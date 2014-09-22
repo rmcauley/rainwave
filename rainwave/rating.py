@@ -67,6 +67,7 @@ def clear_song_rating(sid, song_id, user_id):
 		try:
 			albums = update_album_ratings(sid, song_id, user_id)
 			db.c.commit()
+			return albums
 		except:
 			db.c.rollback()
 			raise

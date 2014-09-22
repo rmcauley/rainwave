@@ -170,6 +170,10 @@ td.songlist_rating > div {
 	position: absolute;
 }
 
+td.songlist_rating_clear {
+	width: 1em;
+}
+
 td.songlist_length {
 	width: 35px;
 	padding-right: 5px;
