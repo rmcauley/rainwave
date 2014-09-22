@@ -181,7 +181,7 @@ class Album(AssociatedMetadata):
 			else:
 				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (album_id, sid))
 				updated_album_ids[sid][album_id] = True
-			num_songs = db.c.fetch_var("SELECT COUNT(*) FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND sid = %s", (album_id, sid))
+			num_songs = db.c.fetch_var("SELECT COUNT(*) FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND sid = %s AND song_exists = TRUE", (album_id, sid))
 			db.c.update("UPDATE r4_album_sid SET album_song_count = %s WHERE album_id = %s AND sid = %s", (num_songs, album_id, sid))
 		self.reset_user_completed_flags()
 		return new_sids
