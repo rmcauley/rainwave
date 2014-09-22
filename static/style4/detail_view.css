@@ -101,6 +101,10 @@ div.albumview_header {
 	margin-left: 130px;
 }
 
+div.albumview_header div.rating {
+	margin-right: 10px;
+}
+
 .albumview_info {
 	color: $darktext;
 	font-size: 0.8em;
