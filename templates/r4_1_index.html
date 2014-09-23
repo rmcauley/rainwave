@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.code }}">
+<head>
+	<title>Rainwave</title>
+	<meta charset="UTF-8" />
+	<meta name="description" content="{{ site_description }}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<script type="text/javascript">
+		var BOOTSTRAP = {
+				"cookie_domain": "{{ cookie_domain }}",
+				"api_url": "{{ api_url }}",
+				"sid": "{{ request.sid }}",
+				"json": {{ json_encode(request.json_payload) }},
+				"locales": {{ locales }},
+				"relays": {{ relays }},
+				"stream_filename": "{{ stream_filename }}",
+				"station_list": {{ station_list }}
+		};
+	</script>
+
+	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
+
+	{% if mobile %}
+		<link href="/static/style4/mobile.css" type="text/css" rel="stylesheet" />
+		<script type="application/javascript">
+			var MOBILE = true;
+		</script>
+	{% else %}
+		<script type="application/javascript">
+			var MOBILE = false;
+		</script>
+	{% end %}
+
+	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
+
+	{% if jsfiles %}
+		{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
+	{% else %}
+		<script src="/static/baked/{{ revision_number }}/script4.js" type="application/javascript"></script>
+	{% end %}
+
+	<script type="text/javascript">
+		_size_calculate();
+	</script>
+</head>
+
+<body class="loading unselectable" onload="initialize();">
+	<div id="div_with_scroll" style="position: absolute; top:-1500px; width: 100px; overflow: scroll; height: 150px;">
+		<div style="height: 100px; width: 10px;">&nbsp;</div>
+	</div>
+	<div id="measure_box">
+		<div id="playlist_item_height" class="searchlist_item">&nbsp;</div>
+	</div>
+
+	<div id="top_menu_wrapper">
+		<div id="top_menu">
+			<ul id="top_icons">
+				<li>
+					<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
+						<svg><use xlink:href="/static/images4/symbols.svg#chat"></use></svg>
+						<span class="icon_description" id="chat_link"></span>
+					</a>
+				</li>
+				
+				<li>
+					<a href="http://rainwave.cc/forums" target="_blank">
+						<svg><use xlink:href="/static/images4/symbols.svg#forums"></use></svg>
+						<span class="icon_description" id="forums_link"></span>
+					</a>
+				</li>
+				
+				<li id="calendar_menu_item">
+					<a href="https://www.google.com/calendar/embed?src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com" target="_blank">
+						<svg><use xlink:href="/static/images4/symbols.svg#calendar"></use></svg>
+						<span class="icon_description" id="calendar_link"></span>
+					</a>
+					<div id="calendar_dropdown" class="info"></div>
+				</li>
+				
+				<li id="user_info"></li>
+
+				<li id="icon_cluster">
+					<a href="http://twitter.com/rainwavecc" target="_blank">
+						<svg><use xlink:href="/static/images4/symbols.svg#twitter"></use></svg>
+					</a>
+					<a href="http://facebook.com/rainwavecc" target="_blank">
+						<svg><use xlink:href="/static/images4/symbols.svg#facebook"></use></svg>
+					</a>
+					
+					<svg id="settings_link"><use xlink:href="/static/images4/symbols.svg#settings"></use></svg>
+
+					<svg id="about_link"><use xlink:href="/static/images4/symbols.svg#about"></use></svg>
+				</li>
+			</ul>
+
+			<ul id="station_select"></ul>
+
+			<div id="current_station">
+				<span id="current_station_arrow_down"></span>
+				<span id="current_station_name"></span>
+			</div>
+
+			<div id="player" class="unselectable">
+				<a id="player_link" href="/tune_in/{{ request.sid }}.mp3" target="_blank">
+					<svg id="audio_icon_play"><use xlink:href="/static/images4/symbols.svg#play_2"></use></svg>
+					<svg id="audio_icon_stop"><use xlink:href="/static/images4/symbols.svg#stop_2"></use></svg>
+					<div id="audio_status"></div>
+				</a>
+				<svg id="audio_volume" viewBox="0 0 100 100" preserveAspectRatio="none">
+					<clipPath id="volume_bars">
+						<rect x="0" y="80"  width="17" height="20"  />
+						<rect x="20" y="60" width="17" height="40"  />
+						<rect x="40" y="40" width="17" height="60"  />
+						<rect x="60" y="20" width="17" height="80"  />
+						<rect x="80" y="0"  width="17" height="100" />
+					</clipPath>
+					<rect id="audio_volume_indicator_background" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)" />
+					<rect id="audio_volume_indicator" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)" />
+				</svg>
+			</div>
+		</div>
+	</div>
+
+	<div id="about_window">
+		<h4 id="staff_list_header"></h4>
+		<div class="info_right">Metal-Ridley</div>
+		<div>Jon Funk</div>
+		<div class="info_right">Nat</div>
+		<div>Kevin</div>
+		<div class="info_right">Tom Helmuth</div>
+		<div>Rob McAuley</div>
+		<div>William Jackson</div>
+
+		<h4 id="relay_sponsors_header"></h4>
+		<div class="info_right"><a class="link_obvious" target="_blank" href="http://www.easynews.com">Dracoirs</a></div>
+		<div>Cory Petosky</div>
+		<div>Joe Love</div>
+
+		<h4 id="design_by"></h4>
+		<div><a class="link_obvious" href="http://frzi.com">Freek Zijlmans (frzi.com)</a></div>
+
+		<h4 id="translators_header"></h4>
+		<div class="info_right">DarkLink (DE)</div>
+		<div>BreadMaker (ES)</div>
+		<div class="info_right">Metal-Geo (NL)</div>
+		<div>Metal-Ridley (FR)</div>
+		<div class="info_right">ocrfan (PT)</div>
+		<div>quarterlife (FI)</div>
+		<div>Steppo (SE)</div>
+
+		<h4 id="icon_attribution"></h4>
+		<div class="info_right"><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/bryan@typeamachines.com">Forums: Brayn Allen</a></div>
+		<div><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/Icomatic">Chat: Icomatic</a></div>
+		<div class="info_right"><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/r0">Gear: Ryan Oksenhorn</a></div>
+		<div><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/JuanGarces">History: Juan Garces</a></div>
+		<div class="info_right"><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/kolchan">User: Dima Kolchan</a></div>
+		<div><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/megapixl">FB: Niels Gesquiere</a></div>
+		<div><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/prerakpatel">Cal: Prerak Patel</a></div>
+		<div><a class="link_obvious" target="_blank" href="http://thenounproject.com/melvin.poppelaars">i: Melvin Poppelaars</a></div>
+
+		<a class="link_obvious" href="http://rainwave.cc/pages/tip_jar" target="_blank" id="donation_information"></a>
+		<a class="link_obvious" href="http://github.com/rmcauley/rainwave/" target="_blank" id="github_link"></a>
+	</div>
+
+	<div id="settings_window"></div>
+	
+	<div id="messages"></div>
+
+	<div id="sizable_body">
+		<div id="requests_positioner">
+			<div id="requests_grab_tag"></div>
+			<div id="requests_scrollblock" class="scrollblock">
+				<div id="requests_toolbar">
+					<img id="requests_pause" class="requests_advanced" src="/static/images4/request_pause.png" width="14" height="14" />
+					<img id="requests_unrated" class="requests_advanced" src="/static/images4/request_unrated.png" width="14" height="14" />
+					<img id="requests_clear" class="requests_advanced" src="/static/images4/request_clear.png" width="14" height="14" />
+					<img id="requests_pin" src="/static/images4/pin_hdpi.png" width="14" height="14" />
+				</div>
+				<div id="requests_header"></div>
+				<div id="requests" class="scrollable">
+					<div id="requests_scrollbar" class="scrollbar scrollbar_invisible"></div>
+					<div id="requests_list"></div>
+				</div>
+			</div>
+		</div>
+		<div id="timeline_scrollblock" class="scrollblock">
+			<div id="timeline" class="scrollable">
+				<div id="timeline_scrollbar" class="scrollbar scrollbar_invisible"></div>
+				<div id="timeline_resizer" class="resizer"></div>
+			</div>
+		</div>
+		<div id="lists">
+			<div id="lists_resizer" class="resizer"></div>
+			<div id="lists_tabs_container">
+				<ul id="lists_tabs">
+					<li id="lists_tab_album" class="link" ></li>
+				</ul>
+			</div>
+			<div id="lists_searchbox">
+				<div id="searchlist_input" class="unselectable">
+					<div id="searchlist_searchbox" class="searchlist_searchbox">
+						<div id="searchlist_icon"></div>
+						<div id="searchlist_cancel">ESC</div>
+					</div>
+				</div>
+			</div>
+			<div id="lists_container" class="scrollblock">
+				<div id="lists_albums" class="searchlist scrollable">
+					<div id="lists_albums_stretcher" class="searchlist_stretcher"></div>
+					<div id="lists_albums_scrollbar" class="scrollbar scrollbar_invisible"></div>
+					<div id="lists_albums_items" class="searchlist_items"></div>
+				</div>
+				<div id="lists_artists" class="searchlist scrollable">
+					<div id="lists_artists_stretcher" class="searchlist_stretcher"></div>
+					<div id="lists_artists_scrollbar" class="scrollbar scrollbar_invisible"></div>
+					<div id="lists_artists_items" class="searchlist_items"></div>
+				</div>
+				<div id="lists_groups" class="searchlist scrollable">
+					<div id="lists_groups_stretcher" class="searchlist_stretcher"></div>
+					<div id="lists_groups_scrollbar" class="scrollbar scrollbar_invisible"></div>
+					<div id="lists_groups_items" class="searchlist_items"></div>
+				</div>
+				<div id="lists_listeners" class="searchlist scrollable">
+					<div id="lists_listeners_stretcher" class="searchlist_stretcher"></div>
+					<div id="lists_listeners_scrollbar" class="scrollbar scrollbar_invisible"></div>
+					<div id="lists_listeners_items" class="searchlist_items"></div>
+				</div>
+			</div>
+		</div>
+		<div id="detail_scrollblock" class="scrollblock">
+			<div id="detail">
+				<div id="detail_scrollbar" class="scrollbar scrollbar_invisible"></div>			
+			</div>
+		</div>
+	</div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-3567354-1', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>

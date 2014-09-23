@@ -1,544 +1,91 @@
-@font-face {
-	font-family: 'Rainwave';
-	src: url('/static/phantomrw.woff');
-}
+$menu_height: 45px;
 
-$menu_height: 56px;
-$menu_height_small: 22px;
-$main_icon_height: 33px;
-
-#logo_name {
-	cursor: pointer;
-	font-family: 'Rainwave';
-	color: $highlight;
-	text-transform: uppercase;
+#top_menu_wrapper {
+	background: $highlight_dark;
+	height: $menu_height;
+	overflow: hidden;
 }
 
 #top_menu {
 	box-sizing: border-box;
-	background: #000;
+	color: #FFF;
+	background: $highlight;
+	margin: 0 auto;
+	padding: 0 5px;
+	width: 100%;
+	max-width: 100%;
 	height: $menu_height;
-	padding-top: 1px;
+
+	@include transition(max-width);
 }
 
-#top_menu.small_menu {
-	height: $menu_height_small;
+body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
+	max-width: 1024px;
 }
 
-#user_info {
-	@include transition-wtime(150ms, color);
-	margin-right: 1em;
+#top_menu svg {
+	display: inline;
+	height: 20px;
+	width: 20px;
 }
 
-#top_menu svg, #top_menu img.icon {
-	height: 16px;
-	width: 16px;
-	margin: 0;
-	padding: 0;
-	position: relative;
-	top: -1px;
-	vertical-align: middle;
+#top_menu svg rect, #top_menu svg circle, #top_menu svg path, #top_menu svg polygon {
+	fill: #FFF;
 }
 
-#top_menu svg path, #top_menu svg rect {
-	@include transition-wtime(150ms, fill);
-	fill: $vdarktext;
+#facebook_f {
+	fill: $highlight !important;
 }
 
-#top_menu li:hover, #top_menu li:hover a {
-	color: $text;
-}
-
-/* Firefox bug */
-#top_menu li:hover a:hover {
-	color: $linkhover;
-}
-
-#top_menu li:hover svg path, #top_menu li:hover svg rect {
-	fill: $text;
-}
-
-#top_menu li a:hover svg path, #top_menu li a:hover svg rect {
-	fill: $linkhover;
-}
-
-#top_menu img.icon {
-	@include transition-wtime(150ms, opacity);
-	opacity: 0.6;
-}
-
-#top_menu.small_menu .icon_description {
+#about_window, #settings_window {
 	display: none;
 }
 
-#top_menu li:hover img.icon {
-	opacity: 1;
+#current_station {
+	display: inline-block;
+	height: $menu_height;
 }
 
-#station_select, #top_icons, #main_icons {
-	box-sizing: border-box;
-	height: $menu_height_small;
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-}
-
-#station_select {
-	float: left;
-}
-
-#top_icons, #main_icons {
-	float: right;
-}
-
-#top_icons, #top_icons a, div.small_menu #main_icons {
-	color: $vdarktext;
-}
-
-#top_icons a:hover {
-	color: $linkhover;
-}
-
-div.normal_menu #main_icons {
-	z-index: 1;
-	clear: both;
+#current_station span {
 	position: relative;
-	top: $main_icon_height / 2;
+	top: 50%;
 	@include transform(translateY(-50%));
 }
 
-div.normal_menu #main_icons:hover {
-	z-index: 101;
+/* STATION SELET */
+
+#station_select {
+	display: none;
+	position: absolute;
 }
 
-div.normal_menu #main_icons li {
-	position: relative;
-	display: inline;
-	padding: 1px 1em 0px 1em;
-	cursor: default;
-}
+/* ICONS AND LINKS */
 
-div.normal_menu #main_icons svg path {
-	fill: $text;
-}
-
-#station_select li, #top_icons li, div.small_menu #main_icons li {
-	box-sizing: border-box;
-	position: relative;
-	height: $menu_height_small;
-	padding: 0px 1em 0px;
-	border-bottom: 1px solid #000;
-	float: left;
+#top_icons {
 	margin: 0;
-}
-
-#top_icons li.small_link {
-	padding-left: .4em;
-	padding-right: .4em;
-}
-
-#station_select li:first-child {
-	padding-left: 10px;
-}
-
-#station_select li a {
-	text-transform: uppercase;
-	font-family: 'Rainwave', sans-serif;
-	text-align: center;
-	color: $vdarktext;
-}
-
-#station_select li.selected {
-	border-color: $highlight;
-}
-
-#station_select li.selected a {
-	color: $highlight;
-}
-
-/* Fix a Firefox bug */
-#station_select li a:hover, #station_select li.selected a:hover {
-	color: #a7e1ff;
-}
-
-/* DROPDOWN STATION INFO */
-
-#top_menu div.info {
-	box-sizing: border-box;
-	margin: 2px 0 0 0;
-	@include transition-wtime(300ms, opacity, transform, height, padding, border);
-	opacity: 0;
-	position: absolute;
-	width: 380px;
-	height: 0;
-	background-color: #000;
-	border: solid 0px #000;
-	box-shadow: 3px 3px 3px 4px #000;
-	overflow: hidden;
-	left: 0px;
-	z-index: 2;
-}
-
-#top_menu div.info:hover {
-	overflow: visible;
-}
-
-#top_menu li:hover {
-	z-index: 100;
-}
-
-div.menu_now_playing {
-	color: $highlight;
-	font-size: smaller;
-	text-transform: uppercase;
-	margin-bottom: 5px;
-}
-
-#station_select div.timeline_song {
-	margin-bottom: 10px;
-}
-
-#station_select div.station_menu_description, #donation_information, #intro_mode_link, #github_link {
-	display: block;
-	clear: both;
-	padding-top: 5px;
-	margin-top: 5px;
-	margin-bottom: 2px;
-	border-top: solid 1px #777;
-	text-align: center;
-}
-
-#station_select div.station_menu_description {
-	font-style: italic;
-	font-size: smaller;
-}
-
-#top_menu li:hover div.info {
-	border: solid 1px #777;
-	opacity: 1;
-	height: 145px;
-	padding: 5px 10px 10px 10px;
-}
-
-#top_menu li:hover div.hidden_info {
-	border: none;
-	opacity: 0;
-	height: 0;
 	padding: 0;
+	float: right;
+	position: relative;
+	top: 50%;
+	@include transform(translateY(-50%));
 }
 
-#user_info div.info {
-	width: 300px;
-	@include transform(translateX(-70px));
-	text-align: center;
+#top_icons li {
+	display: inline;
 }
 
-#user_info #user_qr_code {
-	position: absolute;
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-color: #FFF;
-	background-position: center center;
-	width: 300px;
-	height: 0px;
-	z-index: 1;
-	opacity: 0;
-	@include transition(opacity, height);
-	@include transform(translateX(-40px));
-	border: solid 1px #777;
-	box-shadow: 3px 3px 3px 4px #000;
-}
-
-#user_info #user_qr_code_hover:hover #user_qr_code {
-	display: block;
-	opacity: 1;
-	height: 300px;
-}
-
-#user_info #logout_link, #user_info #user_info_link {
-	display: block;
-	padding-bottom: 5px;
-	margin-bottom: 10px;
-	border-bottom: 1px solid #777;
+#top_icons li svg {
+	@include transform(translateY(.1em));
 }
 
 /* PLAYER */
 
-$audio_ssize: 6px;
-$audio_vsize: 11px;
-$audio_hsize: 15px;
-
 #player {
-	clear: left;
-	background: #383a3d;
-	height: $main_icon_height;
-}
-
-div.small_menu #player {
-	clear: none;
-	background: transparent;
-	padding: 0px 1em;
-	display: inline;
-}
-
-#player_link {
-	position: relative;
-}
-
-#player_alignment {
-	position: relative;
-	margin-left: 10px;
-}
-
-div.small_menu #player_alignment {
-	display: inline;
-	margin-left: 1em;
-	height: auto;
-}
-
-#audio_icon {
-    float: left;
-    position: relative;
-	width: 0; 
-	height: 0;
-	top: $main_icon_height / 2 - $audio_vsize - 1;
-    @include transition(border, border-radius, margin);
-    border-style: solid;
-    border-color: transparent;
-	border-top-width: $audio_vsize;
-	border-bottom-width: $audio_vsize;
-	border-left: $audio_hsize solid #FFF;
-	border-right: 0px solid transparent;
-    border-radius: 0px;
-}
-
-div.small_menu #audio_icon {
-	border-top-width: $audio_ssize;
-	border-bottom-width: $audio_ssize;
-	border-left: $audio_vsize solid #FFF;
-	top: $menu_height_small / 2 - $audio_ssize - 1;
-	left: 1em;
-}
-
-/* !important to cover up another Firefox CSS-rule-collision bug */
-div.tuned_in #audio_icon {
-	border-left-color: $highlight !important;
-}
-
-#player a:hover #audio_icon {
-	border-left-color: $linkhover !important;
-}
-
-#audio_icon.audio_playing {
-    border-color: $text;
-    border-right: $audio_hsize solid $text;
-    border-width: 10px;
-}
-
-div.small_menu #audio_icon.audio_playing {
-	border-right-style: solid;
-	border-right-color: $text;
-	border-right-width: $audio_ssize - 1;
-	border-left: $audio_ssize solid $text;
-}
-
-div.tuned_in #audio_icon.audio_playing {
-	border-color: $highlight;
-}
-
-#player a:hover #audio_icon.audio_playing {
-	border-color: $linkhover;
-}
-
-#audio_icon.audio_connecting {
-    border-color: #FFCC33 !important;
-    border-radius: $audio_vsize;
-    border-width: $audio_vsize;
-    margin-left: 7px;
-}
-
-#audio_status {
-	display: inline;
-	position: relative;
-	font-family: 'Rainwave';
-	text-transform: uppercase;
-	font-size: 26px;
-    @include transition(LINKCOLOR);
-}
-
-div.small_menu #audio_status {
-	font-size: 100%;
-	left: -13px;
-	top: 0;
-}
-
-div.tuned_in #audio_status {
-	color: $highlight;
-}
-
-div.tuned_in #audio_status:hover {
-	color: $link;
-}
-
-#top_menu #audio_volume {
-	width: 50px;
-	height: 1em;
-	top: 0;
-	opacity: 0;
-	@include transition(opacity);
-	-webkit-transition-delay: 1s;
-            transition-delay: 1s;
-}
-
-#top_menu.small_menu #audio_volume {
-	height: 0.7em;
-	width: 30px;
-}
-
-#top_menu #audio_volume.audio_playing_volume {
-	opacity: 1;
-}
-
-#audio_volume_indicator {
-	fill: $text;
-}
-
-#audio_volume_indicator_background {
-	fill: $vdarktext;
-}
-
-div.tuned_in #audio_volume_indicator {
-	fill: $highlight;
-}
-
-/* SETTINGS WINDOW */
-
-#top_menu #settings_window {
-	width: 300px;
-	@include transform(translateX(-200px));
-	padding: 0 !important;
-}
-
-#top_menu li:hover #settings_window {
-	height: 31em;
-}
-
-body.small_screen #top_menu li:hover #settings_window {
-	height: 34em;
-}
-
-#settings_window div.setting_group:first-child {
-	margin-top: 3px;
-}
-
-#settings_window div.setting_group {
-	padding: 3px 6px 3px 10px;
-	clear: right;
-}
-
-#settings_window div.setting_group:hover {
-	background: #333;
-}
-
-#settings_window div.setting_group input, #settings_window div.setting_group select {
-	float: right;
-}
-
-#settings_window div.setting_group label {
-	display: block;
-}
-
-#settings_window h4, #about_window h4 {
-	margin: 5px;
-	padding: 0px;
-	border-bottom: 1px solid $vdarktext;
-	font-size: 100%;
-	font-weight: bold;
-}
-
-#settings_window div.setting_group + h4 {
-	margin-top: 10px;
-}
-
-#intro_mode_link {
-	cursor: pointer;
-}
-
-/* ABOUT WINDOW (minus that h4 stuff above) */
-
-#top_menu #about_window {
-	position: absolute;
-	left: 100%;
-	@include transform(translateX(-390px));
-}
-
-#top_menu li:hover #about_window {
-	height: 39.5em;
-}
-
-#top_menu li:hover #about_window.hidden_info {
-	height: 0;
-}
-
-body.small_screen #top_menu li:hover #about_window {
-	height: 42em;
-}
-
-#about_window .info_right, #settings_window .info_right {
-	float: right;
-	padding-right: 15px;
-}
-
-#about_window div + h4 {
- 	margin-top: 20px;
-}
-
-#about_window div {
-	padding-left: 15px;
+	display: inline-block;
 }
 
 /* CALENDAR */
 
-#top_menu li #calendar_dropdown {
-	width: 350px;
-	@include transform(translateX(-100px));
-}
-
-#top_menu li:hover #calendar_dropdown {
-	height: 520px;
-}
-
-#calendar_dropdown iframe {
-	margin: 0;
-	padding: 0;
-	width: 100%;
-	height: 500px;
-}
-
-#donation_information {
-	display: block;
-	margin-top: 20px;
-}
-
-/* TWEETBOXIN' */
-
-#twitter_dropdown {
-	transform: translateX(-350px);
-	width: 400px;
-}
-
-#top_menu li:hover #twitter_dropdown {
-	height: 550px;
-}
-
-#request_cta {
-	opacity: 0;
-	@include transition(opacity);
-	cursor: pointer;
-}
-
-#request_cta img {
-	margin-right: 5px;
-	width: 14px;
-	height: 14px;
+#calendar_dropdown {
+	display: none;
 }

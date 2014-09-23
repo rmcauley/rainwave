@@ -6,7 +6,7 @@ var SmallScreen = false;
 var SCREEN_HEIGHT;
 var SCREEN_WIDTH;
 var MAIN_HEIGHT;
-var MENU_HEIGHT = 56;
+var MENU_HEIGHT = 45;
 
 function _size_calculate() {
 	"use strict";
@@ -153,7 +153,7 @@ function initialize() {
 	PlaylistLists.initialize();
 	Requests.initialize();
 	R4Audio.initialize(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
-	History.initialize();
+	//History.initialize();
 	SettingsWindow.initialize();
 
 	// ****************** PAGE LAYOUT
@@ -176,7 +176,7 @@ function initialize() {
 	Scrollbar.resizer_calculate();
 	Scrollbar.recalculate();
 	DetailView.scroll_init();
-	History.scroll_init();
+	//History.scroll_init();
 
 	// DIRTY THE LAYOUT
 
@@ -192,7 +192,7 @@ function initialize() {
 	Scrollbar.resizer_refresh();
 	DetailView.draw();
 	PlaylistLists.draw();
-	History.draw();
+	//History.draw();
 	Menu.draw(BOOTSTRAP.station_list);
 	SettingsWindow.draw();
 	AboutWindow.draw();
