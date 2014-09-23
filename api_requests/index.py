@@ -53,7 +53,8 @@ class MainIndex(api.web.HTMLRequest):
 	def get(self):
 		info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
 		self.append("api_info", { "time": int(time.time()) })
-		self.render("r4_index.html", request=self,
+		mobile = self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1
+		self.render(self.page_template, request=self,
 					site_description=self.locale.translate("station_description_id_%s" % self.sid),
 					revision_number=config.build_number,
 					jsfiles=self.jsfiles,
@@ -63,7 +64,7 @@ class MainIndex(api.web.HTMLRequest):
 					relays=config.public_relays_json[self.sid],
 					stream_filename=config.get_station(self.sid, "stream_filename"),
 					station_list=config.station_list_json,
-					mobile=self.request.headers.get("User-Agent").lower().find("mobile") != -1)
+					mobile=mobile)
 
 @handle_url("/beta")
 class BetaRedirect(tornado.web.RequestHandler):
