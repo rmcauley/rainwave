@@ -265,10 +265,16 @@ class FileEventHandler(watchdog.events.FileSystemEventHandler):
 		self.sids = sids
 
 	def _handle_file(self, filename):
-		_scan_file(filename, self.sids)
+		try:
+			_scan_file(filename, self.sids)
+		except Exception as xception:
+			_add_scan_error(filename, xception)
 
 	def _handle_directory(self, directory):
-		_scan_directory(directory, self.sids)
+		try:
+			_scan_directory(directory, self.sids)
+		except Exception as xception:
+			_add_scan_error(directory, xception)
 
 	def _handle_event(self, event):
 		try:
@@ -287,8 +293,8 @@ class FileEventHandler(watchdog.events.FileSystemEventHandler):
 				else:
 					log.debug("scan_event", "%s for dir %s" % (event.event_type, event.dest_path))
 					self._handle_directory(event.dest_path)
-		except Exception as e:
-			log.exception("scan", "Exception encountered in observer for %s" % self.root_directory, e)
+		except Exception as xception:
+			_add_scan_error(self.root_directory, xception)
 
 	def on_moved(self, event):
 		self._handle_event(event)
