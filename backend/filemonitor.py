@@ -271,21 +271,24 @@ class FileEventHandler(watchdog.events.FileSystemEventHandler):
 		_scan_directory(directory, self.sids)
 
 	def _handle_event(self, event):
-		if hasattr(event, "src_path") and event.src_path and check_file_is_in_directory(event.src_path, self.root_directory):
-			if not os.path.isdir(event.src_path) and not event.event_type == 'deleted':
-				log.debug("scan_event", "%s for file %s" % (event.event_type, event.src_path))
-				self._handle_file(event.src_path)
-			else:
-				log.debug("scan_event", "%s for dir %s" % (event.event_type, event.src_path))
-				self._handle_directory(event.src_path)
+		try:
+			if hasattr(event, "src_path") and event.src_path and check_file_is_in_directory(event.src_path, self.root_directory):
+				if not os.path.isdir(event.src_path) and not event.event_type == 'deleted':
+					log.debug("scan_event", "%s for file %s" % (event.event_type, event.src_path))
+					self._handle_file(event.src_path)
+				else:
+					log.debug("scan_event", "%s for dir %s" % (event.event_type, event.src_path))
+					self._handle_directory(event.src_path)
 
-		if hasattr(event, "dest_path") and event.dest_path and check_file_is_in_directory(event.dest_path, self.root_directory):
-			if not os.path.isdir(event.dest_path) and not event.event_type == 'deleted':
-				log.debug("scan_event", "%s for file %s" % (event.event_type, event.dest_path))
-				self._handle_file(event.dest_path)
-			else:
-				log.debug("scan_event", "%s for dir %s" % (event.event_type, event.dest_path))
-				self._handle_directory(event.dest_path)
+			if hasattr(event, "dest_path") and event.dest_path and check_file_is_in_directory(event.dest_path, self.root_directory):
+				if not os.path.isdir(event.dest_path) and not event.event_type == 'deleted':
+					log.debug("scan_event", "%s for file %s" % (event.event_type, event.dest_path))
+					self._handle_file(event.dest_path)
+				else:
+					log.debug("scan_event", "%s for dir %s" % (event.event_type, event.dest_path))
+					self._handle_directory(event.dest_path)
+		except Exception as e:
+			log.exception("scan", "Exception encountered in observer for %s" % self.root_directory, e)
 
 	def on_moved(self, event):
 		self._handle_event(event)
