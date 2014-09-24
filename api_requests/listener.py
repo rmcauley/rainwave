@@ -82,3 +82,12 @@ class CurrentListenersRequest(APIHandler):
 
 	def post(self):
 		self.append("current_listeners", cache.get_station(self.sid, "current_listeners"))
+
+@handle_api_url("user_info")
+class UserInfoRequest(APIHandler):
+	description = "Get information about the user making the request."
+	auth_required = True
+	sid_required = False
+
+	def post(self):
+		self.append("user_info", self.user.to_dict())
