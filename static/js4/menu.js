@@ -39,10 +39,7 @@ var Menu = function() {
 				elements.user_info.appendChild($el("img", { "class": "avatar icon", "src": User.avatar }));
 			}
 			else {
-				var svguse = $el("use", { "xlink:href": "/static/images4/symbols.svg#user" });
-				var svg = $el("svg");
-				svg.appendChild(svguse);
-				elements.user_info.appendChild(svg);	
+				$add_class(elements.user_info, "show_anonymous_avatar");
 			}
 			elements.user_info.appendChild($el("span", { "textContent": User.name }));
 		}

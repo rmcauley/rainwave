@@ -31,6 +31,7 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 
 #top_menu svg rect, #top_menu svg circle, #top_menu svg path, #top_menu svg polygon {
 	fill: #FFF;
+	@include transition-wtime(150ms, fill);
 }
 
 #facebook_f {
@@ -40,6 +41,8 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 #about_window, #settings_window {
 	display: none;
 }
+
+/* CURRENT STATION */
 
 #current_station {
 	border-right: 1px solid #1e71a9;
@@ -69,7 +72,7 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 	text-transform: uppercase;
 }
 
-/* STATION SELET */
+/* STATION SELECT */
 
 #station_select {
 	display: none;
@@ -89,10 +92,19 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 
 #top_icons li {
 	display: inline;
+	padding: 0 .5em;
 }
 
 #top_icons li svg {
 	@include transform(translateY(.1em));
+}
+
+#top_icons #anonymous_user_avatar {
+	display: none;
+}
+
+#top_icons li.show_anonymous_avatar #anonymous_user_avatar {
+	display: inline;
 }
 
 /* PLAYER */
@@ -100,14 +112,32 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 #player {
 	position: relative;
 	display: inline-block;
-	padding-left: 30px;
 	top: 50%;
 	@include transform(translateY(-50%));
+	font-size: 2em;
+	font-style: italic;
+	font-weight: 300;
+}
+
+#player #audio_status {
+	padding-left: 1.15em;
+	@include transition(LINKCOLOR);
+}
+
+#player a:hover #audio_status {
+	color: $linkhover;
 }
 
 #player svg.audio_icon {
 	position: absolute;
-	left: 0;
+	left: 5px;
+	height: 0.9em;
+	width: 0.8em;
+	margin-top: .25em;
+}
+
+#player a:hover svg.audio_icon rect, #player a:hover svg.audio_icon circle, #player a:hover svg.audio_icon path, #player a:hover svg.audio_icon polygon {
+	fill: $linkhover;
 }
 
 #player svg.audio_icon use {
@@ -124,6 +154,18 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 
 #player.playing #audio_icon_play {
 	opacity: 0;
+}
+
+#top_menu #player svg#audio_volume {
+	margin-left: .3em;
+	width: 1.3em;
+	height: .7em;
+	opacity: 0;
+	@include transition(opacity);
+}
+
+#top_menu #player.playing svg#audio_volume {
+	opacity: 1;
 }
 
 /* CALENDAR */

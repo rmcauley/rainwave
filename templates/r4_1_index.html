@@ -78,19 +78,22 @@
 					<div id="calendar_dropdown" class="info"></div>
 				</li>
 				
-				<li id="user_info"></li>
+				<li id="user_info">
+					<svg id="anonymous_user_avatar"><use id="audio_icon_stop" xlink:href="/static/images4/symbols.svg#user"></use></svg>
+				</li>
 
 				<li id="icon_cluster">
 					<a href="http://twitter.com/rainwavecc" target="_blank">
 						<svg><use xlink:href="/static/images4/symbols.svg#twitter"></use></svg>
 					</a>
+					
 					<a href="http://facebook.com/rainwavecc" target="_blank">
 						<svg><use xlink:href="/static/images4/symbols.svg#facebook"></use></svg>
 					</a>
-					
-					<svg id="settings_link"><use xlink:href="/static/images4/symbols.svg#settings"></use></svg>
 
 					<svg id="about_link"><use xlink:href="/static/images4/symbols.svg#about"></use></svg>
+
+					<svg id="settings_link"><use xlink:href="/static/images4/symbols.svg#settings"></use></svg>
 				</li>
 			</ul>
 
@@ -104,8 +107,8 @@
 			<div id="player" class="unselectable">
 				<a id="player_link" href="/tune_in/{{ request.sid }}.mp3" target="_blank">
 					<svg class="audio_icon">
-						<use id="audio_icon_play" xlink:href="/static/images4/symbols.svg#play_2"></use>
-						<use id="audio_icon_stop" xlink:href="/static/images4/symbols.svg#stop_2"></use>
+						<use id="audio_icon_play" xlink:href="/static/images4/symbols.svg#play"></use>
+						<use id="audio_icon_stop" xlink:href="/static/images4/symbols.svg#stop"></use>
 					</svg>
 					<span id="audio_status"></span>
 				</a>
