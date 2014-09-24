@@ -1,0 +1,13 @@
+httpie
+jsmin
+mutagen
+Pillow
+psutil
+psycopg2
+pylibmc
+pyScss
+pytz
+supervisor
+tornado
+Unidecode
+watchdog
