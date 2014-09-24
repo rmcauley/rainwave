@@ -90,4 +90,4 @@ class UserInfoRequest(APIHandler):
 	sid_required = False
 
 	def post(self):
-		self.append("user_info", self.user.to_dict())
+		self.append("user_info", self.user.to_private_dict())
