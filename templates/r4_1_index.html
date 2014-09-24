@@ -18,7 +18,7 @@
 		};
 	</script>
 
-	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
 	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
 
 	{% if mobile %}
@@ -97,15 +97,17 @@
 			<ul id="station_select"></ul>
 
 			<div id="current_station">
-				<span id="current_station_arrow_down"></span>
+				<svg class="pulldown_arrow"><use xlink:href="/static/images4/symbols.svg#pulldown"></use></svg>
 				<span id="current_station_name"></span>
 			</div>
 
 			<div id="player" class="unselectable">
 				<a id="player_link" href="/tune_in/{{ request.sid }}.mp3" target="_blank">
-					<svg id="audio_icon_play"><use xlink:href="/static/images4/symbols.svg#play_2"></use></svg>
-					<svg id="audio_icon_stop"><use xlink:href="/static/images4/symbols.svg#stop_2"></use></svg>
-					<div id="audio_status"></div>
+					<svg class="audio_icon">
+						<use id="audio_icon_play" xlink:href="/static/images4/symbols.svg#play_2"></use>
+						<use id="audio_icon_stop" xlink:href="/static/images4/symbols.svg#stop_2"></use>
+					</svg>
+					<span id="audio_status"></span>
 				</a>
 				<svg id="audio_volume" viewBox="0 0 100 100" preserveAspectRatio="none">
 					<clipPath id="volume_bars">

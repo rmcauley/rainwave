@@ -42,14 +42,31 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 }
 
 #current_station {
-	display: inline-block;
+	border-right: 1px solid #1e71a9;
+	box-sizing: border-box;
+	min-width: 15em;
+	float: left;
 	height: $menu_height;
+	padding: 0 20px 0 15px;
+	margin-right: 20px;
 }
 
-#current_station span {
+#current_station svg.pulldown_arrow {
+	float: right;
 	position: relative;
 	top: 50%;
 	@include transform(translateY(-50%));
+}
+
+#current_station span#current_station_name {
+	display: block;
+	position: relative;
+	top: 50%;
+	@include transform(translateY(-50%));
+	font-style: italic;
+	font-size: 2em;
+	font-weight: 300;
+	text-transform: uppercase;
 }
 
 /* STATION SELET */
@@ -81,7 +98,32 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 /* PLAYER */
 
 #player {
+	position: relative;
 	display: inline-block;
+	padding-left: 30px;
+	top: 50%;
+	@include transform(translateY(-50%));
+}
+
+#player svg.audio_icon {
+	position: absolute;
+	left: 0;
+}
+
+#player svg.audio_icon use {
+	@include transition(opacity);
+}
+
+#player #audio_icon_stop {
+	opacity: 0;
+}
+
+#player.playing #audio_icon_stop {
+	opacity: 1;
+}
+
+#player.playing #audio_icon_play {
+	opacity: 0;
 }
 
 /* CALENDAR */
