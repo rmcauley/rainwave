@@ -54,7 +54,7 @@ class MainIndex(api.web.HTMLRequest):
 		info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
 		self.append("api_info", { "time": int(time.time()) })
 		mobile = self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1
-		self.render(self.page_template, request=self,
+		self.render("r4_index.html", request=self,
 					site_description=self.locale.translate("station_description_id_%s" % self.sid),
 					revision_number=config.build_number,
 					jsfiles=self.jsfiles,
