@@ -1,6 +1,6 @@
 /* POSITIONING */
 
-#requests_scrollblock {
+#requests_positioner {
 	display: block;
 	position: absolute;
 	left: 100%;
@@ -14,22 +14,36 @@
 	@include transform(translateX(-5px));
 }
 
-body.stage_0 #requests_scrollblock, body.stage_1 #requests_scrollblock, body.stage_2 #requests_scrollblock {
+body.stage_0 #requests_positioner, body.stage_1 #requests_positioner, body.stage_2 #requests_positioner {
 	display: none;
 }
 
-#requests_scrollblock.request_queue_paused {
+#requests_grab_tag {
+	position: absolute;
+	background-color: #133563;
+	margin-left: -1.5em;
+	padding: 0px 15px;
+	transform: translate(-100%, 0px) rotate(-90deg);
+	transform-origin: right top 0px;
+	@include transition-wtime(350ms, background-color);
+}
+
+#requests_positioner.request_queue_paused, #requests_positioner.request_queue_paused #requests_grab_tag {
 	border-color: #603E13;
 	background-color: #1C1104;
 }
 
-#requests_scrollblock.request_warning {
+#requests_positioner.request_warning, #requests_positioner.request_queue_warning #requests_grab_tag {
 	border-color: #5E1212;
 	background-color: #190303;
 }
 
-#requests_scrollblock:hover, #requests_scrollblock.fake_hover, body.requests_sticky #requests_scrollblock {
+#requests_positioner:hover, #requests_positioner.fake_hover, body.requests_sticky #requests_positioner {
 	@include transform(translateX(-360px));
+}
+
+body.requests_sticky #requests_grab_tag {
+	display: none;
 }
 
 #requests {
@@ -43,6 +57,9 @@ body.stage_0 #requests_scrollblock, body.stage_1 #requests_scrollblock, body.sta
 	padding: 2px 0 3px 7px;
 	background: #112F56;
 	@include transition(background-color);
+	position: absolute;
+	width: 100%;
+	z-index: 1;
 }
 
 div.request_queue_paused #requests_header {
@@ -55,7 +72,10 @@ div.request_warning #requests_header {
 
 #requests_toolbar {
 	padding: 3px 5px 0 0;
-	float: right;
+	position: absolute;
+	z-index: 2;
+	width: 100%;
+	text-align: right;
 }
 
 #requests_toolbar img {

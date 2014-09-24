@@ -47,7 +47,7 @@ class WebListProducers(api.web.PrettyPrintAPIMixin, producers.ListProducers):
 		self.write("<td><a onclick=\"window.top.call_api('admin/delete_producer', { 'sched_id': %s });\">Delete</a></td>" % row['id'])
 
 	def sort_keys(self, keys):
-		return [ "name", "type", "url" ]
+		return [ "name", "type", "url", 'sid', 'sched_length_minutes' ]
 
 @handle_url("/admin/album_list/modify_producer")
 class WebModifyProducer(api.web.HTMLRequest):

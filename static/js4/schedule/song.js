@@ -39,6 +39,7 @@ var TimelineSong = function() {
 			}
 
 			self.elements.album_art = self.el.appendChild(Albums.art_html(self.data.albums[0], null, request_mode));
+			self.elements.album_art.addEventListener("click", function(e) { e.stopPropagation(); });
 			if (request_mode) {
 				self.elements.request_drag = $el("div", { "class": "request_sort_grab" });
 				self.elements.request_drag._song_id = json.id;
@@ -67,27 +68,21 @@ var TimelineSong = function() {
 
 			if (song_rating) title_group.appendChild(song_rating.el);
 
-			self.elements.title = title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title }));
-			if (!MOBILE) {
-				self.elements.title.addEventListener("mouseover", self.title_mouse_over);
-				self.elements.title.addEventListener("mouseout", self.title_mouse_out);
-				self.elements.title.addEventListener("click", self.vote);
-			}
-			else {
-				c.addEventListener("mouseover", self.title_mouse_over);
-				c.addEventListener("mouseout", self.title_mouse_out);
-				c.addEventListener("click", self.vote);	
-			}
+			self.elements.title = title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title, "title": self.data.title }));
+			self.el.addEventListener("mouseover", self.title_mouse_over);
+			self.el.addEventListener("mouseout", self.title_mouse_out);
+			self.el.addEventListener("click", self.vote);	
 			if (song_rating) song_rating.rating_title_el = self.elements.title;
 
 			var album_group = c.appendChild($el("div", { "class": "album_group" }));
 
 			if (album_rating) album_group.appendChild(album_rating.el);
 
-			self.elements.album = album_group.appendChild($el("div", { "class": "album", "textContent": self.data.albums[0].name }));			
+			self.elements.album = album_group.appendChild($el("div", { "class": "album" }));
+			self.elements.album_name = self.elements.album.appendChild($el("span", { "textContent": self.data.albums[0].name, "class": "album_name", "title": self.data.albums[0].name }));
 			if (self.data.albums[0].id && !MOBILE) {
-				self.elements.album.className = "album link";
-				self.elements.album.addEventListener("click", function() { DetailView.open_album(self.data.albums[0].id ); });
+				self.elements.album_name.className = "album_name link";
+				self.elements.album_name.addEventListener("click", function(e) { e.stopPropagation(); DetailView.open_album(self.data.albums[0].id ); });
 			}
 			if (album_rating) album_rating.rating_title_el = self.elements.album;
 			

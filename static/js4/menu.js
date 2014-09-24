@@ -27,6 +27,13 @@ var Menu = function() {
 		}
 	};
 
+	var remove_about_window = function(e) {
+		if (Mouse.is_mouse_leave(e, $id("logo"))) {
+			$id("about_window").className = "hidden_info info";
+			$id("logo").removeEventListener("mouseout", remove_about_window);
+		}
+	};
+
 	self.draw = function(station_list) {
 		API.add_callback(update_tuned_in_status, "user");
 
@@ -40,6 +47,11 @@ var Menu = function() {
 		$id("history_link").textContent = $l("previouslyplayed");
 		$id("forums_link").textContent = $l("forums");
 		$id("calendar_link").textContent = $l("events_calendar_link");
+
+		$id("logo").addEventListener("click", function() { 
+			$id("about_window").className = "info";
+			$id("logo").addEventListener("mouseout", remove_about_window);
+		});
 
 		// Setup user info
 		elements.user_info = $id("user_info");
@@ -137,7 +149,7 @@ var Menu = function() {
 
 	var insert_calendar_iframe = function(e) {
 		$id("calendar_menu_item").removeEventListener("mouseover", insert_calendar_iframe);
-		$id("calendar_dropdown").appendChild($el("iframe", { "class": "calendar_iframe", "src": "https://www.google.com/calendar/embed?showTitle=0&showNav=0&showDate=0&showPrint=0&showCalendars=0&mode=AGENDA&height=500&wkst=1&bgcolor=%23ffffff&src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com&color=%232952A3&ctz=America%2FToronto", "frameborder": "0", "scrolling": "no" }));
+		$id("calendar_dropdown").appendChild($el("iframe", { "class": "calendar_iframe", "src": "https://www.google.com/calendar/embed?showTitle=0&showNav=0&showDate=0&showPrint=0&showCalendars=0&mode=AGENDA&height=500&wkst=1&bgcolor=%23ffffff&src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com&color=%232952A3", "frameborder": "0", "scrolling": "no" }));
 	};
 
 	var insert_twitter_widget = function(e) {

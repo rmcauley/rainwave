@@ -310,12 +310,15 @@ class Election(event.BaseEvent):
 			log.debug("requests", "Sequence length: %s" % _request_sequence[self.sid])
 
 	def get_request(self):
-		song = request.get_next(self.sid)
+		song = self._get_request_function()
 		if not song:
 			return None
 		self.reset_request_sequence()
 		song.data['entry_type'] = ElecSongTypes.request
 		return song
+
+	def _get_request_function(self):
+		return request.get_next(self.sid)
 
 	def length(self):
 		if self.used or self.in_progress:

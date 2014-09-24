@@ -149,7 +149,7 @@ class User(object):
 	def get_listener_record(self, use_cache=True):
 		listener = None
 		if self.id > 1:
-			listener = cache.get_user(self.id, "listener_record")
+			# listener = cache.get_user(self.id, "listener_record")
 			if not listener or not use_cache:
 				listener = db.c.fetch_row("SELECT "
 					"listener_id, sid, listener_lock AS lock, listener_lock_sid AS lock_sid, listener_lock_counter AS lock_counter, listener_voted_entry AS voted_entry "
@@ -162,8 +162,8 @@ class User(object):
 				"WHERE listener_ip = %s AND listener_purge = FALSE", (self.ip_address,))
 		if listener:
 			self.data.update(listener)
-		if self.id > 1:
-			cache.set_user(self.id, "listener_record", listener)
+		# if self.id > 1:
+			# cache.set_user(self.id, "listener_record", listener)
 		return listener
 
 	def refresh(self, sid):
@@ -248,6 +248,18 @@ class User(object):
 			limit = max_limit
 		added_requests = 0
 		for song_id in playlist.get_unrated_songs_for_requesting(self.id, sid, limit):
+			if song_id:
+				added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
+		return added_requests
+
+	def add_favorited_requests(self, sid, limit = None):
+		max_limit = self._check_too_many_requests()
+		if not limit:
+			limit = max_limit
+		elif (max_limit > limit):
+			limit = max_limit
+		added_requests = 0
+		for song_id in playlist.get_favorited_songs_for_requesting(self.id, sid, limit):
 			if song_id:
 				added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
 		return added_requests

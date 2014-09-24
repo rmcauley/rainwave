@@ -8,7 +8,7 @@ $menu_height_small: 22px;
 $main_icon_height: 33px;
 
 #logo_name {
-	cursor: default;
+	cursor: pointer;
 	font-family: 'Rainwave';
 	color: $highlight;
 	text-transform: uppercase;
@@ -32,6 +32,7 @@ $main_icon_height: 33px;
 
 #top_menu svg, #top_menu img.icon {
 	height: 16px;
+	width: 16px;
 	margin: 0;
 	padding: 0;
 	position: relative;
@@ -219,6 +220,13 @@ div.menu_now_playing {
 	padding: 5px 10px 10px 10px;
 }
 
+#top_menu li:hover div.hidden_info {
+	border: none;
+	opacity: 0;
+	height: 0;
+	padding: 0;
+}
+
 #user_info div.info {
 	width: 300px;
 	@include transform(translateX(-70px));
@@ -395,6 +403,10 @@ div.tuned_in #audio_status:hover {
 	fill: $text;
 }
 
+#audio_volume_indicator_background {
+	fill: $vdarktext;
+}
+
 div.tuned_in #audio_volume_indicator {
 	fill: $highlight;
 }
@@ -408,11 +420,11 @@ div.tuned_in #audio_volume_indicator {
 }
 
 #top_menu li:hover #settings_window {
-	height: 30em;
+	height: 31em;
 }
 
 body.small_screen #top_menu li:hover #settings_window {
-	height: 33em;
+	height: 34em;
 }
 
 #settings_window div.setting_group:first-child {
@@ -464,6 +476,10 @@ body.small_screen #top_menu li:hover #settings_window {
 	height: 39.5em;
 }
 
+#top_menu li:hover #about_window.hidden_info {
+	height: 0;
+}
+
 body.small_screen #top_menu li:hover #about_window {
 	height: 42em;
 }
@@ -485,6 +501,7 @@ body.small_screen #top_menu li:hover #about_window {
 
 #top_menu li #calendar_dropdown {
 	width: 350px;
+	@include transform(translateX(-100px));
 }
 
 #top_menu li:hover #calendar_dropdown {

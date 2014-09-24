@@ -36,13 +36,16 @@ def prepare_cooldown_algorithm(sid):
 	avg_album_rating = db.c.fetch_var("SELECT AVG(album_rating) FROM r4_album_sid WHERE r4_album_sid.sid = %s AND r4_album_sid.album_exists = TRUE", (sid,))
 	if not avg_album_rating:
 		avg_album_rating = 3.5
+	avg_album_rating = min(max(1, avg_album_rating), 5)
 	log.debug("cooldown", "SID %s: avg_album_rating: %s" % (sid, avg_album_rating))
 	multiplier_adjustment = db.c.fetch_var("SELECT SUM(tempvar) FROM (SELECT r4_album_sid.album_id, AVG(album_cool_multiply) * AVG(song_length) AS tempvar FROM r4_album_sid JOIN r4_songs USING (album_id) JOIN r4_song_sid USING (song_id) WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE GROUP BY r4_album_sid.album_id) AS hooooboy", (sid,))
 	if not multiplier_adjustment:
 		multiplier_adjustment = 1
 	multiplier_adjustment = multiplier_adjustment / float(sum_aasl)
+	multiplier_adjustment = min(max(0.5, multiplier_adjustment), 4)
 	log.debug("cooldown", "SID %s: multi: %s" % (sid, multiplier_adjustment))
 	base_album_cool = float(config.get_station(sid, "cooldown_percentage")) * float(sum_aasl) / float(multiplier_adjustment)
+	base_album_cool = max(min(base_album_cool, 1000000), 1)
 	log.debug("cooldown", "SID %s: base_album_cool: %s" % (sid, base_album_cool))
 	base_rating = db.c.fetch_var(
 			"SELECT SUM(tempvar) FROM ("
@@ -56,7 +59,7 @@ def prepare_cooldown_algorithm(sid):
 			(sid,))
 	if not base_rating:
 		base_rating = 4
-	base_rating = float(base_rating) / float(sum_aasl)
+	base_rating = min(max(1, float(base_rating) / float(sum_aasl)), 5)
 	log.debug("cooldown", "SID %s: base rating: %s" % (sid, base_rating))
 	min_album_cool = config.get_station(sid, "cooldown_highest_rating_multiplier") * base_album_cool
 	log.debug("cooldown", "SID %s: min_album_cool: %s" % (sid, min_album_cool))

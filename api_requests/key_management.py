@@ -11,6 +11,7 @@ mini_qr_service = "http://chart.apis.google.com/chart?cht=qr&chs=75x75&choe=ISO-
 class KeyIndex(api.web.HTMLRequest):
 	login_required = True
 	description = "Used for management of API keys by users."
+	sid_required = False
 
 	def get(self):
 		global qr_service

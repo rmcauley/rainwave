@@ -169,7 +169,16 @@ class AllFavHandler(APIHandler):
 	pagination = True
 
 	def post(self):
-		self.append(self.return_name, db.c.fetch_all(
+		if 'sid' in self.request.arguments:
+			self.append(self.return_name, db.c.fetch_all(
+			"SELECT r4_song_ratings.song_id AS id, song_title AS title, r4_albums.album_id, album_name, song_rating AS rating, COALESCE(song_rating_user, 0) AS rating_user, song_fave AS fave, r4_song_sid.song_cool_end AS cool_end "
+			"FROM r4_song_ratings "
+				"JOIN r4_song_sid ON (r4_song_ratings.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
+				"JOIN r4_songs ON (r4_song_ratings.song_id = r4_songs.song_id) "
+				"JOIN r4_albums USING (album_id) "
+			"WHERE user_id = %s AND song_verified = TRUE AND song_fave = TRUE ORDER BY album_name, song_title " + self.get_sql_limit_string(), (self.sid, self.user.id)))
+		else:
+			self.append(self.return_name, db.c.fetch_all(
 			"SELECT r4_song_ratings.song_id AS id, song_title AS title, r4_albums.album_id, album_name, song_rating AS rating, COALESCE(song_rating_user, 0) AS rating_user, song_fave AS fave "
 			"FROM r4_song_ratings JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 			"WHERE user_id = %s AND song_verified = TRUE AND song_fave = TRUE ORDER BY album_name, song_title " + self.get_sql_limit_string(), (self.user.id,)))
@@ -219,3 +228,51 @@ class StationSongCountRequest(APIHandler):
 		self.append(self.return_name, db.c.fetch_all(
 			"SELECT song_origin_sid AS sid, COUNT(song_id) AS song_count "
 			"FROM r4_songs WHERE song_verified = TRUE GROUP BY song_origin_sid"))
+
+@handle_api_url("user_requested_history")
+class AllRequestedSongs(APIHandler):
+	description = "Shows the user's completed requests."
+	return_name = "user_requested_history"
+	login_required = True
+	sid_required = True
+	pagination = True
+
+	def post(self):
+		self.append(self.return_name, db.c.fetch_all(
+			"SELECT "
+				"r4_songs.song_id AS id, song_title AS title, album_name, song_rating AS rating, song_rating_user AS rating_user, song_fave AS fave "
+			"FROM r4_request_history "
+				"JOIN r4_song_sid USING (song_id, sid) "
+				"JOIN r4_songs USING (song_id) "
+				"JOIN r4_albums USING (album_id) "
+				"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = r4_request_history.user_id) "
+			"WHERE r4_request_history.sid = %s AND r4_request_history.user_id = %s AND song_verified = TRUE ORDER BY request_fulfilled_at DESC " + self.get_sql_limit_string(),
+			(self.sid, self.user.id)))
+
+@handle_api_html_url("user_requested_history")
+class AllRequestedSongsHTML(PrettyPrintAPIMixin, AllRequestedSongs):
+	pass
+
+@handle_api_url("user_recent_votes")
+class RecentlyVotedSongs(APIHandler):
+	description = "Shows the user's recently voted on songs."
+	return_name = "user_recent_votes"
+	login_required = True
+	sid_required = True
+	pagination = True
+
+	def post(self):
+		self.append(self.return_name, db.c.fetch_all(
+			"SELECT "
+				"r4_songs.song_id AS id, song_title AS title, album_name, song_rating AS rating, song_rating_user AS rating_user, song_fave AS fave "
+			"FROM r4_vote_history "
+				"JOIN r4_song_sid USING (song_id, sid) "
+				"JOIN r4_songs USING (song_id) "
+				"JOIN r4_albums USING (album_id) "
+				"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = r4_vote_history.user_id) "
+			"WHERE r4_vote_history.sid = %s AND r4_vote_history.user_id = %s AND song_verified = TRUE ORDER BY vote_id DESC " + self.get_sql_limit_string(),
+			(self.sid, self.user.id)))
+
+@handle_api_html_url("user_recent_votes")
+class AllRequestedSongsHTML(PrettyPrintAPIMixin, RecentlyVotedSongs):
+	pass

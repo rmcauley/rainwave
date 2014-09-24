@@ -109,6 +109,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 	};
 
 	var click = function(evt) {
+		evt.stopPropagation();
 		var new_rating = get_rating_from_mouse(evt);
 		// fave toggle
 		if (new_rating === 0) {

@@ -1,17 +1,19 @@
 var GroupList = function() {
 	"use strict";
 	var self = SearchList($id("lists_groups_items"), $id("lists_groups_scrollbar"), $id("lists_groups_stretcher"), "name", "name_searchable");
+	var loading = false;
 	self.list_name = "all_groups";
 	self.load_from_api = function() {
-		API.async_get("all_groups");
+		if (!self.loaded && !loading) {
+			loading = true;
+			API.async_get("all_groups");
+		}
 	}
 	self.tab_el = $el("li", { "textContent": $l("groups_tab_title"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
-		if (!self.loaded) {
-			self.load_from_api();
-		}
-		PlaylistLists.change_visible_list(self); }
-	);
+		self.load_from_api();
+		PlaylistLists.change_visible_list(self);
+	});
 	if (!MOBILE) API.add_callback(self.update, "all_groups");
 
 	self.draw_entry = function(item) {

@@ -13,6 +13,18 @@
 	padding: 0;
 }
 
+#history_link, #history_link_container svg path {
+	@include transition(LINKCOLOR);
+}
+
+#history_link_container:hover #history_link {
+	color: $linkhover;
+}
+
+#history_link_container:hover svg path {
+	fill: $linkhover !important;
+}
+
 #history_link_container:hover #history, #history:hover, #history_link_container.hover_test #history {
 	border: solid 1px #777;
 	opacity: 1;

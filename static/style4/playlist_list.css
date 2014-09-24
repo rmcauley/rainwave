@@ -189,7 +189,7 @@ span.searchlist_name {
 }
 
 div.searchlist_cooldown {
-	background-color: $cooldown-color;
+	background-color: $cooldown-albumlist-color;
 }
 
 div.searchlist_rating_complete {
@@ -206,7 +206,7 @@ div.searchlist_fave_on span.searchlist_name {
 	color: $fave_color;
 }
 
-div.searchlist_fave_on.searchlist_item:hover span.searchlist_name {
+#lists_albums_items div.searchlist_fave_on.searchlist_item:hover span.searchlist_name {
 	background-image: url("/static/images4/heart_solid.png");
 }
 

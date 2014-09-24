@@ -33,14 +33,10 @@ if __name__ == "__main__":
 		libs.chuser.change_user(libs.config.get("scanner_user"), libs.config.get("scanner_group"))
 
 	try:
-		if args.reset:
-			print "Resetting all songs to unscanned state."
-			libs.db.c.update("UPDATE r4_songs SET song_file_mtime = 0")
-
 		if args.art:
 			backend.filemonitor.full_art_update()
 		elif args.full:
-			backend.filemonitor.full_music_scan()
+			backend.filemonitor.full_music_scan(args.reset)
 		else:
 			backend.filemonitor.monitor()
 	finally:

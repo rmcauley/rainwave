@@ -54,13 +54,6 @@
    "create_api_key"                                  : "Create API Key",
    "your_numeric_user_id"                            : "Your numeric user ID",
 
-   "__comment__"                 : "Pretty Printed API Page Words",
-
-   "unrated_songs"                                   : "Unrated Songs",
-   "title"                                           : "Title",
-   "album_name"                                      : "Album Name",
-   "id"                                              : "ID",
-
    "__comment__"                 : "Menu",
 
    "station_name_1"                                  : "Game",
@@ -92,6 +85,7 @@
    "__comment__"                 : "Timeline",
 
    "coming_up"                                       : "Coming Up",
+   "vote_now"                                        : "Vote Now",
    "now_playing"                                     : "Now Playing",
    "election"                                        : "Election",
    "power_hour"                                      : "Power Hour",
@@ -171,6 +165,7 @@
    "songs_from"                                      : "Songs from %(station)",
    "album_on_station"                                : "On %(station): %(album)",
    "groups_tab_title"                                : "Categories",
+   "relevant_categories"                             : "Relevant categories: ",
 
    "__comment__"                 : "Requests",
 
@@ -179,9 +174,13 @@
    "request_fill_with_unrated"                       : "Unrated Fill",
 
    "Requests"                                        : "Requests",
-   "requests_expiring"                               : "Requests - Losing Your Place!",
-   "requests_all_on_cooldown"                        : "Requests - No Good Requests!",
-   "request_you_are_x_in_line"                       : "Requests - #(position) In Line",
+   "requests_expiring"                               : "Place In Line Will Expire!",
+   "requests_all_on_cooldown"                        : "No Good Requests!",
+   "request_you_are_x_in_line"                       : "#(position) In Line",
+
+   "request_grab_tag__warning"                       : "Warning",
+   "request_grab_tag__paused"                        : "Paused",
+   "requests_grab_tab__num_requests"                 : "%(num_requests) &(num_requests:Request/Requests)",
    
    "cancel_request"                                  : "Cancel Request",
    "request_on_cooldown_for"                         : "On cooldown for %(cool_time).",
@@ -222,6 +221,7 @@
    "prefs_playlist_sort_faves_first"                 : "Sort with Faves First",
    "prefs_playlist_show_rating_complete"             : "Show Incomplete Ratings",
    "prefs_playlist_sort_by"                          : "Sort By",
+   "prefs_playlist_show_escape_icon"                 : "Show ESC Icon",
    "prefs_sort_playlist_by_alpha"                    : "Alphabet",
    "prefs_sort_playlist_by_rating_user"              : "Rating",
    "prefs_sort_playlist_by_cool"                     : "Cooldown",
@@ -235,5 +235,36 @@
    "timeformat_d"                                    : "d ",
    "timeformat_h"                                    : "h ",
    "timeformat_m"                                    : "m ",
-   "timeformat_s"                                    : "s "
+   "timeformat_s"                                    : "s ",
+
+   "__comment__"                 : "Raw API Pages (statistics, etc)",
+
+   "unrated_songs"                                   : "Unrated Songs",
+   "title"                                           : "Title",
+   "album_name"                                      : "Album Name",
+   "id"                                              : "ID",
+   "sid"                                             : "Station ID",
+   "delete"                                          : "Delete",
+   "all_faves"                                       : "All Favourites",
+   "rating_user"                                     : "User Rating",
+   "fave"                                            : "Fave",
+   "rating"                                          : "Avg. Rating",
+   "album_id"                                        : "Album ID",
+   "playback_history"                                : "Previously Played - Extended",
+   "name"                                            : "Name",
+   "song_rating"                                     : "Rating",
+   "top_100"                                         : "Top 100",
+   "song_rating_count"                               : "# Ratings",
+   "origin_sid"                                      : "Station",
+   "user_recent_votes"                               : "Your Recent Votes",
+   "user_requested_history"                          : "Your Request History",
+
+   "__comment__"                 : "Admin Panel Lines (translation not required)",
+
+   "time"                                            : "Time",
+   "type"                                            : "Type",
+   "file"                                            : "File",
+   "error"                                           : "Error",
+   "url"                                             : "URL",
+   "sched_length_minutes"                            : "Length (min.)"
 }

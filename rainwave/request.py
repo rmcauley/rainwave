@@ -84,12 +84,14 @@ def update_expire_times():
 			expiry_times[row['user_id']] = row['line_expiry_tune_in']
 	cache.set("request_expire_times", expiry_times, True)
 
-def get_next(sid):
+def get_next(sid, start_at_position = 0):
 	line = cache.get_station(sid, "request_line")
 	if not line:
 		return None
+	if start_at_position > 0 and len(line) <= 3:
+		start_at_position = 0
 	song = None
-	for pos in range(0, len(line)):
+	for pos in range(start_at_position, len(line)):
 		if not line[pos]:
 			pass  # ?!?!
 		elif not line[pos]['song_id']:

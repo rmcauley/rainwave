@@ -2,6 +2,7 @@ var AlbumList = function() {
 	"use strict";
 
 	var self = SearchList($id("lists_albums_items"), $id("lists_albums_scrollbar"), $id("lists_albums_stretcher"), "name", "name_searchable");
+	var loading = false;
 
 	// Preferences handling
 	var playlist_sort_solver = function(nv) {
@@ -40,7 +41,10 @@ var AlbumList = function() {
 	self.list_name = "all_albums";
 
 	self.load_from_api = function() {
-		API.async_get("all_albums");
+		if (!self.loaded && !loading) {
+			loading = true;
+			API.async_get("all_albums");
+		}
 	}
 	
 	self.tab_el = $id("lists_tab_album");

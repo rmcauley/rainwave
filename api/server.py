@@ -156,7 +156,7 @@ class APIServer(object):
 
 		if task_id == 0:
 			buildtools.bake_css()
-			buildtools.bake_js()
+			# buildtools.bake_js()
 			buildtools.bake_beta_js()
 
 		for request in request_classes:

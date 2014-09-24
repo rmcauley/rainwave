@@ -1,21 +1,24 @@
 var ListenersList = function() {
 	"use strict";
-	var self = SearchList($id("lists_listeners_items"), $id("lists_listeners_scrollbar"), $id("lists_listeners_stretcher"), "name", "name");
+	var self = SearchList($id("lists_listeners_items"), $id("lists_listeners_scrollbar"), $id("lists_listeners_stretcher"), "name", "name_searchable");
+	var loading = false;
 	self.auto_trim = true;
 	self.list_name = "current_listeners";
 	self.load_from_api = function() {
-		API.async_get("current_listeners");
+		if (!self.loaded && !loading) {
+			loading = true;
+			API.async_get("current_listeners");
+		}
 	}
 	self.tab_el = $el("li", { "textContent": $l("Listeners"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
-		if (!self.loaded) {
-			self.load_from_api();
-		}
-		PlaylistLists.change_visible_list(self); }
-	);
+		self.load_from_api();
+		PlaylistLists.change_visible_list(self);
+	});
 	if (!MOBILE) API.add_callback(self.update, "current_listeners");
 
 	self.draw_entry = function(item) {
+		item.name_searchable = Formatting.make_searchable_string(item.name);
 		item._el = document.createElement("div");
 		item._el.className = "searchlist_item";
 		item._el_text_span = document.createElement("span");

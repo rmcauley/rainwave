@@ -35,6 +35,8 @@ var EventBase = function(json) {
 	self.elements.header_clock = $el("span", { "class": "timeline_header_clock" });
 	var header_vote_result = $el("div", { "class": "timeline_header_vote_result" });
 	var header_text = $el("a");
+	var current_header_default_text;
+	var now_playing = false;
 	var header_bar = $el("div", { "class": "timeline_header_bar" });
 	var header_inside_bar = $el("div", { "class": "timeline_header_bar_inside" });
 	header_bar.appendChild(header_inside_bar);
@@ -92,37 +94,36 @@ var EventBase = function(json) {
 
 	self.change_to_coming_up = function() {
 		$add_class(self.el, "timeline_next");
-		self.set_header_text($l("coming_up"));
+		current_header_default_text = $l("coming_up");
+		now_playing = false;
+		self.set_header_text();
 	};
 
 	self.change_to_now_playing = function() {
 		if ($has_class(self.el, "timeline_now_playing")) return;
+		now_playing = true;
+		current_header_default_text = $l("now_playing");
 		$remove_class(self.el, "timeline_next");
-		self.set_header_text($l("now_playing"));
+		self.set_header_text();
 		Clock.pageclock = self.elements.header_clock;
 		if (self.songs && (self.songs.length > 1)) {
 			// other places in the code rely on songs[0] to be the winning song
 			// make sure we sort properly for that condition here
-			self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
-			var use_header = self.songs[0].data.entry_votes ? true : false;
-			if (use_header) {
-				self.el.insertBefore(header_vote_result, header_bar);
-				header_vote_result.appendChild($el("span", { "textContent": $l("voting_results_were") + " " }));
-			}
+			header_vote_result.appendChild($el("span", { "textContent": $l("voting_results_were") + " " }));
 			for (var i = 0; i < self.songs.length; i++) {
-				if (use_header) {
-					header_vote_result.appendChild($el("span", { "textContent": self.songs[i].data.entry_votes }));
-					if ($has_class(self.songs[i].el, "voting_registered")) {
-						header_vote_result.lastChild.className = "self_voted_result";
-					}
-					if (i != (self.songs.length - 1)) {
-						header_vote_result.appendChild($el("span", { "textContent": " - " }));
-					}
+				header_vote_result.appendChild($el("span", { "textContent": self.songs[i].data.entry_votes }));
+				if ($has_class(self.songs[i].el, "voting_registered")) {
+					header_vote_result.lastChild.className = "self_voted_result";
 				}
-				if (self.songs[i].data.entry_position == 0) {
-					$add_class(self.songs[i].el, "timeline_now_playing_song");
+				if (i != (self.songs.length - 1)) {
+					header_vote_result.appendChild($el("span", { "textContent": " - " }));
 				}
 			}
+			self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
+			if (self.songs[0].data.entry_votes) {
+				self.el.insertBefore(header_vote_result, header_bar);				
+			}
+			$add_class(self.songs[0].el, "timeline_now_playing_song");
 		}
 		else if (self.songs && (self.songs.length > 0)) {
 			$add_class(self.songs[0].el, "timeline_now_playing_song");
@@ -137,6 +138,7 @@ var EventBase = function(json) {
 		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].enable_voting();
 		}
+		self.set_header_text();
 	};
 
 	self.clear_voting_status = function() {
@@ -155,6 +157,7 @@ var EventBase = function(json) {
 		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].disable_voting();
 		}
+		self.set_header_text();
 	};
 
 	self.register_vote = function(entry_id) {
@@ -173,21 +176,24 @@ var EventBase = function(json) {
 		Fx.delay_css_setting(self.el, "transform", "translateY(" + new_y + "px)");
 	};
 
-	self.set_header_text = function(default_text) {
+	self.set_header_text = function() {
 		if (self.type == "OneUp") {
-			header_text.textContent = default_text + " - " + self.name + " " + $l("power_hour");
+			header_text.textContent = current_header_default_text + " - " + self.name + " " + $l("power_hour");
 		}
-		else if ((default_text != $l("now_playing") || self.type != "Election") && $l_has(self.type.toLowerCase())) {
-			header_text.textContent = default_text + " - " + $l(self.type.toLowerCase());
+		else if (self.type != "Election" && $l_has(self.type.toLowerCase())) {
+			header_text.textContent = current_header_default_text + " - " + $l(self.type.toLowerCase());
 			if (self.name) {
 				header_text.textContent += " - " + self.name;
 			}
 		}
+		else if (!now_playing && self.type == "Election" && self.data.voting_allowed) {
+			header_text.textContent = current_header_default_text + " - " + $l("vote_now");
+		}
 		else if (self.name) {
-			header_text.textContent = default_text + " - " + self.name;
+			header_text.textContent = current_header_default_text + " - " + self.name;
 		}
 		else {
-			header_text.textContent = default_text;
+			header_text.textContent = current_header_default_text;
 		}
 		if (self.data.url) {
 			header_text.setAttribute("href", self.data.url);

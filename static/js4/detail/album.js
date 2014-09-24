@@ -23,25 +23,31 @@
 // 	Chart.defaults.global.scaleLineColor = "rgba(255,255,255,.3)";
 // 	Chart.defaults.global.scaleBeginAtZero = true;
 
-var AlbumViewColors = { "1.0": "#e74a4a",
-						"1.5": "#ba3c3c",
-						"2.0": "#8e2e2e",
-						"2.5": "#6b3535",
-						"3.0": "#62696d",
-						"3.5": "#799db5",
-						"4.0": "#4CA8E4",
-						"4.5": "#1fb4e4",
-						"5.0": "#5dd7ff"
+var AlbumViewColors = { "1.0": "#FF6801",
+						"1.5": "#F79450",
+						"2.0": "#F2B084",
+						"2.5": "#EDCDB7",
+						"3.0": "#E8E8E8",
+						"3.5": "#B4D6ED",
+						"4.0": "#7FC3F2",
+						"4.5": "#4CB1F7",
+						"5.0": "#0197FF"
 					};
 
 var AlbumViewRatingPieChart = function(ctx, json) {
 	"use strict";
 	var data = [];
+	var max_count = 0;
 	for (var i in AlbumViewColors) {
-		if (i in json.rating_histogram) data.push({ "value": json.rating_histogram[i], "color": AlbumViewColors[i], "highlight": "#FFF", "label": i });
+		if (i in json.rating_histogram) {
+			max_count += json.rating_histogram[i];
+		}
+	}
+	for (var i in AlbumViewColors) {
+		if (i in json.rating_histogram) data.push({ "value": Math.round(json.rating_histogram[i] / max_count * 100), "color": AlbumViewColors[i], "highlight": "#FFF", "label": i });
 	}
 	if (data.length == 0) return;
-	var chart = new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1, "animationSteps": 40 });
+	var chart = new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1, "animationSteps": 40, "tooltipTemplate": "<%if (label){%><%=label%>: <%}%><%= value %>%", });
 };
 
 var AlbumView = function(view, json) {
@@ -50,7 +56,11 @@ var AlbumView = function(view, json) {
 	var i;
 
 	var d = $el("div", { "class": "albumview_header" });
-	d.appendChild($el("h1", { "textContent": json.name }));
+	var r = AlbumRating(json);
+	var h = $el("h1");
+	h.appendChild($el("span", { "textContent": json.name, "title": json.name }));
+	d.appendChild(h);
+	d.appendChild(r.el);
 
 	var cnvs = d.appendChild($el("canvas", { "width": 100, "height": 80 }));
 	AlbumViewRatingPieChart(cnvs.getContext("2d"), json);
@@ -61,7 +71,14 @@ var AlbumView = function(view, json) {
 	if (json.request_count > 0) {
 		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_requests_ranked_at", { "count": json.request_count, "rank": json.request_rank }) }));
 	}
+
+	var cats = $el("div", { "class": "albumview_info" });
+	cats.appendChild($el("span", { "textContent": $l("relevant_categories") }));
+	Groups.append_spans_from_json(cats, json.genres);
+	d.appendChild(cats);
+
 	view.el.appendChild(d);
+
 
 	if (User.sid == 5) {
 		var s = {};

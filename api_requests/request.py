@@ -1,8 +1,9 @@
 from api import fieldtypes
-from api.web import APIHandler
+from api.web import APIHandler, PrettyPrintAPIMixin
 from api.exceptions import APIException
-from api.server import handle_api_url
+from api.server import handle_api_url, handle_api_html_url
 
+from libs import cache
 from libs import db
 
 @handle_api_url('request')
@@ -72,6 +73,21 @@ class RequestUnratedSongs(APIHandler):
 		else:
 			raise APIException("request_unrated_failed")
 
+@handle_api_url("request_favorited_songs")
+class RequestUnratedSongs(APIHandler):
+	description = "Fills the user's request queue with favorited songs."
+	login_required = True
+	tunein_required = False
+	unlocked_listener_only = False
+	fields = { "limit": (fieldtypes.integer, False) }
+
+	def post(self):
+		if self.user.add_favorited_requests(self.sid, self.get_argument("limit")) > 0:
+			self.append_standard("request_favorited_songs_success")
+			self.append("requests", self.user.get_requests(self.sid))
+		else:
+			raise APIException("request_favorited_failed")
+
 @handle_api_url("clear_requests")
 class ClearRequests(APIHandler):
 	description = "Clears all requests the user."
@@ -112,3 +128,17 @@ class UnPauseRequestQueue(APIHandler):
 			self.append_standard("radio_requests_paused")
 		else:
 			self.append_standard("radio_requests_unpaused")
+
+
+
+@handle_api_url("request_line")
+class ListRequestLine(APIHandler):
+	sid_required = True
+
+	def post(self):
+		self.append(self.return_name, cache.get_station(self.sid, "request_line"))
+		# self.append("request_line_db", db.c.fetch_all("SELECT username, r4_request_line.* FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE sid = %s ORDER BY line_wait_start", (self.sid,)))
+
+@handle_api_html_url("request_line")
+class ListRequestLineHTML(PrettyPrintAPIMixin, ListRequestLine):
+	pass

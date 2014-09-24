@@ -12,7 +12,8 @@ $donorcolor: #FF0;
 $transtime: 700ms cubic-bezier(0.165, 0.84, 0.44, 1);
 $hovercolor: #143347;
 $hovercolor-border: #1a435e;
-$cooldown-color: #232449;
+$cooldown-color: #282a54;
+$cooldown-albumlist-color: #2c2e5c;
 $fave_color: #f7ff9f;
 
 @mixin no-transition() {

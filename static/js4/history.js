@@ -7,7 +7,6 @@ var History = function() {
 	var songs = [];
 	var css_left = 0;
 	var scroll_update_timeout;
-	var shown = false;
 
 	var mouse_over = function(e) {
 		$remove_class(container, "fake_hover");
@@ -27,29 +26,27 @@ var History = function() {
 		el = $id("history_list");
 		if (!MOBILE) API.add_callback(self.update, "sched_history");
 		var li = $id("history_link_container");
-		if ('onmouseenter' in li) {
-			li.addEventListener("mouseenter", self.show);
-		}
-		else {
-			li.addEventListener("mouseover", self.show);
-		}
+		// if ('onmouseenter' in li) {
+		// 	li.addEventListener("mouseenter", self.show);
+		// }
+		// else {
+		// 	li.addEventListener("mouseover", self.show);
+		// }
 	};
 
 	self.scroll_init = function() {
 		scroller = Scrollbar.new(el, $id("history_scrollbar"));
 		scroller.unrelated_positioning = true;
+		//css_left = $id("history_link_container").offsetWidth + (SmallScreen ? 85 : 55);
+		css_left = 175 + (SmallScreen ? 85 : 55);
 	};
 
 	self.draw = function() {
 		el.style.width = 380 + Scrollbar.get_scrollbar_width() + "px";
+		scrollblock.style[Fx.transform_string] = "translateX(-" + css_left + "px)";
 	};
 
 	self.show = function() {
-		shown = true;
-		if (!css_left) {
-			css_left = $id("history_link_container").offsetWidth + (SmallScreen ? 85 : 55);
-			scrollblock.style[Fx.transform_string] = "translateX(-" + css_left + "px)";
-		}
 		for (var i = songs.length - 1; i >= 0; i--) {
 			// gotta use next sibling because the first element is the scrollbar!
 			el.insertBefore(songs[i].el, el.firstChild.nextSibling);
@@ -60,9 +57,12 @@ var History = function() {
 			el.removeChild(el.lastChild);	// header!
 			el.removeChild(el.lastChild);
 		}
+		var ago;
 		for (i = 0; i < el.childNodes.length; i++) {
 			if (el.childNodes[i]._start_actual) {
-				el.childNodes[i].textContent = $l("played_ago", { "time": Formatting.cooldown_glance(Clock.now - (el.childNodes[i]._start_actual + Clock.get_time_diff())) });
+				ago = Clock.now - el.childNodes[i]._start_actual;
+				if (ago < 60) ago = 60;
+				el.childNodes[i].textContent = $l("played_ago", { "time": Formatting.cooldown_glance(ago) });
 			}
 		}
 		scroller.recalculate(null, 650);
@@ -90,7 +90,7 @@ var History = function() {
 			}
 		}
 		songs = new_songs;
-		if (shown) self.show();
+		self.show();
 	};
 
 	self.on_resize = function() {};

@@ -109,14 +109,15 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 	var hotkey_mode_enable = function() {
 		hotkey_mode_on = true;
-		$add_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
-		self.search_box_input.textContent = $l("hotkey_mode");
+		self.do_searchbar_style();
 	};
 
 	var hotkey_mode_disable = function() {
 		hotkey_mode_on = false;
-		clear_searchbar();
+		self.do_searchbar_style();
 	};
+
+	self.hotkey_mode_disable = hotkey_mode_disable;
 
 	var hotkey_mode_handle = function(character) {
 		try {
@@ -132,6 +133,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			else if (character == "s") Schedule.vote(0, 1);
 			else if (character == "d") Schedule.vote(0, 2);
 			else if (character == "z") Schedule.vote(1, 0); 
+			else if (character == "y") Schedule.vote(1, 0); 		// quertz layout
 			else if (character == "x") Schedule.vote(1, 1);
 			else if (character == "c") Schedule.vote(1, 2);
 			else { 
@@ -265,10 +267,6 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.key_nav_escape = function() {
-		if (!Prefs.get("used_escape_to_clear_search")) {
-			$add_class(self.search_box_input.parentNode, "no_escape_button");
-			Prefs.change("used_escape_to_clear_search", true);
-		}
 		if (hotkey_mode_on) hotkey_mode_disable();
 		if (search_string.length > 0) {
 			self.clear_search();
@@ -375,15 +373,38 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		ignore_original_scroll_top = false;
 	};
 
-	var clear_searchbar = function() {
-		if (hotkey_timeout) {
-			clearTimeout(hotkey_timeout);
-		}
-		$remove_class(self.search_box_input.parentNode.parentNode, "no_results");
+	self.do_searchbar_style = function() {
+		if (hotkey_timeout) clearTimeout(hotkey_timeout);
 		$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
-		$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
-		$remove_class(self.search_box_input.parentNode, "searchlist_input_active");
-		self.search_box_input.textContent = $l("filter");
+		if (hotkey_mode_on) {
+			$add_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
+			self.search_box_input.textContent = $l("hotkey_mode");
+			return;
+		}
+		else {
+			$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
+		}
+
+		if (search_string && (visible.length === 0)) {
+			$add_class(self.search_box_input.parentNode.parentNode, "no_results");
+		}
+		else {
+			$remove_class(self.search_box_input.parentNode.parentNode, "no_results");	
+		}
+
+		if (search_string.length > 0) {
+			self.search_box_input.textContent = search_string;
+			$add_class(self.search_box_input.parentNode, "searchlist_input_active");
+		}
+		else {
+			self.search_box_input.textContent = $l("filter");
+			$remove_class(self.search_box_input.parentNode, "searchlist_input_active");
+		}
+	};
+
+	var clear_searchbar = function() {
+		search_string = "";
+		self.do_searchbar_style();
 	};
 
 	// SCROLL **************************
@@ -433,7 +454,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		self.el.style.top = scrollbar.scroll_top + "px";
 		
 		if (current_scroll_index === new_index) return;
-		if (visible.length === 0) return;
+		if ((visible.length === 0) && (hidden.length === 0)) return;
 
 		if (current_scroll_index) {
 			if (new_index < current_scroll_index - num_items_to_display) current_scroll_index = false;

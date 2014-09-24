@@ -101,6 +101,10 @@ div.albumview_header {
 	margin-left: 130px;
 }
 
+div.albumview_header div.rating {
+	margin-right: 10px;
+}
+
 .albumview_info {
 	color: $darktext;
 	font-size: 0.8em;
@@ -141,6 +145,10 @@ div.songlist_title_text, div.songlist_artists_text {
 	text-overflow: ellipsis;
 }
 
+div.songlist_title_text:hover, div.songlist_artists_text:hover {
+	white-space: normal;
+}
+
 table.songlist div.overflow_tooltip {
 	display: block;
 	background-color: #2F304D;
@@ -164,6 +172,10 @@ td.songlist_rating {
 
 td.songlist_rating > div {
 	position: absolute;
+}
+
+td.songlist_rating_clear {
+	width: 1em;
 }
 
 td.songlist_length {
@@ -223,7 +235,7 @@ div.rating_title_el_fave {
 /* USER DETAILS */
 
 div.detail_view_listener div.art_container.avatar {
-	background-size: auto;
+	background-size: contain;
 }
 
 ul.user_detail_legend {

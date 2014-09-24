@@ -48,7 +48,7 @@ var SongsTable = function(songs, columns) {
 				cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] }));
 				div = $el("div", { "class": "songlist_" + columns[key] + "_text" });
 				Artists.append_spans_from_json(div, JSON.parse(songs[i].artist_parseable));
-				Formatting.add_overflow_tooltip(div);
+				//Formatting.add_overflow_tooltip(div);
 				cell.appendChild(div);
 			}
 			else if (columns[key] in songs[i]) {
@@ -56,7 +56,7 @@ var SongsTable = function(songs, columns) {
 					cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] } ));
 					div = $el("div", { "class": "songlist_" + columns[key] + "_text", "textContent": songs[i][columns[key]] });
 					title_el = div
-					Formatting.add_overflow_tooltip(div);
+					//Formatting.add_overflow_tooltip(div);
 					cell.appendChild(div);
 				}
 				else if (columns[key] == "rating") {
@@ -66,6 +66,18 @@ var SongsTable = function(songs, columns) {
 					r.absolute_y = true;
 					cell.appendChild(r.el);
 					row.appendChild(cell);
+
+					// if (User.id > 1) {
+					// 	cell = $el("td", { "class": "songlist_rating_clear" });
+					// 	div = $el("span", { "style": "float: right;", "textContent": "X" });
+					// 	div._song_id = songs[i].id;
+					// 	div.addEventListener("click", function(e) {
+					// 		if (e.target._song_id) API.async_get("clear_rating", { "song_id": e.target._song_id });
+							
+					// 	})
+					// 	cell.appendChild(div);
+					// 	row.appendChild(cell);
+					// }
 				}
 				else if (columns[key] == "cool_end") {
 					if (songs[i].cool_end > Clock.now) {
