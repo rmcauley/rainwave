@@ -27,6 +27,11 @@ var Menu = function() {
 		$id("forums_link").textContent = $l("forums");
 		$id("calendar_link").textContent = $l("events_calendar_link");
 
+		$id("about_link").addEventListener("click", function(e) {
+			e.stopPropagation();
+			self.show_modal($id("about_window_container"));
+		});
+
 		// $id("logo").addEventListener("click", function() { 
 		// 	$id("about_window").className = "info";
 		// 	$id("logo").addEventListener("mouseout", remove_about_window);
@@ -125,6 +130,32 @@ var Menu = function() {
 			$id("station_select").style.height = $id("station_select").scrollHeight + "px";
 		}
 	};
+
+	var current_modal;
+
+	self.show_modal = function(modal_div) {
+		$add_class(modal_div, "active_modal");
+		$add_class(document.body, "modal_is_active");
+
+		var kmw = [ 'top_menu_wrapper', 'sizable_body', 'messages' ];
+		for (var i = 0; i < kmw.length; i++) {
+			$id(kmw[i]).addEventListener('click', self.remove_modal);
+		}
+
+		current_modal = modal_div;
+	};
+
+	self.remove_modal = function() {
+		$remove_class(current_modal, "active_modal");
+		$remove_class(document.body, "modal_is_active");
+
+		var kmw = [ 'top_menu_wrapper', 'sizable_body', 'messages' ];
+		for (var i = 0; i < kmw.length; i++) {
+			$id(kmw[i]).removeEventListener('click', self.remove_modal);
+		}
+
+		current_modal = null;
+	}
 
 	var insert_calendar_iframe = function(e) {
 		$id("calendar_menu_item").removeEventListener("mouseover", insert_calendar_iframe);

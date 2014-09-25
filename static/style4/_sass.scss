@@ -5,12 +5,13 @@ $text: #FFF;
 $darktext: #CCC;
 $vdarktext: #777;
 $vvdarktext: #444;
-$highlight: #1f95e5;
-$highlight_dark: #128adb;
+$orange: #f7941e;
+$highlight: #35adff;
 $link: #6cf6ff;
 $linkhover: #a7e1ff;
 $donorcolor: #FF0;
-$transtime: 700ms cubic-bezier(0.165, 0.84, 0.44, 1);
+$transfunc: cubic-bezier(0.165, 0.84, 0.44, 1);
+$transtime: 700ms $transfunc;
 $hovercolor: #143347;
 $hovercolor-border: #1a435e;
 $cooldown-color: #282a54;
@@ -27,6 +28,16 @@ $fave_color: #f7ff9f;
 	-webkit-transform: $transform_string;
 	-ms-transform: $transform_string;
 	transform: $transform_string;
+}
+
+@mixin transition-delay($t) {
+	-webkit-transition-delay: $t;
+	transition-delay: $t;
+}
+
+@mixin transition-duration($t) {
+	-webkit-transition-duration: $t;
+	transition-duration: $t;
 }
 
 @mixin transition-wtime($customtime, $trans...) {
@@ -95,6 +106,7 @@ body.loading * {
 	overflow: hidden;
 	position: relative;
 	width: 100%;
+	@include transition-wtime(300ms, opacity);
 }
 
 .debug_div {
@@ -122,6 +134,7 @@ body.loading * {
 	position: absolute;
 	z-index: 1000;
 	width: 100%;
+	@include transition-wtime(300ms, opacity);
 }
 
 #messages div {

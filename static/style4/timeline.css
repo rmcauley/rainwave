@@ -351,7 +351,7 @@ div.timeline_now_playing div.timeline_header_vote_result + div.timeline_header_b
 }
 
 div.timeline_header_bar_inside {
-	background-color: $highlight;
+	background-color: $orange;
 	height: 2px;
 	margin: 0px;
 	padding: 0px;

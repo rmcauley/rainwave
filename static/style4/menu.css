@@ -1,15 +1,17 @@
 $menu_height: 45px;
+$menu_blue: #1f95e5;
 
 #top_menu_wrapper {
-	background: $highlight_dark;
+	background: #128adb;
 	height: $menu_height;
 	overflow: hidden;
+	@include transition-wtime(300ms, opacity);
 }
 
 #top_menu {
 	box-sizing: border-box;
 	color: #FFF;
-	background: $highlight;
+	background: $menu_blue;
 	margin: 0 auto;
 	padding: 0 5px;
 	width: 100%;
@@ -17,6 +19,10 @@ $menu_height: 45px;
 	height: $menu_height;
 
 	@include transition(max-width);
+}
+
+#top_menu a:hover {
+	color: $linkhover;
 }
 
 body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
@@ -30,16 +36,16 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 }
 
 #top_menu svg rect, #top_menu svg circle, #top_menu svg path, #top_menu svg polygon {
-	fill: #FFF;
+	fill: $text;
 	@include transition-wtime(150ms, fill);
+}
+
+#top_menu a:hover svg rect, #top_menu a:hover svg circle, #top_menu a:hover svg path, #top_menu a:hover svg polygon {
+	fill: $linkhover;
 }
 
 #facebook_f {
 	fill: $highlight !important;
-}
-
-#about_window, #settings_window {
-	display: none;
 }
 
 /* CURRENT STATION */
@@ -92,7 +98,11 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 
 #top_icons li {
 	display: inline;
-	padding: 0 .5em;
+	padding: 0 0.8em;
+}
+
+#top_icons li:last-child {
+	padding-right: 0;
 }
 
 #top_icons li svg {
@@ -105,6 +115,15 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 
 #top_icons li.show_anonymous_avatar #anonymous_user_avatar {
 	display: inline;
+}
+
+#top_icons #icon_cluster > * {
+	cursor: pointer;
+	padding: 0 0.2em;
+}
+
+#top_icons #icon_cluster > *:last-child {
+	padding-right: 0;
 }
 
 /* PLAYER */
@@ -172,4 +191,90 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 
 #calendar_dropdown {
 	display: none;
+}
+
+/* MODAL STUFF */
+
+body.modal_is_active #top_menu_wrapper, body.modal_is_active #sizable_body, body.modal_is_active #messages {
+	opacity: 0.3;
+}
+
+div.modal_container {
+	position: absolute;
+	overflow: hidden;
+	margin: 0 auto;
+	top: 50%;
+	left: 50%;
+	width: 0;
+	opacity: 0;
+	background: #000;
+	padding: 5px 0;
+	z-index: 10001;
+	@include transform(translate(-50%, -50%));
+
+	-webkit-transition: width 400ms $transfunc 400ms, opacity 300ms $transfunc 100ms;
+            transition: width 400ms $transfunc 400ms, opacity 300ms $transfunc 100ms;
+}
+
+div.modal_container.active_modal {
+	display: block;
+	width: 100%;
+	opacity: 1;
+
+	@include transition-wtime(400ms, width);
+}
+
+div.modal_header_wrapper {
+	padding-bottom: 2px;
+	border-bottom: 1px solid $menu_blue;
+}
+
+div.modal_header {
+	width: 100%;
+	background: $menu_blue;
+	font-size: 1.2em;
+	font-style: italic;
+	font-weight: 300;
+}
+
+div.modal_header_content {
+	max-width: 850px;
+	width: 65%;
+	margin: 0 auto;
+	opacity: 0;
+	padding: 0;
+}
+
+div.active_modal div.modal_header_content {
+	opacity: 1;
+	padding-left: 25px;
+	@include transition(padding, opacity);
+	@include transition-delay(700ms);
+}
+
+div.modal {
+	max-width: 800px;
+	width: 60%;
+	margin: 5px auto;
+	height: 0;
+	max-height: 50%;
+	padding: 5px;
+	overflow: hidden;
+	opacity: 0;
+
+	@include transition-wtime(400ms, height, opacity);
+}
+
+div.active_modal div.modal {
+	height: 500px;
+	overflow-y: scroll;
+	opacity: 1;
+	-webkit-transition: height 400ms $transfunc 400ms, opacity 400ms 700ms;
+	        transition: height 400ms $transfunc 400ms, opacity 400ms 700ms;
+}
+
+div.modal_bottom_border {
+	height: 2px;
+	width: 100%;
+	background: $menu_blue;
 }
