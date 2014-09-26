@@ -267,7 +267,7 @@ div.modal {
 
 div.active_modal div.modal {
 	height: 500px;
-	overflow-y: scroll;
+	overflow: auto;
 	opacity: 1;
 	-webkit-transition: height 400ms $transfunc 300ms, opacity 400ms linear 500ms;
 	        transition: height 400ms $transfunc 300ms, opacity 400ms linear 500ms;
@@ -277,4 +277,59 @@ div.modal_bottom_border {
 	height: 2px;
 	width: 100%;
 	background: $menu_blue;
+}
+
+/* SETTINGS */
+
+div.setting_group {
+	clear: both;
+	margin-top: 8px;
+}
+
+div.yes_no_wrapper {
+	box-sizing: border-box;
+	float: right;
+	padding: 0;
+	margin-left: 1em;
+}
+
+div.yes_no_wrapper span {
+	box-sizing: border-box;
+	display: inline-block;
+	line-height: 1.5em;
+}
+
+span.yes_no_yes, span.yes_no_no {
+	position: relative;
+	z-index: 2;
+	width: 60px;
+	border: 1px solid $menu_blue;
+}
+
+span.yes_no_yes {
+	padding-right: 5px;
+	text-align: right;
+	border-right: none;
+}
+
+span.yes_no_no {
+	padding-left: 5px;
+	border-left: none;
+}
+
+span.yes_no_bar {
+	position: absolute;
+	width: 65px;
+	background: $menu_blue;
+	margin-left: 5px;
+	z-index: 1;
+}
+
+span.yes_no_dot {
+	position: absolute;
+	border: solid .75em $menu_blue;
+	border-radius: 5px;
+	background: $menu_blue;
+	z-index: 1;
+	margin-left: -4px;
 }

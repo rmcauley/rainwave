@@ -141,6 +141,7 @@
 
    "__comment__"                 : "About Window",
 
+   "about_window_header"                             : "About Rainwave",
    "staff_list_header"                               : "Staff",
    "relay_sponsors_header"                           : "Relay Sponsors",
    "translators_header"                              : "Translators",
@@ -210,6 +211,9 @@
 
    "__comment__"                 : "Preferences",
 
+   "preferences"                                     : "Preferences",
+   "yes"                                             : "Yep",
+   "no"                                              : "Nope",
    "prefs_small_menu"                                : "Small Menu",
    "change_language"                                 : "Language",
    "tab_title_preferences"                           : "Tab Title",

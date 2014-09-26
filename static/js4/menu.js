@@ -17,11 +17,6 @@ var Menu = function() {
 	self.draw = function(station_list) {
 		API.add_callback(update_tuned_in_status, "user");
 
-		if (MOBILE) {
-			self.mobile_draw(station_list);
-			return;
-		}
-
 		$id("current_station_name").textContent =  $l("station_name_" + User.sid);
 		$id("chat_link").textContent = $l("chat");
 		$id("forums_link").textContent = $l("forums");
@@ -31,11 +26,13 @@ var Menu = function() {
 			e.stopPropagation();
 			self.show_modal($id("about_window_container"));
 		});
+		$id("about_modal_header").textContent = $l("about_window_header");
 
-		// $id("logo").addEventListener("click", function() { 
-		// 	$id("about_window").className = "info";
-		// 	$id("logo").addEventListener("mouseout", remove_about_window);
-		// });
+		$id("settings_link").addEventListener("click", function(e) { 
+			e.stopPropagation();
+			self.show_modal($id("settings_window_container"));
+		});
+		$id("settings_modal_header").textContent = $l("settings");
 
 		// // Setup user info
 		elements.user_info = $id("user_info");
@@ -91,46 +88,6 @@ var Menu = function() {
 		// $id("calendar_menu_item").addEventListener("mouseover", insert_calendar_iframe);
 	};
 
-	self.mobile_draw = function(station_list) {
-		if (User.id > 1) {
-			$id("top_menu").insertBefore($el("div", { "textContent": User.name, "style": "color: #777; font-size: smaller; margin: 5px 0 0 0; padding-right: 5px; position: absolute; transform: translateX(-100%); left: 100%; z-index: 1;" }), $id("top_menu").firstChild);
-		}
-
-		var order = [ 5, 1, 4, 2, 3 ];
-		order.splice(order.indexOf(User.sid), 1);
-		order.unshift(User.sid);
-		var ul = $id("station_select");
-		var a, li;
-		var beta_add = window.location.href.indexOf("beta") !== -1 ? "/beta/" : "";
-		for (var i = 0; i < order.length; i++) {
-			li = ul.appendChild($el("li"));
-			li._station_id = parseInt(order[i]);		// ugh gotta make sure this is a COPY of the integer
-			a = li.appendChild($el("a", { "textContent": "Rainwave " + $l("station_name_" + order[i] ) }));
-			if ((order[i] in station_list) && (order[i] != User.sid)) {
-				a.setAttribute("href", station_list[order[i]].url + beta_add);
-			}
-			else if (order[i] == User.sid) {
-				a.parentNode.addEventListener("click", self.toggle_mobile_pulldown);
-				a.parentNode.style.cursor = "pointer";
-			}
-			
-			if (order[i] == User.sid) {
-				$add_class(li, "selected");
-			}
-		}
-	};
-
-	self.toggle_mobile_pulldown = function(e) {
-		if (mobile_height_toggled) {
-			mobile_height_toggled = false
-			$id("station_select").style.height = null;
-		}
-		else {
-			mobile_height_toggled = true;
-			$id("station_select").style.height = $id("station_select").scrollHeight + "px";
-		}
-	};
-
 	var current_modal;
 
 	self.show_modal = function(modal_div) {
@@ -139,19 +96,21 @@ var Menu = function() {
 
 		var kmw = [ 'top_menu_wrapper', 'sizable_body', 'messages' ];
 		for (var i = 0; i < kmw.length; i++) {
-			$id(kmw[i]).addEventListener('click', self.remove_modal);
+			$id(kmw[i]).addEventListener('click', self.remove_modal, true);
 		}
 
 		current_modal = modal_div;
 	};
 
-	self.remove_modal = function() {
+	self.remove_modal = function(e) {
+		e.stopPropagation();
+
 		$remove_class(current_modal, "active_modal");
 		$remove_class(document.body, "modal_is_active");
 
 		var kmw = [ 'top_menu_wrapper', 'sizable_body', 'messages' ];
 		for (var i = 0; i < kmw.length; i++) {
-			$id(kmw[i]).removeEventListener('click', self.remove_modal);
+			$id(kmw[i]).removeEventListener('click', self.remove_modal, true);
 		}
 
 		current_modal = null;

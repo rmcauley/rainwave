@@ -156,14 +156,14 @@ var SettingsWindow = function() {
 	};
 
 	self.enable_disable_title_options = function(nv) {
-		if (nv) {
-			$id("prefs_show_clock_in_titlebar").parentNode.style.opacity = 1;
-			$id("prefs_show_rating_in_titlebar").parentNode.style.opacity = 1;
-		}
-		else {
-			$id("prefs_show_clock_in_titlebar").parentNode.style.opacity = 0.5;
-			$id("prefs_show_rating_in_titlebar").parentNode.style.opacity = 0.5;
-		}
+		// if (nv) {
+		// 	$id("prefs_show_clock_in_titlebar").parentNode.style.opacity = 1;
+		// 	$id("prefs_show_rating_in_titlebar").parentNode.style.opacity = 1;
+		// }
+		// else {
+		// 	$id("prefs_show_clock_in_titlebar").parentNode.style.opacity = 0.5;
+		// 	$id("prefs_show_rating_in_titlebar").parentNode.style.opacity = 0.5;
+		// }
 	};
 
 	self.change_language = function(e) {
@@ -190,8 +190,6 @@ var SettingsWindow = function() {
 		langs.addEventListener("change", self.change_language);
 		div.appendChild(langs);
 		div.appendChild($el("label", { "for": "prefs_language", "textContent": $l("change_language") }));
-
-		draw_cb_list([ "small_menu" ]);
 
 		el.appendChild($el("h4", { "textContent": $l("tab_title_preferences") }));
 		draw_cb_list([
@@ -255,13 +253,20 @@ var SettingsWindow = function() {
 	}
 
 	var draw_cb_list = function(pref_list) {
-		var cb, div, label;
+		var cb, div, label, yes, no, dot, bar;
 		for (var i = 0; i < pref_list.length; i++) {
 			div = $el("div", { "class": "setting_group" });
-			cb = div.appendChild($el("input", { "type": "checkbox", "id": "prefs_" + pref_list[i] }));
-			cb._pref_name = pref_list[i];
-			cb.addEventListener("change", checkbox_changed);
-			if (Prefs.get(pref_list[i])) cb.setAttribute("checked", true);
+			cb = div.appendChild($el("div", { "class": "yes_no_wrapper" }));
+			yes = cb.appendChild($el("span", { "class": "yes_no_yes", "textContent": $l("yes") }));
+			bar = cb.appendChild($el("span", { "class": "yes_no_bar" }));
+			bar.innerHTML = "&nbsp;";
+			dot = cb.appendChild($el("span", { "class": "yes_no_dot" }));
+			no = cb.appendChild($el("span", { "class": "yes_no_no", "textContent": $l("no") }));
+
+			//#cb = div.appendChild($el("input", { "type": "checkbox", "id": "prefs_" + pref_list[i] }));
+			// cb._pref_name = pref_list[i];
+			//cb.addEventListener("change", checkbox_changed);
+			//if (Prefs.get(pref_list[i])) cb.setAttribute("checked", true);
 			label = div.appendChild($el("label", { "for": "prefs_" + pref_list[i], "textContent": $l("prefs_" + pref_list[i]) }));
 			el.appendChild(div);
 		}

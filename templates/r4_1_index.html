@@ -93,7 +93,7 @@
 
 					<a id="about_link"><svg><use xlink:href="/static/images4/symbols.svg#about"></use></svg></a>
 
-					<a id="about_link"><svg><use xlink:href="/static/images4/symbols.svg#settings"></use></svg></a>
+					<a id="settings_link"><svg><use xlink:href="/static/images4/symbols.svg#settings"></use></svg></a>
 				</li>
 			</ul>
 
@@ -130,9 +130,7 @@
 	<div class="modal_container" id="about_window_container">
 		<div class="modal_header_wrapper">
 			<div class="modal_header">
-				<div class="modal_header_content">
-					About Rainwave
-				</div>
+				<div id="about_modal_header" class="modal_header_content"></div>
 			</div>
 		</div>
 		<div class="modal" id="about_window">
@@ -178,7 +176,15 @@
 		<div class="modal_bottom_border"></div>
 	</div>
 
-	<div id="settings_window" class="modal_container"></div>
+	<div class="modal_container active_modal" id="settings_window_container">
+		<div class="modal_header_wrapper">
+			<div class="modal_header">
+				<div id="settings_modal_header" class="modal_header_content"></div>
+			</div>
+		</div>
+		<div id="settings_window" class="modal"></div>
+		<div class="modal_bottom_border"></div>
+	</div>
 	
 	<div id="messages"></div>
 
