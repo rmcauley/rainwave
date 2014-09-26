@@ -252,19 +252,63 @@ var SettingsWindow = function() {
 		}
 	}
 
+	/* YES/NO BOXES ... totally worth the effort */
+
+	var force_yes = function(e) {
+		console.log("force yes");
+		if (e) e.stopPropagation();
+		if ($has_class(this.parentNode, "no")) { 
+			$remove_class(this.parentNode, "yes");
+			$remove_class(this.parentNode, "no");
+			this.parentNode.offsetWidth;  // gotta force that style recalculation :/
+
+			$add_class(this.parentNode, "yes");
+		}
+		else { 
+			$add_class(this.parentNode, "yes");
+		}
+	};
+
+	var force_no = function(e) {
+		console.log("force no");
+		if (e) e.stopPropagation();
+		$add_class(this.parentNode, "no");
+		$remove_class(this.parentNode, "yes");
+	};
+
+	var yes_no_swap = function(e) {
+		if (e) e.stopPropagation();
+		if ($has_class(this._cb, "no")) { 
+			$remove_class(this._cb, "yes");
+			$remove_class(this._cb, "no");
+			this._cb.offsetWidth;  // gotta force that style recalculation :/
+
+			$add_class(this._cb, "yes");
+		}
+		else if ($has_class(this._cb, "yes")) { 
+			$add_class(this._cb, "no");
+		}
+		else {
+			$add_class(this._cb, "yes");
+		}
+	};
+
 	var draw_cb_list = function(pref_list) {
 		var cb, div, label, yes, no, dot, bar;
 		for (var i = 0; i < pref_list.length; i++) {
-			div = $el("div", { "class": "setting_group" });
+			div = $el("div", { "class": "setting_group yes_no_group" });
 			cb = div.appendChild($el("div", { "class": "yes_no_wrapper" }));
 			yes = cb.appendChild($el("span", { "class": "yes_no_yes", "textContent": $l("yes") }));
+			yes.addEventListener("click", force_yes);
 			bar = cb.appendChild($el("span", { "class": "yes_no_bar" }));
 			dot = cb.appendChild($el("span", { "class": "yes_no_dot" }));
 			no = cb.appendChild($el("span", { "class": "yes_no_no", "textContent": $l("no") }));
+			no.addEventListener("click", force_no);
 
 			//#cb = div.appendChild($el("input", { "type": "checkbox", "id": "prefs_" + pref_list[i] }));
 			cb._pref_name = pref_list[i];
-			//cb.addEventListener("change", checkbox_changed);
+			div.addEventListener("click", yes_no_swap);
+			div._cb = cb;
 			if (Prefs.get(pref_list[i])) $add_class(cb, "yes");
 			label = div.appendChild($el("label", { "for": "prefs_" + pref_list[i], "textContent": $l("prefs_" + pref_list[i]) }));
 			el.appendChild(div);

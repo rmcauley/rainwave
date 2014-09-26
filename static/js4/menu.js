@@ -7,13 +7,6 @@ var Menu = function() {
 	self.initialize = function() {
 	};
 
-	var remove_about_window = function(e) {
-		if (Mouse.is_mouse_leave(e, $id("logo"))) {
-			$id("about_window").className = "hidden_info info";
-			$id("logo").removeEventListener("mouseout", remove_about_window);
-		}
-	};
-
 	self.draw = function(station_list) {
 		API.add_callback(update_tuned_in_status, "user");
 
@@ -32,7 +25,7 @@ var Menu = function() {
 			e.stopPropagation();
 			self.show_modal($id("settings_window_container"));
 		});
-		$id("settings_modal_header").textContent = $l("settings");
+		$id("settings_modal_header").textContent = $l("preferences");
 
 		// // Setup user info
 		elements.user_info = $id("user_info");
@@ -103,7 +96,11 @@ var Menu = function() {
 	};
 
 	self.remove_modal = function(e) {
-		e.stopPropagation();
+		if (e) {
+			e.stopPropagation();
+			e.preventDefault();
+		}
+
 
 		$remove_class(current_modal, "active_modal");
 		$remove_class(document.body, "modal_is_active");

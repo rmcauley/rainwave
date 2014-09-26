@@ -281,13 +281,16 @@ div.modal_bottom_border {
 
 /* SETTINGS */
 
-$yes_no_height: 20px;
+$yes_no_height: 23px;
 
 div.setting_group {
 	clear: both;
-	margin-top: 10px;
 	padding: 2px;
 	height: $yes_no_height;
+}
+
+div.setting_group.yes_no_group {
+	cursor: pointer;
 }
 
 div.yes_no_wrapper {
@@ -337,14 +340,19 @@ span.yes_no_bar {
 	background: $menu_blue;
 	z-index: 1;
 
-	@include transition-wtime(350ms, transform);
 	@include transform(rotate(0deg));
 	-webkit-transform-origin: left center;
 	        transform-origin: left center;
 }
 
 div.yes_no_wrapper.yes span.yes_no_bar {
-	@include transform(rotate(180deg));
+	@include transition-wtime(350ms, transform);
+	@include transform(rotate(-180deg));
+}
+
+div.yes_no_wrapper.no span.yes_no_bar {
+	@include transition-wtime(350ms, transform);
+	@include transform(rotate(-360deg));
 }
 
 span.yes_no_dot {
