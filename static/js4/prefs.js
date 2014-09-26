@@ -172,7 +172,7 @@ var SettingsWindow = function() {
 	};
 
 	self.draw = function() {
-		var div = el.appendChild($el("div", { "class": "setting_group" }));
+		var div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
 		var langs = $el("div", { "class": "multi_select", "id": "prefs_language" });
 		var option;
 		var locale_names = [];
@@ -191,6 +191,27 @@ var SettingsWindow = function() {
 		}
 		div.appendChild(langs);
 		div.appendChild($el("label", { "for": "prefs_language", "textContent": $l("change_language") }));
+
+		div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
+		div.appendChild($el("label", { "textContent": $l("m3u_downloads") }));
+		
+		div = div.appendChild($el("div", { "class": "multi_select multi_select_special" }));
+		option = div.appendChild($el("span"));
+		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "iTunes MP3", "class": "link", "target": "_blank" }));
+		option = div.appendChild($el("span", { "class": "setting_group" }));
+		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "Windows MP3", "class": "link", "target": "_blank" }));
+		option = div.appendChild($el("span", { "class": "setting_group" }));
+		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".ogg", "textContent": "Foobar2000 Ogg", "class": "link", "target": "_blank" }));
+
+		div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
+		div.appendChild($el("label", { "textContent": $l("site_mode") }));
+		
+		div = div.appendChild($el("div", { "class": "multi_select multi_select_special" }));
+		var mode_highlighter = div.appendChild($el("div", { "class": "floating_highlight" }));
+		option = div.appendChild($el("span", { "textContent": $l("basic") }));
+		option.addEventListener("click", function(e) { Prefs.change("stage", 2); });
+		option = div.appendChild($el("span", { "textContent": $l("full") }));
+		option.addEventListener("click", function(e) { Prefs.change("stage", 4); });
 
 		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("tab_title_preferences") }));
 		draw_cb_list([
@@ -222,20 +243,7 @@ var SettingsWindow = function() {
 			"playlist_show_escape_icon",
 		]);
 
-		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("m3u_downloads") }));
-		div = el.appendChild($el("div", { "class": "setting_group" }));
-		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "mp3.m3u", "class": "info_right link_obvious" }));
-		div.appendChild($el("div", { "textContent": "iTunes/Winamp" }));
-		div = el.appendChild($el("div", { "class": "setting_group" }));
-		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "mp3.m3u", "class": "info_right link_obvious" }));
-		div.appendChild($el("div", { "textContent": "Windows Media" }));
-		div = el.appendChild($el("div", { "class": "setting_group" }));
-		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".ogg", "textContent": "ogg.m3u", "class": "info_right link_obvious" }));
-		div.appendChild($el("div", { "textContent": "Foobar2000" }));
-
-		intro_mode_swap();
 		self.enable_disable_title_options(Prefs.get("show_title_in_titlebar"));
-		Prefs.add_callback("stage", intro_mode_swap);
 	};
 
 	var multi_select_change = function(e, pref_name, highlighter) {
@@ -272,24 +280,6 @@ var SettingsWindow = function() {
 		highlighter.style.height = h + "px";
 		highlighter.style[Fx.transform_string] = "translate(" + l + "px, " + t + "px)";
 	};
-
-	var intro_mode_swap = function(nv) {
-		nv = nv || Prefs.get("stage");
-		if ($id("intro_mode_link")) {
-			$id("intro_mode_link").parentNode.removeChild($id("intro_mode_link"));
-		}
-		if (nv < 3) {
-			var iml = $el("div", { "class": "link_obvious", "id": "intro_mode_link", "textContent": $l("skip_intro_mode") });
-			iml.addEventListener("click", function() { Prefs.change("stage", 4); });
-			el.appendChild(iml);
-		}
-		else {
-			var iml = $el("div", { "class": "link_obvious", "id": "intro_mode_link", "textContent": $l("do_intro_mode") });
-			iml.addEventListener("click", function() { Prefs.change("stage", 2); });
-			el.appendChild(iml);
-		}
-	}
-
 	/* YES/NO BOXES ... totally worth the effort */
 
 	var force_yes = function(e) {
@@ -334,11 +324,17 @@ var SettingsWindow = function() {
 	};
 
 	var yes_no_value_check = function(cb) {
-		if ($has_class(cb, "yes")) {
-			Prefs.change(cb._pref_name, true);
+		if ($has_class(cb, "no")) {
+			Prefs.change(cb._pref_name, false);
+			console.log(false);
+		}
+		else if ($has_class(cb, "yes")) {
+			Prefs.change(cb._pref_name, true);	
+			console.log(true);
 		}
 		else {
 			Prefs.change(cb._pref_name, false);
+			console.log(false);
 		}
 	}
 

@@ -284,13 +284,38 @@ div.modal_bottom_border {
 
 $yes_no_height: 23px;
 
-div.setting_group {
-	clear: both;
-	padding: 2px;
-	height: $yes_no_height;
+div.setting_subheader {
+	color: $orange;
+	border-bottom: 1px solid $orange;
+	padding: 0;
+	margin: 5px 0;
 }
 
-div.setting_group.yes_no_group {
+div.setting_group {
+	clear: both;
+	padding: 2px 7px;
+	height: $yes_no_height;
+	overflow: hidden;
+	border-bottom: 1px solid transparent;
+	@include transition(border-color, background);
+}
+
+div.setting_group.setting_group_special {
+	margin: 5px 0;
+	padding-left: 0px;
+}
+
+div.setting_group_special label {
+	color: $orange;
+}
+
+div.setting_group:hover {
+	border-color: $hovercolor-border;
+	background-color: $hovercolor;
+	@include no-transition();
+}
+
+div.setting_group.yes_no_group, div.setting_group.yes_no_group label {
 	cursor: pointer;
 }
 
@@ -335,11 +360,11 @@ div.yes_no_wrapper.yes span.yes_no_no {
 	color: $vdarktext;
 }
 
-div.yes_no_wrapper.yes.no span.yes.no_yes {
+div.yes_no_wrapper.yes.no span.yes_no_yes {
 	color: $vdarktext;
 }
 
-div.yes_no_wrapper.yes.no span.yes.no_no {
+div.yes_no_wrapper.yes.no span.yes_no_no {
 	color: $text;
 }
 
@@ -387,7 +412,7 @@ div.multi_select {
 div.multi_select span {
 	box-sizing: border-box;
 	position: relative;
-	padding: 2px 5px;
+	padding: 0 5px;
 	margin: 0 .5em;
 	color: $vdarktext;
 	@include transition-wtime(350ms, color);
@@ -413,4 +438,8 @@ div.multi_select div.floating_highlight {
 	position: absolute;
 	background-color: $menu_blue;
 	@include transition-wtime(350ms, transform, height, width);
+}
+
+div.multi_select span a {
+	color: $vdarktext;
 }
