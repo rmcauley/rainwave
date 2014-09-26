@@ -167,13 +167,13 @@ var SettingsWindow = function() {
 	};
 
 	self.change_language = function(e) {
-		docCookies.setItem("rw_lang", this.value, Infinity, "/", BOOTSTRAP.cookie_domain);
+		docCookies.setItem("rw_lang", this._value, Infinity, "/", BOOTSTRAP.cookie_domain);
 		document.location.reload();
 	};
 
 	self.draw = function() {
 		var div = el.appendChild($el("div", { "class": "setting_group" }));
-		var langs = $el("select", { "id": "prefs_language" });
+		var langs = $el("div", { "class": "multi_select", "id": "prefs_language" });
 		var option;
 		var locale_names = [];
 		for (var i in BOOTSTRAP.locales) {
@@ -181,13 +181,14 @@ var SettingsWindow = function() {
 		}
 		locale_names.sort();
 		for (i = 0; i < locale_names.length; i++) {
-			option = $el("option", { "value": locale_names[i], "textContent": BOOTSTRAP.locales[locale_names[i]] });
+			option = $el("span", { "textContent": BOOTSTRAP.locales[locale_names[i]] });
+			option._value = locale_names[i];
 			if (locale_names[i] == LOCALE) {
-				option.setAttribute("selected", "selected");
+				$add_class(option, "selected selected_first");
 			}
+			option.addEventListener("click", self.change_language);
 			langs.appendChild(option);
 		}
-		langs.addEventListener("change", self.change_language);
 		div.appendChild(langs);
 		div.appendChild($el("label", { "for": "prefs_language", "textContent": $l("change_language") }));
 
@@ -200,15 +201,17 @@ var SettingsWindow = function() {
 		
 		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("playlist_preferences") }));
 		div = el.appendChild($el("div", { "class": "setting_group" }));
-		var playlist_sort = $el("select", { "id": "prefs_playlist_sort_by" });
+		var playlist_sort = $el("div", { "id": "prefs_playlist_sort_by", "class": "multi_select" });
+		var playlist_sort_highlighter = playlist_sort.appendChild($el("div", { "class": "floating_highlight" }));
 		for (i = 0; i < PlaylistLists.sorting_methods.length; i++) {
-			option = $el("option", { "value": PlaylistLists.sorting_methods[i], "textContent": $l("prefs_sort_playlist_by_" + PlaylistLists.sorting_methods[i]) });
+			option = $el("span", { "textContent": $l("prefs_sort_playlist_by_" + PlaylistLists.sorting_methods[i]) });
+			option._value = PlaylistLists.sorting_methods[i];
 			if (PlaylistLists.sorting_methods[i] == Prefs.get("playlist_sort")) {
-				option.setAttribute("selected", "selected");
+				$add_class(option, "selected selected_first");
 			}
+			option.addEventListener("click", function(e) { multi_select_change(e, "playlist_sort", playlist_sort_highlighter); });
 			playlist_sort.appendChild(option);
 		}
-		playlist_sort.addEventListener("change", change_sorting_method);
 		div.appendChild(playlist_sort);
 		div.appendChild($el("label", { "for": "prefs_playlist_sort_by", "textContent": $l("prefs_playlist_sort_by") }));
 
@@ -235,6 +238,41 @@ var SettingsWindow = function() {
 		Prefs.add_callback("stage", intro_mode_swap);
 	};
 
+	var multi_select_change = function(e, pref_name, highlighter) {
+		Prefs.change(pref_name, e.target._value);
+
+		var w = e.target.offsetWidth;
+		var h = e.target.offsetHeight;
+		var l = e.target.offsetLeft;
+		var t = e.target.offsetTop;
+
+		for (var i = 0; i < e.target.parentNode.childNodes.length; i++) {
+			$remove_class(e.target.parentNode.childNodes[i], "selected");
+			if ($has_class(e.target.parentNode.childNodes[i], "selected_first")) { 
+				$remove_class(e.target.parentNode.childNodes[i], "selected_first")
+				highlighter.style.transition = "none";
+				var w2 = e.target.parentNode.childNodes[i].offsetWidth;
+				var h2 = e.target.parentNode.childNodes[i].offsetHeight;
+				var l2 = e.target.parentNode.childNodes[i].offsetLeft;
+				var t2 = e.target.parentNode.childNodes[i].offsetTop;
+				highlighter.style.width = w2 + "px";
+				highlighter.style.height = h2 + "px";
+				highlighter.style[Fx.transform_string] = "translate(" + l2 + "px, " + t2 + "px)";
+				// trigger style recalculation so this happens w/o transition
+				// this will match the highlighter to the first selected element
+				highlighter.offsetWidth;
+				// now we can remove the transition safely
+				highlighter.style.transition = null;
+			}
+			$remove_class(e.target.parentNode.childNodes[i], "selected_first");
+		}
+		$add_class(e.target, "selected");
+
+		highlighter.style.width = w + "px";
+		highlighter.style.height = h + "px";
+		highlighter.style[Fx.transform_string] = "translate(" + l + "px, " + t + "px)";
+	};
+
 	var intro_mode_swap = function(nv) {
 		nv = nv || Prefs.get("stage");
 		if ($id("intro_mode_link")) {
@@ -255,7 +293,6 @@ var SettingsWindow = function() {
 	/* YES/NO BOXES ... totally worth the effort */
 
 	var force_yes = function(e) {
-		console.log("force yes");
 		if (e) e.stopPropagation();
 		if ($has_class(this.parentNode, "no")) { 
 			$remove_class(this.parentNode, "yes");
@@ -267,13 +304,15 @@ var SettingsWindow = function() {
 		else { 
 			$add_class(this.parentNode, "yes");
 		}
+		yes_no_value_check(this.parentNode);
 	};
 
 	var force_no = function(e) {
-		console.log("force no");
 		if (e) e.stopPropagation();
+		if (!$has_class(this.parentNode, "yes")) return;
 		$add_class(this.parentNode, "no");
 		$remove_class(this.parentNode, "yes");
+		yes_no_value_check(this.parentNode);
 	};
 
 	var yes_no_swap = function(e) {
@@ -291,7 +330,17 @@ var SettingsWindow = function() {
 		else {
 			$add_class(this._cb, "yes");
 		}
+		yes_no_value_check(this._cb);
 	};
+
+	var yes_no_value_check = function(cb) {
+		if ($has_class(cb, "yes")) {
+			Prefs.change(cb._pref_name, true);
+		}
+		else {
+			Prefs.change(cb._pref_name, false);
+		}
+	}
 
 	var draw_cb_list = function(pref_list) {
 		var cb, div, label, yes, no, dot, bar;
@@ -305,7 +354,6 @@ var SettingsWindow = function() {
 			no = cb.appendChild($el("span", { "class": "yes_no_no", "textContent": $l("no") }));
 			no.addEventListener("click", force_no);
 
-			//#cb = div.appendChild($el("input", { "type": "checkbox", "id": "prefs_" + pref_list[i] }));
 			cb._pref_name = pref_list[i];
 			div.addEventListener("click", yes_no_swap);
 			div._cb = cb;
@@ -314,10 +362,6 @@ var SettingsWindow = function() {
 			el.appendChild(div);
 		}
 	}
-
-	var checkbox_changed = function(pref_list) {
-		Prefs.change(this._pref_name, this.checked);
-	};
 
 	var change_sorting_method = function(evt) {
 		Prefs.change("playlist_sort", this.value);

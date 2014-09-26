@@ -1,8 +1,9 @@
 $menu_height: 45px;
 $menu_blue: #1f95e5;
+$menu_blue_dark: #128adb;
 
 #top_menu_wrapper {
-	background: #128adb;
+	background: $menu_blue_dark;
 	height: $menu_height;
 	overflow: hidden;
 	@include transition-wtime(300ms, opacity);
@@ -309,20 +310,20 @@ div.yes_no_wrapper span {
 span.yes_no_yes, span.yes_no_no {
 	position: relative;
 	z-index: 2;
-	width: 60px;
+	width: 70px;
 	border: 1px solid $menu_blue;
 	@include transition-wtime(350ms, color);
+	text-align: center;
 }
 
 span.yes_no_yes {
-	padding-right: 18px;
-	text-align: right;
+	padding-right: 10px;
 	border-right: none;
 	color: $vdarktext;
 }
 
 span.yes_no_no {
-	padding-left: 18px;
+	padding-left: 10px;
 	border-left: none;
 }
 
@@ -334,24 +335,34 @@ div.yes_no_wrapper.yes span.yes_no_no {
 	color: $vdarktext;
 }
 
+div.yes_no_wrapper.yes.no span.yes.no_yes {
+	color: $vdarktext;
+}
+
+div.yes_no_wrapper.yes.no span.yes.no_no {
+	color: $text;
+}
+
 span.yes_no_bar {
 	position: absolute;
-	width: 60px;
-	background: $menu_blue;
+	width: 70px;
+	background: #0c5d93;
 	z-index: 1;
-
+	
 	@include transform(rotate(0deg));
 	-webkit-transform-origin: left center;
 	        transform-origin: left center;
 }
 
 div.yes_no_wrapper.yes span.yes_no_bar {
-	@include transition-wtime(350ms, transform);
+	background: $menu_blue;
+	@include transition-wtime(350ms, transform, background-color);
 	@include transform(rotate(-180deg));
 }
 
 div.yes_no_wrapper.no span.yes_no_bar {
-	@include transition-wtime(350ms, transform);
+	background: #0c5d93;
+	@include transition-wtime(350ms, transform, background-color);
 	@include transform(rotate(-360deg));
 }
 
@@ -362,4 +373,44 @@ span.yes_no_dot {
 	background: $text;
 	z-index: 1;
 	margin-left: -10px;
+}
+
+/* MULTIPLE SELECTS */
+
+div.multi_select {
+	box-sizing: border-box;
+	float: right;
+	position: relative;
+	height: $yes_no_height;
+}
+
+div.multi_select span {
+	box-sizing: border-box;
+	position: relative;
+	padding: 2px 5px;
+	margin: 0 .5em;
+	color: $vdarktext;
+	@include transition-wtime(350ms, color);
+	border: 1px solid $menu_blue;
+	cursor: pointer;
+	height: $yes_no_height;
+}
+
+div.multi_select span:last-child {
+	margin-right: 0;
+}
+
+div.multi_select span.selected {
+	color: $text;
+}
+
+div.multi_select span.selected_first {
+	background: $menu_blue;
+}
+
+div.multi_select div.floating_highlight {
+	box-sizing: border-box;
+	position: absolute;
+	background-color: $menu_blue;
+	@include transition-wtime(350ms, transform, height, width);
 }
