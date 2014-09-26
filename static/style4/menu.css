@@ -249,7 +249,7 @@ div.active_modal div.modal_header_content {
 	opacity: 1;
 	padding-left: 25px;
 	@include transition(padding, opacity);
-	@include transition-delay(700ms);
+	@include transition-delay(600ms);
 }
 
 div.modal {
@@ -269,8 +269,8 @@ div.active_modal div.modal {
 	height: 500px;
 	overflow-y: scroll;
 	opacity: 1;
-	-webkit-transition: height 400ms $transfunc 400ms, opacity 400ms 700ms;
-	        transition: height 400ms $transfunc 400ms, opacity 400ms 700ms;
+	-webkit-transition: height 400ms $transfunc 300ms, opacity 400ms linear 500ms;
+	        transition: height 400ms $transfunc 300ms, opacity 400ms linear 500ms;
 }
 
 div.modal_bottom_border {
