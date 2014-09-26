@@ -281,22 +281,26 @@ div.modal_bottom_border {
 
 /* SETTINGS */
 
+$yes_no_height: 20px;
+
 div.setting_group {
 	clear: both;
-	margin-top: 8px;
+	margin-top: 10px;
+	padding: 2px;
+	height: $yes_no_height;
 }
 
 div.yes_no_wrapper {
 	box-sizing: border-box;
 	float: right;
 	padding: 0;
-	margin-left: 1em;
+	margin: 0;
 }
 
 div.yes_no_wrapper span {
 	box-sizing: border-box;
 	display: inline-block;
-	line-height: 1.5em;
+	height: $yes_no_height;
 }
 
 span.yes_no_yes, span.yes_no_no {
@@ -304,32 +308,50 @@ span.yes_no_yes, span.yes_no_no {
 	z-index: 2;
 	width: 60px;
 	border: 1px solid $menu_blue;
+	@include transition-wtime(350ms, color);
 }
 
 span.yes_no_yes {
-	padding-right: 5px;
+	padding-right: 18px;
 	text-align: right;
 	border-right: none;
+	color: $vdarktext;
 }
 
 span.yes_no_no {
-	padding-left: 5px;
+	padding-left: 18px;
 	border-left: none;
+}
+
+div.yes_no_wrapper.yes span.yes_no_yes {
+	color: $text;
+}
+
+div.yes_no_wrapper.yes span.yes_no_no {
+	color: $vdarktext;
 }
 
 span.yes_no_bar {
 	position: absolute;
-	width: 65px;
+	width: 60px;
 	background: $menu_blue;
-	margin-left: 5px;
 	z-index: 1;
+
+	@include transition-wtime(350ms, transform);
+	@include transform(rotate(0deg));
+	-webkit-transform-origin: left center;
+	        transform-origin: left center;
+}
+
+div.yes_no_wrapper.yes span.yes_no_bar {
+	@include transform(rotate(180deg));
 }
 
 span.yes_no_dot {
 	position: absolute;
-	border: solid .75em $menu_blue;
-	border-radius: 5px;
-	background: $menu_blue;
+	border: solid 10px $text;
+	border-radius: 10px;
+	background: $text;
 	z-index: 1;
-	margin-left: -4px;
+	margin-left: -10px;
 }

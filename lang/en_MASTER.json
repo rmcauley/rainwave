@@ -221,7 +221,7 @@
    "prefs_show_rating_in_titlebar"                   : "Show Rating In Tab Title",
    "prefs_show_title_in_titlebar"                    : "Show Song Title In Tab Title",
    "playlist_preferences"                            : "Album List",
-   "prefs_playlist_sort_available_first"             : "Sort with Cooldown Last",
+   "prefs_playlist_sort_available_first"             : "Sort with Available First",
    "prefs_playlist_sort_faves_first"                 : "Sort with Faves First",
    "prefs_playlist_show_rating_complete"             : "Show Incomplete Ratings",
    "prefs_playlist_sort_by"                          : "Sort By",

@@ -191,14 +191,14 @@ var SettingsWindow = function() {
 		div.appendChild(langs);
 		div.appendChild($el("label", { "for": "prefs_language", "textContent": $l("change_language") }));
 
-		el.appendChild($el("h4", { "textContent": $l("tab_title_preferences") }));
+		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("tab_title_preferences") }));
 		draw_cb_list([
 			"show_title_in_titlebar",
 			"show_clock_in_titlebar",
 			"show_rating_in_titlebar"
 		]);
 		
-		el.appendChild($el("h4", { "textContent": $l("playlist_preferences") }));
+		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("playlist_preferences") }));
 		div = el.appendChild($el("div", { "class": "setting_group" }));
 		var playlist_sort = $el("select", { "id": "prefs_playlist_sort_by" });
 		for (i = 0; i < PlaylistLists.sorting_methods.length; i++) {
@@ -219,7 +219,7 @@ var SettingsWindow = function() {
 			"playlist_show_escape_icon",
 		]);
 
-		el.appendChild($el("h4", { "textContent": $l("m3u_downloads") }));
+		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("m3u_downloads") }));
 		div = el.appendChild($el("div", { "class": "setting_group" }));
 		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "mp3.m3u", "class": "info_right link_obvious" }));
 		div.appendChild($el("div", { "textContent": "iTunes/Winamp" }));
@@ -259,14 +259,13 @@ var SettingsWindow = function() {
 			cb = div.appendChild($el("div", { "class": "yes_no_wrapper" }));
 			yes = cb.appendChild($el("span", { "class": "yes_no_yes", "textContent": $l("yes") }));
 			bar = cb.appendChild($el("span", { "class": "yes_no_bar" }));
-			bar.innerHTML = "&nbsp;";
 			dot = cb.appendChild($el("span", { "class": "yes_no_dot" }));
 			no = cb.appendChild($el("span", { "class": "yes_no_no", "textContent": $l("no") }));
 
 			//#cb = div.appendChild($el("input", { "type": "checkbox", "id": "prefs_" + pref_list[i] }));
-			// cb._pref_name = pref_list[i];
+			cb._pref_name = pref_list[i];
 			//cb.addEventListener("change", checkbox_changed);
-			//if (Prefs.get(pref_list[i])) cb.setAttribute("checked", true);
+			if (Prefs.get(pref_list[i])) $add_class(cb, "yes");
 			label = div.appendChild($el("label", { "for": "prefs_" + pref_list[i], "textContent": $l("prefs_" + pref_list[i]) }));
 			el.appendChild(div);
 		}
