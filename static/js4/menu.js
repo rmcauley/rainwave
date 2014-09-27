@@ -84,6 +84,11 @@ var Menu = function() {
 	var current_modal;
 
 	self.show_modal = function(modal_div) {
+		if (current_modal) return;
+
+		modal_div.style.display = "block";
+		modal_div.offsetWidth; // force redraw so transitions can happen
+
 		$add_class(modal_div, "active_modal");
 		$add_class(document.body, "modal_is_active");
 
@@ -101,6 +106,10 @@ var Menu = function() {
 			e.preventDefault();
 		}
 
+		Fx.chain_transition(current_modal, function() {
+			current_modal.style.display = "none";
+			current_modal = null;
+		});
 
 		$remove_class(current_modal, "active_modal");
 		$remove_class(document.body, "modal_is_active");
@@ -109,8 +118,6 @@ var Menu = function() {
 		for (var i = 0; i < kmw.length; i++) {
 			$id(kmw[i]).removeEventListener('click', self.remove_modal, true);
 		}
-
-		current_modal = null;
 	}
 
 	var insert_calendar_iframe = function(e) {

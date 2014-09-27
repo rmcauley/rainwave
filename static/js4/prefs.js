@@ -156,14 +156,14 @@ var SettingsWindow = function() {
 	};
 
 	self.enable_disable_title_options = function(nv) {
-		// if (nv) {
-		// 	$id("prefs_show_clock_in_titlebar").parentNode.style.opacity = 1;
-		// 	$id("prefs_show_rating_in_titlebar").parentNode.style.opacity = 1;
-		// }
-		// else {
-		// 	$id("prefs_show_clock_in_titlebar").parentNode.style.opacity = 0.5;
-		// 	$id("prefs_show_rating_in_titlebar").parentNode.style.opacity = 0.5;
-		// }
+		if (nv) {
+			$id("prefs_show_clock_in_titlebar").parentNode.style.opacity = 1;
+			$id("prefs_show_rating_in_titlebar").parentNode.style.opacity = 1;
+		}
+		else {
+			$id("prefs_show_clock_in_titlebar").parentNode.style.opacity = 0.5;
+			$id("prefs_show_rating_in_titlebar").parentNode.style.opacity = 0.5;
+		}
 	};
 
 	self.change_language = function(e) {
@@ -181,7 +181,7 @@ var SettingsWindow = function() {
 		}
 		locale_names.sort();
 		for (i = 0; i < locale_names.length; i++) {
-			option = $el("span", { "textContent": BOOTSTRAP.locales[locale_names[i]] });
+			option = $el("span", { "class": "link", "textContent": BOOTSTRAP.locales[locale_names[i]] });
 			option._value = locale_names[i];
 			if (locale_names[i] == LOCALE) {
 				$add_class(option, "selected selected_first");
@@ -207,10 +207,9 @@ var SettingsWindow = function() {
 		div.appendChild($el("label", { "textContent": $l("site_mode") }));
 		
 		div = div.appendChild($el("div", { "class": "multi_select multi_select_special" }));
-		var mode_highlighter = div.appendChild($el("div", { "class": "floating_highlight" }));
-		option = div.appendChild($el("span", { "textContent": $l("basic") }));
+		option = div.appendChild($el("span", { "id": "site_mode_selector_basic", "class": "link", "textContent": $l("basic") }));
 		option.addEventListener("click", function(e) { Prefs.change("stage", 2); });
-		option = div.appendChild($el("span", { "textContent": $l("full") }));
+		option = div.appendChild($el("span", { "id": "site_mode_selector_full", "class": "link", "textContent": $l("full") }));
 		option.addEventListener("click", function(e) { Prefs.change("stage", 4); });
 
 		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("tab_title_preferences") }));
@@ -225,7 +224,7 @@ var SettingsWindow = function() {
 		var playlist_sort = $el("div", { "id": "prefs_playlist_sort_by", "class": "multi_select" });
 		var playlist_sort_highlighter = playlist_sort.appendChild($el("div", { "class": "floating_highlight" }));
 		for (i = 0; i < PlaylistLists.sorting_methods.length; i++) {
-			option = $el("span", { "textContent": $l("prefs_sort_playlist_by_" + PlaylistLists.sorting_methods[i]) });
+			option = $el("span", { "class": "link", "textContent": $l("prefs_sort_playlist_by_" + PlaylistLists.sorting_methods[i]) });
 			option._value = PlaylistLists.sorting_methods[i];
 			if (PlaylistLists.sorting_methods[i] == Prefs.get("playlist_sort")) {
 				$add_class(option, "selected selected_first");
@@ -354,14 +353,10 @@ var SettingsWindow = function() {
 			div.addEventListener("click", yes_no_swap);
 			div._cb = cb;
 			if (Prefs.get(pref_list[i])) $add_class(cb, "yes");
-			label = div.appendChild($el("label", { "for": "prefs_" + pref_list[i], "textContent": $l("prefs_" + pref_list[i]) }));
+			label = div.appendChild($el("label", { "id": "prefs_" + pref_list[i], "textContent": $l("prefs_" + pref_list[i]) }));
 			el.appendChild(div);
 		}
 	}
-
-	var change_sorting_method = function(evt) {
-		Prefs.change("playlist_sort", this.value);
-	};
 
 	return self;
 }();

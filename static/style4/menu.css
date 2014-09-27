@@ -297,7 +297,7 @@ div.setting_group {
 	height: $yes_no_height;
 	overflow: hidden;
 	border-bottom: 1px solid transparent;
-	@include transition(border-color, background);
+	@include transition(border-color, background, opacity);
 }
 
 div.setting_group.setting_group_special {
@@ -442,4 +442,22 @@ div.multi_select div.floating_highlight {
 
 div.multi_select span a {
 	color: $vdarktext;
+}
+
+div.multi_select.multi_select_special span a {
+	color: $text;
+}
+
+div.multi_select span a:hover {
+	color: $linkhover;
+}
+
+body.stage_0 #site_mode_selector_basic, body.stage_1 #site_mode_selector_basic, body.stage_2 #site_mode_selector_basic {
+	color: $text;
+	background: $menu_blue;
+}
+
+body.stage_3 #site_mode_selector_full, body.stage_4 #site_mode_selector_full {
+	color: $text;
+	background: $menu_blue;
 }

@@ -3,7 +3,7 @@ This is the git project for the Rainwave website, http://rainwave.cc.
 == Python Setup for Debian/Ubuntu
 
 $ sudo apt-get install python-pip python-pyscss python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae
-$ sudo pip install jsmin pytz watchdog pympler
+$ sudo pip install jsmin pytz watchdog
 
 == Python Setup for Windows
 
@@ -19,9 +19,9 @@ $ sudo pip install jsmin pytz watchdog pympler
 6. Make sure the Python Scripts directory is also on your PATH
 7. On the commandline, execute:
 	> easy_install pip
-	> pip install tornado mutagen nose pillow pyscss jsmin unidecode pytz objgraph watchdog python-memcached pympler
+	> pip install tornado mutagen nose pillow pyscss jsmin unidecode pytz watchdog python-memcached
 
-== Getting Started for Web Development
+== Getting Started for HTML/CSS/JS Development
 
 $ git clone git@github.com:rmcauley/rainwave.git
 $ cp etc/rainwave-dev.conf etc/[your username].conf
@@ -30,21 +30,23 @@ $ python rw_api.py
 Wait until you see "API server on port 20000 ready to go."  Depending on your
 PC, this may take a minute or so.
 
-Then open the beta URL: http://localhost:20000/beta/?sid=1
+Then open the beta URL:
+   http://localhost:20000/beta/?sid=1
 
 Done!
 
 If you want to emulate being logged in, go to this URL:
-http://localhost:20000/api4/test/login_tuned_in/1
+   http://localhost:20000/api4/test/login_tuned_in/1
 
 To emulate being anonymous, just close and re-open your browser.
 
-HTML files can be found in the templates directory.
-CSS files are in static/style4 and compiled using SCSS.
-JS files are in static/js4 and are not minified for beta development.
-Image files are in static/images4
+HTML files can be found in /templates.
+CSS files are in /static/style4 and compiled using SCSS, starting from _sass.css.
+JS files are in /static/js4 and are not minified for beta development, execution starts from main.js.
+Image files are in /static/images4.
 
-All files are refreshed as you edit them, no need to restart the server.
+All files are refreshed as you edit them, no need to restart the server, with the exception of
+language files.
 
 == Getting Started for Backend Development
 
@@ -84,7 +86,6 @@ Required on all systems:
 - jsmin
 - unidecode
 - pytz
-- pympler
 - watchdog
 - meliae (Linux)
 - pylibmc (POSIX) or python-memcached (Windows/PyPy)

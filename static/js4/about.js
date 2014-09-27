@@ -5,8 +5,9 @@ var AboutWindow = {
 		$id("translators_header").textContent = $l("translators_header");
 		$id("icon_attribution").textContent = $l("icon_attribution");
 		$id("design_by").textContent = $l("design_by");
-		$id("github_link").textContent = $l("open_sourced_at_github")
-
-		$id("donation_information").textContent = $l("donate_and_paypal_info");
+		$id("about_donations_label").textContent = $l("donation_info_label");
+		$id("about_donations_link").textContent = $l("donation_info_link");
+		$id("about_github_label").textContent = $l("github_info_label");
+		$id("about_github_link").textContent = $l("github_info_link");
 	}
 };
