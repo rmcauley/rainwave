@@ -31,7 +31,7 @@ var TimelineSong = function() {
 
 		var draw = function() {
 			self.el = $el("div", { "class": "timeline_song" });
-			
+
 			if (request_mode) {
 				self.elements.request_cancel = $el("div", { "class": "request_cancel", "textContent": "x" });
 				self.elements.request_cancel.addEventListener("click", function() { Requests.delete(self.data.id); });
@@ -50,15 +50,21 @@ var TimelineSong = function() {
 				$add_class(self.el, "requested");
 				self.elements.requester = self.elements.album_art.firstChild.appendChild($el("div", { 
 					"class": "requester",
+					"textContent": self.data.elec_request_username
+				}));
+				self.elements.request_indicator = self.elements.album_art.firstChild.appendChild($el("div", { 
+					"class": "request_indicator",
 					"textContent": $l("timeline_art__request_indicator")
 				}));
 				if (self.data.elec_request_user_id == User.id) {
+					$add_class(self.elements.request_indicator, "your_request");
 					$add_class(self.elements.requester, "your_request");
 					self.elements.requester.textContent = $l("timeline_art__your_request_indicator");
 					if (Prefs.get("stage") < 4) {
 						Prefs.change("stage", 4);
 					}
 				}
+				self.elements.requester.addEventListener("click", function() { DetailView.open_listener(self.data.elec_request_user_id); });
 			}
 
 			// c for content, this stuff should be pushed aside from the album art 

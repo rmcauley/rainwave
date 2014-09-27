@@ -28,14 +28,22 @@ body.stage_0 #requests_positioner, body.stage_1 #requests_positioner, body.stage
 	@include transition-wtime(350ms, background-color);
 }
 
-#requests_positioner.request_queue_paused, #requests_positioner.request_queue_paused #requests_grab_tag {
+#requests_positioner.request_queue_paused {
 	border-color: #603E13;
 	background-color: #1C1104;
 }
 
-#requests_positioner.request_warning, #requests_positioner.request_queue_warning #requests_grab_tag {
+#requests_positioner.request_queue_paused #requests_grab_tag {
+	background-color: #603E13;
+}
+
+#requests_positioner.request_warning {
 	border-color: #5E1212;
 	background-color: #190303;
+}
+
+#requests_positioner.request_warning #requests_grab_tag {
+	background-color: #5E1212;
 }
 
 #requests_positioner:hover, #requests_positioner.fake_hover, body.requests_sticky #requests_positioner {

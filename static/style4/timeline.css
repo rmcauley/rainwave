@@ -109,11 +109,11 @@ div.timeline_song div.album_group {
 	clear: right;
 }
 
-div.timeline_song span.album_name {
+#timeline div.timeline_song span.album_name, #timeline div.timeline_song div.artist span {
 	@include transition-wtime(250ms, background-color, padding);
 }
 
-#timeline div.timeline_song.voting_enabled span.album_name:hover {
+#timeline div.timeline_song.voting_enabled span.album_name:hover, #timeline div.timeline_song.voting_enabled div.artist span:hover {
 	background-color: #264499;
 	padding: 0 10px;
 }
@@ -144,21 +144,51 @@ div.timeline_song_content div.artist, div.timeline_song_content div.votes, div.t
 	display: none;
 }
 
-div.timeline_song div.requester {
+body.show_artists div#timeline div.timeline_next div.timeline_song_content div.artist, body.show_artists div#timeline div.timeline_next div.timeline_song_content div.album_group {
+	display: block;
+	font-size: 0.9em;
+} 
+
+body.show_artists div#timeline div.timeline_song_content div.artist span:first-child, body.show_artists div#timeline div.timeline_song_content span.album_name:first-child {
+	margin-left: 15px;
+}
+
+div.timeline_song div.request_indicator, div.timeline_song div.requester {
+	box-sizing: border-box;
 	position: absolute;
-	@include transition(opacity);
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: x-small;
+	background: $highlight;
+	@include transition(opacity, LINKCOLOR);
+	text-align: left;
+	text-transform: uppercase;
+}
+
+div.timeline_song div.requester {
+	z-index: 5;
+	padding-left: 1.5em;
+	cursor: pointer;
+}
+
+div.timeline_song div.requester:hover {
+	color: $linkhover;
+}
+
+div.timeline_song div.request_indicator {
+	text-align: right;
+	z-index: 4;
+	opacity: 1;
+	padding-right: 1.5em;
+
 	@include transform(rotate(-90deg) translateX(-100%)); 
 	-webkit-transform-origin: 0% 0%;
 	        transform-origin: 0% 0%;
-	width: 100%;
-	font-size: x-small;
-	z-index: 5;
-	text-align: center;
-	background: $highlight;
-	opacity: 1;
 }
 
-div.timeline_song div.art_expandable.art_expanded div.requester {
+div.timeline_song div.art_expandable.art_expanded div.requester, div.timeline_song div.art_expandable.art_expanded div.request_indicator {
 	opacity: 0;
 }
 
@@ -393,7 +423,7 @@ div.timeline_header {
 }
 
 div.timeline_now_playing div.timeline_header {
-	color: $highlight;
+	color: $orange;
 }
 
 span.timeline_header_clock {
@@ -405,7 +435,7 @@ body.show_pageclock span.timeline_header_clock {
 	display: block;
 }
 
-div.voting_enabled {
+div.voting_enabled div.timeline_song_content {
 	cursor: pointer;
 }
 

@@ -1,5 +1,4 @@
-// attribution to do:
-// sort design icon by http://www.thenounproject.com/NemanjaIvanovic
+// 1. Previously played 2. Retina rating bars 3. Dropdown
 
 var User;
 var SmallScreen = false;
@@ -194,6 +193,7 @@ function initialize() {
 	Scrollbar.resizer_refresh();
 	DetailView.draw();
 	PlaylistLists.draw();
+	Schedule.draw();
 	//History.draw();
 	Menu.draw(BOOTSTRAP.station_list);
 	SettingsWindow.draw();

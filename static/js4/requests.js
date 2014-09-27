@@ -87,7 +87,6 @@ var Requests = function() {
 			if (!$has_class(songs[i].el, "timeline_song_is_cool")) {
 				all_cooldown = false;
 				good_requests++;
-				break;
 			}
 		}
 
@@ -160,7 +159,7 @@ var Requests = function() {
 		}
 		else {
 			container.style.transition = "none";
-			container.className = "fake_hover";
+			$add_class(container, "fake_hover");
 			$remove_class(document.body, "requests_sticky");
 			container.addEventListener("mouseout", once_mouse_out);
 			Prefs.change("requests_sticky", false);
@@ -216,10 +215,10 @@ var Requests = function() {
 	};
 
 	self.reflow = function() {
-		var running_height = 5;
+		var running_height = 25;
 		for (var i = 0; i < songs.length; i++) {
 			songs[i]._request_y = running_height;
-			songs[i].el.style.transform = "translateY(" + (running_height + (SCREEN_HEIGHT * i)) + "px)";
+			songs[i].el.style.transform = "translateY(" + (running_height + (SCREEN_HEIGHT * (i + 1))) + "px)";
 			Fx.delay_css_setting(songs[i].el, "transform", "translateY(" + running_height + "px)");
 			running_height += TimelineSong.height;
 		}
@@ -229,7 +228,7 @@ var Requests = function() {
 	};
 
 	self.real_reflow = function() {
-		var running_height = 5;
+		var running_height = 25;
 		for (var i = 0; i < songs.length; i++) {
 			if (dragging_song != songs[i]) {
 				songs[i]._request_y = running_height;

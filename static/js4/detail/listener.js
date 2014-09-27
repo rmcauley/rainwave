@@ -3,6 +3,13 @@ var ListenerView = function(view, json) {
 	view.el.appendChild(Albums.art_html({ "secret_user_sauce": json.avatar }));
 	var d = $el("div", { "class": "albumview_header" });
 	d.appendChild($el("h1", { "textContent": json.name }));
+	console.log(json);
+	if (json.user_id == User.id) {
+		var d2 = d.appendChild($el("div", { "class": "albumview_info" }));
+		d2.appendChild($el("a", { "href": "http://rainwave.cc/keys/", "class": "link_obvious", "target": "_blank", "textContent": $l("manage_your_api_keys")}));
+		d2.appendChild($el("br"));
+		d2.appendChild($el("a", { "href": "http://rainwave.cc/keys/", "class": "link_obvious", "textContent": $l("logout_in_forums")}));
+	}
 	view.el.appendChild(d);
 
 	var order = [ 1, 4, 2, 3, 5 ];
@@ -20,6 +27,12 @@ var ListenerView = function(view, json) {
 	d = c.appendChild($el("ul", { "class": "user_detail_legend"}));
 	for (var i = 0; i < order.length; i++) {
 		d.appendChild($el("li", { "textContent": $l("station_name_" + order[i]), "style": "background-color: " + colors[order[i]] + ";" }));
+	}
+
+	if (json.user_id == User.id) {
+		d = view.el.appendChild($el("div", { "class": "user_detail_segment" }));
+		d.appendChild($el("h3", { "textContent": $l("your_mobile_app_qr") }));
+		d.appendChild($el("img", { "width": chart_height - 4, "height": chart_height - 4, "src": "http://chart.apis.google.com/chart?cht=qr&chs=" + (chart_height - 4) + "x" + (chart_height - 4) + "&choe=ISO-8859-1&chl=" + "rw://" + User.id + ":" + User.api_key + "@rainwave.cc" }));
 	}
 
 	var draw_chart = function(jd, key, header) {

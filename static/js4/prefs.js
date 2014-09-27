@@ -194,7 +194,6 @@ var SettingsWindow = function() {
 
 		div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
 		div.appendChild($el("label", { "textContent": $l("m3u_downloads") }));
-		
 		div = div.appendChild($el("div", { "class": "multi_select multi_select_special" }));
 		option = div.appendChild($el("span"));
 		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "iTunes MP3", "class": "link", "target": "_blank" }));
@@ -204,13 +203,14 @@ var SettingsWindow = function() {
 		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".ogg", "textContent": "Foobar2000 Ogg", "class": "link", "target": "_blank" }));
 
 		div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
-		div.appendChild($el("label", { "textContent": $l("site_mode") }));
-		
+		div.appendChild($el("label", { "textContent": $l("site_mode") }));		
 		div = div.appendChild($el("div", { "class": "multi_select multi_select_special" }));
 		option = div.appendChild($el("span", { "id": "site_mode_selector_basic", "class": "link", "textContent": $l("basic") }));
 		option.addEventListener("click", function(e) { Prefs.change("stage", 2); });
 		option = div.appendChild($el("span", { "id": "site_mode_selector_full", "class": "link", "textContent": $l("full") }));
 		option.addEventListener("click", function(e) { Prefs.change("stage", 4); });
+
+		draw_cb_list([ "show_artists" ], true);
 
 		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("tab_title_preferences") }));
 		draw_cb_list([
@@ -337,10 +337,11 @@ var SettingsWindow = function() {
 		}
 	}
 
-	var draw_cb_list = function(pref_list) {
+	var draw_cb_list = function(pref_list, special) {
 		var cb, div, label, yes, no, dot, bar;
 		for (var i = 0; i < pref_list.length; i++) {
 			div = $el("div", { "class": "setting_group yes_no_group" });
+			if (special) $add_class(div, "setting_group_special");
 			cb = div.appendChild($el("div", { "class": "yes_no_wrapper" }));
 			yes = cb.appendChild($el("span", { "class": "yes_no_yes", "textContent": $l("yes") }));
 			yes.addEventListener("click", force_yes);

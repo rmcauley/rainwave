@@ -36,21 +36,13 @@ var Menu = function() {
 			else {
 				$add_class(elements.user_info, "show_anonymous_avatar");
 			}
-			elements.user_info.appendChild($el("span", { "textContent": User.name }));
+			elements.user_info.appendChild($el("a", { "textContent": User.name }));
+			elements.user_info.addEventListener("click", function() { DetailView.open_listener(User.id); });
 		}
-
-		// 	var user_links = elements.user_info.appendChild($el("div", { "class": "info" }));
-		// 	user_links.appendChild($el("a", { "class": "link link_obvious", "id": "user_info_link", "textContent": $l("your_statistics") }));
-		// 	user_links.lastChild.addEventListener("click", function() { DetailView.open_listener(User.id); });
-		// 	user_links.appendChild($el("a", { "class": "link_obvious", "id": "logout_link", "href": "http://rainwave.cc/forums/", "textContent": $l("logout_in_forums") }));
-		// 	var qr_code_container = user_links.appendChild($el("div", { "id": "user_qr_code_hover", "textContent": $l("your_mobile_app_qr") }));
-		// 	var qr_code = qr_code_container.appendChild($el("div", { "id": "user_qr_code" }));
-		// 	qr_code_container.addEventListener("mouseover", add_user_qr_code);
-		// }
-		// else {
-		// 	elements.user_info.appendChild($el("img", { "class": "avatar icon", "src": "/static/images4/user.svg" }));
-		// 	elements.user_info.appendChild($el("a", { "href": "http://rainwave.cc/forums/ucp.php?mode=login&redirect=/", "textContent": $l("login") }));
-		// }
+		else {
+			$add_class(elements.user_info, "show_anonymous_avatar anonymous_user");
+			elements.user_info.appendChild($el("a", { "href": "http://rainwave.cc/forums/ucp.php?mode=login&redirect=/", "textContent": $l("login") }));
+		}
 
 		// Setup station select menu
 		// var order = [ 5, 1, 4, 2, 3 ];
@@ -78,7 +70,7 @@ var Menu = function() {
 		// }
 		// API.add_callback(update_station_info, "all_stations_info");
 
-		// $id("calendar_menu_item").addEventListener("mouseover", insert_calendar_iframe);
+		$id("calendar_menu_item").addEventListener("mouseover", insert_calendar_iframe);
 	};
 
 	var current_modal;
@@ -122,6 +114,7 @@ var Menu = function() {
 
 	var insert_calendar_iframe = function(e) {
 		$id("calendar_menu_item").removeEventListener("mouseover", insert_calendar_iframe);
+
 		$id("calendar_dropdown").appendChild($el("iframe", { "class": "calendar_iframe", "src": "https://www.google.com/calendar/embed?showTitle=0&showNav=0&showDate=0&showPrint=0&showCalendars=0&mode=AGENDA&height=500&wkst=1&bgcolor=%23ffffff&src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com&color=%232952A3", "frameborder": "0", "scrolling": "no" }));
 	};
 
@@ -147,11 +140,6 @@ var Menu = function() {
 				songs[key]._shown = false;
 			}
 		}
-	};
-
-	var add_user_qr_code = function(evt) {
-		this.removeEventListener("mouseover", add_user_qr_code);
-		$id("user_qr_code").style.backgroundImage = "url(http://chart.apis.google.com/chart?cht=qr&chs=300x300&choe=ISO-8859-1&chl=" + "rw://" + User.id + ":" + User.api_key + "@rainwave.cc" + ")";
 	};
 
 	var update_tuned_in_status = function(user_json) {

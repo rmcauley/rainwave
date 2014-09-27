@@ -28,8 +28,8 @@ body.stage_0 #lists, body.stage_1 #lists, body.stage_2 #lists {
 	height: 25px;
 	padding-left: 0;
 	margin: 10px 0 0 0;
+	border-bottom: 1px solid $vvdarktext;
 	list-style: none;
-	border-bottom: solid 1px $darktext;
 	white-space: nowrap;
 }
 
@@ -38,27 +38,14 @@ body.stage_0 #lists, body.stage_1 #lists, body.stage_2 #lists {
 	height: 25px;
 	padding: 0 10px;
 	cursor: pointer;
-	color: $darktext;
-	@include transition(LINKCOLOR, background, opacity);
-
-	border-left-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 0px;
-	border-top-width: 0px;
-	border-style: solid;
-	-webkit-border-image: -webkit-linear-gradient(bottom, $darktext, rgba(0, 0, 0, 0)) 1 100%;
-	-moz-border-image: -moz-linear-gradient(bottom, $darktext, rgba(0, 0, 0, 0)) 1 100%;
-	border-image: linear-gradient(to top, $darktext, rgba(0, 0, 0, 0)) 1 100%;
-	background-repeat: no-repeat;
-}
-
-#lists_tabs li + li {
-	border-left-width: 0px;
+	color: $vdarktext;
+	border-bottom: 1px solid transparent;
+	@include transition(LINKCOLOR, background, opacity, border-bottom);
 }
 
 #lists_tabs li.list_tab_open {
-	color: $highlight;
-	@include simple-gradient($vdarktext, rgba(0, 0, 0, 0), top, 40%);
+	color: $text;
+	border-bottom: 1px solid $orange;
 }
 
 /* SEARCH BOX */
@@ -154,7 +141,7 @@ div.searchlist_items {
 div.searchlist_item {
 	background-repeat: no-repeat;
 	height: 22px;
-	padding: 1px 65px 0 0;
+	padding: 2px 65px 1px 0;
 	border-bottom: solid 1px transparent;
 	cursor: pointer;
 	@include transition-wtime(250ms, background-color, border-color);
@@ -230,9 +217,10 @@ div.searchlist_item:hover span.searchlist_name, div.searchtable_key_nav_hover sp
 	padding-left: 35px;
 }
 
-div.searchlist_open_item, div.searchlist_cooldown.searchlist_open_item {
+div.searchlist_item.searchlist_open_item, div.searchlist_item.searchlist_cooldown.searchlist_open_item {
 	background-color: #1f4f70;
-	border-color: #245b80;
+	/* border-color: #245b80; */
+	border-color: $orange;
 }
 
 div.searchlist_open_item span.searchlist_name, div.searchlist_item.searchlist_open_item:hover span.searchlist_name {

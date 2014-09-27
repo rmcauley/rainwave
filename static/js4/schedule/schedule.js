@@ -36,12 +36,28 @@ var Schedule = function() {
 	};
 
 	self.initialize = function() {
+		Prefs.define("show_artists", [ false, true ]);
+		Prefs.add_callback("show_artists", show_artists_callback);
+
 		API.add_callback(function(json) { sched_current = json; }, "sched_current");
 		API.add_callback(function(json) { sched_next = json; }, "sched_next");
 		API.add_callback(self.update, "_SYNC_COMPLETE");
 
 		API.add_callback(self.register_vote, "vote_result");
 		API.add_callback(self.tune_in_voting_allowed_check, "user");
+	};
+
+	var show_artists_callback = function(nv) { 
+		if (nv) {
+			$add_class(document.body, "show_artists");
+		}
+		else {
+			$remove_class(document.body, "show_artists");
+		}
+	};
+
+	self.draw = function() {
+		show_artists_callback(Prefs.get("show_artists"));
 	};
 
 	self.update = function() {

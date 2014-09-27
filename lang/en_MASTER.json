@@ -66,10 +66,6 @@
    "forums"                                          : "Forums",
    "login"                                           : "Login",
    "chat"                                            : "Chat",
-
-   "logout_in_forums"                                : "Please visit the forums to logout.",
-   "your_statistics"                                 : "Your statistics",
-   "your_mobile_app_qr"                              : "Your Android app QR code",
    
    "request_song_to_vote_for"                        : "Request A Song To Vote For",
    "previouslyplayed"                                : "Previously Played",
@@ -95,8 +91,8 @@
    "voting_results_were"                             : "vote results:",
    "click_here_to_start_voting"                      : "Click here to vote for what song you want to hear next!",
    "played_ago"                                      : "Played %(time) Ago",
-   "timeline_art__request_indicator"                 : "REQUEST",
-   "timeline_art__your_request_indicator"            : "YOURS",
+   "timeline_art__request_indicator"                 : "Request",
+   "timeline_art__your_request_indicator"            : "Yours",
 
    "__comment__"                 : "Tip Jar",
 
@@ -121,6 +117,10 @@
    "ratings_completion_rate"                         : "Rating Completion",
    "rating_spread"                                   : "Rating Spread",
    "average_rating_by_station"                       : "Avg. Rating By Station",
+
+   "your_mobile_app_qr"                              : "Your Android App QR Code",
+   "manage_your_api_keys"                            : "Manage your API keys.",
+   "logout_in_forums"                                : "Please visit the forums to logout.",
 
    "__comment__"                 : "Other",
 
@@ -149,7 +149,7 @@
    "design_by"                                       : "Site Design",
    "donation_info_label"                             : "Donation Information",
    "donation_info_link"                              : "Details",
-   "github_info_label"                               : "Rainwave is Open Source",
+   "github_info_label"                               : "Rainwave Open Source Repository",
    "github_info_link"                                : "View on GitHub",
 
    "__comment__"                 : "Playlist View",
@@ -226,14 +226,15 @@
    "prefs_show_rating_in_titlebar"                   : "Show Rating In Tab Title",
    "prefs_show_title_in_titlebar"                    : "Show Song Title In Tab Title",
    "playlist_preferences"                            : "Album List",
-   "prefs_playlist_sort_available_first"             : "Sort with Available First",
-   "prefs_playlist_sort_faves_first"                 : "Sort with Faves First",
-   "prefs_playlist_show_rating_complete"             : "Show Incomplete Ratings",
-   "prefs_playlist_sort_by"                          : "Sort By",
-   "prefs_playlist_show_escape_icon"                 : "Show ESC Icon",
-   "prefs_sort_playlist_by_alpha"                    : "Alphabetical",
+   "prefs_playlist_sort_available_first"             : "Sort Available to the Top",
+   "prefs_playlist_sort_faves_first"                 : "Sort Faves To the Top",
+   "prefs_playlist_show_rating_complete"             : "Show Incomplete Ratings in Orange",
+   "prefs_playlist_sort_by"                          : "Sort Albums By...",
+   "prefs_playlist_show_escape_icon"                 : "Show ESC Button While Searching",
+   "prefs_sort_playlist_by_alpha"                    : "Alphabetical Order",
    "prefs_sort_playlist_by_rating_user"              : "Rating",
    "prefs_sort_playlist_by_cool"                     : "Cooldown",
+   "prefs_show_artists"                              : "Show Artists In Timeline",
    "m3u_downloads"                                   : "M3U Downloads",
    "skip_intro_mode"                                 : "Skip Intro Mode",
    "do_intro_mode"                                   : "Go back to Intro Mode",
