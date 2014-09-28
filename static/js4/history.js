@@ -6,7 +6,6 @@ var History = function() {
 	var el;
 	var songs = [];
 	var is_mouseover = false;
-	var redo_schedule_scrollbar;
 
 	self.initialize = function() {
 		if (MOBILE) return;
@@ -41,32 +40,33 @@ var History = function() {
 	var sticky_change = function(nv) {
 		if (nv) {
 			$add_class(outer_container, "sticky_history");
-			sticky_size_change(Prefs.get("sticky_history_size"), true);
+			sticky_size_change(Prefs.get("sticky_history_size"), false, true);
 			// this will stop the scrollbar recalculate from firing on page load
-			if (songs.length > 0) {	sched_scrollbar_recalculate(); }
+			if (songs.length > 0) {	
+				sched_scrollbar_recalculate();
+			}
 		}
 		else {
 			$remove_class(outer_container, "sticky_history");
 			is_mouseover = false;
 			// same deal - stop this from firing on page load
 			if (songs.length > 0) {	
-				redo_schedule_scrollbar = true;
 				mouseover();
 			}
 		}
 	};
 
-	var sticky_size_change = function(nv, is_actually_sticky) {
+	var sticky_size_change = function(nv, ov, is_actually_sticky) {
 		if (!Prefs.get("sticky_history") && !is_actually_sticky) return;
 		container.style.height = (nv * TimelineSong.height) + "px";
 		el.style.top = -((5 - nv) * TimelineSong.height) + "px";
+		sched_scrollbar_recalculate();
 	};
 
 	var sched_scrollbar_recalculate = function() {
 		Fx.chain_transition(el, function(e) {
 			setTimeout(function() { Schedule.scrollbar_recalculate(); }, 200);
 		});
-		redo_schedule_scrollbar = false;
 	};
 
 	var mouseover = function(e) {
@@ -75,6 +75,7 @@ var History = function() {
 		is_mouseover = true;
 		el.style.top = "0px";
 		container.style.height = (songs.length * TimelineSong.height) + "px";
+		sched_scrollbar_recalculate();
 	};
 
 	var mouseout = function(e) {
@@ -83,9 +84,7 @@ var History = function() {
 			el.style.top = -(songs.length * TimelineSong.height) + "px";
 			container.style.height = "0px";
 			is_mouseover = false;
-			if (redo_schedule_scrollbar === true) {
-				sched_scrollbar_recalculate();
-			}
+			sched_scrollbar_recalculate();
 		}
 	};
 
