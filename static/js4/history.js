@@ -128,7 +128,7 @@ var History = function() {
 			w.removeChild(w.firstChild);
 		}
 
-		var t = SongsTable(json, [ "song_played_at", "title", "album_name", "rating" ]);
+		var t = SongsTable(json, [ "song_played_at", "title", "album_name", "artists", "rating" ]);
 		w.appendChild(t);
 
 		Menu.show_modal($id("longhist_window_container"));

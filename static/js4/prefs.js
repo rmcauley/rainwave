@@ -173,7 +173,7 @@ var SettingsWindow = function() {
 
 	self.draw = function() {
 		var div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
-		var langs = $el("div", { "class": "multi_select", "id": "prefs_language" });
+		var langs = $el("div", { "class": "multi_select unselectable", "id": "prefs_language" });
 		var option;
 		var locale_names = [];
 		for (var i in BOOTSTRAP.locales) {
@@ -194,7 +194,7 @@ var SettingsWindow = function() {
 
 		div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
 		div.appendChild($el("label", { "textContent": $l("m3u_downloads") }));
-		div = div.appendChild($el("div", { "class": "multi_select multi_select_special" }));
+		div = div.appendChild($el("div", { "class": "multi_select multi_select_special unselectable" }));
 		option = div.appendChild($el("span"));
 		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "iTunes MP3", "class": "link", "target": "_blank" }));
 		option = div.appendChild($el("span", { "class": "setting_group" }));
@@ -204,7 +204,7 @@ var SettingsWindow = function() {
 
 		div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
 		div.appendChild($el("label", { "textContent": $l("site_mode") }));
-		div = div.appendChild($el("div", { "class": "multi_select multi_select_special" }));
+		div = div.appendChild($el("div", { "class": "multi_select multi_select_special unselectable" }));
 		option = div.appendChild($el("span", { "id": "site_mode_selector_basic", "class": "link", "textContent": $l("basic") }));
 		option.addEventListener("click", function(e) { Prefs.change("stage", 2); });
 		option = div.appendChild($el("span", { "id": "site_mode_selector_full", "class": "link", "textContent": $l("full") }));
@@ -213,7 +213,7 @@ var SettingsWindow = function() {
 		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("timeline_preferences") }));
 		draw_cb_list([ "show_artists" ]);
 		div = el.appendChild($el("div", { "class": "setting_group" }));
-		var sticky_history_size = $el("div", { "id": "prefs_sticky_history_size", "class": "multi_select" });
+		var sticky_history_size = $el("div", { "id": "prefs_sticky_history_size", "class": "multi_select unselectable" });
 		var histsize_highlighter = sticky_history_size.appendChild($el("div", { "class": "floating_highlight" }));
 		for (i = 1; i <= 5; i++) {
 			option = $el("span", { "class": "link", "textContent": i });
@@ -236,7 +236,7 @@ var SettingsWindow = function() {
 		
 		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("playlist_preferences") }));
 		div = el.appendChild($el("div", { "class": "setting_group" }));
-		var playlist_sort = $el("div", { "id": "prefs_playlist_sort_by", "class": "multi_select" });
+		var playlist_sort = $el("div", { "id": "prefs_playlist_sort_by", "class": "multi_select unselectable" });
 		var playlist_sort_highlighter = playlist_sort.appendChild($el("div", { "class": "floating_highlight" }));
 		for (i = 0; i < PlaylistLists.sorting_methods.length; i++) {
 			option = $el("span", { "class": "link", "textContent": $l("prefs_sort_playlist_by_" + PlaylistLists.sorting_methods[i]) });

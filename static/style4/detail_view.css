@@ -138,27 +138,15 @@ table.songlist tr:hover td {
 	@include no-transition();
 }
 
-div.songlist_title_text, div.songlist_artists_text {
+div.songlist_title_text, div.songlist_artists_text, div.songlist_album_name_text {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
 
-div.songlist_title_text:hover, div.songlist_artists_text:hover {
+div.songlist_title_text:hover, div.songlist_artists_text:hover, div.songlist_album_name_text:hover {
 	white-space: normal;
 }
-
-table.songlist div.overflow_tooltip {
-	display: block;
-	background-color: #2F304D;
-    border: 1px solid #3E4066;
-    padding: 3px;
-    transform: translate(-4px, -4px);
-    white-space: normal;
-    text-overflow: clip;
-    box-shadow: 3px 3px 5px #000;
-}
-
 table.songlist img.link_external {
 	height: 14px;
 	width: 14px;

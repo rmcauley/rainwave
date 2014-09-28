@@ -52,7 +52,7 @@ var SongsTable = function(songs, columns) {
 				cell.appendChild(div);
 			}
 			else if (columns[key] in songs[i]) {
-				if (columns[key] == "title") {
+				if (columns[key] == "title" || columns[key] == "album_name") {
 					cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] } ));
 					div = $el("div", { "class": "songlist_" + columns[key] + "_text", "textContent": songs[i][columns[key]] });
 					title_el = div
