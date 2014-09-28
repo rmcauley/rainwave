@@ -1,4 +1,5 @@
 $menu_height: 45px;
+$station_select_sta_height = 60px;
 $menu_blue: #1f95e5;
 $menu_blue_dark: #128adb;
 
@@ -7,7 +8,7 @@ $menu_blue_dark: #128adb;
 	background: $menu_blue_dark;
 	height: $menu_height;
 	@include transition-wtime(300ms, opacity);
-	z-index: 1;
+	z-index: 2;
 }
 
 #top_menu {
@@ -15,7 +16,7 @@ $menu_blue_dark: #128adb;
 	color: #FFF;
 	background: $menu_blue;
 	margin: 0 auto;
-	padding: 0 5px;
+	padding: 0;
 	width: 100%;
 	max-width: 100%;
 	height: $menu_height;
@@ -50,41 +51,169 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 	fill: $highlight !important;
 }
 
-/* CURRENT STATION */
+/* STATION SELECT */
 
-#current_station {
-	border-right: 1px solid #1e71a9;
-	box-sizing: border-box;
-	min-width: 15em;
-	float: left;
-	height: $menu_height;
-	padding: 0 20px 0 15px;
-	margin-right: 20px;
-}
+$menu_transfunc: cubic-bezier(0.77, 0, 0.175, 1);
 
-#current_station svg.pulldown_arrow {
-	float: right;
+#station_select_container {
 	position: relative;
-	top: 50%;
-	@include transform(translateY(-50%));
-}
-
-#current_station span#current_station_name {
-	display: block;
-	position: relative;
-	top: 50%;
-	@include transform(translateY(-50%));
+	z-index: 20000;
 	font-style: italic;
-	font-size: 2em;
 	font-weight: 300;
+	font-size: 2em;
+	float: left;
+	width: 8em;
+	border-right: 1px solid #1e71a9;
+	height: $menu_height;
+	margin-right: 15px;
+
+	-webkit-transition: width 350ms;
+	        transition: width 350ms;
+	-webkit-transition-timing-function: $menu_transfunc;
+	        transition-timing-function: $menu_transfunc;
+}
+
+#station_select_container.open {
+	width: 12em;
+}
+
+#station_select {
+	box-sizing: border-box;
+	position: absolute;
+	padding: 0 20px 0 15px;
+	height: $menu_height;
+	background: #0b5c89;
+	z-index: 20000;
+	width: 100%;
+
+	-webkit-transition: width 350ms, background-color 350ms, height 700ms;
+	        transition: width 350ms, background-color 350ms, height 700ms;
+	-webkit-transition-timing-function: $menu_transfunc;
+	        transition-timing-function: $menu_transfunc;
+}
+
+#station_select svg.pulldown_arrow {
+	float: right;
+	cursor: pointer;
+	position: relative;
+	z-index: 50;
+	top: $menu_height / 2;
+	@include transition-wtime(350ms, transform);
+	@include transform(translateY(-50%) rotate(0deg));
+	-webkit-transform-origin: center center;
+	        transform-origin: center center;
+	-webkit-transition-timing-function: $menu_transfunc;
+	        transition-timing-function: $menu_transfunc;
+}
+
+#station_select.open {
+	width: 12em;
+	height: ($station_select_sta_height * 5) + $menu_height;
+}
+
+#station_select.open svg.pulldown_arrow {
+	cursor: default;
+	@include transform(translateY(-50%) rotate(180deg));
+}
+
+#station_select_header {
+	position: absolute;
+	top: -($menu_height / 2);
+	color: rgb(151,198,229);
+	text-transform: uppercase;
+	font-weight: 400;
+	font-size: .6em;
+	margin-left: 5px;
+
+	@include transform(translateY(-50%));
+	@include transition(top);
+	-webkit-transition-timing-function: $menu_transfunc;
+	        transition-timing-function: $menu_transfunc;
+}
+
+#station_select.open #station_select_header {
+	top: $menu_height / 2;
+}
+
+a.station {
+	box-sizing: border-box;
+	display: block;
+	background: #0b5c89;
+	position: absolute;
+	left: 0;
+	z-index: 1;
+	width: 100%;
+	cursor: pointer;
+	overflow: hidden;
+	height: $menu_height;
+	top: 0;
+	padding-left: 20px;
+	color: rgb(151,198,229);
+
+	-webkit-transition: top 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
+	        transition: top 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
+}
+
+#station_select.open a.station {
+	height: $station_select_sta_height;
+}
+
+a.station:hover {
+	background: #0f74b8;
+	color: $text !important;
+	cursor: pointer;
+}
+
+a.station.selected_station {
+	background: $menu_blue;
+	color: $text;
+	z-index: 40;
+}
+
+#station_select.open a.station.selected_station, #station_select.open a.station.selected_station:hover {
+	cursor: default;
+	color: $text;
+}
+
+#station_select.open a.station:nth-of-type(1) { top: $menu_height; border-top: 1px solid rgba(0, 0, 0, 0.1); }
+#station_select.open a.station:nth-of-type(2) { top: $menu_height + $station_select_sta_height; }
+#station_select.open a.station:nth-of-type(3) { top: $menu_height + ($station_select_sta_height * 2); }
+#station_select.open a.station:nth-of-type(4) { top: $menu_height + ($station_select_sta_height * 3); }
+#station_select.open a.station:nth-of-type(5) { top: $menu_height + ($station_select_sta_height * 4); }
+
+div.station_details {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	@include transition-wtime(350ms, transform);
+}
+
+#station_select.open a.station:hover div.station_details, #station_select.open a.station.selected_station div.station_details {
+	transform: translateY(-70%);
+}
+
+div.station_name {
 	text-transform: uppercase;
 }
 
-/* STATION SELECT */
-
-#station_select {
-	display: none;
+div.station_description {
+	text-transform: uppercase;
+	font-weight: 400;
+	font-size: 0.4em;
 	position: absolute;
+	top: $station_select_sta_height;
+	opacity: 0;
+	-webkit-transition: transform 300ms ease-in-out, opacity 250ms ease;
+	        transition: transform 300ms ease-in-out, opacity 250ms ease;
+}
+
+#station_select.open a.station:hover div.station_description, #station_select.open a.selected_station div.station_description {
+	opacity: 1;
+	@include transform(translateY(-120%));
+}
+
+div.station_song {
+	display: none;
 }
 
 /* ICONS AND LINKS */
