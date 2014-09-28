@@ -69,6 +69,8 @@
    
    "request_song_to_vote_for"                        : "Request A Song To Vote For",
    "previouslyplayed"                                : "Previously Played",
+   "extended_history_link"                           : "Extended",
+   "extended_history_header"                    : "Extended History",
    
    "tunein"                                          : "Tune In",
    "stop"                                            : "Stop",

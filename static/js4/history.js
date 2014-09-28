@@ -1,72 +1,47 @@
 var History = function() {
 	"use strict";
 	var self = {};
+	var outer_container;
+	var container;
 	var el;
-	var scrollblock;
-	var scroller;
+	var has_init = false;
 	var songs = [];
-	var css_left = 0;
-	var scroll_update_timeout;
-
-	var mouse_over = function(e) {
-		$remove_class(container, "fake_hover");
-		if (fake_hover_timeout) {
-			clearTimeout(fake_hover_timeout);
-			fake_hover_timeout = null;
-		}
-	};
-
-	var fake_hover = function() {
-		fake_hover_timeout = setTimeout(function() { $remove_class(container, "fake_hover"); fake_hover_timeout = null; }, 3000);
-		$add_class(container, "fake_hover");
-	};
+	var is_mouseover = false;
 
 	self.initialize = function() {
-		scrollblock = $id("history");
+		if (MOBILE) return;
+
+		outer_container = $id("history_outer_container");
+		container = $id("history_container");
 		el = $id("history_list");
-		if (!MOBILE) API.add_callback(self.update, "sched_history");
-		var li = $id("history_link_container");
-		// if ('onmouseenter' in li) {
-		// 	li.addEventListener("mouseenter", self.show);
-		// }
-		// else {
-		// 	li.addEventListener("mouseover", self.show);
-		// }
+		API.add_callback(self.update, "sched_history");
 	};
 
-	self.scroll_init = function() {
-		scroller = Scrollbar.new(el, $id("history_scrollbar"));
-		scroller.unrelated_positioning = true;
-		//css_left = $id("history_link_container").offsetWidth + (SmallScreen ? 85 : 55);
-		css_left = 175 + (SmallScreen ? 85 : 55);
-	};
+	self.scroll_init = function() {};
 
 	self.draw = function() {
-		el.style.width = 380 + Scrollbar.get_scrollbar_width() + "px";
-		scrollblock.style[Fx.transform_string] = "translateX(-" + css_left + "px)";
+		$id("history_header").textContent = $l("previouslyplayed");
+		$id("longhist_modal_header").textContent = $l("extended_history_header");
+		$id("longhist_link").textContent = $l("extended_history_link");
+		$id("longhist_link").addEventListener("click", function() { API.async_get("playback_history", { "per_page": 40 }); });
+		outer_container.addEventListener("mouseover", mouseover);
+		outer_container.addEventListener("mouseout", mouseout);
+		container.style.height = "0px";
+		API.add_callback(open_long_history, "playback_history");
 	};
 
-	self.show = function() {
-		for (var i = songs.length - 1; i >= 0; i--) {
-			// gotta use next sibling because the first element is the scrollbar!
-			el.insertBefore(songs[i].el, el.firstChild.nextSibling);
-			el.insertBefore(songs[i].header, el.firstChild.nextSibling);
+	var mouseover = function(e) {
+		if (is_mouseover) return;
+		is_mouseover = true;
+		el.style.top = "0px";
+		container.style.height = (songs.length * TimelineSong.height) + "px";
+	};
+
+	var mouseout = function(e) {
+		if (Mouse.is_mouse_leave(e, outer_container)) {
+			el.style.top = -(songs.length * TimelineSong.height) + "px";
+			container.style.height = "0px";
 		}
-		// has to be *4 because of the header also being a child of el
-		while (el.childNodes.length >= (songs.length * 4)) {
-			el.removeChild(el.lastChild);	// header!
-			el.removeChild(el.lastChild);
-		}
-		var ago;
-		for (i = 0; i < el.childNodes.length; i++) {
-			if (el.childNodes[i]._start_actual) {
-				ago = Clock.now - el.childNodes[i]._start_actual;
-				if (ago < 60) ago = 60;
-				el.childNodes[i].textContent = $l("played_ago", { "time": Formatting.cooldown_glance(ago) });
-			}
-		}
-		scroller.recalculate(null, 650);
-		scroller.refresh();
 	};
 
 	self.update = function(json) {
@@ -90,10 +65,33 @@ var History = function() {
 			}
 		}
 		songs = new_songs;
-		self.show();
+
+		while (songs.length > 5) {
+			songs.shift();
+		}
+
+		if (!has_init) {
+			el.style.top = -(songs.length * TimelineSong.height) + "px";
+		}
+
+		for (i = songs.length - 1; i >= 0; i--) {
+			el.appendChild(songs[i].el);
+		}
 	};
 
 	self.on_resize = function() {};
+
+	var open_long_history = function(json) {
+		var w = $id("longhist_window");
+		while (w.firstChild) {
+			w.removeChild(w.firstChild);
+		}
+
+		var t = SongsTable(json, [ "song_played_at", "title", "album_name", "rating" ]);
+		w.appendChild(t);
+
+		Menu.show_modal($id("longhist_window_container"));
+	};
 
 	return self;
 }();

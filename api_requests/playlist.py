@@ -194,22 +194,23 @@ class PlaybackHistory(APIHandler):
 	login_required = False
 	sid_required = True
 	allow_get = True
+	pagination = True
 
 	def post(self):
 		if self.user.is_anonymous():
 			self.append(self.return_name, db.c.fetch_all(
-				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name "
+				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, songhist_time AS song_played_at "
 				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 				"WHERE r4_song_history.sid = %s "
-				"ORDER BY songhist_id DESC LIMIT 100",
+				"ORDER BY songhist_id DESC " + self.get_sql_limit_string(),
 				(self.sid,)))
 		else:
 			self.append(self.return_name, db.c.fetch_all(
-				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, song_rating_user AS rating_user, song_fave AS fave "
+				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, song_rating_user AS rating_user, song_fave AS fave, songhist_time AS song_played_at "
 				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 					"LEFT JOIN r4_song_ratings ON r4_song_history.song_id = r4_song_ratings.song_id AND user_id = %s "
 				"WHERE r4_song_history.sid = %s "
-				"ORDER BY songhist_id DESC LIMIT 100",
+				"ORDER BY songhist_id DESC " + self.get_sql_limit_string(),
 				(self.user.id, self.sid)))
 
 @handle_api_html_url("playback_history")

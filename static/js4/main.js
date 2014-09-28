@@ -1,4 +1,4 @@
-// 1. Previously played 2. Retina rating bars 3. Dropdown
+// 2. Retina rating bars 3. Dropdown
 
 var User;
 var SmallScreen = false;
@@ -154,7 +154,7 @@ function initialize() {
 	PlaylistLists.initialize();
 	Requests.initialize();
 	R4Audio.initialize(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
-	//History.initialize();
+	History.initialize();
 	SettingsWindow.initialize();
 
 	// ****************** PAGE LAYOUT
@@ -177,7 +177,7 @@ function initialize() {
 	Scrollbar.resizer_calculate();
 	Scrollbar.recalculate();
 	DetailView.scroll_init();
-	//History.scroll_init();
+	History.scroll_init();
 
 	// DIRTY THE LAYOUT
 
@@ -194,7 +194,7 @@ function initialize() {
 	DetailView.draw();
 	PlaylistLists.draw();
 	Schedule.draw();
-	//History.draw();
+	History.draw();
 	Menu.draw(BOOTSTRAP.station_list);
 	SettingsWindow.draw();
 	AboutWindow.draw();

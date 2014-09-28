@@ -1,52 +1,52 @@
-#history {
-	box-sizing: border-box;
-	margin: 0;
-	@include transition-wtime(300ms, opacity, height, padding);
-	opacity: 0;
-	position: absolute;
-	width: 380px;
-	height: 0;
-	background-color: #000;
-	border: solid 0px #000;
-	box-shadow: 3px 3px 3px 4px #000;
-	z-index: 100;
-	padding: 0;
+#history_outer_container {
+	margin-top: 10px;
 }
 
-#history_link, #history_link_container svg path {
-	@include transition(LINKCOLOR);
-}
-
-#history_link_container:hover #history_link {
-	color: $linkhover;
-}
-
-#history_link_container:hover svg path {
-	fill: $linkhover !important;
-}
-
-#history_link_container:hover #history, #history:hover, #history_link_container.hover_test #history {
-	border: solid 1px #777;
+#history_outer_container svg.pulldown_arrow {
+	height: 1em;
+	width: 1em;
+	vertical-align: middle;
 	opacity: 1;
-	height: 650px;
-	padding: 10px;
+	@include transition-wtime(350ms, opacity);
+}
+
+#history_outer_container div.timeline_header a:link, #history_outer_container div.timeline_header a:visited, #history_outer_container div.timeline_header .link {
+	color: $vdarktext;
+}
+
+#history_outer_container:hover svg.pulldown_arrow {
+	opacity: 0;
+}
+
+#longhist_link, #history_pin {
+	opacity: 0;
+	float: right;
+	@include transition-wtime(350ms, opacity);
+	margin-left: 10px;
+}
+
+#history_pin {
+	margin-top: 3px;
+}
+
+#history_outer_container:hover #longhist_link {
+	opacity: 1;
+}
+
+#history_outer_container:hover #history_pin {
+	opacity: 0.6;
+}
+
+#history_outer_container svg.pulldown_arrow * {
+	fill: $vdarktext;
+}
+
+#history_container {
+	overflow: hidden;
+	@include transition-wtime(350ms, opacity, height);
 }
 
 #history_list {
-	height: 100%;
-}
-
-#history div.timeline_song {
-	width: 350px;
-}
-
-div.history_song_header {
-	font-size: smaller;
-	color: $highlight;
-	text-transform: uppercase;
-	margin-bottom: 5px;
-}
-
-div.timeline_song + div.history_song_header {
-	margin-top: 2em;
+	position: relative;
+	@include transition-wtime(350ms, top);
 }
