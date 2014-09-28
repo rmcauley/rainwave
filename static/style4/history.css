@@ -14,7 +14,7 @@
 	color: $vdarktext;
 }
 
-#history_outer_container:hover svg.pulldown_arrow {
+#history_outer_container:hover svg.pulldown_arrow, div.sticky_history svg.pulldown_arrow {
 	opacity: 0;
 }
 
@@ -27,6 +27,13 @@
 
 #history_pin {
 	margin-top: 3px;
+	border: 1px solid transparent;
+	cursor: pointer;
+}
+
+div.sticky_history #history_pin {
+	border: 1px inset #222;
+	background: #000;
 }
 
 #history_outer_container:hover #longhist_link {
@@ -49,4 +56,31 @@
 #history_list {
 	position: relative;
 	@include transition-wtime(350ms, top);
+	width: 100%;
+}
+
+#history_list div.timeline_song {
+	position: absolute;
+	@include transition(transform, opacity);
+	width: 100%;
+}
+
+#history_list div.timeline_song:nth-child(2) {
+	opacity: 0.9;
+}
+
+#history_list div.timeline_song:nth-child(3) {
+	opacity: 0.8;
+}
+
+#history_list div.timeline_song:nth-child(4) {
+	opacity: 0.7;
+}
+
+#history_list div.timeline_song:nth-child(5) {
+	opacity: 0.6;
+}
+
+#history_list:hover div.timeline_song {
+	opacity: 1;
 }

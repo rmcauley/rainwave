@@ -203,14 +203,29 @@ var SettingsWindow = function() {
 		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".ogg", "textContent": "Foobar2000 Ogg", "class": "link", "target": "_blank" }));
 
 		div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
-		div.appendChild($el("label", { "textContent": $l("site_mode") }));		
+		div.appendChild($el("label", { "textContent": $l("site_mode") }));
 		div = div.appendChild($el("div", { "class": "multi_select multi_select_special" }));
 		option = div.appendChild($el("span", { "id": "site_mode_selector_basic", "class": "link", "textContent": $l("basic") }));
 		option.addEventListener("click", function(e) { Prefs.change("stage", 2); });
 		option = div.appendChild($el("span", { "id": "site_mode_selector_full", "class": "link", "textContent": $l("full") }));
 		option.addEventListener("click", function(e) { Prefs.change("stage", 4); });
 
-		draw_cb_list([ "show_artists" ], true);
+		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("timeline_preferences") }));
+		draw_cb_list([ "show_artists" ]);
+		div = el.appendChild($el("div", { "class": "setting_group" }));
+		var sticky_history_size = $el("div", { "id": "prefs_sticky_history_size", "class": "multi_select" });
+		var histsize_highlighter = sticky_history_size.appendChild($el("div", { "class": "floating_highlight" }));
+		for (i = 1; i <= 5; i++) {
+			option = $el("span", { "class": "link", "textContent": i });
+			option._value = i;
+			if (i == Prefs.get("sticky_history_size")) {
+				$add_class(option, "selected selected_first");
+			}
+			option.addEventListener("click", function(e) { multi_select_change(e, "sticky_history_size", histsize_highlighter); });
+			sticky_history_size.appendChild(option);
+		}
+		div.appendChild(sticky_history_size);
+		div.appendChild($el("label", { "textContent": $l("prefs_sticky_history_size") }));
 
 		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("tab_title_preferences") }));
 		draw_cb_list([

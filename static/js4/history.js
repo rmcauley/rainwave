@@ -4,12 +4,17 @@ var History = function() {
 	var outer_container;
 	var container;
 	var el;
-	var has_init = false;
 	var songs = [];
 	var is_mouseover = false;
+	var redo_schedule_scrollbar;
 
 	self.initialize = function() {
 		if (MOBILE) return;
+
+		Prefs.define("sticky_history", [ false, true ]);
+		Prefs.define("sticky_history_size", [ 3, 1, 2, 4, 5 ]);
+		Prefs.add_callback("sticky_history", sticky_change);
+		Prefs.add_callback("sticky_history_size", sticky_size_change);
 
 		outer_container = $id("history_outer_container");
 		container = $id("history_container");
@@ -24,23 +29,63 @@ var History = function() {
 		$id("longhist_modal_header").textContent = $l("extended_history_header");
 		$id("longhist_link").textContent = $l("extended_history_link");
 		$id("longhist_link").addEventListener("click", function() { API.async_get("playback_history", { "per_page": 40 }); });
+		$id("history_pin").addEventListener("click", function() { Prefs.change("sticky_history", !Prefs.get("sticky_history")); });
 		outer_container.addEventListener("mouseover", mouseover);
 		outer_container.addEventListener("mouseout", mouseout);
 		container.style.height = "0px";
+		el.style.top = -(5 * TimelineSong.height) + "px";
+		sticky_change(Prefs.get("sticky_history"));
 		API.add_callback(open_long_history, "playback_history");
+	};
+
+	var sticky_change = function(nv) {
+		if (nv) {
+			$add_class(outer_container, "sticky_history");
+			sticky_size_change(Prefs.get("sticky_history_size"), true);
+			// this will stop the scrollbar recalculate from firing on page load
+			if (songs.length > 0) {	sched_scrollbar_recalculate(); }
+		}
+		else {
+			$remove_class(outer_container, "sticky_history");
+			is_mouseover = false;
+			// same deal - stop this from firing on page load
+			if (songs.length > 0) {	
+				redo_schedule_scrollbar = true;
+				mouseover();
+			}
+		}
+	};
+
+	var sticky_size_change = function(nv, is_actually_sticky) {
+		if (!Prefs.get("sticky_history") && !is_actually_sticky) return;
+		container.style.height = (nv * TimelineSong.height) + "px";
+		el.style.top = -((5 - nv) * TimelineSong.height) + "px";
+	};
+
+	var sched_scrollbar_recalculate = function() {
+		Fx.chain_transition(el, function(e) {
+			setTimeout(function() { Schedule.scrollbar_recalculate(); }, 200);
+		});
+		redo_schedule_scrollbar = false;
 	};
 
 	var mouseover = function(e) {
 		if (is_mouseover) return;
+		if (Prefs.get("sticky_history")) return;
 		is_mouseover = true;
 		el.style.top = "0px";
 		container.style.height = (songs.length * TimelineSong.height) + "px";
 	};
 
 	var mouseout = function(e) {
+		if (Prefs.get("sticky_history")) return;
 		if (Mouse.is_mouse_leave(e, outer_container)) {
 			el.style.top = -(songs.length * TimelineSong.height) + "px";
 			container.style.height = "0px";
+			is_mouseover = false;
+			if (redo_schedule_scrollbar === true) {
+				sched_scrollbar_recalculate();
+			}
 		}
 	};
 
@@ -59,23 +104,20 @@ var History = function() {
 			}
 			if (!found) {
 				new_song = TimelineSong.new(json[i].songs[0]);
-				new_song.header = $el("div", { "class": "history_song_header", "textContent": $l("previouslyplayed") });
-				new_song.header._start_actual = json[i].start_actual;
+				new_song.el.style.transform = "translateY(" + (json.length * TimelineSong.height) + "px)";
 				new_songs.push(new_song);
 			}
 		}
 		songs = new_songs;
 
-		while (songs.length > 5) {
-			songs.shift();
-		}
-
-		if (!has_init) {
-			el.style.top = -(songs.length * TimelineSong.height) + "px";
+		for (i = 0; i <= (el.childNodes.length - 5); i++) {
+			Fx.delay_css_setting(el.childNodes[i], "transform", "translateY(-" + TimelineSong.height + "px)");
+			Fx.remove_element(el.childNodes[i]);
 		}
 
 		for (i = songs.length - 1; i >= 0; i--) {
 			el.appendChild(songs[i].el);
+			Fx.delay_css_setting(songs[i].el, "transform", "translateY(" + ((songs.length - i - 1) * TimelineSong.height) + "px)");
 		}
 	};
 
