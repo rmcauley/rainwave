@@ -265,27 +265,36 @@ class FileEventHandler(watchdog.events.FileSystemEventHandler):
 		self.sids = sids
 
 	def _handle_file(self, filename):
-		_scan_file(filename, self.sids)
+		try:
+			_scan_file(filename, self.sids)
+		except Exception as xception:
+			_add_scan_error(filename, xception)
 
 	def _handle_directory(self, directory):
-		_scan_directory(directory, self.sids)
+		try:
+			_scan_directory(directory, self.sids)
+		except Exception as xception:
+			_add_scan_error(directory, xception)
 
 	def _handle_event(self, event):
-		if hasattr(event, "src_path") and event.src_path and check_file_is_in_directory(event.src_path, self.root_directory):
-			if not os.path.isdir(event.src_path) and not event.event_type == 'deleted':
-				log.debug("scan_event", "%s for file %s" % (event.event_type, event.src_path))
-				self._handle_file(event.src_path)
-			else:
-				log.debug("scan_event", "%s for dir %s" % (event.event_type, event.src_path))
-				self._handle_directory(event.src_path)
+		try:
+			if hasattr(event, "src_path") and event.src_path and check_file_is_in_directory(event.src_path, self.root_directory):
+				if not os.path.isdir(event.src_path) and not event.event_type == 'deleted':
+					log.debug("scan_event", "%s for file %s" % (event.event_type, event.src_path))
+					self._handle_file(event.src_path)
+				else:
+					log.debug("scan_event", "%s for dir %s" % (event.event_type, event.src_path))
+					self._handle_directory(event.src_path)
 
-		if hasattr(event, "dest_path") and event.dest_path and check_file_is_in_directory(event.dest_path, self.root_directory):
-			if not os.path.isdir(event.dest_path) and not event.event_type == 'deleted':
-				log.debug("scan_event", "%s for file %s" % (event.event_type, event.dest_path))
-				self._handle_file(event.dest_path)
-			else:
-				log.debug("scan_event", "%s for dir %s" % (event.event_type, event.dest_path))
-				self._handle_directory(event.dest_path)
+			if hasattr(event, "dest_path") and event.dest_path and check_file_is_in_directory(event.dest_path, self.root_directory):
+				if not os.path.isdir(event.dest_path) and not event.event_type == 'deleted':
+					log.debug("scan_event", "%s for file %s" % (event.event_type, event.dest_path))
+					self._handle_file(event.dest_path)
+				else:
+					log.debug("scan_event", "%s for dir %s" % (event.event_type, event.dest_path))
+					self._handle_directory(event.dest_path)
+		except Exception as xception:
+			_add_scan_error(self.root_directory, xception)
 
 	def on_moved(self, event):
 		self._handle_event(event)

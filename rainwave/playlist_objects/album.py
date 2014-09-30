@@ -172,7 +172,7 @@ class Album(AssociatedMetadata):
 		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (album_id,))
 		for sid in current_sids:
 			if not new_sids.count(sid):
-				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE WHERE album_id = %s AND sid = %s", (album_id, sid))
+				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE AND album_num_songs = 0 WHERE album_id = %s AND sid = %s", (album_id, sid))
 		for sid in new_sids:
 			if current_sids.count(sid):
 				pass
