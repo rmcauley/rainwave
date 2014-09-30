@@ -35,12 +35,13 @@ var Menu = function() {
 			else {
 				$add_class(elements.user_info, "show_anonymous_avatar");
 			}
-			elements.user_info.appendChild($el("a", { "textContent": User.name }));
-			elements.user_info.addEventListener("click", function() { DetailView.open_listener(User.id); });
+			$id("user_info_name").textContent = User.name;
+			$id("user_info_name").addEventListener("click", function() { DetailView.open_listener(User.id); });
 		}
 		else {
 			$add_class(elements.user_info, "show_anonymous_avatar anonymous_user");
-			elements.user_info.appendChild($el("a", { "href": "http://rainwave.cc/forums/ucp.php?mode=login&redirect=/", "textContent": $l("login") }));
+			$id("user_info_name").setAttribute("href", "http://rainwave.cc/forums/ucp.php?mode=login&redirect=/");
+			$id("user_info_name").textContent ="login";
 		}
 
 		// Setup station select menu

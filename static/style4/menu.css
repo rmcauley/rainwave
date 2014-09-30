@@ -244,6 +244,15 @@ div.station_song {
 	cursor: pointer;
 }
 
+#top_icons img.avatar.icon {
+	position: relative;
+	top: 2px;
+	max-width: 1.2em;
+	margin-right: 5px;
+	padding: 0;
+	vertical-align: baseline;
+}
+
 #top_icons #anonymous_user_avatar {
 	display: none;
 }
