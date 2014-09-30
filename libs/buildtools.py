@@ -9,6 +9,8 @@ def create_baked_directory():
 	d = os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()))
 	if not os.path.exists(d):
 		os.makedirs(d)
+		return True
+	return False
 
 def bake_css():
 	create_baked_directory()
@@ -46,7 +48,7 @@ def get_js_file_list_url():
 		return result
 	return get_js_file_list()
 
-def bake_js(source_dir="js", dest_file="script.js"):
+def bake_js(source_dir="js4", dest_file="script4.js"):
 	create_baked_directory()
 	o = open(os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), dest_file), "w")
 	for fn in get_js_file_list(source_dir):
@@ -54,9 +56,6 @@ def bake_js(source_dir="js", dest_file="script.js"):
 		o.write(jsmin(jsfile.read()))
 		jsfile.close()
 	o.close()
-
-def bake_beta_js():
-	bake_js("js4", "script4.js")
 
 def get_build_number():
 	bnf = open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), 'r')

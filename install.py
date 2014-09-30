@@ -54,8 +54,9 @@ shutil.rmtree(os.path.join(installdir, "static", "baked"))
 
 if os.path.exists(tmpdir):
 	shutil.copytree(os.path.join(tmpdir, "static", "baked"), os.path.join(installdir, "static", "baked"))
-if not os.path.exists(os.path.join(installdir, "static", "baked", str(buildtools.get_build_number()))):
-	os.makedirs(os.path.join(installdir, "static", "baked", str(buildtools.get_build_number())))
+if not buildtools.create_baked_directory():
+	buildtools.bake_css()
+	buildtools.bake_js()
 
 subprocess.call(["chown", "-R", "%s:%s" % (user, group), installdir ])
 
