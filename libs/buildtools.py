@@ -12,11 +12,13 @@ def create_baked_directory():
 
 def bake_css():
 	create_baked_directory()
-	# _bake_css_file(os.path.join(os.path.dirname(__file__), "../static/style/_sass.scss"),
-	# 			   os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style.css"))
 	_bake_css_file(os.path.join(os.path.dirname(__file__), "../static/style4/_sass.scss"),
 				   os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style4.css"))
 
+def bake_beta_css():
+	create_baked_directory()
+	_bake_css_file(os.path.join(os.path.dirname(__file__), "../static/style4/_sass.scss"),
+				   os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style4b.css"))
 
 def _bake_css_file(input_filename, output_filename):
 	css_f = open(input_filename, 'r')
