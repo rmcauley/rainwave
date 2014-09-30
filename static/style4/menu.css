@@ -248,7 +248,7 @@ div.station_song {
 	position: relative;
 	top: 2px;
 	max-width: 1.2em;
-	margin-right: 5px;
+	margin-left: 5px;
 	padding: 0;
 	vertical-align: baseline;
 }
@@ -271,7 +271,7 @@ div.station_song {
 }
 
 #top_icons #icon_cluster > *:last-child {
-	padding-right: 0;
+	padding-right: 10px;
 }
 
 /* PLAYER */
