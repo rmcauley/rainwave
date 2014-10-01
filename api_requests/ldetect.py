@@ -29,6 +29,7 @@ class IcecastHandler(RainwaveHandler):
 		if not self.relay:
 			self.set_status(403)
 			self.append("%s is not a valid relay." % self.request.remote_ip)
+			log.debug("ldetect", "%s is not a valid relay." % self.request.remote_ip)
 			self.finish()
 			return
 
@@ -50,6 +51,8 @@ class IcecastHandler(RainwaveHandler):
 			if isinstance(exc, APIException):
 				exc.localize(self.locale)
 				self.set_header("icecast-auth-message", exc.reason)
+			log.debug("ldetect", "Relay command failed: %s" % exc.reason)
+			log.exception("ldetect", "Exception encountered handling relay command.", exc)
 		super(IcecastHandler, self).finish()
 
 	def append(self, message, dct = None):
