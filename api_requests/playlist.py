@@ -53,7 +53,7 @@ class ArtistHandler(APIHandler):
 	def post(self):
 		artist = playlist.Artist.load_from_id(self.get_argument("id"))
 		artist.load_all_songs(self.sid, self.user.id)
-		self.append(self.return_name, artist.to_dict(self.user))
+		self.append(self.return_name, artist.to_dict_full(self.user))
 
 @handle_api_url("group")
 class GroupHandler(APIHandler):
@@ -64,7 +64,7 @@ class GroupHandler(APIHandler):
 	def post(self):
 		group = playlist.SongGroup.load_from_id(self.get_argument("id"))
 		group.load_songs_from_sid(self.sid, self.user.id)
-		self.append(self.return_name, group.to_dict(self.user))
+		self.append(self.return_name, group.to_dict_full(self.user))
 
 @handle_api_url("album")
 class AlbumHandler(APIHandler):
@@ -75,7 +75,7 @@ class AlbumHandler(APIHandler):
 	def post(self):
 		album = playlist.Album.load_from_id_with_songs(self.get_argument("id"), self.sid, self.user)
 		album.load_extra_detail(self.sid)
-		self.append("album", album.to_dict(self.user))
+		self.append("album", album.to_dict_full(self.user))
 
 @handle_api_url("song")
 class SongHandler(APIHandler):

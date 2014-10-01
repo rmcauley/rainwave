@@ -366,9 +366,22 @@ class Album(AssociatedMetadata):
 		return db.c.update("UPDATE r4_album_sid SET album_vote_count = %s WHERE album_id = %s AND sid = %s", (count, self.id, sid))
 
 	def to_dict(self, user = None):
-		d = super(Album, self).to_dict(user)
+		d = {}
+		d['id'] = self.id
+		for v in [ 'rating', 'art', 'name' ]:
+			d[v] = self.data[v]
+
 		if user:
-			self.data.update(rating.get_album_rating(self.sid, self.id, user.id))
+			d.update(rating.get_album_rating(self.sid, self.id, user.id))
+		else:
+			d['rating_user'] = None
+			d['fave'] = None
+		return d
+
+	def to_dict_full(self, user = None):
+		d = super(Album, self).to_dict_full(user)
+		if user:
+			d.update(rating.get_album_rating(self.sid, self.id, user.id))
 		else:
 			d['rating_user'] = None
 			d['fave'] = None

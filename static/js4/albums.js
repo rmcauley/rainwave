@@ -52,7 +52,7 @@ var Albums = function() {
 			if (json.secret_user_sauce.indexOf("svg") == -1) ac.className = "art_container avatar";
 			ac.style.backgroundImage = "url(" + json.secret_user_sauce + ")";	
 		}
-		else if (!json.art) {
+		else if (!json.art || (json.art.length == 0)) {
 			ac = c.appendChild($el("div", { "class": "art_container" }));
 			ac.style.backgroundImage = "url(/static/images4/noart_1.jpg)";
 		}
