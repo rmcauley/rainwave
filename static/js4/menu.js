@@ -72,6 +72,10 @@ var Menu = function() {
 		API.add_callback(update_station_info, "all_stations_info");
 
 		$id("calendar_menu_item").addEventListener("mouseover", insert_calendar_iframe);
+
+		$id("about_modal_close").addEventListener("click", self.remove_modal);
+		$id("settings_modal_close").addEventListener("click", self.remove_modal);
+		$id("longhist_modal_close").addEventListener("click", self.remove_modal);
 	};
 
 	var current_modal;

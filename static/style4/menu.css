@@ -414,7 +414,7 @@ div.modal_header {
 }
 
 div.modal_header_content {
-	max-width: 850px;
+	max-width: 900px;
 	width: 65%;
 	margin: 0 auto;
 	opacity: 0;
@@ -423,9 +423,20 @@ div.modal_header_content {
 
 div.active_modal div.modal_header_content {
 	opacity: 1;
-	padding-left: 25px;
-	@include transition(padding, opacity);
+	max-width: 850px;
+	width: 55%;
+	@include transition(padding, opacity, width, max-width);
 	@include transition-delay(600ms);
+}
+
+div.modal_header_content svg {
+	fill: $text;
+	float: right;
+	height: 1em;
+	width: 1em;
+	stroke: #FFF;
+	margin-top: 3px;
+	cursor: pointer;
 }
 
 div.modal {
