@@ -38,12 +38,12 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 	width: 20px;
 }
 
-#top_menu svg rect, #top_menu svg circle, #top_menu svg path, #top_menu svg polygon {
+#top_menu svg {
 	fill: $text;
 	@include transition-wtime(150ms, fill);
 }
 
-#top_menu a:hover svg rect, #top_menu a:hover svg circle, #top_menu a:hover svg path, #top_menu a:hover svg polygon {
+#top_menu a:hover svg {
 	fill: $linkhover;
 }
 
