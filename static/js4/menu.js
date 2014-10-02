@@ -129,10 +129,13 @@ var Menu = function() {
 			$add_class($id("station_select_container"), "open");
 			$id("station_select").addEventListener("mouseout", close_station_select);
 		}
+		else {
+			close_station_select(null, true);
+		}
 	};
 
-	var close_station_select = function(e) {
-		if (Mouse.is_mouse_leave(e, $id("station_select"))) {
+	var close_station_select = function(e, override) {
+		if (override || Mouse.is_mouse_leave(e, $id("station_select"))) {
 			$id("station_select").removeEventListener("mouseout", close_station_select);
 			$remove_class($id("station_select"), "open");
 			$remove_class($id("station_select_container"), "open");
