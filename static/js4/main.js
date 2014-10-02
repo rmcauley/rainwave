@@ -10,6 +10,7 @@ var MENU_HEIGHT = 45;
 function _size_calculate() {
 	"use strict";
 	if (MOBILE) return;
+	var old_width = SCREEN_WIDTH;
 	var old_height = SCREEN_HEIGHT;
 	SCREEN_HEIGHT = document.documentElement.clientHeight;
 	SCREEN_WIDTH = document.documentElement.clientWidth;
@@ -26,7 +27,7 @@ function _size_calculate() {
 		Fx.delay_draw(function() { RatingControl.change_padding_top(3); });
 		return true;
 	}
-	return old_height != SCREEN_HEIGHT;
+	return old_height != SCREEN_HEIGHT || old_width != SCREEN_WIDTH;
 }
 
 function _on_resize() {

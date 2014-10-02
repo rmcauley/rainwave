@@ -276,7 +276,7 @@ div.station_song {
 
 /* PLAYER */
 
-#player {
+#r4_audio_player {
 	position: relative;
 	display: inline-block;
 	top: 50%;
@@ -286,16 +286,16 @@ div.station_song {
 	font-weight: 300;
 }
 
-#player #audio_status {
+#r4_audio_player #audio_status {
 	padding-left: 1.15em;
 	@include transition(LINKCOLOR);
 }
 
-#player a:hover #audio_status {
+#r4_audio_player a:hover #audio_status {
 	color: $linkhover;
 }
 
-#player svg.audio_icon {
+#r4_audio_player svg.audio_icon {
 	position: absolute;
 	left: 5px;
 	height: 0.9em;
@@ -303,27 +303,28 @@ div.station_song {
 	margin-top: .25em;
 }
 
-#player a:hover svg.audio_icon rect, #player a:hover svg.audio_icon circle, #player a:hover svg.audio_icon path, #player a:hover svg.audio_icon polygon {
+#r4_audio_player a:hover svg.audio_icon rect, #r4_audio_player a:hover svg.audio_icon circle, #r4_audio_player a:hover svg.audio_icon path, #r4_audio_player a:hover svg.audio_icon polygon {
 	fill: $linkhover;
 }
 
-#player svg.audio_icon use {
+#r4_audio_player svg.audio_icon use {
 	@include transition(opacity);
 }
 
-#player #audio_icon_stop {
+#r4_audio_player #audio_icon_stop {
 	opacity: 0;
 }
 
-#player.playing #audio_icon_stop {
+#r4_audio_player.playing #audio_icon_stop {
 	opacity: 1;
 }
 
-#player.playing #audio_icon_play {
+#r4_audio_player.playing #audio_icon_play {
 	opacity: 0;
 }
 
-#top_menu #player svg#audio_volume {
+#top_menu #r4_audio_player svg#audio_volume {
+	position: relative;
 	margin-left: .3em;
 	width: 1.3em;
 	height: .7em;
@@ -331,8 +332,12 @@ div.station_song {
 	@include transition(opacity);
 }
 
-#top_menu #player.playing svg#audio_volume {
+#top_menu #r4_audio_player.playing svg#audio_volume {
 	opacity: 1;
+}
+
+#top_menu #r4_audio_player svg rect#audio_volume_indicator_background {
+	opacity: 0.5;
 }
 
 /* CALENDAR */

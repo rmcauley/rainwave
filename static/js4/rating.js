@@ -184,7 +184,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 		self.el.addEventListener("mouseover", self.fave_mouse_over);
 		self.el.addEventListener("mouseout", self.reset_fave);
 		self.el.addEventListener("click", click);
-		$add_class(fave_solid, "faveable");
+		$add_class(fave_lined, "faveable");
 
 		if (type == "song") {
 			self.el.addEventListener("mouseout", self.hide_hover);

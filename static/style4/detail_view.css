@@ -206,6 +206,10 @@ table.songlist td.songlist_requestable span {
 	display: none;
 }
 
+table.songlist tr:hover img.faveable {
+	opacity: 1;
+}
+
 div.songlist_request_hint table.songlist td.songlist_requestable {
 	width: 80px;
 }
@@ -244,9 +248,16 @@ ul.user_detail_legend li + li {
 	margin-left: 1em;
 }
 
+div.user_detail_container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	align-content: space-around;
+}
+
 div.user_detail_segment {
 	float: left;
-	width: 300px;
+	width: 250px;
 	margin-left: 30px;
 	text-align: center;
 }

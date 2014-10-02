@@ -48,6 +48,9 @@ var Requests = function() {
 		$id("requests_unrated").setAttribute("title", $l("request_fill_with_unrated"));
 		$id("requests_unrated").setAttribute("alt", $l("request_fill_with_unrated"));
 		$id("requests_unrated").addEventListener("click", self.fill_with_unrated);
+		$id("requests_favfill").setAttribute("title", $l("request_fill_with_unrated"));
+		$id("requests_favfill").setAttribute("alt", $l("request_fill_with_faves"));
+		$id("requests_favfill").addEventListener("click", self.fill_with_faves);
 		self.on_resize();
 	};
 
@@ -142,6 +145,10 @@ var Requests = function() {
 
 	self.fill_with_unrated = function() {
 		API.async_get("request_unrated_songs");
+	};
+
+	self.fill_with_faves = function() {
+		API.async_get("request_favorited_songs");
 	};
 
 	self.add = function(song_id) {

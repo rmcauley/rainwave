@@ -178,6 +178,7 @@
    "clear_request_queue"                             : "Clear All",
    "pause_request_queue"                             : "Pause",
    "request_fill_with_unrated"                       : "Unrated Fill",
+   "request_fill_with_faves"                         : "Fave Fill",
 
    "Requests"                                        : "Requests",
    "requests_expiring"                               : "Place In Line Will Expire!",

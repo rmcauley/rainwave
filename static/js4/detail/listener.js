@@ -3,7 +3,6 @@ var ListenerView = function(view, json) {
 	view.el.appendChild(Albums.art_html({ "secret_user_sauce": json.avatar }));
 	var d = $el("div", { "class": "albumview_header" });
 	d.appendChild($el("h1", { "textContent": json.name }));
-	console.log(json);
 	if (json.user_id == User.id) {
 		var d2 = d.appendChild($el("div", { "class": "albumview_info" }));
 		d2.appendChild($el("a", { "href": "http://rainwave.cc/keys/", "class": "link_obvious", "target": "_blank", "textContent": $l("manage_your_api_keys")}));
@@ -20,7 +19,7 @@ var ListenerView = function(view, json) {
 		4: "#6e439d",  // Indigo
 		5: "#a8cb2b",  // greenish
 	};
-	var chart_width = 300;
+	var chart_width = 250;
 	var chart_height = 200;
 
 	var c = view.el.appendChild($el("div", { "style": "text-align: center;" }));
@@ -29,11 +28,15 @@ var ListenerView = function(view, json) {
 		d.appendChild($el("li", { "textContent": $l("station_name_" + order[i]), "style": "background-color: " + colors[order[i]] + ";" }));
 	}
 
+	view._detail_container = view.el.appendChild($el("div", { "class": "user_detail_container" }));
+
 	if (json.user_id == User.id) {
-		d = view.el.appendChild($el("div", { "class": "user_detail_segment" }));
+		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("your_mobile_app_qr") }));
-		d.appendChild($el("img", { "width": chart_height - 4, "height": chart_height - 4, "src": "http://chart.apis.google.com/chart?cht=qr&chs=" + (chart_height - 4) + "x" + (chart_height - 4) + "&choe=ISO-8859-1&chl=" + "rw://" + User.id + ":" + User.api_key + "@rainwave.cc" }));
+		d.appendChild($el("img", { "width": chart_height - 5, "height": chart_height - 5, "src": "http://chart.apis.google.com/chart?cht=qr&chs=" + (chart_height - 4) + "x" + (chart_height - 4) + "&choe=ISO-8859-1&chl=" + "rw://" + User.id + ":" + User.api_key + "@rainwave.cc" }));
 	}
+
+	var current_chart_draw_steps = 40;
 
 	var draw_chart = function(jd, key, header) {
 		var data = [];
@@ -47,10 +50,11 @@ var ListenerView = function(view, json) {
 			}
 		}
 		if (data.length > 0) {
-			d = view.el.appendChild($el("div", { "class": "user_detail_segment" }));
+			d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 			d.appendChild($el("h3", { "textContent": header }));
 			var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
-			var chart = new Chart(cnvs.getContext("2d")).Doughnut(data, { "animationSteps": 40 });
+			var chart = new Chart(cnvs.getContext("2d")).Doughnut(data, { "animationSteps": current_chart_draw_steps });
+			current_chart_draw_steps += 5;
 		}
 	};
 
@@ -70,10 +74,11 @@ var ListenerView = function(view, json) {
 		total_data += json.rating_completion[sid] || 0;
 	}
 	if (total_data > 5) {
-		d = view.el.appendChild($el("div", { "class": "user_detail_segment" }));
+		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("ratings_completion_rate") }));
 		var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
-		var chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 20, "scaleStartValue": 0, "tooltipTemplate": "<%=label%>: <%= value %>%" });
+		var chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 20, "scaleStartValue": 0, "tooltipTemplate": "<%=label%>: <%= value %>%", "animationSteps": current_chart_draw_steps });
+		current_chart_draw_steps += 5;
 	}
 
 	var data = [];
@@ -92,10 +97,11 @@ var ListenerView = function(view, json) {
 		if (!found) data.push({ "value": 0, "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });	
 	}
 	if (any_found) {
-		d = view.el.appendChild($el("div", { "class": "user_detail_segment" }));
+		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("average_rating_by_station") }));
 		var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
-		var chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 1, "scaleStartValue": 0 });
+		var chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 1, "scaleStartValue": 0, "animationSteps": current_chart_draw_steps });
+		current_chart_draw_steps += 5;
 	}
 
 	data = [];
@@ -108,10 +114,11 @@ var ListenerView = function(view, json) {
 		}
 	}
 	if (data.length > 0) {
-		d = view.el.appendChild($el("div", { "class": "user_detail_segment" }));
+		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("rating_spread") }));
 		var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
-		var chart = new Chart(cnvs.getContext("2d")).Doughnut(data);
+		var chart = new Chart(cnvs.getContext("2d")).Doughnut(data, { "animationSteps": current_chart_draw_steps });
+		current_chart_draw_steps += 5;
 	}	
 
 	return view.el;

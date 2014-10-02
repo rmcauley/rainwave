@@ -105,15 +105,15 @@
 				</div>
 			</div>
 
-			<div id="player" class="unselectable">
-				<a id="player_link" href="/tune_in/{{ request.sid }}.mp3" target="_blank">
+			<div id="r4_audio_player">
+				<a class="unselectable" id="player_link" href="/tune_in/{{ request.sid }}.mp3" target="_blank">
 					<svg class="audio_icon">
 						<use id="audio_icon_play" xlink:href="/static/images4/symbols.svg#play"></use>
 						<use id="audio_icon_stop" xlink:href="/static/images4/symbols.svg#stop"></use>
 					</svg>
 					<span id="audio_status"></span>
 				</a>
-				<svg id="audio_volume" viewBox="0 0 100 100" preserveAspectRatio="none">
+				<svg class="unselectable" id="audio_volume" viewBox="0 0 100 100" preserveAspectRatio="none">
 					<clipPath id="volume_bars">
 						<rect x="0" y="80"  width="17" height="20"  />
 						<rect x="20" y="60" width="17" height="40"  />
@@ -205,6 +205,7 @@
 			<div id="requests_scrollblock" class="scrollblock">
 				<div id="requests_toolbar">
 					<img id="requests_pause" class="requests_advanced" src="/static/images4/request_pause.png" width="14" height="14" />
+					<img id="requests_favfill" class="requests_advanced" src="/static/images4/request_faves.png" width="14" height="14" />
 					<img id="requests_unrated" class="requests_advanced" src="/static/images4/request_unrated.png" width="14" height="14" />
 					<img id="requests_clear" class="requests_advanced" src="/static/images4/request_clear.png" width="14" height="14" />
 					<img id="requests_pin" src="/static/images4/pin_hdpi.png" width="14" height="14" />

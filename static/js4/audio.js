@@ -12,7 +12,7 @@
 	
 	Style the page as you see fit.
 		- No class present on audio_icon means the player is stopped
-		- Class "audio_playing" will be applied to #audio_icon when playing
+		- Class "playing" will be applied to r4_audio_player when playing
 
 	Next pick your station ID:
 		1 = Game
@@ -173,26 +173,23 @@ var R4Audio = function() {
 	};
 
 	self.on_stop = function() {
-		icon_el.className = "";
-		if (volume_el) volume_el.setAttribute("class", "");
+		document.getElementById("r4_audio_player").className = "";
 		text_el.textContent = $l ? $l("tunein") : "Tune In";
 		self.stop();
 	};
 
 	self.on_connecting = function() {
-		icon_el.className = "audio_connecting";
+		// nothin
 	};
 
 	self.on_play = function() {
-		icon_el.className = "audio_playing";
-		if (volume_el) volume_el.setAttribute("class", "audio_playing_volume");
+		document.getElementById("r4_audio_player").className = "playing";
 		text_el.textContent = $l ? $l("stop") : "Stop";
 		self.clear_audio_errors();
 	};
 
 	self.on_stall = function() {
 		if (!ErrorHandler) return;
-		icon_el.className = "audio_connecting";
 		var a = $el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": $l("try_external_player") });
 		a.addEventListener("click", function() {
 			self.stop();
