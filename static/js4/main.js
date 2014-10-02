@@ -78,25 +78,22 @@ function vote_cta_check() {
 }
 
 function request_cta_check() {
-	return;
-	
-	// if ((User.id > 1) && (Prefs.get("stage") == 2)) {
-	// 	if (!$id("request_cta")) {
-	// 		var cta = $el("li", { "id": "request_cta" });
-	// 		cta.appendChild($el("img", { "src": "/static/images4/request.png" }));
-	// 		cta.appendChild($el("span", { "textContent": $l("request_song_to_vote_for") }));
-	// 		$id("main_icons").insertBefore(cta, $id("main_icons").firstChild);
-	// 		cta.addEventListener("click", function() {
-	// 			Prefs.change("stage", 3);
-	// 			Fx.remove_element(cta);
-	// 			PlaylistLists.intro_mode_first_open();
-	// 		});
-	// 		Fx.delay_css_setting(cta, "opacity", 1);
-	// 	}
-	// }
-	// else if ($id("request_cta")) {
-	// 	$id("request_cta").parentNode.removeChild($id("request_cta"));
-	// }
+	if ((User.id > 1) && (Prefs.get("stage") == 2)) {
+		if (!$id("request_cta")) {
+			var cta = $el("li", { "id": "request_cta", "class": "link" });
+			cta.appendChild($el("span", { "textContent": $l("Request") }));
+			$id("top_icons").insertBefore(cta, $id("top_icons").firstChild);
+			cta.addEventListener("click", function() {
+				Prefs.change("stage", 3);
+				Fx.remove_element(cta);
+				PlaylistLists.intro_mode_first_open();
+			});
+			Fx.delay_css_setting(cta, "opacity", 1);
+		}
+	}
+	else if ($id("request_cta")) {
+		$id("request_cta").parentNode.removeChild($id("request_cta"));
+	}
 }
 
 function stage_switch(nv, ov) { 

@@ -47,10 +47,6 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 	fill: $linkhover;
 }
 
-#facebook_f {
-	fill: $highlight !important;
-}
-
 /* STATION SELECT */
 
 $menu_transfunc: cubic-bezier(0.77, 0, 0.175, 1);
