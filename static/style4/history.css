@@ -2,19 +2,43 @@
 	margin-top: 10px;
 }
 
+#history_header_container {
+	cursor: pointer;
+	@include transition-wtime(350ms, color, background-color);
+}
+
+#history_outer_container.history_not_showing #history_header_container:hover {
+	color: $text;
+	background-color: $cooldown-color;
+}
+
+#history_outer_container.sticky_history #history_header_container {
+	cursor: default;
+}
+
 #history_outer_container svg.pulldown_arrow {
 	height: 1em;
 	width: 1em;
 	vertical-align: middle;
 	opacity: 1;
-	@include transition-wtime(350ms, opacity);
+	fill: $vdarktext;
+	@include transition-wtime(350ms, opacity, transform, fill);
+	@include transform(rotate(0deg));
+}
+
+#history_outer_container.history_not_showing #history_header_container:hover svg {
+	fill: $text;
 }
 
 #history_outer_container div.timeline_header a:link, #history_outer_container div.timeline_header a:visited, #history_outer_container div.timeline_header .link {
 	color: $vdarktext;
 }
 
-#history_outer_container:hover svg.pulldown_arrow, div#history_outer_container.sticky_history svg.pulldown_arrow {
+#history_outer_container.history_showing svg.pulldown_arrow {
+	@include transform(rotate(180deg));
+}
+
+div#history_outer_container.sticky_history svg.pulldown_arrow {
 	opacity: 0;
 }
 
@@ -44,9 +68,6 @@ div.sticky_history #history_pin {
 	opacity: 0.6;
 }
 
-#history_outer_container svg.pulldown_arrow * {
-	fill: $vdarktext;
-}
 
 #history_container {
 	overflow: hidden;

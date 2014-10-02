@@ -27,9 +27,9 @@ var History = function() {
 		$id("history_header").textContent = $l("previouslyplayed");
 		$id("longhist_modal_header").textContent = $l("extended_history_header");
 		$id("longhist_link").textContent = $l("extended_history_link");
-		$id("longhist_link").addEventListener("click", function() { API.async_get("playback_history", { "per_page": 40 }); });
-		$id("history_pin").addEventListener("click", function() { Prefs.change("sticky_history", !Prefs.get("sticky_history")); });
-		outer_container.addEventListener("mouseover", mouseover);
+		$id("longhist_link").addEventListener("click", function(e) { e.stopPropagation(); API.async_get("playback_history", { "per_page": 40 }); });
+		$id("history_pin").addEventListener("click", function(e) { e.stopPropagation(); Prefs.change("sticky_history", !Prefs.get("sticky_history")); });
+		$id("history_header_container").addEventListener("click", showing_swap);
 		outer_container.addEventListener("mouseout", mouseout);
 		container.style.height = "0px";
 		el.style.top = -(5 * TimelineSong.height) + "px";
@@ -40,6 +40,7 @@ var History = function() {
 	var sticky_change = function(nv) {
 		if (nv) {
 			$add_class(outer_container, "sticky_history");
+			$remove_class(outer_container, "nonsticky_history");
 			sticky_size_change(Prefs.get("sticky_history_size"), false, true);
 			// this will stop the scrollbar recalculate from firing on page load
 			if (songs.length > 0) {	
@@ -48,11 +49,13 @@ var History = function() {
 		}
 		else {
 			$remove_class(outer_container, "sticky_history");
+			$add_class(outer_container, "nonsticky_history");
+			$add_class(outer_container, "history_not_showing");
 			is_mouseover = false;
 			// same deal - stop this from firing on page load
-			if (songs.length > 0) {	
-				mouseover();
-			}
+			// if (songs.length > 0) {	
+			// 	mouseover();
+			// }
 		}
 	};
 
@@ -69,18 +72,32 @@ var History = function() {
 		});
 	};
 
+	var showing_swap = function(e) {
+		if (e.button !== 0) return;
+		if (is_mouseover) {
+			mouseout(e, true);
+		}
+		else {
+			mouseover(e);
+		}
+	};
+
 	var mouseover = function(e) {
-		if (is_mouseover) return;
+		// if (is_mouseover) return;
 		if (Prefs.get("sticky_history")) return;
 		is_mouseover = true;
+		$add_class(outer_container, "history_showing");
+		$remove_class(outer_container, "history_not_showing");
 		el.style.top = "0px";
 		container.style.height = (songs.length * TimelineSong.height) + "px";
 		sched_scrollbar_recalculate();
 	};
 
-	var mouseout = function(e) {
+	var mouseout = function(e, override) {
 		if (Prefs.get("sticky_history")) return;
-		if (Mouse.is_mouse_leave(e, outer_container)) {
+		if (override || Mouse.is_mouse_leave(e, outer_container)) {
+			$remove_class(outer_container, "history_showing");
+			$add_class(outer_container, "history_not_showing");
 			el.style.top = -(songs.length * TimelineSong.height) + "px";
 			container.style.height = "0px";
 			is_mouseover = false;
