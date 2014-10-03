@@ -540,7 +540,7 @@ class Song(object):
 			if user.data['rate_anything']:
 				d['rating_allowed'] = True
 		
-		for v in [ "entry_id", "elec_request_user_id", "entry_position", "entry_type", "elec_request_username", "sid" ]:
+		for v in [ "entry_id", "elec_request_user_id", "entry_position", "entry_type", "elec_request_username", "sid", "one_up_used", "one_up_queued", "one_up_id" ]:
 			if v in self.data:
 				d[v] = self.data[v]
 
