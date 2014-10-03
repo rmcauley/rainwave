@@ -128,7 +128,7 @@ div.timeline_song_content > div, div.timeline_song_content div.album_group .link
 	color: $song_subinfo_color;
 }
 
-div.timeline_song_content div.album_group .link.rating_title_el_fave {
+div.timeline_song_content div.album.rating_title_el_fave span.link {
 	color: $fave_color;
 }
 

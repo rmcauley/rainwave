@@ -59,6 +59,10 @@ body.requests_sticky #requests_grab_tag {
 	position: relative;
 }
 
+#requests div.rating_site, #requests div.rating_user {
+	display: none;
+}
+
 /* REQUEST-ONLY ELEMENTS */
 
 #requests_header {
@@ -146,6 +150,11 @@ div.request_sort_grab img {
 	left: 20px;
 	height: 30px;
 	width: 30px;
+}
+
+body.small_screen div.request_sort_grab img {
+	top: 14px;
+	left: 14px;
 }
 
 #requests div.timeline_song.dragging {

@@ -109,6 +109,9 @@ var TimelineSong = function() {
 				self.update_cooldown_info();
 			}
 
+			if (song_rating) song_rating.reset_fave();
+			if (album_rating) album_rating.reset_fave();
+
 			self.el.appendChild(c);
 		};
 
