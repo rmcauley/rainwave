@@ -82,10 +82,10 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 			self.write("<ol>")
 			for song in ph['songs']:
 				self.write("<li><div>%s" % song['title'])
-				if song['one_up_used']:
-					self.write(" <b>(PLAYED)</b>")
-				elif song['one_up_queued']:
-					self.write(" (queued)")
+				# if song['one_up_used']:
+				# 	self.write(" <b>(PLAYED)</b>")
+				# elif song['one_up_queued']:
+				# 	self.write(" (queued)")
 				self.write("</div><div>%s</div>\n" % song['albums'][0]['name'])
 				self.write("<div><a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">Delete</a></div></li>\n" % song['one_up_id'])
 			self.write("</ol>\n")
