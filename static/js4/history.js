@@ -11,7 +11,7 @@ var History = function() {
 		if (MOBILE) return;
 
 		Prefs.define("sticky_history", [ false, true ]);
-		Prefs.define("sticky_history_size", [ 3, 1, 2, 4, 5 ]);
+		Prefs.define("sticky_history_size", [ 5, 4, 3, 2, 1 ]);
 		Prefs.add_callback("sticky_history", sticky_change);
 		Prefs.add_callback("sticky_history_size", sticky_size_change);
 

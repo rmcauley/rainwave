@@ -105,6 +105,7 @@ body.loading * {
 #sizable_body {
 	overflow: hidden;
 	position: relative;
+	z-index: 1;
 	width: 100%;
 	@include transition-wtime(300ms, opacity);
 }
