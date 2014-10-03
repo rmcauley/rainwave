@@ -8,6 +8,13 @@ var ListenerView = function(view, json) {
 		d2.appendChild($el("a", { "href": "http://rainwave.cc/keys/", "class": "link_obvious", "target": "_blank", "textContent": $l("manage_your_api_keys")}));
 		d2.appendChild($el("br"));
 		d2.appendChild($el("a", { "href": "http://rainwave.cc/keys/", "class": "link_obvious", "textContent": $l("logout_in_forums")}));
+		d2.appendChild($el("br"));
+		d2.appendChild($el("br"));
+		d2.appendChild($el("span", { "textContent": $l("view_your")}));
+		d2.appendChild($el("a", { "href": "http://rainwave.cc/pages/user_recent_votes", "target": "_blank", "class": "link_obvious", "textContent": $l("recent_votes")}));
+		d2.appendChild($el("span", { "textContent": ", "}));
+		d2.appendChild($el("a", { "href": "http://rainwave.cc/pages/user_requested_history", "target": "_blank", "class": "link_obvious", "textContent": $l("request_history")}));
+		d2.appendChild($el("span", { "textContent": "." }));
 	}
 	view.el.appendChild(d);
 
@@ -29,12 +36,6 @@ var ListenerView = function(view, json) {
 	}
 
 	view._detail_container = view.el.appendChild($el("div", { "class": "user_detail_container" }));
-
-	if (json.user_id == User.id) {
-		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
-		d.appendChild($el("h3", { "textContent": $l("your_mobile_app_qr") }));
-		d.appendChild($el("img", { "width": chart_height - 5, "height": chart_height - 5, "src": "http://chart.apis.google.com/chart?cht=qr&chs=" + (chart_height - 4) + "x" + (chart_height - 4) + "&choe=ISO-8859-1&chl=" + "rw://" + User.id + ":" + User.api_key + "@rainwave.cc" }));
-	}
 
 	var current_chart_draw_steps = 40;
 
@@ -120,6 +121,12 @@ var ListenerView = function(view, json) {
 		var chart = new Chart(cnvs.getContext("2d")).Doughnut(data, { "animationSteps": current_chart_draw_steps });
 		current_chart_draw_steps += 5;
 	}	
+
+	if (json.user_id == User.id) {
+		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
+		d.appendChild($el("h3", { "textContent": $l("your_mobile_app_qr") }));
+		d.appendChild($el("img", { "width": chart_height - 5, "height": chart_height - 5, "src": "http://chart.apis.google.com/chart?cht=qr&chs=" + (chart_height - 4) + "x" + (chart_height - 4) + "&choe=ISO-8859-1&chl=" + "rw://" + User.id + ":" + User.api_key + "@rainwave.cc" }));
+	}
 
 	return view.el;
 };
