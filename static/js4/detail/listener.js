@@ -19,8 +19,8 @@ var ListenerView = function(view, json) {
 		4: "#6e439d",  // Indigo
 		5: "#a8cb2b",  // greenish
 	};
-	var chart_width = 250;
-	var chart_height = 200;
+	var chart_width = SmallScreen ? 175 : 250;
+	var chart_height = SmallScreen ? 150 : 200;
 
 	var c = view.el.appendChild($el("div", { "style": "text-align: center;" }));
 	d = c.appendChild($el("ul", { "class": "user_detail_legend"}));
