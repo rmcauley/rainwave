@@ -80,7 +80,7 @@ class Album(AssociatedMetadata):
 			"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
 				"song_url AS url, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiply, "
 				"song_cool_override AS cool_override, %s AS requestable, song_cool AS cool, song_cool_end AS cool_end, "
-				"song_request_only AS request_only, song_artist_parseable AS artist_parseable, "
+				"song_request_only_end AS request_only_end, song_request_only AS request_only, song_artist_parseable AS artist_parseable, "
 				"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(song_fave, FALSE) AS fave "
 			"FROM r4_song_sid "
 				"JOIN r4_songs USING (song_id) "
