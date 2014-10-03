@@ -534,7 +534,7 @@ class Song(object):
 
 		d['rating_user'] = None
 		d['fave'] = None
-		d['rating_allowed'] = False
+		d['rating_allowed'] = self.data['rating_allowed']
 		if user:
 			d.update(rating.get_song_rating(self.id, user.id))
 			if user.data['rate_anything']:
