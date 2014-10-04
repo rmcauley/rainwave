@@ -511,7 +511,8 @@ class Song(object):
 		d['title'] = self.data['title']
 		d['id'] = self.id
 		d['rating'] = self.data['rating']
-		d['link_text'] = self.data['origin_sid']
+		d['origin_sid'] = self.data['origin_sid']
+		d['link_text'] = self.data['link_text']
 		d['artist_parseable'] = self.data['artist_parseable']
 		d['cool'] = self.data['cool']
 		d['url'] = self.data['url']
