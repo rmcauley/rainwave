@@ -133,7 +133,7 @@ var API = function() {
 		}
 		sync_resync = true;
 		sync_error_count++;
-		if (sync_error_count > 2) {
+		if (sync_error_count > 4) {
 			ErrorHandler.remove_permanent_error("sync_retrying");
 			var e = ErrorHandler.make_error("sync_stopped", 500);
 			if (result && result.sync_result && result.sync_result.tl_key) {
