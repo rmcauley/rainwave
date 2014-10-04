@@ -5,6 +5,7 @@ var Menu = function() {
 	var mobile_height_toggled = false;
 
 	self.initialize = function() {
+		Prefs.define("station_select_clicked", [ false, true ]);
 	};
 
 	self.draw = function(station_list) {
@@ -76,6 +77,10 @@ var Menu = function() {
 		$id("about_modal_close").addEventListener("click", self.remove_modal);
 		$id("settings_modal_close").addEventListener("click", self.remove_modal);
 		$id("longhist_modal_close").addEventListener("click", self.remove_modal);
+
+		if (!Prefs.get("station_select_clicked")) {
+			$add_class($id("station_select"), "call_to_action");
+		}
 	};
 
 	var current_modal;
@@ -124,6 +129,8 @@ var Menu = function() {
 	};
 
 	var open_station_select = function(e) {
+		Prefs.change("station_select_clicked", true);
+		$remove_class($id("station_select"), "call_to_action");
 		if (!$has_class($id("station_select"), "open")) {
 			$add_class($id("station_select"), "open");
 			$add_class($id("station_select_container"), "open");

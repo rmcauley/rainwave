@@ -112,6 +112,29 @@ $menu_transfunc: cubic-bezier(0.77, 0, 0.175, 1);
 	@include transform(translateY(-50%) rotate(180deg));
 }
 
+#station_select.call_to_action svg.pulldown_arrow {
+	-webkit-animation-duration: 1.5s;
+	        animation-duration: 1.5s;
+	-webkit-animation-name: pulldown_cta;
+	        animation-name: pulldown_cta;
+	-webkit-animation-iteration-count: infinite;
+	        animation-iteration-count: infinite;
+}
+
+@keyframes pulldown_cta {
+	from { top: $menu_height / 2;  }
+	30%  { top: $menu_height - 10; }
+	80%  { top: $menu_height / 2;  }
+	to   { top: $menu_height / 2;  }
+}
+
+@-webkit-keyframes pulldown_cta {
+	from { top: $menu_height / 2;  }
+	30%  { top: $menu_height - 10; } 
+	80%  { top: $menu_height / 2;  }
+	to   { top: $menu_height / 2;  }
+}
+
 #station_select_header {
 	position: absolute;
 	top: -($menu_height / 2);
