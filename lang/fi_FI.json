@@ -54,13 +54,6 @@
    "create_api_key"                                  : "Luo API-avain",
    "your_numeric_user_id"                            : "Numeromuotoinen käyttäjätunnisteesi",
 
-   "__comment__"                 : "Pretty Printed API Page Words",
-
-   "unrated_songs"                                   : "Arvostelemattomat kappaleet",
-   "title"                                           : "Kappale",
-   "album_name"                                      : "Albumi",
-   "id"                                              : "Tunniste",
-
    "__comment__"                 : "Menu",
 
    "station_name_1"                                  : "Peli",
@@ -161,7 +154,7 @@
    "filter"                                          : "Kirjoita missä tahansa suodattaaksesi",
    "typeanywhere"                                    : "Aloita kirjoittaminen!",
    "clearfilter"                                     : "Tyhjennä suodatin",
-   "album_rating_ranked_at"                          : "Arvosteltu %(rating), sijalla #(rank).",
+   "album_rating_ranked_at"                          : "Arvosana %(rating), sijalla #(rank).",
    "album_requests_ranked_at"                        : "Toivottu %(count) kertaa, sijalla #(rank).",
    "Request"                                         : "Toivo",
    "Albums"                                          : "Albumit",
@@ -172,6 +165,7 @@
    "songs_from"                                      : "Kappaleet asemalta %(station)",
    "album_on_station"                                : "Kanavalla %(station): %(album)",
    "groups_tab_title"                                : "Kategoriat",
+   "relevant_categories"                             : "Liittyvät kategoriat: ",
 
    "__comment__"                 : "Requests",
 
@@ -183,6 +177,10 @@
    "requests_expiring"                               : "Toiveet - Menettämässä jonosijaasi!",
    "requests_all_on_cooldown"                        : "Toiveet - Ei kelpaavia toiveita!",
    "request_you_are_x_in_line"                       : "Toiveet - Sijalla #(position) jonossa",
+   
+   "request_grab_tag__warning"                       : "Varoitus",
+   "request_grab_tag__paused"                        : "Pysäytetty",
+   "requests_grab_tab__num_requests"                 : "%(num_requests) &(num_requests:toive/toivetta)",
    
    "cancel_request"                                  : "Peru toive",
    "request_on_cooldown_for"                         : "Jäähyllä %(cool_time) ajan.",
@@ -237,5 +235,36 @@
    "timeformat_d"                                    : "pv ",
    "timeformat_h"                                    : "t ",
    "timeformat_m"                                    : "min ",
-   "timeformat_s"                                    : "s "
+   "timeformat_s"                                    : "s ",
+   
+   "__comment__"                 : "Raw API Pages (statistics, etc)",
+
+   "unrated_songs"                                   : "Arvostelemattomat kappaleet",
+   "title"                                           : "Kappale",
+   "album_name"                                      : "Albumi,
+   "id"                                              : "Tunniste",
+   "sid"                                             : "Aseman tunniste",
+   "delete"                                          : "Poista",
+   "all_faves"                                       : "Kaikki suosikit",
+   "rating_user"                                     : "Käyttäjän arvosana",
+   "fave"                                            : "Suosikki",
+   "rating"                                          : "Keskim. arvosana",
+   "album_id"                                        : "Albumin tunniste",
+   "playback_history"                                : "Aiemmin soineet - laajennettu",
+   "name"                                            : "Nimi",
+   "song_rating"                                     : "Arvosana",
+   "top_100"                                         : "Top 100",
+   "song_rating_count"                               : "Arvosteluja",
+   "origin_sid"                                      : "Asema",
+   "user_recent_votes"                               : "Viimeaikaiset äänesi",
+   "user_requested_history"                          : "Toivehistoriasi",
+
+   "__comment__"                 : "Admin Panel Lines (translation not required)",
+
+   "time"                                            : "Aika",
+   "type"                                            : "Tyyppi",
+   "file"                                            : "Tiedosto",
+   "error"                                           : "Virhe",
+   "url"                                             : "URL",
+   "sched_length_minutes"                            : "Pituus (min.)"
 }
