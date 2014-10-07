@@ -49,7 +49,7 @@ var Scrollbar = function() {
 
 	cls.new = function(scrollable, handle, handle_margin_top) {
 		if (!handle_margin_top && (handle_margin_top !== 0)) handle_margin_top = 3;
-		var handle_margin_bottom = 3;
+		var handle_margin_bottom = 5;
 
 		var self = {};
 		self.scroll_top = null;

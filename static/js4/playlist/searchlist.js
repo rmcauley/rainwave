@@ -18,6 +18,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.el = el;
 	self.search_box_input = $el("div", { "class": "searchlist_input", "textContent": $l("filter") });
 	var scrollbar = Scrollbar.new(stretching_el.parentNode, scrollbar_handle, 0);
+	scrollbar.set_handle_margin_bottom(10);
 	// see bottom of this object for event binding
 
 	var data = {}
