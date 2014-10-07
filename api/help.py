@@ -64,8 +64,6 @@ class IndexRequest(tornado.web.RequestHandler):
 			else:
 				self.write_property(prop[0], handler, prop[1])
 		display_url = url
-		if display_url.find("/api4/") == 0:
-			display_url = display_url[6:]
 		self.write("<td><a href='/api4/help%s'>%s</a></td>" % (url, display_url))
 		if (issubclass(handler, api.web.HTMLRequest) or issubclass(handler, api.web.PrettyPrintAPIMixin)) and url.find("(") == -1:
 			self.write("<td><a href='%s'>Link</a></td>" % url)
