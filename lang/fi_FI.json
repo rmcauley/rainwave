@@ -241,7 +241,7 @@
 
    "unrated_songs"                                   : "Arvostelemattomat kappaleet",
    "title"                                           : "Kappale",
-   "album_name"                                      : "Albumi,
+   "album_name"                                      : "Albumi",
    "id"                                              : "Tunniste",
    "sid"                                             : "Aseman tunniste",
    "delete"                                          : "Poista",
