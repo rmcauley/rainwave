@@ -39,6 +39,11 @@ body.stage_0 #timeline, body.stage_1 #timeline, body.stage_2 #timeline {
 	overflow: hidden;
 }
 
+body.stage_in_transition #timeline {
+	width: 110% !important;
+	overflow: hidden !important;
+}
+
 body.stage_3 #timeline {
 	overflow: hidden;
 }

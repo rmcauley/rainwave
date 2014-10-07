@@ -115,10 +115,12 @@ function stage_switch(nv, ov) {
 			$id("timeline").style.overflowY = "";
 		})
 	}
-	$add_class(document.body, "stage_" + nv);
 	vote_cta_check();
 	request_cta_check();
 	Schedule.stage_padding_check();
+	Fx.chain_transition(document.body, function() { $remove_class(document.body, "stage_in_transition"); });
+	$add_class(document.body, "stage_" + nv);
+	$add_class(document.body, "stage_in_transition");
 }
 
 function initialize() {
