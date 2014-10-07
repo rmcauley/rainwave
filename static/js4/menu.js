@@ -72,7 +72,8 @@ var Menu = function() {
 		}
 		API.add_callback(update_station_info, "all_stations_info");
 
-		$id("calendar_menu_item").addEventListener("mouseover", insert_calendar_iframe);
+		$id("calendar_menu_item").addEventListener("click", calendar_toggle);
+		$id("calendar_menu_item").addEventListener("mouseout", calendar_hide);
 
 		$id("about_modal_close").addEventListener("click", self.remove_modal);
 		$id("settings_modal_close").addEventListener("click", self.remove_modal);
@@ -122,10 +123,24 @@ var Menu = function() {
 		}
 	}
 
-	var insert_calendar_iframe = function(e) {
-		$id("calendar_menu_item").removeEventListener("mouseover", insert_calendar_iframe);
+	var calendar_toggle = function(e) {
+		var dd = $id("calendar_dropdown"); 
+		if (!$has_class(dd, "has_calendar")) {
+			dd.appendChild($el("iframe", { "class": "calendar_iframe", "src": "https://www.google.com/calendar/embed?showTitle=0&showNav=0&showDate=0&showPrint=0&showCalendars=0&mode=AGENDA&height=500&wkst=1&bgcolor=%23ffffff&src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com&color=%232952A3", "frameborder": "0", "scrolling": "no" }));
+		}
+		if ($has_class(dd, "show_calendar")) {
+			$remove_class(dd, "show_calendar");
+		}
+		else {
+			$add_class(dd, "show_calendar");
+		}	
+	};
 
-		$id("calendar_dropdown").appendChild($el("iframe", { "class": "calendar_iframe", "src": "https://www.google.com/calendar/embed?showTitle=0&showNav=0&showDate=0&showPrint=0&showCalendars=0&mode=AGENDA&height=500&wkst=1&bgcolor=%23ffffff&src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com&color=%232952A3", "frameborder": "0", "scrolling": "no" }));
+	var calendar_hide = function(e) {
+		var dd = $id("calendar_dropdown"); 
+		if (Mouse.is_mouse_leave(e, dd)) {
+			$remove_class(dd, "show_calendar");
+		}
 	};
 
 	var open_station_select = function(e) {

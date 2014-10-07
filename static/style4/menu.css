@@ -305,12 +305,12 @@ div.station_song {
 	font-weight: 300;
 }
 
-#r4_audio_player #audio_status {
+#r4_audio_player span {
 	padding-left: 1.15em;
-	@include transition(LINKCOLOR);
+	@include transition(LINKCOLOR, padding);
 }
 
-#r4_audio_player a:hover #audio_status {
+#r4_audio_player a:hover span {
 	color: $linkhover;
 }
 
@@ -324,21 +324,30 @@ div.station_song {
 
 #r4_audio_player a:hover svg.audio_icon rect, #r4_audio_player a:hover svg.audio_icon circle, #r4_audio_player a:hover svg.audio_icon path, #r4_audio_player a:hover svg.audio_icon polygon {
 	fill: $linkhover;
+	@include transition-wtime(300ms, fill);
 }
 
-#r4_audio_player svg.audio_icon use {
+#r4_audio_player svg.audio_icon use, #r4_audio_player svg {
+	@include transition-wtime(300ms, opacity, fill);
+}
+
+#audio_status_stop, #audio_status_play {
 	@include transition(opacity);
 }
 
-#r4_audio_player #audio_icon_stop {
+#audio_status_play {
+	position: absolute;
+}
+
+#r4_audio_player #audio_icon_stop, #r4_audio_player #audio_status_stop {
 	opacity: 0;
 }
 
-#r4_audio_player.playing #audio_icon_stop {
+#r4_audio_player.playing #audio_icon_stop, #r4_audio_player.playing #audio_status_stop {
 	opacity: 1;
 }
 
-#r4_audio_player.playing #audio_icon_play {
+#r4_audio_player.playing #audio_icon_play, #r4_audio_player.playing #audio_status_play {
 	opacity: 0;
 }
 
@@ -366,17 +375,14 @@ div.menu_inline_dropdown {
 	position: absolute;
 	height: 0;
 	background: $menu_blue;
-	opacity: 0;
 	border: 2px solid $menu_blue;
 	z-index: 10001;
 	overflow: hidden;
 
-	@include transition-wtime(400ms, height, opacity);
+	@include transition-wtime(700ms, height, opacity);
 	@include transform(translateX(-50%));
-}
-
-li:hover #calendar_dropdown {
-	opacity: 1;
+	-webkit-transition-timing-function: $menu_transfunc;
+	        transition-timing-function: $menu_transfunc;
 }
 
 #calendar_dropdown {
@@ -388,7 +394,7 @@ li:hover #calendar_dropdown {
 	height: 500px;
 }
 
-li:hover #calendar_dropdown {
+#calendar_dropdown.show_calendar {
 	height: 500px;
 }
 

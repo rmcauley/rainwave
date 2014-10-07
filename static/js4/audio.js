@@ -7,7 +7,6 @@
 
 	<div id='r4_audio_player'>
 		<div id='audio_icon'></div>
-		<div id='audio_status'></div>
 	</div>
 	
 	Style the page as you see fit.
@@ -36,7 +35,7 @@ var R4Audio = function() {
 	var playing_status = false;
 
 	var icon_el;
-	var text_el;
+	//var text_el;
 	var volume_el;
 	var volume_rect;
 	var offset_width;
@@ -69,7 +68,7 @@ var R4Audio = function() {
 
 	self.initialize = function(stream_filename, relays) {
 		icon_el = document.getElementById("audio_icon");
-		text_el = document.getElementById("audio_status");
+		//text_el = document.getElementById("audio_status");
 		if (!self.supported) return;
 
 		var container = document.getElementById("player_link") || document.getElementById("r4_audio_player");
@@ -109,7 +108,10 @@ var R4Audio = function() {
 	};
 
 	self.draw = function() {
-		text_el.textContent = $l ? $l("tunein") : "Tune In";
+		if ($l) {
+			$id("audio_status_stop").textContent = $l("stop");
+			$id("audio_status_play").textContent = $l("tunein");
+		}
 	};
 
 	self.clear_audio_errors = function(e) {
@@ -174,7 +176,7 @@ var R4Audio = function() {
 
 	self.on_stop = function() {
 		document.getElementById("r4_audio_player").className = "";
-		text_el.textContent = $l ? $l("tunein") : "Tune In";
+		//text_el.textContent = $l ? $l("tunein") : "Tune In";
 		self.stop();
 	};
 
@@ -184,7 +186,7 @@ var R4Audio = function() {
 
 	self.on_play = function() {
 		document.getElementById("r4_audio_player").className = "playing";
-		text_el.textContent = $l ? $l("stop") : "Stop";
+		//text_el.textContent = $l ? $l("stop") : "Stop";
 		self.clear_audio_errors();
 	};
 
