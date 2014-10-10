@@ -306,9 +306,11 @@ def _update_schedule_memcache(sid):
 		all_station['album'] = sched_current_dict['songs'][0]['albums'][0]['name']
 		all_station['art'] = sched_current_dict['songs'][0]['albums'][0]['art']
 	else:
-		all_station['title'] = sched_current_dict['name']
-		all_station['album'] = ""
+		all_station['title'] = None
+		all_station['album'] = None
 		all_station['art'] = None
+	all_station['event_name'] = sched_current_dict['name']
+	all_station['event_type'] = sched_current_dict['type']
 	cache.set_station(sid, "all_station_info", all_station, True)
 
 def update_memcache(sid):
