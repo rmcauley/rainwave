@@ -72,10 +72,12 @@ var AlbumView = function(view, json) {
 		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_requests_ranked_at", { "count": json.request_count, "rank": json.request_rank }) }));
 	}
 
-	var cats = $el("div", { "class": "albumview_info" });
-	cats.appendChild($el("span", { "textContent": $l("relevant_categories") }));
-	Groups.append_spans_from_json(cats, json.genres);
-	d.appendChild(cats);
+	if (json.genres.length > 0) {
+		var cats = $el("div", { "class": "albumview_info" });
+		cats.appendChild($el("span", { "textContent": $l("relevant_categories") }));
+		Groups.append_spans_from_json(cats, json.genres);
+		d.appendChild(cats);
+	}
 
 	view.el.appendChild(d);
 
