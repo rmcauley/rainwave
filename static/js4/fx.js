@@ -57,7 +57,7 @@ var Fx = function() {
 	var transition_ends = [ "transitionend", "webkitTransitionEnd", "otransitionend" ];
 	self.chain_transition = function(el, end_func) {
 		var end_func_wrapper = function(e) {
-			end_func(e);
+			end_func(e, el);
 			for (var i in transition_ends) {
 				el.removeEventListener(transition_ends[i], end_func_wrapper, false);
 			}

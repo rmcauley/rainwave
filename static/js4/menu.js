@@ -1,8 +1,11 @@
 var Menu = function() {
 	var self = {};
 	var elements = {};
-	var songs = {};
 	var mobile_height_toggled = false;
+	var songs = {};
+
+	var event_alerts_closed = [];
+	var event_alert;
 
 	self.initialize = function() {
 		Prefs.define("station_select_clicked", [ false, true ]);
@@ -52,6 +55,7 @@ var Menu = function() {
 		station_container.addEventListener("click", open_station_select);
 		var station;
 		var beta_add = window.location.href.indexOf("beta") !== -1 ? "/beta/" : "";
+		elements.stations = [];
 		for (var i = 0; i < order.length; i++) {
 			station = station_container.appendChild($el("a", { "class": "station" }));
 			station._station_id = parseInt(order[i]);		// ugh gotta make sure this is a COPY of the integer
@@ -62,13 +66,12 @@ var Menu = function() {
 				$add_class(station, "selected_station");
 			}
 
+			station._np_info = station.appendChild($el("div", { "class": "station_song_container" }));
+
 			station._details = station.appendChild($el("div", { "class": "station_details" }));
 			station._name = station._details.appendChild($el("div", { "class": "station_name", "textContent": $l("station_name_" + order[i] ) }));
 			station._desc = station._details.appendChild($el("div", { "class": "station_description", "textContent": $l("station_menu_description_id_" + order[i]) }));
-
-			station._song = station.appendChild($el("div", { "class": "station_song" }));
-			station._title = station._song.appendChild($el("div", { "class": "station_song_title" }));
-			station._album = station._song.appendChild($el("div", { "class": "station_song_album" }));
+			elements.stations[station._station_id] = station;
 		}
 		API.add_callback(update_station_info, "all_stations_info");
 
@@ -154,6 +157,7 @@ var Menu = function() {
 		else {
 			close_station_select(null, true);
 		}
+		remove_event_alert();
 	};
 
 	var close_station_select = function(e, override) {
@@ -164,28 +168,70 @@ var Menu = function() {
 		}
 	};
 
-	var show_station_info = function(e) {
-		// var sid = this._station_id || e.target._station_id || e.target.parentNode._station_id;
-		// if (!sid || !songs[sid]) return;
-		// if (songs[sid]._shown) return;
-		// songs[sid]._shown = true;
+	var update_station_info = function(json) {
+		var do_event_alert, event_desc, event_sid;
+		for (var key in json) {
+			if (json[key] && elements.stations[key]) {
+				if (key == 1) {
+					json[key].event_name = "10/06 New Music";
+					json[key].event_type = "OneUp";
+				}
+				if (!event_alert && json[key].event_name && (key != User.sid)) {
+					event_sid = key;
+					$add_class(elements.stations[key], "event_ongoing");
+				
+					elements.stations[key]._desc.textContent = $l("special_event_on_now");
+					event_desc = "";
+					if (json[key].event_type == "OneUp") {
+						event_desc += json[key].event_name + " " + $l("power_hour");
+					}
+					else if (json[key].type != "Election" && $l_has(json[key].type.toLowerCase())) {
+						event_desc += $l(json[key].type.toLowerCase());
+						if (json[key].name) {
+							event_desc += " - " + json[key].name;
+						}
+					}
+					else  {
+						event_desc += json[key].name;
+					}
+					elements.stations[key]._desc.textContent += event_desc;
 
-		// if (elements[sid].firstChild.nextSibling.className == "timeline_song") {
-		// 	elements[sid].replaceChild(songs[sid].el, elements[sid].firstChild.nextSibling);
-		// }
-		// else {
-		// 	elements[sid].insertBefore(songs[sid].el, elements[sid].firstChild.nextSibling);
-		// }
+					if (event_alerts_closed.indexOf(json[key].event_name) == -1) {
+						do_event_alert = json[key];
+					}
+				}
+				else {
+					$remove_class(elements.stations[key], "event_ongoing");
+					elements.stations[key]._desc.textContent = $l("station_menu_description_id_" + key);
+				}
+				
+				if (songs[key]) {
+					songs[key].el.parentNode.removeChild(songs[key.el]);
+				}
+				json[key].albums = [ { "art": json[key].art, "name": json[key].album } ];
+				songs[key] = TimelineSong.new(json[key]);
+				elements.stations[key]._np_info.appendChild(songs[key].el);
+			}
+		}
+
+		if (do_event_alert) {
+			if (event_alert) {
+				event_alert.parentNode.removeChild(event_alert);
+			}
+			event_alert = $el("div", { "class": "event_ongoing_alert" });
+			event_alert.appendChild($el("div", { "textContent": $l("special_event_alert", { "station": $l("station_name_" + event_sid) }) }));
+			event_alert.appendChild($el("div", { "textContent": event_desc }));
+			$id("station_select_container").parentNode.insertBefore(event_alert, $id("station_select_container").nextSibling);
+		}
 	};
 
-	var update_station_info = function(json) {
-		// for (var key in json) {
-		// 	if (json[key]) {
-		// 		json[key].albums = [ { "art": json[key].art, "name": json[key].album } ];
-		// 		songs[key] = TimelineSong.new(json[key]);
-		// 		songs[key]._shown = false;
-		// 	}
-		// }
+	var remove_event_alert = function() {
+		if (event_alert) {
+			Fx.chain_transition(event_alert, function(e, el) { el.parentNode.removeChild(el); });
+			$add_class(event_alert, "event_alert_closing");
+			event_alerts_closed.append(event_alert._name);
+			event_alert = null;
+		}
 	};
 
 	var update_tuned_in_status = function(user_json) {

@@ -47,21 +47,53 @@ body.stage_0 #top_menu, body.stage_1 #top_menu, body.stage_2 #top_menu {
 	fill: $linkhover;
 }
 
-/* STATION SELECT */
+/* EVENT ALERT */
 
 $menu_transfunc: cubic-bezier(0.77, 0, 0.175, 1);
+$event_ongoing_color: #0066ff;
+
+div.event_ongoing_alert {
+	float: left;
+	display: inline-block;
+	text-align: center;
+	height: $menu_height;
+	padding: 0px 8px;
+	background: $event_ongoing_color;
+	overflow: hidden;
+	max-width: 300px;
+
+	@include transition(max-width, padding, opacity);
+	-webkit-transition-timing-function: $menu_transfunc;
+	        transition-timing-function: $menu_transfunc;
+}
+
+div.event_ongoing_alert > div {
+	word-wrap: nowrap;
+	overflow: hidden;
+}
+
+div.event_ongoing_alert > div:first-child {
+	font-size: 0.9em;
+	font-weight: 300;
+	font-style: italic;
+}
+
+div.event_ongoing_alert.event_alert_closing {
+	max-width: 0px;
+	padding: 0px;
+	opacity: 0px;
+}
+
+/* STATION SELECT */
 
 #station_select_container {
 	position: relative;
 	z-index: 20000;
-	font-style: italic;
-	font-weight: 300;
-	font-size: 2em;
 	float: left;
-	width: 8em;
+	width: 17em;
 	border-right: 1px solid #1e71a9;
 	height: $menu_height;
-	margin-right: 15px;
+	margin-right: 8px;
 
 	-webkit-transition: width 350ms;
 	        transition: width 350ms;
@@ -70,7 +102,7 @@ $menu_transfunc: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 #station_select_container.open {
-	width: 12em;
+	width: 35em;
 }
 
 #station_select {
@@ -103,22 +135,12 @@ $menu_transfunc: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 #station_select.open {
-	width: 12em;
 	height: ($station_select_sta_height * 5) + $menu_height;
 }
 
 #station_select.open svg.pulldown_arrow {
 	cursor: default;
 	@include transform(translateY(-50%) rotate(180deg));
-}
-
-#station_select.call_to_action svg.pulldown_arrow {
-	-webkit-animation-duration: 1.5s;
-	        animation-duration: 1.5s;
-	-webkit-animation-name: pulldown_cta;
-	        animation-name: pulldown_cta;
-	-webkit-animation-iteration-count: infinite;
-	        animation-iteration-count: infinite;
 }
 
 @keyframes pulldown_cta {
@@ -135,14 +157,24 @@ $menu_transfunc: cubic-bezier(0.77, 0, 0.175, 1);
 	to   { top: $menu_height / 2;  }
 }
 
+#station_select.call_to_action svg.pulldown_arrow {
+	-webkit-animation-duration: 1.5s;
+	        animation-duration: 1.5s;
+	-webkit-animation-name: pulldown_cta;
+	        animation-name: pulldown_cta;
+	-webkit-animation-iteration-count: infinite;
+	        animation-iteration-count: infinite;
+}
+
 #station_select_header {
 	position: absolute;
 	top: -($menu_height / 2);
 	color: rgb(151,198,229);
 	text-transform: uppercase;
-	font-weight: 400;
-	font-size: .6em;
 	margin-left: 5px;
+	font-style: italic;
+	font-size: 1.2em;
+
 
 	@include transform(translateY(-50%));
 	@include transition(top);
@@ -189,6 +221,10 @@ a.station.selected_station {
 	z-index: 40;
 }
 
+a.station.event_ongoing {
+	background: $event_ongoing_color;
+}
+
 #station_select.open a.station.selected_station, #station_select.open a.station.selected_station:hover {
 	cursor: default;
 	color: $text;
@@ -203,6 +239,9 @@ a.station.selected_station {
 div.station_details {
 	position: relative;
 	top: 50%;
+	font-style: italic;
+	font-weight: 300;
+	font-size: 2em;
 	@include transform(translateY(-50%));
 	@include transition-wtime(350ms, transform);
 }
@@ -231,8 +270,37 @@ div.station_description {
 	@include transform(translateY(-120%));
 }
 
-div.station_song {
-	display: none;
+div.station_song_container {
+	float: right;
+	height: $station_select_sta_height;
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+	opacity: 0;
+	width: 0;
+
+	-webkit-transition: width 700ms $menu_transfunc, opacity 300ms $transfunc;
+	        transition: width 700ms $menu_transfunc, opacity 300ms $transfunc;
+}
+
+#station_select.open div.station_song_container {
+	opacity: 0.7;
+	width: 230px;
+}
+
+#station_select.open a.station:hover div.station_song_container {
+	opacity: 1.0;
+}
+
+#station_select div.timeline_song {
+	font-weight: 300;
+	font-size: .9em;
+	height: $station_select_sta_height - 14;
+	top: 50%;
+	@include transform(translateY(-50%));
+}
+
+#station_select div.timeline_song div.art_anchor, #station_select div.timeline_song div.art_container {
+	height: $station_select_sta_height - 14;
+	width: $station_select_sta_height - 14;
 }
 
 /* ICONS AND LINKS */
@@ -303,6 +371,7 @@ div.station_song {
 	font-size: 2em;
 	font-style: italic;
 	font-weight: 300;
+	margin-left: 8px;
 }
 
 #r4_audio_player span {
