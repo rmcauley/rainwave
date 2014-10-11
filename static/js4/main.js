@@ -160,7 +160,7 @@ function initialize() {
 	// ****************** PAGE LAYOUT
 	// PREP: Applies the small_screen and small_menu classes if necessary and sizes everything
 	if (MOBILE) {
-		$add_class(document.body, "small_screen");
+		$add_class(document.body, "small_screen mobile_screen");
 		SmallScreen = true;
 	}
 	Fx.flush_draws();

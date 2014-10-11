@@ -2,6 +2,10 @@
 	margin-top: 10px;
 }
 
+body.mobile_screen #history_outer_container {
+	display: none;
+}
+
 #history_header_container {
 	cursor: pointer;
 	@include transition-wtime(350ms, color, background-color);

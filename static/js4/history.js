@@ -24,6 +24,7 @@ var History = function() {
 	self.scroll_init = function() {};
 
 	self.draw = function() {
+		if (MOBILE) return;
 		$id("history_header").textContent = $l("previouslyplayed");
 		$id("longhist_modal_header").textContent = $l("extended_history_header");
 		$id("longhist_link").textContent = $l("extended_history_link");

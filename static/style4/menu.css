@@ -24,6 +24,10 @@ $menu_blue_dark: #128adb;
 	@include transition(max-width);
 }
 
+body.mobile_screen #top_menu_wrapper, body.mobile_screen #top_menu {
+	height: auto;
+}
+
 #top_menu a:hover {
 	color: $linkhover;
 }
@@ -103,6 +107,13 @@ div.event_ongoing_alert.event_alert_closing {
 
 #station_select_container.open {
 	width: 35em;
+}
+
+body.mobile_screen {
+	#station_select_container, #station_select_container.open {
+		float: none;
+		width: 100%;
+	}
 }
 
 #station_select {
@@ -246,7 +257,7 @@ div.station_details {
 	@include transition-wtime(350ms, transform);
 }
 
-#station_select.open a.station:hover div.station_details, #station_select.open a.station.selected_station div.station_details, a.station.event_ongoing div.station_details {
+#station_select.open a.station:hover div.station_details, #station_select.open a.station.selected_station div.station_details, a.station.event_ongoing div.station_details, body.mobile_screen #station_select.open a.station div.station_details {
 	@include transform(translateY(-70%));
 }
 
@@ -265,9 +276,9 @@ div.station_description {
 	        transition: transform 300ms ease-in-out, opacity 250ms ease;
 }
 
-#station_select.open a.station:hover div.station_description, #station_select.open a.selected_station div.station_description, a.station.event_ongoing div.station_description {
+#station_select.open a.station:hover div.station_description, #station_select.open a.selected_station div.station_description, a.station.event_ongoing div.station_description, body.mobile_screen #station_select.open a.station div.station_description {
 	opacity: 1;
-	@include transform(translateY(-120%));
+	@include transform(translateY(-2em));
 }
 
 div.station_song_container {
@@ -279,6 +290,10 @@ div.station_song_container {
 
 	-webkit-transition: width 700ms $menu_transfunc, opacity 300ms $transfunc;
 	        transition: width 700ms $menu_transfunc, opacity 300ms $transfunc;
+}
+
+body.mobile_screen div.station_song_container {
+	display: none;
 }
 
 #station_select.open div.station_song_container {
@@ -316,6 +331,10 @@ div.station_song_container {
 	position: relative;
 	top: 50%;
 	@include transform(translateY(-50%));
+}
+
+body.mobile_screen #top_icons {
+	display: none;
 }
 
 #top_icons li {
@@ -378,6 +397,15 @@ div.station_song_container {
 	margin-left: 8px;
 }
 
+body.mobile_screen #r4_audio_player {
+	display: block;
+	top: inherit;
+	@include transform(none);
+	background: $menu_blue_dark;
+	margin-left: 0px;
+	padding-left: 14px;
+}
+
 #r4_audio_player span {
 	padding-left: 1.15em;
 	@include transition(LINKCOLOR, padding);
@@ -393,6 +421,10 @@ div.station_song_container {
 	height: 0.9em;
 	width: 0.8em;
 	margin-top: .25em;
+}
+
+body.mobile_screen #r4_audio_player svg.audio_icon {
+	left: 19px;
 }
 
 #r4_audio_player a:hover svg.audio_icon rect, #r4_audio_player a:hover svg.audio_icon circle, #r4_audio_player a:hover svg.audio_icon path, #r4_audio_player a:hover svg.audio_icon polygon {
