@@ -246,7 +246,7 @@ div.station_details {
 	@include transition-wtime(350ms, transform);
 }
 
-#station_select.open a.station:hover div.station_details, #station_select.open a.station.selected_station div.station_details {
+#station_select.open a.station:hover div.station_details, #station_select.open a.station.selected_station div.station_details, a.station.event_ongoing div.station_details {
 	@include transform(translateY(-70%));
 }
 
