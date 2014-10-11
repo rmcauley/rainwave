@@ -172,10 +172,6 @@ var Menu = function() {
 		var do_event_alert, event_desc, event_sid;
 		for (var key in json) {
 			if (json[key] && elements.stations[key]) {
-				if (key == 1) {
-					json[key].event_name = "10/06 New Music";
-					json[key].event_type = "OneUp";
-				}
 				if (!event_alert && json[key].event_name && (key != User.sid)) {
 					event_sid = key;
 					$add_class(elements.stations[key], "event_ongoing");
