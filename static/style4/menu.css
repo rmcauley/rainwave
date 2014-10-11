@@ -265,7 +265,7 @@ div.station_description {
 	        transition: transform 300ms ease-in-out, opacity 250ms ease;
 }
 
-#station_select.open a.station:hover div.station_description, #station_select.open a.selected_station div.station_description {
+#station_select.open a.station:hover div.station_description, #station_select.open a.selected_station div.station_description, a.station.event_ongoing div.station_description {
 	opacity: 1;
 	@include transform(translateY(-120%));
 }
@@ -301,6 +301,10 @@ div.station_song_container {
 #station_select div.timeline_song div.art_anchor, #station_select div.timeline_song div.art_container {
 	height: $station_select_sta_height - 14;
 	width: $station_select_sta_height - 14;
+}
+
+#station_select a.station.selected_station div.timeline_song {
+	display: none;
 }
 
 /* ICONS AND LINKS */

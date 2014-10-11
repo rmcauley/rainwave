@@ -206,7 +206,7 @@ var Menu = function() {
 				}
 				
 				if (songs[key]) {
-					songs[key].el.parentNode.removeChild(songs[key.el]);
+					songs[key].el.parentNode.removeChild(songs[key].el);
 				}
 				json[key].albums = [ { "art": json[key].art, "name": json[key].album } ];
 				songs[key] = TimelineSong.new(json[key]);
@@ -216,7 +216,7 @@ var Menu = function() {
 
 		if (do_event_alert) {
 			if (event_alert) {
-				event_alert.parentNode.removeChild(event_alert);
+				remove_event_alert();
 			}
 			event_alert = $el("div", { "class": "event_ongoing_alert" });
 			event_alert.appendChild($el("div", { "textContent": $l("special_event_alert", { "station": $l("station_name_" + event_sid) }) }));
