@@ -473,6 +473,19 @@ body.mobile_screen #r4_audio_player svg.audio_icon {
 	opacity: 0.5;
 }
 
+#top_menu #user_tunein_recognized {
+	opacity: 0;
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	fill: #FFF;
+	@include transition(opacity);
+}
+
+#top_menu.tuned_in #user_tunein_recognized {
+	opacity: 1;
+}
+
 /* CALENDAR */
 
 div.menu_inline_dropdown {
