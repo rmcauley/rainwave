@@ -163,7 +163,7 @@
    "filter"                                          : "Type anywhere to filter",
    "typeanywhere"                                    : "Just start typing!",
    "clearfilter"                                     : "Clear Filter",
-   "album_rating_ranked_at"                          : "Rated at %(rating), ranking #(rank).",
+   "album_rating_ranked_at_v2"                       : "Rated at %(rating) by %(rating_count) song ratings, ranking #(rank).",
    "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",
    "Request"                                         : "Request",
    "Albums"                                          : "Albums",
@@ -234,6 +234,7 @@
    "prefs_show_rating_in_titlebar"                   : "Show Rating In Tab Title",
    "prefs_show_title_in_titlebar"                    : "Show Song Title In Tab Title",
    "prefs_sticky_history_size"                       : "Number of Songs to Always Show in Previously Played",
+   "prefs_sticky_history_size__none"                 : "None",
    "playlist_preferences"                            : "Album List",
    "prefs_playlist_sort_available_first"             : "Sort Available to the Top",
    "prefs_playlist_sort_faves_first"                 : "Sort Faves To the Top",
@@ -244,10 +245,10 @@
    "prefs_sort_playlist_by_rating_user"              : "Rating",
    "prefs_sort_playlist_by_cool"                     : "Cooldown",
    "prefs_show_artists"                              : "Show Artists In Timeline",
+   "prefs_show_losing_songs"                         : "Show Songs That Lost in the Election",
    "m3u_downloads"                                   : "M3U Downloads",
    "skip_intro_mode"                                 : "Skip Intro Mode",
    "do_intro_mode"                                   : "Go back to Intro Mode",
-   "none"                                            : "None",
 
    "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
 
