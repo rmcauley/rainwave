@@ -44,14 +44,6 @@ body.stage_in_transition #timeline {
 	overflow: hidden !important;
 }
 
-body.stage_3 #timeline {
-	overflow: hidden;
-}
-
-body.stage_0 #timeline_scrollbar, body.stage_1 #timeline_scrollbar, body.stage_2 #timeline_scrollbar {
-	display: none;
-}
-
 body.small_screen #timeline {
 	padding: 0 10px;
 }
@@ -73,12 +65,16 @@ div.timeline_event {
 	opacity: 1;
 }
 
-body.stage_0 div.timeline_event:nth-child(n+4), body.stage_1 div.timeline_event:nth-child(n+4) {
+body.stage_0 div.timeline_next, body.stage_1 div.timeline_next {
 	opacity: 0;
 	visibility: hidden;
 }
 
-body.stage_2 div.timeline_event:nth-child(n+5), body.stage_3 div.timeline_event:nth-child(n+5) {
+body.stage_2 div.timeline_next_1, body.stage_3 div.timeline_next_1,
+body.stage_2 div.timeline_next_2, body.stage_3 div.timeline_next_2,
+body.stage_2 div.timeline_next_3, body.stage_3 div.timeline_next_3,
+body.stage_2 div.timeline_next_4, body.stage_3 div.timeline_next_4,
+body.stage_2 div.timeline_next_5, body.stage_3 div.timeline_next_5 {
 	opacity: 0;
 	visibility: hidden;
 }

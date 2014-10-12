@@ -133,9 +133,13 @@ var Schedule = function() {
 		new_events.push(current_event);
 		if (!current_event.el.parentNode) self.el.appendChild(current_event.el);
 
-		var previous_evt, sequenced_margin;
+		var previous_evt, sequenced_margin, j;
 		for (i = 0; i < sched_next.length; i++) {
 			temp_evt = find_and_update_event(sched_next[i]);
+			for (j = 0; j <= 5; j++) {
+				$remove_class(temp_evt.el, "timeline_next_" + j);
+			}
+			$add_class(temp_evt.el, "timeline_next_" + i);
 			temp_evt.change_to_coming_up();
 			if (previous_evt && temp_evt.data.core_event_id && (previous_evt.data.core_event_id === temp_evt.data.core_event_id)) {
 				temp_evt.hide_header();
