@@ -30,6 +30,7 @@ var R4Audio = function() {
 	var self = {};
 	self.supported = false;
 	self.type = null;	
+	self.changed_status_callback = null;
 	var filetype;
 	var stream_urls = [];
 	var playing_status = false;
@@ -158,6 +159,7 @@ var R4Audio = function() {
 
 		audio_el.play();
 		playing_status = true;
+		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
 	self.stop = function(evt) {
@@ -172,6 +174,7 @@ var R4Audio = function() {
 		audio_el = null;
 		self.on_stop();
 		playing_status = false;
+		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
 	self.on_stop = function() {
@@ -188,6 +191,7 @@ var R4Audio = function() {
 		document.getElementById("r4_audio_player").className = "playing";
 		//text_el.textContent = $l ? $l("stop") : "Stop";
 		self.clear_audio_errors();
+		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
 	self.on_stall = function() {
@@ -198,6 +202,7 @@ var R4Audio = function() {
 			self.clear_audio_errors();
 		})
 		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_connect_error", 500), a);
+		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
 	self.on_error = function() {
@@ -209,6 +214,7 @@ var R4Audio = function() {
 		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_error", 500), a);
 		self.on_stop();
 		self.supported = false;
+		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
 	var volume_control_mousedown = function(evt) {

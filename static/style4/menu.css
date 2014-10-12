@@ -482,7 +482,7 @@ body.mobile_screen #r4_audio_player svg.audio_icon {
 	@include transition(opacity);
 }
 
-#top_menu.tuned_in #user_tunein_recognized {
+#top_menu.external_tuned_in #user_tunein_recognized {
 	opacity: 1;
 }
 
@@ -533,6 +533,7 @@ div.modal_container {
 	background: #000;
 	padding: 5px 0;
 	z-index: 10001;
+	max-height: 80%;
 	@include transform(translate(-50%, -50%));
 
 	-webkit-transition: width 400ms $transfunc 400ms, opacity 300ms $transfunc 100ms;
@@ -587,11 +588,12 @@ div.modal_header_content svg {
 }
 
 div.modal {
+	position: relative;
 	max-width: 100%;
 	width: 800px;
 	margin: 5px auto;
 	height: 0;
-	max-height: 80%;
+	max-height: 100%;
 	padding: 5px;
 	overflow: hidden;
 	opacity: 0;
@@ -605,6 +607,10 @@ div.active_modal div.modal {
 	opacity: 1;
 	-webkit-transition: height 400ms $transfunc 300ms, opacity 400ms linear 500ms;
 	        transition: height 400ms $transfunc 300ms, opacity 400ms linear 500ms;
+}
+
+body.small_screen div.active_modal div.modal {
+	height: 400px;
 }
 
 div.modal_bottom_border {

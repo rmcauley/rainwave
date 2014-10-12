@@ -9,6 +9,7 @@ var Menu = function() {
 
 	self.initialize = function() {
 		Prefs.define("station_select_clicked", [ false, true ]);
+		R4Audio.changed_status_callback = update_tuned_in_status_from_player;
 	};
 
 	self.draw = function(station_list) {
@@ -230,12 +231,18 @@ var Menu = function() {
 		}
 	};
 
+	var audio_playing;
+	var update_tuned_in_status_from_player = function(playing) {
+		audio_playing = playing;
+		update_tuned_in_status(User);
+	};
+	
 	var update_tuned_in_status = function(user_json) {
-		if (user_json.tuned_in) {
-			$add_class($id("top_menu"), "tuned_in");
+		if (user_json.tuned_in && !playing) {
+			$add_class($id("top_menu"), "external_tuned_in");
 		}
 		else {
-			$remove_class($id("top_menu"), "tuned_in");
+			$remove_class($id("top_menu"), "external_tuned_in");
 		}
 	};
 

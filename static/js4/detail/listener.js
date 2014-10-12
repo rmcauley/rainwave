@@ -7,7 +7,7 @@ var ListenerView = function(view, json) {
 		var d2 = d.appendChild($el("div", { "class": "albumview_info" }));
 		d2.appendChild($el("a", { "href": "http://rainwave.cc/keys/", "class": "link_obvious", "target": "_blank", "textContent": $l("manage_your_api_keys")}));
 		d2.appendChild($el("br"));
-		d2.appendChild($el("a", { "href": "http://rainwave.cc/keys/", "class": "link_obvious", "textContent": $l("logout_in_forums")}));
+		d2.appendChild($el("a", { "href": "http://rainwave.cc/forums/", "class": "link_obvious", "textContent": $l("logout_in_forums")}));
 		d2.appendChild($el("br"));
 		d2.appendChild($el("br"));
 		d2.appendChild($el("span", { "textContent": $l("view_your")}));
@@ -125,7 +125,7 @@ var ListenerView = function(view, json) {
 	if (json.user_id == User.id) {
 		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("your_mobile_app_qr") }));
-		d.appendChild($el("img", { "width": chart_height - 5, "height": chart_height - 5, "src": "http://chart.apis.google.com/chart?cht=qr&chs=" + (chart_height - 4) + "x" + (chart_height - 4) + "&choe=ISO-8859-1&chl=" + "rw://" + User.id + ":" + User.api_key + "@rainwave.cc" }));
+		d.appendChild($el("img", { "width": chart_height - 5, "height": chart_height - 5, "src": "http://chart.apis.google.com/chart?cht=qr&chs=" + (chart_height - 5) + "x" + (chart_height - 5) + "&choe=ISO-8859-1&chl=" + "rw://" + User.id + ":" + User.api_key + "@rainwave.cc" }));
 	}
 
 	return view.el;
