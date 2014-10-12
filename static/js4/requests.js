@@ -79,9 +79,11 @@ var Requests = function() {
 	self.show_queue_paused = function() {
 		if (User.requests_paused) {
 			$add_class(container, "request_queue_paused");
+			$id("requests_pause").setAttribute("src", "/static/images4/request_play.png");
 		}
 		else {
 			$remove_class(container, "request_queue_paused");
+			$id("requests_pause").setAttribute("src", "/static/images4/request_pause.png");
 		}
 
 		var good_requests = 0;
