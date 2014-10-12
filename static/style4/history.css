@@ -1,4 +1,6 @@
 #history_outer_container {
+	position: relative;
+	z-index: 5;
 	margin-top: 10px;
 }
 
@@ -11,13 +13,9 @@ body.mobile_screen #history_outer_container {
 	@include transition-wtime(350ms, color, background-color);
 }
 
-#history_outer_container.history_not_showing #history_header_container:hover {
+#history_header_container:hover {
 	color: $text;
 	background-color: $cooldown-color;
-}
-
-#history_outer_container.sticky_history #history_header_container {
-	cursor: default;
 }
 
 #history_outer_container svg.pulldown_arrow {
@@ -30,7 +28,11 @@ body.mobile_screen #history_outer_container {
 	@include transform(rotate(0deg));
 }
 
-#history_outer_container.history_not_showing #history_header_container:hover svg {
+#history_outer_container.history_open svg.pulldown_arrow {
+	@include transform(rotate(180deg));
+}
+
+#history_outer_container #history_header_container:hover svg {
 	fill: $text;
 }
 
@@ -38,74 +40,13 @@ body.mobile_screen #history_outer_container {
 	color: $vdarktext;
 }
 
-#history_outer_container.history_showing svg.pulldown_arrow {
-	@include transform(rotate(180deg));
-}
-
-div#history_outer_container.sticky_history svg.pulldown_arrow {
-	opacity: 0;
-}
-
-#longhist_link, #history_pin {
+#longhist_link {
 	opacity: 0;
 	float: right;
 	@include transition-wtime(350ms, opacity);
 	margin-left: 10px;
 }
 
-#history_pin {
-	margin-top: 3px;
-	border: 1px solid transparent;
-	cursor: pointer;
-}
-
-div.sticky_history #history_pin {
-	border: 1px inset #222;
-	background: #000;
-}
-
 #history_outer_container:hover #longhist_link {
-	opacity: 1;
-}
-
-#history_outer_container:hover #history_pin {
-	opacity: 0.6;
-}
-
-
-#history_container {
-	overflow: hidden;
-	@include transition-wtime(350ms, opacity, height);
-}
-
-#history_list {
-	position: relative;
-	@include transition-wtime(350ms, top);
-	width: 100%;
-}
-
-#history_list div.timeline_song {
-	position: absolute;
-	@include transition(transform, opacity);
-	width: 100%;
-}
-
-#history_list div.timeline_song:nth-child(4) {
-	opacity: 0.9;
-}
-
-#history_list div.timeline_song:nth-child(3) {
-	opacity: 0.8;
-}
-
-#history_list div.timeline_song:nth-child(2) {
-	opacity: 0.7;
-}
-
-#history_list div.timeline_song:nth-child(1) {
-	opacity: 0.6;
-}
-
-#history_list:hover div.timeline_song {
 	opacity: 1;
 }

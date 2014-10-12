@@ -128,7 +128,26 @@ var EventBase = function(json) {
 		else if (self.songs && (self.songs.length > 0)) {
 			$add_class(self.songs[0].el, "timeline_now_playing_song");
 		}
+		for (var i = 1; i < self.songs.length; i++) {
+			$add_class(self.songs[i].el, "timeline_losing_song");
+		}
 		$add_class(self.el, "timeline_now_playing");
+	};
+
+	self.change_to_history = function() {
+		if ($has_class(self.el, "timeline_history")) return;
+		// we shouldn't have to do this sort (or I have a problem in the API)
+		// but just to be sure, a quick sort of a 3-length array won't kill us
+		self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
+		// neither will reclassing the songs that lost
+		for (var i = 1; i < self.songs.length; i++) {
+			$add_class(self.songs[i].el, "timeline_losing_song");
+		}
+		now_playing = false;
+		$remove_class(self.el, "timeline_next");
+		$remove_class(self.el, "timeline_now_playing");
+		$remove_class(self.songs[0].el, "timeline_now_playing_song");
+		$add_class(self.el, "timeline_history");
 	};
 
 	self.enable_voting = function() {

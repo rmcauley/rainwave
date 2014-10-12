@@ -28,7 +28,7 @@
 		</script>
 	{% else %}
 		<script type="application/javascript">
-			var MOBILE = true;
+			var MOBILE = false;
 		</script>
 	{% end %}
 
@@ -233,13 +233,9 @@
 				<div id="timeline_resizer" class="resizer"></div>
 				<div id="history_outer_container">
 					<div id="history_header_container" class="timeline_header">
-						<img id="history_pin" src="/static/images4/pin_hdpi.png" width="12" height="12" />
 						<span id="longhist_link" class="link"></span>
 						<span id="history_header"></span>
 						<svg class="pulldown_arrow"><use xlink:href="/static/images4/symbols.svg#pulldown"></use></svg>
-					</div>
-					<div id="history_container">
-						<div id="history_list"></div>
 					</div>
 				</div>
 			</div>

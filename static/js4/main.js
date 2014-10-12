@@ -154,7 +154,6 @@ function initialize() {
 	PlaylistLists.initialize();
 	Requests.initialize();
 	R4Audio.initialize(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
-	History.initialize();
 	SettingsWindow.initialize();
 
 	// ****************** PAGE LAYOUT
@@ -177,7 +176,6 @@ function initialize() {
 	Scrollbar.resizer_calculate();
 	Scrollbar.recalculate();
 	DetailView.scroll_init();
-	History.scroll_init();
 
 	// DIRTY THE LAYOUT
 
@@ -194,7 +192,6 @@ function initialize() {
 	DetailView.draw();
 	PlaylistLists.draw();
 	Schedule.draw();
-	History.draw();
 	Menu.draw(BOOTSTRAP.station_list);
 	SettingsWindow.draw();
 	AboutWindow.draw();

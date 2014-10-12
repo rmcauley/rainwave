@@ -2,20 +2,23 @@ var Schedule = function() {
 	"use strict";
 	var self = {};
 	self.events = [];
+	self.history_events = [];
 	self.el = null;
 
 	var first_time = true;
 	var sched_next;
 	var sched_current;
+	var sched_history;
 	var current_event;
 
 	var timeline_scrollbar;
 	var timeline_resizer;
 
-	var now_playing_size = 0;
+	//var now_playing_size = 0;
+	var history_open = false;
 
 	self.now_playing_size_calculate = function() {
-		now_playing_size = current_event.el.offsetHeight;
+		//now_playing_size = current_event.el.offsetHeight;
 	};
 
 	self.scroll_init = function() {
@@ -36,11 +39,19 @@ var Schedule = function() {
 	};
 
 	self.initialize = function() {
+		Prefs.define("sticky_history", [ false, true ]);
+		Prefs.define("sticky_history_size", [ 5, 4, 3, 2, 1, 0 ]);
+		Prefs.add_callback("sticky_history", self.reflow_history);
+		Prefs.add_callback("sticky_history_size", self.reflow_history);
+
+		API.add_callback(open_long_history, "playback_history");
+
 		Prefs.define("show_artists", [ false, true ]);
 		Prefs.add_callback("show_artists", show_artists_callback);
 
 		API.add_callback(function(json) { sched_current = json; }, "sched_current");
 		API.add_callback(function(json) { sched_next = json; }, "sched_next");
+		API.add_callback(function(json) { sched_history = json; }, "sched_history");
 		API.add_callback(self.update, "_SYNC_COMPLETE");
 
 		API.add_callback(self.register_vote, "vote_result");
@@ -57,6 +68,12 @@ var Schedule = function() {
 	};
 
 	self.draw = function() {
+		$id("history_header").textContent = $l("previouslyplayed");
+		$id("longhist_modal_header").textContent = $l("extended_history_header");
+		$id("longhist_link").textContent = $l("extended_history_link");
+		$id("longhist_link").addEventListener("click", function(e) { e.stopPropagation(); API.async_get("playback_history", { "per_page": 40 }); });
+		$id("history_header_container").addEventListener("click", function(e) { Prefs.change("sticky_history", !Prefs.get("sticky_history")); });
+
 		show_artists_callback(Prefs.get("show_artists"));
 	};
 
@@ -65,8 +82,28 @@ var Schedule = function() {
 		var i;
 
 		// Mark everything for deletion - this flag will get updated to false as events do
-		for (i = 0; i < self.events.length; i++) {
-			self.events[i].pending_delete = true;
+		var temp_evt = self.el.firstChild;
+		var to_delete = [];
+		while (temp_evt) {
+			if ($has_class(temp_evt, "timeline_event_closing")) {
+				to_delete.push(temp_evt);
+			}
+			if ($has_class(temp_evt, "timeline_event")) {
+				temp_evt._pending_delete = true;
+			}
+			temp_evt = temp_evt.nextSibling;
+		}
+		for (i = 0; i < to_delete.length; i++) self.el.removeChild(to_delete[i]);
+
+		// with history, [0] is the most recent song, so we start inserting from sched_history.length
+		self.history_events = [];
+		for (i = sched_history.length - 1; i >= 0; i--) {
+			temp_evt = find_and_update_event(sched_history[i]);
+			temp_evt.change_to_history();
+			temp_evt.hide_header();
+			new_events.push(temp_evt);
+			self.history_events.push(temp_evt);
+			if (!temp_evt.el.parentNode) self.el.appendChild(temp_evt.el);
 		}
 
 		current_event = find_and_update_event(sched_current);
@@ -82,7 +119,7 @@ var Schedule = function() {
 		new_events.push(current_event);
 		if (!current_event.el.parentNode) self.el.appendChild(current_event.el);
 
-		var temp_evt, previous_evt, sequenced_margin;
+		var previous_evt, sequenced_margin;
 		for (i = 0; i < sched_next.length; i++) {
 			temp_evt = find_and_update_event(sched_next[i]);
 			temp_evt.change_to_coming_up();
@@ -108,14 +145,18 @@ var Schedule = function() {
 		}
 
 		// Erase old elements out before we replace the self.events with new_events
-		for (i = 0; i < self.events.length; i++) {
-			if (self.events[i].pending_delete) {
-				$add_class(self.events[i].el, "timeline_event_closing");
-				self.events[i].el.style.marginTop = "-" + now_playing_size + "px";
-				Fx.remove_element(self.events[i].el);
+		temp_evt = self.el.firstChild;
+		while (temp_evt) {
+			if ($has_class(temp_evt, "timeline_event") && temp_evt._pending_delete) {
+				temp_evt.style.marginTop = "0px";
+				temp_evt.style.marginBottom = "0px";
+				$add_class(temp_evt, "timeline_event_closing");
 			}
+			temp_evt = temp_evt.nextSibling;
 		}
 		self.events = new_events;
+
+		self.reflow_history();
 
 		if (first_time) {
 			first_time = false;
@@ -149,8 +190,48 @@ var Schedule = function() {
 		}
 		else {
 			evt.update(event_json);
-			evt.pending_delete = false;
+			evt.el._pending_delete = false;
 			return evt;
+		}
+	};
+
+	self.reflow_history = function() {
+		if (Prefs.get("sticky_history") || (Prefs.get("sticky_history_size") == self.history_events.length)) {
+			$add_class($id("history_outer_container"), "history_open");
+			self.history_events[0].el.style.marginTop = "0px";
+			self.history_events[0].el.style.marginBottom = "0px";
+			for (var i = 1; i < self.history_events.length; i++) {
+				self.history_events[i].el.style.marginTop = "0px";
+				self.history_events[i].el.style.marginBottom = "0px";
+			}
+			self.history_events[self.history_events.length - 1].el.style.marginBottom = "30px";
+		}
+		else {
+			$remove_class($id("history_outer_container"), "history_open");
+			self.history_events[0].el.style.marginTop = ((-(self.history_events.length - Prefs.get("sticky_history_size")) * TimelineSong.height) - 30) + "px";
+			var threshold_index = self.history_events.length - Prefs.get("sticky_history_size");
+			for (var i = 1; i < self.history_events.length; i++) {
+				if (threshold_index == i) {
+					self.history_events[i].el.style.marginTop = "30px";
+				}
+				else {
+					self.history_events[i].el.style.marginTop = "0px";
+				}
+				self.history_events[i].el.style.marginBottom = "0px";
+			}
+			if (threshold_index >= self.history_events.length) {
+				self.history_events[self.history_events.length - 1].el.style.marginBottom = "40px";
+			}
+			else {
+				self.history_events[self.history_events.length - 1].el.style.marginBottom = "30px";
+			}
+		}
+
+		if (!timeline_scrollbar.pending_self_update) {
+			timeline_scrollbar.pending_self_update = true;
+			Fx.chain_transition(self.history_events[0].el, function(e) {
+				setTimeout(function() { self.scrollbar_recalculate(); }, 1100);
+			});
 		}
 	};
 
@@ -221,7 +302,19 @@ var Schedule = function() {
 			return current_event.songs[0].song_rating.rating_user;
 		}
 		return null;
-	}
+	};
+
+	var open_long_history = function(json) {
+		var w = $id("longhist_window");
+		while (w.firstChild) {
+			w.removeChild(w.firstChild);
+		}
+
+		var t = SongsTable(json, [ "song_played_at", "title", "album_name", "artists", "rating" ]);
+		w.appendChild(t);
+
+		Menu.show_modal($id("longhist_window_container"));
+	};
 
 	return self;
 }();

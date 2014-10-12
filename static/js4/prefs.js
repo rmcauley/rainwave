@@ -215,8 +215,8 @@ var SettingsWindow = function() {
 		div = el.appendChild($el("div", { "class": "setting_group" }));
 		var sticky_history_size = $el("div", { "id": "prefs_sticky_history_size", "class": "multi_select unselectable" });
 		var histsize_highlighter = sticky_history_size.appendChild($el("div", { "class": "floating_highlight" }));
-		for (i = 1; i <= 5; i++) {
-			option = $el("span", { "class": "link", "textContent": i });
+		for (i = 0; i <= 5; i++) {
+			option = $el("span", { "class": "link", "textContent": i != 0 ? i : $l("none") });
 			option._value = i;
 			if (i == Prefs.get("sticky_history_size")) {
 				$add_class(option, "selected selected_first");

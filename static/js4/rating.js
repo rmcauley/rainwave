@@ -100,8 +100,8 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 			if (!hover_box.parentNode) {
 				Fx.stop_chain(hover_box);
 				self.el.insertBefore(hover_box, self.el.firstChild);
-				hover_box.style.opacity = "1";
 			}
+			hover_box.style.opacity = "1";
 		}
 		else {
 			effect.set_rating(current_rating);
