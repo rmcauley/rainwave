@@ -214,6 +214,13 @@ var Schedule = function() {
 	};
 
 	self.reflow_history = function() {
+		var i;
+		if (first_time) {
+			for (i = 0; i < self.history_events.length; i++) {
+				self.history_events[i].el.style.marginTop = (-TimelineSong.height - ((self.history_events.length - i) * TimelineSong.height)) + "px";
+			}
+		}
+
 		if (Prefs.get("sticky_history_size") == self.history_events.length) {
 			$remove_class($id("history_outer_container"), "history_expandable");
 		}
@@ -223,32 +230,32 @@ var Schedule = function() {
 
 		if (Prefs.get("sticky_history") || (Prefs.get("sticky_history_size") == self.history_events.length)) {
 			$add_class($id("history_outer_container"), "history_open");
-			self.history_events[0].el.style.marginTop = "0px";
+			Fx.delay_css_setting(self.history_events[0].el, "marginTop", "0px");
 			self.history_events[0].el.style.marginBottom = "0px";
-			for (var i = 1; i < self.history_events.length; i++) {
-				self.history_events[i].el.style.marginTop = "0px";
+			for (i = 1; i < self.history_events.length; i++) {
+				Fx.delay_css_setting(self.history_events[i].el, "marginTop", "0px");
 				self.history_events[i].el.style.marginBottom = "0px";
 			}
-			self.history_events[self.history_events.length - 1].el.style.marginBottom = "30px";
+			Fx.delay_css_setting(self.history_events[self.history_events.length - 1].el, "marginBottom", "30px");
 		}
 		else {
 			$remove_class($id("history_outer_container"), "history_open");
-			self.history_events[0].el.style.marginTop = ((-(self.history_events.length - Prefs.get("sticky_history_size")) * TimelineSong.height) - 30) + "px";
+			Fx.delay_css_setting(self.history_events[0].el, "marginTop", ((-(self.history_events.length - Prefs.get("sticky_history_size")) * TimelineSong.height) - 30) + "px");
 			var threshold_index = self.history_events.length - Prefs.get("sticky_history_size");
-			for (var i = 1; i < self.history_events.length; i++) {
+			for (i = 1; i < self.history_events.length; i++) {
 				if (threshold_index == i) {
-					self.history_events[i].el.style.marginTop = "30px";
+					Fx.delay_css_setting(self.history_events[i].el, "marginTop", "30px");
 				}
 				else {
-					self.history_events[i].el.style.marginTop = "0px";
+					Fx.delay_css_setting(self.history_events[i].el, "marginTop", "0px");
 				}
-				self.history_events[i].el.style.marginBottom = "0px";
+				Fx.delay_css_setting(self.history_events[i].el, "marginBottom", "0px");
 			}
 			if (threshold_index >= self.history_events.length) {
-				self.history_events[self.history_events.length - 1].el.style.marginBottom = "40px";
+				Fx.delay_css_setting(self.history_events[self.history_events.length - 1].el, "marginBottom", "40px");
 			}
 			else {
-				self.history_events[self.history_events.length - 1].el.style.marginBottom = "30px";
+				Fx.delay_css_setting(self.history_events[self.history_events.length - 1].el, "marginBottom", "30px");
 			}
 		}
 
