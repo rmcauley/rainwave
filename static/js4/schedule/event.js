@@ -244,6 +244,7 @@ var EventBase = function(json) {
 	};
 
 	self.progress_bar_start = function() {
+		if (MOBILE) return;
 		progress_bar_update();
 		header_inside_bar.style.opacity = 1;
 		Clock.pageclock_bar_function = progress_bar_update;

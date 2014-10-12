@@ -67,6 +67,7 @@ var SongsTable = function(songs, columns) {
 					cell.appendChild(r.el);
 					row.appendChild(cell);
 
+					// I didn't like the way this fit into the design, despite it being a user requested feature. (it was not clamored for)
 					// if (User.id > 1) {
 					// 	cell = $el("td", { "class": "songlist_rating_clear" });
 					// 	div = $el("span", { "style": "float: right;", "textContent": "X" });

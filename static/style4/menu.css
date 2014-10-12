@@ -548,8 +548,8 @@ div.modal_header {
 }
 
 div.modal_header_content {
-	max-width: 900px;
-	width: 65%;
+	max-width: 100%;
+	width: 850px;
 	margin: 0 auto;
 	opacity: 0;
 	padding: 0;
@@ -557,8 +557,8 @@ div.modal_header_content {
 
 div.active_modal div.modal_header_content {
 	opacity: 1;
-	max-width: 850px;
-	width: 55%;
+	max-width: 100%;
+	width: 800px;
 	@include transition(padding, opacity, width, max-width);
 	@include transition-delay(600ms);
 }
@@ -574,11 +574,11 @@ div.modal_header_content svg {
 }
 
 div.modal {
-	max-width: 800px;
-	width: 60%;
+	max-width: 100%;
+	width: 800px;
 	margin: 5px auto;
 	height: 0;
-	max-height: 50%;
+	max-height: 80%;
 	padding: 5px;
 	overflow: hidden;
 	opacity: 0;
@@ -587,7 +587,7 @@ div.modal {
 }
 
 div.active_modal div.modal {
-	height: 500px;
+	height: 600px;
 	overflow: auto;
 	opacity: 1;
 	-webkit-transition: height 400ms $transfunc 300ms, opacity 400ms linear 500ms;

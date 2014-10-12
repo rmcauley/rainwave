@@ -47,6 +47,8 @@ var Schedule = function() {
 		API.add_callback(open_long_history, "playback_history");
 
 		Prefs.define("show_artists", [ false, true ]);
+		Prefs.define("show_losing_songs", [ false, true ]);
+		Prefs.add_callback("show_losing_songs", show_losing_songs_callback);
 		Prefs.add_callback("show_artists", show_artists_callback);
 
 		API.add_callback(function(json) { sched_current = json; }, "sched_current");
@@ -67,6 +69,17 @@ var Schedule = function() {
 		}
 	};
 
+	var show_losing_songs_callback = function(nv) {
+		if (nv) {
+			$add_class(self.el, "timeline_showing_losers");
+			$remove_class(self.el, "timeline_not_showing_losers");
+		}
+		else {
+			$remove_class(self.el, "timeline_showing_losers");
+			$add_class(self.el, "timeline_not_showing_losers");
+		}
+	};
+
 	self.draw = function() {
 		$id("history_header").textContent = $l("previouslyplayed");
 		$id("longhist_modal_header").textContent = $l("extended_history_header");
@@ -75,6 +88,7 @@ var Schedule = function() {
 		$id("history_header_container").addEventListener("click", function(e) { Prefs.change("sticky_history", !Prefs.get("sticky_history")); });
 
 		show_artists_callback(Prefs.get("show_artists"));
+		show_losing_songs_callback(Prefs.get("show_losing_songs"));
 	};
 
 	self.update = function() {
@@ -196,6 +210,13 @@ var Schedule = function() {
 	};
 
 	self.reflow_history = function() {
+		if (Prefs.get("sticky_history_size") == self.history_events.length) {
+			$remove_class($id("history_outer_container"), "history_expandable");
+		}
+		else {
+			$add_class($id("history_outer_container"), "history_expandable");
+		}
+
 		if (Prefs.get("sticky_history") || (Prefs.get("sticky_history_size") == self.history_events.length)) {
 			$add_class($id("history_outer_container"), "history_open");
 			self.history_events[0].el.style.marginTop = "0px";

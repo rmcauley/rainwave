@@ -13,7 +13,7 @@ body.mobile_screen #history_outer_container {
 	@include transition-wtime(350ms, color, background-color);
 }
 
-#history_header_container:hover {
+#history_outer_container.history_expandable #history_header_container:hover {
 	color: $text;
 	background-color: $cooldown-color;
 }
@@ -22,7 +22,7 @@ body.mobile_screen #history_outer_container {
 	height: 1em;
 	width: 1em;
 	vertical-align: middle;
-	opacity: 1;
+	opacity: 0;
 	fill: $vdarktext;
 	@include transition-wtime(350ms, opacity, transform, fill);
 	@include transform(rotate(0deg));
@@ -30,6 +30,10 @@ body.mobile_screen #history_outer_container {
 
 #history_outer_container.history_open svg.pulldown_arrow {
 	@include transform(rotate(180deg));
+}
+
+#history_outer_container.history_expandable svg.pulldown_arrow {
+	opacity: 1;
 }
 
 #history_outer_container #history_header_container:hover svg {

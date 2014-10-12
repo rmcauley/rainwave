@@ -146,6 +146,17 @@ div.timeline_song_content div.title.rating_title_el_fave {
 	color: $fave_color;
 }
 
+div.timeline_song_content div.entry_votes {
+	display: none;
+	float: right;
+	padding-right: .5em;
+	color: $darktext;
+}
+
+div.timeline_showing_losers div.timeline_now_playing div.timeline_song_content div.entry_votes {
+	display: block;
+}
+
 div.timeline_song_content div.artist, div.timeline_song_content div.votes, div.timeline_song_content div.cooldown_info, div.timeline_song a.song_link {
 	display: none;
 }
@@ -298,7 +309,10 @@ img.art_image {
 
 /* NOW PLAYING MODIFICATIONS */
 
-div.timeline_song.timeline_losing_song, body.small_screen div.timeline_song.timeline_losing_song {
+div.timeline_not_showing_losers div.timeline_song.timeline_losing_song,
+div.timeline_event.timeline_history div.timeline_song.timeline_losing_song,
+body.small_screen div.timeline_not_showing_losers div.timeline_song.timeline_losing_song, 
+body.small_screen div.timeline_event.timeline_history div.timeline_song.timeline_losing_song {
 	opacity: 0;
 	height: 0px;
 	overflow: hidden;
@@ -366,7 +380,7 @@ div.timeline_header_vote_result {
 	@include transition(margin, height);
 }
 
-div.timeline_now_playing div.timeline_header_vote_result {
+div.timeline_not_showing_losers div.timeline_now_playing div.timeline_header_vote_result {
 	margin-top: 30px;
 	height: 1.2em;
 }
@@ -391,7 +405,7 @@ div.timeline_now_playing div.timeline_header_bar {
 	margin-top: 30px;
 }
 
-div.timeline_now_playing div.timeline_header_vote_result + div.timeline_header_bar {
+div.timeline_not_showing_losers div.timeline_now_playing div.timeline_header_vote_result + div.timeline_header_bar {
 	margin-top: 5px;
 }
 

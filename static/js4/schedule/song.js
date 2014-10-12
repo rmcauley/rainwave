@@ -70,11 +70,12 @@ var TimelineSong = function() {
 			// c for content, this stuff should be pushed aside from the album art 
 			var c = $el("div", { "class": "timeline_song_content" });
 			
-			var title_group = c.appendChild($el("div", { "class": "title_group" }));
+			self.elements.title_group = c.appendChild($el("div", { "class": "title_group" }));
 
-			if (song_rating) title_group.appendChild(song_rating.el);
+			if (song_rating) self.elements.title_group.appendChild(song_rating.el);
 
-			self.elements.title = title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title, "title": self.data.title }));
+			self.elements.entry_votes = self.elements.title_group.appendChild($el("div", { "class": "entry_votes", "textContent": self.data.entry_votes }));
+			self.elements.title = self.elements.title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title, "title": self.data.title }));
 			self.el.addEventListener("mouseover", self.title_mouse_over);
 			self.el.addEventListener("mouseout", self.title_mouse_out);
 			self.el.addEventListener("click", self.vote);	
@@ -128,6 +129,8 @@ var TimelineSong = function() {
 		self.update = function(new_json) {
 			self.data = new_json;
 			self.data.entry_position = new_json.entry_position;
+			self.data.entry_votes = new_json.entry_votes;
+			self.elements.entry_votes.textContent = self.data.entry_votes;
 			if (song_rating) song_rating.update(new_json.rating_user, new_json.rating, new_json.fave, new_json.rating_allowed);
 			if (album_rating) album_rating.update(new_json.albums[0].rating_user, new_json.albums[0].rating, new_json.albums[0].fave, false);
 			self.update_cooldown_info();

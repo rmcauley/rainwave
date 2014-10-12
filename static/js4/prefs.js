@@ -211,12 +211,12 @@ var SettingsWindow = function() {
 		option.addEventListener("click", function(e) { Prefs.change("stage", 4); });
 
 		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("timeline_preferences") }));
-		draw_cb_list([ "show_artists" ]);
+		draw_cb_list([ "show_artists", "show_losing_songs" ]);
 		div = el.appendChild($el("div", { "class": "setting_group" }));
 		var sticky_history_size = $el("div", { "id": "prefs_sticky_history_size", "class": "multi_select unselectable" });
 		var histsize_highlighter = sticky_history_size.appendChild($el("div", { "class": "floating_highlight" }));
 		for (i = 0; i <= 5; i++) {
-			option = $el("span", { "class": "link", "textContent": i != 0 ? i : $l("none") });
+			option = $el("span", { "class": "link", "textContent": i != 0 ? i : $l("prefs_sticky_history_size__none") });
 			option._value = i;
 			if (i == Prefs.get("sticky_history_size")) {
 				$add_class(option, "selected selected_first");
