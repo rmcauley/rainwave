@@ -43,6 +43,7 @@ var AlbumViewRatingPieChart = function(ctx, json) {
 			max_count += json.rating_histogram[i];
 		}
 	}
+	json.num_song_ratings = max_count;
 	for (var i in AlbumViewColors) {
 		if (i in json.rating_histogram) data.push({ "value": Math.round(json.rating_histogram[i] / max_count * 100), "color": AlbumViewColors[i], "highlight": "#FFF", "label": i });
 	}
@@ -66,7 +67,7 @@ var AlbumView = function(view, json) {
 	AlbumViewRatingPieChart(cnvs.getContext("2d"), json);
 
 	if (json.rating > 0) {
-		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_rating_ranked_at", { "rating": json.rating, "rank": json.rating_rank }) }));
+		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_rating_ranked_at_v2", { "rating": json.rating, "rating_count": json.num_song_ratings, "rank": json.rating_rank }) }));
 	}
 	if (json.request_count > 0) {
 		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_requests_ranked_at", { "count": json.request_count, "rank": json.request_rank }) }));
