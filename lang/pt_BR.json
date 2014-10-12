@@ -67,7 +67,6 @@
    "forums"                                          : "Fórum",
    "login"                                           : "Login",
    "chat"                                            : "Bate-papo",
-
    "previouslyplayed"                                : "Histórico",
    "extended_history_link"                           : "Estendido",
    "extended_history_header"                         : "Histórico estendido",
@@ -182,6 +181,7 @@
    "clear_request_queue"                             : "Limpar todos",
    "pause_request_queue"                             : "Pausar",
    "request_fill_with_unrated"                       : "Encher com não avaliadas",
+   "request_fill_with_faves"                         : "Encher com favoritas",
 
    "Requests"                                        : "Pedidos",
    "requests_expiring"                               : "Vai perder seu lugar na fila!",
