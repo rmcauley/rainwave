@@ -40,7 +40,7 @@ var Schedule = function() {
 
 	self.initialize = function() {
 		Prefs.define("sticky_history", [ false, true ]);
-		Prefs.define("sticky_history_size", [ 5, 4, 3, 2, 1, 0 ]);
+		Prefs.define("sticky_history_size", [ 0, 5, 4, 3, 2, 1 ]);
 		Prefs.add_callback("sticky_history", self.reflow_history);
 		Prefs.add_callback("sticky_history_size", self.reflow_history);
 
