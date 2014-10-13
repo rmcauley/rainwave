@@ -206,7 +206,7 @@ var Menu = function() {
 					songs[key].el.parentNode.removeChild(songs[key].el);
 				}
 				json[key].albums = [ { "art": json[key].art, "name": json[key].album } ];
-				songs[key] = TimelineSong.new(json[key]);
+				songs[key] = TimelineSong.create(json[key]);
 				elements.stations[key]._np_info.appendChild(songs[key].el);
 			}
 		}

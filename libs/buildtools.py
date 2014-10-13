@@ -2,6 +2,7 @@ import os
 import scss
 from scss import Scss
 from jsmin import jsmin
+from slimit import minify
 from csscompressor import compress
 
 scss.config.LOAD_PATHS = os.path.dirname(__file__) + "/../static/style4"
@@ -56,12 +57,14 @@ def bake_js(source_dir="js4", dest_file="script4.js"):
 	create_baked_directory()
 	fn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), dest_file)
 	if not os.path.exists(fn):
-		o = open(fn, "w")
-		for fn in get_js_file_list(source_dir):
-			jsfile = open(os.path.join(os.path.dirname(__file__), "..", fn))
-			o.write("\n")
-			o.write(jsmin(jsfile.read()))
+		js_content = ""
+		for sfn in get_js_file_list(source_dir):
+			jsfile = open(os.path.join(os.path.dirname(__file__), "..", sfn))
+			js_content += minify(jsfile.read()) + "\n"
 			jsfile.close()
+		
+		o = open(fn, "w")
+		o.write(minify(js_content, mangle=True, mangle_toplevel=False))
 		o.close()
 
 def get_build_number():

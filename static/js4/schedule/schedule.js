@@ -25,7 +25,7 @@ var Schedule = function() {
 
 	self.scroll_init = function() {
 		self.el = $id("timeline");
-		timeline_scrollbar = Scrollbar.new(self.el, $id("timeline_scrollbar"), 30);
+		timeline_scrollbar = Scrollbar.create(self.el, $id("timeline_scrollbar"), 30);
 		timeline_scrollbar.pending_self_update = true;
 		timeline_resizer = Scrollbar.new_resizer($id("timeline_scrollblock"), self.el, $id("timeline_resizer"));
 		timeline_resizer.callback = DetailView.on_resize;

@@ -6,7 +6,7 @@ var TimelineSong = function() {
 	};
 	cls.calculate_height();
 
-	cls.new = function(json, request_mode) {
+	cls.create = function(json, request_mode) {
 		var self = {};
 		self.data = json;
 		self.elements = {};
@@ -34,7 +34,7 @@ var TimelineSong = function() {
 
 			if (request_mode) {
 				self.elements.request_cancel = $el("div", { "class": "request_cancel", "textContent": "x" });
-				self.elements.request_cancel.addEventListener("click", function() { Requests.delete(self.data.id); });
+				self.elements.request_cancel.addEventListener("click", function() { Requests.remove(self.data.id); });
 				self.el.appendChild(self.elements.request_cancel);
 			}
 

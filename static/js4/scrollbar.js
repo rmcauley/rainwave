@@ -47,7 +47,7 @@ var Scrollbar = function() {
 		}
 	};
 
-	cls.new = function(scrollable, handle, handle_margin_top) {
+	cls.create = function(scrollable, handle, handle_margin_top) {
 		if (!handle_margin_top && (handle_margin_top !== 0)) handle_margin_top = 3;
 		var handle_margin_bottom = 5;
 

@@ -34,7 +34,7 @@ var DetailView = function() {
 	};
 
 	self.scroll_init = function() {
-		scroller = Scrollbar.new(el, $id("detail_scrollbar"));
+		scroller = Scrollbar.create(el, $id("detail_scrollbar"));
 		scroller.unrelated_positioning = true;
 		Fx.delay_draw(self.on_resize_draw);
 		self.on_resize_calculate();

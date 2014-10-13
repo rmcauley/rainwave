@@ -48,7 +48,7 @@ var EventBase = function(json) {
 		self.songs = [];
 		if ("songs" in json) {
 			for (var i = 0; i < json.songs.length; i++) {
-				self.songs.push(TimelineSong.new(json.songs[i]));
+				self.songs.push(TimelineSong.create(json.songs[i]));
 			}
 		}
 	}

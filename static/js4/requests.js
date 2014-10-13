@@ -16,7 +16,7 @@ var Requests = function() {
 
 	self.scroll_init = function() {
 		scroll_container = $id("requests");
-		scroller = Scrollbar.new(scroll_container, $id("requests_scrollbar"), 35);
+		scroller = Scrollbar.create(scroll_container, $id("requests_scrollbar"), 35);
 		scroller.set_handle_margin_bottom(30);
 	};
 
@@ -157,7 +157,7 @@ var Requests = function() {
 		API.async_get("request", { "song_id": song_id });
 	};
 
-	self.delete = function(song_id) {
+	self.remove = function(song_id) {
 		API.async_get("delete_request", { "song_id": song_id });
 	};
 
@@ -198,7 +198,7 @@ var Requests = function() {
 				}
 			}
 			if (!found) {
-				n = TimelineSong.new(json[i], true);
+				n = TimelineSong.create(json[i], true);
 				n.elements.request_drag.addEventListener("mousedown", start_drag);
 				n.el.style[Fx.transform_string] = "translateY(" + SCREEN_HEIGHT + "px)";
 				new_songs.unshift(n);
