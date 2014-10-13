@@ -4,6 +4,7 @@ var SCREEN_HEIGHT;
 var SCREEN_WIDTH;
 var MAIN_HEIGHT;
 var MENU_HEIGHT = 45;
+var INITIALIZED = false;
 
 function _size_calculate() {
 	"use strict";
@@ -124,6 +125,9 @@ function stage_switch(nv, ov) {
 function initialize() {
 	"use strict";
 
+	if (INITIALIZED) return;
+	INITIALIZED = true;
+
 	// ****************** DATA HANDLING
 	Fx.initialize();
 	User = BOOTSTRAP.json.user;
@@ -211,3 +215,5 @@ function initialize() {
 	window.addEventListener("resize", _on_resize, false);
 	setTimeout(function() { $remove_class(document.body, "unselectable"); }, 1500);
 }
+
+document.addEventListener("DOMContentLoaded", initialize);
