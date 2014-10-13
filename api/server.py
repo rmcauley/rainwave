@@ -104,9 +104,8 @@ class APIServer(object):
 		cache.connect()
 		memory_trace.setup(port_no)
 
-		if buildtools.create_baked_directory():
-			buildtools.bake_css()
-			buildtools.bake_js()
+		buildtools.bake_css()
+		buildtools.bake_js()
 
 		api.locale.load_translations()
 		api.locale.compile_static_language_files()

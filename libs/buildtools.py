@@ -14,13 +14,14 @@ def create_baked_directory():
 
 def bake_css():
 	create_baked_directory()
-	_bake_css_file(os.path.join(os.path.dirname(__file__), "../static/style4/_sass.scss"),
-				   os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style4.css"))
+	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style4.css")
+	if not os.path.exists(wfn):
+		_bake_css_file(os.path.join(os.path.dirname(__file__), "..", "static", "style4", "_sass.scss"), wfn)
 
 def bake_beta_css():
 	create_baked_directory()
-	_bake_css_file(os.path.join(os.path.dirname(__file__), "../static/style4/_sass.scss"),
-				   os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style4b.css"))
+	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style4b.css")
+	_bake_css_file(os.path.join(os.path.dirname(__file__), "..", "static", "style4", "_sass.scss"), wfn)
 
 def _bake_css_file(input_filename, output_filename):
 	css_f = open(input_filename, 'r')
@@ -50,12 +51,14 @@ def get_js_file_list_url():
 
 def bake_js(source_dir="js4", dest_file="script4.js"):
 	create_baked_directory()
-	o = open(os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), dest_file), "w")
-	for fn in get_js_file_list(source_dir):
-		jsfile = open(os.path.join(os.path.dirname(__file__), "..", fn))
-		o.write(jsmin(jsfile.read()))
-		jsfile.close()
-	o.close()
+	fn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), dest_file)
+	if not os.path.exists(fn):
+		o = open(fn, "w")
+		for fn in get_js_file_list(source_dir):
+			jsfile = open(os.path.join(os.path.dirname(__file__), "..", fn))
+			o.write(jsmin(jsfile.read()))
+			jsfile.close()
+		o.close()
 
 def get_build_number():
 	bnf = open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), 'r')
