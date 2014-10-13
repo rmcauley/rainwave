@@ -104,6 +104,10 @@ class APIServer(object):
 		cache.connect()
 		memory_trace.setup(port_no)
 
+		if buildtools.create_baked_directory():
+			buildtools.bake_css()
+			buildtools.bake_js()
+
 		api.locale.load_translations()
 		api.locale.compile_static_language_files()
 
@@ -119,10 +123,6 @@ class APIServer(object):
 				cache.set_station(station_id, "backend_ok", True)
 				cache.set_station(station_id, "backend_message", "OK")
 				cache.set_station(station_id, "get_next_socket_timeout", False)
-
-		if buildtools.create_baked_directory():
-			buildtools.bake_css()
-			buildtools.bake_js()
 		
 		for sid in config.station_ids:
 			cache.update_local_cache_for_sid(sid)
