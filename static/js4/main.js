@@ -1,5 +1,3 @@
-// 2. Retina rating bars 3. Dropdown
-
 var User;
 var SmallScreen = false;
 var SCREEN_HEIGHT;
@@ -40,11 +38,11 @@ function _on_resize() {
 	if (!_size_calculate()) return;
 	
 	// draw 1 :(
+	Schedule.reflow_history();
 	Fx.flush_draws();
 	$id('sizable_body').style.height = MAIN_HEIGHT + "px";
 
 	// paint 2 :(
-	Schedule.scrollbar_recalculate();
 	Scrollbar.recalculate();
 	// scrollbar recalculation has to come before PlaylistLists.on_resize
 	PlaylistLists.on_resize();
@@ -57,7 +55,7 @@ function _on_resize() {
 
 	// hacks, argh, the np size calculate needs to be done after any and all animation
 	// has finished, which means we need to introduce this delay.
-	setTimeout(function() { Schedule.now_playing_size_calculate(); }, 1500);
+	//setTimeout(function() { Schedule.now_playing_size_calculate(); }, 1500);
 }
 
 function vote_cta_check() {

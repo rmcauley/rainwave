@@ -10,6 +10,8 @@ var Schedule = function() {
 	var sched_current;
 	var sched_history;
 	var current_event;
+	var first_scroll_override = true;
+	var scrollbar_recalculate_timeout;
 
 	var timeline_scrollbar;
 	var timeline_resizer;
@@ -126,10 +128,6 @@ var Schedule = function() {
 			current_event.el.style.marginTop = SCREEN_HEIGHT + "px";
 		}
 		Fx.delay_css_setting(current_event.el, "marginTop", "10px");
-		timeline_scrollbar.pending_self_update = true;
-		Fx.chain_transition(current_event.el, function(e) {
-			setTimeout(function() { self.scrollbar_recalculate(); }, 1100);
-		});
 		new_events.push(current_event);
 		if (!current_event.el.parentNode) self.el.appendChild(current_event.el);
 
@@ -188,8 +186,19 @@ var Schedule = function() {
 	};
 
 	self.scrollbar_recalculate = function() {
-		timeline_scrollbar.recalculate();
-		timeline_scrollbar.refresh();
+		if (scrollbar_recalculate_timeout) {
+			timeline_scrollbar.pending_self_update = false;
+			clearTimeout(scrollbar_recalculate_timeout);
+		}
+		if (!timeline_scrollbar.pending_self_update || first_scroll_override) {
+			first_scroll_override = false;
+			timeline_scrollbar.pending_self_update = true;
+			scrollbar_recalculate_timeout = setTimeout(function() {
+				timeline_scrollbar.recalculate();
+				timeline_scrollbar.refresh();
+				timeline_scrollbar.pending_self_update = false;
+			}, 1600);
+		}
 	};
 
 	var find_event = function(id) {
@@ -240,7 +249,10 @@ var Schedule = function() {
 		}
 		else {
 			$remove_class($id("history_outer_container"), "history_open");
-			Fx.delay_css_setting(self.history_events[0].el, "marginTop", ((-(self.history_events.length - Prefs.get("sticky_history_size")) * TimelineSong.height) - 30) + "px");
+			var mt1 = -(self.history_events.length - Prefs.get("sticky_history_size")) * TimelineSong.height;
+			if (!SmallScreen) mt1 -= 30;
+			else mt1 += 30;
+			Fx.delay_css_setting(self.history_events[0].el, "marginTop", mt1 + "px");
 			var threshold_index = self.history_events.length - Prefs.get("sticky_history_size");
 			for (i = 1; i < self.history_events.length; i++) {
 				if (threshold_index == i) {
@@ -258,13 +270,7 @@ var Schedule = function() {
 				Fx.delay_css_setting(self.history_events[self.history_events.length - 1].el, "marginBottom", "30px");
 			}
 		}
-
-		if (!timeline_scrollbar.pending_self_update) {
-			timeline_scrollbar.pending_self_update = true;
-			Fx.chain_transition(self.history_events[0].el, function(e) {
-				setTimeout(function() { self.scrollbar_recalculate(); }, 1100);
-			});
-		}
+		self.scrollbar_recalculate();
 	};
 
 	self.register_vote = function(json) {
