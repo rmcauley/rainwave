@@ -56,6 +56,7 @@ def bake_js(source_dir="js4", dest_file="script4.js"):
 		o = open(fn, "w")
 		for fn in get_js_file_list(source_dir):
 			jsfile = open(os.path.join(os.path.dirname(__file__), "..", fn))
+			o.write("\n")
 			o.write(jsmin(jsfile.read()))
 			jsfile.close()
 		o.close()
