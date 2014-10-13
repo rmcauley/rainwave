@@ -77,5 +77,5 @@ class BetaRedirect(tornado.web.RequestHandler):
 @handle_url("/beta/")
 class BetaIndex(MainIndex):
 	beta = True
-	page_template = "r4_1_index.html"
+	page_template = "r4_index.html"
 	perks_required = True
