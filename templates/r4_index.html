@@ -17,27 +17,34 @@
 				"station_list": {{ station_list }}
 		};
 	</script>
-	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
+
+	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
+	<link href="/static/baked/{{ revision_number }}/style4b.css" type="text/css" rel="stylesheet" />
+
 	{% if mobile %}
 		<link href="/static/style4/mobile.css" type="text/css" rel="stylesheet" />
 		<script type="application/javascript">
 			var MOBILE = true;
 		</script>
 	{% else %}
-	<script type="application/javascript">
-		var MOBILE = false;
-	</script>
+		<script type="application/javascript">
+			var MOBILE = false;
+		</script>
 	{% end %}
+
 	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
+
 	{% if jsfiles %}
 		{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
 	{% else %}
 		<script src="/static/baked/{{ revision_number }}/script4.js" type="application/javascript"></script>
 	{% end %}
+
 	<script type="text/javascript">
 		_size_calculate();
 	</script>
 </head>
+
 <body class="loading unselectable" onload="initialize();">
 	<div id="div_with_scroll" style="position: absolute; top:-1500px; width: 100px; overflow: scroll; height: 150px;">
 		<div style="height: 100px; width: 10px;">&nbsp;</div>
@@ -45,149 +52,72 @@
 	<div id="measure_box">
 		<div id="playlist_item_height" class="searchlist_item">&nbsp;</div>
 	</div>
-	<div id="top_menu">
-		<ul id="top_icons">
-			<li>
-				<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
-					<svg viewBox="0 0 100 100">
-						<path d="M32,66.98v17.992c0,2.434,1.875,2.09,2.5,1.59C35.27,85.947,56,66.98,56,66.98h26c4.941,0,6-1.059,6-5.998   V19.719C88,13.92,87,13,82,13H18c-4.92,0-6,1-6,5.998v41.984c0,4.857,0.84,5.998,6,5.998H32z M36.52,43.988   c0,3.039-2.48,5.518-5.52,5.518s-5.52-2.479-5.52-5.518s2.48-5.52,5.52-5.52S36.52,40.953,36.52,43.988z M54.52,43.988   c0,3.039-2.48,5.518-5.52,5.518s-5.52-2.479-5.52-5.518s2.48-5.52,5.52-5.52S54.52,40.953,54.52,43.988z M72.52,43.988   c0,3.039-2.48,5.518-5.52,5.518s-5.52-2.479-5.52-5.518s2.48-5.52,5.52-5.52S72.52,40.953,72.52,43.988z"/>
-					</svg>
-					<span class="icon_description" id="chat_link"></span>
-				</a>
-			</li>
-			<li>
-				<a href="http://rainwave.cc/forums" target="_blank">
-					<svg viewBox="0 0 89 89">
-						<path d="M72.555,10.766H9.904c-2.268,0-4.17,1.701-4.731,4.011h72.112C76.724,12.467,74.822,10.766,72.555,10.766z" />
-						<path d="M9.904,42.146h62.651H85l-7.543-6.165V18.084H5v18.647C5,39.722,7.195,42.146,9.904,42.146z" />
-						<path d="M80.135,46.856H17.961c-2.407,0-4.4,1.944-4.792,4.498h71.756C84.534,48.801,82.541,46.856,80.135,46.856z" />
-						<path d="M13.096,72.289L5.82,78.234h12.125c0.005,0,0.01,0,0.016,0h62.173c2.687,0,4.865-2.423,4.865-5.413V54.663H13.096V72.289z" />
-					</svg>
-					<span class="icon_description" id="forums_link"></span>
-				</a>
-			</li>
-			<li id="calendar_menu_item">
-				<a href="https://www.google.com/calendar/embed?src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com" target="_blank">
-					<svg viewBox="0 0 80.5 77.5">
-							<path d="M71.7,19.597H8.715V7H71.7V19.597z"/>
-							<rect x="8.715" y="54.398" width="12.437" height="12.438"/>
-							<rect x="8.715" y="38.854" width="12.437" height="12.436"/>
-							<rect x="8.715" y="23.308" width="12.437" height="12.437"/>
-							<rect x="25.562" y="54.398" width="12.437" height="12.438"/>
-							<rect x="25.562" y="38.854" width="12.437" height="12.436"/>
-							<rect x="25.562" y="23.308" width="12.437" height="12.437"/>
-							<rect x="42.416" y="54.398" width="12.434" height="12.438"/>
-							<rect x="42.416" y="38.854" width="12.434" height="12.436"/>
-							<rect x="42.416" y="23.308" width="12.434" height="12.437"/>
-							<rect x="59.264" y="54.398" width="12.437" height="12.438"/>
-							<rect x="59.264" y="38.854" width="12.437" height="12.436"/>
-							<rect x="59.264" y="23.308" width="12.437" height="12.437"/>
-						</g>
-					</svg>
-					<span class="icon_description" id="calendar_link"></span>
-				</a>
-				<div id="calendar_dropdown" class="info"></div>
-			</li>
-			<li id="user_info"></li>
-			<li class="small_link">
-				<svg id="settings_link" viewBox="0 0 115 115">
-					<path transform="translate(0, 10)" d="M95.784,59.057c1.867,0,3.604-1.514,3.858-3.364c0,0,0.357-2.6,0.357-5.692c0-3.092-0.357-5.692-0.357-5.692  c-0.255-1.851-1.991-3.364-3.858-3.364h-9.648c-1.868,0-3.808-1.191-4.31-2.646s-1.193-6.123,0.128-7.443l6.82-6.82  c1.32-1.321,1.422-3.575,0.226-5.01L80.976,11c-1.435-1.197-3.688-1.095-5.01,0.226l-6.82,6.82c-1.32,1.321-3.521,1.853-4.888,1.183  c-1.368-0.67-5.201-3.496-5.201-5.364V4.217c0-1.868-1.514-3.604-3.364-3.859c0,0-2.6-0.358-5.692-0.358s-5.692,0.358-5.692,0.358  c-1.851,0.254-3.365,1.991-3.365,3.859v9.648c0,1.868-1.19,3.807-2.646,4.31c-1.456,0.502-6.123,1.193-7.444-0.128l-6.82-6.82  C22.713,9.906,20.459,9.804,19.025,11L11,19.025c-1.197,1.435-1.095,3.689,0.226,5.01l6.819,6.82  c1.321,1.321,1.854,3.521,1.183,4.888s-3.496,5.201-5.364,5.201H4.217c-1.868,0-3.604,1.514-3.859,3.364c0,0-0.358,2.6-0.358,5.692  c0,3.093,0.358,5.692,0.358,5.692c0.254,1.851,1.991,3.364,3.859,3.364h9.648c1.868,0,3.807,1.19,4.309,2.646  c0.502,1.455,1.193,6.122-0.128,7.443l-6.819,6.819c-1.321,1.321-1.423,3.575-0.226,5.01L19.025,89  c1.435,1.196,3.688,1.095,5.009-0.226l6.82-6.82c1.321-1.32,3.521-1.853,4.889-1.183c1.368,0.67,5.201,3.496,5.201,5.364v9.648  c0,1.867,1.514,3.604,3.365,3.858c0,0,2.599,0.357,5.692,0.357s5.692-0.357,5.692-0.357c1.851-0.255,3.364-1.991,3.364-3.858v-9.648  c0-1.868,1.19-3.808,2.646-4.31s6.123-1.192,7.444,0.128l6.819,6.82c1.321,1.32,3.575,1.422,5.01,0.226L89,80.976  c1.196-1.435,1.095-3.688-0.227-5.01l-6.819-6.819c-1.321-1.321-1.854-3.521-1.183-4.889c0.67-1.368,3.496-5.201,5.364-5.201H95.784  z M50,68.302c-10.108,0-18.302-8.193-18.302-18.302c0-10.107,8.194-18.302,18.302-18.302c10.108,0,18.302,8.194,18.302,18.302  C68.302,60.108,60.108,68.302,50,68.302z" />
-				</svg>
-				<div id="settings_window" class="info"></div>
-			</li>
-			<li id="twitter_menu_item" class="small_link">
-				<a href="http://twitter.com/rainwavecc" target="_blank">
-					<svg viewBox="0 0 190 160">
-						<g transform="translate(-282.32053,-380)">
-	    					<path d="m 453.82593,412.80619 c -6.3097,2.79897 -13.09189,4.68982 -20.20852,5.54049 7.26413,-4.35454 12.84406,-11.24992 15.47067,-19.46675 -6.79934,4.03295 -14.3293,6.96055 -22.34461,8.53841 -6.41775,-6.83879 -15.56243,-11.111 -25.68298,-11.111 -19.43159,0 -35.18696,15.75365 -35.18696,35.18525 0,2.75781 0.31128,5.44359 0.91155,8.01875 -29.24344,-1.46723 -55.16995,-15.47582 -72.52461,-36.76396 -3.02879,5.19662 -4.76443,11.24048 -4.76443,17.6891 0,12.20777 6.21194,22.97747 15.65332,29.28716 -5.76773,-0.18265 -11.19331,-1.76565 -15.93716,-4.40083 -0.004,0.14663 -0.004,0.29412 -0.004,0.44248 0,17.04767 12.12889,31.26806 28.22555,34.50266 -2.95247,0.80436 -6.06101,1.23398 -9.26989,1.23398 -2.2673,0 -4.47114,-0.22124 -6.62011,-0.63114 4.47801,13.97857 17.47214,24.15143 32.86992,24.43441 -12.04227,9.43796 -27.21366,15.06335 -43.69965,15.06335 -2.84014,0 -5.64082,-0.16722 -8.39349,-0.49223 15.57186,9.98421 34.06703,15.8094 53.93768,15.8094 64.72024,0 100.11301,-53.61524 100.11301,-100.11387 0,-1.52554 -0.0343,-3.04251 -0.10204,-4.55261 6.87394,-4.95995 12.83891,-11.15646 17.55618,-18.21305 z" />
-						</g>
-					</svg>
-				</a>
-				<div id="twitter_dropdown" class="info">
-					<a id="twitter_timeline" class="twitter-timeline" data-dnt="true" href="https://twitter.com/Rainwavecc"  data-widget-id="499806455336144896"></a>
+
+	<div id="top_menu_wrapper">
+		<div id="top_menu">
+			<ul id="top_icons">
+				<li>
+					<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
+						<!--<svg><use xlink:href="/static/images4/symbols.svg#chat"></use></svg>-->
+						<span class="icon_description" id="chat_link"></span>
+					</a>
+				</li>
+				
+				<li>
+					<a href="http://rainwave.cc/forums" target="_blank">
+						<!--<svg><use xlink:href="/static/images4/symbols.svg#forums"></use></svg>-->
+						<span class="icon_description" id="forums_link"></span>
+					</a>
+				</li>
+				
+				<li id="calendar_menu_item">
+					<a class="link">
+						<!--<svg><use xlink:href="/static/images4/symbols.svg#calendar"></use></svg>-->
+						<span class="icon_description" id="calendar_link"></span>
+					</a>
+					<div id="calendar_dropdown" class="menu_inline_dropdown"></div>
+				</li>
+				
+				<li id="user_info">
+					<a id="user_info_name"></a>
+					<svg id="anonymous_user_avatar"><use id="audio_icon_stop" xlink:href="/static/images4/symbols.svg#user"></use></svg>
+				</li>
+
+				<li id="icon_cluster">
+					<a href="http://twitter.com/rainwavecc" target="_blank">
+						<svg><use xlink:href="/static/images4/symbols.svg#twitter"></use></svg>
+					</a>
+					
+					<a href="http://facebook.com/rainwavecc" target="_blank">
+						<svg><use xlink:href="/static/images4/symbols.svg#facebook"></use></svg>
+					</a>
+
+					<a id="about_link"><svg><use xlink:href="/static/images4/symbols.svg#about"></use></svg></a>
+
+					<a id="settings_link"><svg><use xlink:href="/static/images4/symbols.svg#settings"></use></svg></a>
+				</li>
+			</ul>
+
+			<div id="station_select_container">
+				<div id="station_select">
+					<div id="station_select_header"></div>
+					<svg class="pulldown_arrow"><use xlink:href="/static/images4/symbols.svg#pulldown"></use></svg>
 				</div>
-			</li>
-			<li class="small_link">
-				<a href="http://facebook.com/rainwavecc" target="_blank">
-					<svg viewBox="0 0 290 290">
-						<g transform="translate(0, 20)">
-							<path d="M248.082,262.307c7.854,0,14.223-6.369,14.223-14.225V18.812
-								c0-7.857-6.368-14.224-14.223-14.224H18.812c-7.857,0-14.224,6.367-14.224,14.224v229.27c0,7.855,6.366,14.225,14.224,14.225
-								H248.082z"/>
-							<path style="fill: #000;" d="M182.409,262.307v-99.803h33.499l5.016-38.895h-38.515V98.777c0-11.261,3.127-18.935,19.275-18.935
-								l20.596-0.009V45.045c-3.562-0.474-15.788-1.533-30.012-1.533c-29.695,0-50.025,18.126-50.025,51.413v28.684h-33.585v38.895h33.585
-								v99.803H182.409z"/>
-						</g>
+			</div>
+
+			<div id="r4_audio_player">
+				<a class="unselectable" id="player_link" href="/tune_in/{{ request.sid }}.mp3" target="_blank">
+					<svg id="user_tunein_recognized">
+						<use xlink:href="/static/images4/symbols.svg#signal"></use>
 					</svg>
+					<svg class="audio_icon">
+						<use id="audio_icon_play" xlink:href="/static/images4/symbols.svg#play"></use>
+						<use id="audio_icon_stop" xlink:href="/static/images4/symbols.svg#stop"></use>
+					</svg>
+					<span id="audio_status_play"></span>
+					<span id="audio_status_stop"></span>
 				</a>
-			</li>
-			<li id="logo">
-				<span id="logo_name">Rainwave</span>
-				<div id="about_window" class="info hidden_info">
-					<h4 id="staff_list_header"></h4>
-					<div class="info_right">Metal-Ridley</div>
-					<div>Jon Funk</div>
-					<div class="info_right">Nat</div>
-					<div>Kevin</div>
-					<div class="info_right">Tom Helmuth</div>
-					<div>Rob McAuley</div>
-					<div>William Jackson</div>
-
-					<h4 id="relay_sponsors_header"></h4>
-					<div class="info_right"><a class="link_obvious" target="_blank" href="http://www.easynews.com">Dracoirs</a></div>
-					<div>Cory Petosky</div>
-					<div>Joe Love</div>
-
-					<h4 id="design_by"></h4>
-					<div><a class="link_obvious" href="http://frzi.com">Freek Zijlmans (frzi.com)</a></div>
-
-					<h4 id="translators_header"></h4>
-					<div class="info_right">DarkLink (DE)</div>
-					<div>BreadMaker (ES)</div>
-					<div class="info_right">Metal-Geo (NL)</div>
-					<div>Metal-Ridley (FR)</div>
-					<div class="info_right">ocrfan (PT)</div>
-					<div>quarterlife (FI)</div>
-					<div>Steppo (SE)</div>
-
-					<h4 id="icon_attribution"></h4>
-					<div class="info_right"><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/bryan@typeamachines.com">Forums: Brayn Allen</a></div>
-					<div><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/Icomatic">Chat: Icomatic</a></div>
-					<div class="info_right"><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/r0">Gear: Ryan Oksenhorn</a></div>
-					<div><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/JuanGarces">History: Juan Garces</a></div>
-					<div class="info_right"><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/kolchan">User: Dima Kolchan</a></div>
-					<div><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/megapixl">FB: Niels Gesquiere</a></div>
-					<div><a class="link_obvious" target="_blank" href="http://www.thenounproject.com/prerakpatel">Cal: Prerak Patel</a></div>
-
-					<a class="link_obvious" href="http://rainwave.cc/pages/tip_jar" target="_blank" id="donation_information"></a>
-					<a class="link_obvious" href="http://github.com/rmcauley/rainwave/" target="_blank" id="github_link"></a>
-				</div>
-			</li>
-		</ul>
-
-		<ul id="station_select"></ul>
-
-		<ul id="main_icons">
-			<li id="history_link_container">
-				<svg viewBox="0 0 100 100">
-					<path d="M49.317,64.832L68.503,45.55c1.784-1.786,1.784-4.678,0.002-6.464c-1.787-1.784-4.678-1.783-6.462,0L46.088,55.138  L35.61,44.662c-1.783-1.784-4.679-1.784-6.462,0c-1.785,1.785-1.785,4.678,0,6.462l13.706,13.707  c0.893,0.893,2.063,1.339,3.234,1.339C47.256,66.17,48.426,65.724,49.317,64.832z" />
-					<path d="M47.155,14.719c-23.457,0-42.54,18.537-42.54,41.994C4.615,65.652,7.48,75,12.637,81H5.114C2.565,81,0.5,83.451,0.5,86  s2.065,5,4.614,5H29V66.48c0-2.548-1.951-4.613-4.5-4.613S20,63.933,20,66.48v9.202c-5-5.353-5.413-11.705-5.413-18.423  c0-17.759,14.629-32.206,32.387-32.206c17.76,0,32.294,14.447,32.294,32.206S64.87,89.466,47.109,89.466  c-2.853,0-5.143,2.313-5.143,5.166c0,2.855,2.322,5.168,5.177,5.168c23.459,0,42.546-19.083,42.546-42.54  C89.689,33.802,70.613,14.719,47.155,14.719z" />
-					<path d="M40.414,11h13.483c3.156,0,5.712-2.345,5.712-5.5c0-3.154-2.556-5.5-5.712-5.5H40.414c-3.158,0-5.713,2.346-5.713,5.5  C34.701,8.655,37.256,11,40.414,11z"/>
-				</svg>
-				<span id="history_link"></span>
-				<div id="history" class="scrollblock">
-					<div id="history_list" class="scrollable"><div id="history_scrollbar" class="scrollbar scrollbar_invisible"></div></div>
-				</div>
-			</li>
-		</ul>
-		
-		<div id="player" class="unselectable">
-			<div id="player_alignment">
-				<a id="player_link" href="/tune_in/{{ request.sid }}.mp3" target="_blank">
-					<div id="audio_icon"></div>
-					<div id="audio_status"></div>
-				</a>
-				<svg id="audio_volume" viewBox="0 0 100 100" preserveAspectRatio="none">
+				<svg class="unselectable" id="audio_volume" viewBox="0 0 100 100" preserveAspectRatio="none">
 					<clipPath id="volume_bars">
 						<rect x="0" y="80"  width="17" height="20"  />
 						<rect x="20" y="60" width="17" height="40"  />
@@ -201,13 +131,95 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="modal_container" id="about_window_container" style="display: none;">
+		<div class="modal_header_wrapper">
+			<div class="modal_header">
+				<div class="modal_header_content">
+					<svg id="about_modal_close"><use xlink:href="/static/images4/symbols.svg#close"></use></svg>
+					<span id="about_modal_header"></span>
+				</div>
+			</div>
+		</div>
+		<div class="modal" id="about_window">
+			<div class="setting_group setting_group_special">
+				<div class="multi_select multi_select_special">
+					<span>
+						<a id="about_donations_link" href="http://rainwave.cc/pages/tip_jar" target="_blank"></a>
+					</span>
+				</div>
+				<label id="about_donations_label"></label>
+			</div>
+
+			<div class="setting_group setting_group_special">
+				<div class="multi_select multi_select_special">
+					<span>
+						<a id="about_github_link" href="http://github.com/rmcauley/rainwave" target="_blank"></a>
+					</span>
+				</div>
+				<label id="about_github_label"></label>
+			</div>
+
+			<div><a class="link_obvious" href="http://github.com/rmcauley/rainwave/" target="_blank" id="github_link"></a></div>
+
+			<div class="setting_subheader" id="staff_list_header"></div>
+			<div class="setting_group">Jon Funk, Kevin, Metal-Ridley, Nat, Rob McAuley, Tom Helmuth, William Jackson</div>
+
+			<div class="setting_subheader" id="relay_sponsors_header"></div>
+			<div class="setting_group">Cory Petosky, <a class="link_obvious" target="_blank" href="http://www.easynews.com">Dracoirs</a>, Joe Love</div>
+
+			<div class="setting_subheader" id="design_by"></div>
+			<div class="setting_group"><a class="link_obvious" target="_blank" href="http://frzi.com">Freek Zijlmans (frzi.com)</a></div>
+
+			<div class="setting_subheader" id="translators_header"></div>
+			<div class="setting_group">BreadMaker (ES), DarkLink (DE), Metal-Ridley (FR), Metal-Geo (NL), quarterlife (FI), tjader (PT)</div>
+
+			<div class="setting_subheader" id="icon_attribution"></div>
+			<div class="setting_group">Facebook Icon: <a class="link_obvious" target="_blank" href="http://www.thenounproject.com/megapixl">Niels Gesquiere</a></div>
+			<div class="setting_group">Info Icon: <a class="link_obvious" target="_blank" href="http://www.thenounproject.com/melvin.poppelaars">Melvin Poppelaars</a></div>
+			<div class="setting_group">Settings Icon: <a class="link_obvious" target="_blank" href="http://www.thenounproject.com/r0">Ryan Oksenhorn</a></div>
+			<div class="setting_group">Sort Icon: <a class="link_obvious" target="_blank" href="http://www.thenounproject.com/NemanjaIvanovic">Nemanja Ivanovic</a></div>
+			<div class="setting_group">User Icon: <a class="link_obvious" target="_blank" href="http://www.thenounproject.com/kolchan">Dima Kolchan</a></div>
+			<div class="setting_group">Signal Icon: <a class="link_obvious" target="_blank" href="http://thenounproject.com/Korokoro">Korokoro</a></div>
+		</div>
+		<div class="modal_bottom_border"></div>
+	</div>
+
+	<div class="modal_container" id="settings_window_container" style="display: none;">
+		<div class="modal_header_wrapper">
+			<div class="modal_header">
+				<div class="modal_header_content">
+					<svg id="settings_modal_close"><use xlink:href="/static/images4/symbols.svg#close"></use></svg>
+					<span id="settings_modal_header"></span>
+				</div>
+			</div>
+		</div>
+		<div id="settings_window" class="modal"></div>
+		<div class="modal_bottom_border"></div>
+	</div>
+
+	<div class="modal_container" id="longhist_window_container" style="display: none;">
+		<div class="modal_header_wrapper">
+			<div class="modal_header">
+				<div class="modal_header_content">
+					<svg id="longhist_modal_close"><use xlink:href="/static/images4/symbols.svg#close"></use></svg>
+					<span id="longhist_modal_header"></span>
+				</div>
+			</div>
+		</div>
+		<div id="longhist_window" class="modal"></div>
+		<div class="modal_bottom_border"></div>
+	</div>
+	
 	<div id="messages"></div>
+
 	<div id="sizable_body">
 		<div id="requests_positioner">
 			<div id="requests_grab_tag"></div>
 			<div id="requests_scrollblock" class="scrollblock">
 				<div id="requests_toolbar">
 					<img id="requests_pause" class="requests_advanced" src="/static/images4/request_pause.png" width="14" height="14" />
+					<img id="requests_favfill" class="requests_advanced" src="/static/images4/request_faves.png" width="14" height="14" />
 					<img id="requests_unrated" class="requests_advanced" src="/static/images4/request_unrated.png" width="14" height="14" />
 					<img id="requests_clear" class="requests_advanced" src="/static/images4/request_clear.png" width="14" height="14" />
 					<img id="requests_pin" src="/static/images4/pin_hdpi.png" width="14" height="14" />
@@ -223,6 +235,13 @@
 			<div id="timeline" class="scrollable">
 				<div id="timeline_scrollbar" class="scrollbar scrollbar_invisible"></div>
 				<div id="timeline_resizer" class="resizer"></div>
+				<div id="history_outer_container">
+					<div id="history_header_container" class="timeline_header">
+						<span id="longhist_link" class="link"></span>
+						<span id="history_header"></span>
+						<svg class="pulldown_arrow"><use xlink:href="/static/images4/symbols.svg#pulldown"></use></svg>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div id="lists">
