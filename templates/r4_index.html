@@ -20,7 +20,6 @@
 
 	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
 	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
-
 	<style media="(max-width: 899px)">
 		ul#top_icons li { display: none; }
 		ul#top_icons li#icon_cluster { display: inline; }
@@ -39,6 +38,7 @@
 		</script>
 	{% end %}
 
+	<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js" type="application/javascript"></script>
 	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
 
 	{% if jsfiles %}

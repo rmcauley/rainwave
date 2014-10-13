@@ -1,7 +1,8 @@
+import os
 import scss
 from scss import Scss
-import os
 from jsmin import jsmin
+from csscompressor import compress
 
 scss.config.LOAD_PATHS = os.path.dirname(__file__) + "/../static/style4"
 
@@ -27,6 +28,8 @@ def _bake_css_file(input_filename, output_filename):
 	css_f = open(input_filename, 'r')
 	css_content = Scss().compile(css_f.read())
 	css_f.close()
+
+	css_content = compress(css_content)
 
 	dest = open(output_filename, 'w')
 	dest.write(css_content)

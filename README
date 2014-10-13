@@ -19,7 +19,7 @@ $ sudo pip install jsmin pytz watchdog
 6. Make sure the Python Scripts directory is also on your PATH
 7. On the commandline, execute:
 	> easy_install pip
-	> pip install tornado mutagen nose pillow pyscss jsmin unidecode pytz watchdog python-memcached
+	> pip install tornado mutagen nose pillow pyscss jsmin unidecode pytz watchdog python-memcached csscompressor
 
 == Getting Started for HTML/CSS/JS Development
 
@@ -89,6 +89,7 @@ Required on all systems:
 - watchdog
 - meliae (Linux)
 - pylibmc (POSIX) or python-memcached (Windows/PyPy)
+- csscompressor
 
 To let Rainwave automatically mp3gain your collection, you will need to enable it
 in the configs and also have the "mp3gain" executable in your path.
