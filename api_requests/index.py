@@ -67,15 +67,15 @@ class MainIndex(api.web.HTMLRequest):
 					station_list=config.station_list_json,
 					mobile=mobile)
 
-@handle_url("/beta")
-class BetaRedirect(tornado.web.RequestHandler):
-	help_hidden = True
+# @handle_url("/beta")
+# class BetaRedirect(tornado.web.RequestHandler):
+# 	help_hidden = True
 
-	def prepare(self):
-		self.redirect("/beta/", permanent=True)
+# 	def prepare(self):
+# 		self.redirect("/beta/", permanent=True)
 
-@handle_url("/beta/")
-class BetaIndex(MainIndex):
-	beta = True
-	page_template = "r4_index.html"
-	perks_required = True
+# @handle_url("/beta/")
+# class BetaIndex(MainIndex):
+# 	beta = True
+# 	page_template = "r4_index.html"
+# 	perks_required = True
