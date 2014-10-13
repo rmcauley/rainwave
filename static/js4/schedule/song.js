@@ -124,7 +124,7 @@ var TimelineSong = function() {
 
 		self.title_mouse_out = function(e) {
 			$remove_class(self.el, "voting_hover");
-		}
+		};
 
 		self.update = function(new_json) {
 			self.data = new_json;

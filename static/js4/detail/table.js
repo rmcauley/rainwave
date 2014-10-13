@@ -55,7 +55,7 @@ var SongsTable = function(songs, columns) {
 				if (columns[key] == "title" || columns[key] == "album_name") {
 					cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] } ));
 					div = $el("div", { "class": "songlist_" + columns[key] + "_text", "textContent": songs[i][columns[key]] });
-					title_el = div
+					title_el = div;
 					//Formatting.add_overflow_tooltip(div);
 					cell.appendChild(div);
 				}

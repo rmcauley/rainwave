@@ -65,7 +65,7 @@ var Albums = function() {
 				ac.style.backgroundImage = "url(" + json.art + "_" + size + ".jpg)";
 			}
 			if (!not_expandable) {
-				$add_class(ac, "art_expandable")
+				$add_class(ac, "art_expandable");
 				ac._album_art = json.art;
 				ac.addEventListener("click", expand_art);
 				ac.addEventListener("mouseout", normalize_art);

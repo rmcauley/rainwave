@@ -200,7 +200,7 @@ var R4Audio = function() {
 		a.addEventListener("click", function() {
 			self.stop();
 			self.clear_audio_errors();
-		})
+		});
 		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_connect_error", 500), a);
 		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
@@ -210,7 +210,7 @@ var R4Audio = function() {
 		var a = $el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": $l("try_external_player") });
 		a.addEventListener("click", function() {
 			self.clear_audio_errors();
-		})
+		});
 		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_error", 500), a);
 		self.on_stop();
 		self.supported = false;
@@ -239,7 +239,7 @@ var R4Audio = function() {
 		if (!v || isNaN(v)) v = 0;
 		audio_el.volume = v;
 		draw_volume(v);
-	}
+	};
 
 	var draw_volume = function(v) {
 		volume_rect.setAttribute("width", 100 * v);

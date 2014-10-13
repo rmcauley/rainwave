@@ -80,7 +80,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 		//rating_dbg.innerHTML = "layerX: " + (evt.layerX || evt.offsetX) + " / layerY: " + (evt.layerY || evt.offsetY) + "<br>offset_left: " + offset_left + " / offset_top:" + offset_top + "<br>x: " + x + " / y: " + y + " -> ";
 		if (x <= 18) return 0;		// fave switching
 
-		var result = Math.round(((x - 20 + ((18 - y) * .5)) / 10) * 2) / 2;
+		var result = Math.round(((x - 20 + ((18 - y) * 0.5)) / 10) * 2) / 2;
 		//rating_dbg.innerHTML += result;
 		if (result <= 1) return 1;
 		else if (result >= 5) return 5;
@@ -94,7 +94,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 		if (tr >= 1) {
 			effect.change_to_user_rating();
 			effect.set(tr);
-			if (tr * 10 % 10 == 0) hover_number.textContent = tr + ".0";
+			if (tr * 10 % 10 === 0) hover_number.textContent = tr + ".0";
 			else hover_number.textContent = tr;
 			hover_box.style.width = Math.max(tr * 10 - 3, 20) + "px";
 			if (!hover_box.parentNode) {

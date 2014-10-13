@@ -17,13 +17,13 @@ function _size_calculate() {
 	MAIN_HEIGHT = SCREEN_HEIGHT - MENU_HEIGHT;
 	if ((SCREEN_WIDTH <= 1400) && !SmallScreen) {
 		SmallScreen = true;
-		Fx.delay_draw(function() { $add_class(document.body, "small_screen") });
+		Fx.delay_draw(function() { $add_class(document.body, "small_screen"); });
 		Fx.delay_draw(function() { RatingControl.change_padding_top(1); });
 		return true;
 	}
 	else if ((SCREEN_WIDTH > 1400) && SmallScreen) {
 		SmallScreen = false;
-		Fx.delay_draw(function() { $remove_class(document.body, "small_screen") });
+		Fx.delay_draw(function() { $remove_class(document.body, "small_screen"); });
 		Fx.delay_draw(function() { RatingControl.change_padding_top(3); });
 		return true;
 	}
@@ -113,7 +113,7 @@ function stage_switch(nv, ov) {
 		$id("timeline").style.overflowY = "hidden";
 		Fx.chain_transition($id("timeline_scrollblock"), function() {
 			$id("timeline").style.overflowY = "";
-		})
+		});
 	}
 	vote_cta_check();
 	request_cta_check();
@@ -212,4 +212,4 @@ function initialize() {
 	DeepLinker.detect_url_change();
 	window.addEventListener("resize", _on_resize, false);
 	setTimeout(function() { $remove_class(document.body, "unselectable"); }, 1500);
-};
+}

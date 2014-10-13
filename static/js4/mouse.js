@@ -20,7 +20,7 @@ var Mouse = function() {
 		}
 		if (reltg == p_node) return false;
 		return true;
-	}
+	};
 
 	// ONLY ON DOWN, not on move!
 	// This is mostly used to track where the mouse is to help tooltip error displays

@@ -8,7 +8,7 @@ var GroupList = function() {
 			loading = true;
 			API.async_get("all_groups");
 		}
-	}
+	};
 	self.tab_el = $el("li", { "textContent": $l("groups_tab_title"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
 		self.load_from_api();

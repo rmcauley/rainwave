@@ -106,11 +106,12 @@ var EventBase = function(json) {
 		$remove_class(self.el, "timeline_next");
 		self.set_header_text();
 		Clock.pageclock = self.elements.header_clock;
+		var i;
 		if (self.songs && (self.songs.length > 1)) {
 			// other places in the code rely on songs[0] to be the winning song
 			// make sure we sort properly for that condition here
 			header_vote_result.appendChild($el("span", { "textContent": $l("voting_results_were") + " " }));
-			for (var i = 0; i < self.songs.length; i++) {
+			for (i = 0; i < self.songs.length; i++) {
 				header_vote_result.appendChild($el("span", { "textContent": self.songs[i].data.entry_votes }));
 				if ($has_class(self.songs[i].el, "voting_registered")) {
 					header_vote_result.lastChild.className = "self_voted_result";
@@ -128,7 +129,7 @@ var EventBase = function(json) {
 		else if (self.songs && (self.songs.length > 0)) {
 			$add_class(self.songs[0].el, "timeline_now_playing_song");
 		}
-		for (var i = 1; i < self.songs.length; i++) {
+		for (i = 1; i < self.songs.length; i++) {
 			$add_class(self.songs[i].el, "timeline_losing_song");
 		}
 		$add_class(self.el, "timeline_now_playing");

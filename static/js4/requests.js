@@ -127,7 +127,7 @@ var Requests = function() {
 		}
 		else {
 			$remove_class(container, "request_warning");
-			grab_tag.textContent = $l("request_grab_tag__paused")
+			grab_tag.textContent = $l("request_grab_tag__paused");
 			header.innerHTML = "&nbsp;";
 		}
 	};
@@ -274,7 +274,7 @@ var Requests = function() {
 
 	var continue_drag = function(e) {
 		var new_y = dragging_song._request_y - (Mouse.y - Mouse.get_y(e));
-		var new_index = Math.floor((new_y + (TimelineSong.height * .3)) / TimelineSong.height);
+		var new_index = Math.floor((new_y + (TimelineSong.height * 0.3)) / TimelineSong.height);
 		if (new_index >= songs.length) new_index = songs.length - 1;
 		if (new_index < 0) new_index = 0;
 		if (new_index != dragging_index) {

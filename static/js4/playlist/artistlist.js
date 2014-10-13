@@ -8,7 +8,7 @@ var ArtistList = function() {
 			loading = true;
 			API.async_get("all_artists");
 		}
-	}
+	};
 	self.tab_el = $el("li", { "textContent": $l("Artists"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
 		self.load_from_api();

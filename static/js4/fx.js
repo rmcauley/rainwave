@@ -61,12 +61,12 @@ var Fx = function() {
 			for (var i in transition_ends) {
 				el.removeEventListener(transition_ends[i], end_func_wrapper, false);
 			}
-		}
+		};
 		for (var i in transition_ends) {
 			el.addEventListener(transition_ends[i], end_func_wrapper, false);
 		}
 		el._end_func_wrapper = end_func_wrapper;
-	}
+	};
 
 	// limitation: can only chain once
 	self.chain_transition_css = function(el, property, value, end_func) {
@@ -81,7 +81,7 @@ var Fx = function() {
 			}
 			el._end_func_wrapper = null;
 		}
-	}
+	};
 
 	self.remove_element = function(el) {
 		var check = getComputedStyle(el);

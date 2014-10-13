@@ -216,7 +216,7 @@ var SettingsWindow = function() {
 		var sticky_history_size = $el("div", { "id": "prefs_sticky_history_size", "class": "multi_select unselectable" });
 		var histsize_highlighter = sticky_history_size.appendChild($el("div", { "class": "floating_highlight" }));
 		for (i = 0; i <= 5; i++) {
-			option = $el("span", { "class": "link", "textContent": i != 0 ? i : $l("prefs_sticky_history_size__none") });
+			option = $el("span", { "class": "link", "textContent": i !== 0 ? i : $l("prefs_sticky_history_size__none") });
 			option._value = i;
 			if (i == Prefs.get("sticky_history_size")) {
 				$add_class(option, "selected selected_first");
@@ -271,7 +271,7 @@ var SettingsWindow = function() {
 		for (var i = 0; i < e.target.parentNode.childNodes.length; i++) {
 			$remove_class(e.target.parentNode.childNodes[i], "selected");
 			if ($has_class(e.target.parentNode.childNodes[i], "selected_first")) { 
-				$remove_class(e.target.parentNode.childNodes[i], "selected_first")
+				$remove_class(e.target.parentNode.childNodes[i], "selected_first");
 				highlighter.style.transition = "none";
 				var w2 = e.target.parentNode.childNodes[i].offsetWidth;
 				var h2 = e.target.parentNode.childNodes[i].offsetHeight;
@@ -350,7 +350,7 @@ var SettingsWindow = function() {
 			Prefs.change(cb._pref_name, false);
 			console.log(false);
 		}
-	}
+	};
 
 	var draw_cb_list = function(pref_list, special) {
 		var cb, div, label, yes, no, dot, bar;
@@ -372,7 +372,7 @@ var SettingsWindow = function() {
 			label = div.appendChild($el("label", { "id": "prefs_" + pref_list[i], "textContent": $l("prefs_" + pref_list[i]) }));
 			el.appendChild(div);
 		}
-	}
+	};
 
 	return self;
 }();

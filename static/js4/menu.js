@@ -125,7 +125,7 @@ var Menu = function() {
 		for (var i = 0; i < kmw.length; i++) {
 			$id(kmw[i]).removeEventListener('click', self.remove_modal, true);
 		}
-	}
+	};
 
 	var calendar_toggle = function(e) {
 		var dd = $id("calendar_dropdown"); 

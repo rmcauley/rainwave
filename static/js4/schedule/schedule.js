@@ -290,7 +290,7 @@ var Schedule = function() {
 			throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote" });
 		}
 
-		if (!(sched_next[which_election].type == "Election")) {
+		if (sched_next[which_election].type != "Election") {
 			throw({ "is_rw": true, "tl_key": "not_an_election" });
 		}
 
@@ -320,7 +320,7 @@ var Schedule = function() {
 		}
 		else {
 			for (i = 0; i < sched_next.length; i++) {
-				evt = find_event(sched_next[i].id)
+				evt = find_event(sched_next[i].id);
 				if (evt) {
 					evt.data.voting_allowed = false;
 					evt.disable_voting();

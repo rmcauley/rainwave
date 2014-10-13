@@ -270,7 +270,7 @@ var API = function() {
 		catch(err) {
 			self.sync_stop();
 			ErrorHandler.javascript_error(err, json);
-			setTimeout(function() { throw(err) }, 1);
+			setTimeout(function() { throw(err); }, 1);
 		}
 	};
 

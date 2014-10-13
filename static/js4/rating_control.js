@@ -124,7 +124,7 @@ var RatingControl = function() {
 				album_ratings[i][j].reset_rating();
 			}
 		}
-	}
+	};
 
 	return self;
 }();

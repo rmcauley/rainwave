@@ -44,7 +44,7 @@ var DetailView = function() {
 		if (request_made) {
 			$remove_class(el, "songlist_request_hint");
 		}
-	}
+	};
 	
 	var create = function(type, id, render_function, json) {
 		if (internal_width === false) {
@@ -89,7 +89,7 @@ var DetailView = function() {
 	self.on_resize = function() {
 		self.on_resize_calculate();
 		self.on_resize_draw();
-	}	
+	};
 
 	self.on_resize_calculate = function() {
 		var tmp = scrollblock.offsetWidth;
@@ -174,7 +174,7 @@ var DetailView = function() {
 	
 	var open_internal = function(type, id) {
 		id = parseInt(id);
-		if (!id || id == NaN) {
+		if (!id || isNaN(id)) {
 			return false;
 		}
 		var existing_view = exists(type, id);

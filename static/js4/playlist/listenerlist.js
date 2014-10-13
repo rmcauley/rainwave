@@ -9,7 +9,7 @@ var ListenersList = function() {
 			loading = true;
 			API.async_get("current_listeners");
 		}
-	}
+	};
 	self.tab_el = $el("li", { "textContent": $l("Listeners"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
 		self.load_from_api();

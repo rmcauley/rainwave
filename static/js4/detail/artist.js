@@ -26,7 +26,7 @@ var ArtistViewRenderSid = function(view, json, sid) {
 		view.el.appendChild(all_tables[i].header);
 		view.el.appendChild(all_tables[i].table);
 	}
-}
+};
 
 var ArtistView = function(view, json) {
 	"use strict";

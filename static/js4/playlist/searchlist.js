@@ -21,7 +21,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	scrollbar.set_handle_margin_bottom(10);
 	// see bottom of this object for event binding
 
-	var data = {}
+	var data = {};
 	self.data = data;			// keys() are the object IDs (e.g. data[album.id])
 	self.loaded = false;
 	
@@ -89,7 +89,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		else {
 			self.draw_entry(json);
 			json._searchname = json[search_key];
-			json._el._id = json.id
+			json._el._id = json.id;
 			json._lower_case_sort_keyed = json[sort_key].toLowerCase();
 			data[json.id] = json;
 		}
@@ -506,7 +506,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		if (search_string.length > 0) {
 			ignore_original_scroll_top = true;
 		}
-	}
+	};
 
 	// FAKING A TEXT FIELD **************
 
@@ -514,7 +514,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		if (search_string.length == 0) {
 			self.search_box_input.textContent = $l("typeanywhere");
 		}
-	}
+	};
 
 	self.search_box_input.addEventListener("click", input_click);
 

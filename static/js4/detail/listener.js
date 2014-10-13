@@ -66,7 +66,7 @@ var ListenerView = function(view, json) {
 	draw_chart(json.ratings_by_station, "ratings", $l("rating_counts_across_stations"));
 
 	var data = [];
-	var v, sid, idx;
+	var v, sid, idx, cnvs, chart;
 	var total_data = 0;
 	for (idx in order) {
 		sid = order[idx];
@@ -77,12 +77,12 @@ var ListenerView = function(view, json) {
 	if (total_data > 5) {
 		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("ratings_completion_rate") }));
-		var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
-		var chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 20, "scaleStartValue": 0, "tooltipTemplate": "<%=label%>: <%= value %>%", "animationSteps": current_chart_draw_steps });
+		cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
+		chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 20, "scaleStartValue": 0, "tooltipTemplate": "<%=label%>: <%= value %>%", "animationSteps": current_chart_draw_steps });
 		current_chart_draw_steps += 5;
 	}
 
-	var data = [];
+	data = [];
 	var found, any_found;
 	for (idx in order) {
 		sid = order[idx];
@@ -100,8 +100,8 @@ var ListenerView = function(view, json) {
 	if (any_found) {
 		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("average_rating_by_station") }));
-		var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
-		var chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 1, "scaleStartValue": 0, "animationSteps": current_chart_draw_steps });
+		cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
+		chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 1, "scaleStartValue": 0, "animationSteps": current_chart_draw_steps });
 		current_chart_draw_steps += 5;
 	}
 
@@ -117,8 +117,8 @@ var ListenerView = function(view, json) {
 	if (data.length > 0) {
 		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("rating_spread") }));
-		var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
-		var chart = new Chart(cnvs.getContext("2d")).Doughnut(data, { "animationSteps": current_chart_draw_steps });
+		cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
+		chart = new Chart(cnvs.getContext("2d")).Doughnut(data, { "animationSteps": current_chart_draw_steps });
 		current_chart_draw_steps += 5;
 	}	
 

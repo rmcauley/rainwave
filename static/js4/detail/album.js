@@ -44,10 +44,10 @@ var AlbumViewRatingPieChart = function(ctx, json) {
 		}
 	}
 	json.num_song_ratings = max_count;
-	for (var i in AlbumViewColors) {
+	for (i in AlbumViewColors) {
 		if (i in json.rating_histogram) data.push({ "value": Math.round(json.rating_histogram[i] / max_count * 100), "color": AlbumViewColors[i], "highlight": "#FFF", "label": i });
 	}
-	if (data.length == 0) return;
+	if (data.length === 0) return;
 	var chart = new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1, "animationSteps": 40, "tooltipTemplate": "<%if (label){%><%=label%>: <%}%><%= value %>%", });
 };
 
