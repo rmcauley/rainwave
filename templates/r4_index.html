@@ -21,6 +21,13 @@
 	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
 	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
 
+	<style media="(max-width: 899px)">
+		ul#top_icons li { display: none; }
+		ul#top_icons li#icon_cluster { display: inline; }
+		ul#top_icons li#icon_cluster a { display: none; }
+		ul#top_icons li#icon_cluster a#settings_link { display: inline; }
+	</style>
+
 	{% if mobile %}
 		<link href="/static/style4/mobile.css" type="text/css" rel="stylesheet" />
 		<script type="application/javascript">
