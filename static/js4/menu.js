@@ -178,19 +178,7 @@ var Menu = function() {
 					$add_class(elements.stations[key], "event_ongoing");
 				
 					elements.stations[key]._desc.textContent = $l("special_event_on_now");
-					event_desc = "";
-					if (json[key].event_type == "OneUp") {
-						event_desc += json[key].event_name + " " + $l("power_hour");
-					}
-					else if (json[key].event_type != "Election" && $l_has(json[key].event_type.toLowerCase())) {
-						event_desc += $l(json[key].event_type.toLowerCase());
-						if (json[key].event_name) {
-							event_desc += " - " + json[key].event_name;
-						}
-					}
-					else  {
-						event_desc += json[key].event_name;
-					}
+					event_desc = Formatting.event_name(json[key].event_type, json[key].event_name);
 					elements.stations[key]._desc.textContent += event_desc;
 
 					if (event_alerts_closed.indexOf(json[key].event_name) == -1) {

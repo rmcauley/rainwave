@@ -96,6 +96,15 @@ var Formatting = function() {
 		el.addEventListener("click", do_overflow_tooltip);
 	};
 
+	self.event_name = function(event_type, event_name) {
+		if ((event_type != "Election") && $l_has("event_naming__" + event_type.toLowerCase())) {
+			return $l("event_naming__" + event_type.toLowerCase(), { "name": event_name });
+		}
+		else {
+			return event_name;
+		}
+	};
+
 	// from lehelk: http://web.archive.org/web/20120918093154/http://lehelk.com/2011/05/06/script-to-remove-diacritics/
 	var diacritic_map = [
 		{'base':'A', 'letters':/[\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F]/g},

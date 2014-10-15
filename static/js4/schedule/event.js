@@ -197,20 +197,12 @@ var EventBase = function(json) {
 	};
 
 	self.set_header_text = function() {
-		if (self.type == "OneUp") {
-			header_text.textContent = current_header_default_text + " - " + self.name + " " + $l("power_hour");
+		var event_desc = Formatting.event_name(self.type, self.name);
+		if (event_desc && !self.data.voting_allowed) {
+			header_text.textContent = current_header_default_text + event_desc;
 		}
-		else if (self.type != "Election" && $l_has(self.type.toLowerCase())) {
-			header_text.textContent = current_header_default_text + " - " + $l(self.type.toLowerCase());
-			if (self.name) {
-				header_text.textContent += " - " + self.name;
-			}
-		}
-		else if (!now_playing && self.type == "Election" && self.data.voting_allowed) {
-			header_text.textContent = current_header_default_text + " - " + $l("vote_now");
-		}
-		else if (self.name) {
-			header_text.textContent = current_header_default_text + " - " + self.name;
+		else if (self.data.voting_allowed) {
+			header_text.textContent = event_desc + " - " + $l("vote_now");
 		}
 		else {
 			header_text.textContent = current_header_default_text;

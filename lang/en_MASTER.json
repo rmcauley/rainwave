@@ -97,6 +97,8 @@
    "timeline_art__request_indicator"                 : "Request",
    "timeline_art__your_request_indicator"            : "Yours",
 
+   "event_naming__oneup"                             : "%(name) Power Hour",
+
    "__comment__"                 : "Tip Jar",
 
    "tip_jar"                                         : "Tip Jar",
