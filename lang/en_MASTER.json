@@ -70,7 +70,7 @@
    "previouslyplayed"                                : "Previously Played",
    "extended_history_link"                           : "Extended",
    "extended_history_header"                         : "Extended History",
-   "special_event_on_now"                            : "Special Event: ",
+   "special_event_on_now"                            : "Event: ",
    "special_event_alert"                             : "Special Event on %(station): ",
    
    "tunein"                                          : "Tune In",
