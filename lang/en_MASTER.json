@@ -268,7 +268,7 @@
    "id"                                              : "ID",
    "sid"                                             : "Station ID",
    "delete"                                          : "Delete",
-   "all_faves"                                       : "All Favourites",
+   "all_faves"                                       : "All Faves",
    "rating_user"                                     : "User Rating",
    "fave"                                            : "Fave",
    "rating"                                          : "Avg. Rating",

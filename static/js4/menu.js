@@ -41,7 +41,7 @@ var Menu = function() {
 				$add_class(elements.user_info, "show_anonymous_avatar");
 			}
 			$id("user_info_name").textContent = User.name;
-			$id("user_info_name").addEventListener("click", function() { DetailView.open_listener(User.id); });
+			$id("user_info").addEventListener("click", function() { DetailView.open_listener(User.id); });
 		}
 		else {
 			$add_class(elements.user_info, "show_anonymous_avatar anonymous_user");

@@ -13,6 +13,8 @@ var ListenerView = function(view, json) {
 		d2.appendChild($el("span", { "textContent": $l("view_your")}));
 		d2.appendChild($el("a", { "href": "http://rainwave.cc/pages/user_recent_votes", "target": "_blank", "class": "link_obvious", "textContent": $l("recent_votes")}));
 		d2.appendChild($el("span", { "textContent": ", "}));
+		d2.appendChild($el("a", { "href": "http://rainwave.cc/pages/all_faves", "target": "_blank", "class": "link_obvious", "textContent": $l("all_faves"), "style": "text-transform: lowercase;" }));
+		d2.appendChild($el("span", { "textContent": ", "}));
 		d2.appendChild($el("a", { "href": "http://rainwave.cc/pages/user_requested_history", "target": "_blank", "class": "link_obvious", "textContent": $l("request_history")}));
 		d2.appendChild($el("span", { "textContent": "." }));
 	}
