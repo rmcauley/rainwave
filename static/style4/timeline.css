@@ -83,9 +83,9 @@ div.timeline_song {
 	clear: both;
 	position: relative;
 	cursor: default;
-	-webkit-transition: height $transtime, opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
-	-ms-transition: height $transtime, opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
-	transition: height $transtime, opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
+	-webkit-transition: height $transtime, opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
+	-ms-transition: height $transtime, opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
+	transition: height $transtime, opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
 	background-image: url(/static/images4/vote_hover.png);
 	background-position: -678px 0px;
 	background-repeat: no-repeat;

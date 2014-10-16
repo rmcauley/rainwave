@@ -19,7 +19,11 @@
 	</script>
 
 	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
-	<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
+	{% if jsfiles %}
+		<link href="/static/baked/{{ revision_number }}/style4b.css" type="text/css" rel="stylesheet" />
+	{% else %}
+		<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
+	{% end %}
 	<style media="(max-width: 899px)">
 		ul#top_icons li { display: none; }
 		ul#top_icons li#icon_cluster { display: inline; }

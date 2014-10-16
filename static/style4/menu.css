@@ -72,7 +72,7 @@ div.event_ongoing_alert {
 }
 
 div.event_ongoing_alert > div {
-	word-wrap: nowrap;
+	white-space: nowrap;
 	overflow: hidden;
 }
 
