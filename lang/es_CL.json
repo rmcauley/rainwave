@@ -267,7 +267,7 @@
    "album_name"                                      : "Nombre de Álbum",
    "id"                                              : "ID",
    "sid"                                             : "ID de Estación",
-   "delete"                                          : "Borrar",
+   "delete"                                          : "Eliminar",
    "all_faves"                                       : "Todos los Favoritos",
    "rating_user"                                     : "Evaluación del Usuario",
    "fave"                                            : "Favorito",
