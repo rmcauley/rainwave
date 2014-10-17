@@ -486,7 +486,10 @@ class PrettyPrintAPIMixin(object):
 				for row in json:
 					self.write("<tr><td>%s</td>" % i)
 					for key in keys:
-						self.write("<td>%s</td>" % row[key])
+						if key == "sid":
+							self.write("<td>%s</td>" % config.station_id_friendly[row[key]])
+						else:
+							self.write("<td>%s</td>" % row[key])
 					self.row_special(row)
 					self.write("</tr>")
 					i = i + 1

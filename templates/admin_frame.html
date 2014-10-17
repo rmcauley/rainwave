@@ -53,7 +53,8 @@
 	function change_screen() {
 		lyre.setStationID(current_station);
 		window.frames.tool.location.href = "tools/" + current_tool + "?sid=" + current_station;
-		window.frames.selector.location.href="album_list/" + current_tool + "?restrict=" + current_restriction;
+		var new_selector_url = 
+		window.frames.selector.location.href = "album_list/" + current_tool + "?sid=" + current_station + "&restrict=" + current_restriction;
 
 		var t = window.frames.tool_list.document.getElementsByTagName("a");
 		for (var i = 0; i < t.length; i++) {
