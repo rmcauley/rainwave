@@ -199,9 +199,9 @@ var EventBase = function(json) {
 	self.set_header_text = function() {
 		var event_desc = Formatting.event_name(self.type, self.name);
 		if (event_desc && !self.data.voting_allowed) {
-			header_text.textContent = current_header_default_text + event_desc;
+			header_text.textContent = current_header_default_text + " - " + event_desc;
 		}
-		else if (self.data.voting_allowed) {
+		else if (event_desc && self.data.voting_allowed) {
 			header_text.textContent = event_desc + " - " + $l("vote_now");
 		}
 		else {
