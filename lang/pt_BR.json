@@ -45,6 +45,7 @@
    "requests_reordered"                              : "Pedidos reordenado.",
    "request_queue_paused"                            : "Fila de pedidos pausada.",
    "request_queue_unpaused"                          : "Fila de pedidos despausada.",
+   "no_request"                                      : "Nenhum pedido.",
 
    "__comment__"                 : "API Key Management",
 
@@ -96,6 +97,8 @@
    "played_ago"                                      : "Tocada há %(time)",
    "timeline_art__request_indicator"                 : "Pedido",
    "timeline_art__your_request_indicator"            : "Seu",
+
+   "event_naming__oneup"                             : "%(name) Power Hour",
 
    "__comment__"                 : "Tip Jar",
 
