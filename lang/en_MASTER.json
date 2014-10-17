@@ -45,6 +45,7 @@
    "requests_reordered"                              : "Requests Reordered",
    "request_queue_paused"                            : "Request queue paused.",
    "request_queue_unpaused"                          : "Request queue unpaused.",
+   "no_results"                                      : "No results.",
 
    "__comment__"                 : "API Key Management",
 

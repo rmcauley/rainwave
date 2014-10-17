@@ -494,6 +494,8 @@ class PrettyPrintAPIMixin(object):
 					self.write("</tr>")
 					i = i + 1
 				self.write("</table>")
+			else:
+				self.write("<p>%s</p>" % self.locale.translate("no_results"))
 		if self.pagination and "per_page" in self.fields and self.get_argument("per_page") != 0:
 			if self.get_argument("page_start") and self.get_argument("page_start") > 0:
 				self.write("<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>" % (per_page_link, previous_page_start))
