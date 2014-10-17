@@ -45,6 +45,7 @@
    "requests_reordered"                              : "Pedidos reordenado.",
    "request_queue_paused"                            : "Fila de pedidos pausada.",
    "request_queue_unpaused"                          : "Fila de pedidos despausada.",
+   "no_request"                                      : "Nenhum pedido.",
 
    "__comment__"                 : "API Key Management",
 
@@ -96,6 +97,8 @@
    "played_ago"                                      : "Tocada há %(time)",
    "timeline_art__request_indicator"                 : "Pedido",
    "timeline_art__your_request_indicator"            : "Seu",
+
+   "event_naming__oneup"                             : "%(name) Power Hour",
 
    "__comment__"                 : "Tip Jar",
 
@@ -163,8 +166,8 @@
    "filter"                                          : "Digite em qualuqer lugar para filtrar",
    "typeanywhere"                                    : "Basta começar a digitar!",
    "clearfilter"                                     : "Limpar filtro",
-   "album_rating_ranked_at_v2"                       : "Avaliado em %(rating) por %(rating_count) avaliações, #(rank) no ranking.",
-   "album_requests_ranked_at"                        : "Pedida %(count) &(count:vez/vezes), #(rank) no ranking.",
+   "album_rating_ranked_at_v2"                       : "Avaliado em %(rating) por %(rating_count) avaliações, %(rank)º no ranking.",
+   "album_requests_ranked_at"                        : "Pedida %(count) &(count:vez/vezes), %(rank)º no ranking.",
    "Request"                                         : "Pedir",
    "Albums"                                          : "Álbuns",
    "Artists"                                         : "Artistas",
@@ -186,7 +189,7 @@
    "Requests"                                        : "Pedidos",
    "requests_expiring"                               : "Vai perder seu lugar na fila!",
    "requests_all_on_cooldown"                        : "Nenhum pedido disponível!",
-   "request_you_are_x_in_line"                       : "#(position) na fila",
+   "request_you_are_x_in_line"                       : "%(position)º na fila",
 
    "request_grab_tag__warning"                       : "Aviso",
    "request_grab_tag__paused"                        : "Pausado",
