@@ -235,7 +235,7 @@
    "prefs_show_clock_in_titlebar"                    : "Ver Reloj En La Pestaña",
    "prefs_show_rating_in_titlebar"                   : "Ver Puntaje En La Pestaña",
    "prefs_show_title_in_titlebar"                    : "Título De Canción En Pestaña",
-   "prefs_sticky_history_size"                       : "Número De Canciones que ee Muestran en 'Tocadas Previamente'",
+   "prefs_sticky_history_size"                       : "Número De Canciones que se Muestran en 'Tocadas Previamente'",
    "prefs_sticky_history_size__none"                 : "Ninguna",
    "playlist_preferences"                            : "Lista De Álbumes",
    "prefs_playlist_sort_available_first"             : "Ver 'En Reposo' al Final",
