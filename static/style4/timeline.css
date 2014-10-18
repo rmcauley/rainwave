@@ -36,7 +36,6 @@ body.unselectable #timeline {
 
 body.stage_0 #timeline, body.stage_1 #timeline, body.stage_2 #timeline {
 	width: 100% !important;
-	overflow: hidden;
 }
 
 body.stage_in_transition #timeline {
