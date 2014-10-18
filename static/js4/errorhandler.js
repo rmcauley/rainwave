@@ -55,8 +55,8 @@ var ErrorHandler = function() {
 			var x = Mouse.x - 5;
 			var y = Mouse.y - m.height - 2;
 			if (y < 30) y = 30;
-			if (x > (window.innerWidth - m.width)) x = window.innerWidth - err.offsetWidth - 15;
-			if (y > (window.innerHeight - m.height)) y = window.innerHeight - err.offsetHeight - 15;
+			if (x > (SCREEN_WIDTH - m.width)) x = SCREEN_WIDTH - m.width - 15;
+			if (y > (SCREEN_HEIGHT - m.height)) y = SCREEN_HEIGHT - m.height - 15;
 			err.style.left = x + "px";
 			err.style.top = y + "px";
 
