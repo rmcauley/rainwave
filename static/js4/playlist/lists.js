@@ -24,7 +24,6 @@ PlaylistLists = function() {
 		Prefs.define("playlist_sort", self.sorting_methods);
 		Prefs.define("playlist_sort_faves_first", [ false, true ]);
 		Prefs.define("playlist_sort_available_first", [ true, false ]);
-		Prefs.define("playlist_show_rating_complete", [ false, true ]);
 		Prefs.define("searchlist_show_cooldown");
 		Prefs.define("playlist_show_escape_icon", [ true, false ]);
 

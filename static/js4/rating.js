@@ -147,14 +147,14 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 		else $remove_class(self.el, "ratable");
 	};
 
-	self.update_rating_complete = function(new_rating_complete) {
+	self.update_rating_complete = function(new_rating_complete, override) {
 		if (self.type != "album") return;
-		if (!("rating_complete" in self) || (self.rating_complete != new_rating_complete)) {
+		if (override || !("rating_complete" in self) || (self.rating_complete != new_rating_complete)) {
 			self.rating_complete = new_rating_complete;
-			if (self.rating_complete) {
+			if (self.rating_complete || !Prefs.get("playlist_show_rating_complete")) {
 				self.el.style.backgroundImage = null;
 			}
-			else {
+			else if (Prefs.get("playlist_show_rating_complete")) {
 				self.el.style.backgroundImage = "url('/static/images4/rating_bar/unrated_ldpi.png')";
 			}
 		}

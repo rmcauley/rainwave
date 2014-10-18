@@ -17,6 +17,10 @@ var RatingControl = function() {
 		API.add_callback(self.album_fave_update, "fave_album_result");
 		API.add_callback(self.history_update, "sched_history");
 		API.add_callback(function() { gc_timer = setTimeout(self.garbage_collection, 10000); }, "_SYNC_COMPLETE");
+
+		// was originally a playlist pref, now lives here
+		Prefs.define("playlist_show_rating_complete", [ false, true ]);
+		Prefs.add_callback("playlist_show_rating_complete", rating_complete_toggle);
 	};
 
 	self.rating_user_callback = function(json) {
@@ -49,6 +53,15 @@ var RatingControl = function() {
 		}
 		if (self.album_rating_callback) {
 			self.album_rating_callback(album_id, rating, rating_user, rating_complete);
+		}
+	};
+
+	var rating_complete_toggle = function(nv) {
+		var album_id, i;
+		for (album_id in album_ratings) {
+			for (i = 0; i < album_ratings[album_id].length; i++) {
+				album_ratings[album_id][i].update_rating_complete(album_ratings[i], true);
+			}
 		}
 	};
 

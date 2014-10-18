@@ -340,15 +340,12 @@ var SettingsWindow = function() {
 	var yes_no_value_check = function(cb) {
 		if ($has_class(cb, "no")) {
 			Prefs.change(cb._pref_name, false);
-			console.log(false);
 		}
 		else if ($has_class(cb, "yes")) {
 			Prefs.change(cb._pref_name, true);	
-			console.log(true);
 		}
 		else {
 			Prefs.change(cb._pref_name, false);
-			console.log(false);
 		}
 	};
 
