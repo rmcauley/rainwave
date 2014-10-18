@@ -36,7 +36,7 @@ def get_updated_albums_dict(sid):
 	for album_id in updated_album_ids[sid]:
 		album = Album.load_from_id_sid(album_id, sid)
 		album.solve_cool_lowest(sid)
-		tmp = album.to_dict()
+		tmp = album.to_dict_full()
 		# Remove user-related stuff since this gets stuffed straight down the pipe
 		tmp.pop('rating_user', None)
 		tmp.pop('fave', None)
