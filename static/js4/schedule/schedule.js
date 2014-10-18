@@ -126,8 +126,11 @@ var Schedule = function() {
 		current_event.change_to_now_playing();
 		if (first_time) {
 			current_event.el.style.marginTop = SCREEN_HEIGHT + "px";
+			Fx.delay_css_setting(current_event.el, "marginTop", "10px");
 		}
-		Fx.delay_css_setting(current_event.el, "marginTop", "10px");
+		else {
+			current_event.el.style.marginTop = "10px";
+		}
 		new_events.push(current_event);
 		if (!current_event.el.parentNode) self.el.appendChild(current_event.el);
 
@@ -151,11 +154,15 @@ var Schedule = function() {
 			previous_evt = temp_evt;
 			if (first_time) {
 				temp_evt.el.style.marginTop = "100%";
+				Fx.delay_css_setting(temp_evt.el, "marginTop", sequenced_margin ? "0px" : "30px");
 			}
 			else if (!temp_evt.el.style.marginTop) {
 				temp_evt.el.style.marginTop = SCREEN_HEIGHT + "px";
+				Fx.delay_css_setting(temp_evt.el, "marginTop", sequenced_margin ? "0px" : "30px");
 			}
-			Fx.delay_css_setting(temp_evt.el, "marginTop", sequenced_margin ? "0px" : "30px");
+			else {
+				temp_evt.el.style.marginTop = sequenced_margin ? "0px" : "30px";
+			}
 			if (!temp_evt.el.parentNode) self.el.appendChild(temp_evt.el);
 			if (MOBILE) break;
 		}
@@ -239,35 +246,47 @@ var Schedule = function() {
 
 		if (Prefs.get("sticky_history") || (Prefs.get("sticky_history_size") == self.history_events.length)) {
 			$add_class($id("history_outer_container"), "history_open");
-			Fx.delay_css_setting(self.history_events[0].el, "marginTop", "0px");
+			if (first_time) {
+				Fx.delay_css_setting(self.history_events[0].el, "marginTop", "0px");
+			}
+			else {
+				self.history_events[0].el.style.marginTop = "0px";
+			}
 			self.history_events[0].el.style.marginBottom = "0px";
 			for (i = 1; i < self.history_events.length; i++) {
-				Fx.delay_css_setting(self.history_events[i].el, "marginTop", "0px");
+				if (first_time) {
+					Fx.delay_css_setting(self.history_events[i].el, "marginTop", "0px");
+				}
+				else {
+					self.history_events[i].el.style.marginTop = "0px";
+				}
 				self.history_events[i].el.style.marginBottom = "0px";
 			}
-			Fx.delay_css_setting(self.history_events[self.history_events.length - 1].el, "marginBottom", "30px");
+			self.history_events[self.history_events.length - 1].el.style.marginBottom = "30px";
 		}
 		else {
 			$remove_class($id("history_outer_container"), "history_open");
 			var mt1 = -(self.history_events.length - Prefs.get("sticky_history_size")) * TimelineSong.height;
 			if (!SmallScreen) mt1 -= 30;
 			else mt1 += 30;
-			Fx.delay_css_setting(self.history_events[0].el, "marginTop", mt1 + "px");
-			var threshold_index = self.history_events.length - Prefs.get("sticky_history_size");
-			for (i = 1; i < self.history_events.length; i++) {
-				if (threshold_index == i) {
-					Fx.delay_css_setting(self.history_events[i].el, "marginTop", "30px");
-				}
-				else {
-					Fx.delay_css_setting(self.history_events[i].el, "marginTop", "0px");
-				}
-				Fx.delay_css_setting(self.history_events[i].el, "marginBottom", "0px");
-			}
-			if (threshold_index >= self.history_events.length) {
-				Fx.delay_css_setting(self.history_events[self.history_events.length - 1].el, "marginBottom", "40px");
+			if (first_time) {
+				Fx.delay_css_setting(self.history_events[0].el, "marginTop", mt1 + "px");
 			}
 			else {
-				Fx.delay_css_setting(self.history_events[self.history_events.length - 1].el, "marginBottom", "30px");
+				self.history_events[0].el.style.marginTop = mt1 + "px";
+			}
+			var threshold_index = self.history_events.length - Prefs.get("sticky_history_size");
+			var mt;
+			for (i = 1; i < self.history_events.length; i++) {
+				mt = threshold_index == i ? 30 : 0;
+				self.history_events[i].el.style.marginTop = mt + "px";
+				self.history_events[i].el.style.marginBottom = "0px";
+			}
+			if (threshold_index >= self.history_events.length) {
+				self.history_events[self.history_events.length - 1].el.style.marginBottom = "40px";
+			}
+			else {
+				self.history_events[self.history_events.length - 1].el.style.marginBottom = "30px";
 			}
 		}
 		self.scrollbar_recalculate();
@@ -317,7 +336,7 @@ var Schedule = function() {
 		if (json.tuned_in && (!json.locked || (json.lock_sid == BOOTSTRAP.sid))) {
 			for (i = 0; i < sched_next.length; i++) {
 				evt = find_event(sched_next[i].id);
-				if (evt) {
+				if (evt && (evt.type == "Election")) {
 					evt.data.voting_allowed = true;
 					evt.enable_voting();
 				}
