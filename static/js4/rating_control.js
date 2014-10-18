@@ -44,6 +44,7 @@ var RatingControl = function() {
 			for (var i = 0; i < album_ratings[album_id].length; i++) {
 				if (rating_user) album_ratings[album_id][i].update_user_rating(rating_user);
 				if (rating) album_ratings[album_id][i].update_rating(rating);
+				album_ratings[album_id][i].update_rating_complete(rating_complete);
 			}
 		}
 		if (self.album_rating_callback) {

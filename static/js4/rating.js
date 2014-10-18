@@ -7,7 +7,7 @@
 
 // ******* SEE fx.js FOR BACKGROUND POSITIONING AND FAVE SHOWING/HIDING
 
-var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title_el) {
+var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title_el, rating_complete) {
 	"use strict";
 	if ((type != "song") && (type != "album")) return undefined;
 	if (isNaN(id)) return undefined;
@@ -147,6 +147,19 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 		else $remove_class(self.el, "ratable");
 	};
 
+	self.update_rating_complete = function(new_rating_complete) {
+		if (self.type != "album") return;
+		if (!("rating_complete" in self) || (self.rating_complete != new_rating_complete)) {
+			self.rating_complete = new_rating_complete;
+			if (self.rating_complete) {
+				self.el.style.backgroundImage = null;
+			}
+			else {
+				self.el.style.backgroundImage = "url('/static/images4/rating_bar/unrated_ldpi.png')";
+			}
+		}
+	};
+
 	self.update = function(rating_user, rating, fave, ratable) {
 		self.rating_user = rating_user;
 		self.rating = rating;
@@ -173,8 +186,8 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 
 	self.hide_hover = function() {
 		Fx.remove_element(hover_box);
-		 offset_left = null;
-		 offset_top = null;
+		offset_left = null;
+		offset_top = null;
 	};
 
 	self.reset_rating();
@@ -191,6 +204,10 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 			self.el.addEventListener("mousemove", on_mouse_move);
 			self.el.addEventListener("mouseout", self.reset_rating);
 		}
+
+		if (type == "album") {
+			self.update_rating_complete(rating_complete);
+		}
 	}
 
 	RatingControl.add(self);
@@ -199,9 +216,9 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 };
 
 var SongRating = function(json, rating_title_el) {
-	return Rating("song", json.id, json.rating_user, json.rating, json.fave, json.rating_allowed, rating_title_el);
+	return Rating("song", json.id, json.rating_user, json.rating, json.fave, json.rating_allowed, rating_title_el, true);
 };
 
 var AlbumRating = function(json, rating_title_el) {
-	return Rating("album", json.id, json.rating_user, json.rating, json.fave, false, rating_title_el);
+	return Rating("album", json.id, json.rating_user, json.rating, json.fave, false, rating_title_el, json.rating_complete);
 };

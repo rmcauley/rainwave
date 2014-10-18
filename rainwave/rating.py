@@ -16,9 +16,9 @@ def get_song_rating(song_id, user_id):
 def get_album_rating(sid, album_id, user_id):
 	rating = cache.get_album_rating(sid, album_id, user_id)
 	if not rating:
-		rating = db.c.fetch_row("SELECT album_rating_user AS rating_user, album_fave AS fave FROM r4_album_ratings WHERE user_id = %s AND album_id = %s AND sid = %s", (user_id, album_id, sid))
+		rating = db.c.fetch_row("SELECT album_rating_user AS rating_user, album_fave AS fave, album_rating_complete AS rating_complete FROM r4_album_ratings WHERE user_id = %s AND album_id = %s AND sid = %s", (user_id, album_id, sid))
 		if not rating:
-			rating = { "rating_user": 0, "fave": None }
+			rating = { "rating_user": 0, "fave": None, "rating_complete": False }
 	cache.set_album_rating(sid, album_id, user_id, rating)
 	return rating
 
