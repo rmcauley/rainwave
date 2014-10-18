@@ -276,7 +276,7 @@ class Sync(APIHandler):
 			raise APIException("station_offline")
 
 		self.user.refresh(self.sid)
-		api_requests.info.attach_info_to_request(self)
+		api_requests.info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
 		self.finish()
 
 	def update_user(self):
