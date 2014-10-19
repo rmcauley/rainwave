@@ -120,7 +120,7 @@
    "requests_by_station"                             : "Заявки по станциям",
    "requests_by_source_station"                      : "Заявки по изначальным станциям.",
    "rating_counts_across_stations"                   : "Оценки по изначальным станциям..",
-   "ratings_completion_rate"                         : "Полнота оценок",
+   "ratings_completion_rate"                         : "Всего оценено",
    "rating_spread"                                   : "Разброс оценок",
    "average_rating_by_station"                       : "Средние оценки по станциям",
 
@@ -167,7 +167,7 @@
    "typeanywhere"                                    : "Просто начните печатать",
    "clearfilter"                                     : "Очистить фильтр",
    "album_rating_ranked_at_v2"                       : "Оценено на %(rating) исходя из %(rating_count) оценок, занимает #(rank) место.",
-   "album_requests_ranked_at"                        : "%(count) заявок, &(count:time/times), занимает #(rank) место.",
+   "album_requests_ranked_at"                        : "Всего заявок: %(count), занимает #(rank) место.",
    "Request"                                         : "Заявки",
    "Albums"                                          : "Альбомы",
    "Artists"                                         : "Исполнители",
