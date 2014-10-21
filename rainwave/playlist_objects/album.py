@@ -172,7 +172,7 @@ class Album(AssociatedMetadata):
 		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (album_id,))
 		for sid in current_sids:
 			if not new_sids.count(sid):
-				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE AND album_num_songs = 0 WHERE album_id = %s AND sid = %s", (album_id, sid))
+				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE AND album_song_count = 0 WHERE album_id = %s AND sid = %s", (album_id, sid))
 		for sid in new_sids:
 			if current_sids.count(sid):
 				pass
@@ -198,9 +198,9 @@ class Album(AssociatedMetadata):
 			# AlbumCD = minAlbumCD + ((maxAlbumR - albumR)/(maxAlbumR - minAlbumR)*(maxAlbumCD - minAlbumCD))
 			# old: auto_cool = cooldown.cooldown_config[sid]['min_album_cool'] + (((4 - (cool_rating - 1)) / 4.0) * (cooldown.cooldown_config[sid]['max_album_cool'] - cooldown.cooldown_config[sid]['min_album_cool']))
 			auto_cool = cooldown.cooldown_config[sid]['min_album_cool'] + (((5 - cool_rating) / 4.0) * (cooldown.cooldown_config[sid]['max_album_cool'] - cooldown.cooldown_config[sid]['min_album_cool']))
-			album_num_songs = self.get_num_songs(sid)
-			log.debug("cooldown", "min_album_cool: %s .. max_album_cool: %s .. auto_cool: %s .. album_num_songs: %s .. rating: %s" % (cooldown.cooldown_config[sid]['min_album_cool'], cooldown.cooldown_config[sid]['max_album_cool'], auto_cool, album_num_songs, cool_rating))
-			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_num_songs - config.get_station(sid, "cooldown_size_slope_start")))) / 2)
+			album_song_count = self.get_num_songs(sid)
+			log.debug("cooldown", "min_album_cool: %s .. max_album_cool: %s .. auto_cool: %s .. album_song_count: %s .. rating: %s" % (cooldown.cooldown_config[sid]['min_album_cool'], cooldown.cooldown_config[sid]['max_album_cool'], auto_cool, album_song_count, cool_rating))
+			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_song_count - config.get_station(sid, "cooldown_size_slope_start")))) / 2)
 			cool_age_multiplier = cooldown.get_age_cooldown_multiplier(self.data['added_on'])
 			cool_time = int(auto_cool * cool_size_multiplier * cool_age_multiplier * self.data['cool_multiply'])
 			log.debug("cooldown", "auto_cool: %s .. cool_size_multiplier: %s .. cool_age_multiplier: %s .. cool_multiply: %s .. cool_time: %s" %
