@@ -226,7 +226,7 @@ var Menu = function() {
 	};
 	
 	var update_tuned_in_status = function(user_json) {
-		if (user_json.tuned_in && !audio_playing) {
+		if (user_json.tuned_in) {
 			$add_class($id("top_menu"), "external_tuned_in");
 		}
 		else {
