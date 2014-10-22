@@ -231,27 +231,25 @@ def ip_address(addr, request = None):
 media_player_error = None
 def media_player(str, request = None):
 	ua = str.lower()
-	if ua.find("foobar"):
+	if ua.find("foobar") > -1:
 		return "Foobar2000"
-	elif ua.find("winamp"):
+	elif ua.find("winamp") > -1:
 		return "Winamp"
-	elif ua.find("vlc") or ua.find("videolan"):
+	elif ua.find("vlc") > -1 or ua.find("videolan") > -1:
 		return "VLC"
-	elif ua.find("xine"):
+	elif ua.find("xine") > -1:
 		return "Xine"
-	elif ua.find("fstream"):
+	elif ua.find("fstream") > -1:
 		return "Fstream"
-	elif ua.find("bass"):
+	elif ua.find("bass") > -1:
 		return "BASS/XMplay"
-	elif ua.find("xion"):
+	elif ua.find("xion") > -1:
 		return "Xion"
-	elif ua.find("itunes"):
+	elif ua.find("itunes") > -1:
 		return "iTunes"
-	elif ua.find('muses'):
+	elif ua.find('muses') > -1:
 		return "Flash Player"
-	elif ua.find('windows'):
-		return "Windows Media"
-	return "Unknown"
+	return "Unknown (" + str + ")"
 
 producer_type_error = None
 def producer_type(str, request = None):
