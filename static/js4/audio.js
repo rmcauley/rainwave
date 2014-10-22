@@ -40,7 +40,6 @@ var R4Audio = function() {
 	var volume_el;
 	var volume_rect;
 	var offset_width;
-	var volume_value = 1;
 	var last_user_tunein_check = 0;
 
 	var audio_el = document.createElement('audio');
@@ -91,6 +90,8 @@ var R4Audio = function() {
 		}
 
 		API.add_callback(user_tunein_check, "user");
+
+		Prefs.define("audio_volume", 100);
 	};
 
 	var user_tunein_check = function(json) {
@@ -147,7 +148,7 @@ var R4Audio = function() {
 		// if (volume_el) {
 		// 	audio_el.addEventListener("volumechange", draw_volume);
 		// }
-		audio_el.volume = volume_value;
+		audio_el.volume = Prefs.get("audio_volume");
 		var source;
 		for (var i in stream_urls) {
 			source = document.createElement("source");
@@ -240,7 +241,7 @@ var R4Audio = function() {
 		if (v > 0.95) v = 1;
 		if (!v || isNaN(v)) v = 0;
 		audio_el.volume = v;
-		volume_value = v;
+		Prefs.change("audio_volume", v);
 		draw_volume(v);
 	};
 
