@@ -205,7 +205,7 @@ def _process_album_art(filename, sids):
 	# So we need to repr() in order to get the proper number of \ and then chop the leading and trailing single-quotes
 	# Nasty bug.  This workaround needs to be more thoroughly tested, admittedly, but appears to work fine on Linux as well.
 	directory = repr(os.path.dirname(filename) + os.sep)[1:-1]
-	album_ids = db.c.fetch_list("SELECT album_id FROM r4_songs WHERE song_filename LIKE %s || '%%'", (directory,))
+	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs WHERE song_filename LIKE %s || '%%'", (directory,))
 	if not album_ids or len(album_ids) == 0:
 		return
 	im_original = Image.open(filename)
