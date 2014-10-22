@@ -199,7 +199,7 @@ class PlaybackHistory(APIHandler):
 	def post(self):
 		if self.user.is_anonymous():
 			self.append(self.return_name, db.c.fetch_all(
-				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, songhist_time AS song_played_at, song_artist_parseable AS artist_parseable, song_rating AS rating, album_rating AS album_rating "
+				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, songhist_time AS song_played_at, song_artist_parseable AS artist_parseable, song_rating AS rating "
 				"FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 				"WHERE r4_song_history.sid = %s "
 				"ORDER BY songhist_id DESC " + self.get_sql_limit_string(),

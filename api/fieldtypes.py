@@ -273,11 +273,11 @@ def media_player(str, request = None):
 		return "Xion"
 	elif ua.find("itunes") > -1:
 		return "iTunes"
-	elif ua.find('muses') > -1:
+	elif ua.find('muses') > -1 or ua.find('fmod') > -1:
 		return "Flash Player"
 	elif ua.find('mozilla') > -1:
 		return "Mozilla"
-	elif ua.find('wmplayer') > -1:
+	elif ua.find('wmplayer') > -1 or ua.find('nsplayer') > -1:
 		return "Windows Media"
 	return "Unknown (" + str + ")"
 
