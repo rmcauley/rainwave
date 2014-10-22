@@ -240,9 +240,9 @@ def media_player(str, request = None):
 	elif ua.find("foobar") > -1:
 		return "Foobar2000"
 	elif ua.find('dalvik') > -1 or ua.find('android') > -1:
-		return "Android Browser"
+		return "Android"
 	elif ua.find('stagefright') > -1 or ua.find('servestream') > -1:
-		return "Android App"
+		return "Android (App)"
 	elif ua.find('lavf') > -1:
 		return "LAV"
 	elif ua.find('ffmpeg') > -1:
@@ -251,12 +251,20 @@ def media_player(str, request = None):
 		return "Winamp"
 	elif ua.find("vlc") > -1 or ua.find("videolan") > -1:
 		return "VLC"
+	elif ua.find('applecoremedia') > -1 and ua.find('mac os x') > -1:
+		return "iTunes (iPhone)"
+	elif ua.find('applecoremedia') > -1:
+		return "iTunes (Mac OS)"
+	elif ua.find('cfnetwork') > -1 and ua.find('darwin') > -1:
+		return "iPhone (App)"
 	elif ua.find("minecraft") > -1:
 		return "Minecraft"
 	elif ua.find('clementine') > -1:
 		return "Clementine"
 	elif ua.find("xine") > -1:
 		return "Xine"
+	elif ua.find('audacious') > -1:
+		return 'Audacious'
 	elif ua.find("fstream") > -1:
 		return "Fstream"
 	elif ua.find("bass") > -1:
