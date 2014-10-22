@@ -162,6 +162,7 @@ class RemoveListener(IcecastHandler):
 								 (self.relay, self.get_argument("client")))
 		if not listener:
 			self.append("      RMFAIL: %s %s %s." % (sid, '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
+			return
 
 		db.c.update("UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_relay = %s AND listener_icecast_id = %s", (self.relay, self.get_argument("client")))
 		if listener['user_id'] > 1:
