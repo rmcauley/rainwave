@@ -277,6 +277,8 @@ def media_player(str, request = None):
 		return "Flash Player"
 	elif ua.find('mozilla') > -1:
 		return "Mozilla"
+	elif ua.find('wmplayer') > -1:
+		return "Windows Media"
 	return "Unknown (" + str + ")"
 
 producer_type_error = None
