@@ -91,7 +91,7 @@ var R4Audio = function() {
 
 		API.add_callback(user_tunein_check, "user");
 
-		Prefs.define("audio_volume", 1.0);
+		Prefs.define("audio_volume", [ 1.0 ]);
 	};
 
 	var user_tunein_check = function(json) {
@@ -148,7 +148,7 @@ var R4Audio = function() {
 		// if (volume_el) {
 		// 	audio_el.addEventListener("volumechange", draw_volume);
 		// }
-		if ((Prefs.get("audio_volume") > 1) || (Prefs.get("audio_volume") < 0)) {
+		if ((Prefs.get("audio_volume") > 1) || (Prefs.get("audio_volume") < 0) || !Prefs.get("audio_volume")) {
 			Prefs.change("audio_volume", 1.0);
 		}
 		audio_el.volume = Prefs.get("audio_volume");
