@@ -152,6 +152,7 @@ var R4Audio = function() {
 			Prefs.change("audio_volume", 1.0);
 		}
 		audio_el.volume = Prefs.get("audio_volume");
+		draw_volume(Prefs.get("audio_volume"));
 		var source;
 		for (var i in stream_urls) {
 			source = document.createElement("source");
