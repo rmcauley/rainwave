@@ -279,6 +279,12 @@ def media_player(str, request = None):
 		return "Mozilla"
 	elif ua.find('wmplayer') > -1 or ua.find('nsplayer') > -1:
 		return "Windows Media"
+	elif ua.find('mediamonkey') > -1:
+		return "MediaMonkey"
+	elif ua.find('XBMC') > -1:
+		return "XBMC"
+	elif ua == "-":
+		return "None"
 	return "Unknown (" + str + ")"
 
 producer_type_error = None

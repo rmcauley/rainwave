@@ -167,6 +167,7 @@ class User(object):
 		return listener
 
 	def refresh(self, sid):
+		self.data['tuned_in'] = False
 		listener = self.get_listener_record(use_cache=False)
 		if listener:
 			if self.data['sid'] == sid:
