@@ -7,7 +7,13 @@ var Fx = function() {
 	var draw_batch = [];
 
 	var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
-	var performance = window.performance || { "now": function() { return new Date().getTime(); } };
+	var performance;
+	if (window.performance && window.performance.now) {
+		performance = window.performance;
+	}
+	else {
+		performance = { "now": function() { return new Date().getTime(); } };
+	}
 	if (!requestAnimationFrame) {
 		requestAnimationFrame = function(callback) { window.setTimeout(callback, 40); };
 	}
