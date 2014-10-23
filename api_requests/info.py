@@ -60,7 +60,7 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 		sched_current = cache.get_station(request.sid, "sched_current_dict")
 		sched_next = cache.get_station(request.sid, "sched_next_dict")
 		sched_history = cache.get_station(request.sid, "sched_history_dict")
-		if len(sched_next) > 0 and request.user.is_tunedin() and sched_next[0].type == "Election":
+		if len(sched_next) > 0 and request.user.is_tunedin() and sched_next[0]['type'] == "Election":
 			sched_next[0]['voting_allowed'] = True
 	request.append("sched_current", sched_current)
 	request.append("sched_next", sched_next)
