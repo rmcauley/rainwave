@@ -225,6 +225,7 @@ def _get_schedule_stats(sid):
 
 def manage_next(sid):
 	max_sched_id, max_elec_id, num_elections, max_future_time = _get_schedule_stats(sid)
+	now_producer = get_producer_at_time(sid, time.time())
 	next_producer = get_producer_at_time(sid, max_future_time)
 	nextnext_producer_start = db.c.fetch_var("SELECT sched_start FROM r4_schedule WHERE sid = %s AND sched_used = FALSE AND sched_start > %s AND sched_timed = TRUE", (sid, max_future_time))
 	time_to_future_producer = None
@@ -232,7 +233,7 @@ def manage_next(sid):
 		time_to_future_producer = nextnext_producer_start - max_future_time
 	else:
 		time_to_future_producer = 86400
-	while len(upnext[sid]) < next_producer.plan_ahead_limit:
+	while len(upnext[sid]) < now_producer.plan_ahead_limit:
 		target_length = None
 		if time < 20:
 			log.debug("timing", "SID %s <20 seconds to upnext event, not using timing." % sid)
