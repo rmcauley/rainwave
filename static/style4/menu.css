@@ -113,6 +113,7 @@ body.mobile_screen {
 	#station_select_container, #station_select_container.open {
 		float: none;
 		width: 100%;
+		border: none;
 	}
 }
 

@@ -237,14 +237,15 @@ var Schedule = function() {
 			}
 		}
 
-		if (Prefs.get("sticky_history_size") == self.history_events.length) {
+		var sticky_history_size = MOBILE ? 0 : Prefs.get("sticky_history_size");
+		if (sticky_history_size == self.history_events.length) {
 			$remove_class($id("history_outer_container"), "history_expandable");
 		}
 		else {
 			$add_class($id("history_outer_container"), "history_expandable");
 		}
 
-		if (Prefs.get("sticky_history") || (Prefs.get("sticky_history_size") == self.history_events.length)) {
+		if (Prefs.get("sticky_history") || (sticky_history_size == self.history_events.length)) {
 			$add_class($id("history_outer_container"), "history_open");
 			if (first_time) {
 				Fx.delay_css_setting(self.history_events[0].el, "marginTop", "0px");
@@ -266,7 +267,7 @@ var Schedule = function() {
 		}
 		else {
 			$remove_class($id("history_outer_container"), "history_open");
-			var mt1 = -(self.history_events.length - Prefs.get("sticky_history_size")) * TimelineSong.height;
+			var mt1 = -(self.history_events.length - sticky_history_size) * TimelineSong.height;
 			if (!SmallScreen) mt1 -= 30;
 			else mt1 += 30;
 			if (first_time) {
@@ -275,14 +276,17 @@ var Schedule = function() {
 			else {
 				self.history_events[0].el.style.marginTop = mt1 + "px";
 			}
-			var threshold_index = self.history_events.length - Prefs.get("sticky_history_size");
+			var threshold_index = self.history_events.length - sticky_history_size;
 			var mt;
 			for (i = 1; i < self.history_events.length; i++) {
 				mt = threshold_index == i ? 30 : 0;
 				self.history_events[i].el.style.marginTop = mt + "px";
 				self.history_events[i].el.style.marginBottom = "0px";
 			}
-			if (threshold_index >= self.history_events.length) {
+			if (MOBILE) {
+				self.history_events[self.history_events.length - 1].el.style.marginBottom = "55px";
+			}
+			else if (threshold_index >= self.history_events.length) {
 				self.history_events[self.history_events.length - 1].el.style.marginBottom = "40px";
 			}
 			else {
