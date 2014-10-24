@@ -233,7 +233,7 @@ def manage_next(sid):
 		time_to_future_producer = nextnext_producer_start - max_future_time
 	else:
 		time_to_future_producer = 86400
-	while len(upnext[sid]) < now_producer.plan_ahead_limit:
+	while len(upnext[sid]) < min(now_producer.plan_ahead_limit, next_producer.plan_ahead_limit):
 		target_length = None
 		if time < 20:
 			log.debug("timing", "SID %s <20 seconds to upnext event, not using timing." % sid)
