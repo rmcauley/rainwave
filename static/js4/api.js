@@ -216,6 +216,12 @@ var API = function() {
 		}
 	};
 
+	self.sync_status = function() {
+		console.log(sync);
+		console.log(sync_stopped);
+		console.log(sync_error_count);
+	};
+
 	var async_timeout = function() {
 		ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
 	};
@@ -251,6 +257,12 @@ var API = function() {
 				async.send(self.serialize(to_do.params));
 			}
 		}
+	};
+
+	self.async_status = function() {
+		console.log(async);
+		console.log(async.readyState);
+		console.log(async_queue);
 	};
 
 	var perform_callbacks = function(json) {
