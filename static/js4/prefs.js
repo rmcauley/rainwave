@@ -125,10 +125,11 @@ var Prefs = function() {
 		if (values && !(name in values)) {
 			values[name] = legal_values ? legal_values[0] : false;
 		}
-		callbacks[name] = [];
+		if (!callbacks[name]) callbacks[name] = [];
 	};
 
 	self.add_callback = function(name, method) {
+		if (!callbacks[name]) callbacks[name] = [];
 		callbacks[name].push(method);
 	};
 
