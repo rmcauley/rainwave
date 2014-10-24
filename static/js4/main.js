@@ -157,6 +157,7 @@ function initialize() {
 	Requests.initialize();
 	R4Audio.initialize(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
 	SettingsWindow.initialize();
+	R4Notify.initialize();
 
 	// ****************** PAGE LAYOUT
 	// PREP: Applies the small_screen and small_menu classes if necessary and sizes everything
