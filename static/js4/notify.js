@@ -42,7 +42,7 @@ var R4Notify = function() {
 		if (sched_current.songs[0].id == current_song_id) return;
 		current_song_id = sched_current.songs[0].id;
 
-		var art = sched_current.songs[0].albums[0].art ? sched_current.songs[0].albums[0].art : "/static/images4/noart_1.jpg";
+		var art = sched_current.songs[0].albums[0].art ? sched_current.songs[0].albums[0].art + "_120.jpg" : "/static/images4/noart_1.jpg";
 		var artists = "";
 		for (var i = 0; i < sched_current.songs[0].artists.length; i++) {
 			if (i > 0) artists += ", ";
