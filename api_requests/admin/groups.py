@@ -36,7 +36,7 @@ class RemoveGroupFromSong(api.web.APIHandler):
 class EditGroup(api.web.APIHandler):
 	admin_required = True
 	sid_required = False
-	fields = { "group_id": (fieldtypes.group_id, True), "elec_block": (fieldtypes.positive_integer, None) }
+	fields = { "group_id": (fieldtypes.group_id, True), "elec_block": (fieldtypes.zero_or_greater_integer, None) }
 
 	def post(self):
 		g = SongGroup.load_from_id(self.get_argument("group_id"))
