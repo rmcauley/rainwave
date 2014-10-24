@@ -132,7 +132,7 @@ var Menu = function() {
 		if (!$has_class(dd, "has_calendar")) {
 			var tz_param;
 			if (jstz) {
-				tz_param = "&ctz=" + jstz.determine_timezone().name();
+				tz_param = "&ctz=" + jstz.determine().name();
 			}
 			dd.appendChild($el("iframe", { "class": "calendar_iframe", "src": "https://www.google.com/calendar/embed?showTitle=0&showNav=0&showDate=0&showPrint=0&showCalendars=0&mode=AGENDA&height=500&wkst=1&bgcolor=%23ffffff&src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com&color=%232952A3" + tz_param, "frameborder": "0", "scrolling": "no" }));
 		}
