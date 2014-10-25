@@ -39,9 +39,15 @@ class OneUpProducer(event.BaseProducer):
 			raise Exception("Cannot change the start time of a used producer.")
 
 	def _update_length(self):
-		length = db.c.fetch_var("SELECT SUM(song_length) FROM r4_one_ups JOIN r4_songs USING (song_id) WHERE sched_id = %s GROUP BY sched_id", (self.id,))
-		if not length:
+		stats = db.c.fetch_row("SELECT SUM(song_length) AS l, COUNT(song_length) AS c FROM r4_one_ups JOIN r4_songs USING (song_id) WHERE sched_id = %s GROUP BY sched_id", (self.id,))
+		# for some reason we need 'buffer' at the end of each song for switching
+		# otherwise the power hour cuts off the last few songs if we just do straight sum(song_length)
+		# the time is short an averages 15 seconds per song in my testing
+		# how this discrepency happens I don't know, but we add 30s of 'buffer' to each song
+		if not stats:
 			length = 0
+		else:
+			length = stats['l'] + (30 * stats['c'])
 		if self.start_actual:
 			self.end = self.start_actual + length
 		else:
