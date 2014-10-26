@@ -15,7 +15,7 @@ set -e
 case "$1" in
   start)
 	echo -n "Starting Rainwave Scanner: "
-	start-stop-daemon --start --background --exec /opt/rainwave/rw_scanner.py
+	start-stop-daemon --start --background -c "exec /opt/rainwave/rw_scanner.py > /var/log/rainwave/scanner_stderr.log 2>&1"
 	echo "OK"
 	echo -n "Starting Rainwave API: "
 	start-stop-daemon --make-pidfile --pidfile /var/run/rainwave/_api_core.pid --start --background --exec /opt/rainwave/rw_api.py
