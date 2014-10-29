@@ -487,6 +487,18 @@ body.mobile_screen #r4_audio_player svg.audio_icon {
 	opacity: 1;
 }
 
+#m3u_dropdown {
+	border: none;
+	font-size: 0.7em;
+	width: 10em;
+	transform: none;
+	-webkit-transform: none;
+}
+
+#m3u_dropdown a {
+	padding: .5em;
+}
+
 #top_menu.show_m3u #r4_audio_player:hover #m3u_dropdown {
 	height: 2.5em;
 }

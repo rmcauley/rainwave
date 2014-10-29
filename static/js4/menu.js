@@ -93,7 +93,7 @@ var Menu = function() {
 			show_m3u(Prefs.get("show_m3u"));
 
 			$id("m3u_dropdown").appendChild($el("a", { "textContent": ".ogg.m3u", "href": "/tune_in/" + User.sid + ".ogg", "target": "_blank", "class": "link", "style": "float: right" }));
-			$id("m3u_dropdown").appendChild($el("a", { "textContent": ".mp3.m3u", "href": "/tune_in/" + User.sid + ".mp3", "target": "_blank", "class": "link" }));
+			$id("m3u_dropdown").appendChild($el("a", { "textContent": ".mp3.m3u", "href": "/tune_in/" + User.sid + ".mp3", "target": "_blank", "class": "link", "style": "float: left" }));
 		}
 	};
 
@@ -163,9 +163,8 @@ var Menu = function() {
 	};
 
 	var calendar_hide = function(e) {
-		var dd = $id("calendar_dropdown"); 
-		if (Mouse.is_mouse_leave(e, dd)) {
-			$remove_class(dd, "show_calendar");
+		if (Mouse.is_mouse_leave(e, $id("calendar_menu_item"))) {
+			$remove_class($id("calendar_dropdown"), "show_calendar");
 		}
 	};
 
