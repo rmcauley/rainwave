@@ -9,6 +9,7 @@ var Menu = function() {
 
 	self.initialize = function() {
 		Prefs.define("station_select_clicked", [ false, true ]);
+		Prefs.define("show_m3u", [ false, true ]);
 		R4Audio.changed_status_callback = update_tuned_in_status_from_player;
 	};
 
@@ -85,6 +86,23 @@ var Menu = function() {
 
 		if (!Prefs.get("station_select_clicked")) {
 			$add_class($id("station_select"), "call_to_action");
+		}
+
+		if (!MOBILE) {
+			Prefs.add_callback("show_m3u", show_m3u);
+			show_m3u(Prefs.get("show_m3u"));
+
+			$id("m3u_dropdown").appendChild($el("a", { "textContent": ".ogg.m3u", "href": "/tune_in/" + User.sid + ".ogg", "target": "_blank", "class": "link", "style": "float: right" }));
+			$id("m3u_dropdown").appendChild($el("a", { "textContent": ".mp3.m3u", "href": "/tune_in/" + User.sid + ".mp3", "target": "_blank", "class": "link" }));
+		}
+	};
+
+	var show_m3u = function(v) {
+		if (v) {
+			$add_class($id("top_menu"), "show_m3u");
+		}
+		else {
+			$remove_class($id("top_menu"), "show_m3u");
 		}
 	};
 

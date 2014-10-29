@@ -487,6 +487,10 @@ body.mobile_screen #r4_audio_player svg.audio_icon {
 	opacity: 1;
 }
 
+#top_menu.show_m3u #r4_audio_player:hover #m3u_dropdown {
+	height: 2.5em;
+}
+
 /* CALENDAR */
 
 div.menu_inline_dropdown {

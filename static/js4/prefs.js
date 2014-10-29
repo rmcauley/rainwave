@@ -197,10 +197,13 @@ var SettingsWindow = function() {
 		div.appendChild($el("label", { "textContent": $l("m3u_downloads") }));
 		div = div.appendChild($el("div", { "class": "multi_select multi_select_special unselectable" }));
 		option = div.appendChild($el("span"));
+		option.addEventListener("click", function() { Prefs.change("show_m3u", true); });
 		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "iTunes MP3", "class": "link", "target": "_blank" }));
 		option = div.appendChild($el("span", { "class": "setting_group" }));
+		option.addEventListener("click", function() { Prefs.change("show_m3u", true); });
 		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "Windows MP3", "class": "link", "target": "_blank" }));
 		option = div.appendChild($el("span", { "class": "setting_group" }));
+		option.addEventListener("click", function() { Prefs.change("show_m3u", true); });
 		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".ogg", "textContent": "Foobar2000 Ogg", "class": "link", "target": "_blank" }));
 
 		div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
