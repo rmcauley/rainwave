@@ -45,7 +45,7 @@
    "requests_reordered"                              : "Pedidos reordenado.",
    "request_queue_paused"                            : "Fila de pedidos pausada.",
    "request_queue_unpaused"                          : "Fila de pedidos despausada.",
-   "no_request"                                      : "Nenhum pedido.",
+   "no_results"                                      : "Nenhum resultado.",
 
    "__comment__"                 : "API Key Management",
 
