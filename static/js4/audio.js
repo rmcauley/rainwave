@@ -27,6 +27,8 @@
 */
 
 var R4Audio = function() {
+	"use strict";
+
 	var self = {};
 	self.supported = false;
 	self.type = null;	
@@ -89,6 +91,11 @@ var R4Audio = function() {
 			volume_el.addEventListener("mousedown", volume_control_mousedown);
 		}
 
+		var mute_el = document.getElementById("audio_icon_mute");
+		if (mute_el) {
+			mute_el.addEventListener("click", self.toggle_mute);
+		}
+
 		API.add_callback(user_tunein_check, "user");
 
 		Prefs.define("audio_volume", [ 1.0 ]);
@@ -121,6 +128,7 @@ var R4Audio = function() {
 		if (!ErrorHandler) return;
 		ErrorHandler.remove_permanent_error("audio_error");
 		ErrorHandler.remove_permanent_error("audio_connect_error");
+		Prefs.change("show_m3u", true);
 	};
 
 	self.play_stop = function(evt) {
@@ -182,6 +190,19 @@ var R4Audio = function() {
 		self.on_stop();
 		playing_status = false;
 		if (self.changed_status_callback) self.changed_status_callback(playing_status);
+	};
+
+	self.toggle_mute = function() {
+		//if (!audio_el) return;
+		var mute_el = document.getElementById("audio_icon_mute");
+		if (mute_el.className == "muted") {
+			mute_el.setAttribute("class", null);
+			//audio_el.volume = Prefs.get("audio_volume");
+		}
+		else {
+			//audio_el.volume = 0;
+			mute_el.setAttribute("class", "muted");
+		}
 	};
 
 	self.on_stop = function() {
