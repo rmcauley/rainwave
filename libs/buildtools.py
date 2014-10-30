@@ -1,7 +1,6 @@
 import os
 import scss
 from scss import Scss
-from jsmin import jsmin
 from slimit import minify
 
 scss.config.LOAD_PATHS = os.path.dirname(__file__) + "/../static/style4"

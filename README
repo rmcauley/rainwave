@@ -3,7 +3,7 @@ This is the git project for the Rainwave website, http://rainwave.cc.
 == Python Setup for Debian/Ubuntu
 
 $ sudo apt-get install python-pip python-pyscss python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit
-$ sudo pip install jsmin pytz watchdog
+$ sudo pip install pytz watchdog
 
 == Python Setup for Windows
 
@@ -19,7 +19,7 @@ $ sudo pip install jsmin pytz watchdog
 6. Make sure the Python Scripts directory is also on your PATH
 7. On the commandline, execute:
 	> easy_install pip
-	> pip install tornado mutagen nose pillow pyscss jsmin unidecode pytz watchdog python-memcached csscompressor
+	> pip install tornado mutagen nose pillow pyscss unidecode pytz watchdog python-memcached
 
 == Getting Started for HTML/CSS/JS Development
 
@@ -83,14 +83,12 @@ Required on all systems:
 - pillow
 - psutil
 - pyScss
-- jsmin
 - unidecode
 - pytz
 - watchdog
-- meliae (Linux)
-- pylibmc (POSIX) or python-memcached (Windows/PyPy)
-- csscompressor
 - slimit
+- meliae (Linux, if enabling memory tracing)
+- pylibmc (Linux or cypthon) or python-memcached (Windows or PyPy)
 
 To let Rainwave automatically mp3gain your collection, you will need to enable it
 in the configs and also have the "mp3gain" executable in your path.
