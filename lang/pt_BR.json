@@ -45,7 +45,7 @@
    "requests_reordered"                              : "Pedidos reordenado.",
    "request_queue_paused"                            : "Fila de pedidos pausada.",
    "request_queue_unpaused"                          : "Fila de pedidos despausada.",
-   "no_request"                                      : "Nenhum pedido.",
+   "no_results"                                      : "Nenhum resultado.",
 
    "__comment__"                 : "API Key Management",
 
@@ -229,10 +229,10 @@
    "site_mode"                                       : "Modo do site",
    "basic"                                           : "Básico",
    "full"                                            : "Completo",
-   "prefs_small_menu"                                : "Menu pequeno",
    "change_language"                                 : "Idioma",
    "timeline_preferences"                            : "Linha do tempo",
    "tab_title_preferences"                           : "Título da aba",
+   "prefs_notify"                                    : "Exibir notificações quanto tocar as músicas",
    "prefs_show_clock_in_titlebar"                    : "Exibir relógio no título",
    "prefs_show_rating_in_titlebar"                   : "Exibir avaliação no título",
    "prefs_show_title_in_titlebar"                    : "Exibir nome da música no título",
