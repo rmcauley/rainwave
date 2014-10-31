@@ -251,6 +251,8 @@ class User(object):
 		for song_id in playlist.get_unrated_songs_for_requesting(self.id, sid, limit):
 			if song_id:
 				added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
+		if added_requests > 0:
+			self.put_in_request_line(sid)
 		return added_requests
 
 	def add_favorited_requests(self, sid, limit = None):
@@ -263,6 +265,8 @@ class User(object):
 		for song_id in playlist.get_favorited_songs_for_requesting(self.id, sid, limit):
 			if song_id:
 				added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
+		if added_requests > 0:
+			self.put_in_request_line(sid)
 		return added_requests
 
 	def remove_request(self, song_id):
