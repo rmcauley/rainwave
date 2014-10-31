@@ -157,6 +157,16 @@ td.songlist_rating {
 	width: 70px;
 }
 
+td.songlist_rating_user_number {
+	color: $highlight;
+	width: 1.5em;
+}
+
+td.songlist_rating_number {
+	color: $darktext;
+	width: 1.5em;
+}
+
 td.songlist_rating > div {
 	position: absolute;
 }

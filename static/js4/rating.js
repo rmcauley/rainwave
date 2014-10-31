@@ -7,7 +7,7 @@
 
 // ******* SEE fx.js FOR BACKGROUND POSITIONING AND FAVE SHOWING/HIDING
 
-var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title_el, rating_complete) {
+var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title_el, rating_complete, rating_number_element, rating_user_number_element) {
 	"use strict";
 	if ((type != "song") && (type != "album")) return undefined;
 	if (isNaN(id)) return undefined;
@@ -20,12 +20,15 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 		"id": id,
 		"rating_user": rating_user,
 		"rating": rating,
+		"rating_complete": rating_complete,
 		"fave": fave,
 		"ratable": ratable,
 		"el": $el("div", { "class": "rating " + type + "_rating" }),
 		"absolute_x": false,
 		"absolute_y": false,
-		"rating_title_el": rating_title_el
+		"rating_title_el": rating_title_el,
+		"rating_number_element": rating_number_element,
+		"rating_user_number_element": rating_user_number_element
 	};
 
 	var hover_box = $el("div", { "class": "rating_hover" });
@@ -42,12 +45,29 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 			effect.change_to_user_rating();
 			current_rating = self.rating_user;
 		}
-		else {
+		else if (!Prefs.get("hide_global_ratings"))  {
 			effect.change_to_site_rating();
 			current_rating = self.rating;
 		}
+		else {
+			effect.change_to_site_rating();
+			current_rating = 0;
+		}
 		effect.set_rating(current_rating);
 		self.update_ratable(self.ratable);
+
+		if (self.rating && self.rating > 0 && self.rating_number_element && (self.rating_user || !Prefs.get("hide_global_ratings"))) {
+			self.rating_number_element.textContent = Formatting.rating(self.rating);
+		}
+		else if (self.rating_number_element) {
+			self.rating_number_element.textContent = "";
+		}
+		if (self.rating_user && self.rating_user > 0 && self.rating_user_number_element) {
+			self.rating_user_number_element.textContent = Formatting.rating(self.rating_user);
+		}
+		else if (self.rating_user_number_element) {
+			self.rating_user_number_element.textContent = "";
+		}
 	};
 
 	self.reset_fave = function(evt) {
@@ -94,14 +114,18 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 		if (tr >= 1) {
 			effect.change_to_user_rating();
 			effect.set(tr);
-			if (tr * 10 % 10 === 0) hover_number.textContent = tr + ".0";
-			else hover_number.textContent = tr;
-			hover_box.style.width = Math.max(tr * 10 - 3, 20) + "px";
-			if (!hover_box.parentNode) {
-				Fx.stop_chain(hover_box);
-				self.el.insertBefore(hover_box, self.el.firstChild);
+			hover_number.textContent = Formatting.rating(tr);
+			if (self.rating_user_number_element) {
+				self.rating_user_number_element.textContent = Formatting.rating(tr);
 			}
-			hover_box.style.opacity = "1";
+			else {
+				hover_box.style.width = Math.max(tr * 10 - 3, 20) + "px";
+				if (!hover_box.parentNode) {
+					Fx.stop_chain(hover_box);
+					self.el.insertBefore(hover_box, self.el.firstChild);
+				}
+				hover_box.style.opacity = "1";
+			}
 		}
 		else {
 			effect.set_rating(current_rating);

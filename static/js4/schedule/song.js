@@ -132,7 +132,10 @@ var TimelineSong = function() {
 			self.data.entry_votes = new_json.entry_votes;
 			self.elements.entry_votes.textContent = self.data.entry_votes;
 			if (song_rating) song_rating.update(new_json.rating_user, new_json.rating, new_json.fave, new_json.rating_allowed);
-			if (album_rating) album_rating.update(new_json.albums[0].rating_user, new_json.albums[0].rating, new_json.albums[0].fave, false);
+			if (album_rating) {
+				album_rating.update(new_json.albums[0].rating_user, new_json.albums[0].rating, new_json.albums[0].fave, false);
+				album_rating.update_rating_complete(new_json.albums[0].rating_complete);
+			}
 			self.update_cooldown_info();
 		};
 

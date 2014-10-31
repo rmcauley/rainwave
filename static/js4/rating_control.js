@@ -21,6 +21,9 @@ var RatingControl = function() {
 		// was originally a playlist pref, now lives here
 		Prefs.define("playlist_show_rating_complete", [ false, true ]);
 		Prefs.add_callback("playlist_show_rating_complete", rating_complete_toggle);
+
+		Prefs.define("hide_global_ratings", [ false, true ]);
+		Prefs.add_callback("hide_global_ratings", hide_global_rating_callback);
 	};
 
 	self.rating_user_callback = function(json) {
@@ -38,7 +41,7 @@ var RatingControl = function() {
 		if (song_id in song_ratings) {
 			for (var i = 0; i < song_ratings[song_id].length; i++) {
 				if (rating_user) song_ratings[song_id][i].update_user_rating(rating_user);
-				if (rating) song_ratings[song_id][i].update_user_rating(rating);
+				if (rating) song_ratings[song_id][i].update_rating(rating);
 			}
 		}
 	};
@@ -56,13 +59,24 @@ var RatingControl = function() {
 		}
 	};
 
-	var rating_complete_toggle = function(nv) {
+	var rating_complete_toggle = function() {
 		var album_id, i;
 		for (album_id in album_ratings) {
 			for (i = 0; i < album_ratings[album_id].length; i++) {
 				album_ratings[album_id][i].update_rating_complete(album_ratings[i], true);
 			}
 		}
+	};
+
+	var hide_global_rating_callback = function() {
+		var song_id, i;
+		for (song_id in song_ratings) {
+			for (i = 0; i < song_ratings[song_id].length; i++) {
+				song_ratings[song_id][i].reset_rating();
+			}
+		}
+
+		rating_complete_toggle();
 	};
 
 	self.garbage_collection = function() {
