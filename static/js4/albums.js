@@ -24,7 +24,7 @@ var Albums = function() {
 		}
 
 		if (("_album_art" in tgt) && tgt._album_art) {
-			var full_res = $el("img", { "class": "art_image", "src": tgt._album_art + ".jpg" });
+			var full_res = $el("img", { "class": "art_image", "src": tgt._album_art + "_320.jpg" });
 			full_res.onload = function() {
 				tgt.style.backgroundImage = "url(" + full_res.getAttribute("src") + ")";
 			};
@@ -59,7 +59,7 @@ var Albums = function() {
 		else {
 			ac = c.appendChild($el("div", { "class": "art_container" }));
 			if (!MOBILE && window.devicePixelRatio && (window.devicePixelRatio > 1.5)) {
-				ac.style.backgroundImage = "url(" + json.art + ".jpg)";
+				ac.style.backgroundImage = "url(" + json.art + "_320.jpg)";
 			}
 			else {
 				ac.style.backgroundImage = "url(" + json.art + "_" + size + ".jpg)";
