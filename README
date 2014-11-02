@@ -27,8 +27,8 @@ $ git clone git@github.com:rmcauley/rainwave.git
 $ cp etc/rainwave-dev.conf etc/[your username].conf
 $ python rw_api.py
 
-Wait until you see "API server on port 20000 ready to go."  Depending on your
-PC, this may take a minute or so.
+Wait until you see "API server on port 20000 ready to go."  Depending on
+your PC, this may take a minute or so.
 
 Then open the beta URL:
    http://localhost:20000/beta/?sid=1
@@ -41,12 +41,15 @@ If you want to emulate being logged in, go to this URL:
 To emulate being anonymous, just close and re-open your browser.
 
 HTML files can be found in /templates.
-CSS files are in /static/style4 and compiled using SCSS, starting from _sass.css.
-JS files are in /static/js4 and are not minified for beta development, execution starts from main.js.
+CSS files are in /static/style4 and compiled using SCSS from _sass.css.
+JS files are in /static/js4 and are not minified for beta development.
+	- Execution starts from main.js.
+	- No libraries or frameworks are used
+	- There are some helper functions in element.js and formatting.js
 Image files are in /static/images4.
 
-All files are refreshed as you edit them, no need to restart the server, with the exception of
-language files.
+All files are refreshed as you edit them, no need to restart the
+server, with the exception of language files.
 
 == Getting Started for Backend Development
 
@@ -90,5 +93,6 @@ Required on all systems:
 - meliae (Linux, if enabling memory tracing)
 - pylibmc (Linux or cypthon) or python-memcached (Windows or PyPy)
 
-To let Rainwave automatically mp3gain your collection, you will need to enable it
-in the configs and also have the "mp3gain" executable in your path.
+To let Rainwave automatically mp3gain your collection, 
+you will need to enable it in the configs and also have
+the "mp3gain" executable in your path.
