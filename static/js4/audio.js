@@ -193,14 +193,14 @@ var R4Audio = function() {
 	};
 
 	self.toggle_mute = function() {
-		//if (!audio_el) return;
+		if (!audio_el) return;
 		var mute_el = document.getElementById("audio_icon_mute");
-		if (mute_el.className == "muted") {
+		if (audio_el.volume === 0) {
 			mute_el.setAttribute("class", null);
-			//audio_el.volume = Prefs.get("audio_volume");
+			audio_el.volume = Prefs.get("audio_volume");
 		}
 		else {
-			//audio_el.volume = 0;
+			audio_el.volume = 0;
 			mute_el.setAttribute("class", "muted");
 		}
 	};
@@ -268,6 +268,7 @@ var R4Audio = function() {
 		audio_el.volume = v;
 		Prefs.change("audio_volume", v);
 		draw_volume(v);
+		mute_el.setAttribute("class", null);
 	};
 
 	var draw_volume = function(v) {

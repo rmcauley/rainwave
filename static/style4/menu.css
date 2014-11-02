@@ -437,7 +437,7 @@ body.mobile_screen #r4_audio_player svg.audio_icon {
 	@include transition-wtime(300ms, opacity, fill);
 }
 
-#audio_status_stop, #audio_status_play {
+#audio_status_stop, #audio_status_play, #audio_icon_mute {
 	@include transition(opacity);
 }
 
@@ -445,7 +445,7 @@ body.mobile_screen #r4_audio_player svg.audio_icon {
 	position: absolute;
 }
 
-#r4_audio_player #audio_icon_stop, #r4_audio_player #audio_status_stop {
+#r4_audio_player #audio_icon_stop, #r4_audio_player #audio_status_stop, #r4_audio_player #audio_icon_mute {
 	opacity: 0;
 }
 
@@ -466,7 +466,7 @@ body.mobile_screen #r4_audio_player svg.audio_icon {
 	@include transition(opacity);
 }
 
-#top_menu svg#audio_icon_mute {
+#top_menu #r4_audio_player.playing svg#audio_icon_mute {
 	cursor: pointer;
 	opacity: 0.5;
 	@include transition-wtime(300ms, fill, opacity);
@@ -475,14 +475,14 @@ body.mobile_screen #r4_audio_player svg.audio_icon {
 	fill: #FFF;
 }
 
-#top_menu svg#audio_icon_mute:hover {
+#top_menu #r4_audio_player.playing svg#audio_icon_mute:hover {
 	opacity: 1;
 }
-#top_menu svg#audio_icon_mute:hover, #top_menu svg#audio_icon_mute:hover * {
+#top_menu #r4_audio_player.playing svg#audio_icon_mute:hover, #top_menu svg#audio_icon_mute:hover * {
 	fill: $linkhover;
 }
 
-#top_menu svg#audio_icon_mute.muted, #top_menu svg#audio_icon_mute.muted * {
+#top_menu #r4_audio_player.playing svg#audio_icon_mute.muted, #top_menu svg#audio_icon_mute.muted * {
 	opacity: 1;
 	fill: #FAA;
 }
