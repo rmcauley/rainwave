@@ -94,9 +94,9 @@ class Album(AssociatedMetadata):
 	def get_art_url(self, album_id, sid = None):
 		if not config.get("album_art_file_path"):
 			return ""
-		elif sid and os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s_%s.jpg" % (sid, album_id))):
+		elif sid and os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s_%s_320.jpg" % (sid, album_id))):
 			return "%s/%s_%s" % (config.get("album_art_url_path"), sid, album_id)
-		elif os.path.isfile(os.path.join(config.get("album_art_file_path"), "a_%s.jpg" % album_id)):
+		elif os.path.isfile(os.path.join(config.get("album_art_file_path"), "a_%s_320.jpg" % album_id)):
 			return "%s/a_%s" % (config.get("album_art_url_path"), album_id)
 		return ""
 
