@@ -28,6 +28,7 @@ function _size_calculate() {
 		Fx.delay_draw(function() { RatingControl.change_padding_top(3); });
 		return true;
 	}
+	TimelineSong.calculate_height();
 	return old_height != SCREEN_HEIGHT || old_width != SCREEN_WIDTH;
 }
 
