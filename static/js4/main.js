@@ -16,12 +16,14 @@ function _size_calculate() {
 	MAIN_HEIGHT = SCREEN_HEIGHT - MENU_HEIGHT;
 	if ((SCREEN_WIDTH <= 1400) && !SmallScreen) {
 		SmallScreen = true;
+		TimelineSong.calculate_height();
 		Fx.delay_draw(function() { $add_class(document.body, "small_screen"); });
 		Fx.delay_draw(function() { RatingControl.change_padding_top(1); });
 		return true;
 	}
 	else if ((SCREEN_WIDTH > 1400) && SmallScreen) {
 		SmallScreen = false;
+		TimelineSong.calculate_height();
 		Fx.delay_draw(function() { $remove_class(document.body, "small_screen"); });
 		Fx.delay_draw(function() { RatingControl.change_padding_top(3); });
 		return true;
