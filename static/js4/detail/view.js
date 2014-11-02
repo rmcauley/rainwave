@@ -11,6 +11,8 @@ var DetailView = function() {
 
 	self.initialize = function() {
 		Prefs.define("request_made");
+		Prefs.define("detail_global_ratings", [ false, true ]);
+		Prefs.add_callback("detail_global_ratings", close_all);
 		el = $id("detail");
 		scrollblock = $id("detail_scrollblock");
 		if (!MOBILE) {
@@ -45,6 +47,17 @@ var DetailView = function() {
 			$remove_class(el, "songlist_request_hint");
 		}
 	};
+
+	var close_all = function() {
+		var a;
+		while (open_views.length) {
+			a = open_views.shift();
+			if (a.el.parentNode) {
+				a.el.parentNode.removeChild(a.el);
+			}
+		}
+		visible_view = null;
+	};
 	
 	var create = function(type, id, render_function, json) {
 		if (internal_width === false) {
@@ -52,8 +65,12 @@ var DetailView = function() {
 			self.on_resize_draw();
 			$add_class(el, "scrollable");
 		}
-		while (open_views.length > 30) {
-			open_views.shift();
+		var a;
+		while (open_views.length > 20) {
+			a = open_views.shift();
+			if (a.el.parentNode) {
+				a.el.parentNode.removeChild(a.el);
+			}
 		}
 		var n = { "el": $el("div", { "class": "detail_view detail_view_" + type }), "type": type, "id": id, "visible": false, "scroll_top": 0 };
 		open_views.push(n);

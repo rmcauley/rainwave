@@ -2,7 +2,7 @@ var SongsTable = function(songs, columns) {
 	"use strict";
 	var el = $el("table", { "class": "songlist" });
 
-	var row, cell, r, i, div, link, title_el;
+	var row, cell, cell2, cell3, r, i, div, div2, link, title_el;
 	for (i = 0; i < songs.length; i++) {
 		row = $el("tr");
 		if (("cool" in songs[i]) && songs[i].cool) {
@@ -60,12 +60,24 @@ var SongsTable = function(songs, columns) {
 					cell.appendChild(div);
 				}
 				else if (columns[key] == "rating") {
-					cell = $el("td", { "class": "songlist_" + columns[key] });
-					r = Rating("song", songs[i].id, songs[i].rating_user, songs[i].rating, songs[i].fave, User.rate_anything, title_el);
+					if (Prefs.get("detail_global_ratings")) {
+						cell2 = $el("td", { "class": "songlist_rating_user_number" });
+						cell3 = $el("td", { "class": "songlist_rating_number" });
+					}
+					else {
+						cell2 = null;
+						cell3 = null;
+					}
+
+					cell = $el("td", { "class": "songlist_" + columns[key] }); //songs[i].rating
+					r = Rating("song", songs[i].id, songs[i].rating_user, 4.0512887, songs[i].fave, User.rate_anything, title_el, true, cell3, cell2);
 					r.absolute_x = true;
 					r.absolute_y = true;
 					cell.appendChild(r.el);
 					row.appendChild(cell);
+
+					if (cell2) row.appendChild(cell2);
+					if (cell3) row.appendChild(cell3);
 
 					// I didn't like the way this fit into the design, despite it being a user requested feature. (it was not clamored for)
 					// if (User.id > 1) {

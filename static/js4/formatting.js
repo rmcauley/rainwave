@@ -69,6 +69,12 @@ var Formatting = function() {
 		return el;
 	};
 
+	self.rating = function(r) {
+		r = Math.round(r * 10) / 10;
+		if (r * 10 % 10 === 0) return r + ".0";
+		else return r;
+	};
+
 	var do_overflow_tooltip = function(evt) {
 		var el = evt.target;
 		// this is here to subvert the fact that artists are displayed as spans,

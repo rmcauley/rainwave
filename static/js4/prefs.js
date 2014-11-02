@@ -261,8 +261,14 @@ var SettingsWindow = function() {
 		draw_cb_list([
 			"playlist_sort_available_first",
 			"playlist_sort_faves_first",
-			"playlist_show_rating_complete",
 			"playlist_show_escape_icon",
+		]);
+
+		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("rating_preferences") }));
+		draw_cb_list([
+			"playlist_show_rating_complete",
+			"hide_global_ratings",
+			"detail_global_ratings",
 		]);
 
 		self.enable_disable_title_options(Prefs.get("show_title_in_titlebar"));
