@@ -96,8 +96,8 @@ class Album(AssociatedMetadata):
 			return ""
 		elif sid and os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s_%s.jpg" % (sid, album_id))):
 			return "%s/%s_%s" % (config.get("album_art_url_path"), sid, album_id)
-		elif os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % album_id)):
-			return "%s/%s" % (config.get("album_art_url_path"), album_id)
+		elif os.path.isfile(os.path.join(config.get("album_art_file_path"), "a_%s.jpg" % album_id)):
+			return "%s/a_%s" % (config.get("album_art_url_path"), album_id)
 		return ""
 
 	def __init__(self):
