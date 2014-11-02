@@ -69,8 +69,8 @@ var SongsTable = function(songs, columns) {
 						cell3 = null;
 					}
 
-					cell = $el("td", { "class": "songlist_" + columns[key] }); //songs[i].rating
-					r = Rating("song", songs[i].id, songs[i].rating_user, 4.0512887, songs[i].fave, User.rate_anything, title_el, true, cell3, cell2);
+					cell = $el("td", { "class": "songlist_" + columns[key] });
+					r = Rating("song", songs[i].id, songs[i].rating_user, songs[i].rating, songs[i].fave, User.rate_anything, title_el, true, cell3, cell2);
 					r.absolute_x = true;
 					r.absolute_y = true;
 					cell.appendChild(r.el);
