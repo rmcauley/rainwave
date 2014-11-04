@@ -132,6 +132,7 @@ function initialize() {
 	INITIALIZED = true;
 
 	// ****************** DATA HANDLING
+	TimelineSong.calculate_height();
 	Fx.initialize();
 	User = BOOTSTRAP.json.user;
 	API.add_callback(function(json) { User = json; }, "user");

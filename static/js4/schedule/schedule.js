@@ -268,7 +268,8 @@ var Schedule = function() {
 		else {
 			$remove_class($id("history_outer_container"), "history_open");
 			var mt1 = -(self.history_events.length - sticky_history_size) * TimelineSong.height;
-			mt1 -= 30;
+			if (!MOBILE) mt1 -= 30;
+			else mt1 += 30;
 			if (first_time) {
 				Fx.delay_css_setting(self.history_events[0].el, "marginTop", mt1 + "px");
 			}
