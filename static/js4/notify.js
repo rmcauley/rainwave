@@ -2,7 +2,7 @@ var R4Notify = function() {
 	"use strict";
 
 	var self = {};
-	self.capable = Notification ? true : false;
+	self.capable = typeof(Notification) !== "undefined" ? true : false;
 	self.enabled = false;
 	var current_song_id;
 
