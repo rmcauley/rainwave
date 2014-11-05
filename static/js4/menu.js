@@ -236,7 +236,7 @@ var Menu = function() {
 		if (event_alert) {
 			Fx.chain_transition(event_alert, function(e, el) { el.parentNode.removeChild(el); });
 			$add_class(event_alert, "event_alert_closing");
-			event_alerts_closed.append(event_alert._name);
+			event_alerts_closed.push(event_alert._name);
 			event_alert = null;
 		}
 	};
