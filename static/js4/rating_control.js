@@ -30,7 +30,7 @@ var RatingControl = function() {
 		// TODO: Show an error, maybe?  Is it handled by API.js...?
 		if (!json.success) return;
 
-		rating_update_song(json.song_id, json.rating_user, null);
+		rating_update_song(json.song_id, null, json.rating_user);
 
 		for (var i = 0; i < json.updated_album_ratings.length; i++) {
 			rating_update_album(json.updated_album_ratings[i].id, null, json.updated_album_ratings[i].rating_user, json.updated_album_ratings[i].rating_complete);
@@ -51,7 +51,7 @@ var RatingControl = function() {
 			for (var i = 0; i < album_ratings[album_id].length; i++) {
 				if (rating_user) album_ratings[album_id][i].update_user_rating(rating_user);
 				if (rating) album_ratings[album_id][i].update_rating(rating);
-				album_ratings[album_id][i].update_rating_complete(rating_complete);
+				if (rating_complete || (rating_complete === false)) album_ratings[album_id][i].update_rating_complete(rating_complete);
 			}
 		}
 		if (self.album_rating_callback) {
@@ -63,7 +63,7 @@ var RatingControl = function() {
 		var album_id, i;
 		for (album_id in album_ratings) {
 			for (i = 0; i < album_ratings[album_id].length; i++) {
-				album_ratings[album_id][i].update_rating_complete(album_ratings[i], true);
+				album_ratings[album_id][i].update_rating_complete(album_ratings[album_id][i].rating_complete, true);
 			}
 		}
 	};
@@ -125,7 +125,7 @@ var RatingControl = function() {
 		if (json.length > 0) {
 			if (("songs" in json[0]) && (json[0].songs.length > 0)) {
 				rating_update_album(json[0].songs[0].albums[0].id, null, json[0].songs[0].albums[0].rating, null);
-				rating_update_song(json[0].songs[0].id, null, json[0].songs[0].rating);
+				rating_update_song(json[0].songs[0].id, json[0].songs[0].rating, null);
 			}
 		}
 	};

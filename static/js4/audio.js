@@ -266,9 +266,9 @@ var R4Audio = function() {
 		if (v > 0.95) v = 1;
 		if (!v || isNaN(v)) v = 0;
 		audio_el.volume = v;
-		Prefs.change("audio_volume", v);
 		draw_volume(v);
-		mute_el.setAttribute("class", null);
+		document.getElementById("audio_icon_mute").setAttribute("class", null);
+		if (Prefs) Prefs.change("audio_volume", v);
 	};
 
 	var draw_volume = function(v) {

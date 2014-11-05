@@ -183,7 +183,7 @@ class Album(AssociatedMetadata):
 				updated_album_ids[sid][album_id] = True
 			num_songs = self.get_num_songs(sid)
 			db.c.update("UPDATE r4_album_sid SET album_song_count = %s WHERE album_id = %s AND sid = %s", (num_songs, album_id, sid))
-		self.reset_user_completed_flags()
+		self.update_all_user_ratings()
 		return new_sids
 
 	def start_cooldown(self, sid, cool_time = False):

@@ -207,6 +207,7 @@ var Menu = function() {
 					}
 				}
 				else {
+					remove_event_alert();
 					$remove_class(elements.stations[key], "event_ongoing");
 					elements.stations[key]._desc.textContent = $l("station_menu_description_id_" + key);
 				}
