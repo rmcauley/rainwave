@@ -206,7 +206,7 @@ var Menu = function() {
 						do_event_alert = json[key];
 					}
 				}
-				else {
+				else if (!json[key].event_name) {
 					remove_event_alert();
 					$remove_class(elements.stations[key], "event_ongoing");
 					elements.stations[key]._desc.textContent = $l("station_menu_description_id_" + key);
