@@ -11,6 +11,7 @@ class TipJarContents(APIHandler):
 	allow_get = True
 	login_required = False
 	pagination = True
+	sid_required = False
 
 	def post(self):
 		self.append(self.return_name,
