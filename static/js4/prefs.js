@@ -40,6 +40,7 @@ var docCookies = {
 // Remove legacy settings
 docCookies.removeItem("r3sid", "/", BOOTSTRAP.cookie_domain);
 docCookies.removeItem("r3prefs", "/", BOOTSTRAP.cookie_domain);
+docCookies.removeItem("edilayouts", "/", BOOTSTRAP.cookie_domain);
 
 /* Preferences for R4 */
 
