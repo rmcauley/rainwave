@@ -165,21 +165,23 @@ class Election(event.BaseEvent):
 		return playlist.get_random_song_timed(self.sid, target_song_length)
 
 	def _check_song_for_conflict(self, song):
-		requesting_user = db.c.fetch_row(
-			"SELECT username, phpbb_users.user_id AS user_id "
-				"FROM r4_request_store "
-					"JOIN r4_listeners ON (r4_request_store.user_id = r4_listeners.user_id AND r4_listeners.sid = %s) "
-					"JOIN r4_request_line ON (r4_listeners.user_id = r4_request_line.user_id AND r4_listeners.sid = r4_request_line.sid) "
-					"JOIN phpbb_users ON (r4_request_line.user_id = phpbb_users.user_id) "
-				"WHERE r4_request_store.song_id = %s "
-				"ORDER BY line_wait_start LIMIT 1",
-			(self.sid, song.id))
-		if requesting_user:
-			song.data['entry_type'] = ElecSongTypes.request
-			song.data['request_username'] = requesting_user['username']
-			song.data['request_user_id'] = requesting_user['user_id']
-			return True
 		return False
+
+		# requesting_user = db.c.fetch_row(
+		# 	"SELECT username, phpbb_users.user_id AS user_id "
+		# 		"FROM r4_request_store "
+		# 			"JOIN r4_listeners ON (r4_request_store.user_id = r4_listeners.user_id AND r4_listeners.sid = %s) "
+		# 			"JOIN r4_request_line ON (r4_listeners.user_id = r4_request_line.user_id AND r4_listeners.sid = r4_request_line.sid) "
+		# 			"JOIN phpbb_users ON (r4_request_line.user_id = phpbb_users.user_id) "
+		# 		"WHERE r4_request_store.song_id = %s "
+		# 		"ORDER BY line_wait_start LIMIT 1",
+		# 	(self.sid, song.id))
+		# if requesting_user:
+		# 	song.data['entry_type'] = ElecSongTypes.request
+		# 	song.data['request_username'] = requesting_user['username']
+		# 	song.data['request_user_id'] = requesting_user['user_id']
+		# 	return True
+		# return False
 
 	def add_song(self, song):
 		if not song:
