@@ -11,6 +11,19 @@ var RatingControl = function() {
 	var gc_timer = false;
 
 	self.initialize = function() {
+		API.add_callback(self.rating_user_callback, "rate_result");
+		API.add_callback(self.song_fave_update, "fave_song_result");
+		API.add_callback(self.album_fave_update, "fave_album_result");
+		API.add_callback(self.history_update, "sched_history");
+		API.add_callback(function() { gc_timer = setTimeout(self.garbage_collection, 10000); }, "_SYNC_COMPLETE");
+
+		// was originally a playlist pref, now lives here
+		Prefs.define("playlist_show_rating_complete", [ false, true ]);
+		Prefs.add_callback("playlist_show_rating_complete", rating_complete_toggle);
+
+		Prefs.define("hide_global_ratings", [ false, true ]);
+		Prefs.add_callback("hide_global_ratings", hide_global_rating_callback);
+
 		$id("rating_window_5_0").addEventListener("click", function() { do_modal_rating(5.0); });
 		$id("rating_window_4_5").addEventListener("click", function() { do_modal_rating(4.5); });
 		$id("rating_window_4_0").addEventListener("click", function() { do_modal_rating(4.0); });
@@ -20,20 +33,6 @@ var RatingControl = function() {
 		$id("rating_window_2_0").addEventListener("click", function() { do_modal_rating(2.0); });
 		$id("rating_window_1_5").addEventListener("click", function() { do_modal_rating(1.5); });
 		$id("rating_window_1_0").addEventListener("click", function() { do_modal_rating(1.0); });
-
-		Prefs.define("playlist_show_rating_complete", [ false, true ]); // was originally a playlist pref, now lives here
-		Prefs.define("hide_global_ratings", [ false, true ]);
-
-		if (MOBILE) return;
-
-		API.add_callback(self.rating_user_callback, "rate_result");
-		API.add_callback(self.song_fave_update, "fave_song_result");
-		API.add_callback(self.album_fave_update, "fave_album_result");
-		API.add_callback(self.history_update, "sched_history");
-		API.add_callback(function() { gc_timer = setTimeout(self.garbage_collection, 10000); }, "_SYNC_COMPLETE");
-
-		Prefs.add_callback("playlist_show_rating_complete", rating_complete_toggle);
-		Prefs.add_callback("hide_global_ratings", hide_global_rating_callback);
 	};
 
 	self.rating_user_callback = function(json) {
