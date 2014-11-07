@@ -574,6 +574,12 @@ body.modal_is_active #top_menu_wrapper, body.modal_is_active #sizable_body, body
 	opacity: 0.3;
 }
 
+body.modal_is_active div.history_hidden {
+	-webkit-transition-duration: 0s;
+	transition-duration: 0s;
+	opacity: 0;
+}
+
 div.modal_container {
 	position: absolute;
 	overflow: hidden;
@@ -590,6 +596,10 @@ div.modal_container {
 
 	-webkit-transition: width 400ms $transfunc 400ms, opacity 300ms $transfunc 100ms;
             transition: width 400ms $transfunc 400ms, opacity 300ms $transfunc 100ms;
+}
+
+body.mobile_screen div.modal_container {
+	max-height: 100%;
 }
 
 div.modal_container.active_modal {
@@ -663,6 +673,10 @@ div.active_modal div.modal {
 
 body.small_screen div.active_modal div.modal {
 	height: 400px;
+}
+
+body.mobile_screen div.active_modal div.modal {
+	height: 360px;
 }
 
 div.modal_bottom_border {

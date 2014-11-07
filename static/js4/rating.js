@@ -133,6 +133,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 	};
 
 	var click = function(evt) {
+		if (!self.ratable && (!User.rate_anything)) return;
 		evt.stopPropagation();
 		var new_rating = get_rating_from_mouse(evt);
 		// fave toggle
@@ -148,6 +149,12 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 		else if (self.ratable) {
 			self.rate(new_rating);
 		}
+	};
+
+	var click_mobile = function(evt) {
+		if (!self.ratable && (!User.rate_anything)) return;
+		evt.stopPropagation();
+		RatingControl.start_modal_rating(id);
 	};
 
 	self.update_user_rating = function(rating_user) {
@@ -232,6 +239,9 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 		if (type == "album") {
 			self.update_rating_complete(rating_complete);
 		}
+	}
+	else if (User.id > 1 && MOBILE && type == "song") {
+		self.el.addEventListener("click", click_mobile);
 	}
 
 	RatingControl.add(self);

@@ -144,6 +144,7 @@
    "hotkey_mode"                                     : "1-5 to Rate, A/S/D to Vote",
    "invalid_hotkey"                                  : "Invalid hotkey.",
    "not_an_election"                                 : "Not an election.",
+   "rate_song_mobile_dialog"                         : "Rate Song",
 
    "catastrophic_error"                              : "Rainwave Has Crashed :(",
    "submit_javascript_error"                         : "Please submit the bug report below to the forums, so we can fix it.",

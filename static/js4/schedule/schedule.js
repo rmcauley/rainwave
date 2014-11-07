@@ -245,7 +245,7 @@ var Schedule = function() {
 			$add_class($id("history_outer_container"), "history_expandable");
 		}
 
-		if (Prefs.get("sticky_history") || (sticky_history_size == self.history_events.length)) {
+		if ((Prefs.get("sticky_history") && !MOBILE) || (sticky_history_size == self.history_events.length)) {
 			$add_class($id("history_outer_container"), "history_open");
 			if (first_time) {
 				Fx.delay_css_setting(self.history_events[0].el, "marginTop", "0px");
@@ -279,6 +279,12 @@ var Schedule = function() {
 			var threshold_index = self.history_events.length - sticky_history_size;
 			var mt;
 			for (i = 1; i < self.history_events.length; i++) {
+				if (i < threshold_index) {
+					$add_class(self.history_events[i].el, "history_hidden");
+				}
+				else {
+					$remove_class(self.history_events[i].el, "history_hidden");
+				}
 				mt = threshold_index == i ? 30 : 0;
 				self.history_events[i].el.style.marginTop = mt + "px";
 				self.history_events[i].el.style.marginBottom = "0px";

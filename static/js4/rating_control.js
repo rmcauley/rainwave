@@ -24,6 +24,16 @@ var RatingControl = function() {
 
 		Prefs.define("hide_global_ratings", [ false, true ]);
 		Prefs.add_callback("hide_global_ratings", hide_global_rating_callback);
+
+		$id("rating_window_5_0").addEventListener("click", function() { do_modal_rating(5.0); });
+		$id("rating_window_4_5").addEventListener("click", function() { do_modal_rating(4.5); });
+		$id("rating_window_4_0").addEventListener("click", function() { do_modal_rating(4.0); });
+		$id("rating_window_3_5").addEventListener("click", function() { do_modal_rating(3.5); });
+		$id("rating_window_3_0").addEventListener("click", function() { do_modal_rating(3.0); });
+		$id("rating_window_2_5").addEventListener("click", function() { do_modal_rating(2.5); });
+		$id("rating_window_2_0").addEventListener("click", function() { do_modal_rating(2.0); });
+		$id("rating_window_1.5").addEventListener("click", function() { do_modal_rating(1.5); });
+		$id("rating_window_1_0").addEventListener("click", function() { do_modal_rating(1.0); });
 	};
 
 	self.rating_user_callback = function(json) {
@@ -152,6 +162,22 @@ var RatingControl = function() {
 				album_ratings[i][j].reset_rating();
 			}
 		}
+	};
+
+	var current_modal_song_id;
+	self.start_modal_rating = function(song_id) {
+		if ((song_id in song_ratings) && (song_ratings[song_id].length)) {	
+			current_modal_song_id = song_id;
+			Menu.show_modal($id("rating_window_container"));
+		}
+	};
+
+	var do_modal_rating = function(rating) {
+		if (current_modal_song_id && (current_modal_song_id in song_ratings) && (song_ratings[current_modal_song_id].length)) {	
+			song_ratings[current_modal_song_id][0].rate(rating);
+		}
+		current_modal_song_id = null;
+		Menu.remove_modal();
 	};
 
 	return self;

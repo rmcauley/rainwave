@@ -40,6 +40,7 @@
 		<script type="application/javascript">
 			var MOBILE = true;
 		</script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.3/fastclick.min.js" type="application/javascript"></script>
 	{% else %}
 		<script type="application/javascript">
 			var MOBILE = false;
@@ -224,6 +225,29 @@
 			</div>
 		</div>
 		<div id="longhist_window" class="modal"></div>
+		<div class="modal_bottom_border"></div>
+	</div>
+
+	<div class="modal_container" id="rating_window_container" style="display: none;">
+		<div class="modal_header_wrapper">
+			<div class="modal_header">
+				<div class="modal_header_content">
+					<svg id="rating_modal_close"><use xlink:href="/static/images4/symbols.svg#close"></use></svg>
+					<span id="rating_modal_header"></span>
+				</div>
+			</div>
+		</div>
+		<div id="rating_window" class="modal">
+			<div id="rating_window_5_0">5.0</div>
+			<div id="rating_window_4_5">4.5</div>
+			<div id="rating_window_4_0">4.0</div>
+			<div id="rating_window_3_5">3.5</div>
+			<div id="rating_window_3_0">3.0</div>
+			<div id="rating_window_2_5">2.5</div>
+			<div id="rating_window_2_0">2.0</div>
+			<div id="rating_window_1_5">1.5</div>
+			<div id="rating_window_1_0">1.0</div>
+		</div>
 		<div class="modal_bottom_border"></div>
 	</div>
 	

@@ -32,6 +32,8 @@ var Menu = function() {
 		});
 		$id("settings_modal_header").textContent = $l("preferences");
 
+		$id("rating_modal_header").textContent = $l("rate_song_mobile_dialog");
+
 		// // Setup user info
 		elements.user_info = $id("user_info");
 		if (User.id > 1) {
@@ -83,6 +85,7 @@ var Menu = function() {
 		$id("about_modal_close").addEventListener("click", self.remove_modal);
 		$id("settings_modal_close").addEventListener("click", self.remove_modal);
 		$id("longhist_modal_close").addEventListener("click", self.remove_modal);
+		$id("rating_modal_close").addEventListener("click", self.remove_modal);
 
 		if (!Prefs.get("station_select_clicked")) {
 			$add_class($id("station_select"), "call_to_action");
