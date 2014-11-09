@@ -133,7 +133,6 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 	};
 
 	var click = function(evt) {
-		if (!self.ratable && (!User.rate_anything)) return;
 		evt.stopPropagation();
 		var new_rating = get_rating_from_mouse(evt);
 		// fave toggle

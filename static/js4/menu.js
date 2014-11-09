@@ -49,7 +49,7 @@ var Menu = function() {
 		else {
 			$add_class(elements.user_info, "show_anonymous_avatar anonymous_user");
 			$id("user_info_name").setAttribute("href", "http://rainwave.cc/forums/ucp.php?mode=login&redirect=/");
-			$id("user_info_name").textContent ="login";
+			$id("user_info_name").textContent = $l("login");
 		}
 
 		// Setup station select menu
