@@ -23,7 +23,7 @@ class ListProducers(api.web.APIHandler):
 		self.append(self.return_name + "_past",
 			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes "
 						"FROM r4_schedule "
-						"WHERE sched_used = FALSE AND sid = %s AND sched_start > %s AND sched_start < %s ORDER BY sched_start DESC",
+						"WHERE sched_type != 'PVPElectionProducer' AND sid = %s AND sched_start > %s AND sched_start < %s ORDER BY sched_start DESC",
 						(self.sid, time.time() - (86400 * 60), time.time())))
 
 @handle_api_url("admin/list_producers_all")
@@ -42,7 +42,7 @@ class ListProducersAll(api.web.APIHandler):
 		self.append(self.return_name + "_past",
 			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes "
 						"FROM r4_schedule "
-						"WHERE sched_used = FALSE AND sched_start > %s AND sched_start < %s ORDER BY sched_start DESC",
+						"WHERE sched_type != 'PVPElectionProducer' AND sched_start > %s AND sched_start < %s ORDER BY sched_start DESC",
 						(time.time() - (86400 * 26), time.time())))
 
 @handle_api_url("admin/list_producer_types")

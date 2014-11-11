@@ -90,7 +90,8 @@ var DetailView = function() {
 	var switch_to = function(view) {
 		if (visible_view) {
 			visible_view.scroll_top = scroller.scroll_top;
-			el.removeChild(visible_view.el);
+			if (visible_view.el.parentNode == el) el.removeChild(visible_view.el);
+			else visible_view.parentNode.el.removeChild(visible_view.el);
 			visible_view.visible = false;
 		}
 		visible_view = view;
