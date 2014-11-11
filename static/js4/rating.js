@@ -236,7 +236,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 		}
 
 		if (type == "album") {
-			self.update_rating_complete(rating_complete);
+			self.update_rating_complete(rating_complete, true);
 		}
 	}
 	else if (User.id > 1 && MOBILE && type == "song") {
