@@ -45,6 +45,7 @@
    "requests_reordered"                              : "Peticiones Reordenadas",
    "request_queue_paused"                            : "Lista de peticiones pausada.",
    "request_queue_unpaused"                          : "Lista de peticiones reanudada.",
+   "no_results"                                      : "Sin resultados.",
 
    "__comment__"                 : "API Key Management",
 
@@ -143,6 +144,7 @@
    "hotkey_mode"                                     : "1-5 para Evaluar, A/S/D para Votar",
    "invalid_hotkey"                                  : "Tecla rápida inválida.",
    "not_an_election"                                 : "No es una votación.",
+   "rate_song_mobile_dialog"                         : "Evaluar Canción",
 
    "catastrophic_error"                              : "Rainwave Ha Fallado :(",
    "submit_javascript_error"                         : "Por favor envíe el informe de error a los foros, para que podamos arreglarlo.",
@@ -231,7 +233,7 @@
    "change_language"                                 : "Idioma",
    "timeline_preferences"                            : "Timeline",
    "tab_title_preferences"                           : "Título De Pestaña",
-   "prefs_notify"                                    : "Notificación Emergente Cuando Cambie la Canción",
+   "prefs_notify"                                    : "Notificación de Escritorio Cuando Cambie la Canción",
    "prefs_show_clock_in_titlebar"                    : "Ver Reloj En La Pestaña",
    "prefs_show_rating_in_titlebar"                   : "Ver Puntaje En La Pestaña",
    "prefs_show_title_in_titlebar"                    : "Título De Canción En Pestaña",
@@ -248,6 +250,9 @@
    "prefs_sort_playlist_by_cool"                     : "Reposo",
    "prefs_show_artists"                              : "Mostrar Nombres de Artistas en el Timeline",
    "prefs_show_losing_songs"                         : "Mostrar Canciones que Perdieron en la Votación",
+   "rating_preferences"                              : "Evaluaciones",
+   "prefs_hide_global_ratings"                       : "Esconder Evaluaciones Globales Hasta que se Haya Evaluado",
+   "prefs_detail_global_ratings"                     : "Mostrar Evaluaciones Globales en las Listas de Canciones",
    "m3u_downloads"                                   : "Descargas De M3U",
    "skip_intro_mode"                                 : "Omitir Modo Introducción",
    "do_intro_mode"                                   : "Volver Al Modo Introducción",
@@ -268,7 +273,7 @@
    "id"                                              : "ID",
    "sid"                                             : "ID de Estación",
    "delete"                                          : "Eliminar",
-   "all_faves"                                       : "Todos los Favoritos",
+   "all_faves"                                       : "Mis Favoritos",
    "rating_user"                                     : "Evaluación del Usuario",
    "fave"                                            : "Favorito",
    "rating"                                          : "Evaluación Promedio",
