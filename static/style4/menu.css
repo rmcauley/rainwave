@@ -105,6 +105,10 @@ div.event_ongoing_alert.event_alert_closing {
 	        transition-timing-function: $menu_transfunc;
 }
 
+body.stage_0 #station_select_container, body.stage_1 #station_select_container, body.stage_2 #station_select_container {
+	width: 13em;
+}
+
 #station_select_container.open {
 	width: 35em;
 }
