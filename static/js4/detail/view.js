@@ -91,7 +91,7 @@ var DetailView = function() {
 		if (visible_view) {
 			visible_view.scroll_top = scroller.scroll_top;
 			if (visible_view.el.parentNode == el) el.removeChild(visible_view.el);
-			else visible_view.parentNode.el.removeChild(visible_view.el);
+			else if (visible_view.parentNode) visible_view.parentNode.removeChild(visible_view.el);
 			visible_view.visible = false;
 		}
 		visible_view = view;
