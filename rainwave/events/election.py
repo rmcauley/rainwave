@@ -43,6 +43,9 @@ class ElectionProducer(event.BaseProducer):
 		self.elec_type = "Election"
 		self.elec_class = Election
 
+	def has_next_event(self):
+		return True
+
 	def load_next_event(self, target_length = None, min_elec_id = 0, skip_requests = False):
 		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s ORDER BY elec_id LIMIT 1", (self.elec_type, self.sid, min_elec_id))
 		if elec_id:

@@ -74,6 +74,8 @@ def get_producer_at_time(sid, at_time):
 		log.exception("get_producer", "Failed to get an appropriate producer.", e)
 	if not to_ret:
 		return election.ElectionProducer(sid)
+	if not to_ret.has_next_event():
+		return election.ElectionProducer(sid)
 	return to_ret
 
 def get_advancing_file(sid):

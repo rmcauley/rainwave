@@ -13,6 +13,10 @@ class OneUpProducer(event.BaseProducer):
 		super(OneUpProducer, self).__init__(sid)
 		self.plan_ahead_limit = 5
 
+	def has_next_event(self):
+		next_up_id = db.c.fetch_var("SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE ORDER BY one_up_order LIMIT 1", (self.id,))
+		return True if next_up_id else False
+
 	def load_next_event(self, target_length = None, min_elec_id = None):
 		next_up_id = db.c.fetch_var("SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE ORDER BY one_up_order LIMIT 1", (self.id,))
 		if next_up_id:

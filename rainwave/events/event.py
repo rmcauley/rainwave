@@ -109,6 +109,9 @@ class BaseProducer(object):
 		else:
 			raise Exception("Cannot change the start time of a used producer.")
 
+	def has_next_event(self):
+		raise Exception("No event type specified.")
+
 	def load_next_event(self, target_length = None, min_elec_id = None):
 		raise Exception("No event type specified.")
 
