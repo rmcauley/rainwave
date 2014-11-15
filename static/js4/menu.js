@@ -173,11 +173,16 @@ var Menu = function() {
 
 	var open_station_select = function(e) {
 		Prefs.change("station_select_clicked", true);
-		$remove_class($id("station_select"), "call_to_action");
-		if (!$has_class($id("station_select"), "open")) {
-			$add_class($id("station_select"), "open");
+		var ss = $id("station_select");
+		$remove_class(ss, "call_to_action");
+		if (!$has_class(ss, "open")) {
+			$add_class(ss, "open");
 			$add_class($id("station_select_container"), "open");
-			$id("station_select").addEventListener("mouseout", close_station_select);
+			Fx.chain_transition(ss, function() {
+				if ($has_class(ss, "open")) {
+					ss.addEventListener("mouseout", close_station_select);
+				}
+			});
 		}
 		else {
 			close_station_select(null, true);
