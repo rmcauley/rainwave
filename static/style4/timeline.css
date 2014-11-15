@@ -156,6 +156,14 @@ div.timeline_song_content div.artist, div.timeline_song_content div.votes, div.t
 	display: none;
 }
 
+div.timeline_song a.song_link {
+	color: $text;
+}
+
+div.timeline_song a.song_link:hover, div.timeline_song a.song_link:hover span {
+	color: $linkhover;
+}
+
 body.show_artists div#timeline div.timeline_next div.timeline_song_content div.artist, body.show_artists div#timeline div.timeline_next div.timeline_song_content div.album_group {
 	display: block;
 	font-size: 0.9em;
