@@ -243,7 +243,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				# update_phpbb_session is done by verify_phpbb_session if successful
 				self.user = User(user_id)
 				self.user.ip_address = self.request.remote_ip
-				self.user.authorize(self.sid, bypass=True)
+				self.user.authorize(self.sid, None, bypass=True)
 				return True
 
 			if not self.user and self.get_cookie(phpbb_cookie_name + "k"):
@@ -252,7 +252,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 					self._update_phpbb_session(self._get_phpbb_session(user_id))
 					self.user = User(user_id)
 					self.user.ip_address = self.request.remote_ip
-					self.user.authorize(self.sid, bypass=True)
+					self.user.authorize(self.sid, None, bypass=True)
 					return True
 		return False
 
