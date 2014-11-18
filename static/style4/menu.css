@@ -385,6 +385,10 @@ body.mobile_screen #top_icons {
 	padding: 0 0.2em;
 }
 
+#top_icons #facebook_link {
+	margin-right: 1em;
+}
+
 #top_icons #icon_cluster > *:last-child {
 	padding-right: 10px;
 }
