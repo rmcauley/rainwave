@@ -60,10 +60,7 @@ class User(object):
 		self.data['listener_id'] = 0
 		self.data['_group_id'] = None
 
-	def authorize(self, sid = None, api_key = None, bypass = False):
-		if not api_key:
-			return
-		
+	def authorize(self, sid, api_key, bypass = False):
 		self.api_key = api_key
 
 		if not bypass and not re.match('^[\w\d]+$', api_key):
