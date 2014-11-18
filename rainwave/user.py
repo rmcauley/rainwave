@@ -159,7 +159,6 @@ class User(object):
 				"listener_id, sid, listener_lock AS lock, listener_lock_sid AS lock_sid, listener_lock_counter AS lock_counter, listener_voted_entry AS voted_entry "
 				"FROM r4_listeners "
 				"WHERE listener_ip = %s AND listener_purge = FALSE AND user_id = 1", (self.ip_address,))
-			log.debug("special", "Anon listener result for IP %s: %s" % (self.ip_address, listener))
 		if listener:
 			self.data.update(listener)
 		# if self.id > 1:
@@ -171,7 +170,6 @@ class User(object):
 		listener = self.get_listener_record(use_cache=False)
 		if listener:
 			if self.data['sid'] == sid:
-				log.debug("special", "User %s from IP %s is tuned in." % (self.id, self.ip_address))
 				self.data['tuned_in'] = True
 			else:
 				self.data['sid'] = sid
