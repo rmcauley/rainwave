@@ -8,6 +8,7 @@ import api_requests.tune_in
 
 from libs import cache
 from libs import config
+from libs import log
 
 def attach_info_to_request(request, extra_list = None, all_lists = False):
 	# Front-load all non-animated content ahead of the schedule content
@@ -56,11 +57,13 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 		sched_history = []
 		for evt in cache.get_station(request.sid, "sched_history"):
 			sched_history.append(evt.to_dict(request.user, check_rating_acl=True))
-	else:
+	elif request.user:
 		sched_current = cache.get_station(request.sid, "sched_current_dict")
 		sched_next = cache.get_station(request.sid, "sched_next_dict")
 		sched_history = cache.get_station(request.sid, "sched_history_dict")
+		log.debug("special", "%s - %s - %s - %s" % (request.user.ip_address, len(sched_next) > 0, request.user.is_tunedin(), sched_next[0]['type'] == "Election"))
 		if len(sched_next) > 0 and request.user.is_tunedin() and sched_next[0]['type'] == "Election":
+			log.debug("special", "%s - Is marked for voting_allowed" % request.user.ip_address)
 			sched_next[0]['voting_allowed'] = True
 	request.append("sched_current", sched_current)
 	request.append("sched_next", sched_next)

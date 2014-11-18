@@ -213,8 +213,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			raise APIException("auth_required", http_code=403)
 		elif not self.user and not self.auth_required:
 			self.user = User(1)
-			self.user.ip_address = self.request.remote_ip
-		
+			self.user.ip_address = self.request.remote_ip		
+
 		self.user.refresh(self.sid)
 
 		if self.login_required and (not self.user or self.user.is_anonymous()):
@@ -242,7 +242,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			if self._verify_phpbb_session(user_id):
 				# update_phpbb_session is done by verify_phpbb_session if successful
 				self.user = User(user_id)
-				self.user.authorize(self.sid, None, None, True)
+				self.user.ip_address = self.request.remote_ip
+				self.user.authorize(self.sid)
 				return True
 
 			if not self.user and self.get_cookie(phpbb_cookie_name + "k"):
@@ -250,7 +251,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				if can_login == 1:
 					self._update_phpbb_session(self._get_phpbb_session(user_id))
 					self.user = User(user_id)
-					self.user.authorize(self.sid, None, None, True)
+					self.user.ip_address = self.request.remote_ip
+					self.user.authorize(self.sid)
 					return True
 		return False
 
@@ -286,7 +288,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 		if user_id_present:
 			self.user = User(long(self.get_argument("user_id")))
-			self.user.authorize(self.sid, self.request.remote_ip, self.get_argument("key"))
+			self.user.ip_address = self.request.remote_ip
+			self.user.authorize(self.sid, self.get_argument("key"))
 			if not self.user.authorized:
 				raise APIException("auth_failed", http_code=403)
 			else:

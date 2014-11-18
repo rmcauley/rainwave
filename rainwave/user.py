@@ -60,17 +60,16 @@ class User(object):
 		self.data['listener_id'] = 0
 		self.data['_group_id'] = None
 
-	def authorize(self, sid, ip_address, api_key, bypass = False):
-		self.ip_address = ip_address
+	def authorize(self, sid = None, api_key = None, bypass = False):
 		self.api_key = api_key
 
 		if not bypass and not re.match('^[\w\d]+$', api_key):
 			return
 
 		if self.id > 1:
-			self._auth_registered_user(ip_address, api_key, bypass)
+			self._auth_registered_user(api_key, bypass)
 		else:
-			self._auth_anon_user(ip_address, api_key, bypass)
+			self._auth_anon_user(api_key, bypass)
 
 	def get_all_api_keys(self):
 		if self.id > 1:
@@ -78,7 +77,7 @@ class User(object):
 			cache.set_user(self, "api_keys", keys)
 			return keys
 
-	def _auth_registered_user(self, ip_address, api_key, bypass = False):
+	def _auth_registered_user(self, api_key, bypass = False):
 		if not bypass:
 			keys = cache.get_user(self, "api_keys")
 			if not keys:
@@ -124,15 +123,15 @@ class User(object):
 		if not self.data['listen_key']:
 			self.generate_listen_key()
 
-	def _auth_anon_user(self, ip_address, api_key, bypass = False):
+	def _auth_anon_user(self, api_key, bypass = False):
 		if not bypass:
-			auth_against = cache.get("ip_%s_api_key" % ip_address)
+			auth_against = cache.get("ip_%s_api_key" % self.ip_address)
 			if not auth_against:
-				auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (ip_address,))
+				auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (self.ip_address,))
 				if not auth_against:
 					# log.debug("user", "Anonymous user key %s not found." % api_key)
 					return
-				cache.set("ip_%s_api_key" % ip_address, auth_against)
+				cache.set("ip_%s_api_key" % self.ip_address, auth_against)
 			if auth_against != api_key:
 				# log.debug("user", "Anonymous user key %s does not match key %s." % (api_key, auth_against))
 				return
@@ -159,7 +158,8 @@ class User(object):
 			listener = db.c.fetch_row("SELECT "
 				"listener_id, sid, listener_lock AS lock, listener_lock_sid AS lock_sid, listener_lock_counter AS lock_counter, listener_voted_entry AS voted_entry "
 				"FROM r4_listeners "
-				"WHERE listener_ip = %s AND listener_purge = FALSE", (self.ip_address,))
+				"WHERE listener_ip = %s AND listener_purge = FALSE AND user_id = 1", (self.ip_address,))
+			log.debug("special", "Anon listener result for IP %s: %s" % (self.ip_address, listener))
 		if listener:
 			self.data.update(listener)
 		# if self.id > 1:
@@ -171,6 +171,7 @@ class User(object):
 		listener = self.get_listener_record(use_cache=False)
 		if listener:
 			if self.data['sid'] == sid:
+				log.debug("special", "User %s from IP %s is tuned in." % (self.id, self.ip_address))
 				self.data['tuned_in'] = True
 			else:
 				self.data['sid'] = sid
@@ -416,12 +417,12 @@ class User(object):
 		db.c.update("UPDATE phpbb_users SET radio_listenkey = %s WHERE user_id = %s", (listen_key, self.id))
 		self.update({ "radio_listen_key": listen_key })
 
-	def ensure_api_key(self, ip_address = None):
-		if self.id == 1 and ip_address:
-			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (ip_address,))
+	def ensure_api_key(self):
+		if self.id == 1:
+			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (self.ip_address,))
 			if not api_key:
-				api_key = self.generate_api_key(ip_address, int(time.time()) + 172800)
-				cache.set("ip_%s_api_key" % ip_address, api_key)
+				api_key = self.generate_api_key(self.ip_address, int(time.time()) + 172800)
+				cache.set("ip_%s_api_key" % self.ip_address, api_key)
 		elif self.id > 1:
 			if 'api_key' in self.data and self.data['api_key']:
 				return self.data['api_key']
@@ -431,9 +432,9 @@ class User(object):
 		self.data['api_key'] = api_key
 		return api_key
 
-	def generate_api_key(self, ip_address = None, expiry = None):
+	def generate_api_key(self, expiry = None):
 		api_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
-		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_ip) VALUES (%s, %s, %s, %s)", (self.id, api_key, expiry, ip_address))
+		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_ip) VALUES (%s, %s, %s, %s)", (self.id, api_key, expiry, self.ip_address))
 		# this function updates the API key cache for us
 		self.get_all_api_keys()
 		return api_key
