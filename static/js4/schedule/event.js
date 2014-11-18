@@ -204,6 +204,9 @@ var EventBase = function(json) {
 		else if (event_desc && self.data.voting_allowed) {
 			header_text.textContent = event_desc + " - " + $l("vote_now");
 		}
+		else if (self.data.voting_allowed) {
+			header_text.textContent = current_header_default_text + " - " + $l("vote_now");;	
+		}
 		else {
 			header_text.textContent = current_header_default_text;
 		}
