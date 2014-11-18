@@ -61,6 +61,9 @@ class User(object):
 		self.data['_group_id'] = None
 
 	def authorize(self, sid = None, api_key = None, bypass = False):
+		if not api_key:
+			return
+		
 		self.api_key = api_key
 
 		if not bypass and not re.match('^[\w\d]+$', api_key):
