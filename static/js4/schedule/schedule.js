@@ -230,6 +230,7 @@ var Schedule = function() {
 	};
 
 	self.reflow_history = function() {
+		if (self.history_events.length == 0) return;
 		var i;
 		if (first_time) {
 			for (i = 0; i < self.history_events.length; i++) {

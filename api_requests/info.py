@@ -19,21 +19,22 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 	if request.user:
 		request.append("user", request.user.to_private_dict())
 
-	if all_lists or (extra_list == "all_albums") or 'all_albums' in request.request.arguments:
-		request.append("all_albums", api_requests.playlist.get_all_albums(request.sid, request.user))
-	else:
-		request.append("album_diff", cache.get_station(request.sid, 'album_diff'))
+	if not request.mobile:
+		if all_lists or (extra_list == "all_albums") or 'all_albums' in request.request.arguments:
+			request.append("all_albums", api_requests.playlist.get_all_albums(request.sid, request.user))
+		else:
+			request.append("album_diff", cache.get_station(request.sid, 'album_diff'))
 
-	if all_lists or (extra_list == "all_artists") or 'all_artists' in request.request.arguments:
-		request.append("all_artists", api_requests.playlist.get_all_artists(request.sid))
+		if all_lists or (extra_list == "all_artists") or 'all_artists' in request.request.arguments:
+			request.append("all_artists", api_requests.playlist.get_all_artists(request.sid))
 
-	if all_lists or (extra_list == "all_groups") or 'all_groups' in request.request.arguments:
-		request.append("all_groups", api_requests.playlist.get_all_groups(request.sid))
-	
-	if all_lists or (extra_list == "current_listeners") or 'current_listeners' in request.request.arguments or request.get_cookie("r4_active_list") == "current_listeners":
-		request.append("current_listeners", cache.get_station(request.sid, "current_listeners"))
+		if all_lists or (extra_list == "all_groups") or 'all_groups' in request.request.arguments:
+			request.append("all_groups", api_requests.playlist.get_all_groups(request.sid))
+		
+		if all_lists or (extra_list == "current_listeners") or 'current_listeners' in request.request.arguments or request.get_cookie("r4_active_list") == "current_listeners":
+			request.append("current_listeners", cache.get_station(request.sid, "current_listeners"))
 
-	request.append("request_line", cache.get_station(request.sid, "request_line"))
+		request.append("request_line", cache.get_station(request.sid, "request_line"))
 
 	sched_next = None
 	sched_history = None
@@ -65,7 +66,10 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 			sched_next[0]['voting_allowed'] = True
 	request.append("sched_current", sched_current)
 	request.append("sched_next", sched_next)
-	request.append("sched_history", sched_history)
+	if not request.mobile:
+		request.append("sched_history", sched_history)
+	else:
+		request.append("sched_history", [])
 	if request.user:
 		if not request.user.is_anonymous():
 			user_vote_cache = cache.get_user(request.user, "vote_history")

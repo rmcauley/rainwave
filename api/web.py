@@ -103,6 +103,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		self.user = None
 		self._output = None
 		self._output_array = False
+		self.mobile = False
 
 	def initialize(self, **kwargs):
 		super(RainwaveHandler, self).initialize(**kwargs)
