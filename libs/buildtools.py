@@ -3,7 +3,7 @@ import scss
 from scss import Scss
 from slimit import minify
 
-scss.config.LOAD_PATHS = os.path.dirname(__file__) + "/../static/style4"
+scss.config.LOAD_PATHS = os.path.join(os.path.dirname(__file__), "..", "static", "style4")
 
 def create_baked_directory():
 	d = os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()))
