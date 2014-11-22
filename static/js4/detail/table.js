@@ -2,7 +2,7 @@ var SongsTable = function(songs, columns) {
 	"use strict";
 	var el = $el("table", { "class": "songlist" });
 
-	var row, cell, cell2, cell3, r, i, div, div2, link, title_el;
+	var row, cell, cell2, cell3, r, i, div, div2, link, title_el, title_cell;
 	for (i = 0; i < songs.length; i++) {
 		row = $el("tr");
 		if (("cool" in songs[i]) && songs[i].cool) {
@@ -43,6 +43,7 @@ var SongsTable = function(songs, columns) {
 		}
 
 		title_el = null;
+		title_cell = null;
 		for (var key = 0; key < columns.length; key++) {
 			if ((columns[key] == "artists") && ("artist_parseable" in songs[i])) {
 				cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] }));
@@ -56,6 +57,7 @@ var SongsTable = function(songs, columns) {
 					cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] } ));
 					div = $el("div", { "class": "songlist_" + columns[key] + "_text", "textContent": songs[i][columns[key]] });
 					title_el = div;
+					title_cell = cell;
 					//Formatting.add_overflow_tooltip(div);
 					cell.appendChild(div);
 				}
@@ -110,9 +112,27 @@ var SongsTable = function(songs, columns) {
 					row.appendChild($el("td", { "class": "songlist_" + columns[key], "textContent": songs[i][columns[key]] } ));
 				}
 			}
+
+			title_cell._song_id = songs[i].id;
+			title_cell.addEventListener("click", function(e) {
+				var el = this;
+				if (el.triggered) return;
+				el.triggered = true;
+				API.async_get("song", { "id": el._song_id }, function(json) {
+					SongsTableDetailDraw(el, json);
+				});
+			});
 		}
 
 		el.appendChild(row);
 	}
 	return el;
+};
+
+var SongsTableDetailDraw = function(title_el, json) {
+	if (title_el.childNodes.length > 1) return;
+	var d = $el("div", { "class": "songlist_extra_detail" });
+	var cnvs = d.appendChild($el("canvas", { "width": 100, "height": 80 }));
+	AlbumViewRatingPieChart(cnvs.getContext("2d"), json.song);
+	title_el.insertBefore(d, title_el.firstChild);
 };

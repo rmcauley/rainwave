@@ -147,6 +147,7 @@ div.songlist_title_text, div.songlist_artists_text, div.songlist_album_name_text
 div.songlist_title_text:hover, div.songlist_artists_text:hover, div.songlist_album_name_text:hover {
 	white-space: normal;
 }
+
 table.songlist img.link_external {
 	height: 14px;
 	width: 14px;
@@ -194,7 +195,9 @@ td.songlist_artists {
 }
 
 td.songlist_title {
+	position: relative;
 	max-width: 200px;
+	cursor: pointer;
 }
 
 table.songlist td.songlist_requestable {
@@ -231,6 +234,23 @@ div.songlist_request_hint table.songlist td.songlist_requestable span {
 
 div.rating_title_el_fave {
 	color: $fave_color;
+}
+
+div.songlist_extra_detail {
+	position: absolute;
+	padding: 3px;
+	background: #000;
+	border: solid 1px $vvdarktext;
+	opacity: 0;
+	left: 100%;
+	margin-top: 1.5em;
+
+	@include transition-wtime(300ms, opacity);
+	@include transform(translateY(-100%));
+}
+
+td.songlist_title:hover div.songlist_extra_detail {
+	opacity: 1;
 }
 
 /* USER DETAILS */
