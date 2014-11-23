@@ -113,15 +113,17 @@ var SongsTable = function(songs, columns) {
 				}
 			}
 
-			title_cell._song_id = songs[i].id;
-			title_cell.addEventListener("click", function(e) {
-				var el = this;
-				if (el.triggered) return;
-				el.triggered = true;
-				API.async_get("song", { "id": el._song_id }, function(json) {
-					SongsTableDetailDraw(el, json);
+			if (title_cell) {
+				title_cell._song_id = songs[i].id;
+				title_cell.addEventListener("click", function(e) {
+					var el = this;
+					if (el.triggered) return;
+					el.triggered = true;
+					API.async_get("song", { "id": el._song_id }, function(json) {
+						SongsTableDetailDraw(el, json);
+					});
 				});
-			});
+			}
 		}
 
 		el.appendChild(row);
