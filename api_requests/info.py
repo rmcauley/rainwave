@@ -1,4 +1,5 @@
 from api.web import APIHandler
+from api.exceptions import APIException
 from api import fieldtypes
 from api.server import test_post
 from api.server import handle_api_url
@@ -42,6 +43,8 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 	if request.user and not request.user.is_anonymous():
 		request.append("requests", request.user.get_requests(request.sid))
 		sched_current = cache.get_station(request.sid, "sched_current")
+		if not sched_current:
+			raise APIException("server_just_started", "Rainwave is Rebooting, Please Try Again in a Few Minutes", http_code=500)
 		if request.user.is_tunedin():
 			sched_current.get_song().data['rating_allowed'] = True
 		sched_current = sched_current.to_dict(request.user)
@@ -60,6 +63,8 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 			sched_history.append(evt.to_dict(request.user, check_rating_acl=True))
 	elif request.user:
 		sched_current = cache.get_station(request.sid, "sched_current_dict")
+		if not sched_current:
+			raise APIException("server_just_started", "Rainwave is Rebooting, Please Try Again in a Few Minutes", http_code=500)
 		sched_next = cache.get_station(request.sid, "sched_next_dict")
 		sched_history = cache.get_station(request.sid, "sched_history_dict")
 		if len(sched_next) > 0 and request.user.is_tunedin() and sched_next[0]['type'] == "Election":

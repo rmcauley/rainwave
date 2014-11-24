@@ -46,6 +46,7 @@
    "request_queue_paused"                            : "Request queue paused.",
    "request_queue_unpaused"                          : "Request queue unpaused.",
    "no_results"                                      : "No results.",
+   "server_just_started"                             : "Rainwave is Rebooting",
 
    "__comment__"                 : "API Key Management",
 
