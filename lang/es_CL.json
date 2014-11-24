@@ -46,6 +46,7 @@
    "request_queue_paused"                            : "Lista de peticiones pausada.",
    "request_queue_unpaused"                          : "Lista de peticiones reanudada.",
    "no_results"                                      : "Sin resultados.",
+   "server_just_started"                             : "Rainwave se está Reiniciando",
 
    "__comment__"                 : "API Key Management",
 
