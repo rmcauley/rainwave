@@ -176,6 +176,7 @@ var Menu = function() {
 		var ss = $id("station_select");
 		$remove_class(ss, "call_to_action");
 		if (!$has_class(ss, "open")) {
+			$add_class($id("top_menu"), "station_select_open");
 			$add_class(ss, "open");
 			$add_class($id("station_select_container"), "open");
 			Fx.chain_transition(ss, function() {
@@ -195,6 +196,7 @@ var Menu = function() {
 			$id("station_select").removeEventListener("mouseout", close_station_select);
 			$remove_class($id("station_select"), "open");
 			$remove_class($id("station_select_container"), "open");
+			$remove_class($id("top_menu"), "station_select_open");
 		}
 	};
 
