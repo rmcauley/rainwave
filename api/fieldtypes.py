@@ -7,7 +7,7 @@ string_error = "must be a string."
 def string(in_string, request = None):
 	if not in_string:
 		return None
-	return str(in_string)
+	return unicode(in_string)
 
 # All _error variables start with no capital letter and end with a period.
 numeric_error = "must be a number."
