@@ -224,10 +224,12 @@ var API = function() {
 
 	var async_timeout = function() {
 		ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
+		self.async_get();
 	};
 
 	var async_error = function() {
 		ErrorHandler.permanent_error(ErrorHandler.make_error("async_error", 500));
+		self.async_get();
 	};
 
 	var async_complete = function() {
