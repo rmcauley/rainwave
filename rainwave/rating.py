@@ -122,7 +122,7 @@ def set_album_fave(sid, album_id, user_id, fave):
 	db.c.commit()
 
 def update_album_ratings(target_sid, song_id, user_id):
-	toret = None
+	toret = []
 	for row in db.c.fetch_all("SELECT r4_songs.album_id, sid, album_song_count FROM r4_songs JOIN r4_album_sid USING (album_id) WHERE r4_songs.song_id = %s AND album_exists = TRUE", (song_id,)):
 		album_id = row['album_id']
 		sid = row['sid']
@@ -152,5 +152,5 @@ def update_album_ratings(target_sid, song_id, user_id):
 						(album_rating, album_fave, rating_complete, user_id, album_id, sid))
 		cache.set_album_rating(sid, album_id, user_id, { "rating_user": album_rating, "fave": album_fave, "rating_complete": rating_complete })
 		if target_sid == sid:
-			toret = { "sid": sid, "id": album_id, "rating_user": album_rating, "rating_complete": rating_complete }
+			toret.append({ "sid": sid, "id": album_id, "rating_user": album_rating, "rating_complete": rating_complete })
 	return toret

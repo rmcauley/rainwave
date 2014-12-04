@@ -7,10 +7,12 @@ var RatingControl = function() {
 	var self = {};
 	self.album_rating_callback = null;
 	self.fave_callback = null;
-	self.padding_top = SmallScreen ? 1 : 3;
+	self.padding_top = 1;
 	var gc_timer = false;
 
 	self.initialize = function() {
+		self.padding_top = SmallScreen ? 1 : 3;
+
 		API.add_callback(self.rating_user_callback, "rate_result");
 		API.add_callback(self.song_fave_update, "fave_song_result");
 		API.add_callback(self.album_fave_update, "fave_album_result");
@@ -42,7 +44,9 @@ var RatingControl = function() {
 		rating_update_song(json.song_id, null, json.rating_user);
 
 		for (var i = 0; i < json.updated_album_ratings.length; i++) {
-			rating_update_album(json.updated_album_ratings[i].id, null, json.updated_album_ratings[i].rating_user, json.updated_album_ratings[i].rating_complete);
+			if (json.updated_album_ratings[i]) {
+				rating_update_album(json.updated_album_ratings[i].id, null, json.updated_album_ratings[i].rating_user, json.updated_album_ratings[i].rating_complete);
+			}
 		}
 	};
 

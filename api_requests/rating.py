@@ -30,12 +30,12 @@ class SubmitRatingRequest(APIHandler):
 					raise APIException("cannot_rate_now")
 			elif not self.user.is_tunedin():
 				raise APIException("tunein_to_rate_current_song")
-		album = ratinglib.set_song_rating(self.sid, song_id, self.user.id, rating)
-		self.append_standard("rating_submitted", updated_album_ratings = [ album ], song_id = song_id, rating_user = rating)
+		albums = ratinglib.set_song_rating(self.sid, song_id, self.user.id, rating)
+		self.append_standard("rating_submitted", updated_album_ratings = albums, song_id = song_id, rating_user = rating)
 
 	def clear_rating(self, song_id):
-		album = ratinglib.clear_song_rating(self.sid, song_id, self.user.id)
-		self.append_standard("rating_submitted", updated_album_ratings = [ album ], song_id = song_id, rating_user = None)
+		albums = ratinglib.clear_song_rating(self.sid, song_id, self.user.id)
+		self.append_standard("rating_submitted", updated_album_ratings = albums, song_id = song_id, rating_user = None)
 
 @handle_api_url('clear_rating')
 class ClearRating(SubmitRatingRequest):
