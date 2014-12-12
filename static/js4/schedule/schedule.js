@@ -164,7 +164,6 @@ var Schedule = function() {
 				temp_evt.el.style.marginTop = sequenced_margin ? "0px" : "30px";
 			}
 			if (!temp_evt.el.parentNode) self.el.appendChild(temp_evt.el);
-			if (MOBILE) break;
 		}
 
 		// Erase old elements out before we replace the self.events with new_events
@@ -230,7 +229,6 @@ var Schedule = function() {
 	};
 
 	self.reflow_history = function() {
-		if (self.history_events.length == 0) return;
 		var i;
 		if (first_time) {
 			for (i = 0; i < self.history_events.length; i++) {
@@ -246,7 +244,7 @@ var Schedule = function() {
 			$add_class($id("history_outer_container"), "history_expandable");
 		}
 
-		if ((Prefs.get("sticky_history") && !MOBILE) || (sticky_history_size == self.history_events.length)) {
+		if (Prefs.get("sticky_history") || (sticky_history_size == self.history_events.length)) {
 			$add_class($id("history_outer_container"), "history_open");
 			if (first_time) {
 				Fx.delay_css_setting(self.history_events[0].el, "marginTop", "0px");
@@ -269,8 +267,7 @@ var Schedule = function() {
 		else {
 			$remove_class($id("history_outer_container"), "history_open");
 			var mt1 = -(self.history_events.length - sticky_history_size) * TimelineSong.height;
-			if (!MOBILE) mt1 -= 30;
-			else mt1 += 30;
+			mt1 += 30;
 			if (first_time) {
 				Fx.delay_css_setting(self.history_events[0].el, "marginTop", mt1 + "px");
 			}

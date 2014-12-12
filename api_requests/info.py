@@ -71,10 +71,7 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 			sched_next[0]['voting_allowed'] = True
 	request.append("sched_current", sched_current)
 	request.append("sched_next", sched_next)
-	if not request.mobile:
-		request.append("sched_history", sched_history)
-	else:
-		request.append("sched_history", [])
+	request.append("sched_history", sched_history)
 	if request.user:
 		if not request.user.is_anonymous():
 			user_vote_cache = cache.get_user(request.user, "vote_history")

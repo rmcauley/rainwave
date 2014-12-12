@@ -4,10 +4,6 @@
 	margin-top: 10px;
 }
 
-body.mobile_screen #history_outer_container {
-	display: none;
-}
-
 #history_header_container {
 	cursor: pointer;
 	@include transition-wtime(350ms, color, background-color);
@@ -49,6 +45,10 @@ body.mobile_screen #history_outer_container {
 	float: right;
 	@include transition-wtime(350ms, opacity);
 	margin-left: 10px;
+
+	body.mobile_screen & {
+		display: none;
+	}
 }
 
 #history_outer_container:hover #longhist_link {
