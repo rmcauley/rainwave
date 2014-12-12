@@ -260,7 +260,7 @@ var R4Audio = function() {
 	};
 
 	var change_volume_from_mouse = function(evt) {
-		var x = evt.layerX || evt.offsetX;
+		var x = evt.offsetX === undefined ? evt.layerX : evt.offsetX;
 		var v = Math.min(Math.max((x / offset_width), 0), 1);
 		if (v < 0.05) v = 0;
 		if (v > 0.95) v = 1;
