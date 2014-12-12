@@ -194,9 +194,9 @@ var Menu = function() {
 	var close_station_select = function(e, override) {
 		if (override || Mouse.is_mouse_leave(e, $id("station_select"))) {
 			$id("station_select").removeEventListener("mouseout", close_station_select);
+			Fx.chain_transition($id("station_select"), function() { $remove_class($id("top_menu"), "station_select_open"); });
 			$remove_class($id("station_select"), "open");
 			$remove_class($id("station_select_container"), "open");
-			$remove_class($id("top_menu"), "station_select_open");
 		}
 	};
 

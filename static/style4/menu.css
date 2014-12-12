@@ -163,9 +163,9 @@ div.event_ongoing_alert {
 }
 
 #top_menu.station_select_open {
-	ul#top_icons li { 
-		display: none;
-		#settings_link { display: inline; }
+	ul#top_icons {
+		overflow: hidden;
+		width: 0px;
 	}
 }
 
