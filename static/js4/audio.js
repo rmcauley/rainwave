@@ -156,6 +156,8 @@ var R4Audio = function() {
 		// if (volume_el) {
 		// 	audio_el.addEventListener("volumechange", draw_volume);
 		// }
+		var mute_el = document.getElementById("audio_icon_mute");
+		if (mute_el) mute_el.setAttribute("class", null);
 		if ((Prefs.get("audio_volume") > 1) || (Prefs.get("audio_volume") < 0) || !Prefs.get("audio_volume")) {
 			Prefs.change("audio_volume", 1.0);
 		}
