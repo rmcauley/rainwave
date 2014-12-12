@@ -181,7 +181,7 @@ var Rating = function(type, id, rating_user, rating, fave, ratable, rating_title
 		if (self.type != "album") return;
 		if (override || !("rating_complete" in self) || (self.rating_complete != new_rating_complete)) {
 			self.rating_complete = new_rating_complete;
-			if (self.rating_complete || !Prefs.get("playlist_show_rating_complete")) {
+			if (self.rating_complete || !Prefs.get("playlist_show_rating_complete") || !self.rating_user) {
 				self.el.style.backgroundImage = null;
 			}
 			else if (Prefs.get("playlist_show_rating_complete")) {
