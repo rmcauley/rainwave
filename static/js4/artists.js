@@ -8,6 +8,7 @@ var Artists = function() {
 	};
 
 	self.append_spans_from_json = function(el, json) {
+		if (!json) return document.createElement("span");
 		var a;
 		for (var i = 0; i < json.length; i++) {
 			a = $el("span", { "textContent": json[i].name, "class": "link" });
