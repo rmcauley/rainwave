@@ -1,7 +1,10 @@
 import os
-import scss
-from scss import Scss
+import warnings
 from slimit import minify
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    import scss
+    from scss import Scss
 
 scss.config.LOAD_PATHS = os.path.join(os.path.dirname(__file__), "..", "static", "style4")
 
