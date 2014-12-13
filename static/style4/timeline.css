@@ -114,7 +114,7 @@ div.timeline_song div.album_group {
 	@include transition-wtime(250ms, background-color, padding);
 }
 
-#timeline div.timeline_song.voting_enabled span.album_name:hover, #timeline div.timeline_song.voting_enabled div.artist span:hover {
+#timeline div.timeline_song.voting_enabled span.album_name:hover, #timeline div.timeline_song.voting_enabled div.artist span.link:hover {
 	background-color: #264499;
 	padding: 0 10px;
 }
