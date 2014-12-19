@@ -242,15 +242,19 @@ div.songlist_extra_detail {
 	background: #000;
 	border: solid 1px $vvdarktext;
 	opacity: 0;
-	left: 100%;
-	margin-top: 1.5em;
+	left: 8em;
+	z-index: 1;
+	height: 0px;
+	overflow: hidden;
 
-	@include transition-wtime(300ms, opacity);
-	@include transform(translateY(-100%));
+	@include transition-wtime(250ms, opacity, height, transform);
+	@include transform(translateY(0));
 }
 
 td.songlist_title:hover div.songlist_extra_detail {
 	opacity: 1;
+	height: 100px;
+	@include transform(translateY(-100px));
 }
 
 /* USER DETAILS */
