@@ -300,6 +300,8 @@ def create_tables():
 			song_url					TEXT		, \
 			song_link_text				TEXT		, \
 			song_length					SMALLINT	, \
+			song_track_number			SMALLINT	, \
+			song_disc_number			SMALLINT	, \
 			song_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 			song_rating					REAL		DEFAULT 0, \
 			song_rating_count			INTEGER		DEFAULT 0, \
