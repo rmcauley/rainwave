@@ -56,6 +56,8 @@ class Artist(AssociatedMetadata):
 			 	"song_rating AS rating, "
 				"song_exists AS requestable, "
 				"song_length AS length, "
+				"song_track_number AS track_number, "
+				"song_disc_number AS disc_number, "
 				"song_cool AS cool, "
 				"song_cool_end AS cool_end, "
 				"song_url as url, song_link_text as link_text, "
@@ -70,7 +72,7 @@ class Artist(AssociatedMetadata):
 				"LEFT JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
 				"LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
 			"WHERE r4_song_artist.artist_id = %s AND r4_songs.song_verified = TRUE "
-			"ORDER BY song_exists DESC, album_name, song_title ",
+			"ORDER BY song_exists DESC, album_name, COALESCE(song_disc_number, 0), COALESCE(song_track_number, 0), song_title ",
 			(sid, sid, user_id, self.id))
 		# And of course, now we have to burn extra CPU cycles to make sure the right album name is used and that we present the data
 		# in the same format seen everywhere else on the API.  Still, much faster then loading individual song objects.

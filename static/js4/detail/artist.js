@@ -10,7 +10,7 @@ var ArtistViewRenderSid = function(view, json, sid) {
 			subheader.addEventListener("click", function(e) { DetailView.open_album(e.target._album_id); });
 		}
 		all_tables.push( {
-			"table": SongsTable(json[album_id], [ "title", "length", "rating", "cool_end" ]),
+			"table": SongsTable(json[album_id], [ "disc_number", "track_number", "title", "length", "rating", "cool_end" ]),
 			"header": subheader,
 			"name": json[album_id][0].albums[0].name
 		});

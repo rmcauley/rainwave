@@ -91,11 +91,11 @@ var AlbumView = function(view, json) {
 		}
 		for (i in s) {
 			view.el.appendChild($el("h2", { "textContent": $l("songs_from", { "station": $l("station_name_" + i) }) }));
-			view.el.appendChild(SongsTable(s[i], [ "title", "artists", "length", "rating", "cool_end" ]));
+			view.el.appendChild(SongsTable(s[i], [ "disc_number", "track_number", "title", "artists", "length", "rating", "cool_end" ]));
 		}
 	}
 	else {
-		view.el.appendChild(SongsTable(json.songs, [ "title", "artists", "length", "rating", "cool_end" ]));
+		view.el.appendChild(SongsTable(json.songs, [ "disc_number", "track_number", "title", "artists", "length", "rating", "cool_end" ]));
 	}
 	return view.el;
 };

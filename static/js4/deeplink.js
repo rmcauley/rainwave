@@ -26,6 +26,15 @@ var DeepLinker = function() {
 		}
 	};
 
+	self.reload_view = function() {
+		var deeplinkurl = decodeURI(old_url);
+		if (deeplinkurl.indexOf("#!/") >= 0) {
+			var args = deeplinkurl.substring(deeplinkurl.indexOf("#!/") + 3).split("/");
+			var r = args.splice(0, 1)[0];
+			self.open_route(r, args);
+		}
+	};
+
 	self.open_route = function(route, args) {
 		if (route in routes) {
 			if (!routes[route].apply(this, args)) {

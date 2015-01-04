@@ -195,12 +195,13 @@ class Song(object):
 		 	self.album_tag = unicode(w[0]).strip()
 		else:
 			raise PassableScanError("Song filename \"%s\" has no album tag." % filename)
-		w = f.tags.getall('TRCK')
-		if w is not None and len(w) > 0:
-			self.data['track_number'] = +w[0]
-		w = f.tags.getall('TPOS')
-		if w is not None and len(w) > 0:
-			self.data['disc_number'] = +w[0]
+		if config.get_default("scan_song_tracknumber", False):
+			w = f.tags.getall('TRCK')
+			if w is not None and len(w) > 0:
+				self.data['track_number'] = +w[0]
+			w = f.tags.getall('TPOS')
+			if w is not None and len(w) > 0:
+				self.data['disc_number'] = +w[0]
 		w = f.tags.getall('TCON')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.genre_tag = unicode(w[0])
@@ -270,7 +271,7 @@ class Song(object):
 				potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s AND song_artist_tag = %s", (self.data['title'], self.data['length'], self.artist_tag))
 			else:
 				potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s", (self.data['title'], self.data['length']))
-			if potential_id:
+			if not config.get_default("allow_duplicate_song", False) and potential_id:
 				self.id = potential_id
 				update = True
 

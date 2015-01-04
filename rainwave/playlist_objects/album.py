@@ -78,6 +78,7 @@ class Album(AssociatedMetadata):
 		requestable = True if user else False
 		instance.data['songs'] = db.c.fetch_all(
 			"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
+				"song_track_number AS track_number, song_disc_number as disc_number, "
 				"song_url AS url, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiply, "
 				"song_cool_override AS cool_override, %s AS requestable, song_cool AS cool, song_cool_end AS cool_end, "
 				"song_request_only_end AS request_only_end, song_request_only AS request_only, song_artist_parseable AS artist_parseable, "
@@ -86,7 +87,7 @@ class Album(AssociatedMetadata):
 				"JOIN r4_songs USING (song_id) "
 				"LEFT JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
 			"WHERE r4_song_sid.song_exists = TRUE AND r4_songs.song_verified = TRUE AND r4_songs.album_id = %s AND r4_song_sid.sid = %s "
-			"ORDER BY song_title",
+			"ORDER BY COALESCE(song_disc_number, 0), COALESCE(song_track_number, 0), song_title",
 			(requestable, user_id, instance.id, sid))
 		return instance
 

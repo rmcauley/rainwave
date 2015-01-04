@@ -12,7 +12,7 @@ var GroupView = function(view, json) {
 			subheader.addEventListener("click", function(e) { DetailView.open_album(e.target._album_id); });
 		}
 		all_tables.push({
-			"table": SongsTable(json.all_songs_for_sid[album_id], [ "title", "length", "rating", "cool_end" ]),
+			"table": SongsTable(json.all_songs_for_sid[album_id], [ "disc_number", "track_number", "title", "length", "rating", "cool_end" ]),
 			"name": json.all_songs_for_sid[album_id][0].albums[0].name,
 			"header": subheader
 		});
