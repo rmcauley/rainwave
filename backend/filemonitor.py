@@ -117,10 +117,13 @@ def _check_codepage_1252(filename):
 		raise PassableScanError("Invalid filename. (possible cp1252 or obscure unicode)")
 
 def _scan_directory(directory, sids):
+	# Normalize and add a trailing separator to the directory name
+	directory = os.path.join(os.path.normpath(directory), "")
+
 	# Windows workaround eww, damnable directory names
 	if os.name == "nt":
-		directory = os.path.normpath(directory).replace("\\", "\\\\")
-	
+		directory = directory.replace("\\", "\\\\")
+
 	songs = db.c.fetch_list("SELECT song_id FROM r4_songs WHERE song_filename LIKE %s || '%%' AND song_verified = TRUE", (directory,))
 	for song_id in songs:
 		# log.debug("scan", "Marking Song ID %s for possible deletion." % song_id)
