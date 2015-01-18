@@ -140,6 +140,7 @@ class Album(AssociatedMetadata):
 		if d.has_key('sid'):
 			self.sid = d['sid']
 		self.data['art'] = Album.get_art_url(self.id, sid)
+		self._dict_check_assign(d, "album_year", None)
 
 	def _dict_check_assign(self, d, key, default = None, new_key = None):
 		if not new_key and key.find("album_") == 0:
@@ -152,6 +153,9 @@ class Album(AssociatedMetadata):
 	def get_num_songs(self, sid):
 		return db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE r4_songs.album_id = %s AND sid = %s AND song_exists = TRUE AND song_verified = TRUE", (self.id, sid))
 
+	def update_album(self):
+		db.c.update("UPDATE r4_albums SET album_year = (SELECT MAX(song_year) FROM r4_songs WHERE album_id = %s AND song_verified = TRUE) WHERE album_id= %s" % (self.id, self.id) )
+
 	def associate_song_id(self, song_id, is_tag = None):
 		existing_album = db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,))
 		if not existing_album or existing_album != self.id:
@@ -159,11 +163,12 @@ class Album(AssociatedMetadata):
 		if existing_album and existing_album != self.id:
 			self.reconcile_sids(existing_album)
 		self.reconcile_sids()
+		self.update_album()
 
 	def disassociate_song_id(self, *args):
 		# You can't do this.  You can only associated something new, which
 		# will trigger a 'swap' of albums if necessary.
-		pass
+		self.update_album()
 
 	def reconcile_sids(self, album_id = None):
 		if not album_id:
@@ -185,6 +190,7 @@ class Album(AssociatedMetadata):
 			num_songs = self.get_num_songs(sid)
 			db.c.update("UPDATE r4_album_sid SET album_song_count = %s WHERE album_id = %s AND sid = %s", (num_songs, album_id, sid))
 		self.update_all_user_ratings()
+		self.update_album()
 		return new_sids
 
 	def start_cooldown(self, sid, cool_time = False):
