@@ -112,6 +112,11 @@ def get(key):
 	require(key)
 	return _opts[key]
 
+def get_default(key, value):
+	if has(key):
+		return _opts[key]
+	return value
+
 def get_directory(key):
 	value = get(key)
 	if not value:

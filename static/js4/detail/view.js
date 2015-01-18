@@ -12,7 +12,11 @@ var DetailView = function() {
 	self.initialize = function() {
 		Prefs.define("request_made");
 		Prefs.define("detail_global_ratings", [ false, true ]);
+		Prefs.define("show_disc_number", [ false, true ]);
+		Prefs.define("show_track_number", [ false, true ]);
 		Prefs.add_callback("detail_global_ratings", close_all);
+		Prefs.add_callback("show_disc_number", close_all);
+		Prefs.add_callback("show_track_number", close_all);
 		el = $id("detail");
 		scrollblock = $id("detail_scrollblock");
 		if (!MOBILE) {
@@ -57,6 +61,7 @@ var DetailView = function() {
 			}
 		}
 		visible_view = null;
+		DeepLinker.reload_view();
 	};
 	
 	var create = function(type, id, render_function, json) {

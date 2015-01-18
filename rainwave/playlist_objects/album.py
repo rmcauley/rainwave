@@ -78,6 +78,7 @@ class Album(AssociatedMetadata):
 		requestable = True if user else False
 		instance.data['songs'] = db.c.fetch_all(
 			"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
+				"song_track_number AS track_number, song_disc_number as disc_number, "
 				"song_url AS url, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiply, "
 				"song_cool_override AS cool_override, %s AS requestable, song_cool AS cool, song_cool_end AS cool_end, "
 				"song_request_only_end AS request_only_end, song_request_only AS request_only, song_artist_parseable AS artist_parseable, "
@@ -86,7 +87,7 @@ class Album(AssociatedMetadata):
 				"JOIN r4_songs USING (song_id) "
 				"LEFT JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
 			"WHERE r4_song_sid.song_exists = TRUE AND r4_songs.song_verified = TRUE AND r4_songs.album_id = %s AND r4_song_sid.sid = %s "
-			"ORDER BY song_title",
+			"ORDER BY COALESCE(song_disc_number, 0), COALESCE(song_track_number, 0), song_title",
 			(requestable, user_id, instance.id, sid))
 		return instance
 
@@ -139,6 +140,7 @@ class Album(AssociatedMetadata):
 		if d.has_key('sid'):
 			self.sid = d['sid']
 		self.data['art'] = Album.get_art_url(self.id, sid)
+		self._dict_check_assign(d, "album_year", None)
 
 	def _dict_check_assign(self, d, key, default = None, new_key = None):
 		if not new_key and key.find("album_") == 0:
@@ -151,6 +153,9 @@ class Album(AssociatedMetadata):
 	def get_num_songs(self, sid):
 		return db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE r4_songs.album_id = %s AND sid = %s AND song_exists = TRUE AND song_verified = TRUE", (self.id, sid))
 
+	def update_album(self):
+		db.c.update("UPDATE r4_albums SET album_year = (SELECT MAX(song_year) FROM r4_songs WHERE album_id = %s AND song_verified = TRUE) WHERE album_id= %s" % (self.id, self.id) )
+
 	def associate_song_id(self, song_id, is_tag = None):
 		existing_album = db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,))
 		if not existing_album or existing_album != self.id:
@@ -158,11 +163,12 @@ class Album(AssociatedMetadata):
 		if existing_album and existing_album != self.id:
 			self.reconcile_sids(existing_album)
 		self.reconcile_sids()
+		self.update_album()
 
 	def disassociate_song_id(self, *args):
 		# You can't do this.  You can only associated something new, which
 		# will trigger a 'swap' of albums if necessary.
-		pass
+		self.update_album()
 
 	def reconcile_sids(self, album_id = None):
 		if not album_id:
@@ -184,6 +190,7 @@ class Album(AssociatedMetadata):
 			num_songs = self.get_num_songs(sid)
 			db.c.update("UPDATE r4_album_sid SET album_song_count = %s WHERE album_id = %s AND sid = %s", (num_songs, album_id, sid))
 		self.update_all_user_ratings()
+		self.update_album()
 		return new_sids
 
 	def start_cooldown(self, sid, cool_time = False):

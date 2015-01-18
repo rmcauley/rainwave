@@ -9,10 +9,13 @@ var ArtistViewRenderSid = function(view, json, sid) {
 			subheader._album_id = json[album_id][0].albums[0].id;
 			subheader.addEventListener("click", function(e) { DetailView.open_album(e.target._album_id); });
 		}
+		var name = json[album_id][0].albums[0].name;
+		if( json[album_id][0].albums[0].year )
+			name = json[album_id][0].albums[0].year +" - "+name;
 		all_tables.push( {
-			"table": SongsTable(json[album_id], [ "title", "length", "rating", "cool_end" ]),
+			"table": SongsTable(json[album_id], [ "disc_number", "track_number", "title", "length", "rating", "cool_end" ]),
 			"header": subheader,
-			"name": json[album_id][0].albums[0].name
+			"name": name
 		});
 	}
 
