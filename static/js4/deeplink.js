@@ -27,12 +27,8 @@ var DeepLinker = function() {
 	};
 
 	self.reload_view = function() {
-		var deeplinkurl = decodeURI(old_url);
-		if (deeplinkurl.indexOf("#!/") >= 0) {
-			var args = deeplinkurl.substring(deeplinkurl.indexOf("#!/") + 3).split("/");
-			var r = args.splice(0, 1)[0];
-			self.open_route(r, args);
-		}
+		old_url = null;
+		self.detect_url_change();
 	};
 
 	self.open_route = function(route, args) {

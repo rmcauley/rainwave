@@ -272,12 +272,6 @@ var SettingsWindow = function() {
 			"detail_global_ratings",
 		]);
 
-		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("order_preferences") }));
-		draw_cb_list([
-			"show_disc_number",
-			"show_track_number",
-		]);
-
 		self.enable_disable_title_options(Prefs.get("show_title_in_titlebar"));
 	};
 

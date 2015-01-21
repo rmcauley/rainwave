@@ -13,7 +13,7 @@ var ArtistViewRenderSid = function(view, json, sid) {
 		if( json[album_id][0].albums[0].year )
 			name = json[album_id][0].albums[0].year +" - "+name;
 		all_tables.push( {
-			"table": SongsTable(json[album_id], [ "disc_number", "track_number", "title", "length", "rating", "cool_end" ]),
+			"table": SongsTable(json[album_id], SITE_CONFIG.artist_view_columns),
 			"header": subheader,
 			"name": name
 		});

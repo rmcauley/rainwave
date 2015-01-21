@@ -109,13 +109,8 @@ var SongsTable = function(songs, columns) {
 					row.appendChild($el("td", { "class": "songlist_cool_end", "textContent": Formatting.cooldown_glance(Clock.now - songs[i][columns[key]]) } ));
 				}
 				else if ((columns[key] == "track_number") || (columns[key] == "disc_number")) {
-					if (Prefs.get("show_"+columns[key])) {
-						if (songs[i][columns[key]]) {
-							row.appendChild($el("td", { "class": "songlist_"+columns[key], "textContent": songs[i][columns[key]] + "." } ));
-						}
-						else {
-							row.appendChild($el("td", { "class": "songlist_"+columns[key] } ));
-						}
+					if (songs[i][columns[key]]) {
+						row.appendChild($el("td", { "class": "songlist_"+columns[key], "textContent": songs[i][columns[key]] + "." } ));
 					}
 				}
 				else {

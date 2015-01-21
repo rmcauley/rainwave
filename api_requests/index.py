@@ -46,7 +46,8 @@ class MainIndex(api.web.HTMLRequest):
 			self.jsfiles = []
 			for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js4")):
 				for f in files:
-					self.jsfiles.append(os.path.join(root[root.find("static/js4"):], f))
+					if f.endswith(".js"):
+						self.jsfiles.append(os.path.join(root[root.find("static/js4"):], f))
 
 	def append(self, key, value):
 		self.json_payload[key] = value

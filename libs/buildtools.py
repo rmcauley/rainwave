@@ -41,7 +41,8 @@ def get_js_file_list(js_dir = "js"):
 	jsfiles = []
 	for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "..", "static", js_dir)):
 		for f in files:
-			jsfiles.append(os.path.join(root[root.find("..") + 3:], f))
+			if f.endswith(".js"):
+				jsfiles.append(os.path.join(root[root.find("..") + 3:], f))
 	jsfiles = sorted(jsfiles)
 	return jsfiles
 

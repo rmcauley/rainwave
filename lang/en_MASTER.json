@@ -258,9 +258,6 @@
    "m3u_downloads"                                   : "M3U Downloads",
    "skip_intro_mode"                                 : "Skip Intro Mode",
    "do_intro_mode"                                   : "Go back to Intro Mode",
-   "order_preferences"                               : "Album / Song Numbering",
-   "prefs_show_disc_number"                          : "Show disc number",
-   "prefs_show_track_number"                         : "Show track number",
 
    "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
 

@@ -196,13 +196,12 @@ class Song(object):
 		 	self.album_tag = unicode(w[0]).strip()
 		else:
 			raise PassableScanError("Song filename \"%s\" has no album tag." % filename)
-		if config.get_default("scan_song_tracknumber", False):
-			w = f.tags.getall('TRCK')
-			if w is not None and len(w) > 0:
-				self.data['track_number'] = +w[0]
-			w = f.tags.getall('TPOS')
-			if w is not None and len(w) > 0:
-				self.data['disc_number'] = +w[0]
+		w = f.tags.getall('TRCK')
+		if w is not None and len(w) > 0:
+			self.data['track_number'] = +w[0]
+		w = f.tags.getall('TPOS')
+		if w is not None and len(w) > 0:
+			self.data['disc_number'] = +w[0]
 		w = f.tags.getall('TCON')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.genre_tag = unicode(w[0])
@@ -212,13 +211,12 @@ class Song(object):
 		w = f.tags.getall('WXXX')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.data['url'] = unicode(w[0]).strip()
-		if config.get_default("scan_album_year", False):
-			w = f.tags.getall('TYER')
-			if w is not None and len(w) > 0:
-				self.data['year'] = +w[0]
-			w = f.tags.getall('TDRC')
-			if self.data['year'] is None and w is not None and len(w) > 0:
-				self.data['year'] = unicode(w[0])
+		w = f.tags.getall('TYER')
+		if w is not None and len(w) > 0:
+			self.data['year'] = +w[0]
+		w = f.tags.getall('TDRC')
+		if self.data['year'] is None and w is not None and len(w) > 0:
+			self.data['year'] = unicode(w[0])
 
 		self.replay_gain = self._get_replaygain(f)
 
@@ -279,7 +277,7 @@ class Song(object):
 				potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s AND song_artist_tag = %s", (self.data['title'], self.data['length'], self.artist_tag))
 			else:
 				potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s", (self.data['title'], self.data['length']))
-			if not config.get_default("allow_duplicate_song", False) and potential_id:
+			if not config.get("allow_duplicate_song") and potential_id:
 				self.id = potential_id
 				update = True
 
