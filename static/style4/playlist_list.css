@@ -140,15 +140,10 @@ div.searchlist_items {
 
 div.searchlist_item {
 	background-repeat: no-repeat;
-	height: 22px;
-	padding: 2px 65px 1px 0;
+	padding: 2px 65px 2px 0;
 	border-bottom: solid 1px transparent;
 	cursor: pointer;
 	@include transition-wtime(250ms, background-color, border-color);
-}
-
-body.small_screen div.searchlist_item {
-	height: 18px;
 }
 
 div.searchlist_stretcher {

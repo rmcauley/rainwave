@@ -29,6 +29,9 @@ function _size_calculate() {
 		return true;
 	}
 	TimelineSong.calculate_height();
+	if ($id("playlist_item_height")) {
+		PLAYLIST_ITEM_HEIGHT = $id("playlist_item_height").offsetHeight;
+	}
 	return old_height != SCREEN_HEIGHT || old_width != SCREEN_WIDTH;
 }
 
@@ -183,6 +186,12 @@ function initialize() {
 	Scrollbar.resizer_calculate();
 	Scrollbar.recalculate();
 	DetailView.scroll_init();
+
+	// also measure any elements
+	// this particular element measurement is also duplicated in size_calculate
+	if ($id("playlist_item_height")) {
+		PLAYLIST_ITEM_HEIGHT = $id("playlist_item_height").offsetHeight;
+	}
 
 	// DIRTY THE LAYOUT
 
