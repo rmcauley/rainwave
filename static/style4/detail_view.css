@@ -251,6 +251,14 @@ div.songlist_extra_detail {
 	@include transform(translateY(0));
 }
 
+div.songlist_extra_detail canvas {
+	float: left;
+}
+
+div.songlist_extra_detail div.songlist_extra_detail_item {
+	margin-left: 110px;
+}
+
 td.songlist_title:hover div.songlist_extra_detail {
 	opacity: 1;
 	height: 100px;

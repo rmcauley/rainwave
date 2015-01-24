@@ -136,5 +136,14 @@ var SongsTableDetailDraw = function(title_el, json) {
 	var d = $el("div", { "class": "songlist_extra_detail" });
 	var cnvs = d.appendChild($el("canvas", { "width": 100, "height": 80 }));
 	AlbumViewRatingPieChart(cnvs.getContext("2d"), json.song);
+	if (json.song.rating > 0) {
+		d.appendChild($el("div", { "class": "songlist_extra_detail_item", "textContent": $l("song_extradetail_rating", { "rating": json.song.rating, "rating_count": json.song.rating_count, "rank": json.song.rating_rank }) }));
+		d.appendChild($el("div", { "class": "songlist_extra_detail_item", "textContent": $l("song_extradetail_rating_rank", { "rating": json.song.rating, "rating_count": json.song.rating_count, "rank": json.song.rating_rank }) }));
+	}
+	if (json.song.request_count > 0) {
+		d.appendChild($el("div", { "class": "songlist_extra_detail_item", "textContent": $l("song_extradetail_requests", { "count": json.song.request_count, "rank": json.song.request_rank }) }));
+		d.appendChild($el("div", { "class": "songlist_extra_detail_item", "textContent": $l("song_extradetail_requests_rank", { "count": json.song.request_count, "rank": json.song.request_rank }) }));
+	}
+
 	title_el.insertBefore(d, title_el.firstChild);
 };
