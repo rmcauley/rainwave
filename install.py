@@ -44,7 +44,7 @@ shutil.copy("rw_backend.py", installdir + "/rw_backend.py")
 shutil.copy("rw_scanner.py", installdir + "/rw_scanner.py")
 shutil.copy("rw_clear_cache.py", installdir + "/rw_clear_cache.py")
 shutil.copy("rw_get_next.py", installdir + "/rw_get_next.py")
-shutil.copy("rw_icecast_sync.py", installdir + "/rw_icecast_sync.py")
+shutil.copy("rw_icecast_count.py", installdir + "/rw_icecast_count.py")
 shutil.copy("rw_auto_pvp.py", installdir + "/rw_auto_pvp.py")
 shutil.copy("tagset.py", installdir + "/tagset.py")
 
