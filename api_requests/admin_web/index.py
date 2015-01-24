@@ -63,8 +63,12 @@ class RelayStatus(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Relay Status"))
 		status = cache.get("relay_status")
 		if status:
+			total = 0
 			for relay, count in status.iteritems():
+				total += count
 				self.write("%s: %s listeners<br />" % (relay, count))
+			self.write("<br />")
+			self.write("<b>Total: %s</b>" % total)
 		else:
 			self.write("No relay status available.")
 		self.write(self.render_string("basic_footer.html"))
