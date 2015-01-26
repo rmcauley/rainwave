@@ -43,10 +43,11 @@ var AlbumViewRatingPieChart = function(ctx, json) {
 			max_count += json.rating_histogram[i];
 		}
 	}
-	for (var i in AlbumViewColors) {
+	json.num_song_ratings = max_count;
+	for (i in AlbumViewColors) {
 		if (i in json.rating_histogram) data.push({ "value": Math.round(json.rating_histogram[i] / max_count * 100), "color": AlbumViewColors[i], "highlight": "#FFF", "label": i });
 	}
-	if (data.length == 0) return;
+	if (data.length === 0) return;
 	var chart = new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1, "animationSteps": 40, "tooltipTemplate": "<%if (label){%><%=label%>: <%}%><%= value %>%", });
 };
 
@@ -66,16 +67,18 @@ var AlbumView = function(view, json) {
 	AlbumViewRatingPieChart(cnvs.getContext("2d"), json);
 
 	if (json.rating > 0) {
-		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_rating_ranked_at", { "rating": json.rating, "rank": json.rating_rank }) }));
+		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_rating_ranked_at_v2", { "rating": json.rating, "rating_count": json.num_song_ratings, "rank": json.rating_rank }) }));
 	}
 	if (json.request_count > 0) {
 		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_requests_ranked_at", { "count": json.request_count, "rank": json.request_rank }) }));
 	}
 
-	var cats = $el("div", { "class": "albumview_info" });
-	cats.appendChild($el("span", { "textContent": $l("relevant_categories") }));
-	Groups.append_spans_from_json(cats, json.genres);
-	d.appendChild(cats);
+	if (json.genres.length > 0) {
+		var cats = $el("div", { "class": "albumview_info" });
+		cats.appendChild($el("span", { "textContent": $l("relevant_categories") }));
+		Groups.append_spans_from_json(cats, json.genres);
+		d.appendChild(cats);
+	}
 
 	view.el.appendChild(d);
 

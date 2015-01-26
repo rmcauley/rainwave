@@ -8,6 +8,9 @@ from rainwave.user import User
 def update_line(sid):
 	# Get everyone in the line
 	line = db.c.fetch_all("SELECT username, user_id, line_expiry_tune_in, line_expiry_election, line_wait_start FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE r4_request_line.sid = %s AND radio_requests_paused = FALSE ORDER BY line_wait_start", (sid,))
+	_process_line(line, sid)
+
+def _process_line(line, sid):
 	new_line = []
 	# user_positions has user_id as a key and position as the value, this is cached for quick lookups by API requests
 	# so users know where they are in line
@@ -115,9 +118,7 @@ def get_next(sid, start_at_position = 0):
 						(u.id, song.id, time.time() - entry['line_wait_start'], len(line), request_count, sid))
 			db.c.update("UPDATE phpbb_users SET radio_totalrequests = %s WHERE user_id = %s", (request_count, u.id))
 			song.update_request_count(sid)
-			# If we fully update the line, the user may sneak in and get 2 requests in the same election.
-			# This is not a good idea, so we leave it to the scheduler to issue the full cache update.
-			cache.set_station(sid, "request_line", line, True)
+			_process_line(line, sid)
 			break
 
 	return song

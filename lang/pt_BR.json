@@ -45,6 +45,7 @@
    "requests_reordered"                              : "Pedidos reordenado.",
    "request_queue_paused"                            : "Fila de pedidos pausada.",
    "request_queue_unpaused"                          : "Fila de pedidos despausada.",
+   "no_results"                                      : "Nenhum resultado.",
 
    "__comment__"                 : "API Key Management",
 
@@ -54,32 +55,24 @@
    "create_api_key"                                  : "Criar chave da API",
    "your_numeric_user_id"                            : "Seu ID de usuário numérico",
 
-   "__comment__"                 : "Pretty Printed API Page Words",
-
-   "unrated_songs"                                   : "Músicas não avaliadas",
-   "title"                                           : "Nome",
-   "album_name"                                      : "Álbum",
-   "id"                                              : "ID",
-
    "__comment__"                 : "Menu",
 
+   "station_select_header"                           : "Escolher estação",
    "station_name_1"                                  : "Jogos",
    "station_name_2"                                  : "OC ReMix",
    "station_name_3"                                  : "Covers",
    "station_name_4"                                  : "Chiptune",
    "station_name_5"                                  : "Todas",
 
-   "events_calendar_link"                            : "Eventos da rádio",
+   "events_calendar_link"                            : "Eventos",
    "forums"                                          : "Fórum",
    "login"                                           : "Login",
    "chat"                                            : "Bate-papo",
-
-   "logout_in_forums"                                : "Por favor vá ao fórum para fazer logout.",
-   "your_statistics"                                 : "Suas estatísticas",
-   "your_mobile_app_qr"                              : "Seu código QR para a aplicação Android",
-   
-   "request_song_to_vote_for"                        : "Peça uma música para ser votada",
-   "previouslyplayed"                                : "Tocado anteriormente",
+   "previouslyplayed"                                : "Histórico",
+   "extended_history_link"                           : "Estendido",
+   "extended_history_header"                         : "Histórico estendido",
+   "special_event_on_now"                            : "Evento especial: ",
+   "special_event_alert"                             : "Evento especial na %(station): ",
    
    "tunein"                                          : "Tocar",
    "stop"                                            : "Parar",
@@ -92,6 +85,7 @@
    "__comment__"                 : "Timeline",
 
    "coming_up"                                       : "A seguir",
+   "vote_now"                                        : "Vote agora",
    "now_playing"                                     : "Agora",
    "election"                                        : "Eleição",
    "power_hour"                                      : "Power Hour",
@@ -101,8 +95,10 @@
    "voting_results_were"                             : "Resultado dos votos:",
    "click_here_to_start_voting"                      : "Clique aqui para votar em qual música você quer ouvir a seguir!",
    "played_ago"                                      : "Tocada há %(time)",
-   "timeline_art__request_indicator"                 : "PEDIDO",
-   "timeline_art__your_request_indicator"            : "SEU",
+   "timeline_art__request_indicator"                 : "Pedido",
+   "timeline_art__your_request_indicator"            : "Seu",
+
+   "event_naming__oneup"                             : "%(name) Power Hour",
 
    "__comment__"                 : "Tip Jar",
 
@@ -128,6 +124,13 @@
    "rating_spread"                                   : "Distribuição da avaliação",
    "average_rating_by_station"                       : "Avaliação média por estação",
 
+   "your_mobile_app_qr"                              : "Seu QR Code para a aplicação Android",
+   "manage_your_api_keys"                            : "Gerenciar suas chaves da API.",
+   "logout_in_forums"                                : "Por favor vá ao fórum para efetuar logout.",
+   "view_your"                                       : "Ver seus: ",
+   "recent_votes"                                    : "votos recentes",
+   "request_history"                                 : "histórico de pedidos",
+
    "__comment__"                 : "Other",
 
    "redownload_m3u"                                  : "Você está tocando? Se você acaba de fazer login por favor baixe novamente o playlist.",
@@ -147,21 +150,24 @@
 
    "__comment__"                 : "About Window",
 
+   "about_window_header"                             : "Sobre a Rainwave",
    "staff_list_header"                               : "Equipe",
    "relay_sponsors_header"                           : "Transmissores",
    "translators_header"                              : "Tradutores",
-   "icon_attribution"                                : "Atribuição dos ícones",
+   "icon_attribution"                                : "Atribuição de direitos autorais dos ícones",
    "design_by"                                       : "Design do site",
-   "donate_and_paypal_info"                          : "Clique aqui para doações",
-   "open_sourced_at_github"                          : "A Rainwave é código aberto, disponível no GitHub",
+   "donation_info_label"                             : "Informações para doações",
+   "donation_info_link"                              : "Detalhes",
+   "github_info_label"                               : "Repositório de código aberto da Rainwave",
+   "github_info_link"                                : "Ver no GitHub",
 
    "__comment__"                 : "Playlist View",
 
    "filter"                                          : "Digite em qualuqer lugar para filtrar",
    "typeanywhere"                                    : "Basta começar a digitar!",
    "clearfilter"                                     : "Limpar filtro",
-   "album_rating_ranked_at"                          : "Avaliado em %(rating), #(rank) no ranking.",
-   "album_requests_ranked_at"                        : "Pedida %(count) &(count:vez/vezes), #(rank) no ranking.",
+   "album_rating_ranked_at_v2"                       : "Avaliado em %(rating) por %(rating_count) avaliações, %(rank)º no ranking.",
+   "album_requests_ranked_at"                        : "Pedida %(count) &(count:vez/vezes), %(rank)º no ranking.",
    "Request"                                         : "Pedir",
    "Albums"                                          : "Álbuns",
    "Artists"                                         : "Artistas",
@@ -171,17 +177,23 @@
    "songs_from"                                      : "Músicas da estação %(station)",
    "album_on_station"                                : "Na estação %(station): %(album)",
    "groups_tab_title"                                : "Categorias",
+   "relevant_categories"                             : "Categorias relevantes: ",
 
    "__comment__"                 : "Requests",
 
    "clear_request_queue"                             : "Limpar todos",
    "pause_request_queue"                             : "Pausar",
    "request_fill_with_unrated"                       : "Encher com não avaliadas",
+   "request_fill_with_faves"                         : "Encher com favoritas",
 
    "Requests"                                        : "Pedidos",
-   "requests_expiring"                               : "Pedidos - Perdendo seu lugar na fila!",
-   "requests_all_on_cooldown"                        : "Pedidos - Nenhum pedido disponível!",
-   "request_you_are_x_in_line"                       : "Pedidos - #(position) na fila",
+   "requests_expiring"                               : "Vai perder seu lugar na fila!",
+   "requests_all_on_cooldown"                        : "Nenhum pedido disponível!",
+   "request_you_are_x_in_line"                       : "%(position)º na fila",
+
+   "request_grab_tag__warning"                       : "Aviso",
+   "request_grab_tag__paused"                        : "Pausado",
+   "requests_grab_tab__num_requests"                 : "%(num_requests) &(num_requests:Pedido/Pedidos)",
    
    "cancel_request"                                  : "Cancelar pedido",
    "request_on_cooldown_for"                         : "Em repouso por %(cool_time).",
@@ -211,20 +223,32 @@
 
    "__comment__"                 : "Preferences",
 
-   "prefs_small_menu"                                : "Menu pequeno",
+   "preferences"                                     : "Preferências",
+   "yes"                                             : "Sim",
+   "no"                                              : "Não",
+   "site_mode"                                       : "Modo do site",
+   "basic"                                           : "Básico",
+   "full"                                            : "Completo",
    "change_language"                                 : "Idioma",
-   "tab_title_preferences"                           : "Títulod a aba",
+   "timeline_preferences"                            : "Linha do tempo",
+   "tab_title_preferences"                           : "Título da aba",
+   "prefs_notify"                                    : "Exibir notificações quanto tocar as músicas",
    "prefs_show_clock_in_titlebar"                    : "Exibir relógio no título",
    "prefs_show_rating_in_titlebar"                   : "Exibir avaliação no título",
    "prefs_show_title_in_titlebar"                    : "Exibir nome da música no título",
+   "prefs_sticky_history_size"                       : "Número de músicas a serem sempre exibidas no histórico",
+   "prefs_sticky_history_size__none"                 : "Nenhuma",
    "playlist_preferences"                            : "Lista de álbuns",
-   "prefs_playlist_sort_available_first"             : "Ordenar repousados por último",
-   "prefs_playlist_sort_faves_first"                 : "Ordenar favoritos primeiro",
-   "prefs_playlist_show_rating_complete"             : "Exibir avaliações incompletas",
-   "prefs_playlist_sort_by"                          : "Ordenar por",
-   "prefs_sort_playlist_by_alpha"                    : "Nome",
+   "prefs_playlist_sort_available_first"             : "Ordenar disponíveis no topo",
+   "prefs_playlist_sort_faves_first"                 : "Ordenar favoritos no topo",
+   "prefs_playlist_show_rating_complete"             : "Exibir avaliações incompletas em laranja",
+   "prefs_playlist_sort_by"                          : "Ordenar álbuns por",
+   "prefs_playlist_show_escape_icon"                 : "Exibir ícone ESC",
+   "prefs_sort_playlist_by_alpha"                    : "Ordem alfabética",
    "prefs_sort_playlist_by_rating_user"              : "Avaliação",
    "prefs_sort_playlist_by_cool"                     : "Repouso",
+   "prefs_show_artists"                              : "Exibir artistas na linha do tempo",
+   "prefs_show_losing_songs"                         : "Exibir músicas que perderam a eleição",
    "m3u_downloads"                                   : "Downloads de M3U",
    "skip_intro_mode"                                 : "Pular modo introdutório",
    "do_intro_mode"                                   : "Voltar ao modo introdutório",
@@ -235,5 +259,36 @@
    "timeformat_d"                                    : "d ",
    "timeformat_h"                                    : "h ",
    "timeformat_m"                                    : "m ",
-   "timeformat_s"                                    : "s "
+   "timeformat_s"                                    : "s ",
+
+   "__comment__"                 : "Raw API Pages (statistics, etc)",
+
+   "unrated_songs"                                   : "Músicas não avaliadas",
+   "title"                                           : "Título",
+   "album_name"                                      : "Nome do álbum",
+   "id"                                              : "ID",
+   "sid"                                             : "ID da estação",
+   "delete"                                          : "Apagar",
+   "all_faves"                                       : "Todos os favoritos",
+   "rating_user"                                     : "Avaliação do usuário",
+   "fave"                                            : "Favorito",
+   "rating"                                          : "Avaliação média",
+   "album_id"                                        : "ID do álbum",
+   "playback_history"                                : "Histórico - Extendido",
+   "name"                                            : "Nome",
+   "song_rating"                                     : "Avaliação",
+   "top_100"                                         : "100 melhores",
+   "song_rating_count"                               : "Nº de avaiações",
+   "origin_sid"                                      : "Estação",
+   "user_recent_votes"                               : "Seus votos recentes",
+   "user_requested_history"                          : "Seu histórico de pedidos",
+
+   "__comment__"                 : "Admin Panel Lines (translation not required)",
+
+   "time"                                            : "Time",
+   "type"                                            : "Type",
+   "file"                                            : "File",
+   "error"                                           : "Error",
+   "url"                                             : "URL",
+   "sched_length_minutes"                            : "Length (min.)"
 }

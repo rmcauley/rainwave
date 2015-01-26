@@ -29,6 +29,7 @@ class IcecastHandler(RainwaveHandler):
 		if not self.relay:
 			self.set_status(403)
 			self.append("%s is not a valid relay." % self.request.remote_ip)
+			log.debug("ldetect", "%s is not a valid relay." % self.request.remote_ip)
 			self.finish()
 			return
 
@@ -50,6 +51,8 @@ class IcecastHandler(RainwaveHandler):
 			if isinstance(exc, APIException):
 				exc.localize(self.locale)
 				self.set_header("icecast-auth-message", exc.reason)
+			log.debug("ldetect", "Relay command failed: %s" % exc.reason)
+			log.exception("ldetect", "Exception encountered handling relay command.", exc)
 		super(IcecastHandler, self).finish()
 
 	def append(self, message, dct = None):
@@ -101,14 +104,14 @@ class AddListener(IcecastHandler):
 				"SET sid = %s, listener_ip = %s, listener_purge = FALSE, listener_icecast_id = %s, listener_relay = %s, listener_agent = %s "
 				"WHERE user_id = %s",
 				(sid, self.get_argument("ip"), self.get_argument("client"), self.relay, self.agent, self.user_id))
-			self.append("Registered user %s record updated to be tuned in to %s." % (self.user_id, sid))
+			self.append("%s update: %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent))
 			self.failed = False
 		else:
 			db.c.update("INSERT INTO r4_listeners "
 				"(sid, user_id, listener_ip, listener_icecast_id, listener_relay, listener_agent) "
 				"VALUES (%s, %s, %s, %s, %s, %s)",
 				(sid, self.user_id, self.get_argument("ip"), self.get_argument("client"), self.relay, self.agent))
-			self.append("Registered user %s is now tuned in." % self.user_id)
+			self.append("%s new   : %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent))
 			self.failed = False
 		if not self.failed:
 			u = user.User(self.user_id)
@@ -129,7 +132,7 @@ class AddListener(IcecastHandler):
 					"VALUES (%s, %s, %s, %s, %s, %s)",
 				(sid, self.get_argument("ip"), 1, self.relay, self.get_argument("agent"), self.get_argument("client")))
 			sync_to_front.sync_frontend_ip(self.get_argument("ip"))
-			self.append("Anonymous user from IP %s is now tuned in with record." % self.get_argument("ip"))
+			self.append("%s new   : %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent))
 			self.failed = False
 		else:
 			# Keep one valid entry on file for the listener by popping once
@@ -139,7 +142,7 @@ class AddListener(IcecastHandler):
 				db.c.update("DELETE FROM r4_listeners WHERE listener_icecast_id = %s", (records.pop(),))
 				log.debug("ldetect", "Deleted extra record for icecast ID %s from IP %s." % (self.get_argument("client"), self.get_argument("ip")))
 			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE WHERE listener_ip = %s", (self.get_argument("client"), self.get_argument("ip")))
-			self.append("Anonymous user from IP %s record updated." % self.get_argument("ip"))
+			self.append("%s update: %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent))
 			self.failed = False
 		sync_to_front.sync_frontend_ip(self.get_argument("ip"))
 
@@ -158,17 +161,17 @@ class RemoveListener(IcecastHandler):
 		listener = db.c.fetch_row("SELECT user_id, listener_ip FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
 								 (self.relay, self.get_argument("client")))
 		if not listener:
-			return self.append("No user record to delete for client %s on relay %s." % (self.get_argument("client"), self.relay))
+			self.append("      RMFAIL: %s %s %s." % (sid, '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
+			return
 
 		db.c.update("UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_relay = %s AND listener_icecast_id = %s", (self.relay, self.get_argument("client")))
 		if listener['user_id'] > 1:
-			self.append("Registered user ID %s flagged for removal." % (listener['user_id'],))
 			db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s", (time.time() + 600, listener['user_id']))
 			cache.set_user(listener['user_id'], "listener_record", None)
 			sync_to_front.sync_frontend_user_id(listener['user_id'])
 		else:
-			self.append("Anonymous user, client ID %s relay %s flagged for removal." % (self.get_argument("client"), self.relay))
 			sync_to_front.sync_frontend_ip(listener['listener_ip'])
+		self.append("%s remove: %s %s %s." % ('{:<5}'.format(listener['user_id']), sid, '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
 		self.failed = False
 
 # Compatible with R4 beta relay

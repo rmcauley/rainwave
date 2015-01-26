@@ -104,6 +104,9 @@ class APIServer(object):
 		cache.connect()
 		memory_trace.setup(port_no)
 
+		buildtools.bake_css()
+		buildtools.bake_js()
+
 		api.locale.load_translations()
 		api.locale.compile_static_language_files()
 
@@ -153,11 +156,6 @@ class APIServer(object):
 
 		if config.get("api_user") and config.get("api_group"):
 			chuser.change_user(config.get("api_user"), config.get("api_group"))
-
-		if task_id == 0:
-			buildtools.bake_css()
-			# buildtools.bake_js()
-			buildtools.bake_beta_js()
 
 		for request in request_classes:
 			log.debug("start", "   Handler: %s" % str(request))

@@ -154,5 +154,11 @@ class AssociatedMetadata(object):
 			db.c.update(self.delete_self_query, (self.id,))
 
 	def to_dict(self, user = None):
+		d = {}
+		d['id'] = self.id
+		d['name'] = self.data['name']
+		return d
+
+	def to_dict_full(self, user = None):
 		self.data['id'] = self.id
 		return self.data

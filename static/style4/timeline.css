@@ -36,15 +36,11 @@ body.unselectable #timeline {
 
 body.stage_0 #timeline, body.stage_1 #timeline, body.stage_2 #timeline {
 	width: 100% !important;
-	overflow: hidden;
 }
 
-body.stage_3 #timeline {
-	overflow: hidden;
-}
-
-body.stage_0 #timeline_scrollbar, body.stage_1 #timeline_scrollbar, body.stage_2 #timeline_scrollbar {
-	display: none;
+body.stage_in_transition #timeline {
+	width: 110% !important;
+	overflow: hidden !important;
 }
 
 body.small_screen #timeline {
@@ -64,31 +60,31 @@ div.timeline_event {
 	position: relative;
 	width: 100%;
 	margin-top: 10px;
-	@include transition-wtime(1s, opacity, transform, margin-top);
+	@include transition-wtime(1s, opacity, transform, margin);
 	opacity: 1;
 }
 
-body.stage_0 div.timeline_event:nth-child(n+4), body.stage_1 div.timeline_event:nth-child(n+4) {
+body.stage_0 div.timeline_next, body.stage_1 div.timeline_next {
 	opacity: 0;
 	visibility: hidden;
 }
 
-body.stage_2 div.timeline_event:nth-child(n+5), body.stage_3 div.timeline_event:nth-child(n+5) {
+body.stage_2 div.timeline_next_1, body.stage_3 div.timeline_next_1,
+body.stage_2 div.timeline_next_2, body.stage_3 div.timeline_next_2,
+body.stage_2 div.timeline_next_3, body.stage_3 div.timeline_next_3,
+body.stage_2 div.timeline_next_4, body.stage_3 div.timeline_next_4,
+body.stage_2 div.timeline_next_5, body.stage_3 div.timeline_next_5 {
 	opacity: 0;
 	visibility: hidden;
-}
-
-div.timeline_event_closing {
-	overflow: hidden;
 }
 
 div.timeline_song {
 	clear: both;
 	position: relative;
 	cursor: default;
-	-webkit-transition: height $transtime, opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
-	-ms-transition: height $transtime, opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
-	transition: height $transtime, opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out 0s;
+	-webkit-transition: height $transtime, opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
+	-ms-transition: height $transtime, opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
+	transition: height $transtime, opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
 	background-image: url(/static/images4/vote_hover.png);
 	background-position: -678px 0px;
 	background-repeat: no-repeat;
@@ -97,6 +93,11 @@ div.timeline_song {
 
 body.small_screen div.timeline_song {
 	height: $art_small_thumbnail_size;
+}
+
+div.timeline_event_closing div.timeline_song {
+	height: 0px;
+	overflow: hidden;
 }
 
 div.timeline_song div.title, div.timeline_song div.album, div.timeline_song div.artist, div.timeline_song div.cooldown_info, div.timeline_song a.song_link {
@@ -109,11 +110,11 @@ div.timeline_song div.album_group {
 	clear: right;
 }
 
-div.timeline_song span.album_name {
+#timeline div.timeline_song span.album_name, #timeline div.timeline_song div.artist span {
 	@include transition-wtime(250ms, background-color, padding);
 }
 
-#timeline div.timeline_song.voting_enabled span.album_name:hover {
+#timeline div.timeline_song.voting_enabled span.album_name:hover, #timeline div.timeline_song.voting_enabled div.artist span.link:hover {
 	background-color: #264499;
 	padding: 0 10px;
 }
@@ -128,7 +129,7 @@ div.timeline_song_content > div, div.timeline_song_content div.album_group .link
 	color: $song_subinfo_color;
 }
 
-div.timeline_song_content div.album_group .link.rating_title_el_fave {
+div.timeline_song_content div.album.rating_title_el_fave span.link {
 	color: $fave_color;
 }
 
@@ -140,25 +141,74 @@ div.timeline_song_content div.title.rating_title_el_fave {
 	color: $fave_color;
 }
 
+div.timeline_song_content div.entry_votes {
+	display: none;
+	float: right;
+	padding-right: .5em;
+	color: $darktext;
+}
+
+div.timeline_showing_losers div.timeline_now_playing div.timeline_song_content div.entry_votes {
+	display: block;
+}
+
 div.timeline_song_content div.artist, div.timeline_song_content div.votes, div.timeline_song_content div.cooldown_info, div.timeline_song a.song_link {
 	display: none;
 }
 
-div.timeline_song div.requester {
+div.timeline_song a.song_link {
+	color: $text;
+}
+
+div.timeline_song a.song_link:hover, div.timeline_song a.song_link:hover span {
+	color: $linkhover;
+}
+
+body.show_artists div#timeline div.timeline_next div.timeline_song_content div.artist, body.show_artists div#timeline div.timeline_next div.timeline_song_content div.album_group {
+	display: block;
+	font-size: 0.9em;
+} 
+
+body.show_artists div#timeline div.timeline_song_content div.artist span:first-child, body.show_artists div#timeline div.timeline_song_content span.album_name:first-child {
+	margin-left: 15px;
+}
+
+div.timeline_song div.request_indicator, div.timeline_song div.requester {
+	box-sizing: border-box;
 	position: absolute;
-	@include transition(opacity);
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: x-small;
+	background: $highlight;
+	@include transition(opacity, LINKCOLOR);
+	text-align: left;
+	text-transform: uppercase;
+}
+
+div.timeline_song div.requester {
+	z-index: 5;
+	padding-left: 1.5em;
+	cursor: pointer;
+}
+
+div.timeline_song div.requester:hover {
+	color: $linkhover;
+}
+
+div.timeline_song div.request_indicator {
+	text-align: right;
+	z-index: 4;
+	opacity: 1;
+	padding-right: 1.5em;
+
 	@include transform(rotate(-90deg) translateX(-100%)); 
 	-webkit-transform-origin: 0% 0%;
 	        transform-origin: 0% 0%;
-	width: 100%;
-	font-size: x-small;
-	z-index: 5;
-	text-align: center;
-	background: $highlight;
-	opacity: 1;
 }
 
-div.timeline_song div.art_expandable.art_expanded div.requester {
+div.timeline_song div.art_expandable.art_expanded div.requester, div.timeline_song div.art_expandable.art_expanded div.request_indicator {
 	opacity: 0;
 }
 
@@ -262,7 +312,10 @@ img.art_image {
 
 /* NOW PLAYING MODIFICATIONS */
 
-div.timeline_now_playing div.timeline_song, body.small_screen div.timeline_now_playing div.timeline_song {
+div.timeline_not_showing_losers div.timeline_song.timeline_losing_song,
+div.timeline_event.timeline_history div.timeline_song.timeline_losing_song,
+body.small_screen div.timeline_not_showing_losers div.timeline_song.timeline_losing_song, 
+body.small_screen div.timeline_event.timeline_history div.timeline_song.timeline_losing_song {
 	opacity: 0;
 	height: 0px;
 	overflow: hidden;
@@ -320,10 +373,19 @@ div.timeline_now_playing_song div.timeline_song_content > div, div.timeline_now_
 }
 
 div.timeline_header_vote_result {
-	margin-top: 30px;
+	margin-top: 0px;
+	height: 0;
 	text-align: center;
 	color: $darktext;
 	font-size: small;
+	overflow: hidden;
+
+	@include transition(margin, height);
+}
+
+div.timeline_not_showing_losers div.timeline_now_playing div.timeline_header_vote_result {
+	margin-top: 30px;
+	height: 1.2em;
 }
 
 div.timeline_header_vote_result span.self_voted_result {
@@ -346,12 +408,12 @@ div.timeline_now_playing div.timeline_header_bar {
 	margin-top: 30px;
 }
 
-div.timeline_now_playing div.timeline_header_vote_result + div.timeline_header_bar {
+div.timeline_not_showing_losers div.timeline_now_playing div.timeline_header_vote_result + div.timeline_header_bar {
 	margin-top: 5px;
 }
 
 div.timeline_header_bar_inside {
-	background-color: $highlight;
+	background-color: $orange;
 	height: 2px;
 	margin: 0px;
 	padding: 0px;
@@ -393,7 +455,7 @@ div.timeline_header {
 }
 
 div.timeline_now_playing div.timeline_header {
-	color: $highlight;
+	color: $orange;
 }
 
 span.timeline_header_clock {
@@ -405,7 +467,7 @@ body.show_pageclock span.timeline_header_clock {
 	display: block;
 }
 
-div.voting_enabled {
+div.voting_enabled div.timeline_song_content {
 	cursor: pointer;
 }
 

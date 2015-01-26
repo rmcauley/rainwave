@@ -11,6 +11,8 @@ class TipJarContents(APIHandler):
 	allow_get = True
 	login_required = False
 	pagination = True
+	sid_required = False
+	auth_required = False
 
 	def post(self):
 		self.append(self.return_name,
@@ -24,6 +26,9 @@ class TipJarContents(APIHandler):
 
 @handle_api_html_url("tip_jar")
 class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
+	login_required = False
+	auth_required = False
+
 	def get(self):
 		self.write(self.render_string("basic_header.html", title=self.locale.translate("tip_jar")))
 		self.write("<p>%s</p>" % self.locale.translate("tip_jar_opener"))

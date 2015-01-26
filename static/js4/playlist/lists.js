@@ -24,7 +24,6 @@ PlaylistLists = function() {
 		Prefs.define("playlist_sort", self.sorting_methods);
 		Prefs.define("playlist_sort_faves_first", [ false, true ]);
 		Prefs.define("playlist_sort_available_first", [ true, false ]);
-		Prefs.define("playlist_show_rating_complete", [ false, true ]);
 		Prefs.define("searchlist_show_cooldown");
 		Prefs.define("playlist_show_escape_icon", [ true, false ]);
 
@@ -68,7 +67,7 @@ PlaylistLists = function() {
 
 	self.intro_mode_first_open = function() {
 		if (!self.active_list) self.change_visible_list(lists.all_albums);
-	}
+	};
 
 	self.change_visible_list = function(change_to, do_not_hit_api) {
 		if (self.active_list == change_to) {
@@ -87,7 +86,7 @@ PlaylistLists = function() {
 		self.active_list.el.parentNode.style.display = "block";
 		$add_class(self.active_list.tab_el, "list_tab_open");
 		if (!do_not_hit_api && !self.active_list.loaded) self.active_list.load_from_api();
-		docCookies.setItem("r4_active_list", change_to.list_name, Infinity, "/", BOOTSTRAP.cookie_domain)
+		docCookies.setItem("r4_active_list", change_to.list_name, Infinity, "/", BOOTSTRAP.cookie_domain);
 		self.active_list.do_searchbar_style();
 		self.active_list.recalculate(true);
 		self.active_list.reposition();

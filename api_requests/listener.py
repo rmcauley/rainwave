@@ -58,7 +58,7 @@ class ListenerDetailRequest(APIHandler):
 
 		user['requests_by_source_station'] = db.c.fetch_all("SELECT song_origin_sid AS sid, COUNT(request_id) AS requests "
 													"FROM r4_request_history JOIN r4_songs USING (song_id) "
-													"WHERE user_id = %s "
+													"WHERE user_id = %s AND song_verified = TRUE "
 													"GROUP BY song_origin_sid",
 													(self.get_argument("id"),))
 

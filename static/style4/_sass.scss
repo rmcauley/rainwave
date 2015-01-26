@@ -1,3 +1,5 @@
+@option compress:yes;
+
 $img_dir: ../../images;
 
 $background: #000000;
@@ -5,11 +7,13 @@ $text: #FFF;
 $darktext: #CCC;
 $vdarktext: #777;
 $vvdarktext: #444;
-$highlight: #1f95e5;
+$orange: #f7941e;
+$highlight: #35adff;
 $link: #6cf6ff;
 $linkhover: #a7e1ff;
 $donorcolor: #FF0;
-$transtime: 700ms cubic-bezier(0.165, 0.84, 0.44, 1);
+$transfunc: cubic-bezier(0.165, 0.84, 0.44, 1);
+$transtime: 700ms $transfunc;
 $hovercolor: #143347;
 $hovercolor-border: #1a435e;
 $cooldown-color: #282a54;
@@ -26,6 +30,16 @@ $fave_color: #f7ff9f;
 	-webkit-transform: $transform_string;
 	-ms-transform: $transform_string;
 	transform: $transform_string;
+}
+
+@mixin transition-delay($t) {
+	-webkit-transition-delay: $t;
+	transition-delay: $t;
+}
+
+@mixin transition-duration($t) {
+	-webkit-transition-duration: $t;
+	transition-duration: $t;
 }
 
 @mixin transition-wtime($customtime, $trans...) {
@@ -71,13 +85,17 @@ html, body {
 	margin: 0;
 	padding: 0;
 	opacity: 1;
-	font-family: Helvetica, sans-serif;
+	font-family: 'Roboto Condensed', 'Helvetica Neue', 'Helvetica', sans-serif;
 	overflow: hidden;
 	background: #1c1d1f;
 }
 
 body.small_screen {
-	font-size: smaller;
+	font-size: 90%;
+}
+
+body.mobile_screen {
+	background: #131416;
 }
 
 body.loading {
@@ -93,7 +111,9 @@ body.loading * {
 #sizable_body {
 	overflow: hidden;
 	position: relative;
+	z-index: 1;
 	width: 100%;
+	@include transition-wtime(300ms, opacity);
 }
 
 .debug_div {
@@ -121,6 +141,7 @@ body.loading * {
 	position: absolute;
 	z-index: 1000;
 	width: 100%;
+	@include transition-wtime(300ms, opacity);
 }
 
 #messages div {

@@ -48,7 +48,7 @@ var EventBase = function(json) {
 		self.songs = [];
 		if ("songs" in json) {
 			for (var i = 0; i < json.songs.length; i++) {
-				self.songs.push(TimelineSong.new(json.songs[i]));
+				self.songs.push(TimelineSong.create(json.songs[i]));
 			}
 		}
 	}
@@ -106,11 +106,12 @@ var EventBase = function(json) {
 		$remove_class(self.el, "timeline_next");
 		self.set_header_text();
 		Clock.pageclock = self.elements.header_clock;
+		var i;
 		if (self.songs && (self.songs.length > 1)) {
 			// other places in the code rely on songs[0] to be the winning song
 			// make sure we sort properly for that condition here
 			header_vote_result.appendChild($el("span", { "textContent": $l("voting_results_were") + " " }));
-			for (var i = 0; i < self.songs.length; i++) {
+			for (i = 0; i < self.songs.length; i++) {
 				header_vote_result.appendChild($el("span", { "textContent": self.songs[i].data.entry_votes }));
 				if ($has_class(self.songs[i].el, "voting_registered")) {
 					header_vote_result.lastChild.className = "self_voted_result";
@@ -128,7 +129,26 @@ var EventBase = function(json) {
 		else if (self.songs && (self.songs.length > 0)) {
 			$add_class(self.songs[0].el, "timeline_now_playing_song");
 		}
+		for (i = 1; i < self.songs.length; i++) {
+			$add_class(self.songs[i].el, "timeline_losing_song");
+		}
 		$add_class(self.el, "timeline_now_playing");
+	};
+
+	self.change_to_history = function() {
+		if ($has_class(self.el, "timeline_history")) return;
+		// we shouldn't have to do this sort (or I have a problem in the API)
+		// but just to be sure, a quick sort of a 3-length array won't kill us
+		self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
+		// neither will reclassing the songs that lost
+		for (var i = 1; i < self.songs.length; i++) {
+			$add_class(self.songs[i].el, "timeline_losing_song");
+		}
+		now_playing = false;
+		$remove_class(self.el, "timeline_next");
+		$remove_class(self.el, "timeline_now_playing");
+		$remove_class(self.songs[0].el, "timeline_now_playing_song");
+		$add_class(self.el, "timeline_history");
 	};
 
 	self.enable_voting = function() {
@@ -177,20 +197,15 @@ var EventBase = function(json) {
 	};
 
 	self.set_header_text = function() {
-		if (self.type == "OneUp") {
-			header_text.textContent = current_header_default_text + " - " + self.name + " " + $l("power_hour");
+		var event_desc = Formatting.event_name(self.type, self.name);
+		if (event_desc && !self.data.voting_allowed) {
+			header_text.textContent = current_header_default_text + " - " + event_desc;
 		}
-		else if (self.type != "Election" && $l_has(self.type.toLowerCase())) {
-			header_text.textContent = current_header_default_text + " - " + $l(self.type.toLowerCase());
-			if (self.name) {
-				header_text.textContent += " - " + self.name;
-			}
+		else if (event_desc && self.data.voting_allowed) {
+			header_text.textContent = event_desc + " - " + $l("vote_now");
 		}
-		else if (!now_playing && self.type == "Election" && self.data.voting_allowed) {
-			header_text.textContent = current_header_default_text + " - " + $l("vote_now");
-		}
-		else if (self.name) {
-			header_text.textContent = current_header_default_text + " - " + self.name;
+		else if (self.data.voting_allowed) {
+			header_text.textContent = current_header_default_text + " - " + $l("vote_now");;	
 		}
 		else {
 			header_text.textContent = current_header_default_text;
@@ -225,6 +240,7 @@ var EventBase = function(json) {
 	};
 
 	self.progress_bar_start = function() {
+		if (MOBILE) return;
 		progress_bar_update();
 		header_inside_bar.style.opacity = 1;
 		Clock.pageclock_bar_function = progress_bar_update;

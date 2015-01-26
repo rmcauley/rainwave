@@ -4,9 +4,8 @@ var TimelineSong = function() {
 	cls.calculate_height = function() {
 		cls.height = SmallScreen ? 55 : 70;
 	};
-	cls.calculate_height();
 
-	cls.new = function(json, request_mode) {
+	cls.create = function(json, request_mode) {
 		var self = {};
 		self.data = json;
 		self.elements = {};
@@ -31,10 +30,10 @@ var TimelineSong = function() {
 
 		var draw = function() {
 			self.el = $el("div", { "class": "timeline_song" });
-			
+
 			if (request_mode) {
 				self.elements.request_cancel = $el("div", { "class": "request_cancel", "textContent": "x" });
-				self.elements.request_cancel.addEventListener("click", function() { Requests.delete(self.data.id); });
+				self.elements.request_cancel.addEventListener("click", function() { Requests.remove(self.data.id); });
 				self.el.appendChild(self.elements.request_cancel);
 			}
 
@@ -50,25 +49,32 @@ var TimelineSong = function() {
 				$add_class(self.el, "requested");
 				self.elements.requester = self.elements.album_art.firstChild.appendChild($el("div", { 
 					"class": "requester",
+					"textContent": self.data.elec_request_username
+				}));
+				self.elements.request_indicator = self.elements.album_art.firstChild.appendChild($el("div", { 
+					"class": "request_indicator",
 					"textContent": $l("timeline_art__request_indicator")
 				}));
 				if (self.data.elec_request_user_id == User.id) {
+					$add_class(self.elements.request_indicator, "your_request");
 					$add_class(self.elements.requester, "your_request");
 					self.elements.requester.textContent = $l("timeline_art__your_request_indicator");
 					if (Prefs.get("stage") < 4) {
 						Prefs.change("stage", 4);
 					}
 				}
+				self.elements.requester.addEventListener("click", function() { DetailView.open_listener(self.data.elec_request_user_id); });
 			}
 
 			// c for content, this stuff should be pushed aside from the album art 
 			var c = $el("div", { "class": "timeline_song_content" });
 			
-			var title_group = c.appendChild($el("div", { "class": "title_group" }));
+			self.elements.title_group = c.appendChild($el("div", { "class": "title_group" }));
 
-			if (song_rating) title_group.appendChild(song_rating.el);
+			if (song_rating) self.elements.title_group.appendChild(song_rating.el);
 
-			self.elements.title = title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title, "title": self.data.title }));
+			self.elements.entry_votes = self.elements.title_group.appendChild($el("div", { "class": "entry_votes", "textContent": self.data.entry_votes }));
+			self.elements.title = self.elements.title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title, "title": self.data.title }));
 			self.el.addEventListener("mouseover", self.title_mouse_over);
 			self.el.addEventListener("mouseout", self.title_mouse_out);
 			self.el.addEventListener("click", self.vote);	
@@ -103,6 +109,9 @@ var TimelineSong = function() {
 				self.update_cooldown_info();
 			}
 
+			if (song_rating) song_rating.reset_fave();
+			if (album_rating) album_rating.reset_fave();
+
 			self.el.appendChild(c);
 		};
 
@@ -114,13 +123,18 @@ var TimelineSong = function() {
 
 		self.title_mouse_out = function(e) {
 			$remove_class(self.el, "voting_hover");
-		}
+		};
 
 		self.update = function(new_json) {
 			self.data = new_json;
 			self.data.entry_position = new_json.entry_position;
+			self.data.entry_votes = new_json.entry_votes;
+			self.elements.entry_votes.textContent = self.data.entry_votes;
 			if (song_rating) song_rating.update(new_json.rating_user, new_json.rating, new_json.fave, new_json.rating_allowed);
-			if (album_rating) album_rating.update(new_json.albums[0].rating_user, new_json.albums[0].rating, new_json.albums[0].fave, false);
+			if (album_rating) {
+				album_rating.update(new_json.albums[0].rating_user, new_json.albums[0].rating, new_json.albums[0].fave, false);
+				album_rating.update_rating_complete(new_json.albums[0].rating_complete);
+			}
 			self.update_cooldown_info();
 		};
 

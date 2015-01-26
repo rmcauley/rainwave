@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>R4 Admin</title>
-<script src="../static/js/0_lyre-ajax.js" type="application/x-javascript"></script>
+<script src="../static/old-lyre-ajax.js" type="application/x-javascript"></script>
 <script type="application/x-javascript">
 	lyre.setURLPrefix("{{ api_url }}");
 	lyre.setUserID("{{ user_id }}");
@@ -53,7 +53,8 @@
 	function change_screen() {
 		lyre.setStationID(current_station);
 		window.frames.tool.location.href = "tools/" + current_tool + "?sid=" + current_station;
-		window.frames.selector.location.href="album_list/" + current_tool + "?restrict=" + current_restriction;
+		var new_selector_url = 
+		window.frames.selector.location.href = "album_list/" + current_tool + "?sid=" + current_station + "&restrict=" + current_restriction;
 
 		var t = window.frames.tool_list.document.getElementsByTagName("a");
 		for (var i = 0; i < t.length; i++) {
@@ -85,7 +86,7 @@
 		<frame src="tool_list" name="tool_list" />
 		<frame src="station_list" name="station_list" />
 		<frame src="restrict_songs" name="restrict_songs" />
-		<frame src="/blank" name="debug" />
+		<frame src="relay_status" name="debug" />
 	</frameset>
 	<frameset cols="33%, *">
 		<frame src="tools/scan_results" name="tool" />

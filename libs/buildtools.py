@@ -1,27 +1,37 @@
-import scss
-from scss import Scss
 import os
-from jsmin import jsmin
+import warnings
+from slimit import minify
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    import scss
+    from scss import Scss
 
-scss.config.LOAD_PATHS = os.path.dirname(__file__) + "/../static/style4"
+scss.config.LOAD_PATHS = os.path.join(os.path.dirname(__file__), "..", "static", "style4")
 
 def create_baked_directory():
 	d = os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()))
 	if not os.path.exists(d):
 		os.makedirs(d)
+		return True
+	return False
 
 def bake_css():
 	create_baked_directory()
-	# _bake_css_file(os.path.join(os.path.dirname(__file__), "../static/style/_sass.scss"),
-	# 			   os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style.css"))
-	_bake_css_file(os.path.join(os.path.dirname(__file__), "../static/style4/_sass.scss"),
-				   os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()), "style4.css"))
+	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style4.css")
+	if not os.path.exists(wfn):
+		_bake_css_file(os.path.join(os.path.dirname(__file__), "..", "static", "style4", "_sass.scss"), wfn)
 
+def bake_beta_css():
+	create_baked_directory()
+	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style4b.css")
+	_bake_css_file(os.path.join(os.path.dirname(__file__), "..", "static", "style4", "_sass.scss"), wfn)
 
 def _bake_css_file(input_filename, output_filename):
 	css_f = open(input_filename, 'r')
 	css_content = Scss().compile(css_f.read())
 	css_f.close()
+
+	# css_content = compress(css_content)
 
 	dest = open(output_filename, 'w')
 	dest.write(css_content)
@@ -44,17 +54,19 @@ def get_js_file_list_url():
 		return result
 	return get_js_file_list()
 
-def bake_js(source_dir="js", dest_file="script.js"):
+def bake_js(source_dir="js4", dest_file="script4.js"):
 	create_baked_directory()
-	o = open(os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), dest_file), "w")
-	for fn in get_js_file_list(source_dir):
-		jsfile = open(os.path.join(os.path.dirname(__file__), "..", fn))
-		o.write(jsmin(jsfile.read()))
-		jsfile.close()
-	o.close()
-
-def bake_beta_js():
-	bake_js("js4", "script4.js")
+	fn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), dest_file)
+	if not os.path.exists(fn):
+		js_content = ""
+		for sfn in get_js_file_list(source_dir):
+			jsfile = open(os.path.join(os.path.dirname(__file__), "..", sfn))
+			js_content += minify(jsfile.read()) + "\n"
+			jsfile.close()
+		
+		o = open(fn, "w")
+		o.write(minify(js_content, mangle=True, mangle_toplevel=False))
+		o.close()
 
 def get_build_number():
 	bnf = open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), 'r')

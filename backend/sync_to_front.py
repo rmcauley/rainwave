@@ -31,7 +31,7 @@ def sync_frontend_all(sid):
 	http_client = AsyncHTTPClient()
 	params = urllib.urlencode({ "sid": sid })
 	for i in range(0, config.get("api_num_processes")):
-		http_client.fetch("http://localhost:%s/api4/sync_update_all" % (config.get("api_base_port") + i,), sync_result, method='POST', body=params)
+		http_client.fetch("http://%s:%s/api4/sync_update_all" % (config.get("api_url"), config.get("api_base_port") + i,), sync_result, method='POST', body=params)
 		log.debug("sync_front", "Sent update_all to API port %s" % (config.get("api_base_port") + i,))
 
 def sync_frontend_ip(ip_address):
@@ -39,13 +39,13 @@ def sync_frontend_ip(ip_address):
 	# the sid here is for local testing purposes
 	params = urllib.urlencode({ "ip_address": ip_address, "sid": 1 })
 	for i in range(0, config.get("api_num_processes")):
-		http_client.fetch("http://localhost:%s/api4/sync_update_ip" % (config.get("api_base_port") + i,), sync_result, method='POST', body=params)
+		http_client.fetch("http://%s:%s/api4/sync_update_ip" % (config.get("api_url"), config.get("api_base_port") + i,), sync_result, method='POST', body=params)
 
 def sync_frontend_user_id(user_id):
 	http_client = AsyncHTTPClient()
 	params = urllib.urlencode({ "sync_user_id": user_id, "sid": 1 })
 	for i in range(0, config.get("api_num_processes")):
-		http_client.fetch("http://127.0.0.1:%s/api4/sync_update_user" % (config.get("api_base_port") + i,), sync_result, method='POST', body=params)
+		http_client.fetch("http://%s:%s/api4/sync_update_user" % (config.get("api_url"), config.get("api_base_port") + i,), sync_result, method='POST', body=params)
 
 
 # These only update schedules for all end users, and are here so admins can update things like

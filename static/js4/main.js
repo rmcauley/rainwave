@@ -1,33 +1,38 @@
-// attribution to do:
-// sort design icon by http://www.thenounproject.com/NemanjaIvanovic
-
 var User;
 var SmallScreen = false;
 var SCREEN_HEIGHT;
 var SCREEN_WIDTH;
 var MAIN_HEIGHT;
-var MENU_HEIGHT = 56;
+var MENU_HEIGHT = 45;
+var INITIALIZED = false;
 
 function _size_calculate() {
 	"use strict";
 	if (MOBILE) return;
+	var old_width = SCREEN_WIDTH;
 	var old_height = SCREEN_HEIGHT;
 	SCREEN_HEIGHT = document.documentElement.clientHeight;
 	SCREEN_WIDTH = document.documentElement.clientWidth;
 	MAIN_HEIGHT = SCREEN_HEIGHT - MENU_HEIGHT;
 	if ((SCREEN_WIDTH <= 1400) && !SmallScreen) {
 		SmallScreen = true;
-		Fx.delay_draw(function() { $add_class(document.body, "small_screen") });
+		TimelineSong.calculate_height();
+		Fx.delay_draw(function() { $add_class(document.body, "small_screen"); });
 		Fx.delay_draw(function() { RatingControl.change_padding_top(1); });
 		return true;
 	}
 	else if ((SCREEN_WIDTH > 1400) && SmallScreen) {
 		SmallScreen = false;
-		Fx.delay_draw(function() { $remove_class(document.body, "small_screen") });
+		TimelineSong.calculate_height();
+		Fx.delay_draw(function() { $remove_class(document.body, "small_screen"); });
 		Fx.delay_draw(function() { RatingControl.change_padding_top(3); });
 		return true;
 	}
-	return old_height != SCREEN_HEIGHT;
+	TimelineSong.calculate_height();
+	if ($id("playlist_item_height")) {
+		PLAYLIST_ITEM_HEIGHT = $id("playlist_item_height").offsetHeight;
+	}
+	return old_height != SCREEN_HEIGHT || old_width != SCREEN_WIDTH;
 }
 
 function _on_resize() {
@@ -40,11 +45,11 @@ function _on_resize() {
 	if (!_size_calculate()) return;
 	
 	// draw 1 :(
+	Schedule.reflow_history();
 	Fx.flush_draws();
 	$id('sizable_body').style.height = MAIN_HEIGHT + "px";
 
 	// paint 2 :(
-	Schedule.scrollbar_recalculate();
 	Scrollbar.recalculate();
 	// scrollbar recalculation has to come before PlaylistLists.on_resize
 	PlaylistLists.on_resize();
@@ -57,7 +62,7 @@ function _on_resize() {
 
 	// hacks, argh, the np size calculate needs to be done after any and all animation
 	// has finished, which means we need to introduce this delay.
-	setTimeout(function() { Schedule.now_playing_size_calculate(); }, 1500);
+	//setTimeout(function() { Schedule.now_playing_size_calculate(); }, 1500);
 }
 
 function vote_cta_check() {
@@ -80,10 +85,9 @@ function vote_cta_check() {
 function request_cta_check() {
 	if ((User.id > 1) && (Prefs.get("stage") == 2)) {
 		if (!$id("request_cta")) {
-			var cta = $el("li", { "id": "request_cta" });
-			cta.appendChild($el("img", { "src": "/static/images4/request.png" }));
-			cta.appendChild($el("span", { "textContent": $l("request_song_to_vote_for") }));
-			$id("main_icons").insertBefore(cta, $id("main_icons").firstChild);
+			var cta = $el("li", { "id": "request_cta", "class": "link" });
+			cta.appendChild($el("span", { "textContent": $l("Request") }));
+			$id("top_icons").insertBefore(cta, $id("top_icons").firstChild);
 			cta.addEventListener("click", function() {
 				Prefs.change("stage", 3);
 				Fx.remove_element(cta);
@@ -114,18 +118,24 @@ function stage_switch(nv, ov) {
 		$id("timeline").style.overflowY = "hidden";
 		Fx.chain_transition($id("timeline_scrollblock"), function() {
 			$id("timeline").style.overflowY = "";
-		})
+		});
 	}
-	$add_class(document.body, "stage_" + nv);
 	vote_cta_check();
 	request_cta_check();
 	Schedule.stage_padding_check();
+	Fx.chain_transition(document.body, function() { $remove_class(document.body, "stage_in_transition"); });
+	$add_class(document.body, "stage_" + nv);
+	$add_class(document.body, "stage_in_transition");
 }
 
 function initialize() {
 	"use strict";
 
+	if (INITIALIZED) return;
+	INITIALIZED = true;
+
 	// ****************** DATA HANDLING
+	TimelineSong.calculate_height();
 	Fx.initialize();
 	User = BOOTSTRAP.json.user;
 	API.add_callback(function(json) { User = json; }, "user");
@@ -153,13 +163,13 @@ function initialize() {
 	PlaylistLists.initialize();
 	Requests.initialize();
 	R4Audio.initialize(BOOTSTRAP.stream_filename, BOOTSTRAP.relays);
-	History.initialize();
 	SettingsWindow.initialize();
+	R4Notify.initialize();
 
 	// ****************** PAGE LAYOUT
 	// PREP: Applies the small_screen and small_menu classes if necessary and sizes everything
 	if (MOBILE) {
-		$add_class(document.body, "small_screen");
+		$add_class(document.body, "small_screen mobile_screen");
 		SmallScreen = true;
 	}
 	Fx.flush_draws();
@@ -176,7 +186,12 @@ function initialize() {
 	Scrollbar.resizer_calculate();
 	Scrollbar.recalculate();
 	DetailView.scroll_init();
-	History.scroll_init();
+
+	// also measure any elements
+	// this particular element measurement is also duplicated in size_calculate
+	if ($id("playlist_item_height")) {
+		PLAYLIST_ITEM_HEIGHT = $id("playlist_item_height").offsetHeight;
+	}
 
 	// DIRTY THE LAYOUT
 
@@ -192,7 +207,7 @@ function initialize() {
 	Scrollbar.resizer_refresh();
 	DetailView.draw();
 	PlaylistLists.draw();
-	History.draw();
+	Schedule.draw();
 	Menu.draw(BOOTSTRAP.station_list);
 	SettingsWindow.draw();
 	AboutWindow.draw();
@@ -213,4 +228,10 @@ function initialize() {
 	DeepLinker.detect_url_change();
 	window.addEventListener("resize", _on_resize, false);
 	setTimeout(function() { $remove_class(document.body, "unselectable"); }, 1500);
-};
+
+	if (MOBILE && (typeof(FastClick) !== "undefined")) {
+		FastClick.attach(document.body);
+	}
+}
+
+document.addEventListener("DOMContentLoaded", initialize);

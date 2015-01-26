@@ -64,8 +64,6 @@ class IndexRequest(tornado.web.RequestHandler):
 			else:
 				self.write_property(prop[0], handler, prop[1])
 		display_url = url
-		if display_url.find("/api4/") == 0:
-			display_url = display_url[6:]
 		self.write("<td><a href='/api4/help%s'>%s</a></td>" % (url, display_url))
 		if (issubclass(handler, api.web.HTMLRequest) or issubclass(handler, api.web.PrettyPrintAPIMixin)) and url.find("(") == -1:
 			self.write("<td><a href='%s'>Link</a></td>" % url)
@@ -80,7 +78,7 @@ class IndexRequest(tornado.web.RequestHandler):
 		self.write("<table class='help_legend'>")
 		for section in section_order:
 			self.write("<tr><th colspan='10'>%s</th></tr>" % section)
-			self.write("<tr><th>Allows GET<th>Auth Required</th><th>Station ID Required</th><th>Tune In Required</th><th>Login Required</th><th>DJ</th><th>Admin</th><th>Pagination</th><th>URL / Info</th><th>Link</th></tr>")
+			self.write("<tr><th>Allows GET<th>Auth Required</th><th>Station ID Required</th><th>Tune In Required</th><th>Login Required</th><th>DJ</th><th>Admin</th><th>Pagination</th><th>URL</th><th>Link</th></tr>")
 			for url, handler in sorted(sections[section].items()):
 				self.write_class_properties(url, handler)
 		self.write("</table>")
@@ -114,26 +112,33 @@ class HelpRequest(tornado.web.RequestHandler):
 				self.write("<li>" + prop[2] + "</li>")
 		self.write("</ul>")
 
-		if getattr(klass, "fields", False):
-			self.write("<h2>Fields</h2>")
-			self.write("<table><tr><th>Field Name</th><th>Type</th><th>Required</th></tr>")
-			if getattr(klass, "sid_required", False):
-				self.write("<tr><td>sid</td><td>integer</td><td>Required</td></tr>")
-			if getattr(klass, "auth_required", False):
-				self.write("<tr><td>user_id</td><td>integer</td><td>Required</td></tr>")
-				self.write("<tr><td>key</td><td>api_key</td><td>Required</td></tr>")
+		self.write("<h2>Fields</h2>")
+		self.write("<table><tr><th>Field Name</th><th>Type</th><th>Required</th></tr>")
+		if getattr(klass, "auth_required", False):
+			if getattr(klass, "admin_required", False):
+				self.write("<tr><td>user_id</td><td>integer</td><td>Required, must be an administrator.</td></tr>")
+			elif getattr(klass, "login_required", False):
+				self.write("<tr><td>user_id</td><td>integer</td><td>Required, registered users only. (user_id > 1)</td></tr>")
 			else:
-				self.write("<tr><td>user_id</td><td>integer</td><td>Optional</td></tr>")
-				self.write("<tr><td>key</td><td>api_key</td><td>Optional</td></tr>")
-			for field, field_attribs in klass.fields.iteritems():
-				type_cast, required = field_attribs
-				self.write("<tr><td>%s</td><td>%s</td>" % (field, type_cast.__name__))
-				if required:
-					self.write("<td>Required</td>")
-				else:
-					self.write("<td>Not required.</td>")
-				self.write("</tr>")
-			self.write("</table>")
+				self.write("<tr><td>user_id</td><td>integer</td><td>Required, anonymous users OK. (user_id == 1).</td></tr>")
+			self.write("<tr><td>key</td><td>api_key</td><td>Required</td></tr>")
+		else:
+			self.write("<tr><td>user_id</td><td>integer</td><td>Optional</td></tr>")
+			self.write("<tr><td>key</td><td>api_key</td><td>Optional</td></tr>")
+		if getattr(klass, "sid_required", False):
+			self.write("<tr><td>sid</td><td>integer</td><td>Required</td></tr>")
+		if getattr(klass, "pagination", False) and not "per_page" in klass.fields:
+			self.write("<tr><td>per_page</td><td>integer</td><td>Optional, default 100</td></tr>")
+			self.write("<tr><td>page_start</td><td>integer</td><td>Optional, default 0</td></tr>")
+		for field, field_attribs in klass.fields.iteritems():
+			type_cast, required = field_attribs
+			self.write("<tr><td>%s</td><td>%s</td>" % (field, type_cast.__name__))
+			if required:
+				self.write("<td>Required</td>")
+			else:
+				self.write("<td>Not required.</td>")
+			self.write("</tr>")
+		self.write("</table>")
 
 		# if (os.path.exists("api_tests/%s.json" % url)):
 		# 	self.write("<h2>Sample Output</h2>")

@@ -1,4 +1,5 @@
 from api.web import APIHandler
+from api.exceptions import APIException
 from api import fieldtypes
 from api.server import test_post
 from api.server import handle_api_url
@@ -8,6 +9,7 @@ import api_requests.tune_in
 
 from libs import cache
 from libs import config
+from libs import log
 
 def attach_info_to_request(request, extra_list = None, all_lists = False):
 	# Front-load all non-animated content ahead of the schedule content
@@ -18,21 +20,22 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 	if request.user:
 		request.append("user", request.user.to_private_dict())
 
-	if all_lists or (extra_list == "all_albums") or 'all_albums' in request.request.arguments:
-		request.append("all_albums", api_requests.playlist.get_all_albums(request.sid, request.user))
-	else:
-		request.append("album_diff", cache.get_station(request.sid, 'album_diff'))
+	if not request.mobile:
+		if all_lists or (extra_list == "all_albums") or 'all_albums' in request.request.arguments:
+			request.append("all_albums", api_requests.playlist.get_all_albums(request.sid, request.user))
+		else:
+			request.append("album_diff", cache.get_station(request.sid, 'album_diff'))
 
-	if all_lists or (extra_list == "all_artists") or 'all_artists' in request.request.arguments:
-		request.append("all_artists", api_requests.playlist.get_all_artists(request.sid))
+		if all_lists or (extra_list == "all_artists") or 'all_artists' in request.request.arguments:
+			request.append("all_artists", api_requests.playlist.get_all_artists(request.sid))
 
-	if all_lists or (extra_list == "all_groups") or 'all_groups' in request.request.arguments:
-		request.append("all_groups", api_requests.playlist.get_all_groups(request.sid))
-	
-	if all_lists or (extra_list == "current_listeners") or 'current_listeners' in request.request.arguments:
-		request.append("current_listeners", cache.get_station(request.sid, "current_listeners"))
+		if all_lists or (extra_list == "all_groups") or 'all_groups' in request.request.arguments:
+			request.append("all_groups", api_requests.playlist.get_all_groups(request.sid))
+		
+		if all_lists or (extra_list == "current_listeners") or 'current_listeners' in request.request.arguments or request.get_cookie("r4_active_list") == "current_listeners":
+			request.append("current_listeners", cache.get_station(request.sid, "current_listeners"))
 
-	request.append("request_line", cache.get_station(request.sid, "request_line"))
+		request.append("request_line", cache.get_station(request.sid, "request_line"))
 
 	sched_next = None
 	sched_history = None
@@ -40,6 +43,8 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 	if request.user and not request.user.is_anonymous():
 		request.append("requests", request.user.get_requests(request.sid))
 		sched_current = cache.get_station(request.sid, "sched_current")
+		if not sched_current:
+			raise APIException("server_just_started", "Rainwave is Rebooting, Please Try Again in a Few Minutes", http_code=500)
 		if request.user.is_tunedin():
 			sched_current.get_song().data['rating_allowed'] = True
 		sched_current = sched_current.to_dict(request.user)
@@ -56,10 +61,14 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 		sched_history = []
 		for evt in cache.get_station(request.sid, "sched_history"):
 			sched_history.append(evt.to_dict(request.user, check_rating_acl=True))
-	else:
+	elif request.user:
 		sched_current = cache.get_station(request.sid, "sched_current_dict")
+		if not sched_current:
+			raise APIException("server_just_started", "Rainwave is Rebooting, Please Try Again in a Few Minutes", http_code=500)
 		sched_next = cache.get_station(request.sid, "sched_next_dict")
 		sched_history = cache.get_station(request.sid, "sched_history_dict")
+		if len(sched_next) > 0 and request.user.is_tunedin() and sched_next[0]['type'] == "Election":
+			sched_next[0]['voting_allowed'] = True
 	request.append("sched_current", sched_current)
 	request.append("sched_next", sched_next)
 	request.append("sched_history", sched_history)
@@ -113,6 +122,6 @@ class StationsRequest(APIHandler):
 				"id": station_id,
 				"name": config.station_id_friendly[station_id],
 				"description": self.locale.translate("station_description_id_%s" % station_id),
-				"stream": "http://%s:8000/%s" % (config.get_station(station_id, "round_robin_relay_host"), api_requests.tune_in.get_stream_filename(station_id, user=self.user)),
+				"stream": "http://%s:%s/%s" % (config.get_station(station_id, "round_robin_relay_host"), config.get_station(station_id, "round_robin_relay_port"), api_requests.tune_in.get_stream_filename(station_id, user=self.user)),
 			})
 		self.append(self.return_name, station_list)

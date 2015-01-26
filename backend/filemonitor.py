@@ -117,10 +117,13 @@ def _check_codepage_1252(filename):
 		raise PassableScanError("Invalid filename. (possible cp1252 or obscure unicode)")
 
 def _scan_directory(directory, sids):
+	# Normalize and add a trailing separator to the directory name
+	directory = os.path.join(os.path.normpath(directory), "")
+
 	# Windows workaround eww, damnable directory names
 	if os.name == "nt":
-		directory = os.path.normpath(directory).replace("\\", "\\\\")
-	
+		directory = directory.replace("\\", "\\\\")
+
 	songs = db.c.fetch_list("SELECT song_id FROM r4_songs WHERE song_filename LIKE %s || '%%' AND song_verified = TRUE", (directory,))
 	for song_id in songs:
 		# log.debug("scan", "Marking Song ID %s for possible deletion." % song_id)
@@ -204,8 +207,8 @@ def _process_album_art(filename, sids):
 	# There's an ugly bug here where psycopg isn't correctly escaping the path's \ on Windows
 	# So we need to repr() in order to get the proper number of \ and then chop the leading and trailing single-quotes
 	# Nasty bug.  This workaround needs to be more thoroughly tested, admittedly, but appears to work fine on Linux as well.
-	directory = repr(os.path.dirname(filename) + os.sep)[2:-1]
-	album_ids = db.c.fetch_list("SELECT album_id FROM r4_songs WHERE song_filename LIKE %s || '%%'", (directory,))
+	directory = repr(os.path.dirname(filename) + os.sep).strip("u'")
+	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs WHERE song_filename LIKE %s || '%%'", (directory,))
 	if not album_ids or len(album_ids) == 0:
 		return
 	im_original = Image.open(filename)
@@ -229,10 +232,10 @@ def _process_album_art(filename, sids):
 	for album_id in album_ids:
 		im_120.save("%s%s%s_%s_120.jpg" % (config.get("album_art_file_path"), os.sep, sids[0], album_id))
 		im_240.save("%s%s%s_%s_240.jpg" % (config.get("album_art_file_path"), os.sep, sids[0], album_id))
-		im_320.save("%s%s%s_%s.jpg" % (config.get("album_art_file_path"), os.sep, sids[0], album_id))
-		im_120.save("%s%s%s_120.jpg" % (config.get("album_art_file_path"), os.sep, album_id))
-		im_240.save("%s%s%s_240.jpg" % (config.get("album_art_file_path"), os.sep, album_id))
-		im_320.save("%s%s%s.jpg" % (config.get("album_art_file_path"), os.sep, album_id))
+		im_320.save("%s%s%s_%s_320.jpg" % (config.get("album_art_file_path"), os.sep, sids[0], album_id))
+		im_120.save("%s%sa_%s_120.jpg" % (config.get("album_art_file_path"), os.sep, album_id))
+		im_240.save("%s%sa_%s_240.jpg" % (config.get("album_art_file_path"), os.sep, album_id))
+		im_320.save("%s%sa_%s_320.jpg" % (config.get("album_art_file_path"), os.sep, album_id))
 
 def _disable_file(filename):
 	# aka "delete this off the playlist"

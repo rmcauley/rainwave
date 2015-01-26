@@ -170,10 +170,11 @@ class SyncUpdateAll(APIHandler):
 			log.debug("sync_update_all", "sync_update_all request was not OK.")
 			return
 		log.debug("sync_update_all", "Updating all sessions for sid %s" % self.sid)
-		rainwave.playlist.update_num_songs()
-		rainwave.playlist.prepare_cooldown_algorithm(self.sid)
-		cache.update_local_cache_for_sid(self.sid)
-		sessions[self.sid].update_all(self.sid)
+		if self.sid:
+			rainwave.playlist.update_num_songs()
+			rainwave.playlist.prepare_cooldown_algorithm(self.sid)
+			cache.update_local_cache_for_sid(self.sid)
+			sessions[self.sid].update_all(self.sid)
 
 		super(SyncUpdateAll, self).on_finish()
 

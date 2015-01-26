@@ -7,12 +7,11 @@
 
 	<div id='r4_audio_player'>
 		<div id='audio_icon'></div>
-		<div id='audio_status'></div>
 	</div>
 	
 	Style the page as you see fit.
 		- No class present on audio_icon means the player is stopped
-		- Class "audio_playing" will be applied to #audio_icon when playing
+		- Class "playing" will be applied to r4_audio_player when playing
 
 	Next pick your station ID:
 		1 = Game
@@ -28,15 +27,18 @@
 */
 
 var R4Audio = function() {
+	"use strict";
+
 	var self = {};
 	self.supported = false;
 	self.type = null;	
+	self.changed_status_callback = null;
 	var filetype;
 	var stream_urls = [];
 	var playing_status = false;
 
 	var icon_el;
-	var text_el;
+	//var text_el;
 	var volume_el;
 	var volume_rect;
 	var offset_width;
@@ -69,7 +71,7 @@ var R4Audio = function() {
 
 	self.initialize = function(stream_filename, relays) {
 		icon_el = document.getElementById("audio_icon");
-		text_el = document.getElementById("audio_status");
+		//text_el = document.getElementById("audio_status");
 		if (!self.supported) return;
 
 		var container = document.getElementById("player_link") || document.getElementById("r4_audio_player");
@@ -89,7 +91,14 @@ var R4Audio = function() {
 			volume_el.addEventListener("mousedown", volume_control_mousedown);
 		}
 
+		var mute_el = document.getElementById("audio_icon_mute");
+		if (mute_el) {
+			mute_el.addEventListener("click", self.toggle_mute);
+		}
+
 		API.add_callback(user_tunein_check, "user");
+
+		Prefs.define("audio_volume", [ 1.0 ]);
 	};
 
 	var user_tunein_check = function(json) {
@@ -109,13 +118,17 @@ var R4Audio = function() {
 	};
 
 	self.draw = function() {
-		text_el.textContent = $l ? $l("tunein") : "Tune In";
+		if ($l) {
+			$id("audio_status_stop").textContent = $l("stop");
+			$id("audio_status_play").textContent = $l("tunein");
+		}
 	};
 
 	self.clear_audio_errors = function(e) {
 		if (!ErrorHandler) return;
 		ErrorHandler.remove_permanent_error("audio_error");
 		ErrorHandler.remove_permanent_error("audio_connect_error");
+		Prefs.change("show_m3u", true);
 	};
 
 	self.play_stop = function(evt) {
@@ -143,6 +156,13 @@ var R4Audio = function() {
 		// if (volume_el) {
 		// 	audio_el.addEventListener("volumechange", draw_volume);
 		// }
+		var mute_el = document.getElementById("audio_icon_mute");
+		if (mute_el) mute_el.setAttribute("class", null);
+		if ((Prefs.get("audio_volume") > 1) || (Prefs.get("audio_volume") < 0) || !Prefs.get("audio_volume")) {
+			Prefs.change("audio_volume", 1.0);
+		}
+		audio_el.volume = Prefs.get("audio_volume");
+		draw_volume(Prefs.get("audio_volume"));
 		var source;
 		for (var i in stream_urls) {
 			source = document.createElement("source");
@@ -156,6 +176,7 @@ var R4Audio = function() {
 
 		audio_el.play();
 		playing_status = true;
+		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
 	self.stop = function(evt) {
@@ -170,35 +191,48 @@ var R4Audio = function() {
 		audio_el = null;
 		self.on_stop();
 		playing_status = false;
+		if (self.changed_status_callback) self.changed_status_callback(playing_status);
+	};
+
+	self.toggle_mute = function() {
+		if (!audio_el) return;
+		var mute_el = document.getElementById("audio_icon_mute");
+		if (audio_el.volume === 0) {
+			mute_el.setAttribute("class", null);
+			audio_el.volume = Prefs.get("audio_volume");
+		}
+		else {
+			audio_el.volume = 0;
+			mute_el.setAttribute("class", "muted");
+		}
 	};
 
 	self.on_stop = function() {
-		icon_el.className = "";
-		if (volume_el) volume_el.setAttribute("class", "");
-		text_el.textContent = $l ? $l("tunein") : "Tune In";
+		document.getElementById("r4_audio_player").className = "";
+		//text_el.textContent = $l ? $l("tunein") : "Tune In";
 		self.stop();
 	};
 
 	self.on_connecting = function() {
-		icon_el.className = "audio_connecting";
+		// nothin
 	};
 
 	self.on_play = function() {
-		icon_el.className = "audio_playing";
-		if (volume_el) volume_el.setAttribute("class", "audio_playing_volume");
-		text_el.textContent = $l ? $l("stop") : "Stop";
+		document.getElementById("r4_audio_player").className = "playing";
+		//text_el.textContent = $l ? $l("stop") : "Stop";
 		self.clear_audio_errors();
+		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
 	self.on_stall = function() {
 		if (!ErrorHandler) return;
-		icon_el.className = "audio_connecting";
 		var a = $el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": $l("try_external_player") });
 		a.addEventListener("click", function() {
 			self.stop();
 			self.clear_audio_errors();
-		})
+		});
 		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_connect_error", 500), a);
+		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
 	self.on_error = function() {
@@ -206,10 +240,11 @@ var R4Audio = function() {
 		var a = $el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": $l("try_external_player") });
 		a.addEventListener("click", function() {
 			self.clear_audio_errors();
-		})
+		});
 		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_error", 500), a);
 		self.on_stop();
 		self.supported = false;
+		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
 	var volume_control_mousedown = function(evt) {
@@ -227,14 +262,16 @@ var R4Audio = function() {
 	};
 
 	var change_volume_from_mouse = function(evt) {
-		var x = evt.layerX || evt.offsetX;
+		var x = evt.offsetX === undefined ? evt.layerX : evt.offsetX;
 		var v = Math.min(Math.max((x / offset_width), 0), 1);
 		if (v < 0.05) v = 0;
 		if (v > 0.95) v = 1;
 		if (!v || isNaN(v)) v = 0;
 		audio_el.volume = v;
 		draw_volume(v);
-	}
+		document.getElementById("audio_icon_mute").setAttribute("class", null);
+		if (Prefs) Prefs.change("audio_volume", v);
+	};
 
 	var draw_volume = function(v) {
 		volume_rect.setAttribute("width", 100 * v);

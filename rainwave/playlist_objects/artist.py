@@ -85,3 +85,7 @@ class Artist(AssociatedMetadata):
 			self.data['all_songs'][song['sid']][song['album_id']].append(song)
 			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id'), "openable": song.pop('album_openable') } ]
 			
+	def to_dict(self, user=None):
+		d = super(Artist, self).to_dict(user)
+		d['order'] = self.data['order']
+		return d

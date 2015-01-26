@@ -2,7 +2,7 @@ var SongsTable = function(songs, columns) {
 	"use strict";
 	var el = $el("table", { "class": "songlist" });
 
-	var row, cell, r, i, div, link, title_el;
+	var row, cell, cell2, cell3, r, i, div, div2, link, title_el, title_cell;
 	for (i = 0; i < songs.length; i++) {
 		row = $el("tr");
 		if (("cool" in songs[i]) && songs[i].cool) {
@@ -43,6 +43,7 @@ var SongsTable = function(songs, columns) {
 		}
 
 		title_el = null;
+		title_cell = null;
 		for (var key = 0; key < columns.length; key++) {
 			if ((columns[key] == "artists") && ("artist_parseable" in songs[i])) {
 				cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] }));
@@ -52,21 +53,35 @@ var SongsTable = function(songs, columns) {
 				cell.appendChild(div);
 			}
 			else if (columns[key] in songs[i]) {
-				if (columns[key] == "title") {
+				if (columns[key] == "title" || columns[key] == "album_name") {
 					cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] } ));
 					div = $el("div", { "class": "songlist_" + columns[key] + "_text", "textContent": songs[i][columns[key]] });
-					title_el = div
+					title_el = div;
+					title_cell = cell;
 					//Formatting.add_overflow_tooltip(div);
 					cell.appendChild(div);
 				}
 				else if (columns[key] == "rating") {
+					if (Prefs.get("detail_global_ratings")) {
+						cell2 = $el("td", { "class": "songlist_rating_user_number" });
+						cell3 = $el("td", { "class": "songlist_rating_number" });
+					}
+					else {
+						cell2 = null;
+						cell3 = null;
+					}
+
 					cell = $el("td", { "class": "songlist_" + columns[key] });
-					r = Rating("song", songs[i].id, songs[i].rating_user, songs[i].rating, songs[i].fave, User.rate_anything, title_el);
+					r = Rating("song", songs[i].id, songs[i].rating_user, songs[i].rating, songs[i].fave, User.rate_anything, title_el, true, cell3, cell2);
 					r.absolute_x = true;
 					r.absolute_y = true;
 					cell.appendChild(r.el);
 					row.appendChild(cell);
 
+					if (cell2) row.appendChild(cell2);
+					if (cell3) row.appendChild(cell3);
+
+					// I didn't like the way this fit into the design, despite it being a user requested feature. (it was not clamored for)
 					// if (User.id > 1) {
 					// 	cell = $el("td", { "class": "songlist_rating_clear" });
 					// 	div = $el("span", { "style": "float: right;", "textContent": "X" });
@@ -90,13 +105,45 @@ var SongsTable = function(songs, columns) {
 				else if (columns[key] == "length") {
 					row.appendChild($el("td", { "class": "songlist_" + columns[key], "textContent": Formatting.minute_clock(songs[i].length) }));
 				}
+				else if (columns[key] == "song_played_at") {
+					row.appendChild($el("td", { "class": "songlist_cool_end", "textContent": Formatting.cooldown_glance(Clock.now - songs[i][columns[key]]) } ));
+				}
 				else {
 					row.appendChild($el("td", { "class": "songlist_" + columns[key], "textContent": songs[i][columns[key]] } ));
 				}
+			}
+
+			if (title_cell) {
+				title_cell._song_id = songs[i].id;
+				title_cell.addEventListener("click", function(e) {
+					var el = this;
+					if (el.triggered) return;
+					el.triggered = true;
+					API.async_get("song", { "id": el._song_id }, function(json) {
+						SongsTableDetailDraw(el, json);
+					});
+				});
 			}
 		}
 
 		el.appendChild(row);
 	}
 	return el;
+};
+
+var SongsTableDetailDraw = function(title_el, json) {
+	if (title_el.childNodes.length > 1) return;
+	var d = $el("div", { "class": "songlist_extra_detail" });
+	var cnvs = d.appendChild($el("canvas", { "width": 100, "height": 80 }));
+	AlbumViewRatingPieChart(cnvs.getContext("2d"), json.song);
+	if (json.song.rating > 0) {
+		d.appendChild($el("div", { "class": "songlist_extra_detail_item", "textContent": $l("song_extradetail_rating", { "rating": json.song.rating, "rating_count": json.song.rating_count, "rank": json.song.rating_rank }) }));
+		d.appendChild($el("div", { "class": "songlist_extra_detail_item", "textContent": $l("song_extradetail_rating_rank", { "rating": json.song.rating, "rating_count": json.song.rating_count, "rank": json.song.rating_rank }) }));
+	}
+	if (json.song.request_count > 0) {
+		d.appendChild($el("div", { "class": "songlist_extra_detail_item", "textContent": $l("song_extradetail_requests", { "count": json.song.request_count, "rank": json.song.request_rank }) }));
+		d.appendChild($el("div", { "class": "songlist_extra_detail_item", "textContent": $l("song_extradetail_requests_rank", { "count": json.song.request_count, "rank": json.song.request_rank }) }));
+	}
+
+	title_el.insertBefore(d, title_el.firstChild);
 };

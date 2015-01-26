@@ -7,7 +7,13 @@ var Fx = function() {
 	var draw_batch = [];
 
 	var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
-	var performance = window.performance || { "now": function() { return new Date().getTime(); } };
+	var performance;
+	if (window.performance && window.performance.now) {
+		performance = window.performance;
+	}
+	else {
+		performance = { "now": function() { return new Date().getTime(); } };
+	}
 	if (!requestAnimationFrame) {
 		requestAnimationFrame = function(callback) { window.setTimeout(callback, 40); };
 	}
@@ -57,16 +63,16 @@ var Fx = function() {
 	var transition_ends = [ "transitionend", "webkitTransitionEnd", "otransitionend" ];
 	self.chain_transition = function(el, end_func) {
 		var end_func_wrapper = function(e) {
-			end_func(e);
+			end_func(e, el);
 			for (var i in transition_ends) {
 				el.removeEventListener(transition_ends[i], end_func_wrapper, false);
 			}
-		}
+		};
 		for (var i in transition_ends) {
 			el.addEventListener(transition_ends[i], end_func_wrapper, false);
 		}
 		el._end_func_wrapper = end_func_wrapper;
-	}
+	};
 
 	// limitation: can only chain once
 	self.chain_transition_css = function(el, property, value, end_func) {
@@ -81,7 +87,7 @@ var Fx = function() {
 			}
 			el._end_func_wrapper = null;
 		}
-	}
+	};
 
 	self.remove_element = function(el) {
 		var check = getComputedStyle(el);

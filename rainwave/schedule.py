@@ -74,6 +74,8 @@ def get_producer_at_time(sid, at_time):
 		log.exception("get_producer", "Failed to get an appropriate producer.", e)
 	if not to_ret:
 		return election.ElectionProducer(sid)
+	if not to_ret.has_next_event():
+		return election.ElectionProducer(sid)
 	return to_ret
 
 def get_advancing_file(sid):
@@ -185,11 +187,17 @@ def post_process(sid):
 # 	sync_to_front.sync_frontend_all_timed(sid)
 
 def _add_listener_count_record(sid):
-	lc_guests = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1", (sid,))
-	lc_users = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1", (sid,))
-	lc_guests_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1 AND listener_voted_entry IS NOT NULL", (sid,))
-	lc_users_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1 AND listener_voted_entry IS NOT NULL", (sid,))
-	return db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests, lc_users, lc_guests_active, lc_users_active) VALUES (%s, %s, %s, %s, %s)", (sid, lc_guests, lc_users, lc_guests_active, lc_users_active))
+	# THIS FUNCTION IS BROKEN BECAUSE ACCURATE LISTENER TRACKING DOES NOT HAPPEN
+	#
+	# the listener_counts table is now being used differently, please check backend/icecast_sync.py
+	# for how it's used now
+	#
+	# lc_guests = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1", (sid,))
+	# lc_users = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1", (sid,))
+	# lc_guests_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1 AND listener_voted_entry IS NOT NULL", (sid,))
+	# lc_users_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1 AND listener_voted_entry IS NOT NULL", (sid,))
+	# return db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests, lc_users, lc_guests_active, lc_users_active) VALUES (%s, %s, %s, %s, %s)", (sid, lc_guests, lc_users, lc_guests_active, lc_users_active))
+	pass
 
 def _get_schedule_stats(sid):
 	global upnext
@@ -225,6 +233,7 @@ def _get_schedule_stats(sid):
 
 def manage_next(sid):
 	max_sched_id, max_elec_id, num_elections, max_future_time = _get_schedule_stats(sid)
+	now_producer = get_producer_at_time(sid, time.time())
 	next_producer = get_producer_at_time(sid, max_future_time)
 	nextnext_producer_start = db.c.fetch_var("SELECT sched_start FROM r4_schedule WHERE sid = %s AND sched_used = FALSE AND sched_start > %s AND sched_timed = TRUE", (sid, max_future_time))
 	time_to_future_producer = None
@@ -232,7 +241,7 @@ def manage_next(sid):
 		time_to_future_producer = nextnext_producer_start - max_future_time
 	else:
 		time_to_future_producer = 86400
-	while len(upnext[sid]) < next_producer.plan_ahead_limit:
+	while len(upnext[sid]) < min(now_producer.plan_ahead_limit, next_producer.plan_ahead_limit):
 		target_length = None
 		if time < 20:
 			log.debug("timing", "SID %s <20 seconds to upnext event, not using timing." % sid)
@@ -249,9 +258,11 @@ def manage_next(sid):
 		next_event = next_producer.load_next_event(target_length, max_elec_id)
 		if not next_event:
 			log.info("manage_next", "Producer ID %s type %s did not produce an event." % (next_producer.id, next_producer.type))
-			ep = election.ElectionProducer(sid)
-			next_event = ep.load_next_event(target_length, max_elec_id)
+			next_producer = election.ElectionProducer(sid)
+			next_event = next_producer.load_next_event(target_length, max_elec_id)
 		upnext[sid].append(next_event)
+		if next_event.is_election:
+			num_elections += 1
 		if next_event.is_election and next_event.id > max_elec_id:
 			max_elec_id = next_event.id
 		max_future_time += upnext[sid][-1].length()
@@ -306,9 +317,11 @@ def _update_schedule_memcache(sid):
 		all_station['album'] = sched_current_dict['songs'][0]['albums'][0]['name']
 		all_station['art'] = sched_current_dict['songs'][0]['albums'][0]['art']
 	else:
-		all_station['title'] = sched_current_dict['name']
-		all_station['album'] = ""
+		all_station['title'] = None
+		all_station['album'] = None
 		all_station['art'] = None
+	all_station['event_name'] = sched_current_dict['name']
+	all_station['event_type'] = sched_current_dict['type']
 	cache.set_station(sid, "all_station_info", all_station, True)
 
 def update_memcache(sid):

@@ -7,7 +7,7 @@ string_error = "must be a string."
 def string(in_string, request = None):
 	if not in_string:
 		return None
-	return str(in_string)
+	return unicode(in_string)
 
 # All _error variables start with no capital letter and end with a period.
 numeric_error = "must be a number."
@@ -231,27 +231,61 @@ def ip_address(addr, request = None):
 media_player_error = None
 def media_player(str, request = None):
 	ua = str.lower()
-	if ua.find("foobar"):
+	if ua.find("firefox") > -1:
+		return "Firefox"
+	elif ua.find("chrome") > -1:
+		return "Chrome"
+	elif ua.find("safari") > -1:
+		return "Safari"
+	elif ua.find("foobar") > -1:
 		return "Foobar2000"
-	elif ua.find("winamp"):
+	elif ua.find('dalvik') > -1 or ua.find('android') > -1:
+		return "Android"
+	elif ua.find('stagefright') > -1 or ua.find('servestream') > -1:
+		return "Android (App)"
+	elif ua.find('lavf') > -1:
+		return "LAV"
+	elif ua.find('ffmpeg') > -1:
+		return "FFmpeg"
+	elif ua.find("winamp") > -1:
 		return "Winamp"
-	elif ua.find("vlc") or ua.find("videolan"):
+	elif ua.find("vlc") > -1 or ua.find("videolan") > -1:
 		return "VLC"
-	elif ua.find("xine"):
+	elif ua.find('applecoremedia') > -1 and ua.find('mac os x') > -1:
+		return "iTunes (iPhone)"
+	elif ua.find('applecoremedia') > -1:
+		return "iTunes (Mac OS)"
+	elif ua.find('cfnetwork') > -1 and ua.find('darwin') > -1:
+		return "iPhone (App)"
+	elif ua.find("minecraft") > -1:
+		return "Minecraft"
+	elif ua.find('clementine') > -1:
+		return "Clementine"
+	elif ua.find("xine") > -1:
 		return "Xine"
-	elif ua.find("fstream"):
+	elif ua.find('audacious') > -1:
+		return 'Audacious'
+	elif ua.find("fstream") > -1:
 		return "Fstream"
-	elif ua.find("bass"):
+	elif ua.find("bass") > -1:
 		return "BASS/XMplay"
-	elif ua.find("xion"):
+	elif ua.find("xion") > -1:
 		return "Xion"
-	elif ua.find("itunes"):
+	elif ua.find("itunes") > -1:
 		return "iTunes"
-	elif ua.find('muses'):
+	elif ua.find('muses') > -1 or ua.find('fmod') > -1:
 		return "Flash Player"
-	elif ua.find('windows'):
+	elif ua.find('mozilla') > -1:
+		return "Mozilla"
+	elif ua.find('wmplayer') > -1 or ua.find('nsplayer') > -1:
 		return "Windows Media"
-	return "Unknown"
+	elif ua.find('mediamonkey') > -1:
+		return "MediaMonkey"
+	elif ua.find('XBMC') > -1:
+		return "XBMC"
+	elif ua == "-":
+		return "None"
+	return "Unknown (" + str + ")"
 
 producer_type_error = None
 def producer_type(str, request = None):

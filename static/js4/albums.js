@@ -24,7 +24,7 @@ var Albums = function() {
 		}
 
 		if (("_album_art" in tgt) && tgt._album_art) {
-			var full_res = $el("img", { "class": "art_image", "src": tgt._album_art + ".jpg" });
+			var full_res = $el("img", { "class": "art_image", "src": tgt._album_art + "_320.jpg" });
 			full_res.onload = function() {
 				tgt.style.backgroundImage = "url(" + full_res.getAttribute("src") + ")";
 			};
@@ -52,20 +52,20 @@ var Albums = function() {
 			if (json.secret_user_sauce.indexOf("svg") == -1) ac.className = "art_container avatar";
 			ac.style.backgroundImage = "url(" + json.secret_user_sauce + ")";	
 		}
-		else if (!json.art) {
+		else if (!json.art || (json.art.length == 0)) {
 			ac = c.appendChild($el("div", { "class": "art_container" }));
 			ac.style.backgroundImage = "url(/static/images4/noart_1.jpg)";
 		}
 		else {
 			ac = c.appendChild($el("div", { "class": "art_container" }));
 			if (!MOBILE && window.devicePixelRatio && (window.devicePixelRatio > 1.5)) {
-				ac.style.backgroundImage = "url(" + json.art + ".jpg)";
+				ac.style.backgroundImage = "url(" + json.art + "_320.jpg)";
 			}
 			else {
 				ac.style.backgroundImage = "url(" + json.art + "_" + size + ".jpg)";
 			}
 			if (!not_expandable) {
-				$add_class(ac, "art_expandable")
+				$add_class(ac, "art_expandable");
 				ac._album_art = json.art;
 				ac.addEventListener("click", expand_art);
 				ac.addEventListener("mouseout", normalize_art);

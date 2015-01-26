@@ -7,6 +7,8 @@
 //	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses 'id')
 
+var PLAYLIST_ITEM_HEIGHT = 24;
+
 var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_key) {
 	"use strict";
 	el.parentNode.style.display = "none";
@@ -17,10 +19,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.auto_trim = false;
 	self.el = el;
 	self.search_box_input = $el("div", { "class": "searchlist_input", "textContent": $l("filter") });
-	var scrollbar = Scrollbar.new(stretching_el.parentNode, scrollbar_handle, 0);
+	var scrollbar = Scrollbar.create(stretching_el.parentNode, scrollbar_handle, 0);
+	scrollbar.set_handle_margin_bottom(5);
 	// see bottom of this object for event binding
 
-	var data = {}
+	var data = {};
 	self.data = data;			// keys() are the object IDs (e.g. data[album.id])
 	self.loaded = false;
 	
@@ -32,7 +35,6 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	var search_string = "";
 	var current_key_nav_id = false;
 	var current_open_id = false;
-	var item_height = SmallScreen ? 20 : 24;
 	var num_items_to_display;
 	var original_scroll_top;
 	var original_key_nav;
@@ -53,10 +55,6 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		for (i in json) {
 			self.update_item(json[i]);
 		}
-		if (search_string.length == 0) {
-			self.update_view();
-			hidden = [];
-		}
 
 		if (self.update_cool) {
 			for (i in data) {
@@ -64,9 +62,13 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			}
 		}
 
-		current_scroll_index = false;
-		self.recalculate();
-		self.reposition();
+		if (search_string.length == 0) {
+			self.update_view();
+			hidden = [];
+			current_scroll_index = false;
+			self.recalculate();
+			self.reposition();
+		}
 		self.loaded = true;
 	};
 
@@ -88,7 +90,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		else {
 			self.draw_entry(json);
 			json._searchname = json[search_key];
-			json._el._id = json.id
+			json._el._id = json.id;
 			json._lower_case_sort_keyed = json[sort_key].toLowerCase();
 			data[json.id] = json;
 		}
@@ -178,14 +180,14 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.recalculate = function(force_height_check) {
-		var full_height = item_height * visible.length;
+		var full_height = PLAYLIST_ITEM_HEIGHT * visible.length;
 		if (force_height_check || (full_height != current_height)) {
 			stretching_el.style.height = full_height + "px";
-			scrollbar.recalculate(full_height);
+			scrollbar.recalculate(full_height, null, true);
 			scrollbar.refresh();
 			current_height = full_height;
 		}
-		num_items_to_display = Math.ceil(scrollbar.offset_height / item_height) + 1;
+		num_items_to_display = Math.ceil(scrollbar.offset_height / PLAYLIST_ITEM_HEIGHT) + 1;
 	};
 
 	self.sort_function = function(a, b) {
@@ -228,6 +230,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	var key_nav_arrow_action = function(jump) {
+		backspace_scroll_top = null;
 		if (!current_key_nav_id) {
 			self.key_nav_first_item();
 			return;
@@ -274,6 +277,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		return true;
 	};
 
+	var backspace_scroll_top;
+
 	self.key_nav_backspace = function() {
 		if (search_string.length == 1) {
 			self.clear_search();
@@ -297,6 +302,10 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 			current_scroll_index = false;
 			self.recalculate();
+			if (backspace_scroll_top && (revisible.length + visible.length > num_items_to_display)) {
+				scrollbar.scroll_to(backspace_scroll_top);	
+				backspace_scroll_top = null;
+			}
 			self.reposition();
 			return true;
 		}
@@ -339,6 +348,10 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		if (visible.length === 0) {
 			$add_class(self.search_box_input.parentNode.parentNode, "no_results");
 		}
+		else if (visible.length <= num_items_to_display) {
+			backspace_scroll_top = scrollbar.scroll_top;
+			scrollbar.scroll_to(0);
+		}
 		current_scroll_index = false;
 		if (first_time) {
 			original_scroll_top = scrollbar.scroll_top;
@@ -350,6 +363,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.clear_search = function() {
+		backspace_scroll_top = null;
 		clear_searchbar();
 		search_string = "";
 		if (hidden.length == 0) return;
@@ -417,11 +431,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			}
 			// position at the lower edge
 			else if (new_index >= (current_scroll_index + num_items_to_display - 8)) {
-				scrollbar.scroll_to(Math.min(scrollbar.scroll_top_max, (new_index - num_items_to_display + 8) * item_height));
+				scrollbar.scroll_to(Math.min(scrollbar.scroll_top_max, (new_index - num_items_to_display + 8) * PLAYLIST_ITEM_HEIGHT));
 			}
 			// position at the higher edge
 			else {
-				scrollbar.scroll_to(Math.max(0, (new_index - 7) * item_height));
+				scrollbar.scroll_to(Math.max(0, (new_index - 7) * PLAYLIST_ITEM_HEIGHT));
 			}
 		}
 	};
@@ -445,10 +459,10 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.reposition = function() {
-		var new_index = Math.floor(scrollbar.scroll_top / item_height);
+		var new_index = Math.floor(scrollbar.scroll_top / PLAYLIST_ITEM_HEIGHT);
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
 		
-		var new_margin = (scrollbar.scroll_top - (item_height * new_index));
+		var new_margin = (scrollbar.scroll_top - (PLAYLIST_ITEM_HEIGHT * new_index));
 		new_margin = new_margin ? -new_margin : 0;	
 		self.el.style.marginTop = new_margin + "px";
 		self.el.style.top = scrollbar.scroll_top + "px";
@@ -505,7 +519,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		if (search_string.length > 0) {
 			ignore_original_scroll_top = true;
 		}
-	}
+	};
 
 	// FAKING A TEXT FIELD **************
 
@@ -513,13 +527,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		if (search_string.length == 0) {
 			self.search_box_input.textContent = $l("typeanywhere");
 		}
-	}
+	};
 
 	self.search_box_input.addEventListener("click", input_click);
 
 	self.on_resize = function() {
-		if (SmallScreen) item_height = 20;
-		else item_height = 24;
 		current_scroll_index = false;
 		self.recalculate(true);
 		self.reposition();

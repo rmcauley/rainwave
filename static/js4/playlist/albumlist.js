@@ -11,7 +11,7 @@ var AlbumList = function() {
 		//if (nv == "updated") self.sort_function = self.sort_by_updated;
 		if (nv == "rating_user") self.sort_function = self.sort_by_rating_user;
 		if (nv == "cool") self.sort_function = self.sort_by_cool_time;
-	}
+	};
 	Prefs.add_callback("playlist_sort", function(nv) {
 		playlist_sort_solver(nv);
 		self.update_view([]);
@@ -45,7 +45,7 @@ var AlbumList = function() {
 			loading = true;
 			API.async_get("all_albums");
 		}
-	}
+	};
 	
 	self.tab_el = $id("lists_tab_album");
 	self.tab_el.textContent = $l("Albums");
@@ -123,12 +123,7 @@ var AlbumList = function() {
 			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + RatingControl.padding_top + 1) + "px";
 		}
 		else if (item.rating) {
-			if (playlist_show_rating_complete && !item.rating_complete) {
-				item._el.style.backgroundImage = "url(/static/images4/rating_bar/unrated_ldpi.png)";
-			}
-			else {
-				item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
-			}
+			item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
 			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + RatingControl.padding_top + 1) + "px";
 		}
 

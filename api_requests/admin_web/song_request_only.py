@@ -22,7 +22,7 @@ class SongRequestOnlyAlbumList(AlbumList):
 @handle_url("/admin/song_list/song_request_only")
 class SongRequestOnlyList(SongList):
 	def render_row_special(self, row):
-		if row['request_only']:
+		if row['request_only_end'] == None:
 			self.write("<td style='background: #880000;'><a onclick=\"window.top.call_api('admin/set_song_request_only', { 'song_id': %s, 'request_only': false })\">DISABLE</a>" % (row['id']))
 		else:
-			self.write("<td><a onclick=\"window.top.call_api('admin/set_song_request_only', { 'song_id': %s, 'request_only': true })\">enable</a>" % (row['id']))
+			self.write("<td><a onclick=\"window.top.call_api('admin/set_song_request_only', { 'song_id': %s, 'request_only': true })\">enable</a>" % (row['id'],))

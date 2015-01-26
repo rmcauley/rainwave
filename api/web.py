@@ -103,6 +103,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		self.user = None
 		self._output = None
 		self._output_array = False
+		self.mobile = False
 
 	def initialize(self, **kwargs):
 		super(RainwaveHandler, self).initialize(**kwargs)
@@ -213,8 +214,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			raise APIException("auth_required", http_code=403)
 		elif not self.user and not self.auth_required:
 			self.user = User(1)
-			self.user.ip_address = self.request.remote_ip
-		
+			self.user.ip_address = self.request.remote_ip		
+
 		self.user.refresh(self.sid)
 
 		if self.login_required and (not self.user or self.user.is_anonymous()):
@@ -242,7 +243,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			if self._verify_phpbb_session(user_id):
 				# update_phpbb_session is done by verify_phpbb_session if successful
 				self.user = User(user_id)
-				self.user.authorize(self.sid, None, None, True)
+				self.user.ip_address = self.request.remote_ip
+				self.user.authorize(self.sid, None, bypass=True)
 				return True
 
 			if not self.user and self.get_cookie(phpbb_cookie_name + "k"):
@@ -250,7 +252,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				if can_login == 1:
 					self._update_phpbb_session(self._get_phpbb_session(user_id))
 					self.user = User(user_id)
-					self.user.authorize(self.sid, None, None, True)
+					self.user.ip_address = self.request.remote_ip
+					self.user.authorize(self.sid, None, bypass=True)
 					return True
 		return False
 
@@ -286,7 +289,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 		if user_id_present:
 			self.user = User(long(self.get_argument("user_id")))
-			self.user.authorize(self.sid, self.request.remote_ip, self.get_argument("key"))
+			self.user.ip_address = self.request.remote_ip
+			self.user.authorize(self.sid, self.get_argument("key"))
 			if not self.user.authorized:
 				raise APIException("auth_failed", http_code=403)
 			else:
@@ -486,11 +490,16 @@ class PrettyPrintAPIMixin(object):
 				for row in json:
 					self.write("<tr><td>%s</td>" % i)
 					for key in keys:
-						self.write("<td>%s</td>" % row[key])
+						if key == "sid":
+							self.write("<td>%s</td>" % config.station_id_friendly[row[key]])
+						else:
+							self.write("<td>%s</td>" % row[key])
 					self.row_special(row)
 					self.write("</tr>")
 					i = i + 1
 				self.write("</table>")
+			else:
+				self.write("<p>%s</p>" % self.locale.translate("no_results"))
 		if self.pagination and "per_page" in self.fields and self.get_argument("per_page") != 0:
 			if self.get_argument("page_start") and self.get_argument("page_start") > 0:
 				self.write("<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>" % (per_page_link, previous_page_start))

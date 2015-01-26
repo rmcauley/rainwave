@@ -69,6 +69,12 @@ var Formatting = function() {
 		return el;
 	};
 
+	self.rating = function(r) {
+		r = Math.round(r * 10) / 10;
+		if (r * 10 % 10 === 0) return r + ".0";
+		else return r;
+	};
+
 	var do_overflow_tooltip = function(evt) {
 		var el = evt.target;
 		// this is here to subvert the fact that artists are displayed as spans,
@@ -94,6 +100,15 @@ var Formatting = function() {
 
 	self.add_overflow_tooltip = function(el) {
 		el.addEventListener("click", do_overflow_tooltip);
+	};
+
+	self.event_name = function(event_type, event_name) {
+		if ((event_type != "Election") && $l_has("event_naming__" + event_type.toLowerCase())) {
+			return $l("event_naming__" + event_type.toLowerCase(), { "name": event_name });
+		}
+		else {
+			return event_name;
+		}
 	};
 
 	// from lehelk: http://web.archive.org/web/20120918093154/http://lehelk.com/2011/05/06/script-to-remove-diacritics/

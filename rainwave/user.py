@@ -60,17 +60,16 @@ class User(object):
 		self.data['listener_id'] = 0
 		self.data['_group_id'] = None
 
-	def authorize(self, sid, ip_address, api_key, bypass = False):
-		self.ip_address = ip_address
+	def authorize(self, sid, api_key, bypass = False):
 		self.api_key = api_key
 
 		if not bypass and not re.match('^[\w\d]+$', api_key):
 			return
 
 		if self.id > 1:
-			self._auth_registered_user(ip_address, api_key, bypass)
+			self._auth_registered_user(api_key, bypass)
 		else:
-			self._auth_anon_user(ip_address, api_key, bypass)
+			self._auth_anon_user(api_key, bypass)
 
 	def get_all_api_keys(self):
 		if self.id > 1:
@@ -78,7 +77,7 @@ class User(object):
 			cache.set_user(self, "api_keys", keys)
 			return keys
 
-	def _auth_registered_user(self, ip_address, api_key, bypass = False):
+	def _auth_registered_user(self, api_key, bypass = False):
 		if not bypass:
 			keys = cache.get_user(self, "api_keys")
 			if not keys:
@@ -124,15 +123,15 @@ class User(object):
 		if not self.data['listen_key']:
 			self.generate_listen_key()
 
-	def _auth_anon_user(self, ip_address, api_key, bypass = False):
+	def _auth_anon_user(self, api_key, bypass = False):
 		if not bypass:
-			auth_against = cache.get("ip_%s_api_key" % ip_address)
+			auth_against = cache.get("ip_%s_api_key" % self.ip_address)
 			if not auth_against:
-				auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (ip_address,))
+				auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (self.ip_address,))
 				if not auth_against:
 					# log.debug("user", "Anonymous user key %s not found." % api_key)
 					return
-				cache.set("ip_%s_api_key" % ip_address, auth_against)
+				cache.set("ip_%s_api_key" % self.ip_address, auth_against)
 			if auth_against != api_key:
 				# log.debug("user", "Anonymous user key %s does not match key %s." % (api_key, auth_against))
 				return
@@ -159,7 +158,7 @@ class User(object):
 			listener = db.c.fetch_row("SELECT "
 				"listener_id, sid, listener_lock AS lock, listener_lock_sid AS lock_sid, listener_lock_counter AS lock_counter, listener_voted_entry AS voted_entry "
 				"FROM r4_listeners "
-				"WHERE listener_ip = %s AND listener_purge = FALSE", (self.ip_address,))
+				"WHERE listener_ip = %s AND listener_purge = FALSE AND user_id = 1", (self.ip_address,))
 		if listener:
 			self.data.update(listener)
 		# if self.id > 1:
@@ -167,6 +166,7 @@ class User(object):
 		return listener
 
 	def refresh(self, sid):
+		self.data['tuned_in'] = False
 		listener = self.get_listener_record(use_cache=False)
 		if listener:
 			if self.data['sid'] == sid:
@@ -250,6 +250,8 @@ class User(object):
 		for song_id in playlist.get_unrated_songs_for_requesting(self.id, sid, limit):
 			if song_id:
 				added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
+		if added_requests > 0:
+			self.put_in_request_line(sid)
 		return added_requests
 
 	def add_favorited_requests(self, sid, limit = None):
@@ -262,6 +264,8 @@ class User(object):
 		for song_id in playlist.get_favorited_songs_for_requesting(self.id, sid, limit):
 			if song_id:
 				added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
+		if added_requests > 0:
+			self.put_in_request_line(sid)
 		return added_requests
 
 	def remove_request(self, song_id):
@@ -338,18 +342,23 @@ class User(object):
 			requests = db.c.fetch_all(
 				"SELECT r4_request_store.song_id AS id, COALESCE(r4_song_sid.sid, r4_request_store.sid) AS sid, "
 					"r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
-					"song_title AS title, song_length AS length, "
+					"song_rating AS rating, song_title AS title, song_length AS length, "
 					"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, "
 					"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
 					"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
-					"r4_songs.album_id AS album_id, r4_albums.album_name "
+					"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
+					"song_fave AS fave, album_fave AS album_fave, "
+					"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating AS album_rating "
 				"FROM r4_request_store "
 					"JOIN r4_songs USING (song_id) "
 					"JOIN r4_albums USING (album_id) "
+					"JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_request_store.sid = r4_album_sid.sid) "
 					"LEFT JOIN r4_song_sid ON (r4_request_store.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
+					"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
+			 		"LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = r4_request_store.sid) "
 				"WHERE r4_request_store.user_id = %s "
 				"ORDER BY reqstor_order, reqstor_id",
-				(sid, self.id))
+				(sid, self.id, self.id, self.id))
 			# Lovely but too heavy considering this SQL query sits in the way of a page refresh
 			# It also needs to be updated to make use of the sid argument
 			# requests = db.c.fetch_all(
@@ -377,8 +386,9 @@ class User(object):
 			song['albums'] = [ {
 				"name": song.pop('album_name'),
 				"id": song['album_id'],
-				#"rating": song.pop('album_rating'),
-				#"rating_user": song.pop('album_rating_user'),
+				"fave": song.pop('album_fave'),
+				"rating": song.pop('album_rating'),
+				"rating_user": song.pop('album_rating_user'),
 				"art": playlist.Album.get_art_url(song.pop('album_id'), song['sid'])
 			 } ]
 		cache.set_user(self, "requests", requests)
@@ -405,12 +415,12 @@ class User(object):
 		db.c.update("UPDATE phpbb_users SET radio_listenkey = %s WHERE user_id = %s", (listen_key, self.id))
 		self.update({ "radio_listen_key": listen_key })
 
-	def ensure_api_key(self, ip_address = None):
-		if self.id == 1 and ip_address:
-			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (ip_address,))
+	def ensure_api_key(self):
+		if self.id == 1:
+			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (self.ip_address,))
 			if not api_key:
-				api_key = self.generate_api_key(ip_address, int(time.time()) + 172800)
-				cache.set("ip_%s_api_key" % ip_address, api_key)
+				api_key = self.generate_api_key(int(time.time()) + 172800)
+				cache.set("ip_%s_api_key" % self.ip_address, api_key)
 		elif self.id > 1:
 			if 'api_key' in self.data and self.data['api_key']:
 				return self.data['api_key']
@@ -420,9 +430,9 @@ class User(object):
 		self.data['api_key'] = api_key
 		return api_key
 
-	def generate_api_key(self, ip_address = None, expiry = None):
+	def generate_api_key(self, expiry = None):
 		api_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
-		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_ip) VALUES (%s, %s, %s, %s)", (self.id, api_key, expiry, ip_address))
+		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_ip) VALUES (%s, %s, %s, %s)", (self.id, api_key, expiry, self.ip_address))
 		# this function updates the API key cache for us
 		self.get_all_api_keys()
 		return api_key

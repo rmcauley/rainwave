@@ -30,6 +30,7 @@ class MainIndex(api.web.HTMLRequest):
 	login_required = False
 	sid_required = False
 	beta = False
+	page_template = "r4_index.html"
 
 	def prepare(self):
 		super(MainIndex, self).prepare()
@@ -38,10 +39,10 @@ class MainIndex(api.web.HTMLRequest):
 
 		if not self.user:
 			self.user = User(1)
-		self.user.ensure_api_key(self.request.remote_ip)
+		self.user.ensure_api_key()
 
 		if self.beta or config.get("web_developer_mode") or config.get("developer_mode") or config.get("test_mode"):
-			buildtools.bake_css()
+			buildtools.bake_beta_css()
 			self.jsfiles = []
 			for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js4")):
 				for f in files:
@@ -51,10 +52,10 @@ class MainIndex(api.web.HTMLRequest):
 		self.json_payload[key] = value
 
 	def get(self):
+		self.mobile = self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1
 		info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
 		self.append("api_info", { "time": int(time.time()) })
-		mobile = self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1
-		self.render("r4_index.html", request=self,
+		self.render(self.page_template, request=self,
 					site_description=self.locale.translate("station_description_id_%s" % self.sid),
 					revision_number=config.build_number,
 					jsfiles=self.jsfiles,
@@ -64,7 +65,7 @@ class MainIndex(api.web.HTMLRequest):
 					relays=config.public_relays_json[self.sid],
 					stream_filename=config.get_station(self.sid, "stream_filename"),
 					station_list=config.station_list_json,
-					mobile=mobile)
+					mobile=self.mobile)
 
 @handle_url("/beta")
 class BetaRedirect(tornado.web.RequestHandler):
@@ -76,3 +77,9 @@ class BetaRedirect(tornado.web.RequestHandler):
 @handle_url("/beta/")
 class BetaIndex(MainIndex):
 	beta = True
+	page_template = "r4_index.html"
+
+	def prepare(self):
+		if not config.get("public_beta"):
+			self.perks_required = True
+		super(BetaIndex, self).prepare()

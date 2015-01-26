@@ -3,7 +3,7 @@ var API = function() {
 	var sid, url, user_id, api_key;
 	var sync, sync_params, sync_stopped, sync_timeout_id, sync_error_count, sync_resync;
 	var sync_timeout_error_removal_timeout;
-	var async, async_queue;
+	var async, async_queue, async_callback;
 	var callbacks = {};
 	var universal_callbacks = [];
 	var offline_ack = false;
@@ -133,7 +133,7 @@ var API = function() {
 		}
 		sync_resync = true;
 		sync_error_count++;
-		if (sync_error_count > 2) {
+		if (sync_error_count > 4) {
 			ErrorHandler.remove_permanent_error("sync_retrying");
 			var e = ErrorHandler.make_error("sync_stopped", 500);
 			if (result && result.sync_result && result.sync_result.tl_key) {
@@ -216,16 +216,29 @@ var API = function() {
 		}
 	};
 
+	self.sync_status = function() {
+		console.log(sync);
+		console.log(sync_stopped);
+		console.log(sync_error_count);
+	};
+
 	var async_timeout = function() {
 		ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
+		self.async_get();
 	};
 
 	var async_error = function() {
 		ErrorHandler.permanent_error(ErrorHandler.make_error("async_error", 500));
+		self.async_get();
 	};
 
 	var async_complete = function() {
-		perform_callbacks(JSON.parse(async.responseText));
+		var json = JSON.parse(async.responseText);
+		perform_callbacks(json);
+		if (async_callback) {
+			async_callback(json);
+			async_callback = null;
+		}
 		ErrorHandler.remove_permanent_error("async_error");
 		if (MOBILE && mobile_syncing) {
 			mobile_syncing = false;
@@ -235,14 +248,15 @@ var API = function() {
 		self.async_get();
 	};
 
-	self.async_get = function(action, params) {
+	self.async_get = function(action, params, callback) {
 		if (action) {
 			if (!params) params = {};
-			async_queue.push({ "action": action, "params": params });
+			async_queue.push({ "action": action, "params": params, "callback": callback });
 		}
 		if ((async.readyState === 0) || (async.readyState === 4)) {
 			var to_do = async_queue.shift();
 			if (to_do) {
+				async_callback = to_do.callback;
 				async.open("POST", url + to_do.action, true);
 				async.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 				to_do.params.sid = sid;
@@ -251,6 +265,12 @@ var API = function() {
 				async.send(self.serialize(to_do.params));
 			}
 		}
+	};
+
+	self.async_status = function() {
+		console.log(async);
+		console.log(async.readyState);
+		console.log(async_queue);
 	};
 
 	var perform_callbacks = function(json) {
@@ -270,7 +290,7 @@ var API = function() {
 		catch(err) {
 			self.sync_stop();
 			ErrorHandler.javascript_error(err, json);
-			setTimeout(function() { throw(err) }, 1);
+			setTimeout(function() { throw(err); }, 1);
 		}
 	};
 

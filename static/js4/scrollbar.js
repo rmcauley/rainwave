@@ -47,9 +47,9 @@ var Scrollbar = function() {
 		}
 	};
 
-	cls.new = function(scrollable, handle, handle_margin_top) {
+	cls.create = function(scrollable, handle, handle_margin_top) {
 		if (!handle_margin_top && (handle_margin_top !== 0)) handle_margin_top = 3;
-		var handle_margin_bottom = 3;
+		var handle_margin_bottom = 5;
 
 		var self = {};
 		self.scroll_top = null;
@@ -72,11 +72,24 @@ var Scrollbar = function() {
 
 		self.recalculate = function(force_height, offset_height) {
 			if (cls.hold_all_recalculations) return;
-			self.scroll_height = force_height || self.delay_force_height || scrollable.scrollHeight;
-			if (self.delay_force_height) self.delay_force_height = null;
-			self.offset_height = offset_height || scrollable.parentNode.offsetHeight;
+			if (force_height || (force_height === 0)) {
+				self.scroll_height = force_height;
+			}
+			else if (self.delay_force_height) {
+				self.scroll_height = self.delay_force_height;
+				self.delay_force_height = null;
+			}
+			else {
+				self.scroll_height = scrollable.scrollHeight;
+			}
+			if (offset_height || (offset_height === 0)) {
+				self.offset_height = offset_height;
+			}
+			else {
+				self.offset_height = scrollable.parentNode.offsetHeight;
+			}
 			self.scroll_top = scrollable.scrollTop;
-			self.scroll_top_max = (self.scroll_height - self.offset_height);
+			self.scroll_top_max = Math.max(0, self.scroll_height - self.offset_height);
 			scroll_top_fresh = true;
 			self.pending_self_update = false;
 		};
@@ -85,6 +98,7 @@ var Scrollbar = function() {
 			if ((self.scroll_height === 0) || (self.offset_height === 0) || (self.scroll_height <= self.offset_height)) {
 				if (visible) $add_class(handle, "scrollbar_invisible");
 				handle.style.height = null;
+				handle.style.top = 0;
 				visible = false;
 			}
 			else {
@@ -111,9 +125,10 @@ var Scrollbar = function() {
 			if (!scroll_top_fresh) self.scroll_top = scrollable.scrollTop;
 			else scroll_top_fresh = false;
 
-			var top = (self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
+			var top = Math.min(1, self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
 			if (!self.unrelated_positioning) top += self.scroll_top;
-			handle.style.top = handle_margin_top + Math.floor(top) + "px";
+			top = handle_margin_top + Math.floor(top);
+			handle.style.top = top + "px";
 
 			if (e && self.reposition_hook) self.reposition_hook();
 		};

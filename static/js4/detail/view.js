@@ -11,6 +11,8 @@ var DetailView = function() {
 
 	self.initialize = function() {
 		Prefs.define("request_made");
+		Prefs.define("detail_global_ratings", [ false, true ]);
+		Prefs.add_callback("detail_global_ratings", close_all);
 		el = $id("detail");
 		scrollblock = $id("detail_scrollblock");
 		if (!MOBILE) {
@@ -34,7 +36,7 @@ var DetailView = function() {
 	};
 
 	self.scroll_init = function() {
-		scroller = Scrollbar.new(el, $id("detail_scrollbar"));
+		scroller = Scrollbar.create(el, $id("detail_scrollbar"));
 		scroller.unrelated_positioning = true;
 		Fx.delay_draw(self.on_resize_draw);
 		self.on_resize_calculate();
@@ -44,7 +46,18 @@ var DetailView = function() {
 		if (request_made) {
 			$remove_class(el, "songlist_request_hint");
 		}
-	}
+	};
+
+	var close_all = function() {
+		var a;
+		while (open_views.length) {
+			a = open_views.shift();
+			if (a.el.parentNode) {
+				a.el.parentNode.removeChild(a.el);
+			}
+		}
+		visible_view = null;
+	};
 	
 	var create = function(type, id, render_function, json) {
 		if (internal_width === false) {
@@ -52,8 +65,12 @@ var DetailView = function() {
 			self.on_resize_draw();
 			$add_class(el, "scrollable");
 		}
-		while (open_views.length > 30) {
-			open_views.shift();
+		var a;
+		while (open_views.length > 20) {
+			a = open_views.shift();
+			if (a.el.parentNode) {
+				a.el.parentNode.removeChild(a.el);
+			}
 		}
 		var n = { "el": $el("div", { "class": "detail_view detail_view_" + type }), "type": type, "id": id, "visible": false, "scroll_top": 0 };
 		open_views.push(n);
@@ -73,7 +90,8 @@ var DetailView = function() {
 	var switch_to = function(view) {
 		if (visible_view) {
 			visible_view.scroll_top = scroller.scroll_top;
-			el.removeChild(visible_view.el);
+			if (visible_view.el.parentNode == el) el.removeChild(visible_view.el);
+			else if (visible_view.parentNode) visible_view.parentNode.removeChild(visible_view.el);
 			visible_view.visible = false;
 		}
 		visible_view = view;
@@ -89,7 +107,7 @@ var DetailView = function() {
 	self.on_resize = function() {
 		self.on_resize_calculate();
 		self.on_resize_draw();
-	}	
+	};
 
 	self.on_resize_calculate = function() {
 		var tmp = scrollblock.offsetWidth;
@@ -174,7 +192,7 @@ var DetailView = function() {
 	
 	var open_internal = function(type, id) {
 		id = parseInt(id);
-		if (!id || id == NaN) {
+		if (!id || isNaN(id)) {
 			return false;
 		}
 		var existing_view = exists(type, id);

@@ -5,7 +5,7 @@ var Groups = function() {
 
 	var open_from_target = function(e) {
 		if (e.target._group_id) DetailView.open_group(e.target._group_id);
-	}
+	};
 
 	self.append_spans_from_json = function(el, json) {
 		var a;

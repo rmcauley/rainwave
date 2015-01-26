@@ -40,6 +40,7 @@ var docCookies = {
 // Remove legacy settings
 docCookies.removeItem("r3sid", "/", BOOTSTRAP.cookie_domain);
 docCookies.removeItem("r3prefs", "/", BOOTSTRAP.cookie_domain);
+docCookies.removeItem("edilayouts", "/", BOOTSTRAP.cookie_domain);
 
 /* Preferences for R4 */
 
@@ -125,10 +126,11 @@ var Prefs = function() {
 		if (values && !(name in values)) {
 			values[name] = legal_values ? legal_values[0] : false;
 		}
-		callbacks[name] = [];
+		if (!callbacks[name]) callbacks[name] = [];
 	};
 
 	self.add_callback = function(name, method) {
+		if (!callbacks[name]) callbacks[name] = [];
 		callbacks[name].push(method);
 	};
 
@@ -167,13 +169,13 @@ var SettingsWindow = function() {
 	};
 
 	self.change_language = function(e) {
-		docCookies.setItem("rw_lang", this.value, Infinity, "/", BOOTSTRAP.cookie_domain);
+		docCookies.setItem("rw_lang", this._value, Infinity, "/", BOOTSTRAP.cookie_domain);
 		document.location.reload();
 	};
 
 	self.draw = function() {
-		var div = el.appendChild($el("div", { "class": "setting_group" }));
-		var langs = $el("select", { "id": "prefs_language" });
+		var div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
+		var langs = $el("div", { "class": "multi_select unselectable", "id": "prefs_language" });
 		var option;
 		var locale_names = [];
 		for (var i in BOOTSTRAP.locales) {
@@ -181,98 +183,207 @@ var SettingsWindow = function() {
 		}
 		locale_names.sort();
 		for (i = 0; i < locale_names.length; i++) {
-			option = $el("option", { "value": locale_names[i], "textContent": BOOTSTRAP.locales[locale_names[i]] });
+			option = $el("span", { "class": "link", "textContent": BOOTSTRAP.locales[locale_names[i]] });
+			option._value = locale_names[i];
 			if (locale_names[i] == LOCALE) {
-				option.setAttribute("selected", "selected");
+				$add_class(option, "selected selected_first");
 			}
+			option.addEventListener("click", self.change_language);
 			langs.appendChild(option);
 		}
-		langs.addEventListener("change", self.change_language);
 		div.appendChild(langs);
 		div.appendChild($el("label", { "for": "prefs_language", "textContent": $l("change_language") }));
 
-		draw_cb_list([ "small_menu" ]);
+		div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
+		div.appendChild($el("label", { "textContent": $l("m3u_downloads") }));
+		div = div.appendChild($el("div", { "class": "multi_select multi_select_special unselectable" }));
+		option = div.appendChild($el("span"));
+		option.addEventListener("click", function() { Prefs.change("show_m3u", true); });
+		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "iTunes MP3", "class": "link", "target": "_blank" }));
+		option = div.appendChild($el("span", { "class": "setting_group" }));
+		option.addEventListener("click", function() { Prefs.change("show_m3u", true); });
+		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "Windows MP3", "class": "link", "target": "_blank" }));
+		option = div.appendChild($el("span", { "class": "setting_group" }));
+		option.addEventListener("click", function() { Prefs.change("show_m3u", true); });
+		option.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".ogg", "textContent": "Foobar2000 Ogg", "class": "link", "target": "_blank" }));
 
-		el.appendChild($el("h4", { "textContent": $l("tab_title_preferences") }));
+		div = el.appendChild($el("div", { "class": "setting_group setting_group_special" }));
+		div.appendChild($el("label", { "textContent": $l("site_mode") }));
+		div = div.appendChild($el("div", { "class": "multi_select multi_select_special unselectable" }));
+		option = div.appendChild($el("span", { "id": "site_mode_selector_basic", "class": "link", "textContent": $l("basic") }));
+		option.addEventListener("click", function(e) { Prefs.change("stage", 2); });
+		option = div.appendChild($el("span", { "id": "site_mode_selector_full", "class": "link", "textContent": $l("full") }));
+		option.addEventListener("click", function(e) { Prefs.change("stage", 4); });
+
+		if (R4Notify.capable) {
+			draw_cb_list([ "notify" ], true);
+		}
+
+		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("timeline_preferences") }));
+		draw_cb_list([ "show_artists", "show_losing_songs" ]);
+		div = el.appendChild($el("div", { "class": "setting_group" }));
+		var sticky_history_size = $el("div", { "id": "prefs_sticky_history_size", "class": "multi_select unselectable" });
+		var histsize_highlighter = sticky_history_size.appendChild($el("div", { "class": "floating_highlight" }));
+		for (i = 0; i <= 5; i++) {
+			option = $el("span", { "class": "link", "textContent": i !== 0 ? i : $l("prefs_sticky_history_size__none") });
+			option._value = i;
+			if (i == Prefs.get("sticky_history_size")) {
+				$add_class(option, "selected selected_first");
+			}
+			option.addEventListener("click", function(e) { multi_select_change(e, "sticky_history_size", histsize_highlighter); });
+			sticky_history_size.appendChild(option);
+		}
+		div.appendChild(sticky_history_size);
+		div.appendChild($el("label", { "textContent": $l("prefs_sticky_history_size") }));
+
+		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("tab_title_preferences") }));
 		draw_cb_list([
 			"show_title_in_titlebar",
 			"show_clock_in_titlebar",
 			"show_rating_in_titlebar"
 		]);
 		
-		el.appendChild($el("h4", { "textContent": $l("playlist_preferences") }));
+		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("playlist_preferences") }));
 		div = el.appendChild($el("div", { "class": "setting_group" }));
-		var playlist_sort = $el("select", { "id": "prefs_playlist_sort_by" });
+		var playlist_sort = $el("div", { "id": "prefs_playlist_sort_by", "class": "multi_select unselectable" });
+		var playlist_sort_highlighter = playlist_sort.appendChild($el("div", { "class": "floating_highlight" }));
 		for (i = 0; i < PlaylistLists.sorting_methods.length; i++) {
-			option = $el("option", { "value": PlaylistLists.sorting_methods[i], "textContent": $l("prefs_sort_playlist_by_" + PlaylistLists.sorting_methods[i]) });
+			option = $el("span", { "class": "link", "textContent": $l("prefs_sort_playlist_by_" + PlaylistLists.sorting_methods[i]) });
+			option._value = PlaylistLists.sorting_methods[i];
 			if (PlaylistLists.sorting_methods[i] == Prefs.get("playlist_sort")) {
-				option.setAttribute("selected", "selected");
+				$add_class(option, "selected selected_first");
 			}
+			option.addEventListener("click", function(e) { multi_select_change(e, "playlist_sort", playlist_sort_highlighter); });
 			playlist_sort.appendChild(option);
 		}
-		playlist_sort.addEventListener("change", change_sorting_method);
 		div.appendChild(playlist_sort);
 		div.appendChild($el("label", { "for": "prefs_playlist_sort_by", "textContent": $l("prefs_playlist_sort_by") }));
 
 		draw_cb_list([
 			"playlist_sort_available_first",
 			"playlist_sort_faves_first",
-			"playlist_show_rating_complete",
 			"playlist_show_escape_icon",
 		]);
 
-		el.appendChild($el("h4", { "textContent": $l("m3u_downloads") }));
-		div = el.appendChild($el("div", { "class": "setting_group" }));
-		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "mp3.m3u", "class": "info_right link_obvious" }));
-		div.appendChild($el("div", { "textContent": "iTunes/Winamp" }));
-		div = el.appendChild($el("div", { "class": "setting_group" }));
-		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": "mp3.m3u", "class": "info_right link_obvious" }));
-		div.appendChild($el("div", { "textContent": "Windows Media" }));
-		div = el.appendChild($el("div", { "class": "setting_group" }));
-		div.appendChild($el("a", { "href": "/tune_in/" + User.sid + ".ogg", "textContent": "ogg.m3u", "class": "info_right link_obvious" }));
-		div.appendChild($el("div", { "textContent": "Foobar2000" }));
+		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("rating_preferences") }));
+		draw_cb_list([
+			"playlist_show_rating_complete",
+			"hide_global_ratings",
+			"detail_global_ratings",
+		]);
 
-		intro_mode_swap();
 		self.enable_disable_title_options(Prefs.get("show_title_in_titlebar"));
-		Prefs.add_callback("stage", intro_mode_swap);
 	};
 
-	var intro_mode_swap = function(nv) {
-		nv = nv || Prefs.get("stage");
-		if ($id("intro_mode_link")) {
-			$id("intro_mode_link").parentNode.removeChild($id("intro_mode_link"));
+	var multi_select_change = function(e, pref_name, highlighter) {
+		Prefs.change(pref_name, e.target._value);
+
+		var w = e.target.offsetWidth;
+		var h = e.target.offsetHeight;
+		var l = e.target.offsetLeft;
+		var t = e.target.offsetTop;
+
+		for (var i = 0; i < e.target.parentNode.childNodes.length; i++) {
+			$remove_class(e.target.parentNode.childNodes[i], "selected");
+			if ($has_class(e.target.parentNode.childNodes[i], "selected_first")) { 
+				$remove_class(e.target.parentNode.childNodes[i], "selected_first");
+				highlighter.style.transition = "none";
+				var w2 = e.target.parentNode.childNodes[i].offsetWidth;
+				var h2 = e.target.parentNode.childNodes[i].offsetHeight;
+				var l2 = e.target.parentNode.childNodes[i].offsetLeft;
+				var t2 = e.target.parentNode.childNodes[i].offsetTop;
+				highlighter.style.width = w2 + "px";
+				highlighter.style.height = h2 + "px";
+				highlighter.style[Fx.transform_string] = "translate(" + l2 + "px, " + t2 + "px)";
+				// trigger style recalculation so this happens w/o transition
+				// this will match the highlighter to the first selected element
+				highlighter.offsetWidth;
+				// now we can remove the transition safely
+				highlighter.style.transition = null;
+			}
+			$remove_class(e.target.parentNode.childNodes[i], "selected_first");
 		}
-		if (nv < 3) {
-			var iml = $el("div", { "class": "link_obvious", "id": "intro_mode_link", "textContent": $l("skip_intro_mode") });
-			iml.addEventListener("click", function() { Prefs.change("stage", 4); });
-			el.appendChild(iml);
+		$add_class(e.target, "selected");
+
+		highlighter.style.width = w + "px";
+		highlighter.style.height = h + "px";
+		highlighter.style[Fx.transform_string] = "translate(" + l + "px, " + t + "px)";
+	};
+	/* YES/NO BOXES ... totally worth the effort */
+
+	var force_yes = function(e) {
+		if (e) e.stopPropagation();
+		if ($has_class(this.parentNode, "no")) { 
+			$remove_class(this.parentNode, "yes");
+			$remove_class(this.parentNode, "no");
+			this.parentNode.offsetWidth;  // gotta force that style recalculation :/
+
+			$add_class(this.parentNode, "yes");
+		}
+		else { 
+			$add_class(this.parentNode, "yes");
+		}
+		yes_no_value_check(this.parentNode);
+	};
+
+	var force_no = function(e) {
+		if (e) e.stopPropagation();
+		if (!$has_class(this.parentNode, "yes")) return;
+		$add_class(this.parentNode, "no");
+		$remove_class(this.parentNode, "yes");
+		yes_no_value_check(this.parentNode);
+	};
+
+	var yes_no_swap = function(e) {
+		if (e) e.stopPropagation();
+		if ($has_class(this._cb, "no")) { 
+			$remove_class(this._cb, "yes");
+			$remove_class(this._cb, "no");
+			this._cb.offsetWidth;  // gotta force that style recalculation :/
+
+			$add_class(this._cb, "yes");
+		}
+		else if ($has_class(this._cb, "yes")) { 
+			$add_class(this._cb, "no");
 		}
 		else {
-			var iml = $el("div", { "class": "link_obvious", "id": "intro_mode_link", "textContent": $l("do_intro_mode") });
-			iml.addEventListener("click", function() { Prefs.change("stage", 2); });
-			el.appendChild(iml);
+			$add_class(this._cb, "yes");
 		}
-	}
-
-	var draw_cb_list = function(pref_list) {
-		var cb, div, label;
-		for (var i = 0; i < pref_list.length; i++) {
-			div = $el("div", { "class": "setting_group" });
-			cb = div.appendChild($el("input", { "type": "checkbox", "id": "prefs_" + pref_list[i] }));
-			cb._pref_name = pref_list[i];
-			cb.addEventListener("change", checkbox_changed);
-			if (Prefs.get(pref_list[i])) cb.setAttribute("checked", true);
-			label = div.appendChild($el("label", { "for": "prefs_" + pref_list[i], "textContent": $l("prefs_" + pref_list[i]) }));
-			el.appendChild(div);
-		}
-	}
-
-	var checkbox_changed = function(pref_list) {
-		Prefs.change(this._pref_name, this.checked);
+		yes_no_value_check(this._cb);
 	};
 
-	var change_sorting_method = function(evt) {
-		Prefs.change("playlist_sort", this.value);
+	var yes_no_value_check = function(cb) {
+		if ($has_class(cb, "no")) {
+			Prefs.change(cb._pref_name, false);
+		}
+		else if ($has_class(cb, "yes")) {
+			Prefs.change(cb._pref_name, true);	
+		}
+		else {
+			Prefs.change(cb._pref_name, false);
+		}
+	};
+
+	var draw_cb_list = function(pref_list, special) {
+		var cb, div, label, yes, no, dot, bar;
+		for (var i = 0; i < pref_list.length; i++) {
+			div = $el("div", { "class": "setting_group yes_no_group" });
+			if (special) $add_class(div, "setting_group_special");
+			cb = div.appendChild($el("div", { "class": "yes_no_wrapper" }));
+			yes = cb.appendChild($el("span", { "class": "yes_no_yes", "textContent": $l("yes") }));
+			yes.addEventListener("click", force_yes);
+			bar = cb.appendChild($el("span", { "class": "yes_no_bar" }));
+			dot = cb.appendChild($el("span", { "class": "yes_no_dot" }));
+			no = cb.appendChild($el("span", { "class": "yes_no_no", "textContent": $l("no") }));
+			no.addEventListener("click", force_no);
+
+			cb._pref_name = pref_list[i];
+			div.addEventListener("click", yes_no_swap);
+			div._cb = cb;
+			if (Prefs.get(pref_list[i])) $add_class(cb, "yes");
+			label = div.appendChild($el("label", { "id": "prefs_" + pref_list[i], "textContent": $l("prefs_" + pref_list[i]) }));
+			el.appendChild(div);
+		}
 	};
 
 	return self;

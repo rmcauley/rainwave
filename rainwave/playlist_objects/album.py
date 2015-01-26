@@ -36,7 +36,7 @@ def get_updated_albums_dict(sid):
 	for album_id in updated_album_ids[sid]:
 		album = Album.load_from_id_sid(album_id, sid)
 		album.solve_cool_lowest(sid)
-		tmp = album.to_dict()
+		tmp = album.to_dict_full()
 		# Remove user-related stuff since this gets stuffed straight down the pipe
 		tmp.pop('rating_user', None)
 		tmp.pop('fave', None)
@@ -80,7 +80,7 @@ class Album(AssociatedMetadata):
 			"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
 				"song_url AS url, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiply, "
 				"song_cool_override AS cool_override, %s AS requestable, song_cool AS cool, song_cool_end AS cool_end, "
-				"song_request_only AS request_only, song_artist_parseable AS artist_parseable, "
+				"song_request_only_end AS request_only_end, song_request_only AS request_only, song_artist_parseable AS artist_parseable, "
 				"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(song_fave, FALSE) AS fave "
 			"FROM r4_song_sid "
 				"JOIN r4_songs USING (song_id) "
@@ -94,10 +94,10 @@ class Album(AssociatedMetadata):
 	def get_art_url(self, album_id, sid = None):
 		if not config.get("album_art_file_path"):
 			return ""
-		elif sid and os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s_%s.jpg" % (sid, album_id))):
+		elif sid and os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s_%s_320.jpg" % (sid, album_id))):
 			return "%s/%s_%s" % (config.get("album_art_url_path"), sid, album_id)
-		elif os.path.isfile(os.path.join(config.get("album_art_file_path"), "%s.jpg" % album_id)):
-			return "%s/%s" % (config.get("album_art_url_path"), album_id)
+		elif os.path.isfile(os.path.join(config.get("album_art_file_path"), "a_%s_320.jpg" % album_id)):
+			return "%s/a_%s" % (config.get("album_art_url_path"), album_id)
 		return ""
 
 	def __init__(self):
@@ -172,7 +172,7 @@ class Album(AssociatedMetadata):
 		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (album_id,))
 		for sid in current_sids:
 			if not new_sids.count(sid):
-				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE AND album_num_songs = 0 WHERE album_id = %s AND sid = %s", (album_id, sid))
+				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE AND album_song_count = 0 WHERE album_id = %s AND sid = %s", (album_id, sid))
 		for sid in new_sids:
 			if current_sids.count(sid):
 				pass
@@ -183,7 +183,7 @@ class Album(AssociatedMetadata):
 				updated_album_ids[sid][album_id] = True
 			num_songs = self.get_num_songs(sid)
 			db.c.update("UPDATE r4_album_sid SET album_song_count = %s WHERE album_id = %s AND sid = %s", (num_songs, album_id, sid))
-		self.reset_user_completed_flags()
+		self.update_all_user_ratings()
 		return new_sids
 
 	def start_cooldown(self, sid, cool_time = False):
@@ -198,9 +198,9 @@ class Album(AssociatedMetadata):
 			# AlbumCD = minAlbumCD + ((maxAlbumR - albumR)/(maxAlbumR - minAlbumR)*(maxAlbumCD - minAlbumCD))
 			# old: auto_cool = cooldown.cooldown_config[sid]['min_album_cool'] + (((4 - (cool_rating - 1)) / 4.0) * (cooldown.cooldown_config[sid]['max_album_cool'] - cooldown.cooldown_config[sid]['min_album_cool']))
 			auto_cool = cooldown.cooldown_config[sid]['min_album_cool'] + (((5 - cool_rating) / 4.0) * (cooldown.cooldown_config[sid]['max_album_cool'] - cooldown.cooldown_config[sid]['min_album_cool']))
-			album_num_songs = self.get_num_songs(sid)
-			log.debug("cooldown", "min_album_cool: %s .. max_album_cool: %s .. auto_cool: %s .. album_num_songs: %s .. rating: %s" % (cooldown.cooldown_config[sid]['min_album_cool'], cooldown.cooldown_config[sid]['max_album_cool'], auto_cool, album_num_songs, cool_rating))
-			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_num_songs - config.get_station(sid, "cooldown_size_slope_start")))) / 2)
+			album_song_count = self.get_num_songs(sid)
+			log.debug("cooldown", "min_album_cool: %s .. max_album_cool: %s .. auto_cool: %s .. album_song_count: %s .. rating: %s" % (cooldown.cooldown_config[sid]['min_album_cool'], cooldown.cooldown_config[sid]['max_album_cool'], auto_cool, album_song_count, cool_rating))
+			cool_size_multiplier = config.get_station(sid, "cooldown_size_min_multiplier") + (config.get_station(sid, "cooldown_size_max_multiplier") - config.get_station(sid, "cooldown_size_min_multiplier")) / (1 + math.pow(2.7183, (config.get_station(sid, "cooldown_size_slope") * (album_song_count - config.get_station(sid, "cooldown_size_slope_start")))) / 2)
 			cool_age_multiplier = cooldown.get_age_cooldown_multiplier(self.data['added_on'])
 			cool_time = int(auto_cool * cool_size_multiplier * cool_age_multiplier * self.data['cool_multiply'])
 			log.debug("cooldown", "auto_cool: %s .. cool_size_multiplier: %s .. cool_age_multiplier: %s .. cool_multiply: %s .. cool_time: %s" %
@@ -257,10 +257,10 @@ class Album(AssociatedMetadata):
 		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (time.time(), self.id, sid))
 
 	def get_all_ratings(self, sid):
-		table = db.c.fetch_all("SELECT album_rating_user, album_fave, user_id FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND sid = %s", (self.id, sid))
+		table = db.c.fetch_all("SELECT album_rating_user, album_fave, user_id, album_rating_complete FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND sid = %s", (self.id, sid))
 		all_ratings = {}
 		for row in table:
-			all_ratings[row['user_id']] = { "rating_user": row['album_rating_user'], "fave": row['album_fave'] }
+			all_ratings[row['user_id']] = { "rating_user": row['album_rating_user'], "fave": row['album_fave'], "rating_complete": row['album_rating_complete'] }
 		return all_ratings
 
 	def update_all_user_ratings(self):
@@ -366,9 +366,22 @@ class Album(AssociatedMetadata):
 		return db.c.update("UPDATE r4_album_sid SET album_vote_count = %s WHERE album_id = %s AND sid = %s", (count, self.id, sid))
 
 	def to_dict(self, user = None):
-		d = super(Album, self).to_dict(user)
+		d = {}
+		d['id'] = self.id
+		for v in [ 'rating', 'art', 'name' ]:
+			d[v] = self.data[v]
+
 		if user:
-			self.data.update(rating.get_album_rating(self.sid, self.id, user.id))
+			d.update(rating.get_album_rating(self.sid, self.id, user.id))
+		else:
+			d['rating_user'] = None
+			d['fave'] = None
+		return d
+
+	def to_dict_full(self, user = None):
+		d = super(Album, self).to_dict_full(user)
+		if user:
+			d.update(rating.get_album_rating(self.sid, self.id, user.id))
 		else:
 			d['rating_user'] = None
 			d['fave'] = None

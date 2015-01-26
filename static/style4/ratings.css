@@ -101,3 +101,27 @@ div.rating_hover_number {
 body.small_screen div.rating_hover {
 	font-size: medium;
 }
+
+#rating_window {
+	text-align: center;
+}
+
+#rating_window > div {
+	font-size: larger;
+	text-align: center;
+	cursor: pointer;
+	padding: 0.5em;
+	border: #444 solid 1px;
+	margin: 1em;
+	width: 5em;
+}
+
+#rating_window > div:nth-child(even) {
+	float: right;
+	margin: 0;
+	margin-right: 2em;
+}
+
+#rating_window > div:first-child {
+	margin: 1em auto;
+}

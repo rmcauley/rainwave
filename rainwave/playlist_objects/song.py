@@ -375,7 +375,7 @@ class Song(object):
 		if 'request_only_end' in self.data and self.data['request_only_end'] != None:
 			self.data['request_only_end'] = self.data['cool_end'] + config.get_station(sid, "cooldown_request_only_period")
 			self.data['request_only'] = True
-			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s WHERE song_id = %s AND sid = %s", (self.data['request_only_end'], self.id, sid))
+			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s WHERE song_id = %s AND sid = %s AND song_request_only_end IS NOT NULL", (self.data['request_only_end'], self.id, sid))
 
 	def start_election_block(self, sid, num_elections):
 		for metadata in self.groups:
@@ -507,26 +507,68 @@ class Song(object):
 			self.data['rating_histogram'][str(point['rating_user_rnd'])] = point['rating_user_count']
 
 	def to_dict(self, user = None):
-		self.data['id'] = self.id
-		self.data['artists'] = []
-		self.data['albums'] = []
-		self.data['groups'] = []
+		d = {}
+		d['title'] = self.data['title']
+		d['id'] = self.id
+		d['rating'] = self.data['rating']
+		d['origin_sid'] = self.data['origin_sid']
+		d['link_text'] = self.data['link_text']
+		d['artist_parseable'] = self.data['artist_parseable']
+		d['cool'] = self.data['cool']
+		d['url'] = self.data['url']
+		d['elec_blocked'] = self.data['elec_blocked']
+		d['elec_blocked_by'] = self.data['elec_blocked_by']
+		d['length'] = self.data['length']
+
+		d['artists'] = []
+		d['albums'] = []
+		d['groups'] = []
 		if self.albums:
 			for metadata in self.albums:
-				self.data['albums'].append(metadata.to_dict(user))
+				d['albums'].append(metadata.to_dict(user))
 		if self.artists:
 			for metadata in self.artists:
-				self.data['artists'].append(metadata.to_dict(user))
+				d['artists'].append(metadata.to_dict(user))
 		if self.groups:
 			for metadata in self.groups:
-				self.data['groups'].append(metadata.to_dict(user))
-		self.data['rating_user'] = None
-		self.data['fave'] = None
+				d['groups'].append(metadata.to_dict(user))
+
+		d['rating_user'] = None
+		d['fave'] = None
+		d['rating_allowed'] = self.data['rating_allowed']
 		if user:
-			self.data.update(rating.get_song_rating(self.id, user.id))
+			d.update(rating.get_song_rating(self.id, user.id))
 			if user.data['rate_anything']:
-				self.data['rating_allowed'] = True
-		return self.data
+				d['rating_allowed'] = True
+		
+		for v in [ "entry_id", "elec_request_user_id", "entry_position", "entry_type", "entry_votes", "elec_request_username", "sid", "one_up_used", "one_up_queued", "one_up_id", "rating_rank", "request_rank", "request_count", "rating_histogram", "rating_count" ]:
+			if v in self.data:
+				d[v] = self.data[v]
+
+		return d
+
+	# def to_dict_full(self, user = None):
+	# 	self.data['id'] = self.id
+	# 	self.data['artists'] = []
+	# 	self.data['albums'] = []
+	# 	self.data['groups'] = []
+	# 	if self.albums:
+	# 		for metadata in self.albums:
+	# 			self.data['albums'].append(metadata.to_dict(user))
+	# 	if self.artists:
+	# 		for metadata in self.artists:
+	# 			self.data['artists'].append(metadata.to_dict(user))
+	# 	if self.groups:
+	# 		for metadata in self.groups:
+	# 			self.data['groups'].append(metadata.to_dict(user))
+	# 	self.data['rating_user'] = None
+	# 	self.data['fave'] = None
+	# 	self.data['rating_allowed'] = False
+	# 	if user:
+	# 		self.data.update(rating.get_song_rating(self.id, user.id))
+	# 		if user.data['rate_anything']:
+	# 			self.data['rating_allowed'] = True
+	# 	return self.data
 
 	def get_all_ratings(self):
 		table = db.c.fetch_all("SELECT song_rating_user, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))

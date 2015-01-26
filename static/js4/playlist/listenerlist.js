@@ -1,15 +1,11 @@
 var ListenersList = function() {
 	"use strict";
 	var self = SearchList($id("lists_listeners_items"), $id("lists_listeners_scrollbar"), $id("lists_listeners_stretcher"), "name", "name_searchable");
-	var loading = false;
 	self.auto_trim = true;
 	self.list_name = "current_listeners";
 	self.load_from_api = function() {
-		if (!self.loaded && !loading) {
-			loading = true;
-			API.async_get("current_listeners");
-		}
-	}
+		API.async_get("current_listeners");
+	};
 	self.tab_el = $el("li", { "textContent": $l("Listeners"), "class": "link" });
 	self.tab_el.addEventListener("click", function() {
 		self.load_from_api();

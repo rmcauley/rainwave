@@ -13,6 +13,10 @@ class OneUpProducer(event.BaseProducer):
 		super(OneUpProducer, self).__init__(sid)
 		self.plan_ahead_limit = 5
 
+	def has_next_event(self):
+		next_up_id = db.c.fetch_var("SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE ORDER BY one_up_order LIMIT 1", (self.id,))
+		return True if next_up_id else False
+
 	def load_next_event(self, target_length = None, min_elec_id = None):
 		next_up_id = db.c.fetch_var("SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE ORDER BY one_up_order LIMIT 1", (self.id,))
 		if next_up_id:
@@ -39,9 +43,15 @@ class OneUpProducer(event.BaseProducer):
 			raise Exception("Cannot change the start time of a used producer.")
 
 	def _update_length(self):
-		length = db.c.fetch_var("SELECT SUM(song_length) FROM r4_one_ups JOIN r4_songs USING (song_id) WHERE sched_id = %s GROUP BY sched_id", (self.id,))
-		if not length:
+		stats = db.c.fetch_row("SELECT SUM(song_length) AS l, COUNT(song_length) AS c FROM r4_one_ups JOIN r4_songs USING (song_id) WHERE sched_id = %s GROUP BY sched_id", (self.id,))
+		# for some reason we need 'buffer' at the end of each song for switching
+		# otherwise the power hour cuts off the last few songs if we just do straight sum(song_length)
+		# the time is short an averages 15 seconds per song in my testing
+		# how this discrepency happens I don't know, but we add 30s of 'buffer' to each song
+		if not stats:
 			length = 0
+		else:
+			length = stats['l'] + (30 * stats['c'])
 		if self.start_actual:
 			self.end = self.start_actual + length
 		else:

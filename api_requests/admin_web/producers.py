@@ -36,8 +36,7 @@ class WebCreateProducer(api.web.HTMLRequest):
 		self.write(">Create new Producer</button></div>")
 		self.write(self.render_string("basic_footer.html"))
 
-@handle_url("/admin/album_list/producers")
-class WebListProducers(api.web.PrettyPrintAPIMixin, producers.ListProducers):
+class WebListProducersBase(object):
 	def header_special(self):
 		self.write("<th>Time</th><th></th><th></th>")
 
@@ -47,7 +46,19 @@ class WebListProducers(api.web.PrettyPrintAPIMixin, producers.ListProducers):
 		self.write("<td><a onclick=\"window.top.call_api('admin/delete_producer', { 'sched_id': %s });\">Delete</a></td>" % row['id'])
 
 	def sort_keys(self, keys):
-		return [ "name", "type", "url", 'sid', 'sched_length_minutes' ]
+		return [ "sid", "name", "type", 'sched_length_minutes', "url" ]
+
+@handle_url("/admin/album_list/producers")
+class WebListProducers(WebListProducersBase, api.web.PrettyPrintAPIMixin, producers.ListProducers):
+	pass
+
+@handle_url("/admin/tools/producers_all")
+class WebCreateProducerAll(WebCreateProducer):
+	pass
+
+@handle_url("/admin/album_list/producers_all")
+class WebListProducersAll(WebListProducersBase, api.web.PrettyPrintAPIMixin, producers.ListProducersAll):
+	pass
 
 @handle_url("/admin/album_list/modify_producer")
 class WebModifyProducer(api.web.HTMLRequest):

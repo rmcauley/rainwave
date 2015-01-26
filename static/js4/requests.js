@@ -16,7 +16,7 @@ var Requests = function() {
 
 	self.scroll_init = function() {
 		scroll_container = $id("requests");
-		scroller = Scrollbar.new(scroll_container, $id("requests_scrollbar"), 35);
+		scroller = Scrollbar.create(scroll_container, $id("requests_scrollbar"), 35);
 		scroller.set_handle_margin_bottom(30);
 	};
 
@@ -48,6 +48,9 @@ var Requests = function() {
 		$id("requests_unrated").setAttribute("title", $l("request_fill_with_unrated"));
 		$id("requests_unrated").setAttribute("alt", $l("request_fill_with_unrated"));
 		$id("requests_unrated").addEventListener("click", self.fill_with_unrated);
+		$id("requests_favfill").setAttribute("title", $l("request_fill_with_faves"));
+		$id("requests_favfill").setAttribute("alt", $l("request_fill_with_faves"));
+		$id("requests_favfill").addEventListener("click", self.fill_with_faves);
 		self.on_resize();
 	};
 
@@ -76,9 +79,11 @@ var Requests = function() {
 	self.show_queue_paused = function() {
 		if (User.requests_paused) {
 			$add_class(container, "request_queue_paused");
+			$id("requests_pause").setAttribute("src", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QzFCODUzQUE1MjIzMTFFNEJFQ0VGMkJDN0VDNjIzOUEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QzFCODUzQUI1MjIzMTFFNEJFQ0VGMkJDN0VDNjIzOUEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpDMUI4NTNBODUyMjMxMUU0QkVDRUYyQkM3RUM2MjM5QSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpDMUI4NTNBOTUyMjMxMUU0QkVDRUYyQkM3RUM2MjM5QSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PhxAPyEAAACXSURBVHja5JZRDoAgDEOp2f2vPCUGjckYUUYx2u9J80ZphKqmIJWD4A0tKV4ugbQGirDJPN3ekNZIRxC6pNIiCDAFi9AkZRheTFmGh6kYqetKrfcJkxDMlVJTiuo7fHo3ebxy7dSmgdel0SlFq7z7cXZv16hwyPDXfm4M7KaJSeldzScc2KVzCL9v+KOUauAv+KsIVwEGAI96KVeurpUJAAAAAElFTkSuQmCC");
 		}
 		else {
 			$remove_class(container, "request_queue_paused");
+			$id("requests_pause").setAttribute("src", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RjdGOUZFMDgyM0RBMTFFNDhDNTlCQkNCMEM0MEY5MUEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RjdGOUZFMDkyM0RBMTFFNDhDNTlCQkNCMEM0MEY5MUEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpGN0Y5RkUwNjIzREExMUU0OEM1OUJCQ0IwQzQwRjkxQSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpGN0Y5RkUwNzIzREExMUU0OEM1OUJCQ0IwQzQwRjkxQSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pm/95VkAAABtSURBVHjaYvz//z8DlQC6QYzYxJkY6AxYsLgMK2AEAqzeIjGEBsSHeH1AbUB3Hw5/C1mwpDqKUu1okNLdQkZYnNE6H8KSxmgqpb0PaRB3/5Hrx4H3Ia1T62gqHS1LR1Mpbh/+p2ITfFD5ECDAAGteJEcF3nOjAAAAAElFTkSuQmCC");
 		}
 
 		var good_requests = 0;
@@ -87,7 +92,6 @@ var Requests = function() {
 			if (!$has_class(songs[i].el, "timeline_song_is_cool")) {
 				all_cooldown = false;
 				good_requests++;
-				break;
 			}
 		}
 
@@ -123,7 +127,7 @@ var Requests = function() {
 		}
 		else {
 			$remove_class(container, "request_warning");
-			grab_tag.textContent = $l("request_grab_tag__paused")
+			grab_tag.textContent = $l("request_grab_tag__paused");
 			header.innerHTML = "&nbsp;";
 		}
 	};
@@ -145,11 +149,15 @@ var Requests = function() {
 		API.async_get("request_unrated_songs");
 	};
 
+	self.fill_with_faves = function() {
+		API.async_get("request_favorited_songs");
+	};
+
 	self.add = function(song_id) {
 		API.async_get("request", { "song_id": song_id });
 	};
 
-	self.delete = function(song_id) {
+	self.remove = function(song_id) {
 		API.async_get("delete_request", { "song_id": song_id });
 	};
 
@@ -160,7 +168,7 @@ var Requests = function() {
 		}
 		else {
 			container.style.transition = "none";
-			container.className = "fake_hover";
+			$add_class(container, "fake_hover");
 			$remove_class(document.body, "requests_sticky");
 			container.addEventListener("mouseout", once_mouse_out);
 			Prefs.change("requests_sticky", false);
@@ -190,7 +198,7 @@ var Requests = function() {
 				}
 			}
 			if (!found) {
-				n = TimelineSong.new(json[i], true);
+				n = TimelineSong.create(json[i], true);
 				n.elements.request_drag.addEventListener("mousedown", start_drag);
 				n.el.style[Fx.transform_string] = "translateY(" + SCREEN_HEIGHT + "px)";
 				new_songs.unshift(n);
@@ -216,10 +224,10 @@ var Requests = function() {
 	};
 
 	self.reflow = function() {
-		var running_height = 5;
+		var running_height = 25;
 		for (var i = 0; i < songs.length; i++) {
 			songs[i]._request_y = running_height;
-			songs[i].el.style.transform = "translateY(" + (running_height + (SCREEN_HEIGHT * i)) + "px)";
+			songs[i].el.style.transform = "translateY(" + (running_height + (SCREEN_HEIGHT * (i + 1))) + "px)";
 			Fx.delay_css_setting(songs[i].el, "transform", "translateY(" + running_height + "px)");
 			running_height += TimelineSong.height;
 		}
@@ -229,7 +237,7 @@ var Requests = function() {
 	};
 
 	self.real_reflow = function() {
-		var running_height = 5;
+		var running_height = 25;
 		for (var i = 0; i < songs.length; i++) {
 			if (dragging_song != songs[i]) {
 				songs[i]._request_y = running_height;
@@ -266,7 +274,7 @@ var Requests = function() {
 
 	var continue_drag = function(e) {
 		var new_y = dragging_song._request_y - (Mouse.y - Mouse.get_y(e));
-		var new_index = Math.floor((new_y + (TimelineSong.height * .3)) / TimelineSong.height);
+		var new_index = Math.floor((new_y + (TimelineSong.height * 0.3)) / TimelineSong.height);
 		if (new_index >= songs.length) new_index = songs.length - 1;
 		if (new_index < 0) new_index = 0;
 		if (new_index != dragging_index) {

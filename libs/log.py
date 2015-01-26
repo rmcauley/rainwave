@@ -20,6 +20,7 @@ def init(logfile, loglevel = "warning"):
 	print_handler.setFormatter(RWFormatter())
 	print_handler.setLevel(logging.DEBUG)
 
+	logging.getLogger("scss").addHandler(handler)
 	logging.getLogger("tornado.general").addHandler(handler)
 	log = logging.getLogger("tornado.application")
 	log.addHandler(handler)

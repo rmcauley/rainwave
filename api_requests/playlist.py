@@ -53,7 +53,7 @@ class ArtistHandler(APIHandler):
 	def post(self):
 		artist = playlist.Artist.load_from_id(self.get_argument("id"))
 		artist.load_all_songs(self.sid, self.user.id)
-		self.append(self.return_name, artist.to_dict(self.user))
+		self.append(self.return_name, artist.to_dict_full(self.user))
 
 @handle_api_url("group")
 class GroupHandler(APIHandler):
@@ -64,7 +64,7 @@ class GroupHandler(APIHandler):
 	def post(self):
 		group = playlist.SongGroup.load_from_id(self.get_argument("id"))
 		group.load_songs_from_sid(self.sid, self.user.id)
-		self.append(self.return_name, group.to_dict(self.user))
+		self.append(self.return_name, group.to_dict_full(self.user))
 
 @handle_api_url("album")
 class AlbumHandler(APIHandler):
@@ -75,7 +75,7 @@ class AlbumHandler(APIHandler):
 	def post(self):
 		album = playlist.Album.load_from_id_with_songs(self.get_argument("id"), self.sid, self.user)
 		album.load_extra_detail(self.sid)
-		self.append("album", album.to_dict(self.user))
+		self.append("album", album.to_dict_full(self.user))
 
 @handle_api_url("song")
 class SongHandler(APIHandler):
@@ -194,22 +194,23 @@ class PlaybackHistory(APIHandler):
 	login_required = False
 	sid_required = True
 	allow_get = True
+	pagination = True
 
 	def post(self):
 		if self.user.is_anonymous():
 			self.append(self.return_name, db.c.fetch_all(
-				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name "
-				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
+				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, songhist_time AS song_played_at, song_artist_parseable AS artist_parseable, song_rating AS rating "
+				"FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 				"WHERE r4_song_history.sid = %s "
-				"ORDER BY songhist_id DESC LIMIT 100",
+				"ORDER BY songhist_id DESC " + self.get_sql_limit_string(),
 				(self.sid,)))
 		else:
 			self.append(self.return_name, db.c.fetch_all(
-				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, song_rating_user AS rating_user, song_fave AS fave "
-				"FROM r4_song_history JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
+				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, song_rating_user AS rating_user, song_fave AS fave, songhist_time AS song_played_at, song_artist_parseable AS artist_parseable, song_rating AS rating, song_rating_user AS rating_user "
+				"FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 					"LEFT JOIN r4_song_ratings ON r4_song_history.song_id = r4_song_ratings.song_id AND user_id = %s "
 				"WHERE r4_song_history.sid = %s "
-				"ORDER BY songhist_id DESC LIMIT 100",
+				"ORDER BY songhist_id DESC " + self.get_sql_limit_string(),
 				(self.user.id, self.sid)))
 
 @handle_api_html_url("playback_history")
