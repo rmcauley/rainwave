@@ -5,7 +5,7 @@ Pillow
 psutil
 psycopg2
 pylibmc
-pyScss
+pyScss==1.2.1
 pytz
 slimit
 supervisor
