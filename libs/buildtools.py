@@ -1,6 +1,9 @@
 import os
 import warnings
+import subprocess
+import config
 from slimit import minify
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     import scss
@@ -12,6 +15,8 @@ def create_baked_directory():
 	d = os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()))
 	if not os.path.exists(d):
 		os.makedirs(d)
+		if os.name != "nt" and os.getuid() != 0:
+			subprocess.call(["chown", "-R", "%s:%s" % (config.get("api_user"), config.get("api_group")), d ])
 		return True
 	return False
 

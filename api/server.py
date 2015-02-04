@@ -104,9 +104,6 @@ class APIServer(object):
 		cache.connect()
 		memory_trace.setup(port_no)
 
-		buildtools.bake_css()
-		buildtools.bake_js()
-
 		api.locale.load_translations()
 		api.locale.compile_static_language_files()
 
@@ -172,6 +169,9 @@ class APIServer(object):
 			log.close()
 
 	def start(self):
+		buildtools.bake_css()
+		buildtools.bake_js()
+		
 		# Setup variables for the long poll module
 		# Bypass Tornado's forking processes for Windows machines if num_processes is set to 1
 		if config.get("api_num_processes") == 1 or config.get("web_developer_mode"):

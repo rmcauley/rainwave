@@ -13,7 +13,7 @@ from backend import icecast_sync
 from rainwave.events import pvpelection
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description="Rainwave API server.")
+	parser = argparse.ArgumentParser(description="Rainwave PVP Hour generation script.")
 	parser.add_argument("--config", default=None)
 	args = parser.parse_args()
 	config.load(args.config)
