@@ -255,6 +255,7 @@
    "prefs_sort_playlist_by_cool"                     : "Cooldown",
    "prefs_show_artists"                              : "Show Artists In Timeline",
    "prefs_show_losing_songs"                         : "Show Songs That Lost in the Election",
+   "prefs_requests_auto_slide"                       : "Show Request Pane On Change",
    "rating_preferences"                              : "Ratings",
    "prefs_hide_global_ratings"                       : "Hide Global Ratings Until I've Rated",
    "prefs_detail_global_ratings"                     : "Show Global Ratings in Song Lists",

@@ -219,6 +219,8 @@ var SettingsWindow = function() {
 			draw_cb_list([ "notify" ], true);
 		}
 
+		draw_cb_list([ "requests_auto_slide" ], true);
+
 		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("timeline_preferences") }));
 		draw_cb_list([ "show_artists", "show_losing_songs" ]);
 		div = el.appendChild($el("div", { "class": "setting_group" }));
