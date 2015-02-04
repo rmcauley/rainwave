@@ -3,7 +3,6 @@ import os
 import getpass
 import tornado.escape
 import tempfile
-from libs import buildtools
 
 # Options hash - please don't access this externally in case the storage method changes
 _opts = {}
@@ -22,6 +21,12 @@ public_relays_json = {}
 station_list_json = {}
 station_mounts = {}
 station_mount_filenames = {}
+
+def get_build_number():
+	bnf = open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), 'r')
+	bn = int(bnf.read())
+	bnf.close()
+	return bn
 
 def get_config_file(testmode = False):
 	if os.path.isfile("etc/%s.conf" % getpass.getuser()):
@@ -99,7 +104,7 @@ def load(file = None, testmode = False):
 		station_mounts[get_station(station_id, "stream_filename") + ".ogg"] = station_id
 	station_list_json = tornado.escape.json_encode(station_list)
 
-	build_number = buildtools.get_build_number()
+	build_number = get_build_number()
 		
 def has(key):
 	return key in _opts

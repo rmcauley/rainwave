@@ -1,7 +1,8 @@
 import os
 import warnings
 import subprocess
-import config
+from libs import config
+from libs.config import get_build_number
 from slimit import minify
 
 with warnings.catch_warnings():
@@ -72,12 +73,6 @@ def bake_js(source_dir="js4", dest_file="script4.js"):
 		o = open(fn, "w")
 		o.write(minify(js_content, mangle=True, mangle_toplevel=False))
 		o.close()
-
-def get_build_number():
-	bnf = open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), 'r')
-	bn = int(bnf.read())
-	bnf.close()
-	return bn
 
 def increment_build_number():
 	bn = get_build_number()	+ 1
