@@ -82,7 +82,6 @@ var AlbumView = function(view, json) {
 
 	view.el.appendChild(d);
 
-
 	if (User.sid == 5) {
 		var s = {};
 		for (i = 0; i < json.songs.length; i++) {

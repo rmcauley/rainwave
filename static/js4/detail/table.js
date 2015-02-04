@@ -1,5 +1,15 @@
+// this special sorting fixes how Postgres ignores spaces while sorting
+// the discrepency in sorting is small, but does exist, since
+// many other places on the page do sorting.
+var SongsTableSorting = function(a, b) {
+	if (a.title.toLowerCase() < b.title.toLowerCase()) return -1;
+	else if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
+	return 0;
+};
+
 var SongsTable = function(songs, columns) {
 	"use strict";
+	songs.sort(SongsTableSorting);
 	var el = $el("table", { "class": "songlist" });
 
 	var row, cell, cell2, cell3, r, i, div, div2, link, title_el, title_cell;
