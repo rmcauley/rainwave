@@ -347,18 +347,34 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		}
 		if (visible.length === 0) {
 			$add_class(self.search_box_input.parentNode.parentNode, "no_results");
+			self.recalculate();
+			self.reposition();
+		}
+		else if (first_time) {
+			current_scroll_index = false;
+			original_scroll_top = scrollbar.scroll_top;
+			self.recalculate();
+			scrollbar.scroll_to(0);
+			self.reposition();
 		}
 		else if (visible.length <= num_items_to_display) {
+			current_scroll_index = false;
 			backspace_scroll_top = scrollbar.scroll_top;
+			self.recalculate();
 			scrollbar.scroll_to(0);
+			self.reposition();
 		}
-		current_scroll_index = false;
-		if (first_time) {
-			original_scroll_top = scrollbar.scroll_top;
-			scrollbar.scroll_to(0);
+		else if (visible.length <= current_scroll_index) {
+			current_scroll_index = false;
+			backspace_scroll_top = scrollbar.scroll_top;
+			self.recalculate();
+			scrollbar.scroll_to((visible.length - num_items_to_display) * PLAYLIST_ITEM_HEIGHT);
+			self.reposition();
 		}
-		self.recalculate();
-		self.reposition();
+		else {
+			self.recalculate();
+			self.reposition();
+		}
 		return true;
 	};
 
@@ -366,7 +382,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		backspace_scroll_top = null;
 		clear_searchbar();
 		search_string = "";
-		if (hidden.length == 0) return;
+		if (hidden.length === 0) return;
 
 		self.update_view();
 		hidden = [];
