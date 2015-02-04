@@ -130,6 +130,7 @@ table.songlist td {
 
 tr.songlist_cool td {
 	background-color: $cooldown-color;
+	border-bottom-color: $cooldown-color;
 }
 
 table.songlist tr:hover td {
