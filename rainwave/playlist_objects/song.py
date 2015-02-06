@@ -125,7 +125,7 @@ class Song(object):
 	@classmethod
 	def load_from_deleted_file(klass, filename):
 		matched_entry = db.c.fetch_row("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
-		if matched_entry:
+		if matched_entry and 'song_id' in matched_entry:
 			s = klass.load_from_id(matched_entry['song_id'])
 		else:
 			s = None
