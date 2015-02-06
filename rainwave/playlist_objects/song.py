@@ -17,6 +17,7 @@ from rainwave.playlist_objects.album import Album
 from rainwave.playlist_objects.songgroup import SongGroup
 from rainwave.playlist_objects.metadata import make_searchable_string
 from rainwave.playlist_objects import cooldown
+from rainwave.playlist_objects.metadata import MetadataUpdateError
 
 _mp3gain_path = filetools.which("mp3gain")
 
@@ -85,15 +86,21 @@ class Song(object):
 			log.debug("playlist", "this filename matches an existing database entry, song_id {}".format(matched_entry['song_id']))
 			s = klass.load_from_id(matched_entry['song_id'])
 			for metadata in s.artists:
-				if metadata.is_tag:
-					metadata.disassociate_song_id(s.id)
-				else:
-					kept_artists.append(metadata)
+				try:
+					if metadata.is_tag:
+						metadata.disassociate_song_id(s.id)
+					else:
+						kept_artists.append(metadata)
+				except MetadataUpdateError:
+					pass
 			for metadata in s.groups:
-				if metadata.is_tag:
-					metadata.disassociate_song_id(s.id)
-				else:
-					kept_groups.append(metadata)
+				try:
+					if metadata.is_tag:
+						metadata.disassociate_song_id(s.id)
+					else:
+						kept_groups.append(metadata)
+				except MetadataUpdateError:
+					pass
 		elif len(sids) == 0:
 			raise SongHasNoSIDsException
 		else:
