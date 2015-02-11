@@ -264,6 +264,8 @@ class Album(AssociatedMetadata):
 		return all_ratings
 
 	def update_all_user_ratings(self):
+		if not db.c.allows_join_on_update:
+			return
 		for sid in config.station_ids:
 			num_songs = self.get_num_songs(sid)
 			db.c.update(
@@ -289,6 +291,8 @@ class Album(AssociatedMetadata):
 				(self.id, sid, self.id, sid, self.id, sid, num_songs))
 
 	def reset_user_completed_flags(self):
+		if not db.c.allows_join_on_update:
+			return
 		if db.c.allows_join_on_update:
 			db.c.update(
 				"WITH status AS ( "
