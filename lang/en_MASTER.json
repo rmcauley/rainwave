@@ -300,5 +300,7 @@
    "file"                                            : "File",
    "error"                                           : "Error",
    "url"                                             : "URL",
-   "sched_length_minutes"                            : "Length (min.)"
+   "sched_length_minutes"                            : "Length (min.)",
+   "backend_scan_errors"                             : "Backend Scan Errors",
+   "producers"                                       : "Producers"
 }
