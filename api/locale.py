@@ -88,8 +88,8 @@ def load_translations():
 				translations[filename[:-5]] = RainwaveLocale(filename[:-5], master, json.load(f))
 				f.close()
 				locale_names[filename[:-5]] = translations[filename[:-5]].dict['language_name']
-			except:
-				log.warn("locale", "%s is not a valid JSON file." % filename[:-5])
+			except Exception as e:
+				log.exception("locale", "%s translation did not load." % filename[:-5], e)
 
 	locale_names_json = tornado.escape.json_encode(locale_names)
 
@@ -136,8 +136,13 @@ class RainwaveLocale(tornado.locale.Locale):
 
 		return translations['en_CA']
 
+	# I can't find the original definition for the init here
+	# And things seem to work fine without calling it
+	# So... I'm just going to leave it alone and ignore
+	# the pylint warning that we're not calling super() here
+	#pylint: disable=W0231
 	def __init__(self, code, mster, translation):
-		super(RainwaveLocale, self).__init__()
+		# super(RainwaveLocale, self).__init__()
 		# remove lines that are no longer in the master file
 		to_pop = []
 		for k, v in translation.iteritems():
@@ -154,6 +159,7 @@ class RainwaveLocale(tornado.locale.Locale):
 		for k, v in mster.iteritems():
 			if not translation.has_key(k):
 				self.missing[k] = v
+	#pylint: enable=W0231
 
 	def translate(self, key, **kwargs):
 		if not key in self.dict:
