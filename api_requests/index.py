@@ -65,6 +65,7 @@ class MainIndex(api.web.HTMLRequest):
 					relays=config.public_relays_json[self.sid],
 					stream_filename=config.get_station(self.sid, "stream_filename"),
 					station_list=config.station_list_json,
+					apple_home_screen_icon=config.get("apple_home_screen_icon"),
 					mobile=self.mobile)
 
 @handle_url("/beta")
