@@ -244,7 +244,7 @@ var SettingsWindow = function() {
 			"show_clock_in_titlebar",
 			"show_rating_in_titlebar"
 		]);
-		
+
 		el.appendChild($el("div", { "class": "setting_subheader", "textContent": $l("playlist_preferences") }));
 		div = el.appendChild($el("div", { "class": "setting_group" }));
 		var playlist_sort = $el("div", { "id": "prefs_playlist_sort_by", "class": "multi_select unselectable" });
@@ -284,10 +284,11 @@ var SettingsWindow = function() {
 		var h = e.target.offsetHeight;
 		var l = e.target.offsetLeft;
 		var t = e.target.offsetTop;
+		var reflow_trigger;
 
 		for (var i = 0; i < e.target.parentNode.childNodes.length; i++) {
 			$remove_class(e.target.parentNode.childNodes[i], "selected");
-			if ($has_class(e.target.parentNode.childNodes[i], "selected_first")) { 
+			if ($has_class(e.target.parentNode.childNodes[i], "selected_first")) {
 				$remove_class(e.target.parentNode.childNodes[i], "selected_first");
 				highlighter.style.transition = "none";
 				var w2 = e.target.parentNode.childNodes[i].offsetWidth;
@@ -299,7 +300,7 @@ var SettingsWindow = function() {
 				highlighter.style[Fx.transform_string] = "translate(" + l2 + "px, " + t2 + "px)";
 				// trigger style recalculation so this happens w/o transition
 				// this will match the highlighter to the first selected element
-				highlighter.offsetWidth;
+				highlighter.offsetWidth;	// jshint ignore:line
 				// now we can remove the transition safely
 				highlighter.style.transition = null;
 			}
@@ -315,14 +316,15 @@ var SettingsWindow = function() {
 
 	var force_yes = function(e) {
 		if (e) e.stopPropagation();
-		if ($has_class(this.parentNode, "no")) { 
+		if ($has_class(this.parentNode, "no")) {
 			$remove_class(this.parentNode, "yes");
 			$remove_class(this.parentNode, "no");
-			this.parentNode.offsetWidth;  // gotta force that style recalculation :/
+			 // gotta force that style recalculation :/
+			this.parentNode.offsetWidth;  // jshint ignore:line
 
 			$add_class(this.parentNode, "yes");
 		}
-		else { 
+		else {
 			$add_class(this.parentNode, "yes");
 		}
 		yes_no_value_check(this.parentNode);
@@ -338,14 +340,15 @@ var SettingsWindow = function() {
 
 	var yes_no_swap = function(e) {
 		if (e) e.stopPropagation();
-		if ($has_class(this._cb, "no")) { 
+		if ($has_class(this._cb, "no")) {
 			$remove_class(this._cb, "yes");
 			$remove_class(this._cb, "no");
-			this._cb.offsetWidth;  // gotta force that style recalculation :/
+			 // gotta force that style recalculation :/
+			this._cb.offsetWidth;  // jshint ignore:line
 
 			$add_class(this._cb, "yes");
 		}
-		else if ($has_class(this._cb, "yes")) { 
+		else if ($has_class(this._cb, "yes")) {
 			$add_class(this._cb, "no");
 		}
 		else {
@@ -359,7 +362,7 @@ var SettingsWindow = function() {
 			Prefs.change(cb._pref_name, false);
 		}
 		else if ($has_class(cb, "yes")) {
-			Prefs.change(cb._pref_name, true);	
+			Prefs.change(cb._pref_name, true);
 		}
 		else {
 			Prefs.change(cb._pref_name, false);

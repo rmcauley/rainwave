@@ -31,7 +31,7 @@ var ArtistViewRenderSid = function(view, json, sid) {
 var ArtistView = function(view, json) {
 	"use strict";
 	view.el.appendChild($el("h1", { "textContent": json.name }));
-	
+
 	if (json.all_songs[User.sid]) ArtistViewRenderSid(view, json.all_songs[User.sid], User.sid);
 
 	var i, sid, album_id;
@@ -41,6 +41,6 @@ var ArtistView = function(view, json) {
 		if (sid == User.sid) continue;
 		if (json.all_songs[sid]) ArtistViewRenderSid(view, json.all_songs[sid], sid);
 	}
-	
+
 	return view.el;
 };

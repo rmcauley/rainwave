@@ -26,7 +26,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	var data = {};
 	self.data = data;			// keys() are the object IDs (e.g. data[album.id])
 	self.loaded = false;
-	
+
 	var visible = [];			// list of IDs sorted by the sort_function (visible on screen)
 	var hidden = [];			// list of IDs unsorted - currently hidden from view during a search
 
@@ -62,7 +62,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			}
 		}
 
-		if (search_string.length == 0) {
+		if (search_string.length === 0) {
 			self.update_view();
 			hidden = [];
 			current_scroll_index = false;
@@ -126,19 +126,19 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			if ((parseInt(character) >= 1) && (parseInt(character) <= 5)) {
 				Schedule.rate_current_song(parseInt(character));
 			}
-			else if (character == 'q') Schedule.rate_current_song(1.5);
-			else if (character == 'w') Schedule.rate_current_song(2.5);
-			else if (character == 'e') Schedule.rate_current_song(3.5);
-			else if (character == 'r') Schedule.rate_current_song(4.5);
+			else if (character == "q") Schedule.rate_current_song(1.5);
+			else if (character == "w") Schedule.rate_current_song(2.5);
+			else if (character == "e") Schedule.rate_current_song(3.5);
+			else if (character == "r") Schedule.rate_current_song(4.5);
 
 			else if (character == "a") Schedule.vote(0, 0);
 			else if (character == "s") Schedule.vote(0, 1);
 			else if (character == "d") Schedule.vote(0, 2);
-			else if (character == "z") Schedule.vote(1, 0); 
+			else if (character == "z") Schedule.vote(1, 0);
 			else if (character == "y") Schedule.vote(1, 0); 		// quertz layout
 			else if (character == "x") Schedule.vote(1, 1);
 			else if (character == "c") Schedule.vote(1, 2);
-			else { 
+			else {
 				hotkey_mode_error("invalid_hotkey");
 				return true;
 			}
@@ -160,7 +160,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		hotkey_mode_disable();
 		$add_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
 		self.search_box_input.textContent = $l(tl_key);
-		hotkey_timeout = setTimeout(function() { 
+		hotkey_timeout = setTimeout(function() {
 			$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
 			self.search_box_input.textContent = $l("filter");
 			hotkey_timeout = null;
@@ -169,7 +169,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 	self.update_view = function(to_reshow) {
 		to_reshow = to_reshow || hidden;
-		if (visible.length == 0) {
+		if (visible.length === 0) {
 			to_reshow.sort(self.sort_function);
 			visible = to_reshow;
 		}
@@ -244,7 +244,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		self.key_nav_highlight(visible[new_index]);
 		return true;
 	};
-	
+
 	self.key_nav_down = function() {
 		return key_nav_arrow_action(1);
 	};
@@ -287,7 +287,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		else if (search_string.length > 1) {
 			search_string = search_string.substring(0, search_string.length - 1);
 			self.search_box_input.textContent = search_string;
-		
+
 			var use_search_string = Formatting.make_searchable_string(search_string);
 			var revisible = [];
 			for (var i = hidden.length - 1; i >= 0; i--) {
@@ -303,7 +303,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			current_scroll_index = false;
 			self.recalculate();
 			if (backspace_scroll_top && (revisible.length + visible.length > num_items_to_display)) {
-				scrollbar.scroll_to(backspace_scroll_top);	
+				scrollbar.scroll_to(backspace_scroll_top);
 				backspace_scroll_top = null;
 			}
 			self.reposition();
@@ -318,11 +318,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 				return true;
 			}
 		}
-		else if ((search_string.length == 0) && (character == " ")) {
+		else if ((search_string.length === 0) && (character === " ")) {
 			hotkey_mode_enable();
 			return true;
 		}
-		var first_time = search_string.length == 0 ? true : false;
+		var first_time = search_string.length === 0 ? true : false;
 		if (first_time) {
 			clear_searchbar();
 			original_key_nav = current_key_nav_id;
@@ -417,7 +417,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			$add_class(self.search_box_input.parentNode.parentNode, "no_results");
 		}
 		else {
-			$remove_class(self.search_box_input.parentNode.parentNode, "no_results");	
+			$remove_class(self.search_box_input.parentNode.parentNode, "no_results");
 		}
 
 		if (search_string.length > 0) {
@@ -475,12 +475,12 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.reposition = function() {
 		var new_index = Math.floor(scrollbar.scroll_top / PLAYLIST_ITEM_HEIGHT);
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
-		
+
 		var new_margin = (scrollbar.scroll_top - (PLAYLIST_ITEM_HEIGHT * new_index));
-		new_margin = new_margin ? -new_margin : 0;	
+		new_margin = new_margin ? -new_margin : 0;
 		self.el.style.marginTop = new_margin + "px";
 		self.el.style.top = scrollbar.scroll_top + "px";
-		
+
 		if (current_scroll_index === new_index) return;
 		if ((visible.length === 0) && (hidden.length === 0)) return;
 
@@ -538,7 +538,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	// FAKING A TEXT FIELD **************
 
 	var input_click = function(e) {
-		if (search_string.length == 0) {
+		if (search_string.length === 0) {
 			self.search_box_input.textContent = $l("typeanywhere");
 		}
 	};

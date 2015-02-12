@@ -47,11 +47,11 @@ var TimelineSong = function() {
 			}
 			else if (self.data.elec_request_username) {
 				$add_class(self.el, "requested");
-				self.elements.requester = self.elements.album_art.firstChild.appendChild($el("div", { 
+				self.elements.requester = self.elements.album_art.firstChild.appendChild($el("div", {
 					"class": "requester",
 					"textContent": self.data.elec_request_username
 				}));
-				self.elements.request_indicator = self.elements.album_art.firstChild.appendChild($el("div", { 
+				self.elements.request_indicator = self.elements.album_art.firstChild.appendChild($el("div", {
 					"class": "request_indicator",
 					"textContent": $l("timeline_art__request_indicator")
 				}));
@@ -66,9 +66,9 @@ var TimelineSong = function() {
 				self.elements.requester.addEventListener("click", function() { DetailView.open_listener(self.data.elec_request_user_id); });
 			}
 
-			// c for content, this stuff should be pushed aside from the album art 
+			// c for content, this stuff should be pushed aside from the album art
 			var c = $el("div", { "class": "timeline_song_content" });
-			
+
 			self.elements.title_group = c.appendChild($el("div", { "class": "title_group" }));
 
 			if (song_rating) self.elements.title_group.appendChild(song_rating.el);
@@ -77,7 +77,7 @@ var TimelineSong = function() {
 			self.elements.title = self.elements.title_group.appendChild($el("div", { "class": "title", "textContent": self.data.title, "title": self.data.title }));
 			self.el.addEventListener("mouseover", self.title_mouse_over);
 			self.el.addEventListener("mouseout", self.title_mouse_out);
-			self.el.addEventListener("click", self.vote);	
+			self.el.addEventListener("click", self.vote);
 			if (song_rating) song_rating.rating_title_el = self.elements.title;
 
 			var album_group = c.appendChild($el("div", { "class": "album_group" }));
@@ -91,7 +91,7 @@ var TimelineSong = function() {
 				self.elements.album_name.addEventListener("click", function(e) { e.stopPropagation(); DetailView.open_album(self.data.albums[0].id ); });
 			}
 			if (album_rating) album_rating.rating_title_el = self.elements.album;
-			
+
 			if ("artists" in self.data) {
 				self.elements.artists = c.appendChild($el("div", { "class": "artist" }));
 				Artists.append_spans_from_json(self.elements.artists, self.data.artists);

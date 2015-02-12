@@ -28,6 +28,6 @@ var GroupView = function(view, json) {
 		view.el.appendChild(all_tables[i].header);
 		view.el.appendChild(all_tables[i].table);
 	}
-	
+
 	return view.el;
 };

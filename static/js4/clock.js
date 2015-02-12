@@ -58,7 +58,7 @@ var Clock = function() {
 			self.pageclock.textContent = c;
 		}
 
-		if (self.pageclock_bar_function) { 
+		if (self.pageclock_bar_function) {
 			self.pageclock_bar_function(page_title_end, self.now);
 		}
 
@@ -67,7 +67,7 @@ var Clock = function() {
 			API.force_sync();
 			return;
 		}
-		else if (MOBILE && (page_title_end < self.now) && (Math.abs(page_title_end - self.now) % 5 == 0)) {
+		else if (MOBILE && (page_title_end < self.now) && (Math.abs(page_title_end - self.now) % 5 === 0)) {
 			API.force_sync();
 			return;
 		}
@@ -81,7 +81,7 @@ var Clock = function() {
 		if (Prefs.get("show_rating_in_titlebar")) {
 			var rating = Schedule.get_current_song_rating();
 			if (rating) {
-				if (rating * 10 % 10 == 0) rating = rating + ".0";
+				if (rating * 10 % 10 === 0) rating = rating + ".0";
 				this_page_title = "[" + rating + "] " + this_page_title;
 			}
 			else if (rating === 0) {

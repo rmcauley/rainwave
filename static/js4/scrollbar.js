@@ -114,7 +114,7 @@ var Scrollbar = function() {
 		};
 
 		self.scroll_to = function(px) {
-			px = Math.max(0, Math.min(self.scroll_top_max, px))
+			px = Math.max(0, Math.min(self.scroll_top_max, px));
 			scrollable.scrollTop = px;
 			self.scroll_top = px;
 			scroll_top_fresh = true;
@@ -183,7 +183,7 @@ var Scrollbar = function() {
 		self.save = function() {
 			Prefs.change("resize_" + scrollblock.id, self.size);
 		};
-		
+
 		self.calculate = function() {
 			if (MOBILE) return;
 			if (!self.size) {

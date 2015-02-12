@@ -62,7 +62,7 @@ var Schedule = function() {
 		API.add_callback(self.tune_in_voting_allowed_check, "user");
 	};
 
-	var show_artists_callback = function(nv) { 
+	var show_artists_callback = function(nv) {
 		if (nv) {
 			$add_class(document.body, "show_artists");
 		}
@@ -219,7 +219,7 @@ var Schedule = function() {
 	var find_and_update_event = function(event_json) {
 		var evt = find_event(event_json.id);
 		if (!evt) {
-			return Event.load(event_json);	
+			return Event.load(event_json);
 		}
 		else {
 			evt.update(event_json);

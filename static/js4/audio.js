@@ -1,5 +1,5 @@
 /* Usage Instructions
-	
+
 	Download and include this Javascript file to your page.  No jQuery required, and
 	no conflicts will happen with existing code.
 
@@ -8,7 +8,7 @@
 	<div id='r4_audio_player'>
 		<div id='audio_icon'></div>
 	</div>
-	
+
 	Style the page as you see fit.
 		- No class present on audio_icon means the player is stopped
 		- Class "playing" will be applied to r4_audio_player when playing
@@ -31,7 +31,7 @@ var R4Audio = function() {
 
 	var self = {};
 	self.supported = false;
-	self.type = null;	
+	self.type = null;
 	self.changed_status_callback = null;
 	var filetype;
 	var stream_urls = [];
@@ -44,11 +44,11 @@ var R4Audio = function() {
 	var offset_width;
 	var last_user_tunein_check = 0;
 
-	var audio_el = document.createElement('audio');
+	var audio_el = document.createElement("audio");
 	if ("canPlayType" in audio_el) {
 		// circumvent Ogg here since it'll be far more battery draining than MP3 for mobile devices
-		var can_vorbis = MOBILE ? false : audio_el.canPlayType('audio/ogg; codecs="vorbis"');
-		var can_mp3 = audio_el.canPlayType('audio/mpeg; codecs="mp3"');
+		var can_vorbis = MOBILE ? false : audio_el.canPlayType("audio/ogg; codecs=\"vorbis\"");
+		var can_mp3 = audio_el.canPlayType("audio/mpeg; codecs=\"mp3\"");
 		// we have to check for Mozilla support specifically
 		// because Webkit will choke on Vorbis and stop playing after
 		// a single song switch, and thus, we have to forcefeed it MP3.
@@ -148,10 +148,10 @@ var R4Audio = function() {
 		if (audio_el) return;
 
 		audio_el = document.createElement("audio");
-		audio_el.addEventListener('stop', self.on_stop);
-		//audio_el.addEventListener('loadstart', self.on_connecting);
-		audio_el.addEventListener('play', self.on_play);
-		audio_el.addEventListener('stall', self.on_stall);
+		audio_el.addEventListener("stop", self.on_stop);
+		//audio_el.addEventListener("loadstart", self.on_connecting);
+		audio_el.addEventListener("play", self.on_play);
+		audio_el.addEventListener("stall", self.on_stall);
 		// this doesn't appear to work correctly in Firefox
 		// if (volume_el) {
 		// 	audio_el.addEventListener("volumechange", draw_volume);
@@ -168,11 +168,11 @@ var R4Audio = function() {
 			source = document.createElement("source");
 			source.setAttribute("src", stream_urls[i]);
 			source.setAttribute("type", filetype);
-			source.addEventListener('playing', self.clear_audio_errors);
+			source.addEventListener("playing", self.clear_audio_errors);
 			audio_el.appendChild(source);
 		}
 
-		audio_el.lastChild.addEventListener('error', self.on_error);
+		audio_el.lastChild.addEventListener("error", self.on_error);
 
 		audio_el.play();
 		playing_status = true;
@@ -258,7 +258,7 @@ var R4Audio = function() {
 
 	var volume_control_mouseup = function(evt) {
 		volume_el.removeEventListener("mousemove", change_volume_from_mouse);
-		document.removeEventListener("mouseup", volume_control_mouseup);	
+		document.removeEventListener("mouseup", volume_control_mouseup);
 	};
 
 	var change_volume_from_mouse = function(evt) {

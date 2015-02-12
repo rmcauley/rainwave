@@ -98,7 +98,7 @@ var SongsTable = function(songs, columns) {
 					// 	div._song_id = songs[i].id;
 					// 	div.addEventListener("click", function(e) {
 					// 		if (e.target._song_id) API.async_get("clear_rating", { "song_id": e.target._song_id });
-							
+
 					// 	})
 					// 	cell.appendChild(div);
 					// 	row.appendChild(cell);
