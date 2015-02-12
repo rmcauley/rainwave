@@ -232,7 +232,7 @@ class Album(AssociatedMetadata):
 		return self.data['cool_lowest']
 
 	def update_rating(self):
-		for sid in db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s", (self.id,)):	
+		for sid in db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s", (self.id,)):
 			dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user < 3 AND sid = %s GROUP BY album_id", (self.id, sid))
 			if not dislikes:
 				dislikes = 0
@@ -349,6 +349,7 @@ class Album(AssociatedMetadata):
 		histo = db.c.fetch_all(
 			"SELECT song_rating_user, COUNT(song_rating) AS rating_count "
 			"FROM r4_song_ratings "
+				"JOIN phpbb_users ON (r4_song_ratings.user_id = phpbb_users.user_id AND phpbb_users.radio_inactive = FALSE) "
 				"JOIN r4_song_sid ON (r4_song_ratings.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
 				"JOIN r4_songs ON (r4_song_ratings.song_id = r4_songs.song_id) "
 			"WHERE album_id = %s "
