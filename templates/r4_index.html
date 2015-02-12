@@ -5,7 +5,9 @@
 	<meta charset="UTF-8" />
 	<meta name="description" content="{{ site_description }}" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-	<link href="{{ apple_home_screen_icon }}" rel="apple-touch-icon" />
+	{% if apple_home_screen_icon %}
+		<link href="{{ apple_home_screen_icon }}" rel="apple-touch-icon" />
+	{% end %}
 	<script type="text/javascript">
 		var BOOTSTRAP = {
 				"cookie_domain": "{{ cookie_domain }}",
@@ -79,20 +81,20 @@
 						<span class="icon_description" id="chat_link"></span>
 					</a>
 				</li>
-				
+
 				<li>
 					<a href="http://rainwave.cc/forums" target="_blank">
 						<span class="icon_description" id="forums_link"></span>
 					</a>
 				</li>
-				
+
 				<li id="calendar_menu_item">
 					<a class="link">
 						<span class="icon_description" id="calendar_link"></span>
 					</a>
 					<div id="calendar_dropdown" class="menu_inline_dropdown"></div>
 				</li>
-				
+
 				<li id="user_info">
 					<a id="user_info_name"></a>
 					<svg id="anonymous_user_avatar"><use id="audio_icon_stop" xlink:href="/static/images4/symbols.svg#user"></use></svg>
@@ -102,7 +104,7 @@
 					<a href="http://twitter.com/rainwavecc" target="_blank">
 						<svg><use xlink:href="/static/images4/symbols.svg#twitter"></use></svg>
 					</a>
-					
+
 					<a id="facebook_link" href="http://facebook.com/rainwavecc" target="_blank">
 						<svg><use xlink:href="/static/images4/symbols.svg#facebook"></use></svg>
 					</a>
@@ -251,7 +253,7 @@
 		</div>
 		<div class="modal_bottom_border"></div>
 	</div>
-	
+
 	<div id="messages"></div>
 
 	<div id="sizable_body">
@@ -325,7 +327,7 @@
 		</div>
 		<div id="detail_scrollblock" class="scrollblock">
 			<div id="detail">
-				<div id="detail_scrollbar" class="scrollbar scrollbar_invisible"></div>			
+				<div id="detail_scrollbar" class="scrollbar scrollbar_invisible"></div>
 			</div>
 		</div>
 	</div>
