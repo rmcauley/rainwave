@@ -47,7 +47,7 @@ class TuneInIndex(api.web.HTMLRequest):
 
 		self.set_header("Content-Disposition", "inline; filename=\"rainwave_%s_%s.m3u\"" % (config.station_id_friendly[self.sid].lower(), filetype))
 
-	def get(self, url_param, filetype):
+	def get(self, url_param, filetype):	#pylint: disable=W0221
 		self.set_sid(url_param, filetype)
 
 		stream_filename = get_stream_filename(self.sid, filetype, self.user)

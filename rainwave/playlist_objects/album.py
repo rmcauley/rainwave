@@ -58,6 +58,7 @@ class Album(AssociatedMetadata):
 	check_self_size_query = "SELECT COUNT(*) FROM r4_songs WHERE album_id = %s"
 	delete_self_query = "UPDATE r4_album_sid SET album_exists = FALSE WHERE album_id = %s"
 
+	#pylint: disable=W0212
 	@classmethod
 	def load_from_id_sid(cls, album_id, sid):
 		row = db.c.fetch_row("SELECT r4_albums.*, album_rating, album_rating_count, album_cool, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.album_id = %s AND r4_album_sid.sid = %s", (album_id, sid))
@@ -99,6 +100,7 @@ class Album(AssociatedMetadata):
 		elif os.path.isfile(os.path.join(config.get("album_art_file_path"), "a_%s_320.jpg" % album_id)):
 			return "%s/a_%s" % (config.get("album_art_url_path"), album_id)
 		return ""
+	#pylint: enable=W0212
 
 	def __init__(self):
 		super(Album, self).__init__()
@@ -120,7 +122,7 @@ class Album(AssociatedMetadata):
 		updated_album_ids[self.sid][self.id] = True
 		return success
 
-	def _assign_from_dict(self, d, sid = None):
+	def _assign_from_dict(self, d, sid = None):	#pylint: disable=W0221
 		self.id = d['album_id']
 		self.data['name'] = d['album_name']
 		self.data['added_on'] = d['album_added_on']

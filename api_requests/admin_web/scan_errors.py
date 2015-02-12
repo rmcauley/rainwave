@@ -22,7 +22,7 @@ def relative_time(epoch_time):
 class ScanResults(api.web.PrettyPrintAPIMixin, BackendScanErrors):
 	admin_required = True
 
-	def get(self):
+	def get(self):	#pylint: disable=E0202,W0221
 		new_results = []
 		for row in self._output[self.return_name]:
 			row['time'] = relative_time(row['time'])

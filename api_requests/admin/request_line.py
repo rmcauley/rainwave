@@ -1,5 +1,4 @@
 from libs import cache
-from libs import db
 import api.web
 from api.server import handle_api_url
 from api.server import handle_api_html_url

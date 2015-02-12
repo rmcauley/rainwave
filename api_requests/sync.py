@@ -41,10 +41,10 @@ class SessionBank(object):
 	def clear(self):
 		self.sessions[:] = []
 		self.to_remove[:] = []
-		for user_id, timer in self.user_update_timers.iteritems():
+		for user_id, timer in self.user_update_timers.iteritems():	#pylint: disable=W0612
 			tornado.ioloop.IOLoop.instance().remove_timeout(timer)
 		self.user_update_timers = {}
-		for ip_address, timer in self.ip_update_timers.iteritems():
+		for ip_address, timer in self.ip_update_timers.iteritems():	#pylint: disable=W0612
 			tornado.ioloop.IOLoop.instance().remove_timeout(timer)
 		self.ip_update_timers = {}
 
@@ -224,7 +224,7 @@ class SyncUpdateIP(APIHandler):
 
 		ip_address = self.get_argument("ip_address")
 		for sid in sessions:
-			sessions[sid].update_ip_address(ip_address)			
+			sessions[sid].update_ip_address(ip_address)
 
 		super(SyncUpdateIP, self).on_finish()
 
@@ -246,7 +246,7 @@ class Sync(APIHandler):
 			raise APIException("station_offline")
 
 		self.set_header("Content-Type", "application/json")
-		
+
 		if not self.get_argument("resync"):
 			if self.get_argument("known_event_id") and cache.get_station(self.sid, "sched_current_dict") and (cache.get_station(self.sid, "sched_current_dict")['id'] != self.get_argument("known_event_id")):
 				self.update()

@@ -45,9 +45,11 @@ def _bake_css_file(input_filename, output_filename):
 
 def get_js_file_list(js_dir = "js"):
 	jsfiles = []
+	#pylint: disable=W0612
 	for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "..", "static", js_dir)):
 		for f in files:
 			jsfiles.append(os.path.join(root[root.find("..") + 3:], f))
+	#pylint: enable=W0612
 	jsfiles = sorted(jsfiles)
 	return jsfiles
 
@@ -69,7 +71,7 @@ def bake_js(source_dir="js4", dest_file="script4.js"):
 			jsfile = open(os.path.join(os.path.dirname(__file__), "..", sfn))
 			js_content += minify(jsfile.read()) + "\n"
 			jsfile.close()
-		
+
 		o = open(fn, "w")
 		o.write(minify(js_content, mangle=True, mangle_toplevel=False))
 		o.close()

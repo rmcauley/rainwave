@@ -4,8 +4,6 @@ import os
 import shutil
 import subprocess
 
-from libs import buildtools
-
 installdir = "/opt/rainwave"
 user = "rainwave"
 group = "www-data"

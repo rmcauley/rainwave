@@ -8,8 +8,10 @@ from api_requests.admin_web import index
 from api_requests.admin_web.power_hours import get_ph_formatted_time
 
 # this makes sure all the event modules get loaded correctly
-# DO NOT REMOVE despite what pylinter might tell you!
-from rainwave import schedule
+# and registered correctly with their parent class
+# it is critical to make sure this module works correctly
+# do not remove, that pylint ignore is there for a good reason
+from rainwave import schedule		#pylint: disable=W0611
 
 @handle_url("/admin/tools/producers")
 class WebCreateProducer(api.web.HTMLRequest):
@@ -37,6 +39,7 @@ class WebCreateProducer(api.web.HTMLRequest):
 		self.write(self.render_string("basic_footer.html"))
 
 class WebListProducersBase(object):
+	#pylint: disable=E1101
 	def header_special(self):
 		self.write("<th>Time</th><th></th><th></th>")
 
@@ -47,6 +50,7 @@ class WebListProducersBase(object):
 
 	def sort_keys(self, keys):
 		return [ "sid", "name", "type", 'sched_length_minutes', "url" ]
+	#pylint: enable=E1101
 
 @handle_url("/admin/album_list/producers")
 class WebListProducers(WebListProducersBase, api.web.PrettyPrintAPIMixin, producers.ListProducers):

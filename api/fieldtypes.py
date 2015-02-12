@@ -11,119 +11,121 @@ def string(in_string, request = None):
 
 # All _error variables start with no capital letter and end with a period.
 numeric_error = "must be a number."
-def numeric(str, request = None):
+def numeric(s, request = None):
 	if not numeric:
 		return None
-	if not re.match('^\d+$', str):
+	if not re.match('^\d+$', s):
 		return None
-	return str
+	return s
 
 integer_error = "must be a number."
-def integer(str, request = None):
-	if not str:
+def integer(s, request = None):
+	if not s:
 		return None
-	if not re.match('^-?\d+$', str):
+	if not re.match('^-?\d+$', s):
 		return None
-	return int(str)
+	return int(s)
 
+#pylint: disable=W0621
 song_id_error = "must be a valid song ID."
-def song_id(str, request = None):
-	if not str:
+def song_id(s, request = None):
+	if not s:
 		return None
-	if not re.match('^\d+$', str):
+	if not re.match('^\d+$', s):
 		return None
-	song_id = int(str)
+	song_id = int(s)
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_songs WHERE song_id = %s AND song_verified = TRUE", (song_id,)) == 0:
 		return None
 	return song_id
 
 song_id_matching_sid_error = "must be a valid song ID that exists on the requested station ID."
-def song_id_matching_sid(str, request):
-	if not str or not request:
+def song_id_matching_sid(s, request):
+	if not s or not request:
 		return None
-	if not re.match('^\d+$', str):
+	if not re.match('^\d+$', s):
 		return None
-	song_id = int(str)
+	song_id = int(s)
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_song_sid WHERE song_id = %s AND sid = %s", (song_id, request.sid)) == 0:
 		return None
 	return song_id
 
 album_id_error = "must be a valid album ID."
-def album_id(str, request = None):
-	if not str:
+def album_id(s, request = None):
+	if not s:
 		return None
-	if not re.match('^\d+$', str):
+	if not re.match('^\d+$', s):
 		return None
-	album_id = int(str)
+	album_id = int(s)
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_albums WHERE album_id = %s", (album_id,)) == 0:
 		return None
 	return album_id
 
 artist_id_error = "must be a valid artist ID."
-def artist_id(str, request = None):
-	if not str:
+def artist_id(s, request = None):
+	if not s:
 		return None
-	if not re.match('^\d+$', str):
+	if not re.match('^\d+$', s):
 		return None
-	artist_id = int(str)
+	artist_id = int(s)
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_artists WHERE artist_id = %s", (artist_id,)) == 0:
 		return None
 	return artist_id
 
 sched_id_error = "must be a valid schedule ID."
-def sched_id(str, request = None):
-	if not str:
+def sched_id(s, request = None):
+	if not s:
 		return None
-	if not re.match('^\d+$', str):
+	if not re.match('^\d+$', s):
 		return None
-	sched_id = int(str)
+	sched_id = int(s)
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_schedule WHERE sched_id = %s", (sched_id,)) == 0:
 		return None
 	return sched_id
+#pylint: enable=W0621
 
 positive_integer_error = "must be a positive number."
-def positive_integer(str, request = None):
-	if not str:
+def positive_integer(s, request = None):
+	if not s:
 		return None
-	if not re.match('^\d+$', str):
+	if not re.match('^\d+$', s):
 		return None
-	nmbr = int(str)
+	nmbr = int(s)
 	if nmbr <= 0:
 		return None
 	return nmbr
 
 zero_or_greater_integer_error = "must be positive number or zero."
-def zero_or_greater_integer(str, request = None):
-	if not str:
+def zero_or_greater_integer(s, request = None):
+	if not s:
 		return None
-	if not re.match('^\d+$', str):
+	if not re.match('^\d+$', s):
 		return None
-	nmbr = int(str)
+	nmbr = int(s)
 	if nmbr < 0:
 		return None
 	return nmbr
 
 float_num_error = "must be a number."
-def float_num(str, request = None):
-	if not str:
+def float_num(s, request = None):
+	if not s:
 		return None
-	if not re.match('^\d+(.\d+)?$', str):
+	if not re.match('^\d+(.\d+)?$', s):
 		return None
-	return float(str)
+	return float(s)
 
 long_num_error = "must be a number."
-def long_num(str, request = None):
-	if not str:
+def long_num(s, request = None):
+	if not s:
 		return None
-	if not re.match('^\d+$', str):
+	if not re.match('^\d+$', s):
 		return None
-	return long(str)
+	return long(s)
 
 rating_error = "must >= 1.0 and <= 5.0 in increments of	0.5."
-def rating(str, request = None):
-	if not str:
+def rating(s, request = None):
+	if not s:
 		return None
-	r = float_num(str)
+	r = float_num(s)
 	if not r:
 		return None
 	if r < 1 or r > 5:
@@ -133,18 +135,18 @@ def rating(str, request = None):
 	return r
 
 boolean_error = "must be 'true' or 'false'."
-def boolean(str, request = None):
-	if not str:
+def boolean(s, request = None):
+	if not s:
 		return None
-	if str == "true":
+	if s == "true":
 		return True
-	elif str == "false":
+	elif s == "false":
 		return False
 	return None
 
 user_id_error = "must be a valid user ID."
-def user_id(str, request = None):
-	u = positive_integer(str, request)
+def user_id(s, request = None):
+	u = positive_integer(s, request)
 	if not u:
 		return None
 	if not db.c.fetch_var("SELECT user_id FROM phpbb_users WHERE user_id = %s", (u,)):
@@ -152,66 +154,70 @@ def user_id(str, request = None):
 	return u
 
 valid_relay_error = "must be a known and valid relay's IP address."
-def valid_relay(str, request = None):
-	if not str:
+def valid_relay(s, request = None):
+	if not s:
 		return None
 	for name, value in config.get("relays").iteritems():
-		if value['ip_address'] == str:
+		if value['ip_address'] == s:
 			return name
 	return None
 
+#pylint: disable=W0621
 sid_error = "must be a valid station ID."
-def sid(str, request = None):
-	if not str:
+def sid(s, request = None):
+	if not s:
 		return None
-	sid = integer(str, request)
+	sid = integer(s, request)
 	if not sid:
 		return None
 	if sid in config.station_ids:
 		return sid
 	return None
+#pylint: enable=W0621
 
 integer_list_error = "must be a comma-separated list of integers."
-def integer_list(str, request = None):
-	if not str:
+def integer_list(s, request = None):
+	if not s:
 		return None
-	if not re.match('^(\d+)(,\d+)*$', str):
+	if not re.match('^(\d+)(,\d+)*$', s):
 		return None
 	l = []
-	for entry in str.split(","):
+	for entry in s.split(","):
 		l.append(int(entry))
 	return l
 
+#pylint: disable=W0621
 # Careful, this one could get expensive with all the song ID queries
 song_id_list_error = "must be a comma-separated list of valid song IDs."
-def song_id_list(str, request = None):
-	if not str:
+def song_id_list(s, request = None):
+	if not s:
 		return None
-	l = integer_list(str)
+	l = integer_list(s)
 	if not l:
 		return None
 	for song_id in l:
 		if db.c.fetch_var("SELECT COUNT(*) FROM r4_songs WHERE song_id = %s AND song_verified = TRUE", (song_id,)) == 0:
 			return None
 	return l
+#pylint: enable=W0621
 
 # Returns a set of (mount, user_id, listen_key)
 icecast_mount_error = "invalid Icecast origin."
-def icecast_mount(str, request = None):
-	if not str:
+def icecast_mount(s, request = None):
+	if not s:
 		return None
-	m = re.search(r"^/(?P<mount>[\d\w\-.]+)(\?(?P<user>\d+):(?P<key>[\d\w]+))?(?:\?\d+\.(?:mp3|ogg))?$", str)
+	m = re.search(r"^/(?P<mount>[\d\w\-.]+)(\?(?P<user>\d+):(?P<key>[\d\w]+))?(?:\?\d+\.(?:mp3|ogg))?$", s)
 	if not m:
 		return None
 
 	rd = m.groupdict()
 	mount = rd["mount"]
-	user_id = 1
+	uid = 1
 	listen_key = None
 	if "user" in rd and rd["user"]:
-		user_id = long(rd["user"])
+		uid = long(rd["user"])
 		listen_key = rd["key"]
-	return (mount, user_id, listen_key)
+	return (mount, uid, listen_key)
 
 ip_address_error = "invalid IP address."
 def ip_address(addr, request = None):
@@ -229,8 +235,8 @@ def ip_address(addr, request = None):
 	# return None
 
 media_player_error = None
-def media_player(str, request = None):
-	ua = str.lower()
+def media_player(s, request = None):
+	ua = s.lower()
 	if ua.find("firefox") > -1:
 		return "Firefox"
 	elif ua.find("chrome") > -1:
@@ -285,21 +291,21 @@ def media_player(str, request = None):
 		return "XBMC"
 	elif ua == "-":
 		return "None"
-	return "Unknown (" + str + ")"
+	return "Unknown (" + s + ")"
 
 producer_type_error = None
-def producer_type(str, request = None):
-	if str not in rainwave.events.event.all_producers:
+def producer_type(s, request = None):
+	if s not in rainwave.events.event.all_producers:
 		return None
-	return str
-	
+	return s
+
 group_id_error = "must be a valid group ID."
-def group_id(str, request = None):
-	if not str:
+def group_id(s, request = None):
+	if not s:
 		return None
-	if not re.match('^\d+$', str):
+	if not re.match('^\d+$', s):
 		return None
-	group_id = int(str)
-	if db.c.fetch_var("SELECT COUNT(*) FROM r4_groups WHERE group_id = %s", (group_id,)) == 0:
+	gid = int(s)
+	if db.c.fetch_var("SELECT COUNT(*) FROM r4_groups WHERE group_id = %s", (gid,)) == 0:
 		return None
-	return group_id
+	return gid

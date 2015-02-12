@@ -1,7 +1,6 @@
 import math
 
 from api.web import APIHandler
-from api.exceptions import APIException
 from api import fieldtypes
 from api.server import handle_api_url
 
@@ -15,7 +14,7 @@ class ListenerDetailRequest(APIHandler):
 	sid_required = False
 	login_required = False
 	fields = { "id": (fieldtypes.user_id, True) }
-	
+
 	def post(self):
 		user = db.c.fetch_row(
 			"SELECT user_id, username AS name, user_avatar AS avatar, user_avatar_type AS avatar_type, user_colour AS colour, rank_title AS rank, "

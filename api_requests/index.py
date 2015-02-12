@@ -44,7 +44,7 @@ class MainIndex(api.web.HTMLRequest):
 		if self.beta or config.get("web_developer_mode") or config.get("developer_mode") or config.get("test_mode"):
 			buildtools.bake_beta_css()
 			self.jsfiles = []
-			for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js4")):
+			for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js4")):	#pylint: disable=W0612
 				for f in files:
 					self.jsfiles.append(os.path.join(root[root.find("static/js4"):], f))
 

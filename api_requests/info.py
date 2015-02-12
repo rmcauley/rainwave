@@ -9,7 +9,6 @@ import api_requests.tune_in
 
 from libs import cache
 from libs import config
-from libs import log
 
 def attach_info_to_request(request, extra_list = None, all_lists = False):
 	# Front-load all non-animated content ahead of the schedule content
@@ -31,7 +30,7 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 
 		if all_lists or (extra_list == "all_groups") or 'all_groups' in request.request.arguments:
 			request.append("all_groups", api_requests.playlist.get_all_groups(request.sid))
-		
+
 		if all_lists or (extra_list == "current_listeners") or 'current_listeners' in request.request.arguments or request.get_cookie("r4_active_list") == "current_listeners":
 			request.append("current_listeners", cache.get_station(request.sid, "current_listeners"))
 

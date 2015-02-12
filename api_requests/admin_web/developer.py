@@ -17,7 +17,7 @@ class CreateAnonTunedIn(APIHandler):
 	allow_get = True
 	return_name = "create_anon_tuned_in_result"
 
-	def post(self, sid):
+	def post(self, sid):	#pylint: disable=W0221
 		if db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE listener_ip = '127.0.0.1' AND user_id = 1") == 0:
 			db.c.update("INSERT INTO r4_listeners (listener_ip, user_id, sid, listener_icecast_id) VALUES ('127.0.0.1', 1, %s, 1)", (int(sid),))
 			self.append_standard("dev_anon_user_tunein_ok", "Anonymous user tune in record completed.")
@@ -31,7 +31,7 @@ class TestUserRequest(APIHandler):
 	auth_required = False
 	allow_get = True
 
-	def post(self, sid):
+	def post(self, sid):	#pylint: disable=W0221
 		user_id = db.c.fetch_var("SELECT MAX(user_id) FROM phpbb_users")
 		if user_id and user_id < 2:
 			user_id = user_id + 1

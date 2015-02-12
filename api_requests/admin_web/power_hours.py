@@ -19,7 +19,7 @@ def get_ph_formatted_time(start_time, end_time, timezone_name):
 
 @handle_url("/admin/tools/power_hours")
 class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours):
-	def get(self):
+	def get(self):	#pylint: disable=E0202,W0221
 		self.write(self.render_string("bare_header.html", title="%s Power Hours" % config.station_id_friendly[self.sid]))
 		self.write("<h2>%s Power Hours</h2>" % config.station_id_friendly[self.sid])
 		self.write("<script>window.top.current_sched_id = null;</script>\n\n")
@@ -51,7 +51,7 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 		self.write("<a href='power_hours?sid=%s'>Power hour non-existent or deleted.  Click this line to go back.</a>" % self.sid)
 		self.write(self.render_string("basic_footer.html"))
 
-	def get(self):
+	def get(self):	#pylint: disable=E0202,W0221
 		ph = self._output[self.return_name]
 		self.write(self.render_string("bare_header.html", title="%s" % ph['name']))
 		self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")

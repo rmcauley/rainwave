@@ -26,5 +26,5 @@ def _update_inactive():
 				"WHERE radio_inactive = FALSE AND radio_last_active < %s",
 				(time_threshold,))
 
-checking = tornado.ioloop.PeriodicCallback(inactive_checking, 360000) 
+checking = tornado.ioloop.PeriodicCallback(inactive_checking, 360000)
 checking.start()

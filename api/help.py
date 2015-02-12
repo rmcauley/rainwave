@@ -97,7 +97,7 @@ class IndexRequest(tornado.web.RequestHandler):
 		self.write(self.render_string("basic_footer.html"))
 
 class HelpRequest(tornado.web.RequestHandler):
-	def get(self, url):
+	def get(self, url):		#pylint: disable=W0221
 		url = "/" + url
 		if not url in help_classes:
 			self.send_error(404)

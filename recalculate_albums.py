@@ -18,7 +18,7 @@ if __name__ == "__main__":
 		txt += " " * (80 - len(txt))
 		print "\r" + txt,
 		i += 1
-		
+
 		a = Album.load_from_id(album_id)
 		a.reconcile_sids()
 		a.update_all_user_ratings()

@@ -1,4 +1,3 @@
-from libs import log
 from libs import config
 from libs import cache
 from libs import db
@@ -45,7 +44,7 @@ class AssociateGroupToolFinish(api.web.HTMLRequest):
 	admin_required = True
 	sid_required = False
 
-	def get(self, group_id):
+	def get(self, group_id):	#pylint: disable=W0221
 		group = SongGroup.load_from_id(group_id)
 		songs = cache.get_user(self.user, "admin_associate_groups_songs") or []
 		cache.set_user(self.user, "admin_associate_groups_songs", [])
@@ -62,7 +61,7 @@ class AssociateGroupToolFinish(api.web.HTMLRequest):
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/tools/associate_groups_cache_reset")
-class AssociateGroupToolFinish(api.web.HTMLRequest):
+class AssociateGroupCacheReset(api.web.HTMLRequest):
 	admin_required = True
 	sid_required = False
 
@@ -131,7 +130,7 @@ class GroupEditTool(api.web.HTMLRequest):
 class GroupEditGroupList(api.web.HTMLRequest):
 	admin_required = True
 	allow_get = True
-	
+
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="Group List"))
 		self.write("<h2>Group List</h2>")

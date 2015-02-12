@@ -16,7 +16,7 @@ class SubmitSongFave(APIHandler):
 		"song_id": (fieldtypes.song_id, True),
 		"fave": (fieldtypes.boolean, True)
 	}
-	
+
 	def post(self):
 		object_id = self.get_argument(self._fave_type + "_id")
 		fave = self.get_argument("fave")

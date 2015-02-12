@@ -32,7 +32,7 @@ def setup(unique_prefix):
 
 def record_sizes():
 	global _prefix
-	
+
 	gc.collect()
 	linecache.clearcache()
 

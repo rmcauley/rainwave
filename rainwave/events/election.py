@@ -46,6 +46,7 @@ class ElectionProducer(event.BaseProducer):
 	def has_next_event(self):
 		return True
 
+	#pylint: disable=W0221
 	def load_next_event(self, target_length = None, min_elec_id = 0, skip_requests = False):
 		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s ORDER BY elec_id LIMIT 1", (self.elec_type, self.sid, min_elec_id))
 		if elec_id:
@@ -55,6 +56,7 @@ class ElectionProducer(event.BaseProducer):
 			return elec
 		else:
 			return self._create_election(target_length, skip_requests)
+	#pylint: enable=W0612
 
 	def load_event_in_progress(self):
 		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s ORDER BY elec_id DESC LIMIT 1", (self.elec_type, self.sid))
@@ -146,7 +148,7 @@ class Election(event.BaseEvent):
 		# ONLY RUN _ADD_REQUESTS ONCE PER FILL
 		if not skip_requests:
 			self._add_requests()
-		for i in range(len(self.songs), self._num_songs):
+		for i in range(len(self.songs), self._num_songs):	#pylint: disable=W0612
 			try:
 				if not target_song_length and len(self.songs) > 0 and 'length' in self.songs[0].data:
 					target_song_length = self.songs[0].data['length']
@@ -160,7 +162,6 @@ class Election(event.BaseEvent):
 				self.add_song(song)
 			except Exception as e:
 				log.exception("elec_fill", "Song failed to fill in an election.", e)
-				pass
 		if len(self.songs) == 0:
 			raise ElectionEmptyException
 
@@ -268,7 +269,7 @@ class Election(event.BaseEvent):
 		# ONLY RUN IS_REQUEST_NEEDED ONCE
 		if self.is_request_needed() and len(self.songs) < self._num_songs:
 			log.debug("requests", "Ready for requests, filling %s." % self._num_requests)
-			for i in range(0, self._num_requests):
+			for i in range(0, self._num_requests):	#pylint: disable=W0612
 				self.add_song(self.get_request())
 
 	def is_request_needed(self):

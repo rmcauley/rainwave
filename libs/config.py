@@ -42,7 +42,7 @@ def get_config_file(testmode = False):
 	else:
 		raise RuntimeError("Could not find a configuration file at etc/rainwave.conf or /etc/rainwave.conf")
 
-def load(file = None, testmode = False):
+def load(filename = None, testmode = False):
 	global _opts
 	global test_mode
 	global build_number
@@ -53,18 +53,18 @@ def load(file = None, testmode = False):
 	global station_hostnames
 	global station_mount_filenames
 
-	if not file:
-		file = get_config_file(testmode)
-	
-	config_file = open(file)
+	if not filename:
+		filename = get_config_file(testmode)
+
+	config_file = open(filename)
 	_opts = json.load(config_file)
 	config_file.close()
-	
+
 	stations = _opts.pop('stations')
 	_opts['stations'] = {}
 	for key in stations.keys():
 		_opts['stations'][int(key)] = stations[key]
-	
+
 	require('stations')
 	set_station_ids(get("song_dirs"), get("station_id_friendly"))
 	if get("test_mode") == True:
@@ -83,10 +83,10 @@ def load(file = None, testmode = False):
 		for relay_name, relay in get("relays").iteritems():
 			if sid in relay['sids']:
 				public_relays[sid].append({
-					"name": relay_name, 
-					"protocol": relay['protocol'], 
-					"hostname": relay['hostname'], 
-					"port": relay['port'], 
+					"name": relay_name,
+					"protocol": relay['protocol'],
+					"hostname": relay['hostname'],
+					"port": relay['port'],
 					#'url': "http://%s:%s" % (relay['hostname'], relay['port'])
 				})
 		public_relays_json[sid] = tornado.escape.json_encode(public_relays[sid])
@@ -105,14 +105,14 @@ def load(file = None, testmode = False):
 	station_list_json = tornado.escape.json_encode(station_list)
 
 	build_number = get_build_number()
-		
+
 def has(key):
 	return key in _opts
-	
+
 def require(key):
 	if not key in _opts:
 		raise StandardError("Required configuration key '%s' not found." % key)
-		
+
 def get(key):
 	require(key)
 	return _opts[key]
@@ -126,10 +126,10 @@ def get_directory(key):
 def set_value(key, value):
 	_opts[key] = value
 	return value
-	
+
 def override(key, value):
 	_opts[key] = value
-	
+
 def get_station(sid, key):
 	if not sid in _opts['stations']:
 		raise StandardError("Station SID %s has no configuration." % sid)
@@ -140,13 +140,13 @@ def get_station(sid, key):
 def set_station_ids(dirs, friendly):
 	global station_ids
 	global station_id_friendly
-	
+
 	sid_array = []
-	for d, sids in dirs.iteritems():
+	for d, sids in dirs.iteritems():	#pylint: disable=W0612
 		for sid in sids:
 			if sid_array.count(sid) == 0:
 				sid_array.append(sid)
 	station_ids = set(sid_array)
-	
+
 	for sid, friendly in friendly.iteritems():
 		station_id_friendly[int(sid)] = friendly

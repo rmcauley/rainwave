@@ -46,7 +46,7 @@ def _cache_relay_status():
 	global in_process
 
 	relays = {}
-	for relay, relay_info in config.get("relays").iteritems():
+	for relay, relay_info in config.get("relays").iteritems():	#pylint: disable=W0612
 		relays[relay] = 0
 
 	for handler, data in in_process.iteritems():

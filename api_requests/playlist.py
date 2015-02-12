@@ -135,7 +135,7 @@ class Top100Songs(APIHandler):
 
 	def post(self):
 		if 'sid' in self.request.arguments:
-			self.append(self.return_name, 
+			self.append(self.return_name,
 				db.c.fetch_all(
 					"SELECT DISTINCT ON (song_rating, song_id) "
 						"song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, song_rating, song_rating_count "
@@ -275,5 +275,5 @@ class RecentlyVotedSongs(APIHandler):
 			(self.sid, self.user.id)))
 
 @handle_api_html_url("user_recent_votes")
-class AllRequestedSongsHTML(PrettyPrintAPIMixin, RecentlyVotedSongs):
+class RecentlyVotedSongsHTML(PrettyPrintAPIMixin, RecentlyVotedSongs):
 	pass

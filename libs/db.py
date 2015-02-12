@@ -70,8 +70,10 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE SET NULL" % (linking_table, linking_table, key, key, foreign_table, key))
 
 	def create_idx(self, table, *args):
+		#pylint: disable=W0141
 		name = "%s_%s_idx" % (table, '_'.join(map(str, args)))
 		columns = ','.join(map(str, args))
+		#pylint: enable=W0612
 		self.execute("CREATE INDEX %s ON %s (%s)" % (name, table, columns))
 
 	def start_transaction(self):
@@ -192,7 +194,7 @@ class SQLiteCursor(object):
 		# rows in order to maintain proper order.
 		# HEY, DON'T USE SQLITE IN PRODUCTION ANYWAY
 		if table == "r4_schedule":
-			c.update("INSERT INTO r4_schedule (sched_id, sid, sched_start) VALUES (%s, %s, %s)", (val, 0, 0)) 
+			c.update("INSERT INTO r4_schedule (sched_id, sid, sched_start) VALUES (%s, %s, %s)", (val, 0, 0))
 		return val
 
 	def fetchone(self):

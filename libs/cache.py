@@ -47,10 +47,12 @@ def connect():
 		if not _memcache_ratings:
 			_memcache_ratings = _memcache
 
+#pylint: disable=W0622
 def set(key, value, save_local = False):
 	if save_local or key in local:
 		local[key] = value
 	_memcache.set(key, value)
+#pylint: disable=W0622
 
 def get(key):
 	if key in local:
@@ -123,7 +125,7 @@ def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "user_rating_acl")
 	refresh_local_station(sid, "user_rating_acl_song_index")
 	refresh_local("request_expire_times")
-	
+
 	all_stations = {}
 	for station_id in config.station_ids:
 		all_stations[station_id] = get_station(station_id, "all_station_info")

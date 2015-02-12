@@ -77,7 +77,7 @@ class AlbumList(api.web.HTMLRequest):
 	admin_required = True
 	allow_get = True
 	fields = { "restrict": (fieldtypes.sid, True) }
-	
+
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="Album List"))
 		self.write("<h2>%s Playlist</h2>" % config.station_id_friendly[self.get_argument('restrict')])
@@ -109,7 +109,7 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 	admin_required = True
 	# fields are handled by AlbumHandler
 
-	def get(self):
+	def get(self):	#pylint: disable=E0202,W0221
 		self.write(self.render_string("bare_header.html", title="Song List"))
 		self.write("<h2>%s (%s)</h2>" % (self._output['album']['name'], config.station_id_friendly[self.sid]))
 		self.write("<table>")

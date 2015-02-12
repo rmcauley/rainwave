@@ -19,7 +19,7 @@ sid_output = {}
 class AdvanceScheduleRequest(tornado.web.RequestHandler):
 	processed = False
 
-	def get(self, sid):
+	def get(self, sid):	#pylint: disable=W0221
 		self.success = False
 		self.sid = None
 		if int(sid) in config.station_ids:
@@ -112,7 +112,7 @@ class BackendServer(object):
 		port = int(config.get("backend_port")) + sid
 		server = tornado.httpserver.HTTPServer(app)
 		server.listen(port, address='127.0.0.1')
-		
+
 		for station_id in config.station_ids:
 			playlist.prepare_cooldown_algorithm(station_id)
 		schedule.load()
@@ -128,11 +128,13 @@ class BackendServer(object):
 			log.info("stop", "Backend has been shutdown.")
 			log.close()
 
-	# This method breaks pylint and quite on purpose, its job is to just load
-	# the cron jobs that run occasionally.
 	def _import_cron_modules(self):
+		#pylint: disable=W0612
+		# This method breaks pylint and quite on purpose, its job is to just load
+		# the cron jobs that run occasionally.  Ignore pylint warning W0612.
 		import backend.api_key_pruning
 		import backend.inactive
+		#pylint: enable=W0612
 
 	def start(self):
 		for sid in config.station_ids:

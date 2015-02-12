@@ -1,7 +1,6 @@
 import os
 
 import api.locale
-import lang_formatter
 
 api.locale.load_translations()
 
