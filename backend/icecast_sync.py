@@ -101,13 +101,16 @@ def _start(callback):
 		relay_base_url = "%s%s:%s/admin/listclients?mount=/" % (relay_info['protocol'], relay_info['ip_address'], relay_info['port'])
 		for sid in relay_info['sids']:
 			for ftype in ('.mp3', '.ogg'):
-				handler = IcecastSyncCallback(relay, relay_info, ftype, sid, callback)
-				in_process[handler] = False
-				http_client = tornado.httpclient.HTTPClient()
-				http_client.fetch(relay_base_url + stream_names[sid] + ftype,
-									auth_username=relay_info['admin_username'],
-									auth_password=relay_info['admin_password'],
-									callback=handler.process)
+				try:
+					handler = IcecastSyncCallback(relay, relay_info, ftype, sid, callback)
+					in_process[handler] = False
+					http_client = tornado.httpclient.HTTPClient()
+					http_client.fetch(relay_base_url + stream_names[sid] + ftype,
+										auth_username=relay_info['admin_username'],
+										auth_password=relay_info['admin_password'],
+										callback=handler.process)
+				except Exception as e:
+					log.exception("icecast_sync", "Could not sync %s %s.%s" % (relay, stream_names[sid], ftype), e)
 
 	callback()
 
