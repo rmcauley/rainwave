@@ -31,11 +31,12 @@ var Fx = function() {
 
 	var get_transform_string = function() {
 		var transforms = [ "transform", "WebkitTransform", "msTransform", "MozTransform", "OTransform" ];
-		var p;
-		while (p = transforms.shift()) {
-			if (typeof $id("measure_box").style[p] != 'undefined') {
+		var p = transforms.shift();
+		while (p) {
+			if (typeof($id("measure_box").style[p]) !== "undefined") {
 				return p;
 			}
+			p = transforms.shift();
 		}
 	};
 

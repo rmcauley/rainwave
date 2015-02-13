@@ -2,6 +2,7 @@ import time
 import calendar
 from libs import config
 from libs import db
+from libs import cache
 import api.web
 from api.server import handle_url
 from api import fieldtypes
@@ -54,11 +55,29 @@ class RestrictList(api.web.HTMLRequest):
 			self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"top.current_restriction = %s; top.change_screen();\">%s</a>" % (sid, sid, config.station_id_friendly[sid]))
 		self.write(self.render_string("basic_footer.html"))
 
+@handle_url("/admin/relay_status")
+class RelayStatus(api.web.HTMLRequest):
+	admin_required = True
+
+	def get(self):
+		self.write(self.render_string("bare_header.html", title="Relay Status"))
+		status = cache.get("relay_status")
+		if status:
+			total = 0
+			for relay, count in status.iteritems():
+				total += count
+				self.write("%s: %s listeners<br />" % (relay, count))
+			self.write("<br />")
+			self.write("<b>Total: %s</b>" % total)
+		else:
+			self.write("No relay status available.")
+		self.write(self.render_string("basic_footer.html"))
+
 class AlbumList(api.web.HTMLRequest):
 	admin_required = True
 	allow_get = True
 	fields = { "restrict": (fieldtypes.sid, True) }
-	
+
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="Album List"))
 		self.write("<h2>%s Playlist</h2>" % config.station_id_friendly[self.get_argument('restrict')])
@@ -90,7 +109,7 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 	admin_required = True
 	# fields are handled by AlbumHandler
 
-	def get(self):
+	def get(self):	#pylint: disable=E0202,W0221
 		self.write(self.render_string("bare_header.html", title="Song List"))
 		self.write("<h2>%s (%s)</h2>" % (self._output['album']['name'], config.station_id_friendly[self.sid]))
 		self.write("<table>")

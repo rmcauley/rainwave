@@ -214,7 +214,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			raise APIException("auth_required", http_code=403)
 		elif not self.user and not self.auth_required:
 			self.user = User(1)
-			self.user.ip_address = self.request.remote_ip		
+			self.user.ip_address = self.request.remote_ip
 
 		self.user.refresh(self.sid)
 
@@ -430,17 +430,20 @@ class PrettyPrintAPIMixin(object):
 	allow_get = True
 	write_error = _html_write_error
 
+	#pylint: disable=E1003
 	# reset the initialize to ignore overwriting self.get with anything
-	# TODO: stop fucking monkeypatching you dipshit
+	# TODO: NO MONKEYPATCHING ARGH, NO, BAD CODER, LOOK AT THOSE PYLINT IGNORES
 	def initialize(self, *args, **kwargs):
 		super(APIHandler, self).initialize(*args, **kwargs)
-		# yaaaaaaay monkey patching :/
+		#pylint: disable=E0203
 		self._real_post = self.post
 		self.post = self.post_reject
+		#pylint: enable=E0203
 
 	def prepare(self):
 		super(APIHandler, self).prepare()
 		self._real_post()
+	#pylint: enable=E1003
 
 	def get(self, write_header=True):
 		if write_header:
@@ -474,7 +477,7 @@ class PrettyPrintAPIMixin(object):
 				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
 			elif not self.return_name in self._output:
 				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
-		for output_key, json in self._output.iteritems():
+		for output_key, json in self._output.iteritems():	#pylint: disable=W0612
 			if type(json) != types.ListType:
 				continue
 			if len(json) > 0:
@@ -524,9 +527,11 @@ class PrettyPrintAPIMixin(object):
 		new_keys.extend(keys)
 		return new_keys
 
+	#pylint: disable=E1003
 	# no JSON output!!
 	def finish(self):
 		super(APIHandler, self).finish()
+	#pylint: enable=E1003
 
 	# see initialize, this will override the JSON POST function
 	def post_reject(self):

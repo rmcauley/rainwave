@@ -81,9 +81,23 @@ function $remove_class(el, class_name) {
 }
 
 function $has_class(el, class_name) {
+	"use strict";
 	if (!el.className) return false;
 	if (el.className.split(" ").indexOf(class_name) == -1) {
 		return false;
 	}
 	return true;
+}
+
+
+function $svg_icon(icon, cls) {
+	"use strict";
+	var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+	var use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+	use.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "/dj/static/images/rtm_symbols.svg#" + icon);
+	if (cls) {
+		svg.setAttributeNS(null, "class", cls);
+	}
+	svg.appendChild(use);
+	return svg;
 }

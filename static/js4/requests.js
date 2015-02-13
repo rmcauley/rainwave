@@ -22,6 +22,7 @@ var Requests = function() {
 
 	self.initialize = function() {
 		Prefs.define("requests_sticky");
+		Prefs.define("requests_auto_slide", [ true, false ]);
 		el = $id("requests_list");
 		container = $id("requests_positioner");
 		container.addEventListener("mouseover", mouse_over);
@@ -182,7 +183,9 @@ var Requests = function() {
 	self.update = function(json) {
 		var i, j, found, n;
 		if (json.length != songs.length) {
-			fake_hover();
+			if (Prefs.get("requests_auto_slide")) {
+				fake_hover();
+			}
 		}
 
 		var new_songs = [];

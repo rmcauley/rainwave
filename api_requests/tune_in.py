@@ -7,7 +7,7 @@ import api.web
 from libs import config
 
 def get_round_robin_url(sid, filetype = "mp3", user = None):
-	return "http://%s:8000/%s" % (config.get_station(sid, "round_robin_relay_host"), get_stream_filename(sid, filetype, user))
+	return "http://%s:%s/%s" % (config.get_station(sid, "round_robin_relay_host"), config.get_station(sid, "round_robin_relay_port"), get_stream_filename(sid, filetype, user))
 
 def get_stream_filename(sid, filetype = "mp3", user = None):
 	filename = config.get_station(sid, "stream_filename")
@@ -47,7 +47,7 @@ class TuneInIndex(api.web.HTMLRequest):
 
 		self.set_header("Content-Disposition", "inline; filename=\"rainwave_%s_%s.m3u\"" % (config.station_id_friendly[self.sid].lower(), filetype))
 
-	def get(self, url_param, filetype):
+	def get(self, url_param, filetype):	#pylint: disable=W0221
 		self.set_sid(url_param, filetype)
 
 		stream_filename = get_stream_filename(self.sid, filetype, self.user)

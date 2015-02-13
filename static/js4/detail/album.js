@@ -66,7 +66,7 @@ var AlbumView = function(view, json) {
 	var cnvs = d.appendChild($el("canvas", { "width": 100, "height": 80 }));
 	AlbumViewRatingPieChart(cnvs.getContext("2d"), json);
 
-	if (json.year) {
+	if (json.year && ("year" in SITE_CONFIG.album_view_columns)) {
 		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_year", { "year": json.year }) }));
 	}
 	if (json.rating > 0) {
@@ -84,7 +84,6 @@ var AlbumView = function(view, json) {
 	}
 
 	view.el.appendChild(d);
-
 
 	if (User.sid == 5) {
 		var s = {};

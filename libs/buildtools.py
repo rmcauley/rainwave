@@ -1,6 +1,10 @@
 import os
 import warnings
+import subprocess
+from libs import config
+from libs.config import get_build_number
 from slimit import minify
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     import scss
@@ -12,6 +16,8 @@ def create_baked_directory():
 	d = os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()))
 	if not os.path.exists(d):
 		os.makedirs(d)
+		if os.name != "nt" and os.getuid() == 0:	#pylint: disable=E1101
+			subprocess.call(["chown", "-R", "%s:%s" % (config.get("api_user"), config.get("api_group")), d ])
 		return True
 	return False
 
@@ -39,10 +45,12 @@ def _bake_css_file(input_filename, output_filename):
 
 def get_js_file_list(js_dir = "js"):
 	jsfiles = []
+	#pylint: disable=W0612
 	for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "..", "static", js_dir)):
 		for f in files:
 			if f.endswith(".js"):
 				jsfiles.append(os.path.join(root[root.find("..") + 3:], f))
+	#pylint: enable=W0612
 	jsfiles = sorted(jsfiles)
 	return jsfiles
 
@@ -64,16 +72,10 @@ def bake_js(source_dir="js4", dest_file="script4.js"):
 			jsfile = open(os.path.join(os.path.dirname(__file__), "..", sfn))
 			js_content += minify(jsfile.read()) + "\n"
 			jsfile.close()
-		
+
 		o = open(fn, "w")
 		o.write(minify(js_content, mangle=True, mangle_toplevel=False))
 		o.close()
-
-def get_build_number():
-	bnf = open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), 'r')
-	bn = int(bnf.read())
-	bnf.close()
-	return bn
 
 def increment_build_number():
 	bn = get_build_number()	+ 1

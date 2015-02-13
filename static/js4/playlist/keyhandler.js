@@ -5,7 +5,7 @@
 	var backspace_trap = false;
 	var backspace_timer = false;
 
-	// these key codes are handled by on_key_down, as browser's default behaviour 
+	// these key codes are handled by on_key_down, as browser's default behaviour
 	// tend to act on them at that stage rather than on_key_press
 	// backspace, escape, down, up, page up, page down
 	var keydown_handled = [ 8, 27, 38, 40, 33, 34 ];
@@ -23,10 +23,10 @@
 		backspace_timer = false;
 		backspace_trap = false;
 	};
-	
+
 	self.on_key_press = function(evt) {
 		if (self.is_ignorable(evt)) return true;
-		
+
 		if (keydown_handled.indexOf(evt.keyCode) == -1) {
 			return self.handle_event(evt);
 		}
@@ -37,7 +37,7 @@
 			return false;
 		}
 	};
-	
+
 	self.on_key_down = function(evt) {
 		if (self.is_ignorable(evt)) return true;
 		// Short-circuit backspace on Webkit - which fires its backspace handler at the end of the keyDown bubble.
@@ -62,7 +62,7 @@
 			return false;
 		}
 	};
-	
+
 	// this exists just to handle the timeout for when the user releases the backspace
 	// user releases backspace, then X seconds later we release our backspace trap flag.
 	// this stops the user from accidentally browsing away from the site while using
@@ -74,11 +74,11 @@
 			return false;
 		}
 	};
-	
+
 	self.is_ignorable = function(evt) {
 		if (evt.ctrlKey || evt.altKey || evt.metaKey) return true;
 		// we can't trap anything beyond here for opera without losing important keys
-		if (!('charCode' in evt)) return false;
+		if (!("charCode" in evt)) return false;
 		// F1 to F12 keys
 		if ((evt.charCode === 0) && (evt.keyCode >= 112) && (evt.keyCode <= 123)) return true;
 		return false;
@@ -95,8 +95,8 @@
 
 		if (self.is_ignorable(evt)) return true;
 
-		var chr = '';
-		if (!('charCode' in evt)) {
+		var chr = "";
+		if (!("charCode" in evt)) {
 			chr = String.fromCharCode(evt.keyCode);
 		}
 		else if (evt.charCode > 0) {
@@ -150,7 +150,7 @@
 		return false;
 	};
 
-	window.addEventListener('keydown', self.on_key_down, true);
-	window.addEventListener('keypress', self.on_key_press, true);
-	window.addEventListener('keyup', self.on_key_up, true);
+	window.addEventListener("keydown", self.on_key_down, true);
+	window.addEventListener("keypress", self.on_key_press, true);
+	window.addEventListener("keyup", self.on_key_up, true);
 }());

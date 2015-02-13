@@ -59,7 +59,7 @@ var DetailView = function() {
 		visible_view = null;
 		DeepLinker.reload_view();
 	};
-	
+
 	var create = function(type, id, render_function, json) {
 		if (internal_width === false) {
 			self.on_resize_calculate();
@@ -114,7 +114,7 @@ var DetailView = function() {
 		var tmp = scrollblock.offsetWidth;
 		if (tmp && (tmp > 0)) internal_width = tmp;
 	};
-	
+
 	self.on_resize_draw = function() {
 		el.style.width = (internal_width + Scrollbar.get_scrollbar_width()) + "px";
 	};
@@ -167,7 +167,7 @@ var DetailView = function() {
 		DeepLinker.change_url("listener", id);
 	};
 
-	var open_album_internal = function(id) { 
+	var open_album_internal = function(id) {
 		id = parseInt(id);
 		PlaylistLists.set_new_open("all_albums", id);
 		return open_internal("album", id);
@@ -190,7 +190,7 @@ var DetailView = function() {
 		PlaylistLists.set_new_open("current_listeners", id);
 		return open_internal("listener", id);
 	};
-	
+
 	var open_internal = function(type, id) {
 		id = parseInt(id);
 		if (!id || isNaN(id)) {

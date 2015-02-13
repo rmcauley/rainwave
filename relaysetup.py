@@ -110,6 +110,6 @@ print '------------------------------------------------------------'
 print 'Make sure you talk to LR and give him:'
 print '  1. The IP address of your Icecast server.'
 print '  2. The admin login to your Icecast relay.'
-print 
+print
 print 'Make sure your Icecast config has <burst-on-connect> set to 0.'
 print 'No other special attention is required.'

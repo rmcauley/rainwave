@@ -11,10 +11,5 @@
    "suffix_9"                                        : "th",
    "suffix_11"                                       : "th",
    "suffix_12"                                       : "th",
-   "suffix_13"                                       : "th",
-
-   "__comment__": "These are all admin panel strings that don't require translating.",
-
-   "backend_scan_errors": "Backend Scan Errors",
-   "producers": "Producers"
+   "suffix_13"                                       : "th"
 }

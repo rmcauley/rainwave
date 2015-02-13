@@ -74,7 +74,7 @@ class RequestUnratedSongs(APIHandler):
 			raise APIException("request_unrated_failed")
 
 @handle_api_url("request_favorited_songs")
-class RequestUnratedSongs(APIHandler):
+class RequestFavoritedSongs(APIHandler):
 	description = "Fills the user's request queue with favorited songs."
 	login_required = True
 	tunein_required = False

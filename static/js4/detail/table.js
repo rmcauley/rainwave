@@ -1,5 +1,15 @@
+// this special sorting fixes how Postgres ignores spaces while sorting
+// the discrepency in sorting is small, but does exist, since
+// many other places on the page do sorting.
+var SongsTableSorting = function(a, b) {
+	if (a.title.toLowerCase() < b.title.toLowerCase()) return -1;
+	else if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
+	return 0;
+};
+
 var SongsTable = function(songs, columns) {
 	"use strict";
+	songs.sort(SongsTableSorting);
 	var el = $el("table", { "class": "songlist" });
 
 	var row, cell, cell2, cell3, r, i, div, div2, link, title_el, title_cell;
@@ -88,7 +98,7 @@ var SongsTable = function(songs, columns) {
 					// 	div._song_id = songs[i].id;
 					// 	div.addEventListener("click", function(e) {
 					// 		if (e.target._song_id) API.async_get("clear_rating", { "song_id": e.target._song_id });
-							
+
 					// 	})
 					// 	cell.appendChild(div);
 					// 	row.appendChild(cell);
@@ -141,5 +151,14 @@ var SongsTableDetailDraw = function(title_el, json) {
 	var d = $el("div", { "class": "songlist_extra_detail" });
 	var cnvs = d.appendChild($el("canvas", { "width": 100, "height": 80 }));
 	AlbumViewRatingPieChart(cnvs.getContext("2d"), json.song);
+	if (json.song.rating > 0) {
+		d.appendChild($el("div", { "class": "songlist_extra_detail_item", "textContent": $l("song_extradetail_rating", { "rating": json.song.rating, "rating_count": json.song.rating_count, "rank": json.song.rating_rank }) }));
+		d.appendChild($el("div", { "class": "songlist_extra_detail_item", "textContent": $l("song_extradetail_rating_rank", { "rating": json.song.rating, "rating_count": json.song.rating_count, "rank": json.song.rating_rank }) }));
+	}
+	if (json.song.request_count > 0) {
+		d.appendChild($el("div", { "class": "songlist_extra_detail_item", "textContent": $l("song_extradetail_requests", { "count": json.song.request_count, "rank": json.song.request_rank }) }));
+		d.appendChild($el("div", { "class": "songlist_extra_detail_item", "textContent": $l("song_extradetail_requests_rank", { "count": json.song.request_count, "rank": json.song.request_rank }) }));
+	}
+
 	title_el.insertBefore(d, title_el.firstChild);
 };

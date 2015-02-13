@@ -84,5 +84,3 @@ class ShufflePowerHour(api.web.APIHandler):
 		ph =  OneUpProducer.load_producer_by_id(self.get_argument("sched_id"))
 		ph.shuffle_songs()
 		self.append(self.return_name, ph.to_dict())
-
-

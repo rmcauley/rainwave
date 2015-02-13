@@ -29,6 +29,9 @@ function _size_calculate() {
 		return true;
 	}
 	TimelineSong.calculate_height();
+	if ($id("playlist_item_height")) {
+		PLAYLIST_ITEM_HEIGHT = $id("playlist_item_height").offsetHeight;
+	}
 	return old_height != SCREEN_HEIGHT || old_width != SCREEN_WIDTH;
 }
 
@@ -40,11 +43,11 @@ function _on_resize() {
 
 	// paint 1 :(
 	if (!_size_calculate()) return;
-	
+
 	// draw 1 :(
 	Schedule.reflow_history();
 	Fx.flush_draws();
-	$id('sizable_body').style.height = MAIN_HEIGHT + "px";
+	$id("sizable_body").style.height = MAIN_HEIGHT + "px";
 
 	// paint 2 :(
 	Scrollbar.recalculate();
@@ -98,9 +101,9 @@ function request_cta_check() {
 	}
 }
 
-function stage_switch(nv, ov) { 
+function stage_switch(nv, ov) {
 	if (MOBILE) {
-		$add_class(document.body, "stage_2");	
+		$add_class(document.body, "stage_2");
 		return;
 	}
 
@@ -147,7 +150,7 @@ function initialize() {
 	Chart.defaults.Doughnut.segmentStrokeColor = "#000";
 	Chart.defaults.Doughnut.animationEasing = "easeOutQuart";
 	Chart.defaults.PolarArea.scaleShowLabels = false;
-	Chart.defaults.PolarArea.scaleBackdropColor = "rgba(255,255,255,0.75)",
+	Chart.defaults.PolarArea.scaleBackdropColor = "rgba(255,255,255,0.75)";
 	Chart.defaults.PolarArea.segmentStrokeColor = "#000";
 	Chart.defaults.PolarArea.animationEasing = "easeOutQuart";
 
@@ -172,7 +175,7 @@ function initialize() {
 	Fx.flush_draws();
 	// copy/pasted from _size_calculate because _size_calculate does not get called and menu height may have changed
 	MAIN_HEIGHT = SCREEN_HEIGHT - MENU_HEIGHT;
-	$id('sizable_body').style.height = MAIN_HEIGHT + "px";
+	$id("sizable_body").style.height = MAIN_HEIGHT + "px";
 	PlaylistLists.on_resize(true);
 
 	// PAINT 1: Measure scrollbar width, setup scrollbars
@@ -183,6 +186,12 @@ function initialize() {
 	Scrollbar.resizer_calculate();
 	Scrollbar.recalculate();
 	DetailView.scroll_init();
+
+	// also measure any elements
+	// this particular element measurement is also duplicated in size_calculate
+	if ($id("playlist_item_height")) {
+		PLAYLIST_ITEM_HEIGHT = $id("playlist_item_height").offsetHeight;
+	}
 
 	// DIRTY THE LAYOUT
 

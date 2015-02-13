@@ -32,7 +32,7 @@ class LocaleMissingLines(api.web.HTMLRequest):
 	auth_required = False
 	sid_required = False
 
-	def get(self, request_locale):
+	def get(self, request_locale):	#pylint: disable=W0221
 		if not request_locale in locale.translations:
 			raise tornado.web.HTTPError(404)
 

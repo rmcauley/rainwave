@@ -7,6 +7,8 @@
 //	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses 'id')
 
+var PLAYLIST_ITEM_HEIGHT = 24;
+
 var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_key) {
 	"use strict";
 	el.parentNode.style.display = "none";
@@ -18,13 +20,13 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.el = el;
 	self.search_box_input = $el("div", { "class": "searchlist_input", "textContent": $l("filter") });
 	var scrollbar = Scrollbar.create(stretching_el.parentNode, scrollbar_handle, 0);
-	scrollbar.set_handle_margin_bottom(25);
+	scrollbar.set_handle_margin_bottom(5);
 	// see bottom of this object for event binding
 
 	var data = {};
 	self.data = data;			// keys() are the object IDs (e.g. data[album.id])
 	self.loaded = false;
-	
+
 	var visible = [];			// list of IDs sorted by the sort_function (visible on screen)
 	var hidden = [];			// list of IDs unsorted - currently hidden from view during a search
 
@@ -33,7 +35,6 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	var search_string = "";
 	var current_key_nav_id = false;
 	var current_open_id = false;
-	var item_height = SmallScreen ? 20 : 24;
 	var num_items_to_display;
 	var original_scroll_top;
 	var original_key_nav;
@@ -61,7 +62,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			}
 		}
 
-		if (search_string.length == 0) {
+		if (search_string.length === 0) {
 			self.update_view();
 			hidden = [];
 			current_scroll_index = false;
@@ -125,19 +126,19 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			if ((parseInt(character) >= 1) && (parseInt(character) <= 5)) {
 				Schedule.rate_current_song(parseInt(character));
 			}
-			else if (character == 'q') Schedule.rate_current_song(1.5);
-			else if (character == 'w') Schedule.rate_current_song(2.5);
-			else if (character == 'e') Schedule.rate_current_song(3.5);
-			else if (character == 'r') Schedule.rate_current_song(4.5);
+			else if (character == "q") Schedule.rate_current_song(1.5);
+			else if (character == "w") Schedule.rate_current_song(2.5);
+			else if (character == "e") Schedule.rate_current_song(3.5);
+			else if (character == "r") Schedule.rate_current_song(4.5);
 
 			else if (character == "a") Schedule.vote(0, 0);
 			else if (character == "s") Schedule.vote(0, 1);
 			else if (character == "d") Schedule.vote(0, 2);
-			else if (character == "z") Schedule.vote(1, 0); 
+			else if (character == "z") Schedule.vote(1, 0);
 			else if (character == "y") Schedule.vote(1, 0); 		// quertz layout
 			else if (character == "x") Schedule.vote(1, 1);
 			else if (character == "c") Schedule.vote(1, 2);
-			else { 
+			else {
 				hotkey_mode_error("invalid_hotkey");
 				return true;
 			}
@@ -159,7 +160,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		hotkey_mode_disable();
 		$add_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
 		self.search_box_input.textContent = $l(tl_key);
-		hotkey_timeout = setTimeout(function() { 
+		hotkey_timeout = setTimeout(function() {
 			$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
 			self.search_box_input.textContent = $l("filter");
 			hotkey_timeout = null;
@@ -168,7 +169,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 	self.update_view = function(to_reshow) {
 		to_reshow = to_reshow || hidden;
-		if (visible.length == 0) {
+		if (visible.length === 0) {
 			to_reshow.sort(self.sort_function);
 			visible = to_reshow;
 		}
@@ -179,14 +180,14 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.recalculate = function(force_height_check) {
-		var full_height = item_height * visible.length;
+		var full_height = PLAYLIST_ITEM_HEIGHT * visible.length;
 		if (force_height_check || (full_height != current_height)) {
 			stretching_el.style.height = full_height + "px";
-			scrollbar.recalculate(full_height);
+			scrollbar.recalculate(full_height, null, true);
 			scrollbar.refresh();
 			current_height = full_height;
 		}
-		num_items_to_display = Math.ceil(scrollbar.offset_height / item_height) + 1;
+		num_items_to_display = Math.ceil(scrollbar.offset_height / PLAYLIST_ITEM_HEIGHT) + 1;
 	};
 
 	self.sort_function = function(a, b) {
@@ -229,6 +230,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	var key_nav_arrow_action = function(jump) {
+		backspace_scroll_top = null;
 		if (!current_key_nav_id) {
 			self.key_nav_first_item();
 			return;
@@ -242,7 +244,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		self.key_nav_highlight(visible[new_index]);
 		return true;
 	};
-	
+
 	self.key_nav_down = function() {
 		return key_nav_arrow_action(1);
 	};
@@ -275,6 +277,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		return true;
 	};
 
+	var backspace_scroll_top;
+
 	self.key_nav_backspace = function() {
 		if (search_string.length == 1) {
 			self.clear_search();
@@ -283,7 +287,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		else if (search_string.length > 1) {
 			search_string = search_string.substring(0, search_string.length - 1);
 			self.search_box_input.textContent = search_string;
-		
+
 			var use_search_string = Formatting.make_searchable_string(search_string);
 			var revisible = [];
 			for (var i = hidden.length - 1; i >= 0; i--) {
@@ -298,6 +302,10 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 			current_scroll_index = false;
 			self.recalculate();
+			if (backspace_scroll_top && (revisible.length + visible.length > num_items_to_display)) {
+				scrollbar.scroll_to(backspace_scroll_top);
+				backspace_scroll_top = null;
+			}
 			self.reposition();
 			return true;
 		}
@@ -310,11 +318,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 				return true;
 			}
 		}
-		else if ((search_string.length == 0) && (character == " ")) {
+		else if ((search_string.length === 0) && (character === " ")) {
 			hotkey_mode_enable();
 			return true;
 		}
-		var first_time = search_string.length == 0 ? true : false;
+		var first_time = search_string.length === 0 ? true : false;
 		if (first_time) {
 			clear_searchbar();
 			original_key_nav = current_key_nav_id;
@@ -337,23 +345,42 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		if (!visible.indexOf(current_key_nav_id)) {
 			self.remove_key_nav_highlight();
 		}
+		current_scroll_index = false;
 		if (visible.length === 0) {
 			$add_class(self.search_box_input.parentNode.parentNode, "no_results");
+			self.recalculate();
+			self.reposition();
 		}
-		current_scroll_index = false;
-		if (first_time) {
+		else if (first_time) {
 			original_scroll_top = scrollbar.scroll_top;
+			self.recalculate();
 			scrollbar.scroll_to(0);
+			self.reposition();
 		}
-		self.recalculate();
-		self.reposition();
+		else if (visible.length <= num_items_to_display) {
+			backspace_scroll_top = scrollbar.scroll_top;
+			self.recalculate();
+			scrollbar.scroll_to(0);
+			self.reposition();
+		}
+		else if (visible.length <= current_scroll_index) {
+			backspace_scroll_top = scrollbar.scroll_top;
+			self.recalculate();
+			scrollbar.scroll_to((visible.length - num_items_to_display) * PLAYLIST_ITEM_HEIGHT);
+			self.reposition();
+		}
+		else {
+			self.recalculate();
+			self.reposition();
+		}
 		return true;
 	};
 
 	self.clear_search = function() {
+		backspace_scroll_top = null;
 		clear_searchbar();
 		search_string = "";
-		if (hidden.length == 0) return;
+		if (hidden.length === 0) return;
 
 		self.update_view();
 		hidden = [];
@@ -390,7 +417,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			$add_class(self.search_box_input.parentNode.parentNode, "no_results");
 		}
 		else {
-			$remove_class(self.search_box_input.parentNode.parentNode, "no_results");	
+			$remove_class(self.search_box_input.parentNode.parentNode, "no_results");
 		}
 
 		if (search_string.length > 0) {
@@ -418,11 +445,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			}
 			// position at the lower edge
 			else if (new_index >= (current_scroll_index + num_items_to_display - 8)) {
-				scrollbar.scroll_to(Math.min(scrollbar.scroll_top_max, (new_index - num_items_to_display + 8) * item_height));
+				scrollbar.scroll_to(Math.min(scrollbar.scroll_top_max, (new_index - num_items_to_display + 8) * PLAYLIST_ITEM_HEIGHT));
 			}
 			// position at the higher edge
 			else {
-				scrollbar.scroll_to(Math.max(0, (new_index - 7) * item_height));
+				scrollbar.scroll_to(Math.max(0, (new_index - 7) * PLAYLIST_ITEM_HEIGHT));
 			}
 		}
 	};
@@ -446,14 +473,14 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.reposition = function() {
-		var new_index = Math.floor(scrollbar.scroll_top / item_height);
+		var new_index = Math.floor(scrollbar.scroll_top / PLAYLIST_ITEM_HEIGHT);
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
-		
-		var new_margin = (scrollbar.scroll_top - (item_height * new_index));
-		new_margin = new_margin ? -new_margin : 0;	
+
+		var new_margin = (scrollbar.scroll_top - (PLAYLIST_ITEM_HEIGHT * new_index));
+		new_margin = new_margin ? -new_margin : 0;
 		self.el.style.marginTop = new_margin + "px";
 		self.el.style.top = scrollbar.scroll_top + "px";
-		
+
 		if (current_scroll_index === new_index) return;
 		if ((visible.length === 0) && (hidden.length === 0)) return;
 
@@ -511,7 +538,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	// FAKING A TEXT FIELD **************
 
 	var input_click = function(e) {
-		if (search_string.length == 0) {
+		if (search_string.length === 0) {
 			self.search_box_input.textContent = $l("typeanywhere");
 		}
 	};
@@ -519,8 +546,6 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.search_box_input.addEventListener("click", input_click);
 
 	self.on_resize = function() {
-		if (SmallScreen) item_height = 20;
-		else item_height = 24;
 		current_scroll_index = false;
 		self.recalculate(true);
 		self.reposition();

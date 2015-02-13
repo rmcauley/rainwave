@@ -7,7 +7,7 @@ var Event = function() {
 			// nothing special for elections right now
 			return EventBase(json, $l("Election"));
 		}
-		else if ((json.type == "OneUp") || (json.type == 'SingleSong')) {
+		else if ((json.type == "OneUp") || (json.type == "SingleSong")) {
 			return OneUp(json, $l("OneUp"));
 		}
 		throw("Unknown event type '" + json.type + "'");
@@ -42,7 +42,7 @@ var EventBase = function(json) {
 	header_bar.appendChild(header_inside_bar);
 	header.appendChild(self.elements.header_clock);
 	header.appendChild(header_text);
-	self.header_text;
+	self.header_text = header_text;
 
 	if (json.songs) {
 		self.songs = [];
@@ -122,7 +122,7 @@ var EventBase = function(json) {
 			}
 			self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
 			if (self.songs[0].data.entry_votes) {
-				self.el.insertBefore(header_vote_result, header_bar);				
+				self.el.insertBefore(header_vote_result, header_bar);
 			}
 			$add_class(self.songs[0].el, "timeline_now_playing_song");
 		}
@@ -167,7 +167,7 @@ var EventBase = function(json) {
 		}
 		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].clear_voting_status();
-		}	
+		}
 	};
 
 	self.disable_voting = function() {
@@ -205,7 +205,7 @@ var EventBase = function(json) {
 			header_text.textContent = event_desc + " - " + $l("vote_now");
 		}
 		else if (self.data.voting_allowed) {
-			header_text.textContent = current_header_default_text + " - " + $l("vote_now");;	
+			header_text.textContent = current_header_default_text + " - " + $l("vote_now");
 		}
 		else {
 			header_text.textContent = current_header_default_text;
@@ -257,4 +257,3 @@ var EventBase = function(json) {
 	}
 	return self;
 };
- 

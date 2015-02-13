@@ -48,7 +48,7 @@ var ListenerView = function(view, json) {
 			sid = order[idx];
 			for (i = 0; i < jd.length; i++) {
 				if (jd[i].sid == sid) {
-					data.push({ "value": jd[i][key], "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });	
+					data.push({ "value": jd[i][key], "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });
 				}
 			}
 		}
@@ -92,12 +92,12 @@ var ListenerView = function(view, json) {
 		found = false;
 		for (i = 0; i < json.ratings_by_station.length; i++) {
 			if (json.ratings_by_station[i].sid == sid) {
-				data.push({ "value": json.ratings_by_station[i].average_rating, "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });	
+				data.push({ "value": json.ratings_by_station[i].average_rating, "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });
 				found = true;
 				any_found = true;
 			}
 		}
-		if (!found) data.push({ "value": 0, "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });	
+		if (!found) data.push({ "value": 0, "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });
 	}
 	if (any_found) {
 		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
@@ -112,7 +112,7 @@ var ListenerView = function(view, json) {
 		for (i = 0; i < json.rating_spread.length; i++) {
 			if (v == json.rating_spread[i].rating) {
 				found = true;
-				data.push({ "value": json.rating_spread[i].ratings, "color": AlbumViewColors[v], "highlight": "#FFF", "label": v });	
+				data.push({ "value": json.rating_spread[i].ratings, "color": AlbumViewColors[v], "highlight": "#FFF", "label": v });
 			}
 		}
 	}
@@ -122,7 +122,7 @@ var ListenerView = function(view, json) {
 		cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
 		chart = new Chart(cnvs.getContext("2d")).Doughnut(data, { "animationSteps": current_chart_draw_steps });
 		current_chart_draw_steps += 5;
-	}	
+	}
 
 	if (json.user_id == User.id) {
 		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));

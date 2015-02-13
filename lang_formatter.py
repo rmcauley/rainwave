@@ -1,7 +1,7 @@
 import os
 import glob
 
-def format(in_filename, out_filename):
+def format_locales(in_filename, out_filename):
 	original_file = open(in_filename, 'r')
 	out_file = open(out_filename, 'w')
 	for line in original_file:
@@ -19,4 +19,4 @@ def format(in_filename, out_filename):
 if __name__ == "__main__":
 	files = [ os.path.basename(f) for f in glob.glob("./lang/*.json") ]
 	for filename in files:
-		format("./lang/%s" % filename, "./lang2/%s" % filename)
+		format_locales("./lang/%s" % filename, "./lang2/%s" % filename)

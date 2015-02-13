@@ -130,7 +130,7 @@ class OneUp(event.BaseEvent):
 	def start_event(self):
 		super(OneUp, self).start_event()
 		# db.c.update("UPDATE r4_one_ups SET one_up_used = TRUE WHERE one_up_id = %s", (self.id,))
-	
+
 	def finish(self):
 		super(OneUp, self).finish()
 		db.c.update("UPDATE r4_one_ups SET one_up_used = TRUE WHERE one_up_id = %s", (self.id,))

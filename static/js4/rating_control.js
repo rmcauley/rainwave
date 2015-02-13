@@ -169,14 +169,14 @@ var RatingControl = function() {
 
 	var current_modal_song_id;
 	self.start_modal_rating = function(song_id) {
-		if ((song_id in song_ratings) && (song_ratings[song_id].length)) {	
+		if ((song_id in song_ratings) && (song_ratings[song_id].length)) {
 			current_modal_song_id = song_id;
 			Menu.show_modal($id("rating_window_container"));
 		}
 	};
 
 	var do_modal_rating = function(rating) {
-		if (current_modal_song_id && (current_modal_song_id in song_ratings) && (song_ratings[current_modal_song_id].length)) {	
+		if (current_modal_song_id && (current_modal_song_id in song_ratings) && (song_ratings[current_modal_song_id].length)) {
 			song_ratings[current_modal_song_id][0].rate(rating);
 		}
 		current_modal_song_id = null;

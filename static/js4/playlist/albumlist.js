@@ -46,7 +46,7 @@ var AlbumList = function() {
 			API.async_get("all_albums");
 		}
 	};
-	
+
 	self.tab_el = $id("lists_tab_album");
 	self.tab_el.textContent = $l("Albums");
 	self.tab_el.addEventListener("click", function() {

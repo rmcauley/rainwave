@@ -92,8 +92,8 @@ def set_song_fave(song_id, user_id, fave):
 	elif (exists and exists["song_fave"] and not fave):
 		db.c.update("UPDATE r4_songs SET song_fave_count = song_fave_count - 1 WHERE song_id = %s", (song_id,))
 	cache.set_song_rating(song_id, user_id, { "rating_user": rating, "fave": fave })
-	return True
 	db.c.commit()
+	return True
 
 def set_album_fave(sid, album_id, user_id, fave):
 	db.c.start_transaction()
@@ -118,8 +118,8 @@ def set_album_fave(sid, album_id, user_id, fave):
 		cache.set_album_rating(sid, album_id, user_id, { "rating_user": rating, "fave": fave, "rating_complete": rating_complete })
 	elif "album" == "song":
 		cache.set_song_rating(album_id, user_id, { "rating_user": rating, "fave": fave })
-	return True
 	db.c.commit()
+	return True
 
 def update_album_ratings(target_sid, song_id, user_id):
 	toret = []

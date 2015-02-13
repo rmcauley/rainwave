@@ -130,6 +130,7 @@ table.songlist td {
 
 tr.songlist_cool td {
 	background-color: $cooldown-color;
+	border-bottom-color: $cooldown-color;
 }
 
 table.songlist tr:hover td {
@@ -259,6 +260,14 @@ div.songlist_extra_detail {
 
 	@include transition-wtime(250ms, opacity, height, transform);
 	@include transform(translateY(0));
+}
+
+div.songlist_extra_detail canvas {
+	float: left;
+}
+
+div.songlist_extra_detail div.songlist_extra_detail_item {
+	margin-left: 110px;
 }
 
 td.songlist_title:hover div.songlist_extra_detail {

@@ -140,10 +140,10 @@ var API = function() {
 				e.text += " (" + $l(result.sync_result.tl_key) + ")";
 			}
 			else if (result && result.error && result.error.tl_key) {
-				e.text += " (" + $l(result.error.tl_key) + ")";	
+				e.text += " (" + $l(result.error.tl_key) + ")";
 			}
 			else if (result && result[0] && result[0].error && result[0].error.tl_key) {
-				e.text += " (" + $l(result[0].error.tl_key) + ")";	
+				e.text += " (" + $l(result[0].error.tl_key) + ")";
 			}
 			else {
 				e.text += " (" + $l("lost_connection") + ")";

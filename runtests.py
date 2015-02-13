@@ -45,15 +45,15 @@ class ExtensionPlugin(Plugin):
 
     def wantModule(self,file):
         return True
-		
+
 # Setup our run environment for the test.
 username = os.environ.get("USERNAME") #os.environ['USER']
 sqlite_file = "%s/rw_test.%s.sqlite" % (tempfile.gettempdir(), username)
 if os.path.exists(sqlite_file):
 	os.remove(sqlite_file)
-	
+
 libs.config.load(args.config, testmode=True)
-		
+
 if not args.apionly:
 	if libs.config.get("db_type") == "sqlite":
 		libs.config.override("db_name", sqlite_file)
@@ -78,7 +78,7 @@ if not args.apionly:
 	if nose.run(addplugins=[ExtensionPlugin()], argv=['-w', 'tests', '-s']) == 0:
 		sys.stderr.write("Unit testing failed.\n")
 	#	sys.exit(1)
-		
+
 	libs.db.close()
 
 if args.api or args.apionly:

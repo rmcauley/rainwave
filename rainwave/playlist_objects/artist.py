@@ -14,7 +14,7 @@ class Artist(AssociatedMetadata):
 	delete_self_query = "DELETE FROM r4_artists WHERE artist_id = %s"
 
 	# needs to be specialized because of artist_order
-	def associate_song_id(self, song_id, is_tag = None, order = None):
+	def associate_song_id(self, song_id, is_tag = None, order = None):	#pylint: disable=W0221
 		if not order and (not "order" in self.data or not self.data['order']):
 			order = db.c.fetch_var("SELECT MAX(artist_order) FROM r4_song_artist WHERE song_id = %s", (song_id,))
 			if not order:
@@ -86,7 +86,7 @@ class Artist(AssociatedMetadata):
 				self.data['all_songs'][song['sid']][song['album_id']] = []
 			self.data['all_songs'][song['sid']][song['album_id']].append(song)
 			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id'), "openable": song.pop('album_openable'), "year": song.pop('album_year') } ]
-			
+
 	def to_dict(self, user=None):
 		d = super(Artist, self).to_dict(user)
 		d['order'] = self.data['order']

@@ -187,16 +187,22 @@ def post_process(sid):
 # 	sync_to_front.sync_frontend_all_timed(sid)
 
 def _add_listener_count_record(sid):
-	lc_guests = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1", (sid,))
-	lc_users = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1", (sid,))
-	lc_guests_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1 AND listener_voted_entry IS NOT NULL", (sid,))
-	lc_users_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1 AND listener_voted_entry IS NOT NULL", (sid,))
-	return db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests, lc_users, lc_guests_active, lc_users_active) VALUES (%s, %s, %s, %s, %s)", (sid, lc_guests, lc_users, lc_guests_active, lc_users_active))
+	# THIS FUNCTION IS BROKEN BECAUSE ACCURATE LISTENER TRACKING DOES NOT HAPPEN
+	#
+	# the listener_counts table is now being used differently, please check backend/icecast_sync.py
+	# for how it's used now
+	#
+	# lc_guests = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1", (sid,))
+	# lc_users = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1", (sid,))
+	# lc_guests_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1 AND listener_voted_entry IS NOT NULL", (sid,))
+	# lc_users_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1 AND listener_voted_entry IS NOT NULL", (sid,))
+	# return db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests, lc_users, lc_guests_active, lc_users_active) VALUES (%s, %s, %s, %s, %s)", (sid, lc_guests, lc_users, lc_guests_active, lc_users_active))
+	pass
 
 def _get_schedule_stats(sid):
 	global upnext
 	global current
-	
+
 	max_sched_id = 0
 	max_elec_id = None
 	end_time = int(time.time())
@@ -226,7 +232,9 @@ def _get_schedule_stats(sid):
 	return (max_sched_id, max_elec_id, num_elections, end_time)
 
 def manage_next(sid):
+	#pylint: disable=W0612
 	max_sched_id, max_elec_id, num_elections, max_future_time = _get_schedule_stats(sid)
+	#pylint: enable=W0612
 	now_producer = get_producer_at_time(sid, time.time())
 	next_producer = get_producer_at_time(sid, max_future_time)
 	nextnext_producer_start = db.c.fetch_var("SELECT sched_start FROM r4_schedule WHERE sid = %s AND sched_used = FALSE AND sched_start > %s AND sched_timed = TRUE", (sid, max_future_time))
@@ -273,7 +281,9 @@ def manage_next(sid):
 		future_time += evt.length()
 
 def _get_or_create_election(sid, target_length = None):
+	#pylint: disable=W0612
 	max_sched_id, max_elec_id, num_elections, next_end_time = _get_schedule_stats(sid)
+	#pylint: enable=W0612
 
 	ep = election.ElectionProducer(sid)
 	return ep.load_next_event(target_length=target_length, min_elec_id=max_elec_id)
@@ -294,12 +304,12 @@ def _update_schedule_memcache(sid):
 
 	sched_current_dict = current[sid].to_dict()
 	cache.set_station(sid, "sched_current_dict", sched_current_dict, True)
-	
+
 	next_dict_list = []
 	for event in upnext[sid]:
 		next_dict_list.append(event.to_dict())
 	cache.set_station(sid, "sched_next_dict", next_dict_list, True)
-	
+
 	history_dict_list = []
 	for event in history[sid]:
 		history_dict_list.append(event.to_dict())

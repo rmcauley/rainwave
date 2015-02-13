@@ -12,12 +12,14 @@ from rainwave.playlist_objects import cooldown
 # that any non-refactored code works with the way this module used to be.
 # (this module used to be gargantuan)
 # pylint will flag these as unused but TRUST ME, KEEP THEM HERE
+#pylint: disable=W0611
 from rainwave.playlist_objects.album import Album
 from rainwave.playlist_objects.album import warm_cooled_albums
 from rainwave.playlist_objects.album import get_updated_albums_dict
 from rainwave.playlist_objects.artist import Artist
 from rainwave.playlist_objects.songgroup import SongGroup
 from rainwave.playlist_objects.cooldown import prepare_cooldown_algorithm
+#pylint: enable=W0611
 
 num_songs = {}
 
@@ -221,6 +223,8 @@ def get_unrated_songs_for_user(user_id, limit = "LIMIT ALL"):
 		"WHERE song_verified = TRUE AND r4_song_ratings.song_id IS NULL ORDER BY album_name, song_title " + limit, (user_id,))
 
 def _get_requested_albums_sql():
+	if not db.c.allows_join_on_update:
+		return
 	return ("WITH requested_albums AS ("
 		"SELECT r4_songs.album_id "
 		"FROM r4_request_store "
@@ -254,7 +258,7 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 	# Similar to the above, but this time we take whatever's on shortest cooldown (ignoring album unrated count)
 	if len(unrated) < limit:
 		for album_row in db.c.fetch_all(
-				_get_requested_albums_sql() + 
+				_get_requested_albums_sql() +
 				("SELECT r4_songs.album_id, MIN(song_cool_end) "
 					"FROM r4_song_sid "
 						"JOIN r4_songs USING (song_id) "

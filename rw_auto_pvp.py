@@ -8,12 +8,11 @@ from libs import config
 from libs import db
 from libs import cache
 from libs import log
-from backend import icecast_sync
 
 from rainwave.events import pvpelection
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description="Rainwave API server.")
+	parser = argparse.ArgumentParser(description="Rainwave PVP Hour generation script.")
 	parser.add_argument("--config", default=None)
 	args = parser.parse_args()
 	config.load(args.config)
@@ -21,7 +20,7 @@ if __name__ == "__main__":
 	log.init(log_file, config.get("log_level"))
 	db.connect()
 	cache.connect()
-	
+
 	dow_map = [ (4, 5), (2, 1), (3, 4), (5, 2), (1, 3), (2, 4), (1, 3) ]
 	# dow_map = [ (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1) ]
 	timezones = [ (timezone('Europe/London'), 13, 0), (timezone('US/Eastern'), 13, 1) ]

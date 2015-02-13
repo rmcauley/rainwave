@@ -2,8 +2,9 @@ This is the git project for the Rainwave website, http://rainwave.cc.
 
 == Python Setup for Debian/Ubuntu
 
-$ sudo apt-get install python-pip python-pyscss python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit
+$ sudo apt-get install python-pip python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit
 $ sudo pip install pytz watchdog
+$ sudo pip install pyscss=1.2.0
 
 == Python Setup for Windows
 
@@ -19,7 +20,7 @@ $ sudo pip install pytz watchdog
 6. Make sure the Python Scripts directory is also on your PATH
 7. On the commandline, execute:
 	> easy_install pip
-	> pip install tornado mutagen nose pillow pyscss unidecode pytz watchdog python-memcached
+	> pip install tornado mutagen nose pillow pyscss=1.2.0 unidecode pytz watchdog python-memcached
 
 == Getting Started for HTML/CSS/JS Development
 
@@ -85,7 +86,7 @@ Required on all systems:
 - nose
 - pillow
 - psutil
-- pyScss
+- pyScss=1.2.0
 - unidecode
 - pytz
 - watchdog
@@ -93,6 +94,18 @@ Required on all systems:
 - meliae (Linux, if enabling memory tracing)
 - pylibmc (Linux or cypthon) or python-memcached (Windows or PyPy)
 
-To let Rainwave automatically mp3gain your collection, 
+To let Rainwave automatically mp3gain your collection,
 you will need to enable it in the configs and also have
 the "mp3gain" executable in your path.
+
+== Pylinting
+
+Pylint is run on the project with the following settings:
+
+disable: [
+	"W0312", "W0703", "R0904", "R0903", "W0702", "W0602", "W0603",
+	"R0915", "W0201", "W5103", "W5101", "W0232", "W0613", "W1401"
+]
+ignore: [
+	"C", "R", "I"
+]

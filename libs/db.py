@@ -17,7 +17,7 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 
 	def fetch_var(self, query, params = None):
 		self.execute(query, params)
-		if self.rowcount == 0:
+		if self.rowcount <= 0:
 			return None
 		r = self.fetchone()
 		# I realize this is not the most efficient way, but one of the primary
@@ -30,19 +30,19 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 
 	def fetch_row(self, query, params = None):
 		self.execute(query, params)
-		#if self.rowcount == 0:
-		#	return None
+		if self.rowcount <= 0:
+			return None
 		return self.fetchone()
 
 	def fetch_all(self, query, params = None):
 		self.execute(query, params)
-		if self.rowcount == 0:
+		if self.rowcount <= 0:
 			return []
 		return self.fetchall()
 
 	def fetch_list(self, query, params = None):
 		self.execute(query, params)
-		if self.rowcount == 0:
+		if self.rowcount <= 0:
 			return []
 		arr = []
 		row = self.fetchone()
@@ -70,8 +70,10 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE SET NULL" % (linking_table, linking_table, key, key, foreign_table, key))
 
 	def create_idx(self, table, *args):
+		#pylint: disable=W0141
 		name = "%s_%s_idx" % (table, '_'.join(map(str, args)))
 		columns = ','.join(map(str, args))
+		#pylint: enable=W0612
 		self.execute("CREATE INDEX %s ON %s (%s)" % (name, table, columns))
 
 	def start_transaction(self):
@@ -146,7 +148,7 @@ class SQLiteCursor(object):
 
 	def fetch_all(self, query, params = None):
 		self.execute(query, params)
-		if self.cur.rowcount == 0:
+		if self.cur.rowcount <= 0:
 			return []
 		return self.cur.fetchall()
 
@@ -193,7 +195,7 @@ class SQLiteCursor(object):
 		# rows in order to maintain proper order.
 		# HEY, DON'T USE SQLITE IN PRODUCTION ANYWAY
 		if table == "r4_schedule":
-			c.update("INSERT INTO r4_schedule (sched_id, sid, sched_start) VALUES (%s, %s, %s)", (val, 0, 0)) 
+			c.update("INSERT INTO r4_schedule (sched_id, sid, sched_start) VALUES (%s, %s, %s)", (val, 0, 0))
 		return val
 
 	def fetchone(self):

@@ -39,7 +39,7 @@ PlaylistLists = function() {
 		lists.current_listeners = ListenersList();
 	};
 
-	self.draw = function() {		
+	self.draw = function() {
 		tabs_el.appendChild(lists.all_albums.tab_el);
 		tabs_el.appendChild(lists.all_artists.tab_el);
 		tabs_el.appendChild(lists.all_groups.tab_el);
@@ -61,7 +61,7 @@ PlaylistLists = function() {
 			$remove_class(search_box, "no_escape_button");
 		}
 		else {
-			$add_class(search_box, "no_escape_button");	
+			$add_class(search_box, "no_escape_button");
 		}
 	};
 

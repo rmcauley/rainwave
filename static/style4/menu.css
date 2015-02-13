@@ -609,15 +609,10 @@ div.modal_container {
 	background: #000;
 	padding: 5px 0;
 	z-index: 10001;
-	max-height: 80%;
 	@include transform(translate(-50%, -50%));
 
 	-webkit-transition: width 400ms $transfunc 400ms, opacity 300ms $transfunc 100ms;
             transition: width 400ms $transfunc 400ms, opacity 300ms $transfunc 100ms;
-}
-
-body.mobile_screen div.modal_container {
-	max-height: 100%;
 }
 
 div.modal_container.active_modal {
@@ -673,7 +668,6 @@ div.modal {
 	width: 800px;
 	margin: 5px auto;
 	height: 0;
-	max-height: 100%;
 	padding: 5px;
 	overflow: hidden;
 	opacity: 0;

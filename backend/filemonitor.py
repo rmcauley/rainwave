@@ -84,10 +84,10 @@ def _scan_all_directories(art_only=False):
 	total_files = 0
 	file_counter = 0
 	for directory, sids in config.get("song_dirs").iteritems():
-		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
+		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):		#pylint: disable=W0612
 			total_files += len(files)
 
-	for directory, sids in config.get("song_dirs").iteritems():		
+	for directory, sids in config.get("song_dirs").iteritems():
 		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
 			for filename in files:
 				filename = os.path.normpath(root + os.sep + filename)
@@ -97,7 +97,7 @@ def _scan_all_directories(art_only=False):
 					else:
 						_scan_file(filename, sids, raise_exceptions=True)
 				except Exception as e:
-					type_, value_, traceback_ = sys.exc_info()
+					type_, value_, traceback_ = sys.exc_info()	#pylint: disable=W0612
 					if not isinstance(e, PassableScanError):
 						print "\n%s:\n\t %s: %s" % (filename.decode("utf-8", errors="ignore"), type_, value_)
 					else:
@@ -117,16 +117,19 @@ def _check_codepage_1252(filename):
 		raise PassableScanError("Invalid filename. (possible cp1252 or obscure unicode)")
 
 def _scan_directory(directory, sids):
+	# Normalize and add a trailing separator to the directory name
+	directory = os.path.join(os.path.normpath(directory), "")
+
 	# Windows workaround eww, damnable directory names
 	if os.name == "nt":
-		directory = os.path.normpath(directory).replace("\\", "\\\\")
-	
+		directory = directory.replace("\\", "\\\\")
+
 	songs = db.c.fetch_list("SELECT song_id FROM r4_songs WHERE song_filename LIKE %s || '%%' AND song_verified = TRUE", (directory,))
 	for song_id in songs:
 		# log.debug("scan", "Marking Song ID %s for possible deletion." % song_id)
 		db.c.update("UPDATE r4_songs SET song_scanned = FALSE WHERE song_id = %s", (song_id,))
 
-	for root, subdirs, files in os.walk(directory, followlinks = True):
+	for root, subdirs, files in os.walk(directory, followlinks = True):	#pylint: disable=W0612
 		for filename in files:
 			filename = os.path.normpath(root + os.sep + filename)
 			_scan_file(filename, sids)
@@ -185,7 +188,7 @@ def _process_album_art_queue(on_screen=False):
 		try:
 			_process_album_art(*_album_art_queue[i])
 		except Exception as e:
-			type_, value_, traceback_ = sys.exc_info()
+			type_, value_, traceback_ = sys.exc_info()	#pylint: disable=W0612
 			_add_scan_error(_album_art_queue[i][0], e)
 			if on_screen:
 				print "\n%s:\n\t %s" % (_album_art_queue[i][0], value_)

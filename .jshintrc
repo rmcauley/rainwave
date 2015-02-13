@@ -1,0 +1,9 @@
+{
+  "globals": {
+    "console": true
+  },
+
+  "newcap": false,
+  "quotmark": true,
+  "loopfunc": true
+}

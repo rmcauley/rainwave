@@ -74,7 +74,7 @@ class AddListener(IcecastHandler):
 	# def get(self, sid):
 	# 	self.post(sid)
 
-	def post(self, sid):
+	def post(self, sid):  	#pylint: disable=W0221
 		(self.mount, self.user_id, self.listen_key) = self.get_argument("mount")
 		self.agent = self.get_argument("agent")
 		self.listener_ip = self.get_argument("ip")
@@ -157,7 +157,7 @@ class RemoveListener(IcecastHandler):
 	# def get(self, sid):
 	# 	self.post(sid)
 
-	def post(self, sid):
+	def post(self, sid):	#pylint: disable=W0221
 		listener = db.c.fetch_row("SELECT user_id, listener_ip FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
 								 (self.relay, self.get_argument("client")))
 		if not listener:

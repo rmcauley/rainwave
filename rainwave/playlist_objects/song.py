@@ -17,6 +17,7 @@ from rainwave.playlist_objects.album import Album
 from rainwave.playlist_objects.songgroup import SongGroup
 from rainwave.playlist_objects.metadata import make_searchable_string
 from rainwave.playlist_objects import cooldown
+from rainwave.playlist_objects.metadata import MetadataUpdateError
 
 _mp3gain_path = filetools.which("mp3gain")
 
@@ -35,6 +36,7 @@ class SongMetadataUnremovable(Exception):
 	pass
 
 class Song(object):
+	#pylint: disable=W0212
 	@classmethod
 	def load_from_id(klass, song_id, sid = None):
 		if sid:
@@ -85,15 +87,21 @@ class Song(object):
 			log.debug("playlist", "this filename matches an existing database entry, song_id {}".format(matched_entry['song_id']))
 			s = klass.load_from_id(matched_entry['song_id'])
 			for metadata in s.artists:
-				if metadata.is_tag:
-					metadata.disassociate_song_id(s.id)
-				else:
-					kept_artists.append(metadata)
+				try:
+					if metadata.is_tag:
+						metadata.disassociate_song_id(s.id)
+					else:
+						kept_artists.append(metadata)
+				except MetadataUpdateError:
+					pass
 			for metadata in s.groups:
-				if metadata.is_tag:
-					metadata.disassociate_song_id(s.id)
-				else:
-					kept_groups.append(metadata)
+				try:
+					if metadata.is_tag:
+						metadata.disassociate_song_id(s.id)
+					else:
+						kept_groups.append(metadata)
+				except MetadataUpdateError:
+					pass
 		elif len(sids) == 0:
 			raise SongHasNoSIDsException
 		else:
@@ -105,7 +113,7 @@ class Song(object):
 		new_artists = Artist.load_list_from_tag(s.artist_tag)
 		new_groups = SongGroup.load_list_from_tag(s.genre_tag)
 
-		i = 0;
+		i = 0
 		for metadata in new_artists:
 			metadata.associate_song_id(s.id, order=i)
 			i += 1
@@ -125,7 +133,7 @@ class Song(object):
 	@classmethod
 	def load_from_deleted_file(klass, filename):
 		matched_entry = db.c.fetch_row("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
-		if matched_entry:
+		if matched_entry and 'song_id' in matched_entry:
 			s = klass.load_from_id(matched_entry['song_id'])
 		else:
 			s = None
@@ -145,6 +153,7 @@ class Song(object):
 		s.data['length'] = 60
 		s.save([ sid ])
 		return s
+	#pylint: enable=W0212
 
 	def __init__(self):
 		"""
@@ -208,7 +217,10 @@ class Song(object):
 		w = f.tags.getall('COMM')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.data['link_text'] = unicode(w[0]).strip()
-		w = f.tags.getall('WXXX')
+		# what the heck is pylint code w0511?  a warning with X X X
+		# even happens on comments.
+		# guess it hates porn but that's what the ID3 wildcard tag is!
+		w = f.tags.getall('WXXX')	#pylint: disable=W0511
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.data['url'] = unicode(w[0]).strip()
 		w = f.tags.getall('TYER')
@@ -222,7 +234,10 @@ class Song(object):
 
 		if not self.replay_gain and config.get("mp3gain_scan"):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
+			# gain_std is unused, we'll grab the output from mp3gain from the tags themselves
+			#pylint: disable=W0612
 			gain_std, gain_error = subprocess.Popen([_mp3gain_path, "-o", "-q", "-s", "i", "-p", "-k", "-T", self.filename ], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+			#pylint: enable=W0612
 			if len(gain_error) > 0:
 				raise Exception("Error when replay gaining \"%s\": %s" % (filename, gain_error))
 			f = MP3(filename)
@@ -232,7 +247,7 @@ class Song(object):
 
 	def _get_replaygain(self, f):
 		replay_gain = None
-		for txxx in f.tags.getall("TXXX"):
+		for txxx in f.tags.getall("TXXX"):	#pylint: disable=W0511
 			if txxx.desc.lower() == "replaygain_track_gain":
 				replay_gain = str(txxx)
 		return replay_gain
@@ -436,7 +451,7 @@ class Song(object):
 				album.update_rating()
 
 	def add_artist(self, name):
-		toret = self._add_metadata(self.artists, name, Artist)
+		to_ret = self._add_metadata(self.artists, name, Artist)
 		self.update_artist_parseable()
 		return to_ret
 
@@ -561,8 +576,8 @@ class Song(object):
 			d.update(rating.get_song_rating(self.id, user.id))
 			if user.data['rate_anything']:
 				d['rating_allowed'] = True
-		
-		for v in [ "entry_id", "elec_request_user_id", "entry_position", "entry_type", "entry_votes", "elec_request_username", "sid", "one_up_used", "one_up_queued", "one_up_id", "rating_rank", "reuest_rank", "rating_histogram" ]:
+
+		for v in [ "entry_id", "elec_request_user_id", "entry_position", "entry_type", "entry_votes", "elec_request_username", "sid", "one_up_used", "one_up_queued", "one_up_id", "rating_rank", "request_rank", "request_count", "rating_histogram", "rating_count" ]:
 			if v in self.data:
 				d[v] = self.data[v]
 
@@ -594,7 +609,7 @@ class Song(object):
 	def get_all_ratings(self):
 		table = db.c.fetch_all("SELECT song_rating_user, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
 		all_ratings = {}
-		for row in all_ratings:
+		for row in table:
 			all_ratings[row['user_id']] = { "rating_user": row['song_rating_user'], "fave": row['song_fave'] }
 		return all_ratings
 

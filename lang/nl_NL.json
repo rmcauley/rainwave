@@ -75,7 +75,7 @@
    "special_event_on_now"                            : "Evenement: ",
    "special_event_alert"                             : "Speciaal Evenement op %(station): ",
    
-   "tunein"                                          : "Naar station luisteren",
+   "tunein"                                          : "Tune In",
    "stop"                                            : "Stoppen",
    "audio_error"                                     : "Kan niet naar dit station luisteren vanaf uw browser!",
    "audio_connect_error"                             : "Op dit moment hebben we problemen om met de radio server te verbinden.",

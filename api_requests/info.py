@@ -9,7 +9,6 @@ import api_requests.tune_in
 
 from libs import cache
 from libs import config
-from libs import log
 
 def attach_info_to_request(request, extra_list = None, all_lists = False):
 	# Front-load all non-animated content ahead of the schedule content
@@ -31,7 +30,7 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 
 		if all_lists or (extra_list == "all_groups") or 'all_groups' in request.request.arguments:
 			request.append("all_groups", api_requests.playlist.get_all_groups(request.sid))
-		
+
 		if all_lists or (extra_list == "current_listeners") or 'current_listeners' in request.request.arguments or request.get_cookie("r4_active_list") == "current_listeners":
 			request.append("current_listeners", cache.get_station(request.sid, "current_listeners"))
 
@@ -122,6 +121,6 @@ class StationsRequest(APIHandler):
 				"id": station_id,
 				"name": config.station_id_friendly[station_id],
 				"description": self.locale.translate("station_description_id_%s" % station_id),
-				"stream": "http://%s:8000/%s" % (config.get_station(station_id, "round_robin_relay_host"), api_requests.tune_in.get_stream_filename(station_id, user=self.user)),
+				"stream": "http://%s:%s/%s" % (config.get_station(station_id, "round_robin_relay_host"), config.get_station(station_id, "round_robin_relay_port"), api_requests.tune_in.get_stream_filename(station_id, user=self.user)),
 			})
 		self.append(self.return_name, station_list)

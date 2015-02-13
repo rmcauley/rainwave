@@ -58,6 +58,7 @@ class Album(AssociatedMetadata):
 	check_self_size_query = "SELECT COUNT(*) FROM r4_songs WHERE album_id = %s"
 	delete_self_query = "UPDATE r4_album_sid SET album_exists = FALSE WHERE album_id = %s"
 
+	#pylint: disable=W0212
 	@classmethod
 	def load_from_id_sid(cls, album_id, sid):
 		row = db.c.fetch_row("SELECT r4_albums.*, album_rating, album_rating_count, album_cool, album_cool_lowest, album_cool_multiply, album_cool_override FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE r4_album_sid.album_id = %s AND r4_album_sid.sid = %s", (album_id, sid))
@@ -100,6 +101,7 @@ class Album(AssociatedMetadata):
 		elif os.path.isfile(os.path.join(config.get("album_art_file_path"), "a_%s_320.jpg" % album_id)):
 			return "%s/a_%s" % (config.get("album_art_url_path"), album_id)
 		return ""
+	#pylint: enable=W0212
 
 	def __init__(self):
 		super(Album, self).__init__()
@@ -121,7 +123,7 @@ class Album(AssociatedMetadata):
 		updated_album_ids[self.sid][self.id] = True
 		return success
 
-	def _assign_from_dict(self, d, sid = None):
+	def _assign_from_dict(self, d, sid = None):	#pylint: disable=W0221
 		self.id = d['album_id']
 		self.data['name'] = d['album_name']
 		self.data['added_on'] = d['album_added_on']
@@ -235,7 +237,7 @@ class Album(AssociatedMetadata):
 		return self.data['cool_lowest']
 
 	def update_rating(self):
-		for sid in db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s", (self.id,)):	
+		for sid in db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s", (self.id,)):
 			dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user < 3 AND sid = %s GROUP BY album_id", (self.id, sid))
 			if not dislikes:
 				dislikes = 0
@@ -267,6 +269,8 @@ class Album(AssociatedMetadata):
 		return all_ratings
 
 	def update_all_user_ratings(self):
+		if not db.c.allows_join_on_update:
+			return
 		for sid in config.station_ids:
 			num_songs = self.get_num_songs(sid)
 			db.c.update(
@@ -292,6 +296,8 @@ class Album(AssociatedMetadata):
 				(self.id, sid, self.id, sid, self.id, sid, num_songs))
 
 	def reset_user_completed_flags(self):
+		if not db.c.allows_join_on_update:
+			return
 		if db.c.allows_join_on_update:
 			db.c.update(
 				"WITH status AS ( "
@@ -333,7 +339,7 @@ class Album(AssociatedMetadata):
 				"JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
 				"JOIN r4_song_group ON (r4_songs.song_id = r4_song_group.song_id) "
 				"JOIN r4_groups USING (group_id) "
-			"WHERE album_id = %s",
+			"WHERE song_verified = TRUE AND album_id = %s",
 			(sid, self.id))
 
 		self.data['rating_histogram'] = {}
@@ -348,6 +354,7 @@ class Album(AssociatedMetadata):
 		histo = db.c.fetch_all(
 			"SELECT song_rating_user, COUNT(song_rating) AS rating_count "
 			"FROM r4_song_ratings "
+				"JOIN phpbb_users ON (r4_song_ratings.user_id = phpbb_users.user_id AND phpbb_users.radio_inactive = FALSE) "
 				"JOIN r4_song_sid ON (r4_song_ratings.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
 				"JOIN r4_songs ON (r4_song_ratings.song_id = r4_songs.song_id) "
 			"WHERE album_id = %s "

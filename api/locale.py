@@ -22,16 +22,16 @@ There are some value replacements you can use in the translated phrase strings:
         = "rating:"     : "Rating: %(num_ratings)"
             --> "Rating: 5.0"
 
-#(stuff)    
+#(stuff)
     - Will display a number with a suffix at the end.
     - Suffixes are not provided in the master language file.
     - English examples:
          = "rank"    : "Rank: #(rank)"
-        = "suffix_1": "st"   
+        = "suffix_1": "st"
             --> "Rank: 1st" when rank is 1
         = "suffix_2": "nd"
             --> "Rank: 2nd" when rank is 2
-        = "suffix_3": "rd" 
+        = "suffix_3": "rd"
             --> "Rank: 3rd" when rank is 3
     - When looking up e.g. the number 1253, the system searches in this order:
         1. "suffix_1253"
@@ -77,7 +77,7 @@ def load_translations():
 	master_file.close()
 
 	locale_names = {}
-	for root, subdir, files in os.walk(os.path.join(os.path.dirname(__file__), "../lang")):
+	for root, subdir, files in os.walk(os.path.join(os.path.dirname(__file__), "../lang")):		#pylint: disable=W0612
 		for filename in files:
 			if filename == "en_MASTER.json":
 				continue
@@ -88,8 +88,8 @@ def load_translations():
 				translations[filename[:-5]] = RainwaveLocale(filename[:-5], master, json.load(f))
 				f.close()
 				locale_names[filename[:-5]] = translations[filename[:-5]].dict['language_name']
-			except:
-				log.warn("locale", "%s is not a valid JSON file." % filename[:-5])
+			except Exception as e:
+				log.exception("locale", "%s translation did not load." % filename[:-5], e)
 
 	locale_names_json = tornado.escape.json_encode(locale_names)
 
@@ -136,23 +136,30 @@ class RainwaveLocale(tornado.locale.Locale):
 
 		return translations['en_CA']
 
-	def __init__(self, code, master, translation):
+	# I can't find the original definition for the init here
+	# And things seem to work fine without calling it
+	# So... I'm just going to leave it alone and ignore
+	# the pylint warning that we're not calling super() here
+	#pylint: disable=W0231
+	def __init__(self, code, mster, translation):
+		# super(RainwaveLocale, self).__init__()
 		# remove lines that are no longer in the master file
 		to_pop = []
 		for k, v in translation.iteritems():
-			if not master.has_key(k) and not k.startswith("suffix_"):
+			if not mster.has_key(k) and not k.startswith("suffix_"):
 				to_pop.append(k)
 		for k in to_pop:
 			translation.pop(k)
 
-		self.dict = dict(master.items() + translation.items())
+		self.dict = dict(mster.items() + translation.items())
 		self.code = code
 
 		# document lines missing
 		self.missing = {}
-		for k, v in master.iteritems():
+		for k, v in mster.iteritems():
 			if not translation.has_key(k):
 				self.missing[k] = v
+	#pylint: enable=W0231
 
 	def translate(self, key, **kwargs):
 		if not key in self.dict:
