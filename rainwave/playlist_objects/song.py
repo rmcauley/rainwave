@@ -169,6 +169,9 @@ class Song(object):
 		self.album_tag = None
 		self.genre_tag = None
 		self.data = {}
+		self.data['track_number'] = None
+		self.data['disc_number'] = None
+		self.data['year'] = None
 		self.data['url'] = None
 		self.data['link_text'] = None
 		self.data['rating_allowed'] = False
@@ -202,6 +205,12 @@ class Song(object):
 		 	self.album_tag = unicode(w[0]).strip()
 		else:
 			raise PassableScanError("Song filename \"%s\" has no album tag." % filename)
+		w = f.tags.getall('TRCK')
+		if w is not None and len(w) > 0:
+			self.data['track_number'] = +w[0]
+		w = f.tags.getall('TPOS')
+		if w is not None and len(w) > 0:
+			self.data['disc_number'] = +w[0]
 		w = f.tags.getall('TCON')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.genre_tag = unicode(w[0])
@@ -214,6 +223,12 @@ class Song(object):
 		w = f.tags.getall('WXXX')	#pylint: disable=W0511
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.data['url'] = unicode(w[0]).strip()
+		w = f.tags.getall('TYER')
+		if w is not None and len(w) > 0:
+			self.data['year'] = +w[0]
+		w = f.tags.getall('TDRC')
+		if self.data['year'] is None and w is not None and len(w) > 0:
+			self.data['year'] = unicode(w[0])
 
 		self.replay_gain = self._get_replaygain(f)
 
@@ -277,7 +292,7 @@ class Song(object):
 				potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s AND song_artist_tag = %s", (self.data['title'], self.data['length'], self.artist_tag))
 			else:
 				potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s", (self.data['title'], self.data['length']))
-			if potential_id:
+			if not config.get("allow_duplicate_song") and potential_id:
 				self.id = potential_id
 				update = True
 
@@ -300,23 +315,26 @@ class Song(object):
 					song_url = %s, \
 					song_link_text = %s, \
 					song_length = %s, \
+					song_track_number = %s, \
+					song_disc_number = %s, \
+					song_year = %s, \
 					song_scanned = TRUE, \
 					song_verified = TRUE, \
 					song_file_mtime = %s, \
 					song_replay_gain = %s, \
 					song_origin_sid = %s \
 				WHERE song_id = %s",
-				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], file_mtime, self.replay_gain, self.data['origin_sid'], self.id))
+				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], self.data['track_number'], self.data['disc_number'], self.data['year'], file_mtime, self.replay_gain, self.data['origin_sid'], self.id))
 			if self.artist_tag:
 				db.c.update("UPDATE r4_songs SET song_artist_tag = %s WHERE song_id = %s", (self.artist_tag, self.id))
 		else:
 			self.id = db.c.get_next_id("r4_songs", "song_id")
 			log.debug("playlist", "inserting a new song with id {}".format(self.id))
 			db.c.update("INSERT INTO r4_songs \
-				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain, song_artist_tag) \
+				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_track_number, song_disc_number, song_year, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain, song_artist_tag) \
 				VALUES \
-				(%s     , %s           , %s        , %s                   , %s       , %s            , %s         , %s             , %s             , %s           , %s          , %s             , %s)",
-				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True, self.replay_gain, self.artist_tag))
+				(%s     , %s           , %s        , %s                   , %s       , %s           , %s         , %s               , %s              , %s       , %s             , %s             , %s           , %s          , %s             , %s)",
+				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], self.data['track_number'], self.data['disc_number'], self.data['year'], self.data['origin_sid'], file_mtime, True, True, self.replay_gain, self.artist_tag))
 			self.verified = True
 			self.data['added_on'] = int(time.time())
 
@@ -534,6 +552,9 @@ class Song(object):
 		d['elec_blocked'] = self.data['elec_blocked']
 		d['elec_blocked_by'] = self.data['elec_blocked_by']
 		d['length'] = self.data['length']
+		d['track_number'] = self.data['track_number']
+		d['disc_number'] = self.data['disc_number']
+		d['year'] = self.data['year']
 
 		d['artists'] = []
 		d['albums'] = []

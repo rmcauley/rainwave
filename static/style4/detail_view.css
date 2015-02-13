@@ -182,6 +182,16 @@ td.songlist_length {
 	padding-right: 5px;
 }
 
+td.songlist_disc_number {
+	width: 8px;
+	text-align: right;
+}
+
+td.songlist_track_number {
+	width: 15px;
+	text-align: right;
+}
+
 td.songlist_url {
 	width: 15px;
 }

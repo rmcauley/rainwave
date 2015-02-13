@@ -127,6 +127,7 @@ class SQLiteCursor(object):
 			query = query.replace("%s", "?")
 		query = query.replace("TRUE", "1")
 		query = query.replace("FALSE", "0")
+		query = query.replace("NULLS FIRST", "")
 		query = query.replace("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP)", "(strftime('%s','now'))")
 		return query
 
@@ -285,6 +286,7 @@ def create_tables():
 			album_id				SERIAL		PRIMARY KEY, \
 			album_name				TEXT		, \
 			album_name_searchable	TEXT 		NOT NULL, \
+			album_year				SMALLINT, \
 			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
 		)")
 
@@ -302,6 +304,9 @@ def create_tables():
 			song_url					TEXT		, \
 			song_link_text				TEXT		, \
 			song_length					SMALLINT	, \
+			song_track_number			SMALLINT	, \
+			song_disc_number			SMALLINT	, \
+			song_year				SMALLINT	, \
 			song_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 			song_rating					REAL		DEFAULT 0, \
 			song_rating_count			INTEGER		DEFAULT 0, \

@@ -57,6 +57,7 @@ var DetailView = function() {
 			}
 		}
 		visible_view = null;
+		DeepLinker.reload_view();
 	};
 
 	var create = function(type, id, render_function, json) {

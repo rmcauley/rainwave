@@ -66,6 +66,9 @@ var AlbumView = function(view, json) {
 	var cnvs = d.appendChild($el("canvas", { "width": 100, "height": 80 }));
 	AlbumViewRatingPieChart(cnvs.getContext("2d"), json);
 
+	if (json.year && ("year" in SITE_CONFIG.album_view_columns)) {
+		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_year", { "year": json.year }) }));
+	}
 	if (json.rating > 0) {
 		d.appendChild($el("div", { "class": "albumview_info", "textContent": $l("album_rating_ranked_at_v2", { "rating": json.rating, "rating_count": json.num_song_ratings, "rank": json.rating_rank }) }));
 	}
@@ -90,11 +93,11 @@ var AlbumView = function(view, json) {
 		}
 		for (i in s) {
 			view.el.appendChild($el("h2", { "textContent": $l("songs_from", { "station": $l("station_name_" + i) }) }));
-			view.el.appendChild(SongsTable(s[i], [ "title", "artists", "length", "rating", "cool_end" ]));
+			view.el.appendChild(SongsTable(s[i], SITE_CONFIG.album_view_columns));
 		}
 	}
 	else {
-		view.el.appendChild(SongsTable(json.songs, [ "title", "artists", "length", "rating", "cool_end" ]));
+		view.el.appendChild(SongsTable(json.songs, SITE_CONFIG.album_view_columns));
 	}
 	return view.el;
 };

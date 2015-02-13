@@ -26,6 +26,11 @@ var DeepLinker = function() {
 		}
 	};
 
+	self.reload_view = function() {
+		old_url = null;
+		self.detect_url_change();
+	};
+
 	self.open_route = function(route, args) {
 		if (route in routes) {
 			if (!routes[route].apply(this, args)) {
