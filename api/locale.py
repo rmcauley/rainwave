@@ -129,9 +129,8 @@ class RainwaveLocale(tornado.locale.Locale):
 			if codes[i] in translations:
 				return translations[codes[i]]
 
-			parts = codes[i].split("_")
 			for locale_name, translation in translations.iteritems():
-				if parts[0] == locale_name[:2]:
+				if codes[i][:2] == locale_name[:2]:
 					return translation
 
 		return translations['en_CA']
