@@ -1,7 +1,6 @@
 import argparse
 import os
 import sys
-import json
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
@@ -22,13 +21,13 @@ if __name__ == "__main__":
 
 	db.connect()
 	cache.connect()
-	
+
 	print "Adding columns to database..."
 
-	db.c.update("ALTER TABLE r4_albums ADD album_year SMALLINT");
-	db.c.update("ALTER TABLE r4_songs ADD song_track_number SMALLINT");
-	db.c.update("ALTER TABLE r4_songs ADD song_disc_number SMALLINT");
-	db.c.update("ALTER TABLE r4_songs ADD song_year SMALLINT");
+	db.c.update("ALTER TABLE r4_albums ADD album_year SMALLINT")
+	db.c.update("ALTER TABLE r4_songs ADD song_track_number SMALLINT")
+	db.c.update("ALTER TABLE r4_songs ADD song_disc_number SMALLINT")
+	db.c.update("ALTER TABLE r4_songs ADD song_year SMALLINT")
 
 	for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums ORDER BY album_id"):
 		a = Album.load_from_id(album_id)
