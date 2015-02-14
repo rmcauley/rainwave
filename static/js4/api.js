@@ -11,6 +11,7 @@ var API = function() {
 	var mobile_syncing;
 
 	var self = {};
+	self.paused = false;
 
 	self.initialize = function(n_sid, n_url, n_user_id, n_api_key, json) {
 		sid = n_sid;
@@ -160,6 +161,26 @@ var API = function() {
 		}
 	};
 
+	var check_sync_results = function(response) {
+		if ("info_result" in response) {
+			response.sync_result = response.info_result;
+		}
+		if (("sync_result" in response) && (response.sync_result.tl_key == "station_offline")) {
+			ErrorHandler.permanent_error(response.sync_result);
+			offline_ack = true;
+			self.paused = false;
+			return true;
+		}
+		else {
+			ErrorHandler.remove_permanent_error("station_offline");
+		}
+		if (("sync_result" in response) && (response.sync_result.tl_key == "station_paused")) {
+			self.paused = true;
+			return true;
+		}
+		return false;
+	}
+
 	var sync_complete = function() {
 		clear_sync_timeout_error_removal_timeout();
 		if (sync_stopped) {
@@ -175,12 +196,11 @@ var API = function() {
 		var sync_restart_pause = 3000;
 		var response = JSON.parse(sync.responseText);
 
-		if (("sync_result" in response) && (response.sync_result.tl_key == "station_offline")) {
-			ErrorHandler.permanent_error(response.sync_result);
-			offline_ack = true;
+		if (check_sync_results(response)) {
 			sync_restart_pause = 0;
 		}
 		else {
+			self.paused = false;
 			sync_error_count = 0;
 			offline_ack = false;
 			perform_callbacks(response);
@@ -193,7 +213,6 @@ var API = function() {
 			}
 			else {
 				clear_sync_timeout_error();
-				ErrorHandler.remove_permanent_error("station_offline");
 			}
 		}
 
@@ -212,7 +231,7 @@ var API = function() {
 				async.abort();
 			}
 			mobile_syncing = true;
-			self.async_get("info");
+			self.async_get("info", { "sync_messages": true });
 		}
 	};
 
@@ -233,16 +252,23 @@ var API = function() {
 	};
 
 	var async_complete = function() {
-		var json = JSON.parse(async.responseText);
-		perform_callbacks(json);
-		if (async_callback) {
-			async_callback(json);
-			async_callback = null;
-		}
 		ErrorHandler.remove_permanent_error("async_error");
+		var json = JSON.parse(async.responseText);
+		if (mobile_syncing && check_sync_results(json)) {
+			// do nothing if there were special status updates
+		}
+		else {
+			perform_callbacks(json);
+			if (async_callback) {
+				async_callback(json);
+				async_callback = null;
+			}
+			if (MOBILE && mobile_syncing) {
+				perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
+			}
+		}
 		if (MOBILE && mobile_syncing) {
-			mobile_syncing = false;
-			perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
+			mobile_syncing = false;	
 			ErrorHandler.remove_permanent_error("mobile_sync_retrying");
 		}
 		self.async_get();
@@ -271,6 +297,7 @@ var API = function() {
 		console.log(async);
 		console.log(async.readyState);
 		console.log(async_queue);
+		console.log("paused? " + self.paused);
 	};
 
 	var perform_callbacks = function(json) {

@@ -62,12 +62,27 @@ var Clock = function() {
 			self.pageclock_bar_function(page_title_end, self.now);
 		}
 
-		if (!MOBILE && force_sync_ok && (page_title_end - self.now < -10)) {
+		// what to do if things appear broken
+		// if the station isn't on a DJ pause, immediately restart the connection
+		// this works for flaky routers/ISPs
+		if (!MOBILE && !API.paused && force_sync_ok && (page_title_end - self.now < -10)) {
 			force_sync_ok = false;
 			API.force_sync();
 			return;
 		}
-		else if (MOBILE && (page_title_end < self.now) && (Math.abs(page_title_end - self.now) % 5 === 0)) {
+		// check every 3 minutes regardless as a backup
+		else if (!MOBILE && !force_sync_ok && (Math.abs(page_title_end - self.now) % 180 === 0)) {
+			API.force_sync();
+			return;
+		}
+		// for mobile users reload the page 5 seconds after things have loaded
+		else if (MOBILE && force_sync_ok && (page_title_end < self.now) && (Math.abs(page_title_end - self.now) % 5 === 0)) {
+			force_sync_ok = false;
+			API.force_sync();
+			return;
+		}
+		// and check every 20 seconds thereafter
+		else if (MOBILE && !force_sync_ok && (page_title_end < self.now) && (Math.abs(page_title_end + 5 - self.now) % 20 === 0)) {
 			API.force_sync();
 			return;
 		}

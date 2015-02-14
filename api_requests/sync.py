@@ -242,8 +242,7 @@ class Sync(APIHandler):
 	def post(self):
 		global sessions
 
-		if not cache.get_station(self.sid, "backend_ok") and not self.get_argument("offline_ack"):
-			raise APIException("station_offline")
+		api_requests.info.check_sync_status(self.sid, self.get_argument("offline_ack"))
 
 		self.set_header("Content-Type", "application/json")
 

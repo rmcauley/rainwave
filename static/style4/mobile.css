@@ -8,10 +8,6 @@ html, body, body.small_screen {
 	overflow: visible !important;
 }
 
-#messages {
-	position: relative !important;
-}
-
 #lists, #detail_scrollblock, #top_icons, #main_icons, #requests_scrollblock  {
 	display: none !important;
 }

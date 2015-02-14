@@ -87,15 +87,28 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 
 	request.append("all_stations_info", cache.get("all_stations_info"))
 
+def check_sync_status(sid, offline_ack=False):
+	if not cache.get_station(sid, "backend_ok") and not offline_ack:
+		raise APIException("station_offline")
+	if cache.get_station(sid, "backend_paused"):
+		raise APIException("station_paused")
+
 @test_post
 @handle_api_url("info")
 class InfoRequest(APIHandler):
 	auth_required = False
 	description = "Returns current user and station information."
-	fields = { "all_albums": (fieldtypes.boolean, False), "current_listeners": (fieldtypes.boolean, False) }
+	fields = { 
+		"all_albums": (fieldtypes.boolean, False),
+		"current_listeners": (fieldtypes.boolean, False),
+		"sync_messages": (fieldtypes.boolean, None)
+	}
 	allow_get = True
 
 	def post(self):
+		if self.get_argument("sync_messages"):
+			check_sync_status(self.sid)
+		
 		attach_info_to_request(self)
 
 @handle_api_url("info_all")
