@@ -458,6 +458,7 @@ def create_tables():
 			sched_type				TEXT		, \
 			sched_name				TEXT		, \
 			sched_url				TEXT 		, \
+			sched_dj_user_id        INT         , \
 			sid						SMALLINT	NOT NULL, \
 			sched_public			BOOLEAN		DEFAULT TRUE, \
 			sched_timed				BOOLEAN		DEFAULT TRUE, \
@@ -471,6 +472,7 @@ def create_tables():
 	c.create_idx("r4_schedule", "sched_in_progress")
 	c.create_idx("r4_schedule", "sched_public")
 	c.create_idx("r4_schedule", "sched_start_actual")
+	c.create_delete_fk("r4_schedule", "phpbb_users", "sched_dj_user_id")
 
 	c.update(" \
 		CREATE TABLE r4_elections ( \

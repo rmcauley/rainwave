@@ -56,7 +56,7 @@ class ElectionProducer(event.BaseProducer):
 			return elec
 		else:
 			return self._create_election(target_length, skip_requests)
-	#pylint: enable=W0612
+	#pylint: enable=W0221
 
 	def load_event_in_progress(self):
 		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s ORDER BY elec_id DESC LIMIT 1", (self.elec_type, self.sid))
@@ -64,6 +64,7 @@ class ElectionProducer(event.BaseProducer):
 			elec = self.elec_class.load_by_id(elec_id)
 			elec.name = self.name
 			elec.url = self.url
+			elec.dj_user_id = self.dj_user_id
 			return elec
 		else:
 			return self.load_next_event()
@@ -75,6 +76,7 @@ class ElectionProducer(event.BaseProducer):
 			elec = self.elec_class.create(self.sid)
 			elec.url = self.url
 			elec.name = self.name
+			elec.dj_user_id = self.dj_user_id
 			elec.fill(target_length, skip_requests)
 			if elec.length() == 0:
 				raise Exception("Created zero-length election.")

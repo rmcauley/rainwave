@@ -285,7 +285,7 @@ var API = function() {
 				async_callback = to_do.callback;
 				async.open("POST", url + to_do.action, true);
 				async.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-				to_do.params.sid = sid;
+				if (!to_do.params.sid) to_do.params.sid = sid;
 				to_do.params.user_id = user_id;
 				to_do.params.key = api_key;
 				async.send(self.serialize(to_do.params));

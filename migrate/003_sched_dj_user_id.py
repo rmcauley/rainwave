@@ -11,7 +11,7 @@ from rainwave.playlist_objects.album import Album
 from rainwave.playlist_objects.album import clear_updated_albums
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description="Rainwave DB migration script for using dates from ID3 tags.")
+	parser = argparse.ArgumentParser(description="Rainwave DB migration script for adding DJ support.")
 	parser.add_argument("--config", default=None)
 	args = parser.parse_args()
 	config.load(args.config)
@@ -24,14 +24,7 @@ if __name__ == "__main__":
 
 	print "Adding columns to database..."
 
-	db.c.update("ALTER TABLE r4_albums ADD album_year SMALLINT")
-	db.c.update("ALTER TABLE r4_songs ADD song_track_number SMALLINT")
-	db.c.update("ALTER TABLE r4_songs ADD song_disc_number SMALLINT")
-	db.c.update("ALTER TABLE r4_songs ADD song_year SMALLINT")
-
-	for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums ORDER BY album_id"):
-		a = Album.load_from_id(album_id)
-		# Will update the album year
-		a.reconcile_sids()
+	db.c.update("ALTER TABLE r4_schedule ADD sched_dj_user_id INT")
+	db.c.create_delete_fk("r4_schedule", "phpbb_users", "sched_dj_user_id")
 
 	print "Done"

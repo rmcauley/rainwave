@@ -16,6 +16,7 @@ from api.exceptions import APIException
 from libs import config
 from libs import log
 from libs import db
+from libs import cache
 
 # This is the Rainwave API main handling request class.  You'll inherit it in order to handle requests.
 # Does a lot of form checking and validation of user/etc.  There's a request class that requires no authentication at the bottom of this module.
@@ -69,10 +70,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	tunein_required = False
 	# Validate user's logged in status first.
 	login_required = False
+	# User must be a DJ for the next, current, or history[0] event
+	dj_required = False
 	# Validate user is a station administrator.
 	admin_required = False
-	# Validate user is currently DJing.
-	dj_required = False
 	# Do we need a valid SID as part of the submitted form?
 	sid_required = True
 	# Description string for documentation.
@@ -165,7 +166,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		else:
 			self.return_name = self.return_name
 
-		if self.admin_required or self.dj_required:
+		if self.admin_required:
 			self.login_required = True
 
 		if 'in_order' in self.request.arguments:
@@ -224,8 +225,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			raise APIException("tunein_required", http_code=403)
 		if self.admin_required and (not self.user or not self.user.is_admin()):
 			raise APIException("admin_required", http_code=403)
-		if self.dj_required and (not self.user or not self.user.is_dj()):
-			raise APIException("dj_required", http_code=403)
 		if self.perks_required and (not self.user or not self.user.has_perks()):
 			raise APIException("perks_required", http_code=403)
 
@@ -233,6 +232,21 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			raise APIException("auth_required", http_code=403)
 		elif self.unlocked_listener_only and self.user.data['lock'] and self.user.data['lock_sid'] != self.sid:
 			raise APIException("unlocked_only", station=config.station_id_friendly[self.user.data['lock_sid']], lock_counter=self.user.data['lock_counter'], http_code=403)
+
+		if self.dj_required and not self.user:
+			raise APIException("dj_required", http_code=403)
+		if self.dj_required and not self.user.is_admin():
+			#pylint: disable=E1103
+			potential_dj_ids = []
+			if cache.get_station(self.sid, "sched_current") and cache.get_station(self.sid, "sched_current").dj_user_id:
+				potential_dj_ids.append(cache.get_station(self.sid, "sched_current").dj_user_id)
+			if cache.get_station(self.sid, "sched_next") and cache.get_station(self.sid, "sched_next")[0].dj_user_id:
+				potential_dj_ids.append(cache.get_station(self.sid, "sched_next")[0].dj_user_id)
+			if cache.get_station(self.sid, "sched_history") and cache.get_station(self.sid, "sched_history")[-1].dj_user_id:
+				potential_dj_ids.append(cache.get_station(self.sid, "sched_history")[-1].dj_user_id)
+			if not self.user.id in potential_dj_ids:
+				raise APIException("dj_required", http_code=403)
+			#pylint: enable=E1103
 
 	def do_phpbb_auth(self):
 		phpbb_cookie_name = config.get("phpbb_cookie_name")

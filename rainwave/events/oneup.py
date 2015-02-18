@@ -25,6 +25,7 @@ class OneUpProducer(event.BaseProducer):
 			up.name = self.name
 			up.url = up.url
 			up.core_event_id = self.id
+			up.dj_user_id = self.dj_user_id
 			return up
 		else:
 			db.c.update("UPDATE r4_schedule SET sched_used = TRUE WHERE sched_id = %s", (self.id,))
@@ -65,6 +66,7 @@ class OneUpProducer(event.BaseProducer):
 			up.name = self.name
 			up.url = self.url
 			up.core_event_id = self.id
+			up.dj_user_id = self.dj_user_id
 			return up
 		else:
 			return None
