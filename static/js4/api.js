@@ -231,7 +231,7 @@ var API = function() {
 				async.abort();
 			}
 			mobile_syncing = true;
-			self.async_get("info", { "sync_messages": true });
+			self.async_get("info", { "status": true });
 		}
 	};
 
@@ -268,7 +268,7 @@ var API = function() {
 			}
 		}
 		if (MOBILE && mobile_syncing) {
-			mobile_syncing = false;	
+			mobile_syncing = false;
 			ErrorHandler.remove_permanent_error("mobile_sync_retrying");
 		}
 		self.async_get();

@@ -98,17 +98,17 @@ def check_sync_status(sid, offline_ack=False):
 class InfoRequest(APIHandler):
 	auth_required = False
 	description = "Returns current user and station information."
-	fields = { 
+	fields = {
 		"all_albums": (fieldtypes.boolean, False),
 		"current_listeners": (fieldtypes.boolean, False),
-		"sync_messages": (fieldtypes.boolean, None)
+		"status": (fieldtypes.boolean, None)
 	}
 	allow_get = True
 
 	def post(self):
-		if self.get_argument("sync_messages"):
+		if self.get_argument("status"):
 			check_sync_status(self.sid)
-		
+
 		attach_info_to_request(self)
 
 @handle_api_url("info_all")
