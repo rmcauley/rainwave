@@ -54,11 +54,12 @@ class BaseProducer(object):
 		p.use_crossfade = row['sched_use_crossfade']
 		p.use_tag_suffix = row['sched_use_tag_suffix']
 		p.url = row['sched_url']
+		p.dj_user_id = row['sched_dj_user_id']
 		p.load()
 		return p
 
 	@classmethod
-	def create(cls, sid, start, end, name = None, public = True, timed = True, url = None, use_crossfade = True, use_tag_suffix = True):
+	def create(cls, sid, start, end, name = None, public = True, timed = True, url = None, use_crossfade = True, use_tag_suffix = True, dj_user_id = None):
 		evt = cls(sid)
 		evt.id = db.c.get_next_id("r4_schedule", "sched_id")
 		evt.start = start
@@ -70,10 +71,11 @@ class BaseProducer(object):
 		evt.url = url
 		evt.use_crossfade = use_crossfade
 		evt.use_tag_suffix = use_tag_suffix
+		evt.dj_user_id = dj_user_id
 		db.c.update("INSERT INTO r4_schedule "
-					"(sched_id, sched_start, sched_end, sched_type, sched_name, sid, sched_public, sched_timed, sched_url, sched_use_crossfade, sched_use_tag_suffix) VALUES "
-					"(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-					(evt.id, evt.start, evt.end, evt.type, evt.name, evt.sid, evt.public, evt.timed, evt.url, evt.use_crossfade, evt.use_tag_suffix))
+					"(sched_id, sched_start, sched_end, sched_type, sched_name, sid, sched_public, sched_timed, sched_url, sched_use_crossfade, sched_use_tag_suffix, sched_dj_user_id) VALUES "
+					"(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+					(evt.id, evt.start, evt.end, evt.type, evt.name, evt.sid, evt.public, evt.timed, evt.url, evt.use_crossfade, evt.use_tag_suffix, evt.dj_user_id))
 		return evt
 
 	def __init__(self, sid):
@@ -94,6 +96,7 @@ class BaseProducer(object):
 		self.use_tag_suffix = True
 		self.plan_ahead_limit = 1
 		self.songs = None
+		self.dj_user_id = None
 
 	def change_start(self, new_start):
 		if not self.used:
