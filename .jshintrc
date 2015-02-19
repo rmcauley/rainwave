@@ -1,9 +1,49 @@
 {
   "globals": {
-    "console": true
+    "console": true,
+
+    "ADMIN": true,
+    "MOBILE": true,
+    "BOOTSTRAP": true,
+    "PLAYLIST_ITEM_HEIGHT": true,
+    "INITIALIZED": true,
+
+    "$id": true,
+    "$el": true,
+    "$l": true,
+    "$add_class": true,
+    "$remove_class": true,
+    "$toggle_class": true,
+    "$has_class": true,
+
+    "Schedule": true,
+    "Fx": true,
+    "Scrollbar": true,
+    "PlaylistLists": true,
+    "Requests": true,
+    "DetailView": true,
+    "Prefs": true,
+    "TimelineSong": true,
+    "Chart": true,
+    "Menu": true,
+    "RatingControl": true,
+    "ErrorHandler": true,
+    "Clock": true,
+    "SettingsWindow": true,
+    "R4Notify": true,
+    "API": true,
+    "R4Audio": true,
+    "DeepLinker": true,
+    "AboutWindow": true,
+    "FastClick": true
   },
 
+  "browser": true,
   "newcap": false,
   "quotmark": true,
-  "loopfunc": true
+  "jquery": true,
+  "loopfunc": true,
+  "undef": true,
+  "unused": "vars",
+  "strict": true
 }
