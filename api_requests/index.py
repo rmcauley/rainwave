@@ -12,9 +12,7 @@ from api_requests import info
 
 from libs import config
 from libs import buildtools
-from libs import db
 from rainwave.user import User
-from rainwave.events.event import BaseProducer
 
 @handle_url("/blank")
 class Blank(api.web.HTMLRequest):
@@ -81,23 +79,9 @@ class BetaRedirect(tornado.web.RequestHandler):
 @handle_url("/beta/")
 class BetaIndex(MainIndex):
 	beta = True
+	page_template = "r4_index.html"
 
 	def prepare(self):
 		if not config.get("public_beta"):
 			self.perks_required = True
-		return super(BetaIndex, self).prepare()
-
-@handle_url("/admin2/")
-class Admin2Index(MainIndex):
-	page_template = "r4_admin.html"
-	dj_required = True
-
-	def get(self):
-		producers = []
-		if self.user.is_admin():
-			for sched_id in db.c.fetch_list("SELECT sched_id FROM r4_schedule WHERE sched_used = 0"):
-				producers.append(BaseProducer.load_producer_by_id(sched_id).to_dict())
-		else:
-			for sched_id in db.c.fetch_list("SELECT sched_id FROM r4_schedule WHERE sched_dj_user_id = %s", (self.user.id,)):
-				producers.append(BaseProducer.load_producer_by_id(sched_id).to_dict())
-		return super(Admin2Index, self).get()
+		super(BetaIndex, self).prepare()
