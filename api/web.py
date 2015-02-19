@@ -98,7 +98,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	def __init__(self, *args, **kwargs):
 		super(RainwaveHandler, self).__init__(*args, **kwargs)
 		self.cleaned_args = {}
-		self.cookie_prefs = {}
 		self.sid = None
 		self._startclock = time.time()
 		self.user = None
@@ -218,6 +217,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self.user.ip_address = self.request.remote_ip
 
 		self.user.refresh(self.sid)
+
+		if self.user and config.get("store_prefs"):
+			self.user.save_preferences(self.request.remote_ip, self.get_cookie("r4_prefs", None))
 
 		if self.login_required and (not self.user or self.user.is_anonymous()):
 			raise APIException("login_required", http_code=403)

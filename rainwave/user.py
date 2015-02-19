@@ -2,6 +2,7 @@ import time
 import re
 import random
 import string
+import urllib2
 
 from libs import log
 from libs import cache
@@ -433,3 +434,27 @@ class User(object):
 		# this function updates the API key cache for us
 		self.get_all_api_keys()
 		return api_key
+
+	def save_preferences(self, ip_addr, prefs_json_string):
+		if not config.get("store_prefs") or not prefs_json_string:
+			return
+		if not db.c.is_postgres:
+			return
+
+		try:
+			prefs_json_string = urllib2.unquote(prefs_json_string)
+			if self.id > 1:
+				if not db.c.fetch_var("SELECT COUNT(*) FROM r4_pref_storage WHERE user_id = %s", (self.id,)):
+					db.c.update("INSERT INTO r4_pref_storage (user_id, prefs) VALUES (%s, %s::jsonb)", (self.id, prefs_json_string))
+				else:
+					db.c.update("UPDATE r4_pref_storage SET prefs = %s::jsonb WHERE user_id = %s", (prefs_json_string, self.id))
+			else:
+				if not db.c.fetch_var("SELECT COUNT(*) FROM r4_pref_storage WHERE ip_address = %s AND user_id = %s", (ip_addr, self.id)):
+					db.c.update("INSERT INTO r4_pref_storage (user_id, ip_address, prefs) VALUES (%s, %s, %s::jsonb)", (self.id, ip_addr, prefs_json_string))
+				else:
+					db.c.update("UPDATE r4_pref_storage SET prefs = %s::jsonb WHERE ip_address = %s AND user_id = %s", (prefs_json_string, ip_addr, self.id))
+		except Exception as e:
+			if 'username' in self.data:
+				log.exception("store_prefs", "Could not store user preferences for %s (ID %s)" % (self.data['username'], self.id), e)
+			else:
+				log.exception("store_prefs", "Could not store user preferences for anonymous user from IP %s" % ip_addr, e)

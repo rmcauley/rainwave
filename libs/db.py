@@ -59,15 +59,19 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 	def get_next_id(self, table, column):
 		return self.fetch_var("SELECT nextval('" + table + "_" + column + "_seq'::regclass)")
 
-	def create_delete_fk(self, linking_table, foreign_table, key, create_idx = True):
+	def create_delete_fk(self, linking_table, foreign_table, key, create_idx = True, foreign_key = None):
+		if not foreign_key:
+			foreign_key = key
 		if create_idx:
 			self.create_idx(linking_table, key)
-		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE CASCADE" % (linking_table, linking_table, key, key, foreign_table, key))
+		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE CASCADE" % (linking_table, linking_table, key, key, foreign_table, foreign_key))
 
-	def create_null_fk(self, linking_table, foreign_table, key, create_idx = True):
+	def create_null_fk(self, linking_table, foreign_table, key, create_idx = True, foreign_key = None):
+		if not foreign_key:
+			foreign_key = key
 		if create_idx:
 			self.create_idx(linking_table, key)
-		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE SET NULL" % (linking_table, linking_table, key, key, foreign_table, key))
+		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE SET NULL" % (linking_table, linking_table, key, key, foreign_table, foreign_key))
 
 	def create_idx(self, table, *args):
 		#pylint: disable=W0141
@@ -128,6 +132,7 @@ class SQLiteCursor(object):
 		query = query.replace("TRUE", "1")
 		query = query.replace("FALSE", "0")
 		query = query.replace("NULLS FIRST", "")
+		query = query.replace("JSONB", "TEXT")
 		query = query.replace("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP)", "(strftime('%s','now'))")
 		return query
 
@@ -204,10 +209,10 @@ class SQLiteCursor(object):
 	def fetchall(self):
 		return self.cur.fetchall()
 
-	def create_delete_fk(self, linking_table, foreign_table, key, create_idx = True):
+	def create_delete_fk(self, *args, **kwargs):
 		pass
 
-	def create_null_fk(self, linking_table, foreign_table, key, create_idx = True):
+	def create_null_fk(self, *args, **kwargs):
 		pass
 
 	def create_idx(self, table, *args):
@@ -472,7 +477,7 @@ def create_tables():
 	c.create_idx("r4_schedule", "sched_in_progress")
 	c.create_idx("r4_schedule", "sched_public")
 	c.create_idx("r4_schedule", "sched_start_actual")
-	c.create_delete_fk("r4_schedule", "phpbb_users", "sched_dj_user_id")
+	c.create_delete_fk("r4_schedule", "phpbb_users", "sched_dj_user_id", foreign_key="user_id", create_idx=False)
 
 	c.update(" \
 		CREATE TABLE r4_elections ( \
@@ -663,6 +668,17 @@ def create_tables():
 		)")
 	c.create_idx("r4_song_history", "sid")
 	c.create_delete_fk("r4_song_history", "r4_songs", "song_id")
+
+	try:
+		c.update(" \
+			CREATE TABLE r4_pref_storage ( \
+				user_id 				INT 		, \
+				ip_address 				TEXT 		, \
+				prefs 					JSONB \
+			)")
+		c.create_delete_fk("r4_pref_storage", "phpbb_users", "user_id")
+	except:
+		log.critical("init_db", "Could not create r4_pref_storage - feature requires Pg 9.4 or higher.  See README.")
 
 	if config.get("standalone_mode"):
 		_fill_test_tables()

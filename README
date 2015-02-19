@@ -64,6 +64,13 @@ song_dirs configuration in your rainwave.conf to point to your collection.
 Tags are important!
 
 $ python db_init.py
+
+You may get an error message: "Could not create r4_pref_storage"
+This is because you are running Postgres 9.3 or lower.  See the section
+later on in the readme regarding the store_prefs option.
+
+Now run:
+
 $ python rw_scanner.py --full
 
 Once done, run the backend (rw_backend.py) and the API (rw_api.py)
@@ -109,3 +116,20 @@ disable: [
 ignore: [
 	"C", "R", "I"
 ]
+
+== About store_prefs option and Postgres 9.4
+
+The store_prefs option relies on the JSONB field type
+introduced in Postgres 9.4.
+
+If you use 9.3 or lower and don't want to use this feature, you are good to go.
+
+If you want to use this feature and:
+	- Initialized Rainwave's DB on Pg 9.4 or higher
+		- Enable the option
+		- You're good to go.
+	- Initialized on Pg 9.3 or lower
+		- Upgrade to 9.4 first
+		- Run migrate/004_pref_storage.py
+		- Enable the option
+		- You're good to go.
