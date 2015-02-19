@@ -1,4 +1,7 @@
 import re
+import time
+from datetime import datetime
+
 from libs import config
 from libs import db
 import rainwave.events.event
@@ -309,3 +312,13 @@ def group_id(s, request = None):
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_groups WHERE group_id = %s", (gid,)) == 0:
 		return None
 	return gid
+
+date_error = "must be valid ISO 8601 date. (YYYY-MM-DD)"
+def date(s, request = None):
+	if not s:
+		return None
+	try:
+		dt = datetime.strptime(s, "%Y-%m-%d")
+		return time.mktime(dt.timetuple())
+	except Exception:
+		return None

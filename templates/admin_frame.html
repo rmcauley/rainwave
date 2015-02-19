@@ -53,7 +53,6 @@
 	function change_screen() {
 		lyre.setStationID(current_station);
 		window.frames.tool.location.href = "tools/" + current_tool + "?sid=" + current_station;
-		var new_selector_url = 
 		window.frames.selector.location.href = "album_list/" + current_tool + "?sid=" + current_station + "&restrict=" + current_restriction;
 
 		var t = window.frames.tool_list.document.getElementsByTagName("a");
@@ -61,7 +60,7 @@
 			if (t[i].id == current_tool) t[i].style.background = "#006";
 			else t[i].style.background = "#000";
 		}
-		
+
 		var s = window.frames.station_list.document.getElementsByTagName("a");
 		for (var i = 0; i < s.length; i++) {
 			if (s[i].id == "sid_" + current_station) s[i].style.background = "#006";

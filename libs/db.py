@@ -548,7 +548,7 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_listener_counts ( \
 			lc_time					INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-			sid					SMALLINT	NOT NULL, \
+			sid						SMALLINT	NOT NULL, \
 			lc_guests				SMALLINT	, \
 			lc_users				SMALLINT	, \
 			lc_users_active				SMALLINT	, \
