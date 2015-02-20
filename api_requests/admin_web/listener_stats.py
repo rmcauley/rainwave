@@ -27,7 +27,7 @@ station_colors = {
 class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
 	def get(self):	#pylint: disable=E0202,W0221
 		self.write(self.render_string("bare_header.html", title="Listener Stats"))
-		self.write("<script src=\"//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.1-beta.2/Chart.min.js\" type=\"application/javascript\"></script>")
+		self.write("<script src=\"//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.1/Chart.min.js\" type=\"application/javascript\"></script>")
 		self.write("<script src=\"/static/js4_admin/Chart.StackedBar.js\" type=\"application/javascript\"></script>")
 		self.write("<script>\n")
 		self.write("window.top.refresh_all_screens = false;")
@@ -43,7 +43,7 @@ class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
 
 			cdata = []
 			for stat in stats:
-				cdata.append(stats['lc_listeners'])
+				cdata.append(float(stat['lc_listeners']))
 
 			data["datasets"].append({
 				"label": config.station_id_friendly[sid],
@@ -61,16 +61,24 @@ class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
 				"cnvs.setAttribute('width', '800');\n"
 				"cnvs.setAttribute('height', '500');\n"
 				"document.body.appendChild(cnvs);\n"
-				"var chart = new Chart(cnvs.getContext('2d')).StackedBar(data);\n"
+				"var chart = new Chart(cnvs.getContext('2d')).StackedBar(data, { 'scaleLineColor': 'rgba(255,255,255,0.5)', 'showTooltips': true, 'multiTooltipTemplate': '<%= datasetLabel %>: <%= value %>' });\n"
 			"});"
 		)
 		self.write("\n</script>")
+
+		self.write("<h2>")
+		self.write(self.header_text)
+		self.write(": ")
+		self.write(datetime.datetime.fromtimestamp(self.date_start).strftime("%Y-%m-%d %H:%M"))
+		self.write(" - ")
+		self.write(datetime.datetime.fromtimestamp(self.date_end).strftime("%Y-%m-%d %H:%M"))
+		self.write("</h2>")
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/album_list/listener_stats")
 class ListenerStats(ListenerStatsBase, listener_stats.ListenerStats):
-	pass
+	header_text = "Listener Counts"
 
 @handle_url("/admin/album_list/listener_stats_aggregate")
 class ListenerStatsAggregate(ListenerStatsBase, listener_stats.ListenerStatsAggregate):
-	pass
+	header_text = "Listener Counts By Hour"
