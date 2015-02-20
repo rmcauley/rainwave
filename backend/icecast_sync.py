@@ -49,6 +49,7 @@ def _cache_relay_status():
 	for relay, relay_info in config.get("relays").iteritems():	#pylint: disable=W0612
 		relays[relay] = 0
 
+
 	for handler, data in in_process.iteritems():
 		if isinstance(data, list):
 			relays[handler.relay_name] += len(data)
@@ -69,7 +70,8 @@ def _count():
 		stations[sid] = 0
 
 	for handler, data in in_process.iteritems():
-		stations[handler.sid] += len(data)
+		if isinstance(data, list):
+			stations[handler.sid] += len(data)
 
 	for sid, listener_count in stations.iteritems():
 		log.debug("icecast_sync", "%s has %s listeners." % (config.station_id_friendly[sid], listener_count))
