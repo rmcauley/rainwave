@@ -376,7 +376,7 @@ var Schedule = function() {
 			w.removeChild(w.firstChild);
 		}
 
-		var t = SongsTable(json, [ "song_played_at", "title", "album_name", "artists", "rating" ]);
+		var t = SongsTable(json, [ "song_played_at", "title", "album_name", "artists", "rating" ], true);
 		w.appendChild(t);
 
 		Menu.show_modal($id("longhist_window_container"));

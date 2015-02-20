@@ -7,9 +7,9 @@ var SongsTableSorting = function(a, b) {
 	return 0;
 };
 
-var SongsTable = function(songs, columns) {
+var SongsTable = function(songs, columns, no_sort) {
 	"use strict";
-	songs.sort(SongsTableSorting);
+	if (!no_sort) songs.sort(SongsTableSorting);
 	var el = $el("table", { "class": "songlist" });
 
 	var row, cell, cell2, cell3, r, i, div, div2, link, title_el, title_cell;
