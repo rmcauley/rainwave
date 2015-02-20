@@ -29,7 +29,7 @@ class ToolList(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Tool List"))
 		self.write("<b>Do:</b><br />")
 		# [ ( "Link Title", "admin_url" ) ]
-		for item in [ ("Scan Results", "scan_results"), ("Producers", "producers"), ("Producers (Meta)", "producers_all"), ("Power Hours", "power_hours"), ("DJ Elections", "dj_election"), ("Cooldown", "cooldown"), ("Request Only Songs", "song_request_only"), ("Donations", "donations"), ("Associate Groups", "associate_groups"), ("Disassociate Groups", "disassociate_groups"), ("Edit Groups", "group_edit") ]:
+		for item in [ ("Scan Results", "scan_results"), ("Producers", "producers"), ("Producers (Meta)", "producers_all"), ("Power Hours", "power_hours"), ("DJ Elections", "dj_election"), ("Cooldown", "cooldown"), ("Request Only Songs", "song_request_only"), ("Donations", "donations"), ("Associate Groups", "associate_groups"), ("Disassociate Groups", "disassociate_groups"), ("Edit Groups", "group_edit"), ("Listener Count", "listener_stats"), ("Listener Count [Wkly]", "listener_stats_aggregate") ]:
 			self.write("<a style='display: block' id=\"%s\" href=\"#\" onclick=\"top.current_tool = '%s'; top.change_screen();\">%s</a>" % (item[1], item[1], item[0]))
 		self.write(self.render_string("basic_footer.html"))
 
