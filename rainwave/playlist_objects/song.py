@@ -552,9 +552,12 @@ class Song(object):
 		d['elec_blocked'] = self.data['elec_blocked']
 		d['elec_blocked_by'] = self.data['elec_blocked_by']
 		d['length'] = self.data['length']
-		d['track_number'] = self.data['track_number']
-		d['disc_number'] = self.data['disc_number']
-		d['year'] = self.data['year']
+		if 'track_number' in self.data:
+			d['track_number'] = self.data['track_number']
+		if 'disc_number' in self.data:
+			d['disc_number'] = self.data['disc_number']
+		if 'year' in self.data:
+			d['year'] = self.data['year']
 
 		d['artists'] = []
 		d['albums'] = []
