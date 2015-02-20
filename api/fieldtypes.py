@@ -318,7 +318,13 @@ def date(s, request = None):
 	if not s:
 		return None
 	try:
-		dt = datetime.strptime(s, "%Y-%m-%d")
-		return time.mktime(dt.timetuple())
+		return datetime.strptime(s, "%Y-%m-%d")
 	except Exception:
 		return None
+
+date_as_epoch_error = "must be valid ISO 8601 date. (YYYY-MM-DD)"
+def date_as_epoch(s, request = None):
+	dt = date(s, request)
+	if not dt:
+		return None
+	return time.mktime(dt.timetuple())

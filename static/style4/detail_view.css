@@ -137,16 +137,16 @@ table.songlist tr:hover td {
 	background-color: $hovercolor;
 	border-bottom-color: $hovercolor-border;
 	@include no-transition();
+
+	div.songlist_title_text, div.songlist_artists_text, div.songlist_album_name_text {
+		white-space: normal;
+	}
 }
 
 div.songlist_title_text, div.songlist_artists_text, div.songlist_album_name_text {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-}
-
-div.songlist_title_text:hover, div.songlist_artists_text:hover, div.songlist_album_name_text:hover {
-	white-space: normal;
 }
 
 table.songlist img.link_external {
