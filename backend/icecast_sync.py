@@ -80,6 +80,8 @@ def _count():
 
 		_cache_relay_status()
 
+		# db.c.update("DELETE FROM r4_listener_counts WHERE lc_time <= %s", (current_time - config.get("trim_history_length"),))
+
 		in_process = {}
 	except Exception as e:
 		log.exception("icecast_sync", "Could not finish counting listeners.", e)
