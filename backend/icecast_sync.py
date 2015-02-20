@@ -65,21 +65,24 @@ def _count():
 
 	log.debug("icecast_sync", "All responses came back for counting.")
 
-	stations = {}
-	for sid in config.station_ids:
-		stations[sid] = 0
+	try:
+		stations = {}
+		for sid in config.station_ids:
+			stations[sid] = 0
 
-	for handler, data in in_process.iteritems():
-		if isinstance(data, list):
-			stations[handler.sid] += len(data)
+		for handler, data in in_process.iteritems():
+			if isinstance(data, list):
+				stations[handler.sid] += len(data)
 
-	for sid, listener_count in stations.iteritems():
-		log.debug("icecast_sync", "%s has %s listeners." % (config.station_id_friendly[sid], listener_count))
-		db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests) VALUES (%s, %s)", (sid, listener_count))
+		for sid, listener_count in stations.iteritems():
+			log.debug("icecast_sync", "%s has %s listeners." % (config.station_id_friendly[sid], listener_count))
+			db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests) VALUES (%s, %s)", (sid, listener_count))
 
-	_cache_relay_status()
+		_cache_relay_status()
 
-	in_process = {}
+		in_process = {}
+	except Exception as e:
+		log.exception("icecast_sync", "Could not finish counting listeners.", e)
 
 # Sync r4_listeners table with what's on the relay
 def _sync():
