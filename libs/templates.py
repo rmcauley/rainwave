@@ -18,23 +18,22 @@ from HTMLParser import HTMLParser
 # Also mucks with having shorthand versions of native
 # functions for minification.
 #
-# just know that it looks like Handlebars
-# except with no helpers available :P
-# and it's far less forgiving
-# and it is also severely restrictive:
-#    - ONE ELEMENT PER {{ }} TAG
-#    - DO NOT MULTI-LINE TEXT
+# It looks much like Handlebars.
+# Except you have no helper system.
+# And it is also severely restrictive:
+#    - ONLY ONE {{ }} IN ONE HTML ELEMENT
 #    - DO NOT MIX {{ }} TAGS AND TEXT IN THE SAME HTML ELEMENT
+#    - DO NOT MULTI-LINE TEXT
 #    - EACH {{# }} AND {{/ }} and {{> }} MUST BE ON ITS OWN LINE
 #
 # {{ @root.blah }}
-#    - access root content
+#    - access root context object
 # {{ $blahblah }}
-#    - raw JS output including $
+#    - use raw JS including $
 # {{ ^blahblah }}
-#    - raw JS output excluding ^
+#    - use raw JS output excluding ^
 #
-# it's dumb.  but it's fast.  really fast.  stupid fast.
+# It's dumb.  But it's fast.  Really fast.  Stupid fast.
 #
 ##########################################
 
@@ -60,13 +59,14 @@ class RainwaveParser(HTMLParser):
 	def __init__(self, template_name, *args, **kwargs):
 		HTMLParser.__init__(self, *args, **kwargs)
 		self.name = template_name
-		self.buffr = ""
-		self.buffr += "%s: function(ctx) {" % template_name
+		self.buffr =  "%s:function(ctx){" % template_name
 		self.buffr += "\"use strict\";"
-		self.buffr += "ctx = ctx || {};"
-		self.buffr += "if (!ctx.$template) ctx.$template = {};"
-		self.buffr += "var rctx = ctx;"
-		self.buffr += "if (!ctx.$template.root) ctx.$template.root = d.createDocumentFragment();"
+		self.buffr += "ctx=ctx||{};"
+		self.buffr += "if(!ctx.$template)ctx.$template={};"
+		self.buffr += "var rctx=ctx;"
+		self.buffr += "if(!ctx.$template.root)ctx.$template.root=d.createDocumentFragment();"
+		self.buffr += "var tr=ctx.$template.root;"
+		self.buffr += "tr.aC=tr.appendChild;"
 
 	def close(self, *args, **kwargs):
 		HTMLParser.close(self, *args, **kwargs)
@@ -80,19 +80,19 @@ class RainwaveParser(HTMLParser):
 
 	def handle_starttag(self, tag, attrs):
 		uid = _get_id()
-		self.buffr += "var %s = d.cE('%s');" % (uid, tag)
+		self.buffr += "var %s=d.cE('%s');" % (uid, tag)
 		self.handle_append(uid)
 		self.tree.append(uid)
 		for attr in attrs:
 			attr_val = self._parse_val(attr[1])
 			if attr[0] == "bind":
-				self.buffr += "ctx.$template.%s = %s;" % (attr_val.strip('"'), uid)
+				self.buffr += "ctx.$template.%s=%s;" % (attr_val.strip('"'), uid)
 			else:
-				self.buffr += "%s.sA('%s', %s);" % (uid, attr[0], attr_val)
+				self.buffr += "%s.sA('%s',%s);" % (uid, attr[0], attr_val)
 
 	def handle_append(self, uid):
 		if len(self.tree) == 0:
-			self.buffr += "rctx.$template.root.appendChild(%s);" % uid
+			self.buffr += "tr.aC(%s);" % uid
 		else:
 			self.buffr += "%s.aC(%s);" % (self.tree[-1], uid)
 
@@ -113,9 +113,9 @@ class RainwaveParser(HTMLParser):
 			elif data[:3] == "{{/" and data[-2:] == "}}":
 				self.handle_stack_pop(data[3:-2])
 			elif not len(self.tree):
-				self.buffr += "rctx.$template.root.textContent = %s;" % self._parse_val(data)
+				raise Exception("Tried to set textContent of root element.  Put text in an element. (\"%s\")" % data)
 			else:
-				self.buffr += "%s.textContent = %s;" % (self.tree[-1], self._parse_val(data))
+				self.buffr += "%s.textContent=%s;" % (self.tree[-1], self._parse_val(data))
 
 	def handle_stack_push(self, data):
 		args = data.strip().split(' ', 1)
@@ -130,7 +130,7 @@ class RainwaveParser(HTMLParser):
 			entry['name'] = "else"
 
 		entry['function_id'] = _get_id()
-		self.buffr += "var %s = function(ctx) {" % entry['function_id']
+		self.buffr += "var %s=function(ctx){" % entry['function_id']
 		self.stack.append(entry)
 
 	def handle_stack_pop(self, name):
@@ -156,8 +156,8 @@ class RainwaveParser(HTMLParser):
 
 	def handle_each(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
-		self.buffr += "for (var i = 0; i < %s.length; i++) {" % context_key
-		self.buffr += "if (!%s[i].$template) %s[i].$template = {};" % (context_key, context_key)
+		self.buffr += "for(var i= 0;i<%s.length;i++){" % context_key
+		self.buffr += "if(!%s[i].$template)%s[i].$template={};" % (context_key, context_key)
 		self.buffr += "%s(%s[i]);" % (function_id, context_key)
 		self.buffr += "}"
 
@@ -166,23 +166,23 @@ class RainwaveParser(HTMLParser):
 
 	def handle_if(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
-		self.buffr += "if (%s) %s(ctx);" % (context_key, function_id)
+		self.buffr += "if(%s)%s(ctx);" % (context_key, function_id)
 
 	def handle_else(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
-		self.buffr += "if (!(%s)) %s(ctx);" % (context_key, function_id)
+		self.buffr += "if(!(%s))%s(ctx);" % (context_key, function_id)
 
 	def handle_with(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
 		self.buffr += "%s(%s);" % (function_id, context_key)
 
 # def process_templates():
-print ("(function() { "
-		"var d = document;"
-		"d.cE = d.createElement;"
-		"Element.prototype.sA = Element.prototype.setAttribute;"
-		"Element.prototype.aC = Element.prototype.appendChild;"
-		"window.RWTemplates = {")
+print ("(function(){"
+		"var d=document;"
+		"d.cE=d.createElement;"
+		"Element.prototype.sA=Element.prototype.setAttribute;"
+		"Element.prototype.aC=Element.prototype.appendChild;"
+		"window.RWTemplates={"),
 parser = RainwaveParser("main")
 parser.feed(
 	'<h1 class="hello" bind="h1">Parse me!</h1>\n'
@@ -192,8 +192,8 @@ parser.feed(
 	'{{#with line[0]}}\n'
 	'<div style="color: red;">{{ title }}</div>'
 	'{{/with}}\n'
-	'{{#if true }}\n'
-	'blurgh\n'
+	'{{#if ^true }}\n'
+	'<span>blurgh</span>\n'
 	'{{/if}}\n'
 	'{{#if false }}\n'
 	'<div>This is a positive.</div>\n'
@@ -201,5 +201,5 @@ parser.feed(
 	'<div>This is a negative!</div>\n'
 	'{{/if}}\n'
 )
-print parser.close()
-print "}; })();"
+print parser.close(),
+print "};})();"
