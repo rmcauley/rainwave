@@ -294,7 +294,7 @@ def _trim(sid):
 	db.c.update("DELETE FROM r4_schedule WHERE sched_start_actual <= %s", (current_time - config.get("trim_event_age"),))
 	db.c.update("DELETE FROM r4_elections WHERE elec_start_actual <= %s", (current_time - config.get("trim_election_age"),))
 	max_history_id = db.c.fetch_var("SELECT MAX(songhist_id) FROM r4_song_history")
-	db.c.update("DELETE FROM r4_song_history WHERE songhist_id <= %s", (max_history_id - config.get("trim_history_length"),))
+	db.c.update("DELETE FROM r4_song_history WHERE songhist_id <= %s AND sid = %s", (max_history_id - config.get("trim_history_length"), sid))
 
 def _update_schedule_memcache(sid):
 	cache.set_station(sid, "sched_current", current[sid], True)
