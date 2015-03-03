@@ -3,7 +3,7 @@ var GroupView = function(view, json) {
 	view.el.appendChild($el("h1", { "textContent": json.name }));
 
 	var all_tables = [];
-	var subheader, o;
+	var subheader;
 	for (var album_id in json.all_songs_for_sid) {
 		subheader = $el("h2", { "class": "artistview_subheader", "textContent": json.all_songs_for_sid[album_id][0].albums[0].name });
 		if (json.all_songs_for_sid[album_id][0].albums[0].openable) {
@@ -15,7 +15,7 @@ var GroupView = function(view, json) {
 		if( json.all_songs_for_sid[album_id][0].albums[0].year )
 			name = json.all_songs_for_sid[album_id][0].albums[0].year +" - "+name;
 		all_tables.push({
-			"table": SongsTable(json.all_songs_for_sid[album_id], [ "disc_number", "track_number", "title", "length", "rating", "cool_end" ]),
+			"table": SongsTable(json.all_songs_for_sid[album_id], SITE_CONFIG.album_view_columns),
 			"name": name,
 			"header": subheader
 		});
