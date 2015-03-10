@@ -20,6 +20,7 @@ from rainwave.events import election
 import rainwave.events.oneup
 import rainwave.events.pvpelection
 import rainwave.events.shortest_election
+import rainwave.events.singlesong
 
 # Events for each station
 current = {}
@@ -47,7 +48,7 @@ def load():
 		if not history[sid]:
 			history[sid] = []
 			for song_id in db.c.fetch_list("SELECT song_id FROM r4_song_history WHERE sid = %s ORDER BY songhist_time DESC LIMIT 5", (sid,)):
-				history[sid].insert(0, events.event.SingleSong(song_id, sid))
+				history[sid].insert(0, events.singlesong.SingleSong(song_id, sid))
 
 def get_event_in_progress(sid):
 	producer = get_current_producer(sid)

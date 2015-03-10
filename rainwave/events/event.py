@@ -2,7 +2,6 @@ import time
 
 from libs import db
 from libs import log
-from rainwave import playlist
 
 all_producers = {}
 
@@ -257,12 +256,3 @@ class BaseEvent(object):
 
 	def delete(self):
 		pass
-
-class SingleSong(BaseEvent):
-	incrementer = 0
-
-	def __init__(self, song_id, sid):
-		super(SingleSong, self).__init__(sid)
-		self.songs = [ playlist.Song.load_from_id(song_id, sid) ]
-		self.id = SingleSong.incrementer
-		SingleSong.incrementer += 1
