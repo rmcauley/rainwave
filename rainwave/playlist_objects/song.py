@@ -11,7 +11,6 @@ from libs import cache
 from libs import filetools
 from libs import log
 from rainwave import rating
-from api import fieldtypes
 
 from rainwave.playlist_objects.artist import Artist
 from rainwave.playlist_objects.album import Album
@@ -209,13 +208,13 @@ class Song(object):
 		w = f.tags.getall('TRCK')
 		if w is not None and len(w) > 0:
 			try:
-				self.data['track_number'] = fieldtypes.integer(w[0])
+				self.data['track_number'] = w[0]
 			except ValueError:
 				pass
 		w = f.tags.getall('TPOS')
 		if w is not None and len(w) > 0:
 			try:
-				self.data['disc_number'] = fieldtypes.integer(w[0])
+				self.data['disc_number'] = w[0]
 			except ValueError:
 				pass
 		w = f.tags.getall('TCON')
@@ -233,13 +232,13 @@ class Song(object):
 		w = f.tags.getall('TYER')
 		if w is not None and len(w) > 0:
 			try:
-				self.data['year'] = fieldtypes.integer(w[0])
+				self.data['year'] = w[0]
 			except ValueError:
 				pass
 		w = f.tags.getall('TDRC')
 		if self.data['year'] is None and w is not None and len(w) > 0:
 			try:
-				self.data['year'] = fieldtypes.integer(unicode(w[0]))
+				self.data['year'] = unicode(w[0])
 			except ValueError:
 				pass
 
