@@ -37,6 +37,9 @@ def scan_file(args, filename):
 		print "Link".ljust(10), ":", s.data['url']
 		print "Length".ljust(10), ":", "%s:%02u" % (int(math.floor(s.data['length'] / 60)), (s.data['length'] % 60))
 		print "Gain".ljust(10), ":", s.replay_gain
+		print "Track".ljust(10), ":", s.data['track_number']
+		print "Disc #".ljust(10), ":", s.data['disc_number']
+		print "Year".ljust(10), ":", s.data['year']
 
 def scan_directory(args, dirname):
 	#pylint: disable=W0612
