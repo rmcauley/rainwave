@@ -208,10 +208,16 @@ class Song(object):
 			raise PassableScanError("Song filename \"%s\" has no album tag." % filename)
 		w = f.tags.getall('TRCK')
 		if w is not None and len(w) > 0:
-			self.data['track_number'] = fieldtypes.integer(+w[0])
+			try:
+				self.data['track_number'] = fieldtypes.integer(w[0])
+			except ValueError:
+				pass
 		w = f.tags.getall('TPOS')
 		if w is not None and len(w) > 0:
-			self.data['disc_number'] = fieldtypes.integer(+w[0])
+			try:
+				self.data['disc_number'] = fieldtypes.integer(w[0])
+			except ValueError:
+				pass
 		w = f.tags.getall('TCON')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.genre_tag = unicode(w[0])
@@ -226,10 +232,16 @@ class Song(object):
 			self.data['url'] = unicode(w[0]).strip()
 		w = f.tags.getall('TYER')
 		if w is not None and len(w) > 0:
-			self.data['year'] = fieldtypes.integer(+w[0])
+			try:
+				self.data['year'] = fieldtypes.integer(w[0])
+			except ValueError:
+				pass
 		w = f.tags.getall('TDRC')
 		if self.data['year'] is None and w is not None and len(w) > 0:
-			self.data['year'] = fieldtypes.integer(unicode(w[0]))
+			try:
+				self.data['year'] = fieldtypes.integer(unicode(w[0]))
+			except ValueError:
+				pass
 
 		self.replay_gain = self._get_replaygain(f)
 
