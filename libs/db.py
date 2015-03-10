@@ -17,7 +17,7 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 
 	def fetch_var(self, query, params = None):
 		self.execute(query, params)
-		if self.rowcount <= 0:
+		if self.rowcount <= 0 or not self.rowcount:
 			return None
 		r = self.fetchone()
 		# I realize this is not the most efficient way, but one of the primary
@@ -30,19 +30,19 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 
 	def fetch_row(self, query, params = None):
 		self.execute(query, params)
-		if self.rowcount <= 0:
+		if self.rowcount <= 0 or not self.rowcount:
 			return None
 		return self.fetchone()
 
 	def fetch_all(self, query, params = None):
 		self.execute(query, params)
-		if self.rowcount <= 0:
+		if self.rowcount <= 0 or not self.rowcount:
 			return []
 		return self.fetchall()
 
 	def fetch_list(self, query, params = None):
 		self.execute(query, params)
-		if self.rowcount <= 0:
+		if self.rowcount <= 0 or not self.rowcount:
 			return []
 		arr = []
 		row = self.fetchone()
