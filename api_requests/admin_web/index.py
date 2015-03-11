@@ -19,7 +19,28 @@ class AdminIndex(api.web.HTMLRequest):
 	admin_required = True
 
 	def get(self):
-		self.render("admin_frame.html", title="R4 Admin", api_url=config.get("api_external_url_prefix"), user_id=self.user.id, api_key=self.user.ensure_api_key())
+		self.render("admin_frame.html", 
+			title="Rainwave Admin",
+			api_url=config.get("api_external_url_prefix"),
+			user_id=self.user.id, 
+			api_key=self.user.ensure_api_key(),
+			sid=self.sid,
+			tool_list_url="tool_list",
+			station_list_url="station_list")
+
+@handle_url("/admin/dj")
+class DJIndex(api.web.HTMLRequest):
+	dj_preparation = True
+
+	def get(self):
+		self.render("admin_frame.html", 
+			title="Rainwave DJ",
+			api_url=config.get("api_external_url_prefix"),
+			user_id=self.user.id, 
+			api_key=self.user.ensure_api_key(),
+			sid=self.sid,
+			tool_list_url="dj_election_list",
+			station_list_url="dj_tools")
 
 @handle_url("/admin/tool_list")
 class ToolList(api.web.HTMLRequest):
@@ -46,7 +67,7 @@ class StationList(api.web.HTMLRequest):
 
 @handle_url("/admin/restrict_songs")
 class RestrictList(api.web.HTMLRequest):
-	admin_required = True
+	dj_preparation = True
 
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="Station List"))
@@ -55,9 +76,30 @@ class RestrictList(api.web.HTMLRequest):
 			self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"top.current_restriction = %s; top.change_screen();\">%s</a>" % (sid, sid, config.station_id_friendly[sid]))
 		self.write(self.render_string("basic_footer.html"))
 
+@handle_url("/admin/dj_election_list")
+class DJEventList(api.web.HTMLRequest):
+	dj_preparation = True
+
+	def get(self):
+		evts = db.c.fetch_all("SELECT * FROM r4_schedule WHERE sched_dj_user_id = %s", (self.user.id,))
+		self.write(self.render_string("bare_header.html", title="Event List"))
+		if not len(evts):
+			self.write("<div>You have no upcoming events.</div>")
+		for row in evts:
+			self.write("<div><a href=\"#\" onclick=\"top.dj_election_sched_id = %s; top.current_tool = 'dj_election'; top.change_screen();\">%s</div>" % (row['sched_id'], row['sched_name']))
+		self.write(self.render_string("basic_footer.html"))
+
+@handle_url("/admin/dj_tools")
+class DJTools(api.web.HTMLRequest):
+	dj_required = True
+
+	def get(self):
+		self.write(self.render_string("bare_header.html", title="DJ Tools"))
+		self.write(self.render_string("basic_footer.html"))
+
 @handle_url("/admin/relay_status")
 class RelayStatus(api.web.HTMLRequest):
-	admin_required = True
+	dj_required = True
 
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="Relay Status"))
@@ -74,7 +116,7 @@ class RelayStatus(api.web.HTMLRequest):
 		self.write(self.render_string("basic_footer.html"))
 
 class AlbumList(api.web.HTMLRequest):
-	admin_required = True
+	dj_preparation = True
 	allow_get = True
 	fields = { "restrict": (fieldtypes.sid, True) }
 
@@ -106,7 +148,7 @@ class AlbumList(api.web.HTMLRequest):
 		pass
 
 class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
-	admin_required = True
+	dj_preparation = True
 	# fields are handled by AlbumHandler
 
 	def get(self):	#pylint: disable=E0202,W0221
@@ -127,3 +169,4 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 
 	def render_row_special(self, row):
 		pass
+

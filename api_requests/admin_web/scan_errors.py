@@ -20,7 +20,7 @@ def relative_time(epoch_time):
 
 @handle_url("/admin/album_list/scan_results")
 class ScanResults(api.web.PrettyPrintAPIMixin, BackendScanErrors):
-	admin_required = True
+	dj_preparation = True
 
 	def get(self):	#pylint: disable=E0202,W0221
 		new_results = []
@@ -32,7 +32,7 @@ class ScanResults(api.web.PrettyPrintAPIMixin, BackendScanErrors):
 
 @handle_url("/admin/tools/scan_results")
 class LatestSongs(api.web.HTMLRequest):
-	admin_required = True
+	dj_preparation = True
 
 	def get(self):
 		self.write(self.render_string("basic_header.html", title="Latest Songs"))

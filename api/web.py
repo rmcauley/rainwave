@@ -54,7 +54,7 @@ class HTMLError404Handler(tornado.web.RequestHandler):
 
 class RainwaveHandler(tornado.web.RequestHandler):
 	# The following variables can be overridden by you.
-	# Fields is a hash with { "form_name" => (fieldtypes.[something], True|False|None } format, so that automatic form validation can be done for you.  True/False values are for required/optional.
+	# Fields is a hash with { "form_name" => (fieldtypes.[something], True|False|None) } format, so that automatic form validation can be done for you.  True/False values are for required/optional.
 	# A True requirement means it must be present and valid
 	# A False requirement means it is optional, but if present, must be valid
 	# A None requirement means it is optional, and if present and invalid, will be set to None
@@ -72,6 +72,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	login_required = False
 	# User must be a DJ for the next, current, or history[0] event
 	dj_required = False
+	# User must have an unused DJ-able event in the future
+	dj_preparation = False
 	# Validate user is a station administrator.
 	admin_required = False
 	# Do we need a valid SID as part of the submitted form?
@@ -235,6 +237,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		elif self.unlocked_listener_only and self.user.data['lock'] and self.user.data['lock_sid'] != self.sid:
 			raise APIException("unlocked_only", station=config.station_id_friendly[self.user.data['lock_sid']], lock_counter=self.user.data['lock_counter'], http_code=403)
 
+		is_dj = False
 		if self.dj_required and not self.user:
 			raise APIException("dj_required", http_code=403)
 		if self.dj_required and not self.user.is_admin():
@@ -242,13 +245,19 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			potential_dj_ids = []
 			if cache.get_station(self.sid, "sched_current") and cache.get_station(self.sid, "sched_current").dj_user_id:
 				potential_dj_ids.append(cache.get_station(self.sid, "sched_current").dj_user_id)
-			if cache.get_station(self.sid, "sched_next") and cache.get_station(self.sid, "sched_next")[0].dj_user_id:
-				potential_dj_ids.append(cache.get_station(self.sid, "sched_next")[0].dj_user_id)
+			if cache.get_station(self.sid, "sched_next"):
+				for evt in cache.get_station(self.sid, "sched_next"):
+					potential_dj_ids.append(evt.dj_user_id)
 			if cache.get_station(self.sid, "sched_history") and cache.get_station(self.sid, "sched_history")[-1].dj_user_id:
 				potential_dj_ids.append(cache.get_station(self.sid, "sched_history")[-1].dj_user_id)
 			if not self.user.id in potential_dj_ids:
 				raise APIException("dj_required", http_code=403)
+			is_dj = True
 			#pylint: enable=E1103
+		
+		if self.dj_preparation and not is_dj and not self.user.is_admin():
+			if not db.c.fetch_var("SELECT COUNT(*) FROM r4_schedule WHERE sched_used = 0 AND sched_dj_user_id = %s", (self.user.id,)):
+				raise APIException("dj_required", http_code=403)
 
 	def do_phpbb_auth(self):
 		phpbb_cookie_name = config.get("phpbb_cookie_name")

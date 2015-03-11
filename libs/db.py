@@ -487,13 +487,15 @@ def create_tables():
 			elec_start_actual		INTEGER		, \
 			elec_type				TEXT		, \
 			elec_priority			BOOLEAN		DEFAULT FALSE, \
-			sid						SMALLINT	NOT NULL \
+			sid						SMALLINT	NOT NULL, \
+			sched_id 				INT 		 \
 		)")
 	if c.is_postgres:
 		c.update("ALTER TABLE r4_elections ALTER COLUMN elec_id SET DEFAULT nextval('r4_schedule_sched_id_seq')")
 	c.create_idx("r4_elections", "elec_id")
 	c.create_idx("r4_elections", "elec_used")
 	c.create_idx("r4_elections", "sid")
+	c.create_delete_fk("r4_elections", "r4_schedule", "sched_id")
 
 	c.update(" \
 		CREATE TABLE r4_election_entries ( \

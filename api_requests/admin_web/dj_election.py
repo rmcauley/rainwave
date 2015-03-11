@@ -4,18 +4,26 @@ import api.web
 from api.server import handle_url
 from api_requests.admin_web.index import AlbumList
 from api_requests.admin_web.index import SongList
+from api import fieldtypes
+from rainwave.events.election import Election
+from libs import db
 
 @handle_url("/admin/tools/dj_election")
 class DJElectionTool(api.web.HTMLRequest):
-	admin_required = True
+	dj_preparation = True
+	fields = { "sched_id": (fieldtypes.sched_id, False) }
 
 	def get(self):
-		self.write(self.render_string("bare_header.html", title="%s One Up Tool" % config.station_id_friendly[self.sid]))
-		self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")
-		self.write("<h2>%s DJ Election Tool</h2>" % config.station_id_friendly[self.sid])
-		self.write("<ul><li>Once committed, the election cannot be changed.</li>")
-		self.write("<li>Pulling songs from other stations is possible and will not affect cooldown on the other station. (it will affect voting stats)")
-		self.write("<li>Song order in elections is randomized for each user.</li>")
+		self.write(self.render_string("bare_header.html", title="%s DJ Election Tool" % config.station_id_friendly[self.sid]))
+		self.write("<script>\nwindow.top.refresh_all_screens = true;\n</script>")
+		if self.get_argument("sched_id", None):
+			self.write("<h2>%s Elections</h2>" % db.c.fetch_var("SELECT sched_name FROM r4_schedule WHERE sched_id = %s", (self.get_argument("sched_id"),)))
+		else:
+			self.write("<h2>%s DJ Election Tool</h2>" % config.station_id_friendly[self.sid])
+		self.write("<ul><li>Once committed, the election cannot be edited.</li>")
+		self.write("<li>Pulling songs from other stations is possible and will not affect cooldown on the other station. (it will affect voting stats on other stations)")
+		self.write("<li>Song order in elections is randomized for each user - do not rely on the order.</li>")
+		self.write("<li>Putting in 1 song will disable voting on the election.</li>")
 		self.write("</ul><hr>")
 
 		songs = cache.get_user(self.user.id, "dj_election")
@@ -27,7 +35,21 @@ class DJElectionTool(api.web.HTMLRequest):
 				self.write("<li>%s<br>%s<br><a onclick=\"window.top.call_api('admin/remove_from_dj_election', { 'song_id': %s });\">Remove</a></li>"
 					% (song.data['title'], song.albums[0].data['name'], song.id))
 			self.write("</ul>")
-			self.write("<a onclick=\"window.top.call_api('admin/commit_dj_election');\">Commit to Queue</a>")
+			if not self.get_argument("sched_id", None):
+				self.write("<a onclick=\"window.top.call_api('admin/commit_dj_election');\">Commit to Queue</a>")
+			else:
+				self.write("<a onclick=\"window.top.call_api('admin/commit_dj_election?sched_id=%s');\">Queue to DJ Block</a>" % (self.get_argument("sched_id"),))
+
+		if self.get_argument("sched_id", None):
+			self.write("<hr>")
+			for election_id in db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sched_id = %s AND elec_used = FALSE ORDER BY elec_id", (self.get_argument("sched_id"),)):
+				elec = Election.load_by_id(election_id)
+				self.write("<ul>")
+				for song in elec.songs:
+					self.write("<li>%s (%s - %s)</li>" % (song.data['title'], song.albums[0].data['name'], song.artists[0].data['name']))
+				self.write("<li><a onclick=\"window.top.call_api('admin/delete_election?elec_id=%s');\">(delete election)</a></li>")
+				self.write("</ul>")
+
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/album_list/dj_election")

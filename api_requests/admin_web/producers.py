@@ -29,12 +29,14 @@ class WebCreateProducer(api.web.HTMLRequest):
 			self.write("<option value='%s'>%s</option>" % (producer_type, producer_type))
 		self.write("</select><br>")
 		self.write("Name: <input id='new_ph_name' type='text' /><br>")
-		self.write("URL: <input id='new_ph_url' type='text' /><br><br>Input date and time in YOUR timezone.<br><u>Start Time</u>:<br> ")
+		self.write("URL: <input id='new_ph_url' type='text' /><br>")
+		self.write("DJ User ID: <input id='new_ph_user_id' type='text' /><br>")
+		self.write("<br>Input date and time in YOUR timezone.<br><u>Start Time</u>:<br> ")
 		index.write_html_time_form(self, "new_ph_start")
 		self.write("<br><br><u>End Time</u>:<br> ")
 		index.write_html_time_form(self, "new_ph_end")
 		self.write("<br><br><button onclick=\"window.top.call_api('admin/create_producer', ")
-		self.write("{ 'producer_type': document.getElementById('new_ph_type').value, 'end_utc_time': document.getElementById('new_ph_end_timestamp').value, 'start_utc_time': document.getElementById('new_ph_start_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\"")
+		self.write("{ 'producer_type': document.getElementById('new_ph_type').value, 'end_utc_time': document.getElementById('new_ph_end_timestamp').value, 'start_utc_time': document.getElementById('new_ph_start_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value, 'dj_user_id': document.getElementById('new_ph_user_id').value });\"")
 		self.write(">Create new Producer</button></div>")
 		self.write(self.render_string("basic_footer.html"))
 
@@ -49,7 +51,7 @@ class WebListProducersBase(object):
 		self.write("<td><a onclick=\"window.top.call_api('admin/delete_producer', { 'sched_id': %s });\">Delete</a></td>" % row['id'])
 
 	def sort_keys(self, keys):
-		return [ "sid", "name", "type", 'sched_length_minutes', "url" ]
+		return [ "sid", "name", "type", 'sched_length_minutes', "url", "username" ]
 	#pylint: enable=E1101
 
 @handle_url("/admin/album_list/producers")

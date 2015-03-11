@@ -9,10 +9,11 @@
 	lyre.setKey("{{ api_key }}");
 	lyre.catcherrors = true;
 	var current_tool = "";
-	var current_station = 1;
+	var current_station = {{ sid }};
 	var current_restriction = 1;
 	var current_sched_id = null;
 	var refresh_all_screens = false;
+	var dj_election_sched_id = false;
 
 	lyre.jsErrorCallback = function(err, json) {
 		window.frames.debug.document.body.style.background = "#660000";
@@ -52,7 +53,12 @@
 
 	function change_screen() {
 		lyre.setStationID(current_station);
-		window.frames.tool.location.href = "tools/" + current_tool + "?sid=" + current_station;
+		if (dj_election_sched_id) {
+			window.frames.tool.location.href = "tools/" + current_tool + "?sid=" + current_station + "&sched_id=" + dj_election_sched_id;
+		}
+		else {
+			window.frames.tool.location.href = "tools/" + current_tool + "?sid=" + current_station;
+		}
 		window.frames.selector.location.href = "album_list/" + current_tool + "?sid=" + current_station + "&restrict=" + current_restriction;
 
 		var t = window.frames.tool_list.document.getElementsByTagName("a");
@@ -82,8 +88,8 @@
 </head>
 <frameset rows="25%, 80%">
 	<frameset cols="15%, 15%, 15%, *">
-		<frame src="tool_list" name="tool_list" />
-		<frame src="station_list" name="station_list" />
+		<frame src="{{ tool_list_url }}" name="tool_list" />
+		<frame src="{{ station_list_url }}" name="station_list" />
 		<frame src="restrict_songs" name="restrict_songs" />
 		<frame src="relay_status" name="debug" />
 	</frameset>

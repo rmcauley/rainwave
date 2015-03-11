@@ -15,14 +15,14 @@ class ListProducers(api.web.APIHandler):
 
 	def post(self):
 		self.append(self.return_name,
-			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes "
-						"FROM r4_schedule "
+			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, username "
+						"FROM r4_schedule LEFT JOIN phpbb_users ON (sched_dj_user_id = user_id) "
 						"WHERE sched_used = FALSE AND sid = %s AND sched_start >= %s ORDER BY sched_start",
 						(self.sid, time.time())))
 
 		self.append(self.return_name + "_past",
-			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes "
-						"FROM r4_schedule "
+			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, username "
+						"FROM r4_schedule LEFT JOIN phpbb_users ON (sched_dj_user_id = user_id) "
 						"WHERE sched_type != 'PVPElectionProducer' AND sid = %s AND sched_start > %s AND sched_start < %s ORDER BY sched_start DESC",
 						(self.sid, time.time() - (86400 * 60), time.time())))
 
@@ -34,14 +34,14 @@ class ListProducersAll(api.web.APIHandler):
 
 	def post(self):
 		self.append(self.return_name,
-			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes "
-						"FROM r4_schedule "
+			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, username "
+						"FROM r4_schedule LEFT JOIN phpbb_users ON (sched_dj_user_id = user_id)  "
 						"WHERE sched_used = FALSE AND sched_start >= %s ORDER BY sched_start",
 						(time.time(),)))
 
 		self.append(self.return_name + "_past",
-			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes "
-						"FROM r4_schedule "
+			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, username "
+						"FROM r4_schedule LEFT JOIN phpbb_users ON (sched_dj_user_id = user_id)  "
 						"WHERE sched_type != 'PVPElectionProducer' AND sched_start > %s AND sched_start < %s ORDER BY sched_start DESC",
 						(time.time() - (86400 * 26), time.time())))
 
@@ -59,10 +59,17 @@ class CreateProducer(api.web.APIHandler):
 	return_name = "power_hour"
 	admin_required = True
 	sid_required = True
-	fields = { "producer_type": (fieldtypes.producer_type, True), "name": (fieldtypes.string, True), "start_utc_time": (fieldtypes.positive_integer, True), "end_utc_time": (fieldtypes.positive_integer, True), "url": (fieldtypes.string, None) }
+	fields = { 
+		"producer_type": (fieldtypes.producer_type, True),
+		"name": (fieldtypes.string, True), 
+		"start_utc_time": (fieldtypes.positive_integer, True), 
+		"end_utc_time": (fieldtypes.positive_integer, True), 
+		"url": (fieldtypes.string, None),
+		"dj_user_id": (fieldtypes.user_id, False)
+	}
 
 	def post(self):
-		p = event.all_producers[self.get_argument("producer_type")].create(sid=self.sid, start=self.get_argument("start_utc_time"), end=self.get_argument("end_utc_time"), name=self.get_argument("name"), url=self.get_argument("url"))
+		p = event.all_producers[self.get_argument("producer_type")].create(sid=self.sid, start=self.get_argument("start_utc_time"), end=self.get_argument("end_utc_time"), name=self.get_argument("name"), url=self.get_argument("url"), dj_user_id=self.get_argument("dj_user_id"))
 		self.append(self.return_name, p.to_dict())
 
 @handle_api_url("admin/change_producer_name")
