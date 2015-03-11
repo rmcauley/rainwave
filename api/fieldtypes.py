@@ -84,6 +84,17 @@ def sched_id(s, request = None):
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_schedule WHERE sched_id = %s", (sched_id,)) == 0:
 		return None
 	return sched_id
+
+elec_id_error = "must be a valid election ID."
+def elec_id(s, request = None):
+	if not s:
+		return None
+	if not re.match('^\d+$', s):
+		return None
+	elec_id = int(s)
+	if db.c.fetch_var("SELECT COUNT(*) FROM r4_elections WHERE elec_id = %s", (elec_id,)) == 0:
+		return None
+	return elec_id
 #pylint: enable=W0621
 
 positive_integer_error = "must be a positive number."
