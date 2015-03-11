@@ -51,11 +51,11 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 		sched_next_objects = cache.get_station(request.sid, "sched_next")
 		for evt in sched_next_objects:
 			sched_next.append(evt.to_dict(request.user))
-		if len(sched_next) > 0 and request.user.is_tunedin() and sched_next_objects[0].is_election:
+		if len(sched_next) > 0 and request.user.is_tunedin() and sched_next_objects[0].is_election and len(sched_next_objects[0].songs) > 0:
 			sched_next[0]['voting_allowed'] = True
 		if request.user.is_tunedin() and request.user.has_perks():
 			for i in range(1, len(sched_next)):
-				if sched_next_objects[i].is_election:
+				if sched_next_objects[i].is_election and len(sched_next_objects[0].songs) > 0:
 					sched_next[i]['voting_allowed'] = True
 		sched_history = []
 		for evt in cache.get_station(request.sid, "sched_history"):
@@ -66,7 +66,7 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 			raise APIException("server_just_started", "Rainwave is Rebooting, Please Try Again in a Few Minutes", http_code=500)
 		sched_next = cache.get_station(request.sid, "sched_next_dict")
 		sched_history = cache.get_station(request.sid, "sched_history_dict")
-		if len(sched_next) > 0 and request.user.is_tunedin() and sched_next[0]['type'] == "Election":
+		if len(sched_next) > 0 and request.user.is_tunedin() and sched_next[0]['type'] == "Election" and len(sched_next[0]['songs']) > 1:
 			sched_next[0]['voting_allowed'] = True
 	request.append("sched_current", sched_current)
 	request.append("sched_next", sched_next)
