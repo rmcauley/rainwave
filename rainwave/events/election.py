@@ -48,7 +48,7 @@ class ElectionProducer(event.BaseProducer):
 
 	#pylint: disable=W0221
 	def load_next_event(self, target_length = None, min_elec_id = 0, skip_requests = False):
-		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s ORDER BY elec_id LIMIT 1", (self.elec_type, self.sid, min_elec_id))
+		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s AND sched_id = %s ORDER BY elec_id LIMIT 1", (self.elec_type, self.sid, min_elec_id, self.id))
 		if elec_id:
 			elec = self.elec_class.load_by_id(elec_id)
 			elec.url = self.url
@@ -59,7 +59,7 @@ class ElectionProducer(event.BaseProducer):
 	#pylint: enable=W0221
 
 	def load_event_in_progress(self):
-		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s ORDER BY elec_id DESC LIMIT 1", (self.elec_type, self.sid))
+		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s AND sched_id = %s ORDER BY elec_id DESC LIMIT 1", (self.elec_type, self.sid, self.id))
 		if elec_id:
 			elec = self.elec_class.load_by_id(elec_id)
 			elec.name = self.name
@@ -73,7 +73,7 @@ class ElectionProducer(event.BaseProducer):
 		log.debug("create_elec", "Creating election type %s for sid %s, target length %s." % (self.elec_type, self.sid, target_length))
 		db.c.start_transaction()
 		try:
-			elec = self.elec_class.create(self.sid)
+			elec = self.elec_class.create(self.sid, self.id)
 			elec.url = self.url
 			elec.name = self.name
 			elec.dj_user_id = self.dj_user_id
@@ -106,6 +106,7 @@ class Election(event.BaseEvent):
 		elec.has_priority = row['elec_priority']
 		elec.public = True
 		elec.timed = False
+		elec.sched_id = row['sched_id']
 		for song_row in db.c.fetch_all("SELECT * FROM r4_election_entries WHERE elec_id = %s", (elec_id,)):
 			song = playlist.Song.load_from_id(song_row['song_id'], elec.sid)
 			song.data['entry_id'] = song_row['entry_id']
@@ -119,7 +120,7 @@ class Election(event.BaseEvent):
 		return elec
 
 	@classmethod
-	def create(cls, sid):
+	def create(cls, sid, sched_id=None):
 		elec_id = db.c.get_next_id("r4_schedule", "sched_id")
 		elec = cls(sid)
 		elec.is_election = True
@@ -134,7 +135,8 @@ class Election(event.BaseEvent):
 		elec.has_priority = False
 		elec.public = True
 		elec.timed = True
-		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid) VALUES (%s, %s, %s, %s)", (elec_id, False, elec.type, elec.sid))
+		elec.sched_id = sched_id
+		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid, sched_id) VALUES (%s, %s, %s, %s, %s)", (elec_id, False, elec.type, elec.sid, sched_id))
 		return elec
 
 	def __init__(self, sid = None):
