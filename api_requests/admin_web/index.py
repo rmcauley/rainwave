@@ -114,15 +114,24 @@ class RelayStatus(api.web.HTMLRequest):
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="Relay Status"))
 		status = cache.get("relay_status")
+		self.write("<div style='float: right'>")
 		if status:
-			total = 0
 			for relay, count in status.iteritems():
-				total += count
 				self.write("%s: %s listeners<br />" % (relay, count))
-			self.write("<br />")
-			self.write("<b>Total: %s</b>" % total)
 		else:
 			self.write("No relay status available.")
+		self.write("</div>")
+		self.write("<div>")
+		total = 0
+		for row in db.c.fetch_all("SELECT sid, lc_guests AS c FROM r4_listener_counts ORDER BY lc_time, sid DESC LIMIT %s", (len(config.station_ids),)):
+			total += row['c']
+			self.write("%s: %s listeners<br />" % (config.station_id_friendly[row['sid']], row['c']))
+		if total == 0:
+			self.write("No listener stats available.")
+		else:
+			self.write("<br />")
+			self.write("<b>Total: %s listeners</b>" % total)
+		self.write("</div>")
 		self.write(self.render_string("basic_footer.html"))
 
 class AlbumList(api.web.HTMLRequest):
