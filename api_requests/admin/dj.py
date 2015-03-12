@@ -18,8 +18,10 @@ class UnpauseStation(api.web.APIHandler):
 	dj_required = True
 
 	def post(self):
-		result = liquidsoap.unpause(self.sid)
 		cache.set_station(self.sid, "backend_paused", False)
+		result = liquidsoap.unpause(self.sid)
+		result += "\n"
+		result += liquidsoap.skip(self.sid)
 		self.append(self.return_name, { "success": True, "message": result })
 
 @handle_api_url("admin/dj/skip")
