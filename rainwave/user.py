@@ -81,12 +81,10 @@ class User(object):
 	def _auth_registered_user(self, api_key, bypass = False):
 		if not bypass:
 			keys = cache.get_user(self, "api_keys")
-			if not keys:
-				if not api_key in self.get_all_api_keys():
-					log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
-					return
-			elif not api_key in keys:
-				log.debug("auth", "Invalid user ID %s and/or API key %s (from cache)." % (self.id, api_key))
+			if keys and api_key in keys:
+				pass
+			elif not api_key in self.get_all_api_keys():
+				log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
 				return
 
 		# Set as authorized and begin populating information
