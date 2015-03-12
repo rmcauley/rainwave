@@ -48,6 +48,7 @@
    "request_queue_unpaused"                          : "Request queue unpaused.",
    "no_results"                                      : "No results.",
    "server_just_started"                             : "Rainwave is Rebooting",
+   "station_paused"                                  : "Station is paused.",
 
    "__comment__"                 : "API Key Management",
 
@@ -304,5 +305,6 @@
    "url"                                             : "URL",
    "sched_length_minutes"                            : "Length (min.)",
    "backend_scan_errors"                             : "Backend Scan Errors",
-   "producers"                                       : "Producers"
+   "producers"                                       : "Producers",
+   "username"                                        : "Username"
 }

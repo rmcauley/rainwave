@@ -26,7 +26,7 @@ class SubmitVote(APIHandler):
 		elec_id = None
 		for event in cache.get_station(self.sid, "sched_next"):
 			lock_count += 1
-			if event.is_election and event.has_entry_id(self.get_argument("entry_id")):
+			if event.is_election and event.has_entry_id(self.get_argument("entry_id")) and len(event.songs) > 1:
 				elec_id = event.id
 				voted = self.vote(self.get_argument("entry_id"), event, lock_count)
 				break

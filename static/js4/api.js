@@ -176,10 +176,11 @@ var API = function() {
 		}
 		if (("sync_result" in response) && (response.sync_result.tl_key == "station_paused")) {
 			self.paused = true;
+			offline_ack = true;
 			return true;
 		}
 		return false;
-	}
+	};
 
 	var sync_complete = function() {
 		clear_sync_timeout_error_removal_timeout();

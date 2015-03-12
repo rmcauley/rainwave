@@ -19,10 +19,10 @@ class AdminIndex(api.web.HTMLRequest):
 	admin_required = True
 
 	def get(self):
-		self.render("admin_frame.html", 
+		self.render("admin_frame.html",
 			title="Rainwave Admin",
 			api_url=config.get("api_external_url_prefix"),
-			user_id=self.user.id, 
+			user_id=self.user.id,
 			api_key=self.user.ensure_api_key(),
 			sid=self.sid,
 			tool_list_url="tool_list",
@@ -33,10 +33,10 @@ class DJIndex(api.web.HTMLRequest):
 	dj_preparation = True
 
 	def get(self):
-		self.render("admin_frame.html", 
+		self.render("admin_frame.html",
 			title="Rainwave DJ",
 			api_url=config.get("api_external_url_prefix"),
-			user_id=self.user.id, 
+			user_id=self.user.id,
 			api_key=self.user.ensure_api_key(),
 			sid=self.sid,
 			tool_list_url="dj_election_list",
@@ -51,7 +51,7 @@ class ToolList(api.web.HTMLRequest):
 		self.write("<b>Do:</b><br />")
 		# [ ( "Link Title", "admin_url" ) ]
 		for item in [ ("Scan Results", "scan_results"), ("Producers", "producers"), ("Producers (Meta)", "producers_all"), ("Power Hours", "power_hours"), ("DJ Elections", "dj_election"), ("Cooldown", "cooldown"), ("Request Only Songs", "song_request_only"), ("Donations", "donations"), ("Associate Groups", "associate_groups"), ("Disassociate Groups", "disassociate_groups"), ("Edit Groups", "group_edit"), ("Listener Count", "listener_stats"), ("Listener Count [Wkly]", "listener_stats_aggregate") ]:
-			self.write("<a style='display: block' id=\"%s\" href=\"#\" onclick=\"top.current_tool = '%s'; top.change_screen();\">%s</a>" % (item[1], item[1], item[0]))
+			self.write("<a style='display: block' id=\"%s\" href=\"#\" onclick=\"window.top.current_tool = '%s'; window.top.change_screen();\">%s</a>" % (item[1], item[1], item[0]))
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/station_list")
@@ -62,7 +62,7 @@ class StationList(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Station List"))
 		self.write("<b>On station:</b><br>")
 		for sid in config.station_ids:
-			self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"top.current_station = %s; top.change_screen();\">%s</a>" % (sid, sid, config.station_id_friendly[sid]))
+			self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"window.top.current_station = %s; window.top.change_screen();\">%s</a>" % (sid, sid, config.station_id_friendly[sid]))
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/restrict_songs")
@@ -73,7 +73,7 @@ class RestrictList(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Station List"))
 		self.write("<b>With songs from:</b><br>")
 		for sid in config.station_ids:
-			self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"top.current_restriction = %s; top.change_screen();\">%s</a>" % (sid, sid, config.station_id_friendly[sid]))
+			self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"window.top.current_restriction = %s; window.top.change_screen();\">%s</a>" % (sid, sid, config.station_id_friendly[sid]))
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/dj_election_list")
@@ -86,7 +86,7 @@ class DJEventList(api.web.HTMLRequest):
 		if not len(evts):
 			self.write("<div>You have no upcoming events.</div>")
 		for row in evts:
-			self.write("<div><a href=\"#\" onclick=\"top.dj_election_sched_id = %s; top.current_tool = 'dj_election'; top.change_screen();\">%s</div>" % (row['sched_id'], row['sched_name']))
+			self.write("<div><a href=\"#\" onclick=\"window.top.dj_election_sched_id = %s; window.top.current_tool = 'dj_election'; window.top.change_screen();\">%s</div>" % (row['sched_id'], row['sched_name']))
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/dj_tools")
@@ -95,6 +95,16 @@ class DJTools(api.web.HTMLRequest):
 
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="DJ Tools"))
+		if cache.get_station(self.sid, "backend_paused"):
+			self.write("<div style='color: red; font-weight: bold;'>PAUSED</div>")
+		else:
+			self.write("<div>Running</div>")
+		self.write("<br />")
+		self.write("<div><a onclick=\"window.top.call_api('admin/dj/pause');\">Pause station</a></div>")
+		self.write("<br />")
+		self.write("<div><a onclick=\"window.top.call_api('admin/dj/unpause');\">Unpause station</a></div>")
+		self.write("<br />")
+		self.write("<div><a onclick=\"window.top.call_api('admin/dj/skip');\">Skip current song</a></div>")
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/relay_status")

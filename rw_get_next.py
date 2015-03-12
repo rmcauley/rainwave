@@ -20,38 +20,41 @@ config.load(args.config)
 cache.connect()
 
 params = urllib.urlencode({ "sid": args.sid })
-try:
-	dest_port = config.get("backend_port")
-	# Linux, multiprocessing is on
-	if hasattr(os, "fork"):
-		dest_port += int(args.sid)
-	# Windows, no multiprocessing
-	else:
-		dest_port += int(list(config.station_ids)[0])
-	conn = httplib.HTTPConnection(args.dest, config.get("backend_port") + int(args.sid), timeout=3)
-	conn.request("GET", "/advance/%s" % args.sid)
-	result = conn.getresponse()
-	if result.status == 200:
-		next_song_filename = result.read()
-		if not next_song_filename or len(next_song_filename) == 0:
-			raise Exception("Got zero-length filename from backend!")
-		print next_song_filename
-	else:
-		raise Exception("Backend HTTP Error %s" % result.status)
-	cache.set_station(args.sid, "backend_ok", True)
-	cache.set_station(args.sid, "backend_message", "OK")
-	cache.set_station(args.sid, "get_next_socket_timeout", False)
-	conn.close()
-except socket.timeout as e:
-	cache.set_station(args.sid, "backend_ok", False)
-	cache.set_station(args.sid, "backend_status", repr(e))
-	cache.set_station(args.sid, "get_next_socket_timeout", True)
-	time.sleep(2)
-	raise
-except Exception as e:
-	cache.set_station(args.sid, "backend_ok", False)
-	cache.set_station(args.sid, "backend_status", repr(e))
-	if conn:
+if cache.get_station(args.sid, "backend_paused"):
+	print config.get_station(args.sid, "paused_file")
+else:
+	try:
+		dest_port = config.get("backend_port")
+		# Linux, multiprocessing is on
+		if hasattr(os, "fork"):
+			dest_port += int(args.sid)
+		# Windows, no multiprocessing
+		else:
+			dest_port += int(list(config.station_ids)[0])
+		conn = httplib.HTTPConnection(args.dest, config.get("backend_port") + int(args.sid), timeout=3)
+		conn.request("GET", "/advance/%s" % args.sid)
+		result = conn.getresponse()
+		if result.status == 200:
+			next_song_filename = result.read()
+			if not next_song_filename or len(next_song_filename) == 0:
+				raise Exception("Got zero-length filename from backend!")
+			print next_song_filename
+		else:
+			raise Exception("Backend HTTP Error %s" % result.status)
+		cache.set_station(args.sid, "backend_ok", True)
+		cache.set_station(args.sid, "backend_message", "OK")
+		cache.set_station(args.sid, "get_next_socket_timeout", False)
 		conn.close()
-	time.sleep(2)
-	raise
+	except socket.timeout as e:
+		cache.set_station(args.sid, "backend_ok", False)
+		cache.set_station(args.sid, "backend_status", repr(e))
+		cache.set_station(args.sid, "get_next_socket_timeout", True)
+		time.sleep(2)
+		raise
+	except Exception as e:
+		cache.set_station(args.sid, "backend_ok", False)
+		cache.set_station(args.sid, "backend_status", repr(e))
+		if conn:
+			conn.close()
+		time.sleep(2)
+		raise

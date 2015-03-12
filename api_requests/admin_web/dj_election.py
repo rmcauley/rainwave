@@ -38,17 +38,21 @@ class DJElectionTool(api.web.HTMLRequest):
 			if not self.get_argument("sched_id", None):
 				self.write("<a onclick=\"window.top.call_api('admin/commit_dj_election');\">Commit to Queue</a>")
 			else:
-				self.write("<a onclick=\"window.top.call_api('admin/commit_dj_election?sched_id=%s');\">Queue to DJ Block</a>" % (self.get_argument("sched_id"),))
+				self.write("<a onclick=\"window.top.call_api('admin/commit_dj_election?sched_id=%s');\">Add to DJ Block</a>" % (self.get_argument("sched_id"),))
 
 		if self.get_argument("sched_id", None):
 			self.write("<hr>")
+			has_elections = False
 			for election_id in db.c.fetch_list("SELECT elec_id FROM r4_elections WHERE sched_id = %s AND elec_used = FALSE ORDER BY elec_id", (self.get_argument("sched_id"),)):
+				has_elections = True
 				elec = Election.load_by_id(election_id)
 				self.write("<ul>")
 				for song in elec.songs:
 					self.write("<li>%s (%s - %s)</li>" % (song.data['title'], song.albums[0].data['name'], song.artists[0].data['name']))
-				self.write("<li><a onclick=\"window.top.call_api('admin/delete_election?elec_id=%s');\">(delete election)</a></li>")
+				self.write("<li><a onclick=\"window.top.call_api('admin/delete_election?elec_id=%s');\">(delete election)</a></li>" % elec.id)
 				self.write("</ul>")
+			if not has_elections:
+				self.write("<div>No elections queued yet.</div>")
 
 		self.write(self.render_string("basic_footer.html"))
 
@@ -59,4 +63,4 @@ class DJElectionAlbumList(AlbumList):
 @handle_url("/admin/song_list/dj_election")
 class DJElectionSongList(SongList):
 	def render_row_special(self, row):
-		self.write("<td><a onclick=\"window.top.call_api('admin/add_to_dj_election', { 'song_id': %s, 'song_sid': %s });\">queue up</a>" % (row['id'], self.sid))
+		self.write("<td><a onclick=\"window.top.call_api('admin/add_to_dj_election', { 'song_id': %s, 'song_sid': %s });\">add to election</a>" % (row['id'], self.sid))

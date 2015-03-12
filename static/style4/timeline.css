@@ -167,7 +167,7 @@ div.timeline_song a.song_link:hover, div.timeline_song a.song_link:hover span {
 body.show_artists div#timeline div.timeline_next div.timeline_song_content div.artist, body.show_artists div#timeline div.timeline_next div.timeline_song_content div.album_group {
 	display: block;
 	font-size: 0.9em;
-} 
+}
 
 body.show_artists div#timeline div.timeline_song_content div.artist span:first-child, body.show_artists div#timeline div.timeline_song_content span.album_name:first-child {
 	margin-left: 15px;
@@ -203,7 +203,7 @@ div.timeline_song div.request_indicator {
 	opacity: 1;
 	padding-right: 1.5em;
 
-	@include transform(rotate(-90deg) translateX(-100%)); 
+	@include transform(rotate(-90deg) translateX(-100%));
 	-webkit-transform-origin: 0% 0%;
 	        transform-origin: 0% 0%;
 }
@@ -314,7 +314,7 @@ img.art_image {
 
 div.timeline_not_showing_losers div.timeline_song.timeline_losing_song,
 div.timeline_event.timeline_history div.timeline_song.timeline_losing_song,
-body.small_screen div.timeline_not_showing_losers div.timeline_song.timeline_losing_song, 
+body.small_screen div.timeline_not_showing_losers div.timeline_song.timeline_losing_song,
 body.small_screen div.timeline_event.timeline_history div.timeline_song.timeline_losing_song {
 	opacity: 0;
 	height: 0px;
@@ -456,6 +456,10 @@ div.timeline_header {
 
 div.timeline_now_playing div.timeline_header {
 	color: $orange;
+
+	a {
+		color: $orange;
+	}
 }
 
 span.timeline_header_clock {

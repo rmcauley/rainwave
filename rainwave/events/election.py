@@ -44,7 +44,10 @@ class ElectionProducer(event.BaseProducer):
 		self.elec_class = Election
 
 	def has_next_event(self):
-		return True
+		if not self.id:
+			return True
+		else:
+			return db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_used = FALSE AND sched_id = %s", (self.elec_type, self.sid, self.id))
 
 	#pylint: disable=W0221
 	def load_next_event(self, target_length = None, min_elec_id = 0, skip_requests = False):
@@ -54,6 +57,8 @@ class ElectionProducer(event.BaseProducer):
 			elec.url = self.url
 			elec.name = self.name
 			return elec
+		elif self.id:
+			return None
 		else:
 			return self._create_election(target_length, skip_requests)
 	#pylint: enable=W0221
