@@ -86,7 +86,7 @@ class DJEventList(api.web.HTMLRequest):
 		if not len(evts):
 			self.write("<div>You have no upcoming events.</div>")
 		for row in evts:
-			self.write("<div><a href=\"#\" onclick=\"window.top.dj_election_sched_id = %s; window.top.current_tool = 'dj_election'; window.top.change_screen();\">%s</div>" % (row['sched_id'], row['sched_name']))
+			self.write("<div><a href=\"#\" onclick=\"window.top.dj_election_sched_id = %s; window.top.current_tool = 'dj_election'; window.top.change_screen();\">%s (%s)</div>" % (row['sched_id'], row['sched_name'], config.station_id_friendly[row['sid']]))
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/dj_tools")
@@ -96,13 +96,13 @@ class DJTools(api.web.HTMLRequest):
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="DJ Tools"))
 		if cache.get_station(self.sid, "backend_paused"):
-			self.write("<div style='color: red; font-weight: bold;'>PAUSED</div>")
+			self.write("<div style='color: red; font-weight: bold;'>%s PAUSED</div>" % config.station_id_friendly[self.sid])
 		else:
-			self.write("<div>Running</div>")
+			self.write("<div>%s Running</div>" % config.station_id_friendly[self.sid])
 		self.write("<br />")
-		self.write("<div><a onclick=\"window.top.call_api('admin/dj/pause');\">Pause station</a></div>")
+		self.write("<div><a onclick=\"window.top.call_api('admin/dj/pause');\">Pause %s</a></div>" % config.station_id_friendly[self.sid])
 		self.write("<br />")
-		self.write("<div><a onclick=\"window.top.call_api('admin/dj/unpause');\">Unpause station</a></div>")
+		self.write("<div><a onclick=\"window.top.call_api('admin/dj/unpause');\">Unpause %s</a></div>" % config.station_id_friendly[self.sid])
 		self.write("<br />")
 		self.write("<div><a onclick=\"window.top.call_api('admin/dj/skip');\">Skip current song</a></div>")
 		self.write(self.render_string("basic_footer.html"))

@@ -17,7 +17,8 @@ class DJElectionTool(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="%s DJ Election Tool" % config.station_id_friendly[self.sid]))
 		self.write("<script>\nwindow.top.refresh_all_screens = true;\n</script>")
 		if self.get_argument("sched_id", None):
-			self.write("<h2>%s Elections</h2>" % db.c.fetch_var("SELECT sched_name FROM r4_schedule WHERE sched_id = %s", (self.get_argument("sched_id"),)))
+			self.write("<h2>%s Elections" % (db.c.fetch_var("SELECT sched_name FROM r4_schedule WHERE sched_id = %s", (self.get_argument("sched_id"),))))
+			self.write(" (%s)</h2>" % config.station_id_friendly[db.c.fetch_var("SELECT sid FROM r4_schedule WHERE sched_id = %s", (self.get_argument("sched_id"),))])
 		else:
 			self.write("<h2>%s DJ Election Tool</h2>" % config.station_id_friendly[self.sid])
 		self.write("<ul><li>Once committed, the election cannot be edited.</li>")
