@@ -99,12 +99,12 @@ class DJTools(api.web.HTMLRequest):
 			self.write("<div style='color: red; font-weight: bold;'>%s PAUSED</div>" % config.station_id_friendly[self.sid])
 		else:
 			self.write("<div>%s Running</div>" % config.station_id_friendly[self.sid])
-		self.write("<br />")
 		self.write("<div><a onclick=\"window.top.call_api('admin/dj/pause');\">Pause %s</a></div>" % config.station_id_friendly[self.sid])
-		self.write("<br />")
 		self.write("<div><a onclick=\"window.top.call_api('admin/dj/unpause');\">Unpause %s</a></div>" % config.station_id_friendly[self.sid])
-		self.write("<br />")
 		self.write("<div><a onclick=\"window.top.call_api('admin/dj/skip');\">Skip current song</a></div>")
+		self.write("<div>Pause ID3 Title: <input type='text' id='pause_title' value=\"%s\" />" % (cache.get_station(self.sid, "pause_title") or "",))
+		self.write(		"<button onclick=\"window.top.call_api('admin/dj/pause_title', { 'title': document.getElementById('pause_title').value });\" />Change</button>")
+		self.write("</div>")
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/relay_status")

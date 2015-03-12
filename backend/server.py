@@ -50,7 +50,9 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 				raise
 
 			to_send = None
-			if not config.get("liquidsoap_annotations"):
+			if cache.get_station(self.sid, "backend_paused"):
+				to_send = self._get_pause_file()
+			elif not config.get("liquidsoap_annotations"):
 				to_send = schedule.get_advancing_file(self.sid)
 			else:
 				to_send = self._get_annotated(schedule.get_advancing_event(self.sid))
@@ -58,6 +60,18 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			self.success = True
 			if not cache.get_station(self.sid, "get_next_socket_timeout"):
 				self.write(to_send)
+
+	def _get_pause_file(self):
+		if not config.get("liquidsoap_annotations"):
+			return config.get("pause_file")
+
+		string = "annotate:crossfade=0,use_suffix=1,"
+		if cache.get_station(self.sid, "pause_title"):
+			string += "title=\"%s\"" % cache.get_station(self.sid, "pause_title")
+		else:
+			string += "title=\"Intermission\""
+		string += ":" + config.get("pause_file")
+		return string
 
 	def _get_annotated(self, e):
 		string = "annotate:crossfade=\""
