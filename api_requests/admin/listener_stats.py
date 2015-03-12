@@ -31,13 +31,16 @@ class ListenerStats(api.web.APIHandler):
 			raise APIException("invalid_argument", text="Start date cannot be after end date.")
 		timespan = self.date_end - self.date_start
 		if timespan <= (86400 * 2):
-			sql = "SELECT lc_time, lc_guests AS lc_listeners FROM r4_listener_counts WHERE lc_time > %s AND lc_time < %s AND sid = %s ORDER BY lc_time"
-			dateformat = "%Y-%m-%d %H:%M"
-		elif timespan <= (86400 * 7):
 			sql = "SELECT (lc_time - (lc_time %% 3600)) AS lc_time, ROUND(CAST(AVG(lc_guests) AS NUMERIC), 1) AS lc_listeners FROM r4_listener_counts WHERE lc_time > %s AND lc_time < %s AND sid = %s GROUP BY (lc_time - (lc_time %% 3600)) ORDER BY lc_time"
 			dateformat = "%Y-%m-%d %H:00"
-		else:
+		elif timespan <= (86400 * 7):
+			sql = "SELECT (lc_time - (lc_time %% (3600 * 6))) AS lc_time, ROUND(CAST(AVG(lc_guests) AS NUMERIC), 1) AS lc_listeners FROM r4_listener_counts WHERE lc_time > %s AND lc_time < %s AND sid = %s GROUP BY (lc_time - (lc_time %% (3600 * 6))) ORDER BY lc_time"
+			dateformat = "%Y-%m-%d %H:00"
+		elif timespan <= (86400 * 30):
 			sql = "SELECT (lc_time - (lc_time %% 86400)) AS lc_time, ROUND(CAST(AVG(lc_guests) AS NUMERIC), 1) AS lc_listeners FROM r4_listener_counts WHERE lc_time > %s AND lc_time < %s AND sid = %s GROUP BY (lc_time - (lc_time %% 86400)) ORDER BY lc_time"
+			dateformat = "%Y-%m-%d"
+		else:
+			sql = "SELECT (lc_time - (lc_time %% (86400 * 7))) AS lc_time, ROUND(CAST(AVG(lc_guests) AS NUMERIC), 1) AS lc_listeners FROM r4_listener_counts WHERE lc_time > %s AND lc_time < %s AND sid = %s GROUP BY (lc_time - (lc_time %% (86400 * 7))) ORDER BY lc_time"
 			dateformat = "%Y-%m-%d"
 		res = {}
 		config.station_ids = (1, 2, 3, 4, 5)
@@ -50,7 +53,7 @@ class ListenerStats(api.web.APIHandler):
 
 @handle_api_url("admin/listener_stats_by_hour")
 class ListenerStatsAggregate(ListenerStats):
-	description = "Get listener stats aggregated by hour, in order to see listener trends."
+	description = "Get listener stats aggregated by 4 hour chunks, in order to see listener trends."
 
 	def post(self):
 		if self.get_argument("date_start"):
@@ -63,7 +66,7 @@ class ListenerStatsAggregate(ListenerStats):
 			self.date_end = time.time()
 		sql = ("SELECT aggr_time AS lc_time, ROUND(CAST(AVG(lc_guests) AS NUMERIC), 1) AS lc_listeners "
 				"FROM ( "
-					"SELECT (((lc_time %% 86400) / 3600) * 3600) + (((lc_time %% (86400 * 7)) / 86400) * 86400) AS aggr_time, lc_guests "
+					"SELECT (((lc_time %% 86400) / 14400) * 14400) + (((lc_time %% (86400 * 7)) / 86400) * 86400) AS aggr_time, lc_guests "
 						"FROM r4_listener_counts "
 						"WHERE lc_time > %s AND lc_time < %s AND sid = %s "
 				") AS lc_listeners "
