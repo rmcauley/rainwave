@@ -9,6 +9,7 @@ from libs import log
 from rainwave import playlist
 from rainwave import request
 from rainwave.events import event
+from rainwave.playlist_objects.song import SongNonExistent
 
 _request_interval = {}
 _request_sequence = {}
@@ -113,7 +114,10 @@ class Election(event.BaseEvent):
 		elec.timed = False
 		elec.sched_id = row['sched_id']
 		for song_row in db.c.fetch_all("SELECT * FROM r4_election_entries WHERE elec_id = %s", (elec_id,)):
-			song = playlist.Song.load_from_id(song_row['song_id'], elec.sid)
+			try:
+				song = playlist.Song.load_from_id(song_row['song_id'], elec.sid)
+			except SongNonExistent:
+				song = playlist.Song.load_from_id(song_row['song_id'], db.c.fetch_var("SELECT song_origin_sid FROM r4_songs WHERE song_id = %s", song_row['song_id']))
 			song.data['entry_id'] = song_row['entry_id']
 			song.data['entry_type'] = song_row['entry_type']
 			song.data['entry_position'] = song_row['entry_position']
