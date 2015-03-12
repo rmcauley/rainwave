@@ -81,7 +81,7 @@ class DJEventList(api.web.HTMLRequest):
 	dj_preparation = True
 
 	def get(self):
-		evts = db.c.fetch_all("SELECT * FROM r4_schedule WHERE sched_dj_user_id = %s", (self.user.id,))
+		evts = db.c.fetch_all("SELECT * FROM r4_schedule WHERE sched_dj_user_id = %s AND sched_used = FALSE", (self.user.id,))
 		self.write(self.render_string("bare_header.html", title="Event List"))
 		if not len(evts):
 			self.write("<div>You have no upcoming events.</div>")
@@ -99,8 +99,8 @@ class DJTools(api.web.HTMLRequest):
 			self.write("<div style='color: red; font-weight: bold;'>%s PAUSED</div>" % config.station_id_friendly[self.sid])
 		else:
 			self.write("<div>%s Running</div>" % config.station_id_friendly[self.sid])
-		self.write("<div><a onclick=\"window.top.call_api('admin/dj/pause');\">Pause %s</a></div>" % config.station_id_friendly[self.sid])
-		self.write("<div><a onclick=\"window.top.call_api('admin/dj/unpause');\">Unpause %s</a></div>" % config.station_id_friendly[self.sid])
+		self.write("<div><a onclick=\"window.top.call_api('admin/dj/pause'); setTimeout(function() { window.location.reload(); }, 1000);\">Pause %s</a></div>" % config.station_id_friendly[self.sid])
+		self.write("<div><a onclick=\"window.top.call_api('admin/dj/unpause'); setTimeout(function() { window.location.reload(); }, 1000);\">Unpause %s</a></div>" % config.station_id_friendly[self.sid])
 		self.write("<div><a onclick=\"window.top.call_api('admin/dj/skip');\">Skip current song</a></div>")
 		self.write("<div>Pause ID3 Title: <input type='text' id='pause_title' value=\"%s\" />" % (cache.get_station(self.sid, "pause_title") or "",))
 		self.write(		"<button onclick=\"window.top.call_api('admin/dj/pause_title', { 'title': document.getElementById('pause_title').value });\" />Change</button>")

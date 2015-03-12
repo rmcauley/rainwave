@@ -129,6 +129,9 @@ def post_process(sid):
 
 		start_time = time.time()
 		current[sid].finish()
+		for sched_id in db.c.fetch_list("SELECT sched_id FROM r4_schedule WHERE sched_end < %s AND sched_used = FALSE", (time.time(),)):
+			t_evt = events.event.BaseProducer.load_producer_by_id(sched_id)
+			t_evt.finish()
 		log.debug("post", "Current finish time: %.6f" % (time.time() - start_time,))
 
 		start_time = time.time()
