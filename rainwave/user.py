@@ -336,7 +336,7 @@ class User(object):
 		requests = []
 		if db.c.is_postgres:
 			requests = db.c.fetch_all(
-				"SELECT r4_request_store.song_id AS id, COALESCE(r4_song_sid.sid, r4_request_store.sid) AS sid, "
+				"SELECT r4_request_store.song_id AS id, COALESCE(r4_song_sid.sid, r4_request_store.sid) AS sid, r4_songs.song_origin_sid AS origin_sid "
 					"r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
 					"song_rating AS rating, song_title AS title, song_length AS length, "
 					"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, "

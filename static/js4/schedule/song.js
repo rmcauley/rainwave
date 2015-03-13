@@ -144,7 +144,7 @@ var TimelineSong = function() {
 			}
 			else if (("valid" in self.data) && !self.data.valid) {
 				$add_class(self.el, "timeline_song_is_cool");
-				self.elements.cooldown.textContent = $l("request_only_on_x", { "station": $l("station_name_" + self.data.sid) });
+				self.elements.cooldown.textContent = $l("request_only_on_x", { "station": $l("station_name_" + self.data.origin_sid) });
 			}
 			else if (self.data.cool && (self.data.cool_end > (Clock.now + 20))) {
 				$add_class(self.el, "timeline_song_is_cool");
