@@ -27,6 +27,10 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		else:
 			return
 
+		if cache.get_station(self.sid, "backend_paused"):
+			self.write(self._get_pause_file())
+			return
+
 		# This program must be run on 1 station for 1 instance, which would allow this operation to be safe.
 		# Also works if 1 process is serving all stations.  Pinging any instance for any station
 		# would break the program here, though.
@@ -50,9 +54,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 				raise
 
 			to_send = None
-			if cache.get_station(self.sid, "backend_paused"):
-				to_send = self._get_pause_file()
-			elif not config.get("liquidsoap_annotations"):
+			if not config.get("liquidsoap_annotations"):
 				to_send = schedule.get_advancing_file(self.sid)
 			else:
 				to_send = self._get_annotated(schedule.get_advancing_event(self.sid))
