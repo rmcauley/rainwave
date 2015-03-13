@@ -151,7 +151,7 @@ var EventBase = function(json) {
 			if (self.data.voting_allowed) {
 				self.enable_voting();
 			}
-			else if ((self.type == "Election") && (self.songs.length > 1)) {
+			else if ((self.type == "Election") && (self.songs.length > 1) && !self.data.used) {
 				self.enable_voting();
 			}
 		}
