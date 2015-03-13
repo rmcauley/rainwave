@@ -46,6 +46,7 @@
    "request_queue_paused"                            : "Fila de pedidos pausada.",
    "request_queue_unpaused"                          : "Fila de pedidos despausada.",
    "no_results"                                      : "Nenhum resultado.",
+   "server_just_started"                             : "A Rainwave está sendo reiniciada",
 
    "__comment__"                 : "API Key Management",
 
@@ -73,7 +74,7 @@
    "extended_history_header"                         : "Histórico estendido",
    "special_event_on_now"                            : "Evento especial: ",
    "special_event_alert"                             : "Evento especial na %(station): ",
-   
+
    "tunein"                                          : "Tocar",
    "stop"                                            : "Parar",
    "audio_error"                                     : "Não foi possível tocar em seu navegador!",
@@ -144,6 +145,7 @@
    "hotkey_mode"                                     : "1-5 para avaliar, A/S/D para votar",
    "invalid_hotkey"                                  : "Atalho inválido.",
    "not_an_election"                                 : "Não há eleição.",
+   "rate_song_mobile_dialog"                         : "Avaliar Música",
 
    "catastrophic_error"                              : "A Rainwave travou :(",
    "submit_javascript_error"                         : "Por favor envie o relatório de erro abaixo no fórum para que possamos consertar.",
@@ -167,7 +169,12 @@
    "typeanywhere"                                    : "Basta começar a digitar!",
    "clearfilter"                                     : "Limpar filtro",
    "album_rating_ranked_at_v2"                       : "Avaliado em %(rating) por %(rating_count) avaliações, %(rank)º no ranking.",
-   "album_requests_ranked_at"                        : "Pedida %(count) &(count:vez/vezes), %(rank)º no ranking.",
+   "album_requests_ranked_at"                        : "Pedido %(count) &(count:vez/vezes), %(rank)º no ranking.",
+   "album_year"                                      : "Lançado em %(year).",
+   "song_extradetail_rating"                         : "Avaliação: %(rating) (por %(rating_count) pessoas)",
+   "song_extradetail_rating_rank"                    : "Ranking de avaliações: #(rank)",
+   "song_extradetail_requests"                       : "Pedidos: %(count) &(count:vez/vezes)",
+   "song_extradetail_requests_rank"                  : "Ranking de pedidos: #(rank)",
    "Request"                                         : "Pedir",
    "Albums"                                          : "Álbuns",
    "Artists"                                         : "Artistas",
@@ -194,7 +201,7 @@
    "request_grab_tag__warning"                       : "Aviso",
    "request_grab_tag__paused"                        : "Pausado",
    "requests_grab_tab__num_requests"                 : "%(num_requests) &(num_requests:Pedido/Pedidos)",
-   
+
    "cancel_request"                                  : "Cancelar pedido",
    "request_on_cooldown_for"                         : "Em repouso por %(cool_time).",
    "request_on_cooldown_ends_soon"                   : "Saindo do repouso.",
@@ -232,7 +239,7 @@
    "change_language"                                 : "Idioma",
    "timeline_preferences"                            : "Linha do tempo",
    "tab_title_preferences"                           : "Título da aba",
-   "prefs_notify"                                    : "Exibir notificações quanto tocar as músicas",
+   "prefs_notify"                                    : "Exibir notificações quando tocar as músicas",
    "prefs_show_clock_in_titlebar"                    : "Exibir relógio no título",
    "prefs_show_rating_in_titlebar"                   : "Exibir avaliação no título",
    "prefs_show_title_in_titlebar"                    : "Exibir nome da música no título",
@@ -249,6 +256,10 @@
    "prefs_sort_playlist_by_cool"                     : "Repouso",
    "prefs_show_artists"                              : "Exibir artistas na linha do tempo",
    "prefs_show_losing_songs"                         : "Exibir músicas que perderam a eleição",
+   "prefs_requests_auto_slide"                       : "Exibir painel de pedidos se houver alguma mudança",
+   "rating_preferences"                              : "Avaliações",
+   "prefs_hide_global_ratings"                       : "Ocultar avaliações globais até que eu tenha avaliado",
+   "prefs_detail_global_ratings"                     : "Exibir avaliações globais nas listas de música",
    "m3u_downloads"                                   : "Downloads de M3U",
    "skip_intro_mode"                                 : "Pular modo introdutório",
    "do_intro_mode"                                   : "Voltar ao modo introdutório",
@@ -290,5 +301,7 @@
    "file"                                            : "File",
    "error"                                           : "Error",
    "url"                                             : "URL",
-   "sched_length_minutes"                            : "Length (min.)"
+   "sched_length_minutes"                            : "Length (min.)",
+   "backend_scan_errors"                             : "Backend Scan Errors",
+   "producers"                                       : "Producers"
 }
