@@ -147,8 +147,13 @@ var EventBase = function(json) {
 	};
 
 	self.check_voting = function() {
-		if (User.tuned_in && (!User.locked || (User.lock_sid == BOOTSTRAP.sid)) && self.data.voting_allowed) {
-			self.enable_voting();
+		if (User.tuned_in && (!User.locked || (User.lock_sid == BOOTSTRAP.sid))) {
+			if (self.data.voting_allowed) {
+				self.enable_voting();
+			}
+			else if ((self.type == "Election") && (self.songs.length > 1)) {
+				self.enable_voting();
+			}
 		}
 		else {
 			self.disable_voting();
