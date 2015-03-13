@@ -86,7 +86,7 @@ class SongGroup(AssociatedMetadata):
 				"JOIN r4_albums USING (album_id) "
 				"LEFT JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) "
 				"LEFT JOIN r4_song_ratings ON (r4_song_group.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
-			"WHERE r4_song_group.group_id = %s AND r4_songs.song_verified = TRUE "
+			"WHERE r4_song_group.group_id = %s AND r4_songs.song_verified = TRUE AND r4_song_sid.song_exists = TRUE "
 			"ORDER BY song_exists DESC, album_year NULLS FIRST, album_name, song_disc_number NULLS FIRST, song_track_number NULLS FIRST, song_title",
 			(sid, sid, user_id, self.id))
 		# And of course, now we have to burn extra CPU cycles to make sure the right album name is used and that we present the data
