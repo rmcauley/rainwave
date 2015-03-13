@@ -340,26 +340,9 @@ var Schedule = function() {
 	};
 
 	self.tune_in_voting_allowed_check = function(json) {
-		var evt, i;
 		if (!sched_next) return;
-		if (json.tuned_in && (!json.locked || (json.lock_sid == BOOTSTRAP.sid))) {
-			for (i = 0; i < sched_next.length; i++) {
-				evt = find_event(sched_next[i].id);
-				if (evt && (evt.type == "Election")) {
-					evt.data.voting_allowed = true;
-					evt.enable_voting();
-				}
-				if (!json.perks) break;
-			}
-		}
-		else {
-			for (i = 0; i < sched_next.length; i++) {
-				evt = find_event(sched_next[i].id);
-				if (evt) {
-					evt.data.voting_allowed = false;
-					evt.disable_voting();
-				}
-			}
+		for (var i = 0; i < sched_next.length; i++) {
+			find_event(sched_next[i].id).check_voting();
 		}
 	};
 

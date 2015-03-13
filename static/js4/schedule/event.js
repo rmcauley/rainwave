@@ -74,12 +74,7 @@ var EventBase = function(json) {
 		self.start = json.start;
 		self.predicted_start = json.predicted_start;
 		self.start_actual = json.start_actual;
-		if (self.data.voting_allowed) {
-			self.enable_voting();
-		}
-		else {
-			self.disable_voting();
-		}
+		self.check_voting();
 
 		if (self.songs) {
 			for (var i = 0; i < self.songs.length; i++) {
@@ -149,6 +144,15 @@ var EventBase = function(json) {
 		$remove_class(self.el, "timeline_now_playing");
 		$remove_class(self.songs[0].el, "timeline_now_playing_song");
 		$add_class(self.el, "timeline_history");
+	};
+
+	self.check_voting = function() {
+		if (User.tuned_in && (!User.locked || (User.lock_sid == BOOTSTRAP.sid)) && self.data.voting_allowed) {
+			self.enable_voting();
+		}
+		else {
+			self.disable_voting();
+		}
 	};
 
 	self.enable_voting = function() {
@@ -252,8 +256,6 @@ var EventBase = function(json) {
 	};
 
 	draw();
-	if (self.data.voting_allowed) {
-		self.enable_voting();
-	}
+	self.check_voting();
 	return self;
 };
