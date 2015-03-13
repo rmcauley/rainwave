@@ -123,7 +123,7 @@ class RelayStatus(api.web.HTMLRequest):
 		self.write("</div>")
 		self.write("<div>")
 		total = 0
-		for row in db.c.fetch_all("SELECT sid, lc_guests AS c FROM r4_listener_counts ORDER BY lc_time, sid DESC LIMIT %s", (len(config.station_ids),)):
+		for row in db.c.fetch_all("SELECT sid, lc_guests AS c FROM r4_listener_counts ORDER BY lc_time DESC, sid LIMIT %s", (len(config.station_ids),)):
 			total += row['c']
 			self.write("%s: %s listeners<br />" % (config.station_id_friendly[row['sid']], row['c']))
 		if total == 0:
