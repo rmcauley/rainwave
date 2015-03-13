@@ -346,6 +346,7 @@ def create_tables():
 			song_exists					BOOLEAN		DEFAULT TRUE, \
 			song_request_only			BOOLEAN		DEFAULT FALSE, \
 			song_request_only_end		INTEGER		DEFAULT 0 \
+			primary key (song_id, sid) \
 		)")
 	# c.create_idx("r4_song_sid", "song_id")	# handled by create_delete_fk
 	c.create_idx("r4_song_sid", "sid")
@@ -363,9 +364,10 @@ def create_tables():
 			song_rated_at				INTEGER		, \
 			song_rated_at_rank			INTEGER		, \
 			song_rated_at_count			INTEGER		, \
-			song_fave				BOOLEAN \
+			song_fave				BOOLEAN, \
+			primary key (user_id, song_id) \
 		)")
-	c.create_idx("r4_song_ratings", "user_id", "song_id")
+	# c.create_idx("r4_song_ratings", "user_id", "song_id") Should be handled by primary key
 	c.create_idx("r4_song_ratings", "song_fave")
 	c.create_delete_fk("r4_song_ratings", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_ratings", "phpbb_users", "user_id")
@@ -391,6 +393,7 @@ def create_tables():
 			album_vote_count			INTEGER		DEFAULT 0, \
 			album_votes_seen			INTEGER		DEFAULT 0, \
 			album_vote_share			REAL 		\
+			primary key (album_id, sid) \
 		)")
 	c.create_idx("r4_album_sid", "album_rating")
 	c.create_idx("r4_album_sid", "album_request_count")
@@ -407,8 +410,9 @@ def create_tables():
 			album_rating_user		REAL		, \
 			album_fave				BOOLEAN, \
 			album_rating_complete	BOOLEAN		DEFAULT FALSE \
+			primary key (user_id, album_id, sid) \
 		)")
-	c.create_idx("r4_album_ratings", "user_id", "album_id")
+	# c.create_idx("r4_album_ratings", "user_id", "album_id") Should be handled by primary key.
 	c.create_idx("r4_album_ratings", "sid")
 	c.create_idx("r4_album_ratings", "album_fave")
 	c.create_delete_fk("r4_album_ratings", "r4_albums", "album_id", create_idx=False)
@@ -416,7 +420,7 @@ def create_tables():
 
 	c.update(" \
 		CREATE TABLE r4_artists		( \
-			artist_id				SERIAL		NOT NULL PRIMARY KEY, \
+			artist_id				SERIAL		PRIMARY KEY, \
 			artist_name				TEXT		, \
 			artist_name_searchable	TEXT 		NOT NULL \
 		)")
@@ -427,6 +431,7 @@ def create_tables():
 			artist_id				INTEGER		NOT NULL, \
 			artist_order			SMALLINT    DEFAULT 0, \
 			artist_is_tag			BOOLEAN		DEFAULT TRUE \
+			primary key (artist_id, song_id) \
 		)")
 	# c.create_idx("r4_song_artist", "song_id")		# handled by create_delete_fk
 	# c.create_idx("r4_song_artist", "artist_id")
@@ -447,6 +452,7 @@ def create_tables():
 			song_id					INTEGER		NOT NULL, \
 			group_id				INTEGER		NOT NULL, \
 			group_is_tag			BOOLEAN		DEFAULT TRUE \
+			primary key (group_id, song_id) \
 		)")
 	# c.create_idx("r4_song_group", "song_id")		# handled by create_delete_fk
 	# c.create_idx("r4_song_group", "group_id")
