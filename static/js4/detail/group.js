@@ -12,8 +12,9 @@ var GroupView = function(view, json) {
 			subheader.addEventListener("click", function(e) { DetailView.open_album(e.target._album_id); });
 		}
 		var name = json.all_songs_for_sid[album_id][0].albums[0].name;
-		if( json.all_songs_for_sid[album_id][0].albums[0].year )
-			name = json.all_songs_for_sid[album_id][0].albums[0].year +" - "+name;
+		if (SITE_CONFIG.use_years_in_sort && json.all_songs_for_sid[album_id][0].albums[0].year) {
+			name = json.all_songs_for_sid[album_id][0].albums[0].year + " - " + name;
+		}
 		all_tables.push({
 			"table": SongsTable(json.all_songs_for_sid[album_id], SITE_CONFIG.album_view_columns),
 			"name": name,

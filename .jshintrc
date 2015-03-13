@@ -2,6 +2,7 @@
   "globals": {
     "console": true,
 
+    "SITE_CONFIG": true,
     "ADMIN": true,
     "MOBILE": true,
     "BOOTSTRAP": true,
