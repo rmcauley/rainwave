@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.code }}">
+<head>
+	<title>Rainwave</title>
+	<meta charset="UTF-8" />
+	<meta name="description" content="{{ site_description }}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	{% if apple_home_screen_icon %}
+		<link href="{{ apple_home_screen_icon }}" rel="apple-touch-icon" />
+	{% end %}
+	<script type="text/javascript">
+		var BOOTSTRAP = {
+			"cookie_domain": "{{ cookie_domain }}",
+			"api_url": "{{ api_url }}",
+			"sid": "{{ request.sid }}",
+			"locales": {{ locales }},
+			"relays": {{ relays }},
+			"stream_filename": "{{ stream_filename }}",
+			"station_list": {{ station_list }},
+			"json": {{ json_encode(request.json_payload) }}
+		};
+	</script>
+
+	<style media="(min-width: 1025px)">
+		@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700);
+	</style>
+	
+	{% if jsfiles %}
+		<link href="/static/baked/{{ revision_number }}/style4b.css" type="text/css" rel="stylesheet" />
+	{% else %}
+		<link href="/static/baked/{{ revision_number }}/style4.css" type="text/css" rel="stylesheet" />
+	{% end %}
+
+	<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.3/fastclick.min.js" type="application/javascript"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.1-beta.2/Chart.min.js" type="application/javascript"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js" defer></script>
+	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js" type="application/javascript"></script>
+
+	{% if jsfiles %}
+		{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
+	{% else %}
+		<script src="/static/baked/{{ revision_number }}/script5.js" type="application/javascript"></script>
+	{% end %}
+</head>
+
+<body class="loading unselectable">
+	<div id="div_with_scroll" style="position: absolute; top:-1500px; width: 100px; overflow: scroll; height: 150px;">
+		<div style="height: 100px; width: 10px;">&nbsp;</div>
+	</div>
+	<div id="measure_box">
+		<div id="playlist_item_height" class="searchlist_item">&nbsp;</div>
+	</div>
+</body>
+</html>

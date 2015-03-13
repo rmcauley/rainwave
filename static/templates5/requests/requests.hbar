@@ -1,0 +1,16 @@
+<div class="scrollblock">
+	<div class="toolbar">
+		<span bind="pause">P<span>
+		<span bind="favfill">Fav</span>
+		<span bind="unrated">Unrated</span>
+		<span bind="clear">Clear</span>
+		<span bind="pin">Pin</span>
+	</div>
+	<div class="header">
+		{{ $l("Requests") }}
+	</div>
+	<div class="scrollable">
+		<div class="scrollbar scrollbar_invisible"></div>
+		<div id="requests_list" bind="content"></div>
+	</div>
+</div>

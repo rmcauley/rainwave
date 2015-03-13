@@ -1,0 +1,5 @@
+<div class="searchlist scrollable" bind="list">
+	<div class="searchlist_stretcher" bind="stretcher"></div>
+	<div class="scrollbar scrollbar_invisible" bind="scrollbar"></div>
+	<div class="searchlist_items" bind="items"></div>
+</div>

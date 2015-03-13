@@ -1,0 +1,84 @@
+div.scrollblock {
+	padding: 0;
+	overflow: hidden;
+}
+
+div.scrollable {
+	box-sizing: border-box;
+	overflow: scroll;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	@include transition(padding);
+}
+
+div.scrollbar {
+	position: absolute;
+	z-index: 90;
+	background-color: inherit;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #888;
+	left: 100%;
+	width: 5px;
+	height: 0px;
+	opacity: 0.5;
+	padding: 0;
+	margin: 0;
+	@include transform(translateX(-10px));
+	@include transition-wtime(250ms, width, opacity, transform, border-color, background-color, height);
+}
+
+div.scrollbar_invisible {
+	opacity: 0;
+}
+
+div.scrollbar:hover {
+	background: #AAB;
+	width: 10px;
+	opacity: 1;
+	border-color: #000;
+	@include transform(translateX(-15px));
+}
+
+div.scrollbar:active {
+	background-color: #556;
+	border-color: #000;
+	width: 10px;
+	opacity: 1;
+	@include transform(translateX(-15px));
+}
+
+div.resizer {
+	z-index: 3;
+	background-color: inherit;
+	position: absolute;
+	border-top: solid 1px #888;
+	top: 2px;
+	left: 100%;
+	width: 5px;
+	height: 28px;
+	opacity: 1;
+	cursor: col-resize;
+	@include transform(translateX(-10px));
+	@include transition-wtime(200ms, width, opacity, transform, border-color, background-color);
+}
+
+body.stage_0 div.resizer, body.stage_1 div.resizer, body.stage_2 div.resizer {
+	display: none;
+}
+
+#lists_resizer.resizer {
+	@include transform(translateX(-5px));
+}
+
+div.resizer:hover {
+	background: #AAB;
+	width: 10px;
+	opacity: 1;
+	border-color: #000;
+	@include transform(translateX(-15px));
+}
+
+#lists_resizer.resizer:hover {
+	@include transform(translateX(-10px));
+}

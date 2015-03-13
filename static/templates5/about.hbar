@@ -1,0 +1,40 @@
+<div class="setting_group setting_group_special">
+	<div class="multi_select multi_select_special">
+		<span>
+			<a id="about_donations_link" href="http://rainwave.cc/pages/tip_jar" target="_blank"></a>
+		</span>
+	</div>
+	<label id="about_donations_label"></label>
+</div>
+
+<div class="setting_group setting_group_special">
+	<div class="multi_select multi_select_special">
+		<span>
+			<a id="about_github_link" href="http://github.com/rmcauley/rainwave" target="_blank"></a>
+		</span>
+	</div>
+	<label id="about_github_label"></label>
+</div>
+
+<div><a class="link_obvious" href="http://github.com/rmcauley/rainwave/" target="_blank" id="github_link"></a></div>
+
+<div class="setting_subheader" id="staff_list_header"></div>
+<div class="setting_group">Jon Funk, Metal-Ridley, Nat, Rob McAuley, SOcean255, Tom Helmuth, William Jackson</div>
+
+<div class="setting_subheader" id="relay_sponsors_header"></div>
+<div class="setting_group">Cory Petosky, <a class="link_obvious" target="_blank" href="http://www.easynews.com">Dracoirs</a>, Joe Love</div>
+
+<div class="setting_subheader" id="design_by"></div>
+<div class="setting_group"><a class="link_obvious" target="_blank" href="http://frzi.com">Freek Zijlmans (frzi.com)</a></div>
+
+<div class="setting_subheader" id="translators_header"></div>
+<div class="setting_group">BreadMaker (ES), DarkLink (DE), Metal-Ridley (FR), Metal-Geo (NL), quarterlife (FI), tjader (PT)</div>
+
+<div class="setting_subheader" id="icon_attribution"></div>
+<div class="setting_group">Facebook Icon: <a class="link_obvious" target="_blank" href="http://www.thenounproject.com/megapixl">Niels Gesquiere</a></div>
+<div class="setting_group">Info Icon: <a class="link_obvious" target="_blank" href="http://www.thenounproject.com/melvin.poppelaars">Melvin Poppelaars</a></div>
+<div class="setting_group">Settings Icon: <a class="link_obvious" target="_blank" href="http://www.thenounproject.com/r0">Ryan Oksenhorn</a></div>
+<div class="setting_group">Sort Icon: <a class="link_obvious" target="_blank" href="http://www.thenounproject.com/NemanjaIvanovic">Nemanja Ivanovic</a></div>
+<div class="setting_group">User Icon: <a class="link_obvious" target="_blank" href="http://www.thenounproject.com/kolchan">Dima Kolchan</a></div>
+<div class="setting_group">Signal Icon: <a class="link_obvious" target="_blank" href="http://thenounproject.com/Korokoro">Korokoro</a></div>
+<div class="setting_group">Mute Icon: <a class="link_obvious" target="_blank" href="http://thenounproject.com/vaniaplatonov">Vania Platonov</a></div>

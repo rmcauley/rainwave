@@ -1,0 +1,12 @@
+<div class="modal_container" style="display: none;" bind="container">
+	<div class="modal_header_wrapper">
+		<div class="modal_header">
+			<div class="modal_header_content">
+				<span class="icon icon_close"></span>
+				{{ title }}
+			</div>
+		</div>
+	</div>
+	<div class="modal" bind="content"></div>
+	<div class="modal_bottom_border"></div>
+</div>
