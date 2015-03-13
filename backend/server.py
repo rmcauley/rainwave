@@ -63,6 +63,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 
 	def _get_pause_file(self):
 		if not config.get("liquidsoap_annotations"):
+			log.debug("backend", "Station is paused, using: %s" % config.get("pause_file"))
 			return config.get("pause_file")
 
 		string = "annotate:crossfade=0,use_suffix=1,"
@@ -71,6 +72,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		else:
 			string += "title=\"Intermission\""
 		string += ":" + config.get("pause_file")
+		log.debug("backend", "Station is paused, using: %s" % string)
 		return string
 
 	def _get_annotated(self, e):
