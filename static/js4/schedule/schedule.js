@@ -341,8 +341,10 @@ var Schedule = function() {
 
 	self.tune_in_voting_allowed_check = function(json) {
 		if (!sched_next) return;
+		var evt;
 		for (var i = 0; i < sched_next.length; i++) {
-			find_event(sched_next[i].id).check_voting();
+			evt = find_event(sched_next[i].id);
+			if (evt) evt.check_voting();
 		}
 	};
 
