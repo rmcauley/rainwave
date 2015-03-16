@@ -415,6 +415,7 @@ def create_tables():
 	c.create_idx("r4_album_ratings", "user_id", "album_id", "sid") 	#Should be handled by primary key.
 	c.create_idx("r4_album_ratings", "album_id", "sid")
 	c.create_idx("r4_album_ratings", "album_fave")
+	c.create_idx("r4_album_ratings", "album_fave", "sid")
 	c.create_delete_fk("r4_album_ratings", "r4_albums", "album_id", create_idx=False)
 	c.create_delete_fk("r4_album_ratings", "phpbb_users", "user_id", create_idx=False)
 
