@@ -28,8 +28,8 @@ if __name__ == "__main__":
 	db.c.update("ALTER TABLE r4_song_ratings ADD PRIMARY KEY (song_id, user_id)")
 	db.c.update("ALTER TABLE r4_album_sid ADD PRIMARY KEY (album_id, sid)")
 	db.c.update("DROP INDEX r4_album_ratings_user_id_album_id_idx")
-	db.c.update("DROP INDEX r4_album_ratings_user_id_album_id_sid_idx")
-	db.c.update("ALTER TABLE r4_album_ratings ADD PRIMARY KEY (album_id, sid, user_id)")
+	#db.c.update("DROP INDEX r4_album_ratings_user_id_album_id_sid_idx")
+	#db.c.update("ALTER TABLE r4_album_ratings ADD PRIMARY KEY (album_id, sid, user_id)")
 	db.c.update("ALTER TABLE r4_song_artist ADD PRIMARY KEY (artist_id, song_id)")
 	db.c.update("ALTER TABLE r4_song_group ADD PRIMARY KEY (group_id, song_id)")
 

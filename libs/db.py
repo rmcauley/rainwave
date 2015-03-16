@@ -410,11 +410,12 @@ def create_tables():
 			album_rating_user		REAL		, \
 			album_fave				BOOLEAN, \
 			album_rating_complete	BOOLEAN		DEFAULT FALSE \
-			PRIMARY KEY (user_id, album_id, sid) \
 		)")
-	# c.create_idx("r4_album_ratings", "user_id", "album_id") Should be handled by primary key.
-	c.create_idx("r4_album_ratings", "sid")
+	# 			PRIMARY KEY (user_id, album_id, sid) \
+	c.create_idx("r4_album_ratings", "user_id", "album_id", "sid") 	#Should be handled by primary key.
+	c.create_idx("r4_album_ratings", "album_id", "sid")
 	c.create_idx("r4_album_ratings", "album_fave")
+	c.create_idx("r4_album_ratings", "album_fave", "sid")
 	c.create_delete_fk("r4_album_ratings", "r4_albums", "album_id", create_idx=False)
 	c.create_delete_fk("r4_album_ratings", "phpbb_users", "user_id", create_idx=False)
 
