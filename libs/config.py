@@ -18,6 +18,7 @@ station_id_friendly = {}
 station_hostnames = {}
 public_relays = None
 public_relays_json = {}
+station_list = {}
 station_list_json = {}
 station_mounts = {}
 station_mount_filenames = {}
@@ -49,6 +50,7 @@ def load(filename = None, testmode = False):
 	global public_relays
 	global public_relays_json
 	global station_ids
+	global station_list
 	global station_list_json
 	global station_hostnames
 	global station_mount_filenames

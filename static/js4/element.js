@@ -89,12 +89,11 @@ function $has_class(el, class_name) {
 	return true;
 }
 
-
 function $svg_icon(icon, cls) {
 	"use strict";
 	var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 	var use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-	use.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "/dj/static/images/rtm_symbols.svg#" + icon);
+	use.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "/static/images4/symbols.svg#" + icon);
 	if (cls) {
 		svg.setAttributeNS(null, "class", cls);
 	}

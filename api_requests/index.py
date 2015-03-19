@@ -7,7 +7,7 @@ import os
 
 import api.web
 import api.locale
-from api.server import handle_url
+from api.server import handle_url, handle_api_url
 from api_requests import info
 
 from libs import config
@@ -31,6 +31,7 @@ class MainIndex(api.web.HTMLRequest):
 	sid_required = False
 	beta = False
 	page_template = "r4_index.html"
+	js_dir = "js4"
 
 	def prepare(self):
 		super(MainIndex, self).prepare()
@@ -44,10 +45,10 @@ class MainIndex(api.web.HTMLRequest):
 		if self.beta or config.get("web_developer_mode") or config.get("developer_mode") or config.get("test_mode"):
 			buildtools.bake_beta_css()
 			self.jsfiles = []
-			for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/js4")):	#pylint: disable=W0612
+			for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/%s" % self.js_dir)):	#pylint: disable=W0612
 				for f in files:
 					if f.endswith(".js"):
-						self.jsfiles.append(os.path.join(root[root.find("static/js4"):], f))
+						self.jsfiles.append(os.path.join(root[root.find("static/%s" % self.js_dir):], f))
 
 	def append(self, key, value):
 		self.json_payload[key] = value
@@ -56,18 +57,21 @@ class MainIndex(api.web.HTMLRequest):
 		self.mobile = self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1
 		info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
 		self.append("api_info", { "time": int(time.time()) })
-		self.render(self.page_template, request=self,
-					site_description=self.locale.translate("station_description_id_%s" % self.sid),
-					revision_number=config.build_number,
-					jsfiles=self.jsfiles,
-					api_url=config.get("api_external_url_prefix"),
-					cookie_domain=config.get("cookie_domain"),
-					locales=api.locale.locale_names_json,
-					relays=config.public_relays_json[self.sid],
-					stream_filename=config.get_station(self.sid, "stream_filename"),
-					station_list=config.station_list_json,
-					apple_home_screen_icon=config.get_station(self.sid, "apple_home_screen_icon"),
-					mobile=self.mobile)
+		self.render(
+			self.page_template,
+			request=self,
+			site_description=self.locale.translate("station_description_id_%s" % self.sid),
+			revision_number=config.build_number,
+			jsfiles=self.jsfiles,
+			api_url=config.get("api_external_url_prefix"),
+			cookie_domain=config.get("cookie_domain"),
+			locales=api.locale.locale_names_json,
+			relays=config.public_relays_json[self.sid],
+			stream_filename=config.get_station(self.sid, "stream_filename"),
+			station_list=config.station_list_json,
+			apple_home_screen_icon=config.get_station(self.sid, "apple_home_screen_icon"),
+			mobile=self.mobile
+		)
 
 @handle_url("/beta")
 class BetaRedirect(tornado.web.RequestHandler):
@@ -79,9 +83,38 @@ class BetaRedirect(tornado.web.RequestHandler):
 @handle_url("/beta/")
 class BetaIndex(MainIndex):
 	beta = True
-	page_template = "r4_index.html"
+	page_template = "r5_index.html"
+	js_dir = "js5"
 
 	def prepare(self):
 		if not config.get("public_beta"):
 			self.perks_required = True
 		super(BetaIndex, self).prepare()
+
+@handle_api_url("bootstrap")
+class Bootstrap(api.web.APIHandler):
+	description = (
+		"Bootstrap a Rainwave client.  Provides user info, API key, station info, relay info, and more.  "
+		"If you run a GET query to this URL, you will receive a Javascript file containing a single variable called RW_BOOTSTRAP.  "
+		"If you run a POST query to this URL, you will receive a JSON object."
+	)
+	auth_required = False
+	login_required = False
+	sid_required = False
+
+	def prepare(self):
+		super(Bootstrap, self).prepare()
+		if not self.user:
+			self.user = User(1)
+		self.user.ensure_api_key()
+
+	def get(self):
+		self.post()
+		self.write("var RW_BOOTSTRAP = ")
+
+	def post(self):
+		info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
+		self.append("cookie_domain", config.get("cookie_domain"))
+		self.append("locales", api.locale.locale_names)
+		self.append("stream_filename", config.get_station(self.sid, "stream_filename"))
+		self.append("station_list", config.station_list)

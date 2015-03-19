@@ -65,11 +65,13 @@ The JSON files should be encoded in UTF-8.
 
 master = None
 translations = {}
+local_names = {}
 locale_names_json = ""
 
 def load_translations():
 	global master
 	global translations
+	global locale_names
 	global locale_names_json
 
 	master_file = open(os.path.join(os.path.dirname(__file__), "../lang/en_MASTER.json"))

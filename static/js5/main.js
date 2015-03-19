@@ -230,9 +230,14 @@ function initialize() {
 	DeepLinker.detect_url_change();
 	window.addEventListener("resize", _on_resize, false);
 	setTimeout(function() { $remove_class(document.body, "unselectable"); }, 1500);
+}
 
-	if (MOBILE && (typeof(FastClick) !== "undefined")) {
+function attachFastClick() {
+	if (INITIALIZED) {
 		FastClick.attach(document.body);
+	}
+	else {
+		window.addEventListener("load", attachFastClick);
 	}
 }
 

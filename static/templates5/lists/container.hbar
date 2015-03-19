@@ -1,5 +1,0 @@
-<div class="scrollblock" bind="container">
-	<div id="lists_tabs_container">
-		<ul id="lists_tabs" bind="tabs"></ul>
-	</div>
-</div>

@@ -1,0 +1,37 @@
+<div bind="root" class="song">
+	<div bind="art_anchor" class="art_anchor">
+		<div bind="art" class="art_container"></div>
+	</div>
+
+	<div class="song_content">
+		{{>rating }}
+
+		<div bind="votes" class="entry_votes"></div>
+
+		<div bind="title" class="title" title="{{ title }}">
+			{{ title }}
+		</div>
+
+		{{#with album }}
+			{{>rating}}
+
+			<span bind="title" class="album_name link" title="{{ title }}">
+				{{ title }}
+			</span>
+		{{/with}}
+
+		<div class="artist">
+			{{#each artists }}
+				<a href="#!/artist/{{ id }}/hello/{{name}}/lburgh">
+					{{ name }}
+				</a>
+			{{/each}}
+		</div>
+
+		{{#if url }}
+			<a href="{{ url }}" target="_blank">
+				{{ link_text }}
+			</a>
+		{{/if}}
+	</div>
+</div>

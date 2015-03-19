@@ -1,13 +1,7 @@
-<div id="timeline_scrollblock" class="scrollblock">
-	<div id="timeline" class="scrollable">
-		<div id="timeline_scrollbar" class="scrollbar scrollbar_invisible"></div>
-		<div id="timeline_resizer" class="resizer"></div>
-		<div id="history_outer_container">
-			<div id="history_header_container" class="timeline_header">
-				<span id="longhist_link" class="link"></span>
-				<span id="history_header"></span>
-				<svg class="pulldown_arrow"><use xlink:href="/static/images4/symbols.svg#pulldown"></use></svg>
-			</div>
-		</div>
+<div class="timeline scrollable" bind="timeline">
+	<div class="timeline_header">
+		<span class="longhist_link link" bind="longhist_link"></span>
+		<span>{{ $l("Previously Played") }}</span>
+		<svg class="pulldown_arrow"><use xlink:href="/static/images4/symbols.svg#pulldown"></use></svg>
 	</div>
 </div>
