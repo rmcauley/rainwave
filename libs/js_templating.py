@@ -141,7 +141,7 @@ class RainwaveParser(HTMLParser):
 			if svg_use:
 				self.buffr += "var %s=$svg_icon(%s, %s)" % (uid, svg_use, svg_cls)
 			else:
-				raise Exception("(%s) The Rainwave templater cannot support SVG unless in this format: <svg use=\"icon_id\" class=\"cls\">" % self.name)
+				raise Exception("(%s) The Rainwave templater cannot support SVG unless in this RW-specific format: <svg use=\"icon_id\" class=\"cls\">" % self.name)
 		else:
 			self.buffr += "var %s=d.c('%s');" % (uid, tag)
 		self.handle_append(uid)

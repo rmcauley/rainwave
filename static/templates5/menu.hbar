@@ -1,7 +1,10 @@
-<div id="top_menu_wrapper">
-	<div id="top_menu">
+<div class="header">
+	<div class="page_size_wrapper">
+		<div id="top_menu">
+
 		<ul id="top_icons">
 			<li>
+
 				<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
 					<span class="icon_description" id="chat_link">{{ $l("Chat") }}</span>
 				</a>
@@ -22,16 +25,12 @@
 
 			<li id="user_info">
 				<a id="user_info_name"></a>
-				<svg id="anonymous_user_avatar"><use id="audio_icon_stop" xlink:href="/static/images4/symbols.svg#user"></use></svg>
+				<svg id="anonymous_user_avatar" use="user"></svg>
 			</li>
 
 			<li id="icon_cluster">
 				<a href="http://twitter.com/rainwavecc" target="_blank">
-					<svg><use xlink:href="/static/images4/symbols.svg#twitter"></use></svg>
-				</a>
-
-				<a id="facebook_link" href="http://facebook.com/rainwavecc" target="_blank">
-					<svg><use xlink:href="/static/images4/symbols.svg#facebook"></use></svg>
+					<svg use="witter"></svg>
 				</a>
 
 				<a id="about_link"><svg><use xlink:href="/static/images4/symbols.svg#about"></use></svg></a>

@@ -43,21 +43,6 @@ function $id(id) {
 	return document.getElementById(id);
 }
 
-function $measure_el(el) {
-	"use strict";
-	var boxed = false;
-	if (!el.parentNode) {
-		$id("measure_box").appendChild(el);
-		boxed = true;
-	}
-	var x = el.offsetWidth;
-	var y = el.scrollHeight || el.offsetHeight;
-	if (boxed) {
-		$id("measure_box").removeChild(el);
-	}
-	return { "width": x, "height": y };
-}
-
 function $add_class(el, class_name) {
 	"use strict";
 	// best to use className here - getAttribute will return null if empty, className returns an empty string

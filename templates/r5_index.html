@@ -5,6 +5,26 @@
 	<meta charset="UTF-8" />
 	<meta name="description" content="{{ site_description }}" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+	<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js"></script>
+	<script src="/api4/bootstrap"></script>
+	<script>
+		BOOTSTRAP.on_init = [];
+		BOOTSTRAP.on_draw = [];
+	</script>
+
+	{% if jsfiles %}
+		{% for file in jsfiles %}
+			<script src="/{{ file }}" type="application/javascript"></script>
+		{% end %}
+	{% else %}
+		<script src="/static/baked/{{ revision_number }}/script5.js" type="application/javascript"></script>
+	{% end %}
+
+	<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.3/fastclick.min.js" defer onload="attachFastClick();"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js" defer></script>
+
 	{% if apple_home_screen_icon %}
 		<link href="{{ apple_home_screen_icon }}" rel="apple-touch-icon" />
 	{% end %}
@@ -18,26 +38,7 @@
 	{% else %}
 		<link href="/static/baked/{{ revision_number }}/style5.css" type="text/css" rel="stylesheet" />
 	{% end %}
-
-	<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.1-beta.2/Chart.min.js"></script>
-	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js"></script>
-
-	<script src="/api4/bootstrap"></script>
-
-	{% if jsfiles %}
-		{% for file in jsfiles %}<script src="/{{ file }}" type="application/javascript"></script>{% end %}
-	{% else %}
-		<script src="/static/baked/{{ revision_number }}/script5.js" type="application/javascript"></script>
-	{% end %}
-
-	<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.3/fastclick.min.js" defer onload="attachFastClick();"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js" defer></script>
 </head>
 
-<body class="loading unselectable">
-	<div id="measure_box">
-		<div id="playlist_item_height" class="searchlist_item">&nbsp;</div>
-		<img src="/static/images4/symbols.svg"></img>
-	</div>
-</body>
+<body class="loading unselectable"></body>
 </html>
