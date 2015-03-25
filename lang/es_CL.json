@@ -29,6 +29,7 @@
    "request_delete_failed"                           : "No se pudo eliminar la petición.",
    "request_unrated_failed"                          : "Pedir canciones no evaluadas ha fallado.",
    "request_is_blocked"                              : "Bloqueada por %(blocked_num) elecciones.",
+   "request_favorited_failed"                        : "No hay favoritos disponibles.",
    "too_many_requests"                               : "Demasiadas peticiones.",
    "same_request_exists"                             : "La canción ya ha sido pedida.",
    "same_request_album"                              : "Ese álbum ya ha sido pedido.",
@@ -47,6 +48,7 @@
    "request_queue_unpaused"                          : "Lista de peticiones reanudada.",
    "no_results"                                      : "Sin resultados.",
    "server_just_started"                             : "Rainwave se está Reiniciando",
+   "station_paused"                                  : "La estación esta pausada.",
 
    "__comment__"                 : "API Key Management",
 
@@ -170,6 +172,7 @@
    "clearfilter"                                     : "Limpiar Filtro",
    "album_rating_ranked_at_v2"                       : "Evaluado con un %(rating) por %(rating_count) &(rating_count:persona/personas), en la posición Nº #(rank).",
    "album_requests_ranked_at"                        : "Pedido %(count) &(count:vez/veces), en la posición Nº #(rank).",
+   "album_year"                                      : "Publicado en %(year).",
    "song_extradetail_rating"                         : "Evualación: %(rating) (por %(rating_count) &(rating_count:persona/personas))",
    "song_extradetail_rating_rank"                    : "Posición Evaluación: Nº #(rank)",
    "song_extradetail_requests"                       : "Peticiones: %(count) &(count:vez/veces)",
@@ -300,5 +303,8 @@
    "file"                                            : "File",
    "error"                                           : "Error",
    "url"                                             : "URL",
-   "sched_length_minutes"                            : "Length (min.)"
+   "sched_length_minutes"                            : "Length (min.)",
+   "backend_scan_errors"                             : "Backend Scan Errors",
+   "producers"                                       : "Producers",
+   "username"                                        : "Username"
 }
