@@ -1,76 +1,97 @@
 <div class="header">
-	<div class="page_size_wrapper">
-		<div id="top_menu">
-
-		<ul id="top_icons">
+	<div class="top_menu">
+		<ul id="menu">
 			<li>
-
 				<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
-					<span class="icon_description" id="chat_link">{{ $l("Chat") }}</span>
+					{{ $l("Chat") }}
 				</a>
 			</li>
 
 			<li>
 				<a href="http://rainwave.cc/forums" target="_blank">
-					<span class="icon_description" id="forums_link"></span>
+					{{ $l("Forums") }}
 				</a>
 			</li>
 
 			<li id="calendar_menu_item">
 				<a class="link">
-					<span class="icon_description" id="calendar_link"></span>
+					<span bind="calendar_link">{{ $l("Events") }}</span>
 				</a>
-				<div id="calendar_dropdown" class="menu_inline_dropdown"></div>
+				<div bind="calendar_dropdown" id="calendar_dropdown" class="menu_inline_dropdown"></div>
 			</li>
 
-			<li id="user_info">
-				<a id="user_info_name"></a>
-				<svg id="anonymous_user_avatar" use="user"></svg>
-			</li>
+			{{#if ^Prefs.get("advanced") }}
+				<li>
+					<a bind="settings_link"><svg use="settings"></svg></a>
+				</li>
+			{{/if}}
 
-			<li id="icon_cluster">
-				<a href="http://twitter.com/rainwavecc" target="_blank">
-					<svg use="witter"></svg>
-				</a>
+			{{#with ^User }}
+				{{#if logged_in }}
+					<li class="user_info">
+						<a bind="user_info_link" class="link">
+							{{ username }}
+						</a>
+						<img src="{{ avatar }}" />
+					</li>
+				{{else}}
+					<li>
+						<a bind="login" class="link">
+							{{ $l("Login") }}
+						</a>
+						<img src="{{ avatar }}" />
+					</li>
 
-				<a id="about_link"><svg><use xlink:href="/static/images4/symbols.svg#about"></use></svg></a>
-
-				<a id="settings_link"><svg><use xlink:href="/static/images4/symbols.svg#settings"></use></svg></a>
-			</li>
+					<li>
+						<a href="/forums/ucp.php?mode=register">
+							{{ $l("Sign Up") }}
+						</a>
+					</li>
+				{{/if}}
+			{{/with}}
 		</ul>
 
 		<div id="station_select_container">
 			<div id="station_select">
-				<div id="station_select_header"></div>
-				<svg class="pulldown_arrow"><use xlink:href="/static/images4/symbols.svg#pulldown"></use></svg>
+				<div id="station_select_header">{{ $l("Station Select" }}</div>
+				<svg class="pulldown_arrow" use="pulldown"></svg>
+				{{#each station }}
+					<a bind="station_link" href="{{ url }}" class="station">
+						<div bind="now_playing" class="station_song_container"></div>
+						<div class="station_details">
+							<div class="station_name">{{ name }}</div>
+							<div class="station_description">{{ description }}</div>
+						</div>
+					</a>
+				{{/each}}
 			</div>
 		</div>
 
 		<div id="r4_audio_player">
-			<a class="unselectable" id="player_link" href="/tune_in/{{ request.sid }}.mp3" target="_blank">
-				<svg id="user_tunein_recognized">
-					<use xlink:href="/static/images4/symbols.svg#signal"></use>
-				</svg>
-				<svg class="audio_icon">
-					<use id="audio_icon_play" xlink:href="/static/images4/symbols.svg#play"></use>
-					<use id="audio_icon_stop" xlink:href="/static/images4/symbols.svg#stop"></use>
-				</svg>
-				<span id="audio_status_play"></span>
-				<span id="audio_status_stop"></span>
+			<a class="unselectable" bind="player_link">
+				<svg bind="tunedin_indicator" use="signal"></svg>
+				<span bind="audio_status_play" class="audio_status">
+					<span>{{ $l("Play") }}</span>
+					<svg class="audio_icon" use="play"></svg>
+				</span>
+				<span bind="audio_status_stop" class="audio_status">
+					<span>{{ $l("Stop") }}</span>
+					<svg class="audio_icon" use="stop"></svg>
+				</span>
 			</a>
-			<svg class="unselectable" id="audio_volume" viewBox="0 0 100 100" preserveAspectRatio="none">
-				<clipPath id="volume_bars">
-					<rect x="0" y="80"  width="17" height="20"  />
-					<rect x="20" y="60" width="17" height="40"  />
-					<rect x="40" y="40" width="17" height="60"  />
-					<rect x="60" y="20" width="17" height="80"  />
-					<rect x="80" y="0"  width="17" height="100" />
-				</clipPath>
-				<rect id="audio_volume_indicator_background" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)" />
-				<rect id="audio_volume_indicator" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)" />
-			</svg>
-			<svg id="audio_icon_mute"><use xlink:href="/static/images4/symbols.svg#mute"></use></svg>
-			<div id="m3u_dropdown" class="menu_inline_dropdown"></div>
+			<svg bind="mute" id="audio_icon_mute" use="mute"></svg>
+			<svg bind="volume" id="audio_volume" use="volume"></svg> 
+			<div id="m3u_dropdown" class="menu_inline_dropdown">
+				<a bind="player_link2" class="link">
+					{{ $l("Listen In-Browser") }}
+				</a>
+				<a href="/tune_in/{{ sid }}.mp3" target="_blank">
+					{{ $l("Listen via MP3") }}
+				</a>
+				<a href="/tune_in/{{ sid }}.ogg" target="_blank">
+					{{ $l("Listen via Ogg") }}
+				</a>
+			</div>
 		</div>
 	</div>
 </div>

@@ -50,14 +50,11 @@ def js_start():
 		"d.c=d.createElement;"
 		"Element.prototype.s=Element.prototype.setAttribute;"
 		"Element.prototype.a=Element.prototype.appendChild;"
-		"function $svg_icon(icon, cls){"
+		"function $svg_icon(icon){"
 			"\"use strict\";"
 			"var s=document.createElementNS(\"http://www.w3.org/2000/svg\", \"svg\");"
 			"var u=document.createElementNS(\"http://www.w3.org/2000/svg\", \"use\");"
 			"use.setAttributeNS(\"http://www.w3.org/1999/xlink\", \"xlink:href\", \"/static/images4/symbols.svg#\" + icon);"
-			"if (cls) {"
-				"svg.setAttributeNS(null, \"class\", cls);"
-			"}"
 			"svg.appendChild(use);"
 			"return svg;"
 		"}"
@@ -132,28 +129,24 @@ class RainwaveParser(HTMLParser):
 
 		if tag == "svg":
 			svg_use = None
-			svg_cls = "null"
 			for attr in attrs:
 				if attr[0] == "use":
 					svg_use = self._parse_val(attr[1])
-				elif attr[0] == "class":
-					svg_cls = self._parse_val(attr[1])
 			if svg_use:
-				self.buffr += "var %s=$svg_icon(%s, %s)" % (uid, svg_use, svg_cls)
+				self.buffr += "var %s=$svg_icon(%s)" % (uid, svg_use)
 			else:
-				raise Exception("(%s) The Rainwave templater cannot support SVG unless in this RW-specific format: <svg use=\"icon_id\" class=\"cls\">" % self.name)
+				raise Exception("(%s) The Rainwave templater cannot support SVG unless in this RW-specific format: <svg use=\"%s\" attr=\"...\" ...>" % (self.name, svg_use))
 		else:
 			self.buffr += "var %s=d.c('%s');" % (uid, tag)
 		self.handle_append(uid)
 		self.tree.append(uid)
 		self.tree_names.append((tag, attrs))
-		if not tag == "svg":
-			for attr in attrs:
-				attr_val = self._parse_val(attr[1])
-				if attr[0] == "bind":
-					self.buffr += "_c.$t.%s=%s;" % (attr_val.strip('"'), uid)
-				else:
-					self.buffr += "%s.s('%s',%s);" % (uid, attr[0], attr_val)
+		for attr in attrs:
+			attr_val = self._parse_val(attr[1])
+			if attr[0] == "bind":
+				self.buffr += "_c.$t.%s=%s;" % (attr_val.strip('"'), uid)
+			else:
+				self.buffr += "%s.s('%s',%s);" % (uid, attr[0], attr_val)
 
 	def handle_append(self, uid):
 		if len(self.tree) == 0:

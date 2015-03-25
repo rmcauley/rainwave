@@ -2,6 +2,6 @@
 	<div class="timeline_header">
 		<span class="longhist_link link" bind="longhist_link"></span>
 		<span>{{ $l("Previously Played") }}</span>
-		<svg class="pulldown_arrow"><use xlink:href="/static/images4/symbols.svg#pulldown"></use></svg>
+		<svg class="pulldown_arrow" use="pulldown"></svg>
 	</div>
 </div>
