@@ -125,7 +125,7 @@ class AddListener(IcecastHandler):
 		# if the system gets a reset).  There is a small flaw here; there's a chance we'll pull in 2 clients with the same client ID.
 		# I (rmcauley) am classifying this as "collatoral damage" - an anon user who is actively using the website
 		# can re-tune-in on the small chance that this occurs.
-		records = db.c.fetch_list("SELECT listener_icecast_id FROM r4_listeners WHERE listener_ip = %s", (self.get_argument("ip"),))
+		records = db.c.fetch_list("SELECT listener_icecast_id FROM r4_listeners WHERE listener_ip = %s AND user_id = 1", (self.get_argument("ip"),))
 		if len(records) == 0:
 			db.c.update("INSERT INTO r4_listeners "
 					"(sid, listener_ip, user_id, listener_relay, listener_agent, listener_icecast_id) "
