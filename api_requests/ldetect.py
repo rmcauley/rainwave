@@ -125,7 +125,7 @@ class AddListener(IcecastHandler):
 		# if the system gets a reset).  There is a small flaw here; there's a chance we'll pull in 2 clients with the same client ID.
 		# I (rmcauley) am classifying this as "collatoral damage" - an anon user who is actively using the website
 		# can re-tune-in on the small chance that this occurs.
-		records = db.c.fetch_list("SELECT listener_icecast_id FROM r4_listeners WHERE listener_ip = %s", (self.get_argument("ip"),))
+		records = db.c.fetch_list("SELECT listener_icecast_id FROM r4_listeners WHERE listener_ip = %s AND user_id = 1", (self.get_argument("ip"),))
 		if len(records) == 0:
 			db.c.update("INSERT INTO r4_listeners "
 					"(sid, listener_ip, user_id, listener_relay, listener_agent, listener_icecast_id) "
@@ -141,7 +141,7 @@ class AddListener(IcecastHandler):
 			while len(records) > 1:
 				db.c.update("DELETE FROM r4_listeners WHERE listener_icecast_id = %s", (records.pop(),))
 				log.debug("ldetect", "Deleted extra record for icecast ID %s from IP %s." % (self.get_argument("client"), self.get_argument("ip")))
-			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE WHERE listener_ip = %s", (self.get_argument("client"), self.get_argument("ip")))
+			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE, listener_relay = %s WHERE listener_ip = %s", (self.get_argument("client"), self.get_argument("ip"), self.relay))
 			self.append("%s update: %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent))
 			self.failed = False
 		sync_to_front.sync_frontend_ip(self.get_argument("ip"))
