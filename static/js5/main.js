@@ -5,16 +5,28 @@
 	resizer_timeline
 	history_sticky
 	resize_*
+	station_select_clicked
+	show_m3u
+*/
+
+/* For page initialization:
+
+BOOTSTRAP.on_init will fill a documentFragment
+BOOTSTRAP.on_measure happens after a paint - use this to measure elements without incurring extra reflows
+BOOTSTRAP.on_draw happens after the measurement - please do not cause reflows.
+
 */
 
 var User;
 
 (function() {
 	"use strict";
-	// DOMContentLoaded
-	// Process data, prepare templates.
-	// NOTHING in here should cause a DOM reflow or change the DOM.
 	var template;
+
+	var fastclick_attach = function() {
+		FastClick.attach(document.body);
+	};
+
 	var initialize = function() {
 		User = BOOTSTRAP.json.user;
 		API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
@@ -38,6 +50,7 @@ var User;
 		Sizing.sizeable_area = template.sizeable_area;
 		Sizing.measure_area = template.measure_area;
 
+		// pre-paint DOM operations while the network is doing its work for CSS
 		for (var i = 0; i < BOOTSTRAP.on_init.length; i++) {
 			BOOTSTRAP.on_init[i](template.documentFragment);
 		}
@@ -49,68 +62,25 @@ var User;
 		Sizing.trigger_resize();
 
 		Scrollbar.hold_all_recalculations = true;
-		for (var i = 0; i < BOOTSTRAP.on_draw.length; i++) {
+		for (var i = 0; i < BOOTSTRAP.on_measure.length; i++) {
+			BOOTSTRAP.on_measure[i]();
+		}
+		Scrollbar.hold_all_recalculations = false;
+
+		for (i = 0; i < BOOTSTRAP.on_draw.length; i++) {
 			BOOTSTRAP.on_draw[i]();
 		}
-		Scrollbar.hold_all_recalculations = false;
 
-		Schedule.scroll_init();
-		Requests.scroll_init();
-		PlaylistLists.scroll_init();
-		Scrollbar.resizer_calculate();
-		Scrollbar.recalculate();
-		DetailView.scroll_init();
+		//DeepLinker.detect_url_change();
 
-		// also measure any elements
-		// this particular element measurement is also duplicated in size_calculate
-		if ($id("playlist_item_height")) {
-			PLAYLIST_ITEM_HEIGHT = $id("playlist_item_height").offsetHeight;
+		if (document.ontouchstart === null) {
+			var fastclick_load = document.createElement("script");
+			fastclick_load.src = "//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.3/fastclick.min.js";
+			fastclick.addEventListener("load", fastclick_attach);
+			document.body.appendChild(fastclick);
 		}
-
-		// DIRTY THE LAYOUT
-
-		if (DeepLinker.has_deep_link() && (Prefs.get("stage") < 3)) {
-			Prefs.change("stage", 3);
-		}
-		stage_switch(Prefs.get("stage"));
-		Prefs.add_callback("stage", stage_switch);
-
-		R4Audio.draw();
-		Requests.draw();
-		Scrollbar.resizer_refresh();
-		DetailView.draw();
-		PlaylistLists.draw();
-		Schedule.draw();
-		Menu.draw(BOOTSTRAP.station_list);
-		SettingsWindow.draw();
-		AboutWindow.draw();
-		$remove_class(document.body, "loading");
-		Fx.flush_draws();
-
-		// PAINT 2: Scrollbar bullshit
-		Scrollbar.hold_all_recalculations = false;
-		Schedule.now_playing_size_calculate();
-		Scrollbar.recalculate();
-
-		// FINAL DIRTY: Move/size the scrollbars
-		Scrollbar.refresh();
-
-		// ****************** DATA CLEANUP
-		delete(BOOTSTRAP.json);
-		DeepLinker.detect_url_change();
-
-		setTimeout(function() { $remove_class(document.body, "unselectable"); }, 1500);
 	};
 
 	document.addEventListener("DOMContentLoaded", initialize);
 	document.addEventListener("load", draw);
 }());
-
-function attachFastClick() {
-	if (document.readyState == "interactive" || document.readyState == "complete") {
-		FastClick.attach(document.body);
-	}
-	else {
-		window.addEventListener("load", attachFastClick);
-	}
-}

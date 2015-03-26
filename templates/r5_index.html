@@ -11,6 +11,7 @@
 	<script src="/api4/bootstrap"></script>
 	<script>
 		BOOTSTRAP.on_init = [];
+		BOOTSTRAP.on_measure = [];
 		BOOTSTRAP.on_draw = [];
 	</script>
 
@@ -22,18 +23,12 @@
 		<script src="/static/baked/{{ revision_number }}/script5.js" type="application/javascript"></script>
 	{% end %}
 
-	<script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.3/fastclick.min.js" defer onload="attachFastClick();"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js" defer></script>
-
 	{% if apple_home_screen_icon %}
 		<link href="{{ apple_home_screen_icon }}" rel="apple-touch-icon" />
 	{% end %}
 
 	<style media="(min-width: 1025px)">
 		@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700);
-		body {
-			font-family: 'Roboto Condensed', 'Helvetica Neue', 'Helvetica', sans-serif;
-		}
 	</style>
 
 	{% if jsfiles %}

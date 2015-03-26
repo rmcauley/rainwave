@@ -13,9 +13,9 @@
 				</a>
 			</li>
 
-			<li id="calendar_menu_item">
+			<li bind="calendar_menu_item">
 				<a class="link">
-					<span bind="calendar_link">{{ $l("Events") }}</span>
+					{{ $l("Events") }}
 				</a>
 				<div bind="calendar_dropdown" id="calendar_dropdown" class="menu_inline_dropdown"></div>
 			</li>
@@ -26,38 +26,33 @@
 				</li>
 			{{/if}}
 
-			{{#with ^User }}
-				{{#if logged_in }}
-					<li class="user_info">
-						<a bind="user_info_link" class="link">
-							{{ username }}
-						</a>
-						<img src="{{ avatar }}" />
-					</li>
-				{{else}}
-					<li>
-						<a bind="login" class="link">
-							{{ $l("Login") }}
-						</a>
-						<img src="{{ avatar }}" />
-					</li>
+			{{#if ^User.user_id > 1 }}
+				<li bind="user_link" class="user_info">
+					<a class="link">{{ ^User.username }}</a>
+					<img src="{{ ^User.avatar }}" />
+				</li>
+			{{else}}
+				<li>
+					<a bind="login" class="link">
+						{{ $l("Login") }}
+					</a>
+				</li>
 
-					<li>
-						<a href="/forums/ucp.php?mode=register">
-							{{ $l("Sign Up") }}
-						</a>
-					</li>
-				{{/if}}
-			{{/with}}
+				<li>
+					<a href="/forums/ucp.php?mode=register">
+						{{ $l("Sign Up") }}
+					</a>
+				</li>
+			{{/if}}
 		</ul>
 
 		<div id="station_select_container">
 			<div id="station_select">
 				<div id="station_select_header">{{ $l("Station Select" }}</div>
 				<svg class="pulldown_arrow" use="pulldown"></svg>
-				{{#each station }}
-					<a bind="station_link" href="{{ url }}" class="station">
-						<div bind="now_playing" class="station_song_container"></div>
+				{{#each stations }}
+					<a bind="menu_link" href="{{ url }}" class="station">
+						<div bind="menu_np" class="station_song_container"></div>
 						<div class="station_details">
 							<div class="station_name">{{ name }}</div>
 							<div class="station_description">{{ description }}</div>

@@ -109,12 +109,12 @@ class Bootstrap(api.web.APIHandler):
 		self.user.ensure_api_key()
 
 	def get(self):
+		self.append("locales", api.locale.locale_names)
+		self.append("cookie_domain", config.get("cookie_domain"))
 		self.post()
 		self.write("var RW_BOOTSTRAP = ")
 
 	def post(self):
 		info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
-		self.append("cookie_domain", config.get("cookie_domain"))
-		self.append("locales", api.locale.locale_names)
 		self.append("stream_filename", config.get_station(self.sid, "stream_filename"))
 		self.append("station_list", config.station_list)

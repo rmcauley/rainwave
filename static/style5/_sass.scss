@@ -1,6 +1,4 @@
-@option compress:yes;
-
-$img_dir: ../../images;
+@option compress: yes;
 
 $background: #000000;
 $text: #FFF;
@@ -34,11 +32,13 @@ $fave_color: #f7ff9f;
 
 @mixin transition-delay($t) {
 	-webkit-transition-delay: $t;
+	-ms-transition-delay: $t;
 	transition-delay: $t;
 }
 
 @mixin transition-duration($t) {
 	-webkit-transition-duration: $t;
+	-ms-transition-duration: $t;
 	transition-duration: $t;
 }
 
@@ -68,24 +68,12 @@ $fave_color: #f7ff9f;
 	@include transition-wtime($transtime, $trans...);
 }
 
-@mixin simple-gradient($from_color, $to_color, $direction, $opacity_stop) {
-	$opacity_stop: 100% !default;
-	$webkit_direction: $direction;
-    @if $direction == top { $webkit_direction: bottom; }
-    @else if $direction == bottom { $webkit_direction: top; }
-    @else if $direction == left { $webkit_direction: right; }
-    @else if $direction == right { $webkit_direction: left; }
-	background: -webkit-linear-gradient($webkit_direction, $from_color 0%, $to_color $opacity_stop);
-	background:         linear-gradient(to $direction, $from_color 0%, $to_color $opacity_stop);
-}
-
 html, body {
+	font-family: 'Roboto Condensed', 'Helvetica Neue', 'Helvetica', sans-serif;		
 	height: 100%;
 	color: $text;
 	margin: 0;
 	padding: 0;
-	opacity: 1;
-	font-family: 'Roboto Condensed', 'Helvetica Neue', 'Helvetica', sans-serif;
 	overflow: hidden;
 	background: #1c1d1f;
 }

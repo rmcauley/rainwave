@@ -50,6 +50,8 @@ def js_start():
 		"d.c=d.createElement;"
 		"Element.prototype.s=Element.prototype.setAttribute;"
 		"Element.prototype.a=Element.prototype.appendChild;"
+		"Element.prototype.on=Element.prototype.addEventListener;"
+		"Element.prototype.off=Element.prototype.removeEventListener;"
 		"function $svg_icon(icon){"
 			"\"use strict\";"
 			"var s=document.createElementNS(\"http://www.w3.org/2000/svg\", \"svg\");"
@@ -108,7 +110,7 @@ class RainwaveParser(HTMLParser):
 		self.buffr += "_c=_c||{};"
 		self.buffr += "if(!_c.$t)_c.$t={};"
 		self.buffr += "var _b=_c;" # don't know what else I can call the root context
-		self.buffr += "if(!_c.$t.root)_c.$t.documentFragment=d.createDocumentFragment();"
+		self.buffr += "if(!_c.$t.documentFragment)_c.$t.documentFragment=d.createDocumentFragment();"
 		self.buffr += "var _r=_c.$t.documentFragment;"
 		# I've tried modifying the documentFragment prototype.  Browsers don't like that. :)
 		# So we do a bit of function-copying here in the JS.
