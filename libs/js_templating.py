@@ -45,25 +45,25 @@ def _get_id():
 	return _unique_id
 
 def js_start():
-	return ("(function(){"
-		"var d=document;"
-		"d.c=d.createElement;"
+	return ("window.RWTemplates=function(){"
+		"var _d=document;"
+		"_d.c=_d.createElement;"
 		"Element.prototype.s=Element.prototype.setAttribute;"
 		"Element.prototype.a=Element.prototype.appendChild;"
 		"Element.prototype.on=Element.prototype.addEventListener;"
 		"Element.prototype.off=Element.prototype.removeEventListener;"
-		"function $svg_icon(icon){"
+		"function _svg(icon){"
 			"\"use strict\";"
-			"var s=document.createElementNS(\"http://www.w3.org/2000/svg\", \"svg\");"
-			"var u=document.createElementNS(\"http://www.w3.org/2000/svg\", \"use\");"
-			"use.setAttributeNS(\"http://www.w3.org/1999/xlink\", \"xlink:href\", \"/static/images4/symbols.svg#\" + icon);"
-			"svg.appendChild(use);"
-			"return svg;"
+			"var s=document.createElementNS(\"http://www.w3.org/2000/svg\",\"svg\");"
+			"var u=document.createElementNS(\"http://www.w3.org/2000/svg\",\"use\");"
+			"u.setAttributeNS(\"http://www.w3.org/1999/xlink\",\"xlink:href\",\"/static/images4/symbols.svg#\"+icon);"
+			"s.appendChild(u);"
+			"return s;"
 		"}"
-		"window.RWTemplates={")
+		"var _rwt={};")
 
 def js_end():
-	return "};})();"
+	return "return _rwt;}();"
 
 class RainwaveParser(HTMLParser):
 	tree = [ ]
@@ -105,13 +105,21 @@ class RainwaveParser(HTMLParser):
 		HTMLParser.__init__(self, *args, **kwargs)
 		_unique_id = _unique_id_chars[0]
 		self.name = template_name
-		self.buffr =  "%s:function(_c){" % template_name
+		names = self.name.split('.')
+		self.buffr = ""
+		if len(names) > 1:
+			for i in range(1, len(names) + 1):
+				cname = '.'.join(names[0:i])
+				self.buffr += "if(!_rwt.%s)_rwt.%s={};" % (cname, cname)
+		self.buffr += "_rwt.%s=function(_c){" % template_name
 		self.buffr += "\"use strict\";"
 		self.buffr += "_c=_c||{};"
 		self.buffr += "if(!_c.$t)_c.$t={};"
-		self.buffr += "var _b=_c;" # don't know what else I can call the root context
-		self.buffr += "if(!_c.$t.documentFragment)_c.$t.documentFragment=d.createDocumentFragment();"
-		self.buffr += "var _r=_c.$t.documentFragment;"
+		# _b?! ... I don't know what else I can call the root context
+		# _b is used when the templater calls @some_var
+		self.buffr += "var _b=_c;"
+		self.buffr += "if(!_c.$t._root)_c.$t._root=_d.createDocumentFragment();"
+		self.buffr += "var _r=_c.$t._root;"
 		# I've tried modifying the documentFragment prototype.  Browsers don't like that. :)
 		# So we do a bit of function-copying here in the JS.
 		self.buffr += "_r.a=_r.appendChild;"
@@ -123,7 +131,7 @@ class RainwaveParser(HTMLParser):
 		if len(self.tree):
 			raise Exception("%s unclosed tags: %s" % (self.name, repr(self.tree_names)))
 		self.buffr += "return _c;"
-		self.buffr += "}"
+		self.buffr += "};"
 		return self.buffr
 
 	def handle_starttag(self, tag, attrs):
@@ -135,11 +143,11 @@ class RainwaveParser(HTMLParser):
 				if attr[0] == "use":
 					svg_use = self._parse_val(attr[1])
 			if svg_use:
-				self.buffr += "var %s=$svg_icon(%s)" % (uid, svg_use)
+				self.buffr += "var %s=_svg(%s);" % (uid, svg_use)
 			else:
 				raise Exception("(%s) The Rainwave templater cannot support SVG unless in this RW-specific format: <svg use=\"%s\" attr=\"...\" ...>" % (self.name, svg_use))
 		else:
-			self.buffr += "var %s=d.c('%s');" % (uid, tag)
+			self.buffr += "var %s=_d.c('%s');" % (uid, tag)
 		self.handle_append(uid)
 		self.tree.append(uid)
 		self.tree_names.append((tag, attrs))
@@ -210,9 +218,9 @@ class RainwaveParser(HTMLParser):
 
 	def handle_each(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
-		self.buffr += "for(var i= 0;i<%s.length;i++){" % context_key
-		self.buffr += "if(!%s[i].$t)%s[i].$t={};" % (context_key, context_key)
-		self.buffr += "%s(%s[i]);" % (function_id, context_key)
+		self.buffr += "for(var _i= 0;_i<%s.length;_i++){" % context_key
+		self.buffr += "if(!%s[_i].$t)%s[_i].$t={};" % (context_key, context_key)
+		self.buffr += "%s(%s[_i]);" % (function_id, context_key)
 		self.buffr += "}"
 
 	def handle_subtemplate(self, template_name):

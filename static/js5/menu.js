@@ -2,24 +2,24 @@ var Menu = function() {
 	var self = {};
 	var songs = {};
 	var template;
-	var stations = [
-		BOOTSTRAP.station_list[5],
-		BOOTSTRAP.station_list[1],
-		BOOTSTRAP.station_list[4],
-		BOOTSTRAP.station_list[2],
-		BOOTSTRAP.station_list[3]
-	];
+	var station_order = [ 5, 1, 4, 2, 3 ];
+	var stations = [];
+	for (var i = 0; i < station_order.length; i++) {
+		if (BOOTSTRAP.station_list[station_order[i]]){ 
+			stations.push(BOOTSTRAP.station_list[station_order[i]]);
+		}
+	}
 	if (window.location.href.indexOf("beta") !== -1) {
 		for (var i = 0; i < stations.length; i++) {
 			stations.url += "/beta";
 		}
 	}
 
-	var init = function(dom) {
-		API.add_callback(update_tuned_in_status, "user");
-		R4Audio.changed_status_callback = update_tuned_in_status_from_player;
+	var init = function(idx) {
+		//API.add_callback(update_tuned_in_status, "user");
+		//R4Audio.changed_status_callback = update_tuned_in_status_from_player;
 		template = RWTemplates.menu({ "stations": stations }).$t;
-		dom.insertBefore(template.root, dom.firstChild);
+		idx.$t._root.replaceChild(template._root, idx.$t.menu);
 
 		if (template.settings_link) {
 			// TODO: settings link

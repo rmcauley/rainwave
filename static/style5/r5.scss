@@ -1,0 +1,98 @@
+@option compress: yes;
+
+@include "_functions.scss";
+
+$background: #000000;
+$text: #FFF;
+$darktext: #CCC;
+$vdarktext: #777;
+$vvdarktext: #444;
+$orange: #f7941e;
+$highlight: #35adff;
+$link: #6cf6ff;
+$linkhover: #a7e1ff;
+$donorcolor: #FF0;
+$hovercolor: #143347;
+$hovercolor-border: #1a435e;
+$cooldown-color: #282a54;
+$cooldown-albumlist-color: #2c2e5c;
+$fave_color: #f7ff9f;
+
+body {
+	font-family: 'Roboto Condensed', 'Helvetica Neue', 'Helvetica', sans-serif;		
+	height: 100%;
+	color: $text;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background: #1c1d1f;
+
+	&.loading {
+		opacity: 0;
+
+		* {
+			@include no-transition();
+		}
+	}
+}
+
+@media (min-width: 1024px) and (max-width: 1365px) {
+	body.advanced {
+		font-size: smaller;
+	}
+}
+
+#sizable_body {
+	overflow: hidden;
+	position: relative;
+	z-index: 1;
+	width: 100%;
+}
+
+div.debug_div {
+	z-index: 1000;
+	position: absolute;
+	left: 100%;
+	margin-left: -600px;
+	text-align: left;
+	background: $vvdarktext;
+	border: solid 1px $vdarktext;
+}
+
+div.measure_box {
+	top: -300px;
+	position: absolute;
+	visibility: hidden;
+	width: 100%;
+	@include hardware-accelerate();
+}
+
+a, a:visited, .link {
+	cursor: pointer;
+	text-decoration: none;
+	color: $text !important;
+	@include transition(LINKCOLOR);
+
+	&:hover {
+		color: $linkhover !important;
+	}
+}
+
+.clickable {
+	cursor: pointer;
+	@include transition(LINKCOLOR);
+
+	&:hover {
+		color: $linkhover !important;
+	}
+}
+
+.unselectable {
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+@include "_*.scss";

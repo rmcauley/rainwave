@@ -368,7 +368,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 class APIHandler(RainwaveHandler):
 	def initialize(self, **kwargs):
 		super(APIHandler, self).initialize(**kwargs)
-		if config.get("developer_mode") or config.test_mode or self.allow_get:
+		if self.allow_get:
 			self.get = self.post
 
 	def finish(self, chunk=None):

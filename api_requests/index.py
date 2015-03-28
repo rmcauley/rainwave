@@ -44,6 +44,7 @@ class MainIndex(api.web.HTMLRequest):
 
 		if self.beta or config.get("web_developer_mode") or config.get("developer_mode") or config.get("test_mode"):
 			buildtools.bake_beta_css()
+			buildtools.bake_beta_templates()
 			self.jsfiles = []
 			for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "../static/%s" % self.js_dir)):	#pylint: disable=W0612
 				for f in files:
@@ -95,12 +96,13 @@ class BetaIndex(MainIndex):
 class Bootstrap(api.web.APIHandler):
 	description = (
 		"Bootstrap a Rainwave client.  Provides user info, API key, station info, relay info, and more.  "
-		"If you run a GET query to this URL, you will receive a Javascript file containing a single variable called RW_BOOTSTRAP.  "
+		"If you run a GET query to this URL, you will receive a Javascript file containing a single variable called BOOTSTRAP.  While this is largely intended for the purposes of the main site, you may use this.  "
 		"If you run a POST query to this URL, you will receive a JSON object."
 	)
 	auth_required = False
 	login_required = False
 	sid_required = False
+	allow_get = False
 
 	def prepare(self):
 		super(Bootstrap, self).prepare()
@@ -112,7 +114,7 @@ class Bootstrap(api.web.APIHandler):
 		self.append("locales", api.locale.locale_names)
 		self.append("cookie_domain", config.get("cookie_domain"))
 		self.post()
-		self.write("var RW_BOOTSTRAP = ")
+		self.write("var BOOTSTRAP=")
 
 	def post(self):
 		info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))

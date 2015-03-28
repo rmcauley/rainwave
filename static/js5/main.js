@@ -21,16 +21,23 @@ var User;
 
 (function() {
 	"use strict";
-	var template;
-
 	var fastclick_attach = function() {
 		FastClick.attach(document.body);
 	};
 
+	var template;
+
 	var initialize = function() {
-		User = BOOTSTRAP.json.user;
-		API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.json.user.id, BOOTSTRAP.json.user.api_key, BOOTSTRAP.json);
-		API.add_callback(function(json) { User = json; }, "user");
+		if (Prefs.get("adv")) {
+			template = RWTemplates.index_advanced();
+		}
+		else {
+			template = RWTemplates.index_basic()
+		}
+
+		User = BOOTSTRAP.user;
+		// API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
+		// API.add_callback(function(json) { User = json; }, "user");
 
 		Chart.defaults.global.scaleLineColor = "rgba(255,255,255,0.5)";
 		Chart.defaults.global.scaleBeginAtZero = true;
@@ -41,35 +48,38 @@ var User;
 		Chart.defaults.PolarArea.segmentStrokeColor = "#000";
 		Chart.defaults.PolarArea.animationEasing = "easeOutQuart";
 
-		if (Prefs.get("full")) {
-			template = RWTemplates.index_panels();
-		}
-		else {
-			template = RWTemplates.index_tabs();
-		}
-		Sizing.sizeable_area = template.sizeable_area;
-		Sizing.measure_area = template.measure_area;
-
 		// pre-paint DOM operations while the network is doing its work for CSS
 		for (var i = 0; i < BOOTSTRAP.on_init.length; i++) {
-			BOOTSTRAP.on_init[i](template.documentFragment);
+			BOOTSTRAP.on_init[i](template);
 		}
 	};
 
 	var draw = function() {
-		document.body.appendChild(template.documentFragment);
-		Scrollbar.calculate_scrollbar_width();
-		Sizing.trigger_resize();
-
-		Scrollbar.hold_all_recalculations = true;
-		for (var i = 0; i < BOOTSTRAP.on_measure.length; i++) {
-			BOOTSTRAP.on_measure[i]();
+		if (Prefs.get("adv")) {
+			document.body.classList.add("advanced");
 		}
-		Scrollbar.hold_all_recalculations = false;
-
-		for (i = 0; i < BOOTSTRAP.on_draw.length; i++) {
-			BOOTSTRAP.on_draw[i]();
+		else {
+			document.body.classList.add("basic");
 		}
+		document.body.appendChild(template.$t._root);
+
+		// Scrollbar.calculate_scrollbar_width();
+		// Sizing.trigger_resize();
+
+		// Scrollbar.hold_all_recalculations = true;
+		// for (var i = 0; i < BOOTSTRAP.on_measure.length; i++) {
+		// 	BOOTSTRAP.on_measure[i]();
+		// }
+		// Scrollbar.hold_all_recalculations = false;
+
+		// for (i = 0; i < BOOTSTRAP.on_draw.length; i++) {
+		// 	BOOTSTRAP.on_draw[i]();
+		// }
+		document.body.classList.remove("loading");
+
+		// BOOTSTRAP = {};
+
+		// do API callbacks here
 
 		//DeepLinker.detect_url_change();
 
@@ -82,5 +92,5 @@ var User;
 	};
 
 	document.addEventListener("DOMContentLoaded", initialize);
-	document.addEventListener("load", draw);
+	window.addEventListener("load", draw);
 }());

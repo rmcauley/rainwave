@@ -1,8 +1,9 @@
 var Sizing = function() {
 	"use strict";
 	var self = {};
-	self.sizeable_area = false;
-	self.measure_area = false;
+	self.sizeable_area = null;
+	self.measure_area = document.createElement("div");
+	self.sizeable_area.className = "measure_box";
 	var window_callbacks = [];
 	var csschange_callbacks = [];
 	var csschange_checks = [];
@@ -10,7 +11,6 @@ var Sizing = function() {
 
 	self.height = function() { return height; };
 	self.width = function() { return width; };
-	self.menu_height = function() { return menu_height; };
 	self.sizeable_area_height = function() { return sizeable_area_size; };
 
 	self.add_resize_callback = function(cb) {
@@ -32,8 +32,8 @@ var Sizing = function() {
 	var on_resize = function() {
 		height = document.documentElement.clientHeight;
 		width = document.documentElement.clientWidth;
-		menu_height = Menu.height();
 		sizeable_area_size = height - self.sizeable_area.offsetTop;
+		self.sizeable_area.style.height = sizeable_area_size + "px";
 
 		var i, k;
 		for (i = 0; i < window_callbacks.length; i++) {

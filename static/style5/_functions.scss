@@ -1,0 +1,62 @@
+$pc-media: unquote("(min-width: 1024px)");
+$mobile-media: unquote("(max-width: 1023px)");
+$tablet-media: unquote("(min-width: 600px) and (max-width: 1023px)");
+$phone-media: unquote("(max-width: 599px)");
+
+$transfunc: cubic-bezier(0.165, 0.84, 0.44, 1);
+$transtime: 700ms $transfunc;
+
+@mixin no-transition() {
+	-webkit-transition: none;
+	-ms-transition: none;
+	transition: none;
+}
+
+@mixin transform($transform_string...) {
+	-webkit-transform: $transform_string;
+	-ms-transform: $transform_string;
+	transform: $transform_string;
+}
+
+@mixin transition-delay($t) {
+	-webkit-transition-delay: $t;
+	-ms-transition-delay: $t;
+	transition-delay: $t;
+}
+
+@mixin transition-duration($t) {
+	-webkit-transition-duration: $t;
+	-ms-transition-duration: $t;
+	transition-duration: $t;
+}
+
+@mixin transition-wtime($customtime, $trans...) {
+	$nice_rules: null;
+	$webkit_rules: null;
+	@each $rule in $trans {
+		$finaltranstime = $customtime
+		@if $rule == LINKCOLOR {
+			$rule = color;
+			$finaltranstime = 150ms;
+		}
+		$nice_rules: append($nice_rules, $rule $finaltranstime);
+		@if $rule == transform { 
+			$webkit_rules: append($webkit_rules, -webkit-transform $finaltranstime);
+		}
+		@else {
+			$webkit_rules: append($webkit_rules, $rule $finaltranstime);
+		}
+	}
+	-webkit-transition: $webkit_rules;
+	-ms-transition: $nice_rules;
+	transition: $nice_rules;
+}
+
+@mixin transition($trans...) {
+	@include transition-wtime($transtime, $trans...);
+}
+
+@mixin hardware-accelerate() {
+	-webkit-transform: translateZ(0);
+	transform: translateZ(0);
+}
