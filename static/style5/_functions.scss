@@ -34,10 +34,10 @@ $transtime: 700ms $transfunc;
 	$nice_rules: null;
 	$webkit_rules: null;
 	@each $rule in $trans {
-		$finaltranstime = $customtime
+		$finaltranstime: $customtime;
 		@if $rule == LINKCOLOR {
-			$rule = color;
-			$finaltranstime = 150ms;
+			$rule: color;
+			$finaltranstime: 150ms;
 		}
 		$nice_rules: append($nice_rules, $rule $finaltranstime);
 		@if $rule == transform { 

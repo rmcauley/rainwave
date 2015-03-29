@@ -1,6 +1,4 @@
-@option compress: yes;
-
-@include "_functions.scss";
+@import "functions";
 
 $background: #000000;
 $text: #FFF;
@@ -8,6 +6,8 @@ $darktext: #CCC;
 $vdarktext: #777;
 $vvdarktext: #444;
 $orange: #f7941e;
+$blue: #1f95e5;
+$blue_dark: #128adb;
 $highlight: #35adff;
 $link: #6cf6ff;
 $linkhover: #a7e1ff;
@@ -95,4 +95,4 @@ a, a:visited, .link {
 	user-select: none;
 }
 
-@include "_*.scss";
+@import "menu";

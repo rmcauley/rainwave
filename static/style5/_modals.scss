@@ -6,3 +6,113 @@
 	width: 100%;
 	height: 100%;
 }
+
+/* MODAL STUFF */
+
+body.modal_is_active #top_menu_wrapper, body.modal_is_active #sizable_body, body.modal_is_active #messages {
+	opacity: 0.3;
+}
+
+body.modal_is_active div.history_hidden {
+	-webkit-transition-duration: 0s;
+	transition-duration: 0s;
+	opacity: 0;
+}
+
+div.modal_container {
+	position: absolute;
+	overflow: hidden;
+	margin: 0 auto;
+	top: 50%;
+	left: 50%;
+	width: 0;
+	opacity: 0;
+	background: #000;
+	padding: 5px 0;
+	z-index: 10001;
+	@include transform(translate(-50%, -50%));
+
+	-webkit-transition: width 400ms $transfunc 400ms, opacity 300ms $transfunc 100ms;
+            transition: width 400ms $transfunc 400ms, opacity 300ms $transfunc 100ms;
+}
+
+div.modal_container.active_modal {
+	display: block;
+	width: 100%;
+	opacity: 1;
+
+	@include transition-wtime(400ms, width);
+}
+
+div.modal_header_wrapper {
+	padding-bottom: 2px;
+	border-bottom: 1px solid $menu_blue;
+}
+
+div.modal_header {
+	width: 100%;
+	background: $menu_blue;
+	font-size: 1.2em;
+	font-weight: 300;
+}
+
+div.modal_header_content {
+	max-width: 100%;
+	width: 850px;
+	margin: 0 auto;
+	opacity: 0;
+	padding: 0;
+}
+
+div.active_modal div.modal_header_content {
+	opacity: 1;
+	max-width: 100%;
+	width: 800px;
+	@include transition(padding, opacity, width, max-width);
+	@include transition-delay(600ms);
+}
+
+div.modal_header_content svg {
+	fill: $text;
+	float: right;
+	height: 1em;
+	width: 1em;
+	stroke: #FFF;
+	margin-top: 3px;
+	cursor: pointer;
+}
+
+div.modal {
+	position: relative;
+	max-width: 100%;
+	width: 800px;
+	margin: 5px auto;
+	height: 0;
+	padding: 5px;
+	overflow: hidden;
+	opacity: 0;
+
+	@include transition-wtime(400ms, height, opacity);
+}
+
+div.active_modal div.modal {
+	height: 600px;
+	overflow: auto;
+	opacity: 1;
+	-webkit-transition: height 400ms $transfunc 300ms, opacity 400ms linear 500ms;
+	        transition: height 400ms $transfunc 300ms, opacity 400ms linear 500ms;
+}
+
+body.small_screen div.active_modal div.modal {
+	height: 400px;
+}
+
+body.mobile_screen div.active_modal div.modal {
+	height: 360px;
+}
+
+div.modal_bottom_border {
+	height: 2px;
+	width: 100%;
+	background: $menu_blue;
+}

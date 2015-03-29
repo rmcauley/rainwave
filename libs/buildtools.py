@@ -1,17 +1,11 @@
 import os
-import warnings
 import subprocess
+import scss
+from pathlib import Path
 from libs import config
 from libs import js_templating
 from libs.config import get_build_number
 from slimit import minify
-
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    import scss
-    from scss import Scss
-
-scss.config.LOAD_PATHS = os.path.join(os.path.dirname(__file__), "..", "static", "style4")
 
 def create_baked_directory():
 	d = os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()))
@@ -25,18 +19,24 @@ def create_baked_directory():
 def bake_css():
 	create_baked_directory()
 	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style4.css")
+	incl_path = Path(os.path.join(os.path.dirname(__file__), "..", "static", "style5")).resolve()
 	if not os.path.exists(wfn):
-		_bake_css_file(os.path.join(os.path.dirname(__file__), "..", "static", "style4", "_sass.scss"), wfn)
+		_bake_css_file("_sass.scss", wfn, incl_path)
 
 def bake_beta_css():
 	create_baked_directory()
 	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style5b.css")
-	_bake_css_file(os.path.join(os.path.dirname(__file__), "..", "static", "style5", "r5.scss"), wfn)
+	incl_path = Path(os.path.join(os.path.dirname(__file__), "..", "static", "style5")).resolve()
+	_bake_css_file("r5.scss", wfn, incl_path)
 
-def _bake_css_file(input_filename, output_filename):
-	css_f = open(input_filename, 'r')
-	css_content = Scss().compile(css_f.read())
-	css_f.close()
+def _bake_css_file(input_filename, output_filename, include_path):
+	css_content = scss.compiler.compile_file(input_filename,
+		root=include_path,
+		search_path=[ include_path ],
+		output_style='nested',
+		live_errors=True,
+		warn_unused_imports=False
+	)
 
 	dest = open(output_filename, 'w')
 	dest.write(css_content)
