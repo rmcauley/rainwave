@@ -1,5 +1,5 @@
 <div class="header">
-	<div class="top_menu">
+	<div class="menu_wrapper">
 		<ul class="menu">
 			<li class="menu_link">
 				<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
@@ -14,10 +14,10 @@
 			</li>
 
 			<li bind="calendar_menu_item" class="menu_link">
+				<div bind="calendar_dropdown" id="calendar_dropdown" class="menu_inline_dropdown"></div>
 				<a class="link">
 					{{ $l("events_calendar_link") }}
 				</a>
-				<div bind="calendar_dropdown" id="calendar_dropdown" class="menu_inline_dropdown"></div>
 			</li>
 
 			{{#if ^Prefs.get("advanced") }}
@@ -31,7 +31,7 @@
 					<a class="link">{{ ^User.username }}</a>
 					<img class="avatar" src="{{ ^User.avatar }}" />
 				</li>
-			{{else}}
+			{{#else}}
 				<li>
 					<a bind="login" class="link">
 						{{ $l("login") }}
@@ -40,7 +40,7 @@
 
 				<li class="menu_link">
 					<a href="/forums/ucp.php?mode=register">
-						{{ $l("sign Up") }}
+						{{ $l("signup") }}
 					</a>
 				</li>
 			{{/if}}
@@ -76,7 +76,7 @@
 			<svg bind="play" class="audio_icon audio_icon_play" use="play"></svg>
 			<svg bind="stop" class="audio_icon audio_icon_stop" use="stop"></svg>
 			<svg bind="mute" class="audio_icon audio_icon_mute" use="mute"></svg>
-			<svg bind="volume" id="audio_volume" use="volume"></svg>
+			<svg bind="volume" class="audio_volume" use="volume"></svg>
 		</div>
 	</div>
 </div>

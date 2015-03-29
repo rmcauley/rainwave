@@ -12,6 +12,8 @@ class RWFormatter(logging.Formatter):
 def init(logfile, loglevel = "warning"):
 	global log
 	logging.getLogger().setLevel(logging.DEBUG)
+	logging.getLogger("scss").setLevel(logging.DEBUG)
+	logging.getLogger("scss.compiler").setLevel(logging.DEBUG)
 	logging.getLogger("tornado.access").setLevel(logging.CRITICAL)
 
 	handler = logging.handlers.RotatingFileHandler(logfile, maxBytes = 10000000, backupCount = 1)
