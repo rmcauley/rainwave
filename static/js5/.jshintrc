@@ -1,0 +1,22 @@
+{
+  "globals": {
+    "console": true,
+    "docCookies": true,
+    "gettext": true,
+    "interpolate": true,
+    "pgettext": true,
+    "requestAnimationFrame": true,
+    "setTimeout": true,
+
+    "API": true
+  },
+
+  "nonew": true,
+  "newcap": false,
+  "quotmark": true,
+  "jquery": true,
+  "loopfunc": true,
+  "undef": true,
+  "unused": "vars",
+  "strict": false
+}
