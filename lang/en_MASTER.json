@@ -86,7 +86,7 @@
    "try_external_player"                             : "Click here to try using an app to tune in.",
    "m3u_hijack_right_click"                          : "A plugin is trying to hijack your browser.  Please right click the player and click Save As to tune in.",
 
-   "listen_via_browser"                               : "Listen In-Browser",
+   "listen_via_browser"                              : "Listen In Browser",
    "listen_via_mp3"                                  : "Listen with MP3",
    "listen_via_ogg"                                  : "Listen with Ogg",
 

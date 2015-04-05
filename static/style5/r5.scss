@@ -19,7 +19,6 @@ $cooldown-albumlist-color: #2c2e5c;
 $fave_color: #f7ff9f;
 
 body {
-	font-family: 'Roboto Condensed', 'Helvetica Neue', 'Helvetica', sans-serif;		
 	height: 100%;
 	color: $text;
 	margin: 0;
@@ -33,6 +32,10 @@ body {
 		* {
 			@include no-transition();
 		}
+	}
+
+	@media $pc-media {
+		font-family: 'Roboto Condensed', 'Helvetica Neue', 'Helvetica', sans-serif;
 	}
 }
 

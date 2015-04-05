@@ -7,6 +7,9 @@ var Menu = function() {
 	for (var i = 0; i < station_order.length; i++) {
 		if (BOOTSTRAP.station_list[station_order[i]]){ 
 			stations.push(BOOTSTRAP.station_list[station_order[i]]);
+			if (station_order[i] == BOOTSTRAP.user.sid) {
+				stations[stations.length - 1].url = null;
+			}
 		}
 	}
 	if (window.location.href.indexOf("beta") !== -1) {
@@ -20,6 +23,12 @@ var Menu = function() {
 		//R4Audio.changed_status_callback = update_tuned_in_status_from_player;
 		template = RWTemplates.menu({ "stations": stations }).$t;
 		idx.$t._root.replaceChild(template._root, idx.$t.menu);
+
+		for (var i = 0; i < stations.length; i++) {
+			if (stations[i].url) {
+				stations.$t.menu_link.setAttribute("href", stations[i].url);
+			}
+		}
 
 		if (template.settings_link) {
 			// TODO: settings link
