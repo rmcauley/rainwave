@@ -1,86 +1,83 @@
-var ViewManager = function(el) {
+var View = function(route) {
 	"use strict";
 	var self = {};
-	self.visible_view = null;
-	var open_views = [];
+	self.route = route;
+	self.visible = false;
+	self.loaded = false;
+	self.onclose = null;
+	self.onopen = null;
+	self.draw = null;
+	self.load = null;
+	self.tabchange = null;
 
-	var BaseView = function(id) {
-		var self = {};
-		self.id = id;
-		self.el = document.createElement("div");
-
-		self.onclose = function() {};
-		self.onopen = self.onclose;
-		self.draw = self.onclose;
-		self.load = self.onclose;
-		self.is_loaded = function() { return true; };
-		self.reopen = function() {
-			while (self.el.firstChild) {
-				self.el.removeChild(self.el.firstChild);
-				self.load();
-			}
-		};
-
-		self.open = function() {
-			if (!self.is_loaded()) {
-				self.load();
-			}
-			else {
-				self.draw();
-			}
-		};
-
-		return self;
+	self.reload = function() {
+		while (self.el.firstChild) {
+			self.el.removeChild(self.el.firstChild);
+		}
+		self.loaded = false;
+		if (self.visible && self.load) {
+			self.load();
+		}
 	};
 
-	var close_window = function(view) {
+	return self;
+};
+
+var ViewManager = function() {
+	var self = {};
+	self.visible_view = null;
+	var views = [];
+
+	var close_view = function(view) {
 		view.visible = false;
 		if (view.onclose) {
 			view.onclose();
 		}
-		if (view.el.parentNode) {
+		if (view.el && view.el.parentNode) {
 			view.el.parentNode.removeChild(view.el);
 		}
 	};
 
-	self.close_all = function() {
-		while (open_views.length) {
-			close_window(open_views.shift());
+	self.close_views = function(limit) {
+		limit = limit || 0;
+		var v;
+		while (views.length > limit) {
+			v = views.shift();
+			close_view(v);
+			self.delete_route(v.route);
 		}
-		self.visible_view = null;
+		if (views.length === 0) {
+			self.visible_view = null;
+		}
 	};
 
-	self.open = function(id, render_function) {
-		var view;
-		for (var i = 0; i < open_views.length; i++) {
-			if (open_views[i].id === id) {
-				view = open_views[i];
-			}
-		}
+	self.add_view = function(view) {
+		self.close_views(5);
+		views.push(view);
 
-		if (!view) {
-			while (open_views.length > 5) {
-				close_window(open_views.shift());
-			}
-			view = BaseView(id);
-			render_function(view);
-			open_views.push(view);
-		}
+		Router.register_route(view.route);
+	};
 
-		// close the currently visible window if there isone
+	self.open_view = function(view) {
 		if (self.visible_view) {
 			close_window(self.visible_view);
 		}
+		
+		if (!view.loaded) {
+			return view.load();
+		}
 
-		// switch to this one
 		self.visible_view = view;
 		view.visible = true;
-		el.appendChild(view.el);
+		if (self.view_container) {
+			el.appendChild(view.el);
+		}
 		if (view.onopen) {
 			view.onopen();
 		}
-
-		return view;
+		if (view.tabchange) {
+			view.tabchange();
+		}
 	};
 
 	var visibilityEventNames = {};
