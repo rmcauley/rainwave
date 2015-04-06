@@ -1,0 +1,4 @@
+<div class="error" bind="el">
+	<img src="/static/images4/cancel.png" alt="X" bind="close_button" />
+	<span>{{ $l(tl_key) }}</span>
+</div>

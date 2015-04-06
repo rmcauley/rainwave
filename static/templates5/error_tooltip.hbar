@@ -1,0 +1,3 @@
+<div class="error_tooltip" bind="el">
+	{{ $l(tl_key) }}
+</div>

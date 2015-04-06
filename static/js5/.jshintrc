@@ -8,7 +8,11 @@
     "requestAnimationFrame": true,
     "setTimeout": true,
 
-    "API": true
+    "API": true,
+    "$l": true,
+    "RWTemplates": true,
+    "ErrorHandler": true,
+    "Fx": true
   },
 
   "nonew": true,
