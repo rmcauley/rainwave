@@ -7,6 +7,8 @@
 	resize_*
 	station_select_clicked
 	show_m3u
+	show_artists
+	show_losing_songs
 */
 
 /* For page initialization:
@@ -29,10 +31,10 @@ var User;
 
 	var initialize = function() {
 		if (Prefs.get("adv")) {
-			template = RWTemplates.index_advanced();
+			template = RWTemplates.index_advanced().$t;
 		}
 		else {
-			template = RWTemplates.index_basic()
+			template = RWTemplates.index_basic().$t;
 		}
 
 		User = BOOTSTRAP.user;
@@ -61,7 +63,7 @@ var User;
 		else {
 			document.body.classList.add("basic");
 		}
-		document.body.appendChild(template.$t._root);
+		document.body.appendChild(template._root);
 
 		// Scrollbar.calculate_scrollbar_width();
 		// Sizing.trigger_resize();
@@ -75,7 +77,6 @@ var User;
 		// for (i = 0; i < BOOTSTRAP.on_draw.length; i++) {
 		// 	BOOTSTRAP.on_draw[i]();
 		// }
-		document.body.classList.remove("loading");
 
 		// BOOTSTRAP = {};
 
@@ -86,8 +87,8 @@ var User;
 		if (document.ontouchstart === null) {
 			var fastclick_load = document.createElement("script");
 			fastclick_load.src = "//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.3/fastclick.min.js";
-			fastclick.addEventListener("load", fastclick_attach);
-			document.body.appendChild(fastclick);
+			fastclick_load.addEventListener("load", fastclick_attach);
+			document.body.appendChild(fastclick_load);
 		}
 	};
 

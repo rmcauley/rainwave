@@ -1,0 +1,2 @@
+<div class="stretcher" bind="stretcher"></div>
+<div class="scrollbar" bind="scrollbar"></div>

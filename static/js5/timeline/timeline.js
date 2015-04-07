@@ -1,0 +1,198 @@
+var Timeline = function() {
+	"use strict";
+	var self = {};
+	var el;
+	var template;
+	var events;
+	var sched_current;
+	var sched_next;
+	var sched_history;
+	var np_size = 0;
+	var song_size = 0;
+
+	self.initialize = function(root_template) {
+		Prefs.define("sticky_history", [ false, true ]);
+		Prefs.define("sticky_history_size", [ 0, 5, 4, 3, 2, 1 ]);
+		Prefs.add_callback("sticky_history", self.reflow);
+		Prefs.add_callback("sticky_history_size", self.reflow);
+
+		API.add_callback("sched_current", function(json) { sched_current = json; });
+		API.add_callback("sched_next", function(json) { sched_next = json; });
+		API.add_callback("sched_history", function(json) { sched_history = json; });
+		API.add_callback("_SYNC_COMPLETE", self.update);
+		API.add_callback("user", self.tune_in_voting_allowed_check);
+		API.add_callback("playback_history", open_long_history);
+
+		template = RWTemplates.timeline.timeline().$t;
+		root_template._root.replaceChild(template.timeline, root_template.timeline);
+
+		template.longhist_link.addEventListener("click",
+			function(e) {
+				e.stopPropagation();
+				API.async_get("playback_history", { "per_page": 40 });
+			}
+		);
+
+		template.history_header_link.addEventListener("click",
+			function(e) {
+				Prefs.change("sticky_history", !Prefs.get("sticky_history"));
+			}
+		);
+
+		el = template.timeline;
+	};
+
+	self.update = function() {
+		var new_events = [];
+
+		for (var i = 0; i < events.length; i++) {
+			events[i]._pending_delete = true;
+		}
+
+		// with history, [0] is the most recent song, so we start inserting from sched_history.length
+		self.history_events = [];
+		for (i = sched_history.length - 1; i >= 0; i--) {
+			sched_history[i] = find_and_update_event(sched_history[i]);
+			sched_history[i].change_to_history();
+			sched_history[i].hide_header();
+			new_events.push(sched_history[i]);
+		}
+
+		sched_current = find_and_update_event(sched_current);
+		sched_current.change_to_now_playing();
+		sched_current.show_header();
+		new_events.push(sched_current);
+
+		var previous_evt;
+		for (i = 0; i < sched_next.length; i++) {
+			sched_next[i] = find_and_update_event(sched_next[i]);
+			sched_next[i].change_to_coming_up();
+			if (previous_evt && sched_next[i].core_event_id && (previous_evt.core_event_id === sched_next[i].core_event_id)) {
+				sched_next[i].hide_header();
+			}
+			else {
+				sched_next[i].show_header();
+			}
+			new_events.push(sched_next[i]);
+			previous_evt = sched_next[i];
+		}
+
+		for (i = 0; i < events.length; i++) {
+			if (events[i]._pending_delete) {
+				events[i].style[Fx.transform] = "translateY(-" + np_size + "px)";
+				Fx.remove_element(events[i].el);
+			}
+		}
+
+		// The now playing bar
+		Clock.set_page_title(sched_current.songs[0].albums[0].name + " - " + sched_current.songs[0].title, sched_current.end);
+		if ((sched_current.end - Clock.now) > 0) {
+			sched_current.progress_bar_start();
+		}
+	};
+
+	var find_event = function(id) {
+		for (var i = 0; i < self.events.length; i++) {
+			if (id == self.events[i].id) {
+				return self.events[i];
+			}
+		}
+		return null;
+	};
+
+	var find_and_update_event = function(event_json) {
+		var evt = find_event(event_json.id);
+		if (!evt) {
+			return Event.load(event_json);
+		}
+		else {
+			evt.update(event_json);
+			evt.el._pending_delete = false;
+			return evt;
+		}
+	};
+
+	self.reflow = function() {
+		var i;
+		var running_y = 20;
+
+		var history_size = Prefs.get("sticky_history") ? sched_history.length: Prefs.get("sticky_history_size") || 0;
+		if (history_size == sched_history.length) {
+			template.history_header.classList.remove("history_expandable");
+		}
+		else {
+			template.history_header.classList.add("history_expandable");
+		}
+
+
+		self.scrollbar_recalculate();
+	};
+
+	self.register_vote = function(json) {
+		if (!json.success) return;
+		for (var i = 0; i < self.events.length; i++) {
+			if (self.events[i].id == json.elec_id) {
+				self.events[i].register_vote(json.entry_id);
+			}
+		}
+	};
+
+	self.rate_current_song = function(new_rating) {
+		if (current_event.songs[0].data.rating_allowed) {
+			current_event.songs[0].rate(new_rating);
+		}
+		else {
+			throw({ "is_rw": true, "tl_key": "cannot_rate_now" });
+		}
+	};
+
+	self.vote = function(which_election, song_position) {
+		if ((which_election < 0) || (which_election >= sched_next.length)) {
+			throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote" });
+		}
+
+		if (sched_next[which_election].type != "Election") {
+			throw({ "is_rw": true, "tl_key": "not_an_election" });
+		}
+
+		if (!sched_next[which_election].voting_allowed) {
+			throw({ "is_rw": true, "tl_key": "cannot_vote_for_this_now"});
+		}
+
+		if ((song_position < 0) || (song_position > sched_next[which_election].songs.length)) {
+			throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote"});
+		}
+
+		find_event(sched_next[which_election].id).songs[song_position].vote();
+	};
+
+	self.tune_in_voting_allowed_check = function(json) {
+		if (!sched_next) return;
+		var evt;
+		for (var i = 0; i < sched_next.length; i++) {
+			evt = find_event(sched_next[i].id);
+			if (evt) evt.check_voting();
+		}
+	};
+
+	self.get_current_song_rating = function() {
+		if (current_event && current_event.songs && (current_event.songs.length > 0)) {
+			return current_event.songs[0].song_rating.rating_user;
+		}
+		return null;
+	};
+
+	var open_long_history = function(json) {
+		var w = $id("longhist_window");
+		while (w.firstChild) {
+			w.removeChild(w.firstChild);
+		}
+
+		var t = SongsTable(json, [ "song_played_at", "title", "album_name", "artists", "rating" ], true);
+		w.appendChild(t);
+
+		Menu.show_modal($id("longhist_window_container"));
+	};
+
+	return self;
+}();

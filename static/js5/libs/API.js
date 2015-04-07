@@ -54,6 +54,7 @@ var API = function() {
 			}
 		}
 
+		perform_callbacks({ "_SYNC_START": true });
 		perform_callbacks(json);
 		perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
 		// Make sure any vote results are registered now (after the schedule has been loaded)
@@ -61,7 +62,24 @@ var API = function() {
 			perform_callbacks({ "vote_result": json.vote_result });
 		}
 
+		// only handle browser closing/opening on mobile
+		if (visibilityEventNames && visibilityEventNames.change && document.addEventListener) {
+			if ((navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1)) {
+				document.addEventListener(visibilityEventNames.change, handle_visibility_change, false);
+			}
+		}
+
 		sync_get();
+	};
+
+	var handle_visibility_change = function() {
+		if (!sync_stopped) return;
+		if (document[visibilityEventNames.hidden]) {
+			sync_pause();
+		}
+		else if (self.visible_view.onopen) {
+			sync_get();
+		}
 	};
 
 	// easy to solve, but stolen from http://stackoverflow.com/questions/1714786/querystring-encoding-of-a-javascript-object
@@ -106,11 +124,15 @@ var API = function() {
 		ErrorHandler.remove_permanent_error("sync_retrying");
 	};
 
-	self.sync_stop = function() {
+	var sync_pause = function() {
 		clear_sync_timeout_error_removal_timeout();
 		sync_clear_timeout();
 		sync_stopped = true;
 		sync.abort();
+	};
+
+	self.sync_stop = function() {
+		sync_pause();
 		ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
 	};
 
@@ -204,6 +226,7 @@ var API = function() {
 			self.paused = false;
 			sync_error_count = 0;
 			offline_ack = false;
+			perform_callbacks({ "_SYNC_START": true });
 			perform_callbacks(response);
 			perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
 			if ("error" in response) {
@@ -221,9 +244,7 @@ var API = function() {
 	};
 
 	self.force_sync = function() {
-		sync_clear_timeout();
-		sync_stopped = false;
-		sync.abort();
+		sync_pause();
 		sync_get();
 	};
 
@@ -314,7 +335,7 @@ var API = function() {
 		}
 	};
 
-	self.add_callback = function(js_func, api_name) {
+	self.add_callback = function(api_name, js_func) {
 		if (!callbacks[api_name]) callbacks[api_name] = [];
 		callbacks[api_name].push(js_func);
 	};

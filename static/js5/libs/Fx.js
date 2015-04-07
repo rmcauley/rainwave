@@ -10,7 +10,7 @@ var Fx = function() {
 	//
 	//*****************************************************************************
 
-	self.transform_string = function() {
+	self.transform = function() {
 		var transforms = [ "transform", "WebkitTransform", "msTransform", "MozTransform", "OTransform" ];
 		var p = transforms.shift();
 		while (p) {

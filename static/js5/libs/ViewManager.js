@@ -23,6 +23,24 @@ var View = function(route) {
 	return self;
 };
 
+var visibilityEventNames = {};
+if (typeof document.hidden !== "undefined") {
+	visibilityEventNames.hidden = "hidden";
+	visibilityEventNames.change = "visibilitychange";
+}
+else if (typeof document.mozHidden !== "undefined") {
+	visibilityEventNames.hidden = "mozHidden";
+	visibilityEventNames.hange = "mozvisibilitychange";
+}
+else if (typeof document.msHidden !== "undefined") {
+	visibilityEventNames.hidden = "msHidden";
+	visibilityEventNames.visibilityChange = "msvisibilitychange";
+}
+else if (typeof document.webkitHidden !== "undefined") {
+	visibilityEventNames.hidden = "webkitHidden";
+	visibilityEventNames.visibilityChange = "webkitvisibilitychange";
+}
+
 var ViewManager = function() {
 	var self = {};
 	self.visible_view = null;
@@ -62,7 +80,7 @@ var ViewManager = function() {
 		if (self.visible_view) {
 			close_window(self.visible_view);
 		}
-		
+
 		if (!view.loaded) {
 			return view.load();
 		}
@@ -79,24 +97,6 @@ var ViewManager = function() {
 			view.tabchange();
 		}
 	};
-
-	var visibilityEventNames = {};
-	if (typeof document.hidden !== "undefined") {
-		visibilityEventNames.hidden = "hidden";
-		visibilityEventNames.change = "visibilitychange";
-	}
-	else if (typeof document.mozHidden !== "undefined") {
-		visibilityEventNames.hidden = "mozHidden";
-		visibilityEventNames.hange = "mozvisibilitychange";
-	}
-	else if (typeof document.msHidden !== "undefined") {
-		visibilityEventNames.hidden = "msHidden";
-		visibilityEventNames.visibilityChange = "msvisibilitychange";
-	}
-	else if (typeof document.webkitHidden !== "undefined") {
-		visibilityEventNames.hidden = "webkitHidden";
-		visibilityEventNames.visibilityChange = "webkitvisibilitychange";
-	}
 
 	var handle_visibility_change = function() {
 		if (!self.visible_view) return;

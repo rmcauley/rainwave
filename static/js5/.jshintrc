@@ -9,10 +9,20 @@
     "setTimeout": true,
 
     "API": true,
+    "lang": true,
     "$l": true,
+    "$l_has": true,
     "RWTemplates": true,
     "ErrorHandler": true,
-    "Fx": true
+    "Fx": true,
+    "visibilityEventNames": true,
+    "Prefs": true,
+    "User": true,
+    "Chart": true,
+    "BOOTSTRAP": true,
+    "Formatting": true,
+    "Clock": true,
+    "Timeline": true
   },
 
   "nonew": true,

@@ -224,7 +224,7 @@ class RainwaveParser(HTMLParser):
 		self.buffr += "}"
 
 	def handle_subtemplate(self, template_name):
-		self.handle_append("RWTemplates.%s(_c)" % template_name)
+		self.handle_append("RWTemplates.%s(_c).$t._root" % template_name)
 
 	def handle_if(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
