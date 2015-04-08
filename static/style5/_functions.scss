@@ -40,7 +40,7 @@ $transtime: 700ms $transfunc;
 			$finaltranstime: 150ms;
 		}
 		$nice_rules: append($nice_rules, $rule $finaltranstime);
-		@if $rule == transform { 
+		@if $rule == transform {
 			$webkit_rules: append($webkit_rules, -webkit-transform $finaltranstime);
 		}
 		@else {
@@ -57,6 +57,7 @@ $transtime: 700ms $transfunc;
 }
 
 @mixin hardware-accelerate() {
-	-webkit-transform: translateZ(0);
-	transform: translateZ(0);
+	@media $pc-media {
+		-webkit-transform: translateZ(0);
+	}
 }
