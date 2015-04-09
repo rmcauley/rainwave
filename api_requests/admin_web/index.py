@@ -135,7 +135,7 @@ class RelayStatus(api.web.HTMLRequest):
 		self.write(self.render_string("basic_footer.html"))
 
 class AlbumList(api.web.HTMLRequest):
-	dj_preparation = True
+	admin_required = True
 	allow_get = True
 	fields = { "restrict": (fieldtypes.sid, True) }
 
@@ -167,7 +167,7 @@ class AlbumList(api.web.HTMLRequest):
 		pass
 
 class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
-	dj_preparation = True
+	admin_required = True
 	# fields are handled by AlbumHandler
 
 	def get(self):	#pylint: disable=E0202,W0221

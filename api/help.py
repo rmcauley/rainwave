@@ -27,17 +27,17 @@ def sectionize_requests():
 			if config.get("developer_mode"):
 				sections["Other"][url] = handler
 		elif issubclass(handler, api.web.PrettyPrintAPIMixin):
-			if handler.admin_required:
+			if handler.admin_required or handler.dj_required or handler.dj_preparation:
 				sections["Admin HTML"][url] = handler
 			else:
 				sections["Statistic HTML"][url] = handler
 		elif issubclass(handler, api.web.HTMLRequest):
-			if handler.admin_required:
+			if handler.admin_required or handler.dj_required or handler.dj_preparation:
 				sections["Admin HTML"][url] = handler
 			else:
 				sections["HTML Pages"][url] = handler
 		elif issubclass(handler, api.web.APIHandler):
-			if handler.admin_required:
+			if handler.admin_required or handler.dj_required or handler.dj_preparation:
 				sections["Admin JSON"][url] = handler
 			else:
 				sections["Core JSON"][url] = handler
@@ -58,9 +58,11 @@ class IndexRequest(tornado.web.RequestHandler):
 		self.write("<tr>")
 		for prop in url_properties:
 			if prop[0] == "auth_required" and getattr(handler, "phpbb_auth", False):
-				self.write("<td class='auth requirement'>phpbb</td>")
+				self.write("<td class='auth requirement'>phpBB</td>")
 			elif prop[0] == "auth_required" and getattr(handler, "auth_required", False):
 				self.write("<td class='auth requirement'>API key</td>")
+			elif prop[0] == "dj_required" and not getattr(handler, "admin_required", False) and (getattr(handler, "dj_required", False) or getattr(handler, "dj_preparation", False)):
+				self.write("<td class='dj requirement'>dj</td>")
 			else:
 				self.write_property(prop[0], handler, prop[1])
 		display_url = url
