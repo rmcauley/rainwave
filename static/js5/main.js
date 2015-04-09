@@ -57,6 +57,7 @@ var User;
 	};
 
 	var draw = function() {
+		var i;
 		if (Prefs.get("adv")) {
 			document.body.classList.add("advanced");
 		}
@@ -69,14 +70,14 @@ var User;
 		// Sizing.trigger_resize();
 
 		// Scrollbar.hold_all_recalculations = true;
-		// for (var i = 0; i < BOOTSTRAP.on_measure.length; i++) {
+		// for (i = 0; i < BOOTSTRAP.on_measure.length; i++) {
 		// 	BOOTSTRAP.on_measure[i]();
 		// }
 		// Scrollbar.hold_all_recalculations = false;
 
-		// for (i = 0; i < BOOTSTRAP.on_draw.length; i++) {
-		// 	BOOTSTRAP.on_draw[i]();
-		// }
+		for (i = 0; i < BOOTSTRAP.on_draw.length; i++) {
+			BOOTSTRAP.on_draw[i]();
+		}
 
 		// BOOTSTRAP = {};
 

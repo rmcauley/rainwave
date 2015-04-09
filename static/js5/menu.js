@@ -2,6 +2,9 @@ var Menu = function() {
 	var self = {};
 	var songs = {};
 	var template;
+	var has_calendar;
+
+	// Station order on the page is to be ordered like this, not by numeric sorting:
 	var station_order = [ 5, 1, 4, 2, 3 ];
 	var stations = [];
 	for (var i = 0; i < station_order.length; i++) {
@@ -12,9 +15,11 @@ var Menu = function() {
 			}
 		}
 	}
+
+	// Make sure the /beta site links to itself
 	if (window.location.href.indexOf("beta") !== -1) {
 		for (var i = 0; i < stations.length; i++) {
-			stations.url += "/beta";
+			if (stations[i].url) stations[i].url += "/beta";
 		}
 	}
 
@@ -22,13 +27,20 @@ var Menu = function() {
 		//API.add_callback(update_tuned_in_status, "user");
 		//R4Audio.changed_status_callback = update_tuned_in_status_from_player;
 		template = RWTemplates.menu({ "stations": stations }).$t;
-		idx.$t._root.replaceChild(template._root, idx.$t.menu);
+		idx._root.replaceChild(template._root, idx.menu);
 
+		// must be done in JS, if you try to do it in the template you still get a clickable <a>
 		for (var i = 0; i < stations.length; i++) {
 			if (stations[i].url) {
-				stations.$t.menu_link.setAttribute("href", stations[i].url);
+				stations[i].$t.menu_link.setAttribute("href", stations[i].url);
+			}
+			else {
+				stations[i].$t.menu_link.classList.add("selected_station");
 			}
 		}
+
+		template.station_select_header.on("click", close_station_select);
+		template.station_select.on("click", open_station_select);
 
 		if (template.settings_link) {
 			// TODO: settings link
@@ -39,10 +51,9 @@ var Menu = function() {
 	var onload = function() {
 		var jstz_load = document.createElement("script");
 		jstz_load.src = "//cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js";
-		jstz_load.on("click", function() {
-			console.log("jstz loaded");
-			// template.calendar_menu_item.on("click", calendar_toggle);
-			// template.calendar_menu_item.on("mouseout", calendar_hide);
+		jstz_load.on("load", function() {
+			template.calendar_menu_item.on("click", calendar_toggle);
+			template.calendar_menu_item.on("mouseleave", calendar_hide);
 		});
 		document.body.appendChild(jstz_load);
 	};
@@ -87,58 +98,43 @@ var Menu = function() {
 	// 	}
 	// };
 
-	// var calendar_toggle = function(e) {
-	// 	var dd = $id("calendar_dropdown"); 
-	// 	if (!$has_class(dd, "has_calendar")) {
-	// 		var tz_param;
-	// 		if (jstz) {
-	// 			tz_param = "&ctz=" + jstz.determine().name();
-	// 		}
-	// 		dd.appendChild($el("iframe", { "class": "calendar_iframe", "src": "https://www.google.com/calendar/embed?showTitle=0&showNav=0&showDate=0&showPrint=0&showCalendars=0&mode=AGENDA&height=500&wkst=1&bgcolor=%23ffffff&src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com&color=%232952A3" + tz_param, "frameborder": "0", "scrolling": "no" }));
-	// 		$add_class(dd, "has_calendar");
-	// 	}
-	// 	if ($has_class(dd, "show_calendar")) {
-	// 		$remove_class(dd, "show_calendar");
-	// 	}
-	// 	else {
-	// 		$add_class(dd, "show_calendar");
-	// 	}	
-	// };
+	var calendar_toggle = function(e) {
+		if (!has_calendar) {
+			var tz_param;
+			if (jstz) {
+				tz_param = "&ctz=" + jstz.determine().name();
+			}
+			var iframe = document.createElement("iframe");
+			iframe.setAttribute("src", "https://www.google.com/calendar/embed?showTitle=0&showNav=0&showDate=0&showPrint=0&showCalendars=0&mode=AGENDA&height=500&wkst=1&bgcolor=%23ffffff&src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com&color=%232952A3" + tz_param);
+			iframe.setAttribute("frameborder", 0);
+			template.calendar_dropdown.appendChild(iframe);
+			has_calendar = true;
+		}
+		if (template.calendar_dropdown.classList.contains("show_calendar")) {
+			calendar_hide();
+		}
+		else {
+			template.calendar_dropdown.classList.add("show_calendar");
+		}
+	};
 
-	// var calendar_hide = function(e) {
-	// 	if (Mouse.is_mouse_leave(e, $id("calendar_menu_item"))) {
-	// 		$remove_class($id("calendar_dropdown"), "show_calendar");
-	// 	}
-	// };
+	var calendar_hide = function(e) {
+		template.calendar_dropdown.classList.remove("show_calendar");
+	};
 
-	// var open_station_select = function(e) {
-	// 	Prefs.change("station_select_clicked", true);
-	// 	var ss = $id("station_select");
-	// 	$remove_class(ss, "call_to_action");
-	// 	if (!$has_class(ss, "open")) {
-	// 		$add_class($id("top_menu"), "station_select_open");
-	// 		$add_class(ss, "open");
-	// 		$add_class($id("station_select_container"), "open");
-	// 		Fx.chain_transition(ss, function() {
-	// 			if ($has_class(ss, "open")) {
-	// 				ss.addEventListener("mouseout", close_station_select);
-	// 			}
-	// 		});
-	// 	}
-	// 	else {
-	// 		close_station_select(null, true);
-	// 	}
-	// 	remove_event_alert();
-	// };
+	var open_station_select = function(e) {
+		if (!template.station_select.classList.contains("open")) {
+			template.station_select.classList.add("open");
+			template.header.on("mouseleave", close_station_select);
+		}
+	};
 
-	// var close_station_select = function(e, override) {
-	// 	if (override || Mouse.is_mouse_leave(e, $id("station_select"))) {
-	// 		$id("station_select").removeEventListener("mouseout", close_station_select);
-	// 		Fx.chain_transition($id("station_select"), function() { $remove_class($id("top_menu"), "station_select_open"); });
-	// 		$remove_class($id("station_select"), "open");
-	// 		$remove_class($id("station_select_container"), "open");
-	// 	}
-	// };
+	var close_station_select = function(e) {
+		if (template.station_select.classList.contains("open")) {
+			template.station_select.classList.remove("open");
+			template.header.off("mouseleave", close_station_select);
+		}
+	};
 
 	// var update_station_info = function(json) {
 	// 	var do_event_alert, event_desc, event_sid;

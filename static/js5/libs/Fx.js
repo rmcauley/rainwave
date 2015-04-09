@@ -13,8 +13,9 @@ var Fx = function() {
 	self.transform = function() {
 		var transforms = [ "transform", "WebkitTransform", "msTransform", "MozTransform", "OTransform" ];
 		var p = transforms.shift();
+		var t = document.createElement("div");
 		while (p) {
-			if (typeof($id("measure_box").style[p]) !== "undefined") {
+			if (typeof(t).style[p] !== "undefined") {
 				return p;
 			}
 			p = transforms.shift();

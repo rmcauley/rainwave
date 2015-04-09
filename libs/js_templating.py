@@ -13,8 +13,11 @@
 # Cannot deal with SVG except for Rainwave's particular use case.
 #
 # It looks much like Handlebars, except you have no helpers system.
-# The only big restriction is that {{#each}} cannot handle
-# objects - only arrays.
+# Restrictions:
+#    - {{#each}} cannot handle objects - only arrays.
+#    - {{#if}} cannot be used inside < >, e.g. <a {{#if href}}href="hello"{{/if}}>
+#    - {{#if}} must contain whole elements, e.g. you cannot do this:
+#            {{#if href}} <a href="href"> {{#else}} <a> {{/if}} something </a>
 #
 # Some handy things to know:
 #
@@ -33,6 +36,8 @@
 import re
 from HTMLParser import HTMLParser
 
+# Use as wide an array of ES5 compatible characters as we can to keep
+# variable names short.
 _unique_id_chars = [ chr(x) for x in xrange(65, 91) ] + [ chr(x) for x in xrange(97, 123) ]
 _unique_id = _unique_id_chars[0]
 def _get_id():
@@ -103,6 +108,7 @@ class RainwaveParser(HTMLParser):
 		global _unique_id_chars
 
 		HTMLParser.__init__(self, *args, **kwargs)
+		# reset the unique IDs back to 0 for this template's local scope
 		_unique_id = _unique_id_chars[0]
 		self.name = template_name
 		names = self.name.split('.')

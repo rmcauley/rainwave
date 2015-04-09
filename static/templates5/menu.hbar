@@ -1,4 +1,4 @@
-<div class="header">
+<div class="header" bind="header">
 	<div class="menu_wrapper">
 		<ul class="menu">
 			<li class="menu_link">
@@ -46,8 +46,10 @@
 			{{/if}}
 		</ul>
 
-		<div id="station_select" class="open">
-			<div id="station_select_header">{{ $l("station_select_header") }}</div>
+		<div id="station_select" bind="station_select">
+			<a class="station" id="station_select_header" bind="station_select_header">
+				<div>{{ $l("station_select_header") }}</div>
+			</a>
 			<svg class="pulldown_arrow" use="pulldown"></svg>
 			{{#each stations }}
 				<a bind="menu_link" class="station">
