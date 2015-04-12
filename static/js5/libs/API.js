@@ -56,11 +56,12 @@ var API = function() {
 
 		perform_callbacks({ "_SYNC_START": true });
 		perform_callbacks(json);
-		perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
+		perform_callbacks({ "_SYNC_COMPLETE": true });
 		// Make sure any vote results are registered now (after the schedule has been loaded)
-		if ("vote_result" in json) {
-			perform_callbacks({ "vote_result": json.vote_result });
+		if ("already_voted" in json) {
+			perform_callbacks({ "already_voted": json.already_voted })	
 		}
+
 
 		// only handle browser closing/opening on mobile
 		if (visibilityEventNames && visibilityEventNames.change && document.addEventListener) {
@@ -228,7 +229,7 @@ var API = function() {
 			offline_ack = false;
 			perform_callbacks({ "_SYNC_START": true });
 			perform_callbacks(response);
-			perform_callbacks({ "_SYNC_COMPLETE": { "complete": true } });
+			perform_callbacks({ "_SYNC_COMPLETE": true });
 			if ("error" in response) {
 				sync_restart_pause = 6000;
 				if (response.error.code != 200) {

@@ -45,11 +45,18 @@ body {
 	}
 }
 
-#sizable_body {
+.sizeable {
 	overflow: hidden;
 	position: relative;
-	z-index: 1;
-	width: 100%;
+	z-index: 0;
+	width: 1024px;
+	max-width: 100%;
+	margin: auto;
+	
+	body.advanced & {
+		width: 100%;
+		margin: 0 auto;
+	}
 }
 
 div.debug_div {
@@ -96,6 +103,12 @@ a, a:visited, .link {
 	-moz-user-select: none;
 	-o-user-select: none;
 	user-select: none;
+}
+
+.scrollable {
+	overflow: auto;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
 @import "menu";

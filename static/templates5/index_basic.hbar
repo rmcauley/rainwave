@@ -1,1 +1,9 @@
+<div bind="measure_box" class="measure_box">
+	<div bind="scroller_size" style="width: 100px; height: 100px; overflow: scroll;"></div>
+</div>
+
 <div bind="menu"></div>
+
+<div bind="sizeable_area" class="sizeable">
+	<div bind="timeline"></div>
+</div>

@@ -133,6 +133,7 @@ var Menu = function() {
 		if (template.station_select.classList.contains("open")) {
 			template.station_select.classList.remove("open");
 			template.header.off("mouseleave", close_station_select);
+			e.stopPropagation();
 		}
 	};
 

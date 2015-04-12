@@ -38,8 +38,7 @@ var User;
 		}
 
 		User = BOOTSTRAP.user;
-		// API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
-		// API.add_callback(function(json) { User = json; }, "user");
+		API.add_callback(function(json) { User = json; }, "user");
 
 		Chart.defaults.global.scaleLineColor = "rgba(255,255,255,0.5)";
 		Chart.defaults.global.scaleBeginAtZero = true;
@@ -66,24 +65,19 @@ var User;
 		}
 		document.body.appendChild(template._root);
 
-		// Scrollbar.calculate_scrollbar_width();
-		// Sizing.trigger_resize();
+		for (i = 0; i < BOOTSTRAP.on_measure.length; i++) {
+			BOOTSTRAP.on_measure[i]();
+		}
 
-		// Scrollbar.hold_all_recalculations = true;
-		// for (i = 0; i < BOOTSTRAP.on_measure.length; i++) {
-		// 	BOOTSTRAP.on_measure[i]();
-		// }
-		// Scrollbar.hold_all_recalculations = false;
+		Sizing.trigger_resize();
 
 		for (i = 0; i < BOOTSTRAP.on_draw.length; i++) {
 			BOOTSTRAP.on_draw[i]();
 		}
 
-		// BOOTSTRAP = {};
+		// API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
 
-		// do API callbacks here
-
-		//DeepLinker.detect_url_change();
+		// DeepLinker.detect_url_change();
 
 		if (document.ontouchstart === null) {
 			var fastclick_load = document.createElement("script");
@@ -91,6 +85,8 @@ var User;
 			fastclick_load.addEventListener("load", fastclick_attach);
 			document.body.appendChild(fastclick_load);
 		}
+
+		BOOTSTRAP = {};
 	};
 
 	document.addEventListener("DOMContentLoaded", initialize);

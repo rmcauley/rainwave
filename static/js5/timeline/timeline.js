@@ -7,10 +7,11 @@ var Timeline = function() {
 	var sched_current;
 	var sched_next;
 	var sched_history;
-	var np_size = 0;
-	var song_size = 0;
+	self.song_size_np = 0;
+	self.song_size = 0;
+	self.header_size = 0;
 
-	self.initialize = function(root_template) {
+	BOOTSTRAP.on_init.push(function(root_template) {
 		Prefs.define("sticky_history", [ false, true ]);
 		Prefs.define("sticky_history_size", [ 0, 5, 4, 3, 2, 1 ]);
 		Prefs.add_callback("sticky_history", self.reflow);
@@ -22,9 +23,10 @@ var Timeline = function() {
 		API.add_callback("_SYNC_COMPLETE", self.update);
 		API.add_callback("user", self.tune_in_voting_allowed_check);
 		API.add_callback("playback_history", open_long_history);
+		API.add_callback("already_voted", self.handle_already_voted);
 
 		template = RWTemplates.timeline.timeline().$t;
-		root_template._root.replaceChild(template.timeline, root_template.timeline);
+		root_template.timeline.parentNode.replaceChild(template.timeline, root_template.timeline);
 
 		template.longhist_link.addEventListener("click",
 			function(e) {
@@ -40,7 +42,7 @@ var Timeline = function() {
 		);
 
 		el = template.timeline;
-	};
+	});
 
 	self.update = function() {
 		var new_events = [];
@@ -84,6 +86,8 @@ var Timeline = function() {
 			}
 		}
 
+		events = new_events;
+
 		// The now playing bar
 		Clock.set_page_title(sched_current.songs[0].albums[0].name + " - " + sched_current.songs[0].title, sched_current.end);
 		if ((sched_current.end - Clock.now) > 0) {
@@ -124,15 +128,29 @@ var Timeline = function() {
 			template.history_header.classList.add("history_expandable");
 		}
 
-
-		self.scrollbar_recalculate();
+		for (var i = 0; i < events.length; i++) {
+			events[i].transform_to(running_y);
+			running_y += events[i].height;
+		}
 	};
 
-	self.register_vote = function(json) {
-		if (!json.success) return;
-		for (var i = 0; i < self.events.length; i++) {
-			if (self.events[i].id == json.elec_id) {
-				self.events[i].register_vote(json.entry_id);
+	self.handle_already_voted = function(json) {
+		if (!events) return;
+		for (i = 0; i < json.length; i++) {
+			self.register_vote(json[i][0], json[i][1]);
+		}
+	};
+
+	self.register_vote = function(event_id, entry_id) {
+		if (!events) return;
+		var i, j;
+		for (i = 0; i < events.length; i++) {
+			if (events[i].elec_id == event_id) {
+				for (j = 0; j < events[i].songs.length; j++) {
+					if (events[i].songs[j].entry_id == entry_id) {
+						self.events[i].songs[j].register_vote();
+					}
+				}
 			}
 		}
 	};
@@ -183,15 +201,15 @@ var Timeline = function() {
 	};
 
 	var open_long_history = function(json) {
-		var w = $id("longhist_window");
-		while (w.firstChild) {
-			w.removeChild(w.firstChild);
-		}
+		// var w = $id("longhist_window");
+		// while (w.firstChild) {
+		// 	w.removeChild(w.firstChild);
+		// }
 
-		var t = SongsTable(json, [ "song_played_at", "title", "album_name", "artists", "rating" ], true);
-		w.appendChild(t);
+		// var t = SongsTable(json, [ "song_played_at", "title", "album_name", "artists", "rating" ], true);
+		// w.appendChild(t);
 
-		Menu.show_modal($id("longhist_window_container"));
+		// Menu.show_modal($id("longhist_window_container"));
 	};
 
 	return self;

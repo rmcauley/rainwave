@@ -19,6 +19,7 @@ div.menu_wrapper {
 
 	body.advanced & {
 		width: 100%;
+		margin: 0;
 	}
 
 	svg {
@@ -92,6 +93,7 @@ div.menu_wrapper {
 		background: transparent !important;
 		text-transform: uppercase;
 		height: $menu_height !important;
+		cursor: pointer;
 
 		@include transform(translateY(-100%));
 		@include transition(transform);
