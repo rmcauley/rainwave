@@ -74,16 +74,11 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 	if request.user:
 		if not request.user.is_anonymous():
 			user_vote_cache = cache.get_user(request.user, "vote_history")
-			temp_current = list()
-			temp_current.append(sched_current)
 			if user_vote_cache:
-				for history in user_vote_cache:
-					for event in (sched_history + sched_next + temp_current):
-						if history[0] == event['id']:
-							api_requests.vote.append_success_to_request(request, event['id'], history[1])
+				request.append("already_voted", user_vote_cache)
 		else:
 			if len(sched_next) > 0 and request.user.data['voted_entry'] > 0 and request.user.data['lock_sid'] == request.sid:
-				api_requests.vote.append_success_to_request(request, sched_next[0]['id'], request.user.data['voted_entry'])
+				request.append("already_voted", [(sched_next[0]['id'], request.user.data['voted_entry'])])
 
 	request.append("all_stations_info", cache.get("all_stations_info"))
 
