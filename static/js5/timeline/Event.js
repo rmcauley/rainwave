@@ -1,8 +1,7 @@
 var Event = function(self) {
 	"use strict";
-	var header_default_text;
-
 	self.type = self.type.toLowerCase();
+	self.header_text = null;
 	if (!self.used && (self.type.indexOf("election") != -1)) {
 		shuffle(self.songs);
 	}
@@ -36,15 +35,14 @@ var Event = function(self) {
 		self.$template.el.classList.remove("sched_history");
 		self.$template.el.classList.remove("sched_current");
 		self.$template.el.classList.add("sched_next");
-		self.set_header_text($l("coming_up"));
 		self.check_voting();
+		self.set_header_text($l("coming_up"));
 	};
 
 	self.change_to_now_playing = function() {
 		self.$template.el.classList.remove("sched_next");
 		self.$template.el.classList.remove("sched_history");
 		self.$template.el.classList.add("sched_current");
-		self.set_header_text($l("now_playing"));
 		Clock.pageclock = self.elements.header_clock;
 		var i;
 		if (self.songs && (self.songs.length > 1)) {
@@ -56,6 +54,7 @@ var Event = function(self) {
 			}
 		}
 		self.check_voting();
+		self.set_header_text($l("now_playing"));
 	};
 
 	self.change_to_history = function() {
@@ -75,7 +74,7 @@ var Event = function(self) {
 			if (self.voting_allowed) {
 				self.enable_voting();
 			}
-			else if ((self.type == "election") && (self.songs.length > 1) && !self.data.used) {
+			else if ((self.type == "election") && (self.songs.length > 1) && !self.used) {
 				self.enable_voting();
 			}
 			else {
@@ -88,106 +87,64 @@ var Event = function(self) {
 	};
 
 	self.enable_voting = function() {
-		if (!self.songs) {
-			return;
-		}
 		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].enable_voting();
-		}
-		self.set_header_text();
-	};
-
-	self.clear_voting_status = function() {
-		if (!self.songs) {
-			return;
-		}
-		for (var i = 0; i < self.songs.length; i++) {
-			self.songs[i].clear_voting_status();
 		}
 	};
 
 	self.disable_voting = function() {
-		if (!self.songs) {
-			return;
-		}
 		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].disable_voting();
 		}
-		self.set_header_text();
 	};
 
-	self.register_vote = function(entry_id) {
-		if (!self.songs) return;
-		for (var i = 0; i < self.songs.length; i++) {
-			if (entry_id == self.songs[i].data.entry_id) {
-				self.songs[i].register_vote();
-			}
-			else {
-				self.songs[i].unregister_vote();
-			}
-		}
-	};
-
-	self.move_to_y = function(new_y) {
-		Fx.delay_css_setting(self.el, "transform", "translateY(" + new_y + "px)");
-	};
-
-	self.set_header_text = function() {
+	self.set_header_text = function(default_text) {
 		var event_desc = Formatting.event_name(self.type, self.name);
-		if (event_desc && !self.data.voting_allowed) {
-			header_text.textContent = current_header_default_text + " - " + event_desc;
+		if (event_desc && !self.voting_allowed) {
+			self.$template.header_text.textContent = default_text + " - " + event_desc;
 		}
-		else if (event_desc && self.data.voting_allowed) {
-			header_text.textContent = event_desc + " - " + $l("vote_now");
+		else if (event_desc && self.voting_allowed) {
+			self.$template.header_text.textContent = event_desc + " - " + $l("vote_now");
 		}
-		else if (self.data.voting_allowed) {
-			header_text.textContent = current_header_default_text + " - " + $l("vote_now");
-		}
-		else {
-			header_text.textContent = current_header_default_text;
-		}
-		if (self.data.url) {
-			header_text.setAttribute("href", self.data.url);
-			header_text.setAttribute("target", "_blank");
-			Formatting.linkify_external(header_text);
-			$add_class(header_text, "link");
+		else if (self.voting_allowed) {
+			self.$template.header_text.textContent = default_text + " - " + $l("vote_now");
 		}
 		else {
-			Formatting.unlinkify(header_text);
-			header_text.removeAttribute("href");
-			header_text.removeAttribute("target");
-			$remove_class(header_text, "link");
+			self.$template.header_text.textContent = default_text;
 		}
-		self.header_text = header_text.textContent;
+		if (self.url) {
+			self.$template.header_text.setAttribute("href", self.url);
+			self.$template.header_text.setAttribute("target", "_blank");
+			self.$template.header_text.classList.add("link");
+		}
+		else {
+			self.$template.header_text.removeAttribute("href");
+			self.$template.header_text.removeAttribute("target");
+			self.$template.header_text.classList.remove("link");
+		}
+		self.header_text = self.$template.header_text.textContent;
 	};
 
 	self.hide_header = function() {
-		if (!$add_class(self.el, "timeline_event_sequence")) return;
-		Fx.delay_css_setting(header, "opacity", 0);
-		Fx.delay_css_setting(header, "height", 0);
-		Fx.delay_css_setting(header, "padding", 0);
+		self.$template.header.classList.add("no_header");
 	};
 
 	self.show_header = function() {
-		if (!$remove_class(self.el, "timeline_event_sequence")) return;
-		Fx.delay_css_setting(header, "opacity", null);
-		Fx.delay_css_setting(header, "height", null);
-		Fx.delay_css_setting(header, "padding", null);
+		self.$template.header.classList.remove("no_header");
 	};
 
+	// TODO: Disable the progress bar while in the background
+
 	self.progress_bar_start = function() {
-		if (MOBILE) return;
 		progress_bar_update();
-		header_inside_bar.style.opacity = 1;
+		self.$template.progress.style.opacity = 1;
 		Clock.pageclock_bar_function = progress_bar_update;
 	};
 
 	var progress_bar_update = function() {
-		var new_val = Math.min(Math.max(Math.floor(((self.end - Clock.now) / (self.data.songs[0].length - 1)) * 100), 0), 100);
-		header_inside_bar.style.width = new_val + "%";
+		var new_val = Math.min(Math.max(Math.floor(((self.end - Clock.now) / (self.songs[0].length - 1)) * 100), 0), 100);
+		self.$template.progress.style.width = new_val + "%";
 	};
 
-	draw();
-	self.check_voting();
 	return self;
 };
