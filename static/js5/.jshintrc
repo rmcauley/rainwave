@@ -22,7 +22,10 @@
     "BOOTSTRAP": true,
     "Formatting": true,
     "Clock": true,
-    "Timeline": true
+    "Timeline": true,
+    "Song": true,
+    "shuffle": true,
+    "Event": true
   },
 
   "nonew": true,

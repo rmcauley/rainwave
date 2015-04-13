@@ -1,85 +1,30 @@
-var Event = function() {
+var Event = function(self) {
 	"use strict";
-	var e_self = {};
+	var header_default_text;
 
-	e_self.load = function(json) {
-		if (json.type == "Election") {
-			// nothing special for elections right now
-			return EventBase(json, $l("Election"));
-		}
-		else if ((json.type == "OneUp") || (json.type == "SingleSong")) {
-			return OneUp(json, $l("OneUp"));
-		}
-		throw("Unknown event type '" + json.type + "'");
-	};
+	self.type = self.type.toLowerCase();
+	if (!self.used && (self.type.indexOf("election") != -1)) {
+		shuffle(self.songs);
+	}
+	self.$template = RWTemplates.timeline.event(self);
 
-	return e_self;
-}();
-
-var EventBase = function(json) {
-	"use strict";
-	var self = {};
-	self.data = json;
-	self.id = json.id;
-	self.type = json.type;
-	self.length = json.length;
-	self.end = json.end;
-	self.pending_delete = false;
-	self.name = json.name || null;
-	self.height = null;
-	self.el = null;
-	self.elements = {};
-	self.songs = null;
-
-	var header = $el("div", { "class": "timeline_header" });
-	self.elements.header_clock = $el("span", { "class": "timeline_header_clock" });
-	var header_vote_result = $el("div", { "class": "timeline_header_vote_result" });
-	var header_text = $el("a");
-	var current_header_default_text;
-	var now_playing = false;
-	var header_bar = $el("div", { "class": "timeline_header_bar" });
-	var header_inside_bar = $el("div", { "class": "timeline_header_bar_inside" });
-	header_bar.appendChild(header_inside_bar);
-	header.appendChild(self.elements.header_clock);
-	header.appendChild(header_text);
-	self.header_text = header_text;
-
-	if (json.songs) {
-		self.songs = [];
-		if ("songs" in json) {
-			for (var i = 0; i < json.songs.length; i++) {
-				self.songs.push(TimelineSong.create(json.songs[i]));
-			}
-		}
+	for (var i = 0; i < self.songs.length; i++) {
+		self.songs[i] = Song(self.songs[i]);
+		self.$template.root.appendChild(self.songs[i].$template.root);
 	}
 
-	var draw = function() {
-		self.el = $el("div", { "class": "timeline_event timeline_" + self.type });
-		self.el.appendChild(header);
-		if (self.songs) {
-			// shuffle our songs to draw in the array if it's not used yet
-			if (!self.data.used && (self.type.toLowerCase().indexOf("election") != -1)) {
-				shuffle(self.songs);
-			}
-			for (var i = 0; i < self.songs.length; i++) {
-				self.el.appendChild(self.songs[i].el);
+	self.update = function(json) {
+		for (var i in json) {
+			if (typeof(json[i]) !== "object") {
+				self[i] = json[i];
 			}
 		}
-		self.el.appendChild(header_bar);
-	};
-
-	self.update = function(json) {
-		self.data = json;
-		self.end = json.end;
-		self.start = json.start;
-		self.predicted_start = json.predicted_start;
-		self.start_actual = json.start_actual;
-		self.check_voting();
 
 		if (self.songs) {
-			for (var i = 0; i < self.songs.length; i++) {
-				for (var j = 0; j < json.songs.length; j++) {
-					if (self.songs[i].data.id == json.songs[j].id) {
+			var j;
+			for (i = 0; i < self.songs.length; i++) {
+				for (j = 0; j < json.songs.length; j++) {
+					if (self.songs[i].id == json.songs[j].id) {
 						self.songs[i].update(json.songs[j]);
 					}
 				}
@@ -88,71 +33,53 @@ var EventBase = function(json) {
 	};
 
 	self.change_to_coming_up = function() {
-		$add_class(self.el, "timeline_next");
-		current_header_default_text = $l("coming_up");
-		now_playing = false;
-		self.set_header_text();
+		self.$template.el.classList.remove("sched_history");
+		self.$template.el.classList.remove("sched_current");
+		self.$template.el.classList.add("sched_next");
+		self.set_header_text($l("coming_up"));
+		self.check_voting();
 	};
 
 	self.change_to_now_playing = function() {
-		if ($has_class(self.el, "timeline_now_playing")) return;
-		now_playing = true;
-		current_header_default_text = $l("now_playing");
-		$remove_class(self.el, "timeline_next");
-		self.set_header_text();
+		self.$template.el.classList.remove("sched_next");
+		self.$template.el.classList.remove("sched_history");
+		self.$template.el.classList.add("sched_current");
+		self.set_header_text($l("now_playing"));
 		Clock.pageclock = self.elements.header_clock;
 		var i;
 		if (self.songs && (self.songs.length > 1)) {
 			// other places in the code rely on songs[0] to be the winning song
 			// make sure we sort properly for that condition here
-			header_vote_result.appendChild($el("span", { "textContent": $l("voting_results_were") + " " }));
+			self.songs.sort(function(a, b) { return a.entry_position < b.entry_position ? -1 : 1; });
 			for (i = 0; i < self.songs.length; i++) {
-				header_vote_result.appendChild($el("span", { "textContent": self.songs[i].data.entry_votes }));
-				if ($has_class(self.songs[i].el, "voting_registered")) {
-					header_vote_result.lastChild.className = "self_voted_result";
-				}
-				if (i != (self.songs.length - 1)) {
-					header_vote_result.appendChild($el("span", { "textContent": " - " }));
-				}
+				self.$template.root.appendChild(self.songs[i].$template.root);
 			}
-			self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
-			if (self.songs[0].data.entry_votes) {
-				self.el.insertBefore(header_vote_result, header_bar);
-			}
-			$add_class(self.songs[0].el, "timeline_now_playing_song");
 		}
-		else if (self.songs && (self.songs.length > 0)) {
-			$add_class(self.songs[0].el, "timeline_now_playing_song");
-		}
-		for (i = 1; i < self.songs.length; i++) {
-			$add_class(self.songs[i].el, "timeline_losing_song");
-		}
-		$add_class(self.el, "timeline_now_playing");
+		self.check_voting();
 	};
 
 	self.change_to_history = function() {
-		if ($has_class(self.el, "timeline_history")) return;
-		// we shouldn't have to do this sort (or I have a problem in the API)
-		// but just to be sure, a quick sort of a 3-length array won't kill us
-		self.songs.sort(function(a, b) { return a.data.entry_position < b.data.entry_position ? -1 : 1; });
+		self.$template.el.classList.remove("sched_current");
+		self.$template.el.classList.remove("sched_next");
+		self.$template.el.classList.add("sched_history");
+		self.songs.sort(function(a, b) { return a.entry_position < b.entry_position ? -1 : 1; });
 		// neither will reclassing the songs that lost
 		for (var i = 1; i < self.songs.length; i++) {
-			$add_class(self.songs[i].el, "timeline_losing_song");
+			self.$template.root.appendChild(self.songs[i].$template.root);
 		}
-		now_playing = false;
-		$remove_class(self.el, "timeline_next");
-		$remove_class(self.el, "timeline_now_playing");
-		$remove_class(self.songs[0].el, "timeline_now_playing_song");
-		$add_class(self.el, "timeline_history");
+		self.check_voting();
 	};
 
 	self.check_voting = function() {
-		if (User.tuned_in && (!User.locked || (User.lock_sid == BOOTSTRAP.sid))) {
-			if (self.data.voting_allowed) {
+		if (User.tuned_in && (!User.locked || (User.lock_sid == User.sid))) {
+			if (self.voting_allowed) {
 				self.enable_voting();
 			}
-			else if ((self.type == "Election") && (self.songs.length > 1) && !self.data.used) {
+			else if ((self.type == "election") && (self.songs.length > 1) && !self.data.used) {
 				self.enable_voting();
+			}
+			else {
+				self.disable_voting();
 			}
 		}
 		else {
