@@ -98,6 +98,12 @@ var Event = function(self) {
 		}
 	};
 
+	self.unregister_vote = function() {
+		for (var i = 0; i < self.songs.length; i++) {
+			self.songs[i].unregister_vote();
+		}
+	};
+
 	self.set_header_text = function(default_text) {
 		var event_desc = Formatting.event_name(self.type, self.name);
 		if (event_desc && !self.voting_allowed) {
@@ -133,17 +139,20 @@ var Event = function(self) {
 		self.$template.header.classList.remove("no_header");
 	};
 
-	// TODO: Disable the progress bar while in the background
-
 	self.progress_bar_start = function() {
 		progress_bar_update();
-		self.$template.progress.style.opacity = 1;
 		Clock.pageclock_bar_function = progress_bar_update;
 	};
 
 	var progress_bar_update = function() {
 		var new_val = Math.min(Math.max(Math.floor(((self.end - Clock.now) / (self.songs[0].length - 1)) * 100), 0), 100);
 		self.$template.progress.style.width = new_val + "%";
+	};
+
+	self.destroy = function() {
+		for (var i = 0; i < self.songs.length; i++) {
+			self.songs[i].destroy();
+		}
 	};
 
 	return self;

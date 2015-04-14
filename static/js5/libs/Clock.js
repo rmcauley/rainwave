@@ -57,7 +57,7 @@ var Clock = function() {
 			self.pageclock.textContent = c;
 		}
 
-		if (self.pageclock_bar_function) {
+		if (self.pageclock_bar_function && !document[visibilityEventNames.hidden]) {
 			self.pageclock_bar_function(page_title_end, self.now);
 		}
 

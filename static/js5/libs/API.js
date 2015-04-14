@@ -59,9 +59,8 @@ var API = function() {
 		perform_callbacks({ "_SYNC_COMPLETE": true });
 		// Make sure any vote results are registered now (after the schedule has been loaded)
 		if ("already_voted" in json) {
-			perform_callbacks({ "already_voted": json.already_voted })	
+			perform_callbacks({ "already_voted": json.already_voted });
 		}
-
 
 		// only handle browser closing/opening on mobile
 		if (visibilityEventNames && visibilityEventNames.change && document.addEventListener) {
@@ -78,7 +77,7 @@ var API = function() {
 		if (document[visibilityEventNames.hidden]) {
 			sync_pause();
 		}
-		else if (self.visible_view.onopen) {
+		else {
 			sync_get();
 		}
 	};
