@@ -26,7 +26,8 @@
     "Timeline": true,
     "Song": true,
     "shuffle": true,
-    "Event": true
+    "Event": true,
+    "Rating": true
   },
 
   "nonew": true,
