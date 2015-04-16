@@ -1,10 +1,10 @@
 var Rating = function() {
 	"use strict";
 	var self = {};
-	self.album_rating_callback = null;
+	self.album_callback = null;
 
 	self.initialize = function() {
-		API.add_callback(rating_user_callback, "rate_result");
+		API.add_callback(rating_api_callback, "rate_result");
 		API.add_callback(song_fave_update, "fave_song_result");
 		API.add_callback(album_fave_update, "fave_album_result");
 
@@ -16,48 +16,7 @@ var Rating = function() {
 		Prefs.add_callback("hide_global_ratings", hide_global_rating_callback);
 	};
 
-	var rating_user_callback = function(json) {
-		// TODO: Show an error, maybe?  Is it handled by API.js...?
-		if (!json.success) return;
-
-		rating_update_song(json.song_id, null, json.rating_user);
-
-		for (var i = 0; i < json.updated_album_ratings.length; i++) {
-			if (json.updated_album_ratings[i]) {
-				rating_update_album(json.updated_album_ratings[i].id, null, json.updated_album_ratings[i].rating_user, json.updated_album_ratings[i].rating_complete);
-			}
-		}
-	};
-
-	var rating_update_song = function(song_id, rating, rating_user) {
-		var ratings = document.getElementsByName("srate_" + song_id);
-		for (var i = 0; i < ratings.length; i++) {
-			if (rating_user) {
-				ratings[i].update_user_rating(rating_user);
-			}
-			if (rating) {
-				ratings[i].update_rating(rating);
-			}
-		}
-	};
-
-	var rating_update_album = function(album_id, rating, rating_user, rating_complete) {
-		var ratings = document.getElementsByName("arate_" + album_id);
-		for (var i = 0; i < ratings.length; i++) {
-			if (rating_user) {
-				ratings[i].update_user_rating(rating_user);
-			}
-			if (rating) {
-				ratings[i].update_rating(rating);
-			}
-			if (rating_complete || (rating_complete === false)) {
-				ratings[i].update_rating_complete(rating_complete);
-			}
-		}
-		if (self.album_rating_callback) {
-			self.album_rating_callback(album_id, rating, rating_user, rating_complete);
-		}
-	};
+	// PREF CALLBACKS
 
 	var rating_complete_toggle = function(use_complete) {
 		if (use_complete) {
@@ -74,6 +33,53 @@ var Rating = function() {
 		}
 		else {
 			document.body.classList.remove("hide_global_ratings");
+		}
+	};
+
+	// API CALLBACKS
+
+	var rating_api_callback = function(json) {
+		// Errors are handled in the individual rating functions, not globally here.
+		if (!json.success) return;
+
+		var ratings, i, a;
+
+		ratings = document.getElementsByName("srate_" + json.song_id);
+		for (i = 0; i < ratings.length; i++) {
+			if (json.rating_user) {
+				ratings[i].classList.add("rating_user");
+				ratings[i].rating_start(json.rating_user);
+			}
+			else if (json.rating) {
+				ratings[i].classList.remove("rating_user");
+				ratings[i].rating_start(json.rating);
+			}
+		}
+
+		for (i = 0; i < json.updated_album_ratings.length; i++) {
+			if (json.updated_album_ratings[i]) {
+				a = json.updated_album_ratings[i];
+				ratings = document.getElementsByName("arate_" + a.id);
+				for (i = 0; i < ratings.length; i++) {
+					if (a.rating_user) {
+						ratings[i].classList.add("rating_user");
+						ratings[i].rating_start(a.rating_user);
+					}
+					if (a.rating) {
+						ratings[i].classList.remove("rating_user");
+						ratings[i].rating_start(a.rating);
+					}
+					if (a.rating_complete === false) {
+						ratings[i].classList.add("rating_incomplete");
+					}
+					else {
+						ratings[i].classList.remove("rating_incomplete");
+					}
+				}
+				if (self.album_callback) {
+					self.album_callback(json.updated_album_ratings);
+				}
+			}
 		}
 	};
 
@@ -102,21 +108,69 @@ var Rating = function() {
 		change_fave("arate_" + json.id, json);
 	};
 
-	// INDIVIDUAL RATING FUNCTIONS
+	// RATING EFFECTS
 
-	var get_rating_from_mouse = function(evt) {
+	var add_effect = function(el) {
+		el.rating_to = 0;
+		el.rating_from = 0;
+		el.rating_now = 0;
+		el.rating_started = 0;
+		el.rating_anim_id = null;
+		// I have tested this and found it to not cause any memory leaks!
+		// I still feel dirty though.
+		el.rating_set = rating_set.bind(el);
+		el.rating_start = rating_start.bind(el);
+		el.rating_step = rating_step.bind(el);
+	};
+
+	var rating_set = function(pos) {
+		this.rating_now = pos;
+		this.rating_to = pos;
+		if (!this.rating_anim_id) {
+			this.rating_step(this.rating_started);
+		}
+	};
+
+	var rating_start = function(stopat) {
+		if (this.rating_to == stopat) return;
+		this.rating_started = performance.now();
+		this.rating_to = stopat;
+		this.rating_from = this.rating_now;
+		if (!this.rating_anim_id) {
+			this.rating_step(this.rating_started);
+		}
+	};
+
+	var rating_step = function(steptime) {
+		if ((steptime < (this.rating_started + 350)) && (this.rating_now != this.rating_to)) {
+			var timeoverduration = (steptime - this.rating_started) / 350;
+			this.rating_now = -(this.rating_to - this.rating_from) * timeoverduration * (timeoverduration - 2) + this.rating_from;
+			this.rating_anim_id = requestAnimationFrame(this.rating_step);
+		}
+		else {
+			this.rating_now = this.rating_to;
+			this.rating_anim_id = null;
+		}
+		this.style.backgroundPosition = "18px " + (-(Math.round((Math.round(this.now * 10) / 2)) * 30)) + "px";
+	};
+
+	var get_rating_from_mouse = function(evt, absolute_x, absolute_y) {
 		var x, y;
 		if (evt.offsetX && evt.offsetY) {
 			x = evt.offsetX;
 			y = evt.offsetY;
 		}
 		else {
-			if (!this.offset_left && !this.absolute_x) this.offset_left = evt.target.offsetLeft;
-			if (!this.offset_top && !this.absolute_y) this.offset_top = evt.target.offsetTop;
+			if (!evt.target.offset_left && !absolute_x) {
+				evt.target.offset_left = evt.target.offsetLeft;
+			}
+			if (!evt.target.offset_top && !absolute_y) {
+				evt.target.offset_top = evt.target.offsetTop;
+			}
 			x = evt.layerX || evt.x;
 			y = evt.layerY || evt.y;
-			if (!this.absolute_x) x -= this.offset_left;
-			if (!this.absolute_y) y -= this.offset_top;
+			if (!absolute_x) x -= evt.target.offset_left;
+			if (!absolute_y) y -= evt.target.offset_top;
 		}
 
 		//console.log("layerX: " + (evt.layerX || evt.offsetX) + " / layerY: " + (evt.layerY || evt.offsetY) + "<br>offset_left: " + offset_left + " / offset_top:" + offset_top + "<br>x: " + x + " / y: " + y + " -> ");
@@ -129,91 +183,13 @@ var Rating = function() {
 		return result;
 	};
 
-	var on_mouse_move = function(evt) {
-		var tr = get_rating_from_mouse(evt);
-		if (tr >= 1) {
-			this.classList.add("user_rating");
-			effect.set(tr);
-			hover_number.textContent = Formatting.rating(tr);
-			if (self.rating_user_number_element) {
-				self.rating_user_number_element.textContent = Formatting.rating(tr);
-			}
-			else {
-				hover_box.style.width = Math.max(tr * 10 - 3, 20) + "px";
-				if (!hover_box.parentNode) {
-					Fx.stop_chain(hover_box);
-					self.el.insertBefore(hover_box, self.el.firstChild);
-				}
-				hover_box.style.opacity = "1";
-			}
-		}
-		else {
-			effect.set_rating(current_rating);
-		}
+	var on_mouse_over = function() {
+		this.classList.add("user_rating");
 	};
 
-	var click = function(evt) {
-		evt.stopPropagation();
-		var new_rating = get_rating_from_mouse(evt);
-		// fave toggle
-		if (new_rating === 0) {
-			// effect.set_fave(!self.fave);
-			if (self.type == "song") {
-				API.async_get("fave_song", { "fave": !self.fave, "song_id": id });
-			}
-			else if (self.type == "album") {
-				API.async_get("fave_album", { "fave": !self.fave, "album_id": id });
-			}
-		}
-		else if (self.ratable) {
-			self.rate(new_rating);
-		}
-	};
+	// INDIVIDUAL RATING BAR CODE
 
-	self.update_user_rating = function(rating_user) {
-		self.rating_user = rating_user;
-		self.reset_rating();
-	};
-
-	self.update_fave = function(fave) {
-		self.fave = fave;
-		self.reset_fave();
-	};
-
-	self.update_rating = function(rating) {
-		self.rating = rating;
-		self.reset_rating();
-	};
-
-	self.update_ratable = function(ratable) {
-		self.ratable = ratable;
-		if (self.ratable) $add_class(self.el, "ratable");
-		else $remove_class(self.el, "ratable");
-	};
-
-	self.update_rating_complete = function(new_rating_complete, override) {
-		if (self.type != "album") return;
-		if (override || !("rating_complete" in self) || (self.rating_complete != new_rating_complete)) {
-			self.rating_complete = new_rating_complete;
-			if (self.rating_complete || !Prefs.get("playlist_show_rating_complete") || !self.rating_user) {
-				self.el.style.backgroundImage = null;
-			}
-			else if (Prefs.get("playlist_show_rating_complete")) {
-				self.el.style.backgroundImage = "url('/static/images4/rating_bar/unrated_ldpi.png')";
-			}
-		}
-	};
-
-	self.update = function(rating_user, rating, fave, ratable) {
-		self.rating_user = rating_user;
-		self.rating = rating;
-		self.fave = fave;
-		self.ratable = ratable;
-		self.reset_rating();
-		self.reset_fave();
-	};
-
-	self.register = function(json) {
+	self.register = function(json, absolute_x, absolute_y) {
 		if (!json || !json.rating || isNaN(json.id)) {
 			return;
 		}
@@ -224,62 +200,95 @@ var Rating = function() {
 			json.rating = null;
 		}
 
-		this.effect = RatingEffect
+		add_effect(json.$template.rating_el);
 
-		json.$template.rating_el.effect = RatingEffect(json.$template.rating_el);
+		var is_song = json.albums || json.album_id || json.album_rating ? true : false;
 
-		var rate = function() {
-			if (!self.ratable) return;
-			effect.set_rating(new_rating);
-			API.async_get("rate", { "rating": new_rating, "song_id": id });
+		var on_mouse_move = function(evt) {
+			var tr = get_rating_from_mouse(evt, absolute_x, absolute_y);
+			if (tr >= 1 && (json.rating_allowed || User.rate_anything)) {
+				json.$template.rating_el.rating_set(tr);
+				json.$template.rating_hover_number.textContent = Formatting.rating(tr);
+				if (json.$template.rating_user_number) {
+					json.$template.rating_user_number.textContent = Formatting.rating(tr);
+				}
+				else {
+					json.$template.rating_hover.style.width = Math.max(tr * 10 - 3, 20) + "px";
+				}
+			}
 		};
+
+		var on_mouse_out = function(evt) {
+			if (!json.rating_user) {
+				json.$template.rating_el.classList.remove("rating_user");
+			}
+			this.rating_start(json.rating_user || json.rating);
+		};
+
+		var click = function(evt) {
+			evt.stopPropagation();
+			var new_rating = get_rating_from_mouse(evt, absolute_x, absolute_y);
+			// fave toggle
+			if (new_rating === 0) {
+				if (is_song) {
+					API.async_get("fave_song", { "fave": !json.fave, "song_id": json.id },
+						function(newjson) {
+							json.fave = newjson.fave;
+						},
+						function(newjson) {
+							// TODO: error handling
+						}
+					);
+				}
+				else {
+					API.async_get("fave_album", { "fave": !json.fave, "album_id": json.id },
+						function(newjson) {
+							json.fave = newjson.fave;
+						},
+						function(newjson) {
+							// TODO: error handling
+						}
+					);
+				}
+			}
+			else if (json.rating_allowed || User.rate_anything) {
+				API.async_get("rate", { "rating": new_rating, "song_id": json.id },
+					function(newjson) {
+						json.rating_user = newjson.rating_user;
+					},
+					function(newjson) {
+						// TODO: error handling
+					}
+				);
+			}
+		};
+
+		if (!is_song && !json.rating_complete) {
+			json.$template.rating_el.classList.add("rating_incomplete");
+		}
+		else if (!is_song) {
+			json.$template.rating_el.classList.remove("rating_incomplete");
+		}
+		if (json.rating_user) {
+			json.$template.rating_el.classList.add("rating_user");
+		}
 
 		if (User.id > 1) {
 			json.$template.rating_el._json = json;
-			json.$template.fave_lined.classList.add("faveable");
-			json.$template.rating_el.addEventListener("mousemove", on_mouse_move);
-			json.$template.rating_el.addEventListener("click", rate);
+			json.$template.rating_el.classList.add("faveable");
+			if (is_song) {
+				json.$template.rating_el.addEventListener("mouseover", on_mouse_over);
+				json.$template.rating_el.addEventListener("mousemove", on_mouse_move);
+				json.$template.rating_el.addEventListener("mouseout", on_mouse_out);
+			}
+			json.$template.rating_el.addEventListener("click", click);
 		}
+
+		// DO NOT RETURN ANYTHING HERE
+		// You run an almost 100% certain risk of memory leaks due to
+		// circular references if you return a function or object
+		// that refers to or uses "json" in any way.
 	};
 
 	return self;
 }();
-
-
-var RatingEffect = function(el) {
-	var self = {};
-
-
-	self.set = function(pos) {
-		now = pos;
-		to = pos;
-		if (!anim_id) {
-			step(0);
-		}
-	};
-
-	self.start = function(stopat) {
-		if (to == stopat) return;
-		started = performance.now();
-		to = stopat;
-		from = now;
-		if (!anim_id) {
-			step(started);
-		}
-	};
-
-	var step = function(steptime) {
-		if ((steptime < (started + duration)) && (now != to)) {
-			var timeoverduration = (steptime - started) / duration;
-			now = -(to - from) * timeoverduration * (timeoverduration - 2) + from;
-			anim_id = requestAnimationFrame(step);
-		}
-		else {
-			now = to;
-			anim_id = null;
-		}
-		el.style.backgroundPosition = "18px " + (-(Math.round((Math.round(now * 10) / 2)) * 30)) + "px";
-	};
-
-	return self;
-};
