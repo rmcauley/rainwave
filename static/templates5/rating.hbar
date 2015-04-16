@@ -1,4 +1,7 @@
-<div class="rating song_rating rating_site" bind="rating">
+<div class="rating" bind="rating">
 	<img class="fave_solid" src="/static/images4/heart_solid.png" />
 	<img class="fave_lined faveable" src="/static/images4/heart_lined.png" />
+	<div class="rating_hover">
+		<div class="rating_hover_number" bind="rating_hover_number"></div>
+	</div>
 </div>

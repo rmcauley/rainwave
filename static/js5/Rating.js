@@ -200,14 +200,14 @@ var Rating = function() {
 			json.rating = null;
 		}
 
-		add_effect(json.$template.rating_el);
+		add_effect(json.$template.rating);
 
 		var is_song = json.albums || json.album_id || json.album_rating ? true : false;
 
 		var on_mouse_move = function(evt) {
 			var tr = get_rating_from_mouse(evt, absolute_x, absolute_y);
 			if (tr >= 1 && (json.rating_allowed || User.rate_anything)) {
-				json.$template.rating_el.rating_set(tr);
+				json.$template.rating.rating_set(tr);
 				json.$template.rating_hover_number.textContent = Formatting.rating(tr);
 				if (json.$template.rating_user_number) {
 					json.$template.rating_user_number.textContent = Formatting.rating(tr);
@@ -220,7 +220,7 @@ var Rating = function() {
 
 		var on_mouse_out = function(evt) {
 			if (!json.rating_user) {
-				json.$template.rating_el.classList.remove("rating_user");
+				json.$template.rating.classList.remove("rating_user");
 			}
 			this.rating_start(json.rating_user || json.rating);
 		};
@@ -264,24 +264,24 @@ var Rating = function() {
 		};
 
 		if (!is_song && !json.rating_complete) {
-			json.$template.rating_el.classList.add("rating_incomplete");
+			json.$template.rating.classList.add("rating_incomplete");
 		}
 		else if (!is_song) {
-			json.$template.rating_el.classList.remove("rating_incomplete");
+			json.$template.rating.classList.remove("rating_incomplete");
 		}
 		if (json.rating_user) {
-			json.$template.rating_el.classList.add("rating_user");
+			json.$template.rating.classList.add("rating_user");
 		}
 
 		if (User.id > 1) {
-			json.$template.rating_el._json = json;
-			json.$template.rating_el.classList.add("faveable");
+			json.$template.rating._json = json;
+			json.$template.rating.classList.add("faveable");
 			if (is_song) {
-				json.$template.rating_el.addEventListener("mouseover", on_mouse_over);
-				json.$template.rating_el.addEventListener("mousemove", on_mouse_move);
-				json.$template.rating_el.addEventListener("mouseout", on_mouse_out);
+				json.$template.rating.addEventListener("mouseover", on_mouse_over);
+				json.$template.rating.addEventListener("mousemove", on_mouse_move);
+				json.$template.rating.addEventListener("mouseout", on_mouse_out);
 			}
-			json.$template.rating_el.addEventListener("click", click);
+			json.$template.rating.addEventListener("click", click);
 		}
 
 		// DO NOT RETURN ANYTHING HERE

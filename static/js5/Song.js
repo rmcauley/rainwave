@@ -3,10 +3,10 @@ var TimelineSong = function(self, event) {
 	self.$template = RWTemplates.song(self);
 	self.el = self.$template.root;
 
-	if (self.$template.rating_el) {
+	if (self.$template.rating) {
 		Rating.register(self);
 	}
-	if (self.albums[0].$template.rating_el) {
+	if (self.albums[0].$template.rating) {
 		Rating.register(self.albums[0]);
 	}
 
@@ -28,21 +28,21 @@ var TimelineSong = function(self, event) {
 
 		self.$template.votes.textContent = self.entry_votes;
 
-		if (self.$template.rating_el) {
+		if (self.$template.rating) {
 			if (self.rating_user) {
-				self.$template.rating_el.classList.add("rating_user");
+				self.$template.rating.classList.add("rating_user");
 			}
 			else {
-				self.$template.rating_el.classList.remove("rating_user");
+				self.$template.rating.classList.remove("rating_user");
 			}
-		 	self.$template.rating_el.rating_set(self.rating_user || self.rating);
+		 	self.$template.rating.rating_set(self.rating_user || self.rating);
 		}
-		if (self.albums[0].$template.rating_el) {
+		if (self.albums[0].$template.rating) {
 			if (self.rating_user) {
-				self.albums[0].$template.rating_el.classList.add("rating_user");
+				self.albums[0].$template.rating.classList.add("rating_user");
 			}
 			else {
-				self.albums[0].$template.rating_el.classList.remove("rating_user");
+				self.albums[0].$template.rating.classList.remove("rating_user");
 			}
 		 	self.albums[0].$template_el.rating_set(self.rating_user || self.rating);
 		}
