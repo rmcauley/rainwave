@@ -211,7 +211,10 @@ def _process_album_art(filename, sids):
 	album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs WHERE song_filename LIKE %s || '%%'", (directory,))
 	if not album_ids or len(album_ids) == 0:
 		return
-	im_original = Image.open(filename)
+	try:
+		im_original = Image.open(filename)
+	except IOError:
+		_add_scan_error(filename, PassableScanError("Could not open album art. (deleted file?)"))
 	if im_original.mode != "RGB":
 		im_original = im_original.convert()
 	if not im_original:
