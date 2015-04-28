@@ -1,4 +1,4 @@
-import time
+from time import gmtime as timestamp
 
 from libs import db
 from libs import log
@@ -24,7 +24,7 @@ class SongGroup(AssociatedMetadata):
 		return db.c.update("UPDATE r4_groups SET group_name = %s, group_name_searchable = %s WHERE group_id = %s", (self.data['name'], make_searchable_string(self.data['name']), self.id))
 
 	def _start_cooldown_db(self, sid, cool_time):
-		cool_end = int(cool_time + time.time())
+		cool_end = int(cool_time + timestamp())
 		log.debug("cooldown", "Group ID %s Station ID %s cool_time period: %s" % (self.id, sid, cool_time))
 		# Make sure to update both the if and else SQL statements if doing any updates
 		if db.c.allows_join_on_update:
@@ -38,7 +38,7 @@ class SongGroup(AssociatedMetadata):
 				"SELECT song_id "
 				"FROM r4_song_group JOIN r4_song_sid USING (song_id) "
 				"WHERE r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end < %s",
-				(self.id, sid, time.time() - cool_time))
+				(self.id, sid, timestamp() - cool_time))
 			for song_id in song_ids:
 				db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_end, song_id, sid))
 

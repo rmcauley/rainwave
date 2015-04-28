@@ -1,4 +1,4 @@
-import time
+from time import gmtime as timestamp
 import re
 import random
 import string
@@ -394,7 +394,7 @@ class User(object):
 		if not self.is_in_request_line():
 			return None
 		if not t:
-			t = time.time() + config.get("request_tunein_timeout")
+			t = timestamp() + config.get("request_tunein_timeout")
 		return db.c.update("UPDATE r4_listeners SET line_expiry_tunein = %s WHERE user_id = %s", (t, self.id))
 
 	def lock_to_sid(self, sid, lock_count):
@@ -415,7 +415,7 @@ class User(object):
 		if self.id == 1:
 			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (self.ip_address,))
 			if not api_key:
-				api_key = self.generate_api_key(int(time.time()) + 172800)
+				api_key = self.generate_api_key(int(timestamp()) + 172800)
 				cache.set("ip_%s_api_key" % self.ip_address, api_key)
 		elif self.id > 1:
 			if 'api_key' in self.data and self.data['api_key']:

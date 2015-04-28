@@ -1,4 +1,5 @@
 import time
+from time import gmtime as timestamp
 import datetime
 from libs import db
 from libs import config
@@ -22,11 +23,11 @@ class ListenerStats(api.web.APIHandler):
 		if self.get_argument("date_start"):
 			self.date_start = time.mktime(self.get_argument("date_start").timetuple())
 		else:
-			self.date_start = (time.time() - (7 * 86400) + 1)
+			self.date_start = (timestamp() - (7 * 86400) + 1)
 		if self.get_argument("date_end"):
 			self.date_end = time.mktime(self.get_argument("date_end").timetuple())
 		else:
-			self.date_end = time.time()
+			self.date_end = timestamp()
 		if self.date_start >= self.date_end:
 			raise APIException("invalid_argument", text="Start date cannot be after end date.")
 		timespan = self.date_end - self.date_start
@@ -59,11 +60,11 @@ class ListenerStatsAggregate(ListenerStats):
 		if self.get_argument("date_start"):
 			self.date_start = time.mktime(self.get_argument("date_start").timetuple())
 		else:
-			self.date_start = (time.time() - (7 * 86400) + 1)
+			self.date_start = (timestamp() - (7 * 86400) + 1)
 		if self.get_argument("date_end"):
 			self.date_end = time.mktime(self.get_argument("date_end").timetuple())
 		else:
-			self.date_end = time.time()
+			self.date_end = timestamp()
 		sql = ("SELECT aggr_time AS lc_time, ROUND(CAST(AVG(lc_guests) AS NUMERIC), 1) AS lc_listeners "
 				"FROM ( "
 					"SELECT (((lc_time %% 86400) / 14400) * 14400) + (((lc_time %% (86400 * 7)) / 86400) * 86400) AS aggr_time, lc_guests "

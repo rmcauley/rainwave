@@ -1,4 +1,4 @@
-import time
+from time import gmtime as timestamp
 import hashlib
 
 from api.web import APIHandler
@@ -42,7 +42,7 @@ class TestUserRequest(APIHandler):
 		self.set_cookie(config.get("phpbb_cookie_name") + "u", user_id)
 		session_id = db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s", (user_id,))
 		if not session_id:
-			session_id = hashlib.md5(repr(time.time())).hexdigest()
+			session_id = hashlib.md5(repr(timestamp())).hexdigest()
 			db.c.update("INSERT INTO phpbb_sessions (session_id, session_user_id) VALUES (%s, %s)", (session_id, user_id))
 		self.set_cookie(config.get("phpbb_cookie_name") + "u", user_id)
 		self.set_cookie(config.get("phpbb_cookie_name") + "sid", session_id)

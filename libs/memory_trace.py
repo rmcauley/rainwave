@@ -1,5 +1,5 @@
 # Necessary includes
-import time
+from time import gmtime as timestamp
 import sys
 import tornado.ioloop
 
@@ -37,7 +37,7 @@ def record_sizes():
 	linecache.clearcache()
 
 	try:
-		d = os.path.join(tempfile.gettempdir(), "rw_memory_%s_%s.json" % (_prefix, int(time.time())))
+		d = os.path.join(tempfile.gettempdir(), "rw_memory_%s_%s.json" % (_prefix, int(timestamp())))
 		meliae.scanner.dump_all_objects(d)
 	except:
 		pass
