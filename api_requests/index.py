@@ -33,6 +33,9 @@ class MainIndex(api.web.HTMLRequest):
 	page_template = "r4_index.html"
 	js_dir = "js4"
 
+	def set_default_headers(self):
+		self.set_header("X-Frame-Options", "SAMEORIGIN")
+
 	def prepare(self):
 		super(MainIndex, self).prepare()
 		self.json_payload = {}

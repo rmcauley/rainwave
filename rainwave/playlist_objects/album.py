@@ -251,11 +251,11 @@ class Album(AssociatedMetadata):
 			if not likes:
 				likes = 0
 			rating_count = dislikes + neutrals + neutralplus + likes
-			log.debug("song_rating", "%s album ratings for %s" % (rating_count, self.data['name']))
+			log.debug("album_rating", "%s album ratings for %s" % (rating_count, self.data['name']))
 			if rating_count > config.get("rating_threshold_for_calc"):
 				self.data['rating'] = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
 				self.data['rating_count'] = rating_count
-				log.debug("song_rating", "%s new rating for %s" % (self.data['rating'], self.data['name']))
+				log.debug("album_rating", "%s new rating for %s" % (self.data['rating'], self.data['name']))
 				db.c.update("UPDATE r4_album_sid SET album_rating = %s, album_rating_count = %s WHERE album_id = %s AND sid = %s", (self.data['rating'], rating_count, self.id, sid))
 
 	def update_last_played(self, sid):

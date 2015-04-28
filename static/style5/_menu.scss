@@ -27,11 +27,11 @@ div.menu_wrapper {
 		height: 20px;
 		width: 20px;
 		fill: $text;
-		@include transition-wtime(150ms, fill);	
+		@include transition-wtime(150ms, fill);
 	}
 
 	a:hover svg {
-		fill: $linkhover;	
+		fill: $linkhover;
 	}
 }
 
@@ -83,7 +83,7 @@ div.menu_wrapper {
 
 	&.open svg.pulldown_arrow {
 		cursor: default;
-		@include transform(translateY(-50%) rotate(180deg));		
+		@include transform(translateY(-50%) rotate(180deg));
 	}
 
 	#station_select_header {
@@ -198,14 +198,14 @@ div.menu_wrapper {
 	}
 
 	&.open a.station {
-		height: $station_height;	
+		height: $station_height;
 
 		&:hover, &.selected_station {
 			cursor: default;
 			color: $text;
 
 			div.station_details {
-				@include transform(translateY(-70%));			
+				@include transform(translateY(-70%));
 			}
 
 			div.station_description {
