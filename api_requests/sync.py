@@ -2,6 +2,7 @@ import tornado.web
 import tornado.ioloop
 import datetime
 import time
+from time import gmtime as timestamp
 
 from api import fieldtypes
 from api.exceptions import APIException
@@ -270,7 +271,7 @@ class Sync(APIHandler):
 
 	def update(self):
 		# Overwrite this value since who knows how long we've spent idling
-		self._startclock = time.time()
+		self._startclock = timestamp()
 
 		if not cache.get_station(self.sid, "backend_ok"):
 			raise APIException("station_offline")
@@ -280,7 +281,7 @@ class Sync(APIHandler):
 		self.finish()
 
 	def update_user(self):
-		self._startclock = time.time()
+		self._startclock = timestamp()
 
 		if not cache.get_station(self.sid, "backend_ok"):
 			raise APIException("station_offline")

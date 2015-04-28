@@ -1,7 +1,7 @@
 import os
-import time
 import subprocess
 import json
+from time import gmtime as timestamp
 
 from mutagen.mp3 import MP3
 
@@ -349,7 +349,7 @@ class Song(object):
 				(%s     , %s           , %s        , %s                   , %s       , %s           , %s         , %s               , %s              , %s       , %s             , %s             , %s           , %s          , %s             , %s)",
 				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], self.data['track_number'], self.data['disc_number'], self.data['year'], self.data['origin_sid'], file_mtime, True, True, self.replay_gain, self.artist_tag))
 			self.verified = True
-			self.data['added_on'] = int(time.time())
+			self.data['added_on'] = int(timestamp())
 
 		current_sids = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (self.id,))
 		log.debug("playlist", "database sids: {}, actual sids: {}".format(current_sids, self.data['sids']))
@@ -413,7 +413,7 @@ class Song(object):
 			cool_time = auto_cool * cooldown.get_age_cooldown_multiplier(self.data['added_on']) * self.data['cool_multiply']
 
 		log.debug("cooldown", "Song ID %s Station ID %s cool_time period: %s" % (self.id, sid, cool_time))
-		cool_time = int(cool_time + time.time())
+		cool_time = int(cool_time + timestamp())
 		db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s AND song_cool_end < %s", (cool_time, self.id, sid, cool_time))
 		self.data['cool'] = True
 		self.data['cool_end'] = cool_time
@@ -632,7 +632,7 @@ class Song(object):
 	def update_last_played(self, sid):
 		for album in self.albums:
 			album.update_last_played(sid)
-		return db.c.update("UPDATE r4_song_sid SET song_played_last = %s WHERE song_id = %s AND sid = %s", (time.time(), self.id, sid))
+		return db.c.update("UPDATE r4_song_sid SET song_played_last = %s WHERE song_id = %s AND sid = %s", (timestamp(), self.id, sid))
 
 	def add_to_vote_count(self, votes, sid):
 		return db.c.update("UPDATE r4_songs SET song_vote_count = song_vote_count + %s WHERE song_id = %s", (votes, self.id))

@@ -1,6 +1,6 @@
 import random
 import math
-import time
+from time import gmtime as timestamp
 
 from libs import db
 from libs import config
@@ -263,7 +263,7 @@ class Election(event.BaseEvent):
 			if db.c.allows_join_on_update and len(self.songs) > 0:
 				db.c.update("UPDATE phpbb_users SET radio_winningvotes = radio_winningvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id = %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
 				db.c.update("UPDATE phpbb_users SET radio_losingvotes = radio_losingvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id != %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
-		self.start_actual = int(time.time())
+		self.start_actual = int(timestamp())
 		self.in_progress = True
 		self.used = True
 		db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s, elec_used = TRUE WHERE elec_id = %s", (self.start_actual, self.id))

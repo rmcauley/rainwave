@@ -1,4 +1,4 @@
-import time
+from time import gmtime as timestamp
 
 from api import fieldtypes
 from api.web import APIHandler
@@ -80,7 +80,7 @@ class SubmitVote(APIHandler):
 				if already_voted:
 					db.c.update("UPDATE r4_vote_history SET song_id = %s, entry_id = %s WHERE user_id = %s and entry_id = %s", (event.get_entry(entry_id).id, entry_id, self.user.id, already_voted))
 				else:
-					time_window = int(time.time()) - 1209600
+					time_window = int(timestamp()) - 1209600
 					vote_count = db.c.fetch_var("SELECT COUNT(vote_id) FROM r4_vote_history WHERE vote_time > %s AND user_id = %s", (time_window, self.user.id))
 					db.c.execute("SELECT user_id, COUNT(song_id) AS c FROM r4_vote_history WHERE vote_time > %s GROUP BY user_id HAVING COUNT(song_id) > %s", (time_window, vote_count))
 					rank = db.c.rowcount + 1
@@ -88,7 +88,7 @@ class SubmitVote(APIHandler):
 						"INSERT INTO r4_vote_history (elec_id, entry_id, user_id, song_id, vote_at_rank, vote_at_count, sid) "
 						"VALUES (%s, %s, %s, %s, %s, %s, %s)",
 						(event.id, entry_id, self.user.id, event.get_entry(entry_id).id, rank, vote_count, event.sid))
-					db.c.update("UPDATE phpbb_users SET radio_inactive = FALSE, radio_last_active = %s, radio_totalvotes = %s WHERE user_id = %s", (time.time(), vote_count, self.user.id))
+					db.c.update("UPDATE phpbb_users SET radio_inactive = FALSE, radio_last_active = %s, radio_totalvotes = %s WHERE user_id = %s", (timestamp(), vote_count, self.user.id))
 
 				user_vote_cache = cache.get_user(self.user, "vote_history")
 				if not user_vote_cache:

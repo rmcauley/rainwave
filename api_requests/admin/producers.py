@@ -1,4 +1,4 @@
-import time
+from time import gmtime as timestamp
 from libs import db
 import api.web
 from api.server import handle_api_url
@@ -18,13 +18,13 @@ class ListProducers(api.web.APIHandler):
 			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, username "
 						"FROM r4_schedule LEFT JOIN phpbb_users ON (sched_dj_user_id = user_id) "
 						"WHERE sched_used = FALSE AND sid = %s AND sched_start >= %s ORDER BY sched_start",
-						(self.sid, time.time())))
+						(self.sid, timestamp())))
 
 		self.append(self.return_name + "_past",
 			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, username "
 						"FROM r4_schedule LEFT JOIN phpbb_users ON (sched_dj_user_id = user_id) "
 						"WHERE sched_type != 'PVPElectionProducer' AND sid = %s AND sched_start > %s AND sched_start < %s ORDER BY sched_start DESC",
-						(self.sid, time.time() - (86400 * 60), time.time())))
+						(self.sid, timestamp() - (86400 * 60), timestamp())))
 
 @handle_api_url("admin/list_producers_all")
 class ListProducersAll(api.web.APIHandler):
@@ -37,13 +37,13 @@ class ListProducersAll(api.web.APIHandler):
 			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, username "
 						"FROM r4_schedule LEFT JOIN phpbb_users ON (sched_dj_user_id = user_id)  "
 						"WHERE sched_used = FALSE AND sched_start >= %s ORDER BY sched_start",
-						(time.time(),)))
+						(timestamp(),)))
 
 		self.append(self.return_name + "_past",
 			db.c.fetch_all("SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, username "
 						"FROM r4_schedule LEFT JOIN phpbb_users ON (sched_dj_user_id = user_id)  "
 						"WHERE sched_type != 'PVPElectionProducer' AND sched_start > %s AND sched_start < %s ORDER BY sched_start DESC",
-						(time.time() - (86400 * 26), time.time())))
+						(timestamp() - (86400 * 26), timestamp())))
 
 @handle_api_url("admin/list_producer_types")
 class ListProducerTypes(api.web.APIHandler):
@@ -59,11 +59,11 @@ class CreateProducer(api.web.APIHandler):
 	return_name = "power_hour"
 	admin_required = True
 	sid_required = True
-	fields = { 
+	fields = {
 		"producer_type": (fieldtypes.producer_type, True),
-		"name": (fieldtypes.string, True), 
-		"start_utc_time": (fieldtypes.positive_integer, True), 
-		"end_utc_time": (fieldtypes.positive_integer, True), 
+		"name": (fieldtypes.string, True),
+		"start_utc_time": (fieldtypes.positive_integer, True),
+		"end_utc_time": (fieldtypes.positive_integer, True),
 		"url": (fieldtypes.string, None),
 		"dj_user_id": (fieldtypes.user_id, False)
 	}

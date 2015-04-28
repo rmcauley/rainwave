@@ -69,7 +69,7 @@ class TestShutdownRequest(api.web.APIHandler):
 		self.write("Shutting down server.")
 
 	def on_finish(self):
-		tornado.ioloop.IOLoop.instance().stop() #add_timeout(time.time() + 2, tornado.ioloop.IOLoop.instance().stop)
+		tornado.ioloop.IOLoop.instance().stop() #add_timeout(time.gmtime() + 2, tornado.ioloop.IOLoop.instance().stop)
 		super(TestShutdownRequest, self).on_finish()
 
 class APITestFailed(Exception):

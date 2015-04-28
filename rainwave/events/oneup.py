@@ -1,5 +1,5 @@
 import random
-import time
+from time import gmtime as timestamp
 
 from libs import db
 from rainwave import playlist
@@ -30,7 +30,7 @@ class OneUpProducer(event.BaseProducer):
 			db.c.update("UPDATE r4_schedule SET sched_used = TRUE WHERE sched_id = %s", (self.id,))
 			return None
 		if not self.start_actual:
-			self.start_actual = time.time()
+			self.start_actual = timestamp()
 			self._update_length()
 
 	def change_start(self, new_start):

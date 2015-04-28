@@ -1,6 +1,7 @@
 import os
 import os.path
 import time
+from time import gmtime as timestamp
 import mimetypes
 import sys
 import psutil
@@ -254,7 +255,7 @@ def _disable_file(filename):
 def _add_scan_error(filename, xception):
 	global _scan_errors
 
-	_scan_errors.insert(0, { "time": int(time.time()), "file": filename, "type": xception.__class__.__name__, "error": str(xception) })
+	_scan_errors.insert(0, { "time": int(timestamp()), "file": filename, "type": xception.__class__.__name__, "error": str(xception) })
 	_save_scan_errors()
 	log.exception("scan", "Error scanning %s" % filename, xception)
 

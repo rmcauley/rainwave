@@ -1,11 +1,11 @@
 import tornado.web
 import tornado.escape
 import tornado.httputil
-import time
 import traceback
 import types
 import hashlib
 import psycopg2
+from time import gmtime as timestamp
 
 from rainwave.user import User
 from rainwave.playlist_objects.song import SongNonExistent
@@ -101,7 +101,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		super(RainwaveHandler, self).__init__(*args, **kwargs)
 		self.cleaned_args = {}
 		self.sid = None
-		self._startclock = time.time()
+		self._startclock = timestamp()
 		self.user = None
 		self._output = None
 		self._output_array = False
@@ -254,7 +254,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				raise APIException("dj_required", http_code=403)
 			is_dj = True
 			#pylint: enable=E1103
-		
+
 		if self.dj_preparation and not is_dj and not self.user.is_admin():
 			if not db.c.fetch_var("SELECT COUNT(*) FROM r4_schedule WHERE sched_used = 0 AND sched_dj_user_id = %s", (self.user.id,)):
 				raise APIException("dj_required", http_code=403)
@@ -299,7 +299,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		return db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s ORDER BY session_last_visit DESC LIMIT 1", (user_id,))
 
 	def _update_phpbb_session(self, session_id):
-		db.c.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(time.time()), "rainwave", session_id))
+		db.c.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(timestamp()), "rainwave", session_id))
 
 	def rainwave_auth(self):
 		user_id_present = "user_id" in self.request.arguments
@@ -375,12 +375,12 @@ class APIHandler(RainwaveHandler):
 		self.set_header("Content-Type", "application/json")
 		if hasattr(self, "_output"):
 			if hasattr(self, "_startclock"):
-				exectime = time.time() - self._startclock
+				exectime = timestamp() - self._startclock
 			else:
 				exectime = -1
 			if exectime > 0.5:
 				log.warn("long_request", "%s took %s to execute!" % (self.url, exectime))
-			self.append("api_info", { "exectime": exectime, "time": round(time.time()) })
+			self.append("api_info", { "exectime": exectime, "time": round(timestamp()) })
 			self.write(tornado.escape.json_encode(self._output))
 		super(APIHandler, self).finish(chunk)
 

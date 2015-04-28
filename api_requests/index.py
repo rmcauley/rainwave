@@ -2,8 +2,8 @@
 
 import tornado.web
 import tornado.escape
-import time
 import os
+from time import gmtime as timestamp
 
 import api.web
 import api.locale
@@ -55,7 +55,7 @@ class MainIndex(api.web.HTMLRequest):
 	def get(self):
 		self.mobile = self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1
 		info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
-		self.append("api_info", { "time": int(time.time()) })
+		self.append("api_info", { "time": int(timestamp()) })
 		self.render(self.page_template, request=self,
 					site_description=self.locale.translate("station_description_id_%s" % self.sid),
 					revision_number=config.build_number,

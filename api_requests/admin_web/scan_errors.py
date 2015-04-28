@@ -1,4 +1,4 @@
-import time
+from time import gmtime as timestamp
 import datetime
 from libs import db
 import api.web
@@ -7,7 +7,7 @@ from api.server import handle_url
 from api_requests.admin.scan_errors import BackendScanErrors
 
 def relative_time(epoch_time):
-	diff = datetime.timedelta(seconds=time.time() - epoch_time)
+	diff = datetime.timedelta(seconds=timestamp() - epoch_time)
 	if diff.days > 0:
 		return "%sd" % diff.days
 	elif diff.seconds > 3600:

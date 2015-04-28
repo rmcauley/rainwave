@@ -1,6 +1,6 @@
 import os
-import time
 import math
+from time import gmtime as timestamp
 
 from libs import db
 from libs import log
@@ -26,12 +26,12 @@ def get_updated_albums_dict(sid):
 
 	previous_newest_album = cache.get_station(sid, "newest_album")
 	if not previous_newest_album:
-		cache.set_station(sid, "newest_album", time.time())
+		cache.set_station(sid, "newest_album", timestamp())
 	else:
 		newest_albums = db.c.fetch_list("SELECT album_id FROM r4_albums JOIN r4_album_sid USING (album_id) WHERE sid = %s AND album_added_on > %s", (sid, previous_newest_album))
 		for album_id in newest_albums:
 			updated_album_ids[sid][album_id] = True
-		cache.set_station(sid, "newest_album", time.time())
+		cache.set_station(sid, "newest_album", timestamp())
 	album_diff = []
 	for album_id in updated_album_ids[sid]:
 		album = Album.load_from_id_sid(album_id, sid)
@@ -45,10 +45,10 @@ def get_updated_albums_dict(sid):
 
 def warm_cooled_albums(sid):
 	global updated_album_ids
-	album_list = db.c.fetch_list("SELECT album_id FROM r4_album_sid WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE", (sid, time.time()))
+	album_list = db.c.fetch_list("SELECT album_id FROM r4_album_sid WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE", (sid, timestamp()))
 	for album_id in album_list:
 		updated_album_ids[sid][album_id] = True
-	db.c.update("UPDATE r4_album_sid SET album_cool = FALSE WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE", (sid, time.time()))
+	db.c.update("UPDATE r4_album_sid SET album_cool = FALSE WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE", (sid, timestamp()))
 
 class Album(AssociatedMetadata):
 	select_by_name_query = "SELECT r4_albums.* FROM r4_albums WHERE album_name = %s"
@@ -215,7 +215,7 @@ class Album(AssociatedMetadata):
 		return self._start_cooldown_db(sid, cool_time)
 
 	def _start_cooldown_db(self, sid, cool_time):
-		cool_end = int(cool_time + time.time())
+		cool_end = int(cool_time + timestamp())
 		if db.c.allows_join_on_update:
 			db.c.update("UPDATE r4_song_sid "
 							"SET song_cool = TRUE, song_cool_end = %s "
@@ -229,7 +229,7 @@ class Album(AssociatedMetadata):
 
 	def solve_cool_lowest(self, sid):
 		self.data['cool_lowest'] = db.c.fetch_var("SELECT MIN(song_cool_end) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s AND song_exists = TRUE", (self.id, sid))
-		if self.data['cool_lowest'] > time.time():
+		if self.data['cool_lowest'] > timestamp():
 			self.data['cool'] = True
 		else:
 			self.data['cool'] = False
@@ -259,7 +259,7 @@ class Album(AssociatedMetadata):
 				db.c.update("UPDATE r4_album_sid SET album_rating = %s, album_rating_count = %s WHERE album_id = %s AND sid = %s", (self.data['rating'], rating_count, self.id, sid))
 
 	def update_last_played(self, sid):
-		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (time.time(), self.id, sid))
+		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (timestamp(), self.id, sid))
 
 	def get_all_ratings(self, sid):
 		table = db.c.fetch_all("SELECT album_rating_user, album_fave, user_id, album_rating_complete FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND sid = %s", (self.id, sid))

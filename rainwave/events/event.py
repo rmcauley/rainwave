@@ -1,4 +1,4 @@
-import time
+from time import gmtime as timestamp
 
 from libs import db
 from libs import log
@@ -121,12 +121,13 @@ class BaseProducer(object):
 		raise Exception("No event type specified.")
 
 	def start_producer(self):
-		self.start_actual = int(time.time())
-		if self.id:
-			db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (self.start_actual, self.id))
+		if not self.start_actual:
+			self.start_actual = int(timestamp())
+			if self.id:
+				db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (self.start_actual, self.id))
 
 	def finish(self):
-		self.end_actual = int(time.time())
+		self.end_actual = int(timestamp())
 		if self.id:
 			db.c.update("UPDATE r4_schedule SET sched_used = TRUE, sched_in_progress = FALSE, sched_end_actual = %s WHERE sched_id = %s", (self.end_actual, self.id))
 
@@ -200,13 +201,13 @@ class BaseEvent(object):
 		self.replay_gain = self.get_song().replay_gain
 
 	def start_event(self):
-		self.start_actual = int(time.time())
+		self.start_actual = int(timestamp())
 		self.in_progress = True
 
 	def finish(self):
 		self.used = True
 		self.in_progress = False
-		self.end = int(time.time())
+		self.end = int(timestamp())
 
 		song = self.get_song()
 		if song:

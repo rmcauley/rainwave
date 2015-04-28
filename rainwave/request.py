@@ -1,4 +1,4 @@
-import time
+from time import gmtime as timestamp
 from libs import db
 from libs import cache
 from libs import log
@@ -15,7 +15,7 @@ def _process_line(line, sid):
 	# user_positions has user_id as a key and position as the value, this is cached for quick lookups by API requests
 	# so users know where they are in line
 	user_positions = {}
-	t = int(time.time())
+	t = int(timestamp())
 	albums_with_requests = []
 	position = 1
 	# For each person
@@ -115,7 +115,7 @@ def get_next(sid, start_at_position = 0):
 			db.c.update("DELETE FROM r4_request_store WHERE song_id = %s AND user_id = %s", (song.id, u.id))
 			db.c.update("INSERT INTO r4_request_history (user_id, song_id, request_wait_time, request_line_size, request_at_count, sid) "
 						"VALUES (%s, %s, %s, %s, %s, %s)",
-						(u.id, song.id, time.time() - entry['line_wait_start'], len(line), request_count, sid))
+						(u.id, song.id, timestamp() - entry['line_wait_start'], len(line), request_count, sid))
 			db.c.update("UPDATE phpbb_users SET radio_totalrequests = %s WHERE user_id = %s", (request_count, u.id))
 			song.update_request_count(sid)
 			_process_line(line, sid)
