@@ -2,8 +2,8 @@
 	<div class="history_header" bind="history_header">
 		<span class="longhist_link link" bind="longhist_link"></span>
 		<div bind="history_header_link">
-			<span>{{ $l("Previously Played") }}</span>
-			<svg class="pulldown_arrow" use="pulldown"></svg>
+			<span>{{ $l("previouslyplayed") }}</span>
+			<svg use="pulldown"></svg>
 		</div>
 	</div>
 </div>

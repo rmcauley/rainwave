@@ -46,12 +46,12 @@ div.modal_container.active_modal {
 
 div.modal_header_wrapper {
 	padding-bottom: 2px;
-	border-bottom: 1px solid $menu_blue;
+	border-bottom: 1px solid $blue;
 }
 
 div.modal_header {
 	width: 100%;
-	background: $menu_blue;
+	background: $blue;
 	font-size: 1.2em;
 	font-weight: 300;
 }
@@ -114,5 +114,5 @@ body.mobile_screen div.active_modal div.modal {
 div.modal_bottom_border {
 	height: 2px;
 	width: 100%;
-	background: $menu_blue;
+	background: $blue;
 }

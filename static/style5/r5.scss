@@ -74,7 +74,6 @@ div.measure_box {
 	position: absolute;
 	visibility: hidden;
 	width: 100%;
-	@include hardware-accelerate();
 }
 
 a, a:visited, .link {
@@ -111,4 +110,9 @@ a, a:visited, .link {
 	overflow-y: auto;
 }
 
+@import "modals";
+@import "messages";
+@import "errors";
 @import "menu";
+
+@import "timeline";

@@ -5,7 +5,10 @@ var Event = function(self) {
 	if (!self.used && (self.type.indexOf("election") != -1)) {
 		shuffle(self.songs);
 	}
+	var showing_header = true;
+	self.height = 0;
 	RWTemplates.timeline.event(self);
+	self.el = self.$t.el;
 
 	for (var i = 0; i < self.songs.length; i++) {
 		self.songs[i] = Song(self.songs[i]);
@@ -37,6 +40,8 @@ var Event = function(self) {
 		self.$t.el.classList.add("sched_next");
 		self.check_voting();
 		self.set_header_text($l("coming_up"));
+		self.height = (self.songs * Timeline.song_size);
+		if (showing_header) self.height += Timeline.header_size;
 	};
 
 	self.change_to_now_playing = function() {
@@ -55,6 +60,8 @@ var Event = function(self) {
 		}
 		self.check_voting();
 		self.set_header_text($l("now_playing"));
+		self.height = (self.songs * Timeline.song_size_np);
+		if (showing_header) self.height += Timeline.header_size;
 	};
 
 	self.change_to_history = function() {
@@ -67,6 +74,8 @@ var Event = function(self) {
 			self.$t.el.appendChild(self.songs[i].el);
 		}
 		self.check_voting();
+		self.height = (self.songs * Timeline.song_size);
+		if (showing_header) self.height += Timeline.header_size;
 	};
 
 	self.check_voting = function() {
@@ -133,10 +142,12 @@ var Event = function(self) {
 
 	self.hide_header = function() {
 		self.$t.header.classList.add("no_header");
+		showing_header = false;
 	};
 
 	self.show_header = function() {
 		self.$t.header.classList.remove("no_header");
+		showing_header = true;
 	};
 
 	self.progress_bar_start = function() {

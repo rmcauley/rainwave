@@ -4,6 +4,7 @@ $station_height: 60px;
 $station_select_width: 270px;
 
 div.header {
+	position: relative;
 	background: $blue_dark;
 	height: $menu_height;
 	z-index: 2;
@@ -48,7 +49,6 @@ div.menu_wrapper {
 	height: $menu_height;
 	overflow: hidden;
 	background: #0b5c89;
-	@include hardware-accelerate();
 
 	-webkit-transition: width 350ms, background-color 350ms, height 700ms;
 	        transition: width 350ms, background-color 350ms, height 700ms;

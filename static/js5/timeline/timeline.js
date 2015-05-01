@@ -7,9 +7,9 @@ var Timeline = function() {
 	var sched_current;
 	var sched_next;
 	var sched_history;
-	self.song_size_np = 0;
-	self.song_size = 0;
-	self.header_size = 0;
+	self.song_size_np = Prefs.get("adv") ? 320 : 160 ;
+	self.song_size = Prefs.get("adv") ? 180 : 120;
+	self.header_size = 20;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		Prefs.define("sticky_history", [ false, true ]);
@@ -68,13 +68,13 @@ var Timeline = function() {
 		var previous_evt;
 		for (i = 0; i < sched_next.length; i++) {
 			sched_next[i] = find_and_update_event(sched_next[i]);
-			sched_next[i].change_to_coming_up();
 			if (previous_evt && sched_next[i].core_event_id && (previous_evt.core_event_id === sched_next[i].core_event_id)) {
 				sched_next[i].hide_header();
 			}
 			else {
 				sched_next[i].show_header();
 			}
+			sched_next[i].change_to_coming_up();
 			new_events.push(sched_next[i]);
 			previous_evt = sched_next[i];
 		}
@@ -87,6 +87,10 @@ var Timeline = function() {
 		}
 
 		events = new_events;
+
+		for (i = 0; i < events.length; i++) {
+			template.timeline.appendChild(events[i].el);
+		}
 
 		// The now playing bar
 		Clock.set_page_title(sched_current.songs[0].albums[0].name + " - " + sched_current.songs[0].title, sched_current.end);
@@ -129,7 +133,7 @@ var Timeline = function() {
 		}
 
 		for (var i = 0; i < events.length; i++) {
-			events[i].transform_to(running_y);
+			events[i].el.style.transform = "translateY(" + running_y + "px)";
 			running_y += events[i].height;
 		}
 	};

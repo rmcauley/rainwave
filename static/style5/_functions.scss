@@ -55,9 +55,3 @@ $transtime: 700ms $transfunc;
 @mixin transition($trans...) {
 	@include transition-wtime($transtime, $trans...);
 }
-
-@mixin hardware-accelerate() {
-	@media $pc-media {
-		-webkit-transform: translateZ(0);
-	}
-}

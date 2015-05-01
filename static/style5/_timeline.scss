@@ -1,0 +1,31 @@
+div.history_header {
+	position: absolute;
+	top: 1em;
+	width: 100%;
+	z-index: 2;
+	opacity: 0.6;
+	cursor: pointer;
+	padding: 0px 5px;
+	@include transition-wtime(350ms, opacity, background-color);
+
+	svg {
+		height: 1em;
+		width: 1em;
+		margin-left: 0.4em;
+		vertical-align: middle;
+		position: relative;
+		top: -2px;
+		fill: $text;
+		@include transition-wtime(350ms, transform);
+		@include transform(rotate(0deg));
+	}
+
+	&:hover {
+		opacity: 1;
+		background-color: $blue / 2.5;
+	}
+
+	&.history_open svg {
+		@include transform(rotate(180deg));
+	}
+}
