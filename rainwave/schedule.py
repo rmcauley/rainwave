@@ -1,5 +1,5 @@
 import time
-from time import gmtime as timestamp
+from time import time as timestamp
 import tornado.ioloop
 import datetime
 
@@ -71,7 +71,8 @@ def get_producer_at_time(sid, at_time):
 								"LIMIT 1", (sid, at_time + 20, at_time))
 	try:
 		to_ret = events.event.BaseProducer.load_producer_by_id(sched_id)
-		to_ret.start_producer()
+		if to_ret:
+			to_ret.start_producer()
 	except Exception as e:
 		log.warn("get_producer", "Failed to obtain producer.")
 		log.exception("get_producer", "Failed to get an appropriate producer.", e)

@@ -1,4 +1,4 @@
-from time import gmtime as timestamp
+from time import time as timestamp
 
 from libs import db
 from libs import log

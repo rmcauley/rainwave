@@ -2,7 +2,7 @@ import tornado.web
 import tornado.ioloop
 import datetime
 import time
-from time import gmtime as timestamp
+from time import time as timestamp
 
 from api import fieldtypes
 from api.exceptions import APIException
