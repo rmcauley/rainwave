@@ -5,7 +5,7 @@ import traceback
 import types
 import hashlib
 import psycopg2
-from time import gmtime as timestamp
+from time import time as timestamp
 
 from rainwave.user import User
 from rainwave.playlist_objects.song import SongNonExistent

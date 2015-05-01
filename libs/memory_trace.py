@@ -1,5 +1,5 @@
 # Necessary includes
-from time import gmtime as timestamp
+from time import time as timestamp
 import sys
 import tornado.ioloop
 

@@ -1,5 +1,5 @@
 import tornado.ioloop
-from time import gmtime as timestamp
+from time import time as timestamp
 from libs import db
 import tempfile
 import os

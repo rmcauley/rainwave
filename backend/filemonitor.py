@@ -1,7 +1,7 @@
 import os
 import os.path
 import time
-from time import gmtime as timestamp
+from time import time as timestamp
 import mimetypes
 import sys
 import psutil

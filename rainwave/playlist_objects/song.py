@@ -1,7 +1,7 @@
 import os
 import subprocess
 import json
-from time import gmtime as timestamp
+from time import time as timestamp
 
 from mutagen.mp3 import MP3
 
