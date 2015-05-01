@@ -117,15 +117,21 @@ class RainwaveParser(HTMLParser):
 			for i in range(1, len(names) + 1):
 				cname = '.'.join(names[0:i])
 				self.buffr += "if(!_rwt.%s)_rwt.%s={};" % (cname, cname)
-		self.buffr += "_rwt.%s=function(_c){" % template_name
+		# "subt" is for "sub-templating" - it is used when called as a sub-template
+		# and we want to make sure that a new root documentFragment is used
+		# if necessary, and that we return the new documentFragment so it can
+		# be appended easily
+		self.buffr += "_rwt.%s=function(_c,_subt){" % template_name
 		self.buffr += "\"use strict\";"
 		self.buffr += "_c=_c||{};"
 		self.buffr += "if(!_c.$t)_c.$t={};"
 		# _b?! ... I don't know what else I can call the root context
 		# _b is used when the templater calls @some_var
 		self.buffr += "var _b=_c;"
-		self.buffr += "if(!_c.$t._root)_c.$t._root=_d.createDocumentFragment();"
-		self.buffr += "var _r=_c.$t._root;"
+		self.buffr += "var _r;"
+		self.buffr += "if(!_c.$t._root){_c.$t._root=_d.createDocumentFragment();_r=_c.$t._root;}"
+		self.buffr += "else if(_subt){_r=_d.createDocumentFragment();}"
+		self.buffr += "if(!_r){_r=_c.$t._root;}"
 		# I've tried modifying the documentFragment prototype.  Browsers don't like that. :)
 		# So we do a bit of function-copying here in the JS.
 		self.buffr += "_r.a=_r.appendChild;"
@@ -136,7 +142,8 @@ class RainwaveParser(HTMLParser):
 			raise Exception("%s unclosed stack: %s" % (self.name, repr(self.stack)))
 		if len(self.tree):
 			raise Exception("%s unclosed tags: %s" % (self.name, repr(self.tree_names)))
-		self.buffr += "return _c;"
+		self.buffr += "if (_subt)return _r;"
+		self.buffr += "return _c.$t;"
 		self.buffr += "};"
 		return self.buffr
 
@@ -230,7 +237,7 @@ class RainwaveParser(HTMLParser):
 		self.buffr += "}"
 
 	def handle_subtemplate(self, template_name):
-		self.handle_append("RWTemplates.%s(_c).$t._root" % template_name)
+		self.handle_append("RWTemplates.%s(_c,true)" % template_name)
 
 	def handle_if(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
@@ -242,4 +249,5 @@ class RainwaveParser(HTMLParser):
 
 	def handle_with(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
+		self.buffr += "if(!%s.$t)%s.$t={};" % (context_key, context_key)
 		self.buffr += "%s(%s);" % (function_id, context_key)
