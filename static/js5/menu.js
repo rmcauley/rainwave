@@ -8,7 +8,7 @@ var Menu = function() {
 	var station_order = [ 5, 1, 4, 2, 3 ];
 	var stations = [];
 	for (var i = 0; i < station_order.length; i++) {
-		if (BOOTSTRAP.station_list[station_order[i]]){ 
+		if (BOOTSTRAP.station_list[station_order[i]]){
 			stations.push(BOOTSTRAP.station_list[station_order[i]]);
 			if (station_order[i] == BOOTSTRAP.user.sid) {
 				stations[stations.length - 1].url = null;
@@ -26,7 +26,7 @@ var Menu = function() {
 	var init = function(idx) {
 		//API.add_callback(update_tuned_in_status, "user");
 		//R4Audio.changed_status_callback = update_tuned_in_status_from_player;
-		template = RWTemplates.menu({ "stations": stations }).$t;
+		template = RWTemplates.menu({ "stations": stations });
 		idx._root.replaceChild(template._root, idx.menu);
 
 		// must be done in JS, if you try to do it in the template you still get a clickable <a>
@@ -144,7 +144,7 @@ var Menu = function() {
 	// 			if (!event_alert && json[key].event_name && (key != User.sid)) {
 	// 				event_sid = key;
 	// 				$add_class(elements.stations[key], "event_ongoing");
-				
+
 	// 				elements.stations[key]._desc.textContent = $l("special_event_on_now");
 	// 				event_desc = Formatting.event_name(json[key].event_type, json[key].event_name);
 	// 				elements.stations[key]._desc.textContent += event_desc;
@@ -158,7 +158,7 @@ var Menu = function() {
 	// 				$remove_class(elements.stations[key], "event_ongoing");
 	// 				elements.stations[key]._desc.textContent = $l("station_menu_description_id_" + key);
 	// 			}
-				
+
 	// 			if (songs[key]) {
 	// 				songs[key].el.parentNode.removeChild(songs[key].el);
 	// 			}
@@ -184,7 +184,7 @@ var Menu = function() {
 	// 	audio_playing = playing;
 	// 	update_tuned_in_status(User);
 	// };
-	
+
 	// var update_tuned_in_status = function(user_json) {
 	// 	if (user_json.tuned_in) {
 	// 		$add_class($id("top_menu"), "external_tuned_in");

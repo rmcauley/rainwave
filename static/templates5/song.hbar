@@ -12,7 +12,7 @@
 			{{ title }}
 		</div>
 
-		{{#with album }}
+		{{#with albums[0] }}
 			{{>rating}}
 
 			<span bind="title" class="album_name link" title="{{ title }}">

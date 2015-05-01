@@ -1,12 +1,12 @@
-var TimelineSong = function(self, event) {
+var Song = function(self, event) {
 	"use strict";
-	self.$template = RWTemplates.song(self);
-	self.el = self.$template.root;
+	var template = RWTemplates.song(self);
+	self.el = template.root;
 
-	if (self.$template.rating) {
+	if (template.rating) {
 		Rating.register(self);
 	}
-	if (self.albums[0].$template.rating) {
+	if (self.albums[0].$t.rating) {
 		Rating.register(self.albums[0]);
 	}
 
@@ -26,50 +26,50 @@ var TimelineSong = function(self, event) {
 			}
 		}
 
-		self.$template.votes.textContent = self.entry_votes;
+		template.votes.textContent = self.entry_votes;
 
-		if (self.$template.rating) {
+		if (template.rating) {
 			if (self.rating_user) {
-				self.$template.rating.classList.add("rating_user");
+				template.rating.classList.add("rating_user");
 			}
 			else {
-				self.$template.rating.classList.remove("rating_user");
+				template.rating.classList.remove("rating_user");
 			}
-		 	self.$template.rating.rating_set(self.rating_user || self.rating);
+		 	template.rating.rating_set(self.rating_user || self.rating);
 		}
-		if (self.albums[0].$template.rating) {
+		if (self.albums[0].$t.rating) {
 			if (self.rating_user) {
-				self.albums[0].$template.rating.classList.add("rating_user");
+				self.albums[0].$t.rating.classList.add("rating_user");
 			}
 			else {
-				self.albums[0].$template.rating.classList.remove("rating_user");
+				self.albums[0].$t.rating.classList.remove("rating_user");
 			}
-		 	self.albums[0].$template_el.rating_set(self.rating_user || self.rating);
+		 	self.albums[0].$t_el.rating_set(self.rating_user || self.rating);
 		}
 
 		self.update_cooldown_info();
 	};
 
 	self.update_cooldown_info = function() {
-		if (!self.$template.cooldown) {
+		if (!template.cooldown) {
 			// nothing
 		}
 		else if (("valid" in self) && !self.valid) {
 			self.el.classList.add("timeline_song_is_cool");
-			self.$template.cooldown.textContent = $l("request_only_on_x", { "station": $l("station_name_" + self.origin_sid) });
+			template.cooldown.textContent = $l("request_only_on_x", { "station": $l("station_name_" + self.origin_sid) });
 		}
 		else if (self.cool && (self.cool_end > (Clock.now + 20))) {
 			self.el.classList.add("timeline_song_is_cool");
-			self.$template.cooldown.textContent = $l("request_on_cooldown_for", { "cool_time": Formatting.cooldown(self.cool_end - Clock.now) });
+			template.cooldown.textContent = $l("request_on_cooldown_for", { "cool_time": Formatting.cooldown(self.cool_end - Clock.now) });
 		}
 		else if (self.cool) {
 			self.el.classList.add("timeline_song_is_cool");
-			self.$template.cooldown.textContent = $l("request_on_cooldown_ends_soon");
+			template.cooldown.textContent = $l("request_on_cooldown_ends_soon");
 		}
 		else if (self.elec_blocked) {
 			self.el.classList.add("timeline_song_is_cool");
 			self.elec_blocked_by = self.elec_blocked_by.charAt(0).toUpperCase() + self.elec_blocked_by.slice(1);
-			self.$template.cooldown.textContent = $l("request_in_election", { "blocked_by": $l("blocked_by_name__" + self.elec_blocked_by.toLowerCase()) });
+			template.cooldown.textContent = $l("request_in_election", { "blocked_by": $l("blocked_by_name__" + self.elec_blocked_by.toLowerCase()) });
 		}
 		else {
 			self.el.classList.remove("timeline_song_is_cool");

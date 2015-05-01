@@ -3,7 +3,7 @@ var Timeline = function() {
 	var self = {};
 	var el;
 	var template;
-	var events;
+	var events = [];
 	var sched_current;
 	var sched_next;
 	var sched_history;
@@ -25,7 +25,7 @@ var Timeline = function() {
 		API.add_callback("playback_history", open_long_history);
 		API.add_callback("already_voted", self.handle_already_voted);
 
-		template = RWTemplates.timeline.timeline().$t;
+		template = RWTemplates.timeline.timeline();
 		root_template.timeline.parentNode.replaceChild(template.timeline, root_template.timeline);
 
 		template.longhist_link.addEventListener("click",
@@ -96,9 +96,9 @@ var Timeline = function() {
 	};
 
 	var find_event = function(id) {
-		for (var i = 0; i < self.events.length; i++) {
-			if (id == self.events[i].id) {
-				return self.events[i];
+		for (var i = 0; i < events.length; i++) {
+			if (id == events[i].id) {
+				return events[i];
 			}
 		}
 		return null;
@@ -107,7 +107,7 @@ var Timeline = function() {
 	var find_and_update_event = function(event_json) {
 		var evt = find_event(event_json.id);
 		if (!evt) {
-			return Event.load(event_json);
+			return Event(event_json);
 		}
 		else {
 			evt.update(event_json);
@@ -148,7 +148,7 @@ var Timeline = function() {
 			if (events[i].elec_id == event_id) {
 				for (j = 0; j < events[i].songs.length; j++) {
 					if (events[i].songs[j].entry_id == entry_id) {
-						self.events[i].songs[j].register_vote();
+						events[i].songs[j].register_vote();
 					}
 				}
 			}

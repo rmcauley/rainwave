@@ -1,4 +1,4 @@
-<div class="timeline_event timeline_{{ type }}">
+<div bind="el" class="timeline_event timeline_{{ type }}">
 	<div class="timeline_header">
 		<span class="timeline_header_clock" bind="clock"></span>
 		<a bind="header"></a>

@@ -31,10 +31,10 @@ var User;
 
 	var initialize = function() {
 		if (Prefs.get("adv")) {
-			template = RWTemplates.index_advanced().$t;
+			template = RWTemplates.index_advanced();
 		}
 		else {
-			template = RWTemplates.index_basic().$t;
+			template = RWTemplates.index_basic();
 		}
 
 		User = BOOTSTRAP.user;
@@ -75,7 +75,7 @@ var User;
 			BOOTSTRAP.on_draw[i]();
 		}
 
-		// API.initialize(BOOTSTRAP.sid, BOOTSTRAP.api_url, BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
+		API.initialize(BOOTSTRAP.sid, "/api4/", BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
 
 		// DeepLinker.detect_url_change();
 
@@ -86,7 +86,7 @@ var User;
 			document.body.appendChild(fastclick_load);
 		}
 
-		BOOTSTRAP = {};
+		BOOTSTRAP = null;
 	};
 
 	document.addEventListener("DOMContentLoaded", initialize);

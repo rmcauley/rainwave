@@ -27,7 +27,9 @@
     "Song": true,
     "shuffle": true,
     "Event": true,
-    "Rating": true
+    "Rating": true,
+    "Sizing": true,
+    "FastClick": true
   },
 
   "nonew": true,
