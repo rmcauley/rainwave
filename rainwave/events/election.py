@@ -38,6 +38,8 @@ def force_request(sid):
 
 @event.register_producer
 class ElectionProducer(event.BaseProducer):
+	always_return_elec = False
+
 	def __init__(self, sid):
 		super(ElectionProducer, self).__init__(sid)
 		self.plan_ahead_limit = config.get_station(sid, "num_planned_elections")
@@ -58,7 +60,7 @@ class ElectionProducer(event.BaseProducer):
 			elec.url = self.url
 			elec.name = self.name
 			return elec
-		elif self.id:
+		elif self.id and not self.always_return_elec:
 			return None
 		else:
 			return self._create_election(target_length, skip_requests)
