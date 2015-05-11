@@ -22,6 +22,7 @@ class GetCachedSongList(api.web.APIHandler):
 
 class AddToCachedSongList(api.web.APIHandler):
 	dj_preparation = True
+	allow_sid_zero = True
 	fields = { "song_id": ( fieldtypes.song_id, True ), "song_sid": ( fieldtypes.sid, True) }
 
 	def post(self):

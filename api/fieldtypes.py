@@ -182,8 +182,8 @@ def sid(s, request = None):
 	if not s:
 		return None
 	sid = integer(s, request)
-	if not sid:
-		return None
+	if request and request.allow_sid_zero and sid == 0:
+		return sid
 	if sid in config.station_ids:
 		return sid
 	return None
