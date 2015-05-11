@@ -62,6 +62,11 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 		self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(ph['start'], ph['end'], 'Europe/London'))
 		self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(ph['start'], ph['end'], 'Asia/Tokyo'))
 
+		total_len = 0
+		for i, song in enumerate(ph['songs']):
+			total_len += song['length']
+		self.write("<br><div>Total length of songs: <b>%d:%02d</b></div>" % (int(total_len / 3600), (total_len / 60) % 60))
+
 		self.write("<br><span>Change time.  Use YOUR timezone.</span><br>")
 		index.write_html_time_form(self, "power_hour", ph['start'])
 		self.write("<br><button onclick=\"window.top.call_api('admin/change_producer_start_time', ")
