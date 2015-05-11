@@ -4,10 +4,15 @@ from rainwave import request
 
 @event.register_producer
 class PVPElectionProducer(election.ElectionProducer):
+	always_return_elec = True
+
 	def __init__(self, sid):
 		super(PVPElectionProducer, self).__init__(sid)
 		self.elec_type = "PVPElection"
 		self.elec_class = PVPElection
+
+	def has_next_event(self):
+		return True
 
 class PVPElection(election.Election):
 	def __init__(self, sid = None):
