@@ -65,7 +65,7 @@ class CreateProducer(api.web.APIHandler):
 		"start_utc_time": (fieldtypes.positive_integer, True),
 		"end_utc_time": (fieldtypes.positive_integer, True),
 		"url": (fieldtypes.string, None),
-		"dj_user_id": (fieldtypes.user_id, False)
+		"dj_user_id": (fieldtypes.user_id, None)
 	}
 
 	def post(self):
