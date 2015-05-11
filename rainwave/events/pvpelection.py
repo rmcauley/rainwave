@@ -9,6 +9,9 @@ class PVPElectionProducer(election.ElectionProducer):
 		self.elec_type = "PVPElection"
 		self.elec_class = PVPElection
 
+	def has_next_event(self):
+		return True
+
 class PVPElection(election.Election):
 	def __init__(self, sid = None):
 		super(PVPElection, self).__init__(sid)

@@ -77,8 +77,10 @@ def get_producer_at_time(sid, at_time):
 		log.warn("get_producer", "Failed to obtain producer.")
 		log.exception("get_producer", "Failed to get an appropriate producer.", e)
 	if not to_ret:
+		log.debug("get_producer", "No producer, defaulting to election.")
 		return election.ElectionProducer(sid)
 	if not to_ret.has_next_event():
+		log.warn("get_producer", "Producer ID %s (type %s) has no events." % (to_ret.id, to_ret.type))
 		return election.ElectionProducer(sid)
 	return to_ret
 
