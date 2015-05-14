@@ -204,7 +204,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 					self.cleaned_args[field] = parsed
 
 		if self.sid is None and not self.sid_required:
-			self.sid = 5
+			self.sid = config.get("default_station")
 		if self.sid == 0 and self.allow_sid_zero:
 			pass
 		elif not self.sid in config.station_ids:
