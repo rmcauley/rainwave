@@ -369,6 +369,7 @@ class Song(object):
 		log.info("song_disable", "Disabling ID %s / file %s" % (self.id, self.filename))
 		db.c.update("UPDATE r4_songs SET song_verified = FALSE WHERE song_id = %s", (self.id,))
 		db.c.update("UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s", (self.id,))
+		db.c.update("DELETE FROM r4_request_store WHERE song_id = %s", (self.id,))
 		if self.albums:
 			for metadata in self.albums:
 				metadata.reconcile_sids()
