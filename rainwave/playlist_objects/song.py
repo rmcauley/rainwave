@@ -653,7 +653,7 @@ class Song(object):
 			return
 
 		acl = cache.get_station(self.sid, "user_rating_acl")
-		if self.id in acl and user.id in acl[self.id]:
+		if acl and self.id in acl and user.id in acl[self.id]:
 			self.data['rating_allowed'] = True
 		else:
 			self.data['rating_allowed'] = False
