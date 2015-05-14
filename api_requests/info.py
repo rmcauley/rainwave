@@ -55,7 +55,7 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 			sched_next[0]['voting_allowed'] = True
 		if request.user.is_tunedin() and request.user.has_perks():
 			for i in range(1, len(sched_next)):
-				if sched_next_objects[i].is_election and len(sched_next_objects[0].songs) > 1:
+				if sched_next_objects[i].is_election and len(sched_next_objects[i].songs) > 1:
 					sched_next[i]['voting_allowed'] = True
 		sched_history = []
 		for evt in cache.get_station(request.sid, "sched_history"):
