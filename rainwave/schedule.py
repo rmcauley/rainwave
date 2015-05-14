@@ -54,7 +54,7 @@ def load():
 def get_event_in_progress(sid):
 	producer = get_current_producer(sid)
 	evt = producer.load_event_in_progress()
-	if not evt:
+	if not evt or not evt.songs or not len(evt.songs):
 		producer = election.ElectionProducer(sid)
 		evt = producer.load_event_in_progress()
 	return evt

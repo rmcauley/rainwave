@@ -61,6 +61,10 @@ class ElectionProducer(event.BaseProducer):
 		log.debug("load_election", "Check for next election (type %s, sid %s, min. ID %s, sched_id %s): %s" % (self.elec_type, self.sid, min_elec_id, self.id, elec_id))
 		if elec_id:
 			elec = self.elec_class.load_by_id(elec_id)
+			if not elec.songs or not len(elec.songs):
+				log.warn("load_election", "Election ID %s is empty.  Marking as used.")
+				db.c.update("UPDATE r4_elections SET elec_used = TRUE WHERE elec_id = %s", (elec.id,))
+				return self.load_next_event()
 			elec.url = self.url
 			elec.name = self.name
 			return elec
@@ -78,6 +82,10 @@ class ElectionProducer(event.BaseProducer):
 		log.debug("load_election", "Check for in-progress elections (type %s, sid %s, sched_id %s): %s" % (self.elec_type, self.sid, self.id, elec_id))
 		if elec_id:
 			elec = self.elec_class.load_by_id(elec_id)
+			if not elec.songs or not len(elec.songs):
+				log.warn("load_election", "Election ID %s is empty.  Marking as used.")
+				db.c.update("UPDATE r4_elections SET elec_used = TRUE WHERE elec_id = %s", (elec.id,))
+				return self.load_next_event()
 			elec.name = self.name
 			elec.url = self.url
 			elec.dj_user_id = self.dj_user_id
