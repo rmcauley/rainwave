@@ -74,6 +74,8 @@ class Album(AssociatedMetadata):
 	@classmethod
 	def load_from_id_with_songs(cls, album_id, sid, user = None):
 		row = db.c.fetch_row("SELECT * FROM r4_albums JOIN r4_album_sid USING (album_id) WHERE album_id = %s AND sid = %s", (album_id, sid))
+		if not row:
+			raise MetadataNotFoundError("%s ID %s for sid %s could not be found." % (cls.__name__, album_id, sid))
 		instance = cls()
 		instance._assign_from_dict(row, sid)
 		instance.sid = sid
