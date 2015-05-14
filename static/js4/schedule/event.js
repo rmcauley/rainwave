@@ -101,6 +101,7 @@ var EventBase = function(json) {
 		$remove_class(self.el, "timeline_next");
 		self.set_header_text();
 		Clock.pageclock = self.elements.header_clock;
+		self.data.voting_allowed = false;
 		var i;
 		if (self.songs && (self.songs.length > 1)) {
 			// other places in the code rely on songs[0] to be the winning song
