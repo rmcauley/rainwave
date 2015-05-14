@@ -50,6 +50,10 @@ def load():
 			history[sid] = []
 			for song_id in db.c.fetch_list("SELECT song_id FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) WHERE sid = %s AND song_exists = TRUE AND song_verified = TRUE ORDER BY songhist_time DESC LIMIT 5", (sid,)):
 				history[sid].insert(0, events.singlesong.SingleSong(song_id, sid))
+			# create a fake history in case clients expect it without checking
+			if not len(history[sid]):
+				for i in range(1, 5):
+					history[sid].insert(0, events.singlesong.SingleSong(playlist.get_random_song_ignore_all(sid), sid))
 
 def get_event_in_progress(sid):
 	producer = get_current_producer(sid)
