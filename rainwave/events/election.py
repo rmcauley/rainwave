@@ -8,6 +8,7 @@ from libs import cache
 from libs import log
 from rainwave import playlist
 from rainwave import request
+from rainwave.user import User
 from rainwave.events import event
 from rainwave.playlist_objects.song import SongNonExistent
 
@@ -195,6 +196,11 @@ class Election(event.BaseEvent):
 				log.exception("elec_fill", "Song failed to fill in an election.", e)
 		if len(self.songs) == 0:
 			raise ElectionEmptyException
+		for song in self.songs:
+			if 'elec_request_user_id' in song.data and song.data['elec_request_user_id']:
+				u = User(song.data['elec_request_user_id'])
+				u.put_in_request_line(u.get_tuned_in_sid())
+			request.update_line(self.sid)
 
 	def _fill_get_song(self, target_song_length):
 		return playlist.get_random_song_timed(self.sid, target_song_length)
@@ -229,6 +235,8 @@ class Election(event.BaseEvent):
 		db.c.update("INSERT INTO r4_election_entries (entry_id, song_id, elec_id, entry_position, entry_type) VALUES (%s, %s, %s, %s, %s)", (entry_id, song.id, self.id, len(self.songs), song.data['entry_type']))
 		song.start_election_block(self.sid, config.get_station(self.sid, "num_planned_elections") + 1)
 		self.songs.append(song)
+		if song.data['entry_type'] == ElecSongTypes.request:
+			request.update_line(self.sid)
 		return True
 
 	def prepare_event(self):
@@ -350,15 +358,12 @@ class Election(event.BaseEvent):
 			log.debug("requests", "Sequence length: %s" % _request_sequence[self.sid])
 
 	def get_request(self):
-		song = self._get_request_function()
+		song = request.get_next(self.sid)
 		if not song:
 			return None
 		self.reset_request_sequence()
 		song.data['entry_type'] = ElecSongTypes.request
 		return song
-
-	def _get_request_function(self):
-		return request.get_next(self.sid)
 
 	def length(self):
 		if self.used or self.in_progress:

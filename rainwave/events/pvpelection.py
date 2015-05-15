@@ -23,9 +23,3 @@ class PVPElection(election.Election):
 	def is_request_needed(self):
 		election.force_request(self.sid)
 		return super(PVPElection, self).is_request_needed()
-
-	def _get_request_function(self):
-		if len(self.songs) > 0:
-			return request.get_next(self.sid, 1)
-		else:
-			return request.get_next(self.sid)

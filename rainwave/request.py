@@ -87,14 +87,12 @@ def update_expire_times():
 			expiry_times[row['user_id']] = row['line_expiry_tune_in']
 	cache.set("request_expire_times", expiry_times, True)
 
-def get_next(sid, start_at_position = 0):
+def get_next(sid):
 	line = cache.get_station(sid, "request_line")
 	if not line:
 		return None
-	if start_at_position > 0 and len(line) <= 3:
-		start_at_position = 0
 	song = None
-	for pos in range(start_at_position, len(line)):
+	for pos in range(0, len(line)):
 		if not line[pos]:
 			pass  # ?!?!
 		elif not line[pos]['song_id']:
@@ -109,8 +107,6 @@ def get_next(sid, start_at_position = 0):
 			u = User(entry['user_id'])
 			db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (u.id, entry['song_id']))
 			u.remove_from_request_line()
-			if u.has_requests():
-				u.put_in_request_line(u.get_tuned_in_sid())
 			request_count = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_history WHERE user_id = %s", (u.id,)) + 1
 			db.c.update("DELETE FROM r4_request_store WHERE song_id = %s AND user_id = %s", (song.id, u.id))
 			db.c.update("INSERT INTO r4_request_history (user_id, song_id, request_wait_time, request_line_size, request_at_count, sid) "
@@ -118,7 +114,6 @@ def get_next(sid, start_at_position = 0):
 						(u.id, song.id, timestamp() - entry['line_wait_start'], len(line), request_count, sid))
 			db.c.update("UPDATE phpbb_users SET radio_totalrequests = %s WHERE user_id = %s", (request_count, u.id))
 			song.update_request_count(sid)
-			_process_line(line, sid)
 			break
 
 	return song
