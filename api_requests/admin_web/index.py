@@ -74,6 +74,7 @@ class RestrictList(api.web.HTMLRequest):
 		self.write("<b>With songs from:</b><br>")
 		for sid in config.station_ids:
 			self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"window.top.current_restriction = %s; window.top.change_screen();\">%s</a>" % (sid, sid, config.station_id_friendly[sid]))
+		self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"window.top.current_restriction = %s; window.top.change_screen();\">%s</a>" % (0, 0, "DJ Only"))
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/dj_election_list")
@@ -137,6 +138,7 @@ class RelayStatus(api.web.HTMLRequest):
 class AlbumList(api.web.HTMLRequest):
 	admin_required = True
 	allow_get = True
+	allow_sid_zero = True
 	fields = { "restrict": (fieldtypes.sid, True) }
 
 	def get(self):
@@ -168,6 +170,7 @@ class AlbumList(api.web.HTMLRequest):
 
 class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 	admin_required = True
+	allow_sid_zero = True
 	# fields are handled by AlbumHandler
 
 	def get(self):	#pylint: disable=E0202,W0221

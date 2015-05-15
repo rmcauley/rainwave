@@ -146,7 +146,7 @@ def set_station_ids(dirs, friendly):
 	sid_array = []
 	for d, sids in dirs.iteritems():	#pylint: disable=W0612
 		for sid in sids:
-			if sid_array.count(sid) == 0:
+			if sid_array.count(sid) == 0 and sid != 0:
 				sid_array.append(sid)
 	station_ids = set(sid_array)
 

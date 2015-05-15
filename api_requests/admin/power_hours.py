@@ -39,6 +39,7 @@ class AddSongToPowerHour(api.web.APIHandler):
 	return_name = "power_hour"
 	admin_required = True
 	sid_required = True
+	allow_sid_zero = True
 	fields = { "sched_id": (fieldtypes.sched_id, True), "song_id": (fieldtypes.song_id, True), "song_sid": (fieldtypes.sid, True) }
 
 	def post(self):
@@ -51,6 +52,7 @@ class AddAlbumToPowerHour(api.web.APIHandler):
 	return_name = "power_hour"
 	admin_required = True
 	sid_required = True
+	allow_sid_zero = True
 	fields = { "sched_id": (fieldtypes.sched_id, True), "album_id": (fieldtypes.album_id, True), "album_sid": (fieldtypes.sid, True) }
 
 	def post(self):

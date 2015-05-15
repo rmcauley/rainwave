@@ -100,9 +100,9 @@ def _scan_all_directories(art_only=False):
 				except Exception as e:
 					type_, value_, traceback_ = sys.exc_info()	#pylint: disable=W0612
 					if not isinstance(e, PassableScanError):
-						print "\n%s:\n\t %s: %s" % (filename.decode("utf-8", errors="ignore"), type_, value_)
+						print "\n%s:\n\t %s: %s" % (filename.decode("utf-8", errors="ignore").encode("ascii", errors="ignore"), type_, value_)
 					else:
-						print "\n%s:\n\t %s" % (filename.decode("utf-8", errors="ignore"), value_)
+						print "\n%s:\n\t %s" % (filename.decode("utf-8", errors="ignore").encode("ascii", errors="ignore"), value_)
 						sys.stdout.flush()
 
 				file_counter += 1

@@ -6,7 +6,10 @@ from api.server import handle_api_html_url
 
 from libs import cache
 from libs import db
+from libs import config
 from rainwave import playlist
+from rainwave.playlist_objects.metadata import MetadataNotFoundError
+from api.exceptions import APIException
 
 def get_all_albums(sid, user = None):
 	if not user or user.is_anonymous():
@@ -73,8 +76,18 @@ class AlbumHandler(APIHandler):
 	fields = { "id": (fieldtypes.album_id, True) }
 
 	def post(self):
-		album = playlist.Album.load_from_id_with_songs(self.get_argument("id"), self.sid, self.user)
-		album.load_extra_detail(self.sid)
+		try:
+			album = playlist.Album.load_from_id_with_songs(self.get_argument("id"), self.sid, self.user)
+			album.load_extra_detail(self.sid)
+		except MetadataNotFoundError:
+			self.return_name = "album_error"
+			valid_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND sid != 0 ORDER BY sid", (self.get_argument("id"),))
+			if not valid_sids or not len(valid_sids):
+				raise APIException("album_is_dj_only")
+			elif config.get("default_station") in valid_sids:
+				raise APIException("album_on_other_station", available_station=config.station_id_friendly[config.get("default_station")], available_sid=valid_sids[0])
+			else:
+				raise APIException("album_on_other_station", available_station=config.station_id_friendly[valid_sids[0]], available_sid=valid_sids[0])
 		self.append("album", album.to_dict_full(self.user))
 
 @handle_api_url("song")

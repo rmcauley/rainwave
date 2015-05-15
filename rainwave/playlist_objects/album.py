@@ -44,6 +44,8 @@ def get_updated_albums_dict(sid):
 	return album_diff
 
 def warm_cooled_albums(sid):
+	if sid == 0:
+		return
 	global updated_album_ids
 	album_list = db.c.fetch_list("SELECT album_id FROM r4_album_sid WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE", (sid, timestamp()))
 	for album_id in album_list:
@@ -72,6 +74,8 @@ class Album(AssociatedMetadata):
 	@classmethod
 	def load_from_id_with_songs(cls, album_id, sid, user = None):
 		row = db.c.fetch_row("SELECT * FROM r4_albums JOIN r4_album_sid USING (album_id) WHERE album_id = %s AND sid = %s", (album_id, sid))
+		if not row:
+			raise MetadataNotFoundError("%s ID %s for sid %s could not be found." % (cls.__name__, album_id, sid))
 		instance = cls()
 		instance._assign_from_dict(row, sid)
 		instance.sid = sid
@@ -120,7 +124,8 @@ class Album(AssociatedMetadata):
 			"SET album_name = %s, album_name_searchable = %s, album_rating = %s "
 			"WHERE album_id = %s",
 			(self.data['name'], make_searchable_string(self.data['name']), self.data['rating'], self.id))
-		updated_album_ids[self.sid][self.id] = True
+		if self.sid != 0:
+			updated_album_ids[self.sid][self.id] = True
 		return success
 
 	def _assign_from_dict(self, d, sid = None):	#pylint: disable=W0221
@@ -184,7 +189,8 @@ class Album(AssociatedMetadata):
 				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (album_id, sid))
 			else:
 				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (album_id, sid))
-				updated_album_ids[sid][album_id] = True
+				if sid != 0:
+					updated_album_ids[sid][album_id] = True
 			num_songs = self.get_num_songs(sid)
 			db.c.update("UPDATE r4_album_sid SET album_song_count = %s WHERE album_id = %s AND sid = %s", (num_songs, album_id, sid))
 		self.update_all_user_ratings()
@@ -192,6 +198,9 @@ class Album(AssociatedMetadata):
 		return new_sids
 
 	def start_cooldown(self, sid, cool_time = False):
+		if sid == 0:
+			return
+
 		if cool_time:
 			pass
 		elif self.data['cool_override']:
@@ -251,7 +260,7 @@ class Album(AssociatedMetadata):
 			if not likes:
 				likes = 0
 			rating_count = dislikes + neutrals + neutralplus + likes
-			log.debug("album_rating", "%s album ratings for %s" % (rating_count, self.data['name']))
+			log.debug("song_rating", "%s album ratings for %s (%s)" % (rating_count, self.data['name'], config.station_id_friendly[sid]))
 			if rating_count > config.get("rating_threshold_for_calc"):
 				self.data['rating'] = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
 				self.data['rating_count'] = rating_count

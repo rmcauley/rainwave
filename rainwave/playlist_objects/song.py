@@ -40,7 +40,7 @@ class Song(object):
 	#pylint: disable=W0212
 	@classmethod
 	def load_from_id(klass, song_id, sid = None):
-		if sid:
+		if sid is not None:
 			d = db.c.fetch_row("SELECT * FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_id = %s AND r4_song_sid.sid = %s", (song_id, sid))
 		else:
 			d = db.c.fetch_row("SELECT * FROM r4_songs WHERE song_id = %s", (song_id,))
@@ -60,7 +60,7 @@ class Song(object):
 			s._assign_from_dict(d)
 
 			if 'album_id' in d and d['album_id']:
-				if sid:
+				if sid is not None:
 					s.albums = [ Album.load_from_id_sid(d['album_id'], s.sid) ]
 				else:
 					s.albums = [ Album.load_from_id(d['album_id']) ]
@@ -202,7 +202,7 @@ class Song(object):
 		else:
 		 	raise PassableScanError("Song filename \"%s\" has no artist tag." % filename)
 		w = f.tags.getall('TALB')
-		if len(w) > 0 and len(unicode(w[0])) > 0:
+		if len(w) > 0 and len(unicode(w[0]).strip()) > 0:
 		 	self.album_tag = unicode(w[0]).strip()
 		else:
 			raise PassableScanError("Song filename \"%s\" has no album tag." % filename)
@@ -369,6 +369,7 @@ class Song(object):
 		log.info("song_disable", "Disabling ID %s / file %s" % (self.id, self.filename))
 		db.c.update("UPDATE r4_songs SET song_verified = FALSE WHERE song_id = %s", (self.id,))
 		db.c.update("UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s", (self.id,))
+		db.c.update("DELETE FROM r4_request_store WHERE song_id = %s", (self.id,))
 		if self.albums:
 			for metadata in self.albums:
 				metadata.reconcile_sids()
@@ -390,7 +391,7 @@ class Song(object):
 		Cooldown is only applied if the song exists on the given station
 		"""
 
-		if (self.sid != sid) or (not self.sid in self.data['sids']):
+		if (self.sid != sid) or (not self.sid in self.data['sids']) or sid == 0:
 			return
 
 		for metadata in self.groups:
@@ -424,6 +425,9 @@ class Song(object):
 			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s WHERE song_id = %s AND sid = %s AND song_request_only_end IS NOT NULL", (self.data['request_only_end'], self.id, sid))
 
 	def start_election_block(self, sid, num_elections):
+		if sid == 0:
+			return
+
 		for metadata in self.groups:
 			metadata.start_election_block(sid, num_elections)
 		for metadata in self.albums:
@@ -649,7 +653,7 @@ class Song(object):
 			return
 
 		acl = cache.get_station(self.sid, "user_rating_acl")
-		if self.id in acl and user.id in acl[self.id]:
+		if acl and self.id in acl and user.id in acl[self.id]:
 			self.data['rating_allowed'] = True
 		else:
 			self.data['rating_allowed'] = False

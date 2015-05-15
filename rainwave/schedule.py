@@ -48,13 +48,17 @@ def load():
 		history[sid] = cache.get_station(sid, "sched_history")
 		if not history[sid]:
 			history[sid] = []
-			for song_id in db.c.fetch_list("SELECT song_id FROM r4_song_history WHERE sid = %s ORDER BY songhist_time DESC LIMIT 5", (sid,)):
+			for song_id in db.c.fetch_list("SELECT song_id FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) WHERE sid = %s AND song_exists = TRUE AND song_verified = TRUE ORDER BY songhist_time DESC LIMIT 5", (sid,)):
 				history[sid].insert(0, events.singlesong.SingleSong(song_id, sid))
+			# create a fake history in case clients expect it without checking
+			if not len(history[sid]):
+				for i in range(1, 5):
+					history[sid].insert(0, events.singlesong.SingleSong(playlist.get_random_song_ignore_all(sid), sid))
 
 def get_event_in_progress(sid):
 	producer = get_current_producer(sid)
 	evt = producer.load_event_in_progress()
-	if not evt:
+	if not evt or not evt.songs or not len(evt.songs):
 		producer = election.ElectionProducer(sid)
 		evt = producer.load_event_in_progress()
 	return evt
@@ -64,6 +68,8 @@ def get_current_producer(sid):
 
 def get_producer_at_time(sid, at_time):
 	to_ret = None
+	local_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(at_time))
+	time_ahead = int((at_time - timestamp()) / 60)
 	sched_id = db.c.fetch_var(	"SELECT sched_id "
 								"FROM r4_schedule "
 								"WHERE sid = %s AND sched_start <= %s AND sched_end > %s "
@@ -74,13 +80,13 @@ def get_producer_at_time(sid, at_time):
 		if to_ret:
 			to_ret.start_producer()
 	except Exception as e:
-		log.warn("get_producer", "Failed to obtain producer.")
-		log.exception("get_producer", "Failed to get an appropriate producer.", e)
+		log.warn("get_producer", "Failed to obtain producer at time %s (%sm ahead)." % (local_time, time_ahead))
+		log.exception("get_producer", "Failed to get an appropriate producer at time %s  (%sm ahead)." % (local_time, time_ahead), e)
 	if not to_ret:
-		log.debug("get_producer", "No producer, defaulting to election.")
+		log.debug("get_producer", "No producer at time %s  (%sm ahead), defaulting to election." % (local_time, time_ahead))
 		return election.ElectionProducer(sid)
 	if not to_ret.has_next_event():
-		log.warn("get_producer", "Producer ID %s (type %s) has no events." % (to_ret.id, to_ret.type))
+		log.warn("get_producer", "Producer ID %s (type %s, %s) has no events." % (to_ret.id, to_ret.type, to_ret.name))
 		return election.ElectionProducer(sid)
 	return to_ret
 

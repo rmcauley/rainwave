@@ -96,12 +96,12 @@ var Requests = function() {
 			}
 		}
 
-		if (!User.requests_paused && User.tuned_in && User.request_position && User.request_expires_at && (User.request_expires_at <= (Clock.now + 600)) && (User.request_expires_at > Clock.now)) {
-			header.textContent = $l("requests_expiring");
-			$add_class(container, "request_warning");
-			grab_tag.textContent = $l("request_grab_tag__warning");
-		}
-		else if (!User.requests_paused && User.tuned_in && all_cooldown) {
+		// if (!User.requests_paused && User.tuned_in && User.request_position && User.request_expires_at && (User.request_expires_at <= (Clock.now + 600)) && (User.request_expires_at > Clock.now)) {
+		// 	header.textContent = $l("requests_expiring");
+		// 	$add_class(container, "request_warning");
+		// 	grab_tag.textContent = $l("request_grab_tag__warning");
+		// }
+		if (!User.requests_paused && User.tuned_in && all_cooldown) {
 			header.textContent = $l("requests_all_on_cooldown");
 			$add_class(container, "request_warning");
 			grab_tag.textContent = $l("request_grab_tag__warning");

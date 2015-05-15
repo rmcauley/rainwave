@@ -43,12 +43,14 @@
    "rating_cleared"                                  : "Rating cleared.",
    "unknown_error_message"                           : "Sorry about that.  Please try again, or file a bug with the debug information below.  (this error has been logged)",
    "debug_information"                               : "Debug information:",
-   "requests_reordered"                              : "Requests Reordered",
+   "requests_reordered"                              : "Requests reordered.",
    "request_queue_paused"                            : "Request queue paused.",
    "request_queue_unpaused"                          : "Request queue unpaused.",
    "no_results"                                      : "No results.",
    "server_just_started"                             : "Rainwave is Rebooting",
-   "station_paused"                                  : "Station is paused.",
+   "station_paused"                                  : "Station is currently paused by the DJ.",
+   "album_on_other_station"                          : "Album is available on %(available_station), sorry!",
+   "album_is_dj_only"                                : "Album is an exclusive part of this event, sorry!",
 
    "__comment__"                 : "API Key Management",
 
@@ -84,7 +86,7 @@
    "audio_connect_error"                             : "Currently having difficulties connecting to the radio server.",
    "audio_connect_error_reattempting"                : "You're losing your ability to vote because of connection issues.  We're trying to keep you connected properly.",
    "try_external_player"                             : "Click here to try using an app to tune in.",
-   "m3u_hijack_right_click"                          : "A plugin is trying to hijack your browser.  Please right click the player and click Save As to tune in.",
+   "m3u_hijack_right_click"                          : "A plugin is trying to hijack your browser.  Please use the MP3 or Ogg M3U download links and an app to tune in.",
 
    "listen_via_browser"                              : "Listen In Browser",
    "listen_via_mp3"                                  : "Listen with MP3",
@@ -141,21 +143,24 @@
 
    "__comment__"                 : "Other",
 
-   "redownload_m3u"                                  : "Are you tuning in?  If you just logged in, please redownload the playlist.",
    "random_relay"                                    : "Random Relay",
+   "redownload_m3u"                                  : "Are you tuning in?  If you just logged in and are using an external app to listen, please redownload the MP3 or Ogg M3U.",
    "sync_stopped"                                    : "Rainwave has stopped working.  Please refresh and try again.",
-   "lost_connection"                                 : "Lost connection to server.",
-   "sync_retrying"                                   : "Having trouble talking with the Rainwave server, please wait...",
-   "mobile_sync_retrying"                            : "Connection timeout issues, please refresh or try later.",
-   "async_error"                                     : "Error talking to server.  Please try again or refresh.",
-   "deeplink_error"                                  : "Error understanding the URL entered.",
+   "lost_connection"                                 : "Lost connection to Rainwave.",
+   "sync_retrying"                                   : "Having trouble talking with the Rainwave, please wait...",
+   "mobile_sync_retrying"                            : "Connection issues, please refresh or try later.",
+   "async_error"                                     : "Error talking to Rainwave.  Please try again or refresh.",
+   "deeplink_error"                                  : "Sorry, we couldn't understand the URL you tried to open.",
+
+   "catastrophic_error"                              : "Rainwave Has Crashed :(",
+   "submit_javascript_error"                         : "Please submit the bug report below to the forums, so we can stop it from happening again.",
+
+   "__comment__"                 : "Hotkey Mode",
+
    "hotkey_mode"                                     : "1-5 to Rate, A/S/D to Vote",
    "invalid_hotkey"                                  : "Invalid hotkey.",
    "not_an_election"                                 : "Not an election.",
    "rate_song_mobile_dialog"                         : "Rate Song",
-
-   "catastrophic_error"                              : "Rainwave Has Crashed :(",
-   "submit_javascript_error"                         : "Please submit the bug report below to the forums, so we can fix it.",
 
    "__comment__"                 : "About Window",
 
@@ -201,8 +206,7 @@
    "request_fill_with_faves"                         : "Fave Fill",
 
    "Requests"                                        : "Requests",
-   "requests_expiring"                               : "Place In Line Will Expire!",
-   "requests_all_on_cooldown"                        : "No Good Requests!",
+   "requests_all_on_cooldown"                        : "All On Cooldown!",
    "request_you_are_x_in_line"                       : "#(position) In Line",
 
    "request_grab_tag__warning"                       : "Warning",
@@ -212,7 +216,7 @@
    "cancel_request"                                  : "Cancel Request",
    "request_on_cooldown_for"                         : "On cooldown for %(cool_time).",
    "request_on_cooldown_ends_soon"                   : "Coming off cooldown.",
-   "request_in_election"                             : "%(blocked_by) is in an election.",
+   "request_in_election"                             : "%(blocked_by) is queued for voting.",
    "blocked_by_name__group"                          : "Category",
    "blocked_by_name__album"                          : "Album",
    "blocked_by_name__in_election"                    : "Song",
@@ -300,6 +304,14 @@
    "origin_sid"                                      : "Station",
    "user_recent_votes"                               : "Your Recent Votes",
    "user_requested_history"                          : "Your Request History",
+   "request_line_result"                             : "Listeners Waiting in Request Line",
+   "song_id"                                         : "Song ID",
+   "user_id"                                         : "User ID",
+   "line_expiry_tune_in"                             : "Expire Time (if tuned out)",
+   "line_expiry_election"                            : "Expire Time (if no good requests)",
+   "line_wait_start"                                 : "Entered Line At (epoch time)",
+   "artist_parseable"                                : "Artists (computer-readable format)",
+   "song_played_at"                                  : "Played At (epoch time)",
 
    "__comment__"                 : "Admin Panel Lines (translation not required)",
 

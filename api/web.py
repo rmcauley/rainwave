@@ -96,6 +96,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	help_hidden = False
 	# automatically add pagination to an API request.  use self.get_sql_limit_string()!
 	pagination = False
+	# allow access to station ID 0
+	allow_sid_zero = False
 
 	def __init__(self, *args, **kwargs):
 		super(RainwaveHandler, self).__init__(*args, **kwargs)
@@ -182,10 +184,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			hostname = unicode(hostname).split(":")[0]
 			if hostname in config.station_hostnames:
 				self.sid = config.station_hostnames[hostname]
-		self.sid = fieldtypes.integer(self.get_argument("sid", None)) or self.sid
-		if self.sid and not self.sid in config.station_ids:
-			self.sid = None
-		if not self.sid and self.sid_required:
+		sid_arg = fieldtypes.integer(self.get_argument("sid", None))
+		if sid_arg is not None:
+			self.sid = sid_arg
+		if self.sid is None and self.sid_required:
 			raise APIException("missing_station_id", http_code=400)
 
 		for field, field_attribs in self.__class__.fields.iteritems():
@@ -201,11 +203,14 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				else:
 					self.cleaned_args[field] = parsed
 
-		if not self.sid and not self.sid_required:
-			self.sid = 5
-		if not self.sid in config.station_ids:
+		if self.sid is None and not self.sid_required:
+			self.sid = config.get("default_station")
+		if self.sid == 0 and self.allow_sid_zero:
+			pass
+		elif not self.sid in config.station_ids:
 			raise APIException("invalid_station_id", http_code=400)
-		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
+		if self.sid:
+			self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 
 		if self.phpbb_auth:
 			self.do_phpbb_auth()
