@@ -336,9 +336,12 @@ class Election(event.BaseEvent):
 
 	def reset_request_sequence(self):
 		if _request_interval[self.sid] <= 0 and _request_sequence[self.sid] <= 0:
-			line_length = len(cache.get_station(self.sid, "request_line"))
+			line_length = 0
+			for entry in (cache.get_station(self.sid, "request_line") or []):
+				if entry['song_id']:
+					line_length += 1
 			# line_length = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_line WHERE sid = %s", (self.sid,))
-			log.debug("requests", "Ready for sequence, line length %s" % line_length)
+			log.debug("requests", "Ready for sequence, entries in request line with valid songs: %s" % line_length)
 			# This sequence variable gets set AFTER a request has already been marked as fulfilled
 			# If we have a +1 to this math we'll actually get 2 requests in a row, one now (is_request_needed will return true)
 			# and then again when sequence_length will go from 1 to 0.
