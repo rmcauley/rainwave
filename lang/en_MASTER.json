@@ -302,7 +302,7 @@
    "request_line_result"                             : "Listeners Waiting in Request Line",
    "song_id"                                         : "Song ID",
    "user_id"                                         : "User ID",
-   "line_expiry_tunein"                              : "Expire Time (if tuned out)",
+   "line_expiry_tune_in"                             : "Expire Time (if tuned out)",
    "line_expiry_election"                            : "Expire Time (if no good requests)",
    "line_wait_start"                                 : "Entered Line At (epoch time)",
    "artist_parseable"                                : "Artists (computer-readable format)",
