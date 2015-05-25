@@ -63,13 +63,13 @@ class ListenerDetailRequest(APIHandler):
 
 		user['ratings_by_station'] = db.c.fetch_all("SELECT song_origin_sid AS sid, TO_CHAR(AVG(song_rating_user), 'FM9.99') AS average_rating, COUNT(song_rating_user) AS ratings "
 													"FROM r4_song_ratings JOIN r4_songs USING (song_id) "
-													"WHERE user_id = %s AND song_verified = TRUE "
+													"WHERE user_id = %s AND song_exists = TRUE AND song_verified = TRUE AND song_origin_sid > 0 "
 													"GROUP BY song_origin_sid",
 													(self.get_argument("id"),))
 
 		user['rating_completion'] = {}
 		for row in user['ratings_by_station']:
-			user['rating_completion'][row['sid']] = math.ceil(float(row['ratings']) / float(playlist.num_songs[row['sid']]) * 100)
+			user['rating_completion'][row['sid']] = math.floor(float(row['ratings']) / float(playlist.num_songs[row['sid']]) * 100)
 
 		user['rating_spread'] = db.c.fetch_all("SELECT COUNT(song_id) AS ratings, song_rating_user AS rating FROM r4_song_ratings WHERE user_id = %s AND song_rating_user IS NOT NULL GROUP BY song_rating_user ORDER BY song_rating_user", (self.get_argument("id"), ))
 
