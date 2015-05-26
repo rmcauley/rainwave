@@ -201,7 +201,7 @@ def post_process(sid):
 		if ti_song:
 			ti_title = ti_song.data['title']
 			ti_album = ti_song.albums[0].data['name']
-			ti_artist = ', '.join([ a['name'] for a in ti_song.artists ])
+			ti_artist = ', '.join([ a.data['name'] for a in ti_song.artists ])
 
 			params = { "id": config.get_station(sid, "tunein_id"),
 						"title": ti_title, "artist": ti_artist, "album": ti_album }
