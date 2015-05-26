@@ -203,14 +203,14 @@ def post_process(sid):
 			ti_album = ti_song.albums[0].data['name']
 			ti_artist = ', '.join([ a['name'] for a in ti_song.artists ])
 
-			params = { "partnerKey": config.get_station(sid, "tunein_partner_key"),
-						"id": config.get_station(sid, "tunein_id"),
+			params = { "id": config.get_station(sid, "tunein_id"),
 						"title": ti_title, "artist": ti_artist, "album": ti_album }
 
 			with requests.Request("GET", "http://air.radiotime.com/Playing.ashx", params=params) as req:
 				p = req.prepare()
 				# Must be done here rather than in params because of odd strings TuneIn creates
 				p.url += "&partnerId=%s" % config.get_station(sid, "tunein_partner_id")
+				p.url += "&partnerKey=%s" % config.get_station(sid, "tunein_partner_key")
 				s = requests.Session()
 				s.send(p, timeout=3)
 				log.debug("advance", "TuneIn updated.")
