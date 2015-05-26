@@ -111,6 +111,13 @@ def load(filename = None, testmode = False):
 def has(key):
 	return key in _opts
 
+def has_station(sid, key):
+	if not sid in _opts['stations']:
+		return False
+	if not key in _opts['stations'][sid]:
+		return False
+	return True
+
 def require(key):
 	if not key in _opts:
 		raise StandardError("Required configuration key '%s' not found." % key)

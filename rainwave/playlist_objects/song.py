@@ -193,17 +193,17 @@ class Song(object):
 
 		w = f.tags.getall('TIT2')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
-		 	self.data['title'] = unicode(w[0]).strip()
+			self.data['title'] = unicode(w[0]).strip()
 		else:
-		 	raise PassableScanError("Song filename \"%s\" has no title tag." % filename)
+			raise PassableScanError("Song filename \"%s\" has no title tag." % filename)
 		w = f.tags.getall('TPE1')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.artist_tag = unicode(w[0])
 		else:
-		 	raise PassableScanError("Song filename \"%s\" has no artist tag." % filename)
+			raise PassableScanError("Song filename \"%s\" has no artist tag." % filename)
 		w = f.tags.getall('TALB')
 		if len(w) > 0 and len(unicode(w[0]).strip()) > 0:
-		 	self.album_tag = unicode(w[0]).strip()
+			self.album_tag = unicode(w[0]).strip()
 		else:
 			raise PassableScanError("Song filename \"%s\" has no album tag." % filename)
 		w = f.tags.getall('TRCK')
@@ -230,6 +230,8 @@ class Song(object):
 		w = f.tags.getall('WXXX')	#pylint: disable=W0511
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.data['url'] = unicode(w[0]).strip()
+		else:
+			self.data['url'] = None
 		w = f.tags.getall('TYER')
 		if w is not None and len(w) > 0:
 			try:
