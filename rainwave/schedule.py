@@ -213,8 +213,8 @@ def post_process(sid):
 				p.url += "&partnerId=%s" % config.get_station(sid, "tunein_partner_id")
 				p.url += "&partnerKey=%s" % config.get_station(sid, "tunein_partner_key")
 				s = requests.Session()
-				s.send(p, timeout=3)
-				log.debug("advance", "TuneIn updated.")
+				resp = s.send(p, timeout=3)
+				log.debug("advance", "TuneIn updated (%s): %s" % (resp.status_code, resp.text))
 			except Exception as e:
 				log.exception("advance", "Could not update TuneIn.", e)
 
