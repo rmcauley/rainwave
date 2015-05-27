@@ -3,6 +3,7 @@ var Prefs = function() {
 	var self = {};
 	var meta = {};
 	var callbacks = {};
+	var cookie_domain = BOOTSTRAP.cookie_domain;
 	var values;
 	try {
 		values = JSON.parse(docCookies.getItem("r5_prefs")) || {};
@@ -12,7 +13,7 @@ var Prefs = function() {
 	}
 
 	self.save = function() {
-		docCookies.setItem("r5_prefs", JSON.stringify(values), Infinity, "/", BOOTSTRAP.cookie_domain);
+		docCookies.setItem("r5_prefs", JSON.stringify(values), Infinity, "/", cookie_domain);
 	};
 
 	self.get = function(name) {
