@@ -10,6 +10,8 @@ var Song = function(self, event) {
 		self.el = self.$t.root;
 	}
 
+	AlbumArt(self.art, template.art);
+
 	if (template.rating) {
 		Rating.register(self);
 	}

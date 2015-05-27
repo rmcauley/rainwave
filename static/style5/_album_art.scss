@@ -1,3 +1,11 @@
+div.art_anchor {
+	position: relative;
+	float: left;
+	width: $art_thumbnail_size;
+	height: $art_thumbnail_size;
+	margin-right: 10px;
+}
+
 div.art_container {
 	position: absolute;
 	z-index: 1;
