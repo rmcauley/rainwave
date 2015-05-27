@@ -5,6 +5,7 @@ div.song {
 	-ms-transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
 	transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
 	height: $art_thumbnail_size;
+	width: 100%;
 
 	div.title, div.album, div.artist, div.cooldown_info, a.song_link {
 		text-overflow: ellipsis;

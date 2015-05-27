@@ -7,8 +7,8 @@ var Timeline = function() {
 	var sched_current;
 	var sched_next;
 	var sched_history;
-	self.song_size_np = Prefs.get("adv") ? 320 : 160 ;
-	self.song_size = Prefs.get("adv") ? 180 : 120;
+	self.song_size_np = Prefs.get("adv") ? 220 : 120;
+	self.song_size = Prefs.get("adv") ? 140 : 80;
 	self.header_size = 20;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
@@ -21,6 +21,7 @@ var Timeline = function() {
 		API.add_callback("sched_next", function(json) { sched_next = json; });
 		API.add_callback("sched_history", function(json) { sched_history = json; });
 		API.add_callback("_SYNC_COMPLETE", self.update);
+		API.add_callback("_SYNC_COMPLETE", self.reflow);
 		API.add_callback("user", self.tune_in_voting_allowed_check);
 		API.add_callback("playback_history", open_long_history);
 		API.add_callback("already_voted", self.handle_already_voted);
@@ -81,7 +82,7 @@ var Timeline = function() {
 
 		for (i = 0; i < events.length; i++) {
 			if (events[i]._pending_delete) {
-				events[i].style[Fx.transform] = "translateY(-" + np_size + "px)";
+				events[i].style[Fx.transform] = "translateY(-" + self.song_size + "px)";
 				Fx.remove_element(events[i].el);
 			}
 		}

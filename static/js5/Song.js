@@ -1,7 +1,14 @@
 var Song = function(self, event) {
 	"use strict";
-	var template = RWTemplates.song(self);
-	self.el = template.root;
+	var template;
+	if (!self.$t) {
+		var template = RWTemplates.song(self);
+		self.el = template.root;
+	}
+	else {
+		template = self.$t;
+		self.el = self.$t.root;
+	}
 
 	if (template.rating) {
 		Rating.register(self);

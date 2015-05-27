@@ -1,11 +1,11 @@
 div.history_header {
 	position: absolute;
-	top: 1em;
+	top: 10px;
 	width: 100%;
 	z-index: 2;
 	opacity: 0.6;
 	cursor: pointer;
-	padding: 0px 5px;
+	padding: 0px;
 	@include transition-wtime(350ms, opacity, background-color);
 
 	svg {

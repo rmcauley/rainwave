@@ -10,9 +10,11 @@ var Event = function(self) {
 	RWTemplates.timeline.event(self);
 	self.el = self.$t.el;
 
+	var running_height = 0;
 	for (var i = 0; i < self.songs.length; i++) {
 		self.songs[i] = Song(self.songs[i]);
-		self.$t.el.appendChild(self.songs[i].el);
+		self.songs[i].el.style[Fx.transform] = "translateY(" + running_height + "px)";
+		running_height += Timeline.song_size;
 	}
 
 	self.update = function(json) {
@@ -40,7 +42,7 @@ var Event = function(self) {
 		self.$t.el.classList.add("sched_next");
 		self.check_voting();
 		self.set_header_text($l("coming_up"));
-		self.height = (self.songs * Timeline.song_size);
+		self.height = (self.songs.length * Timeline.song_size);
 		if (showing_header) self.height += Timeline.header_size;
 	};
 
@@ -54,14 +56,22 @@ var Event = function(self) {
 			// other places in the code rely on songs[0] to be the winning song
 			// make sure we sort properly for that condition here
 			self.songs.sort(function(a, b) { return a.entry_position < b.entry_position ? -1 : 1; });
-			for (i = 0; i < self.songs.length; i++) {
-				self.$t.el.appendChild(self.songs[i].el);
-			}
 		}
 		self.check_voting();
 		self.set_header_text($l("now_playing"));
-		self.height = (self.songs * Timeline.song_size_np);
+		self.height = ((self.songs.length - 1) * Timeline.song_size) + Timeline.song_size_np;
 		if (showing_header) self.height += Timeline.header_size;
+
+		var running_height = 0;
+		for (var i = 0; i < self.songs.length; i++) {
+			self.songs[i].el.style[Fx.transform] = "translateY(" + running_height + "px)";
+			if (i) {
+				running_height += Timeline.song_size;
+			}
+			else {
+				running_height += Timeline.song_size_np;
+			}
+		}
 	};
 
 	self.change_to_history = function() {
@@ -69,12 +79,8 @@ var Event = function(self) {
 		self.$t.el.classList.remove("sched_next");
 		self.$t.el.classList.add("sched_history");
 		self.songs.sort(function(a, b) { return a.entry_position < b.entry_position ? -1 : 1; });
-		// neither will reclassing the songs that lost
-		for (var i = 1; i < self.songs.length; i++) {
-			self.$t.el.appendChild(self.songs[i].el);
-		}
 		self.check_voting();
-		self.height = (self.songs * Timeline.song_size);
+		self.height = (self.songs.length * Timeline.song_size);
 		if (showing_header) self.height += Timeline.header_size;
 	};
 
