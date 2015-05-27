@@ -33,7 +33,7 @@ def _bake_css_file(input_filename, output_filename, include_path):
 	css_content = scss.compiler.compile_file(input_filename,
 		root=include_path,
 		search_path=[ include_path ],
-		output_style='nested',
+		output_style='compressed',
 		live_errors=True,
 		warn_unused_imports=False
 	)

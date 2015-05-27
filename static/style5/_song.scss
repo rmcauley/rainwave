@@ -1,0 +1,101 @@
+div.song {
+	position: absolute;
+	cursor: default;
+	-webkit-transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
+	-ms-transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
+	transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
+	height: $art_thumbnail_size;
+
+	div.title, div.album, div.artist, div.cooldown_info, a.song_link {
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+		height: $rating_height + 1;
+	}
+
+	div.album, div.artist, div.cooldown_info, a.song_link {
+		padding-left: 15px;
+		color: $darktext;
+	}
+
+	a.song_link {
+		display: none;
+	}
+
+	div.entry_votes {
+		display: none;
+		float: right;
+		padding-right: .5em;
+		color: $darktext;
+	}
+
+	&.now_playing {
+		a.song_link, div.entry_votes {
+			display: block;
+		}
+	}
+
+	div.timeline & {
+		background-image: url(/static/images4/vote_hover.png);
+		background-position: -678px 0px;
+		background-repeat: no-repeat;
+
+		span.album_name, div.artist a {
+			@include transition-wtime(250ms, color, background-color, padding);
+
+			&:hover {
+				background-color: #264499;
+				padding: 0 10px;
+				color: $linkhover;
+			}
+		}
+	}
+
+	div.request_indicator, div.requester {
+		box-sizing: border-box;
+		position: absolute;
+		width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: x-small;
+		background: $highlight;
+		text-align: left;
+		text-transform: uppercase;
+		@include transition(opacity, LINKCOLOR);
+	}
+
+	div.requester {
+		z-index: 5;
+		padding-left: 1.5em;
+		cursor: pointer;
+
+		&:hover {
+			color: $linkhover;
+		}
+	}
+
+	div.request_indicator {
+		text-align: right;
+		z-index: 4;
+		opacity: 1;
+		padding-right: 1.5em;
+
+		@include transform(rotate(-90deg) translateX(-100%));
+		-webkit-transform-origin: 0% 0%;
+		        transform-origin: 0% 0%;
+	}
+
+	div.art_expanded {
+		div.requester, div.request_indicator {
+			opacity: 0;
+		}
+	}
+
+	div.your_request {
+		div.requester, div.request_indicator {
+			background: #18a485;
+		}
+	}
+}
+

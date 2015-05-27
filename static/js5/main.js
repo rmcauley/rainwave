@@ -30,13 +30,7 @@ var User;
 	var template;
 
 	var initialize = function() {
-		if (Prefs.get("adv")) {
-			template = RWTemplates.index_advanced();
-		}
-		else {
-			template = RWTemplates.index_basic();
-		}
-
+		template = RWTemplates.index();
 		User = BOOTSTRAP.user;
 		API.add_callback(function(json) { User = json; }, "user");
 
@@ -57,11 +51,8 @@ var User;
 
 	var draw = function() {
 		var i;
-		if (Prefs.get("adv")) {
-			document.body.classList.add("advanced");
-		}
-		else {
-			document.body.classList.add("basic");
+		if (User.id > 1) {
+			document.body.classList.add("logged_in");
 		}
 		document.body.appendChild(template._root);
 

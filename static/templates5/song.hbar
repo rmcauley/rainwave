@@ -15,21 +15,21 @@
 		{{#with albums[0] }}
 			{{>rating}}
 
-			<span bind="title" class="album_name link" title="{{ title }}">
+			<div bind="title" class="album_name link" title="{{ title }}">
 				{{ title }}
-			</span>
+			</div>
 		{{/with}}
 
 		<div class="artist">
 			{{#each artists }}
-				<a href="#!/artist/{{ id }}/hello/{{name}}/lburgh">
+				<a href="#!/artist/{{ id }}">
 					{{ name }}
 				</a>
 			{{/each}}
 		</div>
 
 		{{#if url }}
-			<a href="{{ url }}" target="_blank">
+			<a class="song_link" href="{{ url }}" target="_blank">
 				{{ link_text }}
 			</a>
 		{{/if}}

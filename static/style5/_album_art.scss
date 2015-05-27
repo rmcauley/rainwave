@@ -1,0 +1,53 @@
+div.art_container {
+	position: absolute;
+	z-index: 1;
+	text-align: center;
+	border-color: #222;
+	border-width: 0px;
+	border-style: solid;
+	background-color: transparent;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	width: $art_thumbnail_size;
+	height: $art_thumbnail_size;
+	@include transition-wtime(300ms, width, height, border-width, background-color, transform);
+
+	&:hover {
+		z-index: 3;
+		background-color: #000;
+	}
+
+	&.art_expandable {
+		cursor: pointer;
+
+		&:hover {
+			border-width: 2px;
+			width: $art_thumbnail_hover_size;
+			height: $art_thumbnail_hover_size;
+			box-shadow: 3px 3px 5px #000;
+		}
+
+		&.art_expanded, &.art_expanded:hover {
+			width: $art_full_size;
+			height: $art_full_size;
+			box-shadow: 5px 5px 10px #000;
+		}
+
+		&.art_expand_left.art_expand_up {
+			@include transform(translate(-250px, -250px) !important);
+		}
+
+		&.art_expand_left.art_expand_down {
+			@include transform(translate(-250px, 0) !important);
+		}
+
+		&.art_expand_right.art_expand_up {
+			@include transform(translate(0, -250px) !important);
+		}
+
+		&.art_expand_right.art_expand_down {
+			@include transform(translate(0, 0));
+		}
+	}
+}
