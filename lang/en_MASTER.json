@@ -142,7 +142,7 @@
    "redownload_m3u"                                  : "Are you tuning in?  If you just logged in and are using an external app to listen, please redownload the MP3 or Ogg M3U.",
    "sync_stopped"                                    : "Rainwave has stopped working.  Please refresh and try again.",
    "lost_connection"                                 : "Lost connection to Rainwave.",
-   "sync_retrying"                                   : "Having trouble talking with the Rainwave, please wait...",
+   "sync_retrying"                                   : "Having trouble talking with Rainwave, please wait...",
    "mobile_sync_retrying"                            : "Connection issues, please refresh or try later.",
    "async_error"                                     : "Error talking to Rainwave.  Please try again or refresh.",
    "deeplink_error"                                  : "Sorry, we couldn't understand the URL you tried to open.",
