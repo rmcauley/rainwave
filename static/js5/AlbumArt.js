@@ -13,16 +13,16 @@ var AlbumArt = function() {
 
 		tgt.classList.add("art_expanded");
 		if ((x < (Sizing.width() - 270))) {
-			$add_class(tgt, "art_expand_right");
+			tgt.classList.add("art_expand_right");
 		}
 		else {
-			$add_class(tgt, "art_expand_left");
+			tgt.classList.add("art_expand_left");
 		}
 		if ((y < (Sizing.height() - 270))) {
-			$add_class(tgt, "art_expand_down");
+			tgt.classList.add("art_expand_down");
 		}
 		else {
-			$add_class(tgt, "art_expand_up");
+			tgt.classList.add("art_expand_up");
 		}
 
 		if (("_album_art" in tgt) && tgt._album_art) {
@@ -36,7 +36,7 @@ var AlbumArt = function() {
 	};
 
 	var normalize_art = function(e) {
-		// This used to be zIndex = 2 for reasonsnope
+		// This used to be zIndex = 2 for reasons
 		e.target.style.zIndex = null;
 		e.target.classList.remove("art_expanded");
 		e.target.classList.remove("art_expand_right");
@@ -48,7 +48,6 @@ var AlbumArt = function() {
 	};
 
 	return function(art_url, element) {
-		var img, ac;
 		if (!art_url || (art_url.length === 0)) {
 			element.style.backgroundImage = "url(/static/images4/noart_1.jpg)";
 		}

@@ -1,5 +1,5 @@
 <div bind="root" class="song">
-	<div bind="art_anchor" class="art_anchor">
+	<div class="art_anchor">
 		<div bind="art" class="art_container"></div>
 	</div>
 

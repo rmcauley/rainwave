@@ -90,6 +90,14 @@ a, a:visited, .link {
 	color: $text !important;
 	@include transition(LINKCOLOR);
 
+	&.obvious {
+		color: $link !important;
+
+		&:hover {
+			color: $linkhover !important;
+		}
+	}
+
 	&:hover {
 		color: $linkhover !important;
 	}
