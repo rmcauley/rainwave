@@ -88,7 +88,7 @@ var ViewManager = function() {
 		self.visible_view = view;
 		view.visible = true;
 		if (self.view_container) {
-			el.appendChild(view.el);
+			view.el.appendChild(view.el);
 		}
 		if (view.onopen) {
 			view.onopen();

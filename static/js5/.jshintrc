@@ -1,10 +1,13 @@
 {
   "globals": {
+    "Notification": true,
+
     "$el": true,
     "console": true,
     "docCookies": true,
     "gettext": true,
     "interpolate": true,
+    "MOBILE": true,
     "performance": true,
     "pgettext": true,
     "requestAnimationFrame": true,
