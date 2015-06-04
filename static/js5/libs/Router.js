@@ -25,7 +25,8 @@ var Router = function() {
 	};
 
 	self.get_current_url = function() {
-		if (self.has_deep_link()) {
+		var deeplinkurl = self.has_deep_link();
+		if (deeplinkurl) {
 			return deeplinkurl.substring(deeplinkurl.indexOf("#!/") + 3);
 		}
 		return null;

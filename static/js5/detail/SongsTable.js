@@ -12,7 +12,7 @@ var SongsTable = function(songs, columns, no_sort) {
 	if (!no_sort) songs.sort(SongsTableSorting);
 	var el = $el("table", { "class": "songlist" });
 
-	var row, cell, cell2, cell3, r, i, div, div2, link, title_el, title_cell;
+	var row, cell, cell2, cell3, r, i, div, link, title_el, title_cell;
 	for (i = 0; i < songs.length; i++) {
 		row = $el("tr");
 		if (("cool" in songs[i]) && songs[i].cool) {
@@ -59,7 +59,6 @@ var SongsTable = function(songs, columns, no_sort) {
 				cell = row.appendChild($el("td", { "class": "songlist_" + columns[key] }));
 				div = $el("div", { "class": "songlist_" + columns[key] + "_text" });
 				Artists.append_spans_from_json(div, JSON.parse(songs[i].artist_parseable));
-				//Formatting.add_overflow_tooltip(div);
 				cell.appendChild(div);
 			}
 			else if (columns[key] in songs[i]) {
@@ -68,7 +67,6 @@ var SongsTable = function(songs, columns, no_sort) {
 					div = $el("div", { "class": "songlist_" + columns[key] + "_text", "textContent": songs[i][columns[key]] });
 					title_el = div;
 					title_cell = cell;
-					//Formatting.add_overflow_tooltip(div);
 					cell.appendChild(div);
 				}
 				else if (columns[key] == "rating") {

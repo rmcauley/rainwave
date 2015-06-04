@@ -24,7 +24,7 @@ var Scrollbar = function() {
 			return { "el": scrollable, "set_height": function(){} };
 		}
 
-		scrollblock = document.createElement("div");
+		var scrollblock = document.createElement("div");
 		scrollblock.setAttribute("class", scrollable.className + " scrollblock");
 		scrollable.className = "scrollable";
 
@@ -32,7 +32,7 @@ var Scrollbar = function() {
 			scrollable.parentNode.replaceChild(scrollblock, scrollable);
 		}
 		scrollblock.appendChild(scrollable);
-		
+
 		var stretcher = document.createElement("div");
 		stretcher.className = "stretcher";
 		scrollable.appendChild(stretcher);

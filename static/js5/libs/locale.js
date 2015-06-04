@@ -118,7 +118,7 @@ var $l = function() {
 		}
 		return text;
 
-	}
+	};
 }();
 
 var $l_has = function(key) {

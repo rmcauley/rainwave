@@ -78,7 +78,7 @@ var ViewManager = function() {
 
 	self.open_view = function(view) {
 		if (self.visible_view) {
-			close_window(self.visible_view);
+			close_view(self.visible_view);
 		}
 
 		if (!view.loaded) {
