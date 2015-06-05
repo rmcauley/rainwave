@@ -6,4 +6,19 @@
 
 <div bind="sizeable_area" class="sizeable">
 	<div bind="timeline"></div>
+	<div class="tabs">
+		<span bind="album_tab">{{ $l("Albums") }}</span>
+		<span bind="artist_tab">{{ $l("Artists") }}</span>
+		<span bind="group_tab">{{ $l("groups_tab_title") }}</span>
+		<span bind="listener_tab">{{ $l("Listeners") }}</span>
+		<span bind="request_tab">{{ $l("Requests") }}</span>
+	</div>
+	<div bind="content" class="content">
+		<div bind="album_list" class="album_list"></div>
+		<div bind="artist_list" class="artist_list"></div>
+		<div bind="group_list" class="group_list"></div>
+		<div bind="listener_list" class="listener_list"></div>
+		<div bind="requests" class="requests"></div>
+		<div bind="detail" class="detail"></div>
+	</div>
 </div>
