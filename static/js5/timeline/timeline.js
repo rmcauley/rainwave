@@ -7,9 +7,6 @@ var Timeline = function() {
 	var sched_current;
 	var sched_next;
 	var sched_history;
-	self.song_size_np = Prefs.get("adv") ? 220 : 120;
-	self.song_size = Prefs.get("adv") ? 140 : 80;
-	self.header_size = 20;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		Prefs.define("sticky_history", [ false, true ]);
@@ -43,6 +40,8 @@ var Timeline = function() {
 		);
 
 		el = template.timeline;
+
+		Sizing.add_resize_callback(self.reflow);
 	});
 
 	self.update = function() {
@@ -58,12 +57,20 @@ var Timeline = function() {
 			sched_history[i] = find_and_update_event(sched_history[i]);
 			sched_history[i].change_to_history();
 			sched_history[i].hide_header();
+			if (sched_history[i].el.parentNode != template.timeline) {
+				sched_history[i].el.style[Fx.transform] = "translateY(" + (-((i * 2 + 1) * Sizing.song_size)) + "px)";
+			}
 			new_events.push(sched_history[i]);
 		}
 
+		var unappended_events = 0;
 		sched_current = find_and_update_event(sched_current);
 		sched_current.change_to_now_playing();
 		sched_current.show_header();
+		if (sched_current.el.parentNode != template.timeline) {
+			sched_current.el.style[Fx.transform] = "translateY(" + (Sizing.height() + (unappended_events * 2 * Sizing.song_size)) + "px)";
+			unappended_events++;
+		}
 		new_events.push(sched_current);
 
 		var previous_evt;
@@ -76,13 +83,17 @@ var Timeline = function() {
 				sched_next[i].show_header();
 			}
 			sched_next[i].change_to_coming_up();
+			if (sched_next[i].el.parentNode != template.timeline) {
+				sched_next[i].el.style[Fx.transform] = "translateY(" + (Sizing.height() + (unappended_events * 2 * Sizing.song_size)) + "px)";
+				unappended_events++;
+			}
 			new_events.push(sched_next[i]);
 			previous_evt = sched_next[i];
 		}
 
 		for (i = 0; i < events.length; i++) {
 			if (events[i]._pending_delete) {
-				events[i].style[Fx.transform] = "translateY(-" + self.song_size + "px)";
+				events[i].style[Fx.transform] = "translateY(-" + (get_history_size() * self.song_size) + "px)";
 				Fx.remove_element(events[i].el);
 			}
 		}
@@ -121,9 +132,12 @@ var Timeline = function() {
 		}
 	};
 
-	self.reflow = function() {
-		var i;
-		var running_y = 20;
+	var get_history_size = function() {
+		return Prefs.get("sticky_history") ? sched_history.length: Prefs.get("sticky_history_size") || 0;
+	};
+
+	var _reflow = function() {
+		if (!events.length) return;
 
 		var history_size = Prefs.get("sticky_history") ? sched_history.length: Prefs.get("sticky_history_size") || 0;
 		if (history_size == sched_history.length) {
@@ -133,15 +147,25 @@ var Timeline = function() {
 			template.history_header.classList.add("history_expandable");
 		}
 
-		for (var i = 0; i < events.length; i++) {
+		var hidden_events = sched_history.length - history_size;
+		for (var i = 0; i < hidden_events; i++) {
+			events[i].el.style.transform = "translateY(" + (-(((hidden_events - i - 1) * 2 + 1) * Sizing.song_size)) + "px)";
+		}
+
+		var running_y = 40;
+		for (i = 0; i < events.length; i++) {
 			events[i].el.style.transform = "translateY(" + running_y + "px)";
 			running_y += events[i].height;
 		}
 	};
 
+	self.reflow = function() {
+		requestAnimationFrame(_reflow);
+	};
+
 	self.handle_already_voted = function(json) {
 		if (!events) return;
-		for (i = 0; i < json.length; i++) {
+		for (var i = 0; i < json.length; i++) {
 			self.register_vote(json[i][0], json[i][1]);
 		}
 	};
@@ -161,8 +185,8 @@ var Timeline = function() {
 	};
 
 	self.rate_current_song = function(new_rating) {
-		if (current_event.songs[0].data.rating_allowed) {
-			current_event.songs[0].rate(new_rating);
+		if (sched_current.songs[0].data.rating_allowed) {
+			sched_current.songs[0].rate(new_rating);
 		}
 		else {
 			throw({ "is_rw": true, "tl_key": "cannot_rate_now" });
@@ -199,8 +223,8 @@ var Timeline = function() {
 	};
 
 	self.get_current_song_rating = function() {
-		if (current_event && current_event.songs && (current_event.songs.length > 0)) {
-			return current_event.songs[0].song_rating.rating_user;
+		if (sched_current && sched_current.songs && (sched_current.songs.length > 0)) {
+			return sched_current.songs[0].song_rating.rating_user;
 		}
 		return null;
 	};

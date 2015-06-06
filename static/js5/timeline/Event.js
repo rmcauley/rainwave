@@ -14,7 +14,7 @@ var Event = function(self) {
 	for (var i = 0; i < self.songs.length; i++) {
 		self.songs[i] = Song(self.songs[i]);
 		self.songs[i].el.style[Fx.transform] = "translateY(" + running_height + "px)";
-		running_height += Timeline.song_size;
+		running_height += Sizing.song_size;
 	}
 
 	self.update = function(json) {
@@ -42,8 +42,8 @@ var Event = function(self) {
 		self.$t.el.classList.add("sched_next");
 		self.check_voting();
 		self.set_header_text($l("coming_up"));
-		self.height = (self.songs.length * Timeline.song_size);
-		if (showing_header) self.height += Timeline.header_size;
+		self.height = (self.songs.length * Sizing.song_size);
+		if (showing_header) self.height += Sizing.timeline_header_size;
 	};
 
 	self.change_to_now_playing = function() {
@@ -59,17 +59,17 @@ var Event = function(self) {
 		}
 		self.check_voting();
 		self.set_header_text($l("now_playing"));
-		self.height = ((self.songs.length - 1) * Timeline.song_size) + Timeline.song_size_np;
-		if (showing_header) self.height += Timeline.header_size;
+		self.height = ((self.songs.length - 1) * Sizing.song_size) + Sizing.song_size_np;
+		if (showing_header) self.height += Sizing.timeline_header_size;
 
 		var running_height = 0;
 		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].el.style[Fx.transform] = "translateY(" + running_height + "px)";
 			if (i) {
-				running_height += Timeline.song_size;
+				running_height += Sizing.song_size;
 			}
 			else {
-				running_height += Timeline.song_size_np;
+				running_height += Sizing.song_size_np;
 			}
 		}
 	};
@@ -80,8 +80,7 @@ var Event = function(self) {
 		self.$t.el.classList.add("sched_history");
 		self.songs.sort(function(a, b) { return a.entry_position < b.entry_position ? -1 : 1; });
 		self.check_voting();
-		self.height = (self.songs.length * Timeline.song_size);
-		if (showing_header) self.height += Timeline.header_size;
+		self.height = Sizing.song_size;;
 	};
 
 	self.check_voting = function() {

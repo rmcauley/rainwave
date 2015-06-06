@@ -29,3 +29,7 @@ div.history_header {
 		@include transform(rotate(180deg));
 	}
 }
+
+div.timeline_event {
+	@include transition(transform, opacity);
+}
