@@ -76,6 +76,7 @@ class RainwaveParser(HTMLParser):
 	tree_names = [ ]
 	buffr = None
 	name = None
+	html_buffer = ""
 
 	def parse_context_key(self, context_key):
 		if context_key[0:6] == "@root.":
@@ -148,6 +149,8 @@ class RainwaveParser(HTMLParser):
 		return self.buffr
 
 	def handle_starttag(self, tag, attrs):
+		self.handle_data(None)
+
 		uid = _get_id()
 
 		if tag == "svg":
@@ -178,6 +181,7 @@ class RainwaveParser(HTMLParser):
 			self.buffr += "%s.a(%s);" % (self.tree[-1], uid)
 
 	def handle_endtag(self, tag):
+		self.handle_data(None)
 		try:
 			self.tree.pop()
 			self.tree_names.pop()
@@ -185,22 +189,28 @@ class RainwaveParser(HTMLParser):
 			raise Exception("%s has too many closing tags." % self.name)
 
 	def handle_data(self, lines):
-		if not lines:
+		if lines:
+			self.html_buffer += lines
 			return
-		for line in re.split(r"({{.*?}})", lines):
-			data = line.strip()
-			if not data or len(data) == 0:
-				pass
-			elif data[:3] == "{{>" and data[-2:] == "}}":
-				self.handle_subtemplate(data[3:-2])
-			elif data[:3] == "{{#" and data[-2:] == "}}":
-				self.handle_stack_push(data[3:-2])
-			elif data[:3] == "{{/" and data[-2:] == "}}":
-				self.handle_stack_pop(data[3:-2])
-			elif not len(self.tree):
-				raise Exception("%s: Tried to set textContent of root element.  Put text in an element. (\"%s\")" % (self.name, data))
-			else:
-				self.buffr += "%s.textContent+=%s;" % (self.tree[-1], self._parse_val(data))
+		self.html_buffer = self.html_buffer.strip()
+		if not self.html_buffer or not len(self.html_buffer):
+			return
+		for line in self.html_buffer.split("\n"):
+			for data in re.split(r"({{.*?}})", line):
+				data = data.strip()
+				if not data or len(data) == 0:
+					pass
+				elif data[:3] == "{{>" and data[-2:] == "}}":
+					self.handle_subtemplate(data[3:-2])
+				elif data[:3] == "{{#" and data[-2:] == "}}":
+					self.handle_stack_push(data[3:-2])
+				elif data[:3] == "{{/" and data[-2:] == "}}":
+					self.handle_stack_pop(data[3:-2])
+				elif not len(self.tree):
+					raise Exception("%s: Tried to set textContent of root element.  Put text in an element. (\"%s\")" % (self.name, data))
+				else:
+					self.buffr += "%s.textContent+=%s;" % (self.tree[-1], self._parse_val(data))
+		self.html_buffer = ""
 
 	def handle_stack_push(self, data):
 		args = data.strip().split(' ', 1)
