@@ -36,6 +36,16 @@ div.song {
 		}
 	}
 
+	div.artist {
+		span + a {
+			margin-left: 5px;
+		}
+
+		span:last-child {
+			display: none;
+		}
+	}
+
 	div.timeline & {
 		background-image: url(/static/images4/vote_hover.png);
 		background-position: -678px 0px;
@@ -96,12 +106,6 @@ div.song {
 	div.your_request {
 		div.requester, div.request_indicator {
 			background: #18a485;
-		}
-	}
-
-	div.artist {
-		a + a::before {
-			content: ", ";
 		}
 	}
 }

@@ -25,6 +25,7 @@
 				<a href="#!/artist/{{ id }}">
 					{{ name }}
 				</a>
+				<span>,</span>
 			{{/each}}
 		</div>
 
