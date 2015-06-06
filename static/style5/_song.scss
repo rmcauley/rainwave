@@ -98,5 +98,11 @@ div.song {
 			background: #18a485;
 		}
 	}
+
+	div.artist {
+		a + a::before {
+			content: ", ";
+		}
+	}
 }
 
