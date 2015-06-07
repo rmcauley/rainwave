@@ -37,13 +37,13 @@ div.art_container {
 		}
 
 		&.art_expanded, &.art_expanded:hover {
-			width: $art_full_size;
-			height: $art_full_size;
+			width: $art_full_size !important;
+			height: $art_full_size !important;
 			box-shadow: 5px 5px 10px #000;
 		}
 
 		&.art_expand_left.art_expand_up {
-			@include transform(translate(-250px, -250px) !important);
+			@include transform(translate(-200px, -200px) !important);
 		}
 
 		&.art_expand_left.art_expand_down {
@@ -51,7 +51,7 @@ div.art_container {
 		}
 
 		&.art_expand_right.art_expand_up {
-			@include transform(translate(0, -250px) !important);
+			@include transform(translate(0, -200px) !important);
 		}
 
 		&.art_expand_right.art_expand_down {

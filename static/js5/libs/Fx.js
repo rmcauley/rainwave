@@ -68,15 +68,16 @@ var Fx = function() {
 	};
 
 	self.remove_element = function(el) {
-		var check = getComputedStyle(el);
-		if (!check.getPropertyValue("transition-property") || (check.getPropertyValue("transition-property").indexOf("opacity") == -1)) {
-			el.style.transition = "1s opacity";
+		if (document.body.classList.contains("loading")) {
+			if (el.parentNode) el.parentNode.removeChild(el);
 		}
-		self.chain_transition_css(el, "opacity", 0,
-			function() {
-				if (el.parentNode) el.parentNode.removeChild(el);
-			}
-		);
+		else {
+			self.chain_transition_css(el, "opacity", 0,
+				function() {
+					if (el.parentNode) el.parentNode.removeChild(el);
+				}
+			);
+		}
 	};
 
 	return self;

@@ -68,6 +68,8 @@ var User;
 
 		API.initialize(BOOTSTRAP.sid, "/api4/", BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
 
+		document.body.classList.remove("loading");
+
 		// DeepLinker.detect_url_change();
 
 		if (document.ontouchstart === null) {

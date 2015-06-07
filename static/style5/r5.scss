@@ -87,7 +87,7 @@ div.measure_box {
 a, a:visited, .link {
 	cursor: pointer;
 	text-decoration: none;
-	color: $text !important;
+	color: $text;
 	@include transition(LINKCOLOR);
 
 	&.obvious {
@@ -132,7 +132,8 @@ a, a:visited, .link {
 @import "menu";
 
 @import "timeline";
+@import "timeline_simple";
 
+@import "album_art";
 @import "song";
 @import "rating";
-@import "album_art";

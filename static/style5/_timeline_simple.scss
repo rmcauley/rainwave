@@ -1,0 +1,56 @@
+$simple_art_size: 100px;
+$simple_np_size: 140px;
+
+body.simple div.timeline {
+	div.timeline_event {
+		&.sched_history {
+			height: $simple_art_size;
+		}
+		
+		&.sched_current {
+			height: $simple_art_size + $simple_art_size + $simple_np_size + 30;
+		}
+
+		&.sched_next {
+			height: ($simple_art_size * 3) + 30;
+		}
+	}
+
+	div.song {
+		height: $simple_art_size;
+
+		div.art_anchor {
+			width: $simple_art_size;
+			height: $simple_art_size;
+		}
+
+		div.art_container {
+			width: $simple_art_size;
+			height: $simple_art_size;
+
+			&.art_expandable:hover {
+				width: $simple_art_size * 1.20;
+				height: $simple_art_size * 1.20;
+			}
+		}
+
+		&.now_playing {
+			height: $simple_np_size;
+
+			div.art_anchor {
+				width: $simple_np_size;
+				height: $simple_np_size;
+			}
+
+			div.art_container {
+				width: $simple_np_size;
+				height: $simple_np_size;
+
+				&.art_expandable:hover {
+					width: $simple_np_size * 1.20;
+					height: $simple_np_size * 1.20;
+				}
+			}
+		}
+	}
+}

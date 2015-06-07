@@ -62,6 +62,7 @@ var Event = function(self) {
 			// make sure we sort properly for that condition here
 			self.songs.sort(function(a, b) { return a.entry_position < b.entry_position ? -1 : 1; });
 		}
+		self.songs[0].el.classList.add("now_playing");
 		self.check_voting();
 		self.set_header_text($l("now_playing"));
 		self.height = ((self.songs.length - 1) * Sizing.song_size) + Sizing.song_size_np;
@@ -85,8 +86,10 @@ var Event = function(self) {
 		self.$t.el.classList.remove("sched_next");
 		self.$t.el.classList.add("sched_history");
 		self.songs.sort(function(a, b) { return a.entry_position < b.entry_position ? -1 : 1; });
+		self.songs[0].el.classList.remove("now_playing");
 		for (var i = 1; i < self.songs.length; i++) {
 			self.songs[i].el.classList.add("song_lost");
+			Fx.remove_element(self.songs[i].el);
 		}
 		reflow();
 		self.check_voting();

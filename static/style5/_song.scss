@@ -1,22 +1,37 @@
 div.song {
 	position: absolute;
 	cursor: default;
-	-webkit-transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
-	-ms-transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
-	transition: opacity $transtime, background-color $transtime, transform $transtime, background-position 300ms ease-out;
+	-webkit-transition: opacity $transtime, background-color 250ms $transfunc, border 250ms $transfunc, transform $transtime, background-position 300ms linear;
+	        transition: opacity $transtime, background-color 250ms $transfunc, border 250ms $transfunc, transform $transtime, background-position 300ms linear;
 	height: $art_thumbnail_size;
 	width: 100%;
+
+	&.song_lost {
+		opacity: 0.6;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	div.title {
+		margin-top: 5px;
+	}
 
 	div.title, div.album, div.artist, div.cooldown_info, a.song_link {
 		text-overflow: ellipsis;
 		overflow: hidden;
 		white-space: nowrap;
-		height: $rating_height + 1;
+		min-height: $rating_height + 1;
 	}
 
 	div.album, div.artist, div.cooldown_info, a.song_link {
 		padding-left: 15px;
 		color: $darktext;
+
+		a {
+			color: $darktext;
+		}
 	}
 
 	a.song_link {
@@ -51,13 +66,15 @@ div.song {
 		background-position: -678px 0px;
 		background-repeat: no-repeat;
 
-		span.album_name, div.artist a {
-			@include transition-wtime(250ms, color, background-color, padding);
+		&.voting_enabled {
+			a {
+				@include transition-wtime(250ms, color, background-color, padding);
 
-			&:hover {
-				background-color: #264499;
-				padding: 0 10px;
-				color: $linkhover;
+				&:hover {
+					background-color: #264499;
+					padding: 0 10px;
+					color: $linkhover;
+				}
 			}
 		}
 	}

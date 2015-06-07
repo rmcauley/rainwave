@@ -92,7 +92,7 @@ var Song = function(self, event) {
 
 	self.disable_voting = function() {
 		voting_enabled = false;
-		self.el.classList.add("voting_enabled");
+		self.el.classList.remove("voting_enabled");
 	};
 
 	self.clear_voting_status = function() {

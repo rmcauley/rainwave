@@ -57,7 +57,7 @@ var Sizing = function() {
 		}
 
 		self.song_size_np = self.simple ? 140 : 100;
-		self.song_size = self.simple ? 100 : 80;
+		self.song_size = self.simple ? 100 : 70;
 		self.timeline_header_size = self.simple ? 30 : 20;
 
 		for (i = 0; i < window_callbacks.length; i++) {

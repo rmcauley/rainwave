@@ -15,8 +15,8 @@
 		{{#with albums[0] }}
 			{{>rating}}
 
-			<div bind="title" class="album_name link" title="{{ name }}">
-				{{ name }}
+			<div bind="title" class="album" title="{{ name }}">
+				<a href="#!/album/{{ id }}">{{ name }}</a>
 			</div>
 		{{/with}}
 
