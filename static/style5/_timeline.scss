@@ -33,3 +33,7 @@ div.history_header {
 div.timeline_event {
 	@include transition(transform, opacity);
 }
+
+div.sched_history div.song_lost {
+	opacity: 0;
+}

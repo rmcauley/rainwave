@@ -58,7 +58,7 @@ var Timeline = function() {
 			sched_history[i].change_to_history();
 			sched_history[i].hide_header();
 			if (sched_history[i].el.parentNode != template.timeline) {
-				sched_history[i].el.style[Fx.transform] = "translateY(" + (-((i * 2 + 1) * Sizing.song_size)) + "px)";
+				sched_history[i].el.style[Fx.transform] = "translateY(" + (-((i * 5 + 1) * Sizing.song_size)) + "px)";
 			}
 			new_events.push(sched_history[i]);
 		}
@@ -136,7 +136,7 @@ var Timeline = function() {
 		return Prefs.get("sticky_history") ? sched_history.length: Prefs.get("sticky_history_size") || 0;
 	};
 
-	var _reflow = function() {
+	self._reflow = function(raftime, test) {
 		if (!events.length) return;
 
 		var history_size = Prefs.get("sticky_history") ? sched_history.length: Prefs.get("sticky_history_size") || 0;
@@ -147,20 +147,20 @@ var Timeline = function() {
 			template.history_header.classList.add("history_expandable");
 		}
 
-		var hidden_events = sched_history.length - history_size;
-		for (var i = 0; i < hidden_events; i++) {
-			events[i].el.style.transform = "translateY(" + (-(((hidden_events - i - 1) * 2 + 1) * Sizing.song_size)) + "px)";
+		var hidden_events = Math.min(sched_history.length, Math.max(0, test || sched_history.length - history_size));
+		for (var i = 0; i < hidden_events && i < sched_history.length; i++) {
+			events[i].el.style.transform = "translateY(" + (-(((hidden_events - i - 1) * 5 + 1) * Sizing.song_size)) + "px)";
 		}
 
 		var running_y = 40;
-		for (i = 0; i < events.length; i++) {
+		for (i = hidden_events; i < events.length; i++) {
 			events[i].el.style.transform = "translateY(" + running_y + "px)";
 			running_y += events[i].height;
 		}
 	};
 
 	self.reflow = function() {
-		requestAnimationFrame(_reflow);
+		requestAnimationFrame(self._reflow);
 	};
 
 	self.handle_already_voted = function(json) {

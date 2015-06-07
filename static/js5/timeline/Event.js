@@ -9,13 +9,18 @@ var Event = function(self) {
 	self.height = 0;
 	RWTemplates.timeline.event(self);
 	self.el = self.$t.el;
-
-	var running_height = 0;
 	for (var i = 0; i < self.songs.length; i++) {
 		self.songs[i] = Song(self.songs[i]);
-		self.songs[i].el.style[Fx.transform] = "translateY(" + running_height + "px)";
-		running_height += Sizing.song_size;
 	}
+
+	var reflow = function() {
+		var running_height = 0;
+		for (var i = 0; i < self.songs.length; i++) {
+			self.songs[i].el.style[Fx.transform] = "translateY(" + running_height + "px)";
+			running_height += Sizing.song_size;
+		}
+	};
+	reflow();
 
 	self.update = function(json) {
 		for (var i in json) {
@@ -63,10 +68,11 @@ var Event = function(self) {
 		if (showing_header) self.height += Sizing.timeline_header_size;
 
 		var running_height = 0;
-		for (var i = 0; i < self.songs.length; i++) {
+		for (i = 0; i < self.songs.length; i++) {
 			self.songs[i].el.style[Fx.transform] = "translateY(" + running_height + "px)";
 			if (i) {
 				running_height += Sizing.song_size;
+				self.songs[i].el.classList.add("song_lost");
 			}
 			else {
 				running_height += Sizing.song_size_np;
@@ -79,8 +85,12 @@ var Event = function(self) {
 		self.$t.el.classList.remove("sched_next");
 		self.$t.el.classList.add("sched_history");
 		self.songs.sort(function(a, b) { return a.entry_position < b.entry_position ? -1 : 1; });
+		for (var i = 1; i < self.songs.length; i++) {
+			self.songs[i].el.classList.add("song_lost");
+		}
+		reflow();
 		self.check_voting();
-		self.height = Sizing.song_size;;
+		self.height = Sizing.song_size;
 	};
 
 	self.check_voting = function() {
