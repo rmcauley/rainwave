@@ -102,6 +102,7 @@ class Bootstrap(api.web.APIHandler):
 		"If you run a GET query to this URL, you will receive a Javascript file containing a single variable called BOOTSTRAP.  While this is largely intended for the purposes of the main site, you may use this.  "
 		"If you run a POST query to this URL, you will receive a JSON object."
 	)
+	phpbb_auth = True
 	auth_required = False
 	login_required = False
 	sid_required = False
