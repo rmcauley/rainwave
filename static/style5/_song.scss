@@ -1,8 +1,10 @@
+$song_transitions: opacity $transtime, transform $transtime, background-position 300ms linear;
+
 div.song {
 	position: absolute;
 	cursor: default;
-	-webkit-transition: opacity $transtime, background-color 250ms $transfunc, border 250ms $transfunc, transform $transtime, background-position 300ms linear;
-	        transition: opacity $transtime, background-color 250ms $transfunc, border 250ms $transfunc, transform $transtime, background-position 300ms linear;
+	-webkit-transition: $song_transitions, border-color $transtime, background-color $transtime;
+	        transition: $song_transitions, border-color $transtime, background-color $transtime;
 	height: $art_thumbnail_size;
 	width: 100%;
 
@@ -65,8 +67,18 @@ div.song {
 		background-image: url(/static/images4/vote_hover.png);
 		background-position: -678px 0px;
 		background-repeat: no-repeat;
+		border: 1px solid transparent;
 
 		&.voting_enabled {
+			cursor: pointer;
+
+			&:hover {
+				border-color: #264499;
+				background-color: #192D67;
+				-webkit-transition: $song_transitions;
+	        	        transition: $song_transitions;
+			}
+
 			a {
 				@include transition-wtime(250ms, color, background-color, padding);
 
