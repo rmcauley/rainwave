@@ -232,7 +232,7 @@ def connect():
 	global c
 
 	if c:
-		close()
+		return True
 
 	dbtype = config.get("db_type")
 	name = config.get("db_name")
@@ -272,10 +272,13 @@ def close():
 
 	if c:
 		# forgot to commit?  too bad.
+		log.critical("txopen", "Forgot to close a transaction!  Rolling back!")
 		c.rollback()
 		c.close()
 	if connection:
 		connection.close()
+	c = None
+	connection = None
 
 	return True
 
