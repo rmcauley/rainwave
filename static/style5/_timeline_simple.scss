@@ -1,12 +1,9 @@
-$simple_art_size: 100px;
-$simple_np_size: 140px;
-
 body.simple div.timeline {
 	div.timeline_event {
 		&.sched_history {
 			height: $simple_art_size;
 		}
-		
+
 		&.sched_current {
 			height: $simple_art_size + $simple_art_size + $simple_np_size + 30;
 		}

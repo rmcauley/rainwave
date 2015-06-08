@@ -1,8 +1,8 @@
 div.art_anchor {
 	position: relative;
 	float: left;
-	width: $art_thumbnail_size;
-	height: $art_thumbnail_size;
+	width: $art_size;
+	height: $art_size;
 	margin-right: 10px;
 }
 
@@ -17,8 +17,8 @@ div.art_container {
 	background-position: center center;
 	background-repeat: no-repeat;
 	background-size: contain;
-	width: $art_thumbnail_size;
-	height: $art_thumbnail_size;
+	width: $art_size;
+	height: $art_size;
 	@include transition-wtime(300ms, width, height, border-width, background-color, transform);
 
 	&:hover {
@@ -31,15 +31,15 @@ div.art_container {
 
 		&:hover {
 			border-width: 2px;
-			width: $art_thumbnail_hover_size;
-			height: $art_thumbnail_hover_size;
+			width: $art_hover_size;
+			height: $art_hover_size;
 			box-shadow: 3px 3px 5px #000;
 		}
 
 		&.art_expanded, &.art_expanded:hover {
 			width: $art_full_size !important;
 			height: $art_full_size !important;
-			box-shadow: 5px 5px 10px #000;
+			box-shadow: 3px 3px 5px #000;
 		}
 
 		&.art_expand_left.art_expand_up {
