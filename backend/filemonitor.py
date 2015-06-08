@@ -235,15 +235,11 @@ def _process_album_art(filename, sids):
 		album_ids = db.c.fetch_list("SELECT DISTINCT album_id FROM r4_songs WHERE song_filename LIKE %s || '%%'", (directory,))
 		if not album_ids or len(album_ids) == 0:
 			return
-		try:
-			im_original = Image.open(filename)
-		except IOError:
-			_add_scan_error(filename, PassableScanError("Could not open album art. (deleted file?)"))
+		im_original = Image.open(filename)
+		if not im_original:
+			raise IOError
 		if im_original.mode != "RGB":
 			im_original = im_original.convert()
-		if not im_original:
-			_add_scan_error(filename, PassableScanError("Could not open album art. (bad image?)"))
-			return
 		im_320 = im_original
 		im_240 = im_original
 		im_120 = im_original
@@ -263,7 +259,11 @@ def _process_album_art(filename, sids):
 			im_120.save("%s%sa_%s_120.jpg" % (config.get("album_art_file_path"), os.sep, album_id))
 			im_240.save("%s%sa_%s_240.jpg" % (config.get("album_art_file_path"), os.sep, album_id))
 			im_320.save("%s%sa_%s_320.jpg" % (config.get("album_art_file_path"), os.sep, album_id))
+		log.debug("album_art", "Scanned %s for album ID %s." % (filename, album_ids))
 		return True
+	except IOError:
+		_add_scan_error(filename, PassableScanError("Could not open album art. (deleted file? bad image?)"))
+		return False
 	except Exception as e:
 		_add_scan_error(filename, e)
 		return False
@@ -315,21 +315,27 @@ class FileEventHandler(watchdog.events.FileSystemEventHandler):
 			if hasattr(event, "src_path") and event.src_path and check_file_is_in_directory(event.src_path, self.root_directory):
 				if _is_bad_extension(event.src_path):
 					pass
-				elif not os.path.isdir(event.src_path) and not event.event_type == 'deleted':
-					log.debug("scan_event", "%s for file %s" % (event.event_type, event.src_path))
-					self._handle_file(event.src_path)
+				elif not os.path.isdir(event.src_path):
+					log.debug("scan_event", "%s src_path for file %s" % (event.event_type, event.src_path))
+					if _is_image(event.src_path) and (event.event_type == 'deleted' or event.event_type == 'moved'):
+						pass
+					else:
+						self._handle_file(event.src_path)
 				else:
-					log.debug("scan_event", "%s for dir %s" % (event.event_type, event.src_path))
+					log.debug("scan_event", "%s src_path for dir %s" % (event.event_type, event.src_path))
 					self._handle_directory(event.src_path)
 
 			if hasattr(event, "dest_path") and event.dest_path and check_file_is_in_directory(event.dest_path, self.root_directory):
 				if _is_bad_extension(event.dest_path):
 					pass
-				elif not os.path.isdir(event.dest_path) and not event.event_type == 'deleted':
-					log.debug("scan_event", "%s for file %s" % (event.event_type, event.dest_path))
-					self._handle_file(event.dest_path)
+				elif not os.path.isdir(event.dest_path):
+					log.debug("scan_event", "%s dest_path for file %s" % (event.event_type, event.dest_path))
+					if _is_image(event.dest_path) and (event.event_type == 'deleted'):
+						pass
+					else:
+						self._handle_file(event.dest_path)
 				else:
-					log.debug("scan_event", "%s for dir %s" % (event.event_type, event.dest_path))
+					log.debug("scan_event", "%s dest_path for dir %s" % (event.event_type, event.dest_path))
 					self._handle_directory(event.dest_path)
 		except Exception as xception:
 			_add_scan_error(self.root_directory, xception)
