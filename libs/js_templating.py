@@ -2,17 +2,28 @@
 #
 # Rainwave Templating System
 #
-# This is a very simple templating system that will output
-# native Javascript DOM calls and functions attached
-# to a global JS variable called RWTemplates.
+# Takes in Handlebars-like templates and outputs native Javascript DOM calls.
+# Optionally saves generated elements.
 #
-# Also mucks with having shorthand versions of native
-# functions for minification, so careful if you're also
-# calling things as Element.prototype.(s|a) and document.c.
+# Given a file templates/example.hbar:
+#    <div class="some_div" bind="bound_div">{{ hello_world }}</div>
 #
-# Cannot deal with SVG except for Rainwave's particular use case.
+# This is what happens in JS:
+#    var obj = { "hello_world": "DOM ahoy!" }
+#    RWTemplates.example(obj);
+#    console.log(obj.$t._root);                 // a documentFragment
+#    console.log(obj.$t.bound_div.textContent); // "DOM ahoy!"
+#    document.body.appendChild(obj.$t._root);
 #
-# It looks much like Handlebars, except you have no helpers system.
+# The resulting HTML:
+#    <div class="some_div">DOM ahoy!</div>
+#
+# Also mucks with having shorthand versions of native functions for minification.
+# So careful if you're also calling things as Element.prototype.(s|a) and document.c.
+#
+# Cannot deal with SVG (or other namespaces) except for Rainwave's particular use case.
+#
+# Templates look much like Handlebars, except you have no helpers system.
 # Restrictions:
 #    - {{#each}} cannot handle objects - only arrays.
 #    - {{#if}} cannot be used inside < >, e.g. <a {{#if href}}href="hello"{{/if}}>
@@ -26,7 +37,8 @@
 # 	{{ $blahblah }}
 #   	 - use raw JS including $ (this is a dumb hack for Rainwave)
 # 	{{ ^blahblah }}
-#   	 - use raw JS output excluding ^
+#   	 - use raw JS in the template excluding ^
+#        - access the current object the template system is looking at with _c
 #
 # This system is very dumb.  But it's fast in the browser.
 # Seriously.  Stupid fast.
