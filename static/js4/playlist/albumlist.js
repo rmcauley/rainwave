@@ -255,8 +255,8 @@ var AlbumList = function() {
 			if (self.data[a].cool_lowest > self.data[b].cool_lowest) return 1;
 		}
 
-		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return -1;
-		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return 1;
+		if (self.data[a].cool_lowest < self.data[b].cool_lowest) return -1;
+		else if (self.data[a].cool_lowest > self.data[b].cool_lowest) return 1;
 		return 0;
 	};
 
