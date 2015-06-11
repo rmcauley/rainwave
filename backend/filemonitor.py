@@ -132,10 +132,18 @@ def _scan_directory(directory, sids):
 		# log.debug("scan", "Marking Song ID %s for possible deletion." % song_id)
 		db.c.update("UPDATE r4_songs SET song_scanned = FALSE WHERE song_id = %s", (song_id,))
 
-	for root, subdirs, files in os.walk(directory, followlinks = True):	#pylint: disable=W0612
-		for filename in files:
-			filename = os.path.normpath(root + os.sep + filename)
-			_scan_file(filename, sids)
+	do_scan = False
+	try:
+		os.stat(directory)
+		do_scan = True
+	except IOError:
+		log.debug("scan", "Directory %s no longer exists." % directory)
+
+	if do_scan:
+		for root, subdirs, files in os.walk(directory, followlinks = True):	#pylint: disable=W0612
+			for filename in files:
+				filename = os.path.normpath(root + os.sep + filename)
+				_scan_file(filename, sids)
 
 	songs = db.c.fetch_list("SELECT song_id FROM r4_songs WHERE song_filename LIKE %s || '%%' AND song_scanned = FALSE AND song_verified = TRUE", (directory,))
 	for song_id in songs:
@@ -155,11 +163,16 @@ def _scan_file(filename, sids, raise_exceptions=False):
 			raise
 		return False
 	if _is_mp3(filename):
+		new_mtime = None
+		try:
+			new_mtime = os.stat(filename)[8]
+		except IOError as e:
+			_disable_file(filename)
 		try:
 			log.debug("scan", u"sids: {} Scanning file: {}".format(sids, filename))
 			# Only scan the file if we don't have a previous mtime for it, or the mtime is different
 			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s AND song_verified = TRUE", (filename,))
-			if not old_mtime or old_mtime != os.stat(filename)[8]:
+			if old_mtime != new_mtime or not old_mtime:
 				log.debug("scan", "mtime mismatch, scanning for changes")
 				s = playlist.Song.load_from_file(filename, sids)
 				if not db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (s.id,)):
