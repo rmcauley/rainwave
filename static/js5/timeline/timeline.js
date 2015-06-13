@@ -175,7 +175,7 @@ var Timeline = function() {
 		if (!events) return;
 		var i, j;
 		for (i = 0; i < events.length; i++) {
-			if (events[i].elec_id == event_id) {
+			if (events[i].id == event_id) {
 				for (j = 0; j < events[i].songs.length; j++) {
 					if (events[i].songs[j].entry_id == entry_id) {
 						events[i].songs[j].register_vote();

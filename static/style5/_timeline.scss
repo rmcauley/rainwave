@@ -47,10 +47,11 @@ div.timeline_event {
 		z-index: 10 !important;
 	}
 
-	div.song:nth-child(0) { z-index: 4; }
-	div.song:nth-child(1) { z-index: 3; }
-	div.song:nth-child(2) { z-index: 2; }
-	div.song:nth-child(3) { z-index: 1; }
+	div.song:nth-child(0) { z-index: 1; }
+	div.song:nth-child(1) { z-index: 2; }
+	div.song:nth-child(2) { z-index: 3; }
+	div.song:nth-child(3) { z-index: 4; }
+	div.song:nth-child(4) { z-index: 5; }
 
 	div.timeline_header {
 		text-transform: uppercase;

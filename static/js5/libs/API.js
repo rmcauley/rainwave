@@ -264,13 +264,14 @@ var API = function() {
 		if (async.responseText === "json") {
 			json = async.response;
 		}
+		var do_default = true;
 		if (async_current.error_callback) {
-			async_current.error_callback(json);
+			if (async_current.error_callback(json)) do_default = false;
 		}
-		else if (json) {
+		if (do_default && json) {
 			ErrorHandler.tooltip_error(json);
 		}
-		else {
+		else if (do_default) {
 			ErrorHandler.tooltip_error(ErrorHandler.make_error("async_error", async.status));
 		}
 		self.async_get();

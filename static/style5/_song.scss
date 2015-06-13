@@ -1,4 +1,4 @@
-$song_transitions: opacity $transtime, transform $transtime, background-position 300ms linear;
+$song_transitions: opacity $transtime, transform $transtime, background-position 250ms linear;
 
 div.song {
 	position: absolute;
@@ -80,9 +80,8 @@ div.song {
 	}
 
 	div.timeline & {
-		background-image: url(/static/images4/vote_hover.png);
-		background-position: -678px 0px;
-		background-repeat: no-repeat;
+		background-position: 0% 200%;
+		background-repeat: repeat-x;
 		border: 1px solid transparent;
 
 		&.voting_enabled {
@@ -103,6 +102,15 @@ div.song {
 					padding: 0 10px;
 					color: $linkhover;
 				}
+			}
+
+			&.voting_clicked, &.voting_registered {
+				background-image: url(/static/images4/vote_hover_r5.png);
+			}
+
+			&.voting_registered {
+				background-color: #192D67;
+				background-position: 0px -35px;
 			}
 		}
 	}

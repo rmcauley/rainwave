@@ -1,4 +1,4 @@
-var Song = function(self, event) {
+var Song = function(self, parent_event) {
 	"use strict";
 	var template;
 	if (!self.$t) {
@@ -25,13 +25,17 @@ var Song = function(self, event) {
 		Fave.register(self.albums[0], true);
 	}
 
-	var voting_enabled = false;
 	self.vote = function(evt) {
-		if (!voting_enabled) {
+		if (self.el.classList.contains("voting_registered") || self.el.classList.contains("voting_clicked")) {
 			return;
 		}
 		self.el.classList.add("voting_clicked");
-		API.async_get("vote", { "entry_id": self.entry_id });
+		API.async_get("vote", { "entry_id": self.entry_id },
+			self.register_vote,
+			function(json) {
+				self.el.classList.add("voting_error");
+				setTimeout(function() { self.el.classList.remove("voting_error"); }, 2000);
+			});
 	};
 
 	self.update = function(json) {
@@ -92,13 +96,14 @@ var Song = function(self, event) {
 	};
 
 	self.enable_voting = function() {
-		voting_enabled = true;
 		self.el.classList.add("voting_enabled");
+		self.el.addEventListener("click", self.vote);
 	};
 
 	self.disable_voting = function() {
-		voting_enabled = false;
 		self.el.classList.remove("voting_enabled");
+		self.el.classList.remove("voting_clicked");
+		self.el.removeEventListener("click", self.vote);
 	};
 
 	self.clear_voting_status = function() {
@@ -108,10 +113,17 @@ var Song = function(self, event) {
 	};
 
 	self.register_vote = function() {
+		self.el.classList.remove("voting_clicked");
 		self.el.classList.add("voting_registered");
+		for (var i = 0; i < parent_event.songs.length; i++) {
+			if (parent_event.songs[i].id != self.id) {
+				parent_event.songs[i].unregister_vote();
+			}
+		}
 	};
 
 	self.unregister_vote = function() {
+		self.el.classList.remove("voting_clicked");
 		self.el.classList.remove("voting_registered");
 	};
 

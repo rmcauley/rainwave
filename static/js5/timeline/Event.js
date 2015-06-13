@@ -10,7 +10,7 @@ var Event = function(self) {
 	RWTemplates.timeline.event(self);
 	self.el = self.$t.el;
 	for (var i = 0; i < self.songs.length; i++) {
-		self.songs[i] = Song(self.songs[i]);
+		self.songs[i] = Song(self.songs[i], self);
 	}
 
 	var reflow = function() {
