@@ -175,6 +175,10 @@ var Rating = function() {
 
 		if (is_song) {
 			json.$t.rating.classList.add("rating_song");
+			json.$t.rating.setAttribute("name", "srate_" + json.id);
+		}
+		else {
+			json.$t.rating.setAttribute("name", "arate_" + json.id);
 		}
 
 		var on_mouse_move = function(evt) {
@@ -205,7 +209,7 @@ var Rating = function() {
 			if (json.rating_allowed || User.rate_anything) {
 				API.async_get("rate", { "rating": new_rating, "song_id": json.id },
 					function(newjson) {
-						json.rating_user = newjson.rating_user;
+						json.rating_user = newjson.rate_result.rating_user;
 					},
 					function(newjson) {
 						// TODO: error handling

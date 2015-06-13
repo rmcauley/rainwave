@@ -295,8 +295,10 @@ var API = function() {
 			return async_error();
 		}
 
-		if (("success" in json) && !json.success) {
-			return async_error();
+		for (var i in json) {
+			if (("success" in json[i]) && !json[i].success) {
+				return async_error();
+			}
 		}
 
 		perform_callbacks(json);
