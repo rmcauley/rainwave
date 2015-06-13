@@ -378,6 +378,10 @@ class APIHandler(RainwaveHandler):
 
 	def finish(self, chunk=None):
 		self.set_header("Content-Type", "application/json")
+		self.write_output()
+		super(APIHandler, self).finish(chunk)
+
+	def write_output(self):
 		if hasattr(self, "_output"):
 			if hasattr(self, "_startclock"):
 				exectime = timestamp() - self._startclock
@@ -387,7 +391,6 @@ class APIHandler(RainwaveHandler):
 				log.warn("long_request", "%s took %s to execute!" % (self.url, exectime))
 			self.append("api_info", { "exectime": exectime, "time": round(timestamp()) })
 			self.write(tornado.escape.json_encode(self._output))
-		super(APIHandler, self).finish(chunk)
 
 	def write_error(self, status_code, **kwargs):
 		if self._output_array:
@@ -559,8 +562,8 @@ class PrettyPrintAPIMixin(object):
 
 	#pylint: disable=E1003
 	# no JSON output!!
-	def finish(self):
-		super(APIHandler, self).finish()
+	def finish(self, *args, **kwargs):
+		super(APIHandler, self).finish(*args, **kwargs)
 	#pylint: enable=E1003
 
 	# see initialize, this will override the JSON POST function

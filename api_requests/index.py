@@ -114,7 +114,12 @@ class Bootstrap(api.web.APIHandler):
 			self.user = User(1)
 		self.user.ensure_api_key()
 
+	def finish(self, *args, **kwargs):
+		self.write_output()
+		super(api.web.APIHandler, self).finish(*args, **kwargs)
+
 	def get(self):
+		self.set_header("Content-Type", "text/javascript")
 		self.append("locales", api.locale.locale_names)
 		self.append("cookie_domain", config.get("cookie_domain"))
 		self.post()
