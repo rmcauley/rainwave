@@ -99,6 +99,7 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 class SQLiteCursor(object):
 	allows_join_on_update = False
 	is_postgres = False
+	in_tx = False
 
 	def __init__(self, filename):
 		self.con = sqlite3.connect(filename, 0, sqlite3.PARSE_DECLTYPES)
@@ -232,7 +233,7 @@ def connect():
 	global c
 
 	if c:
-		close()
+		return True
 
 	dbtype = config.get("db_type")
 	name = config.get("db_name")
@@ -272,10 +273,14 @@ def close():
 
 	if c:
 		# forgot to commit?  too bad.
-		c.rollback()
+		if c.in_tx:
+			log.critical("txopen", "Forgot to close a transaction!  Rolling back!")
+			c.rollback()
 		c.close()
 	if connection:
 		connection.close()
+	c = None
+	connection = None
 
 	return True
 
