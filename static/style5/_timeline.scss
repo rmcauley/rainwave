@@ -3,10 +3,12 @@ div.history_header {
 	top: 10px;
 	width: 100%;
 	z-index: 2;
-	opacity: 0.6;
+	opacity: 0.5;
 	cursor: pointer;
 	padding: 0px;
-	@include transition-wtime(350ms, opacity, background-color);
+	font-size: smaller;
+	text-transform: uppercase;
+	@include transition-wtime(300ms, opacity, background-color);
 
 	svg {
 		height: 1em;
@@ -16,8 +18,10 @@ div.history_header {
 		position: relative;
 		top: -2px;
 		fill: $text;
-		@include transition-wtime(350ms, transform);
-		@include transform(rotate(0deg));
+		@include transition-wtime(300ms, transform);
+		@include transform(rotate(90deg));
+		-webkit-transform-origin: 0.5em 0.5em; 
+		        transform-origin: 0.5em 0.5em;
 	}
 
 	&:hover {
@@ -25,8 +29,8 @@ div.history_header {
 		background-color: $blue / 2.5;
 	}
 
-	&.history_open svg {
-		@include transform(rotate(180deg));
+	&.history_expandable svg {
+		@include transform(rotate(0deg));
 	}
 }
 
@@ -47,4 +51,19 @@ div.timeline_event {
 	div.song:nth-child(1) { z-index: 3; }
 	div.song:nth-child(2) { z-index: 2; }
 	div.song:nth-child(3) { z-index: 1; }
+
+	div.timeline_header {
+		text-transform: uppercase;
+		color: $vdarktext;
+		font-size: smaller;
+	}
+
+	&.sched_current div.timeline_header {
+		font-size: inherit;
+		color: $orange;
+	}
+
+	span.timeline_header_clock {
+		float: right;
+	}
 }

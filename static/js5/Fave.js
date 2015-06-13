@@ -7,23 +7,23 @@ var Fave = function(json) {
 		API.add_callback("fave_album_result", album_fave_update);
 	});
 
-	var change_fave = function(el_name, json) {
+	var change_fave = function(el_name, json, favetype) {
 		if (!json.success) return;
 
 		var faves = document.getElementsByName(el_name);
 		var funcn = json.fave ? "add" : "remove";
 		for (var i = 0; i < faves.length; i++) {
 			faves[i].classList[funcn]("is_fave");
-			if (faves[i].parentNode) faves[i].parentNode.classList[funcn]("fave_highlight");
+			if (faves[i].parentNode) faves[i].parentNode.classList[funcn](favetype + "_fave_highlight");
 		}
 	};
 
 	var song_fave_update = function(json) {
-		change_fave("sfave_" + json.id, json);
+		change_fave("sfave_" + json.id, json, "song");
 	};
 
 	var album_fave_update = function(json) {
-		change_fave("afave_" + json.id, json);
+		change_fave("afave_" + json.id, json, "album");
 	};
 
 	var do_fave = function() {
@@ -40,7 +40,10 @@ var Fave = function(json) {
 	self.register = function(json, is_album) {
 		if (json.fave) {
 			json.$t.fave.classList.add("is_fave");
-			if (json.$t.fave.parentNode) json.$t.fave.parentNode.classList.add("fave_highlight");
+			if (json.$t.fave.parentNode) {
+				if (is_album) json.$t.fave.parentNode.classList.add("album_fave_highlight");
+				else json.$t.fave.parentNode.classList.add("song_fave_highlight");
+			}
 		}
 		json.$t.fave.setAttribute("name", is_album ? "afave_" + json.id : "sfave_" + json.id);
 		json.$t.fave._fave_id = json.id;

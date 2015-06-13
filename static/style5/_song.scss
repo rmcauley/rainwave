@@ -24,7 +24,11 @@ div.song {
 		}
 	}
 
-	div.song_content.fave_highlight div.title {
+	div.song_content.song_fave_highlight div.title {
+		color: $fave_color;
+	}
+
+	div.song_content.album_fave_highlight div.album a {
 		color: $fave_color;
 	}
 

@@ -7,8 +7,11 @@ div.rating {
 	margin: 0;
 	height: $rating_height;
 
-	body.logged_in &.rating_song {
+	&.rateable {
 		cursor: pointer;
+	}
+
+	body.logged_in.full &.rating_song {
 		background-image: url("/static/images4/rating_bar/dark_ldpi.png");
 	}
 
@@ -27,19 +30,19 @@ div.rating {
 	div.rating_hover {
 		position: absolute;
 		height: $rating_height;
-		width: 17px;
+		width: 25px;
 		opacity: 0;
-		@include transition-wtime(300ms, opacity, transform);
-		@include transform(translateX($rating_width - 17px));
+		text-align: right;
+		@include transition-wtime(200ms, opacity, transform);
+		@include transform(translateX(0px));
 
 		div.rating_hover_number {
-			font-size: smaller;
 			color: $highlight;
 		}
 	}
 
 	&:hover div.rating_hover {
 		opacity: 1;
-		@include transform(translateX($rating_width - 5px));
+		@include transform(translateX(-27px));
 	}
 }

@@ -145,16 +145,6 @@ var Event = function(self) {
 		else {
 			self.$t.header.textContent = default_text;
 		}
-		if (self.url) {
-			self.$t.header.setAttribute("href", self.url);
-			self.$t.header.setAttribute("target", "_blank");
-			self.$t.header.classList.add("link");
-		}
-		else {
-			self.$t.header.removeAttribute("href");
-			self.$t.header.removeAttribute("target");
-			self.$t.header.classList.remove("link");
-		}
 		self.header_text = self.$t.header.textContent;
 	};
 

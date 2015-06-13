@@ -59,7 +59,7 @@ var Song = function(self, event) {
 			else {
 				self.albums[0].$t.rating.classList.remove("rating_user");
 			}
-		 	self.albums[0].$t_el.rating_set(self.rating_user || self.rating);
+		 	self.albums[0].$t.el.rating_set(self.rating_user || self.rating);
 		}
 
 		self.update_cooldown_info();

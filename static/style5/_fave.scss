@@ -10,10 +10,6 @@ div.fave {
 		position: absolute;
 		opacity: 0;
 		@include transition-wtime(200ms, opacity);
-
-		&.fave_solid {
-			z-index: 1;
-		}
 	}
 
 	&.is_fave {

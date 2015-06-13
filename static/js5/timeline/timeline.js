@@ -61,6 +61,7 @@ var Timeline = function() {
 				sched_history[i].el.style[Fx.transform] = "translateY(" + (-((i * 5 + 1) * Sizing.song_size)) + "px)";
 			}
 			new_events.push(sched_history[i]);
+			if (i === 0) sched_history[i].height += 8;
 		}
 
 		var unappended_events = 0;
