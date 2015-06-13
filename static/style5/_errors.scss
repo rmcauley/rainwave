@@ -1,3 +1,28 @@
+div.messages {
+	position: absolute;
+	z-index: 1000;
+	width: 100%;
+	@include transition-wtime(300ms, opacity);
+
+	> div {
+		box-sizing: border-box;
+		padding: .3em;
+
+		body.simple & {
+			max-width: 1024px;
+			margin: auto;
+		}
+	}
+
+	img.close_button {
+		height: 15px;
+		width: 15px;
+		margin: 2px 5px;
+		float: left;
+		cursor: pointer;
+	}
+}
+
 .error_tooltip, #error_javascript {
 	position: absolute;
 	padding: 0.2em;
@@ -14,14 +39,6 @@
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DD0000), to(#660000));
 }
 
-.overflow_tooltip {
-	position: absolute;
-	overflow: visible;
-	white-space: normal;
-	z-index: 3;
-	display: block;
-}
-
 #error_javascript {
 	box-sizing: border-box;
 	position: absolute;
@@ -33,24 +50,24 @@
 	width: 500px;
 	min-height: 400px;
 	opacity: 1;
-}
 
-#error_javascript h4 {
-	margin: 0 0 10px 0;
-	padding: 0;
-	border-bottom: solid 1px #FFF;
-}
+	h4 {
+		margin: 0 0 10px 0;
+		padding: 0;
+		border-bottom: solid 1px #FFF;
+	}
 
-#error_javascript a {
-	box-sizing: border-box;
-	display: block;
-	width: 100%;
-	padding: 0 10px;
-}
+	a {
+		box-sizing: border-box;
+		display: block;
+		width: 100%;
+		padding: 0 10px;
+	}
 
-#error_javascript textarea {
-	margin-left: 20px;
-	margin-top: 15px;
-	width: 430px;
-	height: 300px;
+	textarea {
+		margin-left: 20px;
+		margin-top: 15px;
+		width: 430px;
+		height: 300px;
+	}
 }

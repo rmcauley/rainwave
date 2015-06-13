@@ -279,13 +279,23 @@ var API = function() {
 	var async_complete = function() {
 		ErrorHandler.remove_permanent_error("async_error");
 		var json;
-		if (async.responseText === "json") {
+		if (async.responseType === "json") {
 			json = async.response;
-			if (("success" in json) && !json.success) {
-				return async_error();
-			}
 		}
 		else {
+			try {
+				json = JSON.parse(async.response);
+			}
+			catch(e) {
+				// nothing
+			}
+		}
+
+		if (!json) {
+			return async_error();
+		}
+
+		if (("success" in json) && !json.success) {
 			return async_error();
 		}
 
@@ -293,6 +303,7 @@ var API = function() {
 		if (async_current.callback) {
 			async_current.callback(json);
 		}
+		
 		self.async_get();
 	};
 
@@ -305,6 +316,7 @@ var API = function() {
 		if ((async.readyState === 0) || (async.readyState === 4)) {
 			async_current = async_queue.shift();
 			if (async_current) {
+				self.last_action = { "action": async_current.action, "params": async_current.params };
 				async.open("POST", url + async_current.action, true);
 				async.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 				if (!async_current.params.sid) async_current.params.sid = sid;
@@ -312,7 +324,6 @@ var API = function() {
 				async_current.params.key = api_key;
 				async.send(self.serialize(async_current.params));
 			}
-			self.last_action = { "action": async_current.action, "params": async_current.params };
 		}
 	};
 

@@ -26,6 +26,7 @@
     "Clock": true,
     "ErrorHandler": true,
     "Event": true,
+    "Fave": true,
     "FastClick": true,
     "Formatting": true,
     "Fx": true,

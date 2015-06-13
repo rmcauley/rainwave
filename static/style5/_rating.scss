@@ -1,17 +1,19 @@
 div.rating {
 	float: right;
 	background-repeat: no-repeat;
-	width: 73px;
+	background-image: url("/static/images4/rating_bar/dark_ldpi_zero.png");
+	width: $rating_width;
 	padding: 0;
 	margin: 0;
-	height: 14px;
+	height: $rating_height;
 
-	&.rating_site {
+	body.logged_in &.rating_song {
+		cursor: pointer;
 		background-image: url("/static/images4/rating_bar/dark_ldpi.png");
 	}
 
 	&.rating_user {
-		background-image: url("/static/images4/rating_bar/bright_ldpi.png");
+		background-image: url("/static/images4/rating_bar/bright_ldpi.png") !important;
 	}
 
 	&.ratable {
@@ -22,97 +24,22 @@ div.rating {
 		}
 	}
 
-	img {
-		width: 14px;
-		height: 13px;
-
-		&.fave_lined {
-			@include transition-wtime(200ms, opacity);
-			opacity: 0;
-			position: absolute;
-			padding-top: 3px;
-		}
-
-		&.fave_solid {
-			z-index: 1;
-			position: absolute;
-			opacity: 0;
-			padding-top: 3px;
-			@include transition-wtime(200ms, opacity);
-		}
-
-		&.faveable {
-			cursor: pointer;
-		}
-	}
-
-	&.rating_fave {
-		img.fave_solid {
-			opacity: 1;
-		}
-	}
-
-	body.logged_in &:hover {
-		img.fave_lined {
-			opacity: 1;
-		}
-		img.fave_solid {
-			opacity: 0;
-		}
-	}
-
 	div.rating_hover {
 		position: absolute;
-		margin-left: $rating_width - 20;
 		height: $rating_height;
-		width: 1.5em;
-		border-bottom: solid 1px $highlight;
-		border-right: solid 1px $highlight;
-		z-index: 100;
-		background: #222;
-		padding: 0;
+		width: 17px;
 		opacity: 0;
-		@include transition-wtime(200ms, opacity, margin-left);
+		@include transition-wtime(300ms, opacity, transform);
+		@include transform(translateX($rating_width - 17px));
 
 		div.rating_hover_number {
-			text-align: right;
 			font-size: smaller;
 			color: $highlight;
 		}
 	}
 
-	&.rateable {
-		div.rating_hover {
-			opacity: 1;
-			margin-left: $rating_width;
-		}
+	&:hover div.rating_hover {
+		opacity: 1;
+		@include transform(translateX($rating_width - 5px));
 	}
-}
-
-#rating_window {
-	text-align: center;
-
-	> div {
-		font-size: larger;
-		text-align: center;
-		cursor: pointer;
-		padding: 0.5em;
-		border: #444 solid 1px;
-		margin: 1em;
-		width: 5em;
-	}
-
-	> div:nth-child(even) {
-		float: right;
-		margin: 0;
-		margin-right: 2em;
-	}
-
-	> div:first-child {
-		margin: 1em auto;
-	}
-}
-
-.fav {
-	color: $fave_color !important;
 }

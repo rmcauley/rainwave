@@ -3,10 +3,8 @@ var Rating = function() {
 	var self = {};
 	self.album_callback = null;
 
-	self.initialize = function() {
-		API.add_callback(rating_api_callback, "rate_result");
-		API.add_callback(song_fave_update, "fave_song_result");
-		API.add_callback(album_fave_update, "fave_album_result");
+	BOOTSTRAP.on_init.push(function(template) {
+		API.add_callback("rate_result", rating_api_callback);
 
 		// was originally a playlist pref, now lives here
 		Prefs.define("playlist_show_rating_complete", [ false, true ]);
@@ -14,7 +12,7 @@ var Rating = function() {
 
 		Prefs.define("hide_global_ratings", [ false, true ]);
 		Prefs.add_callback("hide_global_ratings", hide_global_rating_callback);
-	};
+	});
 
 	// PREF CALLBACKS
 
@@ -83,31 +81,6 @@ var Rating = function() {
 		}
 	};
 
-	var change_fave = function(el_name, json) {
-		if (!json.success) return;
-
-		var faves = document.getElementsByName(el_name);
-		var i;
-		if (json.fave) {
-			for (i = 0; i < faves.length; i++) {
-				faves.classList.add("fave");
-			}
-		}
-		else {
-			for (i = 0; i < faves.length; i++) {
-				faves.classList.remove("fave");
-			}
-		}
-	};
-
-	var song_fave_update = function(json) {
-		change_fave("srate_" + json.id, json);
-	};
-
-	var album_fave_update = function(json) {
-		change_fave("arate_" + json.id, json);
-	};
-
 	// RATING EFFECTS
 
 	var add_effect = function(el) {
@@ -142,8 +115,8 @@ var Rating = function() {
 	};
 
 	var rating_step = function(steptime) {
-		if ((steptime < (this.rating_started + 350)) && (this.rating_now != this.rating_to)) {
-			var timeoverduration = (steptime - this.rating_started) / 350;
+		if ((steptime < (this.rating_started + 300)) && (this.rating_now != this.rating_to)) {
+			var timeoverduration = (steptime - this.rating_started) / 300;
 			this.rating_now = -(this.rating_to - this.rating_from) * timeoverduration * (timeoverduration - 2) + this.rating_from;
 			this.rating_anim_id = requestAnimationFrame(this.rating_step);
 		}
@@ -151,46 +124,42 @@ var Rating = function() {
 			this.rating_now = this.rating_to;
 			this.rating_anim_id = null;
 		}
-		this.style.backgroundPosition = "18px " + (-(Math.round((Math.round(this.now * 10) / 2)) * 30)) + "px";
+		this.style.backgroundPosition = "0px " + (-(Math.round((Math.round(this.rating_now * 10) / 2)) * 30) + 3) + "px";
 	};
 
-	var get_rating_from_mouse = function(evt, absolute_x, absolute_y) {
+	var get_rating_from_mouse = function(evt, relative_x, relative_y) {
 		var x, y;
 		if (evt.offsetX && evt.offsetY) {
 			x = evt.offsetX;
 			y = evt.offsetY;
 		}
 		else {
-			if (!evt.target.offset_left && !absolute_x) {
+			if (!evt.target.offset_left && !relative_x) {
 				evt.target.offset_left = evt.target.offsetLeft;
 			}
-			if (!evt.target.offset_top && !absolute_y) {
+			if (!evt.target.offset_top && !relative_y) {
 				evt.target.offset_top = evt.target.offsetTop;
 			}
 			x = evt.layerX || evt.x;
 			y = evt.layerY || evt.y;
-			if (!absolute_x) x -= evt.target.offset_left;
-			if (!absolute_y) y -= evt.target.offset_top;
+			if (!relative_x) x -= evt.target.offset_left;
+			if (!relative_y) y -= evt.target.offset_top;
 		}
 
-		//console.log("layerX: " + (evt.layerX || evt.offsetX) + " / layerY: " + (evt.layerY || evt.offsetY) + "<br>offset_left: " + offset_left + " / offset_top:" + offset_top + "<br>x: " + x + " / y: " + y + " -> ");
-		if (x <= 18) return 0;		// fave switching
-
-		var result = Math.round(((x - 20 + ((18 - y) * 0.5)) / 10) * 2) / 2;
-		//console.log(result);
+		var result = Math.round(((x + ((18 - y) * 0.5)) / 10) * 2) / 2;
 		if (result <= 1) return 1;
 		else if (result >= 5) return 5;
 		return result;
 	};
 
 	var on_mouse_over = function() {
-		this.classList.add("user_rating");
+		this.classList.add("rating_user");
 	};
 
 	// INDIVIDUAL RATING BAR CODE
 
-	self.register = function(json, absolute_x, absolute_y) {
-		if (!json || !json.rating || isNaN(json.id)) {
+	self.register = function(json, relative_x, relative_y) {
+		if (!json || !json.$t.rating || !json.id || isNaN(json.id)) {
 			return;
 		}
 		if (json.rating_user && ((json.rating_user < 1) || (json.rating_user > 5))) {
@@ -200,58 +169,40 @@ var Rating = function() {
 			json.rating = null;
 		}
 
-		add_effect(json.$template.rating);
+		add_effect(json.$t.rating);
 
 		var is_song = json.albums || json.album_id || json.album_rating ? true : false;
 
+		if (is_song) {
+			json.$t.rating.classList.add("rating_song");
+		}
+
 		var on_mouse_move = function(evt) {
-			var tr = get_rating_from_mouse(evt, absolute_x, absolute_y);
-			if (tr >= 1 && (json.rating_allowed || User.rate_anything)) {
-				json.$template.rating.rating_set(tr);
-				json.$template.rating_hover_number.textContent = Formatting.rating(tr);
-				if (json.$template.rating_user_number) {
-					json.$template.rating_user_number.textContent = Formatting.rating(tr);
-				}
-				else {
-					json.$template.rating_hover.style.width = Math.max(tr * 10 - 3, 20) + "px";
-				}
+			if (evt.target != json.$t.rating) return;
+			var tr = get_rating_from_mouse(evt, relative_x, relative_y);
+			json.$t.rating.rating_set(tr);
+			if (tr) {
+				json.$t.rating_hover_number.textContent = Formatting.rating(tr);
 			}
 		};
 
 		var on_mouse_out = function(evt) {
+			if (!is_song && !json.rating_complete) {
+				this.classList.add("rating_incomplete");
+			}
+			else if (!is_song) {
+				this.classList.remove("rating_incomplete");
+			}
 			if (!json.rating_user) {
-				json.$template.rating.classList.remove("rating_user");
+				this.classList.remove("rating_user");
 			}
 			this.rating_start(json.rating_user || json.rating);
 		};
 
 		var click = function(evt) {
 			evt.stopPropagation();
-			var new_rating = get_rating_from_mouse(evt, absolute_x, absolute_y);
-			// fave toggle
-			if (new_rating === 0) {
-				if (is_song) {
-					API.async_get("fave_song", { "fave": !json.fave, "song_id": json.id },
-						function(newjson) {
-							json.fave = newjson.fave;
-						},
-						function(newjson) {
-							// TODO: error handling
-						}
-					);
-				}
-				else {
-					API.async_get("fave_album", { "fave": !json.fave, "album_id": json.id },
-						function(newjson) {
-							json.fave = newjson.fave;
-						},
-						function(newjson) {
-							// TODO: error handling
-						}
-					);
-				}
-			}
-			else if (json.rating_allowed || User.rate_anything) {
+			var new_rating = get_rating_from_mouse(evt, relative_x, relative_y);
+			if (json.rating_allowed || User.rate_anything) {
 				API.async_get("rate", { "rating": new_rating, "song_id": json.id },
 					function(newjson) {
 						json.rating_user = newjson.rating_user;
@@ -264,24 +215,24 @@ var Rating = function() {
 		};
 
 		if (!is_song && !json.rating_complete) {
-			json.$template.rating.classList.add("rating_incomplete");
+		json.$t.rating.classList.add("rating_incomplete");
 		}
 		else if (!is_song) {
-			json.$template.rating.classList.remove("rating_incomplete");
+			json.$t.rating.classList.remove("rating_incomplete");
 		}
 		if (json.rating_user) {
-			json.$template.rating.classList.add("rating_user");
+			json.$t.rating.classList.add("rating_user");
 		}
+		json.$t.rating.rating_set(json.rating_user || json.rating);
 
 		if (User.id > 1) {
-			json.$template.rating._json = json;
-			json.$template.rating.classList.add("faveable");
+			json.$t.rating._json = json;
 			if (is_song) {
-				json.$template.rating.addEventListener("mouseover", on_mouse_over);
-				json.$template.rating.addEventListener("mousemove", on_mouse_move);
-				json.$template.rating.addEventListener("mouseout", on_mouse_out);
+				json.$t.rating.addEventListener("mouseover", on_mouse_over);
+				json.$t.rating.addEventListener("mousemove", on_mouse_move);
+				json.$t.rating.addEventListener("mouseleave", on_mouse_out);
 			}
-			json.$template.rating.addEventListener("click", click);
+			json.$t.rating.addEventListener("click", click);
 		}
 
 		// DO NOT RETURN ANYTHING HERE

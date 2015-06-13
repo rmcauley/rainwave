@@ -25,8 +25,8 @@ $art_np_size: 100px;
 $art_np_hover_size: 120px;
 $simple_art_size: 100px;
 $simple_np_size: 140px;
-$rating_height: 15px;
-$rating_width: 55px;
+$rating_height: 18px;
+$rating_width: 58px;
 
 body {
 	height: 100%;
@@ -133,7 +133,6 @@ a, a:visited, .link {
 }
 
 @import "modals";
-@import "messages";
 @import "errors";
 @import "menu";
 
@@ -143,3 +142,4 @@ a, a:visited, .link {
 @import "album_art";
 @import "song";
 @import "rating";
+@import "fave";

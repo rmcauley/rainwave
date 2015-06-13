@@ -12,12 +12,16 @@ var Clock = function() {
 	self.pageclock = null;
 	self.pageclock_bar_function = null;
 
-	self.initialize = function() {
+	BOOTSTRAP.on_init.push(function(template) {
 		Prefs.define("show_rating_in_titlebar");
 		Prefs.define("show_clock_in_titlebar", [ true, false ]);
 		Prefs.define("show_title_in_titlebar", [ true, false ]);
-		API.add_callback(self.resync, "api_info");
-	};
+		API.add_callback("api_info", self.resync);
+
+		if (interval === 0) {
+			interval = setInterval(self.loop, 1000);
+		}
+	});
 
 	self.time = function() {
 		return Math.round(new Date().getTime() / 1000);
@@ -96,10 +100,6 @@ var Clock = function() {
 		}
 		if (this_page_title != document.title) document.title = this_page_title;
 	};
-
-	if (interval === 0) {
-		interval = setInterval(self.loop, 1000);
-	}
 
 	return self;
 }();

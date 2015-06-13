@@ -24,7 +24,7 @@ var Menu = function() {
 	}
 
 	var init = function(idx) {
-		//API.add_callback(update_tuned_in_status, "user");
+		//API.add_callback("user", update_tuned_in_status);
 		//R4Audio.changed_status_callback = update_tuned_in_status_from_player;
 		template = RWTemplates.menu({ "stations": stations });
 		idx._root.replaceChild(template._root, idx.menu);

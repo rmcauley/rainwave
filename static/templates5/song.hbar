@@ -8,6 +8,7 @@
 
 		<div bind="votes" class="entry_votes"></div>
 
+		{{>fave}}
 		<div bind="title" class="title" title="{{ title }}">
 			{{ title }}
 		</div>
@@ -15,6 +16,7 @@
 		{{#with albums[0] }}
 			{{>rating}}
 
+			{{>fave}}
 			<div bind="title" class="album" title="{{ name }}">
 				<a href="#!/album/{{ id }}">{{ name }}</a>
 			</div>

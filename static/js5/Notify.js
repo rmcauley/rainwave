@@ -6,15 +6,15 @@ var R4Notify = function() {
 	self.enabled = false;
 	var current_song_id;
 
-	self.initialize = function() {
+	BOOTSTRAP.on_init.push(function(template) {
 		Prefs.define("notify", [ false, true ]);
 		if (!self.capable) return;
 		if (MOBILE) return;
 
 		Prefs.add_callback("notify", self.check_permission);
 		self.check_permission();
-		API.add_callback(self.notify, "sched_current");
-	};
+		API.add_callback("sched_current", self.notify);
+	});
 
 	self.check_permission = function() {
 		if (!self.capable) return;

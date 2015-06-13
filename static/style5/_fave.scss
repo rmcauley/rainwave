@@ -1,0 +1,39 @@
+div.fave {
+	width: 14px;
+	height: 13px;
+	display: none;
+	margin-top: 4px;
+
+	img {
+		width: 14px;
+		height: 13px;
+		position: absolute;
+		opacity: 0;
+		@include transition-wtime(200ms, opacity);
+
+		&.fave_solid {
+			z-index: 1;
+		}
+	}
+
+	&.is_fave {
+		img.fave_solid {
+			opacity: 1;
+		}
+	}
+
+	body.logged_in & {
+		display: inline-block;
+		cursor: pointer;
+	}
+
+	body.logged_in &:hover {
+		img.fave_lined {
+			opacity: 1 !important;
+		}
+		img.fave_solid {
+			opacity: 0;
+			cursor: pointer;
+		}
+	}
+}

@@ -4,6 +4,8 @@
 
 <div bind="menu"></div>
 
+<div bind="messages" class="messages"></div>
+
 <div bind="sizeable_area" class="sizeable">
 	<div bind="timeline"></div>
 	<div class="tabs">

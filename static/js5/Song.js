@@ -18,6 +18,12 @@ var Song = function(self, event) {
 	if (self.albums[0].$t.rating) {
 		Rating.register(self.albums[0]);
 	}
+	if (template.fave) {
+		Fave.register(self);
+	}
+	if (self.albums[0].$t.fave) {
+		Fave.register(self.albums[0], true);
+	}
 
 	var voting_enabled = false;
 	self.vote = function(evt) {

@@ -32,7 +32,7 @@ var User;
 	var initialize = function() {
 		template = RWTemplates.index();
 		User = BOOTSTRAP.user;
-		API.add_callback(function(json) { User = json; }, "user");
+		API.add_callback("user", function(json) { User = json; });
 
 		Chart.defaults.global.scaleLineColor = "rgba(255,255,255,0.5)";
 		Chart.defaults.global.scaleBeginAtZero = true;

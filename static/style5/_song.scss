@@ -5,7 +5,7 @@ div.song {
 	cursor: default;
 	-webkit-transition: $song_transitions, border-color $transtime, background-color $transtime;
 	        transition: $song_transitions, border-color $transtime, background-color $transtime;
-	height: $art_thumbnail_size;
+	height: $art_size;
 	width: 100%;
 
 	&.song_lost {
@@ -18,6 +18,14 @@ div.song {
 
 	div.title {
 		margin-top: 5px;
+
+		body.logged_in & {
+			padding-left: 19px;
+		}
+	}
+
+	div.song_content.fave_highlight div.title {
+		color: $fave_color;
 	}
 
 	div.title, div.album, div.artist, div.cooldown_info, a.song_link {
@@ -30,6 +38,10 @@ div.song {
 	div.album, div.artist, div.cooldown_info, a.song_link {
 		padding-left: 15px;
 		color: $darktext;
+
+		body.logged_in & {
+			padding-left: 30px;
+		}
 
 		a {
 			color: $darktext;
@@ -136,6 +148,14 @@ div.song {
 		div.requester, div.request_indicator {
 			background: #18a485;
 		}
+	}
+
+	div.fave {
+		position: absolute;
+	}
+
+	body.logged_in.simple &:hover img.fave_lined {
+		opacity: 0.5;
 	}
 }
 
