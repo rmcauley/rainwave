@@ -63,7 +63,13 @@ var Router = function() {
 	self.change = function() {
 		// each argument passed in to this function is changed into a URL
 		// this function deals with where to place things after the #!
-		var r = Array.prototype.join.call(arguments, "/");
+
+		// do not use Array.prototype.join.call here - breaks V8 optimization
+		var r = "";
+		for (var i = 0; i < arguments.length; i++) {
+			if (r) r += "/";
+			r += arguments[i];
+		}
 		var new_url = decodeURI(location.href);
 		if (new_url.indexOf("#") >= 0) {
 			new_url = new_url.substring(0, new_url.indexOf("#")) + "#!/" + r;
