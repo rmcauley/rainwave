@@ -276,7 +276,7 @@
    "timeformat_d"                                    : "T ",
    "timeformat_h"                                    : "S ",
    "timeformat_m"                                    : "m ",
-   "timeformat_s"                                    : "s "
+   "timeformat_s"                                    : "s ",
 
    "__comment__"                 : "Raw API Pages (statistics, etc)",
 
