@@ -283,7 +283,7 @@
    "timeformat_m"                                    : "m ",
    "timeformat_s"                                    : "s ",
 
-   "__comment__"                 : "Raw API Pages (statistics, etc)",
+   "__comment__"                 : "Statistic Pages (see http://rainwave.cc/api4/ and scroll down)",
 
    "unrated_songs"                                   : "Unrated Songs",
    "title"                                           : "Title",
