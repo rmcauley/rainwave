@@ -95,8 +95,13 @@ var Scrollbar = function() {
 
 		self.scroll_to = function(px) {
 			px = Math.max(0, Math.min(self.scroll_top_max, px));
-			scrollable.scrollTop = px;
-			self.scroll_top = scrollable.scrollTop;
+			if (px !== self.scroll_top) {
+				scrollable.scrollTop = px;
+				self.scroll_top = px;
+			}
+			else if (self.reposition_hook) {
+				self.reposition_hook();
+			}
 		};
 
 		var mouse_down = function(e) {
