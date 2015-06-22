@@ -115,9 +115,15 @@ var Scrollbar = function() {
 
 		self.scroll_to = function(px) {
 			px = Math.max(0, Math.min(self.scroll_top_max, px));
-			scrollable.scrollTop = px;
-			self.scroll_top = px;
-			scroll_top_fresh = true;
+			// search list breaks if we don't trigger a fake re-scroll here if the position is the same!
+			if (px === self.scroll_top && self.reposition_hook) {
+				self.reposition_hook();
+			}
+			else {
+				scroll_top_fresh = true;
+				scrollable.scrollTop = px;
+				self.scroll_top = px;
+			}
 		};
 
 		self.reposition = function(e) {

@@ -4,11 +4,11 @@ mutagen
 Pillow
 psutil
 psycopg2
-pylibmc
+python-memcached
 pyScss==1.2.1
 pytz
 slimit
 supervisor
-tornado
+tornado>=3.2
 Unidecode
 watchdog
