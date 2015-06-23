@@ -7,6 +7,7 @@ var Timeline = function() {
 	var sched_current;
 	var sched_next;
 	var sched_history;
+	var scroller;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		Prefs.define("sticky_history", [ false, true ]);
@@ -39,9 +40,13 @@ var Timeline = function() {
 			}
 		);
 
-		el = template.timeline;
+		el = template.contents;
 
 		Sizing.add_resize_callback(self.reflow);
+	});
+
+	BOOTSTRAP.on_draw.push(function() {
+		scroller = Scrollbar.create(template.timeline, true);
 	});
 
 	self.update = function() {
@@ -57,7 +62,7 @@ var Timeline = function() {
 			sched_history[i] = find_and_update_event(sched_history[i]);
 			sched_history[i].change_to_history();
 			sched_history[i].hide_header();
-			if (sched_history[i].el.parentNode != template.timeline) {
+			if (sched_history[i].el.parentNode != el) {
 				sched_history[i].el.style[Fx.transform] = "translateY(" + (-((i * 5 + 1) * Sizing.song_size)) + "px)";
 			}
 			new_events.push(sched_history[i]);
@@ -68,7 +73,7 @@ var Timeline = function() {
 		sched_current = find_and_update_event(sched_current);
 		sched_current.change_to_now_playing();
 		sched_current.show_header();
-		if (sched_current.el.parentNode != template.timeline) {
+		if (sched_current.el.parentNode != el) {
 			sched_current.el.style[Fx.transform] = "translateY(" + (Sizing.height() + (unappended_events * 2 * Sizing.song_size)) + "px)";
 			unappended_events++;
 		}
@@ -84,7 +89,7 @@ var Timeline = function() {
 				sched_next[i].show_header();
 			}
 			sched_next[i].change_to_coming_up();
-			if (sched_next[i].el.parentNode != template.timeline) {
+			if (sched_next[i].el.parentNode != el) {
 				sched_next[i].el.style[Fx.transform] = "translateY(" + (Sizing.height() + (unappended_events * 2 * Sizing.song_size)) + "px)";
 				unappended_events++;
 			}
@@ -102,7 +107,7 @@ var Timeline = function() {
 		events = new_events;
 
 		for (i = 0; i < events.length; i++) {
-			template.timeline.appendChild(events[i].el);
+			el.appendChild(events[i].el);
 		}
 
 		// The now playing bar
@@ -158,6 +163,8 @@ var Timeline = function() {
 			events[i].el.style.transform = "translateY(" + running_y + "px)";
 			running_y += events[i].height;
 		}
+
+		scroller.set_height(running_y);
 	};
 
 	self.reflow = function() {

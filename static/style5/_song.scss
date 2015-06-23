@@ -1,6 +1,7 @@
 $song_transitions: opacity $transtime, transform $transtime, background-position 250ms linear;
 
 div.song {
+	box-sizing: border-box;
 	position: absolute;
 	cursor: default;
 	-webkit-transition: $song_transitions, border-color $transtime, background-color $transtime;

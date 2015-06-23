@@ -1,0 +1,39 @@
+.scrollable {
+	overflow: auto;
+	overflow-x: hidden;
+	overflow-y: auto;
+	position: relative;
+	height: 100%;
+}
+
+div.scroll_handle {
+	position: absolute;
+	z-index: 90;
+	background-color: inherit;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #FFF;
+	top: 0px;
+	left: 100%;
+	width: 7px;
+	height: 0px;
+	opacity: 0.3;
+	padding: 0;
+	margin: 0;
+	@include transform(translateX(-12px));
+	@include transition-wtime(250ms, opacity, background-color, height);
+
+	&.invisible {
+		display: none;
+	}
+
+	&:hover {
+		background-color: #AAB;
+		opacity: 0.6;
+	}
+
+	&:active {
+		background-color: #556;
+		opacity: 1;
+	}
+}

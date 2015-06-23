@@ -307,11 +307,11 @@ var API = function() {
 			async_current.callback(json);
 		}
 		
+		async_current = null;
 		self.async_get();
 	};
 
 	self.async_get = function(action, params, callback, error_callback) {
-		async_current = null;
 		if (action) {
 			if (!params) params = {};
 			async_queue.push({ "action": action, "params": params, "callback": callback, "error_callback": error_callback });

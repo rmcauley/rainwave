@@ -1,4 +1,13 @@
 body.simple div.timeline {
+	position: relative;
+
+	div.timeline_contents {
+		position: relative;
+		width: 100%;
+		max-width: 1024px;
+		margin: auto;
+	}
+
 	div.timeline_event {
 		&.sched_history {
 			height: $simple_art_size;
@@ -14,7 +23,7 @@ body.simple div.timeline {
 	}
 
 	div.song {
-		height: $simple_art_size;
+		height: $simple_art_size + 2;
 
 		div.art_anchor {
 			width: $simple_art_size;

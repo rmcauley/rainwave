@@ -63,14 +63,8 @@ div.sizeable {
 	overflow: hidden;
 	position: relative;
 	z-index: 0;
-	width: 1024px;
-	max-width: 100%;
-	margin: auto;
-
-	body.advanced & {
-		width: 100%;
-		margin: 0;
-	}
+	width: 100%;
+	margin: 0;
 }
 
 div.debug_div {
@@ -126,12 +120,6 @@ a, a:visited, .link {
 	user-select: none;
 }
 
-.scrollable {
-	overflow: auto;
-	overflow-x: hidden;
-	overflow-y: auto;
-}
-
 @import "modals";
 @import "errors";
 @import "menu";
@@ -143,3 +131,4 @@ a, a:visited, .link {
 @import "song";
 @import "rating";
 @import "fave";
+@import "scrollbar";

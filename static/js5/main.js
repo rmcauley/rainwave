@@ -60,11 +60,11 @@ var User;
 			BOOTSTRAP.on_measure[i]();
 		}
 
-		Sizing.trigger_resize();
-
 		for (i = 0; i < BOOTSTRAP.on_draw.length; i++) {
 			BOOTSTRAP.on_draw[i]();
 		}
+
+		Sizing.trigger_resize();
 
 		API.initialize(BOOTSTRAP.sid, "/api4/", BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
 

@@ -36,6 +36,7 @@
     "Requests": true,
     "Router": true,
     "RWTemplates": true,
+    "Scrollbar": true,
     "shuffle": true,
     "Sizing": true,
     "Song": true,

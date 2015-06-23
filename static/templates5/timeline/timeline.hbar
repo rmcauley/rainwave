@@ -1,9 +1,11 @@
-<div class="timeline unselectable" bind="timeline">
-	<div class="history_header" bind="history_header">
-		<span class="longhist_link link" bind="longhist_link"></span>
-		<div bind="history_header_link">
-			<span>{{ $l("previouslyplayed") }}</span>
-			<svg use="pulldown"></svg>
+<div class="timeline" bind="timeline">
+	<div class="timeline_contents" bind="contents">
+		<div class="history_header" bind="history_header">
+			<span class="longhist_link link" bind="longhist_link"></span>
+			<div bind="history_header_link">
+				<span>{{ $l("previouslyplayed") }}</span>
+				<svg use="pulldown"></svg>
+			</div>
 		</div>
 	</div>
 </div>

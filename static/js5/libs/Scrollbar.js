@@ -1,45 +1,55 @@
 var Scrollbar = function() {
 	"use strict";
 	var cls = {};
-	var scrollbars;
+	var scrollbars = [];
 	var scrollbar_width;
 	var enabled = false;
 
 	BOOTSTRAP.on_init.push(function(t) {
 		BOOTSTRAP.on_measure.push(function() {
 			scrollbar_width = 100 - t.scroller_size.scrollWidth;
-			// if (scrollbar_width !== 0) {
-			// 	enabled = true;
-			// }
+			if (scrollbar_width !== 0) {
+				enabled = true;
+			}
 		});
 		BOOTSTRAP.on_draw.push(function() {
 			t.scroller_size.parentNode.removeChild(t.scroller_size);
 		});
+
+		Sizing.add_resize_callback(function() {
+			for (var i = 0; i < scrollbars.length; i++) {
+				scrollbars[i].el.style.width = (scrollbars[i].el.parentNode.offsetWidth + scrollbar_width) + "px";
+			}
+		});
 	});
 
-	cls.create = function(scrollable) {
-		scrollable.classList.add("scrollable");
+	cls.create = function(scrollable, always_scrollable) {
+		var scrollblock;
+		// always scrollable is beneficial as an option because the only place we need an extra
+		// scrollblock-wrapping div is for the timeline
+		// all other scrollable <divs> can be just set by themselves but the timeline
+		// has some special width handling that requires a wrapping element at all times.
+		if (enabled || always_scrollable) {
+			scrollblock = document.createElement("div");
+			scrollblock.setAttribute("class", scrollable.className + " scrollblock");
+			scrollable.className = scrollable.classList[0] + "_scroll scrollable";
+
+			if (scrollable.parentNode) {
+				scrollable.parentNode.replaceChild(scrollblock, scrollable);
+			}
+			scrollblock.appendChild(scrollable);
+		}
+		else {
+			scrollable.classList.add("scrollable");
+		}
 
 		if (!enabled) {
-			return { "el": scrollable, "set_height": function(){} };
+			return { "el": scrollable, "set_height": function(h) { /*scrollable.style.height = h + "px";*/ } };
 		}
-
-		var scrollblock = document.createElement("div");
-		scrollblock.setAttribute("class", scrollable.className + " scrollblock");
-		scrollable.className = "scrollable";
-
-		if (scrollable.parentNode) {
-			scrollable.parentNode.replaceChild(scrollblock, scrollable);
-		}
-		scrollblock.appendChild(scrollable);
-
-		var stretcher = document.createElement("div");
-		stretcher.className = "stretcher";
-		scrollable.appendChild(stretcher);
 
 		var handle = document.createElement("div");
 		handle.className = "scroll_handle";
-		scrollable.appendChild(handle);
+		scrollblock.insertBefore(handle, scrollblock.firstChild);
 
 		var self = {};
 		self.el = scrollable;
@@ -64,13 +74,13 @@ var Scrollbar = function() {
 
 		self.refresh = function() {
 			if ((self.scroll_height === 0) || (self.offset_height === 0) || (self.scroll_height <= self.offset_height)) {
-				scrollable.classList.add("scrollbar_invisible");
+				scrollable.classList.add("invisible");
 				handle.style.height = null;
 				handle.style.top = 0;
 				visible = false;
 			}
 			else {
-				scrollable.classList.remove("scrollbar_invisible");
+				scrollable.classList.remove("invisible");
 				visible = true;
 				handle_height = Math.floor((self.offset_height - handle_margin_top - handle_margin_bottom) * (self.offset_height / self.scroll_height));
 				handle_height = Math.max(handle_height, 40);
@@ -88,7 +98,7 @@ var Scrollbar = function() {
 			var top = Math.min(1, self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
 			top += self.scroll_top;
 			top += handle_margin_top;
-			handle.style.top = Math.floor(top) + "px";
+			handle.style[Fx.transform] = "translateX(-12px) translateY(" + Math.floor(top) + "px)";
 
 			if (e && self.reposition_hook) self.reposition_hook();
 		};
