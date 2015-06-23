@@ -19,9 +19,13 @@ var Scrollbar = function() {
 		Sizing.add_resize_callback(function() {
 			for (var i = 0; i < scrollbars.length; i++) {
 				scrollbars[i].el.style.width = (scrollbars[i].el.parentNode.offsetWidth + scrollbar_width) + "px";
+				scrollbars[i].offset_height = scrollbars[i].el.parentNode.offsetHeight;
 			}
 		});
 	});
+
+	var handle_margin_top = 5;
+	var handle_margin_bottom = 5;
 
 	cls.create = function(scrollable, always_scrollable) {
 		var scrollblock;
@@ -61,9 +65,6 @@ var Scrollbar = function() {
 
 		var scrolling = false;
 		var visible = false;
-		var scroll_top_fresh = false;
-		var handle_margin_top = 5;
-		var handle_margin_bottom = 5;
 		var handle_height, original_mouse_y, original_scroll_top, scroll_per_px;
 
 		self.set_height = function(height) {
@@ -82,23 +83,21 @@ var Scrollbar = function() {
 			else {
 				scrollable.classList.remove("invisible");
 				visible = true;
-				handle_height = Math.floor((self.offset_height - handle_margin_top - handle_margin_bottom) * (self.offset_height / self.scroll_height));
+				var wheight = self.offset_height - handle_margin_top - handle_margin_bottom;
+				handle_height = Math.floor(wheight * (self.offset_height / self.scroll_height));
 				handle_height = Math.max(handle_height, 40);
-				scroll_per_px = self.scroll_top_max / (self.offset_height - handle_margin_top - handle_margin_bottom - handle_height);
 				handle.style.height = handle_height + "px";
+				scroll_per_px = self.scroll_top_max / (wheight - handle_height);
 				self.reposition();
 			}
 		};
 
 		self.reposition = function(e) {
 			if (!visible) return;
-			if (!scroll_top_fresh) self.scroll_top = scrollable.scrollTop;
-			else scroll_top_fresh = false;
+			if (e) self.scroll_top = scrollable.scrollTop;
 
 			var top = Math.min(1, self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
-			top += self.scroll_top;
-			top += handle_margin_top;
-			handle.style[Fx.transform] = "translateX(-12px) translateY(" + Math.floor(top) + "px)";
+			handle.style[Fx.transform] = "translateX(-12px) translateY(" + Math.floor(handle_margin_top + top) + "px)";
 
 			if (e && self.reposition_hook) self.reposition_hook();
 		};
