@@ -40,7 +40,7 @@ var Timeline = function() {
 			}
 		);
 
-		el = template.contents;
+		el = template.timeline;
 
 		Sizing.add_resize_callback(self.reflow);
 	});

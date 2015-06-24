@@ -8,6 +8,7 @@ div.history_header {
 	padding: 0px;
 	font-size: smaller;
 	text-transform: uppercase;
+	padding: 0px 10px;
 	@include transition-wtime(300ms, opacity, background-color);
 
 	svg {
@@ -35,12 +36,17 @@ div.history_header {
 }
 
 div.timeline_event {
+	box-sizing: border-box;
 	position: absolute;
 	width: 100%;
 	@include transition(transform, opacity);
 
 	&:hover {
 		z-index: 1;
+	}
+
+	div.song {
+		padding: 0 10px;
 	}
 
 	div.song:hover {
@@ -57,6 +63,7 @@ div.timeline_event {
 		text-transform: uppercase;
 		color: $vdarktext;
 		font-size: smaller;
+		padding: 0 20px 0 10px;
 	}
 
 	&.sched_current div.timeline_header {

@@ -1,12 +1,8 @@
 body.simple div.timeline {
 	position: relative;
-
-	div.timeline_contents {
-		position: relative;
-		width: 100%;
-		max-width: 1024px;
-		margin: auto;
-	}
+	width: 100%;
+	max-width: 1024px;
+	margin: auto;
 
 	div.timeline_event {
 		&.sched_history {
