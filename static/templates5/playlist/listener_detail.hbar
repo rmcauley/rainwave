@@ -1,0 +1,26 @@
+<div class="art_anchor">
+	<div class="art" style="background-image: url({{ avatar }});"></div>
+</div>
+
+<div class="header">
+	<h1>{{ name }}</h1>
+	{{#if _c.user_id == User.id }}
+		<div class="info">
+			<a class="obvious" target="_blank" href="http://rainwave.cc/keys/">
+				{{ $l("manage_your_api_keys") }}
+			</a>
+			<br></br>
+			<br></br>
+			<span>{{ $l("view_your") }}</span>
+			<a class="obvious" target="_blank" href="http://rainwave.cc/pages/user_recent_votes">
+				{{ $l("recent_votes") }}
+			</a>
+			<a class="obvious" target="_blank" href="http://rainwave.cc/pages/all_faves">
+				{{ $l("all_faves") }}
+			</a>
+			<a class="obvious" target="_blank" href="http://rainwave.cc/pages/user_requested_history">
+				{{ $l("request_history") }}
+			</a>
+		</div>
+	{{/if}}
+</div>

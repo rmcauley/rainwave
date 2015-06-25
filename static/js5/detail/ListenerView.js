@@ -1,28 +1,6 @@
 var ListenerView = function(view, json) {
 	"use strict";
-	var art_anchor = $el("div", { "class": "art_anchor" });
-	var art = $el("div", { "class": "art", "style": "background-image: url(" + json.avatar + ")" });
-	art_anchor.appendChild(art);
-	view.el.appendChild(art_anchor);
-
-	var d = $el("div", { "class": "albumview_header" });
-	d.appendChild($el("h1", { "textContent": json.name }));
-	if (json.user_id == User.id) {
-		var d2 = d.appendChild($el("div", { "class": "albumview_info" }));
-		d2.appendChild($el("a", { "href": "http://rainwave.cc/keys/", "class": "link_obvious", "target": "_blank", "textContent": $l("manage_your_api_keys")}));
-		d2.appendChild($el("br"));
-		d2.appendChild($el("a", { "href": "http://rainwave.cc/forums/", "class": "link_obvious", "textContent": $l("logout_in_forums")}));
-		d2.appendChild($el("br"));
-		d2.appendChild($el("br"));
-		d2.appendChild($el("span", { "textContent": $l("view_your")}));
-		d2.appendChild($el("a", { "href": "http://rainwave.cc/pages/user_recent_votes", "target": "_blank", "class": "link_obvious", "textContent": $l("recent_votes")}));
-		d2.appendChild($el("span", { "textContent": ", "}));
-		d2.appendChild($el("a", { "href": "http://rainwave.cc/pages/all_faves", "target": "_blank", "class": "link_obvious", "textContent": $l("all_faves"), "style": "text-transform: lowercase;" }));
-		d2.appendChild($el("span", { "textContent": ", "}));
-		d2.appendChild($el("a", { "href": "http://rainwave.cc/pages/user_requested_history", "target": "_blank", "class": "link_obvious", "textContent": $l("request_history")}));
-		d2.appendChild($el("span", { "textContent": "." }));
-	}
-	view.el.appendChild(d);
+	view.el.appendChild(RWTemplates.detail.listener_detail(json)._root);
 
 	var order = [ 1, 4, 2, 3, 5 ];
 	var colors = {
@@ -36,7 +14,7 @@ var ListenerView = function(view, json) {
 	var chart_height = 180;
 
 	var c = view.el.appendChild($el("div", { "style": "text-align: center;" }));
-	d = c.appendChild($el("ul", { "class": "user_detail_legend"}));
+	var d = c.appendChild($el("ul", { "class": "user_detail_legend"}));
 	for (var i = 0; i < order.length; i++) {
 		d.appendChild($el("li", { "textContent": $l("station_name_" + order[i]), "style": "background-color: " + colors[order[i]] + ";" }));
 	}

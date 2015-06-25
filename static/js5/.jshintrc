@@ -41,6 +41,8 @@
     "Sizing": true,
     "Song": true,
     "SongsTable": true,
+    "SongsTableAlbumSort": true,
+    "SongsTableSorting": true,
     "Timeline": true,
     "User": true,
     "visibilityEventNames": true

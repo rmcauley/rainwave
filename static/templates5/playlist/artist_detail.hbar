@@ -1,0 +1,12 @@
+<div class="header">
+	<h1>{{ artist.name }}</h1>
+</div>
+
+{{#each albums }}
+	{{#if openable }}
+		<h2><a href="#!/album/{{ id }}">{{ name }}</a><h2>
+	{{else}}
+		<h2>{{ name }}</h2>
+	{{/if}}
+	{{>playlist.songtable}}
+{{/each}}
