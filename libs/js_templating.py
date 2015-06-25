@@ -130,11 +130,7 @@ class RainwaveParser(HTMLParser):
 			for i in range(1, len(names) + 1):
 				cname = '.'.join(names[0:i])
 				self.buffr += "if(!_rwt.%s)_rwt.%s={};" % (cname, cname)
-		# "subt" is for "sub-templating" - it is used when called as a sub-template
-		# and we want to make sure that a new root documentFragment is used
-		# if necessary, and that we return the new documentFragment so it can
-		# be appended easily
-		self.buffr += "_rwt.%s=function(_c,_subt){" % template_name
+		self.buffr += "_rwt.%s=function(_c,_proot){" % template_name
 		self.buffr += "\"use strict\";"
 		self.buffr += "_c=_c||{};"
 		self.buffr += "if(!_c.$t)_c.$t={};"
@@ -142,8 +138,8 @@ class RainwaveParser(HTMLParser):
 		# _b is used when the templater calls @some_var
 		self.buffr += "var _b=_c;"
 		self.buffr += "var _r;"
-		self.buffr += "if(!_c.$t._root){_c.$t._root=_d.createDocumentFragment();_r=_c.$t._root;}"
-		self.buffr += "else if(_subt){_r=_d.createDocumentFragment();}"
+		self.buffr += "if(!_c.$t._root && !_proot){_c.$t._root=_d.createDocumentFragment();}"
+		self.buffr += "else if(_proot){_r=_proot}"
 		self.buffr += "if(!_r){_r=_c.$t._root;}"
 		# I've tried modifying the documentFragment prototype.  Browsers don't like that. :)
 		# So we do a bit of function-copying here in the JS.
@@ -155,7 +151,7 @@ class RainwaveParser(HTMLParser):
 			raise Exception("%s unclosed stack: %s" % (self.name, repr(self.stack)))
 		if len(self.tree):
 			raise Exception("%s unclosed tags: %s" % (self.name, repr(self.tree_names)))
-		self.buffr += "if (_subt)return _r;"
+		self.buffr += "if (_proot)return _r;"
 		self.buffr += "return _c.$t;"
 		self.buffr += "};"
 		return self.buffr
@@ -259,7 +255,10 @@ class RainwaveParser(HTMLParser):
 		self.buffr += "}"
 
 	def handle_subtemplate(self, template_name):
-		self.handle_append("RWTemplates.%s(_c,true)" % template_name)
+		if len(self.tree) == 0:
+			self.buffr += "RWTemplates.%s(_c, _r);" % template_name
+		else:
+			self.buffr += "RWTemplates.%s(_c, %s);" % (template_name, self.tree[-1])
 
 	def handle_if(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
