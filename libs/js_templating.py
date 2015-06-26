@@ -29,6 +29,7 @@
 #    - {{#if}} cannot be used inside < >, e.g. <a {{#if href}}href="hello"{{/if}}>
 #    - {{#if}} must contain whole elements, e.g. you cannot do this:
 #            {{#if href}} <a href="href"> {{#else}} <a> {{/if}} something </a>
+#    - {{else}} is {{#else}}, unlike Handlebars
 #
 # Some handy things to know:
 #
@@ -137,15 +138,14 @@ class RainwaveParser(HTMLParser):
 		# _b?! ... I don't know what else I can call the root context
 		# _b is used when the templater calls @some_var
 		self.buffr += "var _b=_c;"
-		self.buffr += "var _r;"
-		self.buffr += "if(!_c.$t._root && !_proot){_c.$t._root=_d.createDocumentFragment();}"
-		self.buffr += "else if(_proot){_r=_proot}"
-		self.buffr += "if(!_r){_r=_c.$t._root;}"
+		self.buffr += "var _r=_proot||_c.$t._root||_d.createDocumentFragment();"
+		self.buffr += "if(!_c.$t._root){_c.$t._root=_r;}"
 		# I've tried modifying the documentFragment prototype.  Browsers don't like that. :)
 		# So we do a bit of function-copying here in the JS.
 		self.buffr += "_r.a=_r.appendChild;"
 
 	def close(self, *args, **kwargs):
+		self.handle_data(None)
 		HTMLParser.close(self, *args, **kwargs)
 		if len(self.stack):
 			raise Exception("%s unclosed stack: %s" % (self.name, repr(self.stack)))
@@ -191,6 +191,8 @@ class RainwaveParser(HTMLParser):
 	def handle_endtag(self, tag):
 		self.handle_data(None)
 		try:
+			if tag != self.tree_names[-1][0]:
+				raise Exception("%s has mismatched open/close tags. (%s/%s)" % (self.name, tag, self.tree_names[-1][0]))
 			self.tree.pop()
 			self.tree_names.pop()
 		except IndexError:
