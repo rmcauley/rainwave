@@ -20,13 +20,10 @@
 				</a>
 			</li>
 
-			{{#if ^Prefs.get("advanced") }}
+			{{#if ^User.user_id > 1 }}
 				<li class="menu_link">
 					<a bind="settings_link"><svg use="settings"></svg></a>
 				</li>
-			{{/if}}
-
-			{{#if ^User.user_id > 1 }}
 				<li bind="user_link" class="user_info">
 					<a class="link">{{ ^User.username }}</a>
 					<img class="avatar" src="{{ ^User.avatar }}" />

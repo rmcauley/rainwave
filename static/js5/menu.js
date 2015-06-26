@@ -43,7 +43,7 @@ var Menu = function() {
 		template.station_select.on("click", open_station_select);
 
 		if (template.settings_link) {
-			// TODO: settings link
+			template.settings_link.addEventListener("click", SettingsWindow);
 		}
 
 	};

@@ -7,7 +7,7 @@
 			<td class="url">
 				{{#if url }}
 					<a href="{{ url }}" target="_blank">
-						<img src="/static/images4/link_external.svg" class="link_external">
+						<img src="/static/images4/link_external.svg" class="link_external" />
 					</a>
 				{{/if}}
 			</td>
