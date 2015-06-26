@@ -1,6 +1,6 @@
 var ListenerView = function(view, json) {
 	"use strict";
-	view.el.appendChild(RWTemplates.detail.listener_detail(json)._root);
+	view.el.appendChild(RWTemplates.detail.listener(json)._root);
 
 	var order = [ 1, 4, 2, 3, 5 ];
 	var colors = {

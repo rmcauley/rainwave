@@ -30,9 +30,10 @@ var AlbumViewRatingPieChart = function(ctx, album) {
 var AlbumView = function(view, album) {
 	"use strict";
 
+	album.songs.sort(SongsTableSorting);
+
 	var template = RWTemplates.album(album);
 	AlbumArt(album.art, template.art);
-
 	view.el.appendChild(template._root);
 
 	if (User.sid == 5) {
@@ -44,15 +45,15 @@ var AlbumView = function(view, album) {
 		for (i in songs) {
 			var h2 = document.createElement("h2");
 			h2.textContent = $l("songs_from", { "station": $l("station_name_" + i) });
-			view.el.appendChild(SongsTable(songs[i], SITE_CONFIG.album_view_columns));
+			view.el.appendChild(h2);
+			view.el.appendChild(RWTemplates.playlist.songstable({ "songs": songs[i] }));
 		}
 	}
 	else {
-		view.el.appendChild(SongsTable(album.songs, SITE_CONFIG.album_view_columns));
+		view.el.appendChild(RWTemplates.playlist.songstable({ "songs": album.songs }));
 	}
 
-	// TODO: don't do this if the view isn't showing it / if it's mobile
-	AlbumViewRatingPieChart(template.rating_graph.getContext("2d"), album);
+	if (!MOBILE) AlbumViewRatingPieChart(template.rating_graph.getContext("2d"), album);
 
 	return view.el;
 };

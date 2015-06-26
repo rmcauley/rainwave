@@ -27,7 +27,7 @@ var ArtistView = function(view, json) {
 		albums_sid.sort(SongsTableAlbumSort);
 		albums = albums.concat(albums_sid);
 	}
-	view.el.appendChild(RWTemplates.playlist.artist_detail({ "artist": json, "albums": albums }));
+	view.el.appendChild(RWTemplates.playlist.artist({ "artist": json, "albums": albums }));
 
 	return view.el;
 };

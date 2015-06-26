@@ -13,7 +13,7 @@ var GroupView = function(view, json) {
 		albums.push(a);
 	}
 	albums.sort(SongsTableAlbumSort);
-	view.el.appendChild(RWTemplates.playlist.group_detail({ "group": json, "albums": albums }));
+	view.el.appendChild(RWTemplates.playlist.group({ "group": json, "albums": albums }));
 
 	return view.el;
 };
