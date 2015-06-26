@@ -1,7 +1,7 @@
 <table>
 	{{#each songs}}
 		<tr class="{{ ^_c.cool ? 'cool' : '' }}" name="cool_class" cool_end="{{ cool_end }}">
-			<td class="request {{ ^_c.requestable : 'requestable' : '' }}">
+			<td class="request {{ ^ _c.requestable ? 'requestable' : '' }}">
 				<img src="/static/images4/request.png" />
 			</td>
 			<td class="url">

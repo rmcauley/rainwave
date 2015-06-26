@@ -20,12 +20,12 @@
 				</a>
 			</li>
 
-			{{#if ^User.user_id > 1 }}
+			{{#if ^User.id > 1 }}
 				<li class="menu_link">
-					<a bind="settings_link"><svg use="settings"></svg></a>
+					<a bind="settings_link">{{ $l("Settings") }}</a>
 				</li>
 				<li bind="user_link" class="user_info">
-					<a class="link">{{ ^User.username }}</a>
+					<a class="link">{{ ^User.name }}</a>
 					<img class="avatar" src="{{ ^User.avatar }}" />
 				</li>
 			{{#else}}

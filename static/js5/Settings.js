@@ -1,4 +1,4 @@
 var SettingsWindow = function() {
 	"use strict";
-	var template = Modal("settings");
+	var template = Modal($l("Settings"), "settings");
 };
