@@ -1,23 +1,35 @@
-body.modal_active {
-	div.header, div.messages, div.sizeable {
-		opacity: 0.3;
+$modal_trans_time: 300ms;
+$initial_height: 0.2;
+
+div.modal_blocker {
+	position: absolute;
+	z-index: 10000;
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+	background: #000;
+	opacity: 0;
+
+	@include transition-wtime($modal_trans_time * 0.8, opacity);
+
+	&.active {
+		opacity: 0.6;
 	}
 }
 
-$window_trans_time: 10000ms;
-$content_trans_time: 2000ms;
-
 div.modal_container {
+	padding: 2px;
 	box-sizing: border-box;
 	position: absolute;
-	opacity: 0;
+	opacity: 0.3;
 	top: 50%;
 	left: 50%;
 	background: #000;
 	z-index: 10001;
 	width: 100%;
-	@include transform(translate(-50%, -50%) scaleX(0));
-	@include transition-wtime($window_trans_time, opacity, transform);
+	@include transform(translate(-50%, -50%) scaleX(0.0) scaleY($initial_height));
+	@include transition-wtime($modal_trans_time, opacity, transform);
 
 	div.content {
 		max-width: 100%;
@@ -31,7 +43,6 @@ div.modal_container {
 		width: 100%;
 		padding-bottom: 2px;
 		border-bottom: 1px solid $blue;
-		margin-bottom: 5px;
 
 		div.bkg {
 			background: $blue;
@@ -49,42 +60,35 @@ div.modal_container {
 	}
 
 	div.main {
-		position: absolute;
 		opacity: 0;
 		height: 600px;
+		margin: 5px auto;
 		padding: 5px;
 		overflow: auto;
 		overflow-y: auto;
 		overflow-x: hidden;
-		left: 50%;
-		@include transform(translate(-50%, 50px));
-		@include transition-wtime($content_trans_time, height, opacity);
-
-		&.open {
-			opacity: 1;
-			@include transform(translate(-50%, 0px));
-		}
+		@include transform(translate(0px, 30px));
+		@include transition-wtime($modal_trans_time * 1.5, opacity, transform);
+		-webkit-transition-delay: $modal_trans_time * 0.5;
+		        transition-delay: $modal_trans_time * 0.5;
 	}
 
-	div.expander {
-		width: 0px;
-		height: 0px;
-
-		-webkit-transition: height $window_trans_time $transfunc $window_trans_time;
-		        transition: height $window_trans_time $transfunc $window_trans_time;
-	}
-
-	&.modal_open {
+	&.open {
 		opacity: 1;
-		@include transform(translate(-50%, -50%));
+		@include transform(translate(-50%, -50%) scaleX(1.0) scaleY($initial_height));
 
-		div.expander {
-			height: 600px;
+		&.full_open {
+			@include transform(translate(-50%, -50%) scaleX(1.0) scaleY(1.0));
+
+			div.main {
+				opacity: 1;
+				@include transform(none);
+			}
 		}
 
 		&.modal_closing {
 			opacity: 0;
-			@include transform(translate(-50%, -40%));
+			@include transform(translate(-50%, -40%) scaleX(1.0) scaleY(1.0) !important);
 		}
 	}
 }

@@ -1,48 +1,61 @@
 var Modal = function() {
 	"use strict";
-	var active_modal;
 
 	var close_modal = function(e, chaining) {
-		if (!chaining) {
-			document.body.classList.remove("modal_active");
+		if (e) {
+			e.preventDefault();
+			e.stopPropagation();
 		}
-		active_modal.classList.add("modal_closing");
-		Fx.chain_transition(active_modal, function() {
-			active_modal.parentNode.removeChild(active_modal);
-		});
+		document.body.classList.remove("modal_active");
+		var modal_to_close;
+		for (var i = 0; i < document.body.children.length; i++) {
+			modal_to_close = document.body.children[i];
+			if (modal_to_close.classList.contains("modal_container") && !modal_to_close.classList.contains("modal_closing")) {
+				modal_to_close.classList.add("modal_closing");
+				Fx.chain_transition(modal_to_close, function(e, el) {
+					el.parentNode.removeChild(el);
+				});
+			}
+		}
 		if (!chaining) {
-			document.body.removeEventListener("click", close_modal);
+			blocker.classList.remove("active");
+			Fx.chain_transition(blocker, function() {
+				if (blocker.parentNode && !blocker.classList.contains("active")) {
+					blocker.parentNode.removeChild(blocker);
+				}
+			});
 		}
 	};
 
 	var modal_class = function(title, template_name, template_object) {
-		if (active_modal) {
-			close_modal(null, true);
-		}
-		else {
-			document.body.classList.add("modal_active");
-			document.body.addEventListener("click", close_modal);
-		}
-
+		close_modal(null, true);
 		var mt = RWTemplates.modal();
 		template_object = template_object || {};
 		template_object._modal_header = title || $l("Notice");
 		var ct = RWTemplates[template_name](template_object);
 		delete(template_object._modal_header);
-		document.body.appendChild(mt.container);
+		mt.content.appendChild(ct._root);
+		mt.container.addEventListener("click", function(e) { e.stopPropagation(); });
+		document.body.insertBefore(blocker, document.body.firstChild);
+		document.body.insertBefore(mt.container, document.body.firstChild);
+		document.body.classList.add("modal_active");
+		// force a re-draw so DOM updates and animation updates don't collide
+		// if we don't do this we actually need to call requestAnimationFrame inside requestAnimationFrame
+		// also causes jshint to spaz.  ignore that.
+		mt.container.offsetHeight;
 		requestAnimationFrame(function() {
-			mt.container.classList.add("modal_open");
-			Fx.chain_transition(mt.expander, function() {
-				mt.content.appendChild(ct._root);
-				requestAnimationFrame(function() {
-					mt.content.classList.add("open");
-				});
+			mt.container.classList.add("open");
+			blocker.classList.add("active");
+			Fx.chain_transition(mt.container, function(e, el) {
+				el.classList.add("full_open");
 			});
 		});
-		active_modal = mt.container;
-
 		return ct;
 	};
+
+	var blocker = document.createElement("div");
+	blocker.className="modal_blocker";
+	blocker.addEventListener("click", close_modal);
 
 	return modal_class;
 }();

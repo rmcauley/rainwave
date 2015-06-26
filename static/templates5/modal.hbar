@@ -8,6 +8,5 @@
 		</div>
 	</div>
 	<div class="content main" bind="content"></div>
-	<div class="expander" bind="expander"></div>
 	<div class="bottom_border"></div>
 </div>
