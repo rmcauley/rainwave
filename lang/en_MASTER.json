@@ -242,6 +242,7 @@
    "__comment__"                 : "Preferences",
 
    "preferences"                                     : "Preferences",
+   "Settings"                                        : "Settings",
    "yes"                                             : "Yep",
    "no"                                              : "Nope",
    "site_mode"                                       : "Site Mode",

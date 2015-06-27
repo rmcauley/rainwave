@@ -26,6 +26,7 @@ var Timeline = function() {
 
 		template = RWTemplates.timeline.timeline();
 		root_template.timeline.parentNode.replaceChild(template.timeline, root_template.timeline);
+		root_template.timeline = template.timeline;
 
 		template.longhist_link.addEventListener("click",
 			function(e) {

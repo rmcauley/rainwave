@@ -1,0 +1,19 @@
+div.lists {
+	position: absolute;
+	z-index: 2;
+	opacity: 0;
+	width: 450px;
+	background: #00C;
+	top: 0px;
+	@include transform(none);
+	@include transition-wtime(300ms, transform, opacity);
+
+	body.simple_f & {
+		opacity: 1;
+	}
+
+	body.playlist & {
+		opacity: 1;
+		@include transform(translateX(-100%));
+	}
+}
