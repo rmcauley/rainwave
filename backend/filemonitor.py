@@ -169,6 +169,8 @@ def _scan_file(filename, sids, raise_exceptions=False):
 			new_mtime = os.stat(filename)[8]
 		except IOError as e:
 			_disable_file(filename)
+		except OSError as e:
+			_disable_file(filename)
 		try:
 			log.debug("scan", u"sids: {} Scanning file: {}".format(sids, filename))
 			# Only scan the file if we don't have a previous mtime for it, or the mtime is different
@@ -189,10 +191,10 @@ def _scan_file(filename, sids, raise_exceptions=False):
 				raise
 	elif _is_image(filename):
 		if not immediate_art:
-			log.debug("scan", "Queueing art scan: %s" % filename)
+			#log.debug("scan", "Queueing art scan: %s" % filename)
 			_album_art_queue.append([filename, sids])
 		else:
-			log.debug("scan", "Scanning art: %s" % filename)
+			#log.debug("scan", "Scanning art: %s" % filename)
 			_process_album_art(filename, sids)
 	return True
 
