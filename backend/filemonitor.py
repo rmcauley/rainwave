@@ -189,8 +189,10 @@ def _scan_file(filename, sids, raise_exceptions=False):
 				raise
 	elif _is_image(filename):
 		if not immediate_art:
+			log.debug("scan", "Queueing art scan: %s" % filename)
 			_album_art_queue.append([filename, sids])
 		else:
+			log.debug("scan", "Scanning art: %s" % filename)
 			_process_album_art(filename, sids)
 	return True
 
