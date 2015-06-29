@@ -168,8 +168,10 @@ def _scan_file(filename, sids, raise_exceptions=False):
 		try:
 			new_mtime = os.stat(filename)[8]
 		except IOError as e:
+			_add_scan_error(filename, e)
 			_disable_file(filename)
 		except OSError as e:
+			_add_scan_error(filename, e)
 			_disable_file(filename)
 		try:
 			log.debug("scan", u"sids: {} Scanning file: {}".format(sids, filename))
@@ -184,6 +186,12 @@ def _scan_file(filename, sids, raise_exceptions=False):
 			else:
 				log.debug("scan", "mtime match, no action taken.")
 				db.c.update("UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s", (filename,))
+		except IOError as e:
+			_add_scan_error(filename, e)
+			_disable_file(filename)
+		except OSError as e:
+			_add_scan_error(filename, e)
+			_disable_file(filename)
 		except Exception as e:
 			_add_scan_error(filename, e)
 			_disable_file(filename)
