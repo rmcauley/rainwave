@@ -153,6 +153,7 @@ def _scan_directory(directory, sids):
 
 def _scan_file(filename, sids, raise_exceptions=False):
 	global _album_art_queue
+	global immediate_art
 
 	s = None
 	try:
