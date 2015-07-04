@@ -47,6 +47,25 @@ var User;
 		for (var i = 0; i < BOOTSTRAP.on_init.length; i++) {
 			BOOTSTRAP.on_init[i](template);
 		}
+
+		template.lists.addEventListener("click", function(e) {
+			e.stopPropagation();
+		});
+
+		template.detail.addEventListener("click", function(e) {
+			e.stopPropagation();
+		});
+
+		template.sizeable_area.addEventListener("click", function(e) {
+			if (Sizing.simple) {
+				Router.change();
+			}
+			// reset the page's open window status if we're not clicking a link
+			if ((e.target.nodeName.toLowerCase() != "a") || !e.target.getAttribute("href")) {
+				document.body.classList.remove("playlist");
+				document.body.classList.remove("requests");
+			}
+		});
 	};
 
 	var draw = function() {
@@ -80,6 +99,8 @@ var User;
 		}
 
 		BOOTSTRAP = null;
+
+		Router.detect_url_change();
 	};
 
 	document.addEventListener("DOMContentLoaded", initialize);

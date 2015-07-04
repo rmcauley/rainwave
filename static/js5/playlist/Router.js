@@ -10,6 +10,13 @@ var Router = function() {
 		tabs.artist = true;
 		tabs.group = true;
 		tabs.listener = true;
+
+		root_template.list_close.addEventListener("click", function() {
+			document.body.classList.remove("playlist");
+			for (var i in tabs) {
+				document.body.classList.remove("playlist_" + i);
+			}
+		});
 	});
 
 	self.get_current_url = function() {
@@ -41,10 +48,32 @@ var Router = function() {
 		}
 		document.body.classList.add("playlist");
 
+		document.body.classList.add("playlist_" + typ);
 		if (id && !isNaN(id)) {
-			document.body.classList.add("playlist_" + typ);
 			// open thingit
 		}
+	};
+
+	self.change = function() {
+		var r = "";
+		for (var i = 0; i < arguments.length; i++) {
+			if (r) r += "/";
+			r += arguments[i];
+		}
+		var new_url = decodeURI(location.href);
+		if (new_url.indexOf("#") >= 0) {
+			new_url = new_url.substring(0, new_url.indexOf("#")) + "#!/" + r;
+		}
+		else {
+			new_url = new_url + "#!/" + r;
+		}
+		if (old_url == new_url) {
+			old_url = null;
+		}
+		else {
+			location.replace(new_url);
+		}
+		self.detect_url_change();
 	};
 
 	window.onhashchange = self.detect_url_change;

@@ -9,11 +9,14 @@
 <div bind="sizeable_area" class="sizeable">
 	<div bind="timeline"></div>
 	<div bind="lists" class="lists" >
+		<div class="list_close" bind="list_close">
+			<img src="/static/images4/cancel.png" alt="X" />
+		</div>
 		<ul>
-			<li bind="album_tab">{{ $l("Albums") }}</li>
-			<li bind="artist_tab">{{ $l("Artists") }}</li>
-			<li bind="group_tab">{{ $l("groups_tab_title") }}</li>
-			<li bind="listener_tab">{{ $l("Listeners") }}</li>
+			<a href="#!/album"><li class="album_tab">{{ $l("Albums") }}</li></a>
+			<a href="#!/artist"><li class="artist_tab">{{ $l("Artists") }}</li></a>
+			<a href="#!/group"><li class="group_tab">{{ $l("groups_tab_title") }}</li></a>
+			<a href="#!/listener"><li class="listener_tab">{{ $l("Listeners") }}</li></a>
 		</ul>
 		<div bind="album_list" class="list album_list"></div>
 		<div bind="artist_list" class="list artist_list"></div>

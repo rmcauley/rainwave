@@ -25,7 +25,10 @@ var Song = function(self, parent_event) {
 		Fave.register(self.albums[0], true);
 	}
 
-	self.vote = function(evt) {
+	self.vote = function(e) {
+		if ((e.target.nodeName.toLowerCase() == "a") && e.target.getAttribute("href")) {
+			return;
+		}
 		if (self.el.classList.contains("voting_registered") || self.el.classList.contains("voting_clicked")) {
 			return;
 		}

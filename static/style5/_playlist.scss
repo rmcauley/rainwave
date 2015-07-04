@@ -1,9 +1,10 @@
 div.lists {
 	position: absolute;
-	z-index: 2;
+	z-index: 100;
 	opacity: 0;
 	width: 450px;
-	background: #00C;
+	background: #272727;
+	border-left: solid 1px #555; 
 	top: 0px;
 	@include transform(none);
 	@include transition-wtime(300ms, transform, opacity);
@@ -15,5 +16,60 @@ div.lists {
 	body.playlist & {
 		opacity: 1;
 		@include transform(translateX(-100%));
+	}
+
+	body.simple & div.list_close {
+		position: absolute;
+		left: 430px;
+		top: 12px;
+		cursor: pointer;
+		opacity: 0.5;
+		@include transition-wtime(300ms, opacity);
+
+		&:hover {
+			opacity: 1;
+		}
+
+		img {
+			width: 14px;
+			height: 14px;
+		}
+	}
+
+	ul {
+		height: 25px;
+		padding-left: 0;
+		margin: 10px 0 0 0;
+		border-bottom: 1px solid $vvdarktext;
+		list-style: none;
+		white-space: nowrap;
+
+
+		li {
+			display: inline-block;
+			height: 25px;
+			padding: 0 10px;
+			cursor: pointer;
+			color: $vdarktext;
+			border-bottom: 1px solid transparent;
+			@include transition(LINKCOLOR, background, opacity, border-bottom);
+
+			&:hover {
+				color: $linkhover;
+			}
+
+			&.list_tab_open {
+				color: $text;
+				border-bottom: 1px solid $orange;
+			}
+
+			body.playlist_artist &.artist_tab,
+			body.playlist_group &.group_tab,
+			body.playlist_album &.album_tab,
+			body.playlist_listener &.listener_tab {
+				color: $text;
+				border-bottom: 1px solid $orange;
+			}
+		}
 	}
 }
