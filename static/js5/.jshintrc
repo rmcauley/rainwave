@@ -17,6 +17,7 @@
     "$l": true,
     "$l_has": true,
     "AlbumArt": true,
+    "AlbumList": true,
     "AlbumViewColors": true,
     "AlbumViewRatingPieChart": true,
     "Artists": true,

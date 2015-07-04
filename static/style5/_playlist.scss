@@ -72,4 +72,51 @@ div.lists {
 			}
 		}
 	}
+
+	div.searchbox_container {
+		position: relative;
+		padding: 10px;
+
+		img {
+			position: absolute;
+			height: 15px;
+			width: 15px;
+			left: 15px;
+			top: 16px;
+			opacity: 0.5;
+			@include transition-wtime(300ms, opacity);
+		}
+
+		input {
+			box-sizing: border-box;
+			border: 1px solid $vdarktext;
+			background: #171717;
+			color: $text;
+			opacity: 0.6;
+			font: inherit;
+			height: 28px;
+			width: 100%;
+			padding-left: 25px;
+			padding-right: 4px;
+			@include transition-wtime(300ms, border-color, opacity);
+
+			&.active {
+				border-color: $blue;
+				opacity: 1;
+
+				+ img {
+					opacity: 1;
+				}
+			}
+
+			&:focus {
+				border-color: $orange !important;
+				opacity: 1;
+
+				+ img {
+					opacity: 1;
+				}
+			}
+		}
+	}
 }

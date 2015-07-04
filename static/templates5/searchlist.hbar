@@ -1,0 +1,8 @@
+<div class="searchbox_container">
+	<input type="text" bind="searchbox" class="searchbox" />
+	<img src="/static/images4/search.png"/>
+</div>
+
+<div bind="scrollblock" class="scrollblock">
+	<div bind="stretcher" class="stretcher"></div>
+</div>

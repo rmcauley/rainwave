@@ -5,7 +5,7 @@ var Router = function() {
 	var old_url;
 	var tabs = {};
 
-	BOOTSTRAP.on_init.push(function(root_template){ 
+	BOOTSTRAP.on_init.push(function(root_template) { 
 		tabs.album = true;
 		tabs.artist = true;
 		tabs.group = true;
@@ -17,6 +17,8 @@ var Router = function() {
 				document.body.classList.remove("playlist_" + i);
 			}
 		});
+
+		AlbumList(root_template.album_list);
 	});
 
 	self.get_current_url = function() {
