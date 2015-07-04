@@ -441,7 +441,9 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		if (data_item) {
 			var new_index = visible.indexOf(data_item.id);
 			if ((new_index > (current_scroll_index + 7)) && (new_index < (current_scroll_index + num_items_to_display - 7))) {
-				// nothing necessary
+				if (!current_scroll_index) {
+					self.redraw_current_position();
+				}
 			}
 			// position at the lower edge
 			else if (new_index >= (current_scroll_index + num_items_to_display - 8)) {
