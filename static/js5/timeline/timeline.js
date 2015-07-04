@@ -75,7 +75,7 @@ var Timeline = function() {
 		sched_current.change_to_now_playing();
 		sched_current.show_header();
 		if (sched_current.el.parentNode != el) {
-			sched_current.el.style[Fx.transform] = "translateY(" + (Sizing.height() + (unappended_events * 2 * Sizing.song_size)) + "px)";
+			sched_current.el.style[Fx.transform] = "translateY(" + (Sizing.height + (unappended_events * 2 * Sizing.song_size)) + "px)";
 			unappended_events++;
 		}
 		new_events.push(sched_current);
@@ -91,7 +91,7 @@ var Timeline = function() {
 			}
 			sched_next[i].change_to_coming_up();
 			if (sched_next[i].el.parentNode != el) {
-				sched_next[i].el.style[Fx.transform] = "translateY(" + (Sizing.height() + (unappended_events * 2 * Sizing.song_size)) + "px)";
+				sched_next[i].el.style[Fx.transform] = "translateY(" + (Sizing.height + (unappended_events * 2 * Sizing.song_size)) + "px)";
 				unappended_events++;
 			}
 			new_events.push(sched_next[i]);

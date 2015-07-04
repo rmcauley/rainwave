@@ -1,5 +1,6 @@
 <div bind="measure_box" class="measure_box">
 	<div bind="scroller_size" style="width: 100px; height: 100px; overflow: scroll;"></div>
+	<div class="list"><div class="item" bind="list_item"></div></div>
 </div>
 
 <div bind="menu"></div>

@@ -1,10 +1,7 @@
 var Sizing = function() {
 	"use strict";
 	var self = {};
-	var sizeable_area = null;
-	var measure_area = null;
 	var window_callbacks = [];
-	var height, width, sizeable_area_size;
 	var index_t;
 
 	self.simple = false;
@@ -12,33 +9,34 @@ var Sizing = function() {
 	self.song_size_np = 0;
 	self.song_size = 0;
 	self.timeline_header_size = 0;
-
-	self.height = function() { return height; };
-	self.width = function() { return width; };
-	self.sizeable_area_height = function() { return sizeable_area_size; };
+	self.list_item_height = 0;
+	self.height = 0;
+	self.width = 0;
+	self.sizeable_area_height = 0;
 
 	self.add_resize_callback = function(cb) {
 		window_callbacks.push(cb);
 	};
 
 	self.trigger_resize = function() {
-		height = document.documentElement.clientHeight;
-		width = document.documentElement.clientWidth;
+		self.height = document.documentElement.clientHeight;
+		self.width = document.documentElement.clientWidth;
+		self.list_item_height = index_t.list_item.offsetHeight;
 		var right_of_timeline;
-		if (index_t.timeline.parentNode == sizeable_area) {
+		if (index_t.timeline.parentNode == index_t.sizeable_area) {
 			right_of_timeline = index_t.timeline.offsetLeft + index_t.timeline.offsetWidth;
 		}
 		else {
 			right_of_timeline = index_t.timeline.parentNode.offsetLeft + index_t.timeline.parentNode.offsetWidth;
 		}
-		sizeable_area_size = height - sizeable_area.offsetTop;
-		sizeable_area.style.height = sizeable_area_size + "px";
+		self.sizeable_area_size = self.height - index_t.sizeable_area.offsetTop;
+		index_t.sizeable_area.style.height = self.sizeable_area_size + "px";
 
-		for (var i = 0; i < sizeable_area.childNodes.length; i++) {
-			sizeable_area.childNodes[i].style.height = sizeable_area_size + "px";
+		for (var i = 0; i < index_t.sizeable_area.childNodes.length; i++) {
+			index_t.sizeable_area.childNodes[i].style.height = self.sizeable_area_size + "px";
 		}
 
-		if (width < 1050) {
+		if (self.width < 1050) {
 			document.body.classList.add("simple");
 			document.body.classList.add("simple_f");
 			document.body.classList.remove("full");
@@ -47,7 +45,7 @@ var Sizing = function() {
 			index_t.lists.style.left = "100%";
 			index_t.detail.style.left = "100%";
 
-			if (width < 600) {
+			if (self.width < 600) {
 				document.body.classList.add("mobile");
 			}
 		}
@@ -69,7 +67,7 @@ var Sizing = function() {
 				index_t.detail.style.left = right_of_timeline + "px";
 			}
 
-			if (width < 1366) {
+			if (self.width < 1366) {
 				document.body.classList.add("small");
 				document.body.classList.remove("normal");
 			}
@@ -89,14 +87,14 @@ var Sizing = function() {
 	};
 
 	self.add_to_measure = function(el) {
-		if (el.parentNode != measure_area) {
-			measure_area.appendChild(el);
+		if (el.parentNode != self.measure_area) {
+			self.measure_area.appendChild(el);
 		}
 	};
 
 	self.measure_el = function(el) {
-		if (el.parentNode != measure_area) {
-			measure_area.appendChild(el);
+		if (el.parentNode != self.measure_area) {
+			self.measure_area.appendChild(el);
 		}
 		var x = el.offsetWidth;
 		var y = el.scrollHeight || el.offsetHeight;
@@ -106,8 +104,6 @@ var Sizing = function() {
 	window.addEventListener("resize", self.trigger_resize);
 
 	BOOTSTRAP.on_init.push(function(t) {
-		measure_area = t.measure_box;
-		sizeable_area = t.sizeable_area;
 		index_t = t;
 	});
 

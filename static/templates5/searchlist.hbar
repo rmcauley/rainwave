@@ -3,6 +3,6 @@
 	<img src="/static/images4/search.png"/>
 </div>
 
-<div bind="scrollblock" class="scrollblock">
+<div bind="scrollable" class="scrollable">
 	<div bind="stretcher" class="stretcher"></div>
 </div>

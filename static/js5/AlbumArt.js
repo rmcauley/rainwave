@@ -14,13 +14,13 @@ var AlbumArt = function() {
 		var y = e.pageY ? e.pageY : e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 
 		tgt.classList.add("art_expanded");
-		if ((x < (Sizing.width() - 270))) {
+		if ((x < (Sizing.width - 270))) {
 			tgt.classList.add("art_expand_right");
 		}
 		else {
 			tgt.classList.add("art_expand_left");
 		}
-		if ((y < (Sizing.height() - 270))) {
+		if ((y < (Sizing.height - 270))) {
 			tgt.classList.add("art_expand_down");
 		}
 		else {

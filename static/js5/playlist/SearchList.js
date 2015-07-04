@@ -7,9 +7,7 @@
 //	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses 'id')
 
-var PLAYLIST_ITEM_HEIGHT = 24;
-
-var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_key) {
+var SearchList = function(el, search_box, stretching_el, sort_key, search_key) {
 	"use strict";
 	el.parentNode.style.display = "none";
 
@@ -18,10 +16,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.search_key = search_key || "id";
 	self.auto_trim = false;
 	self.el = el;
-	self.search_box_input = $el("div", { "class": "searchlist_input", "textContent": $l("filter") });
-	var scrollbar = Scrollbar.create(stretching_el.parentNode, scrollbar_handle, 0);
-	scrollbar.set_handle_margin_bottom(5);
-	// see bottom of this object for event binding
+	var scrollbar = Scrollbar.create(el);
 
 	var data = {};
 	self.data = data;			// keys() are the object IDs (e.g. data[album.id])
@@ -63,7 +58,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		}
 
 		if (search_string.length === 0) {
-			self.update_view();
+			self.unhide();
 			hidden = [];
 			current_scroll_index = false;
 			self.recalculate();
@@ -122,52 +117,52 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.hotkey_mode_disable = hotkey_mode_disable;
 
 	var hotkey_mode_handle = function(character) {
-		try {
-			if ((parseInt(character) >= 1) && (parseInt(character) <= 5)) {
-				Schedule.rate_current_song(parseInt(character));
-			}
-			else if (character == "q") Schedule.rate_current_song(1.5);
-			else if (character == "w") Schedule.rate_current_song(2.5);
-			else if (character == "e") Schedule.rate_current_song(3.5);
-			else if (character == "r") Schedule.rate_current_song(4.5);
+		// try {
+		// 	if ((parseInt(character) >= 1) && (parseInt(character) <= 5)) {
+		// 		Schedule.rate_current_song(parseInt(character));
+		// 	}
+		// 	else if (character == "q") Schedule.rate_current_song(1.5);
+		// 	else if (character == "w") Schedule.rate_current_song(2.5);
+		// 	else if (character == "e") Schedule.rate_current_song(3.5);
+		// 	else if (character == "r") Schedule.rate_current_song(4.5);
 
-			else if (character == "a") Schedule.vote(0, 0);
-			else if (character == "s") Schedule.vote(0, 1);
-			else if (character == "d") Schedule.vote(0, 2);
-			else if (character == "z") Schedule.vote(1, 0);
-			else if (character == "y") Schedule.vote(1, 0); 		// quertz layout
-			else if (character == "x") Schedule.vote(1, 1);
-			else if (character == "c") Schedule.vote(1, 2);
-			else {
-				hotkey_mode_error("invalid_hotkey");
-				return true;
-			}
-			hotkey_mode_disable();
-			return true;
-		}
-		catch (err) {
-			if ("is_rw" in err) {
-				hotkey_mode_error(err.tl_key);
-				return true;
-			}
-			else {
-				throw(err);
-			}
-		}
+		// 	else if (character == "a") Schedule.vote(0, 0);
+		// 	else if (character == "s") Schedule.vote(0, 1);
+		// 	else if (character == "d") Schedule.vote(0, 2);
+		// 	else if (character == "z") Schedule.vote(1, 0);
+		// 	else if (character == "y") Schedule.vote(1, 0); 		// quertz layout
+		// 	else if (character == "x") Schedule.vote(1, 1);
+		// 	else if (character == "c") Schedule.vote(1, 2);
+		// 	else {
+		// 		hotkey_mode_error("invalid_hotkey");
+		// 		return true;
+		// 	}
+		// 	hotkey_mode_disable();
+		// 	return true;
+		// }
+		// catch (err) {
+		// 	if ("is_rw" in err) {
+		// 		hotkey_mode_error(err.tl_key);
+		// 		return true;
+		// 	}
+		// 	else {
+		// 		throw(err);
+		// 	}
+		// }
 	};
 
 	var hotkey_mode_error = function(tl_key) {
-		hotkey_mode_disable();
-		$add_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
-		self.search_box_input.textContent = $l(tl_key);
-		hotkey_timeout = setTimeout(function() {
-			$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
-			self.search_box_input.textContent = $l("filter");
-			hotkey_timeout = null;
-			}, 6000);
+		// hotkey_mode_disable();
+		// $add_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
+		// search_box.setAttribute("placeholder",  $l(tl_key));
+		// hotkey_timeout = setTimeout(function() {
+		// 	$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
+		// 	search_box.setAttribute("placeholder", $l("filter"));
+		// 	hotkey_timeout = null;
+		// 	}, 6000);
 	};
 
-	self.update_view = function(to_reshow) {
+	self.unhide = function(to_reshow) {
 		to_reshow = to_reshow || hidden;
 		if (visible.length === 0) {
 			to_reshow.sort(self.sort_function);
@@ -180,14 +175,14 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.recalculate = function(force_height_check) {
-		var full_height = PLAYLIST_ITEM_HEIGHT * visible.length;
+		var full_height = Sizing.list_item_height * visible.length;
 		if (force_height_check || (full_height != current_height)) {
 			stretching_el.style.height = full_height + "px";
 			scrollbar.recalculate(full_height, null, true);
 			scrollbar.refresh();
 			current_height = full_height;
 		}
-		num_items_to_display = Math.ceil(scrollbar.offset_height / PLAYLIST_ITEM_HEIGHT) + 1;
+		num_items_to_display = Math.ceil(scrollbar.offset_height / Sizing.list_item_height) + 1;
 	};
 
 	self.sort_function = function(a, b) {
@@ -208,7 +203,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 
 	self.remove_key_nav_highlight = function() {
 		if (current_key_nav_id) {
-			$remove_class(data[current_key_nav_id]._el, "searchtable_key_nav_hover");
+			data[current_key_nav_id]._el.classList.remove("hover");
 			current_key_nav_id = null;
 		}
 	};
@@ -217,7 +212,7 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		original_key_nav = false;
 		self.remove_key_nav_highlight();
 		current_key_nav_id = id;
-		$add_class(data[current_key_nav_id]._el, "searchtable_key_nav_hover");
+		data[current_key_nav_id]._el.classList.add("hover");
 		if (!no_scroll) self.scroll_to(data[id]);
 	};
 
@@ -286,7 +281,6 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		}
 		else if (search_string.length > 1) {
 			search_string = search_string.substring(0, search_string.length - 1);
-			self.search_box_input.textContent = search_string;
 
 			var use_search_string = Formatting.make_searchable_string(search_string);
 			var revisible = [];
@@ -295,10 +289,8 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 					revisible.push(hidden.splice(i, 1)[0]);
 				}
 			}
-			if (revisible.length > 0) {
-				$remove_class(self.search_box_input.parentNode.parentNode, "no_results");
-			}
-			self.update_view(revisible);
+			self.unhide(revisible);
+			self.do_searchbar_style();
 
 			current_scroll_index = false;
 			self.recalculate();
@@ -312,25 +304,13 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		return false;
 	};
 
-	self.key_nav_add_character = function(character) {
-		if (hotkey_mode_on) {
-			if (hotkey_mode_handle(character)) {
-				return true;
-			}
-		}
-		else if ((search_string.length === 0) && (character === " ")) {
-			hotkey_mode_enable();
-			return true;
-		}
+	var do_search = function(new_string) {
 		var first_time = search_string.length === 0 ? true : false;
 		if (first_time) {
-			clear_searchbar();
 			original_key_nav = current_key_nav_id;
 			self.remove_key_nav_highlight();
 		}
-		search_string = search_string + character;
-		self.search_box_input.textContent = search_string;
-		$add_class(self.search_box_input.parentNode, "searchlist_input_active");
+		search_string = new_string;
 		var use_search_string = Formatting.make_searchable_string(search_string);
 		var new_visible = [];
 		for (var i = 0; i < visible.length; i++) {
@@ -347,7 +327,6 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		}
 		current_scroll_index = false;
 		if (visible.length === 0) {
-			$add_class(self.search_box_input.parentNode.parentNode, "no_results");
 			self.recalculate();
 			self.reposition();
 		}
@@ -366,23 +345,37 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		else if (visible.length <= current_scroll_index) {
 			backspace_scroll_top = scrollbar.scroll_top;
 			self.recalculate();
-			scrollbar.scroll_to((visible.length - num_items_to_display) * PLAYLIST_ITEM_HEIGHT);
+			scrollbar.scroll_to((visible.length - num_items_to_display) * Sizing.list_item_height);
 			self.reposition();
 		}
 		else {
 			self.recalculate();
 			self.reposition();
 		}
+		self.do_searchbar_style();
+	};
+
+	self.key_nav_add_character = function(character) {
+		if (hotkey_mode_on) {
+			if (hotkey_mode_handle(character)) {
+				return true;
+			}
+		}
+		else if ((search_string.length === 0) && (character === " ")) {
+			hotkey_mode_enable();
+			return true;
+		}
+		do_search(search_string + character);
 		return true;
 	};
 
 	self.clear_search = function() {
 		backspace_scroll_top = null;
-		clear_searchbar();
 		search_string = "";
+		self.do_searchbar_style();
 		if (hidden.length === 0) return;
 
-		self.update_view();
+		self.unhide();
 		hidden = [];
 
 		current_scroll_index = false;
@@ -401,38 +394,39 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		ignore_original_scroll_top = false;
 	};
 
+	search_box.addEventListener("input", function() {
+		if (search_box.value.length < search_string) {
+			self.unhide();
+		}
+		do_search(search_box.value);
+	});
+
 	self.do_searchbar_style = function() {
 		if (hotkey_timeout) clearTimeout(hotkey_timeout);
-		$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
 		if (hotkey_mode_on) {
-			$add_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
-			self.search_box_input.textContent = $l("hotkey_mode");
+			search_box.classList.add("active");
+			search_box.value = "";
+			search_box.setAttribute("placeholder", $l("hotkey_mode"));
 			return;
 		}
 		else {
-			$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode");
+			search_box.classList.remove("active");
 		}
 
 		if (search_string && (visible.length === 0)) {
-			$add_class(self.search_box_input.parentNode.parentNode, "no_results");
+			search_box.classList.add("error");
 		}
 		else {
-			$remove_class(self.search_box_input.parentNode.parentNode, "no_results");
+			search_box.classList.remove("error");
 		}
 
 		if (search_string.length > 0) {
-			self.search_box_input.textContent = search_string;
-			$add_class(self.search_box_input.parentNode, "searchlist_input_active");
+			search_box.value = search_string;
+			search_box.classList.add("active");
 		}
 		else {
-			self.search_box_input.textContent = $l("filter");
-			$remove_class(self.search_box_input.parentNode, "searchlist_input_active");
+			search_box.classList.remove("active");
 		}
-	};
-
-	var clear_searchbar = function() {
-		search_string = "";
-		self.do_searchbar_style();
 	};
 
 	// SCROLL **************************
@@ -447,11 +441,11 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 			}
 			// position at the lower edge
 			else if (new_index >= (current_scroll_index + num_items_to_display - 8)) {
-				scrollbar.scroll_to(Math.min(scrollbar.scroll_top_max, (new_index - num_items_to_display + 8) * PLAYLIST_ITEM_HEIGHT));
+				scrollbar.scroll_to(Math.min(scrollbar.scroll_top_max, (new_index - num_items_to_display + 8) * Sizing.list_item_height));
 			}
 			// position at the higher edge
 			else {
-				scrollbar.scroll_to(Math.max(0, (new_index - 7) * PLAYLIST_ITEM_HEIGHT));
+				scrollbar.scroll_to(Math.max(0, (new_index - 7) * Sizing.list_item_height));
 			}
 		}
 	};
@@ -475,10 +469,10 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	};
 
 	self.reposition = function() {
-		var new_index = Math.floor(scrollbar.scroll_top / PLAYLIST_ITEM_HEIGHT);
+		var new_index = Math.floor(scrollbar.scroll_top / Sizing.list_item_height);
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
 
-		var new_margin = (scrollbar.scroll_top - (PLAYLIST_ITEM_HEIGHT * new_index));
+		var new_margin = (scrollbar.scroll_top - (Sizing.list_item_height * new_index));
 		new_margin = new_margin ? -new_margin : 0;
 		self.el.style.marginTop = new_margin + "px";
 		self.el.style.top = scrollbar.scroll_top + "px";
@@ -527,9 +521,9 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 	self.set_new_open = function(id) {
 		if (!(id in data)) return;
 		if (current_open_id) {
-			$remove_class(data[current_open_id]._el, "searchlist_open_item");
+			data[current_open_id]._el.classList.remove("open");
 		}
-		$add_class(data[id]._el, "searchlist_open_item");
+		data[id]._el.classList.add("open");
 		current_open_id = id;
 		self.key_nav_highlight(id);
 		if (search_string.length > 0) {
@@ -537,21 +531,12 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		}
 	};
 
-	// FAKING A TEXT FIELD **************
-
-	var input_click = function(e) {
-		if (search_string.length === 0) {
-			self.search_box_input.textContent = $l("typeanywhere");
-		}
-	};
-
-	self.search_box_input.addEventListener("click", input_click);
-
-	self.on_resize = function() {
+	Sizing.add_resize_callback(function() {
+		el.style.height = (Sizing.sizeable_area_height - 74) + "px";
 		current_scroll_index = false;
 		self.recalculate(true);
 		self.reposition();
-	};
+	});
 
 	scrollbar.reposition_hook = self.reposition;
 

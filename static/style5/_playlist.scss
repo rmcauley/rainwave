@@ -76,6 +76,7 @@ div.lists {
 	div.searchbox_container {
 		position: relative;
 		padding: 10px;
+		height: 28px;
 
 		img {
 			position: absolute;
@@ -99,6 +100,10 @@ div.lists {
 			padding-left: 25px;
 			padding-right: 4px;
 			@include transition-wtime(300ms, border-color, opacity);
+
+			&::-webkit-input-placeholder, &:-moz-placeholder, &::-moz-placeholder, &:-ms-input-placeholder {
+				color: #FFF;
+			}
 
 			&.active {
 				border-color: $blue;
