@@ -1,5 +1,5 @@
 <div class="searchbox_container">
-	<input type="text" bind="searchbox" class="searchbox" />
+	<input type="text" bind="search_box" />
 	<img src="/static/images4/search.png"/>
 </div>
 

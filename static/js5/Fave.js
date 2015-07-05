@@ -1,6 +1,7 @@
 var Fave = function(json) {
 	"use strict";
 	var self = {};
+	self.album_callback = null;
 
 	BOOTSTRAP.on_init.push(function(template) {
 		API.add_callback("fave_song_result", song_fave_update);
@@ -24,6 +25,9 @@ var Fave = function(json) {
 
 	var album_fave_update = function(json) {
 		change_fave("afave_" + json.id, json, "album");
+		if (self.album_callback) {
+			self.album_callback(json);
+		}
 	};
 
 	var do_fave = function() {
