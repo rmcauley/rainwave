@@ -348,7 +348,8 @@ class Album(AssociatedMetadata):
 				"JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
 				"JOIN r4_song_group ON (r4_songs.song_id = r4_song_group.song_id) "
 				"JOIN r4_groups USING (group_id) "
-			"WHERE song_verified = TRUE AND album_id = %s",
+			"WHERE song_verified = TRUE AND album_id = %s "
+			"ORDER BY group_name ",
 			(sid, self.id))
 
 		self.data['rating_histogram'] = {}
