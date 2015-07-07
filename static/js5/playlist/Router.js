@@ -32,7 +32,9 @@ var Router = function() {
 	self.detect_url_change = function() {
 		if (old_url != location.href) {
 			old_url = location.href;
-			var new_route = self.get_current_url().split("/");
+			var new_route = self.get_current_url();
+			ga('send', 'pageview', '/' + new_route);
+			new_route = new_route.split("/");
 			if (tabs[new_route[0]]) {
 				self.open_route(new_route[0], new_route[1]);
 			}
