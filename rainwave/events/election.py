@@ -386,7 +386,9 @@ class Election(event.BaseEvent):
 		db.c.update("UPDATE r4_elections SET elec_in_progress = FALSE, elec_used = TRUE WHERE elec_id = %s", (self.id,))
 
 		if len(self.songs) > 0:
-			self.songs[0].add_to_vote_count(self.songs[0].data['entry_votes'], self.sid)
+			# hotfix, can be removed later
+			if self.songs[0] and self.songs[0].data and 'entry_votes' in self.songs[0].data:
+				self.songs[0].add_to_vote_count(self.songs[0].data['entry_votes'], self.sid)
 			self.songs[0].update_last_played(self.sid)
 			self.songs[0].update_rating()
 			self.songs[0].start_cooldown(self.sid)
