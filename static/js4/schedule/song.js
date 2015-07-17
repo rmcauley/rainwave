@@ -63,7 +63,7 @@ var TimelineSong = function() {
 						Prefs.change("stage", 4);
 					}
 				}
-				self.elements.requester.addEventListener("click", function() { DetailView.open_listener(self.data.elec_request_user_id); });
+				self.elements.requester.addEventListener("click", function(e) { DetailView.open_listener(self.data.elec_request_user_id); e.stopPropagation(); });
 			}
 
 			// c for content, this stuff should be pushed aside from the album art
