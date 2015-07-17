@@ -763,9 +763,9 @@ def add_custom_fields():
 	c.update("ALTER TABLE phpbb_users ADD radio_losingrequests	INTEGER		DEFAULT 0")
 	c.update("ALTER TABLE phpbb_users ADD radio_totalvotes		INTEGER		DEFAULT 0")
 	c.update("ALTER TABLE phpbb_users ADD radio_last_active		INTEGER		DEFAULT 0")
-	c.update("ALTER TABLE phpbb_users ADD radio_listenkey		INTEGER		DEFAULT 'TESTKEY'")
-	c.update("ALTER TABLE phpbb_users ADD radio_inactive		INTEGER		DEFAULT TRUE")
-	c.update("ALTER TABLE phpbb_users ADD radio_requests_paused	INTEGER		DEFAULT FALSE")
+	c.update("ALTER TABLE phpbb_users ADD radio_listenkey		TEXT		DEFAULT 'TESTKEY'")
+	c.update("ALTER TABLE phpbb_users ADD radio_inactive		BOOLEAN		DEFAULT TRUE")
+	c.update("ALTER TABLE phpbb_users ADD radio_requests_paused	BOOLEAN		DEFAULT FALSE")
 
 def _fill_test_tables():
 	c.update("INSERT INTO phpbb_ranks (rank_title) VALUES ('Test')")

@@ -310,7 +310,7 @@ def get_favorited_songs_for_requesting(user_id, sid, limit):
 					"AND song_elec_blocked = FALSE "
 					"AND requested_albums.album_id IS NULL "
 				"GROUP BY r4_songs.album_id "
-				"ORDER BY song_fave DESC NULLS LAST, random()
+				"ORDER BY song_fave DESC NULLS LAST, random() "
 				"LIMIT %s "
 			), (user_id, user_id, sid, limit)):
 		favorited.append(row['song_id'])
