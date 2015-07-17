@@ -733,25 +733,13 @@ def _create_test_tables():
 	c.update(" \
 		CREATE TABLE phpbb_users( \
 			user_id					SERIAL		PRIMARY KEY, \
-			radio_totalvotes		INTEGER		DEFAULT 0, \
-			radio_totalratings		INTEGER		DEFAULT 0, \
-			radio_totalmindchange	INTEGER		DEFAULT 0, \
-			radio_totalrequests		INTEGER		DEFAULT 0, \
-			radio_winningvotes			INT		DEFAULT 0, \
-			radio_losingvotes			INT		DEFAULT 0, \
-			radio_winningrequests			INT		DEFAULT 0, \
-			radio_losingrequests			INT		DEFAULT 0, \
-			radio_listenkey			TEXT		DEFAULT 'TESTKEY', \
-			group_id				INT		DEFAULT 1, \
+			group_id				INT			DEFAULT 1, \
 			username				TEXT 		DEFAULT 'Test', \
-			user_new_privmsg			INT		DEFAULT 0, \
+			user_new_privmsg		INT			DEFAULT 0, \
 			user_avatar				TEXT		DEFAULT '', \
-			user_avatar_type			INT		DEFAULT 0, \
+			user_avatar_type		INT			DEFAULT 0, \
 			user_colour             TEXT        DEFAULT 'FFFFFF', \
-			user_rank               INTEGER     DEFAULT 0, \
-			radio_inactive			BOOLEAN		DEFAULT TRUE, \
-			radio_last_active		INT         DEFAULT 0, \
-			radio_requests_paused	BOOLEAN		DEFAULT FALSE \
+			user_rank               INT 	    DEFAULT 0, \
 		)")
 
 	c.update("CREATE TABLE phpbb_sessions("
@@ -763,6 +751,21 @@ def _create_test_tables():
 	c.update("CREATE TABLE phpbb_session_keys(key_id TEXT, user_id INT)")
 
 	c.update("CREATE TABLE phpbb_ranks(rank_id SERIAL PRIMARY KEY, rank_title TEXT)")
+
+def add_custom_fields():
+	c.update("ALTER TABLE phpbb_users ADD radio_totalvotes		INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_totalmindchange	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_totalratings	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_totalrequests	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_winningvotes	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_losingvotes		INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_winningrequests	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_losingrequests	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_totalvotes		INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_last_active		INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_listenkey		INTEGER		DEFAULT 'TESTKEY'")
+	c.update("ALTER TABLE phpbb_users ADD radio_inactive		INTEGER		DEFAULT TRUE")
+	c.update("ALTER TABLE phpbb_users ADD radio_requests_paused	INTEGER		DEFAULT FALSE")
 
 def _fill_test_tables():
 	c.update("INSERT INTO phpbb_ranks (rank_title) VALUES ('Test')")

@@ -13,5 +13,6 @@ libs.config.load(args.config)
 
 libs.db.connect()
 libs.db.create_tables()
+libs.db.add_custom_fields()
 
 sys.exit(0)
