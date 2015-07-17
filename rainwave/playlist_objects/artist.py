@@ -81,6 +81,8 @@ class Artist(AssociatedMetadata):
 			self.data['all_songs'][sid] = {}
 		requestable = True if user_id > 1 else False
 		for song in all_songs:
+			if not song['sid'] in config.station_ids:
+				continue
 			song['requestable'] = requestable and song['requestable']
 			if not song['album_id'] in self.data['all_songs'][song['sid']]:
 				self.data['all_songs'][song['sid']][song['album_id']] = []

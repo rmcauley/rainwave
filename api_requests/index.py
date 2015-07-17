@@ -26,8 +26,8 @@ class Blank(api.web.HTMLRequest):
 @handle_url("/(?:index.html)?")
 class MainIndex(api.web.HTMLRequest):
 	description = "Main Rainwave page."
-	auth_required = False
-	login_required = False
+	auth_required = config.has("index_requires_login") and config.get("index_requires_login")
+	login_required = config.has("index_requires_login") and config.get("index_requires_login")
 	sid_required = False
 	beta = False
 	page_template = "r4_index.html"
