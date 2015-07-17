@@ -5,6 +5,7 @@ var AlbumArt = function() {
 		e.stopPropagation();
 
 		var tgt = this;
+		if (!tgt.classList.contains("art_container")) return;
 		if (tgt.classList.contains("art_expanded")) {
 			normalize_art(e);
 			return;
