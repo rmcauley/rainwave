@@ -249,6 +249,7 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 					"AND song_exists = TRUE "
 					"AND song_cool = FALSE "
 					"AND r4_song_ratings.song_id IS NULL "
+					"AND song_elec_blocked = FALSE "
 					"AND requested_albums.album_id IS NULL "
 			"GROUP BY r4_songs.album_id "
 			"ORDER BY unrated_count DESC "
@@ -270,6 +271,7 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 					"WHERE r4_song_sid.sid = %s "
 						"AND song_exists = TRUE "
 						"AND song_cool = TRUE "
+						"AND song_elec_blocked = FALSE "
 						"AND r4_song_ratings.song_id IS NULL "
 						"AND requested_albums.album_id IS NULL "
 				"GROUP BY r4_songs.album_id "
@@ -304,6 +306,7 @@ def get_favorited_songs_for_requesting(user_id, sid, limit):
 					"AND song_exists = TRUE "
 					"AND song_cool = FALSE "
 					"AND r4_song_ratings.song_fave = TRUE "
+					"AND song_elec_blocked = FALSE "
 					"AND requested_albums.album_id IS NULL "
 				"GROUP BY r4_songs.album_id "), (user_id, user_id, sid)):
 		favorited.append(row['song_id'])
