@@ -18,7 +18,7 @@ var Menu = function() {
 
 	// Make sure the /beta site links to itself
 	if (window.location.href.indexOf("beta") !== -1) {
-		for (var i = 0; i < stations.length; i++) {
+		for (i = 0; i < stations.length; i++) {
 			if (stations[i].url) stations[i].url += "/beta";
 		}
 	}
@@ -39,8 +39,10 @@ var Menu = function() {
 			}
 		}
 
-		template.station_select_header.on("click", close_station_select);
-		template.station_select.on("click", open_station_select);
+		if (stations.length > 1) {
+			template.station_select_header.on("click", close_station_select);
+			template.station_select.on("click", open_station_select);
+		}
 
 		if (template.settings_link) {
 			template.settings_link.addEventListener("click", SettingsWindow);
