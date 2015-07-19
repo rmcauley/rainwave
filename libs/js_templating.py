@@ -2,47 +2,80 @@
 #
 # Rainwave Templating System
 #
-# Takes in Handlebars-like templates and outputs native Javascript DOM calls.
-# Optionally saves generated elements.
+# Takes in Mustache/Handlebars-like templates and outputs native Javascript DOM calls.
+# Optionally saves generated elements.  Inherits HTMLParser.
 #
-# Given a file templates/example.hbar:
-#    <div class="some_div" bind="bound_div">{{ hello_world }}</div>
 #
-# This is what happens in JS:
-#    var obj = { "hello_world": "DOM ahoy!" }
-#    RWTemplates.example(obj);
-#    console.log(obj.$t._root);                 // a documentFragment
-#    console.log(obj.$t.bound_div.textContent); // "DOM ahoy!"
-#    document.body.appendChild(obj.$t._root);
+# TEMPLATE SYNOPSIS: (hello_world.mustache)
 #
-# The resulting HTML:
-#    <div class="some_div">DOM ahoy!</div>
+# <div class="some_div" bind="bound_div">{{ hello_world }}</div>
 #
-# Also mucks with having shorthand versions of native functions for minification.
+#
+# JAVASCRIPT SYNOPSIS:
+#
+# var obj = { "hello_world": "DOM ahoy!" }
+# RWTemplates.hello_world(obj);
+# console.log(obj.$t._root);                 // a documentFragment
+# console.log(obj.$t.bound_div);             // a <div>
+# console.log(obj.$t.bound_div.textContent); // "DOM ahoy!"
+# document.body.appendChild(obj.$t._root);
+#
+#
+# PYTHON SYNOPSIS
+#
+# o = open("templates.js", "w")
+# o.write(js_templating.js_start())
+# tfile = open("hello_world.mustache", f))
+# parser = js_templating.RainwaveParser("hello_world")
+# parser.feed(tfile.read())
+# o.write(parser.close())
+# tfile.close()
+# o.write(js_templating.js_end())
+# o.close()
+#
+#
+# CAVEATS
+#
+# Mucks with having shorthand versions of native functions for minification.
 # So careful if you're also calling things as Element.prototype.(s|a) and document.c.
 #
-# Cannot deal with SVG (or other namespaces) except for Rainwave's particular use case.
+# Cannot deal with SVG except for Rainwave's particular use case - only HTML!
+# Should work alright with Canvas though.
 #
-# Templates look much like Handlebars, except you have no helpers system.
+# Templates look much like Mustache/Handlebars, except:
+#    - No helpers
+#    - {{#if}}{{else}}{{/if}} must be written as {{#if}}{{#else}}{{/if}}
+#
 # Restrictions:
 #    - {{#each}} cannot handle objects - only arrays.
-#    - {{#if}} cannot be used inside < >, e.g. <a {{#if href}}href="hello"{{/if}}>
+#    - {{#if}} cannot be used inside < >, e.g. <a {{#if href}}href="hello"{{/if}}> will break
 #    - {{#if}} must contain whole elements, e.g. you cannot do this:
 #            {{#if href}} <a href="href"> {{#else}} <a> {{/if}} something </a>
 #    - {{else}} is {{#else}}, unlike Handlebars
 #
-# Some handy things to know:
+#
+# TIPS
 #
 #	{{ @root.blah }}
 #   	 - access root context object
 # 	{{ $blahblah }}
 #   	 - use raw JS including $ (this is a dumb hack for Rainwave)
 # 	{{ ^blahblah }}
-#   	 - use raw JS in the template excluding ^
+#   	 - use raw JS in the template, excluding the ^
 #        - access the current object the template system is looking at with _c
+#              e.g. {{ ^console.log(_c.hello_world) }} will log the value of {{ hello_world }}
+#              e.g. you cannot {{ obj[idx] }} but you could {{ ^_c.obj[idx] }}
 #
-# This system is very dumb.  But it's fast in the browser.
-# Seriously.  Stupid fast.
+#
+# WHY?!
+#
+# Can't beat the performance of native DOM.
+#
+#
+# TWO-WAY BINDING AND OBJECT.OBSERVE() PLEASE!
+#
+# Out of scope.  This is a Python library to output the DOM calls.
+# What you do with the resulting Javascript is up to you. :)
 #
 ##########################################
 
