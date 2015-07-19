@@ -18,10 +18,13 @@ var Scrollbar = function() {
 
 		Sizing.add_resize_callback(function() {
 			for (var i = 0; i < scrollbars.length; i++) {
-				scrollbars[i].el.style.width = (scrollbars[i].el.parentNode.offsetWidth + scrollbar_width) + "px";
 				scrollbars[i].offset_height = scrollbars[i].el.parentNode.offsetHeight;
+				scrollbars[i].offset_width = scrollbars[i].el.parentNode.offsetWidth;
 			}
-		});
+			for (i = 0; i < scrollbars.length; i++) {
+				scrollbars[i].el.style.width = (scrollbars[i].offset_width + scrollbar_width) + "px";
+			}
+		}, true);
 	});
 
 	var handle_margin_top = 5;
@@ -35,9 +38,12 @@ var Scrollbar = function() {
 		// has some special width handling that requires a wrapping element at all times.
 		if (enabled || always_scrollable) {
 			scrollblock = document.createElement("div");
-			scrollblock.setAttribute("class", scrollable.className + " scrollblock");
-			scrollable.className = scrollable.classList[0] + "_scroll scrollable";
-
+			scrollblock.setAttribute("class", "scrollblock");
+			if (scrollable.className) {
+				scrollblock.setAttribute("class", "scrollblock " + scrollable.className);
+			}
+			scrollable.setAttribute("class", "scrollable");
+		
 			if (scrollable.parentNode) {
 				scrollable.parentNode.replaceChild(scrollblock, scrollable);
 			}

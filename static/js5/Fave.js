@@ -17,6 +17,8 @@ var Fave = function(json) {
 			faves[i].classList[funcn]("is_fave");
 			if (faves[i].parentNode) faves[i].parentNode.classList[funcn](favetype + "_fave_highlight");
 		}
+
+		if ((favetype == "album") && self.album_callback) self.album_callback(json);
 	};
 
 	var song_fave_update = function(json) {
@@ -30,16 +32,19 @@ var Fave = function(json) {
 		}
 	};
 
-	var do_fave = function() {
+	var do_fave = function(e) {
 		if (!this._fave_id) return;
+		if (e && e.stopPropagation) e.stopPropagation();
 		var set_to = !this.classList.contains("is_fave");
-		if (this.getAttribute("name").substring(0, 5) == "sfave") {
+		if (this.getAttribute("name") && this.getAttribute("name").substring(0, 5) == "sfave") {
 			API.async_get("fave_song", { "fave": set_to, "song_id": this._fave_id });
 		}
 		else {
 			API.async_get("fave_album", { "fave": set_to, "album_id": this._fave_id });
 		}
 	};
+
+	self.do_fave = do_fave;
 
 	self.register = function(json, is_album) {
 		if (json.fave) {

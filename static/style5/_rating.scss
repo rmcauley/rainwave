@@ -13,10 +13,18 @@ div.rating {
 
 	body.logged_in.full &.rating_song {
 		background-image: url("/static/images4/rating_bar/dark_ldpi.png");
+
+		&.rating_user {
+			background-image: url("/static/images4/rating_bar/bright_ldpi.png");
+		}
 	}
 
 	&.rating_user {
-		background-image: url("/static/images4/rating_bar/bright_ldpi.png") !important;
+		background-image: url("/static/images4/rating_bar/bright_ldpi.png");
+
+		body.show_incomplete &.rating_incomplete {
+			background-image: url("/static/images4/rating_bar/unrated_ldpi.png");
+		}
 	}
 
 	&.ratable {

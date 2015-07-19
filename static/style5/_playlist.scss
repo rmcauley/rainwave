@@ -125,3 +125,87 @@ div.lists {
 		}
 	}
 }
+
+div.list {
+	position: relative;
+
+	div.list_contents, div.scrollblock {
+		position: relative;
+	}
+
+	div.item {
+		background-image: url("/static/images4/rating_bar/dark_ldpi_zero.png");
+		background-repeat: no-repeat;
+		padding: 2px 65px 2px 5px;
+		border-bottom: solid 1px transparent;
+		cursor: pointer;
+		@include transition-wtime(250ms, background-color, border-color, padding, color);
+		overflow: hidden;
+		word-break: break-all;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		&.album_fave_highlight {
+			color: $fave_color;
+		}
+
+		&.rating_user {
+			background-image: url("/static/images4/rating_bar/bright_ldpi.png");
+
+			body.show_incomplete &.rating_incomplete {
+				background-color: #381e3d;
+				background-image: url("/static/images4/rating_bar/unrated_ldpi.png");
+
+				&.cool {
+					background-color: #2a162e;
+					color: $darktext;
+				}
+			}
+		}
+
+		&:hover, .hover {
+			padding-left: 20px;
+			color: $link;
+			border-color: $hovercolor-border;
+			background-color: $hovercolor;
+			@include transition-wtime(250ms, padding, color);
+
+			body.logged_in & img.fave_lined {
+				opacity: 0.5;
+			}
+
+			&.album_fave_highlight {
+				background-color: #444013;
+				border-color: #5B4E19;
+			}
+		}
+
+		&.open, &.open:hover, &.hover.open {
+			background-color: #1f4f70;
+			border-color: $orange;
+			padding-left: 40px;
+
+			&.album_fave_highlight {
+				background-color: #6D5D1E;
+			}
+		}
+
+		&.cool {
+			background-color: $cooldown_albumlist_color;
+		}
+
+		span.name {
+			padding-left: 5px;
+		}
+
+		div.fave {
+			margin-top: 0;
+		}
+	}
+
+	div.stretcher {
+		position: absolute;
+		width: 1px;
+		display: block;
+	}
+}

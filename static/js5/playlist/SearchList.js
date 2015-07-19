@@ -7,16 +7,27 @@
 //	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses 'id')
 
-var SearchList = function(el, search_box, stretching_el, sort_key, search_key) {
+var SearchList = function(root_el, sort_key, search_key) {
 	"use strict";
-	el.parentNode.style.display = "none";
+
+	var template = RWTemplates.searchlist();
+	root_el.appendChild(template._root);
 
 	var self = {};
 	self.sort_key = sort_key;
 	self.search_key = search_key || "id";
 	self.auto_trim = false;
-	self.el = el;
-	var scrollbar = Scrollbar.create(el);
+
+	var stretcher = document.createElement("div");
+	stretcher.className = "stretcher";
+	template.list.appendChild(stretcher);
+
+	self.el = document.createElement("div");
+	self.el.className = "list_contents";
+	template.list.appendChild(self.el);
+
+	var search_box = template.search_box;
+	var scroll = Scrollbar.create(template.list);
 
 	var data = {};
 	self.data = data;			// keys() are the object IDs (e.g. data[album.id])
@@ -174,15 +185,14 @@ var SearchList = function(el, search_box, stretching_el, sort_key, search_key) {
 		}
 	};
 
-	self.recalculate = function(force_height_check) {
+	self.recalculate = function() {
 		var full_height = Sizing.list_item_height * visible.length;
-		if (force_height_check || (full_height != current_height)) {
-			stretching_el.style.height = full_height + "px";
-			scrollbar.recalculate(full_height, null, true);
-			scrollbar.refresh();
+		if (full_height != current_height) {
+			stretcher.style.height = full_height + "px";
+			scroll.set_height(full_height);
 			current_height = full_height;
 		}
-		num_items_to_display = Math.ceil(scrollbar.offset_height / Sizing.list_item_height) + 1;
+		num_items_to_display = Math.ceil(scroll.offset_height / Sizing.list_item_height) + 1;
 	};
 
 	self.sort_function = function(a, b) {
@@ -295,7 +305,7 @@ var SearchList = function(el, search_box, stretching_el, sort_key, search_key) {
 			current_scroll_index = false;
 			self.recalculate();
 			if (backspace_scroll_top && (revisible.length + visible.length > num_items_to_display)) {
-				scrollbar.scroll_to(backspace_scroll_top);
+				self.el.scrollTop = backspace_scroll_top;
 				backspace_scroll_top = null;
 			}
 			self.reposition();
@@ -326,32 +336,25 @@ var SearchList = function(el, search_box, stretching_el, sort_key, search_key) {
 			self.remove_key_nav_highlight();
 		}
 		current_scroll_index = false;
-		if (visible.length === 0) {
+		if (first_time) {
+			original_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			self.reposition();
-		}
-		else if (first_time) {
-			original_scroll_top = scrollbar.scroll_top;
-			self.recalculate();
-			scrollbar.scroll_to(0);
-			self.reposition();
+			self.el.scrollTop = 0;
 		}
 		else if (visible.length <= num_items_to_display) {
-			backspace_scroll_top = scrollbar.scroll_top;
+			backspace_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			scrollbar.scroll_to(0);
-			self.reposition();
+			self.el.scrollTop = 0;
 		}
 		else if (visible.length <= current_scroll_index) {
-			backspace_scroll_top = scrollbar.scroll_top;
+			backspace_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			scrollbar.scroll_to((visible.length - num_items_to_display) * Sizing.list_item_height);
-			self.reposition();
+			self.el.scrollTop = (visible.length - num_items_to_display) * Sizing.list_item_height;
 		}
 		else {
 			self.recalculate();
-			self.reposition();
 		}
+		self.reposition();
 		self.do_searchbar_style();
 	};
 
@@ -385,7 +388,7 @@ var SearchList = function(el, search_box, stretching_el, sort_key, search_key) {
 			original_key_nav = false;
 		}
 		if (original_scroll_top && !ignore_original_scroll_top) {
-		 	scrollbar.scroll_to(original_scroll_top);
+		 	self.el.scrollTop = original_scroll_top;
 		 	original_scroll_top = false;
 		}
 		else {
@@ -441,11 +444,11 @@ var SearchList = function(el, search_box, stretching_el, sort_key, search_key) {
 			}
 			// position at the lower edge
 			else if (new_index >= (current_scroll_index + num_items_to_display - 8)) {
-				scrollbar.scroll_to(Math.min(scrollbar.scroll_top_max, (new_index - num_items_to_display + 8) * Sizing.list_item_height));
+				self.el.scrollTop = Math.min(scroll.scroll_top_max, (new_index - num_items_to_display + 8) * Sizing.list_item_height);
 			}
 			// position at the higher edge
 			else {
-				scrollbar.scroll_to(Math.max(0, (new_index - 7) * Sizing.list_item_height));
+				self.el.scrollTop = Math.max(0, (new_index - 7) * Sizing.list_item_height);
 			}
 		}
 	};
@@ -469,13 +472,13 @@ var SearchList = function(el, search_box, stretching_el, sort_key, search_key) {
 	};
 
 	self.reposition = function() {
-		var new_index = Math.floor(scrollbar.scroll_top / Sizing.list_item_height);
+		var new_index = Math.floor(scroll.scroll_top / Sizing.list_item_height);
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
 
-		var new_margin = (scrollbar.scroll_top - (Sizing.list_item_height * new_index));
+		var new_margin = (scroll.scroll_top - (Sizing.list_item_height * new_index));
 		new_margin = new_margin ? -new_margin : 0;
 		self.el.style.marginTop = new_margin + "px";
-		self.el.style.top = scrollbar.scroll_top + "px";
+		self.el.style.top = scroll.scroll_top + "px";
 
 		if (current_scroll_index === new_index) return;
 		if ((visible.length === 0) && (hidden.length === 0)) return;
@@ -532,13 +535,14 @@ var SearchList = function(el, search_box, stretching_el, sort_key, search_key) {
 	};
 
 	Sizing.add_resize_callback(function() {
-		el.style.height = (Sizing.sizeable_area_height - 74) + "px";
+		scroll.offset_height = Sizing.sizeable_area_height - 84;
+		template.list.style.height = scroll.offset_height + "px";
 		current_scroll_index = false;
-		self.recalculate(true);
+		self.recalculate();
 		self.reposition();
 	});
 
-	scrollbar.reposition_hook = self.reposition;
+	scroll.reposition_hook = self.reposition;
 
 	return self;
 };

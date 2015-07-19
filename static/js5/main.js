@@ -76,11 +76,11 @@ var User;
 		document.body.appendChild(template._root);
 
 		for (i = 0; i < BOOTSTRAP.on_measure.length; i++) {
-			BOOTSTRAP.on_measure[i]();
+			BOOTSTRAP.on_measure[i](template);
 		}
 
 		for (i = 0; i < BOOTSTRAP.on_draw.length; i++) {
-			BOOTSTRAP.on_draw[i]();
+			BOOTSTRAP.on_draw[i](template);
 		}
 
 		Sizing.trigger_resize();

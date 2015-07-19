@@ -14,8 +14,13 @@ var Sizing = function() {
 	self.width = 0;
 	self.sizeable_area_height = 0;
 
-	self.add_resize_callback = function(cb) {
-		window_callbacks.push(cb);
+	self.add_resize_callback = function(cb, priority) {
+		if (!priority) {
+			window_callbacks.push(cb);
+		}
+		else {
+			window_callbacks.unshift(cb);
+		}
 	};
 
 	self.trigger_resize = function() {
@@ -29,11 +34,11 @@ var Sizing = function() {
 		else {
 			right_of_timeline = index_t.timeline.parentNode.offsetLeft + index_t.timeline.parentNode.offsetWidth;
 		}
-		self.sizeable_area_size = self.height - index_t.sizeable_area.offsetTop;
-		index_t.sizeable_area.style.height = self.sizeable_area_size + "px";
+		self.sizeable_area_height = self.height - index_t.sizeable_area.offsetTop;
+		index_t.sizeable_area.style.height = self.sizeable_area_height + "px";
 
 		for (var i = 0; i < index_t.sizeable_area.childNodes.length; i++) {
-			index_t.sizeable_area.childNodes[i].style.height = self.sizeable_area_size + "px";
+			index_t.sizeable_area.childNodes[i].style.height = self.sizeable_area_height + "px";
 		}
 
 		if (self.width < 1050) {
@@ -105,6 +110,7 @@ var Sizing = function() {
 
 	BOOTSTRAP.on_init.push(function(t) {
 		index_t = t;
+		index_t.list_item.innerHTML = "Reference";
 	});
 
 	return self;

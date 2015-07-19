@@ -17,7 +17,9 @@ var Router = function() {
 				document.body.classList.remove("playlist_" + i);
 			}
 		});
+	});
 
+	BOOTSTRAP.on_draw.push(function(root_template) {
 		AlbumList(root_template.album_list);
 	});
 
@@ -33,7 +35,8 @@ var Router = function() {
 		if (old_url != location.href) {
 			old_url = location.href;
 			var new_route = self.get_current_url();
-			ga('send', 'pageview', '/' + new_route);
+			if (!new_route) return false;
+			if (typeof(ga) == "object") ga("send", "pageview", "/" + new_route);
 			new_route = new_route.split("/");
 			if (tabs[new_route[0]]) {
 				self.open_route(new_route[0], new_route[1]);
@@ -46,7 +49,6 @@ var Router = function() {
 	};
 
 	self.open_route = function(typ, id) {
-		console.log(typ + " - " + id);
 		for (var i in tabs) {
 			document.body.classList.remove("playlist_" + i);
 		}

@@ -1,19 +1,14 @@
 var AlbumList = function(el) {
 	"use strict";
-	var template = RWTemplates.searchlist();
-	el.appendChild(template._root);
-
-	var self = SearchList(template.scrollable, template.search_box, template.stretcher, "name", "name_searchable");
+	var self = SearchList(el, "name", "name_searchable");
 
 	var loading = false;
 	var sort_faves_first = Prefs.get("playlist_sort_faves_first");
 	var sort_available_first = Prefs.get("playlist_sort_available_first");
-	var show_rating_complete = Prefs.get("playlist_show_rating_complete");
 
 	var prefs_update = function() {
 		sort_faves_first = Prefs.get("playlist_sort_faves_first");
 		sort_available_first = Prefs.get("playlist_sort_available_first");
-		show_rating_complete = Prefs.get("playlist_show_rating_complete");
 
 		var nv = Prefs.get("playlist_sort");
 		if ([ "alpha", "rating_user" ].indexOf(nv) == -1) {
@@ -28,12 +23,9 @@ var AlbumList = function(el) {
 	Prefs.add_callback("playlist_sort", prefs_update);
 	Prefs.add_callback("playlist_sort_faves_first", prefs_update);
 	Prefs.add_callback("playlist_sort_available_first", prefs_update);
-	Prefs.add_callback("playlist_show_rating_complete", prefs_update);
 
-	API.add_callback(self.update, "all_albums");
-	API.add_callback(function(json) {
-		if (self.loaded) self.update(json);
-	}, "album_diff");
+	API.add_callback("all_albums", self.update);
+	API.add_callback("album_diff", function(json) { if (self.loaded) self.update(json); });
 
 	self.load = function() {
 		if (!self.loaded && !loading) {
@@ -71,16 +63,30 @@ var AlbumList = function(el) {
 	self.draw_entry = function(item) {
 		item._el = document.createElement("div");
 		item._el.className = "item";
+		item._el._id = item.id;
 
-		item._el_text_span = document.createElement("span");
-		item._el_text_span.className = "name";
-		item._el_text_span.textContent = item.name;
-		item._el_text_span._id = item.id;
+		// could do this using RWTemplates.fave but... speed.  want to inline here as much as possible.
+		item._el_fave = document.createElement("div");
+		item._el_fave.className = "fave";
+		item._el.appendChild(item._el_fave);
+		var fave_lined = document.createElement("img");
+		fave_lined.className = "fave_lined";
+		fave_lined.src = "/static/images4/heart_lined.png";
+		item._el_fave.appendChild(fave_lined);
+		var fave_solid = document.createElement("img");
+		fave_solid.className = "fave_solid";
+		fave_solid.src = "/static/images4/heart_solid_gold.png";
+		item._el_fave.appendChild(fave_solid);
+		item._el_fave._fave_id = item.id;
+		item._el_fave.addEventListener("click", Fave.do_fave);
 
+		var span = document.createElement("span");
+		span.className = "name";
+		span.textContent = item.name;
+		item._el.appendChild(span);
+		
 		self.update_cool(item);
 		self.update_item_element(item);
-
-		item._el.appendChild(item._el_text_span);
 	};
 
 	self.open_element_check = function(e, id) {
@@ -104,28 +110,28 @@ var AlbumList = function(el) {
 
 	self.update_item_element = function(item) {
 		if (item.fave) {
-			item._el.classList.add("fave");
+			item._el.classList.add("album_fave_highlight");
+			item._el_fave.classList.add("is_fave");
 		}
 		else {
-			item._el.classList.remove("fave");
+			item._el.classList.remove("album_fave_highlight");
+			item._el_fave.classList.remove("is_fave");
 		}
-		if (item.rating_user && (item.rating_user > 0)) {
-			if (show_rating_complete && !item.rating_complete) {
-				item._el.style.backgroundImage = "url(/static/images4/rating_bar/unrated_ldpi.png)";
-			}
-			else {
-				item._el.style.backgroundImage = "url(/static/images4/rating_bar/bright_ldpi.png)";
-			}
-			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + 1) + "px";
+
+		if (item.rating_complete) {
+			item._el.classList.add("rating_incomplete");
 		}
-		else if (item.rating) {
-			if (show_rating_complete && !item.rating_complete) {
-				item._el.style.backgroundImage = "url(/static/images4/rating_bar/unrated_ldpi.png)";
-			}
-			else {
-				item._el.style.backgroundImage = "url(/static/images4/rating_bar/dark_ldpi.png)";
-			}
-			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 30) + 1) + "px";
+		else {
+			item._el.classList.remove("rating_incomplete");
+		}
+
+		if (item.rating_user) {
+			item._el.classList.add("rating_user");
+			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + 6) + "px";
+		}
+		else {
+			item._el.classList.remove("rating_user");
+			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round((item.rating || 0) * 10) / 2)) * 30) + 6) + "px";
 		}
 	};
 

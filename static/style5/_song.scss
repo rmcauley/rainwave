@@ -167,7 +167,7 @@ div.song {
 		position: absolute;
 	}
 
-	body.logged_in.simple &:hover img.fave_lined {
+	body.logged_in &:hover img.fave_lined {
 		opacity: 0.5;
 	}
 }
