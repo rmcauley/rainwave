@@ -70,7 +70,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 		if (search_string.length === 0) {
 			self.unhide();
-			hidden = [];
 			current_scroll_index = false;
 			self.recalculate();
 			self.reposition();
@@ -183,6 +182,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			visible = visible.concat(to_reshow);
 			visible.sort(self.sort_function);
 		}
+		if (to_reshow == hidden) hidden = [];
 	};
 
 	self.recalculate = function() {
@@ -305,7 +305,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			current_scroll_index = false;
 			self.recalculate();
 			if (backspace_scroll_top && (revisible.length + visible.length > num_items_to_display)) {
-				self.el.scrollTop = backspace_scroll_top;
+				scroll.scroll_to(backspace_scroll_top);
 				backspace_scroll_top = null;
 			}
 			self.reposition();
@@ -339,17 +339,17 @@ var SearchList = function(root_el, sort_key, search_key) {
 		if (first_time) {
 			original_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			self.el.scrollTop = 0;
+			scroll.scroll_to(0);
 		}
 		else if (visible.length <= num_items_to_display) {
 			backspace_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			self.el.scrollTop = 0;
+			scroll.scroll_to(0);
 		}
 		else if (visible.length <= current_scroll_index) {
 			backspace_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			self.el.scrollTop = (visible.length - num_items_to_display) * Sizing.list_item_height;
+			scroll.scroll_to((visible.length - num_items_to_display) * Sizing.list_item_height);
 		}
 		else {
 			self.recalculate();
@@ -375,11 +375,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 	self.clear_search = function() {
 		backspace_scroll_top = null;
 		search_string = "";
+		search_box.value = "";
 		self.do_searchbar_style();
 		if (hidden.length === 0) return;
-
 		self.unhide();
-		hidden = [];
 
 		current_scroll_index = false;
 		self.recalculate();
@@ -388,7 +387,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			original_key_nav = false;
 		}
 		if (original_scroll_top && !ignore_original_scroll_top) {
-		 	self.el.scrollTop = original_scroll_top;
+		 	scroll.scroll_to(original_scroll_top);
 		 	original_scroll_top = false;
 		}
 		else {
@@ -398,10 +397,15 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	search_box.addEventListener("input", function() {
-		if (search_box.value.length < search_string) {
-			self.unhide();
+		if (!search_box.value.length) {
+			self.clear_search();
 		}
-		do_search(search_box.value);
+		else {
+			if (search_box.value.length < search_string.length) {
+				self.unhide();
+			}
+			do_search(search_box.value);
+		}
 	});
 
 	self.do_searchbar_style = function() {
@@ -444,11 +448,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 			}
 			// position at the lower edge
 			else if (new_index >= (current_scroll_index + num_items_to_display - 8)) {
-				self.el.scrollTop = Math.min(scroll.scroll_top_max, (new_index - num_items_to_display + 8) * Sizing.list_item_height);
+				scroll.scroll_to(Math.min(scroll.scroll_top_max, (new_index - num_items_to_display + 8) * Sizing.list_item_height));
 			}
 			// position at the higher edge
 			else {
-				self.el.scrollTop = Math.max(0, (new_index - 7) * Sizing.list_item_height);
+				scroll.scroll_to(Math.max(0, (new_index - 7) * Sizing.list_item_height));
 			}
 		}
 	};

@@ -4,6 +4,8 @@ var Router = function() {
 	var self = {};
 	var old_url;
 	var tabs = {};
+	var lists = {};
+	self.active_list = null;
 
 	BOOTSTRAP.on_init.push(function(root_template) { 
 		tabs.album = true;
@@ -16,11 +18,12 @@ var Router = function() {
 			for (var i in tabs) {
 				document.body.classList.remove("playlist_" + i);
 			}
+			self.active_list = null;
 		});
 	});
 
 	BOOTSTRAP.on_draw.push(function(root_template) {
-		AlbumList(root_template.album_list);
+		lists.album = AlbumList(root_template.album_list);
 	});
 
 	self.get_current_url = function() {
@@ -35,7 +38,12 @@ var Router = function() {
 		if (old_url != location.href) {
 			old_url = location.href;
 			var new_route = self.get_current_url();
-			if (!new_route) return false;
+			if (!new_route) {
+				document.body.classList.remove("playlist");
+				document.body.classList.remove("requests");
+				self.active_list = false;
+				return false;
+			}
 			if (typeof(ga) == "object") ga("send", "pageview", "/" + new_route);
 			new_route = new_route.split("/");
 			if (tabs[new_route[0]]) {
@@ -57,6 +65,12 @@ var Router = function() {
 		document.body.classList.add("playlist_" + typ);
 		if (id && !isNaN(id)) {
 			// open thingit
+		}
+		if (typ in lists && lists[typ]) {
+			self.active_list = lists[typ];
+		}
+		else {
+			self.active_list = null;
 		}
 	};
 

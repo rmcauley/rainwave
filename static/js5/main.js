@@ -57,13 +57,8 @@ var User;
 		});
 
 		template.sizeable_area.addEventListener("click", function(e) {
-			if (Sizing.simple) {
+			if (Sizing.simple && ((e.target.nodeName.toLowerCase() != "a") || !e.target.getAttribute("href"))) {
 				Router.change();
-			}
-			// reset the page's open window status if we're not clicking a link
-			if ((e.target.nodeName.toLowerCase() != "a") || !e.target.getAttribute("href")) {
-				document.body.classList.remove("playlist");
-				document.body.classList.remove("requests");
 			}
 		});
 	};

@@ -81,13 +81,13 @@ var Scrollbar = function() {
 
 		self.refresh = function() {
 			if ((self.scroll_height === 0) || (self.offset_height === 0) || (self.scroll_height <= self.offset_height)) {
-				scrollable.classList.add("invisible");
+				handle.classList.add("invisible");
 				handle.style.height = null;
-				handle.style.top = 0;
+				handle.style.top = null;
 				visible = false;
 			}
 			else {
-				scrollable.classList.remove("invisible");
+				handle.classList.remove("invisible");
 				visible = true;
 				var wheight = self.offset_height - handle_margin_top - handle_margin_bottom;
 				handle_height = Math.floor(wheight * (self.offset_height / self.scroll_height));
@@ -99,13 +99,17 @@ var Scrollbar = function() {
 		};
 
 		self.reposition = function(e) {
-			if (!visible) return;
-			if (e) self.scroll_top = scrollable.scrollTop;
+			if (!visible) {
+				return;
+			}
+			if (e) {
+				self.scroll_top = scrollable.scrollTop;
+			}
 
 			var top = Math.min(1, self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
 			handle.style[Fx.transform] = "translateX(-12px) translateY(" + Math.floor(handle_margin_top + top) + "px)";
 
-			if (e && self.reposition_hook) self.reposition_hook();
+			if (self.reposition_hook) self.reposition_hook();
 		};
 
 		self.scroll_to = function(px) {
@@ -127,6 +131,7 @@ var Scrollbar = function() {
 			original_scroll_top = self.scroll_top;
 			window.addEventListener("mousemove", mouse_move, false);
 			window.addEventListener("mouseup", mouse_up, false);
+			handle.classList.add("active");
 			// window.onmouseout has issues in Fx
 			//window.addEventListener("mouseout", mouse_up, false);
 		};
@@ -138,6 +143,7 @@ var Scrollbar = function() {
 		};
 
 		var mouse_up = function(e) {
+			handle.classList.remove("active");
 			window.removeEventListener("mousemove", mouse_move, false);
 			window.removeEventListener("mouseup", mouse_up, false);
 			//window.removeEventListener("mouseout", mouse_up, false);

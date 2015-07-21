@@ -1,6 +1,7 @@
 {
   "globals": {
     "console": true,
+    "ga": true,
 
     "SITE_CONFIG": true,
     "ADMIN": true,
