@@ -1,6 +1,167 @@
-.detail {
+div.detail {
+	position: absolute;
+	z-index: 100;
+	opacity: 0;
+	width: 420px;
+	background: #2C2C2C;
+	border-left: solid 1px #777; 
+	top: 0px;
+	@include transform(none);
+	@include transition-wtime(300ms, transform, opacity);
+
+	body.simple_f & {
+		opacity: 1;
+	}
+
+	body.detail & {
+		opacity: 1;
+		@include transform(translateX(-100%));
+	}
+
+	div.art_anchor {
+		float: left;
+		margin-left: 10px;
+		margin-bottom: 10px;
+	}
+
+	ul.panel_header {
+		margin-bottom: 7px;
+
+		li.open {
+			display: block;
+			cursor: default;
+		}
+	}
+
+	h2 {
+		font-size: larger;
+		border-bottom: 1px solid $vdarktext;
+		margin: 0 0 5px 0;
+		padding-bottom: 2px;
+	}
+
 	canvas {
+		float: left;
+		position: relative;
 		width: 100px;
 		height: 80px;
+
+		body.simple & {
+			display: none;
+		}
+	}
+
+	div.detail_header {
+		color: $darktext;
+		font-size: 0.8em;
+		margin: 0 15px 0 10px;
+
+		p {
+			margin: 0 0 0 120px;
+			padding: 0;
+		}
+	}
+
+	div.close {
+		left: 390px;
+	}
+
+	/* SONGLIST */
+
+	table {
+		border-spacing: 0;
+		width: 100%;
+		table-layout: fixed;
+		empty-cells: show;
+		clear: both;
+
+		td {
+			vertical-align: top;
+			padding: 3px;
+			border-bottom-style: solid;
+			border-bottom-width: 1px;
+			border-bottom-color: transparent;
+			@include transition-wtime(300ms, width, background-color, border-bottom-color);
+
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+
+			&.rating_td {
+				width: 75px;
+			}
+
+			&.length {
+				width: 35px;
+				padding-right: 10px;
+			}
+
+			&.number {
+				text-align: right;
+			}
+
+			&.fave_td {
+				width: 15px;
+				padding-left: 8px;
+
+				&.fave_td.song_fave_highlight + td.title {
+					color: $fave_color;
+				}
+			}
+
+			&.cool_info {
+				width: 40px;
+
+				body.simple & {
+					display: none;
+				}
+			}
+
+			&.artists {
+				body.simple & {
+					display: none;
+				}
+			}
+
+			&.title {
+				position: relative;
+				cursor: pointer;
+			}
+
+			&.url {
+				width: 16px;
+			}
+
+			div.fave {
+				padding-right: 5px;
+			}
+		}
+
+		tr {
+			&:hover td {
+				background-color: $hovercolor;
+				border-bottom-color: $hovercolor-border;
+				@include no-transition();
+
+				img.fave_lined {
+					opacity: 1;
+				}
+			}
+
+			&.songlist_cool td {
+				background-color: $cooldown-color;
+				border-bottom-color: $cooldown-color;
+			}
+
+			&.song_fave_highlight:hover td {
+				background-color: #444013;
+				border-color: #5B4E19;
+			}
+		}
+
+		img.link_external, img.request_icon {
+			height: 14px;
+			width: 14px;
+		}
 	}
 }

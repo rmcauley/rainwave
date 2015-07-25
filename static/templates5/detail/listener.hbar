@@ -2,7 +2,7 @@
 	<div class="art" style="background-image: url({{ avatar }});"></div>
 </div>
 
-<div class="header">
+<div class="detail_header">
 	<h1>{{ name }}</h1>
 	{{#if _c.user_id == User.id }}
 		<div class="info">

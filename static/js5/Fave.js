@@ -16,6 +16,7 @@ var Fave = function(json) {
 		for (var i = 0; i < faves.length; i++) {
 			faves[i].classList[funcn]("is_fave");
 			if (faves[i].parentNode) faves[i].parentNode.classList[funcn](favetype + "_fave_highlight");
+			if (faves[i]._go_one_up) faves[i].parentNode.parentNode.classList[funcn](favetype + "_fave_highlight");
 		}
 
 		if ((favetype == "album") && self.album_callback) self.album_callback(json);

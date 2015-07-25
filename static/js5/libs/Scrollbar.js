@@ -54,7 +54,12 @@ var Scrollbar = function() {
 		}
 
 		if (!enabled) {
-			return { "el": scrollable, "set_height": function(h) { /*scrollable.style.height = h + "px";*/ } };
+			return { 
+				"scrollblock": scrollable, 
+				"el": scrollable, 
+				"set_height": function(h) { /*scrollable.style.height = h + "px";*/ },
+				"scroll_to": function(to) { scrollable.scrollTop = to; }
+			};
 		}
 
 		var handle = document.createElement("div");
@@ -62,19 +67,22 @@ var Scrollbar = function() {
 		scrollblock.insertBefore(handle, scrollblock.firstChild);
 
 		var self = {};
+		self.scrollblock = scrollblock;
 		self.el = scrollable;
 		self.scroll_top = null;
 		self.scroll_height = null;
 		self.offset_height = null;
 		self.reposition_hook = false;
-		self.unrelated_positioning = false;
 
 		var scrolling = false;
 		var visible = false;
 		var handle_height, original_mouse_y, original_scroll_top, scroll_per_px;
 
 		self.set_height = function(height) {
-			self.scroll_height = height;
+			if (!height && height !== false && height !== 0) {
+				throw("Invalid argument for scrollable height.");
+			}
+			self.scroll_height = height || self.el.scrollHeight;
 			self.scroll_top_max = Math.max(0, self.scroll_height - self.offset_height);
 			self.refresh();
 		};

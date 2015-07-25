@@ -45,9 +45,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var original_scroll_top;
 	var original_key_nav;
 	var ignore_original_scroll_top;
+	var scroll_to_on_load;
 
 	var current_scroll_index = false;
 	var current_height;
+
 
 	// LIST MANAGEMENT ***********************************************
 
@@ -75,6 +77,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 			self.reposition();
 		}
 		self.loaded = true;
+
+		if (scroll_to_on_load) {
+			self.scroll_to_id(scroll_to_on_load);
+			scroll_to_on_load = false;
+		}
 	};
 
 	self.refresh_all_items = function() {
@@ -201,10 +208,14 @@ var SearchList = function(root_el, sort_key, search_key) {
 		return 0;
 	};
 
-	self.open_element_check = function(e, id) { return true; };
 	self.open_element = function(e) {
-		if ("_id" in e.target && self.open_element_check(e, e.target._id)) {
-			self.open_id(e.target._id);
+		e.stopPropagation();
+		var check_el = e.target;
+		while (check_el && !("_id" in check_el) && (check_el != self.el) && (check_el != document.body)) {
+			check_el = check_el.parentNode;
+		}
+		if (check_el && "_id" in check_el) {
+			self.open_id(check_el._id);
 		}
 	};
 	self.el.addEventListener("click", self.open_element);
@@ -438,6 +449,12 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	// SCROLL **************************
 
+
+	self.scroll_to_id = function(id) {
+		if (id in data) self.scroll_to(data[id]);
+		else scroll_to_on_load = id;
+	};
+
 	self.scroll_to = function(data_item) {
 		if (data_item) {
 			var new_index = visible.indexOf(data_item.id);
@@ -526,10 +543,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 	// NAV *****************************
 
 	self.set_new_open = function(id) {
-		if (!(id in data)) return;
 		if (current_open_id) {
 			data[current_open_id]._el.classList.remove("open");
+			current_open_id = null;
 		}
+		if (!(id in data)) return;
 		data[id]._el.classList.add("open");
 		current_open_id = id;
 		self.key_nav_highlight(id);

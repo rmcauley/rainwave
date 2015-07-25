@@ -1,5 +1,5 @@
-<div class="header">
-	<h1>{{ artist.name }}</h1>
+<div class="detail_header">
+	<h1>{{ group.name }}</h1>
 </div>
 
 {{#each albums }}

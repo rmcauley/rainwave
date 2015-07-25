@@ -13,6 +13,7 @@ var Sizing = function() {
 	self.height = 0;
 	self.width = 0;
 	self.sizeable_area_height = 0;
+	self.detail_area = null;
 
 	self.add_resize_callback = function(cb, priority) {
 		if (!priority) {
@@ -48,7 +49,7 @@ var Sizing = function() {
 			document.body.classList.remove("mobile");
 			self.simple = true;
 			index_t.lists.style.left = "100%";
-			index_t.detail.style.left = "100%";
+			self.detail_area.style.left = "100%";
 
 			if (self.width < 600) {
 				document.body.classList.add("mobile");
@@ -62,14 +63,14 @@ var Sizing = function() {
 				document.body.classList.add("full");
 				self.simple = false;
 				index_t.lists.style.left = null;
-				index_t.detail.style.left = null;
+				self.detail_area.style.left = null;
 			}
 			else {
 				document.body.classList.add("simple");
 				document.body.classList.remove("full");
 				self.simple = true;
 				index_t.lists.style.left = right_of_timeline + "px";
-				index_t.detail.style.left = right_of_timeline + "px";
+				self.detail_area.style.left = right_of_timeline + "px";
 			}
 
 			if (self.width < 1366) {

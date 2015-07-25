@@ -47,20 +47,6 @@ var User;
 		for (var i = 0; i < BOOTSTRAP.on_init.length; i++) {
 			BOOTSTRAP.on_init[i](template);
 		}
-
-		template.lists.addEventListener("click", function(e) {
-			e.stopPropagation();
-		});
-
-		template.detail.addEventListener("click", function(e) {
-			e.stopPropagation();
-		});
-
-		template.sizeable_area.addEventListener("click", function(e) {
-			if (Sizing.simple && ((e.target.nodeName.toLowerCase() != "a") || !e.target.getAttribute("href"))) {
-				Router.change();
-			}
-		});
 	};
 
 	var draw = function() {

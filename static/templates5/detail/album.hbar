@@ -1,0 +1,32 @@
+{{>rating}}
+
+<div class="close" bind="close">
+	<img src="/static/images4/cancel.png" alt="X" />
+</div>
+<ul class="panel_header"><li class="open">{{ name }}</li></ul>
+
+<div class="art_anchor">
+	<div bind="art" class="art_container"></div>
+</div>
+
+<canvas bind="rating_graph" width="100" height="80"></canvas>
+
+<div class="detail_header">
+	{{#if year }}
+		<p class="year">{{ $l("album_year", { "year": _c.year }) }}</p>
+	{{/if}}
+	{{#if rating }}
+		<p>{{ $l("album_rating_ranked_at_v2", { "rating": _c.rating, "rating_count": _c.num_song_ratings, "rank": _c.rating_rank }) }}</p>
+	{{/if}}
+	{{#if request_count }}
+		<p>{{ $l("album_requests_ranked_at", { "count": _c.request_count, "rank": _c.request_rank }) }}</p>
+	{{/if}}
+	{{#if genres.length }}
+		<p>
+			<span>{{ $l("relevant_categories") }}</span>
+			{{#each genres }}
+				<a href="#!/group/{{ id }}">{{ name }}</a>
+			{{/each}}
+		</p>
+	{{/if}}
+</div>

@@ -57,7 +57,7 @@ var AlbumList = function(el) {
 	Fave.album_callback = update_fave;
 
 	self.open_id = function(id) {
-		//DetailView.open_album(id);
+		Router.change("album", id);
 	};
 
 	self.draw_entry = function(item) {
@@ -87,16 +87,6 @@ var AlbumList = function(el) {
 		
 		self.update_cool(item);
 		self.update_item_element(item);
-	};
-
-	self.open_element_check = function(e, id) {
-		if ("enter_key" in e) return true;
-		var x = e.offsetX || e.layerX || e.x || 0;
-		if (x < 22) {
-			API.async_get("fave_album", { "fave": !self.data[id].fave, "album_id": id });
-			return false;
-		}
-		return true;
 	};
 
 	self.update_cool = function(item) {

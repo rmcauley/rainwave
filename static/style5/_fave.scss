@@ -4,6 +4,12 @@ div.fave {
 	display: none;
 	margin-top: 4px;
 
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+
 	img {
 		width: 14px;
 		height: 13px;

@@ -1,5 +1,6 @@
 {
   "globals": {
+    "ga": true,
     "Notification": true,
 
     "$el": true,
@@ -18,9 +19,11 @@
     "$l_has": true,
     "AlbumArt": true,
     "AlbumList": true,
+    "AlbumView": true,
     "AlbumViewColors": true,
     "AlbumViewRatingPieChart": true,
     "Artists": true,
+    "ArtistView": true,
     "API": true,
     "BOOTSTRAP": true,
     "Chart": true,
@@ -31,7 +34,9 @@
     "FastClick": true,
     "Formatting": true,
     "Fx": true,
+    "GroupView": true,
     "lang": true,
+    "ListenerView": true,
     "Modal": true,
     "Prefs": true,
     "Rating": true,

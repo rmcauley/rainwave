@@ -171,7 +171,7 @@ var Rating = function() {
 
 		add_effect(json.$t.rating);
 
-		var is_song = json.albums || json.album_id || json.album_rating ? true : false;
+		var is_song = json.albums || json.album_id || json.album_rating || json.artist_parseable ? true : false;
 
 		if (is_song) {
 			json.$t.rating.classList.add("rating_song");

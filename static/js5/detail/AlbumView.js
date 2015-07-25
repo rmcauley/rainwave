@@ -27,33 +27,44 @@ var AlbumViewRatingPieChart = function(ctx, album) {
 	new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1, "animationSteps": 40, "tooltipTemplate": "<%if (label){%><%=label%>: <%}%><%= value %>%", });
 };
 
-var AlbumView = function(view, album) {
+var AlbumView = function(el, album) {
 	"use strict";
 
 	album.songs.sort(SongsTableSorting);
 
-	var template = RWTemplates.album(album);
+	var template = RWTemplates.detail.album(album);
 	AlbumArt(album.art, template.art);
-	view.el.appendChild(template._root);
+	el.appendChild(template._root);
 
+	for (var i = 0; i < album.songs.length; i++) {
+		if (!album.songs[i].artists) { 
+			album.songs[i].artists = JSON.parse(album.songs[i].artist_parseable);
+		}
+	}
 	if (User.sid == 5) {
 		var songs = {};
-		for (var i = 0; i < album.songs.length; i++) {
-			if (!songs[album.songs[i].origin_sid]) songs[album.songs[i].origin_sid] = [];
+		for (i = 0; i < album.songs.length; i++) {
+			if (!songs[album.songs[i].origin_sid]) {
+				songs[album.songs[i].origin_sid] = [];
+			}
 			songs[album.songs[i].origin_sid].push(album.songs[i]);
 		}
 		for (i in songs) {
 			var h2 = document.createElement("h2");
 			h2.textContent = $l("songs_from", { "station": $l("station_name_" + i) });
-			view.el.appendChild(h2);
-			view.el.appendChild(RWTemplates.playlist.songstable({ "songs": songs[i] }));
+			el.appendChild(h2);
+			el.appendChild(RWTemplates.detail.songtable({ "songs": songs[i] })._root);
 		}
 	}
 	else {
-		view.el.appendChild(RWTemplates.playlist.songstable({ "songs": album.songs }));
+		el.appendChild(RWTemplates.detail.songtable({ "songs": album.songs })._root);
+	}
+
+	for (i = 0; i < album.songs.length; i++) {
+		album.songs[i].$t.fave._go_one_up = true;
+		Fave.register(album.songs[i]);
+		Rating.register(album.songs[i]);
 	}
 
 	if (!MOBILE) AlbumViewRatingPieChart(template.rating_graph.getContext("2d"), album);
-
-	return view.el;
 };

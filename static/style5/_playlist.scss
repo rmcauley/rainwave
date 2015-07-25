@@ -1,3 +1,28 @@
+ul.panel_header {
+	height: 25px;
+	padding-left: 0;
+	margin: 10px 0 0 0;
+	border-bottom: 1px solid $vvdarktext;
+	list-style: none;
+	white-space: nowrap;
+
+
+	li {
+		display: inline-block;
+		height: 25px;
+		padding: 0 10px;
+		cursor: pointer;
+		color: $vdarktext;
+		border-bottom: 1px solid transparent;
+		@include transition(LINKCOLOR, background, opacity, border-bottom);
+
+		&.open {
+			color: $text;
+			border-bottom: 1px solid $orange;
+		}
+	}
+}
+
 div.lists {
 	position: absolute;
 	z-index: 100;
@@ -18,49 +43,14 @@ div.lists {
 		@include transform(translateX(-100%));
 	}
 
-	body.simple & div.list_close {
-		position: absolute;
-		left: 430px;
-		top: 12px;
-		cursor: pointer;
-		opacity: 0.5;
-		@include transition-wtime(300ms, opacity);
-
-		&:hover {
-			opacity: 1;
-		}
-
-		img {
-			width: 14px;
-			height: 14px;
-		}
+	body.playlist.detail & {
+		@include transform(translateX(-110%));	
 	}
 
 	ul {
-		height: 25px;
-		padding-left: 0;
-		margin: 10px 0 0 0;
-		border-bottom: 1px solid $vvdarktext;
-		list-style: none;
-		white-space: nowrap;
-
-
 		li {
-			display: inline-block;
-			height: 25px;
-			padding: 0 10px;
-			cursor: pointer;
-			color: $vdarktext;
-			border-bottom: 1px solid transparent;
-			@include transition(LINKCOLOR, background, opacity, border-bottom);
-
 			&:hover {
 				color: $linkhover;
-			}
-
-			&.list_tab_open {
-				color: $text;
-				border-bottom: 1px solid $orange;
 			}
 
 			body.playlist_artist &.artist_tab,
@@ -164,7 +154,7 @@ div.list {
 		}
 
 		&:hover, .hover {
-			padding-left: 20px;
+			/*padding-left: 20px;*/
 			color: $link;
 			border-color: $hovercolor-border;
 			background-color: $hovercolor;
@@ -183,7 +173,7 @@ div.list {
 		&.open, &.open:hover, &.hover.open {
 			background-color: #1f4f70;
 			border-color: $orange;
-			padding-left: 40px;
+			padding-left: 20px;
 
 			&.album_fave_highlight {
 				background-color: #6D5D1E;
@@ -207,5 +197,23 @@ div.list {
 		position: absolute;
 		width: 1px;
 		display: block;
+	}
+}
+
+body.simple div.close {
+	position: absolute;
+	left: 420px;
+	top: 12px;
+	cursor: pointer;
+	opacity: 0.5;
+	@include transition-wtime(300ms, opacity);
+
+	&:hover {
+		opacity: 1;
+	}
+
+	img {
+		width: 14px;
+		height: 14px;
 	}
 }

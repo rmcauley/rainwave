@@ -31,8 +31,8 @@ body.simple div.timeline {
 			height: $simple_art_size;
 
 			&.art_expandable:hover {
-				width: $simple_art_size * 1.20;
-				height: $simple_art_size * 1.20;
+				width: $simple_art_hover_size;
+				height: $simple_art_hover_size;
 			}
 		}
 

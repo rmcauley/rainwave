@@ -24,6 +24,7 @@ $art_full_size: 320px;
 $art_np_size: 100px;
 $art_np_hover_size: 120px;
 $simple_art_size: 100px;
+$simple_art_hover_size: 120px;
 $simple_np_size: 140px;
 $rating_height: 18px;
 $rating_width: 58px;
@@ -127,6 +128,7 @@ a, a:visited, .link {
 @import "timeline";
 @import "timeline_simple";
 @import "playlist";
+@import "detail";
 
 @import "album_art";
 @import "song";

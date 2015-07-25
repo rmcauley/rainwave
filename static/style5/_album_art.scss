@@ -4,6 +4,11 @@ div.art_anchor {
 	width: $art_size;
 	height: $art_size;
 	margin-right: 10px;
+
+	body.simple & {
+		width: $simple_art_size;
+		height: $simple_art_size;
+	}
 }
 
 div.art_container {
@@ -21,6 +26,11 @@ div.art_container {
 	height: $art_size;
 	@include transition-wtime(300ms, width, height, border-width, background-color, transform);
 
+	body.simple & {
+		width: $simple_art_size;
+		height: $simple_art_size;
+	}
+
 	&:hover {
 		z-index: 3;
 		background-color: #000;
@@ -34,6 +44,11 @@ div.art_container {
 			width: $art_hover_size;
 			height: $art_hover_size;
 			box-shadow: 3px 3px 5px #000;
+
+			body.simple & {
+				width: $simple_np_size;
+				height: $simple_np_size;
+			}
 		}
 
 		&.art_expanded, &.art_expanded:hover {

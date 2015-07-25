@@ -10,10 +10,10 @@
 <div bind="sizeable_area" class="sizeable">
 	<div bind="timeline"></div>
 	<div bind="lists" class="lists" >
-		<div class="list_close" bind="list_close">
+		<div class="close" bind="list_close">
 			<img src="/static/images4/cancel.png" alt="X" />
 		</div>
-		<ul>
+		<ul class="panel_header">
 			<a href="#!/album"><li class="album_tab">{{ $l("Albums") }}</li></a>
 			<a href="#!/artist"><li class="artist_tab">{{ $l("Artists") }}</li></a>
 			<a href="#!/group"><li class="group_tab">{{ $l("groups_tab_title") }}</li></a>
