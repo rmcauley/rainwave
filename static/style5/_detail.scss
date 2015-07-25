@@ -87,13 +87,20 @@ div.detail {
 			white-space: nowrap;
 			text-overflow: ellipsis;
 
+			&:first-child {
+				padding-left: 10px;
+			}
+
+			&:last-child {
+				padding-right: 10px;
+			}
+
 			&.rating_td {
 				width: 75px;
 			}
 
 			&.length {
 				width: 35px;
-				padding-right: 10px;
 			}
 
 			&.number {
@@ -102,7 +109,6 @@ div.detail {
 
 			&.fave_td {
 				width: 15px;
-				padding-left: 8px;
 
 				&.fave_td.song_fave_highlight + td.title {
 					color: $fave_color;

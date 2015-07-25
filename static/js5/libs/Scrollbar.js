@@ -18,8 +18,13 @@ var Scrollbar = function() {
 
 		Sizing.add_resize_callback(function() {
 			for (var i = 0; i < scrollbars.length; i++) {
-				scrollbars[i].offset_height = scrollbars[i].el.parentNode.offsetHeight;
-				scrollbars[i].offset_width = scrollbars[i].el.parentNode.offsetWidth;
+				scrollbars[i].offset_height = scrollbars[i].scrollblock.offsetHeight;
+				scrollbars[i].offset_width = 0;
+				var el = scrollbars[i].scrollblock;
+				while (!scrollbars[i].offset_width && el) {
+					scrollbars[i].offset_width = el.offsetWidth;
+					el = el.parentNode;
+				}
 			}
 			for (i = 0; i < scrollbars.length; i++) {
 				scrollbars[i].el.style.width = (scrollbars[i].offset_width + scrollbar_width) + "px";

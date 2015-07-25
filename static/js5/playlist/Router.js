@@ -74,6 +74,7 @@ var Router = function() {
 
 	BOOTSTRAP.on_draw.push(function(root_template) {
 		lists.album = AlbumList(root_template.album_list);
+		lists.artist = ArtistList(root_template.artist_list);
 
 		scroll = Scrollbar.create(el);
 		Sizing.detail_area = scroll.scrollblock;
@@ -123,12 +124,6 @@ var Router = function() {
 			el.removeChild(el.firstChild);
 		}
 
-		for (var alltypes in cache) {
-			el.classList.remove(alltypes + "_view");
-		}
-
-		document.body.classList.add("detail");
-		el.classList.add(typ + "_view");
 		views[typ](el, cache[typ][id]);
 		var scroll_to = scroll_positions[typ][id] || 0;		// do BEFORE scroll.set_height calls reposition_callback!
 		scroll.set_height(false);
@@ -149,6 +144,7 @@ var Router = function() {
 
 	var open_view = function(typ, id) {
 		if (typ in cache) {
+			document.body.classList.add("detail");
 			if (!cache[typ][id]) {
 				cache[typ][id] = true;
 				API.async_get(typ, { "id": id }, function(json) {
@@ -169,14 +165,16 @@ var Router = function() {
 		document.body.classList.add("playlist");
 
 		if (typ in lists && lists[typ]) {
+			document.body.classList.add("playlist_" + typ);
 			self.active_list = lists[typ];
-			if (!self.active_list.loaded) self.active_list.load();
+			if (!self.active_list.loaded) {
+				self.active_list.load();
+			}
 		}
 		else {
 			self.active_list = null;
 		}
 
-		document.body.classList.add("playlist_" + typ);
 		if (id && !isNaN(id)) {
 			open_view(typ, id);
 		}

@@ -22,6 +22,7 @@
     "AlbumView": true,
     "AlbumViewColors": true,
     "AlbumViewRatingPieChart": true,
+    "ArtistList": true,
     "Artists": true,
     "ArtistView": true,
     "API": true,

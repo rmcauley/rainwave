@@ -1,4 +1,4 @@
-var ArtistView = function(view, json) {
+var ArtistView = function(el, json) {
 	"use strict";
 	var order = [ 1, 4, 2, 3 ];
 	var final_order = [ User.sid ];
@@ -27,7 +27,5 @@ var ArtistView = function(view, json) {
 		albums_sid.sort(SongsTableAlbumSort);
 		albums = albums.concat(albums_sid);
 	}
-	view.el.appendChild(RWTemplates.playlist.artist({ "artist": json, "albums": albums }));
-
-	return view.el;
+	el.appendChild(RWTemplates.playlist.artist({ "artist": json, "albums": albums }));
 };

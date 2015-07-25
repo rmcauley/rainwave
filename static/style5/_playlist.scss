@@ -118,6 +118,15 @@ div.lists {
 
 div.list {
 	position: relative;
+	display: none;
+
+	body.playlist_artist &.artist_list,
+	body.playlist_group &.group_list,
+	body.playlist_album &.album_list,
+	body.playlist_listener &.listener_list,
+	&.measure_list {
+		display: block;
+	}
 
 	div.list_contents, div.scrollblock {
 		position: relative;
@@ -134,6 +143,7 @@ div.list {
 		word-break: break-all;
 		white-space: nowrap;
 		text-overflow: ellipsis;
+		min-height: 20px;
 
 		&.album_fave_highlight {
 			color: $fave_color;
@@ -190,6 +200,12 @@ div.list {
 
 		div.fave {
 			margin-top: 0;
+		}
+	}
+
+	&.artist_list, &.group_list, &.listener_list {
+		div.item {
+			padding-left: 22px;
 		}
 	}
 
