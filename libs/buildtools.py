@@ -3,7 +3,7 @@ import subprocess
 import scss
 from pathlib import Path
 from libs import config
-from libs import js_templating
+from libs import RWTemplates
 from libs.config import get_build_number
 from slimit import minify
 
@@ -76,25 +76,11 @@ def bake_js(source_dir="js4", dest_file="script4.js"):
 		o.write(minify(js_content, mangle=True, mangle_toplevel=False))
 		o.close()
 
-def bake_templates(source_dir="templates5", dest_file="templates5.js", always_write=False):
+def bake_templates(source_dir="templates5", dest_file="templates5.js", always_write=False, **kwargs):
 	create_baked_directory()
-	fn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), dest_file)
-	if not os.path.exists(fn) or always_write:
-		o = open(fn, "w")
-		o.write(js_templating.js_start())
-		#pylint: disable=W0612
-		for root, subdirs, files in os.walk(os.path.join(os.path.dirname(__file__), "..", "static", source_dir)):
-			for f in files:
-				if f.endswith(".hbar"):
-					tname = os.path.join(root[root.find(source_dir) + len(source_dir) + len(os.sep):], f[:-5]).replace(os.sep, ".")
-					tfile = open(os.path.join(root[root.find("..") + 3:], f))
-					parser = js_templating.RainwaveParser(tname)
-					parser.feed(tfile.read())
-					o.write(parser.close())
-					tfile.close()
-		o.write(js_templating.js_end())
-		o.close()
-		#pylint: enable=W0612
+	source_dir = os.path.join(os.path.dirname(__file__), "..", "static", source_dir)
+	dest_file = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), dest_file)
+	RWTemplates.compile_templates(source_dir, dest_file, helpers=False, **kwargs)
 
 def bake_beta_templates():
-	return bake_templates(dest_file="templates5b.js", always_write=True)
+	return bake_templates(dest_file="templates5b.js", always_write=True, debug_symbols=True, full_calls=False)
