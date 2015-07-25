@@ -8,8 +8,7 @@ or stream audio by itself.
 == Python Setup for Debian/Ubuntu
 
 $ sudo apt-get install python-pip python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit
-$ sudo pip install pytz watchdog
-$ sudo pip install pyscss=1.2.0
+$ sudo pip install -r requirements.txt
 
 == Python Setup for Windows
 
@@ -22,10 +21,10 @@ $ sudo pip install pyscss=1.2.0
 4. Install setuptools:
 	https://pypi.python.org/pypi/setuptools#installation-instructions
 5. Make sure Python is on your PATH (you can execute python from a terminal)
-6. Make sure the Python Scripts directory is also on your PATH
+6. Make sure the Python Scripts directory is also on your PATH (i.e. easy_install)
 7. On the commandline, execute:
 	> easy_install pip
-	> pip install tornado mutagen nose pillow pyscss=1.2.0 unidecode pytz watchdog python-memcached
+	> pip install -r requirements.txt
 
 == Getting Started for HTML/CSS/JS Development
 
