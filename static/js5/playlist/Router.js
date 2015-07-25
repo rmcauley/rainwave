@@ -124,15 +124,15 @@ var Router = function() {
 			el.removeChild(el.firstChild);
 		}
 
-		views[typ](el, cache[typ][id]);
+		var t = views[typ](el, cache[typ][id]);
 		var scroll_to = scroll_positions[typ][id] || 0;		// do BEFORE scroll.set_height calls reposition_callback!
 		scroll.set_height(false);
 		scroll.scroll_to(scroll_to);
 		lists[typ].set_new_open(id);
 		lists[typ].scroll_to_id(id);
 
-		if (cache[typ][id].$t.close) {
-			cache[typ][id].$t.close.addEventListener("click", 
+		if (t.close) {
+			t.close.addEventListener("click", 
 				function() {
 					document.body.classList.remove("detail");
 					lists[typ].set_new_open();

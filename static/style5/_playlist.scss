@@ -44,6 +44,7 @@ div.lists {
 	}
 
 	body.playlist.detail & {
+		opacity: 0.7;
 		@include transform(translateX(-110%));	
 	}
 

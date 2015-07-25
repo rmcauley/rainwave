@@ -7,14 +7,16 @@
 			<td class="title" title="{{ title }}">
 				<span bind="title">{{ title }}</span>
 			</td>
-			<td class="artists">
-				{{#each artists }}
-					<a href="#!/artist/{{ id }}">
-						{{ name }}
-					</a>
-					<span>,</span>
-				{{/each}}
-			</td>
+			{{#if artists }}
+				<td class="artists">
+					{{#each artists }}
+						<a href="#!/artist/{{ id }}">
+							{{ name }}
+						</a>
+						<span>,</span>
+					{{/each}}
+				</td>
+			{{/if}}
 			<td class="rating_td">
 				{{>rating}}
 			</td>

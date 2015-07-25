@@ -1,6 +1,7 @@
-<div class="detail_header">
-	<h1>{{ artist.name }}</h1>
+<div class="close" bind="close">
+	<img src="/static/images4/cancel.png" alt="X" />
 </div>
+<ul class="panel_header"><li class="open">{{ artist.name }}</li></ul>
 
 {{#each albums }}
 	{{#if openable }}
@@ -8,5 +9,5 @@
 	{{#else}}
 		<h2>{{ name }}</h2>
 	{{/if}}
-	{{>playlist.songtable}}
+	{{>detail.songtable}}
 {{/each}}

@@ -67,4 +67,6 @@ var AlbumView = function(el, album) {
 	}
 
 	if (!MOBILE) AlbumViewRatingPieChart(template.rating_graph.getContext("2d"), album);
+
+	return template;
 };

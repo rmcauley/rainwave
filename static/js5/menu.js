@@ -40,8 +40,8 @@ var Menu = function() {
 		}
 
 		if (stations.length > 1) {
-			template.station_select_header.on("click", close_station_select);
-			template.station_select.on("click", open_station_select);
+			template.station_select_header.addEventListener("click", close_station_select);
+			template.station_select.addEventListener("click", open_station_select);
 		}
 		else {
 			template.station_select.classList.add("no_station_select");
@@ -56,9 +56,9 @@ var Menu = function() {
 	var onload = function() {
 		var jstz_load = document.createElement("script");
 		jstz_load.src = "//cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js";
-		jstz_load.on("load", function() {
-			template.calendar_menu_item.on("click", calendar_toggle);
-			template.calendar_menu_item.on("mouseleave", calendar_hide);
+		jstz_load.addEventListener("load", function() {
+			template.calendar_menu_item.addEventListener("click", calendar_toggle);
+			template.calendar_menu_item.addEventListener("mouseleave", calendar_hide);
 		});
 		document.body.appendChild(jstz_load);
 	};
@@ -130,14 +130,14 @@ var Menu = function() {
 	var open_station_select = function(e) {
 		if (!template.station_select.classList.contains("open")) {
 			template.station_select.classList.add("open");
-			template.header.on("mouseleave", close_station_select);
+			template.header.addEventListener("mouseleave", close_station_select);
 		}
 	};
 
 	var close_station_select = function(e) {
 		if (template.station_select.classList.contains("open")) {
 			template.station_select.classList.remove("open");
-			template.header.off("mouseleave", close_station_select);
+			template.header.removeEventListener("mouseleave", close_station_select);
 			e.stopPropagation();
 		}
 	};
