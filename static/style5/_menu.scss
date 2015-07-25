@@ -81,6 +81,10 @@ div.menu_wrapper {
 		        transition-timing-function: $menu_transfunc;
 	}
 
+	&.no_station_select svg.pulldown_arrow {
+		display: none;
+	}
+
 	&.open svg.pulldown_arrow {
 		cursor: default;
 		@include transform(translateY(-50%) rotate(180deg));
@@ -105,6 +109,10 @@ div.menu_wrapper {
 			top: $menu_height / 2;
 			@include transform(translateY(-50%));
 		}
+	}
+
+	&.no_station_select #station_select_header {
+		cursor: default;
 	}
 
 	&.open #station_select_header {
@@ -195,6 +203,10 @@ div.menu_wrapper {
 				width: $station_height - 14;
 			}
 		}
+	}
+
+	&.no_station_select a.station {
+		cursor: default;
 	}
 
 	&.open a.station {

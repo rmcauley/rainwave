@@ -43,6 +43,9 @@ var Menu = function() {
 			template.station_select_header.on("click", close_station_select);
 			template.station_select.on("click", open_station_select);
 		}
+		else {
+			template.station_select.classList.add("no_station_select");
+		}
 
 		if (template.settings_link) {
 			template.settings_link.addEventListener("click", SettingsWindow);
