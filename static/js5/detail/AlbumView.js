@@ -61,7 +61,6 @@ var AlbumView = function(el, album) {
 	}
 
 	for (i = 0; i < album.songs.length; i++) {
-		album.songs[i].$t.fave._go_one_up = true;
 		Fave.register(album.songs[i]);
 		Rating.register(album.songs[i]);
 	}

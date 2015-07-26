@@ -34,7 +34,6 @@ var ArtistView = function(el, json) {
 	var j;
 	for (i = 0; i < albums.length; i++) {
 		for (j = 0; j < albums[i].songs.length; j++) {
-			albums[i].songs[j].$t.fave._go_one_up = true;
 			Fave.register(albums[i].songs[j]);
 			Rating.register(albums[i].songs[j]);
 		}

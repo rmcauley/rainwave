@@ -41,7 +41,7 @@ div.detail {
 		padding: 0 10px 2px 10px;
 	}
 
-	table + h2 {
+	table + h2, div.row + h2 {
 		margin-top: 15px;
 	}
 
@@ -167,6 +167,89 @@ div.detail {
 			&.song_fave_highlight:hover td {
 				background-color: #444013;
 				border-color: #5B4E19;
+			}
+		}
+
+		img.link_external, img.request_icon {
+			height: 14px;
+			width: 14px;
+		}
+	}
+
+	div.row {
+		padding: 0 10px 2px 10px;
+		clear: both;
+		border-bottom-style: solid;
+		border-bottom-width: 1px;
+		border-bottom-color: transparent;
+		white-space: nowrap;
+		@include transition-wtime(300ms, width, background-color, border-bottom-color);
+
+		&.cool {
+			background-color: $cooldown-color;
+			border-bottom-color: $cooldown-color;
+		}
+
+		&:hover {
+			background-color: $hovercolor;
+			border-bottom-color: $hovercolor-border;
+			@include no-transition();
+
+			img.fave_lined {
+				opacity: 1;
+			}
+		}
+
+		&.song_fave_highlight {
+			div.title {
+				color: $fave_color;
+			}
+
+			&:hover {
+				background-color: #444013;
+				border-color: #5B4E19;
+			}
+		}
+
+		div.fave {
+			float: left;
+			margin-right: 5px;
+		}
+
+		div.length {
+			width: 35px;
+			float: right;
+		}
+
+		div.rating {
+			float: right;
+		}
+
+		a.url, div.url {
+			float: right;
+			width: 14px;
+		}
+
+		div.cool_info {
+			width: 40px;
+
+			body.simple & {
+				display: none;
+			}
+		}
+
+		div.title {
+			overflow: hidden;
+			text-overflow: ellipsis;		
+		}
+
+		div.artists {
+			max-width: 200px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+
+			body.simple & {
+				display: none;
 			}
 		}
 
