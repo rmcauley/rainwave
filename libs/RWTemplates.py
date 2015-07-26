@@ -122,15 +122,6 @@ class _short_call(object):
 	createElement = "c"
 
 class RainwaveParser(HTMLParser):
-	tree = []
-	stack = []
-	tree_names = []
-	buffr = None
-	name = None
-	html_buffer = ""
-	helpers_on = False
-	helpers = {}
-
 	def parse_context_key(self, context_key):
 		if context_key[0:6] == "@root.":
 			return "_b.%s" % context_key[6:]
@@ -162,8 +153,17 @@ class RainwaveParser(HTMLParser):
 		global _unique_id_chars
 
 		HTMLParser.__init__(self, **kwargs)
+		
+		self.tree = []
+		self.stack = []
+		self.tree_names = []
+		self.buffr = None
+		self.html_buffer = ""
 		self.helpers_on = helpers
+		self.helpers = {}
+		self.bound_scopes = {}
 		self.debug_symbols = debug_symbols
+
 		if full_calls:
 			self.calls = _full_call
 		else:
@@ -194,8 +194,8 @@ class RainwaveParser(HTMLParser):
 		self.buffr += "if(!_c.$t._root){_c.$t._root=_r;}"
 		# I've tried modifying the documentFragment prototype.  Browsers don't like that. :)
 		# So we do a bit of function-copying here in the JS.
-		if full_calls:
-			self.buffr += "_r.%s=_r.%s;" % (_short_call.setAttribute, _full_call.setAttribute)
+		if not full_calls:
+			self.buffr += "_r.%s=_r.%s;" % (_short_call.appendChild, _full_call.appendChild)
 
 	def _current_tree_point(self):
 		if len(self.tree) == 0:
@@ -248,6 +248,12 @@ class RainwaveParser(HTMLParser):
 			self.handle_bind(uid, name)
 
 	def handle_bind(self, uid, bind_name):
+		if len(self.stack) and self.stack[-1]['function_id'] and not self.stack[-1]['function_id'] in self.bound_scopes:
+			self.bound_scopes[self.stack[-1]['function_id']] = True
+			if not self.helpers_on:
+				self.buffr += "if(!_c.$t)_c.$t={};"
+			else:
+				self.buffr += "if(!_c.$t){_c.$t=new RWTemplateObject(_c);_c.$t._root=%s;}" % self._current_tree_point()
 		if not self.helpers_on:
 			self.buffr += "_c.$t.%s=%s;" % (bind_name, uid)
 		else:
@@ -303,22 +309,26 @@ class RainwaveParser(HTMLParser):
 		entry = { "name": args[0] }
 		if len(args) > 1:
 			entry['argument'] = args[1]
+		elif entry['name'] == "if":
+			raise "Tried to use an 'if' without an argument. (%s)" % self.name
 
 		# This quickly closes the 'if' tag itself and copies the arguments over to 'else'
-		if len(self.stack) and self.stack[-1]['name'] == "if" and data == "else":
-			entry = self.stack[-1]
-			self.handle_stack_pop(entry['name'])
-			entry['name'] = "else"
-
-		entry['function_id'] = _get_id()
-		dbg_name = ""
-		if 'argument' in entry and re.match(r"^\w+$", entry['argument']):
-			dbg_name = " %s_%s_%s" % (entry['name'], entry['argument'], entry['function_id'])
-		self.buffr += "var %s=function%s(_c, %s){" % (entry['function_id'], dbg_name, self._current_tree_point())
-		if not self.helpers_on:
-			self.buffr += "if(!_c.$t)_c.$t={};"
+		if len(self.stack) and self.stack[-1]['name'] == "if" and (data == "else" or data == "#else"):
+			if len(self.stack) and self.stack[-1]['function_id'] and self.stack[-1]['function_id'] in self.bound_scopes:
+				del(self.bound_scopes[self.stack[-1]['function_id']])
+			self.buffr += "}else{"
+			return
+		elif entry['name'] == "if":
+			entry['function_id'] = None
+			context_key = self.parse_context_key(entry['argument'])
+			self.buffr += "if(%s){" % (context_key)
 		else:
-			self.buffr += "if(!_c.$t){_c.$t=new RWTemplateObject(_c);_c.$t._root=%s;}" % self._current_tree_point()
+			entry['function_id'] = _get_id()
+			dbg_name = ""
+			if 'argument' in entry and re.match(r"^\w+$", entry['argument']):
+				dbg_name = " %s_%s_%s" % (entry['name'], entry['argument'], entry['function_id'])
+			self.buffr += "var %s=function%s(_c, %s){" % (entry['function_id'], dbg_name, self._current_tree_point())
+			self.scope_bound = False
 		self.stack.append(entry)
 
 	def handle_stack_pop(self, name):
@@ -328,9 +338,14 @@ class RainwaveParser(HTMLParser):
 		if not name == self.stack[-1]['name'] and not (name == "if" and self.stack[-1]['name'] == "else"):
 			raise Exception("Mismatched open and close tags (%s and %s) in %s template." % (self.stack[-1]['name'], name, self.name))
 
-		self.buffr += "};"
+		if self.stack[-1]['function_id']:
+			self.buffr += "};"
 		getattr(self, "handle_%s" % self.stack[-1]['name'])(self.stack[-1]['function_id'], self.stack[-1]['argument'])
 		self.stack.pop()
+		if not len(self.stack):
+			self.scope_bound = True
+		else:
+			self.scope_bound = False
 
 	def handle_each(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
@@ -345,8 +360,7 @@ class RainwaveParser(HTMLParser):
 		self.buffr += "_rwt.%s(_c, %s);" % (template_name, self._current_tree_point())
 
 	def handle_if(self, function_id, context_key):
-		context_key = self.parse_context_key(context_key)
-		self.buffr += "if(%s)%s(_c, %s);" % (context_key, function_id, self._current_tree_point())
+		self.buffr += "}"
 
 	def handle_else(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
