@@ -47,13 +47,14 @@ RWTemplates.helpers.array_update = function(arr) {
 
         // find things that no longer exist
         var exists, i, j;
-        for (i = 0; i < shadow.arr.length; i++) {
+        for (i = shadow.arr.length -1; i >= 0; i--) {
             exists = arr.indexOf(shadow.arr[i]);
             if (exists === -1) {
                 (shadow.render_delete || arr.render_delete || RWTemplates.helpers.array_item_delete)(shadow.el, shadow.arr[i]);
             }
         }
 
+        // find things that don't exist yet
         for (i = 0; i < arr.length; i++) {
             exists = shadow.arr.indexOf(arr[i]);
             if (exists === -1) {
@@ -63,6 +64,8 @@ RWTemplates.helpers.array_update = function(arr) {
                 }
             }
         }
+
+        shadow.arr = arr.slice();
 
         for (i = 0; i < arr.length; i++) {
             if (arr[i].$t) arr[i].$t.update();
@@ -74,7 +77,9 @@ RWTemplates.helpers.array_update = function(arr) {
         else if (arr.length > 0 && arr[0].$t.item_root) {
             for (i = 0; i < arr.length; i++) {
                 for (j = 0; j < arr[i].$t.item_root.length; j++) {
-                    shadow.el.appendChild(arr[i].$t.item_root[j]);
+                    if (arr[i].$t.item_root[j].parentNode) {
+                        arr[i].$t.item_root[j].parentNode.appendChild(arr[i].$t.item_root[j]);
+                    }
                 }
             }
         }
@@ -85,7 +90,7 @@ RWTemplates.helpers.array_update = function(arr) {
 };
 
 RWTemplates.helpers.elem_update = function(elem, val) {
-    if (!elem || !val) return;
+    if (!elem || (typeof(val) == "undefined")) return;
     elem_val = val;
     if (elem.getAttribute("helper")) {
         var hname = elem.getAttribute("helper");
@@ -181,96 +186,128 @@ var RWTemplateObject = function(_c) {
         }
     };
 
-    RWTemplateObject.prototype.get = function() {
+    RWTemplateObject.prototype.get = function(update_in_place) {
         var new_obj = {};
+        var arr_i;
         for (var i in this._c) {
             if (!this._c.hasOwnProperty(i)) continue;
+            if (i == "$t") continue;
 
-            var elem, tagname;
-            for (var eli = 0; eli < this[i].length; eli++) {
-                elem = this[i][eli];
-                tagname = elem.nodeType && elem.tagName ? elem.tagName.toLowerCase() : null;
-                if (tagname == "select") {
-                    new_obj[i] = elem.value;
-                }
-                else if ((tagname == "input") && (elem.getAttribute("type") == "radio") && elem.checked) {
-                    new_obj[i] = elem.value;
-                }
-                else if ((tagname == "input") && (elem.getAttribute("type") == "checkbox") && elem.checked) {
-                    if (elem.value && (elem.value != "true")) {
-                        if (!new_obj[i]) new_obj[i] = "";
-                        if (new_obj[i].length > 0) new_obj[i] += "|";
-                        new_obj[i] += elem.value || "true";
-                    }
-                    else {
-                        new_obj[i] = true;
+            if (this._c[i].$t && this._c[i].$t.get) {
+                new_obj[i] = this._c[i].$t.get(update_in_place);
+            }
+            else if (Object.prototype.toString.call(this._c[i]) == "[object Array]") {
+                new_obj[i] = [];
+                for (arr_i = 0; arr_i < this._c[i].length; arr_i++) {
+                    if (this._c[i][arr_i] && this._c[i][arr_i].$t && this._c[i][arr_i].$t.get) {
+                        new_obj[i].push(this._c[i][arr_i].$t.get(update_in_place));
                     }
                 }
-                else if ((elem.getAttribute("type") != "submit") && elem.value) {
-                    new_obj[i] = elem.value;
-                }
+            }
+            else if (this[i]) {
+                var elem, tagname;
+                for (var eli = 0; eli < this[i].length; eli++) {
+                    elem = this[i][eli];
+                    tagname = elem.nodeType && elem.tagName ? elem.tagName.toLowerCase() : null;
+                    if (tagname == "select") {
+                        new_obj[i] = elem.value;
+                    }
+                    else if ((tagname == "input") && (elem.getAttribute("type") == "radio") && elem.checked) {
+                        new_obj[i] = elem.value;
+                    }
+                    else if ((tagname == "input") && (elem.getAttribute("type") == "checkbox") && elem.checked) {
+                        if (elem.value && (elem.value != "true")) {
+                            if (!new_obj[i]) new_obj[i] = "";
+                            if (new_obj[i].length > 0) new_obj[i] += "|";
+                            new_obj[i] += elem.value || "true";
+                        }
+                        else {
+                            new_obj[i] = true;
+                        }
+                    }
+                    else if ((elem.getAttribute("type") != "submit") && (typeof(elem.value) != "undefined")) {
+                        new_obj[i] = elem.value;
+                    }
 
-                if (new_obj[i] && elem.getAttribute("helper")) {
-                    if (typeof(RWTemplates.helpers[elem.getAttribute("helper") + "_get"]) == "function") {
-                        new_obj[i] = RWTemplates.helpers[elem.getAttribute("helper") + "_get"](this._c, new_obj[i]);
+                    if (new_obj[i] && elem.getAttribute("helper")) {
+                        if (typeof(RWTemplates.helpers[elem.getAttribute("helper") + "_get"]) == "function") {
+                            new_obj[i] = RWTemplates.helpers[elem.getAttribute("helper") + "_get"](this._c, new_obj[i]);
+                        }
+                        else {
+                            console.warn("RWTemplates helper " + elem.getAttribute("helper") + " has a setter but no getter.  Add a " + elem.getAttribute("helper") + "_get function to RWTemplates.helpers.");
+                        }
                     }
-                    else {
-                        console.warn("RWTemplates helper " + elem.getAttribute("helper") + " has a setter but no getter.  Add a " + elem.getAttribute("helper") + "_get function to RWTemplates.helpers.");
-                    }
-                }
 
-                if (new_obj[i] && !isNaN(new_obj[i])) {
-                    new_obj[i] = parseFloat(new_obj[i]);
+                    if (new_obj[i] && !isNaN(new_obj[i])) {
+                        new_obj[i] = parseFloat(new_obj[i]);
+                    }
+
+                    if ((typeof(new_obj[i]) != "undefined") && update_in_place) {
+                        this._c[i] = new_obj[i];
+                    }
                 }
             }
         }
         return new_obj;
     };
 
-    RWTemplateObject.prototype.clear = function() {
-        var new_obj = this.get();
-        for (var i in new_obj) {
-            new_obj[i] = null;
-        }
-        var old_c = this._c;
-        this._c = new_obj;
-        this.update();
-        this._c = old_c;
-        this.normal(this);
+    RWTemplateObject.prototype.update_data = function(new_data) {
+        this.get(true);
     };
 
     RWTemplateObject.prototype.reset = RWTemplateObject.prototype.update;
 
+    var allowed_tags = [ 'select', 'button', 'textarea', 'input' ];
+
     RWTemplateObject.prototype.get_form_elements = function() {
         var elements = [];
-        for (var i in this) {
+        var i, j;
+        for (i in this) {
             if (!this.hasOwnProperty(i)) continue;
-            if (this[i].tagName && (
-                (this[i].tagName.toLowerCase() === "select") ||
-                (this[i].tagName.toLowerCase() === "input") ||
-                (this[i].tagName.toLowerCase() === "button") ||
-                (this[i].tagName.toLowerCase() === "textarea")
-            )) {
-                elements.push(this[i]);
+            for (j = 0; j < this[i].length; j++) {
+                if (allowed_tags.indexOf(this[i][j].tagName.toLowerCase()) !== -1) {
+                    elements.push(this[i][j]);
+                }
+            }
+        }
+        for (i in this._c) {
+            if (!this._c.hasOwnProperty(i)) continue;
+            if (typeof(this._c[i].$t) != "undefined") {
+                elements = elements.concat(this._c[i].$t.get_form_elements());
+            }
+            if (Object.prototype.toString.call(this._c[i]) == "[object Array]") {
+                for (j = 0; j < this._c[i].length; j++) {
+                    if (typeof(this._c[i][j].$t) != "undefined") {
+                        elements = elements.concat(this._c[i][j].$t.get_form_elements());
+                    }
+                }
             }
         }
         return elements;
+    };
+
+    RWTemplateObject.prototype.clear = function() {
+        var elements = this.get_form_elements();
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].value = null;
+        }
     };
 
     RWTemplateObject.prototype.submitting = function(submit_message) {
         var elements = this.get_form_elements();
         for (var i = 0; i < elements.length; i++) {
             if (elements[i].parentNode) {
-                remove_class(elements[i].parentNode, "has-error");
+                elements[i].parentNode.classList.remove("has-error");
             }
             if (elements[i].getAttribute("type") === "submit") {
-                change_button_class(btn_normal);
+                change_button_class(elements[i], btn_normal);
                 change_button_text(elements[i], submit_message || gettext("Saving..."));
             }
             if (bootstrap_mode) {
                 elements[i].classList.remove("has-error");
             }
             elements[i].disabled = true;
+            elements[i].classList.add("disabled");
         }
     };
 
@@ -298,6 +335,7 @@ var RWTemplateObject = function(_c) {
                 }
             }
             elements[i].disabled = false;
+            elements[i].classList.remove("disabled");
             if (elements[i].getAttribute("type") == "submit") {
                 submit_btn = elements[i];
             }
@@ -331,8 +369,6 @@ var RWTemplateObject = function(_c) {
                 }
             }
         }
-
-        change_form_status_text(error_message);
     };
 
     RWTemplateObject.prototype.normal = function(submit_button_text) {
@@ -342,12 +378,12 @@ var RWTemplateObject = function(_c) {
                 elements[i].parentNode.classList.remove("has-error");
             }
             elements[i].disabled = false;
+            elements[i].classList.remove("disabled");
             if (elements[i].getAttribute("type") == "submit") {
                 change_button_class(elements[i], btn_normal);
                 change_button_text(elements[i], submit_button_text);
             }
         }
-        change_form_status_text();
     };
 
     RWTemplateObject.prototype.success = function(success_message, permanent) {
@@ -355,6 +391,7 @@ var RWTemplateObject = function(_c) {
         var btns = [];
         for (var i = 0; i < elements.length; i++) {
             elements[i].disabled = permanent;
+            elements[i].classList[permanent ? "add" : "remove"]("disabled");
             if (bootstrap_mode && elements[i].parentNode) {
                 elements[i].parentNode.classList.remove("has-error");
             }
@@ -362,11 +399,11 @@ var RWTemplateObject = function(_c) {
                 change_button_class(elements[i], btn_success);
                 change_button_text(elements[i], success_message || gettext("Success!"));
                 if (!permanent) {
-                    setTimeout(this.normal(), 5000);
+                    var obj = this;
+                    setTimeout(function() { obj.normal(); }, 5000);
                 }
             }
         }
-        change_form_status_text("");
     };
 
     RWTemplateObject.prototype.enable_enter_key_submission = function(func) {

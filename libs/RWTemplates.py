@@ -121,6 +121,8 @@ class _short_call(object):
 	document = "_d"
 	createElement = "c"
 
+_bind_reserved_words = ( 'update', 'get', 'update_data', 'clear', 'reset', 'get_form_elements', 'submitting', 'error', 'normal', 'success', 'enable_enter_key_submission' )
+
 class RainwaveParser(HTMLParser):
 	def parse_context_key(self, context_key):
 		if context_key[0:6] == "@root.":
@@ -153,7 +155,7 @@ class RainwaveParser(HTMLParser):
 		global _unique_id_chars
 
 		HTMLParser.__init__(self, **kwargs)
-		
+
 		self.tree = []
 		self.stack = []
 		self.tree_names = []
@@ -210,8 +212,6 @@ class RainwaveParser(HTMLParser):
 			raise Exception("%s unclosed stack: %s" % (self.name, repr(self.stack)))
 		if len(self.tree):
 			raise Exception("%s unclosed tags: %s" % (self.name, repr(self.tree_names)))
-		if self.helpers_on:
-			self.buffr += "_c.$template=_c.$t;"
 		self.buffr += "return _c.$t;"
 		self.buffr += "};"
 		return self.buffr
@@ -257,6 +257,9 @@ class RainwaveParser(HTMLParser):
 		if not self.helpers_on:
 			self.buffr += "_c.$t.%s=%s;" % (bind_name, uid)
 		else:
+			global _bind_reserved_words
+			if bind_name in _bind_reserved_words:
+				raise Exception("%s is a reserved word for binding. (%s)" % (bind_name, self.name))
 			self.buffr += "if(_c.$t.%s)_c.$t.%s.push(%s);else _c.$t.%s=[%s];" % (bind_name, bind_name, uid, bind_name, uid)
 			if bind_name != "item_root":
 				self.buffr += "_rwt.helpers.elem_update(%s, _c['%s']);" % (uid, bind_name)
@@ -377,6 +380,6 @@ if __name__ == "__main__":
 	argp = argparse.ArgumentParser(description="Rainwave Javascript Templating system.  Takes Handlebars-style files from templatedir, outputs native Javascript to outfile.")
 	argp.add_argument("--templatedir", default="jstemplates")
 	argp.add_argument("--outfile", default="RWTemplates.templates.js")
-	argp.add_argument("--light", action="store_true")
+	argp.add_argument("--helpers", action="store_true")
 	command_args = argp.parse_args()
-	compile(command_args.templatedir, command_args.outfile, command_args.light)
+	compile_templates(command_args.templatedir, command_args.outfile, helpers=command_args.helpers)
