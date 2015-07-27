@@ -14,7 +14,7 @@
 		</div>
 
 		{{#with albums[0] }}
-			{{>rating}}
+			{{>rating_album}}
 
 			{{>fave}}
 			<div bind="title" class="album" title="{{ name }}">
