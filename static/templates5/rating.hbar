@@ -1,5 +1,3 @@
 <div class="rating" bind="rating">
-	<div class="rating_hover" bind="rating_hover">
-		<div class="rating_hover_number" bind="rating_hover_number"></div>
-	</div>
+	<div class="rating_hover" bind="rating_hover" bind="rating_hover_number"></div>
 </div>

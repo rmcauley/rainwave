@@ -58,6 +58,8 @@ import os
 # variable names short.
 _unique_id_chars = [ chr(x) for x in xrange(65, 91) ] + [ chr(x) for x in xrange(97, 123) ]
 _unique_id = _unique_id_chars[0]
+_func_id = _unique_id_chars[0]
+
 def _get_id():
 	global _unique_id
 	next_idx = _unique_id_chars.index(_unique_id[-1]) + 1
@@ -67,7 +69,21 @@ def _get_id():
 	_unique_id = _unique_id[:-1] + _unique_id_chars[next_idx]
 	return _unique_id
 
+def _get_func_id():
+	global _func_id
+	next_idx = _unique_id_chars.index(_func_id[-1]) + 1
+	if next_idx >= len(_unique_id_chars):
+		_func_id += _unique_id_chars[0]
+		return _func_id
+	_func_id = _func_id[:-1] + _unique_id_chars[next_idx]
+	return "_f.%s" % _func_id
+
 def compile_templates(source_dir, dest_file, **kwargs):
+	global _unique_id
+	global _func_id
+	_func_id = _unique_id_chars[0]
+	_unique_id = _unique_id_chars[0]
+
 	o = open(dest_file, "w")
 	o.write(js_start('full_calls' in kwargs and kwargs['full_calls']))
 	#pylint: disable=W0612
@@ -85,7 +101,9 @@ def compile_templates(source_dir, dest_file, **kwargs):
 	#pylint: enable=W0612
 
 def js_start(full_calls=False):
-	to_ret ="window.RWTemplates=function(){"
+	to_ret = "window.RWTemplates=function(){"
+	to_ret += "'use strict';"
+	to_ret += "var _f={};"
 	if not full_calls:
 		to_ret += (
 			"var _d=document;"
@@ -95,7 +113,6 @@ def js_start(full_calls=False):
 		)
 	to_ret += (
 		"function _svg(icon){"
-			"\"use strict\";"
 			"var s=document.createElementNS(\"http://www.w3.org/2000/svg\",\"svg\");"
 			"var u=document.createElementNS(\"http://www.w3.org/2000/svg\",\"use\");"
 			"u.setAttributeNS(\"http://www.w3.org/1999/xlink\",\"xlink:href\",\"/static/images4/symbols.svg#\"+icon);"
@@ -150,7 +167,7 @@ class RainwaveParser(HTMLParser):
 				use_plus = True
 		return final_val
 
-	def __init__(self, template_name, helpers=False, debug_symbols=True, full_calls=False, **kwargs):
+	def __init__(self, template_name, helpers=False, debug_symbols=True, full_calls=False, inline_templates=tuple(), **kwargs):
 		global _unique_id
 		global _unique_id_chars
 
@@ -159,51 +176,62 @@ class RainwaveParser(HTMLParser):
 		self.tree = []
 		self.stack = []
 		self.tree_names = []
-		self.buffr = None
-		self.html_buffer = ""
+		self.buffers = {}
+		self.input_buffer = ""
 		self.helpers_on = helpers
 		self.helpers = {}
 		self.bound_scopes = {}
 		self.debug_symbols = debug_symbols
+		self.inline_templates = inline_templates
+
+		global _unique_id
+		_unique_id = _unique_id_chars[0]
 
 		if full_calls:
 			self.calls = _full_call
 		else:
 			self.calls = _short_call
-		# reset the unique IDs back to 0 for this template's local scope
-		_unique_id = _unique_id_chars[0]
 		self.name = template_name
 		names = self.name.split('.')
-		self.buffr = ""
+		self.buffers['_r'] = ""
 		if len(names) > 1:
 			for i in range(1, len(names) + 1):
 				cname = '.'.join(names[0:i])
-				self.buffr += "if(!_rwt.%s)_rwt.%s={};" % (cname, cname)
+				self.buffers['_r'] += "if(!_rwt.%s)_rwt.%s={};" % (cname, cname)
 		dbg_name = ""
 		if debug_symbols:
 			dbg_name = " " + template_name.replace(".", "_")
-		self.buffr += "_rwt.%s=function%s(_c,_proot){" % (template_name, dbg_name)
-		self.buffr += "\"use strict\";"
-		self.buffr += "_c=_c||{};"
-		if not self.helpers_on:
-			self.buffr += "if(!_c.$t)_c.$t={};"
-		else:
-			self.buffr += "if(!_c.$t)_c.$t=new RWTemplateObject(_c);"
-		# _b?! ... I don't know what else I can call the root context
-		# _b is used when the templater calls @some_var
-		self.buffr += "var _b=_c;"
-		self.buffr += "var _r=_proot||_c.$t._root||%s.createDocumentFragment();" % self.calls.document
-		self.buffr += "if(!_c.$t._root){_c.$t._root=_r;}"
-		# I've tried modifying the documentFragment prototype.  Browsers don't like that. :)
-		# So we do a bit of function-copying here in the JS.
-		if not full_calls:
-			self.buffr += "_r.%s=_r.%s;" % (_short_call.appendChild, _full_call.appendChild)
+		self.buffers['_r'] += "_rwt.%s=function%s(_c,_r){" % (template_name, dbg_name)
+		if not template_name in inline_templates:
+			self.buffers['_r'] += "_c=_c||{};"
+			if not self.helpers_on:
+				self.buffers['_r'] += "if(!_c.$t)_c.$t={};"
+			else:
+				self.buffers['_r'] += "if(!_c.$t)_c.$t=new RWTemplateObject(_c);"
+			# _b?! ... I don't know what else I can call the root context
+			# _b is used when the templater calls @some_var
+			self.buffers['_r'] += "var _b=_c;"
+			self.buffers['_r'] += "var _r=_r||_c.$t._root;"
+			self.buffers['_r'] += "if (!_r){_r=%s.createDocumentFragment();" % self.calls.document
+			# I've tried modifying the documentFragment prototype.  Browsers don't like that. :)
+			# So we do a bit of function-copying here in the JS.
+			if not full_calls:
+				self.buffers['_r'] += "_r.%s=_r.%s;" % (_short_call.appendChild, _full_call.appendChild)
+			self.buffers['_r'] += "}"
+			self.buffers['_r'] += "if(!_c.$t._root){_c.$t._root=_r;}"
+		
 
 	def _current_tree_point(self):
 		if len(self.tree) == 0:
 			return "_r"
 		else:
 			return self.tree[-1]
+
+	def _current_stack_point(self):
+		for stackpt in reversed(self.stack):
+			if stackpt['function_id']:
+				return stackpt['function_id']
+		return "_r"
 
 	def close(self, *args, **kwargs):
 		self.handle_data(None)
@@ -212,9 +240,15 @@ class RainwaveParser(HTMLParser):
 			raise Exception("%s unclosed stack: %s" % (self.name, repr(self.stack)))
 		if len(self.tree):
 			raise Exception("%s unclosed tags: %s" % (self.name, repr(self.tree_names)))
-		self.buffr += "return _c.$t;"
-		self.buffr += "};"
-		return self.buffr
+		self.buffers['_r'] += "return _c.$t;"
+		self.buffers['_r'] += "};"
+		buffer_r = self.buffers['_r']
+		del(self.buffers['_r'])
+		final_buffer = ""
+		for key, buff in self.buffers.iteritems():
+			final_buffer += buff
+		final_buffer += buffer_r
+		return final_buffer
 
 	def handle_starttag(self, tag, attrs):
 		self.handle_data(None)
@@ -227,11 +261,11 @@ class RainwaveParser(HTMLParser):
 				if attr[0] == "use":
 					svg_use = self._parse_val(attr[1])
 			if svg_use:
-				self.buffr += "var %s=_svg(%s);" % (uid, svg_use)
+				self.buffers[self._current_stack_point()] += "var %s=_svg(%s);" % (uid, svg_use)
 			else:
 				raise Exception("(%s) The Rainwave templater cannot support SVG unless in this RW-specific format: <svg use=\"%s\" attr=\"...\" ...>" % (self.name, svg_use))
 		else:
-			self.buffr += "var %s=%s.%s('%s');" % (uid, self.calls.document, self.calls.createElement, tag)
+			self.buffers[self._current_stack_point()] += "var %s=%s.%s('%s');" % (uid, self.calls.document, self.calls.createElement, tag)
 		self.tree.append(uid)
 		self.tree_names.append((tag, attrs))
 		# gotta do binds last (so they pick up helpers/etc)
@@ -243,29 +277,32 @@ class RainwaveParser(HTMLParser):
 			else:
 				if self.helpers_on and attr[0] == "helper":
 					self.helpers[uid] = attr_val
-				self.buffr += "%s.%s('%s',%s);" % (uid, self.calls.setAttribute, attr[0], attr_val)
+				self.buffers[self._current_stack_point()] += "%s.%s('%s',%s);" % (uid, self.calls.setAttribute, attr[0], attr_val)
 		for name in bind_names:
 			self.handle_bind(uid, name)
 
-	def handle_bind(self, uid, bind_name):
+	def check_bind_scope(self, uid):
 		if len(self.stack) and self.stack[-1]['function_id'] and not self.stack[-1]['function_id'] in self.bound_scopes:
 			self.bound_scopes[self.stack[-1]['function_id']] = True
 			if not self.helpers_on:
-				self.buffr += "if(!_c.$t)_c.$t={};"
+				self.buffers[self._current_stack_point()] += "if(!_c.$t)_c.$t={};"
 			else:
-				self.buffr += "if(!_c.$t){_c.$t=new RWTemplateObject(_c);_c.$t._root=%s;}" % self._current_tree_point()
+				self.buffers[self._current_stack_point()] += "if(!_c.$t){_c.$t=new RWTemplateObject(_c);_c.$t._root=%s;}" % self._current_tree_point()
+
+	def handle_bind(self, uid, bind_name):
+		self.check_bind_scope(uid)
 		if not self.helpers_on:
-			self.buffr += "_c.$t.%s=%s;" % (bind_name, uid)
+			self.buffers[self._current_stack_point()] += "_c.$t.%s=%s;" % (bind_name, uid)
 		else:
 			global _bind_reserved_words
 			if bind_name in _bind_reserved_words:
 				raise Exception("%s is a reserved word for binding. (%s)" % (bind_name, self.name))
-			self.buffr += "if(_c.$t.%s)_c.$t.%s.push(%s);else _c.$t.%s=[%s];" % (bind_name, bind_name, uid, bind_name, uid)
+			self.buffers[self._current_stack_point()] += "if(_c.$t.%s)_c.$t.%s.push(%s);else _c.$t.%s=[%s];" % (bind_name, bind_name, uid, bind_name, uid)
 			if bind_name != "item_root":
-				self.buffr += "_rwt.helpers.elem_update(%s, _c['%s']);" % (uid, bind_name)
+				self.buffers[self._current_stack_point()] += "_rwt.helpers.elem_update(%s, _c['%s']);" % (uid, bind_name)
 
 	def handle_append(self, uid):
-		self.buffr += "%s.%s(%s);" % (self._current_tree_point(), self.calls.appendChild, uid)
+		self.buffers[self._current_stack_point()] += "%s.%s(%s);" % (self._current_tree_point(), self.calls.appendChild, uid)
 
 	def handle_endtag(self, tag):
 		self.handle_data(None)
@@ -281,12 +318,12 @@ class RainwaveParser(HTMLParser):
 
 	def handle_data(self, lines):
 		if lines:
-			self.html_buffer += lines
+			self.input_buffer += lines
 			return
-		self.html_buffer = self.html_buffer.strip()
-		if not self.html_buffer or not len(self.html_buffer):
+		self.input_buffer = self.input_buffer.strip()
+		if not self.input_buffer or not len(self.input_buffer):
 			return
-		for line in self.html_buffer.split("\n"):
+		for line in self.input_buffer.split("\n"):
 			for data in re.split(r"({{.*?}})", line):
 				data = data.strip()
 				if not data or len(data) == 0:
@@ -302,10 +339,10 @@ class RainwaveParser(HTMLParser):
 				elif not len(self.tree):
 					raise Exception("%s: Tried to set textContent of root element.  Text needs to be in an element. (\"%s\")" % (self.name, data))
 				elif self.tree[-1] in self.helpers:
-					self.buffr += "%s.textContent=_rwt.helpers[%s](%s);" % (self.tree[-1], self.helpers[self.tree[-1]], self._parse_val(data))
+					self.buffers[self._current_stack_point()] += "%s.textContent=_rwt.helpers[%s](%s);" % (self.tree[-1], self.helpers[self.tree[-1]], self._parse_val(data))
 				else:
-					self.buffr += "%s.textContent=%s;" % (self.tree[-1], self._parse_val(data))
-		self.html_buffer = ""
+					self.buffers[self._current_stack_point()] += "%s.textContent=%s;" % (self.tree[-1], self._parse_val(data))
+		self.input_buffer = ""
 
 	def handle_stack_push(self, data):
 		args = data.strip().split(' ', 1)
@@ -319,20 +356,21 @@ class RainwaveParser(HTMLParser):
 		if len(self.stack) and self.stack[-1]['name'] == "if" and (data == "else" or data == "#else"):
 			if len(self.stack) and self.stack[-1]['function_id'] and self.stack[-1]['function_id'] in self.bound_scopes:
 				del(self.bound_scopes[self.stack[-1]['function_id']])
-			self.buffr += "}else{"
+			self.buffers[self._current_stack_point()] += "}else{"
 			return
 		elif entry['name'] == "if":
 			entry['function_id'] = None
 			context_key = self.parse_context_key(entry['argument'])
-			self.buffr += "if(%s){" % (context_key)
+			self.stack.append(entry)
+			self.buffers[self._current_stack_point()] += "if(%s){" % (context_key)
 		else:
-			entry['function_id'] = _get_id()
+			entry['function_id'] = _get_func_id()
 			dbg_name = ""
 			if 'argument' in entry and re.match(r"^\w+$", entry['argument']):
-				dbg_name = " %s_%s_%s" % (entry['name'], entry['argument'], entry['function_id'])
-			self.buffr += "var %s=function%s(_c, %s){" % (entry['function_id'], dbg_name, self._current_tree_point())
+				dbg_name = " %s_%s_%s" % (entry['name'], entry['argument'], entry['function_id'][3:])
+			self.stack.append(entry)
+			self.buffers[self._current_stack_point()] = "%s=function%s(_c, %s){" % (entry['function_id'], dbg_name, self._current_tree_point())
 			self.scope_bound = False
-		self.stack.append(entry)
 
 	def handle_stack_pop(self, name):
 		if not len(self.stack):
@@ -342,37 +380,38 @@ class RainwaveParser(HTMLParser):
 			raise Exception("Mismatched open and close tags (%s and %s) in %s template." % (self.stack[-1]['name'], name, self.name))
 
 		if self.stack[-1]['function_id']:
-			self.buffr += "};"
-		getattr(self, "handle_%s" % self.stack[-1]['name'])(self.stack[-1]['function_id'], self.stack[-1]['argument'])
-		self.stack.pop()
+			self.buffers[self._current_stack_point()] += "};"
+		stackpt = self.stack.pop()
 		if not len(self.stack):
 			self.scope_bound = True
 		else:
 			self.scope_bound = False
+		getattr(self, "handle_%s" % stackpt['name'])(stackpt['function_id'], stackpt['argument'])
 
 	def handle_each(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
 		if not self.helpers_on:
-			self.buffr += "for(var _i= 0;_i<%s.length;_i++){" % context_key
-			self.buffr += "%s(%s[_i], %s);" % (function_id, context_key, self._current_tree_point())
-			self.buffr += "}"
+			self.buffers[self._current_stack_point()] += "for(var _i= 0;_i<%s.length;_i++){" % context_key
+			self.buffers[self._current_stack_point()] += "%s(%s[_i], %s);" % (function_id, context_key, self._current_tree_point())
+			self.buffers[self._current_stack_point()] += "}"
 		else:
-			self.buffr += "_rwt.helpers.array_render(%s,%s,%s);" % (context_key, function_id, self._current_tree_point())
+			self.buffers[self._current_stack_point()] += "_rwt.helpers.array_render(%s,%s,%s);" % (context_key, function_id, self._current_tree_point())
 
 	def handle_subtemplate(self, template_name):
-		self.buffr += "_rwt.%s(_c, %s);" % (template_name, self._current_tree_point())
+		self.check_bind_scope(self._current_tree_point())
+		self.buffers[self._current_stack_point()] += "_rwt.%s(_c, %s);" % (template_name, self._current_tree_point())
 
 	def handle_if(self, function_id, context_key):
-		self.buffr += "}"
+		self.buffers[self._current_stack_point()] += "}"
 
 	def handle_else(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
-		self.buffr += "if(!(%s))%s(_c, %s);" % (context_key, function_id, self._current_tree_point())
+		self.buffers[self._current_stack_point()] += "if(!(%s))%s(_c, %s);" % (context_key, function_id, self._current_tree_point())
 
 	def handle_with(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
-		self.buffr += "if(!%s.$t)%s.$t={};" % (context_key, context_key)
-		self.buffr += "%s(%s, %s);" % (function_id, context_key, self._current_tree_point())
+		self.buffers[self._current_stack_point()] += "if(!%s.$t)%s.$t={};" % (context_key, context_key)
+		self.buffers[self._current_stack_point()] += "%s(%s, %s);" % (function_id, context_key, self._current_tree_point())
 
 if __name__ == "__main__":
 	import argparse

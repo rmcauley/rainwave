@@ -4,11 +4,7 @@
 			{{ ^Formatting.minute_clock(_c.length) }}
 		</div>
 		{{#if url }}
-			<a class="url" href="{{ url }}" target="_blank">
-				<img src="/static/images4/link_external.svg" class="link_external" />
-			</a>
-		{{else}}
-			<div class="url">&nbsp;</div>
+			<a class="url" href="{{ url }}" target="_blank"></a>
 		{{/if}}
 		{{>rating}}
 		<div class="cool_info">

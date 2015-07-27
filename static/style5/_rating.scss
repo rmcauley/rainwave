@@ -41,12 +41,9 @@ div.rating {
 		width: 25px;
 		opacity: 0;
 		text-align: right;
+		color: $highlight;
 		@include transition-wtime(200ms, opacity, transform);
 		@include transform(translateX(0px));
-
-		div.rating_hover_number {
-			color: $highlight;
-		}
 	}
 
 	&:hover div.rating_hover {

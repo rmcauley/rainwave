@@ -34,7 +34,6 @@ var AlbumView = function(el, album) {
 
 	var template = RWTemplates.detail.album(album);
 	AlbumArt(album.art, template.art);
-	el.appendChild(template._root);
 
 	for (var i = 0; i < album.songs.length; i++) {
 		if (!album.songs[i].artists) { 
@@ -52,18 +51,20 @@ var AlbumView = function(el, album) {
 		for (i in songs) {
 			var h2 = document.createElement("h2");
 			h2.textContent = $l("songs_from", { "station": $l("station_name_" + i) });
-			el.appendChild(h2);
-			el.appendChild(RWTemplates.detail.songtable({ "songs": songs[i] })._root);
+			template._root.appendChild(h2);
+			template._root.appendChild(RWTemplates.detail.songtable({ "songs": songs[i] })._root);
 		}
 	}
 	else {
-		el.appendChild(RWTemplates.detail.songtable({ "songs": album.songs })._root);
+		template._root.appendChild(RWTemplates.detail.songtable({ "songs": album.songs })._root);
 	}
 
 	for (i = 0; i < album.songs.length; i++) {
 		Fave.register(album.songs[i]);
 		Rating.register(album.songs[i]);
 	}
+
+	el.appendChild(template._root);
 
 	if (!MOBILE) AlbumViewRatingPieChart(template.rating_graph.getContext("2d"), album);
 
