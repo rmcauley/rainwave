@@ -211,7 +211,7 @@ class RainwaveParser(HTMLParser):
 			# _b?! ... I don't know what else I can call the root context
 			# _b is used when the templater calls @some_var
 			self.buffers['_r'] += "var _b=_c;"
-			self.buffers['_r'] += "var _r=_r||_c.$t._root;"
+			self.buffers['_r'] += "_r=_r||_c.$t._root;"
 			self.buffers['_r'] += "if (!_r){_r=%s.createDocumentFragment();" % self.calls.document
 			# I've tried modifying the documentFragment prototype.  Browsers don't like that. :)
 			# So we do a bit of function-copying here in the JS.
@@ -274,6 +274,10 @@ class RainwaveParser(HTMLParser):
 			attr_val = self._parse_val(attr[1])
 			if attr[0] == "bind":
 				bind_names.append(attr_val.strip('"'))
+			elif attr[0] == "class" and tag != "svg":
+				self.buffers[self._current_stack_point()] += "%s.className=%s;" % (uid, attr_val)
+			elif attr[0] == "href" and tag != "svg":
+				self.buffers[self._current_stack_point()] += "%s.href=%s;" % (uid, attr_val)
 			else:
 				if self.helpers_on and attr[0] == "helper":
 					self.helpers[uid] = attr_val
@@ -391,8 +395,9 @@ class RainwaveParser(HTMLParser):
 	def handle_each(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
 		if not self.helpers_on:
-			self.buffers[self._current_stack_point()] += "for(var _i= 0;_i<%s.length;_i++){" % context_key
-			self.buffers[self._current_stack_point()] += "%s(%s[_i], %s);" % (function_id, context_key, self._current_tree_point())
+			looper_var = _get_id()
+			self.buffers[self._current_stack_point()] += "for(var %s=0;%s<%s.length;%s++){" % (looper_var, looper_var, context_key, looper_var)
+			self.buffers[self._current_stack_point()] += "%s(%s[%s], %s);" % (function_id, context_key, looper_var, self._current_tree_point())
 			self.buffers[self._current_stack_point()] += "}"
 		else:
 			self.buffers[self._current_stack_point()] += "_rwt.helpers.array_render(%s,%s,%s);" % (context_key, function_id, self._current_tree_point())
