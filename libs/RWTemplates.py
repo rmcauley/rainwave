@@ -302,9 +302,9 @@ class RainwaveParser(HTMLParser):
 				elif not len(self.tree):
 					raise Exception("%s: Tried to set textContent of root element.  Text needs to be in an element. (\"%s\")" % (self.name, data))
 				elif self.tree[-1] in self.helpers:
-					self.buffr += "%s.textContent+=_rwt.helpers[%s](%s);" % (self.tree[-1], self.helpers[self.tree[-1]], self._parse_val(data))
+					self.buffr += "%s.textContent=_rwt.helpers[%s](%s);" % (self.tree[-1], self.helpers[self.tree[-1]], self._parse_val(data))
 				else:
-					self.buffr += "%s.textContent+=%s;" % (self.tree[-1], self._parse_val(data))
+					self.buffr += "%s.textContent=%s;" % (self.tree[-1], self._parse_val(data))
 		self.html_buffer = ""
 
 	def handle_stack_push(self, data):
@@ -381,5 +381,6 @@ if __name__ == "__main__":
 	argp.add_argument("--templatedir", default="jstemplates")
 	argp.add_argument("--outfile", default="RWTemplates.templates.js")
 	argp.add_argument("--helpers", action="store_true")
+	argp.add_argument("--full", action="store_true")
 	command_args = argp.parse_args()
-	compile_templates(command_args.templatedir, command_args.outfile, helpers=command_args.helpers)
+	compile_templates(command_args.templatedir, command_args.outfile, full_calls=command_args.full, helpers=command_args.helpers)

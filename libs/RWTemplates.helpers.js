@@ -388,6 +388,11 @@ var RWTemplateObject = function(_c) {
 
     RWTemplateObject.prototype.success = function(success_message, permanent) {
         var elements = this.get_form_elements();
+        var this_obj, normalize;
+        if (!permanent) {
+            this_obj = this;
+            normalize = function() { this_obj.normal(); };
+        }
         var btns = [];
         for (var i = 0; i < elements.length; i++) {
             elements[i].disabled = permanent;
@@ -399,8 +404,7 @@ var RWTemplateObject = function(_c) {
                 change_button_class(elements[i], btn_success);
                 change_button_text(elements[i], success_message || gettext("Success!"));
                 if (!permanent) {
-                    var obj = this;
-                    setTimeout(function() { obj.normal(); }, 5000);
+                    setTimeout(normalize, 5000);
                 }
             }
         }
