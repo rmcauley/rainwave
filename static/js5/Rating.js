@@ -172,14 +172,23 @@ var Rating = function() {
 		add_effect(json.$t.rating);
 
 		var is_song = json.albums || json.album_id || json.album_rating || json.artist_parseable ? true : false;
+		if (is_song) register_song(json, relative_x, relative_y);
+		else register_album(json, relative_x, relative_y);
 
-		if (is_song) {
-			json.$t.rating.classList.add("rating_song");
-			json.$t.rating.setAttribute("name", "srate_" + json.id);
+		if (json.rating_user) {
+			json.$t.rating.classList.add("rating_user");
 		}
-		else {
-			json.$t.rating.setAttribute("name", "arate_" + json.id);
-		}
+		json.$t.rating.rating_set(json.rating_user || json.rating);
+
+		// DO NOT RETURN ANYTHING HERE
+		// You run an almost 100% certain risk of memory leaks due to
+		// circular references if you return a function or object
+		// that refers to or uses "json" in any way.
+	};
+
+	var register_song = function(json, relative_x, relative_y) {
+		json.$t.rating.classList.add("rating_song");
+		json.$t.rating.setAttribute("name", "srate_" + json.id);
 
 		var on_mouse_move = function(evt) {
 			if (evt.target != json.$t.rating) return;
@@ -191,12 +200,6 @@ var Rating = function() {
 		};
 
 		var on_mouse_out = function(evt) {
-			if (!is_song && !json.rating_complete) {
-				this.classList.add("rating_incomplete");
-			}
-			else if (!is_song) {
-				this.classList.remove("rating_incomplete");
-			}
 			if (!json.rating_user) {
 				this.classList.remove("rating_user");
 			}
@@ -218,31 +221,24 @@ var Rating = function() {
 			}
 		};
 
-		if (!is_song && !json.rating_complete) {
-		json.$t.rating.classList.add("rating_incomplete");
-		}
-		else if (!is_song) {
-			json.$t.rating.classList.remove("rating_incomplete");
-		}
-		if (json.rating_user) {
-			json.$t.rating.classList.add("rating_user");
-		}
-		json.$t.rating.rating_set(json.rating_user || json.rating);
-
 		if (User.id > 1) {
 			json.$t.rating._json = json;
-			if (is_song) {
-				json.$t.rating.addEventListener("mouseover", on_mouse_over);
-				json.$t.rating.addEventListener("mousemove", on_mouse_move);
-				json.$t.rating.addEventListener("mouseleave", on_mouse_out);
-			}
+			json.$t.rating.addEventListener("mouseover", on_mouse_over);
+			json.$t.rating.addEventListener("mousemove", on_mouse_move);
+			json.$t.rating.addEventListener("mouseleave", on_mouse_out);
 			json.$t.rating.addEventListener("click", click);
 		}
+	};
 
-		// DO NOT RETURN ANYTHING HERE
-		// You run an almost 100% certain risk of memory leaks due to
-		// circular references if you return a function or object
-		// that refers to or uses "json" in any way.
+	var register_album = function(json, relative_x, relative_y) {
+		json.$t.rating.setAttribute("name", "arate_" + json.id);
+
+		if (!json.rating_complete) {
+			json.$t.rating.classList.add("rating_incomplete");
+		}
+		else {
+			json.$t.rating.classList.remove("rating_incomplete");
+		}
 	};
 
 	return self;
