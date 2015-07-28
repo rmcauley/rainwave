@@ -23,6 +23,10 @@ div.menu_wrapper {
 		margin: 0;
 	}
 
+	body.mobile & {
+		display: none;
+	}
+
 	svg {
 		display: inline;
 		height: 20px;
