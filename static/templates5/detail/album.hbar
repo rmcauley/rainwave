@@ -9,7 +9,9 @@
 	<div bind="art" class="art_container"></div>
 </div>
 
-<canvas bind="rating_graph" width="100" height="80"></canvas>
+{{#if ^!Sizing.simple}}
+	<canvas bind="rating_graph" width="100" height="80"></canvas>
+{{/if}}
 
 <div class="detail_header">
 	{{#if year }}

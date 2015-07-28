@@ -1,16 +1,22 @@
 {{#each songs}}
 	<div class="{{ ^'row' + (_c.cool ? 'cool' : '') + ' ' + (_c.fave ? 'song_fave_highlight' : '') }}">
-		<div class="length">
-			{{ ^Formatting.minute_clock(_c.length) }}
-		</div>
-		{{#if url }}
-			<a class="url" href="{{ url }}" target="_blank"></a>
+		{{#if ^!MOBILE}}
+			{{#if ^!Sizing.simple}}
+				<div class="length">
+					{{ ^Formatting.minute_clock(_c.length) }}
+				</div>
+			{{/if}}
+			{{#if url }}
+				<a class="url" href="{{ url }}" target="_blank"></a>
+			{{/if}}
+			{{#if ^!Sizing.simple }}
+				<div class="cool_info">
+					{{ ^Formatting.cooldown_glance(_c.cool_end) }}
+				</div>
+			{{/if}
 		{{/if}}
 		{{>rating}}
-		<div class="cool_info">
-			{{ ^Formatting.cooldown_glance(_c.cool_end) }}
-		</div>
-		{{#if artists }}
+		{{#if ^!Sizing.simple && _c.artists }}
 			<div class="artists">
 				{{#each artists }}
 					<a href="#!/artist/{{ id }}">{{ name }}</a>

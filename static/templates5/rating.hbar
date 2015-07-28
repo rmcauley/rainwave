@@ -1,3 +1,5 @@
 <div class="rating" bind="rating">
-	<div class="rating_hover" bind="rating_hover" bind="rating_hover_number"></div>
+	{{#if ^User.id > 1 }}
+		<div class="rating_hover" bind="rating_hover" bind="rating_hover_number"></div>
+	{{/if}}
 </div>

@@ -4,7 +4,7 @@ div.detail {
 	opacity: 0;
 	width: 420px;
 	background: #2C2C2C;
-	border-left: solid 1px #777; 
+	border-left: solid 1px #777;
 	top: 0px;
 	@include transform(none);
 	@include transition-wtime(300ms, transform, opacity);
@@ -50,10 +50,6 @@ div.detail {
 		position: relative;
 		width: 100px;
 		height: 80px;
-
-		body.simple & {
-			display: none;
-		}
 	}
 
 	div.detail_header {
@@ -70,89 +66,79 @@ div.detail {
 	div.close {
 		left: 390px;
 	}
+}
 
-	/* SONGLIST */
 
-	div.row {
-		padding: 0 10px 2px 10px;
-		clear: both;
-		border-bottom-style: solid;
-		border-bottom-width: 1px;
-		border-bottom-color: transparent;
-		white-space: nowrap;
-		@include transition-wtime(300ms, width, background-color, border-bottom-color);
+div.row {
+	padding: 0 10px 2px 10px;
+	clear: both;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: transparent;
+	white-space: nowrap;
+	@include transition-wtime(300ms, width, background-color, border-bottom-color);
 
-		&.cool {
-			background-color: $cooldown-color;
-			border-bottom-color: $cooldown-color;
+	&.cool {
+		background-color: $cooldown-color;
+		border-bottom-color: $cooldown-color;
+	}
+
+	&:hover {
+		background-color: $hovercolor;
+		border-bottom-color: $hovercolor-border;
+		@include no-transition();
+
+		img.fave_lined {
+			opacity: 1;
+		}
+	}
+
+	&.song_fave_highlight {
+		div.title {
+			color: $fave_color;
 		}
 
 		&:hover {
-			background-color: $hovercolor;
-			border-bottom-color: $hovercolor-border;
-			@include no-transition();
-
-			img.fave_lined {
-				opacity: 1;
-			}
+			background-color: #444013;
+			border-color: #5B4E19;
 		}
+	}
 
-		&.song_fave_highlight {
-			div.title {
-				color: $fave_color;
-			}
+	div.fave {
+		margin-right: 5px;
+	}
 
-			&:hover {
-				background-color: #444013;
-				border-color: #5B4E19;
-			}
-		}
+	div.length {
+		width: 35px;
+		float: right;
+	}
 
-		div.fave {
-			float: left;
-			margin-right: 5px;
-		}
+	div.rating {
+		float: right;
+	}
 
-		div.length {
-			width: 35px;
-			float: right;
-		}
+	a.url {
+		display: inline-block;
+		float: right;
+		width: 14px;
+		height: 14px;
+		background-repeat: no-repeat;
+		background-size: 14px 14px;
+		background-image: url("/static/images4/link_external.svg");
+	}
 
-		div.rating {
-			float: right;
-		}
+	div.cool_info {
+		width: 40px;
+	}
 
-		a.url, div.url {
-			float: right;
-			width: 14px;
-		}
+	div.title {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
 
-		div.cool_info {
-			width: 40px;
-
-			body.simple & {
-				display: none;
-			}
-		}
-
-		div.title {
-			overflow: hidden;
-			text-overflow: ellipsis;		
-		}
-
-		div.artists {
-			max-width: 200px;
-			overflow: hidden;
-			text-overflow: ellipsis;
-
-			body.simple & {
-				display: none;
-			}
-		}
-
-		img.link_external, img.request_icon {
-			height: 14px;
-			width: 14px;
-		}
+	div.artists {
+		max-width: 200px;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 }

@@ -36,7 +36,7 @@ var AlbumView = function(el, album) {
 	AlbumArt(album.art, template.art);
 
 	for (var i = 0; i < album.songs.length; i++) {
-		if (!album.songs[i].artists) { 
+		if (!album.songs[i].artists) {
 			album.songs[i].artists = JSON.parse(album.songs[i].artist_parseable);
 		}
 	}
@@ -66,7 +66,7 @@ var AlbumView = function(el, album) {
 
 	el.appendChild(template._root);
 
-	if (!MOBILE) AlbumViewRatingPieChart(template.rating_graph.getContext("2d"), album);
+	if (template.rating_graph) AlbumViewRatingPieChart(template.rating_graph.getContext("2d"), album);
 
 	return template;
 };
