@@ -6,14 +6,22 @@ var Scrollbar = function() {
 	var enabled = false;
 
 	BOOTSTRAP.on_init.push(function(t) {
+		BOOTSTRAP.on_draw.push(function() {
+			t.scroller_size.parentNode.removeChild(t.scroller_size);
+		});
+
+		if (MOBILE) return;
+		// http://stackoverflow.com/questions/4565112/javascript-how-to-find-out-if-the-user-browser-is-chrome
+		var isChromium = window.chrome, vendorName = window.navigator.vendor, isOpera = window.navigator.userAgent.indexOf("OPR") > -1;
+		if (isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera === false) {
+		   return;
+		}
+
 		BOOTSTRAP.on_measure.push(function() {
 			scrollbar_width = 100 - t.scroller_size.scrollWidth;
 			if (scrollbar_width !== 0) {
 				enabled = true;
 			}
-		});
-		BOOTSTRAP.on_draw.push(function() {
-			t.scroller_size.parentNode.removeChild(t.scroller_size);
 		});
 
 		Sizing.add_resize_callback(function() {
@@ -35,7 +43,7 @@ var Scrollbar = function() {
 	var handle_margin_top = 5;
 	var handle_margin_bottom = 5;
 
-	cls.create = function(scrollable, always_scrollable) {
+	cls.create = function(scrollable, always_scrollable, always_hook) {
 		var scrollblock;
 		// always scrollable is beneficial as an option because the only place we need an extra
 		// scrollblock-wrapping div is for the timeline
@@ -58,26 +66,42 @@ var Scrollbar = function() {
 			scrollable.classList.add("scrollable");
 		}
 
+		var reposition_hook = false;
+
+		var self = {};
+		self.scrollblock = scrollable;
+		self.el = scrollable;
+		self.scroll_top = null;
+		self.scroll_height = null;
+		self.offset_height = null;
+		self.scroll_top_max = null;
 		if (!enabled) {
-			return { 
-				"scrollblock": scrollable, 
-				"el": scrollable, 
-				"set_height": function(h) { /*scrollable.style.height = h + "px";*/ },
-				"scroll_to": function(to) { scrollable.scrollTop = to; }
-			};
+			self.set_height = function(h) { /* pass */ };
+			self.scroll_to = function(n) { self.scrollblock.scrollTop = n; };
+			if (always_hook) {
+				self.refresh = function() {
+					self.scroll_height = self.el.scrollHeight;
+					self.offset_height = self.scrollblock.offsetHeight;
+					self.scroll_top_max = self.scroll_height - self.offset_height;
+				};
+				self.set_hook = function(fn) { 
+					reposition_hook = fn;
+				};
+				scrollable.addEventListener("scroll", function() {
+					self.scroll_top = self.el.scrollTop;
+					if (reposition_hook) reposition_hook();
+				});
+			}
+			else {
+				self.refresh = self.set_height;
+				self.set_hook = function(fn) { scrollable.addEventListener("scroll", fn); };
+			}
+			return self;
 		}
 
 		var handle = document.createElement("div");
 		handle.className = "scroll_handle";
 		scrollblock.insertBefore(handle, scrollblock.firstChild);
-
-		var self = {};
-		self.scrollblock = scrollblock;
-		self.el = scrollable;
-		self.scroll_top = null;
-		self.scroll_height = null;
-		self.offset_height = null;
-		self.reposition_hook = false;
 
 		var scrolling = false;
 		var visible = false;
@@ -124,7 +148,7 @@ var Scrollbar = function() {
 			var top = Math.min(1, self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
 			handle.style[Fx.transform] = "translateX(-12px) translateY(" + Math.floor(handle_margin_top + top) + "px)";
 
-			if (self.reposition_hook) self.reposition_hook();
+			if (reposition_hook) reposition_hook();
 		};
 
 		self.scroll_to = function(px) {
@@ -133,8 +157,8 @@ var Scrollbar = function() {
 				scrollable.scrollTop = px;
 				self.scroll_top = px;
 			}
-			else if (self.reposition_hook) {
-				self.reposition_hook();
+			else if (reposition_hook) {
+				reposition_hook();
 			}
 		};
 
@@ -164,6 +188,10 @@ var Scrollbar = function() {
 			//window.removeEventListener("mouseout", mouse_up, false);
 			document.body.classList.add("unselectable");
 			scrolling = false;
+		};
+
+		self.set_hook = function(fn) {
+			reposition_hook = fn;
 		};
 
 		handle.addEventListener("mousedown", mouse_down);

@@ -13,7 +13,7 @@
 				<div class="cool_info">
 					{{ ^Formatting.cooldown_glance(_c.cool_end) }}
 				</div>
-			{{/if}
+			{{/if}}
 		{{/if}}
 		{{>rating}}
 		{{#if ^!Sizing.simple && _c.artists }}

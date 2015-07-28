@@ -78,9 +78,9 @@ var Router = function() {
 
 		scroll = Scrollbar.create(el);
 		Sizing.detail_area = scroll.scrollblock;
-		scroll.reposition_hook = function() {
+		scroll.set_hook(function() {
 			if (current_type && current_id) scroll_positions[current_type][current_id] = scroll.scroll_top;
-		};
+		});
 	});
 
 	self.get_current_url = function() {

@@ -44,20 +44,23 @@ var Sizing = function() {
 
 		if (self.width < 1050) {
 			document.body.classList.add("simple");
-			document.body.classList.add("simple_f");
 			document.body.classList.remove("full");
-			document.body.classList.remove("mobile");
 			self.simple = true;
 			index_t.lists.style.left = "100%";
 			self.detail_area.style.left = "100%";
 
 			if (self.width < 600) {
 				document.body.classList.add("mobile");
+				document.body.classList.remove("nonmobile");
+			}
+			else {
+				document.body.classList.remove("mobile");
+				document.body.classList.add("nonmobile");
 			}
 		}
 		else {
-			document.body.classList.remove("simple_f");
 			document.body.classList.remove("mobile");
+			document.body.classList.add("nonmobile");
 			if (Prefs.get("adv")) {
 				document.body.classList.remove("simple");
 				document.body.classList.add("full");

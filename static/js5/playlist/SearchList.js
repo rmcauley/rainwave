@@ -27,7 +27,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	template.list.appendChild(self.el);
 
 	var search_box = template.search_box;
-	var scroll = Scrollbar.create(template.list);
+	var scroll = Scrollbar.create(template.list, false, true);
 
 	var data = {};
 	self.data = data;			// keys() are the object IDs (e.g. data[album.id])
@@ -568,7 +568,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		self.reposition();
 	});
 
-	scroll.reposition_hook = self.reposition;
+	scroll.set_hook(self.reposition);
 
 	return self;
 };

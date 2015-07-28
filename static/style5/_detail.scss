@@ -1,19 +1,22 @@
 div.detail {
-	position: absolute;
 	z-index: 100;
-	opacity: 0;
 	width: 420px;
+	max-width: 100%;
 	background: #2C2C2C;
 	border-left: solid 1px #777;
 	top: 0px;
 	@include transform(none);
 	@include transition-wtime(300ms, transform, opacity);
 
-	body.simple_f & {
-		opacity: 1;
+	&, &.scrollable {
+		position: absolute;
 	}
 
-	body.detail & {
+	body.nonmobile & {
+		opacity: 0;
+	}
+
+	body.detail &, body.nonmobile.detail & {
 		opacity: 1;
 		@include transform(translateX(-100%));
 	}

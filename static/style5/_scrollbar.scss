@@ -7,11 +7,6 @@ div.scrollblock {
 	overflow-x: hidden;
 	overflow-y: auto;
 	box-sizing: border-box;
-
-	div.sizeable & {
-		position: relative;
-		height: 100%;
-	}
 }
 
 div.scroll_handle {
@@ -50,4 +45,22 @@ div.scroll_handle {
 		border-color: $orange;
 		opacity: 1 !important;
 	}
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+ 
+::-webkit-scrollbar-track {
+    display: none;
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+	display: none;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-width: 1px;
+	border-style: solid;
+	border-color: #555;
 }

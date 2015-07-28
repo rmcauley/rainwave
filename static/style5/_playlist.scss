@@ -6,7 +6,6 @@ ul.panel_header {
 	list-style: none;
 	white-space: nowrap;
 
-
 	li {
 		display: inline-block;
 		height: 25px;
@@ -26,16 +25,20 @@ ul.panel_header {
 div.lists {
 	position: absolute;
 	z-index: 100;
-	opacity: 0;
 	width: 450px;
+	max-width: 100%;
 	background: #272727;
 	border-left: solid 1px #555; 
 	top: 0px;
 	@include transform(none);
 	@include transition-wtime(300ms, transform, opacity);
 
-	body.simple_f & {
-		opacity: 1;
+	div.scrollable {
+		position: relative;
+	}
+
+	body.nonmobile & {
+		opacity: 0;
 	}
 
 	body.playlist & {
@@ -43,7 +46,7 @@ div.lists {
 		@include transform(translateX(-100%));
 	}
 
-	body.playlist.detail & {
+	body.nonmobile.playlist.detail & {
 		opacity: 0.7;
 		@include transform(translateX(-110%));	
 	}
