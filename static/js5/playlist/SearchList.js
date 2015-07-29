@@ -77,7 +77,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			self.recalculate();
 			self.reposition();
 		}
-		
+
 		if (scroll_to_on_load) {
 			self.scroll_to_id(scroll_to_on_load);
 			scroll_to_on_load = false;
@@ -501,8 +501,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 		var new_margin = (scroll.scroll_top - (Sizing.list_item_height * new_index));
 		new_margin = new_margin ? -new_margin : 0;
-		self.el.style.marginTop = new_margin + "px";
-		self.el.style.top = scroll.scroll_top + "px";
+		self.el.style.transform = "translateY(" + (scroll.scroll_top - new_margin) + "px)";
 
 		if (current_scroll_index === new_index) return;
 		if ((visible.length === 0) && (hidden.length === 0)) return;
