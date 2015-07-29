@@ -1,5 +1,5 @@
 <div bind="el" class="timeline_event timeline_{{ type }}">
-	<div class="timeline_header">
+	<div class="timeline_header" bind="header_container">
 		<span class="timeline_header_clock" bind="clock"></span>
 		{{#if url}}
 			<a class="header_text" href="{{ url }}" target="_blank" bind="header"></a>

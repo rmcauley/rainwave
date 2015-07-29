@@ -52,10 +52,11 @@ var Scrollbar = function() {
 		if (enabled || always_scrollable) {
 			scrollblock = document.createElement("div");
 			scrollblock.setAttribute("class", "scrollblock");
+			scrollblock.style.overflowY = "auto";
 			if (scrollable.className) {
 				scrollblock.setAttribute("class", "scrollblock " + scrollable.className);
 			}
-			scrollable.setAttribute("class", "scrollable");
+			scrollable.setAttribute("class", null);
 		
 			if (scrollable.parentNode) {
 				scrollable.parentNode.replaceChild(scrollblock, scrollable);
@@ -76,7 +77,12 @@ var Scrollbar = function() {
 		self.offset_height = null;
 		self.scroll_top_max = null;
 		if (!enabled) {
-			self.set_height = function(h) { /* pass */ };
+			if (always_scrollable) {
+				self.set_height = function(h) { scrollable.style.height = h + "px"; };
+			}
+			else {
+				self.set_height = function(h) { /* pass */ };
+			}
 			self.scroll_to = function(n) { self.scrollblock.scrollTop = n; };
 			if (always_hook) {
 				self.refresh = function() {

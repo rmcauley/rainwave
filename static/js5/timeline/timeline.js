@@ -159,8 +159,13 @@ var Timeline = function() {
 			events[i].el.style.transform = "translateY(" + (-(((hidden_events - i - 1) * 5 + 1) * Sizing.song_size)) + "px)";
 		}
 
-		var running_y = 40;
+		var running_y = !Sizing.simple || Sizing.mobile ? 30 : 40;
+		var history_gap;
 		for (i = hidden_events; i < events.length; i++) {
+			if (!events[i].history && !history_gap) {
+				history_gap = true;
+				running_y += 10;
+			}
 			events[i].el.style.transform = "translateY(" + running_y + "px)";
 			running_y += events[i].height;
 		}

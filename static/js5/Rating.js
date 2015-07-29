@@ -232,6 +232,7 @@ var Rating = function() {
 
 	var register_album = function(json, relative_x, relative_y) {
 		json.$t.rating.setAttribute("name", "arate_" + json.id);
+		json.$t.rating.classList.add("album_rating");
 
 		if (!json.rating_complete) {
 			json.$t.rating.classList.add("rating_incomplete");

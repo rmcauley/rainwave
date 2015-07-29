@@ -4,6 +4,7 @@ var Sizing = function() {
 	var window_callbacks = [];
 	var index_t;
 
+	self.mobile = false;
 	self.simple = false;
 	self.small = false;
 	self.song_size_np = 0;
@@ -42,6 +43,7 @@ var Sizing = function() {
 			index_t.sizeable_area.childNodes[i].style.height = self.sizeable_area_height + "px";
 		}
 
+		self.mobile = false;
 		if (self.width < 1050) {
 			document.body.classList.add("simple");
 			document.body.classList.remove("full");
@@ -50,6 +52,7 @@ var Sizing = function() {
 			self.detail_area.style.left = "100%";
 
 			if (self.width < 600) {
+				self.mobile = true;
 				document.body.classList.add("mobile");
 				document.body.classList.remove("nonmobile");
 			}
@@ -86,9 +89,9 @@ var Sizing = function() {
 			}
 		}
 
-		self.song_size_np = self.simple ? 140 : 100;
-		self.song_size = self.simple ? 100 : 70;
-		self.timeline_header_size = self.simple ? 30 : 20;
+		self.song_size_np = self.simple && !self.mobile ? 140 : 100;
+		self.song_size = self.simple && !self.mobile ? 100 : 70;
+		self.timeline_header_size = 40;
 
 		for (i = 0; i < window_callbacks.length; i++) {
 			window_callbacks[i]();

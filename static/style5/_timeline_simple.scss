@@ -56,3 +56,62 @@ body.simple div.timeline {
 		}
 	}
 }
+
+@media $phone-media {
+	body.simple div.timeline {
+		position: relative;
+		width: 100%;
+
+		div.timeline_event {
+			&.sched_history {
+				height: $art_size;
+			}
+
+			&.sched_current {
+				height: $art_size + 20;
+			}
+
+			&.sched_next {
+				height: ($art_size * 3) + 30;
+			}
+		}
+
+		div.song {
+			height: $art_size + 2;
+
+			div.art_anchor {
+				width: $art_size;
+				height: $art_size;
+			}
+
+			div.art_container {
+				width: $art_size;
+				height: $art_size;
+
+				&.art_expandable:hover {
+					width: $art_size * 1.15;
+					height: $art_size * 1.15;
+				}
+			}
+
+			&.now_playing {
+				height: $art_size + 20;
+
+				div.art_anchor {
+					width: $art_size + 20;
+					height: $art_size + 20;
+				}
+
+				div.art_container {
+					width: $art_size + 20;
+					height: $art_size + 20;
+
+					&.art_expandable:hover {
+						width: $art_size + 20 * 1.15;
+						height: $art_size + 20 * 1.15;
+					}
+				}
+			}
+		}
+	}
+}

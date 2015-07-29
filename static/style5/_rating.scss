@@ -51,3 +51,7 @@ div.rating {
 		@include transform(translateX(-27px));
 	}
 }
+
+body.simple div.timeline div.album_rating {
+	display: none;
+}

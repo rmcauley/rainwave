@@ -20,7 +20,7 @@ div.history_header {
 		top: -2px;
 		fill: $text;
 		@include transition-wtime(300ms, transform);
-		@include transform(rotate(90deg));
+		@include transform(rotate(180deg));
 		-webkit-transform-origin: 0.5em 0.5em; 
 		        transform-origin: 0.5em 0.5em;
 	}
@@ -63,12 +63,25 @@ div.timeline_event {
 		text-transform: uppercase;
 		color: $vdarktext;
 		font-size: smaller;
-		padding: 0 20px 0 10px;
+		padding: 0 10px;
+
+		&.no_header {
+			display: none;
+		}
+
+		body.mobile & {
+			border-bottom: solid 1px $vdarktext;
+			margin-bottom: 5px;
+		}
 	}
 
 	&.sched_current div.timeline_header {
 		font-size: inherit;
 		color: $orange;
+
+		body.mobile & {
+			border-bottom: solid 1px $orange;
+		}
 	}
 
 	span.timeline_header_clock {

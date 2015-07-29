@@ -13,7 +13,7 @@
 		BOOTSTRAP.on_init = [];
 		BOOTSTRAP.on_measure = [];
 		BOOTSTRAP.on_draw = [];
-		var MOBILE = false;
+		var MOBILE = {{ "true" if mobile else "false" }};
 	</script>
 
 	{% if jsfiles %}
@@ -38,6 +38,24 @@
 		<link href="/static/baked/{{ revision_number }}/style5b.css" type="text/css" rel="stylesheet" />
 	{% else %}
 		<link href="/static/baked/{{ revision_number }}/style5.css" type="text/css" rel="stylesheet" />
+	{% end %}
+
+	{% if not mobile %}
+	<style>
+		::-webkit-scrollbar {
+		    width: 8px;
+		}
+		 
+		::-webkit-scrollbar-track {
+		    display: none;
+		}
+		 
+		::-webkit-scrollbar-thumb {
+		    border-width: 1px;
+			border-style: solid;
+			border-color: #555;
+		}
+	</style>
 	{% end %}
 </head>
 

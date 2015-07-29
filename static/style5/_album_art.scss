@@ -26,11 +26,6 @@ div.art_container {
 	height: $art_size;
 	@include transition-wtime(300ms, width, height, border-width, background-color, transform);
 
-	body.simple & {
-		width: $simple_art_size;
-		height: $simple_art_size;
-	}
-
 	&:hover {
 		z-index: 3;
 		background-color: #000;

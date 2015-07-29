@@ -15,7 +15,7 @@ var AlbumArt = function() {
 		var y = e.pageY ? e.pageY : e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 
 		tgt.classList.add("art_expanded");
-		if ((x < (Sizing.width - 270))) {
+		if (x < (Sizing.width - 270)) {
 			tgt.classList.add("art_expand_right");
 		}
 		else {
@@ -58,16 +58,18 @@ var AlbumArt = function() {
 			element.style.backgroundImage = "url(/static/images4/noart_1.jpg)";
 		}
 		else {
-			element.classList.add("art_expandable");
-			if (window.devicePixelRatio && (window.devicePixelRatio > 1.5)) {
+			if (!MOBILE && window.devicePixelRatio && (window.devicePixelRatio > 1.5)) {
 				element.style.backgroundImage = "url(" + art_url + "_320.jpg)";
 			}
 			else {
 				element.style.backgroundImage = "url(" + art_url + "_120.jpg)";
 				element._album_art = art_url;
 			}
-			element.addEventListener("click", expand_art);
-			element.addEventListener("mouseout", normalize_art);
+			if (!MOBILE) {
+				element.classList.add("art_expandable");
+				element.addEventListener("click", expand_art);
+				element.addEventListener("mouseout", normalize_art);
+			}
 		}
 	};
 }();

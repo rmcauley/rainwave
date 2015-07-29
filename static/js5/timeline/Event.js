@@ -9,6 +9,7 @@ var Event = function(self) {
 	self.height = 0;
 	RWTemplates.timeline.event(self);
 	self.el = self.$t.el;
+	self.history = false;
 	for (var i = 0; i < self.songs.length; i++) {
 		self.songs[i] = Song(self.songs[i], self);
 	}
@@ -85,6 +86,7 @@ var Event = function(self) {
 		self.$t.el.classList.remove("sched_current");
 		self.$t.el.classList.remove("sched_next");
 		self.$t.el.classList.add("sched_history");
+		self.history = true;
 		self.songs.sort(function(a, b) { return a.entry_position < b.entry_position ? -1 : 1; });
 		self.songs[0].el.classList.remove("now_playing");
 		for (var i = 1; i < self.songs.length; i++) {
@@ -149,12 +151,12 @@ var Event = function(self) {
 	};
 
 	self.hide_header = function() {
-		self.$t.header.classList.add("no_header");
+		self.$t.header_container.classList.add("no_header");
 		showing_header = false;
 	};
 
 	self.show_header = function() {
-		self.$t.header.classList.remove("no_header");
+		self.$t.header_container.classList.remove("no_header");
 		showing_header = true;
 	};
 
