@@ -50,20 +50,8 @@ var Sizing = function() {
 			self.simple = true;
 			index_t.lists.style.left = "100%";
 			self.detail_area.style.left = "100%";
-
-			if (self.width < 600) {
-				self.mobile = true;
-				document.body.classList.add("mobile");
-				document.body.classList.remove("nonmobile");
-			}
-			else {
-				document.body.classList.remove("mobile");
-				document.body.classList.add("nonmobile");
-			}
 		}
 		else {
-			document.body.classList.remove("mobile");
-			document.body.classList.add("nonmobile");
 			if (Prefs.get("adv")) {
 				document.body.classList.remove("simple");
 				document.body.classList.add("full");
@@ -89,8 +77,8 @@ var Sizing = function() {
 			}
 		}
 
-		self.song_size_np = self.simple && !self.mobile ? 140 : 100;
-		self.song_size = self.simple && !self.mobile ? 100 : 70;
+		self.song_size_np = self.simple && !MOBILE ? 140 : 100;
+		self.song_size = self.simple && !MOBILE ? 100 : 70;
 		self.timeline_header_size = 40;
 
 		for (i = 0; i < window_callbacks.length; i++) {
@@ -118,6 +106,8 @@ var Sizing = function() {
 	BOOTSTRAP.on_init.push(function(t) {
 		index_t = t;
 		index_t.list_item.innerHTML = "Reference";
+		if (MOBILE) document.body.classList.add("mobile");
+		else document.body.classList.add("desktop");
 	});
 
 	return self;

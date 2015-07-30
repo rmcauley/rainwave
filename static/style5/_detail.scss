@@ -5,6 +5,7 @@ div.detail {
 	background: #2C2C2C;
 	border-left: solid 1px #777;
 	top: 0px;
+	opacity: 0;
 	@include transform(none);
 	@include transition-wtime(300ms, transform, opacity);
 
@@ -12,11 +13,11 @@ div.detail {
 		position: absolute;
 	}
 
-	body.nonmobile & {
-		opacity: 0;
+	body.mobile & {
+		opacity: 1;
 	}
 
-	body.detail &, body.nonmobile.detail & {
+	body.detail & {
 		opacity: 1;
 		@include transform(translateX(-100%));
 	}

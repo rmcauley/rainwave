@@ -28,8 +28,9 @@ div.lists {
 	width: 450px;
 	max-width: 100%;
 	background: #272727;
-	border-left: solid 1px #555; 
+	border-left: solid 1px #555;
 	top: 0px;
+	opacity: 0;
 	@include transform(none);
 	@include transition-wtime(300ms, transform, opacity);
 
@@ -37,8 +38,8 @@ div.lists {
 		position: relative;
 	}
 
-	body.nonmobile & {
-		opacity: 0;
+	body.mobile & {
+		opacity: 1;
 	}
 
 	body.playlist & {
@@ -46,9 +47,9 @@ div.lists {
 		@include transform(translateX(-100%));
 	}
 
-	body.nonmobile.playlist.detail & {
+	body.desktop.playlist.detail & {
 		opacity: 0.7;
-		@include transform(translateX(-110%));	
+		@include transform(translateX(-110%));
 	}
 
 	ul {
@@ -222,10 +223,11 @@ div.list {
 
 body.simple div.close {
 	position: absolute;
-	left: 420px;
+	left: 100%;
 	top: 12px;
 	cursor: pointer;
 	opacity: 0.5;
+	@include transform(translateX(-25px));
 	@include transition-wtime(300ms, opacity);
 
 	&:hover {

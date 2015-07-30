@@ -54,10 +54,8 @@ body {
 	}
 }
 
-@media (min-width: 1050px) and (max-width: 1365px) {
-	body.advanced {
-		font-size: smaller;
-	}
+body.desktop.small.advanced {
+	font-size: smaller;
 }
 
 div.sizeable {
