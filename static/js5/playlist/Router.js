@@ -124,6 +124,10 @@ var Router = function() {
 	};
 
 	var actually_open = function(typ, id) {
+		while (el.firstChild) {
+			el.removeChild(el.firstChild);
+		}
+
 		var t;
 		if (cache[typ][id]._cache_el) {
 			el.appendChild(cache[typ][id]._cache_el);
@@ -161,8 +165,10 @@ var Router = function() {
 			current_type = typ;
 			current_id = id;
 
-			while (el.firstChild) {
-				el.removeChild(el.firstChild);
+			if (!document.body.classList.contains("detail")) {
+				while (el.firstChild) {
+					el.removeChild(el.firstChild);
+				}
 			}
 
 			document.body.classList.add("detail");
