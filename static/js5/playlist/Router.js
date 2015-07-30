@@ -12,30 +12,37 @@ var Router = function() {
 	var views = {};
 	var scroll;
 	var scroll_positions = {};
+	var cache_page_stack;
 	self.active_list = null;
 
 	var reset_cache = function() {
 		cache.album = {};
 		cache.artist = {};
-		cache.group = {};
-		cache.listener = {};
+		if (!MOBILE) {
+			cache.group = {};
+			cache.listener = {};
+			cache_page_stack = [];
+		}
 	};
 
-	BOOTSTRAP.on_init.push(function(root_template) { 
+	BOOTSTRAP.on_init.push(function(root_template) {
 		tabs.album = true;
-		tabs.artist = true;
-		tabs.group = true;
-		tabs.listener = true;
-
-		scroll_positions.album = {};
-		scroll_positions.artist = {};
-		scroll_positions.group = {};
-		scroll_positions.listener = {};
-
 		views.album = AlbumView;
+		scroll_positions.album = {};
+
+		tabs.artist = true;
 		views.artist = ArtistView;
-		views.group = GroupView;
-		views.listener = ListenerView;
+		scroll_positions.artist = {};
+
+		if (!MOBILE) {
+			tabs.group = true;
+			views.group = GroupView;
+			scroll_positions.group = {};
+
+			views.listener = ListenerView;
+			tabs.listener = true;
+			scroll_positions.listener = {};
+		}
 
 		reset_cache();
 
@@ -117,22 +124,29 @@ var Router = function() {
 	};
 
 	var actually_open = function(typ, id) {
-		current_type = typ;
-		current_id = id;
-
-		while (el.firstChild) {
-			el.removeChild(el.firstChild);
+		var t;
+		if (cache[typ][id]._cache_el) {
+			el.appendChild(cache[typ][id]._cache_el);
 		}
-
-		var t = views[typ](el, cache[typ][id]);
+		else {
+			t = views[typ](el, cache[typ][id]);
+			if (t._root && t._root.tagName && (t._root.tagName.toLowerCase() == "div")) {
+				cache[typ][id]._cache_el = t._root;
+				cache_page_stack.push({ "typ": typ, "id": id });
+				var cps;
+				while (cache_page_stack.length > 5) {
+					cps = cache_page_stack.shift();
+					if (cache[cps.typ][cps.id]) cache[cps.typ][cps.id]._cache_el = false;
+				}
+			}
+		}
 		var scroll_to = scroll_positions[typ][id] || 0;		// do BEFORE scroll.set_height calls reposition_callback!
 		scroll.set_height(false);
 		scroll.scroll_to(scroll_to);
-		lists[typ].set_new_open(id);
 		lists[typ].scroll_to_id(id);
 
-		if (t.close) {
-			t.close.addEventListener("click", 
+		if (t && t.close) {
+			t.close.addEventListener("click",
 				function() {
 					document.body.classList.remove("detail");
 					lists[typ].set_new_open();
@@ -144,12 +158,22 @@ var Router = function() {
 
 	var open_view = function(typ, id) {
 		if (typ in cache) {
+			current_type = typ;
+			current_id = id;
+
+			while (el.firstChild) {
+				el.removeChild(el.firstChild);
+			}
+
 			document.body.classList.add("detail");
+			lists[typ].set_new_open(id);
 			if (!cache[typ][id]) {
 				cache[typ][id] = true;
 				API.async_get(typ, { "id": id }, function(json) {
 					cache[typ][id] = json[typ];
-					actually_open(typ, id);
+					if (current_type === typ && current_id === id) {
+						actually_open(typ, id);
+					}
 				});
 			}
 			else if (cache[typ][id] !== true) {

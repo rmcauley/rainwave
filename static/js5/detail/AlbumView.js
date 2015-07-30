@@ -32,7 +32,7 @@ var AlbumView = function(el, album) {
 
 	album.songs.sort(SongsTableSorting);
 
-	var template = RWTemplates.detail.album(album);
+	var template = RWTemplates.detail.album(album, !MOBILE ? document.createElement("div") : null);
 	AlbumArt(album.art, template.art);
 
 	for (var i = 0; i < album.songs.length; i++) {

@@ -171,12 +171,14 @@ var Rating = function() {
 
 		add_effect(json.$t.rating);
 
-		var is_song = json.albums || json.album_id || json.album_rating || json.artist_parseable ? true : false;
-		if (is_song) register_song(json, relative_x, relative_y);
-		else register_album(json, relative_x, relative_y);
+		if (User.id > 1) {
+			var is_song = json.albums || json.album_id || json.album_rating || json.artist_parseable ? true : false;
+			if (is_song) register_song(json, relative_x, relative_y);
+			else register_album(json, relative_x, relative_y);
 
-		if (json.rating_user) {
-			json.$t.rating.classList.add("rating_user");
+			if (json.rating_user) {
+				json.$t.rating.classList.add("rating_user");
+			}
 		}
 		json.$t.rating.rating_set(json.rating_user || json.rating);
 

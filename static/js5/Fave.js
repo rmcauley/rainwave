@@ -48,6 +48,7 @@ var Fave = function(json) {
 	self.do_fave = do_fave;
 
 	self.register = function(json, is_album) {
+		if (User.id <= 1) return;
 		if (json.fave) {
 			json.$t.fave.classList.add("is_fave");
 			if (json.$t.fave.parentNode) {

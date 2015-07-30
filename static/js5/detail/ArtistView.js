@@ -30,7 +30,7 @@ var ArtistView = function(el, json) {
 		}
 		json.albums = albums;
 	}
-	var template = RWTemplates.detail.artist({ "artist": json, "albums": json.albums });
+	var template = RWTemplates.detail.artist({ "artist": json, "albums": json.albums }, !MOBILE ? document.createElement("div") : null);
 	var j;
 	for (i = 0; i < albums.length; i++) {
 		for (j = 0; j < albums[i].songs.length; j++) {
