@@ -15,6 +15,8 @@ var Router = function() {
 	var cache_page_stack;
 	self.active_list = null;
 	var ready_to_render = true;
+	var rendered_typ;
+	var rendered_id;
 
 	var reset_cache = function() {
 		cache.album = {};
@@ -127,6 +129,13 @@ var Router = function() {
 	var actually_open = function(typ, id) {
 		if (!ready_to_render) return;
 
+		document.body.classList.add("detail");
+
+		if ((rendered_typ == typ) && (rendered_id == id)) return;
+
+		rendered_typ = typ;
+		rendered_id = id;
+
 		while (el.firstChild) {
 			el.removeChild(el.firstChild);
 		}
@@ -150,13 +159,11 @@ var Router = function() {
 		var scroll_to = scroll_positions[typ][id] || 0;		// do BEFORE scroll.set_height calls reposition_callback!
 		scroll.set_height(false);
 		scroll.scroll_to(scroll_to);
-		lists[typ].scroll_to_id(id);
 
 		if (t && t.close) {
 			t.close.addEventListener("click",
 				function() {
 					document.body.classList.remove("detail");
-					lists[typ].set_new_open();
 					self.change(current_type);
 				}
 			);
@@ -191,11 +198,14 @@ var Router = function() {
 			On MOBILE then, we always slide the window out first while loading.
 			On DESKTOP, we slide it out blank only if no windows are open.
 						If a playlist is already open, we wait to slide it out.
+			On ANYTHING, if the data from the server is already in our cache, render first.
 
 			*/
 
 			if ((!document.body.classList.contains("detail") || MOBILE) && !cache[typ][id]) {
 				ready_to_render = false;
+				rendered_typ = false;
+				rendered_id = false;
 				while (el.firstChild) {
 					el.removeChild(el.firstChild);
 				}
@@ -209,7 +219,6 @@ var Router = function() {
 				ready_to_render = true;
 			}
 
-			lists[typ].set_new_open(id);
 			if (!cache[typ][id]) {
 				cache[typ][id] = true;
 				API.async_get(typ, { "id": id }, function(json) {
@@ -233,6 +242,20 @@ var Router = function() {
 		}
 		document.body.classList.add("playlist");
 
+		if (id && !isNaN(id)) {
+			lists[typ].set_new_open(id);
+			if (!ready_to_render) {
+				lists[typ].scroll_to(id);
+			}
+			open_view(typ, id);
+			if (ready_to_render) {
+				lists[typ].scroll_to_id(id);
+			}
+		}
+		else {
+			document.body.classList.remove("detail");
+		}
+
 		if (typ in lists && lists[typ]) {
 			document.body.classList.add("playlist_" + typ);
 			self.active_list = lists[typ];
@@ -242,13 +265,6 @@ var Router = function() {
 		}
 		else {
 			self.active_list = null;
-		}
-
-		if (id && !isNaN(id)) {
-			open_view(typ, id);
-		}
-		else {
-			document.body.classList.remove("detail");
 		}
 	};
 

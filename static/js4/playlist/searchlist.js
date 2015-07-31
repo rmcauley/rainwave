@@ -529,8 +529,9 @@ var SearchList = function(el, scrollbar_handle, stretching_el, sort_key, search_
 		if (current_open_id) {
 			$remove_class(data[current_open_id]._el, "searchlist_open_item");
 		}
-		$add_class(data[id]._el, "searchlist_open_item");
 		current_open_id = id;
+		if (!self.loaded) return;
+		$add_class(data[id]._el, "searchlist_open_item");
 		self.key_nav_highlight(id);
 		if (search_string.length > 0) {
 			ignore_original_scroll_top = true;

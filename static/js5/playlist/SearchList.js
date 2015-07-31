@@ -4,7 +4,6 @@
 //  open_id(id);					// open what the user has selected
 
 // OPTIONAL FUNCTIONS you can overwrite:
-//	after_update(json, data, sorted_data);
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses 'id')
 
 var SearchList = function(root_el, sort_key, search_key) {
@@ -78,7 +77,12 @@ var SearchList = function(root_el, sort_key, search_key) {
 			self.reposition();
 		}
 
-		if (scroll_to_on_load) {
+		if (!self.loaded && current_open_id) {
+			self.set_new_open(current_open_id);
+			self.scroll_to_id(current_open_id);
+			scroll_to_on_load = false;
+		}
+		else if (!self.loaded && scroll_to_on_load) {
 			self.scroll_to_id(scroll_to_on_load);
 			scroll_to_on_load = false;
 		}
@@ -454,7 +458,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	self.scroll_to_id = function(id) {
 		if (id in data) self.scroll_to(data[id]);
-		else scroll_to_on_load = id;
+		else if (!self.loaded) scroll_to_on_load = id;
 	};
 
 	self.scroll_to = function(data_item) {
@@ -545,13 +549,14 @@ var SearchList = function(root_el, sort_key, search_key) {
 	// NAV *****************************
 
 	self.set_new_open = function(id) {
-		if (current_open_id) {
+		if (!self.loaded) current_open_id = id;
+		if (!(id in data)) return;
+		if (current_open_id && data[current_open_id]) {
 			data[current_open_id]._el.classList.remove("open");
 			current_open_id = null;
 		}
-		if (!(id in data)) return;
-		data[id]._el.classList.add("open");
 		current_open_id = id;
+		data[id]._el.classList.add("open");
 		self.key_nav_highlight(id);
 		if (search_string.length > 0) {
 			ignore_original_scroll_top = true;
