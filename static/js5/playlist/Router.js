@@ -14,6 +14,7 @@ var Router = function() {
 	var scroll_positions = {};
 	var cache_page_stack;
 	self.active_list = null;
+	var ready_to_render = true;
 
 	var reset_cache = function() {
 		cache.album = {};
@@ -124,6 +125,8 @@ var Router = function() {
 	};
 
 	var actually_open = function(typ, id) {
+		if (!ready_to_render) return;
+
 		while (el.firstChild) {
 			el.removeChild(el.firstChild);
 		}
@@ -165,13 +168,47 @@ var Router = function() {
 			current_type = typ;
 			current_id = id;
 
-			if (!document.body.classList.contains("detail")) {
+			/*
+
+			The way R5 loads things is based on what environment the user is in.
+			The operations necessary are:
+			- Slide out the window(s)
+			- Load the list (if necessary)
+			- Render the list (if necessary)
+			- Load the content
+			- Render the content
+			- Kill all humans
+
+			If on mobile, render and load times are going to be slower, so we
+			always slide a blank window out first to give immediate user feedback.
+			On desktop, sliding out the window first will result in a blank window
+			sliding out and then immediately rendering 99% of the time.
+			This will give the *impression* that the page is slower than
+			loading & rendering first THEN sliding out the complete window.
+			(even if, in wall clock time, it takes fewer milliseconds to slide
+			the window out blank)
+
+			On MOBILE then, we always slide the window out first while loading.
+			On DESKTOP, we slide it out blank only if no windows are open.
+						If a playlist is already open, we wait to slide it out.
+
+			*/
+
+			if ((!document.body.classList.contains("detail") || MOBILE) && !cache[typ][id]) {
+				ready_to_render = false;
 				while (el.firstChild) {
 					el.removeChild(el.firstChild);
 				}
+				document.body.classList.add("detail");
+				Fx.chain_transition(el, function() {
+					actually_open(typ, id);
+					ready_to_render = true;
+				});
+			}
+			else {
+				ready_to_render = true;
 			}
 
-			document.body.classList.add("detail");
 			lists[typ].set_new_open(id);
 			if (!cache[typ][id]) {
 				cache[typ][id] = true;
@@ -180,10 +217,12 @@ var Router = function() {
 					if (current_type === typ && current_id === id) {
 						actually_open(typ, id);
 					}
+					ready_to_render = true;
 				});
 			}
 			else if (cache[typ][id] !== true) {
 				actually_open(typ, id);
+				ready_to_render = true;
 			}
 		}
 	};

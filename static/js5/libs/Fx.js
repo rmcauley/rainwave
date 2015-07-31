@@ -3,7 +3,7 @@ var Fx = function() {
 	var self = {};
 
 	self.transform = function() {
-		var transforms = [ "transform", "WebkitTransform", "msTransform", "MozTransform", "OTransform" ];
+		var transforms = [ "transform", "WebkitTransform", "msTransform", "MozTransform" ];
 		var p = transforms.shift();
 		var t = document.createElement("div");
 		while (p) {
@@ -14,9 +14,12 @@ var Fx = function() {
 		}
 	}();
 
-	var transition_ends = [ "transitionend", "webkitTransitionEnd", "otransitionend" ];
+	var transition_ends = [ "transitionend", "webkitTransitionEnd" ];
 	self.chain_transition = function(el, end_func) {
+		var executed = false;
 		var end_func_wrapper = function(e) {
+			if (executed) return;
+			executed = true;
 			end_func(e, el);
 			for (var i in transition_ends) {
 				el.removeEventListener(transition_ends[i], end_func_wrapper, false);
