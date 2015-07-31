@@ -56,7 +56,7 @@ var Scrollbar = function() {
 			if (scrollable.className) {
 				scrollblock.setAttribute("class", "scrollblock " + scrollable.className);
 			}
-			scrollable.setAttribute("class", null);
+			scrollable.removeAttribute("class");
 		
 			if (scrollable.parentNode) {
 				scrollable.parentNode.replaceChild(scrollblock, scrollable);
@@ -70,7 +70,7 @@ var Scrollbar = function() {
 		var reposition_hook = false;
 
 		var self = {};
-		self.scrollblock = scrollable;
+		self.scrollblock = scrollblock || scrollable;
 		self.el = scrollable;
 		self.scroll_top = null;
 		self.scroll_height = null;
