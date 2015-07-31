@@ -146,6 +146,7 @@ var Router = function() {
 		}
 		else {
 			t = views[typ](el, cache[typ][id]);
+			el.appendChild(t._root);
 			if (t._root && t._root.tagName && (t._root.tagName.toLowerCase() == "div")) {
 				cache[typ][id]._cache_el = t._root;
 				cache_page_stack.push({ "typ": typ, "id": id });

@@ -1,6 +1,6 @@
-var ListenerView = function(view, json) {
+var ListenerView = function(el, json) {
 	"use strict";
-	view.el.appendChild(RWTemplates.detail.listener(json)._root);
+	var template = RWTemplates.detail.listener(json, MOBILE ? null : document.createElement("div"));
 
 	var order = [ 1, 4, 2, 3, 5 ];
 	var colors = {
@@ -13,13 +13,13 @@ var ListenerView = function(view, json) {
 	var chart_width = 200;
 	var chart_height = 180;
 
-	var c = view.el.appendChild($el("div", { "style": "text-align: center;" }));
+	var c = template._root.appendChild($el("div", { "style": "text-align: center;" }));
 	var d = c.appendChild($el("ul", { "class": "user_detail_legend"}));
 	for (var i = 0; i < order.length; i++) {
 		d.appendChild($el("li", { "textContent": $l("station_name_" + order[i]), "style": "background-color: " + colors[order[i]] + ";" }));
 	}
 
-	view._detail_container = view.el.appendChild($el("div", { "class": "user_detail_container" }));
+	var detail_container = template._root.appendChild($el("div", { "class": "user_detail_container" }));
 
 	var current_chart_draw_steps = 40;
 
@@ -35,7 +35,7 @@ var ListenerView = function(view, json) {
 			}
 		}
 		if (data.length > 0) {
-			d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
+			d = detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 			d.appendChild($el("h3", { "textContent": header }));
 			var cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
 			new Chart(cnvs.getContext("2d")).Doughnut(data, { "animationSteps": current_chart_draw_steps });
@@ -59,7 +59,7 @@ var ListenerView = function(view, json) {
 		total_data += json.rating_completion[sid] || 0;
 	}
 	if (total_data > 5) {
-		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
+		d = detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("ratings_completion_rate") }));
 		cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
 		chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 20, "scaleStartValue": 0, "tooltipTemplate": "<%=label%>: <%= value %>%", "animationSteps": current_chart_draw_steps });
@@ -82,7 +82,7 @@ var ListenerView = function(view, json) {
 		if (!found) data.push({ "value": 0, "color": colors[sid], "highlight": "#FFF", "label": $l("station_name_" + sid ) });
 	}
 	if (any_found) {
-		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
+		d = detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("average_rating_by_station") }));
 		cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
 		chart = new Chart(cnvs.getContext("2d")).PolarArea(data, { "scaleOverride": true, "scaleSteps": 5, "scaleStepWidth": 1, "scaleStartValue": 0, "animationSteps": current_chart_draw_steps });
@@ -99,7 +99,7 @@ var ListenerView = function(view, json) {
 		}
 	}
 	if (data.length > 0) {
-		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
+		d = detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("rating_spread") }));
 		cnvs = d.appendChild($el("canvas", { "width": chart_width, "height": chart_height }));
 		chart = new Chart(cnvs.getContext("2d")).Doughnut(data, { "animationSteps": current_chart_draw_steps });
@@ -107,10 +107,10 @@ var ListenerView = function(view, json) {
 	}
 
 	if (json.user_id == User.id) {
-		d = view._detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
+		d = detail_container.appendChild($el("div", { "class": "user_detail_segment" }));
 		d.appendChild($el("h3", { "textContent": $l("your_mobile_app_qr") }));
 		d.appendChild($el("img", { "width": chart_height - 5, "height": chart_height - 5, "src": "http://chart.apis.google.com/chart?cht=qr&chs=" + (chart_height - 5) + "x" + (chart_height - 5) + "&choe=ISO-8859-1&chl=" + "rw://" + User.id + ":" + User.api_key + "@rainwave.cc" }));
 	}
 
-	return view.el;
+	return template;
 };

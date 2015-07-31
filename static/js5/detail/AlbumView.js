@@ -64,8 +64,6 @@ var AlbumView = function(el, album) {
 		Rating.register(album.songs[i]);
 	}
 
-	el.appendChild(template._root);
-
 	if (template.rating_graph) AlbumViewRatingPieChart(template.rating_graph.getContext("2d"), album);
 
 	return template;

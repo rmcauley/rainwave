@@ -38,6 +38,5 @@ var ArtistView = function(el, json) {
 			Rating.register(albums[i].songs[j]);
 		}
 	}
-	el.appendChild(template._root);
 	return template;
 };

@@ -1,4 +1,4 @@
-var GroupView = function(view, json) {
+var GroupView = function(el, json) {
 	"use strict";
 	var albums = [];
 	var a, album_id, i;
@@ -13,7 +13,5 @@ var GroupView = function(view, json) {
 		albums.push(a);
 	}
 	albums.sort(SongsTableAlbumSort);
-	view.el.appendChild(RWTemplates.playlist.group({ "group": json, "albums": albums }));
-
-	return view.el;
+	return RWTemplates.playlist.group({ "group": json, "albums": albums }, MOBILE ? null : document.createElement("div"));
 };
