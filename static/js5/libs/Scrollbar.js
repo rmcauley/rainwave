@@ -36,6 +36,7 @@ var Scrollbar = function() {
 			}
 			for (i = 0; i < scrollbars.length; i++) {
 				scrollbars[i].el.style.width = (scrollbars[i].offset_width + scrollbar_width) + "px";
+				scrollbars[i].el.style.height = scrollbars[i].offset_height + "px";
 			}
 		}, true);
 	});
@@ -52,11 +53,11 @@ var Scrollbar = function() {
 		if (enabled || always_scrollable) {
 			scrollblock = document.createElement("div");
 			scrollblock.setAttribute("class", "scrollblock");
-			scrollblock.style.overflowY = "auto";
+			scrollable.style.overflowY = "auto";
 			if (scrollable.className) {
 				scrollblock.setAttribute("class", "scrollblock " + scrollable.className);
 			}
-			scrollable.removeAttribute("class");
+			scrollable.setAttribute("class", "scrollable");
 		
 			if (scrollable.parentNode) {
 				scrollable.parentNode.replaceChild(scrollblock, scrollable);
