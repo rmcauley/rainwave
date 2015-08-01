@@ -356,17 +356,17 @@ var SearchList = function(root_el, sort_key, search_key) {
 		if (first_time) {
 			original_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			scroll.scroll_to(0);
+			scroll.scroll_to(0, 7);
 		}
 		else if (visible.length <= num_items_to_display) {
 			backspace_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			scroll.scroll_to(0);
+			scroll.scroll_to(0, 7);
 		}
 		else if (visible.length <= current_scroll_index) {
 			backspace_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			scroll.scroll_to((visible.length - num_items_to_display) * Sizing.list_item_height);
+			scroll.scroll_to((visible.length - num_items_to_display) * Sizing.list_item_height, 7);
 		}
 		else {
 			self.recalculate();
@@ -457,30 +457,26 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 
 	self.scroll_to_id = function(id) {
-		if (id in data) {
-			if (Sizing.simple && document.body.classList.contains("detail")) {
-				current_scroll_index = 200000;
-			}
-			self.scroll_to(data[id]);
-		}
+		if (id in data) self.scroll_to(data[id]);
 		else if (!self.loaded) scroll_to_on_load = id;
 	};
 
-	self.scroll_to = function(data_item) {
+	self.scroll_to = function(data_item, margin) {
+		margin = margin || 0;
 		if (data_item) {
 			var new_index = visible.indexOf(data_item.id);
-			if ((new_index > (current_scroll_index + 7)) && (new_index < (current_scroll_index + num_items_to_display - 7))) {
+			if ((new_index > (current_scroll_index + margin)) && (new_index < (current_scroll_index + num_items_to_display - margin))) {
 				if (!current_scroll_index) {
 					self.redraw_current_position();
 				}
 			}
 			// position at the lower edge
-			else if (new_index >= (current_scroll_index + num_items_to_display - 8)) {
+			else if (current_scroll_index && (new_index >= (current_scroll_index + num_items_to_display - 8))) {
 				scroll.scroll_to(Math.min(scroll.scroll_top_max, (new_index - num_items_to_display + 8) * Sizing.list_item_height));
 			}
 			// position at the higher edge
 			else {
-				scroll.scroll_to(Math.max(0, (new_index - 7) * Sizing.list_item_height));
+				scroll.scroll_to(Math.max(0, (new_index - margin) * Sizing.list_item_height));
 			}
 		}
 	};

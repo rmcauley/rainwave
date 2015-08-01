@@ -203,7 +203,7 @@ var Router = function() {
 
 			*/
 
-			if ((!document.body.classList.contains("detail") || MOBILE) && !cache[typ][id]) {
+			if ((!document.body.classList.contains("playlist") || MOBILE) && !cache[typ][id]) {
 				//console.log("Clearing detail.");
 				//console.log(document.body.className);
 				ready_to_render = false;

@@ -53,7 +53,7 @@ var Scrollbar = function() {
 		if (enabled || always_scrollable) {
 			scrollblock = document.createElement("div");
 			scrollblock.setAttribute("class", "scrollblock");
-			scrollable.style.overflowY = "auto";
+			scrollable.style.overflowY = "scroll";
 			if (scrollable.className) {
 				scrollblock.setAttribute("class", "scrollblock " + scrollable.className);
 			}
@@ -128,7 +128,6 @@ var Scrollbar = function() {
 				handle.classList.add("invisible");
 				handle.style.height = null;
 				handle.style.top = null;
-				self.el.style.paddingRight = scrollbar_width + "px";
 				visible = false;
 			}
 			else {
@@ -138,7 +137,6 @@ var Scrollbar = function() {
 				handle_height = Math.floor(wheight * (self.offset_height / self.scroll_height));
 				handle_height = Math.max(handle_height, 40);
 				handle.style.height = handle_height + "px";
-				self.el.style.paddingRight = "0";
 				scroll_per_px = self.scroll_top_max / (wheight - handle_height);
 				self.reposition();
 			}
