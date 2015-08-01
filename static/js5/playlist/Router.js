@@ -67,11 +67,7 @@ var Router = function() {
 		});
 
 		root_template.list_close.addEventListener("click", function() {
-			document.body.classList.remove("playlist");
-			for (var i in tabs) {
-				document.body.classList.remove("playlist_" + i);
-			}
-			self.active_list = null;
+			Router.change();
 		});
 
 		API.add_callback("_SYNC_COMPLETE", function() {
@@ -127,7 +123,11 @@ var Router = function() {
 	};
 
 	var actually_open = function(typ, id) {
-		if (!ready_to_render) return;
+		if (!ready_to_render) {
+			//console.log("Not ready to render yet!");
+			return;
+		}
+		//console.log("Rendering.");
 
 		document.body.classList.add("detail");
 
@@ -204,33 +204,39 @@ var Router = function() {
 			*/
 
 			if ((!document.body.classList.contains("detail") || MOBILE) && !cache[typ][id]) {
+				//console.log("Clearing detail.");
+				//console.log(document.body.className);
 				ready_to_render = false;
 				rendered_typ = false;
 				rendered_id = false;
 				while (el.firstChild) {
 					el.removeChild(el.firstChild);
 				}
-				document.body.classList.add("detail");
-				Fx.chain_transition(el, function() {
+				setTimeout(function() {
+					//console.log("Slide finished.");
 					actually_open(typ, id);
 					ready_to_render = true;
-				});
+				}, 300);
+				document.body.classList.add("detail");
 			}
 			else {
 				ready_to_render = true;
 			}
 
 			if (!cache[typ][id]) {
+				//console.log("Loading from server.");
 				cache[typ][id] = true;
 				API.async_get(typ, { "id": id }, function(json) {
 					cache[typ][id] = json[typ];
 					if (current_type === typ && current_id === id) {
+						//console.log("Loaded from server.");
 						actually_open(typ, id);
 					}
 					ready_to_render = true;
 				});
 			}
 			else if (cache[typ][id] !== true) {
+				//console.log("Rendering from cache.");
 				actually_open(typ, id);
 				ready_to_render = true;
 			}
@@ -242,6 +248,11 @@ var Router = function() {
 			document.body.classList.remove("playlist_" + i);
 		}
 		document.body.classList.add("playlist");
+
+		if (typ in lists && lists[typ]) {
+			document.body.classList.add("playlist_" + typ);
+			self.active_list = lists[typ];
+		}
 
 		if (id && !isNaN(id)) {
 			lists[typ].set_new_open(id);
@@ -258,8 +269,6 @@ var Router = function() {
 		}
 
 		if (typ in lists && lists[typ]) {
-			document.body.classList.add("playlist_" + typ);
-			self.active_list = lists[typ];
 			if (!self.active_list.loaded) {
 				self.active_list.load();
 			}

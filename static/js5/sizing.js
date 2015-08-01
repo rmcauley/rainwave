@@ -105,7 +105,6 @@ var Sizing = function() {
 
 	BOOTSTRAP.on_init.push(function(t) {
 		index_t = t;
-		index_t.list_item.innerHTML = "Reference";
 		if (MOBILE) document.body.classList.add("mobile");
 		else document.body.classList.add("desktop");
 	});

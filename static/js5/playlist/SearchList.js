@@ -457,7 +457,12 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 
 	self.scroll_to_id = function(id) {
-		if (id in data) self.scroll_to(data[id]);
+		if (id in data) {
+			if (Sizing.simple && document.body.classList.contains("detail")) {
+				current_scroll_index = 200000;
+			}
+			self.scroll_to(data[id]);
+		}
 		else if (!self.loaded) scroll_to_on_load = id;
 	};
 

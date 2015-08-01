@@ -84,7 +84,7 @@ var Scrollbar = function() {
 			else {
 				self.set_height = function(h) { /* pass */ };
 			}
-			self.scroll_to = function(n) { self.scrollblock.scrollTop = n; };
+			self.scroll_to = function(n) { self.scrollable.scrollTop = n; };
 			if (always_hook) {
 				self.refresh = function() {
 					self.scroll_height = self.el.scrollHeight;
@@ -193,7 +193,7 @@ var Scrollbar = function() {
 			window.removeEventListener("mousemove", mouse_move, false);
 			window.removeEventListener("mouseup", mouse_up, false);
 			//window.removeEventListener("mouseout", mouse_up, false);
-			document.body.classList.add("unselectable");
+			document.body.classList.remove("unselectable");
 			scrolling = false;
 		};
 

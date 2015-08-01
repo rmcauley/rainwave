@@ -6,7 +6,9 @@
 	<meta name="description" content="{{ site_description }}" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-	<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+	{% if not mobile %}
+		<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+	{% end %}
 	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js"></script>
 	<script src="/api4/bootstrap"></script>
 	<script>
@@ -59,5 +61,5 @@
 	{% end %}
 </head>
 
-<body class="simple loading"></body>
+<body class="simple "></body>
 </html>

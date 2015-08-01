@@ -4,11 +4,6 @@ div.art_anchor {
 	width: $art_size;
 	height: $art_size;
 	margin-right: 10px;
-
-	body.simple & {
-		width: $simple_art_size;
-		height: $simple_art_size;
-	}
 }
 
 div.art_container {

@@ -26,6 +26,8 @@ div.detail {
 		float: left;
 		margin-left: 10px;
 		margin-bottom: 10px;
+		width: 90px;
+		height: 90px;
 	}
 
 	ul.panel_header {
@@ -68,7 +70,16 @@ div.detail {
 	}
 
 	div.close {
-		left: 390px;
+		@include transform(translateX(-32px));
+	}
+
+	div.fave {
+		float: left;
+	}
+
+	div.art_container {
+		width: 90px;
+		height: 90px;
 	}
 }
 
