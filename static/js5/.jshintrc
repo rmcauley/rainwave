@@ -41,6 +41,7 @@
     "Modal": true,
     "Prefs": true,
     "Rating": true,
+    "RequestLineList": true,
     "Requests": true,
     "Router": true,
     "RWTemplates": true,

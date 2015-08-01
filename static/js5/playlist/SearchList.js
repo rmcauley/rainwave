@@ -9,12 +9,12 @@
 var SearchList = function(root_el, sort_key, search_key) {
 	"use strict";
 
-	var template = RWTemplates.searchlist();
-	root_el.appendChild(template._root);
+	sort_key = sort_key || "name";
+	search_key = search_key || "name_searchable";
+
+	var template = RWTemplates.searchlist(null, root_el);
 
 	var self = {};
-	self.sort_key = sort_key;
-	self.search_key = search_key || "id";
 	self.auto_trim = false;
 
 	var stretcher = document.createElement("div");
@@ -501,6 +501,12 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	self.reposition = function() {
 		if (num_items_to_display === undefined) return;
+		if (visible.length === 0) {
+			template._root.classList.add("no_results");
+		}
+		else {
+			template._root.classList.remove("no_results");	
+		}
 		var new_index = Math.floor(scroll.scroll_top / Sizing.list_item_height);
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
 

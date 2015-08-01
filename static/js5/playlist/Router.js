@@ -81,6 +81,7 @@ var Router = function() {
 	BOOTSTRAP.on_draw.push(function(root_template) {
 		lists.album = AlbumList(root_template.album_list);
 		lists.artist = ArtistList(root_template.artist_list);
+		lists.listener = RequestLineList(root_template.listener_list);
 
 		scroll = Scrollbar.create(el);
 		Sizing.detail_area = scroll.scrollblock;
@@ -248,7 +249,6 @@ var Router = function() {
 			document.body.classList.remove("playlist_" + i);
 		}
 		document.body.classList.add("playlist");
-
 		if (typ in lists && lists[typ]) {
 			document.body.classList.add("playlist_" + typ);
 			self.active_list = lists[typ];

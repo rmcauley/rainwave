@@ -1,6 +1,6 @@
 var AlbumList = function(el) {
 	"use strict";
-	var self = SearchList(el, "name", "name_searchable");
+	var self = SearchList(el);
 
 	var loading = false;
 	var sort_faves_first = Prefs.get("playlist_sort_faves_first");

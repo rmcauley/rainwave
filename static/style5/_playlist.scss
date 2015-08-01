@@ -22,6 +22,18 @@ ul.panel_header {
 	}
 }
 
+div.no_result_message {
+	position: absolute;
+	color: $darktext;
+	text-align: center;
+	width: 100%;
+	display: none;
+
+	div.no_results & {
+		display: block;
+	}
+}
+
 div.lists {
 	position: absolute;
 	z-index: 100;
