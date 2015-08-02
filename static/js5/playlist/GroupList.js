@@ -3,14 +3,14 @@ var GroupList = function(el) {
 	var self = SearchList(el);
 	var loading = false;
 
-	self.load_from_api = function() {
+	self.load = function() {
 		if (!self.loaded && !loading) {
 			loading = true;
 			API.async_get("all_groups");
 		}
 	};
 
-	if (!MOBILE) API.add_callback(self.update, "all_groups");
+	API.add_callback("all_groups", self.update);
 
 	self.draw_entry = function(item) {
 		item._el = document.createElement("div");
@@ -23,7 +23,7 @@ var GroupList = function(el) {
 	};
 
 	self.open_id = function(id) {
-		DetailView.open_group(id);
+		Router.change("group", id);
 	};
 
 	return self;

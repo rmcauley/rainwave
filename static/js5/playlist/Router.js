@@ -82,6 +82,7 @@ var Router = function() {
 		lists.album = AlbumList(root_template.album_list);
 		lists.artist = ArtistList(root_template.artist_list);
 		lists.listener = RequestLineList(root_template.listener_list);
+		lists.group = GroupList(root_template.group_list);
 
 		scroll = Scrollbar.create(el);
 		Sizing.detail_area = scroll.scrollblock;

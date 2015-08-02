@@ -8,10 +8,10 @@ var GroupView = function(el, json) {
 		json.all_songs_for_sid[album_id][0].albums = null;
 		a.songs = json.all_songs_for_sid[album_id].sort(SongsTableSorting);
 		for (i = 0; i < a.songs.length; i++) {
-			a.songs[i].artists = JSON.parse(a.songs[i].artists_parseable);
+			a.songs[i].artists = JSON.parse(a.songs[i].artist_parseable);
 		}
 		albums.push(a);
 	}
 	albums.sort(SongsTableAlbumSort);
-	return RWTemplates.playlist.group({ "group": json, "albums": albums }, MOBILE ? null : document.createElement("div"));
+	return RWTemplates.detail.group({ "group": json, "albums": albums }, MOBILE ? null : document.createElement("div"));
 };
