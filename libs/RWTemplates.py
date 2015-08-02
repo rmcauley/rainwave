@@ -59,6 +59,7 @@ import os
 _unique_id_chars = [ chr(x) for x in xrange(65, 91) ] + [ chr(x) for x in xrange(97, 123) ]
 _unique_id = _unique_id_chars[0]
 _func_id = _unique_id_chars[0]
+_defined_dirs = []
 
 def _get_id():
 	global _unique_id
@@ -81,6 +82,8 @@ def _get_func_id():
 def compile_templates(source_dir, dest_file, **kwargs):
 	global _unique_id
 	global _func_id
+	global _defined_dirs
+	_defined_dirs = []
 	_func_id = _unique_id_chars[0]
 	_unique_id = _unique_id_chars[0]
 
@@ -194,10 +197,14 @@ class RainwaveParser(HTMLParser):
 		self.name = template_name
 		names = self.name.split('.')
 		self.buffers['_r'] = ""
+		global _defined_dirs
 		if len(names) > 1:
-			for i in range(1, len(names) + 1):
+			for i in range(1, len(names)):
 				cname = '.'.join(names[0:i])
-				self.buffers['_r'] += "if(!_rwt.%s)_rwt.%s={};" % (cname, cname)
+				if not cname in _defined_dirs:
+					self.buffers['_r'] += "_rwt.%s={};" % cname
+					_defined_dirs.append(cname)
+					print cname
 		dbg_name = ""
 		if debug_symbols:
 			dbg_name = " " + template_name.replace(".", "_")
