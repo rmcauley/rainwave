@@ -11,6 +11,10 @@ div.history_header {
 	padding: 0px 10px;
 	@include transition-wtime(300ms, opacity, background-color);
 
+	body.desktop.simple & {
+		max-width: 50%;
+	}
+
 	svg {
 		height: 1em;
 		width: 1em;

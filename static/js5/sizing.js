@@ -45,11 +45,13 @@ var Sizing = function() {
 
 		self.mobile = false;
 		if (self.width < 1050) {
+			self.mobile = true;
 			document.body.classList.add("simple");
 			document.body.classList.remove("full");
 			self.simple = true;
 			index_t.lists.style.left = "100%";
 			self.detail_area.style.left = "100%";
+			index_t.submenu.style.left = null;
 		}
 		else {
 			if (Prefs.get("adv")) {
@@ -65,6 +67,7 @@ var Sizing = function() {
 				self.simple = true;
 				index_t.lists.style.left = right_of_timeline + "px";
 				self.detail_area.style.left = right_of_timeline + "px";
+				index_t.submenu.style.left = right_of_timeline + "px";
 			}
 
 			if (self.width < 1366) {

@@ -5,6 +5,14 @@
 
 <div bind="menu"></div>
 
+<div class="submenu" bind="submenu">
+	{{#if ^BOOTSTRAP.user.id > 1 }}
+		<a href="#!/requests">{{ $l("Requests")}}</a>
+	{{/if}}
+	<a href="#!/albums">{{ $l("Albums") }}</a>
+	<a href="#!/artists">{{ $l("Artists") }}</a>
+</div>
+
 <div bind="messages" class="messages"></div>
 
 <div bind="sizeable_area" class="sizeable">

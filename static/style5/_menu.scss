@@ -1,5 +1,6 @@
 $menu_transfunc: cubic-bezier(0.77, 0, 0.175, 1);
 $menu_height: 45px;
+$phone_menu_height: 30px;
 $station_height: 60px;
 $station_select_width: 270px;
 
@@ -8,6 +9,10 @@ div.header {
 	background: $blue_dark;
 	height: $menu_height;
 	z-index: 2;
+
+	@media $phone-media {
+		height: $phone_menu_height;
+	}
 }
 
 div.menu_wrapper {
@@ -18,13 +23,13 @@ div.menu_wrapper {
 	margin: 0 auto;
 	height: $menu_height;
 
-	body.advanced & {
+	body.full & {
 		width: 100%;
 		margin: 0;
 	}
 
-	body.mobile & {
-		display: none;
+	@media $phone-media {
+		height: $phone_menu_height;
 	}
 
 	svg {
@@ -59,10 +64,9 @@ div.menu_wrapper {
 	-webkit-transition-timing-function: $menu_transfunc;
 	        transition-timing-function: $menu_transfunc;
 
-	@media $phone-media & {
-		position: relative;
-		width: auto !important;
-		border: none;
+	@media $phone-media	{
+		max-width: 60%;
+		height: $phone_menu_height;
 	}
 
 	&.open {
@@ -113,6 +117,10 @@ div.menu_wrapper {
 			top: $menu_height / 2;
 			@include transform(translateY(-50%));
 		}
+
+		@media $phone-media {
+			font-size: 1em;
+		}
 	}
 
 	&.no_station_select #station_select_header {
@@ -139,6 +147,10 @@ div.menu_wrapper {
 
 		-webkit-transition: top 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
 		        transition: top 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
+
+		@media $phone-media {
+			height: $phone_menu_height !important;
+		}
 
 		&:hover {
 			background: #0f74b8;
@@ -168,6 +180,10 @@ div.menu_wrapper {
 			font-size: 2em;
 			@include transform(translateY(-50%));
 			@include transition-wtime(350ms, transform);
+
+			@media $phone-media {
+				font-size: 1em;
+			}
 		}
 
 		div.station_description {
@@ -179,6 +195,10 @@ div.menu_wrapper {
 			opacity: 0;
 			-webkit-transition: transform 300ms ease-in-out, opacity 250ms ease;
 			        transition: transform 300ms ease-in-out, opacity 250ms ease;
+
+			@media $phone-media {
+				display: none;
+			}
 		}
 
 		div.station_song_container {
@@ -190,7 +210,7 @@ div.menu_wrapper {
 			-webkit-transition: transform 700ms $menu_transfunc, opacity 300ms $transfunc;
 			        transition: transform 700ms $menu_transfunc, opacity 300ms $transfunc;
 
-			@media $mobile-media & {
+			@media $phone-media {
 				display: none;
 			}
 
@@ -358,6 +378,31 @@ $player_icon_width: $player_icon_height;
 	&:hover .menu_inline_dropdown {
 		height: 110px;
 	}
+
+	@media $mobile-media {
+		float: right;
+		margin-left: 0;
+		border-top: none;
+		border-right: 1px solid #0b5c89;
+		height: $menu-height;
+		padding: 0 5px 0 0;
+		top: 0;
+		@include transform(none);
+
+		.menu_inline_dropdown, .audio_icon_mute, .audio_icon_stop, .audio_volume {
+			display: none;
+		}
+
+		.audio_icon_play {
+			position: relative;
+			top: 50%;
+			@include transform(translateY(-50%) scale(0.75));
+		}
+	}
+
+	@media $phone-media {
+		height: $phone_menu_height;
+	}
 }
 
 /* CALENDAR */
@@ -386,4 +431,45 @@ div.menu_inline_dropdown {
 
 #calendar_dropdown.show_calendar {
 	height: 500px;
+}
+
+div.submenu {
+	box-sizing: border-box;
+	position: absolute;
+	z-index: 101;
+	padding: 5px 0;
+	background: $blue_dark;
+	border: 3px solid $blue;
+	border-top: none;
+	@include transform(translateX(-100%));
+
+	body.full & {
+		display: none;
+	}
+
+	body.logged_in & {
+		padding-right: 5px;
+	}
+
+	a {
+		padding: 0px 10px;
+	}
+
+	@media $mobile-media {
+		position: relative;
+		@include transform(none);
+	}
+
+	@media $tablet-media {
+		left: 100%;
+	}
+
+	@media $phone-media {
+		padding: 5px 0 0 0;
+		border: none;
+		height: $phone_menu_height;
+		display: flex;
+		justify-content: space-around;
+		align-content: stretch;
+	}
 }
