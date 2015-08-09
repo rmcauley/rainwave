@@ -39,6 +39,7 @@
     "lang": true,
     "ListenerView": true,
     "Modal": true,
+    "Mouse": true,
     "Prefs": true,
     "Rating": true,
     "RequestLineList": true,

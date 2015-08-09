@@ -10,7 +10,7 @@ var Song = function(self, parent_event) {
 		self.el = self.$t.root;
 	}
 
-	AlbumArt(self.art, template.art);
+	AlbumArt(self.art, template.art, self.request_id);
 
 	if (template.rating) {
 		Rating.register(self);
@@ -60,7 +60,7 @@ var Song = function(self, parent_event) {
 		 	template.rating.rating_set(self.rating_user || self.rating);
 		}
 		if (self.albums[0].$t.rating) {
-			if (self.rating_user) {
+			if (self.albums[0].rating_user) {
 				self.albums[0].$t.rating.classList.add("rating_user");
 			}
 			else {

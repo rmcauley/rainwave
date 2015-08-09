@@ -50,7 +50,7 @@ var AlbumArt = function() {
 		//Fx.chain_transition(e.target, function() { e.target.style.zIndex = null; Fx.stop_chain(e.target); } );
 	};
 
-	return function(art_url, element) {
+	return function(art_url, element, no_expand) {
 		if (!art_url) {
 			art_url = "/static/baked/art/1_27";
 		}
@@ -65,7 +65,7 @@ var AlbumArt = function() {
 				element.style.backgroundImage = "url(" + art_url + "_120.jpg)";
 				element._album_art = art_url;
 			}
-			if (!MOBILE) {
+			if (!MOBILE && !no_expand) {
 				element.classList.add("art_expandable");
 				element.addEventListener("click", expand_art);
 				element.addEventListener("mouseout", normalize_art);

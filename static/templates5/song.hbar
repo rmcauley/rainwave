@@ -1,12 +1,19 @@
 <div bind="root" class="song">
 	<div class="art_anchor">
+		{{#if request_id }}
+			<div class="request_sort_grab" bind="request_drag">
+				<img src="/static/images4/sort.svg" />
+			</div>
+		{{/if}}
 		<div bind="art" class="art_container"></div>
 	</div>
 
 	<div class="song_content">
 		{{>rating }}
 
-		<div bind="votes" class="entry_votes"></div>
+		{{#if ^!_c.request_id }}
+			<div bind="votes" class="entry_votes"></div>
+		{{/if}}
 
 		{{>fave}}
 		<div bind="title" class="title" title="{{ title }}">
@@ -22,19 +29,23 @@
 			</div>
 		{{/with}}
 
-		<div class="artist">
-			{{#each artists }}
-				<a href="#!/artist/{{ id }}">
-					{{ name }}
-				</a>
-				<span>,</span>
-			{{/each}}
-		</div>
+		{{#if request_id }}
+			<div class="cooldown_info" bind="cooldown"></div>
+		{{else}}
+			<div class="artist">
+				{{#each artists }}
+					<a href="#!/artist/{{ id }}">
+						{{ name }}
+					</a>
+					<span>,</span>
+				{{/each}}
+			</div>
 
-		{{#if url }}
-			<a class="song_link" href="{{ url }}" target="_blank">
-				{{ link_text }}
-			</a>
+			{{#if url }}
+				<a class="song_link" href="{{ url }}" target="_blank">
+					{{ link_text }}
+				</a>
+			{{/if}}
 		{{/if}}
 	</div>
 </div>

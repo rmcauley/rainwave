@@ -204,7 +204,6 @@ class RainwaveParser(HTMLParser):
 				if not cname in _defined_dirs:
 					self.buffers['_r'] += "_rwt.%s={};" % cname
 					_defined_dirs.append(cname)
-					print cname
 		dbg_name = ""
 		if debug_symbols:
 			dbg_name = " " + template_name.replace(".", "_")
