@@ -1,32 +1,12 @@
 <div class="header" bind="header">
 	<div class="menu_wrapper">
-		<ul class="menu">
-			<li class="menu_link">
-				<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
-					{{ $l("chat") }}
-				</a>
-			</li>
-
-			<li class="menu_link">
-				<a href="http://rainwave.cc/forums" target="_blank">
-					{{ $l("forums") }}
-				</a>
-			</li>
-
-			<li bind="calendar_menu_item" class="menu_link">
-				<div bind="calendar_dropdown" id="calendar_dropdown" class="menu_inline_dropdown"></div>
-				<a class="link">
-					{{ $l("events_calendar_link") }}
-				</a>
-			</li>
-
+		<ul class="menu user_status">
 			{{#if ^User.id > 1 }}
-				<li class="menu_link">
-					<a bind="settings_link">{{ $l("Settings") }}</a>
-				</li>
 				<li bind="user_link" class="user_info">
-					<a class="link">{{ ^User.name }}</a>
-					<img class="avatar" src="{{ ^User.avatar }}" />
+					<a class="link">
+						<span>{{ ^User.name }}</span>
+						<img class="avatar" src="{{ ^User.avatar }}" />
+					</a>					
 				</li>
 			{{#else}}
 				<li>
@@ -39,6 +19,55 @@
 					<a href="/forums/ucp.php?mode=register">
 						{{ $l("signup") }}
 					</a>
+				</li>
+			{{/if}}
+		</ul>
+
+		<ul class="menu main_menu">
+			{{#if ^BOOTSTRAP.user.id > 1 }}
+				<li class="request_link">
+					<a href="#!/requests" bind="request_link">
+						{{ $l("Requests")}}
+					</a>
+				</li>
+			{{/if}}
+			
+			<li class="album_link">
+				<a href="#!/album">
+					{{ $l("Albums") }}
+				</a>
+			</li>
+
+			<li class="artist_link">
+				<a href="#!/artist">
+					{{ $l("Artists") }}
+				</a>
+			</li>
+		</ul>
+
+		<ul class="menu submenu">
+			<li bind="calendar_menu_item" class="menu_link">
+				<div bind="calendar_dropdown" id="calendar_dropdown" class="menu_inline_dropdown"></div>
+				<a class="link">
+					{{ $l("events_calendar_link") }}
+				</a>
+			</li>
+
+			<li class="menu_link">
+				<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
+					{{ $l("chat") }}
+				</a>
+			</li>
+
+			<li class="menu_link">
+				<a href="http://rainwave.cc/forums" target="_blank">
+					{{ $l("forums") }}
+				</a>
+			</li>
+
+			{{#if ^User.id > 1 }}
+				<li class="menu_link">
+					<a bind="settings_link">{{ $l("Settings") }}</a>
 				</li>
 			{{/if}}
 		</ul>
@@ -60,7 +89,7 @@
 		</div>
 
 		<div id="r4_audio_player" class="unselectable">
-			<div class="menu_inline_dropdown">
+			<div class="m3u">
 				<a bind="play2" class="link">
 					{{ $l("listen_via_browser") }}
 				</a>

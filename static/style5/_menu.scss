@@ -16,6 +16,7 @@ div.header {
 }
 
 div.menu_wrapper {
+	position: relative;
 	color: #FFF;
 	background: $blue;
 	width: 1024px;
@@ -275,28 +276,71 @@ ul.menu {
 	float: right;
 	position: relative;
 	top: 50%;
+	z-index: 1;
 	@include transform(translateY(-50%));
 
 	li {
+		margin: 0;
+		padding: 0;
 		position: relative;
 		display: inline;
-		padding: 0 0.8em;
 
-		&.menu_link {
-			@media $mobile-media {
-				display: none;
-			}
+		a {
+			padding: 4px 12px;
+			display: inline-block;
+		}
+
+		&.user_info {
+			padding-right: 20px;
+		}
+
+		body.playlist_album &.album_link a {
+			background: $blue_dark * 0.8;
+		}
+
+		body.playlist_artist &.artist_link a {
+			background: $blue_dark * 0.8;
+		}
+
+		body.playlist_request &.request_link a {
+			background: $blue_dark * 0.8;
 		}
 	}
 
 	img.avatar {
-		position: relative;
-		top: 2px;
-		max-width: 1.2em;
-		margin-left: 5px;
+		position: absolute;
+		max-width: 20px;
 		padding: 0;
+		margin-left: 5px;
 		vertical-align: baseline;
+		@include transform(translateY(-25%));
 	}
+}
+
+@media $mobile-media {
+	li.menu_link {
+		display: none;
+	}
+}
+
+body.full ul.main_menu {
+	display: none;
+}
+
+body.simple ul.submenu {
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 0;
+	background: $blue;
+	opacity: 0;
+	@include transform(translateY(0px));
+	@include transition-wtime(300ms, transform, opacity);
+}
+
+body.simple div.menu_wrapper:hover ul.submenu {
+	opacity: 1;
+	@include transform(translateY($menu_height - 5));
 }
 
 /* PLAYER */
@@ -313,6 +357,8 @@ $player_icon_width: $player_icon_height;
 	font-weight: 400;
 
 	.audio_icon {
+		position: relative;
+		z-index: 1;
 		height: $player_icon_height;
 		width: $player_icon_width;
 		margin-right: 5px;
@@ -334,6 +380,7 @@ $player_icon_width: $player_icon_height;
 	}
 
 	.audio_volume {
+		z-index: 1;
 		margin-left: 5px;
 		width: $player_icon_height * 2;
 		height: $player_icon_height;
@@ -362,10 +409,16 @@ $player_icon_width: $player_icon_height;
 		fill: orange !important;
 	}
 
-	.menu_inline_dropdown {
-		left: 0;
-		width: 250px;
+	div.m3u {
+		position: absolute;
+		z-index: 0;
+		width: 100%;
 		margin-top: $menu_height - 10;
+		background: $blue;
+		overflow: hidden;
+		opacity: 0;
+		@include transform(translateY(-100%));
+		@include transition-wtime(300ms, transform, opacity);
 
 		a {
 		 	padding: 5px;
@@ -375,8 +428,9 @@ $player_icon_width: $player_icon_height;
 		}
 	}
 
-	&:hover .menu_inline_dropdown {
-		height: 110px;
+	&:hover div.m3u {
+		opacity: 1;
+		@include transform(translateY(-5px));
 	}
 
 	@media $mobile-media {
@@ -431,45 +485,4 @@ div.menu_inline_dropdown {
 
 #calendar_dropdown.show_calendar {
 	height: 500px;
-}
-
-div.submenu {
-	box-sizing: border-box;
-	position: absolute;
-	z-index: 101;
-	padding: 5px 0;
-	background: $blue_dark;
-	border: 3px solid $blue;
-	border-top: none;
-	@include transform(translateX(-100%));
-
-	body.full & {
-		display: none;
-	}
-
-	body.logged_in & {
-		padding-right: 5px;
-	}
-
-	a {
-		padding: 0px 10px;
-	}
-
-	@media $mobile-media {
-		position: relative;
-		@include transform(none);
-	}
-
-	@media $tablet-media {
-		left: 100%;
-	}
-
-	@media $phone-media {
-		padding: 5px 0 0 0;
-		border: none;
-		height: $phone_menu_height;
-		display: flex;
-		justify-content: space-around;
-		align-content: stretch;
-	}
 }
