@@ -270,8 +270,6 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 							"(requested_albums.album_id = r4_songs.album_id) "
 					"WHERE r4_song_sid.sid = %s "
 						"AND song_exists = TRUE "
-						"AND song_cool = TRUE "
-						"AND song_elec_blocked = FALSE "
 						"AND r4_song_ratings.song_id IS NULL "
 						"AND requested_albums.album_id IS NULL "
 				"GROUP BY r4_songs.album_id "
