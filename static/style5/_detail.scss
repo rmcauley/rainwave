@@ -1,25 +1,15 @@
 div.detail {
-	z-index: 100;
-	width: 420px;
-	max-width: 100%;
-	background: #2C2C2C;
-	border-left: solid 1px #777;
-	top: 0px;
-	opacity: 0;
-	@include transform(none);
-	@include transition-wtime(300ms, transform, opacity);
-
 	&, &.scrollable {
 		position: absolute;
-	}
-
-	body.mobile & {
-		opacity: 1;
 	}
 
 	body.detail & {
 		opacity: 1;
 		@include transform(translateX(-100%));
+	}
+
+	body.desktop.detail.requests & {
+		@include transform(translateX(-150%));
 	}
 
 	div.art_anchor {

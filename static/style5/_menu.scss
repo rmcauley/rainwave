@@ -294,15 +294,11 @@ ul.menu {
 			padding-right: 20px;
 		}
 
-		body.playlist_album &.album_link a {
+		body.playlist &.playlist_link a {
 			background: $blue_dark * 0.8;
 		}
 
-		body.playlist_artist &.artist_link a {
-			background: $blue_dark * 0.8;
-		}
-
-		body.playlist_request &.request_link a {
+		body.requests &.requests_link a {
 			background: $blue_dark * 0.8;
 		}
 	}

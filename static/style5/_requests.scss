@@ -1,0 +1,12 @@
+div.requests {
+	z-index: 101;
+
+	&, &.scrollable {
+		position: absolute;
+	}
+
+	body.requests & {
+		opacity: 1;
+		@include transform(translateX(-100%));
+	}
+}

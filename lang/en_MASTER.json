@@ -177,6 +177,7 @@
 
    "__comment__"                 : "Playlist View",
 
+   "playlist"                                        : "Playlist",
    "filter"                                          : "Type anywhere to filter",
    "typeanywhere"                                    : "Just start typing!",
    "clearfilter"                                     : "Clear Filter",

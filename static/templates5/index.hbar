@@ -9,8 +9,7 @@
 
 <div bind="sizeable_area" class="sizeable">
 	<div bind="timeline"></div>
-	<div class="requests" bind="requests">
-		<div class="request_grab_tag" bind="request_grab_tag"></div>
+	<div class="requests panel" bind="requests">
 		<div class="request_header">
 			<span bind="request_header"></span>
 			<img bind="requests_pause" class="requests_advanced" width="14" height="14" src="data:image/png;base64,IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RjdGOUZFMDgyM0RBMTFFNDhDNTlCQkNCMEM0MEY5MUEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RjdGOUZFMDkyM0RBMTFFNDhDNTlCQkNCMEM0MEY5MUEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpGN0Y5RkUwNjIzREExMUU0OEM1OUJCQ0IwQzQwRjkxQSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpGN0Y5RkUwNzIzREExMUU0OEM1OUJCQ0IwQzQwRjkxQSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI" />
@@ -20,7 +19,7 @@
 			<img bind="requests_pin" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NkMzMDUxMzk5MTg4MTFFMzlDRkFDMUUxMDNDRTcwRTYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NkMzMDUxM0E5MTg4MTFFMzlDRkFDMUUxMDNDRTcwRTYiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo2QzMwNTEzNzkxODgxMUUzOUNGQUMxRTEwM0NFNzBFNiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo2QzMwNTEzODkxODgxMUUzOUNGQUMxRTEwM0NFNzBFNiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PreoJBQAAAF7SURBVHjatFaLUcMwDHV7DJARPEI2wExARwgbhA3YwDBB2CAwQdggbOBukG5gVE4GVeeP3KTv7l3ii+1nyfpEee/VSrbAAbj4S0zAA5+/VuzFlzECmy0Ee7LpgmOD7NBCau0qwQPZbKYWMA5kXlcjqIEW6Ji7loxYYLDUSQVt5n5spTd0bmKD7qLWWLyjACP00N/8O5XGBGzx/R34DDyptRCEex/57rZ0qWY5lLvXTYKmL2zWsqqyOi3CiQaBmDTxx1ziX5yIcfb1uCht+0w8HdnYkKitwRuN7r3aDufU2RFGkRPUBYu52BMZt6l1McEvfN5HBF8FYsH9Cl15LCU+bTs6kcgDBkOXSAeXivRUDV0KiS9tykba8UeyaKgQ60pVKrbIlHIp4RUrqT67X9V/NMA5EqEhAD6An6xrPAI7XHvGN/Ah2VkEzXaqqCq2VMxzrlzIb57GYIiVNodCWnLP9A5czUmvJXelq/htuFrQ3NoqLjjd2irKHwEGAGp1+CENFSULAAAAAElFTkSuQmCC" width="14" height="14" />
 		</div>
 	</div>
-	<div bind="lists" class="lists" >
+	<div bind="lists" class="lists panel">
 		<div class="close" bind="list_close">
 			<img src="/static/images4/cancel.png" alt="X" />
 		</div>
@@ -35,5 +34,5 @@
 		<div bind="group_list" class="list group_list"></div>
 		<div bind="listener_list" class="list listener_list"></div>
 	</div>		
-	<div bind="detail" class="detail"></div>
+	<div bind="detail" class="detail panel"></div>
 </div>

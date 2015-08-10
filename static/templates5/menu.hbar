@@ -1,4 +1,4 @@
-<div class="header" bind="header">
+<div class="header unselectable" bind="header">
 	<div class="menu_wrapper">
 		<ul class="menu user_status">
 			{{#if ^User.id > 1 }}
@@ -25,22 +25,16 @@
 
 		<ul class="menu main_menu">
 			{{#if ^BOOTSTRAP.user.id > 1 }}
-				<li class="request_link">
-					<a href="#!/requests" bind="request_link">
+				<li class="requests_link">
+					<a href="#!/requests">
 						{{ $l("Requests")}}
 					</a>
 				</li>
 			{{/if}}
 			
-			<li class="album_link">
-				<a href="#!/album">
-					{{ $l("Albums") }}
-				</a>
-			</li>
-
-			<li class="artist_link">
-				<a href="#!/artist">
-					{{ $l("Artists") }}
+			<li class="playlist_link">
+				<a bind="playlist_link">
+					{{ $l("playlist") }}
 				</a>
 			</li>
 		</ul>

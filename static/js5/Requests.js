@@ -16,6 +16,7 @@ var Requests = function() {
 
 	BOOTSTRAP.on_draw.push(function(root_template) {
 		scroller = Scrollbar.create(el);
+		Sizing.requests_area = scroller.scrollblock;
 	});
 
 	BOOTSTRAP.on_init.push(function(root_template) {

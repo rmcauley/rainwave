@@ -34,7 +34,7 @@ div.no_result_message {
 	}
 }
 
-div.lists {
+div.panel {
 	position: absolute;
 	z-index: 100;
 	width: 450px;
@@ -46,22 +46,29 @@ div.lists {
 	@include transform(none);
 	@include transition-wtime(300ms, transform, opacity);
 
-	div.scrollable {
-		position: relative;
-	}
-
 	body.mobile & {
 		opacity: 1;
 	}
+}
 
+div.lists {
+	div.scrollable {
+		position: relative;
+	}
+	
 	body.playlist & {
 		opacity: 1;
 		@include transform(translateX(-100%));
 	}
 
-	body.desktop.playlist.detail & {
+	body.desktop.playlist.detail &, body.desktop.playlist.requests & {
 		opacity: 0.7;
 		@include transform(translateX(-110%));
+	}
+
+	body.desktop.playlist.detail.requests & {
+		opacity: 0.6;
+		@include transform(translateX(-160%));
 	}
 
 	ul {

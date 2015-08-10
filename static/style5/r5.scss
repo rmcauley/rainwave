@@ -45,7 +45,7 @@ body {
 		}
 	}
 
-	@media $pc-media {
+	&.desktop {
 		font-family: 'Roboto Condensed', 'Helvetica Neue', 'Helvetica', sans-serif;
 
 		i {
@@ -127,6 +127,7 @@ a, a:visited, .link {
 @import "timeline_simple";
 @import "playlist";
 @import "detail";
+@import "requests";
 
 @import "album_art";
 @import "song";

@@ -50,6 +50,7 @@ var Sizing = function() {
 			document.body.classList.remove("full");
 			self.simple = true;
 			index_t.lists.style.left = "100%";
+			self.requests_area.style.left = "100%";
 			self.detail_area.style.left = "100%";
 		}
 		else {
@@ -58,6 +59,7 @@ var Sizing = function() {
 				document.body.classList.add("full");
 				self.simple = false;
 				index_t.lists.style.left = null;
+				self.requests_area.style.left = null;
 				self.detail_area.style.left = null;
 			}
 			else {
@@ -65,6 +67,7 @@ var Sizing = function() {
 				document.body.classList.remove("full");
 				self.simple = true;
 				index_t.lists.style.left = right_of_timeline + "px";
+				self.requests_area.style.left = right_of_timeline + "px";
 				self.detail_area.style.left = right_of_timeline + "px";
 			}
 

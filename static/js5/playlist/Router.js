@@ -17,6 +17,7 @@ var Router = function() {
 	var ready_to_render = true;
 	var rendered_typ;
 	var rendered_id;
+	var last_open;
 
 	var reset_cache = function() {
 		cache.album = {};
@@ -107,6 +108,10 @@ var Router = function() {
 				document.body.classList.remove("playlist");
 				document.body.classList.remove("requests");
 				document.body.classList.remove("detail");
+				document.body.classList.remove("requests");
+				for (var i in tabs) {
+					document.body.classList.remove("playlist_" + i);
+				}
 				self.active_list = false;
 				current_type = null;
 				current_id = null;
@@ -114,8 +119,12 @@ var Router = function() {
 			}
 			if (typeof(ga) == "object") ga("send", "pageview", "/" + new_route);
 			new_route = new_route.split("/");
+			document.body.classList.remove("requests");
 			if (tabs[new_route[0]]) {
 				self.open_route(new_route[0], new_route[1]);
+			}
+			else if (new_route[0] == "requests") {
+				document.body.classList.add("requests");
 			}
 			else {
 				// TODO: show error
@@ -249,8 +258,9 @@ var Router = function() {
 		for (var i in tabs) {
 			document.body.classList.remove("playlist_" + i);
 		}
-		document.body.classList.add("playlist");
 		if (typ in lists && lists[typ]) {
+			last_open = typ;
+			document.body.classList.add("playlist");
 			document.body.classList.add("playlist_" + typ);
 			self.active_list = lists[typ];
 		}
@@ -299,6 +309,10 @@ var Router = function() {
 			location.replace(new_url);
 		}
 		self.detect_url_change();
+	};
+
+	self.open_last = function() {
+		self.change(last_open || "album");
 	};
 
 	window.onhashchange = self.detect_url_change;
