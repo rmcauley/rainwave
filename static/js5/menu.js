@@ -15,6 +15,7 @@ var Menu = function() {
 			}
 		}
 	}
+	self.stations = stations;
 
 	// Make sure the /beta site links to itself
 	if (window.location.href.indexOf("beta") !== -1) {
@@ -23,11 +24,10 @@ var Menu = function() {
 		}
 	}
 
-	var init = function(idx) {
+	BOOTSTRAP.on_init.push(function(root_template) {
 		//API.add_callback("user", update_tuned_in_status);
 		//R4Audio.changed_status_callback = update_tuned_in_status_from_player;
-		template = RWTemplates.menu({ "stations": stations });
-		idx._root.replaceChild(template._root, idx.menu);
+		template = root_template;
 
 		// must be done in JS, if you try to do it in the template you still get a clickable <a>
 		for (var i = 0; i < stations.length; i++) {
@@ -59,9 +59,9 @@ var Menu = function() {
 				Router.open_last();
 			}
 		});
-	};
+	});
 
-	var onload = function() {
+	BOOTSTRAP.on_draw.push(function() {
 		var jstz_load = document.createElement("script");
 		jstz_load.src = "//cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js";
 		jstz_load.addEventListener("load", function() {
@@ -69,10 +69,7 @@ var Menu = function() {
 			template.calendar_menu_item.addEventListener("mouseleave", calendar_hide);
 		});
 		document.body.appendChild(jstz_load);
-	};
-
-	BOOTSTRAP.on_init.push(init);
-	BOOTSTRAP.on_draw.push(onload);
+	});
 
 	// self.show_modal = function(modal_div) {
 	// 	if (current_modal) return;

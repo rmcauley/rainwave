@@ -30,7 +30,7 @@ var User;
 	var template;
 
 	var initialize = function() {
-		template = RWTemplates.index();
+		template = RWTemplates.index({ "stations": Menu.stations });
 		User = BOOTSTRAP.user;
 		API.add_callback("user", function(json) { User = json; });
 

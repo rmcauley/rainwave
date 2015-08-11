@@ -32,11 +32,14 @@ var Fx = function() {
 			if (el.parentNode) el.parentNode.removeChild(el);
 		}
 		else {
-			self.chain_transition_css(el, "opacity", 0,
+			self.chain_transition(el,
 				function() {
 					if (el.parentNode) el.parentNode.removeChild(el);
 				}
 			);
+			requestAnimationFrame(function() {
+				el.style.opacity = 0;
+			});
 		}
 	};
 

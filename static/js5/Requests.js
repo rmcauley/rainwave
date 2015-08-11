@@ -21,11 +21,15 @@ var Requests = function() {
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		el = root_template.requests;
-		header = root_template.header;
+		header = root_template.request_header;
 		link = root_template.request_link;
 
-		API.add_callback(self.update, "requests");
-		API.add_callback(self.show_queue_paused, "user");
+		API.add_callback("requests", self.update);
+		API.add_callback("user", self.show_queue_paused);
+
+		el.addEventListener("click", function(e) {
+			e.stopPropagation();
+		});
 
 		root_template.requests_pause.addEventListener("click", self.pause_queue);
 		root_template.requests_clear.addEventListener("click", self.clear_requests);
@@ -56,7 +60,7 @@ var Requests = function() {
 		el.classList.remove("warning");
 		
 		if (User.tuned_in) {
-			if (!User.requests.paused) {
+			if (!User.requests_paused) {
 				if (good_requests) {
 					link.textContent = $l("Requests") + " (" + good_requests + ")";
 				}
@@ -138,7 +142,7 @@ var Requests = function() {
 				n = Song(json[i]);
 				n.$t.request_drag._song_id = n.id;
 				n.$t.request_drag.addEventListener("mousedown", start_drag);
-				n.el.style[Fx.transform_string] = "translateY(" + Sizing.height + "px)";
+				n.el.style[Fx.transform] = "translateY(" + Sizing.height + "px)";
 				new_songs.unshift(n);
 				el.appendChild(n.el);
 			}
@@ -153,26 +157,23 @@ var Requests = function() {
 	};
 
 	self.reflow = function() {
-		var running_height = 25;
+		var running_height = 0;
 		for (var i = 0; i < songs.length; i++) {
 			songs[i]._request_y = running_height;
-			songs[i].el.style.transform = "translateY(" + (running_height + (Sizing.height * (i + 1))) + "px)";
-			running_height += Sizing.song_size;
+			songs[i].el.style[Fx.transform] = "translateY(" + (running_height + (Sizing.height * (i + 1))) + "px)";
+			running_height += Sizing.request_size;
 		}
-		scroller.delay_force_height = running_height;
-		el.style.height = running_height + "px";
-		self.reflow = self.real_reflow;
 		requestAnimationFrame(self.real_reflow);
 	};
 
 	self.real_reflow = function() {
-		var running_height = 25;
+		var running_height = 0;
 		for (var i = 0; i < songs.length; i++) {
 			if (dragging_song != songs[i]) {
 				songs[i]._request_y = running_height;
-				Fx.delay_css_setting(songs[i].el, "transform", "translateY(" + running_height + "px)");
+				songs[i].el.style[Fx.transform] = "translateY(" + running_height + "px)";
 			}
-			running_height += Sizing.song_size;
+			running_height += Sizing.request_size;
 		}
 		scroller.set_height(running_height);
 	};
@@ -202,7 +203,7 @@ var Requests = function() {
 
 	var continue_drag = function(e) {
 		var new_y = dragging_song._request_y - (Mouse.y - Mouse.get_y(e));
-		var new_index = Math.floor((new_y + (Sizing.song_size * 0.3)) / Sizing.song_size);
+		var new_index = Math.floor((new_y + (Sizing.request_size * 0.3)) / Sizing.request_size);
 		if (new_index >= songs.length) new_index = songs.length - 1;
 		if (new_index < 0) new_index = 0;
 		if (new_index != dragging_index) {
@@ -212,7 +213,7 @@ var Requests = function() {
 			dragging_index = new_index;
 			order_changed = true;
 		}
-		dragging_song.el.style[Fx.transform_string] = "translateY(" + new_y + "px)";
+		dragging_song.el.style[Fx.transform] = "translateY(" + new_y + "px)";
 	};
 
 	var stop_drag = function(e) {

@@ -1,11 +1,11 @@
 <div class="header unselectable" bind="header">
 	<div class="menu_wrapper">
 		<ul class="menu user_status">
-			{{#if ^User.id > 1 }}
+			{{#if ^BOOTSTRAP.user.id > 1 }}
 				<li bind="user_link" class="user_info">
 					<a class="link">
-						<span>{{ ^User.name }}</span>
-						<img class="avatar" src="{{ ^User.avatar }}" />
+						<span>{{ ^BOOTSTRAP.user.name }}</span>
+						<img class="avatar" src="{{ ^BOOTSTRAP.user.avatar }}" />
 					</a>					
 				</li>
 			{{#else}}
@@ -26,7 +26,7 @@
 		<ul class="menu main_menu">
 			{{#if ^BOOTSTRAP.user.id > 1 }}
 				<li class="requests_link">
-					<a href="#!/requests">
+					<a href="#!/requests" bind="request_link">
 						{{ $l("Requests")}}
 					</a>
 				</li>

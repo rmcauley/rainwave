@@ -46,7 +46,7 @@ div.detail {
 		}
 	}
 
-	div.close {
+	&.scrollblock div.close {
 		@include transform(translateX(-32px));
 	}
 

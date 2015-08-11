@@ -83,6 +83,7 @@ var Sizing = function() {
 
 		self.song_size_np = self.simple && !MOBILE ? 140 : 100;
 		self.song_size = self.simple && !MOBILE ? 100 : 70;
+		self.request_size = 70;
 		self.timeline_header_size = 40;
 
 		for (i = 0; i < window_callbacks.length; i++) {

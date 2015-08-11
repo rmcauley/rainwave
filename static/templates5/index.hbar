@@ -3,7 +3,9 @@
 	<div class="list measure_list"><div class="item" bind="list_item">Reference</div></div>
 </div>
 
-<div bind="menu"></div>
+<div bind="menu">
+	{{>menu}}
+</div>
 
 <div bind="messages" class="messages"></div>
 

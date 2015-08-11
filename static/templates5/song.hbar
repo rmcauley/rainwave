@@ -1,4 +1,8 @@
 <div bind="root" class="song">
+	{{#if request_id }}
+		<div class="request_cancel" bind="cancel">x</div>
+	{{/if}}
+
 	<div class="art_anchor">
 		{{#if request_id }}
 			<div class="request_sort_grab" bind="request_drag">

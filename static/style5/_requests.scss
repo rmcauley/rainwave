@@ -10,7 +10,83 @@ div.requests {
 		@include transform(translateX(-100%));
 	}
 
-	img.requests_advanced {
-		float: right;
+	&.scrollblock div.close {
+		@include transform(translateX(-32px));
+	}
+
+	div.request_icons {
+		position: absolute;
+		width: 100px;
+		@include transform(translateX(-130px));
+
+		img {
+			display: inline;
+			margin: 0 5px;
+		}
+	}
+
+	&.scrollblock div.request_icons {
+		@include transform(translateX(-137px));
+	}
+
+	div.song {
+		padding: 0 10px;
+	}
+}
+
+
+div.request_cancel {
+	cursor: pointer;
+	float: left;
+	position: relative;
+	padding: 0 2px 2px 2px;
+	border: solid 1px #444;
+	border-right: none;
+	opacity: 0.6;
+	@include transition-wtime(300ms, border-color, color, opacity);
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+
+	div.song:hover & {
+		opacity: 1;
+	}
+
+	&:hover {
+		border-color: #F44;
+		color: #F44;
+	}
+}
+
+div.request_sort_grab {
+	z-index: 2;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: #000;
+	cursor: grab;
+	opacity: 0;
+	@include transition(opacity);
+
+	div.song:hover & {
+		opacity: 0.75;
+	}
+
+	img {
+		position: relative;
+		top: 20px;
+		left: 20px;
+		height: 30px;
+		width: 30px;
+
+		body.small & {
+			top: 14px;
+			left: 14px;
+		}
+	}
+
+	&.dragging {
+		@include no-transition();
+		z-index: 2;
+		background-color: #25263c;
 	}
 }
