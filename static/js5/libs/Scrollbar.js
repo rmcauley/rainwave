@@ -116,10 +116,10 @@ var Scrollbar = function() {
 
 		self.set_height = function(height) {
 			if (!height && height !== false && height !== 0) {
-				throw("Invalid argument for scrollable height.");
+				console.warn("Invalid argument for scrollable height.");
 			}
-			if (height == self.scroll_height) return;
-			self.scroll_height = height || self.el.scrollHeight;
+			if (height === self.scroll_height) return;
+			self.scroll_height = height !== undefined ? height : self.el.scrollHeight;
 			self.scroll_top_max = Math.max(0, self.scroll_height - self.offset_height);
 			self.refresh();
 		};
