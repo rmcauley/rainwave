@@ -40,28 +40,24 @@
 		</ul>
 
 		<ul class="menu submenu">
-			<li bind="calendar_menu_item" class="menu_link">
+			<li bind="calendar_menu_item">
 				<div bind="calendar_dropdown" id="calendar_dropdown" class="menu_inline_dropdown"></div>
 				<a class="link">
 					{{ $l("events_calendar_link") }}
 				</a>
 			</li>
 
-			<li class="menu_link">
+			<li>
 				<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
 					{{ $l("chat") }}
 				</a>
 			</li>
 
-			<li class="menu_link">
-				<a href="http://rainwave.cc/forums" target="_blank">
-					{{ $l("forums") }}
-				</a>
-			</li>
-
-			{{#if ^User.id > 1 }}
-				<li class="menu_link">
-					<a bind="settings_link">{{ $l("Settings") }}</a>
+			{{#if ^BOOTSTRAP.user.id > 1 }}
+				<li>
+					<a href="http://rainwave.cc/forums" target="_blank">
+						{{ $l("forums") }}
+					</a>
 				</li>
 			{{/if}}
 		</ul>
@@ -83,7 +79,7 @@
 		</div>
 
 		<div id="r4_audio_player" class="unselectable">
-			<div class="m3u">
+			<div class="m3u menu_inline_dropdown">
 				<a bind="play2" class="link">
 					{{ $l("listen_via_browser") }}
 				</a>
@@ -94,11 +90,12 @@
 					{{ $l("listen_via_ogg") }}
 				</a>
 			</div>
-
-			<svg bind="play" class="audio_icon audio_icon_play" use="play"></svg>
-			<svg bind="stop" class="audio_icon audio_icon_stop" use="stop"></svg>
-			<svg bind="mute" class="audio_icon audio_icon_mute" use="mute"></svg>
-			<svg bind="volume" class="audio_volume" use="volume"></svg>
+			<div class="background">
+				<svg bind="play" class="audio_icon audio_icon_play" use="play"></svg>
+				<svg bind="stop" class="audio_icon audio_icon_stop" use="stop"></svg>
+				<svg bind="mute" class="audio_icon audio_icon_mute" use="mute"></svg>
+				<svg bind="volume" class="audio_volume" use="volume"></svg>
+			</div>
 		</div>
 	</div>
 </div>
