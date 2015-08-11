@@ -62,6 +62,9 @@ var AlbumView = function(el, album) {
 	for (i = 0; i < album.songs.length; i++) {
 		Fave.register(album.songs[i]);
 		Rating.register(album.songs[i]);
+		if (album.songs[i].requestable) {
+			Requests.make_clickable(album.songs[i].$t.title, album.songs[i].id);
+		}
 	}
 
 	if (template.rating_graph) AlbumViewRatingPieChart(template.rating_graph.getContext("2d"), album);

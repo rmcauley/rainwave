@@ -6,6 +6,7 @@ var Requests = function() {
 	var scroller;
 	var link;
 	var header;
+	var indicator;
 	
 	var songs = [];
 
@@ -18,6 +19,7 @@ var Requests = function() {
 		el = root_template.requests;
 		header = root_template.request_header;
 		link = root_template.request_link;
+		indicator = root_template.request_indicator;
 
 		API.add_callback("requests", self.update);
 		API.add_callback("user", self.show_queue_paused);
@@ -57,7 +59,7 @@ var Requests = function() {
 		if (User.tuned_in) {
 			if (!User.requests_paused) {
 				if (good_requests) {
-					link.textContent = $l("Requests") + " (" + good_requests + ")";
+					link.textContent = $l("#_requests", { "num_requests": good_requests });
 				}
 				else {
 					link.textContent = $l("Requests");
@@ -115,11 +117,18 @@ var Requests = function() {
 	};
 
 	self.make_clickable = function(el, song_id) {
-		el.addEventListener("click", function() { self.add(song_id); } );
+		el._request_song_id = song_id;
+		el.addEventListener("click", clicked);
+	};
+
+	var clicked = function(e) {
+		if (!this._request_song_id) return;
+		self.add(this._request_song_id);
 	};
 
 	self.update = function(json) {
 		var i, j, found, n;
+		var actually_new = 0;
 
 		var new_songs = [];
 		for (i = json.length - 1; i >= 0; i--) {
@@ -140,6 +149,7 @@ var Requests = function() {
 				n.el.style[Fx.transform] = "translateY(" + Sizing.height + "px)";
 				new_songs.unshift(n);
 				el.appendChild(n.el);
+				actually_new++;
 			}
 		}
 		for (i = songs.length - 1; i >= 0; i--) {
@@ -149,6 +159,31 @@ var Requests = function() {
 		self.show_queue_paused();
 		self.update_header();
 		self.reflow();
+		if (!document.body.classList.contains("loading") && actually_new) {
+			self.indicate(actually_new);
+		}
+	};
+
+	var indicator_timeout;
+
+	self.indicate = function(new_count) {
+		if (indicator_timeout) {
+			clearTimeout(indicator_timeout);
+			new_count += parseInt(indicator.textContent);
+		}
+		indicator.textContent = "+" + new_count;
+		indicator.classList.add("show");
+		indicator_timeout = setTimeout(unindicate, 2000);
+	};
+
+	var unindicate = function() {
+		indicator.classList.remove("show");
+		indicator_timeout = setTimeout(blank_indicator, 300);
+	};
+
+	var blank_indicator = function() {
+		indicator_timeout = null;
+		indicator.textContent = "";
 	};
 
 	self.reflow = function() {

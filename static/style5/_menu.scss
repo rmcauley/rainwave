@@ -337,6 +337,23 @@ ul.submenu {
 	}
 }
 
+div.request_indicator {
+	display: inline;
+	position: absolute;
+	z-index: 1;
+	padding: 4px;
+	background: $orange;
+	height: 100%;
+	opacity: 0;
+	@include transform(translateX(-100%));
+	@include transition-wtime(300ms, transform, opacity);
+
+	&.show {
+		opacity: 1;
+		@include transform(translateX(0));
+	}
+}
+
 /* PLAYER */
 
 $player_icon_height: $menu_height * 0.6;

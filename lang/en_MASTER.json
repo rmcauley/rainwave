@@ -208,6 +208,7 @@
    "request_fill_with_faves"                         : "Fave Fill",
 
    "Requests"                                        : "Requests",
+   "#_requests"                                      : "%(num_requests) &(num_requests:Request/Requests)",
    "requests_all_on_cooldown"                        : "All On Cooldown!",
    "request_you_are_x_in_line"                       : "#(position) In Line",
 
