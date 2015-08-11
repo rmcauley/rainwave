@@ -332,12 +332,8 @@ ul.submenu {
 	}
 
 	body.desktop.simple div.menu_wrapper:hover & {
-		opacity: 0.7;
+		opacity: 1;
 		@include transform(translateY(-50%));
-
-		&:hover {
-			opacity: 1;
-		}
 	}
 }
 

@@ -9,11 +9,6 @@ var Requests = function() {
 	
 	var songs = [];
 
-	var dragging_song;
-	var dragging_index;
-	var order_changed = false;
-	var original_mouse_y;
-
 	BOOTSTRAP.on_draw.push(function(root_template) {
 		scroller = Scrollbar.create(el);
 		Sizing.requests_area = scroller.scrollblock;
@@ -163,7 +158,9 @@ var Requests = function() {
 			songs[i].el.style[Fx.transform] = "translateY(" + (running_height + (Sizing.height * (i + 1))) + "px)";
 			running_height += Sizing.request_size;
 		}
+		self.reflow = self.real_reflow;
 		requestAnimationFrame(self.real_reflow);
+		scroller.set_height(running_height);
 	};
 
 	self.real_reflow = function() {
@@ -180,43 +177,71 @@ var Requests = function() {
 
 	// DRAG AND DROP *********************************************************
 
+	var dragging_song;
+	var dragging_index;
+	var order_changed = false;
+	var original_mouse_y;
+	var original_request_y;
+	var last_mouse_event;
+	var current_dragging_y;
+
 	var start_drag = function(e) {
 		var song_id = e.target._song_id || e.target.parentNode._song_id;
 		if (song_id) {
 			for (var i = 0; i < songs.length; i++) {
-				if (song_id == songs[i].data.id) {
+				if (song_id == songs[i].id) {
 					dragging_song = songs[i];
 					dragging_index = i;
 					break;
 				}
 			}
-			original_mouse_y = Mouse.get_y(e);
-			dragging_song.$t.root.classList.add("dragging");
+			last_mouse_event = e;
+			original_mouse_y = e.clientY + scroller.scroll_top;
+			original_request_y = dragging_song._request_y;
+			scroller.scrollblock.classList.add("dragging");
+			dragging_song.el.classList.add("dragging");
 			document.body.classList.add("unselectable");
-			window.addEventListener("mousemove", continue_drag);
+			window.addEventListener("mousemove", capture_mouse_move);
 			window.addEventListener("mouseup", stop_drag);
+			requestAnimationFrame(continue_drag);
 			e.preventDefault();
 			e.stopPropagation();
 			return false;
 		}
 	};
 
-	var continue_drag = function(e) {
-		var new_y = dragging_song._request_y - (Mouse.y - Mouse.get_y(e));
-		var new_index = Math.floor((new_y + (Sizing.request_size * 0.3)) / Sizing.request_size);
-		if (new_index >= songs.length) new_index = songs.length - 1;
-		if (new_index < 0) new_index = 0;
-		if (new_index != dragging_index) {
-			songs.splice(dragging_index, 1);
-			songs.splice(new_index, 0, dragging_song);
-			self.reflow();
-			dragging_index = new_index;
-			order_changed = true;
+	var capture_mouse_move = function(e) {
+		last_mouse_event = e;
+	};
+
+	var continue_drag = function() {
+		if (!dragging_song) return;
+		var new_y = original_request_y - (original_mouse_y - (last_mouse_event.clientY + scroller.scroll_top));
+		if (new_y != current_dragging_y) {
+			current_dragging_y = new_y;
+			var new_index = Math.floor((new_y + (Sizing.request_size * 0.3)) / Sizing.request_size);
+			if (new_index >= songs.length) new_index = songs.length - 1;
+			if (new_index < 0) new_index = 0;
+			if (new_index != dragging_index) {
+				songs.splice(dragging_index, 1);
+				songs.splice(new_index, 0, dragging_song);
+				self.reflow();
+				dragging_index = new_index;
+				order_changed = true;
+			}
+			dragging_song.el.style[Fx.transform] = "translateY(" + new_y + "px)";
 		}
-		dragging_song.el.style[Fx.transform] = "translateY(" + new_y + "px)";
+		if (last_mouse_event.clientY < 150) {
+			scroller.scroll_to(scroller.scroll_top - Math.floor(last_mouse_event.clientY / 150 * 25));
+		}
+		else if (last_mouse_event.clientY > (Sizing.height - 150)) {
+			scroller.scroll_to(scroller.scroll_top + Math.floor((150 - (Sizing.height - last_mouse_event.clientY)) / 150 * 20));
+		}
+		requestAnimationFrame(continue_drag);
 	};
 
 	var stop_drag = function(e) {
+		scroller.scrollblock.classList.remove("dragging");
 		dragging_song.el.classList.remove("dragging");
 		document.body.classList.remove("unselectable");
 		window.removeEventListener("mousemove", continue_drag);

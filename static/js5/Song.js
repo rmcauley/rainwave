@@ -48,7 +48,9 @@ var Song = function(self, parent_event) {
 			}
 		}
 
-		template.votes.textContent = self.entry_votes;
+		if (template.votes && self.entry_votes) {
+			template.votes.textContent = self.entry_votes;
+		}
 
 		if (template.rating) {
 			if (self.rating_user) {

@@ -31,6 +31,17 @@ div.requests {
 
 	div.song {
 		padding: 0 10px;
+
+		&.dragging {
+			@include no-transition();
+			z-index: 2;
+			background-color: #25263c;
+		}
+	}
+
+	&.dragging div.song {
+		-webkit-transition-duration: 300ms;
+		        transition-duration: 300ms;
 	}
 }
 
@@ -82,11 +93,5 @@ div.request_sort_grab {
 			top: 14px;
 			left: 14px;
 		}
-	}
-
-	&.dragging {
-		@include no-transition();
-		z-index: 2;
-		background-color: #25263c;
 	}
 }
