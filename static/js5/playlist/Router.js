@@ -124,6 +124,7 @@ var Router = function() {
 				self.open_route(new_route[0], new_route[1]);
 			}
 			else if (new_route[0] == "requests") {
+				self.open_route();
 				document.body.classList.add("requests");
 			}
 			else {
@@ -263,6 +264,9 @@ var Router = function() {
 			document.body.classList.add("playlist");
 			document.body.classList.add("playlist_" + typ);
 			self.active_list = lists[typ];
+		}
+		else {
+			document.body.classList.remove("playlist");
 		}
 
 		if (id && !isNaN(id)) {

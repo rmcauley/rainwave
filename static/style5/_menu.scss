@@ -280,7 +280,7 @@ ul.menu {
 	@include transform(translateY(-50%));
 
 	li {
-		margin: 0;
+		margin: 0 2px;
 		padding: 0;
 		position: relative;
 		display: inline;

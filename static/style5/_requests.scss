@@ -9,4 +9,8 @@ div.requests {
 		opacity: 1;
 		@include transform(translateX(-100%));
 	}
+
+	img.requests_advanced {
+		float: right;
+	}
 }

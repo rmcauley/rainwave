@@ -8,25 +8,12 @@ div.detail {
 		@include transform(translateX(-100%));
 	}
 
-	body.desktop.detail.requests & {
-		@include transform(translateX(-150%));
-	}
-
 	div.art_anchor {
 		float: left;
 		margin-left: 10px;
 		margin-bottom: 10px;
 		width: 90px;
 		height: 90px;
-	}
-
-	ul.panel_header {
-		margin-bottom: 7px;
-
-		li.open {
-			display: block;
-			cursor: default;
-		}
 	}
 
 	h2 {
