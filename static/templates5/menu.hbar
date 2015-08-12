@@ -95,7 +95,9 @@
 				<svg bind="play" class="audio_icon audio_icon_play" use="play"></svg>
 				<svg bind="stop" class="audio_icon audio_icon_stop" use="stop"></svg>
 				<svg bind="mute" class="audio_icon audio_icon_mute" use="mute"></svg>
-				<svg bind="volume" class="audio_volume" use="volume"></svg>
+				{{#if ^!MOBILE }}
+					<img bind="volume" class="audio_volume" src="/static/images4/volume.svg"></img>
+				{{/if}}
 			</div>
 		</div>
 	</div>
