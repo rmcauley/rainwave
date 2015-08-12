@@ -100,7 +100,7 @@ var Timeline = function() {
 
 		for (i = 0; i < events.length; i++) {
 			if (events[i]._pending_delete) {
-				events[i].style[Fx.transform] = "translateY(-" + (get_history_size() * self.song_size) + "px)";
+				events[i].el.style[Fx.transform] = "translateY(-" + (get_history_size() * self.song_size) + "px)";
 				Fx.remove_element(events[i].el);
 			}
 		}
