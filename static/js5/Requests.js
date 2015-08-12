@@ -28,6 +28,10 @@ var Requests = function() {
 			e.stopPropagation();
 		});
 
+		root_template.request_close.addEventListener("click", function() {
+			Router.change();
+		});
+
 		root_template.requests_pause.addEventListener("click", self.pause_queue);
 		root_template.requests_clear.addEventListener("click", self.clear_requests);
 		root_template.requests_unrated.addEventListener("click", self.fill_with_unrated);
@@ -58,10 +62,10 @@ var Requests = function() {
 		
 		if (User.tuned_in) {
 			if (!User.requests_paused) {
-				if (good_requests) {
+				if (link && good_requests) {
 					link.textContent = $l("#_requests", { "num_requests": good_requests });
 				}
-				else {
+				else if (link) {
 					link.textContent = $l("Requests");
 				}
 
@@ -78,12 +82,16 @@ var Requests = function() {
 			}
 			else {
 				header.textContent = $l("request_grab_tag__paused");
-				link.textContent = $l("Requests") + " ⏸";
+				if (link) {
+					link.textContent = $l("Requests") + " ⏸";
+				}
 			}
 		}
 		else {
 			header.textContent = $l("Requests");
-			link.textContent = $l("Requests");
+			if (link) {
+				link.textContent = $l("Requests");
+			}
 		}
 	};
 
