@@ -59,7 +59,8 @@ class MainIndex(api.web.HTMLRequest):
 
 	def get(self):
 		self.mobile = self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1
-		info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
+		if not self.beta:
+			info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
 		self.append("api_info", { "time": int(timestamp()) })
 		self.render(
 			self.page_template,
