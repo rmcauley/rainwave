@@ -3,7 +3,6 @@
 </div>
 
 <div class="detail_header">
-	<h1>{{ name }}</h1>
 	{{#if _c.user_id == User.id }}
 		<div class="info">
 			<a class="obvious" target="_blank" href="http://rainwave.cc/keys/">

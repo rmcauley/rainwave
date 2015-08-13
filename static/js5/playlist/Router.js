@@ -18,6 +18,7 @@ var Router = function() {
 	var rendered_typ;
 	var rendered_id;
 	var last_open;
+	var detail_header;
 
 	var reset_cache = function() {
 		cache.album = {};
@@ -51,13 +52,14 @@ var Router = function() {
 		reset_cache();
 
 		el = root_template.detail;
+		detail_header = root_template.detail_header;
 
 		root_template.lists.addEventListener("click", function(e) {
 			document.body.classList.remove("detail");
 			e.stopPropagation();
 		});
 
-		root_template.detail.addEventListener("click", function(e) {
+		root_template.detail_container.addEventListener("click", function(e) {
 			e.stopPropagation();
 		});
 
@@ -69,6 +71,10 @@ var Router = function() {
 
 		root_template.list_close.addEventListener("click", function() {
 			Router.change();
+		});
+
+		root_template.detail_close.addEventListener("click", function() {
+			Router.change(current_type);
 		});
 
 		API.add_callback("_SYNC_COMPLETE", function() {
@@ -155,11 +161,14 @@ var Router = function() {
 		var t;
 		if (cache[typ][id]._cache_el) {
 			el.appendChild(cache[typ][id]._cache_el);
+			detail_header.textContent = cache[typ][id]._header_text;
 		}
 		else {
 			t = views[typ](el, cache[typ][id]);
+			detail_header.textContent = t._header_text;
 			el.appendChild(t._root);
 			if (t._root && t._root.tagName && (t._root.tagName.toLowerCase() == "div")) {
+				cache[typ][id]._header_text = t._header_text;
 				cache[typ][id]._cache_el = t._root;
 				cache_page_stack.push({ "typ": typ, "id": id });
 				var cps;
@@ -169,18 +178,10 @@ var Router = function() {
 				}
 			}
 		}
+
 		var scroll_to = scroll_positions[typ][id] || 0;		// do BEFORE scroll.set_height calls reposition_callback!
 		scroll.set_height(false);
 		scroll.scroll_to(scroll_to);
-
-		if (t && t.close) {
-			t.close.addEventListener("click",
-				function() {
-					document.body.classList.remove("detail");
-					self.change(current_type);
-				}
-			);
-		}
 	};
 
 	var open_view = function(typ, id) {
@@ -299,6 +300,10 @@ var Router = function() {
 			if (r) r += "/";
 			r += arguments[i];
 		}
+		if (arguments.length === 1) {
+			r += "/";
+		}
+		console.log(arguments);
 		var new_url = decodeURI(location.href);
 		if (new_url.indexOf("#") >= 0) {
 			new_url = new_url.substring(0, new_url.indexOf("#")) + "#!/" + r;

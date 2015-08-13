@@ -1,6 +1,10 @@
 div.requests {
 	z-index: 101;
 
+	div.scrollblock {
+		position: relative;
+	}
+
 	&, &.scrollable {
 		position: absolute;
 	}

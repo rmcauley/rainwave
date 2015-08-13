@@ -69,5 +69,7 @@ var AlbumView = function(el, album) {
 
 	if (template.rating_graph) AlbumViewRatingPieChart(template.rating_graph.getContext("2d"), album);
 
+	template._header_text = album.name;
+
 	return template;
 };

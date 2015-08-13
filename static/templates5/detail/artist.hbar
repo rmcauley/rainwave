@@ -1,8 +1,3 @@
-<div class="close" bind="close">
-	<img src="/static/images4/cancel.png" alt="X" />
-</div>
-<ul class="panel_header"><li class="open">{{ artist.name }}</li></ul>
-
 {{#each albums }}
 	{{#if openable }}
 		<h2><a href="#!/album/{{ id }}">{{ name }}</a></h2>

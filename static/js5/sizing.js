@@ -29,6 +29,8 @@ var Sizing = function() {
 		self.height = document.documentElement.clientHeight;
 		self.width = document.documentElement.clientWidth;
 		self.list_item_height = index_t.list_item.offsetHeight;
+		var detail_header_size = index_t.detail_header_container.offsetHeight;
+
 		var right_of_timeline;
 		if (index_t.timeline.parentNode == index_t.sizeable_area) {
 			right_of_timeline = index_t.timeline.offsetLeft + index_t.timeline.offsetWidth;
@@ -38,6 +40,8 @@ var Sizing = function() {
 		}
 		self.sizeable_area_height = self.height - index_t.sizeable_area.offsetTop;
 		index_t.sizeable_area.style.height = self.sizeable_area_height + "px";
+		self.detail_area.style.height = (self.sizeable_area_height - detail_header_size - 20) + "px";
+		self.requests_area.style.height = (self.sizeable_area_height - detail_header_size - 20) + "px";
 
 		for (var i = 0; i < index_t.sizeable_area.childNodes.length; i++) {
 			index_t.sizeable_area.childNodes[i].style.height = self.sizeable_area_height + "px";
@@ -50,8 +54,8 @@ var Sizing = function() {
 			document.body.classList.remove("full");
 			self.simple = true;
 			index_t.lists.style.left = "100%";
-			self.requests_area.style.left = "100%";
-			self.detail_area.style.left = "100%";
+			index_t.requests_container.style.left = "100%";
+			index_t.detail_container.style.left = "100%";
 		}
 		else {
 			if (Prefs.get("adv")) {
@@ -59,16 +63,16 @@ var Sizing = function() {
 				document.body.classList.add("full");
 				self.simple = false;
 				index_t.lists.style.left = null;
-				self.requests_area.style.left = null;
-				self.detail_area.style.left = null;
+				index_t.requests_container.style.left = null;
+				index_t.detail_container.style.left = null;
 			}
 			else {
 				document.body.classList.add("simple");
 				document.body.classList.remove("full");
 				self.simple = true;
 				index_t.lists.style.left = right_of_timeline + "px";
-				self.requests_area.style.left = right_of_timeline + "px";
-				self.detail_area.style.left = right_of_timeline + "px";
+				index_t.requests_container.style.left = right_of_timeline + "px";
+				index_t.detail_container.style.left = right_of_timeline + "px";
 			}
 
 			if (self.width < 1366) {

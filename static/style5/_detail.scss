@@ -58,6 +58,25 @@ div.detail {
 		width: 90px;
 		height: 90px;
 	}
+
+	ul.panel_header {
+		z-index: 1;
+		width: 100%;
+		box-sizing: border-box;
+		padding-right: 50px;
+
+		li {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: break-all;
+			word-break: break-all;
+		}
+	}
+
+	div.scrollblock {
+		margin-top: 10px;
+		position: relative;
+	}
 }
 
 

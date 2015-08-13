@@ -13,5 +13,8 @@ var GroupView = function(el, json) {
 		albums.push(a);
 	}
 	albums.sort(SongsTableAlbumSort);
-	return RWTemplates.detail.group({ "group": json, "albums": albums }, MOBILE ? null : document.createElement("div"));
+
+	var template = RWTemplates.detail.group({ "group": json, "albums": albums }, MOBILE ? null : document.createElement("div"));
+	template._header_Text = json.name;
+	return template;
 };

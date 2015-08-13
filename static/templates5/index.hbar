@@ -11,7 +11,7 @@
 
 <div bind="sizeable_area" class="sizeable">
 	<div bind="timeline"></div>
-	<div class="requests panel" bind="requests">
+	<div class="requests panel" bind="requests_container">
 		{{>requests}}
 	</div>
 	<div bind="lists" class="lists panel">
@@ -29,5 +29,13 @@
 		<div bind="group_list" class="list group_list"></div>
 		<div bind="listener_list" class="list listener_list"></div>
 	</div>		
-	<div bind="detail" class="detail panel"></div>
+	<div bind="detail_container" class="detail panel">
+		<div class="close" bind="detail_close">
+			<img src="/static/images4/cancel.png" alt="X" />
+		</div>
+		<ul class="panel_header" bind="detail_header_container">
+			<li class="open" bind="detail_header"></li>
+		</ul>
+		<div bind="detail"></div>
+	</div>
 </div>
