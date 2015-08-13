@@ -79,7 +79,7 @@
 			{{/each}}
 		</div>
 
-		<div id="r4_audio_player" class="unselectable">
+		<div id="r4_audio_player" bind="player" class="unselectable">
 			<div class="m3u menu_inline_dropdown">
 				<a bind="play2" class="link">
 					{{ $l("listen_via_browser") }}
@@ -95,9 +95,6 @@
 				<svg bind="play" class="audio_icon audio_icon_play" use="play"></svg>
 				<svg bind="stop" class="audio_icon audio_icon_stop" use="stop"></svg>
 				<svg bind="mute" class="audio_icon audio_icon_mute" use="mute"></svg>
-				{{#if ^!MOBILE }}
-					<img bind="volume" class="audio_volume" src="/static/images4/volume.svg"></img>
-				{{/if}}
 			</div>
 		</div>
 	</div>

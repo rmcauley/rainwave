@@ -396,7 +396,34 @@ $player_icon_width: $player_icon_height;
 		cursor: pointer;
 	}
 
+	&.playing {
+		.audio_icon {
+			opacity: 1;
+		}
+
+		.audio_icon_play {
+			&, * {
+				fill: $orange * 2;
+			}
+		}
+
+		.audio_volume {
+			opacity: 1;
+		}
+	}
+
+	&.muted {
+		.audio_icon_mute {
+			opacity: 1;
+
+			&, * {
+				fill: $orange * 2;
+			}
+		}
+	}
+
 	.audio_volume {
+		position: relative;
 		z-index: 1;
 		margin-left: 5px;
 		width: $player_icon_height * 2;
@@ -410,20 +437,6 @@ $player_icon_width: $player_icon_height;
 			fill: orange !important;
 			opacity: 1;
 		}
-	}
-
-	&.playing {
-		.audio_icon {
-			opacity: 1;
-		}
-
-		.audio_volume {
-			opacity: 1;
-		}
-	}
-
-	&.muted .audio_icon_mute {
-		fill: orange !important;
 	}
 
 	&:hover div.m3u {
