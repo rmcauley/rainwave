@@ -62,12 +62,13 @@ div.detail {
 
 
 div.row {
-	padding: 0 10px 2px 10px;
+	padding: 2px 10px 2px 10px;
 	clear: both;
-	border-bottom-style: solid;
-	border-bottom-width: 1px;
-	border-bottom-color: transparent;
+	border-bottom: solid 1px transparent;
+	overflow: hidden;
+	word-break: break-all;
 	white-space: nowrap;
+	min-height: 20px;
 	@include transition-wtime(300ms, width, background-color, border-bottom-color);
 
 	&.cool {
