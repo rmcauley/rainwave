@@ -57,7 +57,7 @@ var Clock = function() {
 
 		var c = Formatting.minute_clock(page_title_end - self.now);
 
-		if (self.pageclock) {
+		if (self.pageclock && (page_title_end - self.now >= 0)) {
 			self.pageclock.textContent = c;
 		}
 
