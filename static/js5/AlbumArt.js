@@ -51,9 +51,6 @@ var AlbumArt = function() {
 	};
 
 	return function(art_url, element, no_expand) {
-		if (!art_url) {
-			art_url = "/static/baked/art/1_27";
-		}
 		if (!art_url || (art_url.length === 0)) {
 			element.style.backgroundImage = "url(/static/images4/noart_1.jpg)";
 		}
