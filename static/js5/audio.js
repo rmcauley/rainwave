@@ -67,13 +67,19 @@ var Audio = function() {
 			stream_urls.push(BOOTSTRAP.relays[i].protocol + BOOTSTRAP.relays[i].hostname + ":" + BOOTSTRAP.relays[i].port + "/" + stream_filename);
 		}
 
-		API.add_callback(user_tunein_check, "user");
+		API.add_callback("user", user_tunein_check);
 
 		Prefs.define("audio_volume", [ 1.0 ]);
 		draw_volume(Prefs.get("audio_volume"));
 	});
 
 	var user_tunein_check = function(json) {
+		if (json.tuned_in) {
+			document.body.classList.add("tuned_in");
+		}
+		else {
+			document.body.classList.remove("tuned_in");
+		}
 		if (!playing_status) return;
 		if (last_user_tunein_check < (Clock.now - 300)) {
 			last_user_tunein_check = parseInt(Clock.now);
@@ -249,7 +255,7 @@ var Audio = function() {
 			muted = true;
 		}
 		else if (el.classList.contains("muted")) {
-			el.classList.remove("muted");	
+			el.classList.remove("muted");
 			muted = false;
 		}
 		else {
