@@ -25,12 +25,12 @@ def bake_css():
 	create_baked_directory()
 	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style4.css")
 	if not os.path.exists(wfn):
-		_bake_css_file(os.path.join(os.path.dirname(__file__), "..", "static", "style4", "_sass.scss"), wfn)
+		_bake_css_file(os.path.join(os.path.dirname(__file__), "..", "static", "style4", "r4.scss"), wfn)
 
 def bake_beta_css():
 	create_baked_directory()
 	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style4b.css")
-	_bake_css_file(os.path.join(os.path.dirname(__file__), "..", "static", "style4", "_sass.scss"), wfn)
+	_bake_css_file(os.path.join(os.path.dirname(__file__), "..", "static", "style4", "r4.scss"), wfn)
 
 def _bake_css_file(input_filename, output_filename):
 	css_f = open(input_filename, 'r')
