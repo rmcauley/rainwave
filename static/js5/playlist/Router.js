@@ -73,7 +73,7 @@ var Router = function() {
 
 		API.add_callback("_SYNC_COMPLETE", function() {
 			reset_cache();
-			if (current_type && current_id) {
+			if (current_type && current_id && document.classList.contains("detail")) {
 				open_view(current_type, current_id);
 			}
 		});
