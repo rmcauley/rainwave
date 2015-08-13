@@ -19,7 +19,6 @@ var Timeline = function() {
 		API.add_callback("sched_next", function(json) { sched_next = json; });
 		API.add_callback("sched_history", function(json) { sched_history = json; });
 		API.add_callback("_SYNC_COMPLETE", self.update);
-		API.add_callback("_SYNC_COMPLETE", self.reflow);
 		API.add_callback("user", self.tune_in_voting_allowed_check);
 		API.add_callback("playback_history", open_long_history);
 		API.add_callback("already_voted", self.handle_already_voted);
@@ -116,6 +115,8 @@ var Timeline = function() {
 		if ((sched_current.end - Clock.now) > 0) {
 			sched_current.progress_bar_start();
 		}
+
+		self.reflow();
 	};
 
 	var find_event = function(id) {

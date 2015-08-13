@@ -36,7 +36,7 @@ var API = function() {
 		if ("sched_current" in json) {
 			known_event_id = json.sched_current.id;
 		}
-		self.add_callback(function(json) { known_event_id = json.id; }, "sched_current");
+		self.add_callback("sched_current", function(json) { known_event_id = json.id; });
 
 		// Make sure the clock gets initialized first
 		perform_callbacks({ "api_info": json.api_info });
