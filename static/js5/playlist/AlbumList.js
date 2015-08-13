@@ -3,26 +3,30 @@ var AlbumList = function(el) {
 	var self = SearchList(el);
 
 	var loading = false;
-	var sort_faves_first = Prefs.get("playlist_sort_faves_first");
-	var sort_available_first = Prefs.get("playlist_sort_available_first");
+	Prefs.define("faves_first");
+	var sort_faves_first = Prefs.get("faves_first");
+	Prefs.define("cool_last", [ true, false ]);
+	var sort_available_first = Prefs.get("cool_last");
 
-	var prefs_update = function() {
-		sort_faves_first = Prefs.get("playlist_sort_faves_first");
-		sort_available_first = Prefs.get("playlist_sort_available_first");
+	var prefs_update = function(unused_arg, unused_arg2, no_redraw) {
+		sort_faves_first = Prefs.get("faves_first");
+		sort_available_first = Prefs.get("cool_last");
 
 		var nv = Prefs.get("playlist_sort");
 		if ([ "alpha", "rating_user" ].indexOf(nv) == -1) {
 			Prefs.change("sort", "alpha");
 		}
-		if (nv == "alpha") self.sort_function = self.sort_by_alpha;
 		if (nv == "rating_user") self.sort_function = self.sort_by_rating_user;
+		else self.sort_function = self.sort_by_alpha;
 
-		self.update_view([]);
-		self.redraw_current_position();
+		if (!no_redraw) {
+			self.update_view([]);
+			self.redraw_current_position();
+		}
 	};
-	Prefs.add_callback("playlist_sort", prefs_update);
-	Prefs.add_callback("playlist_sort_faves_first", prefs_update);
-	Prefs.add_callback("playlist_sort_available_first", prefs_update);
+	Prefs.add_callback("playlist_sort", prefs_update, [ "alpha", "rating_user" ]);
+	Prefs.add_callback("faves_first", prefs_update);
+	Prefs.add_callback("cool_last", prefs_update);
 
 	API.add_callback("all_albums", self.update);
 	API.add_callback("album_diff", function(json) { if (self.loaded) self.update(json); });
@@ -136,8 +140,8 @@ var AlbumList = function(el) {
 			else return 1;
 		}
 
-		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return -1;
-		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return 1;
+		if (self.data[a].name_searchable < self.data[b].name_searchable) return -1;
+		else if (self.data[a].name_searchable > self.data[b].name_searchable) return 1;
 		return 0;
 	};
 
@@ -155,10 +159,12 @@ var AlbumList = function(el) {
 		if (self.data[a].rating_user < self.data[b].rating_user) return 1;
 		if (self.data[a].rating_user > self.data[b].rating_user) return -1;
 
-		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return -1;
-		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return 1;
+		if (self.data[a].name_searchable < self.data[b].name_searchable) return -1;
+		else if (self.data[a].name_searchable > self.data[b].name_searchable) return 1;
 		return 0;
 	};
+
+	prefs_update(null, null, true);
 
 	return self;
 };

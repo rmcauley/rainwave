@@ -107,9 +107,8 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 		else {
 			self.draw_entry(json);
-			json._searchname = json[search_key];
 			json._el._id = json.id;
-			json._lower_case_sort_keyed = json[sort_key].toLowerCase();
+			if (!json[search_key]) json[search_key] = json[sort_key].toLowerCase();
 			data[json.id] = json;
 		}
 		self.queue_reinsert(json.id);
@@ -188,13 +187,12 @@ var SearchList = function(root_el, sort_key, search_key) {
 	self.unhide = function(to_reshow) {
 		to_reshow = to_reshow || hidden;
 		if (visible.length === 0) {
-			to_reshow.sort(self.sort_function);
 			visible = to_reshow;
 		}
 		else {
 			visible = visible.concat(to_reshow);
-			visible.sort(self.sort_function);
 		}
+		visible.sort(self.sort_function);
 		if (to_reshow == hidden) hidden = [];
 	};
 
@@ -209,8 +207,8 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	self.sort_function = function(a, b) {
-		if (data[a]._lower_case_sort_keyed < data[b]._lower_case_sort_keyed) return -1;
-		else if (data[a]._lower_case_sort_keyed > data[b]._lower_case_sort_keyed) return 1;
+		if (data[a][search_key] < data[b][search_key]) return -1;
+		else if (data[a][search_key] > data[b][search_key]) return 1;
 		return 0;
 	};
 
@@ -312,7 +310,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			var use_search_string = Formatting.make_searchable_string(search_string);
 			var revisible = [];
 			for (var i = hidden.length - 1; i >= 0; i--) {
-				if (data[hidden[i]]._searchname.indexOf(use_search_string) != -1) {
+				if (data[hidden[i]][search_key].indexOf(use_search_string) != -1) {
 					revisible.push(hidden.splice(i, 1)[0]);
 				}
 			}
@@ -341,7 +339,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		var use_search_string = Formatting.make_searchable_string(search_string);
 		var new_visible = [];
 		for (var i = 0; i < visible.length; i++) {
-			if (data[visible[i]]._searchname.indexOf(use_search_string) == -1) {
+			if (data[visible[i]][search_key].indexOf(use_search_string) == -1) {
 				hidden.push(visible[i]);
 			}
 			else {

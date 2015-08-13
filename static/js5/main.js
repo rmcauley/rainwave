@@ -79,7 +79,7 @@ var User;
 			document.body.appendChild(fastclick_load);
 		}
 
-		BOOTSTRAP = null;
+		//BOOTSTRAP = null;
 
 		Router.detect_url_change();
 	};
