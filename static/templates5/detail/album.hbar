@@ -1,10 +1,5 @@
 {{>rating}}
 
-<div class="close" bind="close">
-	<img src="/static/images4/cancel.png" alt="X" />
-</div>
-<ul class="panel_header"><li class="open">{{ name }}</li></ul>
-
 <div class="art_anchor">
 	<div bind="art" class="art_container"></div>
 </div>
@@ -14,9 +9,9 @@
 {{/if}}
 
 <div class="detail_header">
-	{{#if year }}
+	<!--{{#if year }}
 		<p class="year">{{ $l("album_year", { "year": _c.year }) }}</p>
-	{{/if}}
+	{{/if}}-->
 	{{#if rating }}
 		<p>{{ $l("album_rating_ranked_at_v2", { "rating": _c.rating, "rating_count": _c.num_song_ratings, "rank": _c.rating_rank }) }}</p>
 	{{/if}}
