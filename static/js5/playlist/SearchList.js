@@ -72,7 +72,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 		if (search_string.length === 0) {
 			self.unhide();
 			current_scroll_index = false;
-			scroll.scroll_top = 0;
 			self.recalculate();
 			self.reposition();
 		}
