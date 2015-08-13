@@ -67,9 +67,6 @@ var Audio = function() {
 			stream_urls.push(BOOTSTRAP.relays[i].protocol + BOOTSTRAP.relays[i].hostname + ":" + BOOTSTRAP.relays[i].port + "/" + stream_filename);
 		}
 
-		console.log(BOOTSTRAP.relays);
-		console.log(stream_urls);
-
 		API.add_callback(user_tunein_check, "user");
 
 		Prefs.define("audio_volume", [ 1.0 ]);
