@@ -115,9 +115,9 @@ class Bootstrap(api.web.APIHandler):
 			self.user = User(1)
 		self.user.ensure_api_key()
 
-	def finish(self, *args, **kwargs):
-		self.write_output()
-		super(api.web.APIHandler, self).finish(*args, **kwargs)
+	# def finish(self, *args, **kwargs):
+	# 	self.write_output()
+	# 	super(Bootstrap, self).finish(*args, **kwargs)
 
 	def get(self):
 		self.set_header("Content-Type", "text/javascript")
@@ -130,3 +130,4 @@ class Bootstrap(api.web.APIHandler):
 		info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
 		self.append("stream_filename", config.get_station(self.sid, "stream_filename"))
 		self.append("station_list", config.station_list)
+		self.append("relays", config.public_relays[self.sid])
