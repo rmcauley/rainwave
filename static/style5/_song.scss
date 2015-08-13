@@ -109,7 +109,7 @@ div.song {
 	        	        transition: $song_transitions;
 			}
 
-			a {
+			div.song_content a {
 				@include transition-wtime(250ms, color, background-color, padding);
 
 				&:hover {

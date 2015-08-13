@@ -9,28 +9,29 @@
 				<img src="/static/images4/sort.svg" />
 			</div>
 		{{/if}}
-		{{#if elec_request_user_id }}
-			{{#if ^_c.elec_request_user_id == User.id }}
-				<div class="requester your_request">
-					<a href="#!/listener/{{ elec_request_user_id }}">
-						{{ elec_request_username }}
-					</a>
-				</div>
-				<div class="request_indicator your_request">
-					{{ $l("timeline_art__your_request_indicator") }}
-				</div>
-			{{else}}
-				<div class="requester">
-					<a href="#!/listener/{{ elec_request_user_id }}">
-						{{ elec_request_username }}
-					</a>
-				</div>
-				<div class="request_indicator">
-					{{ $l("timeline_art__request_indicator") }}
-				</div>
+		<div bind="art" class="art_container">
+			{{#if elec_request_user_id }}
+				{{#if ^_c.elec_request_user_id == User.id }}
+					<div class="requester your_request">
+						<a href="#!/listener/{{ elec_request_user_id }}">
+							{{ elec_request_username }}
+						</a>
+					</div>
+					<div class="request_indicator your_request">
+						{{ $l("timeline_art__your_request_indicator") }}
+					</div>
+				{{else}}
+					<div class="requester">
+						<a href="#!/listener/{{ elec_request_user_id }}">
+							{{ elec_request_username }}
+						</a>
+					</div>
+					<div class="request_indicator">
+						{{ $l("timeline_art__request_indicator") }}
+					</div>
+				{{/if}}
 			{{/if}}
-		{{/if}}
-		<div bind="art" class="art_container"></div>
+		</div>
 	</div>
 
 	<div class="song_content">
