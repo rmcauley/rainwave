@@ -21,7 +21,7 @@ def bake_css():
 	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style4.css")
 	incl_path = Path(os.path.join(os.path.dirname(__file__), "..", "static", "style5")).resolve()
 	if not os.path.exists(wfn):
-		_bake_css_file("_sass.scss", wfn, incl_path)
+		_bake_css_file("r4.scss", wfn, incl_path)
 
 def bake_beta_css():
 	create_baked_directory()

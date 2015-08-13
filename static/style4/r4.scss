@@ -1,6 +1,4 @@
-@option compress:yes;
-
-$img_dir: ../../images;
+$img_dir: "../../images";
 
 $background: #000000;
 $text: #FFF;
@@ -46,10 +44,10 @@ $fave_color: #f7ff9f;
 	$nice_rules: null;
 	$webkit_rules: null;
 	@each $rule in $trans {
-		$finaltranstime = $customtime
+		$finaltranstime: $customtime;
 		@if $rule == LINKCOLOR {
-			$rule = color;
-			$finaltranstime = 150ms;
+			$rule: color;
+			$finaltranstime: 150ms;
 		}
 		$nice_rules: append($nice_rules, $rule $finaltranstime);
 		@if $rule == transform { 
@@ -243,18 +241,11 @@ a:link:hover, .link:hover {
 	height: 300px;
 }
 
-@import "menu.css";
-
-@import "ratings.css";
-
-@import "timeline.css";
-
-@import "playlist_list.css";
-
-@import "detail_view.css";
-
-@import "history.css";
-
-@import "requests.css";
-
-@import "scrollbar.css";
+@import "menu";
+@import "ratings";
+@import "timeline";
+@import "playlist_list";
+@import "detail_view";
+@import "history";
+@import "requests";
+@import "scrollbar";
