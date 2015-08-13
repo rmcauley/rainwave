@@ -512,7 +512,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 		var new_margin = (scroll.scroll_top - (Sizing.list_item_height * new_index));
 		new_margin = new_margin ? -new_margin : 0;
-		self.el.style.transform = "translateY(" + (scroll.scroll_top + new_margin) + "px)";
+		self.el.style[Fx.transform] = "translateY(" + (scroll.scroll_top + new_margin) + "px)";
 
 		if (current_scroll_index === new_index) return;
 		if ((visible.length === 0) && (hidden.length === 0)) return;

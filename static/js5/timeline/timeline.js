@@ -19,6 +19,7 @@ var Timeline = function() {
 		API.add_callback("sched_next", function(json) { sched_next = json; });
 		API.add_callback("sched_history", function(json) { sched_history = json; });
 		API.add_callback("_SYNC_COMPLETE", self.update);
+		API.add_callback("_SYNC_COMPLETE", self.reflow);
 		API.add_callback("user", self.tune_in_voting_allowed_check);
 		API.add_callback("playback_history", open_long_history);
 		API.add_callback("already_voted", self.handle_already_voted);
@@ -40,13 +41,12 @@ var Timeline = function() {
 			}
 		);
 
-		el = template.timeline;
-
 		Sizing.add_resize_callback(self.reflow);
 	});
 
 	BOOTSTRAP.on_draw.push(function() {
 		scroller = Scrollbar.create(template.timeline, true);
+		el = scroller.el;
 	});
 
 	self.update = function() {
@@ -74,7 +74,7 @@ var Timeline = function() {
 		sched_current.change_to_now_playing();
 		sched_current.show_header();
 		if (sched_current.el.parentNode != el) {
-			sched_current.el.style[Fx.transform] = "translateY(" + (Sizing.height + (unappended_events * 2 * Sizing.song_size)) + "px)";
+			sched_current.el.style[Fx.transform] = "translateY(" + ((scroller.scroll_height || Sizing.height) + (unappended_events * 2 * Sizing.song_size)) + "px)";
 			unappended_events++;
 		}
 		new_events.push(sched_current);
@@ -90,7 +90,7 @@ var Timeline = function() {
 			}
 			sched_next[i].change_to_coming_up();
 			if (sched_next[i].el.parentNode != el) {
-				sched_next[i].el.style[Fx.transform] = "translateY(" + (Sizing.height + (unappended_events * 2 * Sizing.song_size)) + "px)";
+				sched_next[i].el.style[Fx.transform] = "translateY(" + ((scroller.scroll_height || Sizing.height) + (unappended_events * 2 * Sizing.song_size)) + "px)";
 				unappended_events++;
 			}
 			new_events.push(sched_next[i]);
@@ -99,7 +99,7 @@ var Timeline = function() {
 
 		for (i = 0; i < events.length; i++) {
 			if (events[i]._pending_delete) {
-				events[i].el.style[Fx.transform] = "translateY(-" + (get_history_size() * self.song_size) + "px)";
+				events[i].el.style[Fx.transform] = "translateY(-" + Sizing.song_size_np + "px)";
 				Fx.remove_element(events[i].el);
 			}
 		}
@@ -107,7 +107,9 @@ var Timeline = function() {
 		events = new_events;
 
 		for (i = 0; i < events.length; i++) {
-			el.appendChild(events[i].el);
+			if (events[i].el.parentNode != el) {
+				el.appendChild(events[i].el);
+			}
 		}
 
 		// The now playing bar
@@ -115,8 +117,6 @@ var Timeline = function() {
 		if ((sched_current.end - Clock.now) > 0) {
 			sched_current.progress_bar_start();
 		}
-
-		self.reflow();
 	};
 
 	var find_event = function(id) {
@@ -135,7 +135,7 @@ var Timeline = function() {
 		}
 		else {
 			evt.update(event_json);
-			evt.el._pending_delete = false;
+			evt._pending_delete = false;
 			return evt;
 		}
 	};
@@ -157,7 +157,7 @@ var Timeline = function() {
 
 		var hidden_events = Math.min(sched_history.length, Math.max(0, test || sched_history.length - history_size));
 		for (var i = 0; i < hidden_events && i < sched_history.length; i++) {
-			events[i].el.style.transform = "translateY(" + (-(((hidden_events - i - 1) * 5 + 1) * Sizing.song_size)) + "px)";
+			events[i].el.style[Fx.transform] = "translateY(" + (-(((hidden_events - i - 1) * 5 + 1) * Sizing.song_size)) + "px)";
 		}
 
 		var running_y = !Sizing.simple || Sizing.mobile ? 30 : 40;
@@ -167,7 +167,7 @@ var Timeline = function() {
 				history_gap = true;
 				running_y += 10;
 			}
-			events[i].el.style.transform = "translateY(" + running_y + "px)";
+			events[i].el.style[Fx.transform] = "translateY(" + running_y + "px)";
 			running_y += events[i].height;
 		}
 
@@ -175,7 +175,7 @@ var Timeline = function() {
 	};
 
 	self.reflow = function() {
-		requestAnimationFrame(self._reflow);
+		setTimeout(self._reflow, 1);
 	};
 
 	self.handle_already_voted = function(json) {

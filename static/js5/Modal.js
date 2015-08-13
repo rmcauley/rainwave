@@ -39,17 +39,13 @@ var Modal = function() {
 		document.body.insertBefore(blocker, document.body.firstChild);
 		document.body.insertBefore(mt.container, document.body.firstChild);
 		document.body.classList.add("modal_active");
-		// force a re-draw so DOM updates and animation updates don't collide
-		// if we don't do this we actually need to call requestAnimationFrame inside requestAnimationFrame
-		// also causes jshint to spaz.  ignore that.
-		mt.container.offsetHeight;
-		requestAnimationFrame(function() {
+		setTimeout(function() {
 			mt.container.classList.add("open");
 			blocker.classList.add("active");
 			Fx.chain_transition(mt.container, function(e, el) {
 				el.classList.add("full_open");
 			});
-		});
+		}, 1);
 		return ct;
 	};
 

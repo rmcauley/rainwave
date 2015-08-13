@@ -37,9 +37,9 @@ var Fx = function() {
 					if (el.parentNode) el.parentNode.removeChild(el);
 				}
 			);
-			requestAnimationFrame(function() {
+			setTimeout(function() {
 				el.style.opacity = 0;
-			});
+			}, 1);
 		}
 	};
 

@@ -202,8 +202,8 @@ var Requests = function() {
 			running_height += Sizing.request_size;
 		}
 		self.reflow = self.real_reflow;
-		requestAnimationFrame(self.real_reflow);
 		scroller.set_height(running_height);
+		setTimeout(self.real_reflow, 1);
 	};
 
 	self.real_reflow = function() {
