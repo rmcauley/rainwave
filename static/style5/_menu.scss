@@ -316,6 +316,23 @@ ul.menu {
 		vertical-align: baseline;
 		@include transform(translateY(-25%));
 	}
+
+	div.request_indicator {
+		display: inline;
+		position: absolute;
+		z-index: 1;
+		padding: 4px;
+		background: $orange;
+		height: 100%;
+		opacity: 0;
+		@include transform(translateX(-100%));
+		@include transition-wtime(300ms, transform, opacity);
+
+		&.show {
+			opacity: 1;
+			@include transform(translateX(0));
+		}
+	}
 }
 
 body.full ul.main_menu {
@@ -334,23 +351,6 @@ ul.submenu {
 	body.desktop.simple div.menu_wrapper:hover & {
 		opacity: 1;
 		@include transform(translateY(-50%));
-	}
-}
-
-div.request_indicator {
-	display: inline;
-	position: absolute;
-	z-index: 1;
-	padding: 4px;
-	background: $orange;
-	height: 100%;
-	opacity: 0;
-	@include transform(translateX(-100%));
-	@include transition-wtime(300ms, transform, opacity);
-
-	&.show {
-		opacity: 1;
-		@include transform(translateX(0));
 	}
 }
 
@@ -396,15 +396,17 @@ $player_icon_width: $player_icon_height;
 		cursor: pointer;
 	}
 
-	&.playing {
-		.audio_icon {
-			opacity: 1;
-		}
-
+	body.tuned_in &, &.playing {
 		.audio_icon_play {
 			&, * {
 				fill: $orange * 2;
 			}
+		}
+	}
+
+	&.playing {
+		.audio_icon {
+			opacity: 1;
 		}
 
 		.audio_volume {
@@ -510,6 +512,6 @@ div.menu_inline_dropdown {
 
 	iframe {
 		width: 100%;
-		height: 500px;	
+		height: 500px;
 	}
 }

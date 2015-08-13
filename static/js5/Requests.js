@@ -1,13 +1,13 @@
 var Requests = function() {
 	"use strict";
 	var self = {};
-	
+
 	var el;
 	var scroller;
 	var link;
 	var header;
 	var indicator;
-	
+
 	var songs = [];
 
 	BOOTSTRAP.on_draw.push(function(root_template) {
@@ -24,7 +24,7 @@ var Requests = function() {
 		API.add_callback("requests", self.update);
 		API.add_callback("user", self.show_queue_paused);
 
-		el.addEventListener("click", function(e) {
+		root_template.requests_container.addEventListener("click", function(e) {
 			e.stopPropagation();
 		});
 
@@ -59,7 +59,7 @@ var Requests = function() {
 		}
 
 		el.classList.remove("warning");
-		
+
 		if (User.tuned_in) {
 			if (!User.requests_paused) {
 				if (link && good_requests) {
@@ -164,6 +164,9 @@ var Requests = function() {
 			Fx.remove_element(songs[i].el);
 		}
 		songs = new_songs;
+		for (i = songs.length - 1; i >= 0; i--) {
+			songs[i].update_cooldown_info();
+		}
 		self.show_queue_paused();
 		self.update_header();
 		self.reflow();

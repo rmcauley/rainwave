@@ -17,6 +17,11 @@ div.song {
 		}
 	}
 
+	&.cool {
+		opacity: 0.85;
+		background: $cooldown_color;
+	}
+
 	div.title {
 		margin-top: 5px;
 
@@ -51,6 +56,15 @@ div.song {
 		a {
 			color: $darktext;
 		}
+	}
+
+	div.cooldown_info {
+		display: none;
+		color: $blue;
+	}
+
+	&.cool div.cooldown_info {
+		display: block;
 	}
 
 	a.song_link {
@@ -126,7 +140,6 @@ div.song {
 		font-size: x-small;
 		background: $highlight;
 		text-align: left;
-		text-transform: uppercase;
 		@include transition(opacity, LINKCOLOR);
 	}
 
@@ -145,6 +158,7 @@ div.song {
 		z-index: 4;
 		opacity: 1;
 		padding-right: 1.5em;
+		text-transform: uppercase;
 
 		@include transform(rotate(-90deg) translateX(-100%));
 		-webkit-transform-origin: 0% 0%;
@@ -158,9 +172,7 @@ div.song {
 	}
 
 	div.your_request {
-		div.requester, div.request_indicator {
-			background: #18a485;
-		}
+		background: #18a485;
 	}
 
 	div.fave {
@@ -169,6 +181,39 @@ div.song {
 
 	body.logged_in &:hover img.fave_lined {
 		opacity: 0.5;
+	}
+
+	div.requester {
+		box-sizing: border-box;
+		position: absolute;
+		width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: small;
+		background: $blue;
+		z-index: 5;
+		padding-left: 1.5em;
+	}
+
+	div.request_indicator {
+		text-align: right;
+		z-index: 4;
+		opacity: 1;
+		padding-right: 1.5em;
+		background: $blue;
+
+		@include transform(rotate(-90deg) translateX(-100%));
+		-webkit-transform-origin: 0% 0%;
+		        transform-origin: 0% 0%;
+	}
+
+	div.art_expanded div.request_indicator {
+		opacity: 0;
+	}
+
+	div.your_request {
+		background: #18a485;
 	}
 }
 

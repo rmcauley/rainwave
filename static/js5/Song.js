@@ -2,10 +2,11 @@ var Song = function(self, parent_event) {
 	"use strict";
 	var template;
 	if (!self.$t) {
-		var template = RWTemplates.song(self);
+		template = RWTemplates.song(self);
 		self.el = template.root;
 	}
 	else {
+		console.log(self.elec_request_user_id);
 		template = self.$t;
 		self.el = self.$t.root;
 	}
@@ -79,24 +80,24 @@ var Song = function(self, parent_event) {
 			// nothing
 		}
 		else if (("valid" in self) && !self.valid) {
-			self.el.classList.add("timeline_song_is_cool");
+			self.el.classList.add("cool");
 			template.cooldown.textContent = $l("request_only_on_x", { "station": $l("station_name_" + self.origin_sid) });
 		}
 		else if (self.cool && (self.cool_end > (Clock.now + 20))) {
-			self.el.classList.add("timeline_song_is_cool");
+			self.el.classList.add("cool");
 			template.cooldown.textContent = $l("request_on_cooldown_for", { "cool_time": Formatting.cooldown(self.cool_end - Clock.now) });
 		}
 		else if (self.cool) {
-			self.el.classList.add("timeline_song_is_cool");
+			self.el.classList.add("cool");
 			template.cooldown.textContent = $l("request_on_cooldown_ends_soon");
 		}
 		else if (self.elec_blocked) {
-			self.el.classList.add("timeline_song_is_cool");
+			self.el.classList.add("cool");
 			self.elec_blocked_by = self.elec_blocked_by.charAt(0).toUpperCase() + self.elec_blocked_by.slice(1);
 			template.cooldown.textContent = $l("request_in_election", { "blocked_by": $l("blocked_by_name__" + self.elec_blocked_by.toLowerCase()) });
 		}
 		else {
-			self.el.classList.remove("timeline_song_is_cool");
+			self.el.classList.remove("cool");
 		}
 	};
 
