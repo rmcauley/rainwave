@@ -300,10 +300,6 @@ var Router = function() {
 			if (r) r += "/";
 			r += arguments[i];
 		}
-		if (arguments.length === 1) {
-			r += "/";
-		}
-		console.log(arguments);
 		var new_url = decodeURI(location.href);
 		if (new_url.indexOf("#") >= 0) {
 			new_url = new_url.substring(0, new_url.indexOf("#")) + "#!/" + r;
