@@ -225,7 +225,7 @@ class RainwaveParser(HTMLParser):
 				self.buffers['_r'] += "_r.%s=_r.%s;" % (_short_call.appendChild, _full_call.appendChild)
 			self.buffers['_r'] += "}"
 			self.buffers['_r'] += "if(!_c.$t._root){_c.$t._root=_r;}"
-		
+
 
 	def _current_tree_point(self):
 		if len(self.tree) == 0:
@@ -284,7 +284,7 @@ class RainwaveParser(HTMLParser):
 				self.buffers[self._current_stack_point()] += "%s.className=%s;" % (uid, attr_val)
 			elif attr[0] == "href" and tag != "svg":
 				self.buffers[self._current_stack_point()] += "%s.href=%s;" % (uid, attr_val)
-			else:
+			elif attr[0] != "use" and tag != "svg":
 				if self.helpers_on and attr[0] == "helper":
 					self.helpers[uid] = attr_val
 				self.buffers[self._current_stack_point()] += "%s.%s('%s',%s);" % (uid, self.calls.setAttribute, attr[0], attr_val)
