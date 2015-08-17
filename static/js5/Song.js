@@ -6,7 +6,6 @@ var Song = function(self, parent_event) {
 		self.el = template.root;
 	}
 	else {
-		console.log(self.elec_request_user_id);
 		template = self.$t;
 		self.el = self.$t.root;
 	}
