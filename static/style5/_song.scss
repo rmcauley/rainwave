@@ -143,38 +143,6 @@ div.song {
 		@include transition(opacity, LINKCOLOR);
 	}
 
-	div.requester {
-		z-index: 5;
-		padding-left: 1.5em;
-		cursor: pointer;
-
-		&:hover {
-			color: $linkhover;
-		}
-	}
-
-	div.request_indicator {
-		text-align: right;
-		z-index: 4;
-		opacity: 1;
-		padding-right: 1.5em;
-		text-transform: uppercase;
-
-		@include transform(rotate(-90deg) translateX(-100%));
-		-webkit-transform-origin: 0% 0%;
-		        transform-origin: 0% 0%;
-	}
-
-	div.art_expanded {
-		div.requester, div.request_indicator {
-			opacity: 0;
-		}
-	}
-
-	div.your_request {
-		background: #18a485;
-	}
-
 	div.fave {
 		position: absolute;
 	}
@@ -197,10 +165,11 @@ div.song {
 	}
 
 	div.request_indicator {
+		box-sizing: border-box;
 		text-align: right;
 		z-index: 4;
 		opacity: 1;
-		padding-right: 1.5em;
+		padding-right: 2em;
 		background: $blue;
 
 		@include transform(rotate(-90deg) translateX(-100%));
