@@ -83,7 +83,7 @@ var Requests = function() {
 			else {
 				header.textContent = $l("request_grab_tag__paused");
 				if (link) {
-					link.textContent = $l("Requests") + " ⏸";
+					link.textContent = $l("request_grab_tag__paused");
 				}
 			}
 		}

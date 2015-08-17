@@ -44,8 +44,8 @@
    "unknown_error_message"                           : "Sorry about that.  Please try again, or file a bug with the debug information below.  (this error has been logged)",
    "debug_information"                               : "Debug information:",
    "requests_reordered"                              : "Requests reordered.",
-   "request_queue_paused"                            : "Request queue paused.",
-   "request_queue_unpaused"                          : "Request queue unpaused.",
+   "request_queue_paused"                            : "Request queue on hold.",
+   "request_queue_unpaused"                          : "Request queue not on hold.",
    "no_results"                                      : "No results.",
    "server_just_started"                             : "Rainwave is Rebooting",
    "station_paused"                                  : "Station is currently paused by the DJ.",
@@ -213,7 +213,7 @@
    "request_you_are_x_in_line"                       : "#(position) In Line",
 
    "request_grab_tag__warning"                       : "Warning",
-   "request_grab_tag__paused"                        : "Paused",
+   "request_grab_tag__paused"                        : "On Hold",
    "requests_grab_tab__num_requests"                 : "%(num_requests) &(num_requests:Request/Requests)",
 
    "cancel_request"                                  : "Cancel Request",
