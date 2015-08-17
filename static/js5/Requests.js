@@ -133,6 +133,11 @@ var Requests = function() {
 		API.async_get("delete_request", { "song_id": song_id });
 	};
 
+	self.remove_event = function(e) {
+		if (!this._song_id) return;
+		self.remove(this._song_id);
+	};
+
 	self.make_clickable = function(el, song_id) {
 		el._request_song_id = song_id;
 		el.addEventListener("click", clicked);
@@ -163,6 +168,8 @@ var Requests = function() {
 				n = Song(json[i]);
 				n.$t.request_drag._song_id = n.id;
 				n.$t.request_drag.addEventListener("mousedown", start_drag);
+				n.$t.cancel._song_id = n.id;
+				n.$t.cancel.addEventListener("click", self.remove_event);
 				n.el.style[Fx.transform] = "translateY(" + Sizing.height + "px)";
 				new_songs.unshift(n);
 				el.appendChild(n.el);
