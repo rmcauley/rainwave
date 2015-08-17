@@ -28,7 +28,7 @@
 		<div bind="artist_list" class="list artist_list"></div>
 		<div bind="group_list" class="list group_list"></div>
 		<div bind="listener_list" class="list listener_list"></div>
-	</div>		
+	</div>
 	<div bind="detail_container" class="detail panel">
 		<div class="close" bind="detail_close">
 			<img src="/static/images4/cancel.png" alt="X" />

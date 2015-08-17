@@ -1,32 +1,34 @@
 div.history_header {
 	position: absolute;
+	z-index: 2;
 	top: 10px;
 	width: 100%;
-	z-index: 2;
 	opacity: 0.5;
 	cursor: pointer;
-	padding: 0px;
+	padding: 0px 10px;
 	font-size: smaller;
 	text-transform: uppercase;
-	padding: 0px 10px;
 	@include transition-wtime(300ms, opacity, background-color);
 
-	body.desktop.simple & {
-		max-width: 50%;
+	span.history_header_header {
+		margin-right: 5px;
 	}
 
-	svg {
+	svg.history_pulldown_arrow {
+		display: inline-block;
+		position: relative;
 		height: 1em;
 		width: 1em;
-		margin-left: 0.4em;
-		vertical-align: middle;
-		position: relative;
-		top: -2px;
 		fill: $text;
-		@include transition-wtime(300ms, transform);
-		@include transform(rotate(0deg));
-		-webkit-transform-origin: 0.5em 0.5em; 
+		top: 2px;
+		@include transform(rotate(180deg));
+		@include transition-wtime(350ms, transform);
+		-webkit-transform-origin: 0.5em 0.5em;
 		        transform-origin: 0.5em 0.5em;
+	}
+
+	&.history_expandable svg.history_pulldown_arrow {
+		@include transform(rotate(0deg));
 	}
 
 	&:hover {
@@ -34,8 +36,12 @@ div.history_header {
 		background-color: $blue / 2.5;
 	}
 
-	&.history_expandable svg {
-		@include transform(rotate(90deg));
+	span.longhist_link {
+		float: right;
+
+		body.simple & {
+			display: none;
+		}
 	}
 }
 
