@@ -46,7 +46,6 @@ var Event = function(self) {
 		self.$t.el.classList.remove("sched_history");
 		self.$t.el.classList.remove("sched_current");
 		self.$t.el.classList.add("sched_next");
-		self.check_voting();
 		self.set_header_text($l("coming_up"));
 		self.height = (self.songs.length * Sizing.song_size);
 		if (showing_header) self.height += Sizing.timeline_header_size;
@@ -64,7 +63,7 @@ var Event = function(self) {
 			self.songs.sort(function(a, b) { return a.entry_position < b.entry_position ? -1 : 1; });
 		}
 		self.songs[0].el.classList.add("now_playing");
-		self.check_voting();
+		self.disable_voting();
 		self.set_header_text($l("now_playing"));
 		self.height = ((self.songs.length - 1) * Sizing.song_size) + Sizing.song_size_np;
 		if (showing_header) self.height += Sizing.timeline_header_size;
@@ -94,16 +93,13 @@ var Event = function(self) {
 			Fx.remove_element(self.songs[i].el);
 		}
 		reflow();
-		self.check_voting();
+		self.disable_voting();
 		self.height = Sizing.song_size;
 	};
 
 	self.check_voting = function() {
 		if (User.tuned_in && (!User.locked || (User.lock_sid == User.sid))) {
-			if (self.voting_allowed) {
-				self.enable_voting();
-			}
-			else if ((self.type == "election") && (self.songs.length > 1) && !self.used) {
+			if ((self.type == "election") && (self.songs.length > 1) && !self.used) {
 				self.enable_voting();
 			}
 			else {

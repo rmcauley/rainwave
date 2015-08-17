@@ -20,7 +20,7 @@ var Timeline = function() {
 		API.add_callback("sched_history", function(json) { sched_history = json; });
 		API.add_callback("_SYNC_COMPLETE", self.update);
 		API.add_callback("_SYNC_COMPLETE", self.reflow);
-		API.add_callback("user", self.tune_in_voting_allowed_check);
+		API.add_callback("user", self.voting_allowed_check);
 		API.add_callback("playback_history", open_long_history);
 		API.add_callback("already_voted", self.handle_already_voted);
 
@@ -105,6 +105,8 @@ var Timeline = function() {
 		}
 
 		events = new_events;
+
+		self.voting_allowed_check();
 
 		for (i = 0; i < events.length; i++) {
 			if (events[i].el.parentNode != el) {
@@ -228,12 +230,19 @@ var Timeline = function() {
 		find_event(sched_next[which_election].id).songs[song_position].vote();
 	};
 
-	self.tune_in_voting_allowed_check = function(json) {
+	self.voting_allowed_check = function(json) {
 		if (!sched_next) return;
 		var evt;
 		for (var i = 0; i < sched_next.length; i++) {
 			evt = find_event(sched_next[i].id);
-			if (evt) evt.check_voting();
+			if (evt) {
+				if (i === 0) {
+					evt.check_voting();
+				}
+				else {
+					evt.disable_voting();
+				}
+			}
 		}
 	};
 
