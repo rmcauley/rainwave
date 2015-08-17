@@ -6,11 +6,9 @@ var Scrollbar = function() {
 	var enabled = false;
 
 	BOOTSTRAP.on_init.push(function(t) {
-		BOOTSTRAP.on_draw.push(function() {
-			t.scroller_size.parentNode.removeChild(t.scroller_size);
-		});
-
+		// if we're on mobile we won't need this due to mobile scrollbars being great
 		if (MOBILE) return;
+		// if we're on Chrome we have custom scrollbars that don't need Javascript
 		// http://stackoverflow.com/questions/4565112/javascript-how-to-find-out-if-the-user-browser-is-chrome
 		var isChromium = window.chrome, vendorName = window.navigator.vendor, isOpera = window.navigator.userAgent.indexOf("OPR") > -1;
 		if (isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera === false) {
@@ -25,6 +23,7 @@ var Scrollbar = function() {
 		});
 
 		Sizing.add_resize_callback(function() {
+			scrollbar_width = 100 - t.scroller_size.scrollWidth;
 			for (var i = 0; i < scrollbars.length; i++) {
 				scrollbars[i].offset_height = scrollbars[i].scrollblock.offsetHeight;
 				scrollbars[i].offset_width = 0;
@@ -58,7 +57,7 @@ var Scrollbar = function() {
 				scrollblock.setAttribute("class", "scrollblock " + scrollable.className);
 			}
 			scrollable.setAttribute("class", "scrollable");
-		
+
 			if (scrollable.parentNode) {
 				scrollable.parentNode.replaceChild(scrollblock, scrollable);
 			}
@@ -91,7 +90,7 @@ var Scrollbar = function() {
 					self.offset_height = self.scrollblock.offsetHeight;
 					self.scroll_top_max = self.scroll_height - self.offset_height;
 				};
-				self.set_hook = function(fn) { 
+				self.set_hook = function(fn) {
 					reposition_hook = fn;
 				};
 				scrollable.addEventListener("scroll", function() {
