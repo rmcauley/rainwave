@@ -36,6 +36,15 @@ var Requests = function() {
 		root_template.requests_clear.addEventListener("click", self.clear_requests);
 		root_template.requests_unrated.addEventListener("click", self.fill_with_unrated);
 		root_template.requests_favfill.addEventListener("click", self.fill_with_faves);
+
+		link.addEventListener("click", function() {
+			if (!document.body.classList.contains("requests")) {
+				Router.change("requests");
+			}
+			else {
+				Router.change();
+			}
+		});
 	});
 
 	self.show_queue_paused = function() {

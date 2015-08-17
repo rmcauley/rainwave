@@ -6,7 +6,7 @@
 					<a class="link">
 						<span>{{ ^BOOTSTRAP.user.name }}</span>
 						<img class="avatar" src="{{ ^BOOTSTRAP.user.avatar }}" />
-					</a>					
+					</a>
 				</li>
 			{{#else}}
 				<li>
@@ -27,12 +27,12 @@
 			{{#if ^BOOTSTRAP.user.id > 1 }}
 				<li class="requests_link">
 					<div bind="request_indicator" class="request_indicator"></div>
-					<a href="#!/requests" bind="request_link">
+					<a bind="request_link">
 						{{ $l("Requests")}}
 					</a>
 				</li>
 			{{/if}}
-			
+
 			<li class="playlist_link">
 				<a bind="playlist_link">
 					{{ $l("playlist") }}
