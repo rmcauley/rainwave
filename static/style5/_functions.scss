@@ -3,6 +3,7 @@ $mobile-media: unquote("(max-width: 1049px)");
 $tablet-media: unquote("(min-width: 600px) and (max-width: 1049px)");
 $phone-media: unquote("(max-width: 599px)");
 
+/* easeOutQuart */
 $transfunc: cubic-bezier(0.165, 0.84, 0.44, 1);
 $transtime: 700ms $transfunc;
 

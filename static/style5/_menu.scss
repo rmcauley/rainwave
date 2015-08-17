@@ -444,6 +444,7 @@ $player_icon_width: $player_icon_height;
 	&:hover div.m3u {
 		opacity: 1;
 		@include transform(translateY(-5px));
+		transition: transform 300ms $transfunc, opacity 300ms $transfunc 50ms;
 	}
 
 	@media $mobile-media {
@@ -481,7 +482,8 @@ div.menu_inline_dropdown {
 	overflow: hidden;
 	opacity: 0;
 	@include transform(translateY(-100%));
-	@include transition-wtime(300ms, transform, opacity);
+	        transition: transform 700ms linear, opacity 200ms $transfunc;
+	-webkit-transition: transform 700ms linear, opacity 200ms $transfunc;
 
 	a {
 	 	padding: 5px;
