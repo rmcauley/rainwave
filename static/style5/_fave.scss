@@ -31,10 +31,11 @@ div.fave {
 
 	body.logged_in &:hover {
 		img.fave_lined {
-			opacity: 1 !important;
+			opacity: 1;
 		}
-		img.fave_solid {
-			opacity: 0;
+
+		&.is_fave img.fave_solid {
+			opacity: 0.5;
 			cursor: pointer;
 		}
 	}
