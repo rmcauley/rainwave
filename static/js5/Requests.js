@@ -50,16 +50,18 @@ var Requests = function() {
 	self.show_queue_paused = function() {
 		if (User.requests_paused) {
 			el.classList.add("paused");
+			link.classList.add("paused");
 		}
 		else {
 			el.classList.remove("paused");
+			link.classList.remove("paused");
 		}
 		self.update_header();
 	};
 
 	self.update_header = function() {
 		var good_requests = 0;
-		var all_bad = false;
+		var all_bad = songs.length > 0;
 		for (var i = 0; i < songs.length; i++) {
 			if (songs[i].good) {
 				all_bad = false;
@@ -68,6 +70,7 @@ var Requests = function() {
 		}
 
 		el.classList.remove("warning");
+		link.classList.remove("warning");
 
 		if (User.tuned_in) {
 			if (!User.requests_paused) {
@@ -81,6 +84,7 @@ var Requests = function() {
 				if (all_bad) {
 					header.textContent = $l("requests_all_on_cooldown");
 					el.classList.add("warning");
+					link.classList.add("warning");
 				}
 				else if (User.request_position) {
 					header.textContent = $l("request_you_are_x_in_line", { "position": User.request_position });

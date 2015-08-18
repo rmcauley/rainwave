@@ -303,8 +303,26 @@ ul.menu {
 			background: $blue_dark * 0.8;
 		}
 
-		body.requests &.requests_link a {
-			background: $blue_dark * 0.8;
+		&.requests_link a {
+			&.paused {
+				background: #6A6A6A;
+			}
+
+			&.warning {
+				background: #6A0000;
+			}
+
+			body.requests & {
+				background: $blue_dark * 0.8;
+			}
+
+			body.requests &.paused {
+				background: #4A4A4A;
+			}
+
+			body.requests &.warning {
+				background: #4A0000;
+			}
 		}
 	}
 
@@ -325,12 +343,12 @@ ul.menu {
 		background: $orange;
 		height: 100%;
 		opacity: 0;
-		@include transform(translateX(-100%));
+		@include transform(translateX(0px));
 		@include transition-wtime(300ms, transform, opacity);
 
 		&.show {
 			opacity: 1;
-			@include transform(translateX(0));
+			@include transform(translateX(-100%));
 		}
 	}
 }
