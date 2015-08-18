@@ -10,7 +10,7 @@ var Song = function(self, parent_event) {
 		self.el = self.$t.root;
 	}
 
-	AlbumArt(self.art, template.art, self.request_id);
+	AlbumArt(self.art || (self.albums.length ? self.albums[0].art : null), template.art, self.request_id);
 
 	if (template.rating) {
 		Rating.register(self);
