@@ -30,7 +30,7 @@
    "request_unrated_failed"                          : "Request unrated failed.",
    "request_is_blocked"                              : "Blocked for %(blocked_num) elections.",
    "request_favorited_failed"                        : "No faves available.",
-   "too_many_requests"                               : "Too many requests.",
+   "too_many_requests"                               : "Your queue is full.",
    "same_request_exists"                             : "Song already requested.",
    "same_request_album"                              : "Album already requested.",
    "song_not_requested"                              : "Song not requested.",

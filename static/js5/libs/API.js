@@ -259,11 +259,7 @@ var API = function() {
 		self.async_get();
 	};
 
-	var async_error = function() {
-		var json;
-		if (async.responseText === "json") {
-			json = async.response;
-		}
+	var async_error = function(json) {
 		var do_default = true;
 		if (async_current.error_callback) {
 			if (async_current.error_callback(json)) do_default = false;
@@ -298,7 +294,7 @@ var API = function() {
 
 		for (var i in json) {
 			if (("success" in json[i]) && !json[i].success) {
-				return async_error();
+				return async_error(json[i]);
 			}
 		}
 
@@ -306,7 +302,7 @@ var API = function() {
 		if (async_current.callback) {
 			async_current.callback(json);
 		}
-		
+
 		async_current = null;
 		self.async_get();
 	};
