@@ -24,14 +24,12 @@
 		</ul>
 
 		<ul class="menu main_menu">
-			{{#if ^BOOTSTRAP.user.id > 1 }}
-				<li class="requests_link">
-					<div bind="request_indicator" class="request_indicator"></div>
-					<a bind="request_link">
-						{{ $l("Requests")}}
-					</a>
-				</li>
-			{{/if}}
+			<li class="requests_link">
+				<div bind="request_indicator" class="request_indicator"></div>
+				<a bind="request_link">
+					{{ $l("Requests")}}
+				</a>
+			</li>
 
 			<li class="playlist_link">
 				<a bind="playlist_link">
