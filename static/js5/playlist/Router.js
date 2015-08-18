@@ -15,7 +15,7 @@ var Router = function() {
 	var cache_page_stack;
 	self.active_list = null;
 	var ready_to_render = true;
-	var rendered_typ;
+	var rendered_type;
 	var rendered_id;
 	var last_open;
 	var detail_header;
@@ -55,7 +55,7 @@ var Router = function() {
 		detail_header = root_template.detail_header;
 
 		root_template.lists.addEventListener("click", function(e) {
-			document.body.classList.remove("detail");
+			self.change(current_type);
 			e.stopPropagation();
 		});
 
@@ -65,16 +65,16 @@ var Router = function() {
 
 		root_template.sizeable_area.addEventListener("click", function(e) {
 			if (Sizing.simple && ((e.target.nodeName.toLowerCase() != "a") || !e.target.getAttribute("href"))) {
-				Router.change();
+				self.change();
 			}
 		});
 
 		root_template.list_close.addEventListener("click", function() {
-			Router.change();
+			self.change();
 		});
 
 		root_template.detail_close.addEventListener("click", function() {
-			Router.change(current_type);
+			self.change(current_type);
 		});
 
 		API.add_callback("_SYNC_COMPLETE", function() {
@@ -149,9 +149,9 @@ var Router = function() {
 
 		document.body.classList.add("detail");
 
-		if ((rendered_typ == typ) && (rendered_id == id)) return;
+		if ((rendered_type == typ) && (rendered_id == id)) return;
 
-		rendered_typ = typ;
+		rendered_type = typ;
 		rendered_id = id;
 
 		while (el.firstChild) {
@@ -220,7 +220,7 @@ var Router = function() {
 				//console.log("Clearing detail.");
 				//console.log(document.body.className);
 				ready_to_render = false;
-				rendered_typ = false;
+				rendered_type = false;
 				rendered_id = false;
 				while (el.firstChild) {
 					el.removeChild(el.firstChild);
