@@ -75,7 +75,12 @@ var Requests = function() {
 		if (User.tuned_in) {
 			if (!User.requests_paused) {
 				if (link && good_requests) {
-					link.textContent = $l("#_requests", { "num_requests": good_requests });
+					if (!Sizing.simple) {
+						link.textContent = $l("#_requests", { "num_requests": good_requests });
+					}
+					else {
+						link.textContent = $l("#_requests", { "num_requests": songs.length });
+					}
 				}
 				else if (link) {
 					link.textContent = $l("Requests");
