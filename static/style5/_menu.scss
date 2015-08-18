@@ -303,25 +303,33 @@ ul.menu {
 			background: $blue_dark * 0.8;
 		}
 
-		&.requests_link a {
-			&.paused {
-				background: #6A6A6A;
+		&.requests_link {
+			display: none;
+
+			body.logged_in & {
+				display: inline;
 			}
 
-			&.warning {
-				background: #6A0000;
-			}
+			a {
+				&.paused {
+					background: #6A6A6A;
+				}
 
-			body.requests & {
-				background: $blue_dark * 0.8;
-			}
+				&.warning {
+					background: #6A0000;
+				}
 
-			body.requests &.paused {
-				background: #4A4A4A;
-			}
+				body.requests & {
+					background: $blue_dark * 0.8;
+				}
 
-			body.requests &.warning {
-				background: #4A0000;
+				body.requests &.paused {
+					background: #4A4A4A;
+				}
+
+				body.requests &.warning {
+					background: #4A0000;
+				}
 			}
 		}
 	}
