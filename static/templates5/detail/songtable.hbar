@@ -8,6 +8,8 @@
 			{{/if}}
 			{{#if url }}
 				<a class="url" href="{{ url }}" target="_blank"></a>
+			{{else}}
+				<div class="fake_url"></div>
 			{{/if}}
 			{{#if ^!Sizing.simple }}
 				<div class="cool_info">

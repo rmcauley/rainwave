@@ -17,6 +17,7 @@ div.detail {
 	}
 
 	h2 {
+		clear: both;
 		font-size: inherit;
 		font-weight: inherit;
 		border-bottom: 1px solid $vdarktext;
@@ -129,11 +130,15 @@ div.row {
 		float: right;
 	}
 
-	a.url {
+	a.url, div.fake_url {
 		display: inline-block;
 		float: right;
 		width: 14px;
 		height: 14px;
+		margin-right: 5px;
+	}
+
+	a.url {
 		background-repeat: no-repeat;
 		background-size: 14px 14px;
 		background-image: url("/static/images4/link_external.svg");
