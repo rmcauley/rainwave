@@ -69,6 +69,11 @@ div.song {
 
 	a.song_link {
 		display: none;
+		padding-right: 18px;
+		background-repeat: no-repeat;
+		background-size: 14px 14px;
+		background-image: url("/static/images4/link_external.svg");
+		background-position: right;
 	}
 
 	div.entry_votes {
@@ -80,7 +85,7 @@ div.song {
 
 	&.now_playing {
 		a.song_link, div.entry_votes {
-			display: block;
+			display: inline;
 		}
 	}
 
