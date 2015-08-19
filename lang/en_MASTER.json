@@ -107,6 +107,7 @@
    "played_ago"                                      : "Played %(time) Ago",
    "timeline_art__request_indicator"                 : "Request",
    "timeline_art__your_request_indicator"            : "Yours",
+   "num_votes"                                       : "%(num_votes) &(num_votes:Vote/Votes)",
 
    "event_naming__oneup"                             : "%(name) Power Hour",
 

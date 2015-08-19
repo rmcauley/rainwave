@@ -24,6 +24,10 @@ var Song = function(self, parent_event) {
 	if (self.albums[0].$t.fave) {
 		Fave.register(self.albums[0], true);
 	}
+	if (template.votes && self.entry_votes) {
+		if (Sizing.simple) template.votes.textContent = $l("num_votes", { "num_votes": self.entry_votes });
+		else template.votes.textContent = self.entry_votes;
+	}
 
 	self.vote = function(e) {
 		if ((e.target.nodeName.toLowerCase() == "a") && e.target.getAttribute("href")) {
@@ -49,7 +53,8 @@ var Song = function(self, parent_event) {
 		}
 
 		if (template.votes && self.entry_votes) {
-			template.votes.textContent = self.entry_votes;
+			if (Sizing.simple) template.votes.textContent = $l("num_votes", { "num_votes": self.entry_votes });
+			else template.votes.textContent = self.entry_votes;
 		}
 
 		if (template.rating) {
