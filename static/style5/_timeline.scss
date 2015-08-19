@@ -97,4 +97,46 @@ div.timeline_event {
 	span.timeline_header_clock {
 		float: right;
 	}
+
+	&.sched_current div.progress {
+		opacity: 1;
+
+		div.progress_inside {
+			opacity: 1;
+		}
+	}
+}
+
+div.progress {
+	box-sizing: border-box;
+	position: absolute;
+	width: 100%;
+	overflow: hidden;
+	height: 2px;
+	margin: 0px;
+	opacity: 0.6;
+	@include transition(transform);
+
+	body.simple & {
+		padding: 0 30px 0 25px;
+	}
+
+	&.history_bar {
+		@include transform(translateY(38px));
+	}
+
+	div.progress_bkg {
+		height: 2px;
+		background-color: $vvdarktext;
+	}
+
+	div.progress_inside {
+		background-color: $orange;
+		height: 2px;
+		margin: auto;
+		padding: 0px;
+		width: 100%;
+		opacity: 0;
+		@include transition(opacity);
+	}
 }

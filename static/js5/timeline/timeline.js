@@ -8,6 +8,7 @@ var Timeline = function() {
 	var sched_next;
 	var sched_history;
 	var scroller;
+	var history_bar;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		Prefs.define("sticky_history", [ false, true ]);
@@ -27,6 +28,7 @@ var Timeline = function() {
 		template = RWTemplates.timeline.timeline();
 		root_template.timeline.parentNode.replaceChild(template.timeline, root_template.timeline);
 		root_template.timeline = template.timeline;
+		history_bar = template.history_bar;
 
 		template.longhist_link.addEventListener("click",
 			function(e) {
@@ -60,10 +62,13 @@ var Timeline = function() {
 		self.history_events = [];
 		for (i = sched_history.length - 1; i >= 0; i--) {
 			sched_history[i] = find_and_update_event(sched_history[i]);
+			if (sched_history[i].el.parentNode != el) {
+				sched_history[i].$t.progress.parentNode.removeChild(sched_history[i].$t.progress);
+			}
 			sched_history[i].change_to_history();
 			sched_history[i].hide_header();
 			if (sched_history[i].el.parentNode != el) {
-				sched_history[i].el.style[Fx.transform] = "translateY(" + (-((i * 5 + 1) * Sizing.song_size)) + "px)";
+				sched_history[i].el.style[Fx.transform] = "translateY(" + (-((i * 5 + 1) * Sizing.song_size) - 1) + "px)";
 			}
 			new_events.push(sched_history[i]);
 			if (i === 0) sched_history[i].height += 8;
@@ -99,7 +104,7 @@ var Timeline = function() {
 
 		for (i = 0; i < events.length; i++) {
 			if (events[i]._pending_delete) {
-				events[i].el.style[Fx.transform] = "translateY(-" + Sizing.song_size_np + "px)";
+				events[i].el.style[Fx.transform] = "translateY(-" + (Sizing.song_size_np + (Sizing.song_size * events[i].songs.length - 1)) + "px)";
 				Fx.remove_element(events[i].el);
 			}
 		}
@@ -159,18 +164,20 @@ var Timeline = function() {
 
 		var hidden_events = Math.min(sched_history.length, Math.max(0, test || sched_history.length - history_size));
 		for (var i = 0; i < hidden_events && i < sched_history.length; i++) {
-			events[i].el.style[Fx.transform] = "translateY(" + (-(((hidden_events - i - 1) * 5 + 1) * Sizing.song_size)) + "px)";
+			events[i].el.style[Fx.transform] = "translateY(" + (-(((hidden_events - i - 1) * 5 + 1) * Sizing.song_size + 1)) + "px)";
 		}
 
-		var running_y = !Sizing.simple || Sizing.mobile ? 30 : 40;
+		var running_y = !Sizing.simple || Sizing.mobile ? 30 : 28;
 		var history_gap;
 		for (i = hidden_events; i < events.length; i++) {
 			if (!events[i].history && !history_gap) {
 				history_gap = true;
-				running_y += 10;
+				history_bar.style[Fx.transform] = "translateY(" + (running_y + 9) + "px)";
+				running_y += 20;
 			}
 			events[i].el.style[Fx.transform] = "translateY(" + running_y + "px)";
 			running_y += events[i].height;
+			if (Sizing.simple && !events[i].history) running_y += 7;
 		}
 
 		scroller.set_height(running_y);

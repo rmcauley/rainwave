@@ -18,8 +18,14 @@ var Event = function(self) {
 		var running_height = 0;
 		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].el.style[Fx.transform] = "translateY(" + running_height + "px)";
-			running_height += Sizing.song_size;
+			if (self.songs[i].el.classList.contains("now_playing")) {
+				running_height += Sizing.song_size_np;
+			}
+			else {
+				running_height += Sizing.song_size;
+			}
 		}
+		if (self.$t.progress) self.$t.progress.style[Fx.transform] = "translateY(" + (running_height + 15) + "px)";
 	};
 	reflow();
 
@@ -67,18 +73,7 @@ var Event = function(self) {
 		self.set_header_text($l("now_playing"));
 		self.height = ((self.songs.length - 1) * Sizing.song_size) + Sizing.song_size_np;
 		if (showing_header) self.height += Sizing.timeline_header_size;
-
-		var running_height = 0;
-		for (i = 0; i < self.songs.length; i++) {
-			self.songs[i].el.style[Fx.transform] = "translateY(" + running_height + "px)";
-			if (i) {
-				running_height += Sizing.song_size;
-				self.songs[i].el.classList.add("song_lost");
-			}
-			else {
-				running_height += Sizing.song_size_np;
-			}
-		}
+		reflow();
 	};
 
 	self.change_to_history = function() {
@@ -92,6 +87,7 @@ var Event = function(self) {
 			self.songs[i].el.classList.add("song_lost");
 			Fx.remove_element(self.songs[i].el);
 		}
+		if (self.$t.progress.parentNode) Fx.remove_element(self.$t.progress);
 		reflow();
 		self.disable_voting();
 		self.height = Sizing.song_size;
@@ -163,7 +159,7 @@ var Event = function(self) {
 
 	var progress_bar_update = function() {
 		var new_val = Math.min(Math.max(Math.floor(((self.end - Clock.now) / (self.songs[0].length - 1)) * 100), 0), 100);
-		self.$t.progress.style.width = new_val + "%";
+		self.$t.progress_inside.style.width = new_val + "%";
 	};
 
 	self.destroy = function() {

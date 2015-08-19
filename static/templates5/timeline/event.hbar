@@ -8,11 +8,13 @@
 		{{/if}}
 	</div>
 
+	<div bind="progress" class="progress">
+		<div class="progress_bkg">
+			<div bind="progress_inside" class="progress_inside"></div>
+		</div>
+	</div>
+
 	{{#each songs }}
 		{{>song}}
 	{{/each}}
-</div>
-
-<div class="timeline_header_bar">
-	<div bind="progress" class="timeline_header_bar_inside"></div>
 </div>

@@ -6,4 +6,7 @@
 			<svg class="history_pulldown_arrow" use="pulldown"></svg>
 		</div>
 	</div>
+	<div bind="history_bar" class="progress history_bar">
+		<div class="progress_bkg"></div>
+	</div>
 </div>
