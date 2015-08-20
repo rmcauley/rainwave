@@ -23,10 +23,6 @@ var User;
 
 (function() {
 	"use strict";
-	var fastclick_attach = function() {
-		FastClick.attach(document.body);
-	};
-
 	var template;
 
 	var initialize = function() {
@@ -74,8 +70,10 @@ var User;
 
 		if (document.ontouchstart === null) {
 			var fastclick_load = document.createElement("script");
-			fastclick_load.src = "//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.3/fastclick.min.js";
-			fastclick_load.addEventListener("load", fastclick_attach);
+			fastclick_load.src = "//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js";
+			fastclick_load.addEventListener("load", function() {
+				FastClick.attach(document.body);
+			});
 			document.body.appendChild(fastclick_load);
 		}
 
