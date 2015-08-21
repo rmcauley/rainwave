@@ -164,10 +164,12 @@ var Router = function() {
 		if (cache[typ][id]._cache_el) {
 			el.appendChild(cache[typ][id]._cache_el);
 			detail_header.textContent = cache[typ][id]._header_text;
+			detail_header.setAttribute("title", cache[typ][id]._header_text);
 		}
 		else {
 			t = views[typ](el, cache[typ][id]);
 			detail_header.textContent = t._header_text;
+			detail_header.setAttribute("title", t._header_text);
 			el.appendChild(t._root);
 			if (t._root && t._root.tagName && (t._root.tagName.toLowerCase() == "div")) {
 				cache[typ][id]._header_text = t._header_text;
