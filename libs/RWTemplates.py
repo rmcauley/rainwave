@@ -88,7 +88,7 @@ def compile_templates(source_dir, dest_file, **kwargs):
 	_unique_id = _unique_id_chars[0]
 
 	o = open(dest_file, "w")
-	o.write(js_start('full_calls' in kwargs and kwargs['full_calls']))
+	o.write(js_start('full_calls' in kwargs and kwargs['full_calls'], 'helpers' in kwargs and kwargs['helpers']))
 	#pylint: disable=W0612
 	for root, subdirs, files in os.walk(source_dir):
 		for f in files:
@@ -103,10 +103,16 @@ def compile_templates(source_dir, dest_file, **kwargs):
 	o.close()
 	#pylint: enable=W0612
 
-def js_start(full_calls=False):
-	to_ret = "window.RWTemplates=function(){"
+def js_start(full_calls=False, helpers=False):
+	to_ret = ""
+	if helpers:
+		to_ret += "window.RWTemplateObject=function(_c){'use strict';this._c=_c;};"
+		to_ret += "window.RWTemplateHelpers={};"
+	to_ret += "window.RWTemplates=function(){"
 	to_ret += "'use strict';"
 	to_ret += "var _f={};"
+	to_ret += "var _h=window.RWTemplateHelpers;"
+	to_ret += "var _o=window.RWTemplateObject;"
 	if not full_calls:
 		to_ret += (
 			"var _d=document;"
@@ -213,7 +219,7 @@ class RainwaveParser(HTMLParser):
 			if not self.helpers_on:
 				self.buffers['_r'] += "if(!_c.$t)_c.$t={};"
 			else:
-				self.buffers['_r'] += "if(!_c.$t)_c.$t=new RWTemplateObject(_c);"
+				self.buffers['_r'] += "if(!_c.$t)_c.$t=new _o(_c);"
 			# _b?! ... I don't know what else I can call the root context
 			# _b is used when the templater calls @some_var
 			self.buffers['_r'] += "var _b=_c;"
@@ -299,7 +305,7 @@ class RainwaveParser(HTMLParser):
 			if not self.helpers_on:
 				self.buffers[self._current_stack_point()] += "if(!_c.$t)_c.$t={};"
 			else:
-				self.buffers[self._current_stack_point()] += "if(!_c.$t){_c.$t=new RWTemplateObject(_c);_c.$t._root=%s;}" % self._current_tree_point()
+				self.buffers[self._current_stack_point()] += "if(!_c.$t){_c.$t=new _o(_c);_c.$t._root=%s;}" % self._current_tree_point()
 
 	def handle_bind(self, uid, bind_name):
 		self.check_bind_scope(uid)
@@ -309,9 +315,9 @@ class RainwaveParser(HTMLParser):
 			global _bind_reserved_words
 			if bind_name in _bind_reserved_words:
 				raise Exception("%s is a reserved word for binding. (%s)" % (bind_name, self.name))
-			self.buffers[self._current_stack_point()] += "if(_c.$t.%s)_c.$t.%s.push(%s);else _c.$t.%s=[%s];" % (bind_name, bind_name, uid, bind_name, uid)
+			self.buffers[self._current_stack_point()] += "if(_c.$t.%s)_c.$t.%s.unshift(%s);else _c.$t.%s=[%s];" % (bind_name, bind_name, uid, bind_name, uid)
 			if bind_name != "item_root":
-				self.buffers[self._current_stack_point()] += "_rwt.helpers.elem_update(%s, _c['%s']);" % (uid, bind_name)
+				self.buffers[self._current_stack_point()] += "_h.elem_update(%s, _c['%s']);" % (uid, bind_name)
 
 	def handle_append(self, uid):
 		self.buffers[self._current_stack_point()] += "%s.%s(%s);" % (self._current_tree_point(), self.calls.appendChild, uid)
@@ -326,6 +332,11 @@ class RainwaveParser(HTMLParser):
 			self.tree_names.pop()
 		except IndexError:
 			raise Exception("%s has too many closing tags." % self.name)
+		if self.helpers:
+			if tag == "form":
+				self.buffers[self._current_stack_point()] += "_h._ofr(_c, %s);" % uid
+			elif tag == "select" or tag == "input" or tag == "textarea":
+				self.buffers[self._current_stack_point()] += "_h._rec(%s);" % uid
 		self.handle_append(current_point)
 
 	def handle_data(self, lines):
@@ -351,7 +362,7 @@ class RainwaveParser(HTMLParser):
 				elif not len(self.tree):
 					raise Exception("%s: Tried to set textContent of root element.  Text needs to be in an element. (\"%s\")" % (self.name, data))
 				elif self.tree[-1] in self.helpers:
-					self.buffers[self._current_stack_point()] += "%s.textContent=_rwt.helpers[%s](%s);" % (self.tree[-1], self.helpers[self.tree[-1]], self._parse_val(data))
+					self.buffers[self._current_stack_point()] += "%s.textContent=_h[%s](%s);" % (self.tree[-1], self.helpers[self.tree[-1]], self._parse_val(data))
 				else:
 					self.buffers[self._current_stack_point()] += "%s.textContent=%s;" % (self.tree[-1], self._parse_val(data))
 		self.input_buffer = ""
@@ -408,7 +419,7 @@ class RainwaveParser(HTMLParser):
 			self.buffers[self._current_stack_point()] += "%s(%s[%s], %s);" % (function_id, context_key, looper_var, self._current_tree_point())
 			self.buffers[self._current_stack_point()] += "}"
 		else:
-			self.buffers[self._current_stack_point()] += "_rwt.helpers.array_render(%s,%s,%s);" % (context_key, function_id, self._current_tree_point())
+			self.buffers[self._current_stack_point()] += "_h.array_render(%s,%s,%s);" % (context_key, function_id, self._current_tree_point())
 
 	def handle_subtemplate(self, template_name):
 		self.check_bind_scope(self._current_tree_point())
