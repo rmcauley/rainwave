@@ -23,7 +23,7 @@
 			<span>{{ $l("relevant_categories") }}</span>
 			{{#each genres }}
 				<a href="#!/group/{{ id }}">{{ name }}</a>
-				<span>,</span>
+				<span>, </span>
 			{{/each}}
 		</p>
 	{{/if}}
