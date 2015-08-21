@@ -182,7 +182,7 @@
    "filter"                                          : "Type anywhere to filter",
    "typeanywhere"                                    : "Just start typing!",
    "clearfilter"                                     : "Clear Filter",
-   "album_rating_ranked_at_v2"                       : "Rated at %(rating) by %(rating_count) song ratings, ranking #(rank).",
+   "album_rating_ranked_at_v2"                       : "Rated %(rating) by %(rating_count) song ratings, ranking #(rank).",
    "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",
    "album_year"                                      : "Released in %(year).",
    "song_extradetail_rating"                         : "Rating: %(rating) (by %(rating_count) people)",
