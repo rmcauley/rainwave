@@ -55,7 +55,9 @@ var Router = function() {
 		detail_header = root_template.detail_header;
 
 		root_template.lists.addEventListener("click", function(e) {
-			self.change(current_type);
+			if (Sizing.simple && document.body.classList.contains("detail")) {
+				self.change(current_type);
+			}
 			e.stopPropagation();
 		});
 
@@ -265,6 +267,7 @@ var Router = function() {
 			document.body.classList.add("playlist");
 			document.body.classList.add("playlist_" + typ);
 			self.active_list = lists[typ];
+			current_type = typ;
 		}
 		else {
 			document.body.classList.remove("playlist");
