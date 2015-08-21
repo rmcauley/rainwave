@@ -502,7 +502,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			template._root.classList.add("no_results");
 		}
 		else {
-			template._root.classList.remove("no_results");	
+			template._root.classList.remove("no_results");
 		}
 		var new_index = Math.floor(scroll.scroll_top / Sizing.list_item_height);
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
@@ -576,7 +576,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		self.reposition();
 	});
 
-	scroll.set_hook(self.reposition);
+	scroll.reposition_hook = self.reposition;
 
 	return self;
 };

@@ -43,71 +43,67 @@ var Scrollbar = function() {
 	var handle_margin_top = 5;
 	var handle_margin_bottom = 5;
 
-	cls.create = function(scrollable, always_scrollable, always_hook) {
-		var scrollblock;
-		// always scrollable is beneficial as an option because the only place we need an extra
-		// scrollblock-wrapping div is for the timeline
-		// all other scrollable <divs> can be just set by themselves but the timeline
-		// has some special width handling that requires a wrapping element at all times.
-		if (enabled || always_scrollable) {
-			scrollblock = document.createElement("div");
-			scrollblock.setAttribute("class", "scrollblock");
-			scrollable.style.overflowY = "scroll";
-			if (scrollable.className) {
-				scrollblock.setAttribute("class", "scrollblock " + scrollable.className);
-			}
-			scrollable.setAttribute("class", "scrollable");
+	var no_op = function() { return; };
 
-			if (scrollable.parentNode) {
-				scrollable.parentNode.replaceChild(scrollblock, scrollable);
-			}
-			scrollblock.appendChild(scrollable);
-		}
-		else {
-			scrollable.classList.add("scrollable");
-		}
-
-		var reposition_hook = false;
-
+	cls.create = function(scrollable, always_scrollblock, always_hook) {
 		var self = {};
-		self.scrollblock = scrollblock || scrollable;
+		self.scrollblock = scrollable;
 		self.el = scrollable;
 		self.scroll_top = null;
 		self.scroll_height = null;
 		self.offset_height = null;
 		self.scroll_top_max = null;
+		self.reposition_hook = null;
+		self.refresh = no_op;
+
+		self.el.classList.add("scrollable");
+
+		if (enabled || always_scrollblock) {
+			self.scrollblock = document.createElement("div");
+			self.scrollblock.setAttribute("class", "scrollblock");
+			if (self.el.className) {
+				self.scrollblock.setAttribute("class", "scrollblock " + self.el.className);
+			}
+			if (enabled) {
+				self.el.setAttribute("class", "scrollable");
+				self.el.style.overflowY = "scroll";
+			}
+
+			if (self.el.parentNode) {
+				self.el.parentNode.replaceChild(self.scrollblock, self.el);
+			}
+			self.scrollblock.appendChild(self.el);
+		}
+
 		if (!enabled) {
-			if (always_scrollable) {
-				self.set_height = function(h) { scrollable.style.height = h + "px"; };
-			}
-			else {
-				self.set_height = function(h) { /* pass */ };
-			}
-			self.scroll_to = function(n) { self.scrollable.scrollTop = n; };
 			if (always_hook) {
 				self.refresh = function() {
 					self.scroll_height = self.el.scrollHeight;
 					self.offset_height = self.scrollblock.offsetHeight;
 					self.scroll_top_max = self.scroll_height - self.offset_height;
 				};
-				self.set_hook = function(fn) {
-					reposition_hook = fn;
-				};
-				scrollable.addEventListener("scroll", function() {
-					self.scroll_top = self.el.scrollTop;
-					if (reposition_hook) reposition_hook();
+				self.scrollblock.addEventListener("scroll", function() {
+					self.scroll_top = self.scrollblock.scrollTop;
+					if (self.reposition_hook) self.reposition_hook();
 				});
 			}
-			else {
-				self.refresh = self.set_height;
-				self.set_hook = function(fn) { scrollable.addEventListener("scroll", fn); };
+
+			if (always_scrollblock) {
+				self.scrollblock.style.overflowY = "scroll";
+				self.set_height = function(h) { self.el.style.height = h + "px"; };
+				self.scroll_to = function(n) { self.scrollblock.scrollTop = n; };
 			}
+			else {
+				self.set_height = no_op;
+				self.scroll_to = function(n) { self.scrollblock.scrollTop = n; };
+			}
+
 			return self;
 		}
 
 		var handle = document.createElement("div");
 		handle.className = "scroll_handle";
-		scrollblock.insertBefore(handle, scrollblock.firstChild);
+		self.scrollblock.insertBefore(handle, self.scrollblock.firstChild);
 
 		var scrolling = false;
 		var visible = false;
@@ -158,7 +154,7 @@ var Scrollbar = function() {
 			var top = Math.min(1, self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
 			handle.style[Fx.transform] = "translateX(-12px) translateY(" + Math.floor(handle_margin_top + top) + "px)";
 
-			if (reposition_hook) reposition_hook();
+			if (self.reposition_hook) self.reposition_hook();
 		};
 
 		self.scroll_to = function(px) {
@@ -167,8 +163,8 @@ var Scrollbar = function() {
 				scrollable.scrollTop = px;
 				self.scroll_top = px;
 			}
-			else if (reposition_hook) {
-				reposition_hook();
+			else if (self.reposition_hook) {
+				self.reposition_hook();
 			}
 		};
 
@@ -201,7 +197,7 @@ var Scrollbar = function() {
 		};
 
 		self.set_hook = function(fn) {
-			reposition_hook = fn;
+			self.reposition_hook = fn;
 		};
 
 		handle.addEventListener("mousedown", mouse_down);
