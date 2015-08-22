@@ -79,8 +79,14 @@ div.detail {
 		position: relative;
 	}
 
-	p.genres span:last-child {
-		display: none;
+	p.genres {
+		span + a {
+			margin-left: 5px;
+		}
+
+		span:last-child {
+			display: none;
+		}
 	}
 }
 
