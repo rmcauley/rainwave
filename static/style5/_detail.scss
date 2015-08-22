@@ -82,6 +82,7 @@ div.detail {
 	p.genres {
 		span + a {
 			margin-left: 3px;
+			word-break: keep-all;
 		}
 
 		span:last-child {
