@@ -14,17 +14,12 @@ var Fx = function() {
 		}
 	}();
 
-	var transition_ends = [ "transitionend", "webkitTransitionEnd" ];
 	self.chain_transition = function(el, end_func) {
 		var end_func_wrapper = function(e) {
 			end_func(e, el);
-			for (var i in transition_ends) {
-				el.removeEventListener(transition_ends[i], end_func_wrapper, false);
-			}
+			el.removeEventListener("transitionend", end_func_wrapper, false);
 		};
-		for (var i in transition_ends) {
-			el.addEventListener(transition_ends[i], end_func_wrapper, false);
-		}
+		el.addEventListener("transitionend", end_func_wrapper, false);
 	};
 
 	self.remove_element = function(el) {
