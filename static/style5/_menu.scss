@@ -279,6 +279,10 @@ ul.menu {
 	z-index: 1;
 	@include transform(translateY(-50%));
 
+	&.main_menu {
+		z-index: 2;
+	}
+
 	li {
 		margin: 0 2px;
 		padding: 0;
