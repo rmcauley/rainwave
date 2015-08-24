@@ -39,6 +39,7 @@ div.rating {
 		position: absolute;
 		height: $rating_height;
 		width: 25px;
+		padding-right: 2px;
 		opacity: 0;
 		text-align: right;
 		color: $highlight;

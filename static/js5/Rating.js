@@ -146,6 +146,7 @@ var Rating = function() {
 			if (!relative_y) y -= evt.target.offset_top;
 		}
 
+		if (x < 0 || y < 0) return 1;
 		var result = Math.round(((x + ((18 - y) * 0.5)) / 10) * 2) / 2;
 		if (result <= 1) return 1;
 		else if (result >= 5) return 5;
@@ -193,10 +194,11 @@ var Rating = function() {
 		json.$t.rating.setAttribute("name", "srate_" + json.id);
 
 		var on_mouse_move = function(evt) {
-			if (evt.target != json.$t.rating) return;
+			if (evt.target !== this) return;
 			var tr = get_rating_from_mouse(evt, relative_x, relative_y);
-			json.$t.rating.rating_set(tr);
+			console.log(tr);
 			if (tr) {
+				json.$t.rating.rating_set(tr);
 				json.$t.rating_hover_number.textContent = Formatting.rating(tr);
 			}
 		};
@@ -210,6 +212,7 @@ var Rating = function() {
 
 		var click = function(evt) {
 			evt.stopPropagation();
+			if (evt.target !== this) return;
 			var new_rating = get_rating_from_mouse(evt, relative_x, relative_y);
 			if (json.rating_allowed || User.rate_anything) {
 				API.async_get("rate", { "rating": new_rating, "song_id": json.id },
