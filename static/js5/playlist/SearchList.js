@@ -12,10 +12,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 	sort_key = sort_key || "name";
 	search_key = search_key || "name_searchable";
 
-	var template = RWTemplates.searchlist(null, root_el);
-
 	var self = {};
 	self.auto_trim = false;
+	RWTemplates.searchlist(self, root_el);
+	var template = self.$t;
 
 	var stretcher = document.createElement("div");
 	stretcher.className = "stretcher";

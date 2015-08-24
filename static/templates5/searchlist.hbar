@@ -3,6 +3,6 @@
 	<img src="/static/images4/search.png"/>
 </div>
 
-<div class="no_result_message">{{ $l("no_results") }}</div>
+<div class="no_result_message" bind="no_result_message">{{ $l("no_results") }}</div>
 
 <div bind="list"></div>

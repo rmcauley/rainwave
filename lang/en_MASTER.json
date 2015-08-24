@@ -199,6 +199,7 @@
    "album_on_station"                                : "On %(station): %(album)",
    "groups_tab_title"                                : "Categories",
    "RequestLine"                                     : "Request Line",
+   "nobody_in_line"                                  : "Nobody in line.",
    "relevant_categories"                             : "Relevant categories: ",
 
    "__comment__"                 : "Requests",
