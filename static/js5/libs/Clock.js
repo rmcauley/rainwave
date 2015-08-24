@@ -79,7 +79,7 @@ var Clock = function() {
 			return;
 		}
 
-		if (!Prefs.get("show_title_in_titlebar") || !page_title || MOBILE  || !User.tuned_in) {
+		if (Sizing.simple && (!Prefs.get("show_title_in_titlebar") || !page_title || MOBILE  || !User.tuned_in)) {
 			if (document.title != "Rainwave") document.title = "Rainwave";
 			return;
 		}
