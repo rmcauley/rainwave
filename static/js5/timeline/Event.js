@@ -24,6 +24,7 @@ var Event = function(self) {
 			else {
 				running_height += Sizing.song_size;
 			}
+			self.songs[i].el.style.zIndex = self.songs.length - i;
 		}
 		if (self.$t.progress) self.$t.progress.style[Fx.transform] = "translateY(" + (running_height + 15) + "px)";
 	};
