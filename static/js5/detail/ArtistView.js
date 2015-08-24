@@ -36,6 +36,9 @@ var ArtistView = function(el, json) {
 		for (j = 0; j < albums[i].songs.length; j++) {
 			Fave.register(albums[i].songs[j]);
 			Rating.register(albums[i].songs[j]);
+			if (albums[i].songs[j].requestable) {
+				Requests.make_clickable(albums[i].songs[j].$t.title, albums[i].songs[j].id);
+			}
 		}
 	}
 

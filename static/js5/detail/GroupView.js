@@ -15,6 +15,18 @@ var GroupView = function(el, json) {
 	albums.sort(SongsTableAlbumSort);
 
 	var template = RWTemplates.detail.group({ "group": json, "albums": albums }, MOBILE ? null : document.createElement("div"));
+
+	var j;
+	for (i = 0; i < albums.length; i++) {
+		for (j = 0; j < albums[i].songs.length; j++) {
+			Fave.register(albums[i].songs[j]);
+			Rating.register(albums[i].songs[j]);
+			if (albums[i].songs[j].requestable) {
+				Requests.make_clickable(albums[i].songs[j].$t.title, albums[i].songs[j].id);
+			}
+		}
+	}
+
 	template._header_text = json.name;
 	return template;
 };
