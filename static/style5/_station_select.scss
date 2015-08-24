@@ -1,4 +1,4 @@
-$station_height: 60px;
+$station_height: 70px;
 $station_select_width: 270px;
 
 #station_select {
@@ -8,7 +8,6 @@ $station_select_width: 270px;
 	float: left;
 	width: $station_select_width;
 	border-right: 1px solid #0b5c89;
-	padding: 0 20px 0 15px;
 	height: $menu_height;
 	overflow: hidden;
 	background: #0b5c89;
@@ -32,8 +31,8 @@ $station_select_width: 270px;
 		float: right;
 		cursor: pointer;
 		position: relative;
-		top: $menu_height / 2;
 		z-index: 50;
+		margin-right: 15px;
 
 		@include transition-wtime(350ms, transform);
 		@include transform(translateY(-50%) rotate(0deg));
@@ -54,17 +53,16 @@ $station_select_width: 270px;
 
 	#station_select_header {
 		position: absolute;
-		opacity: 0.5;
+		opacity: 1;
 		font-size: 1.2em;
-		background: transparent !important;
+		background: $blue * 1.1 !important;
 		text-transform: uppercase;
 		height: $menu_height !important;
 		cursor: pointer;
+		z-index: 41;
 
 		@include transform(translateY(-100%));
-		@include transition(transform);
-		-webkit-transition-timing-function: $menu_transfunc;
-		        transition-timing-function: $menu_transfunc;
+		@include transition-wtime(300ms, transform);
 
 		div {
 			position: relative;
@@ -85,7 +83,18 @@ $station_select_width: 270px;
 		@include transform(translateY(0%));
 	}
 
+	div.menu_wrapper:hover &.closed {
+		#station_select_header {
+			@include transform(translateY(0%));
+		}
+	}
+
+	&.no_station_select a.station {
+		cursor: default;
+	}
+
 	a.station {
+		box-sizing: border-box;
 		display: block;
 		background: transparent;
 		position: absolute;
@@ -95,12 +104,11 @@ $station_select_width: 270px;
 		width: 100%;
 		cursor: pointer;
 		overflow: hidden;
-		height: $menu_height;
-		color: rgb(151,198,229);
-		padding: 0px 0px 0px 20px;
+		height: $station_height;
 
-		-webkit-transition: top 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
-		        transition: top 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
+		padding: 0px 0px 0px 20px;
+		@include transform(translateY(-15px));
+		@include transition-wtime(300ms, transform);
 
 		@media $phone-media {
 			height: $phone_menu_height !important;
@@ -115,11 +123,9 @@ $station_select_width: 270px;
 		&.selected_station {
 			background: $blue;
 			color: $text;
-			z-index: 40;
-
-			div.timeline_song {
-				display: none !important;
-			}
+			z-index: 40 !important;
+			height: $menu_height;
+			@include transform(none);
 		}
 
 		div.station_name {
@@ -183,31 +189,33 @@ $station_select_width: 270px;
 		}
 	}
 
-	&.no_station_select a.station {
-		cursor: default;
-	}
-
 	&.open a.station {
-		height: $station_height;
+		-webkit-transition: -webkit-transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
+		        transition:         transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
 
-		&:hover, &.selected_station {
+		&.selected_station {
 			cursor: default;
-			color: $text;
-
-			div.station_details {
-				@include transform(translateY(-70%));
-			}
-
-			div.station_description {
-				opacity: 0.8;
-				@include transform(translateY(-2em));
-			}
+			height: $station_height;
 		}
 
-		&:nth-of-type(2) { top: $menu_height; border-top: 1px solid rgba(0, 0, 0, 0.1); }
+		div.station_details {
+			@include transform(translateY(-72%));
+		}
 
-		@for $i from 3 through 6 {
-			&:nth-of-type($i) { top: $menu_height + ($station_height * ($i - 2)); }
+		div.station_description {
+			opacity: 0.8;
+			@include transform(translateY(-2.8em));
+		}
+
+		&:nth-of-type(2) {
+			border-top: 1px solid rgba(0, 0, 0, 0.1);
+		}
+
+		@for $i from 2 through 6 {
+			&:nth-of-type($i) {
+				z-index: $i;
+				@include transform(translateY($menu_height + ($station_height * ($i - 2))));
+			}
 		}
 
 		div.station_song_container {

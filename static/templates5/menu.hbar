@@ -61,11 +61,11 @@
 			{{/if}}
 		</ul>
 
-		<div id="station_select" bind="station_select">
+		<div id="station_select" bind="station_select" class="closed">
 			<a class="station" id="station_select_header" bind="station_select_header">
 				<div>{{ $l("station_select_header") }}</div>
+				<svg class="pulldown_arrow" use="pulldown"></svg>
 			</a>
-			<svg class="pulldown_arrow" use="pulldown"></svg>
 			{{#each stations }}
 				<a bind="menu_link" class="station">
 					<div bind="menu_np" class="station_song_container"></div>

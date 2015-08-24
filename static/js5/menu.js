@@ -4,13 +4,21 @@ var Menu = function() {
 	var template;
 	var has_calendar;
 
+	/*BOOTSTRAP.station_list = {
+		1: { "id": 1, "name": "Game", "url": "hello" },
+		2: { "id": 2, "name": "OC ReMix", "url": "hello" },
+		3: { "id": 3, "name": "Covers", "url": "hello" },
+		4: { "id": 4, "name": "Chiptune", "url": "hello" },
+		5: { "id": 5, "name": "All", "url": "hello" }
+	};*/
+
 	// Station order on the page is to be ordered like this, not by numeric sorting:
 	var station_order = [ 5, 1, 4, 2, 3 ];
 	var stations = [];
 	for (var i = 0; i < station_order.length; i++) {
 		if (BOOTSTRAP.station_list[station_order[i]]){
 			stations.push(BOOTSTRAP.station_list[station_order[i]]);
-			if (station_order[i] == BOOTSTRAP.user.sid) {
+			if (stations[stations.length - 1].id == BOOTSTRAP.user.sid) {
 				stations[stations.length - 1].url = null;
 			}
 		}
@@ -135,6 +143,7 @@ var Menu = function() {
 	var open_station_select = function(e) {
 		if (!template.station_select.classList.contains("open")) {
 			template.station_select.classList.add("open");
+			template.station_select.classList.remove("closed");
 			template.header.addEventListener("mouseleave", close_station_select);
 		}
 	};
@@ -142,6 +151,7 @@ var Menu = function() {
 	var close_station_select = function(e) {
 		if (template.station_select.classList.contains("open")) {
 			template.station_select.classList.remove("open");
+			template.station_select.classList.add("closed");
 			template.header.removeEventListener("mouseleave", close_station_select);
 			e.stopPropagation();
 		}
