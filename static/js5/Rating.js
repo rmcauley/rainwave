@@ -153,10 +153,6 @@ var Rating = function() {
 		return result;
 	};
 
-	var on_mouse_over = function() {
-		this.classList.add("rating_user");
-	};
-
 	// INDIVIDUAL RATING BAR CODE
 
 	self.register = function(json, relative_x, relative_y) {
@@ -193,10 +189,23 @@ var Rating = function() {
 		json.$t.rating.classList.add("rating_song");
 		json.$t.rating.setAttribute("name", "srate_" + json.id);
 
+		var on_mouse_over = function() {
+			if (!json.rating_allowed && !User.rate_anything) {
+				if (json.$t.rating.classList.contains("ratable")) {
+					json.$t.rating.classList.remove("ratable");
+				}
+				return;
+			}
+			if (!json.$t.rating.classList.contains("ratable")) {
+				json.$t.rating.classList.add("ratable");
+			}
+			this.classList.add("rating_user");
+		};
+
 		var on_mouse_move = function(evt) {
+			if (!json.rating_allowed && !User.rate_anything) return;
 			if (evt.target !== this) return;
 			var tr = get_rating_from_mouse(evt, relative_x, relative_y);
-			console.log(tr);
 			if (tr) {
 				json.$t.rating.rating_set(tr);
 				json.$t.rating_hover_number.textContent = Formatting.rating(tr);
@@ -212,6 +221,7 @@ var Rating = function() {
 
 		var click = function(evt) {
 			evt.stopPropagation();
+			if (!json.rating_allowed && !User.rate_anything) return;
 			if (evt.target !== this) return;
 			var new_rating = get_rating_from_mouse(evt, relative_x, relative_y);
 			if (json.rating_allowed || User.rate_anything) {
