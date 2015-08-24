@@ -213,7 +213,7 @@ $station_select_width: 270px;
 
 		@for $i from 2 through 6 {
 			&:nth-of-type($i) {
-				z-index: $i;
+				z-index: 6 - $i;
 				@include transform(translateY($menu_height + ($station_height * ($i - 2))));
 			}
 		}
