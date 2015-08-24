@@ -5,6 +5,7 @@ div.detail {
 
 	body.detail & {
 		opacity: 1;
+		visibility: visible;
 		@include transform(translateX(-100%));
 	}
 
