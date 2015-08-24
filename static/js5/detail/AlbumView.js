@@ -13,15 +13,8 @@ var AlbumViewColors = {
 var AlbumViewRatingPieChart = function(ctx, album) {
 	"use strict";
 	var data = [];
-	var max_count = 0;
-	for (var i in AlbumViewColors) {
-		if (i in album.rating_histogram) {
-			max_count += album.rating_histogram[i];
-		}
-	}
-	album.num_song_ratings = max_count;
 	for (i in AlbumViewColors) {
-		if (i in album.rating_histogram) data.push({ "value": Math.round(album.rating_histogram[i] / max_count * 100), "color": AlbumViewColors[i], "highlight": "#FFF", "label": i });
+		if (i in album.rating_histogram) data.push({ "value": Math.round(album.rating_histogram[i] / album.num_song_ratings * 100), "color": AlbumViewColors[i], "highlight": "#FFF", "label": i });
 	}
 	if (data.length === 0) return;
 	new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1, "animationSteps": 40, "tooltipTemplate": "<%if (label){%><%=label%>: <%}%><%= value %>%", });
@@ -29,6 +22,13 @@ var AlbumViewRatingPieChart = function(ctx, album) {
 
 var AlbumView = function(el, album) {
 	"use strict";
+
+	album.num_song_ratings = 0;
+	for (var i in AlbumViewColors) {
+		if (i in album.rating_histogram) {
+			album.num_song_ratings += album.rating_histogram[i];
+		}
+	}
 
 	album.songs.sort(SongsTableSorting);
 

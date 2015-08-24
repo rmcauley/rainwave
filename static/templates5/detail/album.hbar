@@ -13,7 +13,7 @@
 		<p class="year">{{ $l("album_year", { "year": _c.year }) }}</p>
 	{{/if}}-->
 	{{#if rating }}
-		<p>{{ $l("album_rating_ranked_at_v2", { "rating": _c.rating, "rating_count": _c.rating_count, "rank": _c.rating_rank }) }}</p>
+		<p>{{ $l("album_rating_ranked_at_v2", { "rating": _c.rating, "rating_count": _c.num_song_ratings, "rank": _c.rating_rank }) }}</p>
 	{{/if}}
 	{{#if request_count }}
 		<p>{{ $l("album_requests_ranked_at", { "count": _c.request_count, "rank": _c.request_rank }) }}</p>
