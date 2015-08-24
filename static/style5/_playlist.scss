@@ -169,7 +169,7 @@ div.list {
 		padding: 2px 65px 2px 5px;
 		border-bottom: solid 1px transparent;
 		cursor: pointer;
-		@include transition-wtime(250ms, background-color, border-color, padding, color);
+		@include transition-wtime(250ms, background-color, border-color, color);
 		overflow: hidden;
 		word-break: break-all;
 		white-space: nowrap;
@@ -195,11 +195,10 @@ div.list {
 		}
 
 		&:hover, .hover {
-			/*padding-left: 20px;*/
 			color: $link;
 			border-color: $hovercolor-border;
 			background-color: $hovercolor;
-			@include transition-wtime(250ms, padding, color);
+			@include transition-wtime(250ms, color);
 
 			body.logged_in & img.fave_lined {
 				opacity: 0.5;
@@ -214,10 +213,13 @@ div.list {
 		&.open, &.open:hover, &.hover.open {
 			background-color: #1f4f70;
 			border-color: $orange;
-			padding-left: 20px;
 
 			&.album_fave_highlight {
 				background-color: #6D5D1E;
+			}
+
+			span.name {
+				padding-left: 20px;
 			}
 		}
 
@@ -227,6 +229,7 @@ div.list {
 
 		span.name {
 			padding-left: 5px;
+			@include transition-wtime(300ms, padding);
 		}
 
 		div.fave {
