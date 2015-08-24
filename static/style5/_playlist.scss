@@ -64,11 +64,10 @@ div.lists {
 	}
 
 	body.desktop.playlist.detail & {
-		color: #AAA;
 		background: #202020;
 		@include transform(translateX(-110%));
 
-		div.fave, ul.panel_header {
+		ul.panel_header, div.list_contents {
 			opacity: 0.7;
 		}
 	}
