@@ -71,7 +71,7 @@
 					<div bind="menu_np" class="station_song_container"></div>
 					<div class="station_details">
 						<div class="station_name">{{ name }}</div>
-						<div class="station_description">{{ $l("station_menu_description_id_" + _c.sid) }}</div>
+						<div class="station_description">{{ $l("station_menu_description_id_" + _c.id) }}</div>
 					</div>
 				</a>
 			{{/each}}
