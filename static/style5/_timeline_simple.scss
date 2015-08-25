@@ -4,20 +4,6 @@ body.desktop.simple div.timeline {
 	max-width: 1024px;
 	margin: auto;
 
-	div.timeline_event {
-		&.sched_history {
-			height: $simple_art_size;
-		}
-
-		&.sched_current {
-			height: $simple_art_size + $simple_art_size + $simple_np_size + 30;
-		}
-
-		&.sched_next {
-			height: ($simple_art_size * 3) + 30;
-		}
-	}
-
 	div.song {
 		height: $simple_art_size + 2;
 
@@ -60,20 +46,6 @@ body.desktop.simple div.timeline {
 body.mobile.simple div.timeline {
 	position: relative;
 	width: 100%;
-
-	div.timeline_event {
-		&.sched_history {
-			height: $art_size;
-		}
-
-		&.sched_current {
-			height: $art_size + 20;
-		}
-
-		&.sched_next {
-			height: ($art_size * 3) + 30;
-		}
-	}
 
 	div.song {
 		height: $art_size + 2;

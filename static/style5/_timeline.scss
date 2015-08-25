@@ -75,13 +75,15 @@ div.timeline_event {
 		font-size: smaller;
 		padding: 0 20px 0 10px;
 
-		&.no_header {
-			display: none;
-		}
-
 		body.mobile & {
 			border-bottom: solid 1px $vdarktext;
 			margin-bottom: 5px;
+		}
+	}
+
+	&.no_header {
+		div.timeline_header {
+			display: none;
 		}
 	}
 
@@ -138,5 +140,9 @@ div.progress {
 		width: 100%;
 		opacity: 0;
 		@include transition(opacity);
+	}
+
+	div.no_header &, div.no_progress & {
+		display: none;
 	}
 }

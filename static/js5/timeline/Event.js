@@ -5,7 +5,7 @@ var Event = function(self) {
 	if (!self.used && (self.type.indexOf("election") != -1)) {
 		shuffle(self.songs);
 	}
-	var showing_header = true;
+	self.showing_header = true;
 	self.height = 0;
 	RWTemplates.timeline.event(self);
 	self.el = self.$t.el;
@@ -56,7 +56,7 @@ var Event = function(self) {
 		self.$t.el.classList.add("sched_next");
 		self.set_header_text($l("coming_up"));
 		self.height = (self.songs.length * Sizing.song_size);
-		if (showing_header) self.height += Sizing.timeline_header_size;
+		if (self.showing_header) self.height += Sizing.timeline_header_size;
 	};
 
 	self.change_to_now_playing = function() {
@@ -64,7 +64,6 @@ var Event = function(self) {
 		self.$t.el.classList.remove("sched_history");
 		self.$t.el.classList.add("sched_current");
 		Clock.pageclock = self.$t.clock;
-		var i;
 		if (self.songs && (self.songs.length > 1)) {
 			// other places in the code rely on songs[0] to be the winning song
 			// make sure we sort properly for that condition here
@@ -74,7 +73,7 @@ var Event = function(self) {
 		self.disable_voting();
 		self.set_header_text($l("now_playing"));
 		self.height = ((self.songs.length - 1) * Sizing.song_size) + Sizing.song_size_np;
-		if (showing_header) self.height += Sizing.timeline_header_size;
+		if (self.showing_header) self.height += Sizing.timeline_header_size;
 		reflow();
 	};
 
@@ -131,13 +130,13 @@ var Event = function(self) {
 	};
 
 	self.hide_header = function() {
-		self.$t.header_container.classList.add("no_header");
-		showing_header = false;
+		self.el.classList.add("no_header");
+		self.showing_header = false;
 	};
 
 	self.show_header = function() {
-		self.$t.header_container.classList.remove("no_header");
-		showing_header = true;
+		self.el.classList.remove("no_header");
+		self.showing_header = true;
 	};
 
 	self.progress_bar_start = function() {

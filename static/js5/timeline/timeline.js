@@ -175,6 +175,14 @@ var Timeline = function() {
 				history_bar.style[Fx.transform] = "translateY(" + (running_y + 9) + "px)";
 				running_y += 20;
 			}
+			if (events[i].el.classList.contains("no_progress")) {
+				events[i].el.classList.remove("no_progress");
+			}
+			if (!events[i].showing_header && (i !== 0) && (!events[i - 1].el.classList.contains("no_header"))) {
+				events[i - 1].el.classList.add("no_progress");
+				running_y -= Sizing.timeline_header_size;
+				running_y += 17;
+			}
 			events[i].el.style[Fx.transform] = "translateY(" + running_y + "px)";
 			running_y += events[i].height;
 			if (Sizing.simple && !events[i].history) running_y += 7;
