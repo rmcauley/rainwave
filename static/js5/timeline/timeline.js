@@ -242,13 +242,20 @@ var Timeline = function() {
 		var evt;
 		for (var i = 0; i < sched_next.length; i++) {
 			evt = find_event(sched_next[i].id);
-			if (evt) {
-				if (i === 0) {
-					evt.check_voting();
-				}
-				else {
-					evt.disable_voting();
-				}
+			if ((evt.type != "election") || (evt.songs.length <= 1)) {
+				evt.disable_voting();
+			}
+			else if (User.locked && (User.lock_sid != User.sid)) {
+				evt.disable_voting();
+			}
+			else if ((i === 0) && (User.tuned_in)) {
+				evt.enable_voting();
+			}
+			else if (User.tuned_in && User.perks) {
+				evt.enable_voting();
+			}
+			else {
+				evt.disable_voting();
 			}
 		}
 	};

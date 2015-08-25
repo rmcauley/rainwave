@@ -94,20 +94,6 @@ var Event = function(self) {
 		self.height = Sizing.song_size;
 	};
 
-	self.check_voting = function() {
-		if (User.tuned_in && (!User.locked || (User.lock_sid == User.sid))) {
-			if ((self.type == "election") && (self.songs.length > 1) && !self.used) {
-				self.enable_voting();
-			}
-			else {
-				self.disable_voting();
-			}
-		}
-		else {
-			self.disable_voting();
-		}
-	};
-
 	self.enable_voting = function() {
 		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].enable_voting();
