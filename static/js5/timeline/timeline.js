@@ -242,7 +242,10 @@ var Timeline = function() {
 		var evt;
 		for (var i = 0; i < sched_next.length; i++) {
 			evt = find_event(sched_next[i].id);
-			if ((evt.type != "election") || (evt.songs.length <= 1)) {
+			if (!evt) {
+				// pass, we're in the middle of a transition
+			}
+			else if ((evt.type != "election") || (evt.songs.length <= 1)) {
 				evt.disable_voting();
 			}
 			else if (User.locked && (User.lock_sid != User.sid)) {
