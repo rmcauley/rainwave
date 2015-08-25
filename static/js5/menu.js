@@ -4,13 +4,13 @@ var Menu = function() {
 	var template;
 	var has_calendar;
 
-	/*BOOTSTRAP.station_list = {
+	BOOTSTRAP.station_list = {
 		1: { "id": 1, "name": "Game", "url": "hello" },
 		2: { "id": 2, "name": "OC ReMix", "url": "hello" },
 		3: { "id": 3, "name": "Covers", "url": "hello" },
 		4: { "id": 4, "name": "Chiptune", "url": "hello" },
 		5: { "id": 5, "name": "All", "url": "hello" }
-	};*/
+	};
 
 	// Station order on the page is to be ordered like this, not by numeric sorting:
 	var station_order = [ 5, 1, 4, 2, 3 ];
@@ -44,15 +44,13 @@ var Menu = function() {
 			}
 			else {
 				stations[i].$t.menu_link.classList.add("selected_station");
+				if (stations.length > 1) {
+					template.station_select_header.addEventListener("click", toggle_station_select);
+					template.station_select.classList.add("openable");
+					stations[i].$t.menu_link.addEventListener("mousedown", open_station_select);
+					stations[i].$t.menu_link.addEventListener("touchstart", open_station_select);
+				}
 			}
-		}
-
-		if (stations.length > 1) {
-			template.station_select_header.addEventListener("click", close_station_select);
-			template.station_select.addEventListener("click", open_station_select);
-		}
-		else {
-			template.station_select.classList.add("no_station_select");
 		}
 
 		if (template.settings_link) {
@@ -140,11 +138,22 @@ var Menu = function() {
 		template.calendar_dropdown.classList.remove("show_calendar");
 	};
 
+	var toggle_station_select = function(e) {
+		if (template.station_select.classList.contains("open")) {
+			close_station_select(e);
+		}
+		else {
+			open_station_select(e);
+		}
+	};
+
 	var open_station_select = function(e) {
 		if (!template.station_select.classList.contains("open")) {
 			template.station_select.classList.add("open");
 			template.station_select.classList.remove("closed");
+			template.station_select_header.addEventListener("click", close_station_select);
 			template.header.addEventListener("mouseleave", close_station_select);
+			e.stopPropagation();
 		}
 	};
 
@@ -152,6 +161,7 @@ var Menu = function() {
 		if (template.station_select.classList.contains("open")) {
 			template.station_select.classList.remove("open");
 			template.station_select.classList.add("closed");
+			template.station_select_header.removeEventListener("click", close_station_select);
 			template.header.removeEventListener("mouseleave", close_station_select);
 			e.stopPropagation();
 		}

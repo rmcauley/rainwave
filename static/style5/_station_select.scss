@@ -28,6 +28,7 @@ $station_select_width: 270px;
 	}
 
 	svg.pulldown_arrow {
+		display: none;
 		float: right;
 		cursor: pointer;
 		position: relative;
@@ -42,8 +43,8 @@ $station_select_width: 270px;
 		        transition-timing-function: $menu_transfunc;
 	}
 
-	&.no_station_select svg.pulldown_arrow {
-		display: none;
+	&.openable svg.pulldown_arrow {
+		display: block;
 	}
 
 	&.open svg.pulldown_arrow {
@@ -58,7 +59,6 @@ $station_select_width: 270px;
 		background: $blue * 1.1 !important;
 		text-transform: uppercase;
 		height: $menu_height !important;
-		cursor: pointer;
 		z-index: 41;
 
 		@include transform(translateY(-100%));
@@ -75,22 +75,22 @@ $station_select_width: 270px;
 		}
 	}
 
-	&.no_station_select #station_select_header {
-		cursor: default;
+	&.openable #station_select_header {
+		cursor: pointer;
 	}
 
 	&.open #station_select_header {
 		@include transform(translateY(0%));
 	}
 
-	div.menu_wrapper:hover &.closed {
+	div.menu_wrapper:hover &.openable.closed {
 		#station_select_header {
 			@include transform(translateY(0%));
 		}
 	}
 
-	&.no_station_select a.station {
-		cursor: default;
+	&.openable a.station {
+		cursor: pointer;
 	}
 
 	a.station {
@@ -102,13 +102,14 @@ $station_select_width: 270px;
 		top: 0;
 		z-index: 1;
 		width: 100%;
-		cursor: pointer;
 		overflow: hidden;
 		height: $station_height;
+		cursor: default;
 
 		padding: 0px 0px 0px 20px;
 		@include transform(translateY(-15px));
-		@include transition-wtime(300ms, transform);
+		-webkit-transition: -webkit-transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
+		        transition:         transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
 
 		@media $phone-media {
 			height: $phone_menu_height !important;
@@ -117,7 +118,6 @@ $station_select_width: 270px;
 		&:hover {
 			background: #0f74b8;
 			color: $text !important;
-			cursor: pointer;
 		}
 
 		&.selected_station {
@@ -151,10 +151,9 @@ $station_select_width: 270px;
 			font-weight: 400;
 			font-size: 0.4em;
 			position: absolute;
-			top: $station_height;
 			opacity: 0;
-			-webkit-transition: transform 300ms ease-in-out, opacity 250ms ease;
-			        transition: transform 300ms ease-in-out, opacity 250ms ease;
+			@include transition-wtime(300ms, transform, opacity);
+			@include transform(translateX(1em));
 
 			@media $phone-media {
 				display: none;
@@ -190,9 +189,6 @@ $station_select_width: 270px;
 	}
 
 	&.open a.station {
-		-webkit-transition: -webkit-transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
-		        transition:         transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
-
 		&.selected_station {
 			cursor: default;
 			height: $station_height;
@@ -203,8 +199,9 @@ $station_select_width: 270px;
 		}
 
 		div.station_description {
-			opacity: 0.8;
-			@include transform(translateY(-2.8em));
+			opacity: 0.7;
+			@include transform(translateX(0px));
+			transition-delay: 400ms;
 		}
 
 		&:nth-of-type(2) {
