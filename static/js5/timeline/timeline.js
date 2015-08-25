@@ -234,31 +234,31 @@ var Timeline = function() {
 			throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote"});
 		}
 
-		find_event(sched_next[which_election].id).songs[song_position].vote();
+		sched_next[which_election].songs[song_position].vote();
 	};
 
-	self.voting_allowed_check = function(json) {
+	self.voting_allowed_check = function() {
 		if (!sched_next) return;
-		var evt;
+		if (!sched_next.length) return;
 		for (var i = 0; i < sched_next.length; i++) {
-			evt = find_event(sched_next[i].id);
-			if (!evt) {
-				// pass, we're in the middle of a transition
+			if (!sched_next[i].disable_voting) {
+				// we haven't finished loading everything yet, short-circuit
+				return;
 			}
-			else if ((evt.type != "election") || (evt.songs.length <= 1)) {
-				evt.disable_voting();
+			else if ((sched_next[i].type != "election") || (sched_next[i].songs.length <= 1)) {
+				sched_next[i].disable_voting();
 			}
 			else if (User.locked && (User.lock_sid != User.sid)) {
-				evt.disable_voting();
+				sched_next[i].disable_voting();
 			}
-			else if ((i === 0) && (User.tuned_in)) {
-				evt.enable_voting();
+			else if ((i === 0) && User.tuned_in) {
+				sched_next[i].enable_voting();
 			}
 			else if (User.tuned_in && User.perks) {
-				evt.enable_voting();
+				sched_next[i].enable_voting();
 			}
 			else {
-				evt.disable_voting();
+				sched_next[i].disable_voting();
 			}
 		}
 	};

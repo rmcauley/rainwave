@@ -36,6 +36,7 @@ var Event = function(self) {
 				self[i] = json[i];
 			}
 		}
+		self.type = self.type.toLowerCase();
 
 		if (self.songs) {
 			var j;
