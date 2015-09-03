@@ -42,11 +42,19 @@
 #
 #	{{ @root.blah }}
 #   	 - access root context object
-# 	{{ $blahblah }}
-#   	 - use raw JS including $ (this is a dumb hack for Rainwave)
 # 	{{ ^blahblah }}
 #   	 - use raw JS in the template excluding ^
 #        - access the current object the template system is looking at with _c
+#
+# You can add your own convenience functions that will automatically
+# turn into straight Javascript by adding/remove from raw_js_functions.
+# e.g. for django:
+# before:
+#    RWTemplates.raw_js_functions = []
+#    <div>{{ gettext("Hello") }}</div> -----> a.textContent="gettext(\"Hello\")";
+# after:
+#    RWTemplates.raw_js_functions.append("gettext")
+#    <div>{{ gettext("Hello") }}</div> -----> a.textContent=gettext("Hello");
 #
 ##########################################
 
@@ -106,13 +114,11 @@ def compile_templates(source_dir, dest_file, **kwargs):
 def js_start(full_calls=False, helpers=False):
 	to_ret = ""
 	if helpers:
-		to_ret += "window.RWTemplateObject=function(_c){'use strict';this._c=_c;};"
 		to_ret += "window.RWTemplateHelpers={};"
 	to_ret += "window.RWTemplates=function(){"
 	to_ret += "'use strict';"
 	to_ret += "var _f={};"
 	to_ret += "var _h=window.RWTemplateHelpers;"
-	to_ret += "var _o=window.RWTemplateObject;"
 	if not full_calls:
 		to_ret += (
 			"var _d=document;"
@@ -130,6 +136,9 @@ def js_start(full_calls=False, helpers=False):
 		"}"
 	)
 	to_ret += "var _rwt={};"
+	if helpers:
+		to_ret += "var _o;"
+		to_ret += "_rwt.set_object=function(ctor){_o=ctor;};"
 	return to_ret
 
 def js_end():
@@ -147,33 +156,53 @@ class _short_call(object):
 	document = "_d"
 	createElement = "c"
 
+raw_js_functions = [
+	"$l",
+	"gettext",
+	"interpolate"
+]
+
 _bind_reserved_words = ( 'update', 'get', 'update_data', 'clear', 'reset', 'get_form_elements', 'submitting', 'error', 'normal', 'success', 'enable_enter_key_submission' )
 
 class RainwaveParser(HTMLParser):
 	def parse_context_key(self, context_key):
+		global raw_js_functions
+
 		if context_key[0:6] == "@root.":
 			return "_b.%s" % context_key[6:]
-		if context_key[0] == "$":
-			return context_key
+		if context_key == "this":
+			return "_c"
 		if context_key[0] == "^":
 			return context_key[1:]
-		else:
-			return "_c.%s" % context_key
+		for func_name in raw_js_functions:
+			if context_key[0:len(func_name)] == func_name:
+				return context_key
+		return "_c.%s" % context_key
 
 	def _parse_val(self, val):
 		use_plus = False
 		final_val = ""
-		for m in re.split(r"({{.*?}})", val):
-			tm = None
-			if m[:2] == "{{" and m[-2:] == "}}":
-				tm = self.parse_context_key(m[2:-2].strip())
-			elif len(m.strip()) > 0:
-				tm = "\"%s\"" % m
-			if tm:
-				if use_plus:
-					final_val += "+"
-				final_val += tm
-				use_plus = True
+		try:
+			for m in re.split(r"({{.*?}})", val):
+				tm = None
+				if m[:2] == "{{" and m[-2:] == "}}":
+					tm = self.parse_context_key(m[2:-2].strip())
+				elif len(m.strip()) > 0:
+					tm = "\"%s\"" % m
+				if tm:
+					if use_plus:
+						final_val += "+"
+					final_val += tm
+					use_plus = True
+		except:
+			print "-" * 80
+			print "Exception in %s" % self.name
+			print "Value: %s" % val
+			print "Current element tree: " % self.tree_names
+			print "Current call stack: " % self.stack
+			print "-" * 80
+			raise
+
 		return final_val
 
 	def __init__(self, template_name, helpers=False, debug_symbols=True, full_calls=False, inline_templates=tuple(), **kwargs):
@@ -232,7 +261,6 @@ class RainwaveParser(HTMLParser):
 			self.buffers['_r'] += "}"
 			self.buffers['_r'] += "if(!_c.$t._root){_c.$t._root=_r;}"
 
-
 	def _current_tree_point(self):
 		if len(self.tree) == 0:
 			return "_r"
@@ -279,25 +307,29 @@ class RainwaveParser(HTMLParser):
 		else:
 			self.buffers[self._current_stack_point()] += "var %s=%s.%s('%s');" % (uid, self.calls.document, self.calls.createElement, tag)
 		self.tree.append(uid)
-		self.tree_names.append((tag, attrs))
-		# gotta do binds last (so they pick up helpers/etc)
 		bind_names = []
+		self.tree_names.append((tag, attrs, bind_names))
+		# gotta do binds last (so they pick up helpers/etc)
 		for attr in attrs:
-			attr_val = self._parse_val(attr[1])
+			if attr[1] == None:
+				# you can try this:
+				# attr_val = "''"
+				# or you can try this: (which produces "disabled='disabled'" attributes)
+				attr_val = "'%s'" % attr[0]
+			else:
+				attr_val = self._parse_val(attr[1])
 			if attr[0] == "bind":
 				bind_names.append(attr_val.strip('"'))
 			elif attr[0] == "class" and tag != "svg":
 				self.buffers[self._current_stack_point()] += "%s.className=%s;" % (uid, attr_val)
 			elif attr[0] == "href" and tag != "svg":
 				self.buffers[self._current_stack_point()] += "%s.href=%s;" % (uid, attr_val)
-			if attr[0] == "use" and tag == "svg":
+			elif attr[0] == "use" and tag == "svg":
 				pass
 			else:
 				if self.helpers_on and attr[0] == "helper":
 					self.helpers[uid] = attr_val
 				self.buffers[self._current_stack_point()] += "%s.%s('%s',%s);" % (uid, self.calls.setAttribute, attr[0], attr_val)
-		for name in bind_names:
-			self.handle_bind(uid, name)
 
 	def check_bind_scope(self, uid):
 		if len(self.stack) and self.stack[-1]['function_id'] and not self.stack[-1]['function_id'] in self.bound_scopes:
@@ -317,27 +349,28 @@ class RainwaveParser(HTMLParser):
 				raise Exception("%s is a reserved word for binding. (%s)" % (bind_name, self.name))
 			self.buffers[self._current_stack_point()] += "if(_c.$t.%s)_c.$t.%s.unshift(%s);else _c.$t.%s=[%s];" % (bind_name, bind_name, uid, bind_name, uid)
 			if bind_name != "item_root":
-				self.buffers[self._current_stack_point()] += "_h.elem_update(%s, _c['%s']);" % (uid, bind_name)
+				self.buffers[self._current_stack_point()] += "_h.elem_update(%s, _c.%s);" % (uid, bind_name)
 
 	def handle_append(self, uid):
 		self.buffers[self._current_stack_point()] += "%s.%s(%s);" % (self._current_tree_point(), self.calls.appendChild, uid)
 
 	def handle_endtag(self, tag):
 		self.handle_data(None)
-		current_point = self._current_tree_point()
 		try:
-			if tag != self.tree_names[-1][0]:
-				raise Exception("%s has mismatched open/close tags. (%s/%s)" % (self.name, tag, self.tree_names[-1][0]))
-			self.tree.pop()
-			self.tree_names.pop()
+			uid = self.tree.pop()
+			(tn_tag, attrs, bind_names) = self.tree_names.pop()
+			if tag != tn_tag:
+				raise Exception("%s has mismatched open/close tags. (%s - %s%s)" % (self.name, tag, tn_tag, attrs))
+			for name in bind_names:
+				self.handle_bind(uid, name)
+			if self.helpers_on:
+				if tag == "form":
+					self.buffers[self._current_stack_point()] += "_h._ofr(_c, %s);" % uid
+				elif tag == "select" or tag == "input" or tag == "textarea":
+					self.buffers[self._current_stack_point()] += "_h._rec(%s);" % uid
+			self.handle_append(uid)
 		except IndexError:
 			raise Exception("%s has too many closing tags." % self.name)
-		if self.helpers:
-			if tag == "form":
-				self.buffers[self._current_stack_point()] += "_h._ofr(_c, %s);" % uid
-			elif tag == "select" or tag == "input" or tag == "textarea":
-				self.buffers[self._current_stack_point()] += "_h._rec(%s);" % uid
-		self.handle_append(current_point)
 
 	def handle_data(self, lines):
 		if lines:
@@ -346,6 +379,7 @@ class RainwaveParser(HTMLParser):
 		self.input_buffer = self.input_buffer.strip()
 		if not self.input_buffer or not len(self.input_buffer):
 			return
+		text_content_used = False
 		for line in self.input_buffer.split("\n"):
 			for data in re.split(r"({{.*?}})", line):
 				data = data.strip()
@@ -361,10 +395,16 @@ class RainwaveParser(HTMLParser):
 					self.handle_stack_pop(data[3:-2])
 				elif not len(self.tree):
 					raise Exception("%s: Tried to set textContent of root element.  Text needs to be in an element. (\"%s\")" % (self.name, data))
-				elif self.tree[-1] in self.helpers:
-					self.buffers[self._current_stack_point()] += "%s.textContent=_h[%s](%s);" % (self.tree[-1], self.helpers[self.tree[-1]], self._parse_val(data))
 				else:
-					self.buffers[self._current_stack_point()] += "%s.textContent=%s;" % (self.tree[-1], self._parse_val(data))
+					self.buffers[self._current_stack_point()] += "%s.textContent" % (self.tree[-1],)
+					if text_content_used:
+						self.buffers[self._current_stack_point()] += "+"
+					self.buffers[self._current_stack_point()] += "="
+					if self.tree[-1] in self.helpers:
+						self.buffers[self._current_stack_point()] += "_h[%s](%s);" % (self.helpers[self.tree[-1]], self._parse_val(data))
+					else:
+						self.buffers[self._current_stack_point()] += "%s;" % (self._parse_val(data),)
+					text_content_used = True
 		self.input_buffer = ""
 
 	def handle_stack_push(self, data):
@@ -434,7 +474,6 @@ class RainwaveParser(HTMLParser):
 
 	def handle_with(self, function_id, context_key):
 		context_key = self.parse_context_key(context_key)
-		self.buffers[self._current_stack_point()] += "if(!%s.$t)%s.$t={};" % (context_key, context_key)
 		self.buffers[self._current_stack_point()] += "%s(%s, %s);" % (function_id, context_key, self._current_tree_point())
 
 if __name__ == "__main__":
