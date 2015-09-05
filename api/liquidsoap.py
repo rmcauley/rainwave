@@ -35,7 +35,7 @@ def get_password(sid, password):
 	return _send_command(sid, "var.get harbor_pw")
 
 def kick_dj(sid):
-	return _send_command(sid, "harbor.kick")
+	return _send_command(sid, "dj_harbor.kick")
 
 def test(sid):
 	return _send_command(sid, "version")
