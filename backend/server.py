@@ -27,9 +27,15 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		else:
 			return
 
-		if cache.get_station(self.sid, "backend_paused"):
+		if cache.get_station(self.sid, "backend_paused") and cache.get_station(self.sid, "backend_pause_extend"):
 			self.write(self._get_pause_file())
+			cache.set_station(self.sid, "backend_pause_extend", False)
+			cache.set_station(self.sid, "backend_paused_playing", True)
 			return
+		else:
+			cache.set_station(self.sid, "backend_pause_extend", False)
+			cache.set_station(self.sid, "backend_paused", False)
+			cache.set_station(self.sid, "backend_paused_playing", False)
 
 		# This program must be run on 1 station for 1 instance, which would allow this operation to be safe.
 		# Also works if 1 process is serving all stations.  Pinging any instance for any station

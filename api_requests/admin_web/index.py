@@ -96,15 +96,26 @@ class DJTools(api.web.HTMLRequest):
 
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="DJ Tools"))
+		self.write("<div style='margin-bottom: 0.5em; font-weight: bold; border-bottom: solid 1px #777;'>%s - " % config.station_id_friendly[self.sid])
 		if cache.get_station(self.sid, "backend_paused"):
-			self.write("<div style='color: red; font-weight: bold;'>%s PAUSED</div>" % config.station_id_friendly[self.sid])
+			self.write("<span style='color: #6F6;'>Paused</span> ")
+			if cache.get_station(self.sid, "backend_paused_playing"):
+				self.write("<span style='color: #6F6; float: right;'>No Music</span>")
+				if cache.get_station(self.sid, "backend_pause_extend"):
+					self.write("<span style='color: #F00;'>(Will End)</span>")
+				else:
+					self.write("<span style='color: #6F6;'>(Extended)</span>")
+			else:
+				self.write("<span style='color: #FF0; float: right;'>Waiting</span>")
 		else:
-			self.write("<div>%s Running</div>" % config.station_id_friendly[self.sid])
-		self.write("<div><a onclick=\"window.top.call_api('admin/dj/pause'); setTimeout(function() { window.location.reload(); }, 1000);\">Pause %s</a></div>" % config.station_id_friendly[self.sid])
-		self.write("<div><a onclick=\"window.top.call_api('admin/dj/unpause'); setTimeout(function() { window.location.reload(); }, 1000);\">Unpause %s</a></div>" % config.station_id_friendly[self.sid])
-		self.write("<div><a onclick=\"window.top.call_api('admin/dj/skip');\">Skip current song</a></div>")
-		self.write("<div>Pause ID3 Title: <input type='text' id='pause_title' value=\"%s\" />" % (cache.get_station(self.sid, "pause_title") or "",))
-		self.write(		"<button onclick=\"window.top.call_api('admin/dj/pause_title', { 'title': document.getElementById('pause_title').value });\" />Change</button>")
+			self.write("Normal")
+		self.write("</div>")
+		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/pause'); setTimeout(function() { window.location.reload(); }, 1000);\">Pause %s At End Of Song</a></div>" % config.station_id_friendly[self.sid])
+		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/unpause'); setTimeout(function() { window.location.reload(); }, 1000);\">Unpause %s</a></div>" % config.station_id_friendly[self.sid])
+		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/unpause?kick_dj=true'); setTimeout(function() { window.location.reload(); }, 1000);\">Unpause %s And Disconnect</a></div>" % config.station_id_friendly[self.sid])
+		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/skip');\">Skip song/start music</a></div>")
+		self.write("<div>Stream ID3 Title While Paused:<br> <input type='text' id='pause_title' value=\"%s\" />" % (cache.get_station(self.sid, "pause_title") or "",))
+		self.write(		"<button onclick=\"window.top.call_api('admin/dj/pause_title', { 'title': document.getElementById('pause_title').value });\" />Save</button>")
 		self.write("</div>")
 		self.write(self.render_string("basic_footer.html"))
 
