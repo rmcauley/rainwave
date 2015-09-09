@@ -1,6 +1,6 @@
 var RW_TEMPLATE_NO_VALUE = "***NOVALUE***";
 
-var RWTemplateObject = function(_c) {
+var RWTemplateObject = function RWObject(_c) {
     "use strict";
     this._c=_c;
     this.error = RWTemplateObject.prototype.error.bind(this);
@@ -34,8 +34,13 @@ RWTemplateHelpers.array_render = function(arr, template, el) {
         "render_append": arr.render_append,
         "render_positions": arr.render_positions,
         "render_delete": arr.render_delete,
-        "post_append": arr.post_append
+        "post_append": arr.post_append,
+        "post_update": arr.post_update,
+        "pre_update": arr.pre_update
     });
+    if (typeof(arr.pre_update) == "function") {
+        arr.pre_update();
+    }
     for (var i = 0; i < arr.length; i++) {
         if (!arr[i].$t) {
             arr[i].$t = new RWTemplateObject(arr[i]);
@@ -56,6 +61,9 @@ RWTemplateHelpers.array_render = function(arr, template, el) {
         if (typeof(arr.post_append) == "function") {
             arr.post_append(arr[i]);
         }
+    }
+    if (typeof(arr.post_update) == "function") {
+        arr.post_update();
     }
 };
 
@@ -80,6 +88,10 @@ RWTemplateHelpers.array_update = function(arr, full_render) {
     var shadow;
     for (var s = 0; s < arr._shadows.length; s++) {
         shadow = arr._shadows[s];
+
+        if (typeof(arr.pre_update) == "function") {
+            arr.pre_update();
+        }
 
         // find things that no longer exist
         var exists, i, j;
@@ -126,6 +138,10 @@ RWTemplateHelpers.array_update = function(arr, full_render) {
         else if (arr.length > 0) {
             console.warn("Array can't be updated with correct HTML sorting - make sure your array item templates have bind='item_root' to enable automatic HTML element position sorting.");
         }
+
+        if (typeof(arr.post_update) == "function") {
+            arr.post_update();
+        }
     }
 };
 
@@ -135,6 +151,7 @@ RWTemplateHelpers.elem_update = function(elem, val) {
     if (typeof(elem) != "object") return;
     if (!elem.getAttribute) return;
     var elem_val = val;
+    var tagname = elem.tagName.toLowerCase();
     if (elem.getAttribute("helper")) {
         var hname = elem.getAttribute("helper");
         if (!RWTemplateHelpers[hname]) {
@@ -143,13 +160,20 @@ RWTemplateHelpers.elem_update = function(elem, val) {
         elem_val = RWTemplateHelpers[hname](val, elem);
         if (elem_val === RW_TEMPLATE_NO_VALUE) return;
     }
-    var tagname = elem.tagName.toLowerCase();
     if (tagname == "select") {
         elem.value = val;
     }
     else if (tagname == "input") {
-        if ((elem.getAttribute("type") == "radio") || (elem.getAttribute("type") == "checkbox")) {
-            if (elem.getAttribute("value") == elem_val) {
+        if (elem.getAttribute("type") == "radio") {
+            if (elem.getAttribute("value") == val) {
+                elem.checked = true;
+            }
+            else {
+                elem.checked = false;
+            }
+        }
+        else if (elem.getAttribute("type") == "checkbox") {
+            if (val) {
                 elem.checked = true;
             }
             else {
@@ -266,14 +290,13 @@ RWTemplateHelpers.tabify = function(obj) {
         if (!this.on_submit) throw("$t.on_submit must be defined before calling enable_auto_save.");
         var elements = this.get_form_elements();
         for (var i = 0; i < elements.length; i++) {
-            if ((elements[i].tagName == "TEXTAREA") || ((elements[i].tagName == "INPUT") && (elements[i].getAttribute("type") == "text"))) {
-                setup_timeout(elements[i], this);
+            if (!elements[i]._autosaving) {
+                if ((elements[i].tagName == "TEXTAREA") || ((elements[i].tagName == "INPUT") && (elements[i].getAttribute("type") == "text"))) {
+                    setup_timeout(elements[i], this);
+                }
+                setup_autosave(elements[i], this);
+                elements[i]._autosaving = true;
             }
-            // not effective, change will work all the same
-            // if (elements[i].tagName == "SELECT") {
-            //     elements[i].addEventListener("click", this.on_submit);
-            // }
-            setup_autosave(elements[i], this);
         }
     };
 
@@ -358,6 +381,11 @@ RWTemplateHelpers.tabify = function(obj) {
     var gettext = gettext || function(txt) { return txt; };
 
     RWTemplateObject.prototype.update = function(from_object) {
+        // array objects don't get $t, so there's no sense in this code
+        // if (Object.prototype.toString.call(val) == "[object Array]") {
+        //     return RWTemplateHelpers.array_update(this._c, true);
+        // }
+
         var val;
         from_object = from_object || this._c;
         for (var i in from_object) {
@@ -387,14 +415,14 @@ RWTemplateHelpers.tabify = function(obj) {
         }
     };
 
-    RWTemplateObject.prototype.get = function(update_in_place, only_diff) {
+    RWTemplateObject.prototype.get = function(update_in_place, only_diff, shallow) {
         var new_obj = {};
         var arr_i, ii;
         for (var i in this._c) {
             if (!this._c.hasOwnProperty(i)) continue;
             if (i.charAt(0) == "$") continue;
 
-            if ((this._c[i] !== null) && this._c[i].$t && this._c[i].$t.get) {
+            if ((this._c[i] !== null) && this._c[i].$t && this._c[i].$t.get && !shallow) {
                 var new_sub_obj = this._c[i].$t.get(update_in_place, only_diff);
                 for (ii in new_sub_obj) {
                     if (new_sub_obj.hasOwnProperty(ii)) {
@@ -403,7 +431,7 @@ RWTemplateHelpers.tabify = function(obj) {
                     }
                 }
             }
-            else if (Object.prototype.toString.call(this._c[i]) == "[object Array]") {
+            else if ((Object.prototype.toString.call(this._c[i]) == "[object Array]") && !shallow) {
                 var new_arr = [];
                 for (arr_i = 0; arr_i < this._c[i].length; arr_i++) {
                     if (this._c[i][arr_i] && this._c[i][arr_i].$t && this._c[i][arr_i].$t.get) {
@@ -427,17 +455,20 @@ RWTemplateHelpers.tabify = function(obj) {
                     else if ((tagname == "input") && (elem.getAttribute("type") == "radio") && elem.checked) {
                         new_val = elem.value;
                     }
-                    else if ((tagname == "input") && (elem.getAttribute("type") == "checkbox") && elem.checked) {
-                        if (elem.value && (elem.value != "true")) {
-                            if (!new_obj[i]) new_val = "";
-                            if (new_obj[i].length > 0) new_val += "|";
-                            new_val += elem.value || "true";
+                    else if ((tagname == "input") && (elem.getAttribute("type") == "checkbox")) {
+                        if (elem.checked) {
+                            if (elem.getAttribute("value")) {
+                                new_val = elem.getAttribute("value");
+                            }
+                            else {
+                                new_val = true;
+                            }
                         }
                         else {
-                            new_val = true;
+                            new_val = false;
                         }
                     }
-                    else if ((elem.getAttribute("type") != "submit") && (typeof(elem.value) != "undefined")) {
+                    else if ((elem.getAttribute("type") != "submit") && (typeof(elem.value) != "undefined") && (tagname != "li")) {
                         new_val = elem.value;
                     }
 
@@ -446,7 +477,7 @@ RWTemplateHelpers.tabify = function(obj) {
                             new_val = RWTemplateHelpers[elem.getAttribute("helper") + "_get"](this._c, new_val);
                         }
                         else if (typeof(RWTemplateHelpers[elem.getAttribute("helper") + "_get"]) == "undefined") {
-                            console.warn("Helper " + elem.getAttribute("helper") + " has a setter but no getter.  Define RWTemplateHelpers." + elem.getAttribute("helper") + "_get.");
+                            console.warn("Helper " + elem.getAttribute("helper") + " has a setter but no getter (value " + new_val + ").  Define RWTemplateHelpers." + elem.getAttribute("helper") + "_get.");
                         }
                     }
 
