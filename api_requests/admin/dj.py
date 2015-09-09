@@ -9,17 +9,32 @@ class PauseStation(api.web.APIHandler):
 	dj_required = True
 
 	def post(self):
-		result = liquidsoap.pause(self.sid)
 		cache.set_station(self.sid, "backend_paused", True)
-		self.append(self.return_name, { "success": True, "message": result })
+		cache.set_station(self.sid, "backend_pause_extend", True)
+		self.append(self.return_name, { "success": True, "message": "At 0:00 the station will go silent and wait for you." })
 
 @handle_api_url("admin/dj/unpause")
 class UnpauseStation(api.web.APIHandler):
 	dj_required = True
+	fields = { "kick_dj": (fieldtypes.boolean, False) }
 
 	def post(self):
+		if not cache.get_station(self.sid, "backend_paused"):
+			result = "Station seems unpaused already.  "
+		else:
+			result = "Unpausing station.  "
 		cache.set_station(self.sid, "backend_paused", False)
-		result = liquidsoap.unpause(self.sid)
+		cache.set_station(self.sid, "backend_pause_extend", False)
+		if (cache.get_station(self.sid, "backend_paused_playing")):
+			result += "Automatically starting music.  "
+			result += "\n"
+			result += liquidsoap.skip(self.sid)
+		else:
+			result += "If station remains silent, music will start playing within 5 minutes unless you hit skip."
+		if (self.get_argument("kick_dj", default=False)):
+				result += "Kicking DJ.  "
+				result += "\n"
+				result += liquidsoap.kick_dj(self.sid)
 		self.append(self.return_name, { "success": True, "message": result })
 
 @handle_api_url("admin/dj/skip")

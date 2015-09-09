@@ -7,6 +7,7 @@
 	lyre.setURLPrefix("{{ api_url }}");
 	lyre.setUserID("{{ user_id }}");
 	lyre.setKey("{{ api_key }}");
+	lyre.setStationID({{ sid }});
 	lyre.catcherrors = true;
 	var current_tool = "";
 	var current_station = {{ sid }};
@@ -54,12 +55,12 @@
 	function change_screen() {
 		lyre.setStationID(current_station);
 		if (dj_election_sched_id) {
-			window.frames.tool.location.href = "tools/" + current_tool + "?sid=" + current_station + "&sched_id=" + dj_election_sched_id;
+			window.frames.tool.location.href = "/admin/tools/" + current_tool + "?sid=" + current_station + "&sched_id=" + dj_election_sched_id;
 		}
 		else {
-			window.frames.tool.location.href = "tools/" + current_tool + "?sid=" + current_station;
+			window.frames.tool.location.href = "/admin/tools/" + current_tool + "?sid=" + current_station;
 		}
-		window.frames.selector.location.href = "album_list/" + current_tool + "?sid=" + current_station + "&restrict=" + current_restriction;
+		window.frames.selector.location.href = "/admin/album_list/" + current_tool + "?sid=" + current_station + "&restrict=" + current_restriction;
 
 		var t = window.frames.tool_list.document.getElementsByTagName("a");
 		for (var i = 0; i < t.length; i++) {
