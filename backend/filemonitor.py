@@ -278,6 +278,8 @@ def _process_album_art(filename, sids):
 		if im_original.size[0] > 160 or im_original.size[1] > 160:
 			im_120 = im_original.copy()
 			im_120.thumbnail((120, 120), Image.ANTIALIAS)
+		if im_original.size[0] < 320 or im_original.size[1] < 320:
+			_add_scan_error(filename, PassableScanError("Small Art Warning: %sx%s" % (im_original.size[0], im_original.size[1])))
 		for album_id in album_ids:
 			im_120.save("%s%s%s_%s_120.jpg" % (config.get("album_art_file_path"), os.sep, sids[0], album_id))
 			im_240.save("%s%s%s_%s_240.jpg" % (config.get("album_art_file_path"), os.sep, sids[0], album_id))
