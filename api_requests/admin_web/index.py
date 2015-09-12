@@ -111,13 +111,14 @@ class DJTools(api.web.HTMLRequest):
 			self.write("Normal")
 		self.write("</div>")
 		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/pause'); setTimeout(function() { window.location.reload(); }, 1000);\">Pause %s At End Of Song</a></div>" % config.station_id_friendly[self.sid])
-		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/unpause'); setTimeout(function() { window.location.reload(); }, 1000);\">Unpause %s</a></div>" % config.station_id_friendly[self.sid])
-		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/unpause?kick_dj=true'); setTimeout(function() { window.location.reload(); }, 1000);\">Unpause %s And Disconnect</a></div>" % config.station_id_friendly[self.sid])
-		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/skip');\">Skip song/start music</a></div>")
+		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/unpause'); setTimeout(function() { window.location.reload(); }, 1000);\">Start %s</a></div>" % config.station_id_friendly[self.sid])
+		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/unpause?kick_dj=true'); setTimeout(function() { window.location.reload(); }, 1000);\">Disconnect And/Or Start %s</a></div>" % config.station_id_friendly[self.sid])
+		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/skip');\">Skip song (use if station is broken)</a></div>")
 		self.write("<div>Stream ID3 Title While Paused:<br> <input type='text' id='pause_title' value=\"%s\" />" % (cache.get_station(self.sid, "pause_title") or "",))
 		self.write(		"<button onclick=\"window.top.call_api('admin/dj/pause_title', { 'title': document.getElementById('pause_title').value });\" />Save</button>")
 		self.write("</div>")
 		self.write(self.render_string("basic_footer.html"))
+
 
 @handle_url("/admin/relay_status")
 class RelayStatus(api.web.HTMLRequest):
