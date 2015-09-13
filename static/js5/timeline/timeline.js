@@ -77,23 +77,26 @@ var Timeline = function() {
 		var unappended_events = 0;
 		sched_current = find_and_update_event(sched_current);
 		sched_current.change_to_now_playing();
-		sched_current.show_header();
+		// sched_current.show_header();
 		if (sched_current.el.parentNode != el) {
 			sched_current.el.style[Fx.transform] = "translateY(" + ((scroller.scroll_height || Sizing.height) + (unappended_events * 2 * Sizing.song_size)) + "px)";
 			unappended_events++;
 		}
 		new_events.push(sched_current);
 
-		var previous_evt;
+		var previous_evt = sched_current;
+		var is_continuing = false;
 		for (i = 0; i < sched_next.length; i++) {
 			sched_next[i] = find_and_update_event(sched_next[i]);
 			if (previous_evt && sched_next[i].core_event_id && (previous_evt.core_event_id === sched_next[i].core_event_id)) {
-				sched_next[i].hide_header();
+				is_continuing = true;
+				// sched_next[i].hide_header();
 			}
 			else {
-				sched_next[i].show_header();
+				is_continuing = false;
+				// sched_next[i].show_header();
 			}
-			sched_next[i].change_to_coming_up();
+			sched_next[i].change_to_coming_up(is_continuing);
 			if (sched_next[i].el.parentNode != el) {
 				sched_next[i].el.style[Fx.transform] = "translateY(" + ((scroller.scroll_height || Sizing.height) + (unappended_events * 2 * Sizing.song_size)) + "px)";
 				unappended_events++;
@@ -178,11 +181,11 @@ var Timeline = function() {
 			if (events[i].el.classList.contains("no_progress")) {
 				events[i].el.classList.remove("no_progress");
 			}
-			if (!events[i].showing_header && (i !== 0) && (!events[i - 1].el.classList.contains("no_header"))) {
-				events[i - 1].el.classList.add("no_progress");
-				running_y -= Sizing.timeline_header_size;
-				running_y += 17;
-			}
+			// if (!events[i].showing_header && (i !== 0) && (!events[i - 1].el.classList.contains("no_header"))) {
+			// 	events[i - 1].el.classList.add("no_progress");
+			// 	running_y -= Sizing.timeline_header_size;
+			// 	running_y += 17;
+			// }
 			events[i].el.style[Fx.transform] = "translateY(" + running_y + "px)";
 			running_y += events[i].height;
 			if (Sizing.simple && !events[i].history) running_y += 7;

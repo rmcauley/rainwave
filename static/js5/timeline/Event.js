@@ -50,11 +50,11 @@ var Event = function(self) {
 		}
 	};
 
-	self.change_to_coming_up = function() {
+	self.change_to_coming_up = function(is_continuing) {
 		self.$t.el.classList.remove("sched_history");
 		self.$t.el.classList.remove("sched_current");
 		self.$t.el.classList.add("sched_next");
-		self.set_header_text($l("coming_up"));
+		self.set_header_text(is_continuing ? $l("continued") : $l("coming_up"));
 		self.height = (self.songs.length * Sizing.song_size);
 		if (self.showing_header) self.height += Sizing.timeline_header_size;
 	};

@@ -95,6 +95,7 @@
    "__comment__"                 : "Timeline",
 
    "coming_up"                                       : "Coming Up",
+   "continued"                                       : "Continued",
    "vote_now"                                        : "Vote Now",
    "now_playing"                                     : "Now Playing",
    "election"                                        : "Election",
