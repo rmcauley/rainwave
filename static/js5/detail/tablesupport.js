@@ -2,12 +2,12 @@
 // the discrepency in sorting is small, but does exist, since
 // many other places on the page do sorting.
 var SongsTableAlbumSort = function(a, b) {
-	if (a.year && b.year) {
-		if (a.year < b.year) return -1;
-		else if (a.year > b.year) return 1;
-	}
-	if (a.name < b.name) return -1;
-	else if (a.name > b.name) return 1;
+	// if (a.year && b.year) {
+	// 	if (a.year < b.year) return -1;
+	// 	else if (a.year > b.year) return 1;
+	// }
+	if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+	else if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
 	return 0;
 };
 
