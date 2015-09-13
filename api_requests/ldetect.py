@@ -152,16 +152,11 @@ class RemoveListener(IcecastHandler):
 		"client": (fieldtypes.integer, True),
 	}
 
-	# local testing only
-	# allow_get = True
-	# def get(self, sid):
-	# 	self.post(sid)
-
-	def post(self, sid):	#pylint: disable=W0221
+	def post(self, sid=0):	#pylint: disable=W0221
 		listener = db.c.fetch_row("SELECT user_id, listener_ip FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
 								 (self.relay, self.get_argument("client")))
 		if not listener:
-			self.append("      RMFAIL: %s %s %s." % (sid, '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
+			self.append("      RMFAIL: %s %s." % ('{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
 			return
 
 		db.c.update("UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_relay = %s AND listener_icecast_id = %s", (self.relay, self.get_argument("client")))
@@ -171,13 +166,8 @@ class RemoveListener(IcecastHandler):
 			sync_to_front.sync_frontend_user_id(listener['user_id'])
 		else:
 			sync_to_front.sync_frontend_ip(listener['listener_ip'])
-		self.append("%s remove: %s %s %s." % ('{:<5}'.format(listener['user_id']), sid, '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
+		self.append("%s remove: %s %s." % ('{:<5}'.format(listener['user_id']), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
 		self.failed = False
-
-# Compatible with R4 beta relay
-@handle_api_url("listener_remove/(\d+)")
-class RemoveListener_ForR4Beta(RemoveListener):
-	pass
 
 # Compatible with R3 relays
 @handle_url("/sync/(\d+)/listener_add")
