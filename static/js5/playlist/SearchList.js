@@ -9,7 +9,7 @@
 var SearchList = function(root_el, sort_key, search_key) {
 	"use strict";
 
-	sort_key = sort_key || "name";
+	sort_key = sort_key || "name_searchable";
 	search_key = search_key || "name_searchable";
 
 	var self = {};
