@@ -169,7 +169,7 @@ var Rating = function() {
 		add_effect(json.$t.rating);
 
 		if (User.id > 1) {
-			var is_song = json.albums || json.album_id || json.album_rating || json.artist_parseable ? true : false;
+			var is_song = json.title || json.albums || json.album_id || json.album_rating || json.artist_parseable ? true : false;
 			if (is_song) register_song(json, relative_x, relative_y);
 			else register_album(json, relative_x, relative_y);
 
