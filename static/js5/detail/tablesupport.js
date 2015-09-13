@@ -13,8 +13,8 @@ var SongsTableAlbumSort = function(a, b) {
 
 var SongsTableSorting = function(a, b) {
 	"use strict";
-	if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
-	else if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+	if (a.title.toLowerCase() < b.title.toLowerCase()) return -1;
+	else if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
 	return 0;
 };
 
