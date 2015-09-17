@@ -24,8 +24,25 @@ RWTemplateHelpers.opacity = function(val, elem) {
 };
 RWTemplateHelpers.opacity_get = false;
 
-RWTemplateHelpers.array_render = function(arr, template, el) {
+RWTemplateHelpers.className = function(val,elem){
+    elem.className=val;
+    return RW_TEMPLATE_NO_VALUE;
+};
+
+
+RWTemplateHelpers.array_render = function(arr, template, el, parent_context) {
     "use strict";
+
+    var i;
+    if (Object.prototype.toString.call(arr) == "[object Object]") {
+        for (i in arr) {
+            if (arr.hasOwnProperty(i) && (typeof(arr[i]) !== "function")) {
+                template({ "key": i, "value": arr[i] }, el);
+            }
+        }
+        return;
+    }
+
     if (!arr._shadows) arr._shadows = [];
     arr._shadows.push({
         "arr": arr.slice(),
@@ -36,12 +53,13 @@ RWTemplateHelpers.array_render = function(arr, template, el) {
         "render_delete": arr.render_delete,
         "post_append": arr.post_append,
         "post_update": arr.post_update,
-        "pre_update": arr.pre_update
+        "pre_update": arr.pre_update,
+        "parent_context": (arr.post_append && parent_context) ? parent_context : null
     });
     if (typeof(arr.pre_update) == "function") {
         arr.pre_update();
     }
-    for (var i = 0; i < arr.length; i++) {
+    for (i = 0; i < arr.length; i++) {
         if (!arr[i].$t) {
             arr[i].$t = new RWTemplateObject(arr[i]);
         }
@@ -59,7 +77,7 @@ RWTemplateHelpers.array_render = function(arr, template, el) {
             }
         }
         if (typeof(arr.post_append) == "function") {
-            arr.post_append(arr[i]);
+            arr.post_append(arr[i], parent_context);
         }
     }
     if (typeof(arr.post_update) == "function") {
@@ -95,9 +113,11 @@ RWTemplateHelpers.array_update = function(arr, full_render) {
 
         // find things that no longer exist
         var exists, i, j;
+        var anything_changed;
         for (i = shadow.arr.length -1; i >= 0; i--) {
             exists = arr.indexOf(shadow.arr[i]);
             if (exists === -1) {
+                anything_changed = true;
                 (shadow.render_delete || arr.render_delete || RWTemplateHelpers.array_item_delete)(shadow.el, shadow.arr[i]);
             }
         }
@@ -106,12 +126,19 @@ RWTemplateHelpers.array_update = function(arr, full_render) {
         for (i = 0; i < arr.length; i++) {
             exists = shadow.arr.indexOf(arr[i]);
             if (exists === -1) {
+                anything_changed = true;
                 if (shadow.template) {
                     shadow.template(arr[i], shadow.el);
                 }
                 if (arr.render_append) {
                     arr.render_append(shadow.el, arr[i]);
                 }
+                if (arr.post_append) {
+                    arr.post_append(arr[i], shadow.parent_context);
+                }
+            }
+            else if (exists !== i) {
+                anything_changed = true;
             }
         }
 
@@ -123,20 +150,22 @@ RWTemplateHelpers.array_update = function(arr, full_render) {
             }
         }
 
-        if (arr.render_positions) {
-            arr.render_positions();
-        }
-        else if (arr.length > 0 && arr[0].$t.item_root) {
-            for (i = 0; i < arr.length; i++) {
-                for (j = 0; j < arr[i].$t.item_root.length; j++) {
-                    if (arr[i].$t.item_root[j].parentNode) {
-                        arr[i].$t.item_root[j].parentNode.appendChild(arr[i].$t.item_root[j]);
+        if (anything_changed) {
+            if (arr.render_positions) {
+                arr.render_positions();
+            }
+            else if (arr.length > 0 && arr[0].$t.item_root) {
+                for (i = 0; i < arr.length; i++) {
+                    for (j = 0; j < arr[i].$t.item_root.length; j++) {
+                        if (arr[i].$t.item_root[j].parentNode) {
+                            arr[i].$t.item_root[j].parentNode.appendChild(arr[i].$t.item_root[j]);
+                        }
                     }
                 }
             }
-        }
-        else if (arr.length > 0) {
-            console.warn("Array can't be updated with correct HTML sorting - make sure your array item templates have bind='item_root' to enable automatic HTML element position sorting.");
+            else if (arr.length > 0) {
+                console.warn("Array can't be updated with correct HTML sorting - make sure your array item templates have bind='item_root' to enable automatic HTML element position sorting.");
+            }
         }
 
         if (typeof(arr.post_update) == "function") {
@@ -219,7 +248,7 @@ RWTemplateHelpers.stop_ie8_propagation = function(e) {
     return e;
 };
 
-RWTemplateHelpers.tabify = function(obj) {
+RWTemplateHelpers.tabify = function(obj, def) {
     if (!obj.$t) return;
     var areas = [];
     var tabs = [];
@@ -250,6 +279,9 @@ RWTemplateHelpers.tabify = function(obj) {
             });
         }
     }
+    hide_areas();
+    obj.$t[def + "_area"][0].style.display = "block";
+    obj.$t[def + "_tab"][0].parentNode.classList.add("active");
 };
 
 (function() {
@@ -482,9 +514,9 @@ RWTemplateHelpers.tabify = function(obj) {
                     }
 
                     if (typeof(new_val) != "undefined") {
-                        if (!isNaN(new_val) && !isNaN(parseFloat(new_val))) {
-                            new_val = parseFloat(new_val);
-                        }
+                        // if (!isNaN(new_val) && !isNaN(parseFloat(new_val))) {
+                        //     new_val = parseFloat(new_val);
+                        // }
                         if ((!only_diff && (typeof(new_obj[i]) == "undefined")) || (new_val != this._c[i])) {
                             new_obj[i] = new_val;
                         }
@@ -499,9 +531,11 @@ RWTemplateHelpers.tabify = function(obj) {
     RWTemplateObject.prototype.update_data = function(new_data) {
         var new_obj = new_data || this.get();
         for (var i in new_obj) {
-            if ((typeof(this._c[i]) == "object") && this._c[i] && this._c[i].$t) {
-                // untested!!!  possibly unsafe!
-                // this._c[i].$t.update_data(new_obj[i]);
+            if (this._c[i] && Object.prototype.toString.call(this._c[i]) == "[object Array]") {
+                console.warn("Cannot update an array automatically from the server.  Please update manually.");
+            }
+            else if ((typeof(this._c[i]) == "object") && this._c[i] && this._c[i].$t) {
+                this._c[i].$t.update_data(new_obj[i]);
             }
             else {
                 this._c[i] = new_obj[i];
@@ -678,7 +712,7 @@ RWTemplateHelpers.tabify = function(obj) {
             elements[i].disabled = permanent;
             elements[i].classList[permanent ? "add" : "remove"]("disabled");
             if (elements[i].getAttribute("type") == "submit"){
-                RWTemplateHelpers.change_button_text(elements[i], success_message || gettext("Saved"));
+                RWTemplateHelpers.change_button_text(elements[i], success_message || this._c._success_message || gettext("Saved"));
                 RWTemplateHelpers.change_button_class(elements[i], btn_success);
                 if (success_timeouts[this]) {
                     clearTimeout(success_timeouts[this]);
@@ -696,16 +730,4 @@ RWTemplateHelpers.tabify = function(obj) {
         this.update();
         this.success_display();
     };
-
-    /*RWTemplateObject.prototype.enable_enter_key_submission = function(func) {
-        var elements = this.get_form_elements();
-        var tagname;
-        var submit_func = function(e) { if (e.keyCode == 13) func(); };
-        for (var i = 0; i < elements.length; i++) {
-            tagname = elements[i].tagName.toLowerCase();
-            if ((tagname == "select") || (tagname == "input")) {
-                elements[i].addEventListener("keypress", submit_func);
-            }
-        }
-    };*/
 }());
