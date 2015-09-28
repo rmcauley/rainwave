@@ -55,7 +55,7 @@ var Router = function() {
 		detail_header = root_template.detail_header;
 
 		root_template.lists.addEventListener("click", function(e) {
-			if (Sizing.simple && document.body.classList.contains("detail")) {
+			if (Sizing.simple && document.body.classList.contains("detail") && !document.body.classList.contains("desktop")) {
 				self.change(current_type);
 			}
 			e.stopPropagation();

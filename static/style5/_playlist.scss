@@ -63,13 +63,15 @@ div.lists {
 		@include transform(translateX(-100%));
 	}
 
-	body.desktop.playlist.detail & {
+	body.desktop.playlist.normal.detail & {
 		background: #202020;
-		@include transform(translateX(-110%));
+		// @include transform(translateX(-115%));
+		@include transform(translateX(-200%));
 
-		ul.panel_header, div.list_contents {
-			opacity: 0.7;
-		}
+		// ul.panel_header, div.list_contents {
+		// 	opacity: 0.7;
+		// 	@include transition-wtime(300ms, opacity);
+		// }
 	}
 
 	ul.panel_header {

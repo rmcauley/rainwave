@@ -56,6 +56,15 @@ var Sizing = function() {
 			index_t.lists.style.left = "100%";
 			index_t.requests_container.style.left = "100%";
 			index_t.detail_container.style.left = "100%";
+
+			if (self.width < 1366) {
+				document.body.classList.add("small");
+				document.body.classList.remove("normal");
+			}
+			else {
+				document.body.classList.remove("small");
+				document.body.classList.add("normal");
+			}
 		}
 		else {
 			if (Prefs.get("adv")) {
