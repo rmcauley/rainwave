@@ -226,6 +226,10 @@ div.list {
 
 		&.cool {
 			background-color: $cooldown_albumlist_color;
+
+			&:hover {
+				background-color: #1f4f70;
+			}
 		}
 
 		span.name {
