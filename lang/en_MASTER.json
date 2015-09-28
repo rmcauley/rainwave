@@ -49,8 +49,8 @@
    "no_results"                                      : "No results.",
    "server_just_started"                             : "Rainwave is Rebooting",
    "station_paused"                                  : "Station is currently paused by the DJ.",
-   "album_on_other_station"                          : "Album is available on %(available_station), sorry!",
-   "album_is_dj_only"                                : "Album is an exclusive part of this event, sorry!",
+   "album_on_other_station"                          : "Album is not available on this station, sorry!",
+   "album_is_dj_only"                                : "Album is exclusive to this event, sorry!",
 
    "__comment__"                 : "API Key Management",
 
