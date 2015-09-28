@@ -123,15 +123,15 @@ div.song {
 					color: $linkhover;
 				}
 			}
+		}
 
-			&.voting_clicked, &.voting_registered {
-				background-image: url(/static/images4/vote_hover_r5.png);
-			}
+		&.voting_clicked, &.voting_registered {
+			background-image: url(/static/images4/vote_hover_r5.png);
+		}
 
-			&.voting_registered {
-				background-color: #192D67;
-				background-position: 0px -35px;
-			}
+		&.voting_registered {
+			background-color: #192D67;
+			background-position: 0px -35px;
 		}
 	}
 

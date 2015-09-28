@@ -112,7 +112,7 @@ var Song = function(self, parent_event) {
 
 	self.disable_voting = function() {
 		self.el.classList.remove("voting_enabled");
-		self.el.classList.remove("voting_clicked");
+		// self.el.classList.remove("voting_clicked");
 		self.el.removeEventListener("click", self.vote);
 	};
 
