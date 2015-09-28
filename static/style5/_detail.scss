@@ -81,9 +81,13 @@ div.detail {
 	}
 
 	p.genres {
+		// things get really wonky without this
+		// since it's a collection of spans, words don't get broken at all
+		// I don't understand it, but that's browser behaviour for you
+		word-break: break-all;
+
 		span + a {
 			margin-left: 3px;
-			word-break: keep-all;
 		}
 
 		span:last-child {
