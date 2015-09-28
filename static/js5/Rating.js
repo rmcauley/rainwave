@@ -199,7 +199,6 @@ var Rating = function() {
 			if (!json.$t.rating.classList.contains("ratable")) {
 				json.$t.rating.classList.add("ratable");
 			}
-			this.classList.add("rating_user");
 		};
 
 		var on_mouse_move = function(evt) {
@@ -213,9 +212,6 @@ var Rating = function() {
 		};
 
 		var on_mouse_out = function(evt) {
-			if (!json.rating_user) {
-				this.classList.remove("rating_user");
-			}
 			this.rating_start(json.rating_user || json.rating);
 		};
 

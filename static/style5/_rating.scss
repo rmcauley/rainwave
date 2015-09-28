@@ -7,10 +7,6 @@ div.rating {
 	margin: 0;
 	height: $rating_height;
 
-	&.rateable {
-		cursor: pointer;
-	}
-
 	body.logged_in.full &.rating_song {
 		background-image: url("/static/images4/rating_bar/dark_ldpi.png");
 
@@ -33,6 +29,7 @@ div.rating {
 		&:hover {
 			margin-left: 25px;
 			@include no-transition();
+			background-image: url("/static/images4/rating_bar/bright_ldpi.png");
 		}
 	}
 
