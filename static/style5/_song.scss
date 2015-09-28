@@ -104,7 +104,7 @@ div.song {
 		background-repeat: repeat-x;
 		border: 1px solid transparent;
 
-		&.voting_enabled {
+		&.voting_enabled:not(.voting_registered) {
 			cursor: pointer;
 
 			&:hover {
