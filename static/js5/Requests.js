@@ -7,6 +7,7 @@ var Requests = function() {
 	var link;
 	var header;
 	var indicator;
+	var padder;
 
 	var songs = [];
 
@@ -36,6 +37,8 @@ var Requests = function() {
 		root_template.requests_clear.addEventListener("click", self.clear_requests);
 		root_template.requests_unrated.addEventListener("click", self.fill_with_unrated);
 		root_template.requests_favfill.addEventListener("click", self.fill_with_faves);
+
+		padder = root_template.last_request_padder;
 
 		link.addEventListener("click", function() {
 			if (!document.body.classList.contains("requests")) {
@@ -257,6 +260,7 @@ var Requests = function() {
 			}
 			running_height += Sizing.request_size;
 		}
+		padder.style[Fx.transform] = "translateY(" + (running_height - Sizing.request_size) + "px)";
 		scroller.set_height(running_height);
 	};
 
@@ -318,11 +322,13 @@ var Requests = function() {
 			}
 			dragging_song.el.style[Fx.transform] = "translateY(" + new_y + "px)";
 		}
-		if (last_mouse_event.clientY < 150) {
-			scroller.scroll_to(scroller.scroll_top - Math.floor(last_mouse_event.clientY / 150 * 25));
+		var upper_fold = Math.ceil(Math.max(80, Math.min(Sizing.height / 5, 200)));
+		var lower_fold = Math.ceil(Math.max(40, Math.min(Sizing.height / 6, 150)));
+		if (last_mouse_event.clientY < upper_fold) {
+			scroller.scroll_to(scroller.scroll_top - (25 - (Math.floor(last_mouse_event.clientY / upper_fold * 25))));
 		}
-		else if (last_mouse_event.clientY > (Sizing.height - 150)) {
-			scroller.scroll_to(scroller.scroll_top + Math.floor((150 - (Sizing.height - last_mouse_event.clientY)) / 150 * 20));
+		else if (last_mouse_event.clientY > (Sizing.height - lower_fold)) {
+			scroller.scroll_to(scroller.scroll_top + Math.floor((lower_fold - (Sizing.height - last_mouse_event.clientY)) / lower_fold * 20));
 		}
 		requestAnimationFrame(continue_drag);
 	};
