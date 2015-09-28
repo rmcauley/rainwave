@@ -139,7 +139,21 @@ var Requests = function() {
 	};
 
 	self.remove = function(song_id) {
-		API.async_get("delete_request", { "song_id": song_id });
+		var found_song;
+		for (var i = 0; i < songs.length; i++) {
+			if (song_id == songs[i].id) {
+				found_song = songs[i];
+				break;
+			}
+		}
+		if (!found_song) return;
+		found_song._deleted = true;
+		API.async_get("delete_request", { "song_id": song_id },
+			null,
+			function() {
+				found_song._deleted = false;
+			}
+		);
 	};
 
 	self.remove_event = function(e) {
@@ -266,6 +280,8 @@ var Requests = function() {
 					break;
 				}
 			}
+			if (!dragging_song) return;
+			if (dragging_song._deleted) return;
 			last_mouse_event = e;
 			original_mouse_y = e.clientY + scroller.scroll_top;
 			original_request_y = dragging_song._request_y;
