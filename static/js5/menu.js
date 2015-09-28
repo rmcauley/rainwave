@@ -4,14 +4,6 @@ var Menu = function() {
 	var template;
 	var has_calendar;
 
-	BOOTSTRAP.station_list = {
-		1: { "id": 1, "name": "Game", "url": "hello" },
-		2: { "id": 2, "name": "OC ReMix", "url": "hello" },
-		3: { "id": 3, "name": "Covers", "url": "hello" },
-		4: { "id": 4, "name": "Chiptune", "url": "hello" },
-		5: { "id": 5, "name": "All", "url": "hello" }
-	};
-
 	// Station order on the page is to be ordered like this, not by numeric sorting:
 	var station_order = [ 5, 1, 4, 2, 3 ];
 	var stations = [];
