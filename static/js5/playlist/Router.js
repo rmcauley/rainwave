@@ -316,7 +316,7 @@ var Router = function() {
 			old_url = null;
 		}
 		else {
-			location.replace(new_url);
+			location.href = new_url;
 		}
 		self.detect_url_change();
 	};
