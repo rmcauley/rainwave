@@ -189,7 +189,7 @@ var Rating = function() {
 		json.$t.rating.classList.add("rating_song");
 		json.$t.rating.setAttribute("name", "srate_" + json.id);
 
-		var on_mouse_over = function() {
+		var on_mouse_over = function(evt) {
 			if (!json.rating_allowed && !User.rate_anything) {
 				if (json.$t.rating.classList.contains("ratable")) {
 					json.$t.rating.classList.remove("ratable");
@@ -199,6 +199,7 @@ var Rating = function() {
 			if (!json.$t.rating.classList.contains("ratable")) {
 				json.$t.rating.classList.add("ratable");
 			}
+			on_mouse_move(evt);
 		};
 
 		var on_mouse_move = function(evt) {

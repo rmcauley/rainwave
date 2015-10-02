@@ -41,12 +41,14 @@ div.rating {
 		opacity: 0;
 		text-align: right;
 		color: $highlight;
-		@include transition-wtime(200ms, opacity, transform);
+		visibility: hidden;
+		@include transition-wtime(200ms, opacity, transform, visibility);
 		@include transform(translateX(0px));
 	}
 
 	&:hover div.rating_hover {
 		opacity: 1;
+		visibility: visible;
 		@include transform(translateX(-27px));
 	}
 }
