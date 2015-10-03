@@ -54,9 +54,15 @@ ul.menu {
 	top: 50%;
 	z-index: 1;
 	@include transform(translateY(-50%));
+	background: $blue;
 
 	&.main_menu {
 		z-index: 2;
+	}
+
+	&.hamburger_container {
+		margin-right: 10px;
+		margin-left: 5px;
 	}
 
 	li {
@@ -72,11 +78,6 @@ ul.menu {
 
 		&.user_info {
 			padding-right: 20px;
-
-			&:hover div.menu_inline_dropdown {
-				opacity: 1;
-				@include transform(translateY(-5px));
-			}
 		}
 
 		body.playlist &.playlist_link a {
@@ -141,63 +142,103 @@ ul.menu {
 	}
 }
 
-body.full ul.main_menu {
-	display: none;
-}
-
-ul.submenu {
-	body.desktop.simple & {
-		float: right;
-		top: 50%;
-		opacity: 0;
-		@include transform(translateX(5%) translateY(-50%));
-		@include transition-wtime(300ms, opacity, transform);
-	}
-
-	body.desktop.simple div.menu_wrapper:hover & {
-		opacity: 1;
-		@include transform(translateY(-50%));
-	}
-}
-
-div.menu_inline_dropdown {
+.menu_inline_dropdown {
 	position: absolute;
 	z-index: 0;
-	width: 100%;
-	margin-top: $menu_height - 10;
+	min-width: 100%;
 	background: $blue;
-	overflow: hidden;
 	opacity: 0;
-	@include transform(translateY(-100%));
-	        transition: transform 700ms linear, opacity 200ms $transfunc;
-	-webkit-transition: transform 700ms linear, opacity 200ms $transfunc;
+	visibility: hidden;
+	@include transform(translateY(-$menu_height + 10));
+	@include transition-wtime(300ms, opacity, transform, visibility);
 
 	a {
-	 	padding: 5px;
-		display: block;
+	 	padding: 8px 5px 5px 5px;
 		border-bottom: 1px solid $blue * 1.2;
-		margin: 3px 0px;
+		white-space: nowrap;
+		display: block !important;
+		background: $blue;
+		z-index: 1;
+		position: relative;
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+
+	*:hover > & {
+		@include transform(none);
+		opacity: 1;
+		visibility: visible;
+	}
+
+	&.hamburgered {
+		min-width: 100px;
+		text-align: right;
+		margin-left: 30px;
+		@include transform(translateX(-100%) translateY(-$menu_height + 10));
+
+		*:hover > & {
+			@include transform(translateX(-100%));
+		}
+	}
+
+	div.menu_group {
+		position: relative;
+		border-top: 5px solid $blue * 0.8;
+		z-index: 1;
+	}
+}
+
+a.hamburger_icon {
+	padding-left: 8px !important;
+	padding-right: 8px !important;
+	position: relative;
+	display: inline-block;
+	height: 0px;
+	width: 0px;
+	border-top: 2px solid #fff;
+	border-bottom: 2px solid #fff;
+	background: $blue;
+	z-index: 2;
+
+	&:before {
+		content: "";
+		position: absolute;
+		top: 3px;
+		left: 0;
+		width: 100%;
+		border-top: 2px solid #fff;
+		background: $blue;
+	}
+
+	&:hover {
+		border-color: $linkhover;
+
+		&:before {
+			border-color: $linkhover;
+		}
 	}
 }
 
 #calendar_dropdown {
 	position: absolute;
+	z-index: 1;
+	top: 5px;
 	width: 400px;
-	left: 100%;
-	height: 0;
+	height: 500px;
 	opacity: 0;
 	background: $blue;
 	overflow: hidden;
 	padding: 2px;
-
-	@include transform(translateX(-250px));
-	@include transition-wtime(700ms, height, opacity);
-	-webkit-transition-timing-function: $menu_transfunc;
-	        transition-timing-function: $menu_transfunc;
+	visibility: hidden;
+	@include transform(translateX(-90%));
+	@include transition-wtime(300ms, transform, opacity, visibility);
 
 	&.show_calendar {
-		height: 500px;
 		opacity: 1;
+		visibility: visible;
+		@include transform(translateX(-100%));
 	}
 
 	iframe {

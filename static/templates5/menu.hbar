@@ -1,5 +1,12 @@
 <div class="header unselectable" bind="header">
 	<div class="menu_wrapper">
+		<ul class="menu hamburger_container">
+			<li>
+				<a class="link hamburger_icon"></a>
+				{{>menu_hamburger}}
+			</li>
+		</ul>
+
 		<ul class="menu user_status">
 			{{#if ^BOOTSTRAP.user.id > 1 }}
 				<li bind="user_link" class="user_info">
@@ -38,29 +45,6 @@
 			</li>
 		</ul>
 
-		<ul class="menu submenu">
-			<li bind="calendar_menu_item">
-				<div bind="calendar_dropdown" id="calendar_dropdown"></div>
-				<a class="link">
-					{{ $l("events_calendar_link") }}
-				</a>
-			</li>
-
-			<li>
-				<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
-					{{ $l("chat") }}
-				</a>
-			</li>
-
-			{{#if ^BOOTSTRAP.user.id > 1 }}
-				<li>
-					<a href="http://rainwave.cc/forums" target="_blank">
-						{{ $l("forums") }}
-					</a>
-				</li>
-			{{/if}}
-		</ul>
-
 		<div id="station_select" bind="station_select" class="closed">
 			<a class="station" id="station_select_header" bind="station_select_header">
 				<div>{{ $l("station_select_header") }}</div>
@@ -78,6 +62,11 @@
 		</div>
 
 		<div id="r4_audio_player" bind="player" class="unselectable">
+			<div class="background">
+				<svg bind="play" class="audio_icon audio_icon_play" use="play"></svg>
+				<svg bind="stop" class="audio_icon audio_icon_stop" use="stop"></svg>
+				<svg bind="mute" class="audio_icon audio_icon_mute" use="mute"></svg>
+			</div>
 			<div class="m3u menu_inline_dropdown">
 				<a bind="play2" class="link">
 					{{ $l("listen_via_browser") }}
@@ -88,11 +77,6 @@
 				<a href="/tune_in/{{ sid }}.ogg" target="_blank">
 					{{ $l("listen_via_ogg") }}
 				</a>
-			</div>
-			<div class="background">
-				<svg bind="play" class="audio_icon audio_icon_play" use="play"></svg>
-				<svg bind="stop" class="audio_icon audio_icon_stop" use="stop"></svg>
-				<svg bind="mute" class="audio_icon audio_icon_mute" use="mute"></svg>
 			</div>
 		</div>
 	</div>

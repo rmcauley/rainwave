@@ -92,6 +92,10 @@
    "listen_via_mp3"                                  : "Listen with MP3",
    "listen_via_ogg"                                  : "Listen with Ogg",
 
+   "api_docs"                                        : "API Docs",
+   "github_repo"                                     : "GitHub",
+   "twitter"                                         : "Twitter",
+
    "__comment__"                 : "Timeline",
 
    "coming_up"                                       : "Coming Up",

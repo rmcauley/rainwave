@@ -1,0 +1,33 @@
+<div class="hamburgered menu_inline_dropdown">
+	<div>
+		<div bind="calendar_dropdown" id="calendar_dropdown"></div>
+		<a class="link" bind="calendar_menu_item">
+			{{ $l("events_calendar_link") }}
+		</a>
+		<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
+			{{ $l("chat") }}
+		</a>
+		<a href="http://rainwave.cc/forums" target="_blank">
+			{{ $l("forums") }}
+		</a>
+	</div>
+	<div class="menu_group">
+		<a class="link" bind="settings_icon">
+			{{ $l("Settings") }}
+		</a>
+	</div>
+	<div class="menu_group">
+		<a href="https://twitter.com/Rainwavecc" target="_blank">
+			{{ $l("twitter") }}
+		</a>
+		<a href="https://github.com/rmcauley/rainwave/" target="_blank">
+			{{ $l("github_repo") }}
+		</a>
+		<a href="http://rainwave.cc/api4/" target="_blank">
+			{{ $l("api_docs") }}
+		</a>
+		<a href="http://rainwave.cc/pages/tip_jar" target="_blank">
+			{{ $l("tip_jar") }}
+		</a>
+	</div>
+</div>
