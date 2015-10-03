@@ -1,8 +1,8 @@
 <div class="hamburgered menu_inline_dropdown">
 	<div>
-		<div bind="calendar_dropdown" id="calendar_dropdown"></div>
 		<a class="link" bind="calendar_menu_item">
-			{{ $l("events_calendar_link") }}
+			<div bind="calendar_dropdown" id="calendar_dropdown"></div>
+			<span>{{ $l("events_calendar_link") }}</span>
 		</a>
 		<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&amp;server=irc.synirc.net&amp;channel=%23rainwave&amp;noServerNotices=true&amp;noServerMotd=true&amp;autoConnect=true" target="_blank">
 			{{ $l("chat") }}

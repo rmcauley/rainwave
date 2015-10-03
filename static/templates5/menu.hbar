@@ -2,8 +2,8 @@
 	<div class="menu_wrapper">
 		<ul class="menu hamburger_container">
 			<li>
-				<a class="link hamburger_icon"></a>
 				{{>menu_hamburger}}
+				<a class="link hamburger_icon"></a>
 			</li>
 		</ul>
 
@@ -62,11 +62,6 @@
 		</div>
 
 		<div id="r4_audio_player" bind="player" class="unselectable">
-			<div class="background">
-				<svg bind="play" class="audio_icon audio_icon_play" use="play"></svg>
-				<svg bind="stop" class="audio_icon audio_icon_stop" use="stop"></svg>
-				<svg bind="mute" class="audio_icon audio_icon_mute" use="mute"></svg>
-			</div>
 			<div class="m3u menu_inline_dropdown">
 				<a bind="play2" class="link">
 					{{ $l("listen_via_browser") }}
@@ -77,6 +72,11 @@
 				<a href="/tune_in/{{ sid }}.ogg" target="_blank">
 					{{ $l("listen_via_ogg") }}
 				</a>
+			</div>
+			<div class="background">
+				<svg bind="play" class="audio_icon audio_icon_play" use="play"></svg>
+				<svg bind="stop" class="audio_icon audio_icon_stop" use="stop"></svg>
+				<svg bind="mute" class="audio_icon audio_icon_mute" use="mute"></svg>
 			</div>
 		</div>
 	</div>

@@ -145,10 +145,12 @@ ul.menu {
 .menu_inline_dropdown {
 	position: absolute;
 	z-index: 0;
+	top: 10px;
 	min-width: 100%;
 	background: $blue;
 	opacity: 0;
 	visibility: hidden;
+	padding-top: 10px;
 	@include transform(translateY(-$menu_height + 10));
 	@include transition-wtime(300ms, opacity, transform, visibility);
 
@@ -223,6 +225,7 @@ a.hamburger_icon {
 
 #calendar_dropdown {
 	position: absolute;
+	left: 0;
 	z-index: 1;
 	top: 5px;
 	width: 400px;
