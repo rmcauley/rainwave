@@ -15,6 +15,7 @@ var Sizing = function() {
 	self.width = 0;
 	self.sizeable_area_height = 0;
 	self.detail_area = null;
+	self.menu_height = 0;
 
 	self.add_resize_callback = function(cb, priority) {
 		if (!priority) {
@@ -28,6 +29,7 @@ var Sizing = function() {
 	self.trigger_resize = function() {
 		self.height = document.documentElement.clientHeight;
 		self.width = document.documentElement.clientWidth;
+		self.menu_height = index_t.header.offsetHeight;
 		self.list_item_height = index_t.list_item.offsetHeight;
 		var detail_header_size = index_t.detail_header_container.offsetHeight;
 

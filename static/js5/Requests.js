@@ -12,7 +12,7 @@ var Requests = function() {
 	var songs = [];
 
 	BOOTSTRAP.on_draw.push(function(root_template) {
-		scroller = Scrollbar.create(el);
+		scroller = Scrollbar.create(el, false, true);
 		Sizing.requests_area = scroller.scrollblock;
 	});
 
@@ -151,10 +151,12 @@ var Requests = function() {
 		}
 		if (!found_song) return;
 		found_song._deleted = true;
+		found_song.el.classList.add("deleted");
 		API.async_get("delete_request", { "song_id": song_id },
 			null,
 			function() {
 				found_song._deleted = false;
+				found_song.el.classList.remove("deleted");
 			}
 		);
 	};
@@ -175,6 +177,15 @@ var Requests = function() {
 	};
 
 	self.update = function(json) {
+		if (dragging_song) {
+			// we don't really need to do anything here
+			// order_change will cause a request to the server
+			// including any changes the user may or may not have made
+			// and we'll get a fresh list of requests back
+			// which'll keep things all in sync
+			order_changed = true;
+			return;
+		}
 		var i, j, found, n;
 		var actually_new = 0;
 
@@ -211,6 +222,7 @@ var Requests = function() {
 		}
 		self.show_queue_paused();
 		self.update_header();
+
 		self.reflow();
 		if (!document.body.classList.contains("loading") && actually_new) {
 			self.indicate(actually_new);
@@ -275,6 +287,10 @@ var Requests = function() {
 	var current_dragging_y;
 
 	var start_drag = function(e) {
+		if (!e.which || (e.which !== 1)) {
+			return;
+		}
+
 		var song_id = e.target._song_id || e.target.parentNode._song_id;
 		if (song_id) {
 			for (var i = 0; i < songs.length; i++) {
@@ -322,8 +338,8 @@ var Requests = function() {
 			}
 			dragging_song.el.style[Fx.transform] = "translateY(" + new_y + "px)";
 		}
-		var upper_fold = Math.ceil(Math.max(80, Math.min(Sizing.height / 5, 200)));
-		var lower_fold = Math.ceil(Math.max(40, Math.min(Sizing.height / 6, 150)));
+		var upper_fold = Sizing.menu_height + Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
+		var lower_fold = Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
 		if (last_mouse_event.clientY < upper_fold) {
 			scroller.scroll_to(scroller.scroll_top - (25 - (Math.floor(last_mouse_event.clientY / upper_fold * 25))));
 		}
