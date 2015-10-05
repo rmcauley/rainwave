@@ -150,6 +150,9 @@ var Requests = function() {
 			}
 		}
 		if (!found_song) return;
+		if (found_song._deleted) {
+			return;
+		}
 		found_song._deleted = true;
 		found_song.el.classList.add("deleted");
 		API.async_get("delete_request", { "song_id": song_id },
