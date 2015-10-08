@@ -53,7 +53,7 @@ def _process_line(line, sid):
 					row['song_id'] = song_id
 					add_to_line = True
 			elif not row['line_expiry_tune_in'] or row['line_expiry_tune_in'] == 0:
-				db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s", ((t + 900), row['user_id']))
+				db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s", ((t + 600), row['user_id']))
 				add_to_line = True
 			else:
 				add_to_line = True
