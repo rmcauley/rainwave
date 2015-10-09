@@ -18,20 +18,25 @@ if (typeof(RWTemplateHelpers) == "undefined") {
 }
 
 RWTemplateHelpers.opacity = function(val, elem) {
+    "use strict";
     if (val) elem.style.opacity = "1.0";
     else elem.style.opacity = "0.6";
     return RW_TEMPLATE_NO_VALUE;
 };
 RWTemplateHelpers.opacity_get = false;
 
-RWTemplateHelpers.className = function(val,elem){
-    elem.className=val;
+RWTemplateHelpers.className = function(val, elem) {
+    "use strict";
+    elem.className = val;
     return RW_TEMPLATE_NO_VALUE;
 };
 
-
 RWTemplateHelpers.array_render = function(arr, template, el, parent_context) {
     "use strict";
+
+    if (!arr.$t) {
+        arr.$t = new RWTemplateObject(arr);
+    }
 
     var i;
     if (Object.prototype.toString.call(arr) == "[object Object]") {
@@ -51,24 +56,28 @@ RWTemplateHelpers.array_render = function(arr, template, el, parent_context) {
         "render_append": arr.render_append,
         "render_positions": arr.render_positions,
         "render_delete": arr.render_delete,
+        "pre_append": arr.pre_append,
         "post_append": arr.post_append,
         "post_update": arr.post_update,
         "pre_update": arr.pre_update,
         "parent_context": (arr.post_append && parent_context) ? parent_context : null
     });
     if (typeof(arr.pre_update) == "function") {
-        arr.pre_update();
+        arr.pre_update(arr);
     }
     for (i = 0; i < arr.length; i++) {
+        if (typeof(arr.pre_append) == "function") {
+            arr.pre_append(arr[i], parent_context);
+        }
         if (!arr[i].$t) {
             arr[i].$t = new RWTemplateObject(arr[i]);
         }
         if (typeof(arr.render_append) == "function") {
-            template(arr[i]);
+            template(arr[i], null, i);
             arr.render_append(el, arr[i]);
         }
         else {
-            template(arr[i], el);
+            template(arr[i], el, i);
             if (!arr[i].$t) {
                 throw("Array rendered without any template bindings.");
             }
@@ -81,7 +90,7 @@ RWTemplateHelpers.array_render = function(arr, template, el, parent_context) {
         }
     }
     if (typeof(arr.post_update) == "function") {
-        arr.post_update();
+        arr.post_update(arr);
     }
 };
 
@@ -107,8 +116,8 @@ RWTemplateHelpers.array_update = function(arr, full_render) {
     for (var s = 0; s < arr._shadows.length; s++) {
         shadow = arr._shadows[s];
 
-        if (typeof(arr.pre_update) == "function") {
-            arr.pre_update();
+        if (typeof(shadow.pre_update) == "function") {
+            shadow.pre_update(arr);
         }
 
         // find things that no longer exist
@@ -127,14 +136,20 @@ RWTemplateHelpers.array_update = function(arr, full_render) {
             exists = shadow.arr.indexOf(arr[i]);
             if (exists === -1) {
                 anything_changed = true;
-                if (shadow.template) {
+                if (shadow.pre_append) {
+                    shadow.pre_append(arr[i], shadow.parent_context);
+                }
+                if (arr._preserve_item_roots && arr[i].$t && arr[i].$t.item_root && arr[i].$t.item_root.length) {
+                    shadow.el.appendChild(arr[i].$t.item_root[0]);
+                }
+                else if (shadow.template) {
                     shadow.template(arr[i], shadow.el);
                 }
-                if (arr.render_append) {
-                    arr.render_append(shadow.el, arr[i]);
+                if (shadow.render_append) {
+                    shadow.render_append(shadow.el, arr[i]);
                 }
-                if (arr.post_append) {
-                    arr.post_append(arr[i], shadow.parent_context);
+                if (shadow.post_append) {
+                    shadow.post_append(arr[i], shadow.parent_context);
                 }
             }
             else if (exists !== i) {
@@ -151,8 +166,8 @@ RWTemplateHelpers.array_update = function(arr, full_render) {
         }
 
         if (anything_changed) {
-            if (arr.render_positions) {
-                arr.render_positions();
+            if (shadow.render_positions) {
+                shadow.render_positions();
             }
             else if (arr.length > 0 && arr[0].$t.item_root) {
                 for (i = 0; i < arr.length; i++) {
@@ -168,8 +183,8 @@ RWTemplateHelpers.array_update = function(arr, full_render) {
             }
         }
 
-        if (typeof(arr.post_update) == "function") {
-            arr.post_update();
+        if (typeof(shadow.post_update) == "function") {
+            shadow.post_update(arr);
         }
     }
 };
@@ -214,7 +229,9 @@ RWTemplateHelpers.elem_update = function(elem, val) {
         }
     }
     else if (tagname == "textarea") {
-        elem.value = elem_val;
+        if (elem.value != elem_val) {
+            elem.value = elem_val;
+        }
     }
     else if (tagname == "img") {
         elem.setAttribute("src", elem_val);
@@ -413,10 +430,9 @@ RWTemplateHelpers.tabify = function(obj, def) {
     var gettext = gettext || function(txt) { return txt; };
 
     RWTemplateObject.prototype.update = function(from_object) {
-        // array objects don't get $t, so there's no sense in this code
-        // if (Object.prototype.toString.call(val) == "[object Array]") {
-        //     return RWTemplateHelpers.array_update(this._c, true);
-        // }
+        if (Object.prototype.toString.call(this._c) == "[object Array]") {
+            return RWTemplateHelpers.array_update(this._c);
+        }
 
         var val;
         from_object = from_object || this._c;
@@ -454,16 +470,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
             if (!this._c.hasOwnProperty(i)) continue;
             if (i.charAt(0) == "$") continue;
 
-            if ((this._c[i] !== null) && this._c[i].$t && this._c[i].$t.get && !shallow) {
-                var new_sub_obj = this._c[i].$t.get(update_in_place, only_diff);
-                for (ii in new_sub_obj) {
-                    if (new_sub_obj.hasOwnProperty(ii)) {
-                        new_obj[i] = new_sub_obj;
-                        break;
-                    }
-                }
-            }
-            else if ((Object.prototype.toString.call(this._c[i]) == "[object Array]") && !shallow) {
+            if ((Object.prototype.toString.call(this._c[i]) == "[object Array]") && !shallow) {
                 var new_arr = [];
                 for (arr_i = 0; arr_i < this._c[i].length; arr_i++) {
                     if (this._c[i][arr_i] && this._c[i][arr_i].$t && this._c[i][arr_i].$t.get) {
@@ -472,6 +479,15 @@ RWTemplateHelpers.tabify = function(obj, def) {
                 }
                 if (new_arr.length) {
                     new_obj[i] = new_arr;
+                }
+            }
+            else if ((this._c[i] !== null) && (this._c[i] !== undefined) && this._c[i].$t && this._c[i].$t.get && !shallow) {
+                var new_sub_obj = this._c[i].$t.get(update_in_place, only_diff);
+                for (ii in new_sub_obj) {
+                    if (new_sub_obj.hasOwnProperty(ii)) {
+                        new_obj[i] = new_sub_obj;
+                        break;
+                    }
                 }
             }
             else if (this[i]) {
@@ -514,9 +530,12 @@ RWTemplateHelpers.tabify = function(obj, def) {
                     }
 
                     if (typeof(new_val) != "undefined") {
-                        // if (!isNaN(new_val) && !isNaN(parseFloat(new_val))) {
-                        //     new_val = parseFloat(new_val);
-                        // }
+                        if (elem.hasAttribute("int") && !isNaN(new_val) && !isNaN(parseInt(new_val))) {
+                            new_val = parseInt(new_val);
+                        }
+                        else if (elem.hasAttribute("float") && !isNaN(new_val) && !isNaN(parseFloat(new_val))) {
+                            new_val = parseFloat(new_val);
+                        }
                         if ((!only_diff && (typeof(new_obj[i]) == "undefined")) || (new_val != this._c[i])) {
                             new_obj[i] = new_val;
                         }
@@ -528,11 +547,106 @@ RWTemplateHelpers.tabify = function(obj, def) {
         return new_obj;
     };
 
+    RWTemplateHelpers.array_reconcile = function(fresh, existing) {
+        if (!existing._unique_field) {
+            // console.warn("Array that we're trying to update does not have a _unique_field property.");
+            // console.warn(existing);
+            return;
+        }
+        var i, j, found;
+        if (existing._unique_field === true) {
+            for (j = existing.length - 1; j >= 0; j--) {
+                found = false;
+                for (i = fresh.length - 1; i >= 0; i--) {
+                    if (fresh[i] === existing[j]) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    existing.splice(j, 1);
+                }
+            }
+            for (i = fresh.length - 1; i >= 0; i--) {
+                found = false;
+                for (j = existing.length - 1; j >= 0; j--) {
+                    if (fresh[i] === existing[j]) {
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    if (i < existing.length) {
+                        existing.splice(i, 0, fresh[i]);
+                    }
+                    else {
+                        existing.push(fresh[i]);
+                    }
+                }
+            }
+        }
+        else {
+            for (j = existing.length - 1; j >= 0; j--) {
+                found = false;
+                for (i = fresh.length - 1; i >= 0; i--) {
+                    if (fresh[i][existing._unique_field] == existing[j][existing._unique_field]) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    existing.splice(j, 1);
+                }
+            }
+
+            for (i = fresh.length - 1; i >= 0; i--) {
+                found = false;
+                for (j = existing.length - 1; j >= 0; j--) {
+                    if (fresh[i][existing._unique_field] == existing[j][existing._unique_field]) {
+                        if (existing[j].$t) {
+                            existing[j].$t.update_data(fresh[i]);
+                        }
+                        else {
+                            existing[j] = fresh[i];
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    if (i < existing.length) {
+                        existing.splice(i, 0, fresh[i]);
+                    }
+                    else {
+                        existing.push(fresh[i]);
+                    }
+                }
+            }
+        }
+    };
+
     RWTemplateObject.prototype.update_data = function(new_data) {
         var new_obj = new_data || this.get();
+        if (Object.prototype.toString.call(this._c) == "[object Array]") {
+            if (new_data) {
+                RWTemplateHelpers.array_reconcile(new_data, this._c);
+            }
+            return RWTemplateHelpers.array_update(this._c);
+        }
         for (var i in new_obj) {
-            if (this._c[i] && Object.prototype.toString.call(this._c[i]) == "[object Array]") {
-                console.warn("Cannot update an array automatically from the server.  Please update manually.");
+            if (!new_obj.hasOwnProperty(i)) {
+                // do nothing
+            }
+            else if (i == "$t") {
+                // do nothing
+            }
+            else if (this._c[i] && ((Object.prototype.toString.call(this._c[i]) == "[object Array]") || (Object.prototype.toString.call(new_data[i]) == "[object Array]"))) {
+                if (Object.prototype.toString.call(this._c[i]) === Object.prototype.toString.call(new_data[i])) {
+                    RWTemplateHelpers.array_reconcile(new_data[i], this._c[i]);
+                }
+                else {
+                    console.warn("Mismatching object and error when updating object (new, old, key):");
+                    console.warn(new_data, this._c, i);
+                }
             }
             else if ((typeof(this._c[i]) == "object") && this._c[i] && this._c[i].$t) {
                 this._c[i].$t.update_data(new_obj[i]);
@@ -541,11 +655,6 @@ RWTemplateHelpers.tabify = function(obj, def) {
                 this._c[i] = new_obj[i];
             }
         }
-    };
-
-    RWTemplateObject.prototype.update_in_place = function() {
-        this.update_data();
-        this.update();
     };
 
     RWTemplateObject.prototype.reset = function() {

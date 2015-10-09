@@ -386,7 +386,7 @@ class RainwaveParser(HTMLParser):
 				if not data or len(data) == 0:
 					pass
 				elif data[:3] == "{{>" and data[-2:] == "}}":
-					self.handle_subtemplate(data[3:-2])
+					self.handle_subtemplate(data[3:-2].strip())
 				elif re.match(r"^\{\{\s*else\s*\}\}$", data):
 					self.handle_stack_push("#else")
 				elif data[:3] == "{{#" and data[-2:] == "}}":
@@ -459,7 +459,7 @@ class RainwaveParser(HTMLParser):
 			self.buffers[self._current_stack_point()] += "%s(%s[%s], %s);" % (function_id, context_key, looper_var, self._current_tree_point())
 			self.buffers[self._current_stack_point()] += "}"
 		else:
-			self.buffers[self._current_stack_point()] += "_h.array_render(%s,%s,%s);" % (context_key, function_id, self._current_tree_point())
+			self.buffers[self._current_stack_point()] += "_h.array_render(%s,%s,%s,_c);" % (context_key, function_id, self._current_tree_point())
 
 	def handle_subtemplate(self, template_name):
 		self.check_bind_scope(self._current_tree_point())
