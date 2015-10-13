@@ -46,11 +46,13 @@
 		</ul>
 
 		<div id="station_select" bind="station_select" class="closed">
-			<a class="station" id="station_select_header" bind="station_select_header">
-				<div>{{ $l("station_select_header") }}</div>
-				<svg class="pulldown_arrow" use="pulldown"></svg>
+			<svg class="pulldown_arrow" use="pulldown"></svg>
+			<a id="station_select_header" bind="station_select_header" class="station">
+				<div class="station_details">
+					<div class="station_name">{{ $l("station_select_header") }}</div>
+				</div>
 			</a>
-			{{#each stations }}
+			{{#each stations}}
 				<a bind="menu_link" class="station">
 					<div bind="menu_np" class="station_song_container"></div>
 					<div class="station_details">

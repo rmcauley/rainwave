@@ -34,7 +34,6 @@ $station_select_width: 270px;
 		position: relative;
 		z-index: 50;
 		margin-right: 15px;
-		top: $menu_height / 2;
 
 		@include transition-wtime(350ms, transform);
 		@include transform(translateY(-50%) rotate(0deg));
@@ -55,23 +54,38 @@ $station_select_width: 270px;
 
 	#station_select_header {
 		position: absolute;
-		background: $blue;
+		opacity: 1;
+		font-size: 1.2em;
+		background: $blue * 1.1 !important;
+		text-transform: uppercase;
+		height: $menu_height !important;
 		z-index: 41;
-		height: $menu_height;
-		font-size: 0.6em;
 
 		@include transform(translateY(-100%));
+		@include transition-wtime(300ms, transform);
 
-		@media $mobile-media {
-			display: none;
+		div {
+			position: relative;
+			top: $menu_height / 2;
+			@include transform(translateY(-50%));
+		}
+
+		@media $phone-media {
+			font-size: 1em;
 		}
 	}
 
-	&.open #station_select_header {
-		@include transform(none);
+	&.openable #station_select_header {
+		cursor: pointer;
+	}
 
-		div.station_details {
-			@include transform(translateY(-50%));
+	&.open #station_select_header {
+		@include transform(translateY(0%));
+	}
+
+	div.menu_wrapper:hover &.openable.closed {
+		#station_select_header {
+			@include transform(translateY(0%));
 		}
 	}
 
@@ -94,8 +108,8 @@ $station_select_width: 270px;
 
 		padding: 0px 0px 0px 20px;
 		@include transform(translateY(-15px));
-		-webkit-transition: -webkit-transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc;
-		        transition:         transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc;
+		-webkit-transition: -webkit-transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
+		        transition:         transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc, height 700ms $menu_transfunc;
 
 		@media $phone-media {
 			height: $phone_menu_height !important;
@@ -110,7 +124,8 @@ $station_select_width: 270px;
 			background: $blue;
 			color: $text;
 			z-index: 40 !important;
-			@include transform(translateY(-13px));
+			height: $menu_height;
+			@include transform(none);
 		}
 
 		div.station_name {
@@ -147,6 +162,7 @@ $station_select_width: 270px;
 
 		div.station_song_container {
 			float: right;
+			height: $station_height;
 			border-top: 1px solid rgba(0, 0, 0, 0.1);
 			@include transform(translateX(100%));
 
@@ -175,6 +191,7 @@ $station_select_width: 270px;
 	&.open a.station {
 		&.selected_station {
 			cursor: default;
+			height: $station_height;
 		}
 
 		div.station_details {
