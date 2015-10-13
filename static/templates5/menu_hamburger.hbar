@@ -4,7 +4,7 @@
 			<div bind="calendar_dropdown" id="calendar_dropdown"></div>
 			<span>{{ $l("events_calendar_link") }}</span>
 		</a>
-		<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&server=irc.synirc.net&channel=%23rainwave&noServerNotices=true&noServerMotd=true&autoConnect=true{{^ User.id > 1 ? "&nick:" + User.username : "" }}" target="_blank">
+		<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&server=irc.synirc.net&channel=%23rainwave&noServerNotices=true&noServerMotd=true&autoConnect=true{{^ User.id > 1 ? '&nick:' + User.username : '' }}" target="_blank">
 			{{ $l("chat") }}
 		</a>
 		<a href="http://rainwave.cc/forums" target="_blank">
