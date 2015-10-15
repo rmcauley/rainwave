@@ -161,7 +161,9 @@ RWTemplateHelpers.array_update = function(arr, full_render) {
 
         if (full_render) {
             for (i = 0; i < arr.length; i++) {
-                if (arr[i].$t) arr[i].$t.update();
+                if (arr[i].$t) {
+                    arr[i].$t.update();
+                }
             }
         }
 
@@ -442,7 +444,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
 
             val = from_object[i];
             if (Object.prototype.toString.call(val) == "[object Array]") {
-                RWTemplateHelpers.array_update(val);
+                RWTemplateHelpers.array_update(val, true);
             }
             else if ((Object.prototype.toString.call(val) == "[object Object]") && val.$t) {
                 if (val.$t instanceof RWTemplateObject) {
@@ -500,8 +502,10 @@ RWTemplateHelpers.tabify = function(obj, def) {
                     if (tagname == "select") {
                         new_val = elem.value;
                     }
-                    else if ((tagname == "input") && (elem.getAttribute("type") == "radio") && elem.checked) {
-                        new_val = elem.value;
+                    else if ((tagname == "input") && (elem.getAttribute("type") == "radio")) {
+                        if (elem.checked) {
+                            new_val = elem.value;
+                        }
                     }
                     else if ((tagname == "input") && (elem.getAttribute("type") == "checkbox")) {
                         if (elem.checked) {
@@ -513,7 +517,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
                             }
                         }
                         else {
-                            new_val = false;
+                            new_val = null;
                         }
                     }
                     else if ((elem.getAttribute("type") != "submit") && (typeof(elem.value) != "undefined") && (tagname != "li")) {
@@ -548,13 +552,29 @@ RWTemplateHelpers.tabify = function(obj, def) {
     };
 
     RWTemplateHelpers.array_reconcile = function(fresh, existing) {
-        if (!existing._unique_field) {
+        if (!existing._unique_field && !existing._update_in_order && !existing._exact_match) {
             // console.warn("Array that we're trying to update does not have a _unique_field property.");
             // console.warn(existing);
             return;
         }
         var i, j, found;
-        if (existing._unique_field === true) {
+        if (existing._update_in_order) {
+            for (i = 0; i < Math.min(fresh.length, existing.length); i++) {
+                if (existing[i] && existing[i].$t) {
+                    existing[i].$t.update_data(fresh[i]);
+                }
+                else {
+                    existing[i] = fresh[i];
+                }
+            }
+            for (i = existing.length; i < fresh.length; i++) {
+                existing.push(fresh[i]);
+            }
+            while (existing.length > fresh.length) {
+                existing.pop();
+            }
+        }
+        else if (existing._exact_match) {
             for (j = existing.length - 1; j >= 0; j--) {
                 found = false;
                 for (i = fresh.length - 1; i >= 0; i--) {
@@ -627,8 +647,8 @@ RWTemplateHelpers.tabify = function(obj, def) {
     RWTemplateObject.prototype.update_data = function(new_data) {
         var new_obj = new_data || this.get();
         if (Object.prototype.toString.call(this._c) == "[object Array]") {
-            if (new_data) {
-                RWTemplateHelpers.array_reconcile(new_data, this._c);
+            if (new_obj) {
+                RWTemplateHelpers.array_reconcile(new_obj, this._c);
             }
             return RWTemplateHelpers.array_update(this._c);
         }
@@ -639,13 +659,13 @@ RWTemplateHelpers.tabify = function(obj, def) {
             else if (i == "$t") {
                 // do nothing
             }
-            else if (this._c[i] && ((Object.prototype.toString.call(this._c[i]) == "[object Array]") || (Object.prototype.toString.call(new_data[i]) == "[object Array]"))) {
-                if (Object.prototype.toString.call(this._c[i]) === Object.prototype.toString.call(new_data[i])) {
-                    RWTemplateHelpers.array_reconcile(new_data[i], this._c[i]);
+            else if (this._c[i] && ((Object.prototype.toString.call(this._c[i]) == "[object Array]") || (Object.prototype.toString.call(new_obj[i]) == "[object Array]"))) {
+                if (Object.prototype.toString.call(this._c[i]) === Object.prototype.toString.call(new_obj[i])) {
+                    RWTemplateHelpers.array_reconcile(new_obj[i], this._c[i]);
                 }
                 else {
                     console.warn("Mismatching object and error when updating object (new, old, key):");
-                    console.warn(new_data, this._c, i);
+                    console.warn(new_obj, this._c, i);
                 }
             }
             else if ((typeof(this._c[i]) == "object") && this._c[i] && this._c[i].$t) {
@@ -782,7 +802,15 @@ RWTemplateHelpers.tabify = function(obj, def) {
         if (rest_error) {
             var eli;
             for (i in rest_error) {
-                if (this.hasOwnProperty(i)) {
+                if (this._c[i] && this._c[i].$t && (Object.prototype.toString.call(this._c[i]) == "[object Array]") && (Object.prototype.toString.call(rest_error[i]) == "[object Array]")) {
+                    for (eli = 0; eli < rest_error[i].length; eli++) {
+                        this._c[i][eli].$t.error(rest_error[i][eli], xhr_object, error_message);
+                    }
+                }
+                else if ((typeof(this._c[i]) == "object") && this._c[i] && this._c[i].$t) {
+                    this._c[i].$t.error(rest_error[i], xhr_object, error_message);
+                }
+                else if (this.hasOwnProperty(i)) {
                     for (eli = 0; eli < this[i].length; eli++) {
                         RWTemplateHelpers.add_error_class(this[i][eli]);
                     }
