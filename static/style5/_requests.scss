@@ -19,21 +19,6 @@ div.requests {
 		@include transform(translateX(-32px));
 	}
 
-	div.request_icons {
-		position: absolute;
-		width: 100px;
-		@include transform(translateX(-130px));
-
-		img {
-			display: inline;
-			margin: 0 5px;
-		}
-	}
-
-	&.scrollblock div.request_icons {
-		@include transform(translateX(-137px));
-	}
-
 	div.song {
 		padding: 0 10px;
 
@@ -55,6 +40,42 @@ div.requests {
 	}
 }
 
+ul.request_icons {
+	text-align: center;
+
+	li {
+		display: inline;
+		color: #FFF;
+		opacity: 0.5;
+		@include transition-wtime(300ms, opacity);
+		cursor: pointer;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	li.requests_play {
+		display: none;
+	}
+
+	div.paused & {
+		li.requests_pause {
+			display: none;
+		}
+
+		li.requests_play {
+			display: inline;
+		}
+	}
+
+	img {
+		position: relative;
+		top: 1px;
+		height: 14px;
+		margin-right: 5px;
+	}
+}
 
 div.request_cancel {
 	cursor: pointer;

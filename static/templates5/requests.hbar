@@ -1,13 +1,29 @@
 <div class="close" bind="request_close">
 	<img src="/static/images4/cancel.png" alt="X" />
 </div>
-<div class="close request_icons">
-	<img bind="requests_pause" title="{{ $l('pause_request_queue') }}" src="/static/images4/request_pause.png" />
-	<img bind="requests_favfill" title="{{ $l('request_fill_with_faves') }}" src="/static/images4/request_faves.png" />
-	<img bind="requests_unrated" title="{{ $l('request_fill_with_unrated') }}" src="/static/images4/request_unrated.png" />
-	<img bind="requests_clear" title="{{ $l('clear_request_queue') }}" src="/static/images4/request_clear.png" />
-</div>
 <ul class="panel_header"><li class="open" bind="request_header">{{ $l("Requests") }}</li></ul>
+<ul class="panel_header request_icons">
+	<li class="pause_queue" bind="requests_pause" class="requests_pause">
+		<img src="/static/images4/request_pause.png" />
+		<span>{{ $l("Pause") }}</span>
+	</li>
+	<li class="pause_queue" bind="requests_play" class="requests_play">
+		<img src="/static/images4/request_play.png" />
+		<span>{{ $l("Resume") }}</span>
+	</li>
+	<li bind="requests_favfill" >
+		<img src="/static/images4/request_faves.png" />
+		<span>{{ $l("Faves") }}</span>
+	</li>
+	<li bind="requests_unrated">
+		<img src="/static/images4/request_unrated.png" />
+		<span>{{ $l("Unrated") }}</span>
+	</li>
+	<li bind="requests_clear">
+		<img src="/static/images4/request_clear.png" />
+		<span>{{ $l("Clear") }}</span>
+	</li>
+</ul>
 <div bind="requests">
 	<div class="song" style="visibility: hidden; z-index: -1; transition: none;" bind="last_request_padder"></div>
 </div>

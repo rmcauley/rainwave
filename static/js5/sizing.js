@@ -43,7 +43,7 @@ var Sizing = function() {
 		self.sizeable_area_height = self.height - index_t.sizeable_area.offsetTop;
 		index_t.sizeable_area.style.height = self.sizeable_area_height + "px";
 		self.detail_area.style.height = (self.sizeable_area_height - detail_header_size - 20) + "px";
-		self.requests_area.style.height = (self.sizeable_area_height - detail_header_size - 20) + "px";
+		self.requests_area.style.height = (self.sizeable_area_height - (detail_header_size * 2) - 30) + "px";
 
 		for (var i = 0; i < index_t.sizeable_area.childNodes.length; i++) {
 			index_t.sizeable_area.childNodes[i].style.height = self.sizeable_area_height + "px";

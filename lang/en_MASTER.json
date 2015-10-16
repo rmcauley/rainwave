@@ -211,8 +211,14 @@
 
    "clear_request_queue"                             : "Clear All",
    "pause_request_queue"                             : "Pause",
+   "unpause_request_queue"                           : "Unpause",
    "request_fill_with_unrated"                       : "Unrated Fill",
    "request_fill_with_faves"                         : "Fave Fill",
+   "Pause"                                           : "Pause",
+   "Resume"                                          : "Resume",
+   "Faves"                                           : "Faves",
+   "Unrated"                                         : "Unrated",
+   "Clear"                                           : "Clear",
 
    "Requests"                                        : "Requests",
    "#_requests"                                      : "%(num_requests) &(num_requests:Request/Requests)",
