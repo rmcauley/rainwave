@@ -12,11 +12,6 @@
 		</a>
 	</div>
 	<div class="menu_group">
-		<a class="link" bind="settings_icon">
-			{{ $l("Settings") }}
-		</a>
-	</div>
-	<div class="menu_group">
 		<a href="https://twitter.com/Rainwavecc" target="_blank">
 			{{ $l("twitter") }}
 		</a>
@@ -28,6 +23,11 @@
 		</a>
 		<a href="http://rainwave.cc/pages/tip_jar" target="_blank">
 			{{ $l("tip_jar") }}
+		</a>
+	</div>
+	<div class="menu_group">
+		<a class="link" bind="settings_icon">
+			{{ $l("Settings") }}
 		</a>
 	</div>
 </div>

@@ -150,13 +150,11 @@ ul.menu {
 	background: $blue;
 	opacity: 0;
 	visibility: hidden;
-	padding-top: 10px;
+	padding-top: 20px;
 	@include transform(translateY(-$menu_height + 10));
 	@include transition-wtime(300ms, opacity, transform, visibility);
 
 	a {
-	 	padding: 8px 5px 5px 5px;
-		border-bottom: 1px solid $blue * 1.2;
 		white-space: nowrap;
 		display: block !important;
 		background: $blue;
@@ -165,6 +163,10 @@ ul.menu {
 
 		&:last-child {
 			border-bottom: none;
+		}
+
+		&, ul.menu li & {
+			padding: 8px 20px 8px 5px;
 		}
 	}
 
@@ -175,7 +177,7 @@ ul.menu {
 	}
 
 	&.hamburgered {
-		min-width: 100px;
+		min-width: 200px;
 		text-align: right;
 		margin-left: 30px;
 		@include transform(translateX(-100%) translateY(-$menu_height + 10));
@@ -187,7 +189,7 @@ ul.menu {
 
 	div.menu_group {
 		position: relative;
-		border-top: 5px solid $blue * 0.8;
+		border-top: 1px solid $blue * 1.2;
 		z-index: 1;
 	}
 }
