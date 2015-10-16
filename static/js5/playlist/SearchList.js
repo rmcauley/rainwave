@@ -45,6 +45,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var original_key_nav;
 	var ignore_original_scroll_top;
 	var scroll_to_on_load;
+	var scroll_margin = 8;
 
 	var current_scroll_index = false;
 	var current_height;
@@ -154,6 +155,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		// 	else if (character == "y") Schedule.vote(1, 0); 		// quertz layout
 		// 	else if (character == "x") Schedule.vote(1, 1);
 		// 	else if (character == "c") Schedule.vote(1, 2);
+		// 	else if (character == "f") Schedule.fav_current();
 		// 	else {
 		// 		hotkey_mode_error("invalid_hotkey");
 		// 		return true;
@@ -202,7 +204,19 @@ var SearchList = function(root_el, sort_key, search_key) {
 			scroll.set_height(full_height);
 			current_height = full_height;
 		}
-		num_items_to_display = Math.ceil(scroll.offset_height / Sizing.list_item_height) + 1;
+		num_items_to_display = Math.ceil(scroll.offset_height / Sizing.list_item_height);
+		if (num_items_to_display > 35) {
+			scroll_margin = 5;
+		}
+		else if (num_items_to_display > 25) {
+			scroll_margin = 4;
+		}
+		else if (num_items_to_display > 20) {
+			scroll_margin = 3;
+		}
+		else {
+			scroll_margin = 2;
+		}
 	};
 
 	self.sort_function = function(a, b) {
@@ -237,7 +251,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		self.remove_key_nav_highlight();
 		current_key_nav_id = id;
 		data[current_key_nav_id]._el.classList.add("hover");
-		if (!no_scroll) self.scroll_to(data[id]);
+		if (!no_scroll) self.scroll_to(data[id], true);
 	};
 
 	self.key_nav_first_item = function() {
@@ -319,7 +333,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			current_scroll_index = false;
 			self.recalculate();
 			if (backspace_scroll_top && (revisible.length + visible.length > num_items_to_display)) {
-				scroll.scroll_to(backspace_scroll_top);
+				self.scroll_to(backspace_scroll_top);
 				backspace_scroll_top = null;
 			}
 			self.reposition();
@@ -353,17 +367,17 @@ var SearchList = function(root_el, sort_key, search_key) {
 		if (first_time) {
 			original_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			scroll.scroll_to(0, 7);
+			scroll.scroll_to(0);
 		}
 		else if (visible.length <= num_items_to_display) {
 			backspace_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			scroll.scroll_to(0, 7);
+			scroll.scroll_to(0);
 		}
 		else if (visible.length <= current_scroll_index) {
 			backspace_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			scroll.scroll_to((visible.length - num_items_to_display) * Sizing.list_item_height, 7);
+			scroll.scroll_to((visible.length - num_items_to_display) * Sizing.list_item_height);
 		}
 		else {
 			self.recalculate();
@@ -458,22 +472,21 @@ var SearchList = function(root_el, sort_key, search_key) {
 		else if (!self.loaded) scroll_to_on_load = id;
 	};
 
-	self.scroll_to = function(data_item, margin) {
-		margin = margin || 0;
+	self.scroll_to = function(data_item) {
 		if (data_item) {
 			var new_index = visible.indexOf(data_item.id);
-			if ((new_index > (current_scroll_index + margin)) && (new_index < (current_scroll_index + num_items_to_display - margin))) {
+			if ((new_index > (current_scroll_index + scroll_margin)) && (new_index < (current_scroll_index + num_items_to_display - scroll_margin))) {
 				if (!current_scroll_index) {
 					self.redraw_current_position();
 				}
 			}
 			// position at the lower edge
-			else if (current_scroll_index && (new_index >= (current_scroll_index + num_items_to_display - 8))) {
-				scroll.scroll_to(Math.min(scroll.scroll_top_max, (new_index - num_items_to_display + 8) * Sizing.list_item_height));
+			else if (current_scroll_index && (new_index >= (current_scroll_index + num_items_to_display - scroll_margin))) {
+				scroll.scroll_to(Math.min(scroll.scroll_top_max, (new_index - num_items_to_display + scroll_margin + 1) * Sizing.list_item_height));
 			}
 			// position at the higher edge
 			else {
-				scroll.scroll_to(Math.max(0, (new_index - margin) * Sizing.list_item_height));
+				scroll.scroll_to(Math.max(0, (new_index - scroll_margin) * Sizing.list_item_height));
 			}
 		}
 	};
