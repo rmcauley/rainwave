@@ -145,6 +145,7 @@ div.song {
 		font-size: x-small;
 		background: $highlight;
 		text-align: left;
+		text-transform: uppercase;
 		@include transition(opacity, LINKCOLOR);
 	}
 
@@ -163,7 +164,6 @@ div.song {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		font-size: small;
 		background: $blue;
 		z-index: 5;
 		padding-left: 1.5em;

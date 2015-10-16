@@ -97,6 +97,14 @@ div.request_cancel {
 		border-color: #F44;
 		color: #F44;
 	}
+
+	body.simple & {
+		height: 54px;
+		margin-top: 8px;
+		padding: 14px 7px;
+		box-sizing: border-box;
+		font-size: larger;
+	}
 }
 
 div.request_sort_grab {
