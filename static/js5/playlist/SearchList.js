@@ -476,12 +476,12 @@ var SearchList = function(root_el, sort_key, search_key) {
 		if (data_item) {
 			var new_index = visible.indexOf(data_item.id);
 			if ((new_index > (current_scroll_index + scroll_margin)) && (new_index < (current_scroll_index + num_items_to_display - scroll_margin))) {
-				if (!current_scroll_index) {
+				if ((current_scroll_index === false)) {
 					self.redraw_current_position();
 				}
 			}
 			// position at the lower edge
-			else if (current_scroll_index && (new_index >= (current_scroll_index + num_items_to_display - scroll_margin))) {
+			else if ((current_scroll_index !== false) && (new_index >= (current_scroll_index + num_items_to_display - scroll_margin))) {
 				scroll.scroll_to(Math.min(scroll.scroll_top_max, (new_index - num_items_to_display + scroll_margin + 1) * Sizing.list_item_height));
 			}
 			// position at the higher edge
