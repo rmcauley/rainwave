@@ -21,6 +21,7 @@ var Router = function() {
 	var detail_header;
 
 	var reset_cache = function() {
+		console.log("Cache reset.");
 		cache.album = {};
 		cache.artist = {};
 		if (!MOBILE) {
