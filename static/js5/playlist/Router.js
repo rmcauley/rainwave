@@ -19,6 +19,8 @@ var Router = function() {
 	var rendered_id;
 	var last_open;
 	var detail_header;
+	var reset_cache_on_next_request = false;
+	var request_in_flight = false;
 
 	var reset_cache = function() {
 		// console.log("Cache reset.");
@@ -79,9 +81,16 @@ var Router = function() {
 		});
 
 		API.add_callback("_SYNC_COMPLETE", function() {
-			reset_cache();
-			if (current_type && current_id && document.body.classList.contains("detail")) {
-				open_view(current_type, current_id);
+			if (request_in_flight) {
+				reset_cache_on_next_request = true;
+			}
+			else {
+				reset_cache();
+				console.log(current_type, current_id, document.body.classList.contains("detail"));
+				if (current_type && current_id && document.body.classList.contains("detail")) {
+					console.log("Derp");
+					open_view(current_type, current_id);
+				}
 			}
 		});
 	});
@@ -146,6 +155,8 @@ var Router = function() {
 			return;
 		}
 
+		request_in_flight = false;
+
 		if (!document.body.classList.contains("detail")) {
 			// console.log("Sliding out.");
 			document.body.classList.add("detail");
@@ -164,13 +175,13 @@ var Router = function() {
 
 		var t;
 		if (cache[typ][id]._cache_el) {
-			console.log(typ + "/" + id + ": Appending existing cache.");
+			// console.log(typ + "/" + id + ": Appending existing cache.");
 			el.appendChild(cache[typ][id]._cache_el);
 			detail_header.textContent = cache[typ][id]._header_text;
 			detail_header.setAttribute("title", cache[typ][id]._header_text);
 		}
 		else {
-			console.log(typ + "/" + id + ": Rendering detail.");
+			// console.log(typ + "/" + id + ": Rendering detail.");
 			t = views[typ](cache[typ][id]);
 			detail_header.textContent = t._header_text;
 			detail_header.setAttribute("title", t._header_text);
@@ -226,14 +237,17 @@ var Router = function() {
 				ready_to_render = false;
 				rendered_type = false;
 				rendered_id = false;
+				request_in_flight = true;
 				while (el.firstChild) {
 					el.removeChild(el.firstChild);
 				}
 				if (!document.body.classList.contains("detail")) {
 					setTimeout(function() {
 						// console.log("Slide finished.");
-						actually_open(typ, id);
-						ready_to_render = true;
+						if (current_type === typ && current_id === id) {
+							actually_open(typ, id);
+							ready_to_render = true;
+						}
 					}, 300);
 					document.body.classList.add("detail");
 				}
@@ -244,6 +258,11 @@ var Router = function() {
 			else {
 				document.body.classList.add("detail");
 				ready_to_render = true;
+			}
+
+			if (reset_cache_on_next_request) {
+				reset_cache_on_next_request = false;
+				reset_cache();
 			}
 
 			if (!cache[typ][id]) {
