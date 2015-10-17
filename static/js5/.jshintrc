@@ -3,7 +3,6 @@
     "ga": true,
     "Notification": true,
 
-    "$el": true,
     "console": true,
     "docCookies": true,
     "gettext": true,
@@ -36,6 +35,7 @@
     "Formatting": true,
     "Fx": true,
     "GroupView": true,
+    "GroupList": true,
     "jstz": true,
     "lang": true,
     "ListenerView": true,
@@ -59,7 +59,8 @@
     "SongsTableSorting": true,
     "Timeline": true,
     "User": true,
-    "visibilityEventNames": true
+    "visibilityEventNames": true,
+    "Stations": true
   },
 
   "nonew": true,

@@ -203,7 +203,9 @@ var Audio = function() {
 	self.on_stall = function() {
 		el.classList.remove("playing");
 		if (!ErrorHandler) return;
-		var a = $el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": $l("try_external_player") });
+		var a = document.createElement("a");
+		a.setAttribute("href", "/tune_in/" + User.sid + ".mp3");
+		a.textContent = $l("try_external_player");
 		a.addEventListener("click", function() {
 			self.stop();
 			self.clear_audio_errors();
@@ -215,7 +217,9 @@ var Audio = function() {
 	self.on_error = function() {
 		el.classList.remove("playing");
 		if (!ErrorHandler) return;
-		var a = $el("a", { "href": "/tune_in/" + User.sid + ".mp3", "textContent": $l("try_external_player") });
+		var a = document.createElement("a");
+		a.setAttribute("href", "/tune_in/" + User.sid + ".mp3");
+		a.textContent = $l("try_external_player");
 		a.addEventListener("click", function() {
 			self.clear_audio_errors();
 		});

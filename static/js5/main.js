@@ -20,13 +20,48 @@ BOOTSTRAP.on_draw happens after the measurement - please do not cause reflows.
 */
 
 var User;
+var Stations = [];
 
 (function() {
 	"use strict";
 	var template;
 
 	var initialize = function() {
-		template = RWTemplates.index({ "stations": Menu.stations });
+		// BOOTSTRAP.station_list = {
+		// 	1: { "id": 1, "name": "Game", "url": "hello" },
+		// 	2: { "id": 2, "name": "OC ReMix", "url": "hello" },
+		// 	3: { "id": 3, "name": "Covers", "url": "hello" },
+		// 	4: { "id": 4, "name": "Chiptune", "url": "hello" },
+		// 	5: { "id": 5, "name": "All", "url": "hello" }
+		// };
+		var order = [ 5, 1, 4, 2, 3, 5 ];
+		var colors = {
+			1: "#1f95e5",  // Rainwave blue
+			2: "#de641b",  // OCR Orange
+			3: "#b7000f",  // Red
+			4: "#6e439d",  // Indigo
+			5: "#a8cb2b",  // greenish
+		};
+		for (var i = 0; i < order.length; i++) {
+			if (BOOTSTRAP.station_list[order[i]]) {
+				Stations.push(BOOTSTRAP.station_list[order[i]]);
+				Stations[Stations.length - 1].name = $l("station_name_" + order[i]);
+				if (order[i] == BOOTSTRAP.user.sid) {
+					Stations[Stations.length - 1].url = null;
+				}
+				if (colors[order[i]]) {
+					Stations[Stations.length - 1].color = colors[order[i]];
+				}
+			}
+		}
+		if (window.location.href.indexOf("beta") !== -1) {
+			for (i = 0; i < Stations.length; i++) {
+				if (Stations[i].url) Stations[i].url += "/beta";
+			}
+		}
+		BOOTSTRAP.station_list = Stations;
+
+		template = RWTemplates.index({ "stations": Stations });
 		User = BOOTSTRAP.user;
 		API.add_callback("user", function(json) { User = json; });
 
@@ -40,7 +75,7 @@ var User;
 		Chart.defaults.PolarArea.animationEasing = "easeOutQuart";
 
 		// pre-paint DOM operations while the network is doing its work for CSS
-		for (var i = 0; i < BOOTSTRAP.on_init.length; i++) {
+		for (i = 0; i < BOOTSTRAP.on_init.length; i++) {
 			BOOTSTRAP.on_init[i](template);
 		}
 	};

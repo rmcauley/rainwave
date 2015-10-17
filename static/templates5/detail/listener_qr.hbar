@@ -1,0 +1,8 @@
+<div class="user_detail_segment">
+	<h3>{{ $l("your_mobile_app_qr") }}</h3>
+	<img
+		width="{{ ^_c.chart_height - 5 }}"
+		height="{{ ^_c.chart_height - 5 }}"
+		src="{{ ^'http://chart.apis.google.com/chart?cht=qr&chs=' + (_c.chart_height - 5) + 'x' + (_c.chart_height - 5) + '&choe=ISO-8859-1&chl=' + 'rw://' + User.id + ':' + User.api_key + '@rainwave.cc' }}"
+	/>
+</div>

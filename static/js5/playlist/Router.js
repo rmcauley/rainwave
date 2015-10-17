@@ -180,10 +180,12 @@ var Router = function() {
 		}
 		else {
 			// console.log(typ + "/" + id + ": Rendering detail.");
-			t = views[typ](cache[typ][id]);
+			t = views[typ](cache[typ][id], el);
 			detail_header.textContent = t._header_text;
 			detail_header.setAttribute("title", t._header_text);
-			el.appendChild(t._root);
+			if (t._root.parentNode != el) {
+				el.appendChild(t._root);
+			}
 			if (t._root && t._root.tagName && (t._root.tagName.toLowerCase() == "div")) {
 				cache[typ][id]._header_text = t._header_text;
 				cache[typ][id]._cache_el = t._root;

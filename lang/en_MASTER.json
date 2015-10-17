@@ -144,8 +144,8 @@
    "manage_your_api_keys"                            : "Manage your API keys.",
    "logout_in_forums"                                : "Please visit the forums to logout.",
    "view_your"                                       : "View your: ",
-   "recent_votes"                                    : "recent votes",
-   "request_history"                                 : "request history",
+   "recent_votes"                                    : "Recent Votes",
+   "request_history"                                 : "Request History",
 
    "__comment__"                 : "Other",
 

@@ -18,9 +18,9 @@
 		<a href="https://github.com/rmcauley/rainwave/" target="_blank">
 			{{ $l("github_repo") }}
 		</a>
-		<a href="http://rainwave.cc/api4/" target="_blank">
+		<!--<a href="http://rainwave.cc/api4/" target="_blank">
 			{{ $l("api_docs") }}
-		</a>
+		</a>-->
 		<a href="http://rainwave.cc/pages/tip_jar" target="_blank">
 			{{ $l("tip_jar") }}
 		</a>

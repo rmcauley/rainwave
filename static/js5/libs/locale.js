@@ -107,13 +107,19 @@ var $l = function() {
 		}
 
 		var text = "";
+		var piece;
 		for (var i = 0; i < parts.length; i++) {
 			text += parts[i].text;
 			if (el && parts[i].arg_key) {
-				el.appendChild($el("span", { "textContent": parts[i].text, "class": "lang_" + key + "_" + parts[i].arg_key}));
+				piece = document.createElement("span");
+				piece.textContent = parts[i].text;
+				piece.className = "lang_" + key + "_" + parts[i].arg_key;
+				el.appendChild(piece);
 			}
 			else if (el) {
-				el.appendChild($el("span", { "textContent": parts[i].text }));
+				piece = document.createElement("span");
+				piece.textContent = parts[i].text;
+				el.appendChild(piece);
 			}
 		}
 		return text;

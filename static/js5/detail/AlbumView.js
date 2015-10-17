@@ -12,8 +12,9 @@ var AlbumViewColors = {
 
 var AlbumViewRatingPieChart = function(ctx, album) {
 	"use strict";
+
 	var data = [];
-	for (i in AlbumViewColors) {
+	for (var i in AlbumViewColors) {
 		if (i in album.rating_histogram) data.push({ "value": Math.round(album.rating_histogram[i] / album.num_song_ratings * 100), "color": AlbumViewColors[i], "highlight": "#FFF", "label": i });
 	}
 	if (data.length === 0) return;

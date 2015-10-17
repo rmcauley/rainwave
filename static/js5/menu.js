@@ -3,51 +3,23 @@ var Menu = function() {
 	var template;
 	var has_calendar;
 
-	// BOOTSTRAP.station_list = {
-	// 	1: { "id": 1, "name": "Game", "url": "hello" },
-	// 	2: { "id": 2, "name": "OC ReMix", "url": "hello" },
-	// 	3: { "id": 3, "name": "Covers", "url": "hello" },
-	// 	4: { "id": 4, "name": "Chiptune", "url": "hello" },
-	// 	5: { "id": 5, "name": "All", "url": "hello" }
-	// };
-
-	// Station order on the page is to be ordered like this, not by numeric sorting:
-	var station_order = [ 5, 1, 4, 2, 3 ];
-	var stations = [];
-	for (var i = 0; i < station_order.length; i++) {
-		if (BOOTSTRAP.station_list[station_order[i]]){
-			stations.push(BOOTSTRAP.station_list[station_order[i]]);
-			if (stations[stations.length - 1].id == BOOTSTRAP.user.sid) {
-				stations[stations.length - 1].url = null;
-			}
-		}
-	}
-	self.stations = stations;
-
-	// Make sure the /beta site links to itself
-	if (window.location.href.indexOf("beta") !== -1) {
-		for (i = 0; i < stations.length; i++) {
-			if (stations[i].url) stations[i].url += "/beta";
-		}
-	}
-
 	BOOTSTRAP.on_init.push(function(root_template) {
 		//API.add_callback("user", update_tuned_in_status);
 		//R4Audio.changed_status_callback = update_tuned_in_status_from_player;
 		template = root_template;
 
 		// must be done in JS, if you try to do it in the template you still get a clickable <a>
-		for (var i = 0; i < stations.length; i++) {
-			if (stations[i].url) {
-				stations[i].$t.menu_link.setAttribute("href", stations[i].url);
+		for (var i = 0; i < Stations.length; i++) {
+			if (Stations[i].url) {
+				Stations[i].$t.menu_link.setAttribute("href", Stations[i].url);
 			}
 			else {
-				stations[i].$t.menu_link.classList.add("selected_station");
-				if (stations.length > 1) {
+				Stations[i].$t.menu_link.classList.add("selected_station");
+				if (Stations.length > 1) {
 					template.station_select_header.addEventListener("click", toggle_station_select);
 					template.station_select.classList.add("openable");
-					stations[i].$t.menu_link.addEventListener("mousedown", open_station_select);
-					stations[i].$t.menu_link.addEventListener("touchstart", open_station_select);
+					Stations[i].$t.menu_link.addEventListener("mousedown", open_station_select);
+					Stations[i].$t.menu_link.addEventListener("touchstart", open_station_select);
 				}
 			}
 		}

@@ -1,0 +1,4 @@
+<div class="user_detail_segment">
+	<h3>{{ header }}</h3>
+	<canvas width="{{ chart_width }}" height="{{ chart_height }}" bind="canvas"></canvas>
+</div>
