@@ -331,16 +331,19 @@ class RainwaveParser(HTMLParser):
 					self.helpers[uid] = attr_val
 				self.buffers[self._current_stack_point()] += "%s.%s('%s',%s);" % (uid, self.calls.setAttribute, attr[0], attr_val)
 
-	def check_bind_scope(self, uid):
-		if len(self.stack) and self.stack[-1]['function_id'] and not self.stack[-1]['function_id'] in self.bound_scopes:
-			self.bound_scopes[self.stack[-1]['function_id']] = True
-			if not self.helpers_on:
-				self.buffers[self._current_stack_point()] += "if(!_c.$t)_c.$t={};"
-			else:
-				self.buffers[self._current_stack_point()] += "if(!_c.$t){_c.$t=new _o(_c);_c.$t._root=%s;}" % self._current_tree_point()
+	def check_bind_scope(self, uid, blah=False):
+		for item in reversed(self.stack):
+			if item['function_id']:
+				if not self.stack[-1]['function_id'] in self.bound_scopes:
+					self.bound_scopes[self.stack[-1]['function_id']] = True
+					if not self.helpers_on:
+						self.buffers[self._current_stack_point()] += "if(!_c.$t)_c.$t={};"
+					else:
+						self.buffers[self._current_stack_point()] += "if(!_c.$t){_c.$t=new _o(_c);_c.$t._root=%s;}" % self._current_tree_point()
+				return
 
 	def handle_bind(self, uid, bind_name):
-		self.check_bind_scope(uid)
+		self.check_bind_scope(uid, bind_name == "rating_clear")
 		if not self.helpers_on:
 			self.buffers[self._current_stack_point()] += "_c.$t.%s=%s;" % (bind_name, uid)
 		else:
