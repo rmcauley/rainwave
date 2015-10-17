@@ -18,6 +18,7 @@ def _process_line(line, sid):
 	t = int(timestamp())
 	albums_with_requests = []
 	position = 1
+	user_viewable_position = 1
 	# For each person
 	for row in line:
 		add_to_line = False
@@ -41,25 +42,31 @@ def _process_line(line, sid):
 					# They'll get added to the line of whatever station they're tuned in to (if any!)
 					if u.has_requests():
 						u.put_in_request_line(u.get_tuned_in_sid())
-				# If they have no song, start the expiry countdown
-				elif not song_id and not row['line_expiry_election']:
+				# If they have no song and they're in 2nd or 1st, start the expiry countdown
+				elif not song_id and not row['line_expiry_election'] and position <= 2:
+					log.debug("request_line", "%s: User ID %s has no valid requests, beginning boot countdown." % (sid, u.id))
 					row['line_expiry_election'] = t + 900
 					db.c.update("UPDATE r4_request_line SET line_expiry_election = %s WHERE user_id = %s", ((t + 900), row['user_id']))
 					add_to_line = True
 				# Keep 'em in line
 				else:
+					log.debug("request_line", "%s: User ID %s is in line." % (sid, u.id))
 					if song_id:
 						albums_with_requests.append(db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,)))
 					row['song_id'] = song_id
 					add_to_line = True
 			elif not row['line_expiry_tune_in'] or row['line_expiry_tune_in'] == 0:
+				log.debug("request_line", "%s: User ID %s being marked as tuned out." % (sid, u.id))
 				db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s", ((t + 600), row['user_id']))
 				add_to_line = True
 			else:
+				log.debug("request_line", "%s: User ID %s not tuned in, waiting on expiry for action." % (sid, u.id))
 				add_to_line = True
+		row['skip'] = not add_to_line
+		new_line.append(row)
+		user_positions[u.id] = user_viewable_position
+		user_viewable_position = user_viewable_position + 1
 		if add_to_line:
-			new_line.append(row)
-			user_positions[u.id] = position
 			position = position + 1
 
 	cache.set_station(sid, "request_line", new_line, True)
@@ -95,6 +102,8 @@ def get_next(sid):
 	for pos in range(0, len(line)):
 		if not line[pos]:
 			pass  # ?!?!
+		elif 'skip' in line[pos] and line[pos]['skip']:
+			log.debug("request", "Passing on user %s since they're marked as skippable." % line[pos]['username'])
 		elif not line[pos]['song_id']:
 			log.debug("request", "Passing on user %s since they have no valid first song." % line[pos]['username'])
 		else:
