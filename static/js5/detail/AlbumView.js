@@ -56,7 +56,6 @@ var AlbumView = function(album) {
 		}
 	}
 	else {
-		console.log(album.songs);
 		template._root.appendChild(RWTemplates.detail.songtable({ "songs": album.songs })._root);
 	}
 
