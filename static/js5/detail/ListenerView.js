@@ -11,8 +11,8 @@ var ListenerView = function(json, el) {
 	var detail_container = template.user_detail_container;
 
 	var segment_context = {
-		"chart_width": 130,
-		"chart_height": 100,
+		"chart_width": 190,
+		"chart_height": 110,
 	};
 
 	var draw_chart = function(jd, key, header) {
