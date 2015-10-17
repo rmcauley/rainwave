@@ -12,6 +12,16 @@ var Rating = function() {
 
 		Prefs.define("hide_global_ratings", [ false, true ]);
 		Prefs.add_callback("hide_global_ratings", hide_global_rating_callback);
+		Prefs.define("allow_rate_anything", [ false, true ]);
+		Prefs.define("allow_clear", [ false, true ]);
+		Prefs.add_callback("allow_clear", function(v) {
+			if (v) {
+				document.body.classList.add("rating_clear_ok");
+			}
+			else {
+				document.body.classList.remove("rating_clear_ok");
+			}
+		});
 	});
 
 	// PREF CALLBACKS
@@ -52,6 +62,10 @@ var Rating = function() {
 				ratings[i].classList.remove("rating_user");
 				ratings[i].rating_start(json.rating);
 			}
+			else {
+				ratings[i].classList.remove("rating_user");
+				ratings[i].rating_start(0);
+			}
 		}
 
 		for (i = 0; i < json.updated_album_ratings.length; i++) {
@@ -63,9 +77,13 @@ var Rating = function() {
 						ratings[i].classList.add("rating_user");
 						ratings[i].rating_start(a.rating_user);
 					}
-					if (a.rating) {
+					else if (a.rating) {
 						ratings[i].classList.remove("rating_user");
 						ratings[i].rating_start(a.rating);
+					}
+					else {
+						ratings[i].classList.remove("rating_user");
+						ratings[i].rating_start(0);
 					}
 					if (a.rating_complete === false) {
 						ratings[i].classList.add("rating_incomplete");
@@ -175,6 +193,9 @@ var Rating = function() {
 
 			if (json.rating_user) {
 				json.$t.rating.classList.add("rating_user");
+				if (json.$t.rating_clear) {
+					json.$t.rating_clear.parentNode.classList.add("capable");
+				}
 			}
 		}
 		json.$t.rating.rating_set(json.rating_user || json.rating);
@@ -189,8 +210,19 @@ var Rating = function() {
 		json.$t.rating.classList.add("rating_song");
 		json.$t.rating.setAttribute("name", "srate_" + json.id);
 
+		if (json.$t.rating_clear) {
+			json.$t.rating_clear.addEventListener("click", function() {
+				API.async_get("clear_rating", { "song_id": json.id },
+					function(newjson) {
+						json.rating_user = null;
+						json.$t.rating_clear.parentNode.classList.remove("capable");
+					}
+				);
+			});
+		}
+
 		var on_mouse_over = function(evt) {
-			if (!json.rating_allowed && !User.rate_anything) {
+			if (!json.rating_allowed && (!User.rate_anything || Prefs.get("allow_rate_anything"))) {
 				if (json.$t.rating.classList.contains("ratable")) {
 					json.$t.rating.classList.remove("ratable");
 				}
@@ -225,6 +257,9 @@ var Rating = function() {
 				API.async_get("rate", { "rating": new_rating, "song_id": json.id },
 					function(newjson) {
 						json.rating_user = newjson.rate_result.rating_user;
+						if (json.$t.rating_clear) {
+							json.$t.rating_clear.parentNode.classList.add("capable");
+						}
 					},
 					function(newjson) {
 						// TODO: error handling

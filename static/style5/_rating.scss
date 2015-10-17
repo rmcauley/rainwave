@@ -56,3 +56,30 @@ div.rating {
 body.simple div.timeline div.album_rating {
 	display: none;
 }
+
+div.rating_clear {
+	display: none;
+
+	body.logged_in.rating_clear_ok & {
+		display: block;
+		visibility: hidden;
+
+		&.capable {
+			visibility: visible;
+		}
+
+		img {
+			position: relative;
+			top: 1px;
+			height: 14px;
+			opacity: 0.5;
+			cursor: pointer;
+
+			@include transition-wtime(300ms, opacity);
+
+			&:hover {
+				opacity: 1;
+			}
+		}
+	}
+}

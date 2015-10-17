@@ -43,8 +43,8 @@ var AlbumList = function(el) {
 		for (var i = 0; i < json.length; i++) {
 			album_id = json[i].id;
 			if (album_id in self.data) {
-				if (json[i].rating) self.data[album_id].rating = json[i].rating;
-				if (json[i].rating_user) self.data[album_id].rating_user = json[i].rating_user;
+				if ("rating" in json[i]) self.data[album_id].rating = json[i].rating;
+				if ("rating_user" in json[i]) self.data[album_id].rating_user = json[i].rating_user;
 				if (json[i].rating_complete !== null) self.data[album_id].rating_complete = json[i].rating_complete;
 				self.update_item_element(self.data[album_id]);
 			}
@@ -88,7 +88,7 @@ var AlbumList = function(el) {
 		span.className = "name";
 		span.textContent = item.name;
 		item._el.appendChild(span);
-		
+
 		self.update_cool(item);
 		self.update_item_element(item);
 	};
