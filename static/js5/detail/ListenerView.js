@@ -39,7 +39,7 @@ var ListenerView = function(json, el) {
 	draw_chart(json.ratings_by_station, "ratings", $l("rating_counts_across_stations"));
 
 	var data = [];
-	var v, sid, chart, i;
+	var v, sid, chart, i, j;
 	var total_data = 0;
 	for (i = 0; i < Stations.length; i++) {
 		sid = Stations[i].id;
@@ -60,9 +60,9 @@ var ListenerView = function(json, el) {
 		sid = Stations[i].id;
 		if (sid == 5) continue;
 		found = false;
-		for (i = 0; i < json.ratings_by_station.length; i++) {
-			if (json.ratings_by_station[i].sid == sid) {
-				data.push({ "value": json.ratings_by_station[i].average_rating, "color": Stations[i].color, "highlight": "#FFF", "label": Stations[i].name });
+		for (j = 0; j < json.ratings_by_station.length; j++) {
+			if (json.ratings_by_station[j].sid == sid) {
+				data.push({ "value": json.ratings_by_station[j].average_rating, "color": Stations[i].color, "highlight": "#FFF", "label": Stations[i].name });
 				found = true;
 				any_found = true;
 			}
