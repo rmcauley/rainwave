@@ -184,6 +184,7 @@ var Router = function() {
 					cps = cache_page_stack.shift();
 					if (cache[cps.typ][cps.id]) {
 						cache[cps.typ][cps.id]._cache_el = false;
+						cache[cps.typ][cps.id].$t = undefined;
 					}
 				}
 			}
