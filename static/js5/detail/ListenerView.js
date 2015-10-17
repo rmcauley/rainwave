@@ -1,5 +1,8 @@
 var ListenerView = function(json, el) {
 	"use strict";
+
+	// nobody cares about timezones
+	json.regdate = new Date(json.regdate).getYear() + 1900;
 	var template = RWTemplates.detail.listener(json, document.createElement("div"));
 	template._header_text = json.name;
 	el.appendChild(template._root);

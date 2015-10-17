@@ -20,7 +20,7 @@ class ListenerDetailRequest(APIHandler):
 			"SELECT user_id, username AS name, user_avatar AS avatar, user_avatar_type AS avatar_type, user_colour AS colour, rank_title AS rank, "
 				"radio_totalvotes AS total_votes, radio_totalratings AS total_ratings, radio_totalmindchange AS mind_changes, "
 				"radio_totalrequests AS total_requests, radio_winningvotes AS winning_votes, radio_losingvotes AS losing_votes, "
-				"radio_winningrequests AS winning_requests, radio_losingrequests AS losing_requests "
+				"radio_winningrequests AS winning_requests, radio_losingrequests AS losing_requests, user_regdate AS regdate "
 			"FROM phpbb_users LEFT JOIN phpbb_ranks ON (user_rank = rank_id) WHERE user_id = %s",
 			(self.get_argument("id"),))
 

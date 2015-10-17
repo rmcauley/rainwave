@@ -740,6 +740,7 @@ def _create_test_tables():
 			user_avatar_type		INT			DEFAULT 0, \
 			user_colour             TEXT        DEFAULT 'FFFFFF', \
 			user_rank               INT 	    DEFAULT 0, \
+			user_regdate            INT         DEFAULT 0, \
 		)")
 
 	c.update("CREATE TABLE phpbb_sessions("

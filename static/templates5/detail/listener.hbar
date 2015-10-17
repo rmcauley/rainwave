@@ -22,10 +22,17 @@
 				</a>
 			</p>
 		</div>
+	{{else}}
+		<div class="info">
+			{{#if rank}}
+				<p style="color: #{{ color }};">{{ rank }}</p>
+			{{/if}}
+			<p>{{ $l("registered_in_year", { 'year': _c.regdate }) }}</p>
+		</div>
 	{{/if}}
 </div>
 
-<div style="text-align: center; clear: both;">
+<div style="text-align: center; clear: both; margin-top: 1em;">
 	<ul class="user_detail_legend">
 		{{#each ^Stations}}
 			<li style="background-color: {{ color }};">
