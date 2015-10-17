@@ -216,6 +216,7 @@
    "unpause_request_queue"                           : "Unpause",
    "request_fill_with_unrated"                       : "Unrated Fill",
    "request_fill_with_faves"                         : "Fave Fill",
+   "Hold"                                            : "Hold",
    "Pause"                                           : "Pause",
    "Resume"                                          : "Resume",
    "Faves"                                           : "Faves",

@@ -38,6 +38,10 @@ div.requests {
 		-webkit-transition-duration: 300ms;
 		        transition-duration: 300ms;
 	}
+
+	&.paused {
+		background-color: #3C2907;
+	}
 }
 
 ul.request_icons {

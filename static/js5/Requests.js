@@ -2,6 +2,7 @@ var Requests = function() {
 	"use strict";
 	var self = {};
 
+	var container;
 	var el;
 	var scroller;
 	var link;
@@ -21,6 +22,7 @@ var Requests = function() {
 		header = root_template.request_header;
 		link = root_template.request_link;
 		indicator = root_template.request_indicator;
+		container = root_template.requests_container;
 
 		API.add_callback("requests", self.update);
 		API.add_callback("user", self.show_queue_paused);
@@ -34,6 +36,7 @@ var Requests = function() {
 		});
 
 		root_template.requests_pause.addEventListener("click", self.pause_queue);
+		root_template.requests_play.addEventListener("click", self.pause_queue);
 		root_template.requests_clear.addEventListener("click", self.clear_requests);
 		root_template.requests_unrated.addEventListener("click", self.fill_with_unrated);
 		root_template.requests_favfill.addEventListener("click", self.fill_with_faves);
@@ -52,11 +55,11 @@ var Requests = function() {
 
 	self.show_queue_paused = function() {
 		if (User.requests_paused) {
-			el.classList.add("paused");
+			container.classList.add("paused");
 			link.classList.add("paused");
 		}
 		else {
-			el.classList.remove("paused");
+			container.classList.remove("paused");
 			link.classList.remove("paused");
 		}
 		self.update_header();
