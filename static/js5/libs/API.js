@@ -376,7 +376,8 @@ var API = function() {
 		console.log("Current action: ", async_current);
 		console.log("Last action:    ", self.last_action);
 		console.log("Net latency:    ", self.net_latencies);
-		console.log("Total latency:  ",  self.draw_latencies);
+		console.log("Total latency:  ", self.draw_latencies);
+		console.log("Slow:           ", self.is_slow);
 		console.log("Station paused: ", self.paused);
 	};
 
