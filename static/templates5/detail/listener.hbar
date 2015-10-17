@@ -25,7 +25,7 @@
 	{{else}}
 		<div class="info">
 			{{#if rank}}
-				<p style="color: #{{ color }};">{{ rank }}</p>
+				<p style="color: #{{ colour }};">{{ rank }}</p>
 			{{/if}}
 			<p>{{ $l("registered_in_year", { 'year': _c.regdate }) }}</p>
 		</div>
