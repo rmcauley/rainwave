@@ -113,10 +113,10 @@ var AlbumList = function(el) {
 		}
 
 		if (item.rating_complete) {
-			item._el.classList.add("rating_incomplete");
+			item._el.classList.remove("rating_incomplete");
 		}
 		else {
-			item._el.classList.remove("rating_incomplete");
+			item._el.classList.add("rating_incomplete");
 		}
 
 		if (item.rating_user) {
