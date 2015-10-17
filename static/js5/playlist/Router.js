@@ -286,7 +286,7 @@ var Router = function() {
 	};
 
 	self.open_route = function(typ, id) {
-		if ((!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow) {
+		if (lists[typ] && ((!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow)) {
 			ready_to_render = false;
 		}
 
