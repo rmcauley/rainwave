@@ -241,6 +241,7 @@ var Router = function() {
 				}
 			}
 			else {
+				document.body.classList.add("detail");
 				ready_to_render = true;
 			}
 
@@ -265,7 +266,7 @@ var Router = function() {
 	};
 
 	self.open_route = function(typ, id) {
-		if ((!document.body.classList.contains("playlist") || API.is_slow) && (!cache[typ] || !cache[typ][id])) {
+		if ((!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow) {
 			ready_to_render = false;
 		}
 
