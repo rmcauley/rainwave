@@ -1,4 +1,4 @@
-var ListenerView = function(el, json) {
+var ListenerView = function(json) {
 	"use strict";
 	var template = RWTemplates.detail.listener(json, MOBILE ? null : document.createElement("div"));
 

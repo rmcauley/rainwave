@@ -1,4 +1,4 @@
-var ArtistView = function(el, json) {
+var ArtistView = function(json) {
 	"use strict";
 	var order = [ 1, 4, 2, 3 ];
 	var final_order = [ User.sid ];

@@ -1,4 +1,4 @@
-var GroupView = function(el, json) {
+var GroupView = function(json) {
 	"use strict";
 	var albums = [];
 	var a, album_id, i;

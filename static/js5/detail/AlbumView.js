@@ -20,7 +20,7 @@ var AlbumViewRatingPieChart = function(ctx, album) {
 	new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1, "animationSteps": 40, "tooltipTemplate": "<%if (label){%><%=label%>: <%}%><%= value %>%", });
 };
 
-var AlbumView = function(el, album) {
+var AlbumView = function(album) {
 	"use strict";
 
 	album.num_song_ratings = 0;
@@ -35,7 +35,7 @@ var AlbumView = function(el, album) {
 	var template = RWTemplates.detail.album(album, !MOBILE ? document.createElement("div") : null);
 	AlbumArt(album.art, template.art);
 
-	for (var i = 0; i < album.songs.length; i++) {
+	for (i = 0; i < album.songs.length; i++) {
 		if (!album.songs[i].artists) {
 			album.songs[i].artists = JSON.parse(album.songs[i].artist_parseable);
 		}
@@ -56,6 +56,7 @@ var AlbumView = function(el, album) {
 		}
 	}
 	else {
+		console.log(album.songs);
 		template._root.appendChild(RWTemplates.detail.songtable({ "songs": album.songs })._root);
 	}
 
