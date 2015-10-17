@@ -80,13 +80,15 @@ var Router = function() {
 			self.change(current_type);
 		});
 
+		var reload_in = [ false, "album", "artist", "group" ];
+
 		API.add_callback("_SYNC_COMPLETE", function() {
 			if (request_in_flight) {
 				reset_cache_on_next_request = true;
 			}
 			else {
 				reset_cache();
-				if (current_type && current_id && document.body.classList.contains("detail")) {
+				if (current_type && reload_in.indexOf(current_type) && current_id && document.body.classList.contains("detail")) {
 					open_view(current_type, current_id);
 				}
 			}
