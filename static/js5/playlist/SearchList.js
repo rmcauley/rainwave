@@ -90,6 +90,12 @@ var SearchList = function(root_el, sort_key, search_key) {
 		self.loaded = true;
 	};
 
+	self.get_title_from_id = function(id) {
+		if (data && data[id]) {
+			return data[id].name;
+		}
+	};
+
 	self.refresh_all_items = function() {
 		for (var i in data) {
 			self.update_item_element(data[i]);

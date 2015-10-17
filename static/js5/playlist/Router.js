@@ -144,17 +144,20 @@ var Router = function() {
 
 	var actually_open = function(typ, id) {
 		if (!ready_to_render) {
-			//console.log("Not ready to render yet!");
 			return;
 		}
-		//console.log("Rendering.");
 
-		document.body.classList.add("detail");
+		if (!document.body.classList.contains("detail")) {
+			// console.log("Sliding out.");
+			document.body.classList.add("detail");
+		}
 
 		if ((rendered_type == typ) && (rendered_id == id)) return;
 
 		rendered_type = typ;
 		rendered_id = id;
+
+		// console.log("Rendering.");
 
 		while (el.firstChild) {
 			el.removeChild(el.firstChild);
@@ -202,7 +205,6 @@ var Router = function() {
 			- Render the list (if necessary)
 			- Load the content
 			- Render the content
-			- Kill all humans
 
 			If on mobile, render and load times are going to be slower, so we
 			always slide a blank window out first to give immediate user feedback.
@@ -213,47 +215,49 @@ var Router = function() {
 			(even if, in wall clock time, it takes fewer milliseconds to slide
 			the window out blank)
 
-			On MOBILE then, we always slide the window out first while loading.
-			On DESKTOP, we slide it out blank only if no windows are open.
-						If a playlist is already open, we wait to slide it out.
-			On ANYTHING, if the data from the server is already in our cache, render first.
+			TODO: I need to re-document this because holy shitballs
+			Also: try and get header names from the playlists if they're loaded
 
 			*/
 
-			if ((!document.body.classList.contains("playlist") || MOBILE) && !cache[typ][id]) {
-				//console.log("Clearing detail.");
-				//console.log(document.body.className);
+			if ((!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow) {
+				// console.log("Clearing detail.");
 				ready_to_render = false;
 				rendered_type = false;
 				rendered_id = false;
 				while (el.firstChild) {
 					el.removeChild(el.firstChild);
 				}
-				setTimeout(function() {
-					//console.log("Slide finished.");
-					actually_open(typ, id);
+				if (!document.body.classList.contains("detail")) {
+					setTimeout(function() {
+						// console.log("Slide finished.");
+						actually_open(typ, id);
+						ready_to_render = true;
+					}, 300);
+					document.body.classList.add("detail");
+				}
+				else {
 					ready_to_render = true;
-				}, 300);
-				document.body.classList.add("detail");
+				}
 			}
 			else {
 				ready_to_render = true;
 			}
 
 			if (!cache[typ][id]) {
-				//console.log("Loading from server.");
+				// console.log("Loading from server.");
 				cache[typ][id] = true;
 				API.async_get(typ, { "id": id }, function(json) {
 					cache[typ][id] = json[typ];
 					if (current_type === typ && current_id === id) {
-						//console.log("Loaded from server.");
+						// console.log("Loaded from server.");
 						actually_open(typ, id);
+						ready_to_render = true;
 					}
-					ready_to_render = true;
 				});
 			}
 			else if (cache[typ][id] !== true) {
-				//console.log("Rendering from cache.");
+				// console.log("Rendering from cache.");
 				actually_open(typ, id);
 				ready_to_render = true;
 			}
@@ -261,14 +265,22 @@ var Router = function() {
 	};
 
 	self.open_route = function(typ, id) {
+		if ((!document.body.classList.contains("playlist") || API.is_slow) && (!cache[typ] || !cache[typ][id])) {
+			ready_to_render = false;
+		}
+
 		for (var i in tabs) {
 			document.body.classList.remove("playlist_" + i);
 		}
+		var close_detail = true;
 		if (typ in lists && lists[typ]) {
 			last_open = typ;
 			document.body.classList.add("playlist");
 			document.body.classList.add("playlist_" + typ);
 			self.active_list = lists[typ];
+			if ((typ != current_type) && document.body.classList.contains("normal")) {
+				close_detail = false;
+			}
 			current_type = typ;
 		}
 		else {
@@ -276,16 +288,19 @@ var Router = function() {
 		}
 
 		if (id && !isNaN(id)) {
-			lists[typ].set_new_open(id);
 			if (!ready_to_render) {
-				lists[typ].scroll_to(id);
+				detail_header.textContent = lists[typ].get_title_from_id(id) || $l("Loading...");
 			}
+			// if (!ready_to_render) {
+			// 	lists[typ].scroll_to_id(id);
+			// }
 			open_view(typ, id);
-			if (ready_to_render) {
+			lists[typ].set_new_open(id);
+			// if (ready_to_render) {
 				lists[typ].scroll_to_id(id);
-			}
+			// }
 		}
-		else {
+		else if (close_detail) {
 			document.body.classList.remove("detail");
 		}
 

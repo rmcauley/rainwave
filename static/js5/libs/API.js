@@ -12,7 +12,15 @@ var API = function() {
 	self.last_action = null;
 	self.paused = false;
 
+	self.is_slow = false;
+	self.net_latencies = [];
+	self.draw_latencies = [];
+	var slow_net_threshold = 300;
+	var slow_draw_threshold = 500;
+
 	self.initialize = function(n_sid, n_url, n_user_id, n_api_key, json) {
+		self.is_slow = document.body.classList.contains("mobile");
+
 		sid = n_sid;
 		url = n_url;
 		user_id = n_user_id;
@@ -275,6 +283,24 @@ var API = function() {
 
 	var async_complete = function() {
 		ErrorHandler.remove_permanent_error("async_error");
+
+		var net_slow = false;
+		var avg;
+		if (async_current && (async_current.action == "album") || (async_current.action == "artist") || (async_current.action == "group")) {
+			self.net_latencies.push(new Date() - async_current.start);
+			avg = 0;
+			while (self.net_latencies.length > 10) {
+				self.net_latencies.shift();
+			}
+			for (i = 0; i < self.net_latencies.length; i++) {
+				avg += self.net_latencies[i];
+			}
+			avg = avg / self.net_latencies.length;
+			if (avg > slow_net_threshold) {
+				net_slow = true;
+			}
+		}
+
 		var json;
 		if (async.responseType === "json") {
 			json = async.response;
@@ -299,9 +325,26 @@ var API = function() {
 		}
 
 		perform_callbacks(json);
-		if (async_current.callback) {
+		if (async_current && async_current.callback) {
 			async_current.callback(json);
 		}
+
+		var draw_slow = false;
+		if (async_current && (async_current.action == "album") || (async_current.action == "artist") || (async_current.action == "group")) {
+			self.draw_latencies.push(new Date() - async_current.start);
+			avg = 0;
+			while (self.draw_latencies.length > 10) {
+				self.draw_latencies.shift();
+			}
+			for (i = 0; i < self.draw_latencies.length; i++) {
+				avg += self.draw_latencies[i];
+			}
+			avg = avg / self.draw_latencies.length;
+			if (avg > slow_draw_threshold) {
+				draw_slow = true;
+			}
+		}
+		self.is_slow = draw_slow || net_slow;
 
 		async_current = null;
 		self.async_get();
@@ -310,7 +353,7 @@ var API = function() {
 	self.async_get = function(action, params, callback, error_callback) {
 		if (action) {
 			if (!params) params = {};
-			async_queue.push({ "action": action, "params": params, "callback": callback, "error_callback": error_callback });
+			async_queue.push({ "action": action, "params": params, "callback": callback, "error_callback": error_callback, "start": new Date() });
 		}
 		if ((async.readyState === 0) || (async.readyState === 4)) {
 			async_current = async_queue.shift();
@@ -331,6 +374,8 @@ var API = function() {
 		console.log(async.readyState);
 		console.log(async_queue);
 		console.log(async_current);
+		console.log(self.last_action);
+		console.log(self.net_latencies);
 		console.log("paused? " + self.paused);
 	};
 

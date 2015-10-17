@@ -161,6 +161,8 @@
    "catastrophic_error"                              : "Rainwave Has Crashed :(",
    "submit_javascript_error"                         : "Please submit the bug report below to the forums, so we can stop it from happening again.",
 
+   "Loading..."                                      : "Loading...",
+
    "__comment__"                 : "Hotkey Mode",
 
    "hotkey_mode"                                     : "1-5 to Rate, A/S/D to Vote",
