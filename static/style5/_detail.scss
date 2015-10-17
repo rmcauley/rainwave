@@ -169,6 +169,10 @@ div.row {
 		text-overflow: ellipsis;
 	}
 
+	&.requestable div.title {
+		cursor: pointer;
+	}
+
 	div.artists {
 		max-width: 200px;
 		overflow: hidden;
