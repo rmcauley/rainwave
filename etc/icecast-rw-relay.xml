@@ -1,0 +1,330 @@
+<!--
+    This is a sample Icecast2 server config you can use to relay rainwave.cc.
+
+    Please note that relaying is whitelisted by IP address - if you actually
+    want to relay Rainwave, you'll have to arrange for that. :)
+
+    Please reference icecast.org for full documentation about this file.
+
+    This config file is based off the default config for a Debian Jessie install. (2.3.3)
+    If you have custom compiled your own or use a different distro,
+    please check to make sure the path settings for file serving are correct.
+
+    Notably, newer versions of Icecast implement maximum bandwidth - not maximum client count.
+-->
+
+<icecast>
+
+    <!-- You have to configure these sections below. ------------------------------------------- -->
+
+    <location>Somewhere</location>
+    <admin>myemail@mydomain.com</admin>
+
+    <limits>
+        <clients>100</clients>
+        <sources>30</sources>
+        <queue-size>524288</queue-size>
+        <client-timeout>30</client-timeout>
+        <header-timeout>15</header-timeout>
+        <source-timeout>10</source-timeout>
+        <burst-size>65535</burst-size>
+    </limits>
+
+    <authentication>
+        <source-password>hackme</source-password>
+        <relay-password>hackme</relay-password>
+
+        <admin-user>admin</admin-user>
+        <admin-password>hackme</admin-password>
+    </authentication>
+
+    <hostname>mydomain.com</hostname>
+
+    <listen-socket>
+        <port>8000</port>
+    </listen-socket>
+
+    <fileserve>1</fileserve>
+
+    <paths>
+        <basedir>/usr/share/icecast2</basedir>
+        <logdir>/var/log/icecast2</logdir>
+        <webroot>/usr/share/icecast2/web</webroot>
+        <adminroot>/usr/share/icecast2/admin</adminroot>
+        <alias source="/" dest="/index.html"/>
+    </paths>
+
+    <logging>
+        <accesslog>access.log</accesslog>
+        <errorlog>error.log</errorlog>
+        <loglevel>3</loglevel>
+        <logsize>10000</logsize>
+    </logging>
+
+    <security>
+        <chroot>0</chroot>
+        <!--
+        <changeowner>
+            <user>nobody</user>
+            <group>nogroup</group>
+        </changeowner>
+        -->
+    </security>
+
+    <!-- You can stop configuring now - please leave the rest alone! --------------------------- -->
+
+    <directory>
+        <yp-url-timeout>15</yp-url-timeout>
+        <yp-url>http://dir.xiph.org/cgi-bin/yp-cgi</yp-url>
+    </directory>
+
+    <!-- Game----------------------------------------------------------------------------------- -->
+
+    <relay>
+        <server>rainwave.cc</server>
+        <port>8000</port>
+        <mount>/game.mp3</mount>
+        <on-demand>0</on-demand>
+    </relay>
+    <mount>
+        <mount-name>/game.mp3</mount-name>
+        <public>1</public>
+        <authentication type="url">
+            <option name="listener_add" value="http://rainwave.cc/api4/listener_add/1"/>
+            <option name="listener_remove" value="http://rainwave.cc/api4/listener_remove"/>
+            <option name="username" value="user"/>
+            <option name="password" value="pass"/>
+            <option name="auth_header" value="icecast-auth-user: 1"/>
+        </authentication>
+        <stream-name>Rainwave Game Music</stream-name>
+        <stream-description>Video game music radio!</stream-description>
+        <stream-url>http://game.rainwave.cc</stream-url>
+        <genre>Game</genre>
+        <bitrate>96</bitrate>
+        <cluster-password>1bcmQYfmt</cluster-password>
+    </mount>
+
+    <relay>
+        <server>rainwave.cc</server>
+        <port>8000</port>
+        <mount>/game.ogg</mount>
+        <on-demand>0</on-demand>
+    </relay>
+    <mount>
+        <mount-name>/game.ogg</mount-name>
+        <public>1</public>
+        <authentication type="url">
+            <option name="listener_add" value="http://rainwave.cc/api4/listener_add/1"/>
+            <option name="listener_remove" value="http://rainwave.cc/api4/listener_remove"/>
+            <option name="username" value="user"/>
+            <option name="password" value="pass"/>
+            <option name="auth_header" value="icecast-auth-user: 1"/>
+        </authentication>
+        <stream-name>Rainwave Game Music</stream-name>
+        <stream-description>Video game music radio!</stream-description>
+        <stream-url>http://game.rainwave.cc</stream-url>
+        <genre>Game</genre>
+        <bitrate>96</bitrate>
+        <cluster-password>1bcmQYfmt</cluster-password>
+    </mount>
+
+    <!-- OCR------------------------------------------------------------------------------------ -->
+
+    <relay>
+        <server>rainwave.cc</server>
+        <port>8000</port>
+        <mount>/ocremix.mp3</mount>
+        <on-demand>0</on-demand>
+    </relay>
+    <mount>
+        <mount-name>/ocremix.mp3</mount-name>
+        <public>1</public>
+        <authentication type="url">
+            <option name="listener_add" value="http://rainwave.cc/api4/listener_add/2"/>
+            <option name="listener_remove" value="http://rainwave.cc/api4/listener_remove"/>
+            <option name="username" value="user"/>
+            <option name="password" value="pass"/>
+            <option name="auth_header" value="icecast-auth-user: 1"/>
+        </authentication>
+        <stream-name>OverClocked Remix Radio</stream-name>
+        <stream-description>All OverClocked video game remixes.</stream-description>
+        <stream-url>http://ocr.rainwave.cc</stream-url>
+        <genre>Game</genre>
+        <bitrate>96</bitrate>
+        <cluster-password>raXCRL1CY</cluster-password>
+    </mount>
+
+    <relay>
+        <server>rainwave.cc</server>
+        <port>8000</port>
+        <mount>/ocremix.ogg</mount>
+        <on-demand>0</on-demand>
+    </relay>
+    <mount>
+        <mount-name>/ocremix.ogg</mount-name>
+        <public>1</public>
+        <authentication type="url">
+            <option name="listener_add" value="http://rainwave.cc/api4/listener_add/2"/>
+            <option name="listener_remove" value="http://rainwave.cc/api4/listener_remove"/>
+            <option name="username" value="user"/>
+            <option name="password" value="pass"/>
+            <option name="auth_header" value="icecast-auth-user: 1"/>
+        </authentication>
+        <stream-name>OverClocked Remix Radio</stream-name>
+        <stream-description>All OverClocked video game remixes.</stream-description>
+        <stream-url>http://ocr.rainwave.cc</stream-url>
+        <genre>Game</genre>
+        <bitrate>96</bitrate>
+        <cluster-password>raXCRL1CY</cluster-password>
+    </mount>
+
+    <!-- Covers--------------------------------------------------------------------------------- -->
+
+    <relay>
+        <server>rainwave.cc</server>
+        <port>8000</port>
+        <mount>/covers.mp3</mount>
+        <on-demand>0</on-demand>
+    </relay>
+    <mount>
+        <mount-name>/covers.mp3</mount-name>
+        <public>1</public>
+        <authentication type="url">
+            <option name="listener_add" value="http://rainwave.cc/api4/listener_add/3"/>
+            <option name="listener_remove" value="http://rainwave.cc/api4/listener_remove"/>
+            <option name="username" value="user"/>
+            <option name="password" value="pass"/>
+            <option name="auth_header" value="icecast-auth-user: 1"/>
+        </authentication>
+        <stream-name>Rainwave Covers</stream-name>
+        <stream-description>Video game remixes and cover bands.</stream-description>
+        <stream-url>http://covers.rainwave.cc</stream-url>
+        <genre>Game</genre>
+        <bitrate>96</bitrate>
+        <cluster-password>pFjD95tCzn4</cluster-password>
+    </mount>
+
+    <relay>
+        <server>rainwave.cc</server>
+        <port>8000</port>
+        <mount>/covers.ogg</mount>
+        <on-demand>0</on-demand>
+    </relay>
+    <mount>
+        <mount-name>/covers.ogg</mount-name>
+        <public>1</public>
+        <authentication type="url">
+            <option name="listener_add" value="http://rainwave.cc/api4/listener_add/3"/>
+            <option name="listener_remove" value="http://rainwave.cc/api4/listener_remove"/>
+            <option name="username" value="user"/>
+            <option name="password" value="pass"/>
+            <option name="auth_header" value="icecast-auth-user: 1"/>
+        </authentication>
+        <stream-name>Rainwave Covers</stream-name>
+        <stream-description>Video game remixes and cover bands.</stream-description>
+        <stream-url>http://covers.rainwave.cc</stream-url>
+        <genre>Game</genre>
+        <bitrate>96</bitrate>
+        <cluster-password>pFjD95tCzn4</cluster-password>
+    </mount>
+
+    <!-- Chiptune------------------------------------------------------------------------------- -->
+
+    <relay>
+        <server>rainwave.cc</server>
+        <port>8000</port>
+        <mount>/chiptune.mp3</mount>
+        <on-demand>0</on-demand>
+    </relay>
+    <mount>
+        <mount-name>/chiptune.mp3</mount-name>
+        <public>1</public>
+        <authentication type="url">
+            <option name="listener_add" value="http://rainwave.cc/api4/listener_add/4"/>
+            <option name="listener_remove" value="http://rainwave.cc/api4/listener_remove"/>
+            <option name="username" value="user"/>
+            <option name="password" value="pass"/>
+            <option name="auth_header" value="icecast-auth-user: 1"/>
+        </authentication>
+        <stream-name>Rainwave Chiptunes</stream-name>
+        <stream-description>Video game chiptunes.</stream-description>
+        <stream-url>http://chip.rainwave.cc</stream-url>
+        <genre>Game</genre>
+        <bitrate>96</bitrate>
+        <cluster-password>hGOzJjZNZOk5l</cluster-password>
+    </mount>
+
+    <relay>
+        <server>rainwave.cc</server>
+        <port>8000</port>
+        <mount>/chiptune.ogg</mount>
+        <on-demand>0</on-demand>
+    </relay>
+    <mount>
+        <mount-name>/chiptune.ogg</mount-name>
+        <public>1</public>
+        <authentication type="url">
+            <option name="listener_add" value="http://rainwave.cc/api4/listener_add/4"/>
+            <option name="listener_remove" value="http://rainwave.cc/api4/listener_remove"/>
+            <option name="username" value="user"/>
+            <option name="password" value="pass"/>
+            <option name="auth_header" value="icecast-auth-user: 1"/>
+        </authentication>
+        <stream-name>Rainwave Chiptunes</stream-name>
+        <stream-description>Video game chiptunes.</stream-description>
+        <stream-url>http://chip.rainwave.cc</stream-url>
+        <genre>Game</genre>
+        <bitrate>96</bitrate>
+        <cluster-password>hGOzJjZNZOk5l</cluster-password>
+    </mount>
+
+    <!-- All------------------------------------------------------------------------------------ -->
+
+    <relay>
+        <server>rainwave.cc</server>
+        <port>8000</port>
+        <mount>/all.mp3</mount>
+        <on-demand>0</on-demand>
+    </relay>
+    <mount>
+        <mount-name>/all.mp3</mount-name>
+        <public>1</public>
+        <authentication type="url">
+            <option name="listener_add" value="http://rainwave.cc/api4/listener_add/5"/>
+            <option name="listener_remove" value="http://rainwave.cc/api4/listener_remove"/>
+            <option name="username" value="user"/>
+            <option name="password" value="pass"/>
+            <option name="auth_header" value="icecast-auth-user: 1"/>
+        </authentication>
+        <stream-name>Rainwave All</stream-name>
+        <stream-description>Video game music, remixes, and covers.</stream-description>
+        <stream-url>http://all.rainwave.cc</stream-url>
+        <genre>Game</genre>
+        <bitrate>96</bitrate>
+        <cluster-password>PcEyZUjOTmRV</cluster-password>
+    </mount>
+
+    <relay>
+        <server>rainwave.cc</server>
+        <port>8000</port>
+        <mount>/all.ogg</mount>
+        <on-demand>0</on-demand>
+    </relay>
+    <mount>
+        <mount-name>/all.ogg</mount-name>
+        <public>1</public>
+        <authentication type="url">
+            <option name="listener_add" value="http://rainwave.cc/api4/listener_add/5"/>
+            <option name="listener_remove" value="http://rainwave.cc/api4/listener_remove"/>
+            <option name="username" value="user"/>
+            <option name="password" value="pass"/>
+            <option name="auth_header" value="icecast-auth-user: 1"/>
+        </authentication>
+        <stream-name>Rainwave All</stream-name>
+        <stream-description>Video game music, remixes, and covers.</stream-description>
+        <stream-url>http://all.rainwave.cc</stream-url>
+        <genre>Game</genre>
+        <bitrate>96</bitrate>
+        <cluster-password>PcEyZUjOTmRV</cluster-password>
+    </mount>
+</icecast>

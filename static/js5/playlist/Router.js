@@ -86,9 +86,7 @@ var Router = function() {
 			}
 			else {
 				reset_cache();
-				console.log(current_type, current_id, document.body.classList.contains("detail"));
 				if (current_type && current_id && document.body.classList.contains("detail")) {
-					console.log("Derp");
 					open_view(current_type, current_id);
 				}
 			}
