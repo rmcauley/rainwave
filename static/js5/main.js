@@ -34,7 +34,7 @@ var Stations = [];
 		// 	4: { "id": 4, "name": "Chiptune", "url": "hello" },
 		// 	5: { "id": 5, "name": "All", "url": "hello" }
 		// };
-		var order = [ 5, 1, 4, 2, 3, 5 ];
+		var order = [ 5, 1, 4, 2, 3 ];
 		var colors = {
 			1: "#1f95e5",  // Rainwave blue
 			2: "#de641b",  // OCR Orange
