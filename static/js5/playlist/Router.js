@@ -165,13 +165,13 @@ var Router = function() {
 
 		var t;
 		if (cache[typ][id]._cache_el) {
-			console.log("Appending existing cache element.");
+			console.log("Appending existing cache element for " + typ + " " + id + ".");
 			el.appendChild(cache[typ][id]._cache_el);
 			detail_header.textContent = cache[typ][id]._header_text;
 			detail_header.setAttribute("title", cache[typ][id]._header_text);
 		}
 		else {
-			console.log("Rendering detail.");
+			console.log("Rendering detail for " + typ + " " + id + ".");
 			t = views[typ](el, cache[typ][id]);
 			detail_header.textContent = t._header_text;
 			detail_header.setAttribute("title", t._header_text);
