@@ -15,7 +15,7 @@ var API = function() {
 	self.is_slow = false;
 	self.net_latencies = [];
 	self.draw_latencies = [];
-	var slow_net_threshold = 300;
+	var slow_net_threshold = 200;
 	var slow_draw_threshold = 500;
 
 	self.initialize = function(n_sid, n_url, n_user_id, n_api_key, json) {

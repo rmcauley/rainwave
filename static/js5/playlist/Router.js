@@ -165,11 +165,13 @@ var Router = function() {
 
 		var t;
 		if (cache[typ][id]._cache_el) {
+			console.log("Appending existing cache element.");
 			el.appendChild(cache[typ][id]._cache_el);
 			detail_header.textContent = cache[typ][id]._header_text;
 			detail_header.setAttribute("title", cache[typ][id]._header_text);
 		}
 		else {
+			console.log("Rendering detail.");
 			t = views[typ](el, cache[typ][id]);
 			detail_header.textContent = t._header_text;
 			detail_header.setAttribute("title", t._header_text);
@@ -215,9 +217,6 @@ var Router = function() {
 			(even if, in wall clock time, it takes fewer milliseconds to slide
 			the window out blank)
 
-			TODO: I need to re-document this because holy shitballs
-			Also: try and get header names from the playlists if they're loaded
-
 			*/
 
 			if ((!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow) {
@@ -246,19 +245,19 @@ var Router = function() {
 			}
 
 			if (!cache[typ][id]) {
-				// console.log("Loading from server.");
+				console.log("Loading from server.");
 				cache[typ][id] = true;
 				API.async_get(typ, { "id": id }, function(json) {
 					cache[typ][id] = json[typ];
 					if (current_type === typ && current_id === id) {
-						// console.log("Loaded from server.");
+						console.log("Loaded from server.");
 						actually_open(typ, id);
 						ready_to_render = true;
 					}
 				});
 			}
 			else if (cache[typ][id] !== true) {
-				// console.log("Rendering from cache.");
+				console.log("Rendering from cache.");
 				actually_open(typ, id);
 				ready_to_render = true;
 			}
