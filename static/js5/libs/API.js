@@ -257,9 +257,9 @@ var API = function() {
 	};
 
 	self.sync_status = function() {
-		console.log(sync);
-		console.log(sync_stopped);
-		console.log(sync_error_count);
+		console.log("XHR        : ", sync);
+		console.log("Stopped    : ", sync_stopped);
+		console.log("Error Count: ", sync_error_count);
 	};
 
 	var async_timeout = function() {
@@ -370,13 +370,14 @@ var API = function() {
 	};
 
 	self.async_status = function() {
-		console.log(async);
-		console.log(async.readyState);
-		console.log(async_queue);
-		console.log(async_current);
-		console.log(self.last_action);
-		console.log(self.net_latencies);
-		console.log("paused? " + self.paused);
+		console.log("XHR:            ", async);
+		console.log("ReadyState:     ", async.readyState);
+		console.log("Queue:          ", async_queue);
+		console.log("Current action: ", async_current);
+		console.log("Last action:    ", self.last_action);
+		console.log("Net latency:    ", self.net_latencies);
+		console.log("Total latency:  ",  self.draw_latencies);
+		console.log("Station paused: ", self.paused);
 	};
 
 	var perform_callbacks = function(json) {
