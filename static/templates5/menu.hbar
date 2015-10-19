@@ -34,13 +34,15 @@
 			<li class="requests_link">
 				<div bind="request_indicator" class="request_indicator"></div>
 				<a bind="request_link">
-					{{ $l("Requests")}}
+					<svg class="menu_icon menu_icon_requests" use="requests"></svg>
+					<span bind="request_link_text">{{ $l("Requests")}}</span>
 				</a>
 			</li>
 
 			<li class="playlist_link">
 				<a bind="playlist_link">
-					{{ $l("playlist") }}
+					<svg class="menu_icon menu_icon_library" use="library"></svg>
+					<span>{{ $l("library") }}</span>
 				</a>
 			</li>
 		</ul>

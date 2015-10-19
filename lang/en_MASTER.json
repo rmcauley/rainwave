@@ -187,6 +187,7 @@
    "__comment__"                 : "Playlist View",
 
    "playlist"                                        : "Playlist",
+   "library"                                         : "Library",
    "filter"                                          : "Type anywhere to filter",
    "typeanywhere"                                    : "Just start typing!",
    "clearfilter"                                     : "Clear Filter",
@@ -256,7 +257,7 @@
    "station_menu_description_id_2"                   : "All official OverClocked ReMix tracks.",
    "station_menu_description_id_3"                   : "Official and fan-made remixes.",
    "station_menu_description_id_4"                   : "Original and game music chiptunes.",
-   "station_menu_description_id_5"                   : "The entire Rainwave playlist.",
+   "station_menu_description_id_5"                   : "The entire Rainwave Library.",
    "now_playing_on_..."                              : "Now Playing On %(station)",
 
    "__comment__"                 : "Preferences",

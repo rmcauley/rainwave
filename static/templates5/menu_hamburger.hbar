@@ -1,12 +1,14 @@
 <div class="hamburgered menu_inline_dropdown">
 	<div>
-		<a class="link" bind="calendar_menu_item">
-			<div bind="calendar_dropdown" id="calendar_dropdown"></div>
-			<span>{{ $l("events_calendar_link") }}</span>
-		</a>
-		<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&server=irc.synirc.net&channel=%23rainwave&noServerNotices=true&noServerMotd=true&autoConnect=true{{^ BOOTSTRAP.user.id > 1 ? '&nick:' + BOOTSTRAP.user.username : '' }}" target="_blank">
-			{{ $l("chat") }}
-		</a>
+		{{#if ^!MOBILE}}
+			<a class="link" bind="calendar_menu_item">
+				<div bind="calendar_dropdown" id="calendar_dropdown"></div>
+				<span>{{ $l("events_calendar_link") }}</span>
+			</a>
+			<a href="http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&server=irc.synirc.net&channel=%23rainwave&noServerNotices=true&noServerMotd=true&autoConnect=true{{^ BOOTSTRAP.user.id > 1 ? '&nick:' + BOOTSTRAP.user.username : '' }}" target="_blank">
+				{{ $l("chat") }}
+			</a>
+		{{/if}}
 		<a href="http://rainwave.cc/forums" target="_blank">
 			{{ $l("forums") }}
 		</a>
@@ -25,9 +27,11 @@
 			{{ $l("tip_jar") }}
 		</a>
 	</div>
-	<div class="menu_group">
-		<a class="link" bind="settings_icon">
-			{{ $l("Settings") }}
-		</a>
-	</div>
+	{{#if ^!MOBILE}}
+		<div class="menu_group">
+			<a class="link" bind="settings_icon">
+				{{ $l("Settings") }}
+			</a>
+		</div>
+	{{/if}}
 </div>

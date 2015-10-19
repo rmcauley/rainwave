@@ -58,6 +58,16 @@ ul.menu {
 
 	&.main_menu {
 		z-index: 2;
+
+		@media $phone-media {
+			li a {
+				padding: 4px 6px;
+			}
+
+			span {
+				display: none;
+			}
+		}
 	}
 
 	&.hamburger_container {

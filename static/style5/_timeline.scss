@@ -76,7 +76,6 @@ div.timeline_event {
 		padding: 0 20px 0 10px;
 
 		body.mobile & {
-			border-bottom: solid 1px $vdarktext;
 			margin-bottom: 5px;
 		}
 	}
@@ -90,10 +89,6 @@ div.timeline_event {
 	&.sched_current div.timeline_header {
 		font-size: inherit;
 		color: $orange;
-
-		body.mobile & {
-			border-bottom: solid 1px $orange;
-		}
 	}
 
 	span.timeline_header_clock {

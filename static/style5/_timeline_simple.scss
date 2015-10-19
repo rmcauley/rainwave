@@ -1,9 +1,11 @@
-body.desktop.simple div.timeline {
+body.simple div.timeline {
 	position: relative;
 	width: 100%;
 	max-width: 1024px;
 	margin: auto;
+}
 
+body.desktop.simple div.timeline {
 	div.song {
 		height: $simple_art_size + 2;
 
@@ -45,7 +47,6 @@ body.desktop.simple div.timeline {
 
 body.mobile.simple div.timeline {
 	position: relative;
-	width: 100%;
 
 	div.song {
 		height: $art_size + 2;

@@ -65,14 +65,16 @@ var Stations = [];
 		User = BOOTSTRAP.user;
 		API.add_callback("user", function(json) { User = json; });
 
-		Chart.defaults.global.scaleLineColor = "rgba(255,255,255,0.5)";
-		Chart.defaults.global.scaleBeginAtZero = true;
-		Chart.defaults.Doughnut.segmentStrokeColor = "#000";
-		Chart.defaults.Doughnut.animationEasing = "easeOutQuart";
-		Chart.defaults.PolarArea.scaleShowLabels = false;
-		Chart.defaults.PolarArea.scaleBackdropColor = "rgba(255,255,255,0.75)";
-		Chart.defaults.PolarArea.segmentStrokeColor = "#000";
-		Chart.defaults.PolarArea.animationEasing = "easeOutQuart";
+		if (typeof(Chart) != "undefined") {
+			Chart.defaults.global.scaleLineColor = "rgba(255,255,255,0.5)";
+			Chart.defaults.global.scaleBeginAtZero = true;
+			Chart.defaults.Doughnut.segmentStrokeColor = "#000";
+			Chart.defaults.Doughnut.animationEasing = "easeOutQuart";
+			Chart.defaults.PolarArea.scaleShowLabels = false;
+			Chart.defaults.PolarArea.scaleBackdropColor = "rgba(255,255,255,0.75)";
+			Chart.defaults.PolarArea.segmentStrokeColor = "#000";
+			Chart.defaults.PolarArea.animationEasing = "easeOutQuart";
+		}
 
 		// pre-paint DOM operations while the network is doing its work for CSS
 		for (i = 0; i < BOOTSTRAP.on_init.length; i++) {

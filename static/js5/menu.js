@@ -36,16 +36,42 @@ var Menu = function() {
 				Router.open_last();
 			}
 		});
-	});
 
-	BOOTSTRAP.on_draw.push(function() {
-		var jstz_load = document.createElement("script");
-		jstz_load.src = "//cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js";
-		jstz_load.addEventListener("load", function() {
-			template.calendar_menu_item.addEventListener("click", calendar_toggle);
-			template.calendar_menu_item.addEventListener("mouseleave", calendar_hide);
-		});
-		document.body.appendChild(jstz_load);
+		if (template.calendar_dropdown) {
+			BOOTSTRAP.on_draw.push(function() {
+				var jstz_load = document.createElement("script");
+				jstz_load.src = "//cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js";
+				jstz_load.addEventListener("load", function() {
+					template.calendar_menu_item.addEventListener("click", calendar_toggle);
+					template.calendar_menu_item.addEventListener("mouseleave", calendar_hide);
+				});
+				document.body.appendChild(jstz_load);
+			});
+
+			var calendar_toggle = function(e) {
+				if (!has_calendar) {
+					var tz_param;
+					if (jstz) {
+						tz_param = "&ctz=" + jstz.determine().name();
+					}
+					var iframe = document.createElement("iframe");
+					iframe.setAttribute("src", "https://www.google.com/calendar/embed?showTitle=0&showNav=0&showDate=0&showPrint=0&showCalendars=0&mode=AGENDA&height=500&wkst=1&bgcolor=%23ffffff&src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com&color=%232952A3" + tz_param);
+					iframe.setAttribute("frameborder", 0);
+					template.calendar_dropdown.appendChild(iframe);
+					has_calendar = true;
+				}
+				if (template.calendar_dropdown.classList.contains("show_calendar")) {
+					calendar_hide();
+				}
+				else {
+					template.calendar_dropdown.classList.add("show_calendar");
+				}
+			};
+
+			var calendar_hide = function(e) {
+				template.calendar_dropdown.classList.remove("show_calendar");
+			};
+		}
 	});
 
 	// self.show_modal = function(modal_div) {
@@ -84,30 +110,6 @@ var Menu = function() {
 	// 		$id(kmw[i]).removeEventListener('click', self.remove_modal, true);
 	// 	}
 	// };
-
-	var calendar_toggle = function(e) {
-		if (!has_calendar) {
-			var tz_param;
-			if (jstz) {
-				tz_param = "&ctz=" + jstz.determine().name();
-			}
-			var iframe = document.createElement("iframe");
-			iframe.setAttribute("src", "https://www.google.com/calendar/embed?showTitle=0&showNav=0&showDate=0&showPrint=0&showCalendars=0&mode=AGENDA&height=500&wkst=1&bgcolor=%23ffffff&src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com&color=%232952A3" + tz_param);
-			iframe.setAttribute("frameborder", 0);
-			template.calendar_dropdown.appendChild(iframe);
-			has_calendar = true;
-		}
-		if (template.calendar_dropdown.classList.contains("show_calendar")) {
-			calendar_hide();
-		}
-		else {
-			template.calendar_dropdown.classList.add("show_calendar");
-		}
-	};
-
-	var calendar_hide = function(e) {
-		template.calendar_dropdown.classList.remove("show_calendar");
-	};
 
 	var toggle_station_select = function(e) {
 		if (template.station_select.classList.contains("open")) {

@@ -92,6 +92,11 @@ div.lists {
 				color: $text;
 				border-bottom: 1px solid $orange;
 			}
+
+			body.mobile &.group_tab,
+			body.mobile &.listener_tab {
+				display: none;
+			}
 		}
 	}
 

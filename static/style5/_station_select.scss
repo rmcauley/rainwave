@@ -18,13 +18,17 @@ $station_select_width: 270px;
 	        transition-timing-function: $menu_transfunc;
 
 	@media $phone-media	{
-		max-width: 60%;
+		max-width: 100px;
 		height: $phone_menu_height;
 	}
 
 	&.open {
 		width: $station_select_width * 1.8;
 		height: ($station_height * 5) + $menu_height;
+
+		@media $phone-media {
+			width: 100%;
+		}
 	}
 
 	svg.pulldown_arrow {

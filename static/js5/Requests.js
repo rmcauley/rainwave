@@ -6,6 +6,7 @@ var Requests = function() {
 	var el;
 	var scroller;
 	var link;
+	var link_text;
 	var header;
 	var indicator;
 	var padder;
@@ -21,6 +22,7 @@ var Requests = function() {
 		el = root_template.requests;
 		header = root_template.request_header;
 		link = root_template.request_link;
+		link_text = root_template.request_link_text;
 		indicator = root_template.request_indicator;
 		container = root_template.requests_container;
 
@@ -82,14 +84,14 @@ var Requests = function() {
 			if (!User.requests_paused) {
 				if (link && good_requests) {
 					if (!Sizing.simple) {
-						link.textContent = $l("#_requests", { "num_requests": good_requests });
+						link_text.textContent = $l("#_requests", { "num_requests": good_requests });
 					}
 					else {
-						link.textContent = $l("#_requests", { "num_requests": songs.length });
+						link_text.textContent = $l("#_requests", { "num_requests": songs.length });
 					}
 				}
 				else if (link) {
-					link.textContent = $l("Requests");
+					link_text.textContent = $l("Requests");
 				}
 
 				if (all_bad) {
@@ -107,14 +109,14 @@ var Requests = function() {
 			else {
 				header.textContent = $l("request_grab_tag__paused");
 				if (link) {
-					link.textContent = $l("request_grab_tag__paused");
+					link_text.textContent = $l("request_grab_tag__paused");
 				}
 			}
 		}
 		else {
 			header.textContent = $l("Requests");
 			if (link) {
-				link.textContent = $l("Requests");
+				link_text.textContent = $l("Requests");
 			}
 		}
 	};
