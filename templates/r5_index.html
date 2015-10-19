@@ -29,7 +29,7 @@
 	{% end %}
 
 	{% if apple_home_screen_icon %}
-		<link href="{{ apple_home_screen_icon }}" rel="apple-touch-icon" />
+		<link href="{{ apple_home_screen_icon }}" rel="apple-touch-icon"></link>
 	{% end %}
 
 	{% if not mobile %}
@@ -39,9 +39,9 @@
 	{% end %}
 
 	{% if jsfiles %}
-		<link href="/static/baked/{{ revision_number }}/style5b.css" type="text/css" rel="stylesheet" />
+		<link href="/static/baked/{{ revision_number }}/style5b.css" type="text/css" rel="stylesheet"></link>
 	{% else %}
-		<link href="/static/baked/{{ revision_number }}/style5.css" type="text/css" rel="stylesheet" />
+		<link href="/static/baked/{{ revision_number }}/style5.css" type="text/css" rel="stylesheet"></link>
 	{% end %}
 
 	{% if not mobile %}
@@ -66,14 +66,14 @@
 <body class="simple loading">
 	<svg class="unselectable audio_volume" id="audio_volume" viewBox="0 0 100 100" preserveAspectRatio="none" style="display: none;">
 		<clipPath id="volume_bars">
-			<rect x="0" y="80"  width="17" height="20"  />
-			<rect x="20" y="60" width="17" height="40"  />
-			<rect x="40" y="40" width="17" height="60"  />
-			<rect x="60" y="20" width="17" height="80"  />
-			<rect x="80" y="0"  width="17" height="100" />
+			<rect x="0" y="80"  width="17" height="20"></rect>
+			<rect x="20" y="60" width="17" height="40"></rect>
+			<rect x="40" y="40" width="17" height="60"></rect>
+			<rect x="60" y="20" width="17" height="80"></rect>
+			<rect x="80" y="0"  width="17" height="100"></rect>
 		</clipPath>
-		<rect id="audio_volume_indicator_background" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)" style="opacity: 0.3;" />
-		<rect id="audio_volume_indicator" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)" />
+		<rect id="audio_volume_indicator_background" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)" style="opacity: 0.3;"></rect>
+		<rect id="audio_volume_indicator" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)"></rect>
 	</svg>
 </body>
 </html>
