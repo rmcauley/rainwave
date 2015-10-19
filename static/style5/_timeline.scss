@@ -78,10 +78,6 @@ div.timeline_event {
 		color: $vdarktext;
 		font-size: smaller;
 		padding: 0 20px 0 10px;
-
-		body.mobile & {
-			margin-bottom: 5px;
-		}
 	}
 
 	&.no_header {

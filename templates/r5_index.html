@@ -32,9 +32,11 @@
 		<link href="{{ apple_home_screen_icon }}" rel="apple-touch-icon" />
 	{% end %}
 
-	<style media="only screen and (min-width: 1050px)">
-		@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700);
-	</style>
+	{% if not mobile %}
+		<style>
+			@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700);
+		</style>
+	{% end %}
 
 	{% if jsfiles %}
 		<link href="/static/baked/{{ revision_number }}/style5b.css" type="text/css" rel="stylesheet" />

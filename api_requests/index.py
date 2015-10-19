@@ -75,7 +75,7 @@ class MainIndex(api.web.HTMLRequest):
 			stream_filename=config.get_station(self.sid, "stream_filename"),
 			station_list=config.station_list_json,
 			apple_home_screen_icon=config.get_station(self.sid, "apple_home_screen_icon"),
-			mobile=True
+			mobile=self.mobile
 		)
 
 @handle_url("/beta")
