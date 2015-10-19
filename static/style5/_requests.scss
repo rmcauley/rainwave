@@ -58,6 +58,15 @@ ul.request_icons {
 		&:hover {
 			opacity: 1;
 		}
+
+		@media (max-width: 400px) {
+			opacity: 1;
+			margin: 0 10px;
+
+			span {
+				display: none;
+			}
+		}
 	}
 
 	li.requests_play {
