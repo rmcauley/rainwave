@@ -22,6 +22,10 @@ $station_select_width: 270px;
 		height: $phone_menu_height;
 	}
 
+	@media $mobile-media {
+		width: 220px;
+	}
+
 	&.open {
 		width: $station_select_width * 1.8;
 		height: ($station_height * 5) + $menu_height;

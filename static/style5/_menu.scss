@@ -105,7 +105,6 @@ ul.menu {
 		}
 
 		&.user_info {
-			padding-right: 20px;
 
 			a {
 				padding-bottom: 0px;
@@ -116,6 +115,10 @@ ul.menu {
 				overflow: hidden;
 				max-width: 150px;
 				white-space: nowrap;
+
+				@media $mobile-media {
+					max-width: 70px;
+				}
 			}
 		}
 
@@ -155,7 +158,6 @@ ul.menu {
 	}
 
 	img.avatar {
-		position: absolute;
 		max-width: 20px;
 		padding: 0;
 		margin-left: 5px;
@@ -192,9 +194,7 @@ ul.menu {
 				display: none;
 			}
 		}
-	}
 
-	@media $mobile-media {
 		li.user_info {
 			padding-right: 0px;
 			margin: 3px 5px 0 8px;
@@ -215,7 +215,7 @@ ul.menu {
 
 			div.no_avatar & {
 				display: inline-block;
-				max-width: 55px;
+				max-width: 70px;
 				overflow: hidden;
 				white-space: nowrap;
 			}

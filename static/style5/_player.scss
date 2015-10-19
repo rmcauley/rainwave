@@ -11,6 +11,10 @@ $player_icon_width: $player_icon_height;
 	@include transform(translateY(-50%));
 	font-weight: 400;
 
+	@media $mobile-media {
+		margin-left: 235px;
+	}
+
 	div.background {
 		position: relative;
 		background: $blue;
