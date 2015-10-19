@@ -224,13 +224,12 @@ class User(object):
 	def add_request(self, sid, song_id):
 		self._check_too_many_requests()
 		song = playlist.Song.load_from_id(song_id, sid)
-		for requested in self.get_requests(sid):
-			if song.id == requested['id']:
+		for requested in db.c.fetch_all("SELECT r4_request_store.song_id, r4_songs.album_id FROM r4_request_store JOIN r4_songs USING (song_id) WHERE r4_request_store.user_id = %s", (self.id,)):
+			if song.id == requested['song_id']:
 				raise APIException("same_request_exists")
-			for album in song.albums:
-				for requested_album in requested['albums']:
-					if album.id == requested_album['id']:
-						raise APIException("same_request_album")
+			if not self.has_perks():
+				if song.albums[0].id == requested['album_id']:
+					raise APIException("same_request_album")
 		updated_rows = db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
 		if self.data['sid'] == sid and self.is_tunedin():
 			self.put_in_request_line(sid)
