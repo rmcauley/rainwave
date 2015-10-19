@@ -11,18 +11,18 @@
 			{{#if ^BOOTSTRAP.user.id > 1 }}
 				<li bind="user_link" class="user_info">
 					<a href="#!/listener/{{ ^BOOTSTRAP.user.id }}">
-						<span>{{ ^BOOTSTRAP.user.name }}</span>
+						<span>{{ ^BOOTSTRAP.user.name }}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</span>
 						<img class="avatar" src="{{ ^BOOTSTRAP.user.avatar }}" />
 					</a>
 				</li>
 			{{#else}}
-				<li>
+				<li class="login_link">
 					<a bind="login" class="link">
 						{{ $l("login") }}
 					</a>
 				</li>
 
-				<li class="menu_link">
+				<li class="signup_link">
 					<a href="/forums/ucp.php?mode=register">
 						{{ $l("signup") }}
 					</a>

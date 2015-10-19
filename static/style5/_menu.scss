@@ -106,6 +106,17 @@ ul.menu {
 
 		&.user_info {
 			padding-right: 20px;
+
+			a {
+				padding-bottom: 0px;
+			}
+
+			span {
+				display: inline-block;
+				overflow: hidden;
+				max-width: 150px;
+				white-space: nowrap;
+			}
 		}
 
 		body.playlist &.playlist_link a {
@@ -149,7 +160,7 @@ ul.menu {
 		padding: 0;
 		margin-left: 5px;
 		vertical-align: baseline;
-		@include transform(translateY(-25%));
+		@include transform(translateY(-3px));
 	}
 
 	div.request_indicator {
@@ -166,6 +177,48 @@ ul.menu {
 		&.show {
 			opacity: 1;
 			@include transform(translateX(-100%));
+		}
+	}
+
+	@media $phone-media {
+		li.signup_link {
+			display: none;
+		}
+
+		img.avatar {
+			@include transform(none);
+
+			div.no_avatar & {
+				display: none;
+			}
+		}
+	}
+
+	@media $mobile-media {
+		li.user_info {
+			padding-right: 0px;
+			margin: 3px 5px 0 8px;
+
+			a {
+				padding: 0;
+			}
+
+			span {
+				display: none;
+
+				div.no_avatar & {
+					position: relative;
+					display: inline;
+					padding: 0px;
+				}
+			}
+
+			div.no_avatar & {
+				display: inline-block;
+				max-width: 55px;
+				overflow: hidden;
+				white-space: nowrap;
+			}
 		}
 	}
 }
