@@ -11,7 +11,7 @@
 			{{#if ^BOOTSTRAP.user.id > 1 }}
 				<li bind="user_link" class="user_info">
 					<a href="#!/listener/{{ ^BOOTSTRAP.user.id }}">
-						<span>{{ ^BOOTSTRAP.user.name }}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</span>
+						<span>{{ ^BOOTSTRAP.user.name }}</span>
 						<img class="avatar" src="{{ ^BOOTSTRAP.user.avatar }}" />
 					</a>
 				</li>
