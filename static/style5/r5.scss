@@ -36,20 +36,13 @@ body {
 	padding: 0;
 	overflow: hidden;
 	background: #1c1d1f;
+	font-family: 'Roboto Condensed', 'Helvetica Neue', sans-serif;
 
 	&.loading {
 		opacity: 0;
 
 		* {
 			@include no-transition();
-		}
-	}
-
-	&.desktop {
-		font-family: 'Roboto Condensed', 'Helvetica Neue', 'Helvetica', sans-serif;
-
-		i {
-			font-weight: 300;
 		}
 	}
 }
