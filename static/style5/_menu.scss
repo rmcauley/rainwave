@@ -32,15 +32,20 @@ div.menu_wrapper {
 	}
 
 	svg {
-		display: inline;
+		display: inline-block;
 		height: 20px;
 		width: 20px;
-		fill: $text;
-		@include transition-wtime(150ms, fill);
+
+		&, * {
+			fill: $text;
+			@include transition-wtime(150ms, fill);
+		}
 	}
 
 	a:hover svg {
-		fill: $linkhover;
+		&, * {
+			fill: $linkhover;
+		}
 	}
 }
 
@@ -56,16 +61,29 @@ ul.menu {
 	@include transform(translateY(-50%));
 	background: $blue;
 
+	svg {
+		display: none;
+		@include transform(translateY(2px));
+	}
+
 	&.main_menu {
 		z-index: 2;
 
 		@media $phone-media {
+			top: 0;
+			height: $phone_menu_height;
+			@include transform(none);
+
 			li a {
 				padding: 4px 6px;
 			}
 
 			span {
 				display: none;
+			}
+
+			svg {
+				display: block;
 			}
 		}
 	}

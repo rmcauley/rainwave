@@ -17,8 +17,8 @@ $station_select_width: 270px;
 	-webkit-transition-timing-function: $menu_transfunc;
 	        transition-timing-function: $menu_transfunc;
 
-	@media $phone-media	{
-		max-width: 100px;
+	@media $phone-media {
+		width: 120px;
 		height: $phone_menu_height;
 	}
 
@@ -27,7 +27,8 @@ $station_select_width: 270px;
 		height: ($station_height * 5) + $menu_height;
 
 		@media $phone-media {
-			width: 100%;
+			width: 150px;
+			height: ($phone_menu_height * 5) + $phone_menu_height;
 		}
 	}
 
@@ -50,6 +51,10 @@ $station_select_width: 270px;
 
 	&.openable svg.pulldown_arrow {
 		display: block;
+
+		@media $phone-media {
+			display: none;
+		}
 	}
 
 	&.open svg.pulldown_arrow {
@@ -66,8 +71,8 @@ $station_select_width: 270px;
 
 		@include transform(translateY(-100%));
 
-		@media $mobile-media {
-			display: none;
+		@media $phone-media {
+			height: $phone_menu_height;
 		}
 	}
 
@@ -102,7 +107,9 @@ $station_select_width: 270px;
 		        transition:         transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc;
 
 		@media $phone-media {
-			height: $phone_menu_height !important;
+			padding-left: 5px;
+			height: $phone_menu_height;
+			@include transform(none);
 		}
 
 		&:hover {
@@ -115,6 +122,10 @@ $station_select_width: 270px;
 			color: $text;
 			z-index: 40 !important;
 			@include transform(translateY(-13px));
+
+			@media $phone-media {
+				@include transform(none);
+			}
 		}
 
 		div.station_name {
@@ -210,6 +221,14 @@ $station_select_width: 270px;
 		&:hover div.station_song_container {
 			@include transform(translateX(-100%));
 			opacity: 1.0;
+		}
+
+		@media $phone-media {
+			@for $i from 2 through 6 {
+				&:nth-of-type($i) {
+					@include transform(translateY($phone_menu_height + ($phone_menu_height * ($i - 2))));
+				}
+			}
 		}
 	}
 }

@@ -86,27 +86,27 @@ $player_icon_width: $player_icon_height;
 	}
 
 	@media $mobile-media {
-		float: right;
-		margin-left: 0;
 		border-top: none;
-		border-right: 1px solid #0b5c89;
-		height: $menu-height;
-		padding: 0 5px 0 0;
-		top: 0;
+		height: $menu-height - 3;
+		padding: 0 6px 0 0;
+		top: 8px;
 		@include transform(none);
 
 		.menu_inline_dropdown, .audio_icon_mute, .audio_icon_stop, .audio_volume {
 			display: none;
 		}
-
-		.audio_icon_play {
-			position: relative;
-			top: 50%;
-			@include transform(translateY(-50%) scale(0.75));
-		}
 	}
 
 	@media $phone-media {
+		float: right;
+		margin-left: 0;
+		padding: 0 3px 0 0;
+		top: 0px;
 		height: $phone_menu_height;
+
+		.audio_icon_play {
+			@include transform(translateY(5px));
+			height: 20px;
+		}
 	}
 }
