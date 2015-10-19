@@ -1,6 +1,6 @@
 <div class="header unselectable" bind="header">
 	<div class="menu_wrapper">
-		<ul class="menu hamburger_container">
+		<ul class="menu hamburger_container pconly">
 			<li>
 				{{>menu_hamburger}}
 				<a class="link hamburger_icon"></a>
@@ -66,7 +66,7 @@
 		</div>
 
 		<div id="r4_audio_player" bind="player" class="unselectable">
-			<div class="m3u menu_inline_dropdown">
+			<div class="m3u menu_inline_dropdown pconly">
 				<a bind="play2" class="link">
 					{{ $l("listen_via_browser") }}
 				</a>
@@ -79,8 +79,8 @@
 			</div>
 			<div class="background">
 				<svg bind="play" class="audio_icon audio_icon_play" use="play"></svg>
-				<svg bind="stop" class="audio_icon audio_icon_stop" use="stop"></svg>
-				<svg bind="mute" class="audio_icon audio_icon_mute" use="mute"></svg>
+				<svg bind="stop" class="audio_icon audio_icon_stop pconly" use="stop"></svg>
+				<svg bind="mute" class="audio_icon audio_icon_mute pconly" use="mute"></svg>
 			</div>
 		</div>
 	</div>

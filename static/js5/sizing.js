@@ -49,6 +49,8 @@ var Sizing = function() {
 			index_t.sizeable_area.childNodes[i].style.height = self.sizeable_area_height + "px";
 		}
 
+		var is_small = document.body.classList.contains("small");
+		var is_normal = document.body.classList.contains("normal");
 		self.mobile = false;
 		if (self.width < 1050) {
 			self.mobile = true;
@@ -59,7 +61,7 @@ var Sizing = function() {
 			index_t.requests_container.style.left = "100%";
 			index_t.detail_container.style.left = "100%";
 
-			if (self.width < 1366) {
+			if (self.width < 600) {
 				document.body.classList.add("small");
 				document.body.classList.remove("normal");
 			}
@@ -76,6 +78,14 @@ var Sizing = function() {
 				index_t.lists.style.left = null;
 				index_t.requests_container.style.left = null;
 				index_t.detail_container.style.left = null;
+				if (self.width < 1366) {
+					document.body.classList.add("small");
+					document.body.classList.remove("normal");
+				}
+				else {
+					document.body.classList.remove("small");
+					document.body.classList.add("normal");
+				}
 			}
 			else {
 				document.body.classList.add("simple");
@@ -84,22 +94,28 @@ var Sizing = function() {
 				index_t.lists.style.left = right_of_timeline + "px";
 				index_t.requests_container.style.left = right_of_timeline + "px";
 				index_t.detail_container.style.left = right_of_timeline + "px";
-			}
 
-			if (self.width < 1366) {
-				document.body.classList.add("small");
-				document.body.classList.remove("normal");
-			}
-			else {
-				document.body.classList.remove("small");
-				document.body.classList.add("normal");
+				if (self.width < 600) {
+					document.body.classList.add("small");
+					document.body.classList.remove("normal");
+				}
+				else {
+					document.body.classList.remove("small");
+					document.body.classList.add("normal");
+				}
 			}
 		}
+		var size_changed = (document.body.classList.contains("normal") != is_normal) && (document.body.classList.contains("small") != is_small);
 
-		self.song_size_np = self.simple && !MOBILE ? 140 : 100;
-		self.song_size = self.simple && !MOBILE ? 100 : 70;
+		is_small = document.body.classList.contains("small");
+		self.song_size_np = !is_small ? 140 : 100;
+		self.song_size = !is_small ? 100 : 70;
 		self.request_size = 70;
 		self.timeline_header_size = 40;
+
+		if (size_changed) {
+			Timeline._reflow(null, true);
+		}
 
 		for (i = 0; i < window_callbacks.length; i++) {
 			window_callbacks[i]();

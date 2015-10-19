@@ -119,6 +119,22 @@ a, a:visited, .link {
 	user-select: none;
 }
 
+.phoneonly {
+	display: inline-block;
+}
+
+@media $pc-media {
+	.phoneonly {
+		display: none;
+	}
+}
+
+@media $phone-media {
+	.pconly {
+		display: none;
+	}
+}
+
 @import "modals";
 @import "errors";
 

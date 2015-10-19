@@ -5,7 +5,7 @@ body.simple div.timeline {
 	margin: auto;
 }
 
-body.desktop.simple div.timeline {
+body.normal div.timeline {
 	div.song {
 		height: $simple_art_size + 2;
 
@@ -45,9 +45,7 @@ body.desktop.simple div.timeline {
 	}
 }
 
-body.mobile.simple div.timeline {
-	position: relative;
-
+div.timeline {
 	div.song {
 		height: $art_size + 2;
 

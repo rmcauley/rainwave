@@ -14,7 +14,7 @@ var Event = function(self) {
 		self.songs[i] = Song(self.songs[i], self);
 	}
 
-	var reflow = function() {
+	self.reflow = function() {
 		var running_height = 0;
 		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].el.style[Fx.transform] = "translateY(" + running_height + "px)";
@@ -28,7 +28,7 @@ var Event = function(self) {
 		}
 		if (self.$t.progress) self.$t.progress.style[Fx.transform] = "translateY(" + (running_height + 15) + "px)";
 	};
-	reflow();
+	self.reflow();
 
 	self.update = function(json) {
 		for (var i in json) {
@@ -50,13 +50,25 @@ var Event = function(self) {
 		}
 	};
 
+	self.recalculate_height = function() {
+		if (self.$t.el.classList.contains("sched_next")) {
+			self.height = (self.songs.length * Sizing.song_size);
+		}
+		else if (self.$t.el.classList.contains("sched_current")) {
+			self.height = ((self.songs.length - 1) * Sizing.song_size) + Sizing.song_size_np;
+		}
+		else if (self.$t.el.classList.contains("sched_history")) {
+			self.height = Sizing.song_size;
+		}
+		if (self.showing_header && !self.history) self.height += Sizing.timeline_header_size;
+	};
+
 	self.change_to_coming_up = function(is_continuing) {
 		self.$t.el.classList.remove("sched_history");
 		self.$t.el.classList.remove("sched_current");
 		self.$t.el.classList.add("sched_next");
 		self.set_header_text(is_continuing ? $l("continued") : $l("coming_up"));
-		self.height = (self.songs.length * Sizing.song_size);
-		if (self.showing_header) self.height += Sizing.timeline_header_size;
+		self.recalculate_height();
 	};
 
 	self.change_to_now_playing = function() {
@@ -72,9 +84,8 @@ var Event = function(self) {
 		self.songs[0].el.classList.add("now_playing");
 		self.disable_voting();
 		self.set_header_text($l("now_playing"));
-		self.height = ((self.songs.length - 1) * Sizing.song_size) + Sizing.song_size_np;
-		if (self.showing_header) self.height += Sizing.timeline_header_size;
-		reflow();
+		self.recalculate_height();
+		self.reflow();
 	};
 
 	self.change_to_history = function() {
@@ -89,9 +100,9 @@ var Event = function(self) {
 			Fx.remove_element(self.songs[i].el);
 		}
 		if (self.$t.progress.parentNode) Fx.remove_element(self.$t.progress);
-		reflow();
+		self.reflow();
 		self.disable_voting();
-		self.height = Sizing.song_size;
+		self.recalculate_height();
 	};
 
 	self.enable_voting = function() {

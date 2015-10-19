@@ -42,8 +42,6 @@ var Timeline = function() {
 				Prefs.change("sticky_history", !Prefs.get("sticky_history"));
 			}
 		);
-
-		Sizing.add_resize_callback(self.reflow);
 	});
 
 	BOOTSTRAP.on_draw.push(function() {
@@ -154,8 +152,16 @@ var Timeline = function() {
 		return Prefs.get("sticky_history") ? sched_history.length: Prefs.get("sticky_history_size") || 0;
 	};
 
-	self._reflow = function(raftime, test) {
+	self._reflow = function(raftime, reflow_everything) {
 		if (!events.length) return;
+
+		var i;
+		if (reflow_everything) {
+			for (i = 0; i < events.length; i++) {
+				events[i].recalculate_height();
+				events[i].reflow();
+			}
+		}
 
 		var history_size = Prefs.get("sticky_history") ? sched_history.length: Prefs.get("sticky_history_size") || 0;
 		if (history_size == sched_history.length) {
@@ -165,8 +171,8 @@ var Timeline = function() {
 			template.history_header.classList.add("history_expandable");
 		}
 
-		var hidden_events = Math.min(sched_history.length, Math.max(0, test || sched_history.length - history_size));
-		for (var i = 0; i < hidden_events && i < sched_history.length; i++) {
+		var hidden_events = Math.min(sched_history.length, Math.max(0, sched_history.length - history_size));
+		for (i = 0; i < hidden_events && i < sched_history.length; i++) {
 			events[i].el.style[Fx.transform] = "translateY(" + (-(((hidden_events - i - 1) * 5 + 1) * Sizing.song_size + 1)) + "px)";
 		}
 
