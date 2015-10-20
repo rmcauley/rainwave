@@ -25,6 +25,11 @@ class ScanResults(api.web.PrettyPrintAPIMixin, BackendScanErrors):
 	def get(self):	#pylint: disable=E0202,W0221
 		new_results = []
 		for row in self._output[self.return_name]:
+			if "traceback" in row and row['traceback'] and len(row['traceback']):
+				row['traceback'] = '\n'.join(row['traceback'])
+				row['traceback'] = "<pre style='max-width: 450px; overflow: auto;'>%s</pre>" % row['traceback']
+			else:
+				row['traceback'] = " "
 			row['time'] = relative_time(row['time'])
 			new_results.append(row)
 		self._output[self.return_name] = new_results

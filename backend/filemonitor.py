@@ -7,6 +7,7 @@ import sys
 import psutil
 import watchdog.events
 import watchdog.observers
+import traceback
 from PIL import Image
 
 from libs import config
@@ -159,7 +160,7 @@ def _scan_file(filename, sids, raise_exceptions=False):
 	try:
 		_check_codepage_1252(filename)
 	except Exception as e:
-		_add_scan_error(filename, e)
+		_add_scan_error(filename, e, sys.exc_info())
 		if raise_exceptions:
 			raise
 		return False
@@ -193,7 +194,7 @@ def _scan_file(filename, sids, raise_exceptions=False):
 			_add_scan_error(filename, e)
 			_disable_file(filename)
 		except Exception as e:
-			_add_scan_error(filename, e)
+			_add_scan_error(filename, e, sys.exc_info())
 			_disable_file(filename)
 			if raise_exceptions:
 				raise
@@ -310,12 +311,18 @@ def _disable_file(filename):
 	except Exception as e:
 		_add_scan_error(filename, e)
 
-def _add_scan_error(filename, xception):
+def _add_scan_error(filename, xception, full_exc=None):
 	scan_errors = cache.get("backend_scan_errors")
 	if not scan_errors:
 		scan_errors = []
 
-	scan_errors.insert(0, { "time": int(timestamp()), "file": filename, "type": xception.__class__.__name__, "error": str(xception) })
+	eo = { "time": int(timestamp()), "file": filename, "type": xception.__class__.__name__, "error": str(xception), "traceback": "" }
+	if not isinstance(xception, PassableScanError) and not isinstance(xception, IOError) and not isinstance(xception, OSError):
+		if full_exc:
+			eo['traceback'] = traceback.format_exception(*full_exc)			#pylint: disable=W0142
+		else:
+			eo['traceback'] = traceback.format_exception(*sys.exc_info())
+	scan_errors.insert(0, eo)
 	if len(scan_errors) > 100:
 		scan_errors = scan_errors[0:100]
 	cache.set("backend_scan_errors", scan_errors)
