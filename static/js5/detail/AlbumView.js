@@ -45,7 +45,6 @@ var AlbumView = function(album) {
 			album.songs[i].is_new = false;
 		}
 	}
-	console.log(album.is_new, album.has_new);
 
 	var template = RWTemplates.detail.album(album, !MOBILE ? document.createElement("div") : null);
 	AlbumArt(album.art, template.art);
