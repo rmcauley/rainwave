@@ -12,6 +12,13 @@
 	<!--{{#if year }}
 		<p class="year">{{ $l("album_year", { "year": _c.year }) }}</p>
 	{{/if}}-->
+	{{#if ^_c.is_new || _c.has_new }}
+		{{#if is_new }}
+			<p class="new_indicator">{{ $l("new_album") }}</p>
+		{{else}}
+			<p class="new_indicator">{{ $l("new_songs") }}</p>
+		{{/if}}
+	{{/if}}
 	{{#if rating }}
 		<p>{{ $l("album_rating_ranked_at_v2", { "rating": _c.rating, "rating_count": _c.num_song_ratings, "rank": _c.rating_rank }) }}</p>
 	{{/if}}

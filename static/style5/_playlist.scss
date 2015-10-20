@@ -65,13 +65,15 @@ div.lists {
 
 	body.desktop.playlist.normal.detail & {
 		background: #202020;
-		// @include transform(translateX(-115%));
 		@include transform(translateX(-200%));
 
-		// ul.panel_header, div.list_contents {
-		// 	opacity: 0.7;
-		// 	@include transition-wtime(300ms, opacity);
-		// }
+		@media (max-width: 950px) {
+			@include transform(translateX(-150%));
+		}
+
+		@media (max-width: 800px) {
+			@include transform(translateX(-120%));
+		}
 	}
 
 	ul.panel_header {
@@ -240,6 +242,19 @@ div.list {
 		span.name {
 			padding-left: 5px;
 			@include transition-wtime(300ms, padding);
+		}
+
+		&.has_new {
+			span.name {
+				background-repeat: no-repeat;
+				background-size: 14px;
+				background-image: url('/static/images4/new.png');
+				@include transition-wtime(300ms, padding, background-position);
+			}
+
+			&.open span.name {
+				background-position: 15px 0;
+			}
 		}
 
 		div.fave {

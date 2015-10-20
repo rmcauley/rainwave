@@ -327,7 +327,8 @@ def create_tables():
 			album_name				TEXT		, \
 			album_name_searchable	TEXT 		NOT NULL, \
 			album_year				SMALLINT, \
-			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
+			album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
+			album_newest_song_time	INTEGER		DEFAULT 0 \
 		)")
 
 	c.update(" \

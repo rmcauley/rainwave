@@ -66,7 +66,7 @@ var AlbumList = function(el) {
 
 	self.draw_entry = function(item) {
 		item._el = document.createElement("div");
-		item._el.className = "item";
+		item._el.className = "item" + (item.has_new ? " has_new" : "");
 		item._el._id = item.id;
 
 		// could do this using RWTemplates.fave but... speed.  want to inline here as much as possible.

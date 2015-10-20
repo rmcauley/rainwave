@@ -43,8 +43,15 @@ div.detail {
 		margin: 0 15px 0 10px;
 
 		p {
-			margin: 0 0 0 110px;
-			padding: 0;
+			margin: 0 0 0 105px;
+			padding: 0 0 0 5px;
+
+			&.new_indicator {
+				color: $orange;
+				background-repeat: no-repeat;
+				background-size: 12px;
+				background-image: url('/static/images4/new.png');
+			}
 		}
 	}
 
@@ -65,7 +72,6 @@ div.detail {
 		z-index: 1;
 		width: 100%;
 		box-sizing: border-box;
-		padding-right: 50px;
 
 		li {
 			overflow: hidden;
@@ -133,10 +139,6 @@ div.row {
 		}
 	}
 
-	div.fave {
-		margin-right: 5px;
-	}
-
 	div.length {
 		width: 35px;
 		float: right;
@@ -167,6 +169,13 @@ div.row {
 	div.title {
 		overflow: hidden;
 		text-overflow: ellipsis;
+		padding-left: 5px;
+	}
+
+	&.is_new div.title {
+		background-repeat: no-repeat;
+		background-size: 14px;
+		background-image: url('/static/images4/new.png');
 	}
 
 	&.requestable div.title {

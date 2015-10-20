@@ -51,6 +51,8 @@
    "station_paused"                                  : "Station is currently paused by the DJ.",
    "album_on_other_station"                          : "Album is not available on this station, sorry!",
    "album_is_dj_only"                                : "Album is exclusive to this event, sorry!",
+   "oops"                                            : "Oops",
+   "something_went_wrong"                            : "Something went wrong loading that from the server. :(",
 
    "__comment__"                 : "API Key Management",
 
@@ -210,6 +212,8 @@
    "RequestLine"                                     : "Request Line",
    "nobody_in_line"                                  : "Nobody in line.",
    "relevant_categories"                             : "Relevant categories: ",
+   "new_album"                                       : "New album!",
+   "new_songs"                                       : "New songs!",
 
    "__comment__"                 : "Requests",
 
@@ -342,6 +346,7 @@
    "file"                                            : "File",
    "error"                                           : "Error",
    "url"                                             : "URL",
+   "traceback"                                       : "Traceback",
    "sched_length_minutes"                            : "Length (min.)",
    "backend_scan_errors"                             : "Backend Scan Errors",
    "producers"                                       : "Producers",

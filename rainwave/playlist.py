@@ -166,23 +166,24 @@ def remove_all_locks(sid):
 	db.c.update("UPDATE r4_album_sid SET album_cool = FALSE AND album_cool_lowest = 0 WHERE sid = %s" % sid)
 
 def get_all_albums_list(sid, user = None):
+	new_threshold = timestamp() - (86400 * 14)
 	if not user or user.id == 1:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, FALSE AS fave, 0 AS rating_user, FALSE AS rating_complete "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, FALSE AS fave, 0 AS rating_user, FALSE AS rating_complete, album_newest_song_time > %s AS has_new "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"WHERE r4_album_sid.sid = %s AND r4_album_sid.album_exists = TRUE "
 			"ORDER BY album_name",
-			(sid,))
+			(new_threshold, sid,))
 	else:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, COALESCE(album_fave, FALSE) AS fave, COALESCE(album_rating_user, 0) AS rating_user, COALESCE(album_rating_complete, FALSE) AS rating_complete "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, COALESCE(album_fave, FALSE) AS fave, COALESCE(album_rating_user, 0) AS rating_user, COALESCE(album_rating_complete, FALSE) AS rating_complete, album_newest_song_time > %s AS has_new "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s AND r4_album_ratings.sid = %s) "
 			"WHERE r4_album_sid.sid = %s AND r4_album_sid.album_exists = TRUE "
 			"ORDER BY album_name",
-			(user.id, sid, sid))
+			(new_threshold, user.id, sid, sid))
 
 def get_all_artists_list(sid):
 	return db.c.fetch_all(

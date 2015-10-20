@@ -82,7 +82,7 @@ class Album(AssociatedMetadata):
 		user_id = None if not user else user.id
 		requestable = True if user else False
 		instance.data['songs'] = db.c.fetch_all(
-			"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, "
+			"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, song_added_on AS added_on, "
 				"song_track_number AS track_number, song_disc_number as disc_number, "
 				"song_url AS url, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiply, "
 				"song_cool_override AS cool_override, %s AS requestable, song_cool AS cool, song_cool_end AS cool_end, "
@@ -161,9 +161,11 @@ class Album(AssociatedMetadata):
 		return db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE r4_songs.album_id = %s AND sid = %s AND song_exists = TRUE AND song_verified = TRUE", (self.id, sid))
 
 	def associate_song_id(self, song_id, is_tag = None):
-		existing_album = db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,))
+		row = db.c.fetch_row("SELECT album_id, song_added_on FROM r4_songs WHERE song_id = %s", (song_id,))
+		existing_album = row['album_id']
 		if not existing_album or existing_album != self.id:
 			db.c.update("UPDATE r4_songs SET album_id = %s WHERE song_id = %s", (self.id, song_id))
+			db.c.update("UPDATE r4_albums SET album_newest_song_time = %s WHERE album_id = %s AND album_newest_song_time < %s", (row['song_added_on'], self.id, row['song_added_on']))
 		if existing_album and existing_album != self.id:
 			self.reconcile_sids(existing_album)
 		self.reconcile_sids()

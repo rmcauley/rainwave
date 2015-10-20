@@ -17,13 +17,13 @@ $station_select_width: 270px;
 	-webkit-transition-timing-function: $menu_transfunc;
 	        transition-timing-function: $menu_transfunc;
 
+	@media $mobile-media {
+		width: 220px;
+	}
+
 	@media $phone-media {
 		width: 120px;
 		height: $phone_menu_height;
-	}
-
-	@media $mobile-media {
-		width: 220px;
 	}
 
 	&.open {

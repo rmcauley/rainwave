@@ -174,7 +174,10 @@ var Router = function() {
 		}
 
 		var t;
-		if (cache[typ][id]._cache_el) {
+		if (!cache[typ][id]) {
+			RWTemplates.oops(null, el);
+		}
+		else if (cache[typ][id]._cache_el) {
 			// console.log(typ + "/" + id + ": Appending existing cache.");
 			el.appendChild(cache[typ][id]._cache_el);
 			detail_header.textContent = cache[typ][id]._header_text;

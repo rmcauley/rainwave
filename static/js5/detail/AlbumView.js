@@ -33,6 +33,20 @@ var AlbumView = function(album) {
 
 	album.songs.sort(SongsTableSorting);
 
+	album.is_new = album.added_on > (Clock.now - (86400 * 14));
+
+	album.has_new = false;
+	for (i = 0; i < album.songs.length; i++) {
+		if (album.songs[i].added_on > (Clock.now - (86400 * 14))) {
+			album.songs[i].is_new = true;
+			album.has_new = true;
+		}
+		else {
+			album.songs[i].is_new = false;
+		}
+	}
+	console.log(album.is_new, album.has_new);
+
 	var template = RWTemplates.detail.album(album, !MOBILE ? document.createElement("div") : null);
 	AlbumArt(album.art, template.art);
 
