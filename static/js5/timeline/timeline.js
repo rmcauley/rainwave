@@ -139,7 +139,7 @@ var Timeline = function() {
 	var find_and_update_event = function(event_json) {
 		var evt = find_event(event_json.id);
 		if (!evt) {
-			return Event(event_json);
+			return RWEvent(event_json);
 		}
 		else {
 			evt.update(event_json);

@@ -1,4 +1,4 @@
-var Event = function(self) {
+var RWEvent = function(self) {
 	"use strict";
 	self.type = self.type.toLowerCase();
 	self.header_text = null;
