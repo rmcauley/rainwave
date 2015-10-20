@@ -202,24 +202,24 @@ var AlbumList = function() {
 		return 0;
 	};
 
-	self.sort_by_updated = function(a, b) {
-		if (playlist_sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
-			if (self.data[a].fave) return -1;
-			else return 1;
-		}
+	// self.sort_by_updated = function(a, b) {
+	// 	if (playlist_sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+	// 		if (self.data[a].fave) return -1;
+	// 		else return 1;
+	// 	}
 
-		if (playlist_sort_available_first && (self.data[a].cool !== self.data[b].cool)) {
-			if (self.data[a].cool === false) return -1;
-			else return 1;
-		}
+	// 	if (playlist_sort_available_first && (self.data[a].cool !== self.data[b].cool)) {
+	// 		if (self.data[a].cool === false) return -1;
+	// 		else return 1;
+	// 	}
 
-		if (self.data[a].updated < self.data[b].updated) return 1;
-		if (self.data[a].updated > self.data[b].updated) return -1;
+	// 	if (self.data[a].updated < self.data[b].updated) return 1;
+	// 	if (self.data[a].updated > self.data[b].updated) return -1;
 
-		if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return -1;
-		else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return 1;
-		return 0;
-	};
+	// 	if (self.data[a]._lower_case_sort_keyed < self.data[b]._lower_case_sort_keyed) return -1;
+	// 	else if (self.data[a]._lower_case_sort_keyed > self.data[b]._lower_case_sort_keyed) return 1;
+	// 	return 0;
+	// };
 
 	self.sort_by_rating_user = function(a, b) {
 		if (playlist_sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
