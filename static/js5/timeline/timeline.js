@@ -174,12 +174,16 @@ var Timeline = function() {
 		var hidden_events = Math.min(sched_history.length, Math.max(0, sched_history.length - history_size));
 		for (i = 0; i < hidden_events && i < sched_history.length; i++) {
 			events[i].el.style[Fx.transform] = "translateY(" + (-(((hidden_events - i - 1) * 5 + 1) * Sizing.song_size + 1)) + "px)";
+			events[i].el.classList.add("sched_history_hidden");
 		}
 
 		var running_y = !Sizing.simple || Sizing.mobile ? 30 : 28;
 		var history_gap;
 		for (i = hidden_events; i < events.length; i++) {
-			if (!events[i].history && !history_gap) {
+			if (events.history) {
+				events[i].el.classList.remove("sched_history_hidden");
+			}
+			else if (!history_gap) {
 				history_gap = true;
 				history_bar.style[Fx.transform] = "translateY(" + (running_y + 9) + "px)";
 				running_y += 20;
