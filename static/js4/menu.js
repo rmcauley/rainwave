@@ -26,7 +26,7 @@ var Menu = function() {
 		});
 		$id("about_modal_header").textContent = $l("about_window_header");
 
-		$id("settings_link").addEventListener("click", function(e) { 
+		$id("settings_link").addEventListener("click", function(e) {
 			e.stopPropagation();
 			self.show_modal($id("settings_window_container"));
 		});
@@ -149,7 +149,7 @@ var Menu = function() {
 	};
 
 	var calendar_toggle = function(e) {
-		var dd = $id("calendar_dropdown"); 
+		var dd = $id("calendar_dropdown");
 		if (!$has_class(dd, "has_calendar")) {
 			var tz_param;
 			if (jstz) {
@@ -163,7 +163,7 @@ var Menu = function() {
 		}
 		else {
 			$add_class(dd, "show_calendar");
-		}	
+		}
 	};
 
 	var calendar_hide = function(e) {
@@ -208,7 +208,7 @@ var Menu = function() {
 				if (!event_alert && json[key].event_name && (key != User.sid)) {
 					event_sid = key;
 					$add_class(elements.stations[key], "event_ongoing");
-				
+
 					elements.stations[key]._desc.textContent = $l("special_event_on_now");
 					event_desc = Formatting.event_name(json[key].event_type, json[key].event_name);
 					elements.stations[key]._desc.textContent += event_desc;
@@ -222,7 +222,7 @@ var Menu = function() {
 					$remove_class(elements.stations[key], "event_ongoing");
 					elements.stations[key]._desc.textContent = $l("station_menu_description_id_" + key);
 				}
-				
+
 				if (songs[key]) {
 					songs[key].el.parentNode.removeChild(songs[key].el);
 				}
@@ -257,7 +257,7 @@ var Menu = function() {
 		audio_playing = playing;
 		update_tuned_in_status(User);
 	};
-	
+
 	var update_tuned_in_status = function(user_json) {
 		if (user_json.tuned_in) {
 			$add_class($id("top_menu"), "external_tuned_in");

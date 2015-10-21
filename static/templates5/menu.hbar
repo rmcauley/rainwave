@@ -48,7 +48,7 @@
 		</ul>
 
 		<div id="station_select" bind="station_select" class="closed">
-			<svg class="pulldown_arrow" use="pulldown"></svg>
+			<svg bind="pulldown" class="pulldown_arrow" use="pulldown"></svg>
 			<a id="station_select_header" bind="station_select_header" class="station">
 				<div class="station_details">
 					<div class="station_name">{{ $l("station_select_header") }}</div>

@@ -22,7 +22,7 @@ var ListenerView = function(json, el) {
 			sid = Stations[j].id;
 			for (i = 0; i < jd.length; i++) {
 				if (jd[i].sid == sid) {
-					data.push({ "value": jd[i][key], "color": Stations[j].color, "highlight": "#FFF", "label": Stations[i].name });
+					data.push({ "value": jd[i][key], "color": Stations[j].color, "highlight": "#FFF", "label": Stations[j].name });
 					break;
 				}
 			}
