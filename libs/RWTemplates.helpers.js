@@ -77,10 +77,8 @@ RWTemplateHelpers.array_render = function(arr, template, el, parent_context) {
             arr.render_append(el, arr[i]);
         }
         else {
+            arr[i].$t.__i = i;
             template(arr[i], el, i);
-            if (!arr[i].$t) {
-                throw("Array rendered without any template bindings.");
-            }
             if (!arr[i].$t.item_root) {
                 throw("Array rendered without item_root element.");
             }
@@ -139,10 +137,14 @@ RWTemplateHelpers.array_update = function(arr, full_render) {
                 if (shadow.pre_append) {
                     shadow.pre_append(arr[i], shadow.parent_context);
                 }
+                if (!arr[i].$t) {
+                    arr[i].$t = new RWTemplateObject(arr[i]);
+                }
                 if (arr._preserve_item_roots && arr[i].$t && arr[i].$t.item_root && arr[i].$t.item_root.length) {
                     shadow.el.appendChild(arr[i].$t.item_root[0]);
                 }
                 else if (shadow.template) {
+                    arr[i].$t.__i = i;
                     shadow.template(arr[i], shadow.el);
                 }
                 if (shadow.render_append) {
@@ -286,7 +288,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
         else if ((i.indexOf("_tab") !== -1) && (i.indexOf("_tab") == (i.length - 4))) {
             tabs.push(obj.$t[i][0]);
             obj.$t[i][0]._tab_name = i.substr(0, i.indexOf("_tab"));
-            obj.$t[i][0].addEventListener("click", function() {
+            obj.$t[i][0]._open = function() {
                 hide_areas();
                 this.parentNode.classList.add("active");
                 if (obj.$t[this._tab_name + "_area"] && obj.$t[this._tab_name + "_area"][0]) {
@@ -295,7 +297,8 @@ RWTemplateHelpers.tabify = function(obj, def) {
                 else {
                     throw("Can't find corresponding area for " + this._tab_name + ".  Make sure you have a " + this._tab_name + "_area bound.");
                 }
-            });
+            };
+            obj.$t[i][0].addEventListener("click", obj.$t[i][0]._open);
         }
     }
     hide_areas();
@@ -313,7 +316,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
             if (autosave_timeouts[template_obj]) {
                 clearTimeout(autosave_timeouts[template_obj]);
             }
-            autosave_timeouts[template_obj] = setTimeout(template_obj.on_submit, 2000);
+            autosave_timeouts[template_obj] = setTimeout((template_obj.on_autosave || template_obj.on_submit), 2000);
         });
     };
 
@@ -332,13 +335,15 @@ RWTemplateHelpers.tabify = function(obj, def) {
                 }
             }
             if (has_changed) {
-                template_obj.on_submit();
+                (template_obj.on_autosave || template_obj.on_submit)();
             }
         });
     };
 
     RWTemplateObject.prototype.enable_auto_save = function() {
-        if (!this.on_submit) throw("$t.on_submit must be defined before calling enable_auto_save.");
+        if (!this.on_submit && !this.on_autosave) {
+            throw("$t.on_submit or $t.on_autosave must be defined before calling enable_auto_save.");
+        }
         var elements = this.get_form_elements();
         for (var i = 0; i < elements.length; i++) {
             if (!elements[i]._autosaving) {
@@ -656,7 +661,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
             if (!new_obj.hasOwnProperty(i)) {
                 // do nothing
             }
-            else if (i == "$t") {
+            else if (i.charAt(0) == "$") {
                 // do nothing
             }
             else if (this._c[i] && ((Object.prototype.toString.call(this._c[i]) == "[object Array]") || (Object.prototype.toString.call(new_obj[i]) == "[object Array]"))) {
