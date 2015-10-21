@@ -64,9 +64,11 @@ var AlbumList = function(el) {
 		Router.change("album", id);
 	};
 
+	var has_new_threshold = Clock.now - (86400 * 14);
+
 	self.draw_entry = function(item) {
 		item._el = document.createElement("div");
-		item._el.className = "item" + (item.has_new ? " has_new" : "");
+		item._el.className = "item" + (item.newest_song_time > has_new_threshold ? " has_new" : "");
 		item._el._id = item.id;
 
 		// could do this using RWTemplates.fave but... speed.  want to inline here as much as possible.

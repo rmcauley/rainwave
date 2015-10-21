@@ -63,6 +63,7 @@
     "Stations": true
   },
 
+  "browser": true,
   "nonew": true,
   "newcap": false,
   "quotmark": true,
