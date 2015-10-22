@@ -348,10 +348,10 @@ var Requests = function() {
 		}
 		var upper_fold = Sizing.menu_height + Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
 		var lower_fold = Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
-		if (last_mouse_event.clientY < upper_fold) {
+		if ((last_mouse_event.clientY < upper_fold) && (scroller.scroll_top > 0)) {
 			scroller.scroll_to(scroller.scroll_top - (25 - (Math.floor(last_mouse_event.clientY / upper_fold * 25))));
 		}
-		else if (last_mouse_event.clientY > (Sizing.height - lower_fold)) {
+		else if ((last_mouse_event.clientY > (Sizing.height - lower_fold)) && (scroll.scroll_top < scroller.scroll_top_max)) {
 			scroller.scroll_to(scroller.scroll_top + Math.floor((lower_fold - (Sizing.height - last_mouse_event.clientY)) / lower_fold * 20));
 		}
 		requestAnimationFrame(continue_drag);
