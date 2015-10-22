@@ -62,7 +62,6 @@ $station_select_width: 270px;
 	}
 
 	&.open svg.pulldown_arrow {
-		cursor: default;
 		@include transform(translateY(-50%) rotate(180deg));
 	}
 

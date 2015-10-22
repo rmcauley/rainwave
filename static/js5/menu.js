@@ -23,7 +23,7 @@ var Menu = function() {
 					Stations[i].$t.menu_link.addEventListener("mousedown", open_station_select);
 					Stations[i].$t.menu_link.addEventListener("touchstart", open_station_select);
 				}
-				Stations[i].$t.pulldown.addEventListener("click", toggle_station_select);
+				root_template.pulldown.addEventListener("click", toggle_station_select);
 			}
 		}
 
