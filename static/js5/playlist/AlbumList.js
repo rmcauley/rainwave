@@ -64,11 +64,26 @@ var AlbumList = function(el) {
 		Router.change("album", id);
 	};
 
-	var has_new_threshold = Clock.now - (86400 * 14);
+	var has_new_threshold;
+	var has_newish_threshold;
+	if (!Clock.now && BOOTSTRAP && BOOTSTRAP.api_info) {
+	 	has_new_threshold = BOOTSTRAP.api_info.time;
+	 	has_newish_threshold = BOOTSTRAP.api_info.time;
+	}
+	else if (Clock.now) {
+		has_new_threshold = Clock.now;
+		has_newish_threshold = Clock.now;
+	}
+	else {
+		has_new_threshold = parseInt(new Date().getTime() / 1000);
+		has_newish_threshold = parseInt(new Date().getTime() / 1000);
+	}
+	has_new_threshold -= (86400 * 14);
+	has_newish_threshold -= (86400 * 30);
 
 	self.draw_entry = function(item) {
 		item._el = document.createElement("div");
-		item._el.className = "item" + (item.newest_song_time > has_new_threshold ? " has_new" : "");
+		item._el.className = "item" + (item.newest_song_time > has_new_threshold ? " has_new" : (item.newest_song_time > has_newish_threshold ? " has_newish" : ""));
 		item._el._id = item.id;
 
 		// could do this using RWTemplates.fave but... speed.  want to inline here as much as possible.

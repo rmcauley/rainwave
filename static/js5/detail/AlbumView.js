@@ -34,16 +34,45 @@ var AlbumView = function(album) {
 	album.songs.sort(SongsTableSorting);
 
 	album.is_new = album.added_on > (Clock.now - (86400 * 14));
+	album.is_newish = album.added_on > (Clock.now - (86400 * 30));
 
 	album.has_new = false;
+	album.has_newish = false;
 	for (i = 0; i < album.songs.length; i++) {
 		if (album.songs[i].added_on > (Clock.now - (86400 * 14))) {
 			album.songs[i].is_new = true;
 			album.has_new = true;
 		}
+		else if (album.songs[i].added_on > (Clock.now - (86400 * 30))) {
+			album.songs[i].is_newish = true;
+			album.has_newish = true;
+		}
 		else {
 			album.songs[i].is_new = false;
 		}
+	}
+
+	// there are some instances of old songs breaking out into new albums
+	// correct for that here
+	album.is_new = album.has_new && album.is_new;
+	album.is_newish = album.has_newish && album.is_newish;
+
+	album.new_indicator = false;
+	if (album.is_new) {
+		album.new_indicator = $l("new_album");
+		album.new_indicator_class = "new_indicator";
+	}
+	else if (album.is_newish) {
+		album.new_indicator = $l("newish_album");
+		album.new_indicator_class = "newish_indicator";
+	}
+	else if (album.has_new) {
+		album.new_indicator = $l("new_songs");
+		album.new_indicator_class = "new_indicator";
+	}
+	else if (album.has_newish) {
+		album.new_indicator = $l("newish_songs");
+		album.new_indicator_class = "newish_indicator";
 	}
 
 	var template = RWTemplates.detail.album(album, !MOBILE ? document.createElement("div") : null);

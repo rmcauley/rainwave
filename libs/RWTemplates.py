@@ -429,6 +429,12 @@ class RainwaveParser(HTMLParser):
 			context_key = self.parse_context_key(entry['argument'])
 			self.stack.append(entry)
 			self.buffers[self._current_stack_point()] += "if(%s){" % (context_key)
+		elif entry['name'] == "elsif":
+			entry['name'] = "if"
+			entry['function_id'] = None
+			context_key = self.parse_context_key(entry['argument'])
+			self.stack.append(entry)
+			self.buffers[self._current_stack_point()] += "else if(%s){" % (context_key)
 		else:
 			entry['function_id'] = _get_func_id()
 			dbg_name = ""
