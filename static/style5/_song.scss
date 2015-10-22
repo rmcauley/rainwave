@@ -186,8 +186,10 @@ div.song {
 		        transform-origin: 0% 0%;
 	}
 
-	div.art_expanded div.request_indicator {
-		opacity: 0;
+	div.art_expanded {
+		div.request_indicator, div.requester {
+			opacity: 0;
+		}
 	}
 
 	div.your_request {
