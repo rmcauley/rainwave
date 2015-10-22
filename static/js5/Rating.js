@@ -147,7 +147,7 @@ var Rating = function() {
 
 	var get_rating_from_mouse = function(evt, relative_x, relative_y) {
 		var x, y;
-		if (evt.offsetX && evt.offsetY) {
+		if ((typeof(evt.offsetX) != "undefined") && (typeof(evt.offsetY) != "undefined")) {
 			x = evt.offsetX;
 			y = evt.offsetY;
 		}
