@@ -180,7 +180,7 @@ var Timeline = function() {
 		var running_y = !Sizing.simple || Sizing.mobile ? 30 : 28;
 		var history_gap;
 		for (i = hidden_events; i < events.length; i++) {
-			if (events.history) {
+			if (events[i].history) {
 				events[i].el.classList.remove("sched_history_hidden");
 			}
 			else if (!history_gap) {
