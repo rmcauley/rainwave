@@ -147,6 +147,10 @@ div.song {
 		text-align: left;
 		text-transform: uppercase;
 		@include transition(opacity, LINKCOLOR);
+
+		body.normal & {
+			font-size: 70%;
+		}
 	}
 
 	div.fave {
