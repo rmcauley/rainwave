@@ -148,7 +148,7 @@ div.song {
 		text-transform: uppercase;
 		@include transition(opacity, LINKCOLOR);
 
-		body.normal & {
+		body.desktop.normal & {
 			font-size: 70%;
 		}
 	}
