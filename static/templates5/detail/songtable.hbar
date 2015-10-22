@@ -1,5 +1,5 @@
 {{#each songs}}
-	<div class="{{ ^'row ' + (_c.cool ? 'cool' : '') + ' ' + (_c.fave ? 'song_fave_highlight' : '') + ' ' + (_c.requestable ? 'requestable' : '') + ' ' + (_c.is_new ? 'is_new' : '') + ' ' + (_c.is_newish ? 'is_newish' : '') }}">
+	<div class="{{ ^'row ' + (_c.cool ? 'cool' : '') + ' ' + (_c.fave ? 'song_fave_highlight' : '') + ' ' + (_c.requestable ? 'requestable' : '') + ' ' + (_c.is_new ? 'is_new' : (_c.is_newish ? 'is_newish' : '')) }}">
 		{{#if ^!MOBILE}}
 			{{#if ^!Sizing.simple}}
 				<div class="length">
