@@ -213,7 +213,9 @@
    "nobody_in_line"                                  : "Nobody in line.",
    "relevant_categories"                             : "Relevant categories: ",
    "new_album"                                       : "New album!",
+   "newish_album"                                    : "Recently added.",
    "new_songs"                                       : "New songs!",
+   "newish_songs"                                    : "Recently updated.",
 
    "__comment__"                 : "Requests",
 
