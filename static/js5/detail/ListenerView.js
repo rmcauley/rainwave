@@ -95,9 +95,5 @@ var ListenerView = function(json, el) {
 		current_chart_draw_steps += 5;
 	}
 
-	if (json.user_id == User.id) {
-		RWTemplates.detail.listener_qr(segment_context, detail_container);
-	}
-
 	return template;
 };
