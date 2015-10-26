@@ -135,7 +135,7 @@ ul.menu {
 
 			a {
 				&.paused {
-					background: #6A6A6A;
+					background: #2A073C;
 				}
 
 				&.warning {
@@ -147,7 +147,7 @@ ul.menu {
 				}
 
 				body.requests &.paused {
-					background: #3C2907;
+					background: #2A073C;
 				}
 
 				body.requests &.warning {
