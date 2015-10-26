@@ -517,11 +517,17 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	self.reposition = function() {
 		if (num_items_to_display === undefined) return;
-		if (visible.length === 0) {
+		if ((visible.length === 0) && search_string) {
 			template._root.classList.add("no_results");
+			template._root.classList.add("search_active");
+		}
+		else if (visible.length === 0) {
+			template._root.classList.add("no_results");
+			template._root.classList.remove("search_active");
 		}
 		else {
 			template._root.classList.remove("no_results");
+			template._root.classList.remove("search_active");
 		}
 		var new_index = Math.floor(scroll.scroll_top / Sizing.list_item_height);
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
