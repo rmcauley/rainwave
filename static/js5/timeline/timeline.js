@@ -28,6 +28,7 @@ var Timeline = function() {
 		template = RWTemplates.timeline.timeline();
 		root_template.timeline.parentNode.replaceChild(template.timeline, root_template.timeline);
 		root_template.timeline = template.timeline;
+		el = template.timeline_sizer;
 		history_bar = template.history_bar;
 
 		template.longhist_link.addEventListener("click",
@@ -46,7 +47,6 @@ var Timeline = function() {
 
 	BOOTSTRAP.on_draw.push(function() {
 		scroller = Scrollbar.create(template.timeline, true);
-		el = scroller.el;
 	});
 
 	self.update = function() {
