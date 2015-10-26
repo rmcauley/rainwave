@@ -212,7 +212,7 @@ div.list {
 				opacity: 0.5;
 			}
 
-			&.album_fave_highlight {
+			&.album_fave_highlight, &.cool.album_fave_highlight {
 				background-color: #444013;
 				border-color: #5B4E19;
 			}
