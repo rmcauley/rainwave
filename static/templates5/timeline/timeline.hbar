@@ -8,7 +8,9 @@
 			</div>
 		</div>
 		<div bind="history_bar" class="progress history_bar">
-			<div class="progress_bkg"></div>
+			<div class="progress_bkg">
+				<div bind="progress_history_inside" class="progress_inside"></div>
+			</div>
 		</div>
 	</div>
 </div>

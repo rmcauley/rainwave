@@ -150,15 +150,15 @@ var RWEvent = function(self) {
 		self.showing_header = true;
 	};
 
-	self.progress_bar_start = function() {
-		progress_bar_update();
-		Clock.pageclock_bar_function = progress_bar_update;
-	};
+	// self.progress_bar_start = function() {
+		// progress_bar_update();
+		// Clock.pageclock_bar_function = progress_bar_update;
+	// };
 
-	var progress_bar_update = function() {
-		var new_val = Math.min(Math.max(Math.floor(((self.end - Clock.now) / (self.songs[0].length - 1)) * 100), 0), 100);
-		self.$t.progress_inside.style.width = new_val + "%";
-	};
+	// var progress_bar_update = function() {
+	// 	var new_val = Math.min(Math.max(Math.floor(((self.end - Clock.now) / (self.songs[0].length - 1)) * 100), 0), 100);
+	// 	self.$t.progress_inside.style.width = new_val + "%";
+	// };
 
 	self.destroy = function() {
 		for (var i = 0; i < self.songs.length; i++) {

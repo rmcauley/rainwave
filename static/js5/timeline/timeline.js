@@ -43,6 +43,8 @@ var Timeline = function() {
 				Prefs.change("sticky_history", !Prefs.get("sticky_history"));
 			}
 		);
+
+		Clock.pageclock_bar_function = progress_bar_update;
 	});
 
 	BOOTSTRAP.on_draw.push(function() {
@@ -122,9 +124,17 @@ var Timeline = function() {
 
 		// The now playing bar
 		Clock.set_page_title(sched_current.songs[0].albums[0].name + " - " + sched_current.songs[0].title, sched_current.end);
-		if ((sched_current.end - Clock.now) > 0) {
-			sched_current.progress_bar_start();
+	};
+
+	var progress_bar_update = function() {
+		if (!sched_current) {
+			return;
 		}
+		if ((sched_current.end - Clock.now) <= 0) {
+			return;
+		}
+		var new_val = Math.min(Math.max(Math.floor(((sched_current.end - Clock.now) / (sched_current.songs[0].length - 1)) * 100), 0), 100);
+		template.progress_history_inside.style.width = new_val + "%";
 	};
 
 	var find_event = function(id) {

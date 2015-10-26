@@ -102,10 +102,6 @@ div.timeline_event {
 
 	&.sched_current div.progress {
 		opacity: 1;
-
-		div.progress_inside {
-			opacity: 1;
-		}
 	}
 }
 
@@ -124,6 +120,7 @@ div.progress {
 	}
 
 	&.history_bar {
+		opacity: 1;
 		@include transform(translateY(38px));
 	}
 
@@ -135,10 +132,9 @@ div.progress {
 	div.progress_inside {
 		background-color: $orange;
 		height: 2px;
-		margin: auto;
 		padding: 0px;
-		width: 100%;
-		opacity: 0;
+		width: 0;
+		opacity: 1;
 		@include transition(opacity);
 	}
 
