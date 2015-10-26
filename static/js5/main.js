@@ -114,6 +114,8 @@ var Stations = [];
 			document.body.appendChild(fastclick_load);
 		}
 
+		Sizing.trigger_resize();
+
 		//BOOTSTRAP = null;
 
 		Router.detect_url_change();

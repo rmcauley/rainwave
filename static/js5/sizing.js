@@ -27,19 +27,14 @@ var Sizing = function() {
 	};
 
 	self.trigger_resize = function() {
+		window.index_t = index_t;
 		self.height = document.documentElement.clientHeight;
 		self.width = document.documentElement.clientWidth;
 		self.menu_height = index_t.header.offsetHeight;
 		self.list_item_height = index_t.list_item.offsetHeight;
 		var detail_header_size = index_t.detail_header_container.offsetHeight;
 
-		var right_of_timeline;
-		if (index_t.timeline.parentNode == index_t.sizeable_area) {
-			right_of_timeline = index_t.timeline.offsetLeft + index_t.timeline.offsetWidth;
-		}
-		else {
-			right_of_timeline = index_t.timeline.parentNode.offsetLeft + index_t.timeline.parentNode.offsetWidth;
-		}
+		var right_of_timeline = index_t.timeline_sizer.offsetLeft + index_t.timeline_sizer.offsetWidth;
 		self.sizeable_area_height = self.height - index_t.sizeable_area.offsetTop;
 		index_t.sizeable_area.style.height = self.sizeable_area_height + "px";
 		self.detail_area.style.height = (self.sizeable_area_height - detail_header_size - 20) + "px";

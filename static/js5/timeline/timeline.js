@@ -28,6 +28,7 @@ var Timeline = function() {
 		template = RWTemplates.timeline.timeline();
 		root_template.timeline.parentNode.replaceChild(template.timeline, root_template.timeline);
 		root_template.timeline = template.timeline;
+		root_template.timeline_sizer = template.timeline_sizer;
 		el = template.timeline_sizer;
 		history_bar = template.history_bar;
 
