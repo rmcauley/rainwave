@@ -10,7 +10,7 @@ from libs import cache
 from rainwave.playlist_objects.album import clear_updated_albums
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description="Rainwave DB migration script for adding schedule IDs to elections.")
+	parser = argparse.ArgumentParser(description="Rainwave DB migration script for adding album_newest_song_time to r4_albums.")
 	parser.add_argument("--config", default=None)
 	args = parser.parse_args()
 	config.load(args.config)

@@ -165,17 +165,16 @@ class Album(AssociatedMetadata):
 		existing_album = row['album_id']
 		if not existing_album or existing_album != self.id:
 			db.c.update("UPDATE r4_songs SET album_id = %s WHERE song_id = %s", (self.id, song_id))
-			db.c.update("UPDATE r4_albums SET album_newest_song_time = %s WHERE album_id = %s AND album_newest_song_time < %s", (row['song_added_on'], self.id, row['song_added_on']))
 		if existing_album and existing_album != self.id:
-			self.reconcile_sids(existing_album)
-		self.reconcile_sids()
+			self.reconcile_sids(existing_album, song_added_on=row['song_added_on'])
+		self.reconcile_sids(song_added_on=row['song_added_on'])
 
 	def disassociate_song_id(self, *args):
 		# This function is never called on as part of the Album class
 		# This code will never execute!!!
 		pass
 
-	def reconcile_sids(self, album_id = None):
+	def reconcile_sids(self, album_id = None, song_added_on = 0):
 		if not album_id:
 			album_id = self.id
 		new_sids = db.c.fetch_list("SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND song_exists = TRUE GROUP BY sid", (album_id,))
@@ -190,7 +189,7 @@ class Album(AssociatedMetadata):
 			elif old_sids.count(sid):
 				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (album_id, sid))
 			else:
-				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (album_id, sid))
+				db.c.update("INSERT INTO r4_album_sid (album_id, sid, album_newest_song_time) VALUES (%s, %s, %s)", (album_id, sid, song_added_on))
 				if sid != 0:
 					updated_album_ids[sid][album_id] = True
 			num_songs = self.get_num_songs(sid)

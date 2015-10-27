@@ -327,8 +327,7 @@ def create_tables():
 			album_name				TEXT		, \
 			album_name_searchable	TEXT 		NOT NULL, \
 			album_year				SMALLINT, \
-			album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-			album_newest_song_time	INTEGER		DEFAULT 0 \
+			album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
 		)")
 
 	c.update(" \
@@ -429,6 +428,7 @@ def create_tables():
 			album_vote_count			INTEGER		DEFAULT 0, \
 			album_votes_seen			INTEGER		DEFAULT 0, \
 			album_vote_share			REAL 		,\
+			album_newest_song_time		INTEGER		DEFAULT 0, \
 			PRIMARY KEY (album_id, sid) \
 		)")
 	c.create_idx("r4_album_sid", "album_rating")
