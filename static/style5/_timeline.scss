@@ -61,7 +61,7 @@ div.timeline_event {
 	}
 
 	&:hover {
-		z-index: 1;
+		z-index: 20 !important;
 	}
 
 	div.song {

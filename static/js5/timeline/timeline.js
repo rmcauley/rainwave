@@ -59,6 +59,8 @@ var Timeline = function() {
 			events[i]._pending_delete = true;
 		}
 
+		var z_index = sched_history.length + sched_next.length + 2;
+
 		// with history, [0] is the most recent song, so we start inserting from sched_history.length
 		self.history_events = [];
 		for (i = sched_history.length - 1; i >= 0; i--) {
@@ -71,6 +73,8 @@ var Timeline = function() {
 			if (sched_history[i].el.parentNode != el) {
 				sched_history[i].el.style[Fx.transform] = "translateY(" + (-((i * 5 + 1) * Sizing.song_size) - 1) + "px)";
 			}
+			sched_history[i].el.style.zIndex = z_index;
+			z_index--;
 			new_events.push(sched_history[i]);
 			if (i === 0) sched_history[i].height += 8;
 		}
@@ -83,6 +87,8 @@ var Timeline = function() {
 			sched_current.el.style[Fx.transform] = "translateY(" + ((scroller.scroll_height || Sizing.height) + (unappended_events * 2 * Sizing.song_size)) + "px)";
 			unappended_events++;
 		}
+		sched_current.el.style.zIndex = z_index;
+		z_index--;
 		new_events.push(sched_current);
 
 		var previous_evt = sched_current;
@@ -102,6 +108,8 @@ var Timeline = function() {
 				sched_next[i].el.style[Fx.transform] = "translateY(" + ((scroller.scroll_height || Sizing.height) + (unappended_events * 2 * Sizing.song_size)) + "px)";
 				unappended_events++;
 			}
+			sched_next[i].el.style.zIndex = z_index;
+			z_index--;
 			new_events.push(sched_next[i]);
 			previous_evt = sched_next[i];
 		}
