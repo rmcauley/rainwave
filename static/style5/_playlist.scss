@@ -249,12 +249,16 @@ div.list {
 				background-repeat: no-repeat;
 				background-size: 14px;
 				background-image: url('/static/images4/new.png');
-				@include transition-wtime(300ms, padding, background-position);
+				@include transition-wtime(300ms, padding, background-position, LINKCOLOR);
 				color: $orange;
 			}
 
 			&.open span.name {
 				background-position: 15px 0;
+			}
+
+			&:hover span.name {
+				color: $linkhover;
 			}
 		}
 
