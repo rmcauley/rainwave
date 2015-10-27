@@ -468,6 +468,8 @@ var SearchList = function(root_el, sort_key, search_key) {
 		else {
 			search_box.classList.remove("active");
 		}
+
+		self.do_search_message();
 	};
 
 	// SCROLL **************************
@@ -515,8 +517,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		self.reposition();
 	};
 
-	self.reposition = function() {
-		if (num_items_to_display === undefined) return;
+	self.do_search_message = function() {
 		if ((visible.length === 0) && search_string) {
 			template._root.classList.add("no_results");
 			template._root.classList.add("search_active");
@@ -529,11 +530,16 @@ var SearchList = function(root_el, sort_key, search_key) {
 			template._root.classList.remove("no_results");
 			template._root.classList.remove("search_active");
 		}
+	};
+
+	self.reposition = function() {
+		if (num_items_to_display === undefined) return;
 		var new_index = Math.floor(scroll.scroll_top / Sizing.list_item_height);
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
 
 		var new_margin = (scroll.scroll_top - (Sizing.list_item_height * new_index));
 		new_margin = new_margin ? -new_margin : 0;
+		self.do_search_message();
 		self.el.style[Fx.transform] = "translateY(" + (scroll.scroll_top + new_margin) + "px)";
 
 		if (current_scroll_index === new_index) return;

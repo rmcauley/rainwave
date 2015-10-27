@@ -47,6 +47,8 @@
    "request_queue_paused"                            : "Request queue paused.",
    "request_queue_unpaused"                          : "Request queue resumed.",
    "no_results"                                      : "No results.",
+   "empty_list"                                      : "Empty list.",
+   "no_search_results"                               : "No search results.",
    "server_just_started"                             : "Rainwave is Rebooting",
    "station_paused"                                  : "Station is currently paused by the DJ.",
    "album_on_other_station"                          : "Album is not available on this station, sorry!",

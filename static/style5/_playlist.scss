@@ -32,6 +32,18 @@ div.no_result_message {
 	div.no_results & {
 		display: block;
 	}
+
+	div.no_results.search_active & {
+		display: none;
+	}
+
+	&.while_search_active, div.no_results &.while_search_active {
+		display: none;
+	}
+
+	div.no_results.search_active &.while_search_active {
+		display: block;
+	}
 }
 
 div.panel {
