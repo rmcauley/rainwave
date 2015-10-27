@@ -12,6 +12,9 @@ var RWEvent = function(self) {
 	self.history = false;
 	for (var i = 0; i < self.songs.length; i++) {
 		self.songs[i] = Song(self.songs[i], self);
+		if (self.songs[i].$t.art && self.songs[i].$t.art.classList.contains("art_expandable")) {
+			self.songs[i].$t.art._reset_router = true;
+		}
 	}
 
 	self.reflow = function() {

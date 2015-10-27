@@ -5,6 +5,11 @@ var AlbumArt = function() {
 		e.stopPropagation();
 
 		var tgt = this;
+
+		if (this._reset_router) {
+			Router.change();
+		}
+
 		if (!tgt.classList.contains("art_container")) return;
 		if (tgt.classList.contains("art_expanded")) {
 			normalize_art(e);
@@ -39,15 +44,12 @@ var AlbumArt = function() {
 	};
 
 	var normalize_art = function(e) {
-		// This used to be zIndex = 2 for reasons
 		e.target.style.zIndex = null;
 		e.target.classList.remove("art_expanded");
 		e.target.classList.remove("art_expand_right");
 		e.target.classList.remove("art_expand_left");
 		e.target.classList.remove("art_expand_down");
 		e.target.classList.remove("art_expand_up");
-		// I don't know why I did this
-		//Fx.chain_transition(e.target, function() { e.target.style.zIndex = null; Fx.stop_chain(e.target); } );
 	};
 
 	return function(art_url, element, no_expand) {
@@ -65,7 +67,7 @@ var AlbumArt = function() {
 			if (!MOBILE && !no_expand) {
 				element.classList.add("art_expandable");
 				element.addEventListener("click", expand_art);
-				element.addEventListener("mouseout", normalize_art);
+				element.addEventListener("mouseleave", normalize_art);
 			}
 		}
 	};

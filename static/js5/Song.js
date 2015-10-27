@@ -3,6 +3,7 @@ var Song = function(self, parent_event) {
 	var template;
 	if (!self.$t) {
 		template = RWTemplates.song(self);
+		self.$t = template;
 		self.el = template.root;
 	}
 	else {
@@ -11,6 +12,7 @@ var Song = function(self, parent_event) {
 	}
 
 	AlbumArt(self.art || (self.albums.length ? self.albums[0].art : null), template.art, self.request_id);
+	template.art._reset_router = false;
 
 	if (template.rating) {
 		Rating.register(self);
