@@ -18,11 +18,17 @@ var RequestLineList = function(el) {
 		item.name_searchable = Formatting.make_searchable_string(item.username);
 		item._el = document.createElement("div");
 		item._el.className = "item";
-		item._el.textContent = item.position + ". " + item.username;
+		self.update_item_element(item);
 	};
 
 	self.update_item_element = function(item) {
 		item._el.textContent = item.position + ". " + item.username;
+		if (item.skip) {
+			item._el.classList.add("skip");
+		}
+		else {
+			item._el.classList.remove("skip");
+		}
 	};
 
 	self.open_id = function(id) {

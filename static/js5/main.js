@@ -116,7 +116,7 @@ var Stations = [];
 
 		Sizing.trigger_resize();
 
-		//BOOTSTRAP = null;
+		BOOTSTRAP = null;
 
 		Router.detect_url_change();
 	};

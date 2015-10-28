@@ -287,6 +287,10 @@ div.list {
 			}
 		}
 
+		&.skip {
+			opacity: 0.6;
+		}
+
 		div.fave {
 			margin-top: 0;
 		}
