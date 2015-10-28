@@ -27,6 +27,7 @@ var Router = function() {
 		cache.album = {};
 		cache.artist = {};
 		cache.group = {};
+		cache.request_line = {};
 		cache.listener = {};
 		cache_page_stack = [];
 	};
@@ -45,8 +46,12 @@ var Router = function() {
 			views.group = GroupView;
 			scroll_positions.group = {};
 
+			views.request_line = ListenerView;
+			tabs.request_line = true;
+			scroll_positions.request_line = {};
+
 			views.listener = ListenerView;
-			tabs.listener = true;
+			tabs.listener = false;
 			scroll_positions.listener = {};
 		}
 
@@ -98,8 +103,9 @@ var Router = function() {
 	BOOTSTRAP.on_draw.push(function(root_template) {
 		lists.album = AlbumList(root_template.album_list);
 		lists.artist = ArtistList(root_template.artist_list);
-		lists.listener = RequestLineList(root_template.listener_list);
+		lists.request_line = RequestLineList(root_template.listener_list);
 		lists.group = GroupList(root_template.group_list);
+		lists.listener = false;
 
 		scroll = Scrollbar.create(el);
 		Sizing.detail_area = scroll.scrollblock;
@@ -136,7 +142,7 @@ var Router = function() {
 			if (typeof(ga) == "object") ga("send", "pageview", "/" + new_route);
 			new_route = new_route.split("/");
 			document.body.classList.remove("requests");
-			if (tabs[new_route[0]]) {
+			if (tabs[new_route[0]] || views[new_route[0]]) {
 				self.open_route(new_route[0], new_route[1]);
 			}
 			else if (new_route[0] == "requests") {
@@ -237,7 +243,7 @@ var Router = function() {
 
 			*/
 
-			if ((!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow) {
+			if (!tabs[typ] || (!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow) {
 				// console.log("Clearing detail.");
 				ready_to_render = false;
 				rendered_type = false;
@@ -317,14 +323,16 @@ var Router = function() {
 			if (!ready_to_render) {
 				detail_header.textContent = lists[typ].get_title_from_id(id) || $l("Loading...");
 			}
-			// if (!ready_to_render) {
-			// 	lists[typ].scroll_to_id(id);
-			// }
+			var scrolled = false;
+			if (!ready_to_render && lists[typ].loaded) {
+				lists[typ].scroll_to_id(id);
+				scrolled = true;
+			}
 			open_view(typ, id);
 			lists[typ].set_new_open(id);
-			// if (ready_to_render) {
+			if (!scrolled) {
 				lists[typ].scroll_to_id(id);
-			// }
+			}
 		}
 		else if (close_detail) {
 			document.body.classList.remove("detail");

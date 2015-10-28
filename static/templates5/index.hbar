@@ -22,7 +22,7 @@
 			<a href="#!/album"><li class="album_tab">{{ $l("Albums") }}</li></a>
 			<a href="#!/artist"><li class="artist_tab">{{ $l("Artists") }}</li></a>
 			<a href="#!/group"><li class="group_tab">{{ $l("groups_tab_title") }}</li></a>
-			<a href="#!/listener"><li class="listener_tab">{{ $l("RequestLine") }}</li></a>
+			<a href="#!/request_line"><li class="listener_tab">{{ $l("RequestLine") }}</li></a>
 		</ul>
 		<div bind="album_list" class="list album_list"></div>
 		<div bind="artist_list" class="list artist_list"></div>
