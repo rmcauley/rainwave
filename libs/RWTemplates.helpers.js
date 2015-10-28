@@ -31,6 +31,31 @@ RWTemplateHelpers.className = function(val, elem) {
     return RW_TEMPLATE_NO_VALUE;
 };
 
+RWTemplateHelpers.copyObject = function(obj) {
+    var new_obj = Object.prototype.toString.call(obj) == "[object Array]" ? [] : {};
+    for (var i in obj) {
+        if ((i.charAt(0) == "$") || (i.charAt(0) == "_")) {
+            // console.log(i + ": skipping $ or _");
+        }
+        else if (typeof(obj[i]) == "function") {
+            // console.log(i + ": skipping function");
+        }
+        else if (Object.prototype.toString.call(obj[i]) == "[object Object]") {
+            // console.log(i + ": diving into object");
+            new_obj[i] = RWTemplateHelpers.copyObject(obj[i]);
+        }
+        else if (Object.prototype.toString.call(obj[i]) == "[object Array]") {
+            // console.log(i + ": diving into array");
+            new_obj[i] = RWTemplateHelpers.copyObject(obj[i]);
+        }
+        else {
+            // console.log(i + ": copying");
+            new_obj[i] = obj[i];
+        }
+    }
+    return new_obj;
+};
+
 RWTemplateHelpers.array_render = function(arr, template, el, parent_context) {
     "use strict";
 
@@ -363,6 +388,11 @@ RWTemplateHelpers.tabify = function(obj, def) {
 
     RWTemplateHelpers.on_form_render = function(_c, form) {
         if (!_c.$t) return;
+
+        var track_last_button = function(e) {
+            _c.$t._last_button = this;
+        };
+
         form.onsubmit = function(e) {
             if (autosave_timeouts[_c.$t]) {
                 clearTimeout(autosave_timeouts[_c.$t]);
@@ -378,6 +408,9 @@ RWTemplateHelpers.tabify = function(obj, def) {
         for (var i = 0; i < nodes.length; i++) {
             if (!nodes[i].getAttribute("type") || (nodes[i].getAttribute("type") != "submit")) {
                 nodes[i].addEventListener("click", stop_button);
+            }
+            else if (nodes[i].getAttribute("type") == "submit") {
+                nodes[i].addEventListener("click", track_last_button);
             }
         }
     };
@@ -434,7 +467,10 @@ RWTemplateHelpers.tabify = function(obj, def) {
         btn.classList.add(new_class);
     };
 
-    var gettext = gettext || function(txt) { return txt; };
+    var gettext;
+    document.addEventListener("DOMContentLoaded", function () {
+        gettext = gettext || function(txt) { return txt; };
+    });
 
     RWTemplateObject.prototype.update = function(from_object) {
         if (Object.prototype.toString.call(this._c) == "[object Array]") {
@@ -736,9 +772,10 @@ RWTemplateHelpers.tabify = function(obj, def) {
     };
 
     RWTemplateObject.prototype.submitting = function(submit_message, no_disable) {
+        console.log(this._last_button);
         var elements = this.normal();
         for (var i = 0; i < elements.length; i++) {
-            if (elements[i].getAttribute("type") === "submit") {
+            if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
                 RWTemplateHelpers.change_button_text(elements[i], submit_message || gettext("Saving..."));
                 if (!no_disable) {
                     RWTemplateHelpers.change_button_class(elements[i], btn_normal);
@@ -770,13 +807,15 @@ RWTemplateHelpers.tabify = function(obj, def) {
         }
         error_message = error_message || gettext("Try Again");
 
+        console.log(this._last_button);
+
         var elements = this.normal();
         var submit_btns = [];
         for (var i = 0; i < elements.length; i++) {
             if (this._c.hasOwnProperty(i)) RWTemplateHelpers.remove_error_class(elements[i]);
             elements[i].disabled = false;
             elements[i].classList.remove("disabled");
-            if (elements[i].getAttribute("type") == "submit") {
+            if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
                 submit_btns.push(elements[i]);
             }
         }
@@ -808,11 +847,13 @@ RWTemplateHelpers.tabify = function(obj, def) {
             var eli;
             for (i in rest_error) {
                 if (this._c[i] && this._c[i].$t && (Object.prototype.toString.call(this._c[i]) == "[object Array]") && (Object.prototype.toString.call(rest_error[i]) == "[object Array]")) {
-                    for (eli = 0; eli < rest_error[i].length; eli++) {
-                        this._c[i][eli].$t.error(rest_error[i][eli], xhr_object, error_message);
+                    if (!this._c[i]._no_save_propagation) {
+                        for (eli = 0; eli < rest_error[i].length && eli < this._c[i].length; eli++) {
+                            this._c[i][eli].$t.error(rest_error[i][eli], xhr_object, error_message);
+                        }
                     }
                 }
-                else if ((typeof(this._c[i]) == "object") && this._c[i] && this._c[i].$t) {
+                else if ((typeof(this._c[i]) == "object") && this._c[i] && this._c[i].$t && !this._c[i]._no_save_propagation) {
                     this._c[i].$t.error(rest_error[i], xhr_object, error_message);
                 }
                 else if (this.hasOwnProperty(i)) {
@@ -853,7 +894,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
         for (var i = 0; i < elements.length; i++) {
             elements[i].disabled = permanent;
             elements[i].classList[permanent ? "add" : "remove"]("disabled");
-            if (elements[i].getAttribute("type") == "submit"){
+            if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
                 RWTemplateHelpers.change_button_text(elements[i], success_message || this._c._success_message || gettext("Saved"));
                 RWTemplateHelpers.change_button_class(elements[i], btn_success);
                 if (success_timeouts[this]) {
