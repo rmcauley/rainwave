@@ -100,6 +100,8 @@
    "github_repo"                                     : "GitHub",
    "twitter"                                         : "Twitter",
 
+   "currently_tuned_in_station"                      : "Currently tuned in!",
+
    "__comment__"                 : "Timeline",
 
    "coming_up"                                       : "Coming Up",

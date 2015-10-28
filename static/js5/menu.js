@@ -44,6 +44,10 @@ var Menu = function() {
 			}
 		});
 
+		template.burger_button.addEventListener("click", function() {
+			template.hamburger_container.classList.toggle("burger_open");
+		});
+
 		if (template.calendar_dropdown) {
 			BOOTSTRAP.on_draw.push(function() {
 				var jstz_load = document.createElement("script");

@@ -3,6 +3,7 @@ div.timeline.scrollable {
 }
 
 div.history_header {
+	box-sizing: border-box;
 	position: absolute;
 	z-index: 2;
 	top: 10px;

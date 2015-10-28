@@ -263,7 +263,7 @@ ul.menu {
 		margin-left: 30px;
 		@include transform(translateX(-100%) translateY(-$menu_height + 10));
 
-		*:hover > & {
+		&.burger_open > & {
 			@include transform(translateX(-100%));
 		}
 	}

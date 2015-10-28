@@ -240,11 +240,17 @@ var Requests = function() {
 	};
 
 	var indicator_timeout;
+	var indicator_start_count;
 
 	self.indicate = function(new_count) {
 		if (indicator_timeout) {
 			clearTimeout(indicator_timeout);
-			new_count += parseInt(indicator.textContent);
+		}
+		if (!indicator_start_count) {
+			indicator_start_count = songs.length;
+		}
+		else {
+			new_count = songs.length - indicator_start_count;
 		}
 		indicator.textContent = "+" + new_count;
 		indicator.classList.add("show");
@@ -254,6 +260,7 @@ var Requests = function() {
 	var unindicate = function() {
 		indicator.classList.remove("show");
 		indicator_timeout = setTimeout(blank_indicator, 300);
+		indicator_start_count = false;
 	};
 
 	var blank_indicator = function() {

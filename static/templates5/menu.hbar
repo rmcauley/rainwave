@@ -3,7 +3,7 @@
 		<ul class="menu hamburger_container pconly">
 			<li>
 				{{>menu_hamburger}}
-				<a class="link hamburger_icon"></a>
+				<a class="link hamburger_icon" bind="burger_button"></a>
 			</li>
 		</ul>
 
@@ -59,7 +59,12 @@
 					<div bind="menu_np" class="station_song_container"></div>
 					<div class="station_details">
 						<div class="station_name">{{ name }}</div>
-						<div class="station_description">{{ $l("station_menu_description_id_" + _c.id) }}</div>
+						{{#if ^_c.id == BOOTSTRAP.user.sid}}
+							<div class="station_description currently_using_station">{{ $l("station_menu_description_id_" + _c.id) }}</div>
+							<div class="station_description currently_tuned_in">{{ $l("currently_tuned_in_station") }}</div>
+						{{else}}
+							<div class="station_description">{{ $l("station_menu_description_id_" + _c.id) }}</div>
+						{{/if}}
 					</div>
 				</a>
 			{{/each}}

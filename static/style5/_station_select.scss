@@ -161,6 +161,18 @@ $station_select_width: 270px;
 			@media $phone-media {
 				display: none;
 			}
+
+			body.tuned_in &.currently_using_station {
+				display: none;
+			}
+
+			&.currently_tuned_in {
+				display: none;
+			}
+
+			body.tuned_in &.currently_tuned_in {
+				display: block;
+			}
 		}
 
 		div.station_song_container {
