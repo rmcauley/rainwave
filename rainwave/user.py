@@ -137,7 +137,7 @@ class User(object):
 		self.authorized = True
 
 	def get_tuned_in_sid(self):
-		if 'sid' in self.data:
+		if 'sid' in self.data and self.data['sid']:
 			return self.data['sid']
 		lrecord = self.get_listener_record()
 		if 'sid' in lrecord:
