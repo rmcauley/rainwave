@@ -72,6 +72,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 		if (search_string.length === 0) {
 			if (self.auto_trim) {
+				visible.concat(hidden);
 				hidden = visible;
 				visible = [];
 			}
