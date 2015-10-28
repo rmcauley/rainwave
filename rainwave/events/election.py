@@ -198,9 +198,10 @@ class Election(event.BaseEvent):
 			raise ElectionEmptyException
 		for song in self.songs:
 			if 'elec_request_user_id' in song.data and song.data['elec_request_user_id']:
+				log.debug("elec_fill", "Putting user %s back in line after request fulfillment." % song.data['elec_request_username'])
 				u = User(song.data['elec_request_user_id'])
 				u.put_in_request_line(u.get_tuned_in_sid())
-			request.update_line(self.sid)
+		request.update_line(self.sid)
 
 	def _fill_get_song(self, target_song_length):
 		return playlist.get_random_song_timed(self.sid, target_song_length)
