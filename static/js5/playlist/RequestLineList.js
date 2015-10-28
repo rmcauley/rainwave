@@ -7,16 +7,22 @@ var RequestLineList = function(el) {
 
 	API.add_callback("request_line", self.update);
 
+	self.sort_function = function(a, b) {
+		if (self.data[a].position < self.data[b].position) return -1;
+		else if (self.data[a].position > self.data[b].position) return 1;
+		return 0;
+	};
+
 	self.draw_entry = function(item) {
 		item.id = item.user_id;
 		item.name_searchable = Formatting.make_searchable_string(item.username);
 		item._el = document.createElement("div");
 		item._el.className = "item";
-		item._el.textContent = item.username;
+		item._el.textContent = item.position + ". " + item.username;
 	};
 
 	self.update_item_element = function(item) {
-		// this has no need
+		item._el.textContent = item.position + ". " + item.username;
 	};
 
 	self.open_id = function(id) {
