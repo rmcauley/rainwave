@@ -239,9 +239,11 @@ var API = function() {
 			perform_callbacks({ "_SYNC_COMPLETE": true });
 			if ("error" in response) {
 				sync_restart_pause = 6000;
-				if (response.error.code != 200) {
-					sync_stopped = true;
-				}
+				// commented out, because this will happen when
+				// Rainwave is rebooting, and we don't want the sync to stop in that scenario
+				// if (response.error.code != 200) {
+				// 	sync_stopped = true;
+				// }
 			}
 			else {
 				clear_sync_timeout_error();
