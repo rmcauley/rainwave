@@ -71,6 +71,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 
 		if (search_string.length === 0) {
+			if (self.auto_trim) {
+				hidden = visible;
+				visible = [];
+			}
 			self.unhide();
 			current_scroll_index = false;
 			self.recalculate();
@@ -193,7 +197,14 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	self.unhide = function(to_reshow) {
 		to_reshow = to_reshow || hidden;
-		if (visible.length === 0) {
+		if (self.auto_trim) {
+			for (var i in to_reshow) {
+				if (data[to_reshow[i]] && !data[to_reshow[i]]._delete) {
+					visible.push(to_reshow[i]);
+				}
+			}
+		}
+		else if (visible.length === 0) {
 			visible = to_reshow;
 		}
 		else {
