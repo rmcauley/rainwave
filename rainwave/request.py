@@ -63,6 +63,7 @@ def _process_line(line, sid):
 				log.debug("request_line", "%s: User ID %s not tuned in, waiting on expiry for action." % (sid, u.id))
 				add_to_line = True
 		row['skip'] = not add_to_line
+		row['position'] = user_viewable_position
 		new_line.append(row)
 		user_positions[u.id] = user_viewable_position
 		user_viewable_position = user_viewable_position + 1
