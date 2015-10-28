@@ -1,10 +1,15 @@
 var Modal = function() {
 	"use strict";
 
+	var stop_all = false;
+
 	var close_modal = function(e, chaining) {
 		if (e) {
 			e.preventDefault();
 			e.stopPropagation();
+		}
+		if (stop_all) {
+			return;
 		}
 		document.body.classList.remove("modal_active");
 		var modal_to_close;
@@ -27,8 +32,11 @@ var Modal = function() {
 		}
 	};
 
-	var modal_class = function(title, template_name, template_object) {
+	var modal_class = function(title, template_name, template_object, no_close) {
 		close_modal(null, true);
+		if (no_close) {
+			stop_all = true;
+		}
 		var mt = RWTemplates.modal();
 		template_object = template_object || {};
 		template_object._modal_header = title || $l("Notice");

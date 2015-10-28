@@ -5,7 +5,25 @@
 	var permanent_errors = {};
 
 	var onerror_handler = function(message, url, lineNo, charNo, exception) {
-		// todo
+		var template = Modal($l("oops"), "modal_error", null, true);
+		template.content.parentNode.classList.add("error");
+
+		try {
+			var submit_obj = {
+				"name": exception.name,
+				"message": exception.message,
+				"lineNumber": exception.lineNumber || "(no line)",
+				"columnNumber": exception.columnNumber ||  "(no char number)",
+				"stack": exception.stack || exception.backtrace || exception.stacktrace || "(no stack)",
+				"location": window.location.href,
+				"user_agent": navigator.userAgent,
+				"browser_language": navigator.language || navigator.userLanguage,
+			};
+			API.async_get("error_report", submit_obj);
+		}
+		catch (e) {
+			// don't complain, we've already crashed
+		}
 	};
 
 	BOOTSTRAP.on_init.push(function(template) {

@@ -55,6 +55,10 @@
    "album_is_dj_only"                                : "Album is exclusive to this event, sorry!",
    "oops"                                            : "Oops",
    "something_went_wrong"                            : "Something went wrong loading that from the server. :(",
+   "crash_happened"                                  : "Rainwave has crashed. :(",
+   "report_sent"                                     : "We've been told of the error and will look at it!",
+   "contact_on_twitter"                              : "You can yell at us about this on our forums or on Twitter at @Rainwavecc.",
+   "please_refresh"                                  : "Refresh the page to bring Rainwave back.",
 
    "__comment__"                 : "API Key Management",
 
@@ -356,5 +360,6 @@
    "sched_length_minutes"                            : "Length (min.)",
    "backend_scan_errors"                             : "Backend Scan Errors",
    "producers"                                       : "Producers",
-   "username"                                        : "Username"
+   "username"                                        : "Username",
+   "report_submitted"                                : "Report Submitted",
 }

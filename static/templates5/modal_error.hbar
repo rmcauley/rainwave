@@ -1,0 +1,4 @@
+<p>{{ $l("crash_happened") }}</p>
+<p>{{ $l("report_sent") }}</p>
+<p>{{ $l("contact_on_twitter") }} (<a href="http://rainwave.cc/forums">{{ $l("forums") }}</a>, <a href="https://twitter.com/Rainwavecc">@Rainwavecc</a>)</p>
+<p><a onclick="window.location.reload();">{{ $l("please_refresh") }}</a></p>
