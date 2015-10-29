@@ -221,7 +221,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			scroll.set_height(full_height);
 			current_height = full_height;
 		}
-		num_items_to_display = Math.ceil(scroll.offset_height / Sizing.list_item_height);
+		num_items_to_display = Math.ceil(scroll.offset_height / Sizing.list_item_height) + 1;
 		if (num_items_to_display > 35) {
 			scroll_margin = 5;
 		}
