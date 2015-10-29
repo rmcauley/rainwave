@@ -86,9 +86,6 @@ var Sizing = function() {
 				document.body.classList.add("simple");
 				document.body.classList.remove("full");
 				self.simple = true;
-				index_t.lists.style.left = right_of_timeline + "px";
-				index_t.requests_container.style.left = right_of_timeline + "px";
-				index_t.detail_container.style.left = right_of_timeline + "px";
 
 				if (self.width < 600) {
 					document.body.classList.add("small");
@@ -100,6 +97,18 @@ var Sizing = function() {
 				}
 			}
 		}
+
+		if (document.body.classList.contains("simple")) {
+			index_t.lists.style.left = right_of_timeline + "px";
+			index_t.requests_container.style.left = right_of_timeline + "px";
+			index_t.detail_container.style.left = right_of_timeline + "px";
+		}
+		else {
+			index_t.lists.style.left = null;
+			index_t.requests_container.style.left = null;
+			index_t.detail_container.style.left = null;
+		}
+
 		var size_changed = (document.body.classList.contains("normal") != is_normal) && (document.body.classList.contains("small") != is_small);
 
 		is_small = document.body.classList.contains("small");

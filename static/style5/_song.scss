@@ -83,7 +83,7 @@ div.song {
 		color: $darktext;
 	}
 
-	body.desktop.normal &.now_playing {
+	body.desktop.normal div.sched_current & {
 		a.song_link, div.entry_votes {
 			display: inline;
 		}
