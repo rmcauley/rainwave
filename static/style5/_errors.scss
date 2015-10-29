@@ -1,29 +1,5 @@
-div.messages {
-	position: absolute;
-	z-index: 1000;
-	width: 100%;
+.error_tooltip {
 	@include transition-wtime(300ms, opacity);
-
-	> div {
-		box-sizing: border-box;
-		padding: .3em;
-
-		body.simple & {
-			max-width: 1024px;
-			margin: auto;
-		}
-	}
-
-	img.close_button {
-		height: 15px;
-		width: 15px;
-		margin: 2px 5px;
-		float: left;
-		cursor: pointer;
-	}
-}
-
-.error_tooltip, #error_javascript {
 	position: absolute;
 	padding: 0.2em;
 	z-index: 10000;
@@ -32,42 +8,8 @@ div.messages {
 	border: 1px solid #FF0000;
 }
 
-.error, .error_tooltip, #error_javascript {
-	@include transition-wtime(300ms, opacity);
+.error, .error_tooltip {
 	background: #660000;
 	background: -moz-linear-gradient(100% 100% 90deg, #660000, #DD0000);
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DD0000), to(#660000));
-}
-
-#error_javascript {
-	box-sizing: border-box;
-	position: absolute;
-	z-index: 10001;
-	top: 50%;
-	left: 50%;
-	@include transform(translate(-50%, -50%));
-	padding: 10px;
-	width: 500px;
-	min-height: 400px;
-	opacity: 1;
-
-	h4 {
-		margin: 0 0 10px 0;
-		padding: 0;
-		border-bottom: solid 1px #FFF;
-	}
-
-	a {
-		box-sizing: border-box;
-		display: block;
-		width: 100%;
-		padding: 0 10px;
-	}
-
-	textarea {
-		margin-left: 20px;
-		margin-top: 15px;
-		width: 430px;
-		height: 300px;
-	}
 }

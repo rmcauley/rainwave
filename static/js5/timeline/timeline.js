@@ -1,6 +1,7 @@
 var Timeline = function() {
 	"use strict";
 	var self = {};
+	var messages = [];
 	var el;
 	var template;
 	var events = [];
@@ -9,6 +10,7 @@ var Timeline = function() {
 	var sched_history;
 	var scroller;
 	var history_bar;
+	var history_header;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		Prefs.define("sticky_history", [ false, true ]);
@@ -167,8 +169,57 @@ var Timeline = function() {
 		}
 	};
 
-	var get_history_size = function() {
-		return Prefs.get("sticky_history") ? sched_history.length: Prefs.get("sticky_history_size") || 0;
+	self.add_message = function(id, text, not_closeable) {
+		for (var i = 0; i < messages.length; i++) {
+			if (messages[i].id == id) {
+				return;
+			}
+		}
+
+		var msg = {
+			"id": id,
+			"text": text,
+			"closeable": !not_closeable,
+			"closed": false
+		};
+		RWTemplates.timeline.message(msg);
+		messages.push(msg);
+		if (msg.$t.close) {
+			msg.$t.close.addEventListener("click", function() {
+				self.close_message(id);
+			});
+		}
+		self._reflow();
+		return msg;
+	};
+
+	self.close_message = function(id) {
+		var msg;
+		for (var i = 0; i < messages.length; i++) {
+			if (messages[i].id == id) {
+				msg = messages[i];
+				break;
+			}
+		}
+		if (!msg) {
+			return null;
+		}
+
+		msg.closed = true;
+		msg.$t.el.style[Fx.transform] = "translateY(-" + (Sizing.timeline_message_size - 30) + "px);";
+		setTimeout(function() {
+			msg.$t.el.parentNode.removeChild(msg.$t.el);
+		}, 1000);
+		self._reflow();
+
+		return msg;
+	};
+
+	self.remove_message = function(id) {
+		var msg = self.hide_message(id);
+		if (msg) {
+			messages.splice(messages.indexOf(msg), 1);
+		}
 	};
 
 	self._reflow = function(raftime, reflow_everything) {
@@ -182,7 +233,20 @@ var Timeline = function() {
 			}
 		}
 
-		var history_size = Prefs.get("sticky_history") ? sched_history.length: Prefs.get("sticky_history_size") || 0;
+		var running_y = 10;
+
+		for (i = 0; i < messages.length; i++) {
+			if (!messages[i].closed) {
+				messages[i].$t.el.style[Fx.transform] = "translateY(" + running_y + ")";
+				running_y += Sizing.timeline_message_size + 5;
+			}
+		}
+		running_y += 10;
+
+		history_header.style[Fx.transform] = "translateY(" + running_y + ")";
+		running_y += 15;
+
+		var history_size = Prefs.get("sticky_history") ? sched_history.length : Prefs.get("sticky_history_size") || 0;
 		if (history_size == sched_history.length) {
 			template.history_header.classList.remove("history_expandable");
 		}
@@ -190,13 +254,16 @@ var Timeline = function() {
 			template.history_header.classList.add("history_expandable");
 		}
 
+		history_bar.style[Fx.transform] = "translateY(" + running_y + "px")";"
+		running_y += 15;
+
 		var hidden_events = Math.min(sched_history.length, Math.max(0, sched_history.length - history_size));
 		for (i = 0; i < hidden_events && i < sched_history.length; i++) {
 			events[i].el.style[Fx.transform] = "translateY(" + (-(((hidden_events - i - 1) * 5 + 1) * Sizing.song_size + 1)) + "px)";
 			events[i].el.classList.add("sched_history_hidden");
 		}
 
-		var running_y = !Sizing.simple || Sizing.mobile ? 30 : 28;
+		running_y += !Sizing.simple || Sizing.mobile ? 20 : 18;
 		var history_gap;
 		for (i = hidden_events; i < events.length; i++) {
 			if (events[i].history) {

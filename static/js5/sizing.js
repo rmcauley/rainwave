@@ -16,6 +16,7 @@ var Sizing = function() {
 	self.sizeable_area_height = 0;
 	self.detail_area = null;
 	self.menu_height = 0;
+	self.timeline_message_size = 45;
 
 	self.add_resize_callback = function(cb, priority) {
 		if (!priority) {
