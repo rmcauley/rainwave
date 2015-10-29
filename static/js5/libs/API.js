@@ -1,7 +1,7 @@
 var API = function() {
 	"use strict";
 	var sid, url, user_id, api_key;
-	var sync, sync_params, sync_stopped, sync_timeout_id, sync_error_count, sync_resync;
+	var sync, sync_params, sync_stopped, sync_timeout_id, sync_error_count, sync_resync, sync_permastop;
 	var sync_timeout_error_removal_timeout;
 	var async, async_queue, async_current;
 	var callbacks = {};
@@ -16,10 +16,10 @@ var API = function() {
 	self.net_latencies = [];
 	self.draw_latencies = [];
 	var slow_net_threshold = 200;
-	var slow_draw_threshold = 500;
+	var slow_draw_threshold = 400;
 
 	self.initialize = function(n_sid, n_url, n_user_id, n_api_key, json) {
-		self.is_slow = document.body.classList.contains("mobile");
+		self.is_slow = ((navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1));
 
 		sid = n_sid;
 		url = n_url;
@@ -86,7 +86,9 @@ var API = function() {
 			sync_pause();
 		}
 		else {
-			sync_get();
+			if (sync_error_count < 5) {
+				sync_get();
+			}
 		}
 	};
 
@@ -100,10 +102,8 @@ var API = function() {
 	};
 
 	var sync_get = function() {
-		if (sync_stopped) {
-			return;
-		}
-
+		if (sync_permastop) return;
+		sync_stopped = false;
 		sync.open("POST", url + "sync", true);
 		sync.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		clear_sync_timeout_error_removal_timeout();
@@ -141,6 +141,7 @@ var API = function() {
 
 	self.sync_stop = function() {
 		sync_pause();
+		sync_permastop = true;
 		ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
 	};
 
@@ -181,6 +182,7 @@ var API = function() {
 			}
 			ErrorHandler.permanent_error(e);
 			self.sync_stop();
+			sync_permastop = true;
 		}
 		else if (sync_error_count > 1) {
 			ErrorHandler.permanent_error(ErrorHandler.make_error("sync_retrying", 408));
@@ -214,21 +216,25 @@ var API = function() {
 
 	var sync_complete = function() {
 		clear_sync_timeout_error_removal_timeout();
-		if (sync_stopped) {
-			return;
-		}
+
 		// if the API is outputting JSON it always outputs status code 200
 		// the error code, if any, lives in error.code
 		if (sync.status != 200) {
-			sync_error();
-			return;
+			return sync_error();
 		}
 
 		var sync_restart_pause = 3000;
-		var response = JSON.parse(sync.responseText);
+
+		var response;
+		try {
+			response = JSON.parse(sync.responseText);
+		}
+		catch (e) {
+			return sync_error();
+		}
 
 		if (check_sync_results(response)) {
-			sync_restart_pause = 0;
+			sync_restart_pause = 300;
 		}
 		else {
 			self.paused = false;
@@ -239,18 +245,15 @@ var API = function() {
 			perform_callbacks({ "_SYNC_COMPLETE": true });
 			if ("error" in response) {
 				sync_restart_pause = 6000;
-				// commented out, because this will happen when
-				// Rainwave is rebooting, and we don't want the sync to stop in that scenario
-				// if (response.error.code != 200) {
-				// 	sync_stopped = true;
-				// }
 			}
 			else {
 				clear_sync_timeout_error();
 			}
 		}
 
-		sync_timeout_id = setTimeout(sync_get, sync_restart_pause);
+		if (!sync_stopped && !sync_permastop) {
+			sync_timeout_id = setTimeout(sync_get, sync_restart_pause);
+		}
 	};
 
 	self.force_sync = function() {
@@ -260,8 +263,12 @@ var API = function() {
 
 	self.sync_status = function() {
 		console.log("XHR        : ", sync);
+		console.log("Offline Ack: ", offline_ack);
+		console.log("Sta. Pause : ", self.paused);
 		console.log("Stopped    : ", sync_stopped);
+		console.log("Permastop  : ", sync_permastop);
 		console.log("Error Count: ", sync_error_count);
+		console.log("Resync     : ", sync_resync);
 	};
 
 	var async_timeout = function() {
@@ -272,7 +279,9 @@ var API = function() {
 	var async_error = function(json) {
 		var do_default = true;
 		if (async_current.error_callback) {
-			if (async_current.error_callback(json)) do_default = false;
+			if (async_current.error_callback(json)) {
+				do_default = false;
+			}
 		}
 		if (do_default && json) {
 			ErrorHandler.tooltip_error(json);
@@ -285,6 +294,19 @@ var API = function() {
 
 	var async_complete = function() {
 		ErrorHandler.remove_permanent_error("async_error");
+
+		var json;
+		if (async.responseType === "json") {
+			json = async.response;
+		}
+		else {
+			try {
+				json = JSON.parse(async.response);
+			}
+			catch(e) {
+				// nothing
+			}
+		}
 
 		var net_slow = false;
 		var avg;
@@ -300,19 +322,6 @@ var API = function() {
 			avg = avg / self.net_latencies.length;
 			if (avg > slow_net_threshold) {
 				net_slow = true;
-			}
-		}
-
-		var json;
-		if (async.responseType === "json") {
-			json = async.response;
-		}
-		else {
-			try {
-				json = JSON.parse(async.response);
-			}
-			catch(e) {
-				// nothing
 			}
 		}
 
