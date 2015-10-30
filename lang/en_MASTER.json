@@ -267,11 +267,11 @@
 
    "__comment__"                 : "Station Descriptions For The Menu (short messages)",
 
-   "station_menu_description_id_1"                   : "Original game soundtracks, SNES and up.",
-   "station_menu_description_id_2"                   : "All official OverClocked ReMix tracks.",
+   "station_menu_description_id_1"                   : "Music, straight out of the games.",
+   "station_menu_description_id_2"                   : "Overclocked ReMixes and albums.",
    "station_menu_description_id_3"                   : "Official and fan-made remixes.",
-   "station_menu_description_id_4"                   : "Original and game music chiptunes.",
-   "station_menu_description_id_5"                   : "The entire Rainwave Library.",
+   "station_menu_description_id_4"                   : "Bleeps and bloops, from games and more.",
+   "station_menu_description_id_5"                   : "All games and remixes from our whole library.",
    "now_playing_on_..."                              : "Now Playing On %(station)",
 
    "__comment__"                 : "Preferences",
