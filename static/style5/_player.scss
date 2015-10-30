@@ -156,7 +156,7 @@ $player_icon_width: $player_icon_height;
 	    -webkit-animation-play-state: paused;
 	            animation-play-state: paused;
 
-	    &.loading {
+	    &.working {
 	        opacity: 1;
 	        -webkit-animation-play-state: running;
 	                animation-play-state: running;
