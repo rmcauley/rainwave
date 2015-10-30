@@ -113,4 +113,53 @@ $player_icon_width: $player_icon_height;
 			height: 20px;
 		}
 	}
+
+	/* SPINNER *******************************************************************/
+
+	@-webkit-keyframes bar_loader {
+	    0% {
+	        @include transform(translateX(0) scaleX(0));
+	    }
+	    50% {
+	        @include transform(translateX(0) scaleX(1));
+	    }
+	    100% {
+	        @include transform(translate(100%) scaleX(1));
+	    }
+	}
+
+	@keyframes bar_loader {
+	    0% {
+	        @include transform(translateX(-60%) scaleX(0));
+	    }
+	    50% {
+	        @include transform(translateX(-20%) scaleX(0.6));
+	    }
+	    100% {
+	        @include transform(translateX(30%) scaleX(0));
+	    }
+	}
+
+	div.load_indicator {
+	    position: absolute;
+	    top: 95%;
+	    width: 100%;
+	    left: 0;
+	    height: 3px;
+	    opacity: 0;
+	    background: $text;
+
+	    @include transition-interactive(opacity);
+
+	    -webkit-animation: bar_loader 0.8s infinite linear;
+	            animation: bar_loader 0.8s infinite linear;
+	    -webkit-animation-play-state: paused;
+	            animation-play-state: paused;
+
+	    &.loading {
+	        opacity: 1;
+	        -webkit-animation-play-state: running;
+	                animation-play-state: running;
+	    }
+	}
 }

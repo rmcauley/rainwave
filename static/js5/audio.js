@@ -119,15 +119,15 @@ var Audio = function() {
 
 		if (!audio_el) {
 			audio_el = document.createElement("audio");
+			audio_el.setAttribute("preload", "none");
 			audio_el.addEventListener("stop", self.stop);
 			audio_el.addEventListener("play", self.on_play);
-			audio_el.addEventListener("stall", self.on_stall);
+			audio_el.addEventListener("stalled", self.on_stall);
+			audio_el.addEventListener("waiting", self.on_connecting);
+			// should wait until actual playback to show anything
+			// audio_el.addEventListener("loadeddata", self.on_play);
 			// doesn't work with streams
 			// audio_el.addEventListener("loadstart", self.on_connecting);
-			// volumechange doesn't work yet on most browsers
-			// if (volume_el) {
-			// 	audio_el.addEventListener("volumechange", draw_volume);
-			// }
 
 			if (!Prefs.get("audio_volume") || (Prefs.get("audio_volume") > 1) || (Prefs.get("audio_volume") < 0)) {
 				Prefs.change("audio_volume", 1.0);
@@ -136,15 +136,19 @@ var Audio = function() {
 			draw_volume(Prefs.get("audio_volume"));
 
 			var source;
-			for (var i in stream_urls) {
+			for (var i = 0; i < stream_urls.length; i++) {
 				source = document.createElement("source");
 				source.setAttribute("src", stream_urls[i]);
 				source.setAttribute("type", filetype);
 				source.addEventListener("playing", self.clear_audio_errors);
+				if (i == stream_urls.length - 1) {
+					source.addEventListener("error", self.on_error);
+				}
+				else {
+					source.addEventListener("error", self.on_stall);
+				}
 				audio_el.appendChild(source);
 			}
-			// TODO: add these for each source so we can say 'hey we're trying'?
-			audio_el.lastChild.addEventListener("error", self.on_error);
 		}
 
 		if (!playing_status) {
@@ -190,18 +194,19 @@ var Audio = function() {
 		}
 	};
 
-	// self.on_connecting = function() {
-	// 	// doesn't work anyway
-	// };
+	self.on_connecting = function() {
+		el.classList.add("working");
+	};
 
 	self.on_play = function() {
 		el.classList.add("playing");
+		el.classList.remove("working");
 		self.clear_audio_errors();
 		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
 	self.on_stall = function() {
-		el.classList.remove("playing");
+		el.classList.add("working");
 		if (!ErrorHandler) return;
 		var a = document.createElement("a");
 		a.setAttribute("href", "/tune_in/" + User.sid + ".mp3");
@@ -216,6 +221,7 @@ var Audio = function() {
 
 	self.on_error = function() {
 		el.classList.remove("playing");
+		el.classList.remove("working");
 		if (!ErrorHandler) return;
 		var a = document.createElement("a");
 		a.setAttribute("href", "/tune_in/" + User.sid + ".mp3");
