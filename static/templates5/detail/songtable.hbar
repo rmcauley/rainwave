@@ -23,6 +23,11 @@
 			{{/if}}
 		{{/if}}
 		{{>rating}}
+		{{#if ^!MOBILE && !Sizing.simple}}
+			<div class="rating_site">
+				{{ rating }}
+			</div>
+		{{/if}}
 		{{#if ^!Sizing.simple && _c.artists }}
 			<div class="artists">
 				{{#each artists }}
