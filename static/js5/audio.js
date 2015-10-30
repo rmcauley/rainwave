@@ -20,7 +20,17 @@ var Audio = function() {
 	var audio_el = document.createElement("audio");
 	if ("canPlayType" in audio_el) {
 		// circumvent Ogg here since it'll be far more battery draining than MP3 for mobile devices
-		var can_vorbis = MOBILE ? false : audio_el.canPlayType("audio/ogg; codecs=\"vorbis\"");
+		var can_vorbis = false;
+		if (MOBILE) {
+			// stays false
+		}
+		else if (navigator.userAgent.indexOf("CrKey") !== -1) {
+			// stays false
+		}
+		else {
+			can_vorbis = audio_el.canPlayType("audio/ogg; codecs=\"vorbis\"");
+		}
+
 		var can_mp3 = audio_el.canPlayType("audio/mpeg; codecs=\"mp3\"");
 		// we have to check for Mozilla support specifically
 		// because Webkit will choke on Vorbis and stop playing after
