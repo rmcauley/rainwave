@@ -83,7 +83,7 @@ def _get_func_id():
 	next_idx = _unique_id_chars.index(_func_id[-1]) + 1
 	if next_idx >= len(_unique_id_chars):
 		_func_id += _unique_id_chars[0]
-		return _func_id
+		return "_f.%s" % _func_id
 	_func_id = _func_id[:-1] + _unique_id_chars[next_idx]
 	return "_f.%s" % _func_id
 
