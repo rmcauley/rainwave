@@ -76,6 +76,10 @@ var Audio = function() {
 		for (var i in BOOTSTRAP.relays) {
 			stream_urls.push(BOOTSTRAP.relays[i].protocol + BOOTSTRAP.relays[i].hostname + ":" + BOOTSTRAP.relays[i].port + "/" + stream_filename);
 		}
+		// randomize the relay order, except for the round robin
+		var robin = stream_urls.splice(0, 1);
+		shuffle(stream_urls);
+		stream_urls.unshift(robin[0]);
 
 		API.add_callback("user", user_tunein_check);
 
