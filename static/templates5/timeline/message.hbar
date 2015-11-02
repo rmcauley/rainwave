@@ -3,6 +3,6 @@
         <div class="close" bind="close">
             <img src="/static/images4/cancel.png" alt="X" />
         </div>
-    {{/else}}
+    {{/if}}
     <span class="message_text">{{ text }}</span>
 </div>
