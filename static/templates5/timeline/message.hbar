@@ -4,5 +4,7 @@
             <img src="/static/images4/cancel.png" alt="X" />
         </div>
     {{/if}}
-    <span class="message_text">{{ text }}</span>
+    <div class="message_text" bind="message">
+    	<span>{{ text }}</span>
+    </div>
 </div>

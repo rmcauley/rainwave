@@ -38,7 +38,13 @@
 
 	self.permanent_error = function(json, append_element) {
 		var msg = Timeline.add_message(json.tl_key, $l(json.tl_key), true);
-		msg.$t.el.appendChild(append_element);
+		if (!msg) {
+			return;
+		}
+		if (append_element) {
+			msg.$t.message.appendChild(append_element);
+		}
+		return msg;
 	};
 
 	self.remove_permanent_error = function(tl_key) {

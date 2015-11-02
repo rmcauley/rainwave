@@ -182,13 +182,15 @@ var Timeline = function() {
 			"closed": false
 		};
 		RWTemplates.timeline.message(msg);
+		msg.$t.el.style[Fx.transform] = "translateY(-50px)";
+		el.appendChild(msg.$t.el);
 		messages.push(msg);
 		if (msg.$t.close) {
 			msg.$t.close.addEventListener("click", function() {
 				self.close_message(id);
 			});
 		}
-		self._reflow();
+		self.reflow();
 		return msg;
 	};
 
@@ -205,11 +207,11 @@ var Timeline = function() {
 		}
 
 		msg.closed = true;
-		msg.$t.el.style[Fx.transform] = "translateY(-" + (Sizing.timeline_message_size - 30) + "px);";
+		msg.$t.el.style[Fx.transform] = "translateY(-50px)";
 		setTimeout(function() {
 			msg.$t.el.parentNode.removeChild(msg.$t.el);
 		}, 1000);
-		self._reflow();
+		self.reflow();
 
 		return msg;
 	};
@@ -236,15 +238,12 @@ var Timeline = function() {
 
 		for (i = 0; i < messages.length; i++) {
 			if (!messages[i].closed) {
-				messages[i].$t.el.style[Fx.transform] = "translateY(" + running_y + ")";
+				messages[i].$t.el.style[Fx.transform] = "translateY(" + running_y + "px)";
 				running_y += Sizing.timeline_message_size + 5;
 			}
 		}
-		if (messages.length) {
-			running_y += 10;
-		}
 
-		template.history_header.style[Fx.transform] = "translateY(" + running_y + ")";
+		template.history_header.style[Fx.transform] = "translateY(" + running_y + "px)";
 
 		var history_size = Prefs.get("sticky_history") ? sched_history.length : Prefs.get("sticky_history_size") || 0;
 		if (history_size == sched_history.length) {

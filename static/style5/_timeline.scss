@@ -5,15 +5,16 @@ div.timeline.scrollable {
 div.history_header {
 	box-sizing: border-box;
 	position: absolute;
-	z-index: 2;
-	top: 10px;
+	z-index: 30;
 	width: 100%;
 	opacity: 0.5;
 	cursor: pointer;
 	padding: 0px 10px;
 	font-size: smaller;
 	text-transform: uppercase;
-	@include transition-wtime(300ms, opacity, background-color);
+	@include transform(translateY(-30px));
+	-webkit-transition: opacity 300ms $transfunc, background-color 300ms $transfunc, transform $transtime;
+	        transition: opacity 300ms $transfunc, background-color 300ms $transfunc, transform $transtime;
 
 	span.history_header_header {
 		margin-right: 5px;
@@ -109,11 +110,28 @@ div.timeline_event {
 		height: 45px;
 		background: $hovercolor;
 		border: solid 1px $hovercolor-border;
+		padding: 5px;
+		z-index: 20;
 
 		&.error {
 			background: #660000;
 			background: -moz-linear-gradient(100% 100% 90deg, #660000, #DD0000);
 			background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DD0000), to(#660000));
+		}
+
+		div.message_text {
+			position: relative;
+			display: block;
+			top: 50%;
+			@include transform(translateY(-50%));
+
+			span + a {
+				margin-left: 0.5em;
+			}
+		}
+
+		div.close {
+			z-index: 2;
 		}
 	}
 }
