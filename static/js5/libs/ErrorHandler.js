@@ -1,10 +1,14 @@
 (function() {
 	"use strict";
 	var self = {};
+	var already_reported = false;
 
 	var onerror_handler = function(message, url, lineNo, charNo, exception) {
-		var template = Modal($l("oops"), "modal_error", null, true);
-		template.content.parentNode.classList.add("error");
+		if (already_reported) return;
+		already_reported = true;
+
+		var template = Modal($l("crash_happened"), "modal_error", null, true);
+		template._root.parentNode.classList.add("error");
 
 		try {
 			var submit_obj = {

@@ -1,6 +1,6 @@
 from time import time as timestamp
+import tornado.escape
 import datetime
-from libs import db
 import api.web
 from api.server import handle_url
 
@@ -19,15 +19,28 @@ def relative_time(epoch_time):
 	return "now"
 
 @handle_url("/admin/album_list/js_errors")
-class JSErrors(api.web.PrettyPrintAPIMixin, JSErrors):
+class JSErrorDisplay(api.web.PrettyPrintAPIMixin, JSErrors):
+	columns = [
+        "user_id",
+        "username",
+        "message",
+        "location",
+        "lineNumber",
+        "columnNumber",
+        "user_agent",
+        "browser_language",
+        "stack"
+    ]
+
 	def get(self):	#pylint: disable=E0202,W0221
 		for row in self._output[self.return_name]:
-			if "stack" in row and row['stack'] and len(row['stack']):
-				row['stack'] = '\n'.join(row['stack'])
-				row['stack'] = "<pre style='max-width: 450px; overflow: auto;'>%s</pre>" % row['stack']
+			if "stack" in row and row['stack']:
+				if isinstance(row['stack'], list):
+					row['stack'] = '\n'.join(row['stack'])
+				row['stack'] = "<pre style='max-width: 450px; overflow: auto;'>%s</pre>" % tornado.escape.xhtml_escape(row['stack'])
 			else:
 				row['stack'] = " "
-		super(JSErrors, self).get()
+		super(JSErrorDisplay, self).get()
 
 @handle_url("/admin/tools/js_errors")
 class JSErrorsDummy(api.web.HTMLRequest):

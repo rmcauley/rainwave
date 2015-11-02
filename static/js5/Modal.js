@@ -33,16 +33,17 @@ var Modal = function() {
 	};
 
 	var modal_class = function(title, template_name, template_object, no_close) {
+		// catastrophic error has happened
+		if (!document.body) {
+			return;
+		}
 		close_modal(null, true);
 		if (no_close) {
 			stop_all = true;
 		}
-		var mt = RWTemplates.modal();
+		var mt = RWTemplates.modal({ "closeable": !no_close, "title": title });
 		template_object = template_object || {};
-		template_object._modal_header = title || $l("Notice");
-		var ct = RWTemplates[template_name](template_object);
-		delete(template_object._modal_header);
-		mt.content.appendChild(ct._root);
+		var ct = RWTemplates[template_name](template_object, mt.content);
 		mt.container.addEventListener("click", function(e) { e.stopPropagation(); });
 		document.body.insertBefore(blocker, document.body.firstChild);
 		document.body.insertBefore(mt.container, document.body.firstChild);

@@ -147,7 +147,7 @@ class RainwaveLocale(tornado.locale.Locale):
 		# remove lines that are no longer in the master file
 		to_pop = []
 		for k, v in translation.iteritems():
-			if not mster.has_key(k) and not k.startswith("suffix_"):
+			if not code == "en_CA" and not mster.has_key(k) and not k.startswith("suffix_"):
 				to_pop.append(k)
 		for k in to_pop:
 			translation.pop(k)

@@ -57,8 +57,12 @@
    "something_went_wrong"                            : "Something went wrong loading that from the server. :(",
    "crash_happened"                                  : "Rainwave has crashed. :(",
    "report_sent"                                     : "We've been told of the error and will look at it!",
-   "contact_on_twitter"                              : "You can yell at us about this on our forums or on Twitter at @Rainwavecc.",
+   "you_can_yell"                                    : "You can yell at us about this",
+   "yell_on_twitter"                                 : "on Twitter at @Rainwavecc",
+   "yell_or"                                         : "or",
+   "yell_on_forums"                                  : "our forums.",
    "please_refresh"                                  : "Refresh the page to bring Rainwave back.",
+   "report_submitted"                                : "Report Submitted",
 
    "__comment__"                 : "API Key Management",
 
@@ -347,19 +351,5 @@
    "line_expiry_election"                            : "Expire Time (if no good requests)",
    "line_wait_start"                                 : "Entered Line At (epoch time)",
    "artist_parseable"                                : "Artists (computer-readable format)",
-   "song_played_at"                                  : "Played At (epoch time)",
-
-   "__comment__"                 : "Admin Panel Lines (translation not required)",
-
-   "time"                                            : "Time",
-   "type"                                            : "Type",
-   "file"                                            : "File",
-   "error"                                           : "Error",
-   "url"                                             : "URL",
-   "traceback"                                       : "Traceback",
-   "sched_length_minutes"                            : "Length (min.)",
-   "backend_scan_errors"                             : "Backend Scan Errors",
-   "producers"                                       : "Producers",
-   "username"                                        : "Username",
-   "report_submitted"                                : "Report Submitted"
+   "song_played_at"                                  : "Played At (epoch time)"
 }

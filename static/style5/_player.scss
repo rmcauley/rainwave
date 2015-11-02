@@ -149,7 +149,7 @@ $player_icon_width: $player_icon_height;
 	    opacity: 0;
 	    background: $text;
 
-	    @include transition-interactive(opacity);
+	    @include transition-wtime(300ms, opacity);
 
 	    -webkit-animation: bar_loader 0.8s infinite linear;
 	            animation: bar_loader 0.8s infinite linear;

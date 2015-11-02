@@ -11,5 +11,25 @@
    "suffix_9"                                        : "th",
    "suffix_11"                                       : "th",
    "suffix_12"                                       : "th",
-   "suffix_13"                                       : "th"
+   "suffix_13"                                       : "th",
+
+   "__comment__"          : "Admin Panel Lines (translation not required)",
+
+   "time"                                            : "Time",
+   "type"                                            : "Type",
+   "file"                                            : "File",
+   "error"                                           : "Error",
+   "url"                                             : "URL",
+   "traceback"                                       : "Traceback",
+   "sched_length_minutes"                            : "Length (min.)",
+   "backend_scan_errors"                             : "Backend Scan Errors",
+   "producers"                                       : "Producers",
+   "username"                                        : "Username",
+   "columnNumber"                                    : "Col",
+   "user_agent"                                      : "Browser",
+   "lineNumber"                                      : "Line",
+   "browser_language"                                : "Lang",
+   "stack"                                           : "Stack",
+   "location"                                        : "URL",
+   "js_errors"                                       : "Automated JS Error Reports"
 }

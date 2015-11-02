@@ -3,6 +3,9 @@ from api.web import APIHandler
 from api.exceptions import APIException
 from api.server import handle_api_url
 from libs import cache
+from libs import config
+from libs import log
+from urlparse import urlsplit
 
 @handle_api_url('error_report')
 class ErrorReport(APIHandler):
@@ -23,12 +26,11 @@ class ErrorReport(APIHandler):
     }
 
     def prepare(self):
-        # TODO: this is brittle - it should be configurable
-        # also maybe use urlparse in conjunction with config to make it easier
-        if not self.request.headers.get():
-            raise APIException("auth_failed", "Error reporting can only come from rainwave.cc, not from external sources.")
-        if not self.request.headers.get("Referer").startswith("http://rainwave.cc") and not self.request.headers.get("Referer").startswith("https://rainwave.cc"):
-            raise APIException("auth_failed", "Error reporting can only come from rainwave.cc, not from external sources.")
+        if not self.request.headers.get("Referer"):
+            raise APIException("auth_failed", "Error reporting cannot be made from an external address.")
+        refhost = urlsplit(self.request.headers.get("Referer")).hostname
+        if not refhost or not refhost in config.station_hostnames:
+            raise APIException("auth_failed", "Error reporting cannot be made from an external address.")
         return super(ErrorReport, self).prepare()
 
     def post(self):
@@ -38,8 +40,11 @@ class ErrorReport(APIHandler):
         self.cleaned_args['user_id'] = self.user.id
         self.cleaned_args['username'] = self.user.data['name']
 
-        reports = cache.get("error_reports") or []
+        reports = cache.get("error_reports")
+        if not isinstance(reports, list):
+            reports = []
+
         reports.append(self.cleaned_args)
-        cache.set("error_reports", self.cleaned_args)
+        cache.set("error_reports", reports)
 
         self.append_standard("report_submitted", "Error report submitted.")

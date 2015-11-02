@@ -43,6 +43,7 @@ div.modal_container {
 		width: 100%;
 		padding-bottom: 2px;
 		border-bottom: 1px solid $blue;
+		overflow: hidden;
 
 		div.bkg {
 			background: $blue;
@@ -50,6 +51,8 @@ div.modal_container {
 
 		div.content {
 			width: 850px;
+			@include transform(translateY(40px));
+			@include transition(transform, opacity);
 		}
 	}
 
@@ -57,6 +60,20 @@ div.modal_container {
 		height: 2px;
 		width: 100%;
 		background: $blue;
+	}
+
+	&.error {
+		div.header_wrapper {
+			border-bottom: 1px solid #A00;
+
+			div.bkg {
+				background: #A00;
+			}
+		}
+
+		div.bottom_border {
+			background: #A00;
+		}
 	}
 
 	div.main {
@@ -80,7 +97,7 @@ div.modal_container {
 		&.full_open {
 			@include transform(translate(-50%, -50%) scaleX(1.0) scaleY(1.0));
 
-			div.main {
+			div.main, div.header_wrapper div.content {
 				opacity: 1;
 				@include transform(none);
 			}

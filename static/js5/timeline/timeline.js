@@ -10,7 +10,6 @@ var Timeline = function() {
 	var sched_history;
 	var scroller;
 	var history_bar;
-	var history_header;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		Prefs.define("sticky_history", [ false, true ]);
@@ -216,7 +215,7 @@ var Timeline = function() {
 	};
 
 	self.remove_message = function(id) {
-		var msg = self.hide_message(id);
+		var msg = self.close_message(id);
 		if (msg) {
 			messages.splice(messages.indexOf(msg), 1);
 		}
@@ -241,10 +240,11 @@ var Timeline = function() {
 				running_y += Sizing.timeline_message_size + 5;
 			}
 		}
-		running_y += 10;
+		if (messages.length) {
+			running_y += 10;
+		}
 
-		history_header.style[Fx.transform] = "translateY(" + running_y + ")";
-		running_y += 15;
+		template.history_header.style[Fx.transform] = "translateY(" + running_y + ")";
 
 		var history_size = Prefs.get("sticky_history") ? sched_history.length : Prefs.get("sticky_history_size") || 0;
 		if (history_size == sched_history.length) {
@@ -254,8 +254,7 @@ var Timeline = function() {
 			template.history_header.classList.add("history_expandable");
 		}
 
-		history_bar.style[Fx.transform] = "translateY(" + running_y + "px")";"
-		running_y += 15;
+		history_bar.style[Fx.transform] = "translateY(" + running_y + "px)";
 
 		var hidden_events = Math.min(sched_history.length, Math.max(0, sched_history.length - history_size));
 		for (i = 0; i < hidden_events && i < sched_history.length; i++) {

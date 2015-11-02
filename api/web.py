@@ -510,12 +510,13 @@ class PrettyPrintAPIMixin(object):
 				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
 			elif not self.return_name in self._output:
 				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
+
 		for output_key, json in self._output.iteritems():	#pylint: disable=W0612
 			if type(json) != types.ListType:
 				continue
 			if len(json) > 0:
-				self.write("<table><th>#</th>")
-				keys = self.sort_keys(json[0].keys())
+				self.write("<table class='%s'><th>#</th>" % self.return_name)
+				keys = getattr(self, "columns", self.sort_keys(json[0].keys()))
 				for key in keys:
 					self.write("<th>%s</th>" % self.locale.translate(key))
 				self.header_special()
@@ -536,6 +537,7 @@ class PrettyPrintAPIMixin(object):
 				self.write("</table>")
 			else:
 				self.write("<p>%s</p>" % self.locale.translate("no_results"))
+
 		if self.pagination and "per_page" in self.fields and self.get_argument("per_page") != 0:
 			if self.get_argument("page_start") and self.get_argument("page_start") > 0:
 				self.write("<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>" % (per_page_link, previous_page_start))
