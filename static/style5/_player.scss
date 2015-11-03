@@ -3,6 +3,30 @@
 $player_icon_height: $menu_height * 0.6;
 $player_icon_width: $player_icon_height;
 
+@-webkit-keyframes bar_loader {
+    0% {
+        @include transform(translateX(-50%) scaleX(0));
+    }
+    50% {
+        @include transform(translateX(0%) scaleX(0.5));
+    }
+    100% {
+        @include transform(translateX(50%) scaleX(0));
+    }
+}
+
+@keyframes bar_loader {
+    0% {
+        @include transform(translateX(-50%) scaleX(0));
+    }
+    50% {
+        @include transform(translateX(0%) scaleX(0.5));
+    }
+    100% {
+        @include transform(translateX(50%) scaleX(0));
+    }
+}
+
 #r4_audio_player {
 	position: relative;
 	display: inline-block;
@@ -47,7 +71,15 @@ $player_icon_width: $player_icon_height;
 	body.tuned_in &, &.playing {
 		.audio_icon_play {
 			&, * {
-				fill: $orange * 2;
+				fill: $orange * 1.4;
+			}
+		}
+	}
+
+	 body.tuned_in &.playing, &.playing {
+		.audio_icon_play {
+			&, * {
+				fill: $orange * 1.2;
 			}
 		}
 	}
@@ -67,7 +99,7 @@ $player_icon_width: $player_icon_height;
 			opacity: 1;
 
 			&, * {
-				fill: $orange * 2;
+				fill: $orange * 1.2;
 			}
 		}
 	}
@@ -80,13 +112,6 @@ $player_icon_width: $player_icon_height;
 		height: $player_icon_height;
 		opacity: .3;
 		@include transition(opacity);
-	}
-
-	&.playing, &.tunedin {
-		.audio_icon_play {
-			fill: orange !important;
-			opacity: 1;
-		}
 	}
 
 	@media $mobile-media {
@@ -116,36 +141,12 @@ $player_icon_width: $player_icon_height;
 
 	/* SPINNER *******************************************************************/
 
-	@-webkit-keyframes bar_loader {
-	    0% {
-	        @include transform(translateX(0) scaleX(0));
-	    }
-	    50% {
-	        @include transform(translateX(0) scaleX(1));
-	    }
-	    100% {
-	        @include transform(translate(100%) scaleX(1));
-	    }
-	}
-
-	@keyframes bar_loader {
-	    0% {
-	        @include transform(translateX(-60%) scaleX(0));
-	    }
-	    50% {
-	        @include transform(translateX(-20%) scaleX(0.6));
-	    }
-	    100% {
-	        @include transform(translateX(30%) scaleX(0));
-	    }
-	}
-
 	div.load_indicator {
 	    position: absolute;
-	    top: 95%;
+	    z-index: 2;
+	    top: 100%;
 	    width: 100%;
-	    left: 0;
-	    height: 3px;
+	    height: 2px;
 	    opacity: 0;
 	    background: $text;
 
@@ -155,11 +156,11 @@ $player_icon_width: $player_icon_height;
 	            animation: bar_loader 0.8s infinite linear;
 	    -webkit-animation-play-state: paused;
 	            animation-play-state: paused;
+	}
 
-	    &.working {
-	        opacity: 1;
-	        -webkit-animation-play-state: running;
-	                animation-play-state: running;
-	    }
+	&.working div.load_indicator {
+        opacity: 1;
+        -webkit-animation-play-state: running;
+                animation-play-state: running;
 	}
 }

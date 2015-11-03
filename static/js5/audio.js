@@ -70,9 +70,9 @@ var Audio = function() {
 		var stream_filename = BOOTSTRAP.stream_filename;
 		if (self.type == "Vorbis") stream_filename += ".ogg";
 		else if (self.type == "MP3") stream_filename += ".mp3";
-		if (User && User.listen_key) {
-			stream_filename += "?" + User.id + ":" + User.listen_key;
-		}
+		// if (User && User.listen_key) {
+		// 	stream_filename += "?" + User.id + ":" + User.listen_key;
+		// }
 		for (var i in BOOTSTRAP.relays) {
 			stream_urls.push(BOOTSTRAP.relays[i].protocol + BOOTSTRAP.relays[i].hostname + ":" + BOOTSTRAP.relays[i].port + "/" + stream_filename);
 		}
@@ -135,13 +135,15 @@ var Audio = function() {
 			audio_el = document.createElement("audio");
 			audio_el.setAttribute("preload", "none");
 			audio_el.addEventListener("stop", self.stop);
-			audio_el.addEventListener("play", self.on_play);
+			// do not use "play" - it must be "playing"!!
+			audio_el.addEventListener("playing", self.on_play);
 			audio_el.addEventListener("stalled", self.on_stall);
+			// fires when audio element starts to download
 			audio_el.addEventListener("waiting", self.on_connecting);
-			// should wait until actual playback to show anything
-			// audio_el.addEventListener("loadeddata", self.on_play);
-			// doesn't work with streams
-			// audio_el.addEventListener("loadstart", self.on_connecting);
+			// non-functional with icecast
+			// audio_el.addEventListener("loadeddata", self.on_audio_loaddeddata);
+			// always reports true, same time as 'connecting'
+			// audio_el.addEventListener("loadstart", self.on_audio_loadstart);
 
 			if (!Prefs.get("audio_volume") || (Prefs.get("audio_volume") > 1) || (Prefs.get("audio_volume") < 0)) {
 				Prefs.change("audio_volume", 1.0);
@@ -154,7 +156,8 @@ var Audio = function() {
 				source = document.createElement("source");
 				source.setAttribute("src", stream_urls[i]);
 				source.setAttribute("type", filetype);
-				source.addEventListener("playing", self.clear_audio_errors);
+				// doesn't work
+				// source.addEventListener("playing", self.on_play);
 				if (i == stream_urls.length - 1) {
 					source.addEventListener("error", self.on_error);
 				}
@@ -177,16 +180,18 @@ var Audio = function() {
 		if (evt) evt.preventDefault();
 
 		el.classList.remove("playing");
+		el.classList.remove("working");
 		playing_status = false;
 
 		if (!audio_el) return;
 
 		audio_el.pause(0);
 		while (audio_el.firstChild) audio_el.removeChild(audio_el.firstChild);
-		audio_el.src = "";
 		audio_el.load();
 		audio_el = null;
-		if (self.changed_status_callback) self.changed_status_callback(playing_status);
+		if (self.changed_status_callback) {
+			self.changed_status_callback(playing_status);
+		}
 	};
 
 	self.toggle_mute = function() {
@@ -219,30 +224,24 @@ var Audio = function() {
 		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
-	self.on_stall = function() {
+	self.on_stall = function(e) {
+		el.classList.remove("playing");
 		el.classList.add("working");
 		if (!ErrorHandler) return;
-		var a = document.createElement("a");
-		a.setAttribute("href", "/tune_in/" + User.sid + ".mp3");
-		a.textContent = $l("try_external_player");
-		a.addEventListener("click", function() {
-			self.stop();
-			self.clear_audio_errors();
-		});
-		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_connect_error", 500), a);
+		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_connect_error", 500));
 		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
 	self.on_error = function() {
-		el.classList.remove("playing");
-		el.classList.remove("working");
 		if (!ErrorHandler) return;
 		var a = document.createElement("a");
 		a.setAttribute("href", "/tune_in/" + User.sid + ".mp3");
+		a.className = "link obvious";
 		a.textContent = $l("try_external_player");
 		a.addEventListener("click", function() {
 			self.clear_audio_errors();
 		});
+		ErrorHandler.remove_permanent_error("audio_connect_error");
 		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_error", 500), a);
 		self.stop();
 		self.supported = false;
