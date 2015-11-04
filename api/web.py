@@ -360,7 +360,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			return ""
 		limit = ""
 		if self.get_argument("per_page") != None:
-			if self.get_argument("per_page") == "0":
+			if not self.get_argument("per_page"):
 				limit = "LIMIT ALL"
 			else:
 				limit = "LIMIT %s" % self.get_argument("per_page")
