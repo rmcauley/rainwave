@@ -74,7 +74,7 @@ var Clock = function() {
 			return;
 		}
 		// check every 3 minutes regardless as a backup
-		else if (!force_sync_ok && (Math.abs(page_title_end - self.now) % 180 === 0)) {
+		else if (!force_sync_ok && (Math.abs(page_title_end - self.now) % 20 === 0)) {
 			API.force_sync();
 			return;
 		}

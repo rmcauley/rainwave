@@ -186,10 +186,10 @@ var API = function() {
 		}
 		else if (sync_error_count > 1) {
 			ErrorHandler.permanent_error(ErrorHandler.make_error("sync_retrying", 408));
-			sync_timeout_id = setTimeout(sync_get, 6000);
+			sync_timeout_id = setTimeout(sync_get, 4000);
 		}
 		else {
-			sync_timeout_id = setTimeout(sync_get, 6000);
+			sync_timeout_id = setTimeout(sync_get, 4000);
 		}
 	};
 
