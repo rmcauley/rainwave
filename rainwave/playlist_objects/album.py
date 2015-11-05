@@ -248,8 +248,25 @@ class Album(AssociatedMetadata):
 
 	def update_rating(self):
 		for sid in db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s", (self.id,)):
-			self.data['rating'] = db.c.fetch_var("SELECT AVG(song_rating_user) FROM r4_song_ratings JOIN r4_song_sid USING (song_id) JOIN r4_songs USING (song_id) JOIN phpbb_users ON (r4_song_ratings.user_id = phpbb_users.user_id) WHERE radio_inactive = FALSE AND album_id = %s AND r4_song_sid.sid = %s GROUP BY album_id", (self.id, sid))
-			self.data['rating'] = round(self.data['rating'], 1)
+			dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user < 3 AND sid = %s GROUP BY album_id", (self.id, sid))
+			if not dislikes:
+				dislikes = 0
+			neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3 AND album_rating_user < 3.5 AND sid = %s GROUP BY album_id", (self.id, sid))
+			if not neutrals:
+				neutrals = 0
+			neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3.5 AND album_rating_user < 4 AND sid = %s GROUP BY album_id", (self.id, sid))
+			if not neutralplus:
+				neutralplus = 0
+			likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 4 AND sid = %s GROUP BY album_id", (self.id, sid))
+			if not likes:
+				likes = 0
+			rating_count = dislikes + neutrals + neutralplus + likes
+			log.debug("song_rating", "%s album ratings for %s (%s)" % (rating_count, self.data['name'], config.station_id_friendly[sid]))
+			if rating_count > config.get("rating_threshold_for_calc"):
+				self.data['rating'] = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
+				self.data['rating_count'] = rating_count
+				log.debug("album_rating", "%s new rating for %s" % (self.data['rating'], self.data['name']))
+				db.c.update("UPDATE r4_album_sid SET album_rating = %s, album_rating_count = %s WHERE album_id = %s AND sid = %s", (self.data['rating'], rating_count, self.id, sid))
 
 	def update_last_played(self, sid):
 		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (timestamp(), self.id, sid))
