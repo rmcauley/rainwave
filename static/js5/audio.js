@@ -70,9 +70,9 @@ var Audio = function() {
 		var stream_filename = BOOTSTRAP.stream_filename;
 		if (self.type == "Vorbis") stream_filename += ".ogg";
 		else if (self.type == "MP3") stream_filename += ".mp3";
-		// if (User && User.listen_key) {
-		// 	stream_filename += "?" + User.id + ":" + User.listen_key;
-		// }
+		if (User && User.listen_key) {
+			stream_filename += "?" + User.id + ":" + User.listen_key;
+		}
 		for (var i in BOOTSTRAP.relays) {
 			stream_urls.push(BOOTSTRAP.relays[i].protocol + BOOTSTRAP.relays[i].hostname + ":" + BOOTSTRAP.relays[i].port + "/" + stream_filename);
 		}
