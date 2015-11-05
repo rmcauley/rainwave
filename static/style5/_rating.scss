@@ -1,15 +1,13 @@
 div.rating {
 	float: right;
 	background-repeat: no-repeat;
-	background-image: url("/static/images4/rating_bar/dark_ldpi_zero.png");
+	background-image: url("/static/images4/rating_bar/dark_ldpi.png");
 	width: $rating_width;
 	padding: 0;
 	margin: 0;
 	height: $rating_height;
 
 	body.logged_in.full &.rating_song {
-		background-image: url("/static/images4/rating_bar/dark_ldpi.png");
-
 		&.rating_user {
 			background-image: url("/static/images4/rating_bar/bright_ldpi.png");
 		}
