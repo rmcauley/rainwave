@@ -494,7 +494,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	self.scroll_to = function(data_item) {
 		if (data_item) {
 			var new_index = visible.indexOf(data_item.id);
-			if ((new_index > (current_scroll_index + scroll_margin)) && (new_index < (current_scroll_index + num_items_to_display - scroll_margin))) {
+			if ((new_index > (current_scroll_index + scroll_margin)) && (new_index < (current_scroll_index + num_items_to_display - scroll_margin - 1))) {
 				if ((current_scroll_index === false)) {
 					self.redraw_current_position();
 				}

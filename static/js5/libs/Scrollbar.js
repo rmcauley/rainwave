@@ -91,11 +91,17 @@ var Scrollbar = function() {
 
 			if (always_scrollblock) {
 				self.scrollblock.style.overflowY = "scroll";
-				self.set_height = function(h) { self.el.style.height = h + "px"; };
+				self.set_height = function(h) {
+					self.el.style.height = h + "px";
+					self.refresh();
+				};
 				self.scroll_to = function(n) { self.scrollblock.scrollTop = n; };
 			}
 			else {
-				self.set_height = function(n) { force_height = n; };
+				self.set_height = function(n) {
+					force_height = n;
+					self.refresh();
+				};
 				self.scroll_to = function(n) { self.scrollblock.scrollTop = n; };
 			}
 
