@@ -248,20 +248,8 @@ class Album(AssociatedMetadata):
 
 	def update_rating(self):
 		for sid in db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s", (self.id,)):
-			row = db.c.fetch_row(
-				"SELECT AVG(song_rating_user) AS rating, COUNT(song_rating_user) AS count "
-				"FROM r4_song_ratings "
-					"JOIN r4_song_sid ON (r4_song_ratings.song_id = r4_song_sid.song_id AND song_exists = TRUE) "
-					"JOIN r4_songs ON (r4_song_ratings.song_id = r4_songs.song_id AND song_verified = TRUE) "
-					"JOIN phpbb_users ON (r4_song_ratings.user_id = phpbb_users.user_id AND phpbb_users.radio_inactive = FALSE) "
-				"WHERE "
-					"r4_song_songs.album_id = %s "
-					"AND r4_song_sid.sid = %s "
-				"GROUP BY album_id",
-				(self.id, sid))
-			self.data['rating'] = round(row['rating'], 1)
-			log.debug("album_rating", "%s new rating for %s. (%s ratings)" % (self.data['rating'], self.data['name'], row['count']))
-			db.c.update("UPDATE r4_album_sid SET album_rating = %s, album_rating_count = %s WHERE album_id = %s AND sid = %s", (self.data['rating'], row['count'], self.id, sid))
+			self.data['rating'] = db.c.fetch_var("SELECT AVG(song_rating_user) FROM r4_song_ratings JOIN r4_song_sid USING (song_id) JOIN r4_songs USING (song_id) JOIN phpbb_users ON (r4_song_ratings.user_id = phpbb_users.user_id) WHERE radio_inactive = FALSE AND album_id = %s AND r4_song_sid.sid = %s GROUP BY album_id", (self.id, sid))
+			self.data['rating'] = round(self.data['rating'], 1)
 
 	def update_last_played(self, sid):
 		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (timestamp(), self.id, sid))
