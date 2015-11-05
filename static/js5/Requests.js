@@ -197,7 +197,7 @@ var Requests = function() {
 			return;
 		}
 		var i, j, found, n;
-		var actually_new = 0;
+		var previous_length = songs.length;
 
 		var new_songs = [];
 		for (i = json.length - 1; i >= 0; i--) {
@@ -220,7 +220,6 @@ var Requests = function() {
 				n.el.style[Fx.transform] = "translateY(" + Sizing.height + "px)";
 				new_songs.unshift(n);
 				el.appendChild(n.el);
-				actually_new++;
 			}
 		}
 		for (i = songs.length - 1; i >= 0; i--) {
@@ -234,25 +233,34 @@ var Requests = function() {
 		self.update_header();
 
 		self.reflow();
-		if (!document.body.classList.contains("loading") && actually_new) {
-			self.indicate(actually_new);
+		if (!document.body.classList.contains("loading") && (previous_length != songs.length)) {
+			self.indicate(songs.length - previous_length, previous_length);
 		}
 	};
 
 	var indicator_timeout;
 	var indicator_start_count;
 
-	self.indicate = function(new_count) {
+	self.indicate = function(new_count, previous_length) {
 		if (indicator_timeout) {
 			clearTimeout(indicator_timeout);
 		}
 		if (!indicator_start_count) {
-			indicator_start_count = songs.length;
+			indicator_start_count = previous_length;
 		}
 		else {
 			new_count = songs.length - indicator_start_count;
 		}
-		indicator.textContent = "+" + new_count;
+
+		if (new_count > 0) {
+			indicator.textContent = "+" + new_count;
+		}
+		else if (new_count < 0) {
+			indicator.textContent = "-" + new_count;
+		}
+		else {
+			indicator.textContent = "=";
+		}
 		indicator.classList.add("show");
 		indicator_timeout = setTimeout(unindicate, 2000);
 	};
@@ -360,7 +368,7 @@ var Requests = function() {
 		if ((last_mouse_event.clientY < upper_fold) && (scroller.scroll_top > 0)) {
 			scroller.scroll_to(scroller.scroll_top - (25 - (Math.floor(last_mouse_event.clientY / upper_fold * 25))));
 		}
-		else if ((last_mouse_event.clientY > (Sizing.height - lower_fold)) && (scroll.scroll_top < scroller.scroll_top_max)) {
+		else if ((last_mouse_event.clientY > (Sizing.height - lower_fold)) && (scroller.scroll_top < scroller.scroll_top_max)) {
 			scroller.scroll_to(scroller.scroll_top + Math.floor((lower_fold - (Sizing.height - last_mouse_event.clientY)) / lower_fold * 20));
 		}
 		requestAnimationFrame(continue_drag);
