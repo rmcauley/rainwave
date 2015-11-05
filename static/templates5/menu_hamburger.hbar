@@ -1,4 +1,4 @@
-<div class="hamburgered menu_inline_dropdown">
+<div class="hamburgered menu_dropdown">
 	<div>
 		{{#if ^!MOBILE}}
 			<a class="link" bind="calendar_menu_item">

@@ -1,6 +1,6 @@
 <div class="header unselectable" bind="header">
-	<div class="menu_wrapper">
-		<ul class="menu hamburger_container pconly">
+	<div class="menu_wrapper" bind="menu_wrapper">
+		<ul class="menu hamburger_container pconly" bind="hamburger_container">
 			<li>
 				{{>menu_hamburger}}
 				<a class="link hamburger_icon" bind="burger_button"></a>
@@ -72,7 +72,7 @@
 
 		<div id="r4_audio_player" bind="player" class="unselectable">
 			<div class="load_indicator"></div>
-			<div class="m3u menu_inline_dropdown pconly">
+			<div class="m3u menu_dropdown menu_hover_dropdown pconly">
 				<a bind="play2" class="link">
 					{{ $l("listen_via_browser") }}
 				</a>

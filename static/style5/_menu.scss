@@ -223,7 +223,7 @@ ul.menu {
 	}
 }
 
-.menu_inline_dropdown {
+.menu_dropdown {
 	position: absolute;
 	z-index: 0;
 	top: 10px;
@@ -251,7 +251,7 @@ ul.menu {
 		}
 	}
 
-	*:hover > & {
+	*:hover > &.menu_hover_dropdown {
 		@include transform(none);
 		opacity: 1;
 		visibility: visible;
@@ -263,7 +263,9 @@ ul.menu {
 		margin-left: 30px;
 		@include transform(translateX(-100%) translateY(-$menu_height + 10));
 
-		&.burger_open > & {
+		.burger_open & {
+			opacity: 1;
+			visibility: visible;
 			@include transform(translateX(-100%));
 		}
 	}

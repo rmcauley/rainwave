@@ -48,13 +48,17 @@ var Menu = function() {
 			template.hamburger_container.classList.toggle("burger_open");
 		});
 
+		template.menu_wrapper.addEventListener("mouseleave", function() {
+			template.hamburger_container.classList.remove("burger_open");
+		});
+
 		if (template.calendar_dropdown) {
 			BOOTSTRAP.on_draw.push(function() {
 				var jstz_load = document.createElement("script");
 				jstz_load.src = "//cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js";
 				jstz_load.addEventListener("load", function() {
 					template.calendar_menu_item.addEventListener("click", calendar_toggle);
-					template.calendar_menu_item.addEventListener("mouseleave", calendar_hide);
+					template.menu_wrapper.addEventListener("mouseleave", calendar_hide);
 				});
 				document.body.appendChild(jstz_load);
 			});
