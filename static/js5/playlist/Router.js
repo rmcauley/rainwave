@@ -82,7 +82,12 @@ var Router = function() {
 		});
 
 		root_template.detail_close.addEventListener("click", function() {
-			self.change(current_type);
+			if (lists[current_type]) {
+				self.change(current_type);
+			}
+			else {
+				self.change();
+			}
 		});
 
 		var reload_in = [ false, "album", "artist", "group" ];
@@ -324,14 +329,16 @@ var Router = function() {
 				detail_header.textContent = lists[typ].get_title_from_id(id) || $l("Loading...");
 			}
 			var scrolled = false;
-			if (!ready_to_render && lists[typ].loaded) {
+			if (!ready_to_render && lists[typ] && lists[typ].loaded) {
 				lists[typ].scroll_to_id(id);
 				scrolled = true;
 			}
 			open_view(typ, id);
-			lists[typ].set_new_open(id);
-			if (!scrolled) {
-				lists[typ].scroll_to_id(id);
+			if (lists[typ]) {
+				lists[typ].set_new_open(id);
+				if (!scrolled) {
+					lists[typ].scroll_to_id(id);
+				}
 			}
 		}
 		else if (close_detail) {

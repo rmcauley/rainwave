@@ -102,7 +102,7 @@ div.lists {
 			body.playlist_artist &.artist_tab,
 			body.playlist_group &.group_tab,
 			body.playlist_album &.album_tab,
-			body.playlist_listener &.listener_tab {
+			body.playlist_request_line &.listener_tab {
 				color: $text;
 				border-bottom: 1px solid $orange;
 			}
@@ -174,7 +174,7 @@ div.list {
 	body.playlist_artist &.artist_list,
 	body.playlist_group &.group_list,
 	body.playlist_album &.album_list,
-	body.playlist_listener &.listener_list,
+	body.playlist_request_line &.listener_list,
 	&.measure_list {
 		display: block;
 	}
@@ -184,7 +184,7 @@ div.list {
 	}
 
 	div.item {
-		background-image: url("/static/images4/rating_bar/dark_ldpi_zero.png");
+		background-image: url("/static/images4/rating_bar/dark_ldpi.png");
 		background-repeat: no-repeat;
 		padding: 2px 65px 2px 5px;
 		border-bottom: solid 1px transparent;
