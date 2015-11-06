@@ -78,6 +78,14 @@ var Router = function() {
 		});
 
 		root_template.list_close.addEventListener("click", function() {
+			var type_at_close = current_type;
+			if (type_at_close) {
+				setTimeout(function() {
+					if (!document.body.classList.contains("playlist_" + type_at_close)) {
+						lists[type_at_close].clear_search();
+					}
+				}, 400);
+			}
 			self.change();
 		});
 
