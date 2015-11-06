@@ -32,7 +32,7 @@ var RequestLineList = function(el) {
 	};
 
 	self.open_id = function(id) {
-		Router.change("listener", id);
+		Router.change("request_line", id);
 	};
 
 	return self;
