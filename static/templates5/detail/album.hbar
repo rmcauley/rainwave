@@ -1,4 +1,4 @@
-{{>rating}}
+{{>rating_album}}
 
 <div class="art_anchor">
 	<div bind="art" class="art_container"></div>
