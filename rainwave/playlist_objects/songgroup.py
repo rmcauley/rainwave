@@ -79,8 +79,7 @@ class SongGroup(AssociatedMetadata):
 				"song_artist_parseable AS artist_parseable, "
 				"COALESCE(song_rating_user, 0) AS rating_user, "
 				"COALESCE(song_fave, FALSE) AS fave, "
-				"album_name, r4_albums.album_id, album_year, "
-				"album_exists AS album_openable "
+				"album_name, r4_albums.album_id, album_year "
 			"FROM r4_song_group "
 				"JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
 				"JOIN r4_songs ON (r4_song_group.song_id = r4_songs.song_id) "
@@ -99,4 +98,4 @@ class SongGroup(AssociatedMetadata):
 			if not song['album_id'] in self.data['all_songs_for_sid']:
 				self.data['all_songs_for_sid'][song['album_id']] = []
 			self.data['all_songs_for_sid'][song['album_id']].append(song)
-			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id'), "openable": song.pop('album_openable'), "year": song.pop('album_year') } ]
+			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id'), "year": song.pop('album_year') } ]

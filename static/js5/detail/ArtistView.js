@@ -18,6 +18,7 @@ var ArtistView = function(json) {
 			for (album_id in json.all_songs[sid]) {
 				a = json.all_songs[sid][album_id][0].albums[0];
 				if (sid !== User.sid) {
+					a.openable = false;
 					a.name = $l("album_on_station", { "station": $l("station_name_" + sid), "album": a.name });
 				}
 				// cut off a circular memory reference quick-like
