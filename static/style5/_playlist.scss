@@ -184,7 +184,6 @@ div.list {
 	}
 
 	div.item {
-		background-image: url("/static/images4/rating_bar/dark_ldpi.png");
 		background-repeat: no-repeat;
 		padding: 2px 65px 2px 5px;
 		border-bottom: solid 1px transparent;
@@ -198,20 +197,6 @@ div.list {
 
 		&.album_fave_highlight {
 			color: $fave_color;
-		}
-
-		&.rating_user {
-			background-image: url("/static/images4/rating_bar/bright_ldpi.png");
-
-			body.show_incomplete &.rating_incomplete {
-				background-color: #381e3d;
-				background-image: url("/static/images4/rating_bar/unrated_ldpi.png");
-
-				&.cool {
-					background-color: #2a162e;
-					color: $darktext;
-				}
-			}
 		}
 
 		&:hover, .hover {
@@ -256,6 +241,30 @@ div.list {
 			@include transition-wtime(300ms, padding);
 		}
 
+		&.skip {
+			opacity: 0.6;
+		}
+
+		div.fave {
+			margin-top: 0;
+		}
+	}
+
+	&.album_list div.item {
+		&.rating_user {
+			background-image: url("/static/images4/rating_bar/bright_ldpi.png");
+
+			body.show_incomplete &.rating_incomplete {
+				background-color: #381e3d;
+				background-image: url("/static/images4/rating_bar/unrated_ldpi.png");
+
+				&.cool {
+					background-color: #2a162e;
+					color: $darktext;
+				}
+			}
+		}
+
 		&.has_new {
 			span.name {
 				background-repeat: no-repeat;
@@ -285,14 +294,6 @@ div.list {
 			&.open span.name {
 				background-position: 15px 0;
 			}
-		}
-
-		&.skip {
-			opacity: 0.6;
-		}
-
-		div.fave {
-			margin-top: 0;
 		}
 	}
 
