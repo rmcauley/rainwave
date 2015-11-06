@@ -6,8 +6,6 @@ var Menu = function() {
 	var has_calendar;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
-		//API.add_callback("user", update_tuned_in_status);
-		//R4Audio.changed_status_callback = update_tuned_in_status_from_player;
 		template = root_template;
 
 		// must be done in JS, if you try to do it in the template you still get a clickable <a>
@@ -48,9 +46,14 @@ var Menu = function() {
 			template.hamburger_container.classList.toggle("burger_open");
 		});
 
-		template.menu_wrapper.addEventListener("mouseleave", function() {
+		var close_burger = function() {
 			template.hamburger_container.classList.remove("burger_open");
-		});
+		};
+
+		template.menu_wrapper.addEventListener("mouseleave", close_burger);
+		template.request_link.addEventListener("click", close_burger);
+		template.playlist_link.addEventListener("click", close_burger);
+		template.player.addEventListener("click", close_burger);
 
 		if (template.calendar_dropdown) {
 			BOOTSTRAP.on_draw.push(function() {
@@ -89,43 +92,6 @@ var Menu = function() {
 		}
 	});
 
-	// self.show_modal = function(modal_div) {
-	// 	if (current_modal) return;
-
-	// 	modal_div.style.display = "block";
-	// 	modal_div.offsetWidth; // force redraw so transitions can happen
-
-	// 	$add_class(modal_div, "active_modal");
-	// 	$add_class(document.body, "modal_is_active");
-
-	// 	var kmw = [ 'top_menu_wrapper', 'sizable_body', 'messages' ];
-	// 	for (var i = 0; i < kmw.length; i++) {
-	// 		$id(kmw[i]).addEventListener('click', self.remove_modal, true);
-	// 	}
-
-	// 	current_modal = modal_div;
-	// };
-
-	// self.remove_modal = function(e) {
-	// 	if (e) {
-	// 		e.stopPropagation();
-	// 		e.preventDefault();
-	// 	}
-
-	// 	Fx.chain_transition(current_modal, function() {
-	// 		current_modal.style.display = "none";
-	// 		current_modal = null;
-	// 	});
-
-	// 	$remove_class(current_modal, "active_modal");
-	// 	$remove_class(document.body, "modal_is_active");
-
-	// 	var kmw = [ 'top_menu_wrapper', 'sizable_body', 'messages' ];
-	// 	for (var i = 0; i < kmw.length; i++) {
-	// 		$id(kmw[i]).removeEventListener('click', self.remove_modal, true);
-	// 	}
-	// };
-
 	var toggle_station_select = function(e) {
 		if (template.station_select.classList.contains("open")) {
 			close_station_select(e);
@@ -137,6 +103,7 @@ var Menu = function() {
 
 	var open_station_select = function(e) {
 		if (!template.station_select.classList.contains("open")) {
+			template.hamburger_container.classList.remove("burger_open");
 			template.station_select.classList.add("open");
 			template.station_select.classList.remove("closed");
 			template.station_select_header.addEventListener("click", close_station_select);
@@ -185,32 +152,6 @@ var Menu = function() {
 	// 			elements.stations[key]._np_info.appendChild(songs[key].el);
 	// 		}
 	// 	}
-
-	// 	if (do_event_alert) {
-	// 		if (event_alert) {
-	// 			remove_event_alert();
-	// 		}
-	// 		event_alert = $el("div", { "class": "event_ongoing_alert" });
-	// 		event_alert.appendChild($el("div", { "textContent": $l("special_event_alert", { "station": $l("station_name_" + event_sid) }) }));
-	// 		event_alert.appendChild($el("div", { "textContent": event_desc }));
-	// 		$id("station_select_container").parentNode.insertBefore(event_alert, $id("station_select_container").nextSibling);
-	// 	}
-	// };
-
-	// var audio_playing;
-	// var update_tuned_in_status_from_player = function(playing) {
-	// 	audio_playing = playing;
-	// 	update_tuned_in_status(User);
-	// };
-
-	// var update_tuned_in_status = function(user_json) {
-	// 	if (user_json.tuned_in) {
-	// 		$add_class($id("top_menu"), "external_tuned_in");
-	// 	}
-	// 	else {
-	// 		$remove_class($id("top_menu"), "external_tuned_in");
-	// 	}
-	// };
 
 	return self;
 }();
