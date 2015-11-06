@@ -29,9 +29,9 @@ var Menu = function() {
 			template.header.classList.add("no_avatar");
 		}
 
-		if (template.settings_link) {
-			template.settings_link.addEventListener("click", SettingsWindow);
-		}
+		// if (template.settings_link) {
+		// 	template.settings_link.addEventListener("click", SettingsWindow);
+		// }
 
 		template.playlist_link.addEventListener("click", function() {
 			if (document.body.classList.contains("playlist")) {
@@ -54,6 +54,10 @@ var Menu = function() {
 		template.request_link.addEventListener("click", close_burger);
 		template.playlist_link.addEventListener("click", close_burger);
 		template.player.addEventListener("click", close_burger);
+
+		if (template.user_link) {
+			template.user_link.addEventListener("click", close_burger);
+		}
 
 		if (template.calendar_dropdown) {
 			BOOTSTRAP.on_draw.push(function() {

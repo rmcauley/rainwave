@@ -251,6 +251,8 @@ div.list {
 	}
 
 	&.album_list div.item {
+		background-image: url("/static/images4/rating_bar/dark_ldpi.png");
+
 		&.rating_user {
 			background-image: url("/static/images4/rating_bar/bright_ldpi.png");
 
