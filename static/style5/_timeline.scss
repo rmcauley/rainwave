@@ -81,9 +81,11 @@ div.timeline_event {
 	div.song:nth-child(4) { z-index: 5; }
 
 	div.timeline_header {
+		box-sizing: border-box;
+		height: 20px;
+		margin: 0;
 		text-transform: uppercase;
 		color: $vdarktext;
-		font-size: smaller;
 		padding: 0 20px 0 10px;
 	}
 
@@ -94,7 +96,6 @@ div.timeline_event {
 	}
 
 	&.sched_current div.timeline_header {
-		font-size: inherit;
 		color: $orange;
 	}
 
