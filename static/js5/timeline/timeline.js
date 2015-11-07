@@ -234,7 +234,7 @@ var Timeline = function() {
 			}
 		}
 
-		var running_y = 10;
+		var running_y = 9;
 
 		for (i = 0; i < messages.length; i++) {
 			if (!messages[i].closed) {
@@ -261,7 +261,7 @@ var Timeline = function() {
 			events[i].el.classList.add("sched_history_hidden");
 		}
 
-		running_y += !Sizing.simple || Sizing.mobile ? 20 : 18;
+		running_y += !Sizing.simple || Sizing.mobile ? 19 : 17;
 		var history_gap;
 		for (i = hidden_events; i < events.length; i++) {
 			if (events[i].history) {
@@ -270,7 +270,7 @@ var Timeline = function() {
 			else if (!history_gap) {
 				history_gap = true;
 				history_bar.style[Fx.transform] = "translateY(" + (running_y + 9) + "px)";
-				running_y += 20;
+				running_y += 19;
 			}
 			if (events[i].el.classList.contains("no_progress")) {
 				events[i].el.classList.remove("no_progress");
@@ -278,11 +278,11 @@ var Timeline = function() {
 			// if (!events[i].showing_header && (i !== 0) && (!events[i - 1].el.classList.contains("no_header"))) {
 			// 	events[i - 1].el.classList.add("no_progress");
 			// 	running_y -= Sizing.timeline_header_size;
-			// 	running_y += 17;
+			// 	running_y += 16;
 			// }
 			events[i].el.style[Fx.transform] = "translateY(" + running_y + "px)";
 			running_y += events[i].height;
-			if (Sizing.simple && !events[i].history) running_y += 7;
+			if (Sizing.simple && !events[i].history) running_y += 4;
 		}
 
 		scroller.set_height(running_y);

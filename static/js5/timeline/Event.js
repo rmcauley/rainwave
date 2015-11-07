@@ -29,7 +29,7 @@ var RWEvent = function(self) {
 			}
 			self.songs[i].el.style.zIndex = self.songs.length - i;
 		}
-		if (self.$t.progress) self.$t.progress.style[Fx.transform] = "translateY(" + (running_height + 15) + "px)";
+		if (self.$t.progress) self.$t.progress.style[Fx.transform] = "translateY(" + (running_height + 14) + "px)";
 	};
 	self.reflow();
 
