@@ -46,7 +46,7 @@ var Timeline = function() {
 			}
 		);
 
-		Clock.pageclock_bar_function = progress_bar_update;
+		// Clock.pageclock_bar_function = progress_bar_update;
 	});
 
 	BOOTSTRAP.on_draw.push(function() {
