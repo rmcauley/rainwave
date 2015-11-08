@@ -61,6 +61,10 @@ div.detail {
 		}
 	}
 
+	ul.panel_header {
+		border-bottom: none;
+	}
+
 	&.scrollblock div.close {
 		@include transform(translateX(-32px));
 	}
