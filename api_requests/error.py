@@ -14,6 +14,7 @@ class ErrorReport(APIHandler):
     sid_required = False
     help_hidden = True
     description = "Handles taking automated error reports from Rainwave."
+    return_name = "error_report_result"
     fields = {
         "name": (fieldtypes.string, True),
         "message": (fieldtypes.string, True),
@@ -27,10 +28,10 @@ class ErrorReport(APIHandler):
 
     def prepare(self):
         if not self.request.headers.get("Referer"):
-            raise APIException("auth_failed", "Error reporting cannot be made from an external address.")
+            raise APIException("auth_failed", "Error reporting cannot be made from an external address. (no referral)")
         refhost = urlsplit(self.request.headers.get("Referer")).hostname
         if not refhost or not refhost in config.station_hostnames:
-            raise APIException("auth_failed", "Error reporting cannot be made from an external address.")
+            raise APIException("auth_failed", "Error reporting cannot be made from an external address. (%s)" % refhost)
         return super(ErrorReport, self).prepare()
 
     def post(self):
