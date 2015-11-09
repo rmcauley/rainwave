@@ -274,7 +274,7 @@ RWTemplateHelpers.change_button_text = function(btn, text) {
     if (btn._no_changes_please) return;
     if (!btn._changed) {
         btn._changed = true;
-        btn.style.minWidth = btn.offsetWidth + "px";
+        //btn.style.minWidth = btn.offsetWidth + "px";
         btn._original_html = btn.innerHTML;
     }
     if (!text && btn._original_html) {
@@ -466,11 +466,6 @@ RWTemplateHelpers.tabify = function(obj, def) {
         btn.classList.remove(btn_normal);
         btn.classList.add(new_class);
     };
-
-    var gettext;
-    document.addEventListener("DOMContentLoaded", function () {
-        gettext = gettext || function(txt) { return txt; };
-    });
 
     RWTemplateObject.prototype.update = function(from_object) {
         if (Object.prototype.toString.call(this._c) == "[object Array]") {
@@ -772,11 +767,10 @@ RWTemplateHelpers.tabify = function(obj, def) {
     };
 
     RWTemplateObject.prototype.submitting = function(submit_message, no_disable) {
-        console.log(this._last_button);
         var elements = this.normal();
         for (var i = 0; i < elements.length; i++) {
             if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
-                RWTemplateHelpers.change_button_text(elements[i], submit_message || gettext("Saving..."));
+                RWTemplateHelpers.change_button_text(elements[i], submit_message || (typeof(gettext) == "function" ? gettext("Saving...") : "Saving..."));
                 if (!no_disable) {
                     RWTemplateHelpers.change_button_class(elements[i], btn_normal);
                 }
@@ -793,21 +787,19 @@ RWTemplateHelpers.tabify = function(obj, def) {
     RWTemplateObject.prototype.error = function(rest_error, xhr_object, error_message) {
         if (xhr_object) {
             if (xhr_object.status === 403) {
-                error_message = gettext("Invalid Permissions");
+                error_message = typeof(gettext) == "function" ? gettext("Invalid Permissions") : "Invalid Permissions";
             }
             else if ((xhr_object.status % 300) < 100) {
-                error_message = gettext("Server Error (300)");
+                error_message = typeof(gettext) == "function" ? gettext("Server Error (300)") : "Server Error (300)";
             }
             else if ((xhr_object.status % 500) < 100) {
-                error_message = gettext("Server Error (500)");
+                error_message = typeof(gettext) == "function" ? gettext("Server Error (500)") : "Server Error(500)";
             }
         }
         if (rest_error && rest_error.detail) {
             error_message = error_message || rest_error.detail;
         }
-        error_message = error_message || gettext("Try Again");
-
-        console.log(this._last_button);
+        error_message = error_message || (typeof(gettext) == "function" ? gettext("Try Again") : "Try Again");
 
         var elements = this.normal();
         var submit_btns = [];
@@ -895,7 +887,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
             elements[i].disabled = permanent;
             elements[i].classList[permanent ? "add" : "remove"]("disabled");
             if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
-                RWTemplateHelpers.change_button_text(elements[i], success_message || this._c._success_message || gettext("Saved"));
+                RWTemplateHelpers.change_button_text(elements[i], success_message || this._c._success_message || (typeof(gettext) == "function" ? gettext("Saved") : "Saved"));
                 RWTemplateHelpers.change_button_class(elements[i], btn_success);
                 if (success_timeouts[this]) {
                     clearTimeout(success_timeouts[this]);
