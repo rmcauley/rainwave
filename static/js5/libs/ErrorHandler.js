@@ -30,7 +30,12 @@
 
 	BOOTSTRAP.on_init.push(function() {
 		API.add_callback("station_offline", self.permanent_error);
+		API.add_callback("redownload_m3u", redownload_m3u_message);
 	});
+
+	var redownload_m3u_message = function() {
+		self.nonpermanent_error(self.make_error("redownload_m3u", 200));
+	};
 
 	self.make_error = function(tl_key, code) {
 		return { "tl_key": tl_key, "code": code, "text": $l(tl_key) };

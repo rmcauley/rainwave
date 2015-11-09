@@ -125,20 +125,27 @@ class SessionBank(object):
 
 		del self.ip_update_timers[ip_address]
 		for session in self.find_ip(ip_address):
+			do_finish = False
 			try:
 				if session.user.is_anonymous():
 					session.update_user()
-					log.debug("sync_update_ip", "Updated IP %s" % session.request.remote_ip)
+					do_finish = True
 				else:
-					log.debug("sync_update_ip", "Warning logged in user of potential mixup at IP %s" % session.request.remote_ip)
-					session.anon_registered_mixup_warn()
+					session.user.refresh(session.sid)
+					if not session.user.is_tunedin():
+						log.debug("sync_update_ip", "Warning logged in user of potential M3U mixup at IP %s" % session.request.remote_ip)
+						self.append("redownload_m3u", { "tl_key": "redownload_m3u", "text": self.locale.translate("redownload_m3u") })
+						do_finish = True
 			except Exception as e:
-				try:
-					session.finish()
-				except:
-					pass
-				self.remove(session)
+				do_finish = True
 				log.exception("sync", "Session failed to be updated during update_user.", e)
+			finally:
+				try:
+					if do_finish:
+						session.finish()
+						self.remove(session)
+				except Exception as e:
+					log.exception("sync", "Session failed finish() during update_user.", e)
 		self.clean()
 
 sessions = {}
@@ -289,11 +296,3 @@ class Sync(APIHandler):
 		self.user.refresh(self.sid)
 		self.append("user", self.user.to_private_dict())
 		self.finish()
-
-	def anon_registered_mixup_warn(self):
-		self.user.refresh(self.sid)
-		if not self.user.is_anonymous() and not self.user.is_tunedin():
-			self.append_standard("redownload_m3u")
-			self.finish()
-			return True
-		return False
