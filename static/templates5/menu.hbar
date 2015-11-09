@@ -17,7 +17,7 @@
 				</li>
 			{{#else}}
 				<li class="login_link">
-					<a bind="login" class="link">
+					<a bind="login" class="link" href="forums/ucp.php?mode=login">
 						{{ $l("login") }}
 					</a>
 				</li>
