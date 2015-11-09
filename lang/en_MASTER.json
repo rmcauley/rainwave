@@ -53,6 +53,10 @@
    "station_paused"                                  : "Station is currently paused by the DJ.",
    "album_on_other_station"                          : "Album is not available on this station, sorry!",
    "album_is_dj_only"                                : "Album is exclusive to this event, sorry!",
+   "locked_to_station"                               : "You were just voting on %(locked_station), you have to wait %(lock_counter) more &(lock_counter:song/songs) to vote on %(this_station).",
+
+   "__comment__"                 : "Error pop-up when Rainwave goes crashes.",
+
    "oops"                                            : "Oops",
    "something_went_wrong"                            : "Something went wrong loading that from the server. :(",
    "crash_happened"                                  : "Rainwave has crashed. :(",
@@ -272,7 +276,7 @@
    "__comment__"                 : "Station Descriptions For The Menu (short messages)",
 
    "station_menu_description_id_1"                   : "Music, straight out of the games.",
-   "station_menu_description_id_2"                   : "Overclocked ReMixes and albums.",
+   "station_menu_description_id_2"                   : "OverClocked ReMixes and albums.",
    "station_menu_description_id_3"                   : "Official and fan-made remixes.",
    "station_menu_description_id_4"                   : "Bleeps and bloops, from games and more.",
    "station_menu_description_id_5"                   : "All games and remixes from our library.",

@@ -81,10 +81,14 @@ div.timeline_event {
 	div.song:nth-child(4) { z-index: 5; }
 
 	div.timeline_header {
+		box-sizing: border-box;
+		height: 20px;
+		margin: 0;
 		text-transform: uppercase;
 		color: $vdarktext;
-		font-size: smaller;
 		padding: 0 20px 0 10px;
+		// fix webkit rendering things 1px too high (?!?!?!)
+		-webkit-transform: translateY(1px);
 	}
 
 	&.no_header {
@@ -94,7 +98,6 @@ div.timeline_event {
 	}
 
 	&.sched_current div.timeline_header {
-		font-size: inherit;
 		color: $orange;
 	}
 
@@ -147,7 +150,7 @@ div.progress {
 	@include transition(transform);
 
 	body.simple & {
-		padding: 0 30px 0 25px;
+		padding: 0 19px 0 11px;
 	}
 
 	&.history_bar {

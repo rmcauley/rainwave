@@ -2,7 +2,7 @@ ul.panel_header {
 	height: 25px;
 	padding-left: 0;
 	margin: 10px 0 7px 0;
-	border-bottom: 1px solid $vvdarktext;
+	border-bottom: 2px solid $vvdarktext;
 	list-style: none;
 	white-space: nowrap;
 
@@ -12,12 +12,12 @@ ul.panel_header {
 		padding: 0 10px;
 
 		color: $vdarktext;
-		border-bottom: 1px solid transparent;
+		border-bottom: 2px solid transparent;
 		@include transition(LINKCOLOR, background, opacity, border-bottom);
 
 		&.open {
 			color: $text;
-			border-bottom: 1px solid $orange;
+			border-bottom-color: $orange;
 		}
 	}
 }
@@ -104,7 +104,7 @@ div.lists {
 			body.playlist_album &.album_tab,
 			body.playlist_request_line &.listener_tab {
 				color: $text;
-				border-bottom: 1px solid $orange;
+				border-bottom-color: $orange;
 			}
 
 			body.mobile &.group_tab,
@@ -251,6 +251,8 @@ div.list {
 	}
 
 	&.album_list div.item {
+		background-image: url("/static/images4/rating_bar/dark_ldpi.png");
+
 		&.rating_user {
 			background-image: url("/static/images4/rating_bar/bright_ldpi.png");
 

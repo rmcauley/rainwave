@@ -292,8 +292,12 @@ var Router = function() {
 			if (!cache[typ][id]) {
 				// console.log(typ + "/" + id + ": Loading from server.");
 				cache[typ][id] = true;
-				API.async_get(typ, { "id": id }, function(json) {
-					cache[typ][id] = json[typ];
+				var req = typ;
+				if (req == "request_line") {
+					req = "listener";
+				}
+				API.async_get(req, { "id": id }, function(json) {
+					cache[typ][id] = json[req];
 					if (current_type === typ && current_id === id) {
 						// console.log(typ + "/" + id + ": Loaded from server.");
 						actually_open(typ, id);

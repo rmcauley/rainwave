@@ -363,7 +363,7 @@ var Requests = function() {
 			}
 			dragging_song.el.style[Fx.transform] = "translateY(" + new_y + "px)";
 		}
-		var upper_fold = Sizing.menu_height + Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
+		var upper_fold = (Sizing.detail_header_size * 3) + Sizing.menu_height + Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
 		var lower_fold = Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
 		if ((last_mouse_event.clientY < upper_fold) && (scroller.scroll_top > 0)) {
 			scroller.scroll_to(scroller.scroll_top - (25 - (Math.floor(last_mouse_event.clientY / upper_fold * 25))));

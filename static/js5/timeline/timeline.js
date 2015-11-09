@@ -25,6 +25,8 @@ var Timeline = function() {
 		API.add_callback("user", self.voting_allowed_check);
 		API.add_callback("playback_history", open_long_history);
 		API.add_callback("already_voted", self.handle_already_voted);
+		API.add_callback("all_stations_info", check_for_events);
+		API.add_callback("user", lock_check);
 
 		template = RWTemplates.timeline.timeline();
 		root_template.timeline.parentNode.replaceChild(template.timeline, root_template.timeline);
@@ -46,7 +48,7 @@ var Timeline = function() {
 			}
 		);
 
-		Clock.pageclock_bar_function = progress_bar_update;
+		// Clock.pageclock_bar_function = progress_bar_update;
 	});
 
 	BOOTSTRAP.on_draw.push(function() {
@@ -168,7 +170,7 @@ var Timeline = function() {
 		}
 	};
 
-	self.add_message = function(id, text, not_closeable) {
+	self.add_message = function(id, text, not_closeable, no_reflow) {
 		for (var i = 0; i < messages.length; i++) {
 			if (messages[i].id == id) {
 				return;
@@ -187,10 +189,12 @@ var Timeline = function() {
 		messages.push(msg);
 		if (msg.$t.close) {
 			msg.$t.close.addEventListener("click", function() {
-				self.close_message(id);
+				self.remove_message(id);
 			});
 		}
-		self.reflow();
+		if (!no_reflow) {
+			self.reflow();
+		}
 		return msg;
 	};
 
@@ -234,7 +238,7 @@ var Timeline = function() {
 			}
 		}
 
-		var running_y = 10;
+		var running_y = 9;
 
 		for (i = 0; i < messages.length; i++) {
 			if (!messages[i].closed) {
@@ -261,7 +265,7 @@ var Timeline = function() {
 			events[i].el.classList.add("sched_history_hidden");
 		}
 
-		running_y += !Sizing.simple || Sizing.mobile ? 20 : 18;
+		running_y += !Sizing.simple || Sizing.mobile ? 19 : 17;
 		var history_gap;
 		for (i = hidden_events; i < events.length; i++) {
 			if (events[i].history) {
@@ -270,7 +274,7 @@ var Timeline = function() {
 			else if (!history_gap) {
 				history_gap = true;
 				history_bar.style[Fx.transform] = "translateY(" + (running_y + 9) + "px)";
-				running_y += 20;
+				running_y += 19;
 			}
 			if (events[i].el.classList.contains("no_progress")) {
 				events[i].el.classList.remove("no_progress");
@@ -278,11 +282,11 @@ var Timeline = function() {
 			// if (!events[i].showing_header && (i !== 0) && (!events[i - 1].el.classList.contains("no_header"))) {
 			// 	events[i - 1].el.classList.add("no_progress");
 			// 	running_y -= Sizing.timeline_header_size;
-			// 	running_y += 17;
+			// 	running_y += 16;
 			// }
 			events[i].el.style[Fx.transform] = "translateY(" + running_y + "px)";
 			running_y += events[i].height;
-			if (Sizing.simple && !events[i].history) running_y += 7;
+			if (Sizing.simple && !events[i].history) running_y += 4;
 		}
 
 		scroller.set_height(running_y);
@@ -385,6 +389,54 @@ var Timeline = function() {
 		// w.appendChild(t);
 
 		// Menu.show_modal($id("longhist_window_container"));
+	};
+
+	var do_event = function(json, sid) {
+		var url;
+		for (var i = 0; i < Stations.length; i++) {
+			if (Stations[i].id == sid) {
+				url = Stations[i].url;
+			}
+		}
+		var msg = self.add_message("event_" + sid, $l("special_event_on_now"), false, true);
+		var xmsg = document.createElement("span");
+		xmsg.textContent = Formatting.event_name(json.event_type, json.event_name);
+		msg.$t.message.appendChild(xmsg);
+		msg.$t.el.addEventListener("click", function() {
+			window.location.href = url;
+		});
+		msg.$t.el.style.cursor = "pointer";
+		return msg;
+	};
+
+	var check_for_events = function(json) {
+		var sid;
+		for (sid in json) {
+			if (json[sid] && json[sid].event_name && (sid != User.sid)) {
+				do_event(json[sid]);
+			}
+			else if (!json[sid].event_name) {
+				self.close_message("event_" + sid);
+			}
+		}
+	};
+
+	var lock_check = function(json) {
+		if (json.lock_in_effect && (json.lock_sid != User.sid)) {
+			var locked_name, this_name;
+			for (var i = 0; i < Stations.length; i++) {
+				if (Stations[i].id == json.lock_sid) {
+					locked_name = Stations[i].name;
+				}
+				else if (Stations[i].sid == User.sid) {
+					this_name = Stations[i].name;
+				}
+			}
+			self.add_message("station_lock", $l("locked_to_station", { "locked_station": locked_name, "this_station": this_name, "lock_counter": json.lock_counter }), true, true);
+		}
+		else {
+			self.remove_message("station_lock");
+		}
 	};
 
 	return self;

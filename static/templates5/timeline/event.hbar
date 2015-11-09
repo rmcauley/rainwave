@@ -9,7 +9,9 @@
 	</div>
 
 	<div bind="progress" class="progress">
-		<div class="progress_bkg"></div>
+		<div class="progress_bkg">
+			<div bind="progress_inside" class="progress_inside"></div>
+		</div>
 	</div>
 
 	{{#each songs }}

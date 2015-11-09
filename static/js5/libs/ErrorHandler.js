@@ -36,8 +36,8 @@
 		return { "tl_key": tl_key, "code": code, "text": $l(tl_key) };
 	};
 
-	self.permanent_error = function(json, append_element) {
-		var msg = Timeline.add_message(json.tl_key, $l(json.tl_key), true);
+	self.permanent_error = function(json, append_element, not_actually_permanent) {
+		var msg = Timeline.add_message(json.tl_key, $l(json.tl_key), !not_actually_permanent);
 		if (!msg) {
 			return;
 		}
@@ -45,6 +45,10 @@
 			msg.$t.message.appendChild(append_element);
 		}
 		return msg;
+	};
+
+	self.nonpermanent_error = function(json, append_element) {
+		self.permanent_error(json, append_element, true);
 	};
 
 	self.remove_permanent_error = function(tl_key) {

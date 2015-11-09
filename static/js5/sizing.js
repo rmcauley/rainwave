@@ -15,6 +15,7 @@ var Sizing = function() {
 	self.width = 0;
 	self.sizeable_area_height = 0;
 	self.detail_area = null;
+	self.detail_header_size = 0;
 	self.menu_height = 0;
 	self.timeline_message_size = 45;
 
@@ -28,18 +29,17 @@ var Sizing = function() {
 	};
 
 	self.trigger_resize = function() {
-		window.index_t = index_t;
 		self.height = document.documentElement.clientHeight;
 		self.width = document.documentElement.clientWidth;
 		self.menu_height = index_t.header.offsetHeight;
 		self.list_item_height = index_t.list_item.offsetHeight;
-		var detail_header_size = index_t.detail_header_container.offsetHeight;
-
+		self.detail_header_size = index_t.detail_header_container.offsetHeight;
 		var right_of_timeline = index_t.timeline_sizer.offsetLeft + index_t.timeline_sizer.offsetWidth;
 		self.sizeable_area_height = self.height - index_t.sizeable_area.offsetTop;
+
 		index_t.sizeable_area.style.height = self.sizeable_area_height + "px";
-		self.detail_area.style.height = (self.sizeable_area_height - detail_header_size - 20) + "px";
-		self.requests_area.style.height = (self.sizeable_area_height - (detail_header_size * 2) - 30) + "px";
+		self.detail_area.style.height = (self.sizeable_area_height - self.detail_header_size - 20) + "px";
+		self.requests_area.style.height = (self.sizeable_area_height - (self.detail_header_size * 2) - 30) + "px";
 
 		for (var i = 0; i < index_t.sizeable_area.childNodes.length; i++) {
 			index_t.sizeable_area.childNodes[i].style.height = self.sizeable_area_height + "px";
@@ -142,7 +142,18 @@ var Sizing = function() {
 		return { "width": x, "height": y };
 	};
 
-	window.addEventListener("resize", self.trigger_resize);
+	// Firefox has a bug where we need to wait a frame to resize
+	// or we get buggy widths from timeline_sizer
+	// Since we also want to be responsive while resizing the window
+	// we are pretty much left with no choice here but to wait until resizing is done
+	// then resize again :(
+	// to quote ed bighead, I hate my life
+	var fx_workaround_timer;
+	window.addEventListener("resize", function() {
+		self.trigger_resize();
+		clearTimeout(fx_workaround_timer);
+		fx_workaround_timer = setTimeout(self.trigger_resize, 100);
+	});
 
 	BOOTSTRAP.on_init.push(function(t) {
 		index_t = t;

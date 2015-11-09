@@ -127,7 +127,7 @@ var Audio = function() {
 
 		if (!self.supported) {
 			if (!self.detect_hijack() || !ErrorHandler) return;
-			ErrorHandler.permanent_error(ErrorHandler.make_error(400, "m3u_hijack_right_click"));
+			ErrorHandler.nonpermanent_error(ErrorHandler.make_error(400, "m3u_hijack_right_click"));
 			return;
 		}
 
@@ -242,7 +242,7 @@ var Audio = function() {
 			self.clear_audio_errors();
 		});
 		ErrorHandler.remove_permanent_error("audio_connect_error");
-		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_error", 500), a);
+		ErrorHandler.nonpermanent_error(ErrorHandler.make_error("audio_error", 500), a);
 		self.stop();
 		self.supported = false;
 		if (self.changed_status_callback) self.changed_status_callback(playing_status);
