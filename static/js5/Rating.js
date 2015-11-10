@@ -165,7 +165,7 @@ var Rating = function() {
 		}
 
 		if (x < 0 || y < 0) return 1;
-		var result = Math.round(((x + ((18 - y) * 0.5)) / 10) * 2) / 2;
+		var result = Math.round((((x - 4) + ((18 - y) * 0.5)) / 10) * 2) / 2;
 		if (result <= 1) return 1;
 		else if (result >= 5) return 5;
 		return result;
