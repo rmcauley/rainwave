@@ -2,7 +2,8 @@ div.rating {
 	position: relative;
 	float: right;
 	background-repeat: no-repeat;
-	background-image: url("/static/images4/rating_bar/dark_ldpi.png");
+	background-image: $site_rating;
+	background-size: $rating_bkg_size;
 	width: $rating_width;
 	padding: 0;
 	margin: 0;
@@ -10,15 +11,15 @@ div.rating {
 
 	body.logged_in.full &.rating_song {
 		&.rating_user {
-			background-image: url("/static/images4/rating_bar/bright_ldpi.png");
+			background-image: $user_rating;
 		}
 	}
 
 	&.rating_user {
-		background-image: url("/static/images4/rating_bar/bright_ldpi.png");
+		background-image: $user_rating;
 
 		body.show_incomplete &.rating_incomplete {
-			background-image: url("/static/images4/rating_bar/unrated_ldpi.png");
+			background-image: $incomplete_rating;
 		}
 	}
 
@@ -28,7 +29,7 @@ div.rating {
 		&:hover {
 			margin-left: 25px;
 			@include no-transition();
-			background-image: url("/static/images4/rating_bar/bright_ldpi.png");
+			background-image: $user_rating;
 		}
 	}
 
@@ -104,7 +105,7 @@ div.mobile_rating {
 		width: $slider_width;
 		height: 48px;
 		background-repeat: none;
-		background-image: url("/static/images4/rating_bar/touchslide.png");
+		background-image: $touch_rating;
 		background-size: 200px 2496px;
 	}
 

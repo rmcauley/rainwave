@@ -156,7 +156,10 @@ var Rating = function() {
 			this.rating_now = this.rating_to;
 			this.rating_anim_id = null;
 		}
-		this.style.backgroundPosition = "0px " + (-(Math.round((Math.round(this.rating_now * 10) / 2)) * 30) + 3) + "px";
+		// R4 bar image calculation
+		// this.style.backgroundPosition = "0px " + (-(Math.round((Math.round(this.rating_now * 10) / 2)) * 30) + 3) + "px";
+		// R5 images
+		this.style.backgroundPosition = "0px " + (-(Math.round((Math.round(this.rating_now * 10) / 2)) * 28) + 3) + "px";
 	};
 
 	var get_rating_from_mouse = function(evt, relative_x, relative_y) {

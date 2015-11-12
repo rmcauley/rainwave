@@ -251,14 +251,15 @@ div.list {
 	}
 
 	&.album_list div.item {
-		background-image: url("/static/images4/rating_bar/dark_ldpi.png");
+		background-image: $site_rating;
+		background-size: $rating_bkg_size;
 
 		&.rating_user {
-			background-image: url("/static/images4/rating_bar/bright_ldpi.png");
+			background-image: $user_rating;
 
 			body.show_incomplete &.rating_incomplete {
 				background-color: #381e3d;
-				background-image: url("/static/images4/rating_bar/unrated_ldpi.png");
+				background-image: $incomplete_rating;
 
 				&.cool {
 					background-color: #2a162e;
