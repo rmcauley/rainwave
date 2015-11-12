@@ -2,6 +2,8 @@ var Rating = function() {
 	"use strict";
 	var self = {};
 	self.album_callback = null;
+	var is_touching = false;
+	var touch_timer;
 
 	BOOTSTRAP.on_init.push(function(template) {
 		API.add_callback("rate_result", rating_api_callback);
@@ -21,6 +23,18 @@ var Rating = function() {
 			else {
 				document.body.classList.remove("rating_clear_ok");
 			}
+		});
+
+		var clear_touch = function() {
+			touch_timer = false;
+			is_touching = false;
+		};
+
+		document.body.addEventListener("touchend", function () {
+			if (touch_timer) {
+				clearTimeout(touch_timer);
+			}
+			touch_timer = setTimeout(clear_touch, 30);
 		});
 	});
 
@@ -171,6 +185,44 @@ var Rating = function() {
 		return result;
 	};
 
+	var rating_width = 58;
+	var slider_width = 200;
+	var do_touch_rating = function(song, e) {
+		var zero_x = song.$t.rating.offsetLeft + rating_width - slider_width - 10;
+		var t = RWTemplates.rating_mobile();
+		var remove = function(e) {
+			if (e.target !== song.$t.rating) {
+				return;
+			}
+			Fx.remove_element(t.el);
+			song.$t.rating.removeEventListener("touchmove", touchmove);
+			document.body.removeEventListener("touchend", remove);
+			document.body.removeEventListener("touchcancel", remove);
+		};
+		var now_number = 5;
+		var highlight = function(rating, width) {
+			// todo: animate this at 25 steps
+			t.number.style[Fx.transform] = "translateX(" + width + "px)";
+			t.slider.style.backgroundPosition = "0px " + -(Math.max(5, Math.min(25, Math.floor(width / ((slider_width - 25) / 24)))) * 96) + "px";
+			if (rating === now_number) return;
+			now_number = rating;
+			t.number.textContent = Formatting.rating(rating);
+		};
+		var touchmove = function(e) {
+			var rating = (Math.floor((e.touches[0].pageX - (zero_x + 25)) / ((slider_width - 25) / 9)) / 2) + 1;
+			rating = Math.min(Math.max(1, rating), 5);
+			highlight(rating, Math.min(slider_width, Math.max(0, (e.touches[0].pageX - zero_x))));
+		};
+		document.body.addEventListener("touchend", remove);
+		document.body.addEventListener("touchcancel", remove);
+		song.$t.rating.addEventListener("touchmove", touchmove);
+		song.$t.rating.appendChild(t.el);
+		touchmove(e);
+		requestAnimationFrame(function() {
+			t.el.classList.add("show");
+		});
+	};
+
 	// INDIVIDUAL RATING BAR CODE
 
 	self.register = function(json, relative_x, relative_y) {
@@ -250,6 +302,7 @@ var Rating = function() {
 
 		var click = function(evt) {
 			evt.stopPropagation();
+			if (is_touching) return;
 			if (!json.rating_allowed && !User.rate_anything) return;
 			if (evt.target !== this) return;
 			var new_rating = get_rating_from_mouse(evt, relative_x, relative_y);
@@ -274,6 +327,10 @@ var Rating = function() {
 			json.$t.rating.addEventListener("mousemove", on_mouse_move);
 			json.$t.rating.addEventListener("mouseleave", on_mouse_out);
 			json.$t.rating.addEventListener("click", click);
+			json.$t.rating.addEventListener("touchstart", function(e) {
+				is_touching = true;
+				do_touch_rating(json, e);
+			});
 		}
 	};
 
