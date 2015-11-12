@@ -138,11 +138,17 @@ var AlbumList = function(el) {
 
 		if (item.rating_user) {
 			item._el.classList.add("rating_user");
-			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + 6) + "px";
+			// R4
+			// item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + 6) + "px";
+			// R5
+			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 28) + 6) + "px";
 		}
 		else {
 			item._el.classList.remove("rating_user");
-			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round((item.rating || 0) * 10) / 2)) * 30) + 6) + "px";
+			// R4
+			// item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round((item.rating || 0) * 10) / 2)) * 30) + 6) + "px";
+			// R5
+			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round((item.rating || 0) * 10) / 2)) * 28) + 6) + "px";
 		}
 	};
 
