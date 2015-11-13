@@ -1,6 +1,7 @@
 var AlbumList = function(el) {
 	"use strict";
 	var self = SearchList(el);
+	self.$t.list.classList.add("album_list_core");
 
 	var loading = false;
 	Prefs.define("faves_first");

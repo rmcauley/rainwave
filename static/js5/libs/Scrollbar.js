@@ -17,8 +17,10 @@ var Scrollbar = function() {
 
 		BOOTSTRAP.on_measure.push(function() {
 			scrollbar_width = 100 - t.scroller_size.scrollWidth;
+			// if scrollbars are 0 width (as they are on mobile, or Mac OS) we don't need customs
 			if (scrollbar_width !== 0) {
 				enabled = true;
+				document.body.classList.add("custom_scrollbars");
 			}
 		});
 
@@ -159,7 +161,7 @@ var Scrollbar = function() {
 			}
 
 			var top = Math.min(1, self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
-			handle.style[Fx.transform] = "translateX(-12px) translateY(" + Math.floor(handle_margin_top + top) + "px)";
+			handle.style[Fx.transform] = "translateX(-8px) translateY(" + Math.floor(handle_margin_top + top) + "px)";
 
 			if (self.reposition_hook) self.reposition_hook();
 		};

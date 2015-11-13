@@ -11,6 +11,7 @@ div.scrollable {
 }
 
 div.scroll_handle {
+	box-sizing: border-box;
 	position: absolute;
 	z-index: 90;
 	background-color: inherit;
@@ -19,12 +20,12 @@ div.scroll_handle {
 	border-color: #777;
 	top: 0px;
 	left: 100%;
-	width: 5px;
+	width: 8px;
 	min-height: 40px;
 	opacity: 0;
 	padding: 0;
 	margin: 0;
-	@include transform(translateX(-12px));
+	@include transform(translateX(-8px));
 	@include transition-wtime(250ms, opacity, background-color, height);
 
 	div.scrollblock:hover & {
