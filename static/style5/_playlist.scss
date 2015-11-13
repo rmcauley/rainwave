@@ -268,9 +268,17 @@ div.list {
 		&.rating_user {
 			background-image: $user_rating;
 
+			&.album_fave_highlight {
+				background-image: $fav_rating;
+			}
+
 			body.show_incomplete &.rating_incomplete {
 				background-color: #381e3d;
 				background-image: $incomplete_rating;
+
+				&.album_fave_highlight {
+					background-image: $incomplete_rating;
+				}
 
 				&.cool {
 					background-color: #2a162e;

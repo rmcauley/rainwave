@@ -18,6 +18,14 @@ div.rating {
 	&.rating_user {
 		background-image: $user_rating;
 
+		div.song_fave_highlight & {
+			background-image: $fav_rating;
+
+			body.show_incomplete &.rating_incomplete {
+				background-image: $incomplete_rating;
+			}
+		}
+
 		body.show_incomplete &.rating_incomplete {
 			background-image: $incomplete_rating;
 		}
@@ -44,6 +52,10 @@ div.rating {
 		visibility: hidden;
 		@include transition-wtime(200ms, opacity, transform, visibility);
 		@include transform(translateX(0px));
+
+		div.song_fave_highlight & {
+			color: $fave_color;
+		}
 	}
 
 	&:hover div.rating_hover {
