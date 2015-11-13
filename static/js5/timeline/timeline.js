@@ -402,6 +402,8 @@ var Timeline = function() {
 			}
 		}
 		var msg = self.add_message("event_" + sid, $l("special_event_alert", { "station": sname }), false, true);
+		// duplicate message
+		if (!msg) return;
 		var xmsg = document.createElement("span");
 		xmsg.textContent = Formatting.event_name(json.event_type, json.event_name);
 		msg.$t.message.appendChild(xmsg);
