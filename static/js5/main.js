@@ -80,10 +80,10 @@ var Stations = [];
 		for (i = 0; i < BOOTSTRAP.on_init.length; i++) {
 			BOOTSTRAP.on_init[i](template);
 		}
-	};
+	// };
 
-	var draw = function() {
-		var i;
+	// var draw = function() {
+	// 	var i;
 		if (User.id > 1) {
 			document.body.classList.add("logged_in");
 		}
@@ -121,6 +121,6 @@ var Stations = [];
 		Router.detect_url_change();
 	};
 
-	document.addEventListener("DOMContentLoaded", initialize);
-	window.addEventListener("load", draw);
+	//document.addEventListener("DOMContentLoaded", initialize);
+	window.addEventListener("load", initialize);
 }());
