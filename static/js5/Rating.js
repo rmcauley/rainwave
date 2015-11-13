@@ -194,6 +194,9 @@ var Rating = function() {
 		var zero_x = song.$t.rating.offsetLeft + rating_width - slider_width - 10;
 		var t = RWTemplates.rating_mobile();
 		var remove = function(e) {
+			if (e.target == song.$t.rating) {
+				do_rating(now_number, song);
+			}
 			Fx.remove_element(t.el);
 			song.$t.rating.removeEventListener("touchmove", touchmove);
 			document.body.removeEventListener("touchend", remove);
@@ -220,6 +223,20 @@ var Rating = function() {
 		requestAnimationFrame(function() {
 			t.el.classList.add("show");
 		});
+	};
+
+	var do_rating = function(new_rating, json) {
+		API.async_get("rate", { "rating": new_rating, "song_id": json.id },
+			function(newjson) {
+				json.rating_user = newjson.rate_result.rating_user;
+				if (json.$t.rating_clear) {
+					json.$t.rating_clear.parentNode.classList.add("capable");
+				}
+			},
+			function(newjson) {
+				// TODO: error handling
+			}
+		);
 	};
 
 	// INDIVIDUAL RATING BAR CODE
@@ -306,17 +323,7 @@ var Rating = function() {
 			if (evt.target !== this) return;
 			var new_rating = get_rating_from_mouse(evt, relative_x, relative_y);
 			if (json.rating_allowed || User.rate_anything) {
-				API.async_get("rate", { "rating": new_rating, "song_id": json.id },
-					function(newjson) {
-						json.rating_user = newjson.rate_result.rating_user;
-						if (json.$t.rating_clear) {
-							json.$t.rating_clear.parentNode.classList.add("capable");
-						}
-					},
-					function(newjson) {
-						// TODO: error handling
-					}
-				);
+				do_rating(new_rating, json);
 			}
 		};
 
