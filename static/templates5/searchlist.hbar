@@ -1,5 +1,5 @@
 <div class="searchbox_container">
-	<input type="text" bind="search_box" placeholder="{{ $l('search...') }}"/>
+	<input type="text" bind="search_box" placeholder="{{ $l('search...') }}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
 	<img src="/static/images4/search.png"/>
 </div>
 

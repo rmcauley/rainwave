@@ -441,7 +441,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		ignore_original_scroll_top = false;
 	};
 
-	search_box.addEventListener("input", function() {
+	search_box.addEventListener("input", function(e) {
 		if (!search_box.value.length) {
 			self.clear_search();
 		}
@@ -473,7 +473,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 
 		if (search_string.length > 0) {
-			search_box.value = search_string;
+			// search_box.value = search_string;
 			search_box.classList.add("active");
 		}
 		else {
