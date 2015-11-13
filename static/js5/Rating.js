@@ -194,9 +194,6 @@ var Rating = function() {
 		var zero_x = song.$t.rating.offsetLeft + rating_width - slider_width - 10;
 		var t = RWTemplates.rating_mobile();
 		var remove = function(e) {
-			if (e.target !== song.$t.rating) {
-				return;
-			}
 			Fx.remove_element(t.el);
 			song.$t.rating.removeEventListener("touchmove", touchmove);
 			document.body.removeEventListener("touchend", remove);
@@ -204,8 +201,7 @@ var Rating = function() {
 		};
 		var now_number = 5;
 		var highlight = function(rating, width) {
-			// todo: animate this at 25 steps
-			t.number.style[Fx.transform] = "translateX(" + width + "px)";
+			t.number.style[Fx.transform] = "translateX(" + (width - 15) + "px)";
 			t.slider.style.backgroundPosition = "0px " + -(Math.max(5, Math.min(25, Math.floor(width / ((slider_width - 25) / 24)))) * 96) + "px";
 			if (rating === now_number) return;
 			now_number = rating;

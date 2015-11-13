@@ -93,12 +93,12 @@ div.mobile_rating {
 	left: 100%;
 	background: #000;
 	padding: 10px 15px 10px 5px;
-	@include transform(translateX(-100%));
+	@include transform(translateX(-100%) translateY(-1em));
 	@include transition-wtime(200ms, opacity, transform);
 
 	&.show {
 		opacity: 1;
-		@include transform(translateX(-100%) translateY(-1em));
+		@include transform(translateX(-100%) translateY(-2.5em));
 	}
 
 	div.slider {
@@ -111,6 +111,6 @@ div.mobile_rating {
 
 	div.slide_number {
 		position: absolute;
-		top: -5px;
+		top: -8px;
 	}
 }
