@@ -284,6 +284,7 @@ div.list {
 				background-repeat: no-repeat;
 				background-size: 14px;
 				background-image: url('/static/images4/new.png');
+				background-position: 3px 0px;
 				@include transition-wtime(300ms, padding, background-position, LINKCOLOR);
 				color: $orange;
 			}
@@ -302,6 +303,7 @@ div.list {
 				background-repeat: no-repeat;
 				background-size: 14px;
 				background-image: url('/static/images4/newish.png');
+				background-position: 3px 0px;
 				@include transition-wtime(300ms, padding, background-position);
 			}
 
