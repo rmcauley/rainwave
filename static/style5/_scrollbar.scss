@@ -8,6 +8,7 @@ div.scrollable {
 	overflow-y: auto;
 	box-sizing: border-box;
 	position: relative;
+	-webkit-overflow-scrolling: touch;
 }
 
 div.scroll_handle {
