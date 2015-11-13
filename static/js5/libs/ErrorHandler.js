@@ -11,6 +11,7 @@
 		template._root.parentNode.classList.add("error");
 
 		try {
+			API.sync_stop();
 			var submit_obj = {
 				"name": exception.name,
 				"message": exception.message,
