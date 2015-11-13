@@ -30,7 +30,7 @@ class ErrorReport(APIHandler):
         if not self.request.headers.get("Referer"):
             raise APIException("auth_failed", "Error reporting cannot be made from an external address. (no referral)")
         refhost = urlsplit(self.request.headers.get("Referer")).hostname
-        if not refhost or not refhost in config.station_hostnames:
+        if not refhost or not refhost in config.station_hostnames or not config.has("accept_error_reports_from_hosts") or not refhost in config.get("accept_error_reports_from_hosts"):
             raise APIException("auth_failed", "Error reporting cannot be made from an external address. (%s)" % refhost)
         return super(ErrorReport, self).prepare()
 
