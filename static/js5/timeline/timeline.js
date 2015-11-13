@@ -188,7 +188,8 @@ var Timeline = function() {
 		el.appendChild(msg.$t.el);
 		messages.push(msg);
 		if (msg.$t.close) {
-			msg.$t.close.addEventListener("click", function() {
+			msg.$t.close.addEventListener("click", function(e) {
+				e.stopPropagation();
 				self.remove_message(id);
 			});
 		}
@@ -393,12 +394,14 @@ var Timeline = function() {
 
 	var do_event = function(json, sid) {
 		var url;
+		var sname;
 		for (var i = 0; i < Stations.length; i++) {
 			if (Stations[i].id == sid) {
 				url = Stations[i].url;
+				sname = Stations[i].name;
 			}
 		}
-		var msg = self.add_message("event_" + sid, $l("special_event_on_now"), false, true);
+		var msg = self.add_message("event_" + sid, $l("special_event_alert", { "station": sname }), false, true);
 		var xmsg = document.createElement("span");
 		xmsg.textContent = Formatting.event_name(json.event_type, json.event_name);
 		msg.$t.message.appendChild(xmsg);
@@ -413,7 +416,7 @@ var Timeline = function() {
 		var sid;
 		for (sid in json) {
 			if (json[sid] && json[sid].event_name && (sid != User.sid)) {
-				do_event(json[sid]);
+				do_event(json[sid], sid);
 			}
 			else if (!json[sid].event_name) {
 				self.close_message("event_" + sid);
