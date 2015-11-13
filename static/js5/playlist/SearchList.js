@@ -615,7 +615,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	Sizing.add_resize_callback(function() {
-		scroll.offset_height = Sizing.sizeable_area_height - 84;
+		scroll.offset_height = Sizing.sizeable_area_height - 80;
 		template.list.style.height = scroll.offset_height + "px";
 		if (num_items_to_display === undefined) return;
 		current_scroll_index = false;
