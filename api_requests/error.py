@@ -51,7 +51,7 @@ class ErrorReport(APIHandler):
         if not isinstance(reports, list):
             reports = []
 
-        reports.append(self.cleaned_args)
+        reports.insert(0, self.cleaned_args)
         cache.set("error_reports", reports)
 
         self.append_standard("report_submitted", "Error report submitted.")
