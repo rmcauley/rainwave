@@ -9,12 +9,6 @@ div.rating {
 	margin: 0;
 	height: $rating_height;
 
-	body.logged_in.full &.rating_song {
-		&.rating_user {
-			background-image: $user_rating;
-		}
-	}
-
 	&.rating_user {
 		background-image: $user_rating;
 
@@ -38,6 +32,10 @@ div.rating {
 			margin-left: 25px;
 			@include no-transition();
 			background-image: $user_rating;
+
+			div.song_fave_highlight & {
+				background-image: $fav_rating;
+			}
 		}
 	}
 
