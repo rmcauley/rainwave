@@ -52,6 +52,10 @@ body {
 			@include no-transition();
 		}
 	}
+
+	&.safari {
+		-webkit-font-smoothing: antialiased;
+	}
 }
 
 body.desktop.small.full {

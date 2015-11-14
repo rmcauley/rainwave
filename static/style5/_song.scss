@@ -1,10 +1,12 @@
 $song_transitions: opacity $transtime, transform $transtime, background-position 250ms linear;
+$webkit_song_transitions: opacity $transtime, -webkit-transform $transtime, background-position 250ms linear;
+
 
 div.song {
 	box-sizing: border-box;
 	position: absolute;
 	cursor: default;
-	-webkit-transition: $song_transitions, border-color $transtime, background-color $transtime;
+	-webkit-transition: $webkit_song_transitions, border-color $transtime, background-color $transtime;
 	        transition: $song_transitions, border-color $transtime, background-color $transtime;
 	height: $art_size;
 	width: 100%;
@@ -110,7 +112,7 @@ div.song {
 			&:hover {
 				border-color: $hovercolor-border;
 				background-color: $hovercolor;
-				-webkit-transition: $song_transitions;
+				-webkit-transition: $webkit_song_transitions;
 	        	        transition: $song_transitions;
 			}
 

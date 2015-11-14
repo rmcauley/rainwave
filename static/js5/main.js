@@ -87,6 +87,11 @@ var Stations = [];
 		if (User.id > 1) {
 			document.body.classList.add("logged_in");
 		}
+		// Safari has CSS and font rendering issues :/
+		var ua = navigator.userAgent.toLowerCase();
+		if ((ua.indexOf("safari") !== -1) && (ua.indexOf("chrome") === -1)) {
+			document.body.classList.add("safari");
+		}
 		document.body.appendChild(template._root);
 
 		for (i = 0; i < BOOTSTRAP.on_measure.length; i++) {

@@ -9,7 +9,7 @@
 	width: 360px;
 	background: #05101E;
 	border-left: solid 5px #133563;
-	
+
 	@include transition-wtime(350ms, transform, border-color, background-color);
 	@include transform(translateX(-5px));
 }
@@ -23,8 +23,9 @@ body.stage_0 #requests_positioner, body.stage_1 #requests_positioner, body.stage
 	background-color: #133563;
 	margin-left: -1.5em;
 	padding: 0px 15px;
-	transform: translate(-100%, 0px) rotate(-90deg);
-	transform-origin: right top 0px;
+	-webkit-transform-origin: right top 0px;
+	        transform-origin: right top 0px;
+	@include transform(translate(-100%, 0px) rotate(-90deg));
 	@include transition-wtime(350ms, background-color);
 }
 
