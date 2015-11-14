@@ -103,6 +103,7 @@ var AlbumView = function(album) {
 	}
 
 	Rating.register(album);
+	Fave.register(album);
 
 	for (i = 0; i < album.songs.length; i++) {
 		Fave.register(album.songs[i]);

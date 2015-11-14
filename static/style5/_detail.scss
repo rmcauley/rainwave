@@ -110,6 +110,15 @@ div.detail {
 			display: none;
 		}
 	}
+
+	div.album_detail_faverate {
+		float: right;
+
+		div.fave {
+			float: none;
+			margin-right: 5px;
+		}
+	}
 }
 
 
