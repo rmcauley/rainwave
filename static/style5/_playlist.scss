@@ -131,6 +131,22 @@ div.lists {
 			@include transition-wtime(300ms, opacity);
 		}
 
+		img.cancel {
+			display: none;
+			opacity: 1;
+			cursor: pointer;
+			z-index: 2;
+		}
+
+		&.active {
+			img.cancel {
+				display: inline;
+			}
+			img.search {
+				display: none;
+			}
+		}
+
 		input {
 			box-sizing: border-box;
 			border: none;
