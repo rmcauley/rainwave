@@ -24,11 +24,11 @@ var Modal = function() {
 		}
 		if (!chaining) {
 			blocker.classList.remove("active");
-			Fx.chain_transition(blocker, function() {
+			setTimeout(function() {
 				if (blocker.parentNode && !blocker.classList.contains("active")) {
 					blocker.parentNode.removeChild(blocker);
 				}
-			});
+			}, 300);
 		}
 	};
 
