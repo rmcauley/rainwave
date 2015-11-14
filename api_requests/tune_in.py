@@ -22,6 +22,7 @@ class TuneInIndex(api.web.HTMLRequest):
 	description = "Provides the user with an M3U file containing Ogg or MP3 URLs to relays."
 	login_required = False
 	auth_required = False
+	sid_required = False
 
 	def prepare(self):
 		super(TuneInIndex, self).prepare()
