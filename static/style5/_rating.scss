@@ -39,13 +39,13 @@ div.rating {
 		}
 	}
 
-	div.rating_hover {
+	div.rating_number {
 		position: absolute;
 		height: $rating_height;
-		width: 25px;
+		width: 23px;
 		padding-right: 2px;
 		opacity: 0;
-		text-align: right;
+		text-align: center;
 		color: $highlight;
 		visibility: hidden;
 		@include transition-wtime(200ms, opacity, transform, visibility);
@@ -54,12 +54,47 @@ div.rating {
 		div.song_fave_highlight & {
 			color: $fave_color;
 		}
+
+		&.rating_confirm {
+			background: #A8ECFF;
+			color: #A8ECFF;
+			overflow: hidden;
+			visibility: visible;
+
+			$color_transtime: 300ms;
+			$opacity_transtime: 200ms;
+			$wait_transtime: 2s;
+			$confirm_transtime: 300ms;
+
+			&.confirming {
+				opacity: 1;
+				@include transform(translateX(0px) scaleX(1) !important);
+				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, -webkit-transform $wait_transtime;
+				        transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, transform $wait_transtime;
+			}
+
+			&.confirmed {
+				background: $blue;
+				color: $text;
+				@include transform(translateX(-25px) scaleX(1) !important);
+				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, -webkit-transform $confirm_transtime;
+				        transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, transform $confirm_transtime;
+			}
+
+			&.bad_rating {
+				background: #F00;
+				color: $text;
+				@include transform(translateX(-25px) scaleX(1) !important);
+				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, -webkit-transform $confirm_transtime;
+				        transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, transform $confirm_transtime;
+			}
+		}
 	}
 
 	&:hover div.rating_hover {
 		opacity: 1;
 		visibility: visible;
-		@include transform(translateX(-27px));
+		@include transform(translateX(-25px));
 	}
 }
 
