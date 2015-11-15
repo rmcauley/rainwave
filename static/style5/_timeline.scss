@@ -55,11 +55,10 @@ div.timeline_event {
 	box-sizing: border-box;
 	position: absolute;
 	width: 100%;
-	@include transition(transform, opacity);
+	@include transition(transform, opacity, visibility);
 
 	&.sched_history_hidden {
 		visibility: hidden;
-		@include transition(transform, opacity, visibility);
 	}
 
 	&:hover {
