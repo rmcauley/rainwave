@@ -133,7 +133,10 @@ var Audio = function() {
 
 		if (!audio_el) {
 			audio_el = document.createElement("audio");
-			audio_el.setAttribute("preload", "none");
+			// this should be set but it breaks Safari
+			// I guess it doesn't matter much since we're playing anyway
+			// and this doesn't appear on page load, though. >_>
+			// audio_el.setAttribute("preload", "none");
 			audio_el.addEventListener("stop", self.stop);
 			// do not use "play" - it must be "playing"!!
 			audio_el.addEventListener("playing", self.on_play);
