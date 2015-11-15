@@ -94,6 +94,8 @@ var Menu = function() {
 				template.calendar_dropdown.classList.remove("show_calendar");
 			};
 		}
+
+		API.add_callback("all_stations_info", update_station_info);
 	});
 
 	var toggle_station_select = function(e) {
@@ -126,36 +128,18 @@ var Menu = function() {
 		}
 	};
 
-	// var update_station_info = function(json) {
-	// 	var do_event_alert, event_desc, event_sid;
-	// 	for (var key in json) {
-	// 		if (json[key] && elements.stations[key]) {
-	// 			if (!event_alert && json[key].event_name && (key != User.sid)) {
-	// 				event_sid = key;
-	// 				$add_class(elements.stations[key], "event_ongoing");
-
-	// 				elements.stations[key]._desc.textContent = $l("special_event_on_now");
-	// 				event_desc = Formatting.event_name(json[key].event_type, json[key].event_name);
-	// 				elements.stations[key]._desc.textContent += event_desc;
-
-	// 				if (event_alerts_closed.indexOf(json[key].event_name) == -1) {
-	// 					do_event_alert = json[key];
-	// 				}
-	// 			}
-	// 			else if (!json[key].event_name) {
-	// 				remove_event_alert();
-	// 				$remove_class(elements.stations[key], "event_ongoing");
-	// 				elements.stations[key]._desc.textContent = $l("station_menu_description_id_" + key);
-	// 			}
-
-	// 			if (songs[key]) {
-	// 				songs[key].el.parentNode.removeChild(songs[key].el);
-	// 			}
-	// 			json[key].albums = [ { "art": json[key].art, "name": json[key].album } ];
-	// 			songs[key] = TimelineSong.create(json[key]);
-	// 			elements.stations[key]._np_info.appendChild(songs[key].el);
-	// 		}
-	// 	}
+	var update_station_info = function(json) {
+		var i, key;
+		for (key in json) {
+			for (i = 0; i < Stations.length; i++) {
+				if ((Stations[i].id == key) && Stations[i].$t.menu_np_art) {
+					Stations[i].$t.menu_np_art.style.backgroundImage = "url(" + json[key].art + "_120.jpg)";
+					Stations[i].$t.menu_np_song.textContent = json[key].title;
+					Stations[i].$t.menu_np_album.textContent = json[key].album;
+				}
+			}
+		}
+	};
 
 	return self;
 }();

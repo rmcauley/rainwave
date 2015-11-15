@@ -56,7 +56,13 @@
 			</a>
 			{{#each stations}}
 				<a bind="menu_link" class="station">
-					<div bind="menu_np" class="station_song_container"></div>
+					{{#if ^_c.id != BOOTSTRAP.user.sid}}
+						<div bind="menu_np" class="station_song_container">
+							<div bind="menu_np_art" class="ss_art"></div>
+							<div bind="menu_np_song" class="ss_title"></div>
+							<div bind="menu_np_album" class="ss_album"></div>
+						</div>
+					{{/if}}
 					<div class="station_details">
 						<div class="station_name">{{ name }}</div>
 						{{#if ^_c.id == BOOTSTRAP.user.sid}}

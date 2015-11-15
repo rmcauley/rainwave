@@ -162,44 +162,45 @@ $station_select_width: 270px;
 				display: none;
 			}
 
-			// body.tuned_in &.currently_using_station {
-			// 	display: none;
-			// }
-
-			// &.currently_tuned_in {
-			// 	display: none;
-			// }
-
 			body.tuned_in & span.currently_tuned_in {
-				// display: block;
 				color: $orange * 2;
 				padding-left: 5px;
 			}
 		}
 
 		div.station_song_container {
+			visibility: hidden;
+			position: relative;
+			width: 160px;
 			float: right;
-			border-top: 1px solid rgba(0, 0, 0, 0.1);
-			@include transform(translateX(100%));
-
-			-webkit-transition: transform 700ms $menu_transfunc, opacity 300ms $transfunc;
-			        transition: transform 700ms $menu_transfunc, opacity 300ms $transfunc;
+			top: 50%;
+			font-size: smaller;
+			opacity: 0;
+			@include transform(translateX(100%) translateY(-50%));
+			-webkit-transition: -webkit-transform 700ms $menu_transfunc, opacity 300ms $transfunc, visibility 700ms $menu_transfunc;
+			        transition: transform 700ms $menu_transfunc, opacity 300ms $transfunc, visibility 700ms $menu_transfunc;
 
 			@media $phone-media {
 				display: none;
 			}
 
-			div.timeline_song {
-				font-weight: 300;
-				font-size: .9em;
-				height: $station_height - 14;
-				top: 50%;
-				@include transform(translateY(-50%));
+			div {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
 			}
 
-			div.art_anchor, div.art_container {
-				height: $station_height - 14;
-				width: $station_height - 14;
+			div.ss_title {
+				margin-top: 7px;
+			}
+
+			div.ss_art {
+				float: left;
+				height: $station_height - 20;
+				width: $station_height - 20;
+				background-size: contain;
+				background-position: center;
+				background-repeat: no-repeat;
 			}
 		}
 	}
@@ -231,12 +232,12 @@ $station_select_width: 270px;
 		}
 
 		div.station_song_container {
+			visibility: visible;
 			opacity: 0.7;
-			@include transform(translateX(0%));
+			@include transform(translateX(0%) translateY(-50%));
 		}
 
 		&:hover div.station_song_container {
-			@include transform(translateX(-100%));
 			opacity: 1.0;
 		}
 
