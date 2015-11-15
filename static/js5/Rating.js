@@ -230,27 +230,35 @@ var Rating = function() {
 		confirm.className = "rating_number rating_confirm";
 		confirm.textContent = Formatting.rating(new_rating);
 		confirm.style[Fx.transform] = "translateX(" + Math.round((new_rating / 5.0 * 50) - 15) + "px) scaleX(0.2)";
-		json.$t.rating.appendChild(confirm);
+		json.$t.rating.insertBefore(confirm, json.$t.rating.firstChild);
 		setTimeout(function() {
 			confirm.classList.add("confirming");
 		}, 20);
 		API.async_get("rate", { "rating": new_rating, "song_id": json.id },
 			function(newjson) {
-				confirm.classList.add("confirmed");
+				setTimeout(function() {
+					confirm.classList.add("confirmed");
+				}, 20);
 				json.rating_user = newjson.rate_result.rating_user;
 				if (json.$t.rating_clear) {
 					json.$t.rating_clear.parentNode.classList.add("capable");
 				}
 				setTimeout(function() {
-					Fx.remove_element(confirm);
+					confirm.style.opacity = "0";
+					setTimeout(function() {
+						confirm.parentNode.removeChild(confirm);
+					}, 250);
 				}, 1500);
 			},
 			function(newjson) {
 				confirm.textContent = "!";
 				confirm.classList.add("bad_rating");
 				setTimeout(function() {
-					Fx.remove_element(confirm);
-				}, 1000);
+					confirm.style.opacity = "0";
+					setTimeout(function() {
+						confirm.parentNode.removeChild(confirm);
+					}, 250);
+				}, 1500);
 			}
 		);
 	};

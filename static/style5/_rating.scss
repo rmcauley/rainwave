@@ -61,7 +61,7 @@ div.rating {
 			overflow: hidden;
 			visibility: visible;
 
-			$color_transtime: 300ms;
+			$color_transtime: 500ms;
 			$opacity_transtime: 200ms;
 			$wait_transtime: 2s;
 			$confirm_transtime: 300ms;
@@ -74,7 +74,7 @@ div.rating {
 			}
 
 			&.confirmed {
-				background: $blue;
+				background: transparent;
 				color: $text;
 				@include transform(translateX(-25px) scaleX(1) !important);
 				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, -webkit-transform $confirm_transtime;
@@ -95,6 +95,14 @@ div.rating {
 		opacity: 1;
 		visibility: visible;
 		@include transform(translateX(-25px));
+	}
+
+	&:hover div.rating_confirm + div.rating_hover, &:hover div.rating_confirm + div.rating_number {
+		opacity: 0;
+	}
+
+	div.rating_confirm + div.rating_number {
+		opacity: 0 !important;
 	}
 }
 
