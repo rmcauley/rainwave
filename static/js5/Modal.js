@@ -18,7 +18,7 @@ var Modal = function() {
 			if (modal_to_close.classList.contains("modal_container") && !modal_to_close.classList.contains("modal_closing")) {
 				modal_to_close.classList.add("modal_closing");
 				setTimeout(function(e, el) {
-					el.parentNode.removeChild(el);
+					modal_to_close.parentNode.removeChild(el);
 				}, 300);
 			}
 		}
@@ -51,8 +51,8 @@ var Modal = function() {
 		setTimeout(function() {
 			mt.container.classList.add("open");
 			blocker.classList.add("active");
-			setTimeout(function(e, el) {
-				el.classList.add("full_open");
+			setTimeout(function() {
+				mt.container.classList.add("full_open");
 			}, 300);
 		}, 1);
 		return ct;

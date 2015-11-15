@@ -34,6 +34,11 @@
 		API.add_callback("redownload_m3u", redownload_m3u_message);
 	});
 
+	self.test_modal = function() {
+		var template = Modal($l("crash_happened"), "modal_error", null, true);
+		template._root.parentNode.classList.add("error");
+	};
+
 	var redownload_m3u_message = function() {
 		self.nonpermanent_error(self.make_error("redownload_m3u", 200));
 	};
