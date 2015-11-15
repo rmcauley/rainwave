@@ -17,9 +17,9 @@ var Modal = function() {
 			modal_to_close = document.body.children[i];
 			if (modal_to_close.classList.contains("modal_container") && !modal_to_close.classList.contains("modal_closing")) {
 				modal_to_close.classList.add("modal_closing");
-				Fx.chain_transition(modal_to_close, function(e, el) {
+				setTimeout(function(e, el) {
 					el.parentNode.removeChild(el);
-				});
+				}, 300);
 			}
 		}
 		if (!chaining) {
@@ -51,9 +51,9 @@ var Modal = function() {
 		setTimeout(function() {
 			mt.container.classList.add("open");
 			blocker.classList.add("active");
-			Fx.chain_transition(mt.container, function(e, el) {
+			setTimeout(function(e, el) {
 				el.classList.add("full_open");
-			});
+			}, 300);
 		}, 1);
 		return ct;
 	};
