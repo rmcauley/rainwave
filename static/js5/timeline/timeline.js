@@ -190,7 +190,7 @@ var Timeline = function() {
 		if (msg.$t.close) {
 			msg.$t.close.addEventListener("click", function(e) {
 				e.stopPropagation();
-				self.remove_message(id);
+				self.close_message(id);
 			});
 		}
 		if (!no_reflow) {
