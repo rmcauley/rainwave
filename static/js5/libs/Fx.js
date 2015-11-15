@@ -29,12 +29,20 @@ var Fx = function() {
 		else {
 			self.chain_transition(el,
 				function() {
-					if (el.parentNode) el.parentNode.removeChild(el);
+					if (el.parentNode) {
+						el.parentNode.removeChild(el);
+					}
 				}
 			);
 			setTimeout(function() {
 				el.style.opacity = 0;
 			}, 1);
+			// failsafe
+			setTimeout(function() {
+				if (el.parentNode) {
+					el.parentNode.removeChild(el);
+				}
+			});
 		}
 	};
 
