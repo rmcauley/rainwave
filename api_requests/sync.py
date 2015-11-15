@@ -134,7 +134,7 @@ class SessionBank(object):
 					session.user.refresh(session.sid)
 					if not session.user.is_tunedin():
 						log.debug("sync_update_ip", "Warning logged in user of potential M3U mixup at IP %s" % session.request.remote_ip)
-						self.append("redownload_m3u", { "tl_key": "redownload_m3u", "text": self.locale.translate("redownload_m3u") })
+						session.append("redownload_m3u", { "tl_key": "redownload_m3u", "text": session.locale.translate("redownload_m3u") })
 						do_finish = True
 			except Exception as e:
 				do_finish = True
