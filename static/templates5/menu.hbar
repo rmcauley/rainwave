@@ -56,7 +56,7 @@
 			</a>
 			{{#each stations}}
 				<a bind="menu_link" class="station">
-					{{#if ^_c.id != BOOTSTRAP.user.sid}}
+					{{#if ^_c.id != BOOTSTRAP.user.sid && !MOBILE}}
 						<div bind="menu_np" class="station_song_container">
 							<div bind="menu_np_art" class="ss_art"></div>
 							<div bind="menu_np_song" class="ss_title"></div>

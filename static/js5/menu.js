@@ -95,7 +95,9 @@ var Menu = function() {
 			};
 		}
 
-		API.add_callback("all_stations_info", update_station_info);
+		if (!MOBILE) {
+			API.add_callback("all_stations_info", update_station_info);
+		}
 	});
 
 	var toggle_station_select = function(e) {
