@@ -3,11 +3,11 @@ function HDivChart(data) {
 
     var total = 0;
     for (var i = 0; i < data.length; i++) {
-        total += data[i].count;
+        total += data[i].value;
     }
     var total_percent = 0;
     for (i = 0; i < data.length; i++) {
-        data[i].share = Math.floor(data[i].count / total * 100);
+        data[i].share = Math.floor(data[i].value / total * 100);
         total_percent += data[i].share;
     }
     // fudge things
@@ -17,13 +17,15 @@ function HDivChart(data) {
 
     var outside = document.createElement("div");
     outside.className = "chart_outside";
-    var d, t;
+    var d, t, pos;
+    pos = 0;
     for (i = 0; i < data.length; i++) {
         d = document.createElement("div");
         d.className = "chart_bar";
         d.style.width = data[i].share + "%";
         d.style.backgroundColor = data[i].color;
-        d.style.left = (i * Math.floor(100 / data.length)) + "%";
+        d.style.left = pos + "%";
+        pos += data[i].share;
         if (data[i].label) {
             t = document.createElement("span");
             t.className = "chart_label";

@@ -32,7 +32,9 @@
 			<img src="/static/images4/cancel.png" alt="X" />
 		</div>
 		<ul class="panel_header" bind="detail_header_container">
-			<li class="open" bind="detail_header"></li>
+			<li class="open">
+				<span bind="detail_header"></span>
+			</li>
 		</ul>
 		<div bind="detail"></div>
 	</div>

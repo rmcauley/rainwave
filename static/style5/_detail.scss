@@ -40,23 +40,33 @@ div.detail {
 	div.detail_header {
 		color: $darktext;
 		font-size: 0.8em;
-		margin: 0 15px 0 10px;
+		margin: 0 10px 0 110px;
 
-		p {
-			margin: 0 0 0 105px;
-			padding: 0 0 0 5px;
+		div.new_indicator {
+			color: $orange;
+			background-repeat: no-repeat;
+			background-size: 12px;
+			background-image: url('/static/images4/new.png');
+		}
 
-			&.new_indicator {
-				color: $orange;
-				background-repeat: no-repeat;
-				background-size: 12px;
-				background-image: url('/static/images4/new.png');
-			}
+		div.newish_indicator {
+			background-repeat: no-repeat;
+			background-size: 12px;
+			background-image: url('/static/images4/newish.png');
+		}
 
-			&.newish_indicator {
-				background-repeat: no-repeat;
-				background-size: 12px;
-				background-image: url('/static/images4/newish.png');
+		div.genres {
+			div.category_list {
+				box-sizing: border-box;
+				position: absolute;
+				background: #272727;
+				padding: 5px 5px 5px 15px;
+				width: 100%;
+				z-index: 1;
+
+				a {
+					display: block;
+				}
 			}
 		}
 	}
@@ -88,6 +98,7 @@ div.detail {
 			text-overflow: ellipsis;
 			white-space: break-all;
 			word-break: break-all;
+			padding-right: 30px;
 		}
 	}
 
@@ -96,31 +107,20 @@ div.detail {
 		position: relative;
 	}
 
-	p.genres {
-		// things get really wonky without this
-		// since it's a collection of spans, words don't get broken at all
-		// I don't understand it, but that's browser behaviour for you
-		word-break: break-all;
-
-		span + a {
-			margin-left: 3px;
-		}
-
-		span:last-child {
-			display: none;
-		}
-	}
-
 	div.album_detail_faverate {
+		width: $rating_width + 20;
 		float: right;
 
-		div.fave {
+		div.fave img.fave_lined {
+			opacity: 0.5;
+		}
+
+		div.rating {
 			float: none;
-			margin-right: 5px;
+			margin-left: 20px;
 		}
 	}
 }
-
 
 div.row {
 	padding: 2px 10px 2px 10px;

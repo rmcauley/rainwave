@@ -1,13 +1,13 @@
 var RatingColors = {
-	"1.0": "#FF6801",
-	"1.5": "#F79450",
-	"2.0": "#F2B084",
-	"2.5": "#EDCDB7",
-	"3.0": "#E8E8E8",
-	"3.5": "#B4D6ED",
-	"4.0": "#7FC3F2",
-	"4.5": "#4CB1F7",
-	"5.0": "#0197FF"
+	"1.0": "#11537f",
+	"1.5": "#206898",
+	"2.0": "#2873a7",
+	"2.5": "#3281b7",
+	"3.0": "#3789c1",
+	"3.5": "#3789c1",
+	"4.0": "#459cd7",
+	"4.5": "#4ca6e3",
+	"5.0": "#55b3f3"
 };
 
 var RatingChart = function(json) {
@@ -29,7 +29,7 @@ var AlbumView = function(album) {
 	"use strict";
 
 	album.num_song_ratings = 0;
-	for (var i in AlbumViewColors) {
+	for (var i in RatingColors) {
 		if (i in album.rating_histogram) {
 			album.num_song_ratings += album.rating_histogram[i];
 		}
@@ -96,9 +96,22 @@ var AlbumView = function(album) {
 	var template = RWTemplates.detail.album(album, !MOBILE ? document.createElement("div") : null);
 	AlbumArt(album.art, template.art);
 
-	var chart = RatingChart(album);
-	if (chart) {
-		template._root.appendChild(chart);
+	if (template.category_rollover) {
+		template.category_list.parentNode.removeChild(template.category_list);
+		template.category_rollover.parentNode.addEventListener("mouseenter", function() {
+			template.category_rollover.parentNode.appendChild(template.category_list);
+		});
+		template.category_rollover.parentNode.addEventListener("mouseleave", function() {
+			template.category_list.parentNode.removeChild(template.category_list);
+		});
+	}
+
+	if (template.graph_placement) {
+		var chart = RatingChart(album);
+		if (chart) {
+			template.graph_placement.parentNode.replaceChild(chart, template.graph_placement);
+		}
+		template.graph_placement = null;
 	}
 
 	for (i = 0; i < album.songs.length; i++) {
@@ -126,7 +139,7 @@ var AlbumView = function(album) {
 	}
 
 	Rating.register(album);
-	Fave.register(album);
+	Fave.register(album, true);
 
 	for (i = 0; i < album.songs.length; i++) {
 		Fave.register(album.songs[i]);

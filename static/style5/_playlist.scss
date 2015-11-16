@@ -353,18 +353,22 @@ div.list {
 body.simple div.close {
 	position: absolute;
 	left: 100%;
-	top: 12px;
+	top: 11px;
 	cursor: pointer;
+	opacity: 0.6;
 	@include transform(translateX(-25px));
 
 	img {
 		width: 14px;
 		height: 14px;
-		opacity: 0.5;
-		@include transition-wtime(300ms, opacity);
+	}
+}
 
-		&:hover {
-			opacity: 1;
-		}
+body.simple.desktop div.close {
+	opacity: 0.5;
+	@include transition-wtime(300ms, opacity);
+
+	&:hover {
+		opacity: 1;
 	}
 }

@@ -1,4 +1,4 @@
-<div class="album_detail_faverate">
+<div class="album_detail_faverate" bind="_extra_element">
 	{{>fave}}
 	{{>rating_album}}
 </div>
@@ -12,21 +12,33 @@
 		<p class="year">{{ $l("album_year", { "year": _c.year }) }}</p>
 	{{/if}}-->
 	{{#if new_indicator }}
-		<p class="{{ new_indicator_class }}">{{ new_indicator }}</p>
+		<div class="{{ new_indicator_class }}">{{ new_indicator }}</div>
 	{{/if}}
-	{{#if rating }}
-		<p>{{ rating_percentile_message }}</p>
+	{{#if rating_count }}
+		<div>
+			<span>{{ $l("album_rating_detail") }}</span>
+			<span style="margin-left: 3px;">
+				{{ $l("album_rating_detail_numbers", { "rating": _c.rating, "count": _c.rating_count, "percentile": _c.rating_rank_percentile, "percentile_message": _c.rating_percentile_message }) }}
+			</span>
+			<div bind="graph_placement"></div>
+		</div>
 	{{/if}}
 	{{#if request_count }}
-		<p>{{ request_percentile_message }}</p>
+		<div>{{ request_percentile_message }}</div>
 	{{/if}}
 	{{#if ^_c.genres.length && !MOBILE }}
-		<p class="genres">
-			<span>{{ $l("relevant_categories") }}</span>
-			{{#each genres }}
+		<div class="genres">
+			{{#if ^_c.genres.length == 1 }}
+				<span>{{ $l("relevant_category") }}</span>
 				<a href="#!/group/{{ id }}">{{ name }}</a>
-				<span>, </span>
-			{{/each}}
-		</p>
+			{{else}}
+				<div bind="category_rollover">{{ $l("relevant_categories_rollover")}}</div>
+				<div bind="category_list" class="category_list">
+					{{#each genres }}
+						<a href="#!/group/{{ id }}">{{ name }}</a>
+					{{/each}}
+				</div>
+			{{/if}}
+		</div>
 	{{/if}}
 </div>
