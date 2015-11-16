@@ -210,11 +210,16 @@ var Timeline = function() {
 		if (!msg) {
 			return null;
 		}
+		if (msg.closed) {
+			return null;
+		}
 
 		msg.closed = true;
 		msg.$t.el.style[Fx.transform] = "translateY(-50px)";
 		setTimeout(function() {
-			msg.$t.el.parentNode.removeChild(msg.$t.el);
+			if (msg.$t.el.parentNode) {
+				msg.$t.el.parentNode.removeChild(msg.$t.el);
+			}
 		}, 1000);
 		self.reflow();
 
