@@ -7,11 +7,7 @@
 	<div bind="art" class="art_container"></div>
 </div>
 
-{{#if ^!Sizing.simple}}
-	<canvas bind="rating_graph" width="100" height="80" class="ratings"></canvas>
-{{/if}}
-
-<div class="detail_header">
+<div class="detail_header" bind="detail_header">
 	<!--{{#if year }}
 		<p class="year">{{ $l("album_year", { "year": _c.year }) }}</p>
 	{{/if}}-->

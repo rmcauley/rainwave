@@ -1,4 +1,4 @@
-var AlbumViewColors = {
+var RatingColors = {
 	"1.0": "#FF6801",
 	"1.5": "#F79450",
 	"2.0": "#F2B084",
@@ -10,15 +10,19 @@ var AlbumViewColors = {
 	"5.0": "#0197FF"
 };
 
-var AlbumViewRatingPieChart = function(ctx, album) {
-	"use strict";
-
+var RatingChart = function(json) {
 	var data = [];
-	for (var i in AlbumViewColors) {
-		if (i in album.rating_histogram) data.push({ "value": Math.round(album.rating_histogram[i] / album.num_song_ratings * 100), "color": AlbumViewColors[i], "highlight": "#FFF", "label": i });
+	for (var i in RatingColors) {
+		if (i in json.rating_histogram) {
+			data.push({
+				"value": json.rating_histogram[i],
+				"color": RatingColors[i],
+				"label": i
+			});
+		}
 	}
 	if (data.length === 0) return;
-	new Chart(ctx).Doughnut(data, { "segmentStrokeWidth": 1, "animationSteps": 40, "tooltipTemplate": "<%if (label){%><%=label%>: <%}%><%= value %>%", });
+	return HDivChart(data);
 };
 
 var AlbumView = function(album) {
@@ -92,6 +96,11 @@ var AlbumView = function(album) {
 	var template = RWTemplates.detail.album(album, !MOBILE ? document.createElement("div") : null);
 	AlbumArt(album.art, template.art);
 
+	var chart = RatingChart(album);
+	if (chart) {
+		template._root.appendChild(chart);
+	}
+
 	for (i = 0; i < album.songs.length; i++) {
 		if (!album.songs[i].artists) {
 			album.songs[i].artists = JSON.parse(album.songs[i].artist_parseable);
@@ -126,8 +135,6 @@ var AlbumView = function(album) {
 			Requests.make_clickable(album.songs[i].$t.title, album.songs[i].id);
 		}
 	}
-
-	if (template.rating_graph) AlbumViewRatingPieChart(template.rating_graph.getContext("2d"), album);
 
 	template._header_text = album.name;
 
