@@ -75,6 +75,20 @@ var AlbumView = function(album) {
 		album.new_indicator_class = "newish_indicator";
 	}
 
+	if (album.rating_rank_percentile >= 50) {
+		album.rating_percentile_message = $l("album_rating_percentile_top", { "rating": album.rating, "percentile": album.rating_rank_percentile, "percentile_top": 100 - album.rating_rank_percentile });
+	}
+	else {
+		album.rating_percentile_message = $l("album_rating_percentile_bottom", { "rating": album.rating, "percentile": album.rating_rank_percentile });
+	}
+
+	if (album.request_rank_percentile >= 50) {
+		album.request_percentile_message = $l("album_request_percentile_top", { "percentile": album.request_rank_percentile, "percentile_top": 100 - album.request_rank_percentile });
+	}
+	else {
+		album.request_percentile_message = $l("album_request_percentile_bottom", { "percentile": album.request_rank_percentile });
+	}
+
 	var template = RWTemplates.detail.album(album, !MOBILE ? document.createElement("div") : null);
 	AlbumArt(album.art, template.art);
 

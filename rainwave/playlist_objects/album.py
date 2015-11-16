@@ -13,6 +13,7 @@ from rainwave.playlist_objects.metadata import AssociatedMetadata
 from rainwave.playlist_objects.metadata import make_searchable_string
 from rainwave.playlist_objects import cooldown
 
+num_albums = {}
 updated_album_ids = {}
 
 def clear_updated_albums(sid):
@@ -339,8 +340,14 @@ class Album(AssociatedMetadata):
 		# 		song.set_election_block(sid, 'album', num_elections)
 
 	def load_extra_detail(self, sid):
+		global num_albums
+
 		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE album_rating > %s AND sid = %s", (self.data['rating'], sid))
-		self.data['request_rank'] = 1+ db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE album_request_count > %s AND sid = %s", (self.data['request_count'], sid))
+		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE album_request_count > %s AND sid = %s", (self.data['request_count'], sid))
+		self.data['rating_rank_percentile'] = int((float(self.data['rating_rank']) / num_albums[sid]) * 100)
+		self.data['rating_rank_percentile'] = self.data['rating_rank_percentile'] - (self.data['rating_rank_percentile'] % 5)
+		self.data['request_rank_percentile'] = int((float(self.data['request_rank']) / num_albums[sid]) * 100)
+		self.data['request_rank_percentile'] = self.data['request_rank_percentile'] - (self.data['request_rank_percentile'] % 5)
 
 		self.data['genres'] = db.c.fetch_all(
 			"SELECT DISTINCT group_id AS id, group_name AS name "

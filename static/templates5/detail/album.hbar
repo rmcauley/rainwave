@@ -19,10 +19,10 @@
 		<p class="{{ new_indicator_class }}">{{ new_indicator }}</p>
 	{{/if}}
 	{{#if rating }}
-		<p>{{ $l("album_rating_ranked_at_v2", { "rating": _c.rating, "rating_count": _c.num_song_ratings, "rank": _c.rating_rank }) }}</p>
+		<p>{{ rating_percentile_message }}</p>
 	{{/if}}
 	{{#if request_count }}
-		<p>{{ $l("album_requests_ranked_at", { "count": _c.request_count, "rank": _c.request_rank }) }}</p>
+		<p>{{ request_percentile_message }}</p>
 	{{/if}}
 	{{#if ^_c.genres.length && !MOBILE }}
 		<p class="genres">
