@@ -344,9 +344,9 @@ class Album(AssociatedMetadata):
 
 		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE album_exists = TRUE AND album_rating > %s AND sid = %s", (self.data['rating'], sid))
 		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE album_exists = TRUE AND album_request_count > %s AND sid = %s", (self.data['request_count'], sid))
-		self.data['rating_rank_percentile'] = int((float(self.data['rating_rank']) / num_albums[sid]) * 100)
+		self.data['rating_rank_percentile'] = 100 - int((float(self.data['rating_rank']) / num_albums[sid]) * 100)
 		self.data['rating_rank_percentile'] = max(5, min(99, self.data['rating_rank_percentile']))
-		self.data['request_rank_percentile'] = int((float(self.data['request_rank']) / num_albums[sid]) * 100)
+		self.data['request_rank_percentile'] = 100 - int((float(self.data['request_rank']) / num_albums[sid]) * 100)
 		self.data['request_rank_percentile'] = max(5, min(99, self.data['request_rank_percentile']))
 
 		self.data['genres'] = db.c.fetch_all(

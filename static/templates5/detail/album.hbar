@@ -18,7 +18,7 @@
 		<div>
 			<span>{{ $l("album_rating_detail") }}</span>
 			<span style="margin-left: 3px;">
-				{{ $l("album_rating_detail_numbers", { "rating": _c.rating, "count": _c.rating_count, "percentile": _c.rating_rank_percentile, "percentile_message": _c.rating_percentile_message }) }}
+				{{ $l("album_rating_detail_numbers", { "rating": Formatting.rating(_c.rating), "count": _c.rating_count, "percentile": _c.rating_rank_percentile, "percentile_message": _c.rating_percentile_message }) }}
 			</span>
 			<div bind="graph_placement"></div>
 		</div>
