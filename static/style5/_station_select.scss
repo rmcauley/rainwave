@@ -236,6 +236,10 @@ $station_select_width: 270px;
 			visibility: visible;
 			opacity: 0.7;
 			@include transform(translateX(0%) translateY(-50%));
+
+			@media $mobile-media {
+				display: none;
+			}
 		}
 
 		&:hover div.station_song_container {

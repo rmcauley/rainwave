@@ -113,6 +113,16 @@ ul.menu {
 
 			@media $mobile-media {
 				max-width: 70px;
+
+				li.signup_link {
+					display: none;
+				}
+			}
+
+			@media (max-width: 400px) {
+				li.user_info span {
+					display: none;
+				}
 			}
 
 			img.avatar {
