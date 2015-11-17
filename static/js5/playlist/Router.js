@@ -8,6 +8,7 @@ var Router = function() {
 	var cache = {};
 	var current_type;
 	var current_id;
+	var current_open_type;
 	var el;
 	var views = {};
 	var scroll;
@@ -106,8 +107,8 @@ var Router = function() {
 			}
 			else {
 				reset_cache();
-				if (current_type && reload_in.indexOf(current_type) && current_id && document.body.classList.contains("detail")) {
-					open_view(current_type, current_id);
+				if (current_open_type && reload_in.indexOf(current_open_type) && current_id && document.body.classList.contains("detail")) {
+					open_view(current_open_type, current_id);
 				}
 			}
 		});
@@ -150,6 +151,7 @@ var Router = function() {
 				self.active_list = false;
 				current_type = null;
 				current_id = null;
+				current_open_type = null;
 				return false;
 			}
 			if (typeof(ga) == "object") ga("send", "pageview", "/" + new_route);
@@ -242,6 +244,7 @@ var Router = function() {
 		if (typ in cache) {
 			current_type = typ;
 			current_id = id;
+			current_open_type = typ;
 
 			/*
 
@@ -276,7 +279,7 @@ var Router = function() {
 				if (!document.body.classList.contains("detail")) {
 					setTimeout(function() {
 						// console.log("Slide finished.");
-						if (current_type === typ && current_id === id) {
+						if (current_open_type === typ && current_id === id) {
 							actually_open(typ, id);
 							ready_to_render = true;
 						}
@@ -306,7 +309,7 @@ var Router = function() {
 				}
 				API.async_get(req, { "id": id }, function(json) {
 					cache[typ][id] = json[req];
-					if (current_type === typ && current_id === id) {
+					if (current_open_type === typ && current_id === id) {
 						// console.log(typ + "/" + id + ": Loaded from server.");
 						actually_open(typ, id);
 						ready_to_render = true;
@@ -331,7 +334,7 @@ var Router = function() {
 		}
 	};
 
-	self.open_route = function(typ, id) {
+	self.open_route = function(typ, id, force_close_detail) {
 		if (lists[typ] && ((!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow)) {
 			ready_to_render = false;
 		}
@@ -372,7 +375,7 @@ var Router = function() {
 				}
 			}
 		}
-		else if (close_detail) {
+		else if (close_detail || force_close_detail) {
 			document.body.classList.remove("detail");
 		}
 
@@ -409,7 +412,7 @@ var Router = function() {
 	};
 
 	self.open_last = function() {
-		self.change(last_open || "album");
+		self.change(last_open || "album", null, true);
 	};
 
 	window.onhashchange = self.detect_url_change;
