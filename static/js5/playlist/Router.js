@@ -334,7 +334,8 @@ var Router = function() {
 		}
 	};
 
-	self.open_route = function(typ, id, force_close_detail) {
+	var force_close_detail = false;
+	self.open_route = function(typ, id) {
 		if (lists[typ] && ((!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow)) {
 			ready_to_render = false;
 		}
@@ -377,6 +378,7 @@ var Router = function() {
 		}
 		else if (close_detail || force_close_detail) {
 			document.body.classList.remove("detail");
+			force_close_detail = false;
 		}
 
 		if (typ in lists && lists[typ]) {
@@ -412,7 +414,8 @@ var Router = function() {
 	};
 
 	self.open_last = function() {
-		self.change(last_open || "album", null, true);
+		force_close_detail = true;
+		self.change(last_open || "album");
 	};
 
 	window.onhashchange = self.detect_url_change;

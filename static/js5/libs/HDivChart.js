@@ -4,7 +4,6 @@ function HDivChart(data, options) {
     var total, i;
     if (options && options.max) {
         total = options.max;
-        console.log(total);
     }
     else {
         total = 0;
