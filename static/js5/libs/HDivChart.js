@@ -1,9 +1,12 @@
-function HDivChart(data) {
+function HDivChart(data, options) {
     "use strict";
 
-    var total = 0;
-    for (var i = 0; i < data.length; i++) {
-        total += data[i].value;
+    var total = 0 || (options && options.max);
+    var i;
+    if (!total) {
+        for (i = 0; i < data.length; i++) {
+            total += data[i].value;
+        }
     }
     var total_percent = 0;
     for (i = 0; i < data.length; i++) {

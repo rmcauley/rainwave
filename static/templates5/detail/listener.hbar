@@ -3,7 +3,7 @@
 </div>
 
 <div class="detail_header">
-	{{#if ^_c.user_id == User.id }}
+	<!--{{#if ^_c.user_id == User.id }}
 		<div class="info">
 			<span>{{ $l("view_your") }}</span>
 			<p>
@@ -22,17 +22,17 @@
 				</a>
 			</p>
 		</div>
-	{{else}}
+	{{else}}-->
 		<div class="info">
 			{{#if rank}}
 				<p style="color: #{{ colour }};">{{ rank }}</p>
 			{{/if}}
 			<p>{{ $l("registered_in_year", { 'year': _c.regdate }) }}</p>
 		</div>
-	{{/if}}
+	<!--{{/if}}-->
 </div>
 
-<div class="legend_wrapper">
+<!--<div class="legend_wrapper">
 	<ul class="user_detail_legend">
 		{{#each ^Stations}}
 			<li style="background-color: {{ color }};">
@@ -40,6 +40,6 @@
 			</li>
 		{{/each}}
 	</ul>
-</div>
+</div>-->
 
 <div bind="user_detail_container" class="user_detail_container"></div>

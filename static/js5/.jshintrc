@@ -41,6 +41,7 @@
     "Modal": true,
     "Mouse": true,
     "Prefs": true,
+    "RatingChart": true,
     "Rating": true,
     "RequestLineList": true,
     "Requests": true,
