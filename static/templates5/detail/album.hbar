@@ -1,8 +1,3 @@
-<div class="album_detail_faverate" bind="_extra_element">
-	{{>fave}}
-	{{>rating_album}}
-</div>
-
 <div class="art_anchor">
 	<div bind="art" class="art_container"></div>
 </div>

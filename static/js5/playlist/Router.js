@@ -202,8 +202,8 @@ var Router = function() {
 			el.appendChild(cache[typ][id]._cache_el);
 			detail_header.textContent = cache[typ][id]._header_text;
 			detail_header.setAttribute("title", cache[typ][id]._header_text);
-			if (cache[typ][id]._extra_element) {
-				detail_header.parentNode.insertBefore(cache[typ][id]._extra_element, detail_header);
+			if (cache[typ][id]._header_formatting) {
+				cache[typ][id]._header_formatting(detail_header);
 			}
 		}
 		else {
@@ -211,8 +211,8 @@ var Router = function() {
 			t = views[typ](cache[typ][id], el);
 			detail_header.textContent = t._header_text;
 			detail_header.setAttribute("title", t._header_text);
-			if (t._extra_element) {
-				detail_header.parentNode.insertBefore(t._extra_element, detail_header);
+			if (t._header_formatting) {
+				t._header_formatting(detail_header);
 			}
 			if (t._root.parentNode != el) {
 				el.appendChild(t._root);
@@ -220,7 +220,7 @@ var Router = function() {
 			if (t._root && t._root.tagName && (t._root.tagName.toLowerCase() == "div")) {
 				cache[typ][id]._header_text = t._header_text;
 				cache[typ][id]._cache_el = t._root;
-				cache[typ][id]._extra_element = t._extra_element;
+				cache[typ][id].header_formatting = t._header_formatting;
 				cache_page_stack.push({ "typ": typ, "id": id });
 				var cps;
 				while (cache_page_stack.length > 5) {
@@ -322,6 +322,7 @@ var Router = function() {
 	};
 
 	var remove_excess_header_content = function() {
+		detail_header.parentNode.className = "open";
 		var cs = detail_header.parentNode.childNodes;
 		for (var i = cs.length - 1; i >= 0; i--) {
 			if (cs[i] != detail_header) {
@@ -357,7 +358,6 @@ var Router = function() {
 			if (!ready_to_render) {
 				remove_excess_header_content();
 				detail_header.textContent = lists[typ].get_title_from_id(id) || $l("Loading...");
-
 			}
 			var scrolled = false;
 			if (!ready_to_render && lists[typ] && lists[typ].loaded) {
