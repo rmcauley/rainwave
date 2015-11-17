@@ -17,10 +17,17 @@ function HDivChart(data, options) {
         data[i].share = Math.floor(data[i].value / total * 100);
         total_percent += data[i].share;
     }
-    // fudge things
+
+    // fudge things if necessary b/c of rounding errors
     if (!options || !options.max) {
         if (total_percent < 100) {
             data[0].share += 100 - total_percent;
+        }
+    }
+
+    if (options && options.add_share_to_label) {
+        for (i = 0; i < data.length; i++) {
+            data[i].label += data[i].share + "%";
         }
     }
 

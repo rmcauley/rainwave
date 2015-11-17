@@ -16,7 +16,7 @@ var ListenerView = function(json, el) {
 			sid = Stations[j].id;
 			for (i = 0; i < jd.length; i++) {
 				if (jd[i].sid == sid) {
-					data.push({ "value": jd[i][key], "color": Stations[j].color, "label": Stations[j].name + ": " + jd[i][key] + "%" });
+					data.push({ "value": jd[i][key], "color": Stations[j].color, "label": Stations[j].name + ": " });
 					break;
 				}
 			}
@@ -26,24 +26,24 @@ var ListenerView = function(json, el) {
 			hdr.className = "graph_header";
 			hdr.textContent = header_text;
 			detail_container.appendChild(hdr);
-			detail_container.appendChild(HDivChart(data, { "max": 100 }));
+			detail_container.appendChild(HDivChart(data, { "add_share_to_label": true }));
 		}
 	};
 
-	var sid, i, j, hdr;
+	var sid, i, j, hdr, chart;
 
 	// done for compatibility with RatingChart
 	json.rating_histogram = {};
 	for (i = 0; i < json.rating_spread.length; i++) {
 		json.rating_histogram[Formatting.rating(json.rating_spread[i].rating)] = json.rating_spread[i].ratings;
 	}
-	var spread_chart = RatingChart(json);
-	if (spread_chart) {
+	chart = RatingChart(json);
+	if (chart) {
 		hdr = document.createElement("div");
 		hdr.className = "graph_header";
 		hdr.textContent = $l("rating_spread");
 		detail_container.appendChild(hdr);
-		detail_container.appendChild(spread_chart);
+		detail_container.appendChild(chart);
 
 
 		hdr = document.createElement("div");
@@ -58,11 +58,15 @@ var ListenerView = function(json, el) {
 			for (j = 0; j < json.ratings_by_station.length; j++) {
 				if (json.ratings_by_station[j].sid == sid) {
 					found = true;
-					detail_container.appendChild(HDivChart([{ "value": json.ratings_by_station[j].average_rating, "color": Stations[i].color, "label": Stations[i].name + ": " + json.ratings_by_station[j].average_rating }], { "max": 5 }));
+					chart = HDivChart([{ "value": json.ratings_by_station[j].average_rating, "color": Stations[i].color, "label": Stations[i].name + ": " + Formatting.rating(json.ratings_by_station[j].average_rating) }], { "max": 5 });
+					chart.classList.add("chart_overflow");
+					detail_container.appendChild(chart);
 				}
 			}
 			if (!found) {
-				detail_container.appendChild(HDivChart([{ "value": 0, "color": Stations[i].color, "label": Stations[i].name + ": " + $l("no_ratings") }], { "max": 5 }));
+				chart = HDivChart([{ "value": 0, "color": Stations[i].color, "label": Stations[i].name + ": " + $l("no_ratings") }], { "max": 5 });
+				chart.classList.add("chart_overflow");
+				detail_container.appendChild(chart);
 			}
 		}
 	}
@@ -80,7 +84,9 @@ var ListenerView = function(json, el) {
 	for (i = 0; i < Stations.length; i++) {
 		sid = Stations[i].id;
 		if (sid == 5) continue;
-		detail_container.appendChild(HDivChart([{ "value": json.rating_completion[sid] || 0, "color": Stations[i].color, "label": Stations[i].name + ": " + (json.rating_completion[sid] || 0) + "%" }], { "max": 100 }));
+		chart = HDivChart([{ "value": json.rating_completion[sid] || 0, "color": Stations[i].color, "label": Stations[i].name + ": " + (json.rating_completion[sid] || 0) + "%" }], { "max": 100 });
+		chart.classList.add("chart_overflow");
+		detail_container.appendChild(chart);
 	}
 
 	return template;
