@@ -16,7 +16,7 @@ var ListenerView = function(json, el) {
 			sid = Stations[j].id;
 			for (i = 0; i < jd.length; i++) {
 				if (jd[i].sid == sid) {
-					data.push({ "value": jd[i][key], "color": Stations[j].color, "label": Stations[j].name });
+					data.push({ "value": jd[i][key], "color": Stations[j].color, "label": Stations[j].name + ": " + jd[i][key] + "%" });
 					break;
 				}
 			}
@@ -26,35 +26,44 @@ var ListenerView = function(json, el) {
 			hdr.className = "graph_header";
 			hdr.textContent = header_text;
 			detail_container.appendChild(hdr);
-			detail_container.appendChild(HDivChart(data));
+			detail_container.appendChild(HDivChart(data, { "max": 100 }));
 		}
 	};
 
 	var sid, i, j, hdr;
 
-	hdr = document.createElement("div");
-	hdr.className = "graph_header";
-	hdr.textContent = $l("rating_spread");
 	// done for compatibility with RatingChart
-	json.rating_histogram = json.rating_spread;
-	detail_container.appendChild(RatingChart(json));
+	json.rating_histogram = {};
+	for (i = 0; i < json.rating_spread.length; i++) {
+		json.rating_histogram[Formatting.rating(json.rating_spread[i].rating)] = json.rating_spread[i].ratings;
+	}
+	var spread_chart = RatingChart(json);
+	if (spread_chart) {
+		hdr = document.createElement("div");
+		hdr.className = "graph_header";
+		hdr.textContent = $l("rating_spread");
+		detail_container.appendChild(hdr);
+		detail_container.appendChild(spread_chart);
 
-	hdr = document.createElement("div");
-	hdr.className = "graph_header";
-	hdr.textContent = $l("average_rating_by_station");
-	var found;
-	for (i = 0; i < Stations.length; i++) {
-		sid = Stations[i].id;
-		if (sid == 5) continue;
-		found = false;
-		for (j = 0; j < json.ratings_by_station.length; j++) {
-			if (json.ratings_by_station[j].sid == sid) {
-				found = true;
-				detail_container.appendChild(HDivChart([{ "value": json.ratings_by_station[j].average_rating, "color": Stations[i].color, "label": Stations[i].name + ": " + json.ratings_by_station[j].average_rating }], { "max": 5 }));
+
+		hdr = document.createElement("div");
+		hdr.className = "graph_header";
+		hdr.textContent = $l("average_rating_by_station");
+		detail_container.appendChild(hdr);
+		var found;
+		for (i = 0; i < Stations.length; i++) {
+			sid = Stations[i].id;
+			if (sid == 5) continue;
+			found = false;
+			for (j = 0; j < json.ratings_by_station.length; j++) {
+				if (json.ratings_by_station[j].sid == sid) {
+					found = true;
+					detail_container.appendChild(HDivChart([{ "value": json.ratings_by_station[j].average_rating, "color": Stations[i].color, "label": Stations[i].name + ": " + json.ratings_by_station[j].average_rating }], { "max": 5 }));
+				}
 			}
-		}
-		if (!found) {
-			detail_container.appendChild(HDivChart([{ "value": 0, "color": Stations[i].color, "label": Stations[i].name + ": " + $l("no_ratings") }], { "max": 5 }));
+			if (!found) {
+				detail_container.appendChild(HDivChart([{ "value": 0, "color": Stations[i].color, "label": Stations[i].name + ": " + $l("no_ratings") }], { "max": 5 }));
+			}
 		}
 	}
 
@@ -67,6 +76,7 @@ var ListenerView = function(json, el) {
 	hdr = document.createElement("div");
 	hdr.className = "graph_header";
 	hdr.textContent = $l("ratings_completion_rate");
+	detail_container.appendChild(hdr);
 	for (i = 0; i < Stations.length; i++) {
 		sid = Stations[i].id;
 		if (sid == 5) continue;
