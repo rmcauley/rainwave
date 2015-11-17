@@ -113,14 +113,9 @@ ul.menu {
 
 			@media $mobile-media {
 				max-width: 70px;
+				padding-right: 0;
 
 				li.signup_link {
-					display: none;
-				}
-			}
-
-			@media (max-width: 400px) {
-				li.user_info span {
 					display: none;
 				}
 			}
