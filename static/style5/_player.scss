@@ -58,7 +58,7 @@ $player_icon_width: $player_icon_height;
 			@include transition-wtime(300ms, fill, opacity);
 		}
 
-		&:hover, &:hover * {
+		body.desktop &:hover, &:hover * {
 			fill: $linkhover;
 		}
 	}

@@ -14,7 +14,7 @@ div.song {
 	&.song_lost {
 		opacity: 0.6;
 
-		&:hover {
+		body.desktop &:hover {
 			opacity: 1;
 		}
 	}
@@ -109,7 +109,7 @@ div.song {
 		&.voting_enabled:not(.voting_registered) {
 			cursor: pointer;
 
-			&:hover {
+			body.desktop &:hover {
 				border-color: $hovercolor-border;
 				background-color: $hovercolor;
 				-webkit-transition: $webkit_song_transitions;
@@ -119,7 +119,7 @@ div.song {
 			div.song_content a {
 				@include transition-wtime(250ms, color, background-color, padding);
 
-				&:hover {
+				body.desktop &:hover {
 					background-color: #264499;
 					padding: 0 10px;
 					color: $linkhover;
@@ -159,7 +159,7 @@ div.song {
 		position: absolute;
 	}
 
-	body.logged_in &:hover img.fave_lined {
+	body.logged_in.desktop &:hover img.fave_lined {
 		opacity: 0.5;
 	}
 

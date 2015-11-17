@@ -65,14 +65,7 @@
 					{{/if}}
 					<div class="station_details">
 						<div class="station_name">{{ name }}</div>
-						{{#if ^_c.id == BOOTSTRAP.user.sid}}
-							<div class="station_description">
-								<span>{{ $l("station_menu_description_id_" + _c.id) }}</span>
-								<span class="currently_tuned_in">{{ $l("currently_tuned_in_station") }}</span>
-							</div>
-						{{else}}
-							<div class="station_description">{{ $l("station_menu_description_id_" + _c.id) }}</div>
-						{{/if}}
+						<div class="station_description">{{ $l("station_menu_description_id_" + _c.id) }}</div>
 					</div>
 				</a>
 			{{/each}}

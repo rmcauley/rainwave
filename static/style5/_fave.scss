@@ -29,7 +29,7 @@ div.fave {
 		cursor: pointer;
 	}
 
-	body.logged_in &:hover {
+	body.logged_in.desktop &:hover {
 		img.fave_lined {
 			opacity: 1;
 		}

@@ -96,12 +96,12 @@ a, a:visited, .link {
 	&.obvious {
 		color: $link !important;
 
-		&:hover {
+		body.desktop &:hover {
 			color: $linkhover !important;
 		}
 	}
 
-	&:hover {
+	body.desktop &:hover {
 		color: $linkhover !important;
 	}
 }
@@ -110,7 +110,7 @@ a, a:visited, .link {
 	cursor: pointer;
 	@include transition(LINKCOLOR);
 
-	&:hover {
+	body.desktop &:hover {
 		color: $linkhover !important;
 	}
 }

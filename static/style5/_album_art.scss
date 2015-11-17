@@ -21,15 +21,12 @@ div.art_container {
 	height: $art_size;
 	@include transition-wtime(300ms, width, height, border-width, background-color, transform);
 
-	&:hover {
-		z-index: 3;
-		background-color: #000;
-	}
-
 	&.art_expandable {
 		cursor: pointer;
 
 		&:hover {
+			z-index: 3;
+			background-color: #000;
 			border-width: 2px;
 			width: $art_hover_size;
 			height: $art_hover_size;

@@ -37,7 +37,7 @@ div.history_header {
 		@include transform(rotate(0deg));
 	}
 
-	&:hover {
+	body.desktop &:hover {
 		opacity: 1;
 		background-color: $blue / 2.5;
 	}
@@ -61,7 +61,7 @@ div.timeline_event {
 		visibility: hidden;
 	}
 
-	&:hover {
+	body.desktop &:hover {
 		z-index: 20 !important;
 	}
 
@@ -69,7 +69,7 @@ div.timeline_event {
 		padding: 0 10px;
 	}
 
-	div.song:hover {
+	body.desktop div.song:hover {
 		z-index: 10 !important;
 	}
 

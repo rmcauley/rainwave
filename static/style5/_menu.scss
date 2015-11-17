@@ -42,7 +42,7 @@ div.menu_wrapper {
 		}
 	}
 
-	a:hover svg {
+	body.desktop a:hover svg {
 		&, * {
 			fill: $linkhover;
 		}
@@ -279,7 +279,7 @@ a.hamburger_icon {
 		background: $blue;
 	}
 
-	&:hover {
+	body.desktop &:hover {
 		border-color: $linkhover;
 
 		&:before {

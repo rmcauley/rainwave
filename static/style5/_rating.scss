@@ -25,7 +25,7 @@ div.rating {
 		}
 	}
 
-	&.ratable {
+	body.desktop &.ratable {
 		cursor: pointer;
 
 		&:hover {
@@ -91,14 +91,16 @@ div.rating {
 		}
 	}
 
-	&:hover div.rating_hover {
+	body.desktop &:hover div.rating_hover {
 		opacity: 1;
 		visibility: visible;
 		@include transform(translateX(-25px));
 	}
 
-	&:hover div.rating_confirm + div.rating_hover, &:hover div.rating_confirm + div.rating_number {
-		opacity: 0;
+	body.desktop &:hover {
+		div.rating_confirm + div.rating_hover, div.rating_confirm + div.rating_number {
+			opacity: 0;
+		}
 	}
 
 	div.rating_confirm + div.rating_number {

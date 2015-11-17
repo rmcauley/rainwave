@@ -96,7 +96,7 @@ div.lists {
 			cursor: pointer;
 			display: inline-block;
 
-			&:hover {
+			body.desktop &:hover {
 				color: $linkhover;
 			}
 
@@ -224,7 +224,7 @@ div.list {
 			color: $fave_color;
 		}
 
-		&:hover, .hover {
+		body.desktop &:hover, .hover {
 			color: $link;
 			border-color: $hovercolor-border;
 			background-color: $hovercolor;
@@ -240,7 +240,7 @@ div.list {
 			}
 		}
 
-		&.open, &.open:hover, &.hover.open {
+		&.open, body.desktop &.open:hover, &.hover.open {
 			background-color: #1f4f70;
 			border-color: $orange;
 
@@ -256,7 +256,7 @@ div.list {
 		&.cool {
 			background-color: $cooldown_albumlist_color;
 
-			&:hover {
+			body.desktop &:hover {
 				background-color: #1f4f70;
 			}
 		}
@@ -317,7 +317,7 @@ div.list {
 				background-position: 15px 0;
 			}
 
-			&:hover span.name {
+			body.desktop &:hover span.name {
 				color: $linkhover;
 			}
 		}

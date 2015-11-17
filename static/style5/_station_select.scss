@@ -115,7 +115,7 @@ $station_select_width: 270px;
 			@include transform(none);
 		}
 
-		&:hover {
+		body.desktop &:hover {
 			background: #0f74b8;
 			color: $text !important;
 		}
@@ -160,11 +160,6 @@ $station_select_width: 270px;
 
 			@media $phone-media {
 				display: none;
-			}
-
-			body.tuned_in & span.currently_tuned_in {
-				color: $orange * 2;
-				padding-left: 5px;
 			}
 		}
 
@@ -242,7 +237,7 @@ $station_select_width: 270px;
 			}
 		}
 
-		&:hover div.station_song_container {
+		body.desktop &:hover div.station_song_container {
 			opacity: 1.0;
 		}
 

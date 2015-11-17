@@ -51,16 +51,20 @@ ul.request_icons {
 		margin: 0 5px;
 		display: inline;
 		color: #FFF;
-		opacity: 0.5;
 		@include transition-wtime(300ms, opacity);
 		cursor: pointer;
 
-		&:hover {
-			opacity: 1;
+		body.desktop & {
+			opacity: 0.5;
+
+			&:hover {
+				opacity: 1;
+			}
+
+			div.song_
 		}
 
 		@media (max-width: 400px) {
-			opacity: 1;
 			margin: 0 10px;
 
 			span {
@@ -98,18 +102,21 @@ div.request_cancel {
 	padding: 0 2px 2px 2px;
 	border: solid 1px #444;
 	border-right: none;
-	opacity: 0.6;
 	@include transition-wtime(300ms, border-color, color, opacity);
 	border-top-left-radius: 3px;
 	border-bottom-left-radius: 3px;
 
-	div.song:hover & {
-		opacity: 1;
-	}
+	body.desktop & {
+		opacity: 0.6;
 
-	&:hover {
-		border-color: #F44;
-		color: #F44;
+		&:hover {
+			border-color: #F44;
+			color: #F44;
+		}
+
+		div.song &:hover {
+			opacity: 1;
+		}
 	}
 
 	body.simple & {
@@ -131,7 +138,7 @@ div.request_sort_grab {
 	opacity: 0;
 	@include transition(opacity);
 
-	div.song:hover & {
+	body.desktop div.song:hover & {
 		opacity: 0.75;
 	}
 

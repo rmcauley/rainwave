@@ -137,7 +137,7 @@ div.row {
 		border-bottom-color: $cooldown-color;
 	}
 
-	&:hover {
+	body.desktop &:hover {
 		background-color: $hovercolor;
 		border-bottom-color: $hovercolor-border;
 		@include no-transition();
@@ -152,7 +152,7 @@ div.row {
 			color: $fave_color;
 		}
 
-		&:hover {
+		body.desktop &:hover {
 			background-color: #444013;
 			border-color: #5B4E19;
 		}
