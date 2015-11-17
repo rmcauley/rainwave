@@ -157,6 +157,7 @@
    "ratings_completion_rate"                         : "Rating Completion",
    "rating_spread"                                   : "Rating Spread",
    "average_rating_by_station"                       : "Avg. Rating By Station",
+   "no_ratings"                                      : "no ratings",
 
    "your_mobile_app_qr"                              : "Your Android App QR Code",
    "manage_your_api_keys"                            : "Manage your API keys.",
