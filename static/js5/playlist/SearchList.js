@@ -45,7 +45,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var original_key_nav;
 	var ignore_original_scroll_top;
 	var scroll_to_on_load;
-	var scroll_margin = 8;
+	var scroll_margin = 5;
 
 	var current_scroll_index = false;
 	var current_height;
@@ -440,7 +440,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 		ignore_original_scroll_top = false;
 	};
-	template.cancel.addEventListener("click", self.clear_search);
+	template.cancel.addEventListener("click", function() {
+		self.clear_search();
+		template.search_box.focus();
+	});
 
 	search_box.addEventListener("input", function(e) {
 		if (!search_box.value.length) {
@@ -506,18 +509,18 @@ var SearchList = function(root_el, sort_key, search_key) {
 				new_index = visible.indexOf(data_item.id);
 			}
 
-			if ((new_index > (current_scroll_index + scroll_margin)) && (new_index < (current_scroll_index + num_items_to_display - scroll_margin - 1))) {
+			if ((new_index > (current_scroll_index + scroll_margin - 1)) && (new_index < (current_scroll_index + num_items_to_display - scroll_margin - 1))) {
 				if ((current_scroll_index === false)) {
 					self.redraw_current_position();
 				}
 			}
 			// position at the lower edge
-			else if ((current_scroll_index !== false) && (new_index >= (current_scroll_index + num_items_to_display - scroll_margin))) {
-				scroll.scroll_to(Math.min(scroll.scroll_top_max, (new_index - num_items_to_display + scroll_margin + 1) * Sizing.list_item_height));
+			else if ((current_scroll_index !== false) && (new_index >= (current_scroll_index + num_items_to_display - scroll_margin - 1))) {
+				scroll.scroll_to(Math.min(scroll.scroll_top_max, (new_index - num_items_to_display + scroll_margin + 2) * Sizing.list_item_height));
 			}
 			// position at the higher edge
 			else {
-				scroll.scroll_to(Math.max(0, (new_index - scroll_margin) * Sizing.list_item_height));
+				scroll.scroll_to(Math.max(0, (new_index - scroll_margin + 1) * Sizing.list_item_height));
 			}
 		}
 	};
