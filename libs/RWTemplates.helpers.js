@@ -13,8 +13,8 @@ if (typeof(RWTemplates) == "object") {
 // If you want the helper functions but don't want to load all your
 // templates, this quick check will give you access to the helpers.
 // (it won't overwrite the original object when loading templates too, though)
-if (typeof(RWTemplateHelpers) == "undefined") {
-    var RWTemplateHelpers = {};
+if (typeof(window.RWTemplateHelpers) == "undefined") {
+    window.RWTemplateHelpers = {};
 }
 
 RWTemplateHelpers.opacity = function(val, elem) {
@@ -327,8 +327,10 @@ RWTemplateHelpers.tabify = function(obj, def) {
         }
     }
     hide_areas();
-    obj.$t[def + "_area"][0].style.display = "block";
-    obj.$t[def + "_tab"][0].parentNode.classList.add("active");
+    if (def) {
+        obj.$t[def + "_area"][0].style.display = "block";
+        obj.$t[def + "_tab"][0].parentNode.classList.add("active");
+    }
 };
 
 (function() {
@@ -464,6 +466,9 @@ RWTemplateHelpers.tabify = function(obj, def) {
         btn.classList.remove(btn_success);
         btn.classList.remove(btn_error);
         btn.classList.remove(btn_normal);
+        if (btn._normal_class) {
+            btn.classList.remove(btn._normal_class);
+        }
         btn.classList.add(new_class);
     };
 
@@ -677,6 +682,16 @@ RWTemplateHelpers.tabify = function(obj, def) {
                     }
                 }
             }
+
+            var map = {};
+            for (i = 0; i < existing.length; i++) {
+                map[existing[i][existing._unique_field]] = existing[i];
+            }
+            for (i = 0; i < fresh.length; i++) {
+                if (existing[i][existing._unique_field] != fresh[i][existing._unique_field]) {
+                    existing[i] = map[fresh[i][existing._unique_field]];
+                }
+            }
         }
     };
 
@@ -772,7 +787,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
             if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
                 RWTemplateHelpers.change_button_text(elements[i], submit_message || (typeof(gettext) == "function" ? gettext("Saving...") : "Saving..."));
                 if (!no_disable) {
-                    RWTemplateHelpers.change_button_class(elements[i], btn_normal);
+                    RWTemplateHelpers.change_button_class(elements[i], elements[i]._normal_class || btn_normal);
                 }
             }
             if (!no_disable) {
@@ -805,8 +820,10 @@ RWTemplateHelpers.tabify = function(obj, def) {
         var submit_btns = [];
         for (var i = 0; i < elements.length; i++) {
             if (this._c.hasOwnProperty(i)) RWTemplateHelpers.remove_error_class(elements[i]);
-            elements[i].disabled = false;
-            elements[i].classList.remove("disabled");
+            if (elements[i].getAttribute("disabled") != "always") {
+                elements[i].disabled = false;
+                elements[i].classList.remove("disabled");
+            }
             if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
                 submit_btns.push(elements[i]);
             }
