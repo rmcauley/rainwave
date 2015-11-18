@@ -69,7 +69,7 @@ div.timeline_event {
 		padding: 0 10px;
 	}
 
-	body.desktop div.song:hover {
+	body.desktop & div.song:hover {
 		z-index: 10 !important;
 	}
 
