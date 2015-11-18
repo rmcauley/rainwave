@@ -546,7 +546,7 @@ class Song(object):
 				return True
 		raise SongMetadataUnremovable("Found no tag by name %s that wasn't assigned by ID3." % name)
 
-	def load_extra_detail(self):
+	def load_extra_detail(self, sid):
 		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_rating > %s", (self.data['rating'],))
 		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_request_count > %s", (self.data['request_count'],))
 		self.data['rating_rank_percentile'] = int((float(self.data['rating_rank']) / num_origin_songs[sid]) * 100)

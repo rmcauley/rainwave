@@ -98,7 +98,7 @@ class SongHandler(APIHandler):
 
 	def post(self):
 		song = playlist.Song.load_from_id(self.get_argument("id"), self.sid)
-		song.load_extra_detail()
+		song.load_extra_detail(self.sid)
 		self.append("song", song.to_dict(self.user))
 
 @handle_api_url("all_songs")
