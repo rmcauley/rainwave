@@ -23,11 +23,11 @@
 			</p>
 		</div>
 	{{else}}-->
-		<div class="info">
+		<div>
 			{{#if rank}}
-				<p style="color: #{{ colour }};">{{ rank }}</p>
+				<div style="color: #{{ colour }};">{{ rank }}</div>
 			{{/if}}
-			<p>{{ $l("registered_in_year", { 'year': _c.regdate }) }}</p>
+			<div>{{ $l("registered_in_year", { 'year': _c.regdate }) }}</div>
 		</div>
 	<!--{{/if}}-->
 </div>

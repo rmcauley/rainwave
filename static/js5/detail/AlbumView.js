@@ -138,8 +138,8 @@ var AlbumView = function(album) {
 		template._root.appendChild(RWTemplates.detail.songtable({ "songs": album.songs })._root);
 	}
 
-	Rating.register(album);
-	Fave.register(album, true);
+	// Rating.register(album);
+	// Fave.register(album, true);
 
 	for (i = 0; i < album.songs.length; i++) {
 		Fave.register(album.songs[i]);

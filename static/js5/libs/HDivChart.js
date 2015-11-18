@@ -1,21 +1,34 @@
 function HDivChart(data, options) {
     "use strict";
 
-    var total = 0 || (options && options.max);
-    var i;
-    if (!total) {
+    var total, i;
+    if (options && options.max) {
+        total = options.max;
+    }
+    else {
+        total = 0;
         for (i = 0; i < data.length; i++) {
             total += data[i].value;
         }
     }
+
     var total_percent = 0;
     for (i = 0; i < data.length; i++) {
         data[i].share = Math.floor(data[i].value / total * 100);
         total_percent += data[i].share;
     }
-    // fudge things
-    if (total_percent < 100) {
-        data[0].share += 100 - total_percent;
+
+    // fudge things if necessary b/c of rounding errors
+    if (!options || !options.max) {
+        if (total_percent < 100) {
+            data[0].share += 100 - total_percent;
+        }
+    }
+
+    if (options && options.add_share_to_label) {
+        for (i = 0; i < data.length; i++) {
+            data[i].label += data[i].share + "%";
+        }
     }
 
     var outside = document.createElement("div");

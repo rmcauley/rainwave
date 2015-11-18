@@ -10,6 +10,7 @@ div.chart_outside {
         color: $text;
         line-height: 20px;
         overflow: hidden;
+        white-space: nowrap;
 
         &:first-child {
             border-left: none;
@@ -34,5 +35,11 @@ div.chart_outside {
         //     visibility: visible;
         //     @include transform(translateY(120%));
         // }
+    }
+
+    &.chart_overflow {
+        div.chart_bar {
+            overflow: visible;
+        }
     }
 }
