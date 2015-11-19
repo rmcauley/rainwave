@@ -9,7 +9,7 @@
 	{{#if new_indicator }}
 		<div class="{{ new_indicator_class }}">{{ new_indicator }}</div>
 	{{/if}}
-	<!--{{#if rating_count }}-->
+	{{#if rating_count }}
 		<div>
 			<span>{{ $l("album_rating_detail") }}</span>
 			<span style="margin-left: 2px;">
@@ -17,10 +17,10 @@
 			</span>
 			<div bind="graph_placement"></div>
 		</div>
-	<!--{{/if}}-->
-	{{#if request_count }}
-		<div>{{ request_percentile_message }}</div>
 	{{/if}}
+	<!--{{#if request_count }}
+		<div>{{ request_percentile_message }}</div>
+	{{/if}}-->
 	{{#if ^_c.genres.length && !MOBILE }}
 		<div class="genres">
 			{{#if ^_c.genres.length <= 2 }}
