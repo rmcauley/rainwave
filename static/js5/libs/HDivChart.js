@@ -67,20 +67,12 @@ function HDivChart(data, options) {
             t = document.createElement("span");
             t.className = "chart_label";
             t.textContent = data[i].label;
-            // t.style.left = pos + "%";
-            // outside.appendChild(t);
             d.appendChild(t);
         }
         if (data[i].tooltip) {
             t = document.createElement("span");
             t.className = "chart_tooltip";
             t.textContent = data[i].tooltip;
-            d.appendChild(t);
-        }
-        if (data[i].title) {
-            t = document.createElement("span");
-            t.className = "chart_title";
-            t.textContent = data[i].title;
             d.appendChild(t);
         }
         pos += data[i].share;

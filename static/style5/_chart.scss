@@ -5,54 +5,46 @@ div.chart_outside {
     line-height: 20px;
 
     div.chart_bar {
+        box-sizing: border-box;
         position: absolute;
         border-left: solid 1px black;
         height: 20px;
-        overflow: hidden;
         white-space: nowrap;
 
         &:first-child {
             border-left: none;
         }
 
-        // span.chart_tooltip {
-        //     border: solid 1px $blue;
-        //     background: black;
-        //     visibility: hidden;
-        //     opacity: 0;
+        span.chart_label {
+            position: absolute;
+            z-index: 1;
+            max-width: 100%;
+            overflow: hidden;
+            @include transform(translateX(4px));
+        }
 
-        //     @include transition-wtime(300ms, opacity, transform, visibility);
-        // }
+        span.chart_tooltip {
+            border: solid 1px $blue;
+            background: black;
+            visibility: hidden;
+            opacity: 0;
+            left: 50%;
+            @include transform(translateX(-50%));
 
-        // &.hover span.chart_tooltip {
-        //     opacity: 0;
-        //     visibility: visible;
-        //     @include transform(translateY(120%));
-        // }
-    }
+            @include transition-wtime(300ms, opacity, transform, visibility);
+        }
 
-    span.chart_label {
-        position: absolute;
-        z-index: 1;
-        @include transform(translateX(4px));
-        font-size: smaller;
-    }
-
-    &.chart_overflow {
-        div.chart_bar {
-            overflow: visible;
+        &.hover span.chart_tooltip {
+            opacity: 0;
+            visibility: visible;
+            @include transform(translateY(105%));
         }
     }
 
     &.chart_ratings {
-        margin: 0 2px;
-        border: none;
-
         div.chart_bar {
-            border: solid 1px #000;
-            @include transform(skew(15deg));
-
             span.chart_label {
+                font-size: smaller;
                 @include transform(rotate(90deg));
             }
         }
