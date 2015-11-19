@@ -1,7 +1,6 @@
 $song_transitions: opacity $transtime, transform $transtime, background-position 250ms linear;
 $webkit_song_transitions: opacity $transtime, -webkit-transform $transtime, background-position 250ms linear;
 
-
 div.song {
 	box-sizing: border-box;
 	position: absolute;
@@ -27,7 +26,7 @@ div.song {
 	div.title {
 		margin-top: 5px;
 
-		body.logged_in & {
+		body.desktop.logged_in & {
 			padding-left: 19px;
 		}
 	}
@@ -101,10 +100,48 @@ div.song {
 		}
 	}
 
+	div.vote_button {
+		display: none;
+		cursor: pointer;
+		float: left;
+		position: relative;
+		border: solid 1px #444;
+		border-right: none;
+		border-top-left-radius: 3px;
+		border-bottom-left-radius: 3px;
+		height: $art_size;
+		opacity: 0.6;
+		width: 1.5em;
+		top: 50%;
+		@include transform(translateY(-50%));
+		@include transition-wtime(300ms, border-color, color, opacity);
+
+		span.vote_button_rotate {
+			position: absolute;
+			top: 50%;
+			@include transform(translateY(-50%) rotate(90deg));
+		}
+
+		div.sched_current & {
+			visibility: hidden;
+		}
+
+		body.desktop.normal & {
+			display: block;
+			visibility: hidden;
+		}
+	}
+
 	div.timeline & {
 		background-position: 0% 200%;
 		background-repeat: repeat-x;
 		border: 1px solid transparent;
+
+		body.desktop.normal &.voting_enabled {
+			div.vote_button {
+				visibility: visible;
+			}
+		}
 
 		&.voting_enabled:not(.voting_registered) {
 			cursor: pointer;
@@ -114,6 +151,11 @@ div.song {
 				background-color: $hovercolor;
 				-webkit-transition: $webkit_song_transitions;
 	        	        transition: $song_transitions;
+
+	        	div.vote_button {
+	        		opacity: 1;
+	        		background: $blue;
+	        	}
 			}
 
 			div.song_content a {
@@ -157,6 +199,10 @@ div.song {
 
 	div.fave {
 		position: absolute;
+
+		body.mobile & {
+			display: none;
+		}
 	}
 
 	body.logged_in.desktop &:hover img.fave_lined {

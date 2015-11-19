@@ -2,6 +2,11 @@
 	{{#if request_id }}
 		<div class="request_cancel" bind="cancel">x</div>
 	{{/if}}
+	{{#if ^_c.entry_id && !MOBILE }}
+		<div class="vote_button">
+			<span class="vote_button_rotate" bind="vote_button_text">{{ $l("vote") }}</span>
+		</div>
+	{{/if}}
 
 	<div class="art_anchor">
 		{{#if request_id }}

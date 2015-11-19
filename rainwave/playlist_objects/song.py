@@ -179,7 +179,6 @@ class Song(object):
 		self.data['url'] = None
 		self.data['link_text'] = None
 		self.data['rating_allowed'] = False
-		self.data['entry_votes'] = 0
 		self.replay_gain = None
 		self.fake = False
 

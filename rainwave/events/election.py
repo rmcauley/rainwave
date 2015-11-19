@@ -264,7 +264,10 @@ class Election(event.BaseEvent):
 			total_votes = 0
 			for i in range(0, len(self.songs)):
 				self.songs[i].data['entry_position'] = i
-				total_votes += self.songs[i].data['entry_votes']
+				if 'entry_votes' in self.songs[i].data:
+					total_votes += self.songs[i].data['entry_votes']
+				else:
+					self.songs[i].data['entry_votes'] = 0
 				db.c.update("UPDATE r4_election_entries SET entry_position = %s WHERE entry_id = %s", (i, self.songs[i].data['entry_id']))
 			if total_votes > 0:
 				for song in self.songs:
