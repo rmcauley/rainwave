@@ -119,7 +119,10 @@ div.song {
 		span.vote_button_rotate {
 			position: absolute;
 			top: 50%;
-			@include transform(translateY(-50%) rotate(90deg));
+			left: 50%;
+			-webkit-transform-origin: top left;
+			        transform-origin: top left;
+			@include transform(rotate(90deg) translateX(-50%) translateY(-50%));
 		}
 
 		div.sched_current & {
