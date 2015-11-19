@@ -122,9 +122,9 @@ class Album(AssociatedMetadata):
 
 		success = db.c.update(
 			"UPDATE r4_albums "
-			"SET album_name = %s, album_name_searchable = %s, album_rating = %s "
+			"SET album_name = %s, album_name_searchable = %s "
 			"WHERE album_id = %s",
-			(self.data['name'], make_searchable_string(self.data['name']), self.data['rating'], self.id))
+			(self.data['name'], make_searchable_string(self.data['name']), self.id))
 		if self.sid != 0:
 			updated_album_ids[self.sid][self.id] = True
 		return success
@@ -133,7 +133,9 @@ class Album(AssociatedMetadata):
 		self.id = d['album_id']
 		self.data['name'] = d['album_name']
 		self.data['added_on'] = d['album_added_on']
-		self._dict_check_assign(d, "album_rating")
+		if d.has_key("album_rating"):
+			self.rating_precise = d["album_rating"]
+			self.data['rating'] = round(self.rating_precise, 1)
 		self._dict_check_assign(d, "album_rating_count")
 		self._dict_check_assign(d, "album_cool_multiply", 1)
 		self._dict_check_assign(d, "album_cool_override")
@@ -208,7 +210,7 @@ class Album(AssociatedMetadata):
 		elif self.data['cool_override']:
 			cool_time = self.data['cool_override']
 		else:
-			cool_rating = self.data['rating']
+			cool_rating = self.rating_precise
 			if not cool_rating or cool_rating == 0:
 				cool_rating = 3
 			# AlbumCD = minAlbumCD + ((maxAlbumR - albumR)/(maxAlbumR - minAlbumR)*(maxAlbumCD - minAlbumCD))
@@ -264,10 +266,11 @@ class Album(AssociatedMetadata):
 			rating_count = dislikes + neutrals + neutralplus + likes
 			log.debug("song_rating", "%s album ratings for %s (%s)" % (rating_count, self.data['name'], config.station_id_friendly[sid]))
 			if rating_count > config.get("rating_threshold_for_calc"):
-				self.data['rating'] = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
+				self.rating_precise = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 4)
+				self.data['rating'] = round(self.rating_precise, 1)
 				self.data['rating_count'] = rating_count
-				log.debug("album_rating", "%s new rating for %s" % (self.data['rating'], self.data['name']))
-				db.c.update("UPDATE r4_album_sid SET album_rating = %s, album_rating_count = %s WHERE album_id = %s AND sid = %s", (self.data['rating'], rating_count, self.id, sid))
+				log.debug("album_rating", "%s new rating for %s" % (self.rating_precise, self.data['name']))
+				db.c.update("UPDATE r4_album_sid SET album_rating = %s, album_rating_count = %s WHERE album_id = %s AND sid = %s", (self.rating_precise, rating_count, self.id, sid))
 
 	def update_last_played(self, sid):
 		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (timestamp(), self.id, sid))
@@ -342,7 +345,7 @@ class Album(AssociatedMetadata):
 	def load_extra_detail(self, sid):
 		global num_albums
 
-		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE album_exists = TRUE AND album_rating > %s AND sid = %s", (self.data['rating'], sid))
+		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE album_exists = TRUE AND album_rating > %s AND sid = %s", (self.rating_precise, sid))
 		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE album_exists = TRUE AND album_request_count > %s AND sid = %s", (self.data['request_count'], sid))
 		self.data['rating_rank_percentile'] = 100 - int((float(self.data['rating_rank']) / num_albums[sid]) * 100)
 		self.data['rating_rank_percentile'] = max(5, min(99, self.data['rating_rank_percentile']))

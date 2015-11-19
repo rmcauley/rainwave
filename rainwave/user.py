@@ -343,7 +343,7 @@ class User(object):
 					"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
 					"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
 					"song_fave AS fave, album_fave AS album_fave, "
-					"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating AS album_rating "
+					"r4_songs.album_id AS album_id, r4_albums.album_name, ROUND(CAST(r4_album_sid.album_rating) AS NUMERIC, 1) AS album_rating "
 				"FROM r4_request_store "
 					"JOIN r4_songs USING (song_id) "
 					"JOIN r4_albums USING (album_id) "
