@@ -6,6 +6,7 @@ var Clock = function() {
 	var page_title;
 	var page_title_end;
 	var force_sync_ok = false;
+	var original_title = document.title;
 
 	var self = {};
 	self.now = 0;
@@ -80,7 +81,7 @@ var Clock = function() {
 		}
 
 		if (Sizing.simple && (!Prefs.get("show_title_in_titlebar") || !page_title || MOBILE  || !User.tuned_in)) {
-			if (document.title != "Rainwave") document.title = "Rainwave";
+			if (document.title != original_title) document.title = original_title;
 			return;
 		}
 

@@ -45,7 +45,17 @@ div.chart_outside {
         div.chart_bar {
             span.chart_label {
                 font-size: smaller;
+                color: $text;
                 @include transform(rotate(90deg));
+            }
+        }
+    }
+
+    &.chart_overflow {
+        div.chart_bar {
+            span.chart_label {
+                max-width: none;
+                overflow: visible;
             }
         }
     }

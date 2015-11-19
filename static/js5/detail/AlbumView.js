@@ -22,7 +22,7 @@ var RatingChart = function(json) {
 		}
 	}
 	if (data.length === 0) return;
-	var c = HDivChart(data, { "min_share": 5 });
+	var c = HDivChart(data, { "min_share": 4 });
 	c.classList.add("chart_ratings");
 	return c;
 };

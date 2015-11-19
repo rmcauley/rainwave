@@ -170,7 +170,7 @@ def remove_all_locks(sid):
 def get_all_albums_list(sid, user = None):
 	if not user or user.id == 1:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, ROUND(CAST(album_rating AS NUMERIC), 1) AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, FALSE AS fave, 0 AS rating_user, FALSE AS rating_complete, album_newest_song_time AS newest_song_time "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, CAST(ROUND(CAST(album_rating AS NUMERIC), 1) AS REAL) AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, FALSE AS fave, 0 AS rating_user, FALSE AS rating_complete, album_newest_song_time AS newest_song_time "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"WHERE r4_album_sid.sid = %s AND r4_album_sid.album_exists = TRUE "
@@ -178,7 +178,7 @@ def get_all_albums_list(sid, user = None):
 			(sid,))
 	else:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, ROUND(CAST(album_rating AS NUMERIC), 1) AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, COALESCE(album_fave, FALSE) AS fave, COALESCE(album_rating_user, 0) AS rating_user, COALESCE(album_rating_complete, FALSE) AS rating_complete, album_newest_song_time AS newest_song_time "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, CAST(ROUND(CAST(album_rating AS NUMERIC), 1) AS REAL) AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, COALESCE(album_fave, FALSE) AS fave, COALESCE(album_rating_user, 0) AS rating_user, COALESCE(album_rating_complete, FALSE) AS rating_complete, album_newest_song_time AS newest_song_time "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s AND r4_album_ratings.sid = %s) "

@@ -267,7 +267,7 @@ class Album(AssociatedMetadata):
 			rating_count = dislikes + neutrals + neutralplus + likes
 			log.debug("song_rating", "%s album ratings for %s (%s)" % (rating_count, self.data['name'], config.station_id_friendly[sid]))
 			if rating_count > config.get("rating_threshold_for_calc"):
-				self.rating_precise = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 4)
+				self.rating_precise = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 5)
 				self.data['rating'] = round(self.rating_precise, 1)
 				self.data['rating_count'] = rating_count
 				log.debug("album_rating", "%s new rating for %s" % (self.rating_precise, self.data['name']))
