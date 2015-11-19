@@ -336,6 +336,11 @@ var Router = function() {
 
 	var force_close_detail = false;
 	self.open_route = function(typ, id) {
+		if (typ == "autoplay") {
+			RWAudio.play();
+			typ = null;
+			id = null;
+		}
 		if (lists[typ] && ((!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow)) {
 			ready_to_render = false;
 		}

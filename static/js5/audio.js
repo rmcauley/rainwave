@@ -1,10 +1,11 @@
-var Audio = function() {
+var RWAudio = function() {
 	"use strict";
 
 	var self = {};
 	self.supported = false;
 	self.type = null;
 	self.changed_status_callback = null;
+	self.playing_status = false;
 	var filetype;
 	var stream_urls = [];
 	var playing_status = false;
@@ -174,6 +175,7 @@ var Audio = function() {
 		if (!playing_status) {
 			audio_el.play();
 			playing_status = true;
+			self.playing_status = true;
 			if (self.changed_status_callback) self.changed_status_callback(playing_status);
 		}
 	};
@@ -185,6 +187,7 @@ var Audio = function() {
 		el.classList.remove("playing");
 		el.classList.remove("working");
 		playing_status = false;
+		self.playing_status = false;
 
 		if (!audio_el) return;
 

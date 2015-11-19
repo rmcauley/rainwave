@@ -1,19 +1,13 @@
 <!DOCTYPE html>
 <html lang="{{ request.locale.code }}">
 <head>
-	<title>Rainwave</title>
+	<title>Rainwave {{ station_name }}</title>
 	<meta charset="UTF-8" />
 	<meta name="description" content="{{ site_description }}" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js"></script>
 	<script src="/api4/bootstrap"></script>
-	<script>
-		BOOTSTRAP.on_init = [];
-		BOOTSTRAP.on_measure = [];
-		BOOTSTRAP.on_draw = [];
-		var MOBILE = {{ "true" if mobile else "false" }};
-	</script>
 
 	{% if jsfiles %}
 		<script src="/static/baked/{{ revision_number }}/templates5b.js"></script>
@@ -42,21 +36,21 @@
 	{% end %}
 
 	{% if not mobile %}
-	<style>
-		::-webkit-scrollbar {
-		    width: 8px;
-		}
+		<style>
+			::-webkit-scrollbar {
+			    width: 8px;
+			}
 
-		::-webkit-scrollbar-track {
-		    display: none;
-		}
+			::-webkit-scrollbar-track {
+			    display: none;
+			}
 
-		::-webkit-scrollbar-thumb {
-		    border-width: 1px;
-			border-style: solid;
-			border-color: #555;
-		}
-	</style>
+			::-webkit-scrollbar-thumb {
+			    border-width: 1px;
+				border-style: solid;
+				border-color: #555;
+			}
+		</style>
 	{% end %}
 </head>
 

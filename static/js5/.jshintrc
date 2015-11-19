@@ -46,6 +46,7 @@
     "RequestLineList": true,
     "Requests": true,
     "Router": true,
+    "RWAudio": true,
     "RWTemplates": true,
     "Scrollbar": true,
     "SettingsWindow": true,

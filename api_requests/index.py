@@ -75,7 +75,8 @@ class MainIndex(api.web.HTMLRequest):
 			stream_filename=config.get_station(self.sid, "stream_filename"),
 			station_list=config.station_list_json,
 			apple_home_screen_icon=config.get_station(self.sid, "apple_home_screen_icon"),
-			mobile=self.mobile
+			mobile=self.mobile,
+			station_name=config.station_id_friendly[self.sid]
 		)
 
 @handle_url("/beta")
@@ -101,7 +102,7 @@ class Bootstrap(api.web.APIHandler):
 	description = (
 		"Bootstrap a Rainwave client.  Provides user info, API key, station info, relay info, and more.  "
 		"If you run a GET query to this URL, you will receive a Javascript file containing a single variable called BOOTSTRAP.  While this is largely intended for the purposes of the main site, you may use this.  "
-		"If you run a POST query to this URL, you will receive a JSON object."
+		"If you run a POST query to this URL, you will receive a JSON object without the extra data put into BOOTSTRAP that the official Rainwave site requires."
 	)
 	phpbb_auth = True
 	auth_required = False
@@ -115,15 +116,18 @@ class Bootstrap(api.web.APIHandler):
 			self.user = User(1)
 		self.user.ensure_api_key()
 
-	# def finish(self, *args, **kwargs):
-	# 	self.write_output()
-	# 	super(Bootstrap, self).finish(*args, **kwargs)
-
 	def get(self):
 		self.set_header("Content-Type", "text/javascript")
 		self.append("locales", api.locale.locale_names)
 		self.append("cookie_domain", config.get("cookie_domain"))
+		self.append("on_init", [])
+		self.append("on_measure", [])
+		self.append("on_draw", [])
 		self.post()
+		if self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1:
+			self.write("window.MOBILE = true;")
+		else:
+			self.write("window.MOBILE = false;")
 		self.write("var BOOTSTRAP=")
 
 	def post(self):

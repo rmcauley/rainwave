@@ -188,9 +188,10 @@ class Album(AssociatedMetadata):
 				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE AND album_song_count = 0 WHERE album_id = %s AND sid = %s", (album_id, sid))
 		for sid in new_sids:
 			if current_sids.count(sid):
-				pass
+				db.c.update("UPDATE r4_album_sid SET album_newest_song_time = %s WHERE album_newest_song_time < %s AND album_id = %s AND sid = %s", (song_added_on, song_added_on, album_id, sid))
 			elif old_sids.count(sid):
 				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (album_id, sid))
+				db.c.update("UPDATE r4_album_sid SET album_newest_song_time = %s WHERE album_newest_song_time < %s AND album_id = %s AND sid = %s", (song_added_on, song_added_on, album_id, sid))
 			else:
 				db.c.update("INSERT INTO r4_album_sid (album_id, sid, album_newest_song_time) VALUES (%s, %s, %s)", (album_id, sid, song_added_on))
 				if sid != 0:

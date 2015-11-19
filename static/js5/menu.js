@@ -5,13 +5,24 @@ var Menu = function() {
 	var template;
 	var has_calendar;
 
+	var open_station = function(e) {
+		if (RWAudio.playing_status) {
+			e.stopPropagation();
+			e.preventDefault();
+			window.location.href = this._href + "#!/autoplay";
+		}
+	};
+
 	BOOTSTRAP.on_init.push(function(root_template) {
 		template = root_template;
 
-		// must be done in JS, if you try to do it in the template you still get a clickable <a>
+		// must be done in JS, if you try to do it in the template you still get a clickable <a> for
+		// the station that shouldn't have a link
 		for (var i = 0; i < Stations.length; i++) {
 			if (Stations[i].url) {
 				Stations[i].$t.menu_link.setAttribute("href", Stations[i].url);
+				Stations[i].$t.menu_link._href = Stations[i].url;
+				Stations[i].$t.menu_link.addEventListener("click", open_station);
 			}
 			else {
 				Stations[i].$t.menu_link.classList.add("selected_station");
