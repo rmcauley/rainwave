@@ -36,6 +36,7 @@
 
 	self.test_modal = function() {
 		var template = Modal($l("crash_happened"), "modal_error", null, true);
+		if (!template) return;
 		template._root.parentNode.classList.add("error");
 	};
 

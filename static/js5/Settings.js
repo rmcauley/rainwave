@@ -1,79 +1,101 @@
 var SettingsWindow = function() {
 	"use strict";
 	var p = Prefs.get_meta();
+	p.p_sort.legal_values[0].name = $l("prefs_sort_playlist_by_alpha");
+	p.p_sort.legal_values[1].name = $l("prefs_sort_playlist_by_rating_user");
 	Modal($l("Settings"), "settings", p);
 
 	var bool_setup = function(key, obj) {
-		obj.$t.item_root.addEventListener("click", function() {
-			Prefs.change(key, !Prefs.get(key));
+		var check = function() {
 			if (Prefs.get(key)) {
-				obj.$t.item_root.classList.add("yes");
-				obj.$t.item_root.classList.remove("no");
+				if (obj.$t.wrap.classList.contains("no")) {
+					obj.$t.wrap.classList.remove("yes");
+					obj.$t.wrap.classList.remove("no");
+					obj.$t.wrap.offsetWidth;   // jshint ignore:line
+				}
+				obj.$t.wrap.classList.add("yes");
+			}
+			else if (obj.$t.wrap.classList.contains("yes")) {
+				obj.$t.wrap.classList.add("no");
+				obj.$t.wrap.classList.remove("yes");
 			}
 			else {
-				obj.$t.item_root.classList.remove("yes");
-				obj.$t.item_root.classList.add("no");
+				obj.$t.wrap.classList.remove("yes");
 			}
+		};
+		obj.$t.item_root.addEventListener("click", function(e) {
+			e.stopPropagation();
+			Prefs.change(key, !Prefs.get(key));
+			check();
+		});
+		obj.$t.yes.addEventListener("click", function(e) {
+			e.stopPropagation();
+			Prefs.change(key, true);
+			check();
+		});
+		obj.$t.no.addEventListener("click", function(e) {
+			e.stopPropagation();
+			Prefs.change(key, false);
+			check();
 		});
 		if (Prefs.get(key)) {
-			obj.$t.item_root.classList.add("yes");
-		}
-		else {
-			obj.$t.item_root.classList.add("no");
+			obj.$t.wrap.classList.add("yes");
 		}
 	};
 
-	var multi_highlight = function(el) {
-		Prefs.change(pref_name, e.target._value);
+	var multi_highlight = function(el, highlighter) {
+		var w = el.offsetWidth;
+		var h = el.offsetHeight;
+		var l = el.offsetLeft;
+		var t = el.offsetTop;
 
-		var w = e.target.offsetWidth;
-		var h = e.target.offsetHeight;
-		var l = e.target.offsetLeft;
-		var t = e.target.offsetTop;
-		var reflow_trigger;
-
-		for (var i = 0; i < e.target.parentNode.childNodes.length; i++) {
-			$remove_class(e.target.parentNode.childNodes[i], "selected");
-			if ($has_class(e.target.parentNode.childNodes[i], "selected_first")) {
-				$remove_class(e.target.parentNode.childNodes[i], "selected_first");
-				highlighter.style.transition = "none";
-				var w2 = e.target.parentNode.childNodes[i].offsetWidth;
-				var h2 = e.target.parentNode.childNodes[i].offsetHeight;
-				var l2 = e.target.parentNode.childNodes[i].offsetLeft;
-				var t2 = e.target.parentNode.childNodes[i].offsetTop;
-				highlighter.style.width = w2 + "px";
-				highlighter.style.height = h2 + "px";
-				highlighter.style[Fx.transform_string] = "translate(" + l2 + "px, " + t2 + "px)";
-                // trigger style recalculation so this happens w/o transition
-                // this will match the highlighter to the first selected element
-                highlighter.offsetWidth;    // jshint ignore:line
-                // now we can remove the transition safely
-                highlighter.style.transition = null;
-            }
-            $remove_class(e.target.parentNode.childNodes[i], "selected_first");
+		for (var i = 0; i < el.parentNode.childNodes.length; i++) {
+			el.parentNode.childNodes[i].classList.remove("selected");
         }
-        $add_class(e.target, "selected");
+        el.classList.add("selected");
 
         highlighter.style.width = w + "px";
         highlighter.style.height = h + "px";
-        highlighter.style[Fx.transform_string] = "translate(" + l + "px, " + t + "px)";
+        highlighter.style[Fx.transform] = "translate(" + l + "px, " + t + "px)";
     };
-	};
 
-	var multi_setup = function(key, obj) {
-		for (var i in obj.legal_values) {
-			obj.legal_values[i].$t.link.addEventListener("click", function() {
-
+	var multi_setup = function(key, obj, val) {
+		if (key == "locales") {
+			val.$t.link.addEventListener("click", function() {
+				Prefs.change_language(val.value);
+			});
+		}
+		else {
+			val.$t.link.addEventListener("click", function() {
+				Prefs.change(key, val.value);
+				multi_highlight(val.$t.link, obj.$t.highlight);
 			});
 		}
 	};
 
-	for (var i in p) {
-		if (p.bool) {
+	var highlight_later = function(el, highlighter) {
+		setTimeout(function() {
+			multi_highlight(el, highlighter);
+		}, 400);
+	};
+
+	var i, j;
+	for (i in p) {
+		if (!p[i].$t) {
+			continue;
+		}
+
+		if (p[i].bool) {
 			bool_setup(i, p[i]);
 		}
 		else {
-			multi_setup(i, p[i]);
+			for (j in p[i].legal_values) {
+				multi_setup(i, p[i], p[i].legal_values[j]);
+				if (p[i].value == p[i].legal_values[j].value) {
+					p[i].legal_values[j].$t.link.classList.add("selected");
+					highlight_later(p[i].legal_values[j].$t.link, p[i].$t.highlight);
+				}
+			}
 		}
 
 		if (i == "t_tl") {

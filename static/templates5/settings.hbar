@@ -1,14 +1,18 @@
+{{#with locales}}
+    {{>settings_multi}}
+{{/with}}
+
 {{#if notify}}
     {{#with notify}}
         {{>settings_yesno}}
     {{/with}}
 {{/if}}
 
-{{#with locales}}
+{{#with l_stksz}}
     {{>settings_multi}}
 {{/with}}
 
-<div class="settings_subheader">
+<div class="setting_subheader">
     {{ $l("tab_title_preferences") }}
 </div>
 {{#with t_tl}}
@@ -22,7 +26,7 @@
 {{/with}}
 
 <div class="power_only">
-    <div class="settings_subheader">
+    <div class="setting_subheader">
         {{ $l("playlist_preferences") }}
     </div>
     {{#with p_sort}}
@@ -31,17 +35,13 @@
     {{#with p_favup}}
         {{>settings_yesno}}
     {{/with}}
-    {{#with p_cldwn}}
+    {{#with p_avup}}
         {{>settings_yesno}}
     {{/with}}
 </div>
 
-{{#with t_stksz}}
-    {{>settings_multi}}
-{{/with}}
-
 <div class="power_only">
-    <div class="settings_subheader">
+    <div class="setting_subheader">
         {{ $l("rating_preferences") }}
     </div>
     {{#with r_incmplt}}

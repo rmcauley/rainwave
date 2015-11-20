@@ -12,10 +12,10 @@ var Timeline = function() {
 	var history_bar;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
-		Prefs.define("t_stk", [ false, true ], true);
-		Prefs.define("t_stksz", [ 0, 5, 4, 3, 2, 1 ], true);
-		Prefs.add_callback("t_stk", self.reflow);
-		Prefs.add_callback("t_stksz", self.reflow);
+		Prefs.define("l_stk", [ false, true ], true);
+		Prefs.define("l_stksz", [ 0, 5, 4, 3, 2, 1 ], true);
+		Prefs.add_callback("l_stk", self.reflow);
+		Prefs.add_callback("l_stksz", self.reflow);
 
 		API.add_callback("sched_current", function(json) { sched_current = json; });
 		API.add_callback("sched_next", function(json) { sched_next = json; });
@@ -44,7 +44,7 @@ var Timeline = function() {
 
 		template.history_header_link.addEventListener("click",
 			function(e) {
-				Prefs.change("t_stk", !Prefs.get("t_stk"));
+				Prefs.change("l_stk", !Prefs.get("l_stk"));
 			}
 		);
 
@@ -255,7 +255,7 @@ var Timeline = function() {
 
 		template.history_header.style[Fx.transform] = "translateY(" + running_y + "px)";
 
-		var history_size = Prefs.get("t_stk") ? sched_history.length : Prefs.get("t_stksz") || 0;
+		var history_size = Prefs.get("l_stk") ? sched_history.length : Prefs.get("l_stksz") || 0;
 		if (history_size == sched_history.length) {
 			template.history_header.classList.remove("history_expandable");
 		}

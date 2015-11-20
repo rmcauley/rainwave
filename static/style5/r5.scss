@@ -127,6 +127,10 @@ a, a:visited, .link {
 	display: inline-block;
 }
 
+body.simple div.power_only {
+	display: none;
+}
+
 @media $pc-media {
 	.phoneonly {
 		display: none;
@@ -159,3 +163,4 @@ a, a:visited, .link {
 @import "fave";
 @import "scrollbar";
 @import "chart";
+@import "settings";

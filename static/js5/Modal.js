@@ -3,6 +3,15 @@ var Modal = function() {
 
 	var stop_all = false;
 
+	var do_close = function(modal_to_close) {
+		if (modal_to_close.classList.contains("modal_container") && !modal_to_close.classList.contains("modal_closing")) {
+			modal_to_close.classList.add("modal_closing");
+			setTimeout(function(e) {
+				modal_to_close.parentNode.removeChild(modal_to_close);
+			}, 300);
+		}
+	};
+
 	var close_modal = function(e, chaining) {
 		if (e) {
 			e.preventDefault();
@@ -12,15 +21,9 @@ var Modal = function() {
 			return;
 		}
 		document.body.classList.remove("modal_active");
-		var modal_to_close;
-		for (var i = 0; i < document.body.children.length; i++) {
-			modal_to_close = document.body.children[i];
-			if (modal_to_close.classList.contains("modal_container") && !modal_to_close.classList.contains("modal_closing")) {
-				modal_to_close.classList.add("modal_closing");
-				setTimeout(function(e, el) {
-					modal_to_close.parentNode.removeChild(el);
-				}, 300);
-			}
+		var to_close = document.body.querySelectorAll("div.modal_container");
+		for (var i = 0; i < to_close.length; i++) {
+			do_close(to_close[i]);
 		}
 		if (!chaining) {
 			blocker.classList.remove("active");
@@ -38,6 +41,9 @@ var Modal = function() {
 			return;
 		}
 		close_modal(null, true);
+		if (stop_all) {
+			return;
+		}
 		if (no_close) {
 			stop_all = true;
 		}

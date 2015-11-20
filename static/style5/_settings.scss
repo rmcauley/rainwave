@@ -1,0 +1,167 @@
+$yes_no_height: 23px;
+
+div.setting_subheader {
+	color: $orange;
+	border-bottom: 1px solid $orange;
+	padding: 0;
+	margin: 5px 0;
+}
+
+div.setting_group {
+	clear: both;
+	padding: 2px 7px;
+	height: $yes_no_height;
+	overflow: hidden;
+	border-bottom: 1px solid transparent;
+	@include transition(border-color, background, opacity);
+
+	&.setting_group_special {
+		margin: 5px 0;
+		padding-left: 0px;
+
+		label {
+			color: $orange;
+		}
+	}
+
+	&:hover {
+		border-color: $hovercolor-border;
+		background-color: $hovercolor;
+		@include no-transition();
+	}
+
+	&.yes_no_group {
+		cursor: pointer;
+	}
+}
+
+div.yes_no_wrapper {
+	box-sizing: border-box;
+	float: right;
+	padding: 0;
+	margin: 0;
+
+	span {
+		box-sizing: border-box;
+		display: inline-block;
+		height: $yes_no_height;
+	}
+}
+
+span.yes_no_yes, span.yes_no_no {
+	position: relative;
+	z-index: 2;
+	width: 70px;
+	border: 1px solid $blue;
+	@include transition-wtime(350ms, color);
+	text-align: center;
+}
+
+span.yes_no_yes {
+	padding-right: 10px;
+	border-right: none;
+	color: $vdarktext;
+}
+
+span.yes_no_no {
+	padding-left: 10px;
+	border-left: none;
+}
+
+div.yes_no_wrapper {
+	&.yes {
+		span.yes_no_yes {
+			color: $text;
+		}
+		span.yes_no_no {
+			color: $vdarktext;
+		}
+	}
+
+	&.yes.no span.yes_no_yes {
+		color: $vdarktext;
+	}
+
+	&.no span.yes_no_no {
+		color: $text;
+	}
+
+	span.yes_no_bar {
+		position: absolute;
+		width: 70px;
+		background: #0c5d93;
+		z-index: 1;
+
+		@include transform(rotate(0deg));
+		-webkit-transform-origin: left center;
+		        transform-origin: left center;
+	}
+
+	&.yes span.yes_no_bar {
+		background: $blue;
+		@include transition-wtime(350ms, transform, background-color);
+		@include transform(rotate(-180deg));
+	}
+
+	&.no span.yes_no_bar {
+		background: #0c5d93;
+		@include transition-wtime(350ms, transform, background-color);
+		@include transform(rotate(-360deg));
+	}
+}
+
+span.yes_no_dot {
+	position: absolute;
+	border: solid 10px $text;
+	border-radius: 10px;
+	background: $text;
+	z-index: 1;
+	margin-left: -10px;
+}
+
+div.multi_select {
+	box-sizing: border-box;
+	float: right;
+	position: relative;
+	height: $yes_no_height;
+
+	span {
+		box-sizing: border-box;
+		position: relative;
+		padding: 0 5px;
+		margin: 0 .5em;
+		color: $vdarktext;
+		@include transition-wtime(350ms, color);
+		border: 1px solid $blue;
+		cursor: pointer;
+		height: $yes_no_height;
+
+		&:last-child {
+			margin-right: 0;
+		}
+
+		&.selected {
+			color: $text;
+			// background: $blue;
+		}
+
+		a {
+			color: $vdarktext;
+
+			&:hover {
+				color: $linkhover;
+			}
+		}
+	}
+
+	&.multi_select_special span a {
+		color: $text;
+	}
+
+	div.floating_highlight {
+		box-sizing: border-box;
+		position: absolute;
+		background-color: $blue;
+		@include transition-wtime(350ms, transform, height, width);
+	}
+}

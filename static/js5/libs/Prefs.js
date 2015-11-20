@@ -89,11 +89,15 @@ var Prefs = function() {
 	};
 
 	self.define = function(name, legal_values, power_only) {
-		if (meta[name]) return;
 		meta[name] = {};
 		meta[name].legal_values = legal_values || [ false, true ];
 		meta[name].power_only = power_only;
-		meta[name].bool = meta[name].legal_values == [ false, true ] || meta[name].legal_values == [ true, false ];
+		if (meta[name].legal_values.length == 2 && (meta[name].legal_values.indexOf(false) !== -1) && (meta[name].legal_values.indexOf(true) !== -2)) {
+			meta[name].bool = true;
+		}
+		else {
+			meta[name].bool = false;
+		}
 		if (!(name in values)) {
 			values[name] = legal_values ? legal_values[0] : false;
 		}
@@ -119,22 +123,23 @@ var Prefs = function() {
 				"bool"        : meta[i].bool,
 				"power_only"  : meta[i].power_only,
 				"value"       : values[i],
-				"name"        : $l("prefs_") + i
+				"name"        : $l("prefs_" + i)
 			};
-		}
-		if (!meta[i].bool) {
-			for (j = 0; j < meta[i].legal_values.length; j++) {
-				copy[i].legal_values.push({ "value": meta[i].legal_values[j], "name": meta[i].legal_values[j] });
+			if (!meta[i].bool) {
+				for (j = 0; j < meta[i].legal_values.length; j++) {
+					copy[i].legal_values.push({ "value": meta[i].legal_values[j], "name": meta[i].legal_values[j] });
+				}
 			}
 		}
 		copy.locales = {
 			"legal_values": [],
 			"bool": false,
 			"power_only": false,
-			"name": $l("change_language")
+			"name": $l("change_language"),
+			"value": LOCALE
 		};
 		for (i in locales) {
-			copy.locales.legal_values.push({ "value": i, "name": values[i] });
+			copy.locales.legal_values.push({ "value": i, "name": locales[i] });
 		}
 		return copy;
 	};

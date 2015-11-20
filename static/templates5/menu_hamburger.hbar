@@ -29,7 +29,7 @@
 	</div>
 	{{#if ^!MOBILE}}
 		<div class="menu_group">
-			<a class="link" bind="settings_icon">
+			<a class="link" bind="settings_link">
 				{{ $l("Settings") }}
 			</a>
 		</div>
