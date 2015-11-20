@@ -9,14 +9,14 @@ var Rating = function() {
 		API.add_callback("rate_result", rating_api_callback);
 
 		// was originally a playlist pref, now lives here
-		Prefs.define("playlist_show_rating_complete", [ false, true ]);
-		Prefs.add_callback("playlist_show_rating_complete", rating_complete_toggle);
+		Prefs.define("r_incmplt", [ false, true ], true);
+		Prefs.add_callback("r_incmplt", rating_complete_toggle);
 
-		Prefs.define("hide_global_ratings", [ false, true ]);
-		Prefs.add_callback("hide_global_ratings", hide_global_rating_callback);
-		Prefs.define("allow_rate_anything", [ false, true ]);
-		Prefs.define("allow_clear", [ false, true ]);
-		Prefs.add_callback("allow_clear", function(v) {
+		Prefs.define("r_noglbl", [ false, true ], true);
+		Prefs.add_callback("r_noglbl", hide_global_rating_callback);
+		Prefs.define("r_noomni", [ false, true ], true);
+		Prefs.define("r_clear", [ false, true ], true);
+		Prefs.add_callback("r_clear", function(v) {
 			if (v) {
 				document.body.classList.add("rating_clear_ok");
 			}
@@ -314,7 +314,7 @@ var Rating = function() {
 		}
 
 		var on_mouse_over = function(evt) {
-			if (!json.rating_allowed && (!User.rate_anything || Prefs.get("allow_rate_anything"))) {
+			if (!json.rating_allowed && (!User.rate_anything || Prefs.get("r_noomni"))) {
 				if (json.$t.rating.classList.contains("ratable")) {
 					json.$t.rating.classList.remove("ratable");
 				}

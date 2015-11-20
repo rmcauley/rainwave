@@ -84,8 +84,8 @@ var RWAudio = function() {
 
 		API.add_callback("user", user_tunein_check);
 
-		Prefs.define("audio_volume", [ 1.0 ]);
-		draw_volume(Prefs.get("audio_volume"));
+		Prefs.define("vol", [ 1.0 ]);
+		draw_volume(Prefs.get("vol"));
 	});
 
 	var user_tunein_check = function(json) {
@@ -149,11 +149,11 @@ var RWAudio = function() {
 			// always reports true, same time as 'connecting'
 			// audio_el.addEventListener("loadstart", self.on_audio_loadstart);
 
-			if (!Prefs.get("audio_volume") || (Prefs.get("audio_volume") > 1) || (Prefs.get("audio_volume") < 0)) {
+			if (!Prefs.get("vol") || (Prefs.get("vol") > 1) || (Prefs.get("vol") < 0)) {
 				Prefs.change("audio_volume", 1.0);
 			}
-			audio_el.volume = Prefs.get("audio_volume");
-			draw_volume(Prefs.get("audio_volume"));
+			audio_el.volume = Prefs.get("vol");
+			draw_volume(Prefs.get("vol"));
 
 			var source;
 			for (var i = 0; i < stream_urls.length; i++) {
@@ -205,9 +205,9 @@ var RWAudio = function() {
 			el.classList.remove("muted");
 			muted = false;
 			if (audio_el) {
-				audio_el.volume = Prefs.get("audio_volume") || 0.5;
+				audio_el.volume = Prefs.get("vol") || 0.5;
 			}
-			draw_volume(Prefs.get("audio_volume") || 0.5);
+			draw_volume(Prefs.get("vol") || 0.5);
 		}
 		else {
 			el.classList.add("muted");

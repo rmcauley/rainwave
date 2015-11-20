@@ -4,16 +4,16 @@ var AlbumList = function(el) {
 	self.$t.list.classList.add("album_list_core");
 
 	var loading = false;
-	Prefs.define("faves_first");
-	var sort_faves_first = Prefs.get("faves_first");
-	Prefs.define("cool_last", [ true, false ]);
-	var sort_available_first = Prefs.get("cool_last");
+	Prefs.define("p_favup");
+	var sort_faves_first = Prefs.get("p_favup");
+	Prefs.define("p_cldwn", [ true, false ]);
+	var sort_available_first = Prefs.get("p_cldwn");
 
 	var prefs_update = function(unused_arg, unused_arg2, no_redraw) {
-		sort_faves_first = Prefs.get("faves_first");
-		sort_available_first = Prefs.get("cool_last");
+		sort_faves_first = Prefs.get("p_favup");
+		sort_available_first = Prefs.get("p_cldwn");
 
-		var nv = Prefs.get("playlist_sort");
+		var nv = Prefs.get("p_sort");
 		if ([ "alpha", "rating_user" ].indexOf(nv) == -1) {
 			Prefs.change("sort", "alpha");
 		}
@@ -25,9 +25,9 @@ var AlbumList = function(el) {
 			self.redraw_current_position();
 		}
 	};
-	Prefs.add_callback("playlist_sort", prefs_update, [ "alpha", "rating_user" ]);
-	Prefs.add_callback("faves_first", prefs_update);
-	Prefs.add_callback("cool_last", prefs_update);
+	Prefs.add_callback("p_sort", prefs_update, [ "alpha", "rating_user" ]);
+	Prefs.add_callback("p_favup", prefs_update);
+	Prefs.add_callback("p_cldwn", prefs_update);
 
 	API.add_callback("all_albums", self.update);
 	API.add_callback("album_diff", function(json) { if (self.loaded) self.update(json); });

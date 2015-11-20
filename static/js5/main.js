@@ -1,16 +1,3 @@
-/* deprecated preferences:
-	stage
-	do_not_update_titlebar
-	resizer_playlist
-	resizer_timeline
-	history_sticky
-	resize_*
-	station_select_clicked
-	show_m3u
-	show_artists
-	show_losing_songs
-*/
-
 /* For page initialization:
 
 BOOTSTRAP.on_init will fill a documentFragment
@@ -27,6 +14,8 @@ var Stations = [];
 	var template;
 
 	var initialize = function() {
+		Prefs.define("pwr");
+
 		// BOOTSTRAP.station_list = {
 		// 	1: { "id": 1, "name": "Game", "url": "hello" },
 		// 	2: { "id": 2, "name": "OC ReMix", "url": "hello" },
@@ -41,6 +30,7 @@ var Stations = [];
 		// 	4: { "album": "Chip Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "Chip Test Song" },
 		// 	5: { "album": "All Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "All Test Song" },
 		// };
+
 		var order = [ 5, 1, 4, 2, 3 ];
 		var colors = {
 			1: "#1f95e5",  // Rainwave blue
@@ -61,6 +51,7 @@ var Stations = [];
 				}
 			}
 		}
+
 		if (window.location.href.indexOf("beta") !== -1) {
 			for (i = 0; i < Stations.length; i++) {
 				if (Stations[i].url) Stations[i].url += "/beta";
@@ -88,6 +79,7 @@ var Stations = [];
 		if ((ua.indexOf("safari") !== -1) && (ua.indexOf("chrome") === -1)) {
 			document.body.classList.add("safari");
 		}
+
 		document.body.appendChild(template._root);
 
 		for (i = 0; i < BOOTSTRAP.on_measure.length; i++) {
@@ -103,8 +95,6 @@ var Stations = [];
 		API.initialize(BOOTSTRAP.sid, "/api4/", BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
 
 		document.body.classList.remove("loading");
-
-		// DeepLinker.detect_url_change();
 
 		if (document.ontouchstart === null) {
 			var fastclick_load = document.createElement("script");

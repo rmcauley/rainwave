@@ -14,9 +14,9 @@ var Clock = function() {
 	self.pageclock_bar_function = null;
 
 	BOOTSTRAP.on_init.push(function(template) {
-		Prefs.define("show_rating_in_titlebar");
-		Prefs.define("show_clock_in_titlebar", [ true, false ]);
-		Prefs.define("show_title_in_titlebar", [ true, false ]);
+		Prefs.define("t_rt", [ false, true ], true);
+		Prefs.define("t_clk", [ true, false ]);
+		Prefs.define("t_tl", [ true, false ]);
 		API.add_callback("api_info", self.resync);
 
 		if (interval === 0) {
@@ -80,13 +80,13 @@ var Clock = function() {
 			return;
 		}
 
-		if (Sizing.simple && (!Prefs.get("show_title_in_titlebar") || !page_title || MOBILE  || !User.tuned_in)) {
+		if (Sizing.simple && (!Prefs.get("t_tl") || !page_title || MOBILE  || !User.tuned_in)) {
 			if (document.title != original_title) document.title = original_title;
 			return;
 		}
 
 		var this_page_title = page_title;
-		if (Prefs.get("show_rating_in_titlebar")) {
+		if (Prefs.get("t_rt")) {
 			var rating = Timeline.get_current_song_rating();
 			if (rating) {
 				if (rating * 10 % 10 === 0) rating = rating + ".0";
@@ -96,7 +96,7 @@ var Clock = function() {
 				this_page_title = "*** " + this_page_title;
 			}
 		}
-		if (Prefs.get("show_clock_in_titlebar")) {
+		if (Prefs.get("t_clk")) {
 			this_page_title = "[" + c + "] " + this_page_title;
 		}
 		if (this_page_title != document.title) document.title = this_page_title;

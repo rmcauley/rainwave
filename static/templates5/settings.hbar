@@ -1,1 +1,62 @@
-<div>Hello</div>
+{{#if notify}}
+    {{#with notify}}
+        {{>settings_yesno}}
+    {{/with}}
+{{/if}}
+
+{{#with locales}}
+    {{>settings_multi}}
+{{/with}}
+
+<div class="settings_subheader">
+    {{ $l("tab_title_preferences") }}
+</div>
+{{#with t_tl}}
+    {{>settings_yesno}}
+{{/with}}
+{{#with t_clk}}
+    {{>settings_yesno}}
+{{/with}}
+{{#with t_rt}}
+    {{>settings_yesno}}
+{{/with}}
+
+<div class="power_only">
+    <div class="settings_subheader">
+        {{ $l("playlist_preferences") }}
+    </div>
+    {{#with p_sort}}
+        {{>settings_multi}}
+    {{/with}}
+    {{#with p_favup}}
+        {{>settings_yesno}}
+    {{/with}}
+    {{#with p_cldwn}}
+        {{>settings_yesno}}
+    {{/with}}
+</div>
+
+{{#with t_stksz}}
+    {{>settings_multi}}
+{{/with}}
+
+<div class="power_only">
+    <div class="settings_subheader">
+        {{ $l("rating_preferences") }}
+    </div>
+    {{#with r_incmplt}}
+        {{>settings_yesno}}
+    {{/with}}
+
+    {{#with r_noglbl}}
+        {{>settings_yesno}}
+    {{/with}}
+
+    {{#with r_noomni}}
+        {{>settings_yesno}}
+    {{/with}}
+
+    {{#with r_clear}}
+        {{>settings_yesno}}
+    {{/with}}
+</div>

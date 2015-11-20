@@ -7,6 +7,7 @@
     "docCookies": true,
     "gettext": true,
     "interpolate": true,
+    "LOCALE": true,
     "MOBILE": true,
     "performance": true,
     "pgettext": true,

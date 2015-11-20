@@ -1,0 +1,10 @@
+<div bind="item_root" class="{{ ^'setting_group ' + (_c.special ? 'setting_group_special' : '') + ' ' + (_c.power_only ? 'power_only' : '') }}">
+    <div class="multi_select unselectable" bind="area">
+        <div class="floating_highlight" bind="highlight"></div>
+        {{#each legal_values}}
+            <span class="link" value="{{ value }}" bind="link">
+                {{ name }}
+            </span>
+        {{/each}}
+    <label>{{ name }}</label>
+</div>

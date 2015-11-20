@@ -67,7 +67,7 @@ var Sizing = function() {
 			}
 		}
 		else {
-			if (Prefs.get("adv")) {
+			if (Prefs.get("pwr")) {
 				document.body.classList.remove("simple");
 				document.body.classList.add("full");
 				self.simple = false;

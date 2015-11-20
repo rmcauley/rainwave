@@ -1,0 +1,9 @@
+<div bind="item_root" class="{{ ^'setting_group yes_no_group' + (_c.special ? 'setting_group_special' : '') + ' ' + (_c.power_only ? 'power_only' : '') }}">
+    <div class="yes_no_wrapper">
+        <span class="yes_no_yes" bind="yes">{{ $l("yes") }}</span>
+        <span class="yes_no_bar"></span>
+        <span class="yes_no_dot"></span>
+        <span class="yes_no_no" bind="no">{{ $l("no") }}</span>
+    </div>
+    <label>{{ name }}</label>
+</div>

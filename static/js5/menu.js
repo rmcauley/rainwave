@@ -40,9 +40,9 @@ var Menu = function() {
 			template.header.classList.add("no_avatar");
 		}
 
-		// if (template.settings_link) {
-		// 	template.settings_link.addEventListener("click", SettingsWindow);
-		// }
+		if (template.settings_link) {
+			template.settings_link.addEventListener("click", SettingsWindow);
+		}
 
 		template.playlist_link.addEventListener("click", function() {
 			if (document.body.classList.contains("playlist")) {
