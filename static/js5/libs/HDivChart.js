@@ -22,25 +22,6 @@ function HDivChart(data, options) {
     }
 
     if (data.length > 1) {
-        if (options.min_share) {
-            var downmix = 0;
-            for (i = 0; i < data.length; i++) {
-                if (data[i].share < options.min_share) {
-                    data[i].share += (options.min_share - data[i].share);
-                    total_percent += (options.min_share - data[i].share);
-                }
-                else {
-                    downmix++;
-                }
-            }
-            var downshare = Math.floor(Math.max(1, (total_percent - 100) / downmix));
-            for (i = 0; i < data.length && total_percent > 100; i++) {
-                if (data[i].share > options.min_share) {
-                    data[i].share -= downshare;
-                    total_percent -= downshare;
-                }
-            }
-        }
         for (i = 0; i < data.length && total_percent < 100; i++) {
             data[i].share += 0.5;
             total_percent += 0.5;
@@ -63,7 +44,7 @@ function HDivChart(data, options) {
         d.style.width = data[i].share + "%";
         d.style.backgroundColor = data[i].color;
         d.style.left = pos + "%";
-        if (data[i].label) {
+        if (data[i].label && (data[i].share > options.min_share)) {
             t = document.createElement("span");
             t.className = "chart_label";
             t.textContent = data[i].label;
