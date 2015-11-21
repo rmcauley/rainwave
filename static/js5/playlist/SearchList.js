@@ -466,10 +466,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 			search_box.setAttribute("placeholder", $l("hotkey_mode"));
 			return;
 		}
-		else {
-			search_box.classList.remove("active");
-			template.box_container.classList.remove("active");
-		}
 
 		if (search_string && (visible.length === 0)) {
 			search_box.classList.add("error");
