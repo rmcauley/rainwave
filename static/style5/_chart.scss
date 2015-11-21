@@ -17,7 +17,6 @@ div.chart_outside {
 
         span.chart_label {
             position: absolute;
-            z-index: 1;
             max-width: 100%;
             overflow: hidden;
             @include transform(translateX(4px));

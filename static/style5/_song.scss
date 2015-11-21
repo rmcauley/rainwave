@@ -153,12 +153,12 @@ div.song {
 				border-color: $hovercolor-border;
 				background-color: $hovercolor;
 				-webkit-transition: $webkit_song_transitions;
-	        	        transition: $song_transitions;
+				        transition: $song_transitions;
 
-	        	div.vote_button {
-	        		opacity: 1;
-	        		background: $blue;
-	        	}
+				div.vote_button {
+					opacity: 1;
+					background: $blue;
+				}
 			}
 
 			div.song_content a {
@@ -179,6 +179,11 @@ div.song {
 		&.voting_registered {
 			background-color: #192D67;
 			background-position: 0px -35px;
+
+			div.vote_button {
+				opacity: 1;
+				background: $blue;
+			}
 		}
 	}
 
