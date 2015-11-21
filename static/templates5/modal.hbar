@@ -3,7 +3,9 @@
 		<div class="bkg">
 			<div class="content">
 				{{#if closeable}}
-					<span class="icon icon_close"></span>
+					<div class="modal_close" bind="close">
+						<img src="/static/images4/cancel.png" alt="X" />
+					</div>
 				{{/if}}
 				{{#if title }}
 					<span>{{ title }}</span>

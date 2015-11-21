@@ -109,4 +109,16 @@ div.modal_container {
 			@include transform(translate(-50%, -40%) scaleX(1.0) scaleY(1.0) !important);
 		}
 	}
+
+	div.modal_close {
+		float: right;
+		cursor: pointer;
+		top: 1px;
+		position: relative;
+
+		img {
+			width: 14px;
+			height: 14px;
+		}
+	}
 }

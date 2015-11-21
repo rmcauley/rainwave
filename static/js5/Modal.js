@@ -60,7 +60,7 @@ var Modal = function() {
 			setTimeout(function() {
 				mt.container.classList.add("full_open");
 			}, 300);
-		}, 1);
+		}, 20);
 		return ct;
 	};
 
