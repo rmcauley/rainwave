@@ -106,20 +106,20 @@ div.song {
 		float: left;
 		position: relative;
 		border: solid 1px #444;
-		border-right: none;
 		border-top-left-radius: 3px;
 		border-bottom-left-radius: 3px;
 		height: $art_size;
 		opacity: 0.6;
 		width: 1.5em;
 		top: 50%;
-		@include transform(translateY(-50%));
+		@include transform(translateY(-50%) translateX(1px));
 		@include transition-wtime(300ms, border-color, color, opacity);
 
 		span.vote_button_rotate {
 			position: absolute;
 			top: 50%;
 			left: 50%;
+			padding-bottom: 2px;
 			-webkit-transform-origin: top left;
 			        transform-origin: top left;
 			@include transform(rotate(90deg) translateX(-50%) translateY(-50%));
