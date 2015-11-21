@@ -1,1 +1,1 @@
-<div class="rating" bind="rating"></div>
+<div class="rating album_rating" bind="rating"></div>
