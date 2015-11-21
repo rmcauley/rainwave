@@ -17,7 +17,7 @@ function HDivChart(data, options) {
 
     var total_percent = 0;
     for (i = 0; i < data.length; i++) {
-        data[i].share = Math.max(options.min_share, Math.floor(data[i].value / total * 100));
+        data[i].share = Math.floor(data[i].value / total * 100);
         total_percent += data[i].share;
     }
 
