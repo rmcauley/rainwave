@@ -17,12 +17,13 @@ var RatingChart = function(json) {
 			data.push({
 				"value": json.rating_histogram[i],
 				"color": RatingColors[i],
-				"label": i
+				"label": i,
+				"tooltip": Formatting.rating(i) + ": " + json.rating_histogram[i]
 			});
 		}
 	}
 	if (data.length === 0) return;
-	var c = HDivChart(data, { "min_share": 4 });
+	var c = HDivChart(data, { "min_share": 4, "add_share_to_tooltip": true });
 	c.classList.add("chart_ratings");
 	return c;
 };

@@ -34,6 +34,12 @@ function HDivChart(data, options) {
         }
     }
 
+    if (options.add_share_to_tooltip) {
+        for (i = 0; i < data.length; i++) {
+            data[i].tooltip += " (" + data[i].share + "%)";
+        }
+    }
+
     var outside = document.createElement("div");
     outside.className = "chart_outside";
     var d, t, pos;

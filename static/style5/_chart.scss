@@ -19,24 +19,27 @@ div.chart_outside {
             position: absolute;
             max-width: 100%;
             overflow: hidden;
+            cursor: default;
             @include transform(translateX(4px));
         }
 
         span.chart_tooltip {
+            position: absolute;
             border: solid 1px $blue;
             background: black;
             visibility: hidden;
             opacity: 0;
             left: 50%;
-            @include transform(translateX(-50%));
+            @include transform(translateY(50%) translateX(-50%));
 
-            @include transition-wtime(300ms, opacity, transform, visibility);
+            @include transition-wtime(200ms, opacity, transform, visibility);
         }
 
-        &.hover span.chart_tooltip {
-            opacity: 0;
+        &:hover span.chart_tooltip {
+            opacity: 1;
             visibility: visible;
-            @include transform(translateY(105%));
+            cursor: default;
+            @include transform(translateY(100%) translateX(-50%));
         }
     }
 
