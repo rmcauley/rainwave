@@ -22,6 +22,7 @@ var Router = function() {
 	var detail_header;
 	var reset_cache_on_next_request = false;
 	var request_in_flight = false;
+	var has_autoplayed = false;
 
 	var reset_cache = function() {
 		// console.log("Cache reset.");
@@ -157,6 +158,10 @@ var Router = function() {
 			if (typeof(ga) == "object") ga("send", "pageview", "/" + new_route);
 			new_route = new_route.split("/");
 			document.body.classList.remove("requests");
+			if ((new_route[0] == "autoplay") && !has_autoplayed) {
+				RWAudio.play();
+				has_autoplayed = true;
+			}
 			if (tabs[new_route[0]] || views[new_route[0]]) {
 				self.open_route(new_route[0], new_route[1]);
 			}
@@ -336,11 +341,6 @@ var Router = function() {
 
 	var force_close_detail = false;
 	self.open_route = function(typ, id) {
-		if (typ == "autoplay") {
-			RWAudio.play();
-			typ = null;
-			id = null;
-		}
 		if (lists[typ] && ((!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow)) {
 			ready_to_render = false;
 		}
