@@ -49,6 +49,9 @@ var Modal = function() {
 		}
 		var mt = RWTemplates.modal({ "closeable": !no_close, "title": title });
 		template_object = template_object || {};
+		if (mt.close) {
+			mt.close.addEventListener("click", close_modal);
+		}
 		var ct = RWTemplates[template_name](template_object, mt.content);
 		mt.container.addEventListener("click", function(e) { e.stopPropagation(); });
 		document.body.insertBefore(blocker, document.body.firstChild);
