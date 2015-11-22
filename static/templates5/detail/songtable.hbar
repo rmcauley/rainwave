@@ -25,7 +25,7 @@
 		{{>rating}}
 		{{#if ^!MOBILE && !Sizing.simple}}
 			<div class="rating_site">
-				{{ rating }}
+				{{ ^Formatting.rating(_c.rating) }}
 			</div>
 		{{/if}}
 		{{#if ^!Sizing.simple && _c.artists }}

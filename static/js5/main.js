@@ -15,6 +15,9 @@ var Stations = [];
 
 	var initialize = function() {
 		Prefs.define("pwr");
+		if (Prefs.get("pwr")) {
+			Sizing.simple = false;
+		}
 
 		// BOOTSTRAP.station_list = {
 		// 	1: { "id": 1, "name": "Game", "url": "hello" },

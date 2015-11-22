@@ -58,10 +58,6 @@ body {
 	}
 }
 
-body.desktop.small.full {
-	font-size: smaller;
-}
-
 div.sizeable {
 	overflow: hidden;
 	position: relative;
@@ -151,7 +147,6 @@ body.simple div.power_only {
 @import "player";
 
 @import "timeline";
-@import "timeline_simple";
 @import "playlist";
 @import "detail";
 @import "requests";
@@ -164,3 +159,5 @@ body.simple div.power_only {
 @import "scrollbar";
 @import "chart";
 @import "settings";
+
+@import "timeline_sizing";

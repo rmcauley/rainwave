@@ -292,6 +292,10 @@ var Rating = function() {
 		}
 		json.$t.rating.rating_set(json.rating_user || json.rating);
 
+		if (!Sizing.simple && json.rating_user) {
+			json.$t.rating_hover_number.textContent = Formatting.rating(json.rating_user);
+		}
+
 		// DO NOT RETURN ANYTHING HERE
 		// You run an almost 100% certain risk of memory leaks due to
 		// circular references if you return a function or object

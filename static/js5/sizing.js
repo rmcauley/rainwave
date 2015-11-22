@@ -35,7 +35,12 @@ var Sizing = function() {
 		self.list_item_height = index_t.list_item.offsetHeight;
 		self.detail_header_size = index_t.detail_header_container.offsetHeight;
 		var right_of_timeline = index_t.timeline_sizer.offsetLeft + index_t.timeline_sizer.offsetWidth;
+		var request_width = index_t.requests_container.offsetWidth;
+		var detail_width = index_t.detail_container.offsetWidth;
+		var lists_width = index_t.lists.offsetWidth;
+		var pwr_timeline_width = self.width - request_width - detail_width - lists_width;
 		self.sizeable_area_height = self.height - index_t.sizeable_area.offsetTop;
+		console.log(self.width);
 
 		index_t.sizeable_area.style.height = self.sizeable_area_height + "px";
 		self.detail_area.style.height = (self.sizeable_area_height - self.detail_header_size - 20) + "px";
@@ -113,10 +118,27 @@ var Sizing = function() {
 		var size_changed = (document.body.classList.contains("normal") != is_normal) && (document.body.classList.contains("small") != is_small);
 
 		is_small = document.body.classList.contains("small");
-		self.song_size_np = !is_small ? 140 : 100;
-		self.song_size = !is_small ? 100 : 70;
-		self.request_size = 70;
-		self.timeline_header_size = 40;
+
+		if (document.body.classList.contains("simple")) {
+			self.song_size_np = !is_small ? 140 : 100;
+			self.song_size = !is_small ? 100 : 70;
+			self.request_size = 70;
+			self.timeline_header_size = 40;
+
+			index_t.timeline.style.width = null;
+			index_t.lists.style.left = null;
+			index_t.detail_container.style.left = null;
+		}
+		else {
+			self.song_size_np = 100;
+			self.song_size = 70;
+			self.request_size = 70;
+			self.timeline_header_size = 40;
+
+			index_t.timeline.style.width = pwr_timeline_width + "px";
+			index_t.lists.style.left = pwr_timeline_width + "px";
+			index_t.detail_container.style.left = (pwr_timeline_width + lists_width) + "px";
+		}
 
 		if (size_changed) {
 			Timeline._reflow(null, true);

@@ -151,7 +151,7 @@ var AlbumList = function(el) {
 			// item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round((item.rating || 0) * 10) / 2)) * 30) + 6) + "px";
 			// R5
 			if (Prefs.get("r_noglbl") || !item.rating) {
-				item._el.style.backgroundPosition = "right -6px";
+				item._el.style.backgroundPosition = "right 6px";
 			}
 			else {
 				item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 28) + 6) + "px";

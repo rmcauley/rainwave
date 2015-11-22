@@ -10,8 +10,10 @@ var Timeline = function() {
 	var sched_history;
 	var scroller;
 	var history_bar;
+	var root_template;
 
-	BOOTSTRAP.on_init.push(function(root_template) {
+	BOOTSTRAP.on_init.push(function(root_tmpl) {
+		root_template = root_tmpl;
 		Prefs.define("l_stk", [ false, true ], true);
 		Prefs.define("l_stksz", [ 0, 5, 4, 3, 2, 1 ], true);
 		Prefs.add_callback("l_stk", self.reflow);
@@ -30,7 +32,6 @@ var Timeline = function() {
 
 		template = RWTemplates.timeline.timeline();
 		root_template.timeline.parentNode.replaceChild(template.timeline, root_template.timeline);
-		root_template.timeline = template.timeline;
 		root_template.timeline_sizer = template.timeline_sizer;
 		el = template.timeline_sizer;
 		history_bar = template.history_bar;
@@ -53,6 +54,7 @@ var Timeline = function() {
 
 	BOOTSTRAP.on_draw.push(function() {
 		scroller = Scrollbar.create(template.timeline, true);
+		root_template.timeline = scroller.scrollblock;
 	});
 
 	self.update = function() {
@@ -271,7 +273,7 @@ var Timeline = function() {
 			events[i].el.classList.add("sched_history_hidden");
 		}
 
-		running_y += !Sizing.simple || Sizing.mobile ? 19 : 17;
+		running_y += 17;
 		var history_gap;
 		for (i = hidden_events; i < events.length; i++) {
 			if (events[i].history) {

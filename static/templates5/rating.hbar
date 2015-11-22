@@ -1,5 +1,5 @@
 <div class="rating needsclick" bind="rating">
 	{{#if ^User.id > 1 }}
-		<div class="rating_number rating_hover" bind="rating_hover" bind="rating_hover_number"></div>
+		<div class="rating_number rating_hover" bind="rating_hover_number"></div>
 	{{/if}}
 </div>

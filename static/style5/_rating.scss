@@ -9,6 +9,10 @@ div.rating {
 	margin: 0;
 	height: $rating_height;
 
+	body.full {
+		width: $rating_width + 23px;
+	}
+
 	&.rating_user {
 		background-image: $user_rating;
 
@@ -25,7 +29,7 @@ div.rating {
 		}
 	}
 
-	body.desktop &.ratable {
+	body.simple.desktop &.ratable {
 		cursor: pointer;
 
 		&:hover {
@@ -37,6 +41,10 @@ div.rating {
 				background-image: $fav_rating;
 			}
 		}
+	}
+
+	body.full & {
+		margin-left: 30px;
 	}
 
 	div.rating_number {
@@ -91,7 +99,7 @@ div.rating {
 		}
 	}
 
-	body.desktop &:hover div.rating_hover {
+	body.desktop &:hover div.rating_hover, body.full & div.rating_hover {
 		opacity: 1;
 		visibility: visible;
 		@include transform(translateX(-25px));

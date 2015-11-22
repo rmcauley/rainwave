@@ -29,6 +29,7 @@ var Formatting = function() {
 	};
 
 	self.cooldown_glance = function(seconds) {
+		seconds -= Clock.now;
 		if (seconds < 60) return "";
 		if (seconds >= 604800) {
 			return Math.floor(seconds / 604800) + lang.timeformat_w;

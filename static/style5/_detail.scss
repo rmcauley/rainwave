@@ -106,20 +106,6 @@ div.detail {
 		margin-top: 10px;
 		position: relative;
 	}
-
-	div.album_detail_faverate {
-		width: $rating_width + 20;
-		float: right;
-
-		div.fave img.fave_lined {
-			opacity: 0.5;
-		}
-
-		div.rating {
-			float: none;
-			margin-left: 20px;
-		}
-	}
 }
 
 div.row {
@@ -162,8 +148,13 @@ div.row {
 		float: right;
 	}
 
-	div.rating, div.rating_clear {
+	div.rating, div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site {
 		float: right;
+	}
+
+	div.rating_site {
+		color: $darktext;
+		margin-left: 5px;
 	}
 
 	a.url, div.fake_url {
@@ -181,7 +172,8 @@ div.row {
 	}
 
 	div.cool_info {
-		width: 40px;
+		width: 35px;
+		min-height: 10px;
 	}
 
 	div.title {
