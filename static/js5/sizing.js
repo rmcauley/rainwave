@@ -104,14 +104,16 @@ var Sizing = function() {
 		}
 
 		if (document.body.classList.contains("simple")) {
+			index_t.timeline.style.width = null;
 			index_t.lists.style.left = right_of_timeline + "px";
 			index_t.requests_container.style.left = right_of_timeline + "px";
 			index_t.detail_container.style.left = right_of_timeline + "px";
 		}
 		else {
-			index_t.lists.style.left = null;
 			index_t.requests_container.style.left = null;
-			index_t.detail_container.style.left = null;
+			index_t.timeline.style.width = pwr_timeline_width + "px";
+			index_t.lists.style.left = pwr_timeline_width + "px";
+			index_t.detail_container.style.left = (pwr_timeline_width + lists_width) + "px";
 		}
 
 		var size_changed = (document.body.classList.contains("normal") != is_normal) && (document.body.classList.contains("small") != is_small);
@@ -123,20 +125,12 @@ var Sizing = function() {
 			self.song_size = !is_small ? 100 : 70;
 			self.request_size = 70;
 			self.timeline_header_size = 40;
-
-			index_t.timeline.style.width = null;
-			index_t.lists.style.left = null;
-			index_t.detail_container.style.left = null;
 		}
 		else {
 			self.song_size_np = 100;
 			self.song_size = 70;
 			self.request_size = 70;
 			self.timeline_header_size = 40;
-
-			index_t.timeline.style.width = pwr_timeline_width + "px";
-			index_t.lists.style.left = pwr_timeline_width + "px";
-			index_t.detail_container.style.left = (pwr_timeline_width + lists_width) + "px";
 		}
 
 		if (size_changed) {

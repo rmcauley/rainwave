@@ -8,9 +8,14 @@
     {{/with}}
 {{/if}}
 
-{{#with l_stksz}}
-    {{>settings_multi}}
-{{/with}}
+<div class="power_only">
+    <div class="setting_subheader">
+        {{ $l("timeline_preferences") }}
+    </div>
+    {{#with l_stksz}}
+        {{>settings_multi}}
+    {{/with}}
+</div>
 
 <div class="setting_subheader">
     {{ $l("tab_title_preferences") }}
@@ -60,3 +65,10 @@
         {{>settings_yesno}}
     {{/with}}
 </div>
+
+<div class="setting_subheader">
+    {{ $l("site_mode") }}
+</div>
+{{#with pwr}}
+    {{>settings_yesno}}
+{{/with}}

@@ -338,6 +338,7 @@
    "prefs_detail_global_ratings"                     : "Show Global Ratings in Song Lists",
    "prefs_r_noomni"                                  : "Disable Omni Rating",
    "prefs_r_clear"                                   : "Show Delete Rating Button",
+   "prefs_pwr"                                     : "Enable Power User Mode",
    "m3u_downloads"                                   : "M3U Downloads",
    "skip_intro_mode"                                 : "Skip Intro Mode",
    "do_intro_mode"                                   : "Go back to Intro Mode",
