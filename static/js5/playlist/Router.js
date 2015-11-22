@@ -370,7 +370,7 @@ var Router = function() {
 		if (id && !isNaN(id)) {
 			if (!ready_to_render) {
 				remove_excess_header_content();
-				detail_header.textContent = lists[typ].get_title_from_id(id) || $l("Loading...");
+				detail_header.textContent = (lists[typ] && lists[typ].get_title_from_id ? lists[typ].get_title_from_id(id) : false) || $l("Loading...");
 			}
 			var scrolled = false;
 			if (!ready_to_render && lists[typ] && lists[typ].loaded) {
