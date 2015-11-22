@@ -40,7 +40,6 @@ var Sizing = function() {
 		var lists_width = index_t.lists.offsetWidth;
 		var pwr_timeline_width = self.width - request_width - detail_width - lists_width;
 		self.sizeable_area_height = self.height - index_t.sizeable_area.offsetTop;
-		console.log(self.width);
 
 		index_t.sizeable_area.style.height = self.sizeable_area_height + "px";
 		self.detail_area.style.height = (self.sizeable_area_height - self.detail_header_size - 20) + "px";
