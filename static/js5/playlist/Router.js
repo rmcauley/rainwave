@@ -57,6 +57,10 @@ var Router = function() {
 			scroll_positions.listener = {};
 		}
 
+		if (docCookies.getItem("r5_list") && tabs[docCookies.getItem("r5_list")]) {
+			document.body.classList.add("playlist_" + docCookies.getItem("r5_list"));
+		}
+
 		reset_cache();
 
 		el = root_template.detail;
@@ -92,7 +96,9 @@ var Router = function() {
 			// 		}
 			// 	}, 400);
 			// }
-			self.change();
+			if (Sizing.simple) {
+				self.change();
+			}
 		});
 
 		root_template.detail_close.addEventListener("click", function() {
@@ -150,8 +156,10 @@ var Router = function() {
 				document.body.classList.remove("requests");
 				document.body.classList.remove("detail");
 				document.body.classList.remove("requests");
-				for (var i in tabs) {
-					document.body.classList.remove("playlist_" + i);
+				if (Sizing.simple) {
+					for (var i in tabs) {
+						document.body.classList.remove("playlist_" + i);
+					}
 				}
 				self.active_list = false;
 				current_type = null;
@@ -354,6 +362,7 @@ var Router = function() {
 		}
 		var close_detail = true;
 		if (typ in lists && lists[typ]) {
+			Prefs.set_new_list(typ);
 			last_open = typ;
 			document.body.classList.add("playlist");
 			document.body.classList.add("playlist_" + typ);

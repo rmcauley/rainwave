@@ -41,6 +41,8 @@ var docCookies = {
 docCookies.removeItem("r3sid", "/", BOOTSTRAP.cookie_domain);
 docCookies.removeItem("r3prefs", "/", BOOTSTRAP.cookie_domain);
 docCookies.removeItem("edilayouts", "/", BOOTSTRAP.cookie_domain);
+// docCookies.removeItem("r4_prefs", "/", BOOTSTRAP.cookie_domain);
+// docCookies.removeItem("r4_active_list", "/", BOOTSTRAP.cookie_domain);
 
 var Prefs = function() {
 	"use strict";
@@ -59,6 +61,10 @@ var Prefs = function() {
 
 	self.save = function() {
 		docCookies.setItem("r5_prefs", JSON.stringify(values), Infinity, "/", cookie_domain);
+	};
+
+	self.set_new_list = function(list) {
+		docCookies.setItem("r5_list", list, Infinity, "/", cookie_domain);
 	};
 
 	self.get = function(name) {

@@ -20,15 +20,15 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 		request.append("user", request.user.to_private_dict())
 
 	if not request.mobile:
-		if all_lists or (extra_list == "all_albums") or 'all_albums' in request.request.arguments:
+		if all_lists or (extra_list == "all_albums") or (extra_list == "album") or 'all_albums' in request.request.arguments:
 			request.append("all_albums", api_requests.playlist.get_all_albums(request.sid, request.user))
 		else:
 			request.append("album_diff", cache.get_station(request.sid, 'album_diff'))
 
-		if all_lists or (extra_list == "all_artists") or 'all_artists' in request.request.arguments:
+		if all_lists or (extra_list == "all_artists") or (extra_list == "artist") or 'all_artists' in request.request.arguments:
 			request.append("all_artists", api_requests.playlist.get_all_artists(request.sid))
 
-		if all_lists or (extra_list == "all_groups") or 'all_groups' in request.request.arguments:
+		if all_lists or (extra_list == "all_groups") or (extra_list == "group") or 'all_groups' in request.request.arguments:
 			request.append("all_groups", api_requests.playlist.get_all_groups(request.sid))
 
 		if all_lists or (extra_list == "current_listeners") or 'current_listeners' in request.request.arguments or request.get_cookie("r4_active_list") == "current_listeners":

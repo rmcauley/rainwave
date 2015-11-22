@@ -7,10 +7,6 @@ var SettingsWindow = function() {
 
 	var bool_setup = function(key, obj) {
 		var check = function() {
-			if (key == "pwr") {
-				window.location.reload();
-				return;
-			}
 			if (Prefs.get(key)) {
 				if (obj.$t.wrap.classList.contains("no")) {
 					obj.$t.wrap.classList.remove("yes");
@@ -44,6 +40,9 @@ var SettingsWindow = function() {
 		});
 		if (Prefs.get(key)) {
 			obj.$t.wrap.classList.add("yes");
+		}
+		if (key == "pwr") {
+			window.location.reload();
 		}
 	};
 

@@ -122,13 +122,17 @@ var Song = function(self, parent_event) {
 		self.el.classList.remove("voting_clicked");
 		self.el.classList.remove("voting_registered");
 		self.el.classList.remove("voting_enabled");
-		self.$t.vote_button_text.textContent = $l("vote");
+		if (self.$t.vote_button_text) {
+			self.$t.vote_button_text.textContent = $l("vote");
+		}
 	};
 
 	self.register_vote = function() {
 		self.el.classList.remove("voting_clicked");
 		self.el.classList.add("voting_registered");
-		self.$t.vote_button_text.textContent = $l("voted");
+		if (self.$t.vote_button_text) {
+			self.$t.vote_button_text.textContent = $l("voted");
+		}
 		for (var i = 0; i < parent_event.songs.length; i++) {
 			if (parent_event.songs[i].id != self.id) {
 				parent_event.songs[i].unregister_vote();
@@ -139,7 +143,9 @@ var Song = function(self, parent_event) {
 	self.unregister_vote = function() {
 		self.el.classList.remove("voting_clicked");
 		self.el.classList.remove("voting_registered");
-		self.$t.vote_button_text.textContent = $l("vote");
+		if (self.$t.vote_button_text) {
+			self.$t.vote_button_text.textContent = $l("vote");
+		}
 	};
 
 	return self;

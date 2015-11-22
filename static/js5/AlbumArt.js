@@ -6,7 +6,7 @@ var AlbumArt = function() {
 
 		var tgt = this;
 
-		if (this._reset_router) {
+		if (this._reset_router && Sizing.simple) {
 			Router.change();
 		}
 
