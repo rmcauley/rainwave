@@ -5,8 +5,7 @@
 
     "console": true,
     "docCookies": true,
-    "gettext": true,
-    "interpolate": true,
+    "lang": true,
     "LOCALE": true,
     "MOBILE": true,
     "performance": true,

@@ -8,22 +8,13 @@ var Rating = function() {
 	BOOTSTRAP.on_init.push(function(template) {
 		API.add_callback("rate_result", rating_api_callback);
 
-		// was originally a playlist pref, now lives here
 		Prefs.define("r_incmplt", [ false, true ], true);
 		Prefs.add_callback("r_incmplt", rating_complete_toggle);
-
 		Prefs.define("r_noglbl", [ false, true ], true);
 		Prefs.add_callback("r_noglbl", hide_global_rating_callback);
-		Prefs.define("r_noomni", [ false, true ], true);
 		Prefs.define("r_clear", [ false, true ], true);
-		Prefs.add_callback("r_clear", function(v) {
-			if (v) {
-				document.body.classList.add("rating_clear_ok");
-			}
-			else {
-				document.body.classList.remove("rating_clear_ok");
-			}
-		});
+		Prefs.add_callback("r_clear", rating_clear_toggle);
+		Prefs.define("r_noomni", [ false, true ], true);
 
 		var clear_touch = function() {
 			touch_timer = false;
@@ -36,9 +27,22 @@ var Rating = function() {
 			}
 			touch_timer = setTimeout(clear_touch, 30);
 		});
+
+		rating_complete_toggle(Prefs.get("r_incmplt"));
+		hide_global_rating_callback(Prefs.get("r_noglbl"));
+		rating_clear_toggle(Prefs.get("r_clear"));
 	});
 
 	// PREF CALLBACKS
+
+	var rating_clear_toggle = function(v) {
+		if (v) {
+			document.body.classList.add("rating_clear_ok");
+		}
+		else {
+			document.body.classList.remove("rating_clear_ok");
+		}
+	};
 
 	var rating_complete_toggle = function(use_complete) {
 		if (use_complete) {
@@ -71,14 +75,23 @@ var Rating = function() {
 			if (json.rating_user) {
 				ratings[i].classList.add("rating_user");
 				ratings[i].rating_start(json.rating_user);
+				if (ratings[i].firstChild) {
+					ratings[i].firstChild.textContent = Formatting.rating(json.rating_user);
+				}
 			}
 			else if (json.rating) {
 				ratings[i].classList.remove("rating_user");
 				ratings[i].rating_start(json.rating);
+				if (ratings[i].firstChild) {
+					ratings[i].firstChild.textContent = "";
+				}
 			}
 			else {
 				ratings[i].classList.remove("rating_user");
 				ratings[i].rating_start(0);
+				if (ratings[i].firstChild) {
+					ratings[i].firstChild.textContent = "";
+				}
 			}
 		}
 
@@ -90,14 +103,23 @@ var Rating = function() {
 					if (a.rating_user) {
 						ratings[i].classList.add("rating_user");
 						ratings[i].rating_start(a.rating_user);
+						if (ratings[i].firstChild) {
+							ratings[i].firstChild.textContent = Formatting.rating(a.rating_user);
+						}
 					}
 					else if (a.rating) {
 						ratings[i].classList.remove("rating_user");
 						ratings[i].rating_start(a.rating);
+						if (ratings[i].firstChild) {
+							ratings[i].firstChild.textContent = "";
+						}
 					}
 					else {
 						ratings[i].classList.remove("rating_user");
 						ratings[i].rating_start(0);
+						if (ratings[i].firstChild) {
+							ratings[i].firstChild.textContent = "";
+						}
 					}
 					if (a.rating_complete === false) {
 						ratings[i].classList.add("rating_incomplete");

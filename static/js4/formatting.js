@@ -70,6 +70,8 @@ var Formatting = function() {
 	};
 
 	self.rating = function(r) {
+		if (!r) return "";
+
 		r = Math.round(r * 10) / 10;
 		if (r * 10 % 10 === 0) return r + ".0";
 		else return r;
