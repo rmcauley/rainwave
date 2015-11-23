@@ -73,6 +73,7 @@ var Rating = function() {
 		for (i = 0; i < ratings.length; i++) {
 			if (json.rating_user) {
 				ratings[i].classList.add("rating_user");
+				ratings[i].classList.remove("rating_global");
 				ratings[i].rating_start(json.rating_user);
 				if (ratings[i].firstChild) {
 					ratings[i].firstChild.textContent = Formatting.rating(json.rating_user);
@@ -80,6 +81,7 @@ var Rating = function() {
 			}
 			else if (json.rating) {
 				ratings[i].classList.remove("rating_user");
+				ratings[i].classList.add("rating_global");
 				ratings[i].rating_start(json.rating);
 				if (ratings[i].firstChild) {
 					ratings[i].firstChild.textContent = "";
@@ -87,6 +89,7 @@ var Rating = function() {
 			}
 			else {
 				ratings[i].classList.remove("rating_user");
+				ratings[i].classList.add("rating_global");
 				ratings[i].rating_start(0);
 				if (ratings[i].firstChild) {
 					ratings[i].firstChild.textContent = "";
@@ -101,6 +104,7 @@ var Rating = function() {
 				for (i = 0; i < ratings.length; i++) {
 					if (a.rating_user) {
 						ratings[i].classList.add("rating_user");
+						ratings[i].classList.remove("rating_global");
 						ratings[i].rating_start(a.rating_user);
 						if (ratings[i].firstChild) {
 							ratings[i].firstChild.textContent = Formatting.rating(a.rating_user);
@@ -108,6 +112,7 @@ var Rating = function() {
 					}
 					else if (a.rating) {
 						ratings[i].classList.remove("rating_user");
+						ratings[i].classList.add("rating_global");
 						ratings[i].rating_start(a.rating);
 						if (ratings[i].firstChild) {
 							ratings[i].firstChild.textContent = "";
@@ -115,6 +120,7 @@ var Rating = function() {
 					}
 					else {
 						ratings[i].classList.remove("rating_user");
+						ratings[i].classList.add("rating_global");
 						ratings[i].rating_start(0);
 						if (ratings[i].firstChild) {
 							ratings[i].firstChild.textContent = "";
@@ -307,10 +313,17 @@ var Rating = function() {
 
 			if (json.rating_user) {
 				json.$t.rating.classList.add("rating_user");
+				json.$t.rating.classList.remove("rating_global");
 				if (json.$t.rating_clear) {
 					json.$t.rating_clear.parentNode.classList.add("capable");
 				}
 			}
+			else {
+				json.$t.rating.classList.add("rating_global");
+			}
+		}
+		else {
+			json.$t.rating.classList.remove("rating_global");
 		}
 		json.$t.rating.rating_set(json.rating_user || json.rating);
 

@@ -135,6 +135,16 @@ body.simple div.timeline div.album_rating {
 	display: none;
 }
 
+body.hide_global_ratings {
+	div.rating.rating_global {
+		background-image: none;
+
+		& + div.rating_site {
+			visibility: hidden;
+		}
+	}
+}
+
 div.rating_clear {
 	display: none;
 
