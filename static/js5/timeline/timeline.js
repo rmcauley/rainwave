@@ -15,7 +15,7 @@ var Timeline = function() {
 	BOOTSTRAP.on_init.push(function(root_tmpl) {
 		root_template = root_tmpl;
 		Prefs.define("l_stk", [ false, true ], true);
-		Prefs.define("l_stksz", [ 0, 5, 4, 3, 2, 1 ], true);
+		Prefs.define("l_stksz", [ 0, 1, 2, 3, 4, 5 ], true);
 		Prefs.add_callback("l_stk", self.reflow);
 		Prefs.add_callback("l_stksz", self.reflow);
 
