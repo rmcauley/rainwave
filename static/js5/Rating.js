@@ -364,11 +364,13 @@ var Rating = function() {
 
 		var on_mouse_out = function(evt) {
 			this.rating_start(json.rating_user || json.rating);
-			if (json.rating_user) {
-				json.$t.rating_hover_number.textContent = Formatting.rating(json.rating_user);
-			}
-			else {
-				json.$t.rating_hover_number.textContent = "";
+			if (!Sizing.simple) {
+				if (json.rating_user) {
+					json.$t.rating_hover_number.textContent = Formatting.rating(json.rating_user);
+				}
+				else {
+					json.$t.rating_hover_number.textContent = "";
+				}
 			}
 		};
 
