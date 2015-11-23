@@ -357,8 +357,10 @@ var Router = function() {
 			ready_to_render = false;
 		}
 
-		for (var i in tabs) {
-			document.body.classList.remove("playlist_" + i);
+		if (Sizing.simple || lists[typ]) {
+			for (var i in tabs) {
+				document.body.classList.remove("playlist_" + i);
+			}
 		}
 		var close_detail = true;
 		if (typ in lists && lists[typ]) {
