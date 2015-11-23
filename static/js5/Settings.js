@@ -22,6 +22,9 @@ var SettingsWindow = function() {
 			else {
 				obj.$t.wrap.classList.remove("yes");
 			}
+			if (key == "pwr") {
+				window.location.reload();
+			}
 		};
 		obj.$t.item_root.addEventListener("click", function(e) {
 			e.stopPropagation();
@@ -40,9 +43,6 @@ var SettingsWindow = function() {
 		});
 		if (Prefs.get(key)) {
 			obj.$t.wrap.classList.add("yes");
-		}
-		if (key == "pwr") {
-			window.location.reload();
 		}
 	};
 
