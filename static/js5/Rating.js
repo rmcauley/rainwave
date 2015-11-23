@@ -14,7 +14,6 @@ var Rating = function() {
 		Prefs.add_callback("r_noglbl", hide_global_rating_callback);
 		Prefs.define("r_clear", [ false, true ], true);
 		Prefs.add_callback("r_clear", rating_clear_toggle);
-		Prefs.define("r_noomni", [ false, true ], true);
 
 		var clear_touch = function() {
 			touch_timer = false;
@@ -341,7 +340,7 @@ var Rating = function() {
 		}
 
 		var on_mouse_over = function(evt) {
-			if (!json.rating_allowed && (!User.rate_anything || Prefs.get("r_noomni"))) {
+			if (!json.rating_allowed && !User.rate_anything) {
 				if (json.$t.rating.classList.contains("ratable")) {
 					json.$t.rating.classList.remove("ratable");
 				}

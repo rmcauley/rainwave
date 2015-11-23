@@ -336,7 +336,6 @@
    "prefs_hide_global_ratings"                       : "Hide Global Ratings Until I've Rated",
    "prefs_r_noglbl"                                    : "Hide Global Ratings Until I've Rated",
    "prefs_detail_global_ratings"                     : "Show Global Ratings in Song Lists",
-   "prefs_r_noomni"                                  : "Disable Omni Rating",
    "prefs_r_clear"                                   : "Show Delete Rating Button",
    "prefs_pwr"                                     : "Enable Power User Mode",
    "m3u_downloads"                                   : "M3U Downloads",

@@ -57,10 +57,6 @@
         {{>settings_yesno}}
     {{/with}}
 
-    {{#with r_noomni}}
-        {{>settings_yesno}}
-    {{/with}}
-
     {{#with r_clear}}
         {{>settings_yesno}}
     {{/with}}
