@@ -1,4 +1,4 @@
-div.requests {
+div.panel.requests {
 	z-index: 101;
 
 	div.scrollblock {
@@ -39,7 +39,7 @@ div.requests {
 		        transition-duration: 300ms;
 	}
 
-	&.paused {
+	&.paused, body.simple &.paused {
 		background-color: #2A073C;
 	}
 }
