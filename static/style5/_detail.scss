@@ -204,5 +204,17 @@ div.row {
 		max-width: 200px;
 		overflow: hidden;
 		text-overflow: ellipsis;
+
+		a::after {
+			content: ",";
+		}
+
+		a:last-child::after {
+			content: "";
+		}
+
+		a + a::before {
+			content: " ";
+		}
 	}
 }
