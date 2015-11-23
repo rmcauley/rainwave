@@ -292,6 +292,10 @@ div.list {
 				background-color: #381e3d;
 				background-image: $incomplete_rating;
 
+				&:hover {
+					background-color: $hovercolor;
+				}
+
 				&.album_fave_highlight {
 					background-image: $incomplete_rating;
 				}
@@ -299,6 +303,10 @@ div.list {
 				&.cool {
 					background-color: #2a162e;
 					color: $darktext;
+
+					&:hover {
+						background-color: $hovercolor;
+					}
 				}
 			}
 		}
