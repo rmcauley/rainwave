@@ -382,7 +382,7 @@ var Timeline = function() {
 
 	self.get_current_song_rating = function() {
 		if (sched_current && sched_current.songs && (sched_current.songs.length > 0)) {
-			return sched_current.songs[0].song_rating.rating_user;
+			return sched_current.songs[0].rating_user;
 		}
 		return null;
 	};

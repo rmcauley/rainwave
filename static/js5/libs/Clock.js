@@ -89,10 +89,9 @@ var Clock = function() {
 		if (Prefs.get("t_rt")) {
 			var rating = Timeline.get_current_song_rating();
 			if (rating) {
-				if (rating * 10 % 10 === 0) rating = rating + ".0";
-				this_page_title = "[" + rating + "] " + this_page_title;
+				this_page_title = "[" + Formatting.rating(rating) + "] " + this_page_title;
 			}
-			else if (rating === 0) {
+			else {
 				this_page_title = "*** " + this_page_title;
 			}
 		}
