@@ -22,7 +22,7 @@ var AlbumList = function(el) {
 		else self.sort_function = self.sort_by_alpha;
 
 		if (!no_redraw) {
-			self.update_view([]);
+			self.update([]);
 			self.redraw_current_position();
 		}
 	};
