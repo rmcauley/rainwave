@@ -1,11 +1,6 @@
 {{#each songs}}
 	<div class="{{ ^'row ' + (_c.cool ? 'cool' : '') + ' ' + (_c.fave ? 'song_fave_highlight' : '') + ' ' + (_c.requestable ? 'requestable' : '') + ' ' + (_c.is_new ? 'is_new' : (_c.is_newish ? 'is_newish' : '')) }}">
 		{{#if ^!MOBILE}}
-			{{#if ^!Sizing.simple}}
-				<div class="length">
-					{{ ^Formatting.minute_clock(_c.length) }}
-				</div>
-			{{/if}}
 			{{#if url }}
 				<a class="url" href="{{ url }}" target="_blank"></a>
 			{{else}}
@@ -26,6 +21,9 @@
 		{{#if ^!MOBILE && !Sizing.simple}}
 			<div class="rating_site">
 				{{ ^Formatting.rating(_c.rating) }}
+			</div>
+			<div class="length">
+				{{ ^Formatting.minute_clock(_c.length) }}
 			</div>
 		{{/if}}
 		{{#if ^!Sizing.simple && _c.artists }}
