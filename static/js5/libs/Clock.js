@@ -84,6 +84,10 @@ var Clock = function() {
 			if (document.title != original_title) document.title = original_title;
 			return;
 		}
+		else if (!Sizing.simple && !Prefs.get("t_tl")) {
+			if (document.title != original_title) document.title = original_title;
+			return;
+		}
 
 		var this_page_title = page_title;
 		if (Prefs.get("t_rt")) {
