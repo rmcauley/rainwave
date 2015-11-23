@@ -15,7 +15,7 @@ ul.panel_header {
 		border-bottom: 2px solid transparent;
 		@include transition(LINKCOLOR, background, opacity, border-bottom);
 
-		div.lists &.open {
+		div.lists &.open, body.simple &.open {
 			color: $text;
 			border-bottom-color: $orange;
 		}
