@@ -125,6 +125,10 @@ div.rating {
 	div.rating_confirm + div.rating_number {
 		opacity: 0 !important;
 	}
+
+	div.rating_confirm.fading + div.rating_hover {
+		opacity: 1 !important;
+	}
 }
 
 body.simple div.timeline div.album_rating {

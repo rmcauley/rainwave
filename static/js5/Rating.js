@@ -266,6 +266,7 @@ var Rating = function() {
 					json.$t.rating_clear.parentNode.classList.add("capable");
 				}
 				setTimeout(function() {
+					confirm.classList.add("fading");
 					confirm.style.opacity = "0";
 					setTimeout(function() {
 						confirm.parentNode.removeChild(confirm);
