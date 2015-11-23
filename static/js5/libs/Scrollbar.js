@@ -111,7 +111,7 @@ var Scrollbar = function() {
 		}
 
 		var handle = document.createElement("div");
-		handle.className = "scroll_handle";
+		handle.className = "scroll_handle invisible";
 		self.scrollblock.insertBefore(handle, self.scrollblock.firstChild);
 
 		var scrolling = false;
