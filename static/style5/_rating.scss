@@ -29,11 +29,10 @@ div.rating {
 		}
 	}
 
-	body.simple.desktop &.ratable {
+	body.desktop &.ratable {
 		cursor: pointer;
 
 		&:hover {
-			margin-left: 25px;
 			@include no-transition();
 			background-image: $user_rating;
 
@@ -41,6 +40,10 @@ div.rating {
 				background-image: $fav_rating;
 			}
 		}
+	}
+
+	body.desktop &.ratable:hover {
+		margin-left: 25px;
 	}
 
 	body.full & {
