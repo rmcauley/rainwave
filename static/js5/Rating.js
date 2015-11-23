@@ -325,7 +325,7 @@ var Rating = function() {
 	};
 
 	var register_song = function(json, relative_x, relative_y) {
-		json.$t.rating.classList.add("rating_song");
+		json.$t.rating.classList.add("song_rating");
 		json.$t.rating.setAttribute("name", "srate_" + json.id);
 
 		if (json.$t.rating_clear) {

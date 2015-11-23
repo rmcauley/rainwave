@@ -7,6 +7,7 @@ div.rating {
 	width: $rating_width;
 	padding: 0;
 	margin: 0;
+	color: $blue;
 	height: $rating_height;
 
 	body.full {
@@ -16,7 +17,13 @@ div.rating {
 	&.rating_user {
 		background-image: $user_rating;
 
-		div.song_fave_highlight & {
+		div.song_fave_highlight &.song_rating {
+			color: $fave_color;
+			background-image: $fav_rating;
+		}
+
+		div.album_fave_highlight &.album_rating {
+			color: $fave_color;
 			background-image: $fav_rating;
 
 			body.show_incomplete &.rating_incomplete {
@@ -36,7 +43,13 @@ div.rating {
 			@include no-transition();
 			background-image: $user_rating;
 
-			div.song_fave_highlight & {
+			div.song_fave_highlight &.song_rating {
+				color: $fave_color;
+				background-image: $fav_rating;
+			}
+
+			div.album_fave_highlight &.album_rating {
+				color: $fave_color;
 				background-image: $fav_rating;
 			}
 		}
@@ -57,14 +70,9 @@ div.rating {
 		padding-right: 2px;
 		opacity: 0;
 		text-align: center;
-		color: $highlight;
 		visibility: hidden;
 		@include transition-wtime(200ms, opacity, transform, visibility);
 		@include transform(translateX(0px));
-
-		div.song_fave_highlight & {
-			color: $fave_color;
-		}
 
 		&.rating_confirm {
 			background: #A8ECFF;
