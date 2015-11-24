@@ -1,3 +1,8 @@
+{{#if ^!Sizing.simple}}
+	<div id="hotkey_error"></div>
+	<div id="hotkey">Hotkey mode on!</div>
+{{/if}}
+
 <div bind="measure_box" class="measure_box">
 	<div bind="scroller_size" style="width: 100px; height: 100px; overflow: scroll;"></div>
 	<div class="list measure_list"><div class="item" bind="list_item">Reference</div></div>

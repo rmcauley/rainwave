@@ -118,39 +118,157 @@
 		return true;
 	};
 
+	var can_route_to_detail = function() {
+		return Router.active_detail && Router.active_detail._key_handle;
+	};
+
+	var route_to_detail = false;
+	var hotkey_mode_on = false;
 	self.route_key = function(key_code, chr) {
-		if (!Router.active_list) return;
-		
-		if (key_code == 40) {			// down arrow
-			return Router.active_list.key_nav_down();
-		}
-		else if (key_code == 38) {		// up arrow
-			return Router.active_list.key_nav_up();
-		}
-		else if (key_code == 13) {		// enter
-			return Router.active_list.key_nav_enter();
-		}
-		else if (/[\d\w\-.&':+~,]+/.test(chr)) {
-			return Router.active_list.key_nav_add_character(chr);
-		}
-		else if (chr == " ") {			// spacebar
-			return Router.active_list.key_nav_add_character(" ");
-		}
-		else if (key_code == 34) {		// page down
-			return Router.active_list.key_nav_page_down();
-		}
-		else if (key_code == 33) {		// page up
-			return Router.active_list.key_nav_page_up();
-		}
-		else if (key_code == 8) {		// backspace
-			return Router.active_list.key_nav_backspace();
-		}
-		else if (key_code == 27) {
-			Router.active_list.key_nav_escape();
+		if (hotkey_mode_on && hotkey_mode_handle(key_code, chr)) {
 			return true;
 		}
-		
+
+		var route_to = "active_list";
+		if (route_to_detail && can_route_to_detail()) {
+			route_to = "active_detail";
+		}
+		else {
+			route_to_detail = false;
+			if (!Router.active_list) return;
+		}
+
+		var toret;
+		if (key_code == 40) {			// down arrow
+			return Router[route_to].key_nav_down();
+		}
+		else if (key_code == 38) {		// up arrow
+			return Router[route_to].key_nav_up();
+		}
+		else if (key_code == 13) {		// enter
+			return Router[route_to].key_nav_enter();
+		}
+		else if (/[\d\w\-.&':+~,]+/.test(chr)) {
+			return Router[route_to].key_nav_add_character(chr);
+		}
+		else if (chr == " ") {			// spacebar
+			return Router[route_to].key_nav_add_character(" ");
+		}
+		else if (key_code == 34) {		// page down
+			return Router[route_to].key_nav_page_down();
+		}
+		else if (key_code == 33) {		// page up
+			return Router[route_to].key_nav_page_up();
+		}
+		else if (key_code == 8) {		// backspace
+			return Router[route_to].key_nav_backspace();
+		}
+		else if (key_code == 36) {		// home
+			return Router[route_to].key_nav_home();
+		}
+		else if (key_code == 35) {		// end
+			return Router[route_to].key_nav_end();
+		}
+		else if (key_code == 37) {		// left arrow
+			toret = Router[route_to].key_nav_left();
+			if (!toret && route_to_detail) {
+				route_to_detail = false;
+				toret = true;
+			}
+			return toret;
+		}
+		else if (key_code == 39) {		// right arrow
+			toret = Router[route_to].key_nav_right();
+			if (!toret && !route_to_detail && can_route_to_detail()) {
+				route_to_detail = true;
+				toret = true;
+			}
+			return toret;
+		}
+		else if (key_code == 27) {		// escape
+			Router.active_list.key_nav_escape();
+			if (can_route_to_detail()) {
+				Router.active_detail.key_nav_escape();
+			}
+			route_to_detail = false;
+			return true;
+		}
+		else if (key_code == 192) {		// tilde key
+			return hotkey_mode_enable();
+		}
+
 		return false;
+	};
+
+	var hotkey_mode_timeout;
+	var hotkey_mode_error_timeout;
+	var hotkey_mode_enable = function() {
+		hotkey_mode_on = true;
+		if (hotkey_mode_timeout) {
+			clearTimeout(hotkey_mode_timeout);
+		}
+		if (hotkey_mode_error_timeout) {
+			document.body.classList.remove("hotkey_error");
+			clearTimeout(hotkey_mode_error_timeout);
+		}
+		hotkey_mode_timeout = setTimeout(hotkey_mode_disable, 4000);
+		document.body.classList.add("hotkey_on");
+		return true;
+	};
+
+	var hotkey_mode_disable = function() {
+		if (hotkey_mode_timeout) {
+			clearTimeout(hotkey_mode_timeout);
+		}
+		hotkey_mode_on = false;
+		document.body.classList.remove("hotkey_on");
+		return true;
+	};
+
+	var hotkey_mode_handle = function(key_code, character) {
+		try {
+			if ((parseInt(character) >= 1) && (parseInt(character) <= 5)) {
+				Timeline.rate_current_song(parseInt(character));
+			}
+			else if (character == " ") RWAudio.play_stop();
+			else if (character == "q") Timeline.rate_current_song(1.5);
+			else if (character == "w") Timeline.rate_current_song(2.5);
+			else if (character == "e") Timeline.rate_current_song(3.5);
+			else if (character == "r") Timeline.rate_current_song(4.5);
+
+			else if (character == "a") Timeline.vote(0, 0);
+			else if (character == "s") Timeline.vote(0, 1);
+			else if (character == "d") Timeline.vote(0, 2);
+			else if (character == "z") Timeline.vote(1, 0);
+			else if (character == "y") Timeline.vote(1, 0); 		// quertz layout
+			else if (character == "x") Timeline.vote(1, 1);
+			else if (character == "c") Timeline.vote(1, 2);
+			else if (character == "f") Timeline.fav_current();
+			else {
+				hotkey_mode_error("invalid_hotkey");
+				return true;
+			}
+			hotkey_mode_disable();
+			return true;
+		}
+		catch (err) {
+			if ("is_rw" in err) {
+				hotkey_mode_error(err.tl_key);
+				return true;
+			}
+			else {
+				throw(err);
+			}
+		}
+	};
+
+	var hotkey_mode_error = function(tl_key) {
+		hotkey_mode_disable();
+		document.body.classList.add("hotkey_error");
+		document.getElementById("hotkey_error").textContent = $l(tl_key);
+		hotkey_mode_error_timeout = setTimeout(function() {
+			document.body.classList.remove("hotkey_error");
+		}, 3000);
 	};
 
 	window.addEventListener("keydown", self.on_key_down, true);

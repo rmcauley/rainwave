@@ -35,8 +35,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var visible = [];			// list of IDs sorted by the sort_function (visible on screen)
 	var hidden = [];			// list of IDs unsorted - currently hidden from view during a search
 
-	var hotkey_mode_on = false;
-	var hotkey_timeout;
 	var search_string = "";
 	var current_key_nav_id = false;
 	var current_open_id = false;
@@ -134,65 +132,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 		if (hidden.indexOf(id) == -1) {
 			hidden.push(id);
 		}
-	};
-
-	var hotkey_mode_enable = function() {
-		hotkey_mode_on = true;
-		self.do_searchbar_style();
-	};
-
-	var hotkey_mode_disable = function() {
-		hotkey_mode_on = false;
-		self.do_searchbar_style();
-	};
-
-	self.hotkey_mode_disable = hotkey_mode_disable;
-
-	var hotkey_mode_handle = function(character) {
-		// try {
-		// 	if ((parseInt(character) >= 1) && (parseInt(character) <= 5)) {
-		// 		Schedule.rate_current_song(parseInt(character));
-		// 	}
-		// 	else if (character == "q") Schedule.rate_current_song(1.5);
-		// 	else if (character == "w") Schedule.rate_current_song(2.5);
-		// 	else if (character == "e") Schedule.rate_current_song(3.5);
-		// 	else if (character == "r") Schedule.rate_current_song(4.5);
-
-		// 	else if (character == "a") Schedule.vote(0, 0);
-		// 	else if (character == "s") Schedule.vote(0, 1);
-		// 	else if (character == "d") Schedule.vote(0, 2);
-		// 	else if (character == "z") Schedule.vote(1, 0);
-		// 	else if (character == "y") Schedule.vote(1, 0); 		// quertz layout
-		// 	else if (character == "x") Schedule.vote(1, 1);
-		// 	else if (character == "c") Schedule.vote(1, 2);
-		// 	else if (character == "f") Schedule.fav_current();
-		// 	else {
-		// 		hotkey_mode_error("invalid_hotkey");
-		// 		return true;
-		// 	}
-		// 	hotkey_mode_disable();
-		// 	return true;
-		// }
-		// catch (err) {
-		// 	if ("is_rw" in err) {
-		// 		hotkey_mode_error(err.tl_key);
-		// 		return true;
-		// 	}
-		// 	else {
-		// 		throw(err);
-		// 	}
-		// }
-	};
-
-	var hotkey_mode_error = function(tl_key) {
-		// hotkey_mode_disable();
-		// $add_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
-		// search_box.setAttribute("placeholder",  $l(tl_key));
-		// hotkey_timeout = setTimeout(function() {
-		// 	$remove_class(self.search_box_input.parentNode.parentNode, "hotkey_mode_error");
-		// 	search_box.setAttribute("placeholder", $l("filter"));
-		// 	hotkey_timeout = null;
-		// 	}, 6000);
 	};
 
 	self.unhide = function(to_reshow) {
@@ -311,6 +250,14 @@ var SearchList = function(root_el, sort_key, search_key) {
 		return key_nav_arrow_action(-15);
 	};
 
+	self.key_nav_end = function() {
+		self.key_nav_last_item();
+	};
+
+	self.key_nav_home = function() {
+		self.key_nav_first_item();
+	};
+
 	self.key_nav_enter = function() {
 		if (current_key_nav_id) {
 			self.open_element({ "target": data[current_key_nav_id]._el, "enter_key": true });
@@ -320,7 +267,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	self.key_nav_escape = function() {
-		if (hotkey_mode_on) hotkey_mode_disable();
 		if (search_string.length > 0) {
 			self.clear_search();
 		}
@@ -366,6 +312,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 			self.remove_key_nav_highlight();
 		}
 		search_string = new_string;
+		if (!Sizing.simple) {
+			search_box.value = new_string;
+		}
 		var use_search_string = Formatting.make_searchable_string(search_string);
 		var new_visible = [];
 		for (var i = 0; i < visible.length; i++) {
@@ -404,15 +353,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	self.key_nav_add_character = function(character) {
-		if (hotkey_mode_on) {
-			if (hotkey_mode_handle(character)) {
-				return true;
-			}
-		}
-		else if ((search_string.length === 0) && (character === " ")) {
-			hotkey_mode_enable();
-			return true;
-		}
 		do_search(search_string + character);
 		return true;
 	};
@@ -458,15 +398,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 	});
 
 	self.do_searchbar_style = function() {
-		if (hotkey_timeout) clearTimeout(hotkey_timeout);
-		if (hotkey_mode_on) {
-			search_box.classList.add("active");
-			template.box_container.classList.add("active");
-			search_box.value = "";
-			search_box.setAttribute("placeholder", $l("hotkey_mode"));
-			return;
-		}
-
 		if (search_string && (visible.length === 0)) {
 			search_box.classList.add("error");
 			//template.box_container.classList.add("error");
