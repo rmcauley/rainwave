@@ -242,6 +242,14 @@ var SearchList = function(root_el, sort_key, search_key) {
 		return key_nav_arrow_action(-1);
 	};
 
+	self.key_nav_right = function() {
+		return false;
+	};
+
+	self.key_nav_left = function() {
+		return false;
+	};
+
 	self.key_nav_page_down = function() {
 		return key_nav_arrow_action(15);
 	};
@@ -312,9 +320,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 			self.remove_key_nav_highlight();
 		}
 		search_string = new_string;
-		if (!Sizing.simple) {
-			search_box.value = new_string;
-		}
 		var use_search_string = Formatting.make_searchable_string(search_string);
 		var new_visible = [];
 		for (var i = 0; i < visible.length; i++) {
@@ -408,7 +413,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 
 		if (search_string.length > 0) {
-			// search_box.value = search_string;
+			if (!Sizing.simple) {
+				search_box.value = search_string;
+			}
 			search_box.classList.add("active");
 			template.box_container.classList.add("active");
 		}

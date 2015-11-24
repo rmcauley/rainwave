@@ -224,7 +224,7 @@ div.list {
 			color: $fave_color;
 		}
 
-		body.desktop &:hover, .hover {
+		body.desktop &:hover, &.hover {
 			color: $link;
 			border-color: $hovercolor-border;
 			background-color: $hovercolor;
