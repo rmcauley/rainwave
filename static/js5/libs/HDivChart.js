@@ -50,7 +50,7 @@ function HDivChart(data, options) {
         d.style.width = data[i].share + "%";
         d.style.backgroundColor = data[i].color;
         d.style.left = pos + "%";
-        if (data[i].label && (data[i].share > options.min_share)) {
+        if (data[i].label && (data[i].share >= options.min_share)) {
             t = document.createElement("span");
             t.className = "chart_label";
             t.textContent = data[i].label;

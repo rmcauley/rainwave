@@ -206,6 +206,7 @@ div.row {
 		max-width: 200px;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		margin-left: 10px;
 
 		a::after {
 			content: ",";
