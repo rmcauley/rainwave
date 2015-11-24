@@ -106,12 +106,13 @@ var RWAudio = function() {
 		}
 
 		if (json.tuned_in) {
-			ErrorHandler.remove_permanent_error("m3u_hijack_right_click");
+			self.clear_audio_errors();
 		}
 	};
 
 	self.clear_audio_errors = function(e) {
 		if (!ErrorHandler) return;
+		ErrorHandler.remove_permanent_error("m3u_hijack_right_click");
 		ErrorHandler.remove_permanent_error("audio_error");
 		ErrorHandler.remove_permanent_error("audio_connect_error");
 	};
