@@ -377,6 +377,7 @@ var Router = function() {
 		}
 
 		if (id && !isNaN(id)) {
+			id = parseInt(id);
 			if (!ready_to_render) {
 				remove_excess_header_content();
 				detail_header.textContent = (lists[typ] && lists[typ].get_title_from_id ? lists[typ].get_title_from_id(id) : false) || $l("Loading...");

@@ -182,7 +182,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	self.open_element = function(e) {
-		e.stopPropagation();
+		if (e.stopPropagation) {
+			e.stopPropagation();
+		}
 		var check_el = e.target;
 		while (check_el && !("_id" in check_el) && (check_el != self.el) && (check_el != document.body)) {
 			check_el = check_el.parentNode;
