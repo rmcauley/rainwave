@@ -32,7 +32,7 @@ var Song = function(self, parent_event) {
 	}
 
 	self.vote = function(e) {
-		if ((e.target.nodeName.toLowerCase() == "a") && e.target.getAttribute("href")) {
+		if (e && (e.target.nodeName.toLowerCase() == "a") && e.target.getAttribute("href")) {
 			return;
 		}
 		if (self.el.classList.contains("voting_registered") || self.el.classList.contains("voting_clicked")) {

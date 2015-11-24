@@ -1,6 +1,13 @@
 {{#if ^!Sizing.simple}}
 	<div id="hotkey_error"></div>
-	<div id="hotkey">Hotkey mode on!</div>
+	<div id="hotkey">
+		<div>Waiting For Hotkey</div>
+		<div style="float: left;">1-5 = Rate 1.0-5.0</div>
+		<div style="float: right; margin-left: 10px;">A,S,D = Vote 1st Elec</div>
+		<div style="float: left; clear: both;">Q-R = Rate 1.5-4.5</div>
+		<div style="float: right; margin-left: 10px;">Z,X,C = Vote 2nd Elec</div>
+		<div style="clear:both;">Space = Stop/Play</div>
+	</div>
 {{/if}}
 
 <div bind="measure_box" class="measure_box">

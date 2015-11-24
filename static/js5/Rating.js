@@ -222,7 +222,7 @@ var Rating = function() {
 		var t = RWTemplates.rating_mobile();
 		var remove = function(e) {
 			if (e.target == song.$t.rating) {
-				do_rating(now_number, song);
+				self.do_rating(now_number, song);
 			}
 			Fx.remove_element(t.el);
 			song.$t.rating.removeEventListener("touchmove", touchmove);
@@ -252,7 +252,7 @@ var Rating = function() {
 		});
 	};
 
-	var do_rating = function(new_rating, json) {
+	self.do_rating = function(new_rating, json) {
 		var confirm = document.createElement("div");
 		confirm.className = "rating_number rating_confirm";
 		confirm.textContent = Formatting.rating(new_rating);
@@ -394,7 +394,7 @@ var Rating = function() {
 			if (evt.target !== this) return;
 			var new_rating = get_rating_from_mouse(evt, relative_x, relative_y);
 			if (json.rating_allowed || User.rate_anything) {
-				do_rating(new_rating, json);
+				self.do_rating(new_rating, json);
 			}
 		};
 

@@ -102,10 +102,10 @@ body.full {
 			left: 100%;
 			@include transform(translateX(-100%));
 		}
-	}
 
-	div.close {
-		display: none;
+		div.close {
+			display: none;
+		}
 	}
 
 	ul.main_menu {

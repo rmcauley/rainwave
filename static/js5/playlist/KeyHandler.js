@@ -128,6 +128,9 @@
 		if (hotkey_mode_on && hotkey_mode_handle(key_code, chr)) {
 			return true;
 		}
+		else if (key_code == 96 || chr == "`") {		// tilde key
+			return hotkey_mode_enable();
+		}
 
 		var route_to = "active_list";
 		if (route_to_detail && can_route_to_detail()) {
@@ -193,15 +196,13 @@
 			route_to_detail = false;
 			return true;
 		}
-		else if (key_code == 192) {		// tilde key
-			return hotkey_mode_enable();
-		}
 
 		return false;
 	};
 
 	var hotkey_mode_timeout;
 	var hotkey_mode_error_timeout;
+
 	var hotkey_mode_enable = function() {
 		hotkey_mode_on = true;
 		if (hotkey_mode_timeout) {

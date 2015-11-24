@@ -326,8 +326,8 @@ var Timeline = function() {
 	};
 
 	self.rate_current_song = function(new_rating) {
-		if (sched_current.songs[0].data.rating_allowed) {
-			sched_current.songs[0].rate(new_rating);
+		if (sched_current.songs[0].rating_allowed || User.rate_anything) {
+			Rating.do_rating(new_rating, sched_current.songs[0]);
 		}
 		else {
 			throw({ "is_rw": true, "tl_key": "cannot_rate_now" });
@@ -339,7 +339,7 @@ var Timeline = function() {
 			throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote" });
 		}
 
-		if (sched_next[which_election].type != "Election") {
+		if (sched_next[which_election].type != "election") {
 			throw({ "is_rw": true, "tl_key": "not_an_election" });
 		}
 

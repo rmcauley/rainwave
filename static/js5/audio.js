@@ -181,7 +181,7 @@ var RWAudio = function() {
 		}
 	};
 
-	self.stop = function(evt) {
+	self.stop = function(evt, no_error_clear) {
 		if (!self.supported) return;
 		if (evt) evt.preventDefault();
 
@@ -189,6 +189,10 @@ var RWAudio = function() {
 		el.classList.remove("working");
 		playing_status = false;
 		self.playing_status = false;
+
+		if (!no_error_clear) {
+			self.clear_audio_errors();
+		}
 
 		if (!audio_el) return;
 
@@ -250,7 +254,7 @@ var RWAudio = function() {
 		});
 		ErrorHandler.remove_permanent_error("audio_connect_error");
 		ErrorHandler.nonpermanent_error(ErrorHandler.make_error("audio_error", 500), a);
-		self.stop();
+		self.stop(null, true);
 		self.supported = false;
 		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};

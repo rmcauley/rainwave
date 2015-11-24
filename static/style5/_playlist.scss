@@ -358,7 +358,7 @@ div.list {
 	}
 }
 
-body.simple div.close {
+div.close {
 	position: absolute;
 	left: 100%;
 	top: 11px;
@@ -372,7 +372,7 @@ body.simple div.close {
 	}
 }
 
-body.simple.desktop div.close {
+body.desktop div.close {
 	opacity: 0.5;
 	@include transition-wtime(300ms, opacity);
 

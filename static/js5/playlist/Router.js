@@ -15,6 +15,7 @@ var Router = function() {
 	var scroll_positions = {};
 	var cache_page_stack;
 	self.active_list = null;
+	self.active_detail = null;
 	var ready_to_render = true;
 	var rendered_type;
 	var rendered_id;
@@ -210,15 +211,17 @@ var Router = function() {
 		while (el.firstChild) {
 			el.removeChild(el.firstChild);
 		}
+		self.active_detail = null;
 		remove_excess_header_content();
 
 		var t;
 		if (!cache[typ][id]) {
 			RWTemplates.oops(null, el);
 		}
-		else if (cache[typ][id]._cache_el) {
+		else if (cache[typ][id]._root) {
 			// console.log(typ + "/" + id + ": Appending existing cache.");
-			el.appendChild(cache[typ][id]._cache_el);
+			el.appendChild(cache[typ][id]._root);
+			self.active_detail = cache[typ][id];
 			detail_header.textContent = cache[typ][id]._header_text;
 			detail_header.setAttribute("title", cache[typ][id]._header_text);
 			if (cache[typ][id]._header_formatting) {
@@ -236,17 +239,15 @@ var Router = function() {
 			if (t._root.parentNode != el) {
 				el.appendChild(t._root);
 			}
-			if (t._root && t._root.tagName && (t._root.tagName.toLowerCase() == "div")) {
-				cache[typ][id]._header_text = t._header_text;
-				cache[typ][id]._cache_el = t._root;
-				cache[typ][id].header_formatting = t._header_formatting;
+			if (!MOBILE && t._root && t._root.tagName && (t._root.tagName.toLowerCase() == "div")) {
+				cache[typ][id] = t;
+				self.active_detail = cache[typ][id];
 				cache_page_stack.push({ "typ": typ, "id": id });
 				var cps;
 				while (cache_page_stack.length > 5) {
 					cps = cache_page_stack.shift();
 					if (cache[cps.typ][cps.id]) {
-						cache[cps.typ][cps.id]._cache_el = false;
-						cache[cps.typ][cps.id].$t = undefined;
+						delete(cache[cps.typ][cps.id]);
 					}
 				}
 			}
@@ -293,6 +294,7 @@ var Router = function() {
 				while (el.firstChild) {
 					el.removeChild(el.firstChild);
 				}
+				self.active_detail = null;
 				if (!document.body.classList.contains("detail")) {
 					setTimeout(function() {
 						// console.log("Slide finished.");

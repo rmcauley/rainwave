@@ -112,7 +112,7 @@ div.timeline_event {
 		height: 45px;
 		background: $hovercolor;
 		border: solid 1px $hovercolor-border;
-		padding: 5px;
+		padding: 5px 30px 5px 10px;
 		z-index: 20;
 
 		&.error {
