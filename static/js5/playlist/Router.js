@@ -58,10 +58,6 @@ var Router = function() {
 			scroll_positions.listener = {};
 		}
 
-		if (docCookies.getItem("r5_list") && tabs[docCookies.getItem("r5_list")]) {
-			document.body.classList.add("playlist_" + docCookies.getItem("r5_list"));
-		}
-
 		reset_cache();
 
 		el = root_template.detail;

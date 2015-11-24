@@ -64,7 +64,9 @@ var Prefs = function() {
 	};
 
 	self.set_new_list = function(list) {
-		docCookies.setItem("r5_list", list, Infinity, "/", cookie_domain);
+		if (!Sizing.simple) {
+			docCookies.setItem("r5_list", list, Infinity, "/", cookie_domain);
+		}
 	};
 
 	self.get = function(name) {

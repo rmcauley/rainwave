@@ -110,9 +110,16 @@ var Stations = [];
 
 		Sizing.trigger_resize();
 
-		BOOTSTRAP = null;
+		if (!Router.detect_url_change()) {
+			if (!Sizing.simple && docCookies.getItem("r5_list")) {
+				Router.change(docCookies.getItem("r5_list"));
+			}
+			else if (Sizing.simple) {
+				docCookies.removeItem("r5_list", "/", BOOTSTRAP.cookie_domain);
+			}
+		}
 
-		Router.detect_url_change();
+		BOOTSTRAP = null;
 	};
 
 	//document.addEventListener("DOMContentLoaded", initialize);
