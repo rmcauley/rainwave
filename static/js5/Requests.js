@@ -285,7 +285,7 @@ var Requests = function() {
 		}
 		self.reflow = self.real_reflow;
 		scroller.set_height(running_height);
-		setTimeout(self.real_reflow, 1);
+		setTimeout(self.real_reflow, 20);
 	};
 
 	self.real_reflow = function() {
