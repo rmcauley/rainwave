@@ -23,8 +23,8 @@ function HDivChart(data, options) {
 
     if (data.length > 1) {
         for (i = 0; i < data.length && total_percent < 100; i++) {
-            data[i].share += 0.5;
-            total_percent += 0.5;
+            data[i].share += 1;
+            total_percent += 1;
         }
     }
 
