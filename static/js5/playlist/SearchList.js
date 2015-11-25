@@ -141,6 +141,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 				if (data[to_reshow[i]] && !data[to_reshow[i]]._delete) {
 					visible.push(to_reshow[i]);
 				}
+				else if (data[to_reshow[i]]) {
+					delete(data[to_reshow[i]]);
+				}
 			}
 		}
 		else if (visible.length === 0) {

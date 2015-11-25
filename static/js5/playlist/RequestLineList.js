@@ -5,7 +5,12 @@ var RequestLineList = function(el) {
 	self.auto_trim = true;
 	self.loaded = true;
 
-	API.add_callback("request_line", self.update);
+	API.add_callback("request_line", function(json) {
+		for (var i = 0; i < json.length; i++) {
+			json[i].id = json[i].user_id;
+		}
+		self.update(json);
+	});
 
 	self.sort_function = function(a, b) {
 		if (self.data[a].position < self.data[b].position) return -1;
