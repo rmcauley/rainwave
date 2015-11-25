@@ -10,6 +10,9 @@
 				<div class="cool_info">
 					{{ ^Formatting.cooldown_glance(_c.cool_end) }}
 				</div>
+				<div class="length">
+					{{ ^Formatting.minute_clock(_c.length) }}
+				</div>
 			{{/if}}
 			{{#if ^User.id > 1 }}
 				<div class="rating_clear">
@@ -21,9 +24,6 @@
 		{{#if ^!MOBILE && !Sizing.simple}}
 			<div class="rating_site">
 				{{ ^Formatting.rating(_c.rating) }}
-			</div>
-			<div class="length">
-				{{ ^Formatting.minute_clock(_c.length) }}
 			</div>
 		{{/if}}
 		{{#if ^!Sizing.simple && _c.artists }}
