@@ -150,13 +150,13 @@ div.row {
 		float: right;
 	}
 
-	div.rating, div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site {
+	div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site {
+		margin-left: 10px;
 		float: right;
 	}
 
 	div.rating_site {
 		color: $darktext;
-		margin-left: 5px;
 	}
 
 	a.url, div.fake_url {
@@ -164,7 +164,6 @@ div.row {
 		float: right;
 		width: 14px;
 		height: 14px;
-		margin-right: 5px;
 	}
 
 	a.url {
@@ -206,7 +205,6 @@ div.row {
 		max-width: 200px;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		margin-left: 10px;
 
 		a::after {
 			content: ",";
