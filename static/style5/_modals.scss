@@ -28,7 +28,6 @@ div.modal_container {
 	background: #000;
 	z-index: 10001;
 	width: 100%;
-	max-height: 70%;
 	@include transform(translate(-50%, -50%) scaleX(0.0) scaleY($initial_height));
 	@include transition-wtime($modal_trans_time, opacity, transform);
 
@@ -79,7 +78,7 @@ div.modal_container {
 
 	div.main {
 		opacity: 0;
-		height: 600px;
+		max-height: 80vh;
 		margin: 5px auto;
 		padding: 5px;
 		overflow: auto;
