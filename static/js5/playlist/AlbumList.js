@@ -21,7 +21,7 @@ var AlbumList = function(el) {
 		if (nv == "rt") self.sort_function = self.sort_by_rating_user;
 		else self.sort_function = self.sort_by_alpha;
 
-		if (!no_redraw) {
+		if (!no_redraw && self.loaded && !loading) {
 			self.update([]);
 			self.redraw_current_position();
 		}
