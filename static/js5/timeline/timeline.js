@@ -54,6 +54,14 @@ var Timeline = function() {
 
 	BOOTSTRAP.on_draw.push(function() {
 		scroller = Scrollbar.create(template.timeline, true);
+		// if we don't do this, content can get cut off in the timeline
+		// for browsers that don't need the custom scrollbars
+		if (!Scrollbar.is_enabled) {
+			scroller.set_height_original = scroller.set_height;
+			scroller.set_height = function(h) {
+				scroller.set_height_original(Math.max(h, Sizing.sizeable_area_height));
+			};
+		}
 		root_template.timeline = scroller.scrollblock;
 	});
 

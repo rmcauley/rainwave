@@ -47,6 +47,8 @@ var Scrollbar = function() {
 
 	var no_op = function() { return; };
 
+	cls.is_enabled = enabled;
+
 	cls.create = function(scrollable, always_scrollblock, always_hook) {
 		var self = {};
 		self.scrollblock = scrollable;
