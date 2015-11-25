@@ -76,7 +76,7 @@ div.lists {
 		@include transform(translateX(-100%));
 	}
 
-	body.desktop.playlist.normal.detail & {
+	body.simple.desktop.playlist.normal.detail & {
 		background: #202020;
 		@include transform(translateX(-200%));
 
