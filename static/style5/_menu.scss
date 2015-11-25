@@ -207,6 +207,7 @@ ul.menu {
 	opacity: 0;
 	visibility: hidden;
 	padding-top: 20px;
+	padding-bottom: 10px;
 	@include transform(translateY(-$menu_height + 10));
 	@include transition-wtime(300ms, opacity, transform, visibility);
 
