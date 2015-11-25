@@ -52,7 +52,9 @@
 		</div>
 
 		{{#with albums[0] }}
-			{{>rating_album}}
+			{{#if ^!Sizing.simple}}
+				{{>rating_album}}
+			{{/if}}
 
 			{{>fave}}
 			<div bind="title" class="album" title="{{ name }}">
