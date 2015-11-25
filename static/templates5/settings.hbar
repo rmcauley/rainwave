@@ -8,14 +8,12 @@
     {{/with}}
 {{/if}}
 
-<div class="power_only">
-    <div class="setting_subheader">
-        {{ $l("timeline_preferences") }}
-    </div>
-    {{#with l_stksz}}
-        {{>settings_multi}}
-    {{/with}}
+<div class="setting_subheader">
+    {{ $l("site_mode") }}
 </div>
+{{#with pwr}}
+    {{>settings_yesno}}
+{{/with}}
 
 <div class="setting_subheader">
     {{ $l("tab_title_preferences") }}
@@ -32,6 +30,13 @@
 
 <div class="power_only">
     <div class="setting_subheader">
+        {{ $l("timeline_preferences") }}
+    </div>
+    {{#with l_stksz}}
+        {{>settings_multi}}
+    {{/with}}
+
+    <div class="setting_subheader">
         {{ $l("playlist_preferences") }}
     </div>
     {{#with p_sort}}
@@ -43,9 +48,7 @@
     {{#with p_avup}}
         {{>settings_yesno}}
     {{/with}}
-</div>
 
-<div class="power_only">
     <div class="setting_subheader">
         {{ $l("rating_preferences") }}
     </div>
@@ -62,9 +65,3 @@
     {{/with}}
 </div>
 
-<div class="setting_subheader">
-    {{ $l("site_mode") }}
-</div>
-{{#with pwr}}
-    {{>settings_yesno}}
-{{/with}}
