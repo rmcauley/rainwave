@@ -10,9 +10,7 @@ var Requests = function() {
 	var header;
 	var indicator;
 	var padder;
-	var helpmsg = document.createElement("div");
-	helpmsg.className = "blank_request_message";
-	helpmsg.textContent = $l("make_a_request");
+	var helpmsg;
 
 	var songs = [];
 
@@ -28,6 +26,10 @@ var Requests = function() {
 		link_text = root_template.request_link_text;
 		indicator = root_template.request_indicator;
 		container = root_template.requests_container;
+
+		helpmsg = document.createElement("div");
+		helpmsg.className = "blank_request_message";
+		helpmsg.textContent = $l("make_a_request");
 
 		API.add_callback("requests", self.update);
 		API.add_callback("user", self.show_queue_paused);
