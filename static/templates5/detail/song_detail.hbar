@@ -1,0 +1,13 @@
+{{#if rating_count }}
+    <div class="song_detail">
+        <span>{{ $l("song_rating_detail") }}</span>
+        <span style="margin-left: 2px;">
+            {{ $l("rating_detail_numbers", { "rating": Formatting.rating(_c.rating), "count": _c.rating_count, "percentile": _c.rating_rank_percentile, "percentile_message": _c.rating_percentile_message }) }}
+        </span>
+        <div bind="graph_placement"></div>
+    </div>
+{{else}}
+    <div class="song_detail">
+        {{ $l("song_has_no_ratings") }}
+    </div>
+{{/if}}

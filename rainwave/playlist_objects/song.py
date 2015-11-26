@@ -548,10 +548,10 @@ class Song(object):
 	def load_extra_detail(self, sid):
 		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_rating > %s", (self.data['rating'],))
 		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_request_count > %s", (self.data['request_count'],))
-		self.data['rating_rank_percentile'] = int((float(self.data['rating_rank']) / num_origin_songs[sid]) * 100)
-		self.data['rating_rank_percentile'] = self.data['rating_rank_percentile'] - (self.data['rating_rank_percentile'] % 5)
-		self.data['request_rank_percentile'] = int((float(self.data['request_rank']) / num_origin_songs[sid]) * 100)
-		self.data['request_rank_percentile'] = self.data['request_rank_percentile'] - (self.data['request_rank_percentile'] % 5)
+		self.data['rating_rank_percentile'] = 100 - int((float(self.data['rating_rank']) / num_origin_songs[sid]) * 100)
+		self.data['rating_rank_percentile'] = max(5, min(99, self.data['rating_rank_percentile']))
+		self.data['request_rank_percentile'] = 100 - int((float(self.data['request_rank']) / num_origin_songs[sid]) * 100)
+		self.data['request_rank_percentile'] = max(5, min(99, self.data['request_rank_percentile']))
 
 		self.data['rating_histogram'] = {}
 		histo = db.c.fetch_all("SELECT "

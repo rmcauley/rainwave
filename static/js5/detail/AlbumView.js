@@ -83,17 +83,17 @@ var AlbumView = function(album) {
 	}
 
 	if (album.rating_rank_percentile >= 50) {
-		album.rating_percentile_message = $l("album_rating_percentile_top", { "rating": album.rating, "percentile": album.rating_rank_percentile, "percentile_top": 100 - album.rating_rank_percentile });
+		album.rating_percentile_message = $l("rating_percentile_top", { "rating": album.rating, "percentile": album.rating_rank_percentile, "percentile_top": 100 - album.rating_rank_percentile });
 	}
 	else {
-		album.rating_percentile_message = $l("album_rating_percentile_bottom", { "rating": album.rating, "percentile": album.rating_rank_percentile });
+		album.rating_percentile_message = $l("rating_percentile_bottom", { "rating": album.rating, "percentile": album.rating_rank_percentile });
 	}
 
 	if (album.request_rank_percentile >= 50) {
-		album.request_percentile_message = $l("album_request_percentile_top", { "percentile": album.request_rank_percentile, "percentile_top": 100 - album.request_rank_percentile });
+		album.request_percentile_message = $l("request_percentile_top", { "percentile": album.request_rank_percentile, "percentile_top": 100 - album.request_rank_percentile });
 	}
 	else {
-		album.request_percentile_message = $l("album_request_percentile_bottom", { "percentile": album.request_rank_percentile });
+		album.request_percentile_message = $l("request_percentile_bottom", { "percentile": album.request_rank_percentile });
 	}
 
 	var template = RWTemplates.detail.album(album, !MOBILE ? document.createElement("div") : null);
@@ -149,6 +149,9 @@ var AlbumView = function(album) {
 		Rating.register(album.songs[i]);
 		if (album.songs[i].requestable) {
 			Requests.make_clickable(album.songs[i].$t.title, album.songs[i].id);
+		}
+		if (!Sizing.simple) {
+			SongsTableDetail(album.songs[i]);
 		}
 	}
 

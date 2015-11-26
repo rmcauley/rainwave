@@ -1,5 +1,5 @@
 {{#each songs}}
-	<div class="{{ ^'row ' + (_c.cool ? 'cool' : '') + ' ' + (_c.fave ? 'song_fave_highlight' : '') + ' ' + (_c.requestable ? 'requestable' : '') + ' ' + (_c.is_new ? 'is_new' : (_c.is_newish ? 'is_newish' : '')) }}">
+	<div class="{{ ^'row ' + (_c.cool ? 'cool' : '') + ' ' + (_c.fave ? 'song_fave_highlight' : '') + ' ' + (_c.requestable ? 'requestable' : '') + ' ' + (_c.is_new ? 'is_new' : (_c.is_newish ? 'is_newish' : '')) }}" bind="row">
 		{{#if ^!MOBILE}}
 			{{#if url }}
 				<a class="url" href="{{ url }}" target="_blank"></a>
@@ -31,6 +31,11 @@
 				{{#each artists }}
 					<a href="#!/artist/{{ id }}">{{ name }}</a>
 				{{/each}}
+			</div>
+		{{/if}}
+		{{#if ^!Sizing.simple }}
+			<div class="detail_icon" bind="detail_icon">
+				i
 			</div>
 		{{/if}}
 		{{>fave}}
