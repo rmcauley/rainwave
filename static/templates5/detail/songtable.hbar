@@ -35,7 +35,7 @@
 		{{/if}}
 		{{#if ^!Sizing.simple }}
 			<div class="detail_icon" bind="detail_icon">
-				i
+				<img src="/static/images4/info.png" />
 			</div>
 		{{/if}}
 		{{>fave}}

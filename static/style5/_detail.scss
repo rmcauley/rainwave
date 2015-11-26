@@ -170,6 +170,26 @@ div.row {
 		background-image: url("/static/images4/link_external.svg");
 	}
 
+	div.detail_icon {
+		float: left;
+		cursor: pointer;
+		margin-right: 10px;
+
+		img {
+			position: relative;
+			top: 1px;
+			width: 13px;
+			height: 13px;
+			opacity: 0.5;
+
+			@include transition-wtime(300ms, opacity);
+		}
+
+		&:hover img {
+			opacity: 1;
+		}
+	}
+
 	div.cool_info {
 		width: 35px;
 		min-height: 10px;
@@ -219,6 +239,7 @@ div.row {
 
 	div.song_detail {
 		clear: both;
-		padding-left: 30px;
+		padding-top: 2px;
+		padding-left: 50px;
 	}
 }
