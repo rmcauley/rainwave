@@ -45,5 +45,7 @@ var ArtistView = function(json) {
 
 	template._header_text = json.name;
 
+	MultiAlbumKeyNav(template, albums);
+
 	return template;
 };

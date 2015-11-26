@@ -40,6 +40,7 @@
     "Menu": true,
     "Modal": true,
     "Mouse": true,
+    "MultiAlbumKeyNav": true,
     "Prefs": true,
     "RatingChart": true,
     "Rating": true,
