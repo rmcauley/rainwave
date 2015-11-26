@@ -97,6 +97,10 @@ a, a:visited, .link {
 		}
 	}
 
+	&.no_pointer {
+		cursor: default;
+	}
+
 	body.desktop &:hover {
 		color: $linkhover !important;
 	}

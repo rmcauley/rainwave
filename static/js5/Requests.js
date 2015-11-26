@@ -80,6 +80,7 @@ var Requests = function() {
 		el.classList.remove("warning");
 		link.classList.remove("warning");
 		header.removeAttribute("href");
+		header.classList.add("no_pointer");
 
 		if (User.tuned_in) {
 			if (!User.requests_paused) {
@@ -103,6 +104,7 @@ var Requests = function() {
 				else if (User.request_position) {
 					header.textContent = $l("request_you_are_x_in_line", { "position": User.request_position });
 					header.setAttribute("href", "#!/request_line");
+					header.classList.remove("no_pointer");
 				}
 				else {
 					header.textContent = $l("Requests");
