@@ -178,6 +178,8 @@
 			if (!toret && route_to_detail) {
 				route_to_detail = false;
 				toret = true;
+				Router.active_list.key_nav_focus();
+				Router.active_detail.key_nav_blur();
 			}
 			return toret;
 		}
@@ -186,6 +188,8 @@
 			if (!toret && !route_to_detail && can_route_to_detail()) {
 				route_to_detail = true;
 				toret = true;
+				Router.active_list.key_nav_blur();
+				Router.active_detail.key_nav_focus();
 			}
 			return toret;
 		}

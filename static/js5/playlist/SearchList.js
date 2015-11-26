@@ -286,6 +286,18 @@ var SearchList = function(root_el, sort_key, search_key) {
 		return true;
 	};
 
+	self.key_nav_blur = function() {
+		if (current_key_nav_id) {
+			data[current_key_nav_id]._el.classList.remove("hover");
+		}
+	};
+
+	self.key_nav_focus = function() {
+		if (current_key_nav_id) {
+			data[current_key_nav_id]._el.classList.add("hover");
+		}
+	};
+
 	var backspace_scroll_top;
 
 	self.key_nav_backspace = function() {

@@ -164,7 +164,9 @@ var AlbumView = function(album) {
 			var new_i = kni === false ? Math.max(0, -1 + jump) : Math.min(album.songs.length - 1, Math.max(0, kni + jump));
 			if (new_i === kni) return;
 
-			album.songs[kni].$t.row.classList.remove("hover");
+			if (kni !== false) {
+				album.songs[kni].$t.row.classList.remove("hover");
+			}
 			album.songs[new_i].$t.row.classList.add("hover");
 			kni = new_i;
 			scroll_to_kni();
@@ -206,6 +208,23 @@ var AlbumView = function(album) {
 			}
 			kni = false;
 		};
+
+		template.key_nav_focus = function() {
+			if (kni === false) {
+				key_nav_move(1);
+			}
+			else {
+				album.songs[kni].$t.row.classList.add("hover");
+			}
+		};
+
+		template.key_nav_blur = function() {
+			if (kni !== false) {
+				album.songs[kni].$t.row.classList.remove("hover");
+			}
+		};
+
+		template._key_handle = true;
 	}
 
 	return template;
