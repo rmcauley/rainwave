@@ -10,6 +10,9 @@ var Requests = function() {
 	var header;
 	var indicator;
 	var padder;
+	var helpmsg = document.createElement("div");
+	helpmsg.className = "blank_request_message";
+	helpmsg.textContent = $l("make_a_request");
 
 	var songs = [];
 
@@ -233,6 +236,13 @@ var Requests = function() {
 		}
 		self.show_queue_paused();
 		self.update_header();
+
+		if ((songs.length === 0) && Sizing.simple) {
+			el.appendChild(helpmsg);
+		}
+		else if (helpmsg.parentNode) {
+			el.removeChild(helpmsg);
+		}
 
 		self.reflow();
 		if (!document.body.classList.contains("loading") && (previous_length != songs.length)) {

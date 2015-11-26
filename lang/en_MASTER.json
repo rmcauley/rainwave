@@ -279,6 +279,8 @@
    "blocked_by_name__in_election"                    : "Song",
    "request_only_on_x"                               : "This song is on %(station).",
 
+   "make_a_request"                                  : "Open the library and click a song title to add it to your request queue.",
+
    "__comment__"                 : "Station Descriptions (long format, used for Google page descriptions)",
 
    "station_description_id_1"                        : "Video game original soundtrack radio.  Vote for the song you want to hear!",
