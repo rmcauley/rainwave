@@ -173,13 +173,13 @@ var AlbumView = function(album) {
 		};
 
 		var scroll_to_kni = function() {
-			var kni_y = album.songs[kni].offsetTop;
+			var kni_y = album.songs[kni].$t.row.offsetTop;
 			var now_y = template._scroll.scroll_top;
-			if (kni_y > (now_y + scroll.offset_height - 60)) {
-				scroll.scroll_to(kni_y - scroll.offset_height + 60);
+			if (kni_y > (now_y + template._scroll.offset_height - 60)) {
+				template._scroll.scroll_to(kni_y - template._scroll.offset_height + 60);
 			}
 			else if (kni_y < (now_y + 60)) {
-				scroll.scroll_to(kni_y - 60);
+				template._scroll.scroll_to(kni_y - 60);
 			}
 		};
 
