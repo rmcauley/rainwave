@@ -158,6 +158,9 @@ var Router = function() {
 						document.body.classList.remove("playlist_" + i);
 					}
 				}
+				if (self.active_list && self.active_list._key_handle) {
+					self.active_list.key_nav_blur();
+				}
 				self.active_list = false;
 				current_type = null;
 				current_id = null;
@@ -370,6 +373,9 @@ var Router = function() {
 			last_open = typ;
 			document.body.classList.add("playlist");
 			document.body.classList.add("playlist_" + typ);
+			if (self.active_list && self.active_list._key_handle) {
+				self.active_list.key_nav_blur();
+			}
 			self.active_list = lists[typ];
 			if ((typ != current_type) && document.body.classList.contains("normal")) {
 				close_detail = false;
@@ -410,6 +416,9 @@ var Router = function() {
 			}
 		}
 		else {
+			if (self.active_list && self.active_list._key_handle) {
+				self.active_list.key_nav_blur();
+			}
 			self.active_list = null;
 		}
 	};
