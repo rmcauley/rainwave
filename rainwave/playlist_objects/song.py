@@ -606,7 +606,7 @@ class Song(object):
 			if user.data['rate_anything']:
 				d['rating_allowed'] = True
 
-		for v in [ "entry_id", "elec_request_user_id", "entry_position", "entry_type", "entry_votes", "elec_request_username", "sid", "one_up_used", "one_up_queued", "one_up_id", "rating_rank", "request_rank", "request_count", "rating_histogram", "rating_count". "rating_rank_percentile", "request_rank_percentile" ]:
+		for v in [ "entry_id", "elec_request_user_id", "entry_position", "entry_type", "entry_votes", "elec_request_username", "sid", "one_up_used", "one_up_queued", "one_up_id", "rating_rank", "request_rank", "request_count", "rating_histogram", "rating_count", "rating_rank_percentile", "request_rank_percentile" ]:
 			if v in self.data:
 				d[v] = self.data[v]
 
