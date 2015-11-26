@@ -129,7 +129,7 @@ var Router = function() {
 		lists.group = GroupList(root_template.group_list);
 		lists.listener = false;
 
-		scroll = Scrollbar.create(el);
+		scroll = Scrollbar.create(el, false, !Sizing.simple);
 		Sizing.detail_area = scroll.scrollblock;
 		scroll.reposition_hook = function() {
 			if (current_type && current_id) scroll_positions[current_type][current_id] = scroll.scroll_top;
@@ -237,6 +237,7 @@ var Router = function() {
 			}
 			if (!MOBILE && t._root && t._root.tagName && (t._root.tagName.toLowerCase() == "div")) {
 				cache[typ][id] = t;
+				cache[typ][id]._scroll = scroll;
 				self.active_detail = cache[typ][id];
 				cache_page_stack.push({ "typ": typ, "id": id });
 				var cps;
