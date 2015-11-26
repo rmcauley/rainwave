@@ -85,6 +85,14 @@ div.timeline {
 	}
 }
 
+body.simple {
+	div.panel.detail {
+		div.artists, div.cool_info, div.rating_clear, div.rating_site {
+			display: none;
+		}
+	}
+}
+
 body.full {
 	div.panel {
 		position: absolute;
@@ -98,11 +106,6 @@ body.full {
 			@include transform(none !important);
 		}
 
-		&.requests {
-			left: 100%;
-			@include transform(translateX(-100%));
-		}
-
 		div.close {
 			display: none;
 		}
@@ -110,11 +113,6 @@ body.full {
 
 	ul.main_menu {
 		display: none;
-	}
-
-	ul.request_icons li {
-		margin: 0 4px;
-		padding: 0 4px;
 	}
 
 	div.panel.detail {
@@ -129,10 +127,6 @@ body.full {
 	body.full {
 		font-size: smaller;
 
-		div.panel.requests {
-			width: 250px;
-		}
-
 		div.panel.lists {
 			width: 250px;
 		}
@@ -140,19 +134,9 @@ body.full {
 		div.panel.detail {
 			width: 350px;
 
-			div.artists, div.cool_info {
+			div.artists, div.cool_info, div.rating_clear, div.rating_site {
 				display: none;
 			}
-		}
-
-		div.song {
-			div.art_anchor {
-				display: none;
-			}
-		}
-
-		ul.request_icons li span {
-			display: none;
 		}
 	}
 }
@@ -161,18 +145,14 @@ body.full {
 	body.full {
 		font-size: smaller;
 
-		div.panel.requests {
-			width: 350px;
-		}
-
 		div.panel.lists {
 			width: 300px;
 		}
 
 		div.panel.detail {
-			width: 350px;
+			width: 450px;
 
-			div.artists, div.cool_info {
+			div.artists, div.cool_info, div.rating_clear, div.rating_site {
 				display: none;
 			}
 		}
@@ -183,30 +163,6 @@ body.full {
 	body.full {
 		font-size: smaller;
 
-		div.panel.requests {
-			width: 350px;
-		}
-
-		div.panel.lists {
-			width: 350px;
-		}
-
-		div.panel.detail {
-			width: 400px;
-
-			div.artists, div.cool_info {
-				display: none;
-			}
-		}
-	}
-}
-
-@media (min-width: 1600px) and (max-width: 1909px) {
-	body.full {
-		div.panel.requests {
-			width: 350px;
-		}
-
 		div.panel.lists {
 			width: 350px;
 		}
@@ -215,7 +171,43 @@ body.full {
 			width: 550px;
 
 			div.artists {
+				width: 130px;
+			}
+
+			div.cool_info {
+				display: none;
+			}
+		}
+	}
+}
+
+@media (min-width: 1600px) and (max-width: 1799px) {
+	body.full {
+		div.panel.lists {
+			width: 350px;
+		}
+
+		div.panel.detail {
+			width: 650px;
+
+			div.artists {
 				width: 150px;
+			}
+		}
+	}
+}
+
+@media (min-width: 1800px) and (max-width: 1909px) {
+	body.full {
+		div.panel.lists {
+			width: 380px;
+		}
+
+		div.panel.detail {
+			width: 700px;
+
+			div.artists {
+				width: 170px;
 			}
 		}
 	}
@@ -223,19 +215,15 @@ body.full {
 
 @media (min-width: 1910px) and (max-width: 2559px) {
 	body.full {
-		div.panel.requests {
-			width: 400px;
-		}
-
 		div.panel.lists {
 			width: 400px;
 		}
 
 		div.panel.detail {
-			width: 650px;
+			width: 850px;
 
 			div.artists {
-				width: 200px;
+				width: 250px;
 			}
 		}
 	}
@@ -243,19 +231,15 @@ body.full {
 
 @media (min-width: 2560px) {
 	body.full {
-		div.panel.requests {
-			width: 450px;
-		}
-
 		div.panel.lists {
-			width: 450px;
+			width: 500px;
 		}
 
 		div.panel.detail {
-			width: 850px;
+			width: 1100px;
 
 			div.artists {
-				width: 350px;
+				width: 400px;
 			}
 		}
 	}

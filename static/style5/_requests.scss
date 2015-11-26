@@ -9,7 +9,7 @@ div.panel.requests {
 		position: absolute;
 	}
 
-	body.requests & {
+	body.simple.requests & {
 		opacity: 1;
 		visibility: visible;
 		@include transform(translateX(-100%));
@@ -41,6 +41,54 @@ div.panel.requests {
 
 	&.paused, body.simple &.paused {
 		background-color: #2A073C;
+	}
+
+	body.full & {
+		z-index: 102;
+		width: 400px;
+		left: 100%;
+		@include transition-wtime(300ms, transform);
+		@include transform(translateX(-90px));
+
+		ul.request_icons li {
+			visibility: hidden;
+			opacity: 0;
+			@include transition-wtime(300ms, opacity, visibility);
+		}
+
+		div.art_anchor {
+			@include transition-wtime(300ms, transform);
+			@include transform(translateX(-20px));
+		}
+
+		div.request_cancel {
+			opacity: 0;
+		}
+
+		&:hover {
+			@include transform(translateX(-100%));
+
+			ul.request_icons li {
+				visibility: visible;
+				opacity: 0.5;
+
+				&:hover {
+					opacity: 1;
+				}
+			}
+
+			div.art_anchor {
+				@include transform(none);
+			}
+
+			div.request_cancel {
+				opacity: 0.6;
+
+				&:hover {
+					opacity: 1;
+				}
+			}
+		}
 	}
 }
 
@@ -106,9 +154,11 @@ div.request_cancel {
 	border-bottom-left-radius: 3px;
 	height: 54px;
 	margin-top: 8px;
-	padding: 14px 7px;
+	padding: 14px 0px;
 	box-sizing: border-box;
 	font-size: larger;
+	text-align: center;
+	width: 20px;
 	@include transition-wtime(300ms, border-color, color, opacity);
 
 	body.desktop & {

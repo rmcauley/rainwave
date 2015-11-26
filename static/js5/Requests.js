@@ -246,7 +246,7 @@ var Requests = function() {
 			el.removeChild(helpmsg);
 		}
 
-		self.reflow();
+		setTimeout(self.reflow, 20);
 		if (!document.body.classList.contains("loading") && (previous_length != songs.length)) {
 			self.indicate(songs.length - previous_length, previous_length);
 		}
