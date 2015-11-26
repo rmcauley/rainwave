@@ -77,6 +77,10 @@ var Stations = [];
 		if (User.id > 1) {
 			document.body.classList.add("logged_in");
 		}
+		if (Prefs.get("pwr")) {
+			document.body.classList.add("full");
+			document.body.classList.remove("simple");
+		}
 		// Safari has CSS and font rendering issues :/
 		var ua = navigator.userAgent.toLowerCase();
 		if ((ua.indexOf("safari") !== -1) && (ua.indexOf("chrome") === -1)) {
