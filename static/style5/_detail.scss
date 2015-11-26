@@ -122,6 +122,11 @@ div.row {
 	&.cool {
 		background-color: $cooldown-color;
 		border-bottom-color: $cooldown-color;
+
+		body.full &:nth-child(even) {
+			background-color: $cooldown-color / 1.2;
+			border-bottom-color: $cooldown-color / 1.2;
+		}
 	}
 
 	body.desktop &:hover, &.hover {

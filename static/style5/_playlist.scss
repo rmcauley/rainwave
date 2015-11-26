@@ -52,7 +52,7 @@ body.simple div.panel {
 	z-index: 100;
 	width: 450px;
 	max-width: 100%;
-	background: #272727;
+	background: $panel_background;
 	border-left: solid 1px #555;
 	top: 0px;
 	opacity: 0;
@@ -219,6 +219,11 @@ div.list {
 		white-space: nowrap;
 		text-overflow: ellipsis;
 		min-height: 20px;
+
+		body.full &:nth-child(even) {
+			background-color: $panel_background * 1.3;
+			border-bottom-color: $panel_background * 1.3;
+		}
 
 		&.album_fave_highlight {
 			color: $fave_color;
