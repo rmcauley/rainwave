@@ -170,13 +170,16 @@ var Router = function() {
 			if ((new_route[0] == "autoplay") && !has_autoplayed) {
 				RWAudio.play();
 				has_autoplayed = true;
+				return false;
 			}
 			if (tabs[new_route[0]] || views[new_route[0]]) {
 				self.open_route(new_route[0], new_route[1]);
+				return true;
 			}
 			else if (new_route[0] == "requests") {
 				self.open_route();
 				document.body.classList.add("requests");
+				return true;
 			}
 			else {
 				// TODO: show error
