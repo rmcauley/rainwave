@@ -82,7 +82,7 @@
 		// F1 to F12 keys
 		if ((evt.charCode === 0) && (evt.keyCode >= 112) && (evt.keyCode <= 123)) return true;
 		if (Sizing.simple && (evt.keyCode != 27)) return true;
-		if (evt.target && evt.target.className == "search_box") return true;
+		if (evt.target && evt.target.classList.contains("search_box")) return true;
 		return false;
 	};
 
