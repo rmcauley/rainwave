@@ -201,7 +201,9 @@ var AlbumView = function(album) {
 		template.key_nav_backspace = function() { return false; };
 
 		template.key_nav_escape = function() {
-			album.songs[kni].$t.row.classList.remove("hover");
+			if ((kni !== false) && album.songs[kni] && album.songs[kni].$t.detail_icon_click) {
+				album.songs[kni].$t.row.classList.remove("hover");
+			}
 			kni = false;
 		};
 	}

@@ -121,8 +121,8 @@ var GroupView = function(json) {
 			template.key_nav_right = function() { return false; };
 
 			template.key_nav_enter = function() {
-				if ((kni !== false) && album.songs[kni] && album.songs[kni].$t.detail_icon_click) {
-					album.songs[kni].$t.detail_icon_click();
+				if ((kni !== false) && albums[knai].songs[kni] && albums[knai].songs[kni].$t.detail_icon_click) {
+					albums[knai].songs[kni].$t.detail_icon_click();
 				}
 			};
 
@@ -130,8 +130,11 @@ var GroupView = function(json) {
 			template.key_nav_backspace = function() { return false; };
 
 			template.key_nav_escape = function() {
-				album.songs[kni].$t.row.classList.remove("hover");
+				if ((kni !== false) && albums[knai].songs[kni] && albums[knai].songs[kni].$t.detail_icon_click) {
+					albums[knai].songs[kni].$t.row.classList.remove("hover");
+				}
 				kni = false;
+				knai = 0;
 			};
 		}
 	}
