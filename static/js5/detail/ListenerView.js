@@ -45,7 +45,6 @@ var ListenerView = function(json, el) {
 		detail_container.appendChild(hdr);
 		detail_container.appendChild(chart);
 
-
 		hdr = document.createElement("div");
 		hdr.className = "graph_header";
 		hdr.textContent = $l("average_rating_by_station");
@@ -58,13 +57,13 @@ var ListenerView = function(json, el) {
 			for (j = 0; j < json.ratings_by_station.length; j++) {
 				if (json.ratings_by_station[j].sid == sid) {
 					found = true;
-					chart = HDivChart([{ "value": json.ratings_by_station[j].average_rating, "color": Stations[i].color, "label": Stations[i].name + ": " + Formatting.rating(json.ratings_by_station[j].average_rating) }], { "max": 5 });
+					chart = HDivChart([{ "value": json.ratings_by_station[j].average_rating, "color": Stations[i].color, "label": Stations[i].name + ": " + Formatting.rating(json.ratings_by_station[j].average_rating) }], { "max": 5, "guide_lines": 5 });
 					chart.classList.add("chart_overflow");
 					detail_container.appendChild(chart);
 				}
 			}
 			if (!found) {
-				chart = HDivChart([{ "value": 0, "color": Stations[i].color, "label": Stations[i].name + ": " + $l("no_ratings") }], { "max": 5 });
+				chart = HDivChart([{ "value": 0, "color": Stations[i].color, "label": Stations[i].name + ": " + $l("no_ratings") }], { "max": 5, "guide_lines": 5 });
 				chart.classList.add("chart_overflow");
 				detail_container.appendChild(chart);
 			}
@@ -84,7 +83,7 @@ var ListenerView = function(json, el) {
 	for (i = 0; i < Stations.length; i++) {
 		sid = Stations[i].id;
 		if (sid == 5) continue;
-		chart = HDivChart([{ "value": json.rating_completion[sid] || 0, "color": Stations[i].color, "label": Stations[i].name + ": " + (json.rating_completion[sid] || 0) + "%" }], { "max": 100 });
+		chart = HDivChart([{ "value": json.rating_completion[sid] || 0, "color": Stations[i].color, "label": Stations[i].name + ": " + (json.rating_completion[sid] || 0) + "%" }], { "max": 100, "guide_lines": 5 });
 		chart.classList.add("chart_overflow");
 		detail_container.appendChild(chart);
 	}

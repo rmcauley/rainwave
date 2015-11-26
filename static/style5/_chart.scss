@@ -7,13 +7,9 @@ div.chart_outside {
     div.chart_bar {
         box-sizing: border-box;
         position: absolute;
-        border-left: solid 1px black;
+        border-right: solid 1px black;
         height: 20px;
         white-space: nowrap;
-
-        &:first-child {
-            border-left: none;
-        }
 
         span.chart_label {
             position: absolute;
@@ -49,6 +45,14 @@ div.chart_outside {
                 @include transform(translateY(100%) translateX(0%));
             }
         }
+    }
+
+    div.chart_pip {
+        box-sizing: border-box;
+        position: absolute;
+        border-left: solid 1px black;
+        width: 1px;
+        height: 20px;
     }
 
     &.chart_ratings {
