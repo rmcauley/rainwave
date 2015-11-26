@@ -124,7 +124,7 @@ div.row {
 		border-bottom-color: $cooldown-color;
 	}
 
-	body.desktop &:hover {
+	body.desktop &:hover, &.hover {
 		background-color: $hovercolor;
 		border-bottom-color: $hovercolor-border;
 		@include no-transition();

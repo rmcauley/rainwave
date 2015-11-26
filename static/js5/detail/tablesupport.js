@@ -51,11 +51,12 @@ var SongsTableDetail = function(song) {
 		return;
 	}
 	var triggered = false;
-	song.$t.detail_icon.addEventListener("click", function(e) {
+	song.$t.detail_icon_click = function(e) {
 		if (triggered) return;
 		triggered = true;
 		API.async_get("song", { "id": song.id }, function(json) {
 			SongsTableDetailDraw(song, json);
 		});
-	});
+	};
+	song.$t.detail_icon.addEventListener("click", song.$t.detail_icon_click);
 };

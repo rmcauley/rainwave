@@ -55,6 +55,7 @@
     "Sizing": true,
     "Song": true,
     "SongsTable": true,
+    "SongsTableDetail": true,
     "SongsTableAlbumSort": true,
     "SongsTableSorting": true,
     "Timeline": true,

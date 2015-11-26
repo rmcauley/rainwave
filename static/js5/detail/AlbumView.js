@@ -157,5 +157,42 @@ var AlbumView = function(album) {
 
 	template._header_text = album.name;
 
+	if (!Sizing.simple) {
+		var key_nav_i = false;
+		var key_nav_move = function(jump) {
+			var new_i = key_nav_i === false ? 0 : Math.min(album.songs.length - 1, Math.max(0, key_nav_i + jump));
+			if (new_i === key_nav_i) return;
+
+			album.songs[key_nav_i].$t.row.classList.remove("hover");
+			album.songs[new_i].$t.row.classList.add("hover");
+			key_nav_i = new_i;
+		};
+
+		template.key_nav_down = function() { key_nav_move(1); };
+		template.key_nav_up = function() { key_nav_move(-1); };
+		template.key_nav_page_down = function() { key_nav_move(15); };
+		template.key_nav_page_up = function() { key_nav_move(-15); };
+		template.key_nav_end = function() { key_nav_move(album.songs.length); };
+		template.key_nav_home = function() { key_nav_move(-album.songs.length); };
+
+		template.key_nav_left = function() { return false; };
+		template.key_nav_right = function() { return false; };
+
+		template.key_nav_enter = function() {
+			if ((key_nav_i !== false) && album.songs[key_nav_i] && album.songs[key_nav_i].$t.detail_icon_click) {
+				album.songs[key_nav_i].$t.detail_icon_click();
+			}
+		};
+
+		template.key_nav_add_character = function() { return false; };
+		template.key_nav_backspace = function() { return false; };
+
+		template.key_nav_escape = function() {
+			album.songs[key_nav_i].$t.row.classList.remove("hover");
+			key_nav_i = false;
+		};
+
+	}
+
 	return template;
 };
