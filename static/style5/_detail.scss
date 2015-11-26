@@ -145,14 +145,13 @@ div.row {
 		}
 	}
 
-	div.length {
-		width: 35px;
+	div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site, div.length {
+		margin-left: 10px;
 		float: right;
 	}
 
-	div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site {
-		margin-left: 10px;
-		float: right;
+	div.length {
+		width: 35px;
 	}
 
 	div.rating_site {
