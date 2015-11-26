@@ -27,8 +27,15 @@ div.chart_outside {
             opacity: 0;
             left: 50%;
             @include transform(translateY(50%) translateX(-50%));
-
             @include transition-wtime(200ms, opacity, transform, visibility);
+
+            &.chart_tooltip_right {
+                @include transform(translateY(50%) translateX(-100%));
+            }
+
+            &.chart_tooltip_left {
+                @include transform(translateY(50%) translateX(0%));
+            }
         }
 
         &:hover span.chart_tooltip {
