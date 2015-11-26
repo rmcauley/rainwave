@@ -55,7 +55,7 @@ var SongsTableDetail = function(song) {
 		if (triggered) return;
 		triggered = true;
 		API.async_get("song", { "id": song.id }, function(json) {
-			SongsTableDetailDraw(song, json);
+			SongsTableDetailDraw(song, json.song);
 		});
 	};
 	song.$t.detail_icon.addEventListener("click", song.$t.detail_icon_click);
