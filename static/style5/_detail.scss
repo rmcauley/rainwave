@@ -145,7 +145,7 @@ div.row {
 		}
 	}
 
-	div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site, div.length {
+	div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site, div.length, a.url {
 		margin-left: 10px;
 		float: right;
 	}
@@ -160,7 +160,6 @@ div.row {
 
 	a.url, div.fake_url {
 		display: inline-block;
-		float: right;
 		width: 14px;
 		height: 14px;
 	}

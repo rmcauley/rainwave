@@ -40,6 +40,14 @@ div.chart_outside {
             visibility: visible;
             cursor: default;
             @include transform(translateY(100%) translateX(-50%));
+
+            &.chart_tooltip_right {
+                @include transform(translateY(100%) translateX(-100%));
+            }
+
+            &.chart_tooltip_left {
+                @include transform(translateY(100%) translateX(0%));
+            }
         }
     }
 

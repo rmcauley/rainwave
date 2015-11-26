@@ -58,7 +58,15 @@ function HDivChart(data, options) {
         }
         if (data[i].tooltip) {
             t = document.createElement("span");
-            t.className = "chart_tooltip";
+            if (pos <= 15) {
+                t.className = "chart_tooltip chart_tooltip_left";
+            }
+            else if (pos >= 85) {
+                t.className = "chart_tooltip chart_tooltip_right";
+            }
+            else {
+                t.className = "chart_tooltip";
+            }
             t.textContent = data[i].tooltip;
             d.appendChild(t);
         }
