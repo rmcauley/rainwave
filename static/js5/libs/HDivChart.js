@@ -78,7 +78,7 @@ function HDivChart(data, options) {
         for (i = 1; i < options.guide_lines; i++) {
             d = document.createElement("div");
             d.className = "chart_pip";
-            d.style.left = Math.round(100 / options.guide_lines) + "%";
+            d.style.left = (Math.round(100 / options.guide_lines) * i) + "%";
             outside.appendChild(d);
         }
     }
