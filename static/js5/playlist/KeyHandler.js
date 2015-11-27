@@ -7,8 +7,8 @@
 
 	// these key codes are handled by on_key_down, as browser's default behaviour
 	// tend to act on them at that stage rather than on_key_press
-	// backspace, escape, down, up, page up, page down, home, end
-	var keydown_handled = [ 8, 27, 38, 40, 33, 34, 36, 35 ];
+	// backspace, escape, down, up, page up, page down, home, end, right arrow, left arrow
+	var keydown_handled = [ 8, 27, 38, 40, 33, 34, 36, 35, 39, 37 ];
 
 	self.prevent_default = function(evt) {
 		evt.preventDefault(evt);
