@@ -53,7 +53,7 @@ class Artist(AssociatedMetadata):
 			"SELECT r4_song_artist.song_id AS id, "
 			 	"r4_songs.song_origin_sid AS sid, "
 			 	"song_title AS title, "
-			 	"song_rating AS rating, "
+			 	"CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, "
 				"song_exists AS requestable, "
 				"song_length AS length, "
 				"song_track_number AS track_number, "

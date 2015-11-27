@@ -85,7 +85,7 @@ class Album(AssociatedMetadata):
 		instance.data['songs'] = db.c.fetch_all(
 			"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, song_added_on AS added_on, "
 				"song_track_number AS track_number, song_disc_number as disc_number, "
-				"song_url AS url, song_link_text AS link_text, song_rating AS rating, song_cool_multiply AS cool_multiply, "
+				"song_url AS url, song_link_text AS link_text, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_cool_multiply AS cool_multiply, "
 				"song_cool_override AS cool_override, %s AS requestable, song_cool AS cool, song_cool_end AS cool_end, "
 				"song_request_only_end AS request_only_end, song_request_only AS request_only, song_artist_parseable AS artist_parseable, "
 				"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(song_fave, FALSE) AS fave "

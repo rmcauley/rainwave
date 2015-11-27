@@ -464,7 +464,7 @@ class Song(object):
 		rating_count = dislikes + neutrals + neutralplus + likes
 		log.debug("song_rating", "%s ratings for %s" % (rating_count, self.filename))
 		if rating_count > config.get("rating_threshold_for_calc"):
-			self.data['rating'] = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
+			self.data['rating'] = ((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1)
 			log.debug("song_rating", "rating update: %s for %s" % (self.data['rating'], self.filename))
 			db.c.update("UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s", (self.data['rating'], rating_count, self.id))
 
@@ -546,11 +546,11 @@ class Song(object):
 		raise SongMetadataUnremovable("Found no tag by name %s that wasn't assigned by ID3." % name)
 
 	def load_extra_detail(self, sid):
-		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_rating > %s", (self.data['rating'],))
-		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_request_count > %s", (self.data['request_count'],))
-		self.data['rating_rank_percentile'] = 100 - int((float(self.data['rating_rank']) / num_origin_songs[sid]) * 100)
+		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE AND song_rating > %s", (self.data['rating'],))
+		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE AND song_request_count > %s", (self.data['request_count'],))
+		self.data['rating_rank_percentile'] = 100 - int((float(self.data['rating_rank']) / num_songs["_total"]) * 100)
 		self.data['rating_rank_percentile'] = max(5, min(99, self.data['rating_rank_percentile']))
-		self.data['request_rank_percentile'] = 100 - int((float(self.data['request_rank']) / num_origin_songs[sid]) * 100)
+		self.data['request_rank_percentile'] = 100 - int((float(self.data['request_rank']) / num_songs["_total"]) * 100)
 		self.data['request_rank_percentile'] = max(5, min(99, self.data['request_rank_percentile']))
 
 		self.data['rating_histogram'] = {}
@@ -569,7 +569,7 @@ class Song(object):
 		d = {}
 		d['title'] = self.data['title']
 		d['id'] = self.id
-		d['rating'] = self.data['rating']
+		d['rating'] = round(self.data['rating'], 1)
 		d['origin_sid'] = self.data['origin_sid']
 		d['link_text'] = self.data['link_text']
 		d['artist_parseable'] = self.data['artist_parseable']

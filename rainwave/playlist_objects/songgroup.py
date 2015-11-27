@@ -68,7 +68,7 @@ class SongGroup(AssociatedMetadata):
 	def load_songs_from_sid(self, sid, user_id):
 		all_songs = db.c.fetch_all(
 			"SELECT r4_song_group.song_id AS id, song_title AS title, "
-			 	"song_rating AS rating, "
+			 	"CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, "
 				"TRUE AS requestable, "
 				"song_length AS length, "
 				"song_disc_number AS disc_number, "
