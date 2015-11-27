@@ -55,7 +55,7 @@ var $l = function() {
 
 			else if ((plural_found !== 100000) && (plural_found < var_found) && (plural_found < suffix_found)) {
 				colon_index = line.indexOf(":");
-				arg_key = line.substr(plural_found + 2, colon_index - 3);
+				arg_key = line.substring(plural_found + 2, colon_index);
 				if (colon_index == -1) {
 					parts.push({ "text": "[[ translation error ]]", "arg_key": null });
 				}

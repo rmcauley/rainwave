@@ -448,7 +448,7 @@ var Timeline = function() {
 				if (Stations[i].id == json.lock_sid) {
 					locked_name = Stations[i].name;
 				}
-				else if (Stations[i].sid == User.sid) {
+				else if (Stations[i].id == User.sid) {
 					this_name = Stations[i].name;
 				}
 			}
