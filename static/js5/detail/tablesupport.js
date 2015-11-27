@@ -52,11 +52,21 @@ var SongsTableDetail = function(song) {
 	}
 	var triggered = false;
 	song.$t.detail_icon_click = function(e) {
-		if (triggered) return;
-		triggered = true;
-		API.async_get("song", { "id": song.id }, function(json) {
-			SongsTableDetailDraw(song, json.song);
-		});
+		if (song.$t.details) {
+			if (song.$t.details.parentNode) {
+				song.$t.details.parentNode.removeChild(song.$t.details);
+			}
+			else {
+				song.$t.row.appendChild(song.$t.details);
+			}
+		}
+		else {
+			if (triggered) return;
+			triggered = true;
+			API.async_get("song", { "id": song.id }, function(json) {
+				SongsTableDetailDraw(song, json.song);
+			});
+		}
 	};
 	song.$t.detail_icon.addEventListener("click", song.$t.detail_icon_click);
 };

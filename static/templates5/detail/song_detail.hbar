@@ -1,5 +1,5 @@
 {{#if rating_count }}
-    <div class="song_detail">
+    <div class="song_detail" bind="details">
         <span>{{ $l("song_rating_detail") }}</span>
         <span style="margin-left: 2px;">
             {{ $l("rating_detail_numbers", { "rating": Formatting.rating(_c.rating), "count": _c.rating_count, "percentile": _c.rating_rank_percentile, "percentile_message": _c.rating_percentile_message }) }}
