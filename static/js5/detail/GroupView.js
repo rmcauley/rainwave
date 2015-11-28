@@ -26,6 +26,9 @@ var GroupView = function(json) {
 				if (albums[i].songs[j].requestable) {
 					Requests.make_clickable(albums[i].songs[j].$t.title, albums[i].songs[j].id);
 				}
+				if (!Sizing.simple) {
+					SongsTableDetail(albums[i].songs[j]);
+				}
 			}
 		}
 
