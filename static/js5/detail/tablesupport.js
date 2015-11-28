@@ -21,6 +21,7 @@ var SongsTableSorting = function(a, b) {
 var SongsTableDetailDraw = function(song, details) {
 	// song has the $t from the songs table
 	// details contains all the song data
+	if (!details) return;
 	if (details.rating_rank_percentile >= 50) {
 		details.rating_percentile_message = $l("rating_percentile_top", { "rating": details.rating, "percentile": details.rating_rank_percentile, "percentile_top": 100 - details.rating_rank_percentile });
 	}
