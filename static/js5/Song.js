@@ -11,6 +11,8 @@ var Song = function(self, parent_event) {
 		self.el = self.$t.root;
 	}
 
+	self.autovoted = false;
+
 	AlbumArt(self.art || (self.albums.length ? self.albums[0].art : null), template.art, self.request_id);
 	template.art._reset_router = false;
 
@@ -35,7 +37,13 @@ var Song = function(self, parent_event) {
 		if (e && (e.target.nodeName.toLowerCase() == "a") && e.target.getAttribute("href")) {
 			return;
 		}
-		if (self.el.classList.contains("voting_registered") || self.el.classList.contains("voting_clicked")) {
+		if (!self.autovoted && self.el.classList.contains("voting_registered") || self.el.classList.contains("voting_clicked")) {
+			return;
+		}
+		if (self.autovoted) {
+			self.autovoted = false;
+			self.clear_voting_status();
+			setTimeout(self.vote, 300);
 			return;
 		}
 		self.el.classList.add("voting_clicked");
