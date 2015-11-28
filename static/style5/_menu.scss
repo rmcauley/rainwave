@@ -253,12 +253,12 @@ ul.menu {
 	}
 }
 
-a.hamburger_icon {
+div.hamburger_icon {
 	padding-left: 8px !important;
 	padding-right: 8px !important;
 	position: relative;
 	display: inline-block;
-	height: 0px;
+	height: 8px;
 	width: 0px;
 	border-top: 2px solid #fff;
 	border-bottom: 2px solid #fff;
@@ -275,7 +275,7 @@ a.hamburger_icon {
 		background: $blue;
 	}
 
-	body.desktop &:hover {
+	body.desktop li.hamburger_icon_li:hover & {
 		border-color: $linkhover;
 
 		&:before {

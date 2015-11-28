@@ -1,9 +1,11 @@
 <div class="header unselectable" bind="header">
 	<div class="menu_wrapper" bind="menu_wrapper">
 		<ul class="menu hamburger_container pconly" bind="hamburger_container">
-			<li>
+			<li class="hamburger_icon_li">
 				{{>menu_hamburger}}
-				<a class="link hamburger_icon" bind="burger_button"></a>
+				<a class="link" bind="burger_button">
+					<div class="hamburger_icon"></div>
+				</a>
 			</li>
 		</ul>
 
