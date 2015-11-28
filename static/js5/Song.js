@@ -41,6 +41,7 @@ var Song = function(self, parent_event) {
 			return;
 		}
 		if (self.autovoted) {
+			self.el.classList.remove("autovoted");
 			self.autovoted = false;
 			self.clear_voting_status();
 			setTimeout(self.vote, 300);

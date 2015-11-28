@@ -124,6 +124,7 @@ var RWEvent = function(self) {
 		if (self_request && !already_voted) {
 			self.songs[self_request].register_vote();
 			self.songs[self_request].autovoted = true;
+			self.songs[self_request].el.classList.add("autovoted");
 		}
 	};
 

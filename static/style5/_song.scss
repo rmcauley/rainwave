@@ -184,6 +184,10 @@ div.song {
 				opacity: 1;
 				background: $blue;
 			}
+
+			&.autovoted {
+				cursor: pointer;
+			}
 		}
 	}
 
