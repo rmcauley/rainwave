@@ -166,23 +166,6 @@ ul.menu {
 		}
 	}
 
-	div.request_indicator {
-		display: inline;
-		position: absolute;
-		z-index: 1;
-		padding: 4px;
-		background: $orange;
-		height: 100%;
-		opacity: 0;
-		@include transform(translateX(0px));
-		@include transition-wtime(300ms, transform, opacity);
-
-		&.show {
-			opacity: 1;
-			@include transform(translateX(-100%));
-		}
-	}
-
 	@media $phone-media {
 		li.signup_link {
 			display: none;

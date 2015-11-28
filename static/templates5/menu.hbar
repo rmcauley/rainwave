@@ -34,7 +34,7 @@
 
 		<ul class="menu main_menu">
 			<li class="requests_link">
-				<div bind="request_indicator" class="request_indicator"></div>
+				<div bind="request_indicator" class="request_plusminus"></div>
 				<a bind="request_link">
 					<svg class="menu_icon menu_icon_requests" use="requests"></svg>
 					<span bind="request_link_text">{{ $l("Requests")}}</span>

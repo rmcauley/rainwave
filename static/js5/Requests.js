@@ -9,6 +9,7 @@ var Requests = function() {
 	var link_text;
 	var header;
 	var indicator;
+	var indicator2;
 	var padder;
 	var helpmsg;
 
@@ -26,6 +27,9 @@ var Requests = function() {
 		link_text = root_template.request_link_text;
 		indicator = root_template.request_indicator;
 		container = root_template.requests_container;
+		if (root_template.request_indicator2) {
+			indicator2 = root_template.request_indicator2;
+		}
 
 		helpmsg = document.createElement("div");
 		helpmsg.className = "blank_request_message";
@@ -268,19 +272,34 @@ var Requests = function() {
 
 		if (new_count > 0) {
 			indicator.textContent = "+" + new_count;
+			if (indicator2) {
+				indicator2.textContent = "+" + new_count;
+			}
 		}
 		else if (new_count < 0) {
 			indicator.textContent = "-" + new_count;
+			if (indicator2) {
+				indicator2.textContent = "-" + new_count;
+			}
 		}
 		else {
 			indicator.textContent = "=";
+			if (indicator2) {
+				indicator2.textContent = "=";
+			}
 		}
 		indicator.classList.add("show");
+		if (indicator2) {
+			indicator2.classList.add("show");
+		}
 		indicator_timeout = setTimeout(unindicate, 2000);
 	};
 
 	var unindicate = function() {
 		indicator.classList.remove("show");
+		if (indicator2) {
+			indicator2.classList.remove("show");
+		}
 		indicator_timeout = setTimeout(blank_indicator, 300);
 		indicator_start_count = false;
 	};
@@ -288,6 +307,9 @@ var Requests = function() {
 	var blank_indicator = function() {
 		indicator_timeout = null;
 		indicator.textContent = "";
+		if (indicator2) {
+			indicator2.textContent = "";
+		}
 	};
 
 	self.reflow = function() {

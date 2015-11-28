@@ -8,6 +8,9 @@
 		</a>
 	</li>
 </ul>
+{{#if ^!Sizing.simple}}
+	<div bind="request_indicator2" class="request_plusminus"></div>
+{{/if}}
 <ul class="panel_header request_icons">
 	<li class="pause_queue" bind="requests_pause" class="requests_pause">
 		<img src="/static/images4/request_pause.png" />

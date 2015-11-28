@@ -208,3 +208,35 @@ div.blank_request_message {
 	text-align: center;
 	padding: 10px;
 }
+
+div.request_plusminus {
+	display: inline;
+	position: absolute;
+	z-index: 1;
+	padding: 4px;
+	background: $orange;
+	height: 100%;
+	opacity: 0;
+	color: $text;
+	@include transform(translateX(0px));
+	@include transition-wtime(300ms, transform, opacity);
+
+	div.header &.show {
+		opacity: 1;
+		@include transform(translateX(-100%));
+	}
+
+	div.panel & {
+		height: auto;
+		padding: 0 4px;
+		margin-left: 10px;
+
+		&.show {
+			opacity: 1;
+		}
+	}
+
+	div.panel:hover &.show {
+		opacity: 0;
+	}
+}
