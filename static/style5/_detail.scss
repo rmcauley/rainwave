@@ -128,7 +128,7 @@ div.row {
 		background-color: $cooldown-color;
 		border-bottom-color: $cooldown-color;
 
-		body.full &:nth-child(even) {
+		body.full &:nth-child(odd) {
 			background-color: $cooldown-color / 1.2;
 			border-bottom-color: $cooldown-color / 1.2;
 		}
