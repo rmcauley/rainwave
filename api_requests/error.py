@@ -4,8 +4,8 @@ from api.exceptions import APIException
 from api.server import handle_api_url
 from libs import cache
 from libs import config
-from libs import log
 from urlparse import urlsplit
+import time
 
 @handle_api_url('error_report')
 class ErrorReport(APIHandler):
@@ -46,6 +46,7 @@ class ErrorReport(APIHandler):
             self.cleaned_args[k] = v[:2048]
         self.cleaned_args['user_id'] = self.user.id
         self.cleaned_args['username'] = self.user.data['name']
+        self.cleaned_args['time'] = time.time()
 
         reports = cache.get("error_reports")
         if not isinstance(reports, list):

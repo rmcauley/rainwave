@@ -3,6 +3,7 @@ import tornado.escape
 import datetime
 import api.web
 from api.server import handle_url
+from pytz import timezone
 
 from api_requests.admin.js_errors import JSErrors
 
@@ -23,6 +24,7 @@ class JSErrorDisplay(api.web.PrettyPrintAPIMixin, JSErrors):
 	columns = [
         "user_id",
         "username",
+        "time",
         "message",
         "location",
         "lineNumber",
@@ -38,6 +40,8 @@ class JSErrorDisplay(api.web.PrettyPrintAPIMixin, JSErrors):
 				if isinstance(row['stack'], list):
 					row['stack'] = '\n'.join(row['stack'])
 				row['stack'] = "<pre style='max-width: 450px; overflow: auto;'>%s</pre>" % tornado.escape.xhtml_escape(row['stack'])
+			if "time" in row and row['time']:
+				row['time'] = datetime.datetime.fromtimestamp(row['time'], timezone("Asia/Tokyo")).strftime("%a %b %d/%Y %H:%M")
 			else:
 				row['stack'] = " "
 		super(JSErrorDisplay, self).get()
