@@ -22,7 +22,13 @@
 				"user_agent": navigator.userAgent,
 				"browser_language": navigator.language || navigator.userLanguage,
 			};
-			API.async_get("error_report", submit_obj);
+			API.async_get("error_report", submit_obj,
+				function() {
+					template.sending_report.textContent = $l("report_sent");
+				},
+				function() {
+					template.sending_report.textContent = $l("report_error");
+				});
 		}
 		catch (e) {
 			// don't complain, we've already crashed
