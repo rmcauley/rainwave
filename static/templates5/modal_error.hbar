@@ -1,5 +1,5 @@
-<p>
-	{{ $l("report_sent") }}
+<p bind="sending_report">
+	{{ $l("report_sending") }}
 </p>
 <p>
 	<span>{{ $l("you_can_yell") }}</span>
