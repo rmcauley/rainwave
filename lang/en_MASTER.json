@@ -169,7 +169,7 @@
    "view_your"                                       : "View your: ",
    "recent_votes"                                    : "Recent Votes",
    "request_history"                                 : "Request History",
-   "registered_in_year"                              : "Since %(year)",
+   "registered_in_year"                              : "Joined %(year)",
 
    "__comment__"                 : "Other",
 
