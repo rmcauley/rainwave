@@ -130,15 +130,90 @@ var AlbumView = function(album) {
 			}
 			songs[album.songs[i].origin_sid].push(album.songs[i]);
 		}
-		for (i in songs) {
-			var h2 = document.createElement("h2");
-			h2.textContent = $l("songs_from", { "station": $l("station_name_" + i) });
-			template._root.appendChild(h2);
-			template._root.appendChild(RWTemplates.detail.songtable({ "songs": songs[i] })._root);
+		var for_keynav = [];
+		for (i = 0; i < Stations.length; i++) {
+			if (songs[Stations[i].id]) {
+				var h2 = document.createElement("h2");
+				h2.textContent = $l("songs_from", { "station": $l("station_name_" + i) });
+				template._root.appendChild(h2);
+				template._root.appendChild(RWTemplates.detail.songtable({ "songs": songs[i] })._root);
+				for_keynav.push(songs[i]);
+			}
 		}
+		MultiAlbumKeyNav(template, for_keynav);
 	}
 	else {
 		template._root.appendChild(RWTemplates.detail.songtable({ "songs": album.songs })._root);
+
+		if (!Sizing.simple) {
+			// keyboard nav i
+			var kni = false;
+			var key_nav_move = function(jump) {
+				var new_i = kni === false ? Math.max(0, -1 + jump) : Math.min(album.songs.length - 1, Math.max(0, kni + jump));
+				if (new_i === kni) return;
+
+				if (kni !== false) {
+					album.songs[kni].$t.row.classList.remove("hover");
+				}
+				album.songs[new_i].$t.row.classList.add("hover");
+				kni = new_i;
+				scroll_to_kni();
+			};
+
+			var scroll_to_kni = function() {
+				var kni_y = album.songs[kni].$t.row.offsetTop;
+				var now_y = template._scroll.scroll_top;
+				if (kni_y > (now_y + template._scroll.offset_height - 60)) {
+					template._scroll.scroll_to(kni_y - template._scroll.offset_height + 60);
+				}
+				else if (kni_y < (now_y + 60)) {
+					template._scroll.scroll_to(kni_y - 60);
+				}
+			};
+
+			template.key_nav_down = function() { key_nav_move(1); };
+			template.key_nav_up = function() { key_nav_move(-1); };
+			template.key_nav_page_down = function() { key_nav_move(15); };
+			template.key_nav_page_up = function() { key_nav_move(-15); };
+			template.key_nav_end = function() { key_nav_move(album.songs.length); };
+			template.key_nav_home = function() { key_nav_move(-album.songs.length); };
+
+			template.key_nav_left = function() { return false; };
+			template.key_nav_right = function() { return false; };
+
+			template.key_nav_enter = function() {
+				if ((kni !== false) && album.songs[kni] && album.songs[kni].$t.detail_icon_click) {
+					album.songs[kni].$t.detail_icon_click();
+				}
+			};
+
+			template.key_nav_add_character = function() { return false; };
+			template.key_nav_backspace = function() { return false; };
+
+			template.key_nav_escape = function() {
+				if ((kni !== false) && album.songs[kni] && album.songs[kni].$t.detail_icon_click) {
+					album.songs[kni].$t.row.classList.remove("hover");
+				}
+				kni = false;
+			};
+
+			template.key_nav_focus = function() {
+				if (kni === false) {
+					key_nav_move(1);
+				}
+				else {
+					album.songs[kni].$t.row.classList.add("hover");
+				}
+			};
+
+			template.key_nav_blur = function() {
+				if (kni !== false) {
+					album.songs[kni].$t.row.classList.remove("hover");
+				}
+			};
+
+			template._key_handle = true;
+		}
 	}
 
 	// Rating.register(album);
@@ -156,76 +231,6 @@ var AlbumView = function(album) {
 	}
 
 	template._header_text = album.name;
-
-	if (!Sizing.simple) {
-		// keyboard nav i
-		var kni = false;
-		var key_nav_move = function(jump) {
-			var new_i = kni === false ? Math.max(0, -1 + jump) : Math.min(album.songs.length - 1, Math.max(0, kni + jump));
-			if (new_i === kni) return;
-
-			if (kni !== false) {
-				album.songs[kni].$t.row.classList.remove("hover");
-			}
-			album.songs[new_i].$t.row.classList.add("hover");
-			kni = new_i;
-			scroll_to_kni();
-		};
-
-		var scroll_to_kni = function() {
-			var kni_y = album.songs[kni].$t.row.offsetTop;
-			var now_y = template._scroll.scroll_top;
-			if (kni_y > (now_y + template._scroll.offset_height - 60)) {
-				template._scroll.scroll_to(kni_y - template._scroll.offset_height + 60);
-			}
-			else if (kni_y < (now_y + 60)) {
-				template._scroll.scroll_to(kni_y - 60);
-			}
-		};
-
-		template.key_nav_down = function() { key_nav_move(1); };
-		template.key_nav_up = function() { key_nav_move(-1); };
-		template.key_nav_page_down = function() { key_nav_move(15); };
-		template.key_nav_page_up = function() { key_nav_move(-15); };
-		template.key_nav_end = function() { key_nav_move(album.songs.length); };
-		template.key_nav_home = function() { key_nav_move(-album.songs.length); };
-
-		template.key_nav_left = function() { return false; };
-		template.key_nav_right = function() { return false; };
-
-		template.key_nav_enter = function() {
-			if ((kni !== false) && album.songs[kni] && album.songs[kni].$t.detail_icon_click) {
-				album.songs[kni].$t.detail_icon_click();
-			}
-		};
-
-		template.key_nav_add_character = function() { return false; };
-		template.key_nav_backspace = function() { return false; };
-
-		template.key_nav_escape = function() {
-			if ((kni !== false) && album.songs[kni] && album.songs[kni].$t.detail_icon_click) {
-				album.songs[kni].$t.row.classList.remove("hover");
-			}
-			kni = false;
-		};
-
-		template.key_nav_focus = function() {
-			if (kni === false) {
-				key_nav_move(1);
-			}
-			else {
-				album.songs[kni].$t.row.classList.add("hover");
-			}
-		};
-
-		template.key_nav_blur = function() {
-			if (kni !== false) {
-				album.songs[kni].$t.row.classList.remove("hover");
-			}
-		};
-
-		template._key_handle = true;
-	}
 
 	return template;
 };
