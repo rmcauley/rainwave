@@ -134,10 +134,10 @@ var AlbumView = function(album) {
 		for (i = 0; i < Stations.length; i++) {
 			if (songs[Stations[i].id]) {
 				var h2 = document.createElement("h2");
-				h2.textContent = $l("songs_from", { "station": $l("station_name_" + i) });
+				h2.textContent = $l("songs_from", { "station": $l("station_name_" + Stations[i].id) });
 				template._root.appendChild(h2);
-				template._root.appendChild(RWTemplates.detail.songtable({ "songs": songs[i] })._root);
-				for_keynav.push({ "songs": songs[i] });
+				template._root.appendChild(RWTemplates.detail.songtable({ "songs": songs[Stations[i].id] })._root);
+				for_keynav.push({ "songs": songs[Stations[i].id] });
 			}
 		}
 		MultiAlbumKeyNav(template, for_keynav);
