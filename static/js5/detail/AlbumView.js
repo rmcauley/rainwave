@@ -137,7 +137,7 @@ var AlbumView = function(album) {
 				h2.textContent = $l("songs_from", { "station": $l("station_name_" + i) });
 				template._root.appendChild(h2);
 				template._root.appendChild(RWTemplates.detail.songtable({ "songs": songs[i] })._root);
-				for_keynav.push(songs[i]);
+				for_keynav.push({ "songs": songs[i] });
 			}
 		}
 		MultiAlbumKeyNav(template, for_keynav);
