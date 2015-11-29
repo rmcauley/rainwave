@@ -7,7 +7,7 @@
         <div bind="graph_placement"></div>
     </div>
 {{else}}
-    <div class="song_detail">
+    <div class="song_detail" bind="details">
         {{ $l("song_has_no_ratings") }}
     </div>
 {{/if}}
