@@ -11,7 +11,6 @@ div.setting_group {
 	clear: both;
 	padding: 2px 7px;
 	height: $yes_no_height;
-	overflow: hidden;
 	border-bottom: 1px solid transparent;
 	@include transition(border-color, background, opacity);
 
