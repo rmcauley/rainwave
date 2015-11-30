@@ -292,4 +292,6 @@ var KeyHandler = function() {
 	window.addEventListener("keydown", self.on_key_down, true);
 	window.addEventListener("keypress", self.on_key_press, true);
 	window.addEventListener("keyup", self.on_key_up, true);
+
+	return self;
 }();
