@@ -137,7 +137,7 @@ body.simple div.timeline div.album_rating {
 
 body.hide_global_ratings {
 	div.rating.rating_global {
-		background-image: none;
+		background-image: $hidden_rating;
 
 		& + div.rating_site {
 			visibility: hidden;

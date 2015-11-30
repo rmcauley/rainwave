@@ -188,7 +188,6 @@ var Router = function() {
 				if (self.active_list && self.active_list._key_handle) {
 					self.active_list.key_nav_blur();
 				}
-				self.active_list = false;
 				current_type = null;
 				current_id = null;
 				current_open_type = null;
@@ -447,7 +446,6 @@ var Router = function() {
 			if (self.active_list && self.active_list._key_handle) {
 				self.active_list.key_nav_blur();
 			}
-			self.active_list = null;
 		}
 	};
 
