@@ -7,8 +7,8 @@ var KeyHandler = function() {
 
 	// these key codes are handled by on_key_down, as browser's default behaviour
 	// tend to act on them at that stage rather than on_key_press
-	// backspace, escape, down, up, page up, page down, home, end, right arrow, left arrow
-	var keydown_handled = [ 8, 27, 38, 40, 33, 34, 36, 35, 39, 37 ];
+	// backspace, escape, down, up, page up, page down, home, end, right arrow, left arrow, tab
+	var keydown_handled = [ 8, 27, 38, 40, 33, 34, 36, 35, 39, 37, 9 ];
 
 	self.prevent_default = function(evt) {
 		evt.preventDefault(evt);
@@ -111,7 +111,7 @@ var KeyHandler = function() {
 		}
 
 		// a true return here means subroutines did actually handle the keys, and we need to preventDefault...
-		if (self.route_key(evt.keyCode, chr)) {
+		if (self.route_key(evt.keyCode, chr, evt.shiftKey)) {
 			self.prevent_default(evt);
 			// ... which is unfortunately backwards from browsers, which expect "false" to stop the event bubble
 			return false;
@@ -145,7 +145,7 @@ var KeyHandler = function() {
 
 	var route_to_detail = false;
 	var hotkey_mode_on = false;
-	self.route_key = function(key_code, chr) {
+	self.route_key = function(key_code, chr, shift) {
 		if (hotkey_mode_on && hotkey_mode_handle(key_code, chr)) {
 			return true;
 		}
@@ -217,6 +217,14 @@ var KeyHandler = function() {
 			}
 			route_to_detail = false;
 			return true;
+		}
+		else if (key_code == 9) {		// tab
+			if (shift) {
+				Router.tab_backwards();
+			}
+			else {
+				Router.tab_forward();
+			}
 		}
 
 		return false;

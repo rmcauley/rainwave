@@ -24,6 +24,7 @@ var Router = function() {
 	var reset_cache_on_next_request = false;
 	var request_in_flight = false;
 	var has_autoplayed = false;
+	var taborder = [ "album", "artist", "group", "request_line" ];
 
 	var reset_cache = function() {
 		// console.log("Cache reset.");
@@ -146,6 +147,28 @@ var Router = function() {
 			return deeplinkurl.substring(deeplinkurl.indexOf("#!/") + 3);
 		}
 		return null;
+	};
+
+	self.tab_forward = function() {
+		var idx = taborder.indexOf(current_type);
+		if ((idx === -1) || (idx == taborder.length - 1)) {
+			idx = 0;
+		}
+		else {
+			idx++;
+		}
+		self.change(taborder[idx]);
+	};
+
+	self.tab_backwards = function() {
+		var idx = taborder.indexOf(current_type);
+		if (idx <= 0) {
+			idx = taborder.length - 1;
+		}
+		else {
+			idx--;
+		}
+		self.change(taborder[idx]);
 	};
 
 	self.detect_url_change = function() {
