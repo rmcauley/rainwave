@@ -46,6 +46,8 @@ var SongsTableDetailDraw = function(song, details) {
 		}
 		template.graph_placement = null;
 	}
+
+	Router.recalculate_scroll();
 };
 
 var SongsTableDetail = function(song) {
@@ -61,6 +63,7 @@ var SongsTableDetail = function(song) {
 			else {
 				song.$t.row.appendChild(song.$t.details);
 			}
+			Router.recalculate_scroll();
 		}
 		else {
 			if (triggered) return;
@@ -136,7 +139,6 @@ var MultiAlbumKeyNav = function(template, albums) {
 
 	var scroll_to_kni = function() {
 		var kni_y = albums[knai].songs[kni].$t.row.offsetTop;
-		template._scroll.refresh();
 		var now_y = template._scroll.scroll_top;
 		if (kni_y > (now_y + template._scroll.offset_height - 90)) {
 			template._scroll.scroll_to(kni_y - template._scroll.offset_height + 90);

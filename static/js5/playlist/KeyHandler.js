@@ -125,7 +125,9 @@ var KeyHandler = function() {
 
 	self.route_to_lists = function() {
 		if (route_to_detail) {
-			Router.active_list.key_nav_focus();
+			if (Router.active_list && Router.active_list.loaded) {
+				Router.active_list.key_nav_focus();
+			}
 			if (can_route_to_detail()) {
 				Router.active_detail.key_nav_blur();
 			}
@@ -158,6 +160,7 @@ var KeyHandler = function() {
 		else {
 			route_to_detail = false;
 			if (!Router.active_list) return;
+			if (!Router.active_list.loaded) return;
 		}
 
 		var toret;

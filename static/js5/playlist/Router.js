@@ -136,6 +136,10 @@ var Router = function() {
 		};
 	});
 
+	self.recalculate_scroll = function() {
+		scroll.set_height(false);
+	};
+
 	self.get_current_url = function() {
 		var deeplinkurl = decodeURI(location.href);
 		if (deeplinkurl.indexOf("#!/") >= 0) {

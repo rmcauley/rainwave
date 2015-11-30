@@ -162,7 +162,6 @@ var AlbumView = function(album) {
 
 			var scroll_to_kni = function() {
 				var kni_y = album.songs[kni].$t.row.offsetTop;
-				template._scroll.refresh();
 				var now_y = template._scroll.scroll_top;
 				if (kni_y > (now_y + template._scroll.offset_height - 60)) {
 					template._scroll.scroll_to(kni_y - template._scroll.offset_height + 60);
