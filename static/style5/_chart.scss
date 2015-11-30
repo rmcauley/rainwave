@@ -21,6 +21,7 @@ div.chart_outside {
 
         span.chart_tooltip {
             position: absolute;
+            z-index: 2;
             border: solid 1px $blue;
             background: black;
             visibility: hidden;
