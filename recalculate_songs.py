@@ -19,5 +19,5 @@ if __name__ == "__main__":
 		print "\r" + txt,
 		i += 1
 
-		s = Song.load_from_id(song_id, True)
-		s.update_rating()
+		s = Song.load_from_id(song_id)
+		s.update_rating(skip_album_update=True)
