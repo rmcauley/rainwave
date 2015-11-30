@@ -240,12 +240,12 @@ div.list {
 			}
 		}
 
-		&.open, &.hover.open, &.cool.open, &.cool.hover.open, body.desktop &.open:hover, body.desktop &.open.cool:hover {
-			background-color: #1f4f70;
-			border-bottom-color: $orange;
+		&.open {
+			background-color: #1f4f70 !important;
+			border-bottom-color: $orange !important;
 
 			&.album_fave_highlight {
-				background-color: #6D5D1E;
+				background-color: #6D5D1E !important;
 			}
 
 			span.name {
