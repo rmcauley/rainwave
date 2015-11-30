@@ -213,7 +213,7 @@ div.list {
 		padding: 2px 65px 2px 10px;
 		border-bottom: solid 1px transparent;
 		cursor: pointer;
-		@include transition-wtime(250ms, background-color, border-color, color);
+		@include transition-wtime(250ms, background-color, border-bottom-color, color);
 		overflow: hidden;
 		word-break: break-all;
 		white-space: nowrap;
@@ -226,7 +226,7 @@ div.list {
 
 		body.desktop &:hover, &.hover {
 			color: $link;
-			border-color: $hovercolor-border;
+			border-bottom-color: $hovercolor-border;
 			background-color: $hovercolor;
 			@include transition-wtime(250ms, color);
 
@@ -236,13 +236,13 @@ div.list {
 
 			&.album_fave_highlight, &.cool.album_fave_highlight {
 				background-color: #444013;
-				border-color: #5B4E19;
+				border-bottom-color: #5B4E19;
 			}
 		}
 
 		&.open, &.hover.open, &.cool.open, &.cool.hover.open, body.desktop &.open:hover, body.desktop &.open.cool:hover {
 			background-color: #1f4f70;
-			border-color: $orange;
+			border-bottom-color: $orange;
 
 			&.album_fave_highlight {
 				background-color: #6D5D1E;
