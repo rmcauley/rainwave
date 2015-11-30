@@ -119,20 +119,31 @@ div.row {
 	min-height: 20px;
 	@include transition-wtime(300ms, width, background-color, border-bottom-color);
 
-	body.full &:nth-child(even) {
+	body.desktop.full &:nth-child(even) {
 		background-color: $panel_background / 1.2;
 		border-bottom-color: $panel_background / 1.2;
+
+		&:hover, &.hover {
+			background-color: $hovercolor;
+			border-bottom-color: $hovercolor-border;
+		}
 	}
 
 	&.cool {
 		background-color: $cooldown-color;
 		border-bottom-color: $cooldown-color;
 
-		body.full &:nth-child(even) {
+		body.desktop.full & {
+			&:hover, &.hover {
+				background-color: $cooldown_hovercolor;
+			}
+		}
+
+		body.desktop.full &:nth-child(even) {
 			background-color: #161847;
 			border-bottom-color: #161847;
 
-			&:hover {
+			&:hover, &.hover {
 				background-color: $cooldown_hovercolor;
 			}
 		}
