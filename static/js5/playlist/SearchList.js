@@ -197,6 +197,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 	};
 	self.el.addEventListener("click", self.open_element);
+	self.el.addEventListener("click", KeyHandler.route_to_lists);
 
 	// SEARCHING ****************************
 

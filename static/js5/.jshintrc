@@ -35,6 +35,7 @@
     "GroupList": true,
     "HDivChart": true,
     "jstz": true,
+    "KeyHandler": true,
     "lang": true,
     "ListenerView": true,
     "Menu": true,

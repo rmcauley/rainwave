@@ -1,4 +1,4 @@
-(function() {
+var KeyHandler = function() {
 	"use strict";
 	var self = {};
 
@@ -123,6 +123,22 @@
 		return Router.active_detail && Router.active_detail._key_handle;
 	};
 
+	self.route_to_lists = function() {
+		if (route_to_detail) {
+			Router.active_list.key_nav_focus();
+			Router.active_detail.key_nav_blur();
+		}
+		route_to_detail = false;
+	};
+
+	self.route_to_detail = function() {
+		if (!route_to_detail && can_route_to_detail()) {
+			route_to_detail = true;
+			Router.active_list.key_nav_blur();
+			Router.active_detail.key_nav_focus();
+		}
+	};
+
 	var route_to_detail = false;
 	var hotkey_mode_on = false;
 	self.route_key = function(key_code, chr) {
@@ -176,20 +192,16 @@
 		else if (key_code == 37) {		// left arrow
 			toret = Router[route_to].key_nav_left();
 			if (!toret && route_to_detail) {
-				route_to_detail = false;
 				toret = true;
-				Router.active_list.key_nav_focus();
-				Router.active_detail.key_nav_blur();
+				self.route_to_lists();
 			}
 			return toret;
 		}
 		else if (key_code == 39) {		// right arrow
 			toret = Router[route_to].key_nav_right();
 			if (!toret && !route_to_detail && can_route_to_detail()) {
-				route_to_detail = true;
 				toret = true;
-				Router.active_list.key_nav_blur();
-				Router.active_detail.key_nav_focus();
+				self.route_to_detail();
 			}
 			return toret;
 		}
@@ -280,4 +292,4 @@
 	window.addEventListener("keydown", self.on_key_down, true);
 	window.addEventListener("keypress", self.on_key_press, true);
 	window.addEventListener("keyup", self.on_key_up, true);
-}());
+}();
