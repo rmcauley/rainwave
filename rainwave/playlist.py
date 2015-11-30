@@ -29,10 +29,9 @@ class NoAvailableSongsException(Exception):
 	pass
 
 def update_num_songs():
-	num_songs["_total"] = 0
+	num_songs["_total"] = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE")
 	for sid in config.station_ids:
 		num_songs[sid] = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE song_exists = TRUE AND sid = %s", (sid,))
-		num_songs["_total"] += num_songs[sid]
 		num_origin_songs[sid] = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE AND song_origin_sid = %s", (sid,))
 		num_albums[sid] = db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE sid = %s AND album_exists = TRUE", (sid,))
 
