@@ -240,7 +240,7 @@ div.list {
 			}
 		}
 
-		&.open, body.desktop &.open:hover, &.hover.open {
+		&.open, &.hover.open, &.cool.open, &.cool.hover.open, body.desktop &.open:hover, body.desktop &.open.cool:hover {
 			background-color: #1f4f70;
 			border-color: $orange;
 
