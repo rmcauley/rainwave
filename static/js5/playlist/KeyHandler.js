@@ -126,7 +126,9 @@ var KeyHandler = function() {
 	self.route_to_lists = function() {
 		if (route_to_detail) {
 			Router.active_list.key_nav_focus();
-			Router.active_detail.key_nav_blur();
+			if (can_route_to_detail()) {
+				Router.active_detail.key_nav_blur();
+			}
 		}
 		route_to_detail = false;
 	};
