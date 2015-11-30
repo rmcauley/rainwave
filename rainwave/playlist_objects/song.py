@@ -548,9 +548,9 @@ class Song(object):
 	def load_extra_detail(self, sid):
 		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE AND song_rating > %s", (self.data['rating'],))
 		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE AND song_request_count > %s", (self.data['request_count'],))
-		self.data['rating_rank_percentile'] = (self.data['rating_rank'] - num_songs["_total"]) / num_songs["_total"] * 100
+		self.data['rating_rank_percentile'] = ((num_songs["_total"] - self.data['rating_rank']) / num_songs["_total"]) * 100
 		self.data['rating_rank_percentile'] = max(5, min(99, round(self.data['rating_rank_percentile'])))
-		self.data['request_rank_percentile'] = (self.data['request_rank'] - num_songs["_total"]) / num_songs["_total"] * 100
+		self.data['request_rank_percentile'] = ((num_songs["_total"] - self.data['request_rank']) / num_songs["_total"]) * 100
 		self.data['request_rank_percentile'] = max(5, min(99, round(self.data['request_rank_percentile'])))
 
 		self.data['rating_histogram'] = {}
