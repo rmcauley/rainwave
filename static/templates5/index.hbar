@@ -6,7 +6,8 @@
 		<div style="float: right; margin-left: 10px;">A,S,D = Vote 1st Elec</div>
 		<div style="float: left; clear: both;">Q-R = Rate 1.5-4.5</div>
 		<div style="float: right; margin-left: 10px;">Z,X,C = Vote 2nd Elec</div>
-		<div style="clear:both;">Space = Stop/Play</div>
+		<div style="clear: both;">F = Fave Current Song</div>
+		<div style="clear: both;">Space = Stop/Play</div>
 	</div>
 {{/if}}
 

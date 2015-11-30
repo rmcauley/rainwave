@@ -342,6 +342,14 @@ var Timeline = function() {
 		}
 	};
 
+	self.fav_current = function() {
+		if (User.id > 1) {
+			var e = document.createEvent("Events");
+			e.initEvent("click", true, false);
+			sched_current.songs[0].$t.fave.dispatchEvent(e);
+		}
+	};
+
 	self.vote = function(which_election, song_position) {
 		if ((which_election < 0) || (which_election >= sched_next.length)) {
 			throw({ "is_rw": true, "tl_key": "invalid_hotkey_vote" });

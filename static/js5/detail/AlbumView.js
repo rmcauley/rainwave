@@ -199,6 +199,11 @@ var AlbumView = function(album) {
 					else if (chr == "w") Rating.do_rating(2.5, album.songs[kni]);
 					else if (chr == "e") Rating.do_rating(3.5, album.songs[kni]);
 					else if (chr == "r") Rating.do_rating(4.5, album.songs[kni]);
+					else if ((chr == "f") && (User.id > 1)) {
+						var e = document.createEvent("Events");
+						e.initEvent("click", true, false);
+						album.songs[kni].$t.fave.dispatchEvent(e);
+					}
 				}
 
 				return true;
