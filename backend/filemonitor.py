@@ -312,9 +312,11 @@ def _disable_file(filename):
 		_add_scan_error(filename, e)
 
 def _add_scan_error(filename, xception, full_exc=None):
-	scan_errors = cache.get("backend_scan_errors")
-	if not scan_errors:
-		scan_errors = []
+	scan_errors = []
+	try:
+		scan_errors = cache.get("backend_scan_errors")
+	except:
+		pass
 
 	eo = { "time": int(timestamp()), "file": filename, "type": xception.__class__.__name__, "error": str(xception), "traceback": "" }
 	if not isinstance(xception, PassableScanError) and not isinstance(xception, IOError) and not isinstance(xception, OSError):
