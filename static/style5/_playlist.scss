@@ -256,8 +256,11 @@ div.list {
 		&.cool {
 			background-color: $cooldown_albumlist_color;
 
-			body.desktop &:hover {
-				background-color: $cooldown_hovercolor;
+			body.desktop & {
+				&:hover, &.hover {
+					background-color: $cooldown_hovercolor;
+					border-bottom-color: $cooldown_hovercolor_border;
+				}
 			}
 		}
 

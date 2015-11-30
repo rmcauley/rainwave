@@ -121,7 +121,6 @@ div.row {
 
 	body.desktop.full &:nth-child(even) {
 		background-color: $panel_background / 1.2;
-		border-bottom-color: $panel_background / 1.2;
 
 		&:hover, &.hover {
 			background-color: $hovercolor;
@@ -131,11 +130,11 @@ div.row {
 
 	&.cool {
 		background-color: $cooldown-color;
-		border-bottom-color: $cooldown-color;
 
 		body.desktop.full & {
 			&:hover, &.hover {
 				background-color: $cooldown_hovercolor;
+				border-bottom-color: $cooldown_hovercolor_border;
 			}
 		}
 
@@ -145,6 +144,7 @@ div.row {
 
 			&:hover, &.hover {
 				background-color: $cooldown_hovercolor;
+				border-bottom-color: $cooldown_hovercolor_border;
 			}
 		}
 	}
