@@ -381,6 +381,7 @@ var Router = function() {
 				close_detail = false;
 			}
 			current_type = typ;
+			KeyHandler.route_to_lists();
 		}
 		else {
 			document.body.classList.remove("playlist");
