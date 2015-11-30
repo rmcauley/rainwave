@@ -182,12 +182,27 @@ var AlbumView = function(album) {
 			template.key_nav_right = function() { return false; };
 
 			template.key_nav_enter = function() {
-				if ((kni !== false) && album.songs[kni] && album.songs[kni].$t.detail_icon_click) {
-					album.songs[kni].$t.detail_icon_click();
+				if ((kni !== false) && album.songs[kni]) {
+					Requests.add(album.songs[kni].id);
 				}
 			};
 
-			template.key_nav_add_character = function() { return false; };
+			template.key_nav_add_character = function(chr) {
+				if ((kni !== false) && album.songs[kni]) {
+					if ((chr == "i") && album.songs[kni].$t.detail_icon_click) {
+						album.songs[kni].$t.detail_icon_click();
+					}
+					else if ((parseInt(chr) >= 1) && (parseInt(chr) <= 5)) {
+						Rating.do_rating(parseInt(chr), album.songs[kni]);
+					}
+					else if (chr == "q") Rating.do_rating(1.5, album.songs[kni]);
+					else if (chr == "w") Rating.do_rating(2.5, album.songs[kni]);
+					else if (chr == "e") Rating.do_rating(3.5, album.songs[kni]);
+					else if (chr == "r") Rating.do_rating(4.5, album.songs[kni]);
+				}
+
+				return true;
+			};
 			template.key_nav_backspace = function() { return false; };
 
 			template.key_nav_escape = function() {

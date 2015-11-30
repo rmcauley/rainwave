@@ -257,7 +257,7 @@ div.list {
 			background-color: $cooldown_albumlist_color;
 
 			body.desktop &:hover {
-				background-color: #1f4f70;
+				background-color: $cooldown_hovercolor;
 			}
 		}
 
