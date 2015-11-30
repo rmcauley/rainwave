@@ -279,7 +279,7 @@ div.hamburger_icon {
 	overflow: hidden;
 	padding: 2px;
 	visibility: hidden;
-	@include transform(translateX(-90%));
+	@include transform(translateX(-90%) translateY(-10px));
 	@include transition-wtime(300ms, transform, opacity, visibility);
 
 	&.show_calendar {
