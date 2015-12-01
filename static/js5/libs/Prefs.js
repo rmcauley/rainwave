@@ -111,7 +111,7 @@ var Prefs = function() {
 			values[name] = legal_values ? legal_values[0] : false;
 		}
 		else {
-			if ((values[name] !== legal_values[0]) && power_only) {
+			if ((values[name] !== meta[name].legal_values[0]) && power_only) {
 				self.powertripped = true;
 			}
 		}
