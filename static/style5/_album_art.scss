@@ -1,3 +1,8 @@
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 div.art_anchor {
 	position: relative;
 	float: left;
@@ -12,21 +17,31 @@ div.art_container {
 	border-color: #222;
 	border-width: 0px;
 	border-style: solid;
-	background-color: transparent;
+	background-color: #000;
 	background-position: center center;
 	background-repeat: no-repeat;
-	// background-size: contain;
 	background-size: cover;
 	width: $art_size;
 	height: $art_size;
 	@include transition-wtime(300ms, width, height, border-width, background-color, transform);
+
+	div.art_full_size {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		background-color: #000;
+		background-size: contain;
+		background-position: center center;
+		background-repeat: no-repeat;
+		@include transition-wtime(300ms, opacity);
+	}
 
 	&.art_expandable {
 		cursor: pointer;
 
 		&:hover {
 			z-index: 1;
-			background-color: #000;
 			border-width: 2px;
 			width: $art_hover_size;
 			height: $art_hover_size;
@@ -42,8 +57,11 @@ div.art_container {
 			z-index: 1;
 			width: $art_full_size !important;
 			height: $art_full_size !important;
-			background-size: contain;
 			box-shadow: 3px 3px 5px #000;
+
+			div.art_full_size.loaded {
+				opacity: 1;
+			}
 		}
 
 		&.art_expand_left.art_expand_up {

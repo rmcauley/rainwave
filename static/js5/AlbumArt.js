@@ -12,7 +12,7 @@ var AlbumArt = function() {
 
 		if (!tgt.classList.contains("art_container")) return;
 		if (tgt.classList.contains("art_expanded")) {
-			normalize_art(e);
+			normalize_art({ "target": this });
 			return;
 		}
 
@@ -36,7 +36,11 @@ var AlbumArt = function() {
 		if (("_album_art" in tgt) && tgt._album_art) {
 			var full_res = document.createElement("img");
 			full_res.onload = function() {
-				tgt.style.backgroundImage = "url(" + full_res.getAttribute("src") + ")";
+				var fs = document.createElement("div");
+				fs.className = "art_full_size";
+				fs.style.backgroundImage = "url(" + full_res.getAttribute("src") + ")";
+				tgt.appendChild(fs);
+				setTimeout(function() { fs.classList.add("loaded"); }, 20);
 			};
 			full_res.setAttribute("src", tgt._album_art + "_320.jpg");
 			tgt._album_art = null;
@@ -59,6 +63,7 @@ var AlbumArt = function() {
 		else {
 			if (!MOBILE && window.devicePixelRatio && (window.devicePixelRatio > 1.5)) {
 				element.style.backgroundImage = "url(" + art_url + "_320.jpg)";
+				element._album_art = art_url;
 			}
 			else if (!MOBILE && Sizing.simple && !Sizing.small) {
 				element.style.backgroundImage = "url(" + art_url + "_240.jpg)";
