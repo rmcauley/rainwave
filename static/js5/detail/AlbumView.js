@@ -158,6 +158,7 @@ var AlbumView = function(album) {
 				album.songs[new_i].$t.row.classList.add("hover");
 				kni = new_i;
 				scroll_to_kni();
+				return true;
 			};
 
 			var scroll_to_kni = function() {
@@ -171,12 +172,12 @@ var AlbumView = function(album) {
 				}
 			};
 
-			template.key_nav_down = function() { key_nav_move(1); };
-			template.key_nav_up = function() { key_nav_move(-1); };
-			template.key_nav_page_down = function() { key_nav_move(15); };
-			template.key_nav_page_up = function() { key_nav_move(-15); };
-			template.key_nav_end = function() { key_nav_move(album.songs.length); };
-			template.key_nav_home = function() { key_nav_move(-album.songs.length); };
+			template.key_nav_down = function() { return key_nav_move(1); };
+			template.key_nav_up = function() { return key_nav_move(-1); };
+			template.key_nav_page_down = function() { return key_nav_move(15); };
+			template.key_nav_page_up = function() { return key_nav_move(-15); };
+			template.key_nav_end = function() { return key_nav_move(album.songs.length); };
+			template.key_nav_home = function() { return key_nav_move(-album.songs.length); };
 
 			template.key_nav_left = function() { return false; };
 			template.key_nav_right = function() { return false; };
@@ -184,6 +185,7 @@ var AlbumView = function(album) {
 			template.key_nav_enter = function() {
 				if ((kni !== false) && album.songs[kni]) {
 					Requests.add(album.songs[kni].id);
+					return true;
 				}
 			};
 
@@ -204,9 +206,8 @@ var AlbumView = function(album) {
 						e.initEvent("click", true, false);
 						album.songs[kni].$t.fave.dispatchEvent(e);
 					}
+					return true;
 				}
-
-				return true;
 			};
 			template.key_nav_backspace = function() { return false; };
 
