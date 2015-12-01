@@ -41,12 +41,13 @@ var docCookies = {
 docCookies.removeItem("r3sid", "/", BOOTSTRAP.cookie_domain);
 docCookies.removeItem("r3prefs", "/", BOOTSTRAP.cookie_domain);
 docCookies.removeItem("edilayouts", "/", BOOTSTRAP.cookie_domain);
-// docCookies.removeItem("r4_prefs", "/", BOOTSTRAP.cookie_domain);
-// docCookies.removeItem("r4_active_list", "/", BOOTSTRAP.cookie_domain);
+docCookies.removeItem("r4_prefs", "/", BOOTSTRAP.cookie_domain);
+docCookies.removeItem("r4_active_list", "/", BOOTSTRAP.cookie_domain);
 
 var Prefs = function() {
 	"use strict";
 	var self = {};
+	self.powertripped = true;
 	var locales = BOOTSTRAP.locales;
 	var meta = {};
 	var callbacks = {};
@@ -108,6 +109,11 @@ var Prefs = function() {
 		}
 		if (!(name in values)) {
 			values[name] = legal_values ? legal_values[0] : false;
+		}
+		else {
+			if ((values[name] !== legal_values[0]) && power_only) {
+				self.powertripped = true;
+			}
 		}
 		if (!callbacks[name]) callbacks[name] = [];
 	};

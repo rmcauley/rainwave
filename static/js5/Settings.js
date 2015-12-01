@@ -3,7 +3,10 @@ var SettingsWindow = function() {
 	var p = Prefs.get_meta();
 	p.p_sort.legal_values[0].name = $l("prefs_sort_playlist_by_alpha");
 	p.p_sort.legal_values[1].name = $l("prefs_sort_playlist_by_rating_user");
-	Modal($l("Settings"), "settings", p);
+	var ct = Modal($l("Settings"), "settings", p);
+	if (Prefs.powertripped) {
+		ct._root.classList.add("powertripped");
+	}
 
 	var t_tl_check = function() {
 		if (Prefs.get("t_tl")) {
