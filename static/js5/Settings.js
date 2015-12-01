@@ -5,6 +5,17 @@ var SettingsWindow = function() {
 	p.p_sort.legal_values[1].name = $l("prefs_sort_playlist_by_rating_user");
 	Modal($l("Settings"), "settings", p);
 
+	var t_tl_check = function() {
+		if (Prefs.get("t_tl")) {
+			p.t_clk.$t.item_root.style.opacity = 1;
+			p.t_rt.$t.item_root.style.opacity = 1;
+		}
+		else {
+			p.t_clk.$t.item_root.style.opacity = 0.5;
+			p.t_rt.$t.item_root.style.opacity = 0.5;
+		}
+	};
+
 	var bool_setup = function(key, obj) {
 		var check = function() {
 			if (Prefs.get(key)) {
@@ -30,16 +41,25 @@ var SettingsWindow = function() {
 			e.stopPropagation();
 			Prefs.change(key, !Prefs.get(key));
 			check();
+			if (key == "t_tl") {
+				t_tl_check();
+			}
 		});
 		obj.$t.yes.addEventListener("click", function(e) {
 			e.stopPropagation();
 			Prefs.change(key, true);
 			check();
+			if (key == "t_tl") {
+				t_tl_check();
+			}
 		});
 		obj.$t.no.addEventListener("click", function(e) {
 			e.stopPropagation();
 			Prefs.change(key, false);
 			check();
+			if (key == "t_tl") {
+				t_tl_check();
+			}
 		});
 		if (Prefs.get(key)) {
 			obj.$t.wrap.classList.add("yes");
@@ -99,21 +119,6 @@ var SettingsWindow = function() {
 					highlight_later(p[i].legal_values[j].$t.link, p[i].$t.highlight);
 				}
 			}
-		}
-
-		if (i == "t_tl") {
-			var t_tl_check = function() {
-				if (Prefs.get("t_tl")) {
-					p.t_clk.$t.item_root.style.opacity = 1;
-					p.t_rt.$t.item_root.style.opacity = 1;
-				}
-				else {
-					p.t_clk.$t.item_root.style.opacity = 0.5;
-					p.t_rt.$t.item_root.style.opacity = 0.5;
-				}
-			};
-			p[i].$t.item_root.addEventListener("click", t_tl_check);
-			t_tl_check();
 		}
 	}
 };
