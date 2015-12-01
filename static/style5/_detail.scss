@@ -121,6 +121,7 @@ div.row {
 
 	body.desktop.full &:nth-child(even) {
 		background-color: $panel_background / 1.2;
+		border-bottom-color: $panel_background / 1.2;
 
 		&:hover, &.hover {
 			background-color: $hovercolor;
@@ -130,6 +131,7 @@ div.row {
 
 	&.cool {
 		background-color: $cooldown-color;
+		border-bottom-color: $cooldown-color;
 
 		body.desktop.full & {
 			&:hover, &.hover {
@@ -139,8 +141,13 @@ div.row {
 		}
 
 		body.desktop.full &:nth-child(even) {
-			background-color: #161847;
-			border-bottom-color: #161847;
+			// Nat's colors:
+			// background-color: #161847;
+			// border-bottom-color: #161847;
+
+			// Rob's colors:
+			background-color: $cooldown-color / 1.2;
+			border-bottom-color: $cooldown-color / 1.2;
 
 			&:hover, &.hover {
 				background-color: $cooldown_hovercolor;
@@ -166,7 +173,7 @@ div.row {
 
 		body.desktop &:hover {
 			background-color: #444013;
-			border-color: #5B4E19;
+			border-bottom-color: #5B4E19;
 		}
 	}
 
