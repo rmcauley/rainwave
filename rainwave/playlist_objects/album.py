@@ -194,7 +194,7 @@ class Album(AssociatedMetadata):
 			elif old_sids.count(sid):
 				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (album_id, sid))
 			else:
-				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s, %s)", (album_id, sid))
+				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (album_id, sid))
 				if sid != 0:
 					updated_album_ids[sid][album_id] = True
 			num_songs = self.get_num_songs(sid)
