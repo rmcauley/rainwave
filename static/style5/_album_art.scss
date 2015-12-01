@@ -34,7 +34,7 @@ div.art_container {
 		background-size: contain;
 		background-position: center center;
 		background-repeat: no-repeat;
-		@include transition-wtime(300ms, opacity);
+		@include transition-wtime(500ms, opacity);
 	}
 
 	&.art_expandable {
