@@ -60,6 +60,10 @@ var AlbumArt = function() {
 			if (!MOBILE && window.devicePixelRatio && (window.devicePixelRatio > 1.5)) {
 				element.style.backgroundImage = "url(" + art_url + "_320.jpg)";
 			}
+			else if (!MOBILE && Sizing.simple && !Sizing.small) {
+				element.style.backgroundImage = "url(" + art_url + "_240.jpg)";
+				element._album_art = art_url;
+			}
 			else {
 				element.style.backgroundImage = "url(" + art_url + "_120.jpg)";
 				element._album_art = art_url;
