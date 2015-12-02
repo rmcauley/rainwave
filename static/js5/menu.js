@@ -120,6 +120,10 @@ var Menu = function() {
 		}
 	};
 
+	var stop_propagation = function(e) {
+		e.stopPropagation();
+	};
+
 	var open_station_select = function(e) {
 		if (!template.station_select.classList.contains("open")) {
 			template.hamburger_container.classList.remove("burger_open");
@@ -127,6 +131,11 @@ var Menu = function() {
 			template.station_select.classList.remove("closed");
 			template.station_select_header.addEventListener("click", close_station_select);
 			template.header.addEventListener("mouseleave", close_station_select);
+			template.addEventListener("mouseleave", close_station_select);
+
+			template.station_select.addEventListener("touchstart", stop_propagation);
+			document.body.addEventListener("touchstart", close_station_select);
+
 			e.stopPropagation();
 		}
 	};
@@ -137,6 +146,10 @@ var Menu = function() {
 			template.station_select.classList.add("closed");
 			template.station_select_header.removeEventListener("click", close_station_select);
 			template.header.removeEventListener("mouseleave", close_station_select);
+
+			template.station_select.removeEventListener("touchstart", stop_propagation);
+			document.body.removeEventListener("touchstart", close_station_select);
+
 			e.stopPropagation();
 		}
 	};
