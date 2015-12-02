@@ -82,6 +82,10 @@ class CurrentListenersRequest(APIHandler):
 	def post(self):
 		self.append("current_listeners", cache.get_station(self.sid, "current_listeners"))
 
+@handle_api_html_url("current_listeners")
+class CurrentListenersHTML(PrettyPrintAPIMixin, CurrentListenersRequest):
+	pass
+
 @handle_api_url("user_info")
 class UserInfoRequest(APIHandler):
 	description = "Get information about the user making the request."
