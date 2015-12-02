@@ -19,7 +19,7 @@
 				</li>
 			{{#else}}
 				<li class="login_link">
-					<a bind="login" class="link" href="forums/ucp.php?mode=login">
+					<a bind="login" class="link" href="/forums/ucp.php?mode=login&redirect=/">
 						{{ $l("login") }}
 					</a>
 				</li>
