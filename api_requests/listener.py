@@ -1,8 +1,9 @@
 import math
 
 from api.web import APIHandler
+from api.web import PrettyPrintAPIMixin
 from api import fieldtypes
-from api.server import handle_api_url
+from api.server import handle_api_url, handle_api_html_url
 
 from libs import cache
 from libs import db
@@ -81,6 +82,10 @@ class CurrentListenersRequest(APIHandler):
 
 	def post(self):
 		self.append("current_listeners", cache.get_station(self.sid, "current_listeners"))
+
+@handle_api_html_url("current_listeners")
+class CurrentListenersHTML(PrettyPrintAPIMixin, CurrentListenersRequest):
+	pass
 
 @handle_api_url("user_info")
 class UserInfoRequest(APIHandler):

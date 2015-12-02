@@ -31,5 +31,6 @@
    "browser_language"                                : "Lang",
    "stack"                                           : "Stack",
    "location"                                        : "URL",
-   "js_errors"                                       : "Automated JS Error Reports"
+   "js_errors"                                       : "Automated JS Error Reports",
+   "current_listeners_result"                        : "Current Listeners"
 }
