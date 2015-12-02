@@ -131,7 +131,6 @@ var Menu = function() {
 			template.station_select.classList.remove("closed");
 			template.station_select_header.addEventListener("click", close_station_select);
 			template.header.addEventListener("mouseleave", close_station_select);
-			template.addEventListener("mouseleave", close_station_select);
 
 			template.station_select.addEventListener("touchstart", stop_propagation);
 			document.body.addEventListener("touchstart", close_station_select);
