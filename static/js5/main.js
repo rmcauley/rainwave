@@ -19,20 +19,20 @@ var Stations = [];
 			Sizing.simple = false;
 		}
 
-		BOOTSTRAP.station_list = {
-			1: { "id": 1, "name": "Game", "url": "hello" },
-			2: { "id": 2, "name": "OC ReMix", "url": "hello" },
-			3: { "id": 3, "name": "Covers", "url": "hello" },
-			4: { "id": 4, "name": "Chiptune", "url": "hello" },
-			5: { "id": 5, "name": "All", "url": "hello" }
-		};
-		BOOTSTRAP.all_stations_info = {
-			1: { "album": "Game Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "Game Test Song" },
-			2: { "album": "OCR Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "OCR Test Song" },
-			3: { "album": "Covers Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "Covers Test Song" },
-			4: { "album": "Chip Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "Chip Test Song" },
-			5: { "album": "All Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "All Test Song" },
-		};
+		// BOOTSTRAP.station_list = {
+		// 	1: { "id": 1, "name": "Game", "url": "hello" },
+		// 	2: { "id": 2, "name": "OC ReMix", "url": "hello" },
+		// 	3: { "id": 3, "name": "Covers", "url": "hello" },
+		// 	4: { "id": 4, "name": "Chiptune", "url": "hello" },
+		// 	5: { "id": 5, "name": "All", "url": "hello" }
+		// };
+		// BOOTSTRAP.all_stations_info = {
+		// 	1: { "album": "Game Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "Game Test Song" },
+		// 	2: { "album": "OCR Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "OCR Test Song" },
+		// 	3: { "album": "Covers Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "Covers Test Song" },
+		// 	4: { "album": "Chip Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "Chip Test Song" },
+		// 	5: { "album": "All Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "All Test Song" },
+		// };
 
 		var order = [ 5, 1, 4, 2, 3 ];
 		var colors = {
