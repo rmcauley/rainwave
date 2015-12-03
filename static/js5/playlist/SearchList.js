@@ -208,6 +208,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	self.key_nav_highlight = function(id, no_scroll) {
+		if (!data || !(id in data)) return;
 		original_key_nav = false;
 		self.remove_key_nav_highlight();
 		current_key_nav_id = id;
