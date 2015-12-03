@@ -85,8 +85,14 @@ div.song {
 	}
 
 	body.desktop.simple.normal div.sched_current &, body.full div.sched_current & {
-		a.song_link, div.entry_votes {
+		div.entry_votes {
 			display: inline;
+		}
+
+		&.now_playing {
+			a.song_link {
+				display: inline;
+			}
 		}
 	}
 
