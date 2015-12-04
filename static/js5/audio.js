@@ -115,6 +115,7 @@ var RWAudio = function() {
 		ErrorHandler.remove_permanent_error("m3u_hijack_right_click");
 		ErrorHandler.remove_permanent_error("audio_error");
 		ErrorHandler.remove_permanent_error("audio_connect_error");
+		el.classList.remove("working");
 	};
 
 	self.play_stop = function(evt) {
