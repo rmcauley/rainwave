@@ -66,6 +66,8 @@ body.simple div.panel {
 }
 
 div.lists {
+	-webkit-transform: translate3d(0,0,0);
+
 	div.scrollable {
 		position: relative;
 	}

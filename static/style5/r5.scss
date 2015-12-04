@@ -50,10 +50,12 @@ body {
 	font-family: 'Roboto Condensed', 'Helvetica Neue', sans-serif;
 
 	&.loading {
-		opacity: 0;
+		//visibility: hidden;
 
 		* {
-			@include no-transition();
+			-webkit-transition: none !important;
+			-ms-transition: none !important;
+			transition: none !important;
 		}
 	}
 
@@ -84,7 +86,7 @@ div.measure_box {
 	top: -300px;
 	position: absolute;
 	visibility: hidden;
-	width: 100%;
+	width: 300px;
 }
 
 a, a:visited, .link {

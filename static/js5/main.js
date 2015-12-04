@@ -101,8 +101,6 @@ var Stations = [];
 
 		API.initialize(BOOTSTRAP.sid, "/api4/", BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
 
-		document.body.classList.remove("loading");
-
 		if (document.ontouchstart === null) {
 			var fastclick_load = document.createElement("script");
 			fastclick_load.src = "//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js";
@@ -122,6 +120,8 @@ var Stations = [];
 				docCookies.removeItem("r5_list", "/", BOOTSTRAP.cookie_domain);
 			}
 		}
+
+		document.body.classList.remove("loading");
 
 		BOOTSTRAP = null;
 	};

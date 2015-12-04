@@ -16,9 +16,7 @@
 	<div class="list measure_list"><div class="item" bind="list_item">Reference</div></div>
 </div>
 
-<div bind="menu">
-	{{>menu}}
-</div>
+{{>menu}}
 
 <div bind="sizeable_area" class="sizeable">
 	<div bind="timeline"></div>

@@ -3,6 +3,7 @@ $menu_height: 45px;
 $phone_menu_height: 30px;
 
 div.header {
+	-webkit-transform: translate3d(0,0,0);
 	position: relative;
 	background: $blue_dark;
 	height: $menu_height;

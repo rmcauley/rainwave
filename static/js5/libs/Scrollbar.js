@@ -24,8 +24,11 @@ var Scrollbar = function() {
 			}
 		});
 
+		BOOTSTRAP.on_draw.push(function() {
+			t.scroller_size.parentNode.removeChild(t.scroller_size);
+		});
+
 		Sizing.add_resize_callback(function() {
-			scrollbar_width = 100 - t.scroller_size.scrollWidth;
 			for (var i = 0; i < scrollbars.length; i++) {
 				scrollbars[i].offset_height = scrollbars[i].scrollblock.offsetHeight;
 				scrollbars[i].offset_width = 0;
@@ -83,8 +86,19 @@ var Scrollbar = function() {
 			var force_height;
 			if (always_hook) {
 				self.refresh = function() {
-					self.scroll_height = force_height || self.el.scrollHeight;
-					self.offset_height = self.scrollblock.offsetHeight;
+					if (force_height || (force_height === 0)) {
+						self.scroll_height = force_height;
+					}
+					else {
+						self.scroll_height = self.el.scrollHeight;
+					}
+					// short circuit a potential forced layout
+					if (self.scrollblock.classList.contains("list_contents")) {
+						self.offset_height = Sizing.list_height;
+					}
+					else {
+						self.offset_height = self.scrollblock.offsetHeight;
+					}
 					self.scroll_top_max = self.scroll_height - self.offset_height;
 				};
 				self.scrollblock.addEventListener("scroll", function() {
