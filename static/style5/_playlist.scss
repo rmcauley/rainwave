@@ -275,10 +275,6 @@ div.list {
 			@include transition-wtime(300ms, padding);
 		}
 
-		&.skip {
-			opacity: 0.6;
-		}
-
 		div.fave {
 			margin-top: 0;
 			position: relative;
