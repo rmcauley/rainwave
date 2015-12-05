@@ -35,6 +35,7 @@ var AlbumList = function(el) {
 
 	self.load = function() {
 		if (!self.loaded && !loading) {
+			self.show_loading();
 			loading = true;
 			API.async_get("all_albums");
 		}

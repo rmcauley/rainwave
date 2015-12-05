@@ -47,6 +47,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	var current_scroll_index = false;
 	var current_height;
+	var loading_msg;
 
 
 	// LIST MANAGEMENT ***********************************************
@@ -66,6 +67,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 			for (i in data) {
 				self.update_cool(data[i]);
 			}
+		}
+
+		if (loading_msg) {
+			template._root.removeChild(loading_msg);
+			loading_msg = false;
 		}
 
 		if (search_string.length === 0) {
@@ -102,6 +108,15 @@ var SearchList = function(root_el, sort_key, search_key) {
 		for (var i in data) {
 			self.update_item_element(data[i]);
 		}
+	};
+
+	self.show_loading = function() {
+		if (self.loaded) return;
+		loading_msg = document.createElement("div");
+		loading_msg.className = "no_result_message";
+		loading_msg.style.display = "block";
+		loading_msg.textContent = "Loading...";
+		template._root.insertBefore(loading_msg, template.no_result_message);
 	};
 
 	self.update_item = function(json) {
