@@ -248,6 +248,7 @@
    "new_songs"                                       : "New songs!",
    "newish_songs"                                    : "Recently updated.",
    "search..."                                       : "Search...",
+   "no_songs_on_this_station"                        : "There are no songs on %(station) for this album.",
 
    "__comment__"                 : "Requests",
 

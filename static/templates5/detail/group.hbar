@@ -1,8 +1,8 @@
 {{#each albums }}
-	{{#if openable }}
+	<!--{{#if openable }}-->
 		<h2><a href="#!/album/{{ id }}">{{ name }}</a></h2>
-	{{#else}}
+	<!--{{#else}}
 		<h2>{{ name }}</h2>
-	{{/if}}
+	{{/if}}-->
 	{{>detail.songtable}}
 {{/each}}
