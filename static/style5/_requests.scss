@@ -50,10 +50,17 @@ div.panel.requests {
 		@include transition-wtime(300ms, transform);
 		@include transform(translateX(-90px));
 
-		ul.request_icons li {
-			visibility: hidden;
-			opacity: 0;
-			@include transition-wtime(300ms, opacity, visibility);
+		ul.request_icons {
+			margin-top: 9px;
+			padding-bottom: 5px;
+			border-bottom-width: 1px;
+
+			li {
+				border-bottom: none;
+				visibility: hidden;
+				opacity: 0;
+				@include transition-wtime(300ms, opacity, visibility);
+			}
 		}
 
 		div.art_anchor {
