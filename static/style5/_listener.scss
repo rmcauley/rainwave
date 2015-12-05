@@ -1,18 +1,12 @@
-div.detail_view_listener {
-	div.art_container.avatar {
-		background-size: contain;
-	}
-}
-
 div.user_detail_container {
 	clear: both;
 	margin: 10px;
+}
 
-	div.graph_header {
-		margin-bottom: 3px;
-	}
+div.graph_header {
+	margin-bottom: 3px;
+}
 
-	div.chart_outside + div.graph_header {
-		margin-top: 15px;
-	}
+div.chart_outside + div.graph_header {
+	margin-top: 15px;
 }
