@@ -184,9 +184,13 @@ div.row {
 		}
 	}
 
-	div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site, div.length, a.url {
+	div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site, div.length, a.url, div.request_count {
 		margin-left: 10px;
 		float: right;
+	}
+
+	div.request_count {
+		margin-right: 10px;
 	}
 
 	div.length {

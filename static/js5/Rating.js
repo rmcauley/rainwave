@@ -291,6 +291,12 @@ var Rating = function() {
 		);
 	};
 
+	self.fake_effect = function(json, rating) {
+		json.$t.rating.rating_to = rating;
+		rating_step.call(json.$t.rating, 0);
+		json.$t.rating_hover_number.textContent = Formatting.rating(rating);
+	};
+
 	// INDIVIDUAL RATING BAR CODE
 
 	self.register = function(json, relative_x, relative_y) {
