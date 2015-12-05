@@ -284,6 +284,11 @@ div.list {
 			position: relative;
 			top: 1px;
 		}
+
+		div.requestlist_song, div.requestlist_album {
+			color: $darktext;
+			padding-left: 2em;
+		}
 	}
 
 	&.album_list div.item {
