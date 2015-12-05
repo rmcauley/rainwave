@@ -108,7 +108,7 @@ var Router = function() {
 			}
 		});
 
-		var reload_in = [ false, "album", "artist", "group" ];
+		var reload_in = [ "album", "artist", "group" ];
 
 		API.add_callback("_SYNC_COMPLETE", function() {
 			if (request_in_flight) {
@@ -116,7 +116,7 @@ var Router = function() {
 			}
 			else {
 				reset_cache();
-				if (current_open_type && reload_in.indexOf(current_open_type) && current_id && document.body.classList.contains("detail")) {
+				if (current_open_type && (reload_in.indexOf(current_open_type) !== -1) && current_id && document.body.classList.contains("detail")) {
 					open_view(current_open_type, current_id);
 				}
 			}
