@@ -93,8 +93,11 @@ var Scrollbar = function() {
 						self.scroll_height = self.el.scrollHeight;
 					}
 					// short circuit a potential forced layout
-					if (self.scrollblock.classList.contains("list_contents")) {
+					if (self.scrollblock.classList.contains("list_contents") || self.scrollblock.classList.contains("request_scrollblock")) {
 						self.offset_height = Sizing.list_height;
+					}
+					else if (self.scrollblock.classList.contains("timeline")) {
+						self.offset_height = Sizing.sizeable_area_height;
 					}
 					else {
 						self.offset_height = self.scrollblock.offsetHeight;
