@@ -40,7 +40,7 @@ var AlbumArt = function() {
 				fs.className = "art_full_size";
 				fs.style.backgroundImage = "url(" + full_res.getAttribute("src") + ")";
 				tgt.appendChild(fs);
-				setTimeout(function() { fs.classList.add("loaded"); }, 20);
+				requestNextAnimationFrame(function() { fs.classList.add("loaded"); });
 			};
 			full_res.setAttribute("src", tgt._album_art + "_320.jpg");
 			tgt._album_art = null;

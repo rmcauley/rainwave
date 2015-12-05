@@ -250,7 +250,7 @@ var Requests = function() {
 			el.removeChild(helpmsg);
 		}
 
-		setTimeout(self.reflow, 20);
+		requestNextAnimationFrame(self.reflow);
 		if (!document.body.classList.contains("loading") && (previous_length != songs.length)) {
 			self.indicate(songs.length - previous_length, previous_length);
 		}
@@ -321,7 +321,7 @@ var Requests = function() {
 		}
 		self.reflow = self.real_reflow;
 		scroller.set_height(running_height);
-		setTimeout(self.real_reflow, 20);
+		requestNextAnimationFrame(self.real_reflow, 20);
 	};
 
 	self.real_reflow = function() {

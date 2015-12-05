@@ -309,7 +309,7 @@ var Timeline = function() {
 	};
 
 	self.reflow = function() {
-		setTimeout(self._reflow, 20);
+		requestNextAnimationFrame(self._reflow, 20);
 	};
 
 	self.handle_already_voted = function(json) {
