@@ -47,7 +47,7 @@ class ListenerDetailRequest(APIHandler):
 					"JOIN r4_albums USING (album_id) "
 				"WHERE r4_request_history.user_id = %s "
 				"GROUP BY r4_songs.album_id, album_name "
-				"ORDER BY request_count DESC "
+				"ORDER BY request_count_listener DESC "
 				"LIMIT 10",
 				(self.get_argument("id"),)
 			)
