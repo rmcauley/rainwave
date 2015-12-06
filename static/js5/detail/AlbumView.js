@@ -259,7 +259,7 @@ var AlbumView = function(album) {
 			Requests.make_clickable(album.songs[i].$t.title, album.songs[i].id);
 		}
 		if (!Sizing.simple) {
-			SongsTableDetail(album.songs[i]);
+			SongsTableDetail(album.songs[i], (i > album.songs.length - 4));
 		}
 	}
 

@@ -141,6 +141,10 @@ var Router = function() {
 		scroll.set_height(false);
 	};
 
+	self.scroll_a_bit = function() {
+		scroll.scroll_to(scroll.scroll_top + (Sizing.list_item_height * 2));
+	};
+
 	self.get_current_url = function() {
 		var deeplinkurl = decodeURI(location.href);
 		if (deeplinkurl.indexOf("#!/") >= 0) {

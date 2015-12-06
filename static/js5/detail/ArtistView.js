@@ -40,7 +40,7 @@ var ArtistView = function(json) {
 				Requests.make_clickable(albums[i].songs[j].$t.title, albums[i].songs[j].id);
 			}
 			if (!Sizing.simple) {
-				SongsTableDetail(albums[i].songs[j]);
+				SongsTableDetail(albums[i].songs[j], ((i == albums.length - 1) && (j > albums[i].songs.length - 4)));
 			}
 		}
 	}
