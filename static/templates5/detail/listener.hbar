@@ -50,7 +50,7 @@
 	{{#each top_request_albums}}
 		<div class="row">
 			<div class="request_count">{{ request_count_listener }}</div>
-			<div class="title">{{ name }}</div>
+			<div class="title"><a href="#!/album/{{ id }}">{{ name }}</a></div>
 		</div>
 	{{/each}}
 {{/if}}
