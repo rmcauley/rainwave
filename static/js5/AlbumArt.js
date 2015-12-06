@@ -10,6 +10,18 @@ var AlbumArt = function() {
 			Router.change();
 		}
 
+		if (this.parentNode.parentNode.classList.contains("song")) {
+			if (this.parentNode.parentNode._art_timeout) {
+				clearTimeout(this.parentNode.parentNode._art_timeout);
+				this.parentNode.parentNode._art_timeout = null;
+			}
+			this.parentNode.parentNode.style.zIndex = 5;
+
+			if (this.parentNode.parentNode.parentNode.classList.contains("timeline_event")) {
+				this.parentNode.parentNode.parentNode.style.zIndex = 5;
+			}
+		}
+
 		if (!tgt.classList.contains("art_container")) return;
 		if (tgt.classList.contains("art_expanded")) {
 			normalize_art({ "target": this });
@@ -54,6 +66,16 @@ var AlbumArt = function() {
 		e.target.classList.remove("art_expand_left");
 		e.target.classList.remove("art_expand_down");
 		e.target.classList.remove("art_expand_up");
+
+		if (e.target.parentNode.parentNode.classList.contains("song")) {
+			e.target.parentNode.parentNode._art_timeout = setTimeout(function() {
+				e.target.parentNode.parentNode.style.zIndex = e.target.parentNode.parentNode._zIndex;
+
+				if (e.target.parentNode.parentNode.parentNode.classList.contains("timeline_event")) {
+					e.target.parentNode.parentNode.parentNode.style.zIndex = null;
+				}
+			}, 350);
+		}
 	};
 
 	return function(art_url, element, no_expand) {
