@@ -10,15 +10,21 @@ var AlbumArt = function() {
 			Router.change();
 		}
 
-		if (this.parentNode.parentNode.classList.contains("song")) {
-			if (this.parentNode.parentNode._art_timeout) {
-				clearTimeout(this.parentNode.parentNode._art_timeout);
-				this.parentNode.parentNode._art_timeout = null;
+		var song_el = this.parentNode.parentNode;
+		if (song_el && song_el.classList.contains("song")) {
+			if (song_el._art_timeout) {
+				clearTimeout(song_el._art_timeout);
+				song_el._art_timeout = null;
 			}
-			this.parentNode.parentNode.style.zIndex = 5;
+			song_el.style.zIndex = 10;
 
-			if (this.parentNode.parentNode.parentNode.classList.contains("timeline_event")) {
-				this.parentNode.parentNode.parentNode.style.zIndex = 5;
+			var evt_el = song_el.parentNode;
+			if (evt_el && evt_el.classList.contains("timeline_event")) {
+				if (evt_el._art_timeout) {
+					clearTimeout(evt_el._art_timeout);
+					evt_el._art_timeout = null;
+				}
+				song_el.parentNode.style.zIndex = 10;
 			}
 		}
 
@@ -67,14 +73,19 @@ var AlbumArt = function() {
 		e.target.classList.remove("art_expand_down");
 		e.target.classList.remove("art_expand_up");
 
-		if (e.target.parentNode.parentNode.classList.contains("song")) {
-			e.target.parentNode.parentNode._art_timeout = setTimeout(function() {
-				e.target.parentNode.parentNode.style.zIndex = e.target.parentNode.parentNode._zIndex;
-
-				if (e.target.parentNode.parentNode.parentNode.classList.contains("timeline_event")) {
-					e.target.parentNode.parentNode.parentNode.style.zIndex = null;
-				}
+		var song_el = e.target.parentNode.parentNode;
+		if (song_el && song_el.classList.contains("song")) {
+			song_el.style.zIndex = 5;
+			song_el._art_timeout = setTimeout(function() {
+				song_el.style.zIndex = song_el._zIndex;
 			}, 350);
+			var evt_el = song_el.parentNode;
+			if (evt_el.classList.contains("timeline_event")) {
+				song_el.style.zIndex = 5;
+				evt_el._art_timeout = setTimeout(function() {
+					evt_el.style.zIndex = null;
+				}, 350);
+			}
 		}
 	};
 
