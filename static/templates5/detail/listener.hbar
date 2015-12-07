@@ -32,14 +32,27 @@
 	<!--{{/if}}-->
 </div>
 
-<!--<div class="legend_wrapper">
-	<ul class="user_detail_legend">
-		{{#each ^Stations}}
-			<li style="background-color: {{ color }};">
-				{{ name }}
-			</li>
-		{{/each}}
-	</ul>
-</div>-->
+{{#if ^_c.top_albums.length}}
+	<h2>{{ $l("top_rated_albums") }}</h2>
+	{{#each top_albums}}
+		<div class="row">
+			{{>rating}}
+			<!--<div class="rating_site">
+				{{ ^Formatting.rating(_c.rating_site) }}
+			</div>-->
+			<div class="title"><a href="#!/album/{{ id }}">{{ name }}</a></div>
+		</div>
+	{{/each}}
+{{/if}}
+
+{{#if ^_c.top_request_albums}}
+	<h2>{{ $l("top_requested_albums") }}</h2>
+	{{#each top_request_albums}}
+		<div class="row">
+			<div class="request_count">{{ request_count_listener }}</div>
+			<div class="title"><a href="#!/album/{{ id }}">{{ name }}</a></div>
+		</div>
+	{{/each}}
+{{/if}}
 
 <div bind="user_detail_container" class="user_detail_container"></div>

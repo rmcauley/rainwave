@@ -86,7 +86,6 @@ var Timeline = function() {
 			if (sched_history[i].el.parentNode != el) {
 				sched_history[i].el.style[Fx.transform] = "translateY(" + (-((i * 5 + 1) * Sizing.song_size) - 1) + "px)";
 			}
-			sched_history[i].el.style.zIndex = z_index;
 			z_index--;
 			new_events.push(sched_history[i]);
 			if (i === 0) sched_history[i].height += 8;
@@ -100,7 +99,6 @@ var Timeline = function() {
 			sched_current.el.style[Fx.transform] = "translateY(" + ((scroller.scroll_height || Sizing.height) + (unappended_events * 2 * Sizing.song_size)) + "px)";
 			unappended_events++;
 		}
-		sched_current.el.style.zIndex = z_index;
 		z_index--;
 		new_events.push(sched_current);
 
@@ -121,7 +119,6 @@ var Timeline = function() {
 				sched_next[i].el.style[Fx.transform] = "translateY(" + ((scroller.scroll_height || Sizing.height) + (unappended_events * 2 * Sizing.song_size)) + "px)";
 				unappended_events++;
 			}
-			sched_next[i].el.style.zIndex = z_index;
 			z_index--;
 			new_events.push(sched_next[i]);
 			previous_evt = sched_next[i];
@@ -309,7 +306,7 @@ var Timeline = function() {
 	};
 
 	self.reflow = function() {
-		setTimeout(self._reflow, 20);
+		requestNextAnimationFrame(self._reflow, 20);
 	};
 
 	self.handle_already_voted = function(json) {

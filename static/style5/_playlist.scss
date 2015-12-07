@@ -66,6 +66,8 @@ body.simple div.panel {
 }
 
 div.lists {
+	-webkit-transform: translate3d(0,0,0);
+
 	div.scrollable {
 		position: relative;
 	}
@@ -273,14 +275,15 @@ div.list {
 			@include transition-wtime(300ms, padding);
 		}
 
-		&.skip {
-			opacity: 0.6;
-		}
-
 		div.fave {
 			margin-top: 0;
 			position: relative;
 			top: 1px;
+		}
+
+		div.requestlist_song, div.requestlist_album {
+			color: $darktext;
+			padding-left: 2em;
 		}
 	}
 

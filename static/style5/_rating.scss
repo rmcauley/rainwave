@@ -74,6 +74,10 @@ div.rating {
 		@include transition-wtime(200ms, opacity, transform, visibility);
 		@include transform(translateX(0px));
 
+		&.listener_number {
+			color: $text;
+		}
+
 		&.rating_confirm {
 			background: #A8ECFF;
 			color: #A8ECFF;

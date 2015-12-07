@@ -142,6 +142,18 @@ var AlbumView = function(album) {
 		}
 		MultiAlbumKeyNav(template, for_keynav);
 	}
+	else if (album.songs.length === 0) {
+		var sta;
+		for (i = 0; i < Stations.length; i++) {
+			if (Stations[i].id == User.sid) {
+				sta = Stations[i].name;
+			}
+		}
+		var msg = document.createElement("div");
+		msg.className = "no_songs_message";
+		msg.textContent = $l("no_songs_on_this_station", { "station": sta });
+		template._root.appendChild(msg);
+	}
 	else {
 		template._root.appendChild(RWTemplates.detail.songtable({ "songs": album.songs })._root);
 
@@ -247,7 +259,7 @@ var AlbumView = function(album) {
 			Requests.make_clickable(album.songs[i].$t.title, album.songs[i].id);
 		}
 		if (!Sizing.simple) {
-			SongsTableDetail(album.songs[i]);
+			SongsTableDetail(album.songs[i], (i > album.songs.length - 4));
 		}
 	}
 

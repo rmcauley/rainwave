@@ -53,6 +53,9 @@ def _process_line(line, sid):
 					log.debug("request_line", "%s: User ID %s is in line." % (sid, u.id))
 					if song_id:
 						albums_with_requests.append(db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,)))
+						row['song'] = db.c.fetch_row("SELECT song_id AS id, song_title AS title, album_name FROM r4_songs JOIN r4_albums USING (album_id) WHERE song_id = %s", (song_id,))
+					else:
+						row['song'] = None
 					row['song_id'] = song_id
 					add_to_line = True
 			elif not row['line_expiry_tune_in'] or row['line_expiry_tune_in'] == 0:

@@ -1,3 +1,30 @@
+var requestNextAnimationFrame = function() {
+	"use strict";
+	var queue = [];
+
+	var go = function(t) {
+		var this_queue = queue;
+		queue = [];
+		requested = false;
+		for (var i = 0; i < this_queue.length; i++) {
+			this_queue[i](t);
+		}
+	};
+
+	var delay = function() {
+		requestAnimationFrame(go);
+	};
+
+	var requested;
+	return function(f) {
+		queue.push(f);
+		if (!requested) {
+			requestAnimationFrame(delay);
+		}
+		requested = true;
+	};
+}();
+
 var Fx = function() {
 	"use strict";
 	var self = {};
@@ -34,11 +61,11 @@ var Fx = function() {
 					}
 				}
 			);
-			setTimeout(function() {
+			requestNextAnimationFrame(function() {
 				el.style.opacity = 0;
-			}, 1);
+			});
 			// failsafe
-			setTimeout(function() {
+			requestNextAnimationFrame(function() {
 				if (el.parentNode) {
 					el.parentNode.removeChild(el);
 				}

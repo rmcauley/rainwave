@@ -1,84 +1,84 @@
 div.chart_outside {
-    position: relative;
-    border: solid 1px black;
-    height: 20px;
-    line-height: 20px;
+	position: relative;
+	border: solid 1px black;
+	height: 20px;
+	line-height: 20px;
 
-    div.chart_bar {
-        box-sizing: border-box;
-        position: absolute;
-        border-right: solid 1px black;
-        height: 20px;
-        white-space: nowrap;
+	div.chart_bar {
+		box-sizing: border-box;
+		position: absolute;
+		border-right: solid 1px black;
+		height: 20px;
+		white-space: nowrap;
 
-        span.chart_label {
-            position: absolute;
-            max-width: 100%;
-            overflow: hidden;
-            cursor: default;
-            @include transform(translateX(4px));
-        }
+		&:hover span.chart_tooltip {
+			opacity: 1;
+			visibility: visible;
+			cursor: default;
+			@include transform(translateY(100%) translateX(-50%));
 
-        span.chart_tooltip {
-            position: absolute;
-            z-index: 2;
-            border: solid 1px $blue;
-            background: black;
-            visibility: hidden;
-            opacity: 0;
-            left: 50%;
-            @include transform(translateY(50%) translateX(-50%));
-            @include transition-wtime(200ms, opacity, transform, visibility);
+			&.chart_tooltip_right {
+				@include transform(translateY(100%) translateX(-100%));
+			}
 
-            &.chart_tooltip_right {
-                @include transform(translateY(50%) translateX(-100%));
-            }
+			&.chart_tooltip_left {
+				@include transform(translateY(100%) translateX(0%));
+			}
+		}
+	}
 
-            &.chart_tooltip_left {
-                @include transform(translateY(50%) translateX(0%));
-            }
-        }
+	span.chart_label {
+		position: absolute;
+		max-width: 100%;
+		overflow: hidden;
+		cursor: default;
+		@include transform(translateX(4px));
+	}
 
-        &:hover span.chart_tooltip {
-            opacity: 1;
-            visibility: visible;
-            cursor: default;
-            @include transform(translateY(100%) translateX(-50%));
+	span.chart_tooltip {
+		position: absolute;
+		z-index: 2;
+		border: solid 1px $blue;
+		background: black;
+		visibility: hidden;
+		opacity: 0;
+		left: 50%;
+		@include transform(translateY(50%) translateX(-50%));
+		@include transition-wtime(200ms, opacity, transform, visibility);
 
-            &.chart_tooltip_right {
-                @include transform(translateY(100%) translateX(-100%));
-            }
+		&.chart_tooltip_right {
+			@include transform(translateY(50%) translateX(-100%));
+		}
 
-            &.chart_tooltip_left {
-                @include transform(translateY(100%) translateX(0%));
-            }
-        }
-    }
+		&.chart_tooltip_left {
+			@include transform(translateY(50%) translateX(0%));
+		}
+	}
 
-    div.chart_pip {
-        box-sizing: border-box;
-        position: absolute;
-        border-left: solid 1px black;
-        width: 1px;
-        height: 20px;
-    }
+	div.chart_pip {
+		box-sizing: border-box;
+		position: absolute;
+		border-left: solid 1px black;
+		width: 1px;
+		height: 20px;
+	}
 
-    &.chart_ratings {
-        div.chart_bar {
-            span.chart_label {
-                font-size: smaller;
-                color: $text;
-                @include transform(rotate(90deg));
-            }
-        }
-    }
+	&.chart_ratings {
+		div.chart_bar {
+			span.chart_label {
+				font-size: smaller;
+				color: $text;
+				@include transform(rotate(90deg));
+			}
+		}
+	}
 
-    &.chart_overflow {
-        div.chart_bar {
-            span.chart_label {
-                max-width: none;
-                overflow: visible;
-            }
-        }
-    }
+	&.chart_overflow {
+		div.chart_bar {
+			span.chart_label {
+				max-width: none;
+				overflow: visible;
+			}
+		}
+	}
 }

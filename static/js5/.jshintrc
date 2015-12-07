@@ -11,6 +11,7 @@
     "performance": true,
     "pgettext": true,
     "requestAnimationFrame": true,
+    "requestNextAnimationFrame": true,
     "setTimeout": true,
     "SITE_CONFIG": true,
 

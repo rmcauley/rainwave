@@ -2,8 +2,6 @@ var Rating = function() {
 	"use strict";
 	var self = {};
 	self.album_callback = null;
-	var is_touching = false;
-	var touch_timer;
 
 	BOOTSTRAP.on_init.push(function(template) {
 		API.add_callback("rate_result", rating_api_callback);
@@ -14,18 +12,6 @@ var Rating = function() {
 		Prefs.add_callback("r_noglbl", hide_global_rating_callback);
 		Prefs.define("r_clear", [ false, true ], true);
 		Prefs.add_callback("r_clear", rating_clear_toggle);
-
-		var clear_touch = function() {
-			touch_timer = false;
-			is_touching = false;
-		};
-
-		document.body.addEventListener("touchend", function () {
-			if (touch_timer) {
-				clearTimeout(touch_timer);
-			}
-			touch_timer = setTimeout(clear_touch, 30);
-		});
 
 		rating_complete_toggle(Prefs.get("r_incmplt"));
 		hide_global_rating_callback(Prefs.get("r_noglbl"));
@@ -215,9 +201,28 @@ var Rating = function() {
 		return result;
 	};
 
+	var is_touching = false;
+	var touch_timer;
+	var clear_touch = function() {
+		touch_timer = false;
+		is_touching = false;
+	};
+
+	var touchend = function () {
+		if (touch_timer) {
+			clearTimeout(touch_timer);
+		}
+		touch_timer = setTimeout(clear_touch, 30);
+		document.body.removeEventListener("touchend", touchend);
+		document.body.removeEventListener("touchcancel", touchend);
+	};
+
 	var rating_width = 58;
 	var slider_width = 200;
 	var do_touch_rating = function(song, e) {
+		document.body.addEventListener("touchend", touchend);
+		document.body.addEventListener("touchcancel", touchend);
+
 		var zero_x = song.$t.rating.offsetLeft + rating_width - slider_width - 10;
 		var t = RWTemplates.rating_mobile();
 		var remove = function(e) {
@@ -258,14 +263,14 @@ var Rating = function() {
 		confirm.textContent = Formatting.rating(new_rating);
 		confirm.style[Fx.transform] = "translateX(" + Math.round((new_rating / 5.0 * 50) - 15) + "px) scaleX(0.2)";
 		json.$t.rating.insertBefore(confirm, json.$t.rating.firstChild);
-		setTimeout(function() {
+		requestNextAnimationFrame(function() {
 			confirm.classList.add("confirming");
-		}, 20);
+		});
 		API.async_get("rate", { "rating": new_rating, "song_id": json.id },
 			function(newjson) {
-				setTimeout(function() {
+				requestNextAnimationFrame(function() {
 					confirm.classList.add("confirmed");
-				}, 20);
+				});
 				json.rating_user = newjson.rate_result.rating_user;
 				if (json.$t.rating_clear) {
 					json.$t.rating_clear.parentNode.classList.add("capable");
@@ -289,6 +294,12 @@ var Rating = function() {
 				}, 1500);
 			}
 		);
+	};
+
+	self.fake_effect = function(json, rating) {
+		json.$t.rating.rating_to = rating;
+		rating_step.call(json.$t.rating, 0);
+		json.$t.rating_hover_number.textContent = Formatting.rating(rating);
 	};
 
 	// INDIVIDUAL RATING BAR CODE

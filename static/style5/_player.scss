@@ -28,7 +28,7 @@ $player_icon_width: $player_icon_height;
 }
 
 #r4_audio_player {
-	position: relative;
+	position: absolute;
 	display: inline-block;
 	margin-left: $station_select_width + 15;
 	top: 50%;

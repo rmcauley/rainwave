@@ -47,6 +47,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	var current_scroll_index = false;
 	var current_height;
+	var loading_msg;
 
 
 	// LIST MANAGEMENT ***********************************************
@@ -66,6 +67,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 			for (i in data) {
 				self.update_cool(data[i]);
 			}
+		}
+
+		if (loading_msg) {
+			template._root.removeChild(loading_msg);
+			loading_msg = false;
 		}
 
 		if (search_string.length === 0) {
@@ -102,6 +108,15 @@ var SearchList = function(root_el, sort_key, search_key) {
 		for (var i in data) {
 			self.update_item_element(data[i]);
 		}
+	};
+
+	self.show_loading = function() {
+		if (self.loaded) return;
+		loading_msg = document.createElement("div");
+		loading_msg.className = "no_result_message";
+		loading_msg.style.display = "block";
+		loading_msg.textContent = "Loading...";
+		template._root.insertBefore(loading_msg, template.no_result_message);
 	};
 
 	self.update_item = function(json) {
@@ -157,13 +172,13 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	self.recalculate = function() {
-		var full_height = Sizing.list_item_height * visible.length;
+		var full_height = (self.list_item_height || Sizing.list_item_height) * visible.length;
 		if (full_height != current_height) {
 			stretcher.style.height = full_height + "px";
 			scroll.set_height(full_height);
 			current_height = full_height;
 		}
-		num_items_to_display = Math.ceil(scroll.offset_height / Sizing.list_item_height) + 1;
+		num_items_to_display = Math.ceil(scroll.offset_height / (self.list_item_height || Sizing.list_item_height)) + 1;
 		if (num_items_to_display > 35) {
 			scroll_margin = 5;
 		}
@@ -208,6 +223,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	self.key_nav_highlight = function(id, no_scroll) {
+		if (!data || !(id in data)) return;
 		original_key_nav = false;
 		self.remove_key_nav_highlight();
 		current_key_nav_id = id;
@@ -365,7 +381,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		else if (visible.length <= current_scroll_index) {
 			backspace_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			scroll.scroll_to((visible.length - num_items_to_display) * Sizing.list_item_height);
+			scroll.scroll_to((visible.length - num_items_to_display) * (self.list_item_height || Sizing.list_item_height));
 		}
 		else {
 			self.recalculate();
@@ -467,11 +483,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 			}
 			// position at the lower edge
 			else if ((current_scroll_index !== false) && (new_index >= (current_scroll_index + num_items_to_display - scroll_margin - 1))) {
-				scroll.scroll_to(Math.min(scroll.scroll_top_max, (new_index - num_items_to_display + scroll_margin + 2) * Sizing.list_item_height));
+				scroll.scroll_to(Math.min(scroll.scroll_top_max, (new_index - num_items_to_display + scroll_margin + 2) * (self.list_item_height || Sizing.list_item_height)));
 			}
 			// position at the higher edge
 			else {
-				scroll.scroll_to(Math.max(0, (new_index - scroll_margin + 1) * Sizing.list_item_height));
+				scroll.scroll_to(Math.max(0, (new_index - scroll_margin + 1) * (self.list_item_height || Sizing.list_item_height)));
 			}
 		}
 	};
@@ -511,10 +527,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	self.reposition = function() {
 		if (num_items_to_display === undefined) return;
-		var new_index = Math.floor(scroll.scroll_top / Sizing.list_item_height);
+		var new_index = Math.floor(scroll.scroll_top / (self.list_item_height || Sizing.list_item_height));
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
 
-		var new_margin = (scroll.scroll_top - (Sizing.list_item_height * new_index));
+		var new_margin = (scroll.scroll_top - ((self.list_item_height || Sizing.list_item_height) * new_index));
 		new_margin = new_margin ? -new_margin : 0;
 		self.do_search_message();
 		self.el.style[Fx.transform] = "translateY(" + (scroll.scroll_top + new_margin) + "px)";
@@ -576,7 +592,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	Sizing.add_resize_callback(function() {
-		scroll.offset_height = Sizing.sizeable_area_height - 80;
+		scroll.offset_height = Sizing.list_height;
 		template.list.style.height = scroll.offset_height + "px";
 		if (num_items_to_display === undefined) return;
 		current_scroll_index = false;

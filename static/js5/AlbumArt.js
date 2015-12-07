@@ -10,6 +10,24 @@ var AlbumArt = function() {
 			Router.change();
 		}
 
+		var song_el = this.parentNode.parentNode;
+		if (song_el && song_el.classList.contains("song")) {
+			if (song_el._art_timeout) {
+				clearTimeout(song_el._art_timeout);
+				song_el._art_timeout = null;
+			}
+			song_el.style.zIndex = 10;
+
+			var evt_el = song_el.parentNode;
+			if (evt_el && evt_el.classList.contains("timeline_event")) {
+				if (evt_el._art_timeout) {
+					clearTimeout(evt_el._art_timeout);
+					evt_el._art_timeout = null;
+				}
+				song_el.parentNode.style.zIndex = 10;
+			}
+		}
+
 		if (!tgt.classList.contains("art_container")) return;
 		if (tgt.classList.contains("art_expanded")) {
 			normalize_art({ "target": this });
@@ -40,7 +58,7 @@ var AlbumArt = function() {
 				fs.className = "art_full_size";
 				fs.style.backgroundImage = "url(" + full_res.getAttribute("src") + ")";
 				tgt.appendChild(fs);
-				setTimeout(function() { fs.classList.add("loaded"); }, 20);
+				requestNextAnimationFrame(function() { fs.classList.add("loaded"); });
 			};
 			full_res.setAttribute("src", tgt._album_art + "_320.jpg");
 			tgt._album_art = null;
@@ -54,6 +72,21 @@ var AlbumArt = function() {
 		e.target.classList.remove("art_expand_left");
 		e.target.classList.remove("art_expand_down");
 		e.target.classList.remove("art_expand_up");
+
+		var song_el = e.target.parentNode.parentNode;
+		if (song_el && song_el.classList.contains("song")) {
+			song_el.style.zIndex = 5;
+			song_el._art_timeout = setTimeout(function() {
+				song_el.style.zIndex = song_el._zIndex;
+			}, 350);
+			var evt_el = song_el.parentNode;
+			if (evt_el.classList.contains("timeline_event")) {
+				song_el.style.zIndex = 5;
+				evt_el._art_timeout = setTimeout(function() {
+					evt_el.style.zIndex = null;
+				}, 350);
+			}
+		}
 	};
 
 	return function(art_url, element, no_expand) {

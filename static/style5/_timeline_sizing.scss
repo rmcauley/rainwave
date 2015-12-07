@@ -103,7 +103,9 @@ body.full {
 		border-left: solid 1px #555;
 
 		&.lists, &.detail {
-			@include transform(none !important);
+			transform: none !important;
+			-ms-transform: none !important;
+			-webkit-transform: translate3d(0,0,0) !important;
 		}
 
 		div.close {

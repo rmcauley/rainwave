@@ -171,6 +171,9 @@
    "request_history"                                 : "Request History",
    "registered_in_year"                              : "Joined %(year)",
 
+   "top_rated_albums"                                : "Top Rated Albums",
+   "top_requested_albums"                            : "Top Requested Albums",
+
    "__comment__"                 : "Other",
 
    "random_relay"                                    : "Random Relay",
@@ -248,6 +251,7 @@
    "new_songs"                                       : "New songs!",
    "newish_songs"                                    : "Recently updated.",
    "search..."                                       : "Search...",
+   "no_songs_on_this_station"                        : "There are no songs on %(station) for this album.",
 
    "__comment__"                 : "Requests",
 
@@ -280,6 +284,7 @@
    "blocked_by_name__album"                          : "Album",
    "blocked_by_name__in_election"                    : "Song",
    "request_only_on_x"                               : "This song is on %(station).",
+   "no_song_selected"                                : "(no song selected)",
 
    "make_a_request"                                  : "Open the library and click a song title to add it to your request queue.",
 

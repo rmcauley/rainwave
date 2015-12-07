@@ -37,6 +37,7 @@ var SettingsWindow = function() {
 				obj.$t.wrap.classList.remove("yes");
 			}
 			if (key == "pwr") {
+				ct._root.parentNode.classList.add("modal_closing");
 				window.location.reload();
 			}
 		};

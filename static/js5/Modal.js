@@ -57,13 +57,13 @@ var Modal = function() {
 		document.body.insertBefore(blocker, document.body.firstChild);
 		document.body.insertBefore(mt.container, document.body.firstChild);
 		document.body.classList.add("modal_active");
-		setTimeout(function() {
+		requestNextAnimationFrame(function() {
 			mt.container.classList.add("open");
 			blocker.classList.add("active");
 			setTimeout(function() {
 				mt.container.classList.add("full_open");
 			}, 300);
-		}, 20);
+		});
 		return ct;
 	};
 

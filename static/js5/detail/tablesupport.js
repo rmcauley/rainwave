@@ -50,7 +50,7 @@ var SongsTableDetailDraw = function(song, details) {
 	Router.recalculate_scroll();
 };
 
-var SongsTableDetail = function(song) {
+var SongsTableDetail = function(song, scroll_on_open) {
 	if (!song.$t.detail_icon) {
 		return;
 	}
@@ -64,12 +64,18 @@ var SongsTableDetail = function(song) {
 				song.$t.row.appendChild(song.$t.details);
 			}
 			Router.recalculate_scroll();
+			if (scroll_on_open) {
+				Router.scroll_a_bit();
+			}
 		}
 		else {
 			if (triggered) return;
 			triggered = true;
 			API.async_get("song", { "id": song.id }, function(json) {
 				SongsTableDetailDraw(song, json.song);
+				if (scroll_on_open) {
+					Router.scroll_a_bit();
+				}
 			});
 		}
 	};

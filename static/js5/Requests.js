@@ -17,6 +17,7 @@ var Requests = function() {
 
 	BOOTSTRAP.on_draw.push(function(root_template) {
 		scroller = Scrollbar.create(el, false, true);
+		scroller.scrollblock.classList.add("request_scrollblock");
 		Sizing.requests_area = scroller.scrollblock;
 	});
 
@@ -250,7 +251,7 @@ var Requests = function() {
 			el.removeChild(helpmsg);
 		}
 
-		setTimeout(self.reflow, 20);
+		requestNextAnimationFrame(self.reflow);
 		if (!document.body.classList.contains("loading") && (previous_length != songs.length)) {
 			self.indicate(songs.length - previous_length, previous_length);
 		}
@@ -321,7 +322,7 @@ var Requests = function() {
 		}
 		self.reflow = self.real_reflow;
 		scroller.set_height(running_height);
-		setTimeout(self.real_reflow, 20);
+		requestNextAnimationFrame(self.real_reflow, 20);
 	};
 
 	self.real_reflow = function() {

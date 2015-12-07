@@ -1,8 +1,9 @@
 import math
 
 from api.web import APIHandler
+from api.web import PrettyPrintAPIMixin
 from api import fieldtypes
-from api.server import handle_api_url
+from api.server import handle_api_url, handle_api_html_url
 
 from libs import cache
 from libs import db
@@ -27,15 +28,42 @@ class ListenerDetailRequest(APIHandler):
 		user['avatar'] = UserLib.solve_avatar(user['avatar_type'], user['avatar'])
 		user.pop("avatar_type")
 
-		# user['top_albums'] = db.c.fetch_all(
-		# 	"SELECT album_name, album_rating_user, album_rating "
-		# 	"FROM r4_album_ratings "
-		# 		"JOIN r4_album_sid USING (album_id) "
-		# 		"JOIN r4_albums USING (album_id) "
-		# 	"WHERE user_id = %s AND r4_album_ratings.sid = %s AND album_exists = TRUE "
-		# 	"ORDER BY album_rating DESC "
-		# 	"LIMIT 20",
-		# 	(self.get_argument("id"), self.sid))
+		user['top_albums'] = db.c.fetch_all(
+			"SELECT album_id AS id, album_name AS name, album_rating_user AS rating_listener, album_rating AS rating "
+			"FROM r4_album_ratings "
+				"JOIN r4_album_sid USING (album_id, sid) "
+				"JOIN r4_albums USING (album_id) "
+			"WHERE user_id = %s AND r4_album_ratings.sid = %s AND album_exists = TRUE "
+			"ORDER BY album_rating_user DESC NULLS LAST "
+			"LIMIT 10",
+			(self.get_argument("id"), self.sid)
+		)
+
+		if self.sid == 5:
+			user['top_request_albums'] = db.c.fetch_all(
+				"SELECT r4_songs.album_id AS id, album_name AS name, COUNT(request_id) AS request_count_listener "
+				"FROM r4_request_history "
+					"JOIN r4_songs USING (song_id) "
+					"JOIN r4_albums USING (album_id) "
+				"WHERE r4_request_history.user_id = %s "
+				"GROUP BY r4_songs.album_id, album_name "
+				"ORDER BY request_count_listener DESC "
+				"LIMIT 10",
+				(self.get_argument("id"),)
+			)
+		else:
+			user['top_request_albums'] = db.c.fetch_all(
+				"SELECT r4_songs.album_id AS id, album_name AS name, COUNT(request_id) AS request_count_listener "
+				"FROM r4_request_history "
+					"JOIN r4_songs USING (song_id) "
+					"JOIN r4_album_sid ON (r4_album_sid.sid = %s AND r4_songs.album_id = r4_album_sid.album_id) "
+					"JOIN r4_albums ON (r4_album_sid.album_id = r4_albums.album_id) "
+				"WHERE r4_request_history.user_id = %s "
+				"GROUP BY r4_songs.album_id, album_name "
+				"ORDER BY request_count_listener DESC "
+				"LIMIT 10",
+				(self.sid, self.get_argument("id"))
+			)
 
 		user['votes_by_station'] = db.c.fetch_all("SELECT sid, COUNT(vote_id) AS votes "
 												"FROM r4_vote_history "

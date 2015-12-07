@@ -2,6 +2,10 @@ div.timeline.scrollable {
 	overflow-y: hidden;
 }
 
+body.full div.timeline.scrollblock.scrollable {
+	position: absolute;
+}
+
 div.history_header {
 	box-sizing: border-box;
 	position: absolute;
@@ -13,8 +17,9 @@ div.history_header {
 	font-size: smaller;
 	text-transform: uppercase;
 	@include transform(translateY(-30px));
-	-webkit-transition: opacity 300ms $transfunc, background-color 300ms $transfunc, transform $transtime;
 	        transition: opacity 300ms $transfunc, background-color 300ms $transfunc, transform $transtime;
+	-webkit-transition: opacity 300ms $transfunc, background-color 300ms $transfunc, transform $transtime;
+	will-change: opacity, background-color;
 
 	span.history_header_header {
 		margin-right: 5px;
@@ -61,23 +66,9 @@ div.timeline_event {
 		visibility: hidden;
 	}
 
-	body.desktop &:hover {
-		z-index: 20 !important;
-	}
-
 	div.song {
 		padding: 0 10px;
 	}
-
-	body.desktop & div.song:hover {
-		z-index: 10 !important;
-	}
-
-	div.song:nth-child(0) { z-index: 1; }
-	div.song:nth-child(1) { z-index: 2; }
-	div.song:nth-child(2) { z-index: 3; }
-	div.song:nth-child(3) { z-index: 4; }
-	div.song:nth-child(4) { z-index: 5; }
 
 	div.timeline_header {
 		box-sizing: border-box;

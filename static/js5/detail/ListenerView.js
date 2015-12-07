@@ -1,10 +1,22 @@
 var ListenerView = function(json, el) {
 	"use strict";
 
+	for (var i = 0; i < json.top_albums.length; i++) {
+		json.top_albums[i].rating_site = json.top_albums[i].rating;
+		json.top_albums[i].rating = json.top_albums[i].rating_listener;
+		json.top_albums[i].rating_user = true;
+	}
+
 	// no need to be terribly accurate here
 	json.regdate = new Date(json.regdate * 1000).getYear() + 1900;
 	var template = RWTemplates.detail.listener(json, document.createElement("div"));
 	template._header_text = json.name;
+
+	for (i = 0; i < json.top_albums.length; i++) {
+		Rating.fake_effect(json.top_albums[i], json.top_albums[i].rating);
+		json.top_albums[i].$t.rating_hover_number.classList.add("listener_number");
+	}
+
 	el.appendChild(template._root);
 
 	var detail_container = template.user_detail_container;
@@ -30,7 +42,7 @@ var ListenerView = function(json, el) {
 		}
 	};
 
-	var sid, i, j, hdr, chart;
+	var sid, j, hdr, chart;
 
 	// done for compatibility with RatingChart
 	json.rating_histogram = {};

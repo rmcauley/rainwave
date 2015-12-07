@@ -36,6 +36,7 @@ class JSErrorDisplay(api.web.PrettyPrintAPIMixin, JSErrors):
 
 	def get(self):	#pylint: disable=E0202,W0221
 		for row in self._output[self.return_name]:
+			row['time'] = row.get("time", None)
 			if "stack" in row and row['stack']:
 				if isinstance(row['stack'], list):
 					row['stack'] = '\n'.join(row['stack'])

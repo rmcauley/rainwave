@@ -1,4 +1,6 @@
 div.detail {
+	-webkit-transform: translate3d(0,0,0);
+
 	&, &.scrollable {
 		position: absolute;
 	}
@@ -110,6 +112,11 @@ div.detail {
 	}
 }
 
+div.no_songs_message {
+	padding: 2px 10px 2px 10px;
+	clear: both;
+}
+
 div.row {
 	padding: 2px 10px 2px 10px;
 	clear: both;
@@ -177,9 +184,13 @@ div.row {
 		}
 	}
 
-	div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site, div.length, a.url {
+	div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site, div.length, a.url, div.request_count {
 		margin-left: 10px;
 		float: right;
+	}
+
+	div.request_count {
+		margin-right: 10px;
 	}
 
 	div.length {

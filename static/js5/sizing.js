@@ -18,6 +18,7 @@ var Sizing = function() {
 	self.detail_header_size = 0;
 	self.menu_height = 0;
 	self.timeline_message_size = 45;
+	self.list_height = 0;
 
 	self.add_resize_callback = function(cb, priority) {
 		if (!priority) {
@@ -40,6 +41,7 @@ var Sizing = function() {
 		var lists_width = index_t.lists.offsetWidth;
 		var pwr_timeline_width = self.width - request_width - detail_width - lists_width;
 		self.sizeable_area_height = self.height - index_t.sizeable_area.offsetTop;
+		self.list_height = self.sizeable_area_height - 80;
 
 		index_t.sizeable_area.style.height = self.sizeable_area_height + "px";
 		self.detail_area.style.height = (self.sizeable_area_height - self.detail_header_size - 20) + "px";

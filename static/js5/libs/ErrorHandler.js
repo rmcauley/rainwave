@@ -89,7 +89,7 @@
 		err.style.top = y + "px";
 
 		document.body.appendChild(err);
-		requestAnimationFrame(function() { err.style.opacity = "1"; });
+		requestNextAnimationFrame(function() { err.style.opacity = "1"; });
 		setTimeout(function() { Fx.remove_element(err); }, 5000);
 	};
 
