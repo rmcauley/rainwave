@@ -226,23 +226,21 @@ div.list {
 			color: $fave_color;
 		}
 
-		body.desktop &:hover, &.hover {
-			color: $link;
-			border-bottom-color: $hovercolor-border;
-			background-color: $hovercolor;
-			@include transition-wtime(250ms, color);
+		body.desktop & {
+			&:hover, &.hover {
+				color: $link;
+				border-bottom-color: $hovercolor-border;
+				background-color: $hovercolor;
+				@include transition-wtime(250ms, color);
 
-			body.logged_in & img.fave_lined {
-				opacity: 0.5;
+				img.fave_lined {
+					opacity: 0.5;
+				}
 			}
 
-			&.album_fave_highlight, &.cool.album_fave_highlight {
+			&.album_fave_highlight:hover, &.cool.album_fave_highlight:hover {
 				background-color: #444013;
 				border-bottom-color: #5B4E19;
-			}
-
-			img.fave_lined {
-				opacity: 0.5;
 			}
 		}
 
