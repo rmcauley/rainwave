@@ -43,16 +43,11 @@ div.rating {
 			@include no-transition();
 			background-image: $user_rating;
 		}
+	}
 
-		div.song_fave_highlight &.song_rating:hover {
-			color: $fave_color;
-			background-image: $fav_rating;
-		}
-
-		div.album_fave_highlight &.album_rating:hover {
-			color: $fave_color;
-			background-image: $fav_rating;
-		}
+	body.desktop div.song_fave_highlight &.ratable.song_rating:hover {
+		color: $fave_color;
+		background-image: $fav_rating;
 	}
 
 	body.simple.desktop &.ratable:hover {
