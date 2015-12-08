@@ -72,7 +72,7 @@ var Song = function(self, parent_event) {
 			if (self.rating_user) {
 				template.rating.classList.add("rating_user");
 			}
-			else {
+			else if (!template.rating.classList.contains("rating_user")) {
 				template.rating.classList.remove("rating_user");
 				template.rating.rating_set(self.rating);
 			}
@@ -81,7 +81,7 @@ var Song = function(self, parent_event) {
 			if (self.albums[0].rating_user) {
 				self.albums[0].$t.rating.classList.add("rating_user");
 			}
-			else {
+			else if (!self.albums[0].$t.rating.classList.contains("rating_user")) {
 				self.albums[0].$t.rating.classList.remove("rating_user");
 				self.albums[0].$t.rating.rating_set(self.albums[0].rating);
 			}
