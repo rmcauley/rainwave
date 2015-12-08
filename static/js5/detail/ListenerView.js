@@ -15,7 +15,7 @@ var ListenerView = function(json, el) {
 	for (i = 0; i < json.top_albums.length; i++) {
 		Rating.fake_effect(json.top_albums[i], json.top_albums[i].rating);
 		json.top_albums[i].$t.rating_hover_number.classList.add("listener_number");
-		if (json.id == User.id) {
+		if (json.user_id == User.id) {
 			json.top_albums[i].$t.rating.classList.add("rating_user");
 		}
 	}
