@@ -41,25 +41,33 @@ class ListenerDetailRequest(APIHandler):
 
 		if self.sid == 5:
 			user['top_request_albums'] = db.c.fetch_all(
-				"SELECT r4_songs.album_id AS id, album_name AS name, COUNT(request_id) AS request_count_listener "
-				"FROM r4_request_history "
-					"JOIN r4_songs USING (song_id) "
-					"JOIN r4_albums USING (album_id) "
-				"WHERE r4_request_history.user_id = %s "
-				"GROUP BY r4_songs.album_id, album_name "
+				"SELECT COUNT(request_id) AS request_count_listener, id, name FROM ("
+					"SELECT r4_songs.album_id AS id, album_name AS name, request_id "
+					"FROM r4_request_history "
+						"JOIN r4_songs USING (song_id) "
+						"JOIN r4_albums USING (album_id) "
+					"WHERE r4_request_history.user_id = %s "
+					"ORDER BY request_id DESC "
+					"LIMIT 1000"
+				") AS reqs "
+				"GROUP BY id, name "
 				"ORDER BY request_count_listener DESC "
 				"LIMIT 10",
 				(self.get_argument("id"),)
 			)
 		else:
 			user['top_request_albums'] = db.c.fetch_all(
-				"SELECT r4_songs.album_id AS id, album_name AS name, COUNT(request_id) AS request_count_listener "
-				"FROM r4_request_history "
-					"JOIN r4_songs USING (song_id) "
-					"JOIN r4_album_sid ON (r4_album_sid.sid = %s AND r4_songs.album_id = r4_album_sid.album_id) "
-					"JOIN r4_albums ON (r4_album_sid.album_id = r4_albums.album_id) "
-				"WHERE r4_request_history.user_id = %s "
-				"GROUP BY r4_songs.album_id, album_name "
+				"SELECT COUNT(request_id) AS request_count_listener, id, name FROM ("
+					"SELECT r4_songs.album_id AS id, album_name AS name, request_id "
+					"FROM r4_request_history "
+						"JOIN r4_songs USING (song_id) "
+						"JOIN r4_album_sid ON (r4_album_sid.sid = %s AND r4_songs.album_id = r4_album_sid.album_id) "
+						"JOIN r4_albums ON (r4_album_sid.album_id = r4_albums.album_id) "
+					"WHERE r4_request_history.user_id = %s "
+					"ORDER BY request_id DESC "
+					"LIMIT 1000"
+				") AS reqs "
+				"GROUP BY id, name "
 				"ORDER BY request_count_listener DESC "
 				"LIMIT 10",
 				(self.sid, self.get_argument("id"))
