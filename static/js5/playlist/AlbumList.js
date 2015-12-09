@@ -1,4 +1,4 @@
-var AlbumList = function(el) {
+ var AlbumList = function(el) {
 	"use strict";
 	var self = SearchList(el);
 	self.$t.list.classList.add("album_list_core");
@@ -9,8 +9,10 @@ var AlbumList = function(el) {
 	var sort_faves_first = Prefs.get("p_favup");
 	Prefs.define("p_avup", [ true, false ]);
 	var sort_available_first = Prefs.get("p_avup");
+	var completionist = false;
 
 	var prefs_update = function(unused_arg, unused_arg2, no_redraw) {
+		completionist = Prefs.get("r_incmplt");
 		sort_faves_first = Prefs.get("p_favup");
 		sort_available_first = Prefs.get("p_avup");
 
@@ -29,6 +31,7 @@ var AlbumList = function(el) {
 	Prefs.add_callback("p_sort", prefs_update);
 	Prefs.add_callback("p_favup", prefs_update);
 	Prefs.add_callback("p_avup", prefs_update);
+	Prefs.add_callback("r_incmplt", prefs_update);
 
 	API.add_callback("all_albums", self.update);
 	API.add_callback("album_diff", function(json) { if (self.loaded) self.update(json); });
@@ -187,6 +190,10 @@ var AlbumList = function(el) {
 			else return 1;
 		}
 
+		if (completionist) {
+			if (!self.data[a].rating_user && self.data[b].rating_user) return -1;
+			if (self.data[a].rating_user && !self.data[b].rating_user) return 1;
+		}
 		if (self.data[a].rating_user < self.data[b].rating_user) return 1;
 		if (self.data[a].rating_user > self.data[b].rating_user) return -1;
 
