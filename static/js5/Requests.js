@@ -348,8 +348,6 @@ var Requests = function() {
 	var last_mouse_event;
 	var current_dragging_y;
 	var direction_tripped = false;
-	var upper_fold;
-	var lower_fold;
 
 	var start_drag = function(e) {
 		if (!e.which || (e.which !== 1)) {
@@ -375,17 +373,6 @@ var Requests = function() {
 			document.body.classList.add("unselectable");
 			window.addEventListener("mousemove", capture_mouse_move);
 			window.addEventListener("mouseup", stop_drag);
-
-			upper_fold = (Sizing.detail_header_size * 3) + Sizing.menu_height + Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
-			lower_fold = Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
-
-			if ((original_mouse_y > upper_fold) && (original_mouse_y < lower_fold)) {
-				direction_tripped = true;
-			}
-			else {
-				direction_tripped = false;
-			}
-
 			requestAnimationFrame(continue_drag);
 			e.preventDefault();
 			e.stopPropagation();
@@ -415,6 +402,9 @@ var Requests = function() {
 			dragging_song.el.style[Fx.transform] = "translateY(" + new_y + "px)";
 		}
 
+		var upper_fold = (Sizing.detail_header_size * 3) + Sizing.menu_height + Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
+		var lower_fold = Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
+
 		if ((last_mouse_event.clientY < upper_fold) && (scroller.scroll_top > 0)) {
 			if (!direction_tripped) {
 				if (original_mouse_y - last_mouse_event.clientY >= 15) {
@@ -431,11 +421,14 @@ var Requests = function() {
 					direction_tripped = true;
 				}
 			}
-			scroller.scroll_to(scroller.scroll_top + Math.floor((lower_fold - (Sizing.height - last_mouse_event.clientY)) / lower_fold * 20));
+			if (direction_tripped) {
+				scroller.scroll_to(scroller.scroll_top + Math.floor((lower_fold - (Sizing.height - last_mouse_event.clientY)) / lower_fold * 20));
+			}
 		}
 		else {
 			direction_tripped = true;
 		}
+
 		requestAnimationFrame(continue_drag);
 	};
 
