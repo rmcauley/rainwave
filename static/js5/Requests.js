@@ -365,6 +365,7 @@ var Requests = function() {
 			}
 			if (!dragging_song) return;
 			if (dragging_song._deleted) return;
+			direction_tripped = false;
 			last_mouse_event = e;
 			original_mouse_y = e.clientY + scroller.scroll_top;
 			original_request_y = dragging_song._request_y;
@@ -407,7 +408,7 @@ var Requests = function() {
 
 		if ((last_mouse_event.clientY < upper_fold) && (scroller.scroll_top > 0)) {
 			if (!direction_tripped) {
-				if (original_mouse_y - last_mouse_event.clientY >= 15) {
+				if (original_mouse_y - new_y >= 15) {
 					direction_tripped = true;
 				}
 			}
@@ -417,7 +418,7 @@ var Requests = function() {
 		}
 		else if ((last_mouse_event.clientY > (Sizing.height - lower_fold)) && (scroller.scroll_top < scroller.scroll_top_max)) {
 			if (!direction_tripped) {
-				if (last_mouse_event.clientY - original_mouse_y >= 15) {
+				if (new_y - original_mouse_y >= 15) {
 					direction_tripped = true;
 				}
 			}
