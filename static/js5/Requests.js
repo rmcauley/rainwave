@@ -375,7 +375,7 @@ var Requests = function() {
 			upper_fold = Math.min(e.clientY, upper_normal_fold);
 			lower_normal_fold = Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
 			lower_fold = Math.min(Sizing.height - e.clientY, lower_normal_fold);
-			scroller.scrollblock.classList.add("dragging");
+			container.classList.add("dragging");
 			dragging_song.el.classList.add("dragging");
 			document.body.classList.add("unselectable");
 			window.addEventListener("mousemove", capture_mouse_move);
@@ -426,7 +426,7 @@ var Requests = function() {
 	};
 
 	var stop_drag = function(e) {
-		scroller.scrollblock.classList.remove("dragging");
+		container.classList.remove("dragging");
 		dragging_song.el.classList.remove("dragging");
 		document.body.classList.remove("unselectable");
 		window.removeEventListener("mousemove", continue_drag);
