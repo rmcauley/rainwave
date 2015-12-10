@@ -64,6 +64,9 @@ var Rating = function() {
 				if (ratings[i].lastChild) {
 					ratings[i].lastChild.textContent = Formatting.rating(json.rating_user);
 				}
+				if (ratings[i].previousSibling && ratings[i].previousSibling.classList.contains("rating_clear")) {
+					ratings[i].previousSibling.classList.add("capable");
+				}
 			}
 			else if (json.rating) {
 				ratings[i].classList.remove("rating_user");
@@ -72,6 +75,9 @@ var Rating = function() {
 				if (ratings[i].lastChild) {
 					ratings[i].lastChild.textContent = "";
 				}
+				if (ratings[i].previousSibling && ratings[i].previousSibling.classList.contains("rating_clear")) {
+					ratings[i].previousSibling.classList.remove("capable");
+				}
 			}
 			else {
 				ratings[i].classList.remove("rating_user");
@@ -79,6 +85,9 @@ var Rating = function() {
 				ratings[i].rating_start(0);
 				if (ratings[i].lastChild) {
 					ratings[i].lastChild.textContent = "";
+				}
+				if (ratings[i].previousSibling && ratings[i].previousSibling.classList.contains("rating_clear")) {
+					ratings[i].previousSibling.classList.remove("capable");
 				}
 			}
 		}
