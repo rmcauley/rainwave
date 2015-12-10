@@ -344,6 +344,7 @@ var Requests = function() {
 	var dragging_index;
 	var order_changed = false;
 	var original_mouse_y;
+	var original_client_y;
 	var original_request_y;
 	var last_mouse_event;
 	var current_dragging_y;
@@ -368,6 +369,7 @@ var Requests = function() {
 			direction_tripped = false;
 			last_mouse_event = e;
 			original_mouse_y = e.clientY + scroller.scroll_top;
+			original_client_y = e.clientY;
 			original_request_y = dragging_song._request_y;
 			scroller.scrollblock.classList.add("dragging");
 			dragging_song.el.classList.add("dragging");
@@ -408,7 +410,7 @@ var Requests = function() {
 
 		if ((last_mouse_event.clientY < upper_fold) && (scroller.scroll_top > 0)) {
 			if (!direction_tripped) {
-				if (original_mouse_y - new_y >= 15) {
+				if (original_client_y - last_mouse_event.clientY >= 15) {
 					direction_tripped = true;
 				}
 			}
@@ -418,7 +420,7 @@ var Requests = function() {
 		}
 		else if ((last_mouse_event.clientY > (Sizing.height - lower_fold)) && (scroller.scroll_top < scroller.scroll_top_max)) {
 			if (!direction_tripped) {
-				if (new_y - original_mouse_y >= 15) {
+				if (last_mouse_event.clientY - original_client_y >= 15) {
 					direction_tripped = true;
 				}
 			}
