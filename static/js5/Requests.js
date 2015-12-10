@@ -344,11 +344,13 @@ var Requests = function() {
 	var dragging_index;
 	var order_changed = false;
 	var original_mouse_y;
-	var original_client_y;
 	var original_request_y;
 	var last_mouse_event;
 	var current_dragging_y;
-	var direction_tripped = false;
+	var upper_normal_fold;
+	var lower_normal_fold;
+	var upper_fold;
+	var lower_fold;
 
 	var start_drag = function(e) {
 		if (!e.which || (e.which !== 1)) {
@@ -366,11 +368,13 @@ var Requests = function() {
 			}
 			if (!dragging_song) return;
 			if (dragging_song._deleted) return;
-			direction_tripped = false;
 			last_mouse_event = e;
 			original_mouse_y = e.clientY + scroller.scroll_top;
-			original_client_y = e.clientY;
 			original_request_y = dragging_song._request_y;
+			upper_normal_fold = (Sizing.detail_header_size * 3) + Sizing.menu_height + Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
+			upper_fold = Math.min(e.clientY, upper_normal_fold);
+			lower_normal_fold = Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
+			lower_fold = Math.min(Sizing.height - e.clientY, lower_normal_fold);
 			scroller.scrollblock.classList.add("dragging");
 			dragging_song.el.classList.add("dragging");
 			document.body.classList.add("unselectable");
@@ -405,31 +409,17 @@ var Requests = function() {
 			dragging_song.el.style[Fx.transform] = "translateY(" + new_y + "px)";
 		}
 
-		var upper_fold = (Sizing.detail_header_size * 3) + Sizing.menu_height + Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
-		var lower_fold = Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
-
 		if ((last_mouse_event.clientY < upper_fold) && (scroller.scroll_top > 0)) {
-			if (!direction_tripped) {
-				if (original_client_y - last_mouse_event.clientY >= 15) {
-					direction_tripped = true;
-				}
-			}
-			if (direction_tripped) {
-				scroller.scroll_to(scroller.scroll_top - (25 - (Math.floor(last_mouse_event.clientY / upper_fold * 25))));
-			}
+			scroller.scroll_to(scroller.scroll_top - (25 - (Math.floor(last_mouse_event.clientY / upper_fold * 25))));
 		}
 		else if ((last_mouse_event.clientY > (Sizing.height - lower_fold)) && (scroller.scroll_top < scroller.scroll_top_max)) {
-			if (!direction_tripped) {
-				if (last_mouse_event.clientY - original_client_y >= 15) {
-					direction_tripped = true;
-				}
-			}
-			if (direction_tripped) {
-				scroller.scroll_to(scroller.scroll_top + Math.floor((lower_fold - (Sizing.height - last_mouse_event.clientY)) / lower_fold * 20));
-			}
+			scroller.scroll_to(scroller.scroll_top + Math.floor((lower_fold - (Sizing.height - last_mouse_event.clientY)) / lower_fold * 20));
 		}
-		else {
-			direction_tripped = true;
+		else if ((upper_fold != upper_normal_fold) && (last_mouse_event.clientY > (upper_normal_fold + 30))) {
+			upper_fold = upper_normal_fold;
+		}
+		else if ((lower_fold != lower_normal_fold) && (last_mouse_event.clientY < (Sizing.height - lower_normal_fold - 30))) {
+			lower_fold = lower_normal_fold;
 		}
 
 		requestAnimationFrame(continue_drag);
