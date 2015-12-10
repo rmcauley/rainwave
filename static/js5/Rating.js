@@ -59,7 +59,6 @@ var Rating = function() {
 		for (i = 0; i < ratings.length; i++) {
 			if (json.rating_user) {
 				ratings[i].classList.add("rating_user");
-				ratings[i].classList.add("rating_clearable");
 				ratings[i].classList.remove("rating_global");
 				ratings[i].rating_start(json.rating_user);
 				if (ratings[i].lastChild) {
@@ -68,7 +67,6 @@ var Rating = function() {
 			}
 			else if (json.rating) {
 				ratings[i].classList.remove("rating_user");
-				ratings[i].classList.remove("rating_clearable");
 				ratings[i].classList.add("rating_global");
 				ratings[i].rating_start(json.rating);
 				if (ratings[i].lastChild) {
@@ -77,7 +75,6 @@ var Rating = function() {
 			}
 			else {
 				ratings[i].classList.remove("rating_user");
-				ratings[i].classList.remove("rating_clearable");
 				ratings[i].classList.add("rating_global");
 				ratings[i].rating_start(0);
 				if (ratings[i].lastChild) {
@@ -275,6 +272,9 @@ var Rating = function() {
 					confirm.classList.add("confirmed");
 				});
 				json.rating_user = newjson.rate_result.rating_user;
+				if (json.$t.rating_clear) {
+					json.$t.rating_clear.parentNode.classList.add("capable");
+				}
 				setTimeout(function() {
 					if (!confirm.previousSibling) {
 						confirm.classList.add("fading");
@@ -326,8 +326,10 @@ var Rating = function() {
 
 			if (json.rating_user) {
 				json.$t.rating.classList.add("rating_user");
-				json.$t.rating.classList.add("rating_clearable");
 				json.$t.rating.classList.remove("rating_global");
+				if (json.$t.rating_clear) {
+					json.$t.rating_clear.parentNode.classList.add("capable");
+				}
 			}
 			else {
 				json.$t.rating.classList.add("rating_global");
@@ -357,7 +359,7 @@ var Rating = function() {
 				API.async_get("clear_rating", { "song_id": json.id },
 					function(newjson) {
 						json.rating_user = null;
-						json.$t.rating.classList.remove("rating_clearable");
+						json.$t.rating_clear.parentNode.classList.remove("capable");
 					}
 				);
 			});

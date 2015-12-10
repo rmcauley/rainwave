@@ -146,14 +146,14 @@ body.hide_global_ratings {
 
 div.rating_clear {
 	display: none;
-	visibility: hidden;
 
 	body.logged_in.rating_clear_ok & {
 		display: block;
-	}
+		visibility: hidden;
 
-	body.logged_in.rating_clear_ok div.rating_clearable + & {
-		visibility: visible;
+		&.capable {
+			visibility: visible;
+		}
 
 		img {
 			position: relative;
