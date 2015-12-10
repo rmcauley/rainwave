@@ -72,7 +72,7 @@ div.panel.requests {
 			opacity: 0;
 		}
 
-		&:hover {
+		&:hover, &.dragging {
 			@include transform(translateX(-100%));
 
 			ul.request_icons li {
