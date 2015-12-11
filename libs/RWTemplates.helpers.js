@@ -253,11 +253,11 @@ RWTemplateHelpers.elem_update = function(elem, val) {
                 elem.checked = false;
             }
         }
-        else {
+        else if (document.activeElement != elem) {
             elem.value = elem_val;
         }
     }
-    else if (tagname == "textarea") {
+    else if ((tagname == "textarea") && (document.activeElement != elem)) {
         if (elem.value != elem_val) {
             elem.value = elem_val;
         }
@@ -300,7 +300,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
     var tabs = [];
     var hide_areas = function() {
         for (var i = 0; i < areas.length; i++) {
-            areas[i].style.display = "none";
+            areas[i].classList.add("tab_invisible");
         }
         for (i = 0; i < tabs.length; i++) {
             tabs[i].parentNode.classList.remove("active");
@@ -309,6 +309,8 @@ RWTemplateHelpers.tabify = function(obj, def) {
     for (var i in obj.$t) {
         if ((i.indexOf("_area") !== -1) && (i.indexOf("_area") == (i.length - 5))) {
             areas.push(obj.$t[i][0]);
+            obj.$t[i][0].classList.add("tab_area");
+            obj.$t[i][0].classList.add("tab_invisible");
         }
         else if ((i.indexOf("_tab") !== -1) && (i.indexOf("_tab") == (i.length - 4))) {
             tabs.push(obj.$t[i][0]);
@@ -317,7 +319,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
                 hide_areas();
                 this.parentNode.classList.add("active");
                 if (obj.$t[this._tab_name + "_area"] && obj.$t[this._tab_name + "_area"][0]) {
-                    obj.$t[this._tab_name + "_area"][0].style.display = "block";
+                    obj.$t[this._tab_name + "_area"][0].classList.remove("tab_invisible");
                 }
                 else {
                     throw("Can't find corresponding area for " + this._tab_name + ".  Make sure you have a " + this._tab_name + "_area bound.");
@@ -328,7 +330,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
     }
     hide_areas();
     if (def) {
-        obj.$t[def + "_area"][0].style.display = "block";
+        obj.$t[def + "_area"][0].classList.remove("tab_invisible");
         obj.$t[def + "_tab"][0].parentNode.classList.add("active");
     }
 };
@@ -466,7 +468,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
         btn.classList.remove(btn_success);
         btn.classList.remove(btn_error);
         btn.classList.remove(btn_normal);
-        if (btn._normal_class) {
+        if (new_class == btn._normal_class) {
             btn.classList.remove(btn._normal_class);
         }
         btn.classList.add(new_class);
@@ -742,7 +744,7 @@ RWTemplateHelpers.tabify = function(obj, def) {
             if (!this.hasOwnProperty(i)) continue;
             if (i.charAt(0) == "$") continue;
             if (i == "_c") continue;
-            if (this[i]._no_save_propagation) continue;
+            if (this[i] && this[i]._no_save_propagation) continue;
 
             if (Object.prototype.toString.call(this[i]) == "[object Array]") {
                 for (j = 0; j < this[i].length; j++) {
@@ -888,15 +890,13 @@ RWTemplateHelpers.tabify = function(obj, def) {
         return elements;
     };
 
-    var success_timeouts = {};
-
     RWTemplateObject.prototype.success_display = function(success_message, permanent) {
         var elements = this.normal();
         var this_obj, normalize;
         if (!permanent) {
             this_obj = this;
             normalize = function() {
-                success_timeouts[this] = null;
+                this_obj._success_timeout = null;
                 this_obj.normal();
             };
         }
@@ -904,14 +904,14 @@ RWTemplateHelpers.tabify = function(obj, def) {
             elements[i].disabled = permanent;
             elements[i].classList[permanent ? "add" : "remove"]("disabled");
             if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
-                RWTemplateHelpers.change_button_text(elements[i], success_message || this._c._success_message || (typeof(gettext) == "function" ? gettext("Saved") : "Saved"));
+                RWTemplateHelpers.change_button_text(elements[i], success_message || this._success_message || this._c._success_message || (typeof(gettext) == "function" ? gettext("Saved") : "Saved"));
                 RWTemplateHelpers.change_button_class(elements[i], btn_success);
-                if (success_timeouts[this]) {
-                    clearTimeout(success_timeouts[this]);
-                    success_timeouts[this] = null;
-                }
                 if (!permanent) {
-                    success_timeouts[this] = setTimeout(normalize, 5000);
+                    if (this._success_timeout) {
+                        clearTimeout(this._success_timeout);
+                        this._success_timeout = null;
+                    }
+                    this._success_timeout = setTimeout(normalize, 2000);
                 }
             }
         }
