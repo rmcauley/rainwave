@@ -140,6 +140,8 @@
 
    "__comment__"                 : "Tip Jar",
 
+   "Patreon"                                         : "Patreon",
+   "PayPal"                                          : "PayPal",
    "tip_jar"                                         : "Donations",
    "tip_jar_opener"                                  : "Rainwave will keep running regardless of what's in the tip jar.  If you'd like to toss some gil or meseta our way:",
    "tip_jar_instruction_1"                           : "Send a PayPal gift to rmcauley@rainwave.cc in US or Canadian dollars, or use the Paypal button below.",

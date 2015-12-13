@@ -23,8 +23,11 @@
 		<!--<a href="http://rainwave.cc/api4/" target="_blank">
 			{{ $l("api_docs") }}
 		</a>-->
+		<a href="https://www.patreon.com/rainwave" target="_blank">
+			{{ $l("Patreon") }}
+		</a>
 		<a href="http://rainwave.cc/pages/tip_jar" target="_blank">
-			{{ $l("tip_jar") }}
+			{{ $l("PayPal") }}
 		</a>
 	</div>
 	{{#if ^!MOBILE}}
