@@ -86,6 +86,9 @@ var RWEvent = function(self) {
 			self.songs.sort(function(a, b) { return a.entry_position < b.entry_position ? -1 : 1; });
 		}
 		self.songs[0].el.classList.add("now_playing");
+		for (var i = 1; i < self.songs.length; i++) {
+			self.songs[i].el.classList.add("song_lost");
+		}
 		self.disable_voting();
 		self.set_header_text($l("now_playing"));
 		self.recalculate_height();
