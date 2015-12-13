@@ -3,13 +3,14 @@
 import tornado.web
 import tornado.escape
 import os
-from time import time as timestamp
+from api.exceptions import APIException
 
 import api.web
 import api.locale
 from api.server import handle_url, handle_api_url
 from api_requests import info
 
+from libs import cache
 from libs import config
 from libs import buildtools
 from rainwave.user import User
@@ -30,15 +31,19 @@ class MainIndex(api.web.HTMLRequest):
 	login_required = config.has("index_requires_login") and config.get("index_requires_login")
 	sid_required = False
 	beta = False
-	page_template = "r4_index.html"
-	js_dir = "js4"
+	page_template = "r5_index.html"
+	js_dir = "js5"
 
 	def set_default_headers(self):
 		self.set_header("X-Frame-Options", "SAMEORIGIN")
 
 	def prepare(self):
 		super(MainIndex, self).prepare()
-		self.json_payload = {}
+
+		if not cache.get_station(self.sid, "sched_current"):
+			raise APIException("server_just_started", "Rainwave is Rebooting, Please Try Again in a Few Minutes", http_code=500)
+
+		# self.json_payload = {}
 		self.jsfiles = None
 
 		if not self.user:
@@ -54,26 +59,26 @@ class MainIndex(api.web.HTMLRequest):
 					if f.endswith(".js"):
 						self.jsfiles.append(os.path.join(root[root.find("static/%s" % self.js_dir):], f))
 
-	def append(self, key, value):
-		self.json_payload[key] = value
+	# def append(self, key, value):
+	# 	self.json_payload[key] = value
 
 	def get(self):
 		self.mobile = self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1
-		if not self.beta:
-			info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
-		self.append("api_info", { "time": int(timestamp()) })
+		# if not self.beta:
+		# 	info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
+		# self.append("api_info", { "time": int(timestamp()) })
 		self.render(
 			self.page_template,
 			request=self,
 			site_description=self.locale.translate("station_description_id_%s" % self.sid),
 			revision_number=config.build_number,
 			jsfiles=self.jsfiles,
-			api_url=config.get("api_external_url_prefix"),
-			cookie_domain=config.get("cookie_domain"),
-			locales=api.locale.locale_names_json,
-			relays=config.public_relays_json[self.sid],
-			stream_filename=config.get_station(self.sid, "stream_filename"),
-			station_list=config.station_list_json,
+			# api_url=config.get("api_external_url_prefix"),
+			# cookie_domain=config.get("cookie_domain"),
+			# locales=api.locale.locale_names_json,
+			# relays=config.public_relays_json[self.sid],
+			# stream_filename=config.get_station(self.sid, "stream_filename"),
+			# station_list=config.station_list_json,
 			apple_home_screen_icon=config.get_station(self.sid, "apple_home_screen_icon"),
 			mobile=self.mobile,
 			station_name=config.station_id_friendly[self.sid]

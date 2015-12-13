@@ -18,10 +18,10 @@ def create_baked_directory():
 
 def bake_css():
 	create_baked_directory()
-	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style4.css")
+	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style5.css")
 	incl_path = Path(os.path.join(os.path.dirname(__file__), "..", "static", "style5")).resolve()
 	if not os.path.exists(wfn):
-		_bake_css_file("r4.scss", wfn, incl_path)
+		_bake_css_file("r5.scss", wfn, incl_path)
 
 def bake_beta_css():
 	create_baked_directory()
@@ -62,7 +62,7 @@ def get_js_file_list_url():
 		return result
 	return get_js_file_list()
 
-def bake_js(source_dir="js4", dest_file="script4.js"):
+def bake_js(source_dir="js5", dest_file="script5.js"):
 	create_baked_directory()
 	fn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), dest_file)
 	if not os.path.exists(fn):
