@@ -152,7 +152,7 @@ var RWAudio = function() {
 			// audio_el.addEventListener("loadstart", self.on_audio_loadstart);
 
 			if (!Prefs.get("vol") || (Prefs.get("vol") > 1) || (Prefs.get("vol") < 0)) {
-				Prefs.change("audio_volume", 1.0);
+				Prefs.change("vol", 1.0);
 			}
 			audio_el.volume = Prefs.get("vol");
 			draw_volume(Prefs.get("vol"));
@@ -296,7 +296,7 @@ var RWAudio = function() {
 		else {
 			muted = false;
 		}
-		if (Prefs) Prefs.change("audio_volume", v);
+		if (Prefs) Prefs.change("vol", v);
 	};
 
 	var draw_volume = function(v) {
