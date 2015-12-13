@@ -112,7 +112,7 @@ var RWEvent = function(self) {
 
 	self.enable_voting = function() {
 		var already_voted;
-		var self_request;
+		var self_request = false;
 		for (var i = 0; i < self.songs.length; i++) {
 			self.songs[i].enable_voting();
 			if (self.songs[i].el.classList.contains("voting_registered") || self.songs[i].el.classList.contains("voting_clicked")) {
@@ -122,7 +122,7 @@ var RWEvent = function(self) {
 				self_request = i;
 			}
 		}
-		if (self_request && !already_voted) {
+		if ((self_request !== false) && !already_voted) {
 			self.songs[self_request].register_vote();
 			self.songs[self_request].autovoted = true;
 			self.songs[self_request].el.classList.add("autovoted");
