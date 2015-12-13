@@ -112,12 +112,15 @@ ul.menu {
 			padding-right: 20px;
 			max-width: 150px;
 
-			@media $mobile-media {
+			@media $phone-media {
 				max-width: 70px;
-				padding-right: 0;
 
-				li.signup_link {
-					display: none;
+				a {
+					padding: 5px 5px;
+
+					span {
+						display: none;
+					}
 				}
 			}
 
@@ -170,14 +173,6 @@ ul.menu {
 	@media $phone-media {
 		li.signup_link {
 			display: none;
-		}
-
-		img.avatar {
-			@include transform(none);
-
-			div.no_avatar & {
-				display: none;
-			}
 		}
 	}
 }

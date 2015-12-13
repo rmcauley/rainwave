@@ -127,8 +127,7 @@ $player_icon_width: $player_icon_height;
 	}
 
 	@media $phone-media {
-		float: right;
-		margin-left: 0;
+		margin-left: 125px;
 		padding: 0 3px 0 0;
 		top: 0px;
 		height: $phone_menu_height;

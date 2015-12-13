@@ -36,10 +36,6 @@ var Menu = function() {
 			}
 		}
 
-		if (User.avatar == "/static/images4/user.svg") {
-			template.header.classList.add("no_avatar");
-		}
-
 		if (template.settings_link) {
 			template.settings_link.addEventListener("click", SettingsWindow);
 		}
