@@ -139,13 +139,13 @@ body.simple div.power_only {
 
 @media $pc-media {
 	.phoneonly {
-		display: none;
+		display: none !important;
 	}
 }
 
 @media $phone-media {
 	.pconly {
-		display: none;
+		display: none !important;
 	}
 }
 

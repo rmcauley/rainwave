@@ -1,6 +1,6 @@
 <div class="header unselectable" bind="header">
 	<div class="menu_wrapper" bind="menu_wrapper">
-		<ul class="menu hamburger_container pconly" bind="hamburger_container">
+		<ul class="menu hamburger_container" bind="hamburger_container">
 			<li class="hamburger_icon_li">
 				{{>menu_hamburger}}
 				<a class="link" bind="burger_button">

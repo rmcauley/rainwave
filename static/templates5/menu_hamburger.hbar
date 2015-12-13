@@ -1,7 +1,7 @@
 <div class="hamburgered menu_dropdown">
 	<div>
 		{{#if ^!MOBILE}}
-			<a class="link" bind="calendar_menu_item">
+			<a class="link pconly" bind="calendar_menu_item">
 				<div bind="calendar_dropdown" id="calendar_dropdown"></div>
 				<span>{{ $l("events_calendar_link") }}</span>
 			</a>
@@ -17,21 +17,21 @@
 		<a href="https://twitter.com/Rainwavecc" target="_blank">
 			{{ $l("twitter") }}
 		</a>
-		<a href="https://github.com/rmcauley/rainwave/" target="_blank">
+		<a href="https://github.com/rmcauley/rainwave/" target="_blank" class="pconly">
 			{{ $l("github_repo") }}
 		</a>
-		<!--<a href="http://rainwave.cc/api4/" target="_blank">
+		<!--<a href="http://rainwave.cc/api4/" target="_blank" class="pconly">
 			{{ $l("api_docs") }}
 		</a>-->
 		<a href="https://www.patreon.com/rainwave" target="_blank">
 			{{ $l("Patreon") }}
 		</a>
-		<a href="http://rainwave.cc/pages/tip_jar" target="_blank">
+		<a href="http://rainwave.cc/pages/tip_jar" target="_blank" class="pconly">
 			{{ $l("PayPal") }}
 		</a>
 	</div>
 	{{#if ^!MOBILE}}
-		<div class="menu_group">
+		<div class="menu_group pconly">
 			<a class="link" bind="settings_link">
 				{{ $l("Settings") }}
 			</a>

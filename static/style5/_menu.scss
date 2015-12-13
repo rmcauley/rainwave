@@ -76,6 +76,8 @@ ul.menu {
 			@include transform(none);
 
 			li a {
+				box-sizing: border-box;
+				height: $phone_menu_height;
 				padding: 4px 6px;
 			}
 
@@ -92,6 +94,12 @@ ul.menu {
 	&.hamburger_container {
 		margin-right: 10px;
 		margin-left: 5px;
+
+		@media $phone-media {
+			margin-right: 0;
+			margin-left: 0;
+			margin-top: 1px;
+		}
 	}
 
 	li {
@@ -190,9 +198,9 @@ ul.menu {
 	@include transform(translateY(-$menu_height + 10));
 	@include transition-wtime(300ms, opacity, transform, visibility);
 
-	a {
+	a, ul.menu li & a {
 		white-space: nowrap;
-		display: block !important;
+		display: block;
 		background: $blue;
 		z-index: 1;
 		position: relative;
