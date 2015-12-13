@@ -24,9 +24,9 @@ def unlock_listeners(sid):
 	db.c.update("UPDATE r4_listeners SET listener_lock = FALSE WHERE listener_lock_counter <= 0")
 
 def solve_avatar(avatar_type, avatar):
-	if avatar_type == 1:
+	if avatar_type == "avatar.driver.upload":
 		return _AVATAR_PATH % avatar
-	elif avatar_type > 0:
+	elif avatar_type == "avatar.driver.remote":
 		return avatar
 	else:
 		return _DEFAULT_AVATAR
