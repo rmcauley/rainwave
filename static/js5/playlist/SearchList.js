@@ -217,7 +217,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	self.remove_key_nav_highlight = function() {
 		if (current_key_nav_id) {
-			data[current_key_nav_id]._el.classList.remove("hover");
+			if ((current_key_nav_id in data) && data[current_key_nav_id] && data[current_key_nav_id]._el) {
+				data[current_key_nav_id]._el.classList.remove("hover");
+			}
 			current_key_nav_id = null;
 		}
 	};
