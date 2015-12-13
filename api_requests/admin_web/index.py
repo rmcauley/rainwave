@@ -190,13 +190,19 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 		self.write("<h2>%s (%s)</h2>" % (self._output['album']['name'], config.station_id_friendly[self.sid]))
 		self.write("<table>")
 		for row in self._output['album']['songs']:
-			self.write("<tr><td>%s</th><td>%s</td><td>" % (row['id'], row['title']))
+			self.write("<tr><td>%s</th><td>%s</td>" % (row['id'], row['title']))
+			if row['rating']:
+				self.write("<td>(%s)</td>" % row['rating'])
 			if row['rating_user']:
-				self.write(str(row['rating_user']))
-			self.write("</td><td>(%s)</td><td>" % row['rating'])
+				self.write("<td>%s</td>" % str(row['rating_user']))
 			if row['fave']:
-				self.write("Fave")
-			self.write("</td>")
+				self.write("<td>Your Fave</td>")
+			elif 'fave' in row:
+				self.write("<td></td>")
+			if row['length']:
+				self.write("<td>{}:{:0>2d}</td>".format(int(row['length'] / 60), row['length'] % 60))
+			if row['origin_sid']:
+				self.write("<td>%s</td>" % config.station_id_friendly[row['origin_sid']])
 			self.render_row_special(row)
 			self.write("</tr>")
 		self.write(self.render_string("basic_footer.html"))
