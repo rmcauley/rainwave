@@ -45,6 +45,9 @@
     {{#with p_favup}}
         {{>settings_yesno}}
     {{/with}}
+    {{#with p_fav1}}
+        {{>settings_yesno}}
+    {{/with}}
     {{#with p_avup}}
         {{>settings_yesno}}
     {{/with}}

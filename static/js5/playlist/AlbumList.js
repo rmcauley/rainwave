@@ -4,18 +4,23 @@
 	self.$t.list.classList.add("album_list_core");
 
 	var loading = false;
-	Prefs.define("p_null1", [ false, true ], true);
+
 	Prefs.define("p_sort", [ "az", "rt" ], true);
+	Prefs.define("p_null1", [ false, true ], true);
 	Prefs.define("p_favup", null, true);
-	var sort_faves_first = Prefs.get("p_favup");
 	Prefs.define("p_avup", [ true, false ], true);
-	var sort_available_first = Prefs.get("p_avup");
+	Prefs.define("p_fav1", [ false, true ], true);
+
 	var sort_unrated_first = Prefs.get("p_null1");
+	var sort_faves_first = Prefs.get("p_favup");
+	var sort_available_first = Prefs.get("p_avup");
+	var prioritize_faves = Prefs.get("p_fav1");
 
 	var prefs_update = function(unused_arg, unused_arg2, no_redraw) {
 		sort_unrated_first = Prefs.get("p_null1");
 		sort_faves_first = Prefs.get("p_favup");
 		sort_available_first = Prefs.get("p_avup");
+		prioritize_faves = Prefs.get("p_fav1");
 
 		var nv = Prefs.get("p_sort");
 		if ([ "az", "rt" ].indexOf(nv) == -1) {
@@ -166,13 +171,18 @@
 	};
 
 	self.sort_by_alpha = function(a, b) {
-		if (sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+		if (prioritize_faves && sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
 			if (self.data[a].fave) return -1;
 			else return 1;
 		}
 
 		if (sort_available_first && (self.data[a].cool !== self.data[b].cool)) {
 			if (self.data[a].cool === false) return -1;
+			else return 1;
+		}
+
+		if (!prioritize_faves && sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+			if (self.data[a].fave) return -1;
 			else return 1;
 		}
 
@@ -187,13 +197,18 @@
 	};
 
 	self.sort_by_rating_user = function(a, b) {
-		if (sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+		if (prioritize_faves && sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
 			if (self.data[a].fave) return -1;
 			else return 1;
 		}
 
 		if (sort_available_first && (self.data[a].cool !== self.data[b].cool)) {
 			if (self.data[a].cool === false) return -1;
+			else return 1;
+		}
+
+		if (!prioritize_faves && sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+			if (self.data[a].fave) return -1;
 			else return 1;
 		}
 
