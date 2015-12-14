@@ -38,6 +38,7 @@
 	Prefs.add_callback("p_sort", prefs_update);
 	Prefs.add_callback("p_favup", prefs_update);
 	Prefs.add_callback("p_avup", prefs_update);
+	Prefs.add_callback("p_fav1", prefs_update);
 	Prefs.add_callback("r_incmplt", prefs_update);
 
 	API.add_callback("all_albums", self.update);
