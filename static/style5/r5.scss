@@ -17,50 +17,50 @@ $donor:                       #FF0;
 $fave:                        #f7ff9f;
 $link:                        #6cf6ff;
 $link_h:                      #a7e1ff;
-$hover_bkg:                   #143347;			// used on table rows
+$hover_bkg:                   #143347;			// used on table rows and song voting
 $hover_b:                     #1B4560;
 
 // Darker versions of the primary colors
-$text_d:                      #DDD;
-$text_dd:                     #777;
-$text_ddd:                    #444;
-$blue_d:                      #128adb;
+$text_d:                      darken($text, 14%);
+$text_dd:                     darken($text, 54%);
+$text_ddd:                    darken($text, 73%);
+$blue_d:                      darken($blue, 5%);
 
 // Error colors
 $error_b:                     #F00;
-$error_bkg:                   #660000;
-$error_bkg_bright:            #DD0000;			// used in gradients
+$error_bkg:                   darken($error_b, 30%);
+$error_bkg_bright:            darken($error_b, 7%);			// used in gradients
 
 // Timeline colors
 $vote_registered:             #192D67;
 $song_yours:                  #18a485;
-$autovoted:                   #093F32;
-$vote_requester:              #35adff;
+$autovoted:                   darken($song_yours, 23%);
+$vote_requester:              lighten(saturate($link, 15%), 10%);
 
 // List colors (albums/artists/etc)
-$open_item_bkg:               #1f4f70;			// open album
-$open_item_fave_bkg:          #6D5D1E;			// open album that's a fave
-$open_item_b:                 $orange;			// border at bottom of album item
-$cooldown:                    #2c2e5c;			// album on cooldown
-$cooldown_h:                  #1f4f70;			// album on cooldown when mouse/keyboard is on it
-$cooldown_hb:                 #256189;
-$fave_h:                      #444013;			// hover color when album is a fave
-$fave_hb:                     #5B4E19;
-$album_incomplete:            #381e3d;			// when album is incomplete
+$open_item_bkg:               #1f4f70;				// open album/artist/etc
+$open_item_b:                 $orange;
+$open_item_fave_bkg:          darken($fave, 65%);
+$cooldown:                    #2c2e5c;				// album on cooldown, also used for requests on cooldown
+$cooldown_h:                  mix($hover_bkg, $cooldown, 50%);
+$cooldown_hb:                 lighten($cooldown_h, 10%);
+$fave_h:                      darken($fave, 65%);
+$fave_hb:                     desaturate(darken($fave, 45%), 70%);
+$album_incomplete:            #381e3d;
 $album_incomplete_cool:       #2a162e;
 $new_indicator:               $orange;			// when album is new
 
 // Panels
-$panel_bkg:                   #272727;
-$panel_bkg_d:                 #202020;			// playlist panel bkg when detail is open at same time
-$panel_b:                     #555;
+$panel_bkg:                   lighten($bkg, 15%);
+$panel_bkg_d:                 darken($panel_bkg, 2.5%);	 // playlist panel bkg when detail is open at same time
+$panel_b:                     lighten($panel_bkg, 19%);
 $tab:                         $text_dd;
 $tab_b:                       $text_ddd;
 $tab_open:                    $text;
 $tab_open_b:                  $orange;
 $pwrmode_tab:                 $text;
 $pwrmode_tab_b:               $text_ddd;
-$subpanel_separator:          $vvdarktext;		// e.g. below request toolbar
+$subpanel_separator:          $text_ddd;		// e.g. below request toolbar
 
 // Detail Panel
 $details:                     $text_d;      	// "Album added on Sep 9th"
@@ -68,40 +68,40 @@ $subheader_b:                 $text_dd;			// Border color of song list table hea
 
 // Lists of Songs
 $row_bkg:                     transparent;
-$row_bkg_alternating:         $panel_background / 1.2;
+$row_bkg_alternating:         $panel_bkg / 1.2;
 $row_cool_bkg:                $cooldown;
 $row_cool_bkg_alternating:    $cooldown / 1.2;
 
 // Art
 $art_bkg:                     $bkg;
-$art_b:                       #222;
-$drop_shadow:                 #000;
+$art_b:                       lighten($art_bkg, 14%);
+$drop_shadow:                 $bkg;
 
 // Requests
 $request_indicator:           $text;			// +/- indicator when you modify your queue
 $request_indicator_bkg:       $orange;
 $requests_paused:             #2A073C;
-$request_delete:              #F44;
+$request_delete:              mix($text, $error_b, 25%);
 $request_drag_bkg:            $blue * 0.5;
 
 // Timeline/Request Song
 $song_votes:                  $text_d;
-$song_cool_info:              $blue;        	// when request panel shows you "On cooldown for X"
+$song_cool_info:              mix($blue, $text, 70%);        	// when request panel shows you "On cooldown for X"
 $votebtn_h:                   $blue;
 $votebtn_voted:               $blue;
-$timeline_link_h_bkg:         #264499;			// when vote hover is active but links need to be differentiated
+$timeline_link_h_bkg:         lighten(saturate($link, 10%), 19%);			// when vote hover is active but links need to be differentiated
 
 // Rating
 $rating_user_text:            $blue;
 $rating_site_text:            $text_d;
-$rating_confirm_text:         #A8ECFF;
+$rating_confirm_text:         $link_h;
 $rating_hover_text:           $text;
 
 // Scrollbars (for Firefox and IE)
-$scrollbar_border:            $vdarktext;
-$scrollbar_hover:             #AAB;
+$scrollbar_b:                 $text_dd;
+$scrollbar_h:                 lighten($scrollbar_b, 20%);
 $scrollbar_drag_b:            $orange;
-$scrollbar_drag_bkg:          $scrollbar_drag_bkg * 0.5;
+$scrollbar_drag_bkg:          darken($scrollbar_drag_b, 20%);
 
 // Settings
 $setting_subheader:           $orange;
@@ -109,9 +109,9 @@ $setting_yesno_b:             $blue;
 $setting_yesno:               #0c5d93;
 
 // Station Select
-$stasel_border:               #0b5c89;
-$stasel_background:           #0b5c89;
-$stasel_hover_background:     #0f74b8;
+$stasel_b:                    #0b5c89;
+$stasel_bkg:                  #0b5c89;
+$stasel_h_bkg:                #0f74b8;
 
 // Charts
 $chart_label:                 $text;
@@ -211,8 +211,8 @@ div.debug_div {
 	left: 100%;
 	margin-left: -600px;
 	text-align: left;
-	background: $vvdarktext;
-	border: solid 1px $vdarktext;
+	background: $text_ddd;
+	border: solid 1px $text_dd;
 }
 
 div.measure_box {

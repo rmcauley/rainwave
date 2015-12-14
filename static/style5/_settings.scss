@@ -29,7 +29,7 @@ div.setting_group {
 
 	&:hover {
 		border-color: $hover_b;
-		background-color: $hover;
+		background-color: $hover_bkg;
 		@include no-transition();
 	}
 

@@ -104,7 +104,7 @@ div.timeline_event {
 
 	&.timeline_message {
 		height: 45px;
-		background: $hover;
+		background: $hover_bkg;
 		border: solid 1px $hover_b;
 		padding: 5px 30px 5px 10px;
 		z-index: 20;

@@ -18,7 +18,7 @@ div.scroll_handle {
 	background-color: inherit;
 	border-width: 1px;
 	border-style: solid;
-	border-color: $scrollbar_border;
+	border-color: $scrollbar_b;
 	top: 0px;
 	left: 100%;
 	width: 8px;
@@ -27,7 +27,7 @@ div.scroll_handle {
 	padding: 0;
 	margin: 0;
 	@include transform(translateX(-8px));
-	@include transition-wtime(250ms, opacity, background-color, height);
+	@include transition-wtime(300ms, opacity, background-color, height, border-color);
 
 	div.scrollblock:hover & {
 		opacity: 0.5;
@@ -39,13 +39,14 @@ div.scroll_handle {
 	}
 
 	&:hover {
-		background-color: $scrollbar_hover;
+		background-color: $scrollbar_h;
 		opacity: 1;
 	}
 
 	&.active, &.active:hover {
+		@include no-transition();
 		background-color: $scrollbar_drag_bkg;
-		border-color: $scrollbar_drag;
+		border-color: $scrollbar_drag_b;
 		opacity: 1 !important;
 	}
 }

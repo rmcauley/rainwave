@@ -156,8 +156,8 @@ div.song {
 			cursor: pointer;
 
 			body.desktop &:hover {
+				background-color: $hover_bkg;
 				border-color: $hover_b;
-				background-color: $hover;
 				-webkit-transition: $webkit_song_transitions;
 				        transition: $song_transitions;
 

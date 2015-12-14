@@ -7,7 +7,7 @@ $station_select_width: 270px;
 	z-index: 20000;
 	float: left;
 	width: $station_select_width;
-	border-right: 1px solid $stasel_border;
+	border-right: 1px solid $stasel_b;
 	height: $menu_height;
 	overflow: hidden;
 	background: $stasel_bkg;
@@ -116,7 +116,7 @@ $station_select_width: 270px;
 		}
 
 		body.desktop &:hover {
-			background: $stasel_hover_background;
+			background: $stasel_h_bkg;
 			color: $text !important;
 		}
 

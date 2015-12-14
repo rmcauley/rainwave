@@ -1,7 +1,7 @@
 div.header {
 	-webkit-transform: translate3d(0,0,0);
 	position: relative;
-	background: $menu_pad;
+	background: $menu_pad_bkg;
 	height: $menu_height;
 	z-index: 2;
 
@@ -291,5 +291,13 @@ div.hamburger_icon {
 	iframe {
 		width: 100%;
 		height: 500px;
+	}
+}
+
+div.m3u a {
+	border-bottom: solid 1px $submenu_separator;
+
+	&:last-child {
+		border-bottom: none;
 	}
 }

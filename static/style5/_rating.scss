@@ -74,7 +74,7 @@ div.rating {
 		}
 
 		&.rating_confirm {
-			background: $rating_confirm;
+			background: $rating_confirm_text;
 			color: $rating_confirm_text;
 			overflow: hidden;
 			visibility: visible;
@@ -100,7 +100,7 @@ div.rating {
 			}
 
 			&.bad_rating {
-				background: $error_color;
+				background: $error_bkg;
 				color: $text;
 				@include transform(translateX(-25px) scaleX(1) !important);
 				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, -webkit-transform $confirm_transtime;

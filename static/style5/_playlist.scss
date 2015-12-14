@@ -229,7 +229,7 @@ div.list {
 		body.desktop & {
 			&:hover, &.hover {
 				color: $link;
-				background-color: $hover;
+				background-color: $hover_bkg;
 				border-bottom-color: $hover_b;
 				@include transition-wtime(250ms, color);
 
@@ -245,6 +245,7 @@ div.list {
 		}
 
 		&.open {
+			color: $text !important;
 			background-color: $open_item_bkg !important;
 			border-bottom-color: $open_item_b !important;
 
@@ -301,7 +302,7 @@ div.list {
 				background-image: $incomplete_rating;
 
 				&:hover {
-					background-color: $hover;
+					background-color: $hover_bkg;
 					border-bottom-color: $hover_b;
 				}
 
@@ -314,7 +315,7 @@ div.list {
 					background-color: $album_incomplete_cool;
 
 					&:hover {
-						background-color: $hover;
+						background-color: $hover_bkg;
 						border-bottom-color: $hover_b;
 					}
 				}

@@ -63,7 +63,7 @@ div.detail {
 			div.category_list {
 				box-sizing: border-box;
 				position: absolute;
-				background: $panel_background;
+				background: $panel_bkg;
 				padding: 5px 5px 5px 15px;
 				width: 100%;
 				z-index: 1;
@@ -174,7 +174,7 @@ div.row {
 			color: $fave;
 		}
 
-		body.desktop &:hover {
+		body.desktop &:hover, &.hover {
 			background-color: $fave_h;
 			border-bottom-color: $fave_hb;
 		}
