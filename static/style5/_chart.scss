@@ -38,8 +38,9 @@ div.chart_outside {
 	span.chart_tooltip {
 		position: absolute;
 		z-index: 2;
-		border: solid 1px $blue;
-		background: black;
+		color: $chart_tooltip;
+		border: solid 1px $chart_tooltip_b;
+		background: $chart_tooltip_bkg;
 		visibility: hidden;
 		opacity: 0;
 		left: 50%;
@@ -67,7 +68,7 @@ div.chart_outside {
 		div.chart_bar {
 			span.chart_label {
 				font-size: smaller;
-				color: $text;
+				color: $chart_label;
 				@include transform(rotate(90deg));
 			}
 		}

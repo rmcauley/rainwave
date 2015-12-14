@@ -14,8 +14,8 @@
 }
 
 #hotkey {
-	border-color: $blue * 1.4;
-	background: $blue * 1.2;
+	background: $hotkey_bkg;
+	border-color: $hotkey_b;
 
 	body.hotkey_on & {
 		@include transform(translate(-50%, 0%));
@@ -23,8 +23,8 @@
 }
 
 #hotkey_error {
-	background: #700;
-	border-color: #F00;
+	background: $error_bkg;
+	border-color: $error_b;
 
 	body.hotkey_error & {
 		@include transform(translate(-50%, 0%));

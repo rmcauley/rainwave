@@ -8,7 +8,7 @@ div.modal_blocker {
 	left: 0%;
 	width: 100%;
 	height: 100%;
-	background: #000;
+	background: $bkg;
 	opacity: 0;
 
 	@include transition-wtime($modal_trans_time * 0.8, opacity);
@@ -25,7 +25,7 @@ div.modal_container {
 	opacity: 0.3;
 	top: 50%;
 	left: 50%;
-	background: #000;
+	background: $bkg;
 	z-index: 10001;
 	width: 100%;
 	@include transform(translate(-50%, -50%) scaleX(0.0) scaleY($initial_height));
@@ -64,15 +64,15 @@ div.modal_container {
 
 	&.error {
 		div.header_wrapper {
-			border-bottom: 1px solid #A00;
+			border-bottom: 1px solid $error_b;
 
 			div.bkg {
-				background: #A00;
+				background: $error_b;
 			}
 		}
 
 		div.bottom_border {
-			background: #A00;
+			background: $error_b;
 		}
 	}
 

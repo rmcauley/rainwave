@@ -20,7 +20,7 @@ div.song {
 
 	&.cool {
 		opacity: 0.85;
-		background: $cooldown_color;
+		background: $cooldown;
 	}
 
 	div.title {
@@ -32,11 +32,11 @@ div.song {
 	}
 
 	div.song_content.song_fave_highlight div.title {
-		color: $fave_color;
+		color: $fave;
 	}
 
 	div.song_content.album_fave_highlight div.album a {
-		color: $fave_color;
+		color: $fave;
 	}
 
 	div.title, div.album, div.artist, div.cooldown_info, a.song_link {
@@ -48,20 +48,20 @@ div.song {
 
 	div.album, div.artist, div.cooldown_info, a.song_link {
 		padding-left: 15px;
-		color: $darktext;
+		color: $text_d;
 
 		body.logged_in & {
 			padding-left: 30px;
 		}
 
 		a {
-			color: $darktext;
+			color: $text_d;
 		}
 	}
 
 	div.cooldown_info {
 		display: none;
-		color: $blue;
+		color: $song_cool_info;
 	}
 
 	&.cool div.cooldown_info {
@@ -81,7 +81,7 @@ div.song {
 		display: none;
 		float: right;
 		padding-right: 5px;
-		color: $darktext;
+		color: $song_votes;
 	}
 
 	body.desktop.simple.normal div.sched_current &, body.full div.sched_current & {
@@ -111,7 +111,7 @@ div.song {
 		cursor: pointer;
 		float: left;
 		position: relative;
-		border: solid 1px #444;
+		border: solid 1px $text_ddd;
 		border-top-left-radius: 3px;
 		border-bottom-left-radius: 3px;
 		height: $art_size;
@@ -156,14 +156,14 @@ div.song {
 			cursor: pointer;
 
 			body.desktop &:hover {
-				border-color: $hovercolor-border;
-				background-color: $hovercolor;
+				border-color: $hover_b;
+				background-color: $hover;
 				-webkit-transition: $webkit_song_transitions;
 				        transition: $song_transitions;
 
 				div.vote_button {
 					opacity: 1;
-					background: $blue;
+					background: $votebtn_h;
 				}
 			}
 
@@ -171,9 +171,9 @@ div.song {
 				@include transition-wtime(250ms, color, background-color, padding);
 
 				body.desktop &:hover {
-					background-color: #264499;
+					background-color: $timeline_link_h_bkg;
 					padding: 0 10px;
-					color: $linkhover;
+					color: $link_h;
 				}
 			}
 		}
@@ -183,16 +183,16 @@ div.song {
 		}
 
 		&.voting_registered {
-			background-color: #192D67;
+			background-color: $vote_registered;
 			background-position: 0px -35px;
 
 			div.vote_button {
 				opacity: 1;
-				background: $blue;
+				background: $votebtn_voted;
 			}
 
 			&.autovoted {
-				background-color: #093F32;
+				background-color: $autovoted;
 				cursor: pointer;
 			}
 		}
@@ -206,7 +206,7 @@ div.song {
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		font-size: x-small;
-		background: $highlight;
+		background: $vote_requester;
 		text-align: left;
 		text-transform: uppercase;
 		@include transition(opacity, LINKCOLOR);
@@ -229,24 +229,14 @@ div.song {
 	}
 
 	div.requester {
-		box-sizing: border-box;
-		position: absolute;
-		width: 100%;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		background: $blue;
 		z-index: 5;
 		padding-left: 1.5em;
 	}
 
 	div.request_indicator {
-		box-sizing: border-box;
 		text-align: right;
 		z-index: 4;
-		opacity: 1;
 		padding-right: 2em;
-		background: $blue;
 
 		@include transform(rotate(-90deg) translateX(-100%));
 		-webkit-transform-origin: 0% 0%;
@@ -260,7 +250,7 @@ div.song {
 	}
 
 	div.your_request {
-		background: #18a485;
+		background: $song_yours;
 	}
 
 	div.rating {

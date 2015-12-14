@@ -2,7 +2,7 @@ ul.panel_header {
 	height: 25px;
 	padding-left: 0;
 	margin: 10px 0 7px 0;
-	border-bottom: 2px solid $vvdarktext;
+	border-bottom: 2px solid $tab_b;
 	list-style: none;
 	white-space: nowrap;
 
@@ -11,20 +11,20 @@ ul.panel_header {
 		height: 25px;
 		padding: 0 10px;
 
-		color: $vdarktext;
+		color: $tab;
 		border-bottom: 2px solid transparent;
 		@include transition(LINKCOLOR, background, opacity, border-bottom);
 
 		div.lists &.open, body.simple &.open {
-			color: $text;
-			border-bottom-color: $orange;
+			color: $tab_open;
+			border-bottom-color: $tab_open_b;
 		}
 	}
 }
 
 div.no_result_message {
 	position: absolute;
-	color: $darktext;
+	color: $text_d;
 	text-align: center;
 	width: 100%;
 	display: none;
@@ -52,8 +52,8 @@ body.simple div.panel {
 	z-index: 100;
 	width: 450px;
 	max-width: 100%;
-	background: $panel_background;
-	border-left: solid 1px #555;
+	background: $panel_bkg;
+	border-left: solid 1px $panel_b;
 	top: 0px;
 	opacity: 0;
 	visibility: hidden;
@@ -79,7 +79,7 @@ div.lists {
 	}
 
 	body.simple.desktop.playlist.normal.detail & {
-		background: #202020;
+		background: $panel_bkg_d;
 		@include transform(translateX(-200%));
 
 		@media (max-width: 950px) {
@@ -99,15 +99,15 @@ div.lists {
 			display: inline-block;
 
 			body.desktop &:hover {
-				color: $linkhover;
+				color: $link_h;
 			}
 
 			body.playlist_artist &.artist_tab,
 			body.playlist_group &.group_tab,
 			body.playlist_album &.album_tab,
 			body.playlist_request_line &.listener_tab {
-				color: $text;
-				border-bottom-color: $orange;
+				color: $tab_open;
+				border-bottom-color: $tab_open_b;
 			}
 
 			body.mobile &.group_tab,
@@ -119,7 +119,7 @@ div.lists {
 
 	div.searchbox_container {
 		position: relative;
-		border-bottom: solid 1px $vvdarktext;
+		border-bottom: solid 1px $subpanel_separator;
 		padding: 5px 8px;
 		height: 29px;
 
@@ -163,7 +163,7 @@ div.lists {
 			@include transition-wtime(300ms, border-color, opacity);
 
 			&::-webkit-input-placeholder, &:-moz-placeholder, &::-moz-placeholder, &:-ms-input-placeholder {
-				color: #FFF;
+				color: $text;
 			}
 
 			&.active {
@@ -223,14 +223,14 @@ div.list {
 		min-height: 20px;
 
 		&.album_fave_highlight {
-			color: $fave_color;
+			color: $fave;
 		}
 
 		body.desktop & {
 			&:hover, &.hover {
 				color: $link;
-				border-bottom-color: $hovercolor-border;
-				background-color: $hovercolor;
+				background-color: $hover;
+				border-bottom-color: $hover_b;
 				@include transition-wtime(250ms, color);
 
 				img.fave_lined {
@@ -239,17 +239,17 @@ div.list {
 			}
 
 			&.album_fave_highlight:hover, &.cool.album_fave_highlight:hover {
-				background-color: #444013;
-				border-bottom-color: #5B4E19;
+				background-color: $fave_h;
+				border-bottom-color: $fave_hb;
 			}
 		}
 
 		&.open {
-			background-color: #1f4f70 !important;
-			border-bottom-color: $orange !important;
+			background-color: $open_item_bkg !important;
+			border-bottom-color: $open_item_b !important;
 
 			&.album_fave_highlight {
-				background-color: #6D5D1E !important;
+				background-color: $open_item_fave_bkg !important;
 			}
 
 			span.name {
@@ -258,12 +258,12 @@ div.list {
 		}
 
 		&.cool {
-			background-color: $cooldown_albumlist_color;
+			background-color: $cooldown;
 
 			body.desktop & {
 				&:hover, &.hover {
-					background-color: $cooldown_hovercolor;
-					border-bottom-color: $cooldown_hovercolor_border;
+					background-color: $cooldown_h;
+					border-bottom-color: $cooldown_hb;
 				}
 			}
 		}
@@ -280,7 +280,7 @@ div.list {
 		}
 
 		div.requestlist_song, div.requestlist_album {
-			color: $darktext;
+			color: $text_d;
 			padding-left: 2em;
 		}
 	}
@@ -297,11 +297,12 @@ div.list {
 			}
 
 			body.show_incomplete &.rating_incomplete {
-				background-color: #381e3d;
+				background-color: $album_incomplete;
 				background-image: $incomplete_rating;
 
 				&:hover {
-					background-color: $hovercolor;
+					background-color: $hover;
+					border-bottom-color: $hover_b;
 				}
 
 				&.album_fave_highlight {
@@ -309,11 +310,12 @@ div.list {
 				}
 
 				&.cool {
-					background-color: #2a162e;
-					color: $darktext;
+					color: $text_d;
+					background-color: $album_incomplete_cool;
 
 					&:hover {
-						background-color: $hovercolor;
+						background-color: $hover;
+						border-bottom-color: $hover_b;
 					}
 				}
 			}
@@ -326,7 +328,7 @@ div.list {
 				background-image: url('/static/images4/new.png');
 				background-position: 3px 0px;
 				@include transition-wtime(300ms, padding, background-position, LINKCOLOR);
-				color: $orange;
+				color: $new_indicator;
 			}
 
 			&.open span.name {
@@ -334,7 +336,7 @@ div.list {
 			}
 
 			body.desktop &:hover span.name {
-				color: $linkhover;
+				color: $link_h;
 			}
 		}
 

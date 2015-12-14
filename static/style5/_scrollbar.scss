@@ -18,7 +18,7 @@ div.scroll_handle {
 	background-color: inherit;
 	border-width: 1px;
 	border-style: solid;
-	border-color: #777;
+	border-color: $scrollbar_border;
 	top: 0px;
 	left: 100%;
 	width: 8px;
@@ -39,13 +39,13 @@ div.scroll_handle {
 	}
 
 	&:hover {
-		background-color: #AAB;
+		background-color: $scrollbar_hover;
 		opacity: 1;
 	}
 
 	&.active, &.active:hover {
-		background-color: $orange * 0.5;
-		border-color: $orange;
+		background-color: $scrollbar_drag_bkg;
+		border-color: $scrollbar_drag;
 		opacity: 1 !important;
 	}
 }

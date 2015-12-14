@@ -1,11 +1,7 @@
-$menu_transfunc: cubic-bezier(0.77, 0, 0.175, 1);
-$menu_height: 45px;
-$phone_menu_height: 30px;
-
 div.header {
 	-webkit-transform: translate3d(0,0,0);
 	position: relative;
-	background: $blue_dark;
+	background: $menu_pad;
 	height: $menu_height;
 	z-index: 2;
 
@@ -16,8 +12,8 @@ div.header {
 
 div.menu_wrapper {
 	position: relative;
-	color: #FFF;
-	background: $blue;
+	color: $menu;
+	background: $menu_bkg;
 	width: 1024px;
 	max-width: 100%;
 	margin: 0 auto;
@@ -38,14 +34,14 @@ div.menu_wrapper {
 		width: 20px;
 
 		&, * {
-			fill: $text;
+			fill: $menu;
 			@include transition-wtime(150ms, fill);
 		}
 	}
 
 	body.desktop a:hover svg {
 		&, * {
-			fill: $linkhover;
+			fill: $link_h;
 		}
 	}
 }
@@ -60,7 +56,7 @@ ul.menu {
 	top: 50%;
 	z-index: 1;
 	@include transform(translateY(-50%));
-	background: $blue;
+	background: $menu_bkg;
 
 	svg {
 		display: none;
@@ -144,7 +140,7 @@ ul.menu {
 		}
 
 		body.playlist &.playlist_link a {
-			background: $blue_dark * 0.8;
+			background: $menu_link_open;
 		}
 
 		&.requests_link {
@@ -156,23 +152,23 @@ ul.menu {
 
 			a {
 				&.paused {
-					background: #2A073C;
+					background: $requests_paused;
 				}
 
 				&.warning {
-					background: #6A0000;
+					background: $error_bkg;
 				}
 
 				body.requests & {
-					background: $blue_dark * 0.8;
+					background: $menu_link_open;
 				}
 
 				body.requests &.paused {
-					background: #2A073C;
+					background: $requests_paused;
 				}
 
 				body.requests &.warning {
-					background: #4A0000;
+					background: $error_bkg;
 				}
 			}
 		}
@@ -190,7 +186,7 @@ ul.menu {
 	z-index: 0;
 	top: 10px;
 	min-width: 100%;
-	background: $blue;
+	background: $menu_bkg;
 	opacity: 0;
 	visibility: hidden;
 	padding-top: 20px;
@@ -201,7 +197,7 @@ ul.menu {
 	a, ul.menu li & a {
 		white-space: nowrap;
 		display: block;
-		background: $blue;
+		background: $menu_bkg;
 		z-index: 1;
 		position: relative;
 
@@ -235,7 +231,7 @@ ul.menu {
 
 	div.menu_group {
 		position: relative;
-		border-top: 1px solid $blue * 1.2;
+		border-top: 1px solid $submenu_separator;
 		z-index: 1;
 	}
 }
@@ -247,9 +243,9 @@ div.hamburger_icon {
 	display: inline-block;
 	height: 8px;
 	width: 0px;
-	border-top: 2px solid #fff;
-	border-bottom: 2px solid #fff;
-	background: $blue;
+	border-top: 2px solid $menu;
+	border-bottom: 2px solid $menu;
+	background: $menu_bkg;
 	z-index: 2;
 
 	&:before {
@@ -258,15 +254,15 @@ div.hamburger_icon {
 		top: 3px;
 		left: 0;
 		width: 100%;
-		border-top: 2px solid #fff;
-		background: $blue;
+		border-top: 2px solid $menu;
+		background: $menu_bkg;
 	}
 
 	body.desktop li.hamburger_icon_li:hover & {
-		border-color: $linkhover;
+		border-color: $link_h;
 
 		&:before {
-			border-color: $linkhover;
+			border-color: $link_h;
 		}
 	}
 }
@@ -279,7 +275,7 @@ div.hamburger_icon {
 	width: 400px;
 	height: 500px;
 	opacity: 0;
-	background: $blue;
+	background: $menu_bkg;
 	overflow: hidden;
 	padding: 2px;
 	visibility: hidden;

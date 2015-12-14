@@ -97,10 +97,10 @@ body.full {
 	div.panel {
 		position: absolute;
 		z-index: 100;
-		background: #272727;
+		background: $panel_bkg;
 		top: 0px;
 		overflow: hidden;
-		border-left: solid 1px #555;
+		border-left: solid 1px $panel_b;
 
 		&.lists, &.detail {
 			transform: none !important;
@@ -119,8 +119,8 @@ body.full {
 
 	div.panel.detail {
 		ul.panel_header li {
-			color: $text;
-			border-bottom: 2px solid $vvdarktext;
+			color: $pwrmode_tab;
+			border-bottom: 2px solid $pwrmode_tab_b;
 		}
 
 		div.artists {

@@ -1,25 +1,156 @@
 @import "functions";
 
-$background: #000000;
-$text: #FFF;
-$darktext: #DDD;
-$vdarktext: #777;
-$vvdarktext: #444;
-$orange: #f7941e;
-$blue: #1f95e5;
-$blue_dark: #128adb;
-$highlight: #35adff;
-$link: #6cf6ff;
-$linkhover: #a7e1ff;
-$donorcolor: #FF0;
-$hovercolor: #143347;
-$hovercolor-border: #1B4560;
-$cooldown_color: #282a54;
-$cooldown_albumlist_color: #2c2e5c;
-$cooldown_hovercolor: #1f4f70;
-$cooldown_hovercolor_border: #256189;
-$fave_color: #f7ff9f;
-$panel_background: #272727;
+// COLOR DEFINITIONS *****************************************************************************************
+
+// _d   == dark
+// _dd  == very dark
+// _h   == hover
+// _b   == border
+// _bkg == background (if the specificity is necessary - most colors are background colors)
+
+// Primary colors
+$bkg:                         #000;
+$text:                        #FFF;
+$blue:                        #1f95e5;			// primary highlight color
+$orange:                      #f7941e;			// secondary highlight color
+$donor:                       #FF0;
+$fave:                        #f7ff9f;
+$link:                        #6cf6ff;
+$link_h:                      #a7e1ff;
+$hover_bkg:                   #143347;			// used on table rows
+$hover_b:                     #1B4560;
+
+// Darker versions of the primary colors
+$text_d:                      #DDD;
+$text_dd:                     #777;
+$text_ddd:                    #444;
+$blue_d:                      #128adb;
+
+// Error colors
+$error_b:                     #F00;
+$error_bkg:                   #660000;
+$error_bkg_bright:            #DD0000;			// used in gradients
+
+// Timeline colors
+$vote_registered:             #192D67;
+$song_yours:                  #18a485;
+$autovoted:                   #093F32;
+$vote_requester:              #35adff;
+
+// List colors (albums/artists/etc)
+$open_item_bkg:               #1f4f70;			// open album
+$open_item_fave_bkg:          #6D5D1E;			// open album that's a fave
+$open_item_b:                 $orange;			// border at bottom of album item
+$cooldown:                    #2c2e5c;			// album on cooldown
+$cooldown_h:                  #1f4f70;			// album on cooldown when mouse/keyboard is on it
+$cooldown_hb:                 #256189;
+$fave_h:                      #444013;			// hover color when album is a fave
+$fave_hb:                     #5B4E19;
+$album_incomplete:            #381e3d;			// when album is incomplete
+$album_incomplete_cool:       #2a162e;
+$new_indicator:               $orange;			// when album is new
+
+// Panels
+$panel_bkg:                   #272727;
+$panel_bkg_d:                 #202020;			// playlist panel bkg when detail is open at same time
+$panel_b:                     #555;
+$tab:                         $text_dd;
+$tab_b:                       $text_ddd;
+$tab_open:                    $text;
+$tab_open_b:                  $orange;
+$pwrmode_tab:                 $text;
+$pwrmode_tab_b:               $text_ddd;
+$subpanel_separator:          $vvdarktext;		// e.g. below request toolbar
+
+// Detail Panel
+$details:                     $text_d;      	// "Album added on Sep 9th"
+$subheader_b:                 $text_dd;			// Border color of song list table headers
+
+// Lists of Songs
+$row_bkg:                     transparent;
+$row_bkg_alternating:         $panel_background / 1.2;
+$row_cool_bkg:                $cooldown;
+$row_cool_bkg_alternating:    $cooldown / 1.2;
+
+// Art
+$art_bkg:                     $bkg;
+$art_b:                       #222;
+$drop_shadow:                 #000;
+
+// Requests
+$request_indicator:           $text;			// +/- indicator when you modify your queue
+$request_indicator_bkg:       $orange;
+$requests_paused:             #2A073C;
+$request_delete:              #F44;
+$request_drag_bkg:            $blue * 0.5;
+
+// Timeline/Request Song
+$song_votes:                  $text_d;
+$song_cool_info:              $blue;        	// when request panel shows you "On cooldown for X"
+$votebtn_h:                   $blue;
+$votebtn_voted:               $blue;
+$timeline_link_h_bkg:         #264499;			// when vote hover is active but links need to be differentiated
+
+// Rating
+$rating_user_text:            $blue;
+$rating_site_text:            $text_d;
+$rating_confirm_text:         #A8ECFF;
+$rating_hover_text:           $text;
+
+// Scrollbars (for Firefox and IE)
+$scrollbar_border:            $vdarktext;
+$scrollbar_hover:             #AAB;
+$scrollbar_drag_b:            $orange;
+$scrollbar_drag_bkg:          $scrollbar_drag_bkg * 0.5;
+
+// Settings
+$setting_subheader:           $orange;
+$setting_yesno_b:             $blue;
+$setting_yesno:               #0c5d93;
+
+// Station Select
+$stasel_border:               #0b5c89;
+$stasel_background:           #0b5c89;
+$stasel_hover_background:     #0f74b8;
+
+// Charts
+$chart_label:                 $text;
+$chart_tooltip:               $text;
+$chart_tooltip_bkg:           $bkg;
+$chart_tooltip_b:             $blue;
+
+// Hotkey Prompt
+$hotkey_b:                    $blue * 1.4;
+$hotkey_bkg:                  $blue * 1.2;
+
+// Timeline
+$history_header_h_bkg:        $blue / 2.5;
+$timeline_header:             $orange;
+$progress_bkg:                $text_ddd;		// the countdown bar to the next song
+$progress_b:                  $orange;
+
+// Menu colors
+$menu:                        $text;
+$menu_bkg:                    $blue;
+$menu_pad_bkg:                $blue_d;			// outside the main 1024px viewport of basic mode
+$menu_link_open:              $menu_bkg * 0.8;	// e.g. open playlist, look at playlist link bkg
+$submenu_separator:           $blue * 1.2;      // e.g.separator between options in tune in menu
+
+// STYLE MIXINS **********************************************************************************************
+
+@mixin error_colors() {
+	color: $text;
+	border: 1px solid $error_b;
+	background: $error_bkg;
+	background: -moz-linear-gradient(100% 100% 90deg, $error_bkg, $error_bkg_bright);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from($error_bkg_bright), to($error_bkg));
+}
+
+// SIZE DEFINITIONS  *****************************************************************************************
+
+$menu_transfunc: cubic-bezier(0.77, 0, 0.175, 1);
+$menu_height: 45px;
+$phone_menu_height: 30px;
 
 $art_size: 70px;
 $art_hover_size: 100px;
@@ -39,6 +170,8 @@ $fav_rating: url("/static/images4/rating_bar5/user_favourite_gradient.png");
 $touch_rating: url("/static/images4/rating_bar5/touch.png");
 $hidden_rating: url("/static/images4/rating_bar5/hidden_global.png");
 $rating_bkg_size: 60px 728px;
+
+// CORE CONTENT **********************************************************************************************
 
 body {
 	height: 100%;
@@ -99,7 +232,7 @@ a, a:visited, .link {
 		color: $link !important;
 
 		body.desktop &:hover {
-			color: $linkhover !important;
+			color: $link_h !important;
 		}
 	}
 
@@ -108,16 +241,7 @@ a, a:visited, .link {
 	}
 
 	body.desktop &:hover {
-		color: $linkhover !important;
-	}
-}
-
-.clickable {
-	cursor: pointer;
-	@include transition(LINKCOLOR);
-
-	body.desktop &:hover {
-		color: $linkhover !important;
+		color: $link_h !important;
 	}
 }
 
@@ -151,17 +275,14 @@ body.simple div.power_only {
 
 @import "modals";
 @import "errors";
-
 @import "menu";
 @import "station_select";
 @import "player";
-
 @import "timeline";
 @import "playlist";
 @import "detail";
 @import "requests";
 @import "listener";
-
 @import "album_art";
 @import "song";
 @import "rating";
@@ -170,5 +291,4 @@ body.simple div.power_only {
 @import "chart";
 @import "settings";
 @import "hotkey";
-
 @import "timeline_sizing";

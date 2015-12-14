@@ -47,7 +47,7 @@ div.history_header {
 
 	body.desktop &:hover {
 		opacity: 1;
-		background-color: $blue / 2.5;
+		background-color: $history_header_h_bkg;
 	}
 
 	span.longhist_link {
@@ -78,7 +78,7 @@ div.timeline_event {
 		height: 20px;
 		margin: 0;
 		text-transform: uppercase;
-		color: $vdarktext;
+		color: $text_dd;
 		padding: 0 20px 0 10px;
 		// fix webkit rendering things 1px too high (?!?!?!)
 		-webkit-transform: translateY(1px);
@@ -91,7 +91,7 @@ div.timeline_event {
 	}
 
 	&.sched_current div.timeline_header {
-		color: $orange;
+		color: $timeline_header;
 	}
 
 	span.timeline_header_clock {
@@ -104,15 +104,13 @@ div.timeline_event {
 
 	&.timeline_message {
 		height: 45px;
-		background: $hovercolor;
-		border: solid 1px $hovercolor-border;
+		background: $hover;
+		border: solid 1px $hover_b;
 		padding: 5px 30px 5px 10px;
 		z-index: 20;
 
 		&.error {
-			background: #660000;
-			background: -moz-linear-gradient(100% 100% 90deg, #660000, #DD0000);
-			background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DD0000), to(#660000));
+			@include error_colors();
 		}
 
 		div.message_text {
@@ -152,11 +150,11 @@ div.progress {
 
 	div.progress_bkg {
 		height: 2px;
-		background-color: $vvdarktext;
+		background-color: $progress_bkg;
 	}
 
 	div.progress_inside {
-		background-color: $orange;
+		background-color: $progress_b;
 		height: 2px;
 		padding: 0px;
 		width: 0;

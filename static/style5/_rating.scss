@@ -7,7 +7,7 @@ div.rating {
 	width: $rating_width;
 	padding: 0;
 	margin: 0;
-	color: $blue;
+	color: $rating_site_text;
 	height: $rating_height;
 
 	body.full {
@@ -18,12 +18,12 @@ div.rating {
 		background-image: $user_rating;
 
 		div.song_fave_highlight &.song_rating {
-			color: $fave_color;
+			color: $fave;
 			background-image: $fav_rating;
 		}
 
 		div.album_fave_highlight &.album_rating {
-			color: $fave_color;
+			color: $fave;
 			background-image: $fav_rating;
 
 			body.show_incomplete &.rating_incomplete {
@@ -46,7 +46,7 @@ div.rating {
 	}
 
 	body.desktop div.song_fave_highlight &.ratable.song_rating:hover {
-		color: $fave_color;
+		color: $fave;
 		background-image: $fav_rating;
 	}
 
@@ -70,12 +70,12 @@ div.rating {
 		@include transform(translateX(0px));
 
 		&.listener_number {
-			color: $text;
+			color: $rating_hover_text;
 		}
 
 		&.rating_confirm {
-			background: #A8ECFF;
-			color: #A8ECFF;
+			background: $rating_confirm;
+			color: $rating_confirm_text;
 			overflow: hidden;
 			visibility: visible;
 
@@ -100,7 +100,7 @@ div.rating {
 			}
 
 			&.bad_rating {
-				background: #F00;
+				background: $error_color;
 				color: $text;
 				@include transform(translateX(-25px) scaleX(1) !important);
 				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, -webkit-transform $confirm_transtime;
@@ -178,7 +178,7 @@ div.mobile_rating {
 	position: absolute;
 	opacity: 0;
 	left: 100%;
-	background: #000;
+	background: $bkg;
 	padding: 10px 15px 10px 5px;
 	@include transform(translateX(-100%) translateY(-1em));
 	@include transition-wtime(200ms, opacity, transform);

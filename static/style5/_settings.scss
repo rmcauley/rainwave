@@ -5,8 +5,8 @@ div.powertripped div.power_only {
 }
 
 div.setting_subheader {
-	color: $orange;
-	border-bottom: 1px solid $orange;
+	color: $setting_subheader;
+	border-bottom: 1px solid $setting_subheader;
 	padding: 0;
 	margin: 5px 0;
 }
@@ -23,13 +23,13 @@ div.setting_group {
 		padding-left: 0px;
 
 		label {
-			color: $orange;
+			color: $setting_subheader;
 		}
 	}
 
 	&:hover {
-		border-color: $hovercolor-border;
-		background-color: $hovercolor;
+		border-color: $hover_b;
+		background-color: $hover;
 		@include no-transition();
 	}
 
@@ -56,7 +56,7 @@ span.yes_no_yes, span.yes_no_no {
 	position: relative;
 	z-index: 2;
 	width: 70px;
-	border: 1px solid $blue;
+	border: 1px solid $setting_yesno_b;
 	@include transition-wtime(350ms, color);
 	text-align: center;
 }
@@ -64,7 +64,7 @@ span.yes_no_yes, span.yes_no_no {
 span.yes_no_yes {
 	padding-right: 10px;
 	border-right: none;
-	color: $vdarktext;
+	color: $text_dd;
 }
 
 span.yes_no_no {
@@ -78,12 +78,12 @@ div.yes_no_wrapper {
 			color: $text;
 		}
 		span.yes_no_no {
-			color: $vdarktext;
+			color: $text_d;
 		}
 	}
 
 	&.yes.no span.yes_no_yes {
-		color: $vdarktext;
+		color: $text_dd;
 	}
 
 	&.no span.yes_no_no {
@@ -93,7 +93,7 @@ div.yes_no_wrapper {
 	span.yes_no_bar {
 		position: absolute;
 		width: 70px;
-		background: #0c5d93;
+		background: $setting_yesno;
 		z-index: 1;
 
 		@include transform(rotate(0deg));
@@ -102,13 +102,13 @@ div.yes_no_wrapper {
 	}
 
 	&.yes span.yes_no_bar {
-		background: $blue;
+		background: $setting_yesno_b;
 		@include transition-wtime(350ms, transform, background-color);
 		@include transform(rotate(-180deg));
 	}
 
 	&.no span.yes_no_bar {
-		background: #0c5d93;
+		background: $setting_yesno;
 		@include transition-wtime(350ms, transform, background-color);
 		@include transform(rotate(-360deg));
 	}
@@ -134,7 +134,7 @@ div.multi_select {
 		position: relative;
 		padding: 0 5px;
 		margin: 0 .5em;
-		color: $vdarktext;
+		color: $text_dd;
 		@include transition-wtime(350ms, color);
 		border: 1px solid $blue;
 		cursor: pointer;
@@ -150,10 +150,10 @@ div.multi_select {
 		}
 
 		a {
-			color: $vdarktext;
+			color: $text_dd;
 
 			&:hover {
-				color: $linkhover;
+				color: $link_h;
 			}
 		}
 	}

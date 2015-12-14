@@ -10,10 +10,10 @@ div.art_anchor {
 div.art_container {
 	position: absolute;
 	text-align: center;
-	border-color: #222;
+	border-color: $art_b;
 	border-width: 0px;
 	border-style: solid;
-	background-color: #000;
+	background-color: $bkg;
 	background-position: center center;
 	background-repeat: no-repeat;
 	background-size: cover;
@@ -26,7 +26,7 @@ div.art_container {
 		width: 100%;
 		height: 100%;
 		opacity: 0;
-		background-color: #000;
+		background-color: $bkg;
 		background-size: contain;
 		background-position: center center;
 		background-repeat: no-repeat;
@@ -40,7 +40,7 @@ div.art_container {
 			border-width: 2px;
 			width: $art_hover_size;
 			height: $art_hover_size;
-			box-shadow: 3px 3px 5px #000;
+			box-shadow: 3px 3px 5px $drop_shadow;
 
 			body.simple & {
 				width: $simple_np_size;
@@ -51,7 +51,7 @@ div.art_container {
 		&.art_expanded, &.art_expanded:hover {
 			width: $art_full_size !important;
 			height: $art_full_size !important;
-			box-shadow: 3px 3px 5px #000;
+			box-shadow: 3px 3px 5px $drop_shadow;
 
 			div.art_full_size.loaded {
 				opacity: 1;

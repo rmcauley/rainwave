@@ -7,10 +7,10 @@ $station_select_width: 270px;
 	z-index: 20000;
 	float: left;
 	width: $station_select_width;
-	border-right: 1px solid #0b5c89;
+	border-right: 1px solid $stasel_border;
 	height: $menu_height;
 	overflow: hidden;
-	background: #0b5c89;
+	background: $stasel_bkg;
 
 	-webkit-transition: width 350ms, background-color 350ms, height 700ms;
 	        transition: width 350ms, background-color 350ms, height 700ms;
@@ -67,7 +67,7 @@ $station_select_width: 270px;
 
 	#station_select_header {
 		position: absolute;
-		background: $blue;
+		background: $menu_bkg;
 		z-index: 41;
 		height: $menu_height;
 		font-size: 0.6em;
@@ -116,13 +116,13 @@ $station_select_width: 270px;
 		}
 
 		body.desktop &:hover {
-			background: #0f74b8;
+			background: $stasel_hover_background;
 			color: $text !important;
 		}
 
 		&.selected_station {
-			background: $blue;
-			color: $text;
+			background: $menu_bkg;
+			color: $menu;
 			z-index: 40 !important;
 			@include transform(translateY(-13px));
 

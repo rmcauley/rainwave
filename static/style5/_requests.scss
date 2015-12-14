@@ -26,7 +26,7 @@ div.panel.requests {
 			@include no-transition();
 			opacity: 1;
 			z-index: 2;
-			background-color: $blue * 0.5;
+			background-color: $request_drag_bkg;
 		}
 
 		&.deleted {
@@ -40,7 +40,7 @@ div.panel.requests {
 	}
 
 	&.paused, body.simple &.paused {
-		background-color: #2A073C;
+		background-color: $requests_paused;
 	}
 
 	body.full & {
@@ -105,7 +105,7 @@ ul.request_icons {
 	li {
 		margin: 0 5px;
 		display: inline;
-		color: #FFF;
+		color: $text;
 		@include transition-wtime(300ms, opacity);
 		cursor: pointer;
 
@@ -153,7 +153,7 @@ div.request_cancel {
 	float: left;
 	position: relative;
 	padding: 0 2px 2px 2px;
-	border: solid 1px #444;
+	border: solid 1px $text_ddd;
 	border-right: none;
 	border-top-left-radius: 3px;
 	border-bottom-left-radius: 3px;
@@ -170,8 +170,8 @@ div.request_cancel {
 		opacity: 0.6;
 
 		&:hover {
-			border-color: #F44;
-			color: #F44;
+			border-color: $request_delete;
+			color: $request_delete;
 		}
 
 		div.song &:hover {
@@ -209,7 +209,7 @@ div.request_sort_grab {
 }
 
 div.blank_request_message {
-	color: $darktext;
+	color: $text_d;
 	text-align: center;
 	padding: 10px;
 }
@@ -219,10 +219,10 @@ div.request_plusminus {
 	position: absolute;
 	z-index: 1;
 	padding: 4px;
-	background: $orange;
+	background: $request_indicator_bkg;
 	height: 100%;
 	opacity: 0;
-	color: $text;
+	color: $request_indicator;
 	@include transform(translateX(0px));
 	@include transition-wtime(300ms, transform, opacity);
 

@@ -23,7 +23,7 @@ div.detail {
 		clear: both;
 		font-size: inherit;
 		font-weight: inherit;
-		border-bottom: 1px solid $vdarktext;
+		border-bottom: 1px solid $subheader_b;
 		margin: 0 0 5px 0;
 		padding: 0 10px 2px 10px;
 	}
@@ -40,12 +40,12 @@ div.detail {
 	}
 
 	div.detail_header {
-		color: $darktext;
+		color: $details;
 		font-size: 0.8em;
 		margin: 0 10px 0 110px;
 
 		div.new_indicator {
-			color: $orange;
+			color: $new_indicator;
 			background-repeat: no-repeat;
 			background-size: 12px;
 			background-image: url('/static/images4/new.png');
@@ -63,7 +63,7 @@ div.detail {
 			div.category_list {
 				box-sizing: border-box;
 				position: absolute;
-				background: #272727;
+				background: $panel_background;
 				padding: 5px 5px 5px 15px;
 				width: 100%;
 				z-index: 1;
@@ -124,48 +124,44 @@ div.row {
 	word-break: break-all;
 	white-space: nowrap;
 	min-height: 20px;
+	background: $row_bkg;
 	@include transition-wtime(300ms, width, background-color, border-bottom-color);
 
 	body.desktop.full &:nth-child(even) {
-		background-color: $panel_background / 1.2;
-		border-bottom-color: $panel_background / 1.2;
+		background-color: $row_bkg_alternating;
+		border-bottom-color: $row_bkg_alternating;
 
 		&:hover, &.hover {
-			background-color: $hovercolor;
-			border-bottom-color: $hovercolor-border;
+			background-color: $hover_bkg;
+			border-bottom-color: $hover_b;
 		}
 	}
 
 	&.cool {
-		background-color: $cooldown-color;
-		border-bottom-color: $cooldown-color;
+		background-color: $row_cool_bkg;
+		border-bottom-color: $row_cool_bkg;
 
 		body.desktop.full & {
 			&:hover, &.hover {
-				background-color: $cooldown_hovercolor;
-				border-bottom-color: $cooldown_hovercolor_border;
+				background-color: $cooldown_h;
+				border-bottom-color: $cooldown_hb;
 			}
 		}
 
 		body.desktop.full &:nth-child(even) {
-			// Nat's colors:
-			// background-color: #161847;
-			// border-bottom-color: #161847;
-
-			// Rob's colors:
-			background-color: $cooldown-color / 1.2;
-			border-bottom-color: $cooldown-color / 1.2;
+			background-color: $row_cool_bkg_alternating;
+			border-bottom-color: $row_cool_bkg_alternating;
 
 			&:hover, &.hover {
-				background-color: $cooldown_hovercolor;
-				border-bottom-color: $cooldown_hovercolor_border;
+				background-color: $cooldown_h;
+				border-bottom-color: $cooldown_hb;
 			}
 		}
 	}
 
 	body.desktop &:hover, &.hover {
-		background-color: $hovercolor;
-		border-bottom-color: $hovercolor-border;
+		background-color: $hover_bkg;
+		border-bottom-color: $hover_b;
 		@include no-transition();
 
 		img.fave_lined {
@@ -175,12 +171,12 @@ div.row {
 
 	&.song_fave_highlight {
 		div.title {
-			color: $fave_color;
+			color: $fave;
 		}
 
 		body.desktop &:hover {
-			background-color: #444013;
-			border-bottom-color: #5B4E19;
+			background-color: $fave_h;
+			border-bottom-color: $fave_hb;
 		}
 	}
 
@@ -198,7 +194,7 @@ div.row {
 	}
 
 	div.rating_site {
-		color: $darktext;
+		color: $rating_site_text;
 	}
 
 	a.url, div.fake_url {
