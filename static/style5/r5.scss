@@ -81,6 +81,7 @@ $drop_shadow:                 $bkg;
 $request_indicator:           $text;			// +/- indicator when you modify your queue
 $request_indicator_bkg:       $orange;
 $requests_paused:             #2A073C;
+$requests_warn:               darken($error_bkg, 10%);
 $request_delete:              mix($text, $error_b, 25%);
 $request_drag_bkg:            $blue * 0.5;
 

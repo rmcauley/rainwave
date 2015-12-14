@@ -87,7 +87,7 @@ var Requests = function() {
 			}
 		}
 
-		el.classList.remove("warning");
+		container.classList.remove("warning");
 		link.classList.remove("warning");
 		header.removeAttribute("href");
 		header.classList.add("no_pointer");
@@ -108,7 +108,7 @@ var Requests = function() {
 
 				if (all_bad) {
 					header.textContent = $l("requests_all_on_cooldown");
-					el.classList.add("warning");
+					container.classList.add("warning");
 					link.classList.add("warning");
 				}
 				else if (User.request_position) {

@@ -58,7 +58,7 @@ body.simple div.panel {
 	opacity: 0;
 	visibility: hidden;
 	@include transform(none);
-	@include transition-wtime(300ms, transform, opacity, visibility);
+	@include transition-wtime(300ms, transform, opacity, visibility, background-color);
 
 	body.mobile & {
 		opacity: 1;

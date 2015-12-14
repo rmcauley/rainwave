@@ -39,7 +39,11 @@ div.panel.requests {
 		        transition-duration: 300ms;
 	}
 
-	&.paused, body.simple &.paused {
+	&.warning, body.simple &.warning {
+		background-color: $requests_warn;
+	}
+
+	&.paused, body.simple &.paused, &.warning.paused, body.simple &.warning.paused {
 		background-color: $requests_paused;
 	}
 
@@ -47,7 +51,7 @@ div.panel.requests {
 		z-index: 102;
 		width: 400px;
 		left: 100%;
-		@include transition-wtime(300ms, transform);
+		@include transition-wtime(300ms, transform, background-color);
 		@include transform(translateX(-90px));
 
 		ul.request_icons {
