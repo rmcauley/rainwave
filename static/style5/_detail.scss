@@ -175,8 +175,8 @@ div.row {
 		}
 
 		body.desktop &:hover, &.hover {
-			background-color: $fave_h;
-			border-bottom-color: $fave_hb;
+			background-color: $fave_h !important;
+			border-bottom-color: $fave_hb !important;
 		}
 	}
 
