@@ -35,7 +35,7 @@ $error_bkg_bright:            darken($error_b, 7%);			// used in gradients
 $vote_registered:             #192D67;
 $song_yours:                  #18a485;
 $autovoted:                   darken($song_yours, 23%);
-$vote_requester:              lighten(saturate($link, 15%), 10%);
+$vote_requester:              lighten(saturate($blue, 15%), 10%);
 
 // List colors (albums/artists/etc)
 $open_item_bkg:               #1f4f70;				// open album/artist/etc
