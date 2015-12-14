@@ -42,8 +42,9 @@ var Song = function(self, parent_event) {
 		}
 		if (self.autovoted) {
 			self.el.classList.remove("autovoted");
+			self.el.classList.remove("voting_clicked");
+			self.el.classList.remove("voting_registered");
 			self.autovoted = false;
-			self.clear_voting_status();
 			setTimeout(self.vote, 300);
 			return;
 		}
