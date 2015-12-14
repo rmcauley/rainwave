@@ -32,6 +32,7 @@ div.menu_wrapper {
 		display: inline-block;
 		height: 20px;
 		width: 20px;
+		-webkit-transform: translateZ(0);
 
 		&, * {
 			fill: $menu;
