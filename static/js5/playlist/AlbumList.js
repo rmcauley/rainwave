@@ -4,15 +4,16 @@
 	self.$t.list.classList.add("album_list_core");
 
 	var loading = false;
-	Prefs.define("p_sort", [ "az", "rt" ]);
-	Prefs.define("p_favup");
+	Prefs.define("p_null1", [ false, true ], true);
+	Prefs.define("p_sort", [ "az", "rt" ], true);
+	Prefs.define("p_favup", null, true);
 	var sort_faves_first = Prefs.get("p_favup");
-	Prefs.define("p_avup", [ true, false ]);
+	Prefs.define("p_avup", [ true, false ], true);
 	var sort_available_first = Prefs.get("p_avup");
-	var completionist = false;
+	var sort_unrated_first = Prefs.get("p_null1");
 
 	var prefs_update = function(unused_arg, unused_arg2, no_redraw) {
-		completionist = Prefs.get("r_incmplt");
+		sort_unrated_first = Prefs.get("p_null1");
 		sort_faves_first = Prefs.get("p_favup");
 		sort_available_first = Prefs.get("p_avup");
 
@@ -28,6 +29,7 @@
 			self.redraw_current_position();
 		}
 	};
+	Prefs.add_callback("p_null1", prefs_update);
 	Prefs.add_callback("p_sort", prefs_update);
 	Prefs.add_callback("p_favup", prefs_update);
 	Prefs.add_callback("p_avup", prefs_update);
@@ -174,6 +176,11 @@
 			else return 1;
 		}
 
+		if (sort_unrated_first) {
+			if (!self.data[a].rating_user && self.data[b].rating_user) return -1;
+			if (self.data[a].rating_user && !self.data[b].rating_user) return 1;
+		}
+
 		if (self.data[a].name_searchable < self.data[b].name_searchable) return -1;
 		else if (self.data[a].name_searchable > self.data[b].name_searchable) return 1;
 		return 0;
@@ -190,10 +197,11 @@
 			else return 1;
 		}
 
-		if (completionist) {
+		if (sort_unrated_first) {
 			if (!self.data[a].rating_user && self.data[b].rating_user) return -1;
 			if (self.data[a].rating_user && !self.data[b].rating_user) return 1;
 		}
+
 		if (self.data[a].rating_user < self.data[b].rating_user) return 1;
 		if (self.data[a].rating_user > self.data[b].rating_user) return -1;
 

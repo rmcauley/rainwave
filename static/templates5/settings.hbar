@@ -48,6 +48,9 @@
     {{#with p_avup}}
         {{>settings_yesno}}
     {{/with}}
+    {{#with p_null1}}
+        {{>settings_yesno}}
+    {{/with}}
 
     <div class="setting_subheader">
         {{ $l("rating_preferences") }}
