@@ -81,7 +81,7 @@ def bake_templates(source_dir="templates5", dest_file="templates5.js", always_wr
 	source_dir = os.path.join(os.path.dirname(__file__), "..", "static", source_dir)
 	dest_file = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), dest_file)
 	if not os.path.exists(dest_file) or always_write:
-	RWTemplates.compile_templates(source_dir, dest_file, helpers=False, inline_templates=('fave', 'rating', 'rating_album'), **kwargs)
+		RWTemplates.compile_templates(source_dir, dest_file, helpers=False, inline_templates=('fave', 'rating', 'rating_album'), **kwargs)
 
 def bake_beta_templates():
 	return bake_templates(dest_file="templates5b.js", always_write=True, debug_symbols=True, full_calls=False)
