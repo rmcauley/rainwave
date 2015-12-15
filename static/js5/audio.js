@@ -17,6 +17,9 @@ var RWAudio = function() {
 	var muted;
 	var offset_width;
 	var last_user_tunein_check = 0;
+	var audio_el_dest;
+
+	var chrome_is_a_snowflake = false;
 
 	var audio_el = document.createElement("audio");
 	if ("canPlayType" in audio_el) {
@@ -46,12 +49,43 @@ var RWAudio = function() {
 			self.type = "MP3";
 			self.supported = true;
 		}
+
+		if ((navigator.userAgent.indexOf("Chrome") > -1) && (navigator.userAgent.indexOf("Android") > -1)) {
+			chrome_is_a_snowflake = true;
+		}
 	}
+	audio_el = null;
+
+	var setup_audio = function() {
+		if (audio_el && audio_el.parentNode) {
+			audio_el.parentNode.removeChild(audio_el.parentNode);
+		}
+		audio_el = document.createElement("audio");
+		// this should be set but it breaks Safari
+		// I guess it doesn't matter much since we're playing anyway
+		// and this doesn't appear on page load, though. >_>
+		// audio_el.setAttribute("preload", "none");
+		audio_el.addEventListener("stop", self.stop);
+		// do not use "play" - it must be "playing"!!
+		audio_el.addEventListener("playing", self.on_play);
+		// has severe issues on Chrome for mobile
+		if (!chrome_is_a_snowflake) {
+			audio_el.addEventListener("stalled", self.on_stall);
+		}
+		// fires when audio element starts to download
+		audio_el.addEventListener("waiting", self.on_connecting);
+		// non-functional with icecast
+		// audio_el.addEventListener("loadeddata", self.on_audio_loaddeddata);
+		// always reports true, same time as 'connecting'
+		// audio_el.addEventListener("loadstart", self.on_audio_loadstart);
+
+		audio_el_dest.appendChild(audio_el);
+	};
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		if (!self.supported) return;
 
-		root_template.measure_box.appendChild(audio_el);
+		audio_el_dest = root_template.measure_box;
 
 		root_template.volume = document.getElementById("audio_volume");
 		root_template.volume_indicator = document.getElementById("audio_volume_indicator");
@@ -85,23 +119,10 @@ var RWAudio = function() {
 
 		API.add_callback("user", user_tunein_check);
 
+		setup_audio();
+
 		Prefs.define("vol", [ 1.0 ]);
 		draw_volume(Prefs.get("vol"));
-
-		// this should be set but it breaks Safari
-		// I guess it doesn't matter much since we're playing anyway
-		// and this doesn't appear on page load, though. >_>
-		// audio_el.setAttribute("preload", "none");
-		audio_el.addEventListener("stop", self.stop);
-		// do not use "play" - it must be "playing"!!
-		audio_el.addEventListener("playing", self.on_play);
-		audio_el.addEventListener("stalled", self.on_stall);
-		// fires when audio element starts to download
-		audio_el.addEventListener("waiting", self.on_connecting);
-		// non-functional with icecast
-		// audio_el.addEventListener("loadeddata", self.on_audio_loaddeddata);
-		// always reports true, same time as 'connecting'
-		// audio_el.addEventListener("loadstart", self.on_audio_loadstart);
 	});
 
 	var user_tunein_check = function(json) {
@@ -149,8 +170,8 @@ var RWAudio = function() {
 			source.addEventListener("error", self.on_error);
 		}
 		else {
-			source.addEventListener("error", function() {
-				self.on_stall(null, i);
+			source.addEventListener("error", function(e) {
+				self.on_stall(e, i);
 			});
 		}
 		return source;
@@ -202,6 +223,9 @@ var RWAudio = function() {
 
 		audio_el.pause(0);
 		while (audio_el.firstChild) audio_el.removeChild(audio_el.firstChild);
+		if (audio_el.parentNode) audio_el.parentNode.removeChild(audio_el);
+		audio_el = null;
+		setup_audio();
 		if (self.changed_status_callback) {
 			self.changed_status_callback(playing_status);
 		}
@@ -227,10 +251,12 @@ var RWAudio = function() {
 	};
 
 	self.on_connecting = function() {
+		console.log("waiting");
 		el.classList.add("working");
 	};
 
 	self.on_play = function() {
+		console.log("playing");
 		el.classList.add("playing");
 		el.classList.remove("working");
 		self.clear_audio_errors();
@@ -238,6 +264,12 @@ var RWAudio = function() {
 	};
 
 	self.on_stall = function(e, i) {
+		if (i !== undefined) {
+			console.log("stalled after source error");
+		}
+		else {
+			console.log("stalled from audio element");
+		}
 		el.classList.remove("playing");
 		el.classList.add("working");
 		if (!ErrorHandler) return;
@@ -251,6 +283,7 @@ var RWAudio = function() {
 	};
 
 	self.on_error = function(e) {
+		console.log("error");
 		if (!ErrorHandler) return;
 		var a = document.createElement("a");
 		a.setAttribute("href", "/tune_in/" + User.sid + ".mp3");
