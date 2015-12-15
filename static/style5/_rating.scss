@@ -69,7 +69,7 @@ div.rating {
 		@include transition-wtime(200ms, opacity, transform, visibility);
 		@include transform(translateX(0px));
 
-		&.listener_number {
+		&.listener_number, div.rating_hover {
 			color: $rating_hover_text;
 		}
 
