@@ -1,4 +1,4 @@
-{{#if ^!Sizing.simple}}
+{{#if ^!Sizing.simple && !MOBILE}}
 	<div id="hotkey_error"></div>
 	<div id="hotkey">
 		<div>Waiting For Hotkey</div>
