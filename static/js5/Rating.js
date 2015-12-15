@@ -184,23 +184,15 @@ var Rating = function() {
 		this.style.backgroundPosition = "0px " + (-(Math.round((Math.round(this.rating_now * 10) / 2)) * 28) + 3) + "px";
 	};
 
-	var get_rating_from_mouse = function(evt, relative_x, relative_y) {
+	var get_rating_from_mouse = function(evt) {
 		var x, y;
 		if ((typeof(evt.offsetX) != "undefined") && (typeof(evt.offsetY) != "undefined")) {
 			x = evt.offsetX;
 			y = evt.offsetY;
 		}
 		else {
-			if (!evt.target.offset_left && !relative_x) {
-				evt.target.offset_left = evt.target.offsetLeft;
-			}
-			if (!evt.target.offset_top && !relative_y) {
-				evt.target.offset_top = evt.target.offsetTop;
-			}
 			x = evt.layerX || evt.x;
 			y = evt.layerY || evt.y;
-			if (!relative_x) x -= evt.target.offset_left;
-			if (!relative_y) y -= evt.target.offset_top;
 		}
 
 		if (x < 0 || y < 0) return 1;
@@ -315,7 +307,7 @@ var Rating = function() {
 
 	// INDIVIDUAL RATING BAR CODE
 
-	self.register = function(json, relative_x, relative_y) {
+	self.register = function(json) {
 		if (!json || !json.$t.rating || !json.id || isNaN(json.id)) {
 			return;
 		}
@@ -330,8 +322,8 @@ var Rating = function() {
 
 		if (User.id > 1) {
 			var is_song = json.title || json.albums || json.album_id || json.album_rating || json.artist_parseable ? true : false;
-			if (is_song) register_song(json, relative_x, relative_y);
-			else register_album(json, relative_x, relative_y);
+			if (is_song) register_song(json);
+			else register_album(json);
 
 			if (json.rating_user) {
 				json.$t.rating.classList.add("rating_user");
@@ -359,7 +351,7 @@ var Rating = function() {
 		// that refers to or uses "json" in any way.
 	};
 
-	var register_song = function(json, relative_x, relative_y) {
+	var register_song = function(json) {
 		json.$t.rating.classList.add("song_rating");
 		json.$t.rating.setAttribute("name", "srate_" + json.id);
 
@@ -390,7 +382,7 @@ var Rating = function() {
 		var on_mouse_move = function(evt) {
 			if (!json.rating_allowed && !User.rate_anything) return;
 			if (evt.target !== this) return;
-			var tr = get_rating_from_mouse(evt, relative_x, relative_y);
+			var tr = get_rating_from_mouse(evt);
 			if (tr) {
 				json.$t.rating.rating_set(tr);
 				json.$t.rating_hover_number.textContent = Formatting.rating(tr);
@@ -414,7 +406,7 @@ var Rating = function() {
 			if (is_touching) return;
 			if (!json.rating_allowed && !User.rate_anything) return;
 			if (evt.target !== this) return;
-			var new_rating = get_rating_from_mouse(evt, relative_x, relative_y);
+			var new_rating = get_rating_from_mouse(evt);
 			if (json.rating_allowed || User.rate_anything) {
 				self.do_rating(new_rating, json);
 			}
@@ -433,7 +425,7 @@ var Rating = function() {
 		}
 	};
 
-	var register_album = function(json, relative_x, relative_y) {
+	var register_album = function(json) {
 		json.$t.rating.setAttribute("name", "arate_" + json.id);
 		json.$t.rating.classList.add("album_rating");
 
