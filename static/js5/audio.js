@@ -47,10 +47,11 @@ var RWAudio = function() {
 			self.supported = true;
 		}
 	}
-	audio_el = null;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		if (!self.supported) return;
+
+		root_template.measure_box.appendChild(audio_el);
 
 		root_template.volume = document.getElementById("audio_volume");
 		root_template.volume_indicator = document.getElementById("audio_volume_indicator");
@@ -86,6 +87,21 @@ var RWAudio = function() {
 
 		Prefs.define("vol", [ 1.0 ]);
 		draw_volume(Prefs.get("vol"));
+
+		// this should be set but it breaks Safari
+		// I guess it doesn't matter much since we're playing anyway
+		// and this doesn't appear on page load, though. >_>
+		// audio_el.setAttribute("preload", "none");
+		audio_el.addEventListener("stop", self.stop);
+		// do not use "play" - it must be "playing"!!
+		audio_el.addEventListener("playing", self.on_play);
+		audio_el.addEventListener("stalled", self.on_stall);
+		// fires when audio element starts to download
+		audio_el.addEventListener("waiting", self.on_connecting);
+		// non-functional with icecast
+		// audio_el.addEventListener("loadeddata", self.on_audio_loaddeddata);
+		// always reports true, same time as 'connecting'
+		// audio_el.addEventListener("loadstart", self.on_audio_loadstart);
 	});
 
 	var user_tunein_check = function(json) {
@@ -119,14 +135,31 @@ var RWAudio = function() {
 	};
 
 	self.play_stop = function(evt) {
-		if (audio_el) self.stop(evt);
+		if (playing_status) self.stop(evt);
 		else self.play(evt);
 	};
 
-	self.play = function(evt) {
-		if (evt) {
-			evt.preventDefault();
+	var setup_source = function(i, stream_url) {
+		var source = document.createElement("source");
+		source.setAttribute("src", stream_url);
+		source.setAttribute("type", filetype);
+		// doesn't work
+		// source.addEventListener("playing", self.on_play);
+		if (i == stream_urls.length - 1) {
+			source.addEventListener("error", self.on_error);
 		}
+		else {
+			source.addEventListener("error", function() {
+				self.on_stall(null, i);
+			});
+		}
+		return source;
+	};
+
+	self.play = function(evt) {
+		// if (evt) {
+		// 	evt.preventDefault();
+		// }
 
 		if (!self.supported) {
 			if (!self.detect_hijack() || !ErrorHandler) return;
@@ -134,43 +167,15 @@ var RWAudio = function() {
 			return;
 		}
 
-		if (!audio_el) {
-			audio_el = document.createElement("audio");
-			// this should be set but it breaks Safari
-			// I guess it doesn't matter much since we're playing anyway
-			// and this doesn't appear on page load, though. >_>
-			// audio_el.setAttribute("preload", "none");
-			audio_el.addEventListener("stop", self.stop);
-			// do not use "play" - it must be "playing"!!
-			audio_el.addEventListener("playing", self.on_play);
-			audio_el.addEventListener("stalled", self.on_stall);
-			// fires when audio element starts to download
-			audio_el.addEventListener("waiting", self.on_connecting);
-			// non-functional with icecast
-			// audio_el.addEventListener("loadeddata", self.on_audio_loaddeddata);
-			// always reports true, same time as 'connecting'
-			// audio_el.addEventListener("loadstart", self.on_audio_loadstart);
-
+		if (!playing_status) {
 			if (!Prefs.get("vol") || (Prefs.get("vol") > 1) || (Prefs.get("vol") < 0)) {
 				Prefs.change("vol", 1.0);
 			}
 			audio_el.volume = Prefs.get("vol");
 			draw_volume(Prefs.get("vol"));
 
-			var source;
 			for (var i = 0; i < stream_urls.length; i++) {
-				source = document.createElement("source");
-				source.setAttribute("src", stream_urls[i]);
-				source.setAttribute("type", filetype);
-				// doesn't work
-				// source.addEventListener("playing", self.on_play);
-				if (i == stream_urls.length - 1) {
-					source.addEventListener("error", self.on_error);
-				}
-				else {
-					source.addEventListener("error", self.on_stall);
-				}
-				audio_el.appendChild(source);
+				audio_el.appendChild(setup_source(i, stream_urls[i]));
 			}
 		}
 
@@ -184,7 +189,7 @@ var RWAudio = function() {
 
 	self.stop = function(evt, no_error_clear) {
 		if (!self.supported) return;
-		if (evt) evt.preventDefault();
+		// if (evt) evt.preventDefault();
 
 		el.classList.remove("playing");
 		el.classList.remove("working");
@@ -195,12 +200,8 @@ var RWAudio = function() {
 			self.clear_audio_errors();
 		}
 
-		if (!audio_el) return;
-
 		audio_el.pause(0);
 		while (audio_el.firstChild) audio_el.removeChild(audio_el.firstChild);
-		audio_el.load();
-		audio_el = null;
 		if (self.changed_status_callback) {
 			self.changed_status_callback(playing_status);
 		}
@@ -236,15 +237,20 @@ var RWAudio = function() {
 		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
-	self.on_stall = function(e) {
+	self.on_stall = function(e, i) {
 		el.classList.remove("playing");
 		el.classList.add("working");
 		if (!ErrorHandler) return;
-		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_connect_error", 500));
+		var append;
+		if (i !== undefined) {
+			append = document.createElement("span");
+			append.textContent = " (" + (i + 1) + "/" + stream_urls.length + ")";
+		}
+		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_connect_error", 500), append);
 		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
-	self.on_error = function() {
+	self.on_error = function(e) {
 		if (!ErrorHandler) return;
 		var a = document.createElement("a");
 		a.setAttribute("href", "/tune_in/" + User.sid + ".mp3");
