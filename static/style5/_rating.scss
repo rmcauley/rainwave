@@ -7,7 +7,7 @@ div.rating {
 	width: $rating_width;
 	padding: 0;
 	margin: 0;
-	color: $rating_hover_text;
+	color: $rating_site_text;
 	height: $rating_height;
 
 	body.full {
@@ -69,8 +69,12 @@ div.rating {
 		@include transition-wtime(200ms, opacity, transform, visibility);
 		@include transform(translateX(0px));
 
-		&.listener_number {
+		&.listener_number, &.rating_hover {
 			color: $rating_hover_text;
+
+			div.song_fave_highlight & {
+				color: $fave;
+			}
 		}
 
 		&.rating_confirm {
