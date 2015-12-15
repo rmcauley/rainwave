@@ -69,8 +69,12 @@ div.rating {
 		@include transition-wtime(200ms, opacity, transform, visibility);
 		@include transform(translateX(0px));
 
-		&.listener_number, div.rating_hover {
+		&.listener_number, &.rating_hover {
 			color: $rating_hover_text;
+
+			div.song_fave_highlight & {
+				color: $fave;
+			}
 		}
 
 		&.rating_confirm {
