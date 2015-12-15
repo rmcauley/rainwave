@@ -46,8 +46,8 @@ $cooldown_h:                  mix($hover_bkg, $cooldown, 50%);
 $cooldown_hb:                 lighten($cooldown_h, 10%);
 $fave_h:                      darken($fave, 65%);
 $fave_hb:                     desaturate(darken($fave, 45%), 70%);
-$album_incomplete:            #381e3d;
-$album_incomplete_cool:       #2a162e;
+$album_incomplete:            transparent; //#381e3d;
+$album_incomplete_cool:       $cooldown;   //#2a162e;
 $new_indicator:               $orange;			// when album is new
 
 // Panels
