@@ -39,6 +39,7 @@ var R4Notify = function() {
 		if (!sched_current || !sched_current.songs || sched_current.songs.length === 0) return;
 		if (document.body.classList.contains("loading")) return;
 		if (sched_current.songs[0].id == current_song_id) return;
+		if (!document.body.classList.contains("tuned_in")) return;
 		current_song_id = sched_current.songs[0].id;
 
 		var art = sched_current.songs[0].albums[0].art ? sched_current.songs[0].albums[0].art + "_120.jpg" : "/static/images4/noart_1.jpg";
