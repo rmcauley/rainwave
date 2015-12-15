@@ -17,11 +17,13 @@ div.history_header {
 	font-size: smaller;
 	text-transform: uppercase;
 	@include transform(translateY(-30px));
-	        transition: opacity 300ms $transfunc, background-color 300ms $transfunc, transform $transtime;
-	-webkit-transition: opacity 300ms $transfunc, background-color 300ms $transfunc, transform $transtime;
+	        transition: opacity 300ms $transfunc, transform $transtime;
+	-webkit-transition: opacity 300ms $transfunc, transform $transtime;
 
 	body.desktop & {
 		will-change: opacity, background-color;
+			    transition: opacity 300ms $transfunc, background-color 300ms $transfunc, transform $transtime;
+		-webkit-transition: opacity 300ms $transfunc, background-color 300ms $transfunc, transform $transtime;
 	}
 
 	span.history_header_header {
@@ -29,7 +31,7 @@ div.history_header {
 	}
 
 	svg.history_pulldown_arrow {
-		display: inline-block;
+		display: none;
 		position: relative;
 		height: 1em;
 		width: 1em;
@@ -39,6 +41,10 @@ div.history_header {
 		@include transition-wtime(350ms, transform);
 		-webkit-transform-origin: 0.5em 0.5em;
 		        transform-origin: 0.5em 0.5em;
+
+		body.desktop & {
+			display: inline-block;
+		}
 	}
 
 	&.history_expandable svg.history_pulldown_arrow {
@@ -66,7 +72,7 @@ div.timeline_event {
 	@include transition(transform, opacity, visibility);
 
 	&.sched_history_hidden {
-		visibility: hidden;
+	 	opacity: 0;
 	}
 
 	div.song {
