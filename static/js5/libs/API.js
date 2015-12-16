@@ -72,7 +72,7 @@ var API = function() {
 
 		// only handle browser closing/opening on mobile
 		if (visibilityEventNames && visibilityEventNames.change && document.addEventListener) {
-			if ((navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1)) {
+			if (MOBILE || (navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1)) {
 				document.addEventListener(visibilityEventNames.change, handle_visibility_change, false);
 			}
 		}
@@ -257,6 +257,9 @@ var API = function() {
 	};
 
 	self.force_sync = function() {
+		if (sync_permastop || sync_stopped) {
+			return;
+		}
 		sync_pause();
 		sync_get();
 	};
