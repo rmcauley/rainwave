@@ -19,6 +19,9 @@ var RWAudio = function() {
 	var last_user_tunein_check = 0;
 	var audio_el_dest;
 
+	// Chrome on mobile has a really nasty habit of stalling AFTER playback has started
+	// And also taking AGES to start the actual playback.
+	// We use this flag in a few places to stop Chrome from murdering itself on mobile
 	var chrome_is_a_snowflake = false;
 
 	var audio_el = document.createElement("audio");
@@ -69,9 +72,7 @@ var RWAudio = function() {
 		// do not use "play" - it must be "playing"!!
 		audio_el.addEventListener("playing", self.on_play);
 		// has severe issues on Chrome for mobile
-		if (!chrome_is_a_snowflake) {
-			audio_el.addEventListener("stalled", self.on_stall);
-		}
+		audio_el.addEventListener("stalled", self.on_stall);
 		// fires when audio element starts to download
 		audio_el.addEventListener("waiting", self.on_connecting);
 		// non-functional with icecast
@@ -137,6 +138,7 @@ var RWAudio = function() {
 			last_user_tunein_check = parseInt(Clock.now);
 			if (!json.tuned_in) {
 				ErrorHandler.remove_permanent_error("audio_connect_error_reattempting");
+				ErrorHandler.remove_permanent_error("chrome_mobile_takes_time");
 				self.stop();
 				self.play();
 			}
@@ -152,6 +154,7 @@ var RWAudio = function() {
 		ErrorHandler.remove_permanent_error("m3u_hijack_right_click");
 		ErrorHandler.remove_permanent_error("audio_error");
 		ErrorHandler.remove_permanent_error("audio_connect_error");
+		ErrorHandler.remove_permanent_error("chrome_mobile_takes_time");
 		el.classList.remove("working");
 	};
 
@@ -184,11 +187,15 @@ var RWAudio = function() {
 
 		if (!self.supported) {
 			if (!self.detect_hijack() || !ErrorHandler) return;
-			ErrorHandler.nonpermanent_error(ErrorHandler.make_error(400, "m3u_hijack_right_click"));
+			ErrorHandler.nonpermanent_error(ErrorHandler.make_error("m3u_hijack_right_click", 500));
 			return;
 		}
 
 		if (!playing_status) {
+			if (ErrorHandler) {
+				ErrorHandler.permanent_error(ErrorHandler.make_error("chrome_mobile_takes_time", 500));
+			}
+
 			if (!Prefs.get("vol") || (Prefs.get("vol") > 1) || (Prefs.get("vol") < 0)) {
 				Prefs.change("vol", 1.0);
 			}
@@ -251,12 +258,12 @@ var RWAudio = function() {
 	};
 
 	self.on_connecting = function() {
-		console.log("waiting");
+		//console.log("waiting");
 		el.classList.add("working");
 	};
 
 	self.on_play = function() {
-		console.log("playing");
+		//console.log("playing");
 		el.classList.add("playing");
 		el.classList.remove("working");
 		self.clear_audio_errors();
@@ -265,10 +272,13 @@ var RWAudio = function() {
 
 	self.on_stall = function(e, i) {
 		if (i !== undefined) {
-			console.log("stalled after source error");
+			//console.log("stalled after source error");
+		}
+		else if (chrome_is_a_snowflake) {
+			return;
 		}
 		else {
-			console.log("stalled from audio element");
+			//console.log("stalled from audio element");
 		}
 		el.classList.remove("playing");
 		el.classList.add("working");
@@ -283,7 +293,7 @@ var RWAudio = function() {
 	};
 
 	self.on_error = function(e) {
-		console.log("error");
+		//console.log("error");
 		if (!ErrorHandler) return;
 		var a = document.createElement("a");
 		a.setAttribute("href", "/tune_in/" + User.sid + ".mp3");
@@ -293,6 +303,7 @@ var RWAudio = function() {
 			self.clear_audio_errors();
 		});
 		ErrorHandler.remove_permanent_error("audio_connect_error");
+		ErrorHandler.remove_permanent_error("chrome_mobile_takes_time");
 		ErrorHandler.nonpermanent_error(ErrorHandler.make_error("audio_error", 500), a);
 		self.stop(null, true);
 		self.supported = false;

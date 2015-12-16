@@ -109,6 +109,7 @@
    "listen_via_browser"                              : "Listen In Browser",
    "listen_via_mp3"                                  : "Listen with MP3",
    "listen_via_ogg"                                  : "Listen with Ogg",
+   "chrome_mobile_takes_time"                        : "Android can take up to 20 seconds.  An orange icon means you're OK - please wait!",
 
    "api_docs"                                        : "API Docs",
    "github_repo"                                     : "GitHub",
