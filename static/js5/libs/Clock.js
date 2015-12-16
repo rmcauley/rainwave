@@ -19,10 +19,30 @@ var Clock = function() {
 		Prefs.define("t_tl", [ true, false ]);
 		API.add_callback("api_info", self.resync);
 
-		if (interval === 0) {
+		if (!interval) {
 			interval = setInterval(self.loop, 1000);
 		}
+
+		// only handle browser closing/opening on mobile
+		if (MOBILE && visibilityEventNames && visibilityEventNames.change && document.addEventListener) {
+			document.addEventListener(visibilityEventNames.change, handle_visibility_change, false);
+		}
 	});
+
+	var handle_visibility_change = function() {
+		if (document[visibilityEventNames.hidden]) {
+			if (interval) {
+				clearInterval(interval);
+				interval = null;
+			}
+		}
+		else {
+			self.loop();
+			if (!interval) {
+				interval = setInterval(self.loop, 1000);
+			}
+		}
+	};
 
 	self.time = function() {
 		return Math.round(new Date().getTime() / 1000);
@@ -80,7 +100,7 @@ var Clock = function() {
 			return;
 		}
 
-		if (Sizing.simple && (!Prefs.get("t_tl") || !page_title || MOBILE  || !User.tuned_in)) {
+		if (MOBILE || Sizing.simple && (!Prefs.get("t_tl") || !page_title || !User.tuned_in)) {
 			if (document.title != original_title) document.title = original_title;
 			return;
 		}
