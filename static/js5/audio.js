@@ -192,7 +192,7 @@ var RWAudio = function() {
 		}
 
 		if (!playing_status) {
-			if (ErrorHandler) {
+			if (ErrorHandler && chrome_is_a_snowflake) {
 				ErrorHandler.permanent_error(ErrorHandler.make_error("chrome_mobile_takes_time", 500));
 			}
 
