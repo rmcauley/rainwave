@@ -193,16 +193,24 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 			self.write("<tr><td>%s</th><td>%s</td>" % (row['id'], row['title']))
 			if row['rating']:
 				self.write("<td>(%s)</td>" % row['rating'])
+			elif 'rating' in row:
+				self.write("<td></td>")
 			if row['rating_user']:
 				self.write("<td>%s</td>" % str(row['rating_user']))
+			elif 'rating_user' in row:
+				self.write("<td></td>")
 			if row['fave']:
 				self.write("<td>Your Fave</td>")
 			elif 'fave' in row:
 				self.write("<td></td>")
 			if row['length']:
 				self.write("<td>{}:{:0>2d}</td>".format(int(row['length'] / 60), row['length'] % 60))
+			elif 'length' in row:
+				self.write("<td></td>")
 			if row['origin_sid']:
 				self.write("<td>%s</td>" % config.station_id_friendly[row['origin_sid']])
+			elif 'origin_sid' in row:
+				self.write("<td></td>")
 			self.render_row_special(row)
 			self.write("</tr>")
 		self.write(self.render_string("basic_footer.html"))
