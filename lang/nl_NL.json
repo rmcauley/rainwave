@@ -384,7 +384,7 @@
    "line_expiry_election"                            : "Verloop Tijd (als er geen goede aanvragen zijn)",
    "line_wait_start"                                 : "Deelgenomen aan Wachtrij om (tijdsperiode)",
    "artist_parseable"                                : "Artiesten (computer-leesbaar formaat)",
-   "song_played_at"                                  : "Gespeeld om (tijdsperiode)"
+   "song_played_at"                                  : "Gespeeld om (tijdsperiode)",
 
    "__comment__"                 : "Admin Panel Lines (translation not required)",
 
