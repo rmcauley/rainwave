@@ -51,6 +51,7 @@ def add_help_class(klass, url):
 class IndexRequest(api.web.HTMLRequest):
 	auth_required = False
 	login_required = False
+	sid_required = False
 	return_name = "help"
 
 	def write_property(self, name, handler, to_print):
