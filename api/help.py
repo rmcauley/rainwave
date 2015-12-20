@@ -98,7 +98,7 @@ class IndexRequest(api.web.HTMLRequest):
 xhr.open("POST", "http://rainwave.cc/api4/info", true);
 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 xhr.onload = function() { console.log(xhr.response) };
-xhr.send("sid=1");</pre>
+xhr.send("sid=3");</pre>
 <p>Get currently playing/election data for Game/station ID 1 for a user with ID 2:</p>
 <pre>xhr.open("POST", "http://rainwave.cc/api4/info", true);
 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -111,10 +111,10 @@ xhr.send("sid=5&user=2&key=AUTHKEYFROMUSER&entry_id=1");</pre>
 <pre>xhr.open("POST", "http://rainwave.cc/api4/album", true);
 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 xhr.send("sid=2&user=2&key=AUTHKEYFROMUSER&id=1");</pre>
-<p>Get the 300th to 350th previously played song (paginated requests):</p>
+<p>Get the 300th to 350th previously played song for Chiptune (using paginated requests):</p>
 <pre>xhr.open("POST", "http://rainwave.cc/api4/playback_history", true);
 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-xhr.send("sid=2&user=2&key=AUTHKEYFROMUSER&id=1&per_page=50&page_start=6");</pre>
+xhr.send("sid=4&user=2&key=AUTHKEYFROMUSER&id=1&per_page=50&page_start=6");</pre>
 <p>Please experiment by making requests yourself and looking at the output.  Parameters and conditions are noted in the table above.</p>""")
 		self.write("<ul><li>The Rainwave API endpoints are all: <b>http://rainwave.cc/api4/[URL]</b>, with URL corresponding to the table above.</li>")
 		self.write("<li>All endpoints respond to POST.  Some allow GET requests as well, and are noted so in the table above. </li>")
