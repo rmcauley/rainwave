@@ -75,9 +75,11 @@
 			</div>
 
 			{{#if url }}
-				<a class="song_link" href="{{ url }}" target="_blank">
-					{{ link_text }}
-				</a>
+				<div class="song_link_container">
+					<a class="song_link" href="{{ url }}" target="_blank">
+						{{ link_text }}
+					</a>
+				</div>
 			{{/if}}
 		{{/if}}
 	</div>

@@ -39,14 +39,14 @@ div.song {
 		color: $fave;
 	}
 
-	div.title, div.album, div.artist, div.cooldown_info, a.song_link {
+	div.title, div.album, div.artist, div.cooldown_info, div.song_link_container {
 		text-overflow: ellipsis;
 		overflow: hidden;
 		white-space: nowrap;
 		min-height: $rating_height + 1;
 	}
 
-	div.album, div.artist, div.cooldown_info, a.song_link {
+	div.album, div.artist, div.cooldown_info, div.song_link_container {
 		padding-left: 15px;
 		color: $text_d;
 
@@ -68,8 +68,11 @@ div.song {
 		display: block;
 	}
 
-	a.song_link {
+	div.song_link_container {
 		display: none;
+	}
+
+	a.song_link {
 		padding-right: 18px;
 		background-repeat: no-repeat;
 		background-size: 14px 14px;
@@ -91,8 +94,8 @@ div.song {
 		}
 
 		&.now_playing {
-			a.song_link {
-				display: inline;
+			div.song_link_container {
+				display: block;
 			}
 		}
 	}
