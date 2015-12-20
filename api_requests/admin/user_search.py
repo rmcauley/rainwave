@@ -5,6 +5,7 @@ from api import fieldtypes
 
 @handle_api_url("user_search")
 class UserSearchRequest(api.web.APIHandler):
+	description = "Returns a user ID and station they're currently tuned to based on the username provided. (used by Rainwave's IRC bot)"
 	fields = { "username": (fieldtypes.string, True) }
 	auth_required = False
 	sid_required = False

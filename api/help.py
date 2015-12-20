@@ -11,7 +11,8 @@ url_properties = ( ("allow_get", "GET", "Allows HTTP GET requests in addition to
 	("dj_required", "dj", "User must be the active DJ for the station to use command."),
 	("admin_required", "admin", "User must be an administrator to use command."),
 	("pagination", "pagination", "Request can be paginated using 'per_page' and 'page_start' fields."))
-section_order = ( "Core JSON", "HTML Pages", "Statistic HTML", "Admin JSON", "Admin HTML", "Other" )
+section_order_normal = ( "Core JSON", "Statistic HTML" )
+section_order = ( "Core JSON", "Statistic HTML", "HTML Pages", "Admin JSON", "Admin HTML", "Other" )
 sections = { "Core JSON": {},
 			"HTML Pages": {},
 			"Statistic HTML": {},
@@ -47,7 +48,11 @@ def sectionize_requests():
 def add_help_class(klass, url):
 	help_classes[url] = klass
 
-class IndexRequest(tornado.web.RequestHandler):
+class IndexRequest(api.web.HTMLRequest):
+	auth_required = False
+	login_required = False
+	return_name = "help"
+
 	def write_property(self, name, handler, to_print):
 		if getattr(handler, name, False):
 			self.write("<td class='%s requirement'>%s</td>" % (name, to_print))
@@ -78,18 +83,46 @@ class IndexRequest(tornado.web.RequestHandler):
 
 		self.write("<h2>Requests</h2>")
 		self.write("<table class='help_legend'>")
-		for section in section_order:
+		order = section_order if self.user.is_admin() else section_order_normal
+		for section in order:
 			self.write("<tr><th colspan='10'>%s</th></tr>" % section)
 			self.write("<tr><th>Allows GET<th>Auth Required</th><th>Station ID Required</th><th>Tune In Required</th><th>Login Required</th><th>DJ</th><th>Admin</th><th>Pagination</th><th>URL</th><th>Link</th></tr>")
 			for url, handler in sorted(sections[section].items()):
 				self.write_class_properties(url, handler)
 		self.write("</table>")
 		self.write("<h2>Making an API Request</h2>")
-		self.write("<ul><li>The Rainwave 4 API endpoints are all: <b>http://rainwave.cc/api4/[request]</b>.</li>")
-		self.write("<li>All endpoints respond to POST.  Some allow GET requests, some do not.</li>")
-		self.write("<li>Authentication keys and user IDs need to be obtained by the users at http://rainwave.cc/keys/</li>")
-		self.write("<li>Authentication is provided by 'user_id' and 'key' form data.</li>")
+		self.write("""
+<p>Get the currently playing/election data for Covers/station ID 3 for an anonymous user or external website:</p>
+<pre>xhr = new XMLHttpRequest();
+xhr.open("POST", "http://rainwave.cc/api4/info", true);
+xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+xhr.onload = function() { console.log(xhr.response) };
+xhr.send("sid=1");</pre>
+<p>Get currently playing/election data for Game/station ID 1 for a user with ID 2:</p>
+<pre>xhr.open("POST", "http://rainwave.cc/api4/info", true);
+xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+xhr.send("sid=1&user=2&key=AUTHKEYFROMUSER");</pre>
+<p>Vote on a song on All/station ID 5:</p>
+<pre>xhr.open("POST", "http://rainwave.cc/api4/vote", true);
+xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+xhr.send("sid=5&user=2&key=AUTHKEYFROMUSER&entry_id=1");</pre>
+<p>Grab album information for album ID 1 on OCR Remix/station ID 2:</p>
+<pre>xhr.open("POST", "http://rainwave.cc/api4/album", true);
+xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+xhr.send("sid=2&user=2&key=AUTHKEYFROMUSER&id=1");</pre>
+<p>Get the 300th to 350th previously played song (paginated requests):</p>
+<pre>xhr.open("POST", "http://rainwave.cc/api4/playback_history", true);
+xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+xhr.send("sid=2&user=2&key=AUTHKEYFROMUSER&id=1&per_page=50&page_start=6");</pre>
+<p>Please experiment by making requests yourself and looking at the output.  Parameters and conditions are noted in the table above.</p>""")
+		self.write("<ul><li>The Rainwave API endpoints are all: <b>http://rainwave.cc/api4/[URL]</b>, with URL corresponding to the table above.</li>")
+		self.write("<li>All endpoints respond to POST.  Some allow GET requests as well, and are noted so in the table above. </li>")
+		self.write("<li>Click the URL in the table above to get details on what the request does and what arguments it requires.</li>")
+		self.write("<li>Authentication keys and user IDs are only visible to end users, they can see theirs at <a href='http://rainwave.cc/keys/'>http://rainwave.cc/keys/</a></li>")
+		self.write("<li>If an API Key is required in the table above and the user is anonymous, you will not be able use that functionality.  API keys for anonymous users are only given to those using the rainwave.cc site and expire quickly.  Registered user's API keys do not expire.</li>")
 		self.write("<li>Desired station for the request must be specified by 'sid' form data, using the corresponding Station ID below.</li>")
+		self.write("<li>Rainwave's API is complete, and will not be changing.  New functionality will only be done via new commands.</li>")
+		self.write("<li>There is a possibility that the API can crash and not return JSON.  Try/catch for safety.  Other errors (404/500) return JSON.</li>")
 		self.write("</ul>")
 		self.write("<h2>Station ID For 'sid' Argument</h2>")
 		self.write("<ul>")

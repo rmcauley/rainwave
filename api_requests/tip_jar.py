@@ -7,6 +7,7 @@ from libs import db
 
 @handle_api_url("tip_jar")
 class TipJarContents(APIHandler):
+	description = "Returns a list of donations Rainwave has had."
 	return_name = "tip_jar"
 	allow_get = True
 	login_required = False

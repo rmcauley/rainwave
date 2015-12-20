@@ -12,6 +12,7 @@ from rainwave import user as UserLib
 
 @handle_api_url("listener")
 class ListenerDetailRequest(APIHandler):
+	description = "Gets detailed information, such as favourite albums and rating histogram, on a particular user."
 	sid_required = False
 	login_required = False
 	fields = { "id": (fieldtypes.user_id, True) }
@@ -113,6 +114,7 @@ class ListenerDetailRequest(APIHandler):
 
 @handle_api_url("current_listeners")
 class CurrentListenersRequest(APIHandler):
+	description = "Lists all current listeners for a station."
 	sid_required = True
 
 	def post(self):
@@ -124,7 +126,7 @@ class CurrentListenersHTML(PrettyPrintAPIMixin, CurrentListenersRequest):
 
 @handle_api_url("user_info")
 class UserInfoRequest(APIHandler):
-	description = "Get information about the user making the request."
+	description = "Get information about the user whose ID and API key has been provided."
 	auth_required = True
 	sid_required = False
 

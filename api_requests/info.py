@@ -92,7 +92,7 @@ def check_sync_status(sid, offline_ack=False):
 @handle_api_url("info")
 class InfoRequest(APIHandler):
 	auth_required = False
-	description = "Returns current user and station information."
+	description = "Returns current user and station information.  all_albums will append a list of all albums to the request (will slow down your request).  current_listeners will add a list of all current listeners to your request.  Setting 'status' to true will have the response change if the station is currently being DJed. (not recommended to set this to true)"
 	fields = {
 		"all_albums": (fieldtypes.boolean, False),
 		"current_listeners": (fieldtypes.boolean, False),
