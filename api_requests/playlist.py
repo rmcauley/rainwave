@@ -4,9 +4,12 @@ from api import fieldtypes
 from api.server import handle_api_url
 from api.server import handle_api_html_url
 
+import json
+
 from libs import cache
 from libs import db
 from libs import config
+from libs.pretty_date import pretty_date
 from rainwave import playlist
 from rainwave.playlist_objects.metadata import MetadataNotFoundError
 from api.exceptions import APIException
@@ -228,7 +231,32 @@ class PlaybackHistory(APIHandler):
 
 @handle_api_html_url("playback_history")
 class PlaybackHistoryHTML(PrettyPrintAPIMixin, PlaybackHistory):
-	pass
+	login_required = False
+	auth_required = False
+
+	columns = [ "title", "album_name" ]
+
+	def header_special(self):
+		self.write("<th>Artist(s)</th>")
+		self.write("<th>Site Rating</th>")
+		if not self.user.is_anonymous():
+			self.write("<th>Your Rating</th>")
+		self.write("<th>Time Played</th>")
+
+	def row_special(self, row):
+		self.write("<td>")
+		artists = json.loads(row['artist_parseable'])
+		for artist in artists:
+			self.write("%s" % artist['name'])
+			if artist != artists[-1]:
+				self.write(", ")
+		self.write("</td>")
+
+		self.write("<td>%s</td>" % row['rating'])
+		if 'rating_user' in row:
+			self.write("<td>%s</td>" % (row['rating_user'] or ''))
+
+		self.write("<td>%s</td>" % pretty_date(row['song_played_at']))
 
 @handle_api_url("station_song_count")
 class StationSongCountRequest(APIHandler):
