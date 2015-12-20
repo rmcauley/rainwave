@@ -55,14 +55,6 @@ div.history_header {
 		opacity: 1;
 		background-color: $history_header_h_bkg;
 	}
-
-	span.longhist_link {
-		float: right;
-
-		body.simple & {
-			display: none;
-		}
-	}
 }
 
 div.timeline_event {

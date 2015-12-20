@@ -1,9 +1,10 @@
 <div class="timeline" bind="timeline">
 	<div class="timeline_sizer" bind="timeline_sizer">
 		<div class="history_header history_expandable unselectable" bind="history_header">
-			<span class="longhist_link link" bind="longhist_link"></span>
 			<div bind="history_header_link">
-				<span class="history_header_header">{{ $l("previouslyplayed") }}</span>
+				<span class="history_header_header">
+					{{ $l("previouslyplayed") }}
+				</span>
 				<svg class="history_pulldown_arrow" use="pulldown"></svg>
 			</div>
 		</div>

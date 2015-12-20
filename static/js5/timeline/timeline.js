@@ -36,13 +36,6 @@ var Timeline = function() {
 		el = template.timeline_sizer;
 		history_bar = template.history_bar;
 
-		template.longhist_link.addEventListener("click",
-			function(e) {
-				e.stopPropagation();
-				API.async_get("playback_history", { "per_page": 40 });
-			}
-		);
-
 		template.history_header_link.addEventListener("click",
 			function(e) {
 				Prefs.change("l_stk", !Prefs.get("l_stk"));
