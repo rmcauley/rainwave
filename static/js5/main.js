@@ -19,6 +19,32 @@ var Stations = [];
 			Sizing.simple = false;
 		}
 
+		Prefs.define("roboto", [ true, false ]);
+		Prefs.add_callback("roboto", function(nv) {
+			if (!nv) {
+				document.body.classList.add("nofont");
+			}
+			else {
+				document.body.classList.remove("nofont");
+			}
+		});
+		if (!Prefs.get("roboto")) {
+			document.body.classList.add("nofont");
+		}
+
+		Prefs.define("f_norm", [ true, false ], true);
+		Prefs.add_callback("f_norm", function(nv) {
+			if (!nv) {
+				document.body.classList.add("nofontsize");
+			}
+			else {
+				document.body.classList.remove("nofontsize");
+			}
+		});
+		if (!Prefs.get("f_norm")) {
+			document.body.classList.add("nofontsize");
+		}
+
 		// BOOTSTRAP.station_list = {
 		// 	1: { "id": 1, "name": "Game", "url": "hello" },
 		// 	2: { "id": 2, "name": "OC ReMix", "url": "hello" },

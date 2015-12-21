@@ -183,6 +183,10 @@ body {
 	background: #1c1d1f;
 	font-family: 'Roboto Condensed', 'Helvetica Neue', sans-serif;
 
+	&.nofont {
+		font-family: sans-serif;
+	}
+
 	&.loading {
 		//visibility: hidden;
 

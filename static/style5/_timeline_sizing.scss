@@ -133,6 +133,10 @@ body.full {
 	body.full {
 		font-size: smaller;
 
+		&.nofontsize {
+			font-size: inherit;
+		}
+
 		div.panel.lists {
 			width: 25%;
 		}
@@ -151,6 +155,10 @@ body.full {
 	body.full {
 		font-size: smaller;
 
+		&.nofontsize {
+			font-size: inherit;
+		}
+
 		div.panel.lists {
 			width: 25%;
 		}
@@ -168,6 +176,10 @@ body.full {
 @media (min-width: 1440px) and (max-width: 1599px) {
 	body.full {
 		font-size: smaller;
+
+		&.nofontsize {
+			font-size: inherit;
+		}
 
 		div.panel.lists {
 			width: 25%;
