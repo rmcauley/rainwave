@@ -20,6 +20,7 @@ var Stations = [];
 		}
 
 		Prefs.define("roboto", [ true, false ]);
+		Prefs.define("f_norm", [ true, false ], true);
 		Prefs.add_callback("roboto", function(nv) {
 			if (!nv) {
 				document.body.classList.add("nofont");
@@ -28,11 +29,6 @@ var Stations = [];
 				document.body.classList.remove("nofont");
 			}
 		});
-		if (!Prefs.get("roboto")) {
-			document.body.classList.add("nofont");
-		}
-
-		Prefs.define("f_norm", [ true, false ], true);
 		Prefs.add_callback("f_norm", function(nv) {
 			if (!nv) {
 				document.body.classList.add("nofontsize");
@@ -41,9 +37,6 @@ var Stations = [];
 				document.body.classList.remove("nofontsize");
 			}
 		});
-		if (!Prefs.get("f_norm")) {
-			document.body.classList.add("nofontsize");
-		}
 
 		// BOOTSTRAP.station_list = {
 		// 	1: { "id": 1, "name": "Game", "url": "hello" },
@@ -107,6 +100,16 @@ var Stations = [];
 			document.body.classList.add("full");
 			document.body.classList.remove("simple");
 		}
+		if (!Prefs.get("roboto")) {
+			document.body.classList.add("nofont");
+		}
+		if (!Prefs.get("f_norm")) {
+			document.body.classList.add("nofontsize");
+		}
+		if (Prefs.get("l_displose")) {
+			document.body.classList.add("displose");
+		}
+
 		// Safari has CSS and font rendering issues :/
 		var ua = navigator.userAgent.toLowerCase();
 		if ((ua.indexOf("safari") !== -1) && (ua.indexOf("chrome") === -1)) {

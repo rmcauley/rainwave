@@ -328,6 +328,7 @@
    "prefs_t_rt"                                      : "Show Rating In Tab Title",
    "prefs_t_tl"                                      : "Show Song Title In Tab Title",
    "prefs_l_stksz"                                   : "Permanently Visible History",
+   "prefs_l_displose"                                : "Show Songs That Lost in Elections",
    "prefs_sticky_history_size__none"                 : "None",
    "playlist_preferences"                            : "Album List",
    "prefs_p_avup"                                    : "Sort Availables To Top",

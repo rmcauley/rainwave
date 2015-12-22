@@ -1,5 +1,5 @@
-$song_transitions: opacity $transtime, transform $transtime, background-position 250ms linear;
-$webkit_song_transitions: opacity $transtime, -webkit-transform $transtime, background-position 250ms linear;
+$song_transitions: opacity $transtime, transform $transtime, background-position 250ms linear, visibility $transtime;
+$webkit_song_transitions: opacity $transtime, -webkit-transform $transtime, background-position 250ms linear $transtime;
 
 div.song {
 	box-sizing: border-box;
@@ -11,10 +11,15 @@ div.song {
 	width: 100%;
 
 	&.song_lost {
-		opacity: 0.6;
+		visibility: hidden;
+		opacity: 0;
 
-		body.desktop &:hover {
-			opacity: 1;
+		body.displose & {
+			opacity: 0.6;
+
+			body.desktop &:hover {
+				opacity: 1;
+			}
 		}
 	}
 

@@ -28,7 +28,6 @@
     {{>settings_yesno}}
 {{/with}}
 
-
 <div class="setting_subheader">
     {{ $l("font_options") }}
 </div>
@@ -41,10 +40,13 @@
     {{/with}}
 </div>
 
+<div class="setting_subheader">
+    {{ $l("timeline_preferences") }}
+</div>
+{{#with l_displose}}
+    {{>settings_yesno}}
+{{/with}}
 <div class="power_only">
-    <div class="setting_subheader">
-        {{ $l("timeline_preferences") }}
-    </div>
     {{#with l_stksz}}
         {{>settings_multi}}
     {{/with}}

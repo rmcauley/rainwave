@@ -16,8 +16,17 @@ var Timeline = function() {
 		root_template = root_tmpl;
 		Prefs.define("l_stk", [ false, true ], true);
 		Prefs.define("l_stksz", [ 0, 1, 2, 3, 4, 5 ], true);
+		Prefs.define("l_displose", [ false, true ]);
 		Prefs.add_callback("l_stk", self.reflow);
 		Prefs.add_callback("l_stksz", self.reflow);
+		Prefs.add_callback("l_displose", function(nv) {
+			if (nv) {
+				document.body.classList.add("displose");
+			}
+			else {
+				document.body.classList.remove("displose");
+			}
+		});
 
 		API.add_callback("sched_current", function(json) { sched_current = json; });
 		API.add_callback("sched_next", function(json) { sched_next = json; });

@@ -59,7 +59,12 @@ var RWEvent = function(self) {
 			self.height = (self.songs.length * Sizing.song_size);
 		}
 		else if (self.$t.el.classList.contains("sched_current")) {
-			self.height = ((self.songs.length - 1) * Sizing.song_size) + Sizing.song_size_np;
+			if (Prefs.get("l_displose")) {
+				self.height = ((self.songs.length - 1) * Sizing.song_size) + Sizing.song_size_np;
+			}
+			else {
+				self.height = Sizing.song_size_np;
+			}
 		}
 		else if (self.$t.el.classList.contains("sched_history")) {
 			self.height = Sizing.song_size;
