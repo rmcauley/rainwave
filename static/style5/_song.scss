@@ -16,6 +16,7 @@ div.song {
 
 		body.displose & {
 			opacity: 0.6;
+			visibility: visible;
 
 			body.desktop &:hover {
 				opacity: 1;

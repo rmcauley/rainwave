@@ -129,7 +129,7 @@ var Sizing = function() {
 			self.timeline_header_size = 40;
 		}
 		else {
-			self.song_size_np = 100;
+			self.song_size_np = 90;
 			self.song_size = 70;
 			self.request_size = 70;
 			self.timeline_header_size = 40;

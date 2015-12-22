@@ -26,6 +26,7 @@ var Timeline = function() {
 			else {
 				document.body.classList.remove("displose");
 			}
+			self._reflow(null, true);
 		});
 
 		API.add_callback("sched_current", function(json) { sched_current = json; });

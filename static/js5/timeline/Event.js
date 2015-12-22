@@ -24,9 +24,15 @@ var RWEvent = function(self) {
 			if (self.songs[i].el.classList.contains("now_playing")) {
 				running_height += Sizing.song_size_np;
 			}
+			else if (self.songs[i].el.classList.contains("song_lost")) {
+				if (Prefs.get("l_displose")) {
+					running_height += Sizing.song_size;
+				}
+			}
 			else {
 				running_height += Sizing.song_size;
 			}
+
 			self.songs[i].el.style.zIndex = self.songs.length - i;
 			self.songs[i].el._zIndex = self.songs.length - i;
 		}
