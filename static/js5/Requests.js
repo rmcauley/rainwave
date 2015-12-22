@@ -278,9 +278,9 @@ var Requests = function() {
 			}
 		}
 		else if (new_count < 0) {
-			indicator.textContent = "-" + new_count;
+			indicator.textContent = new_count;
 			if (indicator2) {
-				indicator2.textContent = "-" + new_count;
+				indicator2.textContent = new_count;
 			}
 		}
 		else {
