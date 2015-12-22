@@ -87,7 +87,7 @@ div.timeline {
 
 body.simple {
 	div.panel.detail {
-		div.artists, div.cool_info, div.rating_clear, div.rating_site {
+		div.artists, div.rating_clear, div.rating_site {
 			display: none;
 		}
 	}
@@ -142,9 +142,9 @@ body.full {
 		}
 
 		div.panel.detail {
-			width: 35%;
+			width: 37%;
 
-			div.artists, div.cool_info, div.rating_clear, div.rating_site {
+			div.artists, div.rating_clear, div.rating_site {
 				display: none;
 			}
 		}
@@ -164,9 +164,9 @@ body.full {
 		}
 
 		div.panel.detail {
-			width: 35%;
+			width: 37%;
 
-			div.artists, div.cool_info, div.rating_clear, div.rating_site {
+			div.artists, div.rating_clear, div.rating_site {
 				display: none;
 			}
 		}
@@ -186,11 +186,7 @@ body.full {
 		}
 
 		div.panel.detail {
-			width: 40%;
-
-			div.cool_info {
-				display: none;
-			}
+			width: 42%;
 		}
 	}
 }
