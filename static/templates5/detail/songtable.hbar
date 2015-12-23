@@ -33,7 +33,7 @@
 				{{/each}}
 			</div>
 		{{/if}}
-		{{#if ^!Sizing.simple }}
+		{{#if ^!MOBILE }}
 			<div class="detail_icon" bind="detail_icon">
 				<img src="/static/images4/info.png" />
 			</div>

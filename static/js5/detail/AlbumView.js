@@ -258,9 +258,7 @@ var AlbumView = function(album) {
 		if (album.songs[i].requestable) {
 			Requests.make_clickable(album.songs[i].$t.title, album.songs[i].id);
 		}
-		if (!Sizing.simple) {
-			SongsTableDetail(album.songs[i], (i > album.songs.length - 4));
-		}
+		SongsTableDetail(album.songs[i], (i > album.songs.length - 4));
 	}
 
 	template._header_text = album.name;

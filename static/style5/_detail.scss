@@ -261,7 +261,19 @@ div.row {
 	div.artists {
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
 
+	body.full & {
+		div.full_artists {
+			display: none;
+
+			&.multi_artist {
+				display: block;
+			}
+		}
+	}
+
+	div.artists, div.full_artists {
 		a::after {
 			content: ",";
 		}
