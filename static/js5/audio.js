@@ -153,7 +153,7 @@ var RWAudio = function() {
 		if (!ErrorHandler) return;
 		ErrorHandler.remove_permanent_error("m3u_hijack_right_click");
 		ErrorHandler.remove_permanent_error("audio_error");
-		ErrorHandler.remove_permanent_error("audio_connect_error");
+		remove_audio_connect_error();
 		ErrorHandler.remove_permanent_error("chrome_mobile_takes_time");
 		el.classList.remove("working");
 	};
@@ -270,6 +270,21 @@ var RWAudio = function() {
 		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
+	var stall_timeout;
+	var remove_audio_connect_error = function() {
+		ErrorHandler.remove_permanent_error("audio_connect_error");
+		if (stall_timeout) {
+			clearTimeout(stall_timeout);
+		}
+	};
+	var show_audio_connect_error = function(append) {
+		if (stall_timeout) return;
+		stall_timeout = setTimeout(function() {
+			ErrorHandler.permanent_error(ErrorHandler.make_error("audio_connect_error", 500), append);
+			stall_timeout = null;
+		}, 1500);
+	};
+
 	self.on_stall = function(e, i) {
 		if (i !== undefined) {
 			//console.log("stalled after source error");
@@ -288,7 +303,7 @@ var RWAudio = function() {
 			append = document.createElement("span");
 			append.textContent = " (" + (i + 1) + "/" + stream_urls.length + ")";
 		}
-		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_connect_error", 500), append);
+		show_audio_connect_error(append);
 		if (self.changed_status_callback) self.changed_status_callback(playing_status);
 	};
 
@@ -302,7 +317,7 @@ var RWAudio = function() {
 		a.addEventListener("click", function() {
 			self.clear_audio_errors();
 		});
-		ErrorHandler.remove_permanent_error("audio_connect_error");
+		remove_audio_connect_error();
 		ErrorHandler.remove_permanent_error("chrome_mobile_takes_time");
 		ErrorHandler.nonpermanent_error(ErrorHandler.make_error("audio_error", 500), a);
 		self.stop(null, true);
