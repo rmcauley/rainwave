@@ -36,6 +36,11 @@ $vote_registered:             #192D67;
 $song_yours:                  #18a485;
 $autovoted:                   darken($song_yours, 23%);
 $vote_requester:              lighten(saturate($blue, 15%), 10%);
+$song_votes:                  $text_d;
+$song_cool_info:              mix($blue, $text, 70%);        	// when request panel shows you "On cooldown for X"
+$votebtn_h:                   $blue;
+$votebtn_voted:               $blue;
+$timeline_link_h_bkg:         lighten(saturate($vote_registered, 10%), 19%);			// when vote hover is active but links need to be differentiated
 
 // List colors (albums/artists/etc)
 $open_item_bkg:               #1f4f70;				// open album/artist/etc
@@ -84,13 +89,6 @@ $requests_paused:             #2A073C;
 $requests_warn:               darken($error_bkg, 10%);
 $request_delete:              mix($text, $error_b, 25%);
 $request_drag_bkg:            $blue * 0.5;
-
-// Timeline/Request Song
-$song_votes:                  $text_d;
-$song_cool_info:              mix($blue, $text, 70%);        	// when request panel shows you "On cooldown for X"
-$votebtn_h:                   $blue;
-$votebtn_voted:               $blue;
-$timeline_link_h_bkg:         lighten(saturate($link, 10%), 19%);			// when vote hover is active but links need to be differentiated
 
 // Rating
 $rating_user_text:            $blue;
