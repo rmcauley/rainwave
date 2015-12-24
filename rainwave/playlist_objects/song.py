@@ -474,18 +474,12 @@ class Song(object):
 
 	def update_rating(self, skip_album_update=False):
 		ratings = db.c.fetch_all("SELECT song_rating_user AS rating, COUNT(user_id) AS count FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE song_id = %s AND radio_inactive = FALSE GROUP BY song_rating_user", (self.id,))
-		point_map = config.get("rating_map")
-		points = 0.0
-		potential_points = 0.0
-		for row in ratings:
-			potential_points += row['count']
-			for category in point_map:
-				if row['rating'] >= category['threshold']:
-					points = row['count'] * category['points']
+		(points, potential_points) = rating.rating_calculator(ratings)
 
 		log.debug("song_rating", "%s ratings for %s" % (potential_points, self.filename))
 		if points > 0 and potential_points > config.get("rating_threshold_for_calc"):
 			self.data['rating'] = ((points / potential_points) * 4) + 1
+			self.data['rating_count'] = potential_points
 			log.debug("song_rating", "rating update: %s for %s" % (self.data['rating'], self.filename))
 			db.c.update("UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s", (self.data['rating'], potential_points, self.id))
 

@@ -253,26 +253,24 @@ class Album(AssociatedMetadata):
 
 	def update_rating(self):
 		for sid in db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s", (self.id,)):
-			dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user < 3 AND sid = %s GROUP BY album_id", (self.id, sid))
-			if not dislikes:
-				dislikes = 0
-			neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3 AND album_rating_user < 3.5 AND sid = %s GROUP BY album_id", (self.id, sid))
-			if not neutrals:
-				neutrals = 0
-			neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 3.5 AND album_rating_user < 4 AND sid = %s GROUP BY album_id", (self.id, sid))
-			if not neutralplus:
-				neutralplus = 0
-			likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND album_rating_user >= 4 AND sid = %s GROUP BY album_id", (self.id, sid))
-			if not likes:
-				likes = 0
-			rating_count = dislikes + neutrals + neutralplus + likes
-			log.debug("song_rating", "%s album ratings for %s (%s)" % (rating_count, self.data['name'], config.station_id_friendly[sid]))
-			if rating_count > config.get("rating_threshold_for_calc"):
-				self.rating_precise = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 5)
+			ratings = db.c.fetch_all(
+				"SELECT r4_song_ratings.song_rating_user AS rating, COUNT(r4_song_ratings.user_id) AS count "
+				"FROM r4_songs "
+					"JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE) "
+					"JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id) "
+					"JOIN phpbb_users ON (r4_song_ratings.user_id = phpbb_users.user_id AND phpbb_users.radio_inactive = FALSE) "
+				"WHERE r4_songs.album_id = %s "
+				"GROUP BY rating ",
+				(sid, self.id)
+			)
+			(points, potential_points) = rating.rating_calculator(ratings)
+			log.debug("song_rating", "%s album ratings for %s (%s)" % (potential_points, self.data['name'], config.station_id_friendly[sid]))
+			if points > 0 and potential_points > config.get("rating_threshold_for_calc"):
+				self.rating_precise = ((points / potential_points) * 4) + 1
 				self.data['rating'] = round(self.rating_precise, 1)
-				self.data['rating_count'] = rating_count
+				self.data['rating_count'] = potential_points
 				log.debug("album_rating", "%s new rating for %s" % (self.rating_precise, self.data['name']))
-				db.c.update("UPDATE r4_album_sid SET album_rating = %s, album_rating_count = %s WHERE album_id = %s AND sid = %s", (self.rating_precise, rating_count, self.id, sid))
+				db.c.update("UPDATE r4_album_sid SET album_rating = %s, album_rating_count = %s WHERE album_id = %s AND sid = %s", (self.rating_precise, potential_points, self.id, sid))
 
 	def update_last_played(self, sid):
 		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (timestamp(), self.id, sid))

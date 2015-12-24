@@ -3,6 +3,24 @@ from time import time as timestamp
 from libs import db
 from libs import log
 from libs import cache
+from libs import config
+
+def rating_calculator(ratings):
+	"""
+	Send in an SQL cursor that's the entire result of a query that has 2 columns: 'rating' and 'count'.
+	Uses "rating_map" from config to map each rating tier's to the fraction of point(s) it should get.
+	Returns a set: (points, potential_points)
+	"""
+	point_map = config.get("rating_map")
+	points = 0.0
+	potential_points = 0.0
+	for row in ratings:
+		potential_points += row['count']
+		for tier in point_map:
+			if row['rating'] >= tier['threshold']:
+				points = row['count'] * tier['points']
+
+	return (points, potential_points)
 
 def get_song_rating(song_id, user_id):
 	rating = cache.get_song_rating(song_id, user_id)
