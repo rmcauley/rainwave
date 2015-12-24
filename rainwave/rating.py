@@ -79,18 +79,8 @@ def set_song_rating(sid, song_id, user_id, rating = None, fave = None):
 		raise
 
 def clear_song_rating(sid, song_id, user_id):
-	existed = db.c.update("DELETE FROM r4_song_ratings WHERE song_id = %s AND user_id = %s", (song_id, user_id))
-	if existed:
-		db.c.start_transaction()
-		try:
-			albums = update_album_ratings(sid, song_id, user_id)
-			db.c.commit()
-			return albums
-		except:
-			db.c.rollback()
-			raise
-	else:
-		return []
+	db.c.update("UPDATE r4_song_ratings SET song_rating_user = NULL WHERE song_id = %s AND user_id = %s", (song_id, user_id))
+	return update_album_ratings(sid, song_id, user_id)
 
 def set_song_fave(song_id, user_id, fave):
 	db.c.start_transaction()
@@ -151,7 +141,7 @@ def update_album_ratings(target_sid, song_id, user_id):
 			"FROM r4_songs "
 				"JOIN r4_song_sid USING (song_id) "
 				"JOIN r4_song_ratings USING (song_id) "
-			"WHERE album_id = %s AND sid = %s AND song_exists = TRUE AND user_id = %s",
+			"WHERE album_id = %s AND sid = %s AND song_exists = TRUE AND user_id = %s AND song_rating_user IS NOT NULL",
 			(album_id, sid, user_id))
 		rating_complete = False
 		if user_data['rating_user_count'] >= num_songs:
