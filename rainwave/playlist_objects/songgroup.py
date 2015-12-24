@@ -31,8 +31,15 @@ class SongGroup(AssociatedMetadata):
 			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s "
 						"FROM r4_song_group "
 						"WHERE r4_song_sid.song_id = r4_song_group.song_id AND r4_song_group.group_id = %s "
-						"AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end <= %s",
+							"AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end <= %s ",
 						(cool_end, self.id, sid, cool_end))
+			request_only_end = cool_end + 300
+			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s "
+						"FROM r4_song_group "
+						"WHERE r4_song_sid.song_id = r4_song_group.song_id AND r4_song_group.group_id = %s "
+							"AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end <= %s "
+							"AND song_request_only_end IS NOT NULL",
+						(request_only_end, self.id, sid, cool_end))
 		else:
 			song_ids = db.c.fetch_list(
 				"SELECT song_id "

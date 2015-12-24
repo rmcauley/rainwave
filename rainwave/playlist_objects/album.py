@@ -235,8 +235,15 @@ class Album(AssociatedMetadata):
 			db.c.update("UPDATE r4_song_sid "
 							"SET song_cool = TRUE, song_cool_end = %s "
 							"FROM r4_songs "
-							"WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_cool_end < %s",
+							"WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_cool_end <= %s ",
 						(cool_end, self.id, sid, cool_end))
+			request_only_end = cool_end + config.get_station(sid, "cooldown_request_only_period")
+			db.c.update("UPDATE r4_song_sid "
+							"SET song_request_only = TRUE, song_request_only_end = %s "
+							"FROM r4_songs "
+							"WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_cool_end <= %s "
+							"AND song_request_only_end IS NOT NULL",
+						(request_only_end, self.id, sid, cool_end))
 		else:
 			songs = db.c.fetch_list("SELECT song_id FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s AND song_exists = TRUE AND song_cool_end < %s", (self.id, sid, cool_end))
 			for song_id in songs:
