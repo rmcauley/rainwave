@@ -445,28 +445,49 @@ class Song(object):
 		self.data['elec_blocked_by'] = blocked_by
 		self.data['elec_blocked'] = True
 
-	def update_rating(self, skip_album_update = False):
-		"""
-		Calculate an updated rating from the database.
-		"""
-		dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user < 3 GROUP BY song_id", (self.id,))
-		if not dislikes:
-			dislikes = 0
-		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3 AND song_rating_user < 3.5 GROUP BY song_id", (self.id,))
-		if not neutrals:
-			neutrals = 0
-		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3.5 AND song_rating_user < 4 GROUP BY song_id", (self.id,))
-		if not neutralplus:
-			neutralplus = 0
-		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 4 GROUP BY song_id", (self.id,))
-		if not likes:
-			likes = 0
-		rating_count = dislikes + neutrals + neutralplus + likes
-		log.debug("song_rating", "%s ratings for %s" % (rating_count, self.filename))
-		if rating_count > config.get("rating_threshold_for_calc"):
-			self.data['rating'] = ((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1)
+	# def update_rating(self, skip_album_update = False):
+	# 	"""
+	# 	Calculate an updated rating from the database.
+	# 	"""
+	# 	dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user < 3 GROUP BY song_id", (self.id,))
+	# 	if not dislikes:
+	# 		dislikes = 0
+	# 	neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3 AND song_rating_user < 3.5 GROUP BY song_id", (self.id,))
+	# 	if not neutrals:
+	# 		neutrals = 0
+	# 	neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3.5 AND song_rating_user < 4 GROUP BY song_id", (self.id,))
+	# 	if not neutralplus:
+	# 		neutralplus = 0
+	# 	likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 4 GROUP BY song_id", (self.id,))
+	# 	if not likes:
+	# 		likes = 0
+	# 	rating_count = dislikes + neutrals + neutralplus + likes
+	# 	log.debug("song_rating", "%s ratings for %s" % (rating_count, self.filename))
+	# 	if rating_count > config.get("rating_threshold_for_calc"):
+	# 		self.data['rating'] = ((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1)
+	# 		log.debug("song_rating", "rating update: %s for %s" % (self.data['rating'], self.filename))
+	# 		db.c.update("UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s", (self.data['rating'], rating_count, self.id))
+
+	# 	if not skip_album_update:
+	# 		for album in self.albums:
+	# 			album.update_rating()
+
+	def update_rating(self, skip_album_update=False):
+		ratings = db.c.fetch_all("SELECT song_rating_user AS rating, COUNT(user_id) AS count FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE song_id = %s AND radio_inactive = FALSE GROUP BY song_rating_user", (self.id,))
+		point_map = config.get("rating_map")
+		points = 0.0
+		potential_points = 0.0
+		for row in ratings:
+			potential_points += row['count']
+			for category in point_map:
+				if row['rating'] >= category['threshold']:
+					points = row['count'] * category['points']
+
+		log.debug("song_rating", "%s ratings for %s" % (potential_points, self.filename))
+		if points > 0 and potential_points > config.get("rating_threshold_for_calc"):
+			self.data['rating'] = ((points / potential_points) * 4) + 1
 			log.debug("song_rating", "rating update: %s for %s" % (self.data['rating'], self.filename))
-			db.c.update("UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s", (self.data['rating'], rating_count, self.id))
+			db.c.update("UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s", (self.data['rating'], potential_points, self.id))
 
 		if not skip_album_update:
 			for album in self.albums:
