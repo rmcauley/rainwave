@@ -47,7 +47,7 @@ docCookies.removeItem("r4_active_list", "/", BOOTSTRAP.cookie_domain);
 var Prefs = function() {
 	"use strict";
 	var self = {};
-	self.powertripped = true;
+	self.powertripped = false;
 	var locales = BOOTSTRAP.locales;
 	var meta = {};
 	var callbacks = {};
