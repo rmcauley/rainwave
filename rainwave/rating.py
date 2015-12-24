@@ -15,10 +15,12 @@ def rating_calculator(ratings):
 	points = 0.0
 	potential_points = 0.0
 	for row in ratings:
+		tier_points = 0
 		potential_points += row['count']
 		for tier in point_map:
 			if row['rating'] >= tier['threshold']:
-				points = row['count'] * tier['points']
+				tier_points = row['count'] * tier['points']
+		points += tier_points
 
 	return (points, potential_points)
 
