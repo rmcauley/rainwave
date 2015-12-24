@@ -35,6 +35,10 @@ div.setting_group {
 
 	&.yes_no_group {
 		cursor: pointer;
+
+		label {
+			cursor: pointer;
+		}
 	}
 }
 
