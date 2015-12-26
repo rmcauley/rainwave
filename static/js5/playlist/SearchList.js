@@ -113,7 +113,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 	// LIST MANAGEMENT ***********************************************
 
 	self.update = function(json) {
-		// var st = new Date().getTime();
 		var i;
 		if (self.auto_trim) {
 			for (i in data) {

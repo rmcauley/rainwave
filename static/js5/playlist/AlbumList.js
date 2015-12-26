@@ -41,7 +41,7 @@
 	Prefs.add_callback("p_fav1", prefs_update);
 	Prefs.add_callback("r_incmplt", prefs_update);
 
-	API.add_callback("all_albums", self.update);
+	API.add_callback("all_albums", function(json) { loading = true; self.update(json); });
 	API.add_callback("album_diff", function(json) { if (self.loaded) self.update(json); });
 
 	self.load = function() {
