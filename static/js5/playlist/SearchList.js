@@ -113,7 +113,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	// LIST MANAGEMENT ***********************************************
 
 	self.update = function(json) {
-		var st = new Date().getTime();
+		// var st = new Date().getTime();
 		var i;
 		if (self.auto_trim) {
 			for (i in data) {
@@ -146,8 +146,12 @@ var SearchList = function(root_el, sort_key, search_key) {
 			}
 			self.unhide();
 			current_scroll_index = false;
-			self.recalculate();
-			self.reposition();
+			// trigger_resize will cause a reflow anyway later in the loading process
+			// so don't render ahead of ourselves
+			if (!document.body.classList.contains("loading")) {
+				self.recalculate();
+				self.reposition();
+			}
 		}
 	};
 
