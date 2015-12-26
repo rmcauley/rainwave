@@ -55,6 +55,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var waiting_on_chunk = false;
 	var chunked_start;
 	var chunked_i;
+	var first_chunk = false;
 
 	var start_chunking = function() {
 		if (chunked_start) return;
@@ -67,7 +68,8 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	var render_chunk = function() {
-		var limit = Math.min(chunked_i + 100, items_to_draw.length);
+		var limit = Math.min(first_chunk ? 50 : chunked_i + 100, items_to_draw.length);
+		first_chunk = false;
 		for (var i = chunked_i; i < limit; i++) {
 			self.draw_entry(data[items_to_draw[i]]);
 			data[items_to_draw[i]]._el._id = data[items_to_draw[i]].id;
