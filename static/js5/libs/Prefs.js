@@ -60,6 +60,11 @@ var Prefs = function() {
 		values = {};
 	}
 
+	self.reset = function() {
+		values = {};
+		self.save();
+	};
+
 	self.save = function() {
 		docCookies.setItem("r5_prefs", JSON.stringify(values), Infinity, "/", cookie_domain);
 	};

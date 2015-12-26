@@ -1,9 +1,10 @@
 var requestNextAnimationFrame = function() {
 	"use strict";
 	var queue = [];
+	var requested;
 
 	var go = function(t) {
-		var this_queue = queue;
+		var this_queue = queue.slice();
 		queue = [];
 		requested = false;
 		for (var i = 0; i < this_queue.length; i++) {
@@ -15,7 +16,6 @@ var requestNextAnimationFrame = function() {
 		requestAnimationFrame(go);
 	};
 
-	var requested;
 	return function(f) {
 		queue.push(f);
 		if (!requested) {

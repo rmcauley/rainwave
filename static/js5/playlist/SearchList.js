@@ -49,10 +49,70 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var current_height;
 	var loading_msg;
 
+	// CHUNKED RENDERING *********************************************
+
+	var items_to_draw = [];
+	var waiting_on_chunk = false;
+	var chunked_start;
+	var chunked_i;
+
+	var start_chunking = function() {
+		if (chunked_start) return;
+		chunked_start = new Date().getTime();
+		items_to_draw.sort(self.sort_function);
+		if (items_to_draw.length) {
+			chunked_i = 0;
+			render_chunk();
+		}
+	};
+
+	var render_chunk = function() {
+		var limit = Math.min(chunked_i + 100, items_to_draw.length);
+		for (var i = chunked_i; i < limit; i++) {
+			self.draw_entry(data[items_to_draw[i]]);
+			data[items_to_draw[i]]._el._id = data[items_to_draw[i]].id;
+		}
+		chunked_i = i;
+
+		if (waiting_on_chunk) {
+			waiting_on_chunk = false;
+			current_scroll_index = false;
+			self.reposition();
+		}
+
+		if (chunked_i >= items_to_draw.length) {
+			finish_chunking();
+		}
+		else {
+			requestNextAnimationFrame(render_chunk);
+		}
+	};
+
+	var finish_chunking = function() {
+		chunked_i = 0;
+		items_to_draw = [];
+		console.log("Render time: " + ((new Date().getTime()) - chunked_start));
+		self.$t.search_box.setAttribute("placeholder", $l("search..."));
+
+		if (!self.loaded && current_open_id) {
+			self.loaded = true;
+			self.set_new_open(current_open_id);
+			self.scroll_to_id(current_open_id);
+			scroll_to_on_load = false;
+		}
+		else if (!self.loaded && scroll_to_on_load) {
+			self.loaded = true;
+			self.scroll_to_id(scroll_to_on_load);
+			scroll_to_on_load = false;
+		}
+
+		chunked_start = false;
+	};
 
 	// LIST MANAGEMENT ***********************************************
 
 	self.update = function(json) {
+		var st = new Date().getTime();
 		var i;
 		if (self.auto_trim) {
 			for (i in data) {
@@ -62,8 +122,13 @@ var SearchList = function(root_el, sort_key, search_key) {
 		for (i in json) {
 			self.update_item(json[i]);
 		}
+		console.log("Init time: ", (new Date().getTime() - st));
 
-		if (self.update_cool) {
+		if (items_to_draw.length && !chunked_start) {
+			start_chunking();
+		}
+
+		if (self.update_cool && self.loaded) {
 			for (i in data) {
 				self.update_cool(data[i]);
 			}
@@ -84,18 +149,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 			self.recalculate();
 			self.reposition();
 		}
-
-		if (!self.loaded && current_open_id) {
-			self.set_new_open(current_open_id);
-			self.scroll_to_id(current_open_id);
-			scroll_to_on_load = false;
-		}
-		else if (!self.loaded && scroll_to_on_load) {
-			self.scroll_to_id(scroll_to_on_load);
-			scroll_to_on_load = false;
-		}
-
-		self.loaded = true;
 	};
 
 	self.get_title_from_id = function(id) {
@@ -106,7 +159,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	self.refresh_all_items = function() {
 		for (var i in data) {
-			self.update_item_element(data[i]);
+			if (data[i]._el) {
+				self.update_item_element(data[i]);
+			}
 		}
 	};
 
@@ -126,13 +181,16 @@ var SearchList = function(root_el, sort_key, search_key) {
 			for (i in json) {
 				self.data[json.id][i] = json[i];
 			}
-			self.update_item_element(self.data[json.id]);
+			if (self.data[json.id]._el) {
+				self.update_item_element(self.data[json.id]);
+			}
 		}
 		else {
-			self.draw_entry(json);
-			json._el._id = json.id;
-			if (!json[search_key]) json[search_key] = json[sort_key].toLowerCase();
 			data[json.id] = json;
+			items_to_draw.push(json.id);
+			if (json.name) {
+				json.name_searchable = Formatting.make_searchable_string(json.name);
+			}
 		}
 		self.queue_reinsert(json.id);
 	};
@@ -552,13 +610,25 @@ var SearchList = function(root_el, sort_key, search_key) {
 	    		self.el.removeChild(self.el.lastChild);
 			}
 			for (i = new_index; (i < (new_index + num_items_to_display)) && (i < visible.length); i++) {
-				self.el.appendChild(data[visible[i]]._el);
+				if (!data[visible[i]]._el) {
+					waiting_on_chunk = true;
+					break;
+				}
+				else {
+					self.el.appendChild(data[visible[i]]._el);
+				}
 			}
 		}
 		// scrolling up
 		else if (new_index < current_scroll_index) {
 			for (i = current_scroll_index; i >= new_index; i--) {
-				self.el.insertBefore(data[visible[i]]._el, self.el.firstChild);
+				if (!data[visible[i]]._el) {
+					waiting_on_chunk = true;
+					break;
+				}
+				else {
+					self.el.insertBefore(data[visible[i]]._el, self.el.firstChild);
+				}
 			}
 			while (self.el.childNodes.length > num_items_to_display) {
 				self.el.removeChild(self.el.lastChild);
@@ -566,11 +636,31 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 		// scrolling down (or starting fresh)
 		else if (new_index > current_scroll_index) {
-			for (i = (current_scroll_index + num_items_to_display); ((i < (new_index + num_items_to_display)) && (i < visible.length)) ; i++) {
-				self.el.appendChild(data[visible[i]]._el);
+			for (i = (current_scroll_index + num_items_to_display); ((i < (new_index + num_items_to_display)) && (i < visible.length)); i++) {
+				if (!data[visible[i]]._el) {
+					waiting_on_chunk = true;
+					break;
+				}
+				else {
+					self.el.appendChild(data[visible[i]]._el);
+				}
 			}
 			while (self.el.childNodes.length > Math.min(visible.length - new_index, num_items_to_display)) {
 				self.el.removeChild(self.el.firstChild);
+			}
+			if (waiting_on_chunk) {
+				var should_be_visible = 0;
+				for (i = new_index; ((i < (new_index + num_items_to_display)) && (i < visible.length)); i++) {
+					if (data[visible[i]]._el) {
+						should_be_visible++;
+					}
+					else {
+						break;
+					}
+				}
+				while (self.el.childNodes.length > should_be_visible) {
+					self.el.removeChild(self.el.firstChild);
+				}
 			}
 		}
 		current_scroll_index = new_index;
@@ -579,7 +669,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 	// NAV *****************************
 
 	self.set_new_open = function(id) {
-		if (!self.loaded) current_open_id = id;
+		if (!self.loaded) {
+			current_open_id = id;
+			return;
+		}
 		if (!(id in data)) return;
 		if (current_open_id && data[current_open_id]) {
 			data[current_open_id]._el.classList.remove("open");

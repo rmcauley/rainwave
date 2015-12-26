@@ -1,6 +1,6 @@
 var RequestLineList = function(el) {
 	"use strict";
-	var self = SearchList(el, "username", "username");
+	var self = SearchList(el, "username");
 	self.$t.no_result_message.textContent = $l("nobody_in_line");
 	self.auto_trim = true;
 	self.loaded = true;
