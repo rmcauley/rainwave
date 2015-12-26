@@ -91,7 +91,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var finish_chunking = function() {
 		chunked_i = 0;
 		items_to_draw = [];
-		console.log("Render time: " + ((new Date().getTime()) - chunked_start));
 		self.$t.search_box.setAttribute("placeholder", $l("search..."));
 
 		if (!self.loaded && current_open_id) {
@@ -122,7 +121,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 		for (i in json) {
 			self.update_item(json[i]);
 		}
-		console.log("Init time: ", (new Date().getTime() - st));
 
 		if (items_to_draw.length && !chunked_start) {
 			start_chunking();
@@ -188,9 +186,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 		else {
 			data[json.id] = json;
 			items_to_draw.push(json.id);
-			// if (json.name) {
-			// 	json.name_searchable = Formatting.make_searchable_string(json.name);
-			// }
 		}
 		self.queue_reinsert(json.id);
 	};
