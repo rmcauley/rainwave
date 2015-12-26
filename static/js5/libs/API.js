@@ -51,16 +51,16 @@ var API = function() {
 
 		// Call back the heavy playlist functions first
 		// This will prevent animation hitching
-		var lists = [ "all_albums", "all_artists", "current_listeners", "request_line" ];
-		var temp_json;
-		for (var i = 0; i < lists.length; i++) {
-			if (lists[i] in json) {
-				temp_json = {};
-				temp_json[lists[i]] = json[lists[i]];
-				perform_callbacks(temp_json);
-				delete(json[lists[i]]);
-			}
-		}
+		// var lists = [ "all_albums", "all_artists", "current_listeners", "request_line" ];
+		// var temp_json;
+		// for (var i = 0; i < lists.length; i++) {
+		// 	if (lists[i] in json) {
+		// 		temp_json = {};
+		// 		temp_json[lists[i]] = json[lists[i]];
+		// 		perform_callbacks(temp_json);
+		// 		delete(json[lists[i]]);
+		// 	}
+		// }
 
 		perform_callbacks({ "_SYNC_START": true });
 		perform_callbacks(json);
