@@ -48,6 +48,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var current_scroll_index = false;
 	var current_height;
 	var loading_msg;
+	var draw_on_resize = false;
 
 	// CHUNKED RENDERING *********************************************
 
@@ -152,6 +153,8 @@ var SearchList = function(root_el, sort_key, search_key) {
 				self.reposition();
 			}
 		}
+
+		draw_on_resize = true;
 	};
 
 	self.get_title_from_id = function(id) {
@@ -689,8 +692,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 	Sizing.add_resize_callback(function() {
 		scroll.offset_height = Sizing.list_height;
 		template.list.style.height = scroll.offset_height + "px";
-		if (num_items_to_display === undefined) return;
+		if ((num_items_to_display === undefined) && !draw_on_resize) return;
 		current_scroll_index = false;
+		self.recalculate();
 		self.recalculate();
 		self.reposition();
 	});
