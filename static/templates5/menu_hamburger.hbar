@@ -25,7 +25,7 @@
 		<a href="https://www.patreon.com/rainwave" target="_blank">
 			{{ $l("Patreon") }}
 		</a>
-		<a href="http://rainwave.cc/pages/tip_jar" target="_blank" class="pconly">
+		<a href="https://paypal.me/Rainwave/5USD" target="_blank" class="pconly">
 			{{ $l("PayPal") }}
 		</a>
 	</div>
