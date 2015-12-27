@@ -107,6 +107,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 			self.scroll_to_id(scroll_to_on_load);
 			scroll_to_on_load = false;
 		}
+		else if (!self.loaded) {
+			self.loaded = true;
+		}
 
 		chunked_start = false;
 	};
