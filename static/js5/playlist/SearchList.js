@@ -57,6 +57,21 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var chunked_start;
 	var chunked_i;
 	var first_chunk = false;
+	var paused_chunking = false;
+	var restart_chunk_timer;
+
+	var pause_chunking = function() {
+		if (restart_chunk_timer) {
+			clearTimeout(restart_chunk_timer);
+			restart_chunk_timer = false;
+		}
+		paused_chunking = true;
+	};
+
+	var restart_chunking = function() {
+		paused_chunking = false;
+		restart_chunk_timer = setTimeout(render_chunk, 300);
+	};
 
 	var start_chunking = function() {
 		if (chunked_start) return;
@@ -66,10 +81,14 @@ var SearchList = function(root_el, sort_key, search_key) {
 			chunked_i = 0;
 			render_chunk();
 		}
+
+		window.addEventListener("touchstart", pause_chunking);
+		window.addEventListener("touchend", restart_chunking);
+		window.addEventListener("touchcancel", restart_chunking);
 	};
 
 	var render_chunk = function() {
-		var limit = Math.min(first_chunk ? 50 : chunked_i + 100, items_to_draw.length);
+		var limit = Math.min(first_chunk || MOBILE ? 50 : chunked_i + 100, items_to_draw.length);
 		first_chunk = false;
 		for (var i = chunked_i; i < limit; i++) {
 			self.draw_entry(data[items_to_draw[i]]);
@@ -86,7 +105,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		if (chunked_i >= items_to_draw.length) {
 			finish_chunking();
 		}
-		else {
+		else if (!paused_chunking) {
 			requestNextAnimationFrame(render_chunk);
 		}
 	};
@@ -112,6 +131,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 
 		chunked_start = false;
+
+		window.removeEventListener("touchstart", pause_chunking);
+		window.removeEventListener("touchend", restart_chunking);
+		window.removeEventListener("touchcancel", restart_chunking);
 	};
 
 	// LIST MANAGEMENT ***********************************************
