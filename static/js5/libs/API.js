@@ -86,9 +86,7 @@ var API = function() {
 			sync_pause();
 		}
 		else {
-			if (sync_error_count < 5) {
-				sync_get();
-			}
+			sync_get();
 		}
 	};
 
@@ -165,26 +163,26 @@ var API = function() {
 		}
 		sync_resync = true;
 		sync_error_count++;
-		if (sync_error_count > 4) {
-			ErrorHandler.remove_permanent_error("sync_retrying");
-			var e = ErrorHandler.make_error("sync_stopped", 500);
-			if (result && result.sync_result && result.sync_result.tl_key) {
-				e.text += " (" + $l(result.sync_result.tl_key) + ")";
-			}
-			else if (result && result.error && result.error.tl_key) {
-				e.text += " (" + $l(result.error.tl_key) + ")";
-			}
-			else if (result && result[0] && result[0].error && result[0].error.tl_key) {
-				e.text += " (" + $l(result[0].error.tl_key) + ")";
-			}
-			else {
-				e.text += " (" + $l("lost_connection") + ")";
-			}
-			ErrorHandler.permanent_error(e);
-			self.sync_stop();
-			sync_permastop = true;
-		}
-		else if (sync_error_count > 1) {
+		// if (sync_error_count > 4) {
+		// 	ErrorHandler.remove_permanent_error("sync_retrying");
+		// 	var e = ErrorHandler.make_error("sync_stopped", 500);
+		// 	if (result && result.sync_result && result.sync_result.tl_key) {
+		// 		e.text += " (" + $l(result.sync_result.tl_key) + ")";
+		// 	}
+		// 	else if (result && result.error && result.error.tl_key) {
+		// 		e.text += " (" + $l(result.error.tl_key) + ")";
+		// 	}
+		// 	else if (result && result[0] && result[0].error && result[0].error.tl_key) {
+		// 		e.text += " (" + $l(result[0].error.tl_key) + ")";
+		// 	}
+		// 	else {
+		// 		e.text += " (" + $l("lost_connection") + ")";
+		// 	}
+		// 	ErrorHandler.permanent_error(e);
+		// 	self.sync_stop();
+		// 	sync_permastop = true;
+		// }
+		if (sync_error_count > 1) {
 			ErrorHandler.permanent_error(ErrorHandler.make_error("sync_retrying", 408));
 			sync_timeout_id = setTimeout(sync_get, 4000);
 		}
