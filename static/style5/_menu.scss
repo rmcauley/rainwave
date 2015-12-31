@@ -220,7 +220,7 @@ ul.menu {
 	&.hamburgered {
 		min-width: 200px;
 		text-align: right;
-		margin-left: 30px;
+		margin-left: 45px;
 		@include transform(translateX(-100%) translateY(-$menu_height + 10));
 
 		.burger_open & {
