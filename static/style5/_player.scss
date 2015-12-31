@@ -121,7 +121,17 @@ $player_icon_width: $player_icon_height;
 		top: 8px;
 		@include transform(none);
 
-		.menu_inline_dropdown, .audio_icon_mute, .audio_icon_stop, .audio_volume {
+		.menu_inline_dropdown, .audio_icon_mute, .audio_icon_stop {
+			display: none;
+		}
+
+		body.mobile & .audio_volume {
+			display: none;
+		}
+	}
+
+	@media (max-width: 650px) {
+		.audio_volume, body.desktop & .audio_volume {
 			display: none;
 		}
 	}
