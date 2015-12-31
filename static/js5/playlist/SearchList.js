@@ -82,9 +82,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 			render_chunk();
 		}
 
-		window.addEventListener("touchstart", pause_chunking);
-		window.addEventListener("touchend", restart_chunking);
-		window.addEventListener("touchcancel", restart_chunking);
+		// window.addEventListener("touchstart", pause_chunking);
+		// window.addEventListener("touchend", restart_chunking);
+		// window.addEventListener("touchcancel", restart_chunking);
 	};
 
 	var render_chunk = function() {
@@ -132,9 +132,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 		chunked_start = false;
 
-		window.removeEventListener("touchstart", pause_chunking);
-		window.removeEventListener("touchend", restart_chunking);
-		window.removeEventListener("touchcancel", restart_chunking);
+		// window.removeEventListener("touchstart", pause_chunking);
+		// window.removeEventListener("touchend", restart_chunking);
+		// window.removeEventListener("touchcancel", restart_chunking);
 	};
 
 	// LIST MANAGEMENT ***********************************************
