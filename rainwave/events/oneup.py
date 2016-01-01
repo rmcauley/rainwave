@@ -110,6 +110,22 @@ class OneUpProducer(event.BaseProducer):
 			s.data['one_up_id'] = song_row['one_up_id']
 			self.songs.append(s)
 
+	def fill_unrated(self, sid, max_length):
+		total_time = 0
+		rows = db.c.fetch_all(
+			"SELECT song_id, song_length "
+			"FROM r4_song_sid JOIN r4_songs USING (song_id) "
+			"WHERE sid = 1 AND song_rating = 0 "
+			"ORDER BY song_rating_count, song_added_on, random() "
+			"LIMIT 100"
+		)
+		for row in rows:
+			if total_time > max_length:
+				return
+			self.add_song_id(row['song_id'], sid)
+			total_time += row['song_length']
+		self._update_length()
+
 	def to_dict(self):
 		self.load_all_songs()
 		return super(OneUpProducer, self).to_dict()

@@ -31,7 +31,12 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 		index.write_html_time_form(self, "new_ph")
 		self.write("<br><button onclick=\"window.top.call_api('admin/create_producer', ")
 		self.write("{ 'producer_type': 'OneUpProducer', 'end_utc_time': document.getElementById('new_ph_timestamp').value, 'start_utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\"")
-		self.write(">Create new Power Hour</button></div><hr>")
+		self.write(">Create new, empty Power Hour</button></div>")
+		self.write("<div>(based on above form with...)<br>")
+		self.write("Length: <select id='unrated_length'><option value='1800'>30m</option><option value='3600' selected>1h</option><option value='5400'>1.5h</option><option value='7200'>2h</option></select>")
+		self.write("<br><button onclick=\"window.top.call_api('admin/create_producer', ")
+		self.write("{ 'fill_unrated': true, 'producer_type': 'OneUpProducer', 'end_utc_time': parseInt(document.getElementById('new_ph_timestamp').value) + parseInt(document.getElementById('unrated_length').value), 'start_utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\"")
+		self.write(">Create new PH w/unrated songs</button></div><hr>")
 
 		if self.return_name in self._output and type(self._output[self.return_name]) == types.ListType and len(self._output[self.return_name]) > 0:
 			self.write("<ul>")
