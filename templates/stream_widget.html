@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Rainwave for Streamers</title>
+	<script src="/api4/bootstrap?sid={{ sid }}"></script>
+	<script src="/static/js5/libs/API.js"></script>
+	<script src="/static/js5/libs/Fx.js"></script>
+	<script>
+		"use strict";
+		var options = function() {
+			var pairs = location.search.slice(1).split("&");
+
+			var result = {};
+			pairs.forEach(function(pair) {
+				pair = pair.split("=");
+				result[pair[0]] = decodeURIComponent(pair[1] || "");
+			});
+
+			return JSON.parse(JSON.stringify(result));
+		}();
+
+		if (options.ad) {
+			options.ad = parseInt(options.ad);
+		}
+
+		var style;
+
+		var get_art_html = function(art_url) {
+			var html = "<div class='art' style='background-image: url(" + art_url + "); height: " + options.art_size + "; ";
+			if ((options.layout == "art_top") || (options.layout == "art_bottom")) {
+				html += "width: 100%; ";
+			}
+			else {
+				html += "width: " + options.art_size + "; ";
+			}
+			if (options.art_shadow) {
+				html += "-webkit-box-shadow: " + options.art_shadow + "; ";
+				html += "box-shadow: " + options.art_shadow + "; ";
+			}
+			html += "'></div>";
+			return html;
+		};
+
+		var last_ad = options.ad || 0;
+
+		var remove_el = function(el) {
+			setTimeout(function() {
+				if (el.parentNode) {
+					el.parentNode.removeChild(el);
+				}
+			}, 2000);
+		};
+
+		var show = function(json, no_ad) {
+			if (options.ad && !no_ad) {
+				last_ad += 1;
+				if (last_ad >= options.ad) {
+					setTimeout(function() {
+						show(json, true);
+					}, Math.min(Math.max(options.ad * 1000, 1500), 5000));
+					last_ad = 0;
+					show({ "ad": true,
+						"songs": [{
+						"title": options.ad_message || "Music by:",
+						"albums": [ { "art": "/static/images4/ios/1024.png", "name": "http://rainwave.cc" }]
+					}]}, true);
+					return;
+				}
+			}
+
+			var children = document.getElementById("threed").childNodes;
+			for (var i = 0; i < children.length; i++) {
+				if (children[i].tagName == "DIV") {
+					children[i].classList.add("removing");
+					remove_el(children[i]);
+				}
+			}
+			var div = document.createElement("div");
+			div.className = options.layout + " " + options.text_align + " container adding";
+			div.setAttribute("style", style);
+
+			var art_url = json.songs[0].albums[0].art ? json.songs[0].albums[0].art + (json.ad ? "" : "_320.jpg") : null;
+			if (!art_url && options.sid == 2) {
+				art_url = "/static/images4/noart_2.jpg";
+			}
+			else if (!art_url) {
+				art_url = "/static/images4/noart_1.jpg";
+			}
+			var html = "";
+			if (options.layout != "art_bottom") {
+				html += get_art_html(art_url);
+			}
+			html += "<div class='text'><div class='title'>" + json.songs[0].title + "</div>";
+			html += "<div class='album'>" + json.songs[0].albums[0].name + "</div>";
+			if ((options.show_artist == "true") && json.songs[0].artist_parseable) {
+				html += "<div class='artist'>";
+				var artists = JSON.parse(json.songs[0].artist_parseable);
+				for (i = 0; i < artists.length; i++) {
+					if (i) {
+						html += "<span>, </span>";
+					}
+					html += "<span>" + artists[i].name + "</span>";
+				}
+				html += "</div>";
+			}
+			if (options.layout == "art_bottom") {
+				html += get_art_html(art_url);
+			}
+			html += "</div>";
+
+			div.innerHTML = html;
+
+			requestNextAnimationFrame(function() {
+				div.classList.remove("adding");
+			});
+
+			// setTimeout(function() {
+			// 	div.classList.add("removing");
+			// }, 2000);
+
+			document.getElementById("threed").appendChild(div);
+		};
+
+		API.add_callback("sched_current", show);
+		window.addEventListener("load", function() {
+			style = function() {
+				var s = "";
+				s += "color: " + options.color + "; ";
+				s += "font-size: " + (options.font_size || "12pt") + "; ";
+				s += "font-family: " + (options.font_family || "'Roboto Condensed', sans-serif") + "; ";
+				if (options.text_stroke) {
+					s += "text-stroke: " + options.text_stroke + "; ";
+				}
+				if (options.text_shadow) {
+					s += "text-shadow: " + options.text_shadow + "; ";
+				}
+				s += "width: " + options.max_width + "; ";
+				if ((options.layout == "art_left") || (options.layout == "art_right")) {
+					s += "height: " + options.art_size + "; ";
+					// document.getElementById("threed").style.height = options.art_size;
+				}
+				if (options.background_color && (options.background_color !== "transparent")) {
+					s += "background-color: " + options.background_color + "; ";
+					// document.getElementById("threed").style.backgroundColor = options.background_color;
+				}
+				if (options.padding) {
+					s += "padding: " + options.padding + "; ";
+				}
+				if (options.box_shadow) {
+					s += "-webkit-box-shadow: " + options.box_shadow + "; ";
+					s += "box-shadow: " + options.box_shadow + "; ";
+				}
+				return s;
+			}();
+			API.initialize(BOOTSTRAP.sid, "/api4/", BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
+		});
+	</script>
+
+	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
+
+	<style>
+		.right {
+			text-align: right;
+		}
+		.centre, .center {
+			text-align: center;
+		}
+
+		.art_left .art {
+			float: left;
+			margin-right: 10px;
+		}
+
+		.art_right .art {
+			float: right;
+			margin-left: 10px;
+		}
+
+		.art {
+			background-repeat: no-repeat;
+			background-size: contain;
+			background-position: center left;
+		}
+
+		.centre .art, .center .art {
+			background-position: center;
+		}
+
+		.right .art {
+			background-position: right center;
+		}
+
+		.container {
+			position: absolute;
+			overflow: hidden;
+			transform-style: preserve-3d;
+			transition: transform, opacity;
+			transition-duration: 1s;
+			/* transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1); */
+			backface-visibility: hidden;
+		}
+
+		.art_left.container.adding, .art_right.container.adding {
+			transform: rotateX(-120deg) translateY(50%) translateZ(30px);
+			opacity: 0;
+		}
+
+		.art_left.container.removing, .art_right.container.removing {
+			transform: rotateX(120deg) translateY(-50%) translateZ(30px);
+			opacity: 0;
+		}
+
+		.art_top.container.adding, .art_bottom.container.adding {
+			transform: rotateY(120deg) translateX(50%) translateZ(-30px) scaleX(0.5);
+			opacity: 0;
+		}
+
+		.art_top.container.removing, .art_bottom.container.removing {
+			transform-origin: 20% 50%;
+			transform: rotateY(-90deg) translateX(-50%) translateZ(-30px);
+			opacity: 0;
+		}
+
+		.art_left .text, .art_right .text {
+			position: relative;
+			top: 50%;
+			transform: translateY(-50%);
+			-webkit-transform: translateY(-50%);
+		}
+
+		.text, div.title, div.album, div.artist {
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: hidden;
+		}
+
+		#threed {
+			-webkit-perspective: 1000px;
+			-webkit-perspective-origin: center;
+			perspective: 1000px;
+			perspective-origin: center;
+		}
+	</style>
+</head>
+<body>
+	<div id="threed"></div>
+</body>
+</html>

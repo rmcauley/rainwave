@@ -1,0 +1,187 @@
+{% include "basic_header.html" %}
+<p>We highly encourage you use Rainwave as background music for your streams!  All our music is volume-normalized and ad-free, perfect for background as part of a stream!</p>
+<h2>Copyright/Content ID, and "Safe For Work"</h2>
+<p><b>The tl;dr is use OverClocked ReMix/OCR Radio.</b>  Your stream is important, though, so please review the following and select a station carefully.  Lyrical content is noted, as some streamers will not appreciate having a song with lyrics competing on stream with their own voice for user's attention, even if the song is turned down to be in the background.</p>
+<ul>
+	<li>All has some lyrical content, and is "rated G"/"safe for work". (no swears, no racial slurs, no hentai game content or album art, etc)  You stand a strong risk of being Content IDed when using this station.</li>
+	<li>Game has very little lyrical content, and is rated G/safe for work.  You will almost certainly be Content IDed.</li>
+	<li>OverClocked ReMix has no copyrighted content, has some lyrical content, and is rated PG-13 with the very rare R.  We defer to OverClocked ReMix's judgement, which in rare cases produces content such as <a href="http://ocremix.org/remix/OCR01125" target="_blank">Niggaz 4 Life</a>.  More importantly, though, <b><i>you will not be Content IDed with OCR.</i></b></li>
+	<li>Covers has a lot of lyrical content, and is rated PG-13 for swearing and themes from some remixes with lyrics.  You have a very small chance of being Content IDed.</li>
+	<li>Chiptune has no lyrical content, and is rated G.  You have a small chance of being Content IDed.</li>
+</ul>
+<h2>How To Use in OBS</h2>
+<p>Generate a URL from the options below.  Use <a href="https://obsproject.com/forum/resources/clr-browser-source-plugin.22/update?update=232">the CLR Browser Plugin</a> for OBS or the <a href="https://obsproject.com/forum/resources/browser-plugin.115/">Browser Plugin</a> for OBS Studio/Multiplatform, and put the generated URL into the browser plugin's configuration.</p>
+<p>To put the audio on your stream, listen to Rainwave as you normally would and capture regularly through desktop audio in OBS.  You can use our website running in the background, or use your media player of choice by downloading M3Us using the audio player menu on our site by hovering over the play icon.  There will be no need to adjust the volume once started, Rainwave is kept at a consistent volume through per-song ReplayGain normalization.</p>
+<h2>Build Your Widget</h2>
+<table>
+	<tr>
+		<th>Option</th>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+
+	<tr>
+		<td>station</td>
+		<td>
+			<select name="station">
+				<option value="5">All</option>
+				<option value="1">Game</option>
+				<option value="2" selected>OverClocked ReMix</option>
+				<option value="3">Covers</option>
+				<option value="4">Chiptune</option>
+			</select>
+		</td>
+		<td>Which Rainwave station to use.  <b>OverClocked ReMix is highly recommended as you have zero risk of being Content IDed.</b></td>
+	</tr>
+	<tr>
+		<td>layout</td>
+		<td>
+			<select name="layout">
+				<option value="art_top">Album Art Above Text</option>
+				<option value="art_bottom">Album Art Below Text</option>
+				<option value="art_left" selected>Album Art Left of Text</option>
+				<option value="art_right">Album Art Right of Text</option>
+			</select>
+		</td>
+		<td>Where the album art goes relative to the song details.</td>
+	</tr>
+	<tr>
+		<td>art_size</td>
+		<td>
+			<select name="art_size">
+				<option value="320px">320 pixels</option>
+				<option value="240px">240 pixels</option>
+				<option value="200px">200 pixels</option>
+				<option value="120px">120 pixels</option>
+				<option value="70px" selected>70 pixels</option>
+				<option value="50px">50 pixels</option>
+				<option value="30px">30 pixels</option>
+			</select>
+		</td>
+		<td>Album art size in the widget.</td>
+	</tr>
+	<tr>
+		<td>text_align</td>
+		<td>
+			<select name="text_align">
+				<option value="left" selected>Left</option>
+				<option value="right">Right</option>
+				<option value="centre">Centre</option>
+			</select>
+		</td>
+		<td>Alignment of text.</td>
+	</tr>
+	<tr>
+		<td>show_artist</td>
+		<td>
+			<select name="show_artist">
+				<option value="true" selected>Yes</option>
+				<option value="false">No</option>
+			</select>
+		</td>
+		<td>Show artist or not in the widget's text.</td>
+	</tr>
+	<tr>
+		<td>color</td>
+		<td><input type="text" name="color" value="white" style="width: 300px;" /></td>
+		<td>CSS color rule for font color. (e.g. "white"/"#FFF", "black"/"#000", or <a href="http://www.colorpicker.com/" target="_blank">use a color picker</a>)</td>
+	</tr>
+	<tr>
+		<td>background_color</td>
+		<td><input type="text" name="background_color" value="" style="width: 300px;" /></td>
+		<td>CSS rule for the background color for the song box.  Leave default for transparent.  You may need to add your own background in OBS if using transparent.</td>
+	</tr>
+	<tr>
+		<td>box_shadow</td>
+		<td><input type="text" name="box_shadow" value="" style="width: 300px;" /></td>
+		<td>CSS box-shadow/glow rule for the container. (use <a href="http://www.cssmatic.com/box-shadow" target="_blank">this page</a> for help - take what comes after "box-shadow:" and paste into this setting) Leave blank for no shadow/glow.</td>
+	</tr>
+	<tr>
+		<td>font_size</td>
+		<td><input type="text" name="font_size" value="" style="width: 300px;" /></td>
+		<td>CSS rule for font size.  Can use pixels (e.g. "14px") or points. (e.g. "14pt")  Leave blank for Rainwave defaults.</td>
+	</tr>
+	<tr>
+		<td>font_family</td>
+		<td><input type="text" name="font_family" value="" style="width: 300px;" /></td>
+		<td>Specify which font face is used.  This is a CSS rule, so font names with spaces must be enclosed with single quotes.  Leave blank for Rainwave defaults.</td>
+	</tr>
+	<tr>
+		<td>text_stroke</td>
+		<td><input type="text" name="text_stroke" value="2px black" style="width: 300px;" /></td>
+		<td>CSS color rule for text-stroke.  <a href="https://css-tricks.com/almanac/properties/t/text-stroke/" target="_blank">See here for details.</a> (only previewable in Chrome/Safari)  Leave blank for no text-stroke.</td>
+	</tr>
+	<tr>
+		<td>text_shadow</td>
+		<td><input type="text" name="text_shadow" value="" style="width: 300px;" /></td>
+		<td>CSS text-shadow rule. <a href="https://css-tricks.com/almanac/properties/t/text-shadow/" target="_blank">See here for details.</a>  Leave blank for no shadow.</td>
+	</tr>
+	<tr>
+		<td>width</td>
+		<td><input type="text" name="max_width" value="250px" style="width: 300px;" /></td>
+		<td>CSS rule for width of the widget (including album art, but excluding padding) before text gets clipped.</td>
+	</tr>
+	<tr>
+		<td>padding</td>
+		<td><input type="text" name="padding" value="0px" style="width: 300px;" /></td>
+		<td>CSS rule for the space between the edge of the widget and the art/text.</td>
+	</tr>
+	<tr>
+		<td>art_shadow</td>
+		<td><input type="text" name="art_shadow" value="" style="width: 300px;" /></td>
+		<td>CSS box-shadow/glow rule for the art. (use <a href="http://www.cssmatic.com/box-shadow" target="_blank">this page</a> for help - take what comes after "box-shadow:" and paste into this setting) Leave blank for no shadow/glow.</td>
+	</tr>
+	<tr>
+		<td>ad</td>
+		<td><input type="text" name="ad" value="3" style="width: 300px;" /></td>
+		<td>How many songs to play before showing Rainwave's logo as the album art for a brief moment. Set to 0 to never show an ad. Ads last 2-5 seconds depending on the setting, and are Rainwave's logo with our URL displayed in the same style as song information. (please be kind, we run this service for free :) )</td>
+	</tr>
+	<tr>
+		<td>ad_message</td>
+		<td><input type="text" name="ad_message" value="Music by:" style="width: 300px;" /></td>
+		<td>Banner message for the ad.  Enter in the language(s) of your stream.  (again, please be kind :) )</td>
+	</tr>
+</table>
+<pre id="widget_url" style="word-wrap: normal; white-space: normal;"></pre>
+<h2>Preview</h2>
+<iframe id="iframe" style="width: 100%; height: 500px;"></iframe>
+
+<script src="/static/js5/libs/API.js"></script>
+<script>
+	function update_url() {
+		var elems = document.body.querySelectorAll("input,select");
+		var obj = {};
+		for (var i = 0; i < elems.length; i++) {
+			obj[elems[i].getAttribute("name")] = elems[i].value;
+		}
+		obj.sid = obj.station;
+		delete(obj.station);
+		var qstring = API.serialize(obj);
+		var subdomain;
+		if (obj.station == 1) {
+			subdomain = "game";
+		}
+		else if (obj.station == 2) {
+			subdomain = "ocr";
+		}
+		else if (obj.station == 3) {
+			subdomain = "covers";
+		}
+		else if (obj.station == 4) {
+			subdomain = "chiptune";
+		}
+		else {
+			subdomain = "all";
+		}
+		var url = "http://" + subdomain + ".rainwave.cc/widget/widget?" + qstring;
+		document.getElementById("widget_url").textContent = url;
+		document.getElementById("iframe").setAttribute("src", "/widget/widget?" + qstring);
+	}
+	var elems = document.body.querySelectorAll("input,select");
+	for (var i = 0; i < elems.length; i++) {
+		elems[i].addEventListener("change", update_url);
+	}
+	update_url();
+</script>
+
+{% include "basic_footer.html" %}

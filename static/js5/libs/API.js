@@ -71,7 +71,7 @@ var API = function() {
 		}
 
 		// only handle browser closing/opening on mobile
-		if (visibilityEventNames && visibilityEventNames.change && document.addEventListener) {
+		if ((typeof(visibilityEventNames) !== "undefined") && visibilityEventNames.change && document.addEventListener) {
 			if (MOBILE || (navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1)) {
 				document.addEventListener(visibilityEventNames.change, handle_visibility_change, false);
 			}
@@ -127,7 +127,9 @@ var API = function() {
 
 	var clear_sync_timeout_error = function() {
 		sync_timeout_error_removal_timeout = null;
-		ErrorHandler.remove_permanent_error("sync_retrying");
+		if (typeof(ErrorHandler) !== "undefined") {
+			ErrorHandler.remove_permanent_error("sync_retrying");
+		}
 	};
 
 	var sync_pause = function() {
@@ -140,7 +142,9 @@ var API = function() {
 	self.sync_stop = function() {
 		sync_pause();
 		sync_permastop = true;
-		ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
+		if (typeof(ErrorHandler) !== "undefined") {
+			ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
+		}
 	};
 
 	var sync_clear_timeout = function() {
@@ -183,7 +187,9 @@ var API = function() {
 		// 	sync_permastop = true;
 		// }
 		if (sync_error_count > 1) {
-			ErrorHandler.permanent_error(ErrorHandler.make_error("sync_retrying", 408));
+			if (typeof(ErrorHandler) !== "undefined") {
+				ErrorHandler.permanent_error(ErrorHandler.make_error("sync_retrying", 408));
+			}
 			sync_timeout_id = setTimeout(sync_get, 4000);
 		}
 		else {
@@ -196,13 +202,17 @@ var API = function() {
 			response.sync_result = response.info_result;
 		}
 		if (("sync_result" in response) && (response.sync_result.tl_key == "station_offline")) {
-			ErrorHandler.permanent_error(response.sync_result);
+			if (typeof(ErrorHandler) !== "undefined") {
+				ErrorHandler.permanent_error(response.sync_result);
+			}
 			offline_ack = true;
 			self.paused = false;
 			return true;
 		}
 		else {
-			ErrorHandler.remove_permanent_error("station_offline");
+			if (typeof(ErrorHandler) !== "undefined") {
+				ErrorHandler.remove_permanent_error("station_offline");
+			}
 		}
 		if (("sync_result" in response) && (response.sync_result.tl_key == "station_paused")) {
 			self.paused = true;
@@ -273,7 +283,9 @@ var API = function() {
 	};
 
 	var async_timeout = function() {
-		ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
+		if (typeof(ErrorHandler) !== "undefined") {
+			ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
+		}
 		self.async_get();
 	};
 
@@ -285,16 +297,22 @@ var API = function() {
 			}
 		}
 		if (do_default && json) {
-			ErrorHandler.tooltip_error(json);
+			if (typeof(ErrorHandler) !== "undefined") {
+				ErrorHandler.tooltip_error(json);
+			}
 		}
 		else if (do_default) {
-			ErrorHandler.tooltip_error(ErrorHandler.make_error("async_error", async.status));
+			if (typeof(ErrorHandler) !== "undefined") {
+				ErrorHandler.tooltip_error(ErrorHandler.make_error("async_error", async.status));
+			}
 		}
 		self.async_get();
 	};
 
 	var async_complete = function() {
-		ErrorHandler.remove_permanent_error("async_error");
+		if (typeof(ErrorHandler) !== "undefined") {
+			ErrorHandler.remove_permanent_error("async_error");
+		}
 
 		var json;
 		if (async.responseType === "json") {
