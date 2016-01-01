@@ -101,6 +101,18 @@ class OneUpProducer(event.BaseProducer):
 			i += 1
 		return True
 
+	def move_song_up(self, one_up_id):
+		one_up_ids = db.c.fetch_list("SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order", (self.id,))
+		i = 0
+		prev_one_up_id = False
+		for oid in one_up_ids:
+			if oid == one_up_id and prev_one_up_id:
+				db.c.update("UPDATE r4_one_ups SET one_up_order = %s WHERE one_up_id = %s", (i - 1, one_up_id))
+				db.c.update("UPDATE r4_one_ups SET one_up_order = %s WHERE one_up_id = %s", (i, prev_one_up_id))
+			prev_one_up_id = oid
+			i += 1
+		return True
+
 	def load_all_songs(self):
 		self.songs = []
 		for song_row in db.c.fetch_all("SELECT * FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order", (self.id,)):

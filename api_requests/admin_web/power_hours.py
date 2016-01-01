@@ -97,7 +97,10 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 				elif song['one_up_queued']:
 					self.write(" (queued)")
 				self.write("</div><div>%s</div>\n" % song['albums'][0]['name'])
-				self.write("<div><a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">Delete</a></div></li>\n" % song['one_up_id'])
+				self.write("<div>")
+				self.write("<a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">Delete</a> - " % song['one_up_id'])
+				self.write("<a onclick=\"window.top.call_api('admin/move_up_in_power_hour', { 'one_up_id': %s });\">Move Up</a>" % song['one_up_id'])
+				self.write("</div></li>\n")
 			self.write("</ol>\n")
 			self.write("<script>window.top.current_sched_id = %s;</script>\n\n" % ph['id'])
 		except Exception as e:
