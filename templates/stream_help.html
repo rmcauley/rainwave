@@ -89,7 +89,7 @@
 	<tr>
 		<td>background_color</td>
 		<td><input type="text" name="background_color" value="" style="width: 300px;" /></td>
-		<td>CSS rule for the background color for the song box.  Leave default for transparent.  You may need to add your own background in OBS if using transparent.</td>
+		<td>CSS rule for the background color for the song box.  Leave blank for transparent.  You may need to add your own background in OBS if using transparent.</td>
 	</tr>
 	<tr>
 		<td>box_shadow</td>
@@ -104,11 +104,11 @@
 	<tr>
 		<td>font_family</td>
 		<td><input type="text" name="font_family" value="" style="width: 300px;" /></td>
-		<td>Specify which font face is used.  This is a CSS rule, so font names with spaces must be enclosed with single quotes.  Leave blank for Rainwave defaults.</td>
+		<td>CSS rule for what font to use.  Font names with spaces must be enclosed with single quotes, e.g. 'Helvetica Neue'.  Leave blank for Rainwave defaults.</td>
 	</tr>
 	<tr>
 		<td>text_stroke</td>
-		<td><input type="text" name="text_stroke" value="2px black" style="width: 300px;" /></td>
+		<td><input type="text" name="text_stroke" value="" style="width: 300px;" /></td>
 		<td>CSS color rule for text-stroke.  <a href="https://css-tricks.com/almanac/properties/t/text-stroke/" target="_blank">See here for details.</a> (only previewable in Chrome/Safari)  Leave blank for no text-stroke.</td>
 	</tr>
 	<tr>
@@ -123,7 +123,7 @@
 	</tr>
 	<tr>
 		<td>padding</td>
-		<td><input type="text" name="padding" value="0px" style="width: 300px;" /></td>
+		<td><input type="text" name="padding" value="" style="width: 300px;" /></td>
 		<td>CSS rule for the space between the edge of the widget and the art/text.</td>
 	</tr>
 	<tr>
@@ -138,8 +138,8 @@
 	</tr>
 	<tr>
 		<td>ad_message</td>
-		<td><input type="text" name="ad_message" value="Music by:" style="width: 300px;" /></td>
-		<td>Banner message for the ad.  Enter in the language(s) of your stream.  (again, please be kind :) )</td>
+		<td><input type="text" name="ad_message" value="" style="width: 300px;" /></td>
+		<td>Banner message for the ad.  Enter in the language(s) of your stream, or leave at default for "Music by:".</td>
 	</tr>
 </table>
 <pre id="widget_url" style="word-wrap: normal; white-space: normal;"></pre>
@@ -152,22 +152,24 @@
 		var elems = document.body.querySelectorAll("input,select");
 		var obj = {};
 		for (var i = 0; i < elems.length; i++) {
-			obj[elems[i].getAttribute("name")] = elems[i].value;
+			if (elems[i].value) {
+				obj[elems[i].getAttribute("name")] = elems[i].value;
+			}
 		}
 		obj.sid = obj.station;
 		delete(obj.station);
 		var qstring = API.serialize(obj);
 		var subdomain;
-		if (obj.station == 1) {
+		if (obj.sid == 1) {
 			subdomain = "game";
 		}
-		else if (obj.station == 2) {
+		else if (obj.sid == 2) {
 			subdomain = "ocr";
 		}
-		else if (obj.station == 3) {
+		else if (obj.sid == 3) {
 			subdomain = "covers";
 		}
-		else if (obj.station == 4) {
+		else if (obj.sid == 4) {
 			subdomain = "chiptune";
 		}
 		else {

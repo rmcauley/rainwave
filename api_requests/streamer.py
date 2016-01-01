@@ -11,7 +11,7 @@ class StreamHelp(HTMLRequest):
 	def get(self):
 		self.render("stream_help.html",
 			revision_number=config.build_number,
-			title="Rainwave for Streamers")
+			title="Rainwave Now Playing for Twitch Streamers")
 
 @handle_url("/twitch/widget")
 @handle_url("/widget/widget")
