@@ -2,8 +2,8 @@ from api.server import handle_url
 from api.web import HTMLRequest
 from libs import config
 
-@handle_url("/twitch/")
-@handle_url("/widget/")
+@handle_url("/twitch/?")
+@handle_url("/widget/?")
 class StreamHelp(HTMLRequest):
 	auth_required = False
 	sid_required = False
