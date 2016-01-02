@@ -23,6 +23,9 @@
 			options.ad = parseInt(options.ad);
 		}
 
+		options.anim_in = options.anim_in || "to_bottom";
+		options.anim_out = options.anim_out || "to_left";
+
 		var style;
 
 		var get_art_html = function(art_url) {
@@ -36,6 +39,10 @@
 			if (options.art_shadow) {
 				html += "-webkit-box-shadow: " + options.art_shadow + "; ";
 				html += "box-shadow: " + options.art_shadow + "; ";
+			}
+			else if (options.text_shadow) {
+				html += "-webkit-box-shadow: " + options.text_shadow + "; ";
+				html += "box-shadow: " + options.text_shadow + "; ";
 			}
 			html += "'></div>";
 			return html;
@@ -71,12 +78,12 @@
 			var children = document.getElementById("threed").childNodes;
 			for (var i = 0; i < children.length; i++) {
 				if (children[i].tagName == "DIV") {
-					children[i].classList.add("removing");
+					children[i].classList.add(options.anim_out);
 					remove_el(children[i]);
 				}
 			}
 			var div = document.createElement("div");
-			div.className = options.layout + " " + options.text_align + " container adding";
+			div.className = options.layout + " " + options.text_align + " container " + options.anim_in;
 			div.setAttribute("style", style);
 
 			var art_url = json.songs[0].albums[0].art ? json.songs[0].albums[0].art + (json.ad ? "" : "_320.jpg") : null;
@@ -111,11 +118,11 @@
 			div.innerHTML = html;
 
 			requestNextAnimationFrame(function() {
-				div.classList.remove("adding");
+				div.classList.remove(options.anim_in);
 			});
 
 			// setTimeout(function() {
-			// 	div.classList.add("removing");
+			// 	div.classList.add(options.anim_out);
 			// }, 2000);
 
 			document.getElementById("threed").appendChild(div);
@@ -126,13 +133,24 @@
 			style = function() {
 				var s = "";
 				s += "color: " + options.color + "; ";
-				s += "font-size: " + (options.font_size || "12pt") + "; ";
+				s += "font-size: " + (options.font_size || "18pt") + "; ";
 				s += "font-family: " + (options.font_family || "'Roboto Condensed', sans-serif") + "; ";
-				if (options.text_stroke) {
-					s += "text-stroke: " + options.text_stroke + "; ";
+				var shadow = "";
+				if (options.text_stroke_size && options.text_stroke_color) {
+					shadow += "-" + options.text_stroke_size + " -" + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color + ",";
+					shadow +=       options.text_stroke_size + " -" + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color + ",";
+					shadow += "-" + options.text_stroke_size + "  " + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color + ",";
+					shadow +=       options.text_stroke_size + "  " + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color;
 				}
 				if (options.text_shadow) {
-					s += "text-shadow: " + options.text_shadow + "; ";
+					if (shadow) {
+						shadow += ",";
+					}
+					shadow += options.text_shadow;
+				}
+				if (shadow) {
+					s += "text-shadow: " + shadow + ";";
+					s += "-webkit-text-shadow: " + shadow + ";";
 				}
 				s += "width: " + options.max_width + "; ";
 				if ((options.layout == "art_left") || (options.layout == "art_right")) {
@@ -140,12 +158,10 @@
 					// document.getElementById("threed").style.height = options.art_size;
 				}
 				if (options.background_color && (options.background_color !== "transparent")) {
-					s += "background-color: " + options.background_color + "; ";
+					s += "background-color: " + options.background_color + " !important; ";
 					// document.getElementById("threed").style.backgroundColor = options.background_color;
 				}
-				if (options.padding) {
-					s += "padding: " + options.padding + "; ";
-				}
+				s += "padding: " + (options.padding || "8px") + "; ";
 				if (options.box_shadow) {
 					s += "-webkit-box-shadow: " + options.box_shadow + "; ";
 					s += "box-shadow: " + options.box_shadow + "; ";
@@ -193,39 +209,76 @@
 		.container {
 			position: absolute;
 			overflow: hidden;
+			-webkit-transform-style: preserve-3d;
+			-webkit-transition: transform, opacity;
+			-webkit-transition-duration: 1s;
 			transform-style: preserve-3d;
 			transition: transform, opacity;
 			transition-duration: 1s;
 			/* transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1); */
+			-webkit-backface-visibility: hidden;
 			backface-visibility: hidden;
 		}
 
-		.art_left.container.adding, .art_right.container.adding {
-			transform: rotateX(-120deg) translateY(50%) translateZ(30px);
+		.container.fade {
 			opacity: 0;
 		}
 
-		.art_left.container.removing, .art_right.container.removing {
-			transform: rotateX(120deg) translateY(-50%) translateZ(30px);
+		.container.to_left {
+			-webkit-transform: translateX(-100%);
+			transform: translateX(-100%);
 			opacity: 0;
 		}
 
-		.art_top.container.adding, .art_bottom.container.adding {
-			transform: rotateY(120deg) translateX(50%) translateZ(-30px) scaleX(0.5);
+		.container.to_right {
+			-webkit-transform: translateX(100%);
+			transform: translateX(100%);
 			opacity: 0;
 		}
 
-		.art_top.container.removing, .art_bottom.container.removing {
+		.container.to_top {
+			-webkit-transform: translateY(-100%);
+			transform: translateY(-100%);
+			opacity: 0;
+		}
+
+		.container.to_bottom {
+			-webkit-transform: translateY(100%);
+			transform: translateY(100%);
+			opacity: 0;
+		}
+
+		.container.flip_bottom {
+			-webkit-transform: transform: rotateX(-120deg) translateY(50%);
+			transform: rotateX(-120deg) translateY(50%);
+			opacity: 0;
+		}
+
+		.container.flip_top {
+			-webkit-transform: transform: rotateX(120deg) translateY(-50%);
+			transform: rotateX(120deg) translateY(-50%);
+			opacity: 0;
+		}
+
+		.container.flip_right {
+			-webkit-transform: rotateY(120deg) translateX(50%) scaleX(0.5);
+			transform: rotateY(120deg) translateX(50%) scaleX(0.5);
+			opacity: 0;
+		}
+
+		.container.flip_left {
+			webkit-transform-origin: 20% 50%;
+			-webkit-transform: rotateY(-90deg) translateX(-50%);
 			transform-origin: 20% 50%;
-			transform: rotateY(-90deg) translateX(-50%) translateZ(-30px);
+			transform: rotateY(-90deg) translateX(-50%);
 			opacity: 0;
 		}
 
 		.art_left .text, .art_right .text {
 			position: relative;
 			top: 50%;
-			transform: translateY(-50%);
 			-webkit-transform: translateY(-50%);
+			transform: translateY(-50%);
 		}
 
 		.text, div.title, div.album, div.artist {

@@ -13,6 +13,7 @@
 <p>Generate a URL from the options below.  Use <a href="https://obsproject.com/forum/resources/clr-browser-source-plugin.22/update?update=232">the CLR Browser Plugin</a> for OBS or the <a href="https://obsproject.com/forum/resources/browser-plugin.115/">Browser Plugin</a> for OBS Studio/Multiplatform, and put the generated URL into the browser plugin's configuration.</p>
 <p>To put the audio on your stream, listen to Rainwave as you normally would and capture regularly through desktop audio in OBS.  You can use our website running in the background, or use your media player of choice by downloading M3Us using the audio player menu on our site by hovering over the play icon.  There will be no need to adjust the volume once started, Rainwave is kept at a consistent volume through per-song ReplayGain normalization.</p>
 <h2>Build Your Widget</h2>
+<p>Default values are provided for a 1080p capture, downsized to a 720p scene, where the widget is in the lower left of the stream.</p>
 <table>
 	<tr>
 		<th>Option</th>
@@ -52,8 +53,10 @@
 				<option value="320px">320 pixels</option>
 				<option value="240px">240 pixels</option>
 				<option value="200px">200 pixels</option>
+				<option value="160px">160 pixels</option>
 				<option value="120px">120 pixels</option>
-				<option value="70px" selected>70 pixels</option>
+				<option value="100px" selected>100 pixels</option>
+				<option value="70px">70 pixels</option>
 				<option value="50px">50 pixels</option>
 				<option value="30px">30 pixels</option>
 			</select>
@@ -70,6 +73,39 @@
 			</select>
 		</td>
 		<td>Alignment of text.</td>
+	</tr>
+	<tr>
+		<td>anim_in</td>
+		<td>
+			<select name="anim_in">
+				<option value="to_bottom" selected>From Bottom</option>
+				<option value="to_top">From Top</option>
+				<option value="to_left">From Left</option>
+				<option value="to_right">From Right</option>
+				<option value="fade">Fade In</option>
+				<!--<option value="flip_bottom">3D From Bottom</option>
+				<option value="flip_top">3D From Top</option>
+				<option value="flip_left">3D From Left</option>
+				<option value="flip_right">3D From Right</option>-->
+			</select>
+		</td>
+		<td rowspan="2">Controls animation direction of the songs when the tracks change.<!-- <i>3D animations will not work on the older non-studio CLR Browser plugin</i> due to the age of the bundled browser.--></td>
+	</tr>
+	<tr>
+		<td>anim_out</td>
+		<td>
+			<select name="anim_out">
+				<option value="to_bottom">To Bottom</option>
+				<option value="to_top">To Top</option>
+				<option value="to_left" selected>To Left</option>
+				<option value="to_right">To Right</option>
+				<option value="fade">Fade Out</option>
+				<!--<option value="flip_bottom">3D To Bottom</option>
+				<option value="flip_top">3D To Top</option>
+				<option value="flip_left">3D To Left</option>
+				<option value="flip_right">3D To Right</option>-->
+			</select>
+		</td>
 	</tr>
 	<tr>
 		<td>show_artist</td>
@@ -99,7 +135,7 @@
 	<tr>
 		<td>font_size</td>
 		<td><input type="text" name="font_size" value="" style="width: 300px;" /></td>
-		<td>CSS rule for font size.  Can use pixels (e.g. "14px") or points. (e.g. "14pt")  Leave blank for Rainwave defaults.</td>
+		<td>CSS rule for font size.  Can use pixels (e.g. "14px") or points. (e.g. "14pt")  Leave blank for 18pt.</td>
 	</tr>
 	<tr>
 		<td>font_family</td>
@@ -107,29 +143,34 @@
 		<td>CSS rule for what font to use.  Font names with spaces must be enclosed with single quotes, e.g. 'Helvetica Neue'.  Leave blank for Rainwave defaults.</td>
 	</tr>
 	<tr>
-		<td>text_stroke</td>
-		<td><input type="text" name="text_stroke" value="" style="width: 300px;" /></td>
-		<td>CSS color rule for text-stroke.  <a href="https://css-tricks.com/almanac/properties/t/text-stroke/" target="_blank">See here for details.</a> (only previewable in Chrome/Safari)  Leave blank for no text-stroke.</td>
+		<td>text_stroke_color</td>
+		<td><input type="text" name="text_stroke_color" value="black" style="width: 300px;" /></td>
+		<td>CSS color rule for outlining the text.  (CSS specifics: uses 4 text-shadows)</td>
+	</tr>
+	<tr>
+		<td>text_stroke_size</td>
+		<td><input type="text" name="text_stroke_size" value="2px" style="width: 300px;" /></td>
+		<td>CSS <b>pixel</b> size rule for outlining the text.  (e.g. 2px)  <i>Must be in pixels</i> or the scripting will break.</td>
 	</tr>
 	<tr>
 		<td>text_shadow</td>
-		<td><input type="text" name="text_shadow" value="" style="width: 300px;" /></td>
-		<td>CSS text-shadow rule. <a href="https://css-tricks.com/almanac/properties/t/text-shadow/" target="_blank">See here for details.</a>  Leave blank for no shadow.</td>
+		<td><input type="text" name="text_shadow" value="3px 3px 3px black" style="width: 300px;" /></td>
+		<td>CSS text-shadow rule. <a href="https://css-tricks.com/almanac/properties/t/text-shadow/" target="_blank">See here for details</a> or <a href="http://css3gen.com/text-shadow/" target="_blank">here for a generator.</a> Leave blank for no shadow.</td>
+	</tr>
+	<tr>
+		<td>art_shadow</td>
+		<td><input type="text" name="art_shadow" value="" style="width: 300px;" /></td>
+		<td>CSS box-shadow/glow rule for the art. (use <a href="http://www.cssmatic.com/box-shadow" target="_blank">this page</a> for a generator) Leave blank to use text_shadow, put "none" to have no shadow/glow..</td>
 	</tr>
 	<tr>
 		<td>width</td>
-		<td><input type="text" name="max_width" value="250px" style="width: 300px;" /></td>
+		<td><input type="text" name="max_width" value="420px" style="width: 300px;" /></td>
 		<td>CSS rule for width of the widget (including album art, but excluding padding) before text gets clipped.</td>
 	</tr>
 	<tr>
 		<td>padding</td>
 		<td><input type="text" name="padding" value="" style="width: 300px;" /></td>
-		<td>CSS rule for the space between the edge of the widget and the art/text.</td>
-	</tr>
-	<tr>
-		<td>art_shadow</td>
-		<td><input type="text" name="art_shadow" value="" style="width: 300px;" /></td>
-		<td>CSS box-shadow/glow rule for the art. (use <a href="http://www.cssmatic.com/box-shadow" target="_blank">this page</a> for help - take what comes after "box-shadow:" and paste into this setting) Leave blank for no shadow/glow.</td>
+		<td>CSS rule for the space between the edge of the widget and the art/text.  Will also be the space between the edge of the browser plugin and your OBS scene border.  Leave blank for 8px.</td>
 	</tr>
 	<tr>
 		<td>ad</td>
@@ -142,8 +183,9 @@
 		<td>Banner message for the ad.  Enter in the language(s) of your stream, or leave at default for "Music by:".</td>
 	</tr>
 </table>
-<pre id="widget_url" style="word-wrap: normal; white-space: normal;"></pre>
+<pre id="widget_url" style="word-wrap: normal; white-space: normal; word-break: break-all;"></pre>
 <h2>Preview</h2>
+<p>The preview will be larger here than on your stream if you use OBS to downscale the size of your image before streaming.</p>
 <iframe id="iframe" style="width: 100%; height: 500px;"></iframe>
 
 <script src="/static/js5/libs/API.js"></script>
