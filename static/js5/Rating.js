@@ -231,6 +231,9 @@ var Rating = function() {
 				self.do_rating(now_number, song);
 			}
 			Fx.remove_element(t.el);
+			if (song.el) {
+				song.el.classList.remove("on_top");
+			}
 			song.$t.rating.removeEventListener("touchmove", touchmove);
 			document.body.removeEventListener("touchend", remove);
 			document.body.removeEventListener("touchcancel", remove);
@@ -254,6 +257,9 @@ var Rating = function() {
 		song.$t.rating.appendChild(t.el);
 		touchmove(e);
 		requestAnimationFrame(function() {
+			if (song.el) {
+				song.el.classList.add("on_top");
+			}
 			t.el.classList.add("show");
 		});
 	};

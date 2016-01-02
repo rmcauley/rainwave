@@ -125,6 +125,7 @@
 	};
 
 	self.update_cool = function(item) {
+		if (!item._el) return;
 		if (item.cool && (item.cool_lowest > Clock.now)) {
 			item._el.classList.add("cool");
 		}
@@ -134,6 +135,8 @@
 	};
 
 	self.update_item_element = function(item) {
+		if (!item._el) return;
+
 		if (item.fave) {
 			item._el.classList.add("album_fave_highlight");
 			item._el_fave.classList.add("is_fave");

@@ -10,6 +10,11 @@ div.song {
 	height: $art_size;
 	width: 100%;
 
+	// used when mobile ratings are active
+	&.on_top {
+		z-index: 99 !important;
+	}
+
 	&.song_lost {
 		visibility: hidden;
 		opacity: 0;

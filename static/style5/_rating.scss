@@ -174,12 +174,12 @@ div.rating_clear {
 div.mobile_rating {
 	$slider_width: 200px;
 	width: $slider_width;
-	z-index: 5;
+	z-index: 98;
 	position: absolute;
 	opacity: 0;
 	left: 100%;
 	background: $bkg;
-	padding: 10px 15px 10px 5px;
+	padding: 20px 15px 10px 5px;
 	@include transform(translateX(-100%) translateY(-1em));
 	@include transition-wtime(200ms, opacity, transform);
 
@@ -198,6 +198,7 @@ div.mobile_rating {
 
 	div.slide_number {
 		position: absolute;
-		top: -8px;
+		top: 0px;
+		font-weight: bold;
 	}
 }
