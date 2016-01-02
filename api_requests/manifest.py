@@ -34,42 +34,36 @@ class ManifestJSON(HTMLRequest):
 			"theme_color": "#1978B7",
 			"background_color": "#000",
 
+			"splash_screens": [{
+				"src": "/static/images4/logo_white.png",
+				"sizes": "512x512"
+			}],
+
 			"icons": [
 				{
 					"src": "/static/images4/android/32.png",
 					"sizes": "32x32",
-					"type": "image/png",
-					"density": 0.75
+					"type": "image/png"
 				},
 				{
 					"src": "/static/images4/android/48.png",
 					"sizes": "48x48",
-					"type": "image/png",
-					"density": 1.0
+					"type": "image/png"
 				},
 				{
 					"src": "/static/images4/android/128.png",
 					"sizes": "128x128",
-					"type": "image/png",
-					"density": 1.5
+					"type": "image/png"
 				},
 				{
 					"src": "/static/images4/android/128.png",
 					"sizes": "128x128",
-					"type": "image/png",
-					"density": 2.0
+					"type": "image/png"
 				},
 				{
 					"src": "/static/images4/android/256.png",
 					"sizes": "256x256",
-					"type": "image/png",
-					"density": 3.0
-				},
-				{
-					"src": "/static/images4/android/256.png",
-					"sizes": "256x256",
-					"type": "image/png",
-					"density": 4.0
+					"type": "image/png"
 				}
 			]
 		}
