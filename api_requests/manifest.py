@@ -64,6 +64,16 @@ class ManifestJSON(HTMLRequest):
 					"src": "/static/images4/android/256.png",
 					"sizes": "256x256",
 					"type": "image/png"
+				},
+				{
+					"src": "/static/images4/android/384.png",
+					"sizes": "384x384",
+					"type": "image/png"
+				},
+				{
+					"src": "/static/images4/android/512.png",
+					"sizes": "512x512",
+					"type": "image/png"
 				}
 			]
 		}
