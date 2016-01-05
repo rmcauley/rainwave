@@ -88,8 +88,10 @@ var Stations = [];
 			if (User) {
 				requests_paused = User.requests_paused || false;
 			}
+			if (typeof(json.requests_paused) == "undefined") {
+				json.requests_paused = requests_paused;
+			}
 			User = json;
-			User.requests_paused = User.requests_paused || requests_paused;
 		});
 
 		// pre-paint DOM operations while the network is doing its work for CSS
