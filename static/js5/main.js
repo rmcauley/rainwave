@@ -83,7 +83,14 @@ var Stations = [];
 
 		template = RWTemplates.index({ "stations": Stations });
 		User = BOOTSTRAP.user;
-		API.add_callback("user", function(json) { User = json; });
+		API.add_callback("user", function(json) {
+			var requests_paused = false;
+			if (User) {
+				requests_paused = User.requests_paused || false;
+			}
+			User = json;
+			User.requests_paused = User.requests_paused || requests_paused;
+		});
 
 		// pre-paint DOM operations while the network is doing its work for CSS
 		for (i = 0; i < BOOTSTRAP.on_init.length; i++) {
