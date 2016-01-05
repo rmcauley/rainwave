@@ -93,7 +93,7 @@ class User(object):
 		user_data = None
 		if not user_data:
 			user_data = db.c.fetch_row(
-				"SELECT user_id AS id, username AS name, user_new_privmsg AS new_privmsg, user_avatar AS avatar, radio_requests_paused AS requests_paused, "
+				"SELECT user_id AS id, username AS name, user_avatar AS avatar, radio_requests_paused AS requests_paused, "
 					"user_avatar_type AS _avatar_type, radio_listenkey AS listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings "
 				"FROM phpbb_users WHERE user_id = %s",
 				(self.id,)

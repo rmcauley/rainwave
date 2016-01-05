@@ -284,6 +284,8 @@ class Sync(APIHandler):
 			raise APIException("station_offline")
 
 		self.user.refresh(self.sid)
+		if "requests_paused" in self.user.data:
+			del self.user.data['requests_paused']
 		api_requests.info.attach_info_to_request(self)
 		self.finish()
 
@@ -294,5 +296,7 @@ class Sync(APIHandler):
 			raise APIException("station_offline")
 
 		self.user.refresh(self.sid)
+		if "requests_paused" in self.user.data:
+			del self.user.data['requests_paused']
 		self.append("user", self.user.to_private_dict())
 		self.finish()
