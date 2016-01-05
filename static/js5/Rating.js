@@ -204,6 +204,9 @@ var Rating = function() {
 
 	var is_touching = false;
 	var touch_timer;
+	var start_touch_timer;
+	var touching_song;
+	var last_touch;
 	var clear_touch = function() {
 		touch_timer = false;
 		is_touching = false;
@@ -213,28 +216,68 @@ var Rating = function() {
 		if (touch_timer) {
 			clearTimeout(touch_timer);
 		}
+		if (start_touch_timer) {
+			clearTimeout(start_touch_timer);
+		}
 		touch_timer = setTimeout(clear_touch, 30);
+		if (touching_song) {
+			touching_song.$t.rating.classList.remove("starting_touch");
+		}
 		document.body.removeEventListener("touchend", touchend);
 		document.body.removeEventListener("touchcancel", touchend);
 	};
 
-	var rating_width = 58;
-	var slider_width = 200;
-	var do_touch_rating = function(song, e) {
+	var scroll_check_min;
+	var scroll_check_max;
+	var scroll_check = function(e) {
+		if ((e.touches[0].pageY < scroll_check_min) || (e.touches[0].pageY > scroll_check_max)) {
+			touchend(e);
+		}
+		last_touch = e;
+	};
+
+	var trigger_touch_rating = function(e) {
 		document.body.addEventListener("touchend", touchend);
 		document.body.addEventListener("touchcancel", touchend);
 
-		var zero_x = song.$t.rating.offsetLeft + rating_width - slider_width - 10;
+		touching_song.$t.rating.classList.add("starting_touch");
+
+		last_touch = e;
+		scroll_check_min = e.touches[0].pageY - 15;
+		scroll_check_max = e.touches[0].pageY + 15;
+		if (start_touch_timer) {
+			clearTimeout(start_touch_timer);
+		}
+		start_touch_timer = setTimeout(do_touch_rating, 300);
+
+		document.body.addEventListener("touchmove", scroll_check);
+	};
+
+	var rating_width = 58;
+	var slider_width = 200;
+	var do_touch_rating = function() {
+		// document.body.addEventListener("touchend", touchend);
+		// document.body.addEventListener("touchcancel", touchend);
+		document.body.removeEventListener("touchmove", scroll_check);
+
+		var zero_x = touching_song.$t.rating.offsetLeft + rating_width - slider_width - 10;
+		var zero_y = last_touch.touches[0].pageY;
+		touching_song.$t.rating.classList.remove("starting_touch");
 		var t = RWTemplates.rating_mobile();
+		var cancelling = false;
 		var remove = function(e) {
-			if (e.target == song.$t.rating) {
-				self.do_rating(now_number, song);
+			if (!cancelling && (e.target == touching_song.$t.rating)) {
+				self.do_rating(now_number, touching_song);
+			}
+			else {
+				self.do_rating(null, touching_song);
 			}
 			Fx.remove_element(t.el);
-			if (song.el) {
-				song.el.classList.remove("on_top");
+			if (touching_song.el) {
+				touching_song.el.classList.remove("on_top");
 			}
-			song.$t.rating.removeEventListener("touchmove", touchmove);
+			touching_song = false;
+			document.body.removeEventListener("touchmove", touchmove);
 			document.body.removeEventListener("touchend", remove);
 			document.body.removeEventListener("touchcancel", remove);
 		};
@@ -247,18 +290,28 @@ var Rating = function() {
 			t.number.textContent = Formatting.rating(rating);
 		};
 		var touchmove = function(e) {
+			e.preventDefault();
+			if ((e.touches[0].pageY < (zero_y - 40)) || ((e.touches[0].pageY > (zero_y + 40)))) {
+				if (!cancelling) {
+					t.number.textContent = $l("Cancel");
+					cancelling = true;
+					now_number = false;
+				}
+				return;
+			}
+			cancelling = false;
 			var rating = (Math.floor((e.touches[0].pageX - (zero_x + 25)) / ((slider_width - 25) / 9)) / 2) + 1;
 			rating = Math.min(Math.max(1, rating), 5);
 			highlight(rating, Math.min(slider_width, Math.max(0, (e.touches[0].pageX - zero_x))));
 		};
 		document.body.addEventListener("touchend", remove);
 		document.body.addEventListener("touchcancel", remove);
-		song.$t.rating.addEventListener("touchmove", touchmove);
-		song.$t.rating.appendChild(t.el);
-		touchmove(e);
+		document.body.addEventListener("touchmove", touchmove);
+		touching_song.$t.rating.appendChild(t.el);
+		touchmove(last_touch);
 		requestAnimationFrame(function() {
-			if (song.el) {
-				song.el.classList.add("on_top");
+			if (touching_song.el) {
+				touching_song.el.classList.add("on_top");
 			}
 			t.el.classList.add("show");
 		});
@@ -273,6 +326,25 @@ var Rating = function() {
 		requestNextAnimationFrame(function() {
 			confirm.classList.add("confirming");
 		});
+		var rating_err = function() {
+			if (new_rating === null) {
+				confirm.textContent = "x";
+			}
+			else {
+				confirm.textContent = "!";
+			}
+			confirm.classList.add("bad_rating");
+			setTimeout(function() {
+				confirm.style.opacity = "0";
+				setTimeout(function() {
+					confirm.parentNode.removeChild(confirm);
+				}, 250);
+			}, 1500);
+		};
+		if (new_rating === null) {
+			rating_err();
+			return;
+		}
 		API.async_get("rate", { "rating": new_rating, "song_id": json.id },
 			function(newjson) {
 				requestNextAnimationFrame(function() {
@@ -292,16 +364,7 @@ var Rating = function() {
 					}, 250);
 				}, 1500);
 			},
-			function(newjson) {
-				confirm.textContent = "!";
-				confirm.classList.add("bad_rating");
-				setTimeout(function() {
-					confirm.style.opacity = "0";
-					setTimeout(function() {
-						confirm.parentNode.removeChild(confirm);
-					}, 250);
-				}, 1500);
-			}
+			rating_err
 		);
 	};
 
@@ -425,8 +488,10 @@ var Rating = function() {
 			json.$t.rating.addEventListener("mouseleave", on_mouse_out);
 			json.$t.rating.addEventListener("click", click);
 			json.$t.rating.addEventListener("touchstart", function(e) {
+				console.log("where's the touch?!");
 				is_touching = true;
-				do_touch_rating(json, e);
+				touching_song = json;
+				trigger_touch_rating(e);
 			});
 		}
 	};

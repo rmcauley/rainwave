@@ -14,6 +14,11 @@ div.rating {
 		width: $rating_width + 23px;
 	}
 
+	&.starting_touch {
+		@include transition-wtime(300ms, background-color);
+		background-color: $rating_touch_start_bkg;
+	}
+
 	&.rating_user {
 		background-image: $user_rating;
 

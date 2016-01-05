@@ -1,4 +1,4 @@
-<div class="mobile_rating unselectable needsclick {{ extraclass }}" bind="el">
+<div class="mobile_rating unselectable {{ extraclass }}" bind="el">
 	<div class="slide_number" bind="number"></div>
 	<div class="slider" bind="slider"></div>
 </div>
