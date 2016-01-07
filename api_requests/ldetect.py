@@ -156,7 +156,8 @@ class RemoveListener(IcecastHandler):
 		listener = db.c.fetch_row("SELECT user_id, listener_ip FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
 								 (self.relay, self.get_argument("client")))
 		if not listener:
-			self.append("      RMFAIL: %s %s." % ('{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
+			# removal not working is normal, since any reconnecting listener gets a new listener ID
+			# self.append("      RMFAIL: %s %s." % ('{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
 			return
 
 		db.c.update("UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_relay = %s AND listener_icecast_id = %s", (self.relay, self.get_argument("client")))
