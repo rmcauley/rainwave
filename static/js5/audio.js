@@ -228,9 +228,16 @@ var RWAudio = function() {
 			self.clear_audio_errors();
 		}
 
-		audio_el.pause(0);
 		while (audio_el.firstChild) audio_el.removeChild(audio_el.firstChild);
 		if (audio_el.parentNode) audio_el.parentNode.removeChild(audio_el);
+		audio_el.pause(0);
+		audio_el.removeAttribute("src");
+		try {
+			audio_el.load();
+		}
+		catch (e) {
+			// we WANT it to fail
+		}
 		audio_el = null;
 		setup_audio();
 		if (self.changed_status_callback) {
