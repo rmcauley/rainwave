@@ -127,7 +127,7 @@ class OneUpProducer(event.BaseProducer):
 		rows = db.c.fetch_all(
 			"SELECT song_id, song_length "
 			"FROM r4_song_sid JOIN r4_songs USING (song_id) "
-			"WHERE sid = 1 AND song_rating = 0 "
+			"WHERE sid = 1 AND song_rating = 0 AND song_exists = TRUE AND song_verified = TRUE "
 			"ORDER BY song_rating_count, song_added_on, random() "
 			"LIMIT 100"
 		)
