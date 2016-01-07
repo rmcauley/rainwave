@@ -70,7 +70,13 @@
 			return true;
 		};
 
+		var known_id ;
 		var show = function(json, no_ad, no_img_check) {
+			if (known_id && json.id && (known_id == json.id)) {
+				// API is just re-syncing or something
+				return;
+			}
+
 			var art_url = json.songs[0].albums[0].art ? json.songs[0].albums[0].art + (json.ad ? "" : "_320.jpg") : null;
 			if (!art_url && options.sid == 2) {
 				art_url = "/static/images4/noart_2.jpg";
