@@ -1,4 +1,4 @@
-RWTemplateHelpers.tabify = function(obj, def) {
+RWTemplateHelpers.tabify = function(obj, default_tab) {
     "use strict";
 
     if (!obj.$t) return;
@@ -36,8 +36,8 @@ RWTemplateHelpers.tabify = function(obj, def) {
         }
     }
     hide_areas();
-    if (def) {
-        obj.$t[def + "_area"][0].classList.remove("tab_invisible");
-        obj.$t[def + "_tab"][0].parentNode.classList.add("active");
+    if (default_tab) {
+        obj.$t[default_tab + "_area"][0].classList.remove("tab_invisible");
+        obj.$t[default_tab + "_tab"][0].parentNode.classList.add("active");
     }
 };

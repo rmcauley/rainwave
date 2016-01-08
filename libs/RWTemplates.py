@@ -329,7 +329,7 @@ class RainwaveParser(HTMLParser):
 			else:
 				if self.helpers_on and attr[0] == "helper":
 					self.helpers[uid] = attr_val
-				self.buffers[self._current_stack_point()] += "%s.%s('%s',%s);" % (uid, self.calls.setAttribute, attr[0], attr_val)
+				self.buffers[self._current_stack_point()] += "%s.%s('%s',%s);" % (uid, self.calls.setAttribute, attr[0], attr_val or r'""')
 
 	def check_bind_scope(self, uid, blah=False):
 		for item in reversed(self.stack):
@@ -406,7 +406,7 @@ class RainwaveParser(HTMLParser):
 					if self.tree[-1] in self.helpers:
 						self.buffers[self._current_stack_point()] += "_h[%s](%s);" % (self.helpers[self.tree[-1]], self._parse_val(data))
 					else:
-						self.buffers[self._current_stack_point()] += "%s;" % (self._parse_val(data),)
+						self.buffers[self._current_stack_point()] += "\"%s\";" % (self._parse_val(data)[1:-1].replace(r'"', r'\"',))
 					text_content_used = True
 		self.input_buffer = ""
 
