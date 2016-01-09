@@ -25,11 +25,35 @@
 
 		options.anim_in = options.anim_in || "to_bottom";
 		options.anim_out = options.anim_out || "to_left";
+		options.text_stroke_color = options.text_stroke_color || "black";
+		options.text_stroke_size = options.text_stroke_size || "2px";
+		options.text_shadow = options.text_shadow || "3px 3px 3px black";
+		options.font_size = options.font_size || "18pt";
+		options.font_family = options.font_family || "'Roboto Condensed', sans-serif";
+		options.ad_message = options.ad_message || "Music by:";
+		options.padding = options.padding || "8px";
+		options.color = options.color || "white";
+
+		var shadow_size = 0;
+		var shadow_css = options.box_shadow.split(" ");
+		var shadow_part;
+		try {
+			for (var i = 0; i < shadow_css.length; i++) {
+				shadow_part = parseInt(shadow_css[i]);
+				if (!isNaN(shadow_part) && shadow_part) {
+					shadow_size += shadow_part;
+				}
+			}
+		}
+		catch (e) {
+			shadow_size = 0;
+		}
+		options.margin = Math.max(parseInt(options.padding), shadow_size) + "px";
 
 		var style;
 
 		var get_art_html = function(art_url) {
-			var html = "<div class='art' style='background-image: url(" + art_url + "); height: " + options.art_size + "; ";
+			var html = "<div class='art' style='background-color: black; background-image: url(" + art_url + "); height: " + options.art_size + "; ";
 			if ((options.layout == "art_top") || (options.layout == "art_bottom")) {
 				html += "width: 100%; ";
 			}
@@ -105,7 +129,7 @@
 					last_ad = 0;
 					show({ "ad": true,
 						"songs": [{
-						"title": options.ad_message || "Music by:",
+						"title": options.ad_message,
 						"albums": [ { "art": "/static/images4/ios/1024.png", "name": "http://rainwave.cc" }]
 					}]}, true);
 					return;
@@ -128,7 +152,14 @@
 			if (options.layout != "art_bottom") {
 				html += get_art_html(art_url);
 			}
-			html += "<div class='valign'>";
+			html += "<div class='valign' ";
+			if (options.layout == "art_left") {
+				html += "style='margin-left: " + options.padding + ";' ";
+			}
+			else if (options.layout == "art_right") {
+				html += "style='margin-right: " + options.padding + ";' ";
+			}
+			html += ">";
 			html += "<div class='title'>" + json.songs[0].title + "</div>";
 			html += "<div class='album'>" + json.songs[0].albums[0].name + "</div>";
 			if ((options.show_artist == "true") && json.songs[0].artist_parseable) {
@@ -166,8 +197,8 @@
 			style = function() {
 				var s = "";
 				s += "color: " + options.color + "; ";
-				s += "font-size: " + (options.font_size || "18pt") + "; ";
-				s += "font-family: " + (options.font_family || "'Roboto Condensed', sans-serif") + "; ";
+				s += "font-size: " + options.font_size + "; ";
+				s += "font-family: " + options.font_family + "; ";
 				var shadow = "";
 				if (options.text_stroke_size && options.text_stroke_color) {
 					shadow += "-" + options.text_stroke_size + " -" + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color + ",";
@@ -194,21 +225,24 @@
 					s += "background-color: " + options.background_color + " !important; ";
 					// document.getElementById("threed").style.backgroundColor = options.background_color;
 				}
-				var p = (options.padding || "8px");
-				if (options.layout == "art_left") {
-					s += "padding: " + p + " " + p + " " + p + " 0; ";
-					s += "margin-left: " + p + "; ";
-				}
-				else if (options.layout == "art_right") {
-					s += "padding: " + p + " 0 " + p + " " + p + "; ";
-					s += "margin-right: " + p + "; ";
-				}
-				else {
+				var p = options.padding;
+				// if (options.layout == "art_left") {
+				// 	s += "padding: " + p + " " + p + " " + p + " 0; ";
+				// 	s += "margin-left: " + p + "; ";
+				// }
+				// else if (options.layout == "art_right") {
+				// 	s += "padding: " + p + " 0 " + p + " " + p + "; ";
+				// 	s += "margin-right: " + p + "; ";
+				// }
+				// else {
 					s += "padding: " + p + "; ";
-				}
+				// }
 				if (options.box_shadow) {
 					s += "-webkit-box-shadow: " + options.box_shadow + "; ";
 					s += "box-shadow: " + options.box_shadow + "; ";
+				}
+				if (options.margin) {
+					s += "margin-left: " + options.margin + "; margin-top: " + options.margin + "; ";
 				}
 				return s;
 			}();
@@ -219,6 +253,11 @@
 	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
 
 	<style>
+		body {
+			background: white;
+			margin: 0 !important;
+		}
+
 		.right {
 			text-align: right;
 		}
@@ -235,6 +274,7 @@
 		}
 
 		.art_right .valign, .art_left .valign {
+			overflow: hidden;
 			position: relative;
 			top: 50%;
 			transform: translateY(-50%);

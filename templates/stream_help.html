@@ -1,210 +1,297 @@
 {% include "basic_header.html" %}
+<style>
+	div.tab_invisible, table.tab_invisible {
+		display: none;
+	}
+
+	ul.tabs {
+		margin: 0;
+		padding: 0;
+		border-bottom: solid 1px grey;
+	}
+
+	ul.tabs li {
+		display: inline;
+		margin-right: 1em;
+		cursor: pointer;
+		opacity: 0.5;
+	}
+
+	ul.tabs li.active {
+		opacity: 1;
+		font-weight: bold;
+		color: #FFC96A;
+		border-bottom: solid 1px #CE8300;
+	}
+
+	li.tab_invisible {
+		opacity: 0.5;
+	}
+
+	p.preset_question {
+		margin-bottom;
+	}
+
+	p.preset_question + div, p.preset_question + div + div {
+		margin-left: 3em;
+	}
+
+	body {
+		padding-bottom: 2em;
+	}
+
+	div.position_select {
+		border: solid 1px #CCC;
+		width: 400px;
+		height: 150px;
+		position: relative;
+	}
+
+	div.position_select button {
+		display: inline-block;
+		white-space: nowrap;
+		height: 30px;
+		width: 100px;
+	}
+
+	div.position_select button.middle {
+		height: 90px;
+	}
+
+	div.position_select button.centre {
+		width: 200px;
+	}
+</style>
 <p>We highly encourage you use Rainwave as background music for your streams!  All our music is volume-normalized and ad-free, perfect for background as part of a stream!</p>
-<h2>Copyright/Content ID, and "Safe For Work"</h2>
-<p><b>The tl;dr is use OverClocked ReMix/OCR Radio.</b>  Your stream is important, though, so please review the following and select a station carefully.  Lyrical content is noted, as some streamers will not appreciate having a song with lyrics competing on stream with their own voice for user's attention, even if the song is turned down to be in the background.</p>
-<ul>
-	<li>All has some lyrical content, and is "rated G"/"safe for work". (no swears, no racial slurs, no hentai game content or album art, etc)  You stand a strong risk of being Content IDed when using this station.</li>
-	<li>Game has very little lyrical content, and is rated G/safe for work.  You will almost certainly be Content IDed.</li>
-	<li>OverClocked ReMix has no copyrighted content, has some lyrical content, and is rated PG-13 with the very rare R.  We defer to OverClocked ReMix's judgement, which in rare cases produces content such as <a href="http://ocremix.org/remix/OCR01125" target="_blank">Niggaz 4 Life</a>.  More importantly, though, <b><i>you will not be Content IDed with OCR.</i></b></li>
-	<li>Covers has a lot of lyrical content, and is rated PG-13 for swearing and themes from some remixes with lyrics.  You have a very small chance of being Content IDed.</li>
-	<li>Chiptune has no lyrical content, and is rated G.  You have a small chance of being Content IDed.</li>
-</ul>
-<h2>How To Use in OBS</h2>
-<p>Generate a URL from the options below.  Use <a href="https://obsproject.com/forum/resources/clr-browser-source-plugin.22/update?update=232">the CLR Browser Plugin</a> for OBS or the <a href="https://obsproject.com/forum/resources/browser-plugin.115/">Browser Plugin</a> for OBS Studio/Multiplatform, and put the generated URL into the browser plugin's configuration.</p>
-<p>To put the audio on your stream, listen to Rainwave as you normally would and capture regularly through desktop audio in OBS.  You can use our website running in the background, or use your media player of choice by downloading M3Us using the audio player menu on our site by hovering over the play icon.  There will be no need to adjust the volume once started, Rainwave is kept at a consistent volume through per-song ReplayGain normalization.</p>
-<h2>Build Your Widget</h2>
-<p>Default values are provided for a 1080p capture, downsized to a 720p scene, where the widget is in the lower left of the stream.</p>
-<table>
-	<tr>
-		<th>Option</th>
-		<th>Value</th>
-		<th>Description</th>
-	</tr>
 
-	<tr>
-		<td>station</td>
-		<td>
-			<select name="station">
-				<option value="5">All</option>
-				<option value="1">Game</option>
-				<option value="2" selected>OverClocked ReMix</option>
-				<option value="3">Covers</option>
-				<option value="4">Chiptune</option>
-			</select>
-		</td>
-		<td>Which Rainwave station to use.  <b>OverClocked ReMix is highly recommended as you have zero risk of being Content IDed.</b></td>
-	</tr>
-	<tr>
-		<td>layout</td>
-		<td>
-			<select name="layout">
-				<option value="art_top">Album Art Above Text</option>
-				<option value="art_bottom">Album Art Below Text</option>
-				<option value="art_left" selected>Album Art Left of Text</option>
-				<option value="art_right">Album Art Right of Text</option>
-			</select>
-		</td>
-		<td>Where the album art goes relative to the song details.</td>
-	</tr>
-	<tr>
-		<td>art_size</td>
-		<td>
-			<select name="art_size">
-				<option value="320px">320 pixels</option>
-				<option value="240px">240 pixels</option>
-				<option value="200px">200 pixels</option>
-				<option value="160px">160 pixels</option>
-				<option value="120px">120 pixels</option>
-				<option value="100px" selected>100 pixels</option>
-				<option value="70px">70 pixels</option>
-				<option value="50px">50 pixels</option>
-				<option value="30px">30 pixels</option>
-			</select>
-		</td>
-		<td>Album art size in the widget.</td>
-	</tr>
-	<tr>
-		<td>text_align</td>
-		<td>
-			<select name="text_align">
-				<option value="left" selected>Left</option>
-				<option value="right">Right</option>
-				<option value="centre">Centre</option>
-			</select>
-		</td>
-		<td>Alignment of text.</td>
-	</tr>
-	<tr>
-		<td>anim_in</td>
-		<td>
-			<select name="anim_in">
-				<option value="to_bottom" selected>From Bottom</option>
-				<option value="to_top">From Top</option>
-				<option value="to_left">From Left</option>
-				<option value="to_right">From Right</option>
-				<option value="fade">Fade In</option>
-				<!--<option value="flip_bottom">3D From Bottom</option>
-				<option value="flip_top">3D From Top</option>
-				<option value="flip_left">3D From Left</option>
-				<option value="flip_right">3D From Right</option>-->
-			</select>
-		</td>
-		<td rowspan="2">Controls animation direction of the songs when the tracks change.<!-- <i>3D animations will not work on the older non-studio CLR Browser plugin</i> due to the age of the bundled browser.--></td>
-	</tr>
-	<tr>
-		<td>anim_out</td>
-		<td>
-			<select name="anim_out">
-				<option value="to_bottom">To Bottom</option>
-				<option value="to_top">To Top</option>
-				<option value="to_left" selected>To Left</option>
-				<option value="to_right">To Right</option>
-				<option value="fade">Fade Out</option>
-				<!--<option value="flip_bottom">3D To Bottom</option>
-				<option value="flip_top">3D To Top</option>
-				<option value="flip_left">3D To Left</option>
-				<option value="flip_right">3D To Right</option>-->
-			</select>
-		</td>
-	</tr>
-	<tr>
-		<td>show_artist</td>
-		<td>
-			<select name="show_artist">
-				<option value="true" selected>Yes</option>
-				<option value="false">No</option>
-			</select>
-		</td>
-		<td>Show artist or not in the widget's text.</td>
-	</tr>
-	<tr>
-		<td>color</td>
-		<td><input type="text" name="color" value="white" style="width: 300px;" /></td>
-		<td>CSS color rule for font color. (e.g. "white"/"#FFF", "black"/"#000", or <a href="http://www.colorpicker.com/" target="_blank">use a color picker</a>)</td>
-	</tr>
-	<tr>
-		<td>background_color</td>
-		<td><input type="text" name="background_color" value="" style="width: 300px;" /></td>
-		<td>CSS rule for the background color for the song box.  Leave blank for transparent.  You may need to add your own background in OBS if using transparent.</td>
-	</tr>
-	<tr>
-		<td>box_shadow</td>
-		<td><input type="text" name="box_shadow" value="" style="width: 300px;" /></td>
-		<td>CSS box-shadow/glow rule for the container. (use <a href="http://www.cssmatic.com/box-shadow" target="_blank">this page</a> for help - take what comes after "box-shadow:" and paste into this setting) Leave blank for no shadow/glow.</td>
-	</tr>
-	<tr>
-		<td>font_size</td>
-		<td><input type="text" name="font_size" value="" style="width: 300px;" /></td>
-		<td>CSS rule for font size.  Can use pixels (e.g. "14px") or points. (e.g. "14pt")  Leave blank for 18pt.</td>
-	</tr>
-	<tr>
-		<td>font_family</td>
-		<td><input type="text" name="font_family" value="" style="width: 300px;" /></td>
-		<td>CSS rule for what font to use.  Font names with spaces must be enclosed with single quotes, e.g. 'Helvetica Neue'.  Leave blank for Rainwave defaults.</td>
-	</tr>
-	<tr>
-		<td>text_stroke_color</td>
-		<td><input type="text" name="text_stroke_color" value="black" style="width: 300px;" /></td>
-		<td>CSS color rule for outlining the text.  (CSS specifics: uses 4 text-shadows)</td>
-	</tr>
-	<tr>
-		<td>text_stroke_size</td>
-		<td><input type="text" name="text_stroke_size" value="2px" style="width: 300px;" /></td>
-		<td>CSS <b>pixel</b> size rule for outlining the text.  (e.g. 2px)  <i>Must be in pixels</i> or the scripting will break.</td>
-	</tr>
-	<tr>
-		<td>text_shadow</td>
-		<td><input type="text" name="text_shadow" value="3px 3px 3px black" style="width: 300px;" /></td>
-		<td>CSS text-shadow rule. <a href="https://css-tricks.com/almanac/properties/t/text-shadow/" target="_blank">See here for details</a> or <a href="http://css3gen.com/text-shadow/" target="_blank">here for a generator.</a> Leave blank for no shadow.</td>
-	</tr>
-	<tr>
-		<td>art_shadow</td>
-		<td><input type="text" name="art_shadow" value="" style="width: 300px;" /></td>
-		<td>CSS box-shadow/glow rule for the art. (use <a href="http://www.cssmatic.com/box-shadow" target="_blank">this page</a> for a generator) Leave blank to use text_shadow, put "none" to have no shadow/glow..</td>
-	</tr>
-	<tr>
-		<td>width</td>
-		<td><input type="text" name="max_width" value="420px" style="width: 300px;" /></td>
-		<td>CSS rule for width of the widget (including album art, but excluding padding) before text gets clipped.</td>
-	</tr>
-	<tr>
-		<td>padding</td>
-		<td><input type="text" name="padding" value="" style="width: 300px;" /></td>
-		<td>CSS rule for the space between the edge of the widget and the art/text.  Will also be the space between the edge of the browser plugin and your OBS scene border.  Leave blank for 8px.</td>
-	</tr>
-	<tr>
-		<td>ad</td>
-		<td><input type="text" name="ad" value="3" style="width: 300px;" /></td>
-		<td>How many songs to play before showing Rainwave's logo as the album art for a brief moment. Set to 0 to never show an ad. Ads last 2-5 seconds depending on the setting, and are Rainwave's logo with our URL displayed in the same style as song information. (please be kind, we run this service for free :) )</td>
-	</tr>
-	<tr>
-		<td>ad_message</td>
-		<td><input type="text" name="ad_message" value="" style="width: 300px;" /></td>
-		<td>Banner message for the ad.  Enter in the language(s) of your stream, or leave at default for "Music by:".</td>
-	</tr>
-</table>
-<pre id="widget_url" style="word-wrap: normal; white-space: normal; word-break: break-all;"></pre>
-<p>
-	<b>Plugin width:</b> <span id="plugin_width"></span><br />
-	<b>Plugin height:</b> <span id="plugin_height"></span>
+<h2>Content ID Concerns</h2>
+<p><b>The tl;dr is use OverClocked ReMix/OCR Radio</b>.  You are completely content ID safe when you do!</p>
+<p id="more_info_click">
+	To see the long version, <a onclick="document.getElementById('more_info').style.display = 'block'; this.parentNode.style.display='none';" href="#">click here.</a>
 </p>
-<h2>Preview</h2>
-<p>The preview will be larger here than on your stream if you use OBS to downscale the size of your image before streaming.</p>
-<iframe id="iframe" style="width: 100%; height: 500px;"></iframe>
+<div id="more_info" style="display: none;">
+	<p>Lyrical content per station is noted below, as some streamers will not appreciate having a song with lyrics competing on stream with their own voice for user's attention. (even if the song is turned down to be in the background)</p>
+	<ul>
+		<li>All has some lyrical content, and is "rated G"/"safe for work". (no swears, no racial slurs, no hentai game content or album art, etc)  You stand a strong risk of being Content IDed when using this station.</li>
+		<li>Game has very little lyrical content, and is rated G/safe for work.  You will almost certainly be Content IDed.</li>
+		<li>OverClocked ReMix has no copyrighted content, has some lyrical content, and is rated PG-13 with the very rare R.  We defer to OverClocked ReMix's judgement, which in rare cases produces content such as <a href="http://ocremix.org/remix/OCR01125" target="_blank">Niggaz 4 Life</a>.  More importantly, though, <b><i>you will not be Content IDed with OCR.</i></b></li>
+		<li>Covers has a lot of lyrical content, and is rated PG-13 for swearing and themes from some remixes with lyrics.  You have a very small chance of being Content IDed.</li>
+		<li>Chiptune has no lyrical content, and is rated G.  You have a small chance of being Content IDed.</li>
+	</ul>
+</div>
 
+<h2>How To Use in OBS</h2>
+<ol>
+	<li>Install <a href="https://obsproject.com/forum/resources/clr-browser-source-plugin.22/update?update=232">the CLR Browser Plugin</a> for OBS or the <a href="https://obsproject.com/forum/resources/browser-plugin.115/">Browser Plugin</a> for OBS Studio/Multiplatform.</li>
+	<li>Configure your widget below.  If you know CSS, you can tune </li>
+	<li>Copy your widget's URL to the plugin and use the recommended plugin width/height</li>
+	<li>Tune in to Rainwave using your browser or media player</li>
+</ol>
+
+<!-- python libs/RWTemplates.py --templatedir templates/stream_js --outfile static/stream_templates.js --helpers -->
+<script src="/static/stream_templates.js"></script>
+<script src="/static/RWTemplates.js"></script>
+<script src="/static/RWTemplates.forms.js"></script>
+<script src="/static/RWTemplates.tabify.js"></script>
 <script src="/static/js5/libs/API.js"></script>
+<div id="template_zone" style="box-sizing: border-box; padding-right: 10px; float: left; width: 50%; border-right: solid 1px #CE8300; padding-bottom: 2em;"></div>
+<div style="float: right; width: 49%;">
+	<h2>Your Widget</h2>
+	<p><b>Your URL:</b></p>
+	<pre id="widget_url" style="word-wrap: normal; white-space: normal; word-break: break-all;"></pre>
+	<p>
+		<b>Plugin width:</b> <span id="plugin_width"></span><br />
+		<b>Plugin height:</b> <span id="plugin_height"></span>
+	</p>
+	<p>The preview will be larger here than on your stream if you use OBS to downscale the size of your image before streaming.</p>
+	<iframe id="iframe" style="width: 100%; height: 350px; border: none;"></iframe>
+</div>
+<div style="clear: both;"></div>
+
 <script>
-	function update_url() {
-		var elems = document.body.querySelectorAll("input,select");
-		var obj = {};
-		for (var i = 0; i < elems.length; i++) {
-			if (elems[i].value) {
-				obj[elems[i].getAttribute("name")] = elems[i].value;
+	var core_obj = {
+		"presets": {
+			"preset_layout": "center_left",
+			"preset_size": "1080p",
+			"preset_background": "overgame",
+			"preset_header": "yes_cs",
+			"preset_ad": "yes"
+		},
+		"options": {
+			"sid": "2",
+
+			"layout": "art_left",
+			"text_align": "left",
+			"anim_in": "to_left",
+			"anim_out": "to_left",
+
+			"art_size": "100px",
+			"font_size": "",
+			"max_width": "420px",
+
+			"background_color": "rgba(0,0,0,0.6)",
+			"box_shadow": "0px 0px 3px 5px rgba(0,0,0,0.6)",
+
+			"np_header": "true",
+			"np_message": "",
+
+			"ad": "3",
+			"ad_message": "",
+
+			"show_artist": "true",
+			"color": "",
+			"font_family": "",
+			"text_stroke_color": "",
+			"text_stroke_size": "",
+			"text_shadow": "",
+			"art_shadow": "",
+			"padding": ""
+		}
+	};
+
+	var presets = {
+		"top_left": {
+			"layout": "art_left",
+			"text_align": "left",
+			"anim_in": "to_top",
+			"anim_out": "to_left"
+		},
+		"top_center": {
+			"layout": "art_left",
+			"text_align": "left",
+			"anim_in": "to_top",
+			"anim_out": "to_top"
+		},
+		"top_right": {
+			"layout": "art_right",
+			"text_align": "right",
+			"anim_in": "to_top",
+			"anim_out": "to_right"
+		},
+		"center_left": {
+			"layout": "art_left",
+			"text_align": "left",
+			"anim_in": "to_left",
+			"anim_out": "to_left"
+		},
+		"center_right": {
+			"layout": "art_right",
+			"text_align": "right",
+			"anim_in": "to_right",
+			"anim_out": "to_right"
+		},
+		"bottom_left": {
+			"layout": "art_left",
+			"text_align": "left",
+			"anim_in": "to_bottom",
+			"anim_out": "to_left"
+		},
+		"bottom_center": {
+			"layout": "art_left",
+			"text_align": "left",
+			"anim_in": "to_bottom",
+			"anim_out": "to_bottom"
+		},
+		"bottom_right": {
+			"layout": "art_right",
+			"text_align": "right",
+			"anim_in": "to_bottom",
+			"anim_out": "to_right"
+		},
+		"2160p": {
+			"art_size": "240px",
+			"font_size": "32pt",
+			"max_width": "800px",
+		},
+		"1440p": {
+			"art_size": "160px",
+			"font_size": "24pt",
+			"max_width": "640px",
+		},
+		"1080p": {
+			"art_size": "100px",
+			"font_size": "",
+			"max_width": "420px"
+		},
+		"720p": {
+			"art_size": "100px",
+			"font_size": "",
+			"max_width": "420px"
+		},
+		"overbkg": {
+			"background_color": "",
+			"box_shadow": ""
+		},
+		"overimg": {
+			"background_color": "rgba(0,0,0,0.6)",
+			"box_shadow": "0px 0px 3px 5px rgba(0,0,0,0.6)"
+		},
+		"overgame": {
+			"background_color": "rgba(0,0,0,0.6)",
+			"box_shadow": "0px 0px 3px 5px rgba(0,0,0,0.6)"
+		},
+		"yes_np": {
+			"np_header": "yes",
+			"np_message": "Now Playing"
+		},
+		"yes_cm": {
+			"np_header": "yes",
+			"np_message": "Current Music"
+		},
+		"yes_cs": {
+			"np_header": "yes",
+			"np_message": ""
+		},
+		"no_header": {
+			"np_header": "no",
+			"np_message": ""
+		},
+		"ads_yes": {
+			"ad": 3
+		},
+		"ads_no": {
+			"ad": 0
+		}
+	};
+
+	RWTemplates.stream_form(core_obj, document.getElementById("template_zone"));
+	RWTemplateHelpers.tabify(core_obj, "preset");
+
+	function preset(set) {
+		core_obj.presets.$t.update({ "preset_layout": set });
+		core_obj.options.$t.update(presets[set]);
+		core_obj.options.$t.on_autosave();
+	};
+
+	core_obj.presets.$t.preset_size[0].addEventListener("change", function() {
+		core_obj.options.$t.update(presets[this.value]);
+		core_obj.options.$t.on_autosave();
+	});
+
+	core_obj.presets.$t.preset_background[0].addEventListener("change", function() {
+		core_obj.options.$t.update(presets[this.value]);
+		core_obj.options.$t.on_autosave();
+	});
+
+	core_obj.presets.$t.preset_header[0].addEventListener("change", function() {
+		core_obj.options.$t.update(presets[this.value]);
+		core_obj.options.$t.on_autosave();
+	});
+
+	core_obj.presets.$t.preset_ad[0].addEventListener("change", function() {
+		core_obj.options.$t.update(presets[this.value]);
+		core_obj.options.$t.on_autosave();
+	});
+
+	core_obj.options.$t.on_autosave = function() {
+		obj = core_obj.options.$t.get();
+		for (var i in obj) {
+			if (obj[i] === "") {
+				delete(obj[i]);
 			}
 		}
-		obj.sid = obj.station;
-		delete(obj.station);
 		var qstring = API.serialize(obj);
+
 		var subdomain;
 		if (obj.sid == 1) {
 			subdomain = "game";
@@ -225,17 +312,35 @@
 		document.getElementById("widget_url").textContent = url;
 		document.getElementById("iframe").setAttribute("src", "/widget/widget?" + qstring);
 
+		// // todo: account for box-shadow sizes here
 		var padding = parseInt(obj.padding || 8);
 		var width = parseInt(obj.max_width) + (padding * 2);
 		var height = parseInt(obj.art_size) + (padding * 2);
+		var shadow_size = 0;
+		if (obj.box_shadow) {
+			try {
+				var shadow_css = obj.box_shadow.split(" ");
+				var shadow_part;
+				for (i = 0; i < shadow_css.length; i++) {
+					shadow_part = parseInt(shadow_css[i]);
+					if (!isNaN(shadow_part) && shadow_part) {
+						shadow_size += shadow_part;
+					}
+				}
+			}
+			catch (e) {
+				shadow_size = 0;
+			}
+		}
+		var margin = Math.max(parseInt(obj.padding || "8px"), shadow_size) + "px";
+		width += parseInt(margin);
+		height += parseInt(margin);
 		document.getElementById("plugin_width").textContent = width;
 		document.getElementById("plugin_height").textContent = height;
-	}
-	var elems = document.body.querySelectorAll("input,select");
-	for (var i = 0; i < elems.length; i++) {
-		elems[i].addEventListener("change", update_url);
-	}
-	update_url();
+	};
+
+	core_obj.options.$t.enable_auto_save();
+	core_obj.options.$t.on_autosave();
 </script>
 
 {% include "basic_footer.html" %}
