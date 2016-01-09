@@ -342,7 +342,7 @@
 		if (obj.np_header == "yes") {
 			// width += document.getElementById("header").offsetWidth;
 			height += document.getElementById("header").offsetHeight;
-			height -= (parseInt(obj.padding || "8px") / 2);
+			height += (parseInt(obj.padding || "8px") / 2);
 		}
 
 		document.getElementById("plugin_width").textContent = width;
