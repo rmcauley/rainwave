@@ -5,6 +5,7 @@
 	<script src="/api4/bootstrap?sid={{ sid }}"></script>
 	<script src="/static/js5/libs/API.js"></script>
 	<script src="/static/js5/libs/Fx.js"></script>
+	<script src="/static/stream_utility.js"></script>
 	<script>
 		"use strict";
 		var options = function() {
@@ -194,58 +195,7 @@
 
 		API.add_callback("sched_current", show);
 		window.addEventListener("load", function() {
-			style = function() {
-				var s = "";
-				s += "color: " + options.color + "; ";
-				s += "font-size: " + options.font_size + "; ";
-				s += "font-family: " + options.font_family + "; ";
-				var shadow = "";
-				if (options.text_stroke_size && options.text_stroke_color) {
-					shadow += "-" + options.text_stroke_size + " -" + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color + ",";
-					shadow +=       options.text_stroke_size + " -" + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color + ",";
-					shadow += "-" + options.text_stroke_size + "  " + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color + ",";
-					shadow +=       options.text_stroke_size + "  " + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color;
-				}
-				if (options.text_shadow) {
-					if (shadow) {
-						shadow += ",";
-					}
-					shadow += options.text_shadow;
-				}
-				if (shadow) {
-					s += "text-shadow: " + shadow + ";";
-					s += "-webkit-text-shadow: " + shadow + ";";
-				}
-				s += "width: " + options.max_width + "; ";
-				if ((options.layout == "art_left") || (options.layout == "art_right")) {
-					s += "height: " + options.art_size + "; ";
-					// document.getElementById("threed").style.height = options.art_size;
-				}
-				if (options.background_color && (options.background_color !== "transparent")) {
-					s += "background-color: " + options.background_color + " !important; ";
-					// document.getElementById("threed").style.backgroundColor = options.background_color;
-				}
-				var p = options.padding;
-				// if (options.layout == "art_left") {
-				// 	s += "padding: " + p + " " + p + " " + p + " 0; ";
-				// 	s += "margin-left: " + p + "; ";
-				// }
-				// else if (options.layout == "art_right") {
-				// 	s += "padding: " + p + " 0 " + p + " " + p + "; ";
-				// 	s += "margin-right: " + p + "; ";
-				// }
-				// else {
-					s += "padding: " + p + "; ";
-				// }
-				if (options.box_shadow) {
-					s += "-webkit-box-shadow: " + options.box_shadow + "; ";
-					s += "box-shadow: " + options.box_shadow + "; ";
-				}
-				if (options.margin) {
-					s += "margin-left: " + options.margin + "; margin-top: " + options.margin + "; ";
-				}
-				return s;
-			}();
+			style = StyleGenerator(options);
 			API.initialize(BOOTSTRAP.sid, "/api4/", BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
 		});
 	</script>
@@ -438,6 +388,7 @@
 	</style>
 </head>
 <body>
+	<div id="header"></div>
 	<div id="threed"></div>
 </body>
 </html>
