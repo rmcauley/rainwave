@@ -313,8 +313,7 @@
 		document.getElementById("widget_url").textContent = url;
 		document.getElementById("iframe").setAttribute("src", "/widget/widget?" + qstring);
 
-		StyleGenerator(obj);
-		document.getElementById("header").style.visiblity = "hidden";
+		StyleGenerator(DoDefaults(obj));
 
 		var padding = parseInt(obj.padding || 8);
 		var width = parseInt(obj.max_width) + (padding * 2);
@@ -347,6 +346,8 @@
 
 		document.getElementById("plugin_width").textContent = width;
 		document.getElementById("plugin_height").textContent = height;
+
+		document.getElementById("header").style.visibility = "hidden";
 	};
 
 	window.addEventListener("load", function() {

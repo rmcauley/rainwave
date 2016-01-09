@@ -1,3 +1,19 @@
+function DoDefaults(options) {
+	"use strict";
+
+	options.anim_in = options.anim_in || "to_bottom";
+	options.anim_out = options.anim_out || "to_left";
+	options.text_stroke_color = options.text_stroke_color || "black";
+	options.text_stroke_size = options.text_stroke_size || "2px";
+	options.text_shadow = options.text_shadow || "3px 3px 3px black";
+	options.font_size = options.font_size || "18pt";
+	options.font_family = options.font_family || "'Roboto Condensed', sans-serif";
+	options.ad_message = options.ad_message || "Music by:";
+	options.padding = options.padding || "8px";
+	options.color = options.color || "white";
+	return options;
+};
+
 function StyleGenerator(options) {
 	"use strict";
 
