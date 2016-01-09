@@ -27,18 +27,20 @@
 		DoDefaults(options);
 
 		var shadow_size = 0;
-		var shadow_css = options.box_shadow.split(" ");
-		var shadow_part;
-		try {
-			for (var i = 0; i < shadow_css.length; i++) {
-				shadow_part = parseInt(shadow_css[i]);
-				if (!isNaN(shadow_part) && shadow_part) {
-					shadow_size += shadow_part;
+		if (options.box_shadow) {
+			var shadow_css = options.box_shadow.split(" ");
+			var shadow_part;
+			try {
+				for (var i = 0; i < shadow_css.length; i++) {
+					shadow_part = parseInt(shadow_css[i]);
+					if (!isNaN(shadow_part) && shadow_part) {
+						shadow_size += shadow_part;
+					}
 				}
 			}
-		}
-		catch (e) {
-			shadow_size = 0;
+			catch (e) {
+				shadow_size = 0;
+			}
 		}
 		options.margin = Math.max(parseInt(options.padding), shadow_size) + "px";
 
