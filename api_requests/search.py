@@ -19,9 +19,29 @@ class AlbumHandler(APIHandler):
 
 		s = "%%%s%%" % s
 
-		artists = db.c.fetch_all("SELECT DISTINCT artist_id, artist_name FROM r4_song_sid JOIN r4_song_artist USING (song_id) JOIN r4_artists USING (artist_id) WHERE sid = %s AND artist_name_searchable LIKE %s", (self.sid, s))
-		albums = db.c.fetch_all("SELECT DISTINCT album_id, album_name FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE sid = %s AND album_name_searchable LIKE %s", (self.sid, s))
-		songs = db.c.fetch_all("SELECT DISTINCT song_id, song_title, album_name FROM r4_song_sid JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) WHERE sid = %s AND song_title_searchable LIKE %s", (self.sid, s))
+		artists = db.c.fetch_all("SELECT DISTINCT artist_id AS id, artist_name AS name FROM r4_song_sid JOIN r4_song_artist USING (song_id) JOIN r4_artists USING (artist_id) WHERE sid = %s AND artist_name_searchable LIKE %s ORDER BY artist_name LIMIT 50", (self.sid, s))
+		albums = db.c.fetch_all("SELECT DISTINCT album_id AS id, album_name AS name FROM r4_album_sid JOIN r4_albums USING (album_id) WHERE sid = %s AND album_exists = TRUE AND album_name_searchable LIKE %s ORDER BY album_name LIMIT 50", (self.sid, s))
+
+		# use bigger query below
+		# songs = db.c.fetch_all("SELECT DISTINCT song_id, song_title, album_name, song_origin_sid, song_cool, song_cool_end, song_url, song_length,  FROM r4_song_sid JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) WHERE sid = %s AND song_title_searchable LIKE %s", (self.sid, s))
+
+		# base SQL here copy pasted from /rainwave/playlist_objects/album.py
+		requestable = True if not self.user.is_anonymous() else False
+		songs = db.c.fetch_all(
+			"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, song_added_on AS added_on, "
+				"song_track_number AS track_number, song_disc_number as disc_number, "
+				"song_url AS url, song_link_text AS link_text, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_cool_multiply AS cool_multiply, "
+				"song_cool_override AS cool_override, %s AS requestable, song_cool AS cool, song_cool_end AS cool_end, "
+				"song_request_only_end AS request_only_end, song_request_only AS request_only, song_artist_parseable AS artist_parseable, "
+				"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(song_fave, FALSE) AS fave "
+			"FROM r4_song_sid "
+				"JOIN r4_songs ON (r4_song_sid.song_id = r4_songs.song_id AND r4_songs.song_title_searchable LIKE %s) "
+				"LEFT JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
+				"JOIN r4_albums ON (r4_songs.album_id = r4_albums.album_id) "
+			"WHERE r4_song_sid.song_exists = TRUE AND r4_songs.song_verified = TRUE AND r4_song_sid.sid = %s "
+			"ORDER BY song_disc_number NULLS FIRST, song_track_number NULLS FIRST, album_name, song_title "
+			"LIMIT 100",
+			(requestable, s, self.user.id, self.sid))
 
 		self.append("artists", artists)
 		self.append("albums", albums)

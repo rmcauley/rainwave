@@ -47,7 +47,7 @@ div.no_result_message {
 	}
 }
 
-body.simple div.panel {
+body.simple div.panel, div.search_panel {
 	position: absolute;
 	z-index: 100;
 	width: 450px;
@@ -116,72 +116,72 @@ div.lists {
 			}
 		}
 	}
+}
 
-	div.searchbox_container {
-		position: relative;
-		border-bottom: solid 1px $subpanel_separator;
-		padding: 5px 8px;
-		height: 29px;
+div.searchbox_container {
+	position: relative;
+	border-bottom: solid 1px $subpanel_separator;
+	padding: 5px 8px;
+	height: 29px;
 
-		img {
-			position: absolute;
-			height: 13px;
-			width: 13px;
-			left: 10px;
-			top: 13px;
-			opacity: 0.5;
-			@include transition-wtime(300ms, opacity);
-		}
+	img {
+		position: absolute;
+		height: 13px;
+		width: 13px;
+		left: 10px;
+		top: 13px;
+		opacity: 0.5;
+		@include transition-wtime(300ms, opacity);
+	}
 
+	img.cancel {
+		display: none;
+		opacity: 1;
+		cursor: pointer;
+		z-index: 2;
+	}
+
+	&.active {
 		img.cancel {
+			display: inline;
+		}
+		img.search {
 			display: none;
-			opacity: 1;
-			cursor: pointer;
-			z-index: 2;
+		}
+	}
+
+	input {
+		box-sizing: border-box;
+		border: none;
+		background: transparent;
+		color: $text;
+		opacity: 0.6;
+		font: inherit;
+		height: 28px;
+		width: 100%;
+		padding-left: 25px;
+		padding-right: 4px;
+		@include transition-wtime(300ms, border-color, opacity);
+
+		&::-webkit-input-placeholder, &:-moz-placeholder, &::-moz-placeholder, &:-ms-input-placeholder {
+			color: $text;
 		}
 
 		&.active {
-			img.cancel {
-				display: inline;
-			}
-			img.search {
-				display: none;
+			border-color: $blue;
+			opacity: 1;
+
+			+ img {
+				opacity: 1;
 			}
 		}
 
-		input {
-			box-sizing: border-box;
-			border: none;
-			background: transparent;
-			color: $text;
-			opacity: 0.6;
-			font: inherit;
-			height: 28px;
-			width: 100%;
-			padding-left: 25px;
-			padding-right: 4px;
-			@include transition-wtime(300ms, border-color, opacity);
+		&:focus {
+			border-color: $orange !important;
+			opacity: 1;
 
-			&::-webkit-input-placeholder, &:-moz-placeholder, &::-moz-placeholder, &:-ms-input-placeholder {
-				color: $text;
-			}
-
-			&.active {
-				border-color: $blue;
+			+ img {
 				opacity: 1;
-
-				+ img {
-					opacity: 1;
-				}
-			}
-
-			&:focus {
-				border-color: $orange !important;
-				opacity: 1;
-
-				+ img {
-					opacity: 1;
-				}
 			}
 		}
 	}

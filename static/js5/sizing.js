@@ -46,6 +46,7 @@ var Sizing = function() {
 		index_t.sizeable_area.style.height = self.sizeable_area_height + "px";
 		self.detail_area.style.height = (self.sizeable_area_height - self.detail_header_size - 20) + "px";
 		self.requests_area.style.height = (self.sizeable_area_height - (self.detail_header_size * 2) - 30) + "px";
+		index_t.search_results_container.style.height = self.list_height + "px";
 
 		for (var i = 0; i < index_t.sizeable_area.childNodes.length; i++) {
 			index_t.sizeable_area.childNodes[i].style.height = self.sizeable_area_height + "px";
@@ -61,6 +62,7 @@ var Sizing = function() {
 			self.simple = true;
 			index_t.lists.style.left = "100%";
 			index_t.requests_container.style.left = "100%";
+			index_t.search_container.style.left = "100%";
 			index_t.detail_container.style.left = "100%";
 
 			if (self.width < 600) {
@@ -79,6 +81,7 @@ var Sizing = function() {
 				self.simple = false;
 				index_t.lists.style.left = null;
 				index_t.requests_container.style.left = null;
+				index_t.search_container.style.left = null;
 				index_t.detail_container.style.left = null;
 				if (self.width < 1366) {
 					document.body.classList.add("small");
@@ -109,10 +112,12 @@ var Sizing = function() {
 			index_t.timeline.style.width = null;
 			index_t.lists.style.left = right_of_timeline + "px";
 			index_t.requests_container.style.left = right_of_timeline + "px";
+			index_t.search_container.style.left = right_of_timeline + "px";
 			index_t.detail_container.style.left = right_of_timeline + "px";
 		}
 		else {
 			index_t.requests_container.style.left = null;
+			index_t.search_container.style.left = null;
 			index_t.timeline.style.width = pwr_timeline_width + "px";
 			index_t.lists.style.left = pwr_timeline_width + "px";
 			index_t.detail_container.style.left = (pwr_timeline_width + lists_width) + "px";

@@ -130,7 +130,7 @@ $player_icon_width: $player_icon_height;
 		}
 	}
 
-	@media (max-width: 650px) {
+	@media (max-width: 720px) {
 		.audio_volume, body.desktop & .audio_volume {
 			display: none;
 		}

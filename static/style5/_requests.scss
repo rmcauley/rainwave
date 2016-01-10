@@ -216,6 +216,10 @@ div.blank_request_message {
 	color: $text_d;
 	text-align: center;
 	padding: 10px;
+
+	body.full & {
+		display: none;
+	}
 }
 
 div.request_plusminus {

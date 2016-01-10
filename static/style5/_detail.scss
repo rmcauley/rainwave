@@ -19,26 +19,6 @@ div.detail {
 		height: 90px;
 	}
 
-	h2 {
-		clear: both;
-		font-size: inherit;
-		font-weight: inherit;
-		border-bottom: 1px solid $subheader_b;
-		margin: 0 0 5px 0;
-		padding: 0 10px 2px 10px;
-	}
-
-	table + h2, div.row + h2 {
-		margin-top: 15px;
-	}
-
-	canvas.ratings {
-		float: left;
-		position: relative;
-		width: 100px;
-		height: 80px;
-	}
-
 	div.detail_header {
 		color: $details;
 		font-size: 0.8em;
@@ -112,6 +92,21 @@ div.detail {
 	}
 }
 
+div.detail, div.search_results {
+	h2 {
+		clear: both;
+		font-size: inherit;
+		font-weight: inherit;
+		border-bottom: 1px solid $subheader_b;
+		margin: 0 0 5px 0;
+		padding: 0 10px 2px 10px;
+	}
+
+	table + h2, div.row + h2 {
+		margin-top: 15px;
+	}
+}
+
 div.no_songs_message {
 	padding: 2px 10px 2px 10px;
 	clear: both;
@@ -126,6 +121,10 @@ div.row {
 	min-height: 20px;
 	background: $row_bkg;
 	@include transition-wtime(300ms, width, background-color, border-bottom-color);
+
+	div.fave {
+		float: left;
+	}
 
 	body.desktop.full &:nth-child(even) {
 		background-color: $row_bkg_alternating;

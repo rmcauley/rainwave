@@ -202,7 +202,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		loading_msg = document.createElement("div");
 		loading_msg.className = "no_result_message";
 		loading_msg.style.display = "block";
-		loading_msg.textContent = "Loading...";
+		loading_msg.textContent = $l("Loading...");
 		template._root.insertBefore(loading_msg, template.no_result_message);
 	};
 

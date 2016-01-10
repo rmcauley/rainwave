@@ -183,7 +183,7 @@ var Router = function() {
 				document.body.classList.remove("playlist");
 				document.body.classList.remove("requests");
 				document.body.classList.remove("detail");
-				document.body.classList.remove("requests");
+				document.body.classList.remove("search_open");
 				if (Sizing.simple) {
 					for (var i in tabs) {
 						document.body.classList.remove("playlist_" + i);
@@ -200,6 +200,7 @@ var Router = function() {
 			if (typeof(ga) == "object") ga("send", "pageview", "/" + new_route);
 			new_route = new_route.split("/");
 			document.body.classList.remove("requests");
+			document.body.classList.remove("search_open");
 			if ((new_route[0] == "autoplay") && !has_autoplayed) {
 				RWAudio.play();
 				has_autoplayed = true;
@@ -212,6 +213,11 @@ var Router = function() {
 			else if (new_route[0] == "requests") {
 				self.open_route();
 				document.body.classList.add("requests");
+				return true;
+			}
+			else if (new_route[0] == "search") {
+				self.open_route();
+				document.body.classList.add("search_open");
 				return true;
 			}
 			else {

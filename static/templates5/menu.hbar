@@ -47,6 +47,13 @@
 					<span>{{ $l("library") }}</span>
 				</a>
 			</li>
+
+			<li class="search_link">
+				<a bind="search_link">
+					<img class="menu_icon menu_icon_search" src="/static/images4/search.png" />
+					<span>{{ $l("search") }}</span>
+				</a>
+			</li>
 		</ul>
 
 		<div id="station_select" bind="station_select" class="closed">

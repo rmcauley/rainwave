@@ -93,6 +93,7 @@
    "login"                                           : "Login",
    "signup"                                          : "Sign Up",
    "chat"                                            : "Chat",
+   "search"                                          : "Search",
    "previouslyplayed"                                : "Previously Played",
    "playback_history_link"                           : "Playback History",
    "extended_history_header"                         : "Extended History",
@@ -194,6 +195,7 @@
 
    "Loading..."                                      : "Loading...",
    "Cancel"                                          : "Cancel",
+   "go"                                              : "Go",
 
    "__comment__"                 : "Hotkey Mode",
 
@@ -239,6 +241,7 @@
    "song_extradetail_requests_rank"                  : "Request Rank: #(rank)",
    "Request"                                         : "Request",
    "Albums"                                          : "Albums",
+   "Songs"                                           : "Songs",
    "Artists"                                         : "Artists",
    "Users"                                           : "Users",
    "Groups"                                          : "Categories",

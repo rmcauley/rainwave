@@ -23,6 +23,9 @@
 	<div class="requests panel" bind="requests_container">
 		{{>requests}}
 	</div>
+	<div class="search_panel panel" bind="search_container">
+		{{>search}}
+	</div>
 	<div bind="lists" class="lists panel">
 		<div class="close" bind="list_close">
 			<img src="/static/images4/cancel.png" alt="X" />

@@ -36,15 +36,21 @@ div.menu_wrapper {
 
 		&, * {
 			fill: $menu;
-			@include transition-wtime(150ms, fill);
+			// @include transition-wtime(150ms, fill);
 		}
 	}
 
-	body.desktop a:hover svg {
-		&, * {
-			fill: $link_h;
-		}
+	img.menu_icon {
+		height: 15px;
+		width: 15px;
+		@include transform(translateY(4px));
 	}
+
+	// body.desktop a:hover svg {
+	// 	&, * {
+	// 		fill: $link_h;
+	// 	}
+	// }
 }
 
 /* ICONS AND LINKS */
@@ -59,8 +65,11 @@ ul.menu {
 	@include transform(translateY(-50%));
 	background: $menu_bkg;
 
-	svg {
+	svg, img.menu_icon {
 		display: none;
+	}
+
+	svg {
 		@include transform(translateY(2px));
 	}
 
@@ -82,7 +91,7 @@ ul.menu {
 				display: none;
 			}
 
-			svg {
+			svg, img.menu_icon {
 				display: block;
 			}
 		}
@@ -140,7 +149,7 @@ ul.menu {
 			}
 		}
 
-		body.playlist &.playlist_link a {
+		body.playlist &.playlist_link a, body.search_open &.search_link a {
 			background: $menu_link_open;
 		}
 

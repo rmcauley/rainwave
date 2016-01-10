@@ -1,0 +1,26 @@
+{{#if ^_c.artists.length}}
+	<h2>{{ $l("Artists") }}</h2>
+	{{#each artists}}
+		<div class="row">
+			<div class="title">
+				<a href="#!/artist/{{ id }}">{{ name }}</a>
+			</div>
+		</div>
+	{{/each}}
+{{/if}}
+
+{{#if ^_c.albums.length}}
+	<h2>{{ $l("Albums") }}</h2>
+	{{#each albums}}
+		<div class="row">
+			<div class="title">
+				<a href="#!/album/{{ id }}">{{ name }}</a>
+			</div>
+		</div>
+	{{/each}}
+{{/if}}
+
+{{#if ^_c.songs.length}}
+	<h2>{{ $l("Songs") }}</h2>
+	{{>detail.songtable}}
+{{/if}}

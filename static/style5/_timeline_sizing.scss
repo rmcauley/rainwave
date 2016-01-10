@@ -113,11 +113,11 @@ body.full {
 		}
 	}
 
-	ul.main_menu {
-		display: none;
+	li.requests_link, li.playlist_link {
+		display: none !important;
 	}
 
-	div.panel.detail {
+	div.panel.detail, div.search_panel {
 		ul.panel_header li {
 			color: $pwrmode_tab;
 			border-bottom: 2px solid $pwrmode_tab_b;
@@ -141,7 +141,7 @@ body.full {
 			width: 25%;
 		}
 
-		div.panel.detail {
+		div.panel.detail, div.search_panel {
 			width: 37%;
 
 			div.artists, div.rating_clear, div.rating_site {
@@ -163,7 +163,7 @@ body.full {
 			width: 25%;
 		}
 
-		div.panel.detail {
+		div.panel.detail, div.search_panel {
 			width: 37%;
 
 			div.artists, div.rating_clear, div.rating_site {
@@ -185,7 +185,7 @@ body.full {
 			width: 25%;
 		}
 
-		div.panel.detail {
+		div.panel.detail, div.search_panel {
 			width: 42%;
 		}
 	}
@@ -197,7 +197,7 @@ body.full {
 			width: 25%;
 		}
 
-		div.panel.detail {
+		div.panel.detail, div.search_panel {
 			width: 40%;
 		}
 	}
@@ -209,7 +209,7 @@ body.full {
 			width: 23%;
 		}
 
-		div.panel.detail {
+		div.panel.detail, div.search_panel {
 			width: 42%;
 		}
 	}
@@ -221,7 +221,7 @@ body.full {
 			width: 20%;
 		}
 
-		div.panel.detail {
+		div.panel.detail, div.search_panel {
 			width: 45%;
 		}
 	}
@@ -233,7 +233,7 @@ body.full {
 			width: 15%;
 		}
 
-		div.panel.detail {
+		div.panel.detail, div.search_panel {
 			width: 45%;
 		}
 	}
