@@ -329,6 +329,8 @@ def create_tables():
 			album_year				SMALLINT, \
 			album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
 		)")
+	if c.is_postgres:
+		c.update("CREATE INDEX album_name_trgm_gin ON r4_albums USING GIN(album_name_searchable gin_trgm_ops)")
 
 	c.update(" \
 		CREATE TABLE r4_songs ( \
@@ -365,6 +367,8 @@ def create_tables():
 	c.create_idx("r4_songs", "song_rating")
 	c.create_idx("r4_songs", "song_request_count")
 	c.create_null_fk("r4_songs", "r4_albums", "album_id")
+	if c.is_postgres:
+		c.update("CREATE INDEX song_title_trgm_gin ON r4_songs USING GIN(song_title_searchable gin_trgm_ops)")
 
 	c.update(" \
 		CREATE TABLE r4_song_sid ( \
@@ -436,6 +440,7 @@ def create_tables():
 	c.create_idx("r4_album_sid", "album_exists")
 	c.create_idx("r4_album_sid", "sid")
 	c.create_idx("r4_album_sid", "album_requests_pending")
+	c.create_idx("r4_album_sid", "album_exists", "sid")
 	c.create_delete_fk("r4_album_sid", "r4_albums", "album_id")
 
 	c.update(" \
@@ -461,6 +466,8 @@ def create_tables():
 			artist_name				TEXT		, \
 			artist_name_searchable	TEXT 		NOT NULL \
 		)")
+	if c.is_postgres:
+		c.update("CREATE INDEX artist_name_trgm_gin ON r4_artists USING GIN(artist_name_searchable gin_trgm_ops)")
 
 	c.update(" \
 		CREATE TABLE r4_song_artist	( \

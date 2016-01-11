@@ -179,7 +179,7 @@ div.row {
 		}
 	}
 
-	div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site, div.length, a.url, div.request_count {
+	div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site, div.length, a.url, div.request_count, div.album_name {
 		margin-left: 10px;
 		float: right;
 	}
@@ -257,7 +257,7 @@ div.row {
 		cursor: pointer;
 	}
 
-	div.artists {
+	div.artists, div.album_name {
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}

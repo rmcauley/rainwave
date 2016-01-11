@@ -1,7 +1,7 @@
 // This box is also affected by rules in _playlist.scss
 
 div.search_panel {
-	z-index: 105 !important;
+	z-index: 101 !important;
 	max-width: 100%;
 
 	body.full & {
@@ -13,6 +13,10 @@ div.search_panel {
 		@include transform(translateX(-100%));
 		opacity: 1;
 		visibility: visible;
+	}
+
+	body.full.search_open & {
+		@include transform(translateX(-100%) translateX(-90px));
 	}
 
 	body.full &.panel div.close {
@@ -33,5 +37,14 @@ div.search_panel {
 
 	div.search_results {
 		padding-top: 15px;
+	}
+
+	div.row_artist {
+		padding-left: 23px;
+	}
+
+	p {
+		padding: 0px 15px;
+		margin: 0;
 	}
 }

@@ -86,9 +86,18 @@ div.timeline {
 }
 
 body.simple {
-	div.panel.detail {
+	div.panel.detail, div.search_panel {
 		div.artists, div.rating_clear, div.rating_site {
 			display: none;
+		}
+	}
+	div.search_panel {
+		div.cool_info, div.length {
+			display: none;
+		}
+
+		div.album_name {
+			width: 130px;
 		}
 	}
 }
@@ -127,6 +136,12 @@ body.full {
 			width: 25%;
 		}
 	}
+
+	div.search_panel {
+		div.album_name {
+			width: 30%;
+		}
+	}
 }
 
 @media (min-width: 1024px) and (max-width: 1279px) {
@@ -145,6 +160,12 @@ body.full {
 			width: 37%;
 
 			div.artists, div.rating_clear, div.rating_site {
+				display: none;
+			}
+		}
+
+		div.search_panel {
+			div.cool_info, div.length {
 				display: none;
 			}
 		}
@@ -167,6 +188,12 @@ body.full {
 			width: 37%;
 
 			div.artists, div.rating_clear, div.rating_site {
+				display: none;
+			}
+		}
+
+		div.search_panel {
+			div.cool_info, div.length {
 				display: none;
 			}
 		}

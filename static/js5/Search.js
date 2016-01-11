@@ -12,7 +12,7 @@ var SearchPanel = function() {
 		el = root_template.search_results;
 		input = root_template.search;
 
-		container.addEventListener("click", function(e) {
+		root_template.search_container.addEventListener("click", function(e) {
 			e.stopPropagation();
 		});
 
@@ -40,7 +40,9 @@ var SearchPanel = function() {
 		e.preventDefault();
 		e.stopPropagation();
 		if (Formatting.make_searchable_string(input.value).length < 3) {
-			search_error();
+			// fake a server response
+			search_error({ "tl_key": "search_string_too_short" });
+			return;
 		}
 		API.async_get("search", { "search": input.value }, search_result, search_error);
 	};
@@ -49,8 +51,24 @@ var SearchPanel = function() {
 		while (el.hasChildNodes()) {
 			el.removeChild(el.lastChild);
 		}
+
 		RWTemplates.search_results(json, el);
-		for (var i = 0; i < json.songs.length; i++) {
+		var div, a, i;
+
+		for (i = 0; i < json.albums.length; i++) {
+			Fave.register(json.albums[i], true);
+			Rating.register(json.albums[i]);
+		}
+
+		for (i = 0; i < json.songs.length; i++) {
+			div = document.createElement("div");
+			div.className = "album_name";
+			a = document.createElement("a");
+			a.setAttribute("href", "#!/album/" + json.songs[i].album_id);
+			a.textContent = json.songs[i].album_name;
+			div.appendChild(a);
+			json.songs[i].$t.row.insertBefore(div, json.songs[i].$t.title);
+
 			Fave.register(json.songs[i]);
 			Rating.register(json.songs[i]);
 			if (json.songs[i].requestable) {
@@ -60,8 +78,16 @@ var SearchPanel = function() {
 		}
 	};
 
-	var search_error = function() {
-		console.log("wat");
+	var search_error = function(json) {
+		while (el.hasChildNodes()) {
+			el.removeChild(el.lastChild);
+		}
+
+		var p = document.createElement("p");
+		p.textContent = $l(json.tl_key);
+		el.appendChild(p);
+
+		return true;
 	};
 
 	var search_reset_error = function() {
