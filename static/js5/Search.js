@@ -6,6 +6,7 @@ var SearchPanel = function() {
 	var el;
 	var scroller;
 	var input;
+	var search_text;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		container = root_template.search_results_container;
@@ -53,7 +54,55 @@ var SearchPanel = function() {
 			search_error({ "tl_key": "search_string_too_short" });
 			return;
 		}
+		search_text = input.value;
 		API.async_get("search", { "search": input.value }, search_result, search_error);
+	};
+
+	var highlight_text = function(title) {
+		var raw_title = title.textContent;
+		var search_title = Formatting.sanitize_string(raw_title).toLowerCase();
+		var sbstring = search_text.toLowerCase();
+		var found = -1;
+		while ((found == -1) && sbstring.length) {
+			found = search_title.indexOf(sbstring);
+			if (found == -1) {
+				sbstring = sbstring.substring(0, sbstring.length - 1);
+			}
+		}
+		if ((found == -1) || !sbstring) {
+			return;
+		}
+
+		try {
+			title.textContent = "";
+			var before, before_el, highlight, highlight_el;
+			while (search_title.indexOf(sbstring) !== -1) {
+				before = raw_title.substring(0, search_title.indexOf(sbstring));
+				if (before) {
+					before_el = document.createElement("span");
+					before_el.textContent = before;
+					title.appendChild(before_el);
+				}
+				highlight = raw_title.substr(search_title.indexOf(sbstring), search_text.length);
+				if (highlight) {
+					highlight_el = document.createElement("span");
+					highlight_el.className = "search_highlight";
+					highlight_el.textContent = highlight;
+					title.appendChild(highlight_el);
+				}
+				raw_title = raw_title.substring(search_title.indexOf(sbstring) + search_text.length);
+				search_title = search_title.substring(search_title.indexOf(sbstring) + search_text.length);
+			}
+			if (raw_title.length) {
+				before_el = document.createElement("span");
+				before_el.textContent = raw_title;
+				title.appendChild(before_el);
+			}
+		}
+		catch (e) {
+			console.error(e);
+			title.textContent = raw_title;
+		}
 	};
 
 	var search_result = function(json) {
@@ -64,12 +113,19 @@ var SearchPanel = function() {
 		RWTemplates.search_results(json, el);
 		var div, a, i;
 
+		for (i = 0; i < json.artists.length; i++) {
+			highlight_text(json.artists[i].$t.title);
+		}
+
 		for (i = 0; i < json.albums.length; i++) {
+			highlight_text(json.albums[i].$t.title);
 			Fave.register(json.albums[i], true);
 			Rating.register(json.albums[i]);
 		}
 
 		for (i = 0; i < json.songs.length; i++) {
+			highlight_text(json.songs[i].$t.title);
+
 			div = document.createElement("div");
 			div.className = "album_name";
 			a = document.createElement("a");

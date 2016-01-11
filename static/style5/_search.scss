@@ -49,4 +49,12 @@ div.search_panel {
 		padding: 0px 15px;
 		margin: 0;
 	}
+
+	div.search_oob {
+		color: $text_d;
+	}
+
+	span.search_highlight, a span.search_highlight {
+		color: $orange;
+	}
 }

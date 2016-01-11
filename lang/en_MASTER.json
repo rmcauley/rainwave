@@ -55,6 +55,7 @@
    "album_is_dj_only"                                : "Album is exclusive to this event, sorry!",
    "locked_to_station"                               : "You were just voting on %(locked_station), you have to wait %(lock_counter) more &(lock_counter:song/songs) to vote on %(this_station).",
    "search_string_too_short"                         : "Search must be 3 or more letters.",
+   "search_result_limit"                             : "(too many results.  please refine your search.)",
 
    "__comment__"                 : "Error pop-up when Rainwave goes crashes.",
 
