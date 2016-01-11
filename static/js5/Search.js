@@ -30,16 +30,25 @@ var SearchPanel = function() {
 		});
 
 		root_template.search_form.addEventListener("submit", do_search);
+
+		input.addEventListener("keypress", function(evt) {
+			if (evt.keyCode == 27) {
+				input.value = "";
+				while (el.hasChildNodes()) {
+					el.removeChild(el.lastChild);
+				}
+			}
+		});
 	});
 
 	BOOTSTRAP.on_draw.push(function(root_template) {
-		scroller = Scrollbar.create(container, false, true);
+		scroller = Scrollbar.create(container);
 	});
 
 	var do_search = function(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		if (Formatting.make_searchable_string(input.value).length < 3) {
+		if (Formatting.make_searchable_string(input.value).trim().length < 3) {
 			// fake a server response
 			search_error({ "tl_key": "search_string_too_short" });
 			return;
@@ -76,6 +85,9 @@ var SearchPanel = function() {
 			}
 			SongsTableDetail(json.songs[i], (i > json.songs.length - 4));
 		}
+
+		scroller.set_height(false);
+		scroller.refresh();
 	};
 
 	var search_error = function(json) {
@@ -84,7 +96,7 @@ var SearchPanel = function() {
 		}
 
 		var p = document.createElement("p");
-		p.textContent = $l(json.tl_key);
+		p.textContent = $l(json.tl_key, json);
 		el.appendChild(p);
 
 		return true;

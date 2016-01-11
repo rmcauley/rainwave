@@ -83,6 +83,7 @@ var KeyHandler = function() {
 		if ((evt.charCode === 0) && (evt.keyCode >= 112) && (evt.keyCode <= 123)) return true;
 		if (Sizing.simple && (evt.keyCode != 27)) return true;
 		if (evt.target && evt.target.classList.contains("search_box") && (evt.keyCode != 27)) return true;
+		if (document.body.classList.contains("search_open")) return true;
 		return false;
 	};
 

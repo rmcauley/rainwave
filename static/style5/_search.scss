@@ -36,7 +36,9 @@ div.search_panel {
 	}
 
 	div.search_results {
+		box-sizing: border-box;
 		padding-top: 15px;
+		padding-bottom: 5px;
 	}
 
 	div.row_artist {
