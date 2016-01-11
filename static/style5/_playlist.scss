@@ -123,6 +123,11 @@ div.searchbox_container {
 	border-bottom: solid 1px $subpanel_separator;
 	padding: 5px 8px;
 	height: 29px;
+	@include transition-wtime(200ms, background-color);
+
+	&.search_error, &.active.search_error {
+		background-color: $search_error_b;
+	}
 
 	img {
 		position: absolute;
@@ -142,6 +147,8 @@ div.searchbox_container {
 	}
 
 	&.active {
+		background-color: $search_on_b;
+
 		img.cancel {
 			display: inline;
 		}

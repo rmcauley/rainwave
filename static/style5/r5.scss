@@ -66,6 +66,8 @@ $tab_open_b:                  $orange;
 $pwrmode_tab:                 $text;
 $pwrmode_tab_b:               $text_ddd;
 $subpanel_separator:          $text_ddd;		// e.g. below request toolbar
+$search_error_b:              darken($error_b, 40%);
+$search_on_b:                 darken($blue, 35%);
 
 // Detail Panel
 $details:                     $text_d;      	// "Album added on Sep 9th"

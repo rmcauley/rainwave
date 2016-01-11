@@ -527,11 +527,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 	self.do_searchbar_style = function() {
 		if (search_string && (visible.length === 0)) {
 			search_box.classList.add("error");
-			//template.box_container.classList.add("error");
+			template.box_container.classList.add("search_error");
 		}
 		else {
 			search_box.classList.remove("error");
-			//template.box_container.classList.remove("error");
+			template.box_container.classList.remove("search_error");
 		}
 
 		if (search_string.length > 0) {
@@ -602,6 +602,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	self.do_search_message = function() {
 		if ((visible.length === 0) && search_string) {
 			template._root.classList.add("no_results");
+
 			template._root.classList.add("search_active");
 		}
 		else if (visible.length === 0) {

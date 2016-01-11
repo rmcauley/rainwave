@@ -4,6 +4,10 @@ div.search_panel {
 	z-index: 101 !important;
 	max-width: 100%;
 
+	ul.panel_header {
+		margin-bottom: 0;
+	}
+
 	body.full & {
 		left: 100%;
 		width: 450px;
@@ -37,7 +41,7 @@ div.search_panel {
 
 	div.search_results {
 		box-sizing: border-box;
-		padding-top: 15px;
+		padding-top: 10px;
 		padding-bottom: 5px;
 	}
 
@@ -56,5 +60,10 @@ div.search_panel {
 
 	span.search_highlight, a span.search_highlight {
 		color: $orange;
+	}
+
+	div.no_result_message {
+		top: 10px;
+		display: block;
 	}
 }

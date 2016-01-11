@@ -7,11 +7,13 @@ var SearchPanel = function() {
 	var scroller;
 	var input;
 	var search_text;
+	var input_container;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		container = root_template.search_results_container;
 		el = root_template.search_results;
 		input = root_template.search;
+		input_container = root_template.search_box_container;
 
 		root_template.search_container.addEventListener("click", function(e) {
 			e.stopPropagation();
@@ -106,10 +108,16 @@ var SearchPanel = function() {
 	};
 
 	var search_result = function(json) {
+		if ((json.artists.length + json.albums.length + json.songs.length) === 0) {
+			return search_error({ "tl_key": "no_search_results" });
+		}
+
 		while (el.hasChildNodes()) {
 			el.removeChild(el.lastChild);
 		}
 
+		input_container.classList.add("active");
+		input.addEventListener("input", search_reset_color);
 		RWTemplates.search_results(json, el);
 		var div, a, i;
 
@@ -151,15 +159,21 @@ var SearchPanel = function() {
 			el.removeChild(el.lastChild);
 		}
 
-		var p = document.createElement("p");
-		p.textContent = $l(json.tl_key, json);
-		el.appendChild(p);
+		var div = document.createElement("div");
+		div.className = "no_result_message";
+		div.textContent = $l(json.tl_key, json);
+		el.appendChild(div);
+
+		input_container.classList.add("search_error");
+		input.addEventListener("input", search_reset_color);
 
 		return true;
 	};
 
-	var search_reset_error = function() {
-		console.log("unwat");
+	var search_reset_color = function() {
+		input_container.classList.remove("search_error");
+		input_container.classList.remove("active");
+		input.removeEventListener("input", search_reset_color);
 	};
 
 	return self;
