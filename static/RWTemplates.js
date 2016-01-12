@@ -236,7 +236,7 @@
 				}
 			}
 			else if (elem.getAttribute("type") === "checkbox") {
-				if (val) {
+				if (val && (val !== "False") && (val !== "false")) {
 					elem.checked = true;
 				}
 				else {
