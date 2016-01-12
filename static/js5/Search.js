@@ -1,4 +1,4 @@
-var SearchPanel = function() {
+var SearchPanel = function() {01
 	"use strict";
 	var self = {};
 
@@ -7,6 +7,7 @@ var SearchPanel = function() {
 	var scroller;
 	var input;
 	var search_text;
+	var search_regex;
 	var input_container;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
@@ -42,6 +43,13 @@ var SearchPanel = function() {
 				}
 			}
 		});
+
+		root_template.search_cancel.addEventListener("click", function() {
+			while (el.hasChildNodes()) {
+				el.removeChild(el.lastChild);
+			}
+			input.value = "";
+		});
 	});
 
 	BOOTSTRAP.on_draw.push(function(root_template) {
@@ -56,54 +64,36 @@ var SearchPanel = function() {
 			search_error({ "tl_key": "search_string_too_short" });
 			return;
 		}
-		search_text = input.value;
+		search_text = input.value.trim();
+		var raw_re = Formatting.make_searchable_string(search_text).split("").join("[\\W\\D]*?");
+		search_regex = new RegExp("^(.*)?(" + raw_re + ")(.*)$", "i");
 		API.async_get("search", { "search": input.value }, search_result, search_error);
 	};
 
 	var highlight_text = function(title) {
-		var raw_title = title.textContent;
-		var search_title = Formatting.sanitize_string(raw_title).toLowerCase();
-		var sbstring = search_text.toLowerCase();
-		var found = -1;
-		while ((found == -1) && sbstring.length) {
-			found = search_title.indexOf(sbstring);
-			if (found == -1) {
-				sbstring = sbstring.substring(0, sbstring.length - 1);
-			}
-		}
-		if ((found == -1) || !sbstring) {
-			return;
-		}
-
-		try {
+		// too many characters = too big a regex.  NOPE.
+		if (search_text.length > 8) return;
+		var t = title.textContent;
+		var m = t.match(search_regex);
+		if (m && (m.length == 4)) {
 			title.textContent = "";
-			var before, before_el, highlight, highlight_el;
-			while (search_title.indexOf(sbstring) !== -1) {
-				before = raw_title.substring(0, search_title.indexOf(sbstring));
-				if (before) {
-					before_el = document.createElement("span");
-					before_el.textContent = before;
-					title.appendChild(before_el);
-				}
-				highlight = raw_title.substr(search_title.indexOf(sbstring), search_text.length);
-				if (highlight) {
-					highlight_el = document.createElement("span");
-					highlight_el.className = "search_highlight";
-					highlight_el.textContent = highlight;
-					title.appendChild(highlight_el);
-				}
-				raw_title = raw_title.substring(search_title.indexOf(sbstring) + search_text.length);
-				search_title = search_title.substring(search_title.indexOf(sbstring) + search_text.length);
-			}
-			if (raw_title.length) {
-				before_el = document.createElement("span");
-				before_el.textContent = raw_title;
+
+			if (m[1]) {
+				var before_el = document.createElement("span");
+				before_el.textContent = m[1];
 				title.appendChild(before_el);
 			}
-		}
-		catch (e) {
-			console.error(e);
-			title.textContent = raw_title;
+
+			var highlight_el = document.createElement("span");
+			highlight_el.className = "search_highlight";
+			highlight_el.textContent = m[2];
+			title.appendChild(highlight_el);
+
+			if (m[2]) {
+				var after_el = document.createElement("span");
+				after_el.textContent = m[3];
+				title.appendChild(after_el);
+			}
 		}
 	};
 
