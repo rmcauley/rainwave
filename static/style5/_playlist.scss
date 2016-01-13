@@ -148,7 +148,9 @@ div.searchbox_container {
 
 	&.active {
 		background-color: $search_on_b;
+	}
 
+	&.active, &.search_error, &.has_value {
 		img.cancel {
 			display: inline;
 		}

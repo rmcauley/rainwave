@@ -54,6 +54,7 @@
     "Scrollbar": true,
     "SettingsWindow": true,
     "SearchList": true,
+    "SearchPanel": true,
     "shuffle": true,
     "Sizing": true,
     "Song": true,

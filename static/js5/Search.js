@@ -1,4 +1,4 @@
-var SearchPanel = function() {01
+var SearchPanel = function() {
 	"use strict";
 	var self = {};
 
@@ -22,12 +22,20 @@ var SearchPanel = function() {01
 		});
 
 		root_template.search_close.addEventListener("click", function() {
-			Router.change();
+			if (!Sizing.simple) {
+				Router.open_last_id();
+			}
+			else {
+				Router.change();
+			}
 		});
 
 		root_template.search_link.addEventListener("click", function() {
 			if (!document.body.classList.contains("search_open")) {
 				Router.change("search");
+			}
+			else if (!Sizing.simple) {
+				Router.open_last_id();
 			}
 			else {
 				Router.change();
@@ -36,19 +44,35 @@ var SearchPanel = function() {01
 
 		root_template.search_form.addEventListener("submit", do_search);
 
-		input.addEventListener("keypress", clear_search);
-		root_template.search_cancel.addEventListener("click", clear_search);
+		input.addEventListener("keypress", search_reset_color);
+		input.addEventListener("input", function() {
+			if (input.value && !input_container.classList.contains("has_value")) {
+				input_container.classList.add("has_value");
+			}
+			else if (!input.value && input_container.classList.contains("has_value")) {
+				input_container.classList.remove("has_value");
+			}
+		});
+		root_template.search_cancel.addEventListener("click", function() {
+			clear_search();
+			self.focus();
+		});
 	});
 
 	BOOTSTRAP.on_draw.push(function(root_template) {
 		scroller = Scrollbar.create(container);
 	});
 
+	self.focus = function() {
+		input.focus();
+	};
+
 	var clear_search = function() {
 		while (el.hasChildNodes()) {
 			el.removeChild(el.lastChild);
 		}
 		input.value = "";
+		input_container.classList.remove("has_value");
 		search_reset_color();
 	};
 

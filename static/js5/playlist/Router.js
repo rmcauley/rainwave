@@ -20,6 +20,7 @@ var Router = function() {
 	var rendered_type;
 	var rendered_id;
 	var last_open;
+	var last_open_id;
 	var detail_header;
 	var reset_cache_on_next_request = false;
 	var request_in_flight = false;
@@ -218,6 +219,7 @@ var Router = function() {
 			else if (new_route[0] == "search") {
 				self.open_route();
 				document.body.classList.add("search_open");
+				setTimeout(SearchPanel.focus, 300);
 				return true;
 			}
 			else {
@@ -407,6 +409,7 @@ var Router = function() {
 		if (typ in lists && lists[typ]) {
 			Prefs.set_new_list(typ);
 			last_open = typ;
+			last_open_id = id;
 			document.body.classList.add("playlist");
 			document.body.classList.add("playlist_" + typ);
 			if (self.active_list && self.active_list._key_handle) {
@@ -484,6 +487,15 @@ var Router = function() {
 	self.open_last = function() {
 		force_close_detail = true;
 		self.change(last_open || "album");
+	};
+
+	self.open_last_id = function() {
+		if (!last_open_id) {
+			return self.open_last();
+		}
+		else {
+			self.change(last_open, last_open_id);
+		}
 	};
 
 	window.onhashchange = self.detect_url_change;
