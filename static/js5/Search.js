@@ -36,26 +36,21 @@ var SearchPanel = function() {01
 
 		root_template.search_form.addEventListener("submit", do_search);
 
-		input.addEventListener("keypress", function(evt) {
-			if (evt.keyCode == 27) {
-				input.value = "";
-				while (el.hasChildNodes()) {
-					el.removeChild(el.lastChild);
-				}
-			}
-		});
-
-		root_template.search_cancel.addEventListener("click", function() {
-			while (el.hasChildNodes()) {
-				el.removeChild(el.lastChild);
-			}
-			input.value = "";
-		});
+		input.addEventListener("keypress", clear_search);
+		root_template.search_cancel.addEventListener("click", clear_search);
 	});
 
 	BOOTSTRAP.on_draw.push(function(root_template) {
 		scroller = Scrollbar.create(container);
 	});
+
+	var clear_search = function() {
+		while (el.hasChildNodes()) {
+			el.removeChild(el.lastChild);
+		}
+		input.value = "";
+		search_reset_color();
+	};
 
 	var do_search = function(e) {
 		e.preventDefault();
