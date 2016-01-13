@@ -8,6 +8,7 @@ var SearchPanel = function() {01
 	var input;
 	var search_text;
 	var search_regex;
+	var search_regex_greedy;
 	var input_container;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
@@ -65,8 +66,10 @@ var SearchPanel = function() {01
 			return;
 		}
 		search_text = input.value.trim();
-		var raw_re = Formatting.make_searchable_string(search_text).split("").join("[\\W\\D]*?");
+		var raw_re = Formatting.make_searchable_string(search_text).split("").join("[\\W\\D]?");
 		search_regex = new RegExp("^(.*)?(" + raw_re + ")(.*)$", "i");
+		raw_re = Formatting.make_searchable_string(search_text).split("").join("[\\W\\D]*?");
+		search_regex_greedy = new RegExp("^(.*)?(" + raw_re + ")(.*)$", "i");
 		API.async_get("search", { "search": input.value }, search_result, search_error);
 	};
 
@@ -75,6 +78,9 @@ var SearchPanel = function() {01
 		if (search_text.length > 8) return;
 		var t = title.textContent;
 		var m = t.match(search_regex);
+		if (!m) {
+			m = t.match(search_regex_greedy);
+		}
 		if (m && (m.length == 4)) {
 			title.textContent = "";
 
