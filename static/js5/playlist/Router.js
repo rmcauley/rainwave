@@ -428,7 +428,7 @@ var Router = function() {
 
 		if ((typ in lists) && id && !isNaN(id)) {
 			id = parseInt(id);
-			if (cache[typ][id] && cache[typ][id]._root && (cache[typ][id]._root == el.firstChild)) {
+			if (!Sizing.simple && cache[typ][id] && cache[typ][id]._root && (cache[typ][id]._root == el.firstChild)) {
 				// the page is already loaded and rendered (we're just closing requests/search window)
 			}
 			else {
