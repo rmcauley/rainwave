@@ -426,25 +426,34 @@ var Router = function() {
 			document.body.classList.remove("playlist");
 		}
 
-		if (id && !isNaN(id)) {
+		if ((typ in lists) && id && !isNaN(id)) {
 			id = parseInt(id);
-			if (!ready_to_render) {
-				remove_excess_header_content();
-				detail_header.textContent = (lists[typ] && lists[typ].get_title_from_id ? lists[typ].get_title_from_id(id) : false) || $l("Loading...");
+			if (cache[typ][id] && cache[typ][id]._root && (cache[typ][id]._root == el.firstChild)) {
+				// the page is already loaded and rendered (we're just closing requests/search window)
 			}
-			var scrolled = false;
-			if (!ready_to_render && lists[typ] && lists[typ].loaded) {
-				lists[typ].scroll_to_id(id);
-				scrolled = true;
-			}
-			open_view(typ, id);
-			if (lists[typ]) {
-				if (lists[typ].set_new_open(id) && !scrolled) {
+			else {
+				if (cache[typ][id] && cache[typ][id]._root) {
+					// the page is already loaded from cache and ready to go
+					ready_to_render = true;
+				}
+				if (!ready_to_render) {
+					remove_excess_header_content();
+					detail_header.textContent = (lists[typ] && lists[typ].get_title_from_id ? lists[typ].get_title_from_id(id) : false) || $l("Loading...");
+				}
+				var scrolled = false;
+				if (!ready_to_render && lists[typ] && lists[typ].loaded) {
 					lists[typ].scroll_to_id(id);
+					scrolled = true;
+				}
+				open_view(typ, id);
+				if (lists[typ]) {
+					if (lists[typ].set_new_open(id) && !scrolled) {
+						lists[typ].scroll_to_id(id);
+					}
 				}
 			}
 		}
-		else if (close_detail || force_close_detail) {
+		else if (Sizing.simple && (close_detail || force_close_detail)) {
 			document.body.classList.remove("detail");
 			force_close_detail = false;
 		}
@@ -480,7 +489,7 @@ var Router = function() {
 		else {
 			location.href = new_url;
 		}
-		self.detect_url_change();
+		// self.detect_url_change();
 	};
 
 	self.open_last = function() {
