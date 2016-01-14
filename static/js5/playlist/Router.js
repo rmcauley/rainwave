@@ -422,7 +422,7 @@ var Router = function() {
 			current_type = typ;
 			KeyHandler.route_to_lists();
 		}
-		else {
+		else if (Sizing.simple) {
 			document.body.classList.remove("playlist");
 		}
 
