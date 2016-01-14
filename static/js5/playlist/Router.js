@@ -181,11 +181,11 @@ var Router = function() {
 			old_url = location.href;
 			var new_route = self.get_current_url();
 			if (!new_route) {
-				document.body.classList.remove("playlist");
-				document.body.classList.remove("requests");
-				document.body.classList.remove("detail");
 				document.body.classList.remove("search_open");
 				if (Sizing.simple) {
+					document.body.classList.remove("playlist");
+					document.body.classList.remove("requests");
+					document.body.classList.remove("detail");
 					for (var i in tabs) {
 						document.body.classList.remove("playlist_" + i);
 					}
