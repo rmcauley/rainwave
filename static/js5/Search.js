@@ -44,7 +44,14 @@ var SearchPanel = function() {
 
 		root_template.search_form.addEventListener("submit", do_search);
 
-		input.addEventListener("keypress", search_reset_color);
+		input.addEventListener("keypress", function(evt) {
+			if (evt.keyCode == 27) {
+				clear_search();
+			}
+			else {
+				search_reset_color();
+			}
+		});
 		input.addEventListener("input", function() {
 			if (input.value && !input_container.classList.contains("has_value")) {
 				input_container.classList.add("has_value");
@@ -85,10 +92,10 @@ var SearchPanel = function() {
 			return;
 		}
 		search_text = input.value.trim();
-		var raw_re = Formatting.make_searchable_string(search_text).split("").join("[\\W\\D]?");
-		search_regex = new RegExp("^(.*)?(" + raw_re + ")(.*)$", "i");
-		raw_re = Formatting.make_searchable_string(search_text).split("").join("[\\W\\D]*?");
-		search_regex_greedy = new RegExp("^(.*)?(" + raw_re + ")(.*)$", "i");
+		var raw_re = Formatting.make_searchable_string(search_text).split("").join("[^\w\s]?");
+		search_regex = new RegExp("^(.*?)(" + raw_re + ")(.*)$", "i");
+		raw_re = Formatting.make_searchable_string(search_text).split("").join("[^\w\s]*?");
+		search_regex_greedy = new RegExp("^(.*?)(" + raw_re + ")(.*)$", "i");
 		API.async_get("search", { "search": input.value }, search_result, search_error);
 	};
 
