@@ -701,9 +701,12 @@ var SearchList = function(root_el, sort_key, search_key) {
 	self.set_new_open = function(id) {
 		if (!self.loaded) {
 			current_open_id = id;
-			return;
+			return false;
 		}
 		if (!(id in data)) return;
+		if (current_open_id && data[current_open_id] && (current_open_id == id)) {
+			return false;
+		}
 		if (current_open_id && data[current_open_id]) {
 			data[current_open_id]._el.classList.remove("open");
 			current_open_id = null;
@@ -714,6 +717,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		if (search_string.length > 0) {
 			ignore_original_scroll_top = true;
 		}
+		return true;
 	};
 
 	Sizing.add_resize_callback(function() {

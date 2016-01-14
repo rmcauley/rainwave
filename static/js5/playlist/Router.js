@@ -439,8 +439,7 @@ var Router = function() {
 			}
 			open_view(typ, id);
 			if (lists[typ]) {
-				lists[typ].set_new_open(id);
-				if (!scrolled) {
+				if (lists[typ].set_new_open(id) && !scrolled) {
 					lists[typ].scroll_to_id(id);
 				}
 			}
