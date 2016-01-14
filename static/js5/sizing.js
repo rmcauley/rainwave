@@ -54,6 +54,7 @@ var Sizing = function() {
 
 		var is_small = document.body.classList.contains("small");
 		var is_normal = document.body.classList.contains("normal");
+		var is_simple = document.body.classList.contains("simple");
 		self.mobile = false;
 		if (self.width < 1050) {
 			self.mobile = true;
@@ -124,6 +125,7 @@ var Sizing = function() {
 		}
 
 		var size_changed = (document.body.classList.contains("normal") != is_normal) && (document.body.classList.contains("small") != is_small);
+		size_changed = size_changed || (Sizing.simple != is_simple);
 
 		is_small = document.body.classList.contains("small");
 
