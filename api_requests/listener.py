@@ -62,16 +62,16 @@ class ListenerDetailRequest(APIHandler):
 					"SELECT r4_songs.album_id AS id, album_name AS name, request_id "
 					"FROM r4_request_history "
 						"JOIN r4_songs USING (song_id) "
-						"JOIN r4_album_sid ON (r4_album_sid.sid = %s AND r4_songs.album_id = r4_album_sid.album_id) "
+						"JOIN r4_album_sid ON (r4_album_sid.sid = %s AND r4_album_sid.album_exists = TRUE AND r4_songs.album_id = r4_album_sid.album_id) "
 						"JOIN r4_albums ON (r4_album_sid.album_id = r4_albums.album_id) "
-					"WHERE r4_request_history.user_id = %s "
+					"WHERE r4_request_history.user_id = %s AND r4_request_history.sid = %s "
 					"ORDER BY request_id DESC "
 					"LIMIT 1000"
 				") AS reqs "
 				"GROUP BY id, name "
 				"ORDER BY request_count_listener DESC "
 				"LIMIT 10",
-				(self.sid, self.get_argument("id"))
+				(self.sid, self.get_argument("id"), self.sid)
 			)
 
 		user['votes_by_station'] = db.c.fetch_all("SELECT sid, COUNT(vote_id) AS votes "
@@ -80,11 +80,11 @@ class ListenerDetailRequest(APIHandler):
 												"GROUP BY sid",
 												(self.get_argument("id"),))
 
-		user['votes_by_source_station'] = db.c.fetch_all("SELECT song_origin_sid AS sid, COUNT(vote_id) AS votes "
-												"FROM r4_vote_history JOIN r4_songs USING (song_id) "
-												"WHERE user_id = %s "
-												"GROUP BY song_origin_sid",
-												(self.get_argument("id"),))
+		# user['votes_by_source_station'] = db.c.fetch_all("SELECT song_origin_sid AS sid, COUNT(vote_id) AS votes "
+		# 										"FROM r4_vote_history JOIN r4_songs USING (song_id) "
+		# 										"WHERE user_id = %s "
+		# 										"GROUP BY song_origin_sid",
+		# 										(self.get_argument("id"),))
 
 		user['requests_by_station'] = db.c.fetch_all("SELECT sid, COUNT(request_id) AS requests "
 													"FROM r4_request_history "
