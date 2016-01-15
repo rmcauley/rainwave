@@ -117,8 +117,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 		if (!self.loaded && current_open_id) {
 			self.loaded = true;
-			self.set_new_open(current_open_id);
-			self.scroll_to_id(current_open_id);
+			var open_id_workaround = current_open_id;
+			current_open_id = false;
+			self.set_new_open(open_id_workaround);
+			self.scroll_to_id(open_id_workaround);
 			scroll_to_on_load = false;
 		}
 		else if (!self.loaded && scroll_to_on_load) {
