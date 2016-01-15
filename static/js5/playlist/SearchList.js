@@ -113,7 +113,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var finish_chunking = function() {
 		chunked_i = 0;
 		items_to_draw = [];
-		self.$t.search_box.setAttribute("placeholder", $l("search..."));
+		self.$t.search_box.setAttribute("placeholder", $l("Filter..."));
 
 		if (!self.loaded && current_open_id) {
 			self.loaded = true;
