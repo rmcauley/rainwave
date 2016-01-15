@@ -17,7 +17,7 @@
 
 <icecast>
 
-    <!-- You have to configure these sections below. ------------------------------------------- -->
+    <!-- You have to configure these sections below. ===================================================== -->
 
     <location>Somewhere</location>
     <admin>myemail@mydomain.com</admin>
@@ -70,7 +70,7 @@
         -->
     </security>
 
-    <!-- You can stop configuring now - please leave the rest alone! --------------------------- -->
+    <!-- You can stop configuring now - please leave the rest alone! ===================================== -->
 
     <fileserve>1</fileserve>
 
@@ -79,7 +79,7 @@
         <yp-url>http://dir.xiph.org/cgi-bin/yp-cgi</yp-url>
     </directory>
 
-    <!-- Game----------------------------------------------------------------------------------- -->
+    <!-- Game ============================================================================================ -->
 
     <relay>
         <server>relays.rainwave.cc</server>
@@ -129,7 +129,7 @@
         <cluster-password>1bcmQYfmt</cluster-password>
     </mount>
 
-    <!-- OCR------------------------------------------------------------------------------------ -->
+    <!-- OCR ============================================================================================= -->
 
     <relay>
         <server>relays.rainwave.cc</server>
@@ -179,7 +179,7 @@
         <cluster-password>raXCRL1CY</cluster-password>
     </mount>
 
-    <!-- Covers--------------------------------------------------------------------------------- -->
+    <!-- Covers ========================================================================================== -->
 
     <relay>
         <server>relays.rainwave.cc</server>
@@ -229,7 +229,7 @@
         <cluster-password>pFjD95tCzn4</cluster-password>
     </mount>
 
-    <!-- Chiptune------------------------------------------------------------------------------- -->
+    <!-- Chiptune ======================================================================================== -->
 
     <relay>
         <server>relays.rainwave.cc</server>
@@ -279,7 +279,7 @@
         <cluster-password>hGOzJjZNZOk5l</cluster-password>
     </mount>
 
-    <!-- All------------------------------------------------------------------------------------ -->
+    <!-- All ============================================================================================= -->
 
     <relay>
         <server>relays.rainwave.cc</server>
