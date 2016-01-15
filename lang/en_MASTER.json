@@ -98,7 +98,6 @@
    "previouslyplayed"                                : "Previously Played",
    "playback_history_link"                           : "Playback History",
    "extended_history_header"                         : "Extended History",
-   "special_event_on_now"                            : "Event: ",
    "special_event_alert"                             : "Special Event on %(station): ",
 
    "tunein"                                          : "Tune In",
@@ -118,8 +117,6 @@
    "github_repo"                                     : "GitHub",
    "twitter"                                         : "Twitter",
 
-   "currently_tuned_in_station"                      : "Tuned in!",
-
    "__comment__"                 : "Timeline",
 
    "coming_up"                                       : "Coming Up",
@@ -131,8 +128,6 @@
    "vote_submitted"                                  : "Vote Submitted",
    "cannot_vote_for_this_now"                        : "Cannot vote for that song right now.",
    "invalid_hotkey_vote"                             : "Invalid choice, try again.",
-   "voting_results_were"                             : "vote results:",
-   "click_here_to_start_voting"                      : "Click here to vote for what song you want to hear next!",
    "played_ago"                                      : "Played %(time) Ago",
    "timeline_art__request_indicator"                 : "Request",
    "timeline_art__your_request_indicator"            : "Yours",
@@ -169,9 +164,6 @@
    "average_rating_by_station"                       : "Avg. Rating By Station",
    "no_ratings"                                      : "no ratings",
 
-   "your_mobile_app_qr"                              : "Your Android App QR Code",
-   "manage_your_api_keys"                            : "Manage your API keys.",
-   "logout_in_forums"                                : "Please visit the forums to logout.",
    "view_your"                                       : "View your: ",
    "recent_votes"                                    : "Recent Votes",
    "request_history"                                 : "Request History",
@@ -191,9 +183,6 @@
    "async_error"                                     : "Error talking to Rainwave.  Please try again or refresh.",
    "deeplink_error"                                  : "Sorry, we couldn't understand the URL you tried to open.",
 
-   "catastrophic_error"                              : "Rainwave Has Crashed :(",
-   "submit_javascript_error"                         : "Please submit the bug report below to the forums, so we can stop it from happening again.",
-
    "Loading..."                                      : "Loading...",
    "Cancel"                                          : "Cancel",
    "go"                                              : "Go",
@@ -205,26 +194,11 @@
    "not_an_election"                                 : "Not an election.",
    "rate_song_mobile_dialog"                         : "Rate Song",
 
-   "__comment__"                 : "About Window",
-
-   "about_window_header"                             : "About Rainwave",
-   "staff_list_header"                               : "Staff",
-   "relay_sponsors_header"                           : "Relay Sponsors",
-   "translators_header"                              : "Translators",
-   "icon_attribution"                                : "Icon Copyright Attribution",
-   "design_by"                                       : "Site Design",
-   "donation_info_label"                             : "Donation Information",
-   "donation_info_link"                              : "Details",
-   "github_info_label"                               : "Rainwave Open Source Repository",
-   "github_info_link"                                : "View on GitHub",
-
    "__comment__"                 : "Playlist View",
 
    "playlist"                                        : "Playlist",
    "library"                                         : "Library",
-   "filter"                                          : "Type anywhere to filter",
-   "typeanywhere"                                    : "Just start typing!",
-   "clearfilter"                                     : "Clear Filter",
+   "Filter..."                                       : "Filter...",
    "album_rating_ranked_at_v2"                       : "Rated %(rating) by %(rating_count) song ratings, ranking #(rank).",
    "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",
    "album_year"                                      : "Released in %(year).",
@@ -236,10 +210,6 @@
    "request_percentile_top"                          : "Request popularity: top %(percentile_top)%.",
    "request_percentile_bottom"                       : "Request popularity: bottom %(percentile)%.",
    "song_has_no_ratings"                             : "Song has no ratings to report.",
-   "song_extradetail_rating"                         : "Rating: %(rating) (by %(rating_count) people)",
-   "song_extradetail_rating_rank"                    : "Rating Rank: #(rank)",
-   "song_extradetail_requests"                       : "Requests: %(count) &(count:time/times)",
-   "song_extradetail_requests_rank"                  : "Request Rank: #(rank)",
    "Request"                                         : "Request",
    "Albums"                                          : "Albums",
    "Songs"                                           : "Songs",
@@ -280,12 +250,8 @@
    "#_requests"                                      : "%(num_requests) &(num_requests:Request/Requests)",
    "requests_all_on_cooldown"                        : "All On Cooldown!",
    "request_you_are_x_in_line"                       : "#(position) In Line",
-
-   "request_grab_tag__warning"                       : "Warning",
    "request_grab_tag__paused"                        : "Suspended",
-   "requests_grab_tab__num_requests"                 : "%(num_requests) &(num_requests:Request/Requests)",
 
-   "cancel_request"                                  : "Cancel Request",
    "request_on_cooldown_for"                         : "On cooldown for %(cool_time).",
    "request_on_cooldown_ends_soon"                   : "Coming off cooldown.",
    "request_in_election"                             : "%(blocked_by) is queued for voting.",
@@ -354,9 +320,6 @@
    "prefs_detail_global_ratings"                     : "Show Global Ratings in Song Lists",
    "prefs_r_clear"                                   : "Show Delete Rating Button",
    "prefs_pwr"                                       : "Enable Power User Mode",
-   "m3u_downloads"                                   : "M3U Downloads",
-   "skip_intro_mode"                                 : "Skip Intro Mode",
-   "do_intro_mode"                                   : "Go back to Intro Mode",
 
    "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
 
