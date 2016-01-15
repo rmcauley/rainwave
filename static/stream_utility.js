@@ -11,6 +11,8 @@ function DoDefaults(options) {
 	options.ad_message = options.ad_message || "Music by:";
 	options.padding = options.padding || "8px";
 	options.color = options.color || "white";
+	options.delay = parseInt(options.delay) || 0;
+
 	return options;
 };
 

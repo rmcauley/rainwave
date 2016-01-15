@@ -88,7 +88,12 @@
 	<li>Tune in to Rainwave using your browser or media player</li>
 </ol>
 
-<!-- python libs/RWTemplates.py --templatedir templates/stream_js --outfile static/stream_templates.js --helpers -->
+<!--
+	To update the form HTML, run this but add extra dashes.  It should be double dashes but HTML
+	comments don't allow those and we don't want to trigger quirks mode.
+
+	python libs/RWTemplates.py -templatedir templates/stream_js -outfile static/stream_templates.js -helpers
+-->
 <script src="/static/stream_templates.js"></script>
 <script src="/static/RWTemplates.js"></script>
 <script src="/static/RWTemplates.forms.js"></script>
@@ -146,7 +151,8 @@
 			"text_stroke_size": "",
 			"text_shadow": "",
 			"art_shadow": "",
-			"padding": ""
+			"padding": "",
+			"delay": 3
 		}
 	};
 
