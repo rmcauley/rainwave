@@ -39,14 +39,8 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
 		self.write("<p>%s</p>" % self.locale.translate("tip_jar_opener_end"))
 
 		self.write("""
-			<div style='text-align: center'>
-			<form method="post" action="https://www.paypal.com/cgi-bin/webscr" target="paypal">
-			<input type="hidden" name="cmd" value="_xclick">
-			<input type="hidden" name="business" value="rmcauley@gmail.com">
-			<input type="hidden" name="item_name" value="">
-			<input type="hidden" name="bn"  value="ButtonFactory.PayPal.001">
-			<input type="image" name="add" src="/static/images4/paypal.gif">
-			</form>
+			<div>
+				<a href='https://paypal.me/Rainwave/5USD'>Donate at http://paypal.me/Rainwave</a>
 			</div>""")
 
 		all_donations = db.c.fetch_var("SELECT SUM(donation_amount) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0")
