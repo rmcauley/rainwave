@@ -27,6 +27,10 @@ div.chart_outside {
 		}
 	}
 
+	&.overflow_hidden div.chart_bar {
+		overflow: hidden;
+	}
+
 	span.chart_label {
 		position: absolute;
 		max-width: 100%;

@@ -24,7 +24,7 @@ var ListenerView = function(json, el) {
 
 	var detail_container = template.user_detail_container;
 
-	var draw_chart = function(jd, key, header_text) {
+	var draw_chart = function(jd, key, header_text, overflow_hidden) {
 		var data = [];
 		var i, j, sid;
 		for (j = 0; j < Stations.length; j++) {
@@ -41,7 +41,11 @@ var ListenerView = function(json, el) {
 			hdr.className = "graph_header";
 			hdr.textContent = header_text;
 			detail_container.appendChild(hdr);
-			detail_container.appendChild(HDivChart(data, { "add_share_to_label": true }));
+			var chrt = HDivChart(data, { "add_share_to_label": true })
+			if (overflow_hidden) {
+				chrt.classList.add("overflow_hidden");
+			}
+			detail_container.appendChild(chrt);
 		}
 	};
 
@@ -85,11 +89,11 @@ var ListenerView = function(json, el) {
 		}
 	}
 
-	draw_chart(json.votes_by_station, "votes", $l("votes_by_station"));
-	draw_chart(json.requests_by_station, "requests", $l("requests_by_station"));
-	// draw_chart(json.votes_by_source_station, "votes", $l("votes_by_source_station"));
-	draw_chart(json.requests_by_source_station, "requests", $l("requests_by_source_station"));
-	//draw_chart(json.ratings_by_station, "ratings", $l("rating_counts_across_stations"));
+	draw_chart(json.votes_by_station, "votes", $l("votes_by_station"), true);
+	draw_chart(json.requests_by_station, "requests", $l("requests_by_station"), true);
+	// draw_chart(json.votes_by_source_station, "votes", $l("votes_by_source_station"), true);
+	draw_chart(json.requests_by_source_station, "requests", $l("requests_by_source_station"), true);
+	//draw_chart(json.ratings_by_station, "ratings", $l("rating_counts_across_stations"), true);
 
 	hdr = document.createElement("div");
 	hdr.className = "graph_header";
