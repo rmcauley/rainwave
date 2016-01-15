@@ -126,6 +126,12 @@ div.timeline_event {
 			z-index: 2;
 		}
 	}
+
+	body.desktop &.sched_history {
+		&:hover {
+			z-index: 3;
+		}
+	}
 }
 
 div.progress {
