@@ -54,6 +54,8 @@
    "album_on_other_station"                          : "Album is niet beschikbaar op dit station, sorry!",
    "album_is_dj_only"                                : "Album is exclusief geselecteerd voor dit evenement, sorry!",
    "locked_to_station"                               : "U was aan het stemmen op %(locked_station), u moet %(lock_counter) &(lock_counter:song/songs) wachten om te stemmen op %(this_station).",
+   "search_string_too_short"                         : "Zoekopdracht moet minstens 3 letters bevatten.",
+   "search_result_limit"                             : "(te veel resultaten.  gelieve uw zoekopdracht nader te specifiëren.)",
 
  "__comment__"                 : "Error pop-up when Rainwave goes crashes.",
 
@@ -92,10 +94,10 @@
    "login"                                           : "Inloggen",
    "signup"                                          : "Registreer",
    "chat"                                            : "Chat",
+   "search"                                          : "Zoek",
    "previouslyplayed"                                : "Zojuist afgespeeld",
    "playback_history_link"                           : "Afgespeelde Geschiedenis",
    "extended_history_header"                         : "Uitgebreide Geschiedenis",
-   "special_event_on_now"                            : "Evenement: ",
    "special_event_alert"                             : "Speciaal Evenement op %(station): ",
 
    "tunein"                                          : "Tune In",
@@ -115,8 +117,6 @@
    "github_repo"                                     : "GitHub",
    "twitter"                                         : "Twitter",
 
-   "currently_tuned_in_station"                      : "Tuned in!",
-
    "__comment__"                 : "Timeline",
 
    "coming_up"                                       : "Binnenkort",
@@ -128,8 +128,6 @@
    "vote_submitted"                                  : "Stem ingezonden",
    "cannot_vote_for_this_now"                        : "Kan op dit moment niet op dit liedje stemmen.",
    "invalid_hotkey_vote"                             : "Ongeldige keuze, probeer het opnieuw.",
-   "voting_results_were"                             : "stem resultaten:",
-   "click_here_to_start_voting"                      : "Klik hier om te stemmen voor wat u hierna wilt horen!",
    "played_ago"                                      : "%(time) Geleden Afgespeeld",
    "timeline_art__request_indicator"                 : "Aanvraag",
    "timeline_art__your_request_indicator"            : "Uw",
@@ -166,9 +164,6 @@
    "average_rating_by_station"                       : "Gem. Waarderingen per Station",
    "no_ratings"                                      : "geen waarderingen",
 
-   "your_mobile_app_qr"                              : "Uw Android App QR Code",
-   "manage_your_api_keys"                            : "Beheer uw API sleutels.",
-   "logout_in_forums"                                : "Bezoek het forum om uit te loggen.",
    "view_your"                                       : "Bekijk uw: ",
    "recent_votes"                                    : "recente stemmen",
    "request_history"                                 : "aanvraag geschiedenis",
@@ -188,10 +183,9 @@
    "async_error"                                     : "Fout bij het communiceren met Rainwave. Probeer het opnieuw of ververs de pagina.",
    "deeplink_error"                                  : "Fout bij het begrijpen van de ingevoerde URL.",
 
-   "catastrophic_error"                              : "Rainwave is gecrasht :(",
-   "submit_javascript_error"                         : "Geef alstublieft de onderstaande bug report op bij de forums, zodat we het kunnen oplossen",
-
    "Loading..."                                      : "Laden...",
+   "Cancel"                                          : "Annuleer",
+   "go"                                              : "Ga",
 
    "__comment__"                 : "Hotkey Mode",
 
@@ -200,26 +194,11 @@
    "not_an_election"                                 : "Geen verkiezing.",
    "rate_song_mobile_dialog"                         : "Waardeer Liedje",
 
-   "__comment__"                 : "About Window",
-
-   "about_window_header"                             : "Over Rainwave",
-   "staff_list_header"                               : "Personeel",
-   "relay_sponsors_header"                           : "Relais Sponsors",
-   "translators_header"                              : "Vertalers",
-   "icon_attribution"                                : "Icoon Copyright Attributie",
-   "design_by"                                       : "Site Ontwerp",
-   "donation_info_label"                             : "Donatie Informatie",
-   "donation_info_link"                              : "Details",
-   "github_info_label"                               : "Rainwave Open Source Repository",
-   "github_info_link"                                : "Bekijk op GitHub",
-
    "__comment__"                 : "Playlist View",
 
    "playlist"                                        : "Afspeellijst",
    "library"                                         : "Bibliotheek",
-   "filter"                                          : "Typ waar dan ook om te filteren",
-   "typeanywhere"                                    : "Begin gewoon met typen!",
-   "clearfilter"                                     : "Wis Filter",
+   "Filter..."                                       : "Filter...",
    "album_rating_ranked_at_v2"                       : "Gewaardeerd op %(rating) met %(rating_count) Liedjes beoordelingen, Rang: #(rank).",
    "album_requests_ranked_at"                        : "Aantal keren aangevraagd: %(count) &(count:time/times), Rang: #(rank).",
    "album_year"                                      : "Uitgebracht in %(year).",
@@ -231,12 +210,9 @@
    "request_percentile_top"                          : "Aanvraag populariteit: hoogste %(percentile_top)%.",
    "request_percentile_bottom"                       : "Aanvraag populariteit: laagste %(percentile)%.",
    "song_has_no_ratings"                             : "Liedje heeft geen waarderingen.",
-   "song_extradetail_rating"                         : "Waardering: %(rating) (by %(rating_count) people)",
-   "song_extradetail_rating_rank"                    : "Waardering Rang: #(rank)",
-   "song_extradetail_requests"                       : "Aanvragen: %(count) &(count:time/times)",
-   "song_extradetail_requests_rank"                  : "Aanvragen Rang: #(rank)",
    "Request"                                         : "Aanvraag",
    "Albums"                                          : "Albums",
+   "Songs"                                           : "Liedjes",
    "Artists"                                         : "Artiesten",
    "Users"                                           : "Gebruikers",
    "Groups"                                          : "Categorieën",
@@ -274,12 +250,8 @@
    "#_requests"                                      : "%(num_requests) &(num_requests:Request/Requests)",
    "requests_all_on_cooldown"                        : "Alle aanvragen in cooldown!",
    "request_you_are_x_in_line"                       : "#(position) In Wachtrij",
-
-   "request_grab_tag__warning"                       : "Waarschuwing",
    "request_grab_tag__paused"                        : "Gepauzeerd",
-   "requests_grab_tab__num_requests"                 : "%(num_requests) &(num_requests:Request/Requests)",
 
-   "cancel_request"                                  : "Annuleer Aanvraag",
    "request_on_cooldown_for"                         : "Op cooldown voor %(cool_time).",
    "request_on_cooldown_ends_soon"                   : "Cooldown bijna afgelopen.",
    "request_in_election"                             : "%(blocked_by) is in een verkiezing.",
@@ -348,9 +320,6 @@
    "prefs_detail_global_ratings"                     : "Toon de Globale Waarderingen in de Liedjeslijst",
    "prefs_r_clear"                                   : "Toon 'Verwijder Waardering' Knop",
    "prefs_pwr"                                       : "Activeer Power User Modus",
-   "m3u_downloads"                                   : "M3U Downloads",
-   "skip_intro_mode"                                 : "Sla Intro Modus over",
-   "do_intro_mode"                                   : "Ga terug naar Intro Modus",
 
    "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
 
