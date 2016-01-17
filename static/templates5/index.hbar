@@ -2,12 +2,29 @@
 	<div id="hotkey_error"></div>
 	<div id="hotkey">
 		<div>Waiting For Hotkey</div>
-		<div style="float: left;">1-5 = Rate 1.0-5.0</div>
-		<div style="float: right; margin-left: 10px;">A,S,D = Vote 1st Elec</div>
-		<div style="float: left; clear: both;">Q-R = Rate 1.5-4.5</div>
-		<div style="float: right; margin-left: 10px;">Z,X,C = Vote 2nd Elec</div>
-		<div style="clear: both;">F = Fave Current Song</div>
-		<div style="clear: both;">Space = Stop/Play</div>
+		<div style="float: left;">
+			<span bind="hotkeys_rate10">1-5</span>
+			<span> = Rate 1.0-5.0</span></div>
+		<div style="float: right; margin-left: 10px;">
+			<span bind="hotkeys_vote0">A,S,D</span>
+			<span> = Vote 1st Elec</span>
+		</div>
+		<div style="float: left; clear: both;">
+			<span bind="hotkeys_rate05">Q-R</span>
+			<span> = Rate 1.5-4.5</span>
+		</div>
+		<div style="float: right; margin-left: 10px;">
+			<span bind="hotkeys_vote1">Z,X,C</span>
+			<span> = Vote 2nd Elec</span>
+		</div>
+		<div style="clear: both;">
+			<span bind="hotkeys_fave">F</span>
+			<span> = Fave Current Song</span>
+		</div>
+		<div style="clear: both;">
+			<span bind="hotkeys_play">Space</span>
+			<span> = Stop/Play</span>
+		</div>
 	</div>
 {{/if}}
 

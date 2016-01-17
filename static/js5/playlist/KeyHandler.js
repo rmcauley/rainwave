@@ -2,6 +2,58 @@ var KeyHandler = function() {
 	"use strict";
 	var self = {};
 
+	var keymaps = {
+		"US": {
+			"play": [ " " ],
+			"rate10": [ "1" ],
+			"rate15": [ "q" ],
+			"rate20": [ "2" ],
+			"rate25": [ "w" ],
+			"rate30": [ "3" ],
+			"rate35": [ "e" ],
+			"rate40": [ "4" ],
+			"rate45": [ "r" ],
+			"rate50": [ "5" ],
+			"vote0_0": [ "a" ],
+			"vote0_1": [ "s" ],
+			"vote0_2": [ "d" ],
+			"vote1_0": [ "z", "y" ],
+			"vote1_1": [ "x" ],
+			"vote1_2": [ "c" ],
+			"fave": [ "f" ]
+		}
+	};
+	var keymap = keymaps.US;
+
+	BOOTSTRAP.on_draw.push(function(template) {
+		if (Prefs.get("pwr")) {
+			var mapchange = function(nv) {
+			if (!nv || !keymaps[nv]) {
+					keymap = keymaps.US;
+				}
+				else {
+					keymap = keymaps[nv];
+				}
+
+				template.hotkeys_rate10.textContent = (keymap.rate10[0] + "-" + keymap.rate50[0]).toUpperCase();
+				template.hotkeys_rate05.textContent = (keymap.rate15[0] + "-" + keymap.rate45[0]).toUpperCase();
+				template.hotkeys_vote0.textContent = (keymap.vote0_0[0] + "," + keymap.vote0_1[0] + "," + keymap.vote0_2[0]).toUpperCase();
+				template.hotkeys_vote1.textContent = (keymap.vote1_0[0] + "," + keymap.vote1_1[0] + "," + keymap.vote1_2[0]).toUpperCase();
+				template.hotkeys_fave.textContent = keymap.fave[0].toUpperCase();
+
+				if (keymap.play == " ") {
+					template.hotkeys_play.textContent = "Space";
+				}
+				else {
+					template.hotkeys_play.textContent = keymap.play;
+				}
+			};
+			Prefs.define("hkm", [ "US" ]);
+			Prefs.add_callback("hkm", mapchange);
+			mapchange();
+		}
+	});
+
 	var backspace_trap = false;
 	var backspace_timer = false;
 
@@ -259,23 +311,27 @@ var KeyHandler = function() {
 
 	var hotkey_mode_handle = function(key_code, character) {
 		try {
-			if ((parseInt(character) >= 1) && (parseInt(character) <= 5)) {
-				Timeline.rate_current_song(parseInt(character));
-			}
-			else if (character == " ") RWAudio.play_stop();
-			else if (character == "q") Timeline.rate_current_song(1.5);
-			else if (character == "w") Timeline.rate_current_song(2.5);
-			else if (character == "e") Timeline.rate_current_song(3.5);
-			else if (character == "r") Timeline.rate_current_song(4.5);
+			if (keymap.rate10.indexOf(character) !== -1) Timeline.rate_current_song(1.0);
+			else if (keymap.rate15.indexOf(character) !== -1) Timeline.rate_current_song(1.5);
+			else if (keymap.rate20.indexOf(character) !== -1) Timeline.rate_current_song(2.0);
+			else if (keymap.rate25.indexOf(character) !== -1) Timeline.rate_current_song(2.5);
+			else if (keymap.rate30.indexOf(character) !== -1) Timeline.rate_current_song(3.0);
+			else if (keymap.rate35.indexOf(character) !== -1) Timeline.rate_current_song(3.5);
+			else if (keymap.rate40.indexOf(character) !== -1) Timeline.rate_current_song(4.0);
+			else if (keymap.rate45.indexOf(character) !== -1) Timeline.rate_current_song(4.5);
+			else if (keymap.rate50.indexOf(character) !== -1) Timeline.rate_current_song(5.0);
 
-			else if (character == "a") Timeline.vote(0, 0);
-			else if (character == "s") Timeline.vote(0, 1);
-			else if (character == "d") Timeline.vote(0, 2);
-			else if (character == "z") Timeline.vote(1, 0);
-			else if (character == "y") Timeline.vote(1, 0); 		// quertz layout
-			else if (character == "x") Timeline.vote(1, 1);
-			else if (character == "c") Timeline.vote(1, 2);
-			else if (character == "f") Timeline.fav_current();
+			else if (keymap.play.indexOf(character) !== -1) RWAudio.play_stop();
+
+			else if (keymap.vote0_0.indexOf(character) !== -1) Timeline.vote(0, 0);
+			else if (keymap.vote0_1.indexOf(character) !== -1) Timeline.vote(0, 1);
+			else if (keymap.vote0_2.indexOf(character) !== -1) Timeline.vote(0, 2);
+			else if (keymap.vote1_0.indexOf(character) !== -1) Timeline.vote(1, 0); 		// quertz layout
+			else if (keymap.vote1_1.indexOf(character) !== -1) Timeline.vote(1, 1);
+			else if (keymap.vote1_2.indexOf(character) !== -1) Timeline.vote(1, 2);
+
+			else if (keymap.fave.indexOf(character) !== -1) Timeline.fav_current();
+
 			else {
 				hotkey_mode_error("invalid_hotkey");
 				return true;
