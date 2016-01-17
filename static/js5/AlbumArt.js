@@ -17,6 +17,9 @@ var AlbumArt = function() {
 				song_el._art_timeout = null;
 			}
 			song_el.style.zIndex = 10;
+			if (song_el.classList.contains("song_lost")) {
+				song_el.style.opacity = 1;
+			}
 
 			var evt_el = song_el.parentNode;
 			if (evt_el && evt_el.classList.contains("timeline_event")) {
@@ -76,6 +79,7 @@ var AlbumArt = function() {
 		var song_el = e.target.parentNode.parentNode;
 		if (song_el && song_el.classList.contains("song")) {
 			song_el.style.zIndex = 5;
+			song_el.style.opacity = null;
 			song_el._art_timeout = setTimeout(function() {
 				song_el.style.zIndex = song_el._zIndex;
 			}, 350);
