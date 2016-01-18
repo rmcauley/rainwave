@@ -4,6 +4,7 @@ var KeyHandler = function() {
 
 	var keymaps = {
 		"US": {
+			"activate": [ "`", "^" ],
 			"play": [ " " ],
 			"rate10": [ "1" ],
 			"rate15": [ "q" ],
@@ -23,6 +24,10 @@ var KeyHandler = function() {
 			"fave": [ "f" ]
 		}
 	};
+	keymaps.FR = keymaps.US;
+	keymaps.FR.vote1_0 = [ "y", "z" ];
+	keymaps.DE = keymaps.US;
+	keymaps.DE.activate = [ "^", "`" ];
 	var keymap = keymaps.US;
 
 	BOOTSTRAP.on_draw.push(function(template) {
@@ -48,7 +53,7 @@ var KeyHandler = function() {
 					template.hotkeys_play.textContent = keymap.play;
 				}
 			};
-			Prefs.define("hkm", [ "US" ]);
+			Prefs.define("hkm", [ "US", "FR", "DE" ]);
 			Prefs.add_callback("hkm", mapchange);
 			mapchange();
 		}
@@ -202,7 +207,7 @@ var KeyHandler = function() {
 		if (hotkey_mode_on && hotkey_mode_handle(key_code, chr)) {
 			return true;
 		}
-		else if (key_code == 96 || chr == "`") {		// tilde key
+		else if (key_code == 96 || (keymap.activate.indexOf(chr) !== -1)) {
 			return hotkey_mode_enable();
 		}
 

@@ -2,6 +2,12 @@
     {{>settings_multi}}
 {{/with}}
 
+<div class="power_only">
+    {{#with hkm}}
+        {{>settings_multi}}
+    {{/with}}
+</div>
+
 {{#if notify}}
     {{#with notify}}
         {{>settings_yesno}}
