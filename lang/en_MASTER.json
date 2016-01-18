@@ -55,6 +55,7 @@
    "album_on_other_station"                          : "Album is not available on this station, sorry!",
    "album_is_dj_only"                                : "Album is exclusive to this event, sorry!",
    "locked_to_station"                               : "You were just voting on %(locked_station), you have to wait %(lock_counter) more &(lock_counter:song/songs) to vote on %(this_station).",
+      "__comment__"                                          : "The above line happens on station change: 'You were just voting on Game, you have to wait 2 more songs to vote on All'.",
    "search_string_too_short"                         : "Search must be 3 or more letters.",
    "search_result_limit"                             : "(too many results.  please refine your search.)",
 
@@ -118,7 +119,7 @@
    "github_repo"                                     : "GitHub",
    "twitter"                                         : "Twitter",
 
-   "__comment__"                 : "Timeline",
+   "__comment__"                 : "Timeline Headers",
 
    "coming_up"                                       : "Coming Up",
    "continued"                                       : "Continued",
@@ -126,6 +127,9 @@
    "now_playing"                                     : "Now Playing",
    "election"                                        : "Election",
    "power_hour"                                      : "Power Hour",
+
+   "__comment__"                 : "Timeline Song",
+
    "vote_submitted"                                  : "Vote Submitted",
    "cannot_vote_for_this_now"                        : "Cannot vote for that song right now.",
    "invalid_hotkey_vote"                             : "Invalid choice, try again.",
@@ -134,6 +138,7 @@
    "timeline_art__your_request_indicator"            : "Yours",
    "num_votes"                                       : "%(num_votes) &(num_votes:Vote/Votes)",
    "vote"                                            : "Vote",
+      "__comment__"                                    : "The above 'Vote' is a verb, not a noun.",
    "voted"                                           : "Voted",
 
    "event_naming__oneup"                             : "%(name) Power Hour",
