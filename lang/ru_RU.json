@@ -2,6 +2,7 @@
    "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
 
    "language_name"                                   : "Русский",
+   "language_name_short"                             : "RU",
 
    "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
 
@@ -73,7 +74,7 @@
    "extended_history_header"                         : "Расширенная история",
    "special_event_on_now"                            : "Событие: ",
    "special_event_alert"                             : "Специальное событие на станции %(station): ",
-   
+
    "tunein"                                          : "Подключиться",
    "stop"                                            : "Стоп",
    "audio_error"                                     : "Не удалось подключиться с вашего браузера",
@@ -194,7 +195,7 @@
    "request_grab_tag__warning"                       : "Предупреждение",
    "request_grab_tag__paused"                        : "Приостановлено",
    "requests_grab_tab__num_requests"                 : "%(num_requests) &(num_requests:Request/Requests)",
-   
+
    "cancel_request"                                  : "Отменить заявку",
    "request_on_cooldown_for"                         : "Недоступно в течении %(cool_time).",
    "request_on_cooldown_ends_soon"                   : "Сейчас будет доступно.",

@@ -2,6 +2,7 @@
    "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
 
    "language_name"                                   : "English",
+   "language_name_short"                             : "EN",
 
    "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
 
@@ -301,7 +302,6 @@
    "prefs_t_tl"                                      : "Show Song Title In Tab Title",
    "prefs_l_stksz"                                   : "Permanently Visible History",
    "prefs_l_displose"                                : "Show Songs That Lost in Elections",
-   "prefs_sticky_history_size__none"                 : "None",
    "playlist_preferences"                            : "Album List",
    "prefs_p_avup"                                    : "Sort Availables To Top",
    "prefs_p_favup"                                   : "Sort Faves To Top",
@@ -310,16 +310,23 @@
    "prefs_p_sort"                                    : "Album Sort Method",
    "prefs_sort_playlist_by_alpha"                    : "Alphabetical",
    "prefs_sort_playlist_by_rating_user"              : "Rating",
-   "prefs_sort_playlist_by_cool"                     : "Cooldown",
-   "prefs_show_artists"                              : "Show Artists In Timeline",
-   "prefs_show_losing_songs"                         : "Show Songs That Lost in the Election",
-   "prefs_requests_auto_slide"                       : "Show Request Pane On Change",
    "rating_preferences"                              : "Ratings",
    "prefs_r_incmplt"                                 : "Indicate Incompleted Albums",
    "prefs_r_noglbl"                                  : "Hide Global Ratings Until I've Rated",
-   "prefs_detail_global_ratings"                     : "Show Global Ratings in Song Lists",
    "prefs_r_clear"                                   : "Show Delete Rating Button",
    "prefs_pwr"                                       : "Enable Power User Mode",
+   "prefs_hkm"                                       : "Hotkey Mode Keyboard Layout",
+
+   "__comment__"                 : "Hotkey Mode - MAKE THEM VERY SHORT (and to test, activate power user mode and press backtick/tilde key)",
+
+   "waiting_for_hotkey"                              : "Waiting For Hotkey",
+   "hotkeys_rate10"                                  : " = Rate 1.0-5.0",
+   "hotkeys_rate05"                                  : " = Rate 1.5-4.5",
+   "hotkeys_vote0"                                   : " = Vote 1st Elec",
+   "hotkeys_vote1"                                   : " = Vote 2nd Elec",
+   "hotkeys_fave"                                    : " = Fave Current Song",
+   "hotkeys_play"                                    : " = Stop/Play",
+
 
    "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
 

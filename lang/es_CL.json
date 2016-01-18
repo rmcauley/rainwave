@@ -2,6 +2,7 @@
    "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
 
    "language_name"                                   : "Español",
+   "language_name_short"                             : "ES-CL",
 
    "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
 
