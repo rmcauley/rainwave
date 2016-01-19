@@ -56,7 +56,6 @@
    "album_is_dj_only"                                : "Lo sentimos, este álbum es exclusivo de este evento.",
    "locked_to_station"                               : "Acabas de votar en %(locked_station), debes esperar %(lock_counter) &(lock_counter:canción/canciones) más para votar en %(this_station).",
       "__comment__"                                          : "The above line happens on station change: 'You were just voting on Game, you have to wait 2 more songs to vote on All'.",
-
    "search_string_too_short"                         : "La búsqueda debe tener como mínimo 3 letras.",
    "search_result_limit"                             : "(demasiados resultados. debes ser más específico.)",
 
@@ -101,7 +100,6 @@
    "previouslyplayed"                                : "Tocadas Previamente",
    "playback_history_link"                           : "Historial de Reproducción",
    "extended_history_header"                         : "Historial Ampliado",
-   "special_event_on_now"                            : "Evento: ",
    "special_event_alert"                             : "Evento Especial en %(station): ",
 
    "tunein"                                          : "Sintonizar",
@@ -201,9 +199,6 @@
    "invalid_hotkey"                                  : "Tecla rápida inválida.",
    "not_an_election"                                 : "No es una votación.",
    "rate_song_mobile_dialog"                         : "Evaluar Canción",
-
-   "catastrophic_error"                              : "Rainwave Ha Fallado :(",
-   "submit_javascript_error"                         : "Por favor envía el informe de error a los foros, para que podamos arreglarlo.",
 
    "__comment__"                 : "Playlist View",
 
