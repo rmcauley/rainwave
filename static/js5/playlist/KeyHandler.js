@@ -24,7 +24,7 @@ var KeyHandler = function() {
 			"fave": [ "f" ]
 		}
 	};
-	keymaps.AZER = keymaps.QWER;
+	keymaps.AZER = JSON.parse(JSON.stringify(keymaps.QWER));
 	keymaps.AZER.rate15 = [ "a" ];
 	keymaps.AZER.rate25 = [ "z" ];
 	keymaps.AZER.vote0_0 = [ "q" ];
