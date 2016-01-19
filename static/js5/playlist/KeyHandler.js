@@ -4,7 +4,7 @@ var KeyHandler = function() {
 
 	var keymaps = {
 		"QWER": {
-			"activate": [ "`", "<", "'" ],
+			"activate": [ "`", "<", "'", "\\" ],
 			"play": [ " " ],
 			"rate10": [ "1" ],
 			"rate15": [ "q" ],
