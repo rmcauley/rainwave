@@ -28,10 +28,12 @@ var KeyHandler = function() {
 	keymaps.FR.vote1_0 = [ "y", "z" ];
 	keymaps.DE = keymaps.US;
 	keymaps.DE.activate = [ "<", "`" ];
+	keymaps.BR = keymaps.US;
+	keymaps.BR.activate = [ "', "\"" ];
 	var keymap = keymaps.US;
 
 	BOOTSTRAP.on_draw.push(function(template) {
-		Prefs.define("hkm", [ "US", "FR", "DE" ]);
+		Prefs.define("hkm", [ "US", "FR", "DE", "BR" ]);
 		if (Prefs.get("pwr")) {
 			var mapchange = function(nv) {
 			if (!nv || !keymaps[nv]) {
