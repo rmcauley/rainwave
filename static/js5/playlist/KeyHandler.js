@@ -27,7 +27,7 @@ var KeyHandler = function() {
 	keymaps.FR = keymaps.US;
 	keymaps.FR.vote1_0 = [ "y", "z" ];
 	keymaps.DE = keymaps.US;
-	keymaps.DE.activate = [ "^", "`" ];
+	keymaps.DE.activate = [ "<", "`" ];
 	var keymap = keymaps.US;
 
 	BOOTSTRAP.on_draw.push(function(template) {
