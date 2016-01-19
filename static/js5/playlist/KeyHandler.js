@@ -3,7 +3,7 @@ var KeyHandler = function() {
 	var self = {};
 
 	var keymaps = {
-		"QWERTY": {
+		"QWER": {
 			"activate": [ "`", "<", "'" ],
 			"play": [ " " ],
 			"rate10": [ "1" ],
@@ -18,25 +18,25 @@ var KeyHandler = function() {
 			"vote0_0": [ "a" ],
 			"vote0_1": [ "s" ],
 			"vote0_2": [ "d" ],
-			"vote1_0": [ "z" ],
+			"vote1_0": [ "z", "y" ],
 			"vote1_1": [ "x" ],
 			"vote1_2": [ "c" ],
 			"fave": [ "f" ]
 		}
 	};
-	keymaps.AZERTY = keymaps.QWERTY;
-	keymaps.AZERTY.rate15 = [ "a" ];
-	keymaps.AZERTY.rate25 = [ "z" ];
-	keymaps.AZERTY.vote0_0 = [ "q" ];
-	keymaps.AZERTY.vote1_0 = [ "w" ];
-	var keymap = keymaps.QWERTY;
+	keymaps.AZER = keymaps.QWER;
+	keymaps.AZER.rate15 = [ "a" ];
+	keymaps.AZER.rate25 = [ "z" ];
+	keymaps.AZER.vote0_0 = [ "q" ];
+	keymaps.AZER.vote1_0 = [ "w" ];
+	var keymap = keymaps.QWER;
 
 	BOOTSTRAP.on_draw.push(function(template) {
-		Prefs.define("hkm", [ "QWERTY", "AZERTY" ]);
+		Prefs.define("hkm", [ "QWER", "AZER" ]);
 		if (Prefs.get("pwr")) {
 			var mapchange = function(nv) {
 			if (!nv || !keymaps[nv]) {
-					keymap = keymaps.QWERTY;
+					keymap = keymaps.QWER;
 				}
 				else {
 					keymap = keymaps[nv];
