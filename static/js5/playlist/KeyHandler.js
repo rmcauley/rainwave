@@ -31,6 +31,7 @@ var KeyHandler = function() {
 	var keymap = keymaps.US;
 
 	BOOTSTRAP.on_draw.push(function(template) {
+		Prefs.define("hkm", [ "US", "FR", "DE" ]);
 		if (Prefs.get("pwr")) {
 			var mapchange = function(nv) {
 			if (!nv || !keymaps[nv]) {
@@ -53,7 +54,6 @@ var KeyHandler = function() {
 					template.hotkeys_play.textContent = keymap.play;
 				}
 			};
-			Prefs.define("hkm", [ "US", "FR", "DE" ]);
 			Prefs.add_callback("hkm", mapchange);
 			mapchange();
 		}
