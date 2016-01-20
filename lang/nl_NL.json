@@ -168,7 +168,7 @@
    "view_your"                                       : "Bekijk uw: ",
    "recent_votes"                                    : "recente stemmen",
    "request_history"                                 : "aanvraag geschiedenis",
-   "registered_in_year"                              : "Lid geworden in %(year)",
+   "registered_in_year"                              : "Lid geworden in %(year).",
 
    "top_rated_albums"                                : "Hoogst Gewaardeerde Albums",
    "top_requested_albums"                            : "Meest Aangevraagde Albums",
