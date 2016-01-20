@@ -7,24 +7,24 @@
 		<div style="color: #{{ colour }};">{{ rank }}</div>
 	{{/if}}
 	<div>{{ $l("registered_in_year", { 'year': _c.regdate }) }}</div>
-	{{#if ^_c.user_id == User.id }}
+	<!--{{#if ^_c.user_id == User.id }}
 		<div>{{ $l("view_your") }}</div>
-		<div style="padding-left: 10px;"> 
+		<div style="padding-left: 10px;">
 			<a class="obvious" target="_blank" href="http://rainwave.cc/pages/user_recent_votes">
 				{{ $l("recent_votes") }}
 			</a>
 		</div>
-		<div style="padding-left: 10px;"> 
+		<div style="padding-left: 10px;">
 			<a class="obvious" target="_blank" href="http://rainwave.cc/pages/all_faves">
 				{{ $l("all_faves") }}
 			</a>
 		</div>
-		<div style="padding-left: 10px;"> 
+		<div style="padding-left: 10px;">
 			<a class="obvious" target="_blank" href="http://rainwave.cc/pages/user_requested_history">
 				{{ $l("request_history") }}
 			</a>
 		</div>
-	{{/if}}
+	{{/if}}-->
 </div>
 
 {{#if ^_c.top_albums.length}}
