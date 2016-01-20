@@ -4,7 +4,7 @@
 
 <div class="detail_header">
 	{{#if rank}}
-		<div style="color: #{{ colour }};">{{ rank }}</div>
+		<div style="color: #{{ colour }};">({{ rank }})</div>
 	{{/if}}
 	<div>{{ $l("registered_in_year", { 'year': _c.regdate }) }}</div>
 	{{#if ^_c.user_id == User.id }}
