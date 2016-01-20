@@ -173,7 +173,7 @@
    "view_your"                                       : "Ver tus: ",
    "recent_votes"                                    : "Votos Recientes",
    "request_history"                                 : "Historial de Peticiones",
-   "registered_in_year"                              : "Miembro desde %(year)",
+   "registered_in_year"                              : "Miembro desde %(year).",
 
    "top_rated_albums"                                : "Álbumes Mejor Evaluados",
    "top_requested_albums"                            : "Álbumes Más Pedidos",
@@ -316,7 +316,7 @@
    "prefs_sort_playlist_by_alpha"                    : "Alfabético",
    "prefs_sort_playlist_by_rating_user"              : "Valoración",
    "rating_preferences"                              : "Evaluaciones",
-   "prefs_r_incmplt"                                 : "Indicatar Álbumes Incompletos",
+   "prefs_r_incmplt"                                 : "Indicar Álbumes Incompletos",
    "prefs_r_noglbl"                                  : "Esconder Valoración Global Hasta que se haya Valorado",
    "prefs_r_clear"                                   : "Mostrar Botón para Borrar Valoración",
    "prefs_pwr"                                       : "Activar Modo de Super Usuario",
