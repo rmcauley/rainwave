@@ -3,7 +3,15 @@
 </div>
 
 <div class="detail_header">
-	<!--{{#if ^_c.user_id == User.id }}
+	<div>
+		<span>
+			{{ $l("registered_in_year", { 'year': _c.regdate }) }}
+		</span>
+		{{#if rank}}
+			<span style="color: #{{ colour }};">({{ rank }})</span>
+		{{/if}}
+	</div>
+	{{#if ^_c.user_id == User.id }}
 		<div class="info">
 			<span>{{ $l("view_your") }}</span>
 			<p>
@@ -22,14 +30,7 @@
 				</a>
 			</p>
 		</div>
-	{{else}}-->
-		<div>
-			{{#if rank}}
-				<div style="color: #{{ colour }};">{{ rank }}</div>
-			{{/if}}
-			<div>{{ $l("registered_in_year", { 'year': _c.regdate }) }}</div>
-		</div>
-	<!--{{/if}}-->
+	{{/if}}
 </div>
 
 {{#if ^_c.top_albums.length}}
