@@ -3,13 +3,15 @@
 </div>
 
 <div class="detail_header">
-	{{#if rank}}
-		<div style="color: #{{ colour }};">
-			{{ rank }}
-		</div>
-	{{/if}}
 	<div>
-		{{ $l("registered_in_year", { 'year': _c.regdate }) }}
+		{{#if rank}}
+			<span style="color: #{{ colour }}; padding-right: 5px;">
+				{{ rank }}.
+			</span>
+		{{/if}}
+		<span>
+			{{ $l("registered_in_year", { 'year': _c.regdate }) }}
+		</span>
 	</div>
 	{{#if ^_c.user_id == User.id }}
 		<div>{{ $l("view_your") }}</div>
