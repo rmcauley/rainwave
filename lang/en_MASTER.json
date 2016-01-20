@@ -173,7 +173,7 @@
    "view_your"                                       : "View your: ",
    "recent_votes"                                    : "Recent Votes",
    "request_history"                                 : "Request History",
-   "registered_in_year"                              : "Joined %(year)",
+   "registered_in_year"                              : "Joined %(year).",
 
    "top_rated_albums"                                : "Top Rated Albums",
    "top_requested_albums"                            : "Top Requested Albums",
