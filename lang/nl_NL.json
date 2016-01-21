@@ -55,6 +55,7 @@
    "album_on_other_station"                          : "Album is niet beschikbaar op dit station, sorry!",
    "album_is_dj_only"                                : "Album is exclusief geselecteerd voor dit evenement, sorry!",
    "locked_to_station"                               : "U was aan het stemmen op %(locked_station), u moet %(lock_counter) &(lock_counter:song/songs) wachten om te stemmen op %(this_station).",
+       "__comment__"                                          : "The above line happens on station change: 'You were just voting on Game, you have to wait 2 more songs to vote on All'.",
    "search_string_too_short"                         : "Zoekopdracht moet minstens 3 letters bevatten.",
    "search_result_limit"                             : "(te veel resultaten.  gelieve uw zoekopdracht nader te specifiëren.)",
 
@@ -95,7 +96,7 @@
    "login"                                           : "Inloggen",
    "signup"                                          : "Registreer",
    "chat"                                            : "Chat",
-   "search"                                          : "Zoek",
+   "search"                                          : "Zoeken",
    "previouslyplayed"                                : "Zojuist afgespeeld",
    "playback_history_link"                           : "Afgespeelde Geschiedenis",
    "extended_history_header"                         : "Uitgebreide Geschiedenis",
@@ -126,6 +127,9 @@
    "now_playing"                                     : "Nu Spelend",
    "election"                                        : "Verkiezing",
    "power_hour"                                      : "Kracht Uur",
+   
+     "__comment__"                 : "Timeline Song",
+     
    "vote_submitted"                                  : "Stem ingezonden",
    "cannot_vote_for_this_now"                        : "Kan op dit moment niet op dit liedje stemmen.",
    "invalid_hotkey_vote"                             : "Ongeldige keuze, probeer het opnieuw.",
@@ -134,6 +138,7 @@
    "timeline_art__your_request_indicator"            : "Uw",
    "num_votes"                                       : "%(num_votes) &(num_votes:Vote/Votes)",
    "vote"                                            : "Stem",
+       "__comment__"                                    : "The above 'Vote' is a verb, not a noun.",
    "voted"                                           : "Gestemd",
 
    "event_naming__oneup"                             : "%(name) Kracht Uur",
@@ -302,7 +307,6 @@
    "prefs_t_tl"                                      : "Laat Titel Liedje in Tabblad Titel Zien",
    "prefs_l_stksz"                                   : "Permanente Zichtbaarheid Geschiedenis Afgespeelde Liedjes",
    "prefs_l_displose"                                : "Toon Liedjes die de Verkiezingen Verloren",
-   "prefs_sticky_history_size__none"                 : "Geen",
    "playlist_preferences"                            : "Album Lijst",
    "prefs_p_avup"                                    : "Sorteer Beschikbare Liedjes Bovenaan",
    "prefs_p_favup"                                   : "Sorteer Favorieten Bovenaan",
@@ -311,16 +315,23 @@
    "prefs_p_sort"                                    : "Sorteer Albums op...",
    "prefs_sort_playlist_by_alpha"                    : "Alfabetische Volgorde",
    "prefs_sort_playlist_by_rating_user"              : "Waardering",
-   "prefs_sort_playlist_by_cool"                     : "Cooldown",
-   "prefs_show_artists"                              : "Toon Artiesten in de Tijdlijn",
-   "prefs_show_losing_songs"                         : "Toon Liedjes die de Verkiezingen Verloren",
-   "prefs_requests_auto_slide"                       : "Toon Aanvragenlijst bij Verandering",
    "rating_preferences"                              : "Waarderingen",
    "prefs_r_incmplt"                                 : "Duid Incomplete Albums Aan",
    "prefs_r_noglbl"                                  : "Verberg de Globale Waarderingen tot ik Gewaardeerd heb",
-   "prefs_detail_global_ratings"                     : "Toon de Globale Waarderingen in de Liedjeslijst",
    "prefs_r_clear"                                   : "Toon 'Verwijder Waardering' Knop",
    "prefs_pwr"                                       : "Activeer Power User Modus",
+   "prefs_hkm"                                       : "Sneltoets Modus Toetsenbord Layout",
+   
+    "__comment__"                 : "Hotkey Mode - MAKE THEM VERY SHORT (and to test, activate power user mode and press backtick/tilde key)",
+
+   "waiting_for_hotkey"                              : "Wachten Op Sneltoets",
+   "hotkeys_rate10"                                  : " = Waardeer 1.0-5.0",
+   "hotkeys_rate05"                                  : " = Waardeer 1.5-4.5",
+   "hotkeys_vote0"                                   : " = Stem 1st Verk",
+   "hotkeys_vote1"                                   : " = Stem 2nd Verk",
+   "hotkeys_fave"                                    : " = Fav Huidig Liedje",
+   "hotkeys_play"                                    : " = Stop/Speel",
+
 
    "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
 
