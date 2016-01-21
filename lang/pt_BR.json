@@ -173,7 +173,7 @@
    "view_your"                                       : "Ver seus: ",
    "recent_votes"                                    : "votos recentes",
    "request_history"                                 : "histórico de pedidos",
-   "registered_in_year"                              : "Registrou-se em %(year)",
+   "registered_in_year"                              : "Registrou-se em %(year).",
 
    "top_rated_albums"                                : "Álbuns mais bem avaliados",
    "top_requested_albums"                            : "Álbuns mais pedidos",
