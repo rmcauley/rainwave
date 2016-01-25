@@ -66,7 +66,7 @@
 		btn.classList.remove(btnSuccess);
 		btn.classList.remove(btnError);
 		btn.classList.remove(btnNormal);
-		if (newClass === btn._normal_class) {
+		if (newClass !== btn._normal_class) {
 			btn.classList.remove(btn._normal_class);
 		}
 		btn.classList.add(newClass);
@@ -372,7 +372,7 @@
 			elements[i].classList.remove("disabled");
 			if (elements[i].getAttribute("type") == "submit") {
 				RWTemplateHelpers.change_button_text(elements[i], submit_button_text);
-				RWTemplateHelpers.change_button_class(elements[i], btnNormal);
+				RWTemplateHelpers.change_button_class(elements[i], elements[i]._normal_class || btnNormal);
 			}
 		}
 		return elements;
