@@ -271,10 +271,15 @@
 	};
 
 	RWTemplateObject.prototype.submitting = function(submit_message, no_disable) {
+		if (typeof(submit_message) != "string") {
+            submit_message = typeof(gettext) == "function" ? gettext("Saving...") : "Saving...";
+        }
 		var elements = this.normal();
 		for (var i = 0; i < elements.length; i++) {
 			if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
-				RWTemplateHelpers.change_button_text(elements[i], submit_message || (typeof(gettext) == "function" ? gettext("Saving...") : "Saving..."));
+				if (submit_message) {
+					RWTemplateHelpers.change_button_text(elements[i], submit_message || (typeof(gettext) == "function" ? gettext("Saving...") : "Saving..."));
+				}
 				if (!no_disable) {
 					RWTemplateHelpers.change_button_class(elements[i], elements[i]._normal_class || btnNormal);
 				}
@@ -371,7 +376,9 @@
 			elements[i].disabled = false;
 			elements[i].classList.remove("disabled");
 			if (elements[i].getAttribute("type") == "submit") {
-				RWTemplateHelpers.change_button_text(elements[i], submit_button_text);
+				if ((typeof(this._success_message) !== "string") || this._success_message) {
+					RWTemplateHelpers.change_button_text(elements[i], submit_button_text);
+				}
 				RWTemplateHelpers.change_button_class(elements[i], elements[i]._normal_class || btnNormal);
 			}
 		}
@@ -379,6 +386,12 @@
 	};
 
 	RWTemplateObject.prototype.success_display = function(success_message, permanent) {
+		if (typeof(this._success_message == "string") && !this._success_message) {
+			success_message = null;
+		}
+		else {
+			success_message = success_message || this._success_message || this._c._success_message || (typeof(gettext) == "function" ? gettext("Saved") : "Saved");
+		}
 		var elements = this.normal();
 		var this_obj, normalize;
 		if (!permanent) {
@@ -392,7 +405,9 @@
 			elements[i].disabled = permanent;
 			elements[i].classList[permanent ? "add" : "remove"]("disabled");
 			if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
-				RWTemplateHelpers.change_button_text(elements[i], success_message || this._success_message || this._c._success_message || (typeof(gettext) == "function" ? gettext("Saved") : "Saved"));
+				if (success_message) {
+                    RWTemplateHelpers.change_button_text(elements[i], success_message);
+                }
 				RWTemplateHelpers.change_button_class(elements[i], btnSuccess);
 				if (!permanent) {
 					if (this._success_timeout) {
