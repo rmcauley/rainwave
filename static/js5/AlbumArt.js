@@ -84,7 +84,7 @@ var AlbumArt = function() {
 				song_el.style.zIndex = song_el._zIndex;
 			}, 350);
 			var evt_el = song_el.parentNode;
-			if (evt_el.classList.contains("timeline_event")) {
+			if (evt_el && evt_el.classList.contains("timeline_event")) {
 				song_el.style.zIndex = 5;
 				evt_el._art_timeout = setTimeout(function() {
 					evt_el.style.zIndex = null;
