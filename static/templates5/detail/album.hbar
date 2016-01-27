@@ -9,6 +9,11 @@
 	{{#if new_indicator }}
 		<div class="{{ new_indicator_class }}">{{ new_indicator }}</div>
 	{{/if}}
+	{{#if rating_user }}
+		<div>
+			{{ $l("your_album_rating", Formatting.rating(_c)) }}
+		</div>
+	{{/if}}
 	{{#if rating_count }}
 		<div>
 			<span>{{ $l("album_rating_detail") }}</span>
