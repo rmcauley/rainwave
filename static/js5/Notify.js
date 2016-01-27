@@ -22,12 +22,11 @@ var R4Notify = function() {
 		if (self.enabled) return;
 
 		Notification.requestPermission(function (status) {
-			if (Notification.permission !== status) {
-				Notification.permission = status;
-			}
-
 			if (status === "granted") {
 				self.enabled = true;
+			}
+			else {
+				self.enabled = false;
 			}
 		});
 	};
