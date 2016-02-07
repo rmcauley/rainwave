@@ -1,0 +1,27 @@
+div.dj_panel {
+	z-index: 101 !important;
+	max-width: 100%;
+
+	ul.panel_header {
+		margin-bottom: 0;
+	}
+
+	body.full & {
+		left: 100%;
+		width: 450px;
+	}
+
+	body.dj_open & {
+		@include transform(translateX(-100%));
+		opacity: 1;
+		visibility: visible;
+	}
+
+	body.full.dj_open & {
+		@include transform(translateX(-100%) translateX(-90px));
+	}
+
+	body.full &.panel div.close {
+		display: block;
+	}
+}

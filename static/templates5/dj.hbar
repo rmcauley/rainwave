@@ -4,13 +4,13 @@
 <ul class="panel_header">
 	<li class="open">
 		<a bind="search_header">
-			{{ $l("DJ Panel") }}
+			{{ $l("dj_panel") }}
 		</a>
 	</li>
 </ul>
 <ul class="panel_header request_icons dj_controls">
 	DJ Controls Go Here
 </ul>
-<div bind="requests">
-	<div class="song" style="visibility: hidden; z-index: -1; transition: none;" bind="last_request_padder"></div>
+<div bind="song_list">
+	<div class="song" style="visibility: hidden; z-index: -1; transition: none;" bind="last_song_padder"></div>
 </div>

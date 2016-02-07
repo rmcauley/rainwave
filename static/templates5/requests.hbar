@@ -33,6 +33,6 @@
 		<span>{{ $l("Clear") }}</span>
 	</li>
 </ul>
-<div bind="requests">
-	<div class="song" style="visibility: hidden; z-index: -1; transition: none;" bind="last_request_padder"></div>
+<div bind="song_list">
+	<div class="song" style="visibility: hidden; z-index: -1; transition: none;" bind="last_song_padder"></div>
 </div>

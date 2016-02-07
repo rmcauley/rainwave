@@ -22,7 +22,7 @@ var Requests = function() {
 	});
 
 	BOOTSTRAP.on_init.push(function(root_template) {
-		el = root_template.requests;
+		el = root_template.song_list;
 		header = root_template.request_header;
 		link = root_template.request_link;
 		link_text = root_template.request_link_text;
@@ -53,7 +53,7 @@ var Requests = function() {
 		root_template.requests_unrated.addEventListener("click", self.fill_with_unrated);
 		root_template.requests_favfill.addEventListener("click", self.fill_with_faves);
 
-		padder = root_template.last_request_padder;
+		padder = root_template.last_song_padder;
 
 		link.addEventListener("click", function() {
 			if (!document.body.classList.contains("requests")) {

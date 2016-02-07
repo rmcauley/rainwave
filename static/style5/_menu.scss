@@ -149,7 +149,7 @@ ul.menu {
 			}
 		}
 
-		body.playlist &.playlist_link a, body.search_open &.search_link a {
+		body.playlist &.playlist_link a, body.search_open &.search_link a, body.dj_open &.dj_link a {
 			background: $menu_link_open;
 		}
 
