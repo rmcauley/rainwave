@@ -59,12 +59,12 @@ var DJPanel = function DJPanel(root_template) {
 	var analyser = audioCtx.createAnalyser();
 	analyser.minDecibels = -90;
 	analyser.maxDecibels = 0;
-	analyser.smoothingTimeConstant = 0.3;
-	analyser.fftSize = 2048;
+	analyser.smoothingTimeConstant = 0.7;
+	analyser.fftSize = 1024;
 
-	var max_value = 40;
+	var min_db_value = 100;
 
-	javascriptNode = audioCtx.createScriptProcessor(2048, 1, 1);
+	javascriptNode = audioCtx.createScriptProcessor(1024, 1, 1);
 	javascriptNode.onaudioprocess = function() {
 		var array =  new Uint8Array(analyser.frequencyBinCount);
 		analyser.getByteFrequencyData(array);
@@ -74,9 +74,11 @@ var DJPanel = function DJPanel(root_template) {
 			values += array[i];
 		}
 
-		var scale = ((values / array.length) / max_value);
+		var scale = ((values / array.length) / 256);
 		scale = Math.max(0, Math.min(1, scale));
-		t.vu_meter.style.transform = "scaleX(" + scale + ")";
+		// linear value to db
+		scale = (Math.max(Math.log(scale) * 20, -min_db_value) + min_db_value) / min_db_value;
+		t.vu_meter.style.transform = "scaleX(" + Math.max(0.02, scale) + ")";
 	};
 
 	if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {

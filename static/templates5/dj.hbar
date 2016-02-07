@@ -10,7 +10,7 @@
 </ul>
 <ul class="panel_header request_icons dj_controls">
 	<div class="chart_outside overflow_hidden">
-		<div style="width: 100%; background-color: rgb(31, 149, 229); left: 0%;" class="chart_bar" bind="vu_meter"></div>
+		<div style="width: 100%; background-color: rgb(31, 149, 229); left: 0%; transform-origin: left;" class="chart_bar" bind="vu_meter"></div>
 	</div>
 </ul>
 <div bind="song_list">
