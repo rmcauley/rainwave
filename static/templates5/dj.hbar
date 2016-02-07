@@ -9,7 +9,9 @@
 	</li>
 </ul>
 <ul class="panel_header request_icons dj_controls">
-	DJ Controls Go Here
+	<div class="chart_outside overflow_hidden">
+		<div style="width: 100%; background-color: rgb(31, 149, 229); left: 0%;" class="chart_bar" bind="vu_meter"></div>
+	</div>
 </ul>
 <div bind="song_list">
 	<div class="song" style="visibility: hidden; z-index: -1; transition: none;" bind="last_song_padder"></div>

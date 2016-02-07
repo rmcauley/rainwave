@@ -16,8 +16,8 @@
    "__comment__"          : "DJ Panel Lines (translation not required)",
 
    "dj_mode"                                         : "DJ Mode",
-   "dj_mode_enabling"                                : "Loading DJ Mode.  Please wait.",
    "dj_panel"                                        : "DJ Panel",
+   "dj_audio_fail"                                   : "Could not initialize audio source. (are you using the latest Firefox or Chrome?)",
 
    "__comment__"          : "Admin Panel Lines (translation not required)",
 
