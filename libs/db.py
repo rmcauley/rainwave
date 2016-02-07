@@ -285,41 +285,47 @@ def close():
 	return True
 
 def create_tables():
-	if c.is_postgres:
-		c.start_transaction()
-
 	if config.get("standalone_mode"):
 		_create_test_tables()
 
+	# c.update("CREATE EXTENSION pg_trgm;")
+
 	# From: https://wiki.postgresql.org/wiki/First_%28aggregate%29
 	# Used in rainwave/playlist.py
-	c.update("""
-		-- Create a function that always returns the first non-NULL item
-		CREATE OR REPLACE FUNCTION public.first_agg ( anyelement, anyelement )
-		RETURNS anyelement LANGUAGE SQL IMMUTABLE STRICT AS $$
-		        SELECT $1;
-		$$;
+	try:
+		c.update("""
+			-- Create a function that always returns the first non-NULL item
+			CREATE OR REPLACE FUNCTION public.first_agg ( anyelement, anyelement )
+			RETURNS anyelement LANGUAGE SQL IMMUTABLE STRICT AS $$
+			        SELECT $1;
+			$$;
 
-		-- And then wrap an aggregate around it
-		CREATE AGGREGATE public.FIRST (
-		        sfunc    = public.first_agg,
-		        basetype = anyelement,
-		        stype    = anyelement
-		);
+			-- And then wrap an aggregate around it
+			CREATE AGGREGATE public.FIRST (
+			        sfunc    = public.first_agg,
+			        basetype = anyelement,
+			        stype    = anyelement
+			);
 
-		-- Create a function that always returns the last non-NULL item
-		CREATE OR REPLACE FUNCTION public.last_agg ( anyelement, anyelement )
-		RETURNS anyelement LANGUAGE SQL IMMUTABLE STRICT AS $$
-		        SELECT $2;
-		$$;
+			-- Create a function that always returns the last non-NULL item
+			CREATE OR REPLACE FUNCTION public.last_agg ( anyelement, anyelement )
+			RETURNS anyelement LANGUAGE SQL IMMUTABLE STRICT AS $$
+			        SELECT $2;
+			$$;
 
-		-- And then wrap an aggregate around it
-		CREATE AGGREGATE public.LAST (
-		        sfunc    = public.last_agg,
-		        basetype = anyelement,
-		        stype    = anyelement
-		);
-	""")
+			-- And then wrap an aggregate around it
+			CREATE AGGREGATE public.LAST (
+			        sfunc    = public.last_agg,
+			        basetype = anyelement,
+			        stype    = anyelement
+			);
+		""")
+	except:
+		# first is already available, we can skip this
+		pass
+
+	if c.is_postgres:
+		c.start_transaction()
 
 	c.update(" \
 		CREATE TABLE r4_albums ( \
@@ -748,7 +754,7 @@ def _create_test_tables():
 			user_avatar_type		INT			DEFAULT 0, \
 			user_colour             TEXT        DEFAULT 'FFFFFF', \
 			user_rank               INT 	    DEFAULT 0, \
-			user_regdate            INT         DEFAULT 0, \
+			user_regdate            INT         DEFAULT 0 \
 		)")
 
 	c.update("CREATE TABLE phpbb_sessions("
@@ -770,7 +776,6 @@ def add_custom_fields():
 	c.update("ALTER TABLE phpbb_users ADD radio_losingvotes		INTEGER		DEFAULT 0")
 	c.update("ALTER TABLE phpbb_users ADD radio_winningrequests	INTEGER		DEFAULT 0")
 	c.update("ALTER TABLE phpbb_users ADD radio_losingrequests	INTEGER		DEFAULT 0")
-	c.update("ALTER TABLE phpbb_users ADD radio_totalvotes		INTEGER		DEFAULT 0")
 	c.update("ALTER TABLE phpbb_users ADD radio_last_active		INTEGER		DEFAULT 0")
 	c.update("ALTER TABLE phpbb_users ADD radio_listenkey		TEXT		DEFAULT 'TESTKEY'")
 	c.update("ALTER TABLE phpbb_users ADD radio_inactive		BOOLEAN		DEFAULT TRUE")

@@ -1,6 +1,6 @@
 This is the git project for the Rainwave website, http://rainwave.cc.
 
-Rainwave is a system to control an external player such as MPD, 
+Rainwave is a system to control an external player such as MPD,
 or a streaming source such as Ices or LiquidSoap.  It is primarly programmed,
 and configured by default, for use with Ices/LiquidSoap.  It cannot play
 or stream audio by itself.
@@ -62,8 +62,15 @@ $ git clone git@github.com:rmcauley/rainwave.git
 $ cp etc/rainwave_reference.conf etc/[your username].conf
 
 Setup PostgreSQL on your system and change your Rainwave config file
-to use Postgres instead of SQLite.  The Rainwave Pg role must have the ability
-to create tables.  You must also have your own MP3 collection, and change the
+to use Postgres instead of SQLite.
+
+While you are a Postgres superuser, you must have the trigram extension installed.
+To do this:
+
+pg# CREATE EXTENSION pg_trgm;
+
+Once done, the Rainwave Pg role must have the ability to create tables. (e.g.
+database ownership) You must also have your own MP3 collection, and change the
 song_dirs configuration in your rainwave.conf to point to your collection.
 Tags are important!
 
