@@ -45,3 +45,4 @@ out.json
 
 .idea
 .vagrant
+*.sublime-workspace
