@@ -32,7 +32,7 @@
 			{{/if}}
 		</ul>
 
-		<ul class="menu main_menu">
+		<ul class="menu main_menu" bind="main_menu_ul">
 			<li class="requests_link">
 				<div bind="request_indicator" class="request_plusminus"></div>
 				<a bind="request_link">

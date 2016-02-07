@@ -244,6 +244,14 @@ ul.menu {
 		border-top: 1px solid $submenu_separator;
 		z-index: 1;
 	}
+
+	div.menu_group_dj {
+		display: none;
+
+		body.is_dj & {
+			display: block;
+		}
+	}
 }
 
 div.hamburger_icon {

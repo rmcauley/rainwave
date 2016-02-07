@@ -14,6 +14,13 @@ var Menu = function() {
 		}
 	};
 
+	var add_javascript = function(src, callback) {
+		var s = document.createElement("script");
+		s.addEventListener("load", callback);
+		s.src = src;
+		document.getElementsByTagName("head")[0].appendChild(s);
+	};
+
 	BOOTSTRAP.on_init.push(function(root_template) {
 		template = root_template;
 
@@ -105,6 +112,33 @@ var Menu = function() {
 
 		if (!MOBILE) {
 			API.add_callback("all_stations_info", update_station_info);
+
+			if (template.dj_link) {
+				var dj_loaded;
+				template.dj_link.addEventListener("click", function() {
+					if (!User.dj || dj_loaded) return;
+					console.log("Loading DJ Mode...");
+					var jsfiles = [ "/static/js_dj/libshine.js",
+					                "/static/js_dj/libsamplerate.js",
+					                "/static/js_dj/libmad.js",
+					                "/static/js_dj/taglib.js",
+					                "/static/js_dj/webcast.js",
+					                "/static/js_dj/dj.js"
+					];
+					var jsfiles_i = 0;
+					var cb = function() {
+						if (jsfiles_i < jsfiles.length) {
+							add_javascript(jsfiles[jsfiles_i], cb);
+						}
+						else {
+							template.dj_link.parentNode.parentNode.removeChild(template.dj_link.parentNode);
+							DJPanel(root_template);
+						}
+						jsfiles_i++;
+					};
+					cb();
+				});
+			}
 		}
 	});
 

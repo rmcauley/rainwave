@@ -246,19 +246,14 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if self.dj_required and not self.user:
 			raise APIException("dj_required", http_code=403)
 		if self.dj_required and not self.user.is_admin():
-			#pylint: disable=E1103
-			potential_dj_ids = []
-			if cache.get_station(self.sid, "sched_current") and cache.get_station(self.sid, "sched_current").dj_user_id:
-				potential_dj_ids.append(cache.get_station(self.sid, "sched_current").dj_user_id)
-			if cache.get_station(self.sid, "sched_next"):
-				for evt in cache.get_station(self.sid, "sched_next"):
-					potential_dj_ids.append(evt.dj_user_id)
-			if cache.get_station(self.sid, "sched_history") and cache.get_station(self.sid, "sched_history")[-1].dj_user_id:
-				potential_dj_ids.append(cache.get_station(self.sid, "sched_history")[-1].dj_user_id)
-			if not self.user.id in potential_dj_ids:
+			potential_djs = cache.get_station(self.sid, "dj_user_ids")
+			if not potential_djs or not self.user.id in potential_djs:
 				raise APIException("dj_required", http_code=403)
 			is_dj = True
-			#pylint: enable=E1103
+			self.user.data['dj'] = True
+		elif self.user.is_admin():
+			is_dj = True
+			self.user.data['dj'] = True
 
 		if self.dj_preparation and not is_dj and not self.user.is_admin():
 			if not db.c.fetch_var("SELECT COUNT(*) FROM r4_schedule WHERE sched_used = 0 AND sched_dj_user_id = %s", (self.user.id,)):

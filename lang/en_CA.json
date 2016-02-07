@@ -13,6 +13,11 @@
    "suffix_12"                                       : "th",
    "suffix_13"                                       : "th",
 
+   "__comment__"          : "DJ Panel Lines (translation not required)",
+
+   "dj_mode"                                         : "DJ Mode",
+   "dj_mode_enabling"                                : "Loading DJ Mode.  Please wait.",
+
    "__comment__"          : "Admin Panel Lines (translation not required)",
 
    "time"                                            : "Time",

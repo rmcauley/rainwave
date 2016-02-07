@@ -91,6 +91,12 @@ var Stations = [];
 			if (typeof(json.requests_paused) == "undefined") {
 				json.requests_paused = requests_paused;
 			}
+			if (json.dj) {
+				document.body.classList.add("is_dj");
+			}
+			else {
+				document.body.classList.remove("is_dj");
+			}
 			User = json;
 		});
 
