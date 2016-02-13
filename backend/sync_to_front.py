@@ -13,6 +13,7 @@ from libs import config
 # TODO: start using ZeroMQ maybe?
 
 front_sched_sync_timers = {}
+front_sched_dj_timers = {}
 
 def sync_result(response):
 	if response.error:
@@ -47,6 +48,15 @@ def sync_frontend_user_id(user_id):
 	for i in range(0, config.get("api_num_processes")):
 		http_client.fetch("http://%s:%s/api4/sync_update_user" % (config.get("api_url"), config.get("api_base_port") + i,), sync_result, method='POST', body=params)
 
+def sync_frontend_dj(sid):
+	global front_sched_dj_timers
+	front_sched_dj_timers[sid] = None
+
+	http_client = AsyncHTTPClient()
+	params = urllib.urlencode({ "sid": sid })
+	for i in range(0, config.get("api_num_processes")):
+		http_client.fetch("http://%s:%s/api4/sync_update_dj" % (config.get("api_url"), config.get("api_base_port") + i,), sync_result, method='POST', body=params)
+
 
 # These only update schedules for all end users, and are here so admins can update things like
 # adding 1ups and the user's screens will reflect that.  They run with delayed timers so admins
@@ -59,6 +69,17 @@ def sync_frontend_all_timed(sid):
 	front_sched_sync_timers[sid] = IOLoop.instance().add_timeout(datetime.timedelta(seconds=5), lambda: sync_frontend_all(sid))
 
 def _sync_frontend_all_timed_stop(sid):
+	global front_sched_sync_timers
+
 	if sid in front_sched_sync_timers and front_sched_sync_timers[sid]:
 		IOLoop.instance().remove_timeout(front_sched_sync_timers[sid])
 	front_sched_sync_timers[sid] = None
+
+def sync_frontend_dj_timed(sid):
+	global front_sched_dj_timers
+
+	# This rate limits DJ updating requests
+	if sid in front_sched_dj_timers and front_sched_dj_timers[sid]:
+		return
+
+	front_sched_dj_timers[sid] = IOLoop.instance().add_timeout(datetime.timedelta(seconds=5), lambda: sync_frontend_dj(sid))

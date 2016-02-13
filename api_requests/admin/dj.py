@@ -3,6 +3,7 @@ import api.web
 from api.server import handle_api_url
 from api import liquidsoap
 from api import fieldtypes
+from api_requests.info import attach_dj_info_to_request
 
 @handle_api_url("admin/dj/pause")
 class PauseStation(api.web.APIHandler):
@@ -11,6 +12,7 @@ class PauseStation(api.web.APIHandler):
 	def post(self):
 		cache.set_station(self.sid, "backend_paused", True)
 		cache.set_station(self.sid, "backend_pause_extend", True)
+		attach_dj_info_to_request(self)
 		self.append(self.return_name, { "success": True, "message": "At 0:00 the station will go silent and wait for you." })
 
 @handle_api_url("admin/dj/unpause")
@@ -35,6 +37,7 @@ class UnpauseStation(api.web.APIHandler):
 				result += "Kicking DJ.  "
 				result += "\n"
 				result += liquidsoap.kick_dj(self.sid)
+		attach_dj_info_to_request(self)
 		self.append(self.return_name, { "success": True, "message": result })
 
 @handle_api_url("admin/dj/skip")
@@ -43,6 +46,7 @@ class SkipStation(api.web.APIHandler):
 
 	def post(self):
 		result = liquidsoap.skip(self.sid)
+		attach_dj_info_to_request(self)
 		self.append(self.return_name, { "success": True, "message": result })
 
 @handle_api_url("admin/dj/pause_title")
@@ -52,4 +56,5 @@ class PauseTitle(api.web.APIHandler):
 
 	def post(self):
 		cache.set_station(self.sid, "pause_title", self.get_argument("title"))
+		attach_dj_info_to_request(self)
 		self.append(self.return_name, { "success": True, "pause_title": self.get_argument("title") })

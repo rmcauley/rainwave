@@ -1,4 +1,4 @@
-var DJPanel = function DJPanel(root_template) {
+BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 	"use strict";
 
 	var panel = document.createElement("div");
@@ -40,9 +40,52 @@ var DJPanel = function DJPanel(root_template) {
 		}
 	});
 
-	Sizing.trigger_resize();
+	t.btn_pause.addEventListener("click", function() {
+		API.async_get("admin/dj/pause");
+	});
+	t.btn_pause_cancel.addEventListener("click", function() {
+		API.async_get("admin/dj/unpause");
+	});
+	t.btn_resume.addEventListener("click", function() {
+		API.async_get("admin/dj/unpause");
+	});
 
-	Router.change("dj");
+	var dj_api_status = {};
+
+	var update_status = function() {
+		if (dj_api_status.pause_active) {
+			t.dji_music.classList.remove("active");
+			t.dji_will_pause.classList.remove("active");
+			t.dji_paused.classList.add("active");
+			t.btn_pause.disabled = true;
+			t.btn_pause_cancel.disabled = true;
+			t.btn_resume.disabled = false;
+			t.btn_cut_resume.disabled = false;
+		}
+		else if (dj_api_status.pause_requested) {
+			t.dji_music.classList.add("active");
+			t.dji_will_pause.classList.add("active");
+			t.dji_paused.classList.remove("active");
+			t.btn_pause.disabled = true;
+			t.btn_pause_cancel.disabled = false;
+			t.btn_resume.disabled = true;
+			t.btn_cut_resume.disabled = true;
+		}
+		else {
+			t.dji_music.classList.add("active");
+			t.dji_will_pause.classList.remove("active");
+			t.dji_paused.classList.remove("active");
+			t.btn_pause.disabled = false;
+			t.btn_pause_cancel.disabled = true;
+			t.btn_resume.disabled = true;
+			t.btn_cut_resume.disabled = true;
+		}
+	};
+
+	API.add_callback("dj_info", function(json) {
+		dj_api_status = json;
+		update_status();
+	});
 
 	// code from:
 	// Mozilla's Voice Change-o-Matic
@@ -63,8 +106,8 @@ var DJPanel = function DJPanel(root_template) {
 	});
 
 	var analyser = audioCtx.createAnalyser();
-	analyser.minDecibels = -70.0;
-	analyser.maxDecibels = -20.0;
+	analyser.minDecibels = -60.0;
+	analyser.maxDecibels = -15.0;
 	analyser.decibelRange = analyser.maxDecibels + Math.abs(analyser.minDecibels);
 	// analyser.smoothingTimeConstant = 0.8;
 	analyser.fftSize = 256;
@@ -163,4 +206,4 @@ var DJPanel = function DJPanel(root_template) {
 		console.error("navigator.mediaDevices.getUserMedia does not exist.");
 		ErrorHandler.nonpermanent_error(ErrorHandler.make_error("dj_audio_fail", 400));
 	}
-};
+});

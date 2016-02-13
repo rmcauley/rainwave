@@ -43,12 +43,5 @@
 				{{ $l("Settings") }}
 			</a>
 		</div>
-		{{#if ^BOOTSTRAP.user.id > 1}}
-			<div class="menu_group menu_group_dj pconly power_only">
-				<a class="link" bind="dj_link">
-					{{ $l("dj_mode") }}
-				</a>
-			</div>
-		{{/if}}
 	{{/if}}
 </div>

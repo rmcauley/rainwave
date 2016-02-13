@@ -251,7 +251,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				raise APIException("dj_required", http_code=403)
 			is_dj = True
 			self.user.data['dj'] = True
-		elif self.user.is_admin():
+		elif self.dj_required and self.user.is_admin():
 			is_dj = True
 			self.user.data['dj'] = True
 

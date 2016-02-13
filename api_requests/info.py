@@ -10,6 +10,13 @@ import api_requests.tune_in
 from libs import cache
 from libs import config
 
+def attach_dj_info_to_request(request):
+	request.append("dj_info", {
+		"pause_requested": cache.get_station(request.sid, "backend_paused"),
+		"pause_active": cache.get_station(request.sid, "backend_paused_playing"),
+		"pause_title": cache.get_station(request.sid, "pause_title")
+	})
+
 def attach_info_to_request(request, extra_list = None, all_lists = False):
 	# Front-load all non-animated content ahead of the schedule content
 	# Since the schedule content is the most animated on R3, setting this content to load
@@ -18,6 +25,8 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 
 	if request.user:
 		request.append("user", request.user.to_private_dict())
+		if request.user.is_dj():
+			attach_dj_info_to_request(request)
 
 	if not request.mobile:
 		if all_lists or (extra_list == "all_albums") or (extra_list == "album") or 'all_albums' in request.request.arguments:

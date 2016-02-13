@@ -7,6 +7,7 @@ var API = function() {
 	var callbacks = {};
 	var offline_ack = false;
 	var known_event_id = 0;
+	var is_dj = false;
 
 	var self = {};
 	self.last_action = null;
@@ -25,6 +26,7 @@ var API = function() {
 		url = n_url;
 		user_id = n_user_id;
 		api_key = n_api_key;
+		is_dj = json && json.user && json.user.dj;
 
 		sync = new XMLHttpRequest();
 		sync.onload = sync_complete;
@@ -102,7 +104,12 @@ var API = function() {
 	var sync_get = function() {
 		if (sync_permastop) return;
 		sync_stopped = false;
-		sync.open("POST", url + "sync", true);
+		if (!is_dj) {
+			sync.open("POST", url + "sync", true);
+		}
+		else {
+			sync.open("POST", url + "sync_dj", true);
+		}
 		sync.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		clear_sync_timeout_error_removal_timeout();
 		sync_timeout_error_removal_timeout = setTimeout(clear_sync_timeout_error, 15000);

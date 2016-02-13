@@ -81,8 +81,13 @@ class MainIndex(api.web.HTMLRequest):
 			# station_list=config.station_list_json,
 			apple_home_screen_icon=config.get_station(self.sid, "apple_home_screen_icon"),
 			mobile=self.mobile,
-			station_name=config.station_id_friendly[self.sid]
+			station_name=config.station_id_friendly[self.sid],
+			dj=self.user.is_dj()
 		)
+
+@handle_url("/dj")
+class DJIndex(MainIndex):
+	dj_required = True
 
 @handle_url("/beta")
 class BetaRedirect(tornado.web.RequestHandler):
@@ -101,6 +106,10 @@ class BetaIndex(MainIndex):
 		if not config.get("public_beta"):
 			self.perks_required = True
 		super(BetaIndex, self).prepare()
+
+@handle_url("/beta/dj")
+class DJBetaIndex(MainIndex):
+	dj_required = True
 
 @handle_api_url("bootstrap")
 class Bootstrap(api.web.APIHandler):
@@ -140,3 +149,7 @@ class Bootstrap(api.web.APIHandler):
 		self.append("stream_filename", config.get_station(self.sid, "stream_filename"))
 		self.append("station_list", config.station_list)
 		self.append("relays", config.public_relays[self.sid])
+
+@handle_api_url("bootstrap_dj")
+class DJBootstrap(Bootstrap):
+	dj_required = True

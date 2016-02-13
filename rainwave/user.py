@@ -198,6 +198,11 @@ class User(object):
 	def is_admin(self):
 		return self.data['admin'] > 0
 
+	def is_dj(self):
+		if 'dj' in self.data and self.data['dj']:
+			return True
+		return False
+
 	def has_perks(self):
 		return self.data['perks']
 

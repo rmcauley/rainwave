@@ -25,6 +25,29 @@
 		<input type="range" value="1.0" min="0.0" max="15.0" step="0.1" bind="gain" style="width: 300px; transform: translateY(5px);" />
 	</div>
 </div>
+<div class="dj_controls" style="overflow: hidden;">
+	<div style="overflow: hidden;">
+		<div class="dj_indicator dji_music" bind="dji_music">{{ $l("dj_music_playing") }}</div>
+		<button bind="btn_pause">{{ $l("dj_request_pause") }}</button>
+	</div>
+	<div style="overflow: hidden;">
+		<div class="dj_indicator dji_will_pause" bind="dji_will_pause">{{ $l("dj_will_pause") }}</div>
+		<button bind="btn_pause_cancel">{{ $l("dj_cancel_pause") }}</button>
+	</div>
+	<div style="overflow: hidden;">
+		<div class="dj_indicator dji_paused" bind="dji_paused">{{ $l("dj_paused") }}</div>
+		<button bind="btn_resume">{{ $l("dj_resume") }}</button>
+	</div>
+	<div style="overflow: hidden;">
+		<div class="dj_indicator dji_off_air active" bind="dji_off_air">{{ $l("dj_off_air") }}</div>
+		<button bind="btn_on_air">{{ $l("dj_go_on_air") }}</button>
+	</div>
+	<div style="overflow: hidden;">
+		<div class="dj_indicator dji_on_air" bind="dji_on_air">{{ $l("dj_on_air") }}</div>
+		<button bind="btn_cut">{{ $l("dj_cut_mic") }}</button>
+		<button bind="btn_cut_resume">{{ $l("dj_cut_mic_and_resume") }}</button>
+	</div>
+</div>
 <div bind="song_list">
 	<div class="song" style="visibility: hidden; z-index: -1; transition: none;" bind="last_song_padder"></div>
 </div>

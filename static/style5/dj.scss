@@ -24,11 +24,55 @@ div.dj_panel {
 	body.full &.panel div.close {
 		display: block;
 	}
+
+	button {
+		background: $text_ddd;
+		color: $text;
+		cursor: pointer;
+
+		&:disabled {
+			opacity: 0.4;
+			cursor: default;
+		}
+
+		&:enabled:hover {
+			color: $link;
+			background: $vote_registered;
+			border-color: $text_d;
+		}
+	}
+
+	div.dj_indicator, button {
+		margin-top: 3px;
+		padding: 5px;
+		border: solid 1px $text_dd;
+		margin-right: 3em;
+		@include transition-wtime(300ms, background, border, LINKCOLOR, opacity, transform);
+	}
+
+	div.dj_indicator {
+		clear: left;
+		float: left;
+		text-align: center;
+		min-width: 150px;
+		color: $text_dd;
+
+		&.active {
+			font-weight: bold;
+			border: solid 1px $text;
+			color: $text;
+			background: $blue;
+
+			&.dji_on_air, &.dji_paused {
+				background: $song_yours;
+			}
+		}
+	}
 }
 
 div.dj_controls {
-	height: auto;
 	padding: 10px;
+	border-bottom: solid 2px $text_ddd;
 }
 
 div.quiet_range {
@@ -45,6 +89,7 @@ div.volume_indicator {
 	background-color: $blue;
 	left: 0;
 	transform-origin: left;
+	transform: scaleX(0);
 }
 
 div.chart_bar.peak_indicator {

@@ -91,6 +91,19 @@ class SessionBank(object):
 
 		self.clear()
 
+	def update_dj(self, sid):
+		for session in self.sessions:
+			if session.dj:
+				try:
+					session.update_dj_only()
+					log.debug("sync_update_dj", "Updated user %s session." % session.user.id)
+				except Exception as e:
+					try:
+						session.finish()
+					except:
+						pass
+					log.exception("sync_update_dj", "Session failed to be updated during update_dj.", e)
+
 	def update_user(self, user_id):
 		if not user_id in self.user_update_timers or not self.user_update_timers[user_id]:
 			self.user_update_timers[user_id] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=2), lambda: self._do_user_update(user_id))
@@ -117,7 +130,6 @@ class SessionBank(object):
 	def update_ip_address(self, ip_address):
 		if not ip_address in self.ip_update_timers or not self.ip_update_timers[ip_address]:
 			self.ip_update_timers[ip_address] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=2), lambda: self._do_ip_update(ip_address))
-
 
 	def _do_ip_update(self, ip_address):
 		if not ip_address in self.ip_update_timers or not self.ip_update_timers[ip_address]:
@@ -186,6 +198,28 @@ class SyncUpdateAll(APIHandler):
 
 		super(SyncUpdateAll, self).on_finish()
 
+@handle_api_url("sync_update_dj")
+class SyncDJUser(APIHandler):
+	local_only = True
+	auth_required = False
+	sid_required = False
+	hidden = True
+
+	def post(self):
+		self.append("sync_dj_result", "Processing.")
+
+	def on_finish(self):
+		global sessions
+
+		if not self.get_status() == 200:
+			log.debug("sync_update_user", "sync_dj_user request was not OK.")
+			return super(SyncDJUser, self).on_finish()
+
+		if self.sid:
+			sessions[self.sid].update_dj(self.sid)
+
+		return super(SyncDJUser, self).on_finish()
+
 @handle_api_url("sync_update_user")
 class SyncUpdateUser(APIHandler):
 	local_only = True
@@ -250,6 +284,11 @@ class Sync(APIHandler):
 	def post(self):
 		global sessions
 
+		if self.user.is_dj():
+			self.dj = True
+		else:
+			self.dj = False
+
 		api_requests.info.check_sync_status(self.sid, self.get_argument("offline_ack"))
 
 		self.set_header("Content-Type", "application/json")
@@ -301,4 +340,18 @@ class Sync(APIHandler):
 		if "requests_paused" in self.user.data:
 			del self.user.data['requests_paused']
 		self.append("user", self.user.to_private_dict())
+		self.finish()
+
+	def update_dj_only(self):
+		self.finish()
+
+
+@handle_api_url("sync_dj")
+class DJSync(Sync):
+	dj_required = True
+
+	def update_dj_only(self):
+		self._startclock = timestamp()
+
+		api_requests.info.attach_dj_info_to_request(self)
 		self.finish()
