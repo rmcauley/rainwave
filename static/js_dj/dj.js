@@ -47,7 +47,9 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 		API.async_get("admin/dj/unpause");
 	});
 	t.btn_resume.addEventListener("click", function() {
-		API.async_get("admin/dj/unpause");
+		API.async_get("admin/dj/unpause", false, function() {
+			t.btn_resume.disabled = true;
+		});
 	});
 
 	t.save_stream_name.addEventListener("click", function() {
@@ -60,12 +62,35 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 	});
 
 	var dj_api_status = {};
+	var silence_time = 0;
+
+	Clock.pageclock_function2 = function(page_title_end, now) {
+		if (dj_api_status.pause_active) {
+			t.dji_ready.textContent = $l("dj_live_for", { "livetime": Formatting.minute_clock(now - silence_time) });
+		}
+
+		var eta = Math.max(0, page_title_end - 5 - now);
+		var tl = Formatting.minute_clock(eta);
+		if (dj_api_status.pause_requested) {
+			t.dji_will_pause.textContent = $l("dj_will_pause", { "timeleft": tl });
+			if (!eta) {
+				t.dji_will_pause.textContent = $l("dj_go");
+			}
+		}
+		else {
+			t.dji_will_pause.textContent = $l("dj_window", { "timeleft": tl });
+			if (!eta) {
+				t.dji_will_pause.textContent = $l("dj_late");
+			}
+		}
+	};
 
 	var update_status = function() {
 		if (dj_api_status.pause_active) {
 			t.dji_music.classList.remove("active");
+			t.dji_music.textContent = $l("dj_music_paused");
 			t.dji_will_pause.classList.remove("active");
-			t.dji_paused.classList.add("active");
+			t.dji_ready.classList.add("active");
 			t.btn_pause.disabled = true;
 			t.btn_pause_cancel.disabled = true;
 			t.btn_resume.disabled = false;
@@ -73,8 +98,9 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 		}
 		else if (dj_api_status.pause_requested) {
 			t.dji_music.classList.add("active");
+			t.dji_music.textContent = $l("dj_music_playing");
 			t.dji_will_pause.classList.add("active");
-			t.dji_paused.classList.remove("active");
+			t.dji_ready.classList.remove("active");
 			t.btn_pause.disabled = true;
 			t.btn_pause_cancel.disabled = false;
 			t.btn_resume.disabled = true;
@@ -82,12 +108,14 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 		}
 		else {
 			t.dji_music.classList.add("active");
+			t.dji_music.textContent = $l("dj_music_playing");
 			t.dji_will_pause.classList.remove("active");
-			t.dji_paused.classList.remove("active");
+			t.dji_ready.classList.remove("active");
 			t.btn_pause.disabled = false;
 			t.btn_pause_cancel.disabled = true;
 			t.btn_resume.disabled = true;
 			t.btn_cut_resume.disabled = true;
+			silence_time = 0;
 		}
 
 		t.stream_name.value = dj_api_status.pause_title;

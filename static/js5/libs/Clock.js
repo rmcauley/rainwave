@@ -12,6 +12,7 @@ var Clock = function() {
 	self.now = 0;
 	self.pageclock = null;
 	self.pageclock_bar_function = null;
+	self.pageclock_function2 = null;
 
 	BOOTSTRAP.on_init.push(function(template) {
 		Prefs.define("t_rt", [ false, true ], true);
@@ -77,6 +78,10 @@ var Clock = function() {
 		self.now = self.time() + timediff;
 
 		var c = Formatting.minute_clock(page_title_end - self.now);
+
+		if (self.pageclock_function2) {
+			self.pageclock_function2(page_title_end, self.now);
+		}
 
 		if (self.pageclock && (page_title_end - self.now >= 0)) {
 			self.pageclock.textContent = c;
