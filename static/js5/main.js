@@ -143,7 +143,7 @@ var Stations = [];
 
 		Sizing.trigger_resize();
 
-		API.initialize(BOOTSTRAP.sid, "/api4/", BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
+		API.initialize(BOOTSTRAP.user.sid, "/api4/", BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
 
 		if (document.ontouchstart === null) {
 			var fastclick_load = document.createElement("script");
