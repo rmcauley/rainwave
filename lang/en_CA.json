@@ -18,6 +18,8 @@
    "dj_mode"                                         : "DJ Mode",
    "dj_panel"                                        : "DJ Panel",
    "dj_audio_fail"                                   : "Could not initialize audio source. (are you using the latest Firefox or Chrome?)",
+   "dj_gain"                                         : "Gain",
+   "dj_clip_warning"                                 : "<< CLIPPING >>",
 
    "__comment__"          : "Admin Panel Lines (translation not required)",
 

@@ -56,7 +56,11 @@ var DJPanel = function DJPanel(root_template) {
 	var source;
 
 	var gainNode = audioCtx.createGain();
-	gainNode.gain.value = 10;
+	gainNode.gain.value = 1;
+	t.gain.addEventListener("input", function() {
+		gainNode.gain.value = parseFloat(t.gain.value);
+		t.gain_display.textContent = parseFloat(t.gain.value).toFixed(1);
+	});
 
 	var analyser = audioCtx.createAnalyser();
 	analyser.minDecibels = -70.0;
@@ -85,12 +89,11 @@ var DJPanel = function DJPanel(root_template) {
 
 	var quietwidth = (javascriptNode.quietLevel - analyser.minDecibels) / analyser.decibelRange * 100;
 	var goodwidth = ((javascriptNode.clipLevel - javascriptNode.quietLevel) / analyser.decibelRange) * 100;
-	console.log(analyser.decibelRange, quietwidth, goodwidth);
-	// t.quietrange.style.width = quietwidth + "%";
-	t.goodrange.style.left = quietwidth + "%";
-	t.goodrange.style.width = goodwidth + "%";
-	t.cliprange.style.left = (quietwidth + goodwidth) + "%";
-	t.cliprange.style.width = (100 - quietwidth - goodwidth) + "%";
+	t.quiet_range.style.width = quietwidth + "%";
+	t.good_range.style.left = quietwidth + "%";
+	t.good_range.style.width = goodwidth + "%";
+	t.clip_range.style.left = (quietwidth + goodwidth) + "%";
+	t.clip_range.style.width = (100 - quietwidth - goodwidth) + "%";
 
 	javascriptNode.onaudioprocess = function(evt) {
 		var array = new Float32Array(analyser.frequencyBinCount);
@@ -133,11 +136,13 @@ var DJPanel = function DJPanel(root_template) {
 		// t.vu_meter.textContent = javascriptNode.dbVolume + "dB";
 		var peaktoscale = (javascriptNode.longPeak - analyser.minDecibels) / analyser.decibelRange;
 		t.peak.style.transform = "translateX(" + (Math.max(peaktoscale, dbtoscale) * 100) + "%)";
-		if (!javascriptNode.clipping && t.cliprange.classList.contains("clipping")) {
-			t.cliprange.classList.remove("clipping");
+		if (!javascriptNode.clipping && t.clip_range.classList.contains("clipping")) {
+			t.clip_range.classList.remove("clipping");
+			t.clip_warning_text.classList.remove("clipping");
 		}
-		else if (javascriptNode.clipping && !t.cliprange.classList.contains("clipping")) {
-			t.cliprange.classList.add("clipping");
+		else if (javascriptNode.clipping && !t.clip_range.classList.contains("clipping")) {
+			t.clip_range.classList.add("clipping");
+			t.clip_warning_text.classList.add("clipping");
 		}
 		requestAnimationFrame(drawMicVolume);
 	};

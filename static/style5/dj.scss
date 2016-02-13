@@ -26,10 +26,51 @@ div.dj_panel {
 	}
 }
 
-div.clip_indicator {
-	background-color: #910400;
+div.dj_controls {
+	height: auto;
+	padding: 10px;
+}
+
+div.quiet_range {
+	background-color: $text_ddd;
+	left: 0 !important;
+}
+
+div.good_range {
+	background-color: $song_yours;
+}
+
+div.volume_indicator {
+	width: 100%;
+	background-color: $blue;
+	left: 0;
+	transform-origin: left;
+}
+
+div.chart_bar.peak_indicator {
+	width: 100%;
+	background-color: transparent;
+	left: 0;
+	transform-origin: left;
+	border-left: solid 3px $text;
+}
+
+div.clip_warning_text {
+	float: right;
+	display: none;
+	background: $error_b;
+	font-weight: bold;
+	font-size: larger;
 
 	&.clipping {
-		background-color: #F00;
+		display: block;
+	}
+}
+
+div.clip_indicator {
+	background-color: $error_bkg;
+
+	&.clipping {
+		background-color: $error_b;
 	}
 }
