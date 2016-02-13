@@ -6,6 +6,7 @@ import tornado.web
 import tornado.process
 import tornado.options
 
+from backend import sync_to_front
 from rainwave import schedule
 from rainwave import playlist
 from libs import log
@@ -31,6 +32,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			self.write(self._get_pause_file())
 			cache.set_station(self.sid, "backend_pause_extend", False)
 			cache.set_station(self.sid, "backend_paused_playing", True)
+			sync_to_front.sync_frontend_dj(self.sid)
 			return
 		else:
 			cache.set_station(self.sid, "backend_pause_extend", False)
