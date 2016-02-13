@@ -50,6 +50,15 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 		API.async_get("admin/dj/unpause");
 	});
 
+	t.save_stream_name.addEventListener("click", function() {
+		API.async_get("admin/dj/pause_title", { "title": t.stream_name.value }, function() {
+			t.save_stream_name.textContent = "OK!";
+			setTimeout(function() {
+				t.save_stream_name.textContent = $l("dj_save_name");
+			}, 2000);
+		});
+	});
+
 	var dj_api_status = {};
 
 	var update_status = function() {
@@ -80,6 +89,8 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 			t.btn_resume.disabled = true;
 			t.btn_cut_resume.disabled = true;
 		}
+
+		t.stream_name.value = dj_api_status.pause_title;
 	};
 
 	API.add_callback("dj_info", function(json) {
@@ -201,6 +212,7 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 				requestAnimationFrame(drawMicVolume);
 				t.mic_enable.disabled = true;
 				// t.mic_disable.disabled = false;
+				t.btn_on_air.disabled = false;
 			}).catch(function(err) {
 				console.error("The following getUserMedia error occured: " + err);
 				ErrorHandler.nonpermanent_error(ErrorHandler.make_error("dj_audio_fail", 400));
@@ -218,5 +230,6 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 	// 	source = null;
 	// 	t.mic_enable.disabled = false;
 	// 	t.mic_disable.disabled = true;
+	//	t.btn_on_air.disabled = true;
 	// });
 });

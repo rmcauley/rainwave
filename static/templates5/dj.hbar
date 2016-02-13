@@ -32,6 +32,11 @@
 	</div>
 </div>
 <div class="dj_controls" style="overflow: hidden;">
+	<span>{{ $l("dj_stream_name") }}:</span>
+	<input type="text" bind="stream_name" style="margin: 0 1em; width: 200px;" placeholder="Enter Title" />
+	<button bind="save_stream_name">{{ $l("dj_save_name") }}</button>
+</div>
+<div class="dj_controls" style="overflow: hidden;">
 	<div style="overflow: hidden;">
 		<div class="dj_indicator dji_music" bind="dji_music">{{ $l("dj_music_playing") }}</div>
 		<button bind="btn_pause">{{ $l("dj_request_pause") }}</button>
@@ -46,11 +51,11 @@
 	</div>
 	<div style="overflow: hidden;">
 		<div class="dj_indicator dji_off_air active" bind="dji_off_air">{{ $l("dj_off_air") }}</div>
-		<button bind="btn_on_air">{{ $l("dj_go_on_air") }}</button>
+		<button bind="btn_on_air" disabled>{{ $l("dj_go_on_air") }}</button>
 	</div>
 	<div style="overflow: hidden;">
 		<div class="dj_indicator dji_on_air" bind="dji_on_air">{{ $l("dj_on_air") }}</div>
-		<button bind="btn_cut">{{ $l("dj_cut_mic") }}</button>
+		<button bind="btn_cut" disabled>{{ $l("dj_cut_mic") }}</button>
 		<button bind="btn_cut_resume">{{ $l("dj_cut_mic_and_resume") }}</button>
 	</div>
 </div>

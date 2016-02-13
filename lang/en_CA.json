@@ -33,6 +33,8 @@
    "dj_on_air"                                       : "On Air",
    "dj_enable_mic"                                   : "Enable Mic",
    "dj_disable_mic"                                  : "Disable Mic",
+   "dj_stream_name"                                  : "Stream Title Tag for Winamp/FB2K",
+   "dj_save_name"                                    : "Save",
 
    "__comment__"          : "Admin Panel Lines (translation not required)",
 
