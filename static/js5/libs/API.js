@@ -226,6 +226,11 @@ var API = function() {
 			offline_ack = true;
 			return true;
 		}
+		if (("sync_dj_result" in response) && (response.sync_dj_result.tl_key == "station_paused")) {
+			self.paused = true;
+			offline_ack = true;
+			return true;
+		}
 		return false;
 	};
 
