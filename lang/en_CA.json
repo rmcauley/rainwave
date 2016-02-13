@@ -31,6 +31,8 @@
    "dj_paused"                                       : "Paused",
    "dj_off_air"                                      : "Off Air",
    "dj_on_air"                                       : "On Air",
+   "dj_enable_mic"                                   : "Enable Mic",
+   "dj_disable_mic"                                  : "Disable Mic",
 
    "__comment__"          : "Admin Panel Lines (translation not required)",
 

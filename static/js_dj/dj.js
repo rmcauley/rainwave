@@ -96,6 +96,7 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 
 	// putting the source out here prevents the source from being prematurely garbage collected
 	// by firefox and halting audio from working
+	var stream;
 	var source;
 
 	var gainNode = audioCtx.createGain();
@@ -125,10 +126,6 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 	javascriptNode.lastLongPeak = 0;
 	javascriptNode.averaging = 0.90;
 	javascriptNode.clipLag = 750;
-	javascriptNode.shutdown = function() {
-		javascriptNode.disconnect();
-		javascriptNode.onaudioprocess = null;
-	};
 
 	var quietwidth = (javascriptNode.quietLevel - analyser.minDecibels) / analyser.decibelRange * 100;
 	var goodwidth = ((javascriptNode.clipLevel - javascriptNode.quietLevel) / analyser.decibelRange) * 100;
@@ -190,20 +187,36 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 		requestAnimationFrame(drawMicVolume);
 	};
 
-	if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-		navigator.mediaDevices.getUserMedia({ audio: true}).then(function(stream) {
-			source = audioCtx.createMediaStreamSource(stream);
-			source.connect(gainNode);
-			gainNode.connect(analyser);
-			gainNode.connect(javascriptNode);
-			// analyser.connect(audioCtx.destination);
-			requestAnimationFrame(drawMicVolume);
-		}).catch(function(err) {
-			console.error("The following getUserMedia error occured: " + err);
+	gainNode.connect(analyser);
+	gainNode.connect(javascriptNode);
+	// gainNode.connect(audioCtx.destination);
+
+	t.mic_enable.addEventListener("click", function() {
+		if (source) return;
+		if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+			navigator.mediaDevices.getUserMedia({ audio: true}).then(function(new_stream) {
+				stream = new_stream;
+				source = audioCtx.createMediaStreamSource(stream);
+				source.connect(gainNode);
+				requestAnimationFrame(drawMicVolume);
+				t.mic_enable.disabled = true;
+				// t.mic_disable.disabled = false;
+			}).catch(function(err) {
+				console.error("The following getUserMedia error occured: " + err);
+				ErrorHandler.nonpermanent_error(ErrorHandler.make_error("dj_audio_fail", 400));
+			});
+		} else {
+			console.error("navigator.mediaDevices.getUserMedia does not exist.");
 			ErrorHandler.nonpermanent_error(ErrorHandler.make_error("dj_audio_fail", 400));
-		});
-	} else {
-		console.error("navigator.mediaDevices.getUserMedia does not exist.");
-		ErrorHandler.nonpermanent_error(ErrorHandler.make_error("dj_audio_fail", 400));
-	}
+		}
+	});
+
+	// doesn't actually stop the mic from being recorded!
+	// t.mic_disable.addEventListener("click", function() {
+	// 	if (!source) return;
+	// 	source.disconnect();
+	// 	source = null;
+	// 	t.mic_enable.disabled = false;
+	// 	t.mic_disable.disabled = true;
+	// });
 });
