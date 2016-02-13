@@ -26,6 +26,7 @@
     "API": true,
     "BOOTSTRAP": true,
     "Clock": true,
+    "DJPanel": true,
     "ErrorHandler": true,
     "RWEvent": true,
     "Fave": true,

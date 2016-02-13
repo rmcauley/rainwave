@@ -25,3 +25,11 @@ div.dj_panel {
 		display: block;
 	}
 }
+
+div.clip_indicator {
+	background-color: #910400;
+
+	&.clipping {
+		background-color: #F00;
+	}
+}

@@ -1,4 +1,6 @@
 var DJPanel = function DJPanel(root_template) {
+	"use strict";
+
 	var panel = document.createElement("div");
 	panel.className = "dj_panel panel";
 	root_template.sizeable_area.insertBefore(panel, root_template.search_container);
@@ -42,43 +44,102 @@ var DJPanel = function DJPanel(root_template) {
 
 	Router.change("dj");
 
-	// code from Mozilla's Voice Change-o-Matic and
+	// code from:
+	// Mozilla's Voice Change-o-Matic
 	// http://www.smartjava.org/content/exploring-html5-web-audio-visualizing-sound
+	// https://github.com/cwilso/volume-meter/blob/master/volume-meter.js
 
-	var userMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
-
-	var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+	var audioCtx = new (window.AudioContext || window.webkitAudioContext)(); // jshint ignore:line
 
 	// putting the source out here prevents the source from being prematurely garbage collected
 	// by firefox and halting audio from working
 	var source;
 
 	var gainNode = audioCtx.createGain();
-	gainNode.gain.value = 5;
+	gainNode.gain.value = 10;
 
 	var analyser = audioCtx.createAnalyser();
-	analyser.minDecibels = -90;
-	analyser.maxDecibels = 0;
-	analyser.smoothingTimeConstant = 0.7;
-	analyser.fftSize = 1024;
+	analyser.minDecibels = -70.0;
+	analyser.maxDecibels = -20.0;
+	analyser.decibelRange = analyser.maxDecibels + Math.abs(analyser.minDecibels);
+	// analyser.smoothingTimeConstant = 0.8;
+	analyser.fftSize = 256;
 
-	var min_db_value = 100;
+	var javascriptNode = audioCtx.createScriptProcessor(2048);
+	// Firefox's levels are quite arbitrary compared to other applications
+	// These values have seemed to work well
+	javascriptNode.quietLevel = -35;
+	javascriptNode.clipLevel = -25;
+	javascriptNode.clipping = false;
+	javascriptNode.lastClip = 0;
+	javascriptNode.rms = analyser.minDecibels;
+	javascriptNode.peak = analyser.minDecibels;
+	javascriptNode.longPeak = analyser.minDecibels;
+	javascriptNode.lastLongPeak = 0;
+	javascriptNode.averaging = 0.90;
+	javascriptNode.clipLag = 750;
+	javascriptNode.shutdown = function() {
+		javascriptNode.disconnect();
+		javascriptNode.onaudioprocess = null;
+	};
 
-	javascriptNode = audioCtx.createScriptProcessor(1024, 1, 1);
-	javascriptNode.onaudioprocess = function() {
-		var array =  new Uint8Array(analyser.frequencyBinCount);
-		analyser.getByteFrequencyData(array);
+	var quietwidth = (javascriptNode.quietLevel - analyser.minDecibels) / analyser.decibelRange * 100;
+	var goodwidth = ((javascriptNode.clipLevel - javascriptNode.quietLevel) / analyser.decibelRange) * 100;
+	console.log(analyser.decibelRange, quietwidth, goodwidth);
+	// t.quietrange.style.width = quietwidth + "%";
+	t.goodrange.style.left = quietwidth + "%";
+	t.goodrange.style.width = goodwidth + "%";
+	t.cliprange.style.left = (quietwidth + goodwidth) + "%";
+	t.cliprange.style.width = (100 - quietwidth - goodwidth) + "%";
 
-		var values = 0;
-		for (var i = 0; i < array.length; i++) {
-			values += array[i];
+	javascriptNode.onaudioprocess = function(evt) {
+		var array = new Float32Array(analyser.frequencyBinCount);
+		analyser.getFloatFrequencyData(array);
+		var bufLength = array.length;
+		var sum = 0;
+		var peak = analyser.minDecibels;
+
+		for (var i = 0; i < bufLength; i++) {
+			sum += (array[i] * array[i]);
+			peak = Math.max(array[i], peak);
 		}
 
-		var scale = ((values / array.length) / 256);
-		scale = Math.max(0, Math.min(1, scale));
-		// linear value to db
-		scale = (Math.max(Math.log(scale) * 20, -min_db_value) + min_db_value) / min_db_value;
-		t.vu_meter.style.transform = "scaleX(" + Math.max(0.02, scale) + ")";
+		var now = window.performance.now();
+
+		if (peak > javascriptNode.clipLevel) {
+			javascriptNode.clipping = true;
+			javascriptNode.lastClip = now;
+		}
+		else if ((javascriptNode.lastClip + javascriptNode.clipLag) < now) {
+			javascriptNode.clipping = false;
+		}
+
+		if (peak > javascriptNode.longPeak) {
+			javascriptNode.longPeak = peak;
+			javascriptNode.lastLongPeak = now;
+		}
+		else if ((javascriptNode.lastLongPeak + javascriptNode.clipLag) < now) {
+			javascriptNode.longPeak = Math.max(analyser.minDecibels, javascriptNode.longPeak - ((1 - javascriptNode.averaging) * Math.abs(javascriptNode.longPeak)));
+		}
+
+		var rms = Math.sqrt(sum / bufLength);
+		javascriptNode.rms = Math.max(rms, Math.min(analyser.minDecibels, (javascriptNode.rms * javascriptNode.averaging)));
+		javascriptNode.peak = peak;
+	};
+
+	var drawMicVolume = function(timestamp) {
+		var dbtoscale = (javascriptNode.peak - analyser.minDecibels) / analyser.decibelRange;
+		t.vu_meter.style.transform = "scaleX(" + (dbtoscale) + ")";
+		// t.vu_meter.textContent = javascriptNode.dbVolume + "dB";
+		var peaktoscale = (javascriptNode.longPeak - analyser.minDecibels) / analyser.decibelRange;
+		t.peak.style.transform = "translateX(" + (Math.max(peaktoscale, dbtoscale) * 100) + "%)";
+		if (!javascriptNode.clipping && t.cliprange.classList.contains("clipping")) {
+			t.cliprange.classList.remove("clipping");
+		}
+		else if (javascriptNode.clipping && !t.cliprange.classList.contains("clipping")) {
+			t.cliprange.classList.add("clipping");
+		}
+		requestAnimationFrame(drawMicVolume);
 	};
 
 	if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -86,8 +147,9 @@ var DJPanel = function DJPanel(root_template) {
 			source = audioCtx.createMediaStreamSource(stream);
 			source.connect(gainNode);
 			gainNode.connect(analyser);
-			analyser.connect(javascriptNode);
-			analyser.connect(audioCtx.destination);
+			gainNode.connect(javascriptNode);
+			// analyser.connect(audioCtx.destination);
+			requestAnimationFrame(drawMicVolume);
 		}).catch(function(err) {
 			console.error("The following getUserMedia error occured: " + err);
 			ErrorHandler.nonpermanent_error(ErrorHandler.make_error("dj_audio_fail", 400));

@@ -117,13 +117,14 @@ var Menu = function() {
 				var dj_loaded;
 				template.dj_link.addEventListener("click", function() {
 					if (!User.dj || dj_loaded) return;
-					console.log("Loading DJ Mode...");
-					var jsfiles = [ "/static/js_dj/libshine.js",
-					                "/static/js_dj/libsamplerate.js",
-					                "/static/js_dj/libmad.js",
-					                "/static/js_dj/taglib.js",
-					                "/static/js_dj/webcast.js",
-					                "/static/js_dj/dj.js"
+					var jsfiles = [
+						"/static/js_dj/adapter.js",
+						// "/static/js_dj/libshine.js",
+						// "/static/js_dj/libsamplerate.js",
+						// "/static/js_dj/libmad.js",
+						// "/static/js_dj/taglib.js",
+						// "/static/js_dj/webcast.js",
+						"/static/js_dj/dj.js"
 					];
 					var jsfiles_i = 0;
 					var cb = function() {
@@ -137,6 +138,7 @@ var Menu = function() {
 						jsfiles_i++;
 					};
 					cb();
+					close_burger();
 				});
 			}
 		}
