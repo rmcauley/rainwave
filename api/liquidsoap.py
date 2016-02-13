@@ -5,6 +5,8 @@ from api.exceptions import APIException
 from libs import config
 
 def _send_command(sid, cmd):
+	if not config.has_station(sid, "liquidsoap_socket_path"):
+		return ""
 	cmd += "\n"
 	socket_path = config.get_station(sid, "liquidsoap_socket_path")
 	if os.path.exists(socket_path):
