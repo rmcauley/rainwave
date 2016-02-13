@@ -29,6 +29,7 @@ div.dj_panel {
 		background: $text_ddd;
 		color: $text;
 		cursor: pointer;
+		margin-right: 1em;
 
 		&:disabled {
 			opacity: 0.4;
@@ -46,11 +47,11 @@ div.dj_panel {
 		margin-top: 3px;
 		padding: 5px;
 		border: solid 1px $text_dd;
-		margin-right: 3em;
 		@include transition-wtime(300ms, background, border, LINKCOLOR, opacity, transform);
 	}
 
 	div.dj_indicator {
+		margin-right: 3em;
 		clear: left;
 		float: left;
 		text-align: center;
@@ -62,10 +63,6 @@ div.dj_panel {
 			border: solid 1px $text;
 			color: $text;
 			background: $blue;
-
-			&.dji_on_air, &.dji_paused {
-				background: $song_yours;
-			}
 		}
 	}
 }

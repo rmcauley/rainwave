@@ -40,23 +40,19 @@
 	<div style="overflow: hidden;">
 		<div class="dj_indicator dji_music" bind="dji_music">{{ $l("dj_music_playing") }}</div>
 		<button bind="btn_pause">{{ $l("dj_request_pause") }}</button>
-	</div>
-	<div style="overflow: hidden;">
-		<div class="dj_indicator dji_will_pause" bind="dji_will_pause">...</div>
 		<button bind="btn_pause_cancel">{{ $l("dj_cancel_pause") }}</button>
 	</div>
 	<div style="overflow: hidden;">
-		<div class="dj_indicator dji_ready" bind="dji_ready">{{ $l("dj_live_for", { "livetime": "0:00" }) }}</div>
+		<div class="dj_indicator dji_will_pause" bind="dji_will_pause">...</div>
 		<button bind="btn_on_air" disabled>{{ $l("dj_go_on_air") }}</button>
 	</div>
 	<div style="overflow: hidden;">
-		<div class="dj_indicator dji_on_air" bind="dji_on_air">{{ $l("dj_on_air") }}</div>
-		<button bind="btn_cut" disabled>{{ $l("dj_cut_mic") }}</button>
+		<div class="dj_indicator dji_ready" bind="dji_ready">{{ $l("dj_live_for", { "livetime": "0:00" }) }}</div>
 		<button bind="btn_resume" disabled>{{ $l("dj_resume") }}</button>
 	</div>
-	<div>
-		<div class="dj_indicator" style="visibility: hidden;"></div>
-		<button bind="btn_cut_resume" disabled>{{ $l("dj_cut_mic_and_resume") }}</button>
+	<div style="overflow: hidden;">
+		<div class="dj_indicator dji_on_air" bind="dji_on_air">{{ $l("dj_on_air", { "mictime": "0:00" }) }}</div>
+		<button bind="btn_cut" disabled>{{ $l("dj_cut_mic") }}</button>
 	</div>
 </div>
 <div bind="song_list">
