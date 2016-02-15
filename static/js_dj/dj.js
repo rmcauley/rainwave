@@ -263,4 +263,40 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 	// 	t.mic_disable.disabled = true;
 	//	t.btn_on_air.disabled = true;
 	// });
+
+	/* var encoder = new Webcast.Encoder.Mp3({
+		channels: 2,
+		samplerate: audioCtx.samplerate,
+		bitrate: 128
+	});
+
+	encoder = new Webcast.Encoder.Asynchronous({
+		encoder: encoder,
+		scripts: [
+			"/static/js_dj/libmad.js",
+			"/static/js_dj/libsamplerate.js",
+			"/static/js_dj/libshine.js",
+			"/static/js_dj/webcast.js",
+		]
+	});
+
+	var webcast;
+
+	t.dj_go_on_air.addEventListener("click", function() {
+		webcast = new Webcast.Node({
+			url: "ws://localhost:8080/mount",
+			encoder: encoder,
+			context: audioContext,
+			options: options
+		});
+		gainNode.connect(webcast);
+		webcast.connectSocket():
+	});
+
+	t.dj_cut_mic.addEventListener("click", function() {
+		webcast.close(function() {
+			gainNode.disconnect(webcast);
+			console.log("connection closed!");
+		});
+	}); */
 });
