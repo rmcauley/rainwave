@@ -1,5 +1,6 @@
 import os
 import psycopg2
+from time import time as timestamp
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
@@ -29,11 +30,15 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			return
 
 		if cache.get_station(self.sid, "backend_paused"):
+			if not cache.get_station(self.sid, "dj_heartbeat_start"):
+				log.debug("Setting server start heatbeat.")
+				cache.set_station(self.sid, "dj_heartbeat_start", timestamp())
 			self.write(self._get_pause_file())
 			cache.set_station(self.sid, "backend_paused_playing", True)
 			sync_to_front.sync_frontend_dj(self.sid)
 			return
 		else:
+			cache.set_station(self.sid, "dj_heartbeat_start", False)
 			cache.set_station(self.sid, "backend_paused", False)
 			cache.set_station(self.sid, "backend_paused_playing", False)
 
@@ -158,6 +163,7 @@ class BackendServer(object):
 		# the cron jobs that run occasionally.  Ignore pylint warning W0612.
 		import backend.api_key_pruning
 		import backend.inactive
+		import backend.dj_heartbeat
 		#pylint: enable=W0612
 
 	def start(self):
