@@ -101,10 +101,6 @@ class DJTools(api.web.HTMLRequest):
 			self.write("<span style='color: #6F6;'>Paused</span> ")
 			if cache.get_station(self.sid, "backend_paused_playing"):
 				self.write("<span style='color: #6F6; float: right;'>No Music</span>")
-				if cache.get_station(self.sid, "backend_pause_extend"):
-					self.write("<span style='color: #F00;'>(Will End)</span>")
-				else:
-					self.write("<span style='color: #6F6;'>(Extended)</span>")
 			else:
 				self.write("<span style='color: #FF0; float: right;'>Waiting</span>")
 		else:

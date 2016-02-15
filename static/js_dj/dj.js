@@ -61,6 +61,10 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 		});
 	});
 
+	t.change_bkey.addEventListener("click", function() {
+		API.async_get("admin/dj/change_pw");
+	});
+
 	var dj_api_status = {};
 
 	Clock.pageclock_function2 = function(page_title_end, now) {

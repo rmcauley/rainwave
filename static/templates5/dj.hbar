@@ -55,6 +55,9 @@
 		<button bind="btn_cut" disabled>{{ $l("dj_cut_mic") }}</button>
 	</div>
 </div>
-<div bind="song_list">
-	<div class="song" style="visibility: hidden; z-index: -1; transition: none;" bind="last_song_padder"></div>
+<div class="dj_controls" style="overflow: hidden;">
+	<p>Changing the broadcast key will kick any other DJs off air and keep them off air.  Use when switching between back to back shows, or if there's a troublesome DJ.</p>
+	<div>
+		<button bind="change_bkey">Change Broadcast Key</button>
+	</div>
 </div>

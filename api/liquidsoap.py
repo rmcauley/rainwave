@@ -33,7 +33,7 @@ def skip(sid):
 def set_password(sid, password):
 	return _send_command(sid, "var.set harbor_pw = \"%s\"" % password)
 
-def get_password(sid, password):
+def get_password(sid):
 	return _send_command(sid, "var.get harbor_pw")
 
 def kick_dj(sid):

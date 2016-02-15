@@ -28,14 +28,12 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		else:
 			return
 
-		if cache.get_station(self.sid, "backend_paused") and cache.get_station(self.sid, "backend_pause_extend"):
+		if cache.get_station(self.sid, "backend_paused"):
 			self.write(self._get_pause_file())
-			cache.set_station(self.sid, "backend_pause_extend", False)
 			cache.set_station(self.sid, "backend_paused_playing", True)
 			sync_to_front.sync_frontend_dj(self.sid)
 			return
 		else:
-			cache.set_station(self.sid, "backend_pause_extend", False)
 			cache.set_station(self.sid, "backend_paused", False)
 			cache.set_station(self.sid, "backend_paused_playing", False)
 

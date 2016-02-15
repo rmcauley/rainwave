@@ -1,5 +1,10 @@
+import random
+import string
+
 from libs import cache
+
 import api.web
+from api.exceptions import APIException
 from api.server import handle_api_url
 from api import liquidsoap
 from api import fieldtypes
@@ -11,7 +16,6 @@ class PauseStation(api.web.APIHandler):
 
 	def post(self):
 		cache.set_station(self.sid, "backend_paused", True)
-		cache.set_station(self.sid, "backend_pause_extend", True)
 		attach_dj_info_to_request(self)
 		self.append(self.return_name, { "success": True, "message": "At 0:00 the station will go silent and wait for you." })
 
@@ -26,7 +30,6 @@ class UnpauseStation(api.web.APIHandler):
 		else:
 			result = "Unpausing station.  "
 		cache.set_station(self.sid, "backend_paused", False)
-		cache.set_station(self.sid, "backend_pause_extend", False)
 		if (cache.get_station(self.sid, "backend_paused_playing")):
 			result += "Automatically starting music.  "
 			result += "\n"
@@ -58,3 +61,16 @@ class PauseTitle(api.web.APIHandler):
 		cache.set_station(self.sid, "pause_title", self.get_argument("title"))
 		attach_dj_info_to_request(self)
 		self.append(self.return_name, { "success": True, "pause_title": self.get_argument("title") })
+
+@handle_api_url("admin/dj/change_pw")
+class ChangeDJPW(api.web.APIHandler):
+	dj_required = True
+
+	def post(self):
+		new_pw = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for x in range(10))
+		result = liquidsoap.set_password(self.sid, new_pw)
+		if result.startswith("Variable harbor_pw set (was"):
+			cache.set_station(self.sid, "dj_password", new_pw, save_local=True)
+			attach_dj_info_to_request(self)
+		else:
+			raise APIException("internal_error", "Internal error changing DJ key.")
