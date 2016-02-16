@@ -267,13 +267,15 @@ class Sync(APIHandler):
 		self.flush()
 
 	def on_connection_close(self, *args, **kwargs):
-		global sessions
-		sessions[self.sid].remove(self)
+		if self.sid:
+			global sessions
+			sessions[self.sid].remove(self)
 		super(Sync, self).on_connection_close(*args, **kwargs)
 
 	def on_finish(self, *args, **kwargs):
-		global sessions
-		sessions[self.sid].remove(self)
+		if self.sid:
+			global sessions
+			sessions[self.sid].remove(self)
 		super(Sync, self).on_finish(*args, **kwargs)
 
 	def update(self):
