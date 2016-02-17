@@ -1,4 +1,4 @@
-\from libs import log
+from libs import log
 from libs import db
 from unidecode import unidecode
 
