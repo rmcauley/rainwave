@@ -29,7 +29,6 @@
    "request_failed"                                  : "Aanvraag mislukt.",
    "request_delete_failed"                           : "Aanvraag verwijderen mislukt.",
    "request_unrated_failed"                          : "Aanvraag onbeoordeelt mislukt.",
-   "request_is_blocked"                              : "Geblokkeerd voor nog %(blocked_num) verkiezingen.",
    "request_favorited_failed"                        : "Geen favorieten beschikbaar.",
    "too_many_requests"                               : "Te veel aanvragen.",
    "same_request_exists"                             : "Liedje al aangevraagd.",
@@ -99,7 +98,6 @@
    "search"                                          : "Zoeken",
    "previouslyplayed"                                : "Zojuist afgespeeld",
    "playback_history_link"                           : "Afgespeelde Geschiedenis",
-   "extended_history_header"                         : "Uitgebreide Geschiedenis",
    "special_event_alert"                             : "Speciaal Evenement op %(station): ",
 
    "tunein"                                          : "Tune In",
@@ -119,14 +117,18 @@
    "github_repo"                                     : "GitHub",
    "twitter"                                         : "Twitter",
 
-   "__comment__"                 : "Timeline",
+   "__comment__"                 : "Timeline Headers",
 
    "coming_up"                                       : "Binnenkort",
-   "continued"                                       : "Vervolgd",
    "vote_now"                                        : "Stem Nu",
    "now_playing"                                     : "Nu Spelend",
    "election"                                        : "Verkiezing",
    "power_hour"                                      : "Kracht Uur",
+   
+   "__comment__"                 : "When a Power Hour or DJ Event happens, instead of saying 'NEW MUSIC POWER HOUR' repeatedly",
+   "__comment__"                 : "we just use 'CONTINUED' instead, so the title of the power hour is only displayed once",
+   "__comment__"                 : "at the top of the timeline.  That's what this 'continued' line is for.",
+   "continued"                                       : "Vervolgd",
    
      "__comment__"                 : "Timeline Song",
      
@@ -205,7 +207,7 @@
    "playlist"                                        : "Afspeellijst",
    "library"                                         : "Bibliotheek",
    "Filter..."                                       : "Filter...",
-   "your_album_rating"                               : "U hebt dit album %(rating_user) gewaardeerd.",
+   "your_album_rating"                               : "U waardeerde dit album %(rating_user).",
    "album_rating_ranked_at_v2"                       : "Gewaardeerd op %(rating) met %(rating_count) Liedjes beoordelingen, Rang: #(rank).",
    "album_requests_ranked_at"                        : "Aantal keren aangevraagd: %(count) &(count:time/times), Rang: #(rank).",
    "album_year"                                      : "Uitgebracht in %(year).",
