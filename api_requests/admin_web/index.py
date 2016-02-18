@@ -1,11 +1,15 @@
 import time
 import calendar
+import tornado.web.RequestHandler
+
 from libs import config
 from libs import db
 from libs import cache
+
 import api.web
 from api.server import handle_url
 from api import fieldtypes
+
 import api_requests.playlist
 
 def write_html_time_form(request, html_id, at_time = None):
@@ -13,6 +17,13 @@ def write_html_time_form(request, html_id, at_time = None):
 	if not at_time:
 		at_time = current_time
 	request.write(request.render_string("admin_time_select.html", at_time=at_time, html_id=html_id))
+
+@handle_url("/admin")
+class AdminRedirect(tornado.web.RequestHandler):
+	help_hidden = True
+
+	def prepare(self):
+		self.redirect("/admin/", permanent=True)
 
 @handle_url("/admin/")
 class AdminIndex(api.web.HTMLRequest):
