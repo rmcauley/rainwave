@@ -1,6 +1,9 @@
 import os
 import subprocess
-import json
+try:
+	import ujson as json
+except ImportError:
+	import json
 from time import time as timestamp
 
 from mutagen.mp3 import MP3
@@ -291,7 +294,7 @@ class Song(object):
 		artist_parseable = []
 		for artist in self.artists:
 			artist_parseable.append({ "id": artist.id, "name": artist.data['name'] })
-		artist_parseable = json.dumps(artist_parseable)
+		artist_parseable = json.dumps(artist_parseable, ensure_ascii=False)
 		db.c.update("UPDATE r4_songs SET song_artist_parseable = %s WHERE song_id = %s", (artist_parseable, self.id))
 
 	def save(self, sids_override = False):

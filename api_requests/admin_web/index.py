@@ -1,6 +1,6 @@
 import time
 import calendar
-import tornado.web.RequestHandler
+import tornado.web
 
 from libs import config
 from libs import db

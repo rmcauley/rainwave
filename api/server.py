@@ -2,7 +2,10 @@ import sys
 import os
 import httplib
 import urllib
-import json
+try:
+	import ujson as json
+except ImportError:
+	import json
 import time
 import traceback
 
@@ -254,7 +257,7 @@ class APIServer(object):
 					if not dict_compare.print_differences(ref_data, web_data):
 						response_pass = False
 						print "JSON from server:"
-						print json.dumps(web_data, indent=4, sort_keys=True)
+						print json.dumps(web_data, ensure_ascii=False, indent=4)
 						print
 				else:
 					response_pass = False

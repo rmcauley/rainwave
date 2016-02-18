@@ -1,14 +1,13 @@
 # coding=utf-8
 
-import tornado.web
-import tornado.escape
 import os
-from api.exceptions import APIException
+import tornado.web
 
 import api.web
 import api.locale
 from api.server import handle_url, handle_api_url
 from api_requests import info
+from api.exceptions import APIException
 
 from libs import cache
 from libs import config

@@ -1,5 +1,8 @@
 import urllib
-import json
+try:
+	import ujson as json
+except ImportError:
+	import json
 import datetime
 from tornado.httpclient import AsyncHTTPClient
 from tornado.ioloop import IOLoop

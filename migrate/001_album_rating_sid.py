@@ -69,7 +69,7 @@ if __name__ == "__main__":
 		artist_parseable = []
 		for artist in db.c.fetch_all("SELECT artist_name, artist_id FROM r4_song_artist JOIN r4_artists USING (artist_id) WHERE song_id = %s", (song_id,)):
 			artist_parseable.append({ "id": artist['artist_id'], "name": artist['artist_name'] })
-		artist_parseable = json.dumps(artist_parseable)
+		artist_parseable = json.dumps(artist_parseable, ensure_ascii=False)
 		db.c.update("UPDATE r4_songs SET song_artist_parseable = %s WHERE song_id = %s", (artist_parseable, song_id))
 
 	max_album_id = db.c.fetch_var("SELECT MAX(album_id) FROM r4_albums")
