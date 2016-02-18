@@ -18,6 +18,7 @@ function HDivChart(data, options) {
     var total_percent = 0;
     for (i = 0; i < data.length; i++) {
         data[i].share = Math.floor(data[i].value / total * 100);
+        data[i].share_accurate = Math.round(data[i].value / total * 100);
         total_percent += data[i].share;
     }
 
@@ -36,7 +37,7 @@ function HDivChart(data, options) {
 
     if (options.add_share_to_tooltip) {
         for (i = 0; i < data.length; i++) {
-            data[i].tooltip += " (" + data[i].share + "%)";
+            data[i].tooltip += " (" + data[i].share_accurate + "%)";
         }
     }
 
