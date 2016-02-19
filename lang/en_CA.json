@@ -32,5 +32,14 @@
    "stack"                                           : "Stack",
    "location"                                        : "URL",
    "js_errors"                                       : "Automated JS Error Reports",
-   "current_listeners_result"                        : "Current Listeners"
+   "current_listeners_result"                        : "Current Listeners",
+
+   "__comment__"          : "API Pages (unlinked on main site, does not need to be translated)",
+
+   "request_line_result"                             : "Listeners Waiting in Request Line",
+   "line_expiry_tune_in"                             : "Expire Time (if tuned out)",
+   "line_expiry_election"                            : "Expire Time (if no good requests)",
+   "line_wait_start"                                 : "Entered Line At (epoch time)",
+   "artist_parseable"                                : "Artists (computer-readable format)",
+   "song_played_at"                                  : "Played At (epoch time)"
 }

@@ -365,12 +365,6 @@
    "origin_sid"                                      : "Station",
    "user_recent_votes"                               : "Your Recent Votes",
    "user_requested_history"                          : "Your Request History",
-   "request_line_result"                             : "Listeners Waiting in Request Line",
    "song_id"                                         : "Song ID",
-   "user_id"                                         : "User ID",
-   "line_expiry_tune_in"                             : "Expire Time (if tuned out)",
-   "line_expiry_election"                            : "Expire Time (if no good requests)",
-   "line_wait_start"                                 : "Entered Line At (epoch time)",
-   "artist_parseable"                                : "Artists (computer-readable format)",
-   "song_played_at"                                  : "Played At (epoch time)"
+   "user_id"                                         : "User ID"
 }
