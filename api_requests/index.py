@@ -66,6 +66,11 @@ class MainIndex(api.web.HTMLRequest):
 		# if not self.beta:
 		# 	info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
 		# self.append("api_info", { "time": int(timestamp()) })
+		page_title = None
+		if (self.sid == config.get("default_station")):
+			page_title = self.locale.translate("page_title_on_google")
+		else:
+			page_title = "%s %s" % (self.locale.translate("page_title_on_google"), self.locale.translate("station_name_%s" % self.sid))
 		self.render(
 			self.page_template,
 			request=self,
@@ -80,7 +85,7 @@ class MainIndex(api.web.HTMLRequest):
 			# station_list=config.station_list_json,
 			apple_home_screen_icon=config.get_station(self.sid, "apple_home_screen_icon"),
 			mobile=self.mobile,
-			station_name=config.station_id_friendly[self.sid]
+			station_name=page_title
 		)
 
 @handle_url("/beta")

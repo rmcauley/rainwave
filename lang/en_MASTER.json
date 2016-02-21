@@ -5,6 +5,10 @@
    "language_name"                                   : "English",
    "language_name_short"                             : "EN",
 
+   "__comment__"                 : "This shows up after 'Rainwave' on Google results.  e.g. 'Rainwave Video Game Music Radio: Covers'",
+
+   "page_title_on_google"                            : "Video Game Music Radio",
+
    "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
 
    "missing_station_id"                              : "Missing station ID.",
