@@ -2,13 +2,18 @@ This is the git project for the Rainwave website, http://rainwave.cc.
 
 Rainwave is a system to control an external player such as MPD,
 or a streaming source such as Ices or LiquidSoap.  It is primarly programmed,
-and configured by default, for use with Ices/LiquidSoap.  It cannot play
+and configured by default, for use with LiquidSoap.  It cannot play
 or stream audio by itself.
 
 == Python Setup for Debian/Ubuntu
 
-$ sudo apt-get install python-pip python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit
+$ sudo apt-get install postgresql-contrib python-pip python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit
 $ sudo pip install -r requirements.txt
+
+Optional ujson support for faster JSON serialization:
+
+$ sudo apt-get install python-dev libpython-dev
+$ sudo pip install ujson
 
 == Python Setup for Windows
 

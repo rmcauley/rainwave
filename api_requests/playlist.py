@@ -4,7 +4,10 @@ from api import fieldtypes
 from api.server import handle_api_url
 from api.server import handle_api_html_url
 
-import json
+try:
+	import ujson as json
+except ImportError:
+	import json
 
 from libs import cache
 from libs import db

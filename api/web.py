@@ -1,5 +1,9 @@
+try:
+	import ujson as json
+except ImportError:
+	import json
+
 import tornado.web
-import tornado.escape
 import tornado.httputil
 import traceback
 import types
@@ -36,7 +40,7 @@ class Error404Handler(tornado.web.RequestHandler):
 		self.set_status(404)
 		if "in_order" in self.request.arguments:
 			self.write("[")
-		self.write(tornado.escape.json_encode({ "error": { "tl_key": "http_404", "text": "404 Not Found" } }))
+		self.write(json.dumps({ "error": { "tl_key": "http_404", "text": "404 Not Found" } }), ensure_ascii=False)
 		if "in_order" in self.request.arguments:
 			self.write("]")
 		self.finish()
@@ -385,7 +389,7 @@ class APIHandler(RainwaveHandler):
 			if exectime > 0.5:
 				log.warn("long_request", "%s took %s to execute!" % (self.url, exectime))
 			self.append("api_info", { "exectime": exectime, "time": round(timestamp()) })
-			self.write(tornado.escape.json_encode(self._output))
+			self.write(json.dumps(self._output, ensure_ascii=False))
 
 	def write_error(self, status_code, **kwargs):
 		if self._output_array:

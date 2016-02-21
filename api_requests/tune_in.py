@@ -1,5 +1,4 @@
 import tornado.web
-import tornado.escape
 
 from api.server import handle_url
 import api.web

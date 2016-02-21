@@ -1,5 +1,9 @@
+try:
+	import ujson as json
+except ImportError:
+	import json
+
 import datetime
-import tornado.escape
 
 from libs import config
 import api.web
@@ -57,7 +61,7 @@ class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
 			})
 
 		self.write("requestAnimationFrame(function() {\n")
-		self.write("var data = %s;" % tornado.escape.json_encode(data))
+		self.write("var data = %s;" % json.dumps(data, ensure_ascii=False))
 		self.write("\n"
 				"var cnvs = document.createElement('canvas');\n"
 				"cnvs.setAttribute('width', '800');\n"

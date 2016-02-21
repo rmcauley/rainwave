@@ -181,7 +181,7 @@ class HelpRequest(tornado.web.RequestHandler):
 		# 	self.write("<div class='json'>")
 		# 	json_file = open("api_tests/%s.json" % url)
 		# 	json_data = json.load(json_file)
-		# 	self.write(json.dumps(json_data, sort_keys=True, indent=4))
+		# 	self.write(json.dumps(json_data, ensure_ascii=False, indent=4))
 		# 	json_file.close()
 		# 	self.write("</div>")
 

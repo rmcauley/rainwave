@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+import psycopg2
 
 import libs.config
 import libs.db
@@ -12,6 +13,7 @@ args = parser.parse_args()
 libs.config.load(args.config)
 
 libs.db.connect()
+
 libs.db.create_tables()
 libs.db.add_custom_fields()
 

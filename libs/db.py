@@ -288,11 +288,20 @@ def create_tables():
 	if config.get("standalone_mode"):
 		_create_test_tables()
 
-	# c.update("CREATE EXTENSION pg_trgm;")
+	trgrm_exists = c.fetch_var("SELECT extname FROM pg_extension WHERE extname = 'pg_trgm'")
+	if not trgrm_exists or not trgrm_exists == "pg_trgm":
+		try:
+			c.update("CREATE EXTENSION pg_trgm")
+		except:
+			print "Could not create trigram extension."
+			print "Please run 'CREATE EXTENSION pg_trgm;' as a superuser on the database."
+			print "You may also need to install the Postgres Contributions package. (postgres-contrib)"
+			raise
 
 	# From: https://wiki.postgresql.org/wiki/First_%28aggregate%29
 	# Used in rainwave/playlist.py
-	try:
+	first_exists = c.fetch_var("SELECT proname FROM pg_proc WHERE proname = 'first' AND proisagg")
+	if not first_exists or first_exists != "first":
 		c.update("""
 			-- Create a function that always returns the first non-NULL item
 			CREATE OR REPLACE FUNCTION public.first_agg ( anyelement, anyelement )
@@ -306,7 +315,11 @@ def create_tables():
 			        basetype = anyelement,
 			        stype    = anyelement
 			);
+		""")
 
+	last_exists = c.fetch_var("SELECT proname FROM pg_proc WHERE proname = 'last' AND proisagg")
+	if not last_exists or last_exists != "last":
+		c.update("""
 			-- Create a function that always returns the last non-NULL item
 			CREATE OR REPLACE FUNCTION public.last_agg ( anyelement, anyelement )
 			RETURNS anyelement LANGUAGE SQL IMMUTABLE STRICT AS $$
@@ -320,12 +333,6 @@ def create_tables():
 			        stype    = anyelement
 			);
 		""")
-	except:
-		# first is already available, we can skip this
-		pass
-
-	if c.is_postgres:
-		c.start_transaction()
 
 	c.update(" \
 		CREATE TABLE r4_albums ( \

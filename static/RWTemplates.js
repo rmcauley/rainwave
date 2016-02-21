@@ -272,7 +272,10 @@
 			if (i.charAt(0) === "$") continue;
 
 			val = from[i];
-			if (Object.prototype.toString.call(val) === "[object Array]") {
+			if (typeof(val) === "undefined") {
+				// do nothing
+			}
+			else if (Object.prototype.toString.call(val) === "[object Array]") {
 				RWTemplateHelpers.array_update(val, true);
 			}
 			else if ((Object.prototype.toString.call(val) === "[object Object]") && val.$t) {

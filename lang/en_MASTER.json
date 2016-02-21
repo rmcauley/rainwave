@@ -1,8 +1,13 @@
 {
    "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
+   "__comment__"                 : "Please put them in your actual language. (日本語 not 'Japanese' or 'JP') Short version should be < 4 characters.",
 
    "language_name"                                   : "English",
    "language_name_short"                             : "EN",
+
+   "__comment__"                 : "This shows up after 'Rainwave' on Google results.  e.g. 'Rainwave Video Game Music Radio: Covers'",
+
+   "page_title_on_google"                            : "Video Game Music Radio",
 
    "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
 
@@ -29,7 +34,6 @@
    "request_failed"                                  : "Request failed.",
    "request_delete_failed"                           : "Request delete failed.",
    "request_unrated_failed"                          : "Request unrated failed.",
-   "request_is_blocked"                              : "Blocked for %(blocked_num) elections.",
    "request_favorited_failed"                        : "No faves available.",
    "too_many_requests"                               : "Your queue is full.",
    "same_request_exists"                             : "Song already requested.",
@@ -99,7 +103,6 @@
    "search"                                          : "Search",
    "previouslyplayed"                                : "Previously Played",
    "playback_history_link"                           : "Playback History",
-   "extended_history_header"                         : "Extended History",
    "special_event_alert"                             : "Special Event on %(station): ",
 
    "tunein"                                          : "Tune In",
@@ -122,11 +125,15 @@
    "__comment__"                 : "Timeline Headers",
 
    "coming_up"                                       : "Coming Up",
-   "continued"                                       : "Continued",
    "vote_now"                                        : "Vote Now",
    "now_playing"                                     : "Now Playing",
    "election"                                        : "Election",
    "power_hour"                                      : "Power Hour",
+
+   "__comment__"                 : "When a Power Hour or DJ Event happens, instead of saying 'NEW MUSIC POWER HOUR' repeatedly",
+   "__comment__"                 : "we just use 'CONTINUED' instead, so the title of the power hour is only displayed once",
+   "__comment__"                 : "at the top of the timeline.  That's what this 'continued' line is for.",
+   "continued"                                       : "Continued",
 
    "__comment__"                 : "Timeline Song",
 
@@ -205,7 +212,7 @@
    "playlist"                                        : "Playlist",
    "library"                                         : "Library",
    "Filter..."                                       : "Filter...",
-   "your_album_rating"                               : "You've rated this album %(rating_user).",
+   "your_album_rating"                               : "You've rated this album (%rating_user).",
    "album_rating_ranked_at_v2"                       : "Rated %(rating) by %(rating_count) song ratings, ranking #(rank).",
    "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",
    "album_year"                                      : "Released in %(year).",
@@ -363,12 +370,6 @@
    "origin_sid"                                      : "Station",
    "user_recent_votes"                               : "Your Recent Votes",
    "user_requested_history"                          : "Your Request History",
-   "request_line_result"                             : "Listeners Waiting in Request Line",
    "song_id"                                         : "Song ID",
-   "user_id"                                         : "User ID",
-   "line_expiry_tune_in"                             : "Expire Time (if tuned out)",
-   "line_expiry_election"                            : "Expire Time (if no good requests)",
-   "line_wait_start"                                 : "Entered Line At (epoch time)",
-   "artist_parseable"                                : "Artists (computer-readable format)",
-   "song_played_at"                                  : "Played At (epoch time)"
+   "user_id"                                         : "User ID"
 }

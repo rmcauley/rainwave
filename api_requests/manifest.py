@@ -1,5 +1,9 @@
+try:
+	import ujson as json
+except ImportError:
+	import json
+
 import tornado.web
-import tornado.escape
 
 from api.web import HTMLRequest
 from api.server import handle_url
@@ -77,4 +81,4 @@ class ManifestJSON(HTMLRequest):
 				}
 			]
 		}
-		self.write(tornado.escape.json_encode(m))
+		self.write(json.dumps(m, ensure_ascii=False))

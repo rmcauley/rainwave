@@ -1,7 +1,9 @@
-import json
+try:
+	import ujson as json
+except ImportError:
+	import json
 import os
 import getpass
-import tornado.escape
 import tempfile
 
 # Options hash - please don't access this externally in case the storage method changes
@@ -91,7 +93,7 @@ def load(filename = None, testmode = False):
 					"port": relay['port'],
 					#'url': "http://%s:%s" % (relay['hostname'], relay['port'])
 				})
-		public_relays_json[sid] = tornado.escape.json_encode(public_relays[sid])
+		public_relays_json[sid] = json.dumps(public_relays[sid])
 		station_hostnames[get_station(sid, "host")] = sid
 		station_mount_filenames[sid] = get_station(sid, "stream_filename")
 
@@ -104,7 +106,7 @@ def load(filename = None, testmode = False):
 		}
 		station_mounts[get_station(station_id, "stream_filename") + ".mp3"] = station_id
 		station_mounts[get_station(station_id, "stream_filename") + ".ogg"] = station_id
-	station_list_json = tornado.escape.json_encode(station_list)
+	station_list_json = json.dumps(station_list, ensure_ascii=False)
 
 	build_number = get_build_number()
 
