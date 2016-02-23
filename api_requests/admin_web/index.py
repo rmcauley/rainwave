@@ -107,7 +107,7 @@ class DJTools(api.web.HTMLRequest):
 
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="DJ Tools"))
-		self.write("<div style='margin-bottom: 0.5em; border-bottom: solid 1px #777;'>%s - " % config.station_id_friendly[self.sid])
+		self.write("<div style='margin-bottom: 0.5em; font-weight: bold; border-bottom: solid 1px #777;'>%s - " % config.station_id_friendly[self.sid])
 		if cache.get_station(self.sid, "backend_paused"):
 			self.write("<span style='color: #6F6;'>Paused</span> ")
 			if cache.get_station(self.sid, "backend_paused_playing"):
