@@ -59,7 +59,6 @@ div.dj_panel {
 		color: $text_dd;
 
 		&.active {
-			font-weight: bold;
 			border: solid 1px $text;
 			color: $text;
 			background: $blue;
@@ -101,7 +100,6 @@ div.clip_warning_text {
 	float: right;
 	display: none;
 	background: $error_b;
-	font-weight: bold;
 	font-size: larger;
 
 	&.clipping {

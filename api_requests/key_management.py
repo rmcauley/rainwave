@@ -18,7 +18,7 @@ class KeyIndex(api.web.HTMLRequest):
 		global mini_qr_service
 
 		self.write(self.render_string("basic_header.html", title=self.locale.translate("api_key_manager")))
-		self.write("<p>%s: <bold>%s</bold></p>" % (self.locale.translate("your_numeric_user_id"), self.user.id))
+		self.write("<p>%s: %s</p>" % (self.locale.translate("your_numeric_user_id"), self.user.id))
 		self.write("<table><tr><th>%s</th><th>%s</th><th>%s</th></tr>" %
 				   (self.locale.translate("api_key"), self.locale.translate("delete"), self.locale.translate("qr_code")))
 		for key in db.c.fetch_all("SELECT * FROM r4_api_keys WHERE user_id = %s", (self.user.id,)):
