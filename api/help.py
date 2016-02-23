@@ -4,6 +4,7 @@ from libs import config
 
 help_classes = {}
 url_properties = ( ("allow_get", "GET", "Allows HTTP GET requests in addition to POST requests."),
+	("allow_cors", "CORS", "Can be used cross-origin, i.e. from your website and domain name."),
 	("auth_required", "auth", "User ID and API Key required as part of form submission."),
 	("sid_required", "sid", "Station ID required as part of form submission."),
 	("tunein_required", "tunein", "User is required to be tuned in to use command."),
@@ -86,8 +87,8 @@ class IndexRequest(api.web.HTMLRequest):
 		self.write("<table class='help_legend'>")
 		order = section_order if self.user.is_admin() else section_order_normal
 		for section in order:
-			self.write("<tr><th colspan='10'>%s</th></tr>" % section)
-			self.write("<tr><th>Allows GET<th>Auth Required</th><th>Station ID Required</th><th>Tune In Required</th><th>Login Required</th><th>DJ</th><th>Admin</th><th>Pagination</th><th>URL</th><th>Link</th></tr>")
+			self.write("<tr><th colspan='11'>%s</th></tr>" % section)
+			self.write("<tr><th>Allows GET</th><th>Allow CORS</th><th>Auth Required</th><th>Station ID Required</th><th>Tune In Required</th><th>Login Required</th><th>DJ</th><th>Admin</th><th>Pagination</th><th>URL</th><th>Link</th></tr>")
 			for url, handler in sorted(sections[section].items()):
 				self.write_class_properties(url, handler)
 		self.write("</table>")
