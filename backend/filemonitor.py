@@ -76,6 +76,7 @@ def full_music_scan(full_reset):
 
 def full_art_update():
 	global _art_only
+	_art_only = True
 	_common_init()
 	_scan_all_directories(art_only=True)
 	_process_album_art_queue(on_screen=True)
