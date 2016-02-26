@@ -391,7 +391,7 @@ var RainwavePlayer = function() {
 			evt.detail = detail;
 			self.dispatchEvent(evt);
 			stall_timeout = null;
-		}, 1500);
+		}, 1000);
 	};
 
 	var onStall = function(e, i) {
