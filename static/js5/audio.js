@@ -49,7 +49,6 @@ var RWAudio = function() {
 		var robin = stream_urls.splice(0, 1);
 		shuffle(stream_urls);
 		stream_urls.unshift(robin[0]);
-		stream_urls = [ "http://gamestream.rainwave.cc:8000/game.ogg" ];
 		self.useStreamURLs(stream_urls);
 
 		API.add_callback("user", user_tunein_check);
