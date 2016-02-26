@@ -8,18 +8,14 @@ Synopsis:
 
 ------------
 
-var player = RainwavePlayer();
-// audioElDest is where the <audio> tag will be placed on your page.
-// the library does not expose the <audio> tag, it expects you to have your own UI/skin
-player.audioElDest = document.getElementById("audioContainer");
-if (!player.isSupported) {
+if (!RainwavePlayer.isSupported) {
 	alert("No HTML5 audio support!");
 }
 else {
-	player.useStation("Game");
-	player.addEventListener("error", function() { alert("The player stopped working!") });
-	player.play();
-	stopButton.addEventListener("click", player.stop);
+	RainwavePlayer.useStation("Game");
+	RainwavePlayer.addEventListener("error", function() { alert("The RainwavePlayer stopped working!") });
+	RainwavePlayer.play();
+	stopButton.addEventListener("click", RainwavePlayer.stop);
 }
 
 ------------
@@ -41,7 +37,7 @@ Events:
 The following events can be emitted by the library:
 	- "playing" is emitted when the audio starts playing, or resumes after a stall
 	- "stop" when the audio has been completely shutdown
-	- "change" on playing or stop, status can be checked with player.isPlaying
+	- "change" on playing or stop, status can be checked with RainwavePlayer.isPlaying
 	- "volumeChange" triggers on setVolume(), mute (volume will === 0), and unmute
 	- "loading" when the stream is initializing
 	- "stall" when the stream has a hiccup.  (warning: can be thrown more than once for one stall!)
