@@ -14,6 +14,8 @@ var Stations = [];
 	var template;
 
 	var initialize = function() {
+		RWAudio();
+
 		Prefs.define("pwr");
 		if (Prefs.get("pwr")) {
 			Sizing.simple = false;

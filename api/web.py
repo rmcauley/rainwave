@@ -102,6 +102,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	pagination = False
 	# allow access to station ID 0
 	allow_sid_zero = False
+	# set to allow from any source
+	allow_cors = False
 
 	def __init__(self, *args, **kwargs):
 		super(RainwaveHandler, self).__init__(*args, **kwargs)
@@ -164,6 +166,11 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if self.local_only and not self.request.remote_ip in config.get("api_trusted_ip_addresses"):
 			log.info("api", "Rejected %s request from %s, untrusted address." % (self.url, self.request.remote_ip))
 			raise APIException("rejected", text="You are not coming from a trusted address.")
+
+		if self.allow_cors:
+			self.set_header("Access-Control-Allow-Origin", "*")
+			self.set_header("Access-Control-Max-Age", "600")
+			self.set_header("Access-Control-Allow-Credentials", "false")
 
 		if not isinstance(self.locale, locale.RainwaveLocale):
 			self.locale = self.get_browser_locale()

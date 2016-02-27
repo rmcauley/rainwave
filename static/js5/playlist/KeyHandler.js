@@ -327,7 +327,7 @@ var KeyHandler = function() {
 			else if (keymap.rate45.indexOf(character) !== -1) Timeline.rate_current_song(4.5);
 			else if (keymap.rate50.indexOf(character) !== -1) Timeline.rate_current_song(5.0);
 
-			else if (keymap.play.indexOf(character) !== -1) RWAudio.play_stop();
+			else if (keymap.play.indexOf(character) !== -1) RWAudio.playStop();
 
 			else if (keymap.vote0_0.indexOf(character) !== -1) Timeline.vote(0, 0);
 			else if (keymap.vote0_1.indexOf(character) !== -1) Timeline.vote(0, 1);

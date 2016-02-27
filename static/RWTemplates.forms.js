@@ -206,7 +206,7 @@
 						else if (elem.hasAttribute("float") && !isNaN(new_val) && !isNaN(parseFloat(new_val))) {
 							new_val = parseFloat(new_val);
 						}
-						if ((!only_diff && (typeof(new_obj[i]) === "undefined")) || (new_val !== this._c[i])) {
+						if ((!only_diff && (typeof(new_obj[i]) === "undefined")) || (new_val !== this._c[i]) || (new_val && elem.hasAttribute("save-on-true"))) {
 							new_obj[i] = new_val;
 						}
 					}

@@ -212,7 +212,7 @@
    "playlist"                                        : "Playlist",
    "library"                                         : "Library",
    "Filter..."                                       : "Filter...",
-   "your_album_rating"                               : "You've rated this album (%rating_user).",
+   "your_album_rating"                               : "You've rated this album %(rating_user).",
    "album_rating_ranked_at_v2"                       : "Rated %(rating) by %(rating_count) song ratings, ranking #(rank).",
    "album_requests_ranked_at"                        : "Requested %(count) &(count:time/times), ranking #(rank).",
    "album_year"                                      : "Released in %(year).",
