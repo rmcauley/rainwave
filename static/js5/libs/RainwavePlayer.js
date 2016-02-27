@@ -90,11 +90,11 @@ var RainwavePlayer = function() {
 
 	// if the RainwaveAPI interface is not available, we can fallback to round robin relays
 	var hardcodedStations = {
-		1: [{ "hostname": "gamestream.rainwave.cc",  "mount": "game",     "protocol": "http://", "port": "8000" }],
-		2: [{ "hostname": "ocrstream.rainwave.cc",   "mount": "ocremix",  "protocol": "http://", "port": "8000" }],
-		3: [{ "hostname": "coverstream.rainwave.cc", "mount": "covers",   "protocol": "http://", "port": "8000" }],
-		4: [{ "hostname": "chipstream.rainwave.cc",  "mount": "chiptune", "protocol": "http://", "port": "8000" }],
-		5: [{ "hostname": "allstream.rainwave.cc",   "mount": "all",      "protocol": "http://", "port": "8000" }]
+		1: [ "http://gamestream.rainwave.cc:8000/game" ],
+		2: [ "http://ocrstream.rainwave.cc:8000/ocremix" ],
+		3: [ "http://overstream.rainwave.cc:8000/covers" ],
+		4: [ "http://chipstream.rainwave.cc:8000/chiptune" ],
+		5: [ "http://allstream.rainwave.cc:8000/all" ]
 	};
 
 	// these friendly names make it easier to use the library as opposed to remembering numbers
@@ -235,9 +235,7 @@ var RainwavePlayer = function() {
 			}
 		}
 
-		streamURLs = [
-			hardcodedStations[station].protocol + hardcodedStations[station].hostname + ":" + hardcodedStations[station].port + "/" + hardcodedStations[station].mount + "." + self.type
-		];
+		streamURLs = [ hardcodedStations[station] + self.type ];
 	};
 
 	/**
