@@ -235,7 +235,7 @@ var RainwavePlayer = function() {
 			}
 		}
 
-		streamURLs = [ hardcodedStations[station] + self.type ];
+		streamURLs = [ hardcodedStations[station] + "." + self.type ];
 	};
 
 	/**
