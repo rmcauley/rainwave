@@ -15,6 +15,8 @@ r4_harbor_port = 9051
 
 set("log.level", 4)
 
+set("harbor.timeout", 4.)
+
 set("server.socket", true)
 set("server.socket.path", "/var/run/liquidsoap/<script>.sock")
 set("server.socket.permissions", 432) # translates to 660 permissions but needs to be in octal format
@@ -46,7 +48,7 @@ r4_auto = rewrite_metadata([("title", '$(if $(use_suffix),"$(title) $(suffix)","
 r4_offline = single(r4_offline_file)
 r4_auto = fallback([r4_auto, r4_offline], track_sensitive=false)
 
-r4_live = input.harbor("/", id="harbor", port=r4_harbor_port, auth=r4_live_auth, icy=true);
+r4_live = input.harbor("/dj.mp3", id="dj_harbor", port=r4_harbor_port, auth=r4_live_auth);
 r4_livemix = smooth_add(delay=0.5, p=0.2, normal=r4_auto, special=r4_live)
 
 # output.icecast(%vorbis(quality=0.2), host="localhost", port=8000, password="hackme", mount=r4_dest_mount^".ogg", genre="Music", url=r4_dest_url, description=r4_dest_desc, r4_livemix)

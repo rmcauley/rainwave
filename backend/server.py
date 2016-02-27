@@ -31,7 +31,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 
 		if cache.get_station(self.sid, "backend_paused"):
 			if not cache.get_station(self.sid, "dj_heartbeat_start"):
-				log.debug("Setting server start heatbeat.")
+				log.debug("dj", "Setting server start heatbeat.")
 				cache.set_station(self.sid, "dj_heartbeat_start", timestamp())
 			self.write(self._get_pause_file())
 			cache.set_station(self.sid, "backend_paused_playing", True)

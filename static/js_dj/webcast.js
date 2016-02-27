@@ -136,6 +136,7 @@
           });
         }
         options.encoder = encoder;
+        if (options.socket) return;
         return options.socket = new Webcast.Socket({
           url: url,
           mime: options.encoder.mime,

@@ -1,3 +1,14 @@
+/* To test this module against your own server:
+liquidsoap '
+ set("harbor.timeout", 40.)
+ set("log.level", 4)
+ def dumbauth(user, pw) =
+ true
+ end
+ output.file(fallible=true, %mp3, "./dj.mp3", audio_to_stereo(input.harbor("dj.mp3", port=8303, auth=dumbauth)))
+'
+*/
+
 BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 	"use strict";
 
@@ -68,7 +79,14 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 	var dj_api_status = {};
 
 	Clock.pageclock_function2 = function(page_title_end, now) {
-		t.dji_ready.textContent = $l("dj_live_for", { "livetime": Formatting.minute_clock(now - page_title_end) });
+		var live_for = now - page_title_end;
+		if (live_for > 5) {
+			t.dji_ready.classList.add("active");
+		}
+		else {
+			t.dji_ready.classList.remove("active");
+		}
+		t.dji_ready.textContent = $l("dj_live_for", { "livetime": Formatting.minute_clock(live_for) });
 
 		var eta = Math.max(0, page_title_end - 5 - now);
 		if (dj_api_status.pause_requested) {
@@ -88,6 +106,11 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 			else {
 				t.dji_will_pause.textContent = $l("dj_window", { "timeleft": Formatting.minute_clock(eta - 5) });
 			}
+		}
+
+		if (socket && (socket.readyState == WebSocket.OPEN) && on_air_start) {
+			var diff = Math.floor(Date.now() / 1000) - on_air_start;
+			t.dji_on_air.textContent = $l("dj_on_air", { "mictime": Formatting.minute_clock(diff) });
 		}
 	};
 
@@ -242,7 +265,6 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 				source.connect(gainNode);
 				requestAnimationFrame(drawMicVolume);
 				t.mic_enable.disabled = true;
-				// t.mic_disable.disabled = false;
 				t.btn_on_air.disabled = false;
 			}).catch(function(err) {
 				console.error("The following getUserMedia error occured: " + err);
@@ -264,39 +286,74 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 	//	t.btn_on_air.disabled = true;
 	// });
 
-	/* var encoder = new Webcast.Encoder.Mp3({
+	var encoder = new Webcast.Encoder.Mp3({
 		channels: 2,
-		samplerate: audioCtx.samplerate,
+		samplerate: audioCtx.sampleRate,
 		bitrate: 128
 	});
 
-	encoder = new Webcast.Encoder.Asynchronous({
-		encoder: encoder,
-		scripts: [
-			"/static/js_dj/libmad.js",
-			"/static/js_dj/libsamplerate.js",
-			"/static/js_dj/libshine.js",
-			"/static/js_dj/webcast.js",
-		]
+	// Asynchronous encoder has difficulty starting and restarting :/
+
+	// var a = document.createElement("a");
+	// a.href = window.location.href;
+	// var js_href_prefix = a.protocol + "//" + a.hostname;
+	// if (a.port) {
+	// 	js_href_prefix += ":" + a.port;
+	// }
+	// js_href_prefix += "/";
+	// encoder = new Webcast.Encoder.Asynchronous({
+	// 	encoder: encoder,
+	// 	scripts: [
+	// 		js_href_prefix + "static/js_dj/libsamplerate.js",
+	// 		js_href_prefix + "static/js_dj/libshine.js",
+	// 		js_href_prefix + "static/js_dj/webcast.js"
+	// 	]
+	// });
+
+	var on_air_start, socket;
+	var webcast = audioCtx.createWebcastSource(4096, 2);
+	gainNode.connect(webcast);
+
+	var webcast_on_close = function() {
+		on_air_start = null;
+		t.dji_on_air.classList.remove("active");
+		t.dji_on_air.textContent = $l("dj_on_air", { "mictime": "0:00" });
+		t.btn_cut.disabled = true;
+		t.btn_on_air.disabled = false;
+	};
+
+	var socket_on_error = function() {
+		on_air_start = null;
+		t.btn_cut.disabled = true;
+		t.btn_on_air.disabled = false;
+		t.dji_on_air.textContent = $l("dj_net_error");
+		t.dji_on_air.classList.remove("active");
+		t.dji_on_air.classList.add("djerror");
+	};
+
+	var socket_on_open = function() {
+		on_air_start = Math.floor(Date.now() / 1000);
+		t.dji_on_air.classList.add("active");
+		t.dji_on_air.classList.remove("djerror");
+		t.dji_on_air.textContent = $l("dj_on_air", { "mictime": "0:00" });
+	};
+
+	t.btn_on_air.addEventListener("click", function() {
+		var ws_url = "ws://rwdj:" + dj_api_status.dj_password + "@" + dj_api_status.mount_host + ":" + dj_api_status.mount_port + "/" + dj_api_status.mount_url;
+		socket = webcast.connectSocket(encoder, ws_url);
+		socket.onerror = socket_on_error;
+		socket.onopen = socket_on_open;
+
+		t.btn_cut.disabled = false;
+		t.btn_on_air.disabled = true;
+		t.dji_on_air.textContent = $l("dj_connecting");
+		t.dji_on_air.classList.remove("djerror");
 	});
 
-	var webcast;
-
-	t.dj_go_on_air.addEventListener("click", function() {
-		webcast = new Webcast.Node({
-			url: "ws://localhost:8080/mount",
-			encoder: encoder,
-			context: audioContext,
-			options: options
-		});
-		gainNode.connect(webcast);
-		webcast.connectSocket():
+	t.btn_cut.addEventListener("click", function() {
+		if (!webcast) {
+			return;
+		}
+		webcast.close(webcast_on_close);
 	});
-
-	t.dj_cut_mic.addEventListener("click", function() {
-		webcast.close(function() {
-			gainNode.disconnect(webcast);
-			console.log("connection closed!");
-		});
-	}); */
 });

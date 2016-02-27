@@ -18,7 +18,7 @@ def attach_dj_info_to_request(request):
 		"dj_password": cache.get_station(request.sid, "dj_password"),
 		"mount_host": config.get_station(request.sid, "liquidsoap_harbor_host"),
 		"mount_port": config.get_station(request.sid, "liquidsoap_harbor_port"),
-		"mount_url": config.get_station(request.sid, "liquidsoap_harbor_url")
+		"mount_url": config.get_station(request.sid, "liquidsoap_harbor_mount")
 	})
 
 def attach_info_to_request(request, extra_list = None, all_lists = False):

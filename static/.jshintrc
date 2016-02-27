@@ -67,7 +67,8 @@
     "Timeline": true,
     "User": true,
     "visibilityEventNames": true,
-    "Stations": true
+    "Stations": true,
+    "Webcast": true
   },
 
   "browser": true,
