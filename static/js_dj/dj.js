@@ -80,7 +80,7 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 
 	Clock.pageclock_function2 = function(page_title_end, now) {
 		var live_for = now - page_title_end;
-		if (live_for > 5) {
+		if (dj_api_status.pause_active) {
 			t.dji_ready.classList.add("active");
 		}
 		else {
@@ -116,7 +116,7 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 
 	var update_status = function() {
 		if (dj_api_status.pause_active) {
-			t.dji_music.classList.remove("active");
+			t.dji_music.classList.add("active");
 			t.dji_music.textContent = $l("dj_music_paused");
 			t.dji_will_pause.classList.add("active");
 			t.dji_ready.classList.add("active");
@@ -125,7 +125,7 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 			t.btn_resume.disabled = false;
 		}
 		else if (dj_api_status.pause_requested) {
-			t.dji_music.classList.add("active");
+			t.dji_music.classList.remove("active");
 			t.dji_music.textContent = $l("dj_music_playing");
 			t.dji_will_pause.classList.add("active");
 			t.dji_ready.classList.remove("active");
@@ -134,7 +134,7 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 			t.btn_resume.disabled = true;
 		}
 		else {
-			t.dji_music.classList.add("active");
+			t.dji_music.classList.remove("active");
 			t.dji_music.textContent = $l("dj_music_playing");
 			t.dji_will_pause.classList.remove("active");
 			t.dji_ready.classList.remove("active");
