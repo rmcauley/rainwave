@@ -129,6 +129,15 @@ var RainwavePlayer = function() {
 	// We use this flag in a few places to stop Chrome from murdering itself on mobile
 	var chromeSpecialFlag = false;
 
+	var createEvent = function(eventType) {
+		try {
+			return new Event(eventType);
+		}
+		catch(e) {
+			return { "type": eventType };
+		}
+	};
+
 	// *******************************************************************************************
 	//	Initialization And Detection
 	// *******************************************************************************************
@@ -268,7 +277,7 @@ var RainwavePlayer = function() {
 				setupAudio();
 			}
 			if (chromeSpecialFlag) {
-				self.dispatchEvent(new Event("longLoadWarning"));
+				self.dispatchEvent();
 			}
 
 			for (var i = 0; i < streamURLs.length; i++) {
@@ -277,8 +286,8 @@ var RainwavePlayer = function() {
 
 			audioEl.play();
 			self.isPlaying = true;
-			self.dispatchEvent(new Event("playing"));
-			self.dispatchEvent(new Event("change"));
+			self.dispatchEvent(createEvent("playing"));
+			self.dispatchEvent(createEvent("change"));
 		}
 	};
 
@@ -309,8 +318,8 @@ var RainwavePlayer = function() {
 		}
 		audioEl = null;
 		setupAudio();
-		self.dispatchEvent(new Event("stop"));
-		self.dispatchEvent(new Event("change"));
+		self.dispatchEvent(createEvent("stop"));
+		self.dispatchEvent(createEvent("change"));
 	};
 
 	/**
@@ -322,7 +331,7 @@ var RainwavePlayer = function() {
 			if (audioEl) {
 				audioEl.volume = volumeBeforeMute || self.volume;
 			}
-			self.dispatchEvent(new Event("volumeChange"));
+			self.dispatchEvent(createEvent("volumeChange"));
 		}
 		else {
 			self.isMuted = true;
@@ -330,7 +339,7 @@ var RainwavePlayer = function() {
 			if (audioEl) {
 				audioEl.volume = 0;
 			}
-			self.dispatchEvent(new Event("volumeChange"));
+			self.dispatchEvent(createEvent("volumeChange"));
 		}
 	};
 
@@ -347,7 +356,7 @@ var RainwavePlayer = function() {
 		if (audioEl) {
 			audioEl.volume = newVolume;
 		}
-		self.dispatchEvent(new Event("volumeChange"));
+		self.dispatchEvent(createEvent("volumeChange"));
 	};
 
 	// *******************************************************************************************
@@ -355,17 +364,17 @@ var RainwavePlayer = function() {
 	// *******************************************************************************************
 
 	var onWaiting = function() {
-		self.dispatchEvent(new Event("loading"));
+		self.dispatchEvent(createEvent("loading"));
 	};
 
 	var onPlay = function() {
-		self.dispatchEvent(new Event("playing"));
-		self.dispatchEvent(new Event("change"));
+		self.dispatchEvent(createEvent("playing"));
+		self.dispatchEvent(createEvent("change"));
 	};
 
 	var onStop = function() {
-		self.dispatchEvent(new Event("stop"));
-		self.dispatchEvent(new Event("change"));
+		self.dispatchEvent(createEvent("stop"));
+		self.dispatchEvent(createEvent("change"));
 	};
 
 	// the stall-related functions have a timeout in order
@@ -385,7 +394,7 @@ var RainwavePlayer = function() {
 			return;
 		}
 		stall_timeout = setTimeout(function() {
-			var evt = new Event("stall");
+			var evt = createEvent("stall");
 			evt.detail = detail;
 			self.dispatchEvent(evt);
 			stall_timeout = null;
@@ -415,7 +424,7 @@ var RainwavePlayer = function() {
 	var onError = function(e) {
 		stopAudioConnectError();
 		self.stop();
-		self.dispatchEvent(new Event("error"));
+		self.dispatchEvent(createEvent("error"));
 	};
 
 	// *******************************************************************************************
