@@ -321,23 +321,21 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 			bitrate: 128
 		});
 
-		// Asynchronous encoder has difficulty starting and restarting :/
-
-		// var a = document.createElement("a");
-		// a.href = window.location.href;
-		// var js_href_prefix = a.protocol + "//" + a.hostname;
-		// if (a.port) {
-		// 	js_href_prefix += ":" + a.port;
-		// }
-		// js_href_prefix += "/";
-		// encoder = new Webcast.Encoder.Asynchronous({
-		// 	encoder: encoder,
-		// 	scripts: [
-		// 		js_href_prefix + "static/js_dj/libsamplerate.js",
-		// 		js_href_prefix + "static/js_dj/libshine.js",
-		// 		js_href_prefix + "static/js_dj/webcast.js"
-		// 	]
-		// });
+		var a = document.createElement("a");
+		a.href = window.location.href;
+		var js_href_prefix = a.protocol + "//" + a.hostname;
+		if (a.port) {
+			js_href_prefix += ":" + a.port;
+		}
+		js_href_prefix += "/";
+		encoder = new Webcast.Encoder.Asynchronous({
+			encoder: encoder,
+			scripts: [
+				js_href_prefix + "static/js_dj/libsamplerate.js",
+				js_href_prefix + "static/js_dj/libshine.js",
+				js_href_prefix + "static/js_dj/webcast.js"
+			]
+		});
 
 		var ws_url = "ws://rwdj:" + dj_api_status.dj_password + "@" + dj_api_status.mount_host + ":" + dj_api_status.mount_port + "/" + dj_api_status.mount_url;
 		socket = webcast.connectSocket(encoder, ws_url);
