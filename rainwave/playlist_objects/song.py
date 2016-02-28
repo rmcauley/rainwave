@@ -212,18 +212,19 @@ class Song(object):
 			self.album_tag = unicode(w[0]).strip()
 		else:
 			raise PassableScanError("Song filename \"%s\" has no album tag." % filename)
-		w = f.tags.getall('TRCK')
-		if w is not None and len(w) > 0:
-			try:
-				self.data['track_number'] = fieldtypes.integer(unicode(w[0]))
-			except ValueError:
-				pass
-		w = f.tags.getall('TPOS')
-		if w is not None and len(w) > 0:
-			try:
-				self.data['disc_number'] = fieldtypes.integer(unicode(w[0]))
-			except ValueError:
-				pass
+		if config.get("scanner_use_tracknumbers"):
+			w = f.tags.getall('TRCK')
+			if w is not None and len(w) > 0:
+				try:
+					self.data['track_number'] = fieldtypes.integer(unicode(w[0]))
+				except ValueError:
+					pass
+			w = f.tags.getall('TPOS')
+			if w is not None and len(w) > 0:
+				try:
+					self.data['disc_number'] = fieldtypes.integer(unicode(w[0]))
+				except ValueError:
+					pass
 		w = f.tags.getall('TCON')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.genre_tag = unicode(w[0])
