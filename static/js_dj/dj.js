@@ -286,30 +286,6 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 	//	t.btn_on_air.disabled = true;
 	// });
 
-	var encoder = new Webcast.Encoder.Mp3({
-		channels: 2,
-		samplerate: audioCtx.sampleRate,
-		bitrate: 128
-	});
-
-	// Asynchronous encoder has difficulty starting and restarting :/
-
-	// var a = document.createElement("a");
-	// a.href = window.location.href;
-	// var js_href_prefix = a.protocol + "//" + a.hostname;
-	// if (a.port) {
-	// 	js_href_prefix += ":" + a.port;
-	// }
-	// js_href_prefix += "/";
-	// encoder = new Webcast.Encoder.Asynchronous({
-	// 	encoder: encoder,
-	// 	scripts: [
-	// 		js_href_prefix + "static/js_dj/libsamplerate.js",
-	// 		js_href_prefix + "static/js_dj/libshine.js",
-	// 		js_href_prefix + "static/js_dj/webcast.js"
-	// 	]
-	// });
-
 	var on_air_start, socket;
 	var webcast = audioCtx.createWebcastSource(4096, 2);
 	gainNode.connect(webcast);
@@ -339,6 +315,30 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 	};
 
 	t.btn_on_air.addEventListener("click", function() {
+		var encoder = new Webcast.Encoder.Mp3({
+			channels: 2,
+			samplerate: audioCtx.sampleRate,
+			bitrate: 128
+		});
+
+		// Asynchronous encoder has difficulty starting and restarting :/
+
+		// var a = document.createElement("a");
+		// a.href = window.location.href;
+		// var js_href_prefix = a.protocol + "//" + a.hostname;
+		// if (a.port) {
+		// 	js_href_prefix += ":" + a.port;
+		// }
+		// js_href_prefix += "/";
+		// encoder = new Webcast.Encoder.Asynchronous({
+		// 	encoder: encoder,
+		// 	scripts: [
+		// 		js_href_prefix + "static/js_dj/libsamplerate.js",
+		// 		js_href_prefix + "static/js_dj/libshine.js",
+		// 		js_href_prefix + "static/js_dj/webcast.js"
+		// 	]
+		// });
+
 		var ws_url = "ws://rwdj:" + dj_api_status.dj_password + "@" + dj_api_status.mount_host + ":" + dj_api_status.mount_port + "/" + dj_api_status.mount_url;
 		socket = webcast.connectSocket(encoder, ws_url);
 		socket.onerror = socket_on_error;
