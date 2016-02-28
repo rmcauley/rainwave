@@ -331,11 +331,13 @@ var RainwavePlayer = function() {
 			if (audioEl) {
 				audioEl.volume = volumeBeforeMute || self.volume;
 			}
+			self.volume = volumeBeforeMute;
 			self.dispatchEvent(createEvent("volumeChange"));
 		}
 		else {
 			self.isMuted = true;
 			volumeBeforeMute = self.volume;
+			self.volume = 0;
 			if (audioEl) {
 				audioEl.volume = 0;
 			}

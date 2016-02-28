@@ -18,7 +18,6 @@ var RWAudio = function() {
 	var last_user_tunein_check = 0;
 
 	BOOTSTRAP.on_init.push(function(root_template) {
-
 		self.audioElDest = root_template.measure_box;
 
 		root_template.volume = document.getElementById("audio_volume");
@@ -28,7 +27,7 @@ var RWAudio = function() {
 
 		root_template.volume.addEventListener("mousedown", volume_control_mousedown);
 		root_template.mute.addEventListener("click", self.toggleMute);
-		root_template.play.addEventListener("click", self.playStop);
+		root_template.play.addEventListener("click", self.playToggle);
 		root_template.play2.addEventListener("click", self.play);
 		root_template.stop.addEventListener("click", self.stop);
 
