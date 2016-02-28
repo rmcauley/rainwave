@@ -1,5 +1,6 @@
 import random
 import string
+from time import time as timestamp
 
 from libs import cache
 
@@ -74,3 +75,11 @@ class ChangeDJPW(api.web.APIHandler):
 			attach_dj_info_to_request(self)
 		else:
 			raise APIException("internal_error", "Internal error changing DJ key.")
+
+@handle_api_url("admin/dj/heartbeat")
+class DJHeartbeat(api.web.APIHandler):
+	dj_required = True
+
+	def post(self):
+		cache.set_station(self.sid, "dj_heartbeat", timestamp())
+		self.append(self.return_name, { "success": True })

@@ -111,6 +111,9 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 		if (socket && (socket.readyState == WebSocket.OPEN) && on_air_start) {
 			var diff = Math.floor(Date.now() / 1000) - on_air_start;
 			t.dji_on_air.textContent = $l("dj_on_air", { "mictime": Formatting.minute_clock(diff) });
+			if (now % 2 === 0) {
+				API.async_get("admin/dj/heartbeat");
+			}
 		}
 	};
 

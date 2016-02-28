@@ -6,6 +6,9 @@ from libs import log
 from api import liquidsoap
 
 def dj_heartbeat_check():
+	# Don't do this in testing environments
+	if config.get("developer_mode"):
+		return
 	for sid in config.station_ids:
 		if cache.get_station(sid, "backend_paused_playing"):
 			hb = cache.get_station(sid, "dj_heartbeat")
