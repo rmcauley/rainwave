@@ -139,7 +139,12 @@ var RWEvent = function(self) {
 		if ((self_request !== false) && !already_voted) {
 			self.songs[self_request].register_vote();
 			self.songs[self_request].autovoted = true;
-			self.songs[self_request].el.classList.add("autovoted");
+			if (Prefs.get("pwr")) {
+				self.songs[self_request].el.classList.add("autovoted");
+			}
+			else {
+				self.songs[self_request].el.classList.add("voting_registered");
+			}
 		}
 	};
 
