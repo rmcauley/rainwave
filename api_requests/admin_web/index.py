@@ -86,6 +86,9 @@ class RestrictList(api.web.HTMLRequest):
 		for sid in config.station_ids:
 			self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"window.top.current_restriction = %s; window.top.change_screen();\">%s</a>" % (sid, sid, config.station_id_friendly[sid]))
 		self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"window.top.current_restriction = %s; window.top.change_screen();\">%s</a>" % (0, 0, "DJ Only"))
+		self.write("<br>")
+		self.write("<a style='display: block' id=\"sort_%s\" href=\"#\" onclick=\"window.top.current_sort = '%s'; window.top.change_screen();\">%s</a>" % ("alpha", "alpha", "AlphaNum"))
+		self.write("<a style='display: block' id=\"sort_%s\" href=\"#\" onclick=\"window.top.current_sort = '%s'; window.top.change_screen();\">%s</a>" % ("added_on", "added_on", "Added On"))
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/dj_election_list")
@@ -106,26 +109,13 @@ class DJTools(api.web.HTMLRequest):
 	dj_required = True
 
 	def get(self):
-		self.write(self.render_string("bare_header.html", title="DJ Tools"))
-		self.write("<div style='margin-bottom: 0.5em; font-weight: bold; border-bottom: solid 1px #777;'>%s - " % config.station_id_friendly[self.sid])
-		if cache.get_station(self.sid, "backend_paused"):
-			self.write("<span style='color: #6F6;'>Paused</span> ")
-			if cache.get_station(self.sid, "backend_paused_playing"):
-				self.write("<span style='color: #6F6; float: right;'>No Music</span>")
-			else:
-				self.write("<span style='color: #FF0; float: right;'>Waiting</span>")
-		else:
-			self.write("Normal")
-		self.write("</div>")
-		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/pause'); setTimeout(function() { window.location.reload(); }, 1000);\">Pause %s At End Of Song</a></div>" % config.station_id_friendly[self.sid])
-		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/unpause'); setTimeout(function() { window.location.reload(); }, 1000);\">Start %s</a></div>" % config.station_id_friendly[self.sid])
-		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/unpause?kick_dj=true'); setTimeout(function() { window.location.reload(); }, 1000);\">Disconnect And/Or Start %s</a></div>" % config.station_id_friendly[self.sid])
+		self.write(self.render_string("bare_header.html", title="DJ Admin"))
+		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/unpause?kick_dj=true'); setTimeout(function() { window.location.reload(); }, 1000);\">Disconnect DJ And/Or Start %s</a></div>" % config.station_id_friendly[self.sid])
 		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/skip');\">Skip song (use if station is broken)</a></div>")
 		self.write("<div>Stream ID3 Title While Paused:<br> <input type='text' id='pause_title' value=\"%s\" />" % (cache.get_station(self.sid, "pause_title") or "",))
 		self.write(		"<button onclick=\"window.top.call_api('admin/dj/pause_title', { 'title': document.getElementById('pause_title').value });\" />Save</button>")
 		self.write("</div>")
 		self.write(self.render_string("basic_footer.html"))
-
 
 @handle_url("/admin/relay_status")
 class RelayStatus(api.web.HTMLRequest):
@@ -173,7 +163,7 @@ class AlbumList(api.web.HTMLRequest):
 			(self.user.id, self.get_argument("restrict")))
 		for row in albums:
 			self.write("<tr><td>%s</td>" % row['id'])
-			self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?sid=%s&id=%s';\" style='cursor: pointer;'>%s</td><td>" % (self.get_argument('restrict'), row['id'], row['name']))
+			self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?sid=%s&id=%s&sort=%s';\" style='cursor: pointer;'>%s</td><td>" % (self.get_argument('restrict'), row['id'], self.get_argument('sort', ""), row['name']))
 			if row['rating_user']:
 				self.write(str(row['rating_user']))
 			self.write("</td><td>(%s)</td><td>" % row['rating'])

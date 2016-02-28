@@ -73,7 +73,7 @@ class Album(AssociatedMetadata):
 		return instance
 
 	@classmethod
-	def load_from_id_with_songs(cls, album_id, sid, user = None):
+	def load_from_id_with_songs(cls, album_id, sid, user = None, sort = None):
 		row = db.c.fetch_row("SELECT * FROM r4_albums JOIN r4_album_sid USING (album_id) WHERE album_id = %s AND sid = %s", (album_id, sid))
 		if not row:
 			raise MetadataNotFoundError("%s ID %s for sid %s could not be found." % (cls.__name__, album_id, sid))
@@ -82,7 +82,7 @@ class Album(AssociatedMetadata):
 		instance.sid = sid
 		user_id = None if not user else user.id
 		requestable = True if user else False
-		instance.data['songs'] = db.c.fetch_all(
+		sql = (
 			"SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, song_added_on AS added_on, "
 				"song_track_number AS track_number, song_disc_number as disc_number, "
 				"song_url AS url, song_link_text AS link_text, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_cool_multiply AS cool_multiply, "
@@ -93,8 +93,12 @@ class Album(AssociatedMetadata):
 				"JOIN r4_songs USING (song_id) "
 				"LEFT JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
 			"WHERE r4_song_sid.song_exists = TRUE AND r4_songs.song_verified = TRUE AND r4_songs.album_id = %s AND r4_song_sid.sid = %s "
-			"ORDER BY song_disc_number NULLS FIRST, song_track_number NULLS FIRST, song_title",
-			(requestable, user_id, instance.id, sid))
+		)
+		if sort and sort == "added_on":
+			sql += "ORDER BY song_added_on DESC, r4_songs.song_id "
+		else:
+			sql += "ORDER BY song_disc_number NULLS FIRST, song_track_number NULLS FIRST, song_title "
+		instance.data['songs'] = db.c.fetch_all(sql, (requestable, user_id, instance.id, sid))
 		return instance
 
 	@classmethod

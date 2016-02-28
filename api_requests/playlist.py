@@ -77,13 +77,13 @@ class GroupHandler(APIHandler):
 
 @handle_api_url("album")
 class AlbumHandler(APIHandler):
-	description = "Get detailed information about an album, including a list of songs in the album."
+	description = "Get detailed information about an album, including a list of songs in the album.  'Sort' can be set to 'added_on' to sort by when the song was added to the radio."
 	return_name = "album"
-	fields = { "id": (fieldtypes.album_id, True) }
+	fields = { "id": (fieldtypes.album_id, True), "sort": (fieldtypes.string, None) }
 
 	def post(self):
 		try:
-			album = playlist.Album.load_from_id_with_songs(self.get_argument("id"), self.sid, self.user)
+			album = playlist.Album.load_from_id_with_songs(self.get_argument("id"), self.sid, self.user, sort=self.get_argument("sort"))
 			album.load_extra_detail(self.sid)
 		except MetadataNotFoundError:
 			self.return_name = "album_error"

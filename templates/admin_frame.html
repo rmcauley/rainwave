@@ -13,6 +13,7 @@
 	var current_station = {{ sid }};
 	var current_restriction = 1;
 	var current_sched_id = null;
+	var current_sort = "alpha";
 	var refresh_all_screens = false;
 	var dj_election_sched_id = false;
 
@@ -60,7 +61,7 @@
 		else {
 			window.frames.tool.location.href = "/admin/tools/" + current_tool + "?sid=" + current_station;
 		}
-		window.frames.selector.location.href = "/admin/album_list/" + current_tool + "?sid=" + current_station + "&restrict=" + current_restriction;
+		window.frames.selector.location.href = "/admin/album_list/" + current_tool + "?sid=" + current_station + "&restrict=" + current_restriction + "&sort=" + current_sort;
 
 		var t = window.frames.tool_list.document.getElementsByTagName("a");
 		for (var i = 0; i < t.length; i++) {
