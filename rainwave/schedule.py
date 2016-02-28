@@ -103,6 +103,10 @@ def get_current_file(sid):
 def get_current_event(sid):
 	return current[sid]
 
+def set_upnext_crossfade(sid, crossfade):
+	if sid in upnext and upnext[sid][0]:
+		upnext[sid][0].use_crossfade = crossfade
+
 def advance_station(sid):
 	db.c.start_transaction()
 	try:

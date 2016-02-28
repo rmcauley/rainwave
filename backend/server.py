@@ -34,6 +34,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 				log.debug("dj", "Setting server start heatbeat.")
 				cache.set_station(self.sid, "dj_heartbeat_start", timestamp())
 			self.write(self._get_pause_file())
+			schedule.set_upnext_crossfade(self.sid, False)
 			cache.set_station(self.sid, "backend_paused_playing", True)
 			sync_to_front.sync_frontend_dj(self.sid)
 			return
@@ -79,7 +80,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			log.debug("backend", "Station is paused, using: %s" % config.get("pause_file"))
 			return config.get("pause_file")
 
-		string = "annotate:crossfade=0,use_suffix=1,"
+		string = "annotate:crossfade=\"0\",use_suffix=\"1\","
 		if cache.get_station(self.sid, "pause_title"):
 			string += "title=\"%s\"" % cache.get_station(self.sid, "pause_title")
 		else:
