@@ -136,7 +136,7 @@ body.full {
 			width: 25%;
 		}
 
-		div.artists_full {
+		div.full_artists {
 			display: none;
 
 			&.multi_artist {
@@ -171,7 +171,7 @@ body.full {
 				display: none;
 			}
 
-			div.artists_full {
+			div.full_artists {
 				display: block;
 			}
 		}
@@ -203,7 +203,7 @@ body.full {
 				display: none;
 			}
 
-			div.artists_full {
+			div.full_artists {
 				display: block;
 			}
 		}
