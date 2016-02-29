@@ -20,4 +20,12 @@
             {{ $l("song_has_no_ratings") }}
         </div>
     {{/if}}
+    {{#if ^_c.groups && !MOBILE }}
+        <div class="{{ ^'full_groups ' + ((_c.groups.length > 1) ? 'multi_group' : '') }}">
+            <span>{{ $l("Groups") + ": " }}</span>
+            {{#each groups }}
+                <a href="#!/group/{{ id }}">{{ name }}</a>
+            {{/each}}
+        </div>
+    {{/if}}
 </div>

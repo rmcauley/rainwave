@@ -135,6 +135,14 @@ body.full {
 		div.artists {
 			width: 25%;
 		}
+
+		div.artists_full {
+			display: none;
+
+			&.multi_artist {
+				display: block;
+			}
+		}
 	}
 
 	div.search_panel {
@@ -161,6 +169,10 @@ body.full {
 
 			div.artists, div.rating_clear, div.rating_site {
 				display: none;
+			}
+
+			div.artists_full {
+				display: block;
 			}
 		}
 
@@ -189,6 +201,10 @@ body.full {
 
 			div.artists, div.rating_clear, div.rating_site {
 				display: none;
+			}
+
+			div.artists_full {
+				display: block;
 			}
 		}
 
