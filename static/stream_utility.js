@@ -6,6 +6,7 @@ function DoDefaults(options) {
 	options.text_stroke_color = options.text_stroke_color || "black";
 	options.text_stroke_size = options.text_stroke_size || "2px";
 	options.text_shadow = options.text_shadow || "3px 3px 3px black";
+	options.text_align = options.text_align || "left";
 	options.font_size = options.font_size || "18pt";
 	options.font_family = options.font_family || "'Roboto Condensed', sans-serif";
 	options.ad_message = options.ad_message || "Music by:";

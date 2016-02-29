@@ -47,23 +47,20 @@
 		var style;
 
 		var get_art_html = function(art_url) {
-			if (!parseInt(options.art_size)) {
-				return;
-			}
 			var html = "<div class='art' style='background-color: black; background-image: url(" + art_url + "); height: " + options.art_size + "; ";
 			if ((options.layout == "art_top") || (options.layout == "art_bottom")) {
 				html += "width: 100%; ";
 			}
 			else {
 				html += "width: " + options.art_size + "; ";
-			}
-			if (options.art_shadow) {
-				html += "-webkit-box-shadow: " + options.art_shadow + "; ";
-				html += "box-shadow: " + options.art_shadow + "; ";
-			}
-			else if (options.text_shadow) {
-				html += "-webkit-box-shadow: " + options.text_shadow + "; ";
-				html += "box-shadow: " + options.text_shadow + "; ";
+				if (options.art_shadow) {
+					html += "-webkit-box-shadow: " + options.art_shadow + "; ";
+					html += "box-shadow: " + options.art_shadow + "; ";
+				}
+				else if (options.text_shadow) {
+					html += "-webkit-box-shadow: " + options.text_shadow + "; ";
+					html += "box-shadow: " + options.text_shadow + "; ";
+				}
 			}
 			html += "'></div>";
 			return html;
@@ -243,6 +240,19 @@
 			background-size: contain;
 			background-position: center center;
 			z-index: 2;
+		}
+
+		.art_top .art, .art_bottom .art {
+			background-position: left center;
+			background-color: transparent !important;
+		}
+
+		.art_top.centre .art, .art_bottom.centre .art {
+			background-position: center center;
+		}
+
+		.art_top.right .art, .art_bottom.right .art {
+			background-position: right center;
 		}
 
 		.container {
