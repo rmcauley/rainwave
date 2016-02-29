@@ -122,12 +122,12 @@ var RWAudio = function() {
 	self.addEventListener("stall", function(evt) {
 		el.classList.remove("playing");
 		el.classList.add("working");
-		var append;
-		if (evt.detail) {
-			append = document.createElement("span");
-			append.textContent = evt.detail;
-		}
-		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_connect_error", 500), append);
+		// var append;
+		// if (evt.detail) {
+		// 	append = document.createElement("span");
+		// 	append.textContent = evt.detail;
+		// }
+		ErrorHandler.permanent_error(ErrorHandler.make_error("audio_connect_error", 500)); // , append);
 	});
 
 	self.addEventListener("error", function() {

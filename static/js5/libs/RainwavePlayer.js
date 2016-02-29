@@ -371,42 +371,59 @@ var RainwavePlayer = function() {
 	// don't let these escape the library unless there's an actual problem.
 
 	var stall_timeout;
+	var stall_active;
 	var stopAudioConnectError = function() {
 		if (stall_timeout) {
 			clearTimeout(stall_timeout);
 			stall_timeout = null;
 		}
+		stall_active = false;
 	};
 	var doAudioConnectError = function(detail) {
-		if (stall_timeout) {
+		if (stall_active) {
+			dispatchStall(detail);
+		}
+		else if (stall_timeout) {
 			return;
 		}
-		stall_timeout = setTimeout(function() {
-			var evt = createEvent("stall");
-			evt.detail = detail;
-			self.dispatchEvent(evt);
-			stall_timeout = null;
-		}, 1000);
+		else {
+			stall_timeout = setTimeout(function() {
+				dispatchStall(detail);
+			}, 1000);
+		}
+	};
+
+	var dispatchStall = function(detail) {
+		// console.log("Sending stall: " + (detail || "<audio>"));
+		var evt = createEvent("stall");
+		evt.detail = detail;
+		self.dispatchEvent(evt);
+		stall_timeout = null;
+		stall_active = true;
 	};
 
 	var onPlay = function() {
+		// console.log("Sending play.");
 		stopAudioConnectError();
 		self.dispatchEvent(createEvent("playing"));
 		self.dispatchEvent(createEvent("change"));
 	};
 
 	var onWaiting = function() {
+		// console.log("Sending loading.");
 		stopAudioConnectError();
 		self.dispatchEvent(createEvent("loading"));
 	};
 
 	var onStop = function() {
+		// console.log("Sending stop.");
 		stopAudioConnectError();
 		self.dispatchEvent(createEvent("stop"));
 		self.dispatchEvent(createEvent("change"));
 	};
 
 	var onStall = function(e, i) {
+		// console.log("Stall detected.");
 		// we need to handle stalls from sources (which have an index)
 		// and stalls from the audio element themselves in this function
 		// we handle sources so that we know how bad things are.
@@ -427,6 +444,7 @@ var RainwavePlayer = function() {
 	};
 
 	var onError = function(e) {
+		console.log("Sending error.");
 		stopAudioConnectError();
 		self.stop();
 		self.dispatchEvent(createEvent("error"));
