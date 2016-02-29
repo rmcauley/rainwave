@@ -365,20 +365,6 @@ var RainwavePlayer = function() {
 	//	Event Handlers
 	// *******************************************************************************************
 
-	var onWaiting = function() {
-		self.dispatchEvent(createEvent("loading"));
-	};
-
-	var onPlay = function() {
-		self.dispatchEvent(createEvent("playing"));
-		self.dispatchEvent(createEvent("change"));
-	};
-
-	var onStop = function() {
-		self.dispatchEvent(createEvent("stop"));
-		self.dispatchEvent(createEvent("change"));
-	};
-
 	// the stall-related functions have a timeout in order
 	// to workaround browser issues that report stalls for VERY brief
 	// moments (often 50-70ms).
@@ -401,6 +387,23 @@ var RainwavePlayer = function() {
 			self.dispatchEvent(evt);
 			stall_timeout = null;
 		}, 1000);
+	};
+
+	var onPlay = function() {
+		stopAudioConnectError();
+		self.dispatchEvent(createEvent("playing"));
+		self.dispatchEvent(createEvent("change"));
+	};
+
+	var onWaiting = function() {
+		stopAudioConnectError();
+		self.dispatchEvent(createEvent("loading"));
+	};
+
+	var onStop = function() {
+		stopAudioConnectError();
+		self.dispatchEvent(createEvent("stop"));
+		self.dispatchEvent(createEvent("change"));
 	};
 
 	var onStall = function(e, i) {
