@@ -47,6 +47,9 @@
 		var style;
 
 		var get_art_html = function(art_url) {
+			if (!parseInt(options.art_size)) {
+				return;
+			}
 			var html = "<div class='art' style='background-color: black; background-image: url(" + art_url + "); height: " + options.art_size + "; ";
 			if ((options.layout == "art_top") || (options.layout == "art_bottom")) {
 				html += "width: 100%; ";
@@ -325,6 +328,11 @@
 		.art_right.container.adding .title, .art_right.container.adding .album, .art_right.container.adding .artist {
 			-webkit-transform: translateX(105%);
 			transform: translateX(105%);
+		}
+
+		.fade.adding .artist, .fade.adding .album, .fade.adding .artist {
+			-webkit-transform: none;
+			transform: none;
 		}
 
 		.container.to_bottom {
