@@ -82,6 +82,7 @@
 
 		<div id="r4_audio_player" bind="player" class="unselectable">
 			<div class="load_indicator"></div>
+			<div class="tuned_in_indicator"></div>
 			<div class="m3u menu_dropdown menu_hover_dropdown pconly">
 				<a bind="play2" class="link">
 					{{ $l("listen_via_browser") }}

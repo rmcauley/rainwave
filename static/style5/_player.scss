@@ -8,7 +8,7 @@ $player_icon_width: $player_icon_height;
         @include transform(translateX(-50%) scaleX(0));
     }
     50% {
-        @include transform(translateX(0%) scaleX(0.5));
+        @include transform(translateX(0%) scaleX(0.45));
     }
     100% {
         @include transform(translateX(50%) scaleX(0));
@@ -20,7 +20,7 @@ $player_icon_width: $player_icon_height;
         @include transform(translateX(-50%) scaleX(0));
     }
     50% {
-        @include transform(translateX(0%) scaleX(0.5));
+        @include transform(translateX(0%) scaleX(0.45));
     }
     100% {
         @include transform(translateX(50%) scaleX(0));
@@ -68,15 +68,7 @@ $player_icon_width: $player_icon_height;
 		cursor: pointer;
 	}
 
-	body.tuned_in &, &.playing {
-		.audio_icon_play {
-			&, * {
-				fill: $orange * 1.4;
-			}
-		}
-	}
-
-	 body.tuned_in &.playing, &.playing {
+	&.playing, &.playing {
 		.audio_icon_play {
 			&, * {
 				fill: $orange * 1.2;
@@ -150,17 +142,19 @@ $player_icon_width: $player_icon_height;
 
 	/* SPINNER *******************************************************************/
 
+	div.load_indicator, div.tuned_in_indicator {
+		position: absolute;
+		z-index: 2;
+		top: 100%;
+		width: 100%;
+		height: 2px;
+		opacity: 0;
+		background: $text;
+
+		@include transition-wtime(300ms, opacity, transform);
+	}
+
 	div.load_indicator {
-	    position: absolute;
-	    z-index: 2;
-	    top: 100%;
-	    width: 100%;
-	    height: 2px;
-	    opacity: 0;
-	    background: $text;
-
-	    @include transition-wtime(300ms, opacity);
-
 	    -webkit-animation: bar_loader 0.8s infinite linear;
 	            animation: bar_loader 0.8s infinite linear;
 	    -webkit-animation-play-state: paused;
@@ -168,8 +162,18 @@ $player_icon_width: $player_icon_height;
 	}
 
 	&.working div.load_indicator {
-        opacity: 1;
-        -webkit-animation-play-state: running;
-                animation-play-state: running;
+		opacity: 1;
+		-webkit-animation-play-state: running;
+		        animation-play-state: running;
+	}
+
+	div.tuned_in_indicator, body.tuned_in &.working div.tuned_in_indicator {
+		background: $text;
+		@include transform(scaleX(0));
+	}
+
+	body.tuned_in & div.tuned_in_indicator {
+		opacity: 0.6;
+		@include transform(scaleX(1));
 	}
 }
