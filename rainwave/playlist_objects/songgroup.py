@@ -42,7 +42,7 @@ class SongGroup(AssociatedMetadata):
 
 	def reconcile_sids(self):
 		new_sids_all = db.c.fetch_all(
-			"SELECT sid, COUNT(album_id) "
+			"SELECT sid, COUNT(DISTINCT album_id) "
 			"FROM r4_song_group "
 				"JOIN r4_song_sid USING (song_id) "
 				"JOIN r4_songs USING (song_id) "
