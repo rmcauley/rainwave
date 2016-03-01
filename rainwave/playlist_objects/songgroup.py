@@ -17,7 +17,7 @@ class SongGroup(AssociatedMetadata):
 	check_self_size_query = "SELECT COUNT(song_id) FROM r4_song_group JOIN r4_songs USING (song_id) WHERE group_id = %s AND song_verified = TRUE"
 	delete_self_query = "DELETE FROM r4_groups WHERE group_id = %s"
 
-	#pylint: disable=W0212
+	#pylint: disable=W0212,W0221
 	@classmethod
 	def load_list_from_song_id(klass, song_id, sid=None):
 		if not sid:
@@ -28,6 +28,7 @@ class SongGroup(AssociatedMetadata):
 			"FROM r4_song_sid "
 				"JOIN r4_song_group USING (song_id) "
 				"JOIN r4_group_sid ON (r4_song_group.group_id = r4_group_sid.group_id AND r4_group_sid.sid = %s AND r4_group_sid.group_display = TRUE) "
+				"JOIN r4_groups ON (r4_group_sid.group_id = r4_groups.group_id) "
 			"WHERE song_id = %s AND song_exists = TRUE "
 			,(sid, song_id)
 		)
@@ -37,7 +38,7 @@ class SongGroup(AssociatedMetadata):
 			instance._assign_from_dict(row)
 			instances.append(instance)
 		return instances
-	#pylint: enable=W0212
+	#pylint: enable=W0212,W0221
 
 	def reconcile_sids(self):
 		new_sids_all = db.c.fetch_all(
