@@ -22,7 +22,7 @@ var RWAudio = function() {
 
 		root_template.volume = document.getElementById("audio_volume");
 		root_template.volume_indicator = document.getElementById("audio_volume_indicator");
-		root_template.volume.style.display = null;
+		root_template.volume.style.display = "";
 		root_template.mute.parentNode.appendChild(root_template.volume);
 
 		root_template.volume.addEventListener("mousedown", volume_control_mousedown);

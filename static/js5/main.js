@@ -175,8 +175,8 @@ var Stations = [];
 			add_javascript("/static/fastclick.min.js");
 		}
 
-		if (navigator.userAgent.toLowerCase().indexOf("msie") !== -1) {
-			add_javascript("/static/svg4everybody.min.js");
+		if ((navigator.userAgent.toLowerCase().indexOf("msie") !== -1) || (navigator.userAgent.toLowerCase().indexOf("trident") !== -1)) {
+			add_javascript("/static/svg4everybody.min.js", function() { svg4everybody(); });
 		}
 	};
 
