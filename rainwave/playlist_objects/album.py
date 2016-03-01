@@ -95,7 +95,7 @@ class Album(AssociatedMetadata):
 			"WHERE r4_song_sid.song_exists = TRUE AND r4_songs.song_verified = TRUE AND r4_songs.album_id = %s AND r4_song_sid.sid = %s "
 		)
 		if sort and sort == "added_on":
-			sql += "ORDER BY song_added_on DESC, r4_songs.song_id "
+			sql += "ORDER BY song_added_on DESC, r4_songs.song_id DESC "
 		else:
 			sql += "ORDER BY song_disc_number NULLS FIRST, song_track_number NULLS FIRST, song_title "
 		instance.data['songs'] = db.c.fetch_all(sql, (requestable, user_id, instance.id, sid))
