@@ -71,7 +71,7 @@ class Song(object):
 				else:
 					s.albums = [ Album.load_from_id(d['album_id']) ]
 			s.artists = Artist.load_list_from_song_id(song_id)
-			s.groups = SongGroup.load_list_from_song_id(song_id)
+			s.groups = SongGroup.load_list_from_song_id(song_id, sid)
 		except Exception as e:
 			log.exception("song", "Song ID %s failed to load, sid %s." % (song_id, sid), e)
 			s.disable()

@@ -14,7 +14,9 @@ class RemoveGroupFromSong(api.web.APIHandler):
 
 	def post(self):
 		s = Song.load_from_id(self.get_argument("song_id"))
-		s.remove_group_id(self.get_argument("group_id"))
+		g = SongGroup.load_from_id(self.get_argument("group_id"))
+		s.remove_group_id(g.id)
+		g.reconcile_sids()
 		self.append(self.return_name, { "success": "true", "tl_key": "Group removed from song ID." })
 
 @handle_api_url("admin/edit_group_elec_block")

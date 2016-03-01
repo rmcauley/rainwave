@@ -364,15 +364,15 @@ class Album(AssociatedMetadata):
 		self.data['request_rank_percentile'] = max(5, min(99, int(self.data['request_rank_percentile'])))
 
 		self.data['genres'] = db.c.fetch_all(
-			"SELECT DISTINCT group_id AS id, group_name AS name "
-			"FROM r4_albums "
-				"JOIN r4_songs USING (album_id) "
-				"JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
+			"SELECT DISTINCT r4_groups.group_id AS id, group_name AS name "
+			"FROM r4_songs "
+				"JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE) "
 				"JOIN r4_song_group ON (r4_songs.song_id = r4_song_group.song_id) "
-				"JOIN r4_groups USING (group_id) "
-			"WHERE song_verified = TRUE AND album_id = %s "
+				"JOIN r4_group_sid ON (r4_song_group.group_id = r4_group_sid.group_id AND r4_group_sid.sid = %s AND r4_group_sid.group_display = TRUE) "
+				"JOIN r4_groups ON (r4_group_sid.group_id = r4_groups.group_id) "
+			"WHERE song_verified = TRUE AND r4_songs.album_id = %s "
 			"ORDER BY group_name ",
-			(sid, self.id))
+			(sid, sid, self.id))
 
 		self.data['rating_histogram'] = {}
 		# histo = db.c.fetch_all("SELECT "

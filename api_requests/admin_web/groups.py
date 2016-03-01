@@ -56,6 +56,7 @@ class AssociateGroupToolFinish(api.web.HTMLRequest):
 			album = Album.load_from_id_with_songs(album_set[0], album_set[1])
 			for song in album.data['songs']:
 				group.associate_song_id(song['id'])
+		group.reconcile_sids()
 		self.write(self.render_string("bare_header.html", title="Added Groups"))
 		self.write("<p>Now associated.</p><p><a href='/admin/tools/associate_groups'>Start over.</a></p>")
 		self.write(self.render_string("basic_footer.html"))

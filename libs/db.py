@@ -516,6 +516,8 @@ def create_tables():
 	c.create_delete_fk("r4_song_group", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_group", "r4_groups", "group_id")
 
+	_create_group_sid_table()
+
 	c.update(" \
 		CREATE TABLE r4_schedule ( \
 			sched_id				SERIAL		PRIMARY KEY, \
@@ -749,6 +751,16 @@ def create_tables():
 		_fill_test_tables()
 
 	c.commit()
+
+def _create_group_sid_table():
+	c.update(" \
+		CREATE TABLE r4_group_sid( \
+			group_id 				INT, \
+			sid 					SMALLINT	NOT NULL, \
+			group_display			BOOLEAN		DEFAULT FALSE \
+		)")
+	c.create_idx("r4_group_sid", "group_display")
+	c.create_delete_fk("r4_group_sid", "r4_groups", "group_id")
 
 def _create_test_tables():
 	c.update(" \

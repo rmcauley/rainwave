@@ -2,6 +2,7 @@ from time import time as timestamp
 
 from libs import db
 from libs import log
+from libs import config
 
 from rainwave.playlist_objects.metadata import AssociatedMetadata
 from rainwave.playlist_objects.metadata import make_searchable_string
@@ -15,6 +16,54 @@ class SongGroup(AssociatedMetadata):
 	has_song_id_query = "SELECT COUNT(song_id) FROM r4_song_group WHERE song_id = %s AND group_id = %s"
 	check_self_size_query = "SELECT COUNT(song_id) FROM r4_song_group JOIN r4_songs USING (song_id) WHERE group_id = %s AND song_verified = TRUE"
 	delete_self_query = "DELETE FROM r4_groups WHERE group_id = %s"
+
+	#pylint: disable=W0212
+	@classmethod
+	def load_list_from_song_id(klass, song_id, sid=None):
+		if not sid:
+			return super(SongGroup, klass).load_list_from_song_id(song_id)
+
+		rows = db.c.fetch_all(
+			"SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, r4_groups.group_name_searchable AS name_searchable, group_elec_block AS elec_block, group_cool_time AS cool_time, group_is_tag AS is_tag "
+			"FROM r4_song_sid "
+				"JOIN r4_song_group USING (song_id) "
+				"JOIN r4_group_sid ON (r4_song_group.group_id = r4_group_sid.group_id AND r4_group_sid.sid = %s AND r4_group_sid.group_display = TRUE) "
+			"WHERE song_id = %s AND song_exists = TRUE "
+			,(sid, song_id)
+		)
+		instances = []
+		for row in rows:
+			instance = klass()
+			instance._assign_from_dict(row)
+			instances.append(instance)
+		return instances
+	#pylint: enable=W0212
+
+	def reconcile_sids(self):
+		new_sids_all = db.c.fetch_all(
+			"SELECT sid, COUNT(album_id) "
+			"FROM r4_song_group "
+				"JOIN r4_song_sid USING (song_id) "
+				"JOIN r4_songs USING (song_id) "
+			"WHERE group_id = %s AND song_exists = TRUE AND song_verified = TRUE "
+			"GROUP BY sid "
+			"HAVING COUNT(album_id) > 1"
+			,(self.id,))
+		new_sids = []
+		for row in new_sids_all:
+			new_sids.append(row['sid'])
+		active_sids = db.c.fetch_list("SELECT sid FROM r4_group_sid WHERE group_id = %s AND group_display = TRUE GROUP BY sid", (self.id,))
+		inactive_sids = db.c.fetch_list("SELECT sid FROM r4_group_sid WHERE group_id = %s AND group_display = FALSE GROUP BY sid", (self.id,))
+		for sid in config.station_ids:
+			if sid in new_sids:
+				if sid in inactive_sids:
+					db.c.update("UPDATE r4_group_sid SET group_display = TRUE WHERE group_id = %s", (self.id,))
+				elif sid in active_sids:
+					pass
+				else:
+					db.c.update("INSERT INTO r4_group_sid (group_id, sid, group_display) VALUES (%s, %s, TRUE)", (self.id, sid))
+			elif sid in active_sids:
+				db.c.update("UPDATE r4_group_sid SET group_display = FALSE WHERE group_id = %s", (self.id,))
 
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_groups", "group_id")
