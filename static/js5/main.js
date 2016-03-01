@@ -147,14 +147,14 @@ var Stations = [];
 
 		API.initialize(BOOTSTRAP.user.sid, "/api4/", BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
 
-		if (document.ontouchstart === null) {
-			var fastclick_load = document.createElement("script");
-			fastclick_load.src = "//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js";
-			fastclick_load.addEventListener("load", function() {
-				FastClick.attach(document.body);
-			});
-			document.body.appendChild(fastclick_load);
-		}
+		var add_javascript = function(src, callback) {
+			var s = document.createElement("script");
+			s.addEventListener("load", callback);
+			s.src = src;
+			// document.getElementsByTagName("head")[0].appendChild(s);
+			document.body.appendChild(s);
+			return s;
+		};
 
 		Sizing.trigger_resize();
 
@@ -170,6 +170,14 @@ var Stations = [];
 		document.body.classList.remove("loading");
 
 		BOOTSTRAP = null;
+
+		if (document.ontouchstart === null) {
+			add_javascript("/static/fastclick.min.js");
+		}
+
+		if (navigator.userAgent.toLowerCase().indexOf("msie") !== -1) {
+			add_javascript("/static/svg4everybody.min.js");
+		}
 	};
 
 	//document.addEventListener("DOMContentLoaded", initialize);

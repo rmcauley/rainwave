@@ -14,13 +14,6 @@ var Menu = function() {
 		}
 	};
 
-	var add_javascript = function(src, callback) {
-		var s = document.createElement("script");
-		s.addEventListener("load", callback);
-		s.src = src;
-		document.getElementsByTagName("head")[0].appendChild(s);
-	};
-
 	BOOTSTRAP.on_init.push(function(root_template) {
 		template = root_template;
 
@@ -77,7 +70,7 @@ var Menu = function() {
 		if (template.calendar_dropdown) {
 			BOOTSTRAP.on_draw.push(function() {
 				var jstz_load = document.createElement("script");
-				jstz_load.src = "//cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js";
+				jstz_load.src = "/static/jstz.min.js";
 				jstz_load.addEventListener("load", function() {
 					template.calendar_menu_item.addEventListener("click", calendar_toggle);
 					template.menu_wrapper.addEventListener("mouseleave", calendar_hide);
