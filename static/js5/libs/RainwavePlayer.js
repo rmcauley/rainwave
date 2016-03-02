@@ -67,9 +67,12 @@ isSupported   : Boolean: Can the browser play back HTML5 audio?
 isPlaying     : Boolean: Is the library playing/trying to play (true) or stopped? (false)
 isMuted       : Boolean.
 type          : String : What kind of audio does the browser support: "Vorbis" or "MP3"?
+mimetype      : String : MIME type of the string.
 volume        : Number : 0.0 to 1.0. 0.0 during mute.
 
 All properties can be changed, but please don't.  You'll break your own player. :)
+They're exposed for rare edge cases where you may want to override what the
+player is doing, if you're so confident as to do such.
 
 */
 
@@ -118,8 +121,8 @@ var RainwavePlayer = function() {
 	self.isPlaying = false;
 	self.volume = 1.0;
 	self.isMuted = false;
+	self.mimetype = "";
 
-	var filetype;
 	var streamURLs = [];
 	var volumeBeforeMute = 1.0;
 	var isMobile = (navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1);
@@ -157,14 +160,14 @@ var RainwavePlayer = function() {
 		// a single song switch, and thus, we have to forcefeed it MP3.
 		// Check for Mozilla by looking for really specific moz-prefixed properties.
 		if ((navigator.mozIsLocallyAvailable || navigator.mozApps || navigator.mozContacts) && ((canVorbis == "maybe") || (canVorbis == "probably"))) {
-			filetype = "audio/ogg";
+			self.mimetype = "audio/ogg";
 			self.type = "ogg";
 			self.isSupported = true;
 		}
 
 		var canMP3 = audioEl.canPlayType("audio/mpeg; codecs=\"mp3\"");
 		if (!self.isSupported && (canMP3 == "maybe") || (canMP3 == "probably")) {
-			filetype = "audio/mpeg";
+			self.mimetype = "audio/mpeg";
 			self.type = "mp3";
 			self.isSupported = true;
 		}
@@ -203,7 +206,7 @@ var RainwavePlayer = function() {
 	var setupAudioSource = function(i, stream_url) {
 		var source = document.createElement("source");
 		source.setAttribute("src", stream_url);
-		source.setAttribute("type", filetype);
+		source.setAttribute("type", self.mimetype);
 
 		// source.addEventListener("playing", self.on_play);			// doesn't work
 
