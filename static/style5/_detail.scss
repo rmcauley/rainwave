@@ -262,7 +262,7 @@ div.row {
 		text-overflow: ellipsis;
 	}
 
-	div.artists, div.full_artists {
+	div.artists, div.full_artists, div.full_groups {
 		a::after {
 			content: ",";
 		}
