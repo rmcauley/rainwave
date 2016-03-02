@@ -50,21 +50,16 @@ class SongGroup(AssociatedMetadata):
 			"GROUP BY sid "
 			"HAVING COUNT(DISTINCT album_id) > 1"
 			,(self.id,))
-		new_sids = []
-		for row in new_sids_all:
-			new_sids.append(row['sid'])
-		active_sids = db.c.fetch_list("SELECT sid FROM r4_group_sid WHERE group_id = %s AND group_display = TRUE GROUP BY sid", (self.id,))
-		inactive_sids = db.c.fetch_list("SELECT sid FROM r4_group_sid WHERE group_id = %s AND group_display = FALSE GROUP BY sid", (self.id,))
+		new_sids = [ row['sid'] for row in new_sids_all ]
 		for sid in config.station_ids:
-			if sid in new_sids:
-				if sid in inactive_sids:
+			existing = db.c.fetch_row("SELECT group_display FROM r4_group_sid WHERE group_id = %s AND sid = %s", (self.id, sid))
+			if existing:
+				if sid in new_sids:
 					db.c.update("UPDATE r4_group_sid SET group_display = TRUE WHERE group_id = %s", (self.id,))
-				elif sid in active_sids:
-					pass
 				else:
-					db.c.update("INSERT INTO r4_group_sid (group_id, sid, group_display) VALUES (%s, %s, TRUE)", (self.id, sid))
-			elif sid in active_sids:
-				db.c.update("UPDATE r4_group_sid SET group_display = FALSE WHERE group_id = %s", (self.id,))
+					db.c.update("UPDATE r4_group_sid SET group_display = FALSE WHERE group_id = %s", (self.id,))
+			elif sid in new_sids:
+				db.c.update("INSERT INTO r4_group_sid (group_id, sid, group_display) VALUES (%s, %s, TRUE)", (self.id, sid))
 
 	def _insert_into_db(self):
 		self.id = db.c.get_next_id("r4_groups", "group_id")
