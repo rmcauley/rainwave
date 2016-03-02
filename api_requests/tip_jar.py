@@ -43,10 +43,10 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
 				<a href='https://paypal.me/Rainwave/5USD'>Donate at http://paypal.me/Rainwave</a>
 			</div>""")
 
-		all_donations = db.c.fetch_var("SELECT SUM(donation_amount) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0")
+		all_donations = db.c.fetch_var("SELECT ROUND(SUM(donation_amount)) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0")
 		self.write("<p>%s: %s</p>" % (self.locale.translate("tip_jar_all_donations"), all_donations))
 
-		balance = db.c.fetch_var("SELECT SUM(donation_amount) FROM r4_donations")
+		balance = db.c.fetch_var("SELECT ROUND(SUM(donation_amount)) FROM r4_donations")
 		self.write("<p>%s: %s</p>" % (self.locale.translate("tip_jar_balance"), balance))
 
 		super(TipJarHTML, self).get(write_header=False)
