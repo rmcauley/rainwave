@@ -148,15 +148,12 @@ var RainwavePlayer = function() {
 		if (isMobile) {
 			// avoid using Vorbis on mobile devices, since MP3 playback has hardware decoding
 		}
-		else if (navigator.userAgent.indexOf("CrKey") !== -1) {
-			// avoid Vorbis on obscure forms of Chromium and Chromium based browsers
-		}
 		else {
 			canVorbis = audioEl.canPlayType("audio/ogg; codecs=\"vorbis\"");
 		}
 
 		// we have to check for Mozilla support specifically for Vorbis.
-		// Webkit will choke on Vorbis and stop playing after
+		// Webkit/Blink, esp. older ones, will choke on Vorbis and stop playing after
 		// a single song switch, and thus, we have to forcefeed it MP3.
 		// Check for Mozilla by looking for really specific moz-prefixed properties.
 		if ((navigator.mozIsLocallyAvailable || navigator.mozApps || navigator.mozContacts) && ((canVorbis == "maybe") || (canVorbis == "probably"))) {
