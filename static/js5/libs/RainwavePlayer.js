@@ -201,7 +201,7 @@ var RainwavePlayer = function() {
 				setupAudio();
 			}
 			if (chromeSpecialFlag) {
-				self.dispatchEvent();
+				self.dispatchEvent(createEvent("longLoadWarning"));
 			}
 
 			for (var i = 0; i < streamURLs.length; i++) {
@@ -379,7 +379,12 @@ var RainwavePlayer = function() {
 	// *******************************************************************************************
 
 	self.dispatchEvent = function(evt) {
+		if (!evt) {
+			console.error("RainwavePlayer: No event specified to dispatch.");
+			return;
+		}
 		if (!callbacks[evt.type]) {
+			console.error("RainwavePlayer: Invalid event type.");
 			return;
 		}
 		for (var i = 0; i < callbacks[evt.type].length; i++) {
