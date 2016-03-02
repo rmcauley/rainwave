@@ -122,6 +122,8 @@ var Router = function() {
 				}
 			}
 		});
+
+		window.onhashchange = self.detect_url_change;
 	});
 
 	BOOTSTRAP.on_draw.push(function(root_template) {
@@ -513,6 +515,5 @@ var Router = function() {
 		}
 	};
 
-	window.onhashchange = self.detect_url_change;
 	return self;
 }();
