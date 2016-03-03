@@ -1,6 +1,6 @@
 {
    "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
-   "__comment__"                 : "Please put them in your actual language. (日本語 not 'Japanese' or 'JP') Short version should be < 4 characters.",
+   "__comment__"                 : "Please put them in your actual language. (i.e. use kanji!) Short version should be < 4 characters.",
 
    "language_name"                                   : "English",
    "language_name_short"                             : "EN",

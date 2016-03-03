@@ -17,7 +17,11 @@ def slim(ttf, text_file, destination):
 	f = open(text_file, "r")
 
 	for i in f.read().decode("UTF-8"):
-		font.selection[ord(i)] = True
+		# 1327 is where the Cyrillic block(s) end, covered by Roboto Condensed.
+		# We don't want to include characters covered by Roboto in these
+		# extended (presumably CJK) languages, we want them rendered by Roboto!
+		if ord(i) > 1327:
+			font.selection[ord(i)] = True
 	f.close()
 
 	font.selection.invert()

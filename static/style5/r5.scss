@@ -184,8 +184,16 @@ body {
 	background: #1c1d1f;
 	font-family: 'Roboto Condensed', 'Helvetica Neue', sans-serif;
 
+	html[lang="ko_KO"] & {
+		font-family: 'KoPub Dotum', 'Roboto Condensed', 'Helvetica Neue', sans-serif;
+	}
+
+	html[lang="ja_JA"] & {
+		font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+	}
+
 	&.nofont {
-		font-family: sans-serif;
+		font-family: sans-serif !important;
 	}
 
 	&.loading {
