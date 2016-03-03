@@ -255,7 +255,7 @@ var RainwavePlayer = function() {
 			if (audioEl) {
 				audioEl.volume = volumeBeforeMute || self.volume;
 			}
-			self.volume = volumeBeforeMute;
+			self.volume = volumeBeforeMute || self.volume;
 			self.dispatchEvent(createEvent("volumeChange"));
 		}
 		else {
@@ -276,11 +276,12 @@ var RainwavePlayer = function() {
 	self.setVolume = function(newVolume) {
 		if (self.isMuted) {
 			volumeBeforeMute = newVolume;
-			return;
 		}
-		self.volume = newVolume;
-		if (audioEl) {
-			audioEl.volume = newVolume;
+		else {
+			self.volume = newVolume;
+			if (audioEl) {
+				audioEl.volume = newVolume;
+			}
 		}
 		self.dispatchEvent(createEvent("volumeChange"));
 	};
