@@ -96,6 +96,9 @@ var RWEvent = function(self) {
 			// make sure we sort properly for that condition here
 			self.songs.sort(function(a, b) { return a.entry_position < b.entry_position ? -1 : 1; });
 		}
+		if (self.songs[0].autovoted) {
+			self.songs[0].remove_autovote();
+		}
 		self.songs[0].el.classList.add("now_playing");
 		for (var i = 1; i < self.songs.length; i++) {
 			self.songs[i].el.classList.add("song_lost");
