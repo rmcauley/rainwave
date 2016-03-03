@@ -92,7 +92,10 @@ var RWAudio = function() {
 	});
 
 	if (!Prefs.get("vol") || (Prefs.get("vol") > 1) || (Prefs.get("vol") < 0)) {
-		self.setVolume(Prefs.get("vol"));
+		self.setVolume(0.85);
+	}
+	else {
+		Prefs.get("vol");
 	}
 	self.addEventListener("volumeChange", function() {
 		if (self.isMuted) {
@@ -107,7 +110,7 @@ var RWAudio = function() {
 
 	self.addEventListener("stop", function() {
 		el.classList.remove("playing");
-		el.classList.remove("working");
+		clear_audio_errors();
 	});
 
 	self.addEventListener("loading", function() {
