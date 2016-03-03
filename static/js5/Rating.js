@@ -475,10 +475,7 @@ var Rating = function() {
 			if (is_touching) return;
 			if (!json.rating_allowed && !User.rate_anything) return;
 			if (evt.target !== this) return;
-			var new_rating = get_rating_from_mouse(evt);
-			if (json.rating_allowed || User.rate_anything) {
-				self.do_rating(new_rating, json);
-			}
+			self.do_rating(get_rating_from_mouse(evt), json);
 		};
 
 		if (User.id > 1) {
