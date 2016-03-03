@@ -7,7 +7,7 @@ or stream audio by itself.
 
 == Python Setup for Debian/Ubuntu
 
-$ sudo apt-get install postgresql-contrib python-pip python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit
+$ sudo apt-get install postgresql-contrib python-pip python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit python-fontforge
 $ sudo pip install -r requirements.txt
 
 Optional ujson support for faster JSON serialization:

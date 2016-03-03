@@ -178,6 +178,7 @@ class APIServer(object):
 		buildtools.bake_js()
 		buildtools.bake_templates()
 		buildtools.bake_beta_templates()
+		buildtools.copy_woff()
 
 		# Setup variables for the long poll module
 		# Bypass Tornado's forking processes for Windows machines if num_processes is set to 1

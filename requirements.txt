@@ -12,3 +12,4 @@ supervisor
 tornado>=3.2
 Unidecode
 watchdog
+fontforge

@@ -1,6 +1,8 @@
 import os
 import subprocess
 import scss
+import glob
+import shutil
 from pathlib import Path
 from libs import config
 from libs import RWTemplates
@@ -15,6 +17,12 @@ def create_baked_directory():
 			subprocess.call(["chown", "-R", "%s:%s" % (config.get("api_user"), config.get("api_group")), d ])
 		return True
 	return False
+
+def copy_woff():
+	d = os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()))
+	# Copying the minimized font files has to go somewhere.
+	for fontfile in glob.glob(os.path.join(os.path.dirname(__file__), "../static/fonts/*.min.woff")):
+		shutil.copy(fontfile, d)
 
 def bake_css():
 	create_baked_directory()
