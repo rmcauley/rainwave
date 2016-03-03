@@ -121,7 +121,7 @@ var Rating = function() {
 							ratings[i].lastChild.textContent = "";
 						}
 					}
-					if (a.rating_complete === false) {
+					if (!a.rating_complete) {
 						ratings[i].classList.add("rating_incomplete");
 					}
 					else {

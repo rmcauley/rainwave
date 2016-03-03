@@ -109,7 +109,7 @@ def set_album_fave(sid, album_id, user_id, fave):
 	db.c.start_transaction()
 	exists = db.c.fetch_row("SELECT * FROM r4_album_ratings WHERE album_id = %s AND user_id = %s AND sid = %s", (album_id, user_id, sid))
 	rating = None
-	rating_complete = None
+	rating_complete = False
 	if not exists:
 		if db.c.update("INSERT INTO r4_album_ratings (album_id, user_id, album_fave, sid) VALUES (%s, %s, %s, %s)", (album_id, user_id, fave, sid)) == 0:
 			log.debug("rating", "Failed to insert record for fave %s %s, fave is: %s." % ("album", album_id, fave))
