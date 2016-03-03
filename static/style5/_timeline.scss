@@ -80,6 +80,10 @@ div.timeline_event {
 		padding: 0 20px 0 10px;
 		// fix webkit rendering things 1px too high (?!?!?!)
 		-webkit-transform: translateY(1px);
+
+		html[lang='ko_KO'] & {
+			@include transform(translateY(-2px));
+		}
 	}
 
 	&.no_header {

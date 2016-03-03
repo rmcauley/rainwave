@@ -144,6 +144,10 @@ div.song {
 			-webkit-transform-origin: top left;
 			        transform-origin: top left;
 			@include transform(rotate(90deg) translateX(-50%) translateY(-50%));
+
+			html[lang='ko_KO'] & {
+				@include transform(translateX(-50%) translateY(-50%));
+			}
 		}
 
 		div.sched_current & {
