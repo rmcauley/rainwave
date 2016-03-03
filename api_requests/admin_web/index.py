@@ -208,6 +208,10 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 				self.write("<td>{}:{:0>2d}</td>".format(int(row['length'] / 60), row['length'] % 60))
 			elif 'length' in row:
 				self.write("<td></td>")
+			if row['added_on']:
+				self.write("<td>%sd</td>" % int((time.time() - row['added_on']) / 86400))
+			elif 'added_on' in row:
+				self.write("<td></td>")
 			if row['origin_sid']:
 				self.write("<td>%s</td>" % config.station_id_friendly[row['origin_sid']])
 			elif 'origin_sid' in row:
