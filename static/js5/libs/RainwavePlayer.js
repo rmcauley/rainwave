@@ -71,6 +71,13 @@ var RainwavePlayer = function() {
 
 	var audioEl = document.createElement("audio");
 	if ("canPlayType" in audioEl) {
+		var canMP3 = audioEl.canPlayType("audio/mpeg; codecs=\"mp3\"");
+		if ((canMP3 == "maybe") || (canMP3 == "probably")) {
+			self.mimetype = "audio/mpeg";
+			self.type = "mp3";
+			self.isSupported = true;
+		}
+
 		var canVorbis = false;
 		if (isMobile) {
 			// avoid using Vorbis on mobile devices, since MP3 playback has hardware decoding
@@ -86,13 +93,6 @@ var RainwavePlayer = function() {
 		if ((navigator.mozIsLocallyAvailable || navigator.mozApps || navigator.mozContacts) && ((canVorbis == "maybe") || (canVorbis == "probably"))) {
 			self.mimetype = "audio/ogg";
 			self.type = "ogg";
-			self.isSupported = true;
-		}
-
-		var canMP3 = audioEl.canPlayType("audio/mpeg; codecs=\"mp3\"");
-		if (!self.isSupported && ((canMP3 == "maybe") || (canMP3 == "probably"))) {
-			self.mimetype = "audio/mpeg";
-			self.type = "mp3";
 			self.isSupported = true;
 		}
 
