@@ -90,7 +90,7 @@ var RainwavePlayer = function() {
 		}
 
 		var canMP3 = audioEl.canPlayType("audio/mpeg; codecs=\"mp3\"");
-		if (!self.isSupported && (canMP3 == "maybe") || (canMP3 == "probably")) {
+		if (!self.isSupported && ((canMP3 == "maybe") || (canMP3 == "probably"))) {
 			self.mimetype = "audio/mpeg";
 			self.type = "mp3";
 			self.isSupported = true;
