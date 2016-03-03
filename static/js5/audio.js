@@ -102,6 +102,7 @@ var RWAudio = function() {
 			el.classList.remove("muted");
 		}
 		Prefs.change("vol", self.volume);
+		draw_volume(self.volume);
 	});
 
 	self.addEventListener("stop", function() {
@@ -163,20 +164,6 @@ var RWAudio = function() {
 		if (v > 0.95) v = 1;
 		if (!v || isNaN(v)) v = 0;
 		self.setVolume(v);
-		draw_volume(v);
-		if (v === 0) {
-			if (!el.classList.contains("muted")) {
-				el.classList.add("muted");
-			}
-			muted = true;
-		}
-		else if (el.classList.contains("muted")) {
-			el.classList.remove("muted");
-			muted = false;
-		}
-		else {
-			muted = false;
-		}
 	};
 
 	var draw_volume = function(v) {
