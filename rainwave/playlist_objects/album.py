@@ -173,7 +173,8 @@ class Album(AssociatedMetadata):
 		if not existing_album or existing_album != self.id:
 			db.c.update("UPDATE r4_songs SET album_id = %s WHERE song_id = %s", (self.id, song_id))
 		if existing_album and existing_album != self.id:
-			self.reconcile_sids(existing_album)
+			old_album = Album.load_from_id(existing_album)
+			old_album.reconcile_sids()
 		self.reconcile_sids()
 		for song_sid in db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s AND song_exists = TRUE", (song_id,)):
 			db.c.update("UPDATE r4_album_sid SET album_newest_song_time = %s WHERE album_newest_song_time < %s AND album_id = %s AND sid = %s", (row['song_added_on'], row['song_added_on'], self.id, song_sid))
@@ -183,26 +184,24 @@ class Album(AssociatedMetadata):
 		# This code will never execute!!!
 		pass
 
-	def reconcile_sids(self, album_id = None):
-		if not album_id:
-			album_id = self.id
-		new_sids = db.c.fetch_list("SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND song_exists = TRUE GROUP BY sid", (album_id,))
-		current_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (album_id,))
-		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (album_id,))
+	def reconcile_sids(self):
+		new_sids = db.c.fetch_list("SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND song_exists = TRUE GROUP BY sid", (self.id,))
+		current_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (self.id,))
+		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (self.id,))
 		for sid in current_sids:
 			if not new_sids.count(sid):
-				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE AND album_song_count = 0 WHERE album_id = %s AND sid = %s", (album_id, sid))
+				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE AND album_song_count = 0 WHERE album_id = %s AND sid = %s", (self.id, sid))
 		for sid in new_sids:
 			if current_sids.count(sid):
 				pass
 			elif old_sids.count(sid):
-				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (album_id, sid))
+				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (self.id, sid))
 			else:
-				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (album_id, sid))
+				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (self.id, sid))
 				if sid != 0:
-					updated_album_ids[sid][album_id] = True
+					updated_album_ids[sid][self.id] = True
 			num_songs = self.get_num_songs(sid)
-			db.c.update("UPDATE r4_album_sid SET album_song_count = %s WHERE album_id = %s AND sid = %s", (num_songs, album_id, sid))
+			db.c.update("UPDATE r4_album_sid SET album_song_count = %s WHERE album_id = %s AND sid = %s", (num_songs, self.id, sid))
 		self.update_all_user_ratings()
 		db.c.update("UPDATE r4_albums SET album_year = (SELECT MAX(song_year) FROM r4_songs WHERE album_id = %s AND song_verified = TRUE) WHERE album_id = %s" % (self.id, self.id))
 		return new_sids
