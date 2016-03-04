@@ -185,16 +185,16 @@ class Album(AssociatedMetadata):
 		pass
 
 	def reconcile_sids(self):
-		new_sids = db.c.fetch_list("SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND song_exists = TRUE GROUP BY sid", (self.id,))
+		new_sids = db.c.fetch_list("SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND song_exists = TRUE AND song_verified = TRUE GROUP BY sid", (self.id,))
 		current_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (self.id,))
 		old_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE", (self.id,))
 		for sid in current_sids:
-			if not new_sids.count(sid):
+			if not sid in new_sids:
 				db.c.update("UPDATE r4_album_sid SET album_exists = FALSE AND album_song_count = 0 WHERE album_id = %s AND sid = %s", (self.id, sid))
 		for sid in new_sids:
-			if current_sids.count(sid):
+			if sid in current_sids:
 				pass
-			elif old_sids.count(sid):
+			elif sid in old_sids:
 				db.c.update("UPDATE r4_album_sid SET album_exists = TRUE WHERE album_id = %s AND sid = %s", (self.id, sid))
 			else:
 				db.c.update("INSERT INTO r4_album_sid (album_id, sid) VALUES (%s, %s)", (self.id, sid))
