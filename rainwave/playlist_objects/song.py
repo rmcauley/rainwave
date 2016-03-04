@@ -382,6 +382,9 @@ class Song(object):
 		if self.albums:
 			for metadata in self.albums:
 				metadata.reconcile_sids()
+		if self.groups:
+			for metadata in self.groups:
+				metadata.reconcile_sids()
 
 	def _assign_from_dict(self, d):
 		for key, val in d.iteritems():
