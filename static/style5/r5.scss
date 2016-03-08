@@ -9,7 +9,7 @@
 // _bkg == background (if the specificity is necessary - most colors are background colors)
 
 // Primary colors
-$bkg:                         #000;
+$bkg:                         #1c1d1f;
 $text:                        #FFF;
 $blue:                        #1f95e5;			// primary highlight color
 $orange:                      #f7941e;			// secondary highlight color
@@ -41,6 +41,8 @@ $song_cool_info:              mix($blue, $text, 70%);        	// when request pa
 $votebtn_h:                   $blue;
 $votebtn_voted:               $blue;
 $timeline_link_h_bkg:         lighten(saturate($vote_registered, 10%), 19%);			// when vote hover is active but links need to be differentiated
+$vote_highlight:              $text;
+$vote_highlight:              red;
 
 // List colors (albums/artists/etc)
 $open_item_bkg:               #1f4f70;				// open album/artist/etc
@@ -56,7 +58,7 @@ $album_incomplete_cool:       $cooldown;   //#2a162e;
 $new_indicator:               $orange;			// when album is new
 
 // Panels
-$panel_bkg:                   lighten($bkg, 15%);
+$panel_bkg:                   lighten($bkg, 4%);
 $panel_bkg_d:                 darken($panel_bkg, 2.5%);	 // playlist panel bkg when detail is open at same time
 $panel_b:                     lighten($panel_bkg, 19%);
 $tab:                         $text_dd;
@@ -80,9 +82,9 @@ $row_cool_bkg:                $cooldown;
 $row_cool_bkg_alternating:    $cooldown / 1.2;
 
 // Art
-$art_bkg:                     $bkg;
+$art_bkg:                     #000;
 $art_b:                       lighten($art_bkg, 14%);
-$drop_shadow:                 $bkg;
+$drop_shadow:                 $art_bkg;
 
 // Requests
 $request_indicator:           $text;			// +/- indicator when you modify your queue
@@ -181,7 +183,7 @@ body {
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
-	background: #1c1d1f;
+	background: $bkg;
 	font-family: 'Roboto Condensed', 'Helvetica Neue', sans-serif;
 
 	html[lang="ko_KO"] & {

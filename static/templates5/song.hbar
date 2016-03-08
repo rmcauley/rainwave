@@ -2,6 +2,14 @@
 	{{#if request_id }}
 		<div class="request_cancel" bind="cancel">x</div>
 	{{/if}}
+
+	{{#if ^_c.entry_id}}
+		<div class="song_highlight song_highlight_top"></div>
+		<div class="song_highlight song_highlight_right"></div>
+		<div class="song_highlight song_highlight_bottom"></div>
+		<div class="song_highlight song_highlight_left"></div>
+	{{/if}}
+
 	{{#if ^_c.entry_id && !MOBILE && Sizing.simple }}
 		<div class="vote_button">
 			<span class="vote_button_rotate" bind="vote_button_text">{{ $l("vote") }}</span>

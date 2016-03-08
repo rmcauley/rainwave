@@ -26,11 +26,11 @@ var RWEvent = function(self) {
 			}
 			else if (self.songs[i].el.classList.contains("song_lost")) {
 				if (Prefs.get("l_displose")) {
-					running_height += Sizing.song_size;
+					running_height += Sizing.song_size + 2;
 				}
 			}
 			else {
-				running_height += Sizing.song_size;
+				running_height += Sizing.song_size + 2;
 			}
 
 			self.songs[i].el.style.zIndex = self.songs.length - i;
@@ -62,18 +62,18 @@ var RWEvent = function(self) {
 
 	self.recalculate_height = function() {
 		if (self.$t.el.classList.contains("sched_next")) {
-			self.height = (self.songs.length * Sizing.song_size);
+			self.height = (self.songs.length * (Sizing.song_size + 2));
 		}
 		else if (self.$t.el.classList.contains("sched_current")) {
 			if (Prefs.get("l_displose")) {
-				self.height = ((self.songs.length - 1) * Sizing.song_size) + Sizing.song_size_np;
+				self.height = ((self.songs.length - 1) * (Sizing.song_size + 2)) + Sizing.song_size_np;
 			}
 			else {
-				self.height = Sizing.song_size_np;
+				self.height = Sizing.song_size_np + 2;
 			}
 		}
 		else if (self.$t.el.classList.contains("sched_history")) {
-			self.height = Sizing.song_size;
+			self.height = Sizing.song_size + 2;
 		}
 		if (self.showing_header && !self.history) self.height += Sizing.timeline_header_size;
 	};

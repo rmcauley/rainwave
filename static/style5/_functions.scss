@@ -17,6 +17,11 @@ $transtime: 700ms $transfunc;
 	transform: $transform_string;
 }
 
+@mixin transform-origin($t) {
+	-webkit-transform-origin: $t;
+	transform-origin: $t;
+}
+
 @mixin transition-delay($t) {
 	-webkit-transition-delay: $t;
 	transition-delay: $t;

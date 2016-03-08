@@ -160,10 +160,61 @@ div.song {
 		}
 	}
 
+	$highlight_scaleX_h: 0.2;
+	$highlight_scaleY_h: 0.8;
+	$highlight_scaleX_clicked: 0.8;
+	$highlight_scaleY_clicked: 0.95;
+	$highlight_scaleX_voted: 1.0;
+	$highlight_scaleY_voted: 1.0;
+
+	div.song_highlight {
+		position: absolute;
+		opacity: 0.5;
+		background: $vote_highlight;
+		@include transition-wtime(250ms, transform, opacity);
+	}
+
+	div.song_highlight_top {
+		top: 0;
+		left: 11px;
+		width: 100%;
+		height: 1px;
+		@include transform-origin(top left);
+		@include transform(scaleX(0));
+	}
+
+	div.song_highlight_left {
+		top: 0;
+		left: 10px;
+		width: 1px;
+		height: 100%;
+		@include transform-origin(top left);
+		@include transform(scaleY(0));
+	}
+
+	div.song_highlight_bottom {
+		top: 100%;
+		left: 0;
+		width: 100%;
+		height: 1px;
+		@include transform-origin(bottom right);
+		@include transform(translateX(-11px) translateY(-1px) scaleX(0));
+	}
+
+	div.song_highlight_right {
+		top: 0;
+		left: 100%;
+		width: 1px;
+		height: 100%;
+		@include transform-origin(bottom right);
+		@include transform(translateX(-11px) scaleY(0));
+	}
+
+
 	div.timeline & {
 		background-position: 0% 200%;
 		background-repeat: repeat-x;
-		border: 1px solid transparent;
+		padding: 1px 11px;
 
 		body.desktop.normal &.voting_enabled {
 			div.vote_button {
@@ -175,35 +226,77 @@ div.song {
 			cursor: pointer;
 
 			body.desktop &:hover, body.mobile &:active {
-				background-color: $hover_bkg;
-				border-color: $hover_b;
-				-webkit-transition: $webkit_song_transitions;
-				        transition: $song_transitions;
+				// background-color: $hover_bkg;
+				// border-color: $hover_b;
+				// -webkit-transition: $webkit_song_transitions;
+				//         transition: $song_transitions;
 
 				div.vote_button {
 					opacity: 1;
 					background: $votebtn_h;
 				}
-			}
 
-			div.song_content a {
-				@include transition-wtime(250ms, color, background-color, padding);
+				div.song_content a {
+					@include transition-wtime(250ms, color, background-color, padding);
 
-				body.desktop &:hover, body.mobile &:active {
-					background-color: $timeline_link_h_bkg;
-					padding: 0 10px;
-					color: $link_h;
+					body.desktop &:hover, body.mobile &:active {
+						background-color: $timeline_link_h_bkg;
+						padding: 0 10px;
+						color: $link_h;
+					}
+				}
+
+				div.song_highlight {
+					opacity: 0.75;
+				}
+
+				div.song_highlight_top {
+					@include transform(scaleX($highlight_scaleX_h));
+				}
+
+				div.song_highlight_left {
+					@include transform(scaleY($highlight_scaleY_h));
+				}
+
+				div.song_highlight_bottom {
+					@include transform(translateX(-11px) translateY(-1px) scaleX($highlight_scaleX_h));
+				}
+
+				div.song_highlight_right {
+					@include transform(translateX(-11px) scaleY($highlight_scaleY_h));
 				}
 			}
 		}
 
-		&.voting_clicked, &.voting_registered {
-			background-image: url(/static/images4/vote_hover_r5.png);
+		// &.voting_clicked, &.voting_registered {
+		// 	background-image: url(/static/images4/vote_hover_r5.png);
+		// }
+
+		&.voting_clicked {
+			div.song_highlight {
+				@include transition-duration(2s);
+			}
+
+			div.song_highlight_top {
+				@include transform(scaleX($highlight_scaleX_clicked));
+			}
+
+			div.song_highlight_left {
+				@include transform(scaleY($highlight_scaleY_clicked));
+			}
+
+			div.song_highlight_bottom {
+				@include transform(translateX(-11px) translateY(-1px) scaleX($highlight_scaleX_clicked));
+			}
+
+			div.song_highlight_right {
+				@include transform(translateX(-11px) scaleY($highlight_scaleY_clicked));
+			}
 		}
 
 		&.voting_registered {
-			background-color: $vote_registered;
-			background-position: 0px -35px;
+			// background-color: $vote_registered;
+			// background-position: 0px -35px;
 
 			div.vote_button {
 				opacity: 1;
@@ -213,6 +306,26 @@ div.song {
 			&.autovoted {
 				background-color: $autovoted;
 				cursor: pointer;
+			}
+
+			div.song_highlight {
+				opacity: 1;
+			}
+
+			div.song_highlight_top {
+				@include transform(scaleX($highlight_scaleX_voted));
+			}
+
+			div.song_highlight_left {
+				@include transform(scaleY($highlight_scaleY_voted));
+			}
+
+			div.song_highlight_bottom {
+				@include transform(translateX(-11px) translateY(-1px) scaleX($highlight_scaleX_voted));
+			}
+
+			div.song_highlight_right {
+				@include transform(translateX(-11px) scaleY($highlight_scaleY_voted));
 			}
 		}
 	}
