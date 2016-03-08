@@ -36,6 +36,10 @@ $transtime: 700ms $transfunc;
 			$rule: color;
 			$finaltranstime: 150ms;
 		}
+		@else if $rule == TOUCHTRANSFORM {
+			$rule: transform;
+			$finaltranstime: 150ms;
+		}
 		$nice_rules: append($nice_rules, $rule $finaltranstime);
 		@if $rule == transform {
 			$webkit_rules: append($webkit_rules, -webkit-transform $finaltranstime);
@@ -50,4 +54,8 @@ $transtime: 700ms $transfunc;
 
 @mixin transition($trans...) {
 	@include transition-wtime($transtime, $trans...);
+}
+
+@mixin touchtransform() {
+	@include transform(scale(0.96));
 }

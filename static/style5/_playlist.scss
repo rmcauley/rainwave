@@ -97,9 +97,14 @@ div.lists {
 		li {
 			cursor: pointer;
 			display: inline-block;
+			@include transition(LINKCOLOR, TOUCHTRANSFORM);
 
 			body.desktop &:hover {
 				color: $link_h;
+			}
+
+			body.mobile &:active {
+				@include touchtransform();
 			}
 
 			body.playlist_artist &.artist_tab,
@@ -224,7 +229,7 @@ div.list {
 		padding: 2px 65px 2px 10px;
 		border-bottom: solid 1px transparent;
 		cursor: pointer;
-		@include transition-wtime(250ms, background-color, border-bottom-color, color);
+		@include transition-wtime(250ms, background-color, border-bottom-color, color, TOUCHTRANSFORM);
 		overflow: hidden;
 		word-break: break-all;
 		white-space: nowrap;
@@ -235,22 +240,24 @@ div.list {
 			color: $fave;
 		}
 
-		body.desktop & {
-			&:hover, &.hover {
-				color: $link;
-				background-color: $hover_bkg;
-				border-bottom-color: $hover_b;
-				@include transition-wtime(250ms, color);
+		body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
+			color: $link;
+			background-color: $hover_bkg;
+			border-bottom-color: $hover_b;
+			@include transition-wtime(250ms, color, TOUCHTRANSFORM);
 
-				img.fave_lined {
-					opacity: 0.5;
-				}
+			img.fave_lined {
+				opacity: 0.5;
 			}
 
 			&.album_fave_highlight:hover, &.cool.album_fave_highlight:hover {
 				background-color: $fave_h;
 				border-bottom-color: $fave_hb;
 			}
+		}
+
+		body.mobile &:active {
+			@include touchtransform();
 		}
 
 		&.open {
@@ -270,11 +277,9 @@ div.list {
 		&.cool {
 			background-color: $cooldown;
 
-			body.desktop & {
-				&:hover, &.hover {
-					background-color: $cooldown_h;
-					border-bottom-color: $cooldown_hb;
-				}
+			body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
+				background-color: $cooldown_h;
+				border-bottom-color: $cooldown_hb;
 			}
 		}
 
@@ -310,7 +315,7 @@ div.list {
 				background-color: $album_incomplete;
 				background-image: $incomplete_rating;
 
-				&:hover {
+				body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
 					background-color: $hover_bkg;
 					border-bottom-color: $hover_b;
 				}
@@ -323,7 +328,7 @@ div.list {
 					color: $text_d;
 					background-color: $album_incomplete_cool;
 
-					&:hover {
+					body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
 						background-color: $hover_bkg;
 						border-bottom-color: $hover_b;
 					}
@@ -337,7 +342,7 @@ div.list {
 				background-size: 14px;
 				background-image: url('/static/images4/new.png');
 				background-position: 3px 0px;
-				@include transition-wtime(300ms, padding, background-position, LINKCOLOR);
+				@include transition-wtime(300ms, padding, background-position, LINKCOLOR, TOUCHTRANSFORM);
 				color: $new_indicator;
 			}
 
@@ -347,6 +352,11 @@ div.list {
 
 			body.desktop &:hover span.name {
 				color: $link_h;
+			}
+
+			body.mobile &:active {
+				color: $link_h;
+				@include touchtransform();
 			}
 		}
 

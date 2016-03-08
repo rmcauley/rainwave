@@ -120,10 +120,20 @@ div.row {
 	white-space: nowrap;
 	min-height: 20px;
 	background: $row_bkg;
-	@include transition-wtime(300ms, width, background-color, border-bottom-color);
+	@include transition-wtime(300ms, width, background-color, border-bottom-color, transform);
 
 	div.fave {
 		float: left;
+	}
+
+	body.desktop &:hover, &.hover, body.mobile &:active {
+		background-color: $hover_bkg;
+		border-bottom-color: $hover_b;
+		@include no-transition();
+
+		img.fave_lined {
+			opacity: 1;
+		}
 	}
 
 	body.desktop.full &:nth-child(even) {
@@ -140,11 +150,9 @@ div.row {
 		background-color: $row_cool_bkg;
 		border-bottom-color: $row_cool_bkg;
 
-		body.desktop.full & {
-			&:hover, &.hover {
-				background-color: $cooldown_h;
-				border-bottom-color: $cooldown_hb;
-			}
+		body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
+			background-color: $cooldown_h;
+			border-bottom-color: $cooldown_hb;
 		}
 
 		body.desktop.full &:nth-child(even) {
@@ -155,16 +163,6 @@ div.row {
 				background-color: $cooldown_h;
 				border-bottom-color: $cooldown_hb;
 			}
-		}
-	}
-
-	body.desktop &:hover, &.hover {
-		background-color: $hover_bkg;
-		border-bottom-color: $hover_b;
-		@include no-transition();
-
-		img.fave_lined {
-			opacity: 1;
 		}
 	}
 

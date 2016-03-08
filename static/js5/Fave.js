@@ -15,6 +15,7 @@ var Fave = function(json) {
 		var funcn = json.fave ? "add" : "remove";
 		for (var i = 0; i < faves.length; i++) {
 			faves[i].classList[funcn]("is_fave");
+			faves[i].classList.remove("fave_clicked");
 			if (faves[i].parentNode) faves[i].parentNode.classList[funcn](favetype + "_fave_highlight");
 			if (faves[i]._go_one_up) faves[i].parentNode.parentNode.classList[funcn](favetype + "_fave_highlight");
 		}
@@ -43,6 +44,7 @@ var Fave = function(json) {
 		else {
 			API.async_get("fave_album", { "fave": set_to, "album_id": this._fave_id });
 		}
+		this.classList.add("fave_clicked");
 	};
 
 	self.do_fave = do_fave;

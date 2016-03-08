@@ -23,7 +23,7 @@ div.song {
 			opacity: 0.6;
 			visibility: visible;
 
-			body.desktop &:hover {
+			body.desktop &:hover, body.mobile:active {
 				opacity: 1;
 			}
 		}
@@ -174,7 +174,7 @@ div.song {
 		&.voting_enabled:not(.voting_registered) {
 			cursor: pointer;
 
-			body.desktop &:hover {
+			body.desktop &:hover, body.mobile &:active {
 				background-color: $hover_bkg;
 				border-color: $hover_b;
 				-webkit-transition: $webkit_song_transitions;
@@ -189,7 +189,7 @@ div.song {
 			div.song_content a {
 				@include transition-wtime(250ms, color, background-color, padding);
 
-				body.desktop &:hover {
+				body.desktop &:hover, body.mobile &:active {
 					background-color: $timeline_link_h_bkg;
 					padding: 0 10px;
 					color: $link_h;

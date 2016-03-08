@@ -115,7 +115,7 @@ $station_select_width: 270px;
 			@include transform(none);
 		}
 
-		body.desktop &:hover {
+		body.desktop &:hover, body.mobile &:active {
 			background: $stasel_h_bkg;
 			color: $text !important;
 		}
@@ -237,8 +237,10 @@ $station_select_width: 270px;
 			}
 		}
 
-		body.desktop &:hover div.station_song_container {
-			opacity: 1.0;
+		body.desktop &:hover, body.mobile &:active {
+			div.station_song_container {
+				opacity: 1.0;
+			}
 		}
 
 		@media $phone-media {
