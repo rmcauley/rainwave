@@ -111,7 +111,7 @@ var Router = function() {
 
 		var reload_in = [ "album", "artist", "group" ];
 
-		API.add_callback("_SYNC_COMPLETE", function() {
+		API.add_callback("_SYNC_SCHEDULE_COMPLETE", function() {
 			if (request_in_flight) {
 				reset_cache_on_next_request = true;
 			}

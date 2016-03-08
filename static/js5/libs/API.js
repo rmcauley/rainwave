@@ -67,6 +67,9 @@ var API = function() {
 		perform_callbacks({ "_SYNC_START": true });
 		perform_callbacks(json);
 		perform_callbacks({ "_SYNC_COMPLETE": true });
+		if ("sched_current" in json) {
+			perform_callbacks({ "_SYNC_SCHEDULE_COMPLETE": true });
+		}
 		// Make sure any vote results are registered now (after the schedule has been loaded)
 		if ("already_voted" in json) {
 			perform_callbacks({ "already_voted": json.already_voted });
