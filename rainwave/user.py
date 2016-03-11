@@ -348,7 +348,7 @@ class User(object):
 					"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
 					"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
 					"song_fave AS fave, album_fave AS album_fave, "
-					"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating AS album_rating "
+					"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating AS album_rating, album_rating_complete "
 				"FROM r4_request_store "
 					"JOIN r4_songs USING (song_id) "
 					"JOIN r4_albums USING (album_id) "
@@ -372,6 +372,7 @@ class User(object):
 				"fave": song.pop('album_fave'),
 				"rating": round(song.pop('album_rating'), 1),
 				"rating_user": song.pop('album_rating_user'),
+				"rating_complete": song.pop('album_rating_complete'),
 				"art": playlist.Album.get_art_url(song.pop('album_id'), song['sid'])
 			 } ]
 		cache.set_user(self, "requests", requests)
