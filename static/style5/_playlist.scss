@@ -400,6 +400,16 @@ div.close {
 		width: 14px;
 		height: 14px;
 	}
+
+	@media $phone-media {
+		top: 8px;
+		@include transform(translateX(-30px));
+
+		img {
+			width: 20px;
+			height: 20px;
+		}
+	}
 }
 
 body.desktop div.close {
