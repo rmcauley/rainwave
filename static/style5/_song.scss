@@ -297,6 +297,10 @@ div.song {
 		body.desktop.normal & {
 			font-size: 70%;
 		}
+
+		body.mobile & {
+			padding-top: 2px;
+		}
 	}
 
 	div.fave {
