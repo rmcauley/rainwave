@@ -91,6 +91,8 @@ $request_indicator_bkg:       $orange;
 $requests_paused:             #2A073C;
 $requests_warn:               darken($error_bkg, 10%);
 $request_delete:              mix($text, $error_b, 25%);
+$request_delete_bkg:          darken($request_delete, 55%);
+$request_delete_bkg_a:        darken($request_delete, 35%);
 $request_drag_bkg:            $blue * 0.5;
 
 // Rating

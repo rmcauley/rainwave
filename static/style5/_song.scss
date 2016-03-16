@@ -159,6 +159,15 @@ div.song {
 			display: block;
 			visibility: hidden;
 		}
+
+		&:active {
+			-webkit-box-shadow: inset 2px 2px 5px 0px rgba(0,0,0,0.75);
+			        box-shadow: inset 2px 2px 5px 0px rgba(0,0,0,0.75);
+
+			span.vote_button_rotate {
+				@include transform(rotate(90deg) translateX(-50%) translateY(-50%) translateX(2px) translateY(-2px));
+			}
+		}
 	}
 
 	$highlight_scaleX_h: 0.2;
