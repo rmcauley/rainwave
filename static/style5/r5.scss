@@ -41,8 +41,7 @@ $song_cool_info:              mix($blue, $text, 70%);        	// when request pa
 $votebtn_h:                   $blue;
 $votebtn_voted:               $blue;
 $timeline_link_h_bkg:         lighten(saturate($vote_registered, 10%), 19%);			// when vote hover is active but links need to be differentiated
-$vote_highlight:              $text;
-$vote_highlight:              red;
+$vote_highlight:              lighten($hover_b, 40%);
 
 // List colors (albums/artists/etc)
 $open_item_bkg:               #1f4f70;				// open album/artist/etc
