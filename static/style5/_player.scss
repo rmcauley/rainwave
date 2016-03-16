@@ -130,13 +130,15 @@ $player_icon_width: $player_icon_height;
 
 	@media $phone-media {
 		margin-left: 125px;
-		padding: 0 3px 0 0;
+		padding: 0;
 		top: 0px;
 		height: $phone_menu_height;
 
 		.audio_icon_play {
 			@include transform(translateY(5px));
-			height: 20px;
+			height: 25px;
+			margin: 0;
+			padding: 3px 10px 4px 10px;
 		}
 	}
 
