@@ -269,7 +269,7 @@ div.song {
 		&.voting_registered {
 			background-color: $vote_registered;
 			background-position: 0px -35px;
-			border-color: $hover_b;
+			border-color: $vote_registered;
 			-webkit-transition: $webkit_song_transitions, $highlight_fade_duration border-left-color, $highlight_fade_duration border-right-color;
 			        transition: $song_transitions, $highlight_fade_duration border-left-color, $highlight_fade_duration border-right-color;
 
@@ -284,7 +284,7 @@ div.song {
 			}
 
 			div.song_highlight {
-				background: $hover_b;
+				background: $vote_registered;
 				@include transform(scaleX(0.55));
 			}
 		}
