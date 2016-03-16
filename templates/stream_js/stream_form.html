@@ -218,7 +218,7 @@
 		<tr>
 			<td>font_family</td>
 			<td><input type="text" bind="font_family" value="" style="width: 300px;" /></td>
-			<td>CSS rule for what font to use.  Font binds with spaces must be enclosed with single quotes, e.g. 'Helvetica Neue'.  Leave blank for Rainwave defaults.</td>
+			<td>CSS rule for what font to use.  Font names with spaces must be enclosed with single quotes, e.g. 'Helvetica Neue'.  Leave blank for Rainwave defaults.</td>
 		</tr>
 		<tr>
 			<td>text_stroke_color</td>
@@ -297,7 +297,11 @@
 		<tr>
 			<td>delay</td>
 			<td><input type="text" bind="delay" value="" style="width: 300px;" /></td>
-			<td>How many seconds to wait before showing new now playing data.  <i>Make sure you use the same relay and same media player every time</i> or you'll have to change this value constantly!</td>
+			<td>
+				<span>How many seconds to wait before showing new now playing data.</span>
+				<i>Make sure you use the same relay and same media player every time</i>
+				<span>or you'll have to change this value constantly!</span>
+			</td>
 		</tr>
 	{{/with}}
 </table>
