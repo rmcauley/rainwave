@@ -41,8 +41,7 @@ $song_cool_info:              mix($blue, $text, 70%);        	// when request pa
 $votebtn_h:                   $blue;
 $votebtn_voted:               $blue;
 $timeline_link_h_bkg:         lighten(saturate($vote_registered, 10%), 19%);			// when vote hover is active but links need to be differentiated
-$vote_highlight:              $text;
-$vote_highlight:              red;
+$vote_highlight:              lighten($hover_b, 40%);
 
 // List colors (albums/artists/etc)
 $open_item_bkg:               #1f4f70;				// open album/artist/etc
@@ -92,6 +91,8 @@ $request_indicator_bkg:       $orange;
 $requests_paused:             #2A073C;
 $requests_warn:               darken($error_bkg, 10%);
 $request_delete:              mix($text, $error_b, 25%);
+$request_delete_bkg:          darken($request_delete, 55%);
+$request_delete_bkg_a:        darken($request_delete, 35%);
 $request_drag_bkg:            $blue * 0.5;
 
 // Rating
@@ -154,7 +155,7 @@ $submenu_separator:           $blue * 1.2;      // e.g.separator between options
 
 $menu_transfunc: cubic-bezier(0.77, 0, 0.175, 1);
 $menu_height: 45px;
-$phone_menu_height: 30px;
+$phone_menu_height: 40px;
 
 $art_size: 70px;
 $art_hover_size: 100px;

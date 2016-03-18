@@ -38,6 +38,11 @@ div.menu_wrapper {
 			fill: $menu;
 			// @include transition-wtime(150ms, fill);
 		}
+
+		@media $phone-media {
+			height: 25px;
+			width: 25px;
+		}
 	}
 
 	img.menu_icon {
@@ -84,7 +89,7 @@ ul.menu {
 			li a {
 				box-sizing: border-box;
 				height: $phone_menu_height;
-				padding: 4px 6px;
+				padding: 8px 10px;
 			}
 
 			span {
@@ -93,6 +98,19 @@ ul.menu {
 
 			svg, img.menu_icon {
 				display: block;
+			}
+
+			img.menu_icon {
+				position: relative;
+				top: -2px;
+				height: 20px;
+				width: 20px;
+			}
+		}
+
+		@media (max-width: 370px) {
+			li.search_link {
+				display: none;
 			}
 		}
 	}
@@ -127,18 +145,6 @@ ul.menu {
 			padding-right: 20px;
 			max-width: 150px;
 
-			@media $phone-media {
-				max-width: 70px;
-
-				a {
-					padding: 5px 5px;
-
-					span {
-						display: none;
-					}
-				}
-			}
-
 			img.avatar {
 				position: absolute;
 				top: 0;
@@ -147,6 +153,27 @@ ul.menu {
 				max-width: 20px;
 				padding-right: 5px;
 				@include transform(translateX(-100%));
+			}
+
+			@media $phone-media {
+				max-width: 70px;
+				padding: 0;
+				margin: 0;
+
+				a {
+					padding: 4px 10px;
+
+					span {
+						display: none;
+					}
+				}
+
+				img.avatar {
+					position: relative;
+					float: none;
+					max-height: 25px;
+					max-width: 25px;
+				}
 			}
 		}
 

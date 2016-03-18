@@ -145,7 +145,7 @@ $station_select_width: 270px;
 			@include transition-wtime(350ms, transform);
 
 			@media $phone-media {
-				font-size: 1em;
+				font-size: 1.3em;
 			}
 		}
 

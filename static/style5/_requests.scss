@@ -168,18 +168,32 @@ div.request_cancel {
 	font-size: larger;
 	text-align: center;
 	width: 20px;
-	@include transition-wtime(300ms, border-color, color, opacity);
+	@include transition-wtime(300ms, border-color, color, opacity, background-color);
 
 	body.desktop & {
 		opacity: 0.6;
 
 		&:hover {
-			border-color: $request_delete;
-			color: $request_delete;
-		}
-
-		div.song &:hover {
 			opacity: 1;
+		}
+	}
+
+	&:hover, &:active {
+		border-color: $request_delete;
+		color: $request_delete;
+		background-color: $request_delete_bkg;
+	}
+
+	&:active {
+		@include no-transition();
+		background: $request_delete_bkg_a;
+		-webkit-box-shadow: inset 2px 2px 5px 0px rgba(0,0,0,0.75);
+			    box-shadow: inset 2px 2px 5px 0px rgba(0,0,0,0.75);
+
+		span.request_cancel_x {
+			position: relative;
+			top: 2px;
+			left: 2px;
 		}
 	}
 }
@@ -251,5 +265,11 @@ div.request_plusminus {
 
 	div.panel:hover &.show {
 		opacity: 0;
+	}
+
+	@media $phone-media {
+		height: $phone_menu_height;
+	    box-sizing: border-box;
+	    padding: 11px 7px 0px 7px;
 	}
 }

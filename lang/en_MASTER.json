@@ -275,7 +275,7 @@
    "request_only_on_x"                               : "This song is on %(station).",
    "no_song_selected"                                : "(no song selected)",
 
-   "make_a_request"                                  : "Open the library and click a song title to add it to your request queue.",
+   "make_a_request"                                  : "Open the library and click/tap a song title to add it to your request queue.",
 
    "__comment__"                 : "Station Descriptions (long format, used for Google page descriptions)",
 

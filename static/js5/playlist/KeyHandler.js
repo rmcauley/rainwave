@@ -35,11 +35,15 @@ var KeyHandler = function() {
 		Prefs.define("hkm", [ "QWER", "AZER" ]);
 		if (Prefs.get("pwr")) {
 			var mapchange = function(nv) {
-			if (!nv || !keymaps[nv]) {
+				if (!nv || !keymaps[nv]) {
 					keymap = keymaps.QWER;
 				}
 				else {
 					keymap = keymaps[nv];
+				}
+
+				if (!template.hotkeys_rate10) {
+					return;
 				}
 
 				template.hotkeys_rate10.textContent = (keymap.rate10[0] + "-" + keymap.rate50[0]).toUpperCase();
