@@ -80,7 +80,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			log.debug("backend", "Station is paused, using: %s" % config.get("pause_file"))
 			return config.get("pause_file")
 
-		string = "annotate:crossfade=\"0\",use_suffix=\"1\","
+		string = "annotate:crossfade=\"2\",use_suffix=\"1\","
 		if cache.get_station(self.sid, "pause_title"):
 			string += "title=\"%s\"" % cache.get_station(self.sid, "pause_title")
 		else:
