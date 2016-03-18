@@ -91,8 +91,10 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 
 	def _get_annotated(self, e):
 		string = "annotate:crossfade=\""
-		if e.use_crossfade:
+		if e.use_crossfade == True:
 			string += "1"
+		elif e.use_crossfade:
+			string += e.use_crossfade
 		else:
 			string += "0"
 		string += "\","
