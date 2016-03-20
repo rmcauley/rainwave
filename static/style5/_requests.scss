@@ -196,6 +196,10 @@ div.request_cancel {
 			left: 2px;
 		}
 	}
+
+	body.mobile & {
+		width: 30px;
+	}
 }
 
 div.request_sort_grab {
@@ -260,6 +264,10 @@ div.request_plusminus {
 
 		&.show {
 			opacity: 1;
+		}
+
+		@media $mobile-media {
+			display: none;
 		}
 	}
 
