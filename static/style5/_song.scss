@@ -225,6 +225,10 @@ div.song {
 		background-repeat: repeat-x;
 		padding: 0px 10px;
 
+		div.art_anchor, div.song_content {
+			@include transition(TOUCHTRANSFORM);
+		}
+
 		body.desktop.normal &.voting_enabled {
 			div.vote_button {
 				visibility: visible;
@@ -233,6 +237,10 @@ div.song {
 
 		&.voting_enabled:not(.voting_registered):not(.voting_clicked) {
 			cursor: pointer;
+
+			body.mobile & div.art_anchor:active, body.mobile & div.art_anchor:active + div.song_content {
+				@include touchtransform();
+			}
 
 			body.desktop &:hover, body.mobile &:active {
 				background-color: $hover_bkg;
