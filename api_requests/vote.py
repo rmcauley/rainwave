@@ -102,7 +102,6 @@ class SubmitVote(APIHandler):
 					user_vote_cache.pop(0)
 				if not found:
 					user_vote_cache.append([event.id, entry_id])
-				print "setting user cache: %s" % user_vote_cache
 				cache.set_user(self.user, "vote_history", user_vote_cache)
 
 			# Register vote
