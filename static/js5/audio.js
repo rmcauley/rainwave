@@ -82,7 +82,6 @@ var RWAudio = function() {
 	var clear_audio_errors = function(e) {
 		ErrorHandler.remove_permanent_error("m3u_hijack_right_click");
 		ErrorHandler.remove_permanent_error("audio_error");
-		ErrorHandler.remove_permanent_error("chrome_mobile_takes_time");
 		ErrorHandler.remove_permanent_error("audio_connect_error");
 		el.classList.remove("working");
 	};
@@ -111,6 +110,7 @@ var RWAudio = function() {
 	self.addEventListener("stop", function() {
 		el.classList.remove("playing");
 		clear_audio_errors();
+		ErrorHandler.remove_permanent_error("chrome_mobile_takes_time");
 	});
 
 	self.addEventListener("loading", function() {
@@ -120,6 +120,7 @@ var RWAudio = function() {
 	self.addEventListener("playing", function() {
 		el.classList.add("playing");
 		el.classList.remove("working");
+		ErrorHandler.remove_permanent_error("chrome_mobile_takes_time");
 		clear_audio_errors();
 	});
 
@@ -135,7 +136,7 @@ var RWAudio = function() {
 	});
 
 	self.addEventListener("error", function() {
-		clear_audio_errors();
+		self.stop();
 		var a = document.createElement("a");
 		a.setAttribute("href", "/tune_in/" + User.sid + ".mp3");
 		a.className = "link obvious";
@@ -144,7 +145,6 @@ var RWAudio = function() {
 			clear_audio_errors();
 		});
 		ErrorHandler.nonpermanent_error(ErrorHandler.make_error("audio_error", 500), a);
-		self.stop();
 	});
 
 	var volume_control_mousedown = function(evt) {

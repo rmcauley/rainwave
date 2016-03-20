@@ -48,7 +48,6 @@ var RainwavePlayer = function() {
 	self.mimetype = "";
 
 	var streamURLs = [];
-	var volumeBeforeMute = 1.0;
 	var isMobile = (navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1);
 
 	// Chrome on mobile has a really nasty habit of stalling AFTER playback has started
@@ -136,7 +135,7 @@ var RainwavePlayer = function() {
 
 		// on the final <source> of the audio stream, we throw an error event
 		// as the browser will stop trying to play audio
-		if (i == streamURLs.length - 1) {
+		if (i === streamURLs.length - 1) {
 			source.addEventListener("error", onError);
 		}
 		// otherwise, have it throw a stall
@@ -210,7 +209,7 @@ var RainwavePlayer = function() {
 
 			audioEl.play();
 			self.isPlaying = true;
-			self.dispatchEvent(createEvent("playing"));
+			self.dispatchEvent(createEvent("loading"));
 			self.dispatchEvent(createEvent("change"));
 		}
 	};
