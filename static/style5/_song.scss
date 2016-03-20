@@ -196,13 +196,11 @@ div.song {
 
 	div.song_highlight_topright {
 		top: -1px;
-		left: 1px;
 		@include transform-origin(top right);
 	}
 
 	div.song_highlight_bottomleft {
 		top: 100%;
-		left: -1px;
 		@include transform-origin(bottom left);
 	}
 
@@ -270,8 +268,8 @@ div.song {
 			background-color: $vote_registered;
 			background-position: 0px -35px;
 			border-color: $vote_registered;
-			-webkit-transition: $webkit_song_transitions, $highlight_fade_duration border-left-color, $highlight_fade_duration border-right-color;
-			        transition: $song_transitions, $highlight_fade_duration border-left-color, $highlight_fade_duration border-right-color;
+			-webkit-transition: $webkit_song_transitions, $highlight_fade_duration border-color;
+			        transition: $song_transitions, $highlight_fade_duration border-color;
 
 			div.vote_button {
 				opacity: 1;
@@ -285,7 +283,7 @@ div.song {
 
 			div.song_highlight {
 				background: $vote_registered;
-				@include transform(scaleX(0.55));
+				@include transform(scaleX(0.50));
 			}
 		}
 	}
