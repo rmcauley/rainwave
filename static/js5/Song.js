@@ -41,11 +41,15 @@ var Song = function(self, parent_event) {
 			return;
 		}
 		if (self.autovoted) {
+			self.el.classList.add("no_transition");
 			self.el.classList.remove("autovoted");
 			self.el.classList.remove("voting_clicked");
 			self.el.classList.remove("voting_registered");
 			self.autovoted = false;
-			setTimeout(self.vote, 300);
+			requestNextAnimationFrame(function() {
+				self.el.classList.remove("no_transition");
+				self.vote();
+			});
 			return;
 		}
 		self.el.classList.add("voting_clicked");

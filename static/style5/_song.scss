@@ -266,8 +266,8 @@ div.song {
 
 		&.voting_registered {
 			background-color: $vote_registered;
-			background-position: 0px -35px;
 			border-color: $vote_registered;
+			background-position: 0px -35px;
 			-webkit-transition: $webkit_song_transitions, $highlight_fade_duration border-color;
 			        transition: $song_transitions, $highlight_fade_duration border-color;
 
@@ -276,14 +276,27 @@ div.song {
 				background: $votebtn_voted;
 			}
 
-			&.autovoted {
-				background-color: $autovoted;
-				cursor: pointer;
-			}
-
 			div.song_highlight {
 				background: $vote_registered;
 				@include transform(scaleX(0.50));
+			}
+
+			&.autovoted {
+				background-color: $autovoted;
+				border-color: $autovoted;
+				cursor: pointer;
+
+				div.song_highlight {
+					background: $autovoted;
+				}
+			}
+		}
+
+		&.no_transition {
+			@include no-transition();
+
+			div.song_highlight {
+				@include no-transition();
 			}
 		}
 	}
