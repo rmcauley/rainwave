@@ -133,6 +133,20 @@ div.rating {
 	div.rating_confirm.fading + div.rating_hover {
 		opacity: 1 !important;
 	}
+
+	div.hold_to_rate {
+		position: absolute;
+		border: solid 1px $text_dd;
+		box-shadow: 0px 0px 6px 3px $drop_shadow;
+		left: 100%;
+		top: -2.5em;
+		overflow: hidden;
+		white-space: nowrap;
+		color: $text;
+		padding: 2px 5px;
+		background: $bkg;
+		@include transform(translateX(-100%));
+	}
 }
 
 body.simple div.timeline div.album_rating {
@@ -185,6 +199,8 @@ div.mobile_rating {
 	left: 100%;
 	background: $bkg;
 	padding: 20px 15px 10px 5px;
+	border: solid 1px $text_dd;
+	box-shadow: 0px 0px 6px 3px $drop_shadow;
 	@include transform(translateX(-100%) translateY(-1em));
 	@include transition-wtime(200ms, opacity, transform);
 

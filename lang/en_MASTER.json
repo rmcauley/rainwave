@@ -195,6 +195,7 @@
    "mobile_sync_retrying"                            : "Connection issues, please refresh or try later.",
    "async_error"                                     : "Error talking to Rainwave.  Please try again or refresh.",
    "deeplink_error"                                  : "Sorry, we couldn't understand the URL you tried to open.",
+   "hold_to_rate"                                    : "hold to rate",
 
    "Loading..."                                      : "Loading...",
    "Cancel"                                          : "Cancel",

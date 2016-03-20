@@ -212,7 +212,14 @@ var Rating = function() {
 		is_touching = false;
 	};
 
+	var hold_to_rates = [];
+
 	var touchend = function () {
+		console.log(hold_to_rates);
+		for (var i = 0; i < hold_to_rates.length; i++) {
+			hold_to_rates[i].parentNode.removeChild(hold_to_rates[i]);
+		}
+		hold_to_rates = [];
 		if (touch_timer) {
 			clearTimeout(touch_timer);
 		}
@@ -225,6 +232,7 @@ var Rating = function() {
 		}
 		document.body.removeEventListener("touchend", touchend);
 		document.body.removeEventListener("touchcancel", touchend);
+		document.body.removeEventListener("touchmove", scroll_check);
 	};
 
 	var scroll_check_min;
@@ -237,10 +245,18 @@ var Rating = function() {
 	};
 
 	var trigger_touch_rating = function(e) {
+		e.preventDefault();
+
 		document.body.addEventListener("touchend", touchend);
 		document.body.addEventListener("touchcancel", touchend);
 
 		touching_song.$t.rating.classList.add("starting_touch");
+
+		var hold_to_rate = document.createElement("div");
+		hold_to_rate.textContent = $l("hold_to_rate");
+		hold_to_rate.className = "hold_to_rate";
+		touching_song.$t.rating.appendChild(hold_to_rate);
+		hold_to_rates.push(hold_to_rate);
 
 		last_touch = e;
 		scroll_check_min = e.touches[0].pageY - 15;
@@ -259,6 +275,11 @@ var Rating = function() {
 		// document.body.addEventListener("touchend", touchend);
 		// document.body.addEventListener("touchcancel", touchend);
 		document.body.removeEventListener("touchmove", scroll_check);
+
+		for (var i = 0; i < hold_to_rates.length; i++) {
+			hold_to_rates[i].parentNode.removeChild(hold_to_rates[i]);
+		}
+		hold_to_rates = [];
 
 		var zero_x = touching_song.$t.rating.offsetLeft + rating_width - slider_width - 10;
 		var zero_y = last_touch.touches[0].pageY;
@@ -283,7 +304,7 @@ var Rating = function() {
 		};
 		var now_number = 5;
 		var highlight = function(rating, width) {
-			t.number.style[Fx.transform] = "translateX(" + (width - 15) + "px)";
+			t.number.style[Fx.transform] = "translateX(" + Math.max(15, (width - 15)) + "px)";
 			t.slider.style.backgroundPosition = "0px " + -(Math.max(5, Math.min(25, Math.floor(width / ((slider_width - 25) / 24)))) * 96) + "px";
 			if (rating === now_number) return;
 			now_number = rating;
@@ -294,6 +315,7 @@ var Rating = function() {
 			if ((e.touches[0].pageY < (zero_y - 40)) || ((e.touches[0].pageY > (zero_y + 40)))) {
 				if (!cancelling) {
 					t.number.textContent = $l("Cancel");
+					t.slider.style.backgroundPosition = "0px -20px";
 					cancelling = true;
 					now_number = false;
 				}
@@ -485,7 +507,6 @@ var Rating = function() {
 			json.$t.rating.addEventListener("mouseleave", on_mouse_out);
 			json.$t.rating.addEventListener("click", click);
 			json.$t.rating.addEventListener("touchstart", function(e) {
-				console.log("where's the touch?!");
 				is_touching = true;
 				touching_song = json;
 				trigger_touch_rating(e);
