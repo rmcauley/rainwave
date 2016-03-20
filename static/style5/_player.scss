@@ -154,6 +154,10 @@ $player_icon_width: $player_icon_height;
 		background: $text;
 
 		@include transition-wtime(300ms, opacity, transform);
+
+		@media $phone-media {
+			top: $phone_menu_height - 4px;
+		}
 	}
 
 	div.load_indicator {
