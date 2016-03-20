@@ -288,12 +288,6 @@ div.list {
 			@include transition-wtime(300ms, padding);
 		}
 
-		div.fave {
-			margin-top: 0;
-			position: relative;
-			top: 1px;
-		}
-
 		div.requestlist_song, div.requestlist_album {
 			color: $text_d;
 			padding-left: 2em;

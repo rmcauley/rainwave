@@ -24,6 +24,12 @@ div.fave {
 		}
 	}
 
+	&.fave_clicked {
+		img.fave_solid {
+			opacity: 0.5;
+		}
+	}
+
 	body.logged_in & {
 		display: inline-block;
 		cursor: pointer;
@@ -35,38 +41,33 @@ div.fave {
 		}
 	}
 
+	// this only appears in lists for mobile versions
+	// and the CSS for album lists and song lists has slightly different CSS :/
 	body.logged_in.mobile & {
+		position: relative;
 		display: inline-block;
+		width: 30px;
+		margin-top: 0px;
+		padding: 2px 0;
+		border: solid 1px $text_ddd;
+		border-radius: 3px;
+
+		img {
+			padding: 0 8px;
+		}
 
 		img.fave_lined {
 			opacity: 0.7;
 		}
 
-		img.fave_solid {
-			opacity: 0;
-			@include transform(translateY(-130px));
-			@include transition(200ms, transform, opacity);
-		}
-
 		&.is_fave {
-			img.fave_solid {
-				@include transform(none);
+			img.fave_lined {
+				opacity: 0;
 			}
 		}
+	}
 
-		&:active {
-			img.fave_solid {
-				opacity: 1;
-				@include transform(translateY(-100px));
-			}
-		}
-
-		&.fave_clicked, &.fave_clicked:active {
-			img.fave_solid {
-				opacity: 1;
-				@include transition(3000ms, transform);
-				@include transform(translateY(-20px));
-			}
-		}
+	body.logged_in.mobile div.list & {
+		top: 3px;
 	}
 }
