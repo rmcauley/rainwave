@@ -147,7 +147,7 @@ var Song = function(self, parent_event) {
 	};
 
 	self.register_vote = function() {
-
+		self.remove_autovote();
 		self.el.classList.remove("voting_clicked");
 		self.el.classList.add("voting_registered");
 		if (self.$t.vote_button_text) {
