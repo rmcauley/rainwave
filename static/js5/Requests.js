@@ -227,6 +227,7 @@ var Requests = function() {
 				n = Song(json[i]);
 				n.$t.request_drag._song_id = n.id;
 				n.$t.request_drag.addEventListener("mousedown", start_drag);
+				n.$t.request_drag.addEventListener("touchstart", start_touch_drag);
 				n.$t.cancel._song_id = n.id;
 				n.$t.cancel.addEventListener("click", self.remove_event);
 				n.el.style[Fx.transform] = "translateY(" + Sizing.height + "px)";
@@ -352,6 +353,17 @@ var Requests = function() {
 	var upper_fold;
 	var lower_fold;
 
+	var start_touch_drag = function(e) {
+		var fake_event = {
+			"which": 1,
+			"clientY": e.touches[0].pageY,
+			"target": e.target
+		};
+		e.preventDefault();
+		e.stopPropagation();
+		start_drag(fake_event);
+	};
+
 	var start_drag = function(e) {
 		if (!e.which || (e.which !== 1)) {
 			return;
@@ -380,11 +392,21 @@ var Requests = function() {
 			document.body.classList.add("unselectable");
 			window.addEventListener("mousemove", capture_mouse_move);
 			window.addEventListener("mouseup", stop_drag);
+			window.addEventListener("touchmove", capture_touch_move);
+			window.addEventListener("touchend", stop_drag);
 			requestAnimationFrame(continue_drag);
-			e.preventDefault();
-			e.stopPropagation();
-			return false;
+			if (e.preventDefault) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
 		}
+	};
+
+	var capture_touch_move = function(e) {
+		last_mouse_event = {
+			"clientY": e.touches[0].pageY,
+			"target": e.target
+		};
 	};
 
 	var capture_mouse_move = function(e) {
@@ -431,6 +453,8 @@ var Requests = function() {
 		document.body.classList.remove("unselectable");
 		window.removeEventListener("mousemove", continue_drag);
 		window.removeEventListener("mouseup", stop_drag);
+		window.removeEventListener("touchmove", capture_touch_move);
+		window.removeEventListener("touchend", stop_drag);
 		dragging_song = null;
 		self.reflow();
 

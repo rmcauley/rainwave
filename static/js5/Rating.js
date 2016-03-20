@@ -215,7 +215,6 @@ var Rating = function() {
 	var hold_to_rates = [];
 
 	var touchend = function () {
-		console.log(hold_to_rates);
 		for (var i = 0; i < hold_to_rates.length; i++) {
 			hold_to_rates[i].parentNode.removeChild(hold_to_rates[i]);
 		}
