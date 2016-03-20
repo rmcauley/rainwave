@@ -262,7 +262,7 @@ a, a:visited, .link {
 	}
 }
 
-.unselectable {
+.unselectable, body.mobile {
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
