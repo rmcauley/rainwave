@@ -264,7 +264,7 @@ var Rating = function() {
 		if (start_touch_timer) {
 			clearTimeout(start_touch_timer);
 		}
-		start_touch_timer = setTimeout(do_touch_rating, 300);
+		start_touch_timer = setTimeout(do_touch_rating, 500);
 
 		document.body.addEventListener("touchmove", scroll_check);
 	};
