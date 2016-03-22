@@ -1,7 +1,7 @@
 <div class="song_detail" bind="details">
     {{#if ^_c.artists }}
         <div class="{{ ^'full_artists ' + ((_c.artists.length > 1) ? 'multi_artist' : '') }}">
-            <span>{{ $l("Artists") + ": " }}</span>
+            <span>{{ ^($l_has("Artists_pluralized") ? $l("Artists_pluralized", { "count": _c.artists.length }) :  $l("Artists")) + ": " }}</span>
             {{#each artists }}
                 <a href="#!/artist/{{ id }}">{{ name }}</a>
             {{/each}}

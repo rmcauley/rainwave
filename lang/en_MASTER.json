@@ -229,6 +229,7 @@
    "Albums"                                          : "Albums",
    "Songs"                                           : "Songs",
    "Artists"                                         : "Artists",
+   "Artists_pluralized"                              : "&(count:Artist/Artists)",
    "Users"                                           : "Users",
    "Groups"                                          : "Categories",
    "Listeners"                                       : "Listeners",
