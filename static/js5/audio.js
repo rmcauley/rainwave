@@ -94,7 +94,7 @@ var RWAudio = function() {
 		self.setVolume(0.85);
 	}
 	else {
-		Prefs.get("vol");
+		self.setVolume(Prefs.get("vol"));
 	}
 	self.addEventListener("volumeChange", function() {
 		if (self.isMuted) {
