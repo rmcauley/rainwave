@@ -53,7 +53,7 @@ class Artist(AssociatedMetadata):
 			"SELECT r4_song_artist.song_id AS id, "
 			 	"r4_songs.song_origin_sid AS sid, "
 			 	"song_title AS title, "
-			 	"song_rating AS rating, "
+			 	"CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, "
 				"song_exists AS requestable, "
 				"song_length AS length, "
 				"song_track_number AS track_number, "
@@ -63,8 +63,7 @@ class Artist(AssociatedMetadata):
 				"song_url as url, song_link_text as link_text, "
 				"COALESCE(song_rating_user, 0) AS rating_user, "
 				"COALESCE(song_fave, FALSE) AS fave, "
-				"album_name, r4_albums.album_id, album_year, "
-				"album_exists AS album_openable "
+				"album_name, r4_albums.album_id, album_year "
 			"FROM r4_song_artist "
 				"JOIN r4_songs USING (song_id) "
 				"JOIN r4_albums USING (album_id) "
@@ -81,11 +80,13 @@ class Artist(AssociatedMetadata):
 			self.data['all_songs'][sid] = {}
 		requestable = True if user_id > 1 else False
 		for song in all_songs:
+			if not song['sid'] in config.station_ids:
+				continue
 			song['requestable'] = requestable and song['requestable']
 			if not song['album_id'] in self.data['all_songs'][song['sid']]:
 				self.data['all_songs'][song['sid']][song['album_id']] = []
 			self.data['all_songs'][song['sid']][song['album_id']].append(song)
-			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id'), "openable": song.pop('album_openable'), "year": song.pop('album_year') } ]
+			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id'), "year": song.pop('album_year') } ]
 
 	def to_dict(self, user=None):
 		d = super(Artist, self).to_dict(user)

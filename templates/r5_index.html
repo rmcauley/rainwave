@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.code }}">
+<head>
+	<title>Rainwave {{ station_name }}</title>
+	<meta charset="UTF-8" />
+	<meta name="description" content="{{ site_description }}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+	{% if jsfiles %}
+		<link href="/static/baked/{{ revision_number }}/style5b.css" type="text/css" rel="stylesheet" />
+	{% else %}
+		<link href="/static/baked/{{ revision_number }}/style5.css" type="text/css" rel="stylesheet" />
+	{% end %}
+
+	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js"></script>
+	{% if dj %}
+		<script src="/api4/bootstrap_dj"></script>
+	{% else %}
+		<script src="/api4/bootstrap"></script>
+	{% end %}
+
+	{% if jsfiles %}
+		<script src="/static/baked/{{ revision_number }}/templates5b.js"></script>
+		{% for file in jsfiles %}
+			<script src="/{{ file }}" type="application/javascript"></script>
+		{% end %}
+	{% else %}
+		<script src="/static/baked/{{ revision_number }}/templates5.js"></script>
+		<script src="/static/baked/{{ revision_number }}/script5.js" type="application/javascript"></script>
+	{% end %}
+
+	{% if dj %}
+		<script src="/static/js_dj/adapter.js"></script>
+		<script src="/static/js_dj/libshine.js"></script>
+		<script src="/static/js_dj/libsamplerate.js"></script>
+		<script src="/static/js_dj/libmad.js"></script>
+		<script src="/static/js_dj/webcast.js"></script>
+		<script src="/static/js_dj/dj.js"></script>
+	{% end %}
+
+	<link rel="apple-touch-icon" sizes="1024x1024" href="/static/images4/1024.png" />
+	<link rel="apple-touch-icon" sizes="152x152" href="/static/images4/152.png" />
+	<link rel="apple-touch-icon" sizes="120x120" href="/static/images4/120.png" />
+	<link rel="apple-touch-icon" sizes="76x76" href="/static/images4/76.png" />
+
+	<link rel="shortcut icon" href="/static/favicon.ico" />
+	<link rel="icon" sizes="256x256" href="/static/images4/android/256.png" />
+	<link rel="icon" sizes="192x192" href="/static/images4/android/192.png" />
+	<link rel="icon" sizes="128x128" href="/static/images4/android/128.png" />
+	<link rel="icon" sizes="48x48" href="/static/images4/android/48.png" />
+	<link rel="icon" sizes="32x32" href="/static/images4/android/32.png" />
+	<link rel="icon" sizes="16x16" href="/static/favicon.ico" />
+
+	<meta name="theme-color" content="#1978B7" />
+	<meta name="msapplication-navbutton-color" content="#1978B7" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="#1978B7" />
+
+	<link rel="manifest" href="/manifest.json" />
+
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:site" content="@Rainwavecc" />
+	<meta name="twitter:title" content="Rainwave {{ station_name }}" />
+	<meta name="twitter:description" content="{{ site_description }}" />
+	<meta name="twitter:image" content="http://rainwave.cc/static/images4/android/256.png" />
+
+	<meta property="og:title" content="Rainwave {{ station_name }}" />
+	<meta property="og:site_name" content="Rainwave" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="{{ site_description }}" />
+	<meta property="og:locale" content="{{ request.locale.code }}" />
+	<meta property="og:locale_alternative" content="en_US" />
+	<meta property="og:url" content="http://rainwave.cc" />
+	<meta property="og:image" content="http://rainwave.cc/static/images4/android/256.png" />
+
+	{% if not mobile %}
+		<style>
+			@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700);
+			{%if request.locale.code == "ko_KO" %}
+				@font-face {
+					font-family: 'KoPub Dotum';
+					font-style: normal;
+					font-weight: 400;
+					src: local('KoPub Dotum'), local('KoPub Dotum-Medium'), url(/static/baked/{{ revision_number }}/KoPubDotum-Medium.min.woff) format('woff');
+				}
+				@font-face {
+					font-family: 'KoPub Dotum';
+					font-style: normal;
+					font-weight: 700;
+					src: local('KoPub Dotum'), local('KoPub Dotum-Medium'), url(/static/baked/{{ revision_number }}/KoPubDotum-Bold.min.woff) format('woff');
+				}
+			{% end %}
+		</style>
+	{% end %}
+
+	{% if not mobile %}
+		<style>
+			::-webkit-scrollbar {
+			    width: 8px;
+			}
+
+			::-webkit-scrollbar-track {
+			    display: none;
+			}
+
+			::-webkit-scrollbar-thumb {
+			    border-width: 1px;
+				border-style: solid;
+				border-color: #555;
+			}
+		</style>
+	{% end %}
+</head>
+
+<body class="simple loading normal">
+	<svg class="unselectable audio_volume" id="audio_volume" viewBox="0 0 100 100" preserveAspectRatio="none" style="display: none;">
+		<clipPath id="volume_bars">
+			<rect x="0" y="80"  width="17" height="20"></rect>
+			<rect x="20" y="60" width="17" height="40"></rect>
+			<rect x="40" y="40" width="17" height="60"></rect>
+			<rect x="60" y="20" width="17" height="80"></rect>
+			<rect x="80" y="0"  width="17" height="100"></rect>
+		</clipPath>
+		<rect id="audio_volume_indicator_background" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)" style="opacity: 0.3;"></rect>
+		<rect id="audio_volume_indicator" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)"></rect>
+	</svg>
+</body>
+</html>

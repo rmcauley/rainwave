@@ -198,9 +198,10 @@ class Election(event.BaseEvent):
 			raise ElectionEmptyException
 		for song in self.songs:
 			if 'elec_request_user_id' in song.data and song.data['elec_request_user_id']:
+				log.debug("elec_fill", "Putting user %s back in line after request fulfillment." % song.data['elec_request_username'])
 				u = User(song.data['elec_request_user_id'])
 				u.put_in_request_line(u.get_tuned_in_sid())
-			request.update_line(self.sid)
+		request.update_line(self.sid)
 
 	def _fill_get_song(self, target_song_length):
 		return playlist.get_random_song_timed(self.sid, target_song_length)
@@ -263,7 +264,10 @@ class Election(event.BaseEvent):
 			total_votes = 0
 			for i in range(0, len(self.songs)):
 				self.songs[i].data['entry_position'] = i
-				total_votes += self.songs[i].data['entry_votes']
+				if 'entry_votes' in self.songs[i].data:
+					total_votes += self.songs[i].data['entry_votes']
+				else:
+					self.songs[i].data['entry_votes'] = 0
 				db.c.update("UPDATE r4_election_entries SET entry_position = %s WHERE entry_id = %s", (i, self.songs[i].data['entry_id']))
 			if total_votes > 0:
 				for song in self.songs:
@@ -386,7 +390,9 @@ class Election(event.BaseEvent):
 		db.c.update("UPDATE r4_elections SET elec_in_progress = FALSE, elec_used = TRUE WHERE elec_id = %s", (self.id,))
 
 		if len(self.songs) > 0:
-			self.songs[0].add_to_vote_count(self.songs[0].data['entry_votes'], self.sid)
+			# hotfix, can be removed later
+			if self.songs[0] and self.songs[0].data and 'entry_votes' in self.songs[0].data:
+				self.songs[0].add_to_vote_count(self.songs[0].data['entry_votes'], self.sid)
 			self.songs[0].update_last_played(self.sid)
 			self.songs[0].update_rating()
 			self.songs[0].start_cooldown(self.sid)

@@ -2,6 +2,7 @@
    "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
 
    "language_name"                                   : "Polski",
+   "language_name_short"                             : "PL",
 
    "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
 
@@ -169,11 +170,11 @@
    "typeanywhere"                                    : "Zacznij pisać!",
    "clearfilter"                                     : "Wyczyść filtr",
    "album_rating_ranked_at_v2"                       : "Ocena %(rating) przez %(rating_count) ocen utworu, #(rank) w rankingu.",
-   "album_requests_ranked_at"                        : "Proponowany %(count) razy &(count:time/times), #(rank) w rankingu.",
+   "album_requests_ranked_at"                        : "Proponowany %(count) &(count:raz/razy), #(rank) w rankingu.",
    "album_year"                                      : "Wydany w %(year).",
    "song_extradetail_rating"                         : "Ocena: %(rating) (przez %(rating_count) ludzi)",
    "song_extradetail_rating_rank"                    : "Ranking Ocen: #(rank)",
-   "song_extradetail_requests"                       : "Proponowany: %(count) razy &(count:time/times)",
+   "song_extradetail_requests"                       : "Proponowany %(count) &(count:raz/razy)",
    "song_extradetail_requests_rank"                  : "Ranking Prop.: #(rank)",
    "Request"                                         : "Propozycja",
    "Albums"                                          : "Albumy",

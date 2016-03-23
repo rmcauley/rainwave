@@ -24,9 +24,9 @@ def unlock_listeners(sid):
 	db.c.update("UPDATE r4_listeners SET listener_lock = FALSE WHERE listener_lock_counter <= 0")
 
 def solve_avatar(avatar_type, avatar):
-	if avatar_type == 1:
+	if avatar_type == "avatar.driver.upload":
 		return _AVATAR_PATH % avatar
-	elif avatar_type > 0:
+	elif avatar_type == "avatar.driver.remote":
 		return avatar
 	else:
 		return _DEFAULT_AVATAR
@@ -93,7 +93,7 @@ class User(object):
 		user_data = None
 		if not user_data:
 			user_data = db.c.fetch_row(
-				"SELECT user_id AS id, username AS name, user_new_privmsg AS new_privmsg, user_avatar AS avatar, radio_requests_paused AS requests_paused, "
+				"SELECT user_id AS id, username AS name, user_avatar AS avatar, radio_requests_paused AS requests_paused, "
 					"user_avatar_type AS _avatar_type, radio_listenkey AS listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings "
 				"FROM phpbb_users WHERE user_id = %s",
 				(self.id,)
@@ -137,7 +137,7 @@ class User(object):
 		self.authorized = True
 
 	def get_tuned_in_sid(self):
-		if 'sid' in self.data:
+		if 'sid' in self.data and self.data['sid']:
 			return self.data['sid']
 		lrecord = self.get_listener_record()
 		if 'sid' in lrecord:
@@ -198,6 +198,11 @@ class User(object):
 	def is_admin(self):
 		return self.data['admin'] > 0
 
+	def is_dj(self):
+		if 'dj' in self.data and self.data['dj']:
+			return True
+		return False
+
 	def has_perks(self):
 		return self.data['perks']
 
@@ -224,13 +229,12 @@ class User(object):
 	def add_request(self, sid, song_id):
 		self._check_too_many_requests()
 		song = playlist.Song.load_from_id(song_id, sid)
-		for requested in self.get_requests(sid):
-			if song.id == requested['id']:
+		for requested in db.c.fetch_all("SELECT r4_request_store.song_id, r4_songs.album_id FROM r4_request_store JOIN r4_songs USING (song_id) WHERE r4_request_store.user_id = %s", (self.id,)):
+			if song.id == requested['song_id']:
 				raise APIException("same_request_exists")
-			for album in song.albums:
-				for requested_album in requested['albums']:
-					if album.id == requested_album['id']:
-						raise APIException("same_request_album")
+			if not self.has_perks():
+				if song.albums[0].id == requested['album_id']:
+					raise APIException("same_request_album")
 		updated_rows = db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
 		if self.data['sid'] == sid and self.is_tunedin():
 			self.put_in_request_line(sid)
@@ -338,13 +342,13 @@ class User(object):
 			requests = db.c.fetch_all(
 				"SELECT r4_request_store.song_id AS id, COALESCE(r4_song_sid.sid, r4_request_store.sid) AS sid, r4_songs.song_origin_sid AS origin_sid, "
 					"r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
-					"song_rating AS rating, song_title AS title, song_length AS length, "
+					"CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_title AS title, song_length AS length, song_exists AS good, "
 					"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, "
 					"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
 					"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
 					"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
 					"song_fave AS fave, album_fave AS album_fave, "
-					"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating AS album_rating "
+					"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating AS album_rating, album_rating_complete "
 				"FROM r4_request_store "
 					"JOIN r4_songs USING (song_id) "
 					"JOIN r4_albums USING (album_id) "
@@ -355,36 +359,20 @@ class User(object):
 				"WHERE r4_request_store.user_id = %s "
 				"ORDER BY reqstor_order, reqstor_id",
 				(sid, self.id, self.id, self.id))
-			# Lovely but too heavy considering this SQL query sits in the way of a page refresh
-			# It also needs to be updated to make use of the sid argument
-			# requests = db.c.fetch_all(
-			# 	"SELECT r4_request_store.song_id AS id, "
-			# 		"r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
-			# 		"song_rating AS rating, song_title AS title, song_length AS length, "
-			# 		"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, "
-			# 		"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
-			# 		"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
-			# 		"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
-			# 		"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating "
-			# 	"FROM r4_request_store "
-			# 		"JOIN r4_songs USING (song_id) "
-			# 		"JOIN r4_albums USING (album_id) "
-			# 		"JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_request_store.sid = r4_album_sid.sid) "
-			# 		"JOIN r4_song_sid ON (r4_song_sid.sid = r4_request_store.sid AND r4_song_sid.song_id = r4_request_store.song_id) "
-			# 		"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
-			# 		"LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = r4_request_store.sid) "
-			# 	"WHERE r4_request_store.user_id = %s "
-			# 	"ORDER BY reqstor_order, reqstor_id",
-			# 	(self.id, self.id, self.id))
 		if not requests:
 			requests = []
 		for song in requests:
+			if not song['good'] or song['cool'] or song['elec_blocked'] or song['sid'] != sid:
+				song['good'] = False
+			else:
+				song['good'] = True
 			song['albums'] = [ {
 				"name": song.pop('album_name'),
 				"id": song['album_id'],
 				"fave": song.pop('album_fave'),
-				"rating": song.pop('album_rating'),
+				"rating": round(song.pop('album_rating'), 1),
 				"rating_user": song.pop('album_rating_user'),
+				"rating_complete": song.pop('album_rating_complete'),
 				"art": playlist.Album.get_art_url(song.pop('album_id'), song['sid'])
 			 } ]
 		cache.set_user(self, "requests", requests)

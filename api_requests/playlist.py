@@ -4,9 +4,15 @@ from api import fieldtypes
 from api.server import handle_api_url
 from api.server import handle_api_html_url
 
+try:
+	import ujson as json
+except ImportError:
+	import json
+
 from libs import cache
 from libs import db
 from libs import config
+from libs.pretty_date import pretty_date
 from rainwave import playlist
 from rainwave.playlist_objects.metadata import MetadataNotFoundError
 from api.exceptions import APIException
@@ -71,13 +77,13 @@ class GroupHandler(APIHandler):
 
 @handle_api_url("album")
 class AlbumHandler(APIHandler):
-	description = "Get detailed information about an album, including a list of songs in the album."
+	description = "Get detailed information about an album, including a list of songs in the album.  'Sort' can be set to 'added_on' to sort by when the song was added to the radio."
 	return_name = "album"
-	fields = { "id": (fieldtypes.album_id, True) }
+	fields = { "id": (fieldtypes.album_id, True), "sort": (fieldtypes.string, None) }
 
 	def post(self):
 		try:
-			album = playlist.Album.load_from_id_with_songs(self.get_argument("id"), self.sid, self.user)
+			album = playlist.Album.load_from_id_with_songs(self.get_argument("id"), self.sid, self.user, sort=self.get_argument("sort"))
 			album.load_extra_detail(self.sid)
 		except MetadataNotFoundError:
 			self.return_name = "album_error"
@@ -98,7 +104,7 @@ class SongHandler(APIHandler):
 
 	def post(self):
 		song = playlist.Song.load_from_id(self.get_argument("id"), self.sid)
-		song.load_extra_detail()
+		song.load_extra_detail(self.sid)
 		self.append("song", song.to_dict(self.user))
 
 @handle_api_url("all_songs")
@@ -118,7 +124,7 @@ class AllSongsHandler(APIHandler):
 			order = "song_rating_user DESC, album_name, song_title"
 			distinct_on = "song_rating_user, album_name, song_title"
 		self.append(self.return_name, db.c.fetch_all(
-			"SELECT DISTINCT ON (" + distinct_on + ") r4_songs.song_id AS id, song_title AS title, album_name, song_rating AS rating, song_rating_user AS rating_user, song_fave AS fave "
+			"SELECT DISTINCT ON (" + distinct_on + ") r4_songs.song_id AS id, song_title AS title, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_rating_user AS rating_user, song_fave AS fave "
 			"FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_albums USING (album_id) "
 			"LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND user_id = %s) "
 			"WHERE song_verified = TRUE ORDER BY " + order + " " + self.get_sql_limit_string(),
@@ -151,7 +157,7 @@ class Top100Songs(APIHandler):
 			self.append(self.return_name,
 				db.c.fetch_all(
 					"SELECT DISTINCT ON (song_rating, song_id) "
-						"song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, song_rating, song_rating_count "
+						"song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS song_rating, song_rating_count "
 					"FROM r4_song_sid "
 						"JOIN r4_songs USING (song_id) "
 						"JOIN r4_albums USING (album_id) "
@@ -161,7 +167,7 @@ class Top100Songs(APIHandler):
 		else:
 			self.append(self.return_name, db.c.fetch_all(
 				"SELECT DISTINCT ON (song_rating, song_id) "
-					"song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, song_rating, song_rating_count "
+					"song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS song_rating, song_rating_count "
 				"FROM r4_songs "
 					"JOIN r4_song_sid USING (song_id) "
 					"JOIN r4_albums USING (album_id) "
@@ -184,7 +190,7 @@ class AllFavHandler(APIHandler):
 	def post(self):
 		if 'sid' in self.request.arguments:
 			self.append(self.return_name, db.c.fetch_all(
-			"SELECT r4_song_ratings.song_id AS id, song_title AS title, r4_albums.album_id, album_name, song_rating AS rating, COALESCE(song_rating_user, 0) AS rating_user, song_fave AS fave, r4_song_sid.song_cool_end AS cool_end "
+			"SELECT r4_song_ratings.song_id AS id, song_title AS title, r4_albums.album_id, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, COALESCE(song_rating_user, 0) AS rating_user, song_fave AS fave, r4_song_sid.song_cool_end AS cool_end "
 			"FROM r4_song_ratings "
 				"JOIN r4_song_sid ON (r4_song_ratings.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
 				"JOIN r4_songs ON (r4_song_ratings.song_id = r4_songs.song_id) "
@@ -192,7 +198,7 @@ class AllFavHandler(APIHandler):
 			"WHERE user_id = %s AND song_exists = TRUE AND song_fave = TRUE ORDER BY album_name, song_title " + self.get_sql_limit_string(), (self.sid, self.user.id)))
 		else:
 			self.append(self.return_name, db.c.fetch_all(
-			"SELECT r4_song_ratings.song_id AS id, song_title AS title, r4_albums.album_id, album_name, song_rating AS rating, COALESCE(song_rating_user, 0) AS rating_user, song_fave AS fave "
+			"SELECT r4_song_ratings.song_id AS id, song_title AS title, r4_albums.album_id, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, COALESCE(song_rating_user, 0) AS rating_user, song_fave AS fave "
 			"FROM r4_song_ratings JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 			"WHERE user_id = %s AND song_verified = TRUE AND song_fave = TRUE ORDER BY album_name, song_title " + self.get_sql_limit_string(), (self.user.id,)))
 
@@ -212,14 +218,14 @@ class PlaybackHistory(APIHandler):
 	def post(self):
 		if self.user.is_anonymous():
 			self.append(self.return_name, db.c.fetch_all(
-				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, songhist_time AS song_played_at, song_artist_parseable AS artist_parseable, song_rating AS rating "
+				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, songhist_time AS song_played_at, song_artist_parseable AS artist_parseable, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating "
 				"FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 				"WHERE r4_song_history.sid = %s "
 				"ORDER BY songhist_id DESC " + self.get_sql_limit_string(),
 				(self.sid,)))
 		else:
 			self.append(self.return_name, db.c.fetch_all(
-				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, song_rating_user AS rating_user, song_fave AS fave, songhist_time AS song_played_at, song_artist_parseable AS artist_parseable, song_rating AS rating, song_rating_user AS rating_user "
+				"SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, song_rating_user AS rating_user, song_fave AS fave, songhist_time AS song_played_at, song_artist_parseable AS artist_parseable, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_rating_user AS rating_user "
 				"FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
 					"LEFT JOIN r4_song_ratings ON r4_song_history.song_id = r4_song_ratings.song_id AND user_id = %s "
 				"WHERE r4_song_history.sid = %s "
@@ -228,7 +234,32 @@ class PlaybackHistory(APIHandler):
 
 @handle_api_html_url("playback_history")
 class PlaybackHistoryHTML(PrettyPrintAPIMixin, PlaybackHistory):
-	pass
+	login_required = False
+	auth_required = False
+
+	columns = [ "title", "album_name" ]
+
+	def header_special(self):
+		self.write("<th>Artist(s)</th>")
+		self.write("<th>Site Rating</th>")
+		if not self.user.is_anonymous():
+			self.write("<th>Your Rating</th>")
+		self.write("<th>Time Played</th>")
+
+	def row_special(self, row):
+		self.write("<td>")
+		artists = json.loads(row['artist_parseable'])
+		for artist in artists:
+			self.write("%s" % artist['name'])
+			if artist != artists[-1]:
+				self.write(", ")
+		self.write("</td>")
+
+		self.write("<td>%s</td>" % row['rating'])
+		if 'rating_user' in row:
+			self.write("<td>%s</td>" % (row['rating_user'] or ''))
+
+		self.write("<td>%s</td>" % pretty_date(row['song_played_at']))
 
 @handle_api_url("station_song_count")
 class StationSongCountRequest(APIHandler):
@@ -254,7 +285,7 @@ class AllRequestedSongs(APIHandler):
 	def post(self):
 		self.append(self.return_name, db.c.fetch_all(
 			"SELECT "
-				"r4_songs.song_id AS id, song_title AS title, album_name, song_rating AS rating, song_rating_user AS rating_user, song_fave AS fave "
+				"r4_songs.song_id AS id, song_title AS title, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_rating_user AS rating_user, song_fave AS fave "
 			"FROM r4_request_history "
 				"JOIN r4_song_sid USING (song_id, sid) "
 				"JOIN r4_songs USING (song_id) "
@@ -278,7 +309,7 @@ class RecentlyVotedSongs(APIHandler):
 	def post(self):
 		self.append(self.return_name, db.c.fetch_all(
 			"SELECT "
-				"r4_songs.song_id AS id, song_title AS title, album_name, song_rating AS rating, song_rating_user AS rating_user, song_fave AS fave "
+				"r4_songs.song_id AS id, song_title AS title, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_rating_user AS rating_user, song_fave AS fave "
 			"FROM r4_vote_history "
 				"JOIN r4_song_sid USING (song_id, sid) "
 				"JOIN r4_songs USING (song_id) "

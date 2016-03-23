@@ -133,7 +133,8 @@ class AssociatedMetadata(object):
 
 	def start_cooldown(self, sid, cool_time = False):
 		if self.cool_time is not None:
-			self._start_cooldown_db(sid, self.cool_time)
+			if self.cool_time > 0:
+				self._start_cooldown_db(sid, self.cool_time)
 		elif cool_time and cool_time > 0:
 			self._start_cooldown_db(sid, cool_time)
 

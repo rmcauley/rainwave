@@ -3,6 +3,27 @@ from time import time as timestamp
 from libs import db
 from libs import log
 from libs import cache
+from libs import config
+
+def rating_calculator(ratings):
+	"""
+	Send in an SQL cursor that's the entire result of a query that has 2 columns: 'rating' and 'count'.
+	Uses "rating_map" from config to map each rating tier's to the fraction of point(s) it should get.
+	Returns a set: (points, potential_points)
+	"""
+	point_map = config.get("rating_map")
+	points = 0.0
+	potential_points = 0.0
+	for row in ratings:
+		tier_points = 0
+		potential_points += row['count']
+		for tier in point_map:
+			if row['rating'] >= tier['threshold']:
+				tier_points = row['count'] * tier['points']
+		points += tier_points
+	points = min(potential_points, max(0, points))
+
+	return (points, potential_points)
 
 def get_song_rating(song_id, user_id):
 	rating = cache.get_song_rating(song_id, user_id)
@@ -61,18 +82,8 @@ def set_song_rating(sid, song_id, user_id, rating = None, fave = None):
 		raise
 
 def clear_song_rating(sid, song_id, user_id):
-	existed = db.c.update("DELETE FROM r4_song_ratings WHERE song_id = %s AND user_id = %s", (song_id, user_id))
-	if existed:
-		db.c.start_transaction()
-		try:
-			albums = update_album_ratings(sid, song_id, user_id)
-			db.c.commit()
-			return albums
-		except:
-			db.c.rollback()
-			raise
-	else:
-		return []
+	db.c.update("UPDATE r4_song_ratings SET song_rating_user = NULL WHERE song_id = %s AND user_id = %s", (song_id, user_id))
+	return update_album_ratings(sid, song_id, user_id)
 
 def set_song_fave(song_id, user_id, fave):
 	db.c.start_transaction()
@@ -99,7 +110,7 @@ def set_album_fave(sid, album_id, user_id, fave):
 	db.c.start_transaction()
 	exists = db.c.fetch_row("SELECT * FROM r4_album_ratings WHERE album_id = %s AND user_id = %s AND sid = %s", (album_id, user_id, sid))
 	rating = None
-	rating_complete = None
+	rating_complete = False
 	if not exists:
 		if db.c.update("INSERT INTO r4_album_ratings (album_id, user_id, album_fave, sid) VALUES (%s, %s, %s, %s)", (album_id, user_id, fave, sid)) == 0:
 			log.debug("rating", "Failed to insert record for fave %s %s, fave is: %s." % ("album", album_id, fave))
@@ -133,7 +144,7 @@ def update_album_ratings(target_sid, song_id, user_id):
 			"FROM r4_songs "
 				"JOIN r4_song_sid USING (song_id) "
 				"JOIN r4_song_ratings USING (song_id) "
-			"WHERE album_id = %s AND sid = %s AND song_exists = TRUE AND user_id = %s",
+			"WHERE album_id = %s AND sid = %s AND song_exists = TRUE AND user_id = %s AND song_rating_user IS NOT NULL",
 			(album_id, sid, user_id))
 		rating_complete = False
 		if user_data['rating_user_count'] >= num_songs:

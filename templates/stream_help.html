@@ -1,0 +1,372 @@
+{% include "basic_header.html" %}
+<style>
+	div.tab_invisible, table.tab_invisible {
+		display: none;
+	}
+
+	ul.tabs {
+		margin: 0;
+		padding: 0;
+		border-bottom: solid 1px grey;
+	}
+
+	ul.tabs li {
+		display: inline;
+		margin-right: 1em;
+		cursor: pointer;
+		opacity: 0.5;
+	}
+
+	ul.tabs li.active {
+		opacity: 1;
+		font-weight: bold;
+		color: #FFC96A;
+		border-bottom: solid 1px #CE8300;
+	}
+
+	li.tab_invisible {
+		opacity: 0.5;
+	}
+
+	p.preset_question {
+		margin-bottom;
+	}
+
+	p.preset_question + div, p.preset_question + div + div {
+		margin-left: 3em;
+	}
+
+	body {
+		padding-bottom: 2em;
+	}
+
+	div.position_select {
+		border: solid 1px #CCC;
+		width: 400px;
+		height: 150px;
+		position: relative;
+	}
+
+	div.position_select button {
+		display: inline-block;
+		white-space: nowrap;
+		height: 30px;
+		width: 100px;
+	}
+
+	div.position_select button.middle {
+		height: 90px;
+	}
+
+	div.position_select button.centre {
+		width: 200px;
+	}
+</style>
+<p>We highly encourage you use Rainwave as background music for your streams!  All our music is volume-normalized and ad-free, perfect for background as part of a stream!</p>
+
+<h2>Content ID Concerns</h2>
+<p><b>The tl;dr is use OverClocked ReMix/OCR Radio</b>.  You are completely content ID safe when you do!</p>
+<p id="more_info_click">
+	To see the long version, <a onclick="document.getElementById('more_info').style.display = 'block'; this.parentNode.style.display='none';" href="#">click here.</a>
+</p>
+<div id="more_info" style="display: none;">
+	<p>Lyrical content per station is noted below, as some streamers will not appreciate having a song with lyrics competing on stream with their own voice for user's attention. (even if the song is turned down to be in the background)</p>
+	<ul>
+		<li>All has some lyrical content, and is "rated G"/"safe for work". (no swears, no racial slurs, no hentai game content or album art, etc)  You stand a strong risk of being Content IDed when using this station.</li>
+		<li>Game has very little lyrical content, and is rated G/safe for work.  You will almost certainly be Content IDed.</li>
+		<li>OverClocked ReMix has no copyrighted content, has some lyrical content, and is rated PG-13 with the very rare R.  We defer to OverClocked ReMix's judgement, which in rare cases produces content such as <a href="http://ocremix.org/remix/OCR01125" target="_blank">Niggaz 4 Life</a>.  More importantly, though, <b><i>you will not be Content IDed with OCR.</i></b></li>
+		<li>Covers has a lot of lyrical content, and is rated PG-13 for swearing and themes from some remixes with lyrics.  You have a very small chance of being Content IDed.</li>
+		<li>Chiptune has no lyrical content, and is rated G.  You have a small chance of being Content IDed.</li>
+	</ul>
+</div>
+
+<h2>How To Use in OBS</h2>
+<ol>
+	<li>Install <a href="https://obsproject.com/forum/resources/clr-browser-source-plugin.22/update?update=232">the CLR Browser Plugin</a> for OBS or the <a href="https://obsproject.com/forum/resources/browser-plugin.115/">Browser Plugin</a> for OBS Studio/Multiplatform.</li>
+	<li>Configure your widget below.  If you know CSS, you can tune </li>
+	<li>Copy your widget's URL to the plugin and use the recommended plugin width/height</li>
+	<li>Tune in to Rainwave using your browser or media player</li>
+</ol>
+
+<!--
+	To update the form HTML, run this but add extra dashes.  It should be double dashes but HTML
+	comments don't allow those and we don't want to trigger quirks mode.
+
+	python libs/RWTemplates.py -templatedir templates/stream_js -outfile static/stream_templates.js -helpers
+-->
+<script src="/static/stream_templates.js"></script>
+<script src="/static/RWTemplates.js"></script>
+<script src="/static/RWTemplates.forms.js"></script>
+<script src="/static/RWTemplates.tabify.js"></script>
+<script src="/static/stream_utility.js"></script>
+<script src="/static/js5/libs/API.js"></script>
+<div id="template_zone" style="box-sizing: border-box; padding-right: 10px; float: left; width: 50%; border-right: solid 1px #CE8300; padding-bottom: 2em;"></div>
+<div style="float: right; width: 49%;">
+	<h2>Your Widget</h2>
+	<p><b>Your URL:</b></p>
+	<pre id="widget_url" style="word-wrap: normal; white-space: normal; word-break: break-all;"></pre>
+	<p>
+		<b>Plugin width:</b> <span id="plugin_width"></span><br />
+		<b>Plugin height:</b> <span id="plugin_height"></span>
+	</p>
+	<p>The preview will be larger here than on your stream if you use OBS to downscale the size of your image before streaming.</p>
+	<iframe id="iframe" style="width: 100%; height: 350px; border: none; background: white;"></iframe>
+</div>
+<div style="clear: both;"></div>
+
+<script>
+	var core_obj = {
+		"presets": {
+			"preset_layout": "center_left",
+			"preset_size": "1080p",
+			"preset_background": "overgame",
+			"preset_header": "yes_cs",
+			"preset_ad": "yes"
+		},
+		"options": {
+			"sid": "2",
+
+			"layout": "art_left",
+			"text_align": "left",
+			"anim_in": "to_left",
+			"anim_out": "to_left",
+
+			"art_size": "100px",
+			"font_size": "",
+			"max_width": "420px",
+
+			"background_color": "rgba(0,0,0,0.6)",
+			"box_shadow": "0px 0px 3px 5px rgba(0,0,0,0.6)",
+
+			"np_header": "true",
+			"np_message": "",
+
+			"ad": "3",
+			"ad_message": "",
+
+			"show_artist": "true",
+			"color": "",
+			"font_family": "",
+			"text_stroke_color": "",
+			"text_stroke_size": "",
+			"text_shadow": "",
+			"art_shadow": "",
+			"padding": "",
+			"delay": 3
+		}
+	};
+
+	var presets = {
+		"top_left": {
+			"layout": "art_left",
+			"text_align": "left",
+			"anim_in": "to_top",
+			"anim_out": "to_left"
+		},
+		"top_center": {
+			"layout": "art_left",
+			"text_align": "left",
+			"anim_in": "to_top",
+			"anim_out": "to_top"
+		},
+		"top_right": {
+			"layout": "art_right",
+			"text_align": "right",
+			"anim_in": "to_top",
+			"anim_out": "to_right"
+		},
+		"center_left": {
+			"layout": "art_left",
+			"text_align": "left",
+			"anim_in": "to_left",
+			"anim_out": "to_left"
+		},
+		"center_right": {
+			"layout": "art_right",
+			"text_align": "right",
+			"anim_in": "to_right",
+			"anim_out": "to_right"
+		},
+		"bottom_left": {
+			"layout": "art_left",
+			"text_align": "left",
+			"anim_in": "to_bottom",
+			"anim_out": "to_left"
+		},
+		"bottom_center": {
+			"layout": "art_left",
+			"text_align": "left",
+			"anim_in": "to_bottom",
+			"anim_out": "to_bottom"
+		},
+		"bottom_right": {
+			"layout": "art_right",
+			"text_align": "right",
+			"anim_in": "to_bottom",
+			"anim_out": "to_right"
+		},
+		"2160p": {
+			"art_size": "200px",
+			"font_size": "32pt",
+			"max_width": "800px",
+		},
+		"1440p": {
+			"art_size": "160px",
+			"font_size": "25pt",
+			"max_width": "640px",
+		},
+		"1080p": {
+			"art_size": "100px",
+			"font_size": "",
+			"max_width": "420px"
+		},
+		"720p": {
+			"art_size": "70px",
+			"font_size": "15pt",
+			"max_width": "360px"
+		},
+		"480p": {
+			"art_size": "50px",
+			"font_size": "11pt",
+			"max_width": "300px"
+		},
+		"overbkg": {
+			"background_color": "",
+			"box_shadow": ""
+		},
+		"overimg": {
+			"background_color": "rgba(0,0,0,0.6)",
+			"box_shadow": "0px 0px 3px 5px rgba(0,0,0,0.6)"
+		},
+		"overgame": {
+			"background_color": "rgba(0,0,0,0.6)",
+			"box_shadow": "0px 0px 3px 5px rgba(0,0,0,0.6)"
+		},
+		"yes_np": {
+			"np_header": "yes",
+			"np_message": "Now Playing"
+		},
+		"yes_cm": {
+			"np_header": "yes",
+			"np_message": "Current Music"
+		},
+		"yes_cs": {
+			"np_header": "yes",
+			"np_message": ""
+		},
+		"no_header": {
+			"np_header": "no",
+			"np_message": ""
+		},
+		"ads_yes": {
+			"ad": 3
+		},
+		"ads_no": {
+			"ad": 0
+		}
+	};
+
+	RWTemplates.stream_form(core_obj, document.getElementById("template_zone"));
+	RWTemplateHelpers.tabify(core_obj, "preset");
+
+	function preset(set) {
+		core_obj.presets.$t.update({ "preset_layout": set });
+		core_obj.options.$t.update(presets[set]);
+		core_obj.options.$t.on_autosave();
+	};
+
+	core_obj.presets.$t.preset_size[0].addEventListener("change", function() {
+		core_obj.options.$t.update(presets[this.value]);
+		core_obj.options.$t.on_autosave();
+	});
+
+	core_obj.presets.$t.preset_background[0].addEventListener("change", function() {
+		core_obj.options.$t.update(presets[this.value]);
+		core_obj.options.$t.on_autosave();
+	});
+
+	core_obj.presets.$t.preset_header[0].addEventListener("change", function() {
+		core_obj.options.$t.update(presets[this.value]);
+		core_obj.options.$t.on_autosave();
+	});
+
+	core_obj.presets.$t.preset_ad[0].addEventListener("change", function() {
+		core_obj.options.$t.update(presets[this.value]);
+		core_obj.options.$t.on_autosave();
+	});
+
+	core_obj.options.$t.on_autosave = function() {
+		obj = core_obj.options.$t.get();
+		for (var i in obj) {
+			if (obj[i] === "") {
+				delete(obj[i]);
+			}
+		}
+		var qstring = API.serialize(obj);
+
+		var subdomain;
+		if (obj.sid == 1) {
+			subdomain = "game";
+		}
+		else if (obj.sid == 2) {
+			subdomain = "ocr";
+		}
+		else if (obj.sid == 3) {
+			subdomain = "covers";
+		}
+		else if (obj.sid == 4) {
+			subdomain = "chiptune";
+		}
+		else {
+			subdomain = "all";
+		}
+		var url = "http://" + subdomain + ".rainwave.cc/widget/widget?" + qstring;
+		document.getElementById("widget_url").textContent = url;
+		document.getElementById("iframe").setAttribute("src", "/widget/widget?" + qstring);
+
+		StyleGenerator(DoDefaults(obj));
+
+		var padding = parseInt(obj.padding || 8);
+		var width = parseInt(obj.max_width) + (padding * 2);
+		var height = parseInt(obj.art_size) + (padding * 2);
+		var shadow_size = 0;
+		if (obj.box_shadow) {
+			try {
+				var shadow_css = obj.box_shadow.split(" ");
+				var shadow_part;
+				for (i = 0; i < shadow_css.length; i++) {
+					shadow_part = parseInt(shadow_css[i]);
+					if (!isNaN(shadow_part) && shadow_part) {
+						shadow_size += shadow_part;
+					}
+				}
+			}
+			catch (e) {
+				shadow_size = 0;
+			}
+		}
+		var margin = Math.max(parseInt(obj.padding || "8px"), shadow_size) + "px";
+		width += parseInt(margin) + shadow_size;
+		height += parseInt(margin) + shadow_size;
+
+		if (obj.np_header == "yes") {
+			// width += document.getElementById("header").offsetWidth;
+			height += document.getElementById("header").offsetHeight;
+			height += (parseInt(obj.padding || "8px") / 2);
+		}
+
+		document.getElementById("plugin_width").textContent = width;
+		document.getElementById("plugin_height").textContent = height;
+
+		document.getElementById("header").style.visibility = "hidden";
+	};
+
+	window.addEventListener("load", function() {
+		core_obj.options.$t.enable_auto_save();
+		core_obj.options.$t.on_autosave();
+	});
+</script>
+
+<div id="header"></div>
+
+{% include "basic_footer.html" %}

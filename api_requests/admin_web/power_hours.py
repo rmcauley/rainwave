@@ -31,7 +31,12 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 		index.write_html_time_form(self, "new_ph")
 		self.write("<br><button onclick=\"window.top.call_api('admin/create_producer', ")
 		self.write("{ 'producer_type': 'OneUpProducer', 'end_utc_time': document.getElementById('new_ph_timestamp').value, 'start_utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\"")
-		self.write(">Create new Power Hour</button></div><hr>")
+		self.write(">Create new, empty Power Hour</button></div>")
+		self.write("<div>(based on above form with...)<br>")
+		self.write("Length: <select id='unrated_length'><option value='1800'>30m</option><option value='3600' selected>1h</option><option value='5400'>1.5h</option><option value='7200'>2h</option></select>")
+		self.write("<br><button onclick=\"window.top.call_api('admin/create_producer', ")
+		self.write("{ 'fill_unrated': true, 'producer_type': 'OneUpProducer', 'end_utc_time': parseInt(document.getElementById('new_ph_timestamp').value) + parseInt(document.getElementById('unrated_length').value), 'start_utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\"")
+		self.write(">Create new PH w/unrated songs</button></div><hr>")
 
 		if self.return_name in self._output and type(self._output[self.return_name]) == types.ListType and len(self._output[self.return_name]) > 0:
 			self.write("<ul>")
@@ -92,7 +97,10 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 				elif song['one_up_queued']:
 					self.write(" (queued)")
 				self.write("</div><div>%s</div>\n" % song['albums'][0]['name'])
-				self.write("<div><a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">Delete</a></div></li>\n" % song['one_up_id'])
+				self.write("<div>")
+				self.write("<a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">Delete</a> - " % song['one_up_id'])
+				self.write("<a onclick=\"window.top.call_api('admin/move_up_in_power_hour', { 'one_up_id': %s });\">Move Up</a>" % song['one_up_id'])
+				self.write("</div></li>\n")
 			self.write("</ol>\n")
 			self.write("<script>window.top.current_sched_id = %s;</script>\n\n" % ph['id'])
 		except Exception as e:

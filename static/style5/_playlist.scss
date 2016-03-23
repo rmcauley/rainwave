@@ -1,0 +1,416 @@
+ul.panel_header {
+	height: 25px;
+	padding-left: 0;
+	margin: 10px 0 7px 0;
+	border-bottom: 2px solid $tab_b;
+	list-style: none;
+	white-space: nowrap;
+
+	li {
+		display: block;
+		height: 25px;
+		padding: 0 10px;
+
+		color: $tab;
+		border-bottom: 2px solid transparent;
+		@include transition(LINKCOLOR, background, opacity, border-bottom);
+
+		div.lists &.open, body.simple &.open {
+			color: $tab_open;
+			border-bottom-color: $tab_open_b;
+		}
+	}
+}
+
+div.no_result_message {
+	position: absolute;
+	color: $text_d;
+	text-align: center;
+	width: 100%;
+	display: none;
+	top: 50px;
+
+	div.no_results & {
+		display: block;
+	}
+
+	div.no_results.search_active & {
+		display: none;
+	}
+
+	&.while_search_active, div.no_results &.while_search_active {
+		display: none;
+	}
+
+	div.no_results.search_active &.while_search_active {
+		display: block;
+	}
+}
+
+body.simple div.panel, div.search_panel, div.dj_panel {
+	position: absolute;
+	z-index: 100;
+	width: 450px;
+	max-width: 100%;
+	background: $panel_bkg;
+	border-left: solid 1px $panel_b;
+	top: 0px;
+	opacity: 0;
+	visibility: hidden;
+	@include transform(none);
+	@include transition-wtime(300ms, transform, opacity, visibility, background-color);
+
+	body.mobile & {
+		opacity: 1;
+	}
+}
+
+div.lists {
+	-webkit-transform: translate3d(0,0,0);
+
+	div.scrollable {
+		position: relative;
+	}
+
+	body.playlist & {
+		opacity: 1;
+		visibility: visible;
+		@include transform(translateX(-100%));
+	}
+
+	body.simple.desktop.playlist.normal.detail & {
+		background: $panel_bkg_d;
+		@include transform(translateX(-200%));
+
+		@media (max-width: 950px) {
+			@include transform(translateX(-150%));
+		}
+
+		@media (max-width: 800px) {
+			@include transform(translateX(-120%));
+		}
+	}
+
+	ul.panel_header {
+		margin-bottom: 0;
+
+		li {
+			cursor: pointer;
+			display: inline-block;
+			@include transition(LINKCOLOR, TOUCHTRANSFORM);
+
+			body.desktop &:hover {
+				color: $link_h;
+			}
+
+			body.mobile &:active {
+				@include touchtransform();
+			}
+
+			body.playlist_artist &.artist_tab,
+			body.playlist_group &.group_tab,
+			body.playlist_album &.album_tab,
+			body.playlist_request_line &.listener_tab {
+				color: $tab_open;
+				border-bottom-color: $tab_open_b;
+			}
+
+			body.mobile &.group_tab,
+			body.mobile &.listener_tab {
+				display: none;
+			}
+		}
+	}
+}
+
+div.searchbox_container {
+	position: relative;
+	border-bottom: solid 1px $subpanel_separator;
+	padding: 5px 8px;
+	height: 29px;
+	@include transition-wtime(200ms, background-color);
+
+	&.search_error, &.active.search_error {
+		background-color: $search_error_b;
+	}
+
+	img {
+		position: absolute;
+		height: 13px;
+		width: 13px;
+		left: 10px;
+		top: 13px;
+		opacity: 0.5;
+		@include transition-wtime(300ms, opacity);
+	}
+
+	img.cancel {
+		display: none;
+		opacity: 1;
+		cursor: pointer;
+		z-index: 2;
+	}
+
+	&.active {
+		background-color: $search_on_b;
+	}
+
+	&.active, &.search_error, &.has_value {
+		img.cancel {
+			display: inline;
+		}
+		img.search {
+			display: none;
+		}
+	}
+
+	input {
+		box-sizing: border-box;
+		border: none;
+		background: transparent;
+		color: $text;
+		opacity: 0.6;
+		font: inherit;
+		height: 28px;
+		width: 100%;
+		padding-left: 25px;
+		padding-right: 4px;
+		@include transition-wtime(300ms, border-color, opacity);
+
+		&::-webkit-input-placeholder, &:-moz-placeholder, &::-moz-placeholder, &:-ms-input-placeholder {
+			color: $text;
+		}
+
+		&.active {
+			border-color: $blue;
+			opacity: 1;
+
+			+ img {
+				opacity: 1;
+			}
+		}
+
+		&:focus {
+			border-color: $orange !important;
+			opacity: 1;
+
+			+ img {
+				opacity: 1;
+			}
+		}
+	}
+}
+
+div.list {
+	position: relative;
+	display: none;
+
+	body.playlist_artist &.artist_list,
+	body.playlist_group &.group_list,
+	body.playlist_album &.album_list,
+	body.playlist_request_line &.listener_list,
+	&.measure_list {
+		display: block;
+	}
+
+	div.list_contents, div.scrollblock {
+		position: relative;
+	}
+
+	div.list_contents {
+		padding-top: 3px;
+		body.custom_scrollbars & {
+			padding-right: 8px;
+		}
+	}
+
+	div.item {
+		background-repeat: no-repeat;
+		padding: 2px 65px 2px 10px;
+		border-bottom: solid 1px transparent;
+		cursor: pointer;
+		@include transition-wtime(250ms, background-color, border-bottom-color, color, TOUCHTRANSFORM);
+		overflow: hidden;
+		word-break: break-all;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		min-height: 20px;
+
+		&.album_fave_highlight {
+			color: $fave;
+		}
+
+		body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
+			color: $link;
+			background-color: $hover_bkg;
+			border-bottom-color: $hover_b;
+			@include transition-wtime(250ms, color, TOUCHTRANSFORM);
+
+			img.fave_lined {
+				opacity: 0.5;
+			}
+
+			&.album_fave_highlight:hover, &.cool.album_fave_highlight:hover {
+				background-color: $fave_h;
+				border-bottom-color: $fave_hb;
+			}
+		}
+
+		body.mobile &:active {
+			@include touchtransform();
+		}
+
+		&.open {
+			color: $text !important;
+			background-color: $open_item_bkg !important;
+			border-bottom-color: $open_item_b !important;
+
+			&.album_fave_highlight {
+				background-color: $open_item_fave_bkg !important;
+			}
+
+			span.name {
+				padding-left: 20px;
+			}
+		}
+
+		&.cool {
+			background-color: $cooldown;
+
+			body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
+				background-color: $cooldown_h;
+				border-bottom-color: $cooldown_hb;
+			}
+		}
+
+		span.name {
+			padding-left: 9px;
+			@include transition-wtime(300ms, padding);
+		}
+
+		div.requestlist_song, div.requestlist_album {
+			color: $text_d;
+			padding-left: 2em;
+		}
+	}
+
+	&.album_list div.item {
+		background-image: $site_rating;
+		background-size: $rating_bkg_size;
+
+		&.rating_user {
+			background-image: $user_rating;
+
+			&.album_fave_highlight {
+				background-image: $fav_rating;
+			}
+
+			body.show_incomplete &.rating_incomplete {
+				background-color: $album_incomplete;
+				background-image: $incomplete_rating;
+
+				body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
+					background-color: $hover_bkg;
+					border-bottom-color: $hover_b;
+				}
+
+				&.album_fave_highlight {
+					background-image: $incomplete_rating;
+				}
+
+				&.cool {
+					color: $text_d;
+					background-color: $album_incomplete_cool;
+
+					body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
+						background-color: $hover_bkg;
+						border-bottom-color: $hover_b;
+					}
+				}
+			}
+		}
+
+		&.has_new {
+			span.name {
+				background-repeat: no-repeat;
+				background-size: 14px;
+				background-image: url('/static/images4/new.png');
+				background-position: 3px 0px;
+				@include transition-wtime(300ms, padding, background-position, LINKCOLOR, TOUCHTRANSFORM);
+				color: $new_indicator;
+			}
+
+			&.open span.name {
+				background-position: 15px 0;
+			}
+
+			body.desktop &:hover span.name {
+				color: $link_h;
+			}
+
+			body.mobile &:active {
+				color: $link_h;
+				@include touchtransform();
+			}
+		}
+
+		&.has_newish {
+			span.name {
+				background-repeat: no-repeat;
+				background-size: 14px;
+				background-image: url('/static/images4/newish.png');
+				background-position: 3px 0px;
+				@include transition-wtime(300ms, padding, background-position);
+			}
+
+			&.open span.name {
+				background-position: 15px 0;
+			}
+		}
+	}
+
+	&.artist_list, &.group_list, &.listener_list {
+		div.item {
+			padding-left: 22px;
+		}
+	}
+
+	div.stretcher {
+		position: absolute;
+		width: 1px;
+		display: block;
+	}
+}
+
+div.close {
+	position: absolute;
+	left: 100%;
+	top: 11px;
+	cursor: pointer;
+	opacity: 0.6;
+	@include transform(translateX(-25px));
+
+	img {
+		width: 14px;
+		height: 14px;
+	}
+
+	@media $phone-media {
+		top: 8px;
+		@include transform(translateX(-30px));
+
+		img {
+			width: 20px;
+			height: 20px;
+		}
+	}
+}
+
+body.desktop div.close {
+	opacity: 0.5;
+	@include transition-wtime(300ms, opacity);
+
+	&:hover {
+		opacity: 1;
+	}
+}

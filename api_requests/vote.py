@@ -93,9 +93,15 @@ class SubmitVote(APIHandler):
 				user_vote_cache = cache.get_user(self.user, "vote_history")
 				if not user_vote_cache:
 					user_vote_cache = []
+				found = False
+				for voted in user_vote_cache:
+					if voted[0] == event.id:
+						found = True
+						voted[1] = entry_id
 				while len(user_vote_cache) > 5:
 					user_vote_cache.pop(0)
-				user_vote_cache.append((event.id, entry_id))
+				if not found:
+					user_vote_cache.append([event.id, entry_id])
 				cache.set_user(self.user, "vote_history", user_vote_cache)
 
 			# Register vote

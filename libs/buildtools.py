@@ -1,16 +1,13 @@
 import os
-import warnings
 import subprocess
+import scss
+import glob
+import shutil
+from pathlib import Path
 from libs import config
+from libs import RWTemplates
 from libs.config import get_build_number
 from slimit import minify
-
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    import scss
-    from scss import Scss
-
-scss.config.LOAD_PATHS = os.path.join(os.path.dirname(__file__), "..", "static", "style4")
 
 def create_baked_directory():
 	d = os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()))
@@ -21,23 +18,33 @@ def create_baked_directory():
 		return True
 	return False
 
+def copy_woff():
+	d = os.path.join(os.path.dirname(__file__), "../static/baked/", str(get_build_number()))
+	# Copying the minimized font files has to go somewhere.
+	for fontfile in glob.glob(os.path.join(os.path.dirname(__file__), "../static/fonts/*.min.woff")):
+		shutil.copy(fontfile, d)
+
 def bake_css():
 	create_baked_directory()
-	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style4.css")
+	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style5.css")
+	incl_path = Path(os.path.join(os.path.dirname(__file__), "..", "static", "style5")).resolve()
 	if not os.path.exists(wfn):
-		_bake_css_file(os.path.join(os.path.dirname(__file__), "..", "static", "style4", "_sass.scss"), wfn)
+		_bake_css_file("r5.scss", wfn, incl_path)
 
 def bake_beta_css():
 	create_baked_directory()
-	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style4b.css")
-	_bake_css_file(os.path.join(os.path.dirname(__file__), "..", "static", "style4", "_sass.scss"), wfn)
+	wfn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), "style5b.css")
+	incl_path = Path(os.path.join(os.path.dirname(__file__), "..", "static", "style5")).resolve()
+	_bake_css_file("r5.scss", wfn, incl_path)
 
-def _bake_css_file(input_filename, output_filename):
-	css_f = open(input_filename, 'r')
-	css_content = Scss().compile(css_f.read())
-	css_f.close()
-
-	# css_content = compress(css_content)
+def _bake_css_file(input_filename, output_filename, include_path):
+	css_content = scss.compiler.compile_file(input_filename,
+		root=include_path,
+		search_path=[ include_path ],
+		output_style='compressed',
+		live_errors=True,
+		warn_unused_imports=False
+	)
 
 	dest = open(output_filename, 'w')
 	dest.write(css_content)
@@ -63,7 +70,7 @@ def get_js_file_list_url():
 		return result
 	return get_js_file_list()
 
-def bake_js(source_dir="js4", dest_file="script4.js"):
+def bake_js(source_dir="js5", dest_file="script5.js"):
 	create_baked_directory()
 	fn = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), dest_file)
 	if not os.path.exists(fn):
@@ -77,9 +84,12 @@ def bake_js(source_dir="js4", dest_file="script4.js"):
 		o.write(minify(js_content, mangle=True, mangle_toplevel=False))
 		o.close()
 
-def increment_build_number():
-	bn = get_build_number()	+ 1
-	bnf = open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), 'w')
-	bnf.write(bn)
-	bnf.close()
-	return bn
+def bake_templates(source_dir="templates5", dest_file="templates5.js", always_write=False, **kwargs):
+	create_baked_directory()
+	source_dir = os.path.join(os.path.dirname(__file__), "..", "static", source_dir)
+	dest_file = os.path.join(os.path.dirname(__file__), "..", "static", "baked", str(get_build_number()), dest_file)
+	if not os.path.exists(dest_file) or always_write:
+		RWTemplates.compile_templates(source_dir, dest_file, helpers=False, inline_templates=('fave', 'rating', 'rating_album'), **kwargs)
+
+def bake_beta_templates():
+	return bake_templates(dest_file="templates5b.js", always_write=True, debug_symbols=True, full_calls=False)

@@ -56,6 +56,7 @@ class AssociateGroupToolFinish(api.web.HTMLRequest):
 			album = Album.load_from_id_with_songs(album_set[0], album_set[1])
 			for song in album.data['songs']:
 				group.associate_song_id(song['id'])
+		group.reconcile_sids()
 		self.write(self.render_string("bare_header.html", title="Added Groups"))
 		self.write("<p>Now associated.</p><p><a href='/admin/tools/associate_groups'>Start over.</a></p>")
 		self.write(self.render_string("basic_footer.html"))
@@ -147,8 +148,12 @@ class GroupEditGroupList(api.web.HTMLRequest):
 			self.write("<tr><td>%s</td>" % row['id'])
 			self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?id=%s';\" style='cursor: pointer;'>%s</td><td>" % (row['id'], row['name']))
 			self.write("<td>%s songs</td>" % row['num_songs'])
-			self.write("<td><input type='text' id='elec_block_%s' value='%s' /><button onclick=\"window.top.call_api('admin/edit_group_elec_block', { 'group_id': %s, 'elec_block': document.getElementById('elec_block_%s').value })\">BLK</button></td>" % (row['id'], row['elec_block'] or '', row['id'], row['id'] ))
-			self.write("<td><input type='text' id='cooldown_%s' value='%s' /><button onclick=\"window.top.call_api('admin/edit_group_cooldown', { 'group_id': %s, 'cooldown': document.getElementById('cooldown_%s').value })\">CD</button></td>" % (row['id'], row['cool_time'] or '', row['id'], row['id'] ))
+			if row['elec_block'] == None:
+				row['elec_block'] = ''
+			if row['cool_time'] == None:
+				row['cool_time'] = ''
+			self.write("<td><input type='text' id='elec_block_%s' value='%s' /><button onclick=\"window.top.call_api('admin/edit_group_elec_block', { 'group_id': %s, 'elec_block': document.getElementById('elec_block_%s').value })\">BLK</button></td>" % (row['id'], row['elec_block'], row['id'], row['id'] ))
+			self.write("<td><input type='text' id='cooldown_%s' value='%s' /><button onclick=\"window.top.call_api('admin/edit_group_cooldown', { 'group_id': %s, 'cooldown': document.getElementById('cooldown_%s').value })\">CD</button></td>" % (row['id'], row['cool_time'], row['id'], row['id'] ))
 			self.write("<td><a onclick=\"window.top.call_api('admin/\"></td>")
 			self.write("</tr>")
 		self.write(self.render_string("basic_footer.html"))

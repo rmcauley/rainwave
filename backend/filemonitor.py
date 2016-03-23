@@ -7,6 +7,7 @@ import sys
 import psutil
 import watchdog.events
 import watchdog.observers
+import traceback
 from PIL import Image
 
 from libs import config
@@ -75,6 +76,7 @@ def full_music_scan(full_reset):
 
 def full_art_update():
 	global _art_only
+	_art_only = True
 	_common_init()
 	_scan_all_directories(art_only=True)
 	_process_album_art_queue(on_screen=True)
@@ -159,7 +161,7 @@ def _scan_file(filename, sids, raise_exceptions=False):
 	try:
 		_check_codepage_1252(filename)
 	except Exception as e:
-		_add_scan_error(filename, e)
+		_add_scan_error(filename, e, sys.exc_info())
 		if raise_exceptions:
 			raise
 		return False
@@ -193,7 +195,7 @@ def _scan_file(filename, sids, raise_exceptions=False):
 			_add_scan_error(filename, e)
 			_disable_file(filename)
 		except Exception as e:
-			_add_scan_error(filename, e)
+			_add_scan_error(filename, e, sys.exc_info())
 			_disable_file(filename)
 			if raise_exceptions:
 				raise
@@ -278,6 +280,8 @@ def _process_album_art(filename, sids):
 		if im_original.size[0] > 160 or im_original.size[1] > 160:
 			im_120 = im_original.copy()
 			im_120.thumbnail((120, 120), Image.ANTIALIAS)
+		if im_original.size[0] < 320 or im_original.size[1] < 320:
+			_add_scan_error(filename, PassableScanError("Small Art Warning: %sx%s" % (im_original.size[0], im_original.size[1])))
 		for album_id in album_ids:
 			im_120.save("%s%s%s_%s_120.jpg" % (config.get("album_art_file_path"), os.sep, sids[0], album_id))
 			im_240.save("%s%s%s_%s_240.jpg" % (config.get("album_art_file_path"), os.sep, sids[0], album_id))
@@ -308,12 +312,22 @@ def _disable_file(filename):
 	except Exception as e:
 		_add_scan_error(filename, e)
 
-def _add_scan_error(filename, xception):
-	scan_errors = cache.get("backend_scan_errors")
+def _add_scan_error(filename, xception, full_exc=None):
+	scan_errors = []
+	try:
+		scan_errors = cache.get("backend_scan_errors")
+	except:
+		pass
 	if not scan_errors:
 		scan_errors = []
 
-	scan_errors.insert(0, { "time": int(timestamp()), "file": filename, "type": xception.__class__.__name__, "error": str(xception) })
+	eo = { "time": int(timestamp()), "file": filename, "type": xception.__class__.__name__, "error": str(xception), "traceback": "" }
+	if not isinstance(xception, PassableScanError) and not isinstance(xception, IOError) and not isinstance(xception, OSError):
+		if full_exc:
+			eo['traceback'] = traceback.format_exception(*full_exc)			#pylint: disable=W0142
+		else:
+			eo['traceback'] = traceback.format_exception(*sys.exc_info())
+	scan_errors.insert(0, eo)
 	if len(scan_errors) > 100:
 		scan_errors = scan_errors[0:100]
 	cache.set("backend_scan_errors", scan_errors)

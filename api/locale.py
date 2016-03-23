@@ -1,5 +1,5 @@
 import os
-import json
+import json  			# We have some features of stdlib JSON we need here, don't use ujson
 import types
 import codecs
 import tornado.locale
@@ -65,11 +65,13 @@ The JSON files should be encoded in UTF-8.
 
 master = None
 translations = {}
+locale_names = {}
 locale_names_json = ""
 
 def load_translations():
 	global master
 	global translations
+	global locale_names
 	global locale_names_json
 
 	master_file = open(os.path.join(os.path.dirname(__file__), "../lang/en_MASTER.json"))
@@ -87,7 +89,7 @@ def load_translations():
 				f = codecs.open(os.path.join(os.path.dirname(__file__), "../lang/", filename), "r", encoding="utf-8")
 				translations[filename[:-5]] = RainwaveLocale(filename[:-5], master, json.load(f))
 				f.close()
-				locale_names[filename[:-5]] = translations[filename[:-5]].dict['language_name']
+				locale_names[filename[:-5]] = translations[filename[:-5]].dict['language_name_short']
 			except Exception as e:
 				log.exception("locale", "%s translation did not load." % filename[:-5], e)
 
@@ -145,7 +147,7 @@ class RainwaveLocale(tornado.locale.Locale):
 		# remove lines that are no longer in the master file
 		to_pop = []
 		for k, v in translation.iteritems():
-			if not mster.has_key(k) and not k.startswith("suffix_"):
+			if not code == "en_CA" and not mster.has_key(k) and not k.startswith("suffix_"):
 				to_pop.append(k)
 		for k in to_pop:
 			translation.pop(k)

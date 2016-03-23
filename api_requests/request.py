@@ -90,7 +90,7 @@ class RequestFavoritedSongs(APIHandler):
 
 @handle_api_url("clear_requests")
 class ClearRequests(APIHandler):
-	description = "Clears all requests the user."
+	description = "Clears all requests from the user's queue."
 	login_required = True
 	tunein_required = False
 	unlocked_listener_only = False
@@ -133,6 +133,7 @@ class UnPauseRequestQueue(APIHandler):
 
 @handle_api_url("request_line")
 class ListRequestLine(APIHandler):
+	description = "Gives a list of who is waiting in line to make a request on the given station, plus their current top-requested song. (or no song, if they have not decided)"
 	sid_required = True
 
 	def post(self):

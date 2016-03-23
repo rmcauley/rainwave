@@ -1,0 +1,104 @@
+<div bind="root" class="song">
+	{{#if request_id }}
+		<div class="request_cancel" bind="cancel">
+			<span class="request_cancel_x">x</span>
+		</div>
+	{{/if}}
+
+	{{#if ^_c.entry_id}}
+		<div class="song_highlight song_highlight_topleft"></div>
+		<div class="song_highlight song_highlight_topright"></div>
+		<div class="song_highlight song_highlight_bottomleft"></div>
+		<div class="song_highlight song_highlight_bottomright"></div>
+	{{/if}}
+
+	{{#if ^_c.entry_id && !MOBILE && Sizing.simple }}
+		<div class="vote_button">
+			<span class="vote_button_rotate" bind="vote_button_text">{{ $l("vote") }}</span>
+		</div>
+	{{/if}}
+
+	<div class="art_anchor">
+		{{#if request_id }}
+			<div class="request_sort_grab" bind="request_drag">
+				<img src="/static/images4/sort.svg" />
+			</div>
+		{{/if}}
+		<div bind="art" class="art_container">
+			{{#if elec_request_user_id }}
+				{{#if ^_c.elec_request_user_id == User.id }}
+					<div class="requester your_request">
+						{{#if ^!MOBILE}}
+							<a href="#!/listener/{{ elec_request_user_id }}">
+								{{ elec_request_username }}
+							</a>
+						{{else}}
+							{{ elec_request_username }}
+						{{/if}}
+					</div>
+					<div class="request_indicator your_request">
+						{{ $l("timeline_art__your_request_indicator") }}
+					</div>
+				{{else}}
+					<div class="requester">
+						{{#if ^!MOBILE}}
+							<a href="#!/listener/{{ elec_request_user_id }}">
+								{{ elec_request_username }}
+							</a>
+						{{else}}
+							{{ elec_request_username }}
+						{{/if}}
+					</div>
+					<div class="request_indicator">
+						{{ $l("timeline_art__request_indicator") }}
+					</div>
+				{{/if}}
+			{{/if}}
+		</div>
+	</div>
+
+	<div class="song_content">
+		{{>rating }}
+
+		{{#if ^!_c.request_id }}
+			<div bind="votes" class="entry_votes"></div>
+		{{/if}}
+
+		{{>fave}}
+		<div bind="title" class="title" title="{{ title }}">
+			{{ title }}
+		</div>
+
+		{{#with albums[0] }}
+			{{#if ^!Sizing.simple}}
+				{{>rating_album}}
+			{{/if}}
+
+			{{>fave}}
+			<div bind="title" class="album" title="{{ name }}">
+				<a href="#!/album/{{ id }}">{{ name }}</a>
+			</div>
+		{{/with}}
+
+		{{#if request_id }}
+			<div class="cooldown_info" bind="cooldown"></div>
+		{{else}}
+			<div class="artist">
+				{{#each artists }}
+					<a href="#!/artist/{{ id }}">
+						{{ name }}
+					</a>
+					<span>,</span>
+				{{/each}}
+			</div>
+
+			{{#if url }}
+				<div class="song_link_container">
+					<a class="song_link" href="{{ url }}" target="_blank">
+						{{ link_text }}
+					</a>
+				</div>
+			{{/if}}
+		{{/if}}
+	</div>
+</div>

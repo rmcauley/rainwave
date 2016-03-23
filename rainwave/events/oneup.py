@@ -101,6 +101,18 @@ class OneUpProducer(event.BaseProducer):
 			i += 1
 		return True
 
+	def move_song_up(self, one_up_id):
+		one_up_ids = db.c.fetch_list("SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order", (self.id,))
+		i = 0
+		prev_one_up_id = False
+		for oid in one_up_ids:
+			if oid == one_up_id and prev_one_up_id:
+				db.c.update("UPDATE r4_one_ups SET one_up_order = %s WHERE one_up_id = %s", (i - 1, one_up_id))
+				db.c.update("UPDATE r4_one_ups SET one_up_order = %s WHERE one_up_id = %s", (i, prev_one_up_id))
+			prev_one_up_id = oid
+			i += 1
+		return True
+
 	def load_all_songs(self):
 		self.songs = []
 		for song_row in db.c.fetch_all("SELECT * FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order", (self.id,)):
@@ -109,6 +121,23 @@ class OneUpProducer(event.BaseProducer):
 			s.data['one_up_queued'] = song_row['one_up_queued']
 			s.data['one_up_id'] = song_row['one_up_id']
 			self.songs.append(s)
+
+	def fill_unrated(self, sid, max_length):
+		total_time = 0
+		rows = db.c.fetch_all(
+			"SELECT song_id, song_length "
+			"FROM r4_song_sid JOIN r4_songs USING (song_id) "
+			"WHERE sid = %s AND song_rating = 0 AND song_exists = TRUE AND song_verified = TRUE "
+			"ORDER BY song_rating_count, song_added_on, random() "
+			"LIMIT 100",
+			(sid,)
+		)
+		for row in rows:
+			if total_time > max_length:
+				return
+			self.add_song_id(row['song_id'], sid)
+			total_time += row['song_length']
+		self._update_length()
 
 	def to_dict(self):
 		self.load_all_songs()

@@ -1,11 +1,13 @@
 import os
 import psycopg2
+from time import time as timestamp
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 import tornado.process
 import tornado.options
 
+from backend import sync_to_front
 from rainwave import schedule
 from rainwave import playlist
 from libs import log
@@ -28,8 +30,18 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			return
 
 		if cache.get_station(self.sid, "backend_paused"):
+			if not cache.get_station(self.sid, "dj_heartbeat_start"):
+				log.debug("dj", "Setting server start heatbeat.")
+				cache.set_station(self.sid, "dj_heartbeat_start", timestamp())
 			self.write(self._get_pause_file())
+			schedule.set_upnext_crossfade(self.sid, False)
+			cache.set_station(self.sid, "backend_paused_playing", True)
+			sync_to_front.sync_frontend_dj(self.sid)
 			return
+		else:
+			cache.set_station(self.sid, "dj_heartbeat_start", False)
+			cache.set_station(self.sid, "backend_paused", False)
+			cache.set_station(self.sid, "backend_paused_playing", False)
 
 		# This program must be run on 1 station for 1 instance, which would allow this operation to be safe.
 		# Also works if 1 process is serving all stations.  Pinging any instance for any station
@@ -68,7 +80,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			log.debug("backend", "Station is paused, using: %s" % config.get("pause_file"))
 			return config.get("pause_file")
 
-		string = "annotate:crossfade=0,use_suffix=1,"
+		string = "annotate:crossfade=\"2\",use_suffix=\"1\","
 		if cache.get_station(self.sid, "pause_title"):
 			string += "title=\"%s\"" % cache.get_station(self.sid, "pause_title")
 		else:
@@ -79,8 +91,10 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 
 	def _get_annotated(self, e):
 		string = "annotate:crossfade=\""
-		if e.use_crossfade:
+		if e.use_crossfade == True:
 			string += "1"
+		elif e.use_crossfade:
+			string += e.use_crossfade
 		else:
 			string += "0"
 		string += "\","
@@ -152,6 +166,7 @@ class BackendServer(object):
 		# the cron jobs that run occasionally.  Ignore pylint warning W0612.
 		import backend.api_key_pruning
 		import backend.inactive
+		import backend.dj_heartbeat
 		#pylint: enable=W0612
 
 	def start(self):

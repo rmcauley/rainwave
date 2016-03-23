@@ -1,10 +1,19 @@
 This is the git project for the Rainwave website, http://rainwave.cc.
 
+Rainwave is a system to control an external player such as MPD,
+or a streaming source such as Ices or LiquidSoap.  It is primarly programmed,
+and configured by default, for use with LiquidSoap.  It cannot play
+or stream audio by itself.
+
 == Python Setup for Debian/Ubuntu
 
-$ sudo apt-get install python-pip python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit
-$ sudo pip install pytz watchdog
-$ sudo pip install pyscss=1.2.0
+$ sudo apt-get install postgresql-contrib python-pip python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit python-fontforge
+$ sudo pip install -r requirements.txt
+
+Optional ujson support for faster JSON serialization:
+
+$ sudo apt-get install python-dev libpython-dev
+$ sudo pip install ujson
 
 == Python Setup for Windows
 
@@ -17,10 +26,10 @@ $ sudo pip install pyscss=1.2.0
 4. Install setuptools:
 	https://pypi.python.org/pypi/setuptools#installation-instructions
 5. Make sure Python is on your PATH (you can execute python from a terminal)
-6. Make sure the Python Scripts directory is also on your PATH
+6. Make sure the Python Scripts directory is also on your PATH (i.e. easy_install)
 7. On the commandline, execute:
 	> easy_install pip
-	> pip install tornado mutagen nose pillow pyscss=1.2.0 unidecode pytz watchdog python-memcached
+	> pip install -r requirements.txt
 
 == Getting Started for HTML/CSS/JS Development
 
@@ -58,8 +67,15 @@ $ git clone git@github.com:rmcauley/rainwave.git
 $ cp etc/rainwave_reference.conf etc/[your username].conf
 
 Setup PostgreSQL on your system and change your Rainwave config file
-to use Postgres instead of SQLite.  The Rainwave Pg role must have the ability
-to create tables.  You must also have your own MP3 collection, and change the
+to use Postgres instead of SQLite.
+
+While you are a Postgres superuser, you must have the trigram extension installed.
+To do this:
+
+pg# CREATE EXTENSION pg_trgm;
+
+Once done, the Rainwave Pg role must have the ability to create tables. (e.g.
+database ownership) You must also have your own MP3 collection, and change the
 song_dirs configuration in your rainwave.conf to point to your collection.
 Tags are important!
 

@@ -1,11 +1,15 @@
 import time
 import calendar
+import tornado.web
+
 from libs import config
 from libs import db
 from libs import cache
+
 import api.web
 from api.server import handle_url
 from api import fieldtypes
+
 import api_requests.playlist
 
 def write_html_time_form(request, html_id, at_time = None):
@@ -13,6 +17,13 @@ def write_html_time_form(request, html_id, at_time = None):
 	if not at_time:
 		at_time = current_time
 	request.write(request.render_string("admin_time_select.html", at_time=at_time, html_id=html_id))
+
+@handle_url("/admin")
+class AdminRedirect(tornado.web.RequestHandler):
+	help_hidden = True
+
+	def prepare(self):
+		self.redirect("/admin/", permanent=True)
 
 @handle_url("/admin/")
 class AdminIndex(api.web.HTMLRequest):
@@ -50,7 +61,7 @@ class ToolList(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Tool List"))
 		self.write("<b>Do:</b><br />")
 		# [ ( "Link Title", "admin_url" ) ]
-		for item in [ ("Scan Results", "scan_results"), ("Producers", "producers"), ("Producers (Meta)", "producers_all"), ("Power Hours", "power_hours"), ("DJ Elections", "dj_election"), ("Cooldown", "cooldown"), ("Request Only Songs", "song_request_only"), ("Donations", "donations"), ("Associate Groups", "associate_groups"), ("Disassociate Groups", "disassociate_groups"), ("Edit Groups", "group_edit"), ("Listener Count", "listener_stats"), ("Listener Count [Wkly]", "listener_stats_aggregate") ]:
+		for item in [ ("Scan Results", "scan_results"), ("Producers", "producers"), ("Producers (Meta)", "producers_all"), ("Power Hours", "power_hours"), ("DJ Elections", "dj_election"), ("Cooldown", "cooldown"), ("Request Only Songs", "song_request_only"), ("Donations", "donations"), ("Associate Groups", "associate_groups"), ("Disassociate Groups", "disassociate_groups"), ("Edit Groups", "group_edit"), ("Listener Count", "listener_stats"), ("Listener Count [Wkly]", "listener_stats_aggregate"), ("JS Errors", "js_errors") ]:
 			self.write("<a style='display: block' id=\"%s\" href=\"#\" onclick=\"window.top.current_tool = '%s'; window.top.change_screen();\">%s</a>" % (item[1], item[1], item[0]))
 		self.write(self.render_string("basic_footer.html"))
 
@@ -75,6 +86,9 @@ class RestrictList(api.web.HTMLRequest):
 		for sid in config.station_ids:
 			self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"window.top.current_restriction = %s; window.top.change_screen();\">%s</a>" % (sid, sid, config.station_id_friendly[sid]))
 		self.write("<a style='display: block' id=\"sid_%s\" href=\"#\" onclick=\"window.top.current_restriction = %s; window.top.change_screen();\">%s</a>" % (0, 0, "DJ Only"))
+		self.write("<br>")
+		self.write("<a style='display: block' id=\"sort_%s\" href=\"#\" onclick=\"window.top.current_sort = '%s'; window.top.change_screen();\">%s</a>" % ("alpha", "alpha", "AlphaNum"))
+		self.write("<a style='display: block' id=\"sort_%s\" href=\"#\" onclick=\"window.top.current_sort = '%s'; window.top.change_screen();\">%s</a>" % ("added_on", "added_on", "Added On"))
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/dj_election_list")
@@ -95,16 +109,11 @@ class DJTools(api.web.HTMLRequest):
 	dj_required = True
 
 	def get(self):
-		self.write(self.render_string("bare_header.html", title="DJ Tools"))
-		if cache.get_station(self.sid, "backend_paused"):
-			self.write("<div style='color: red; font-weight: bold;'>%s PAUSED</div>" % config.station_id_friendly[self.sid])
-		else:
-			self.write("<div>%s Running</div>" % config.station_id_friendly[self.sid])
-		self.write("<div><a onclick=\"window.top.call_api('admin/dj/pause'); setTimeout(function() { window.location.reload(); }, 1000);\">Pause %s</a></div>" % config.station_id_friendly[self.sid])
-		self.write("<div><a onclick=\"window.top.call_api('admin/dj/unpause'); setTimeout(function() { window.location.reload(); }, 1000);\">Unpause %s</a></div>" % config.station_id_friendly[self.sid])
-		self.write("<div><a onclick=\"window.top.call_api('admin/dj/skip');\">Skip current song</a></div>")
-		self.write("<div>Pause ID3 Title: <input type='text' id='pause_title' value=\"%s\" />" % (cache.get_station(self.sid, "pause_title") or "",))
-		self.write(		"<button onclick=\"window.top.call_api('admin/dj/pause_title', { 'title': document.getElementById('pause_title').value });\" />Change</button>")
+		self.write(self.render_string("bare_header.html", title="DJ Admin"))
+		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/unpause?kick_dj=true'); setTimeout(function() { window.location.reload(); }, 1000);\">Disconnect DJ And/Or Start %s</a></div>" % config.station_id_friendly[self.sid])
+		self.write("<div style='margin-bottom: 0.5em;'><a onclick=\"window.top.call_api('admin/dj/skip');\">Skip song (use if station is broken)</a></div>")
+		self.write("<div>Stream ID3 Title While Paused:<br> <input type='text' id='pause_title' value=\"%s\" />" % (cache.get_station(self.sid, "pause_title") or "",))
+		self.write(		"<button onclick=\"window.top.call_api('admin/dj/pause_title', { 'title': document.getElementById('pause_title').value });\" />Save</button>")
 		self.write("</div>")
 		self.write(self.render_string("basic_footer.html"))
 
@@ -139,22 +148,26 @@ class AlbumList(api.web.HTMLRequest):
 	admin_required = True
 	allow_get = True
 	allow_sid_zero = True
-	fields = { "restrict": (fieldtypes.sid, True) }
+	fields = { "restrict": (fieldtypes.sid, True), "sort": (fieldtypes.string, None) }
 
 	def get(self):
 		self.write(self.render_string("bare_header.html", title="Album List"))
 		self.write("<h2>%s Playlist</h2>" % config.station_id_friendly[self.get_argument('restrict')])
 		self.write("<table>")
-		albums = db.c.fetch_all("SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS rating_user, album_cool_multiply AS cool_multiply, album_cool_override AS cool_override "
+		sql = ("SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS rating_user, album_cool_multiply AS cool_multiply, album_cool_override AS cool_override "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s AND r4_album_ratings.sid = r4_album_sid.sid) "
 			"WHERE r4_album_sid.sid = %s AND r4_album_sid.album_exists = TRUE "
-			"ORDER BY album_name",
-			(self.user.id, self.get_argument("restrict")))
+		)
+		if self.get_argument("sort", None) and self.get_argument("sort") == "added_on":
+			sql += "ORDER BY album_newest_song_time DESC, album_name"
+		else:
+			sql += "ORDER BY album_name"
+		albums = db.c.fetch_all(sql, (self.user.id, self.get_argument("restrict")))
 		for row in albums:
 			self.write("<tr><td>%s</td>" % row['id'])
-			self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?sid=%s&id=%s';\" style='cursor: pointer;'>%s</td><td>" % (self.get_argument('restrict'), row['id'], row['name']))
+			self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?sid=%s&id=%s&sort=%s';\" style='cursor: pointer;'>%s</td><td>" % (self.get_argument('restrict'), row['id'], self.get_argument('sort', ""), row['name']))
 			if row['rating_user']:
 				self.write(str(row['rating_user']))
 			self.write("</td><td>(%s)</td><td>" % row['rating'])
@@ -178,13 +191,31 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 		self.write("<h2>%s (%s)</h2>" % (self._output['album']['name'], config.station_id_friendly[self.sid]))
 		self.write("<table>")
 		for row in self._output['album']['songs']:
-			self.write("<tr><td>%s</th><td>%s</td><td>" % (row['id'], row['title']))
+			self.write("<tr><td>%s</th><td>%s</td>" % (row['id'], row['title']))
+			if row['rating']:
+				self.write("<td>(%s)</td>" % row['rating'])
+			elif 'rating' in row:
+				self.write("<td></td>")
 			if row['rating_user']:
-				self.write(str(row['rating_user']))
-			self.write("</td><td>(%s)</td><td>" % row['rating'])
+				self.write("<td>%s</td>" % str(row['rating_user']))
+			elif 'rating_user' in row:
+				self.write("<td></td>")
 			if row['fave']:
-				self.write("Fave")
-			self.write("</td>")
+				self.write("<td>Your Fave</td>")
+			elif 'fave' in row:
+				self.write("<td></td>")
+			if row['length']:
+				self.write("<td>{}:{:0>2d}</td>".format(int(row['length'] / 60), row['length'] % 60))
+			elif 'length' in row:
+				self.write("<td></td>")
+			if row['added_on']:
+				self.write("<td>%sd</td>" % int((time.time() - row['added_on']) / 86400))
+			elif 'added_on' in row:
+				self.write("<td></td>")
+			if row['origin_sid']:
+				self.write("<td>%s</td>" % config.station_id_friendly[row['origin_sid']])
+			elif 'origin_sid' in row:
+				self.write("<td></td>")
 			self.render_row_special(row)
 			self.write("</tr>")
 		self.write(self.render_string("basic_footer.html"))

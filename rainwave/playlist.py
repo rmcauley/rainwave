@@ -21,14 +21,19 @@ from rainwave.playlist_objects.songgroup import SongGroup
 from rainwave.playlist_objects.cooldown import prepare_cooldown_algorithm
 #pylint: enable=W0611
 
-num_songs = {}
+from rainwave.playlist_objects.song import num_songs
+from rainwave.playlist_objects.song import num_origin_songs
+from rainwave.playlist_objects.album import num_albums
 
 class NoAvailableSongsException(Exception):
 	pass
 
 def update_num_songs():
+	num_songs["_total"] = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE")
 	for sid in config.station_ids:
 		num_songs[sid] = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_song_sid WHERE song_exists = TRUE AND sid = %s", (sid,))
+		num_origin_songs[sid] = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE AND song_origin_sid = %s", (sid,))
+		num_albums[sid] = db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE sid = %s AND album_exists = TRUE", (sid,))
 
 def get_average_song_length(sid):
 	return cooldown.cooldown_config[sid]['average_song_length']
@@ -166,7 +171,7 @@ def remove_all_locks(sid):
 def get_all_albums_list(sid, user = None):
 	if not user or user.id == 1:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, FALSE AS fave, 0 AS rating_user, FALSE AS rating_complete "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, CAST(ROUND(CAST(album_rating AS NUMERIC), 1) AS REAL) AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, FALSE AS fave, 0 AS rating_user, FALSE AS rating_complete, album_newest_song_time AS newest_song_time "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"WHERE r4_album_sid.sid = %s AND r4_album_sid.album_exists = TRUE "
@@ -174,7 +179,7 @@ def get_all_albums_list(sid, user = None):
 			(sid,))
 	else:
 		return db.c.fetch_all(
-			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, COALESCE(album_fave, FALSE) AS fave, COALESCE(album_rating_user, 0) AS rating_user, COALESCE(album_rating_complete, FALSE) AS rating_complete "
+			"SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, CAST(ROUND(CAST(album_rating AS NUMERIC), 1) AS REAL) AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, COALESCE(album_fave, FALSE) AS fave, COALESCE(album_rating_user, 0) AS rating_user, COALESCE(album_rating_complete, FALSE) AS rating_complete, album_newest_song_time AS newest_song_time "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
 			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s AND r4_album_ratings.sid = %s) "
@@ -193,23 +198,31 @@ def get_all_artists_list(sid):
 
 def get_all_groups_list(sid):
 	return db.c.fetch_all(
-		"SELECT group_name AS name, group_name_searchable AS name_searchable, group_id AS id, COUNT(*) AS song_count "
-			"FROM ("
-				"SELECT group_name, group_name_searchable, group_id, COUNT(DISTINCT(album_id)) "
-					"FROM r4_groups "
-						"JOIN r4_song_group USING (group_id) "
-						"JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
-						"JOIN r4_songs ON (r4_song_group.song_id = r4_songs.song_id) "
-						"JOIN r4_albums USING (album_id) "
-					"GROUP BY group_id, group_name_searchable, group_name "
-					"HAVING COUNT(DISTINCT(album_id)) > 1 "
-				") AS multi_album_groups "
-			"JOIN r4_song_group USING (group_id) "
-			"JOIN r4_song_sid using (song_id) "
-		"WHERE r4_song_sid.sid = %s AND song_exists = TRUE "
-		"GROUP BY group_id, group_name, group_name_searchable "
-		"ORDER BY group_name",
-		(sid, sid,))
+		"SELECT group_name AS name, group_name_searchable AS name_searchable, r4_groups.group_id AS id "
+		"FROM r4_group_sid "
+			"JOIN r4_groups USING (group_id) "
+		"WHERE sid = %s AND group_display = TRUE "
+		"ORDER BY group_name "
+		,(sid,))
+
+	# return db.c.fetch_all(
+		# "SELECT group_name AS name, group_name_searchable AS name_searchable, group_id AS id, COUNT(*) AS song_count "
+		# 	"FROM ("
+		# 		"SELECT group_name, group_name_searchable, group_id, COUNT(DISTINCT(album_id)) "
+		# 			"FROM r4_groups "
+		# 				"JOIN r4_song_group USING (group_id) "
+		# 				"JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE) "
+		# 				"JOIN r4_songs ON (r4_song_group.song_id = r4_songs.song_id AND r4_songs.song_verified = TRUE) "
+		# 				"JOIN r4_albums USING (album_id) "
+		# 			"GROUP BY group_id, group_name_searchable, group_name "
+		# 			"HAVING COUNT(DISTINCT(album_id)) > 1 "
+		# 		") AS multi_album_groups "
+		# 	"JOIN r4_song_group USING (group_id) "
+		# 	"JOIN r4_song_sid using (song_id) "
+		# "WHERE r4_song_sid.sid = %s AND song_exists = TRUE "
+		# "GROUP BY group_id, group_name, group_name_searchable "
+		# "ORDER BY group_name",
+		# (sid, sid,))
 
 def reduce_song_blocks(sid):
 	db.c.update("UPDATE r4_song_sid SET song_elec_blocked_num = song_elec_blocked_num - 1 WHERE song_elec_blocked = TRUE AND sid = %s", (sid,))
@@ -239,16 +252,17 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 	unrated = []
 	for row in db.c.fetch_all(
 			_get_requested_albums_sql() +
-			("SELECT MIN(r4_song_sid.song_id) AS song_id, COUNT(r4_song_sid.song_id) AS unrated_count, r4_songs.album_id "
+			("SELECT FIRST(r4_song_sid.song_id ORDER BY random()) AS song_id, COUNT(r4_song_sid.song_id) AS unrated_count, r4_songs.album_id "
 				"FROM r4_song_sid JOIN r4_songs USING (song_id) "
 					"LEFT OUTER JOIN r4_song_ratings ON "
 						"(r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
-					"LEFT JOIN requested_albums ON "
+					"LEFT OUTER JOIN requested_albums ON "
 						"(requested_albums.album_id = r4_songs.album_id) "
 				"WHERE r4_song_sid.sid = %s "
 					"AND song_exists = TRUE "
 					"AND song_cool = FALSE "
 					"AND r4_song_ratings.song_id IS NULL "
+					"AND song_elec_blocked = FALSE "
 					"AND requested_albums.album_id IS NULL "
 			"GROUP BY r4_songs.album_id "
 			"ORDER BY unrated_count DESC "
@@ -265,11 +279,10 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 						"JOIN r4_album_sid ON (r4_album_sid.album_id = r4_songs.album_id AND r4_album_sid.sid = r4_song_sid.sid) "
 						"LEFT OUTER JOIN r4_song_ratings ON "
 							"(r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
-						"LEFT JOIN requested_albums ON "
+						"LEFT OUTER JOIN requested_albums ON "
 							"(requested_albums.album_id = r4_songs.album_id) "
 					"WHERE r4_song_sid.sid = %s "
 						"AND song_exists = TRUE "
-						"AND song_cool = TRUE "
 						"AND r4_song_ratings.song_id IS NULL "
 						"AND requested_albums.album_id IS NULL "
 				"GROUP BY r4_songs.album_id "
@@ -290,26 +303,27 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
 	return unrated
 
 def get_favorited_songs_for_requesting(user_id, sid, limit):
-	# This SQL fetches ALL the favourites, 1 per album, and shuffles them. Then sends back the first X results, where X is the limit.
+	# This SQL fetches ALL favourites, then shuffles between just the favourites, to get 1 fav per album.
+	# It then does the same for any song rated >= 4.5 by the user.
+	# Favourites are bubbled to the top of the heap.  The rest is randomly sorted. (but always above 4.5!)
 	favorited = []
 	for row in db.c.fetch_all(
 			_get_requested_albums_sql() +
-			("SELECT MIN(r4_song_sid.song_id) AS song_id, COUNT(r4_song_sid.song_id) AS unrated_count, r4_songs.album_id "
+			("SELECT FIRST(r4_song_ratings.song_id ORDER BY song_fave DESC NULLS LAST, random()) AS song_id, r4_songs.album_id, BOOL_OR(r4_song_ratings.song_fave) AS song_fave "
 				"FROM r4_song_sid JOIN r4_songs USING (song_id) "
-					"LEFT OUTER JOIN r4_song_ratings ON "
-						"(r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
-					"LEFT JOIN requested_albums ON "
+					"JOIN r4_song_ratings ON "
+						"(r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s AND (r4_song_ratings.song_fave = TRUE OR r4_song_ratings.song_rating_user >= 4.5)) "
+					"LEFT OUTER JOIN requested_albums ON "
 						"(requested_albums.album_id = r4_songs.album_id) "
 				"WHERE r4_song_sid.sid = %s "
 					"AND song_exists = TRUE "
 					"AND song_cool = FALSE "
-					"AND r4_song_ratings.song_fave = TRUE "
+					"AND song_elec_blocked = FALSE "
 					"AND requested_albums.album_id IS NULL "
-				"GROUP BY r4_songs.album_id "), (user_id, user_id, sid)):
+				"GROUP BY r4_songs.album_id "
+				"ORDER BY song_fave DESC NULLS LAST, random() "
+				"LIMIT %s "
+			), (user_id, user_id, sid, limit)):
 		favorited.append(row['song_id'])
 
-	#Shuffles the favourites and sends back based on the limit
-	random.shuffle(favorited)
-	if len(favorited) > limit:
-		return favorited[0:limit]
 	return favorited

@@ -7,6 +7,7 @@ from libs import db
 
 @handle_api_url("tip_jar")
 class TipJarContents(APIHandler):
+	description = "Returns a list of donations Rainwave has had."
 	return_name = "tip_jar"
 	allow_get = True
 	login_required = False
@@ -38,20 +39,14 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
 		self.write("<p>%s</p>" % self.locale.translate("tip_jar_opener_end"))
 
 		self.write("""
-			<div style='text-align: center'>
-			<form method="post" action="https://www.paypal.com/cgi-bin/webscr" target="paypal">
-			<input type="hidden" name="cmd" value="_xclick">
-			<input type="hidden" name="business" value="rmcauley@gmail.com">
-			<input type="hidden" name="item_name" value="">
-			<input type="hidden" name="bn"  value="ButtonFactory.PayPal.001">
-			<input type="image" name="add" src="/static/images4/paypal.gif">
-			</form>
+			<div>
+				<a href='https://paypal.me/Rainwave/5USD'>Donate at http://paypal.me/Rainwave</a>
 			</div>""")
 
-		all_donations = db.c.fetch_var("SELECT SUM(donation_amount) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0")
+		all_donations = db.c.fetch_var("SELECT ROUND(SUM(donation_amount)) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0")
 		self.write("<p>%s: %s</p>" % (self.locale.translate("tip_jar_all_donations"), all_donations))
 
-		balance = db.c.fetch_var("SELECT SUM(donation_amount) FROM r4_donations")
+		balance = db.c.fetch_var("SELECT ROUND(SUM(donation_amount)) FROM r4_donations")
 		self.write("<p>%s: %s</p>" % (self.locale.translate("tip_jar_balance"), balance))
 
 		super(TipJarHTML, self).get(write_header=False)

@@ -285,11 +285,54 @@ def close():
 	return True
 
 def create_tables():
-	if c.is_postgres:
-		c.start_transaction()
-
 	if config.get("standalone_mode"):
 		_create_test_tables()
+
+	trgrm_exists = c.fetch_var("SELECT extname FROM pg_extension WHERE extname = 'pg_trgm'")
+	if not trgrm_exists or not trgrm_exists == "pg_trgm":
+		try:
+			c.update("CREATE EXTENSION pg_trgm")
+		except:
+			print "Could not create trigram extension."
+			print "Please run 'CREATE EXTENSION pg_trgm;' as a superuser on the database."
+			print "You may also need to install the Postgres Contributions package. (postgres-contrib)"
+			raise
+
+	# From: https://wiki.postgresql.org/wiki/First_%28aggregate%29
+	# Used in rainwave/playlist.py
+	first_exists = c.fetch_var("SELECT proname FROM pg_proc WHERE proname = 'first' AND proisagg")
+	if not first_exists or first_exists != "first":
+		c.update("""
+			-- Create a function that always returns the first non-NULL item
+			CREATE OR REPLACE FUNCTION public.first_agg ( anyelement, anyelement )
+			RETURNS anyelement LANGUAGE SQL IMMUTABLE STRICT AS $$
+			        SELECT $1;
+			$$;
+
+			-- And then wrap an aggregate around it
+			CREATE AGGREGATE public.FIRST (
+			        sfunc    = public.first_agg,
+			        basetype = anyelement,
+			        stype    = anyelement
+			);
+		""")
+
+	last_exists = c.fetch_var("SELECT proname FROM pg_proc WHERE proname = 'last' AND proisagg")
+	if not last_exists or last_exists != "last":
+		c.update("""
+			-- Create a function that always returns the last non-NULL item
+			CREATE OR REPLACE FUNCTION public.last_agg ( anyelement, anyelement )
+			RETURNS anyelement LANGUAGE SQL IMMUTABLE STRICT AS $$
+			        SELECT $2;
+			$$;
+
+			-- And then wrap an aggregate around it
+			CREATE AGGREGATE public.LAST (
+			        sfunc    = public.last_agg,
+			        basetype = anyelement,
+			        stype    = anyelement
+			);
+		""")
 
 	c.update(" \
 		CREATE TABLE r4_albums ( \
@@ -297,8 +340,10 @@ def create_tables():
 			album_name				TEXT		, \
 			album_name_searchable	TEXT 		NOT NULL, \
 			album_year				SMALLINT, \
-			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
+			album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
 		)")
+	if c.is_postgres:
+		c.update("CREATE INDEX album_name_trgm_gin ON r4_albums USING GIN(album_name_searchable gin_trgm_ops)")
 
 	c.update(" \
 		CREATE TABLE r4_songs ( \
@@ -335,6 +380,8 @@ def create_tables():
 	c.create_idx("r4_songs", "song_rating")
 	c.create_idx("r4_songs", "song_request_count")
 	c.create_null_fk("r4_songs", "r4_albums", "album_id")
+	if c.is_postgres:
+		c.update("CREATE INDEX song_title_trgm_gin ON r4_songs USING GIN(song_title_searchable gin_trgm_ops)")
 
 	c.update(" \
 		CREATE TABLE r4_song_sid ( \
@@ -398,6 +445,7 @@ def create_tables():
 			album_vote_count			INTEGER		DEFAULT 0, \
 			album_votes_seen			INTEGER		DEFAULT 0, \
 			album_vote_share			REAL 		,\
+			album_newest_song_time		INTEGER		DEFAULT 0, \
 			PRIMARY KEY (album_id, sid) \
 		)")
 	c.create_idx("r4_album_sid", "album_rating")
@@ -405,6 +453,7 @@ def create_tables():
 	c.create_idx("r4_album_sid", "album_exists")
 	c.create_idx("r4_album_sid", "sid")
 	c.create_idx("r4_album_sid", "album_requests_pending")
+	c.create_idx("r4_album_sid", "album_exists", "sid")
 	c.create_delete_fk("r4_album_sid", "r4_albums", "album_id")
 
 	c.update(" \
@@ -430,6 +479,8 @@ def create_tables():
 			artist_name				TEXT		, \
 			artist_name_searchable	TEXT 		NOT NULL \
 		)")
+	if c.is_postgres:
+		c.update("CREATE INDEX artist_name_trgm_gin ON r4_artists USING GIN(artist_name_searchable gin_trgm_ops)")
 
 	c.update(" \
 		CREATE TABLE r4_song_artist	( \
@@ -464,6 +515,8 @@ def create_tables():
 	# c.create_idx("r4_song_group", "group_id")
 	c.create_delete_fk("r4_song_group", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_group", "r4_groups", "group_id")
+
+	_create_group_sid_table()
 
 	c.update(" \
 		CREATE TABLE r4_schedule ( \
@@ -699,29 +752,28 @@ def create_tables():
 
 	c.commit()
 
+def _create_group_sid_table():
+	c.update(" \
+		CREATE TABLE r4_group_sid( \
+			group_id 				INT, \
+			sid 					SMALLINT	NOT NULL, \
+			group_display			BOOLEAN		DEFAULT FALSE \
+		)")
+	c.create_idx("r4_group_sid", "group_display")
+	c.create_delete_fk("r4_group_sid", "r4_groups", "group_id")
+
 def _create_test_tables():
 	c.update(" \
 		CREATE TABLE phpbb_users( \
 			user_id					SERIAL		PRIMARY KEY, \
-			radio_totalvotes		INTEGER		DEFAULT 0, \
-			radio_totalratings		INTEGER		DEFAULT 0, \
-			radio_totalmindchange	INTEGER		DEFAULT 0, \
-			radio_totalrequests		INTEGER		DEFAULT 0, \
-			radio_winningvotes			INT		DEFAULT 0, \
-			radio_losingvotes			INT		DEFAULT 0, \
-			radio_winningrequests			INT		DEFAULT 0, \
-			radio_losingrequests			INT		DEFAULT 0, \
-			radio_listenkey			TEXT		DEFAULT 'TESTKEY', \
-			group_id				INT		DEFAULT 1, \
+			group_id				INT			DEFAULT 1, \
 			username				TEXT 		DEFAULT 'Test', \
-			user_new_privmsg			INT		DEFAULT 0, \
+			user_new_privmsg		INT			DEFAULT 0, \
 			user_avatar				TEXT		DEFAULT '', \
-			user_avatar_type			INT		DEFAULT 0, \
+			user_avatar_type		INT			DEFAULT 0, \
 			user_colour             TEXT        DEFAULT 'FFFFFF', \
-			user_rank               INTEGER     DEFAULT 0, \
-			radio_inactive			BOOLEAN		DEFAULT TRUE, \
-			radio_last_active		INT         DEFAULT 0, \
-			radio_requests_paused	BOOLEAN		DEFAULT FALSE \
+			user_rank               INT 	    DEFAULT 0, \
+			user_regdate            INT         DEFAULT 0 \
 		)")
 
 	c.update("CREATE TABLE phpbb_sessions("
@@ -733,6 +785,20 @@ def _create_test_tables():
 	c.update("CREATE TABLE phpbb_session_keys(key_id TEXT, user_id INT)")
 
 	c.update("CREATE TABLE phpbb_ranks(rank_id SERIAL PRIMARY KEY, rank_title TEXT)")
+
+def add_custom_fields():
+	c.update("ALTER TABLE phpbb_users ADD radio_totalvotes		INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_totalmindchange	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_totalratings	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_totalrequests	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_winningvotes	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_losingvotes		INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_winningrequests	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_losingrequests	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_last_active		INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_listenkey		TEXT		DEFAULT 'TESTKEY'")
+	c.update("ALTER TABLE phpbb_users ADD radio_inactive		BOOLEAN		DEFAULT TRUE")
+	c.update("ALTER TABLE phpbb_users ADD radio_requests_paused	BOOLEAN		DEFAULT FALSE")
 
 def _fill_test_tables():
 	c.update("INSERT INTO phpbb_ranks (rank_title) VALUES ('Test')")

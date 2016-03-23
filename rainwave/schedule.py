@@ -103,6 +103,10 @@ def get_current_file(sid):
 def get_current_event(sid):
 	return current[sid]
 
+def set_upnext_crossfade(sid, crossfade):
+	if sid in upnext and upnext[sid][0]:
+		upnext[sid][0].use_crossfade = crossfade
+
 def advance_station(sid):
 	db.c.start_transaction()
 	try:
@@ -190,6 +194,7 @@ def post_process(sid):
 		log.debug("advance", "Request and upnext management: %.6f" % (timestamp() - start_time,))
 
 		update_memcache(sid)
+
 		sync_to_front.sync_frontend_all(sid)
 		db.c.commit()
 	except:
@@ -374,3 +379,13 @@ def update_memcache(sid):
 	cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
 	cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)
 	cache.set_station(sid, "all_groups", playlist.get_all_groups_list(sid), True)
+
+	potential_dj_ids = []
+	if getattr(current[sid], 'dj_user_id', None):
+		potential_dj_ids.append(current[sid].dj_user_id)
+	for evt in upnext[sid]:
+		if getattr(evt, 'dj_user_id', None):
+			potential_dj_ids.append(evt.dj_user_id)
+	if len(history[sid]) and history[sid][-1] and getattr(history[sid][-1], 'dj_user_id', None):
+		potential_dj_ids.append(history[sid][-1].dj_user_id)
+	cache.set_station(sid, "dj_user_ids", potential_dj_ids)

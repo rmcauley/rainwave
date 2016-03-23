@@ -1,5 +1,9 @@
+try:
+	import ujson as json
+except ImportError:
+	import json
+
 import tornado.web
-import tornado.escape
 import tornado.httputil
 import traceback
 import types
@@ -36,7 +40,7 @@ class Error404Handler(tornado.web.RequestHandler):
 		self.set_status(404)
 		if "in_order" in self.request.arguments:
 			self.write("[")
-		self.write(tornado.escape.json_encode({ "error": { "tl_key": "http_404", "text": "404 Not Found" } }))
+		self.write(json.dumps({ "error": { "tl_key": "http_404", "text": "404 Not Found" } }), ensure_ascii=False)
 		if "in_order" in self.request.arguments:
 			self.write("]")
 		self.finish()
@@ -98,6 +102,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	pagination = False
 	# allow access to station ID 0
 	allow_sid_zero = False
+	# set to allow from any source
+	allow_cors = False
 
 	def __init__(self, *args, **kwargs):
 		super(RainwaveHandler, self).__init__(*args, **kwargs)
@@ -160,6 +166,11 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if self.local_only and not self.request.remote_ip in config.get("api_trusted_ip_addresses"):
 			log.info("api", "Rejected %s request from %s, untrusted address." % (self.url, self.request.remote_ip))
 			raise APIException("rejected", text="You are not coming from a trusted address.")
+
+		if self.allow_cors:
+			self.set_header("Access-Control-Allow-Origin", "*")
+			self.set_header("Access-Control-Max-Age", "600")
+			self.set_header("Access-Control-Allow-Credentials", "false")
 
 		if not isinstance(self.locale, locale.RainwaveLocale):
 			self.locale = self.get_browser_locale()
@@ -246,19 +257,14 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if self.dj_required and not self.user:
 			raise APIException("dj_required", http_code=403)
 		if self.dj_required and not self.user.is_admin():
-			#pylint: disable=E1103
-			potential_dj_ids = []
-			if cache.get_station(self.sid, "sched_current") and cache.get_station(self.sid, "sched_current").dj_user_id:
-				potential_dj_ids.append(cache.get_station(self.sid, "sched_current").dj_user_id)
-			if cache.get_station(self.sid, "sched_next"):
-				for evt in cache.get_station(self.sid, "sched_next"):
-					potential_dj_ids.append(evt.dj_user_id)
-			if cache.get_station(self.sid, "sched_history") and cache.get_station(self.sid, "sched_history")[-1].dj_user_id:
-				potential_dj_ids.append(cache.get_station(self.sid, "sched_history")[-1].dj_user_id)
-			if not self.user.id in potential_dj_ids:
+			potential_djs = cache.get_station(self.sid, "dj_user_ids")
+			if not potential_djs or not self.user.id in potential_djs:
 				raise APIException("dj_required", http_code=403)
 			is_dj = True
-			#pylint: enable=E1103
+			self.user.data['dj'] = True
+		elif self.dj_required and self.user.is_admin():
+			is_dj = True
+			self.user.data['dj'] = True
 
 		if self.dj_preparation and not is_dj and not self.user.is_admin():
 			if not db.c.fetch_var("SELECT COUNT(*) FROM r4_schedule WHERE sched_used = 0 AND sched_dj_user_id = %s", (self.user.id,)):
@@ -360,7 +366,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			return ""
 		limit = ""
 		if self.get_argument("per_page") != None:
-			if self.get_argument("per_page") == "0":
+			if not self.get_argument("per_page"):
 				limit = "LIMIT ALL"
 			else:
 				limit = "LIMIT %s" % self.get_argument("per_page")
@@ -373,11 +379,15 @@ class RainwaveHandler(tornado.web.RequestHandler):
 class APIHandler(RainwaveHandler):
 	def initialize(self, **kwargs):
 		super(APIHandler, self).initialize(**kwargs)
-		if config.get("developer_mode") or config.test_mode or self.allow_get:
+		if self.allow_get:
 			self.get = self.post
 
 	def finish(self, chunk=None):
 		self.set_header("Content-Type", "application/json")
+		self.write_output()
+		super(APIHandler, self).finish(chunk)
+
+	def write_output(self):
 		if hasattr(self, "_output"):
 			if hasattr(self, "_startclock"):
 				exectime = timestamp() - self._startclock
@@ -386,8 +396,7 @@ class APIHandler(RainwaveHandler):
 			if exectime > 0.5:
 				log.warn("long_request", "%s took %s to execute!" % (self.url, exectime))
 			self.append("api_info", { "exectime": exectime, "time": round(timestamp()) })
-			self.write(tornado.escape.json_encode(self._output))
-		super(APIHandler, self).finish(chunk)
+			self.write(json.dumps(self._output, ensure_ascii=False))
 
 	def write_error(self, status_code, **kwargs):
 		if self._output_array:
@@ -507,12 +516,13 @@ class PrettyPrintAPIMixin(object):
 				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
 			elif not self.return_name in self._output:
 				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
+
 		for output_key, json in self._output.iteritems():	#pylint: disable=W0612
 			if type(json) != types.ListType:
 				continue
 			if len(json) > 0:
-				self.write("<table><th>#</th>")
-				keys = self.sort_keys(json[0].keys())
+				self.write("<table class='%s'><th>#</th>" % self.return_name)
+				keys = getattr(self, "columns", self.sort_keys(json[0].keys()))
 				for key in keys:
 					self.write("<th>%s</th>" % self.locale.translate(key))
 				self.header_special()
@@ -533,6 +543,7 @@ class PrettyPrintAPIMixin(object):
 				self.write("</table>")
 			else:
 				self.write("<p>%s</p>" % self.locale.translate("no_results"))
+
 		if self.pagination and "per_page" in self.fields and self.get_argument("per_page") != 0:
 			if self.get_argument("page_start") and self.get_argument("page_start") > 0:
 				self.write("<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>" % (per_page_link, previous_page_start))
@@ -559,8 +570,8 @@ class PrettyPrintAPIMixin(object):
 
 	#pylint: disable=E1003
 	# no JSON output!!
-	def finish(self):
-		super(APIHandler, self).finish()
+	def finish(self, *args, **kwargs):
+		super(APIHandler, self).finish(*args, **kwargs)
 	#pylint: enable=E1003
 
 	# see initialize, this will override the JSON POST function

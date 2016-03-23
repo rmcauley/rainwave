@@ -1,0 +1,5 @@
+<div class="rating album_rating" bind="rating">
+	{{#if ^!Sizing.simple}}
+		<div class="rating_number rating_hover" bind="rating_hover_number"></div>
+	{{/if}}
+</div>

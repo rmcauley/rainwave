@@ -2,6 +2,7 @@
    "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
 
    "language_name"                                   : "Deutsch",
+   "language_name_short"                             : "DE",
 
    "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
 
@@ -78,7 +79,7 @@
    "extended_history_header"                         : "Erweiterter Verlauf",
    "special_event_on_now"                            : "Veranstaltung: ",
    "special_event_alert"                             : "Sonderveranstaltung auf %(station): ",
-   
+
    "tunein"                                          : "Zuhören",
    "stop"                                            : "Stop",
    "audio_error"                                     : "Der Sender konnte mit deinem Browser nicht eingeschaltet werden!",
@@ -102,7 +103,7 @@
    "played_ago"                                      : "Vor %(time) gespielt",
    "timeline_art__request_indicator"                 : "Wunsch",
    "timeline_art__your_request_indicator"            : "Du selbst",
-   
+
     "event_naming__oneup"                             : "%(name) Power Hour",
 
    "__comment__"                 : "Tip Jar",
@@ -135,7 +136,7 @@
    "view_your"                                       : "Betrachte deine: ",
    "recent_votes"                                    : "Letzten Abstimmungen",
    "request_history"                                 : "Wunschverlauf",
-   
+
    "__comment__"                 : "Other",
 
    "random_relay"                                    : "Zufälliger Relay",
@@ -146,12 +147,12 @@
    "mobile_sync_retrying"                            : "Zeitüberschreitung bei der Verbindung, bitte die Seite neu laden oder später erneut versuchen.",
    "async_error"                                     : "Fehler bei der Datenübertragung. Bitte erneut versuchen oder die Seite neu laden.",
    "deeplink_error"                                  : "Die eingegebene URL konnte nicht verarbeitet werden.",
-   
+
    "catastrophic_error"                              : "Rainwave ist abgestürzt :(",
    "submit_javascript_error"                         : "Bitte erstelle einen Fehlerbericht im Forum, damit wir den Fehler beheben können.",
-   
+
    "__comment__"                 : "Hotkey Mode",
-  
+
    "hotkey_mode"                                     : "1-5 zum Bewerten, A/S/D zum Abstimmen",
    "invalid_hotkey"                                  : "Ungültiger Hotkey.",
    "not_an_election"                                 : "Keine Abstimmung.",
@@ -192,7 +193,7 @@
    "album_on_station"                                : "Auf %(station): %(album)",
    "groups_tab_title"                                : "Kategorien",
    "relevant_categories"                             : "Relevante Kategorien: ",
-   
+
    "__comment__"                 : "Requests",
 
    "clear_request_queue"                             : "Alle entfernen",
@@ -203,11 +204,11 @@
    "Requests"                                        : "Wünsche",
    "requests_all_on_cooldown"                        : "Alle Wünsche in der Abkühlpause!",
    "request_you_are_x_in_line"                       : "Position #(position) in der Schlange",
-   
+
    "request_grab_tag__warning"                       : "Warnung",
    "request_grab_tag__paused"                        : "Pausiert",
    "requests_grab_tab__num_requests"                 : "%(num_requests) &(num_requests:Wunsch/Wünsche)",
-   
+
    "cancel_request"                                  : "Wunsch abbrechen",
    "request_on_cooldown_for"                         : "Am abkühlen für %(cool_time).",
    "request_on_cooldown_ends_soon"                   : "Fast abgekühlt.",

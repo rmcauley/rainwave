@@ -1,0 +1,307 @@
+<h2>Customize Your Widget</h2>
+<ul class="tabs">
+	<li><span bind="preset_tab">Configuration</span></li>
+	<li><span bind="options_tab">Custom CSS</span></li>
+</ul>
+<div bind="preset_area" class="preset_area">
+	{{#with options}}
+		<p class="preset_question">What station do you want to show? (OverClocked ReMix highly recommended)</p>
+		<div>
+			<select bind="sid">
+				<option value="5">All</option>
+				<option value="1">Game</option>
+				<option value="2">OverClocked ReMix</option>
+				<option value="3">Covers</option>
+				<option value="4">Chiptune</option>
+			</select>
+		</div>
+	{{/with}}
+	{{#with presets}}
+		<p class="preset_question">Where are you going to put the widget on screen in your stream?</p>
+		<div class="position_select">
+			<button style="position: absolute;" onclick="preset('top_left');">Top Left</button>
+			<button class="centre" style="position: absolute; left: 50%; transform: translateX(-50%);" onclick="preset('top_center');">Top</button>
+			<button style="position: absolute; left: 100%; transform: translateX(-100%);" onclick="preset('top_right');">Top Right</button>
+			<button class="middle" style="position: absolute; top: 75px; transform: translateY(-50%); " onclick="preset('center_left');">Left</button>
+			<button class="middle" style="position: absolute; top: 75px; left: 100%; transform: translateX(-100%) translateY(-50%);" onclick="preset('center_right');">Right</button>
+			<button style="position: absolute; top: 150px; transform: translateY(-100%);" onclick="preset('bottom_left');">Bottom Left</button>
+			<button class="centre" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%) translateY(-100%);" onclick="preset('bottom_center');">Bottom</button>
+			<button style="position: absolute; top: 150px; left: 100%; transform: translateX(-100%) translateY(-100%);" onclick="preset('bottom_right');">Bottom Right</button>
+		</div>
+		<div style="margin-top: 0.5em;">
+			<span style="margin-right: 5px;">Currently selected:</span>
+			<select bind="preset_layout" disabled>
+				<option value="top_left">Top Left Corner</option>
+				<option value="top_center">Top Edge</option>
+				<option value="top_right">Top Right Corner</option>
+				<option value="center_left">Left Side</option>
+				<option value="center_right">Right Side</option>
+				<option value="bottom_left">Bottom Left Corner</option>
+				<option value="bottom_center">Bottom Edge</option>
+				<option value="bottom_right">Bottom Right Corner</option>
+			</select>
+		</div>
+
+		<p class="preset_question">What size is your monitor/capture area?</p>
+		<div>
+			<select bind="preset_size">
+				<option value="2160p">2160p/UHD/4K</option>
+				<option value="1440p">1440p</option>
+				<option value="1080p">1080p</option>
+				<option value="720p">720p</option>
+				<option value="480p">480p</option>
+			</select>
+		</div>
+
+		<p class="preset_question">Will the widget be displayed on top of a game, an image, or a solid background color?</p>
+		<div>
+			<select bind="preset_background">
+				<option value="overbkg">Widget will be over a solid background color.</option>
+				<option value="overimg">Widget will be over an image.</option>
+				<option value="overgame">Widget will be over a game.</option>
+			</select>
+		</div>
+
+		<p class="preset_question">Do you want us to put a small "Current Song:" header in the widget for you?</p>
+		<div>
+			<select bind="preset_header">
+				<option value="yes_np">Yes, "Now Playing"</option>
+				<option value="yes_cm">Yes, "Current Music"</option>
+				<option value="yes_cs">Yes, "Current Song"</option>
+				<option value="no_header">No, I don't want a header/I have my own header.</option>
+			</select>
+		</div>
+
+		<p class="preset_question">Would it be OK if we put in a quick visual shoutout to Rainwave for a few seconds every 10 or so minutes?  (we promise it's not hideous or jarring)</p>
+		<div>
+			<select bind="preset_ad">
+				<option value="ads_yes">Shoutouts are OK.</option>
+				<option value="ads_no">No shoutouts, only music info please.</option>
+			</select>
+		</div>
+	{{/with}}
+</div>
+<table bind="options_area" class="options_area" style="margin-top: 1em;">
+	{{#with options}}
+		<tr>
+			<th>Option</th>
+			<th>Value</th>
+			<th>Description</th>
+		</tr>
+
+		<tr>
+			<td>sid</td>
+			<td>
+				<select bind="sid">
+					<option value="5">All</option>
+					<option value="1">Game</option>
+					<option value="2">OverClocked ReMix</option>
+					<option value="3">Covers</option>
+					<option value="4">Chiptune</option>
+				</select>
+			</td>
+			<td>Which station to use.  OverClocked ReMix highly recommended.</td>
+		</tr>
+
+		<tr>
+			<td>layout</td>
+			<td>
+				<select bind="layout">
+					<option value="art_top">Album Art Above Text</option>
+					<option value="art_bottom">Album Art Below Text</option>
+					<option value="art_left">Album Art Left of Text</option>
+					<option value="art_right">Album Art Right of Text</option>
+				</select>
+			</td>
+			<td>Where the album art goes relative to the song details.</td>
+		</tr>
+		<tr>
+			<td>art_size</td>
+			<td>
+				<select bind="art_size">
+					<option value="320px">320 pixels</option>
+					<option value="240px">240 pixels</option>
+					<option value="200px">200 pixels</option>
+					<option value="160px">160 pixels</option>
+					<option value="120px">120 pixels</option>
+					<option value="100px">100 pixels</option>
+					<option value="70px">70 pixels</option>
+					<option value="50px">50 pixels</option>
+					<option value="30px">30 pixels</option>
+					<option value="0px">(No Art)</option>
+				</select>
+			</td>
+			<td>Album art size in the widget.</td>
+		</tr>
+		<tr>
+			<td>text_align</td>
+			<td>
+				<select bind="text_align">
+					<option value="left">Left</option>
+					<option value="right">Right</option>
+					<option value="centre">Centre</option>
+				</select>
+			</td>
+			<td>Alignment of text.</td>
+		</tr>
+		<tr>
+			<td>anim_in</td>
+			<td>
+				<select bind="anim_in">
+					<option value="to_bottom">From Bottom</option>
+					<option value="to_top">From Top</option>
+					<option value="to_left">From Left</option>
+					<option value="to_right">From Right</option>
+					<option value="fade">Fade In</option>
+					<!--<option value="flip_bottom">3D From Bottom</option>
+					<option value="flip_top">3D From Top</option>
+					<option value="flip_left">3D From Left</option>
+					<option value="flip_right">3D From Right</option>-->
+				</select>
+			</td>
+			<td rowspan="2">Controls animation direction of the songs when the tracks change.<!-- <i>3D animations will not work on the older non-studio CLR Browser plugin</i> due to the age of the bundled browser.--></td>
+		</tr>
+		<tr>
+			<td>anim_out</td>
+			<td>
+				<select bind="anim_out">
+					<option value="to_bottom">To Bottom</option>
+					<option value="to_top">To Top</option>
+					<option value="to_left">To Left</option>
+					<option value="to_right">To Right</option>
+					<option value="fade">Fade Out</option>
+					<!--<option value="flip_bottom">3D To Bottom</option>
+					<option value="flip_top">3D To Top</option>
+					<option value="flip_left">3D To Left</option>
+					<option value="flip_right">3D To Right</option>-->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>show_artist</td>
+			<td>
+				<select bind="show_artist">
+					<option value="true">Yes</option>
+					<option value="false">No</option>
+				</select>
+			</td>
+			<td>Show artist or not in the widget's text.</td>
+		</tr>
+		<tr>
+			<td>color</td>
+			<td><input type="text" bind="color" value="" style="width: 300px;" /></td>
+			<td>
+				<span style="margin-right: 5px;">CSS color rule for font color. (e.g. "white"/"#FFF", "black"/"#000", or </span>
+				<a href="http://www.colorpicker.com/" target="_blank">use a color picker</a>
+				<span>)</span>
+			</td>
+		</tr>
+		<tr>
+			<td>background_color</td>
+			<td><input type="text" bind="background_color" value="" style="width: 300px;" /></td>
+			<td>CSS rule for the background color for the song box.  Leave blank for transparent.  You may need to add your own background in OBS if using transparent.</td>
+		</tr>
+		<tr>
+			<td>box_shadow</td>
+			<td><input type="text" bind="box_shadow" value="" style="width: 300px;" /></td>
+			<td>
+				<span style="margin-right: 5px;">CSS box-shadow/glow rule for the container. (use </span>
+				<a style="margin-right: 5px;" href="http://www.cssmatic.com/box-shadow" target="_blank">this page</a>
+				<span> for help - take what comes after "box-shadow:" and paste into this setting) Leave blank for no shadow/glow.</span>
+			</td>
+		</tr>
+		<tr>
+			<td>font_size</td>
+			<td><input type="text" bind="font_size" value="" style="width: 300px;" /></td>
+			<td>CSS rule for font size.  Can use pixels (e.g. "14px") or points. (e.g. "14pt")  Leave blank for 18pt.</td>
+		</tr>
+		<tr>
+			<td>font_family</td>
+			<td><input type="text" bind="font_family" value="" style="width: 300px;" /></td>
+			<td>CSS rule for what font to use.  Font names with spaces must be enclosed with single quotes, e.g. 'Helvetica Neue'.  Leave blank for Rainwave defaults.</td>
+		</tr>
+		<tr>
+			<td>text_stroke_color</td>
+			<td><input type="text" bind="text_stroke_color" value="black" style="width: 300px;" /></td>
+			<td>CSS color rule for outlining the text.  (CSS specifics: uses 4 text-shadows)</td>
+		</tr>
+		<tr>
+			<td>text_stroke_size</td>
+			<td><input type="text" bind="text_stroke_size" value="2px" style="width: 300px;" /></td>
+			<td>
+				<span style="margin-right: 5px;">CSS </span>
+				<b style="margin-right: 5px;">pixel</b>
+				<span style="margin-right: 5px;"> size rule for outlining the text. (e.g. 2px)  </span>
+				<i style="margin-right: 5px;">Must be in pixels</i>
+				<span> or the scripting will break.</span>
+			</td>
+		</tr>
+		<tr>
+			<td>text_shadow</td>
+			<td><input type="text" bind="text_shadow" value="3px 3px 3px black" style="width: 300px;" /></td>
+			<td>
+				<span style="margin-right: 5px;">CSS text-shadow rule. </span>
+				<a style="margin-right: 5px;" href="http://css3gen.com/text-shadow/" target="_blank">(click here for a generator)</a>
+				<span>Leave blank for no shadow.</span>
+			</td>
+		</tr>
+		<tr>
+			<td>art_shadow</td>
+			<td><input type="text" bind="art_shadow" value="" style="width: 300px;" /></td>
+			<td>
+				<span style="margin-right: 5px;">CSS box-shadow/glow rule for the art. (use </span>
+				<a style="margin-right: 5px;" href="http://www.cssmatic.com/box-shadow" target="_blank">this page</a>
+				<span> for a generator) Leave blank to use text_shadow, put "none" to have no shadow/glow.</span>
+			</td>
+		</tr>
+		<tr>
+			<td>width</td>
+			<td><input type="text" bind="max_width" value="420px" style="width: 300px;" /></td>
+			<td>CSS rule for width of the widget (including album art, but excluding padding) before text gets clipped.</td>
+		</tr>
+		<tr>
+			<td>padding</td>
+			<td><input type="text" bind="padding" value="" style="width: 300px;" /></td>
+			<td>CSS rule for the space between the edge of the widget and the art/text.  Will also be the space between the edge of the browser plugin and your OBS scene border.  Leave blank for 8px.</td>
+		</tr>
+		<tr>
+			<td>np_header</td>
+			<td>
+				<select bind="np_header">
+					<option value="yes">Yes</option>
+					<option value="no">No</option>
+				</select>
+			</td>
+			<td>Show Current Song header.</td>
+		</tr>
+		<tr>
+			<td>np_message</td>
+			<td><input type="text" bind="np_message" value="" style="width: 300px;" /></td>
+			<td>Text content of the Current Song header.</td>
+		</tr>
+		<tr>
+			<td>np_color</td>
+			<td><input type="text" bind="np_message" value="" style="width: 300px;" /></td>
+			<td>Text color of the Current Song header.  Default is Rainwave's orange header color.</td>
+		</tr>
+		<tr>
+			<td>ad</td>
+			<td><input type="text" bind="ad" value="3" style="width: 300px;" /></td>
+			<td>How many songs to play before showing Rainwave's logo as the album art for a brief moment. Set to 0 to never show an ad. Ads last 2-5 seconds depending on the setting, and are Rainwave's logo with our URL displayed in the same style as song information. (please be kind, we run this service for free :) )</td>
+		</tr>
+		<tr>
+			<td>ad_message</td>
+			<td><input type="text" bind="ad_message" value="" style="width: 300px;" /></td>
+			<td>Banner message for the ad.  Enter in the language(s) of your stream, or leave at default for "Music by:".</td>
+		</tr>
+		<tr>
+			<td>delay</td>
+			<td><input type="text" bind="delay" value="" style="width: 300px;" /></td>
+			<td>
+				<span>How many seconds to wait before showing new now playing data.</span>
+				<i>Make sure you use the same relay and same media player every time</i>
+				<span>or you'll have to change this value constantly!</span>
+			</td>
+		</tr>
+	{{/with}}
+</table>
