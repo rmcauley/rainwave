@@ -224,7 +224,7 @@
    "rating_percentile_bottom"                        : "bottom %(percentile)%",
    "request_percentile_top"                          : "Request popularity: top %(percentile_top)%.",
    "request_percentile_bottom"                       : "Request popularity: bottom %(percentile)%.",
-   "song_has_no_ratings"                             : "Song has no ratings to report.",
+   "song_has_no_ratings"                             : "Song doesn't have enough ratings yet.",
    "Request"                                         : "Request",
    "Albums"                                          : "Albums",
    "Songs"                                           : "Songs",
