@@ -137,6 +137,7 @@
 	self.update_item_element = function(item) {
 		if (!item._el) return;
 
+		item._el.classList.remove("fave_clicked");
 		if (item.fave) {
 			item._el.classList.add("album_fave_highlight");
 			item._el_fave.classList.add("is_fave");
