@@ -50,7 +50,7 @@ var SongsTableDetailDraw = function(song, details) {
 	Router.recalculate_scroll();
 };
 
-var SongsTableDetail = function(song, scroll_on_open) {
+var SongsTableDetail = function(song, scroll_on_open, sid) {
 	if (!song.$t.detail_icon) {
 		return;
 	}
@@ -71,7 +71,7 @@ var SongsTableDetail = function(song, scroll_on_open) {
 		else {
 			if (triggered) return;
 			triggered = true;
-			API.async_get("song", { "id": song.id }, function(json) {
+			API.async_get("song", { "id": song.id, "sid": sid }, function(json) {
 				SongsTableDetailDraw(song, json.song);
 				if (scroll_on_open) {
 					Router.scroll_a_bit();
