@@ -1,13 +1,24 @@
 import tornado.web
+import tornado.websocket
 import tornado.ioloop
 import datetime
-import time
+import numbers
+import sys
 from time import time as timestamp
+
+try:
+	import ujson as json
+except ImportError:
+	import json
 
 from api import fieldtypes
 from api.exceptions import APIException
 from api.web import APIHandler
+from api.web import get_browser_locale
+from api.server import api_endpoints
 from api.server import handle_api_url
+from rainwave.user import User
+from api import locale
 import api_requests.info
 import rainwave.playlist
 
@@ -92,17 +103,19 @@ class SessionBank(object):
 		self.clear()
 
 	def update_dj(self, sid):
-		for session in self.sessions:
-			if session.dj:
-				try:
-					session.update_dj_only()
-					log.debug("sync_update_dj", "Updated user %s session." % session.user.id)
-				except Exception as e:
-					try:
-						session.finish()
-					except:
-						pass
-					log.exception("sync_update_dj", "Session failed to be updated during update_dj.", e)
+		# TODO: redo new bank for websockets
+		pass
+		# for session in self.sessions:
+		# 	if session.dj:
+		# 		try:
+		# 			session.update_dj_only()
+		# 			log.debug("sync_update_dj", "Updated user %s session." % session.user.id)
+		# 		except Exception as e:
+		# 			try:
+		# 				session.finish()
+		# 			except:
+		# 				pass
+		# 			log.exception("sync_update_dj", "Session failed to be updated during update_dj.", e)
 
 	def update_user(self, user_id):
 		if not user_id in self.user_update_timers or not self.user_update_timers[user_id]:
@@ -279,6 +292,7 @@ class Sync(APIHandler):
 					"This allows for gaps inbetween requests to be handled elegantly.")
 	auth_required = True
 	fields = { "offline_ack": (fieldtypes.boolean, None), "resync": (fieldtypes.boolean, None), "known_event_id": (fieldtypes.positive_integer, None) }
+	is_websocket = False
 
 	@tornado.web.asynchronous
 	def post(self):
@@ -342,16 +356,131 @@ class Sync(APIHandler):
 		self.append("user", self.user.to_private_dict())
 		self.finish()
 
-	def update_dj_only(self):
-		self.finish()
+class FakeRequestObject(object):
+	def __initialize__(self, arguments):
+		self.arguments = arguments
 
+# TODO: I think I need a different connection bank for websockets.
+# TODO: Special payload updates for live voting/etc
 
-@handle_api_url("sync_dj")
-class DJSync(Sync):
-	dj_required = True
+@handle_api_url("websocket/(\d+)")
+class WSHandler(tornado.websocket.WebSocketHandler):
+	is_websocket = True
 
-	def update_dj_only(self):
-		self._startclock = timestamp()
+	def open(self, *args, **kwargs):
+		super(WSHandler, self).open()
+		self.sid = args[0]
 
-		api_requests.info.attach_dj_info_to_request(self)
-		self.finish()
+		if not isinstance(self.locale, locale.RainwaveLocale):
+			self.locale = get_browser_locale(self)
+
+		self.authorized = False
+
+	def keep_alive(self):
+		self.ping(timestamp())
+
+	def on_close(self):
+		if self.sid:
+			global sessions
+			sessions[self.sid].remove(self)
+		super(WSHandler, self).on_close()
+
+	def _auth(self, user_id, key):
+		self.user = User(user_id)
+		self.user.ip_address = self.request.remote_ip
+		self.user.authorize(None, key)
+		if not self.user.authorized:
+			return False
+		self.authorized = True
+		return True
+
+	def write_message(self, obj, *args, **kwargs):
+		message = json.dumps(obj)
+		super(WSHandler, self).write_message(message, *args, **kwargs)
+
+	def _refresh_user(self):
+		self.user.refresh(self.sid)
+		# TODO: DJ permission checks
+
+	def on_message(self, message):
+		try:
+			message = json.loads(message)
+		except:
+			self.write_message({ "wserror": { "tl_key": "invalid_json", "text": self.locale.translate("invalid_json") } })
+			return
+
+		if not "action" in message or not message['action']:
+			self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="action") } })
+			return
+
+		if not self.authorized and message['action'] != "auth":
+			self.write_message({ "wserror": { "tl_key": "auth_required", "text": self.locale.translate("auth_required") } })
+			return
+
+		if message['action'] == "auth":
+			if not "user_id" in message or not message['user_id']:
+				self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="user_id") } })
+			if not isinstance(message['user_id'], numbers.Number):
+				self.write_message({ "wserror": { "tl_key": "invalid_argument", "text": self.locale.translate("invalid_argument", argument="user_id") } })
+			if not "key" in message or not message['key']:
+				self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="key") } })
+
+			if not self._auth(message['user_id'], message['key']):
+				self.write_message({ "wserror": { "tl_key": "auth_failed", "text": self.locale.translate("auth_failed") } })
+				self.close()
+				return
+
+			self._refresh_user()
+			# no need to send the user's data to the user as that would have come with bootstrap
+			# and will come with each synchronization of the schedule anyway
+			self.write_message({ "wsok": True })
+			# since this will be the first action in any websocket interaction though,
+			# it'd be a good time to send a station offline message.
+			if not cache.get_station(self.sid, "backend_ok"):
+				# shamelessly fake an error.
+				self.write_message({ "sync_result": { "tl_key": "station_offline", "text": self.locale.translate("station_offline") } })
+			return
+
+		# TODO: check for out of date scheduling data
+
+		if not message['action'] in api_endpoints:
+			self.write_message({ "wserror": { "tl_key": "invalid_argument", "text": self.locale.translate("invalid_argument", argument="action") } })
+
+		if not "arguments" in message or not message['arguments']:
+			message['arguments'] = {}
+		message['arguments']['sid'] = message['arguments']['sid'] or self.sid
+
+		endpoint = api_endpoints[message['action']]()
+		try:
+			startclock = timestamp()
+			endpoint.request = FakeRequestObject(message['arguments'])
+			endpoint.user = self.user
+			endpoint.prepare_standalone()
+			endpoint.post()
+			endpoint.append("api_info", { "exectime": timestamp() - startclock, "time": round(timestamp()) })
+		except Exception:
+			endpoint.write_error(500, exc_info=sys.exc_info(), no_finish=True)
+		finally:
+			self.write_message(endpoint._output) 	#pylint: disable=W0212
+
+	def update_user(self):
+		try:
+			startclock = timestamp()
+			handler = APIHandler()
+			handler.return_name = "sync_result"
+			handler.request = FakeRequestObject({})
+			handler.user = self.user
+
+			if not cache.get_station(self.sid, "backend_ok"):
+				raise APIException("station_offline")
+
+			self._refresh_user()
+			api_requests.info.attach_info_to_request(handler)
+			if self.user.is_dj():
+				api_requests.info.attach_dj_info_to_request(handler)
+			handler.append("user", self.user.to_private_dict())
+			handler.append("api_info", { "exectime": timestamp() - startclock, "time": round(timestamp()) })
+		except Exception:
+			handler.write_error(500, exc_info=sys.exc_info(), no_finish=True)
+		finally:
+			self.write_message(handler._output) 	#pylint: disable=W0212

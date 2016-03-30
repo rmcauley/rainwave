@@ -70,5 +70,9 @@
    "line_expiry_election"                            : "Expire Time (if no good requests)",
    "line_wait_start"                                 : "Entered Line At (epoch time)",
    "artist_parseable"                                : "Artists (computer-readable format)",
-   "song_played_at"                                  : "Played At (epoch time)"
+   "song_played_at"                                  : "Played At (epoch time)",
+
+   "__comment__"          : "WebSocket/API related messages, does not need to be translated",
+
+   "invalid_json"                                    : "Invalid JSON or WebSocket message."
 }

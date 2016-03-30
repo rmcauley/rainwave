@@ -56,6 +56,33 @@ class HTMLError404Handler(tornado.web.RequestHandler):
 		self.write(self.render_string("basic_footer.html"))
 		self.finish()
 
+def get_browser_locale(handler, default="en_CA"):
+	"""Determines the user's locale from ``Accept-Language`` header.  Copied from Tornado, adapted slightly.
+
+	See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+	"""
+	if "rw_lang" in handler.cookies:
+		if locale.RainwaveLocale.exists(handler.cookies['rw_lang'].value):
+			return locale.RainwaveLocale.get(handler.cookies['rw_lang'].value)
+	if "Accept-Language" in handler.request.headers:
+		languages = handler.request.headers["Accept-Language"].split(",")
+		locales = []
+		for language in languages:
+			parts = language.strip().split(";")
+			if len(parts) > 1 and parts[1].startswith("q="):
+				try:
+					score = float(parts[1][2:])
+				except (ValueError, TypeError):
+					score = 0.0
+			else:
+				score = 1.0
+			locales.append((parts[0], score))
+		if locales:
+			locales.sort(key=lambda pair: pair[1], reverse=True)
+			codes = [l[0] for l in locales]
+			return locale.RainwaveLocale.get_closest(codes)
+	return locale.RainwaveLocale.get(default)
+
 class RainwaveHandler(tornado.web.RequestHandler):
 	# The following variables can be overridden by you.
 	# Fields is a hash with { "form_name" => (fieldtypes.[something], True|False|None) } format, so that automatic form validation can be done for you.  True/False values are for required/optional.
@@ -135,72 +162,16 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		self.cleaned_args[name] = value
 
 	def get_browser_locale(self, default="en_CA"):
-		"""Determines the user's locale from ``Accept-Language`` header.  Copied from Tornado, adapted slightly.
+		get_browser_locale(self, default)
 
-		See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
-		"""
-		if "rw_lang" in self.cookies:
-			if locale.RainwaveLocale.exists(self.cookies['rw_lang'].value):
-				return locale.RainwaveLocale.get(self.cookies['rw_lang'].value)
-		if "Accept-Language" in self.request.headers:
-			languages = self.request.headers["Accept-Language"].split(",")
-			locales = []
-			for language in languages:
-				parts = language.strip().split(";")
-				if len(parts) > 1 and parts[1].startswith("q="):
-					try:
-						score = float(parts[1][2:])
-					except (ValueError, TypeError):
-						score = 0.0
-				else:
-					score = 1.0
-				locales.append((parts[0], score))
-			if locales:
-				locales.sort(key=lambda pair: pair[1], reverse=True)
-				codes = [l[0] for l in locales]
-				return locale.RainwaveLocale.get_closest(codes)
-		return locale.RainwaveLocale.get(default)
-
-	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
-	def prepare(self):
-		if self.local_only and not self.request.remote_ip in config.get("api_trusted_ip_addresses"):
-			log.info("api", "Rejected %s request from %s, untrusted address." % (self.url, self.request.remote_ip))
-			raise APIException("rejected", text="You are not coming from a trusted address.")
-
-		if self.allow_cors:
-			self.set_header("Access-Control-Allow-Origin", "*")
-			self.set_header("Access-Control-Max-Age", "600")
-			self.set_header("Access-Control-Allow-Credentials", "false")
-
-		if not isinstance(self.locale, locale.RainwaveLocale):
-			self.locale = self.get_browser_locale()
-
-		if not self.return_name:
-			self.return_name = self.url[self.url.rfind("/")+1:] + "_result"
-		else:
-			self.return_name = self.return_name
-
-		if self.admin_required:
-			self.login_required = True
-
+	def setup_output(self):
 		if 'in_order' in self.request.arguments:
 			self._output = []
 			self._output_array = True
 		else:
 			self._output = {}
 
-		self.sid = fieldtypes.integer(self.get_cookie("r4_sid", None))
-		hostname = self.request.headers.get('Host', None)
-		if hostname:
-			hostname = unicode(hostname).split(":")[0]
-			if hostname in config.station_hostnames:
-				self.sid = config.station_hostnames[hostname]
-		sid_arg = fieldtypes.integer(self.get_argument("sid", None))
-		if sid_arg is not None:
-			self.sid = sid_arg
-		if self.sid is None and self.sid_required:
-			raise APIException("missing_station_id", http_code=400)
-
+	def arg_parse(self):
 		for field, field_attribs in self.__class__.fields.iteritems():
 			type_cast, required = field_attribs
 			if required and field not in self.request.arguments:
@@ -214,32 +185,16 @@ class RainwaveHandler(tornado.web.RequestHandler):
 				else:
 					self.cleaned_args[field] = parsed
 
+	def sid_check(self):
 		if self.sid is None and not self.sid_required:
 			self.sid = config.get("default_station")
 		if self.sid == 0 and self.allow_sid_zero:
 			pass
 		elif not self.sid in config.station_ids:
 			raise APIException("invalid_station_id", http_code=400)
-		if self.sid:
-			self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 
-		if self.phpbb_auth:
-			self.do_phpbb_auth()
-		else:
-			self.rainwave_auth()
-
-		if not self.user and self.auth_required:
-			raise APIException("auth_required", http_code=403)
-		elif not self.user and not self.auth_required:
-			self.user = User(1)
-			self.user.ip_address = self.request.remote_ip
-
-		self.user.refresh(self.sid)
-
-		if self.user and config.get("store_prefs"):
-			self.user.save_preferences(self.request.remote_ip, self.get_cookie("r4_prefs", None))
-
-		if self.login_required and (not self.user or self.user.is_anonymous()):
+	def permission_checks(self):
+		if (self.login_required or self.admin_required or self.dj_required) and (not self.user or self.user.is_anonymous()):
 			raise APIException("login_required", http_code=403)
 		if self.tunein_required and (not self.user or not self.user.is_tunedin()):
 			raise APIException("tunein_required", http_code=403)
@@ -269,6 +224,71 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if self.dj_preparation and not is_dj and not self.user.is_admin():
 			if not db.c.fetch_var("SELECT COUNT(*) FROM r4_schedule WHERE sched_used = 0 AND sched_dj_user_id = %s", (self.user.id,)):
 				raise APIException("dj_required", http_code=403)
+
+	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
+	def prepare(self):
+		if self.local_only and not self.request.remote_ip in config.get("api_trusted_ip_addresses"):
+			log.info("api", "Rejected %s request from %s, untrusted address." % (self.url, self.request.remote_ip))
+			raise APIException("rejected", text="You are not coming from a trusted address.")
+
+		if self.allow_cors:
+			self.set_header("Access-Control-Allow-Origin", "*")
+			self.set_header("Access-Control-Max-Age", "600")
+			self.set_header("Access-Control-Allow-Credentials", "false")
+
+		if not isinstance(self.locale, locale.RainwaveLocale):
+			self.locale = self.get_browser_locale()
+
+		if not self.return_name:
+			self.return_name = self.url[self.url.rfind("/")+1:] + "_result"
+		else:
+			self.return_name = self.return_name
+
+		self.setup_output()
+
+		self.sid = fieldtypes.integer(self.get_cookie("r4_sid", None))
+		hostname = self.request.headers.get('Host', None)
+		if hostname:
+			hostname = unicode(hostname).split(":")[0]
+			if hostname in config.station_hostnames:
+				self.sid = config.station_hostnames[hostname]
+		sid_arg = fieldtypes.integer(self.get_argument("sid", None))
+		if sid_arg is not None:
+			self.sid = sid_arg
+		if self.sid is None and self.sid_required:
+			raise APIException("missing_station_id", http_code=400)
+
+		self.arg_parse()
+
+		self.sid_check()
+
+		if self.sid:
+			self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
+
+		if self.phpbb_auth:
+			self.do_phpbb_auth()
+		else:
+			self.rainwave_auth()
+
+		if not self.user and self.auth_required:
+			raise APIException("auth_required", http_code=403)
+		elif not self.user and not self.auth_required:
+			self.user = User(1)
+			self.user.ip_address = self.request.remote_ip
+
+		self.user.refresh(self.sid)
+
+		if self.user and config.get("store_prefs"):
+			self.user.save_preferences(self.request.remote_ip, self.get_cookie("r4_prefs", None))
+
+		self.permission_checks()
+
+	# works without touching cookies or headers, primarily used for websocket requests
+	def prepare_standalone(self):
+		self.setup_output()
+		self.arg_parse()
+		self.sid_check()
+		self.permission_checks()
 
 	def do_phpbb_auth(self):
 		phpbb_cookie_name = config.get("phpbb_cookie_name")
@@ -424,7 +444,8 @@ class APIHandler(RainwaveHandler):
 				self.append("traceback", { "traceback": traceback.format_exception(kwargs['exc_info'][0], kwargs['exc_info'][1], kwargs['exc_info'][2]) })
 		else:
 			self.append("error", { "tl_key": "internal_error", "text": self.locale.translate("internal_error") } )
-		self.finish()
+		if not kwargs.has_key("no_finish") or not kwargs['no_finish']:
+			self.finish()
 
 def _html_write_error(self, status_code, **kwargs):
 	if kwargs.has_key("exc_info"):

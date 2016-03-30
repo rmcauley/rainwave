@@ -39,6 +39,7 @@ request_classes = [
 	(r"/favicon.ico", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "../static/favicon.ico") })
 ]
 testable_requests = []
+api_endpoints = {}
 
 class handle_url(object):
 	def __init__(self, url):
@@ -53,6 +54,12 @@ class handle_url(object):
 class handle_api_url(handle_url):
 	def __init__(self, url):
 		super(handle_api_url, self).__init__("/api4/" + url)
+
+	def __call__(self, klass):
+		global api_endpoints
+		if not klass.local_only:
+			api_endpoints[klass.url] = klass
+		return super(handle_api_url, self).__call__(self, klass)
 
 class handle_api_html_url(handle_url):
 	def __init__(self, url):
