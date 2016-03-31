@@ -30,10 +30,8 @@ class SessionBank(object):
 	def __init__(self):
 		super(SessionBank, self).__init__()
 		self.sessions = []
-		self.to_remove = []
 		self.websockets = []
-		self.user_update_timers = {}
-		self.ip_update_timers = {}
+		self.throttled = {}
 
 	def __iter__(self):
 		for item in self.sessions:
@@ -47,27 +45,19 @@ class SessionBank(object):
 			self.sessions.append(session)
 
 	def remove(self, session):
-		if session.is_websocket:
-			if session in self.websockets:
-				self.websockets.remove(session)
-		else:
-			self.to_remove.append(session)
-
-	def clean(self):
-		for session in self.to_remove:
-			if session in self.sessions:
-				self.sessions.remove(session)
-		self.to_remove[:] = []
+		if session in self.throttled:
+			tornado.ioloop.IOLoop.instance().remove_timeout(self.throttled[session])
+			del(self.throttled[session])
+		if session in self.websockets:
+			self.websockets.remove(session)
+		elif session in self.sessions:
+			self.sessions.remove(session)
 
 	def clear(self):
+		for timer in self.throttled.itervalues():
+			tornado.ioloop.IOLoop.instance().remove_timeout(timer)
 		self.sessions[:] = []
-		self.to_remove[:] = []
-		for user_id, timer in self.user_update_timers.iteritems():	#pylint: disable=W0612
-			tornado.ioloop.IOLoop.instance().remove_timeout(timer)
-		self.user_update_timers = {}
-		for ip_address, timer in self.ip_update_timers.iteritems():	#pylint: disable=W0612
-			tornado.ioloop.IOLoop.instance().remove_timeout(timer)
-		self.ip_update_timers = {}
+		self.throttled.clear()
 
 	def find_user(self, user_id):
 		toret = []
@@ -88,12 +78,10 @@ class SessionBank(object):
 			try:
 				session.keep_alive()
 			except Exception as e:
-				self.remove(session)
+				session.finish()
 				log.exception("sync", "Session failed keepalive.", e)
 
 	def update_all(self, sid):
-		self.clean()
-
 		session_count = 0
 		session_failed_count = 0
 		for session in self.sessions:
@@ -124,57 +112,44 @@ class SessionBank(object):
 						pass
 					log.exception("sync_update_dj", "Session failed to be updated during update_dj.", e)
 
+	# this function is only called when the user's tune_in status changes
+	# though it does send an update for the whole user() object if the situation
+	# is correct
+	def _do_user_update(self, session, updated_by_ip):
+		# clear() might wipe out the timeouts for a bigger update (that includes user update anyway!)
+		# don't bother updating again if that's already happened
+		if not session in self.throttled:
+			return
+		del(self.throttled[session])
+
+		try:
+			potential_mixup_warn = updated_by_ip and not session.user.is_anonymous() and not session.user.is_tunedin()
+			session.refresh_user()
+			if potential_mixup_warn and not session.user.is_tunedin():
+				log.debug("sync_update_ip", "Warning logged in user of potential M3U mixup at IP %s" % session.request.remote_ip)
+				session.login_mixup_warn()
+			else:
+				session.update_user(already_refreshed=True)
+		except Exception as e:
+			log.exception("sync", "Session failed to be updated during update_user.", e)
+			try:
+				session.finish()
+			except Exception:
+				log.exception("sync", "Session failed finish() during update_user.", e)
+
+	def _throttle_session(self, session, updated_by_ip=False):
+		if not session in self.throttled:
+			self.throttled[session] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=2), lambda: self._do_user_update(session, updated_by_ip))
+
 	def update_user(self, user_id):
 		# throttle rapid user updates - usually when a user does something like
 		# switch relays on their media player this can happen.
-		if not user_id in self.user_update_timers or not self.user_update_timers[user_id]:
-			self.user_update_timers[user_id] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=2), lambda: self._do_user_update(user_id))
-
-	def _do_user_update(self, user_id):
-		# clear() might wipe out the timeouts for a bigger update (that includes user update anyway!)
-		# don't bother updating again if that's already happened
-		if not user_id in self.user_update_timers or not self.user_update_timers[user_id]:
-			return
-
-		del self.user_update_timers[user_id]
 		for session in self.find_user(user_id):
-			try:
-				session.update_user()
-				log.debug("sync_update_user", "Updated user %s session." % session.user.id)
-			except Exception as e:
-				try:
-					session.finish()
-				except:
-					pass
-				log.exception("sync_update_user", "Session failed to be updated during update_user.", e)
-		self.clean()
+			self._throttle_session(session)
 
 	def update_ip_address(self, ip_address):
-		if not ip_address in self.ip_update_timers or not self.ip_update_timers[ip_address]:
-			self.ip_update_timers[ip_address] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=2), lambda: self._do_ip_update(ip_address))
-
-	def _do_ip_update(self, ip_address):
-		if not ip_address in self.ip_update_timers or not self.ip_update_timers[ip_address]:
-			return
-
-		del self.ip_update_timers[ip_address]
 		for session in self.find_ip(ip_address):
-			try:
-				if session.user.is_anonymous():
-					session.update_user()
-				else:
-					session.user.refresh(session.sid)
-					if not session.user.is_tunedin():
-						log.debug("sync_update_ip", "Warning logged in user of potential M3U mixup at IP %s" % session.request.remote_ip)
-						session.login_mixup_warn()
-			except Exception as e:
-				log.exception("sync", "Session failed to be updated during update_user.", e)
-				self.remove(session)
-				try:
-					session.finish()
-				except Exception:
-					log.exception("sync", "Session failed finish() during update_user.", e)
-		self.clean()
+			self._throttle_session(session, True)
 
 sessions = {}
 
@@ -328,11 +303,14 @@ class Sync(APIHandler):
 			sessions[self.sid].remove(self)
 		super(Sync, self).on_connection_close(*args, **kwargs)
 
-	def on_finish(self, *args, **kwargs):
+	def finish(self, *args, **kwargs):
 		if self.sid:
 			global sessions
 			sessions[self.sid].remove(self)
-		super(Sync, self).on_finish(*args, **kwargs)
+		super(Sync, self).finish(*args, **kwargs)
+
+	def refresh_user(self):
+		self.user.refresh(self.sid)
 
 	def update(self):
 		# Overwrite this value since who knows how long we've spent idling
@@ -347,13 +325,14 @@ class Sync(APIHandler):
 		api_requests.info.attach_info_to_request(self)
 		self.finish()
 
-	def update_user(self):
+	def update_user(self, already_refreshed=False):
 		self._startclock = timestamp()
 
 		if not cache.get_station(self.sid, "backend_ok"):
 			raise APIException("station_offline")
 
-		self.user.refresh(self.sid)
+		if not already_refreshed:
+			self.user.refresh(self.sid)
 		if "requests_paused" in self.user.data:
 			del self.user.data['requests_paused']
 		self.append("user", self.user.to_private_dict())
@@ -368,9 +347,6 @@ class FakeRequestObject(object):
 		self.arguments = arguments
 
 # TODO: Special payload updates for live voting/etc
-# TODO: Redo throttling completely to reduce complexity - use a dict and sessions as keys!
-# TODO: Make HTTP sessions remove themselves on finish to clean themselves up
-# TODO: Stop using to_remove
 
 @handle_api_url("websocket/(\d+)")
 class WSHandler(tornado.websocket.WebSocketHandler):
@@ -389,9 +365,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
 		if not isinstance(self.locale, locale.RainwaveLocale):
 			self.locale = get_browser_locale(self)
-
-		global sessions
-		sessions[self.sid].append(self)
 
 		self.authorized = False
 
@@ -422,7 +395,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		message = json.dumps(obj)
 		super(WSHandler, self).write_message(message, *args, **kwargs)
 
-	def _refresh_user(self):
+	def refresh_user(self):
 		self.user.refresh(self.sid)
 		# TODO: DJ permission checks
 
@@ -442,38 +415,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			return
 
 		if message['action'] == "auth":
-			if not "user_id" in message or not message['user_id']:
-				self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="user_id") } })
-			if not isinstance(message['user_id'], numbers.Number):
-				self.write_message({ "wserror": { "tl_key": "invalid_argument", "text": self.locale.translate("invalid_argument", argument="user_id") } })
-			if not "key" in message or not message['key']:
-				self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="key") } })
-
-			if not self._auth(message['user_id'], message['key']):
-				self.write_message({ "wserror": { "tl_key": "auth_failed", "text": self.locale.translate("auth_failed") } })
-				self.close()
-				return
-
-			self._refresh_user()
-			# no need to send the user's data to the user as that would have come with bootstrap
-			# and will come with each synchronization of the schedule anyway
-			self.write_message({ "wsok": True })
-			# since this will be the first action in any websocket interaction though,
-			# it'd be a good time to send a station offline message.
-			if not cache.get_station(self.sid, "backend_ok"):
-				# shamelessly fake an error.
-				self.write_message({ "sync_result": { "tl_key": "station_offline", "text": self.locale.translate("station_offline") } })
+			self._do_auth(message)
 			return
-
-		# TODO: check for out of date scheduling data here
-
-		# RPC style kind of code was deemed a bit gross, so no separate "arguments" argument!
-		# if not message['action'] in api_endpoints:
-		# 	self.write_message({ "wserror": { "tl_key": "invalid_argument", "text": self.locale.translate("invalid_argument", argument="action") } })
-
-		# if not "arguments" in message or not message['arguments']:
-		# 	message['arguments'] = {}
-		# message['arguments']['sid'] = message['arguments']['sid'] or self.sid
 
 		endpoint = api_endpoints[message['action']]()
 		try:
@@ -488,7 +431,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		finally:
 			self.write_message(endpoint._output) 	#pylint: disable=W0212
 
-	def update_user(self):
+	def update_user(self, already_refreshed=False):
 		try:
 			startclock = timestamp()
 			handler = APIHandler()
@@ -499,7 +442,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			if not cache.get_station(self.sid, "backend_ok"):
 				raise APIException("station_offline")
 
-			self._refresh_user()
+			if not already_refreshed:
+				self.refresh_user()
 			api_requests.info.attach_info_to_request(handler)
 			if self.user.is_dj():
 				api_requests.info.attach_dj_info_to_request(handler)
@@ -512,3 +456,29 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
 	def login_mixup_warn(self):
 		self.write_message({ "sync_result": { "tl_key": "redownload_m3u", "text": self.locale.translate("redownload_m3u") } })
+
+	def _do_auth(self, message):
+		if not "user_id" in message or not message['user_id']:
+			self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="user_id") } })
+		if not isinstance(message['user_id'], numbers.Number):
+			self.write_message({ "wserror": { "tl_key": "invalid_argument", "text": self.locale.translate("invalid_argument", argument="user_id") } })
+		if not "key" in message or not message['key']:
+			self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="key") } })
+
+		if not self._auth(message['user_id'], message['key']):
+			self.write_message({ "wserror": { "tl_key": "auth_failed", "text": self.locale.translate("auth_failed") } })
+			self.close()
+			return
+
+		global sessions
+		sessions[self.sid].append(self)
+
+		self.refresh_user()
+		# no need to send the user's data to the user as that would have come with bootstrap
+		# and will come with each synchronization of the schedule anyway
+		self.write_message({ "wsok": True })
+		# since this will be the first action in any websocket interaction though,
+		# it'd be a good time to send a station offline message.
+		if not cache.get_station(self.sid, "backend_ok"):
+			# shamelessly fake an error.
+			self.write_message({ "sync_result": { "tl_key": "station_offline", "text": self.locale.translate("station_offline") } })
