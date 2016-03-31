@@ -31,6 +31,7 @@ class SessionBank(object):
 		super(SessionBank, self).__init__()
 		self.sessions = []
 		self.to_remove = []
+		self.websockets = []
 		self.user_update_timers = {}
 		self.ip_update_timers = {}
 
@@ -39,14 +40,22 @@ class SessionBank(object):
 			yield item
 
 	def append(self, session):
-		self.sessions.append(session)
+		if session.is_websocket:
+			if not session in self.websockets:
+				self.websockets.append(session)
+		elif not session in self.sessions:
+			self.sessions.append(session)
 
 	def remove(self, session):
-		self.to_remove.append(session)
+		if session.is_websocket:
+			if session in self.websockets:
+				self.websockets.remove(session)
+		else:
+			self.to_remove.append(session)
 
 	def clean(self):
 		for session in self.to_remove:
-			if self.sessions.count(session) > 0:
+			if session in self.sessions:
 				self.sessions.remove(session)
 		self.to_remove[:] = []
 
@@ -62,20 +71,20 @@ class SessionBank(object):
 
 	def find_user(self, user_id):
 		toret = []
-		for session in self.sessions:
+		for session in self.sessions + self.websockets:
 			if session.user.id == user_id:
 				toret.append(session)
 		return toret
 
 	def find_ip(self, ip_address):
 		toret = []
-		for session in self.sessions:
+		for session in self.sessions + self.websockets:
 			if session.request.remote_ip == ip_address:
 				toret.append(session)
 		return toret
 
 	def keep_alive(self):
-		for session in self.sessions:
+		for session in self.sessions + self.websockets:
 			try:
 				session.keep_alive()
 			except Exception as e:
@@ -103,27 +112,27 @@ class SessionBank(object):
 		self.clear()
 
 	def update_dj(self, sid):
-		# TODO: redo new bank for websockets
-		pass
-		# for session in self.sessions:
-		# 	if session.dj:
-		# 		try:
-		# 			session.update_dj_only()
-		# 			log.debug("sync_update_dj", "Updated user %s session." % session.user.id)
-		# 		except Exception as e:
-		# 			try:
-		# 				session.finish()
-		# 			except:
-		# 				pass
-		# 			log.exception("sync_update_dj", "Session failed to be updated during update_dj.", e)
+		for session in self.websockets:
+			if session.user.is_dj():
+				try:
+					session.update_dj_only()
+					log.debug("sync_update_dj", "Updated user %s session." % session.user.id)
+				except Exception as e:
+					try:
+						session.finish()
+					except:
+						pass
+					log.exception("sync_update_dj", "Session failed to be updated during update_dj.", e)
 
 	def update_user(self, user_id):
+		# throttle rapid user updates - usually when a user does something like
+		# switch relays on their media player this can happen.
 		if not user_id in self.user_update_timers or not self.user_update_timers[user_id]:
 			self.user_update_timers[user_id] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=2), lambda: self._do_user_update(user_id))
 
 	def _do_user_update(self, user_id):
-		# clear() might wipe out the timeouts - let's make sure we don't waste resources
-		# doing unnecessary updates
+		# clear() might wipe out the timeouts for a bigger update (that includes user update anyway!)
+		# don't bother updating again if that's already happened
 		if not user_id in self.user_update_timers or not self.user_update_timers[user_id]:
 			return
 
@@ -150,26 +159,20 @@ class SessionBank(object):
 
 		del self.ip_update_timers[ip_address]
 		for session in self.find_ip(ip_address):
-			do_finish = False
 			try:
 				if session.user.is_anonymous():
 					session.update_user()
-					do_finish = True
 				else:
 					session.user.refresh(session.sid)
 					if not session.user.is_tunedin():
 						log.debug("sync_update_ip", "Warning logged in user of potential M3U mixup at IP %s" % session.request.remote_ip)
-						session.append("redownload_m3u", { "tl_key": "redownload_m3u", "text": session.locale.translate("redownload_m3u") })
-						do_finish = True
+						session.login_mixup_warn()
 			except Exception as e:
-				do_finish = True
 				log.exception("sync", "Session failed to be updated during update_user.", e)
-			finally:
+				self.remove(session)
 				try:
-					if do_finish:
-						session.finish()
-						self.remove(session)
-				except Exception as e:
+					session.finish()
+				except Exception:
 					log.exception("sync", "Session failed finish() during update_user.", e)
 		self.clean()
 
@@ -356,12 +359,18 @@ class Sync(APIHandler):
 		self.append("user", self.user.to_private_dict())
 		self.finish()
 
+	def login_mixup_warn(self):
+		self.append("redownload_m3u", { "tl_key": "redownload_m3u", "text": self.locale.translate("redownload_m3u") })
+		self.finish()
+
 class FakeRequestObject(object):
 	def __initialize__(self, arguments):
 		self.arguments = arguments
 
-# TODO: I think I need a different connection bank for websockets.
 # TODO: Special payload updates for live voting/etc
+# TODO: Redo throttling completely to reduce complexity - use a dict and sessions as keys!
+# TODO: Make HTTP sessions remove themselves on finish to clean themselves up
+# TODO: Stop using to_remove
 
 @handle_api_url("websocket/(\d+)")
 class WSHandler(tornado.websocket.WebSocketHandler):
@@ -371,18 +380,33 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		super(WSHandler, self).open()
 		self.sid = args[0]
 
+		if not self.sid:
+			self.write_message({ "wserror": { "tl_key": "missing_station_id", "text": self.locale.translate("missing_station_id") } })
+			return
+		if not self.sid in config.station_ids:
+			self.write_message({ "wserror": { "tl_key": "invalid_station_id", "text": self.locale.translate("invalid_station_id") } })
+			return
+
 		if not isinstance(self.locale, locale.RainwaveLocale):
 			self.locale = get_browser_locale(self)
 
+		global sessions
+		sessions[self.sid].append(self)
+
 		self.authorized = False
+
+	# overwrites a not supported method and redirects it to self.close
+	# allows websocket sessions to be called exactly the same as HTTP handlers
+	# in the session bank class
+	def finish(self):		#pylint: disable=W0221
+		self.close()
 
 	def keep_alive(self):
 		self.ping(timestamp())
 
 	def on_close(self):
-		if self.sid:
-			global sessions
-			sessions[self.sid].remove(self)
+		global sessions
+		sessions[self.sid].remove(self)
 		super(WSHandler, self).on_close()
 
 	def _auth(self, user_id, key):
@@ -441,19 +465,20 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 				self.write_message({ "sync_result": { "tl_key": "station_offline", "text": self.locale.translate("station_offline") } })
 			return
 
-		# TODO: check for out of date scheduling data
+		# TODO: check for out of date scheduling data here
 
-		if not message['action'] in api_endpoints:
-			self.write_message({ "wserror": { "tl_key": "invalid_argument", "text": self.locale.translate("invalid_argument", argument="action") } })
+		# RPC style kind of code was deemed a bit gross, so no separate "arguments" argument!
+		# if not message['action'] in api_endpoints:
+		# 	self.write_message({ "wserror": { "tl_key": "invalid_argument", "text": self.locale.translate("invalid_argument", argument="action") } })
 
-		if not "arguments" in message or not message['arguments']:
-			message['arguments'] = {}
-		message['arguments']['sid'] = message['arguments']['sid'] or self.sid
+		# if not "arguments" in message or not message['arguments']:
+		# 	message['arguments'] = {}
+		# message['arguments']['sid'] = message['arguments']['sid'] or self.sid
 
 		endpoint = api_endpoints[message['action']]()
 		try:
 			startclock = timestamp()
-			endpoint.request = FakeRequestObject(message['arguments'])
+			endpoint.request = FakeRequestObject(message)
 			endpoint.user = self.user
 			endpoint.prepare_standalone()
 			endpoint.post()
@@ -484,3 +509,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			handler.write_error(500, exc_info=sys.exc_info(), no_finish=True)
 		finally:
 			self.write_message(handler._output) 	#pylint: disable=W0212
+
+	def login_mixup_warn(self):
+		self.write_message({ "sync_result": { "tl_key": "redownload_m3u", "text": self.locale.translate("redownload_m3u") } })
