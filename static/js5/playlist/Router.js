@@ -335,7 +335,7 @@ var Router = function() {
 
 			*/
 
-			if (!tabs[typ] || (!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow) {
+			if (!tabs[typ] || (!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.isSlow) {
 				// console.log("Clearing detail.");
 				ready_to_render = false;
 				rendered_type = false;
@@ -405,7 +405,7 @@ var Router = function() {
 
 	var force_close_detail = false;
 	self.open_route = function(typ, id) {
-		if (lists[typ] && ((!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.is_slow)) {
+		if (lists[typ] && ((!document.body.classList.contains("playlist") && !lists[typ].loaded) || API.isSlow)) {
 			ready_to_render = false;
 		}
 

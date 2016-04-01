@@ -91,20 +91,6 @@ var Clock = function() {
 			self.pageclock_bar_function(page_title_end, self.now);
 		}
 
-		// what to do if things appear broken
-		// if the station isn't on a DJ pause, immediately restart the connection
-		// this works for flaky routers/ISPs
-		if (!API.paused && force_sync_ok && (page_title_end - self.now < -10)) {
-			force_sync_ok = false;
-			API.force_sync();
-			return;
-		}
-		// check every 3 minutes regardless as a backup
-		else if (!force_sync_ok && (Math.abs(page_title_end - self.now) % 20 === 0)) {
-			API.force_sync();
-			return;
-		}
-
 		if (MOBILE || Sizing.simple && (!Prefs.get("t_tl") || !page_title || !User.tuned_in)) {
 			if (document.title != original_title) document.title = original_title;
 			return;
