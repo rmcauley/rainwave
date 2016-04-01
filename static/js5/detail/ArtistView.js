@@ -17,6 +17,7 @@ var ArtistView = function(json) {
 			albums_sid = [];
 			for (album_id in json.all_songs[sid]) {
 				a = json.all_songs[sid][album_id][0].albums[0];
+				a.sid = sid;
 				if (sid !== User.sid) {
 					a.name = $l("album_on_station", { "station": $l("station_name_" + sid), "album": a.name });
 				}
@@ -42,7 +43,7 @@ var ArtistView = function(json) {
 			if (albums[i].songs[j].requestable) {
 				Requests.make_clickable(albums[i].songs[j].$t.title, albums[i].songs[j].id);
 			}
-			SongsTableDetail(albums[i].songs[j], ((i == albums.length - 1) && (j > albums[i].songs.length - 4)));
+			SongsTableDetail(albums[i].songs[j], ((i == albums.length - 1) && (j > albums[i].songs.length - 4)), albums[i].sid);
 		}
 	}
 

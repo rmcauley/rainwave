@@ -57,6 +57,7 @@ var Song = function(self, parent_event) {
 			self.register_vote,
 			function(json) {
 				self.el.classList.add("voting_error");
+				self.el.classList.remove("voting_clicked");
 				setTimeout(function() { self.el.classList.remove("voting_error"); }, 2000);
 			});
 	};
