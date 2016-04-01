@@ -62,7 +62,7 @@ cp rainwave/etc/rainwave_reference.conf rainwave/etc/$USER.conf
 easy_install pip
 pip install -r requirements.txt
 ```
-* Copy etc/rainwave_reference.conf to etc/[your username].conf
+* Copy `etc/rainwave_reference.conf` to `etc/[your username].conf`
 
 ## Postgres Setup For Testing/Development
 
@@ -78,7 +78,7 @@ CREATE DATABASE rainwave WITH OWNER rainwave;
 
 ## Configure Rainwave
 
-Edit your configuration file in the Rainwave etc/, and follow the instructions
+Edit your configuration file in the Rainwave `etc/`, and follow the instructions
 within to setup your install.  Please read through the entire config, as every
 option is important to the setup of your station(s).
 
@@ -132,7 +132,7 @@ to emulate being logged in, open `/api4/test/login_tuned_in/1`.
 Before running install.py:
 
 With an existing phpBB install already ready, copy your Rainwave
-configuration file to /etc/rainwave.conf and tune for production.
+configuration file to `/etc/rainwave.conf` and tune for production.
 e.g. Turn off development modes, turn down logging, increase
 number of processes to the number of CPUs you
 have.
@@ -175,11 +175,11 @@ offline. ([GitHub Issue](https://github.com/rmcauley/rainwave/issues/95))
 
 For user tune in recognition to work, you have to use Icecast's
 user authentication system.  Sample Icecast configurations are
-included in Rainwave's etc/ directory.
+included in Rainwave's `etc/` directory.
 
 ### LiquidSoap Configuration
 
-A sample LiquidSoap configuration is included in etc/.
+A sample LiquidSoap configuration is included in `etc/`.
 
 ## Developing The Front-End
 
@@ -188,24 +188,23 @@ Rainwave!  Open it up and start poking around with developer tools!
 
 To edit the site:
 
-* HTML files for the index and admin panels can be found in /templates.
-* HTML templates for the main site can be found in static/templates5.
-* CSS files are in /static/style5 and the entry point is r5.scss.
-* Image files are in /static/images4.
-* JS files are in /static/js5:
-  * Execution starts from main.js.
+* HTML files for the index and admin panels can be found in `templates/`.
+* HTML templates for the main site can be found in `static/templates5/`.
+* CSS files are in `static/style5` and the entry point is `r5.scss`.
+* Image files are in `static/images4`.
+* JS files are in `static/js5`:
+  * Execution starts from `main.js`.
   * No libraries or frameworks are used
-  * There are some helper functions in element.js and formatting.js
 
-Rainwave rebuilds CSS on each page load of /beta when
-development mode is on, and /beta serves the Javascript without
-minification or bundling.  No need for npm or any package managers
+Rainwave rebuilds CSS on each page load of `/beta` when
+development mode is on, and `/beta` serves the Javascript without
+minification or bundling.  No need for npm, package managers,
 or watchers.
 
 ## Contact
 
 You can get help for deployment and development through the main
-developer, Rob, on the main Rainwave site forums and chat channel:
+developer, Rob, on the Rainwave forums and/or chat channel:
 
 * http://rainwave.cc/forums/
 * irc://irc.synirc.net://rainwave
