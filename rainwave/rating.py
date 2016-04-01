@@ -21,6 +21,7 @@ def rating_calculator(ratings):
 			if row['rating'] >= tier['threshold']:
 				tier_points = row['count'] * tier['points']
 		points += tier_points
+	points = min(potential_points, max(0, points))
 
 	return (points, potential_points)
 

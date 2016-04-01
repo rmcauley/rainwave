@@ -61,6 +61,7 @@ var Rating = function() {
 				ratings[i].classList.add("rating_user");
 				ratings[i].classList.remove("rating_global");
 				ratings[i].rating_start(json.rating_user);
+				ratings[i]._rating_user = json.rating_user;
 				if (ratings[i].lastChild) {
 					ratings[i].lastChild.textContent = Formatting.rating(json.rating_user);
 				}
@@ -72,6 +73,7 @@ var Rating = function() {
 				ratings[i].classList.remove("rating_user");
 				ratings[i].classList.add("rating_global");
 				ratings[i].rating_start(json.rating);
+				ratings[i]._rating_user = null;
 				if (ratings[i].lastChild) {
 					ratings[i].lastChild.textContent = "";
 				}
@@ -83,6 +85,7 @@ var Rating = function() {
 				ratings[i].classList.remove("rating_user");
 				ratings[i].classList.add("rating_global");
 				ratings[i].rating_start(0);
+				ratings[i]._rating_user = null;
 				if (ratings[i].lastChild) {
 					ratings[i].lastChild.textContent = "";
 				}
@@ -457,6 +460,10 @@ var Rating = function() {
 		}
 
 		var on_mouse_over = function(evt) {
+			if (json.$t.rating._rating_user) {
+				json.rating_user = json.$t.rating._rating_user;
+				json.$t.rating._rating_user = null;
+			}
 			if (!json.rating_allowed && !User.rate_anything) {
 				if (json.$t.rating.classList.contains("ratable")) {
 					json.$t.rating.classList.remove("ratable");

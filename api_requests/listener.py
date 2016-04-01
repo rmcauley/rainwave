@@ -34,7 +34,7 @@ class ListenerDetailRequest(APIHandler):
 			"FROM r4_album_ratings "
 				"JOIN r4_album_sid USING (album_id, sid) "
 				"JOIN r4_albums USING (album_id) "
-			"WHERE user_id = %s AND r4_album_ratings.sid = %s AND album_exists = TRUE AND r4_album_sid.album_song_count >= 4 "
+			"WHERE user_id = %s AND r4_album_ratings.sid = %s AND album_exists = TRUE AND r4_album_sid.album_song_count >= 4 AND r4_album_ratings.album_rating_user > 0 "
 			"ORDER BY album_rating_user DESC NULLS LAST, r4_album_sid.album_song_count DESC "
 			"LIMIT 10",
 			(self.get_argument("id"), self.sid)

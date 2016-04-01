@@ -75,7 +75,7 @@ div.rating {
 		@include transform(translateX(0px));
 
 		&.listener_number {
-			color: $rating_hover_text;
+			color: $text;
 		}
 
 		&.rating_confirm {
