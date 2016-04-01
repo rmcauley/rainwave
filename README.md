@@ -82,13 +82,13 @@ CREATE DATABASE rainwave WITH OWNER rainwave;
 ## Configure Rainwave
 
 Edit your configuration file in the Rainwave `etc/`, and follow the instructions
-within to setup your install.  Please read through the entire config, as every
-option is important to the setup of your station(s).
+within to setup your install.  Please read through the entire config carefully.
+Some options are very important.
 
 Tips:
 
 * Until you're ready to deploy a production version, it's best to leave development mode on and keep Rainwave single-processed.
-* Start at Station ID 1 - Station 0 is not allowed.
+* Do not create a station with ID 0.
 
 ## First Start and Test
 
