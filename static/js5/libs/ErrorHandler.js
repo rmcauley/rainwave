@@ -77,7 +77,7 @@
 		if (!json) return;
 		var err = document.createElement("div");
 		err.className = "error_tooltip";
-		err.textContent = json.text;
+		err.textContent = json.text || $l(json.tl_key);
 
 		var x = Mouse.x - 5;
 		var y = Mouse.y - 40 - 2;

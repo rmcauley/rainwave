@@ -409,11 +409,21 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			self._do_auth(message)
 			return
 
+		if message['action'] == "check_sched_current_id":
+			self._do_sched_check(message)
+			return
+
+		if not message['action'] in api_endpoints:
+			self.write_message({ "wserror": { "tl_key": "websocket_404", "text": self.locale.translate("websocket_404") } })
+			return
+
 		endpoint = api_endpoints[message['action']]()
 		try:
 			startclock = timestamp()
 			endpoint.request = FakeRequestObject(message)
 			endpoint.user = self.user
+			if "message_id" in message and isinstance(message['message_id'], numbers.Number):
+				endpoint.append("message_id", message.message_id)
 			endpoint.prepare_standalone()
 			endpoint.post()
 			endpoint.append("api_info", { "exectime": timestamp() - startclock, "time": round(timestamp()) })
@@ -477,3 +487,16 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		if not cache.get_station(self.sid, "backend_ok"):
 			# shamelessly fake an error.
 			self.write_message({ "sync_result": { "tl_key": "station_offline", "text": self.locale.translate("station_offline") } })
+
+	def _do_sched_check(self, message):
+		if not "sched_id" in message or not message['sched_id']:
+			self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="sched_id") } })
+			return
+		if not isinstance(message['sched_id'], numbers.Number):
+			self.write_message({ "wserror": { "tl_key": "invalid_argument", "text": self.locale.translate("invalid_argument", argument="sched_id") } })
+
+		if not cache.get_station(self.sid, "backend_ok"):
+			self.write_message({ "sync_result": { "tl_key": "station_offline", "text": self.locale.translate("station_offline") } })
+
+		if cache.get_station(self.sid, "sched_current_dict") and (cache.get_station(self.sid, "sched_current_dict")['id'] != message['sched_id']):
+			self.update_user()

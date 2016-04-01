@@ -74,5 +74,6 @@
 
    "__comment__"          : "WebSocket/API related messages, does not need to be translated",
 
-   "invalid_json"                                    : "Invalid JSON or WebSocket message."
+   "invalid_json"                                    : "Invalid JSON or WebSocket message.",
+   "websocket_404"                                   : "Action does not exist."
 }

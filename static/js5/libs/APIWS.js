@@ -3,45 +3,24 @@ var RainwaveAPI = function() {
 
 	// Setup  ************************************************************************************************
 
+	var self = {
+		ok: false,
+		isSlow: false
+	};
+
 	var _sid, _url, _userID, _apiKey;
-	var userIsDJ;
+	var userIsDJ, currentScheduleID, isOK, hidden, visibilityChange;
 	var socket, socketStaysClosed, socketIsBusy;
 	var socketErrorCount = 0;
-	var getQueue = [];
-	var getID = 0;
-
-	var self = {};
-	self.ok = false;
-
+	var requestID = 0;
+	var requestQueue = [];
 	var callbacks = {};
-	var known_event_id;
+	var noop = function() {};
 
-	self.isSlow = false;
-	var netLatencies = [];
-	var drawLatencies = [];
+	var netLatencies, drawLatencies = [];
 	var slowNetThreshold = 200;
 	var slowDrawThreshold = 400;
 	var measuredRequests = [ "album", "artist", "group" ];
-
-	var hidden, visibilityChange;
-	if (typeof document.hidden !== "undefined") {
-		hidden = "hidden";
-		visibilityChange = "visibilitychange";
-	}
-	else if (typeof document.mozHidden !== "undefined") {
-		hidden = "mozHidden";
-		visibilityChange = "mozvisibilitychange";
-	}
-	else if (typeof document.msHidden !== "undefined") {
-		hidden = "msHidden";
-		visibilityChange = "msvisibilitychange";
-	}
-	else if (typeof document.webkitHidden !== "undefined") {
-		hidden = "webkitHidden";
-		visibilityChange = "webkitvisibilitychange";
-	}
-
-	var noop = function() {};
 
 	// Module Init  ******************************************************************************************
 
@@ -51,14 +30,26 @@ var RainwaveAPI = function() {
 		_userID = userID;
 		_apiKey = apiKey;
 
-		self.addCallback("sched_current", function(json) { known_event_id = json.id; });
-		self.addCallback("wsok", function() { self.ok = true; });
+		self.addCallback("sched_current", function(json) {
+			currentScheduleID = json.id;
+		});
+		self.addCallback("wsok", function() {
+			self.ok = true;
+			isOK = true;
+			nextRequest();
+
+			if (currentScheduleID) {
+				socket.send(JSON.stringify({
+					action: "check_sched_current_id",
+					sched_id: currentScheduleID
+				}));
+			}
+		});
 
 		if (data) {
 			userIsDJ = data.user && data.user.dj;
-
 			if (data.api_info) {
-				// Make sure the clock gets initialized first
+				// This will initialize any clocks first, since this contains the server time
 				performCallbacks({ "api_info": data.api_info });
 			}
 		}
@@ -71,13 +62,19 @@ var RainwaveAPI = function() {
 			self.isSlow = ((navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1));
 		}
 
+		if (data) {
+			performCallbacks(data);
+		}
+
 		initSocket();
 	};
 
 	// Socket Functions **************************************************************************************
 
 	var initSocket = function() {
-		// TODO: check for socket already open
+		if (socket && (socket.readyState === WebSocket.OPEN)) {
+			return;
+		}
 		socket = new WebSocket("ws://" + _url + "/websocket/" + _sid);
 		socket.addEventListener("open", function() {
 			socket.send(JSON.stringify({
@@ -85,17 +82,16 @@ var RainwaveAPI = function() {
 				user_id: _userID,
 				key: _apiKey
 			}));
-			// TODO: add callback for wsok and request off known_last_event
 		});
 		socket.addEventListener("message", onMessage);
 		socket.addEventListener("close", onClose);
 		socket.addEventListener("error", onError);
-		// we don't use the connecting event
-		// socket.addEventListener("connecting", onConnecting);
 	};
 
 	var closeSocket = function() {
-		// TODO: check if socket is already closed
+		if (!socket || (socket.readyState === WebSocket.CLOSING) || (socket.readyState === WebSocket.CLOSED)) {
+			return;
+		}
 		socket.close();
 	};
 
@@ -108,7 +104,7 @@ var RainwaveAPI = function() {
 
 	var onError = function(event) {
 		if (socketErrorCount > 3) {
-			handleInternalError("sync_retrying");
+			onError({ "wserror": { "tl_key": "sync_retrying" } });
 		}
 		socketErrorCount++;
 	};
@@ -116,10 +112,7 @@ var RainwaveAPI = function() {
 	// Error Handling ****************************************************************************************
 
 	self.onError = noop;
-
-	// function() {
-	// 	// ErrorHandler.permanent_error(ErrorHandler.make_error("sync_retrying", 408));
-	// };
+	self.onErrorRemove = noop;
 
 	self.forceReconnect = function() {
 		if (socketStaysClosed) {
@@ -128,19 +121,16 @@ var RainwaveAPI = function() {
 		closeSocket();
 	};
 
-	var handleInternalError = function(textKey) {
-		self.onError(textKey);
-	};
-
-	var handleAPIError = function(apiObject) {
-		// TODO (if tl_key in apiObject onError(tl_key))
-	};
-
-	var removeAPIError = function(apiObject) {
-		// TODO
-	};
-
 	// Visibility Changing ***********************************************************************************
+
+	if (typeof document.hidden !== "undefined") {
+		hidden = "hidden";
+		visibilityChange = "visibilitychange";
+	}
+	else if (typeof document.webkitHidden !== "undefined") {
+		hidden = "webkitHidden";
+		visibilityChange = "webkitvisibilitychange";
+	}
 
 	var onVisibilityChange = function() {
 		if (document[hidden]) {
@@ -156,31 +146,27 @@ var RainwaveAPI = function() {
 	// Data From API *****************************************************************************************
 
 	var solveLatency = function(asyncRequest, latencies, threshold) {
-		var slow = false;
-		var avg = 0;
+		var i, avg = 0;
 		if (measuredRequests.indexOf(asyncRequest.action) !== -1) {
 			latencies.push(new Date() - asyncRequest.start);
 			while (latencies.length > 10) {
 				latencies.shift();
 			}
-			for (var i = 0; i < latencies.length; i++) {
+			for (i = 0; i < latencies.length; i++) {
 				avg += latencies[i];
 			}
 			avg = avg / latencies.length;
-			if (avg > threshold) {
-				slow = true;
-			}
+			self.slow = avg > threshold;
 		}
-		self.isSlow = slow;
 	};
 
 	var onMessage = function(message) {
 		socketErrorCount = 0;
 
 		var asyncRequest, i;
-		for (i = 0; i < getQueue.length; i++) {
-			if (getQueue[i].message.message_id === message.message_id) {
-				asyncRequest = getQueue[i];
+		for (i = 0; i < requestQueue.length; i++) {
+			if (requestQueue[i].message.message_id === message.message_id) {
+				asyncRequest = requestQueue[i];
 				asyncRequest.success = true;
 				solveLatency(asyncRequest, netLatencies, slowNetThreshold);
 				break;
@@ -214,7 +200,9 @@ var RainwaveAPI = function() {
 			for (i in json) {
 				if (("success" in json[i]) && !json[i].success) {
 					asyncRequest.success = false;
-					asyncRequest.onError(json[i]);
+					if (!asyncRequest.onError(json[i])) {
+						self.onError(json[i]);
+					}
 				}
 			}
 			asyncRequest.drawStart = new Date();
@@ -228,20 +216,20 @@ var RainwaveAPI = function() {
 		}
 
 		if (("sync_result" in json) && (json.sync_result.tl_key == "station_offline")) {
-			handleAPIError(json.sync_result);
+			self.onError(json.sync_result);
 		}
 		else {
-			removeAPIError({ "tl_key": "station_offline" });
+			self.onErrorRemove("station_offline");
 		}
 
 		performCallbacks(json);
-		performCallbacks({ "_SYNC_COMPLETE": true }); // TODO: Switch to NOT use this!  No wonder shit breaks!
-		if ("sched_current" in json) {
-			performCallbacks({ "_SYNC_SCHEDULE_COMPLETE": true });
-		}
 
 		if (alreadyVoted) {
 			performCallbacks({ "already_voted": alreadyVoted });
+		}
+
+		if ("sched_current" in json) {
+			performCallbacks({ "_SYNC_SCHEDULE_COMPLETE": true });
 		}
 
 		if (asyncRequest && asyncRequest.success) {
@@ -249,36 +237,38 @@ var RainwaveAPI = function() {
 			solveLatency(asyncRequest, drawLatencies, slowDrawThreshold);
 		}
 
-		nextGet();
+		nextRequest();
 	};
 
 	// Calls To API ******************************************************************************************
 
-	// TODO: set this to tooltip
-	self.onGetError = null;
+	self.onRequestError = null;
 
-	self.get = function(action, params, onSuccess, onError) {
+	self.request = function(action, params, onSuccess, onError) {
 		params.action = action;
-		params.message_id = getID;
-		getID++;
-		getQueue.push({
+		params.message_id = requestID;
+		requestID++;
+		requestQueue.push({
 			message: params || {},
 			onSuccess: onSuccess || noop,
-			onError: onError || self.onGetError || noop,
+			onError: onError || self.onRequestError || noop,
 		});
-		if (!socketIsBusy) {
-			nextGet();
+		if (!socketIsBusy || !isOK) {
+			nextRequest();
 		}
 	};
 
-	var nextGet = function() {
-		if (!getQueue.length) {
+	var nextRequest = function() {
+		if (!requestQueue.length) {
 			socketIsBusy = false;
 			return;
 		}
+		if (!isOK) {
+			return;
+		}
 
-		getQueue[0].start = new Date();
-  		socket.send(JSON.stringify(getQueue[0].message));
+		requestQueue[0].start = new Date();
+  		socket.send(JSON.stringify(requestQueue[0].message));
 	};
 
 	// Callback Handling *************************************************************************************
@@ -305,10 +295,10 @@ var RainwaveAPI = function() {
 		if (!callbacks[apiName]) {
 			return;
 		}
-		// TODO: this part
+		while (callbacks[apiName].indexOf(apiName) !== -1) {
+			callbacks[apiName].splice(callbacks[apiName].indexOf(apiName), 1);
+		}
 	};
-
-	self.add_callback = self.addCallback;	// compatibility shim for Rainwave
 
 	return self;
 }();
