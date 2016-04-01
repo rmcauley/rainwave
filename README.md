@@ -69,10 +69,13 @@ pip install -r requirements.txt
 If you are using a phpBB install for user authentication, **skip this step** and use
 your existing phpBB database and database credentials.
 
-Install Postgres, connect as a super user, and execute this SQL, using your own password:
+* On Windows, use PgAdmin to connect to your database, and open an SQL input window.
+* On most Linux installs, open an SQL prompt with `sudo -u postgres psql`.
 
-```sql
-CREATE ROLE rainwave WITH LOGIN WITH PASSWORD "[password]";
+Execute the following SQL, replacing the password with your own:
+
+```
+CREATE ROLE rainwave WITH LOGIN WITH PASSWORD "password";
 CREATE DATABASE rainwave WITH OWNER rainwave;
 ```
 
