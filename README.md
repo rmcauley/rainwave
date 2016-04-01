@@ -183,10 +183,10 @@ A sample LiquidSoap configuration is included in etc/.
 
 ## Developing The Front-End
 
-Rainwave rebuilds CSS on each page load of /beta when
-development mode is on, and /beta serves the Javascript without
-minification or bundling.  No need for npm or any package managers
-or watchers.
+By this point in the documentation, you've already got a working
+Rainwave!  Open it up and start poking around with developer tools!
+
+To edit the site:
 
 * HTML files for the index and admin panels can be found in /templates.
 * HTML templates for the main site can be found in static/templates5.
@@ -197,10 +197,15 @@ or watchers.
   * No libraries or frameworks are used
   * There are some helper functions in element.js and formatting.js
 
+Rainwave rebuilds CSS on each page load of /beta when
+development mode is on, and /beta serves the Javascript without
+minification or bundling.  No need for npm or any package managers
+or watchers.
+
 ## Contact
 
 You can get help for deployment and development through the main
 developer, Rob, on the main Rainwave site forums and chat channel:
 
-http://rainwave.cc/forums/
-irc://irc.synirc.net://rainwave
+* http://rainwave.cc/forums/
+* irc://irc.synirc.net://rainwave
