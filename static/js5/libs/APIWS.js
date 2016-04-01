@@ -9,7 +9,7 @@ var RainwaveAPI = function() {
 	};
 
 	var _sid, _url, _userID, _apiKey;
-	var userIsDJ, currentScheduleID, isOK, hidden, visibilityChange;
+	var userIsDJ, currentScheduleID, isOK, hidden, visibilityChange, isHidden;
 	var socket, socketStaysClosed, socketIsBusy;
 	var socketErrorCount = 0;
 	var requestID = 0;
@@ -96,7 +96,7 @@ var RainwaveAPI = function() {
 	};
 
 	var onClose = function() {
-		if (socketStaysClosed) {
+		if (socketStaysClosed || isHidden) {
 			return;
 		}
 		setTimeout(initSocket, 500);
@@ -121,6 +121,11 @@ var RainwaveAPI = function() {
 		closeSocket();
 	};
 
+	self.closePermanently = function() {
+		socketStaysClosed = true;
+		closeSocket();
+	};
+
 	// Visibility Changing ***********************************************************************************
 
 	if (typeof document.hidden !== "undefined") {
@@ -134,11 +139,11 @@ var RainwaveAPI = function() {
 
 	var onVisibilityChange = function() {
 		if (document[hidden]) {
-			socketStaysClosed = true;
+			isHidden = true;
 			closeSocket();
 		}
 		else {
-			socketStaysClosed = false;
+			isHidden = false;
 			initSocket();
 		}
 	};
