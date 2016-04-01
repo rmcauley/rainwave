@@ -111,7 +111,7 @@ and start the public-facing website and API:
 python rw_api.py
 ```
 
-Now use the same tool LiquidSoap will to test that everything works:
+Now use the same tool LiquidSoap uses to test that everything works:
 
 ```
 python rw_get_next.py
@@ -128,7 +128,7 @@ to emulate being logged in, open `/api4/test/login_tuned_in/1`.
 
 ### Installing a Production Rainwave
 
-Before running install.py:
+Before running `install.py`:
 
 With an existing phpBB install already ready, copy your Rainwave
 configuration file to `/etc/rainwave.conf` and tune for production.
@@ -144,7 +144,7 @@ If use systemd and  create scripts for systemd,
 please contribute back to us!
 ([GitHub Issue](https://github.com/rmcauley/rainwave/issues/99))
 
-The install script will attempt to automatically run
+`install.py` will attempt to automatically run
 `/etc/init.d/rainwave` with `start` and `stop` arguments if
 the script exists.
 
@@ -162,7 +162,7 @@ Rainwave depends on three daemons:
 
 When updating Rainwave, to bust caches and make sure your users
 are getting the latest code, you **have** to edit `etc/buildnum` and
-increase the build number *before* install.py.  If you don't do this,
+increase the build number *before* `install.py`.  If you don't do this,
 your users will continually run old code.
 
 During installation, Rainwave has no safety mechanisms or rolling restarts.
