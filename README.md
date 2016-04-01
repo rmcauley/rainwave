@@ -1,4 +1,4 @@
-([GitHub Issue](https://github.com/rmcauley/rainwave/issues/99))# Rainwave Radio Controller
+# Rainwave Radio Controller
 
 ## Preface
 
