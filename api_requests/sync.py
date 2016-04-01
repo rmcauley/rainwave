@@ -382,15 +382,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		sessions[self.sid].remove(self)
 		super(WSHandler, self).on_close()
 
-	def _auth(self, user_id, key):
-		self.user = User(user_id)
-		self.user.ip_address = self.request.remote_ip
-		self.user.authorize(None, key)
-		if not self.user.authorized:
-			return False
-		self.authorized = True
-		return True
-
 	def write_message(self, obj, *args, **kwargs):
 		message = json.dumps(obj)
 		super(WSHandler, self).write_message(message, *args, **kwargs)
@@ -465,10 +456,14 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		if not "key" in message or not message['key']:
 			self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="key") } })
 
-		if not self._auth(message['user_id'], message['key']):
+		self.user = User(message['user_id'])
+		self.user.ip_address = self.request.remote_ip
+		self.user.authorize(None, message['key'])
+		if not self.user.authorized:
 			self.write_message({ "wserror": { "tl_key": "auth_failed", "text": self.locale.translate("auth_failed") } })
 			self.close()
 			return
+		self.authorized = True
 
 		global sessions
 		sessions[self.sid].append(self)
