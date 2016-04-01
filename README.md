@@ -16,6 +16,8 @@ The software stack and data flow for broadcasting:
 * Icecast distributes audio to users
 * Icecast tells Rainwave API when users tune in/out
 
+Rainwave only supports MP3 files.
+
 ## Prerequisites
 
 Authentication for Rainwave in a production environment is dependant on phpBB.
@@ -48,11 +50,10 @@ cp rainwave/etc/rainwave_reference.conf rainwave/etc/$USER.conf
 
 * [Install Postgres 9.4 or above](http://www.postgresql.org/download/windows/) with extras/"contrib" option during install
 * [Install Memcache for Windows](https://commaster.net/content/installing-memcached-windows), any version, and start it
-* [Download and install Python 2.7 64-bit for Windows](https://www.python.org/download/)
+* [Download and install Python 2.7 64-bit for Windows](https://www.python.org/download/), during install, select to add Python to your PATH
 * [Download and install psycopg2 for 64-bit Python 2.7](http://www.stickpeople.com/projects/python/win-psycopg/)
 * [Download and install psutil for 64-bit Python 2.7](https://pypi.python.org/pypi?:action=display&name=psutil#downloads)
 * [Install setuptools](https://pypi.python.org/pypi/setuptools#installation-instructions)
-* Make sure Python is on your PATH (you can execute python from a terminal)
 * Make sure the Python Scripts directory is also on your PATH (i.e. easy_install)
 * Clone/download the Rainwave repository to a folder
 * Open a command shell to the folder and execute:
@@ -68,7 +69,7 @@ pip install -r requirements.txt
 If you are using a phpBB install for user authentication, **skip this step** and use
 your existing phpBB database and database credentials.
 
-Install Postgres, connect as a super user, and execute this SQL:
+Install Postgres, connect as a super user, and execute this SQL, using your own password:
 
 ```sql
 CREATE ROLE rainwave WITH LOGIN WITH PASSWORD "[password]";
@@ -88,9 +89,8 @@ Tips:
 
 ## First Start and Test
 
-On the commandline in your Rainwave repoository directory.
-You need to initialize the database (only once) and then
-add your songs to the database:
+Open a terminal/command line to your Rainwave repository directory.
+You need to initialize the database and then add your songs to the database:
 
 ```
 python db_init.py
@@ -153,6 +153,12 @@ the script exists.
 `/opt/rainwave`, and will minify and bundle Javascript to be put
 into the "baked" static directory.
 
+Rainwave depends on three daemons:
+
+* `rw_backend.py` to act for LiquidSoap
+* `rw_api.py` to act for browsers
+* `rw_scanner.py` which monitors the filesystem for new/changed songs
+
 ### Updating a Running Rainwave
 
 When updating Rainwave, to bust caches and make sure your users
@@ -187,9 +193,9 @@ or watchers.
 * CSS files are in /static/style5 and the entry point is r5.scss.
 * Image files are in /static/images4.
 * JS files are in /static/js5:
-⋅⋅* Execution starts from main.js.
-⋅⋅* No libraries or frameworks are used
-⋅⋅* There are some helper functions in element.js and formatting.js
+  * Execution starts from main.js.
+  * No libraries or frameworks are used
+  * There are some helper functions in element.js and formatting.js
 
 ## Contact
 
