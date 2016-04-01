@@ -97,27 +97,26 @@ python db_init.py
 python rw_scanner.py --full
 ```
 
-Once done, open another terminal/command line and execute:
+Once done, open another terminal/command line and start the music
+management backend that LiquidSoap talks to:
 
 ```
 python rw_backend.api
 ```
 
-This is the service that manages what song to play.
-Once that is started successfully, open another terminal/command line:
+Once that is started successfully, open another terminal/command line
+and start the public-facing website and API:
 
 ```
 python rw_api.py
 ```
 
-The API provides the website, API, and image serving.
-Once started, in your original terminal execute:
+Now use the same tool LiquidSoap will to test that everything works:
 
 ```
 python rw_get_next.py
 ```
 
-rw_get_next gets the next song to play from the backend.
 If successful, you should see a song filename as output.
 
 Open the beta URL at `/beta/?sid=1` to see your Rainwave.
