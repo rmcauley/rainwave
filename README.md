@@ -75,7 +75,7 @@ your existing phpBB database and database credentials.
 Execute the following SQL, replacing the password with your own:
 
 ```
-CREATE ROLE rainwave WITH LOGIN WITH PASSWORD "password";
+CREATE ROLE rainwave WITH LOGIN PASSWORD 'password';
 CREATE DATABASE rainwave WITH OWNER rainwave;
 ```
 
