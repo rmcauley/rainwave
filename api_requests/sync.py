@@ -331,8 +331,7 @@ class Sync(APIHandler):
 		if not cache.get_station(self.sid, "backend_ok"):
 			raise APIException("station_offline")
 
-		if not already_refreshed:
-			self.user.refresh(self.sid)
+		self.user.refresh(self.sid)
 		if "requests_paused" in self.user.data:
 			del self.user.data['requests_paused']
 		self.append("user", self.user.to_private_dict())
@@ -344,11 +343,8 @@ class Sync(APIHandler):
 
 class FakeRequestObject(object):
 	def __init__(self, arguments, cookies):
-		self.arguments_flat = arguments
+		self.arguments = arguments
 		self.cookies = cookies
-
-	def supports_http_1_1(self, *args, **kwargs):
-		return True
 
 # TODO: Special payload updates for live voting/etc
 
@@ -441,7 +437,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			self.write_message({ "wserror": { "tl_key": "websocket_404", "text": self.locale.translate("websocket_404") } })
 			return
 
-		endpoint = api_endpoints[message['action']](api.server.app, FakeRequestObject(message, self.request.cookies))
+		endpoint = api_endpoints[message['action']](websocket=True)
+		endpoint.request = FakeRequestObject(message, self.request.cookies)
 		endpoint.sid = message['sid'] if 'sid' in message else self.sid
 		try:
 			startclock = timestamp()
@@ -461,7 +458,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		handler = None
 		try:
 			startclock = timestamp()
-			handler = APIHandler(api.server.app, FakeRequestObject({}, self.request.cookies))
+			handler = APIHandler(websocket=True)
+			handler.request = FakeRequestObject({}, self.request.cookies)
 			handler.return_name = "sync_result"
 			handler.request = FakeRequestObject({}, self.request.cookies)
 			handler.user = self.user

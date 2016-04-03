@@ -133,7 +133,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	allow_cors = False
 
 	def __init__(self, *args, **kwargs):
-		super(RainwaveHandler, self).__init__(*args, **kwargs)
+		if not 'websocket' in kwargs:
+			super(RainwaveHandler, self).__init__(*args, **kwargs)
 		self.cleaned_args = {}
 		self.sid = None
 		self._startclock = timestamp()
@@ -156,10 +157,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	def get_argument(self, name, default=None, **kwargs):
 		if name in self.cleaned_args:
 			return self.cleaned_args[name]
-		if hasattr(self.request, "arguments_flat") and name in self.request.arguments_flat:
-			return self.request.arguments_flat[name]
-		if hasattr(self.request, "arguments") and name in self.request.arguments:
-			return self.request.arguments[name][-1]
+		if name in self.request.arguments:
+			if isinstance(self.request.arguments[name], list):
+				return self.request.arguments[name][-1].strip()
+			return self.request.arguments[name]
 		return default
 
 	def set_argument(self, name, value):
@@ -173,12 +174,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self.return_name = self.url[self.url.rfind("/")+1:] + "_result"
 		else:
 			self.return_name = self.return_name
-
-		if 'in_order' in self.request.arguments:
-			self._output = []
-			self._output_array = True
-		else:
-			self._output = {}
 
 	def arg_parse(self):
 		for field, field_attribs in self.__class__.fields.iteritems():
@@ -248,6 +243,12 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 		self.setup_output()
 
+		if 'in_order' in self.request.arguments:
+			self._output = []
+			self._output_array = True
+		else:
+			self._output = {}
+
 		self.sid = fieldtypes.integer(self.get_cookie("r4_sid", None))
 		hostname = self.request.headers.get('Host', None)
 		if hostname:
@@ -287,6 +288,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 	# works without touching cookies or headers, primarily used for websocket requests
 	def prepare_standalone(self):
+		self._output = {}
 		self.setup_output()
 		self.arg_parse()
 		self.sid_check()
@@ -540,12 +542,12 @@ class PrettyPrintAPIMixin(object):
 			elif not self.return_name in self._output:
 				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
 
-		for output_key, json in self._output.iteritems():	#pylint: disable=W0612
-			if type(json) != types.ListType:
+		for output_key, json_out in self._output.iteritems():	#pylint: disable=W0612
+			if type(json_out) != types.ListType:
 				continue
-			if len(json) > 0:
+			if len(json_out) > 0:
 				self.write("<table class='%s'><th>#</th>" % self.return_name)
-				keys = getattr(self, "columns", self.sort_keys(json[0].keys()))
+				keys = getattr(self, "columns", self.sort_keys(json_out[0].keys()))
 				for key in keys:
 					self.write("<th>%s</th>" % self.locale.translate(key))
 				self.header_special()
@@ -553,7 +555,7 @@ class PrettyPrintAPIMixin(object):
 				i = 1
 				if "page_start" in self.request.arguments:
 					i += self.get_argument("page_start")
-				for row in json:
+				for row in json_out:
 					self.write("<tr><td>%s</td>" % i)
 					for key in keys:
 						if key == "sid":
