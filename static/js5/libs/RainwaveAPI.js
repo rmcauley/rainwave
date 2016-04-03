@@ -35,6 +35,7 @@ var RainwaveAPI = function() {
 		});
 		self.on("wsok", function() {
 			if (self.debug) console.log("wsok received - auth was good!");
+			self.onErrorRemove("sync_retrying");
 			self.ok = true;
 			isOK = true;
 
@@ -119,7 +120,7 @@ var RainwaveAPI = function() {
 
 	var onSocketError = function() {
 		if (socketErrorCount > 2) {
-			self.onError({ "wserror": { "tl_key": "sync_retrying" } });
+			self.onError({ "tl_key": "sync_retrying" });
 		}
 		socketErrorCount++;
 	};
@@ -182,6 +183,8 @@ var RainwaveAPI = function() {
 
 	var onMessage = function(message) {
 		socketErrorCount = 0;
+
+		self.onErrorRemove("sync_retrying");
 
 		var json;
 		try {
