@@ -158,7 +158,7 @@ var API;
 
 		Sizing.trigger_resize();
 
-		API.initialize(BOOTSTRAP.user.sid, BOOTSTRAP.websocket_url, BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
+		API.initialize(BOOTSTRAP.user.sid, BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
 
 		var add_javascript = function(src, callback) {
 			var s = document.createElement("script");
