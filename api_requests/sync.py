@@ -344,7 +344,7 @@ class Sync(APIHandler):
 
 class FakeRequestObject(object):
 	def __init__(self, arguments, cookies):
-		self.arguments = arguments
+		self.arguments_flat = arguments
 		self.cookies = cookies
 
 	def supports_http_1_1(self, *args, **kwargs):

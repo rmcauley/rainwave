@@ -24,7 +24,7 @@ def numeric(s, request = None):
 		return s
 	if not isinstance(s, (str, unicode)):
 		return None
-	if not re.match('^-\d+(.\d+)?$', s):
+	if not re.match('^-?\d+(.\d+)?$', s):
 		return None
 	return s
 

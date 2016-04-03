@@ -153,9 +153,13 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			value = repr(value)
 		super(RainwaveHandler, self).set_cookie(name, value, *args, **kwargs)
 
-	def get_argument(self, name, default=None, strip=True):
+	def get_argument(self, name, default=None, **kwargs):
 		if name in self.cleaned_args:
 			return self.cleaned_args[name]
+		if hasattr(self.request, "arguments_flat") and name in self.request.arguments_flat:
+			return self.request.arguments_flat[name]
+		if hasattr(self.request, "arguments") and name in self.request.arguments:
+			return self.request.arguments[name][-1]
 		return default
 
 	def set_argument(self, name, value):
@@ -183,7 +187,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			if required and field not in self.request.arguments:
 				raise APIException("missing_argument", argument=field, http_code=400)
 			elif field in self.request.arguments:
-				parsed = type_cast(self.request.arguments[field], self)
+				parsed = type_cast(self.get_argument(field), self)
 				if parsed == None and required != None:
 					raise APIException("invalid_argument", argument=field, reason="%s %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__)), http_code=400)
 			self.cleaned_args[field] = parsed
