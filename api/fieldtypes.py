@@ -11,7 +11,9 @@ string_error = "must be a string."
 def string(in_string, request = None):
 	if not in_string:
 		return None
-	return unicode(in_string)
+	if not isinstance(in_string, (str, unicode)):
+		return None
+	return unicode(in_string).strip()
 
 # All _error variables start with no capital letter and end with a period.
 numeric_error = "must be a number."
@@ -20,7 +22,7 @@ def numeric(s, request = None):
 		return None
 	if isinstance(s, numbers.Number):
 		return s
-	if not isinstance(s, str):
+	if not isinstance(s, (str, unicode)):
 		return None
 	if not re.match('^-\d+(.\d+)?$', s):
 		return None
@@ -32,7 +34,7 @@ def integer(s, request = None):
 		return None
 	if isinstance(s, numbers.Number):
 		return s
-	if not isinstance(s, str):
+	if not isinstance(s, (str, unicode)):
 		return None
 	if not re.match('^-?\d+$', s):
 		return None

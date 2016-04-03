@@ -153,10 +153,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			value = repr(value)
 		super(RainwaveHandler, self).set_cookie(name, value, *args, **kwargs)
 
-	def get_argument(self, name, *args, **kwargs):
+	def get_argument(self, name, default=None, strip=True):
 		if name in self.cleaned_args:
 			return self.cleaned_args[name]
-		return super(RainwaveHandler, self).get_argument(name, *args, **kwargs)
+		return default
 
 	def set_argument(self, name, value):
 		self.cleaned_args[name] = value
@@ -176,20 +176,17 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		else:
 			self._output = {}
 
-	def arg_parse(self, shallow=False):
+	def arg_parse(self):
 		for field, field_attribs in self.__class__.fields.iteritems():
 			type_cast, required = field_attribs
 			parsed = None
 			if required and field not in self.request.arguments:
 				raise APIException("missing_argument", argument=field, http_code=400)
-			if shallow and field in self.request.arguments:
+			elif field in self.request.arguments:
 				parsed = type_cast(self.request.arguments[field], self)
-			else:
-				parsed = type_cast(self.get_argument(field, default=None), self)
-			if parsed == None and required != None:
-				raise APIException("invalid_argument", argument=field, reason="%s %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__)), http_code=400)
-			else:
-				self.cleaned_args[field] = parsed
+				if parsed == None and required != None:
+					raise APIException("invalid_argument", argument=field, reason="%s %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__)), http_code=400)
+			self.cleaned_args[field] = parsed
 
 	def sid_check(self):
 		if self.sid is None and not self.sid_required:
@@ -287,7 +284,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	# works without touching cookies or headers, primarily used for websocket requests
 	def prepare_standalone(self):
 		self.setup_output()
-		self.arg_parse(shallow=True)
+		self.arg_parse()
 		self.sid_check()
 		self.permission_checks()
 

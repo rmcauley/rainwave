@@ -129,7 +129,7 @@ class SessionBank(object):
 				log.debug("sync_update_ip", "Warning logged in user of potential M3U mixup at IP %s" % session.request.remote_ip)
 				session.login_mixup_warn()
 			else:
-				session.update_user(already_refreshed=True)
+				session.update_user()
 		except Exception as e:
 			log.exception("sync", "Session failed to be updated during update_user.", e)
 			try:
@@ -325,7 +325,7 @@ class Sync(APIHandler):
 		api_requests.info.attach_info_to_request(self)
 		self.finish()
 
-	def update_user(self, already_refreshed=False):
+	def update_user(self):
 		self._startclock = timestamp()
 
 		if not cache.get_station(self.sid, "backend_ok"):
@@ -394,7 +394,16 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
 	def write_message(self, obj, *args, **kwargs):
 		message = json.dumps(obj)
-		super(WSHandler, self).write_message(message, *args, **kwargs)
+		try:
+			super(WSHandler, self).write_message(message, *args, **kwargs)
+		except tornado.websocket.WebSocketClosedError:
+			self.on_close()
+		except tornado.websocket.WebSocketError as e:
+			log.exception("websocket", "WebSocket Error", e)
+			try:
+				self.close()
+			except Exception:
+				self.on_close()
 
 	def refresh_user(self):
 		self.user.refresh(self.sid)
@@ -448,29 +457,36 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		finally:
 			self.write_message(endpoint._output) 	#pylint: disable=W0212
 
-	def update_user(self, already_refreshed=False):
+	def update(self):
+		handler = None
 		try:
 			startclock = timestamp()
-			handler = APIHandler()
+			handler = APIHandler(api.server.app, FakeRequestObject({}, self.request.cookies))
 			handler.return_name = "sync_result"
 			handler.request = FakeRequestObject({}, self.request.cookies)
 			handler.user = self.user
 			handler.sid = self.sid
+			handler.prepare_standalone()
 
 			if not cache.get_station(self.sid, "backend_ok"):
 				raise APIException("station_offline")
 
-			if not already_refreshed:
-				self.refresh_user()
+			self.refresh_user()
 			api_requests.info.attach_info_to_request(handler)
 			if self.user.is_dj():
 				api_requests.info.attach_dj_info_to_request(handler)
 			handler.append("user", self.user.to_private_dict())
 			handler.append("api_info", { "exectime": timestamp() - startclock, "time": round(timestamp()) })
-		except Exception:
-			handler.write_error(500, exc_info=sys.exc_info(), no_finish=True)
+		except Exception as e:
+			if handler:
+				handler.write_error(500, exc_info=sys.exc_info(), no_finish=True)
+			log.exception("websocket", "Exception during update.", e)
 		finally:
-			self.write_message(handler._output) 	#pylint: disable=W0212
+			if handler:
+				self.write_message(handler._output) 	#pylint: disable=W0212
+
+	def update_user(self):
+		self.write_message({ "user": self.user.to_private_dict() })
 
 	def login_mixup_warn(self):
 		self.write_message({ "sync_result": { "tl_key": "redownload_m3u", "text": self.locale.translate("redownload_m3u") } })
@@ -501,6 +517,9 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		self.write_message({ "wsok": True })
 		# since this will be the first action in any websocket interaction though,
 		# it'd be a good time to send a station offline message.
+		self._station_offline_check()
+
+	def _station_offline_check(self):
 		if not cache.get_station(self.sid, "backend_ok"):
 			# shamelessly fake an error.
 			self.write_message({ "sync_result": { "tl_key": "station_offline", "text": self.locale.translate("station_offline") } })
@@ -516,4 +535,4 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			self.write_message({ "sync_result": { "tl_key": "station_offline", "text": self.locale.translate("station_offline") } })
 
 		if cache.get_station(self.sid, "sched_current_dict") and (cache.get_station(self.sid, "sched_current_dict")['id'] != message['sched_id']):
-			self.update_user()
+			self.update()
