@@ -140,6 +140,7 @@ class Bootstrap(api.web.APIHandler):
 		self.append("on_init", [])
 		self.append("on_measure", [])
 		self.append("on_draw", [])
+		self.append("websocket_url", "ws://%s:%s/api4/websocket/" % (config.get_station(self.sid, "host"), config.get("api_base_port")))
 		self.post()
 		if self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1:
 			self.write("window.MOBILE = true;")

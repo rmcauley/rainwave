@@ -5,15 +5,16 @@ var RainwaveAPI = function() {
 
 	var self = {
 		ok: false,
-		isSlow: false
+		isSlow: false,
+		debug: false
 	};
 
 	var _sid, _url, _userID, _apiKey;
 	var userIsDJ, currentScheduleID, isOK, hidden, visibilityChange, isHidden;
 	var socket, socketStaysClosed, socketIsBusy;
-	var socketErrorCount = 0;
-	var requestID = 0;
+	var socketErrorCount, socketSequentialRequests, requestID = 0;
 	var requestQueue = [];
+	var sentRequests = [];
 	var callbacks = {};
 	var noop = function() {};
 
@@ -30,20 +31,30 @@ var RainwaveAPI = function() {
 		_userID = userID;
 		_apiKey = apiKey;
 
-		self.addCallback("sched_current", function(json) {
+		self.on("sched_current", function(json) {
 			currentScheduleID = json.id;
 		});
-		self.addCallback("wsok", function() {
+		self.on("wsok", function() {
+			if (self.debug) console.log("wsok received - auth was good!");
 			self.ok = true;
 			isOK = true;
-			nextRequest();
 
 			if (currentScheduleID) {
+				if (self.debug) console.log("Socket send - check_sched_current_id with " + currentScheduleID);
 				socket.send(JSON.stringify({
 					action: "check_sched_current_id",
 					sched_id: currentScheduleID
 				}));
 			}
+
+			nextRequest();
+		});
+		self.on("wsping", function(json) {
+			if (self.debug) console.log("Pinged!");
+			socket.send(JSON.stringify({
+				action: "wspong",
+				timestamp: json.timestamp
+			}));
 		});
 
 		if (data) {
@@ -75,17 +86,19 @@ var RainwaveAPI = function() {
 		if (socket && (socket.readyState === WebSocket.OPEN)) {
 			return;
 		}
-		socket = new WebSocket("ws://" + _url + "/websocket/" + _sid);
+		socket = new WebSocket(_url + _sid);
 		socket.addEventListener("open", function() {
+			if (self.debug) console.log("Socket open.");
 			socket.send(JSON.stringify({
-				message: "auth",
+				action: "auth",
 				user_id: _userID,
 				key: _apiKey
 			}));
+
 		});
 		socket.addEventListener("message", onMessage);
-		socket.addEventListener("close", onClose);
-		socket.addEventListener("error", onError);
+		socket.addEventListener("close", onSocketClose);
+		socket.addEventListener("error", onSocketError);
 	};
 
 	var closeSocket = function() {
@@ -93,18 +106,21 @@ var RainwaveAPI = function() {
 			return;
 		}
 		socket.close();
+		if (self.debug) console.log("Socket closed.");
 	};
 
-	var onClose = function() {
+	var onSocketClose = function() {
+		isOK = false;
+		self.ok = false;
 		if (socketStaysClosed || isHidden) {
 			return;
 		}
 		setTimeout(initSocket, 500);
 	};
 
-	var onError = function(event) {
-		if (socketErrorCount > 3) {
-			onError({ "wserror": { "tl_key": "sync_retrying" } });
+	var onSocketError = function() {
+		if (socketErrorCount > 2) {
+			self.onError({ "wserror": { "tl_key": "sync_retrying" } });
 		}
 		socketErrorCount++;
 	};
@@ -168,19 +184,9 @@ var RainwaveAPI = function() {
 	var onMessage = function(message) {
 		socketErrorCount = 0;
 
-		var asyncRequest, i;
-		for (i = 0; i < requestQueue.length; i++) {
-			if (requestQueue[i].message.message_id === message.message_id) {
-				asyncRequest = requestQueue[i];
-				asyncRequest.success = true;
-				solveLatency(asyncRequest, netLatencies, slowNetThreshold);
-				break;
-			}
-		}
-
 		var json;
 		try {
-			 json = JSON.parse(event.data);
+			 json = JSON.parse(message.data);
 		}
 		catch (exc) {
 			console.error("Response from Rainwave API was not JSON!");
@@ -201,6 +207,20 @@ var RainwaveAPI = function() {
 			}
 		}
 
+		if (self.debug) console.log("Socket receive", message.data);
+
+		var asyncRequest, i;
+		if (json.message_id) {
+			for (i = 0; i < sentRequests.length; i++) {
+				if (sentRequests[i].message.message_id === json.message_id.message_id) {
+					asyncRequest = sentRequests.splice(i, 1)[0];
+					asyncRequest.success = true;
+					solveLatency(asyncRequest, netLatencies, slowNetThreshold);
+					break;
+				}
+			}
+		}
+
 		if (asyncRequest) {
 			for (i in json) {
 				if (("success" in json[i]) && !json[i].success) {
@@ -213,13 +233,6 @@ var RainwaveAPI = function() {
 			asyncRequest.drawStart = new Date();
 		}
 
-		// Make sure any vote results are registered after the schedule has been loaded.
-		var alreadyVoted;
-		if ("already_voted" in json) {
-			alreadyVoted = json.already_voted;
-			delete json.already_voted;
-		}
-
 		if (("sync_result" in json) && (json.sync_result.tl_key == "station_offline")) {
 			self.onError(json.sync_result);
 		}
@@ -228,14 +241,6 @@ var RainwaveAPI = function() {
 		}
 
 		performCallbacks(json);
-
-		if (alreadyVoted) {
-			performCallbacks({ "already_voted": alreadyVoted });
-		}
-
-		if ("sched_current" in json) {
-			performCallbacks({ "_SYNC_SCHEDULE_COMPLETE": true });
-		}
 
 		if (asyncRequest && asyncRequest.success) {
 			asyncRequest.onSuccess(json);
@@ -250,6 +255,10 @@ var RainwaveAPI = function() {
 	self.onRequestError = null;
 
 	self.request = function(action, params, onSuccess, onError) {
+		if (!action) {
+			throw("No action specified for Rainwave API request.");
+		}
+		params = params || {};
 		params.action = action;
 		params.message_id = requestID;
 		requestID++;
@@ -266,25 +275,61 @@ var RainwaveAPI = function() {
 	var nextRequest = function() {
 		if (!requestQueue.length) {
 			socketIsBusy = false;
+			socketSequentialRequests = 0;
 			return;
 		}
 		if (!isOK) {
 			return;
 		}
 
-		requestQueue[0].start = new Date();
-  		socket.send(JSON.stringify(requestQueue[0].message));
+		socketSequentialRequests++;
+		// throttling
+		if (socketSequentialRequests > 2) {
+			socketSequentialRequests = 0;
+			setTimeout(nextRequest, 500);
+			return;
+		}
+
+		var request = requestQueue.shift();
+		request.start = new Date();
+
+		if (sentRequests.length > 10) {
+			sentRequests.splice(0, sentRequests.length - 10);
+		}
+		sentRequests.push(request);
+
+		if (self.debug) console.log("Socket write", request.message);
+  		socket.send(JSON.stringify(request.message));
 	};
 
 	// Callback Handling *************************************************************************************
 
 	var performCallbacks = function(json) {
+		// Make sure any vote results are registered after the schedule has been loaded.
+		var alreadyVoted;
+		if ("already_voted" in json) {
+			alreadyVoted = json.already_voted;
+			delete json.already_voted;
+		}
+
 		var cb, key;
 		for (key in json) {
 			if (key in callbacks) {
 				for (cb = 0; cb < callbacks[key].length; cb++) {
 					callbacks[key][cb](json[key]);
 				}
+			}
+		}
+
+		if ("sched_current" in json) {
+			if (self.debug) console.log("Sync complete.");
+			performCallbacks({ "_SYNC_SCHEDULE_COMPLETE": true });
+		}
+
+		key = "already_voted";
+		if (alreadyVoted && (key in callbacks)) {
+			for (cb = 0; cb < callbacks[key].length; cb++) {
+				callbacks[key][cb](alreadyVoted);
 			}
 		}
 	};
@@ -295,6 +340,8 @@ var RainwaveAPI = function() {
 		}
 		callbacks[apiName].push(func);
 	};
+
+	self.on = self.addEventListener;
 
 	self.removeEventListener = function(apiName, func) {
 		if (!callbacks[apiName]) {

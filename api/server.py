@@ -40,6 +40,7 @@ request_classes = [
 ]
 testable_requests = []
 api_endpoints = {}
+app = None
 
 class handle_url(object):
 	def __init__(self, url):
@@ -49,17 +50,14 @@ class handle_url(object):
 		klass.url = self.url
 		request_classes.append((self.url, klass))
 		api.help.add_help_class(klass, klass.url)
+		global api_endpoints
+		if not getattr(klass, "local_only", False) and not getattr(klass, "is_websocket", False):
+			api_endpoints[klass.url] = klass
 		return klass
 
 class handle_api_url(handle_url):
 	def __init__(self, url):
 		super(handle_api_url, self).__init__("/api4/" + url)
-
-	def __call__(self, klass):
-		global api_endpoints
-		if not klass.local_only:
-			api_endpoints[klass.url] = klass
-		return super(handle_api_url, self).__call__(self, klass)
 
 class handle_api_html_url(handle_url):
 	def __init__(self, url):
@@ -155,6 +153,7 @@ class APIServer(object):
 		api.help.sectionize_requests()
 
 		# Fire ze missiles!
+		global app
 		app = tornado.web.Application(request_classes,
 			debug=(config.test_mode or config.get("developer_mode")),
 			template_path=os.path.join(os.path.dirname(__file__), "../templates"),

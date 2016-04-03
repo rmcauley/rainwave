@@ -1,5 +1,6 @@
 import re
 import time
+import numbers
 from datetime import datetime
 
 from libs import config
@@ -15,15 +16,23 @@ def string(in_string, request = None):
 # All _error variables start with no capital letter and end with a period.
 numeric_error = "must be a number."
 def numeric(s, request = None):
-	if not numeric:
+	if not s:
 		return None
-	if not re.match('^\d+$', s):
+	if isinstance(s, numbers.Number):
+		return s
+	if not isinstance(s, str):
+		return None
+	if not re.match('^-\d+(.\d+)?$', s):
 		return None
 	return s
 
 integer_error = "must be a number."
 def integer(s, request = None):
 	if not s:
+		return None
+	if isinstance(s, numbers.Number):
+		return s
+	if not isinstance(s, str):
 		return None
 	if not re.match('^-?\d+$', s):
 		return None
@@ -32,66 +41,54 @@ def integer(s, request = None):
 #pylint: disable=W0621
 song_id_error = "must be a valid song ID."
 def song_id(s, request = None):
-	if not s:
+	song_id = integer(s)
+	if not song_id:
 		return None
-	if not re.match('^\d+$', s):
-		return None
-	song_id = int(s)
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_songs WHERE song_id = %s AND song_verified = TRUE", (song_id,)) == 0:
 		return None
 	return song_id
 
 song_id_matching_sid_error = "must be a valid song ID that exists on the requested station ID."
 def song_id_matching_sid(s, request):
-	if not s or not request:
+	song_id = integer(s)
+	if not song_id or not request:
 		return None
-	if not re.match('^\d+$', s):
-		return None
-	song_id = int(s)
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_song_sid WHERE song_id = %s AND sid = %s", (song_id, request.sid)) == 0:
 		return None
 	return song_id
 
 album_id_error = "must be a valid album ID."
 def album_id(s, request = None):
-	if not s:
+	album_id = integer(s)
+	if not album_id:
 		return None
-	if not re.match('^\d+$', s):
-		return None
-	album_id = int(s)
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_albums WHERE album_id = %s", (album_id,)) == 0:
 		return None
 	return album_id
 
 artist_id_error = "must be a valid artist ID."
 def artist_id(s, request = None):
-	if not s:
+	artist_id = integer(s)
+	if not artist_id:
 		return None
-	if not re.match('^\d+$', s):
-		return None
-	artist_id = int(s)
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_artists WHERE artist_id = %s", (artist_id,)) == 0:
 		return None
 	return artist_id
 
 sched_id_error = "must be a valid schedule ID."
 def sched_id(s, request = None):
-	if not s:
+	sched_id = integer(s)
+	if not sched_id:
 		return None
-	if not re.match('^\d+$', s):
-		return None
-	sched_id = int(s)
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_schedule WHERE sched_id = %s", (sched_id,)) == 0:
 		return None
 	return sched_id
 
 elec_id_error = "must be a valid election ID."
 def elec_id(s, request = None):
-	if not s:
+	elec_id = integer(s)
+	if not elec_id:
 		return None
-	if not re.match('^\d+$', s):
-		return None
-	elec_id = int(s)
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_elections WHERE elec_id = %s", (elec_id,)) == 0:
 		return None
 	return elec_id
@@ -99,46 +96,38 @@ def elec_id(s, request = None):
 
 positive_integer_error = "must be a positive number."
 def positive_integer(s, request = None):
-	if not s:
+	nmbr = integer(s)
+	if not nmbr:
 		return None
-	if not re.match('^\d+$', s):
-		return None
-	nmbr = int(s)
 	if nmbr <= 0:
 		return None
 	return nmbr
 
 zero_or_greater_integer_error = "must be positive number or zero."
 def zero_or_greater_integer(s, request = None):
-	if not s:
+	nmbr = integer(s)
+	if nmbr == None:
 		return None
-	if not re.match('^\d+$', s):
-		return None
-	nmbr = int(s)
 	if nmbr < 0:
 		return None
 	return nmbr
 
 float_num_error = "must be a number."
 def float_num(s, request = None):
-	if not s:
-		return None
-	if not re.match('^\d+(.\d+)?$', s):
+	f = numeric(s)
+	if not f:
 		return None
 	return float(s)
 
 long_num_error = "must be a number."
 def long_num(s, request = None):
-	if not s:
+	l = numeric(s)
+	if not l:
 		return None
-	if not re.match('^\d+$', s):
-		return None
-	return long(s)
+	return long(l)
 
 rating_error = "must >= 1.0 and <= 5.0 in increments of	0.5."
 def rating(s, request = None):
-	if not s:
-		return None
 	r = float_num(s)
 	if not r:
 		return None
@@ -150,9 +139,13 @@ def rating(s, request = None):
 
 boolean_error = "must be 'true' or 'false'."
 def boolean(s, request = None):
-	if not s:
+	if s == True:
+		return True
+	elif s == False:
+		return False
+	elif not s:
 		return None
-	if s == "true":
+	elif s == "true":
 		return True
 	elif s == "false":
 		return False
@@ -179,9 +172,9 @@ def valid_relay(s, request = None):
 #pylint: disable=W0621
 sid_error = "must be a valid station ID."
 def sid(s, request = None):
-	if not s:
+	sid = zero_or_greater_integer(s, request)
+	if not sid:
 		return None
-	sid = integer(s, request)
 	if request and request.allow_sid_zero and sid == 0:
 		return sid
 	if sid in config.station_ids:
@@ -191,6 +184,12 @@ def sid(s, request = None):
 
 integer_list_error = "must be a comma-separated list of integers."
 def integer_list(s, request = None):
+	if isinstance(s, list):
+		for i in s:
+			if not isinstance(i, (int, long)):
+				return None
+		return s
+
 	if not s:
 		return None
 	if not re.match('^(\d+)(,\d+)*$', s):
@@ -204,8 +203,6 @@ def integer_list(s, request = None):
 # Careful, this one could get expensive with all the song ID queries
 song_id_list_error = "must be a comma-separated list of valid song IDs."
 def song_id_list(s, request = None):
-	if not s:
-		return None
 	l = integer_list(s)
 	if not l:
 		return None
@@ -315,11 +312,7 @@ def producer_type(s, request = None):
 
 group_id_error = "must be a valid group ID."
 def group_id(s, request = None):
-	if not s:
-		return None
-	if not re.match('^\d+$', s):
-		return None
-	gid = int(s)
+	gid = integer(s)
 	if db.c.fetch_var("SELECT COUNT(*) FROM r4_groups WHERE group_id = %s", (gid,)) == 0:
 		return None
 	return gid

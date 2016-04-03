@@ -17,8 +17,8 @@ from api.web import APIHandler
 from api.web import get_browser_locale
 from api.server import api_endpoints
 from api.server import handle_api_url
+import api.server
 from rainwave.user import User
-from api import locale
 import api_requests.info
 import rainwave.playlist
 
@@ -84,7 +84,7 @@ class SessionBank(object):
 	def update_all(self, sid):
 		session_count = 0
 		session_failed_count = 0
-		for session in self.sessions:
+		for session in self.sessions + self.websockets:
 			try:
 				session.update()
 				session_count += 1
@@ -157,7 +157,7 @@ def init():
 	global sessions
 	for sid in config.station_ids:
 		sessions[sid] = SessionBank()
-	tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=30), _keep_all_alive)
+		tornado.ioloop.PeriodicCallback(_keep_all_alive, 30000).start()
 
 def _keep_all_alive():
 	global sessions
@@ -343,18 +343,29 @@ class Sync(APIHandler):
 		self.finish()
 
 class FakeRequestObject(object):
-	def __initialize__(self, arguments):
+	def __init__(self, arguments, cookies):
 		self.arguments = arguments
+		self.cookies = cookies
+
+	def supports_http_1_1(self, *args, **kwargs):
+		return True
 
 # TODO: Special payload updates for live voting/etc
 
 @handle_api_url("websocket/(\d+)")
 class WSHandler(tornado.websocket.WebSocketHandler):
 	is_websocket = True
+	local_only = False
+	help_hidden = False
+	locale = None
+	sid = None
 
 	def open(self, *args, **kwargs):
 		super(WSHandler, self).open()
-		self.sid = args[0]
+		try:
+			self.sid = int(args[0])
+		except Exception:
+			pass
 
 		if not self.sid:
 			self.write_message({ "wserror": { "tl_key": "missing_station_id", "text": self.locale.translate("missing_station_id") } })
@@ -363,8 +374,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			self.write_message({ "wserror": { "tl_key": "invalid_station_id", "text": self.locale.translate("invalid_station_id") } })
 			return
 
-		if not isinstance(self.locale, locale.RainwaveLocale):
-			self.locale = get_browser_locale(self)
+		self.locale = get_browser_locale(self)
 
 		self.authorized = False
 
@@ -375,7 +385,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		self.close()
 
 	def keep_alive(self):
-		self.ping(timestamp())
+		self.write_message({ "wsping": { "timestamp": timestamp() }})
 
 	def on_close(self):
 		global sessions
@@ -413,22 +423,28 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			self._do_sched_check(message)
 			return
 
+		if message['action'] == "wspong":
+			# TODO: Check ping/pong values...?  I don't think it's necessary.
+			return
+
+		message['action'] = "/api4/%s" % message['action']
 		if not message['action'] in api_endpoints:
 			self.write_message({ "wserror": { "tl_key": "websocket_404", "text": self.locale.translate("websocket_404") } })
 			return
 
-		endpoint = api_endpoints[message['action']]()
+		endpoint = api_endpoints[message['action']](api.server.app, FakeRequestObject(message, self.request.cookies))
+		endpoint.sid = message['sid'] if 'sid' in message else self.sid
 		try:
 			startclock = timestamp()
-			endpoint.request = FakeRequestObject(message)
 			endpoint.user = self.user
-			if "message_id" in message and isinstance(message['message_id'], numbers.Number):
-				endpoint.append("message_id", message.message_id)
 			endpoint.prepare_standalone()
+			if "message_id" in message and isinstance(message['message_id'], numbers.Number):
+				endpoint.append("message_id", { "message_id": message['message_id'] })
 			endpoint.post()
 			endpoint.append("api_info", { "exectime": timestamp() - startclock, "time": round(timestamp()) })
-		except Exception:
+		except Exception as e:
 			endpoint.write_error(500, exc_info=sys.exc_info(), no_finish=True)
+			log.exception("websocket", "API Exception during operation.", e)
 		finally:
 			self.write_message(endpoint._output) 	#pylint: disable=W0212
 
@@ -437,8 +453,9 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			startclock = timestamp()
 			handler = APIHandler()
 			handler.return_name = "sync_result"
-			handler.request = FakeRequestObject({})
+			handler.request = FakeRequestObject({}, self.request.cookies)
 			handler.user = self.user
+			handler.sid = self.sid
 
 			if not cache.get_station(self.sid, "backend_ok"):
 				raise APIException("station_offline")

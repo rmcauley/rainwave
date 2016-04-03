@@ -8,12 +8,25 @@ BOOTSTRAP.on_draw happens after the measurement - please do not cause reflows.
 
 var User;
 var Stations = [];
+var API;
 
 (function() {
 	"use strict";
 	var template;
 
 	var initialize = function() {
+		// this global API variable name and the function renaming
+		// was required after the API changed to something useable
+		// by the outside world.
+		API = RainwaveAPI;
+		API.onError = ErrorHandler.permanent_error;
+		API.onErrorRemove = ErrorHandler.remove_permanent_error;
+		API.onRequestError = ErrorHandler.tooltip_error;
+		API.add_callback = API.addEventListener;
+		API.async_get = API.request;
+		API.force_sync = API.forceReconnect;
+		API.sync_stop = API.closePermanently;
+
 		RWAudio();
 
 		Prefs.define("pwr");
@@ -145,7 +158,7 @@ var Stations = [];
 
 		Sizing.trigger_resize();
 
-		API.initialize(BOOTSTRAP.user.sid, "/api4/", BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
+		API.initialize(BOOTSTRAP.user.sid, BOOTSTRAP.websocket_url, BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
 
 		var add_javascript = function(src, callback) {
 			var s = document.createElement("script");

@@ -40,7 +40,7 @@ class Error404Handler(tornado.web.RequestHandler):
 		self.set_status(404)
 		if "in_order" in self.request.arguments:
 			self.write("[")
-		self.write(json.dumps({ "error": { "tl_key": "http_404", "text": "404 Not Found" } }), ensure_ascii=False)
+		self.write(json.dumps({ "error": { "tl_key": "http_404", "text": "404 Not Found" } }))
 		if "in_order" in self.request.arguments:
 			self.write("]")
 		self.finish()
@@ -162,28 +162,34 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		self.cleaned_args[name] = value
 
 	def get_browser_locale(self, default="en_CA"):
-		get_browser_locale(self, default)
+		return get_browser_locale(self, default)
 
 	def setup_output(self):
+		if not self.return_name:
+			self.return_name = self.url[self.url.rfind("/")+1:] + "_result"
+		else:
+			self.return_name = self.return_name
+
 		if 'in_order' in self.request.arguments:
 			self._output = []
 			self._output_array = True
 		else:
 			self._output = {}
 
-	def arg_parse(self):
+	def arg_parse(self, shallow=False):
 		for field, field_attribs in self.__class__.fields.iteritems():
 			type_cast, required = field_attribs
+			parsed = None
 			if required and field not in self.request.arguments:
 				raise APIException("missing_argument", argument=field, http_code=400)
-			elif not required and field not in self.request.arguments:
-				self.cleaned_args[field] = None
+			if shallow and field in self.request.arguments:
+				parsed = type_cast(self.request.arguments[field], self)
 			else:
-				parsed = type_cast(self.get_argument(field), self)
-				if parsed == None and required != None:
-					raise APIException("invalid_argument", argument=field, reason="%s %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__)), http_code=400)
-				else:
-					self.cleaned_args[field] = parsed
+				parsed = type_cast(self.get_argument(field, default=None), self)
+			if parsed == None and required != None:
+				raise APIException("invalid_argument", argument=field, reason="%s %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__)), http_code=400)
+			else:
+				self.cleaned_args[field] = parsed
 
 	def sid_check(self):
 		if self.sid is None and not self.sid_required:
@@ -239,11 +245,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		if not isinstance(self.locale, locale.RainwaveLocale):
 			self.locale = self.get_browser_locale()
 
-		if not self.return_name:
-			self.return_name = self.url[self.url.rfind("/")+1:] + "_result"
-		else:
-			self.return_name = self.return_name
-
 		self.setup_output()
 
 		self.sid = fieldtypes.integer(self.get_cookie("r4_sid", None))
@@ -286,7 +287,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	# works without touching cookies or headers, primarily used for websocket requests
 	def prepare_standalone(self):
 		self.setup_output()
-		self.arg_parse()
+		self.arg_parse(shallow=True)
 		self.sid_check()
 		self.permission_checks()
 
