@@ -41,34 +41,34 @@ var Fx = function() {
 		}
 	}();
 
-	self.chain_transition = function(el, end_func) {
-		var end_func_wrapper = function(e) {
-			end_func(e, el);
-			el.removeEventListener("transitionend", end_func_wrapper, false);
-		};
-		el.addEventListener("transitionend", end_func_wrapper, false);
-	};
+	// this never really worked 100% of the time, leaving lots of leftover elements
+	// self.chain_transition = function(el, end_func) {
+	// 	var end_func_wrapper = function(e) {
+	// 		end_func(e, el);
+	// 		el.removeEventListener("transitionend", end_func_wrapper, false);
+	// 	};
+	// 	el.addEventListener("transitionend", end_func_wrapper, false);
+	// };
 
 	self.remove_element = function(el) {
 		if (document.body.classList.contains("loading")) {
 			if (el.parentNode) el.parentNode.removeChild(el);
 		}
 		else {
-			self.chain_transition(el,
-				function() {
-					if (el.parentNode) {
-						el.parentNode.removeChild(el);
-					}
-				}
-			);
-			requestNextAnimationFrame(function() {
-				el.style.opacity = 0;
-			});
-			// failsafe
-			requestNextAnimationFrame(function() {
+			// self.chain_transition(el,
+			// 	function() {
+			// 		if (el.parentNode) {
+			// 			el.parentNode.removeChild(el);
+			// 		}
+			// 	}
+			// );
+			setTimeout(function() {
 				if (el.parentNode) {
 					el.parentNode.removeChild(el);
 				}
+			}, 1000);
+			requestNextAnimationFrame(function() {
+				el.style.opacity = 0;
 			});
 		}
 	};
