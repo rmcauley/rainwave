@@ -289,7 +289,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	# works without touching cookies or headers, primarily used for websocket requests
 	def prepare_standalone(self, message_id=None):
 		self._output = {}
-		endpoint.append("message_id", { "message_id": message['message_id'] })
+		if message_id:
+			self.append("message_id", { "message_id": message_id })
 		self.setup_output()
 		self.arg_parse()
 		self.sid_check()
