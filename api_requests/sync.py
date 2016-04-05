@@ -444,8 +444,11 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		endpoint.user = self.user
 		try:
 			startclock = timestamp()
-			if "message_id" in message and isinstance(message['message_id'], numbers.Number):
-				endpoint.prepare_standalone(message['message_id'])
+			if "message_id" in message:
+				if not fieldtypes.zero_or_greater_integer(message['message_id']):
+					endpoint.prepare_standalone()
+					raise APIException("invalid_argument", argument="message_id", reason=fieldtypes.zero_or_greater_integer_error, http_code=400)
+				endpoint.prepare_standalone(fieldtypes.zero_or_greater_integer(message['message_id']))
 			else:
 				endpoint.prepare_standalone()
 			endpoint.post()
