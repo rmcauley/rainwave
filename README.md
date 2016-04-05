@@ -39,7 +39,7 @@ or above is required.
 ### Prerequisites on Debian/Ubuntu
 
 ```
-git clone git@github.com:rmcauley/rainwave.git
+git clone https://github.com/rmcauley/rainwave.git
 sudo apt-get install memcached postgresql-contrib python-pip python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit python-fontforge python-dev libpython-dev
 sudo pip install -r rainwave/requirements.txt
 sudo pip install ujson
