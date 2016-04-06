@@ -13,3 +13,4 @@ tornado>=4.2
 Unidecode
 watchdog
 fontforge
+pyzmq>=15.2.0

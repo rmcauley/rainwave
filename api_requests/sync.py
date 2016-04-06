@@ -4,6 +4,7 @@ import tornado.ioloop
 import datetime
 import numbers
 import sys
+import zmq
 from time import time as timestamp
 
 try:

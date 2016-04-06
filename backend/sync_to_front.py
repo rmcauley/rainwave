@@ -1,19 +1,16 @@
 import urllib
+import datetime
+import zmq
+from tornado.httpclient import AsyncHTTPClient
+from tornado.ioloop import IOLoop
+
 try:
 	import ujson as json
 except ImportError:
 	import json
-import datetime
-from tornado.httpclient import AsyncHTTPClient
-from tornado.ioloop import IOLoop
 
 from libs import log
 from libs import config
-
-# These HTTP calls must be asynchronous, otherwise if an API instance tries to call itself we'll wind up with
-# a nasty case of deadlock.
-
-# TODO: start using ZeroMQ maybe?
 
 front_sched_sync_timers = {}
 front_sched_dj_timers = {}
