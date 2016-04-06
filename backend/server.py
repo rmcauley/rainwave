@@ -184,7 +184,7 @@ class BackendServer(object):
 
 			task_id = tornado.process.task_id()
 			if task_id == 0:
-				zeromq.init_proxy()
+				# zeromq.init_proxy()
 				self._import_cron_modules()
 			if task_id != None:
 				self._listen(stations[task_id])

@@ -9,39 +9,44 @@ try:
 except ImportError:
 	import json
 
-context = zmq.Context()
-pub = None
-pub_stream = None
-sub = None
-sub_stream = None
+_context = zmq.Context()
+_pub = None
+_sub_stream = None
 
 # ioloop.install() has to happen before anything happens with Tornado.
 # Make sure to include this module as early as possible in your app!
 def install_ioloop():
 	ioloop.install()
 
-def init_pub(socket=None):
-	global pub
-	global pub_stream
-	pub = context.socket(zmq.PUB)
-	pub.bind(socket or config.get("zeromq_pub_socket"))
-	pub_stream = zmqstream.ZMQStream(pub)
+def init_pub():
+	global _pub
+	_pub = _context.socket(zmq.PUB)
+	_pub.bind(config.get("zeromq_act_as_pub_socket"))
+	# pub_stream = zmqstream.ZMQStream(_pub)
 
 def init_sub():
-	global sub
-	global sub_stream
-	sub = context.socket(zmq.SUB)
-	sub.bind(config.get("zeromq_sub_socket"))
-	sub_stream = zmqstream.ZMQStream(sub)
+	global _sub_stream
+	sub = _context.socket(zmq.SUB)
+	sub.bind(config.get("zeromq_act_as_sub_socket"))
+	_sub_stream = zmqstream.ZMQStream(sub)
 
 def set_sub_callback(methd):
-	sub_stream.on_recv(methd)
+	_sub_stream.on_recv(methd)
 
 def publish(dct):
-	pub.send_multipart(json.dumps(dct))
+	_pub.send_multipart(json.dumps(dct))
 
-def init_proxy():
-	init_pub(config.get("zeromq_proxy_socket"))
-	init_sub()
-	pub_stream.on_recv(lambda msg: sub.send_multipart(msg))		#pylint: disable=W0108
-	sub_stream.on_recv(lambda msg: pub.send_multipart(msg))		#pylint: disable=W0108
+# def init_proxy():
+# 	# Subs to other pubs
+# 	frontend = _context.socket(zmq.SUB)
+# 	frontend.bind(config.get("zeromq_act_as_pub_socket"))
+# 	frontend.setsockopt(zmq.SUBSCRIBE, "")
+# 	frontend_stream = zmqstream.ZMQStream(frontend)
+
+# 	# Pubs to the other subs
+# 	backend = _context.socket(zmq.PUB)
+# 	backend.bind(config.get("zeromq_act_as_sub_socket"))
+# 	backend_stream = zmqstream.ZMQStream(backend)
+
+# 	frontend_stream.on_recv(lambda msg: backend.send_multipart(msg))		#pylint: disable=W0108
+# 	backend_stream.on_recv(lambda msg: frontend.send_multipart(msg))		#pylint: disable=W0108
