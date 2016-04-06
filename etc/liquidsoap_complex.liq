@@ -43,7 +43,7 @@ rw_auto = rewrite_metadata([("title", '$(if $(use_suffix),"$(title) $(suffix)","
 rw_offline = single(rw_offline_file)
 rw_auto = fallback([rw_auto, rw_offline], track_sensitive=false)
 
-rw_live = input.harbor("/dj.mp3", id="dj_harbor", port=rw_harbor_port, auth=rw_live_auth);
+rw_live = input.harbor("/dj.mp3", id="dj_harbor", port=rw_harbor_port, auth=rw_live_auth)
 rw_livemix = smooth_add(delay=0.5, p=0.2, normal=rw_auto, special=rw_live)
 
 # output.icecast(%vorbis(quality=0.2), host="localhost", port=8000, password="hackme", mount=rw_dest_mount^".ogg", genre="Music", url=rw_dest_url, description=rw_dest_desc, rw_livemix)
