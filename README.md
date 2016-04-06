@@ -148,8 +148,16 @@ You need to initialize the database and then add your songs to the database:
 
 ```
 python db_init.py
+```
+
+Now have Rainwave pick up the music you added to your `song_dirs`:
+
+```
 python rw_scanner.py --full
 ```
+
+This will run a full scan of your `song_dirs`.  To monitor `song_dirs`
+continuously without using CPU, run `rw_scanner.py` without the `--full` switch.
 
 Once done, open another terminal/command line and start the music
 management backend that LiquidSoap talks to:
@@ -216,7 +224,7 @@ Rainwave depends on three daemons:
 
 When updating Rainwave, to bust caches and make sure your users
 are getting the latest code, you **have** to edit `etc/buildnum` and
-increase the build number *before* `install.py`.  If you don't do this,
+increase the build number *before* using `install.py`.  If you don't do this,
 your users will continually run old code.
 
 During installation, Rainwave has no safety mechanisms or rolling restarts.
