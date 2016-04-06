@@ -4,7 +4,6 @@ import tornado.ioloop
 import datetime
 import numbers
 import sys
-import zmq
 from time import time as timestamp
 
 try:
@@ -18,7 +17,6 @@ from api.web import APIHandler
 from api.web import get_browser_locale
 from api.server import api_endpoints
 from api.server import handle_api_url
-import api.server
 from rainwave.user import User
 import api_requests.info
 import rainwave.playlist
@@ -26,6 +24,7 @@ import rainwave.playlist
 from libs import cache
 from libs import log
 from libs import config
+from libs import zeromq
 
 class SessionBank(object):
 	def __init__(self):
@@ -100,7 +99,7 @@ class SessionBank(object):
 
 		self.clear()
 
-	def update_dj(self, sid):
+	def update_dj(self):
 		for session in self.websockets:
 			if session.user.is_dj():
 				try:
@@ -155,112 +154,44 @@ class SessionBank(object):
 sessions = {}
 
 def init():
+	tornado.ioloop.PeriodicCallback(_keep_all_alive, 30000).start()
+	zeromq.set_sub_callback(_on_zmq)
 	global sessions
 	for sid in config.station_ids:
 		sessions[sid] = SessionBank()
-		tornado.ioloop.PeriodicCallback(_keep_all_alive, 30000).start()
 
 def _keep_all_alive():
 	global sessions
 	for sid in sessions:
 		sessions[sid].keep_alive()
 
-@handle_api_url("sync_update_all")
-class SyncUpdateAll(APIHandler):
-	local_only = True
-	auth_required = False
-	sid_required = False
-	hidden = True
+def _on_zmq(message):
+	try:
+		message = json.loads(message)
+	except Exception as e:
+		log.exception("zeromq", "Error decoding ZeroMQ message.", e)
+		return
 
-	def post(self):
-		self.append("sync_all_result", "Processing.")
+	if not 'action' in message or message['action']:
+		log.critical("zeromq", "No action received from ZeroMQ.")
 
-	def on_finish(self):
-		global sessions
-
-		if not self.get_status() == 200:
-			log.debug("sync_update_all", "sync_update_all request was not OK.")
-			return
-		log.debug("sync_update_all", "Updating all sessions for sid %s" % self.sid)
-		if self.sid:
+	try:
+		if message['action'] == "update_all":
 			rainwave.playlist.update_num_songs()
-			rainwave.playlist.prepare_cooldown_algorithm(self.sid)
-			cache.update_local_cache_for_sid(self.sid)
-			sessions[self.sid].update_all(self.sid)
-
-		super(SyncUpdateAll, self).on_finish()
-
-@handle_api_url("sync_update_dj")
-class SyncDJUser(APIHandler):
-	local_only = True
-	auth_required = False
-	sid_required = False
-	hidden = True
-
-	def post(self):
-		self.append("sync_dj_result", "Processing.")
-
-	def on_finish(self):
-		global sessions
-
-		if not self.get_status() == 200:
-			log.debug("sync_update_user", "sync_dj_user request was not OK.")
-			return super(SyncDJUser, self).on_finish()
-
-		if self.sid:
-			sessions[self.sid].update_dj(self.sid)
-
-		return super(SyncDJUser, self).on_finish()
-
-@handle_api_url("sync_update_user")
-class SyncUpdateUser(APIHandler):
-	local_only = True
-	auth_required = False
-	sid_required = False
-	hidden = True
-
-	fields = { "sync_user_id": (fieldtypes.integer, True)}
-
-	def post(self):
-		self.append("sync_user_result", "Processing.")
-
-	def on_finish(self):
-		global sessions
-
-		if not self.get_status() == 200:
-			log.debug("sync_update_user", "sync_update_user request was not OK.")
-			return super(SyncUpdateUser, self).on_finish()
-
-		user_id = long(self.get_argument("sync_user_id"))
-		for sid in sessions:
-			sessions[sid].update_user(user_id)
-
-		return super(SyncUpdateUser, self).on_finish()
-
-@handle_api_url("sync_update_ip")
-class SyncUpdateIP(APIHandler):
-	local_only = True
-	auth_required = False
-	sid_required = False
-	hidden = True
-
-	fields = { "ip_address": (fieldtypes.ip_address, True) }
-
-	def post(self):
-		self.append("sync_ip_result", "Processing.")
-
-	def on_finish(self):
-		global sessions
-
-		if not self.get_status() == 200:
-			log.debug("sync_update_ip", "sync_update_ip request was not OK.")
-			return
-
-		ip_address = self.get_argument("ip_address")
-		for sid in sessions:
-			sessions[sid].update_ip_address(ip_address)
-
-		super(SyncUpdateIP, self).on_finish()
+			rainwave.playlist.prepare_cooldown_algorithm(message['sid'])
+			cache.update_local_cache_for_sid(message['sid'])
+			sessions[message['sid']].update_all(message['sid'])
+		elif message['action'] == "update_ip":
+			for sid in sessions:
+				sessions[sid].update_ip_address(message['ip'])
+		elif message['action'] == "update_user":
+			for sid in sessions:
+				sessions[sid].update_user(message['user_id'])
+		elif message['action'] == "update_dj":
+			sessions[message['sid']].update_dj()
+	except Exception as e:
+		log.exception("zeromq", "Error handling Zero MQ action '%s'" % message['action'], e)
+		return
 
 @handle_api_url("sync")
 class Sync(APIHandler):

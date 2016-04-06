@@ -4,45 +4,44 @@ import zmq
 from zmq.eventloop import ioloop, zmqstream
 from libs import config
 
+try:
+	import ujson as json
+except ImportError:
+	import json
+
 context = zmq.Context()
-xpub = None
-xpub_stream = None
-xsub = None
-xsub_stream = None
+pub = None
+pub_stream = None
+sub = None
+sub_stream = None
 
 # ioloop.install() has to happen before anything happens with Tornado.
 # Make sure to include this module as early as possible in your app!
 def install_ioloop():
 	ioloop.install()
 
-def init_pub():
-	global xpub
-	global xpub_stream
-	xpub = context.socket(zmq.XPUB)
-	xpub.bind(config.get("zeromq_pub_socket"))
-	xpub_stream = zmqstream.ZMQStream(xpub, ioloop)
+def init_pub(socket=None):
+	global pub
+	global pub_stream
+	pub = context.socket(zmq.PUB)
+	pub.bind(socket or config.get("zeromq_pub_socket"))
+	pub_stream = zmqstream.ZMQStream(pub)
 
 def init_sub():
-	global xsub
-	global xsub_stream
-	xsub = context.socket(zmq.XSUB)
-	xsub.bind(config.get("zeromq_sub_socket"))
-	xsub_stream = zmqstream.ZMQStream(xsub, ioloop)
-
-def init_proxy():
-	init_pub()
-	init_sub()
-	set_sub_callback(send_to_pub)
-	set_pub_callback(send_to_sub)
-
-def set_pub_callback(methd):
-	xpub_stream.on_recv(methd)
+	global sub
+	global sub_stream
+	sub = context.socket(zmq.SUB)
+	sub.bind(config.get("zeromq_sub_socket"))
+	sub_stream = zmqstream.ZMQStream(sub)
 
 def set_sub_callback(methd):
-	xsub_stream.on_recv(methd)
+	sub_stream.on_recv(methd)
 
-def send_to_pub(message):
-	xpub.send_multipart(message)
+def publish(dct):
+	pub.send_multipart(json.dumps(dct))
 
-def send_to_sub(message):
-	xsub.send_multipart(message)
+def init_proxy():
+	init_pub(config.get("zeromq_proxy_socket"))
+	init_sub()
+	pub_stream.on_recv(lambda msg: sub.send_multipart(msg))		#pylint: disable=W0108
+	sub_stream.on_recv(lambda msg: pub.send_multipart(msg))		#pylint: disable=W0108

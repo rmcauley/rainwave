@@ -94,6 +94,8 @@ class APIServer(object):
 		self.ioloop = None
 
 	def _listen(self, task_id):
+		zeromq.init_pub()
+		zeromq.init_sub()
 		import api_requests.sync
 		api_requests.sync.init()
 
@@ -113,8 +115,6 @@ class APIServer(object):
 		log.debug("start", "Server booting, port %s." % port_no)
 		db.connect()
 		cache.connect()
-		zeromq.init_pub()
-		zeromq.init_sub()
 		memory_trace.setup(port_no)
 
 		api.locale.load_translations()
