@@ -439,14 +439,19 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			return
 
 		endpoint = api_endpoints[message['action']](websocket=True)
+		endpoint.locale = self.locale
 		endpoint.request = FakeRequestObject(message, self.request.cookies)
 		endpoint.sid = message['sid'] if 'sid' in message else self.sid
+		endpoint.user = self.user
 		try:
 			startclock = timestamp()
-			endpoint.user = self.user
-			endpoint.prepare_standalone()
-			if "message_id" in message and isinstance(message['message_id'], numbers.Number):
-				endpoint.append("message_id", { "message_id": message['message_id'] })
+			if "message_id" in message:
+				if not fieldtypes.zero_or_greater_integer(message['message_id']):
+					endpoint.prepare_standalone()
+					raise APIException("invalid_argument", argument="message_id", reason=fieldtypes.zero_or_greater_integer_error, http_code=400)
+				endpoint.prepare_standalone(fieldtypes.zero_or_greater_integer(message['message_id']))
+			else:
+				endpoint.prepare_standalone()
 			endpoint.post()
 			endpoint.append("api_info", { "exectime": timestamp() - startclock, "time": round(timestamp()) })
 		except Exception as e:
@@ -456,15 +461,14 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			self.write_message(endpoint._output) 	#pylint: disable=W0212
 
 	def update(self):
-		handler = None
+		handler = APIHandler(websocket=True)
+		handler.locale = self.locale
+		handler.request = FakeRequestObject({}, self.request.cookies)
+		handler.sid = self.sid
+		handler.user = self.user
+		handler.return_name = "sync_result"
 		try:
 			startclock = timestamp()
-			handler = APIHandler(websocket=True)
-			handler.request = FakeRequestObject({}, self.request.cookies)
-			handler.return_name = "sync_result"
-			handler.request = FakeRequestObject({}, self.request.cookies)
-			handler.user = self.user
-			handler.sid = self.sid
 			handler.prepare_standalone()
 
 			if not cache.get_station(self.sid, "backend_ok"):
@@ -530,8 +534,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		if not isinstance(message['sched_id'], numbers.Number):
 			self.write_message({ "wserror": { "tl_key": "invalid_argument", "text": self.locale.translate("invalid_argument", argument="sched_id") } })
 
-		if not cache.get_station(self.sid, "backend_ok"):
-			self.write_message({ "sync_result": { "tl_key": "station_offline", "text": self.locale.translate("station_offline") } })
+		self._station_offline_check()
 
 		if cache.get_station(self.sid, "sched_current_dict") and (cache.get_station(self.sid, "sched_current_dict")['id'] != message['sched_id']):
 			self.update()

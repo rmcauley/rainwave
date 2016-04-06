@@ -20,15 +20,16 @@ Rainwave only supports MP3 files.
 
 ## Prerequisites
 
-Authentication for Rainwave in a production environment is dependant on phpBB.
+Authentication for Rainwave users is dependant on phpBB.
 
-If you are just testing/developing locally, Rainwave will automatically setup
-some phpBB tables in the database and fill with some basic test data.  phpBB
-and PHP are not required in this scenario.
+* If you want users to use your site for voting, rating, and requesting, you'll
+have to install the latest phpBB, 3.1 or above.
+* If you're just running Rainwave for streaming audio, you do not need phpBB.
+* If you are just testing/developing locally, you do not need phpBB.
 
-phpBB and Rainwave must share the same database.  Some phpBB tables
-are also modified for Rainwave's purposes as part of Rainwave's
-database initialization, but do not interfere with phpBB.
+phpBB and Rainwave must share the same database.  Rainwave uses phpBB's
+tables and data.  If you do not have phpBB, Rainwave will create its own
+fake phpBB data to put into the database.
 
 If using Icecast, Icecast 2.3.3 or above is required.
 
@@ -39,8 +40,8 @@ or above is required.
 ### Prerequisites on Debian/Ubuntu
 
 ```
-git clone git@github.com:rmcauley/rainwave.git
-sudo apt-get install memcached postgresql-contrib python-pip python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit python-fontforge python-dev libpython-dev
+git clone https://github.com/rmcauley/rainwave.git
+sudo apt-get install memcached postgresql-contrib python-pip python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit python-fontforge python-dev libpython-dev mp3gain
 sudo pip install -r rainwave/requirements.txt
 sudo pip install ujson
 cp rainwave/etc/rainwave_reference.conf rainwave/etc/$USER.conf
@@ -79,6 +80,24 @@ CREATE ROLE rainwave WITH LOGIN PASSWORD 'password';
 CREATE DATABASE rainwave WITH OWNER rainwave;
 ```
 
+Now connect to the database you created, and execute:
+
+```
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+```
+
+## Postgres Setup for existing phpBB
+
+Connect to the phpBB database as your database superuser
+and execute the following SQL:
+
+```
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+```
+
+When configuring Rainwave, use the exact same address, user, and password for Rainwave
+as you do for phpBB.
+
 ## Configure Rainwave
 
 Edit your configuration file in the Rainwave `etc/`, and follow the instructions
@@ -87,8 +106,40 @@ Some options are very important.
 
 Tips:
 
-* Until you're ready to deploy a production version, it's best to leave development mode on and keep Rainwave single-processed.
+* Until you're ready to deploy a production version, it's best to leave development mode
+on and keep Rainwave single-processed.
 * Do not create a station with ID 0.
+* If using phpBB, configure the database *exactly* the same as you did for phpBB
+
+Potential gotcha:
+
+If you start seeing "Peer authentication failed" messages when running Rainwave,
+you *may* have to edit your pg_hba.conf after this if you get errors trying to
+connect.  The pg_hba.conf is usually located at `/etc/postgresql/[VERSION]/main/pg_hba.conf`.
+If you're running this all on the same machine, add this line to the file:
+
+```
+local    [DATABASE NAME]     [DATABASE USER]         md5
+```
+
+## Adding Music to your Rainwave Library
+
+Locate the "song_dir" entry from your configuration file and copy/paste
+your music library to this directory.
+
+Note: If using a remote Linux server you will need to use SFTP/SSH, or install
+vsftpd or similar FTP server package, to upload music to the directory.
+
+* *Your MP3 tags must be accurate*.  Rainwave reads the tags to obtain
+track information, which is necessary to manage song rotation.
+* Upload a minimum of 1,000 songs.  Rainwave requires a minimal library
+of this size to operate correctly.
+* Place albums in seperate directories if using album art. To add album art,
+create a file named "folder.jpg" and place it in each album directory
+for it to appear. (sorry, embedded album art is not supported)
+* Rainwave and LiquidSoap support unicode MP3 tags, but do not support
+unicode filenames.  Please rename files that contain accents and symbols.
+Rainwave will reject and skip files that contain accents or symbols.
 
 ## First Start and Test
 
@@ -104,7 +155,7 @@ Once done, open another terminal/command line and start the music
 management backend that LiquidSoap talks to:
 
 ```
-python rw_backend.api
+python rw_backend.py
 ```
 
 Once that is started successfully, open another terminal/command line
@@ -120,7 +171,7 @@ Now use the same tool LiquidSoap uses to test that everything works:
 python rw_get_next.py
 ```
 
-If successful, you should see a song filename as output.
+If successful, you should see a song file name as output.
 
 Open the beta URL at `/beta/?sid=1` to see your Rainwave.
 
