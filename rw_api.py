@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+# this include has to go first so ZMQ can steal IOLoop installation from Tornado
+import libs.zeromq
+libs.zeromq.install_ioloop()
+
 import argparse
 import sys
 

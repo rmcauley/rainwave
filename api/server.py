@@ -26,6 +26,7 @@ from libs import chuser
 from libs import cache
 from libs import memory_trace
 from libs import buildtools
+from libs import zeromq
 from rainwave import playlist
 from rainwave import schedule
 import rainwave.request
@@ -112,6 +113,8 @@ class APIServer(object):
 		log.debug("start", "Server booting, port %s." % port_no)
 		db.connect()
 		cache.connect()
+		zeromq.init_pub()
+		zeromq.init_sub()
 		memory_trace.setup(port_no)
 
 		api.locale.load_translations()

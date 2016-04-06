@@ -1,9 +1,9 @@
 __using_libmc = False
 try:
-    import pylibmc as libmc
-    __using_libmc = True
+	import pylibmc as libmc
+	__using_libmc = True
 except ImportError:
-    import memcache as libmc
+	import memcache as libmc
 
 from libs import config
 from libs import db
@@ -32,7 +32,7 @@ def connect():
 	if _memcache:
 		return
 	if config.get("memcache_fake") or config.get("web_developer_mode"):
-	 	_memcache = TestModeCache()
+		_memcache = TestModeCache()
 		_memcache_ratings = TestModeCache()
 		reset_station_caches()
 	else:

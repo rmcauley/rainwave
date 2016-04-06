@@ -15,6 +15,7 @@ from libs import config
 from libs import db
 from libs import cache
 from libs import memory_trace
+from libs import zeromq
 
 sid_output = {}
 
@@ -130,6 +131,7 @@ class BackendServer(object):
 
 		db.connect()
 		cache.connect()
+		zeromq.init_pub()
 		log.init("%s/rw_%s.log" % (config.get_directory("log_dir"), config.station_id_friendly[sid].lower()), config.get("log_level"))
 		memory_trace.setup(config.station_id_friendly[sid].lower())
 
@@ -182,6 +184,7 @@ class BackendServer(object):
 
 			task_id = tornado.process.task_id()
 			if task_id == 0:
+				zeromq.init_proxy()
 				self._import_cron_modules()
 			if task_id != None:
 				self._listen(stations[task_id])
