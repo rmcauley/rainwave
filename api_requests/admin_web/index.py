@@ -1,6 +1,7 @@
 import time
 import calendar
 import tornado.web
+import tornado.escape
 
 from libs import config
 from libs import db
@@ -167,7 +168,7 @@ class AlbumList(api.web.HTMLRequest):
 		albums = db.c.fetch_all(sql, (self.user.id, self.get_argument("restrict")))
 		for row in albums:
 			self.write("<tr><td>%s</td>" % row['id'])
-			self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?sid=%s&id=%s&sort=%s';\" style='cursor: pointer;'>%s</td><td>" % (self.get_argument('restrict'), row['id'], self.get_argument('sort', ""), row['name']))
+			self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?sid=%s&id=%s&sort=%s';\" style='cursor: pointer;'>%s</td><td>" % (self.get_argument('restrict'), row['id'], self.get_argument('sort', ""), tornado.escape.xhtml_escape(row['name'])))
 			if row['rating_user']:
 				self.write(str(row['rating_user']))
 			self.write("</td><td>(%s)</td><td>" % row['rating'])
@@ -191,7 +192,7 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 		self.write("<h2>%s (%s)</h2>" % (self._output['album']['name'], config.station_id_friendly[self.sid]))
 		self.write("<table>")
 		for row in self._output['album']['songs']:
-			self.write("<tr><td>%s</th><td>%s</td>" % (row['id'], row['title']))
+			self.write("<tr><td>%s</th><td>%s</td>" % (row['id'], tornado.escape.xhtml_escape(row['title'])))
 			if row['rating']:
 				self.write("<td>(%s)</td>" % row['rating'])
 			elif 'rating' in row:

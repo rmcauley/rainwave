@@ -1,8 +1,13 @@
 {
    "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
+   "__comment__"                 : "Please put them in your actual language. (i.e. use kanji!) Short version should be < 4 characters.",
 
    "language_name"                                   : "Nederlands",
    "language_name_short"                             : "NL",
+   
+    "__comment__"                 : "This shows up after 'Rainwave' on Google results.  e.g. 'Rainwave Video Game Music Radio: Covers'",
+
+   "page_title_on_google"                            : "Video Game Music Radio",
 
    "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
 
@@ -190,6 +195,7 @@
    "mobile_sync_retrying"                            : "Connectie timeout problemen, ververs alstublieft de pagina of probeer het later opnieuw.",
    "async_error"                                     : "Fout bij het communiceren met Rainwave. Probeer het opnieuw of ververs de pagina.",
    "deeplink_error"                                  : "Fout bij het begrijpen van de ingevoerde URL.",
+   "hold_to_rate"                                    : "hou ingedrukt om te waarderen",
 
    "Loading..."                                      : "Laden...",
    "Cancel"                                          : "Annuleer",
@@ -223,6 +229,7 @@
    "Albums"                                          : "Albums",
    "Songs"                                           : "Liedjes",
    "Artists"                                         : "Artiesten",
+   "Artists_pluralized"                              : "&(count:Artiest/Artiesten)",
    "Users"                                           : "Gebruikers",
    "Groups"                                          : "Categorieën",
    "Listeners"                                       : "Luisteraars",
@@ -351,7 +358,7 @@
    "album_name"                                      : "Album Naam",
    "id"                                              : "ID",
    "sid"                                             : "Station ID",
-   "delete"                                          : "Verwijderen",
+   "delete"                                          : "Verwijder",
    "all_faves"                                       : "Alle Favorieten",
    "rating_user"                                     : "Gebruikers Beoordeling",
    "fave"                                            : "Favoriet",
@@ -365,14 +372,9 @@
    "origin_sid"                                      : "Station",
    "user_recent_votes"                               : "Uw Recente Stemmen",
    "user_requested_history"                          : "Uw Aanvraag Geschiedenis",
-   "request_line_result"                             : "Wachtende Luisteraars in de Aanvragen Wachtrij",
    "song_id"                                         : "Liedje ID",
    "user_id"                                         : "Gebruiker ID",
-   "line_expiry_tune_in"                             : "Verloop Tijd (als station niet wordt beluisterd)",
-   "line_expiry_election"                            : "Verloop Tijd (als er geen goede aanvragen zijn)",
-   "line_wait_start"                                 : "Deelgenomen aan Wachtrij om (tijdsperiode)",
-   "artist_parseable"                                : "Artiesten (computer-leesbaar formaat)",
-   "song_played_at"                                  : "Gespeeld om (tijdsperiode)",
+   
 
    "__comment__"                 : "Admin Panel Lines (translation not required)",
 
