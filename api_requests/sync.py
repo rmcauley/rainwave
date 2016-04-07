@@ -165,33 +165,36 @@ def _keep_all_alive():
 	for sid in sessions:
 		sessions[sid].keep_alive()
 
-def _on_zmq(message):
-	try:
-		message = json.loads(message)
-	except Exception as e:
-		log.exception("zeromq", "Error decoding ZeroMQ message.", e)
-		return
+def _on_zmq(messages):
+	for message in messages:
+		try:
+			message = json.loads(message)
+		except Exception as e:
+			log.exception("zeromq", "Error decoding ZeroMQ message.", e)
+			return
 
-	if not 'action' in message or message['action']:
-		log.critical("zeromq", "No action received from ZeroMQ.")
+		if not 'action' in message or not message['action']:
+			log.critical("zeromq", "No action received from ZeroMQ.")
 
-	try:
-		if message['action'] == "update_all":
-			rainwave.playlist.update_num_songs()
-			rainwave.playlist.prepare_cooldown_algorithm(message['sid'])
-			cache.update_local_cache_for_sid(message['sid'])
-			sessions[message['sid']].update_all(message['sid'])
-		elif message['action'] == "update_ip":
-			for sid in sessions:
-				sessions[sid].update_ip_address(message['ip'])
-		elif message['action'] == "update_user":
-			for sid in sessions:
-				sessions[sid].update_user(message['user_id'])
-		elif message['action'] == "update_dj":
-			sessions[message['sid']].update_dj()
-	except Exception as e:
-		log.exception("zeromq", "Error handling Zero MQ action '%s'" % message['action'], e)
-		return
+		try:
+			if message['action'] == "update_all":
+				rainwave.playlist.update_num_songs()
+				rainwave.playlist.prepare_cooldown_algorithm(message['sid'])
+				cache.update_local_cache_for_sid(message['sid'])
+				sessions[message['sid']].update_all(message['sid'])
+			elif message['action'] == "update_ip":
+				for sid in sessions:
+					sessions[sid].update_ip_address(message['ip'])
+			elif message['action'] == "update_user":
+				for sid in sessions:
+					sessions[sid].update_user(message['user_id'])
+			elif message['action'] == "update_dj":
+				sessions[message['sid']].update_dj()
+			elif message['action'] == "ping":
+				log.debug("zeromq", "Pong")
+		except Exception as e:
+			log.exception("zeromq", "Error handling Zero MQ action '%s'" % message['action'], e)
+			return
 
 @handle_api_url("sync")
 class Sync(APIHandler):

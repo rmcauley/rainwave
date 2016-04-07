@@ -177,6 +177,9 @@ class BackendServer(object):
 
 		stations = list(config.station_ids)
 		if not hasattr(os, "fork"):
+			if len(stations) > 1:
+				log.critical("server", "*** WARNING: CANNOT RUN BACKEND FOR MORE THAN 1 STATION ON WINDOWS ***")
+			zeromq.init_proxy()
 			self._import_cron_modules()
 			self._listen(stations[0])
 		else:
@@ -184,7 +187,7 @@ class BackendServer(object):
 
 			task_id = tornado.process.task_id()
 			if task_id == 0:
-				# zeromq.init_proxy()
+				zeromq.init_proxy()
 				self._import_cron_modules()
 			if task_id != None:
 				self._listen(stations[task_id])
