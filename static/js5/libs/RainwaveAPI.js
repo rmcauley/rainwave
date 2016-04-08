@@ -12,7 +12,9 @@ var RainwaveAPI = function() {
 	var _sid, _userID, _apiKey;
 	var userIsDJ, currentScheduleID, isOK, hidden, visibilityChange, isHidden;
 	var socket, socketStaysClosed, socketIsBusy;
-	var socketErrorCount, socketSequentialRequests, requestID = 0;
+	var socketErrorCount = 0;
+	var socketSequentialRequests = 0;
+	var requestID = 0;
 	var requestQueue = [];
 	var sentRequests = [];
 	var callbacks = {};
