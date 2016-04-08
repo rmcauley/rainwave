@@ -9,7 +9,7 @@ var RainwaveAPI = function() {
 		debug: false
 	};
 
-	var _sid, _userID, _apiKey;
+	var _sid, _userID, _apiKey, _host;
 	var userIsDJ, currentScheduleID, isOK, hidden, visibilityChange, isHidden;
 	var socket, socketStaysClosed, socketIsBusy;
 	var socketErrorCount = 0;
@@ -27,10 +27,11 @@ var RainwaveAPI = function() {
 
 	// Module Init  ******************************************************************************************
 
-	self.initialize = function(sid, userID, apiKey, data) {
+	self.initialize = function(sid, userID, apiKey, data, host) {
 		_sid = sid;
 		_userID = userID;
 		_apiKey = apiKey;
+		_host = host;
 
 		self.on("sched_current", function(json) {
 			currentScheduleID = json.id;
@@ -88,7 +89,17 @@ var RainwaveAPI = function() {
 		if (socket && (socket.readyState === WebSocket.OPEN)) {
 			return;
 		}
-		socket = new WebSocket("ws://" + window.location.host + "/api4/websocket/" + _sid);
+		var wshost = (window.location.protocol === "https:") ? "wss://" : "ws://";
+		if (_host) {
+			wshost += _host;
+			if (window.location.port) {
+				wshost += ":" + window.location.port;
+			}
+		}
+		else {
+			wshost += window.location.host;
+		}
+		socket = new WebSocket(wshost + "/api4/websocket/" + _sid);
 		socket.addEventListener("open", function() {
 			if (self.debug) console.log("Socket open.");
 			socket.send(JSON.stringify({
