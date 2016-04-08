@@ -62,7 +62,7 @@
 		<div class="close" bind="detail_close">
 			<img src="/static/images4/cancel.png" alt="X" />
 		</div>
-		<ul class="panel_header" bind="detail_header_container">
+		<ul class="panel_header selectable" bind="detail_header_container">
 			<li class="open">
 				<span bind="detail_header"></span>
 			</li>

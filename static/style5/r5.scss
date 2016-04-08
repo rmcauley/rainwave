@@ -262,12 +262,22 @@ a, a:visited, .link {
 	}
 }
 
-.unselectable, body.mobile {
+.unselectable, body {
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-o-user-select: none;
 	user-select: none;
+}
+
+body.desktop {
+	.name, .title, .album, .artist, .artists, .selectable {
+		-webkit-user-select: text;
+		-khtml-user-select: text;
+		-moz-user-select: text;
+		-o-user-select: text;
+		user-select: text;
+	}
 }
 
 .phoneonly {
