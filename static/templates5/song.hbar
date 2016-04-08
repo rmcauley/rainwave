@@ -6,6 +6,8 @@
 	{{/if}}
 
 	{{#if ^_c.entry_id}}
+		<div class="song_highlight song_highlight_left"></div>
+		<div class="song_highlight song_highlight_right"></div>
 		<div class="song_highlight song_highlight_topleft"></div>
 		<div class="song_highlight song_highlight_topright"></div>
 		<div class="song_highlight song_highlight_bottomleft"></div>
