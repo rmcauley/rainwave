@@ -372,6 +372,7 @@ def _update_schedule_memcache(sid):
 
 def update_memcache(sid):
 	_update_schedule_memcache(sid)
+	update_live_voting(sid)
 	cache.prime_rating_cache_for_events(sid, [ current[sid] ] + upnext[sid] + history[sid])
 	cache.set_station(sid, "current_listeners", listeners.get_listeners_dict(sid), True)
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)
@@ -389,3 +390,11 @@ def update_memcache(sid):
 	if len(history[sid]) and history[sid][-1] and getattr(history[sid][-1], 'dj_user_id', None):
 		potential_dj_ids.append(history[sid][-1].dj_user_id)
 	cache.set_station(sid, "dj_user_ids", potential_dj_ids)
+
+def update_live_voting(sid):
+	live_voting = {}
+	for event in upnext[sid]:
+		if event.is_election:
+			live_voting[event.id] = db.c.fetch_all("SELECT entry_id, entry_votes, song_id FROM r4_election_entries WHERE elec_id = %s", (event.id,))
+	cache.set_station(sid, "live_voting", live_voting)
+	return live_voting

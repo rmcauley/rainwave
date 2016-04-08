@@ -54,7 +54,7 @@ var Song = function(self, parent_event) {
 		}
 		self.el.classList.add("voting_clicked");
 		API.async_get("vote", { "entry_id": self.entry_id },
-			self.register_vote,
+			null,
 			function(json) {
 				self.el.classList.add("voting_error");
 				self.el.classList.remove("voting_clicked");

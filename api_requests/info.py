@@ -21,7 +21,7 @@ def attach_dj_info_to_request(request):
 		"mount_url": config.get_station(request.sid, "liquidsoap_harbor_mount")
 	})
 
-def attach_info_to_request(request, extra_list = None, all_lists = False):
+def attach_info_to_request(request, extra_list = None, all_lists = False, live_voting = False):
 	# Front-load all non-animated content ahead of the schedule content
 	# Since the schedule content is the most animated on R3, setting this content to load
 	# first has a good impact on the perceived animation smoothness since table redrawing
@@ -94,6 +94,9 @@ def attach_info_to_request(request, extra_list = None, all_lists = False):
 				request.append("already_voted", [(sched_next[0]['id'], request.user.data['voted_entry'])])
 
 	request.append("all_stations_info", cache.get("all_stations_info"))
+
+	if live_voting:
+		request.append("live_voting", cache.get_station(request.sid, "live_voting"))
 
 def check_sync_status(sid, offline_ack=False):
 	if not cache.get_station(sid, "backend_ok") and not offline_ack:

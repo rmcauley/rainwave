@@ -4,6 +4,7 @@ import tornado.ioloop
 import datetime
 import numbers
 import sys
+import uuid
 from time import time as timestamp
 
 try:
@@ -11,17 +12,16 @@ try:
 except ImportError:
 	import json
 
-import api.server
 from api import fieldtypes
 from api.exceptions import APIException
 from api.web import APIHandler
 from api.web import get_browser_locale
 from api.server import api_endpoints
 from api.server import handle_api_url
-from api_requests.vote import SubmitVote
 from rainwave.user import User
 import api_requests.info
 import rainwave.playlist
+import rainwave.schedule
 
 from libs import cache
 from libs import log
@@ -148,15 +148,19 @@ class SessionBank(object):
 			except Exception:
 				log.exception("sync", "Session failed finish() during update_user.", e)
 
-	def send_to_user(self, user_id, data):
+	def send_to_user(self, user_id, uuid_exclusion, data):
 		if not user_id in self.websockets_by_user:
 			return
-		for session in self.websockets_by_user:
-			session.write_message(data)
+		if "message_id" in data:
+			del(data["message_id"])
+		for session in self.websockets_by_user[user_id]:
+			if not session.uuid == uuid_exclusion:
+				session.write_message(data)
 
-	def send_to_all(self, data):
+	def send_to_all(self, uuid_exclusion, data):
 		for session in self.websockets:
-			session.write_message(data)
+			if not uuid_exclusion == session.uuid:
+				session.write_message(data)
 
 	def _throttle_session(self, session, updated_by_ip=False):
 		if not session in self.throttled:
@@ -197,14 +201,11 @@ def _on_zmq(messages):
 		if not 'action' in message or not message['action']:
 			log.critical("zeromq", "No action received from ZeroMQ.")
 
-		if 'uuid' in message and message['uuid'] == api.server.server_uuid:
-			return
-
 		try:
 			if message['action'] == "result_sync":
-				sessions[message['sid']].send_to_user(message['user_id'], message['data'])
+				sessions[message['sid']].send_to_user(message['user_id'], message['uuid_exclusion'], message['data'])
 			elif message['action'] == "forward_to_all":
-				sessions[message['sid']].send_to_all(message['data'])
+				sessions[message['sid']].send_to_all(message['uuid_exclusion'], message['data'])
 			elif message['action'] == "update_all":
 				rainwave.playlist.update_num_songs()
 				rainwave.playlist.prepare_cooldown_algorithm(message['sid'])
@@ -316,6 +317,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 	help_hidden = False
 	locale = None
 	sid = None
+	uuid = None
 
 	def open(self, *args, **kwargs):
 		super(WSHandler, self).open()
@@ -416,9 +418,13 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			endpoint.post()
 			endpoint.append("api_info", { "exectime": timestamp() - startclock, "time": round(timestamp()) })
 			if endpoint.sync_across_sessions:
-				zeromq.publish({ "action": "result_sync", "sid": self.sid, "user_id": self.user.id, "data": endpoint._output, "uuid": api.server.uuid })
-			if isinstance(endpoint, SubmitVote) and endpoint.elec_id:
-				zeromq.publish({ "action": "forward_to_all", "sid": self.sid, "data": endpoint.get_live_voting() })
+				if endpoint.return_name in endpoint._output and isinstance(endpoint._output[endpoint.return_name], dict) and not endpoint._output[endpoint.return_name]['success']:
+					pass
+				else:
+					zeromq.publish({ "action": "result_sync", "sid": self.sid, "user_id": self.user.id, "data": endpoint._output, "uuid_exclusion": self.uuid })
+			if message['action'] == "vote" and endpoint.return_name in endpoint._output and isinstance(endpoint._output[endpoint.return_name], dict) and endpoint._output[endpoint.return_name]['success']:
+				live_voting = rainwave.schedule.update_live_voting(self.sid)
+				zeromq.publish({ "action": "forward_to_all", "sid": self.sid, "uuid_exclusion": self.uuid, "data": live_voting })
 		except Exception as e:
 			endpoint.write_error(500, exc_info=sys.exc_info(), no_finish=True)
 			log.exception("websocket", "API Exception during operation.", e)
@@ -441,7 +447,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 				raise APIException("station_offline")
 
 			self.refresh_user()
-			api_requests.info.attach_info_to_request(handler)
+			api_requests.info.attach_info_to_request(handler, live_voting=True)
 			if self.user.is_dj():
 				api_requests.info.attach_dj_info_to_request(handler)
 			handler.append("user", self.user.to_private_dict())
@@ -476,6 +482,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			self.close()
 			return
 		self.authorized = True
+		self.uuid = str(uuid.uuid4())
 
 		global sessions
 		sessions[self.sid].append(self)
