@@ -121,7 +121,7 @@ var RainwaveAPI = function() {
 	};
 
 	var onSocketError = function() {
-		if (socketErrorCount > 2) {
+		if (socketErrorCount > 1) {
 			self.onError({ "tl_key": "sync_retrying" });
 		}
 		socketErrorCount++;
