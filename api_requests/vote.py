@@ -19,6 +19,7 @@ class SubmitVote(APIHandler):
 	tunein_required = True
 	description = "Vote for a candidate in an election.  Cannot cancel/delete a vote.  If user has already voted, the vote will be changed to the submitted song."
 	fields = { "entry_id": (fieldtypes.integer, True) }
+	sync_across_sessions = True
 
 	def post(self):
 		lock_count = 0

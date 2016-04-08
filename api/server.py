@@ -2,12 +2,14 @@ import sys
 import os
 import httplib
 import urllib
+import time
+import traceback
+import uuid
+
 try:
 	import ujson as json
 except ImportError:
 	import json
-import time
-import traceback
 
 import tornado.httpserver
 import tornado.ioloop
@@ -42,6 +44,7 @@ request_classes = [
 testable_requests = []
 api_endpoints = {}
 app = None
+server_uuid = None
 
 class handle_url(object):
 	def __init__(self, url):
@@ -96,6 +99,10 @@ class APIServer(object):
 	def _listen(self, task_id):
 		zeromq.init_pub()
 		zeromq.init_sub()
+
+		global server_uuid
+		server_uuid = uuid.uuid4()
+
 		import api_requests.sync
 		api_requests.sync.init()
 

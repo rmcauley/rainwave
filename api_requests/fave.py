@@ -16,6 +16,7 @@ class SubmitSongFave(APIHandler):
 		"song_id": (fieldtypes.song_id, True),
 		"fave": (fieldtypes.boolean, True)
 	}
+	sync_across_sessions = True
 
 	def post(self):
 		object_id = self.get_argument(self._fave_type + "_id")
@@ -45,3 +46,4 @@ class SubmitAlbumFave(SubmitSongFave):
 		"album_id": (fieldtypes.album_id, True),
 		"fave": (fieldtypes.boolean, True)
 	}
+	sync_across_sessions = True

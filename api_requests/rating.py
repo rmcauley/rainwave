@@ -19,6 +19,7 @@ class SubmitRatingRequest(APIHandler):
 		"song_id": (fieldtypes.song_id, True),
 		"rating": (fieldtypes.rating, True)
 	}
+	sync_across_sessions = True
 
 	def post(self):
 		self.rate(self.get_argument("song_id"), self.get_argument("rating"))

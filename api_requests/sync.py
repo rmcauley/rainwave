@@ -11,6 +11,7 @@ try:
 except ImportError:
 	import json
 
+import api.server
 from api import fieldtypes
 from api.exceptions import APIException
 from api.web import APIHandler
@@ -32,6 +33,7 @@ class SessionBank(object):
 		self.sessions = []
 		self.websockets = []
 		self.throttled = {}
+		self.sessions_by_user = {}
 
 	def __iter__(self):
 		for item in self.sessions:
@@ -41,6 +43,10 @@ class SessionBank(object):
 		if session.is_websocket:
 			if not session in self.websockets:
 				self.websockets.append(session)
+			if not session.user.is_anonymous():
+				if not session.user.id in self.sessions_by_user:
+					self.sessions_by_user = []
+				self.sessions_by_user[session.user_id].append(session)
 		elif not session in self.sessions:
 			self.sessions.append(session)
 
@@ -50,6 +56,10 @@ class SessionBank(object):
 			del(self.throttled[session])
 		if session in self.websockets:
 			self.websockets.remove(session)
+			if not session.user.is_anonymous() and session.user.id in self.sessions_by_user and session in self.sessions_by_user:
+				self.sessions_by_user[session.user_id].remove(session)
+				if not len(self.sessions_by_user[session.user_id]):
+					del(self.sessions_by_user[session.user_id])
 		elif session in self.sessions:
 			self.sessions.remove(session)
 
@@ -137,6 +147,12 @@ class SessionBank(object):
 			except Exception:
 				log.exception("sync", "Session failed finish() during update_user.", e)
 
+	def send_to_user(self, user_id, data):
+		if not user_id in self.sessions_by_user:
+			return
+		for session in self.sessions_by_user:
+			session.write_message(data)
+
 	def _throttle_session(self, session, updated_by_ip=False):
 		if not session in self.throttled:
 			self.throttled[session] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=2), lambda: self._do_user_update(session, updated_by_ip))
@@ -176,8 +192,13 @@ def _on_zmq(messages):
 		if not 'action' in message or not message['action']:
 			log.critical("zeromq", "No action received from ZeroMQ.")
 
+		if 'uuid' in message and message['uuid'] == api.server.server_uuid:
+			return
+
 		try:
-			if message['action'] == "update_all":
+			if message['action'] == "result_sync":
+				sessions[message['sid']].send_to_user(message['user_id'], message['data'])
+			elif message['action'] == "update_all":
 				rainwave.playlist.update_num_songs()
 				rainwave.playlist.prepare_cooldown_algorithm(message['sid'])
 				cache.update_local_cache_for_sid(message['sid'])
@@ -281,8 +302,6 @@ class FakeRequestObject(object):
 		self.arguments = arguments
 		self.cookies = cookies
 
-# TODO: Special payload updates for live voting/etc
-
 @handle_api_url("websocket/(\d+)")
 class WSHandler(tornado.websocket.WebSocketHandler):
 	is_websocket = True
@@ -377,6 +396,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		endpoint.request = FakeRequestObject(message, self.request.cookies)
 		endpoint.sid = message['sid'] if 'sid' in message else self.sid
 		endpoint.user = self.user
+		#pylint: disable=W0212
 		try:
 			startclock = timestamp()
 			if "message_id" in message:
@@ -388,11 +408,14 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 				endpoint.prepare_standalone()
 			endpoint.post()
 			endpoint.append("api_info", { "exectime": timestamp() - startclock, "time": round(timestamp()) })
+			if endpoint.sync_across_sessions:
+				zeromq.publish({ "action": "result_sync", "sid": self.sid, "user_id": self.user.id, "data": endpoint._output, "uuid": api.server.uuid })
 		except Exception as e:
 			endpoint.write_error(500, exc_info=sys.exc_info(), no_finish=True)
 			log.exception("websocket", "API Exception during operation.", e)
 		finally:
-			self.write_message(endpoint._output) 	#pylint: disable=W0212
+			self.write_message(endpoint._output)
+		#pylint: enable=W0212
 
 	def update(self):
 		handler = APIHandler(websocket=True)

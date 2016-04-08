@@ -15,6 +15,7 @@ class SubmitRequest(APIHandler):
 	fields = {
 		"song_id": (fieldtypes.song_id_matching_sid, True)
 	}
+	sync_across_sessions = True
 
 	def post(self):
 		if self.user.add_request(self.sid, self.get_argument("song_id")):
@@ -32,6 +33,7 @@ class DeleteRequest(APIHandler):
 	fields = {
 		"song_id": (fieldtypes.song_id, True)
 	}
+	sync_across_sessions = True
 
 	def post(self):
 		if self.user.remove_request(self.get_argument("song_id")):
@@ -49,6 +51,7 @@ class OrderRequests(APIHandler):
 	fields = {
 		"order": (fieldtypes.song_id_list, True)
 	}
+	sync_across_sessions = True
 
 	def post(self):
 		order = 0
@@ -65,6 +68,7 @@ class RequestUnratedSongs(APIHandler):
 	tunein_required = False
 	unlocked_listener_only = False
 	fields = { "limit": (fieldtypes.integer, False) }
+	sync_across_sessions = True
 
 	def post(self):
 		if self.user.add_unrated_requests(self.sid, self.get_argument("limit")) > 0:
@@ -80,6 +84,7 @@ class RequestFavoritedSongs(APIHandler):
 	tunein_required = False
 	unlocked_listener_only = False
 	fields = { "limit": (fieldtypes.integer, False) }
+	sync_across_sessions = True
 
 	def post(self):
 		if self.user.add_favorited_requests(self.sid, self.get_argument("limit")) > 0:
@@ -94,6 +99,7 @@ class ClearRequests(APIHandler):
 	login_required = True
 	tunein_required = False
 	unlocked_listener_only = False
+	sync_across_sessions = True
 
 	def post(self):
 		self.user.clear_all_requests()
@@ -105,6 +111,7 @@ class PauseRequestQueue(APIHandler):
 	login_required = True
 	tunein_required = False
 	unlocked_listener_only = False
+	sync_across_sessions = True
 
 	def post(self):
 		self.user.pause_requests()
@@ -120,6 +127,7 @@ class UnPauseRequestQueue(APIHandler):
 	login_required = True
 	tunein_required = False
 	unlocked_listener_only = False
+	sync_across_sessions = True
 
 	def post(self):
 		self.user.unpause_requests(self.sid)
@@ -128,8 +136,6 @@ class UnPauseRequestQueue(APIHandler):
 			self.append_standard("radio_requests_paused")
 		else:
 			self.append_standard("radio_requests_unpaused")
-
-
 
 @handle_api_url("request_line")
 class ListRequestLine(APIHandler):

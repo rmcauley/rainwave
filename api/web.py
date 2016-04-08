@@ -131,6 +131,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	allow_sid_zero = False
 	# set to allow from any source
 	allow_cors = False
+	# sync result across all user's websocket sessions
+	sync_across_sessions = False
 
 	def __init__(self, *args, **kwargs):
 		if not 'websocket' in kwargs:
