@@ -22,6 +22,7 @@ var RWAudio;
 		API = RainwaveAPI;
 		API.onError = ErrorHandler.permanent_error;
 		API.onErrorRemove = ErrorHandler.remove_permanent_error;
+		API.onUnsuccessful = ErrorHandler.tooltip_error;
 		API.onRequestError = ErrorHandler.tooltip_error;
 		API.add_callback = API.addEventListener;
 		API.async_get = API.request;

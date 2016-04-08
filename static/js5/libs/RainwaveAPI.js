@@ -128,11 +128,13 @@ var RainwaveAPI = function() {
 		if (socketStaysClosed || isHidden) {
 			return;
 		}
+		if (self.debug) console.log("Socket was closed.");
 		setTimeout(initSocket, 500);
 	};
 
 	var onSocketError = function() {
-		if (socketErrorCount > 1) {
+		if (self.debug) console.log("Socket errored.");
+		if (socketErrorCount > 0) {
 			self.onError({ "tl_key": "sync_retrying" });
 		}
 		socketErrorCount++;
@@ -142,8 +144,10 @@ var RainwaveAPI = function() {
 
 	self.onError = noop;
 	self.onErrorRemove = noop;
+	self.onUnsuccessful = noop;
 
 	self.forceReconnect = function() {
+		if (self.debug) console.log("Forcing socket reconnect.");
 		if (socketStaysClosed) {
 			return;
 		}
@@ -151,6 +155,7 @@ var RainwaveAPI = function() {
 	};
 
 	self.closePermanently = function() {
+		if (self.debug) console.log("Forcing socket to be closed.");
 		socketStaysClosed = true;
 		closeSocket();
 	};
@@ -241,7 +246,7 @@ var RainwaveAPI = function() {
 				if (("success" in json[i]) && !json[i].success) {
 					asyncRequest.success = false;
 					if (!asyncRequest.onError(json[i])) {
-						self.onError(json[i]);
+						self.onUnsuccessful(json[i]);
 					}
 				}
 			}

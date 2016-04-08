@@ -430,7 +430,18 @@ class APIHandler(RainwaveHandler):
 		if self._output_array:
 			self._output = []
 		else:
-			self._output = {}
+			if "message_id" in self._output:
+				self._output = {
+					"message_id": self._output['message_id'],
+				}
+				self._output[self.return_name] = {
+					"tl_key": "internal_error",
+					"text": self.locale.translate("internal_error"),
+					"status": 500,
+					"success": False
+				}
+			else:
+				self._output = {}
 		if kwargs.has_key("exc_info"):
 			exc = kwargs['exc_info'][1]
 

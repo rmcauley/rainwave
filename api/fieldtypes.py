@@ -18,10 +18,10 @@ def string(in_string, request = None):
 # All _error variables start with no capital letter and end with a period.
 numeric_error = "must be a number."
 def numeric(s, request = None):
-	if not s:
-		return None
 	if isinstance(s, numbers.Number):
 		return s
+	if not s:
+		return None
 	if not isinstance(s, (str, unicode)):
 		return None
 	if not re.match('^-?\d+(.\d+)?$', s):

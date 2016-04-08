@@ -46,8 +46,8 @@ class SessionBank(object):
 				self.websockets.append(session)
 			if not session.user.is_anonymous():
 				if not session.user.id in self.websockets_by_user:
-					self.websockets_by_user = []
-				self.websockets_by_user[session.user_id].append(session)
+					self.websockets_by_user[session.user.id] = []
+				self.websockets_by_user[session.user.id].append(session)
 		elif not session in self.sessions:
 			self.sessions.append(session)
 
@@ -58,9 +58,9 @@ class SessionBank(object):
 		if session in self.websockets:
 			self.websockets.remove(session)
 			if not session.user.is_anonymous() and session.user.id in self.websockets_by_user and session in self.websockets_by_user:
-				self.websockets_by_user[session.user_id].remove(session)
-				if not len(self.websockets_by_user[session.user_id]):
-					del(self.websockets_by_user[session.user_id])
+				self.websockets_by_user[session.user.id].remove(session)
+				if not len(self.websockets_by_user[session.user.id]):
+					del(self.websockets_by_user[session.user.id])
 		elif session in self.sessions:
 			self.sessions.remove(session)
 
@@ -407,7 +407,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		try:
 			startclock = timestamp()
 			if "message_id" in message:
-				if not fieldtypes.zero_or_greater_integer(message['message_id']):
+				if fieldtypes.zero_or_greater_integer(message['message_id']) == None:
 					endpoint.prepare_standalone()
 					raise APIException("invalid_argument", argument="message_id", reason=fieldtypes.zero_or_greater_integer_error, http_code=400)
 				endpoint.prepare_standalone(fieldtypes.zero_or_greater_integer(message['message_id']))
