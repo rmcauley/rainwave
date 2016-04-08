@@ -51,6 +51,12 @@ var Fave = function(json) {
 
 	self.register = function(json, is_album) {
 		if (User.id <= 1) return;
+		// if the song is a request and it's not good, i.e. it's for another
+		// station, don't register this as a favourite or activate it.
+		// you can't interact across stations on Rainwave.
+		if (("good" in json) && !json.good) {
+			return;
+		}
 		if (json.fave) {
 			json.$t.fave.classList.add("is_fave");
 			if (json.$t.fave.parentNode) {
