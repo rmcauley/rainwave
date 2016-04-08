@@ -1,3 +1,5 @@
+$menu_icon_only_media: unquote("(max-width: 650px)");
+
 div.header {
 	-webkit-transform: translate3d(0,0,0);
 	position: relative;
@@ -39,7 +41,7 @@ div.menu_wrapper {
 			// @include transition-wtime(150ms, fill);
 		}
 
-		@media $phone-media {
+		@media $menu_icon_only_media {
 			height: 25px;
 			width: 25px;
 		}
@@ -50,12 +52,6 @@ div.menu_wrapper {
 		width: 15px;
 		@include transform(translateY(4px));
 	}
-
-	// body.desktop a:hover svg {
-	// 	&, * {
-	// 		fill: $link_h;
-	// 	}
-	// }
 }
 
 /* ICONS AND LINKS */
@@ -78,20 +74,14 @@ ul.menu {
 		@include transform(translateY(2px));
 	}
 
+	li.search_link img {
+		@include transform(translateY(1px));
+	}
+
 	&.main_menu {
 		z-index: 2;
 
-		@media $phone-media {
-			top: 0;
-			height: $phone_menu_height;
-			@include transform(none);
-
-			li a {
-				box-sizing: border-box;
-				height: $phone_menu_height;
-				padding: 8px 10px;
-			}
-
+		@media $menu_icon_only_media {
 			span {
 				display: none;
 			}
@@ -105,6 +95,22 @@ ul.menu {
 				top: -2px;
 				height: 20px;
 				width: 20px;
+			}
+		}
+
+		@media $phone-media {
+			top: 0;
+			height: $phone_menu_height;
+			@include transform(none);
+
+			li a {
+				box-sizing: border-box;
+				height: $phone_menu_height;
+				padding: 8px 10px;
+			}
+
+			li.search_link img {
+				@include transform(none);
 			}
 		}
 

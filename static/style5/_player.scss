@@ -108,8 +108,8 @@ $player_icon_width: $player_icon_height;
 
 	@media $mobile-media {
 		border-top: none;
-		height: $menu-height - 3;
-		padding: 0 6px 0 0;
+		// height: $menu-height - 3;
+		padding: 0;
 		top: 8px;
 		@include transform(none);
 
@@ -126,11 +126,15 @@ $player_icon_width: $player_icon_height;
 		.audio_volume, body.desktop & .audio_volume {
 			display: none;
 		}
+
+		.audio_icon_play {
+			padding: 0 0 0 4px;
+		}
 	}
 
 	@media $phone-media {
 		margin-left: 125px;
-		padding: 0;
+		padding: 0px;
 		top: 0px;
 		height: $phone_menu_height;
 
