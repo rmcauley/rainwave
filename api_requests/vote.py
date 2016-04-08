@@ -20,6 +20,7 @@ class SubmitVote(APIHandler):
 	description = "Vote for a candidate in an election.  Cannot cancel/delete a vote.  If user has already voted, the vote will be changed to the submitted song."
 	fields = { "entry_id": (fieldtypes.integer, True) }
 	sync_across_sessions = True
+	elec_id = None
 
 	def post(self):
 		lock_count = 0
@@ -35,6 +36,7 @@ class SubmitVote(APIHandler):
 				break
 		if voted:
 			append_success_to_request(self, elec_id, self.get_argument("entry_id"))
+			self.elec_id = elec_id
 		else:
 			self.append_standard("cannot_vote_for_this_now", success=False, elec_id=elec_id, entry_id=self.get_argument("entry_id"))
 
@@ -115,3 +117,6 @@ class SubmitVote(APIHandler):
 			raise
 
 		return True
+
+	def get_live_voting(self):
+		return db.c.fetch_all("SELECT entry_id, entry_votes, song_id FROM r4_election_entries WHERE AND elec_id = %s", (self.elec_id,))

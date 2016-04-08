@@ -18,6 +18,7 @@ from api.web import APIHandler
 from api.web import get_browser_locale
 from api.server import api_endpoints
 from api.server import handle_api_url
+from api_requests.vote import SubmitVote
 from rainwave.user import User
 import api_requests.info
 import rainwave.playlist
@@ -33,7 +34,7 @@ class SessionBank(object):
 		self.sessions = []
 		self.websockets = []
 		self.throttled = {}
-		self.sessions_by_user = {}
+		self.websockets_by_user = {}
 
 	def __iter__(self):
 		for item in self.sessions:
@@ -44,9 +45,9 @@ class SessionBank(object):
 			if not session in self.websockets:
 				self.websockets.append(session)
 			if not session.user.is_anonymous():
-				if not session.user.id in self.sessions_by_user:
-					self.sessions_by_user = []
-				self.sessions_by_user[session.user_id].append(session)
+				if not session.user.id in self.websockets_by_user:
+					self.websockets_by_user = []
+				self.websockets_by_user[session.user_id].append(session)
 		elif not session in self.sessions:
 			self.sessions.append(session)
 
@@ -56,10 +57,10 @@ class SessionBank(object):
 			del(self.throttled[session])
 		if session in self.websockets:
 			self.websockets.remove(session)
-			if not session.user.is_anonymous() and session.user.id in self.sessions_by_user and session in self.sessions_by_user:
-				self.sessions_by_user[session.user_id].remove(session)
-				if not len(self.sessions_by_user[session.user_id]):
-					del(self.sessions_by_user[session.user_id])
+			if not session.user.is_anonymous() and session.user.id in self.websockets_by_user and session in self.websockets_by_user:
+				self.websockets_by_user[session.user_id].remove(session)
+				if not len(self.websockets_by_user[session.user_id]):
+					del(self.websockets_by_user[session.user_id])
 		elif session in self.sessions:
 			self.sessions.remove(session)
 
@@ -148,9 +149,13 @@ class SessionBank(object):
 				log.exception("sync", "Session failed finish() during update_user.", e)
 
 	def send_to_user(self, user_id, data):
-		if not user_id in self.sessions_by_user:
+		if not user_id in self.websockets_by_user:
 			return
-		for session in self.sessions_by_user:
+		for session in self.websockets_by_user:
+			session.write_message(data)
+
+	def send_to_all(self, data):
+		for session in self.websockets:
 			session.write_message(data)
 
 	def _throttle_session(self, session, updated_by_ip=False):
@@ -198,6 +203,8 @@ def _on_zmq(messages):
 		try:
 			if message['action'] == "result_sync":
 				sessions[message['sid']].send_to_user(message['user_id'], message['data'])
+			elif message['action'] == "forward_to_all":
+				sessions[message['sid']].send_to_all(message['data'])
 			elif message['action'] == "update_all":
 				rainwave.playlist.update_num_songs()
 				rainwave.playlist.prepare_cooldown_algorithm(message['sid'])
@@ -410,6 +417,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			endpoint.append("api_info", { "exectime": timestamp() - startclock, "time": round(timestamp()) })
 			if endpoint.sync_across_sessions:
 				zeromq.publish({ "action": "result_sync", "sid": self.sid, "user_id": self.user.id, "data": endpoint._output, "uuid": api.server.uuid })
+			if isinstance(endpoint, SubmitVote) and endpoint.elec_id:
+				zeromq.publish({ "action": "forward_to_all", "sid": self.sid, "data": endpoint.get_live_voting() })
 		except Exception as e:
 			endpoint.write_error(500, exc_info=sys.exc_info(), no_finish=True)
 			log.exception("websocket", "API Exception during operation.", e)
