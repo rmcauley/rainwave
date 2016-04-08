@@ -355,10 +355,10 @@ class User(object):
 					"JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_request_store.sid = r4_album_sid.sid) "
 					"LEFT JOIN r4_song_sid ON (r4_request_store.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
 					"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
-			 		"LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = r4_request_store.sid) "
+			 		"LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = %s) "
 				"WHERE r4_request_store.user_id = %s "
 				"ORDER BY reqstor_order, reqstor_id",
-				(sid, self.id, self.id, self.id))
+				(sid, self.id, self.id, sid, self.id))
 		if not requests:
 			requests = []
 		for song in requests:
@@ -375,7 +375,7 @@ class User(object):
 				"rating_complete": song.pop('album_rating_complete'),
 				"art": playlist.Album.get_art_url(song.pop('album_id'), song['sid'])
 			 } ]
-		cache.set_user(self, "requests", requests)
+		# cache.set_user(self, "requests", requests)
 		return requests
 
 	def set_request_tunein_expiry(self, t = None):

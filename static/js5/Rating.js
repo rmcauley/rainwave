@@ -507,16 +507,26 @@ var Rating = function() {
 		};
 
 		if (User.id > 1) {
-			json.$t.rating._json = json;
-			json.$t.rating.addEventListener("mouseover", on_mouse_over);
-			json.$t.rating.addEventListener("mousemove", on_mouse_move);
-			json.$t.rating.addEventListener("mouseleave", on_mouse_out);
-			json.$t.rating.addEventListener("click", click);
-			json.$t.rating.addEventListener("touchstart", function(e) {
-				is_touching = true;
-				touching_song = json;
-				trigger_touch_rating(e);
-			});
+			// this is for requests, if a request is not available
+			// on this station do not allow rating it
+			if (("good" in json) && !good) {
+				// remove the srate attribute so this will
+				// never pick up any ratings update
+				// it should be super isolated
+				json.$t.rating.setAttribute("name", "");
+			}
+			else {
+				json.$t.rating._json = json;
+				json.$t.rating.addEventListener("mouseover", on_mouse_over);
+				json.$t.rating.addEventListener("mousemove", on_mouse_move);
+				json.$t.rating.addEventListener("mouseleave", on_mouse_out);
+				json.$t.rating.addEventListener("click", click);
+				json.$t.rating.addEventListener("touchstart", function(e) {
+					is_touching = true;
+					touching_song = json;
+					trigger_touch_rating(e);
+				});
+			}
 		}
 	};
 
