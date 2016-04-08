@@ -30,10 +30,10 @@ def numeric(s, request = None):
 
 integer_error = "must be a number."
 def integer(s, request = None):
-	if not s:
-		return None
 	if isinstance(s, numbers.Number):
 		return s
+	if not s:
+		return None
 	if not isinstance(s, (str, unicode)):
 		return None
 	if not re.match('^-?\d+$', s):
