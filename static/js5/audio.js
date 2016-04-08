@@ -1,4 +1,4 @@
-var RWAudio = function() {
+var RWAudioConstructor = function() {
 	"use strict";
 
 	// this file uses RainwavePlayer which confirms to Javascript standards

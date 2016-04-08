@@ -76,6 +76,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var start_chunking = function() {
 		if (chunked_start) return;
 		chunked_start = new Date().getTime();
+		// TODO: only sort up to what's visible and then sort the rest later?
 		items_to_draw.sort(self.sort_function);
 		if (items_to_draw.length) {
 			chunked_i = 0;
@@ -256,6 +257,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 		else {
 			visible = visible.concat(to_reshow);
 		}
+		// TODO: what sort algorithm do JS engines use?  would pre-sorting to_reshow
+		//       result in a faster sort on visible?  or are we always looking at n*logn?
+		// TODO: only sort up to what's visible and then sort the rest later?
 		visible.sort(self.sort_function);
 		if (to_reshow == hidden) hidden = [];
 	};

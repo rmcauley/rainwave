@@ -9,6 +9,7 @@ BOOTSTRAP.on_draw happens after the measurement - please do not cause reflows.
 var User;
 var Stations = [];
 var API;
+var RWAudio;
 
 (function() {
 	"use strict";
@@ -27,7 +28,7 @@ var API;
 		API.force_sync = API.forceReconnect;
 		API.sync_stop = API.closePermanently;
 
-		RWAudio();
+		RWAudio = RWAudioConstructor();
 
 		Prefs.define("pwr");
 		if (Prefs.get("pwr")) {
