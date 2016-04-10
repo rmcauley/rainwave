@@ -69,14 +69,16 @@ var Song = function(self, parent_event) {
 			}
 		}
 
-		if (!self.entry_votes) {
-			template.votes.textContent = "";
-		}
-		else if (Sizing.simple) {
-			template.votes.textContent = $l("num_votes", { "num_votes": self.entry_votes });
-		}
-		else {
-			template.votes.textContent = self.entry_votes;
+		if (template.votes) {
+			if (!self.entry_votes) {
+				template.votes.textContent = "";
+			}
+			else if (Sizing.simple) {
+				template.votes.textContent = $l("num_votes", { "num_votes": self.entry_votes });
+			}
+			else {
+				template.votes.textContent = self.entry_votes;
+			}
 		}
 
 		if (template.rating) {
