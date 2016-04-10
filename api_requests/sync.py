@@ -380,7 +380,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			self.throttled = False
 			return
 
-		log.debug("throttle", "Throttled with %s messages" % len(self.throttled_msgs))
+		# log.debug("throttle", "Throttled with %s messages" % len(self.throttled_msgs))
 		action = self.throttled_msgs[0]['action']
 		msg = None
 		if not action in nonunique_actions:
@@ -393,10 +393,10 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 						"message_id": { "message_id": fieldtypes.zero_or_greater_integer(m['message_id']), "success": False, "tl_key": "websocket_throttle" }
 					})
 			self.throttled_msgs = [ m for m in self.throttled_msgs if m['action'] != action ]
-			log.debug("throttle", "Handling last throttled %s message." % action)
+			# log.debug("throttle", "Handling last throttled %s message." % action)
 		else:
 			msg = self.throttled_msgs.pop(0)
-			log.debug("throttle", "Handling last throttled %s message." % action)
+			# log.debug("throttle", "Handling last throttled %s message." % action)
 		if msg:
 			self._process_message(msg, is_throttle_process=True)
 		tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=1), self.process_throttle)
@@ -431,20 +431,20 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		self.msg_times = [ t for t in self.msg_times if t > throt_t ]
 		if not is_throttle_process:
 			self.msg_times.append(timestamp())
-			log.debug("throttle", "%s - %s" % (len(self.msg_times), message['action']))
+			# log.debug("throttle", "%s - %s" % (len(self.msg_times), message['action']))
 			if len(self.msg_times) >= 9:
 				self.write_message({
 					"wsthrottle": { "tl_key": "websocket_throttle", "text": self.locale.translate("websocket_throttle") },
 					"message_id": { "message_id": message_id, "success": False, "tl_key": "websocket_throttle" }
 				})
-				log.debug("throttle", "Dropping request.")
+				# log.debug("throttle", "Dropping request.")
 				return
 			if self.throttled:
-				log.debug("throttle", "Currently throttled, adding to queue.")
+				# log.debug("throttle", "Currently throttled, adding to queue.")
 				self.throttled_msgs.append(message)
 				return
 			elif (message['action'] == "vote" and len(self.msg_times) >= 4) or len(self.msg_times) >= 6:
-				log.debug("throttle", "Too many messages, throttling.")
+				# log.debug("throttle", "Too many messages, throttling.")
 				self.throttled = True
 				self.throttled_msgs.append(message)
 				tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=1), self.process_throttle)
