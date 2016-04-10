@@ -61,6 +61,7 @@ var Router = function() {
 		}
 
 		reset_cache();
+		API.add_callback("wsthrottle", reset_cache);
 
 		el = root_template.detail;
 		detail_header = root_template.detail_header;

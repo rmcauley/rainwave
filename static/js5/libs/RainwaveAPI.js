@@ -54,10 +54,10 @@ var RainwaveAPI = function() {
 		});
 		self.on("wsping", function(json) {
 			if (self.debug) console.log("Pinged!");
-			socket.send(JSON.stringify({
-				action: "wspong",
-				timestamp: json.timestamp
-			}));
+			// socket.send(JSON.stringify({
+			// 	action: "wspong",
+			// 	timestamp: json.timestamp
+			// }));
 		});
 
 		if (data) {

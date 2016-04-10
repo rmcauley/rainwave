@@ -27,6 +27,7 @@
    "song_does_not_exist"                             : "Song does not exist.",
    "db_error_retry"                                  : "Internal database error - please retry.",
    "db_error_permanent"                              : "Server error - internal database is offline.",
+   "websocket_throttle"                              : "Please slow down.",
 
    "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
 

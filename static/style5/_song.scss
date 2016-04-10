@@ -318,6 +318,10 @@ div.song {
 			}
 		}
 
+		&.voting_error {
+			background-color: $error_bkg;
+		}
+
 		&.no_transition {
 			@include no-transition();
 
