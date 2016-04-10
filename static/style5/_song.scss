@@ -98,6 +98,10 @@ div.song {
 		margin-left: 10px;
 		color: $song_votes;
 		position: relative;
+
+		body.full & {
+			min-width: 1em;
+		}
 	}
 
 	body.desktop.simple.normal div.sched_current &, body.full div.sched_current & {
@@ -383,3 +387,24 @@ div.song {
 	}
 }
 
+div.song div.plusminus {
+	height: auto;
+	padding: 1px 2px;
+
+	&.negative {
+		background: $request_indicator_neg_bkg;
+	}
+
+	&.show {
+		opacity: 1;
+	}
+
+	body.simple & {
+		left: 100%;
+		@include transform(translateX(-100%));
+
+		&.show {
+			@include transform(none);
+		}
+	}
+}

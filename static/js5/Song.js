@@ -175,10 +175,53 @@ var Song = function(self, parent_event) {
 	};
 
 	if (self.entry_id) {
-		var indicate = Indicator(self.$t.vote_indicator, self.entry_votes);
+		var indicators = [];
+
+		var indicate = function(diff) {
+			var div = document.createElement("div");
+			if (diff <= 0) {
+				div.className = "plusminus negative";
+				div.textContent = diff;
+			}
+			else {
+				div.className = "plusminus positive";
+				div.textContent = "+" + diff;
+			}
+			template.votes.parentNode.insertBefore(div, template.votes);
+			for (var i = 0; i < indicators.length; i++) {
+				if (Sizing.simple) {
+					indicators[i].style[Fx.transform] = "translateX(" + ((indicators.length - i) * 105) + "%)";
+				}
+				else {
+					// ?!?!
+				}
+				indicators[i].style.opacity = 0.7;
+			}
+			// while (indicators.length > 4) {
+			// 	Fx.remove_element(indicators.pop());
+			// }
+			indicators.push(div);
+			requestNextAnimationFrame(function() {
+				div.classList.add("show");
+			});
+			// setTimeout(function() {
+			// 	if (indicators.indexOf(div) !== -1) {
+			// 		Fx.remove_element(div);
+			// 		indicators.splice(indicators.indexOf(div));
+			// 	}
+			// }, 2000);
+		};
 
 		self.live_voting = function(json) {
-			indicate(json.entry_votes);
+			if (MOBILE) return;
+
+			var diff = json.entry_votes - self.entry_votes;
+			self.entry_votes = json.entry_votes;
+
+			if (!document[visibilityEventNames.hidden] && diff) {
+				indicate(diff);
+			}
+
 			if (!json.entry_votes) {
 				template.votes.textContent = "";
 			}

@@ -246,26 +246,6 @@ div.plusminus {
 	@include transform(translateX(0px));
 	@include transition-wtime(300ms, transform, opacity);
 
-	div.song & {
-		left: 100%;
-		height: auto;
-		padding: 1px 2px;
-		@include transform(translateX(-100%));
-
-		&.show {
-			opacity: 1;
-			@include transform(translateX(0%));
-		}
-
-		&.negative {
-			background: $request_indicator_neg_bkg;
-		}
-
-		&.equal {
-			background: $bkg;
-		}
-	}
-
 	div.header &.show {
 		opacity: 1;
 		@include transform(translateX(-100%));

@@ -64,7 +64,6 @@
 
 		{{#if ^_c.entry_id}}
 			<div class="entry_votes">
-				<div bind="vote_indicator" class="plusminus"></div>
 				<span bind="votes"></span>
 			</div>
 		{{/if}}
