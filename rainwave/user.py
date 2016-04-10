@@ -362,10 +362,10 @@ class User(object):
 		if not requests:
 			requests = []
 		for song in requests:
-			if not song['good'] or song['cool'] or song['elec_blocked'] or song['sid'] != sid:
-				song['good'] = False
+			if not song['valid'] or song['cool'] or song['elec_blocked'] or song['sid'] != sid:
+				song['valid'] = False
 			else:
-				song['good'] = True
+				song['valid'] = True
 			song['albums'] = [ {
 				"name": song.pop('album_name'),
 				"id": song['album_id'],
