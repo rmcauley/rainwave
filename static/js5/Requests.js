@@ -232,6 +232,9 @@ var Requests = function() {
 				n.$t.cancel._song_id = n.id;
 				n.$t.cancel.addEventListener("click", self.remove_event);
 				n.el.style[Fx.transform] = "translateY(" + Sizing.height + "px)";
+				// http://rainwave.cc/forums/viewtopic.php?f=27&t=5548
+				// requests across stations will break if we don't disconnect album ratings here
+				n.albums[0].$t.rating.setAttribute("name", "");
 				new_songs.unshift(n);
 				el.appendChild(n.el);
 			}
