@@ -4,11 +4,13 @@ from api import fieldtypes
 from api.web import APIHandler
 from api.exceptions import APIException
 from api.server import handle_api_url
+import rainwave.schedule
 
 from libs import cache
 from libs import config
 from libs import log
 from libs import db
+from libs import zeromq
 
 def append_success_to_request(request, elec_id, entry_id):
 	request.append_standard("vote_submitted", return_name="vote_result", elec_id=elec_id, entry_id=entry_id)
@@ -37,6 +39,13 @@ class SubmitVote(APIHandler):
 			append_success_to_request(self, elec_id, self.get_argument("entry_id"))
 		else:
 			self.append_standard("cannot_vote_for_this_now", success=False, elec_id=elec_id, entry_id=self.get_argument("entry_id"))
+
+	# this will never get executed for WebSocket connections, so this code
+	# is duplicated in sync.py
+	def on_finish(self):
+		live_voting = rainwave.schedule.update_live_voting(self.sid)
+		zeromq.publish({ "action": "forward_to_all", "sid": self.sid, "data": { "live_voting": live_voting } })
+		super(SubmitVote, self).on_finish()
 
 	def vote(self, entry_id, event, lock_count):
 		# Subtract a previous vote from the song's total if there was one

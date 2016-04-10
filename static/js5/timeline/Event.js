@@ -208,5 +208,16 @@ var RWEvent = function(self) {
 		}
 	};
 
+	self.live_voting = function(lvsongs) {
+		var lvi, si;
+		for (lvi = 0; lvi < lvsongs.length; lvi++) {
+			for (si = 0; si < self.songs.length; si++) {
+				if (lvsongs[lvi].entry_id == self.songs[si].entry_id) {
+					self.songs[si].live_voting(lvsongs[lvi]);
+				}
+			}
+		}
+	};
+
 	return self;
 };

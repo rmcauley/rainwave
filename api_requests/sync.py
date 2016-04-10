@@ -422,7 +422,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 					pass
 				else:
 					zeromq.publish({ "action": "result_sync", "sid": self.sid, "user_id": self.user.id, "data": endpoint._output, "uuid_exclusion": self.uuid })
-			if message['action'] == "vote" and endpoint.return_name in endpoint._output and isinstance(endpoint._output[endpoint.return_name], dict) and endpoint._output[endpoint.return_name]['success']:
+			if message['action'] == "/api4/vote" and endpoint.return_name in endpoint._output and isinstance(endpoint._output[endpoint.return_name], dict) and endpoint._output[endpoint.return_name]['success']:
 				live_voting = rainwave.schedule.update_live_voting(self.sid)
 				endpoint.append("live_voting", live_voting)
 				zeromq.publish({ "action": "forward_to_all", "sid": self.sid, "uuid_exclusion": self.uuid, "data": { "live_voting": live_voting } })

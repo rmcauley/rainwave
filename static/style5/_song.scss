@@ -92,18 +92,15 @@ div.song {
 	}
 
 	div.entry_votes {
-		display: none;
+		display: inline;
 		float: right;
 		padding-right: 5px;
 		margin-left: 10px;
 		color: $song_votes;
+		position: relative;
 	}
 
 	body.desktop.simple.normal div.sched_current &, body.full div.sched_current & {
-		div.entry_votes {
-			display: inline;
-		}
-
 		&.now_playing {
 			div.song_link_container {
 				display: block;

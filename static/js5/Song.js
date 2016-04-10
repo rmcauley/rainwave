@@ -69,9 +69,14 @@ var Song = function(self, parent_event) {
 			}
 		}
 
-		if (template.votes && self.entry_votes) {
-			if (Sizing.simple) template.votes.textContent = $l("num_votes", { "num_votes": self.entry_votes });
-			else template.votes.textContent = self.entry_votes;
+		if (!self.entry_votes) {
+			template.votes.textContent = "";
+		}
+		else if (Sizing.simple) {
+			template.votes.textContent = $l("num_votes", { "num_votes": self.entry_votes });
+		}
+		else {
+			template.votes.textContent = self.entry_votes;
 		}
 
 		if (template.rating) {
@@ -168,6 +173,23 @@ var Song = function(self, parent_event) {
 			self.$t.vote_button_text.textContent = $l("vote");
 		}
 	};
+
+	if (self.entry_id) {
+		var indicate = Indicator(self.$t.vote_indicator, self.entry_votes);
+
+		self.live_voting = function(json) {
+			indicate(json.entry_votes);
+			if (!json.entry_votes) {
+				template.votes.textContent = "";
+			}
+			else if (Sizing.simple) {
+				template.votes.textContent = $l("num_votes", { "num_votes": json.entry_votes });
+			}
+			else {
+				template.votes.textContent = json.entry_votes;
+			}
+		};
+	}
 
 	return self;
 };

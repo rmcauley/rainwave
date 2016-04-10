@@ -86,8 +86,9 @@ $art_b:                       lighten($art_bkg, 14%);
 $drop_shadow:                 $art_bkg;
 
 // Requests
-$request_indicator:           $text;			// +/- indicator when you modify your queue
+$request_indicator:           $text;			// +/- indicator for live voting (and a few others)
 $request_indicator_bkg:       $orange;
+$request_indicator_neg_bkg:   $blue;
 $requests_paused:             #2A073C;
 $requests_warn:               darken($error_bkg, 10%);
 $request_delete:              mix($text, $error_b, 25%);
@@ -262,22 +263,12 @@ a, a:visited, .link {
 	}
 }
 
-.unselectable, body {
+body {
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-o-user-select: none;
 	user-select: none;
-}
-
-body.desktop {
-	.name, .title, .album, .artist, .artists, .selectable {
-		-webkit-user-select: text;
-		-khtml-user-select: text;
-		-moz-user-select: text;
-		-o-user-select: text;
-		user-select: text;
-	}
 }
 
 .phoneonly {

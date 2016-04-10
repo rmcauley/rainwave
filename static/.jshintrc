@@ -34,6 +34,7 @@
     "GroupList": true,
     "GroupView": true,
     "HDivChart": true,
+    "Indicator": true,
     "jstz": true,
     "KeyHandler": true,
     "lang": true,

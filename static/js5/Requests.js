@@ -28,7 +28,7 @@ var Requests = function() {
 		link_text = root_template.request_link_text;
 		indicator = root_template.request_indicator;
 		container = root_template.requests_container;
-		if (root_template.request_indicator2) {
+		if (Prefs.get("pwr") && root_template.request_indicator2) {
 			indicator2 = root_template.request_indicator2;
 		}
 
@@ -63,6 +63,8 @@ var Requests = function() {
 				Router.change();
 			}
 		});
+
+		self.indicate = Indicator(indicator, 0, indicator2);
 	});
 
 	self.show_queue_paused = function() {
@@ -209,7 +211,6 @@ var Requests = function() {
 			return;
 		}
 		var i, j, found, n;
-		var previous_length = songs.length;
 
 		var new_songs = [];
 		for (i = json.length - 1; i >= 0; i--) {
@@ -253,65 +254,7 @@ var Requests = function() {
 		}
 
 		requestNextAnimationFrame(self.reflow);
-		if (!document.body.classList.contains("loading") && (previous_length != songs.length)) {
-			self.indicate(songs.length - previous_length, previous_length);
-		}
-	};
-
-	var indicator_timeout;
-	var indicator_start_count;
-
-	self.indicate = function(new_count, previous_length) {
-		if (indicator_timeout) {
-			clearTimeout(indicator_timeout);
-		}
-		if (!indicator_start_count) {
-			indicator_start_count = previous_length;
-		}
-		else {
-			new_count = songs.length - indicator_start_count;
-		}
-
-		if (new_count > 0) {
-			indicator.textContent = "+" + new_count;
-			if (indicator2) {
-				indicator2.textContent = "+" + new_count;
-			}
-		}
-		else if (new_count < 0) {
-			indicator.textContent = new_count;
-			if (indicator2) {
-				indicator2.textContent = new_count;
-			}
-		}
-		else {
-			indicator.textContent = "=";
-			if (indicator2) {
-				indicator2.textContent = "=";
-			}
-		}
-		indicator.classList.add("show");
-		if (indicator2) {
-			indicator2.classList.add("show");
-		}
-		indicator_timeout = setTimeout(unindicate, 2000);
-	};
-
-	var unindicate = function() {
-		indicator.classList.remove("show");
-		if (indicator2) {
-			indicator2.classList.remove("show");
-		}
-		indicator_timeout = setTimeout(blank_indicator, 300);
-		indicator_start_count = false;
-	};
-
-	var blank_indicator = function() {
-		indicator_timeout = null;
-		indicator.textContent = "";
-		if (indicator2) {
-			indicator2.textContent = "";
-		}
+		self.indicate(songs.length);
 	};
 
 	self.reflow = function() {

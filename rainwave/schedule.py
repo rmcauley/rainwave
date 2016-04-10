@@ -393,7 +393,10 @@ def update_memcache(sid):
 
 def update_live_voting(sid):
 	live_voting = {}
-	for event in upnext[sid]:
+	upnext_sid = cache.get_station(sid, "sched_next")
+	if not upnext_sid:
+		return live_voting
+	for event in upnext_sid:
 		if event.is_election:
 			live_voting[event.id] = db.c.fetch_all("SELECT entry_id, entry_votes, song_id FROM r4_election_entries WHERE elec_id = %s", (event.id,))
 	cache.set_station(sid, "live_voting", live_voting)
