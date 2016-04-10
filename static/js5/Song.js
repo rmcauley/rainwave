@@ -22,11 +22,21 @@ var Song = function(self, parent_event) {
 	if (self.albums[0].$t.rating) {
 		Rating.register(self.albums[0]);
 	}
-	if (template.fave) {
-		Fave.register(self);
+	if (("valid" in self) && !self.valid) {
+		if (template.fave) {
+			self.$t.fave.parentNode.removeChild(self.$t.fave);
+		}
+		if (self.albums[0].$t.fave) {
+			self.albums[0].$t.fave.parentNode.removeChild(self.albums[0].$t.fave);
+		}
 	}
-	if (self.albums[0].$t.fave) {
-		Fave.register(self.albums[0], true);
+	else{
+		if (template.fave) {
+			Fave.register(self);
+		}
+		if (self.albums[0].$t.fave) {
+			Fave.register(self.albums[0], true);
+		}
 	}
 	if (template.votes && self.entry_votes) {
 		if (Sizing.simple) template.votes.textContent = $l("num_votes", { "num_votes": self.entry_votes });

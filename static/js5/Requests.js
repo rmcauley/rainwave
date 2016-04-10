@@ -83,7 +83,7 @@ var Requests = function() {
 		var good_requests = 0;
 		var all_bad = songs.length > 0;
 		for (var i = 0; i < songs.length; i++) {
-			if (songs[i].good) {
+			if (songs[i].valid) {
 				all_bad = false;
 				good_requests++;
 			}
