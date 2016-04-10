@@ -34,10 +34,10 @@ var Timeline = function() {
 		API.add_callback("sched_history", function(json) { sched_history = json; });
 		API.add_callback("_SYNC_SCHEDULE_COMPLETE", self.update);
 		API.add_callback("_SYNC_SCHEDULE_COMPLETE", self.reflow);
-		API.add_callback("_SYNC_SCHEDULE_COMPLETE", self.voting_allowed_check);
 		API.add_callback("playback_history", open_long_history);
 		API.add_callback("already_voted", self.handle_already_voted);
 		API.add_callback("all_stations_info", check_for_events);
+		API.add_callback("user", self.voting_allowed_check);
 		API.add_callback("user", lock_check);
 		API.add_callback("vote_result", function(json) {
 			if (json.success) {
