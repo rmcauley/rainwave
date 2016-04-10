@@ -190,26 +190,26 @@ var Song = function(self, parent_event) {
 			template.votes.parentNode.insertBefore(div, template.votes);
 			for (var i = 0; i < indicators.length; i++) {
 				if (Sizing.simple) {
-					indicators[i].style[Fx.transform] = "translateX(" + ((indicators.length - i) * 105) + "%)";
+					indicators[i].style[Fx.transform] = "translateX(" + ((indicators.length - i) * 23) + "px)";
 				}
 				else {
 					// ?!?!
 				}
 				indicators[i].style.opacity = 0.7;
 			}
-			// while (indicators.length > 4) {
-			// 	Fx.remove_element(indicators.pop());
-			// }
+			while (indicators.length >= 3) {
+				Fx.remove_element(indicators.shift());
+			}
 			indicators.push(div);
 			requestNextAnimationFrame(function() {
 				div.classList.add("show");
 			});
-			// setTimeout(function() {
-			// 	if (indicators.indexOf(div) !== -1) {
-			// 		Fx.remove_element(div);
-			// 		indicators.splice(indicators.indexOf(div));
-			// 	}
-			// }, 2000);
+			setTimeout(function() {
+				if (indicators.indexOf(div) !== -1) {
+					Fx.remove_element(div);
+					indicators.splice(indicators.indexOf(div), 1);
+				}
+			}, 2000);
 		};
 
 		self.live_voting = function(json) {
