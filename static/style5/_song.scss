@@ -102,6 +102,10 @@ div.song {
 		body.full & {
 			min-width: 1em;
 		}
+
+		@media $phone-media {
+			display: none;
+		}
 	}
 
 	body.desktop.simple.normal div.sched_current &, body.full div.sched_current & {
@@ -384,6 +388,20 @@ div.song {
 
 	div.rating {
 		margin-left: 25px;
+	}
+
+	@media (max-width: 320px) {
+		div.timeline & div.art_anchor {
+			position: absolute;
+			z-index: -1;
+			opacity: 0.4;
+			-webkit-filter: blur(1px);
+			filter: blur(1px)
+		}
+
+		div.song_content {
+			padding-left: 10px;
+		}
 	}
 }
 
