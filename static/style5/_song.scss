@@ -409,4 +409,12 @@ div.song div.plusminus {
 			@include transform(none);
 		}
 	}
+
+	body.full & {
+		left: 0;
+
+		&.show {
+			@include transform(translateX(-100%) translateX(-5px));
+		}
+	}
 }

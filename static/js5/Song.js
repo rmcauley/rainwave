@@ -193,7 +193,7 @@ var Song = function(self, parent_event) {
 					indicators[i].style[Fx.transform] = "translateX(" + ((indicators.length - i) * 23) + "px)";
 				}
 				else {
-					// ?!?!
+					indicators[i].style[Fx.transform] = "translateX(-100%) translateX(-" + ((indicators.length - i) * 23 + 5) + "px)";
 				}
 				indicators[i].style.opacity = 0.7;
 			}
