@@ -87,6 +87,7 @@ var Song = function(self, parent_event) {
 			vote_timeout = setTimeout(self.vote, 6000);
 			held_vote_song = self;
 		}
+		last_vote = Clock.now;
 		API.async_get("vote", { "entry_id": self.entry_id },
 			null,
 			function(json) {
