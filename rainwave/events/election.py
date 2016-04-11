@@ -433,3 +433,7 @@ class Election(event.BaseEvent):
 
 	def delete(self):
 		return db.c.update("DELETE FROM r4_elections WHERE elec_id = %s", (self.id,))
+
+	def update_vote_counts(self):
+		for song in self.songs:
+			song.data['entry_votes'] = db.c.fetch_var("SELECT entry_votes FROM r4_election_entries WHERE entry_id = %s", (song.data['entry_id']))

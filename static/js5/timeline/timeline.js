@@ -12,6 +12,9 @@ var Timeline = function() {
 	var history_bar;
 	var root_template;
 
+	self.votes_this_election = 0;
+	self.votes_limit_hit = false;
+
 	BOOTSTRAP.on_init.push(function(root_tmpl) {
 		root_template = root_tmpl;
 		Prefs.define("l_stk", [ false, true ], true);
@@ -75,6 +78,9 @@ var Timeline = function() {
 	});
 
 	self.update = function() {
+		self.votes_this_election = 0;
+		self.votes_limit_hit = false;
+
 		var new_events = [];
 
 		for (var i = 0; i < events.length; i++) {

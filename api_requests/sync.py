@@ -190,7 +190,15 @@ def _keep_all_alive():
 	for sid in sessions:
 		sessions[sid].keep_alive()
 
+votes_by = {}
+last_vote_by = {}
+votes_by_limit = 3   # hardcoded limit for number of votes per election a user can make being throttled
+vote_once_every_seconds = 5		# how many seconds have to pass before a user can vote again
+
 def _on_zmq(messages):
+	global votes_by
+	global last_vote_by
+
 	for message in messages:
 		try:
 			message = json.loads(message)
@@ -211,6 +219,8 @@ def _on_zmq(messages):
 				rainwave.playlist.prepare_cooldown_algorithm(message['sid'])
 				cache.update_local_cache_for_sid(message['sid'])
 				sessions[message['sid']].update_all(message['sid'])
+				votes_by = {}
+				last_vote_by = {}
 			elif message['action'] == "update_ip":
 				for sid in sessions:
 					sessions[sid].update_ip_address(message['ip'])
@@ -221,6 +231,9 @@ def _on_zmq(messages):
 				sessions[message['sid']].update_dj()
 			elif message['action'] == "ping":
 				log.debug("zeromq", "Pong")
+			elif message['action'] == "vote_by":
+				votes_by[message['by']] = votes_by[message['by']] + 1 if message['by'] in votes_by else 1
+				last_vote_by[message['by']] = timestamp()
 		except Exception as e:
 			log.exception("zeromq", "Error handling Zero MQ action '%s'" % message['action'], e)
 			return
@@ -431,8 +444,15 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		self.msg_times = [ t for t in self.msg_times if t > throt_t ]
 		if not is_throttle_process:
 			self.msg_times.append(timestamp())
+			drop_request = len(self.msg_times) >= 7
 			# log.debug("throttle", "%s - %s" % (len(self.msg_times), message['action']))
-			if len(self.msg_times) >= 9:
+			if message['action'] == "vote":
+				votes_by_key = self.request.remote_ip if self.user.is_anonymous() else self.user.id
+				vote_limit = votes_by_limit if not self.user.has_perks() else votes_by_limit * 2
+				if votes_by_key in votes_by and votes_by[votes_by_key] >= vote_limit and (timestamp() - vote_once_every_seconds) > last_vote_by[votes_by_key]:
+					drop_request = True
+				zeromq.publish({ "action": "vote_by", "by": votes_by_key })
+			if drop_request:
 				self.write_message({
 					"wsthrottle": { "tl_key": "websocket_throttle", "text": self.locale.translate("websocket_throttle") },
 					"message_id": { "message_id": message_id, "success": False, "tl_key": "websocket_throttle" }
@@ -443,7 +463,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 				# log.debug("throttle", "Currently throttled, adding to queue.")
 				self.throttled_msgs.append(message)
 				return
-			elif (message['action'] == "vote" and len(self.msg_times) >= 4) or len(self.msg_times) >= 6:
+			elif len(self.msg_times) >= 5:
 				# log.debug("throttle", "Too many messages, throttling.")
 				self.throttled = True
 				self.throttled_msgs.append(message)
@@ -482,6 +502,13 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 				else:
 					zeromq.publish({ "action": "result_sync", "sid": self.sid, "user_id": self.user.id, "data": endpoint._output, "uuid_exclusion": self.uuid })
 			if message['action'] == "/api4/vote" and endpoint.return_name in endpoint._output and isinstance(endpoint._output[endpoint.return_name], dict) and endpoint._output[endpoint.return_name]['success']:
+				self.votes_this_election += 1
+				if self.votes_this_election == 5:
+					self.vote_throttled = True
+					if self.user.is_anonymous():
+						zeromq.publish({ "action": "new_throttle", "target": self.request.remote_ip })
+					else:
+						zeromq.publish({ "action": "new_throttle", "target": self.user.id })
 				live_voting = rainwave.schedule.update_live_voting(self.sid)
 				endpoint.append("live_voting", live_voting)
 				zeromq.publish({ "action": "forward_to_all", "sid": self.sid, "uuid_exclusion": self.uuid, "data": { "live_voting": live_voting } })
@@ -506,6 +533,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			if not cache.get_station(self.sid, "backend_ok"):
 				raise APIException("station_offline")
 
+			self.votes_this_election = 0
 			self.refresh_user()
 			api_requests.info.attach_info_to_request(handler, live_voting=True)
 			if self.user.is_dj():

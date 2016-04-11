@@ -1,3 +1,7 @@
+var held_vote_song;
+var vote_timeout;
+var last_vote;
+
 var Song = function(self, parent_event) {
 	"use strict";
 	var template;
@@ -50,6 +54,9 @@ var Song = function(self, parent_event) {
 		if (!self.autovoted && self.el.classList.contains("voting_registered") || self.el.classList.contains("voting_clicked")) {
 			return;
 		}
+		if (held_vote_song == self) {
+			return;
+		}
 		if (self.autovoted) {
 			self.el.classList.add("no_transition");
 			self.el.classList.remove("autovoted");
@@ -62,10 +69,31 @@ var Song = function(self, parent_event) {
 			});
 			return;
 		}
+		self.el.classList.remove("voting_clicked_long");
 		self.el.classList.add("voting_clicked");
+		Timeline.votes_this_election++;
+		if ((Timeline.votes_this_election >= (User.perks ? 6 : 3)) && (last_vote > (Clock.now - 6))) {
+			if (!Timeline.votes_limit_hit) {
+				ErrorHandler.tooltip_error(ErrorHandler.make_error("websocket_throttle", 403));
+			}
+			Timeline.votes_limit_hit = true;
+			self.el.classList.add("voting_clicked_long");
+			if (held_vote_song) {
+				held_vote_song.unregister_vote();
+			}
+			if (vote_timeout) {
+				clearTimeout(vote_timeout);
+			}
+			vote_timeout = setTimeout(self.vote, 6000);
+			held_vote_song = self;
+		}
 		API.async_get("vote", { "entry_id": self.entry_id },
 			null,
 			function(json) {
+				if (json.tl_key == "websocket_throttle") {
+					Timeline.votes_this_election = 1000;
+					Timeline.votes_limit_hit = true;
+				}
 				self.el.classList.add("voting_error");
 				self.el.classList.remove("voting_clicked");
 				setTimeout(function() { self.el.classList.remove("voting_error"); }, 2000);
@@ -117,7 +145,7 @@ var Song = function(self, parent_event) {
 		if (!template.cooldown) {
 			// nothing
 		}
-		else if (("valid" in self) && !self.valid) {
+		else if (("valid" in self) && !self.valid && (self.sid !== User.sid)) {
 			self.el.classList.add("cool");
 			template.cooldown.textContent = $l("request_only_on_x", { "station": $l("station_name_" + self.origin_sid) });
 		}

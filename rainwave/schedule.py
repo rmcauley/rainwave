@@ -322,6 +322,8 @@ def manage_next(sid):
 	for evt in upnext[sid]:
 		evt.start = future_time
 		future_time += evt.length()
+		if evt.is_election:
+			evt.update_vote_counts()
 
 def _get_or_create_election(sid, target_length = None):
 	#pylint: disable=W0612

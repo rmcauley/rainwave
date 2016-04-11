@@ -189,8 +189,8 @@ div.song {
 		width: 100%;
 		left: 0;
 		background: $vote_highlight;
-		-webkit-transition: 450ms transform $transfunc, background linear $highlight_fade_duration;
-		        transition: 450ms transform $transfunc, background linear $highlight_fade_duration;
+		-webkit-transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
+		        transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
 		@include transform(scaleX(0));
 	}
 
@@ -279,8 +279,6 @@ div.song {
 
 		&.voting_clicked {
 			background-color: $hover_bkg;
-			border-left-color: $vote_highlight;
-			border-right-color: $vote_highlight;
 			-webkit-transition: $webkit_song_transitions;
 				    transition: $song_transitions;
 
@@ -288,6 +286,10 @@ div.song {
 				visibility: visible;
 				@include transition-duration($highlight_fade_duration);
 				@include transform(scaleX(0.4));
+			}
+
+			&.voting_clicked_long div.song_highlight {
+				@include transition-duration(4000);
 			}
 		}
 
