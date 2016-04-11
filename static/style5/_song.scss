@@ -289,7 +289,7 @@ div.song {
 			}
 
 			&.voting_clicked_long div.song_highlight {
-				@include transition-duration(4000);
+				@include transition-duration(7500ms);
 			}
 		}
 

@@ -234,6 +234,7 @@ def _on_zmq(messages):
 			elif message['action'] == "vote_by":
 				votes_by[message['by']] = votes_by[message['by']] + 1 if message['by'] in votes_by else 1
 				last_vote_by[message['by']] = timestamp()
+				# log.debug("zeromq", "Vote by %s" % (message['by'],))
 		except Exception as e:
 			log.exception("zeromq", "Error handling Zero MQ action '%s'" % message['action'], e)
 			return
@@ -406,7 +407,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 						"message_id": { "message_id": fieldtypes.zero_or_greater_integer(m['message_id']), "success": False, "tl_key": "websocket_throttle" }
 					})
 			self.throttled_msgs = [ m for m in self.throttled_msgs if m['action'] != action ]
-			# log.debug("throttle", "Handling last throttled %s message." % action)
+			log.debug("throttle", "Handling last throttled %s message." % action)
 		else:
 			msg = self.throttled_msgs.pop(0)
 			# log.debug("throttle", "Handling last throttled %s message." % action)
@@ -444,14 +445,15 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		self.msg_times = [ t for t in self.msg_times if t > throt_t ]
 		if not is_throttle_process:
 			self.msg_times.append(timestamp())
-			drop_request = len(self.msg_times) >= 7
+			drop_request = len(self.msg_times) >= 8
 			# log.debug("throttle", "%s - %s" % (len(self.msg_times), message['action']))
-			if message['action'] == "vote":
-				votes_by_key = self.request.remote_ip if self.user.is_anonymous() else self.user.id
-				vote_limit = votes_by_limit if not self.user.has_perks() else votes_by_limit * 2
-				if votes_by_key in votes_by and votes_by[votes_by_key] >= vote_limit and (timestamp() - vote_once_every_seconds) > last_vote_by[votes_by_key]:
-					drop_request = True
-				zeromq.publish({ "action": "vote_by", "by": votes_by_key })
+			# if message['action'] == "vote":
+			# 	votes_by_key = self.request.remote_ip if self.user.is_anonymous() else self.user.id
+			# 	vote_limit = votes_by_limit if not self.user.has_perks() else votes_by_limit * 2
+			# 	if votes_by_key in votes_by and votes_by[votes_by_key] >= vote_limit and (timestamp() - vote_once_every_seconds) > last_vote_by[votes_by_key]:
+			# 		log.debug("throttle", "Dropping vote - too many votes.")
+			# 		drop_request = True
+			# 	zeromq.publish({ "action": "vote_by", "by": votes_by_key })
 			if drop_request:
 				self.write_message({
 					"wsthrottle": { "tl_key": "websocket_throttle", "text": self.locale.translate("websocket_throttle") },
@@ -502,13 +504,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 				else:
 					zeromq.publish({ "action": "result_sync", "sid": self.sid, "user_id": self.user.id, "data": endpoint._output, "uuid_exclusion": self.uuid })
 			if message['action'] == "/api4/vote" and endpoint.return_name in endpoint._output and isinstance(endpoint._output[endpoint.return_name], dict) and endpoint._output[endpoint.return_name]['success']:
-				self.votes_this_election += 1
-				if self.votes_this_election == 5:
-					self.vote_throttled = True
-					if self.user.is_anonymous():
-						zeromq.publish({ "action": "new_throttle", "target": self.request.remote_ip })
-					else:
-						zeromq.publish({ "action": "new_throttle", "target": self.user.id })
 				live_voting = rainwave.schedule.update_live_voting(self.sid)
 				endpoint.append("live_voting", live_voting)
 				zeromq.publish({ "action": "forward_to_all", "sid": self.sid, "uuid_exclusion": self.uuid, "data": { "live_voting": live_voting } })

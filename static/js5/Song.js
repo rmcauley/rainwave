@@ -1,4 +1,5 @@
 var held_vote_song;
+var held_vote_song_event;
 var vote_timeout;
 var last_vote;
 
@@ -51,10 +52,10 @@ var Song = function(self, parent_event) {
 		if (e && (e.target.nodeName.toLowerCase() == "a") && e.target.getAttribute("href")) {
 			return;
 		}
-		if (!self.autovoted && self.el.classList.contains("voting_registered") || self.el.classList.contains("voting_clicked")) {
-			return;
+		if (held_vote_song && (held_vote_song_event == parent_event)) {
+			// pass
 		}
-		if (held_vote_song == self) {
+		else if ((!self.autovoted && self.el.classList.contains("voting_registered")) || self.el.classList.contains("voting_clicked")) {
 			return;
 		}
 		if (self.autovoted) {
@@ -69,10 +70,15 @@ var Song = function(self, parent_event) {
 			});
 			return;
 		}
-		self.el.classList.remove("voting_clicked_long");
-		self.el.classList.add("voting_clicked");
 		Timeline.votes_this_election++;
 		if ((Timeline.votes_this_election >= (User.perks ? 6 : 3)) && (last_vote > (Clock.now - 6))) {
+			last_vote = Clock.now;
+			parent_event.unregister_vote();
+			if (held_vote_song_event && (held_vote_song_event !== parent_event)) {
+				held_vote_song_event.unregister_vote();
+			}
+			self.el.classList.remove("voting_clicked_long");
+			self.el.classList.add("voting_clicked");
 			if (!Timeline.votes_limit_hit) {
 				ErrorHandler.tooltip_error(ErrorHandler.make_error("websocket_throttle", 403));
 			}
@@ -81,13 +87,28 @@ var Song = function(self, parent_event) {
 			if (held_vote_song) {
 				held_vote_song.unregister_vote();
 			}
+			// TODO:
+			/*
+				A vote that's been held back here through this method will need to be
+				re-registered as the actual vote if the vote is moved somewhere else.
+				Uuuuuuuugh.
+			*/
 			if (vote_timeout) {
 				clearTimeout(vote_timeout);
 			}
 			vote_timeout = setTimeout(self.vote, 6000);
 			held_vote_song = self;
+			held_vote_song_event = parent_event;
+			return;
+		}
+		if (vote_timeout) {
+			clearTimeout(vote_timeout);
 		}
 		last_vote = Clock.now;
+		self.el.classList.remove("voting_clicked_long");
+		self.el.classList.add("voting_clicked");
+		held_vote_song = null;
+		held_vote_song_event = null;
 		API.async_get("vote", { "entry_id": self.entry_id },
 			null,
 			function(json) {
