@@ -54,7 +54,7 @@ var Fave = function(json) {
 		// if the song is a request and it's not good, i.e. it's for another
 		// station, don't register this as a favourite or activate it.
 		// you can't interact across stations on Rainwave.
-		if (("good" in json) && !json.good) {
+		if (("valid" in json) && !json.valid) {
 			return;
 		}
 		if (json.fave) {

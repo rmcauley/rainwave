@@ -364,8 +364,12 @@ class User(object):
 		for song in requests:
 			if not song['valid'] or song['cool'] or song['elec_blocked'] or song['sid'] != sid:
 				song['valid'] = False
+				# backwards compatibility
+				song['good'] = False
 			else:
 				song['valid'] = True
+				# backwards compatibility
+				song['good'] = True
 			song['albums'] = [ {
 				"name": song.pop('album_name'),
 				"id": song['album_id'],
