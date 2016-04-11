@@ -88,7 +88,8 @@ $drop_shadow:                 $art_bkg;
 // Requests
 $request_indicator:           $text;			// +/- indicator for live voting (and a few others)
 $request_indicator_bkg:       $orange;
-$request_indicator_neg_bkg:   $blue;
+$request_indicator_neg:       $text_d;
+$request_indicator_neg_bkg:   #333;
 $requests_paused:             #2A073C;
 $requests_warn:               darken($error_bkg, 10%);
 $request_delete:              mix($text, $error_b, 25%);

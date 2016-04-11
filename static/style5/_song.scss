@@ -417,10 +417,6 @@ div.song div.plusminus {
 	min-width: 18px;
 	text-align: center;
 
-	&.negative {
-		background: $request_indicator_neg_bkg;
-	}
-
 	&.show {
 		opacity: 1;
 	}
