@@ -12,7 +12,6 @@ var RainwaveAPI = function() {
 	var _sid, _userID, _apiKey, _host;
 	var userIsDJ, currentScheduleID, isOK, hidden, visibilityChange, isHidden;
 	var socket, socketStaysClosed, socketIsBusy;
-	var socketErrorCount = 0;
 	var socketSequentialRequests = 0;
 	var requestID = 0;
 	var requestQueue = [];
@@ -134,10 +133,7 @@ var RainwaveAPI = function() {
 
 	var onSocketError = function() {
 		if (self.debug) console.log("Socket errored.");
-		if (socketErrorCount > 0) {
-			self.onError({ "tl_key": "sync_retrying" });
-		}
-		socketErrorCount++;
+		self.onError({ "tl_key": "sync_retrying" });
 	};
 
 	// Error Handling ****************************************************************************************
@@ -200,8 +196,6 @@ var RainwaveAPI = function() {
 	};
 
 	var onMessage = function(message) {
-		socketErrorCount = 0;
-
 		self.onErrorRemove("sync_retrying");
 
 		var json;
@@ -281,6 +275,9 @@ var RainwaveAPI = function() {
 		params = params || {};
 		params.action = action;
 		params.message_id = requestID;
+		if (("sid" in params) && !params.sid && (params.sid !== 0)) {
+			delete params.sid;
+		}
 		requestID++;
 		requestQueue.push({
 			message: params || {},

@@ -462,7 +462,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		endpoint = api_endpoints[message['action']](websocket=True)
 		endpoint.locale = self.locale
 		endpoint.request = FakeRequestObject(message, self.request.cookies)
-		endpoint.sid = message['sid'] if 'sid' in message else self.sid
+		endpoint.sid = message['sid'] if ('sid' in message and message['sid']) else self.sid
 		endpoint.user = self.user
 		#pylint: disable=W0212
 		try:
