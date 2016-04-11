@@ -234,7 +234,9 @@ var Requests = function() {
 				n.el.style[Fx.transform] = "translateY(" + Sizing.height + "px)";
 				// http://rainwave.cc/forums/viewtopic.php?f=27&t=5548
 				// requests across stations will break if we don't disconnect album ratings here
-				n.albums[0].$t.rating.setAttribute("name", "");
+				if (n.albums[0].$t.rating) {
+					n.albums[0].$t.rating.setAttribute("name", "");
+				}
 				new_songs.unshift(n);
 				el.appendChild(n.el);
 			}
