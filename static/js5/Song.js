@@ -22,7 +22,7 @@ var Song = function(self, parent_event) {
 	if (self.albums[0].$t.rating) {
 		Rating.register(self.albums[0]);
 	}
-	if (("valid" in self) && !self.valid) {
+	if (("good" in self) && !self.good) {
 		if (template.fave) {
 			self.$t.fave.parentNode.removeChild(self.$t.fave);
 		}
@@ -47,7 +47,7 @@ var Song = function(self, parent_event) {
 		if (e && (e.target.nodeName.toLowerCase() == "a") && e.target.getAttribute("href")) {
 			return;
 		}
-		if (!self.autovoted && self.el.classList.contains("voting_registered") || self.el.classList.contains("voting_clicked")) {
+		if ((!self.autovoted && self.el.classList.contains("voting_registered")) || self.el.classList.contains("voting_clicked")) {
 			return;
 		}
 		if (self.autovoted) {
@@ -66,13 +66,17 @@ var Song = function(self, parent_event) {
 		API.async_get("vote", { "entry_id": self.entry_id },
 			null,
 			function(json) {
-				self.el.classList.add("voting_error");
 				self.el.classList.remove("voting_clicked");
-				setTimeout(function() { self.el.classList.remove("voting_error"); }, 2000);
 			},
 			function(json) {
-				// TODO: indicate that voting has been slowed here, also cancel other votes in
-				// progress
+				for (var i = 0; i < parent_event.songs.length; i++) {
+					if (parent_event.songs[i] != self) {
+						parent_event.songs[i].unregister_vote();
+					}
+				}
+				// TODO: the animation isn't always long
+				// I need to think of another solution :/
+				self.el.classList.add("voting_clicked_long");
 			});
 	};
 
