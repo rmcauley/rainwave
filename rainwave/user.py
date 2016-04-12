@@ -343,7 +343,7 @@ class User(object):
 				"SELECT r4_request_store.song_id AS id, COALESCE(r4_song_sid.sid, r4_request_store.sid) AS sid, r4_songs.song_origin_sid AS origin_sid, "
 					"r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
 					"CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_title AS title, song_length AS length, "
-					"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, song_exists AS good, "
+					"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, "
 					"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
 					"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
 					"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
@@ -364,8 +364,12 @@ class User(object):
 		for song in requests:
 			if not song['valid'] or song['cool'] or song['elec_blocked'] or song['sid'] != sid:
 				song['valid'] = False
+				# backwards compatibility
+				song['good'] = False
 			else:
 				song['valid'] = True
+				# backwards compatibility
+				song['good'] = True
 			song['albums'] = [ {
 				"name": song.pop('album_name'),
 				"id": song['album_id'],
