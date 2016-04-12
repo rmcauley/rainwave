@@ -121,7 +121,7 @@ var Song = function(self, parent_event) {
 		if (!template.cooldown) {
 			// nothing
 		}
-		else if (("valid" in self) && !self.valid) {
+		else if (("valid" in self) && !self.valid && !self.good) {
 			self.el.classList.add("cool");
 			template.cooldown.textContent = $l("request_only_on_x", { "station": $l("station_name_" + self.origin_sid) });
 		}
