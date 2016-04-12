@@ -39,7 +39,9 @@ var Timeline = function() {
 		API.add_callback("all_stations_info", check_for_events);
 		API.add_callback("user", self.voting_allowed_check);
 		API.add_callback("user", lock_check);
-		API.add_callback("live_voting", live_voting);
+		if (!MOBILE) {
+			API.add_callback("live_voting", live_voting);
+		}
 		API.add_callback("vote_result", function(json) {
 			if (json.success) {
 				self.register_vote(json.elec_id, json.entry_id);

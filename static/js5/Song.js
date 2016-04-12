@@ -233,8 +233,6 @@ var Song = function(self, parent_event) {
 		};
 
 		self.live_voting = function(json) {
-			if (MOBILE) return;
-
 			var diff = json.entry_votes - self.entry_votes;
 			self.entry_votes = json.entry_votes;
 
