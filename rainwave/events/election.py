@@ -363,7 +363,6 @@ class Election(event.BaseEvent):
 			return None
 		self.reset_request_sequence()
 		song.data['entry_type'] = ElecSongTypes.request
-		song.data['entry_votes'] = 1
 		return song
 
 	def length(self):
@@ -423,12 +422,6 @@ class Election(event.BaseEvent):
 			if song.data['entry_id'] == entry_id:
 				return song
 		return None
-
-	def has_request_by_user(self, user_id):
-		for song in self.songs:
-			if song.data['entry_type'] == ElecSongTypes.request and song.data['elec_request_user_id'] == user_id:
-				return song
-		return False
 
 	def add_vote_to_entry(self, entry_id, addition = 1):
 		# I hope you've verified this entry belongs to this event, cause I don't do that here.. :)
