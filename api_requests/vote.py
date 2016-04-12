@@ -100,6 +100,10 @@ class SubmitVote(APIHandler):
 						(event.id, entry_id, self.user.id, event.get_entry(entry_id).id, rank, vote_count, event.sid))
 					db.c.update("UPDATE phpbb_users SET radio_inactive = FALSE, radio_last_active = %s, radio_totalvotes = %s WHERE user_id = %s", (timestamp(), vote_count, self.user.id))
 
+					autovoted_entry = event.has_request_by_user(self.user.id)
+					if autovoted_entry:
+						event.add_vote_to_entry(autovoted_entry.data['entry_id'], -1)
+
 				user_vote_cache = cache.get_user(self.user, "vote_history")
 				if not user_vote_cache:
 					user_vote_cache = []
