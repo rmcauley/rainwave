@@ -12,9 +12,6 @@ var Timeline = function() {
 	var history_bar;
 	var root_template;
 
-	self.votes_this_election = 0;
-	self.votes_limit_hit = false;
-
 	BOOTSTRAP.on_init.push(function(root_tmpl) {
 		root_template = root_tmpl;
 		Prefs.define("l_stk", [ false, true ], true);
@@ -78,9 +75,6 @@ var Timeline = function() {
 	});
 
 	self.update = function() {
-		self.votes_this_election = 0;
-		self.votes_limit_hit = false;
-
 		var new_events = [];
 
 		for (var i = 0; i < events.length; i++) {
@@ -160,16 +154,16 @@ var Timeline = function() {
 		Clock.set_page_title(sched_current.songs[0].albums[0].name + " - " + sched_current.songs[0].title, sched_current.end);
 	};
 
-	var progress_bar_update = function() {
-		if (!sched_current) {
-			return;
-		}
-		if ((sched_current.end - Clock.now) <= 0) {
-			return;
-		}
-		var new_val = Math.min(Math.max(Math.floor(((sched_current.end - Clock.now) / (sched_current.songs[0].length - 1)) * 100), 0), 100);
-		template.progress_history_inside.style.width = new_val + "%";
-	};
+	// var progress_bar_update = function() {
+	// 	if (!sched_current) {
+	// 		return;
+	// 	}
+	// 	if ((sched_current.end - Clock.now) <= 0) {
+	// 		return;
+	// 	}
+	// 	var new_val = Math.min(Math.max(Math.floor(((sched_current.end - Clock.now) / (sched_current.songs[0].length - 1)) * 100), 0), 100);
+	// 	template.progress_history_inside.style.width = new_val + "%";
+	// };
 
 	var find_event = function(id) {
 		for (var i = 0; i < events.length; i++) {

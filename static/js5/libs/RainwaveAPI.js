@@ -227,7 +227,13 @@ var RainwaveAPI = function() {
 		if (json.message_id) {
 			for (i = 0; i < sentRequests.length; i++) {
 				if (sentRequests[i].message.message_id === json.message_id.message_id) {
-					asyncRequest = sentRequests.splice(i, 1)[0];
+					if (("incomplete" in json.message_id ) && json.message_id.incomplete) {
+						asyncRequest = sentRequests[i];
+						asyncRequest.onIncomplete();
+					}
+					else {
+						asyncRequest = sentRequests.splice(i, 1)[0];
+					}
 					asyncRequest.success = true;
 					solveLatency(asyncRequest, netLatencies, slowNetThreshold);
 					break;
@@ -268,7 +274,7 @@ var RainwaveAPI = function() {
 
 	self.onRequestError = null;
 
-	self.request = function(action, params, onSuccess, onError) {
+	self.request = function(action, params, onSuccess, onError, onIncomplete) {
 		if (!action) {
 			throw("No action specified for Rainwave API request.");
 		}
@@ -283,6 +289,7 @@ var RainwaveAPI = function() {
 			message: params || {},
 			onSuccess: onSuccess || noop,
 			onError: onError || self.onRequestError || noop,
+			onIncomplete: onIncomplete || noop
 		});
 		if (!socketIsBusy || !isOK) {
 			nextRequest();

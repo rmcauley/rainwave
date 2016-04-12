@@ -326,6 +326,33 @@ class FakeRequestObject(object):
 
 nonunique_actions = ("request", )
 
+# TODO: smarter way of sorting request priority using a list and indexOf
+
+class WSMessage(dict):
+	def __lt__(self, other):
+		if self['action'] == "request" and other['action'] != "request":
+			return False
+		return True
+
+	def __gt__(self, other):
+		if self['action'] == "request" and other['action'] != "request":
+			return True
+		return False
+
+	def __eq__(self, other):
+		if self['action'] == "request" and other['action'] == "request":
+			return True
+		return False
+
+	def __le__(self, other):
+		if self.__lt__(other) or self.__eq__(other)
+
+	def __ge__(self, other):
+		if self.__gt__(other) or self.__eq__(other)
+
+	def __ne__(self, other):
+		return not self.__eq__(other)
+
 @handle_api_url("websocket/(\d+)")
 class WSHandler(tornado.websocket.WebSocketHandler):
 	is_websocket = True
@@ -354,8 +381,10 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		self.authorized = False
 
 		self.msg_times = []
-		self.throttled_msgs = []
+		self.throttled_vote = False
+		self.throttled_votes = []
 		self.throttled = False
+		self.throttled_msgs = []
 
 	# overwrites a not supported method and redirects it to self.close
 	# allows websocket sessions to be called exactly the same as HTTP handlers
@@ -393,7 +422,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		if not len(self.throttled_msgs):
 			self.throttled = False
 			return
-
+		self.throttled_msgs.sort()
 		# log.debug("throttle", "Throttled with %s messages" % len(self.throttled_msgs))
 		action = self.throttled_msgs[0]['action']
 		msg = None
@@ -415,9 +444,27 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			self._process_message(msg, is_throttle_process=True)
 		tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=1), self.process_throttle)
 
+	def should_vote_throttle(self):
+		votes_by_key = self.request.remote_ip if self.user.is_anonymous() else self.user.id
+		vote_limit = votes_by_limit if not self.user.has_perks() else votes_by_limit * 2
+		if (votes_by_key in votes_by and votes_by[votes_by_key] >= vote_limit and (timestamp() - vote_once_every_seconds) > last_vote_by[votes_by_key]):
+			return last_vote_by[votes_by_key] + vote_once_every_seconds
+		return 0
+
+	def process_vote_throttle(self):
+		last_vote = self.throttled_votes.pop()
+		for last_vote in self.throttled_votes:
+			self.write_message({ "message_id": { "message_id": last_vote['message_id'], "success": False, "tl_key": "websocket_throttle" } })
+		self.throttled_votes[:] = []
+		if self.should_vote_throttle():
+			tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=self.should_vote_throttle() + 0.5, self.process_vote_throttle))
+			return
+		self.throttled_vote = False
+		self._process_message(last_vote, is_throttle_process=True)
+
 	def on_message(self, message):
 		try:
-			message = json.loads(message)
+			message = WSMessage().update(json.loads(message))
 		except:
 			self.write_message({ "wserror": { "tl_key": "invalid_json", "text": self.locale.translate("invalid_json") } })
 			return
@@ -443,24 +490,20 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
 		throt_t = timestamp() - 3
 		self.msg_times = [ t for t in self.msg_times if t > throt_t ]
+
 		if not is_throttle_process:
 			self.msg_times.append(timestamp())
-			drop_request = len(self.msg_times) >= 8
-			# log.debug("throttle", "%s - %s" % (len(self.msg_times), message['action']))
-			# if message['action'] == "vote":
-			# 	votes_by_key = self.request.remote_ip if self.user.is_anonymous() else self.user.id
-			# 	vote_limit = votes_by_limit if not self.user.has_perks() else votes_by_limit * 2
-			# 	if votes_by_key in votes_by and votes_by[votes_by_key] >= vote_limit and (timestamp() - vote_once_every_seconds) > last_vote_by[votes_by_key]:
-			# 		log.debug("throttle", "Dropping vote - too many votes.")
-			# 		drop_request = True
-			# 	zeromq.publish({ "action": "vote_by", "by": votes_by_key })
-			if drop_request:
-				self.write_message({
-					"wsthrottle": { "tl_key": "websocket_throttle", "text": self.locale.translate("websocket_throttle") },
-					"message_id": { "message_id": message_id, "success": False, "tl_key": "websocket_throttle" }
-				})
-				# log.debug("throttle", "Dropping request.")
-				return
+			log.debug("throttle", "%s - %s" % (len(self.msg_times), message['action']))
+			if message['action'] == "vote":
+				if self.should_vote_throttle() and not self.throttled_vote:
+					self.throttled_vote = True
+					tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=self.should_vote_throttle() + 0.5, self.process_vote_throttle))
+				if self.throttled_vote:
+					log.debug("throttle", "Too many votes - queueing.")
+					self.throttled_votes.append(message)
+					zeromq.publish({ "action": "vote_by", "by": votes_by_key })
+					self.write_message({ "message_id": { "message_id": message_id, "incomplete": True } })
+					return
 			if self.throttled:
 				# log.debug("throttle", "Currently throttled, adding to queue.")
 				self.throttled_msgs.append(message)
@@ -471,6 +514,9 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 				self.throttled_msgs.append(message)
 				tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=1), self.process_throttle)
 				return
+
+		if message['action'] == "vote":
+			zeromq.publish({ "action": "vote_by", "by": votes_by_key })
 
 		if message['action'] == "check_sched_current_id":
 			self._do_sched_check(message)
@@ -528,7 +574,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			if not cache.get_station(self.sid, "backend_ok"):
 				raise APIException("station_offline")
 
-			self.votes_this_election = 0
 			self.refresh_user()
 			api_requests.info.attach_info_to_request(handler, live_voting=True)
 			if self.user.is_dj():
