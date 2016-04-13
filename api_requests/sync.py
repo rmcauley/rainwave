@@ -5,6 +5,7 @@ import datetime
 import numbers
 import sys
 import uuid
+import urlparse
 from time import time as timestamp
 
 try:
@@ -362,7 +363,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 	uuid = None
 
 	def check_origin(self, origin):
-		parsed_origin = urllib.parse.urlparse(origin)
+		parsed_origin = urlparse.urlparse(origin)
 		return parsed_origin.netloc.endswith("rainwave.cc")
 
 	def open(self, *args, **kwargs):
