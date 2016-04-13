@@ -324,8 +324,6 @@ class FakeRequestObject(object):
 
 nonunique_actions = ("request", )
 
-# TODO: smarter way of sorting request priority using a list and indexOf
-
 class WSMessage(dict):
 	def __lt__(self, other):
 		if self['action'] == "request" and other['action'] != "request":
@@ -455,6 +453,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
 	def process_vote_throttle(self):
 		if not len(self.throttled_votes):
+			self.throttled_vote = False
 			return
 		if self.should_vote_throttle():
 			log.debug("vote_throttle", "Still need to wait longer before processing the vote throttle!")
