@@ -27,6 +27,7 @@
    "song_does_not_exist"                             : "Liedje bestaat niet.",
    "db_error_retry"                                  : "Interne database fout - probeer het opnieuw.",
    "db_error_permanent"                              : "Server-fout - interne database is offline.",
+   "websocket_throttle"                              : "Rustig aan!",
 
    "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
 
