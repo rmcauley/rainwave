@@ -67,6 +67,7 @@ var Song = function(self, parent_event) {
 			null,
 			function(json) {
 				self.el.classList.remove("voting_clicked");
+				return true;
 			},
 			function(json) {
 				for (var i = 0; i < parent_event.songs.length; i++) {
@@ -74,8 +75,6 @@ var Song = function(self, parent_event) {
 						parent_event.songs[i].unregister_vote();
 					}
 				}
-				// TODO: the animation isn't always long
-				// I need to think of another solution :/
 				self.el.classList.add("voting_clicked_long");
 			});
 	};

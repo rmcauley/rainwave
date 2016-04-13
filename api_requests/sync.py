@@ -454,19 +454,25 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		return 0
 
 	def process_vote_throttle(self):
-		# TODO: separate votes by election
 		if not len(self.throttled_votes):
 			return
 		if self.should_vote_throttle():
 			log.debug("vote_throttle", "Still need to wait longer before processing the vote throttle!")
 			tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=self.should_vote_throttle()), self.process_vote_throttle)
 			return
-		last_vote = self.throttled_votes.pop()
 		log.debug("vote_throttle", "Processing vote throttle.")
-		for last_vote in self.throttled_votes:
-			self.write_message({ "message_id": { "message_id": last_vote['message_id'], "success": False, "tl_key": "websocket_throttle" } })
-		self.throttled_votes[:] = []
-		self.throttled_vote = False
+		elec_id = self.throttled_votes[0]['elec_id']
+		votes = [ v for v in self.throttled_votes if v['elec_id'] == elec_id ]
+		last_vote = votes.pop()
+		for vote in votes:
+			self.write_message({ "message_id": { "message_id": vote['message_id'], "success": False, "tl_key": "websocket_throttle" } })
+		self.throttled_votes = [ v for v in self.throttled_votes if v['elec_id'] != elec_id ]
+		if not len(self.throttled_votes):
+			log.debug("vote_throttle", "Out of votes to throttle.")
+			self.throttled_vote = False
+		else:
+			log.debug("vote_throttle", "Votes for other elections still possible, will process after timeout.")
+			tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=vote_once_every_seconds), self.process_vote_throttle)
 		self._process_message(last_vote, is_throttle_process=True)
 
 	def on_message(self, message_text):
@@ -489,6 +495,13 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			self._do_auth(message)
 			return
 
+		if message['action'] == "vote":
+			if not message['entry_id']:
+				self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="entry_id") } })
+			elif not fieldtypes.integer(message['entry_id']):
+				self.write_message({ "wserror": { "tl_key": "invalid_argument", "text": self.locale.translate("missing_argument", argument="entry_id", reason=fieldtypes.integer_error) } })
+			message['elec_id'] = rainwave.schedule.get_elec_id_for_entry(self.sid, message['entry_id'])
+
 		self._process_message(message)
 
 	def _process_message(self, message, is_throttle_process=False):
@@ -502,17 +515,17 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		if not is_throttle_process:
 			self.msg_times.append(timestamp())
 			log.debug("throttle", "%s - %s" % (len(self.msg_times), message['action']))
-			# if message['action'] == "vote":
-			# 	if self.should_vote_throttle() and not self.throttled_vote:
-			# 		log.debug("vote_throttle", "Starting vote throttle.")
-			# 		self.throttled_vote = True
-			# 		tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=5), self.process_vote_throttle)
-			# 	if self.throttled_vote:
-			# 		log.debug("throttle", "Too many votes - queueing.")
-			# 		self.throttled_votes.append(message)
-			# 		zeromq.publish({ "action": "vote_by", "by": self.votes_by_key })
-			# 		self.write_message({ "message_id": { "message_id": message_id, "incomplete": True } })
-			# 		return
+			if message['action'] == "vote":
+				if self.should_vote_throttle() and not self.throttled_vote:
+					log.debug("vote_throttle", "Starting vote throttle.")
+					self.throttled_vote = True
+					tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=5), self.process_vote_throttle)
+				if self.throttled_vote:
+					log.debug("throttle", "Too many votes - queueing.")
+					self.throttled_votes.append(message)
+					zeromq.publish({ "action": "vote_by", "by": self.votes_by_key })
+					self.write_message({ "message_id": { "message_id": message_id, "incomplete": True } })
+					return
 			if self.throttled:
 				# log.debug("throttle", "Currently throttled, adding to queue.")
 				self.throttled_msgs.append(message)

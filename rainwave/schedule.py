@@ -403,3 +403,9 @@ def update_live_voting(sid):
 			live_voting[event.id] = db.c.fetch_all("SELECT entry_id, entry_votes, song_id FROM r4_election_entries WHERE elec_id = %s", (event.id,))
 	cache.set_station(sid, "live_voting", live_voting)
 	return live_voting
+
+def get_elec_id_for_entry(sid, entry_id):
+	for event in cache.get_station(sid, "sched_next"):
+		if event.is_election and event.has_entry_id(entry_id):
+			return event.id
+	return 0
