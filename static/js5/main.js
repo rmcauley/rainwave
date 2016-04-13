@@ -156,7 +156,7 @@ var RWAudio;
 
 		Sizing.trigger_resize();
 
-		API.initialize(BOOTSTRAP.user.sid, BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
+		API.initialize(BOOTSTRAP.user.sid, BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP, BOOTSTRAP.websocket_host);
 
 		var add_javascript = function(src, callback) {
 			var s = document.createElement("script");
