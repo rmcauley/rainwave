@@ -89,7 +89,7 @@ class SessionBank(object):
 			try:
 				session.keep_alive()
 			except Exception as e:
-				session.finish()
+				session.rw_finish()
 				log.exception("sync", "Session failed keepalive.", e)
 
 	def update_all(self, sid):
@@ -101,7 +101,7 @@ class SessionBank(object):
 				session_count += 1
 			except Exception as e:
 				try:
-					session.finish()
+					session.rw_finish()
 				except:
 					pass
 				session_failed_count += 1
@@ -118,7 +118,7 @@ class SessionBank(object):
 					log.debug("sync_update_dj", "Updated user %s session." % session.user.id)
 				except Exception as e:
 					try:
-						session.finish()
+						session.rw_finish()
 					except:
 						pass
 					log.exception("sync_update_dj", "Session failed to be updated during update_dj.", e)
@@ -144,7 +144,7 @@ class SessionBank(object):
 		except Exception as e:
 			log.exception("sync", "Session failed to be updated during update_user.", e)
 			try:
-				session.finish()
+				session.rw_finish()
 			except Exception:
 				log.exception("sync", "Session failed finish() during update_user.", e)
 
@@ -285,6 +285,9 @@ class Sync(APIHandler):
 			sessions[self.sid].remove(self)
 		super(Sync, self).finish(*args, **kwargs)
 
+	def rw_finish(self):
+		self.finish()
+
 	def refresh_user(self):
 		self.user.refresh(self.sid)
 
@@ -382,10 +385,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		self.throttled = False
 		self.throttled_msgs = []
 
-	# overwrites a not supported method and redirects it to self.close
-	# allows websocket sessions to be called exactly the same as HTTP handlers
-	# in the session bank class
-	def finish(self):		#pylint: disable=W0221
+	def rw_finish(self, *args, **kwargs):
 		self.close()
 
 	def keep_alive(self):
@@ -394,7 +394,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 	def on_close(self):
 		global sessions
 		self.throttled_msgs = []
-		sessions[self.sid].remove(self)
+		if self.sid:
+			sessions[self.sid].remove(self)
 		super(WSHandler, self).on_close()
 
 	def write_message(self, obj, *args, **kwargs):
