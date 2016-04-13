@@ -248,10 +248,6 @@ class Election(event.BaseEvent):
 					song.data['entry_votes'] = song_result['entry_votes']
 			if not 'entry_votes' in song.data:
 				song.data['entry_votes'] = 0
-			# Auto-votes for somebody's request
-			if song.data['entry_type'] == ElecSongTypes.request:
-				if db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (song.data['elec_request_user_id'], self.id)) == 0:
-					song.data['entry_votes'] += 1
 		random.shuffle(self.songs)
 		self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
 		self.songs = sorted(self.songs, key=lambda song: song.data['entry_votes'])
