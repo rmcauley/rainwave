@@ -85,7 +85,7 @@ class SubmitVote(APIHandler):
 				if not db.c.update("UPDATE r4_listeners SET listener_voted_entry = %s WHERE listener_id = %s", (entry_id, self.user.data['listener_id'])):
 					log.warn("vote", "Could not set voted_entry: listener ID %s voting for entry ID %s." % (self.user.data['listener_id'], entry_id))
 					raise APIException("internal_error")
-				self.user.update({ "listener_voted_entry": entry_id })
+				self.user.update({ "voted_entry": entry_id })
 			else:
 				if already_voted:
 					db.c.update("UPDATE r4_vote_history SET song_id = %s, entry_id = %s WHERE user_id = %s and entry_id = %s", (event.get_entry(entry_id).id, entry_id, self.user.id, already_voted))

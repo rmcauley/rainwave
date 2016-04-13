@@ -566,6 +566,9 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		#pylint: disable=W0212
 		try:
 			startclock = timestamp()
+			# TODO: this should be a part of prepare_standalone!
+			if message['action'] == "vote" and self.user.is_anonymous():
+				self.user.refresh(self.sid)
 			if "message_id" in message:
 				if message_id == None:
 					endpoint.prepare_standalone()

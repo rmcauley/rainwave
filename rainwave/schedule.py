@@ -178,6 +178,7 @@ def post_process(sid):
 		user.trim_listeners(sid)
 		cache.update_user_rating_acl(sid, history[sid][0].get_song().id)
 		user.unlock_listeners(sid)
+		db.c.update("UPDATE r4_listeners SET listener_voted_entry = NULL WHERE sid = %s", (sid,))
 		log.debug("advance", "User management and trimming: %.6f" % (timestamp() - start_time,))
 
 		start_time = timestamp()

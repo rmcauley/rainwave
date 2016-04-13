@@ -20,9 +20,17 @@ class CreateAnonTunedIn(APIHandler):
 	def post(self, sid):	#pylint: disable=W0221
 		if db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE listener_ip = '127.0.0.1' AND user_id = 1") == 0:
 			db.c.update("INSERT INTO r4_listeners (listener_ip, user_id, sid, listener_icecast_id) VALUES ('127.0.0.1', 1, %s, 1)", (int(sid),))
-			self.append_standard("dev_anon_user_tunein_ok", "Anonymous user tune in record completed.")
-		else:
-			raise APIException(500, "internal_error", "Anonymous user tune in record already exists.")
+			self.append_standard("dev_anon_user_tunein_ok", "Anonymous user tune in 127.0.0.1 record completed.")
+			return
+		if db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE listener_ip = '::1' AND user_id = 1") == 0:
+			db.c.update("INSERT INTO r4_listeners (listener_ip, user_id, sid, listener_icecast_id) VALUES ('::1', 1, %s, 1)", (int(sid),))
+			self.append_standard("dev_anon_user_tunein_ok", "Anonymous user tune in ::1 record completed.")
+			return
+		if db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE listener_ip = 'localhost' AND user_id = 1") == 0:
+			db.c.update("INSERT INTO r4_listeners (listener_ip, user_id, sid, listener_icecast_id) VALUES ('localhost', 1, %s, 1)", (int(sid),))
+			self.append_standard("dev_anon_user_tunein_ok", "Anonymous user tune in localhost record completed.")
+			return
+		raise APIException(500, "internal_error", "Anonymous user tune in record already exists.")
 
 class TestUserRequest(APIHandler):
 	description = "Login as a user."
