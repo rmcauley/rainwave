@@ -361,6 +361,10 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 	sid = None
 	uuid = None
 
+	def check_origin(self, origin):
+		parsed_origin = urllib.parse.urlparse(origin)
+		return parsed_origin.netloc.endswith("rainwave.cc")
+
 	def open(self, *args, **kwargs):
 		super(WSHandler, self).open()
 		try:
