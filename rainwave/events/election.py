@@ -233,7 +233,9 @@ class Election(event.BaseEvent):
 		song.data['entry_position'] = len(self.songs)
 		if not 'entry_type' in song.data:
 			song.data['entry_type'] = ElecSongTypes.normal
-		db.c.update("INSERT INTO r4_election_entries (entry_id, song_id, elec_id, entry_position, entry_type) VALUES (%s, %s, %s, %s, %s)", (entry_id, song.id, self.id, len(self.songs), song.data['entry_type']))
+		if not 'entry_votes' in song.data:
+			song.data['entry_votes'] = 0
+		db.c.update("INSERT INTO r4_election_entries (entry_id, song_id, elec_id, entry_position, entry_type, entry_votes) VALUES (%s, %s, %s, %s, %s, %s)", (entry_id, song.id, self.id, len(self.songs), song.data['entry_type'], song.data['entry_votes']))
 		song.start_election_block(self.sid, config.get_station(self.sid, "num_planned_elections") + 1)
 		self.songs.append(song)
 		if song.data['entry_type'] == ElecSongTypes.request:
