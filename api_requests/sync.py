@@ -476,7 +476,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		if not self.votes_by_key in votes_by:
 			return 0
 
-		vote_limit = 3 if not self.user.has_perks() else 5
+		vote_limit = 3
 		# log.debug("vote_throttle", "%s - %s - %s" % (vote_limit, votes_by[self.votes_by_key], (timestamp() < (last_vote_by[self.votes_by_key] + vote_once_every_seconds))))
 		if (votes_by[self.votes_by_key] >= vote_limit) and (timestamp() < (last_vote_by[self.votes_by_key] + vote_once_every_seconds)):
 			# log.debug("vote_throttle", (last_vote_by[self.votes_by_key] + vote_once_every_seconds) - timestamp())
