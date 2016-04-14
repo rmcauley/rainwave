@@ -370,11 +370,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		parsed_origin = urlparse.urlparse(origin)
 		return parsed_origin.netloc.endswith(websocket_allow_from)
 
-	def get(self, *args, **kwargs):
-		super(WSHandler, self).get(*args, **kwargs)
-		if self._status_code > 400:
-			log.debug("websocket", "Invalid WS request (%s) from browser %s. (%s)" % (self._status_code, self.request.headers.get("User-Agent", "unknown"), self.request.headers.get("Connection", "")))
-
 	def open(self, *args, **kwargs):
 		super(WSHandler, self).open(*args, **kwargs)
 
