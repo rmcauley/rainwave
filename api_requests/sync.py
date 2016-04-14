@@ -629,35 +629,39 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		self.write_message({ "sync_result": { "tl_key": "redownload_m3u", "text": self.locale.translate("redownload_m3u") } })
 
 	def _do_auth(self, message):
-		if not "user_id" in message or not message['user_id']:
-			self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="user_id") } })
-		if not isinstance(message['user_id'], numbers.Number):
-			self.write_message({ "wserror": { "tl_key": "invalid_argument", "text": self.locale.translate("invalid_argument", argument="user_id") } })
-		if not "key" in message or not message['key']:
-			self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="key") } })
+		try:
+			if not "user_id" in message or not message['user_id']:
+				self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="user_id") } })
+			if not isinstance(message['user_id'], numbers.Number):
+				self.write_message({ "wserror": { "tl_key": "invalid_argument", "text": self.locale.translate("invalid_argument", argument="user_id") } })
+			if not "key" in message or not message['key']:
+				self.write_message({ "wserror": { "tl_key": "missing_argument", "text": self.locale.translate("missing_argument", argument="key") } })
 
-		self.user = User(message['user_id'])
-		self.user.ip_address = self.request.remote_ip
-		self.user.authorize(None, message['key'])
-		if not self.user.authorized:
-			self.write_message({ "wserror": { "tl_key": "auth_failed", "text": self.locale.translate("auth_failed") } })
+			self.user = User(message['user_id'])
+			self.user.ip_address = self.request.remote_ip
+			self.user.authorize(None, message['key'])
+			if not self.user.authorized:
+				self.write_message({ "wserror": { "tl_key": "auth_failed", "text": self.locale.translate("auth_failed") } })
+				self.close()
+				return
+			self.authorized = True
+			self.uuid = str(uuid.uuid4())
+
+			global sessions
+			sessions[self.sid].append(self)
+
+			self.votes_by_key = self.request.remote_ip if self.user.is_anonymous() else self.user.id
+
+			self.refresh_user()
+			# no need to send the user's data to the user as that would have come with bootstrap
+			# and will come with each synchronization of the schedule anyway
+			self.write_message({ "wsok": True })
+			# since this will be the first action in any websocket interaction though,
+			# it'd be a good time to send a station offline message.
+			self._station_offline_check()
+		except Exception as e:
+			log.exception("websocket", "Exception during authentication.", e)
 			self.close()
-			return
-		self.authorized = True
-		self.uuid = str(uuid.uuid4())
-
-		global sessions
-		sessions[self.sid].append(self)
-
-		self.votes_by_key = self.request.remote_ip if self.user.is_anonymous() else self.user.id
-
-		self.refresh_user()
-		# no need to send the user's data to the user as that would have come with bootstrap
-		# and will come with each synchronization of the schedule anyway
-		self.write_message({ "wsok": True })
-		# since this will be the first action in any websocket interaction though,
-		# it'd be a good time to send a station offline message.
-		self._station_offline_check()
 
 	def _station_offline_check(self):
 		if not cache.get_station(self.sid, "backend_ok"):
