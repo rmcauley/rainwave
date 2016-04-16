@@ -189,8 +189,8 @@ div.song {
 		width: 100%;
 		left: 0;
 		background: $vote_highlight;
-		-webkit-transition: transform 450ms linear, background $highlight_fade_duration linear;
-		        transition: transform 450ms linear, background $highlight_fade_duration linear;
+		-webkit-transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
+		        transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
 		@include transform(scaleX(0));
 	}
 
@@ -286,10 +286,6 @@ div.song {
 				visibility: visible;
 				@include transition-duration($highlight_fade_duration);
 				@include transform(scaleX(0.4));
-			}
-
-			&.voting_clicked_long div.song_highlight {
-				@include transition-duration(7500ms);
 			}
 		}
 

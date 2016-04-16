@@ -255,7 +255,7 @@ def delay_live_vote_removal(message):
 		delayed_live_vote[message['sid']] = None
 
 def delay_live_vote(message):
-	message['timer'] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=vote_once_every_seconds), lambda: process_delayed_live_vote([message['sid']]))
+	message['timer'] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=vote_once_every_seconds), lambda: process_delayed_live_vote(message['sid']))
 
 def process_delayed_live_vote(sid):
 	if not delayed_live_vote[sid]:
@@ -420,7 +420,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		self.close()
 
 	def keep_alive(self):
-		self.write_message({ "wsping": { "timestamp": timestamp() }})
+		self.write_message({ "ping": { "timestamp": timestamp() }})
 
 	def on_close(self):
 		global sessions
@@ -533,6 +533,14 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 				self.throttled_msgs.append(message)
 				tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=0.5), self.process_throttle)
 				return
+
+		if message['action'] == "ping":
+			self.write_message({ "pong": { "timestamp": timestamp() } })
+			return
+
+		if message['action'] == "pong":
+			self.write_message({ "pongConfirm": { "timestamp": timestamp() } })
+			return
 
 		if message['action'] == "vote":
 			zeromq.publish({ "action": "vote_by", "by": self.votes_by_key })

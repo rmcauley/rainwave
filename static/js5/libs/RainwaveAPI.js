@@ -6,13 +6,13 @@ var RainwaveAPI = function() {
 	var self = {
 		ok: false,
 		isSlow: false,
-		debug: false
+		debug: false,
+		throwErrorsOnThrottle: false
 	};
 
 	var _sid, _userID, _apiKey, _host;
-	var userIsDJ, currentScheduleID, isOK, hidden, visibilityChange, isHidden;
+	var userIsDJ, currentScheduleID, isOK, isOKTimer, hidden, visibilityChange, isHidden, pingInterval;
 	var socket, socketStaysClosed, socketIsBusy;
-	var socketSequentialRequests = 0;
 	var requestID = 0;
 	var requestQueue = [];
 	var sentRequests = [];
@@ -35,29 +35,8 @@ var RainwaveAPI = function() {
 		self.on("sched_current", function(json) {
 			currentScheduleID = json.id;
 		});
-		self.on("wsok", function() {
-			if (self.debug) console.log("wsok received - auth was good!");
-			self.onErrorRemove("sync_retrying");
-			self.ok = true;
-			isOK = true;
-
-			if (currentScheduleID) {
-				if (self.debug) console.log("Socket send - check_sched_current_id with " + currentScheduleID);
-				socket.send(JSON.stringify({
-					action: "check_sched_current_id",
-					sched_id: currentScheduleID
-				}));
-			}
-
-			nextRequest();
-		});
-		self.on("wsping", function(json) {
-			if (self.debug) console.log("Pinged!");
-			// socket.send(JSON.stringify({
-			// 	action: "wspong",
-			// 	timestamp: json.timestamp
-			// }));
-		});
+		self.on("wsok", onSocketOK);
+		self.on("ping", onPing);
 
 		if (data) {
 			userIsDJ = data.user && data.user.dj;
@@ -98,6 +77,10 @@ var RainwaveAPI = function() {
 		else {
 			wshost += window.location.host;
 		}
+		if (isOKTimer) {
+			clearTimeout(isOKTimer);
+		}
+		isOKTimer = setTimeout(connectedCheck, 3000);
 		socket = new WebSocket(wshost + "/api4/websocket/" + _sid);
 		socket.addEventListener("open", function() {
 			if (self.debug) console.log("Socket open.");
@@ -106,16 +89,32 @@ var RainwaveAPI = function() {
 				user_id: _userID,
 				key: _apiKey
 			}));
-
 		});
 		socket.addEventListener("message", onMessage);
 		socket.addEventListener("close", onSocketClose);
 		socket.addEventListener("error", onSocketError);
 	};
 
+	var connectedCheck = function() {
+		if (self.debug) console.log("Couldn't appear to connect.");
+		self.forceReconnect();
+	};
+
 	var closeSocket = function() {
 		if (!socket || (socket.readyState === WebSocket.CLOSING) || (socket.readyState === WebSocket.CLOSED)) {
 			return;
+		}
+		// sometimes depending on browser condition, onSocketClose won't get called for a while
+		// therefore it's important to switch isOK to false here *and* in onSocketClose.
+		isOK = false;
+		self.ok = false;
+		if (isOKTimer) {
+			clearTimeout(isOKTimer);
+			isOKTimer = null;
+		}
+		if (pingInterval) {
+			clearInterval(pingInterval);
+			pingInterval = null;
 		}
 		socket.close();
 		if (self.debug) console.log("Socket closed.");
@@ -124,6 +123,14 @@ var RainwaveAPI = function() {
 	var onSocketClose = function() {
 		isOK = false;
 		self.ok = false;
+		if (isOKTimer) {
+			clearTimeout(isOKTimer);
+			isOKTimer = null;
+		}
+		if (pingInterval) {
+			clearInterval(pingInterval);
+			pingInterval = null;
+		}
 		if (socketStaysClosed || isHidden) {
 			return;
 		}
@@ -134,6 +141,27 @@ var RainwaveAPI = function() {
 	var onSocketError = function() {
 		if (self.debug) console.log("Socket errored.");
 		self.onError({ "tl_key": "sync_retrying" });
+	};
+
+	var onSocketOK = function() {
+		if (self.debug) console.log("wsok received - auth was good!");
+		self.onErrorRemove("sync_retrying");
+		self.ok = true;
+		isOK = true;
+
+		if (!pingInterval) {
+			pingInterval = setInterval(ping, 20000);
+		}
+
+		if (currentScheduleID) {
+			if (self.debug) console.log("Socket send - check_sched_current_id with " + currentScheduleID);
+			socket.send(JSON.stringify({
+				action: "check_sched_current_id",
+				sched_id: currentScheduleID
+			}));
+		}
+
+		nextRequest();
 	};
 
 	// Error Handling ****************************************************************************************
@@ -178,6 +206,18 @@ var RainwaveAPI = function() {
 		}
 	};
 
+	// Ping and Pong *****************************************************************************************
+
+	var ping = function() {
+		if (self.debug) console.log("Pinging server.");
+		self.request("ping");
+	};
+
+	var onPing = function() {
+		if (self.debug) console.log("Server ping.");
+		self.request("pong");
+	};
+
 	// Data From API *****************************************************************************************
 
 	var solveLatency = function(asyncRequest, latencies, threshold) {
@@ -197,6 +237,10 @@ var RainwaveAPI = function() {
 
 	var onMessage = function(message) {
 		self.onErrorRemove("sync_retrying");
+		if (isOKTimer) {
+			clearTimeout(isOKTimer);
+			isOKTimer = null;
+		}
 
 		var json;
 		try {
@@ -227,13 +271,7 @@ var RainwaveAPI = function() {
 		if (json.message_id) {
 			for (i = 0; i < sentRequests.length; i++) {
 				if (sentRequests[i].message.message_id === json.message_id.message_id) {
-					if (("incomplete" in json.message_id ) && json.message_id.incomplete) {
-						asyncRequest = sentRequests[i];
-						asyncRequest.onIncomplete();
-					}
-					else {
-						asyncRequest = sentRequests.splice(i, 1)[0];
-					}
+					asyncRequest = sentRequests.splice(i, 1)[0];
 					asyncRequest.success = true;
 					solveLatency(asyncRequest, netLatencies, slowNetThreshold);
 					break;
@@ -245,8 +283,10 @@ var RainwaveAPI = function() {
 			for (i in json) {
 				if (("success" in json[i]) && !json[i].success) {
 					asyncRequest.success = false;
-					if (!asyncRequest.onError(json[i])) {
-						self.onUnsuccessful(json[i]);
+					if (self.throwErrorsOnThrottle || (json[i].tl_key !== "websocket_throttle")) {
+						if (!asyncRequest.onError(json[i])) {
+							self.onUnsuccessful(json[i]);
+						}
 					}
 				}
 			}
@@ -272,6 +312,8 @@ var RainwaveAPI = function() {
 
 	// Calls To API ******************************************************************************************
 
+	var statelessRequests = [ "ping", "pong" ];
+
 	self.onRequestError = null;
 
 	self.request = function(action, params, onSuccess, onError, onIncomplete) {
@@ -280,11 +322,17 @@ var RainwaveAPI = function() {
 		}
 		params = params || {};
 		params.action = action;
-		params.message_id = requestID;
 		if (("sid" in params) && !params.sid && (params.sid !== 0)) {
 			delete params.sid;
 		}
-		requestID++;
+		if ((statelessRequests.indexOf(action) !== -1) || !isOK) {
+			for (var i = requestQueue.length - 1; i >= 0; i--) {
+				if (requestQueue[i].message.action === action) {
+					if (self.debug) console.log("Throwing away extra " + requestQueue[i].message.action);
+					requestQueue.splice(i, 1);
+				}
+			}
+		}
 		requestQueue.push({
 			message: params || {},
 			onSuccess: onSuccess || noop,
@@ -299,31 +347,43 @@ var RainwaveAPI = function() {
 	var nextRequest = function() {
 		if (!requestQueue.length) {
 			socketIsBusy = false;
-			socketSequentialRequests = 0;
 			return;
 		}
 		if (!isOK) {
 			return;
 		}
 
-		socketSequentialRequests++;
-		// throttling
-		if (socketSequentialRequests > 2) {
-			socketSequentialRequests = 0;
-			setTimeout(nextRequest, 500);
-			return;
-		}
-
 		var request = requestQueue.shift();
 		request.start = new Date();
 
-		if (sentRequests.length > 10) {
-			sentRequests.splice(0, sentRequests.length - 10);
+		if (statelessRequests.indexOf(request.message.action) === -1) {
+			request.message.message_id = requestID;
+			requestID++;
+			if (sentRequests.length > 10) {
+				sentRequests.splice(0, sentRequests.length - 10);
+			}
+			sentRequests.push(request);
 		}
-		sentRequests.push(request);
 
+		if (isOKTimer) {
+			clearTimeout(isOKTimer);
+		}
+		isOKTimer = setTimeout(function() {
+			onRequestTimeout(request);
+		}, 4000);
 		if (self.debug) console.log("Socket write", request.message);
   		socket.send(JSON.stringify(request.message));
+	};
+
+	var onRequestTimeout = function(request) {
+		if (isOKTimer) {
+			isOKTimer = null;
+			requestQueue.unshift(request);
+			if (self.debug) console.log("Looks like the connection timed out.");
+			self.onRequestError({ "tl_key": "lost_connection" });
+			self.onError({ "tl_key": "sync_retrying" });
+			self.forceReconnect();
+		}
 	};
 
 	// Callback Handling *************************************************************************************
