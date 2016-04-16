@@ -3,7 +3,7 @@
 		<a href="{{ ^'http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&server=irc.synirc.net&channel=%23rainwave&noServerNotices=true&noServerMotd=true&autoConnect=true' + (BOOTSTRAP.user.id > 1 ? '&nick=' + BOOTSTRAP.user.name : '') }}" target="_blank">
 			{{ $l("chat") }}
 		</a>
-		<a href="http://rainwave.cc/forums" target="_blank">
+		<a href="/forums" target="_blank">
 			{{ $l("forums") }}
 		</a>
 	</div>
@@ -33,7 +33,7 @@
 		<a href="https://github.com/rmcauley/rainwave/" target="_blank">
 			{{ $l("github_repo") }}
 		</a>
-		<a href="http://rainwave.cc/api4/" target="_blank">
+		<a href="/api4/" target="_blank">
 			{{ $l("api_docs") }}
 		</a>
 	</div>

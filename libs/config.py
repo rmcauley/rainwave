@@ -102,7 +102,7 @@ def load(filename = None, testmode = False):
 		station_list[station_id] = {
 			"id": station_id,
 			"name": station_id_friendly[station_id],
-			"url": "http://%s" % get_station(station_id, "host")
+			"url": "//%s" % get_station(station_id, "host")
 		}
 		station_mounts[get_station(station_id, "stream_filename") + ".mp3"] = station_id
 		station_mounts[get_station(station_id, "stream_filename") + ".ogg"] = station_id

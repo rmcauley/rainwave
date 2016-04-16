@@ -16,17 +16,17 @@
 	{{#if ^_c.user_id == User.id }}
 		<div>{{ $l("view_your") }}</div>
 		<div style="padding-left: 10px;">
-			<a class="obvious" target="_blank" href="http://rainwave.cc/pages/user_recent_votes">
+			<a class="obvious" target="_blank" href="/pages/user_recent_votes">
 				{{ $l("recent_votes") }}
 			</a>
 		</div>
 		<div style="padding-left: 10px;">
-			<a class="obvious" target="_blank" href="http://rainwave.cc/pages/all_faves">
+			<a class="obvious" target="_blank" href="/pages/all_faves">
 				{{ $l("all_faves") }}
 			</a>
 		</div>
 		<div style="padding-left: 10px;">
-			<a class="obvious" target="_blank" href="http://rainwave.cc/pages/user_requested_history">
+			<a class="obvious" target="_blank" href="/pages/user_requested_history">
 				{{ $l("request_history") }}
 			</a>
 		</div>
