@@ -299,7 +299,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		self.permission_checks()
 
 	def do_phpbb_auth(self):
-		phpbb_cookie_name = config.get("phpbb_cookie_name")
+		phpbb_cookie_name = config.get("phpbb_cookie_name") + "_"
 		user_id = fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", ""))
 		if not user_id:
 			pass
@@ -327,7 +327,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			return None
 		if not user_id:
 			user_id = self.user.id
-		cookie_session = self.get_cookie(config.get("phpbb_cookie_name") + "sid")
+		cookie_session = self.get_cookie(config.get("phpbb_cookie_name") + "_sid")
 		if cookie_session:
 			if cookie_session == db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s AND session_id = %s", (user_id, cookie_session)):
 				self._update_phpbb_session(cookie_session)
