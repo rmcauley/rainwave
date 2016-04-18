@@ -11,7 +11,6 @@
 		template._root.parentNode.classList.add("error");
 
 		try {
-			API.sync_stop();
 			var submit_obj = {
 				"name": exception.name,
 				"message": exception.message,
@@ -25,10 +24,13 @@
 			API.async_get("error_report", submit_obj,
 				function() {
 					template.sending_report.textContent = $l("report_sent");
+					API.sync_stop();
 				},
 				function() {
 					template.sending_report.textContent = $l("report_error");
-				});
+					API.sync_stop();
+				}
+			);
 		}
 		catch (e) {
 			// don't complain, we've already crashed

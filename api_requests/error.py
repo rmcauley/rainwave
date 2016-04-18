@@ -18,8 +18,8 @@ class ErrorReport(APIHandler):
     fields = {
         "name": (fieldtypes.string, True),
         "message": (fieldtypes.string, True),
-        "lineNumber": (fieldtypes.string, True),
-        "columnNumber": (fieldtypes.string, True),
+        "lineNumber": (fieldtypes.integer, None),
+        "columnNumber": (fieldtypes.integer, None),
         "stack": (fieldtypes.string, True),
         "location": (fieldtypes.string, True),
         "user_agent": (fieldtypes.string, True),
@@ -43,7 +43,8 @@ class ErrorReport(APIHandler):
     def post(self):
         # limit size of submission
         for k, v in self.cleaned_args.iteritems():
-            self.cleaned_args[k] = v[:2048]
+            if isinstance(object, (str, unicode)):
+                self.cleaned_args[k] = v[:2048]
         self.cleaned_args['user_id'] = self.user.id
         self.cleaned_args['username'] = self.user.data['name']
         self.cleaned_args['time'] = time.time()
