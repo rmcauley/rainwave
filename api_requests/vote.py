@@ -44,7 +44,7 @@ class SubmitVote(APIHandler):
 	# is duplicated in sync.py
 	def on_finish(self):
 		live_voting = rainwave.schedule.update_live_voting(self.sid)
-		zeromq.publish({ "action": "forward_to_all", "sid": self.sid, "uuid_exclusion": None, "data": { "live_voting": live_voting } })
+		zeromq.publish({ "action": "live_voting", "sid": self.sid, "uuid_exclusion": None, "data": { "live_voting": live_voting } })
 		super(SubmitVote, self).on_finish()
 
 	def vote(self, entry_id, event, lock_count):
