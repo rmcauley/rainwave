@@ -117,6 +117,8 @@ var Router = function() {
 				reset_cache_on_next_request = true;
 			}
 			else {
+				rendered_type = null;
+				rendered_id = null;
 				reset_cache();
 				if (current_open_type && (reload_in.indexOf(current_open_type) !== -1) && current_id && document.body.classList.contains("detail")) {
 					open_view(current_open_type, current_id);
