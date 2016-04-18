@@ -316,7 +316,7 @@ var RainwaveAPI = function() {
 
 	self.onRequestError = null;
 
-	self.request = function(action, params, onSuccess, onError, onIncomplete) {
+	self.request = function(action, params, onSuccess, onError) {
 		if (!action) {
 			throw("No action specified for Rainwave API request.");
 		}
@@ -336,8 +336,7 @@ var RainwaveAPI = function() {
 		requestQueue.push({
 			message: params || {},
 			onSuccess: onSuccess || noop,
-			onError: onError || self.onRequestError || noop,
-			onIncomplete: onIncomplete || noop
+			onError: onError || self.onRequestError || noop
 		});
 		if (!socketIsBusy || !isOK) {
 			nextRequest();

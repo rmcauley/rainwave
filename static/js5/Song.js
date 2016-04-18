@@ -44,23 +44,16 @@ var Song = function(self, parent_event) {
 	}
 
 	self.vote = function(e) {
-		if (e && (e.target.nodeName.toLowerCase() == "a") && e.target.getAttribute("href")) {
+		if (e && e.target && (e.target.nodeName.toLowerCase() == "a") && e.target.getAttribute("href")) {
 			return;
 		}
 		if ((!self.autovoted && self.el.classList.contains("voting_registered")) || self.el.classList.contains("voting_clicked")) {
 			return;
 		}
 		if (self.autovoted) {
-			self.el.classList.add("no_transition");
 			self.el.classList.remove("autovoted");
-			self.el.classList.remove("voting_clicked");
 			self.el.classList.remove("voting_registered");
 			self.autovoted = false;
-			requestNextAnimationFrame(function() {
-				self.el.classList.remove("no_transition");
-				self.vote();
-			});
-			return;
 		}
 		self.el.classList.add("voting_clicked");
 		API.async_get("vote", { "entry_id": self.entry_id },
@@ -68,15 +61,8 @@ var Song = function(self, parent_event) {
 			function(json) {
 				self.el.classList.remove("voting_clicked");
 				return true;
-			},
-			function(json) {
-				for (var i = 0; i < parent_event.songs.length; i++) {
-					if (parent_event.songs[i] != self) {
-						parent_event.songs[i].unregister_vote();
-					}
-				}
-				self.el.classList.add("voting_clicked_long");
-			});
+			}
+		);
 	};
 
 	self.update = function(json) {

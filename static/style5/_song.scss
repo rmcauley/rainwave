@@ -311,23 +311,18 @@ div.song {
 			&.autovoted {
 				background-color: $autovoted;
 				cursor: pointer;
+				background-position: 0% 200%;
 
 				div.song_highlight {
-					background: $autovoted;
+					background: $vote_highlight;
+					visibility: hidden;
+					@include transform(scaleX(0));
 				}
 			}
 		}
 
 		&.voting_error {
 			background-color: $error_bkg;
-		}
-
-		&.no_transition {
-			@include no-transition();
-
-			div.song_highlight {
-				@include no-transition();
-			}
 		}
 	}
 
