@@ -17,8 +17,6 @@ from libs import cache
 from libs import memory_trace
 from libs import zeromq
 
-sid_output = {}
-
 class AdvanceScheduleRequest(tornado.web.RequestHandler):
 	processed = False
 
@@ -44,37 +42,27 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 			cache.set_station(self.sid, "backend_paused", False)
 			cache.set_station(self.sid, "backend_paused_playing", False)
 
-		# This program must be run on 1 station for 1 instance, which would allow this operation to be safe.
-		# Also works if 1 process is serving all stations.  Pinging any instance for any station
-		# would break the program here, though.
-		if cache.get_station(self.sid, "get_next_socket_timeout") and sid_output[self.sid]:
-			log.warn("backend", "Using previous output to prevent flooding.")
-			self.write(sid_output[self.sid])
-			sid_output[self.sid] = None
-			self.success = True
-		else:
-			try:
-				schedule.advance_station(self.sid)
-			except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
-				log.warn("backend", e.diag.message_primary)
-				db.close()
-				db.connect()
-				raise
-			except psycopg2.extensions.TransactionRollbackError as e:
-				log.warn("backend", "Database transaction deadlock.  Re-opening database and setting retry timeout.")
-				db.close()
-				db.connect()
-				raise
+		try:
+			schedule.advance_station(self.sid)
+		except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
+			log.warn("backend", e.diag.message_primary)
+			db.close()
+			db.connect()
+			raise
+		except psycopg2.extensions.TransactionRollbackError as e:
+			log.warn("backend", "Database transaction deadlock.  Re-opening database and setting retry timeout.")
+			db.close()
+			db.connect()
+			raise
 
-			to_send = None
-			if not config.get("liquidsoap_annotations"):
-				to_send = schedule.get_advancing_file(self.sid)
-			else:
-				to_send = self._get_annotated(schedule.get_advancing_event(self.sid))
-			sid_output[self.sid] = to_send
-			self.success = True
-			if not cache.get_station(self.sid, "get_next_socket_timeout"):
-				self.write(to_send)
+		to_send = None
+		if not config.get("liquidsoap_annotations"):
+			to_send = schedule.get_advancing_file(self.sid)
+		else:
+			to_send = self._get_annotated(schedule.get_advancing_event(self.sid))
+		self.success = True
+		if not cache.get_station(self.sid, "get_next_socket_timeout"):
+			self.write(to_send)
 
 	def _get_pause_file(self):
 		if not config.get("liquidsoap_annotations"):
@@ -172,9 +160,6 @@ class BackendServer(object):
 		#pylint: enable=W0612
 
 	def start(self):
-		for sid in config.station_ids:
-			sid_output[sid] = None
-
 		stations = list(config.station_ids)
 		if not hasattr(os, "fork"):
 			if len(stations) > 1:
