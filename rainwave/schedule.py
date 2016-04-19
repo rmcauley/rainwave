@@ -202,7 +202,7 @@ def post_process(sid):
 		db.c.rollback()
 		raise
 
-	if current[sid] and config.has_station(sid, "tunein_partner_key"):
+	if current[sid] and config.has_station(sid, "tunein_partner_key") and config.get_station(sid, "tunein_partner_key"):
 		ti_song = current[sid].get_song()
 		if ti_song:
 			ti_title = ti_song.data['title']
