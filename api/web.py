@@ -430,7 +430,7 @@ class APIHandler(RainwaveHandler):
 		if self._output_array:
 			self._output = []
 		else:
-			if "message_id" in self._output:
+			if self._output and "message_id" in self._output:
 				self._output = {
 					"message_id": self._output['message_id'],
 				}
