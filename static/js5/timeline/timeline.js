@@ -60,6 +60,10 @@ var Timeline = function() {
 			}
 		);
 
+		if (visibilityEventNames && visibilityEventNames.change && document.addEventListener) {
+			document.addEventListener(visibilityEventNames.change, live_voting_visibility_change, false);
+		}
+
 		// Clock.pageclock_bar_function = progress_bar_update;
 	});
 
@@ -475,7 +479,24 @@ var Timeline = function() {
 		}
 	};
 
+	// LIVE VOTING *******************************************************************************************
+
+	var last_live_vote;
+
+	var live_voting_visibility_change = function() {
+		if (!document[visibilityEventNames.hidden]) {
+			if (last_live_vote) {
+				live_voting(last_live_vote);
+			}
+		}
+	};
+
 	var live_voting = function(json) {
+		if (document[visibilityEventNames.hidden]) {
+			last_live_vote = json;
+			return;
+		}
+		last_live_vote = null;
 		for (var i = 0; i < events.length; i++) {
 			if (json[events[i].id]) {
 				events[i].live_voting(json[events[i].id]);
