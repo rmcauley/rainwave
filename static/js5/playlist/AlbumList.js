@@ -8,7 +8,7 @@
 	Prefs.define("p_sort", [ "az", "rt" ], true);
 	Prefs.define("p_null1", [ false, true ], true);
 	Prefs.define("p_favup", null, true);
-	Prefs.define("p_avup", [ true, false ], true);
+	Prefs.define("p_avup", [ false, true ], true);
 	Prefs.define("p_fav1", [ false, true ], true);
 
 	var sort_unrated_first = Prefs.get("p_null1");
