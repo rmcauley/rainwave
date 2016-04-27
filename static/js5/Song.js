@@ -143,13 +143,10 @@ var Song = function(self, parent_event) {
 
 	self.enable_voting = function() {
 		self.el.classList.add("voting_enabled");
-		// self.el.addEventListener("click", self.vote);
 	};
 
 	self.disable_voting = function() {
 		self.el.classList.remove("voting_enabled");
-		// self.el.classList.remove("voting_clicked");
-		// self.el.removeEventListener("click", self.vote);
 	};
 
 	self.clear_voting_status = function() {
@@ -245,6 +242,8 @@ var Song = function(self, parent_event) {
 			}
 		};
 	}
+
+	self.el.addEventListener("click", self.vote);
 
 	return self;
 };
