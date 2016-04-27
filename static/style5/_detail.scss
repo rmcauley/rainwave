@@ -282,3 +282,23 @@ div.row {
 		word-break: normal;
 	}
 }
+
+div.album_has_cooldown, div.album_all_cooldown {
+	color: $text;
+	background-color: $row_cool_bkg;
+	border-bottom-color: $row_cool_bkg;
+	cursor: pointer;
+
+	&:hover {
+		text-decoration: underline dotted;
+	}
+}
+
+table.cooldown_explain {
+	width: 100%;
+
+	th, td {
+		text-align: left;
+		border-bottom: solid 1px $text_dd;
+	}
+}

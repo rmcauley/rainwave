@@ -9,6 +9,19 @@
 	{{#if new_indicator }}
 		<div class="{{ new_indicator_class }}">{{ new_indicator }}</div>
 	{{/if}}
+	{{#if all_cooldown }}
+		<div class="album_all_cooldown" bind="cooldown_explanation">
+			<span>{{ $l("album_all_cooldown") }}</span>
+			<sup>?</sup>
+		</div>
+	{{else}}
+		{{#if has_cooldown }}
+			<div class="album_has_cooldown" bind="cooldown_explanation">
+				<span>{{ $l("album_has_cooldown") }}</span>
+				<sup>?</sup>
+			</div>
+		{{/if}}
+	{{/if}}
 	{{#if rating_user }}
 		<div>
 			{{ $l("your_album_rating", { 'rating_user': Formatting.rating(_c.rating_user) }) }}

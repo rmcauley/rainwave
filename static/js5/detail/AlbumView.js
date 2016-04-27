@@ -28,6 +28,10 @@ var RatingChart = function(json) {
 	return c;
 };
 
+var CooldownExplanation = function() {
+	Modal($l("cd_what_is"), "modal_what_is_cooldown");
+};
+
 var AlbumView = function(album) {
 	"use strict";
 
@@ -45,6 +49,9 @@ var AlbumView = function(album) {
 
 	album.has_new = false;
 	album.has_newish = false;
+	album.all_cooldown = false;
+	var on_cooldown = 0;
+	album.has_cooldown = false;
 	for (i = 0; i < album.songs.length; i++) {
 		if (album.songs[i].added_on > (Clock.now - (86400 * 14))) {
 			album.songs[i].is_new = true;
@@ -57,6 +64,15 @@ var AlbumView = function(album) {
 		else {
 			album.songs[i].is_new = false;
 		}
+
+		if (album.songs[i].cool) {
+			album.has_cooldown = true;
+			on_cooldown++;
+		}
+	}
+
+	if (on_cooldown === album.songs.length) {
+		album.all_cooldown = true;
 	}
 
 	// there are some instances of old songs breaking out into new albums
@@ -249,8 +265,9 @@ var AlbumView = function(album) {
 		}
 	}
 
-	// Rating.register(album);
-	// Fave.register(album, true);
+	if (album.$t.cooldown_explanation) {
+		album.$t.cooldown_explanation.addEventListener("click", CooldownExplanation);
+	}
 
 	for (i = 0; i < album.songs.length; i++) {
 		Fave.register(album.songs[i]);
