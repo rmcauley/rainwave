@@ -45,6 +45,15 @@ var Song = function(self, parent_event) {
 
 	self.vote = function(e) {
 		if (e && e.target && (e.target.nodeName.toLowerCase() == "a") && e.target.getAttribute("href")) {
+			if (MOBILE) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+			else {
+				return;
+			}
+		}
+		if (!self.el.classList.contains("voting_enabled")) {
 			return;
 		}
 		if ((!self.autovoted && self.el.classList.contains("voting_registered")) || self.el.classList.contains("voting_clicked")) {
@@ -134,13 +143,13 @@ var Song = function(self, parent_event) {
 
 	self.enable_voting = function() {
 		self.el.classList.add("voting_enabled");
-		self.el.addEventListener("click", self.vote);
+		// self.el.addEventListener("click", self.vote);
 	};
 
 	self.disable_voting = function() {
 		self.el.classList.remove("voting_enabled");
 		// self.el.classList.remove("voting_clicked");
-		self.el.removeEventListener("click", self.vote);
+		// self.el.removeEventListener("click", self.vote);
 	};
 
 	self.clear_voting_status = function() {
