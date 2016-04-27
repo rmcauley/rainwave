@@ -96,7 +96,7 @@ var RWAudio;
 
 		if (window.location.href.indexOf("beta") !== -1) {
 			for (i = 0; i < Stations.length; i++) {
-				if (Stations[i].url) Stations[i].url = "/beta?sid=" + Stations[i].id;
+				if (Stations[i].url) Stations[i].url = "/beta/?sid=" + Stations[i].id;
 			}
 		}
 		BOOTSTRAP.station_list = Stations;
