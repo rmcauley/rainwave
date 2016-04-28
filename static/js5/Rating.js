@@ -509,7 +509,7 @@ var Rating = function() {
 		if (User.id > 1) {
 			// this is for requests, if a request is not available
 			// on this station do not allow rating it
-			if (("valid" in json) && !json.valid) {
+			if (("good" in json) && !json.good) {
 				// remove the srate attribute so this will
 				// never pick up any ratings update
 				// it should be super isolated
