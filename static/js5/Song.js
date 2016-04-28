@@ -29,6 +29,9 @@ var Song = function(self, parent_event) {
 		if (self.albums[0].$t.fave) {
 			self.albums[0].$t.fave.parentNode.removeChild(self.albums[0].$t.fave);
 		}
+		if (self.albums[0].$t.rating) {
+			self.albums[0].$t.rating.setAttribute("name", "");
+		}
 	}
 	else{
 		if (template.fave) {
