@@ -28,7 +28,6 @@ var RWAudio;
 		API.async_get = API.request;
 		API.force_sync = API.forceReconnect;
 		API.sync_stop = API.closePermanently;
-		API.throwErrorsOnThrottle = true;
 		API.on("wsthrottle", function(json) {
 			API.onUnsuccessful(json);
 		});

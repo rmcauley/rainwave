@@ -7,7 +7,7 @@ var RainwaveAPI = function() {
 		ok: false,
 		isSlow: false,
 		debug: false,
-		throwErrorsOnThrottle: false
+		throwErrorsOnThrottle: true
 	};
 
 	var _sid, _userID, _apiKey, _host;
