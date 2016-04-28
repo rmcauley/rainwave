@@ -351,7 +351,7 @@ class FakeRequestObject(object):
 		self.arguments = arguments
 		self.cookies = cookies
 
-nonunique_actions = ("request", )
+nonunique_actions = ("request", "delete_request", "fave_song", "fave_album", "rate", "clear_rating")
 
 class WSMessage(dict):
 	def __lt__(self, other):
