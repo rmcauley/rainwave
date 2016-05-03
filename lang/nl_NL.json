@@ -90,7 +90,7 @@
    "__comment__"                 : "Menu",
 
    "station_select_header"                           : "Station Selecteren",
-   "station_name_1"                                  : "Spellen",
+   "station_name_1"                                  : "Games",
    "station_name_2"                                  : "OC ReMix",
    "station_name_3"                                  : "Covers",
    "station_name_4"                                  : "Chiptune",
@@ -176,7 +176,7 @@
    "ratings_completion_rate"                         : "Waarderingen Volledigheid",
    "rating_spread"                                   : "Waarderingen Verspreiding",
    "average_rating_by_station"                       : "Gem. Waarderingen per Station",
-   "no_ratings"                                      : "geen waarderingen",
+   "no_ratings"                                      : "Geen waarderingen",
 
    "view_your"                                       : "Bekijk uw: ",
    "recent_votes"                                    : "recente stemmen",
@@ -196,7 +196,7 @@
    "mobile_sync_retrying"                            : "Connectie timeout problemen, ververs alstublieft de pagina of probeer het later opnieuw.",
    "async_error"                                     : "Fout bij het communiceren met Rainwave. Probeer het opnieuw of ververs de pagina.",
    "deeplink_error"                                  : "Fout bij het begrijpen van de ingevoerde URL.",
-   "hold_to_rate"                                    : "hou ingedrukt om te waarderen",
+   "hold_to_rate"                                    : "Hou ingedrukt om te waarderen",
 
    "Loading..."                                      : "Laden...",
    "Cancel"                                          : "Annuleer",
@@ -243,6 +243,8 @@
    "relevant_category"                               : "Categorie: ",
    "relevant_categories_rollover"                    : "Relevante categorieën: beweeg de muis over de lijst.",
    "new_album"                                       : "Nieuw album!",
+   "album_all_cooldown"                              : "Dit album is op cooldown.",
+   "album_has_cooldown"                              : "Sommige liedjes zijn op cooldown.",
    "newish_album"                                    : "Recent toegevoegd.",
    "new_songs"                                       : "Nieuwe liedjes!",
    "newish_songs"                                    : "Recent bijgewerkt.",
@@ -343,6 +345,27 @@
    "hotkeys_fave"                                    : " = Fav Huidig Liedje",
    "hotkeys_play"                                    : " = Stop/Speel",
 
+ "__comment__"                 : "Cooldown Explanation",
+
+   "cd_what_is"                                      : "Wat Is Cooldown?",
+   "cd_blue_bkg_is"                                  : "Als een liedje of album een blauwe achtergrond heeft, is het op cooldown en kan het momenteel niet gespeeld worden.",
+   "cd_why_use_cooldown"                             : "Cooldowns worden gebruikt zodat Rainwave gen liedjes en albums herhaalt.",
+   "cd_type_of_cooldown"                             : "Type van Cooldown",
+   "cd_example"                                      : "Voorbeeld",
+   "cd_cooldown_length"                              : "Cooldown Lengte",
+   "cd_song"                                         : "Liedje",
+   "cd_song_length"                                  : "2-6 dagen",
+   "cd_album"                                        : "Album",
+   "cd_album_length"                                 : "6-48 uren",
+   "cd_category"                                     : "Categorie",
+   "cd_category_length"                              : "15 minuten",
+   "cd_cooldowns_depend_on"                          : "Cooldowns hangen af van:",
+   "cd_album_size"                                   : "Album Grootte",
+   "cd_larger_album"                                 : "Groter Album = Kortere Cooldown",
+   "cd_rating"                                       : "Waardering",
+   "cd_higher_rating"                                : "Hogere Waardering = Kortere Cooldown",
+   "cd_recently_added"                               : "Recent Toegevoegd",
+   "cd_newer"                                        : "Nieuwer = Kortere Cooldown",
 
    "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
 
