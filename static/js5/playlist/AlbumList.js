@@ -43,6 +43,9 @@
 
 	API.add_callback("all_albums", function(json) { loading = true; self.update(json); });
 	API.add_callback("album_diff", function(json) { if (self.loaded) self.update(json); });
+	API.add_callback("outdated_data_warning", function() {
+		API.async_get("all_albums");
+	});
 
 	self.load = function() {
 		if (!self.loaded && !loading) {

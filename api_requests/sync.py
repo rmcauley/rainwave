@@ -684,3 +684,4 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
 		if cache.get_station(self.sid, "sched_current_dict") and (cache.get_station(self.sid, "sched_current_dict")['id'] != message['sched_id']):
 			self.update()
+			self.write_message({ "outdated_data_warning": { "outdated": True } })
