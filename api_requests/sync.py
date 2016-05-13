@@ -227,7 +227,7 @@ def _on_zmq(messages):
 					delay_live_vote(message)
 				delayed_live_vote[message['sid']] = message
 			elif message['action'] == "update_all":
-				delay_live_vote_removal(message)
+				delay_live_vote_removal(message['sid'])
 				rainwave.playlist.update_num_songs()
 				rainwave.playlist.prepare_cooldown_algorithm(message['sid'])
 				cache.update_local_cache_for_sid(message['sid'])

@@ -147,6 +147,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 		self.data = data;
 		items_to_draw = [];
 		self.loaded = false;
+
+		while (self.el.firstChild) {
+			self.el.removeChild(self.el.lastChild);
+		}
 	};
 
 	self.update = function(json) {
@@ -642,7 +646,14 @@ var SearchList = function(root_el, sort_key, search_key) {
 		self.el.style[Fx.transform] = "translateY(" + (scroll.scroll_top + new_margin) + "px)";
 
 		if (current_scroll_index === new_index) return;
-		if ((visible.length === 0) && (hidden.length === 0)) return;
+		if ((visible.length === 0) && (hidden.length === 0)) {
+			if (self.auto_trim) {
+				while (self.el.firstChild) {
+					self.el.removeChild(self.el.lastChild);
+				}
+			}
+			return;
+		}
 
 		if (current_scroll_index) {
 			if (new_index < current_scroll_index - num_items_to_display) current_scroll_index = false;
@@ -653,7 +664,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		// full reset
 		if (current_scroll_index === false) {
 			while (self.el.firstChild) {
-	    		self.el.removeChild(self.el.lastChild);
+				self.el.removeChild(self.el.lastChild);
 			}
 			for (i = new_index; (i < (new_index + num_items_to_display)) && (i < visible.length); i++) {
 				if (!data[visible[i]]._el) {

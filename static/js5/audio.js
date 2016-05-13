@@ -14,7 +14,6 @@ var RWAudioConstructor = function() {
 	var volume_el;
 	var volume_rect;
 	var mute_el;
-	var muted;
 	var offset_width;
 	var last_user_tunein_check = 0;
 
