@@ -179,6 +179,7 @@ class SessionBank(object):
 
 sessions = {}
 delayed_live_vote = {}
+delayed_live_vote_timers = {}
 websocket_allow_from = "*"
 votes_by = {}
 last_vote_by = {}
@@ -191,6 +192,7 @@ def init():
 	for sid in config.station_ids:
 		sessions[sid] = SessionBank()
 		delayed_live_vote[sid] = None
+		delayed_live_vote_timers[sid] = None
 	websocket_allow_from = config.get("websocket_allow_from")
 	tornado.ioloop.PeriodicCallback(_keep_all_alive, 30000).start()
 	zeromq.set_sub_callback(_on_zmq)
@@ -219,9 +221,9 @@ def _on_zmq(messages):
 				sessions[message['sid']].send_to_user(message['user_id'], message['uuid_exclusion'], message['data'])
 			elif message['action'] == "live_voting":
 				sessions[message['sid']].send_to_all(message['uuid_exclusion'], message['data'])
-				delay_live_vote_removal(message)
+				delay_live_vote_removal(message['sid'])
 			elif message['action'] == "delayed_live_voting":
-				if not delayed_live_vote[message['sid']]:
+				if not delayed_live_vote_timers[message['sid']]:
 					delay_live_vote(message)
 				delayed_live_vote[message['sid']] = message
 			elif message['action'] == "update_all":
@@ -249,15 +251,17 @@ def _on_zmq(messages):
 			log.exception("zeromq", "Error handling Zero MQ action '%s'" % message['action'], e)
 			return
 
-def delay_live_vote_removal(message):
-	if delayed_live_vote[message['sid']]:
-		message['timer'] = tornado.ioloop.IOLoop.instance().remove_timeout(delayed_live_vote[message['sid']])
-		delayed_live_vote[message['sid']] = None
+def delay_live_vote_removal(sid):
+	if delayed_live_vote_timers[sid]:
+		tornado.ioloop.IOLoop.instance().remove_timeout(delayed_live_vote_timers[sid])
+		delayed_live_vote[sid] = None
+		delayed_live_vote_timers[sid] = None
 
 def delay_live_vote(message):
-	message['timer'] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=vote_once_every_seconds), lambda: process_delayed_live_vote(message['sid']))
+	delayed_live_vote_timers[message['sid']] = tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=vote_once_every_seconds), lambda: process_delayed_live_vote(message['sid']))
 
 def process_delayed_live_vote(sid):
+	delayed_live_vote_timers[sid] = None
 	if not delayed_live_vote[sid]:
 		return
 	sessions[sid].send_to_all(None, delayed_live_vote[sid]['data'])
