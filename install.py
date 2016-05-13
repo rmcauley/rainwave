@@ -22,7 +22,7 @@ if __name__ == "__main__":
 		shutil.rmtree(tmpdir)
 	if os.path.exists(os.path.join(installdir, "static", "baked")):
 		os.makedirs(os.path.join(tmpdir, "static"))
-		shutil.copytree(os.path.join(installdir, "static", "baked"), os.path.join(tmpdir, "static", "baked"))
+		shutil.copytree(os.path.join(installdir, "static", "baked"), os.path.join(tmpdir, "static", "baked"), symlinks=True)
 	shutil.rmtree(installdir)
 	os.makedirs(installdir)
 	if not os.path.isdir(installdir):
@@ -53,7 +53,7 @@ if __name__ == "__main__":
 	shutil.rmtree(os.path.join(installdir, "static", "baked"))
 
 	if os.path.exists(tmpdir):
-		shutil.copytree(os.path.join(tmpdir, "static", "baked"), os.path.join(installdir, "static", "baked"))
+		shutil.copytree(os.path.join(tmpdir, "static", "baked"), os.path.join(installdir, "static", "baked"), symlinks=True)
 
 	subprocess.call(["chown", "-R", "%s:%s" % (user, group), installdir ])
 
