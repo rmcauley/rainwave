@@ -7,6 +7,7 @@ var RWAudioConstructor = function() {
 	// so expect the worst in variable naming mixing
 
 	var self = RainwavePlayer;
+	self.debug = true;
 	if (!self.isSupported) return;
 
 	var el;

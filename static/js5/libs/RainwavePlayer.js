@@ -39,6 +39,7 @@ var RainwavePlayer = function() {
 	};
 
 	var self = {};
+	self.debug = false;
 	self.isSupported = false;
 	self.type = null;
 	self.audioElDest = false;
@@ -131,17 +132,26 @@ var RainwavePlayer = function() {
 		source.setAttribute("src", stream_url);
 		source.setAttribute("type", self.mimetype);
 
-		// source.addEventListener("playing", self.on_play);			// doesn't work
+		// <source> tags only support addEventListener("error");
+		// leave this line commented out.
+		// source.addEventListener("playing", self.onPlay);
 
 		// on the final <source> of the audio stream, we throw an error event
 		// as the browser will stop trying to play audio
 		if (i === streamURLs.length - 1) {
-			source.addEventListener("error", onError);
+			source.addEventListener("error", function(e) {
+				if (self.debug) {
+					console.log("RainwavePlayer: Error on source " + stream_url);
+					console.log("RainwavePlayer: Error on final source.");
+				}
+				onError(e);
+			});
 		}
 		// otherwise, have it throw a stall
 		// (sometimes the source will stall, other times <audio>, sometimes BOTH)
 		else {
 			source.addEventListener("error", function(e) {
+				if (self.debug) console.log("RainwavePlayer: Error on source " + stream_url);
 				onStall(e, i);
 			});
 		}
@@ -310,7 +320,7 @@ var RainwavePlayer = function() {
 	};
 
 	var dispatchStall = function(detail) {
-		// console.log("Sending stall: " + (detail || "<audio>"));
+		if (self.debug) console.log("RainwavePlayer: Sending stall: " + (detail || "<audio>"));
 		var evt = createEvent("stall");
 		evt.detail = detail;
 		self.dispatchEvent(evt);
@@ -319,27 +329,27 @@ var RainwavePlayer = function() {
 	};
 
 	var onPlay = function() {
-		// console.log("Sending play.");
+		if (self.debug) console.log("RainwavePlayer: Playing " + audioEl.currentSrc);
 		stopAudioConnectError();
 		self.dispatchEvent(createEvent("playing"));
 		self.dispatchEvent(createEvent("change"));
 	};
 
 	var onWaiting = function() {
-		// console.log("Sending loading.");
+		if (self.debug) console.log("RainwavePlayer: Sending loading.");
 		stopAudioConnectError();
 		self.dispatchEvent(createEvent("loading"));
 	};
 
 	var onStop = function() {
-		// console.log("Sending stop.");
+		if (self.debug) console.log("RainwavePlayer: Sending stop.");
 		stopAudioConnectError();
 		self.dispatchEvent(createEvent("stop"));
 		self.dispatchEvent(createEvent("change"));
 	};
 
 	var onStall = function(e, i) {
-		// console.log("Stall detected.");
+		if (self.debug) console.log("RainwavePlayer: Stall detected.");
 		// we need to handle stalls from sources (which have an index)
 		// and stalls from the audio element themselves in this function
 		// we handle sources so that we know how bad things are.
@@ -360,7 +370,7 @@ var RainwavePlayer = function() {
 	};
 
 	var onError = function(e) {
-		// console.log("Sending error.");
+		if (self.debug) console.log("RainwavePlayer: Sending error.");
 		stopAudioConnectError();
 		self.stop();
 		self.dispatchEvent(createEvent("error"));
