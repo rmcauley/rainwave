@@ -462,7 +462,7 @@ var Timeline = function() {
 	};
 
 	var lock_check = function(json) {
-		if (json.lock_in_effect && (json.lock_sid != User.sid)) {
+		if (json.lock_in_effect && (json.lock_sid != json.sid)) {
 			var locked_name, this_name;
 			for (var i = 0; i < Stations.length; i++) {
 				if (Stations[i].id == json.lock_sid) {

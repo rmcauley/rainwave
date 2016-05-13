@@ -72,7 +72,6 @@ var Song = function(self, parent_event) {
 			null,
 			function(json) {
 				self.el.classList.remove("voting_clicked");
-				return true;
 			}
 		);
 	};
