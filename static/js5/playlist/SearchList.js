@@ -526,6 +526,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 			if (search_box.value.length < search_string.length) {
 				self.unhide();
 			}
+			else if (search_box.value.substring(0, search_string.length) !== search_string) {
+				self.unhide();
+			}
 			do_search(search_box.value);
 		}
 	});
