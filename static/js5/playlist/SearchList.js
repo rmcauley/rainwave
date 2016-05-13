@@ -142,6 +142,13 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	// LIST MANAGEMENT ***********************************************
 
+	self.wipe_data = function() {
+		data = {};
+		self.data = data;
+		items_to_draw = [];
+		self.loaded = false;
+	};
+
 	self.update = function(json) {
 		var i;
 		if (self.auto_trim) {

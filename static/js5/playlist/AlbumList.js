@@ -44,7 +44,16 @@
 	API.add_callback("all_albums", function(json) { loading = true; self.update(json); });
 	API.add_callback("album_diff", function(json) { if (self.loaded) self.update(json); });
 	API.add_callback("outdated_data_warning", function() {
-		API.async_get("all_albums");
+		if (!self.loaded || loading) {
+			return;
+		}
+
+		if (Sizing.simple && !document.body.classList.contains("playlist_album")) {
+			self.unload();
+		}
+		else {
+			API.async_get("all_albums");
+		}
 	});
 
 	self.load = function() {
@@ -54,6 +63,11 @@
 			API.async_get("all_albums");
 		}
 	};
+
+	self.unload = function() {
+		self.wipe_data();
+		loading = false;
+	}
 
 	var update_rating = function(json) {
 		var album_id;
