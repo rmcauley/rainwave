@@ -11,6 +11,7 @@ var RequestLineList = function(el) {
 			json[i].id = json[i].user_id;
 		}
 		self.update(json);
+		self.do_search_message();
 	});
 
 	self.sort_function = function(a, b) {
