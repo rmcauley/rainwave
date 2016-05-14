@@ -51,7 +51,7 @@ class SubmitVote(APIHandler):
 		# Subtract a previous vote from the song's total if there was one
 		already_voted = False
 		if self.user.is_anonymous():
-			# log.debug("vote", "Anon already voted: %s" % (self.user.id, self.user.data['voted_entry']))
+			# log.debug("vote", "Anon already voted: %s" % (self.user.data['voted_entry'],))
 			if self.user.data['voted_entry'] and self.user.data['voted_entry'] == entry_id:
 				# immediately return and a success will be registered
 				return True

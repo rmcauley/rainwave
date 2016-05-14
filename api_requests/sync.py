@@ -569,7 +569,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			# TODO: this should be a part of prepare_standalone!
 			# it's required to see if another person on the same IP address has overriden the vote
 			# for the in-memory user here, so it requires a DB fetch.
-			if message['action'] == "vote" and self.user.is_anonymous():
+			if message['action'] == "/api4/vote" and self.user.is_anonymous():
 				self.user.refresh(self.sid)
 			if "message_id" in message:
 				if message_id == None:
