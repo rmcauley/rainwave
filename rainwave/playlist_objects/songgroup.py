@@ -40,6 +40,10 @@ class SongGroup(AssociatedMetadata):
 		return instances
 	#pylint: enable=W0212,W0221
 
+	def associate_song_id(self, song_id, is_tag = None):
+		super(SongGroup, self).associate_song_id(song_id, is_tag)
+		self.reconcile_sids()
+
 	def reconcile_sids(self):
 		new_sids_all = db.c.fetch_all(
 			"SELECT sid, COUNT(DISTINCT album_id) "
