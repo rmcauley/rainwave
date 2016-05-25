@@ -339,7 +339,7 @@ var RainwaveAPI = function() {
 			onSuccess: onSuccess || noop,
 			onError: onError || self.onRequestError || noop
 		});
-		if (!socketIsBusy || !isOK) {
+		if (!socketIsBusy && isOK) {
 			nextRequest();
 		}
 	};
