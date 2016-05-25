@@ -45,7 +45,9 @@ var Sizing = function() {
 		self.list_height = self.sizeable_area_height - 80;
 
 		index_t.sizeable_area.style.height = self.sizeable_area_height + "px";
-		self.detail_area.style.height = (self.sizeable_area_height - self.detail_header_size - 20) + "px";
+		if (self.detail_area) {
+			self.detail_area.style.height = (self.sizeable_area_height - self.detail_header_size - 20) + "px";
+		}
 		self.requests_area.style.height = (self.sizeable_area_height - (self.detail_header_size * 2) - 30) + "px";
 		index_t.search_results_container.style.height = self.list_height + "px";
 		if (self.dj_area) {

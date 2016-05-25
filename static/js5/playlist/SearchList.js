@@ -147,6 +147,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		self.data = data;
 		items_to_draw = [];
 		self.loaded = false;
+		num_items_to_display = undefined;
 
 		while (self.el.firstChild) {
 			self.el.removeChild(self.el.lastChild);
