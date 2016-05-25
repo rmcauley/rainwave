@@ -8,6 +8,7 @@ var RWAudioConstructor = function() {
 
 	var self = RainwavePlayer;
 	self.debug = true;
+	self.shuffleURLs = true;
 	if (!self.isSupported) return;
 
 	var el;

@@ -47,6 +47,7 @@ var RainwavePlayer = function() {
 	self.volume = 1.0;
 	self.isMuted = false;
 	self.mimetype = "";
+	self.shuffleURLs = false;
 
 	var streamURLs = [];
 	var isMobile = (navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1);
@@ -161,6 +162,23 @@ var RainwavePlayer = function() {
 		return source;
 	};
 
+	function shuffle(array) {
+		var m = array.length, t, i;
+
+		// While there remain elements to shuffle…
+		while (m) {
+			// Pick a remaining element…
+			i = Math.floor(Math.random() * m--);
+
+			// And swap it with the current element.
+			t = array[m];
+			array[m] = array[i];
+			array[i] = t;
+		}
+
+		return array;
+	}
+
 	// *******************************************************************************************
 	//	Public Functions
 	// *******************************************************************************************
@@ -212,8 +230,13 @@ var RainwavePlayer = function() {
 			if (!audioEl) {
 				setupAudio();
 			}
+
 			if (chromeSpecialFlag) {
 				self.dispatchEvent(createEvent("longLoadWarning"));
+			}
+
+			if (self.shuffleURLs) {
+				shuffle(streamURLs);
 			}
 
 			for (var i = 0; i < streamURLs.length; i++) {
