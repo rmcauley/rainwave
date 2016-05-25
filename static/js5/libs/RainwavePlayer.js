@@ -116,9 +116,12 @@ var RainwavePlayer = function() {
 		}
 		self.isPlaying = false;
 		audioEl = document.createElement("audio");
-		audioEl.addEventListener("stop", onStop);
+		audioEl.addEventListener("abort", onAbort);
+		audioEl.addEventListener("ended", onEnded);
+		// audioEl.addEventListener("stop", onStop);		// there is no stop event for <audio>
 		audioEl.addEventListener("playing", onPlay);		// do not use "play" - it must be "playing"!!
 		audioEl.addEventListener("stalled", onStall);
+		audioEl.addEventListener("suspend", onSuspend);
 		audioEl.addEventListener("waiting", onWaiting);
 		audioEl.volume = self.volume;
 		if (!self.audioElDest) {
@@ -231,6 +234,8 @@ var RainwavePlayer = function() {
 		if (!self.isSupported) return;
 		if (!audioEl) return;
 
+		stopAudioConnectError();
+
 		while (audioEl.firstChild) {
 			audioEl.removeChild(audioEl.firstChild);
 		}
@@ -300,11 +305,13 @@ var RainwavePlayer = function() {
 	var stall_active;
 	var stopAudioConnectError = function() {
 		if (stall_timeout) {
+			if (self.debug) console.log("RainwavePlayer: Stutter on " + audioEl.currentSrc);
 			clearTimeout(stall_timeout);
 			stall_timeout = null;
 		}
 		stall_active = false;
 	};
+
 	var doAudioConnectError = function(detail) {
 		if (stall_active) {
 			dispatchStall(detail);
@@ -344,12 +351,28 @@ var RainwavePlayer = function() {
 		self.dispatchEvent(createEvent("loading"));
 	};
 
+	var onEnded = function() {
+		if (self.debug) console.log("RainwavePlayer: Ended! " + audioEl.currentSrc);
+		onStop();
+	};
+
+	var onAbort = function() {
+		if (self.debug) console.log("RainwavePlayer: Aborted! " + audioEl.currentSrc);
+		onStop();
+	}
+
 	var onStop = function() {
 		if (self.debug) console.log("RainwavePlayer: Sending stop. " + audioEl.currentSrc);
+		self.stop();
 		stopAudioConnectError();
 		self.dispatchEvent(createEvent("stop"));
 		self.dispatchEvent(createEvent("change"));
 	};
+
+	var onSuspend = function(e) {
+		if (self.debug) console.log("RainwavePlayer: Suspended! " + audioEl.currentSrc);
+		onStall(e);
+	}
 
 	var onStall = function(e, i) {
 		if (self.debug) console.log("RainwavePlayer: Stall detected: " + audioEl.currentSrc);
