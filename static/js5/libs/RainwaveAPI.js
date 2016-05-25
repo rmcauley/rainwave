@@ -7,7 +7,8 @@ var RainwaveAPI = function() {
 		ok: false,
 		isSlow: false,
 		debug: false,
-		throwErrorsOnThrottle: true
+		throwErrorsOnThrottle: true,
+		forceSecure: true
 	};
 
 	var _sid, _userID, _apiKey, _host;
@@ -67,7 +68,7 @@ var RainwaveAPI = function() {
 		if (socket && (socket.readyState === WebSocket.OPEN)) {
 			return;
 		}
-		var wshost = (window.location.protocol === "https:") ? "wss://" : "ws://";
+		var wshost = (window.location.protocol === "https:" || self.forceSecure) ? "wss://" : "ws://";
 		if (_host) {
 			wshost += _host;
 			if (window.location.port) {
