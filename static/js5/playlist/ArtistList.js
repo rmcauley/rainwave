@@ -4,7 +4,7 @@ var ArtistList = function(el) {
 
 	var loading = false;
 
-	API.add_callback("all_artists", function(json) { loading = true; self.update(json); });
+	API.add_callback("all_artists", function(json) { self.update(json); });
 
 	self.load = function() {
 		if (!self.loaded && !loading) {
@@ -12,6 +12,10 @@ var ArtistList = function(el) {
 			loading = true;
 			API.async_get("all_artists");
 		}
+	};
+
+	self.onFinishRender = function() {
+		loading = false;
 	};
 
 	self.draw_entry = function(item) {

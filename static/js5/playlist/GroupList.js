@@ -11,7 +11,11 @@ var GroupList = function(el) {
 		}
 	};
 
-	API.add_callback("all_groups", function(json) { loading = true; self.update(json); });
+	API.add_callback("all_groups", function(json) { self.update(json); });
+
+	self.onFinishRender = function() {
+		loading = false;
+	};
 
 	self.draw_entry = function(item) {
 		item._el = document.createElement("div");

@@ -133,6 +133,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 			self.loaded = true;
 		}
 
+		if (self.onFinishRender) {
+			self.onFinishRender();
+		}
+
 		chunked_start = false;
 
 		// window.removeEventListener("touchstart", pause_chunking);
