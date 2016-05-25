@@ -165,6 +165,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 			self.update_item(json[i]);
 		}
 
+		if (loading_msg) {
+			template._root.removeChild(loading_msg);
+			loading_msg = false;
+		}
+
 		if (items_to_draw.length && !chunked_start) {
 			start_chunking();
 		}
@@ -173,11 +178,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 			for (i in data) {
 				self.update_cool(data[i]);
 			}
-		}
-
-		if (loading_msg) {
-			template._root.removeChild(loading_msg);
-			loading_msg = false;
 		}
 
 		if (search_string.length === 0) {
