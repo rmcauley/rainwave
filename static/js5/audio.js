@@ -47,7 +47,11 @@ var RWAudioConstructor = function() {
 		// randomize the relay order, except for the round robin
 		var robin = stream_urls.splice(0, 1);
 		shuffle(stream_urls);
-		stream_urls.unshift(robin[0]);
+		// we're having problems with the round-robin relay(s) and
+		// connectivity.  in order for debugging in RainwavePlayer
+		// to spit out the true errant server, we're not going to add
+		// the round robin relay back
+		// stream_urls.unshift(robin[0]);
 		self.useStreamURLs(stream_urls);
 
 		API.add_callback("user", user_tunein_check);
