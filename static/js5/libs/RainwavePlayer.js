@@ -120,7 +120,8 @@ var RainwavePlayer = function() {
 		audioEl.addEventListener("abort", onAbort);
 		audioEl.addEventListener("ended", onEnded);
 		// audioEl.addEventListener("stop", onStop);		// there is no stop event for <audio>
-		audioEl.addEventListener("playing", onPlay);		// do not use "play" - it must be "playing"!!
+		audioEl.addEventListener("play", onPlay);			// for recovery after stall/stop
+		audioEl.addEventListener("playing", onPlay);		// for starting to play after load
 		audioEl.addEventListener("stalled", onStall);
 		audioEl.addEventListener("suspend", onSuspend);
 		audioEl.addEventListener("waiting", onWaiting);
