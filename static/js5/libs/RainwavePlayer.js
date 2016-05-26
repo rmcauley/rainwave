@@ -120,8 +120,7 @@ var RainwavePlayer = function() {
 		audioEl.addEventListener("abort", onAbort);
 		audioEl.addEventListener("ended", onEnded);
 		// audioEl.addEventListener("stop", onStop);		// there is no stop event for <audio>
-		audioEl.addEventListener("play", onPlay);			// for recovery after stall/stop
-		audioEl.addEventListener("playing", onPlay);		// for starting to play after load
+		audioEl.addEventListener("playing", onPlay);		// do not use "playing"
 		audioEl.addEventListener("stalled", onStall);
 		audioEl.addEventListener("suspend", onSuspend);
 		audioEl.addEventListener("waiting", onWaiting);
@@ -376,8 +375,9 @@ var RainwavePlayer = function() {
 	};
 
 	var onEnded = function() {
-		if (self.debug) console.log("RainwavePlayer: Ended! " + audioEl.currentSrc);
+		if (self.debug) console.log("RainwavePlayer: Ended prematurely! " + audioEl.currentSrc);
 		onStop();
+		self.play();
 	};
 
 	var onAbort = function() {
