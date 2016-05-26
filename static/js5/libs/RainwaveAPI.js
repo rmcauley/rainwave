@@ -85,11 +85,18 @@ var RainwaveAPI = function() {
 		socket = new WebSocket(wshost + "/api4/websocket/" + _sid);
 		socket.addEventListener("open", function() {
 			if (self.debug) console.log("Socket open.");
-			socket.send(JSON.stringify({
-				action: "auth",
-				user_id: _userID,
-				key: _apiKey
-			}));
+			try {
+				socket.send(JSON.stringify({
+					action: "auth",
+					user_id: _userID,
+					key: _apiKey
+				}));
+			}
+			catch (exc) {
+				console.error("Socket exception while trying to authenticate on socket.");
+				console.error(e);
+				onSocketError();
+			}
 		});
 		socket.addEventListener("message", onMessage);
 		socket.addEventListener("close", onSocketClose);
@@ -156,10 +163,17 @@ var RainwaveAPI = function() {
 
 		if (currentScheduleID) {
 			if (self.debug) console.log("Socket send - check_sched_current_id with " + currentScheduleID);
-			socket.send(JSON.stringify({
-				action: "check_sched_current_id",
-				sched_id: currentScheduleID
-			}));
+			try {
+				socket.send(JSON.stringify({
+					action: "check_sched_current_id",
+					sched_id: currentScheduleID
+				}));
+			}
+			catch (exc) {
+				console.error("Socket exception while trying to check_sched_current_id.");
+				console.error(e);
+				onSocketError();
+			}
 		}
 
 		nextRequest();
@@ -353,7 +367,7 @@ var RainwaveAPI = function() {
 			return;
 		}
 
-		var request = requestQueue.shift();
+		var request = requestQueue[0];
 		request.start = new Date();
 
 		if (statelessRequests.indexOf(request.message.action) === -1) {
@@ -362,7 +376,6 @@ var RainwaveAPI = function() {
 			if (sentRequests.length > 10) {
 				sentRequests.splice(0, sentRequests.length - 10);
 			}
-			sentRequests.push(request);
 		}
 
 		if (isOKTimer) {
@@ -371,8 +384,32 @@ var RainwaveAPI = function() {
 		isOKTimer = setTimeout(function() {
 			onRequestTimeout(request);
 		}, 4000);
+
 		if (self.debug) console.log("Socket write", request.message);
-  		socket.send(JSON.stringify(request.message));
+
+		var jsonmsg;
+		try {
+			jsonmsg = JSON.stringify(request.message);
+		}
+		catch (e) {
+			console.error("JSON exception while trying to encode message.");
+			console.error(e);
+			requestQueue.shift();
+			return;
+		}
+
+		try {
+  			socket.send(jsonmsg);
+  			requestQueue.shift();
+  			if (request.message.message_id !== undefined) {
+				sentRequests.push(request);
+			}
+  		}
+		catch (exc) {
+			console.error("Socket exception while trying to send.");
+			console.error(e);
+			onSocketError();
+		}
 	};
 
 	var onRequestTimeout = function(request) {
