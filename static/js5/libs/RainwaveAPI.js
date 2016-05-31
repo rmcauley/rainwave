@@ -407,7 +407,7 @@ var RainwaveAPI = function() {
   		}
 		catch (exc) {
 			console.error("Socket exception while trying to send.");
-			console.error(e);
+			console.error(exc);
 			onSocketError();
 		}
 	};
