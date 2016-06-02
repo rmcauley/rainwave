@@ -197,6 +197,9 @@ var Requests = function() {
 
 	var clicked = function(e) {
 		if (!this._request_song_id) return;
+		if (User.id === 1) {
+			ErrorHandler.tooltip_error(ErrorHandler.make_error("must_login_and_tune_in_to_request", 400));
+		}
 		self.add(this._request_song_id);
 	};
 
