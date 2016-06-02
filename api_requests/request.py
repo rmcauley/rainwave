@@ -18,6 +18,8 @@ class SubmitRequest(APIHandler):
 	sync_across_sessions = True
 
 	def post(self):
+		if self.user.is_anonymous():
+			raise APIException("must_login_and_tune_in_to_request")
 		if self.user.add_request(self.sid, self.get_argument("song_id")):
 			self.append_standard("request_success")
 			self.append("requests", self.user.get_requests(self.sid))
