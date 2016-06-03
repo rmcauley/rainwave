@@ -124,6 +124,11 @@ var RainwavePlayer = function() {
 		audioEl.addEventListener("stalled", onStall);
 		audioEl.addEventListener("suspend", onSuspend);
 		audioEl.addEventListener("waiting", onWaiting);
+		if (self.debug) {
+			audioEl.addEventListener("canplay", function() {
+				if (self.debug) console.log("RainwavePlayer: <audio> canplay            :: " + audioEl.currentSrc);
+			});
+		}
 		audioEl.volume = self.volume;
 		if (!self.audioElDest) {
 			self.audioElDest = document.createElement("div");
@@ -337,7 +342,7 @@ var RainwavePlayer = function() {
 
 	var doAudioConnectError = function(detail) {
 		if (stall_active) {
-			dispatchStall(detail);
+			return;
 		}
 		else if (stall_timeout) {
 			return;
@@ -351,76 +356,87 @@ var RainwavePlayer = function() {
 
 	var dispatchStall = function(detail) {
 		if (self.debug) {
-			console.log("RainwavePlayer: Sending stall: " + (detail || "<audio>"));
-			console.log("RainwavePlayer: Stalled on " + audioEl.currentSrc);
+			console.log("RainwavePlayer: Dispatching stall: " + (detail || "<audio>"));
+			console.log("RainwavePlayer: Stalled on URL " + audioEl.currentSrc);
 		}
 		var evt = createEvent("stall");
 		evt.detail = detail;
 		self.dispatchEvent(evt);
 		stall_timeout = null;
 		stall_active = true;
+		// Firefox doesn't always send a playing event after a stall recovery
+		// timeupdate will catch this problem
+		audioEl.addEventListener("timeupdate", onTimeUpdate);
+	};
+
+	var onTimeUpdate = function() {
+		if (self.debug) console.log("RainwavePlayer: <audio> timeupdate         :: " + audioEl.currentSrc);
+		audioEl.removeEventListener("timeupdate", onTimeUpdate);
+		onPlay();
 	};
 
 	var onPlay = function() {
-		if (self.debug) console.log("RainwavePlayer: Playing " + audioEl.currentSrc);
+		if (self.debug) console.log("RainwavePlayer: <audio> playing            :: " + audioEl.currentSrc);
 		stopAudioConnectError();
 		self.dispatchEvent(createEvent("playing"));
-		self.dispatchEvent(createEvent("change"));
 	};
 
 	var onWaiting = function() {
-		if (self.debug) console.log("RainwavePlayer: Sending loading: " + audioEl.currentSrc);
+		if (self.debug) console.log("RainwavePlayer: <audio> waiting            ::" + audioEl.currentSrc);
 		stopAudioConnectError();
 		self.dispatchEvent(createEvent("loading"));
 	};
 
 	var onEnded = function() {
-		if (self.debug) console.log("RainwavePlayer: Ended prematurely! " + audioEl.currentSrc);
+		if (self.debug) console.log("RainwavePlayer: <audio> ended              :: " + audioEl.currentSrc);
 		onStop();
 		self.play();
 	};
 
 	var onAbort = function() {
-		if (self.debug) console.log("RainwavePlayer: Aborted! " + audioEl.currentSrc);
+		if (self.debug) console.log("RainwavePlayer: <audio> aborted            :: " + audioEl.currentSrc);
 		onStop();
 	}
 
 	var onStop = function() {
-		if (self.debug) console.log("RainwavePlayer: Sending stop. " + audioEl.currentSrc);
+		if (self.debug) console.log("RainwavePlayer: <audio> stop               :: " + audioEl.currentSrc);
 		self.stop();
-		stopAudioConnectError();
-		self.dispatchEvent(createEvent("stop"));
-		self.dispatchEvent(createEvent("change"));
 	};
 
 	var onSuspend = function(e) {
-		if (self.debug) console.log("RainwavePlayer: Suspended! " + audioEl.currentSrc);
+		if (self.debug) console.log("RainwavePlayer: <audio> suspend            :: " + audioEl.currentSrc);
 		onStall(e);
 	}
 
 	var onStall = function(e, i) {
-		if (self.debug) console.log("RainwavePlayer: Stall detected: " + audioEl.currentSrc);
 		// we need to handle stalls from sources (which have an index)
 		// and stalls from the audio element themselves in this function
 		// we handle sources so that we know how bad things are.
 		// we give errors such as "3/5 sources have failed."
 
-		if ((i === undefined) && chromeSpecialFlag) {
-			// we can ignore <audio> element stalls when Chrome is being special
-			// because it is forever stalled for some reason. :/
-			// we know it's an <audio> problem when the 2nd argument 'i' is undefined :)
-			return;
+		if (i === undefined) {
+			if (self.debug) console.log("RainwavePlayer: <audio> stall              :: " + audioEl.currentSrc);
+			if (chromeSpecialFlag) {
+				// we can ignore <audio> element stalls when Chrome is being special
+				// because it is forever stalled for some reason. :/
+				if (self.debug) console.log("RainwavePlayer: Ignoring stall due to chromeSpecialFlag.");
+				return;
+			}
+		}
+		else {
+			if (self.debug) console.log("RainwavePlayer: <source> stall             :: " + audioEl.currentSrc);
 		}
 
 		var detail;
 		if (i !== undefined) {
 			detail = " (" + (i + 1) + "/" + streamURLs.length + ")";
 		}
+		if (self.debug) console.log("RainwavePlayer: Stall event detail: " + detail);
 		doAudioConnectError(detail);
 	};
 
 	var onError = function(e) {
-		if (self.debug) console.log("RainwavePlayer: Sending error. " + audioEl.currentSrc);
+		if (self.debug) console.log("RainwavePlayer: <audio> error              :: " + audioEl.currentSrc);
 		stopAudioConnectError();
 		self.stop();
 		self.dispatchEvent(createEvent("error"));

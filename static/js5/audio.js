@@ -130,7 +130,6 @@ var RWAudioConstructor = function() {
 	});
 
 	self.addEventListener("stall", function(evt) {
-		el.classList.remove("playing");
 		el.classList.add("working");
 		// var append;
 		// if (evt.detail) {
