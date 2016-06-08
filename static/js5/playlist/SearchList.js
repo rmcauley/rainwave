@@ -177,6 +177,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 		if (items_to_draw.length && !chunked_start) {
 			start_chunking();
 		}
+		else {
+			self.onFinishRender();
+		}
 
 		if (self.update_cool && self.loaded) {
 			for (i in data) {
