@@ -13,9 +13,12 @@ var SongList = function() {
 		return songs;
 	};
 
+	self.get_scroller = function() {
+		return scroller;
+	};
+
 	self.on_draw = function() {
 		scroller = Scrollbar.create(el, false, true);
-		scroller.scrollblock.classList.add("request_scrollblock");
 		Sizing.requests_areas.push(scroller.scrollblock);
 	};
 
@@ -293,7 +296,10 @@ var Requests = function() {
 	var indicator2;
 	var container;
 
-	BOOTSTRAP.on_draw.push(self.on_draw);
+	BOOTSTRAP.on_draw.push(function() {
+		self.on_draw();
+		self.get_scroller().scrollblock.classList.add("request_scrollblock");
+	});
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		var $t = RWTemplates.requests();
