@@ -37,7 +37,7 @@
 
 <div bind="sizeable_area" class="sizeable">
 	<div bind="timeline"></div>
-	<div class="requests panel" bind="requests_container"></div>
+	<div class="requests panel songlist_panel" bind="requests_container"></div>
 	<div class="search_panel panel" bind="search_container">
 		{{>search}}
 	</div>

@@ -20,6 +20,26 @@ var SongList = function() {
 	self.on_draw = function() {
 		scroller = Scrollbar.create(el, false, true);
 		Sizing.requests_areas.push(scroller.scrollblock);
+
+		if (Prefs.get("pwr")) {
+			var move_out = function() {
+				out_timer = false;
+				scroller.scrollblock.parentNode.classList.remove("panel_open");
+			};
+			var out_timer = false;
+			scroller.scrollblock.addEventListener("mouseenter", function() {
+				scroller.scrollblock.parentNode.classList.add("panel_open");
+				if (out_timer) {
+					clearTimeout(out_timer);
+					out_timer = false;
+				}
+			});
+			scroller.scrollblock.addEventListener("mouseleave", function() {
+				if (!out_timer) {
+					out_timer = setTimeout(move_out, 200);
+				}
+			});
+		}
 	};
 
 	self.on_init = function($t) {
