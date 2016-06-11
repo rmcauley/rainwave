@@ -20,6 +20,7 @@ var Sizing = function() {
 	self.timeline_message_size = 45;
 	self.list_height = 0;
 	self.dj_area = null;
+	self.requests_areas = [];
 
 	self.add_resize_callback = function(cb, priority) {
 		if (!priority) {
@@ -48,13 +49,17 @@ var Sizing = function() {
 		if (self.detail_area) {
 			self.detail_area.style.height = (self.sizeable_area_height - self.detail_header_size - 20) + "px";
 		}
-		self.requests_area.style.height = (self.sizeable_area_height - (self.detail_header_size * 2) - 30) + "px";
+
+		for (var i = 0; i < self.requests_areas.length; i++) {
+			self.requests_areas[i].style.height = (self.sizeable_area_height - (self.detail_header_size * 2) - 30) + "px";
+		}
+
 		index_t.search_results_container.style.height = self.list_height + "px";
 		if (self.dj_area) {
 			self.dj_area.style.height = self.dj_area.sizeable_area_height + "px";
 		}
 
-		for (var i = 0; i < index_t.sizeable_area.childNodes.length; i++) {
+		for (i = 0; i < index_t.sizeable_area.childNodes.length; i++) {
 			index_t.sizeable_area.childNodes[i].style.height = self.sizeable_area_height + "px";
 		}
 

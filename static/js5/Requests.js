@@ -1,206 +1,46 @@
-var Requests = function() {
+var SongList = function() {
 	"use strict";
 	var self = {};
 
 	var container;
 	var el;
 	var scroller;
-	var link;
-	var link_text;
-	var header;
-	var indicator;
-	var indicator2;
 	var padder;
-	var helpmsg;
 
 	var songs = [];
 
-	BOOTSTRAP.on_draw.push(function(root_template) {
+	self.get_songs = function() {
+		return songs;
+	};
+
+	self.on_draw = function() {
 		scroller = Scrollbar.create(el, false, true);
 		scroller.scrollblock.classList.add("request_scrollblock");
-		Sizing.requests_area = scroller.scrollblock;
-	});
+		Sizing.requests_areas.push(scroller.scrollblock);
+	};
 
-	BOOTSTRAP.on_init.push(function(root_template) {
-		el = root_template.song_list;
-		header = root_template.request_header;
-		link = root_template.request_link;
-		link_text = root_template.request_link_text;
-		indicator = root_template.request_indicator;
-		container = root_template.requests_container;
-		if (Prefs.get("pwr") && root_template.request_indicator2) {
-			indicator2 = root_template.request_indicator2;
-		}
+	self.on_init = function($t) {
+		el = $t.song_list;
+		container = $t.song_list_container;
 
-		helpmsg = document.createElement("div");
-		helpmsg.className = "blank_request_message";
-		helpmsg.textContent = $l("make_a_request");
-
-		API.add_callback("requests", self.update);
-		API.add_callback("user", self.show_queue_paused);
-
-		root_template.requests_container.addEventListener("click", function(e) {
+		$t.song_list_container.addEventListener("click", function(e) {
 			e.stopPropagation();
 		});
 
-		root_template.request_close.addEventListener("click", function() {
-			Router.change();
-		});
+		$t.panel_close.addEventListener("click", self.close);
 
-		root_template.requests_pause.addEventListener("click", self.pause_queue);
-		root_template.requests_play.addEventListener("click", self.pause_queue);
-		root_template.requests_clear.addEventListener("click", self.clear_requests);
-		root_template.requests_unrated.addEventListener("click", self.fill_with_unrated);
-		root_template.requests_favfill.addEventListener("click", self.fill_with_faves);
-
-		padder = root_template.last_song_padder;
-
-		link.addEventListener("click", function() {
-			if (!document.body.classList.contains("requests")) {
-				Router.change("requests");
-			}
-			else {
-				Router.change();
-			}
-		});
-
-		self.indicate = Indicator(indicator, 0, indicator2);
-	});
-
-	self.show_queue_paused = function() {
-		if (User.requests_paused) {
-			container.classList.add("paused");
-			link.classList.add("paused");
-		}
-		else {
-			container.classList.remove("paused");
-			link.classList.remove("paused");
-		}
-		self.update_header();
+		padder = $t.last_song_padder;
 	};
 
-	self.update_header = function() {
-		var good_requests = 0;
-		var all_bad = songs.length > 0;
-		for (var i = 0; i < songs.length; i++) {
-			if (songs[i].valid) {
-				all_bad = false;
-				good_requests++;
-			}
-		}
-
-		container.classList.remove("warning");
-		link.classList.remove("warning");
-		header.removeAttribute("href");
-		header.classList.add("no_pointer");
-
-		if (User.tuned_in) {
-			if (!User.requests_paused) {
-				if (link && good_requests) {
-					if (!Sizing.simple) {
-						link_text.textContent = $l("#_requests", { "num_requests": good_requests });
-					}
-					else {
-						link_text.textContent = $l("#_requests", { "num_requests": songs.length });
-					}
-				}
-				else if (link) {
-					link_text.textContent = $l("Requests");
-				}
-
-				if (all_bad) {
-					header.textContent = $l("requests_all_on_cooldown");
-					container.classList.add("warning");
-					link.classList.add("warning");
-				}
-				else if (User.request_position) {
-					header.textContent = $l("request_you_are_x_in_line", { "position": User.request_position });
-					header.setAttribute("href", "#!/request_line");
-					header.classList.remove("no_pointer");
-				}
-				else {
-					header.textContent = $l("Requests");
-				}
-			}
-			else {
-				header.textContent = $l("request_grab_tag__paused");
-				if (link) {
-					link_text.textContent = $l("request_grab_tag__paused");
-				}
-			}
-		}
-		else {
-			header.textContent = $l("Requests");
-			if (link) {
-				link_text.textContent = $l("Requests");
-			}
-		}
+	self.close = function() {
+		Router.change();
 	};
 
-	self.pause_queue = function() {
-		if (User.requests_paused) {
-			API.async_get("unpause_request_queue");
-		}
-		else {
-			API.async_get("pause_request_queue");
-		}
-	};
-
-	self.clear_requests = function() {
-		API.async_get("clear_requests");
-	};
-
-	self.fill_with_unrated = function() {
-		API.async_get("request_unrated_songs");
-	};
-
-	self.fill_with_faves = function() {
-		API.async_get("request_favorited_songs");
-	};
-
-	self.add = function(song_id) {
-		API.async_get("request", { "song_id": song_id });
-	};
-
-	self.remove = function(song_id) {
-		var found_song;
-		for (var i = 0; i < songs.length; i++) {
-			if (song_id == songs[i].id) {
-				found_song = songs[i];
-				break;
-			}
-		}
-		if (!found_song) return;
-		if (found_song._deleted) {
-			return;
-		}
-		found_song._deleted = true;
-		found_song.el.classList.add("deleted");
-		API.async_get("delete_request", { "song_id": song_id },
-			null,
-			function() {
-				found_song._deleted = false;
-				found_song.el.classList.remove("deleted");
-			}
-		);
-	};
+	self.remove = function(song_id) {};
 
 	self.remove_event = function(e) {
 		if (!this._song_id) return;
 		self.remove(this._song_id);
-	};
-
-	self.make_clickable = function(el, song_id) {
-		el._request_song_id = song_id;
-		el.addEventListener("click", clicked);
-	};
-
-	var clicked = function(e) {
-		if (!this._request_song_id) return;
-		if (User.id === 1) {
-			ErrorHandler.tooltip_error(ErrorHandler.make_error("must_login_and_tune_in_to_request", 400));
-		}
-		self.add(this._request_song_id);
 	};
 
 	self.update = function(json) {
@@ -246,18 +86,29 @@ var Requests = function() {
 		for (i = songs.length - 1; i >= 0; i--) {
 			songs[i].update_cooldown_info();
 		}
-		self.show_queue_paused();
-		self.update_header();
 
-		if ((songs.length === 0) && Sizing.simple) {
-			el.appendChild(helpmsg);
+		if (self.show_queue_paused) {
+			self.show_queue_paused();
 		}
-		else if (helpmsg.parentNode) {
-			el.removeChild(helpmsg);
+
+		if (self.update_header) {
+			self.update_header();
+		}
+
+		if (self.helpmsg) {
+			if ((songs.length === 0) && Sizing.simple) {
+				el.appendChild(self.helpmsg);
+			}
+			else if (self.helpmsg.parentNode) {
+				el.removeChild(self.helpmsg);
+			}
 		}
 
 		requestNextAnimationFrame(self.reflow);
-		self.indicate(songs.length);
+
+		if (self.indicate) {
+			self.indicate(songs.length);
+		}
 	};
 
 	self.reflow = function() {
@@ -283,6 +134,24 @@ var Requests = function() {
 		}
 		padder.style[Fx.transform] = "translateY(" + (running_height - Sizing.request_size) + "px)";
 		scroller.set_height(running_height);
+	};
+
+	self.find_song_to_remove = function(song_id) {
+		var found_song;
+		var songs = self.get_songs();
+		for (var i = 0; i < songs.length; i++) {
+			if (song_id == songs[i].id) {
+				found_song = songs[i];
+				break;
+			}
+		}
+		if (!found_song) return;
+		if (found_song._deleted) {
+			return;
+		}
+		found_song._deleted = true;
+		found_song.el.classList.add("deleted");
+		return found_song;
 	};
 
 	// DRAG AND DROP *********************************************************
@@ -404,15 +273,199 @@ var Requests = function() {
 		dragging_song = null;
 		self.reflow();
 
-		if (order_changed) {
-			var song_order = "";
-			for (var i = 0; i < songs.length; i++) {
-				if (i !== 0) song_order += ",";
-				song_order += songs[i].id;
-			}
-			API.async_get("order_requests", { "order": song_order });
+		if (order_changed && self.on_order_changed) {
+			self.on_order_changed();
 		}
 		order_changed = false;
+	};
+
+	return self;
+};
+
+var Requests = function() {
+	"use strict";
+	var self = SongList();
+
+	var link;
+	var link_text;
+	var header;
+	var indicator;
+	var indicator2;
+	var container;
+
+	BOOTSTRAP.on_draw.push(self.on_draw);
+
+	BOOTSTRAP.on_init.push(function(root_template) {
+		var $t = RWTemplates.requests();
+		self.on_init($t);
+
+		header = $t.request_header;
+		link = root_template.request_link;
+		link_text = root_template.request_link_text;
+		indicator = root_template.request_indicator;
+		if (Prefs.get("pwr") && $t.request_indicator2) {
+			indicator2 = $t.request_indicator2;
+		}
+		container = $t.song_list_container;
+
+		self.helpmsg = document.createElement("div");
+		self.helpmsg.className = "blank_request_message";
+		self.helpmsg.textContent = $l("make_a_request");
+
+		API.add_callback("requests", self.update);
+		API.add_callback("user", self.show_queue_paused);
+
+		$t.requests_pause.addEventListener("click", self.pause_queue);
+		$t.requests_play.addEventListener("click", self.pause_queue);
+		$t.requests_clear.addEventListener("click", self.clear_requests);
+		$t.requests_unrated.addEventListener("click", self.fill_with_unrated);
+		$t.requests_favfill.addEventListener("click", self.fill_with_faves);
+
+		link.addEventListener("click", function() {
+			if (!document.body.classList.contains("requests")) {
+				Router.change("requests");
+			}
+			else {
+				Router.change();
+			}
+		});
+
+		self.indicate = Indicator(indicator, 0, indicator2);
+
+		root_template.requests_container.appendChild($t._root);
+	});
+
+	self.show_queue_paused = function() {
+		if (User.requests_paused) {
+			container.classList.add("paused");
+			link.classList.add("paused");
+		}
+		else {
+			container.classList.remove("paused");
+			link.classList.remove("paused");
+		}
+		self.update_header();
+	};
+
+	self.update_header = function() {
+		var good_requests = 0;
+		var songs = self.get_songs();
+		var all_bad = songs.length > 0;
+		for (var i = 0; i < songs.length; i++) {
+			if (songs[i].valid) {
+				all_bad = false;
+				good_requests++;
+			}
+		}
+
+		container.classList.remove("warning");
+		link.classList.remove("warning");
+		header.removeAttribute("href");
+		header.classList.add("no_pointer");
+
+		if (User.tuned_in) {
+			if (!User.requests_paused) {
+				if (link && good_requests) {
+					if (!Sizing.simple) {
+						link_text.textContent = $l("#_requests", { "num_requests": good_requests });
+					}
+					else {
+						link_text.textContent = $l("#_requests", { "num_requests": songs.length });
+					}
+				}
+				else if (link) {
+					link_text.textContent = $l("Requests");
+				}
+
+				if (all_bad) {
+					header.textContent = $l("requests_all_on_cooldown");
+					container.classList.add("warning");
+					link.classList.add("warning");
+				}
+				else if (User.request_position) {
+					header.textContent = $l("request_you_are_x_in_line", { "position": User.request_position });
+					header.setAttribute("href", "#!/request_line");
+					header.classList.remove("no_pointer");
+				}
+				else {
+					header.textContent = $l("Requests");
+				}
+			}
+			else {
+				header.textContent = $l("request_grab_tag__paused");
+				if (link) {
+					link_text.textContent = $l("request_grab_tag__paused");
+				}
+			}
+		}
+		else {
+			header.textContent = $l("Requests");
+			if (link) {
+				link_text.textContent = $l("Requests");
+			}
+		}
+	};
+
+	self.pause_queue = function() {
+		if (User.requests_paused) {
+			API.async_get("unpause_request_queue");
+		}
+		else {
+			API.async_get("pause_request_queue");
+		}
+	};
+
+	self.clear_requests = function() {
+		API.async_get("clear_requests");
+	};
+
+	self.fill_with_unrated = function() {
+		API.async_get("request_unrated_songs");
+	};
+
+	self.fill_with_faves = function() {
+		API.async_get("request_favorited_songs");
+	};
+
+	self.add = function(song_id) {
+		API.async_get("request", { "song_id": song_id });
+	};
+
+	self.remove = function(song_id) {
+		var found_song = self.find_song_to_remove(song_id);
+		if (!found_song) {
+			return;
+		}
+		API.async_get("delete_request", { "song_id": song_id },
+			null,
+			function() {
+				found_song._deleted = false;
+				found_song.el.classList.remove("deleted");
+			}
+		);
+	};
+
+	self.make_clickable = function(el, song_id) {
+		el._request_song_id = song_id;
+		el.addEventListener("click", clicked);
+	};
+
+	var clicked = function(e) {
+		if (!this._request_song_id) return;
+		if (User.id === 1) {
+			ErrorHandler.tooltip_error(ErrorHandler.make_error("must_login_and_tune_in_to_request", 400));
+		}
+		self.add(this._request_song_id);
+	};
+
+	self.on_order_changed = function(e) {
+		var songs = self.get_songs();
+		var song_order = "";
+		for (var i = 0; i < songs.length; i++) {
+			if (i !== 0) song_order += ",";
+			song_order += songs[i].id;
+		}
+		API.async_get("order_requests", { "order": song_order });
 	};
 
 	return self;

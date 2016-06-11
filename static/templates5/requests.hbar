@@ -1,4 +1,4 @@
-<div class="close" bind="request_close">
+<div class="close" bind="panel_close">
 	<img src="/static/images4/cancel.png" alt="X" />
 </div>
 <ul class="panel_header">
@@ -33,6 +33,6 @@
 		<span>{{ $l("Clear") }}</span>
 	</li>
 </ul>
-<div bind="song_list">
+<div bind="song_list" bind="song_list_container">
 	<div class="song" style="visibility: hidden; z-index: -1; transition: none;" bind="last_song_padder"></div>
 </div>
