@@ -7,7 +7,7 @@ from rainwave.user import User
 
 def update_line(sid):
 	# Get everyone in the line
-	line = db.c.fetch_all("SELECT username, user_id, line_expiry_tune_in, line_expiry_election, line_wait_start FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE r4_request_line.sid = %s AND radio_requests_paused = FALSE ORDER BY line_wait_start", (sid,))
+	line = db.c.fetch_all("SELECT username, user_id, line_expiry_tune_in, line_expiry_election, line_wait_start, line_has_had_valid FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE r4_request_line.sid = %s AND radio_requests_paused = FALSE ORDER BY line_wait_start", (sid,))
 	_process_line(line, sid)
 
 def _process_line(line, sid):
@@ -19,6 +19,7 @@ def _process_line(line, sid):
 	albums_with_requests = []
 	position = 1
 	user_viewable_position = 1
+	valid_positions = 0
 	# For each person
 	for row in line:
 		add_to_line = False
@@ -34,6 +35,11 @@ def _process_line(line, sid):
 			if tuned_in:
 				# Get their top song ID
 				song_id = u.get_top_request_song_id(sid)
+				if song_id and not row['line_has_had_valid']:
+					row['line_has_had_valid'] = True
+					db.c.update("UPDATE r4_request_line SET line_has_had_valid = TRUE WHERE user_id = %s", (u.id, ))
+				if row['line_has_had_valid']:
+					valid_positions += 1
 				# If they have no song and their line expiry has arrived, boot 'em
 				if not song_id and row['line_expiry_election'] and (row['line_expiry_election'] <= t):
 					log.debug("request_line", "%s: Removed user ID %s from line for election timeout, expiry time %s current time %s" % (sid, u.id, row['line_expiry_election'], t))
@@ -73,6 +79,8 @@ def _process_line(line, sid):
 		if add_to_line:
 			position = position + 1
 
+	log.debug("request_line", "Request line valid positions: %s" % valid_positions)
+	cache.set_station(sid, 'request_valid_positions', valid_positions)
 	cache.set_station(sid, "request_line", new_line, True)
 	cache.set_station(sid, "request_user_positions", user_positions, True)
 

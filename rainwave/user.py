@@ -306,7 +306,8 @@ class User(object):
 				return True
 			elif already_lined:
 				self.remove_from_request_line()
-			return (db.c.update("INSERT INTO r4_request_line (user_id, sid) VALUES (%s, %s)", (self.id, sid)) > 0)
+			has_valid = True if self.get_top_request_song_id(sid) else False
+			return (db.c.update("INSERT INTO r4_request_line (user_id, sid, line_has_had_valid) VALUES (%s, %s, %s)", (self.id, sid, has_valid)) > 0)
 
 	def remove_from_request_line(self):
 		return (db.c.update("DELETE FROM r4_request_line WHERE user_id = %s", (self.id,)) > 0)
