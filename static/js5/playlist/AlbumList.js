@@ -53,11 +53,9 @@
 		}
 
 		if (Sizing.simple && !document.body.classList.contains("playlist_album")) {
-			console.log("unloaded!");
 			self.unload();
 		}
 		else {
-			console.log("reloading!");
 			API.async_get("all_albums");
 		}
 	});
