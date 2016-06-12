@@ -1,8 +1,13 @@
 {
    "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
-
+   "__comment__"                 : "Please put them in your actual language. (i.e. use kanji!) Short version should be < 4 characters.",
+   
    "language_name"                                   : "Deutsch",
    "language_name_short"                             : "DE",
+
+   "__comment__"                 : "This shows up after 'Rainwave' on Google results.  e.g. 'Rainwave Video Game Music Radio: Covers'",
+
+   "page_title_on_google"                            : "Videospiel-Musik-Radio",
 
    "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
 
@@ -22,16 +27,16 @@
    "song_does_not_exist"                             : "Song existiert nicht.",
    "db_error_retry"                                  : "Interner Datenbankfehler - Bitte erneut versuchen.",
    "db_error_permanent"                              : "Server Fehler - Interne Datenbank ist offline.",
-
+   "websocket_throttle"                              : "Mach mal langsam!",
+   
    "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
 
    "fave_failed"                                     : "Favorisieren fehlgeschlagen.",
    "request_failed"                                  : "Wünschen fehlgeschlagen.",
    "request_delete_failed"                           : "Wunsch konnte nicht gelöscht werden.",
    "request_unrated_failed"                          : "Wünschen von unbewerteten Songs fehlgeschlagen.",
-   "request_is_blocked"                              : "Blockiert für weitere %(blocked_num) Wahlen.",
    "request_favorited_failed"                        : "Keine Favoriten vorhanden.",
-   "too_many_requests"                               : "Zu viele Wünsche.",
+   "too_many_requests"                               : "Deine Wunschliste ist voll.",
    "same_request_exists"                             : "Song bereits gewünscht.",
    "same_request_album"                              : "Album bereits gewünscht.",
    "song_not_requested"                              : "Song nicht gewünscht.",
@@ -48,10 +53,31 @@
    "request_queue_paused"                            : "Wunschliste pausiert.",
    "request_queue_unpaused"                          : "Wunschliste fortgesetzt.",
    "no_results"                                      : "Keine Ergebnisse.",
+   "empty_list"                                      : "Leere Liste.",
+   "no_search_results"                               : "Keine Suchergebnisse.",
    "server_just_started"                             : "Rainwave startet gerade neu",
    "station_paused"                                  : "Station ist aktuell vom DJ pausiert.",
-   "album_on_other_station"                          : "Album ist auf %(available_station) verfügbar, tut uns leid!",
+   "album_on_other_station"                          : "Album ist auf dieser Station nicht verfügbar, tut uns leid!",
    "album_is_dj_only"                                : "Album ist ein exklusiver Teil dieser Veranstaltung, tut uns leid!",
+   "locked_to_station"                               : "Du hast gerade erst auf %(locked_station) abgestimmt, daher musst du noch %(lock_counter) &(lock_counter:song/songs) abwarten, um auf %(this_station) abstimmen zu können.",
+   "__comment__"                                     : "The above line happens on station change: 'You were just voting on Game, you have to wait 2 more songs to vote on All'.",
+   "search_string_too_short"                         : "Die Sucheingabe muss 3 Zeichen oder mehr haben.",
+   "search_result_limit"                             : "(Zu viele Ergebnisse. Bitte schränke deine Suche weiter ein.)",
+
+   "__comment__"                 : "Error pop-up when Rainwave goes crashes.",
+
+   "oops"                                            : "Oops",
+   "something_went_wrong"                            : "Irgendetwas lief beim Laden vom Server schief. :(",
+   "crash_happened"                                  : "Rainwave ist abgestürzt. :(",
+   "report_sending"                                  : "Versuche einen Fehlerbericht zu senden...",
+   "report_sent"                                     : "Der Fehler wurde gemeldet! Wir werden ihn untersuchen!",
+   "report_error"                                    : "... und wir konnten nicht einmal einen Fehlerbericht senden :(",
+   "you_can_yell"                                    : "Du kennst uns deswegen anmeckern",
+   "yell_on_twitter"                                 : "auf Twitter unter @Rainwavecc",
+   "yell_or"                                         : "oder",
+   "yell_on_forums"                                  : "in unserem Forum.",
+   "please_refresh"                                  : "Lade die Seite neu um es erneut zu versuchen.",
+   "report_submitted"                                : "Bericht gesendet",
 
    "__comment__"                 : "API Key Management",
 
@@ -73,11 +99,11 @@
    "events_calendar_link"                            : "Veranstaltungskalender",
    "forums"                                          : "Forum",
    "login"                                           : "Einloggen",
+   "signup"                                          : "Registrieren",
    "chat"                                            : "Chat",
+   "search"                                          : "Suchen",
    "previouslyplayed"                                : "Zuletzt gespielt",
-   "extended_history_link"                           : "Verlauf",
-   "extended_history_header"                         : "Erweiterter Verlauf",
-   "special_event_on_now"                            : "Veranstaltung: ",
+   "playback_history_link"                           : "Songverlauf",
    "special_event_alert"                             : "Sonderveranstaltung auf %(station): ",
 
    "tunein"                                          : "Zuhören",
@@ -87,6 +113,15 @@
    "audio_connect_error_reattempting"                : "Aufgrund von Verbindungsproblemen verlierst du die Möglichkeit abzustimmen. Wir versuchen deine Verbindung stabil zu halten.",
    "try_external_player"                             : "Klicke hier, um mit einem externen Programm zu hören.",
    "m3u_hijack_right_click"                          : "Ein Browserplugin versucht den Download abzufangen. Bitte nutze die .mp3 oder .ogg M3U-Downloadlinks und ein externes Programm, um den Sender zu hören.",
+
+   "listen_via_browser"                              : "Im Browser zuhören",
+   "listen_via_mp3"                                  : "Über MP3-Stream zuhören",
+   "listen_via_ogg"                                  : "Über Ogg-Stream zuhören",
+   "chrome_mobile_takes_time"                        : "Android braucht bis zu 30 Sekunden. Ein orangenes Icon bedeutet es funktioniert - bitte warten!",
+
+   "api_docs"                                        : "API Dokumentation",
+   "github_repo"                                     : "GitHub",
+   "twitter"                                         : "Twitter",
 
    "__comment__"                 : "Timeline",
 
