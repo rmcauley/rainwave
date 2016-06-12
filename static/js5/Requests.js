@@ -40,15 +40,15 @@ var SongList = function() {
 				}
 			});
 		}
+
+		scroller.scrollblock.parentNode.addEventListener("click", function(e) {
+			e.stopPropagation();
+		});
 	};
 
 	self.on_init = function($t) {
 		el = $t.song_list;
 		container = $t.song_list_container;
-
-		$t.song_list_container.addEventListener("click", function(e) {
-			e.stopPropagation();
-		});
 
 		$t.panel_close.addEventListener("click", self.close);
 
@@ -314,7 +314,7 @@ var Requests = function() {
 	var header;
 	var indicator;
 	var indicator2;
-	var container;
+	var root_container;
 
 	BOOTSTRAP.on_draw.push(function() {
 		self.on_draw();
@@ -323,7 +323,7 @@ var Requests = function() {
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		var $t = RWTemplates.requests();
-		self.on_init($t);
+		self.on_init($t, root_template);
 
 		header = $t.request_header;
 		link = root_template.request_link;
@@ -332,7 +332,7 @@ var Requests = function() {
 		if (Prefs.get("pwr") && $t.request_indicator2) {
 			indicator2 = $t.request_indicator2;
 		}
-		container = $t.song_list_container;
+		root_container = root_template.requests_container;
 
 		self.helpmsg = document.createElement("div");
 		self.helpmsg.className = "blank_request_message";
@@ -358,16 +358,16 @@ var Requests = function() {
 
 		self.indicate = Indicator(indicator, 0, indicator2);
 
-		root_template.requests_container.appendChild($t._root);
+		root_container.appendChild($t._root);
 	});
 
 	self.show_queue_paused = function() {
 		if (User.requests_paused) {
-			container.classList.add("paused");
+			root_container.classList.add("paused");
 			link.classList.add("paused");
 		}
 		else {
-			container.classList.remove("paused");
+			root_container.classList.remove("paused");
 			link.classList.remove("paused");
 		}
 		self.update_header();
@@ -384,7 +384,7 @@ var Requests = function() {
 			}
 		}
 
-		container.classList.remove("warning");
+		root_container.classList.remove("warning");
 		link.classList.remove("warning");
 		header.removeAttribute("href");
 		header.classList.add("no_pointer");
@@ -405,7 +405,7 @@ var Requests = function() {
 
 				if (all_bad) {
 					header.textContent = $l("requests_all_on_cooldown");
-					container.classList.add("warning");
+					root_container.classList.add("warning");
 					link.classList.add("warning");
 				}
 				else if (User.request_position) {
