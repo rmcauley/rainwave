@@ -1,4 +1,4 @@
-div.panel.requests {
+div.panel.songlist_panel {
 	z-index: 101;
 
 	div.scrollblock {
@@ -31,6 +31,7 @@ div.panel.requests {
 
 		&.deleted {
 			opacity: 0.3;
+			z-index: -1;
 		}
 	}
 
@@ -76,7 +77,7 @@ div.panel.requests {
 			opacity: 0;
 		}
 
-		&:hover, &.dragging {
+		&:hover, &.dragging, &.panel_open {
 			@include transform(translateX(-100%));
 
 			ul.request_icons li {

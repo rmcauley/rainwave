@@ -652,7 +652,8 @@ def create_tables():
 			sid					SMALLINT	NOT NULL, \
 			line_wait_start				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 			line_expiry_tune_in			INTEGER		, \
-			line_expiry_election			INTEGER \
+			line_expiry_election			INTEGER , \
+			line_has_had_valid              BOOLEAN DEFAULT FALSE \
 		)")
 	# c.create_idx("r4_request_line", "user_id")		# handled by create_delete_fk
 	c.create_idx("r4_request_line", "sid")

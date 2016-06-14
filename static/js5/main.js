@@ -31,6 +31,10 @@ var RWAudio;
 		API.on("wsthrottle", function(json) {
 			API.onUnsuccessful(json);
 		});
+		// for local development and debugging
+		if (window.location.hostname === "localhost") {
+			API.forceSecure = false;
+		}
 
 		RWAudio = RWAudioConstructor();
 
