@@ -759,6 +759,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		scroll.offset_height = Sizing.list_height;
 		template.list.style.height = scroll.offset_height + "px";
 		if ((num_items_to_display === undefined) && !draw_on_resize) return;
+		if (!self.loaded) return;
 		current_scroll_index = false;
 		self.recalculate();
 		self.recalculate();
