@@ -123,26 +123,38 @@
    "github_repo"                                     : "GitHub",
    "twitter"                                         : "Twitter",
 
-   "__comment__"                 : "Timeline",
+   "__comment__"                 : "Timeline Headers",
 
    "coming_up"                                       : "Nächster Song",
    "vote_now"                                        : "Jetzt abstimmen",
    "now_playing"                                     : "Gerade läuft",
    "election"                                        : "Abstimmung",
    "power_hour"                                      : "Power Hour",
+   
+   "__comment__"                 : "When a Power Hour or DJ Event happens, instead of saying 'NEW MUSIC POWER HOUR' repeatedly",
+   "__comment__"                 : "we just use 'CONTINUED' instead, so the title of the power hour is only displayed once",
+   "__comment__"                 : "at the top of the timeline.  That's what this 'continued' line is for.",
+   "continued"                                       : "Continued",
+
+   "__comment__"                 : "Timeline Song", 
+   
    "vote_submitted"                                  : "Stimme übermittelt",
    "cannot_vote_for_this_now"                        : "Für diesen Song kann gerade nicht abgestimmt werden.",
    "invalid_hotkey_vote"                             : "Ungültige Auswahl, versuche es erneut.",
-   "voting_results_were"                             : "Abstimmungsergebnisse:",
-   "click_here_to_start_voting"                      : "Klicke hier, um für den nächsten Song abzustimmen!",
    "played_ago"                                      : "Vor %(time) gespielt",
    "timeline_art__request_indicator"                 : "Wunsch",
    "timeline_art__your_request_indicator"            : "Du selbst",
-
+   "num_votes"                                       : "%(num_votes) &(num_votes:Stimme/Stimmen)",
+   "vote"                                            : "Abstimmen",
+      "__comment__"                                    : "The above 'Vote' is a verb, not a noun.",
+   "voted"                                           : "Abgestimmt",
+   
     "event_naming__oneup"                             : "%(name) Power Hour",
 
    "__comment__"                 : "Tip Jar",
 
+   "Patreon"                                         : "Patreon",
+   "PayPal"                                          : "PayPal",
    "tip_jar"                                         : "Spendendose",
    "tip_jar_opener"                                  : "Rainwave wird es weiter geben, egal wie viel Geld in der Spendendose ist. Wenn du aber ein paar Münzen hineinwerfen möchtest, dann ist das ganz einfach:",
    "tip_jar_instruction_1"                           : "Überweise mit PayPal den gewünschten Betrag an rmcauley@rainwave.cc in US- oder Kanadischen-Dollar, oder klicke auf den PayPal-Knopf weiter unten.",
@@ -164,14 +176,16 @@
    "ratings_completion_rate"                         : "Bewertungsvollständigkeit",
    "rating_spread"                                   : "Bewertungsverteilung",
    "average_rating_by_station"                       : "Durchschnittliche Bewertung je Sender",
+   "no_ratings"                                      : "Keine Bewertungen",
 
-   "your_mobile_app_qr"                              : "Dein Android-App QR-Code",
-   "manage_your_api_keys"                            : "Verwalte deine API-Keys.",
-   "logout_in_forums"                                : "Bitte gehe in das Forum, um dich abzumelden.",
    "view_your"                                       : "Betrachte deine: ",
    "recent_votes"                                    : "Letzten Abstimmungen",
    "request_history"                                 : "Wunschverlauf",
+   "registered_in_year"                              : "Dabei sei %(year).",
 
+   "top_rated_albums"                                : "Am besten bewertete Alben",
+   "top_requested_albums"                            : "Am häufigsten gewünschte Alben",
+   
    "__comment__"                 : "Other",
 
    "random_relay"                                    : "Zufälliger Relay",
@@ -182,10 +196,12 @@
    "mobile_sync_retrying"                            : "Zeitüberschreitung bei der Verbindung, bitte die Seite neu laden oder später erneut versuchen.",
    "async_error"                                     : "Fehler bei der Datenübertragung. Bitte erneut versuchen oder die Seite neu laden.",
    "deeplink_error"                                  : "Die eingegebene URL konnte nicht verarbeitet werden.",
-
-   "catastrophic_error"                              : "Rainwave ist abgestürzt :(",
-   "submit_javascript_error"                         : "Bitte erstelle einen Fehlerbericht im Forum, damit wir den Fehler beheben können.",
-
+   "hold_to_rate"                                    : "hold to rate",
+   
+   "Loading..."                                      : "Lade...",
+   "Cancel"                                          : "Abbruch",
+   "go"                                              : "Los",
+   
    "__comment__"                 : "Hotkey Mode",
 
    "hotkey_mode"                                     : "1-5 zum Bewerten, A/S/D zum Abstimmen",
@@ -193,42 +209,47 @@
    "not_an_election"                                 : "Keine Abstimmung.",
    "rate_song_mobile_dialog"                         : "Song bewerten",
 
-   "__comment__"                 : "About Window",
-
-   "about_window_header"                             : "Über Rainwave",
-   "staff_list_header"                               : "Mitarbeiter",
-   "relay_sponsors_header"                           : "Relay Sponsoren",
-   "translators_header"                              : "Übersetzer",
-   "icon_attribution"                                : "Icon-Rechteinhaber",
-   "design_by"                                       : "Seitengestaltung",
-   "donation_info_label"                             : "Spendeninformationen",
-   "donation_info_link"                              : "Details",
-   "github_info_label"                               : "Rainwave Open Source Repository",
-   "github_info_link"                                : "Auf GitHub ansehen",
-
    "__comment__"                 : "Playlist View",
 
+      "playlist"                                        : "Playlist",
+      "library"                                         : "Library",
    "filter"                                          : "Tippe irgendwo um zu filtern",
-   "typeanywhere"                                    : "Schreib einfach los!",
-   "clearfilter"                                     : "Filter löschen",
+      "your_album_rating"                               : "You've rated this album %(rating_user).",
    "album_rating_ranked_at_v2"                       : "Wertung von %(rating) durch %(rating_count) Bewertungen, Platz #(rank) der Rangliste.",
    "album_requests_ranked_at"                        : "%(count) &(count:mal/mal) gewünscht, Platz #(rank) der Wunschrangliste.",
    "album_year"                                      : "Veröffentlicht im Jahr %(year).",
-   "song_extradetail_rating"                         : "Bewertung: %(rating) (durch %(rating_count) Nutzer)",
-   "song_extradetail_rating_rank"                    : "Bewertungsranglistenplatz: #(rank)",
-   "song_extradetail_requests"                       : "Gewünscht: %(count) &(count:mal/mal)",
-   "song_extradetail_requests_rank"                  : "Wunschranglistenplatz: #(rank)",
+      "album_rating_detail"                             : "Users have rated this album ",
+      "song_rating_detail"                              : "Users have rated this song ",
+      "rating_detail_numbers"                           : "%(rating). (%(percentile_message))",
+      "rating_percentile_top"                           : "top %(percentile_top)%",
+      "rating_percentile_bottom"                        : "bottom %(percentile)%",
+      "request_percentile_top"                          : "Request popularity: top %(percentile_top)%.",
+      "request_percentile_bottom"                       : "Request popularity: bottom %(percentile)%.",
+      "song_has_no_ratings"                             : "Song has too few ratings to report.",
    "Request"                                         : "Wünsche",
    "Albums"                                          : "Alben",
+   "Songs"                                           : "Songs",
    "Artists"                                         : "Künstler",
+      "Artists_pluralized"                              : "&(count:Artist/Artists)",
    "Users"                                           : "Benutzer",
    "Groups"                                          : "Kategorien",
    "Listeners"                                       : "Zuhörer",
    "songs_from"                                      : "Songs von %(station)",
    "album_on_station"                                : "Auf %(station): %(album)",
    "groups_tab_title"                                : "Kategorien",
+      "RequestLine"                                     : "Request Line",
+      "nobody_in_line"                                  : "Nobody in line.",
    "relevant_categories"                             : "Relevante Kategorien: ",
-
+      "relevant_categories_rollover"                    : "Relevant categories: roll over to list.",
+      "album_all_cooldown"                              : "This album is on cooldown.",
+      "album_has_cooldown"                              : "Some songs are on cooldown.",
+      "new_album"                                       : "New album!",
+      "newish_album"                                    : "Recently added.",
+      "new_songs"                                       : "New songs!",
+      "newish_songs"                                    : "Recently updated.",
+      "search..."                                       : "Search...",
+      "no_songs_on_this_station"                        : "There are no songs on %(station) for this album.",
+   
    "__comment__"                 : "Requests",
 
    "clear_request_queue"                             : "Alle entfernen",
