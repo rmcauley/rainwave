@@ -289,14 +289,14 @@ var Rating = function() {
 		var t = RWTemplates.rating_mobile();
 		var cancelling = false;
 		var remove = function(e) {
-			if (!cancelling && (e.target == touching_song.$t.rating)) {
+			if (!cancelling && touching_song && touching_song.$t && (e.target == touching_song.$t.rating)) {
 				self.do_rating(now_number, touching_song);
 			}
-			else {
+			else if (touching_song) {
 				self.do_rating(null, touching_song);
 			}
 			Fx.remove_element(t.el);
-			if (touching_song.el) {
+			if (touching_song && touching_song.el) {
 				touching_song.el.classList.remove("on_top");
 			}
 			touching_song = false;
