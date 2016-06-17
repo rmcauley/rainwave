@@ -6,7 +6,7 @@ var Menu = function() {
 	var has_calendar;
 
 	var open_station = function(e) {
-		if (RWAudio.isPlaying && !MOBILE) {
+		if (RWAudio && RWAudio.isPlaying && !MOBILE) {
 			e.stopPropagation();
 			e.preventDefault();
 			window.location.href = this._href + "#!/autoplay";
