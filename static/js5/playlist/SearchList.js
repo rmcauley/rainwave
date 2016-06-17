@@ -259,6 +259,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	self.unhide = function(to_reshow) {
+		if (!self.loaded) {
+			return;
+		}
+
 		to_reshow = to_reshow || hidden;
 		if (self.auto_trim) {
 			for (var i in to_reshow) {
