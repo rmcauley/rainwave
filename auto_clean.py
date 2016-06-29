@@ -50,7 +50,7 @@ if __name__ == "__main__":
 		print "Disabled: %s" % row['song_filename']
 
 	for row in reqonly_songs:
-		db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE WHERE song_id = %s", row['song_id'])
+		db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE WHERE song_id = %s", (row['song_id'],))
 		print "Req Only: %s" % row['song_filename']
 
 	print
