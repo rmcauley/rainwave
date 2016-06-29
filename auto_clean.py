@@ -42,7 +42,7 @@ if __name__ == "__main__":
 	for row in remove_songs:
 		fn = row['song_filename'].split(os.sep)[-1]
 		mkdir_p("%s%s%s" % (args.moveto, os.sep, row['song_origin_sid']))
-		shutil.move(row, "%s%s%s%s%s" % (args.moveto, os.sep, row['song_origin_sid'], os.sep, row['song_filename']))
+		shutil.move(row['song_filename'], "%s%s%s%s%s" % (args.moveto, os.sep, row['song_origin_sid'], os.sep, row['song_filename']))
 
 		song = Song.load_from_id(row['song_id'])
 		song.disable()
