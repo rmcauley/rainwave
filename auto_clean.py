@@ -31,6 +31,7 @@ if __name__ == "__main__":
 
 	for row in remove_songs:
 		fn = row['song_filename'].split(os.sep)[-1]
+		os.makedirs(args.moveto + "/" + row['song_origin_sid'])
 		shutil.move(row, args.moveto + "/" + row['song_origin_sid'] + "/" + row['song_filename'])
 
 		song = Song.load_from_id(row['song_id'])
