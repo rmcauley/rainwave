@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
 	for row in remove_songs:
 		fn = row['song_filename'].split(os.sep)[-1]
-		os.makedirs("%s%s%s" % (args.moveto, os.sep, row['song_origin_sid']))
+		mkdir_p("%s%s%s" % (args.moveto, os.sep, row['song_origin_sid']))
 		shutil.move(row, "%s%s%s%s%s" % (args.moveto, os.sep, row['song_origin_sid'], os.sep, row['song_filename']))
 
 		song = Song.load_from_id(row['song_id'])
@@ -52,3 +52,7 @@ if __name__ == "__main__":
 	for row in reqonly_songs:
 		db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE WHERE song_id = %s", row['song_id'])
 		print "Req Only: %s" % row['song_filename']
+
+	print
+	print "Number of songs disabled (this time): %s" % len(remove_songs)
+	print "Number of songs req only (all time) : %s" % len(reqonly_songs)
