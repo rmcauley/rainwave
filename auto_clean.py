@@ -40,13 +40,13 @@ if __name__ == "__main__":
 		reqonly_songs += db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating <= %s AND song_origin_sid = %s AND song_verified = TRUE", (REMOVE_THRESHOLD, REQONLY_STATION))
 
 	for row in remove_songs:
-		fn = row['song_filename'].split(os.sep)[-1]
-		mkdir_p("%s%s%s" % (args.moveto, os.sep, row['song_origin_sid']))
-		shutil.move(row['song_filename'], "%s%s%s%s%s" % (args.moveto, os.sep, row['song_origin_sid'], os.sep, row['song_filename']))
-
 		song = Song.load_from_id(row['song_id'])
-		song.disable()
+		fn = row['song_filename'].split(os.sep)[-1]
+		dn = "%s%s%s%s%s" % (args.moveto, os.sep, row['song_origin_sid'], os.sep, song.albums[0].data['name'])
+		mkdir_p(dn)
+		shutil.move(row['song_filename'], "%s%s%s" % (dn, os.sep, fn))
 
+		song.disable()
 		print "Disabled: %s" % row['song_filename']
 
 	for row in reqonly_songs:
