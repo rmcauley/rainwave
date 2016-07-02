@@ -5,16 +5,41 @@ var R4Notify = function() {
 	self.capable = typeof(Notification) !== "undefined" ? true : false;
 	self.enabled = false;
 	var current_song_id;
+	var notifier;
 
 	BOOTSTRAP.on_init.push(function(template) {
-		Prefs.define("notify", [ false, true ]);
+		Prefs.define("notify", [ true, false ]);
 		if (!self.capable) return;
 		if (MOBILE) return;
 
 		Prefs.add_callback("notify", self.check_permission);
 		self.check_permission();
 		API.add_callback("sched_current", self.notify);
+
+		var ua = navigator.userAgent.toLowerCase();
+		if (ua.indexOf("linux") >= 0) {
+			notifier = linuxNotifier;
+		}
+		else if ((ua.indexOf("windows") >= 0) && (ua.indexOf("gecko") >= 0)) {
+			notifier = windowsFirefoxNotifier;
+		}
+		else {
+			notifier = standardNotifier;
+		}
+
 	});
+
+	var standardNotifier = function(song, artists, art) {
+		return new Notification(song.title, { body: song.albums[0].name + "\n" + artists, tag: "current_song", icon: art });
+	};
+
+	var windowsFirefoxNotifier = function(song, artists, art) {
+		return new Notification($l("now_playing"), { body: song.title + "\n" + song.albums[0].name + "\n" + artists, tag: "current_song", icon: art });
+	};
+
+	var linuxNotifier = function(song, artists, art) {
+		return new Notification(song.title, { body: song.albums[0].name + "\n" + artists, tag: "current_song" });
+	};
 
 	self.check_permission = function() {
 		if (!self.capable) return;
@@ -47,9 +72,9 @@ var R4Notify = function() {
 			if (i > 0) artists += ", ";
 			artists += sched_current.songs[0].artists[i].name;
 		}
-		var n = new Notification(sched_current.songs[0].title, { body: sched_current.songs[0].albums[0].name + "\n" + artists, tag: "current_song", icon: art });
+		var n = notifier(sched_current.songs[0], artists, art);
 		n.onshow = function () {
-  			setTimeout(n.close.bind(n), 5000);
+  			setTimeout(n.close.bind(n), 7000);
 		};
 	};
 
