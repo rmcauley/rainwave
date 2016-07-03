@@ -1,6 +1,13 @@
 {{#each songs}}
 	<div class="{{ ^'row ' + (_c.cool ? 'cool' : '') + ' ' + (_c.fave ? 'song_fave_highlight' : '') + ' ' + (_c.requestable ? 'requestable' : '') + ' ' + (_c.is_new ? 'is_new' : (_c.is_newish ? 'is_newish' : '')) }}" bind="row">
 		{{#if ^!MOBILE}}
+			{{#if ^Sizing.simple }}
+				{{#if url }}
+					<a class="url" href="{{ url }}" target="_blank"></a>
+				{{else}}
+					<div class="fake_url"></div>
+				{{/if}}
+			{{/if}}
 			{{#if ^!Sizing.simple }}
 				<div class="cool_info">
 					{{ ^Formatting.cooldown_glance(_c.cool_end) }}
@@ -29,10 +36,12 @@
 			</div>
 		{{/if}}
 		{{#if ^!MOBILE }}
-			{{#if url }}
-				<a class="url" href="{{ url }}" target="_blank"></a>
-			{{else}}
-				<div class="fake_url"></div>
+			{{#if ^!Sizing.simple }}
+				{{#if url }}
+					<a class="url" href="{{ url }}" target="_blank"></a>
+				{{else}}
+					<div class="fake_url"></div>
+				{{/if}}
 			{{/if}}
 			<div class="detail_icon" bind="detail_icon">
 				<img src="/static/images4/info.png" />
