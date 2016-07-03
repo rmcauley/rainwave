@@ -177,7 +177,7 @@ div.row {
 		}
 	}
 
-	div.rating_clear, div.fake_url, div.cool_info, div.artists, div.rating_site, div.length, a.url, div.request_count, div.album_name {
+	div.rating_clear, div.cool_info, div.artists, div.rating_site, div.length, div.request_count, div.album_name {
 		margin-left: 10px;
 		float: right;
 	}
@@ -195,12 +195,15 @@ div.row {
 	}
 
 	a.url, div.fake_url {
+		float: left;
+		margin-right: 10px;
 		display: inline-block;
 		width: 14px;
-		height: 14px;
+		height: 18px;
 	}
 
 	a.url {
+		background-position: 0 3px;
 		background-repeat: no-repeat;
 		background-size: 14px 14px;
 		background-image: url("/static/images4/link_external.svg");
