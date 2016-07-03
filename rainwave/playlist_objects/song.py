@@ -66,7 +66,7 @@ class Song(object):
 			s._assign_from_dict(d)
 
 			if 'album_id' in d and d['album_id']:
-				s.albums = [ Album.load_from_id_sid(d['album_id'], sid)) ]
+				s.albums = [ Album.load_from_id_sid(d['album_id'], sid) ]
 			s.artists = Artist.load_list_from_song_id(song_id)
 			s.groups = SongGroup.load_list_from_song_id(song_id, sid)
 		except Exception as e:
