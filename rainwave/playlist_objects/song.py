@@ -50,6 +50,7 @@ class Song(object):
 			d = db.c.fetch_row("SELECT * FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_id = %s AND r4_song_sid.sid = %s", (song_id, sid))
 		else:
 			d = db.c.fetch_row("SELECT * FROM r4_songs WHERE song_id = %s", (song_id,))
+			sid = d['song_origin_sid']
 		if not d:
 			raise SongNonExistent
 
