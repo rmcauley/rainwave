@@ -24,34 +24,40 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Rainwave auto-song cleanup.  WARNING: This script hardcoded for Rainwave's setup!  Please edit the code before using!")
 	parser.add_argument("--config", default=None, required=True)
 	parser.add_argument("--moveto", default=None, required=True)
+	parser.add_argument("--dry", default=True, required=False)
 	args = parser.parse_args()
 	config.load(args.config)
 	db.connect()
 	cache.connect()
 
 	REMOVE_THRESHOLD = 3.0
+	REQUIRED_RATING_COUNT = 20
 	REQONLY_THRESHOLD = 3.3
 	REQONLY_STATION = 2
 
-	remove_songs = db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating <= %s AND song_origin_sid != %s AND song_verified = TRUE", (REMOVE_THRESHOLD, REQONLY_STATION))
-	reqonly_songs = db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating > %s AND song_rating <= %s AND song_verified = TRUE", (REMOVE_THRESHOLD, REQONLY_THRESHOLD))
+	remove_songs = db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating <= %s AND song_origin_sid != %s AND song_verified = TRUE AND song_rating_count >= %s", (REMOVE_THRESHOLD, REQONLY_STATION, REQUIRED_RATING_COUNT))
+	reqonly_songs = db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating > %s AND song_rating <= %s AND song_verified = TRUE AND song_rating_count >= %s", (REMOVE_THRESHOLD, REQONLY_THRESHOLD, REQUIRED_RATING_COUNT))
 
 	if REQONLY_STATION:
-		reqonly_songs += db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating <= %s AND song_origin_sid = %s AND song_verified = TRUE", (REMOVE_THRESHOLD, REQONLY_STATION))
+		reqonly_songs += db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating <= %s AND song_origin_sid = %s AND song_verified = TRUE AND song_rating_count >= %s", (REMOVE_THRESHOLD, REQONLY_STATION, REQUIRED_RATING_COUNT))
 
 	for row in remove_songs:
 		song = Song.load_from_id(row['song_id'])
 		fn = row['song_filename'].split(os.sep)[-1]
 		dn = "%s%s%s%s%s" % (args.moveto, os.sep, row['song_origin_sid'], os.sep, song.albums[0].data['name'])
-		mkdir_p(dn)
-		shutil.move(row['song_filename'], "%s%s%s" % (dn, os.sep, fn))
 
-		song.disable()
+		if not args.dry:
+			mkdir_p(dn)
+			shutil.move(row['song_filename'], "%s%s%s" % (dn, os.sep, fn))
+
+			song.disable()
+
 		print "Disabled: %s" % row['song_filename']
 
 	for row in reqonly_songs:
-		db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE WHERE song_id = %s", (row['song_id'],))
-		db.c.update("UPDATE r4_songs SET song_request_count = 0 WHERE song_id = %s", (row['song_id'],))
+		if not args.dry:
+			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE WHERE song_id = %s", (row['song_id'],))
+			db.c.update("UPDATE r4_songs SET song_request_count = 0 WHERE song_id = %s", (row['song_id'],))
 		print "Req Only: %s" % row['song_filename']
 
 	print
