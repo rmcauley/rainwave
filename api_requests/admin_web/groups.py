@@ -139,7 +139,7 @@ class GroupEditGroupList(api.web.HTMLRequest):
 				"SELECT COUNT(r4_song_group.song_id) AS num_songs, r4_groups.group_id AS id, group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time "
 				"FROM r4_groups "
 					"JOIN r4_song_group USING (group_id) "
-					"LEFT JOIN r4_songs ON (r4_song_group.song_id = r4_songs.song_id AND song_verified = TRUE) "
+					"JOIN r4_songs ON (r4_song_group.song_id = r4_songs.song_id AND song_verified = TRUE) "
 				"GROUP BY r4_groups.group_id, group_name, group_elec_block, group_cool_time "
 				"ORDER BY group_name",
 				(self.sid,))
@@ -167,7 +167,7 @@ class GroupEditSongList(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Song List"))
 		self.write("<h2>%s Songs</h2>" % (group.data['name']))
 		self.write("<table>")
-		for row in db.c.fetch_all("SELECT r4_songs.song_id AS id, song_title AS title, album_name, group_is_tag FROM r4_song_group JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) WHERE group_id = %s ORDER BY group_is_tag, album_name, title", (group.id,)):
+		for row in db.c.fetch_all("SELECT r4_songs.song_id AS id, song_title AS title, album_name, group_is_tag FROM r4_song_group JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) WHERE group_id = %s AND song_verified = TRUE ORDER BY group_is_tag, album_name, title", (group.id,)):
 			self.write("<tr><td>%s</th><td>%s</td><td>" % (row['id'], row['album_name']))
 			self.write("</td><td>%s</td><td>" % row['title'])
 			if not row['group_is_tag']:
