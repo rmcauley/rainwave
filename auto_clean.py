@@ -8,6 +8,7 @@ import errno
 from libs import config
 from libs import db
 from libs import cache
+from libs import log
 
 from rainwave.playlist_objects.song import Song
 
@@ -27,6 +28,8 @@ if __name__ == "__main__":
 	parser.add_argument("--dry", default=True, required=False)
 	args = parser.parse_args()
 	config.load(args.config)
+	log_file = "%s/rw_auto_clean.log" % (config.get_directory("log_dir"),)
+	log.init(log_file, "print")
 	db.connect()
 	cache.connect()
 
