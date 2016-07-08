@@ -38,11 +38,11 @@ if __name__ == "__main__":
 	REQONLY_THRESHOLD = 3.3
 	REQONLY_STATION = 2
 
-	remove_songs = db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating <= %s AND song_origin_sid != %s AND song_verified = TRUE AND song_rating_count >= %s", (REMOVE_THRESHOLD, REQONLY_STATION, REQUIRED_RATING_COUNT))
-	reqonly_songs = db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating > %s AND song_rating <= %s AND song_verified = TRUE AND song_rating_count >= %s", (REMOVE_THRESHOLD, REQONLY_THRESHOLD, REQUIRED_RATING_COUNT))
+	remove_songs = db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating <= %s AND song_origin_sid != %s AND song_origin_sid != 0 AND song_verified = TRUE AND song_rating_count >= %s", (REMOVE_THRESHOLD, REQONLY_STATION, REQUIRED_RATING_COUNT))
+	reqonly_songs = db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating > %s AND song_rating <= %s AND song_origin_sid != 0 AND song_verified = TRUE AND song_rating_count >= %s", (REMOVE_THRESHOLD, REQONLY_THRESHOLD, REQUIRED_RATING_COUNT))
 
 	if REQONLY_STATION:
-		reqonly_songs += db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating <= %s AND song_origin_sid = %s AND song_verified = TRUE AND song_rating_count >= %s", (REMOVE_THRESHOLD, REQONLY_STATION, REQUIRED_RATING_COUNT))
+		reqonly_songs += db.c.fetch_all("SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating <= %s AND song_origin_sid = %s AND song_origin_sid != 0 AND song_verified = TRUE AND song_rating_count >= %s", (REMOVE_THRESHOLD, REQONLY_STATION, REQUIRED_RATING_COUNT))
 
 	for row in remove_songs:
 		song = Song.load_from_id(row['song_id'])
