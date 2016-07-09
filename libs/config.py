@@ -40,6 +40,9 @@ def get_config_file(testmode = False):
 		return ("etc/rainwave.conf")
 	elif os.path.isfile("/etc/rainwave.conf"):
 		return ("/etc/rainwave.conf")
+	elif os.name == "nt" and os.path.exists("C:\\Users\\%s\\Documents\\GitHub\\rainwave\\etc\\%s.conf" % (getpass.getuser(), getpass.getuser())):
+		# Yes, this is absolutely a 100% convenience for the primary dev of Rainwave who runs Windows :P
+		return ("C:\\Users\\%s\\Documents\\GitHub\\rainwave\\etc\\%s.conf" % (getpass.getuser(), getpass.getuser()))
 	elif testmode:
 		raise RuntimeError("Could not find a configuration file at etc/rainwave_test.conf.")
 	else:
