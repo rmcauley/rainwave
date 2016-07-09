@@ -290,15 +290,21 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 	// });
 
 	var on_air_start, socket;
-	var webcast = audioCtx.createWebcastSource(4096, 2);
-	gainNode.connect(webcast);
+	var webcast;
+
+	var webcast_init = function() {
+		webcast = audioCtx.createWebcastSource(4096, 2);
+		gainNode.connect(webcast);
+	};
 
 	var webcast_on_close = function() {
+		gainNode.disconnect(webcast);
 		on_air_start = null;
 		t.dji_on_air.classList.remove("active");
 		t.dji_on_air.textContent = $l("dj_on_air", { "mictime": "0:00" });
 		t.btn_cut.disabled = true;
 		t.btn_on_air.disabled = false;
+		webcast = null;
 	};
 
 	var socket_on_error = function() {
@@ -318,6 +324,8 @@ BOOTSTRAP.on_init.push(function DJPanel(root_template) {
 	};
 
 	t.btn_on_air.addEventListener("click", function() {
+		webcast_init();
+
 		var encoder = new Webcast.Encoder.Mp3({
 			channels: 2,
 			samplerate: audioCtx.sampleRate,
