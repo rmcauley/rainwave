@@ -33,7 +33,7 @@
 </div>
 <div class="dj_controls" style="overflow: hidden;">
 	<span>{{ $l("dj_stream_name") }}:</span>
-	<input type="text" bind="stream_name" style="margin: 0 1em; width: 200px;" placeholder="Enter Title" />
+	<input type="text" bind="stream_name" style="margin: 0 1em; width: 200px;" placeholder="Enter Title" stop />
 	<button bind="save_stream_name">{{ $l("dj_save_name") }}</button>
 </div>
 <div class="dj_controls" style="overflow: hidden;">

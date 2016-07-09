@@ -156,7 +156,7 @@ var KeyHandler = function() {
 		if (evt.target) targ = evt.target;
 		else if (evt.srcElement) targ = evt.srcElement;
 		if (targ.nodeType == 3) targ = targ.parentNode;  // defeat Safari bug
-		//if (targ.tagName.toLowerCase() == "input") return true;  // do nothing for input fields
+		if ((targ.tagName.toLowerCase() == "input") && targ.hasAttribute("stop")) return true;
 
 		if (self.is_ignorable(evt)) {
 			if (evt.keyCode == 27) {
