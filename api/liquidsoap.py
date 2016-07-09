@@ -1,25 +1,34 @@
 import socket
 import os, os.path
 
-from api.exceptions import APIException
 from libs import config
 
-def _send_command(sid, cmd):
-	if not config.has_station(sid, "liquidsoap_socket_path"):
-		return ""
-	cmd += "\n"
-	socket_path = config.get_station(sid, "liquidsoap_socket_path")
-	if os.path.exists(socket_path):
+def _get_socket(sid):
+	client = None
+	if hasattr(socket,"AF_UNIX") and config.has_station(sid, "liquidsoap_socket_path") and os.path.exists(config.get_station(sid, "liquidsoap_socket_path")):
 		client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-		client.connect(socket_path)
-		client.send(cmd)
-		to_ret = client.recv(1024)
-		client.send("exit")
-		client.close()
-		to_ret = to_ret.strip().strip("END").strip()
-		return to_ret
-	else:
-		raise APIException("internal_error", "Could not connect to Liquidsoap. (station %s)" % sid)
+		client.connect(config.get_station(sid, "liquidsoap_socket_path"))
+	elif config.has_station(sid, "liquidsoap_telnet_host"):
+		client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    	client.settimeout(2)
+    	client.connect((config.get_station(sid, "liquidsoap_telnet_host"), config.get_station(sid, "liquidsoap_telnet_port")))
+	return client
+
+def _send_command(sid, cmd):
+	if not config.has_station(sid, "liquidsoap_socket_path") and not config.has_station(sid, "liquidsoap_telnet_host"):
+		return ""
+
+	client = _get_socket(sid)
+	if not client:
+		return ""
+
+	cmd += "\n"
+	client.send(cmd)
+	to_ret = client.recv(1024)
+	client.send("exit")
+	client.close()
+	to_ret = to_ret.strip().strip("END").strip()
+	return to_ret
 
 # def pause(sid):
 # 	return _send_command(sid, "var.set paused = true")
