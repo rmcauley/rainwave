@@ -86,6 +86,8 @@
    "qr_code"                                         : "QR Code",
    "create_api_key"                                  : "Create API Key",
    "your_numeric_user_id"                            : "Your numeric user ID",
+   "app_would_like_to"                               : "This App Would Like To:",
+   "allow_api_auth"                                  : "Sounds Good",
 
    "__comment__"                 : "Menu",
 
@@ -226,6 +228,7 @@
    "request_percentile_top"                          : "Request popularity: top %(percentile_top)%.",
    "request_percentile_bottom"                       : "Request popularity: bottom %(percentile)%.",
    "song_has_no_ratings"                             : "Song has too few ratings to report.",
+   "Rate"                                            : "Rate",
    "Request"                                         : "Request",
    "Albums"                                          : "Albums",
    "Songs"                                           : "Songs",
