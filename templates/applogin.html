@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.code }}">
+<head>
+	<title>Rainwave {{ locale.translate("login") }}</title>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+	<meta name="msapplication-TileColor" content="#1978B7">
+	<meta name="msapplication-TileImage" content="/static/images4/logo_white.png">
+
+	<link rel="shortcut icon" href="/static/favicon.ico" />
+	<link rel="icon" sizes="16x16 32x32 48x48 256x256" href="/static/favicon.ico" />
+
+	<meta name="theme-color" content="#1978B7" />
+	<meta name="msapplication-navbutton-color" content="#1978B7" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="#1978B7" />
+
+	<style>
+		html, body {
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+			margin: 0;
+			padding: 0;
+			background: #000;
+			color: #FFF;
+		}
+
+		header {
+			display: inline-block;
+			margin: 0 auto;
+		}
+
+		h1 {
+			margin-top: 5px;
+			padding: 5px 0;
+			text-align: center;
+			background: #192D67;
+			border-top: solid 1px #777;
+			border-bottom: solid 1px #777;
+		}
+
+		h1 img {
+			width: 64px;
+			vertical-align: middle;
+		}
+
+		h3 {
+			text-align: center;
+		}
+
+		ul {
+			margin: 25px 0;
+			padding: 0;
+			text-align: center;
+			list-style: none;
+		}
+
+		li {
+			padding: 5px 0;
+		}
+
+		li:nth-child(even) {
+			background: #2A2A2A;
+		}
+
+		li:nth-child(odd) {
+			background: #202020;
+		}
+
+		footer {
+			display: block;
+			margin-top: 60px;
+			text-align: center;
+		}
+
+		button {
+			background: #1f95e5;
+			color: #FFF;
+			font-weight: bold;
+			font-size: larger;
+			border: none;
+			padding: 10px;
+			cursor: pointer;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>
+		<img src="/static/images4/android/128.png" />
+		Rainwave
+	</h1>
+
+	<h3>{{ locale.translate("app_would_like_to") }}</h3>
+
+	<ul>
+		<li>{{ locale.translate("vote") }}</li>
+		<li>{{ locale.translate("Rate") }}</li>
+		<li>{{ locale.translate("Request") }}</li>
+	</ul>
+
+	<footer>
+		<a href="{{ link_url }}">
+			<button>{{ locale.translate("allow_api_auth") }}</button>
+		</a>
+	</footer>
+</body>
+</html>
