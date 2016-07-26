@@ -48,14 +48,19 @@
 		}
 
 		ul {
+
 			margin: 25px 0;
 			padding: 0;
-			text-align: center;
 			list-style: none;
 		}
 
 		li {
-			padding: 5px 0;
+			padding: 5px 5px 5px 10px;
+		}
+
+		li::before {
+			content: "•";
+			margin-right: 10px;
 		}
 
 		li:nth-child(even) {
@@ -80,6 +85,12 @@
 			border: none;
 			padding: 10px;
 			cursor: pointer;
+		}
+
+		button:active {
+			transform: translate(2px,2px);
+			color: #EEE;
+			background: #1055d5;
 		}
 	</style>
 </head>
