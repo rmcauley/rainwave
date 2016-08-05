@@ -92,10 +92,10 @@ var SearchPanel = function() {
 			return;
 		}
 		search_text = input.value.trim();
-		var raw_re = Formatting.make_searchable_string(search_text).split("").join("[^\w\s]?");
-		search_regex = new RegExp("^(.*?)(" + raw_re + ")(.*)$", "i");
-		raw_re = Formatting.make_searchable_string(search_text).split("").join("[^\w\s]*?");
-		search_regex_greedy = new RegExp("^(.*?)(" + raw_re + ")(.*)$", "i");
+		var raw_re = Formatting.make_searchable_string(search_text).split("").join("{1}[^\w\s]?");
+		search_regex = new RegExp("^(.*?)(" + raw_re + ")", "i");
+		raw_re = Formatting.make_searchable_string(search_text).split("").join("{1}[^\w\s]*?");
+		search_regex_greedy = new RegExp("^(.*?)(" + raw_re + ")", "i");
 		API.async_get("search", { "search": input.value }, search_result, search_error);
 	};
 
