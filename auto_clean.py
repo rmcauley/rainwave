@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
 	for row in reqonly_songs:
 		if args.execute:
-			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE AND song_request_only_end = NULL WHERE song_id = %s", (row['song_id'],))
+			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = NULL WHERE song_id = %s", (row['song_id'],))
 			db.c.update("UPDATE r4_songs SET song_request_count = 0 WHERE song_id = %s", (row['song_id'],))
 		print "Req Only: %s" % row['song_filename']
 
