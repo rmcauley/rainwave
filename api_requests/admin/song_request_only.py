@@ -12,7 +12,7 @@ class SetSongRequestOnly(api.web.APIHandler):
 
 	def post(self):
 		if self.get_argument("request_only"):
-			db.c.update("UPDATE r4_song_sid SET song_request_only_end = NULL WHERE song_id = %s AND sid = %s", (self.get_argument("song_id"), self.sid))
+			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE AND song_request_only_end = NULL WHERE song_id = %s AND sid = %s", (self.get_argument("song_id"), self.sid))
 			self.append(self.return_name, { "success": True, "text": "Song ID %s is now request only." % self.get_argument("song_id") })
 		else:
 			db.c.update("UPDATE r4_song_sid SET song_request_only_end = 0 WHERE song_id = %s AND sid = %s", (self.get_argument("song_id"), self.sid))
