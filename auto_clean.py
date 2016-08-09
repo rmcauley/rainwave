@@ -25,7 +25,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Rainwave auto-song cleanup.  WARNING: This script hardcoded for Rainwave's setup!  Please edit the code before using!")
 	parser.add_argument("--config", default=None, required=True)
 	parser.add_argument("--moveto", default=None, required=True)
-	parser.add_argument("--dry", default=True, required=False)
+	parser.add_argument("--execute", required=False, action="store_true")
 	args = parser.parse_args()
 	config.load(args.config)
 	log_file = "%s/rw_auto_clean.log" % (config.get_directory("log_dir"),)
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 		fn = row['song_filename'].split(os.sep)[-1]
 		dn = "%s%s%s%s%s" % (args.moveto, os.sep, row['song_origin_sid'], os.sep, song.albums[0].data['name'])
 
-		if not args.dry:
+		if args.execute:
 			mkdir_p(dn)
 			shutil.move(row['song_filename'], "%s%s%s" % (dn, os.sep, fn))
 
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 		print "Disabled: %s" % row['song_filename']
 
 	for row in reqonly_songs:
-		if not args.dry:
+		if args.execute:
 			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE AND song_request_only_end = NULL WHERE song_id = %s", (row['song_id'],))
 			db.c.update("UPDATE r4_songs SET song_request_count = 0 WHERE song_id = %s", (row['song_id'],))
 		print "Req Only: %s" % row['song_filename']
