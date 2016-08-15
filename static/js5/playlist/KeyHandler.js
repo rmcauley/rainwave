@@ -22,6 +22,26 @@ var KeyHandler = function() {
 			"vote1_1": [ "x" ],
 			"vote1_2": [ "c" ],
 			"fave": [ "f" ]
+		},
+		"DVOR": {
+			"activate": [ "`", "W", "-", "\\" ],
+			"play": [ " " ],
+			"rate10": [ "1" ],
+			"rate15": [ "'" ],
+			"rate20": [ "2" ],
+			"rate25": [ "," ],
+			"rate30": [ "3" ],
+			"rate35": [ "." ],
+			"rate40": [ "4" ],
+			"rate45": [ "p" ],
+			"rate50": [ "5" ],
+			"vote0_0": [ "a" ],
+			"vote0_1": [ "o" ],
+			"vote0_2": [ "e" ],
+			"vote1_0": [ ";", "f" ],
+			"vote1_1": [ "q" ],
+			"vote1_2": [ "j" ],
+			"fave": [ "u" ]
 		}
 	};
 	keymaps.AZER = JSON.parse(JSON.stringify(keymaps.QWER));
@@ -32,7 +52,7 @@ var KeyHandler = function() {
 	var keymap = keymaps.QWER;
 
 	BOOTSTRAP.on_draw.push(function(template) {
-		Prefs.define("hkm", [ "QWER", "AZER" ]);
+		Prefs.define("hkm", [ "QWER", "AZER", "DVOR" ]);
 		if (Prefs.get("pwr")) {
 			var mapchange = function(nv) {
 				if (!nv || !keymaps[nv]) {
