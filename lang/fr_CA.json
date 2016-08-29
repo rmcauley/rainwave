@@ -145,7 +145,7 @@
    "timeline_art__request_indicator"                 : "Requête",
    "timeline_art__your_request_indicator"            : "Votre requête",
    "num_votes"                                       : "%(num_votes) &(num_votes:Vote/Votes)",
-   "vote"                                            : "Voter"
+   "vote"                                            : "Voter",
       "__comment__"                                    : "The above 'Vote' is a verb, not a noun.",
    "voted"                                           : "Voté",
 
