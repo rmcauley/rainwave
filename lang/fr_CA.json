@@ -7,7 +7,7 @@
 
    "__comment__"                 : "This shows up after 'Rainwave' on Google results.  e.g. 'Rainwave Video Game Music Radio: Covers'",
 
-   "page_title_on_google"                            : "Radio de musique de jeux vidéos",
+   "page_title_on_google"                            : "Radio de musique de jeux vidéo",
 
    "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
 
@@ -284,15 +284,15 @@
 
    "__comment__"                 : "Station Descriptions (long format, used for Google page descriptions)",
 
-   "station_description_id_1"                        : "Radio de musique originale provenant de jeux vidéos. Votez pour les chansons que vous voulez entendre!",
-   "station_description_id_2"                        : "Radio de la communauté OverClocked ReMix, le meilleur en matière de remixes de musique de jeux vidéos. Votez pour votre remix favoris!",
-   "station_description_id_3"                        : "Radio de remixes officiels ou fait par des fans de jeux vidéos, diffusé 24/7.  Votez pour votre artiste préféré!",
-   "station_description_id_4"                        : "Radio de musique chiptunes originale et de jeux vidéos, diffusé 24/7. Votez pour les chansons que vous voulez entendre!",
-   "station_description_id_5"                        : "Radio de musique de jeux vidéos originale ou remixé! Votez pour les chansons que vous voulez entendre!",
+   "station_description_id_1"                        : "Radio de musique originale provenant de jeux vidéo. Votez pour les chansons que vous voulez entendre!",
+   "station_description_id_2"                        : "Radio de la communauté OverClocked ReMix, le meilleur en matière de remixes de musique de jeux vidéo. Votez pour votre remix favoris!",
+   "station_description_id_3"                        : "Radio de remixes officiels ou fait par des fans de jeux vidéo, diffusé 24/7.  Votez pour votre artiste préféré!",
+   "station_description_id_4"                        : "Radio de musique chiptunes originale et de jeux vidéo, diffusé 24/7. Votez pour les chansons que vous voulez entendre!",
+   "station_description_id_5"                        : "Radio de musique de jeux vidéo originale ou remixé! Votez pour les chansons que vous voulez entendre!",
 
    "__comment__"                 : "Station Descriptions For The Menu (short messages)",
 
-   "station_menu_description_id_1"                   : "Musique tout droit sorti des jeux vidéos.",
+   "station_menu_description_id_1"                   : "Musique tout droit sorti des jeux vidéo.",
    "station_menu_description_id_2"                   : "OverClocked ReMixes et leurs albums.",
    "station_menu_description_id_3"                   : "Remixes officiels ou fait par des fans.",
    "station_menu_description_id_4"                   : "Musique 8-bit, provenant de jeux et plus.",
