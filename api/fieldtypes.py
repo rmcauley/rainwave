@@ -167,7 +167,7 @@ def valid_relay(s, request = None):
 	if not s:
 		return None
 	for name, value in config.get("relays").iteritems():
-		if value['ip_address'] == s:
+		if value['ip_address'] == s or (value.get('ip_address6') and value.get('ip_address6') == s):
 			return name
 	return None
 
