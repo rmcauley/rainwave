@@ -124,14 +124,14 @@ class User(object):
 
 	def _auth_anon_user(self, api_key, bypass = False):
 		if not bypass:
-			auth_against = cache.get("ip_%s_api_key" % self.ip_address)
+			auth_against = cache.get("api_key_ip_%s" % api_key)
 			if not auth_against:
-				auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (self.ip_address,))
-				if not auth_against:
+				auth_against = db.c.fetch_var("SELECT api_ip FROM r4_api_keys WHERE api_key = %s AND user_id = 1", (self.api_key,))
+				if not auth_against or not auth_against == self.ip_address:
 					# log.debug("user", "Anonymous user key %s not found." % api_key)
 					return
-				cache.set("ip_%s_api_key" % self.ip_address, auth_against)
-			if auth_against != api_key:
+				cache.set("api_key_ip_%s" % api_key, auth_against)
+			if auth_against != self.ip_address:
 				# log.debug("user", "Anonymous user key %s does not match key %s." % (api_key, auth_against))
 				return
 		self.authorized = True
