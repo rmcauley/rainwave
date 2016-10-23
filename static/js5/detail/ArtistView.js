@@ -1,3 +1,9 @@
+var UnavailableOnThisStationPopup = function() {
+	ErrorHandler.tooltip_error({
+		"text": $l("song_on_other_station", { "station": $l("station_name_" + User.sid) })
+	});
+};
+
 var ArtistView = function(json) {
 	"use strict";
 	var order = [ 1, 4, 2, 3 ];
@@ -42,6 +48,8 @@ var ArtistView = function(json) {
 			Rating.register(albums[i].songs[j]);
 			if (albums[i].songs[j].requestable) {
 				Requests.make_clickable(albums[i].songs[j].$t.title, albums[i].songs[j].id);
+			} else {
+				albums[i].songs[j].$t.title.addEventListener("click", UnavailableOnThisStationPopup);
 			}
 			SongsTableDetail(albums[i].songs[j], ((i == albums.length - 1) && (j > albums[i].songs.length - 4)), albums[i].sid);
 		}

@@ -122,6 +122,14 @@ div.row {
 	background: $row_bkg;
 	@include transition-wtime(300ms, width, background-color, border-bottom-color, transform);
 
+	&.unrequestable {
+		display: none;
+
+		body.normal & {
+			display: block;
+		}
+	}
+
 	div.fave {
 		float: left;
 	}
@@ -260,6 +268,15 @@ div.row {
 
 	&.requestable div.title {
 		cursor: pointer;
+	}
+
+	&.unrequestable div.title {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	&.unrequestable:hover div.title {
+		opacity: 1.0;
 	}
 
 	div.artists, div.album_name {
