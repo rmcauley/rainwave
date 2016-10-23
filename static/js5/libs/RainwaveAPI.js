@@ -6,7 +6,7 @@ var RainwaveAPI = function() {
 	var self = {
 		ok: false,
 		isSlow: false,
-		debug: false,
+		debug: true,
 		throwErrorsOnThrottle: true,
 		forceSecure: true
 	};
@@ -328,11 +328,13 @@ var RainwaveAPI = function() {
 			asyncRequest.drawStart = new Date();
 		}
 
-		if (("sync_result" in json) && (json.sync_result.tl_key == "station_offline")) {
-			self.onError(json.sync_result);
-		}
-		else {
-			self.onErrorRemove("station_offline");
+		if ("sync_result" in json) {
+			if (json.sync_result.tl_key == "station_offline") {
+				self.onError(json.sync_result);
+			}
+			else {
+				self.onErrorRemove("station_offline");
+			}
 		}
 
 		performCallbacks(json);
