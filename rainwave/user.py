@@ -3,6 +3,7 @@ import re
 import random
 import string
 import urllib2
+import unicodedata
 
 from libs import log
 from libs import cache
@@ -124,15 +125,16 @@ class User(object):
 
 	def _auth_anon_user(self, api_key, bypass = False):
 		if not bypass:
-			auth_against = cache.get("api_key_ip_%s" % api_key)
+			cache_key = unicodedata.normalize('NFKD', u"api_key_ip_%s" % api_key).encode('ascii', 'ignore')
+			auth_against = cache.get(cache_key)
 			if not auth_against:
 				auth_against = db.c.fetch_var("SELECT api_ip FROM r4_api_keys WHERE api_key = %s AND user_id = 1", (self.api_key,))
 				if not auth_against or not auth_against == self.ip_address:
-					# log.debug("user", "Anonymous user key %s not found." % api_key)
+					log.debug("user", "Anonymous user key %s not found." % api_key)
 					return
-				cache.set("api_key_ip_%s" % api_key, auth_against)
+				cache.set(cache_key, auth_against)
 			if auth_against != self.ip_address:
-				# log.debug("user", "Anonymous user key %s does not match key %s." % (api_key, auth_against))
+				log.debug("user", "Anonymous user key %s does not match key %s." % (api_key, auth_against))
 				return
 		self.authorized = True
 
