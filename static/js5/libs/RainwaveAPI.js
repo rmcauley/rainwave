@@ -13,7 +13,7 @@ var RainwaveAPI = function() {
 
 	var _sid, _userID, _apiKey, _host;
 	var userIsDJ, currentScheduleID, isOK, isOKTimer, hidden, visibilityChange, isHidden, pingInterval;
-	var socket, socketStaysClosed, socketIsBusy;
+	var socket, socketStaysClosed, socketIsBusy, socketNoops, socketOpped;
 	var requestID = 0;
 	var requestQueue = [];
 	var sentRequests = [];
@@ -39,6 +39,8 @@ var RainwaveAPI = function() {
 		self.on("wsok", onSocketOK);
 		self.on("wserror", onSocketFailure);
 		self.on("ping", onPing);
+
+		socketNoops = 0;
 
 		if (data) {
 			userIsDJ = data.user && data.user.dj;
@@ -86,6 +88,7 @@ var RainwaveAPI = function() {
 		socket = new WebSocket(wshost + "/api4/websocket/" + _sid);
 		socket.addEventListener("open", function() {
 			if (self.debug) console.log("Socket open.");
+			socketOpped = false;
 			try {
 				socket.send(JSON.stringify({
 					action: "auth",
@@ -144,6 +147,12 @@ var RainwaveAPI = function() {
 			return;
 		}
 		if (self.debug) console.log("Socket was closed.");
+		if (!socketOpped) {
+			socketNoops += 1;
+			if (socketNoops >= 5) {
+				onSocketError();
+			}
+		}
 		setTimeout(initSocket, 500);
 	};
 
@@ -260,6 +269,8 @@ var RainwaveAPI = function() {
 	};
 
 	var onMessage = function(message) {
+		socketOpped = true;
+		socketNoops = 0;
 		self.onErrorRemove("sync_retrying");
 		if (isOKTimer) {
 			clearTimeout(isOKTimer);
