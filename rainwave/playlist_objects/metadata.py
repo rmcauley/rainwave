@@ -87,6 +87,15 @@ class AssociatedMetadata(object):
 		self.data = {}
 		self.data['name'] = None
 
+	def __str__(self):
+		return self.data['name']
+
+	def __unicode__(self):
+		return self.data['name']
+
+	def __repr__(self):
+		return self.data['name']
+
 	def _assign_from_dict(self, d):
 		self.id = d["id"]
 		self.data['name'] = d["name"]

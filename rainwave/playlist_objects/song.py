@@ -1,5 +1,6 @@
 import os
 import subprocess
+import copy
 try:
 	import ujson as json
 except ImportError:
@@ -27,6 +28,17 @@ _mp3gain_path = filetools.which("mp3gain")
 
 num_songs = {}
 num_origin_songs = {}
+
+def zip_metadata(tag_metadata, kept_metadata):
+	new_metadata = copy.copy(tag_metadata)
+	for kept in kept_metadata:
+		found = False
+		for tag in tag_metadata:
+			if tag.id == kept.id:
+				found = True
+		if not found:
+			new_metadata.append(kept)
+	return new_metadata
 
 # Usable if you want to throw an exception on a file but still continue
 # scanning other files.
@@ -93,18 +105,16 @@ class Song(object):
 			s = klass.load_from_id(matched_entry['song_id'])
 			for metadata in s.artists:
 				try:
-					if metadata.is_tag:
-						metadata.disassociate_song_id(s.id)
-					else:
+					if not metadata.is_tag:
 						kept_artists.append(metadata)
+					metadata.disassociate_song_id(s.id)
 				except MetadataUpdateError:
 					pass
 			for metadata in s.groups:
 				try:
-					if metadata.is_tag:
-						metadata.disassociate_song_id(s.id)
-					else:
+					if not metadata.is_tag:
 						kept_groups.append(metadata)
+					metadata.disassociate_song_id(s.id)
 				except MetadataUpdateError:
 					pass
 		elif len(sids) == 0:
@@ -118,15 +128,15 @@ class Song(object):
 		new_artists = Artist.load_list_from_tag(s.artist_tag)
 		new_groups = SongGroup.load_list_from_tag(s.genre_tag)
 
+		s.artists = zip_metadata(new_artists, kept_artists)
+		s.groups = zip_metadata(new_groups, kept_groups)
+
 		i = 0
-		for metadata in new_artists:
+		for metadata in s.artists:
 			metadata.associate_song_id(s.id, order=i)
 			i += 1
-		for metadata in new_groups:
+		for metadata in s.groups:
 			metadata.associate_song_id(s.id)
-
-		s.artists = new_artists + kept_artists
-		s.groups = new_groups + kept_groups
 
 		s.albums = [ Album.load_from_name(s.album_tag) ]
 		s.albums[0].associate_song_id(s.id)
