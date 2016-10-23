@@ -63,6 +63,7 @@
       "__comment__"                                          : "The above line happens on station change: 'You were just voting on Game, you have to wait 2 more songs to vote on All'.",
    "search_string_too_short"                         : "Search must be 3 or more letters.",
    "search_result_limit"                             : "(too many results.  please refine your search.)",
+   "auth_failed_message"                             : "Our authorization system failed!  Please refresh the page, or try logging in again on the forums.  If the problem persists please report a bug to the chatroom or our forums!",
 
    "__comment__"                 : "Error pop-up when Rainwave goes crashes.",
 

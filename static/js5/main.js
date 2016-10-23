@@ -31,6 +31,13 @@ var RWAudio;
 		API.on("wsthrottle", function(json) {
 			API.onUnsuccessful(json);
 		});
+		API.on("wserror", function(json) {
+			if (json.tl_key === "auth_failed") {
+				var template = Modal($l("auth_required"), "modal_auth_failure", {}, true);
+				if (!template) return;
+				template._root.parentNode.classList.add("error");
+			}
+		});
 		// for local development and debugging
 		if (window.location.hostname === "localhost") {
 			API.forceSecure = false;

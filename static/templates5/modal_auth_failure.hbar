@@ -1,0 +1,8 @@
+<p>
+	{{ $l("auth_failed_message") }}
+</p>
+<p>
+	<a class="link obvious" href="https://rainwave.cc/forums">
+		https://rainwave.cc/forums/
+	</a>
+</p>
