@@ -50,7 +50,7 @@ div.panel.songlist_panel {
 
 	body.full & {
 		z-index: 102;
-		width: 400px;
+		width: 420px;
 		left: 100%;
 		@include transition-wtime(300ms, transform, background-color);
 		@include transform(translateX(-90px));
@@ -77,6 +77,11 @@ div.panel.songlist_panel {
 			opacity: 0;
 		}
 
+		div.scrollable {
+			width: 400px;
+			@include transition-wtime(300ms, transform);
+		}
+
 		&:hover, &.dragging, &.panel_open {
 			@include transform(translateX(-100%));
 
@@ -99,6 +104,10 @@ div.panel.songlist_panel {
 				&:hover {
 					opacity: 1;
 				}
+			}
+
+			div.scrollable {
+				@include transform(translateX(10px));
 			}
 		}
 	}
