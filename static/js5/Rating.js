@@ -478,7 +478,12 @@ var Rating = function() {
 
 		var on_mouse_move = function(evt) {
 			if (!json.rating_allowed && !User.rate_anything) return;
-			if (evt.target !== this) return;
+			if (evt.target !== this) {
+				if (Prefs.get("r_noglbl")) {
+					json.$t.rating.rating_set(0);
+				}
+				return;
+			}
 			var tr = get_rating_from_mouse(evt);
 			if (tr) {
 				json.$t.rating.rating_set(tr);
