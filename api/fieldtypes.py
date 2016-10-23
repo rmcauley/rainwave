@@ -13,7 +13,11 @@ def string(in_string, request = None):
 		return None
 	if not isinstance(in_string, (str, unicode)):
 		return None
-	return unicode(in_string).strip()
+	try:
+		return unicode(in_string, 'utf-8').strip()
+	except UnicodeDecodeError:
+		return unicode(in_string).strip()
+	return None
 
 # All _error variables start with no capital letter and end with a period.
 numeric_error = "must be a number."
