@@ -6,7 +6,7 @@ var RainwaveAPI = function() {
 	var self = {
 		ok: false,
 		isSlow: false,
-		debug: true,
+		debug: false,
 		throwErrorsOnThrottle: true,
 		forceSecure: true
 	};
