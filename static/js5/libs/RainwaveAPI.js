@@ -37,6 +37,7 @@ var RainwaveAPI = function() {
 			currentScheduleID = json.id;
 		});
 		self.on("wsok", onSocketOK);
+		self.on("wserror", onSocketFailure);
 		self.on("ping", onPing);
 
 		if (data) {
@@ -94,7 +95,7 @@ var RainwaveAPI = function() {
 			}
 			catch (exc) {
 				console.error("Socket exception while trying to authenticate on socket.");
-				console.error(e);
+				console.error(exc);
 				onSocketError();
 			}
 		});
@@ -171,12 +172,20 @@ var RainwaveAPI = function() {
 			}
 			catch (exc) {
 				console.error("Socket exception while trying to check_sched_current_id.");
-				console.error(e);
+				console.error(exc);
 				onSocketError();
 			}
 		}
 
 		nextRequest();
+	};
+
+	var onSocketFailure = function(error) {
+		if (error.tl_key === "auth_failed") {
+			console.error("Authorization failed for Rainwave websocket.  Wrong API key/user ID combo.");
+			self.onError(error);
+			self.closePermanently();
+		}
 	};
 
 	// Error Handling ****************************************************************************************
