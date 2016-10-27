@@ -1,5 +1,8 @@
 <div class="hamburgered menu_dropdown">
 	<div>
+		<a href="https://discord.gg/uBFgKBZ" target="_blank">
+			Discord
+		</a>
 		<a href="{{ ^'http://widget.mibbit.com/?settings=6c1d29e713c9f8c150d99cd58b4b086b&server=irc.synirc.net&channel=%23rainwave&noServerNotices=true&noServerMotd=true&autoConnect=true' + (BOOTSTRAP.user.id > 1 ? '&nick=' + BOOTSTRAP.user.name : '') }}" target="_blank">
 			{{ $l("chat") }}
 		</a>
