@@ -13,6 +13,7 @@ function DoDefaults(options) {
 	options.padding = options.padding || "8px";
 	options.color = options.color || "white";
 	options.delay = parseInt(options.delay) || 0;
+	options.show_requesters = true;
 
 	return options;
 };
