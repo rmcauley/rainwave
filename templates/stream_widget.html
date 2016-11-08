@@ -167,6 +167,15 @@
 			html += "</div></div>";
 
 			div.innerHTML = html;
+			
+			if (options.show_requesters) {
+				if (json.songs[0].elec_request_username) {
+					document.getElementById("header").textContent = "Requested by " + json.songs[0].elec_request_username;
+				}
+				else {
+					document.getElementById("header").textContent = options.np_message || "Current Song";
+				}
+			}
 
 			requestNextAnimationFrame(function() {
 				div.classList.remove("adding");
