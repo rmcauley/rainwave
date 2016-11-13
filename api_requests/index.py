@@ -47,6 +47,7 @@ class MainIndex(api.web.HTMLRequest):
 
 		if not self.user:
 			self.user = User(1)
+		self.user.ip_address = self.request.remote_ip
 		self.user.ensure_api_key()
 
 		if self.beta or config.get("web_developer_mode") or config.get("developer_mode") or config.get("test_mode"):
