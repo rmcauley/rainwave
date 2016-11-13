@@ -130,7 +130,7 @@ class User(object):
 			if not auth_against:
 				auth_against = db.c.fetch_var("SELECT api_ip FROM r4_api_keys WHERE api_key = %s AND user_id = 1", (self.api_key,))
 				if not auth_against or not auth_against == self.ip_address:
-					log.debug("user", "Anonymous user key %s not found." % api_key)
+					log.debug("user", "Anonymous user key %s not found for IP %s: record in DB is %s." % (api_key, self.ip_address, auth_against))
 					return
 				cache.set(cache_key, auth_against)
 			if auth_against != self.ip_address:
