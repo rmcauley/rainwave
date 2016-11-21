@@ -72,10 +72,16 @@ var R4Notify = function() {
 			if (i > 0) artists += ", ";
 			artists += sched_current.songs[0].artists[i].name;
 		}
-		var n = notifier(sched_current.songs[0], artists, art);
-		n.onshow = function () {
-  			setTimeout(n.close.bind(n), 7000);
-		};
+		try {
+			var n = notifier(sched_current.songs[0], artists, art);
+			n.onshow = function () {
+				setTimeout(n.close.bind(n), 7000);
+			};
+		}
+		catch (e) {
+			self.capable = false;
+			self.enabled = false;
+		}
 	};
 
 	return self;
