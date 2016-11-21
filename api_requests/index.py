@@ -150,7 +150,7 @@ class Bootstrap(api.web.APIHandler):
 		self.write("var BOOTSTRAP=")
 
 	def post(self):
-		info.attach_info_to_request(self, extra_list=self.get_cookie("r5_list"), live_voting=True)
+		info.attach_info_to_request(self, live_voting=True)
 		self.append("stream_filename", config.get_station(self.sid, "stream_filename"))
 		self.append("station_list", config.station_list)
 		self.append("relays", config.public_relays[self.sid])

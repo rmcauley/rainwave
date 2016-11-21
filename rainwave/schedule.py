@@ -383,6 +383,7 @@ def update_memcache(sid):
 	cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
 	cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)
 	cache.set_station(sid, "all_groups", playlist.get_all_groups_list(sid), True)
+	cache.set_station(sid, "all_groups_power", playlist.get_all_groups_for_power(sid), True)
 
 	potential_dj_ids = []
 	if getattr(current[sid], 'dj_user_id', None):
