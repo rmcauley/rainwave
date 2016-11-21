@@ -68,9 +68,13 @@ div.panel.songlist_panel {
 			}
 		}
 
+		div.song {
+			padding: 0 20px;
+		}
+
 		div.art_anchor {
 			@include transition-wtime(300ms, transform);
-			@include transform(translateX(-20px));
+			@include transform(translateX(-30px));
 		}
 
 		div.request_cancel {
@@ -78,7 +82,7 @@ div.panel.songlist_panel {
 		}
 
 		div.scrollable {
-			width: 400px;
+			width: 420px;
 			@include transition-wtime(300ms, transform);
 		}
 
@@ -104,10 +108,6 @@ div.panel.songlist_panel {
 				&:hover {
 					opacity: 1;
 				}
-			}
-
-			div.scrollable {
-				@include transform(translateX(10px));
 			}
 		}
 	}
