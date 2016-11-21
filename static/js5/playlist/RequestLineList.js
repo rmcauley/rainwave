@@ -50,7 +50,7 @@ var RequestLineList = function(el) {
 		}
 		else {
 			item._song_title.textContent = $l("no_song_selected");
-			item._album_title.textContent = "";
+			item._album_title.textContent = "_";
 		}
 	};
 
