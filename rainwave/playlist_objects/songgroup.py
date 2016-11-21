@@ -74,6 +74,9 @@ class SongGroup(AssociatedMetadata):
 		return db.c.update("UPDATE r4_groups SET group_name = %s, group_name_searchable = %s WHERE group_id = %s", (self.data['name'], make_searchable_string(self.data['name']), self.id))
 
 	def _start_cooldown_db(self, sid, cool_time):
+		if config.has_station(sid, "cooldown_enable_for_categories") and not config.get_station(sid, "cooldown_enable_for_categories"):
+			return
+
 		cool_end = int(cool_time + timestamp())
 		log.debug("cooldown", "Group ID %s Station ID %s cool_time period: %s" % (self.id, sid, cool_time))
 		# Make sure to update both the if and else SQL statements if doing any updates
