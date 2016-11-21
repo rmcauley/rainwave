@@ -244,7 +244,7 @@ div.list {
 			color: $link;
 			background-color: $hover_bkg;
 			border-bottom-color: $hover_b;
-			@include transition-wtime(250ms, color, TOUCHTRANSFORM);
+			@include transition-wtime(250ms, TOUCHTRANSFORM);
 
 			img.fave_lined {
 				opacity: 0.5;
@@ -291,6 +291,12 @@ div.list {
 		div.requestlist_song, div.requestlist_album {
 			color: $text_d;
 			padding-left: 2em;
+		}
+
+		&.skip {
+			div.requestlist_album {
+				color: transparent;
+			}
 		}
 	}
 
