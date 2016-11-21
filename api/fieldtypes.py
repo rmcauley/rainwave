@@ -13,6 +13,8 @@ def string(in_string, request = None):
 		return None
 	if not isinstance(in_string, (str, unicode)):
 		return None
+	if isinstance(in_string, unicode):
+		return in_string
 	try:
 		return unicode(in_string, 'utf-8').strip()
 	except UnicodeDecodeError:
