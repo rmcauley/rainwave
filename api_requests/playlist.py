@@ -29,6 +29,9 @@ def get_all_artists(sid):
 def get_all_groups(sid):
 	return cache.get_station(sid, "all_groups")
 
+def get_all_groups_power(sid):
+	return cache.get_station(sid, "all_groups_power")
+
 @handle_api_url("all_albums")
 class AllAlbumsHandler(APIHandler):
 	description = "Get a list of all albums on the station playlist."
@@ -47,11 +50,15 @@ class AllArtistsHandler(APIHandler):
 
 @handle_api_url("all_groups")
 class AllGroupsHandler(APIHandler):
-	description = "Get a list of all song groups on the station playlist."
+	description = "Get a list of all song groups on the station playlist.  Supply the 'all' flag to get a list of categories that includes categories that only contain a single album."
 	return_name = "all_groups"
+	fields = { "all": (fieldtypes.boolean, None) }
 
 	def post(self):
-		self.append(self.return_name, get_all_groups(self.sid))
+		if self.get_argument("all"):
+			self.append(self.return_name, get_all_groups_power(self.sid))
+		else:
+			self.append(self.return_name, get_all_groups(self.sid))
 
 @handle_api_url("artist")
 class ArtistHandler(APIHandler):

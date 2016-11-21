@@ -40,6 +40,10 @@ var SettingsWindow = function() {
 				ct._root.parentNode.classList.add("modal_closing");
 				window.location.reload();
 			}
+			if (key == "p_allcats") {
+				ct._root.parentNode.classList.add("modal_closing");
+				window.location.reload();
+			}
 		};
 		obj.$t.item_root.addEventListener("click", function(e) {
 			e.stopPropagation();

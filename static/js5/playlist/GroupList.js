@@ -3,11 +3,13 @@ var GroupList = function(el) {
 	var self = SearchList(el);
 	var loading = false;
 
+	Prefs.define("p_allcats", [ false, true ], true);
+
 	self.load = function() {
 		if (!self.loaded && !loading) {
 			self.show_loading();
 			loading = true;
-			API.async_get("all_groups");
+			API.async_get("all_groups", { "all": Prefs.get("p_allcats") });
 		}
 	};
 
