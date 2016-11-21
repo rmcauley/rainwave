@@ -402,7 +402,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	self.key_nav_enter = function() {
-		if (current_key_nav_id) {
+		if (current_key_nav_id && current_key_nav_id && data[current_key_nav_id]) {
 			self.open_element({ "target": data[current_key_nav_id]._el, "enter_key": true });
 			return true;
 		}
