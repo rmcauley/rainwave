@@ -53,6 +53,9 @@ class ErrorReport(APIHandler):
         if not isinstance(reports, list):
             reports = []
 
+        while len(reports) > 30:
+            reports.pop()
+
         reports.insert(0, self.cleaned_args)
         cache.set("error_reports", reports)
 
