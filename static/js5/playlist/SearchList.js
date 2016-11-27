@@ -441,6 +441,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 			var use_search_string = Formatting.make_searchable_string(search_string);
 			var revisible = [];
 			for (var i = hidden.length - 1; i >= 0; i--) {
+				if (!data[hidden[i]]) {
+					continue;
+				}
 				if (data[hidden[i]][search_key].indexOf(use_search_string) != -1) {
 					revisible.push(hidden.splice(i, 1)[0]);
 				}
@@ -470,6 +473,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 		var use_search_string = Formatting.make_searchable_string(search_string);
 		var new_visible = [];
 		for (var i = 0; i < visible.length; i++) {
+			if (!data[visible[i]]) {
+				continue;
+			}
 			if (data[visible[i]][search_key].indexOf(use_search_string) == -1) {
 				hidden.push(visible[i]);
 			}
