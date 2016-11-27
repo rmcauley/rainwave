@@ -153,6 +153,10 @@ var Menu = function() {
 	var update_station_info = function(json) {
 		var i, key;
 		for (key in json) {
+			if (!json[key]) {
+				continue;
+			}
+
 			for (i = 0; i < Stations.length; i++) {
 				if ((Stations[i].id == key) && Stations[i].$t.menu_np_art) {
 					Stations[i].$t.menu_np_art.style.backgroundImage = "url(" + json[key].art + "_120.jpg)";

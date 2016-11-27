@@ -455,7 +455,7 @@ var Timeline = function() {
 			if (json[sid] && json[sid].event_name && (sid != User.sid)) {
 				do_event(json[sid], sid);
 			}
-			else if (!json[sid].event_name) {
+			else if (!json[sid] || !json[sid].event_name) {
 				self.close_message("event_" + sid);
 			}
 		}
