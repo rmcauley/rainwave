@@ -58,12 +58,15 @@
    "server_just_started"                             : "Rainwave is aan het herstarten.",
    "station_paused"                                  : "Station is momenteel gepauzeerd door de DJ.",
    "album_on_other_station"                          : "Album is niet beschikbaar op dit station, sorry!",
+   "song_on_other_station"                           : "Liedje is niet beschikbaar op %(station).",
    "album_is_dj_only"                                : "Album is exclusief geselecteerd voor dit evenement, sorry!",
    "locked_to_station"                               : "U was aan het stemmen op %(locked_station), u moet %(lock_counter) &(lock_counter:song/songs) wachten om te stemmen op %(this_station).",
        "__comment__"                                          : "The above line happens on station change: 'You were just voting on Game, you have to wait 2 more songs to vote on All'.",
    "search_string_too_short"                         : "Zoekopdracht moet minstens 3 letters bevatten.",
    "search_result_limit"                             : "(te veel resultaten.  gelieve uw zoekopdracht nader te specifiëren.)",
 
+   "auth_failed_message"                             : "Ons verificatiesysteem faalde!  We hebben deze bug al een paar weken bij anonieme gebruikers, en we zijn het verificatiesysteem momenteel aan het herschrijven.  Gelieve de pagina te verversen, of beter, REGISTREER EN LOGIN door de link naar forum hieronder te gebruiken wat het probleem zal oplossen!",
+   
  "__comment__"                 : "Error pop-up when Rainwave goes crashes.",
 
    "oops"                                            : "Oeps",
@@ -86,6 +89,8 @@
    "qr_code"                                         : "QR Code",
    "create_api_key"                                  : "Creëer API Sleutel",
    "your_numeric_user_id"                            : "Uw numerieke ID",
+   "app_would_like_to"                               : "Deze App Wilt Graag:",
+   "allow_api_auth"                                  : "Klinkt Goed",
 
    "__comment__"                 : "Menu",
 
@@ -226,6 +231,7 @@
    "request_percentile_top"                          : "Aanvraag populariteit: hoogste %(percentile_top)%.",
    "request_percentile_bottom"                       : "Aanvraag populariteit: laagste %(percentile)%.",
    "song_has_no_ratings"                             : "Liedje heeft geen waarderingen.",
+   "Rate"                                            : "Beoordeel",
    "Request"                                         : "Aanvraag",
    "Albums"                                          : "Albums",
    "Songs"                                           : "Liedjes",
@@ -326,6 +332,7 @@
    "prefs_p_null1"                                   : "Sorteer Onbeoordeelde Liedjes Bovenaan",
    "prefs_p_fav1"                                    : "Prioriteer Favorieten Boven Beschikbare Liedjes",
    "prefs_p_sort"                                    : "Sorteer Albums op...",
+   "prefs_p_allcats"                                 : "Toon Single-Album Categorieën",
    "prefs_sort_playlist_by_alpha"                    : "Alfabetische Volgorde",
    "prefs_sort_playlist_by_rating_user"              : "Waardering",
    "rating_preferences"                              : "Waarderingen",
