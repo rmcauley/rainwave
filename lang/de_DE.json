@@ -41,7 +41,7 @@
    "same_request_album"                              : "Album bereits gewünscht.",
    "song_not_requested"                              : "Song nicht gewünscht.",
    "station_offline"                                 : "Dieser Sender ist zur Zeit offline. Komm später noch einmal wieder.",
-   "must_login_and_tune_in_to_request"               : "Du musst eingeloggt sein und den Sender hören, um dir etwas zu wünschen.",
+   "must_login_and_tune_in_to_request"               : "Du musst eingeloggt sein, um dir etwas zu wünschen.",
    "already_voted_for_song"                          : "Du hast für diesen Song bereits abgestimmt.",
    "cannot_rate_now"                                 : "Du kannst diesen Song zur Zeit nicht bewerten.",
    "tunein_to_rate_current_song"                     : "Du musst den Sender hören um den aktuellen Song zu bewerten.",
@@ -118,13 +118,13 @@
    "audio_error"                                     : "Der Sender konnte mit deinem Browser nicht eingeschaltet werden!",
    "audio_connect_error"                             : "Es gibt gerade Schwierigkeiten den Server zu erreichen.",
    "audio_connect_error_reattempting"                : "Aufgrund von Verbindungsproblemen verlierst du die Möglichkeit abzustimmen. Wir versuchen deine Verbindung stabil zu halten.",
-   "try_external_player"                             : "Klicke hier, um mit einem externen Programm zu hören.",
+   "try_external_player"                             : "Klicke hier, um mit einem externen Programm zuzuhören.",
    "m3u_hijack_right_click"                          : "Ein Browserplugin versucht den Download abzufangen. Bitte nutze die .mp3 oder .ogg M3U-Downloadlinks und ein externes Programm, um den Sender zu hören.",
 
    "listen_via_browser"                              : "Im Browser zuhören",
    "listen_via_mp3"                                  : "Über MP3-Stream zuhören",
    "listen_via_ogg"                                  : "Über Ogg-Stream zuhören",
-   "chrome_mobile_takes_time"                        : "Android braucht bis zu 30 Sekunden. Ein orangenes Icon bedeutet es funktioniert - bitte warten!",
+   "chrome_mobile_takes_time"                        : "Android braucht bis zu 20 Sekunden. Ein orangenes Icon bedeutet es funktioniert gleich - bitte warten!",
 
    "api_docs"                                        : "API Dokumentation",
    "github_repo"                                     : "GitHub",
@@ -153,7 +153,7 @@
    "timeline_art__your_request_indicator"            : "Du selbst",
    "num_votes"                                       : "%(num_votes) &(num_votes:Stimme/Stimmen)",
    "vote"                                            : "Abstimmen",
-      "__comment__"                                    : "The above 'Vote' is a verb, not a noun.",
+   "__comment__"                                    : "The above 'Vote' is a verb, not a noun.",
    "voted"                                           : "Abgestimmt",
    
     "event_naming__oneup"                             : "%(name) Power Hour",
@@ -188,7 +188,7 @@
    "view_your"                                       : "Betrachte deine: ",
    "recent_votes"                                    : "Letzten Abstimmungen",
    "request_history"                                 : "Wunschverlauf",
-   "registered_in_year"                              : "Dabei sei %(year).",
+   "registered_in_year"                              : "Dabei seit %(year).",
 
    "top_rated_albums"                                : "Am besten bewertete Alben",
    "top_requested_albums"                            : "Am häufigsten gewünschte Alben",
@@ -220,7 +220,7 @@
 
    "playlist"                                        : "Albenliste",
    "library"                                         : "Bibliothek",
-   "filter"                                          : "Tippe irgendwo um zu filtern",
+   "filter"                                          : "Filtern...",
    "your_album_rating"                               : "Du hast dieses Album mit %(rating_user) bewertet.",
    "album_rating_ranked_at_v2"                       : "Wertung von %(rating) durch %(rating_count) Bewertungen, Platz #(rank) der Rangliste.",
    "album_requests_ranked_at"                        : "%(count) &(count:mal/mal) gewünscht, Platz #(rank) der Wunschrangliste.",
@@ -234,7 +234,7 @@
    "request_percentile_bottom"                       : "Wunschhäufigkeit: Gehört zu den seltensten %(percentile)%.",
    "song_has_no_ratings"                             : "Song hat zu wenig Bewertungen um Statistiken anzuzeigen.",
    "Rate"                                            : "Bewerten",
-   "Request"                                         : "Wünsche",
+   "Request"                                         : "Wünschen",
    "Albums"                                          : "Alben",
    "Songs"                                           : "Songs",
    "Artists"                                         : "Künstler",
@@ -254,26 +254,30 @@
    "new_album"                                       : "Neues Album!",
    "newish_album"                                    : "Vor Kurzem hinzugefügt.",
    "new_songs"                                       : "Neue Songs!",
-   "newish_songs"                                    : "Recently updated.",
+   "newish_songs"                                    : "Vor Kurzem aktualisiert.",
    "search..."                                       : "Suchen...",
    "no_songs_on_this_station"                        : "Es gibt keine Songs auf %(station) für dieses Album.",
    
    "__comment__"                 : "Requests",
-
+   
    "clear_request_queue"                             : "Alle entfernen",
-   "pause_request_queue"                             : "Pause",
+   "pause_request_queue"                             : "Pausieren",
+   "unpause_request_queue"                           : "Weiter",
    "request_fill_with_unrated"                       : "Mit unbewerteten Songs auffüllen",
    "request_fill_with_faves"                         : "Mit Favoriten auffüllen",
+   "Suspend"                                         : "Pausieren",
+   "Pause"                                           : "Pausieren",
+   "Resume"                                          : "Weiter",
+   "Faves"                                           : "Favoriten",
+   "Unrated"                                         : "Unbewertete",
+   "Clear"                                           : "Löschen",
 
    "Requests"                                        : "Wünsche",
+   "#_requests"                                      : "%(num_requests) &(num_requests:Wunnsch/Wünsche)",
    "requests_all_on_cooldown"                        : "Alle Wünsche in der Abkühlpause!",
    "request_you_are_x_in_line"                       : "Position #(position) in der Schlange",
-
-   "request_grab_tag__warning"                       : "Warnung",
    "request_grab_tag__paused"                        : "Pausiert",
-   "requests_grab_tab__num_requests"                 : "%(num_requests) &(num_requests:Wunsch/Wünsche)",
 
-   "cancel_request"                                  : "Wunsch abbrechen",
    "request_on_cooldown_for"                         : "Am abkühlen für %(cool_time).",
    "request_on_cooldown_ends_soon"                   : "Fast abgekühlt.",
    "request_in_election"                             : "%(blocked_by) ist in einer Abstimmung.",
@@ -281,6 +285,9 @@
    "blocked_by_name__album"                          : "Album",
    "blocked_by_name__in_election"                    : "Song",
    "request_only_on_x"                               : "Nur auf %(station) verfügbar.",
+   "no_song_selected"                                : "(kein Song ausgewählt)",
+
+   "make_a_request"                                  : "Öffne die Bibliothek und klicke einen Songtitel an, um ihn deiner Wunschliste hinzuzufügen.",
 
    "__comment__"                 : "Station Descriptions (long format, used for Google page descriptions)",
 
