@@ -141,7 +141,7 @@
    "__comment__"                 : "When a Power Hour or DJ Event happens, instead of saying 'NEW MUSIC POWER HOUR' repeatedly",
    "__comment__"                 : "we just use 'CONTINUED' instead, so the title of the power hour is only displayed once",
    "__comment__"                 : "at the top of the timeline.  That's what this 'continued' line is for.",
-   "continued"                                       : "Continued",
+   "continued"                                       : "Fortsetzung",
 
    "__comment__"                 : "Timeline Song", 
    
@@ -153,7 +153,7 @@
    "timeline_art__your_request_indicator"            : "Du selbst",
    "num_votes"                                       : "%(num_votes) &(num_votes:Stimme/Stimmen)",
    "vote"                                            : "Abstimmen",
-   "__comment__"                                    : "The above 'Vote' is a verb, not a noun.",
+   "__comment__"                                     : "The above 'Vote' is a verb, not a noun.",
    "voted"                                           : "Abgestimmt",
    
     "event_naming__oneup"                             : "%(name) Power Hour",
@@ -232,7 +232,7 @@
    "rating_percentile_bottom"                        : "Gehört zu den schlechtesten %(percentile)%",
    "request_percentile_top"                          : "Wunschhäufigkeit: Gehört zu den häufigsten %(percentile_top)%.",
    "request_percentile_bottom"                       : "Wunschhäufigkeit: Gehört zu den seltensten %(percentile)%.",
-   "song_has_no_ratings"                             : "Song hat zu wenig Bewertungen um Statistiken anzuzeigen.",
+   "song_has_no_ratings"                             : "Song hat zu wenig Bewertungen, um Statistiken anzuzeigen.",
    "Rate"                                            : "Bewerten",
    "Request"                                         : "Wünschen",
    "Albums"                                          : "Alben",
@@ -275,7 +275,7 @@
 
    "Requests"                                        : "Wünsche",
    "#_requests"                                      : "%(num_requests) &(num_requests:Wunnsch/Wünsche)",
-   "requests_all_on_cooldown"                        : "Alle Wünsche in der Abkühlpause!",
+   "requests_all_on_cooldown"                        : "Alle Wünsche sind in der Abkühlpause!",
    "request_you_are_x_in_line"                       : "Position #(position) in der Schlange",
    "request_grab_tag__paused"                        : "Pausiert",
 
@@ -319,7 +319,7 @@
    "change_language"                                 : "Sprache",
    "timeline_preferences"                            : "Zeitleiste",
    "tab_title_preferences"                           : "(Browser-)Tab-Titel",
-   "font_options"                                    : "Schriftoptions",
+   "font_options"                                    : "Schriftoptionen",
    "prefs_roboto"                                    : "Verwende eigene Schriftart",
    "prefs_f_norm"                                    : "Schriftgröße an Bildschirmbreite anpassen",
    "prefs_notify"                                    : "Desktopbenachrichtigungen bei Songwechsel",
@@ -342,7 +342,7 @@
    "prefs_r_noglbl"                                  : "Verstecke globale Bewertungen bis ich bewertet habe",
    "prefs_r_clear"                                   : "Zeige Löschknopf für Bewertungen",
    "prefs_pwr"                                       : "Aktiviere Power-User-Modus",
-   "prefs_hkm"                                       : "Hotkey-Modus Tastaturlayout",
+   "prefs_hkm"                                       : "Tastaturlayout im Hotkey-Modus",
 
    "__comment__"                 : "Hotkey Mode - MAKE THEM VERY SHORT (and to test, activate power user mode and press backtick/tilde key)",
 
