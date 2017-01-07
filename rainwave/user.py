@@ -251,7 +251,9 @@ class User(object):
 			limit = max_limit
 		added_requests = 0
 		for song_id in playlist.get_unrated_songs_for_requesting(self.id, sid, limit):
-			if song_id:
+			added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
+		if added_requests < limit:
+			for song_id in playlist.get_unrated_songs_on_cooldown_for_requesting(self.id, sid, limit - added_requests):
 				added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
 		if added_requests > 0:
 			self.put_in_request_line(sid)
