@@ -19,15 +19,17 @@ class SongGroup(AssociatedMetadata):
 
 	#pylint: disable=W0212,W0221
 	@classmethod
-	def load_list_from_song_id(klass, song_id, sid=None):
+	def load_list_from_song_id(klass, song_id, sid=None, all_categories=False):
 		if not sid:
 			return super(SongGroup, klass).load_list_from_song_id(song_id)
+
+		show_all_condition = "" if all_categories else "AND r4_group_sid.group_display = TRUE"
 
 		rows = db.c.fetch_all(
 			"SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, r4_groups.group_name_searchable AS name_searchable, group_elec_block AS elec_block, group_cool_time AS cool_time, group_is_tag AS is_tag "
 			"FROM r4_song_sid "
 				"JOIN r4_song_group USING (song_id) "
-				"JOIN r4_group_sid ON (r4_song_group.group_id = r4_group_sid.group_id AND r4_group_sid.sid = %s AND r4_group_sid.group_display = TRUE) "
+				"JOIN r4_group_sid ON (r4_song_group.group_id = r4_group_sid.group_id AND r4_group_sid.sid = %s " + show_all_condition + ") "
 				"JOIN r4_groups ON (r4_group_sid.group_id = r4_groups.group_id) "
 			"WHERE r4_song_sid.song_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE "
 			"ORDER BY r4_groups.group_name"

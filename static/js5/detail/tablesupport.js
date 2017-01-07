@@ -71,7 +71,7 @@ var SongsTableDetail = function(song, scroll_on_open, sid) {
 		else {
 			if (triggered) return;
 			triggered = true;
-			API.async_get("song", { "id": song.id, "sid": sid || User.sid }, function(json) {
+			API.async_get("song", { "id": song.id, "sid": sid || User.sid, "all_categories": Prefs.get("p_allcats") }, function(json) {
 				SongsTableDetailDraw(song, json.song);
 				if (scroll_on_open) {
 					Router.scroll_a_bit();

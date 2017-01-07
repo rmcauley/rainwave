@@ -57,7 +57,7 @@ class SongMetadataUnremovable(Exception):
 class Song(object):
 	#pylint: disable=W0212
 	@classmethod
-	def load_from_id(klass, song_id, sid = None):
+	def load_from_id(klass, song_id, sid = None, all_categories = False):
 		if sid is not None:
 			d = db.c.fetch_row("SELECT * FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_id = %s AND r4_song_sid.sid = %s", (song_id, sid))
 		else:
@@ -81,7 +81,7 @@ class Song(object):
 			if 'album_id' in d and d['album_id']:
 				s.albums = [ Album.load_from_id_sid(d['album_id'], sid) ]
 			s.artists = Artist.load_list_from_song_id(song_id)
-			s.groups = SongGroup.load_list_from_song_id(song_id, sid)
+			s.groups = SongGroup.load_list_from_song_id(song_id, sid, all_categories = all_categories)
 		except Exception as e:
 			log.exception("song", "Song ID %s failed to load, sid %s." % (song_id, sid), e)
 			s.disable()
