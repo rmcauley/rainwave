@@ -258,6 +258,13 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 	};
 
+	var filterUnhide = function(value) {
+		if (value !== null && value !== undefined) {
+			return true;
+		}
+		return false;
+	};
+
 	self.unhide = function(to_reshow) {
 		to_reshow = to_reshow || hidden;
 		if (self.auto_trim) {
@@ -276,9 +283,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		else {
 			visible = visible.concat(to_reshow);
 		}
-		// TODO: what sort algorithm do JS engines use?  would pre-sorting to_reshow
-		//       result in a faster sort on visible?  or are we always looking at n*logn?
-		// TODO: only sort up to what's visible and then sort the rest later?
+		visible = visible.filter(filterUnhide);
 		visible.sort(self.sort_function);
 		if (to_reshow == hidden) hidden = [];
 	};
