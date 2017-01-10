@@ -448,44 +448,52 @@ var RainwaveAPI = function() {
 	// Callback Handling *************************************************************************************
 
 	var performCallbacks = function(json) {
-		// Make sure any vote results are registered after the schedule has been loaded.
-		var alreadyVoted;
-		var liveVoting;
-		if ("already_voted" in json) {
-			alreadyVoted = json.already_voted;
-			delete json.already_voted;
-		}
-		if ("live_voting" in json) {
-			liveVoting = json.live_voting;
-			delete json.live_voting;
-		}
+		try {
+			// Make sure any vote results are registered after the schedule has been loaded.
+			var alreadyVoted;
+			var liveVoting;
+			if ("already_voted" in json) {
+				alreadyVoted = json.already_voted;
+				delete json.already_voted;
+			}
+			if ("live_voting" in json) {
+				liveVoting = json.live_voting;
+				delete json.live_voting;
+			}
 
-		var cb, key;
-		for (key in json) {
-			if (key in callbacks) {
+			var cb, key;
+			for (key in json) {
+				if (key in callbacks) {
+					for (cb = 0; cb < callbacks[key].length; cb++) {
+						callbacks[key][cb](json[key]);
+					}
+				}
+			}
+
+			if ("sched_current" in json) {
+				if (self.debug) console.log("Sync complete.");
+				performCallbacks({ "_SYNC_SCHEDULE_COMPLETE": true });
+			}
+
+			key = "already_voted";
+			if (alreadyVoted && (key in callbacks)) {
 				for (cb = 0; cb < callbacks[key].length; cb++) {
-					callbacks[key][cb](json[key]);
+					callbacks[key][cb](alreadyVoted);
+				}
+			}
+
+			key = "live_voting";
+			if (liveVoting && (key in callbacks)) {
+				for (cb = 0; cb < callbacks[key].length; cb++) {
+					callbacks[key][cb](liveVoting);
 				}
 			}
 		}
-
-		if ("sched_current" in json) {
-			if (self.debug) console.log("Sync complete.");
-			performCallbacks({ "_SYNC_SCHEDULE_COMPLETE": true });
-		}
-
-		key = "already_voted";
-		if (alreadyVoted && (key in callbacks)) {
-			for (cb = 0; cb < callbacks[key].length; cb++) {
-				callbacks[key][cb](alreadyVoted);
+		catch (e) {
+			if (self.exceptionHandler) {
+				self.exceptionHandler(e);
 			}
-		}
-
-		key = "live_voting";
-		if (liveVoting && (key in callbacks)) {
-			for (cb = 0; cb < callbacks[key].length; cb++) {
-				callbacks[key][cb](liveVoting);
-			}
+			throw e;
 		}
 	};
 

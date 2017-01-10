@@ -20,6 +20,7 @@ var RWAudio;
 		// was required after the API changed to something useable
 		// by the outside world.
 		API = RainwaveAPI;
+		API.exceptionHandler = ErrorHandler.onerror_handler;
 		API.onError = ErrorHandler.permanent_error;
 		API.onErrorRemove = ErrorHandler.remove_permanent_error;
 		API.onUnsuccessful = ErrorHandler.tooltip_error;

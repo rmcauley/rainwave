@@ -1,9 +1,9 @@
-(function() {
+var ErrorHandler = function() {
 	"use strict";
 	var self = {};
 	var already_reported = false;
 
-	var onerror_handler = function(message, url, lineNo, charNo, exception) {
+	self.onerror_handler = function(exception) {
 		if (already_reported) return;
 		already_reported = true;
 
@@ -95,8 +95,5 @@
 		setTimeout(function() { Fx.remove_element(err); }, 5000);
 	};
 
-	window.onerror = onerror_handler;
-	window.ErrorHandler = self;
-
 	return self;
-})();
+}();
