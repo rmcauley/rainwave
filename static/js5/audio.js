@@ -155,6 +155,9 @@ var RWAudioConstructor = function() {
 		if (evt.button !== 0) return;
 		offset_width = parseInt(window.getComputedStyle(volume_el, null).getPropertyValue("width"));
 		change_volume_from_mouse(evt);
+		if (self.isMuted) {
+			self.toggleMute();
+		}
 		volume_el.addEventListener("mousemove", change_volume_from_mouse);
 		document.addEventListener("mouseup", volume_control_mouseup);
 	};
