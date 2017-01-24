@@ -86,12 +86,12 @@ class GroupHandler(APIHandler):
 class AlbumHandler(APIHandler):
 	description = "Get detailed information about an album, including a list of songs in the album.  'Sort' can be set to 'added_on' to sort by when the song was added to the radio."
 	return_name = "album"
-	fields = { "id": (fieldtypes.album_id, True), "sort": (fieldtypes.string, None) }
+	fields = { "id": (fieldtypes.album_id, True), "sort": (fieldtypes.string, None), "all_categories": (fieldtypes.boolean, None) }
 
 	def post(self):
 		try:
 			album = playlist.Album.load_from_id_with_songs(self.get_argument("id"), self.sid, self.user, sort=self.get_argument("sort"))
-			album.load_extra_detail(self.sid)
+			album.load_extra_detail(self.sid, self.get_argument("all_categories"))
 		except MetadataNotFoundError:
 			self.return_name = "album_error"
 			valid_sids = db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND sid != 0 ORDER BY sid", (self.get_argument("id"),))

@@ -375,11 +375,14 @@ var Router = function() {
 			if (!cache[typ][id]) {
 				// console.log(typ + "/" + id + ": Loading from server.");
 				cache[typ][id] = true;
+				var params = { "id": id };
 				var req = typ;
 				if (req == "request_line") {
 					req = "listener";
+				} else if (req == "album" && Prefs.get("p_allcats")) {
+					params.all_categories = true;
 				}
-				API.async_get(req, { "id": id }, function(json) {
+				API.async_get(req, params, function(json) {
 					cache[typ][id] = json[req];
 					if (current_open_type === typ && current_id === id) {
 						// console.log(typ + "/" + id + ": Loaded from server.");

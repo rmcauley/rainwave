@@ -352,7 +352,7 @@ class Album(AssociatedMetadata):
 		# 		song.id = row['song_id']
 		# 		song.set_election_block(sid, 'album', num_elections)
 
-	def load_extra_detail(self, sid):
+	def load_extra_detail(self, sid, get_all_groups=False):
 		global num_albums
 
 		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(album_id) FROM r4_album_sid WHERE album_exists = TRUE AND album_rating > %s AND sid = %s", (self.rating_precise, sid))
@@ -362,12 +362,16 @@ class Album(AssociatedMetadata):
 		self.data['request_rank_percentile'] = (float(num_albums[sid] - self.data['rating_rank']) / float(num_albums[sid])) * 100
 		self.data['request_rank_percentile'] = max(5, min(99, int(self.data['request_rank_percentile'])))
 
+		get_all_groups_sql = "AND r4_group_sid.group_display = TRUE"
+		if get_all_groups:
+			get_all_groups_sql = ""
+
 		self.data['genres'] = db.c.fetch_all(
 			"SELECT DISTINCT r4_groups.group_id AS id, group_name AS name "
 			"FROM r4_songs "
 				"JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE) "
 				"JOIN r4_song_group ON (r4_songs.song_id = r4_song_group.song_id) "
-				"JOIN r4_group_sid ON (r4_song_group.group_id = r4_group_sid.group_id AND r4_group_sid.sid = %s AND r4_group_sid.group_display = TRUE) "
+				"JOIN r4_group_sid ON (r4_song_group.group_id = r4_group_sid.group_id AND r4_group_sid.sid = %s " + get_all_groups_sql + ") "
 				"JOIN r4_groups ON (r4_group_sid.group_id = r4_groups.group_id) "
 			"WHERE song_verified = TRUE AND r4_songs.album_id = %s "
 			"ORDER BY group_name ",
