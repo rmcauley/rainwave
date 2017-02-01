@@ -17,6 +17,21 @@ var RWAudioConstructor = function() {
 	var mute_el;
 	var offset_width;
 	var last_user_tunein_check = 0;
+	var iOSAppMode = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.rainwave;
+
+	if (iOSAppMode) {
+		self.play = function () {
+			window.webkit.messageHandlers.rainwavePlay.postMessage();
+		}
+
+		self.stop = function () {
+			window.webkit.messageHandlers.rainwaveStop.postMessage();
+		}
+
+		self.useStreamURLs = function (streamURLs) {
+			window.webkit.messageHandlers.rainwaveUseStreamURLs.postMessage(streamURLs);
+		}
+	}
 
 	BOOTSTRAP.on_init.push(function(root_template) {
 		self.audioElDest = root_template.measure_box;
