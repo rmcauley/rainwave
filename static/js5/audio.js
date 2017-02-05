@@ -17,20 +17,20 @@ var RWAudioConstructor = function() {
 	var mute_el;
 	var offset_width;
 	var last_user_tunein_check = 0;
-	var iOSAppMode = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.rainwave;
+	var iOSAppMode = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.rainwavePlay;
 
 	if (iOSAppMode) {
 		self.play = function () {
 			window.webkit.messageHandlers.rainwavePlay.postMessage();
-		}
+		};
 
 		self.stop = function () {
 			window.webkit.messageHandlers.rainwaveStop.postMessage();
-		}
+		};
 
 		self.useStreamURLs = function (streamURLs) {
 			window.webkit.messageHandlers.rainwaveUseStreamURLs.postMessage(streamURLs);
-		}
+		};
 	}
 
 	BOOTSTRAP.on_init.push(function(root_template) {
@@ -90,7 +90,7 @@ var RWAudioConstructor = function() {
 				ErrorHandler.remove_permanent_error("audio_connect_error_reattempting");
 				ErrorHandler.remove_permanent_error("chrome_mobile_takes_time");
 				self.stop();
-				setTimeout(300, self.play);
+				setTimeout(self.play, 300);
 			}
 		}
 
