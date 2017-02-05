@@ -21,12 +21,12 @@ var RWAudioConstructor = function() {
 
 	if (iOSAppMode) {
 		self.play = function () {
-			window.webkit.messageHandlers.rainwavePlay.postMessage();
-		};
+			window.webkit.messageHandlers.rainwavePlay.postMessage(User.sid);
+		}
 
 		self.stop = function () {
-			window.webkit.messageHandlers.rainwaveStop.postMessage();
-		};
+			window.webkit.messageHandlers.rainwaveStop.postMessage(User.sid);
+		}
 
 		self.useStreamURLs = function (streamURLs) {
 			window.webkit.messageHandlers.rainwaveUseStreamURLs.postMessage(streamURLs);
