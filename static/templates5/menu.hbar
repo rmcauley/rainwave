@@ -87,10 +87,10 @@
 				<a bind="play2" class="link">
 					{{ $l("listen_via_browser") }}
 				</a>
-				<a href="/tune_in/{{ ^BOOTSTRAP.user.sid }}.mp3" target="_blank">
+				<a href="/tune_in/{{ ^BOOTSTRAP.user.sid }}.mp3.m3u" target="_blank">
 					{{ $l("listen_via_mp3") }}
 				</a>
-				<a href="/tune_in/{{ ^BOOTSTRAP.user.sid }}.ogg" target="_blank">
+				<a href="/tune_in/{{ ^BOOTSTRAP.user.sid }}.ogg.m3u" target="_blank">
 					{{ $l("listen_via_ogg") }}
 				</a>
 			</div>
