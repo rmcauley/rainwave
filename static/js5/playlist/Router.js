@@ -260,8 +260,8 @@ var Router = function() {
 
 		// console.log("Rendering.");
 
-		while (el.firstChild) {
-			el.removeChild(el.firstChild);
+		for (var i = 0; i < el.childNodes.length; i++) {
+			el.childNodes[i].style.display = "none";
 		}
 		self.active_detail = null;
 		remove_excess_header_content();
@@ -273,6 +273,7 @@ var Router = function() {
 		else if (cache[typ][id]._root) {
 			// console.log(typ + "/" + id + ": Appending existing cache.");
 			el.appendChild(cache[typ][id]._root);
+			cache[typ][id]._root.style.display = "block";
 			self.active_detail = cache[typ][id];
 			detail_header.textContent = cache[typ][id]._header_text;
 			detail_header.setAttribute("title", cache[typ][id]._header_text);
@@ -300,6 +301,9 @@ var Router = function() {
 				while (cache_page_stack.length > 5) {
 					cps = cache_page_stack.shift();
 					if (cache[cps.typ][cps.id]) {
+						if (cache[cps.typ][cps.id].parentNode) {
+							cache[cps.typ][cps.id].parentNode.removeChild(cache[cps.typ][cps.id]);
+						}
 						delete(cache[cps.typ][cps.id]);
 					}
 				}
