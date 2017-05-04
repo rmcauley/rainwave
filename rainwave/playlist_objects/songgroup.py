@@ -55,7 +55,6 @@ class SongGroup(AssociatedMetadata):
 				"JOIN r4_songs USING (song_id) "
 			"WHERE group_id = %s AND song_exists = TRUE AND song_verified = TRUE "
 			"GROUP BY sid "
-			"HAVING COUNT(DISTINCT album_id) > 1"
 			,(self.id,))
 		new_sids = [ row['sid'] for row in new_sids_all ]
 		for sid in config.station_ids:
