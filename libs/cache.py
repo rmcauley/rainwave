@@ -86,6 +86,12 @@ def get_song_rating(song_id, user_id):
 def set_album_rating(sid, album_id, user_id, rating):
 	_memcache_ratings.set("rating_album_%s_%s_%s" % (sid, album_id, user_id), rating)
 
+def set_album_faves(sid, album_id, user_id, fave):
+	rating = get_album_rating(sid, album_id, user_id)
+	if rating:
+		rating['album_fave'] = fave
+		set_album_rating(sid, album_id, user_id, rating)
+
 def get_album_rating(sid, album_id, user_id):
 	return _memcache_ratings.get("rating_album_%s_%s_%s" % (sid, album_id, user_id))
 

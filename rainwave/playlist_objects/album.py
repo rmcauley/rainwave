@@ -286,7 +286,13 @@ class Album(AssociatedMetadata):
 		return db.c.update("UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s", (timestamp(), self.id, sid))
 
 	def get_all_ratings(self, sid):
-		table = db.c.fetch_all("SELECT album_rating_user, album_fave, user_id, album_rating_complete FROM r4_album_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND album_id = %s AND sid = %s", (self.id, sid))
+		table = db.c.fetch_all(
+			"SELECT album_rating_user, user_id, album_rating_complete, album_fave "
+			"FROM r4_album_ratings JOIN phpbb_users USING (user_id) "
+			"LEFT JOIN r4_album_faves USING (album_id, user_id) "
+			"WHERE radio_inactive = FALSE AND album_id = %s AND sid = %s",
+			(self.id, sid)
+		)
 		all_ratings = {}
 		for row in table:
 			all_ratings[row['user_id']] = { "rating_user": row['album_rating_user'], "fave": row['album_fave'], "rating_complete": row['album_rating_complete'] }
@@ -299,25 +305,22 @@ class Album(AssociatedMetadata):
 			num_songs = self.get_num_songs(sid)
 			db.c.update(
 				"WITH "
-					"faves AS ( "
-						"SELECT album_id, sid, album_fave, user_id, NULL::numeric AS album_rating_user, 0::bigint AS song_rating_user_count FROM r4_album_ratings WHERE album_id = %s AND sid = %s AND album_fave = TRUE "
-					"), "
 					"deleted AS ( "
 						"DELETE FROM r4_album_ratings WHERE album_id = %s AND sid = %s RETURNING *"
 					"), "
 					"ratings AS ( "
-						"SELECT album_id, sid, FALSE AS album_fave, user_id, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user, COUNT(song_rating_user) AS song_rating_user_count "
+						"SELECT album_id, sid, user_id, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user, COUNT(song_rating_user) AS song_rating_user_count "
 						"FROM ("
 							"SELECT song_id, sid, r4_songs.album_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_verified = TRUE "
 						") AS r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) WHERE r4_song_ratings.song_rating_user IS NOT NULL "
 						"GROUP BY album_id, sid, user_id "
 					") "
-				"INSERT INTO r4_album_ratings (sid, album_id, album_fave, user_id, album_rating_user, album_rating_complete) "
-				"SELECT sid, album_id, BOOL_OR(album_fave) AS album_fave, user_id, NULLIF(MAX(album_rating_user), 0) AS album_rating_user, CASE WHEN MAX(song_rating_user_count) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete "
-					"FROM (SELECT * FROM faves UNION ALL SELECT * FROM ratings) AS result "
+				"INSERT INTO r4_album_ratings (sid, album_id, user_id, album_rating_user, album_rating_complete) "
+				"SELECT sid, album_id, user_id, NULLIF(MAX(album_rating_user), 0) AS album_rating_user, CASE WHEN MAX(song_rating_user_count) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete "
+					"FROM (SELECT * FROM ratings) AS result "
 					"GROUP BY sid, album_id, user_id "
-					"HAVING BOOL_OR(album_fave) = TRUE OR NULLIF(MAX(album_rating_user), 0) IS NOT NULL ",
-				(self.id, sid, self.id, sid, self.id, sid, num_songs))
+					"HAVING NULLIF(MAX(album_rating_user), 0) IS NOT NULL ",
+				(self.id, sid, self.id, sid, num_songs))
 
 	def reset_user_completed_flags(self):
 		if not db.c.allows_join_on_update:
@@ -402,9 +405,9 @@ class Album(AssociatedMetadata):
 		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_songs JOIN r4_request_history USING (song_id) WHERE album_id = %s AND sid = %s", (self.id, sid))
 		return db.c.update("UPDATE r4_album_sid SET album_request_count = %s WHERE album_id = %s AND sid = %s", (count, self.id, sid))
 
-	def update_fave_count(self, sid):
-		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_ratings WHERE album_fave = TRUE AND album_id = %s AND sid = %s", (self.id, sid))
-		return db.c.update("UPDATE r4_album_sid SET album_fave_count = %s WHERE album_id = %s AND sid = %s", (count, self.id, sid))
+	def update_fave_count(self):
+		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_album_faves WHERE album_fave = TRUE AND album_id = %s", (self.id,))
+		return db.c.update("UPDATE r4_album_sid SET album_fave_count = %s WHERE album_id = %s", (count, self.id))
 
 	def update_vote_count(self, sid):
 		count = db.c.fetch_var("SELECT COUNT(song_id) FROM r4_vote_history JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s", (self.id, sid))

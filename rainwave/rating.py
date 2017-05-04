@@ -37,7 +37,13 @@ def get_song_rating(song_id, user_id):
 def get_album_rating(sid, album_id, user_id):
 	rating = cache.get_album_rating(sid, album_id, user_id)
 	if not rating:
-		rating = db.c.fetch_row("SELECT album_rating_user AS rating_user, album_fave AS fave, album_rating_complete AS rating_complete FROM r4_album_ratings WHERE user_id = %s AND album_id = %s AND sid = %s", (user_id, album_id, sid))
+		rating = db.c.fetch_row(
+			"SELECT album_rating_user AS rating_user, album_fave AS fave, album_rating_complete AS rating_complete "
+			"FROM r4_album_ratings "
+			"LEFT JOIN r4_album_faves USING (user_id, album_id) "
+			"WHERE user_id = %s AND album_id = %s AND sid = %s",
+			(user_id, album_id, sid)
+		)
 		if not rating:
 			rating = { "rating_user": 0, "fave": None, "rating_complete": False }
 	cache.set_album_rating(sid, album_id, user_id, rating)
@@ -108,23 +114,21 @@ def set_song_fave(song_id, user_id, fave):
 
 def set_album_fave(sid, album_id, user_id, fave):
 	db.c.start_transaction()
-	exists = db.c.fetch_row("SELECT * FROM r4_album_ratings WHERE album_id = %s AND user_id = %s AND sid = %s", (album_id, user_id, sid))
+	exists = db.c.fetch_row("SELECT * FROM r4_album_faves WHERE album_id = %s AND user_id = %s", (album_id, user_id))
 	rating = None
 	rating_complete = False
 	if not exists:
-		if db.c.update("INSERT INTO r4_album_ratings (album_id, user_id, album_fave, sid) VALUES (%s, %s, %s, %s)", (album_id, user_id, fave, sid)) == 0:
+		if db.c.update("INSERT INTO r4_album_faves (album_id, user_id, album_fave) VALUES (%s, %s, %s)", (album_id, user_id, fave)) == 0:
 			log.debug("rating", "Failed to insert record for fave %s %s, fave is: %s." % ("album", album_id, fave))
 			return False
 	else:
-		rating = exists["album" + "_rating_user"]
-		rating_complete = exists['album_rating_complete']
-		if db.c.update("UPDATE r4_album_ratings SET album_fave = %s WHERE album_id = %s AND user_id = %s AND sid = %s", (fave, album_id, user_id, sid)) == 0:
+		if db.c.update("UPDATE r4_album_faves SET album_fave = %s WHERE album_id = %s AND user_id = %s", (fave, album_id, user_id)) == 0:
 			log.debug("rating", "Failed to update record for fave %s %s, fave is: %s." % ("album", album_id, fave))
 			return False
 	if (not exists and fave) or (not exists["album" + "_fave"] and fave):
-		db.c.update("UPDATE r4_album_sid SET album_fave_count = album_fave_count + 1 WHERE album_id = %s AND sid = %s", (album_id, sid))
+		db.c.update("UPDATE r4_album_sid SET album_fave_count = album_fave_count + 1 WHERE album_id = %s", (album_id,))
 	elif (exists and exists["album" + "_fave"] and not fave):
-		db.c.update("UPDATE r4_album_sid SET album_fave_count = album_fave_count - 1 WHERE album_id = %s AND sid = %s", (album_id, sid))
+		db.c.update("UPDATE r4_album_sid SET album_fave_count = album_fave_count - 1 WHERE album_id = %s", (album_id,))
 	if "album" == "album":
 		cache.set_album_rating(sid, album_id, user_id, { "rating_user": rating, "fave": fave, "rating_complete": rating_complete })
 	elif "album" == "song":
@@ -152,16 +156,15 @@ def update_album_ratings(target_sid, song_id, user_id):
 		album_rating = None
 		if user_data['rating_user']:
 			album_rating = float(user_data['rating_user'])
-		album_fave = None
-		existing_rating = db.c.fetch_row("SELECT album_rating_user, album_fave FROM r4_album_ratings WHERE album_id = %s AND user_id = %s AND sid = %s", (album_id, user_id, sid))
+
+		existing_rating = db.c.fetch_row("SELECT album_rating_user FROM r4_album_ratings WHERE album_id = %s AND user_id = %s AND sid = %s", (album_id, user_id, sid))
 		if existing_rating:
-			album_fave = existing_rating['album_fave']
-			db.c.update("UPDATE r4_album_ratings SET album_rating_user = %s, album_fave = %s, album_rating_complete = %s WHERE user_id = %s AND album_id = %s AND sid = %s",
-						(album_rating, album_fave, rating_complete, user_id, album_id, sid))
+			db.c.update("UPDATE r4_album_ratings SET album_rating_user = %s, album_rating_complete = %s WHERE user_id = %s AND album_id = %s AND sid = %s",
+						(album_rating, rating_complete, user_id, album_id, sid))
 		else:
-			db.c.update("INSERT INTO r4_album_ratings (album_rating_user, album_fave, album_rating_complete, user_id, album_id, sid) VALUES (%s, %s, %s, %s, %s, %s)",
-						(album_rating, album_fave, rating_complete, user_id, album_id, sid))
-		cache.set_album_rating(sid, album_id, user_id, { "rating_user": album_rating, "fave": album_fave, "rating_complete": rating_complete })
+			db.c.update("INSERT INTO r4_album_ratings (album_rating_user, album_rating_complete, user_id, album_id, sid) VALUES (%s, %s, %s, %s, %s, %s)",
+						(album_rating, rating_complete, user_id, album_id, sid))
+		cache.set_album_rating(sid, album_id, user_id, { "rating_user": album_rating, "rating_complete": rating_complete })
 		if target_sid == sid:
 			toret.append({ "sid": sid, "id": album_id, "rating_user": album_rating, "rating_complete": rating_complete })
 	return toret

@@ -462,7 +462,6 @@ def create_tables():
 			sid 					SMALLINT	NOT NULL, \
 			user_id					INTEGER		NOT NULL, \
 			album_rating_user		REAL		, \
-			album_fave				BOOLEAN, \
 			album_rating_complete	BOOLEAN		DEFAULT FALSE \
 		)")
 	# 			PRIMARY KEY (user_id, album_id, sid) \
@@ -472,6 +471,18 @@ def create_tables():
 	c.create_idx("r4_album_ratings", "album_fave", "sid")
 	c.create_delete_fk("r4_album_ratings", "r4_albums", "album_id", create_idx=False)
 	c.create_delete_fk("r4_album_ratings", "phpbb_users", "user_id", create_idx=False)
+
+	c.update(" \
+		CREATE TABLE r4_album_faves ( \
+			album_id				INTEGER		NOT NULL, \
+			user_id					INTEGER		NOT NULL, \
+			album_fave				BOOLEAN \
+		)")
+	# 			PRIMARY KEY (user_id, album_id, sid) \
+	c.create_idx("r4_album_faves", "user_id", "album_id", "sid") 	#Should be handled by primary key.
+	c.create_idx("r4_album_faves", "album_fave")
+	c.create_delete_fk("r4_album_faves", "r4_albums", "album_id", create_idx=False)
+	c.create_delete_fk("r4_album_faves", "phpbb_users", "user_id", create_idx=False)
 
 	c.update(" \
 		CREATE TABLE r4_artists		( \

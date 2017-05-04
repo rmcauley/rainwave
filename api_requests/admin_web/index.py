@@ -158,14 +158,15 @@ class AlbumList(api.web.HTMLRequest):
 		sql = ("SELECT r4_albums.album_id AS id, album_name AS name, album_name_searchable AS name_searchable, album_rating AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, album_updated AS updated, album_fave AS fave, album_rating_user AS rating_user, album_cool_multiply AS cool_multiply, album_cool_override AS cool_override "
 			"FROM r4_albums "
 			"JOIN r4_album_sid USING (album_id) "
-			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND user_id = %s AND r4_album_ratings.sid = r4_album_sid.sid) "
+			"LEFT JOIN r4_album_ratings ON (r4_album_sid.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = r4_album_sid.sid) "
+			"LEFT JOIN r4_album_faves ON (r4_album_sid.album_id = r4_album_faves.album_id AND r4_album_faves.user_id = %s) "
 			"WHERE r4_album_sid.sid = %s AND r4_album_sid.album_exists = TRUE "
 		)
 		if self.get_argument("sort", None) and self.get_argument("sort") == "added_on":
 			sql += "ORDER BY album_newest_song_time DESC, album_name"
 		else:
 			sql += "ORDER BY album_name"
-		albums = db.c.fetch_all(sql, (self.user.id, self.get_argument("restrict")))
+		albums = db.c.fetch_all(sql, (self.user.id, self.user.id, self.get_argument("restrict")))
 		for row in albums:
 			self.write("<tr><td>%s</td>" % row['id'])
 			self.write("<td onclick=\"window.location.href = '../song_list/' + window.top.current_tool + '?sid=%s&id=%s&sort=%s';\" style='cursor: pointer;'>%s</td><td>" % (self.get_argument('restrict'), row['id'], self.get_argument('sort', ""), tornado.escape.xhtml_escape(row['name'])))
