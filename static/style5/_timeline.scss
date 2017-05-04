@@ -84,6 +84,15 @@ div.timeline_event {
 		html[lang='ko_KO'] & {
 			@include transform(translateY(-2px));
 		}
+
+		.header_text {
+			box-sizing: border-box;
+			display: block;
+			padding-right: 20px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
 	}
 
 	&.no_header {
