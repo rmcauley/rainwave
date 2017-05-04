@@ -4,7 +4,7 @@ from libs import config
 from rainwave.playlist_objects.metadata import AssociatedMetadata, MetadataUpdateError, make_searchable_string
 
 class Artist(AssociatedMetadata):
-	select_by_name_query = "SELECT artist_id AS id, artist_name AS name, artist_name_searchable AS name_searchable FROM r4_artists WHERE artist_name = %s"
+	select_by_name_query = "SELECT artist_id AS id, artist_name AS name, artist_name_searchable AS name_searchable FROM r4_artists WHERE lower(artist_name) = lower(%s)"
 	select_by_id_query = "SELECT artist_id AS id, artist_name AS name, artist_name_searchable AS name_searchable FROM r4_artists WHERE artist_id = %s"
 	select_by_song_id_query = "SELECT r4_artists.artist_id AS id, r4_artists.artist_name AS name, r4_artists.artist_name_searchable AS name_searchable, r4_song_artist.artist_is_tag AS is_tag, artist_order AS \"order\" FROM r4_song_artist JOIN r4_artists USING (artist_id) WHERE song_id = %s ORDER BY artist_order"
 	disassociate_song_id_query = "DELETE FROM r4_song_artist WHERE song_id = %s AND artist_id = %s"

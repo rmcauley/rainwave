@@ -54,7 +54,7 @@ def warm_cooled_albums(sid):
 	db.c.update("UPDATE r4_album_sid SET album_cool = FALSE WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE", (sid, timestamp()))
 
 class Album(AssociatedMetadata):
-	select_by_name_query = "SELECT r4_albums.* FROM r4_albums WHERE album_name = %s"
+	select_by_name_query = "SELECT r4_albums.* FROM r4_albums WHERE lower(album_name) = lower(%s)"
 	select_by_id_query = "SELECT r4_albums.* FROM r4_albums WHERE album_id = %s"
 	select_by_song_id_query = "SELECT r4_albums.* FROM r4_songs JOIN r4_albums USING (album_id) WHERE song_id = %s"
 	has_song_id_query = "SELECT COUNT(song_id) FROM r4_songs WHERE song_id = %s AND album_id = %s"
