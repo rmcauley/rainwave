@@ -110,6 +110,7 @@ ul.menu {
 			}
 
 			li.search_link img {
+				top: 2px;
 				@include transform(none);
 			}
 		}
