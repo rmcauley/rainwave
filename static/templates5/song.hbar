@@ -27,6 +27,10 @@
 			</div>
 		{{/if}}
 		<div bind="art" class="art_container">
+			{{#if ^_c.entry_id && User.sid === 5 }}
+				<div class="power_only song_station_indicator song_station_indicator_{{ origin_sid }}"></div>
+			{{/if}}
+
 			{{#if elec_request_user_id }}
 				{{#if ^_c.elec_request_user_id == User.id }}
 					<div class="requester your_request">

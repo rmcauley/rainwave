@@ -404,6 +404,24 @@ div.song {
 			padding-left: 10px;
 		}
 	}
+
+	div.song_station_indicator {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		font-size: 12px;
+		padding: 0 2px;
+		text-align: center;
+		height: 12px;
+		line-height: 12px;
+		color: $text;
+	}
+
+	div.song_station_indicator_1 { background: $station_game;   &::before { content: 'G' } }
+	div.song_station_indicator_2 { background: $station_ocr;    &::before { content: 'O' } }
+	div.song_station_indicator_3 { background: $station_covers; &::before { content: 'C' } }
+	div.song_station_indicator_4 { background: $station_chip;   &::before { content: 'C' } }
+	div.song_station_indicator_5 { background: $station_all;    &::before { content: 'A' } }
 }
 
 div.song div.plusminus {

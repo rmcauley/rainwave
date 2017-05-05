@@ -26,6 +26,13 @@ $text_dd:                     darken($text, 54%);
 $text_ddd:                    darken($text, 73%);
 $blue_d:                      darken($blue, 5%);
 
+// Stations
+$station_game:                #1f95e5;  // Rainwave blue
+$station_ocr:                 #de641b;  // OCR Orange
+$station_covers:              #b7000f;  // Red
+$station_chip:                #6e439d;  // Indigo
+$station_all:                 #a8cb2b;  // greenish
+
 // Error colors
 $error_b:                     #F00;
 $error_bkg:                   darken($error_b, 30%);
