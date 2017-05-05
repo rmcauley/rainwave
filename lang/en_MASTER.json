@@ -333,6 +333,7 @@
    "prefs_p_fav1"                                    : "Prioritize Faves Over Available",
    "prefs_p_sort"                                    : "Album Sort Method",
    "prefs_p_allcats"                                 : "Show Single-Album Categories",
+   "prefs_p_songsort"                                : "Sort Songs The Same As Albums",
    "prefs_sort_playlist_by_alpha"                    : "Alphabetical",
    "prefs_sort_playlist_by_rating_user"              : "Rating",
    "rating_preferences"                              : "Ratings",

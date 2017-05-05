@@ -16,7 +16,7 @@ var GroupView = function(json) {
 		}
 		albums.sort(SongsTableAlbumSort);
 
-		template = RWTemplates.detail.group({ "group": json, "albums": albums }, MOBILE ? null : document.createElement("div"));
+		template = RWTemplates.detail.group({ "group": json, "albums": albums }, document.createElement("div"));
 
 		var j;
 		for (i = 0; i < albums.length; i++) {

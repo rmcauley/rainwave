@@ -35,6 +35,15 @@ var Router = function() {
 		cache.request_line = {};
 		cache.listener = {};
 		cache_page_stack = [];
+
+		if (el) {
+			while (el.firstChild) {
+				el.removeChild(el.firstChild);
+			}
+			if (self.active_detail) {
+				el.appendChild(self.active_detail._root);
+			}
+		}
 	};
 
 	BOOTSTRAP.on_init.push(function(root_template) {
@@ -142,6 +151,11 @@ var Router = function() {
 			if (current_type && current_id) scroll_positions[current_type][current_id] = scroll.scroll_top;
 		};
 	});
+
+	self.reset_everything = function () {
+		reset_cache();
+		self.change();
+	};
 
 	self.recalculate_scroll = function() {
 		scroll.set_height(false);
@@ -292,7 +306,7 @@ var Router = function() {
 			if (t._root.parentNode != el) {
 				el.appendChild(t._root);
 			}
-			if (!MOBILE && t._root && t._root.tagName && (t._root.tagName.toLowerCase() == "div")) {
+			if (t._root && t._root.tagName && (t._root.tagName.toLowerCase() == "div")) {
 				cache[typ][id] = t;
 				cache[typ][id]._scroll = scroll;
 				self.active_detail = cache[typ][id];
@@ -301,8 +315,8 @@ var Router = function() {
 				while (cache_page_stack.length > 5) {
 					cps = cache_page_stack.shift();
 					if (cache[cps.typ][cps.id]) {
-						if (cache[cps.typ][cps.id].parentNode) {
-							cache[cps.typ][cps.id].parentNode.removeChild(cache[cps.typ][cps.id]);
+						if (cache[cps.typ][cps.id]._root.parentNode) {
+							cache[cps.typ][cps.id]._root.parentNode.removeChild(cache[cps.typ][cps.id]._root);
 						}
 						delete(cache[cps.typ][cps.id]);
 					}
@@ -348,8 +362,8 @@ var Router = function() {
 				rendered_type = false;
 				rendered_id = false;
 				request_in_flight = true;
-				while (el.firstChild) {
-					el.removeChild(el.firstChild);
+				for (var i = 0; i < el.childNodes.length; i++) {
+					el.childNodes[i].style.display = "none";
 				}
 				self.active_detail = null;
 				if (!document.body.classList.contains("detail")) {

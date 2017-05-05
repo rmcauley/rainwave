@@ -112,7 +112,7 @@ var AlbumView = function(album) {
 		album.request_percentile_message = $l("request_percentile_bottom", { "percentile": album.request_rank_percentile });
 	}
 
-	var template = RWTemplates.detail.album(album, !MOBILE ? document.createElement("div") : null);
+	var template = RWTemplates.detail.album(album, document.createElement("div"));
 	AlbumArt(album.art, template.art);
 
 	if (template.category_rollover) {

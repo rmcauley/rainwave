@@ -10,11 +10,13 @@
 	Prefs.define("p_favup", null, true);
 	Prefs.define("p_avup", [ false, true ], true);
 	Prefs.define("p_fav1", [ false, true ], true);
+	Prefs.define("p_songsort", [ false, true ], true);
 
 	var sort_unrated_first = Prefs.get("p_null1");
 	var sort_faves_first = Prefs.get("p_favup");
 	var sort_available_first = Prefs.get("p_avup");
 	var prioritize_faves = Prefs.get("p_fav1");
+	var songsort_same_as_album = Prefs.get("p_songsort");
 
 	var prefs_update = function(unused_arg, unused_arg2, no_redraw) {
 		sort_unrated_first = Prefs.get("p_null1");
@@ -33,12 +35,18 @@
 			self.update([]);
 			self.redraw_current_position();
 		}
+
+		if (!no_redraw && songsort_same_as_album !== Prefs.get("p_songsort")) {
+			songsort_same_as_album = Prefs.get("p_songsort");
+			Router.reset_everything();
+		}
 	};
 	Prefs.add_callback("p_null1", prefs_update);
 	Prefs.add_callback("p_sort", prefs_update);
 	Prefs.add_callback("p_favup", prefs_update);
 	Prefs.add_callback("p_avup", prefs_update);
 	Prefs.add_callback("p_fav1", prefs_update);
+	Prefs.add_callback("p_songsort", prefs_update);
 	Prefs.add_callback("r_incmplt", prefs_update);
 
 	self.onFinishRender = function() {
