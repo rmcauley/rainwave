@@ -75,6 +75,24 @@ class CreateProducer(api.web.APIHandler):
 			p.fill_unrated(self.sid, self.get_argument("end_utc_time") - self.get_argument("start_utc_time"))
 		self.append(self.return_name, p.to_dict())
 
+@handle_api_url("admin/duplicate_producer")
+class DuplicateProducer(api.web.APIHandler):
+	return_name = "power_hour"
+	admin_required = True
+	sid_required = True
+	fields = { "sched_id": (fieldtypes.sched_id, True) }
+
+	def post(self):
+		producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
+		if not producer:
+			raise APIException("internal_error", "Producer ID %s not found." % self.get_argument("sched_id"))
+		new_producer = producer.duplicate()
+		ts = int(timestamp())
+		if new_producer.start < ts:
+			new_producer.change_end(ts + 86400 + (new_producer.end - new_producer.start))
+			new_producer.change_start(ts + 86400)
+		self.append(self.return_name, new_producer.to_dict())
+
 @handle_api_url("admin/change_producer_name")
 class ChangeProducerName(api.web.APIHandler):
 	admin_required = True

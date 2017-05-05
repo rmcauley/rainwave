@@ -97,6 +97,20 @@ class BaseProducer(object):
 		self.songs = None
 		self.dj_user_id = None
 
+	def duplicate(self):
+		return self.__class__.create(
+			self.sid,
+			self.start,
+			self.end,
+			self.name,
+			self.public,
+			self.timed,
+			self.url,
+			self.use_crossfade,
+			self.use_tag_suffix,
+			self.dj_user_id
+		)
+
 	def change_start(self, new_start):
 		if not self.used:
 			self.start = new_start

@@ -40,3 +40,13 @@ class EditGroupCooldown(api.web.APIHandler):
 		g = SongGroup.load_from_id(self.get_argument("group_id"))
 		g.set_cooldown(self.get_argument("cooldown"))
 		self.append(self.return_name, { "tl_key": "group_edit_success", "text": "Group cooldown updated to %s" % self.get_argument("cooldown") })
+
+@handle_api_url("admin/create_group")
+class CreateGroup(api.web.APIHandler):
+	admin_required = True
+	sid_required = False
+	fields = { "name": (fieldtypes.string, True) }
+
+	def post(self):
+		SongGroup.load_from_name(self.get_argument("name"))
+		self.append(self.return_name, { "tl_key": "group_create_success", "text": "Group created." })

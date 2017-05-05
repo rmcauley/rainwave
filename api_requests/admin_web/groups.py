@@ -96,6 +96,8 @@ class AssociateGroupTool(api.web.HTMLRequest):
 		self.write("</select><br />")
 		self.write("<button onclick=\"window.location.href='/admin/tools/associate_groups_finish/' + document.getElementById('associate_group_id').value\">Associate</button>")
 		self.write("<br /><br /><a href='/admin/tools/associate_groups_cache_reset'>Reset the list above.</a>")
+		self.write("<h3>Create a new group:</h3>")
+		self.write("<p><input type='text' id='new_group_name' /><br /><button onclick=\"window.top.call_api('admin/create_group', { 'name': document.getElementById('new_group_name').value })\">Create</button></p>")
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/album_list/associate_groups")
@@ -123,7 +125,6 @@ class GroupEditTool(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Group Editing"))
 		self.write("<h2>Group Editing</h2>")
 		self.write("<p>The station you select in the frames above this have no bearing here.</p>")
-		self.write("<p>-- todo: let you add new groups here --</p>")
 		self.write(self.render_string("basic_footer.html"))
 
 @handle_url("/admin/album_list/group_edit")

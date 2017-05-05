@@ -43,12 +43,13 @@ class WebCreateProducer(api.web.HTMLRequest):
 class WebListProducersBase(object):
 	#pylint: disable=E1101
 	def header_special(self):
-		self.write("<th>Time</th><th></th><th></th>")
+		self.write("<th>Time</th><th></th><th></th><th></th>")
 
 	def row_special(self, row):
 		self.write("<td style='font-family: monospace;'>%s</td>" % get_ph_formatted_time(row['start'], row['end'], 'US/Eastern'))
 		self.write("<td><a href='/admin/album_list/modify_producer?sid=%s&sched_id=%s'>Modify</a></td>" % (self.sid, row['id']))
 		self.write("<td><a onclick=\"window.top.call_api('admin/delete_producer', { 'sched_id': %s });\">Delete</a></td>" % row['id'])
+		self.write("<td><a onclick=\"window.top.call_api('admin/duplicate_producer', { 'sched_id': %s });\">Duplicate</a></td>" % row['id'])
 
 	def sort_keys(self, keys):
 		return [ "sid", "name", "type", 'sched_length_minutes', "url", "username" ]
