@@ -66,6 +66,7 @@
     "SongsTableDetail": true,
     "SongsTableSorting": true,
     "Stations": true,
+    "supportsPassiveEvents": true,
     "Timeline": true,
     "User": true,
     "visibilityEventNames": true,

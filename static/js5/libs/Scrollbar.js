@@ -107,7 +107,7 @@ var Scrollbar = function() {
 				self.scrollblock.addEventListener("scroll", function() {
 					self.scroll_top = self.scrollblock.scrollTop;
 					if (self.reposition_hook) self.reposition_hook();
-				});
+				}, supportsPassiveEvents ? { passive: true } : false);
 			}
 
 			if (always_scrollblock) {
@@ -229,7 +229,7 @@ var Scrollbar = function() {
 		};
 
 		handle.addEventListener("mousedown", mouse_down);
-		scrollable.addEventListener("scroll", self.reposition);
+		scrollable.addEventListener("scroll", self.reposition, supportsPassiveEvents ? { passive: true } : false);
 		scrollbars.push(self);
 		return self;
 	};
