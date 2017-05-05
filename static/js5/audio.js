@@ -117,10 +117,6 @@ var RWAudioConstructor = function() {
 		el.classList.remove("working");
 	};
 
-	self.addEventListener("longLoadWarning", function() {
-		ErrorHandler.permanent_error(ErrorHandler.make_error("chrome_mobile_takes_time", 500));
-	});
-
 	if (!Prefs.get("vol") || (Prefs.get("vol") > 1) || (Prefs.get("vol") < 0)) {
 		self.setVolume(0.85);
 	}
