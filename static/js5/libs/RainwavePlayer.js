@@ -231,6 +231,7 @@ var RainwavePlayer = function() {
 			return;
 		}
 
+		var to_return = null;
 		if (!self.isPlaying) {
 			if (!audioEl) {
 				setupAudio();
@@ -248,11 +249,12 @@ var RainwavePlayer = function() {
 				audioEl.appendChild(setupAudioSource(i, streamURLs[i]));
 			}
 
-			audioEl.play();
+			to_return = audioEl.play();
 			self.isPlaying = true;
 			self.dispatchEvent(createEvent("loading"));
 			self.dispatchEvent(createEvent("change"));
 		}
+		return to_return;
 	};
 
 	/**

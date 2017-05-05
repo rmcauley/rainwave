@@ -19,6 +19,7 @@ var RWAudioConstructor = function() {
 	var offset_width = 54;		// taken straight from the CSS for #audio_volume
 	var offset_left;
 	var last_user_tunein_check = 0;
+	var now_playing;
 	var iOSAppMode = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.rainwavePlay;
 
 	if (iOSAppMode) {
@@ -75,6 +76,12 @@ var RWAudioConstructor = function() {
 		self.useStreamURLs(stream_urls);
 
 		API.add_callback("user", user_tunein_check);
+		API.add_callback("sched_current", function (np) {
+			now_playing = np;
+			if (msUpdateMetadata) {
+				msUpdateMetadata();
+			}
+		});
 
 		Prefs.define("vol", [ 1.0 ]);
 		draw_volume(Prefs.get("vol"));
@@ -221,6 +228,45 @@ var RWAudioConstructor = function() {
 		}
 		return false;
 	};
+
+	if (navigator.mediaSession) {
+		var msPlay = function() {
+			var promise = self.play();
+			if (promise && promise.then) {
+				promise.then(msUpdateMetadata);
+			}
+		};
+
+		var msUpdateMetadata = function () {
+			var song = now_playing.songs[0];
+			var art_exists = song.albums[0].art ? true : false;
+			var art_url = "http://rainwave.cc/" + (now_playing.songs[0].albums[0].art || "/static/images4/noart_1.jpg");
+			var artwork = [
+				{ src: art_url + (art_exists ? "_120.jpg" : ""), sizes: "120x120", type: "image/jpeg" },
+				{ src: art_url + (art_exists ? "_240.jpg" : ""), sizes: "240x240", type: "image/jpeg" },
+				{ src: art_url + (art_exists ? "_320.jpg" : ""), sizes: "320x320", type: "image/jpeg" },
+			];
+
+			var artists = [];
+			for (var i = 0; i < song.artists.length; i++) {
+				artists.push(song.artists[i].name);
+			}
+
+			navigator.mediaSession.metadata = new MediaMetadata({
+				title: song.title,
+				artist: artists.join(", "),
+				album: song.albums[0].name,
+				artwork: artwork
+			});
+		};
+
+		navigator.mediaSession.setActionHandler("play", msPlay);
+		navigator.mediaSession.setActionHandler("pause", self.stop);
+		navigator.mediaSession.setActionHandler("previoustrack", msPlay);
+		navigator.mediaSession.setActionHandler("nexttrack", msPlay);
+		navigator.mediaSession.setActionHandler("seekbackward", function() {});
+		navigator.mediaSession.setActionHandler("seekforward", function() {});
+	}
 
 	return self;
 };
