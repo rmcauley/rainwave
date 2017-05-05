@@ -96,6 +96,12 @@ $player_icon_width: $player_icon_height;
 		}
 	}
 
+	#audio_volume_container {
+		position: relative;
+		display: inline-block;
+		cursor: default;
+	}
+
 	.audio_volume {
 		position: relative;
 		z-index: 1;
@@ -103,6 +109,7 @@ $player_icon_width: $player_icon_height;
 		width: $player_icon_height * 2;
 		height: $player_icon_height;
 		opacity: .3;
+		cursor: default;
 		@include transition(opacity);
 	}
 

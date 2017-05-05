@@ -14,8 +14,10 @@ var RWAudioConstructor = function() {
 	var el;
 	var volume_el;
 	var volume_rect;
+	var volume_container;
 	var mute_el;
-	var offset_width;
+	var offset_width = 54;		// taken straight from the CSS for #audio_volume
+	var offset_left;
 	var last_user_tunein_check = 0;
 	var iOSAppMode = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.rainwavePlay;
 
@@ -36,10 +38,11 @@ var RWAudioConstructor = function() {
 	BOOTSTRAP.on_init.push(function(root_template) {
 		self.audioElDest = root_template.measure_box;
 
+		root_template.volume_container = document.getElementById("audio_volume_container");
 		root_template.volume = document.getElementById("audio_volume");
 		root_template.volume_indicator = document.getElementById("audio_volume_indicator");
 		root_template.volume.style.display = "";
-		root_template.mute.parentNode.appendChild(root_template.volume);
+		root_template.mute.parentNode.appendChild(root_template.volume_container);
 
 		root_template.volume.addEventListener("mousedown", volume_control_mousedown);
 		root_template.mute.addEventListener("click", self.toggleMute);
@@ -50,6 +53,7 @@ var RWAudioConstructor = function() {
 		el = root_template.player;
 		volume_el = root_template.volume;
 		volume_rect = root_template.volume_indicator;
+		volume_container = root_template.volume_container;
 		mute_el = root_template.mute;
 
 		var stream_filename = BOOTSTRAP.stream_filename + "." + self.type;
@@ -168,7 +172,14 @@ var RWAudioConstructor = function() {
 
 	var volume_control_mousedown = function(evt) {
 		if (evt.button !== 0) return;
-		offset_width = parseInt(window.getComputedStyle(volume_el, null).getPropertyValue("width"));
+		var node = volume_container;
+		offset_left = node.offsetLeft;
+		while (node = node.parentNode) {
+			if (node.offsetLeft) {
+				offset_left += node.offsetLeft;
+			}
+		}
+		console.log(offset_left);
 		change_volume_from_mouse(evt);
 		if (self.isMuted) {
 			self.toggleMute();
@@ -183,8 +194,9 @@ var RWAudioConstructor = function() {
 	};
 
 	var change_volume_from_mouse = function(evt) {
-		var x = evt.layerX !== undefined ? evt.layerX : evt.offsetX;
-		var v = Math.min(Math.max((x / offset_width), 0), 1);
+		var x = evt.pageX ? evt.pageX : evt.clientX;
+		x = x - 5;
+		var v = Math.min(Math.max(((x - offset_left) / offset_width), 0), 1);
 		if (v < 0.05) v = 0;
 		if (v > 0.95) v = 1;
 		if (!v || isNaN(v)) v = 0;
