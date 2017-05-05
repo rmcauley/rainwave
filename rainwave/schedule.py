@@ -381,9 +381,13 @@ def update_memcache(sid):
 	cache.set_station(sid, "album_diff", playlist.get_updated_albums_dict(sid), True)
 	rainwave.playlist_objects.album.clear_updated_albums(sid)
 	cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
+	cache.set_station(sid, "all_albums_no_searchable", playlist.get_all_albums_list(sid, with_searchable=False), True)
 	cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)
+	cache.set_station(sid, "all_artists_no_searchable", playlist.get_all_artists_list(sid, with_searchable=False), True)
 	cache.set_station(sid, "all_groups", playlist.get_all_groups_list(sid), True)
+	cache.set_station(sid, "all_groups_no_searchable", playlist.get_all_groups_list(sid, with_searchable=False), True)
 	cache.set_station(sid, "all_groups_power", playlist.get_all_groups_for_power(sid), True)
+	cache.set_station(sid, "all_groups_power_no_searchable", playlist.get_all_groups_for_power(sid, with_searchable=False), True)
 
 	potential_dj_ids = []
 	if getattr(current[sid], 'dj_user_id', None):

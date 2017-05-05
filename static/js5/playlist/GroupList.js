@@ -9,7 +9,7 @@ var GroupList = function(el) {
 		if (!self.loaded && !loading) {
 			self.show_loading();
 			loading = true;
-			API.async_get("all_groups", { "all": Prefs.get("p_allcats") });
+			API.async_get("all_groups", { "all": Prefs.get("p_allcats"), "no_searchable": true });
 		}
 	};
 

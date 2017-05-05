@@ -22,7 +22,6 @@ var RequestLineList = function(el) {
 
 	self.draw_entry = function(item) {
 		item.id = item.user_id;
-		item.name_searchable = Formatting.make_searchable_string(item.username);
 		item._el = document.createElement("div");
 		item._el.className = "item";
 		item._user = document.createElement("div");

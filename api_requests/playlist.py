@@ -17,48 +17,65 @@ from rainwave import playlist
 from rainwave.playlist_objects.metadata import MetadataNotFoundError
 from api.exceptions import APIException
 
-def get_all_albums(sid, user = None):
-	if not user or user.is_anonymous():
-		return cache.get_station(sid, "all_albums")
+def get_all_albums(sid, user = None, with_searchable = True):
+	if with_searchable:
+		if not user or user.is_anonymous():
+			return cache.get_station(sid, "all_albums")
+		else:
+			return playlist.get_all_albums_list(sid, user)
 	else:
-		return playlist.get_all_albums_list(sid, user)
+		if not user or user.is_anonymous():
+			return cache.get_station(sid, "all_albums_no_searchable")
+		else:
+			return playlist.get_all_albums_list(sid, user, with_searchable = False)
 
-def get_all_artists(sid):
-	return cache.get_station(sid, "all_artists")
+def get_all_artists(sid, with_searchable = True):
+	if with_searchable:
+		return cache.get_station(sid, "all_artists")
+	else:
+		return cache.get_station(sid, "all_artists_no_searchable")
 
-def get_all_groups(sid):
-	return cache.get_station(sid, "all_groups")
+def get_all_groups(sid, with_searchable = True):
+	if with_searchable:
+		return cache.get_station(sid, "all_groups")
+	else:
+		return cache.get_station(sid, "all_groups_no_searchable")
 
-def get_all_groups_power(sid):
-	return cache.get_station(sid, "all_groups_power")
+def get_all_groups_power(sid, with_searchable = True):
+	if with_searchable:
+		return cache.get_station(sid, "all_groups_power")
+	else:
+		return cache.get_station(sid, "all_groups_power_no_searchable")
 
 @handle_api_url("all_albums")
 class AllAlbumsHandler(APIHandler):
 	description = "Get a list of all albums on the station playlist."
 	return_name = "all_albums"
+	fields = { "no_searchable": (fieldtypes.boolean, None) }
 
 	def post(self):
-		self.append(self.return_name, get_all_albums(self.sid, self.user))
+		self.append(self.return_name, get_all_albums(self.sid, self.user, with_searchable=not self.get_argument("no_searchable")))
 
 @handle_api_url("all_artists")
 class AllArtistsHandler(APIHandler):
 	description = "Get a list of all artists on the station playlist."
 	return_name = "all_artists"
+	fields = { "no_searchable": (fieldtypes.boolean, None) }
 
 	def post(self):
-		self.append(self.return_name, get_all_artists(self.sid))
+		self.append(self.return_name, get_all_artists(self.sid, with_searchable=not self.get_argument("no_searchable")))
 
 @handle_api_url("all_groups")
 class AllGroupsHandler(APIHandler):
 	description = "Get a list of all song groups on the station playlist.  Supply the 'all' flag to get a list of categories that includes categories that only contain a single album."
 	return_name = "all_groups"
-	fields = { "all": (fieldtypes.boolean, None) }
+	fields = { "all": (fieldtypes.boolean, None), "no_searchable": (fieldtypes.boolean, None) }
 
 	def post(self):
 		if self.get_argument("all"):
-			self.append(self.return_name, get_all_groups_power(self.sid))
+			self.append(self.return_name, get_all_groups_power(self.sid, with_searchable=not self.get_argument("no_searchable")))
 		else:
-			self.append(self.return_name, get_all_groups(self.sid))
+			self.append(self.return_name, get_all_groups(self.sid, with_searchable=not self.get_argument("no_searchable")))
 
 @handle_api_url("artist")
 class ArtistHandler(APIHandler):

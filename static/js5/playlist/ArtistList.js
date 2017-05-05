@@ -10,7 +10,7 @@ var ArtistList = function(el) {
 		if (!self.loaded && !loading) {
 			self.show_loading();
 			loading = true;
-			API.async_get("all_artists");
+			API.async_get("all_artists", { "no_searchable": true });
 		}
 	};
 
