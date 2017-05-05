@@ -58,4 +58,11 @@
 			{{/if}}
 		</div>
 	{{/if}}
+	{{#if ^User.perks}}
+		<div>
+			<a class="fave_all_songs" bind="fave_all_songs">{{ $l("fave_all_songs") }}</a>
+			<span>-</span>
+			<a class="unfave_all_songs" bind="unfave_all_songs">{{ $l("unfave_all_songs") }}</a>
+		</div>
+	{{/if}}
 </div>

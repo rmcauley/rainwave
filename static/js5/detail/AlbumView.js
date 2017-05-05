@@ -133,6 +133,24 @@ var AlbumView = function(album) {
 		template.graph_placement = null;
 	}
 
+	if (template.fave_all_songs) {
+		var all_fave_running = false;
+		template.fave_all_songs.addEventListener("click", function() {
+			if (all_fave_running) {
+				ErrorHandler.tooltip_error(ErrorHandler.make_error("websocket_throttle", 400));
+			}
+			all_fave_running = true;
+			API.async_get("fave_all_songs", { "album_id": album.id, "fave": true }, function() { all_fave_running = false; });
+		});
+		template.unfave_all_songs.addEventListener("click", function() {
+			if (all_fave_running) {
+				ErrorHandler.tooltip_error(ErrorHandler.make_error("websocket_throttle", 400));
+			}
+			all_fave_running = true;
+			API.async_get("fave_all_songs", { "album_id": album.id, "fave": false }, function() { all_fave_running = false; });
+		});
+	}
+
 	for (i = 0; i < album.songs.length; i++) {
 		if (!album.songs[i].artists) {
 			album.songs[i].artists = JSON.parse(album.songs[i].artist_parseable);

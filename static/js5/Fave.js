@@ -6,6 +6,7 @@ var Fave = function(json) {
 	BOOTSTRAP.on_init.push(function(template) {
 		API.add_callback("fave_song_result", song_fave_update);
 		API.add_callback("fave_album_result", album_fave_update);
+		API.add_callback("fave_all_songs_result", song_fave_all_update);
 	});
 
 	var change_fave = function(el_name, json, favetype) {
@@ -25,6 +26,12 @@ var Fave = function(json) {
 
 	var song_fave_update = function(json) {
 		change_fave("sfave_" + json.id, json, "song");
+	};
+
+	var song_fave_all_update = function(json) {
+		for (var i = 0; i < json.song_ids.length; i++) {
+			change_fave("sfave_" + json.song_ids[i], json, "song");
+		}
 	};
 
 	var album_fave_update = function(json) {
