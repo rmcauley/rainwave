@@ -120,7 +120,7 @@ class Bootstrap(api.web.APIHandler):
 	description = (
 		"Bootstrap a Rainwave client.  Provides user info, API key, station info, relay info, and more.  "
 		"If you run a GET query to this URL, you will receive a Javascript file containing a single variable called BOOTSTRAP.  While this is largely intended for the purposes of the main site, you may use this.  "
-		"If you run a POST query to this URL, you will receive a JSON object without the extra data put into BOOTSTRAP that the official Rainwave site requires."
+		"If you run a POST query to this URL, you will receive a JSON object of the same data."
 	)
 	phpbb_auth = True
 	auth_required = False
@@ -133,17 +133,12 @@ class Bootstrap(api.web.APIHandler):
 		if not self.user:
 			self.user = User(1)
 		self.user.ensure_api_key()
+		self.is_mobile = self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1
 
 	def get(self):
 		self.set_header("Content-Type", "text/javascript")
-		self.append("locales", api.locale.locale_names)
-		self.append("cookie_domain", config.get("cookie_domain"))
-		self.append("on_init", [])
-		self.append("on_measure", [])
-		self.append("on_draw", [])
-		self.append("websocket_host", config.get("websocket_host"))
 		self.post()
-		if self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1:
+		if self.is_mobile:
 			self.write("window.MOBILE = true;")
 		else:
 			self.write("window.MOBILE = false;")
@@ -151,9 +146,21 @@ class Bootstrap(api.web.APIHandler):
 
 	def post(self):
 		info.attach_info_to_request(self, live_voting=True)
+		self.append("build_version", config.build_number)
+		self.append("locale", self.locale.code)
+		self.append("locales", api.locale.locale_names)
+		self.append("cookie_domain", config.get("cookie_domain"))
+		self.append("on_init", [])
+		self.append("on_measure", [])
+		self.append("on_draw", [])
+		self.append("websocket_host", config.get("websocket_host"))
 		self.append("stream_filename", config.get_station(self.sid, "stream_filename"))
 		self.append("station_list", config.station_list)
 		self.append("relays", config.public_relays[self.sid])
+		if self.is_mobile:
+			self.append("mobile", True)
+		else:
+			self.append("mobile", False)
 
 @handle_api_url("bootstrap_dj")
 class DJBootstrap(Bootstrap):

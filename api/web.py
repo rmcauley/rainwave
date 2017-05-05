@@ -369,7 +369,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self._output.append({ key: dct })
 		else:
 			self._output[key] = dct
-		if "code" in dct:
+		if isinstance(dct, dict) and "code" in dct:
 			return dct["code"]
 		return True
 
