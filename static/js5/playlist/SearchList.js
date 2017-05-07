@@ -58,34 +58,15 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var chunked_i;
 	var first_chunk = false;
 	var paused_chunking = false;
-	var restart_chunk_timer;
-
-	var pause_chunking = function() {
-		if (restart_chunk_timer) {
-			clearTimeout(restart_chunk_timer);
-			restart_chunk_timer = false;
-		}
-		paused_chunking = true;
-	};
-
-	var restart_chunking = function() {
-		paused_chunking = false;
-		restart_chunk_timer = setTimeout(render_chunk, 300);
-	};
 
 	var start_chunking = function() {
 		if (chunked_start) return;
 		chunked_start = new Date().getTime();
-		// TODO: only sort up to what's visible and then sort the rest later?
 		items_to_draw.sort(self.sort_function);
 		if (items_to_draw.length) {
 			chunked_i = 0;
 			render_chunk();
 		}
-
-		// window.addEventListener("touchstart", pause_chunking);
-		// window.addEventListener("touchend", restart_chunking);
-		// window.addEventListener("touchcancel", restart_chunking);
 	};
 
 	var render_chunk = function() {
@@ -116,6 +97,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 		chunked_i = 0;
 		items_to_draw = [];
 		self.$t.search_box.setAttribute("placeholder", $l("Filter..."));
+		if (self.sort_function == self.sort_function_while_loading) {
+			self.sort_function = self.sort_function_search_key;
+		}
+		visible.sort(self.sort_function);
 
 		if (!self.loaded && current_open_id) {
 			self.loaded = true;
@@ -127,11 +112,13 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 		else if (!self.loaded && scroll_to_on_load) {
 			self.loaded = true;
+			current_open_id = false;
 			self.scroll_to_id(scroll_to_on_load);
 			scroll_to_on_load = false;
 		}
 		else if (!self.loaded) {
 			self.loaded = true;
+			self.redraw_current_position();
 		}
 
 		if (self.onFinishRender) {
@@ -139,10 +126,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 
 		chunked_start = false;
-
-		// window.removeEventListener("touchstart", pause_chunking);
-		// window.removeEventListener("touchend", restart_chunking);
-		// window.removeEventListener("touchcancel", restart_chunking);
 	};
 
 	// LIST MANAGEMENT ***********************************************
@@ -311,11 +294,24 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 	};
 
-	self.sort_function = function(a, b) {
+	self.sort_function_search_key = function(a, b) {
 		if (data[a][search_key] < data[b][search_key]) return -1;
 		else if (data[a][search_key] > data[b][search_key]) return 1;
 		return 0;
 	};
+
+	self.sort_function_while_loading = function(a, b) {
+		if (self.loaded) {
+			if (data[a][search_key] < data[b][search_key]) return -1;
+			else if (data[a][search_key] > data[b][search_key]) return 1;
+		} else {
+			if (data[a].name < data[b].name) return -1;
+			else if (data[a].name > data[b].name) return 1;
+		}
+		return 0;
+	};
+
+	self.sort_function = self.sort_function_while_loading;
 
 	self.open_element = function(e) {
 		if (e.stopPropagation) {

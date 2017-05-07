@@ -225,8 +225,14 @@
 			if (self.data[a].rating_user && !self.data[b].rating_user) return 1;
 		}
 
-		if (self.data[a].name_searchable < self.data[b].name_searchable) return -1;
-		else if (self.data[a].name_searchable > self.data[b].name_searchable) return 1;
+		if (self.loaded) {
+			if (self.data[a].name_searchable < self.data[b].name_searchable) return -1;
+			else if (self.data[a].name_searchable > self.data[b].name_searchable) return 1;
+		}
+		else {
+			if (self.data[a].name < self.data[b].name) return -1;
+			else if (self.data[a].name > self.data[b].name) return 1;
+		}
 		return 0;
 	};
 
@@ -254,8 +260,14 @@
 		if (self.data[a].rating_user < self.data[b].rating_user) return 1;
 		if (self.data[a].rating_user > self.data[b].rating_user) return -1;
 
-		if (self.data[a].name_searchable < self.data[b].name_searchable) return -1;
-		else if (self.data[a].name_searchable > self.data[b].name_searchable) return 1;
+		if (self.loaded) {
+			if (self.data[a].name_searchable < self.data[b].name_searchable) return -1;
+			else if (self.data[a].name_searchable > self.data[b].name_searchable) return 1;
+		}
+		else {
+			if (self.data[a].name < self.data[b].name) return -1;
+			else if (self.data[a].name > self.data[b].name) return 1;
+		}
 		return 0;
 	};
 
