@@ -130,7 +130,7 @@ class User(object):
 			if not listen_key:
 				listen_key = db.c.fetch_var("SELECT api_key_listen_key FROM r4_api_keys WHERE api_key = %s AND user_id = 1", (self.api_key,))
 				if not listen_key:
-					self.ensure_api_key()
+					return
 				else:
 					self.data['listen_key'] = listen_key
 			else:
