@@ -6,9 +6,12 @@ BOOTSTRAP.on_draw happens after the measurement - please do not cause reflows.
 
 */
 
-// if ("serviceWorker" in navigator) {
-// 	navigator.serviceWorker.register("/serviceworker.js", { scope: "/" });
-// }
+var service_worker_registration;
+if ("serviceWorker" in navigator) {
+	navigator.serviceWorker.register("/serviceworker.js", { scope: "/" }).then(function (registration) {
+		service_worker_registration = registration;
+	});
+}
 
 var User;
 var Stations = [];
@@ -204,6 +207,12 @@ var RWAudio;
 
 		if ((navigator.userAgent.toLowerCase().indexOf("msie") !== -1) || (navigator.userAgent.toLowerCase().indexOf("trident") !== -1)) {
 			add_javascript("/static/svg4everybody.min.js", function() { svg4everybody(); });
+		}
+
+		if (service_worker_registration) {
+			requestNextAnimationFrame(function() {
+				service_worker_registration.update();
+			});
 		}
 	};
 
