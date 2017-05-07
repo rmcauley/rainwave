@@ -68,15 +68,8 @@ var Menu = function() {
 		}
 
 		if (template.calendar_dropdown) {
-			BOOTSTRAP.on_draw.push(function() {
-				var jstz_load = document.createElement("script");
-				jstz_load.src = "/static/jstz.min.js";
-				jstz_load.addEventListener("load", function() {
-					template.calendar_menu_item.addEventListener("click", calendar_toggle);
-					template.menu_wrapper.addEventListener("mouseleave", calendar_hide);
-				});
-				document.body.appendChild(jstz_load);
-			});
+			template.calendar_menu_item.addEventListener("click", calendar_toggle);
+			template.menu_wrapper.addEventListener("mouseleave", calendar_hide);
 
 			var calendar_toggle = function(e) {
 				if (!has_calendar) {
