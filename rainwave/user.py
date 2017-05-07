@@ -125,18 +125,16 @@ class User(object):
 
 	def _auth_anon_user(self, api_key, bypass = False):
 		if not bypass:
-			cache_key = unicodedata.normalize('NFKD', u"api_key_ip_%s" % api_key).encode('ascii', 'ignore')
-			auth_against = cache.get(cache_key)
-			if not auth_against:
-				auth_against = db.c.fetch_var("SELECT api_ip FROM r4_api_keys WHERE api_key = %s AND user_id = 1", (self.api_key,))
-				if not auth_against or not auth_against == self.ip_address:
-					log.debug("user", "Anonymous user key %s not found for IP %s: record in DB is %s." % (api_key, self.ip_address, auth_against))
-					log.debug("user", "Re-generating API key %s." % api_key)
-					self.ensure_api_key(reuse = api_key)
-				cache.set(cache_key, auth_against)
-			if auth_against != self.ip_address:
-				log.debug("user", "Anonymous user key %s has IP %s which does not match IP %s." % (api_key, auth_against, self.ip_address))
-				return
+			cache_key = unicodedata.normalize('NFKD', u"api_key_listen_key_%s" % api_key).encode('ascii', 'ignore')
+			listen_key = cache.get(cache_key)
+			if not listen_key:
+				listen_key = db.c.fetch_var("SELECT api_key_listen_key FROM r4_api_keys WHERE api_key = %s AND user_id = 1", (self.api_key,))
+				if not listen_key:
+					self.ensure_api_key()
+				else:
+					self.data['listen_key'] = listen_key
+			else:
+				self.data['listen_key'] = listen_key
 		self.authorized = True
 
 	def get_tuned_in_sid(self):
@@ -406,27 +404,35 @@ class User(object):
 		db.c.update("UPDATE phpbb_users SET radio_listenkey = %s WHERE user_id = %s", (listen_key, self.id))
 		self.update({ "radio_listen_key": listen_key })
 
-	def ensure_api_key(self, reuse = None):
+	def ensure_api_key(self):
 		if self.id == 1:
-			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (self.ip_address,))
-			if not api_key:
-				cache_key = unicodedata.normalize('NFKD', u"api_key_ip_%s" % api_key).encode('ascii', 'ignore')
-				api_key = self.generate_api_key(int(timestamp()) + 172800, reuse)
-				cache.set(cache_key, api_key)
+			if self.data.get('api_key') and self.data['listen_key']:
+				return
+			api_key = self.generate_api_key(int(timestamp()) + 172800, self.data.get('api_key'))
+			cache_key = unicodedata.normalize('NFKD', u"api_key_listen_key_%s" % api_key).encode('ascii', 'ignore')
+			cache.set(cache_key, self.data['listen_key'])
 		elif self.id > 1:
 			if 'api_key' in self.data and self.data['api_key']:
 				return self.data['api_key']
+
 			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = %s", (self.id,))
 			if not api_key:
 				api_key = self.generate_api_key()
 		self.data['api_key'] = api_key
+
 		return api_key
 
 	def generate_api_key(self, expiry = None, reuse = None):
 		api_key = reuse or ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
-		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_ip) VALUES (%s, %s, %s, %s)", (self.id, api_key, expiry, self.ip_address))
-		# this function updates the API key cache for us
-		self.get_all_api_keys()
+		listen_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
+		if reuse:
+			db.c.update("DELETE FROM r4_api_keys WHERE api_key = %s AND user_id = 1", (reuse,))
+		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_key_listen_key) VALUES (%s, %s, %s, %s)", (self.id, api_key, expiry, listen_key))
+		if self.id == 1:
+			self.data['listen_key'] = listen_key
+		else:
+			# this function updates the API key cache for us
+			self.get_all_api_keys()
 		return api_key
 
 	def save_preferences(self, ip_addr, prefs_json_string):

@@ -21,27 +21,27 @@ if __name__ == "__main__":
 
 	print "Adding r4_album_faves table."
 
-	# db.c.update(" \
-	# 	CREATE TABLE r4_album_faves ( \
-	# 		album_id				INTEGER		NOT NULL, \
-	# 		user_id					INTEGER		NOT NULL, \
-	# 		album_fave				BOOLEAN \
-	# 	)")
-	# # 			PRIMARY KEY (user_id, album_id, sid) \
-	# db.c.create_idx("r4_album_faves", "user_id", "album_id", "sid") 	#Should be handled by primary key.
-	# db.c.create_idx("r4_album_faves", "album_fave")
-	# db.c.create_delete_fk("r4_album_faves", "r4_albums", "album_id", create_idx=False)
-	# db.c.create_delete_fk("r4_album_faves", "phpbb_users", "user_id", create_idx=False)
+	db.c.update(" \
+		CREATE TABLE r4_album_faves ( \
+			album_id				INTEGER		NOT NULL, \
+			user_id					INTEGER		NOT NULL, \
+			album_fave				BOOLEAN \
+		)")
+	# 			PRIMARY KEY (user_id, album_id, sid) \
+	db.c.create_idx("r4_album_faves", "user_id", "album_id", "sid") 	#Should be handled by primary key.
+	db.c.create_idx("r4_album_faves", "album_fave")
+	db.c.create_delete_fk("r4_album_faves", "r4_albums", "album_id", create_idx=False)
+	db.c.create_delete_fk("r4_album_faves", "phpbb_users", "user_id", create_idx=False)
 
-	# print "Populating album_faves table..."
+	print "Populating album_faves table..."
 
-	# for row in db.c.fetch_all("SELECT album_id, user_id FROM r4_album_ratings WHERE album_fave = TRUE"):
-	# 	if not db.c.fetch_var("SELECT COUNT(*) FROM r4_album_faves WHERE album_id = %s AND user_id = %s", (row['album_id'], row['user_id'])):
-	# 		db.c.update("INSERT INTO r4_album_faves (album_id, user_id, album_fave) VALUES (%s, %s, TRUE)", (row['album_id'], row['user_id']))
+	for row in db.c.fetch_all("SELECT album_id, user_id FROM r4_album_ratings WHERE album_fave = TRUE"):
+		if not db.c.fetch_var("SELECT COUNT(*) FROM r4_album_faves WHERE album_id = %s AND user_id = %s", (row['album_id'], row['user_id'])):
+			db.c.update("INSERT INTO r4_album_faves (album_id, user_id, album_fave) VALUES (%s, %s, TRUE)", (row['album_id'], row['user_id']))
 
-	# print "Removing old column..."
+	print "Removing old column..."
 
-	# db.c.update("ALTER TABLE r4_album_ratings DROP COLUMN album_fave")
+	db.c.update("ALTER TABLE r4_album_ratings DROP COLUMN album_fave")
 
 	print "Recalculating ratings for testing..."
 	for row in db.c.fetch_all("SELECT DISTINCT album_id, sid FROM r4_album_sid"):

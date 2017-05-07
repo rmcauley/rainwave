@@ -730,12 +730,12 @@ def create_tables():
 		CREATE TABLE r4_api_keys ( \
 			api_id					SERIAL		PRIMARY KEY, \
 			user_id					INTEGER		NOT NULL, \
-			api_ip					TEXT		, \
 			api_key					VARCHAR(10) , \
-			api_expiry				INTEGER		\
+			api_expiry				INTEGER		, \
+			api_key_listen_key      TEXT        \
 		)")
 	# c.create_idx("r4_api_keys", "user_id")		# handled by create_delete_fk
-	c.create_idx("r4_api_keys", "api_ip")
+	c.create_idx("r4_api_keys", "api_key")
 	c.create_delete_fk("r4_api_keys", "phpbb_users", "user_id")
 
 	c.update(" \
@@ -817,7 +817,7 @@ def _fill_test_tables():
 
 	# Anonymous user
 	c.update("INSERT INTO phpbb_users (user_id, username) VALUES (1, 'Anonymous')")
-	c.update("INSERT INTO r4_api_keys (user_id, api_key, api_ip) VALUES (1, 'TESTKEY', '127.0.0.1')")
+	c.update("INSERT INTO r4_api_keys (user_id, api_key) VALUES (1, 'TESTKEY')")
 
 	# User ID 2: site admin
 	c.update("INSERT INTO phpbb_users (user_id, username, group_id) VALUES (2, 'Test', 5)")
