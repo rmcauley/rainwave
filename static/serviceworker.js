@@ -36,20 +36,7 @@ self.addEventListener('fetch', function(evt) {
 					'<meta name="theme-color" content="#1978B7" />' +
 					'<meta name="msapplication-navbutton-color" content="#1978B7" />' +
 					'<meta name="apple-mobile-web-app-status-bar-style" content="#1978B7" />' +
-					'<link rel="manifest" href="/manifest.json" />' +
-					'<meta name="twitter:card" content="summary" />' +
-					'<meta name="twitter:site" content="@Rainwavecc" />' +
-					'<meta name="twitter:title" content="Rainwave {{ station_name }}" />' +
-					'<meta name="twitter:description" content="{{ site_description }}" />' +
-					'<meta name="twitter:image" content="https://core.rainwave.cc/static/images4/android/256.jpg" />' +
-					'<meta property="og:title" content="Rainwave {{ station_name }}" />' +
-					'<meta property="og:site_name" content="Rainwave" />' +
-					'<meta property="og:type" content="website" />' +
-					'<meta property="og:description" content="{{ site_description }}" />' +
-					'<meta property="og:locale" content="{{ request.locale.code }}" />' +
-					'<meta property="og:locale_alternative" content="en_US" />' +
-					'<meta property="og:url" content="https://rainwave.cc" />' +
-					'<meta property="og:image" content="https://rainwave.cc/static/images4/android/256.png" />'
+					'<link rel="manifest" href="/manifest.json" />'
 			);
 
 			if (!data.mobile) {
