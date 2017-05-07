@@ -64,7 +64,7 @@
 			self.unload();
 		}
 		else {
-			API.async_get("all_albums");
+			API.async_get("all_albums", { "no_searchable": true });
 		}
 	});
 
