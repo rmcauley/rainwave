@@ -23,6 +23,7 @@ if __name__ == "__main__":
 
 	db.c.update("ALTER TABLE r4_api_keys DROP COLUMN api_ip")
 	db.c.update("ALTER TABLE r4_api_keys ADD COLUMN api_key_listen_key TEXT")
+	db.c.update("ALTER TABLE r4_listeners ADD listener_key TEXT")
 	db.c.create_idx("r4_api_keys", "api_key")
 
 	for key in db.c.fetch_list("SELECT api_key FROM r4_api_keys"):

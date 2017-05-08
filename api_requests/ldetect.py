@@ -121,30 +121,28 @@ class AddListener(IcecastHandler):
 		sync_to_front.sync_frontend_user_id(self.user_id)
 
 	def add_anonymous(self, sid):
-		# Here we'll erase any extra records for the same IP address (shouldn't happen but you never know, especially
-		# if the system gets a reset).  There is a small flaw here; there's a chance we'll pull in 2 clients with the same client ID.
-		# I (rmcauley) am classifying this as "collatoral damage" - an anon user who is actively using the website
-		# can re-tune-in on the small chance that this occurs.
-		records = db.c.fetch_list("SELECT listener_icecast_id FROM r4_listeners WHERE listener_ip = %s AND user_id = 1", (self.get_argument("ip"),))
+		if not self.listen_key:
+			return
+
+		records = db.c.fetch_list("SELECT listener_id FROM r4_listeners WHERE (listener_ip = %s OR listener_key = %s) AND user_id = 1", (self.get_argument("ip"), self.listen_key))
 		if len(records) == 0:
 			db.c.update("INSERT INTO r4_listeners "
-					"(sid, listener_ip, user_id, listener_relay, listener_agent, listener_icecast_id) "
-					"VALUES (%s, %s, %s, %s, %s, %s)",
-				(sid, self.get_argument("ip"), 1, self.relay, self.get_argument("agent"), self.get_argument("client")))
-			sync_to_front.sync_frontend_ip(self.get_argument("ip"))
+					"(sid, listener_ip, user_id, listener_relay, listener_agent, listener_icecast_id, listener_key) "
+					"VALUES (%s, %s, %s, %s, %s, %s, %s)",
+				(sid, self.get_argument("ip"), 1, self.relay, self.get_argument("agent"), self.get_argument("client"), self.listen_key))
+			sync_to_front.sync_frontend_key(self.listen_key)
 			self.append("%s new   : %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent))
 			self.failed = False
 		else:
 			# Keep one valid entry on file for the listener by popping once
-			records.pop()
+			listener_id = records.pop()
 			# Erase the rest
 			while len(records) > 1:
-				db.c.update("DELETE FROM r4_listeners WHERE listener_icecast_id = %s", (records.pop(),))
-				log.debug("ldetect", "Deleted extra record for icecast ID %s from IP %s." % (self.get_argument("client"), self.get_argument("ip")))
-			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE, listener_relay = %s WHERE listener_ip = %s", (self.get_argument("client"), self.get_argument("ip"), self.relay))
+				db.c.update("DELETE FROM r4_listeners WHERE listener_id = %s", (records.pop(),))
+			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE, listener_relay = %s WHERE listener_id = %s", (self.get_argument("client"), self.relay, listener_id))
 			self.append("%s update: %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent))
 			self.failed = False
-		sync_to_front.sync_frontend_ip(self.get_argument("ip"))
+		sync_to_front.sync_frontend_key(self.listen_key)
 
 @handle_api_url("listener_remove")
 class RemoveListener(IcecastHandler):
@@ -166,7 +164,7 @@ class RemoveListener(IcecastHandler):
 			cache.set_user(listener['user_id'], "listener_record", None)
 			sync_to_front.sync_frontend_user_id(listener['user_id'])
 		else:
-			sync_to_front.sync_frontend_ip(listener['listener_ip'])
+			sync_to_front.sync_frontend_key(listener['listener_ip'])
 		self.append("%s remove: %s %s." % ('{:<5}'.format(listener['user_id']), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
 		self.failed = False
 

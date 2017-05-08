@@ -617,6 +617,7 @@ def create_tables():
 			listener_lock_counter	SMALLINT	DEFAULT 0, \
 			listener_purge			BOOLEAN		DEFAULT FALSE, \
 			listener_voted_entry	INTEGER		, \
+			listener_key            TEXT        , \
 			user_id					INTEGER		DEFAULT 1 \
 		)")
 	c.create_idx("r4_listeners", "sid")

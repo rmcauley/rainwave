@@ -85,6 +85,13 @@ class SessionBank(object):
 				toret.append(session)
 		return toret
 
+	def find_listen_key(self, listen_key):
+		toret = []
+		for session in self.sessions + self.websockets:
+			if session.user.data.get('listen_key') == listen_key:
+				toret.append(session)
+		return toret
+
 	def keep_alive(self):
 		for session in self.sessions + self.websockets:
 			try:
@@ -177,6 +184,10 @@ class SessionBank(object):
 		for session in self.find_ip(ip_address):
 			self._throttle_session(session, True)
 
+	def update_listen_key(self, listen_key):
+		for session in self.find_listen_key(listen_key):
+			self._throttle_session(session)
+
 sessions = {}
 delayed_live_vote = {}
 delayed_live_vote_timers = {}
@@ -237,6 +248,9 @@ def _on_zmq(messages):
 			elif message['action'] == "update_ip":
 				for sid in sessions:
 					sessions[sid].update_ip_address(message['ip'])
+			elif message['action'] == "update_listen_key":
+				for sid in sessions:
+					sessions[sid].update_listen_key(message['ip'])
 			elif message['action'] == "update_user":
 				for sid in sessions:
 					sessions[sid].update_user(message['user_id'])

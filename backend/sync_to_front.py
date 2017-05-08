@@ -11,3 +11,6 @@ def sync_frontend_user_id(user_id):
 
 def sync_frontend_dj(sid):
 	zeromq.publish({ "action": "update_dj", "sid": sid })
+
+def sync_frontend_key(key):
+	zeromq.publish({"action": "update_listen_key", "listen_key": key})
