@@ -292,7 +292,6 @@ def get_unrated_songs_on_cooldown_for_requesting(user_id, sid, limit):
 			("SELECT r4_songs.album_id, MIN(song_cool_end) "
 				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
-					"JOIN r4_album_sid ON (r4_album_sid.album_id = r4_songs.album_id AND r4_album_sid.sid = r4_song_sid.sid) "
 					"LEFT OUTER JOIN r4_song_ratings ON "
 						"(r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s) "
 					"LEFT OUTER JOIN requested_albums ON "
