@@ -40,6 +40,9 @@ var Router = function() {
 			while (el.firstChild) {
 				el.removeChild(el.firstChild);
 			}
+
+			rendered_type = null;
+			rendered_id   = null;
 		}
 
 		if (detail_header) {

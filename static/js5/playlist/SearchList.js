@@ -753,8 +753,8 @@ var SearchList = function(root_el, sort_key, search_key) {
 			data[current_open_id]._el.classList.remove("open");
 			current_open_id = null;
 		}
-		if (id === null || !(id in data)) return;
 		current_open_id = id;
+		if (!id || !(id in data)) return;
 		data[id]._el.classList.add("open");
 		self.key_nav_highlight(id);
 		if (search_string.length > 0) {
