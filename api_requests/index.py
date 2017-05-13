@@ -35,6 +35,7 @@ class MainIndex(api.web.HTMLRequest):
 
 	def set_default_headers(self):
 		self.set_header("X-Frame-Options", "SAMEORIGIN")
+		self.set_header("X-XSS-Protection", "1; mode=block")
 
 	def prepare(self):
 		super(MainIndex, self).prepare()
