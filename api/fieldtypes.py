@@ -221,7 +221,7 @@ def song_id_list(s, request = None):
 #pylint: enable=W0621
 
 # Returns a set of (mount, user_id, listen_key)
-icecast_mount_error = "invalid Icecast origin."
+icecast_mount_error = "invalid Icecast mount."
 def icecast_mount(s, request = None):
 	if not s:
 		return None
