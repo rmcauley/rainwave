@@ -250,7 +250,7 @@ def _on_zmq(messages):
 					sessions[sid].update_ip_address(message['ip'])
 			elif message['action'] == "update_listen_key":
 				for sid in sessions:
-					sessions[sid].update_listen_key(message['ip'])
+					sessions[sid].update_listen_key(message['listen_key'])
 			elif message['action'] == "update_user":
 				for sid in sessions:
 					sessions[sid].update_user(message['user_id'])
