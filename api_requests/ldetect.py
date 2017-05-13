@@ -139,7 +139,7 @@ class AddListener(IcecastHandler):
 			while len(records) > 1:
 				db.c.update("DELETE FROM r4_listeners WHERE listener_id = %s", (records.pop(),))
 			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE, listener_relay = %s WHERE listener_id = %s", (self.get_argument("client"), self.relay, listener_id))
-			self.append("%s update: %s %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"), self.listen_key), self.agent))
+			self.append("%s update: %s %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent, self.listen_key))
 			self.failed = False
 		sync_to_front.sync_frontend_key(self.listen_key)
 
