@@ -6,12 +6,12 @@ BOOTSTRAP.on_draw happens after the measurement - please do not cause reflows.
 
 */
 
-var service_worker_registration;
-if ("serviceWorker" in navigator) {
-	navigator.serviceWorker.register("/serviceworker.js", { scope: "/" }).then(function (registration) {
-		service_worker_registration = registration;
-	});
-}
+// var service_worker_registration;
+// if ("serviceWorker" in navigator) {
+// 	navigator.serviceWorker.register("/serviceworker.js", { scope: "/" }).then(function (registration) {
+// 		service_worker_registration = registration;
+// 	});
+// }
 
 var User;
 var Stations = [];
