@@ -87,10 +87,6 @@ class DuplicateProducer(api.web.APIHandler):
 		if not producer:
 			raise APIException("internal_error", "Producer ID %s not found." % self.get_argument("sched_id"))
 		new_producer = producer.duplicate()
-		ts = int(timestamp())
-		if new_producer.start < ts:
-			new_producer.change_end(ts + 86400 + (new_producer.end - new_producer.start))
-			new_producer.change_start(ts + 86400)
 		self.append(self.return_name, new_producer.to_dict())
 
 @handle_api_url("admin/change_producer_name")

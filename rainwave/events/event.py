@@ -98,7 +98,7 @@ class BaseProducer(object):
 		self.dj_user_id = None
 
 	def duplicate(self):
-		return self.__class__.create(
+		duped = self.__class__.create(
 			self.sid,
 			self.start,
 			self.end,
@@ -110,6 +110,11 @@ class BaseProducer(object):
 			self.use_tag_suffix,
 			self.dj_user_id
 		)
+		ts = int(timestamp())
+		if duped.start < ts:
+			duped.change_start(ts + 86400)
+			duped.change_end(duped.start + (self.end - self.start))
+		return duped
 
 	def change_start(self, new_start):
 		if not self.used:
