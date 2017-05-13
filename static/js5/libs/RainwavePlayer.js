@@ -129,7 +129,7 @@ var RainwavePlayer = function() {
 				if (self.debug) console.log("RainwavePlayer: <audio> canplay            :: " + audioEl.currentSrc);
 			});
 		}
-		audioEl.volume = self.volume;
+		audioEl.volume = self.isMuted ? 0 : self.volume;
 		if (!self.audioElDest) {
 			self.audioElDest = document.createElement("div");
 		}
