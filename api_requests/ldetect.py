@@ -104,14 +104,14 @@ class AddListener(IcecastHandler):
 				"SET sid = %s, listener_ip = %s, listener_purge = FALSE, listener_icecast_id = %s, listener_relay = %s, listener_agent = %s "
 				"WHERE user_id = %s",
 				(sid, self.get_argument("ip"), self.get_argument("client"), self.relay, self.agent, self.user_id))
-			self.append("%s update: %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent))
+			self.append("%s update: %s %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent, self.listen_key))
 			self.failed = False
 		else:
 			db.c.update("INSERT INTO r4_listeners "
 				"(sid, user_id, listener_ip, listener_icecast_id, listener_relay, listener_agent) "
 				"VALUES (%s, %s, %s, %s, %s, %s)",
 				(sid, self.user_id, self.get_argument("ip"), self.get_argument("client"), self.relay, self.agent))
-			self.append("%s new   : %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent))
+			self.append("%s new   : %s %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent, self.listen_key))
 			self.failed = False
 		if not self.failed:
 			u = user.User(self.user_id)
@@ -130,7 +130,7 @@ class AddListener(IcecastHandler):
 					"(sid, listener_ip, user_id, listener_relay, listener_agent, listener_icecast_id, listener_key) "
 					"VALUES (%s, %s, %s, %s, %s, %s, %s)",
 				(sid, self.get_argument("ip"), 1, self.relay, self.get_argument("agent"), self.get_argument("client"), self.listen_key))
-			self.append("%s new   : %s %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"), self.listen_key), self.agent))
+			self.append("%s new   : %s %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent, self.listen_key))
 			self.failed = False
 		else:
 			# Keep one valid entry on file for the listener by popping once
