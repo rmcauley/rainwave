@@ -130,8 +130,7 @@ class AddListener(IcecastHandler):
 					"(sid, listener_ip, user_id, listener_relay, listener_agent, listener_icecast_id, listener_key) "
 					"VALUES (%s, %s, %s, %s, %s, %s, %s)",
 				(sid, self.get_argument("ip"), 1, self.relay, self.get_argument("agent"), self.get_argument("client"), self.listen_key))
-			sync_to_front.sync_frontend_key(self.listen_key)
-			self.append("%s new   : %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent))
+			self.append("%s new   : %s %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"), self.listen_key), self.agent))
 			self.failed = False
 		else:
 			# Keep one valid entry on file for the listener by popping once
@@ -140,7 +139,7 @@ class AddListener(IcecastHandler):
 			while len(records) > 1:
 				db.c.update("DELETE FROM r4_listeners WHERE listener_id = %s", (records.pop(),))
 			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE, listener_relay = %s WHERE listener_id = %s", (self.get_argument("client"), self.relay, listener_id))
-			self.append("%s update: %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent))
+			self.append("%s update: %s %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"), self.listen_key), self.agent))
 			self.failed = False
 		sync_to_front.sync_frontend_key(self.listen_key)
 
@@ -151,7 +150,7 @@ class RemoveListener(IcecastHandler):
 	}
 
 	def post(self, sid=0):	#pylint: disable=W0221
-		listener = db.c.fetch_row("SELECT user_id, listener_ip FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
+		listener = db.c.fetch_row("SELECT user_id, listener_key FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
 								 (self.relay, self.get_argument("client")))
 		if not listener:
 			# removal not working is normal, since any reconnecting listener gets a new listener ID
@@ -164,7 +163,7 @@ class RemoveListener(IcecastHandler):
 			cache.set_user(listener['user_id'], "listener_record", None)
 			sync_to_front.sync_frontend_user_id(listener['user_id'])
 		else:
-			sync_to_front.sync_frontend_key(listener['listener_ip'])
+			sync_to_front.sync_frontend_key(listener['listener_key'])
 		self.append("%s remove: %s %s." % ('{:<5}'.format(listener['user_id']), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
 		self.failed = False
 
