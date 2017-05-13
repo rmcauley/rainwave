@@ -162,7 +162,7 @@ def update_album_ratings(target_sid, song_id, user_id):
 			db.c.update("UPDATE r4_album_ratings SET album_rating_user = %s, album_rating_complete = %s WHERE user_id = %s AND album_id = %s AND sid = %s",
 						(album_rating, rating_complete, user_id, album_id, sid))
 		else:
-			db.c.update("INSERT INTO r4_album_ratings (album_rating_user, album_rating_complete, user_id, album_id, sid) VALUES (%s, %s, %s, %s, %s, %s)",
+			db.c.update("INSERT INTO r4_album_ratings (album_rating_user, album_rating_complete, user_id, album_id, sid) VALUES (%s, %s, %s, %s, %s)",
 						(album_rating, rating_complete, user_id, album_id, sid))
 		cache.set_album_rating(sid, album_id, user_id, { "rating_user": album_rating, "rating_complete": rating_complete })
 		if target_sid == sid:
