@@ -141,6 +141,7 @@ class AddListener(IcecastHandler):
 				sync_to_front.sync_frontend_key(popped)
 				db.c.update("DELETE FROM r4_listeners WHERE listener_id = %s", (popped,))
 			db.c.update("UPDATE r4_listeners "
+					"SET sid = %s, listener_ip = %s, listener_relay = %s, listener_agent = %s, listener_icecast_id = %s, listener_key = %s, listener_purge = FALSE "
 					"WHERE listener_id = %s",
 					(sid, self.get_argument("ip"), self.relay, self.get_argument("agent"), self.get_argument("client"), self.listen_key, listener_id))
 			self.append("%s update: %s %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent, self.listen_key))
