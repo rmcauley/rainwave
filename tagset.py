@@ -19,6 +19,7 @@ parser.add_argument("--gain", action="store_true")
 
 shell_args = parser.parse_args()
 config.set_value("mp3gain_scan", shell_args.gain)
+config.set_value("scanner_use_tracknumbers", True)
 
 def scan_file(args, filename):
 	if _is_mp3(filename):
