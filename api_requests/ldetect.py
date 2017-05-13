@@ -136,7 +136,6 @@ class AddListener(IcecastHandler):
 			# Keep one valid entry on file for the listener by popping once
 			listener_id = records.pop()
 			# Erase the rest
-<<<<<<< HEAD
 			while len(records):
 				popped = records.pop()
 				sync_to_front.sync_frontend_key(popped)
@@ -145,11 +144,6 @@ class AddListener(IcecastHandler):
 					"SET sid = %s, listener_ip = %s, listener_relay = %s, listener_agent = %s, listener_icecast_id = %s, listener_key = %s "
 					"WHERE listener_id = %s",
 					(sid, self.get_argument("ip"), self.relay, self.get_argument("agent"), self.get_argument("client"), self.listen_key, listener_id))
-=======
-			while len(records) > 1:
-				db.c.update("DELETE FROM r4_listeners WHERE listener_id = %s", (records.pop(),))
-			db.c.update("UPDATE r4_listeners SET listener_icecast_id = %s, listener_purge = FALSE, listener_relay = %s, sid = %s WHERE listener_id = %s", (self.get_argument("client"), self.relay, sid, listener_id,))
->>>>>>> origin/master
 			self.append("%s update: %s %s %s %s %s %s." % ('{:<5}'.format(self.user_id), sid, '{:<15}'.format(self.get_argument("ip")), '{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client")), self.agent, self.listen_key))
 			self.failed = False
 		sync_to_front.sync_frontend_key(self.listen_key)
