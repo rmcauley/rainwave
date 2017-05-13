@@ -95,10 +95,13 @@ def set_song_fave(song_id, user_id, fave):
 	db.c.start_transaction()
 	exists = db.c.fetch_row("SELECT * FROM r4_song_ratings WHERE song_id = %s AND user_id = %s", (song_id, user_id))
 	rating = None
-	if not exists:
+	if not exists and fave:
 		if db.c.update("INSERT INTO r4_song_ratings (song_id, user_id, song_fave) VALUES (%s, %s, %s)", (song_id, user_id, fave)) == 0:
 			log.debug("rating", "Failed to insert record for song fave %s, fave is: %s." % (song_id, fave))
 			return False
+	elif not exists and not fave:
+		# Nothing to do!
+		return True
 	else:
 		rating = exists["song_rating_user"]
 		if db.c.update("UPDATE r4_song_ratings SET song_fave = %s WHERE song_id = %s AND user_id = %s", (fave, song_id, user_id)) == 0:
