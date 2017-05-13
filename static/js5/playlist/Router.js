@@ -40,9 +40,10 @@ var Router = function() {
 			while (el.firstChild) {
 				el.removeChild(el.firstChild);
 			}
-			if (self.active_detail) {
-				el.appendChild(self.active_detail._root);
-			}
+		}
+
+		if (detail_header) {
+			detail_header.textContent = "";
 		}
 	};
 

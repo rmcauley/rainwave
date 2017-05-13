@@ -746,7 +746,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 			current_open_id = id;
 			return false;
 		}
-		if (!(id in data)) return;
 		if (current_open_id && data[current_open_id] && (current_open_id == id)) {
 			return false;
 		}
@@ -754,6 +753,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			data[current_open_id]._el.classList.remove("open");
 			current_open_id = null;
 		}
+		if (id === null || !(id in data)) return;
 		current_open_id = id;
 		data[id]._el.classList.add("open");
 		self.key_nav_highlight(id);
