@@ -27,8 +27,7 @@ if __name__ == "__main__":
 			user_id					INTEGER		NOT NULL, \
 			album_fave				BOOLEAN \
 		)")
-	# 			PRIMARY KEY (user_id, album_id, sid) \
-	db.c.create_idx("r4_album_faves", "user_id", "album_id", "sid") 	#Should be handled by primary key.
+	db.c.create_idx("r4_album_faves", "user_id", "album_id") 	#Should be handled by primary key.
 	db.c.create_idx("r4_album_faves", "album_fave")
 	db.c.create_delete_fk("r4_album_faves", "r4_albums", "album_id", create_idx=False)
 	db.c.create_delete_fk("r4_album_faves", "phpbb_users", "user_id", create_idx=False)
