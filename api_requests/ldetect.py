@@ -140,6 +140,7 @@ class AddListener(IcecastHandler):
 				popped = records.pop()
 				sync_to_front.sync_frontend_key(popped)
 				db.c.update("DELETE FROM r4_listeners WHERE listener_id = %s", (popped,))
+				log.debug("ldetect", "%s remove excess client ID %s" % ('{:<5}'.format(self.user_id), popped))
 			db.c.update("UPDATE r4_listeners "
 					"SET sid = %s, listener_ip = %s, listener_relay = %s, listener_agent = %s, listener_icecast_id = %s, listener_key = %s "
 					"WHERE listener_id = %s",
