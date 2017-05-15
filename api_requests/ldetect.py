@@ -122,6 +122,7 @@ class AddListener(IcecastHandler):
 
 	def add_anonymous(self, sid):
 		if not self.listen_key:
+			self.failed = False
 			return
 
 		records = db.c.fetch_list("SELECT listener_id FROM r4_listeners WHERE (listener_ip = %s OR listener_key = %s) AND user_id = 1", (self.get_argument("ip"), self.listen_key))
