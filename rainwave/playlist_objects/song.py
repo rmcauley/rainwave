@@ -199,7 +199,7 @@ class Song(object):
 		"""
 
 		# log.debug("playlist", u"reading tag info from {}".format(filename))
-		f = MP3(filename)
+		f = MP3(filename, translate=False)
 		self.filename = filename
 
 		if not f.tags:
@@ -270,7 +270,7 @@ class Song(object):
 			#pylint: enable=W0612
 			if len(gain_error) > 0:
 				raise Exception("Error when replay gaining \"%s\": %s" % (filename, gain_error))
-			f = MP3(filename)
+			f = MP3(filename, translate=False)
 			self.replay_gain = self._get_replaygain(f)
 
 		self.data['length'] = int(f.info.length)
