@@ -17,7 +17,7 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 
 	def fetch_var(self, query, params = None):
 		self.execute(query, params)
-		if self.rowcount == 0:
+		if self.rowcount <= 0 or not self.rowcount:
 			return None
 		r = self.fetchone()
 		# I realize this is not the most efficient way, but one of the primary
@@ -30,19 +30,19 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 
 	def fetch_row(self, query, params = None):
 		self.execute(query, params)
-		#if self.rowcount == 0:
-		#	return None
+		if self.rowcount <= 0 or not self.rowcount:
+			return None
 		return self.fetchone()
 
 	def fetch_all(self, query, params = None):
 		self.execute(query, params)
-		if self.rowcount == 0:
+		if self.rowcount <= 0 or not self.rowcount:
 			return []
 		return self.fetchall()
 
 	def fetch_list(self, query, params = None):
 		self.execute(query, params)
-		if self.rowcount == 0:
+		if self.rowcount <= 0 or not self.rowcount:
 			return []
 		arr = []
 		row = self.fetchone()
@@ -59,19 +59,25 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 	def get_next_id(self, table, column):
 		return self.fetch_var("SELECT nextval('" + table + "_" + column + "_seq'::regclass)")
 
-	def create_delete_fk(self, linking_table, foreign_table, key, create_idx = True):
+	def create_delete_fk(self, linking_table, foreign_table, key, create_idx = True, foreign_key = None):
+		if not foreign_key:
+			foreign_key = key
 		if create_idx:
 			self.create_idx(linking_table, key)
-		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE CASCADE" % (linking_table, linking_table, key, key, foreign_table, key))
+		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE CASCADE" % (linking_table, linking_table, key, key, foreign_table, foreign_key))
 
-	def create_null_fk(self, linking_table, foreign_table, key, create_idx = True):
+	def create_null_fk(self, linking_table, foreign_table, key, create_idx = True, foreign_key = None):
+		if not foreign_key:
+			foreign_key = key
 		if create_idx:
 			self.create_idx(linking_table, key)
-		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE SET NULL" % (linking_table, linking_table, key, key, foreign_table, key))
+		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE SET NULL" % (linking_table, linking_table, key, key, foreign_table, foreign_key))
 
 	def create_idx(self, table, *args):
+		#pylint: disable=W0141
 		name = "%s_%s_idx" % (table, '_'.join(map(str, args)))
 		columns = ','.join(map(str, args))
+		#pylint: enable=W0612
 		self.execute("CREATE INDEX %s ON %s (%s)" % (name, table, columns))
 
 	def start_transaction(self):
@@ -93,6 +99,7 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 class SQLiteCursor(object):
 	allows_join_on_update = False
 	is_postgres = False
+	in_tx = False
 
 	def __init__(self, filename):
 		self.con = sqlite3.connect(filename, 0, sqlite3.PARSE_DECLTYPES)
@@ -125,6 +132,8 @@ class SQLiteCursor(object):
 			query = query.replace("%s", "?")
 		query = query.replace("TRUE", "1")
 		query = query.replace("FALSE", "0")
+		query = query.replace("NULLS FIRST", "")
+		query = query.replace("JSONB", "TEXT")
 		query = query.replace("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP)", "(strftime('%s','now'))")
 		return query
 
@@ -145,7 +154,7 @@ class SQLiteCursor(object):
 
 	def fetch_all(self, query, params = None):
 		self.execute(query, params)
-		if self.cur.rowcount == 0:
+		if self.cur.rowcount <= 0:
 			return []
 		return self.cur.fetchall()
 
@@ -192,7 +201,7 @@ class SQLiteCursor(object):
 		# rows in order to maintain proper order.
 		# HEY, DON'T USE SQLITE IN PRODUCTION ANYWAY
 		if table == "r4_schedule":
-			c.update("INSERT INTO r4_schedule (sched_id, sid, sched_start) VALUES (%s, %s, %s)", (val, 0, 0)) 
+			c.update("INSERT INTO r4_schedule (sched_id, sid, sched_start) VALUES (%s, %s, %s)", (val, 0, 0))
 		return val
 
 	def fetchone(self):
@@ -201,10 +210,10 @@ class SQLiteCursor(object):
 	def fetchall(self):
 		return self.cur.fetchall()
 
-	def create_delete_fk(self, linking_table, foreign_table, key, create_idx = True):
+	def create_delete_fk(self, *args, **kwargs):
 		pass
 
-	def create_null_fk(self, linking_table, foreign_table, key, create_idx = True):
+	def create_null_fk(self, *args, **kwargs):
 		pass
 
 	def create_idx(self, table, *args):
@@ -224,7 +233,7 @@ def connect():
 	global c
 
 	if c:
-		close()
+		return True
 
 	dbtype = config.get("db_type")
 	name = config.get("db_name")
@@ -264,27 +273,77 @@ def close():
 
 	if c:
 		# forgot to commit?  too bad.
-		c.rollback()
+		if c.in_tx:
+			log.critical("txopen", "Forgot to close a transaction!  Rolling back!")
+			c.rollback()
 		c.close()
 	if connection:
 		connection.close()
+	c = None
+	connection = None
 
 	return True
 
 def create_tables():
-	if c.is_postgres:
-		c.start_transaction()
-
 	if config.get("standalone_mode"):
 		_create_test_tables()
+
+	trgrm_exists = c.fetch_var("SELECT extname FROM pg_extension WHERE extname = 'pg_trgm'")
+	if not trgrm_exists or not trgrm_exists == "pg_trgm":
+		try:
+			c.update("CREATE EXTENSION pg_trgm")
+		except:
+			print "Could not create trigram extension."
+			print "Please run 'CREATE EXTENSION pg_trgm;' as a superuser on the database."
+			print "You may also need to install the Postgres Contributions package. (postgres-contrib)"
+			raise
+
+	# From: https://wiki.postgresql.org/wiki/First_%28aggregate%29
+	# Used in rainwave/playlist.py
+	first_exists = c.fetch_var("SELECT proname FROM pg_proc WHERE proname = 'first' AND proisagg")
+	if not first_exists or first_exists != "first":
+		c.update("""
+			-- Create a function that always returns the first non-NULL item
+			CREATE OR REPLACE FUNCTION public.first_agg ( anyelement, anyelement )
+			RETURNS anyelement LANGUAGE SQL IMMUTABLE STRICT AS $$
+			        SELECT $1;
+			$$;
+
+			-- And then wrap an aggregate around it
+			CREATE AGGREGATE public.FIRST (
+			        sfunc    = public.first_agg,
+			        basetype = anyelement,
+			        stype    = anyelement
+			);
+		""")
+
+	last_exists = c.fetch_var("SELECT proname FROM pg_proc WHERE proname = 'last' AND proisagg")
+	if not last_exists or last_exists != "last":
+		c.update("""
+			-- Create a function that always returns the last non-NULL item
+			CREATE OR REPLACE FUNCTION public.last_agg ( anyelement, anyelement )
+			RETURNS anyelement LANGUAGE SQL IMMUTABLE STRICT AS $$
+			        SELECT $2;
+			$$;
+
+			-- And then wrap an aggregate around it
+			CREATE AGGREGATE public.LAST (
+			        sfunc    = public.last_agg,
+			        basetype = anyelement,
+			        stype    = anyelement
+			);
+		""")
 
 	c.update(" \
 		CREATE TABLE r4_albums ( \
 			album_id				SERIAL		PRIMARY KEY, \
 			album_name				TEXT		, \
 			album_name_searchable	TEXT 		NOT NULL, \
-			album_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
+			album_year				SMALLINT, \
+			album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
 		)")
+	if c.is_postgres:
+		c.update("CREATE INDEX album_name_trgm_gin ON r4_albums USING GIN(album_name_searchable gin_trgm_ops)")
 
 	c.update(" \
 		CREATE TABLE r4_songs ( \
@@ -300,6 +359,9 @@ def create_tables():
 			song_url					TEXT		, \
 			song_link_text				TEXT		, \
 			song_length					SMALLINT	, \
+			song_track_number			SMALLINT	, \
+			song_disc_number			SMALLINT	, \
+			song_year				SMALLINT	, \
 			song_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 			song_rating					REAL		DEFAULT 0, \
 			song_rating_count			INTEGER		DEFAULT 0, \
@@ -318,6 +380,8 @@ def create_tables():
 	c.create_idx("r4_songs", "song_rating")
 	c.create_idx("r4_songs", "song_request_count")
 	c.create_null_fk("r4_songs", "r4_albums", "album_id")
+	if c.is_postgres:
+		c.update("CREATE INDEX song_title_trgm_gin ON r4_songs USING GIN(song_title_searchable gin_trgm_ops)")
 
 	c.update(" \
 		CREATE TABLE r4_song_sid ( \
@@ -333,7 +397,8 @@ def create_tables():
 			song_played_last			INTEGER		, \
 			song_exists					BOOLEAN		DEFAULT TRUE, \
 			song_request_only			BOOLEAN		DEFAULT FALSE, \
-			song_request_only_end		INTEGER		DEFAULT 0 \
+			song_request_only_end		INTEGER		DEFAULT 0, \
+			PRIMARY KEY (song_id, sid) \
 		)")
 	# c.create_idx("r4_song_sid", "song_id")	# handled by create_delete_fk
 	c.create_idx("r4_song_sid", "sid")
@@ -351,9 +416,10 @@ def create_tables():
 			song_rated_at				INTEGER		, \
 			song_rated_at_rank			INTEGER		, \
 			song_rated_at_count			INTEGER		, \
-			song_fave				BOOLEAN \
+			song_fave				BOOLEAN, \
+			PRIMARY KEY (user_id, song_id) \
 		)")
-	c.create_idx("r4_song_ratings", "user_id", "song_id")
+	# c.create_idx("r4_song_ratings", "user_id", "song_id") Should be handled by primary key
 	c.create_idx("r4_song_ratings", "song_fave")
 	c.create_delete_fk("r4_song_ratings", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_ratings", "phpbb_users", "user_id")
@@ -378,13 +444,16 @@ def create_tables():
 			album_fave_count			INTEGER		DEFAULT 0, \
 			album_vote_count			INTEGER		DEFAULT 0, \
 			album_votes_seen			INTEGER		DEFAULT 0, \
-			album_vote_share			REAL 		\
+			album_vote_share			REAL 		,\
+			album_newest_song_time		INTEGER		DEFAULT 0, \
+			PRIMARY KEY (album_id, sid) \
 		)")
 	c.create_idx("r4_album_sid", "album_rating")
 	c.create_idx("r4_album_sid", "album_request_count")
 	c.create_idx("r4_album_sid", "album_exists")
 	c.create_idx("r4_album_sid", "sid")
 	c.create_idx("r4_album_sid", "album_requests_pending")
+	c.create_idx("r4_album_sid", "album_exists", "sid")
 	c.create_delete_fk("r4_album_sid", "r4_albums", "album_id")
 
 	c.update(" \
@@ -393,28 +462,44 @@ def create_tables():
 			sid 					SMALLINT	NOT NULL, \
 			user_id					INTEGER		NOT NULL, \
 			album_rating_user		REAL		, \
-			album_fave				BOOLEAN, \
 			album_rating_complete	BOOLEAN		DEFAULT FALSE \
 		)")
-	c.create_idx("r4_album_ratings", "user_id", "album_id")
-	c.create_idx("r4_album_ratings", "sid")
+	# 			PRIMARY KEY (user_id, album_id, sid) \
+	c.create_idx("r4_album_ratings", "user_id", "album_id", "sid") 	#Should be handled by primary key.
+	c.create_idx("r4_album_ratings", "album_id", "sid")
 	c.create_idx("r4_album_ratings", "album_fave")
+	c.create_idx("r4_album_ratings", "album_fave", "sid")
 	c.create_delete_fk("r4_album_ratings", "r4_albums", "album_id", create_idx=False)
 	c.create_delete_fk("r4_album_ratings", "phpbb_users", "user_id", create_idx=False)
 
 	c.update(" \
+		CREATE TABLE r4_album_faves ( \
+			album_id				INTEGER		NOT NULL, \
+			user_id					INTEGER		NOT NULL, \
+			album_fave				BOOLEAN \
+		)")
+	# 			PRIMARY KEY (user_id, album_id, sid) \
+	c.create_idx("r4_album_faves", "user_id", "album_id", "sid") 	#Should be handled by primary key.
+	c.create_idx("r4_album_faves", "album_fave")
+	c.create_delete_fk("r4_album_faves", "r4_albums", "album_id", create_idx=False)
+	c.create_delete_fk("r4_album_faves", "phpbb_users", "user_id", create_idx=False)
+
+	c.update(" \
 		CREATE TABLE r4_artists		( \
-			artist_id				SERIAL		NOT NULL PRIMARY KEY, \
+			artist_id				SERIAL		PRIMARY KEY, \
 			artist_name				TEXT		, \
 			artist_name_searchable	TEXT 		NOT NULL \
 		)")
+	if c.is_postgres:
+		c.update("CREATE INDEX artist_name_trgm_gin ON r4_artists USING GIN(artist_name_searchable gin_trgm_ops)")
 
 	c.update(" \
 		CREATE TABLE r4_song_artist	( \
 			song_id					INTEGER		NOT NULL, \
 			artist_id				INTEGER		NOT NULL, \
 			artist_order			SMALLINT    DEFAULT 0, \
-			artist_is_tag			BOOLEAN		DEFAULT TRUE \
+			artist_is_tag			BOOLEAN		DEFAULT TRUE, \
+			PRIMARY KEY (artist_id, song_id) \
 		)")
 	# c.create_idx("r4_song_artist", "song_id")		# handled by create_delete_fk
 	# c.create_idx("r4_song_artist", "artist_id")
@@ -434,12 +519,15 @@ def create_tables():
 		CREATE TABLE r4_song_group ( \
 			song_id					INTEGER		NOT NULL, \
 			group_id				INTEGER		NOT NULL, \
-			group_is_tag			BOOLEAN		DEFAULT TRUE \
+			group_is_tag			BOOLEAN		DEFAULT TRUE, \
+			PRIMARY KEY (group_id, song_id) \
 		)")
 	# c.create_idx("r4_song_group", "song_id")		# handled by create_delete_fk
 	# c.create_idx("r4_song_group", "group_id")
 	c.create_delete_fk("r4_song_group", "r4_songs", "song_id")
 	c.create_delete_fk("r4_song_group", "r4_groups", "group_id")
+
+	_create_group_sid_table()
 
 	c.update(" \
 		CREATE TABLE r4_schedule ( \
@@ -451,6 +539,7 @@ def create_tables():
 			sched_type				TEXT		, \
 			sched_name				TEXT		, \
 			sched_url				TEXT 		, \
+			sched_dj_user_id        INT         , \
 			sid						SMALLINT	NOT NULL, \
 			sched_public			BOOLEAN		DEFAULT TRUE, \
 			sched_timed				BOOLEAN		DEFAULT TRUE, \
@@ -464,6 +553,7 @@ def create_tables():
 	c.create_idx("r4_schedule", "sched_in_progress")
 	c.create_idx("r4_schedule", "sched_public")
 	c.create_idx("r4_schedule", "sched_start_actual")
+	c.create_delete_fk("r4_schedule", "phpbb_users", "sched_dj_user_id", foreign_key="user_id", create_idx=False)
 
 	c.update(" \
 		CREATE TABLE r4_elections ( \
@@ -473,13 +563,15 @@ def create_tables():
 			elec_start_actual		INTEGER		, \
 			elec_type				TEXT		, \
 			elec_priority			BOOLEAN		DEFAULT FALSE, \
-			sid						SMALLINT	NOT NULL \
+			sid						SMALLINT	NOT NULL, \
+			sched_id 				INT 		 \
 		)")
 	if c.is_postgres:
 		c.update("ALTER TABLE r4_elections ALTER COLUMN elec_id SET DEFAULT nextval('r4_schedule_sched_id_seq')")
 	c.create_idx("r4_elections", "elec_id")
 	c.create_idx("r4_elections", "elec_used")
 	c.create_idx("r4_elections", "sid")
+	c.create_delete_fk("r4_elections", "r4_schedule", "sched_id")
 
 	c.update(" \
 		CREATE TABLE r4_election_entries ( \
@@ -525,6 +617,7 @@ def create_tables():
 			listener_lock_counter	SMALLINT	DEFAULT 0, \
 			listener_purge			BOOLEAN		DEFAULT FALSE, \
 			listener_voted_entry	INTEGER		, \
+			listener_key            TEXT        , \
 			user_id					INTEGER		DEFAULT 1 \
 		)")
 	c.create_idx("r4_listeners", "sid")
@@ -534,7 +627,7 @@ def create_tables():
 	c.update(" \
 		CREATE TABLE r4_listener_counts ( \
 			lc_time					INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-			sid					SMALLINT	NOT NULL, \
+			sid						SMALLINT	NOT NULL, \
 			lc_guests				SMALLINT	, \
 			lc_users				SMALLINT	, \
 			lc_users_active				SMALLINT	, \
@@ -571,7 +664,8 @@ def create_tables():
 			sid					SMALLINT	NOT NULL, \
 			line_wait_start				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
 			line_expiry_tune_in			INTEGER		, \
-			line_expiry_election			INTEGER \
+			line_expiry_election			INTEGER , \
+			line_has_had_valid              BOOLEAN DEFAULT FALSE \
 		)")
 	# c.create_idx("r4_request_line", "user_id")		# handled by create_delete_fk
 	c.create_idx("r4_request_line", "sid")
@@ -637,12 +731,12 @@ def create_tables():
 		CREATE TABLE r4_api_keys ( \
 			api_id					SERIAL		PRIMARY KEY, \
 			user_id					INTEGER		NOT NULL, \
-			api_ip					TEXT		, \
 			api_key					VARCHAR(10) , \
-			api_expiry				INTEGER		\
+			api_expiry				INTEGER		, \
+			api_key_listen_key      TEXT        \
 		)")
 	# c.create_idx("r4_api_keys", "user_id")		# handled by create_delete_fk
-	c.create_idx("r4_api_keys", "api_ip")
+	c.create_idx("r4_api_keys", "api_key")
 	c.create_delete_fk("r4_api_keys", "phpbb_users", "user_id")
 
 	c.update(" \
@@ -655,34 +749,44 @@ def create_tables():
 	c.create_idx("r4_song_history", "sid")
 	c.create_delete_fk("r4_song_history", "r4_songs", "song_id")
 
+	try:
+		c.update(" \
+			CREATE TABLE r4_pref_storage ( \
+				user_id 				INT 		, \
+				ip_address 				TEXT 		, \
+				prefs 					JSONB \
+			)")
+		c.create_delete_fk("r4_pref_storage", "phpbb_users", "user_id")
+	except:
+		log.critical("init_db", "Could not create r4_pref_storage - feature requires Pg 9.4 or higher.  See README.")
+
 	if config.get("standalone_mode"):
 		_fill_test_tables()
 
 	c.commit()
 
+def _create_group_sid_table():
+	c.update(" \
+		CREATE TABLE r4_group_sid( \
+			group_id 				INT, \
+			sid 					SMALLINT	NOT NULL, \
+			group_display			BOOLEAN		DEFAULT FALSE \
+		)")
+	c.create_idx("r4_group_sid", "group_display")
+	c.create_delete_fk("r4_group_sid", "r4_groups", "group_id")
+
 def _create_test_tables():
 	c.update(" \
 		CREATE TABLE phpbb_users( \
 			user_id					SERIAL		PRIMARY KEY, \
-			radio_totalvotes		INTEGER		DEFAULT 0, \
-			radio_totalratings		INTEGER		DEFAULT 0, \
-			radio_totalmindchange	INTEGER		DEFAULT 0, \
-			radio_totalrequests		INTEGER		DEFAULT 0, \
-			radio_winningvotes			INT		DEFAULT 0, \
-			radio_losingvotes			INT		DEFAULT 0, \
-			radio_winningrequests			INT		DEFAULT 0, \
-			radio_losingrequests			INT		DEFAULT 0, \
-			radio_listenkey			TEXT		DEFAULT 'TESTKEY', \
-			group_id				INT		DEFAULT 1, \
+			group_id				INT			DEFAULT 1, \
 			username				TEXT 		DEFAULT 'Test', \
-			user_new_privmsg			INT		DEFAULT 0, \
+			user_new_privmsg		INT			DEFAULT 0, \
 			user_avatar				TEXT		DEFAULT '', \
-			user_avatar_type			INT		DEFAULT 0, \
+			user_avatar_type		INT			DEFAULT 0, \
 			user_colour             TEXT        DEFAULT 'FFFFFF', \
-			user_rank               INTEGER     DEFAULT 0, \
-			radio_inactive			BOOLEAN		DEFAULT TRUE, \
-			radio_last_active		INT         DEFAULT 0, \
-			radio_requests_paused	BOOLEAN		DEFAULT FALSE \
+			user_rank               INT 	    DEFAULT 0, \
+			user_regdate            INT         DEFAULT 0 \
 		)")
 
 	c.update("CREATE TABLE phpbb_sessions("
@@ -695,12 +799,26 @@ def _create_test_tables():
 
 	c.update("CREATE TABLE phpbb_ranks(rank_id SERIAL PRIMARY KEY, rank_title TEXT)")
 
+def add_custom_fields():
+	c.update("ALTER TABLE phpbb_users ADD radio_totalvotes		INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_totalmindchange	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_totalratings	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_totalrequests	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_winningvotes	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_losingvotes		INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_winningrequests	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_losingrequests	INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_last_active		INTEGER		DEFAULT 0")
+	c.update("ALTER TABLE phpbb_users ADD radio_listenkey		TEXT		DEFAULT 'TESTKEY'")
+	c.update("ALTER TABLE phpbb_users ADD radio_inactive		BOOLEAN		DEFAULT TRUE")
+	c.update("ALTER TABLE phpbb_users ADD radio_requests_paused	BOOLEAN		DEFAULT FALSE")
+
 def _fill_test_tables():
 	c.update("INSERT INTO phpbb_ranks (rank_title) VALUES ('Test')")
 
 	# Anonymous user
 	c.update("INSERT INTO phpbb_users (user_id, username) VALUES (1, 'Anonymous')")
-	c.update("INSERT INTO r4_api_keys (user_id, api_key, api_ip) VALUES (1, 'TESTKEY', '127.0.0.1')")
+	c.update("INSERT INTO r4_api_keys (user_id, api_key) VALUES (1, 'TESTKEY')")
 
 	# User ID 2: site admin
 	c.update("INSERT INTO phpbb_users (user_id, username, group_id) VALUES (2, 'Test', 5)")

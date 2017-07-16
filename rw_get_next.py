@@ -28,24 +28,25 @@ try:
 	# Windows, no multiprocessing
 	else:
 		dest_port += int(list(config.station_ids)[0])
-	conn = httplib.HTTPConnection(args.dest, config.get("backend_port") + int(args.sid), timeout=3)
+	timeout = 5 if cache.get_station(args.sid, "backend_ok") else 120
+	conn = httplib.HTTPConnection(args.dest, config.get("backend_port") + int(args.sid), timeout=timeout)
 	conn.request("GET", "/advance/%s" % args.sid)
 	result = conn.getresponse()
 	if result.status == 200:
 		next_song_filename = result.read()
 		if not next_song_filename or len(next_song_filename) == 0:
 			raise Exception("Got zero-length filename from backend!")
+		if os.name == "nt":
+			next_song_filename = os.path.relpath(next_song_filename).replace("\\", "/")
 		print next_song_filename
 	else:
-		raise Exception("Backend HTTP Error %s" % result.status)
+		raise Exception("HTTP Error %s trying to reach backend!" % result.status)
 	cache.set_station(args.sid, "backend_ok", True)
 	cache.set_station(args.sid, "backend_message", "OK")
-	cache.set_station(args.sid, "get_next_socket_timeout", False)
 	conn.close()
 except socket.timeout as e:
 	cache.set_station(args.sid, "backend_ok", False)
 	cache.set_station(args.sid, "backend_status", repr(e))
-	cache.set_station(args.sid, "get_next_socket_timeout", True)
 	time.sleep(2)
 	raise
 except Exception as e:

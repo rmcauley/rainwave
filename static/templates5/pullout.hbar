@@ -1,0 +1,3 @@
+<div id="requests_positioner" bind="requests_pullout">
+	<div id="requests_grab_tag"></div>
+</div>

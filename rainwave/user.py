@@ -1,7 +1,9 @@
-import time
+from time import time as timestamp
 import re
 import random
 import string
+import urllib2
+import unicodedata
 
 from libs import log
 from libs import cache
@@ -23,9 +25,9 @@ def unlock_listeners(sid):
 	db.c.update("UPDATE r4_listeners SET listener_lock = FALSE WHERE listener_lock_counter <= 0")
 
 def solve_avatar(avatar_type, avatar):
-	if avatar_type == 1:
+	if avatar_type == "avatar.driver.upload":
 		return _AVATAR_PATH % avatar
-	elif avatar_type > 0:
+	elif avatar_type == "avatar.driver.remote":
 		return avatar
 	else:
 		return _DEFAULT_AVATAR
@@ -80,12 +82,10 @@ class User(object):
 	def _auth_registered_user(self, api_key, bypass = False):
 		if not bypass:
 			keys = cache.get_user(self, "api_keys")
-			if not keys:
-				if not api_key in self.get_all_api_keys():
-					log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
-					return
-			elif not api_key in keys:
-				log.debug("auth", "Invalid user ID %s and/or API key %s (from cache)." % (self.id, api_key))
+			if keys and api_key in keys:
+				pass
+			elif not api_key in self.get_all_api_keys():
+				log.debug("auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key))
 				return
 
 		# Set as authorized and begin populating information
@@ -94,7 +94,7 @@ class User(object):
 		user_data = None
 		if not user_data:
 			user_data = db.c.fetch_row(
-				"SELECT user_id AS id, username AS name, user_new_privmsg AS new_privmsg, user_avatar AS avatar, radio_requests_paused AS requests_paused, "
+				"SELECT user_id AS id, username AS name, user_avatar AS avatar, radio_requests_paused AS requests_paused, "
 					"user_avatar_type AS _avatar_type, radio_listenkey AS listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings "
 				"FROM phpbb_users WHERE user_id = %s",
 				(self.id,)
@@ -125,20 +125,20 @@ class User(object):
 
 	def _auth_anon_user(self, api_key, bypass = False):
 		if not bypass:
-			auth_against = cache.get("ip_%s_api_key" % self.ip_address)
-			if not auth_against:
-				auth_against = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE api_ip = %s AND user_id = 1", (self.ip_address,))
-				if not auth_against:
-					# log.debug("user", "Anonymous user key %s not found." % api_key)
+			cache_key = unicodedata.normalize('NFKD', u"api_key_listen_key_%s" % api_key).encode('ascii', 'ignore')
+			listen_key = cache.get(cache_key)
+			if not listen_key:
+				listen_key = db.c.fetch_var("SELECT api_key_listen_key FROM r4_api_keys WHERE api_key = %s AND user_id = 1", (self.api_key,))
+				if not listen_key:
 					return
-				cache.set("ip_%s_api_key" % self.ip_address, auth_against)
-			if auth_against != api_key:
-				# log.debug("user", "Anonymous user key %s does not match key %s." % (api_key, auth_against))
-				return
+				else:
+					self.data['listen_key'] = listen_key
+			else:
+				self.data['listen_key'] = listen_key
 		self.authorized = True
 
 	def get_tuned_in_sid(self):
-		if 'sid' in self.data:
+		if 'sid' in self.data and self.data['sid']:
 			return self.data['sid']
 		lrecord = self.get_listener_record()
 		if 'sid' in lrecord:
@@ -156,7 +156,7 @@ class User(object):
 					"WHERE user_id = %s AND listener_purge = FALSE", (self.id,))
 		else:
 			listener = db.c.fetch_row("SELECT "
-				"listener_id, sid, listener_lock AS lock, listener_lock_sid AS lock_sid, listener_lock_counter AS lock_counter, listener_voted_entry AS voted_entry "
+				"listener_id, sid, listener_lock AS lock, listener_lock_sid AS lock_sid, listener_lock_counter AS lock_counter, listener_voted_entry AS voted_entry, listener_key AS listen_key "
 				"FROM r4_listeners "
 				"WHERE listener_ip = %s AND listener_purge = FALSE AND user_id = 1", (self.ip_address,))
 		if listener:
@@ -200,6 +200,8 @@ class User(object):
 		return self.data['admin'] > 0
 
 	def is_dj(self):
+		if 'dj' in self.data and self.data['dj']:
+			return True
 		return False
 
 	def has_perks(self):
@@ -226,15 +228,14 @@ class User(object):
 		return max_reqs - num_reqs
 
 	def add_request(self, sid, song_id):
-		self._check_too_many_requests()
 		song = playlist.Song.load_from_id(song_id, sid)
-		for requested in self.get_requests(sid):
-			if song.id == requested['id']:
+		for requested in db.c.fetch_all("SELECT r4_request_store.song_id, r4_songs.album_id FROM r4_request_store JOIN r4_songs USING (song_id) WHERE r4_request_store.user_id = %s", (self.id,)):
+			if song.id == requested['song_id']:
 				raise APIException("same_request_exists")
-			for album in song.albums:
-				for requested_album in requested['albums']:
-					if album.id == requested_album['id']:
-						raise APIException("same_request_album")
+			if not self.has_perks():
+				if song.albums[0].id == requested['album_id']:
+					raise APIException("same_request_album")
+		self._check_too_many_requests()
 		updated_rows = db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
 		if self.data['sid'] == sid and self.is_tunedin():
 			self.put_in_request_line(sid)
@@ -248,7 +249,9 @@ class User(object):
 			limit = max_limit
 		added_requests = 0
 		for song_id in playlist.get_unrated_songs_for_requesting(self.id, sid, limit):
-			if song_id:
+			added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
+		if added_requests < limit:
+			for song_id in playlist.get_unrated_songs_on_cooldown_for_requesting(self.id, sid, limit - added_requests):
 				added_requests += db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)", (self.id, song_id, sid))
 		if added_requests > 0:
 			self.put_in_request_line(sid)
@@ -306,7 +309,8 @@ class User(object):
 				return True
 			elif already_lined:
 				self.remove_from_request_line()
-			return (db.c.update("INSERT INTO r4_request_line (user_id, sid) VALUES (%s, %s)", (self.id, sid)) > 0)
+			has_valid = True if self.get_top_request_song_id(sid) else False
+			return (db.c.update("INSERT INTO r4_request_line (user_id, sid, line_has_had_valid) VALUES (%s, %s, %s)", (self.id, sid, has_valid)) > 0)
 
 	def remove_from_request_line(self):
 		return (db.c.update("DELETE FROM r4_request_line WHERE user_id = %s", (self.id,)) > 0)
@@ -340,65 +344,50 @@ class User(object):
 		requests = []
 		if db.c.is_postgres:
 			requests = db.c.fetch_all(
-				"SELECT r4_request_store.song_id AS id, COALESCE(r4_song_sid.sid, r4_request_store.sid) AS sid, "
+				"SELECT r4_request_store.song_id AS id, COALESCE(r4_song_sid.sid, r4_request_store.sid) AS sid, r4_songs.song_origin_sid AS origin_sid, "
 					"r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
-					"song_rating AS rating, song_title AS title, song_length AS length, "
-					"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, "
+					"CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_title AS title, song_length AS length, "
+					"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, song_exists AS good, "
 					"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
 					"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
 					"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
 					"song_fave AS fave, album_fave AS album_fave, "
-					"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating AS album_rating "
+					"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating AS album_rating, album_rating_complete "
 				"FROM r4_request_store "
 					"JOIN r4_songs USING (song_id) "
 					"JOIN r4_albums USING (album_id) "
 					"JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_request_store.sid = r4_album_sid.sid) "
 					"LEFT JOIN r4_song_sid ON (r4_request_store.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
 					"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
-			 		"LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = r4_request_store.sid) "
+			 		"LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = %s) "
+			 		"LEFT JOIN r4_album_faves ON (r4_songs.album_id = r4_album_faves.album_id AND r4_album_faves.user_id = %s) "
 				"WHERE r4_request_store.user_id = %s "
 				"ORDER BY reqstor_order, reqstor_id",
-				(sid, self.id, self.id, self.id))
-			# Lovely but too heavy considering this SQL query sits in the way of a page refresh
-			# It also needs to be updated to make use of the sid argument
-			# requests = db.c.fetch_all(
-			# 	"SELECT r4_request_store.song_id AS id, "
-			# 		"r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
-			# 		"song_rating AS rating, song_title AS title, song_length AS length, "
-			# 		"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, "
-			# 		"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
-			# 		"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
-			# 		"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
-			# 		"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating "
-			# 	"FROM r4_request_store "
-			# 		"JOIN r4_songs USING (song_id) "
-			# 		"JOIN r4_albums USING (album_id) "
-			# 		"JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_request_store.sid = r4_album_sid.sid) "
-			# 		"JOIN r4_song_sid ON (r4_song_sid.sid = r4_request_store.sid AND r4_song_sid.song_id = r4_request_store.song_id) "
-			# 		"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
-			# 		"LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = r4_request_store.sid) "
-			# 	"WHERE r4_request_store.user_id = %s "
-			# 	"ORDER BY reqstor_order, reqstor_id",
-			# 	(self.id, self.id, self.id))
+				(sid, self.id, self.id, sid, self.id, self.id))
 		if not requests:
 			requests = []
 		for song in requests:
+			if not song['valid'] or song['cool'] or song['elec_blocked'] or song['sid'] != sid:
+				song['valid'] = False
+			else:
+				song['valid'] = True
 			song['albums'] = [ {
 				"name": song.pop('album_name'),
 				"id": song['album_id'],
 				"fave": song.pop('album_fave'),
-				"rating": song.pop('album_rating'),
+				"rating": round(song.pop('album_rating'), 1),
 				"rating_user": song.pop('album_rating_user'),
+				"rating_complete": song.pop('album_rating_complete'),
 				"art": playlist.Album.get_art_url(song.pop('album_id'), song['sid'])
 			 } ]
-		cache.set_user(self, "requests", requests)
+		# cache.set_user(self, "requests", requests)
 		return requests
 
 	def set_request_tunein_expiry(self, t = None):
 		if not self.is_in_request_line():
 			return None
 		if not t:
-			t = time.time() + config.get("request_tunein_timeout")
+			t = timestamp() + config.get("request_tunein_timeout")
 		return db.c.update("UPDATE r4_listeners SET line_expiry_tunein = %s WHERE user_id = %s", (t, self.id))
 
 	def lock_to_sid(self, sid, lock_count):
@@ -417,22 +406,55 @@ class User(object):
 
 	def ensure_api_key(self):
 		if self.id == 1:
-			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = 1 AND api_ip = %s", (self.ip_address,))
-			if not api_key:
-				api_key = self.generate_api_key(int(time.time()) + 172800)
-				cache.set("ip_%s_api_key" % self.ip_address, api_key)
+			if self.data.get('api_key') and self.data['listen_key']:
+				return
+			api_key = self.generate_api_key(int(timestamp()) + 172800, self.data.get('api_key'))
+			cache_key = unicodedata.normalize('NFKD', u"api_key_listen_key_%s" % api_key).encode('ascii', 'ignore')
+			cache.set(cache_key, self.data['listen_key'])
 		elif self.id > 1:
 			if 'api_key' in self.data and self.data['api_key']:
 				return self.data['api_key']
+
 			api_key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = %s", (self.id,))
 			if not api_key:
 				api_key = self.generate_api_key()
 		self.data['api_key'] = api_key
+
 		return api_key
 
-	def generate_api_key(self, expiry = None):
-		api_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
-		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_ip) VALUES (%s, %s, %s, %s)", (self.id, api_key, expiry, self.ip_address))
-		# this function updates the API key cache for us
-		self.get_all_api_keys()
+	def generate_api_key(self, expiry = None, reuse = None):
+		api_key = reuse or ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
+		listen_key = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
+		if reuse:
+			db.c.update("DELETE FROM r4_api_keys WHERE api_key = %s AND user_id = 1", (reuse,))
+		db.c.update("INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_key_listen_key) VALUES (%s, %s, %s, %s)", (self.id, api_key, expiry, listen_key))
+		if self.id == 1:
+			self.data['listen_key'] = listen_key
+		else:
+			# this function updates the API key cache for us
+			self.get_all_api_keys()
 		return api_key
+
+	def save_preferences(self, ip_addr, prefs_json_string):
+		if not config.get("store_prefs") or not prefs_json_string:
+			return
+		if not db.c.is_postgres:
+			return
+
+		try:
+			prefs_json_string = urllib2.unquote(prefs_json_string)
+			if self.id > 1:
+				if not db.c.fetch_var("SELECT COUNT(*) FROM r4_pref_storage WHERE user_id = %s", (self.id,)):
+					db.c.update("INSERT INTO r4_pref_storage (user_id, prefs) VALUES (%s, %s::jsonb)", (self.id, prefs_json_string))
+				else:
+					db.c.update("UPDATE r4_pref_storage SET prefs = %s::jsonb WHERE user_id = %s", (prefs_json_string, self.id))
+			else:
+				if not db.c.fetch_var("SELECT COUNT(*) FROM r4_pref_storage WHERE ip_address = %s AND user_id = %s", (ip_addr, self.id)):
+					db.c.update("INSERT INTO r4_pref_storage (user_id, ip_address, prefs) VALUES (%s, %s, %s::jsonb)", (self.id, ip_addr, prefs_json_string))
+				else:
+					db.c.update("UPDATE r4_pref_storage SET prefs = %s::jsonb WHERE ip_address = %s AND user_id = %s", (prefs_json_string, ip_addr, self.id))
+		except Exception as e:
+			if 'username' in self.data:
+				log.exception("store_prefs", "Could not store user preferences for %s (ID %s)" % (self.data['username'], self.id), e)
+			else:
+				log.exception("store_prefs", "Could not store user preferences for anonymous user from IP %s" % ip_addr, e)

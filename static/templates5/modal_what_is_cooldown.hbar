@@ -1,0 +1,40 @@
+<p>{{ $l("cd_blue_bkg_is") }}</p>
+<p>{{ $l("cd_why_use_cooldown") }}</p>
+<table class="cooldown_explain">
+	<tr>
+		<th>{{ $l("cd_type_of_cooldown") }}</th>
+		<th>{{ $l("cd_example") }}</th>
+		<th>{{ $l("cd_cooldown_length") }}</th>
+	</tr>
+	<tr>
+		<td>{{ $l("cd_song") }}</td>
+		<td>One Winged Angel</td>
+		<td>{{ $l("cd_song_length") }}</td>
+	</tr>
+	<tr>
+		<td>{{ $l("cd_album") }}</td>
+		<td>Final Fantasy VII</td>
+		<td>{{ $l("cd_album_length") }}</td>
+	</tr>
+	<tr>
+		<td>{{ $l("cd_category") }}</td>
+		<td>Final Fantasy</td>
+		<td>{{ $l("cd_category_length") }}</td>
+	</tr>
+</table>
+
+<p>{{ $l("cd_cooldowns_depend_on") }}</p>
+<table class="cooldown_explain">
+	<tr>
+		<td>{{ $l("cd_album_size") }}</td>
+		<td>{{ $l("cd_larger_album") }}</td>
+	</tr>
+	<tr>
+		<td>{{ $l("cd_rating") }}</td>
+		<td>{{ $l("cd_higher_rating") }}</td>
+	</tr>
+	<tr>
+		<td>{{ $l("cd_recently_added") }}</td>
+		<td>{{ $l("cd_newer") }}</td>
+	</tr>
+</table>

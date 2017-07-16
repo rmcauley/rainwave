@@ -1,4 +1,4 @@
-import time
+from time import time as timestamp
 from libs import db
 from libs import cache
 from libs import log
@@ -7,7 +7,7 @@ from rainwave.user import User
 
 def update_line(sid):
 	# Get everyone in the line
-	line = db.c.fetch_all("SELECT username, user_id, line_expiry_tune_in, line_expiry_election, line_wait_start FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE r4_request_line.sid = %s AND radio_requests_paused = FALSE ORDER BY line_wait_start", (sid,))
+	line = db.c.fetch_all("SELECT username, user_id, line_expiry_tune_in, line_expiry_election, line_wait_start, line_has_had_valid FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE r4_request_line.sid = %s AND radio_requests_paused = FALSE ORDER BY line_wait_start", (sid,))
 	_process_line(line, sid)
 
 def _process_line(line, sid):
@@ -15,9 +15,11 @@ def _process_line(line, sid):
 	# user_positions has user_id as a key and position as the value, this is cached for quick lookups by API requests
 	# so users know where they are in line
 	user_positions = {}
-	t = int(time.time())
+	t = int(timestamp())
 	albums_with_requests = []
 	position = 1
+	user_viewable_position = 1
+	valid_positions = 0
 	# For each person
 	for row in line:
 		add_to_line = False
@@ -33,6 +35,11 @@ def _process_line(line, sid):
 			if tuned_in:
 				# Get their top song ID
 				song_id = u.get_top_request_song_id(sid)
+				if song_id and not row['line_has_had_valid']:
+					row['line_has_had_valid'] = True
+					db.c.update("UPDATE r4_request_line SET line_has_had_valid = TRUE WHERE user_id = %s", (u.id, ))
+				if row['line_has_had_valid']:
+					valid_positions += 1
 				# If they have no song and their line expiry has arrived, boot 'em
 				if not song_id and row['line_expiry_election'] and (row['line_expiry_election'] <= t):
 					log.debug("request_line", "%s: Removed user ID %s from line for election timeout, expiry time %s current time %s" % (sid, u.id, row['line_expiry_election'], t))
@@ -41,27 +48,39 @@ def _process_line(line, sid):
 					# They'll get added to the line of whatever station they're tuned in to (if any!)
 					if u.has_requests():
 						u.put_in_request_line(u.get_tuned_in_sid())
-				# If they have no song, start the expiry countdown
-				elif not song_id and not row['line_expiry_election']:
+				# If they have no song and they're in 2nd or 1st, start the expiry countdown
+				elif not song_id and not row['line_expiry_election'] and position <= 2:
+					log.debug("request_line", "%s: User ID %s has no valid requests, beginning boot countdown." % (sid, u.id))
 					row['line_expiry_election'] = t + 900
 					db.c.update("UPDATE r4_request_line SET line_expiry_election = %s WHERE user_id = %s", ((t + 900), row['user_id']))
 					add_to_line = True
 				# Keep 'em in line
 				else:
+					log.debug("request_line", "%s: User ID %s is in line." % (sid, u.id))
 					if song_id:
 						albums_with_requests.append(db.c.fetch_var("SELECT album_id FROM r4_songs WHERE song_id = %s", (song_id,)))
+						row['song'] = db.c.fetch_row("SELECT song_id AS id, song_title AS title, album_name FROM r4_songs JOIN r4_albums USING (album_id) WHERE song_id = %s", (song_id,))
+					else:
+						row['song'] = None
 					row['song_id'] = song_id
 					add_to_line = True
 			elif not row['line_expiry_tune_in'] or row['line_expiry_tune_in'] == 0:
-				db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s", ((t + 900), row['user_id']))
+				log.debug("request_line", "%s: User ID %s being marked as tuned out." % (sid, u.id))
+				db.c.update("UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s", ((t + 600), row['user_id']))
 				add_to_line = True
 			else:
+				log.debug("request_line", "%s: User ID %s not tuned in, waiting on expiry for action." % (sid, u.id))
 				add_to_line = True
+		row['skip'] = not add_to_line
+		row['position'] = user_viewable_position
+		new_line.append(row)
+		user_positions[u.id] = user_viewable_position
+		user_viewable_position = user_viewable_position + 1
 		if add_to_line:
-			new_line.append(row)
-			user_positions[u.id] = position
 			position = position + 1
 
+	log.debug("request_line", "Request line valid positions: %s" % valid_positions)
+	cache.set_station(sid, 'request_valid_positions', valid_positions)
 	cache.set_station(sid, "request_line", new_line, True)
 	cache.set_station(sid, "request_user_positions", user_positions, True)
 
@@ -87,16 +106,16 @@ def update_expire_times():
 			expiry_times[row['user_id']] = row['line_expiry_tune_in']
 	cache.set("request_expire_times", expiry_times, True)
 
-def get_next(sid, start_at_position = 0):
+def get_next(sid):
 	line = cache.get_station(sid, "request_line")
 	if not line:
 		return None
-	if start_at_position > 0 and len(line) <= 3:
-		start_at_position = 0
 	song = None
-	for pos in range(start_at_position, len(line)):
+	for pos in range(0, len(line)):
 		if not line[pos]:
 			pass  # ?!?!
+		elif 'skip' in line[pos] and line[pos]['skip']:
+			log.debug("request", "Passing on user %s since they're marked as skippable." % line[pos]['username'])
 		elif not line[pos]['song_id']:
 			log.debug("request", "Passing on user %s since they have no valid first song." % line[pos]['username'])
 		else:
@@ -109,16 +128,13 @@ def get_next(sid, start_at_position = 0):
 			u = User(entry['user_id'])
 			db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (u.id, entry['song_id']))
 			u.remove_from_request_line()
-			if u.has_requests():
-				u.put_in_request_line(u.get_tuned_in_sid())
 			request_count = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_history WHERE user_id = %s", (u.id,)) + 1
 			db.c.update("DELETE FROM r4_request_store WHERE song_id = %s AND user_id = %s", (song.id, u.id))
 			db.c.update("INSERT INTO r4_request_history (user_id, song_id, request_wait_time, request_line_size, request_at_count, sid) "
 						"VALUES (%s, %s, %s, %s, %s, %s)",
-						(u.id, song.id, time.time() - entry['line_wait_start'], len(line), request_count, sid))
+						(u.id, song.id, timestamp() - entry['line_wait_start'], len(line), request_count, sid))
 			db.c.update("UPDATE phpbb_users SET radio_totalrequests = %s WHERE user_id = %s", (request_count, u.id))
 			song.update_request_count(sid)
-			_process_line(line, sid)
 			break
 
 	return song

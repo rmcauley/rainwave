@@ -13,8 +13,67 @@
    "suffix_12"                                       : "th",
    "suffix_13"                                       : "th",
 
-   "__comment__": "These are all admin panel strings that don't require translating.",
+   "__comment__"          : "DJ Panel Lines (translation not required)",
 
-   "backend_scan_errors": "Backend Scan Errors",
-   "producers": "Producers"
+   "dj_mode"                                         : "DJ Mode",
+   "dj_panel"                                        : "DJ Panel",
+   "dj_audio_fail"                                   : "Could not initialize audio source. (are you using the latest Firefox or Chrome?)",
+   "dj_gain"                                         : "Gain",
+   "dj_clip_warning"                                 : "<< LOUD >>",
+   "dj_enable_mic"                                   : "Enable Mic",
+
+   "dj_request_pause"                                : "Pause at End of Next Song",
+   "dj_cancel_pause"                                 : "Cancel",
+   "dj_resume"                                       : "Resume Music",
+   "dj_go_on_air"                                    : "Broadcast",
+   "dj_cut_mic"                                      : "Stop Broadcasting",
+
+   "dj_music_playing"                                : "Music Playing",
+   "dj_music_paused"                                 : "Music Paused",
+   "dj_window"                                       : "Window Open for %(timeleft)",
+   "dj_will_pause"                                   : "Go Live In %(timeleft)",
+   "dj_go"                                           : "Go Live!",
+   "dj_live_for"                                     : "System Held for %(livetime)",
+   "dj_late"                                         : "Window Closed",
+   "dj_on_air"                                       : "On Air for %(mictime)",
+
+   "dj_stream_name"                                  : "Stream Title Tag for Winamp/FB2K",
+   "dj_save_name"                                    : "Save",
+   "dj_connecting"                                   : "Connecting...",
+   "dj_net_error"                                    : "Net Error!",
+
+   "__comment__"          : "Admin Panel Lines (translation not required)",
+
+   "time"                                            : "Time",
+   "type"                                            : "Type",
+   "file"                                            : "File",
+   "error"                                           : "Error",
+   "url"                                             : "URL",
+   "traceback"                                       : "Traceback",
+   "sched_length_minutes"                            : "Length (min.)",
+   "backend_scan_errors"                             : "Backend Scan Errors",
+   "producers"                                       : "Producers",
+   "username"                                        : "Username",
+   "columnNumber"                                    : "Col",
+   "user_agent"                                      : "Browser",
+   "lineNumber"                                      : "Line",
+   "browser_language"                                : "Lang",
+   "stack"                                           : "Stack",
+   "location"                                        : "URL",
+   "js_errors"                                       : "Automated JS Error Reports",
+   "current_listeners_result"                        : "Current Listeners",
+
+   "__comment__"          : "API Pages (unlinked on main site, does not need to be translated)",
+
+   "request_line_result"                             : "Listeners Waiting in Request Line",
+   "line_expiry_tune_in"                             : "Expire Time (if tuned out)",
+   "line_expiry_election"                            : "Expire Time (if no good requests)",
+   "line_wait_start"                                 : "Entered Line At (epoch time)",
+   "artist_parseable"                                : "Artists (computer-readable format)",
+   "song_played_at"                                  : "Played At (epoch time)",
+
+   "__comment__"          : "WebSocket/API related messages, does not need to be translated",
+
+   "invalid_json"                                    : "Invalid JSON or WebSocket message.",
+   "websocket_404"                                   : "Action does not exist."
 }

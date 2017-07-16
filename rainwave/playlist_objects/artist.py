@@ -4,7 +4,7 @@ from libs import config
 from rainwave.playlist_objects.metadata import AssociatedMetadata, MetadataUpdateError, make_searchable_string
 
 class Artist(AssociatedMetadata):
-	select_by_name_query = "SELECT artist_id AS id, artist_name AS name, artist_name_searchable AS name_searchable FROM r4_artists WHERE artist_name = %s"
+	select_by_name_query = "SELECT artist_id AS id, artist_name AS name, artist_name_searchable AS name_searchable FROM r4_artists WHERE lower(artist_name) = lower(%s)"
 	select_by_id_query = "SELECT artist_id AS id, artist_name AS name, artist_name_searchable AS name_searchable FROM r4_artists WHERE artist_id = %s"
 	select_by_song_id_query = "SELECT r4_artists.artist_id AS id, r4_artists.artist_name AS name, r4_artists.artist_name_searchable AS name_searchable, r4_song_artist.artist_is_tag AS is_tag, artist_order AS \"order\" FROM r4_song_artist JOIN r4_artists USING (artist_id) WHERE song_id = %s ORDER BY artist_order"
 	disassociate_song_id_query = "DELETE FROM r4_song_artist WHERE song_id = %s AND artist_id = %s"
@@ -14,7 +14,7 @@ class Artist(AssociatedMetadata):
 	delete_self_query = "DELETE FROM r4_artists WHERE artist_id = %s"
 
 	# needs to be specialized because of artist_order
-	def associate_song_id(self, song_id, is_tag = None, order = None):
+	def associate_song_id(self, song_id, is_tag = None, order = None):	#pylint: disable=W0221
 		if not order and (not "order" in self.data or not self.data['order']):
 			order = db.c.fetch_var("SELECT MAX(artist_order) FROM r4_song_artist WHERE song_id = %s", (song_id,))
 			if not order:
@@ -53,16 +53,17 @@ class Artist(AssociatedMetadata):
 			"SELECT r4_song_artist.song_id AS id, "
 			 	"r4_songs.song_origin_sid AS sid, "
 			 	"song_title AS title, "
-			 	"song_rating AS rating, "
+			 	"CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, "
 				"song_exists AS requestable, "
 				"song_length AS length, "
+				"song_track_number AS track_number, "
+				"song_disc_number AS disc_number, "
 				"song_cool AS cool, "
 				"song_cool_end AS cool_end, "
 				"song_url as url, song_link_text as link_text, "
 				"COALESCE(song_rating_user, 0) AS rating_user, "
 				"COALESCE(song_fave, FALSE) AS fave, "
-				"album_name, r4_albums.album_id, "
-				"album_exists AS album_openable "
+				"album_name, r4_albums.album_id, album_year "
 			"FROM r4_song_artist "
 				"JOIN r4_songs USING (song_id) "
 				"JOIN r4_albums USING (album_id) "
@@ -70,7 +71,7 @@ class Artist(AssociatedMetadata):
 				"LEFT JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
 				"LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
 			"WHERE r4_song_artist.artist_id = %s AND r4_songs.song_verified = TRUE "
-			"ORDER BY song_exists DESC, album_name, song_title ",
+			"ORDER BY song_exists DESC, album_year NULLS FIRST, album_name, song_disc_number NULLS FIRST, song_track_number NULLS FIRST, song_title",
 			(sid, sid, user_id, self.id))
 		# And of course, now we have to burn extra CPU cycles to make sure the right album name is used and that we present the data
 		# in the same format seen everywhere else on the API.  Still, much faster then loading individual song objects.
@@ -79,12 +80,14 @@ class Artist(AssociatedMetadata):
 			self.data['all_songs'][sid] = {}
 		requestable = True if user_id > 1 else False
 		for song in all_songs:
+			if not song['sid'] in config.station_ids:
+				continue
 			song['requestable'] = requestable and song['requestable']
 			if not song['album_id'] in self.data['all_songs'][song['sid']]:
 				self.data['all_songs'][song['sid']][song['album_id']] = []
 			self.data['all_songs'][song['sid']][song['album_id']].append(song)
-			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id'), "openable": song.pop('album_openable') } ]
-			
+			song['albums'] = [ { "name": song.pop('album_name'), "id": song.pop('album_id'), "year": song.pop('album_year') } ]
+
 	def to_dict(self, user=None):
 		d = super(Artist, self).to_dict(user)
 		d['order'] = self.data['order']

@@ -17,8 +17,9 @@ parser.add_argument("--group")
 parser.add_argument("--title")
 parser.add_argument("--gain", action="store_true")
 
-args = parser.parse_args()
-config.set_value("mp3gain_scan", args.gain)
+shell_args = parser.parse_args()
+config.set_value("mp3gain_scan", shell_args.gain)
+config.set_value("scanner_use_tracknumbers", True)
 
 def scan_file(args, filename):
 	if _is_mp3(filename):
@@ -36,12 +37,17 @@ def scan_file(args, filename):
 		print "Link Name".ljust(10), ":", s.data['link_text']
 		print "Link".ljust(10), ":", s.data['url']
 		print "Length".ljust(10), ":", "%s:%02u" % (int(math.floor(s.data['length'] / 60)), (s.data['length'] % 60))
-		print "Gain".ljust(10), ":", s.replay_gain	
+		print "Gain".ljust(10), ":", s.replay_gain
+		print "Track".ljust(10), ":", s.data['track_number']
+		print "Disc #".ljust(10), ":", s.data['disc_number']
+		print "Year".ljust(10), ":", s.data['year']
 
 def scan_directory(args, dirname):
+	#pylint: disable=W0612
 	for root, subdirs, files in os.walk(dirname.encode("utf-8"), followlinks = True):
 		for filename in files:
 			scan_file(args, os.path.join(root, filename))
+	#pylint: enable=W0612
 
 def update_tag(args, filename):
 	if args.album or args.artist or args.group or args.title:
@@ -56,10 +62,9 @@ def update_tag(args, filename):
 			s["title"] = unicode(args.title)
 		s.save()
 
-
 if __name__ == "__main__":
-	for f in args.paths:
+	for f in shell_args.paths:
 		if os.path.isfile(f):
-			scan_file(args, f)
+			scan_file(shell_args, f)
 		elif os.path.isdir(f):
-			scan_directory(args, f)
+			scan_directory(shell_args, f)

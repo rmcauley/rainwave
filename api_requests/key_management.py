@@ -10,12 +10,17 @@ mini_qr_service = "http://chart.apis.google.com/chart?cht=qr&chs=75x75&choe=ISO-
 @handle_url("/keys/")
 class KeyIndex(api.web.HTMLRequest):
 	login_required = True
-	description = "Used for management of API keys by users."
 	sid_required = False
+	auth_required = False
+	description = "Used for management of API keys by users."
 
 	def get(self):
 		global qr_service
 		global mini_qr_service
+
+		if self.request.headers.get("User-Agent").lower().find("android") != -1 and not self.get_argument('noredirect'):
+			self.redirect('/keys/app')
+			return
 
 		self.write(self.render_string("basic_header.html", title=self.locale.translate("api_key_manager")))
 		self.write("<p>%s: <bold>%s</bold></p>" % (self.locale.translate("your_numeric_user_id"), self.user.id))
@@ -31,6 +36,29 @@ class KeyIndex(api.web.HTMLRequest):
 			self.write("</tr>")
 		self.write("<tr><td><a href=\"/keys/create\">%s</a></td><td>&nbsp;</td><td>&nbsp;</td></tr>" % (self.locale.translate("create_api_key")))
 		self.write(self.render_string("basic_footer.html"))
+
+@handle_url("/keys/app")
+class AppLogin(api.web.HTMLRequest):
+	login_required = False
+	sid_required = False
+	auth_required = False
+	description = "Shows an acceptance screen with an rw:// link to login.  Allows seamless logins on mobile screens."
+
+	def get(self):
+		if not self.user or self.user.is_anonymous():
+			self.redirect('/forums/ucp.php?mode=login&redirect=%s' % self.url)
+			return
+		
+		self.user.ensure_api_key()
+
+		key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = %s LIMIT 1", (self.user.id,))
+
+		self.render(
+			"applogin.html",
+			request=self,
+			locale=self.locale,
+			link_url="rw://%s:%s@rainwave.cc" % (self.user.id, key)
+		)
 
 @handle_url("/keys/delete")
 class KeyDelete(KeyIndex):

@@ -1,5 +1,4 @@
 import tornado.web
-import tornado.escape
 
 from api.server import handle_url
 import api.web
@@ -17,11 +16,12 @@ def get_stream_filename(sid, filetype = "mp3", user = None):
 	else:
 		return "%s.%s?%s:%s" % (filename, filetype, user.id, user.data['listen_key'])
 
-@handle_url("/tune_in/(\w+|\d)\.(ogg|mp3)")
+@handle_url("/tune_in/(\w+|\d)\.(ogg|mp3)(.m3u)?")
 class TuneInIndex(api.web.HTMLRequest):
 	description = "Provides the user with an M3U file containing Ogg or MP3 URLs to relays."
 	login_required = False
 	auth_required = False
+	sid_required = False
 
 	def prepare(self):
 		super(TuneInIndex, self).prepare()
@@ -47,7 +47,7 @@ class TuneInIndex(api.web.HTMLRequest):
 
 		self.set_header("Content-Disposition", "inline; filename=\"rainwave_%s_%s.m3u\"" % (config.station_id_friendly[self.sid].lower(), filetype))
 
-	def get(self, url_param, filetype):
+	def get(self, url_param, filetype, m3u=None):	#pylint: disable=W0221
 		self.set_sid(url_param, filetype)
 
 		stream_filename = get_stream_filename(self.sid, filetype, self.user)

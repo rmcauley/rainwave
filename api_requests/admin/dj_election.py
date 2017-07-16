@@ -5,9 +5,10 @@ from api.exceptions import APIException
 from api import fieldtypes
 from rainwave import playlist
 from rainwave import events
+from libs import db
 
 class GetCachedSongList(api.web.APIHandler):
-	admin_required = True
+	dj_preparation = True
 
 	def post(self):
 		songs = cache.get_user(self.user.id, self.return_name)
@@ -20,7 +21,8 @@ class GetCachedSongList(api.web.APIHandler):
 			self.append(self.return_name, [])
 
 class AddToCachedSongList(api.web.APIHandler):
-	admin_required = True
+	dj_preparation = True
+	allow_sid_zero = True
 	fields = { "song_id": ( fieldtypes.song_id, True ), "song_sid": ( fieldtypes.sid, True) }
 
 	def post(self):
@@ -35,7 +37,7 @@ class AddToCachedSongList(api.web.APIHandler):
 		self.append(self.return_name, to_output)
 
 class RemoveFromCachedSongList(api.web.APIHandler):
-	admin_required = True
+	dj_preparation = True
 	fields = { "song_id": (fieldtypes.song_id, True) }
 
 	def post(self):
@@ -65,15 +67,34 @@ class RemoveFromDJElection(RemoveFromCachedSongList):
 
 @handle_api_url("admin/commit_dj_election")
 class CommitDJElection(api.web.APIHandler):
-	admin_required = True
+	dj_preparation = True
 	description = "Commit the DJ Election the user is editing."
+	fields = { "sched_id": (fieldtypes.sched_id, False) }
 
 	def post(self):
 		songs = cache.get_user(self.user.id, "dj_election")
 		if not songs:
 			raise APIException("no_dj_election", "No songs found queued for a DJ election.")
-		elec = events.election.Election.create(self.sid)
+		if self.get_argument("sched_id", None) and not self.user.is_admin:
+			if not self.user.id == db.c.fetch_var("SELECT sched_dj_user_id FROM r4_schedule WHERE sched_id = %s", (self.get_argument("sched_id"),)):
+				raise APIException("auth_required", http_code=403)
+		elec = events.election.Election.create(self.sid, self.get_argument("sched_id"))
 		for song in songs:
 			elec.add_song(song)
 		cache.set_user(self.user.id, "dj_election", None)
+		self.append(self.return_name, { "success": True })
+
+@handle_api_url("admin/delete_election")
+class DeleteElection(api.web.APIHandler):
+	dj_preparation = True
+	description = "Delete an existing election."
+	fields =  {"elec_id": (fieldtypes.elec_id, True) }
+
+	def post(self):
+		elec = events.election.Election.load_by_id(self.get_argument("elec_id"))
+		can_delete = self.user.is_admin()
+		if not can_delete:
+			if not self.user.id == db.c.fetch_var("SELECT sched_dj_user_id FROM r4_schedule WHERE sched_id = %s", (elec.sched_id,)):
+				raise APIException("auth_required", http_code=403)
+		elec.delete()
 		self.append(self.return_name, { "success": True })

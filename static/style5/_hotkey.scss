@@ -1,0 +1,32 @@
+#hotkey, #hotkey_error {
+	position: absolute;
+	display: inline-block;
+	padding: 10px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	border-style: solid;
+	border-width: 1px;
+	border-top: none;
+	z-index: 5;
+	text-align: center;
+	left: 50%;
+	@include transform(translate(-50%, -100%));
+}
+
+#hotkey {
+	background: $hotkey_bkg;
+	border-color: $hotkey_b;
+
+	body.hotkey_on & {
+		@include transform(translate(-50%, 0%));
+	}
+}
+
+#hotkey_error {
+	background: $error_bkg;
+	border-color: $error_b;
+
+	body.hotkey_error & {
+		@include transform(translate(-50%, 0%));
+	}
+}

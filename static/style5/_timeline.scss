@@ -1,0 +1,185 @@
+div.timeline.scrollable {
+	overflow-y: hidden;
+}
+
+body.full div.timeline.scrollblock.scrollable {
+	position: absolute;
+}
+
+div.history_header {
+	box-sizing: border-box;
+	position: absolute;
+	z-index: 30;
+	width: 100%;
+	opacity: 0.5;
+	cursor: pointer;
+	padding: 0px 10px;
+	font-size: smaller;
+	text-transform: uppercase;
+	@include transform(translateY(-30px));
+	        transition: opacity 300ms $transfunc, transform $transtime;
+	-webkit-transition: opacity 300ms $transfunc, transform $transtime;
+
+	body.desktop & {
+		will-change: opacity, background-color;
+			    transition: opacity 300ms $transfunc, background-color 300ms $transfunc, transform $transtime;
+		-webkit-transition: opacity 300ms $transfunc, background-color 300ms $transfunc, transform $transtime;
+	}
+
+	span.history_header_header {
+		margin-right: 5px;
+	}
+
+	svg.history_pulldown_arrow {
+		display: none;
+		position: relative;
+		height: 1em;
+		width: 1em;
+		fill: $text;
+		top: 2px;
+		@include transform(rotate(180deg));
+		@include transition-wtime(350ms, transform);
+		-webkit-transform-origin: 0.5em 0.5em;
+		        transform-origin: 0.5em 0.5em;
+
+		body.desktop & {
+			display: inline-block;
+		}
+	}
+
+	&.history_expandable svg.history_pulldown_arrow {
+		@include transform(rotate(0deg));
+	}
+
+	body.desktop &:hover {
+		opacity: 1;
+		background-color: $history_header_h_bkg;
+	}
+}
+
+div.timeline_event {
+	box-sizing: border-box;
+	position: absolute;
+	width: 100%;
+	@include transition(transform, opacity, visibility);
+
+	&.sched_history_hidden {
+	 	opacity: 0;
+	}
+
+	div.timeline_header {
+		box-sizing: border-box;
+		height: 20px;
+		margin: 0;
+		text-transform: uppercase;
+		color: $text_dd;
+		padding: 0 20px 0 10px;
+		// fix webkit rendering things 1px too high (?!?!?!)
+		-webkit-transform: translateY(1px);
+
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		html[lang='ko_KO'] & {
+			@include transform(translateY(-2px));
+		}
+
+		.header_text {
+			box-sizing: border-box;
+			display: block;
+			padding-right: 20px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+
+	&.no_header {
+		div.timeline_header {
+			display: none;
+		}
+	}
+
+	&.sched_current div.timeline_header {
+		color: $timeline_header;
+	}
+
+	span.timeline_header_clock {
+		float: right;
+	}
+
+	&.sched_current div.progress {
+		opacity: 1;
+	}
+
+	&.timeline_message {
+		height: 45px;
+		background: $hover_bkg;
+		border: solid 1px $hover_b;
+		padding: 5px 30px 5px 10px;
+		z-index: 20;
+
+		&.error {
+			@include error_colors();
+		}
+
+		div.message_text {
+			position: relative;
+			display: block;
+			top: 50%;
+			@include transform(translateY(-50%));
+
+			span + a {
+				margin-left: 0.5em;
+			}
+		}
+
+		div.close {
+			z-index: 2;
+		}
+	}
+
+	body.desktop &.sched_history {
+		&:hover {
+			z-index: 3;
+		}
+	}
+}
+
+div.progress {
+	box-sizing: border-box;
+	position: absolute;
+	width: 100%;
+	overflow: hidden;
+	height: 2px;
+	margin: 0px;
+	opacity: 0.6;
+	@include transition(transform);
+
+	body.simple & {
+		padding: 0 19px 0 11px;
+	}
+
+	&.history_bar {
+		opacity: 1;
+	}
+
+	div.progress_bkg {
+		height: 2px;
+		background-color: $progress_bkg;
+	}
+
+	div.progress_inside {
+		background-color: $progress_b;
+		height: 2px;
+		padding: 0px;
+		width: 0;
+		opacity: 1;
+		@include transition(opacity);
+	}
+
+	div.no_header &, div.no_progress & {
+		display: none;
+	}
+}

@@ -19,7 +19,7 @@ def get_ph_formatted_time(start_time, end_time, timezone_name):
 
 @handle_url("/admin/tools/power_hours")
 class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours):
-	def get(self):
+	def get(self):	#pylint: disable=E0202,W0221
 		self.write(self.render_string("bare_header.html", title="%s Power Hours" % config.station_id_friendly[self.sid]))
 		self.write("<h2>%s Power Hours</h2>" % config.station_id_friendly[self.sid])
 		self.write("<script>window.top.current_sched_id = null;</script>\n\n")
@@ -31,7 +31,12 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 		index.write_html_time_form(self, "new_ph")
 		self.write("<br><button onclick=\"window.top.call_api('admin/create_producer', ")
 		self.write("{ 'producer_type': 'OneUpProducer', 'end_utc_time': document.getElementById('new_ph_timestamp').value, 'start_utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\"")
-		self.write(">Create new Power Hour</button></div><hr>")
+		self.write(">Create new, empty Power Hour</button></div>")
+		self.write("<div>(based on above form with...)<br>")
+		self.write("Length: <select id='unrated_length'><option value='1800'>30m</option><option value='3600' selected>1h</option><option value='5400'>1.5h</option><option value='7200'>2h</option></select>")
+		self.write("<br><button onclick=\"window.top.call_api('admin/create_producer', ")
+		self.write("{ 'fill_unrated': true, 'producer_type': 'OneUpProducer', 'end_utc_time': parseInt(document.getElementById('new_ph_timestamp').value) + parseInt(document.getElementById('unrated_length').value), 'start_utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\"")
+		self.write(">Create new PH w/unrated songs</button></div><hr>")
 
 		if self.return_name in self._output and type(self._output[self.return_name]) == types.ListType and len(self._output[self.return_name]) > 0:
 			self.write("<ul>")
@@ -51,7 +56,7 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 		self.write("<a href='power_hours?sid=%s'>Power hour non-existent or deleted.  Click this line to go back.</a>" % self.sid)
 		self.write(self.render_string("basic_footer.html"))
 
-	def get(self):
+	def get(self):	#pylint: disable=E0202,W0221
 		ph = self._output[self.return_name]
 		self.write(self.render_string("bare_header.html", title="%s" % ph['name']))
 		self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")
@@ -61,6 +66,11 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 		self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(ph['start'], ph['end'], 'US/Pacific'))
 		self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(ph['start'], ph['end'], 'Europe/London'))
 		self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(ph['start'], ph['end'], 'Asia/Tokyo'))
+
+		total_len = 0
+		for i, song in enumerate(ph['songs']):
+			total_len += song['length']
+		self.write("<br><div>Total length of songs: <b>%d:%02d</b></div>" % (int(total_len / 3600), (total_len / 60) % 60))
 
 		self.write("<br><span>Change time.  Use YOUR timezone.</span><br>")
 		index.write_html_time_form(self, "power_hour", ph['start'])
@@ -87,7 +97,10 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 				elif song['one_up_queued']:
 					self.write(" (queued)")
 				self.write("</div><div>%s</div>\n" % song['albums'][0]['name'])
-				self.write("<div><a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">Delete</a></div></li>\n" % song['one_up_id'])
+				self.write("<div>")
+				self.write("<a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">Delete</a> - " % song['one_up_id'])
+				self.write("<a onclick=\"window.top.call_api('admin/move_up_in_power_hour', { 'one_up_id': %s });\">Move Up</a>" % song['one_up_id'])
+				self.write("</div></li>\n")
 			self.write("</ol>\n")
 			self.write("<script>window.top.current_sched_id = %s;</script>\n\n" % ph['id'])
 		except Exception as e:

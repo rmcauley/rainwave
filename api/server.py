@@ -2,9 +2,13 @@ import sys
 import os
 import httplib
 import urllib
-import json
 import time
 import traceback
+
+try:
+	import ujson as json
+except ImportError:
+	import json
 
 import tornado.httpserver
 import tornado.ioloop
@@ -23,6 +27,7 @@ from libs import chuser
 from libs import cache
 from libs import memory_trace
 from libs import buildtools
+from libs import zeromq
 from rainwave import playlist
 from rainwave import schedule
 import rainwave.request
@@ -31,11 +36,14 @@ request_classes = [
 	(r"/api4/?", api.help.IndexRequest),
 	(r"/api4/help/?", api.help.IndexRequest),
 	(r"/api4/help/(.+)", api.help.HelpRequest),
-	(r"/static/(.*)", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "../static/") }),
-	(r"/beta/static/(.*)", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "../static/") }),
-	(r"/favicon.ico", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "../static/favicon.ico") })
+	(r"/static/(.*)", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "..", "static") }),
+	(r"/beta/static/(.*)", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "..", "static") }),
+	(r"/favicon.ico", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "..", "static", "favicon.ico") }),
+	(r"/(serviceworker.js)", tornado.web.StaticFileHandler, { 'path': os.path.join(os.path.dirname(__file__), "..", "static") }),
 ]
 testable_requests = []
+api_endpoints = {}
+app = None
 
 class handle_url(object):
 	def __init__(self, url):
@@ -45,6 +53,9 @@ class handle_url(object):
 		klass.url = self.url
 		request_classes.append((self.url, klass))
 		api.help.add_help_class(klass, klass.url)
+		global api_endpoints
+		if not getattr(klass, "local_only", False) and not getattr(klass, "is_websocket", False):
+			api_endpoints[klass.url] = klass
 		return klass
 
 class handle_api_url(handle_url):
@@ -69,12 +80,14 @@ class TestShutdownRequest(api.web.APIHandler):
 		self.write("Shutting down server.")
 
 	def on_finish(self):
-		tornado.ioloop.IOLoop.instance().stop() #add_timeout(time.time() + 2, tornado.ioloop.IOLoop.instance().stop)
+		tornado.ioloop.IOLoop.instance().stop() #add_timeout(time.gmtime() + 2, tornado.ioloop.IOLoop.instance().stop)
 		super(TestShutdownRequest, self).on_finish()
 
 class APITestFailed(Exception):
 	def __init__(self, value):
+		super(APITestFailed, self).__init__()
 		self.value = value
+
 	def __str__(self):
 		return repr(self.value)
 
@@ -83,9 +96,12 @@ class APIServer(object):
 		self.ioloop = None
 
 	def _listen(self, task_id):
+		zeromq.init_pub()
+		zeromq.init_sub()
+
 		import api_requests.sync
 		api_requests.sync.init()
-		
+
 		# task_ids start at zero, so we gobble up ports starting at the base port and work up
 		port_no = int(config.get("api_base_port")) + task_id
 
@@ -104,9 +120,6 @@ class APIServer(object):
 		cache.connect()
 		memory_trace.setup(port_no)
 
-		buildtools.bake_css()
-		buildtools.bake_js()
-
 		api.locale.load_translations()
 		api.locale.compile_static_language_files()
 
@@ -122,7 +135,7 @@ class APIServer(object):
 				cache.set_station(station_id, "backend_ok", True)
 				cache.set_station(station_id, "backend_message", "OK")
 				cache.set_station(station_id, "get_next_socket_timeout", False)
-		
+
 		for sid in config.station_ids:
 			cache.update_local_cache_for_sid(sid)
 			playlist.prepare_cooldown_algorithm(sid)
@@ -146,6 +159,7 @@ class APIServer(object):
 		api.help.sectionize_requests()
 
 		# Fire ze missiles!
+		global app
 		app = tornado.web.Application(request_classes,
 			debug=(config.test_mode or config.get("developer_mode")),
 			template_path=os.path.join(os.path.dirname(__file__), "../templates"),
@@ -172,6 +186,12 @@ class APIServer(object):
 			log.close()
 
 	def start(self):
+		buildtools.bake_css()
+		buildtools.bake_js()
+		buildtools.bake_templates()
+		buildtools.bake_beta_templates()
+		buildtools.copy_woff()
+
 		# Setup variables for the long poll module
 		# Bypass Tornado's forking processes for Windows machines if num_processes is set to 1
 		if config.get("api_num_processes") == 1 or config.get("web_developer_mode"):
@@ -250,7 +270,7 @@ class APIServer(object):
 					if not dict_compare.print_differences(ref_data, web_data):
 						response_pass = False
 						print "JSON from server:"
-						print json.dumps(web_data, indent=4, sort_keys=True)
+						print json.dumps(web_data, ensure_ascii=False, indent=4)
 						print
 				else:
 					response_pass = False

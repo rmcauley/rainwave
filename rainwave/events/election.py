@@ -1,6 +1,6 @@
 import random
 import math
-import time
+from time import time as timestamp
 
 from libs import db
 from libs import config
@@ -8,7 +8,9 @@ from libs import cache
 from libs import log
 from rainwave import playlist
 from rainwave import request
+from rainwave.user import User
 from rainwave.events import event
+from rainwave.playlist_objects.song import SongNonExistent
 
 _request_interval = {}
 _request_sequence = {}
@@ -37,6 +39,8 @@ def force_request(sid):
 
 @event.register_producer
 class ElectionProducer(event.BaseProducer):
+	always_return_elec = False
+
 	def __init__(self, sid):
 		super(ElectionProducer, self).__init__(sid)
 		self.plan_ahead_limit = config.get_station(sid, "num_planned_elections")
@@ -44,24 +48,48 @@ class ElectionProducer(event.BaseProducer):
 		self.elec_class = Election
 
 	def has_next_event(self):
-		return True
+		if not self.id:
+			return True
+		else:
+			return db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_used = FALSE AND sched_id = %s", (self.elec_type, self.sid, self.id))
 
+	#pylint: disable=W0221
 	def load_next_event(self, target_length = None, min_elec_id = 0, skip_requests = False):
-		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s ORDER BY elec_id LIMIT 1", (self.elec_type, self.sid, min_elec_id))
+		if self.id:
+			elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s AND sched_id = %s ORDER BY elec_id LIMIT 1", (self.elec_type, self.sid, min_elec_id, self.id))
+		else:
+			elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s AND sched_id IS NULL ORDER BY elec_id LIMIT 1", (self.elec_type, self.sid, min_elec_id))
+		log.debug("load_election", "Check for next election (type %s, sid %s, min. ID %s, sched_id %s): %s" % (self.elec_type, self.sid, min_elec_id, self.id, elec_id))
 		if elec_id:
 			elec = self.elec_class.load_by_id(elec_id)
+			if not elec.songs or not len(elec.songs):
+				log.warn("load_election", "Election ID %s is empty.  Marking as used.")
+				db.c.update("UPDATE r4_elections SET elec_used = TRUE WHERE elec_id = %s", (elec.id,))
+				return self.load_next_event()
 			elec.url = self.url
 			elec.name = self.name
 			return elec
+		elif self.id and not self.always_return_elec:
+			return None
 		else:
 			return self._create_election(target_length, skip_requests)
+	#pylint: enable=W0221
 
 	def load_event_in_progress(self):
-		elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s ORDER BY elec_id DESC LIMIT 1", (self.elec_type, self.sid))
+		if self.id:
+			elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s AND sched_id = %s ORDER BY elec_id DESC LIMIT 1", (self.elec_type, self.sid, self.id))
+		else:
+			elec_id = db.c.fetch_var("SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s AND sched_id IS NULL ORDER BY elec_id DESC LIMIT 1", (self.elec_type, self.sid))
+		log.debug("load_election", "Check for in-progress elections (type %s, sid %s, sched_id %s): %s" % (self.elec_type, self.sid, self.id, elec_id))
 		if elec_id:
 			elec = self.elec_class.load_by_id(elec_id)
+			if not elec.songs or not len(elec.songs):
+				log.warn("load_election", "Election ID %s is empty.  Marking as used.")
+				db.c.update("UPDATE r4_elections SET elec_used = TRUE WHERE elec_id = %s", (elec.id,))
+				return self.load_next_event()
 			elec.name = self.name
 			elec.url = self.url
+			elec.dj_user_id = self.dj_user_id
 			return elec
 		else:
 			return self.load_next_event()
@@ -70,9 +98,10 @@ class ElectionProducer(event.BaseProducer):
 		log.debug("create_elec", "Creating election type %s for sid %s, target length %s." % (self.elec_type, self.sid, target_length))
 		db.c.start_transaction()
 		try:
-			elec = self.elec_class.create(self.sid)
+			elec = self.elec_class.create(self.sid, self.id)
 			elec.url = self.url
 			elec.name = self.name
+			elec.dj_user_id = self.dj_user_id
 			elec.fill(target_length, skip_requests)
 			if elec.length() == 0:
 				raise Exception("Created zero-length election.")
@@ -102,8 +131,12 @@ class Election(event.BaseEvent):
 		elec.has_priority = row['elec_priority']
 		elec.public = True
 		elec.timed = False
+		elec.sched_id = row['sched_id']
 		for song_row in db.c.fetch_all("SELECT * FROM r4_election_entries WHERE elec_id = %s", (elec_id,)):
-			song = playlist.Song.load_from_id(song_row['song_id'], elec.sid)
+			try:
+				song = playlist.Song.load_from_id(song_row['song_id'], elec.sid)
+			except SongNonExistent:
+				song = playlist.Song.load_from_id(song_row['song_id'], db.c.fetch_var("SELECT song_origin_sid FROM r4_songs WHERE song_id = %s", (song_row['song_id'],)))
 			song.data['entry_id'] = song_row['entry_id']
 			song.data['entry_type'] = song_row['entry_type']
 			song.data['entry_position'] = song_row['entry_position']
@@ -115,7 +148,7 @@ class Election(event.BaseEvent):
 		return elec
 
 	@classmethod
-	def create(cls, sid):
+	def create(cls, sid, sched_id=None):
 		elec_id = db.c.get_next_id("r4_schedule", "sched_id")
 		elec = cls(sid)
 		elec.is_election = True
@@ -130,7 +163,8 @@ class Election(event.BaseEvent):
 		elec.has_priority = False
 		elec.public = True
 		elec.timed = True
-		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid) VALUES (%s, %s, %s, %s)", (elec_id, False, elec.type, elec.sid))
+		elec.sched_id = sched_id
+		db.c.update("INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid, sched_id) VALUES (%s, %s, %s, %s, %s)", (elec_id, False, elec.type, elec.sid, sched_id))
 		return elec
 
 	def __init__(self, sid = None):
@@ -146,7 +180,7 @@ class Election(event.BaseEvent):
 		# ONLY RUN _ADD_REQUESTS ONCE PER FILL
 		if not skip_requests:
 			self._add_requests()
-		for i in range(len(self.songs), self._num_songs):
+		for i in range(len(self.songs), self._num_songs):	#pylint: disable=W0612
 			try:
 				if not target_song_length and len(self.songs) > 0 and 'length' in self.songs[0].data:
 					target_song_length = self.songs[0].data['length']
@@ -160,9 +194,14 @@ class Election(event.BaseEvent):
 				self.add_song(song)
 			except Exception as e:
 				log.exception("elec_fill", "Song failed to fill in an election.", e)
-				pass
 		if len(self.songs) == 0:
 			raise ElectionEmptyException
+		for song in self.songs:
+			if 'elec_request_user_id' in song.data and song.data['elec_request_user_id']:
+				log.debug("elec_fill", "Putting user %s back in line after request fulfillment." % song.data['elec_request_username'])
+				u = User(song.data['elec_request_user_id'])
+				u.put_in_request_line(u.get_tuned_in_sid())
+		request.update_line(self.sid)
 
 	def _fill_get_song(self, target_song_length):
 		return playlist.get_random_song_timed(self.sid, target_song_length)
@@ -194,9 +233,13 @@ class Election(event.BaseEvent):
 		song.data['entry_position'] = len(self.songs)
 		if not 'entry_type' in song.data:
 			song.data['entry_type'] = ElecSongTypes.normal
-		db.c.update("INSERT INTO r4_election_entries (entry_id, song_id, elec_id, entry_position, entry_type) VALUES (%s, %s, %s, %s, %s)", (entry_id, song.id, self.id, len(self.songs), song.data['entry_type']))
+		if not 'entry_votes' in song.data:
+			song.data['entry_votes'] = 0
+		db.c.update("INSERT INTO r4_election_entries (entry_id, song_id, elec_id, entry_position, entry_type, entry_votes) VALUES (%s, %s, %s, %s, %s, %s)", (entry_id, song.id, self.id, len(self.songs), song.data['entry_type'], song.data['entry_votes']))
 		song.start_election_block(self.sid, config.get_station(self.sid, "num_planned_elections") + 1)
 		self.songs.append(song)
+		if song.data['entry_type'] == ElecSongTypes.request:
+			request.update_line(self.sid)
 		return True
 
 	def prepare_event(self):
@@ -207,10 +250,6 @@ class Election(event.BaseEvent):
 					song.data['entry_votes'] = song_result['entry_votes']
 			if not 'entry_votes' in song.data:
 				song.data['entry_votes'] = 0
-			# Auto-votes for somebody's request
-			if song.data['entry_type'] == ElecSongTypes.request:
-				if db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history WHERE user_id = %s AND elec_id = %s", (song.data['elec_request_user_id'], self.id)) == 0:
-					song.data['entry_votes'] += 1
 		random.shuffle(self.songs)
 		self.songs = sorted(self.songs, key=lambda song: song.data['entry_type'])
 		self.songs = sorted(self.songs, key=lambda song: song.data['entry_votes'])
@@ -223,7 +262,10 @@ class Election(event.BaseEvent):
 			total_votes = 0
 			for i in range(0, len(self.songs)):
 				self.songs[i].data['entry_position'] = i
-				total_votes += self.songs[i].data['entry_votes']
+				if 'entry_votes' in self.songs[i].data:
+					total_votes += self.songs[i].data['entry_votes']
+				else:
+					self.songs[i].data['entry_votes'] = 0
 				db.c.update("UPDATE r4_election_entries SET entry_position = %s WHERE entry_id = %s", (i, self.songs[i].data['entry_id']))
 			if total_votes > 0:
 				for song in self.songs:
@@ -249,7 +291,7 @@ class Election(event.BaseEvent):
 			if db.c.allows_join_on_update and len(self.songs) > 0:
 				db.c.update("UPDATE phpbb_users SET radio_winningvotes = radio_winningvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id = %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
 				db.c.update("UPDATE phpbb_users SET radio_losingvotes = radio_losingvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id != %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
-		self.start_actual = int(time.time())
+		self.start_actual = int(timestamp())
 		self.in_progress = True
 		self.used = True
 		db.c.update("UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s, elec_used = TRUE WHERE elec_id = %s", (self.start_actual, self.id))
@@ -268,7 +310,7 @@ class Election(event.BaseEvent):
 		# ONLY RUN IS_REQUEST_NEEDED ONCE
 		if self.is_request_needed() and len(self.songs) < self._num_songs:
 			log.debug("requests", "Ready for requests, filling %s." % self._num_requests)
-			for i in range(0, self._num_requests):
+			for i in range(0, self._num_requests):	#pylint: disable=W0612
 				self.add_song(self.get_request())
 
 	def is_request_needed(self):
@@ -304,9 +346,14 @@ class Election(event.BaseEvent):
 
 	def reset_request_sequence(self):
 		if _request_interval[self.sid] <= 0 and _request_sequence[self.sid] <= 0:
-			line_length = len(cache.get_station(self.sid, "request_line"))
-			# line_length = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_line WHERE sid = %s", (self.sid,))
-			log.debug("requests", "Ready for sequence, line length %s" % line_length)
+			line_length = cache.get_station(self.sid, 'request_valid_positions')
+			if not line_length:
+				for entry in (cache.get_station(self.sid, "request_line") or []):
+					if entry['song_id']:
+						line_length += 1
+				log.debug("requests", "Ready for sequence, entries in request line with valid songs: %s" % line_length)
+			else:
+				log.debug("requests", "Ready for sequence, valid positions: %s" % line_length)
 			# This sequence variable gets set AFTER a request has already been marked as fulfilled
 			# If we have a +1 to this math we'll actually get 2 requests in a row, one now (is_request_needed will return true)
 			# and then again when sequence_length will go from 1 to 0.
@@ -315,15 +362,13 @@ class Election(event.BaseEvent):
 			log.debug("requests", "Sequence length: %s" % _request_sequence[self.sid])
 
 	def get_request(self):
-		song = self._get_request_function()
+		song = request.get_next(self.sid)
 		if not song:
 			return None
 		self.reset_request_sequence()
 		song.data['entry_type'] = ElecSongTypes.request
+		song.data['entry_votes'] = 1
 		return song
-
-	def _get_request_function(self):
-		return request.get_next(self.sid)
 
 	def length(self):
 		if self.used or self.in_progress:
@@ -346,7 +391,9 @@ class Election(event.BaseEvent):
 		db.c.update("UPDATE r4_elections SET elec_in_progress = FALSE, elec_used = TRUE WHERE elec_id = %s", (self.id,))
 
 		if len(self.songs) > 0:
-			self.songs[0].add_to_vote_count(self.songs[0].data['entry_votes'], self.sid)
+			# hotfix, can be removed later
+			if self.songs[0] and self.songs[0].data and 'entry_votes' in self.songs[0].data:
+				self.songs[0].add_to_vote_count(self.songs[0].data['entry_votes'], self.sid)
 			self.songs[0].update_last_played(self.sid)
 			self.songs[0].update_rating()
 			self.songs[0].start_cooldown(self.sid)
@@ -381,9 +428,19 @@ class Election(event.BaseEvent):
 				return song
 		return None
 
+	def has_request_by_user(self, user_id):
+		for song in self.songs:
+			if song.data['entry_type'] == ElecSongTypes.request and song.data['elec_request_user_id'] == user_id:
+				return song
+		return False
+
 	def add_vote_to_entry(self, entry_id, addition = 1):
 		# I hope you've verified this entry belongs to this event, cause I don't do that here.. :)
 		return db.c.update("UPDATE r4_election_entries SET entry_votes = entry_votes + %s WHERE entry_id = %s", (addition, entry_id))
 
 	def delete(self):
 		return db.c.update("DELETE FROM r4_elections WHERE elec_id = %s", (self.id,))
+
+	def update_vote_counts(self):
+		for song in self.songs:
+			song.data['entry_votes'] = db.c.fetch_var("SELECT entry_votes FROM r4_election_entries WHERE entry_id = %s", (song.data['entry_id'],))

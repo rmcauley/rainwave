@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Rainwave for Streamers</title>
+	<script src="/api4/bootstrap?sid={{ sid }}"></script>
+	<script src="/static/old-http-api.js"></script>
+	<script src="/static/js5/libs/Fx.js"></script>
+	<script src="/static/stream_utility.js"></script>
+	<script>
+		"use strict";
+		var options = function() {
+			var pairs = location.search.slice(1).split("&");
+
+			var result = {};
+			pairs.forEach(function(pair) {
+				pair = pair.split("=");
+				result[pair[0]] = decodeURIComponent(pair[1] || "");
+			});
+
+			return JSON.parse(JSON.stringify(result));
+		}();
+
+		if (options.ad) {
+			options.ad = parseInt(options.ad);
+		}
+
+		DoDefaults(options);
+
+		var shadow_size = 0;
+		if (options.box_shadow) {
+			var shadow_css = options.box_shadow.split(" ");
+			var shadow_part;
+			try {
+				for (var i = 0; i < shadow_css.length; i++) {
+					shadow_part = parseInt(shadow_css[i]);
+					if (!isNaN(shadow_part) && shadow_part) {
+						shadow_size += shadow_part;
+					}
+				}
+			}
+			catch (e) {
+				shadow_size = 0;
+			}
+		}
+		options.margin = Math.max(parseInt(options.padding), shadow_size) + "px";
+
+		var style;
+
+		var get_art_html = function(art_url) {
+			var html = "<div class='art' style='background-color: black; background-image: url(" + art_url + "); height: " + options.art_size + "; ";
+			if ((options.layout == "art_top") || (options.layout == "art_bottom")) {
+				html += "width: 100%; ";
+			}
+			else {
+				html += "width: " + options.art_size + "; ";
+				if (options.art_shadow) {
+					html += "-webkit-box-shadow: " + options.art_shadow + "; ";
+					html += "box-shadow: " + options.art_shadow + "; ";
+				}
+				else if (options.text_shadow) {
+					html += "-webkit-box-shadow: " + options.text_shadow + "; ";
+					html += "box-shadow: " + options.text_shadow + "; ";
+				}
+			}
+			html += "'></div>";
+			return html;
+		};
+
+		var last_ad = 0;
+
+		var remove_el = function(el) {
+			setTimeout(function() {
+				if (el.parentNode) {
+					el.parentNode.removeChild(el);
+				}
+			}, 2000);
+		};
+
+		var image_ok = function(img) {
+			if (!img.complete) {
+				return false;
+			}
+
+			if (typeof img.naturalWidth !== "undefined" && img.naturalWidth === 0) {
+				return false;
+			}
+
+			return true;
+		};
+
+		var show = function(json, no_ad, no_img_check) {
+			var art_url = json.songs[0].albums[0].art ? json.songs[0].albums[0].art + (json.ad ? "" : "_320.jpg") : null;
+			if (!art_url && options.sid == 2) {
+				art_url = "/static/images4/noart_2.jpg";
+			}
+			else if (!art_url) {
+				art_url = "/static/images4/noart_1.jpg";
+			}
+
+			if (!no_img_check) {
+				var img = new Image();
+				img.src = art_url;
+				if (!image_ok(img)) {
+					img.addEventListener("load", function() {
+						show(json, no_ad, true);
+					});
+					return;
+				}
+			}
+
+			if (options.ad && !no_ad) {
+				last_ad += 1;
+				if (last_ad >= options.ad) {
+					setTimeout(function() {
+						show(json, true);
+					}, Math.min(Math.max(options.ad * 1000, 3000), 7000));
+					last_ad = 0;
+					show({ "ad": true,
+						"songs": [{
+						"title": options.ad_message,
+						"albums": [ { "art": "/static/images4/ios/1024.png", "name": "http://rainwave.cc" }]
+					}]}, true);
+					return;
+				}
+			}
+
+			var children = document.getElementById("threed").childNodes;
+			for (var i = 0; i < children.length; i++) {
+				if (children[i].tagName == "DIV") {
+					children[i].classList.add("removing");
+					children[i].classList.add(options.anim_out);
+					remove_el(children[i]);
+				}
+			}
+			var div = document.createElement("div");
+			div.className = options.layout + " " + options.text_align + " container adding " + options.anim_in;
+			div.setAttribute("style", style);
+
+			var html = "";
+			if (options.layout != "art_bottom") {
+				html += get_art_html(art_url);
+			}
+			html += "<div class='valign' ";
+			if (options.layout == "art_left") {
+				html += "style='margin-left: " + options.padding + ";' ";
+			}
+			else if (options.layout == "art_right") {
+				html += "style='margin-right: " + options.padding + ";' ";
+			}
+			html += ">";
+			html += "<div class='title'>" + json.songs[0].title + "</div>";
+			html += "<div class='album'>" + json.songs[0].albums[0].name + "</div>";
+			if ((options.show_artist == "true") && json.songs[0].artist_parseable) {
+				html += "<div class='artist'>";
+				var artists = JSON.parse(json.songs[0].artist_parseable);
+				for (i = 0; i < artists.length; i++) {
+					if (i) {
+						html += "<span>, </span>";
+					}
+					html += "<span>" + artists[i].name + "</span>";
+				}
+				html += "</div>";
+			}
+			if (options.layout == "art_bottom") {
+				html += get_art_html(art_url);
+			}
+			html += "</div></div>";
+
+			div.innerHTML = html;
+			
+			if (options.show_requesters) {
+				if (json.songs[0].elec_request_username) {
+					document.getElementById("header").textContent = "Requested by " + json.songs[0].elec_request_username;
+				}
+				else {
+					document.getElementById("header").textContent = options.np_message || "Current Song";
+				}
+			}
+
+			requestNextAnimationFrame(function() {
+				div.classList.remove("adding");
+				div.classList.remove(options.anim_in);
+			});
+
+			// setTimeout(function() {
+			// 	div.classList.add(options.anim_out);
+			// }, 2000);
+
+			document.getElementById("threed").appendChild(div);
+		};
+
+		var known_id;
+		var done_delay = false;
+		API.add_callback("sched_current", function(json) {
+			if (known_id && json.id && (known_id == json.id)) {
+				// avoid a redraw of the same content
+				return;
+			}
+			known_id = json.id;
+			if (!options.delay || !done_delay) {
+				done_delay = true;
+				show(json);
+			}
+			else {
+				setTimeout(function() {
+					show(json);
+				}, options.delay * 1000);
+			}
+		});
+		window.addEventListener("load", function() {
+			style = StyleGenerator(options);
+			API.initialize(BOOTSTRAP.sid, "/api4/", BOOTSTRAP.user.id, BOOTSTRAP.user.api_key, BOOTSTRAP);
+		});
+	</script>
+
+	<link href='//fonts.googleapis.com/css?family=Roboto+Condensed:400,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
+
+	<style>
+		body {
+			margin: 0 !important;
+		}
+
+		.right {
+			text-align: right;
+		}
+		.centre, .center {
+			text-align: center;
+		}
+
+		.art_left .art {
+			float: left;
+		}
+
+		.art_right .art {
+			float: right;
+		}
+
+		.art_right .valign, .art_left .valign {
+			overflow: hidden;
+			position: relative;
+			top: 50%;
+			transform: translateY(-50%);
+			-webkit-transform: translateY(-50%);
+		}
+
+		.art {
+			position: relative;
+			background-repeat: no-repeat;
+			background-size: contain;
+			background-position: center center;
+			z-index: 2;
+		}
+
+		.art_top .art, .art_bottom .art {
+			background-position: left center;
+			background-color: transparent !important;
+		}
+
+		.art_top.centre .art, .art_bottom.centre .art {
+			background-position: center center;
+		}
+
+		.art_top.right .art, .art_bottom.right .art {
+			background-position: right center;
+		}
+
+		.container {
+			position: absolute;
+			overflow: hidden;
+			-webkit-transform-style: preserve-3d;
+			-webkit-transition: transform, opacity;
+			-webkit-transition-duration: 1s;
+			-webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+			transform-style: preserve-3d;
+			transition: transform, opacity;
+			transition-duration: 1s;
+			transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic */
+			-webkit-backface-visibility: hidden;
+			backface-visibility: hidden;
+		}
+
+		.container.fade {
+			opacity: 0;
+		}
+
+		.container.to_left {
+			-webkit-transform: translateX(-100%);
+			transform: translateX(-100%);
+			opacity: 0;
+		}
+
+		.container.to_right {
+			-webkit-transform: translateX(100%);
+			transform: translateX(100%);
+			opacity: 0;
+		}
+
+		.container.to_top {
+			-webkit-transform: translateY(-100%);
+			transform: translateY(-100%);
+			opacity: 0;
+		}
+
+		.title, .album, .artist {
+			display: block;
+			max-width: 100%;
+			-webkit-transition: transform, opacity;
+			-webkit-transition-duration: 750ms;
+			-webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+			transition: transform, opacity;
+			transition-duration: 750ms;
+			transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic */
+		}
+
+		.art_left .title, .art_left .album, .art_left .artist {
+			padding-left: 10px;
+		}
+
+		.art_right .title, .art_right .album, .art_right .artist {
+			padding-right: 10px;
+		}
+
+		.title {
+			-webkit-transition-delay: 400ms;
+			transition-delay: 400ms;
+		}
+
+		.album {
+			-webkit-transition-delay: 450ms;
+			transition-delay: 450ms;
+		}
+
+		.artist {
+			-webkit-transition-delay: 500ms;
+			transition-delay: 500ms;
+		}
+
+		.art_left.container.left .text_piece > span, .art_right.container.right.adding .text_piece > span {
+			display: inline-block;
+		}
+
+		.art_left.container.adding .title, .art_left.container.adding .album, .art_left.container.adding .artist {
+			-webkit-transform: translateX(-105%);
+			transform: translateX(-105%);
+		}
+
+		.art_right.container.adding .title, .art_right.container.adding .album, .art_right.container.adding .artist {
+			-webkit-transform: translateX(105%);
+			transform: translateX(105%);
+		}
+
+		.fade.adding .artist, .fade.adding .album, .fade.adding .artist {
+			-webkit-transform: none;
+			transform: none;
+		}
+
+		.container.to_bottom {
+			-webkit-transform: translateY(100%);
+			transform: translateY(100%);
+			opacity: 0;
+		}
+
+		.container.flip_bottom {
+			-webkit-transform: rotateX(-120deg) translateY(50%);
+			transform: rotateX(-120deg) translateY(50%);
+			opacity: 0;
+		}
+
+		.container.flip_top {
+			-webkit-transform: rotateX(120deg) translateY(-50%);
+			transform: rotateX(120deg) translateY(-50%);
+			opacity: 0;
+		}
+
+		.container.flip_right {
+			-webkit-transform: rotateY(120deg) translateX(50%) scaleX(0.5);
+			transform: rotateY(120deg) translateX(50%) scaleX(0.5);
+			opacity: 0;
+		}
+
+		.container.flip_left {
+			-webkit-transform-origin: 20% 50%;
+			-webkit-transform: rotateY(-90deg) translateX(-50%);
+			transform-origin: 20% 50%;
+			transform: rotateY(-90deg) translateX(-50%);
+			opacity: 0;
+		}
+
+		.art_left .text, .art_right .text {
+			position: relative;
+			top: 50%;
+			-webkit-transform: translateY(-50%);
+			transform: translateY(-50%);
+		}
+
+		.title, .album, .artist {
+			overflow: visible;
+			overflow-x: hidden;
+			overflow-y: visible;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+
+		#threed {
+			-webkit-perspective: 1000px;
+			-webkit-perspective-origin: center;
+			perspective: 1000px;
+			perspective-origin: center;
+		}
+	</style>
+</head>
+<body>
+	<div id="header"></div>
+	<div id="threed"></div>
+</body>
+</html>

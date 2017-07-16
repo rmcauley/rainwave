@@ -1,9 +1,9 @@
 __using_libmc = False
 try:
-    import pylibmc as libmc
-    __using_libmc = True
+	import pylibmc as libmc
+	__using_libmc = True
 except ImportError:
-    import memcache as libmc
+	import memcache as libmc
 
 from libs import config
 from libs import db
@@ -32,7 +32,7 @@ def connect():
 	if _memcache:
 		return
 	if config.get("memcache_fake") or config.get("web_developer_mode"):
-	 	_memcache = TestModeCache()
+		_memcache = TestModeCache()
 		_memcache_ratings = TestModeCache()
 		reset_station_caches()
 	else:
@@ -47,10 +47,12 @@ def connect():
 		if not _memcache_ratings:
 			_memcache_ratings = _memcache
 
+#pylint: disable=W0622
 def set(key, value, save_local = False):
 	if save_local or key in local:
 		local[key] = value
 	_memcache.set(key, value)
+#pylint: disable=W0622
 
 def get(key):
 	if key in local:
@@ -83,6 +85,12 @@ def get_song_rating(song_id, user_id):
 
 def set_album_rating(sid, album_id, user_id, rating):
 	_memcache_ratings.set("rating_album_%s_%s_%s" % (sid, album_id, user_id), rating)
+
+def set_album_faves(sid, album_id, user_id, fave):
+	rating = get_album_rating(sid, album_id, user_id)
+	if rating:
+		rating['album_fave'] = fave
+		set_album_rating(sid, album_id, user_id, rating)
 
 def get_album_rating(sid, album_id, user_id):
 	return _memcache_ratings.get("rating_album_%s_%s_%s" % (sid, album_id, user_id))
@@ -123,7 +131,7 @@ def update_local_cache_for_sid(sid):
 	refresh_local_station(sid, "user_rating_acl")
 	refresh_local_station(sid, "user_rating_acl_song_index")
 	refresh_local("request_expire_times")
-	
+
 	all_stations = {}
 	for station_id in config.station_ids:
 		all_stations[station_id] = get_station(station_id, "all_station_info")

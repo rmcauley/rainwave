@@ -1,5 +1,5 @@
 # Necessary includes
-import time
+from time import time as timestamp
 import sys
 import tornado.ioloop
 
@@ -32,12 +32,12 @@ def setup(unique_prefix):
 
 def record_sizes():
 	global _prefix
-	
+
 	gc.collect()
 	linecache.clearcache()
 
 	try:
-		d = os.path.join(tempfile.gettempdir(), "rw_memory_%s_%s.json" % (_prefix, int(time.time())))
+		d = os.path.join(tempfile.gettempdir(), "rw_memory_%s_%s.json" % (_prefix, int(timestamp())))
 		meliae.scanner.dump_all_objects(d)
 	except:
 		pass

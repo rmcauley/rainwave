@@ -10,7 +10,9 @@ def make_searchable_string(s):
 
 class MetadataInsertionError(Exception):
 	def __init__(self, value):
+		super(MetadataInsertionError, self).__init__()
 		self.value = value
+
 	def __str__(self):
 		return repr(self.value)
 
@@ -33,6 +35,7 @@ class AssociatedMetadata(object):
 	delete_self_query = None			# one argument: self.id
 	has_song_id_query = None 			# two arguments: song_id, self.id
 
+	#pylint: disable=W0212
 	@classmethod
 	def load_from_name(klass, name):
 		instance = klass()
@@ -73,6 +76,7 @@ class AssociatedMetadata(object):
 			instance._assign_from_dict(row)
 			instances.append(instance)
 		return instances
+	#pylint: enable=W0212
 
 	def __init__(self):
 		self.id = None
@@ -82,6 +86,15 @@ class AssociatedMetadata(object):
 
 		self.data = {}
 		self.data['name'] = None
+
+	def __str__(self):
+		return self.data['name']
+
+	def __unicode__(self):
+		return self.data['name']
+
+	def __repr__(self):
+		return self.data['name']
 
 	def _assign_from_dict(self, d):
 		self.id = d["id"]
@@ -129,7 +142,8 @@ class AssociatedMetadata(object):
 
 	def start_cooldown(self, sid, cool_time = False):
 		if self.cool_time is not None:
-			self._start_cooldown_db(sid, self.cool_time)
+			if self.cool_time > 0:
+				self._start_cooldown_db(sid, self.cool_time)
 		elif cool_time and cool_time > 0:
 			self._start_cooldown_db(sid, cool_time)
 

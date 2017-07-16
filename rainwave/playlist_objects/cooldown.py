@@ -1,4 +1,4 @@
-import time
+from time import time as timestamp
 import math
 
 from libs import config
@@ -17,7 +17,7 @@ def prepare_cooldown_algorithm(sid):
 
 	if not sid in cooldown_config:
 		cooldown_config[sid] = { "time": 0 }
-	if cooldown_config[sid]['time'] > (time.time() - 3600):
+	if cooldown_config[sid]['time'] > (timestamp() - 3600):
 		return
 
 	# Variable names from here on down are from jf's proposal at: http://rainwave.cc/forums/viewtopic.php?f=13&t=1267
@@ -73,7 +73,7 @@ def prepare_cooldown_algorithm(sid):
 	cooldown_config[sid]['base_rating'] = float(base_rating)
 	cooldown_config[sid]['min_album_cool'] = int(min_album_cool)
 	cooldown_config[sid]['max_album_cool'] = int(max_album_cool)
-	cooldown_config[sid]['time'] = int(time.time())
+	cooldown_config[sid]['time'] = int(timestamp())
 
 	average_song_length = db.c.fetch_var("SELECT AVG(song_length) FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE song_exists = TRUE AND sid = %s", (sid,))
 	log.debug("cooldown", "SID %s: average_song_length: %s" % (sid, average_song_length))
@@ -88,7 +88,7 @@ def prepare_cooldown_algorithm(sid):
 	cooldown_config[sid]['min_song_cool'] = cooldown_config[sid]['max_song_cool'] * config.get_station(sid, "cooldown_song_min_multiplier")
 
 def get_age_cooldown_multiplier(added_on):
-	age_weeks = (int(time.time()) - added_on) / 604800.0
+	age_weeks = (int(timestamp()) - added_on) / 604800.0
 	cool_age_multiplier = 1.0
 	if age_weeks < config.get("cooldown_age_threshold"):
 		s2_end = config.get("cooldown_age_threshold")

@@ -1,11 +1,13 @@
 import os
 import psycopg2
+from time import time as timestamp
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 import tornado.process
 import tornado.options
 
+from backend import sync_to_front
 from rainwave import schedule
 from rainwave import playlist
 from libs import log
@@ -13,13 +15,12 @@ from libs import config
 from libs import db
 from libs import cache
 from libs import memory_trace
-
-sid_output = {}
+from libs import zeromq
 
 class AdvanceScheduleRequest(tornado.web.RequestHandler):
 	processed = False
 
-	def get(self, sid):
+	def get(self, sid):	#pylint: disable=W0221
 		self.success = False
 		self.sid = None
 		if int(sid) in config.station_ids:
@@ -27,42 +28,62 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		else:
 			return
 
-		# This program must be run on 1 station for 1 instance, which would allow this operation to be safe.
-		# Also works if 1 process is serving all stations.  Pinging any instance for any station
-		# would break the program here, though.
-		if cache.get_station(self.sid, "get_next_socket_timeout") and sid_output[self.sid]:
-			log.warn("backend", "Using previous output to prevent flooding.")
-			self.write(sid_output[self.sid])
-			sid_output[self.sid] = None
-			self.success = True
+		if cache.get_station(self.sid, "backend_paused"):
+			if not cache.get_station(self.sid, "dj_heartbeat_start"):
+				log.debug("dj", "Setting server start heatbeat.")
+				cache.set_station(self.sid, "dj_heartbeat_start", timestamp())
+			self.write(self._get_pause_file())
+			schedule.set_upnext_crossfade(self.sid, False)
+			cache.set_station(self.sid, "backend_paused_playing", True)
+			sync_to_front.sync_frontend_dj(self.sid)
+			return
 		else:
-			try:
-				schedule.advance_station(self.sid)
-			except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
-				log.warn("backend", e.diag.message_primary)
-				db.close()
-				db.connect()
-				raise
-			except psycopg2.extensions.TransactionRollbackError as e:
-				log.warn("backend", "Database transaction deadlock.  Re-opening database and setting retry timeout.")
-				db.close()
-				db.connect()
-				raise
+			cache.set_station(self.sid, "dj_heartbeat_start", False)
+			cache.set_station(self.sid, "backend_paused", False)
+			cache.set_station(self.sid, "backend_paused_playing", False)
 
-			to_send = None
-			if not config.get("liquidsoap_annotations"):
-				to_send = schedule.get_advancing_file(self.sid)
-			else:
-				to_send = self._get_annotated(schedule.get_advancing_event(self.sid))
-			sid_output[self.sid] = to_send
-			self.success = True
-			if not cache.get_station(self.sid, "get_next_socket_timeout"):
-				self.write(to_send)
+		try:
+			schedule.advance_station(self.sid)
+		except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
+			log.warn("backend", e.diag.message_primary)
+			db.close()
+			db.connect()
+			raise
+		except psycopg2.extensions.TransactionRollbackError as e:
+			log.warn("backend", "Database transaction deadlock.  Re-opening database and setting retry timeout.")
+			db.close()
+			db.connect()
+			raise
+
+		to_send = None
+		if not config.get("liquidsoap_annotations"):
+			to_send = schedule.get_advancing_file(self.sid)
+		else:
+			to_send = self._get_annotated(schedule.get_advancing_event(self.sid))
+		self.success = True
+		if not cache.get_station(self.sid, "get_next_socket_timeout"):
+			self.write(to_send)
+
+	def _get_pause_file(self):
+		if not config.get("liquidsoap_annotations"):
+			log.debug("backend", "Station is paused, using: %s" % config.get("pause_file"))
+			return config.get("pause_file")
+
+		string = "annotate:crossfade=\"2\",use_suffix=\"1\","
+		if cache.get_station(self.sid, "pause_title"):
+			string += "title=\"%s\"" % cache.get_station(self.sid, "pause_title")
+		else:
+			string += "title=\"Intermission\""
+		string += ":" + config.get("pause_file")
+		log.debug("backend", "Station is paused, using: %s" % string)
+		return string
 
 	def _get_annotated(self, e):
 		string = "annotate:crossfade=\""
-		if e.use_crossfade:
+		if e.use_crossfade == True:
 			string += "1"
+		elif e.use_crossfade:
+			string += e.use_crossfade
 		else:
 			string += "0"
 		string += "\","
@@ -98,6 +119,7 @@ class BackendServer(object):
 
 		db.connect()
 		cache.connect()
+		zeromq.init_pub()
 		log.init("%s/rw_%s.log" % (config.get_directory("log_dir"), config.station_id_friendly[sid].lower()), config.get("log_level"))
 		memory_trace.setup(config.station_id_friendly[sid].lower())
 
@@ -112,7 +134,7 @@ class BackendServer(object):
 		port = int(config.get("backend_port")) + sid
 		server = tornado.httpserver.HTTPServer(app)
 		server.listen(port, address='127.0.0.1')
-		
+
 		for station_id in config.station_ids:
 			playlist.prepare_cooldown_algorithm(station_id)
 		schedule.load()
@@ -128,18 +150,21 @@ class BackendServer(object):
 			log.info("stop", "Backend has been shutdown.")
 			log.close()
 
-	# This method breaks pylint and quite on purpose, its job is to just load
-	# the cron jobs that run occasionally.
 	def _import_cron_modules(self):
+		#pylint: disable=W0612
+		# This method breaks pylint and quite on purpose, its job is to just load
+		# the cron jobs that run occasionally.  Ignore pylint warning W0612.
 		import backend.api_key_pruning
 		import backend.inactive
+		import backend.dj_heartbeat
+		#pylint: enable=W0612
 
 	def start(self):
-		for sid in config.station_ids:
-			sid_output[sid] = None
-
 		stations = list(config.station_ids)
 		if not hasattr(os, "fork"):
+			if len(stations) > 1:
+				log.critical("server", "*** WARNING: CANNOT RUN BACKEND FOR MORE THAN 1 STATION ON WINDOWS ***")
+			zeromq.init_proxy()
 			self._import_cron_modules()
 			self._listen(stations[0])
 		else:
@@ -147,6 +172,7 @@ class BackendServer(object):
 
 			task_id = tornado.process.task_id()
 			if task_id == 0:
+				zeromq.init_proxy()
 				self._import_cron_modules()
 			if task_id != None:
 				self._listen(stations[task_id])

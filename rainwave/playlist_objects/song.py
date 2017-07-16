@@ -1,7 +1,11 @@
 import os
-import time
 import subprocess
-import json
+import copy
+try:
+	import ujson as json
+except ImportError:
+	import json
+from time import time as timestamp
 
 from mutagen.mp3 import MP3
 
@@ -11,14 +15,30 @@ from libs import cache
 from libs import filetools
 from libs import log
 from rainwave import rating
+from api import fieldtypes
 
 from rainwave.playlist_objects.artist import Artist
 from rainwave.playlist_objects.album import Album
 from rainwave.playlist_objects.songgroup import SongGroup
 from rainwave.playlist_objects.metadata import make_searchable_string
 from rainwave.playlist_objects import cooldown
+from rainwave.playlist_objects.metadata import MetadataUpdateError
 
 _mp3gain_path = filetools.which("mp3gain")
+
+num_songs = {}
+num_origin_songs = {}
+
+def zip_metadata(tag_metadata, kept_metadata):
+	new_metadata = copy.copy(tag_metadata)
+	for kept in kept_metadata:
+		found = False
+		for tag in tag_metadata:
+			if tag.id == kept.id:
+				found = True
+		if not found:
+			new_metadata.append(kept)
+	return new_metadata
 
 # Usable if you want to throw an exception on a file but still continue
 # scanning other files.
@@ -35,12 +55,14 @@ class SongMetadataUnremovable(Exception):
 	pass
 
 class Song(object):
+	#pylint: disable=W0212
 	@classmethod
-	def load_from_id(klass, song_id, sid = None):
-		if sid:
+	def load_from_id(klass, song_id, sid = None, all_categories = False):
+		if sid is not None:
 			d = db.c.fetch_row("SELECT * FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_id = %s AND r4_song_sid.sid = %s", (song_id, sid))
 		else:
 			d = db.c.fetch_row("SELECT * FROM r4_songs WHERE song_id = %s", (song_id,))
+			sid = d['song_origin_sid']
 		if not d:
 			raise SongNonExistent
 
@@ -57,12 +79,9 @@ class Song(object):
 			s._assign_from_dict(d)
 
 			if 'album_id' in d and d['album_id']:
-				if sid:
-					s.albums = [ Album.load_from_id_sid(d['album_id'], s.sid) ]
-				else:
-					s.albums = [ Album.load_from_id(d['album_id']) ]
+				s.albums = [ Album.load_from_id_sid(d['album_id'], sid) ]
 			s.artists = Artist.load_list_from_song_id(song_id)
-			s.groups = SongGroup.load_list_from_song_id(song_id)
+			s.groups = SongGroup.load_list_from_song_id(song_id, sid, all_categories = all_categories)
 		except Exception as e:
 			log.exception("song", "Song ID %s failed to load, sid %s." % (song_id, sid), e)
 			s.disable()
@@ -85,15 +104,19 @@ class Song(object):
 			log.debug("playlist", "this filename matches an existing database entry, song_id {}".format(matched_entry['song_id']))
 			s = klass.load_from_id(matched_entry['song_id'])
 			for metadata in s.artists:
-				if metadata.is_tag:
+				try:
+					if not metadata.is_tag:
+						kept_artists.append(metadata)
 					metadata.disassociate_song_id(s.id)
-				else:
-					kept_artists.append(metadata)
+				except MetadataUpdateError:
+					pass
 			for metadata in s.groups:
-				if metadata.is_tag:
+				try:
+					if not metadata.is_tag:
+						kept_groups.append(metadata)
 					metadata.disassociate_song_id(s.id)
-				else:
-					kept_groups.append(metadata)
+				except MetadataUpdateError:
+					pass
 		elif len(sids) == 0:
 			raise SongHasNoSIDsException
 		else:
@@ -105,15 +128,15 @@ class Song(object):
 		new_artists = Artist.load_list_from_tag(s.artist_tag)
 		new_groups = SongGroup.load_list_from_tag(s.genre_tag)
 
-		i = 0;
-		for metadata in new_artists:
+		s.artists = zip_metadata(new_artists, kept_artists)
+		s.groups = zip_metadata(new_groups, kept_groups)
+
+		i = 0
+		for metadata in s.artists:
 			metadata.associate_song_id(s.id, order=i)
 			i += 1
-		for metadata in new_groups:
+		for metadata in s.groups:
 			metadata.associate_song_id(s.id)
-
-		s.artists = new_artists + kept_artists
-		s.groups = new_groups + kept_groups
 
 		s.albums = [ Album.load_from_name(s.album_tag) ]
 		s.albums[0].associate_song_id(s.id)
@@ -125,7 +148,7 @@ class Song(object):
 	@classmethod
 	def load_from_deleted_file(klass, filename):
 		matched_entry = db.c.fetch_row("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
-		if matched_entry:
+		if matched_entry and 'song_id' in matched_entry:
 			s = klass.load_from_id(matched_entry['song_id'])
 		else:
 			s = None
@@ -145,6 +168,7 @@ class Song(object):
 		s.data['length'] = 60
 		s.save([ sid ])
 		return s
+	#pylint: enable=W0212
 
 	def __init__(self):
 		"""
@@ -160,6 +184,9 @@ class Song(object):
 		self.album_tag = None
 		self.genre_tag = None
 		self.data = {}
+		self.data['track_number'] = None
+		self.data['disc_number'] = None
+		self.data['year'] = None
 		self.data['url'] = None
 		self.data['link_text'] = None
 		self.data['rating_allowed'] = False
@@ -172,7 +199,7 @@ class Song(object):
 		"""
 
 		# log.debug("playlist", u"reading tag info from {}".format(filename))
-		f = MP3(filename)
+		f = MP3(filename, translate=False)
 		self.filename = filename
 
 		if not f.tags:
@@ -180,44 +207,77 @@ class Song(object):
 
 		w = f.tags.getall('TIT2')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
-		 	self.data['title'] = unicode(w[0]).strip()
+			self.data['title'] = unicode(w[0]).strip()
 		else:
-		 	raise PassableScanError("Song filename \"%s\" has no title tag." % filename)
+			raise PassableScanError("Song filename \"%s\" has no title tag." % filename)
 		w = f.tags.getall('TPE1')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.artist_tag = unicode(w[0])
 		else:
-		 	raise PassableScanError("Song filename \"%s\" has no artist tag." % filename)
+			raise PassableScanError("Song filename \"%s\" has no artist tag." % filename)
 		w = f.tags.getall('TALB')
-		if len(w) > 0 and len(unicode(w[0])) > 0:
-		 	self.album_tag = unicode(w[0]).strip()
+		if len(w) > 0 and len(unicode(w[0]).strip()) > 0:
+			self.album_tag = unicode(w[0]).strip()
 		else:
 			raise PassableScanError("Song filename \"%s\" has no album tag." % filename)
+		if config.get("scanner_use_tracknumbers"):
+			w = f.tags.getall('TRCK')
+			if w is not None and len(w) > 0:
+				try:
+					self.data['track_number'] = fieldtypes.integer(unicode(w[0]))
+				except ValueError:
+					pass
+			w = f.tags.getall('TPOS')
+			if w is not None and len(w) > 0:
+				try:
+					self.data['disc_number'] = fieldtypes.integer(unicode(w[0]))
+				except ValueError:
+					pass
 		w = f.tags.getall('TCON')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.genre_tag = unicode(w[0])
 		w = f.tags.getall('COMM')
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.data['link_text'] = unicode(w[0]).strip()
-		w = f.tags.getall('WXXX')
+		# what the heck is pylint code w0511?  a warning with X X X
+		# even happens on comments.
+		# guess it hates porn but that's what the ID3 wildcard tag is!
+		w = f.tags.getall('WXXX')	#pylint: disable=W0511
 		if len(w) > 0 and len(unicode(w[0])) > 0:
 			self.data['url'] = unicode(w[0]).strip()
+		else:
+			self.data['url'] = None
+		w = f.tags.getall('TYER')
+		if w is not None and len(w) > 0:
+			try:
+				self.data['year'] = fieldtypes.integer(unicode(w[0]))
+			except ValueError:
+				pass
+		w = f.tags.getall('TDRC')
+		if self.data['year'] is None and w is not None and len(w) > 0:
+			try:
+				self.data['year'] = fieldtypes.integer(unicode(w[0]))
+			except ValueError:
+				pass
 
 		self.replay_gain = self._get_replaygain(f)
 
 		if not self.replay_gain and config.get("mp3gain_scan"):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
+			# gain_std is unused, we'll grab the output from mp3gain from the tags themselves
+			#pylint: disable=W0612
 			gain_std, gain_error = subprocess.Popen([_mp3gain_path, "-o", "-q", "-s", "i", "-p", "-k", "-T", self.filename ], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+			#pylint: enable=W0612
 			if len(gain_error) > 0:
 				raise Exception("Error when replay gaining \"%s\": %s" % (filename, gain_error))
-			f = MP3(filename)
+			f = MP3(filename, translate=False)
 			self.replay_gain = self._get_replaygain(f)
 
 		self.data['length'] = int(f.info.length)
 
 	def _get_replaygain(self, f):
 		replay_gain = None
-		for txxx in f.tags.getall("TXXX"):
+		for txxx in f.tags.getall("TXXX"):	#pylint: disable=W0511
 			if txxx.desc.lower() == "replaygain_track_gain":
 				replay_gain = str(txxx)
 		return replay_gain
@@ -243,7 +303,7 @@ class Song(object):
 		artist_parseable = []
 		for artist in self.artists:
 			artist_parseable.append({ "id": artist.id, "name": artist.data['name'] })
-		artist_parseable = json.dumps(artist_parseable)
+		artist_parseable = json.dumps(artist_parseable, ensure_ascii=False)
 		db.c.update("UPDATE r4_songs SET song_artist_parseable = %s WHERE song_id = %s", (artist_parseable, self.id))
 
 	def save(self, sids_override = False):
@@ -262,7 +322,7 @@ class Song(object):
 				potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s AND song_artist_tag = %s", (self.data['title'], self.data['length'], self.artist_tag))
 			else:
 				potential_id = db.c.fetch_var("SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s", (self.data['title'], self.data['length']))
-			if potential_id:
+			if not config.get("allow_duplicate_song") and potential_id:
 				self.id = potential_id
 				update = True
 
@@ -285,25 +345,28 @@ class Song(object):
 					song_url = %s, \
 					song_link_text = %s, \
 					song_length = %s, \
+					song_track_number = %s, \
+					song_disc_number = %s, \
+					song_year = %s, \
 					song_scanned = TRUE, \
 					song_verified = TRUE, \
 					song_file_mtime = %s, \
 					song_replay_gain = %s, \
 					song_origin_sid = %s \
 				WHERE song_id = %s",
-				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], file_mtime, self.replay_gain, self.data['origin_sid'], self.id))
+				(self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], self.data['track_number'], self.data['disc_number'], self.data['year'], file_mtime, self.replay_gain, self.data['origin_sid'], self.id))
 			if self.artist_tag:
 				db.c.update("UPDATE r4_songs SET song_artist_tag = %s WHERE song_id = %s", (self.artist_tag, self.id))
 		else:
 			self.id = db.c.get_next_id("r4_songs", "song_id")
 			log.debug("playlist", "inserting a new song with id {}".format(self.id))
 			db.c.update("INSERT INTO r4_songs \
-				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain, song_artist_tag) \
+				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_track_number, song_disc_number, song_year, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain, song_artist_tag) \
 				VALUES \
-				(%s     , %s           , %s        , %s                   , %s       , %s            , %s         , %s             , %s             , %s           , %s          , %s             , %s)",
-				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], self.data['origin_sid'], file_mtime, True, True, self.replay_gain, self.artist_tag))
+				(%s     , %s           , %s        , %s                   , %s       , %s           , %s         , %s               , %s              , %s       , %s             , %s             , %s           , %s          , %s             , %s)",
+				(self.id, self.filename, self.data['title'], make_searchable_string(self.data['title']), self.data['url'], self.data['link_text'], self.data['length'], self.data['track_number'], self.data['disc_number'], self.data['year'], self.data['origin_sid'], file_mtime, True, True, self.replay_gain, self.artist_tag))
 			self.verified = True
-			self.data['added_on'] = int(time.time())
+			self.data['added_on'] = int(timestamp())
 
 		current_sids = db.c.fetch_list("SELECT sid FROM r4_song_sid WHERE song_id = %s", (self.id,))
 		log.debug("playlist", "database sids: {}, actual sids: {}".format(current_sids, self.data['sids']))
@@ -323,8 +386,12 @@ class Song(object):
 		log.info("song_disable", "Disabling ID %s / file %s" % (self.id, self.filename))
 		db.c.update("UPDATE r4_songs SET song_verified = FALSE WHERE song_id = %s", (self.id,))
 		db.c.update("UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s", (self.id,))
+		db.c.update("DELETE FROM r4_request_store WHERE song_id = %s", (self.id,))
 		if self.albums:
 			for metadata in self.albums:
+				metadata.reconcile_sids()
+		if self.groups:
+			for metadata in self.groups:
 				metadata.reconcile_sids()
 
 	def _assign_from_dict(self, d):
@@ -344,7 +411,7 @@ class Song(object):
 		Cooldown is only applied if the song exists on the given station
 		"""
 
-		if (self.sid != sid) or (not self.sid in self.data['sids']):
+		if (self.sid != sid) or (not self.sid in self.data['sids']) or sid == 0:
 			return
 
 		for metadata in self.groups:
@@ -367,17 +434,20 @@ class Song(object):
 			cool_time = auto_cool * cooldown.get_age_cooldown_multiplier(self.data['added_on']) * self.data['cool_multiply']
 
 		log.debug("cooldown", "Song ID %s Station ID %s cool_time period: %s" % (self.id, sid, cool_time))
-		cool_time = int(cool_time + time.time())
+		cool_time = int(cool_time + timestamp())
 		db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s AND song_cool_end < %s", (cool_time, self.id, sid, cool_time))
 		self.data['cool'] = True
 		self.data['cool_end'] = cool_time
 
-		if 'request_only_end' in self.data and self.data['request_only_end'] != None:
-			self.data['request_only_end'] = self.data['cool_end'] + config.get_station(sid, "cooldown_request_only_period")
-			self.data['request_only'] = True
-			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s WHERE song_id = %s AND sid = %s AND song_request_only_end IS NOT NULL", (self.data['request_only_end'], self.id, sid))
+		#if 'request_only_end' in self.data and self.data['request_only_end'] != None:
+		self.data['request_only_end'] = self.data['cool_end'] + config.get_station(sid, "cooldown_request_only_period")
+		self.data['request_only'] = True
+		db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s WHERE song_id = %s AND sid = %s AND song_request_only_end IS NOT NULL", (self.data['request_only_end'], self.id, sid))
 
 	def start_election_block(self, sid, num_elections):
+		if sid == 0:
+			return
+
 		for metadata in self.groups:
 			metadata.start_election_block(sid, num_elections)
 		for metadata in self.albums:
@@ -390,35 +460,50 @@ class Song(object):
 		self.data['elec_blocked_by'] = blocked_by
 		self.data['elec_blocked'] = True
 
-	def update_rating(self, skip_album_update = False):
-		"""
-		Calculate an updated rating from the database.
-		"""
-		dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user < 3 GROUP BY song_id", (self.id,))
-		if not dislikes:
-			dislikes = 0
-		neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3 AND song_rating_user < 3.5 GROUP BY song_id", (self.id,))
-		if not neutrals:
-			neutrals = 0
-		neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3.5 AND song_rating_user < 4 GROUP BY song_id", (self.id,))
-		if not neutralplus:
-			neutralplus = 0
-		likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 4 GROUP BY song_id", (self.id,))
-		if not likes:
-			likes = 0
-		rating_count = dislikes + neutrals + neutralplus + likes
-		log.debug("song_rating", "%s ratings for %s" % (rating_count, self.filename))
-		if rating_count > config.get("rating_threshold_for_calc"):
-			self.data['rating'] = round(((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1), 1)
+	# def update_rating(self, skip_album_update = False):
+	# 	"""
+	# 	Calculate an updated rating from the database.
+	# 	"""
+	# 	dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user < 3 GROUP BY song_id", (self.id,))
+	# 	if not dislikes:
+	# 		dislikes = 0
+	# 	neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3 AND song_rating_user < 3.5 GROUP BY song_id", (self.id,))
+	# 	if not neutrals:
+	# 		neutrals = 0
+	# 	neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3.5 AND song_rating_user < 4 GROUP BY song_id", (self.id,))
+	# 	if not neutralplus:
+	# 		neutralplus = 0
+	# 	likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 4 GROUP BY song_id", (self.id,))
+	# 	if not likes:
+	# 		likes = 0
+	# 	rating_count = dislikes + neutrals + neutralplus + likes
+	# 	log.debug("song_rating", "%s ratings for %s" % (rating_count, self.filename))
+	# 	if rating_count > config.get("rating_threshold_for_calc"):
+	# 		self.data['rating'] = ((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1)
+	# 		log.debug("song_rating", "rating update: %s for %s" % (self.data['rating'], self.filename))
+	# 		db.c.update("UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s", (self.data['rating'], rating_count, self.id))
+
+	# 	if not skip_album_update:
+	# 		for album in self.albums:
+	# 			album.update_rating()
+
+	def update_rating(self, skip_album_update=False):
+		ratings = db.c.fetch_all("SELECT song_rating_user AS rating, COUNT(user_id) AS count FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE song_id = %s AND radio_inactive = FALSE GROUP BY song_rating_user", (self.id,))
+		(points, potential_points) = rating.rating_calculator(ratings)
+
+		log.debug("song_rating", "%s ratings for %s" % (potential_points, self.filename))
+		if points > 0 and potential_points > config.get("rating_threshold_for_calc"):
+			self.data['rating'] = ((points / potential_points) * 4) + 1
+			self.data['rating_count'] = potential_points
 			log.debug("song_rating", "rating update: %s for %s" % (self.data['rating'], self.filename))
-			db.c.update("UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s", (self.data['rating'], rating_count, self.id))
+			db.c.update("UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s", (self.data['rating'], potential_points, self.id))
 
 		if not skip_album_update:
 			for album in self.albums:
 				album.update_rating()
 
 	def add_artist(self, name):
-		toret = self._add_metadata(self.artists, name, Artist)
+		to_ret = self._add_metadata(self.artists, name, Artist)
 		self.update_artist_parseable()
 		return to_ret
 
@@ -490,9 +575,13 @@ class Song(object):
 				return True
 		raise SongMetadataUnremovable("Found no tag by name %s that wasn't assigned by ID3." % name)
 
-	def load_extra_detail(self):
-		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_rating > %s", (self.data['rating'],))
-		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_request_count > %s", (self.data['request_count'],))
+	def load_extra_detail(self, sid):
+		self.data['rating_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE AND song_rating > %s", (self.data['rating'],))
+		self.data['request_rank'] = 1 + db.c.fetch_var("SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE AND song_request_count > %s", (self.data['request_count'],))
+		self.data['rating_rank_percentile'] = (float(num_songs["_total"] - self.data['rating_rank']) / float(num_songs["_total"])) * 100
+		self.data['rating_rank_percentile'] = max(5, min(99, int(self.data['rating_rank_percentile'])))
+		self.data['request_rank_percentile'] = (float(num_songs["_total"] - self.data['request_rank']) / float(num_songs["_total"])) * 100
+		self.data['request_rank_percentile'] = max(5, min(99, int(self.data['request_rank_percentile'])))
 
 		self.data['rating_histogram'] = {}
 		histo = db.c.fetch_all("SELECT "
@@ -510,7 +599,7 @@ class Song(object):
 		d = {}
 		d['title'] = self.data['title']
 		d['id'] = self.id
-		d['rating'] = self.data['rating']
+		d['rating'] = round(self.data['rating'], 1)
 		d['origin_sid'] = self.data['origin_sid']
 		d['link_text'] = self.data['link_text']
 		d['artist_parseable'] = self.data['artist_parseable']
@@ -519,6 +608,12 @@ class Song(object):
 		d['elec_blocked'] = self.data['elec_blocked']
 		d['elec_blocked_by'] = self.data['elec_blocked_by']
 		d['length'] = self.data['length']
+		if 'track_number' in self.data:
+			d['track_number'] = self.data['track_number']
+		if 'disc_number' in self.data:
+			d['disc_number'] = self.data['disc_number']
+		if 'year' in self.data:
+			d['year'] = self.data['year']
 
 		d['artists'] = []
 		d['albums'] = []
@@ -540,8 +635,8 @@ class Song(object):
 			d.update(rating.get_song_rating(self.id, user.id))
 			if user.data['rate_anything']:
 				d['rating_allowed'] = True
-		
-		for v in [ "entry_id", "elec_request_user_id", "entry_position", "entry_type", "entry_votes", "elec_request_username", "sid", "one_up_used", "one_up_queued", "one_up_id", "rating_rank", "reuest_rank", "rating_histogram" ]:
+
+		for v in [ "entry_id", "elec_request_user_id", "entry_position", "entry_type", "entry_votes", "elec_request_username", "sid", "one_up_used", "one_up_queued", "one_up_id", "rating_rank", "request_rank", "request_count", "rating_histogram", "rating_count", "rating_rank_percentile", "request_rank_percentile" ]:
 			if v in self.data:
 				d[v] = self.data[v]
 
@@ -573,14 +668,14 @@ class Song(object):
 	def get_all_ratings(self):
 		table = db.c.fetch_all("SELECT song_rating_user, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
 		all_ratings = {}
-		for row in all_ratings:
+		for row in table:
 			all_ratings[row['user_id']] = { "rating_user": row['song_rating_user'], "fave": row['song_fave'] }
 		return all_ratings
 
 	def update_last_played(self, sid):
 		for album in self.albums:
 			album.update_last_played(sid)
-		return db.c.update("UPDATE r4_song_sid SET song_played_last = %s WHERE song_id = %s AND sid = %s", (time.time(), self.id, sid))
+		return db.c.update("UPDATE r4_song_sid SET song_played_last = %s WHERE song_id = %s AND sid = %s", (timestamp(), self.id, sid))
 
 	def add_to_vote_count(self, votes, sid):
 		return db.c.update("UPDATE r4_songs SET song_vote_count = song_vote_count + %s WHERE song_id = %s", (votes, self.id))
@@ -597,7 +692,7 @@ class Song(object):
 			return
 
 		acl = cache.get_station(self.sid, "user_rating_acl")
-		if self.id in acl and user.id in acl[self.id]:
+		if acl and self.id in acl and user.id in acl[self.id]:
 			self.data['rating_allowed'] = True
 		else:
 			self.data['rating_allowed'] = False

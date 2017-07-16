@@ -5,6 +5,7 @@ from api.server import handle_api_url
 
 from libs import cache
 from rainwave import rating as ratinglib
+from rainwave import playlist
 
 @handle_api_url('rate')
 class SubmitRatingRequest(APIHandler):
@@ -18,6 +19,7 @@ class SubmitRatingRequest(APIHandler):
 		"song_id": (fieldtypes.song_id, True),
 		"rating": (fieldtypes.rating, True)
 	}
+	sync_across_sessions = True
 
 	def post(self):
 		self.rate(self.get_argument("song_id"), self.get_argument("rating"))
@@ -35,7 +37,8 @@ class SubmitRatingRequest(APIHandler):
 
 	def clear_rating(self, song_id):
 		albums = ratinglib.clear_song_rating(self.sid, song_id, self.user.id)
-		self.append_standard("rating_submitted", updated_album_ratings = albums, song_id = song_id, rating_user = None)
+		s = playlist.Song.load_from_id(song_id, self.sid)
+		self.append_standard("rating_submitted", updated_album_ratings = albums, song_id = song_id, rating_user = None, rating = s.data['rating'])
 
 @handle_api_url('clear_rating')
 class ClearRating(SubmitRatingRequest):

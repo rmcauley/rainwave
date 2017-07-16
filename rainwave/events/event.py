@@ -1,8 +1,7 @@
-import time
+from time import time as timestamp
 
 from libs import db
 from libs import log
-from rainwave import playlist
 
 all_producers = {}
 
@@ -15,7 +14,7 @@ def get_admin_creatable_producers():
 	types = []
 	for key in all_producers.keys():
 		if ((key != "ShortestElectionProducer") and
-				(key != "ElectionProducer") and
+	#			(key != "ElectionProducer") and
 				(key != "OneUpProducer")):
 			types.append(key)
 	return types
@@ -54,11 +53,12 @@ class BaseProducer(object):
 		p.use_crossfade = row['sched_use_crossfade']
 		p.use_tag_suffix = row['sched_use_tag_suffix']
 		p.url = row['sched_url']
+		p.dj_user_id = row['sched_dj_user_id']
 		p.load()
 		return p
 
 	@classmethod
-	def create(cls, sid, start, end, name = None, public = True, timed = True, url = None, use_crossfade = True, use_tag_suffix = True):
+	def create(cls, sid, start, end, name = None, public = True, timed = True, url = None, use_crossfade = True, use_tag_suffix = True, dj_user_id = None):
 		evt = cls(sid)
 		evt.id = db.c.get_next_id("r4_schedule", "sched_id")
 		evt.start = start
@@ -70,10 +70,11 @@ class BaseProducer(object):
 		evt.url = url
 		evt.use_crossfade = use_crossfade
 		evt.use_tag_suffix = use_tag_suffix
+		evt.dj_user_id = dj_user_id
 		db.c.update("INSERT INTO r4_schedule "
-					"(sched_id, sched_start, sched_end, sched_type, sched_name, sid, sched_public, sched_timed, sched_url, sched_use_crossfade, sched_use_tag_suffix) VALUES "
-					"(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-					(evt.id, evt.start, evt.end, evt.type, evt.name, evt.sid, evt.public, evt.timed, evt.url, evt.use_crossfade, evt.use_tag_suffix))
+					"(sched_id, sched_start, sched_end, sched_type, sched_name, sid, sched_public, sched_timed, sched_url, sched_use_crossfade, sched_use_tag_suffix, sched_dj_user_id) VALUES "
+					"(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+					(evt.id, evt.start, evt.end, evt.type, evt.name, evt.sid, evt.public, evt.timed, evt.url, evt.use_crossfade, evt.use_tag_suffix, evt.dj_user_id))
 		return evt
 
 	def __init__(self, sid):
@@ -94,6 +95,26 @@ class BaseProducer(object):
 		self.use_tag_suffix = True
 		self.plan_ahead_limit = 1
 		self.songs = None
+		self.dj_user_id = None
+
+	def duplicate(self):
+		duped = self.__class__.create(
+			self.sid,
+			self.start,
+			self.end,
+			self.name,
+			self.public,
+			self.timed,
+			self.url,
+			self.use_crossfade,
+			self.use_tag_suffix,
+			self.dj_user_id
+		)
+		ts = int(timestamp())
+		if duped.start < ts:
+			duped.change_start(ts + 86400)
+			duped.change_end(duped.start + (self.end - self.start))
+		return duped
 
 	def change_start(self, new_start):
 		if not self.used:
@@ -119,12 +140,13 @@ class BaseProducer(object):
 		raise Exception("No event type specified.")
 
 	def start_producer(self):
-		self.start_actual = int(time.time())
-		if self.id:
-			db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (self.start_actual, self.id))
+		if not self.start_actual:
+			self.start_actual = int(timestamp())
+			if self.id:
+				db.c.update("UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s", (self.start_actual, self.id))
 
 	def finish(self):
-		self.end_actual = int(time.time())
+		self.end_actual = int(timestamp())
 		if self.id:
 			db.c.update("UPDATE r4_schedule SET sched_used = TRUE, sched_in_progress = FALSE, sched_end_actual = %s WHERE sched_id = %s", (self.end_actual, self.id))
 
@@ -198,13 +220,13 @@ class BaseEvent(object):
 		self.replay_gain = self.get_song().replay_gain
 
 	def start_event(self):
-		self.start_actual = int(time.time())
+		self.start_actual = int(timestamp())
 		self.in_progress = True
 
 	def finish(self):
 		self.used = True
 		self.in_progress = False
-		self.end = int(time.time())
+		self.end = int(timestamp())
 
 		song = self.get_song()
 		if song:
@@ -254,12 +276,3 @@ class BaseEvent(object):
 
 	def delete(self):
 		pass
-
-class SingleSong(BaseEvent):
-	incrementer = 0
-
-	def __init__(self, song_id, sid):
-		super(SingleSong, self).__init__(sid)
-		self.songs = [ playlist.Song.load_from_id(song_id, sid) ]
-		self.id = SingleSong.incrementer
-		SingleSong.incrementer += 1

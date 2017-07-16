@@ -1,7 +1,7 @@
 <script>
 function {{ html_id }}_set_time_from_server(epoch_time) {
 	var d = new Date((epoch_time * 1000) + new Date().getTimezoneOffset());
-	document.getElementById('{{ html_id }}_year').value = d.getYear();
+	document.getElementById('{{ html_id }}_year').value = d.getYear() + 1900;
 	document.getElementById('{{ html_id }}_month').value = d.getMonth() + 1;
 	document.getElementById('{{ html_id }}_day').value = d.getDate();
 	document.getElementById('{{ html_id }}_hour').value = d.getHours();
@@ -22,8 +22,8 @@ function {{ html_id }}_fix_time() {
 };
 </script>
 
-YY/MM//DD: <select id='{{ html_id }}_year' onchange='{{ html_id }}_fix_time();'>
-{% for m in range(2014, 2021) %}
+YY/MM/DD: <select id='{{ html_id }}_year' onchange='{{ html_id }}_fix_time();'>
+{% for m in range(2015, 2021) %}
 	<option value='{{ m }}'>{{ m }}</option>
 {% end %}
 </select>
@@ -53,6 +53,6 @@ Time: <select id='{{ html_id }}_hour' onchange='{{ html_id }}_fix_time();'>>
 {% end %}
 </select>
 <br>
-Epoch: 
+Epoch:
 <input type='text' id='{{ html_id }}_timestamp' size=12 disabled='disabled'/>
 <script>{{ html_id }}_set_time_from_server({{ at_time }});</script>

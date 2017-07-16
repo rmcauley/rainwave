@@ -2,6 +2,7 @@
    "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
 
    "language_name"                                   : "Suomi",
+   "language_name_short"                             : "FI",
 
    "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
 
@@ -73,7 +74,7 @@
    "extended_history_header"                         : "Laajennettu historia",
    "special_event_on_now"                            : "Tapahtuma: ",
    "special_event_alert"                             : "Erikoistapahtuma asemalla %(station): ",
-   
+
    "tunein"                                          : "Kuuntele",
    "stop"                                            : "Pysäytä",
    "audio_error"                                     : "Ei pystytty aloittamaan kuuntelua selaimestasi!",
@@ -97,7 +98,7 @@
    "played_ago"                                      : "Soinut %(time) sitten",
    "timeline_art__request_indicator"                 : "Toive",
    "timeline_art__your_request_indicator"            : "Sinun",
-   
+
    "event_naming__oneup"                             : "%(name) Tehotunti",
 
    "__comment__"                 : "Tip Jar",
@@ -123,7 +124,7 @@
    "ratings_completion_rate"                         : "Arvostellut kappaleet",
    "rating_spread"                                   : "Arvostelujen jakautuminen",
    "average_rating_by_station"                       : "Keskim. arvostelu aseman mukaan",
-   
+
    "your_mobile_app_qr"                              : "Android-sovelluksesi QR-koodi",
    "manage_your_api_keys"                            : "Hallinnoi API-avaimiasi.",
    "logout_in_forums"                                : "Kirjaudu ulos keskustelualueen kautta.",
@@ -189,11 +190,11 @@
    "requests_expiring"                               : "Toiveet - Menettämässä jonosijaasi!",
    "requests_all_on_cooldown"                        : "Toiveet - Ei kelpaavia toiveita!",
    "request_you_are_x_in_line"                       : "Toiveet - Sijalla #(position) jonossa",
-   
+
    "request_grab_tag__warning"                       : "Varoitus",
    "request_grab_tag__paused"                        : "Pysäytetty",
    "requests_grab_tab__num_requests"                 : "%(num_requests) &(num_requests:toive/toivetta)",
-   
+
    "cancel_request"                                  : "Peru toive",
    "request_on_cooldown_for"                         : "Jäähyllä %(cool_time) ajan.",
    "request_on_cooldown_ends_soon"                   : "Tulossa pois jäähyltä.",
@@ -253,8 +254,8 @@
    "prefs_detail_global_ratings"                     : "Näytä globaalit arvostelut kappalelistoissa.",
    "m3u_downloads"                                   : "M3U-lataukset",
    "skip_intro_mode"                                 : "Ohita perehdytystila",
-   "do_intro_mode"                                   : "Palaa perehdytystilaan",  
-   
+   "do_intro_mode"                                   : "Palaa perehdytystilaan",
+
    "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
 
    "timeformat_w"                                    : "vk ",
@@ -262,7 +263,7 @@
    "timeformat_h"                                    : "t ",
    "timeformat_m"                                    : "min ",
    "timeformat_s"                                    : "s ",
-   
+
    "__comment__"                 : "Raw API Pages (statistics, etc)",
 
    "unrated_songs"                                   : "Arvostelemattomat kappaleet",

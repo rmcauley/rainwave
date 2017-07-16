@@ -1,0 +1,12 @@
+{
+	"folders":
+	[
+		{
+			"folder_exclude_patterns":
+			[
+				"static/baked"
+			],
+			"path": "."
+		}
+	]
+}

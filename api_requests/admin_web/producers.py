@@ -8,8 +8,10 @@ from api_requests.admin_web import index
 from api_requests.admin_web.power_hours import get_ph_formatted_time
 
 # this makes sure all the event modules get loaded correctly
-# DO NOT REMOVE despite what pylinter might tell you!
-from rainwave import schedule
+# and registered correctly with their parent class
+# it is critical to make sure this module works correctly
+# do not remove, that pylint ignore is there for a good reason
+from rainwave import schedule		#pylint: disable=W0611
 
 @handle_url("/admin/tools/producers")
 class WebCreateProducer(api.web.HTMLRequest):
@@ -27,26 +29,31 @@ class WebCreateProducer(api.web.HTMLRequest):
 			self.write("<option value='%s'>%s</option>" % (producer_type, producer_type))
 		self.write("</select><br>")
 		self.write("Name: <input id='new_ph_name' type='text' /><br>")
-		self.write("URL: <input id='new_ph_url' type='text' /><br><br>Input date and time in YOUR timezone.<br><u>Start Time</u>:<br> ")
+		self.write("URL: <input id='new_ph_url' type='text' /><br>")
+		self.write("DJ User ID: <input id='new_ph_user_id' type='text' /><br>")
+		self.write("<br>Input date and time in YOUR timezone.<br><u>Start Time</u>:<br> ")
 		index.write_html_time_form(self, "new_ph_start")
 		self.write("<br><br><u>End Time</u>:<br> ")
 		index.write_html_time_form(self, "new_ph_end")
 		self.write("<br><br><button onclick=\"window.top.call_api('admin/create_producer', ")
-		self.write("{ 'producer_type': document.getElementById('new_ph_type').value, 'end_utc_time': document.getElementById('new_ph_end_timestamp').value, 'start_utc_time': document.getElementById('new_ph_start_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\"")
+		self.write("{ 'producer_type': document.getElementById('new_ph_type').value, 'end_utc_time': document.getElementById('new_ph_end_timestamp').value, 'start_utc_time': document.getElementById('new_ph_start_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value, 'dj_user_id': document.getElementById('new_ph_user_id').value });\"")
 		self.write(">Create new Producer</button></div>")
 		self.write(self.render_string("basic_footer.html"))
 
 class WebListProducersBase(object):
+	#pylint: disable=E1101
 	def header_special(self):
-		self.write("<th>Time</th><th></th><th></th>")
+		self.write("<th>Time</th><th></th><th></th><th></th>")
 
 	def row_special(self, row):
 		self.write("<td style='font-family: monospace;'>%s</td>" % get_ph_formatted_time(row['start'], row['end'], 'US/Eastern'))
 		self.write("<td><a href='/admin/album_list/modify_producer?sid=%s&sched_id=%s'>Modify</a></td>" % (self.sid, row['id']))
 		self.write("<td><a onclick=\"window.top.call_api('admin/delete_producer', { 'sched_id': %s });\">Delete</a></td>" % row['id'])
+		self.write("<td><a onclick=\"window.top.call_api('admin/duplicate_producer', { 'sched_id': %s });\">Duplicate</a></td>" % row['id'])
 
 	def sort_keys(self, keys):
-		return [ "sid", "name", "type", 'sched_length_minutes', "url" ]
+		return [ "sid", "name", "type", 'sched_length_minutes', "url", "username" ]
+	#pylint: enable=E1101
 
 @handle_url("/admin/album_list/producers")
 class WebListProducers(WebListProducersBase, api.web.PrettyPrintAPIMixin, producers.ListProducers):

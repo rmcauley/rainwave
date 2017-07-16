@@ -31,7 +31,7 @@ if __name__ == "__main__":
 		song_to_album[row['song_id']] = row['album_id']
 
 	album_faves = db.c.fetch_all("SELECT user_id, album_id, album_fave FROM r4_album_ratings WHERE album_fave = TRUE ORDER BY album_id")
-	
+
 	print "Adding columns to database..."
 
 	db.c.update("ALTER TABLE r4_album_sid ADD COLUMN album_rating REAL NOT NULL DEFAULT 0")
@@ -69,7 +69,7 @@ if __name__ == "__main__":
 		artist_parseable = []
 		for artist in db.c.fetch_all("SELECT artist_name, artist_id FROM r4_song_artist JOIN r4_artists USING (artist_id) WHERE song_id = %s", (song_id,)):
 			artist_parseable.append({ "id": artist['artist_id'], "name": artist['artist_name'] })
-		artist_parseable = json.dumps(artist_parseable)
+		artist_parseable = json.dumps(artist_parseable, ensure_ascii=False)
 		db.c.update("UPDATE r4_songs SET song_artist_parseable = %s WHERE song_id = %s", (artist_parseable, song_id))
 
 	max_album_id = db.c.fetch_var("SELECT MAX(album_id) FROM r4_albums")
@@ -96,14 +96,14 @@ if __name__ == "__main__":
 			a.update_vote_count(sid)
 		a.update_all_user_ratings()
 		a.update_rating()
-	
+
 	print
 	for album_id in db.c.fetch_list("SELECT album_id FROM r4_albums ORDER BY album_id"):
 		print "\rUpdating counts for %s/%s" % (album_id, max_album_id),
 		a = Album.load_from_id(album_id)
 		for sid in config.station_ids:
 			a.update_fave_count(sid)
-	
+
 	print
 	print "Removing old columns..."
 	db.c.update("ALTER TABLE r4_song_sid DROP COLUMN album_id")

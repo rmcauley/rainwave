@@ -1,0 +1,225 @@
+div.rating {
+	position: relative;
+	float: right;
+	background-repeat: no-repeat;
+	background-image: $site_rating;
+	background-size: $rating_bkg_size;
+	width: $rating_width;
+	padding: 0;
+	margin: 0;
+	color: $rating_hover_text;
+	height: $rating_height;
+
+	body.full {
+		width: $rating_width + 23px;
+	}
+
+	&.starting_touch {
+		@include transition-wtime(300ms, background-color);
+		background-color: $rating_touch_start_bkg;
+	}
+
+	&.rating_user {
+		background-image: $user_rating;
+
+		div.song_fave_highlight &.song_rating {
+			color: $fave;
+			background-image: $fav_rating;
+		}
+
+		div.album_fave_highlight &.album_rating {
+			color: $fave;
+			background-image: $fav_rating;
+
+			body.show_incomplete &.rating_incomplete {
+				background-image: $incomplete_rating;
+			}
+		}
+
+		body.show_incomplete &.rating_incomplete {
+			background-image: $incomplete_rating;
+		}
+	}
+
+	body.desktop &.ratable {
+		cursor: pointer;
+
+		&:hover {
+			@include no-transition();
+			background-image: $user_rating;
+		}
+	}
+
+	body.desktop div.song_fave_highlight &.ratable.song_rating:hover {
+		color: $fave;
+		background-image: $fav_rating;
+	}
+
+	body.simple.desktop &.ratable:hover {
+		margin-left: 25px;
+	}
+
+	body.full & {
+		margin-left: 30px;
+	}
+
+	div.rating_number {
+		position: absolute;
+		height: $rating_height;
+		width: 23px;
+		padding-right: 2px;
+		opacity: 0;
+		text-align: center;
+		visibility: hidden;
+		@include transition-wtime(200ms, opacity, transform, visibility);
+		@include transform(translateX(0px));
+
+		&.listener_number {
+			color: $text;
+		}
+
+		&.rating_confirm {
+			background: $rating_confirm_text;
+			color: $rating_confirm_text;
+			overflow: hidden;
+			visibility: visible;
+
+			$color_transtime: 500ms;
+			$opacity_transtime: 200ms;
+			$wait_transtime: 2s;
+			$confirm_transtime: 300ms;
+
+			&.confirming {
+				opacity: 1;
+				@include transform(translateX(0px) scaleX(1) !important);
+				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, -webkit-transform $wait_transtime;
+				        transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, transform $wait_transtime;
+			}
+
+			&.confirmed {
+				background: transparent;
+				color: $text;
+				@include transform(translateX(-25px) scaleX(1) !important);
+				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, -webkit-transform $confirm_transtime;
+				        transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, transform $confirm_transtime;
+			}
+
+			&.bad_rating {
+				background: $error_bkg;
+				color: $text;
+				@include transform(translateX(-25px) scaleX(1) !important);
+				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, -webkit-transform $confirm_transtime;
+				        transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, transform $confirm_transtime;
+			}
+		}
+	}
+
+	body.desktop &:hover div.rating_hover, body.full & div.rating_hover {
+		opacity: 1;
+		visibility: visible;
+		@include transform(translateX(-25px));
+	}
+
+	body.desktop &:hover {
+		div.rating_confirm + div.rating_hover, div.rating_confirm + div.rating_number {
+			opacity: 0;
+		}
+	}
+
+	div.rating_confirm + div.rating_number {
+		opacity: 0 !important;
+	}
+
+	div.rating_confirm.fading + div.rating_hover {
+		opacity: 1 !important;
+	}
+
+	div.hold_to_rate {
+		position: absolute;
+		border: solid 1px $text_dd;
+		box-shadow: 0px 0px 6px 3px $drop_shadow;
+		left: 100%;
+		top: -2.5em;
+		overflow: hidden;
+		white-space: nowrap;
+		color: $text;
+		padding: 2px 5px;
+		background: $bkg;
+		@include transform(translateX(-100%));
+	}
+}
+
+body.simple div.timeline div.album_rating {
+	display: none;
+}
+
+body.hide_global_ratings {
+	div.rating.rating_global {
+		background-image: $hidden_rating;
+
+		& + div.rating_site {
+			visibility: hidden;
+		}
+	}
+}
+
+div.rating_clear {
+	display: none;
+
+	body.logged_in.rating_clear_ok & {
+		display: block;
+		visibility: hidden;
+
+		&.capable {
+			visibility: visible;
+		}
+
+		img {
+			position: relative;
+			top: 1px;
+			height: 14px;
+			opacity: 0.5;
+			cursor: pointer;
+
+			@include transition-wtime(300ms, opacity);
+
+			&:hover {
+				opacity: 1;
+			}
+		}
+	}
+}
+
+div.mobile_rating {
+	$slider_width: 200px;
+	width: $slider_width;
+	z-index: 98;
+	position: absolute;
+	opacity: 0;
+	left: 100%;
+	background: $bkg;
+	padding: 20px 15px 10px 5px;
+	border: solid 1px $text_dd;
+	box-shadow: 0px 0px 6px 3px $drop_shadow;
+	@include transform(translateX(-100%) translateY(-1em));
+	@include transition-wtime(200ms, opacity, transform);
+
+	&.show {
+		opacity: 1;
+		@include transform(translateX(-100%) translateY(-2.5em));
+	}
+
+	div.slider {
+		width: $slider_width;
+		height: 48px;
+		background-repeat: none;
+		background-image: $touch_rating;
+		background-size: 200px 2496px;
+	}
+
+	div.slide_number {
+		position: absolute;
+		top: 0px;
+		font-weight: bold;
+	}
+}

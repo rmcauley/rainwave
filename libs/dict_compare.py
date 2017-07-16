@@ -6,7 +6,7 @@ def print_differences(ref_data, compare_data):
 	# Short-circuit any funny testing
 	if ref_data == compare_data:
 		return True
-		
+
 	passed = True
 
 	for key, value in ref_data.iteritems():
@@ -24,7 +24,7 @@ def print_differences(ref_data, compare_data):
 			print "\tComparison data:"
 			pp.pprint(compare_data[key])
 			passed = False
-			
+
 	for key, value in compare_data.iteritems():
 		if key not in ref_data:
 			print "[Ref    ] lacks key: %s" % key

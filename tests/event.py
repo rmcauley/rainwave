@@ -1,5 +1,5 @@
 import unittest
-import time
+from time import time as timestamp
 from libs import db
 from libs import cache
 from rainwave import playlist
@@ -12,11 +12,11 @@ class ElectionTest(unittest.TestCase):
 	def setUp(self):
 		self.song1 = playlist.Song.load_from_file("tests/test1.mp3", [1])
 		self.song5 = playlist.Song.load_from_file("tests/test5.mp3", [5])
-		
+
 	def tearDown(self):
 		self.song1.disable()
 		self.song5.disable()
-		
+
 	def test_fill_and_load(self):
 		e = Election.create(1)
 		self.assertEqual(e.use_crossfade, True)
@@ -34,23 +34,23 @@ class ElectionTest(unittest.TestCase):
 				fail = False
 		self.assertEqual(False, fail)
 		playlist.remove_all_locks(1)
-		
+
 		e = Election.create(1)
 		e.fill(5)
 		playlist.remove_all_locks(1)
-		
+
 	def test_check_song_for_conflict(self):
 		db.c.update("DELETE FROM r4_listeners")
 		db.c.update("DELETE FROM r4_request_store")
-	
+
 		e = Election.create(1)
 		self.assertEqual(False, e._check_song_for_conflict(self.song1))
-		
+
 		u = User(2)
 		u.authorize(sid=1, ip_address=None, api_key=None, bypass=True)
 		self.assertEqual(1, u.put_in_request_line(1))
 		# TODO: Use proper request/user methods here instead of DB call
-		db.c.update("UPDATE r4_request_line SET line_top_song_id = %s, line_expiry_tune_in = %s WHERE user_id = %s", (self.song1.id, int(time.time()) + 9999, u.id))
+		db.c.update("UPDATE r4_request_line SET line_top_song_id = %s, line_expiry_tune_in = %s WHERE user_id = %s", (self.song1.id, int(timestamp()) + 9999, u.id))
 		db.c.update("INSERT INTO r4_listeners (sid, user_id, listener_icecast_id) VALUES (1, %s, 1)", (u.id,))
 		db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, 1)", (u.id, self.song1.id))
 		request.update_cache(1)
@@ -60,7 +60,7 @@ class ElectionTest(unittest.TestCase):
 		self.assertEqual(True, e._check_song_for_conflict(self.song5))
 		self.assertEqual(event.ElecSongTypes.conflict, self.song5.data['entry_type'])
 		self.assertEqual(event.ElecSongTypes.request, self.song1.data['entry_type'])
-		
+
 	def test_start_finish(self):
 		e = Election.create(1)
 		e.fill()
@@ -73,7 +73,7 @@ class ElectionTest(unittest.TestCase):
 		self.assertEqual(req_song.id, e.songs[1].id)
 		self.assertEqual(win_song.id, e.get_song().id)
 		e.finish()
-		
+
 	def test_get_request(self):
 		db.c.update("DELETE FROM r4_listeners")
 		db.c.update("DELETE FROM r4_request_store")
@@ -83,22 +83,22 @@ class ElectionTest(unittest.TestCase):
 		# TODO: Use proper request class here instead of DB call
 		db.c.update("INSERT INTO r4_listeners (sid, user_id, listener_icecast_id) VALUES (1, %s, 1)", (u.id,))
 		db.c.update("INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, 1)", (u.id, self.song1.id,))
-		
+
 		e = Election.create(1)
 		req = e.get_request()
 		self.assertNotEqual(None, req)
 		self.assertEqual(self.song1.id, req.id)
-		
+
 	def test_add_from_queue(self):
 		db.c.update("DELETE FROM r4_election_queue")
 		event.add_to_election_queue(1, self.song1)
 		e = Election.create(1)
 		e._add_from_queue()
 		self.assertEqual(self.song1.id, e.songs[0].id)
-	
+
 	def test_is_request_needed(self):
 		pass
 		# e = Election(1)
 		# e.is_request_needed()
 		# e.
-		
+

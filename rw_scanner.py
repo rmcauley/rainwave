@@ -23,8 +23,6 @@ if __name__ == "__main__":
 		libs.log.init("%s/rw_scanner.log" % libs.config.get_directory("log_dir"), "debug")
 	else:
 		libs.log.init("%s/rw_scanner.log" % libs.config.get_directory("log_dir"), libs.config.get("log_level"))
-	libs.db.connect()
-	libs.cache.connect()
 
 	for sid in libs.config.station_ids:
 		rainwave.playlist_objects.album.clear_updated_albums(sid)

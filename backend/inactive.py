@@ -1,5 +1,5 @@
 import tornado.ioloop
-import time
+from time import time as timestamp
 from libs import db
 import tempfile
 import os
@@ -14,17 +14,17 @@ def inactive_checking():
 			last_time = int(t)
 		except Exception:
 			pass
-	if (not last_time) or (last_time < (time.time() - 86400)):
+	if (not last_time) or (last_time < (timestamp() - 86400)):
 		_update_inactive()
 
 def _update_inactive():
 	f = open("%s/r4_inactive_check" % tempfile.gettempdir(), 'w')
-	f.write(str(int(time.time())))
+	f.write(str(int(timestamp())))
 	f.close()
-	time_threshold = time.time() - (86400 * 30)
+	time_threshold = timestamp() - (86400 * 30)
 	db.c.update("UPDATE phpbb_users SET radio_inactive = TRUE "
 				"WHERE radio_inactive = FALSE AND radio_last_active < %s",
 				(time_threshold,))
 
-checking = tornado.ioloop.PeriodicCallback(inactive_checking, 360000) 
+checking = tornado.ioloop.PeriodicCallback(inactive_checking, 360000)
 checking.start()

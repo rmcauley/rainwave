@@ -1,11 +1,15 @@
+try:
+	import ujson as json
+except ImportError:
+	import json
+
 import tornado.web
-import tornado.escape
 import tornado.httputil
-import time
 import traceback
 import types
 import hashlib
 import psycopg2
+from time import time as timestamp
 
 from rainwave.user import User
 from rainwave.playlist_objects.song import SongNonExistent
@@ -16,6 +20,7 @@ from api.exceptions import APIException
 from libs import config
 from libs import log
 from libs import db
+from libs import cache
 
 # This is the Rainwave API main handling request class.  You'll inherit it in order to handle requests.
 # Does a lot of form checking and validation of user/etc.  There's a request class that requires no authentication at the bottom of this module.
@@ -35,7 +40,7 @@ class Error404Handler(tornado.web.RequestHandler):
 		self.set_status(404)
 		if "in_order" in self.request.arguments:
 			self.write("[")
-		self.write(tornado.escape.json_encode({ "error": { "tl_key": "http_404", "text": "404 Not Found" } }))
+		self.write(json.dumps({ "error": { "tl_key": "http_404", "text": "404 Not Found" } }))
 		if "in_order" in self.request.arguments:
 			self.write("]")
 		self.finish()
@@ -51,9 +56,36 @@ class HTMLError404Handler(tornado.web.RequestHandler):
 		self.write(self.render_string("basic_footer.html"))
 		self.finish()
 
+def get_browser_locale(handler, default="en_CA"):
+	"""Determines the user's locale from ``Accept-Language`` header.  Copied from Tornado, adapted slightly.
+
+	See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+	"""
+	if "rw_lang" in handler.cookies:
+		if locale.RainwaveLocale.exists(handler.cookies['rw_lang'].value):
+			return locale.RainwaveLocale.get(handler.cookies['rw_lang'].value)
+	if "Accept-Language" in handler.request.headers:
+		languages = handler.request.headers["Accept-Language"].split(",")
+		locales = []
+		for language in languages:
+			parts = language.strip().split(";")
+			if len(parts) > 1 and parts[1].startswith("q="):
+				try:
+					score = float(parts[1][2:])
+				except (ValueError, TypeError):
+					score = 0.0
+			else:
+				score = 1.0
+			locales.append((parts[0], score))
+		if locales:
+			locales.sort(key=lambda pair: pair[1], reverse=True)
+			codes = [l[0] for l in locales]
+			return locale.RainwaveLocale.get_closest(codes)
+	return locale.RainwaveLocale.get(default)
+
 class RainwaveHandler(tornado.web.RequestHandler):
 	# The following variables can be overridden by you.
-	# Fields is a hash with { "form_name" => (fieldtypes.[something], True|False|None } format, so that automatic form validation can be done for you.  True/False values are for required/optional.
+	# Fields is a hash with { "form_name" => (fieldtypes.[something], True|False|None) } format, so that automatic form validation can be done for you.  True/False values are for required/optional.
 	# A True requirement means it must be present and valid
 	# A False requirement means it is optional, but if present, must be valid
 	# A None requirement means it is optional, and if present and invalid, will be set to None
@@ -69,10 +101,12 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	tunein_required = False
 	# Validate user's logged in status first.
 	login_required = False
+	# User must be a DJ for the next, current, or history[0] event
+	dj_required = False
+	# User must have an unused DJ-able event in the future
+	dj_preparation = False
 	# Validate user is a station administrator.
 	admin_required = False
-	# Validate user is currently DJing.
-	dj_required = False
 	# Do we need a valid SID as part of the submitted form?
 	sid_required = True
 	# Description string for documentation.
@@ -93,13 +127,19 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	help_hidden = False
 	# automatically add pagination to an API request.  use self.get_sql_limit_string()!
 	pagination = False
+	# allow access to station ID 0
+	allow_sid_zero = False
+	# set to allow from any source
+	allow_cors = False
+	# sync result across all user's websocket sessions
+	sync_across_sessions = False
 
 	def __init__(self, *args, **kwargs):
-		super(RainwaveHandler, self).__init__(*args, **kwargs)
+		if not 'websocket' in kwargs:
+			super(RainwaveHandler, self).__init__(*args, **kwargs)
 		self.cleaned_args = {}
-		self.cookie_prefs = {}
 		self.sid = None
-		self._startclock = time.time()
+		self._startclock = timestamp()
 		self.user = None
 		self._output = None
 		self._output_array = False
@@ -116,40 +156,78 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			value = repr(value)
 		super(RainwaveHandler, self).set_cookie(name, value, *args, **kwargs)
 
-	def get_argument(self, name, *args, **kwargs):
+	def get_argument(self, name, default=None, **kwargs):
 		if name in self.cleaned_args:
 			return self.cleaned_args[name]
-		return super(RainwaveHandler, self).get_argument(name, *args, **kwargs)
+		if name in self.request.arguments:
+			if isinstance(self.request.arguments[name], list):
+				return self.request.arguments[name][-1].strip()
+			return self.request.arguments[name]
+		return default
 
 	def set_argument(self, name, value):
 		self.cleaned_args[name] = value
 
 	def get_browser_locale(self, default="en_CA"):
-		"""Determines the user's locale from ``Accept-Language`` header.  Copied from Tornado, adapted slightly.
+		return get_browser_locale(self, default)
 
-		See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
-		"""
-		if "rw_lang" in self.cookies:
-			if locale.RainwaveLocale.exists(self.cookies['rw_lang'].value):
-				return locale.RainwaveLocale.get(self.cookies['rw_lang'].value)
-		if "Accept-Language" in self.request.headers:
-			languages = self.request.headers["Accept-Language"].split(",")
-			locales = []
-			for language in languages:
-				parts = language.strip().split(";")
-				if len(parts) > 1 and parts[1].startswith("q="):
-					try:
-						score = float(parts[1][2:])
-					except (ValueError, TypeError):
-						score = 0.0
-				else:
-					score = 1.0
-				locales.append((parts[0], score))
-			if locales:
-				locales.sort(key=lambda pair: pair[1], reverse=True)
-				codes = [l[0] for l in locales]
-				return locale.RainwaveLocale.get_closest(codes)
-		return locale.RainwaveLocale.get(default)
+	def setup_output(self):
+		if not self.return_name:
+			self.return_name = self.url[self.url.rfind("/")+1:] + "_result"
+		else:
+			self.return_name = self.return_name
+
+	def arg_parse(self):
+		for field, field_attribs in self.__class__.fields.iteritems():
+			type_cast, required = field_attribs
+			parsed = None
+			if required and field not in self.request.arguments:
+				raise APIException("missing_argument", argument=field, http_code=400)
+			elif field in self.request.arguments:
+				parsed = type_cast(self.get_argument(field), self)
+				if parsed == None and required != None:
+					raise APIException("invalid_argument", argument=field, reason="%s %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__)), http_code=400)
+			self.cleaned_args[field] = parsed
+
+	def sid_check(self):
+		if self.sid is None and not self.sid_required:
+			self.sid = config.get("default_station")
+		if self.sid == 0 and self.allow_sid_zero:
+			pass
+		elif not self.sid in config.station_ids:
+			raise APIException("invalid_station_id", http_code=400)
+
+	def permission_checks(self):
+		if (self.login_required or self.admin_required or self.dj_required) and (not self.user or self.user.is_anonymous()):
+			raise APIException("login_required", http_code=403)
+		if self.tunein_required and (not self.user or not self.user.is_tunedin()):
+			raise APIException("tunein_required", http_code=403)
+		if self.admin_required and (not self.user or not self.user.is_admin()):
+			raise APIException("admin_required", http_code=403)
+		if self.perks_required and (not self.user or not self.user.has_perks()):
+			raise APIException("perks_required", http_code=403)
+
+		if self.unlocked_listener_only and not self.user:
+			raise APIException("auth_required", http_code=403)
+		elif self.unlocked_listener_only and self.user.data['lock'] and self.user.data['lock_sid'] != self.sid:
+			raise APIException("unlocked_only", station=config.station_id_friendly[self.user.data['lock_sid']], lock_counter=self.user.data['lock_counter'], http_code=403)
+
+		is_dj = False
+		if self.dj_required and not self.user:
+			raise APIException("dj_required", http_code=403)
+		if self.dj_required and not self.user.is_admin():
+			potential_djs = cache.get_station(self.sid, "dj_user_ids")
+			if not potential_djs or not self.user.id in potential_djs:
+				raise APIException("dj_required", http_code=403)
+			is_dj = True
+			self.user.data['dj'] = True
+		elif self.dj_required and self.user.is_admin():
+			is_dj = True
+			self.user.data['dj'] = True
+
+		if self.dj_preparation and not is_dj and not self.user.is_admin():
+			if not db.c.fetch_var("SELECT COUNT(*) FROM r4_schedule WHERE sched_used = 0 AND sched_dj_user_id = %s", (self.user.id,)):
+				raise APIException("dj_required", http_code=403)
 
 	# Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
 	def prepare(self):
@@ -157,16 +235,15 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			log.info("api", "Rejected %s request from %s, untrusted address." % (self.url, self.request.remote_ip))
 			raise APIException("rejected", text="You are not coming from a trusted address.")
 
+		if self.allow_cors:
+			self.set_header("Access-Control-Allow-Origin", "*")
+			self.set_header("Access-Control-Max-Age", "600")
+			self.set_header("Access-Control-Allow-Credentials", "false")
+
 		if not isinstance(self.locale, locale.RainwaveLocale):
 			self.locale = self.get_browser_locale()
 
-		if not self.return_name:
-			self.return_name = self.url[self.url.rfind("/")+1:] + "_result"
-		else:
-			self.return_name = self.return_name
-
-		if self.admin_required or self.dj_required:
-			self.login_required = True
+		self.setup_output()
 
 		if 'in_order' in self.request.arguments:
 			self._output = []
@@ -180,30 +257,18 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			hostname = unicode(hostname).split(":")[0]
 			if hostname in config.station_hostnames:
 				self.sid = config.station_hostnames[hostname]
-		self.sid = fieldtypes.integer(self.get_argument("sid", None)) or self.sid
-		if self.sid and not self.sid in config.station_ids:
-			self.sid = None
-		if not self.sid and self.sid_required:
+		sid_arg = fieldtypes.integer(self.get_argument("sid", None))
+		if sid_arg is not None:
+			self.sid = sid_arg
+		if self.sid is None and self.sid_required:
 			raise APIException("missing_station_id", http_code=400)
 
-		for field, field_attribs in self.__class__.fields.iteritems():
-			type_cast, required = field_attribs
-			if required and field not in self.request.arguments:
-				raise APIException("missing_argument", argument=field, http_code=400)
-			elif not required and field not in self.request.arguments:
-				self.cleaned_args[field] = None
-			else:
-				parsed = type_cast(self.get_argument(field), self)
-				if parsed == None and required != None:
-					raise APIException("invalid_argument", argument=field, reason="%s %s" % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__)), http_code=400)
-				else:
-					self.cleaned_args[field] = parsed
+		self.arg_parse()
 
-		if not self.sid and not self.sid_required:
-			self.sid = 5
-		if not self.sid in config.station_ids:
-			raise APIException("invalid_station_id", http_code=400)
-		self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
+		self.sid_check()
+
+		if self.sid:
+			self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
 
 		if self.phpbb_auth:
 			self.do_phpbb_auth()
@@ -214,28 +279,27 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			raise APIException("auth_required", http_code=403)
 		elif not self.user and not self.auth_required:
 			self.user = User(1)
-			self.user.ip_address = self.request.remote_ip		
+			self.user.ip_address = self.request.remote_ip
 
 		self.user.refresh(self.sid)
 
-		if self.login_required and (not self.user or self.user.is_anonymous()):
-			raise APIException("login_required", http_code=403)
-		if self.tunein_required and (not self.user or not self.user.is_tunedin()):
-			raise APIException("tunein_required", http_code=403)
-		if self.admin_required and (not self.user or not self.user.is_admin()):
-			raise APIException("admin_required", http_code=403)
-		if self.dj_required and (not self.user or not self.user.is_dj()):
-			raise APIException("dj_required", http_code=403)
-		if self.perks_required and (not self.user or not self.user.has_perks()):
-			raise APIException("perks_required", http_code=403)
+		if self.user and config.get("store_prefs"):
+			self.user.save_preferences(self.request.remote_ip, self.get_cookie("r4_prefs", None))
 
-		if self.unlocked_listener_only and not self.user:
-			raise APIException("auth_required", http_code=403)
-		elif self.unlocked_listener_only and self.user.data['lock'] and self.user.data['lock_sid'] != self.sid:
-			raise APIException("unlocked_only", station=config.station_id_friendly[self.user.data['lock_sid']], lock_counter=self.user.data['lock_counter'], http_code=403)
+		self.permission_checks()
+
+	# works without touching cookies or headers, primarily used for websocket requests
+	def prepare_standalone(self, message_id=None):
+		self._output = {}
+		if message_id != None:
+			self.append("message_id", { "message_id": message_id })
+		self.setup_output()
+		self.arg_parse()
+		self.sid_check()
+		self.permission_checks()
 
 	def do_phpbb_auth(self):
-		phpbb_cookie_name = config.get("phpbb_cookie_name")
+		phpbb_cookie_name = config.get("phpbb_cookie_name") + "_"
 		user_id = fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", ""))
 		if not user_id:
 			pass
@@ -263,7 +327,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			return None
 		if not user_id:
 			user_id = self.user.id
-		cookie_session = self.get_cookie(config.get("phpbb_cookie_name") + "sid")
+		cookie_session = self.get_cookie(config.get("phpbb_cookie_name") + "_sid")
 		if cookie_session:
 			if cookie_session == db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s AND session_id = %s", (user_id, cookie_session)):
 				self._update_phpbb_session(cookie_session)
@@ -274,7 +338,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		return db.c.fetch_var("SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s ORDER BY session_last_visit DESC LIMIT 1", (user_id,))
 
 	def _update_phpbb_session(self, session_id):
-		db.c.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(time.time()), "rainwave", session_id))
+		db.c.update("UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s", (int(timestamp()), "rainwave", session_id))
 
 	def rainwave_auth(self):
 		user_id_present = "user_id" in self.request.arguments
@@ -305,7 +369,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self._output.append({ key: dct })
 		else:
 			self._output[key] = dct
-		if "code" in dct:
+		if isinstance(dct, dict) and "code" in dct:
 			return dct["code"]
 		return True
 
@@ -330,7 +394,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			return ""
 		limit = ""
 		if self.get_argument("per_page") != None:
-			if self.get_argument("per_page") == "0":
+			if not self.get_argument("per_page"):
 				limit = "LIMIT ALL"
 			else:
 				limit = "LIMIT %s" % self.get_argument("per_page")
@@ -343,27 +407,41 @@ class RainwaveHandler(tornado.web.RequestHandler):
 class APIHandler(RainwaveHandler):
 	def initialize(self, **kwargs):
 		super(APIHandler, self).initialize(**kwargs)
-		if config.get("developer_mode") or config.test_mode or self.allow_get:
+		if self.allow_get:
 			self.get = self.post
 
 	def finish(self, chunk=None):
 		self.set_header("Content-Type", "application/json")
+		self.write_output()
+		super(APIHandler, self).finish(chunk)
+
+	def write_output(self):
 		if hasattr(self, "_output"):
 			if hasattr(self, "_startclock"):
-				exectime = time.time() - self._startclock
+				exectime = timestamp() - self._startclock
 			else:
 				exectime = -1
 			if exectime > 0.5:
 				log.warn("long_request", "%s took %s to execute!" % (self.url, exectime))
-			self.append("api_info", { "exectime": exectime, "time": round(time.time()) })
-			self.write(tornado.escape.json_encode(self._output))
-		super(APIHandler, self).finish(chunk)
+			self.append("api_info", { "exectime": exectime, "time": round(timestamp()) })
+			self.write(json.dumps(self._output, ensure_ascii=False))
 
 	def write_error(self, status_code, **kwargs):
 		if self._output_array:
 			self._output = []
 		else:
-			self._output = {}
+			if self._output and "message_id" in self._output:
+				self._output = {
+					"message_id": self._output['message_id'],
+				}
+				self._output[self.return_name] = {
+					"tl_key": "internal_error",
+					"text": self.locale.translate("internal_error"),
+					"status": 500,
+					"success": False
+				}
+			else:
+				self._output = {}
 		if kwargs.has_key("exc_info"):
 			exc = kwargs['exc_info'][1]
 
@@ -385,7 +463,8 @@ class APIHandler(RainwaveHandler):
 				self.append("traceback", { "traceback": traceback.format_exception(kwargs['exc_info'][0], kwargs['exc_info'][1], kwargs['exc_info'][2]) })
 		else:
 			self.append("error", { "tl_key": "internal_error", "text": self.locale.translate("internal_error") } )
-		self.finish()
+		if not kwargs.has_key("no_finish") or not kwargs['no_finish']:
+			self.finish()
 
 def _html_write_error(self, status_code, **kwargs):
 	if kwargs.has_key("exc_info"):
@@ -430,17 +509,20 @@ class PrettyPrintAPIMixin(object):
 	allow_get = True
 	write_error = _html_write_error
 
+	#pylint: disable=E1003
 	# reset the initialize to ignore overwriting self.get with anything
-	# TODO: stop fucking monkeypatching you dipshit
+	# TODO: NO MONKEYPATCHING ARGH, NO, BAD CODER, LOOK AT THOSE PYLINT IGNORES
 	def initialize(self, *args, **kwargs):
 		super(APIHandler, self).initialize(*args, **kwargs)
-		# yaaaaaaay monkey patching :/
+		#pylint: disable=E0203
 		self._real_post = self.post
 		self.post = self.post_reject
+		#pylint: enable=E0203
 
 	def prepare(self):
 		super(APIHandler, self).prepare()
 		self._real_post()
+	#pylint: enable=E1003
 
 	def get(self, write_header=True):
 		if write_header:
@@ -474,12 +556,13 @@ class PrettyPrintAPIMixin(object):
 				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
 			elif not self.return_name in self._output:
 				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
-		for output_key, json in self._output.iteritems():
-			if type(json) != types.ListType:
+
+		for output_key, json_out in self._output.iteritems():	#pylint: disable=W0612
+			if type(json_out) != types.ListType:
 				continue
-			if len(json) > 0:
-				self.write("<table><th>#</th>")
-				keys = self.sort_keys(json[0].keys())
+			if len(json_out) > 0:
+				self.write("<table class='%s'><th>#</th>" % self.return_name)
+				keys = getattr(self, "columns", self.sort_keys(json_out[0].keys()))
 				for key in keys:
 					self.write("<th>%s</th>" % self.locale.translate(key))
 				self.header_special()
@@ -487,7 +570,7 @@ class PrettyPrintAPIMixin(object):
 				i = 1
 				if "page_start" in self.request.arguments:
 					i += self.get_argument("page_start")
-				for row in json:
+				for row in json_out:
 					self.write("<tr><td>%s</td>" % i)
 					for key in keys:
 						if key == "sid":
@@ -500,6 +583,7 @@ class PrettyPrintAPIMixin(object):
 				self.write("</table>")
 			else:
 				self.write("<p>%s</p>" % self.locale.translate("no_results"))
+
 		if self.pagination and "per_page" in self.fields and self.get_argument("per_page") != 0:
 			if self.get_argument("page_start") and self.get_argument("page_start") > 0:
 				self.write("<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>" % (per_page_link, previous_page_start))
@@ -524,9 +608,11 @@ class PrettyPrintAPIMixin(object):
 		new_keys.extend(keys)
 		return new_keys
 
+	#pylint: disable=E1003
 	# no JSON output!!
-	def finish(self):
-		super(APIHandler, self).finish()
+	def finish(self, *args, **kwargs):
+		super(APIHandler, self).finish(*args, **kwargs)
+	#pylint: enable=E1003
 
 	# see initialize, this will override the JSON POST function
 	def post_reject(self):

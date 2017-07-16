@@ -1,0 +1,31 @@
+<div class="song_detail" bind="details">
+    {{#if ^_c.artists }}
+        <div class="{{ ^'full_artists ' + ((_c.artists.length > 1) ? 'multi_artist' : '') }}">
+            <span>{{ ^($l_has("Artists_pluralized") ? $l("Artists_pluralized", { "count": _c.artists.length }) :  $l("Artists")) + ": " }}</span>
+            {{#each artists }}
+                <a href="#!/artist/{{ id }}">{{ name }}</a>
+            {{/each}}
+        </div>
+    {{/if}}
+    {{#if ^_c.groups && _c.groups.length && !MOBILE }}
+        <div class="{{ ^'full_groups ' + ((_c.groups.length > 1) ? 'multi_group' : '') }}">
+            <span>{{ $l("Groups") + ": " }}</span>
+            {{#each groups }}
+                <a href="#!/group/{{ id }}">{{ name }}</a>
+            {{/each}}
+        </div>
+    {{/if}}
+    {{#if rating_count }}
+        <div>
+            <span>{{ $l("song_rating_detail") }}</span>
+            <span style="margin-left: 2px;">
+                {{ $l("rating_detail_numbers", { "rating": Formatting.rating(_c.rating), "count": _c.rating_count, "percentile": _c.rating_rank_percentile, "percentile_message": _c.rating_percentile_message }) }}
+            </span>
+        </div>
+        <div bind="graph_placement"></div>
+    {{else}}
+        <div>
+            {{ $l("song_has_no_ratings") }}
+        </div>
+    {{/if}}
+</div>
