@@ -256,6 +256,8 @@
    "newish_songs"                                    : "Recent bijgewerkt.",
    "search..."                                       : "Zoek...",
    "no_songs_on_this_station"                        : "Er zijn geen liedjes op %(station) voor dit album.",
+   "fave_all_songs"                                  : "Voeg alle toe als favoriet",
+   "unfave_all_songs"                                : "Verwijder alle als favoriet",
 
    "__comment__"                 : "Requests",
 
@@ -333,6 +335,7 @@
    "prefs_p_fav1"                                    : "Prioriteer Favorieten Boven Beschikbare Liedjes",
    "prefs_p_sort"                                    : "Sorteer Albums op...",
    "prefs_p_allcats"                                 : "Toon Single-Album Categorieën",
+   "prefs_p_songsort"                                : "Sorteer Liedjes Zoals Albums Gesorteerd Worden",
    "prefs_sort_playlist_by_alpha"                    : "Alfabetische Volgorde",
    "prefs_sort_playlist_by_rating_user"              : "Waardering",
    "rating_preferences"                              : "Waarderingen",
