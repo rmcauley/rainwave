@@ -87,11 +87,7 @@ var RainwavePlayer = function() {
 			canVorbis = audioEl.canPlayType("audio/ogg; codecs=\"vorbis\"");
 		}
 
-		// we have to check for Mozilla support specifically for Vorbis.
-		// Webkit/Blink, esp. older ones, will choke on Vorbis and stop playing after
-		// a single song switch, and thus, we have to forcefeed it MP3.
-		// Check for Mozilla by looking for really specific moz-prefixed properties.
-		if ((navigator.mozIsLocallyAvailable || navigator.mozApps || navigator.mozContacts) && ((canVorbis == "maybe") || (canVorbis == "probably"))) {
+		if ((canVorbis == "maybe") || (canVorbis == "probably")) {
 			self.mimetype = "audio/ogg";
 			self.type = "ogg";
 			self.isSupported = true;
