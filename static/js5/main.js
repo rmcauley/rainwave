@@ -209,11 +209,11 @@ var RWAudio;
 			add_javascript("/static/svg4everybody.min.js", function() { svg4everybody(); });
 		}
 
-		if (service_worker_registration) {
-			requestNextAnimationFrame(function() {
-				service_worker_registration.update();
-			});
-		}
+// 		if (service_worker_registration) {
+// 			requestNextAnimationFrame(function() {
+// 				service_worker_registration.update();
+// 			});
+// 		}
 	};
 
 	//document.addEventListener("DOMContentLoaded", initialize);
