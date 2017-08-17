@@ -8,7 +8,7 @@ var R4Notify = function() {
 	var notifier;
 
 	BOOTSTRAP.on_init.push(function(template) {
-		Prefs.define("notify", [ true, false ]);
+		Prefs.define("notify", [ false, true ]);
 		if (!self.capable) return;
 		if (MOBILE) return;
 
