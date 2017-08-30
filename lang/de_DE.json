@@ -1,7 +1,7 @@
 {
    "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
    "__comment__"                 : "Please put them in your actual language. (i.e. use kanji!) Short version should be < 4 characters.",
-   
+
    "language_name"                                   : "Deutsch",
    "language_name_short"                             : "DE",
 
@@ -28,7 +28,7 @@
    "db_error_retry"                                  : "Interner Datenbankfehler - Bitte erneut versuchen.",
    "db_error_permanent"                              : "Server Fehler - Interne Datenbank ist offline.",
    "websocket_throttle"                              : "Mach mal langsam!",
-   
+
    "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
 
    "fave_failed"                                     : "Favorisieren fehlgeschlagen.",
@@ -67,7 +67,7 @@
 
    "auth_failed_message"                             : "Unser Autorisierungssystem hat nicht funktioniert! Wir hatten dieses Problem in den letzten paar Wochen mit anonymen usern und wir schreiben momentan das Autorisierungssystem neu. Bitte lade die Seite neu oder noch besser, REGISTRIERE DICH UND LOGGE DICH EIN indem du den Forenlink unten verwendest und das Problem wird verschwinden!",
 
-   
+
    "__comment__"                 : "Error pop-up when Rainwave goes crashes.",
 
    "oops"                                            : "Oops",
@@ -92,8 +92,8 @@
    "your_numeric_user_id"                            : "Deine numerische Benutzer ID",
    "app_would_like_to"                               : "Diese App würde gerne:",
    "allow_api_auth"                                  : "Klingt gut",
-   
-   
+
+
    "__comment__"                 : "Menu",
 
    "station_select_header"                           : "Senderauswahl",
@@ -137,14 +137,14 @@
    "now_playing"                                     : "Gerade läuft",
    "election"                                        : "Abstimmung",
    "power_hour"                                      : "Power Hour",
-   
+
    "__comment__"                 : "When a Power Hour or DJ Event happens, instead of saying 'NEW MUSIC POWER HOUR' repeatedly",
    "__comment__"                 : "we just use 'CONTINUED' instead, so the title of the power hour is only displayed once",
    "__comment__"                 : "at the top of the timeline.  That's what this 'continued' line is for.",
    "continued"                                       : "Fortsetzung",
 
-   "__comment__"                 : "Timeline Song", 
-   
+   "__comment__"                 : "Timeline Song",
+
    "vote_submitted"                                  : "Stimme übermittelt",
    "cannot_vote_for_this_now"                        : "Für diesen Song kann gerade nicht abgestimmt werden.",
    "invalid_hotkey_vote"                             : "Ungültige Auswahl, versuche es erneut.",
@@ -155,7 +155,7 @@
    "vote"                                            : "Abstimmen",
    "__comment__"                                     : "The above 'Vote' is a verb, not a noun.",
    "voted"                                           : "Abgestimmt",
-   
+
     "event_naming__oneup"                             : "%(name) Power Hour",
 
    "__comment__"                 : "Tip Jar",
@@ -192,7 +192,7 @@
 
    "top_rated_albums"                                : "Am besten bewertete Alben",
    "top_requested_albums"                            : "Am häufigsten gewünschte Alben",
-   
+
    "__comment__"                 : "Other",
 
    "random_relay"                                    : "Zufälliger Relay",
@@ -204,11 +204,11 @@
    "async_error"                                     : "Fehler bei der Datenübertragung. Bitte erneut versuchen oder die Seite neu laden.",
    "deeplink_error"                                  : "Die eingegebene URL konnte nicht verarbeitet werden.",
    "hold_to_rate"                                    : "hold to rate",
-   
+
    "Loading..."                                      : "Lade...",
    "Cancel"                                          : "Abbruch",
    "go"                                              : "Los",
-   
+
    "__comment__"                 : "Hotkey Mode",
 
    "hotkey_mode"                                     : "1-5 zum Bewerten, A/S/D zum Abstimmen",
@@ -258,9 +258,9 @@
    "newish_songs"                                    : "Vor Kurzem aktualisiert.",
    "search..."                                       : "Suchen...",
    "no_songs_on_this_station"                        : "Es gibt keine Songs auf %(station) für dieses Album.",
-   
+
    "__comment__"                 : "Requests",
-   
+
    "clear_request_queue"                             : "Alle entfernen",
    "pause_request_queue"                             : "Pausieren",
    "unpause_request_queue"                           : "Weiter",
@@ -274,7 +274,7 @@
    "Clear"                                           : "Löschen",
 
    "Requests"                                        : "Wünsche",
-   "#_requests"                                      : "%(num_requests) &(num_requests:Wunnsch/Wünsche)",
+   "#_requests"                                      : "%(num_requests) &(num_requests:Wunsch/Wünsche)",
    "requests_all_on_cooldown"                        : "Alle Wünsche sind in der Abkühlpause!",
    "request_you_are_x_in_line"                       : "Position #(position) in der Schlange",
    "request_grab_tag__paused"                        : "Pausiert",
@@ -375,7 +375,7 @@
    "cd_higher_rating"                                : "Bessere Bewertung = Kürzere Abkühldauer",
    "cd_recently_added"                               : "Vor Kurzem hinzugefügt",
    "cd_newer"                                        : "Neuer = Kürzere Abkühldauer",
-   
+
    "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
 
    "timeformat_w"                                    : "W ",
