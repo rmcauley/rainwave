@@ -419,8 +419,8 @@ div.song {
 
 	div.song_station_indicator_1 { background: $station_game;   &::before { content: 'G' } }
 	div.song_station_indicator_2 { background: $station_ocr;    &::before { content: 'O' } }
-	div.song_station_indicator_3 { background: $station_covers; &::before { content: 'C' } }
-	div.song_station_indicator_4 { background: $station_chip;   &::before { content: 'C' } }
+	div.song_station_indicator_3 { background: $station_covers; &::before { content: 'Co' } }
+	div.song_station_indicator_4 { background: $station_chip;   &::before { content: 'Ch' } }
 	div.song_station_indicator_5 { background: $station_all;    &::before { content: 'A' } }
 }
 
