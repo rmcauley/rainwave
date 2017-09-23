@@ -21,6 +21,7 @@ from rainwave.events import election
 # This is to make sure the code gets loaded and producers get registered
 import rainwave.events.oneup
 import rainwave.events.pvpelection
+import rainwave.events.pvpelection_no_cooldown
 import rainwave.events.shortest_election
 import rainwave.events.singlesong
 

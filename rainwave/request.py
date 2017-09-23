@@ -5,9 +5,11 @@ from libs import log
 from rainwave import playlist
 from rainwave.user import User
 
+LINE_SQL = "SELECT username, user_id, line_expiry_tune_in, line_expiry_election, line_wait_start, line_has_had_valid FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE r4_request_line.sid = %s AND radio_requests_paused = FALSE ORDER BY line_wait_start"
+
 def update_line(sid):
 	# Get everyone in the line
-	line = db.c.fetch_all("SELECT username, user_id, line_expiry_tune_in, line_expiry_election, line_wait_start, line_has_had_valid FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE r4_request_line.sid = %s AND radio_requests_paused = FALSE ORDER BY line_wait_start", (sid,))
+	line = db.c.fetch_all(LINE_SQL, (sid,))
 	_process_line(line, sid)
 
 def _process_line(line, sid):
@@ -106,11 +108,10 @@ def update_expire_times():
 			expiry_times[row['user_id']] = row['line_expiry_tune_in']
 	cache.set("request_expire_times", expiry_times, True)
 
-def get_next(sid):
+def get_next_entry(sid):
 	line = cache.get_station(sid, "request_line")
 	if not line:
-		return None
-	song = None
+		return None, None
 	for pos in range(0, len(line)):
 		if not line[pos]:
 			pass  # ?!?!
@@ -119,22 +120,44 @@ def get_next(sid):
 		elif not line[pos]['song_id']:
 			log.debug("request", "Passing on user %s since they have no valid first song." % line[pos]['username'])
 		else:
-			entry = line.pop(pos)
-			song = playlist.Song.load_from_id(entry['song_id'], sid)
-			log.debug("request", "Fulfilling %s's request for %s." % (entry['username'], song.filename))
-			song.data['elec_request_user_id'] = entry['user_id']
-			song.data['elec_request_username'] = entry['username']
+			return line.pop(pos), line
+	return None, None
 
-			u = User(entry['user_id'])
-			db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (u.id, entry['song_id']))
-			u.remove_from_request_line()
-			request_count = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_history WHERE user_id = %s", (u.id,)) + 1
-			db.c.update("DELETE FROM r4_request_store WHERE song_id = %s AND user_id = %s", (song.id, u.id))
-			db.c.update("INSERT INTO r4_request_history (user_id, song_id, request_wait_time, request_line_size, request_at_count, sid) "
-						"VALUES (%s, %s, %s, %s, %s, %s)",
-						(u.id, song.id, timestamp() - entry['line_wait_start'], len(line), request_count, sid))
-			db.c.update("UPDATE phpbb_users SET radio_totalrequests = %s WHERE user_id = %s", (request_count, u.id))
-			song.update_request_count(sid)
-			break
+def mark_request_filled(sid, user, song, entry, line):
+	log.debug("request", "Fulfilling %s's request for %s." % (user.data['name'], song.filename))
+	song.data['elec_request_user_id'] = user.id
+	song.data['elec_request_username'] = user.data['name']
+
+	db.c.update("DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s", (user.id, song.id))
+	user.remove_from_request_line()
+	request_count = db.c.fetch_var("SELECT COUNT(*) FROM r4_request_history WHERE user_id = %s", (user.id,)) + 1
+	db.c.update("DELETE FROM r4_request_store WHERE song_id = %s AND user_id = %s", (song.id, user.id))
+	db.c.update("INSERT INTO r4_request_history (user_id, song_id, request_wait_time, request_line_size, request_at_count, sid) "
+				"VALUES (%s, %s, %s, %s, %s, %s)",
+				(user.id, song.id, timestamp() - entry['line_wait_start'], len(line), request_count, sid))
+	db.c.update("UPDATE phpbb_users SET radio_totalrequests = %s WHERE user_id = %s", (request_count, user.id))
+	song.update_request_count(sid)
+
+def get_next(sid):
+	entry, line = get_next_entry(sid)
+	if not entry:
+		return None
+
+	user = User(entry['user_id'])
+	song = playlist.Song.load_from_id(entry['song_id'], sid)
+	mark_request_filled(sid, user, song, entry, line)
+
+	return song
+
+def get_next_ignoring_cooldowns(sid):
+	line = db.c.fetch_all(LINE_SQL, (sid,))
+
+	if not line or len(line) == 0:
+		return None
+
+	entry = line[0]
+	user = User(entry['user_id'])
+	song = playlist.Song.load_from_id(user.get_top_request_song_id_any(sid), sid)
+	mark_request_filled(sid, user, song, entry, line)
 
 	return song

@@ -262,7 +262,7 @@ class Election(event.BaseEvent):
 			total_votes = 0
 			for i in range(0, len(self.songs)):
 				self.songs[i].data['entry_position'] = i
-				if 'entry_votes' in self.songs[i].data:
+				if self.songs[i].data.get('entry_votes'):
 					total_votes += self.songs[i].data['entry_votes']
 				else:
 					self.songs[i].data['entry_votes'] = 0
@@ -361,8 +361,11 @@ class Election(event.BaseEvent):
 			_request_interval[self.sid] = config.get_station(self.sid, "request_interval")
 			log.debug("requests", "Sequence length: %s" % _request_sequence[self.sid])
 
+	def _get_request_song(self):
+		return request.get_next(self.sid)
+
 	def get_request(self):
-		song = request.get_next(self.sid)
+		song = self._get_request_song()
 		if not song:
 			return None
 		self.reset_request_sequence()
