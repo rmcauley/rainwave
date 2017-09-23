@@ -27,7 +27,7 @@
 			</div>
 		{{/if}}
 		<div bind="art" class="art_container">
-			{{#if ^_c.entry_id && User.sid === 5 }}
+			{{#if ^_c._is_timeline && User.sid === 5 }}
 				<div class="power_only song_station_indicator song_station_indicator_{{ origin_sid }}"></div>
 			{{/if}}
 

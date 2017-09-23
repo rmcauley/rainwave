@@ -2,6 +2,9 @@ var Song = function(self, parent_event) {
 	"use strict";
 	var template;
 	if (!self.$t) {
+		if (parent_event) {
+			self._is_timeline = true;
+		}
 		template = RWTemplates.song(self);
 		self.$t = template;
 		self.el = template.root;
