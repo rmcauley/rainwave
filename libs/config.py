@@ -90,6 +90,7 @@ def load(filename = None, testmode = False):
 			"port": get_station(sid, "round_robin_relay_port"),
 			#"url": "http://%s:%s" % (get_station(sid, "round_robin_relay_host"), get_station(sid, "round_robin_relay_port"))
 		})
+		relay_hostnames.append(get_station(sid, "round_robin_relay_host"))
 		for relay_name, relay in get("relays").iteritems():
 			if sid in relay['sids']:
 				public_relays[sid].append({
