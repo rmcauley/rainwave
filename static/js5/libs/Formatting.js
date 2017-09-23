@@ -125,26 +125,19 @@ var Formatting = function() {
 		{"base":"z","letters":/[\u007A\u24E9\uFF5A\u017A\u1E91\u017C\u017E\u1E93\u1E95\u01B6\u0225\u0240\u2C6C\uA763]/g}
 	];
 
-	if (String.prototype && String.prototype.normalize) {
-		self.sanitize_string = function(str) {
-			return str.normalize().replace(/[\u0300-\u036f]/g, "");
-		};
-	}
-	else {
-		self.sanitize_string = function(str) {
-			for (var i = 0; i < diacritic_map.length; i++) {
-				str = str.replace(diacritic_map[i].letters, diacritic_map[i].base);
-			}
-			return str;
-		};
-	}
+	self.sanitize_string = function(str) {
+		for (var i = 0; i < diacritic_map.length; i++) {
+			str = str.replace(diacritic_map[i].letters, diacritic_map[i].base);
+		}
+		return str;
+	};
 
 	self.remove_non_alphanum = function(str) {
 		return str.replace(/\W/g, "");
 	};
 
 	self.make_searchable_string = function(str) {
-		return self.sanitize_string(str).replace(/[^\w ]/g, "").toLowerCase();
+		return self.sanitize_string(str).toLowerCase();
 	};
 
 	return self;
