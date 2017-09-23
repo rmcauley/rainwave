@@ -39,6 +39,11 @@ class MainIndex(api.web.HTMLRequest):
 		self.set_header("X-Frame-Options", "SAMEORIGIN")
 		self.set_header("X-XSS-Protection", "1; mode=block")
 
+		if self.request.protocol == 'https':
+			self.set_header("Content-Security-Policy", config.csp_header)
+			self.set_header("Referrer-Policy", "origin")
+			self.set_header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+
 	def prepare(self):
 		if self.path_kwargs.get('station'):
 			self.sid = config.stream_filename_to_sid.get(self.path_kwargs['station'])
@@ -128,11 +133,6 @@ class BetaIndex(MainIndex):
 	js_dir = "js5"
 
 	def prepare(self):
-		if self.request.protocol == 'https':
-			self.set_header("Content-Security-Policy", config.csp_header)
-			self.set_header("Referrer-Policy", "origin")
-			self.set_header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
-
 		if not config.get("public_beta"):
 			self.perks_required = True
 		super(BetaIndex, self).prepare()
