@@ -23,7 +23,7 @@ class Blank(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Blank"))
 		self.write(self.render_string("basic_footer.html"))
 
-@handle_url("/(?:index.html)?")
+@handle_url("/(?P<station>[a-z]+)?/?(?:index.html)?")
 class MainIndex(api.web.HTMLRequest):
 	description = "Main Rainwave page."
 	auth_required = config.has("index_requires_login") and config.get("index_requires_login")
@@ -38,7 +38,26 @@ class MainIndex(api.web.HTMLRequest):
 		self.set_header("X-XSS-Protection", "1; mode=block")
 
 	def prepare(self):
+		if self.request.protocol == 'https':
+			self.set_header("Content-Security-Policy", "default-src https:")
+			self.set_header("Referrer-Policy", "same-origin")
+			self.set_header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+
+		if self.path_kwargs.get('station'):
+			self.sid = config.stream_filename_to_sid.get(self.path_kwargs['station'])
+			if not self.sid:
+				self.redirect(config.get("base_site_url"))
+				return
+
 		super(MainIndex, self).prepare()
+
+		if self.path_kwargs.get('station') is None:
+			self.redirect("{}{}/".format(config.get("base_site_url"), config.station_mount_filenames[self.sid]), permanent=True)
+			return
+
+		if config.get("enforce_ssl") and self.request.protocol != 'https':
+			self.redirect("{}{}/".format(config.get("base_site_url"), config.station_mount_filenames[self.sid]), permanent=True)
+			return
 
 		if not cache.get_station(self.sid, "sched_current"):
 			raise APIException("server_just_started", "Rainwave is Rebooting, Please Try Again in a Few Minutes", http_code=500)
@@ -63,7 +82,7 @@ class MainIndex(api.web.HTMLRequest):
 	# def append(self, key, value):
 	# 	self.json_payload[key] = value
 
-	def get(self):
+	def get(self, station=None):
 		self.mobile = self.request.headers.get("User-Agent").lower().find("mobile") != -1 or self.request.headers.get("User-Agent").lower().find("android") != -1
 		# if not self.beta:
 		# 	info.attach_info_to_request(self, extra_list=self.get_cookie("r4_active_list"))
@@ -90,18 +109,18 @@ class MainIndex(api.web.HTMLRequest):
 			dj=self.user.is_dj()
 		)
 
-@handle_url("/dj")
+@handle_url("/(?P<station>[a-z]+)/dj")
 class DJIndex(MainIndex):
 	dj_required = True
 
-@handle_url("/beta")
+@handle_url("/(?P<station>[a-z]+)/beta")
 class BetaRedirect(tornado.web.RequestHandler):
 	help_hidden = True
 
 	def prepare(self):
 		self.redirect("/beta/", permanent=True)
 
-@handle_url("/beta/")
+@handle_url("/(?P<station>[a-z]+)/beta/")
 class BetaIndex(MainIndex):
 	beta = True
 	page_template = "r5_index.html"
@@ -112,7 +131,7 @@ class BetaIndex(MainIndex):
 			self.perks_required = True
 		super(BetaIndex, self).prepare()
 
-@handle_url("/beta/dj")
+@handle_url("/(?P<station>[a-z]+)/beta/dj")
 class DJBetaIndex(MainIndex):
 	dj_required = True
 

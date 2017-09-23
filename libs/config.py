@@ -24,6 +24,7 @@ station_list = {}
 station_list_json = {}
 station_mounts = {}
 station_mount_filenames = {}
+stream_filename_to_sid = {}
 
 def get_build_number():
 	bnf = open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), 'r')
@@ -99,13 +100,14 @@ def load(filename = None, testmode = False):
 		public_relays_json[sid] = json.dumps(public_relays[sid])
 		station_hostnames[get_station(sid, "host")] = sid
 		station_mount_filenames[sid] = get_station(sid, "stream_filename")
+		stream_filename_to_sid[get_station(sid, "stream_filename")] = sid
 
 	station_list = {}
 	for station_id in station_ids:
 		station_list[station_id] = {
 			"id": station_id,
 			"name": station_id_friendly[station_id],
-			"url": "//%s" % get_station(station_id, "host")
+			"url": "{}{}/".format(get("base_site_url"), station_mount_filenames[station_id])
 		}
 		station_mounts[get_station(station_id, "stream_filename") + ".mp3"] = station_id
 		station_mounts[get_station(station_id, "stream_filename") + ".ogg"] = station_id

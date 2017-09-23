@@ -251,17 +251,18 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		else:
 			self._output = {}
 
-		self.sid = fieldtypes.integer(self.get_cookie("r4_sid", None))
-		hostname = self.request.headers.get('Host', None)
-		if hostname:
-			hostname = unicode(hostname).split(":")[0]
-			if hostname in config.station_hostnames:
-				self.sid = config.station_hostnames[hostname]
-		sid_arg = fieldtypes.integer(self.get_argument("sid", None))
-		if sid_arg is not None:
-			self.sid = sid_arg
-		if self.sid is None and self.sid_required:
-			raise APIException("missing_station_id", http_code=400)
+		if not self.sid:
+			self.sid = fieldtypes.integer(self.get_cookie("r4_sid", None))
+			hostname = self.request.headers.get('Host', None)
+			if hostname:
+				hostname = unicode(hostname).split(":")[0]
+				if hostname in config.station_hostnames:
+					self.sid = config.station_hostnames[hostname]
+			sid_arg = fieldtypes.integer(self.get_argument("sid", None))
+			if sid_arg is not None:
+				self.sid = sid_arg
+			if self.sid is None and self.sid_required:
+				raise APIException("missing_station_id", http_code=400)
 
 		self.arg_parse()
 
