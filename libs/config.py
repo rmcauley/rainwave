@@ -112,7 +112,7 @@ def load(filename = None, testmode = False):
 		"default-src 'self' *.{}".format(get("hostname")),
 		"object-src 'none'",
 		"media-src {}".format(' '.join(relay_hostnames)),
-		"font-src 'self' https://fonts.googleapis.com",
+		"font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com/",
 		"connect-src wss://websocket.rainwave.cc",
 		"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
 	])
