@@ -113,8 +113,8 @@ def load(filename = None, testmode = False):
 		"object-src 'none'",
 		"media-src {}".format(' '.join(relay_hostnames)),
 		"font-src 'self' https://fonts.googleapis.com",
-		"connect-src websocket.rainwave.cc",
-		"style-src 'unsafe-inline'"
+		"connect-src wss://websocket.rainwave.cc",
+		"style-src 'self' 'unsafe-inline'"
 	])
 
 	station_list = {}
