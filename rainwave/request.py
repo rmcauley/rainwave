@@ -144,6 +144,7 @@ def get_next(sid):
 		return None
 
 	user = User(entry['user_id'])
+	user.data['name'] = entry['username']
 	song = playlist.Song.load_from_id(entry['song_id'], sid)
 	mark_request_filled(sid, user, song, entry, line)
 
@@ -157,6 +158,7 @@ def get_next_ignoring_cooldowns(sid):
 
 	entry = line[0]
 	user = User(entry['user_id'])
+	user.data['name'] = entry['username']
 	song = playlist.Song.load_from_id(user.get_top_request_song_id_any(sid), sid)
 	mark_request_filled(sid, user, song, entry, line)
 
