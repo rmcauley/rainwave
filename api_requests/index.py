@@ -38,6 +38,7 @@ class MainIndex(api.web.HTMLRequest):
 	def set_default_headers(self):
 		self.set_header("X-Frame-Options", "SAMEORIGIN")
 		self.set_header("X-XSS-Protection", "1; mode=block")
+		self.set_header("X-Content-Type-Options", "nosniff")
 
 		if self.request.protocol == 'https':
 			self.set_header("Content-Security-Policy", config.csp_header)

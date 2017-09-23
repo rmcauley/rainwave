@@ -154,7 +154,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	def set_cookie(self, name, value, *args, **kwargs):
 		if isinstance(value, (int, long)):
 			value = repr(value)
-		super(RainwaveHandler, self).set_cookie(name, value, *args, **kwargs)
+		super(RainwaveHandler, self).set_cookie(name, "{}; Secure".format(value), *args, **kwargs)
 
 	def get_argument(self, name, default=None, **kwargs):
 		if name in self.cleaned_args:
@@ -269,7 +269,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 		self.sid_check()
 
 		if self.sid:
-			self.set_cookie("r4_sid", str(self.sid), expires_days=365, domain=config.get("cookie_domain"))
+			self.set_cookie("r4_sid", str(self.sid), expires_days=365)
 
 		if self.phpbb_auth:
 			self.do_phpbb_auth()
