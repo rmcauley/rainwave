@@ -90,7 +90,7 @@ def load(filename = None, testmode = False):
 			"port": get_station(sid, "round_robin_relay_port"),
 			#"url": "http://%s:%s" % (get_station(sid, "round_robin_relay_host"), get_station(sid, "round_robin_relay_port"))
 		})
-		relay_hostnames.append(get_station(sid, "round_robin_relay_host"))
+		relay_hostnames.append('http://{}'.format(get_station(sid, "round_robin_relay_host")))
 		for relay_name, relay in get("relays").iteritems():
 			if sid in relay['sids']:
 				public_relays[sid].append({
@@ -101,7 +101,7 @@ def load(filename = None, testmode = False):
 					#'url': "http://%s:%s" % (relay['hostname'], relay['port'])
 				})
 				if not relay['hostname'] in relay_hostnames:
-					relay_hostnames.append(relay['hostname'])
+					relay_hostnames.append(relay['protocol'] + relay['hostname'])
 		public_relays_json[sid] = json.dumps(public_relays[sid])
 		station_hostnames[get_station(sid, "host")] = sid
 		station_mount_filenames[sid] = get_station(sid, "stream_filename")
