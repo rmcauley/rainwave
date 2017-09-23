@@ -109,9 +109,11 @@ def load(filename = None, testmode = False):
 	global csp_header
 	csp_header = ";".join([
 		"default-src 'self' *.{}".format(get("hostname")),
-		"object-src none",
+		"object-src 'none'",
 		"media-src {}".format(' '.join(relay_hostnames)),
-		"font-src 'self', 'https://fonts.googleapis.com'"
+		"font-src 'self' https://fonts.googleapis.com",
+		"connect-src websocket.rainwave.cc",
+		"style-src 'unsafe-inline'"
 	])
 
 	station_list = {}
