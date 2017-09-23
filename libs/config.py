@@ -25,6 +25,7 @@ station_list_json = {}
 station_mounts = {}
 station_mount_filenames = {}
 stream_filename_to_sid = {}
+csp_header = ""
 
 def get_build_number():
 	bnf = open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), 'r')
@@ -79,6 +80,7 @@ def load(filename = None, testmode = False):
 		test_mode = True
 
 	public_relays = {}
+	relay_hostnames = []
 	for sid in station_ids:
 		public_relays[sid] = []
 		public_relays[sid].append({
@@ -97,10 +99,20 @@ def load(filename = None, testmode = False):
 					"port": relay['port'],
 					#'url': "http://%s:%s" % (relay['hostname'], relay['port'])
 				})
+				if not relay['hostname'] in relay_hostnames:
+					relay_hostnames.append(relay['hostname'])
 		public_relays_json[sid] = json.dumps(public_relays[sid])
 		station_hostnames[get_station(sid, "host")] = sid
 		station_mount_filenames[sid] = get_station(sid, "stream_filename")
 		stream_filename_to_sid[get_station(sid, "stream_filename")] = sid
+
+	global csp_header
+	csp_header = ";".join([
+		"default-src 'self' *.{}".format(get("hostname")),
+		"object-src none",
+		"media-src {}".format(' '.join(relay_hostnames)),
+		"font-src 'self', 'https://fonts.googleapis.com'"
+	])
 
 	station_list = {}
 	for station_id in station_ids:

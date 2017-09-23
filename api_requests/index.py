@@ -14,6 +14,8 @@ from libs import config
 from libs import buildtools
 from rainwave.user import User
 
+STATION_REGEX = "game|ocremix|chiptune|covers|all"
+
 @handle_url("/blank")
 class Blank(api.web.HTMLRequest):
 	auth_required = False
@@ -23,7 +25,7 @@ class Blank(api.web.HTMLRequest):
 		self.write(self.render_string("bare_header.html", title="Blank"))
 		self.write(self.render_string("basic_footer.html"))
 
-@handle_url("/(?P<station>[a-z]+)?/?(?:index.html)?")
+@handle_url("/(?P<station>{})?/?(?:index.html)?".format(STATION_REGEX))
 class MainIndex(api.web.HTMLRequest):
 	description = "Main Rainwave page."
 	auth_required = config.has("index_requires_login") and config.get("index_requires_login")
@@ -38,11 +40,6 @@ class MainIndex(api.web.HTMLRequest):
 		self.set_header("X-XSS-Protection", "1; mode=block")
 
 	def prepare(self):
-		if self.request.protocol == 'https':
-			self.set_header("Content-Security-Policy", "default-src https:")
-			self.set_header("Referrer-Policy", "same-origin")
-			self.set_header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
-
 		if self.path_kwargs.get('station'):
 			self.sid = config.stream_filename_to_sid.get(self.path_kwargs['station'])
 			if not self.sid:
@@ -55,7 +52,11 @@ class MainIndex(api.web.HTMLRequest):
 			self.redirect("{}{}/".format(config.get("base_site_url"), config.station_mount_filenames[self.sid]), permanent=True)
 			return
 
-		if config.get("enforce_ssl") and self.request.protocol != 'https':
+		if config.get("enforce_ssl") and self.request.protocol != "https":
+			self.redirect("{}{}/".format(config.get("base_site_url"), config.station_mount_filenames[self.sid]), permanent=True)
+			return
+
+		if not config.get("developer_mode") and self.request.host != config.get("hostname"):
 			self.redirect("{}{}/".format(config.get("base_site_url"), config.station_mount_filenames[self.sid]), permanent=True)
 			return
 
@@ -109,29 +110,34 @@ class MainIndex(api.web.HTMLRequest):
 			dj=self.user.is_dj()
 		)
 
-@handle_url("/(?P<station>[a-z]+)/dj")
+@handle_url("/(?P<station>{})/dj".format(STATION_REGEX))
 class DJIndex(MainIndex):
 	dj_required = True
 
-@handle_url("/(?P<station>[a-z]+)/beta")
+@handle_url("/(?P<station>{})/beta".format(STATION_REGEX))
 class BetaRedirect(tornado.web.RequestHandler):
 	help_hidden = True
 
 	def prepare(self):
 		self.redirect("/beta/", permanent=True)
 
-@handle_url("/(?P<station>[a-z]+)/beta/")
+@handle_url("/(?P<station>{})/beta/".format(STATION_REGEX))
 class BetaIndex(MainIndex):
 	beta = True
 	page_template = "r5_index.html"
 	js_dir = "js5"
 
 	def prepare(self):
+		if self.request.protocol == 'https':
+			self.set_header("Content-Security-Policy", config.csp_header)
+			self.set_header("Referrer-Policy", "origin")
+			self.set_header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+
 		if not config.get("public_beta"):
 			self.perks_required = True
 		super(BetaIndex, self).prepare()
 
-@handle_url("/(?P<station>[a-z]+)/beta/dj")
+@handle_url("/(?P<station>{})/beta/dj".format(STATION_REGEX))
 class DJBetaIndex(MainIndex):
 	dj_required = True
 
