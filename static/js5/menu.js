@@ -68,9 +68,6 @@ var Menu = function() {
 		}
 
 		if (template.calendar_dropdown) {
-			template.calendar_menu_item.addEventListener("click", calendar_toggle);
-			template.menu_wrapper.addEventListener("mouseleave", calendar_hide);
-
 			var calendar_toggle = function(e) {
 				if (!has_calendar) {
 					var tz_param;
@@ -94,6 +91,9 @@ var Menu = function() {
 			var calendar_hide = function(e) {
 				template.calendar_dropdown.classList.remove("show_calendar");
 			};
+
+			template.calendar_menu_item.addEventListener("click", calendar_toggle);
+			template.menu_wrapper.addEventListener("mouseleave", calendar_hide);
 		}
 
 		if (!MOBILE) {
