@@ -37,7 +37,7 @@ try:
 		if not next_song_filename or len(next_song_filename) == 0:
 			raise Exception("Got zero-length filename from backend!")
 		if os.name == "nt":
-			next_song_filename = os.path.relpath(next_song_filename).replace("\\", "/")
+			next_song_filename = next_song_filename.replace("\\", "/")
 		print next_song_filename
 	else:
 		raise Exception("HTTP Error %s trying to reach backend!" % result.status)
