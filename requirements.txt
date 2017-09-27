@@ -1,5 +1,3 @@
-httpie
-jsmin
 mutagen
 Pillow
 psutil
@@ -11,6 +9,6 @@ slimit
 supervisor
 tornado>=4.2
 Unidecode
-watchdog
+pyinotify
 fontforge
 pyzmq>=15.2.0

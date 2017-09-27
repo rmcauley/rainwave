@@ -5,8 +5,7 @@ from time import time as timestamp
 import mimetypes
 import sys
 import psutil
-import watchdog.events
-import watchdog.observers
+import pyinotify
 import traceback
 from PIL import Image
 
@@ -18,7 +17,7 @@ from libs import db
 from rainwave import playlist
 from rainwave.playlist_objects.song import PassableScanError
 
-from libs.filetools import check_file_is_in_directory, which
+from libs.filetools import which
 
 mp3gain_path = which("mp3gain")
 # Art can be scanned before the music itself is scanned, in which case the art will
@@ -75,8 +74,6 @@ def full_music_scan(full_reset):
 		raise
 
 def full_art_update():
-	global _art_only
-	_art_only = True
 	_common_init()
 	_scan_all_directories(art_only=True)
 	_process_album_art_queue(on_screen=True)
@@ -138,7 +135,7 @@ def _scan_directory(directory, sids):
 	try:
 		os.stat(directory)
 		do_scan = True
-	except IOError:
+	except (IOError, OSError):
 		log.debug("scan", "Directory %s no longer exists." % directory)
 
 	if do_scan:
@@ -291,8 +288,8 @@ def _process_album_art(filename, sids):
 			im_320.save("%s%sa_%s_320.jpg" % (config.get("album_art_file_path"), os.sep, album_id))
 		log.debug("album_art", "Scanned %s for album ID %s." % (filename, album_ids))
 		return True
-	except IOError:
-		_add_scan_error(filename, PassableScanError("Could not open album art. (deleted file? bad image?)"))
+	except (IOError, OSError):
+		_add_scan_error(filename, PassableScanError("Could not open album art. (this will happen when a directory has been deleted)"))
 		return False
 	except Exception as e:
 		_add_scan_error(filename, e)
@@ -333,77 +330,54 @@ def _add_scan_error(filename, xception, full_exc=None):
 	cache.set("backend_scan_errors", scan_errors)
 	log.exception("scan", "Error scanning %s" % filename, xception)
 
-class FileEventHandler(watchdog.events.FileSystemEventHandler):
-	def __init__(self, root_directory, sids):
-		self.root_directory = root_directory
-		self.sids = sids
+DELETE_OPERATION = (pyinotify.IN_DELETE, pyinotify.IN_MOVED_FROM)
 
-	def _handle_file(self, filename):
+class NewDirectoryException(Exception):
+	pass
+
+class FileEventHandler(pyinotify.ProcessEvent):
+	def process_IN_CREATE(self, event):
+		if event.dir:
+			raise NewDirectoryException
+
+	def process_IN_CLOSE_WRITE(self, event):
+		if event.dir:
+			log.debug("scan", "Ignoring close write event for directory %s" % event.pathname)
+			return
+		self._process(event)
+
+	def process_IN_DELETE(self, event):
+		if event.dir:
+			log.debug("scan", "Ignoring delete event for directory %s" % event.pathname)
+			return
+		self._process(event)
+
+	def process_IN_MOVED_TO(self, event):
+		self._process(event)
+
+		if event.dir:
+			raise NewDirectoryException
+
+	def process_IN_MOVED_FROM(self, event):
+		self._process(event)
+
+	def _process(self, event):
+		matched_sids = []
+		for song_dirs_path, sids in config.get('song_dirs').iteritems():
+			if event.pathname.startswith(song_dirs_path):
+				matched_sids.extend(sids)
+
+		log.debug("scan", "%s %s %s" % (event.maskname, event.pathname, matched_sids))
+
 		try:
-			_scan_file(filename, self.sids)
+			if event.dir:
+				_scan_directory(event.pathname, matched_sids)
+			elif len(matched_sids) == 0 or event.mask in DELETE_OPERATION:
+				_disable_file(event.pathname)
+			else:
+				_scan_file(event.pathname, matched_sids)
 		except Exception as xception:
-			_add_scan_error(filename, xception)
-
-	def _handle_directory(self, directory):
-		try:
-			_scan_directory(directory, self.sids)
-		except Exception as xception:
-			_add_scan_error(directory, xception)
-
-	def _handle_event(self, event):
-		try:
-			if hasattr(event, "src_path") and event.src_path and check_file_is_in_directory(event.src_path, self.root_directory):
-				if _is_bad_extension(event.src_path):
-					pass
-				elif not os.path.isdir(event.src_path):
-					log.debug("scan_event", "%s src_path for file %s" % (event.event_type, event.src_path))
-					if _is_image(event.src_path) and (event.event_type == 'deleted' or event.event_type == 'moved'):
-						pass
-					else:
-						self._handle_file(event.src_path)
-				else:
-					log.debug("scan_event", "%s src_path for dir %s" % (event.event_type, event.src_path))
-					self._handle_directory(event.src_path)
-
-			if hasattr(event, "dest_path") and event.dest_path and check_file_is_in_directory(event.dest_path, self.root_directory):
-				if _is_bad_extension(event.dest_path):
-					pass
-				elif not os.path.isdir(event.dest_path):
-					log.debug("scan_event", "%s dest_path for file %s" % (event.event_type, event.dest_path))
-					if _is_image(event.dest_path) and (event.event_type == 'deleted'):
-						pass
-					else:
-						self._handle_file(event.dest_path)
-				else:
-					log.debug("scan_event", "%s dest_path for dir %s" % (event.event_type, event.dest_path))
-					self._handle_directory(event.dest_path)
-		except Exception as xception:
-			_add_scan_error(self.root_directory, xception)
-			log.critical("scan_event", "Exception occurred - reconnecting to the database just in case.")
-			db.close()
-			db.connect()
-
-	def on_moved(self, event):
-		self._handle_event(event)
-
-	def on_created(self, event):
-		self._handle_event(event)
-
-	def on_deleted(self, event):
-		self._handle_event(event)
-
-	def on_modified(self, event):
-		self._handle_event(event)
-
-class RWObserver(watchdog.observers.Observer):
-	def start(self, *args, **kwargs):
-		super(RWObserver, self).start(*args, **kwargs)
-		db.connect()
-		cache.connect()
-
-	def stop(self, *args, **kwargs):
-		super(RWObserver, self).stop(*args, **kwargs)
-		db.close()
+			_add_scan_error(event.pathname, xception)
 
 def monitor():
 	_common_init()
@@ -413,19 +387,30 @@ def monitor():
 	pid_file.write(str(pid))
 	pid_file.close()
 
-	observers = []
-	for directory, sids in config.get("song_dirs").iteritems():
-		observer = RWObserver()
-		observer.schedule(FileEventHandler(directory, sids), directory, recursive=True)
-		observer.start()
-		log.info("scan", "Observing %s with sids %s" % (directory, repr(sids)))
-		observers.append(observer)
+	mask = (
+		pyinotify.IN_CREATE |
+		pyinotify.IN_CLOSE_WRITE |
+		pyinotify.IN_DELETE |
+		pyinotify.IN_MOVED_TO |
+		pyinotify.IN_MOVED_FROM |
+		pyinotify.IN_EXCL_UNLINK
+	)
 
 	try:
-		while True:
-			time.sleep(1)
+		go = True
+		while go:
+			try:
+				log.info("scan", "File monitor started.")
+				wm = pyinotify.WatchManager()
+				wm.add_watch(config.get("monitor_dir"), mask, rec=True)
+				pyinotify.Notifier(wm, FileEventHandler()).loop()
+				go = False
+			except NewDirectoryException:
+				log.debug("scan", "New directory added, restarting watch.")
+			finally:
+				try:
+					wm.close()
+				except:
+					pass
 	finally:
-		for observer in observers:
-			observer.stop()
-		for observer in observers:
-			observer.join()
+		log.info("scan", "File monitor shutdown.")

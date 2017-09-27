@@ -31,6 +31,9 @@ if __name__ == "__main__":
 		libs.chuser.change_user(libs.config.get("scanner_user"), libs.config.get("scanner_group"))
 
 	try:
+		libs.db.connect()
+		libs.cache.connect()
+
 		if args.art:
 			backend.filemonitor.full_art_update()
 		elif args.full:
