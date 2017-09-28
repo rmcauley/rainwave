@@ -322,13 +322,16 @@ def _add_scan_error(filename, xception, full_exc=None):
 	if not isinstance(xception, PassableScanError) and not isinstance(xception, IOError) and not isinstance(xception, OSError):
 		if full_exc:
 			eo['traceback'] = traceback.format_exception(*full_exc)			#pylint: disable=W0142
+			log.exception("scan", "Error scanning %s" % filename, full_exc)
 		else:
 			eo['traceback'] = traceback.format_exception(*sys.exc_info())
+			log.exception("scan", "Error scanning %s" % filename, sys.exc_info())
+	else:
+		log.warn("scan", "Warning scanning %s: %s" % (filename, xception.message))
 	scan_errors.insert(0, eo)
 	if len(scan_errors) > 100:
 		scan_errors = scan_errors[0:100]
 	cache.set("backend_scan_errors", scan_errors)
-	log.exception("scan", "Error scanning %s" % filename, xception)
 
 DELETE_OPERATION = (pyinotify.IN_DELETE, pyinotify.IN_MOVED_FROM)
 
@@ -347,9 +350,15 @@ class FileEventHandler(pyinotify.ProcessEvent):
 		self._process(event)
 
 	def process_IN_DELETE(self, event):
+		# Deletes are performed on files first, rendering a directory scan pointless.
 		if event.dir:
 			log.debug("scan", "Ignoring delete event for directory %s" % event.pathname)
 			return
+
+		if not _is_mp3(event.pathname):
+			log.debug("scan", "Ignoring delete event for non-MP3 %s" % event.pathname)
+			return
+
 		self._process(event)
 
 	def process_IN_MOVED_TO(self, event):
@@ -359,6 +368,10 @@ class FileEventHandler(pyinotify.ProcessEvent):
 			raise NewDirectoryException
 
 	def process_IN_MOVED_FROM(self, event):
+		if not event.dir and not _is_mp3(event.pathname):
+			log.debug("scan", "Ignoring moved-from event for non-MP3 %s" % event.pathname)
+			return
+
 		self._process(event)
 
 	def _process(self, event):
