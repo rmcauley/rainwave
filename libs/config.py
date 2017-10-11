@@ -102,7 +102,7 @@ def load(filename = None, testmode = False):
 				})
 				relay_hostname = relay['protocol'] + relay['hostname']
 				if not relay_hostname in relay_hostnames:
-					relay_hostnames.append(relay_hostnames)
+					relay_hostnames.append(relay_hostname)
 				relay_hostname_port = '{}{}:{}'.format(relay['protocol'], relay['hostname'], relay['port'])
 				if not relay_hostname_port in relay_hostnames:
 					relay_hostnames.append(relay_hostname_port)
