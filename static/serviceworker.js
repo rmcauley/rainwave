@@ -35,6 +35,7 @@ self.addEventListener('fetch', function(evt) {
 					'<link rel="icon" sizes="16x16 32x32 48x48 256x256" href="/static/favicon.ico" />' +
 					'<meta name="theme-color" content="#1978B7" />' +
 					'<meta name="msapplication-navbutton-color" content="#1978B7" />' +
+					'<meta name="apple-mobile-web-app-capable" content="yes" />' +
 					'<meta name="apple-mobile-web-app-status-bar-style" content="#1978B7" />' +
 					'<link rel="manifest" href="/manifest.json" />'
 			);
