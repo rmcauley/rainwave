@@ -93,19 +93,10 @@ def _scan_all_directories(art_only=False):
 		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
 			for filename in files:
 				filename = os.path.normpath(root + os.sep + filename)
-				try:
-					if art_only and not _is_image(filename):
-						pass
-					else:
-						_scan_file(filename, sids, raise_exceptions=True)
-				except Exception as e:
-					type_, value_, traceback_ = sys.exc_info()	#pylint: disable=W0612
-					if not isinstance(e, PassableScanError):
-						print "\n%s:\n\t %s: %s" % (filename.decode("utf-8", errors="ignore").encode("ascii", errors="ignore"), type_, value_)
-					else:
-						print "\n%s:\n\t %s" % (filename.decode("utf-8", errors="ignore").encode("ascii", errors="ignore"), value_)
-						sys.stdout.flush()
-
+				if art_only and not _is_image(filename):
+					pass
+				else:
+					_scan_file(filename, sids)
 				file_counter += 1
 				_print_to_screen_inline('%s %s / %s' % (directory, file_counter, total_files))
 				sys.stdout.flush()
@@ -138,7 +129,7 @@ def _scan_directory(directory, sids):
 	except (IOError, OSError):
 		log.debug("scan", "Directory %s no longer exists." % directory)
 
-	if do_scan:
+	if do_scan and len(sids) > 0:
 		for root, subdirs, files in os.walk(directory, followlinks = True):	#pylint: disable=W0612
 			for filename in files:
 				filename = os.path.normpath(root + os.sep + filename)
@@ -150,7 +141,7 @@ def _scan_directory(directory, sids):
 		log.debug("scan", "Disabling song: %s" % s.filename)
 		s.disable()
 
-def _scan_file(filename, sids, raise_exceptions=False):
+def _scan_file(filename, sids):
 	global _album_art_queue
 	global immediate_art
 
@@ -159,9 +150,6 @@ def _scan_file(filename, sids, raise_exceptions=False):
 		_check_codepage_1252(filename)
 	except Exception as e:
 		_add_scan_error(filename, e, sys.exc_info())
-		if raise_exceptions:
-			raise
-		return False
 	if _is_mp3(filename):
 		new_mtime = None
 		try:
@@ -194,8 +182,6 @@ def _scan_file(filename, sids, raise_exceptions=False):
 		except Exception as e:
 			_add_scan_error(filename, e, sys.exc_info())
 			_disable_file(filename)
-			if raise_exceptions:
-				raise
 	elif _is_image(filename):
 		if not immediate_art:
 			#log.debug("scan", "Queueing art scan: %s" % filename)
@@ -389,8 +375,11 @@ class FileEventHandler(pyinotify.ProcessEvent):
 				_disable_file(event.pathname)
 			else:
 				_scan_file(event.pathname, matched_sids)
+
+			_process_album_art_queue()
 		except Exception as xception:
 			_add_scan_error(event.pathname, xception)
+
 
 def monitor():
 	_common_init()
