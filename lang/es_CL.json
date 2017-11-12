@@ -28,6 +28,7 @@
    "db_error_retry"                                  : "Error interno de la base de datos - Intente nuevamente.",
    "db_error_permanent"                              : "Error del servidor - la base de datos interna no está en línea.",
    "websocket_throttle"                              : "¡Ve más despacio!",
+   "404"                                             : "Página no encontrada.",
 
    "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
 
@@ -59,10 +60,12 @@
    "station_paused"                                  : "La estación ha sido pausada por el DJ.",
    "album_on_other_station"                          : "Lo sentimos, este álbum no está disponible en esta estación.",
    "album_is_dj_only"                                : "Lo sentimos, este álbum es exclusivo de este evento.",
+   "song_on_other_station"                           : "La canción no está disponible en %(station).",
    "locked_to_station"                               : "Acabas de votar en %(locked_station), debes esperar %(lock_counter) &(lock_counter:canción/canciones) más para votar en %(this_station).",
       "__comment__"                                          : "The above line happens on station change: 'You were just voting on Game, you have to wait 2 more songs to vote on All'.",
    "search_string_too_short"                         : "La búsqueda debe tener como mínimo 3 letras.",
    "search_result_limit"                             : "(demasiados resultados. debes ser más específico.)",
+   "auth_failed_message"                             : "¡Nuestro sistema de autorización ha fallado! Hemos tenido este error en las últimas semanas con usuarios anónimos, y actualmente estamos reescribiendo el sistema de autenticación. Por favor, actualiza la página, o mejor, REGÍSTRATE Y ACCEDE usando el enlace del foro que se encuentra a continuación para solucionar el problema",
 
    "__comment__"                 : "Error pop-up when Rainwave goes crashes.",
 
@@ -86,6 +89,8 @@
    "qr_code"                                         : "Código QR",
    "create_api_key"                                  : "Crear Clave de API",
    "your_numeric_user_id"                            : "Tu identificador numérico de usuario",
+   "app_would_like_to"                               : "A Esta App Le Gustaría:",
+   "allow_api_auth"                                  : "Suena Bien",
 
    "__comment__"                 : "Menu",
 
@@ -129,7 +134,7 @@
    "vote_now"                                        : "Vota Ahora",
    "now_playing"                                     : "Tocando Ahora",
    "election"                                        : "Votación",
-   "power_hour"                                      : "Hora de Poder",
+   "power_hour"                                      : "Especial de Una Hora",
 
    "__comment__"                 : "When a Power Hour or DJ Event happens, instead of saying 'NEW MUSIC POWER HOUR' repeatedly",
    "__comment__"                 : "we just use 'CONTINUED' instead, so the title of the power hour is only displayed once",
@@ -149,7 +154,7 @@
       "__comment__"                                    : "The above 'Vote' is a verb, not a noun.",
    "voted"                                           : "Votado",
 
-   "event_naming__oneup"                             : "%(name) - Hora de Poder",
+   "event_naming__oneup"                             : "Una Hora de: %(name)",
 
    "__comment__"                 : "Tip Jar",
 
@@ -226,6 +231,7 @@
    "request_percentile_top"                          : "Popularidad de Pedidos: %(percentile_top)% superior.",
    "request_percentile_bottom"                       : "Popularidad de Pedidos: %(percentile)% inferior.",
    "song_has_no_ratings"                             : "La canción tiene muy pocas evaluaciones para reportar.",
+   "Rate"                                            : "Evaluar",
    "Request"                                         : "Pedido",
    "Albums"                                          : "Álbumes",
    "Songs"                                           : "Canciones",
@@ -241,7 +247,7 @@
    "nobody_in_line"                                  : "Nadie en la Fila.",
    "relevant_categories"                             : "Categorías relacionadas: ",
    "relevant_category"                               : "Categoría: ",
-   "relevant_categories_rollover"                    : "Categorías relacionadas: Vuelva a la lista.",
+   "relevant_categories_rollover"                    : "Categorías relacionadas: Mostrar lista.",
    "album_all_cooldown"                              : "Este álbum está en reposo.",
    "album_has_cooldown"                              : "Algunas canciones están en reposo.",
    "new_album"                                       : "¡Álbum nuevo!",
@@ -250,6 +256,8 @@
    "newish_songs"                                    : "Actualizado recientemente.",
    "search..."                                       : "Buscar...",
    "no_songs_on_this_station"                        : "No hay canciones para este álbum en %(station).",
+   "fave_all_songs"                                  : "Marcar todas las canciones como favoritas",
+   "unfave_all_songs"                                : "Quitar todas las canciones de favoritos",
 
    "__comment__"                 : "Requests",
 
@@ -326,6 +334,8 @@
    "prefs_p_null1"                                   : "Mostrar Sin Evaluar Primero",
    "prefs_p_fav1"                                    : "Priorizar Favoritos Sobre Disponibles",
    "prefs_p_sort"                                    : "Método para Ordenar Álbumes",
+   "prefs_p_allcats"                                 : "Mostrar Categorías de Álbum Único",
+   "prefs_p_songsort"                                : "Ordenar Canciones Igual Que Álbumes",
    "prefs_sort_playlist_by_alpha"                    : "Alfabético",
    "prefs_sort_playlist_by_rating_user"              : "Valoración",
    "rating_preferences"                              : "Evaluaciones",
