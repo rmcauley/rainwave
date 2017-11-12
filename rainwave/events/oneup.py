@@ -2,6 +2,7 @@ import random
 from time import time as timestamp
 
 from libs import db
+from libs import config
 from rainwave import playlist
 from rainwave.events import event
 
@@ -165,7 +166,7 @@ class OneUp(event.BaseEvent):
 
 	def start_event(self):
 		super(OneUp, self).start_event()
-		# db.c.update("UPDATE r4_one_ups SET one_up_used = TRUE WHERE one_up_id = %s", (self.id,))
+		self.songs[0].start_election_block(self.sid, config.get_station(self.sid, "num_planned_elections") + 1)
 
 	def finish(self):
 		super(OneUp, self).finish()
