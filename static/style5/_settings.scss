@@ -56,6 +56,11 @@ div.yes_no_wrapper {
 	}
 }
 
+div.r_incmplt.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
 span.yes_no_yes, span.yes_no_no {
 	position: relative;
 	z-index: 2;

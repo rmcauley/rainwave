@@ -5,5 +5,5 @@
         <span class="yes_no_dot"></span>
         <span class="yes_no_no" bind="no">{{ $l("no") }}</span>
     </div>
-    <label>{{ name }}</label>
+    <label bind="name">{{ name }}</label>
 </div>

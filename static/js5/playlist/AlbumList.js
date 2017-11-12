@@ -31,6 +31,10 @@
 		if (nv == "rt") self.sort_function = self.sort_by_rating_user;
 		else self.sort_function = self.sort_by_alpha;
 
+		if (sort_unrated_first) {
+			Prefs.change("r_incmplt", true);
+		}
+
 		var redraw_album = false;
 		if (!no_redraw && self.loaded && !loading) {
 			self.update([]);
@@ -39,7 +43,6 @@
 		}
 
 		if (redraw_album || (!no_redraw && songsort_same_as_album !== Prefs.get("p_songsort"))) {
-			console.log("blargh!");
 			songsort_same_as_album = Prefs.get("p_songsort");
 			Router.reset_everything();
 			self.set_new_open(null);
@@ -227,6 +230,9 @@
 		if (sort_unrated_first) {
 			if (!self.data[a].rating_user && self.data[b].rating_user) return -1;
 			if (self.data[a].rating_user && !self.data[b].rating_user) return 1;
+
+			if (!self.data[a].rating_complete && self.data[b].rating_complete) return -1;
+			if (self.data[a].rating_complete && !self.data[b].rating_complete) return 1;
 		}
 
 		if (self.loaded) {
@@ -259,6 +265,9 @@
 		if (sort_unrated_first) {
 			if (!self.data[a].rating_user && self.data[b].rating_user) return -1;
 			if (self.data[a].rating_user && !self.data[b].rating_user) return 1;
+
+			if (!self.data[a].rating_complete && self.data[b].rating_complete) return -1;
+			if (self.data[a].rating_complete && !self.data[b].rating_complete) return 1;
 		}
 
 		if (self.data[a].rating_user < self.data[b].rating_user) return 1;

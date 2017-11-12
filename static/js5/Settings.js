@@ -19,6 +19,25 @@ var SettingsWindow = function() {
 		}
 	};
 
+	var incomplete_check = function(incomplete, nullfirst) {
+		if (incomplete) {
+			p.r_incmplt.$t.wrap.classList.remove("no");
+			p.r_incmplt.$t.wrap.classList.add("yes");
+		}
+		else {
+			p.r_incmplt.$t.wrap.classList.remove("yes");
+			p.r_incmplt.$t.wrap.classList.add("no");
+		}
+		if (nullfirst) {
+			p.r_incmplt.$t.wrap.classList.add("disabled");
+		} else {
+			p.r_incmplt.$t.wrap.classList.remove("disabled");
+		}
+
+	};
+	p.r_incmplt.$t.wrap.classList.add("r_incmplt");
+	incomplete_check(Prefs.get("r_incmplt"), Prefs.get("p_null1"));
+
 	var bool_setup = function(key, obj) {
 		var check = function() {
 			if (Prefs.get(key)) {
@@ -47,10 +66,14 @@ var SettingsWindow = function() {
 		};
 		obj.$t.item_root.addEventListener("click", function(e) {
 			e.stopPropagation();
-			Prefs.change(key, !Prefs.get(key));
+			var val = !Prefs.get(key);
+			Prefs.change(key, val);
 			check();
 			if (key == "t_tl") {
 				t_tl_check();
+			}
+			if (key == "p_null1") {
+				incomplete_check(Prefs.get("r_incmplt"), val);
 			}
 		});
 		obj.$t.yes.addEventListener("click", function(e) {
@@ -60,6 +83,9 @@ var SettingsWindow = function() {
 			if (key == "t_tl") {
 				t_tl_check();
 			}
+			if (key == "p_null1") {
+				incomplete_check(Prefs.get("r_incmplt"), true);
+			}
 		});
 		obj.$t.no.addEventListener("click", function(e) {
 			e.stopPropagation();
@@ -67,6 +93,9 @@ var SettingsWindow = function() {
 			check();
 			if (key == "t_tl") {
 				t_tl_check();
+			}
+			if (key == "p_null1") {
+				incomplete_check(Prefs.get("r_incmplt"), false);
 			}
 		});
 		if (Prefs.get(key)) {

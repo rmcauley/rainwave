@@ -90,6 +90,12 @@ var Prefs = function() {
 			return false;
 		}
 		if (value === self.get(name)) return;
+
+		// special case for a dependent var
+		if (name == "r_incmplt" && self.get("p_null1") && !value) {
+			return;
+		}
+
 		var old_value = values[name];
 		values[name] = value;
 		if (!skip_callbacks) {
