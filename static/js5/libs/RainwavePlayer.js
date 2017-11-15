@@ -87,6 +87,11 @@ var RainwavePlayer = function() {
 			canVorbis = audioEl.canPlayType("audio/ogg; codecs=\"vorbis\"");
 		}
 
+		// https://bugzilla.mozilla.org/show_bug.cgi?id=1417300
+		if (window.navigator.userAgent.indexOf('Firefox/57') !== -1) {
+			canVorbis = false;
+		}
+
 		if ((canVorbis == "maybe") || (canVorbis == "probably")) {
 			self.mimetype = "audio/ogg";
 			self.type = "ogg";
