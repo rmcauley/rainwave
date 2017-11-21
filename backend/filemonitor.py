@@ -324,6 +324,9 @@ DELETE_OPERATION = (pyinotify.IN_DELETE, pyinotify.IN_MOVED_FROM)
 class NewDirectoryException(Exception):
 	pass
 
+class DeletedDirectoryException(Exception):
+	pass
+
 class FileEventHandler(pyinotify.ProcessEvent):
 	def process_IN_ATTRIB(self, event):
 		# ATTRIB events are:
@@ -348,8 +351,7 @@ class FileEventHandler(pyinotify.ProcessEvent):
 
 		# Deletes are performed on files first, rendering a directory scan pointless.
 		if event.dir:
-			log.debug("scan", "Ignoring delete event for directory %s" % event.pathname)
-			return
+			raise DeletedDirectoryException
 
 		if not _is_mp3(event.pathname):
 			log.debug("scan", "Ignoring delete event for non-MP3 %s" % event.pathname)
@@ -369,6 +371,9 @@ class FileEventHandler(pyinotify.ProcessEvent):
 			return
 
 		self._process(event)
+
+	def process_IN_MOVED_SELF(self, event):
+		raise DeletedDirectoryException
 
 	def _process(self, event):
 		# Ignore WinSCP events.
@@ -410,6 +415,7 @@ def monitor():
 		pyinotify.IN_DELETE |
 		pyinotify.IN_MOVED_TO |
 		pyinotify.IN_MOVED_FROM |
+		pyinotify.IN_MOVE_SELF |
 		pyinotify.IN_EXCL_UNLINK
 	)
 
@@ -424,6 +430,8 @@ def monitor():
 				go = False
 			except NewDirectoryException:
 				log.debug("scan", "New directory added, restarting watch.")
+			except DeletedDirectoryException:
+				log.debug("scan", "Directory was deleted, restarting watch.")
 			finally:
 				try:
 					wm.close()
