@@ -332,6 +332,13 @@ class FileEventHandler(pyinotify.ProcessEvent):
 		# ATTRIB events are:
 		# - Some file renames (see: WinSCP)
 		# - Directories when they've been touched
+
+		# ATTRIB on directories causes full station rescans when directories are copied to the root
+		# of a station.  As such, we have to ignore these.
+		if event.dir:
+			log.debug("scan", "Ignoring attrib event for directory %s" % event.pathname)
+			return
+
 		self._process(event)
 
 	def process_IN_CREATE(self, event):
