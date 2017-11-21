@@ -29,6 +29,10 @@ _mp3gain_path = filetools.which("mp3gain")
 num_songs = {}
 num_origin_songs = {}
 
+def set_umask():
+    os.setpgrp()
+    os.umask(002)
+
 def zip_metadata(tag_metadata, kept_metadata):
 	new_metadata = copy.copy(tag_metadata)
 	for kept in kept_metadata:
@@ -266,7 +270,12 @@ class Song(object):
 			# Run mp3gain quietly, finding peak while not clipping, output DB friendly, and preserving original timestamp
 			# gain_std is unused, we'll grab the output from mp3gain from the tags themselves
 			#pylint: disable=W0612
-			gain_std, gain_error = subprocess.Popen([_mp3gain_path, "-o", "-q", "-s", "i", "-p", "-k", "-T", self.filename ], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+			gain_std, gain_error = subprocess.Popen(
+				[_mp3gain_path, "-o", "-q", "-s", "i", "-p", "-k", "-T", self.filename ],
+				stdout=subprocess.PIPE,
+				stderr=subprocess.PIPE,
+				preexec_fn=set_umask
+			).communicate()
 			#pylint: enable=W0612
 			if len(gain_error) > 0:
 				raise Exception("Error when replay gaining \"%s\": %s" % (filename, gain_error))
