@@ -325,6 +325,12 @@ class NewDirectoryException(Exception):
 	pass
 
 class FileEventHandler(pyinotify.ProcessEvent):
+	def process_IN_ATTRIB(self, event):
+		# ATTRIB events are:
+		# - Some file renames (see: WinSCP)
+		# - Directories when they've been touched
+		self._process(event)
+
 	def process_IN_CREATE(self, event):
 		if event.dir:
 			raise NewDirectoryException
@@ -336,6 +342,10 @@ class FileEventHandler(pyinotify.ProcessEvent):
 		self._process(event)
 
 	def process_IN_DELETE(self, event):
+		# Ignore WinSCP events.
+		if event.pathname.endswith('.filepart'):
+			return
+
 		# Deletes are performed on files first, rendering a directory scan pointless.
 		if event.dir:
 			log.debug("scan", "Ignoring delete event for directory %s" % event.pathname)
@@ -361,6 +371,10 @@ class FileEventHandler(pyinotify.ProcessEvent):
 		self._process(event)
 
 	def _process(self, event):
+		# Ignore WinSCP events.
+		if event.pathname.endswith('.filepart'):
+			return
+
 		matched_sids = []
 		for song_dirs_path, sids in config.get('song_dirs').iteritems():
 			if event.pathname.startswith(song_dirs_path):
@@ -390,6 +404,7 @@ def monitor():
 	pid_file.close()
 
 	mask = (
+		pyinotify.IN_ATTRIB |
 		pyinotify.IN_CREATE |
 		pyinotify.IN_CLOSE_WRITE |
 		pyinotify.IN_DELETE |
