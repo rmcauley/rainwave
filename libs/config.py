@@ -113,7 +113,7 @@ def load(filename = None, testmode = False):
 
 	global csp_header
 	csp_header = ";".join([
-		"default-src 'self' *.{} https://www.google.com".format(get("hostname")),
+		"default-src 'self' *.{} https://calendar.google.com".format(get("hostname")),
 		"object-src 'none'",
 		"media-src {}".format(' '.join(relay_hostnames)),
 		"font-src 'self' data: https://fonts.googleapis.com https://fonts.gstatic.com/",
