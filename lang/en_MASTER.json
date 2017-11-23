@@ -90,8 +90,8 @@
    "qr_code"                                         : "QR Code",
    "create_api_key"                                  : "Create API Key",
    "your_numeric_user_id"                            : "Your numeric user ID",
-   "app_would_like_to"                               : "This App Would Like To:",
-   "allow_api_auth"                                  : "Sounds Good",
+   "app_would_like_to"                               : "This app would like to:",
+   "allow_api_auth"                                  : "Accept",
 
    "__comment__"                 : "Menu",
 

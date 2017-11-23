@@ -16,12 +16,34 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="#1978B7" />
 
 	<style>
+		html {
+			background-color: #000;
+			background-image: url('/static/images4/auth_background.jpg');
+			background-size: cover;
+			background-repeat: no-repeat;
+			background-attachment: scroll;
+			background-position: top center;
+		}
+
 		html, body {
-			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+			font-family: "Roboto Condensed", Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+			font-size: 24px;
 			margin: 0;
 			padding: 0;
-			background: #000;
 			color: #FFF;
+		}
+
+		#width-restrict {
+			margin: 20px auto;
+			max-width: 320px;
+		}
+
+		#logo {
+			height: 54px;
+			width: auto;
+			vertical-align: middle;
+			transform: translateY(-5px);
+			margin-right: 4px;
 		}
 
 		header {
@@ -33,9 +55,6 @@
 			margin-top: 5px;
 			padding: 5px 0;
 			text-align: center;
-			background: #192D67;
-			border-top: solid 1px #777;
-			border-bottom: solid 1px #777;
 		}
 
 		h1 img {
@@ -43,19 +62,20 @@
 			vertical-align: middle;
 		}
 
-		h3 {
-			text-align: center;
+		#app_would_like_to {
+			font-size: smaller;
+			font-weight: bold;
 		}
 
 		ul {
-
-			margin: 25px 0;
+			margin: 20px 0;
 			padding: 0;
 			list-style: none;
 		}
 
 		li {
-			padding: 5px 5px 5px 10px;
+			padding: 5px 5px 5px 0px;
+			font-weight: lighter;
 		}
 
 		li::before {
@@ -63,12 +83,8 @@
 			margin-right: 10px;
 		}
 
-		li:nth-child(even) {
-			background: #2A2A2A;
-		}
-
-		li:nth-child(odd) {
-			background: #202020;
+		#padding {
+			padding: 0px 16px;
 		}
 
 		footer {
@@ -80,11 +96,13 @@
 		button {
 			background: #1f95e5;
 			color: #FFF;
-			font-weight: bold;
-			font-size: larger;
 			border: none;
-			padding: 10px;
+			padding: 15px 30px;
 			cursor: pointer;
+			width: 100%;
+			text-align: left;
+			font-family: inherit;
+			font-size: inherit;
 		}
 
 		button:active {
@@ -92,27 +110,44 @@
 			color: #EEE;
 			background: #1055d5;
 		}
+
+		#arrow {
+			float: right;
+			transform: translateY(-2px);
+		}
+
+		#accept {
+			text-transform: uppercase;
+			font-style: italic;
+		}
 	</style>
 </head>
 
 <body>
-	<h1>
-		<img src="/static/images4/android/128.png" />
-		Rainwave
-	</h1>
+	<div id="width-restrict">
+		<h1>
+			<img id="logo" src="/static/images4/logo_droplet.png" />
+			<i>Rainwave</i>
+		</h1>
 
-	<h3>{{ locale.translate("app_would_like_to") }}</h3>
+		<div id="padding">
+			<div id="app_would_like_to">{{ locale.translate("app_would_like_to") }}</div>
 
-	<ul>
-		<li>{{ locale.translate("vote") }}</li>
-		<li>{{ locale.translate("Rate") }}</li>
-		<li>{{ locale.translate("Request") }}</li>
-	</ul>
+			<ul>
+				<li>{{ locale.translate("vote") }}</li>
+				<li>{{ locale.translate("Rate") }}</li>
+				<li>{{ locale.translate("Request") }}</li>
+			</ul>
+		</div>
 
-	<footer>
-		<a href="{{ link_url }}">
-			<button>{{ locale.translate("allow_api_auth") }}</button>
-		</a>
-	</footer>
+		<footer>
+			<a href="{{ link_url }}">
+				<button>
+					<span id="arrow">→</span>
+					<span id="accept">{{ locale.translate("allow_api_auth") }}</span>
+				</button>
+			</a>
+		</footer>
+	</div>
 </body>
 </html>
