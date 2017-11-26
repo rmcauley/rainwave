@@ -45,7 +45,7 @@ if __name__ == "__main__":
 				break
 		p.load_all_songs()
 
-		start_eu = datetime.now(timezone('Europe/London')).replace(hour=13, minute=0, second=0, microsecond=0) + timedelta(days=1)
+		start_eu = datetime.now(timezone('Europe/London')).replace(hour=10, minute=0, second=0, microsecond=0) + timedelta(days=1)
 		start_epoch_eu = long((start_eu - datetime.fromtimestamp(0, timezone('US/Eastern'))).total_seconds())
 		p_eu = oneup.OneUpProducer.create(
 			sid=TARGET_SID,
