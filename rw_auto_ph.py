@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
 	songs_today = db.c.fetch_list("SELECT r4_songs.song_id FROM r4_song_sid JOIN r4_songs ON (r4_song_sid.song_id = r4_songs.song_id) WHERE song_added_on > %s AND song_verified = TRUE AND sid = %s ORDER BY random()", (long(time.time() - 86400), TARGET_SID))
 	if len(songs_today) > 0:
-		start = datetime.now(timezone('US/Eastern')).replace(hour=13, minute=0, second=0, microsecond=0)
+		start = datetime.now(timezone('US/Eastern')).replace(hour=14, minute=0, second=0, microsecond=0)
 		start_epoch = long((start - datetime.fromtimestamp(0, timezone('US/Eastern'))).total_seconds())
 		p = oneup.OneUpProducer.create(
 			sid=TARGET_SID,
