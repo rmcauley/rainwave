@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 import os
 import os.path
 import time
@@ -387,10 +391,13 @@ class FileEventHandler(pyinotify.ProcessEvent):
 		if event.pathname.endswith('.filepart'):
 			return
 
-		matched_sids = []
-		for song_dirs_path, sids in config.get('song_dirs').iteritems():
-			if event.pathname.startswith(song_dirs_path):
-				matched_sids.extend(sids)
+		try:
+			matched_sids = []
+			for song_dirs_path, sids in config.get('song_dirs').iteritems():
+				if event.pathname.startswith(song_dirs_path):
+					matched_sids.extend(sids)
+		except Exception as xception:
+			_add_scan_error(event.pathname, xception)
 
 		log.debug("scan", "%s %s %s" % (event.maskname, event.pathname, matched_sids))
 
