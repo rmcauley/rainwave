@@ -28,6 +28,7 @@
    "db_error_retry"                                  : "Interne database fout - probeer het opnieuw.",
    "db_error_permanent"                              : "Server-fout - interne database is offline.",
    "websocket_throttle"                              : "Rustig aan!",
+   "404"                                             : "Pagina niet gevonden",
 
    "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
 
@@ -90,7 +91,7 @@
    "create_api_key"                                  : "Creëer API Sleutel",
    "your_numeric_user_id"                            : "Uw numerieke ID",
    "app_would_like_to"                               : "Deze App Wilt Graag:",
-   "allow_api_auth"                                  : "Klinkt Goed",
+   "allow_api_auth"                                  : "Accepteer",
 
    "__comment__"                 : "Menu",
 
@@ -101,7 +102,7 @@
    "station_name_4"                                  : "Chiptune",
    "station_name_5"                                  : "Alles",
 
-   "events_calendar_link"                            : "Evenement",
+   "events_calendar_link"                            : "Evenementen",
    "forums"                                          : "Forums",
    "login"                                           : "Inloggen",
    "signup"                                          : "Registreer",
