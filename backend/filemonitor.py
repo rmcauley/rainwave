@@ -345,7 +345,7 @@ class FileEventHandler(pyinotify.ProcessEvent):
 
 	def process_IN_CREATE(self, event):
 		if event.dir:
-			raise NewDirectoryException
+			self._process(event)
 
 	def process_IN_CLOSE_WRITE(self, event):
 		if event.dir:
@@ -437,7 +437,7 @@ def monitor():
 			try:
 				log.info("scan", "File monitor started.")
 				wm = pyinotify.WatchManager()
-				wm.add_watch(str(config.get("monitor_dir")), mask, rec=True)
+				wm.add_watch(str(config.get("monitor_dir")), mask, rec=True, auto_add=True)
 				pyinotify.Notifier(wm, FileEventHandler()).loop()
 				go = False
 			except NewDirectoryException:

@@ -37,10 +37,11 @@ if __name__ == "__main__":
 
 			directory_to = root.replace("{}{}".format(upcoming, os.sep), "")
 			mkdir_p(directory_to)
-			time.sleep(3)
+			print directory_to
+			time.sleep(10)
 
 			for f in files:
 				f_from = os.path.join(root, f)
 				f_to = os.path.join(directory_to, f)
-				print "Moving:\n  {}\n  {}".format(f_from, f_to)
+				print "    {}".format(f_to)
 				shutil.move(f_from, f_to)
