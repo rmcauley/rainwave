@@ -151,7 +151,7 @@ def update_album_ratings(target_sid, song_id, user_id):
 			"FROM r4_songs "
 				"JOIN r4_song_sid USING (song_id) "
 				"JOIN r4_song_ratings USING (song_id) "
-			"WHERE album_id = %s AND sid = %s AND song_exists = TRUE AND user_id = %s AND song_rating_user IS NOT NULL",
+			"WHERE album_id = %s AND sid = %s AND song_exists = TRUE AND user_id = %s",
 			(album_id, sid, user_id))
 		rating_complete = False
 		if user_data['rating_user_count'] >= num_songs:
