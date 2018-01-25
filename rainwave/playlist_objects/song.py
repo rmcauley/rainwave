@@ -497,7 +497,7 @@ class Song(object):
 	# 			album.update_rating()
 
 	def update_rating(self, skip_album_update=False):
-		ratings = db.c.fetch_all("SELECT song_rating_user AS rating, COUNT(user_id) AS count FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE song_id = %s AND radio_inactive = FALSE GROUP BY song_rating_user", (self.id,))
+		ratings = db.c.fetch_all("SELECT song_rating_user AS rating, COUNT(user_id) AS count FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE song_id = %s AND radio_inactive = FALSE AND song_rating_user IS NOT NULL GROUP BY song_rating_user", (self.id,))
 		(points, potential_points) = rating.rating_calculator(ratings)
 
 		log.debug("song_rating", "%s ratings for %s" % (potential_points, self.filename))

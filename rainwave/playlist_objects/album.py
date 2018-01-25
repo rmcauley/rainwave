@@ -267,7 +267,7 @@ class Album(AssociatedMetadata):
 				"SELECT r4_song_ratings.song_rating_user AS rating, COUNT(r4_song_ratings.user_id) AS count "
 				"FROM r4_songs "
 					"JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE) "
-					"JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id) "
+					"JOIN r4_song_ratings ON (r4_song_sid.song_id = r4_song_ratings.song_id AND r4_song_ratings.song_rating_user IS NOT NULL) "
 					"JOIN phpbb_users ON (r4_song_ratings.user_id = phpbb_users.user_id AND phpbb_users.radio_inactive = FALSE) "
 				"WHERE r4_songs.album_id = %s "
 				"GROUP BY rating ",
