@@ -28,7 +28,7 @@ def rating_calculator(ratings):
 def get_song_rating(song_id, user_id):
 	rating = cache.get_song_rating(song_id, user_id)
 	if not rating:
-		rating = db.c.fetch_row("SELECT song_rating_user AS rating_user, song_fave AS fave FROM r4_song_ratings WHERE user_id = %s AND song_id = %s AND song_rating_user IS NOT NULL", (user_id, song_id))
+		rating = db.c.fetch_row("SELECT song_rating_user AS rating_user, song_fave AS fave FROM r4_song_ratings WHERE user_id = %s AND song_id = %s", (user_id, song_id))
 		if not rating:
 			rating = { "rating_user": 0, "fave": None }
 	cache.set_song_rating(song_id, user_id, rating)
