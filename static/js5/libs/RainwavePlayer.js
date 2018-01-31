@@ -40,6 +40,7 @@ var RainwavePlayer = function() {
 
 	var self = {};
 	self.debug = false;
+	self.debugExtra = false;
 	self.isSupported = false;
 	self.type = null;
 	self.audioElDest = false;
@@ -331,6 +332,9 @@ var RainwavePlayer = function() {
 	// to workaround browser issues that report stalls for VERY brief
 	// moments (often 50-70ms).
 	// don't let these escape the library unless there's an actual problem.
+	
+	// the stall used to be 1000 but had to be raised to 2000 due to issues in Firefox 58
+	var STALL_DELAY = 2000;
 
 	var stall_timeout;
 	var stall_active;
@@ -351,9 +355,10 @@ var RainwavePlayer = function() {
 			return;
 		}
 		else {
+			if (self.debugExtra) console.log("RainwavePlayer: Stall event caught - waiting for " + STALL_DELAY + "ms before dispatching.");
 			stall_timeout = setTimeout(function() {
 				dispatchStall(detail);
-			}, 1000);
+			}, STALL_DELAY);
 		}
 	};
 
