@@ -122,10 +122,11 @@ var RainwavePlayer = function() {
 		audioEl.addEventListener("abort", onAbort);
 		audioEl.addEventListener("ended", onEnded);
 		// audioEl.addEventListener("stop", onStop);		// there is no stop event for <audio>
-		audioEl.addEventListener("playing", onPlay);		// do not use "playing"
+		audioEl.addEventListener("playing", onPlay);
 		audioEl.addEventListener("stalled", onStall);
 		audioEl.addEventListener("suspend", onSuspend);
 		audioEl.addEventListener("waiting", onWaiting);
+		audioEl.addEventListener("timeupdate", onTimeUpdate);
 		if (self.debug) {
 			audioEl.addEventListener("canplay", function() {
 				if (self.debug) console.log("RainwavePlayer: <audio> canplay            :: " + audioEl.currentSrc);
@@ -332,8 +333,8 @@ var RainwavePlayer = function() {
 	// to workaround browser issues that report stalls for VERY brief
 	// moments (often 50-70ms).
 	// don't let these escape the library unless there's an actual problem.
-	
-	// the stall used to be 1000 but had to be raised to 2000 due to issues in Firefox 58
+
+	// the stall used to be 1000 but had to be raised to 2000 due to issues with onSuspend events over-firing in Firefox 58
 	var STALL_DELAY = 2000;
 
 	var stall_timeout;
@@ -372,15 +373,10 @@ var RainwavePlayer = function() {
 		self.dispatchEvent(evt);
 		stall_timeout = null;
 		stall_active = true;
-		// Firefox doesn't always send a playing event after a stall recovery
-		// timeupdate will catch this problem
-		audioEl.addEventListener("timeupdate", onTimeUpdate);
 	};
 
 	var onTimeUpdate = function() {
-		if (self.debug) console.log("RainwavePlayer: <audio> timeupdate         :: " + audioEl.currentSrc);
-		audioEl.removeEventListener("timeupdate", onTimeUpdate);
-		onPlay();
+		stopAudioConnectError();
 	};
 
 	var onPlay = function() {
