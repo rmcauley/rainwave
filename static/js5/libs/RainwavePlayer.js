@@ -40,7 +40,6 @@ var RainwavePlayer = function() {
 
 	var self = {};
 	self.debug = false;
-	self.debugExtra = false;
 	self.isSupported = false;
 	self.type = null;
 	self.audioElDest = false;
@@ -356,7 +355,6 @@ var RainwavePlayer = function() {
 			return;
 		}
 		else {
-			if (self.debugExtra) console.log("RainwavePlayer: Stall event caught - waiting for " + STALL_DELAY + "ms before dispatching.");
 			stall_timeout = setTimeout(function() {
 				dispatchStall(detail);
 			}, STALL_DELAY);
