@@ -46,6 +46,7 @@ if __name__ == "__main__":
 	shutil.copy("rw_icecast_count.py", installdir + "/rw_icecast_count.py")
 	shutil.copy("rw_auto_pvp.py", installdir + "/rw_auto_pvp.py")
 	shutil.copy("rw_auto_copy.py", installdir + "/rw_auto_copy.py")
+	shutil.copy("rw_auto_ph.py", installdir + "/rw_auto_ph.py")
 	shutil.copy("tagset.py", installdir + "/tagset.py")
 
 	shutil.copy("initscript", "/etc/init.d/rainwave")
