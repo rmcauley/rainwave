@@ -287,15 +287,23 @@ class Album(AssociatedMetadata):
 
 	def get_all_ratings(self, sid):
 		table = db.c.fetch_all(
-			"SELECT album_rating_user, user_id, album_rating_complete, album_fave "
+			"SELECT album_rating_user, user_id, album_rating_complete "
 			"FROM r4_album_ratings JOIN phpbb_users USING (user_id) "
-			"LEFT JOIN r4_album_faves USING (album_id, user_id) "
 			"WHERE radio_inactive = FALSE AND album_id = %s AND sid = %s",
 			(self.id, sid)
 		)
 		all_ratings = {}
 		for row in table:
-			all_ratings[row['user_id']] = { "rating_user": row['album_rating_user'], "fave": row['album_fave'], "rating_complete": row['album_rating_complete'] }
+			all_ratings[row['user_id']] = { "rating_user": row['album_rating_user'], "fave": None, "rating_complete": row['album_rating_complete'] }
+
+		table = db.c.fetch_all(
+			"SELECT user_id "
+			"FROM r4_album_faves JOIN phpbb_users USING (user_id) "
+			"WHERE radio_inactive = FALSE AND album_id = %s AND album_fave IS TRUE",
+			(self.id,)
+		)
+		for row in table:
+			all_ratings.setdefault(row['user_id'], {"rating_user": 0, "rating_complete": False})['fave'] = True
 		return all_ratings
 
 	def update_all_user_ratings(self):
