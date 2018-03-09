@@ -38,14 +38,14 @@ def get_album_rating(sid, album_id, user_id):
 	rating = cache.get_album_rating(sid, album_id, user_id)
 	if not rating:
 		rating = db.c.fetch_row(
-			"SELECT album_rating_user AS rating_user, album_fave AS fave, album_rating_complete AS rating_complete "
+			"SELECT album_rating_user AS rating_user, album_rating_complete AS rating_complete "
 			"FROM r4_album_ratings "
-			"LEFT JOIN r4_album_faves USING (user_id, album_id) "
-			"WHERE user_id = %s AND album_id = %s AND sid = %s AND album_rating_user IS NOT NULL ",
+			"WHERE user_id = %s AND album_id = %s AND sid = %s",
 			(user_id, album_id, sid)
 		)
 		if not rating:
-			rating = { "rating_user": 0, "fave": None, "rating_complete": False }
+			rating = {"rating_user": 0, "rating_complete": False}
+		rating['fave'] = db.c.fetch_var("SELECT album_fave FROM r4_album_faves WHERE user_id = %s AND album_id = %s", (user_id, album_id)) or False
 	cache.set_album_rating(sid, album_id, user_id, rating)
 	return rating
 
