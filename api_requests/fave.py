@@ -54,13 +54,13 @@ class SubmitAlbumFave(SubmitSongFave):
 
 @handle_api_url('fave_all_songs')
 class SubmitFaveAllSongs(SubmitAlbumFave):
-	sid_required = False
+	sid_required = True
 	_fave_type = "song_batched"
 	perks_required = True
-	description = "Faves or un-faves all songs in an album."
+	description = "Faves or un-faves all songs in an album.  Only songs on station ID provided will be faved."
 
 	def post(self):
-		song_ids = db.c.fetch_list("SELECT song_id FROM r4_songs WHERE album_id = %s", (self.get_argument("album_id"),))
+		song_ids = db.c.fetch_list("SELECT r4_song_sid.song_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND sid = %s", (self.get_argument("album_id"), self.sid))
 		for song_id in song_ids:
 			self._batched_id = song_id
 			super(SubmitFaveAllSongs, self).post()
