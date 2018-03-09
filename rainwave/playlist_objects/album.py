@@ -287,23 +287,22 @@ class Album(AssociatedMetadata):
 
 	def get_all_ratings(self, sid):
 		table = db.c.fetch_all(
-			"SELECT album_rating_user, user_id, album_rating_complete "
-			"FROM r4_album_ratings JOIN phpbb_users USING (user_id) "
-			"WHERE radio_inactive = FALSE AND album_id = %s AND sid = %s",
-			(self.id, sid)
+			"SELECT "
+				"phpbb_users.user_id AS user_id, "
+				"album_rating_user, "
+				"album_rating_complete, "
+				"album_fave "
+			"FROM "
+				"phpbb_users "
+				"LEFT JOIN r4_album_ratings ON (r4_album_ratings.user_id = phpbb_users.user_id AND r4_album_ratings.album_id = %s AND sid = %s) "
+				"LEFT JOIN r4_album_faves ON (r4_album_faves.user_id = phpbb_users.user_id AND r4_album_faves.album_id = %s) "
+			"WHERE phpbb_users.radio_inactive = FALSE",
+			(self.id, sid, self.id)
 		)
 		all_ratings = {}
 		for row in table:
 			all_ratings[row['user_id']] = { "rating_user": row['album_rating_user'], "fave": None, "rating_complete": row['album_rating_complete'] }
 
-		table = db.c.fetch_all(
-			"SELECT user_id "
-			"FROM r4_album_faves JOIN phpbb_users USING (user_id) "
-			"WHERE radio_inactive = FALSE AND album_id = %s AND album_fave IS TRUE",
-			(self.id,)
-		)
-		for row in table:
-			all_ratings.setdefault(row['user_id'], {"rating_user": 0, "rating_complete": False})['fave'] = True
 		return all_ratings
 
 	def update_all_user_ratings(self):
