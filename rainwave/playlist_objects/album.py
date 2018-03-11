@@ -301,7 +301,11 @@ class Album(AssociatedMetadata):
 		)
 		all_ratings = {}
 		for row in table:
-			all_ratings[row['user_id']] = { "rating_user": row['album_rating_user'], "fave": None, "rating_complete": row['album_rating_complete'] }
+			all_ratings[row['user_id']] = {
+				"rating_user": row['album_rating_user'] or 0,
+				"fave": row['album_fave'] or False,
+				"rating_complete": row['album_rating_complete'] or False,
+			}
 
 		return all_ratings
 
