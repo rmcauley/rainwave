@@ -289,7 +289,7 @@ def get_unrated_songs_on_cooldown_for_requesting(user_id, sid, limit):
 	unrated = []
 	for album_row in db.c.fetch_all(
 			_get_requested_albums_sql() +
-			("SELECT r4_songs.album_id, MIN(song_cool_end) "
+			("SELECT r4_songs.album_id, MIN(song_cool_end), BOOL_OR(song_elec_blocked = TRUE) AS is_blocked "
 				"FROM r4_song_sid "
 					"JOIN r4_songs USING (song_id) "
 					"LEFT OUTER JOIN r4_song_ratings ON "
@@ -298,11 +298,11 @@ def get_unrated_songs_on_cooldown_for_requesting(user_id, sid, limit):
 						"(requested_albums.album_id = r4_songs.album_id) "
 				"WHERE r4_song_sid.sid = %s "
 					"AND song_exists = TRUE "
-					"AND song_cool = TRUE "
+					"AND (song_elec_blocked = TRUE OR song_cool = TRUE) "
 					"AND r4_song_ratings.song_id IS NULL "
 					"AND requested_albums.album_id IS NULL "
 			"GROUP BY r4_songs.album_id "
-			"ORDER BY MIN(song_cool_end) "
+			"ORDER BY is_blocked DESC, MIN(song_cool_end) "
 			"LIMIT %s"), (user_id, user_id, sid, limit)):
 		song_id = db.c.fetch_var(
 			"SELECT r4_song_sid.song_id "
@@ -311,9 +311,9 @@ def get_unrated_songs_on_cooldown_for_requesting(user_id, sid, limit):
 				"WHERE r4_songs.album_id = %s "
 					"AND r4_song_sid.sid = %s "
 					"AND song_exists = TRUE "
-					"AND song_cool = TRUE "
+					"AND (song_elec_blocked = TRUE OR song_cool = TRUE) "
 					"AND r4_song_ratings.song_id IS NULL "
-				"ORDER BY song_cool_end "
+				"ORDER BY song_cool, song_cool_end "
 				"LIMIT 1", (user_id, album_row['album_id'], sid))
 		if song_id:
 			unrated.append(song_id)
