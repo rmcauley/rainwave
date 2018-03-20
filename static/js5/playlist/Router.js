@@ -123,8 +123,6 @@ var Router = function() {
 			}
 		});
 
-		var reload_in = [ "album", "artist", "group" ];
-
 		API.add_callback("_SYNC_SCHEDULE_COMPLETE", function() {
 			if (request_in_flight) {
 				reset_cache_on_next_request = true;
@@ -133,7 +131,7 @@ var Router = function() {
 				rendered_type = null;
 				rendered_id = null;
 				reset_cache();
-				if (current_open_type && (reload_in.indexOf(current_open_type) !== -1) && current_id && document.body.classList.contains("detail")) {
+				if (current_open_type && current_id && document.body.classList.contains("detail")) {
 					open_view(current_open_type, current_id);
 				}
 			}
