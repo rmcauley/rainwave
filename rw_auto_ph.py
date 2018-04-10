@@ -42,9 +42,6 @@ if __name__ == "__main__":
 	)
 
 	if len(songs_today) > 0:
-		start = datetime.now(timezone('US/Eastern')).replace(hour=14, minute=0, second=0, microsecond=0)
-		start_epoch = long((start - datetime.fromtimestamp(0, timezone('US/Eastern'))).total_seconds())
-
 		total_seconds = 0
 		for song_row in songs_today:
 			total_seconds = total_seconds + song_row['song_length']
@@ -60,8 +57,11 @@ if __name__ == "__main__":
 		log.debug("auto_ph", "Number of PH:    : %s" % number_of_ph)
 		log.debug("auto_ph", "Length of each PH: %s" % (length_of_each_ph / 60))
 
-		delta_days = 1
+		delta_days = 0
 		for ph_num in range(number_of_ph):
+			start = datetime.now(timezone('US/Eastern')).replace(hour=14, minute=0, second=0, microsecond=0) + timedelta(days=delta_days)
+			start_epoch = long((start - datetime.fromtimestamp(0, timezone('US/Eastern'))).total_seconds())
+
 			name = start.strftime("%b %d New Music")
 			if number_of_ph > 1:
 				name += ' (Part %s)' % delta_days
@@ -84,7 +84,7 @@ if __name__ == "__main__":
 			p.shuffle_songs()
 			p.load_all_songs()
 
-			start_eu = datetime.now(timezone('Europe/London')).replace(hour=10, minute=0, second=0, microsecond=0) + timedelta(days=delta_days)
+			start_eu = datetime.now(timezone('Europe/London')).replace(hour=10, minute=0, second=0, microsecond=0) + timedelta(days=delta_days + 1)
 			start_epoch_eu = long((start_eu - datetime.fromtimestamp(0, timezone('US/Eastern'))).total_seconds())
 			p_eu = oneup.OneUpProducer.create(
 				sid=TARGET_SID,
