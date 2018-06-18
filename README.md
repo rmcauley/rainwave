@@ -269,3 +269,4 @@ developer, Rob, on the Rainwave forums and/or chat channel:
 
 * http://rainwave.cc/forums/
 * irc://irc.synirc.net://rainwave
+* https://discord.gg/7fuzz4u
