@@ -280,6 +280,9 @@ class User(object):
 	def clear_all_requests(self):
 		return db.c.update("DELETE FROM r4_request_store WHERE user_id = %s", (self.id,))
 
+	def clear_all_requests_on_cooldown(self):
+		return db.c.update("DELETE FROM r4_request_store JOIN r4_song_sid ON r4_song_sid.song_id = r4_request_store.song_id AND r4_song_sid.sid = r4_request_store.sid WHERE user_id = %s AND song_cool_end > %s", (self.id, timestamp() + (20 * 60),))
+
 	def pause_requests(self):
 		self.remove_from_request_line()
 		if db.c.update("UPDATE phpbb_users SET radio_requests_paused = TRUE WHERE user_id = %s", (self.id,)) != 0:
