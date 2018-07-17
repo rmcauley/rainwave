@@ -7,9 +7,16 @@ from time import time as timestamp
 import mimetypes
 import sys
 import psutil
-import pyinotify
 import traceback
 from PIL import Image
+
+if os.name != 'nt':
+	import pyinotify
+	from pyinotify import ProcessEvent, IN_DELETE, IN_MOVED_FROM
+else:
+	ProcessEvent = object
+	IN_DELETE = 1
+	IN_MOVED_FROM = 2
 
 from libs import config
 from libs import log
@@ -321,7 +328,7 @@ def _add_scan_error(filename, xception, full_exc=None):
 		scan_errors = scan_errors[0:100]
 	cache.set("backend_scan_errors", scan_errors)
 
-DELETE_OPERATION = (pyinotify.IN_DELETE, pyinotify.IN_MOVED_FROM)
+DELETE_OPERATION = (IN_DELETE, IN_MOVED_FROM)
 
 class NewDirectoryException(Exception):
 	pass
@@ -329,7 +336,7 @@ class NewDirectoryException(Exception):
 class DeletedDirectoryException(Exception):
 	pass
 
-class FileEventHandler(pyinotify.ProcessEvent):
+class FileEventHandler(ProcessEvent):
 	def process_IN_ATTRIB(self, event):
 		# ATTRIB events are:
 		# - Some file renames (see: WinSCP)
