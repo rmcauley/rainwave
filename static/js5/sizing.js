@@ -166,7 +166,7 @@ var Sizing = function() {
 		}
 
 		if (size_changed) {
-			Timeline._reflow(null, true);
+			Timeline.reflow(true);
 		}
 
 		for (i = 0; i < window_callbacks.length; i++) {

@@ -26,7 +26,7 @@ var Timeline = function() {
 			else {
 				document.body.classList.remove("displose");
 			}
-			self._reflow(null, true);
+			self.reflow(true);
 		});
 
 		API.add_callback("sched_current", function(json) { sched_current = json; });
@@ -98,9 +98,6 @@ var Timeline = function() {
 			}
 			sched_history[i].change_to_history();
 			sched_history[i].hide_header();
-			if (sched_history[i].el.parentNode != el) {
-				sched_history[i].el.style[Fx.transform] = "translateY(" + (-((i * 5 + 1) * Sizing.song_size) - 1) + "px)";
-			}
 			z_index--;
 			new_events.push(sched_history[i]);
 			if (i === 0) sched_history[i].height += 8;
@@ -111,7 +108,6 @@ var Timeline = function() {
 		sched_current.change_to_now_playing();
 		// sched_current.show_header();
 		if (sched_current.el.parentNode != el) {
-			sched_current.el.style[Fx.transform] = "translateY(" + ((scroller.scroll_height || Sizing.height) + (unappended_events * 2 * Sizing.song_size)) + "px)";
 			unappended_events++;
 		}
 		z_index--;
@@ -131,7 +127,6 @@ var Timeline = function() {
 			}
 			sched_next[i].change_to_coming_up(is_continuing);
 			if (sched_next[i].el.parentNode != el) {
-				sched_next[i].el.style[Fx.transform] = "translateY(" + ((scroller.scroll_height || Sizing.height) + (unappended_events * 2 * Sizing.song_size)) + "px)";
 				unappended_events++;
 			}
 			z_index--;
@@ -255,7 +250,7 @@ var Timeline = function() {
 		}
 	};
 
-	self._reflow = function(raftime, reflow_everything) {
+	self.reflow = function(reflow_everything) {
 		if (!events.length) return;
 
 		var i;
@@ -318,10 +313,6 @@ var Timeline = function() {
 		}
 
 		scroller.set_height(running_y);
-	};
-
-	self.reflow = function() {
-		requestNextAnimationFrame(self._reflow, 20);
 	};
 
 	self.handle_already_voted = function(json) {
