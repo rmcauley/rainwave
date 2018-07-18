@@ -57,14 +57,16 @@ if __name__ == "__main__":
 		log.debug("auto_ph", "Number of PH:    : %s" % number_of_ph)
 		log.debug("auto_ph", "Length of each PH: %s" % (length_of_each_ph / 60))
 
+		original_start = start = datetime.now(timezone('US/Eastern')).replace(hour=14, minute=0, second=0, microsecond=0)
+
 		delta_days = 0
 		for ph_num in range(number_of_ph):
 			start = datetime.now(timezone('US/Eastern')).replace(hour=14, minute=0, second=0, microsecond=0) + timedelta(days=delta_days)
 			start_epoch = long((start - datetime.fromtimestamp(0, timezone('US/Eastern'))).total_seconds())
 
-			name = start.strftime("%b %d New Music")
+			name = original_start.strftime("%b %d New Music")
 			if number_of_ph > 1:
-				name += ' (Part %s)' % delta_days
+				name += ' (Part %s)' % (delta_days + 1)
 
 			p = oneup.OneUpProducer.create(
 				sid=TARGET_SID,
@@ -90,7 +92,7 @@ if __name__ == "__main__":
 				sid=TARGET_SID,
 				start=start_epoch_eu,
 				end=start_epoch_eu + 1,
-				name=start.strftime("%b %d New Music Reprisal")
+				name=original_start.strftime("%b %d New Music Reprisal")
 			)
 			for song in p.songs:
 				p_eu.add_song_id(song.id, TARGET_SID)
