@@ -27,7 +27,7 @@ var AlbumArt = function() {
 					clearTimeout(evt_el._art_timeout);
 					evt_el._art_timeout = null;
 				}
-				song_el.parentNode.style.zIndex = 10;
+				evt_el.style.zIndex = 10;
 			}
 		}
 
