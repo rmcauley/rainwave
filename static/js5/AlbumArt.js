@@ -21,7 +21,7 @@ var AlbumArt = function() {
 				song_el.style.opacity = 1;
 			}
 
-			var evt_el = song_el.parentNode && song_el.parentNode.parentNode;;
+			var evt_el = song_el.parentNode && song_el.parentNode.parentNode;
 			if (evt_el && evt_el.classList.contains("timeline_event")) {
 				if (evt_el._art_timeout) {
 					clearTimeout(evt_el._art_timeout);
