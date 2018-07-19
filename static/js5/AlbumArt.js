@@ -21,7 +21,7 @@ var AlbumArt = function() {
 				song_el.style.opacity = 1;
 			}
 
-			var evt_el = song_el.parentNode;
+			var evt_el = song_el.parentNode && song_el.parentNode.parentNode;;
 			if (evt_el && evt_el.classList.contains("timeline_event")) {
 				if (evt_el._art_timeout) {
 					clearTimeout(evt_el._art_timeout);
@@ -83,7 +83,7 @@ var AlbumArt = function() {
 			song_el._art_timeout = setTimeout(function() {
 				song_el.style.zIndex = song_el._zIndex;
 			}, 350);
-			var evt_el = song_el.parentNode;
+			var evt_el = song_el.parentNode && song_el.parentNode.parentNode;
 			if (evt_el && evt_el.classList.contains("timeline_event")) {
 				song_el.style.zIndex = 5;
 				evt_el._art_timeout = setTimeout(function() {
