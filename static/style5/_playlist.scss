@@ -225,6 +225,7 @@ div.list {
 	}
 
 	div.item {
+		box-sizing: border-box;
 		background-repeat: no-repeat;
 		padding: 2px 65px 2px 10px;
 		border-bottom: solid 1px transparent;
@@ -234,7 +235,7 @@ div.list {
 		word-break: break-all;
 		white-space: nowrap;
 		text-overflow: ellipsis;
-		min-height: 20px;
+		min-height: 21px;
 
 		&.album_fave_highlight {
 			color: $fave;

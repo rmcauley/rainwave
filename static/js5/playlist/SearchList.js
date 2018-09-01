@@ -273,7 +273,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	self.recalculate = function() {
-		var full_height = (self.list_item_height || Sizing.list_item_height) * visible.length;
+		var full_height = ((self.list_item_height || Sizing.list_item_height) * visible.length) + 7;
+		if (window.navigator.userAgent.indexOf('Firefox') !== -1) {
+			// bizarro Firefox scroll height behaviour that I couldn't solve :(
+			full_height += (self.list_item_height || Sizing.list_item_height) * 1.5;
+		}
 		if (full_height != current_height) {
 			stretcher.style.height = full_height + "px";
 			scroll.set_height(full_height);
