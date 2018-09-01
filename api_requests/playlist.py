@@ -186,7 +186,7 @@ class Top100Songs(APIHandler):
 						"JOIN r4_songs USING (song_id) "
 						"JOIN r4_albums USING (album_id) "
 					"WHERE r4_song_sid.sid = %s AND song_rating_count > 20 AND song_verified = TRUE "
-					"ORDER BY song_rating DESC, song_id LIMIT 100", (self.sid,))
+					"ORDER BY song_rating DESC, song_rating_count DESC, song_id LIMIT 100", (self.sid,))
 				)
 		else:
 			self.append(self.return_name, db.c.fetch_all(
