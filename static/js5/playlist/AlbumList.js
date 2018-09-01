@@ -235,15 +235,7 @@
 			if (self.data[a].rating_complete && !self.data[b].rating_complete) return 1;
 		}
 
-		if (self.loaded) {
-			if (self.data[a].name_searchable < self.data[b].name_searchable) return -1;
-			else if (self.data[a].name_searchable > self.data[b].name_searchable) return 1;
-		}
-		else {
-			if (self.data[a].name < self.data[b].name) return -1;
-			else if (self.data[a].name > self.data[b].name) return 1;
-		}
-		return 0;
+		return self.data[a].name.localeCompare(self.data[b].name_searchable);
 	};
 
 	self.sort_by_rating_user = function(a, b) {
@@ -273,15 +265,7 @@
 		if (self.data[a].rating_user < self.data[b].rating_user) return 1;
 		if (self.data[a].rating_user > self.data[b].rating_user) return -1;
 
-		if (self.loaded) {
-			if (self.data[a].name_searchable < self.data[b].name_searchable) return -1;
-			else if (self.data[a].name_searchable > self.data[b].name_searchable) return 1;
-		}
-		else {
-			if (self.data[a].name < self.data[b].name) return -1;
-			else if (self.data[a].name > self.data[b].name) return 1;
-		}
-		return 0;
+		return self.data[a].name.localeCompare(self.data[b].name_searchable);
 	};
 
 	prefs_update(null, null, true);
