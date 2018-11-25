@@ -11,5 +11,5 @@ unidecode
 # pyinotify
 # fontforge
 pyzmq==15.2.0
-requests==2.8.1
+requests>=2.20.0
 ply==3.4
