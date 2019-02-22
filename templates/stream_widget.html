@@ -167,7 +167,7 @@
 			html += "</div></div>";
 
 			div.innerHTML = html;
-			
+
 			if (options.show_requesters) {
 				if (json.songs[0].elec_request_username) {
 					document.getElementById("header").textContent = "Requested by " + json.songs[0].elec_request_username;
@@ -182,9 +182,12 @@
 				div.classList.remove(options.anim_in);
 			});
 
-			// setTimeout(function() {
-			// 	div.classList.add(options.anim_out);
-			// }, 2000);
+			if (options.show_duration_when_changed) {
+				console.log(options.show_duration_when_changed);
+				setTimeout(function() {
+					div.classList.add(options.anim_out);
+				}, options.show_duration_when_changed);
+			}
 
 			document.getElementById("threed").appendChild(div);
 		};

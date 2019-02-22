@@ -92,7 +92,7 @@
 	To update the form HTML, run this but add extra dashes.  It should be double dashes but HTML
 	comments don't allow those and we don't want to trigger quirks mode.
 
-	python libs/RWTemplates.py -templatedir templates/stream_js -outfile static/stream_templates.js -helpers
+	python libs/RWTemplates.py --templatedir templates/stream_js --outfile static/stream_templates.js --helpers
 -->
 <script src="/static/stream_templates.js"></script>
 <script src="/static/RWTemplates.js"></script>
@@ -130,6 +130,7 @@
 			"text_align": "left",
 			"anim_in": "to_left",
 			"anim_out": "to_left",
+			"show_duration_when_changed": "",
 
 			"art_size": "100px",
 			"font_size": "",

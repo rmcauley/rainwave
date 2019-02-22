@@ -14,6 +14,7 @@ function DoDefaults(options) {
 	options.color = options.color || "white";
 	options.delay = parseInt(options.delay) || 0;
 	options.show_requesters = true;
+	options.show_duration_when_changed = options.show_duration_when_changed || null;
 
 	return options;
 };
