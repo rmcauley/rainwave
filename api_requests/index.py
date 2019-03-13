@@ -43,7 +43,7 @@ class MainIndex(api.web.HTMLRequest):
 		if self.request.protocol == 'https':
 			self.set_header("Content-Security-Policy", config.csp_header)
 			self.set_header("Referrer-Policy", "origin")
-			self.set_header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+			self.set_header("Strict-Transport-Security", "max-age=63072000; preload")
 
 	def prepare(self):
 		if self.path_kwargs.get('station'):
