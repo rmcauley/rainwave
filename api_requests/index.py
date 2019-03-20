@@ -55,15 +55,15 @@ class MainIndex(api.web.HTMLRequest):
 		super(MainIndex, self).prepare()
 
 		if self.path_kwargs.get('station') is None:
-			self.redirect("{}{}/".format(config.get("base_site_url"), config.station_mount_filenames[self.sid]), permanent=True)
+			self.redirect("{}{}/".format(config.get("base_site_url"), config.station_mount_filenames[self.sid]))
 			return
 
 		if config.get("enforce_ssl") and self.request.protocol != "https":
-			self.redirect("{}{}/".format(config.get("base_site_url"), config.station_mount_filenames[self.sid]), permanent=True)
+			self.redirect("{}{}/".format(config.get("base_site_url"), config.station_mount_filenames[self.sid]))
 			return
 
 		if not config.get("developer_mode") and self.request.host != config.get("hostname"):
-			self.redirect("{}{}/".format(config.get("base_site_url"), config.station_mount_filenames[self.sid]), permanent=True)
+			self.redirect("{}{}/".format(config.get("base_site_url"), config.station_mount_filenames[self.sid]))
 			return
 
 		if not cache.get_station(self.sid, "sched_current"):
