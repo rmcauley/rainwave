@@ -14,9 +14,9 @@
 
 	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js"></script>
 	{% if dj %}
-		<script src="/api4/bootstrap_dj"></script>
+		<script src="/api4/bootstrap_dj?sid={{ request.sid }}"></script>
 	{% else %}
-		<script src="/api4/bootstrap"></script>
+		<script src="/api4/bootstrap?sid={{ request.sid }}"></script>
 	{% end %}
 
 	{% if jsfiles %}
