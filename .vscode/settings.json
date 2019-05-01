@@ -1,0 +1,12 @@
+{
+	"files.exclude": {
+		"**/*.pyc": true,
+		"static/baked/**": true
+	},
+	"editor.formatOnSave": true,
+	"prettier.endOfLine": "lf",
+	"prettier.printWidth": 120,
+	"prettier.tabWidth": 4,
+	"prettier.useTabs": true,
+	"python.formatting.provider": "black"
+}
