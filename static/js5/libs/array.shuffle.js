@@ -1,6 +1,8 @@
 function shuffle(array) {
 	"use strict";
-	var m = array.length, t, i;
+	var m = array.length,
+		t,
+		i;
 
 	// While there remain elements to shuffle…
 	while (m) {

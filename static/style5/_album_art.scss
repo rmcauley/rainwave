@@ -48,7 +48,8 @@ div.art_container {
 			}
 		}
 
-		&.art_expanded, &.art_expanded:hover {
+		&.art_expanded,
+		&.art_expanded:hover {
 			width: $art_full_size !important;
 			height: $art_full_size !important;
 			box-shadow: 3px 3px 5px $drop_shadow;

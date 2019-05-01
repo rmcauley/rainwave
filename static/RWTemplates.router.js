@@ -6,8 +6,8 @@
 
 	var self = {};
 	window.Router = self;
-	self.current_route = [ null, null ];
-	self.previous_route = [ null, null ];
+	self.current_route = [null, null];
+	self.previous_route = [null, null];
 	self.routes = {};
 	var oldURL, lastopen; // , disappearTimer;
 	var first = true;
@@ -28,9 +28,9 @@
 		var changed = false;
 		var old = self.current_route;
 		self.current_route = self.getCurrentRoute();
-		if ((oldURL != location.href) && (old.join() != self.current_route.join())) {
+		if (oldURL != location.href && old.join() != self.current_route.join()) {
 			self.previous_route = old;
-			if (typeof(ga) == "object") ga("send", "pageview", "/" + self.current_route.join("/"));
+			if (typeof ga == "object") ga("send", "pageview", "/" + self.current_route.join("/"));
 			var args = self.current_route;
 			if (args.length) {
 				self.open_route.apply(this, args);
@@ -78,25 +78,23 @@
 	};
 
 	self.open_route = function(typ, id) {
-		if ((typ == "session") && id) {
+		if (typ == "session" && id) {
 			lastopen = id;
 		}
 		if (self.routes.hasOwnProperty(typ)) {
 			if (!id && self.routes[typ]._index) {
-				if (typeof(self.routes[typ]._index) == "function") {
+				if (typeof self.routes[typ]._index == "function") {
 					self.routes[typ]._index = self.routes[typ]._index(getNewDiv());
 				}
 				if (self.routes[typ]._index) {
 					showPage(typ, id, self.routes[typ]._index.$t._root);
 				}
-			}
-			else if (self.routes[typ][id] && (!self.routes[typ][id]._force_reload || !self.routes[typ][id]._loaded)) {
+			} else if (self.routes[typ][id] && (!self.routes[typ][id]._force_reload || !self.routes[typ][id]._loaded)) {
 				showPage(typ, id, self.routes[typ][id]);
 				if (self.routes[typ][id]._force_reload) {
 					self.routes[typ][id]._loaded = true;
 				}
-			}
-			else if (self.routes[typ]._load_new) {
+			} else if (self.routes[typ]._load_new) {
 				var currentURL = window.location.href;
 				var result = self.routes[typ]._load_new(id, getNewDiv(), function(div) {
 					if (div) {
@@ -104,20 +102,17 @@
 						if (currentURL == window.location.href) {
 							self.open_route(typ, id);
 						}
-					}
-					else {
+					} else {
 						self.fourohfour();
 					}
 				});
 				if (!result) {
 					self.fourohfour();
 				}
-			}
-			else {
+			} else {
 				self.fourohfour();
 			}
-		}
-		else {
+		} else {
 			self.fourohfour();
 		}
 	};
@@ -136,14 +131,12 @@
 		}
 		if (newurl.indexOf("#") >= 0) {
 			newurl = newurl.substring(0, newurl.indexOf("#")) + "#!/" + r;
-		}
-		else {
+		} else {
 			newurl = newurl + "#!/" + r;
 		}
 		if (oldURL == newurl) {
 			oldURL = null;
-		}
-		else {
+		} else {
 			location.href = newurl;
 		}
 		self.detect_url_change();
@@ -164,8 +157,7 @@
 	self.go_home = function() {
 		if (lastopen) {
 			self.change("session", lastopen);
-		}
-		else {
+		} else {
 			self.change("session");
 		}
 	};
@@ -173,4 +165,4 @@
 	window.onhashchange = self.detect_url_change;
 
 	return self;
-}());
+})();

@@ -17,7 +17,7 @@ function DoDefaults(options) {
 	options.show_duration_when_changed = options.show_duration_when_changed || null;
 
 	return options;
-};
+}
 
 function StyleGenerator(options) {
 	"use strict";
@@ -27,10 +27,43 @@ function StyleGenerator(options) {
 	s += "font-family: " + options.font_family + "; ";
 	var shadow = "";
 	if (options.text_stroke_size && options.text_stroke_color) {
-		shadow += "-" + options.text_stroke_size + " -" + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color + ",";
-		shadow +=       options.text_stroke_size + " -" + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color + ",";
-		shadow += "-" + options.text_stroke_size + "  " + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color + ",";
-		shadow +=       options.text_stroke_size + "  " + options.text_stroke_size + " " + (Math.ceil(parseInt(options.text_stroke_size)) / 2) + "px " + options.text_stroke_color;
+		shadow +=
+			"-" +
+			options.text_stroke_size +
+			" -" +
+			options.text_stroke_size +
+			" " +
+			Math.ceil(parseInt(options.text_stroke_size)) / 2 +
+			"px " +
+			options.text_stroke_color +
+			",";
+		shadow +=
+			options.text_stroke_size +
+			" -" +
+			options.text_stroke_size +
+			" " +
+			Math.ceil(parseInt(options.text_stroke_size)) / 2 +
+			"px " +
+			options.text_stroke_color +
+			",";
+		shadow +=
+			"-" +
+			options.text_stroke_size +
+			"  " +
+			options.text_stroke_size +
+			" " +
+			Math.ceil(parseInt(options.text_stroke_size)) / 2 +
+			"px " +
+			options.text_stroke_color +
+			",";
+		shadow +=
+			options.text_stroke_size +
+			"  " +
+			options.text_stroke_size +
+			" " +
+			Math.ceil(parseInt(options.text_stroke_size)) / 2 +
+			"px " +
+			options.text_stroke_color;
 	}
 	if (options.text_shadow) {
 		if (shadow) {
@@ -42,7 +75,7 @@ function StyleGenerator(options) {
 		s += "text-shadow: " + shadow + ";";
 		s += "-webkit-text-shadow: " + shadow + ";";
 	}
-	if (options.background_color && (options.background_color !== "transparent")) {
+	if (options.background_color && options.background_color !== "transparent") {
 		s += "background-color: " + options.background_color + " !important; ";
 		// document.getElementById("threed").style.backgroundColor = options.background_color;
 	}
@@ -57,7 +90,7 @@ function StyleGenerator(options) {
 
 	if (options.np_header == "yes") {
 		document.getElementById("header").setAttribute("style", s);
-		document.getElementById("header").style.fontSize = (parseFloat(options.font_size) * 0.7) + "pt";
+		document.getElementById("header").style.fontSize = parseFloat(options.font_size) * 0.7 + "pt";
 		document.getElementById("header").style.padding = "0 " + options.padding;
 		document.getElementById("header").style.textTransform = "uppercase";
 		document.getElementById("header").style.color = options.np_color || "#FFC96A";
@@ -65,8 +98,7 @@ function StyleGenerator(options) {
 		document.getElementById("header").style.position = "relative";
 		document.getElementById("header").style.textAlign = options.text_align;
 		document.getElementById("header").textContent = options.np_message || "Current Song";
-	}
-	else {
+	} else {
 		document.getElementById("header").style.display = "none";
 	}
 
@@ -81,16 +113,16 @@ function StyleGenerator(options) {
 	// 	s += "margin-right: " + p + "; ";
 	// }
 	// else {
-		s += "padding: " + p + "; ";
+	s += "padding: " + p + "; ";
 	// }
 
 	if (options.np_header == "yes") {
-		s += "padding-top: " + (parseInt(options.padding) / 2) + "px; ";
+		s += "padding-top: " + parseInt(options.padding) / 2 + "px; ";
 	}
 
-	if ((options.layout == "art_left") || (options.layout == "art_right")) {
+	if (options.layout == "art_left" || options.layout == "art_right") {
 		s += "height: " + options.art_size + "; ";
 		// document.getElementById("threed").style.height = options.art_size;
 	}
 	return s;
-};
+}

@@ -92,36 +92,44 @@ div.rating {
 			&.confirming {
 				opacity: 1;
 				@include transform(translateX(0px) scaleX(1) !important);
-				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, -webkit-transform $wait_transtime;
-				        transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, transform $wait_transtime;
+				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime,
+					-webkit-transform $wait_transtime;
+				transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime,
+					transform $wait_transtime;
 			}
 
 			&.confirmed {
 				background: transparent;
 				color: $text;
 				@include transform(translateX(-25px) scaleX(1) !important);
-				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, -webkit-transform $confirm_transtime;
-				        transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, transform $confirm_transtime;
+				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime,
+					-webkit-transform $confirm_transtime;
+				transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime,
+					transform $confirm_transtime;
 			}
 
 			&.bad_rating {
 				background: $error_bkg;
 				color: $text;
 				@include transform(translateX(-25px) scaleX(1) !important);
-				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, -webkit-transform $confirm_transtime;
-				        transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime, transform $confirm_transtime;
+				-webkit-transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime,
+					-webkit-transform $confirm_transtime;
+				transition: color $color_transtime, opacity $opacity_transtime, background $color_transtime,
+					transform $confirm_transtime;
 			}
 		}
 	}
 
-	body.desktop &:hover div.rating_hover, body.full & div.rating_hover {
+	body.desktop &:hover div.rating_hover,
+	body.full & div.rating_hover {
 		opacity: 1;
 		visibility: visible;
 		@include transform(translateX(-25px));
 	}
 
 	body.desktop &:hover {
-		div.rating_confirm + div.rating_hover, div.rating_confirm + div.rating_number {
+		div.rating_confirm + div.rating_hover,
+		div.rating_confirm + div.rating_number {
 			opacity: 0;
 		}
 	}

@@ -13,9 +13,9 @@ $station_select_width: 270px;
 	background: $stasel_bkg;
 
 	-webkit-transition: width 350ms, background-color 350ms, height 700ms;
-	        transition: width 350ms, background-color 350ms, height 700ms;
+	transition: width 350ms, background-color 350ms, height 700ms;
 	-webkit-transition-timing-function: $menu_transfunc;
-	        transition-timing-function: $menu_transfunc;
+	transition-timing-function: $menu_transfunc;
 
 	@media $mobile-media {
 		width: 220px;
@@ -48,9 +48,9 @@ $station_select_width: 270px;
 		@include transition-wtime(350ms, transform);
 		@include transform(translateY(-50%) rotate(0deg));
 		-webkit-transform-origin: center center;
-		        transform-origin: center center;
+		transform-origin: center center;
 		-webkit-transition-timing-function: $menu_transfunc;
-		        transition-timing-function: $menu_transfunc;
+		transition-timing-function: $menu_transfunc;
 	}
 
 	&.openable svg.pulldown_arrow {
@@ -107,7 +107,7 @@ $station_select_width: 270px;
 		padding: 0px 0px 0px 20px;
 		@include transform(translateY(-15px));
 		-webkit-transition: -webkit-transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc;
-		        transition:         transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc;
+		transition: transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc;
 
 		@media $phone-media {
 			padding-left: 5px;
@@ -115,7 +115,8 @@ $station_select_width: 270px;
 			@include transform(none);
 		}
 
-		body.desktop &:hover, body.mobile &:active {
+		body.desktop &:hover,
+		body.mobile &:active {
 			background: $stasel_h_bkg;
 			color: $text !important;
 		}
@@ -172,8 +173,9 @@ $station_select_width: 270px;
 			font-size: smaller;
 			opacity: 0;
 			@include transform(translateX(100%) translateY(-50%));
-			-webkit-transition: -webkit-transform 700ms $menu_transfunc, opacity 300ms $transfunc, visibility 700ms $menu_transfunc;
-			        transition: transform 700ms $menu_transfunc, opacity 300ms $transfunc, visibility 700ms $menu_transfunc;
+			-webkit-transition: -webkit-transform 700ms $menu_transfunc, opacity 300ms $transfunc,
+				visibility 700ms $menu_transfunc;
+			transition: transform 700ms $menu_transfunc, opacity 300ms $transfunc, visibility 700ms $menu_transfunc;
 
 			@media $phone-media {
 				display: none;
@@ -237,9 +239,10 @@ $station_select_width: 270px;
 			}
 		}
 
-		body.desktop &:hover, body.mobile &:active {
+		body.desktop &:hover,
+		body.mobile &:active {
 			div.station_song_container {
-				opacity: 1.0;
+				opacity: 1;
 			}
 		}
 

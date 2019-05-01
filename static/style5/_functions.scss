@@ -34,8 +34,7 @@ $transtime: 700ms $transfunc;
 		@if $rule == LINKCOLOR {
 			$rule: color;
 			$finaltranstime: 150ms;
-		}
-		@else if $rule == TOUCHTRANSFORM {
+		} @else if $rule == TOUCHTRANSFORM {
 			$rule: transform;
 			$finaltranstime: 150ms;
 		}

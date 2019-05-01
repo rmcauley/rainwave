@@ -1,4 +1,4 @@
-var Scrollbar = function() {
+var Scrollbar = (function() {
 	"use strict";
 	var cls = {};
 	var scrollbars = [];
@@ -10,9 +10,11 @@ var Scrollbar = function() {
 		if (MOBILE) return;
 		// if we're on Chrome we have custom scrollbars that don't need Javascript
 		// http://stackoverflow.com/questions/4565112/javascript-how-to-find-out-if-the-user-browser-is-chrome
-		var isChromium = window.chrome, vendorName = window.navigator.vendor, isOpera = window.navigator.userAgent.indexOf("OPR") > -1;
+		var isChromium = window.chrome,
+			vendorName = window.navigator.vendor,
+			isOpera = window.navigator.userAgent.indexOf("OPR") > -1;
 		if (isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera === false) {
-		   return;
+			return;
 		}
 
 		BOOTSTRAP.on_measure.push(function() {
@@ -39,7 +41,7 @@ var Scrollbar = function() {
 				}
 			}
 			for (i = 0; i < scrollbars.length; i++) {
-				scrollbars[i].el.style.width = (scrollbars[i].offset_width + scrollbar_width) + "px";
+				scrollbars[i].el.style.width = scrollbars[i].offset_width + scrollbar_width + "px";
 				scrollbars[i].el.style.height = scrollbars[i].offset_height + "px";
 			}
 		}, true);
@@ -48,7 +50,9 @@ var Scrollbar = function() {
 	var handle_margin_top = 5;
 	var handle_margin_bottom = 5;
 
-	var no_op = function() { return; };
+	var no_op = function() {
+		return;
+	};
 
 	cls.is_enabled = enabled;
 
@@ -86,28 +90,32 @@ var Scrollbar = function() {
 			var force_height;
 			if (always_hook) {
 				self.refresh = function() {
-					if (force_height || (force_height === 0)) {
+					if (force_height || force_height === 0) {
 						self.scroll_height = force_height;
-					}
-					else {
+					} else {
 						self.scroll_height = self.el.scrollHeight;
 					}
 					// short circuit a potential forced layout
-					if (self.scrollblock.classList.contains("list_contents") || self.scrollblock.classList.contains("request_scrollblock")) {
+					if (
+						self.scrollblock.classList.contains("list_contents") ||
+						self.scrollblock.classList.contains("request_scrollblock")
+					) {
 						self.offset_height = Sizing.list_height;
-					}
-					else if (self.scrollblock.classList.contains("timeline")) {
+					} else if (self.scrollblock.classList.contains("timeline")) {
 						self.offset_height = Sizing.sizeable_area_height;
-					}
-					else {
+					} else {
 						self.offset_height = self.scrollblock.offsetHeight;
 					}
 					self.scroll_top_max = self.scroll_height - self.offset_height;
 				};
-				self.scrollblock.addEventListener("scroll", function() {
-					self.scroll_top = self.scrollblock.scrollTop;
-					if (self.reposition_hook) self.reposition_hook();
-				}, supportsPassiveEvents ? { passive: true } : false);
+				self.scrollblock.addEventListener(
+					"scroll",
+					function() {
+						self.scroll_top = self.scrollblock.scrollTop;
+						if (self.reposition_hook) self.reposition_hook();
+					},
+					supportsPassiveEvents ? { passive: true } : false
+				);
 			}
 
 			if (always_scrollblock) {
@@ -116,14 +124,17 @@ var Scrollbar = function() {
 					self.el.style.height = h + "px";
 					self.refresh();
 				};
-				self.scroll_to = function(n) { self.scrollblock.scrollTop = n; };
-			}
-			else {
+				self.scroll_to = function(n) {
+					self.scrollblock.scrollTop = n;
+				};
+			} else {
 				self.set_height = function(n) {
 					force_height = n;
 					self.refresh();
 				};
-				self.scroll_to = function(n) { self.scrollblock.scrollTop = n; };
+				self.scroll_to = function(n) {
+					self.scrollblock.scrollTop = n;
+				};
 			}
 
 			return self;
@@ -144,8 +155,7 @@ var Scrollbar = function() {
 			if (height !== false) {
 				if (height === self.scroll_height) return;
 				self.scroll_height = height !== undefined ? height : self.el.scrollHeight;
-			}
-			else {
+			} else {
 				self.scroll_height = self.el.scrollHeight;
 			}
 			self.scroll_top_max = Math.max(0, self.scroll_height - self.offset_height);
@@ -153,13 +163,12 @@ var Scrollbar = function() {
 		};
 
 		self.refresh = function() {
-			if ((self.scroll_height === 0) || (self.offset_height === 0) || (self.scroll_height <= self.offset_height)) {
+			if (self.scroll_height === 0 || self.offset_height === 0 || self.scroll_height <= self.offset_height) {
 				handle.classList.add("invisible");
 				handle.style.height = null;
 				handle.style.top = null;
 				visible = false;
-			}
-			else {
+			} else {
 				handle.classList.remove("invisible");
 				visible = true;
 				var wheight = self.offset_height - handle_margin_top - handle_margin_bottom;
@@ -179,7 +188,9 @@ var Scrollbar = function() {
 				self.scroll_top = scrollable.scrollTop;
 			}
 
-			var top = Math.min(1, self.scroll_top / self.scroll_top_max) * (self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
+			var top =
+				Math.min(1, self.scroll_top / self.scroll_top_max) *
+				(self.offset_height - handle_margin_bottom - handle_margin_top - handle_height);
 			handle.style[Fx.transform] = "translateX(-8px) translateY(" + Math.floor(handle_margin_top + top) + "px)";
 
 			if (self.reposition_hook) self.reposition_hook();
@@ -190,8 +201,7 @@ var Scrollbar = function() {
 			if (px !== self.scroll_top) {
 				scrollable.scrollTop = px;
 				self.scroll_top = px;
-			}
-			else if (self.reposition_hook) {
+			} else if (self.reposition_hook) {
 				self.reposition_hook();
 			}
 		};
@@ -210,7 +220,7 @@ var Scrollbar = function() {
 		};
 
 		var mouse_move = function(e) {
-			var new_scroll_top = Math.floor(original_scroll_top + ((e.screenY - original_mouse_y) * scroll_per_px));
+			var new_scroll_top = Math.floor(original_scroll_top + (e.screenY - original_mouse_y) * scroll_per_px);
 			new_scroll_top = Math.max(Math.min(new_scroll_top, self.scroll_top_max), 0);
 			scrollable.scrollTop = new_scroll_top;
 		};
@@ -235,4 +245,4 @@ var Scrollbar = function() {
 	};
 
 	return cls;
-}();
+})();

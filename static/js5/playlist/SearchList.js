@@ -29,11 +29,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 	var scroll = Scrollbar.create(template.list, false, true);
 
 	var data = {};
-	self.data = data;			// keys() are the object IDs (e.g. data[album.id])
+	self.data = data; // keys() are the object IDs (e.g. data[album.id])
 	self.loaded = false;
 
-	var visible = [];			// list of IDs sorted by the sort_function (visible on screen)
-	var hidden = [];			// list of IDs unsorted - currently hidden from view during a search
+	var visible = []; // list of IDs sorted by the sort_function (visible on screen)
+	var hidden = []; // list of IDs unsorted - currently hidden from view during a search
 
 	var search_string = "";
 	var current_key_nav_id = false;
@@ -73,7 +73,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 		var limit = Math.min(first_chunk ? 50 : chunked_i + (MOBILE ? 50 : 100), items_to_draw.length);
 		first_chunk = false;
 		for (var i = chunked_i; i < limit; i++) {
-			data[items_to_draw[i]].name_searchable = Formatting.make_searchable_string(data[items_to_draw[i]].name || data[items_to_draw[i]][sort_key]);
+			data[items_to_draw[i]].name_searchable = Formatting.make_searchable_string(
+				data[items_to_draw[i]].name || data[items_to_draw[i]][sort_key]
+			);
 			self.draw_entry(data[items_to_draw[i]]);
 			data[items_to_draw[i]]._el._id = data[items_to_draw[i]].id;
 		}
@@ -87,8 +89,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 		if (chunked_i >= items_to_draw.length) {
 			finish_chunking();
-		}
-		else if (!paused_chunking) {
+		} else if (!paused_chunking) {
 			requestNextAnimationFrame(render_chunk);
 		}
 	};
@@ -109,14 +110,12 @@ var SearchList = function(root_el, sort_key, search_key) {
 			self.set_new_open(open_id_workaround);
 			self.scroll_to_id(open_id_workaround);
 			scroll_to_on_load = false;
-		}
-		else if (!self.loaded && scroll_to_on_load) {
+		} else if (!self.loaded && scroll_to_on_load) {
 			self.loaded = true;
 			current_open_id = false;
 			self.scroll_to_id(scroll_to_on_load);
 			scroll_to_on_load = false;
-		}
-		else if (!self.loaded) {
+		} else if (!self.loaded) {
 			self.loaded = true;
 			self.redraw_current_position();
 		}
@@ -160,8 +159,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 		if (items_to_draw.length && !chunked_start) {
 			start_chunking();
-		}
-		else if (self.onFinishRender) {
+		} else if (self.onFinishRender) {
 			self.onFinishRender();
 		}
 
@@ -222,8 +220,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			if (self.data[json.id]._el) {
 				self.update_item_element(self.data[json.id]);
 			}
-		}
-		else {
+		} else {
 			data[json.id] = json;
 			items_to_draw.push(json.id);
 		}
@@ -255,16 +252,13 @@ var SearchList = function(root_el, sort_key, search_key) {
 			for (var i in to_reshow) {
 				if (data[to_reshow[i]] && !data[to_reshow[i]]._delete) {
 					visible.push(to_reshow[i]);
-				}
-				else if (data[to_reshow[i]]) {
-					delete(data[to_reshow[i]]);
+				} else if (data[to_reshow[i]]) {
+					delete data[to_reshow[i]];
 				}
 			}
-		}
-		else if (visible.length === 0) {
+		} else if (visible.length === 0) {
 			visible = to_reshow;
-		}
-		else {
+		} else {
 			visible = visible.concat(to_reshow);
 		}
 		visible = visible.filter(filterUnhide);
@@ -273,8 +267,8 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	self.recalculate = function() {
-		var full_height = ((self.list_item_height || Sizing.list_item_height) * visible.length) + 7;
-		if (window.navigator.userAgent.indexOf('Firefox') !== -1) {
+		var full_height = (self.list_item_height || Sizing.list_item_height) * visible.length + 7;
+		if (window.navigator.userAgent.indexOf("Firefox") !== -1) {
 			// bizarro Firefox scroll height behaviour that I couldn't solve :(
 			full_height += (self.list_item_height || Sizing.list_item_height) * 1.5;
 		}
@@ -286,14 +280,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 		num_items_to_display = Math.ceil(scroll.offset_height / (self.list_item_height || Sizing.list_item_height)) + 1;
 		if (num_items_to_display > 35) {
 			scroll_margin = 5;
-		}
-		else if (num_items_to_display > 25) {
+		} else if (num_items_to_display > 25) {
 			scroll_margin = 4;
-		}
-		else if (num_items_to_display > 20) {
+		} else if (num_items_to_display > 20) {
 			scroll_margin = 3;
-		}
-		else {
+		} else {
 			scroll_margin = 2;
 		}
 	};
@@ -322,7 +313,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			e.stopPropagation();
 		}
 		var check_el = e.target;
-		while (check_el && !("_id" in check_el) && (check_el != self.el) && (check_el != document.body)) {
+		while (check_el && !("_id" in check_el) && check_el != self.el && check_el != document.body) {
 			check_el = check_el.parentNode;
 		}
 		if (check_el && "_id" in check_el) {
@@ -335,7 +326,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	self.remove_key_nav_highlight = function() {
 		if (current_key_nav_id) {
-			if ((current_key_nav_id in data) && data[current_key_nav_id] && data[current_key_nav_id]._el) {
+			if (current_key_nav_id in data && data[current_key_nav_id] && data[current_key_nav_id]._el) {
 				data[current_key_nav_id]._el.classList.remove("hover");
 			}
 			current_key_nav_id = null;
@@ -366,7 +357,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			return;
 		}
 		var current_idx = visible.indexOf(current_key_nav_id);
-		if (!current_idx && (current_idx !== 0)) {
+		if (!current_idx && current_idx !== 0) {
 			self.key_nav_first_item();
 			return;
 		}
@@ -409,7 +400,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 	self.key_nav_enter = function() {
 		if (current_key_nav_id && current_key_nav_id && data[current_key_nav_id]) {
-			self.open_element({ "target": data[current_key_nav_id]._el, "enter_key": true });
+			self.open_element({ target: data[current_key_nav_id]._el, enter_key: true });
 			return true;
 		}
 		return false;
@@ -440,8 +431,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 		if (search_string.length == 1) {
 			self.clear_search();
 			return true;
-		}
-		else if (search_string.length > 1) {
+		} else if (search_string.length > 1) {
 			search_string = search_string.substring(0, search_string.length - 1);
 
 			var use_search_string = Formatting.make_searchable_string(search_string);
@@ -459,7 +449,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 			current_scroll_index = false;
 			self.recalculate();
-			if (backspace_scroll_top && (revisible.length + visible.length > num_items_to_display)) {
+			if (backspace_scroll_top && revisible.length + visible.length > num_items_to_display) {
 				self.scroll_to(backspace_scroll_top);
 				backspace_scroll_top = null;
 			}
@@ -484,8 +474,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			}
 			if (data[visible[i]][search_key].indexOf(use_search_string) == -1) {
 				hidden.push(visible[i]);
-			}
-			else {
+			} else {
 				new_visible.push(visible[i]);
 			}
 		}
@@ -498,18 +487,17 @@ var SearchList = function(root_el, sort_key, search_key) {
 			original_scroll_top = scroll.scroll_top;
 			self.recalculate();
 			scroll.scroll_to(0);
-		}
-		else if (visible.length <= num_items_to_display) {
+		} else if (visible.length <= num_items_to_display) {
 			backspace_scroll_top = scroll.scroll_top;
 			self.recalculate();
 			scroll.scroll_to(0);
-		}
-		else if (visible.length <= current_scroll_index) {
+		} else if (visible.length <= current_scroll_index) {
 			backspace_scroll_top = scroll.scroll_top;
 			self.recalculate();
-			scroll.scroll_to((visible.length - num_items_to_display) * (self.list_item_height || Sizing.list_item_height));
-		}
-		else {
+			scroll.scroll_to(
+				(visible.length - num_items_to_display) * (self.list_item_height || Sizing.list_item_height)
+			);
+		} else {
 			self.recalculate();
 		}
 		self.reposition();
@@ -536,10 +524,9 @@ var SearchList = function(root_el, sort_key, search_key) {
 			original_key_nav = false;
 		}
 		if (original_scroll_top && !ignore_original_scroll_top) {
-		 	scroll.scroll_to(original_scroll_top);
-		 	original_scroll_top = false;
-		}
-		else {
+			scroll.scroll_to(original_scroll_top);
+			original_scroll_top = false;
+		} else {
 			self.scroll_to_default();
 		}
 		ignore_original_scroll_top = false;
@@ -552,12 +539,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 	search_box.addEventListener("input", function(e) {
 		if (!search_box.value.length) {
 			self.clear_search();
-		}
-		else {
+		} else {
 			if (search_box.value.length < search_string.length) {
 				self.unhide();
-			}
-			else if (search_box.value.substring(0, search_string.length) !== search_string) {
+			} else if (search_box.value.substring(0, search_string.length) !== search_string) {
 				self.unhide();
 			}
 			do_search(search_box.value);
@@ -565,11 +550,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 	});
 
 	self.do_searchbar_style = function() {
-		if (search_string && (visible.length === 0)) {
+		if (search_string && visible.length === 0) {
 			search_box.classList.add("error");
 			template.box_container.classList.add("search_error");
-		}
-		else {
+		} else {
 			search_box.classList.remove("error");
 			template.box_container.classList.remove("search_error");
 		}
@@ -580,8 +564,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			}
 			search_box.classList.add("active");
 			template.box_container.classList.add("active");
-		}
-		else {
+		} else {
 			search_box.classList.remove("active");
 			template.box_container.classList.remove("active");
 		}
@@ -590,7 +573,6 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	// SCROLL **************************
-
 
 	self.scroll_to_id = function(id) {
 		if (id in data) self.scroll_to(data[id]);
@@ -605,18 +587,32 @@ var SearchList = function(root_el, sort_key, search_key) {
 				new_index = visible.indexOf(data_item.id);
 			}
 
-			if ((new_index > (current_scroll_index + scroll_margin - 1)) && (new_index < (current_scroll_index + num_items_to_display - scroll_margin - 1))) {
-				if ((current_scroll_index === false)) {
+			if (
+				new_index > current_scroll_index + scroll_margin - 1 &&
+				new_index < current_scroll_index + num_items_to_display - scroll_margin - 1
+			) {
+				if (current_scroll_index === false) {
 					self.redraw_current_position();
 				}
 			}
 			// position at the lower edge
-			else if ((current_scroll_index !== false) && (new_index >= (current_scroll_index + num_items_to_display - scroll_margin - 1))) {
-				scroll.scroll_to(Math.min(scroll.scroll_top_max, (new_index - num_items_to_display + scroll_margin + 2) * (self.list_item_height || Sizing.list_item_height)));
+			else if (
+				current_scroll_index !== false &&
+				new_index >= current_scroll_index + num_items_to_display - scroll_margin - 1
+			) {
+				scroll.scroll_to(
+					Math.min(
+						scroll.scroll_top_max,
+						(new_index - num_items_to_display + scroll_margin + 2) *
+							(self.list_item_height || Sizing.list_item_height)
+					)
+				);
 			}
 			// position at the higher edge
 			else {
-				scroll.scroll_to(Math.max(0, (new_index - scroll_margin + 1) * (self.list_item_height || Sizing.list_item_height)));
+				scroll.scroll_to(
+					Math.max(0, (new_index - scroll_margin + 1) * (self.list_item_height || Sizing.list_item_height))
+				);
 			}
 		}
 	};
@@ -624,12 +620,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 	self.scroll_to_default = function() {
 		if (current_key_nav_id && visible.indexOf(current_key_nav_id)) {
 			self.scroll_to(data[current_key_nav_id]);
-		}
-		else if (current_open_id && visible.indexOf(current_open_id)) {
+		} else if (current_open_id && visible.indexOf(current_open_id)) {
 			current_key_nav_id = current_open_id;
 			self.scroll_to(data[current_open_id]);
-		}
-		else {
+		} else {
 			self.reposition();
 		}
 	};
@@ -640,16 +634,14 @@ var SearchList = function(root_el, sort_key, search_key) {
 	};
 
 	self.do_search_message = function() {
-		if ((visible.length === 0) && search_string) {
+		if (visible.length === 0 && search_string) {
 			template._root.classList.add("no_results");
 
 			template._root.classList.add("search_active");
-		}
-		else if ((visible.length === 0) && (items_to_draw.length === 0)) {
+		} else if (visible.length === 0 && items_to_draw.length === 0) {
 			template._root.classList.add("no_results");
 			template._root.classList.remove("search_active");
-		}
-		else {
+		} else {
 			template._root.classList.remove("no_results");
 			template._root.classList.remove("search_active");
 		}
@@ -660,13 +652,13 @@ var SearchList = function(root_el, sort_key, search_key) {
 		var new_index = Math.floor(scroll.scroll_top / (self.list_item_height || Sizing.list_item_height));
 		new_index = Math.max(0, Math.min(new_index, visible.length - num_items_to_display));
 
-		var new_margin = (scroll.scroll_top - ((self.list_item_height || Sizing.list_item_height) * new_index));
+		var new_margin = scroll.scroll_top - (self.list_item_height || Sizing.list_item_height) * new_index;
 		new_margin = new_margin ? -new_margin : 0;
 		self.do_search_message();
 		self.el.style[Fx.transform] = "translateY(" + (scroll.scroll_top + new_margin) + "px)";
 
 		if (current_scroll_index === new_index) return;
-		if ((visible.length === 0) && (hidden.length === 0)) {
+		if (visible.length === 0 && hidden.length === 0) {
 			if (self.auto_trim) {
 				while (self.el.firstChild) {
 					self.el.removeChild(self.el.lastChild);
@@ -677,7 +669,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 
 		if (current_scroll_index) {
 			if (new_index < current_scroll_index - num_items_to_display) current_scroll_index = false;
-			else if (new_index > current_scroll_index + (num_items_to_display * 2)) current_scroll_index = false;
+			else if (new_index > current_scroll_index + num_items_to_display * 2) current_scroll_index = false;
 		}
 
 		var i;
@@ -686,12 +678,11 @@ var SearchList = function(root_el, sort_key, search_key) {
 			while (self.el.firstChild) {
 				self.el.removeChild(self.el.lastChild);
 			}
-			for (i = new_index; (i < (new_index + num_items_to_display)) && (i < visible.length); i++) {
+			for (i = new_index; i < new_index + num_items_to_display && i < visible.length; i++) {
 				if (!data[visible[i]]._el) {
 					waiting_on_chunk = true;
 					break;
-				}
-				else {
+				} else {
 					self.el.appendChild(data[visible[i]]._el);
 				}
 			}
@@ -702,8 +693,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 				if (!data[visible[i]]._el) {
 					waiting_on_chunk = true;
 					break;
-				}
-				else {
+				} else {
 					self.el.insertBefore(data[visible[i]]._el, self.el.firstChild);
 				}
 			}
@@ -713,12 +703,15 @@ var SearchList = function(root_el, sort_key, search_key) {
 		}
 		// scrolling down (or starting fresh)
 		else if (new_index > current_scroll_index) {
-			for (i = (current_scroll_index + num_items_to_display); ((i < (new_index + num_items_to_display)) && (i < visible.length)); i++) {
+			for (
+				i = current_scroll_index + num_items_to_display;
+				i < new_index + num_items_to_display && i < visible.length;
+				i++
+			) {
 				if (!data[visible[i]]._el) {
 					waiting_on_chunk = true;
 					break;
-				}
-				else {
+				} else {
 					self.el.appendChild(data[visible[i]]._el);
 				}
 			}
@@ -727,11 +720,10 @@ var SearchList = function(root_el, sort_key, search_key) {
 			}
 			if (waiting_on_chunk) {
 				var should_be_visible = 0;
-				for (i = new_index; ((i < (new_index + num_items_to_display)) && (i < visible.length)); i++) {
+				for (i = new_index; i < new_index + num_items_to_display && i < visible.length; i++) {
 					if (data[visible[i]]._el) {
 						should_be_visible++;
-					}
-					else {
+					} else {
 						break;
 					}
 				}
@@ -750,7 +742,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 			current_open_id = id;
 			return false;
 		}
-		if (current_open_id && data[current_open_id] && (current_open_id == id)) {
+		if (current_open_id && data[current_open_id] && current_open_id == id) {
 			return false;
 		}
 		if (current_open_id && data[current_open_id]) {
@@ -770,7 +762,7 @@ var SearchList = function(root_el, sort_key, search_key) {
 	Sizing.add_resize_callback(function() {
 		scroll.offset_height = Sizing.list_height;
 		template.list.style.height = scroll.offset_height + "px";
-		if ((num_items_to_display === undefined) && !draw_on_resize) return;
+		if (num_items_to_display === undefined && !draw_on_resize) return;
 		if (!self.loaded && !chunked_start) return;
 		current_scroll_index = false;
 		self.recalculate();

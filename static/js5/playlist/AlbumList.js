@@ -1,16 +1,16 @@
- var AlbumList = function(el) {
+var AlbumList = function(el) {
 	"use strict";
 	var self = SearchList(el);
 	self.$t.list.classList.add("album_list_core");
 
 	var loading = false;
 
-	Prefs.define("p_sort", [ "az", "rt" ], true);
-	Prefs.define("p_null1", [ false, true ], true);
+	Prefs.define("p_sort", ["az", "rt"], true);
+	Prefs.define("p_null1", [false, true], true);
 	Prefs.define("p_favup", null, true);
-	Prefs.define("p_avup", [ false, true ], true);
-	Prefs.define("p_fav1", [ false, true ], true);
-	Prefs.define("p_songsort", [ false, true ], true);
+	Prefs.define("p_avup", [false, true], true);
+	Prefs.define("p_fav1", [false, true], true);
+	Prefs.define("p_songsort", [false, true], true);
 
 	var sort_unrated_first = Prefs.get("p_null1");
 	var sort_faves_first = Prefs.get("p_favup");
@@ -25,7 +25,7 @@
 		prioritize_faves = Prefs.get("p_fav1");
 
 		var nv = Prefs.get("p_sort");
-		if ([ "az", "rt" ].indexOf(nv) == -1) {
+		if (["az", "rt"].indexOf(nv) == -1) {
 			Prefs.change("sort", "az");
 		}
 		if (nv == "rt") self.sort_function = self.sort_by_rating_user;
@@ -60,8 +60,13 @@
 		loading = false;
 	};
 
-	API.add_callback("all_albums", function(json) { loading = true; self.update(json); });
-	API.add_callback("album_diff", function(json) { if (self.loaded) self.update(json); });
+	API.add_callback("all_albums", function(json) {
+		loading = true;
+		self.update(json);
+	});
+	API.add_callback("album_diff", function(json) {
+		if (self.loaded) self.update(json);
+	});
 	API.add_callback("outdated_data_warning", function() {
 		if (!self.loaded || loading) {
 			return;
@@ -69,9 +74,8 @@
 
 		if (Sizing.simple && !document.body.classList.contains("playlist_album")) {
 			self.unload();
-		}
-		else {
-			API.async_get("all_albums", { "no_searchable": true });
+		} else {
+			API.async_get("all_albums", { no_searchable: true });
 		}
 	});
 
@@ -79,7 +83,7 @@
 		if (!self.loaded && !loading) {
 			self.show_loading();
 			loading = true;
-			API.async_get("all_albums", { "no_searchable": true });
+			API.async_get("all_albums", { no_searchable: true });
 		}
 	};
 
@@ -117,23 +121,27 @@
 	var has_new_threshold;
 	var has_newish_threshold;
 	if (!Clock.now && BOOTSTRAP && BOOTSTRAP.api_info) {
-	 	has_new_threshold = BOOTSTRAP.api_info.time;
-	 	has_newish_threshold = BOOTSTRAP.api_info.time;
-	}
-	else if (Clock.now) {
+		has_new_threshold = BOOTSTRAP.api_info.time;
+		has_newish_threshold = BOOTSTRAP.api_info.time;
+	} else if (Clock.now) {
 		has_new_threshold = Clock.now;
 		has_newish_threshold = Clock.now;
-	}
-	else {
+	} else {
 		has_new_threshold = parseInt(new Date().getTime() / 1000);
 		has_newish_threshold = parseInt(new Date().getTime() / 1000);
 	}
-	has_new_threshold -= (86400 * 14);
-	has_newish_threshold -= (86400 * 30);
+	has_new_threshold -= 86400 * 14;
+	has_newish_threshold -= 86400 * 30;
 
 	self.draw_entry = function(item) {
 		item._el = document.createElement("div");
-		item._el.className = "item" + (item.newest_song_time > has_new_threshold ? " has_new" : (item.newest_song_time > has_newish_threshold ? " has_newish" : ""));
+		item._el.className =
+			"item" +
+			(item.newest_song_time > has_new_threshold
+				? " has_new"
+				: item.newest_song_time > has_newish_threshold
+				? " has_newish"
+				: "");
 		item._el._id = item.id;
 
 		// could do this using RWTemplates.fave but... speed.  want to inline here as much as possible.
@@ -162,10 +170,9 @@
 
 	self.update_cool = function(item) {
 		if (!item._el) return;
-		if (item.cool && (item.cool_lowest > Clock.now)) {
+		if (item.cool && item.cool_lowest > Clock.now) {
 			item._el.classList.add("cool");
-		}
-		else {
+		} else {
 			item._el.classList.remove("cool");
 		}
 	};
@@ -177,16 +184,14 @@
 		if (item.fave) {
 			item._el.classList.add("album_fave_highlight");
 			item._el_fave.classList.add("is_fave");
-		}
-		else {
+		} else {
 			item._el.classList.remove("album_fave_highlight");
 			item._el_fave.classList.remove("is_fave");
 		}
 
 		if (item.rating_complete) {
 			item._el.classList.remove("rating_incomplete");
-		}
-		else {
+		} else {
 			item._el.classList.add("rating_incomplete");
 		}
 
@@ -195,34 +200,34 @@
 			// R4
 			// item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + 6) + "px";
 			// R5
-			item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 28) + 6) + "px";
-		}
-		else {
+			item._el.style.backgroundPosition =
+				"right " + (-(Math.round(Math.round(item.rating_user * 10) / 2) * 28) + 6) + "px";
+		} else {
 			item._el.classList.remove("rating_user");
 			// R4
 			// item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round((item.rating || 0) * 10) / 2)) * 30) + 6) + "px";
 			// R5
 			if (Prefs.get("r_noglbl") || !item.rating) {
 				item._el.style.backgroundPosition = "right 6px";
-			}
-			else {
-				item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating * 10) / 2)) * 28) + 6) + "px";
+			} else {
+				item._el.style.backgroundPosition =
+					"right " + (-(Math.round(Math.round(item.rating * 10) / 2) * 28) + 6) + "px";
 			}
 		}
 	};
 
 	self.sort_by_alpha = function(a, b) {
-		if (prioritize_faves && sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+		if (prioritize_faves && sort_faves_first && self.data[a].fave !== self.data[b].fave) {
 			if (self.data[a].fave) return -1;
 			else return 1;
 		}
 
-		if (sort_available_first && (self.data[a].cool !== self.data[b].cool)) {
+		if (sort_available_first && self.data[a].cool !== self.data[b].cool) {
 			if (self.data[a].cool === false) return -1;
 			else return 1;
 		}
 
-		if (!prioritize_faves && sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+		if (!prioritize_faves && sort_faves_first && self.data[a].fave !== self.data[b].fave) {
 			if (self.data[a].fave) return -1;
 			else return 1;
 		}
@@ -239,17 +244,17 @@
 	};
 
 	self.sort_by_rating_user = function(a, b) {
-		if (prioritize_faves && sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+		if (prioritize_faves && sort_faves_first && self.data[a].fave !== self.data[b].fave) {
 			if (self.data[a].fave) return -1;
 			else return 1;
 		}
 
-		if (sort_available_first && (self.data[a].cool !== self.data[b].cool)) {
+		if (sort_available_first && self.data[a].cool !== self.data[b].cool) {
 			if (self.data[a].cool === false) return -1;
 			else return 1;
 		}
 
-		if (!prioritize_faves && sort_faves_first && (self.data[a].fave !== self.data[b].fave)) {
+		if (!prioritize_faves && sort_faves_first && self.data[a].fave !== self.data[b].fave) {
 			if (self.data[a].fave) return -1;
 			else return 1;
 		}

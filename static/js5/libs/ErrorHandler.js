@@ -1,4 +1,4 @@
-var ErrorHandler = function() {
+var ErrorHandler = (function() {
 	"use strict";
 	var self = {};
 	var already_reported = false;
@@ -12,16 +12,18 @@ var ErrorHandler = function() {
 
 		try {
 			var submit_obj = {
-				"name": exception.name,
-				"message": exception.message,
-				"lineNumber": exception.lineNumber || "(no line)",
-				"columnNumber": exception.columnNumber ||  "(no char number)",
-				"stack": exception.stack || exception.backtrace || exception.stacktrace || "(no stack)",
-				"location": window.location.href,
-				"user_agent": navigator.userAgent,
-				"browser_language": navigator.language || navigator.userLanguage,
+				name: exception.name,
+				message: exception.message,
+				lineNumber: exception.lineNumber || "(no line)",
+				columnNumber: exception.columnNumber || "(no char number)",
+				stack: exception.stack || exception.backtrace || exception.stacktrace || "(no stack)",
+				location: window.location.href,
+				user_agent: navigator.userAgent,
+				browser_language: navigator.language || navigator.userLanguage
 			};
-			API.async_get("error_report", submit_obj,
+			API.async_get(
+				"error_report",
+				submit_obj,
 				function() {
 					template.sending_report.textContent = $l("report_sent");
 					API.sync_stop();
@@ -31,8 +33,7 @@ var ErrorHandler = function() {
 					API.sync_stop();
 				}
 			);
-		}
-		catch (e) {
+		} catch (e) {
 			// don't complain, we've already crashed
 		}
 	};
@@ -53,7 +54,7 @@ var ErrorHandler = function() {
 	};
 
 	self.make_error = function(tl_key, code) {
-		return { "tl_key": tl_key, "code": code, "text": $l(tl_key) };
+		return { tl_key: tl_key, code: code, text: $l(tl_key) };
 	};
 
 	self.permanent_error = function(json, append_element, not_actually_permanent) {
@@ -84,16 +85,20 @@ var ErrorHandler = function() {
 		var x = Mouse.x - 5;
 		var y = Mouse.y - 40 - 2;
 		if (y < 20) y = 30;
-		else if (y > (Sizing.height - 40)) y = Sizing.height - 40;
+		else if (y > Sizing.height - 40) y = Sizing.height - 40;
 		if (x < 30) x = 40;
-		else if (x > (Sizing.width - 40)) x = Sizing.width - 40;
+		else if (x > Sizing.width - 40) x = Sizing.width - 40;
 		err.style.left = x + "px";
 		err.style.top = y + "px";
 
 		document.body.appendChild(err);
-		requestNextAnimationFrame(function() { err.style.opacity = "1"; });
-		setTimeout(function() { Fx.remove_element(err); }, 5000);
+		requestNextAnimationFrame(function() {
+			err.style.opacity = "1";
+		});
+		setTimeout(function() {
+			Fx.remove_element(err);
+		}, 5000);
 	};
 
 	return self;
-}();
+})();

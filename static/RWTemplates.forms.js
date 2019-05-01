@@ -81,8 +81,7 @@
 		}
 		if (!text && btn._original_html) {
 			btn.innerHTML = btn._original_html;
-		}
-		else if (text) {
+		} else if (text) {
 			btn.textContent = text;
 		}
 	};
@@ -121,10 +120,9 @@
 		};
 		var nodes = form.querySelectorAll("button");
 		for (var i = 0; i < nodes.length; i++) {
-			if (!nodes[i].getAttribute("type") || (nodes[i].getAttribute("type") != "submit")) {
+			if (!nodes[i].getAttribute("type") || nodes[i].getAttribute("type") != "submit") {
 				nodes[i].addEventListener("click", stop_button);
-			}
-			else if (nodes[i].getAttribute("type") == "submit") {
+			} else if (nodes[i].getAttribute("type") == "submit") {
 				nodes[i].addEventListener("click", track_last_button);
 			}
 		}
@@ -138,7 +136,7 @@
 			if (!this._c.hasOwnProperty(i)) continue;
 			if (i.charAt(0) === "$") continue;
 
-			if ((Object.prototype.toString.call(this._c[i]) == "[object Array]") && !shallow) {
+			if (Object.prototype.toString.call(this._c[i]) == "[object Array]" && !shallow) {
 				var new_arr = [];
 				for (arr_i = 0; arr_i < this._c[i].length; arr_i++) {
 					if (this._c[i][arr_i] && this._c[i][arr_i].$t && this._c[i][arr_i].$t.get) {
@@ -148,8 +146,13 @@
 				if (new_arr.length) {
 					new_obj[i] = new_arr;
 				}
-			}
-			else if ((this._c[i] !== null) && (this._c[i] !== undefined) && this._c[i].$t && this._c[i].$t.get && !shallow) {
+			} else if (
+				this._c[i] !== null &&
+				this._c[i] !== undefined &&
+				this._c[i].$t &&
+				this._c[i].$t.get &&
+				!shallow
+			) {
 				var new_sub_obj = this._c[i].$t.get(update_in_place, only_diff);
 				for (ii in new_sub_obj) {
 					if (new_sub_obj.hasOwnProperty(ii)) {
@@ -157,56 +160,64 @@
 						break;
 					}
 				}
-			}
-			else if (this[i]) {
+			} else if (this[i]) {
 				var elem, tagname, new_val;
 				for (var eli = 0; eli < this[i].length; eli++) {
 					new_val = undefined;
 					elem = this[i][eli];
-					if (typeof(elem) === "function") continue;
+					if (typeof elem === "function") continue;
 					tagname = elem.nodeType && elem.tagName ? elem.tagName.toLowerCase() : null;
 					if (tagname === "select") {
 						new_val = elem.value;
-					}
-					else if ((tagname === "input") && (elem.getAttribute("type") === "radio")) {
+					} else if (tagname === "input" && elem.getAttribute("type") === "radio") {
 						if (elem.checked) {
 							new_val = elem.value;
 						}
-					}
-					else if ((tagname === "input") && (elem.getAttribute("type") === "checkbox")) {
+					} else if (tagname === "input" && elem.getAttribute("type") === "checkbox") {
 						if (elem.checked) {
 							if (elem.getAttribute("value")) {
 								new_val = elem.getAttribute("value");
-							}
-							else {
+							} else {
 								new_val = true;
 							}
-						}
-						else {
+						} else {
 							new_val = false;
 						}
-					}
-					else if ((elem.getAttribute("type") !== "submit") && (typeof(elem.value) !== "undefined") && (tagname !== "li")) {
+					} else if (
+						elem.getAttribute("type") !== "submit" &&
+						typeof elem.value !== "undefined" &&
+						tagname !== "li"
+					) {
 						new_val = elem.value;
 					}
 
-					if ((typeof(new_val) !== "undefined") && elem.getAttribute("helper")) {
-						if (typeof(RWTemplateHelpers[elem.getAttribute("helper") + "_get"]) === "function") {
+					if (typeof new_val !== "undefined" && elem.getAttribute("helper")) {
+						if (typeof RWTemplateHelpers[elem.getAttribute("helper") + "_get"] === "function") {
 							new_val = RWTemplateHelpers[elem.getAttribute("helper") + "_get"](this._c, new_val);
-						}
-						else if (typeof(RWTemplateHelpers[elem.getAttribute("helper") + "_get"]) === "undefined") {
-							console.warn("Helper " + elem.getAttribute("helper") + " has a setter but no getter (value " + new_val + ").  Define RWTemplateHelpers." + elem.getAttribute("helper") + "_get.");
+						} else if (typeof RWTemplateHelpers[elem.getAttribute("helper") + "_get"] === "undefined") {
+							console.warn(
+								"Helper " +
+									elem.getAttribute("helper") +
+									" has a setter but no getter (value " +
+									new_val +
+									").  Define RWTemplateHelpers." +
+									elem.getAttribute("helper") +
+									"_get."
+							);
 						}
 					}
 
-					if (typeof(new_val) !== "undefined") {
+					if (typeof new_val !== "undefined") {
 						if (elem.hasAttribute("int") && !isNaN(new_val) && !isNaN(parseInt(new_val))) {
 							new_val = parseInt(new_val);
-						}
-						else if (elem.hasAttribute("float") && !isNaN(new_val) && !isNaN(parseFloat(new_val))) {
+						} else if (elem.hasAttribute("float") && !isNaN(new_val) && !isNaN(parseFloat(new_val))) {
 							new_val = parseFloat(new_val);
 						}
-						if ((!only_diff && (typeof(new_obj[i]) === "undefined")) || (new_val !== this._c[i]) || (new_val && elem.hasAttribute("save-on-true"))) {
+						if (
+							(!only_diff && typeof new_obj[i] === "undefined") ||
+							new_val !== this._c[i] ||
+							(new_val && elem.hasAttribute("save-on-true"))
+						) {
 							new_obj[i] = new_val;
 						}
 					}
@@ -222,7 +233,7 @@
 		RWTemplateObject.prototype.update();
 	};
 
-	var allowed_tags = [ "select", "button", "textarea", "input" ];
+	var allowed_tags = ["select", "button", "textarea", "input"];
 
 	RWTemplateObject.prototype.get_form_elements = function() {
 		var elements = [];
@@ -235,7 +246,7 @@
 
 			if (Object.prototype.toString.call(this[i]) === "[object Array]") {
 				for (j = 0; j < this[i].length; j++) {
-					if (typeof(this[i][j]) === "object") {
+					if (typeof this[i][j] === "object") {
 						if (allowed_tags.indexOf(this[i][j].tagName.toLowerCase()) !== -1) {
 							elements.push(this[i][j]);
 						}
@@ -249,12 +260,11 @@
 			if (!this._c[i]) continue;
 			if (this._c[i]._no_save_propagation) continue;
 
-			if ((typeof(this._c[i].$t) != "undefined") && this._c[i].$t._c && (this._c[i].$t._c != this._c)) {
+			if (typeof this._c[i].$t != "undefined" && this._c[i].$t._c && this._c[i].$t._c != this._c) {
 				elements = elements.concat(this._c[i].$t.get_form_elements());
-			}
-			else if (Object.prototype.toString.call(this._c[i]) == "[object Array]") {
+			} else if (Object.prototype.toString.call(this._c[i]) == "[object Array]") {
 				for (j = 0; j < this._c[i].length; j++) {
-					if (typeof(this._c[i][j].$t) != "undefined") {
+					if (typeof this._c[i][j].$t != "undefined") {
 						elements = elements.concat(this._c[i][j].$t.get_form_elements());
 					}
 				}
@@ -271,14 +281,20 @@
 	};
 
 	RWTemplateObject.prototype.submitting = function(submit_message, no_disable) {
-		if (typeof(submit_message) != "string") {
-            submit_message = typeof(gettext) == "function" ? gettext("Saving...") : "Saving...";
-        }
+		if (typeof submit_message != "string") {
+			submit_message = typeof gettext == "function" ? gettext("Saving...") : "Saving...";
+		}
 		var elements = this.normal();
 		for (var i = 0; i < elements.length; i++) {
-			if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
+			if (
+				(elements[i].getAttribute("type") == "submit" && !this._last_button) ||
+				elements[i] == this._last_button
+			) {
 				if (submit_message) {
-					RWTemplateHelpers.change_button_text(elements[i], submit_message || (typeof(gettext) == "function" ? gettext("Saving...") : "Saving..."));
+					RWTemplateHelpers.change_button_text(
+						elements[i],
+						submit_message || (typeof gettext == "function" ? gettext("Saving...") : "Saving...")
+					);
 				}
 				if (!no_disable) {
 					RWTemplateHelpers.change_button_class(elements[i], elements[i]._normal_class || btnNormal);
@@ -296,19 +312,17 @@
 	RWTemplateObject.prototype.error = function(rest_error, xhr_object, error_message) {
 		if (xhr_object) {
 			if (xhr_object.status === 403) {
-				error_message = typeof(gettext) == "function" ? gettext("Invalid Permissions") : "Invalid Permissions";
-			}
-			else if ((xhr_object.status % 300) < 100) {
-				error_message = typeof(gettext) == "function" ? gettext("Server Error (300)") : "Server Error (300)";
-			}
-			else if ((xhr_object.status % 500) < 100) {
-				error_message = typeof(gettext) == "function" ? gettext("Server Error (500)") : "Server Error (500)";
+				error_message = typeof gettext == "function" ? gettext("Invalid Permissions") : "Invalid Permissions";
+			} else if (xhr_object.status % 300 < 100) {
+				error_message = typeof gettext == "function" ? gettext("Server Error (300)") : "Server Error (300)";
+			} else if (xhr_object.status % 500 < 100) {
+				error_message = typeof gettext == "function" ? gettext("Server Error (500)") : "Server Error (500)";
 			}
 		}
 		if (rest_error && rest_error.detail) {
 			error_message = error_message || rest_error.detail;
 		}
-		error_message = error_message || (typeof(gettext) == "function" ? gettext("Try Again") : "Try Again");
+		error_message = error_message || (typeof gettext == "function" ? gettext("Try Again") : "Try Again");
 
 		var elements = this.normal();
 		var submit_btns = [];
@@ -319,7 +333,10 @@
 				elements[i].disabled = false;
 				elements[i].classList.remove("disabled");
 			}
-			if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
+			if (
+				(elements[i].getAttribute("type") == "submit" && !this._last_button) ||
+				elements[i] == this._last_button
+			) {
 				submit_btns.push(elements[i]);
 			}
 		}
@@ -350,17 +367,25 @@
 		if (rest_error) {
 			var eli;
 			for (i in rest_error) {
-				if (this._c[i] && this._c[i].$t && (Object.prototype.toString.call(this._c[i]) == "[object Array]") && (Object.prototype.toString.call(rest_error[i]) == "[object Array]")) {
+				if (
+					this._c[i] &&
+					this._c[i].$t &&
+					Object.prototype.toString.call(this._c[i]) == "[object Array]" &&
+					Object.prototype.toString.call(rest_error[i]) == "[object Array]"
+				) {
 					if (!this._c[i]._no_save_propagation) {
 						for (eli = 0; eli < rest_error[i].length && eli < this._c[i].length; eli++) {
 							this._c[i][eli].$t.error(rest_error[i][eli], xhr_object, error_message);
 						}
 					}
-				}
-				else if ((typeof(this._c[i]) == "object") && this._c[i] && this._c[i].$t && !this._c[i]._no_save_propagation) {
+				} else if (
+					typeof this._c[i] == "object" &&
+					this._c[i] &&
+					this._c[i].$t &&
+					!this._c[i]._no_save_propagation
+				) {
 					this._c[i].$t.error(rest_error[i], xhr_object, error_message);
-				}
-				else if (this.hasOwnProperty(i)) {
+				} else if (this.hasOwnProperty(i)) {
 					for (eli = 0; eli < this[i].length; eli++) {
 						RWTemplateHelpers.add_error_class(this[i][eli]);
 					}
@@ -376,7 +401,7 @@
 			elements[i].disabled = false;
 			elements[i].classList.remove("disabled");
 			if (elements[i].getAttribute("type") == "submit") {
-				if ((typeof(this._success_message) !== "string") || this._success_message) {
+				if (typeof this._success_message !== "string" || this._success_message) {
 					RWTemplateHelpers.change_button_text(elements[i], submit_button_text);
 				}
 				RWTemplateHelpers.change_button_class(elements[i], elements[i]._normal_class || btnNormal);
@@ -386,11 +411,14 @@
 	};
 
 	RWTemplateObject.prototype.success_display = function(success_message, permanent) {
-		if (typeof(this._success_message == "string") && !this._success_message) {
+		if (typeof (this._success_message == "string") && !this._success_message) {
 			success_message = null;
-		}
-		else {
-			success_message = success_message || this._success_message || this._c._success_message || (typeof(gettext) == "function" ? gettext("Saved") : "Saved");
+		} else {
+			success_message =
+				success_message ||
+				this._success_message ||
+				this._c._success_message ||
+				(typeof gettext == "function" ? gettext("Saved") : "Saved");
 		}
 		var elements = this.normal();
 		var this_obj, normalize;
@@ -404,10 +432,13 @@
 		for (var i = 0; i < elements.length; i++) {
 			elements[i].disabled = permanent;
 			elements[i].classList[permanent ? "add" : "remove"]("disabled");
-			if (((elements[i].getAttribute("type") == "submit") && !this._last_button) || (elements[i] == this._last_button)) {
+			if (
+				(elements[i].getAttribute("type") == "submit" && !this._last_button) ||
+				elements[i] == this._last_button
+			) {
 				if (success_message) {
-                    RWTemplateHelpers.change_button_text(elements[i], success_message);
-                }
+					RWTemplateHelpers.change_button_text(elements[i], success_message);
+				}
 				RWTemplateHelpers.change_button_class(elements[i], btnSuccess);
 				if (!permanent) {
 					if (this._success_timeout) {
@@ -431,7 +462,7 @@
 			if (autosave_timeouts[template_obj]) {
 				clearTimeout(autosave_timeouts[template_obj]);
 			}
-			autosave_timeouts[template_obj] = setTimeout((template_obj.on_autosave || template_obj.on_submit), 2000);
+			autosave_timeouts[template_obj] = setTimeout(template_obj.on_autosave || template_obj.on_submit, 2000);
 		});
 	};
 
@@ -457,12 +488,15 @@
 
 	RWTemplateObject.prototype.enable_auto_save = function() {
 		if (!this.on_submit && !this.on_autosave) {
-			throw("$t.on_submit or $t.on_autosave must be defined before calling enable_auto_save.");
+			throw "$t.on_submit or $t.on_autosave must be defined before calling enable_auto_save.";
 		}
 		var elements = this.get_form_elements();
 		for (var i = 0; i < elements.length; i++) {
 			if (!elements[i]._autosaving) {
-				if ((elements[i].tagName == "TEXTAREA") || ((elements[i].tagName == "INPUT") && (elements[i].getAttribute("type") == "text"))) {
+				if (
+					elements[i].tagName == "TEXTAREA" ||
+					(elements[i].tagName == "INPUT" && elements[i].getAttribute("type") == "text")
+				) {
 					setup_timeout(elements[i], this);
 				}
 				setup_autosave(elements[i], this);
@@ -470,4 +504,4 @@
 			}
 		}
 	};
-}());
+})();

@@ -31,7 +31,6 @@ div.scroll_handle {
 
 	div.scrollblock:hover & {
 		opacity: 0.5;
-
 	}
 
 	&.invisible {
@@ -43,7 +42,8 @@ div.scroll_handle {
 		opacity: 1;
 	}
 
-	&.active, &.active:hover {
+	&.active,
+	&.active:hover {
 		@include no-transition();
 		background-color: $scrollbar_drag_bkg;
 		border-color: $scrollbar_drag_b;

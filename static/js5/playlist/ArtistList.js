@@ -4,13 +4,16 @@ var ArtistList = function(el) {
 
 	var loading = false;
 
-	API.add_callback("all_artists", function(json) { loading = true; self.update(json); });
+	API.add_callback("all_artists", function(json) {
+		loading = true;
+		self.update(json);
+	});
 
 	self.load = function() {
 		if (!self.loaded && !loading) {
 			self.show_loading();
 			loading = true;
-			API.async_get("all_artists", { "no_searchable": true });
+			API.async_get("all_artists", { no_searchable: true });
 		}
 	};
 

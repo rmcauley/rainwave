@@ -14,17 +14,17 @@ var SongsTableAlbumSort = function(a, b) {
 var SongsTableSorting = function(a, b) {
 	"use strict";
 	if (Prefs.get("p_songsort")) {
-		if (Prefs.get("p_fav1") && Prefs.get("p_favup") && (a.fave !== b.fave)) {
+		if (Prefs.get("p_fav1") && Prefs.get("p_favup") && a.fave !== b.fave) {
 			if (a.fave) return -1;
 			else return 1;
 		}
 
-		if (Prefs.get("p_avup") && (a.cool !== b.cool)) {
+		if (Prefs.get("p_avup") && a.cool !== b.cool) {
 			if (a.cool === false) return -1;
 			else return 1;
 		}
 
-		if (!Prefs.get("p_fav1") && Prefs.get("p_favup") && (a.fave !== b.fave)) {
+		if (!Prefs.get("p_fav1") && Prefs.get("p_favup") && a.fave !== b.fave) {
 			if (a.fave) return -1;
 			else return 1;
 		}
@@ -50,17 +50,27 @@ var SongsTableDetailDraw = function(song, details) {
 	// details contains all the song data
 	if (!details) return;
 	if (details.rating_rank_percentile >= 50) {
-		details.rating_percentile_message = $l("rating_percentile_top", { "rating": details.rating, "percentile": details.rating_rank_percentile, "percentile_top": 100 - details.rating_rank_percentile });
-	}
-	else {
-		details.rating_percentile_message = $l("rating_percentile_bottom", { "rating": details.rating, "percentile": details.rating_rank_percentile });
+		details.rating_percentile_message = $l("rating_percentile_top", {
+			rating: details.rating,
+			percentile: details.rating_rank_percentile,
+			percentile_top: 100 - details.rating_rank_percentile
+		});
+	} else {
+		details.rating_percentile_message = $l("rating_percentile_bottom", {
+			rating: details.rating,
+			percentile: details.rating_rank_percentile
+		});
 	}
 
 	if (details.request_rank_percentile >= 50) {
-		details.request_percentile_message = $l("request_percentile_top", { "percentile": details.request_rank_percentile, "percentile_top": 100 - details.request_rank_percentile });
-	}
-	else {
-		details.request_percentile_message = $l("request_percentile_bottom", { "percentile": details.request_rank_percentile });
+		details.request_percentile_message = $l("request_percentile_top", {
+			percentile: details.request_rank_percentile,
+			percentile_top: 100 - details.request_rank_percentile
+		});
+	} else {
+		details.request_percentile_message = $l("request_percentile_bottom", {
+			percentile: details.request_rank_percentile
+		});
 	}
 
 	var template = RWTemplates.detail.song_detail(details, song.$t.row);
@@ -86,24 +96,26 @@ var SongsTableDetail = function(song, scroll_on_open, sid) {
 		if (song.$t.details) {
 			if (song.$t.details.parentNode) {
 				song.$t.details.parentNode.removeChild(song.$t.details);
-			}
-			else {
+			} else {
 				song.$t.row.appendChild(song.$t.details);
 			}
 			Router.recalculate_scroll();
 			if (scroll_on_open) {
 				Router.scroll_a_bit();
 			}
-		}
-		else {
+		} else {
 			if (triggered) return;
 			triggered = true;
-			API.async_get("song", { "id": song.id, "sid": sid || User.sid, "all_categories": Prefs.get("p_allcats") }, function(json) {
-				SongsTableDetailDraw(song, json.song);
-				if (scroll_on_open) {
-					Router.scroll_a_bit();
+			API.async_get(
+				"song",
+				{ id: song.id, sid: sid || User.sid, all_categories: Prefs.get("p_allcats") },
+				function(json) {
+					SongsTableDetailDraw(song, json.song);
+					if (scroll_on_open) {
+						Router.scroll_a_bit();
+					}
 				}
-			});
+			);
 		}
 	};
 	song.$t.detail_icon.addEventListener("click", song.$t.detail_icon_click);
@@ -128,8 +140,7 @@ var MultiAlbumKeyNav = function(template, albums) {
 		if (kni === false) {
 			new_i = 0;
 			new_album_i = 0;
-		}
-		else {
+		} else {
 			while (jump !== 0) {
 				new_i += step;
 				jump--;
@@ -139,25 +150,22 @@ var MultiAlbumKeyNav = function(template, albums) {
 						new_album_i = albums.length - 1;
 						new_i = albums[new_album_i].songs.length - 1;
 						jump = 0;
-					}
-					else {
+					} else {
 						new_i = 0;
 					}
-				}
-				else if (new_i < 0) {
+				} else if (new_i < 0) {
 					new_album_i--;
 					if (new_album_i < 0) {
 						new_album_i = 0;
 						new_i = 0;
 						jump = 0;
-					}
-					else {
+					} else {
 						new_i = albums[new_album_i].songs.length - 1;
 					}
 				}
 			}
 		}
-		if ((new_i === kni) && (new_album_i === knai)) return;
+		if (new_i === kni && new_album_i === knai) return;
 
 		if (kni !== false) {
 			albums[knai].songs[kni].$t.row.classList.remove("hover");
@@ -175,18 +183,25 @@ var MultiAlbumKeyNav = function(template, albums) {
 	var scroll_to_kni = function() {
 		var kni_y = albums[knai].songs[kni].$t.row.offsetTop;
 		var now_y = template._scroll.scroll_top;
-		if (kni_y > (now_y + template._scroll.offset_height - 90)) {
+		if (kni_y > now_y + template._scroll.offset_height - 90) {
 			template._scroll.scroll_to(kni_y - template._scroll.offset_height + 90);
-		}
-		else if (kni_y < (now_y + 60)) {
+		} else if (kni_y < now_y + 60) {
 			template._scroll.scroll_to(kni_y - 60);
 		}
 	};
 
-	template.key_nav_down = function() { return key_nav_move(1); };
-	template.key_nav_up = function() { return key_nav_move(-1); };
-	template.key_nav_end = function() { return key_nav_move(total_songs); };
-	template.key_nav_home = function() { return key_nav_move(-total_songs); };
+	template.key_nav_down = function() {
+		return key_nav_move(1);
+	};
+	template.key_nav_up = function() {
+		return key_nav_move(-1);
+	};
+	template.key_nav_end = function() {
+		return key_nav_move(total_songs);
+	};
+	template.key_nav_home = function() {
+		return key_nav_move(-total_songs);
+	};
 	template.key_nav_page_up = function() {
 		if (!knai) {
 			return false;
@@ -216,29 +231,31 @@ var MultiAlbumKeyNav = function(template, albums) {
 		return true;
 	};
 
-	template.key_nav_left = function() { return false; };
-	template.key_nav_right = function() { return false; };
+	template.key_nav_left = function() {
+		return false;
+	};
+	template.key_nav_right = function() {
+		return false;
+	};
 
 	template.key_nav_enter = function() {
-		if ((kni !== false) && albums[knai].songs[kni]) {
+		if (kni !== false && albums[knai].songs[kni]) {
 			Requests.add(albums[knai].songs[kni].id);
 			return true;
 		}
 	};
 
 	template.key_nav_add_character = function(chr) {
-		if ((kni !== false) && albums[knai].songs[kni]) {
-			if ((chr == "i") && albums[knai].songs[kni].$t.detail_icon_click) {
+		if (kni !== false && albums[knai].songs[kni]) {
+			if (chr == "i" && albums[knai].songs[kni].$t.detail_icon_click) {
 				albums[knai].songs[kni].$t.detail_icon_click();
-			}
-			else if ((parseInt(chr) >= 1) && (parseInt(chr) <= 5)) {
+			} else if (parseInt(chr) >= 1 && parseInt(chr) <= 5) {
 				Rating.do_rating(parseInt(chr), albums[knai].songs[kni]);
-			}
-			else if (chr == "q") Rating.do_rating(1.5, albums[knai].songs[kni]);
+			} else if (chr == "q") Rating.do_rating(1.5, albums[knai].songs[kni]);
 			else if (chr == "w") Rating.do_rating(2.5, albums[knai].songs[kni]);
 			else if (chr == "e") Rating.do_rating(3.5, albums[knai].songs[kni]);
 			else if (chr == "r") Rating.do_rating(4.5, albums[knai].songs[kni]);
-			else if ((chr == "f") && (User.id > 1)) {
+			else if (chr == "f" && User.id > 1) {
 				var e = document.createEvent("Events");
 				e.initEvent("click", true, false);
 				albums[knai].songs[kni].$t.fave.dispatchEvent(e);
@@ -246,10 +263,12 @@ var MultiAlbumKeyNav = function(template, albums) {
 			return true;
 		}
 	};
-	template.key_nav_backspace = function() { return false; };
+	template.key_nav_backspace = function() {
+		return false;
+	};
 
 	template.key_nav_escape = function() {
-		if ((kni !== false) && albums[knai].songs[kni] && albums[knai].songs[kni].$t.detail_icon_click) {
+		if (kni !== false && albums[knai].songs[kni] && albums[knai].songs[kni].$t.detail_icon_click) {
 			albums[knai].songs[kni].$t.row.classList.remove("hover");
 		}
 		kni = false;
@@ -259,8 +278,7 @@ var MultiAlbumKeyNav = function(template, albums) {
 	template.key_nav_focus = function() {
 		if (kni === false) {
 			key_nav_move(1);
-		}
-		else {
+		} else {
 			albums[knai].songs[kni].$t.row.classList.add("hover");
 		}
 	};

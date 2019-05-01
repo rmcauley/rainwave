@@ -1,7 +1,7 @@
 $menu_icon_only_media: unquote("(max-width: 650px)");
 
 div.header {
-	-webkit-transform: translate3d(0,0,0);
+	-webkit-transform: translate3d(0, 0, 0);
 	position: relative;
 	background: $menu_pad_bkg;
 	height: $menu_height;
@@ -36,7 +36,8 @@ div.menu_wrapper {
 		width: 20px;
 		-webkit-transform: translateZ(0);
 
-		&, * {
+		&,
+		* {
 			fill: $menu;
 			// @include transition-wtime(150ms, fill);
 		}
@@ -66,7 +67,8 @@ ul.menu {
 	@include transform(translateY(-50%));
 	background: $menu_bkg;
 
-	svg, img.menu_icon {
+	svg,
+	img.menu_icon {
 		display: none;
 	}
 
@@ -86,7 +88,8 @@ ul.menu {
 				display: none;
 			}
 
-			svg, img.menu_icon {
+			svg,
+			img.menu_icon {
 				display: block;
 			}
 
@@ -184,7 +187,9 @@ ul.menu {
 			}
 		}
 
-		body.playlist &.playlist_link a, body.search_open &.search_link a, body.dj_open &.dj_link a {
+		body.playlist &.playlist_link a,
+		body.search_open &.search_link a,
+		body.dj_open &.dj_link a {
 			background: $menu_link_open;
 		}
 
@@ -239,7 +244,8 @@ ul.menu {
 	@include transform(translateY(-$menu_height + 10));
 	@include transition-wtime(300ms, opacity, transform, visibility);
 
-	a, ul.menu li & a {
+	a,
+	ul.menu li & a {
 		white-space: nowrap;
 		display: block;
 		background: $menu_bkg;
@@ -250,7 +256,8 @@ ul.menu {
 			border-bottom: none;
 		}
 
-		&, ul.menu li & {
+		&,
+		ul.menu li & {
 			padding: 8px 20px 8px 5px;
 		}
 	}

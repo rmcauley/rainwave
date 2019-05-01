@@ -5,7 +5,8 @@ div.panel.songlist_panel {
 		position: relative;
 	}
 
-	&, &.scrollable {
+	&,
+	&.scrollable {
 		position: absolute;
 	}
 
@@ -37,14 +38,18 @@ div.panel.songlist_panel {
 
 	&.dragging div.song {
 		-webkit-transition-duration: 300ms;
-		        transition-duration: 300ms;
+		transition-duration: 300ms;
 	}
 
-	&.warning, body.simple &.warning {
+	&.warning,
+	body.simple &.warning {
 		background-color: $requests_warn;
 	}
 
-	&.paused, body.simple &.paused, &.warning.paused, body.simple &.warning.paused {
+	&.paused,
+	body.simple &.paused,
+	&.warning.paused,
+	body.simple &.warning.paused {
 		background-color: $requests_paused;
 	}
 
@@ -86,7 +91,9 @@ div.panel.songlist_panel {
 			@include transition-wtime(300ms, transform);
 		}
 
-		&:hover, &.dragging, &.panel_open {
+		&:hover,
+		&.dragging,
+		&.panel_open {
 			@include transform(translateX(-100%));
 
 			ul.request_icons li {
@@ -188,7 +195,8 @@ div.request_cancel {
 		}
 	}
 
-	&:hover, &:active {
+	&:hover,
+	&:active {
 		border-color: $request_delete;
 		color: $request_delete;
 		background-color: $request_delete_bkg;
@@ -197,8 +205,8 @@ div.request_cancel {
 	&:active {
 		@include no-transition();
 		background: $request_delete_bkg_a;
-		-webkit-box-shadow: inset 2px 2px 5px 0px rgba(0,0,0,0.75);
-			    box-shadow: inset 2px 2px 5px 0px rgba(0,0,0,0.75);
+		-webkit-box-shadow: inset 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
+		box-shadow: inset 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
 	}
 
 	body.mobile & {
@@ -256,7 +264,8 @@ div.plusminus {
 	@include transform(translateX(0px));
 	@include transition-wtime(300ms, transform, opacity);
 
-	&.negative, &.equal {
+	&.negative,
+	&.equal {
 		color: $request_indicator_neg;
 		background: $request_indicator_neg_bkg;
 	}
@@ -286,7 +295,7 @@ div.plusminus {
 
 	@media $phone-media {
 		height: $phone_menu_height;
-	    box-sizing: border-box;
-	    padding: 11px 7px 0px 7px;
+		box-sizing: border-box;
+		padding: 11px 7px 0px 7px;
 	}
 }

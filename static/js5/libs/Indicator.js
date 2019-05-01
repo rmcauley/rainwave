@@ -5,7 +5,7 @@ var Indicator = function(indicator, indicator_start_count, indicator2) {
 	var current_count = indicator_start_count;
 
 	var indicate = function(new_count) {
-		if (document.body.classList.contains("loading") || (!indicator_timeout && (new_count == indicator_start_count))) {
+		if (document.body.classList.contains("loading") || (!indicator_timeout && new_count == indicator_start_count)) {
 			current_count = new_count;
 			indicator_start_count = new_count;
 			return;
@@ -24,8 +24,7 @@ var Indicator = function(indicator, indicator_start_count, indicator2) {
 			if (indicator2) {
 				indicator2.textContent = "+" + new_count;
 			}
-		}
-		else if (new_count < 0) {
+		} else if (new_count < 0) {
 			indicator.classList.remove("positive");
 			indicator.classList.add("negative");
 			indicator.classList.remove("equal");
@@ -33,8 +32,7 @@ var Indicator = function(indicator, indicator_start_count, indicator2) {
 			if (indicator2) {
 				indicator2.textContent = new_count;
 			}
-		}
-		else {
+		} else {
 			indicator.textContent = "=";
 			indicator.classList.remove("positive");
 			indicator.classList.remove("negative");

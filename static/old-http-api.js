@@ -1,4 +1,4 @@
-var API = function() {
+var API = (function() {
 	"use strict";
 	var sid, url, user_id, api_key;
 	var sync, sync_params, sync_stopped, sync_timeout_id, sync_error_count, sync_resync, sync_permastop;
@@ -20,7 +20,9 @@ var API = function() {
 	var slow_draw_threshold = 400;
 
 	self.initialize = function(n_sid, n_url, n_user_id, n_api_key, json) {
-		self.is_slow = ((navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1));
+		self.is_slow =
+			navigator.userAgent.toLowerCase().indexOf("mobile") !== -1 ||
+			navigator.userAgent.toLowerCase().indexOf("android") !== -1;
 
 		sid = n_sid;
 		url = n_url;
@@ -32,7 +34,7 @@ var API = function() {
 		sync.onload = sync_complete;
 		sync.onerror = sync_error;
 		sync.ontimeout = sync_error;
-		sync_params = self.serialize({ "sid": sid, "user_id": user_id, "key": api_key });
+		sync_params = self.serialize({ sid: sid, user_id: user_id, key: api_key });
 		sync_stopped = false;
 		sync_resync = false;
 		sync_error_count = 0;
@@ -46,10 +48,12 @@ var API = function() {
 		if ("sched_current" in json) {
 			known_event_id = json.sched_current.id;
 		}
-		self.add_callback("sched_current", function(json) { known_event_id = json.id; });
+		self.add_callback("sched_current", function(json) {
+			known_event_id = json.id;
+		});
 
 		// Make sure the clock gets initialized first
-		perform_callbacks({ "api_info": json.api_info });
+		perform_callbacks({ api_info: json.api_info });
 
 		// Call back the heavy playlist functions first
 		// This will prevent animation hitching
@@ -64,20 +68,24 @@ var API = function() {
 		// 	}
 		// }
 
-		perform_callbacks({ "_SYNC_START": true });
+		perform_callbacks({ _SYNC_START: true });
 		perform_callbacks(json);
-		perform_callbacks({ "_SYNC_COMPLETE": true });
+		perform_callbacks({ _SYNC_COMPLETE: true });
 		if ("sched_current" in json) {
-			perform_callbacks({ "_SYNC_SCHEDULE_COMPLETE": true });
+			perform_callbacks({ _SYNC_SCHEDULE_COMPLETE: true });
 		}
 		// Make sure any vote results are registered now (after the schedule has been loaded)
 		if ("already_voted" in json) {
-			perform_callbacks({ "already_voted": json.already_voted });
+			perform_callbacks({ already_voted: json.already_voted });
 		}
 
 		// only handle browser closing/opening on mobile
-		if ((typeof(visibilityEventNames) !== "undefined") && visibilityEventNames.change && document.addEventListener) {
-			if (MOBILE || (navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1)) {
+		if (typeof visibilityEventNames !== "undefined" && visibilityEventNames.change && document.addEventListener) {
+			if (
+				MOBILE ||
+				navigator.userAgent.toLowerCase().indexOf("mobile") !== -1 ||
+				navigator.userAgent.toLowerCase().indexOf("android") !== -1
+			) {
 				document.addEventListener(visibilityEventNames.change, handle_visibility_change, false);
 			}
 		}
@@ -89,8 +97,7 @@ var API = function() {
 		if (!sync_stopped) return;
 		if (document[visibilityEventNames.hidden]) {
 			sync_pause();
-		}
-		else {
+		} else {
 			sync_get();
 		}
 	};
@@ -109,8 +116,7 @@ var API = function() {
 		sync_stopped = false;
 		if (!is_dj) {
 			sync.open("POST", url + "sync", true);
-		}
-		else {
+		} else {
 			sync.open("POST", url + "sync_dj", true);
 		}
 		sync.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -137,7 +143,7 @@ var API = function() {
 
 	var clear_sync_timeout_error = function() {
 		sync_timeout_error_removal_timeout = null;
-		if (typeof(ErrorHandler) !== "undefined") {
+		if (typeof ErrorHandler !== "undefined") {
 			ErrorHandler.remove_permanent_error("sync_retrying");
 		}
 	};
@@ -152,7 +158,7 @@ var API = function() {
 	self.sync_stop = function() {
 		sync_pause();
 		sync_permastop = true;
-		if (typeof(ErrorHandler) !== "undefined") {
+		if (typeof ErrorHandler !== "undefined") {
 			ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
 		}
 	};
@@ -171,8 +177,7 @@ var API = function() {
 			if (sync.responseText) {
 				result = JSON.parse(sync.responseText);
 			}
-		}
-		catch (exc) {
+		} catch (exc) {
 			// do nothing
 		}
 		sync_resync = true;
@@ -197,12 +202,11 @@ var API = function() {
 		// 	sync_permastop = true;
 		// }
 		if (sync_error_count > 1) {
-			if (typeof(ErrorHandler) !== "undefined") {
+			if (typeof ErrorHandler !== "undefined") {
 				ErrorHandler.permanent_error(ErrorHandler.make_error("sync_retrying", 408));
 			}
 			sync_timeout_id = setTimeout(sync_get, 4000);
-		}
-		else {
+		} else {
 			sync_timeout_id = setTimeout(sync_get, 4000);
 		}
 	};
@@ -211,25 +215,24 @@ var API = function() {
 		if ("info_result" in response) {
 			response.sync_result = response.info_result;
 		}
-		if (("sync_result" in response) && (response.sync_result.tl_key == "station_offline")) {
-			if (typeof(ErrorHandler) !== "undefined") {
+		if ("sync_result" in response && response.sync_result.tl_key == "station_offline") {
+			if (typeof ErrorHandler !== "undefined") {
 				ErrorHandler.permanent_error(response.sync_result);
 			}
 			offline_ack = true;
 			self.paused = false;
 			return true;
-		}
-		else {
-			if (typeof(ErrorHandler) !== "undefined") {
+		} else {
+			if (typeof ErrorHandler !== "undefined") {
 				ErrorHandler.remove_permanent_error("station_offline");
 			}
 		}
-		if (("sync_result" in response) && (response.sync_result.tl_key == "station_paused")) {
+		if ("sync_result" in response && response.sync_result.tl_key == "station_paused") {
 			self.paused = true;
 			offline_ack = true;
 			return true;
 		}
-		if (("sync_dj_result" in response) && (response.sync_dj_result.tl_key == "station_paused")) {
+		if ("sync_dj_result" in response && response.sync_dj_result.tl_key == "station_paused") {
 			self.paused = true;
 			offline_ack = true;
 			return true;
@@ -251,25 +254,22 @@ var API = function() {
 		var response;
 		try {
 			response = JSON.parse(sync.responseText);
-		}
-		catch (e) {
+		} catch (e) {
 			return sync_error();
 		}
 
 		if (check_sync_results(response)) {
 			sync_restart_pause = 300;
-		}
-		else {
+		} else {
 			self.paused = false;
 			sync_error_count = 0;
 			offline_ack = false;
-			perform_callbacks({ "_SYNC_START": true });
+			perform_callbacks({ _SYNC_START: true });
 			perform_callbacks(response);
-			perform_callbacks({ "_SYNC_COMPLETE": true });
+			perform_callbacks({ _SYNC_COMPLETE: true });
 			if ("error" in response) {
 				sync_restart_pause = 6000;
-			}
-			else {
+			} else {
 				clear_sync_timeout_error();
 			}
 		}
@@ -298,7 +298,7 @@ var API = function() {
 	};
 
 	var async_timeout = function() {
-		if (typeof(ErrorHandler) !== "undefined") {
+		if (typeof ErrorHandler !== "undefined") {
 			ErrorHandler.permanent_error(ErrorHandler.make_error("sync_stopped", 500));
 		}
 		self.async_get();
@@ -312,12 +312,11 @@ var API = function() {
 			}
 		}
 		if (do_default && json) {
-			if (typeof(ErrorHandler) !== "undefined") {
+			if (typeof ErrorHandler !== "undefined") {
 				ErrorHandler.tooltip_error(json);
 			}
-		}
-		else if (do_default) {
-			if (typeof(ErrorHandler) !== "undefined") {
+		} else if (do_default) {
+			if (typeof ErrorHandler !== "undefined") {
 				ErrorHandler.tooltip_error(ErrorHandler.make_error("async_error", async.status));
 			}
 		}
@@ -325,26 +324,28 @@ var API = function() {
 	};
 
 	var async_complete = function() {
-		if (typeof(ErrorHandler) !== "undefined") {
+		if (typeof ErrorHandler !== "undefined") {
 			ErrorHandler.remove_permanent_error("async_error");
 		}
 
 		var json;
 		if (async.responseType === "json") {
 			json = async.response;
-		}
-		else {
+		} else {
 			try {
 				json = JSON.parse(async.response);
-			}
-			catch(e) {
+			} catch (e) {
 				// nothing
 			}
 		}
 
 		var net_slow = false;
 		var avg;
-		if (async_current && (async_current.action == "album") || (async_current.action == "artist") || (async_current.action == "group")) {
+		if (
+			(async_current && async_current.action == "album") ||
+			async_current.action == "artist" ||
+			async_current.action == "group"
+		) {
 			self.net_latencies.push(new Date() - async_current.start);
 			avg = 0;
 			while (self.net_latencies.length > 10) {
@@ -364,7 +365,7 @@ var API = function() {
 		}
 
 		for (var i in json) {
-			if (("success" in json[i]) && !json[i].success) {
+			if ("success" in json[i] && !json[i].success) {
 				return async_error(json[i]);
 			}
 		}
@@ -375,7 +376,11 @@ var API = function() {
 		}
 
 		var draw_slow = false;
-		if (async_current && (async_current.action == "album") || (async_current.action == "artist") || (async_current.action == "group")) {
+		if (
+			(async_current && async_current.action == "album") ||
+			async_current.action == "artist" ||
+			async_current.action == "group"
+		) {
 			self.draw_latencies.push(new Date() - async_current.start);
 			avg = 0;
 			while (self.draw_latencies.length > 10) {
@@ -398,12 +403,18 @@ var API = function() {
 	self.async_get = function(action, params, callback, error_callback) {
 		if (action) {
 			if (!params) params = {};
-			async_queue.push({ "action": action, "params": params, "callback": callback, "error_callback": error_callback, "start": new Date() });
+			async_queue.push({
+				action: action,
+				params: params,
+				callback: callback,
+				error_callback: error_callback,
+				start: new Date()
+			});
 		}
-		if ((async.readyState === 0) || (async.readyState === 4)) {
+		if (async.readyState === 0 || async.readyState === 4) {
 			async_current = async_queue.shift();
 			if (async_current) {
-				self.last_action = { "action": async_current.action, "params": async_current.params };
+				self.last_action = { action: async_current.action, params: async_current.params };
 				async.open("POST", url + async_current.action, true);
 				async.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 				if (!async_current.params.sid) async_current.params.sid = sid;
@@ -443,4 +454,4 @@ var API = function() {
 	};
 
 	return self;
-}();
+})();

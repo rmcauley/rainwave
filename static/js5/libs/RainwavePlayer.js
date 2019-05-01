@@ -1,41 +1,41 @@
 //  RainwavePlayer - http://github.com/rmcauley/rainwave_player
 
-var RainwavePlayer = function() {
+var RainwavePlayer = (function() {
 	"use strict";
 
 	// callback registries
 	var callbacks = {
-		"playing": [],
-		"stop": [],
-		"change": [],
-		"volumeChange": [],
-		"loading": [],
-		"stall": [],
-		"error": [],
-		"longLoadWarning": []
+		playing: [],
+		stop: [],
+		change: [],
+		volumeChange: [],
+		loading: [],
+		stall: [],
+		error: [],
+		longLoadWarning: []
 	};
 
 	// if the RainwaveAPI interface is not available, we can fallback to round robin relays
 	var hardcodedStations = {
-		1: [ "http://gamestream.rainwave.cc:8000/game" ],
-		2: [ "http://ocrstream.rainwave.cc:8000/ocremix" ],
-		3: [ "http://overstream.rainwave.cc:8000/covers" ],
-		4: [ "http://chipstream.rainwave.cc:8000/chiptune" ],
-		5: [ "http://allstream.rainwave.cc:8000/all" ]
+		1: ["http://gamestream.rainwave.cc:8000/game"],
+		2: ["http://ocrstream.rainwave.cc:8000/ocremix"],
+		3: ["http://overstream.rainwave.cc:8000/covers"],
+		4: ["http://chipstream.rainwave.cc:8000/chiptune"],
+		5: ["http://allstream.rainwave.cc:8000/all"]
 	};
 
 	// these friendly names make it easier to use the library as opposed to remembering numbers
 	var hardcodedStationToSID = {
-		"game": 1,
-		"ocr": 2,
-		"ocremix": 2,
+		game: 1,
+		ocr: 2,
+		ocremix: 2,
 		"oc remix": 2,
-		"cover": 3,
-		"covers": 3,
-		"chip": 4,
-		"chiptune": 4,
-		"chiptunes": 4,
-		"all": 5
+		cover: 3,
+		covers: 3,
+		chip: 4,
+		chiptune: 4,
+		chiptunes: 4,
+		all: 5
 	};
 
 	var self = {};
@@ -50,7 +50,9 @@ var RainwavePlayer = function() {
 	self.shuffleURLs = false;
 
 	var streamURLs = [];
-	var isMobile = (navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1);
+	var isMobile =
+		navigator.userAgent.toLowerCase().indexOf("mobile") !== -1 ||
+		navigator.userAgent.toLowerCase().indexOf("android") !== -1;
 
 	// Chrome on mobile has a really nasty habit of stalling AFTER playback has started
 	// And also taking AGES to start the actual playback.
@@ -60,9 +62,8 @@ var RainwavePlayer = function() {
 	var createEvent = function(eventType) {
 		try {
 			return new Event(eventType);
-		}
-		catch(e) {
-			return { "type": eventType };
+		} catch (e) {
+			return { type: eventType };
 		}
 	};
 
@@ -72,8 +73,8 @@ var RainwavePlayer = function() {
 
 	var audioEl = document.createElement("audio");
 	if ("canPlayType" in audioEl) {
-		var canMP3 = audioEl.canPlayType("audio/mpeg; codecs=\"mp3\"");
-		if ((canMP3 == "maybe") || (canMP3 == "probably")) {
+		var canMP3 = audioEl.canPlayType('audio/mpeg; codecs="mp3"');
+		if (canMP3 == "maybe" || canMP3 == "probably") {
 			self.mimetype = "audio/mpeg";
 			self.type = "mp3";
 			self.isSupported = true;
@@ -82,24 +83,23 @@ var RainwavePlayer = function() {
 		var canVorbis = false;
 		if (isMobile) {
 			// avoid using Vorbis on mobile devices, since MP3 playback has hardware decoding
-		}
-		else {
-			canVorbis = audioEl.canPlayType("audio/ogg; codecs=\"vorbis\"");
+		} else {
+			canVorbis = audioEl.canPlayType('audio/ogg; codecs="vorbis"');
 		}
 
 		// https://bugzilla.mozilla.org/show_bug.cgi?id=1417300
-		if (window.navigator.userAgent.indexOf('Firefox/57') !== -1) {
+		if (window.navigator.userAgent.indexOf("Firefox/57") !== -1) {
 			canVorbis = false;
 		}
 
-		if ((canVorbis == "maybe") || (canVorbis == "probably")) {
+		if (canVorbis == "maybe" || canVorbis == "probably") {
 			self.mimetype = "audio/ogg";
 			self.type = "ogg";
 			self.isSupported = true;
 		}
 
 		// see variable definition of chromeSpecialFlag on why we need to do this
-		if ((navigator.userAgent.indexOf("Chrome") > -1) && (navigator.userAgent.indexOf("Android") > -1)) {
+		if (navigator.userAgent.indexOf("Chrome") > -1 && navigator.userAgent.indexOf("Android") > -1) {
 			chromeSpecialFlag = true;
 		}
 	}
@@ -170,7 +170,9 @@ var RainwavePlayer = function() {
 	};
 
 	function shuffle(array) {
-		var m = array.length, t, i;
+		var m = array.length,
+			t,
+			i;
 
 		// While there remain elements to shuffle…
 		while (m) {
@@ -198,14 +200,13 @@ var RainwavePlayer = function() {
 		if (isNaN(parseInt(station)) || !hardcodedStations[parseInt(station)]) {
 			if (station.toLowerCase && hardcodedStationToSID[station.toLowerCase()]) {
 				station = hardcodedStationToSID[station.toLowerCase()];
-			}
-			else {
+			} else {
 				console.warn("Unknown Rainwave Station " + station + ", defaulting to All.");
 				station = 5;
 			}
 		}
 
-		streamURLs = [ hardcodedStations[station] + "." + self.type ];
+		streamURLs = [hardcodedStations[station] + "." + self.type];
 	};
 
 	/**
@@ -274,16 +275,15 @@ var RainwavePlayer = function() {
 		if (audioEl.parentNode) {
 			audioEl.parentNode.removeChild(audioEl);
 		}
-		audioEl.pause(0);					// I forget why I specified the 0 initially
-		audioEl.removeAttribute("src");		// nuke all traces of a source from orbit
+		audioEl.pause(0); // I forget why I specified the 0 initially
+		audioEl.removeAttribute("src"); // nuke all traces of a source from orbit
 		try {
 			// removing all the <source> elements first and then loading stops the
 			// browser from streaming entirely.  anything short of that
 			// and the browser will continue to stream in the background, piling up a massive
 			// audio buffer.
 			audioEl.load();
-		}
-		catch (e) {
+		} catch (e) {
 			// do nothing, we WANT it to fail
 		}
 		audioEl = null;
@@ -302,8 +302,7 @@ var RainwavePlayer = function() {
 				audioEl.volume = self.volume;
 			}
 			self.dispatchEvent(createEvent("volumeChange"));
-		}
-		else {
+		} else {
 			self.isMuted = true;
 			if (audioEl) {
 				audioEl.volume = 0;
@@ -350,11 +349,9 @@ var RainwavePlayer = function() {
 	var doAudioConnectError = function(detail) {
 		if (stall_active) {
 			return;
-		}
-		else if (stall_timeout) {
+		} else if (stall_timeout) {
 			return;
-		}
-		else {
+		} else {
 			stall_timeout = setTimeout(function() {
 				dispatchStall(detail);
 			}, STALL_DELAY);
@@ -398,7 +395,7 @@ var RainwavePlayer = function() {
 	var onAbort = function() {
 		if (self.debug) console.log("RainwavePlayer: <audio> aborted            :: " + audioEl.currentSrc);
 		onStop();
-	}
+	};
 
 	var onStop = function() {
 		if (self.debug) console.log("RainwavePlayer: <audio> stop               :: " + audioEl.currentSrc);
@@ -408,7 +405,7 @@ var RainwavePlayer = function() {
 	var onSuspend = function(e) {
 		if (self.debug) console.log("RainwavePlayer: <audio> suspend            :: " + audioEl.currentSrc);
 		onStall(e);
-	}
+	};
 
 	var onStall = function(e, i) {
 		// we need to handle stalls from sources (which have an index)
@@ -424,8 +421,7 @@ var RainwavePlayer = function() {
 				if (self.debug) console.log("RainwavePlayer: Ignoring stall due to chromeSpecialFlag.");
 				return;
 			}
-		}
-		else {
+		} else {
 			if (self.debug) console.log("RainwavePlayer: <source> stall             :: " + audioEl.currentSrc);
 		}
 
@@ -480,4 +476,4 @@ var RainwavePlayer = function() {
 	};
 
 	return self;
-}();
+})();

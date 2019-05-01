@@ -1,4 +1,4 @@
-var Mouse = function() {
+var Mouse = (function() {
 	"use strict";
 	var self = {};
 
@@ -20,6 +20,5 @@ var Mouse = function() {
 		window.addEventListener("mousedown", update_mouse, true);
 	}
 
-
 	return self;
-}();
+})();

@@ -1,4 +1,4 @@
-var Clock = function() {
+var Clock = (function() {
 	"use strict";
 	var interval = 0;
 	var timediff = 0;
@@ -15,9 +15,9 @@ var Clock = function() {
 	self.pageclock_function2 = null;
 
 	BOOTSTRAP.on_init.push(function(template) {
-		Prefs.define("t_rt", [ false, true ], true);
-		Prefs.define("t_clk", [ true, false ]);
-		Prefs.define("t_tl", [ true, false ]);
+		Prefs.define("t_rt", [false, true], true);
+		Prefs.define("t_clk", [true, false]);
+		Prefs.define("t_tl", [true, false]);
 		API.add_callback("api_info", self.resync);
 
 		if (!interval) {
@@ -36,8 +36,7 @@ var Clock = function() {
 				clearInterval(interval);
 				interval = null;
 			}
-		}
-		else {
+		} else {
 			self.loop();
 			if (!interval) {
 				interval = setInterval(self.loop, 1000);
@@ -65,7 +64,7 @@ var Clock = function() {
 	};
 
 	self.set_page_title = function(new_title, new_end_time) {
-		if ((new_end_time != page_title_end) && (new_end_time > self.now)) {
+		if (new_end_time != page_title_end && new_end_time > self.now) {
 			force_sync_ok = true;
 		}
 		page_title = new_title;
@@ -83,7 +82,7 @@ var Clock = function() {
 			self.pageclock_function2(page_title_end, self.now);
 		}
 
-		if (self.pageclock && (page_title_end - self.now >= 0)) {
+		if (self.pageclock && page_title_end - self.now >= 0) {
 			self.pageclock.textContent = c;
 		}
 
@@ -91,11 +90,10 @@ var Clock = function() {
 			self.pageclock_bar_function(page_title_end, self.now);
 		}
 
-		if (MOBILE || Sizing.simple && (!Prefs.get("t_tl") || !page_title || !User.tuned_in)) {
+		if (MOBILE || (Sizing.simple && (!Prefs.get("t_tl") || !page_title || !User.tuned_in))) {
 			if (document.title != original_title) document.title = original_title;
 			return;
-		}
-		else if (!Sizing.simple && !Prefs.get("t_tl")) {
+		} else if (!Sizing.simple && !Prefs.get("t_tl")) {
 			if (document.title != original_title) document.title = original_title;
 			return;
 		}
@@ -105,8 +103,7 @@ var Clock = function() {
 			var rating = Timeline.get_current_song_rating();
 			if (rating) {
 				this_page_title = "[" + Formatting.rating(rating) + "] " + this_page_title;
-			}
-			else {
+			} else {
 				this_page_title = "*** " + this_page_title;
 			}
 		}
@@ -117,4 +114,4 @@ var Clock = function() {
 	};
 
 	return self;
-}();
+})();

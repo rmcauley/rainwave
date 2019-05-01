@@ -4,27 +4,27 @@ $player_icon_height: $menu_height * 0.6;
 $player_icon_width: $player_icon_height;
 
 @-webkit-keyframes bar_loader {
-    0% {
-        @include transform(translateX(-50%) scaleX(0));
-    }
-    50% {
-        @include transform(translateX(0%) scaleX(0.45));
-    }
-    100% {
-        @include transform(translateX(50%) scaleX(0));
-    }
+	0% {
+		@include transform(translateX(-50%) scaleX(0));
+	}
+	50% {
+		@include transform(translateX(0%) scaleX(0.45));
+	}
+	100% {
+		@include transform(translateX(50%) scaleX(0));
+	}
 }
 
 @keyframes bar_loader {
-    0% {
-        @include transform(translateX(-50%) scaleX(0));
-    }
-    50% {
-        @include transform(translateX(0%) scaleX(0.45));
-    }
-    100% {
-        @include transform(translateX(50%) scaleX(0));
-    }
+	0% {
+		@include transform(translateX(-50%) scaleX(0));
+	}
+	50% {
+		@include transform(translateX(0%) scaleX(0.45));
+	}
+	100% {
+		@include transform(translateX(50%) scaleX(0));
+	}
 }
 
 #r4_audio_player {
@@ -54,11 +54,13 @@ $player_icon_width: $player_icon_height;
 		opacity: 0.3;
 		cursor: pointer;
 
-		&, * {
+		&,
+		* {
 			@include transition-wtime(300ms, fill, opacity);
 		}
 
-		body.desktop &:hover, &:hover * {
+		body.desktop &:hover,
+		&:hover * {
 			fill: $link_h;
 		}
 	}
@@ -68,9 +70,11 @@ $player_icon_width: $player_icon_height;
 		cursor: pointer;
 	}
 
-	&.playing, &.playing {
+	&.playing,
+	&.playing {
 		.audio_icon_play {
-			&, * {
+			&,
+			* {
 				fill: $orange * 1.2;
 			}
 		}
@@ -90,7 +94,8 @@ $player_icon_width: $player_icon_height;
 		.audio_icon_mute {
 			opacity: 1;
 
-			&, * {
+			&,
+			* {
 				fill: $orange * 1.2;
 			}
 		}
@@ -108,7 +113,7 @@ $player_icon_width: $player_icon_height;
 		margin-left: 5px;
 		width: $player_icon_height * 2;
 		height: $player_icon_height;
-		opacity: .3;
+		opacity: 0.3;
 		cursor: default;
 		@include transition(opacity);
 	}
@@ -120,7 +125,9 @@ $player_icon_width: $player_icon_height;
 		top: 8px;
 		@include transform(none);
 
-		.menu_inline_dropdown, .audio_icon_mute, .audio_icon_stop {
+		.menu_inline_dropdown,
+		.audio_icon_mute,
+		.audio_icon_stop {
 			display: none;
 		}
 
@@ -130,7 +137,8 @@ $player_icon_width: $player_icon_height;
 	}
 
 	@media (max-width: 720px) {
-		.audio_volume, body.desktop & .audio_volume {
+		.audio_volume,
+		body.desktop & .audio_volume {
 			display: none;
 		}
 
@@ -155,7 +163,8 @@ $player_icon_width: $player_icon_height;
 
 	/* SPINNER *******************************************************************/
 
-	div.load_indicator, div.tuned_in_indicator {
+	div.load_indicator,
+	div.tuned_in_indicator {
 		position: absolute;
 		z-index: 2;
 		top: 100%;
@@ -172,19 +181,20 @@ $player_icon_width: $player_icon_height;
 	}
 
 	div.load_indicator {
-	    -webkit-animation: bar_loader 0.8s infinite linear;
-	            animation: bar_loader 0.8s infinite linear;
-	    -webkit-animation-play-state: paused;
-	            animation-play-state: paused;
+		-webkit-animation: bar_loader 0.8s infinite linear;
+		animation: bar_loader 0.8s infinite linear;
+		-webkit-animation-play-state: paused;
+		animation-play-state: paused;
 	}
 
 	&.working div.load_indicator {
 		opacity: 1;
 		-webkit-animation-play-state: running;
-		        animation-play-state: running;
+		animation-play-state: running;
 	}
 
-	div.tuned_in_indicator, body.tuned_in &.working div.tuned_in_indicator {
+	div.tuned_in_indicator,
+	body.tuned_in &.working div.tuned_in_indicator {
 		background: $text;
 		@include transform(scaleX(0));
 	}

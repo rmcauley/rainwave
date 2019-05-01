@@ -1,4 +1,4 @@
-var requestNextAnimationFrame = function() {
+var requestNextAnimationFrame = (function() {
 	"use strict";
 	var queue = [];
 	var requested;
@@ -23,23 +23,23 @@ var requestNextAnimationFrame = function() {
 		}
 		requested = true;
 	};
-}();
+})();
 
-var Fx = function() {
+var Fx = (function() {
 	"use strict";
 	var self = {};
 
-	self.transform = function() {
-		var transforms = [ "transform", "WebkitTransform", "msTransform", "MozTransform" ];
+	self.transform = (function() {
+		var transforms = ["transform", "WebkitTransform", "msTransform", "MozTransform"];
 		var p = transforms.shift();
 		var t = document.createElement("div");
 		while (p) {
-			if (typeof(t).style[p] !== "undefined") {
+			if (typeof t.style[p] !== "undefined") {
 				return p;
 			}
 			p = transforms.shift();
 		}
-	}();
+	})();
 
 	// this never really worked 100% of the time, leaving lots of leftover elements
 	// self.chain_transition = function(el, end_func) {
@@ -53,8 +53,7 @@ var Fx = function() {
 	self.remove_element = function(el) {
 		if (document.body.classList.contains("loading")) {
 			if (el.parentNode) el.parentNode.removeChild(el);
-		}
-		else {
+		} else {
 			// self.chain_transition(el,
 			// 	function() {
 			// 		if (el.parentNode) {
@@ -74,4 +73,4 @@ var Fx = function() {
 	};
 
 	return self;
-}();
+})();

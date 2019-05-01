@@ -1,4 +1,4 @@
-var RainwaveAPI = function() {
+var RainwaveAPI = (function() {
 	"use strict";
 
 	// Setup  ************************************************************************************************
@@ -20,10 +20,11 @@ var RainwaveAPI = function() {
 	var callbacks = {};
 	var noop = function() {};
 
-	var netLatencies, drawLatencies = [];
+	var netLatencies,
+		drawLatencies = [];
 	var slowNetThreshold = 200;
 	var slowDrawThreshold = 400;
-	var measuredRequests = [ "album", "artist", "group" ];
+	var measuredRequests = ["album", "artist", "group"];
 
 	// Module Init  ******************************************************************************************
 
@@ -46,16 +47,21 @@ var RainwaveAPI = function() {
 			userIsDJ = data.user && data.user.dj;
 			if (data.api_info) {
 				// This will initialize any clocks first, since this contains the server time
-				performCallbacks({ "api_info": data.api_info });
+				performCallbacks({ api_info: data.api_info });
 			}
 		}
 
 		// on mobile browsers
-		if ((navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1)) {
+		if (
+			navigator.userAgent.toLowerCase().indexOf("mobile") !== -1 ||
+			navigator.userAgent.toLowerCase().indexOf("android") !== -1
+		) {
 			// only handle browser minimizing/maximizing on mobile
 			document.addEventListener(visibilityChange, onVisibilityChange);
 			// set to slow network by default (affects rendering)
-			self.isSlow = ((navigator.userAgent.toLowerCase().indexOf("mobile") !== -1) || (navigator.userAgent.toLowerCase().indexOf("android") !== -1));
+			self.isSlow =
+				navigator.userAgent.toLowerCase().indexOf("mobile") !== -1 ||
+				navigator.userAgent.toLowerCase().indexOf("android") !== -1;
 		}
 
 		if (data) {
@@ -68,17 +74,16 @@ var RainwaveAPI = function() {
 	// Socket Functions **************************************************************************************
 
 	var initSocket = function() {
-		if (socket && (socket.readyState === WebSocket.OPEN)) {
+		if (socket && socket.readyState === WebSocket.OPEN) {
 			return;
 		}
-		var wshost = (window.location.protocol === "https:" || self.forceSecure) ? "wss://" : "ws://";
+		var wshost = window.location.protocol === "https:" || self.forceSecure ? "wss://" : "ws://";
 		if (_host) {
 			wshost += _host;
 			if (window.location.port) {
 				wshost += ":" + window.location.port;
 			}
-		}
-		else {
+		} else {
 			wshost += window.location.host;
 		}
 		if (isOKTimer) {
@@ -90,13 +95,14 @@ var RainwaveAPI = function() {
 			if (self.debug) console.log("Socket open.");
 			socketOpped = false;
 			try {
-				socket.send(JSON.stringify({
-					action: "auth",
-					user_id: _userID,
-					key: _apiKey
-				}));
-			}
-			catch (exc) {
+				socket.send(
+					JSON.stringify({
+						action: "auth",
+						user_id: _userID,
+						key: _apiKey
+					})
+				);
+			} catch (exc) {
 				console.error("Socket exception while trying to authenticate on socket.");
 				console.error(exc);
 				onSocketError();
@@ -113,7 +119,7 @@ var RainwaveAPI = function() {
 	};
 
 	var closeSocket = function() {
-		if (!socket || (socket.readyState === WebSocket.CLOSING) || (socket.readyState === WebSocket.CLOSED)) {
+		if (!socket || socket.readyState === WebSocket.CLOSING || socket.readyState === WebSocket.CLOSED) {
 			return;
 		}
 		// sometimes depending on browser condition, onSocketClose won't get called for a while
@@ -158,7 +164,7 @@ var RainwaveAPI = function() {
 
 	var onSocketError = function() {
 		if (self.debug) console.log("Socket errored.");
-		self.onError({ "tl_key": "sync_retrying" });
+		self.onError({ tl_key: "sync_retrying" });
 	};
 
 	var onSocketOK = function() {
@@ -174,12 +180,13 @@ var RainwaveAPI = function() {
 		if (currentScheduleID) {
 			if (self.debug) console.log("Socket send - check_sched_current_id with " + currentScheduleID);
 			try {
-				socket.send(JSON.stringify({
-					action: "check_sched_current_id",
-					sched_id: currentScheduleID
-				}));
-			}
-			catch (exc) {
+				socket.send(
+					JSON.stringify({
+						action: "check_sched_current_id",
+						sched_id: currentScheduleID
+					})
+				);
+			} catch (exc) {
 				console.error("Socket exception while trying to check_sched_current_id.");
 				console.error(exc);
 				onSocketError();
@@ -222,8 +229,7 @@ var RainwaveAPI = function() {
 	if (typeof document.hidden !== "undefined") {
 		hidden = "hidden";
 		visibilityChange = "visibilitychange";
-	}
-	else if (typeof document.webkitHidden !== "undefined") {
+	} else if (typeof document.webkitHidden !== "undefined") {
 		hidden = "webkitHidden";
 		visibilityChange = "webkitvisibilitychange";
 	}
@@ -232,8 +238,7 @@ var RainwaveAPI = function() {
 		if (document[hidden]) {
 			isHidden = true;
 			closeSocket();
-		}
-		else {
+		} else {
 			isHidden = false;
 			initSocket();
 		}
@@ -254,7 +259,8 @@ var RainwaveAPI = function() {
 	// Data From API *****************************************************************************************
 
 	var solveLatency = function(asyncRequest, latencies, threshold) {
-		var i, avg = 0;
+		var i,
+			avg = 0;
 		if (measuredRequests.indexOf(asyncRequest.action) !== -1) {
 			latencies.push(new Date() - asyncRequest.start);
 			while (latencies.length > 10) {
@@ -279,9 +285,8 @@ var RainwaveAPI = function() {
 
 		var json;
 		try {
-			 json = JSON.parse(message.data);
-		}
-		catch (exc) {
+			json = JSON.parse(message.data);
+		} catch (exc) {
 			console.error("Response from Rainwave API was not JSON!");
 			console.error(message);
 			closeSocket();
@@ -316,9 +321,9 @@ var RainwaveAPI = function() {
 
 		if (asyncRequest) {
 			for (i in json) {
-				if (("success" in json[i]) && !json[i].success) {
+				if ("success" in json[i] && !json[i].success) {
 					asyncRequest.success = false;
-					if (self.throwErrorsOnThrottle || (json[i].tl_key !== "websocket_throttle")) {
+					if (self.throwErrorsOnThrottle || json[i].tl_key !== "websocket_throttle") {
 						if (!asyncRequest.onError(json[i])) {
 							self.onUnsuccessful(json[i]);
 						}
@@ -331,8 +336,7 @@ var RainwaveAPI = function() {
 		if ("sync_result" in json) {
 			if (json.sync_result.tl_key == "station_offline") {
 				self.onError(json.sync_result);
-			}
-			else {
+			} else {
 				self.onErrorRemove("station_offline");
 			}
 		}
@@ -349,20 +353,20 @@ var RainwaveAPI = function() {
 
 	// Calls To API ******************************************************************************************
 
-	var statelessRequests = [ "ping", "pong" ];
+	var statelessRequests = ["ping", "pong"];
 
 	self.onRequestError = null;
 
 	self.request = function(action, params, onSuccess, onError) {
 		if (!action) {
-			throw("No action specified for Rainwave API request.");
+			throw "No action specified for Rainwave API request.";
 		}
 		params = params || {};
 		params.action = action;
-		if (("sid" in params) && !params.sid && (params.sid !== 0)) {
+		if ("sid" in params && !params.sid && params.sid !== 0) {
 			delete params.sid;
 		}
-		if ((statelessRequests.indexOf(action) !== -1) || !isOK) {
+		if (statelessRequests.indexOf(action) !== -1 || !isOK) {
 			for (var i = requestQueue.length - 1; i >= 0; i--) {
 				if (requestQueue[i].message.action === action) {
 					if (self.debug) console.log("Throwing away extra " + requestQueue[i].message.action);
@@ -412,8 +416,7 @@ var RainwaveAPI = function() {
 		var jsonmsg;
 		try {
 			jsonmsg = JSON.stringify(request.message);
-		}
-		catch (e) {
+		} catch (e) {
 			console.error("JSON exception while trying to encode message.");
 			console.error(e);
 			requestQueue.shift();
@@ -421,13 +424,12 @@ var RainwaveAPI = function() {
 		}
 
 		try {
-  			socket.send(jsonmsg);
-  			requestQueue.shift();
-  			if (request.message.message_id !== undefined) {
+			socket.send(jsonmsg);
+			requestQueue.shift();
+			if (request.message.message_id !== undefined) {
 				sentRequests.push(request);
 			}
-  		}
-		catch (exc) {
+		} catch (exc) {
 			console.error("Socket exception while trying to send.");
 			console.error(exc);
 			onSocketError();
@@ -439,8 +441,8 @@ var RainwaveAPI = function() {
 			isOKTimer = null;
 			requestQueue.unshift(request);
 			if (self.debug) console.log("Looks like the connection timed out.");
-			self.onRequestError({ "tl_key": "lost_connection" });
-			self.onError({ "tl_key": "sync_retrying" });
+			self.onRequestError({ tl_key: "lost_connection" });
+			self.onError({ tl_key: "sync_retrying" });
 			self.forceReconnect();
 		}
 	};
@@ -472,24 +474,23 @@ var RainwaveAPI = function() {
 
 			if ("sched_current" in json) {
 				if (self.debug) console.log("Sync complete.");
-				performCallbacks({ "_SYNC_SCHEDULE_COMPLETE": true });
+				performCallbacks({ _SYNC_SCHEDULE_COMPLETE: true });
 			}
 
 			key = "already_voted";
-			if (alreadyVoted && (key in callbacks)) {
+			if (alreadyVoted && key in callbacks) {
 				for (cb = 0; cb < callbacks[key].length; cb++) {
 					callbacks[key][cb](alreadyVoted);
 				}
 			}
 
 			key = "live_voting";
-			if (liveVoting && (key in callbacks)) {
+			if (liveVoting && key in callbacks) {
 				for (cb = 0; cb < callbacks[key].length; cb++) {
 					callbacks[key][cb](liveVoting);
 				}
 			}
-		}
-		catch (e) {
+		} catch (e) {
 			if (self.exceptionHandler) {
 				self.exceptionHandler(e);
 			}
@@ -516,4 +517,4 @@ var RainwaveAPI = function() {
 	};
 
 	return self;
-}();
+})();

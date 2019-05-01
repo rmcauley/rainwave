@@ -15,7 +15,8 @@ ul.panel_header {
 		border-bottom: 2px solid transparent;
 		@include transition(LINKCOLOR, background, opacity, border-bottom);
 
-		div.lists &.open, body.simple &.open {
+		div.lists &.open,
+		body.simple &.open {
 			color: $tab_open;
 			border-bottom-color: $tab_open_b;
 		}
@@ -38,7 +39,8 @@ div.no_result_message {
 		display: none;
 	}
 
-	&.while_search_active, div.no_results &.while_search_active {
+	&.while_search_active,
+	div.no_results &.while_search_active {
 		display: none;
 	}
 
@@ -47,7 +49,9 @@ div.no_result_message {
 	}
 }
 
-body.simple div.panel, div.search_panel, div.dj_panel {
+body.simple div.panel,
+div.search_panel,
+div.dj_panel {
 	position: absolute;
 	z-index: 100;
 	width: 450px;
@@ -66,7 +70,7 @@ body.simple div.panel, div.search_panel, div.dj_panel {
 }
 
 div.lists {
-	-webkit-transform: translate3d(0,0,0);
+	-webkit-transform: translate3d(0, 0, 0);
 
 	div.scrollable {
 		position: relative;
@@ -130,7 +134,8 @@ div.searchbox_container {
 	height: 29px;
 	@include transition-wtime(200ms, background-color);
 
-	&.search_error, &.active.search_error {
+	&.search_error,
+	&.active.search_error {
 		background-color: $search_error_b;
 	}
 
@@ -155,7 +160,9 @@ div.searchbox_container {
 		background-color: $search_on_b;
 	}
 
-	&.active, &.search_error, &.has_value {
+	&.active,
+	&.search_error,
+	&.has_value {
 		img.cancel {
 			display: inline;
 		}
@@ -177,7 +184,10 @@ div.searchbox_container {
 		padding-right: 4px;
 		@include transition-wtime(300ms, border-color, opacity);
 
-		&::-webkit-input-placeholder, &:-moz-placeholder, &::-moz-placeholder, &:-ms-input-placeholder {
+		&::-webkit-input-placeholder,
+		&:-moz-placeholder,
+		&::-moz-placeholder,
+		&:-ms-input-placeholder {
 			color: $text;
 		}
 
@@ -213,7 +223,8 @@ div.list {
 		display: block;
 	}
 
-	div.list_contents, div.scrollblock {
+	div.list_contents,
+	div.scrollblock {
 		position: relative;
 	}
 
@@ -241,7 +252,9 @@ div.list {
 			color: $fave;
 		}
 
-		body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
+		body.desktop &:hover,
+		body.desktop &.hover,
+		body.mobile &:active {
 			color: $link;
 			background-color: $hover_bkg;
 			border-bottom-color: $hover_b;
@@ -251,7 +264,8 @@ div.list {
 				opacity: 0.5;
 			}
 
-			&.album_fave_highlight:hover, &.cool.album_fave_highlight:hover {
+			&.album_fave_highlight:hover,
+			&.cool.album_fave_highlight:hover {
 				background-color: $fave_h;
 				border-bottom-color: $fave_hb;
 			}
@@ -278,7 +292,9 @@ div.list {
 		&.cool {
 			background-color: $cooldown;
 
-			body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
+			body.desktop &:hover,
+			body.desktop &.hover,
+			body.mobile &:active {
 				background-color: $cooldown_h;
 				border-bottom-color: $cooldown_hb;
 			}
@@ -289,7 +305,8 @@ div.list {
 			@include transition-wtime(300ms, padding);
 		}
 
-		div.requestlist_song, div.requestlist_album {
+		div.requestlist_song,
+		div.requestlist_album {
 			color: $text_d;
 			padding-left: 2em;
 		}
@@ -316,7 +333,9 @@ div.list {
 				background-color: $album_incomplete;
 				background-image: $incomplete_rating;
 
-				body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
+				body.desktop &:hover,
+				body.desktop &.hover,
+				body.mobile &:active {
 					background-color: $hover_bkg;
 					border-bottom-color: $hover_b;
 				}
@@ -329,7 +348,9 @@ div.list {
 					color: $text_d;
 					background-color: $album_incomplete_cool;
 
-					body.desktop &:hover, body.desktop &.hover, body.mobile &:active {
+					body.desktop &:hover,
+					body.desktop &.hover,
+					body.mobile &:active {
 						background-color: $hover_bkg;
 						border-bottom-color: $hover_b;
 					}
@@ -341,7 +362,7 @@ div.list {
 			span.name {
 				background-repeat: no-repeat;
 				background-size: 14px;
-				background-image: url('/static/images4/new.png');
+				background-image: url("/static/images4/new.png");
 				background-position: 3px 0px;
 				@include transition-wtime(300ms, padding, background-position, LINKCOLOR, TOUCHTRANSFORM);
 				color: $new_indicator;
@@ -365,7 +386,7 @@ div.list {
 			span.name {
 				background-repeat: no-repeat;
 				background-size: 14px;
-				background-image: url('/static/images4/newish.png');
+				background-image: url("/static/images4/newish.png");
 				background-position: 3px 0px;
 				@include transition-wtime(300ms, padding, background-position);
 			}
@@ -376,7 +397,9 @@ div.list {
 		}
 	}
 
-	&.artist_list, &.group_list, &.listener_list {
+	&.artist_list,
+	&.group_list,
+	&.listener_list {
 		div.item {
 			padding-left: 22px;
 		}

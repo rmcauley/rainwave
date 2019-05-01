@@ -1,13 +1,13 @@
 var UnavailableOnThisStationPopup = function() {
 	ErrorHandler.tooltip_error({
-		"text": $l("song_on_other_station", { "station": $l("station_name_" + User.sid) })
+		text: $l("song_on_other_station", { station: $l("station_name_" + User.sid) })
 	});
 };
 
 var ArtistView = function(json) {
 	"use strict";
-	var order = [ 1, 4, 2, 3 ];
-	var final_order = [ User.sid ];
+	var order = [1, 4, 2, 3];
+	var final_order = [User.sid];
 	for (var i = 0; i < order.length; i++) {
 		if (order[i] === User.sid) continue;
 		if (!json.all_songs[order[i]]) continue;
@@ -25,9 +25,8 @@ var ArtistView = function(json) {
 				a = json.all_songs[sid][album_id][0].albums[0];
 				a.sid = sid;
 				if (sid !== User.sid) {
-					a.name = $l("album_on_station", { "station": $l("station_name_" + sid), "album": a.name });
-				}
-				else {
+					a.name = $l("album_on_station", { station: $l("station_name_" + sid), album: a.name });
+				} else {
 					a.openable = true;
 				}
 				// cut off a circular memory reference quick-like
@@ -40,7 +39,7 @@ var ArtistView = function(json) {
 		}
 		json.albums = albums;
 	}
-	var template = RWTemplates.detail.artist({ "artist": json, "albums": json.albums }, document.createElement("div"));
+	var template = RWTemplates.detail.artist({ artist: json, albums: json.albums }, document.createElement("div"));
 	var j;
 	for (i = 0; i < albums.length; i++) {
 		for (j = 0; j < albums[i].songs.length; j++) {
@@ -51,7 +50,11 @@ var ArtistView = function(json) {
 			} else {
 				albums[i].songs[j].$t.title.addEventListener("click", UnavailableOnThisStationPopup);
 			}
-			SongsTableDetail(albums[i].songs[j], ((i == albums.length - 1) && (j > albums[i].songs.length - 4)), albums[i].sid);
+			SongsTableDetail(
+				albums[i].songs[j],
+				i == albums.length - 1 && j > albums[i].songs.length - 4,
+				albums[i].sid
+			);
 		}
 	}
 

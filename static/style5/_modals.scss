@@ -28,7 +28,7 @@ div.modal_container {
 	background: $bkg;
 	z-index: 10001;
 	width: 100%;
-	@include transform(translate(-50%, -50%) scaleX(0.0) scaleY($initial_height));
+	@include transform(translate(-50%, -50%) scaleX(0) scaleY($initial_height));
 	@include transition-wtime($modal_trans_time, opacity, transform);
 
 	div.content {
@@ -87,17 +87,18 @@ div.modal_container {
 		@include transform(translate(0px, 30px));
 		@include transition-wtime($modal_trans_time * 1.5, opacity, transform);
 		-webkit-transition-delay: $modal_trans_time * 0.5;
-		        transition-delay: $modal_trans_time * 0.5;
+		transition-delay: $modal_trans_time * 0.5;
 	}
 
 	&.open {
 		opacity: 1;
-		@include transform(translate(-50%, -50%) scaleX(1.0) scaleY($initial_height));
+		@include transform(translate(-50%, -50%) scaleX(1) scaleY($initial_height));
 
 		&.full_open {
-			@include transform(translate(-50%, -50%) scaleX(1.0) scaleY(1.0));
+			@include transform(translate(-50%, -50%) scaleX(1) scaleY(1));
 
-			div.main, div.header_wrapper div.content {
+			div.main,
+			div.header_wrapper div.content {
 				opacity: 1;
 				@include transform(none);
 			}
@@ -105,7 +106,7 @@ div.modal_container {
 
 		&.modal_closing {
 			opacity: 0;
-			@include transform(translate(-50%, -40%) scaleX(1.0) scaleY(1.0) !important);
+			@include transform(translate(-50%, -40%) scaleX(1) scaleY(1) !important);
 		}
 	}
 

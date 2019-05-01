@@ -16,7 +16,7 @@ var GroupView = function(json) {
 		}
 		albums.sort(SongsTableAlbumSort);
 
-		template = RWTemplates.detail.group({ "group": json, "albums": albums }, document.createElement("div"));
+		template = RWTemplates.detail.group({ group: json, albums: albums }, document.createElement("div"));
 
 		var j;
 		for (i = 0; i < albums.length; i++) {
@@ -26,7 +26,7 @@ var GroupView = function(json) {
 				if (albums[i].songs[j].requestable) {
 					Requests.make_clickable(albums[i].songs[j].$t.title, albums[i].songs[j].id);
 				}
-				SongsTableDetail(albums[i].songs[j], ((i == albums.length - 1) && (j > albums[i].songs.length - 4)));
+				SongsTableDetail(albums[i].songs[j], i == albums.length - 1 && j > albums[i].songs.length - 4);
 			}
 		}
 

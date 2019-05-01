@@ -6,7 +6,8 @@
 	],
 	"settings": {
 		"files.exclude": {
-			"**/*.pyc": true
+			"**/*.pyc": true,
+			"static/baked/**": true
 		},
 		"editor.formatOnSave": true,
 		"prettier.endOfLine": "lf",

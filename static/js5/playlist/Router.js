@@ -1,4 +1,4 @@
-var Router = function() {
+var Router = (function() {
 	"use strict";
 
 	var self = {};
@@ -25,7 +25,7 @@ var Router = function() {
 	var reset_cache_on_next_request = false;
 	var request_in_flight = false;
 	var has_autoplayed = false;
-	var taborder = [ "album", "artist", "group", "request_line" ];
+	var taborder = ["album", "artist", "group", "request_line"];
 
 	var reset_cache = function() {
 		// console.log("Cache reset.");
@@ -42,7 +42,7 @@ var Router = function() {
 			}
 
 			rendered_type = null;
-			rendered_id   = null;
+			rendered_id = null;
 		}
 
 		if (detail_header) {
@@ -80,7 +80,11 @@ var Router = function() {
 		detail_header = root_template.detail_header;
 
 		root_template.lists.addEventListener("click", function(e) {
-			if (Sizing.simple && document.body.classList.contains("detail") && !document.body.classList.contains("desktop")) {
+			if (
+				Sizing.simple &&
+				document.body.classList.contains("detail") &&
+				!document.body.classList.contains("desktop")
+			) {
 				self.change(current_type);
 			}
 			e.stopPropagation();
@@ -91,7 +95,7 @@ var Router = function() {
 		});
 
 		root_template.sizeable_area.addEventListener("click", function(e) {
-			if (Sizing.simple && ((e.target.nodeName.toLowerCase() != "a") || !e.target.getAttribute("href"))) {
+			if (Sizing.simple && (e.target.nodeName.toLowerCase() != "a" || !e.target.getAttribute("href"))) {
 				self.change();
 			}
 		});
@@ -117,8 +121,7 @@ var Router = function() {
 		root_template.detail_close.addEventListener("click", function() {
 			if (lists[current_type]) {
 				self.change(current_type);
-			}
-			else {
+			} else {
 				self.change();
 			}
 		});
@@ -126,8 +129,7 @@ var Router = function() {
 		API.add_callback("_SYNC_SCHEDULE_COMPLETE", function() {
 			if (request_in_flight) {
 				reset_cache_on_next_request = true;
-			}
-			else {
+			} else {
 				rendered_type = null;
 				rendered_id = null;
 				reset_cache();
@@ -154,7 +156,7 @@ var Router = function() {
 		};
 	});
 
-	self.reset_everything = function () {
+	self.reset_everything = function() {
 		reset_cache();
 		self.change();
 	};
@@ -164,7 +166,7 @@ var Router = function() {
 	};
 
 	self.scroll_a_bit = function() {
-		scroll.scroll_to(scroll.scroll_top + (Sizing.list_item_height * 2));
+		scroll.scroll_to(scroll.scroll_top + Sizing.list_item_height * 2);
 	};
 
 	self.get_current_url = function() {
@@ -177,10 +179,9 @@ var Router = function() {
 
 	self.tab_forward = function() {
 		var idx = taborder.indexOf(current_type);
-		if ((idx === -1) || (idx == taborder.length - 1)) {
+		if (idx === -1 || idx == taborder.length - 1) {
 			idx = 0;
-		}
-		else {
+		} else {
 			idx++;
 		}
 		self.change(taborder[idx]);
@@ -190,8 +191,7 @@ var Router = function() {
 		var idx = taborder.indexOf(current_type);
 		if (idx <= 0) {
 			idx = taborder.length - 1;
-		}
-		else {
+		} else {
 			idx--;
 		}
 		self.change(taborder[idx]);
@@ -220,12 +220,12 @@ var Router = function() {
 				current_open_type = null;
 				return false;
 			}
-			if (typeof(ga) == "object") ga("send", "pageview", "/" + new_route);
+			if (typeof ga == "object") ga("send", "pageview", "/" + new_route);
 			new_route = new_route.split("/");
 			document.body.classList.remove("requests");
 			document.body.classList.remove("search_open");
 			document.body.classList.remove("dj_open");
-			if ((new_route[0] == "autoplay") && !has_autoplayed) {
+			if (new_route[0] == "autoplay" && !has_autoplayed) {
 				RWAudio.play();
 				has_autoplayed = true;
 				return false;
@@ -233,24 +233,20 @@ var Router = function() {
 			if (tabs[new_route[0]] || views[new_route[0]]) {
 				self.open_route(new_route[0], new_route[1]);
 				return true;
-			}
-			else if (new_route[0] == "requests") {
+			} else if (new_route[0] == "requests") {
 				self.open_route();
 				document.body.classList.add("requests");
 				return true;
-			}
-			else if (new_route[0] == "search") {
+			} else if (new_route[0] == "search") {
 				self.open_route();
 				document.body.classList.add("search_open");
 				setTimeout(SearchPanel.focus, 300);
 				return true;
-			}
-			else if (new_route[0] == "dj") {
+			} else if (new_route[0] == "dj") {
 				self.open_route();
 				document.body.classList.add("dj_open");
 				return true;
-			}
-			else {
+			} else {
 				// TODO: show error
 			}
 		}
@@ -269,7 +265,7 @@ var Router = function() {
 			document.body.classList.add("detail");
 		}
 
-		if ((rendered_type == typ) && (rendered_id == id)) return;
+		if (rendered_type == typ && rendered_id == id) return;
 
 		rendered_type = typ;
 		rendered_id = id;
@@ -285,8 +281,7 @@ var Router = function() {
 		var t;
 		if (!cache[typ][id]) {
 			RWTemplates.oops(null, el);
-		}
-		else if (cache[typ][id]._root) {
+		} else if (cache[typ][id]._root) {
 			// console.log(typ + "/" + id + ": Appending existing cache.");
 			el.appendChild(cache[typ][id]._root);
 			cache[typ][id]._root.style.display = "block";
@@ -296,8 +291,7 @@ var Router = function() {
 			if (cache[typ][id]._header_formatting) {
 				cache[typ][id]._header_formatting(detail_header);
 			}
-		}
-		else {
+		} else {
 			// console.log(typ + "/" + id + ": Rendering detail.");
 			t = views[typ](cache[typ][id], el);
 			detail_header.textContent = t._header_text;
@@ -308,11 +302,11 @@ var Router = function() {
 			if (t._root.parentNode != el) {
 				el.appendChild(t._root);
 			}
-			if (t._root && t._root.tagName && (t._root.tagName.toLowerCase() == "div")) {
+			if (t._root && t._root.tagName && t._root.tagName.toLowerCase() == "div") {
 				cache[typ][id] = t;
 				cache[typ][id]._scroll = scroll;
 				self.active_detail = cache[typ][id];
-				cache_page_stack.push({ "typ": typ, "id": id });
+				cache_page_stack.push({ typ: typ, id: id });
 				var cps;
 				while (cache_page_stack.length > 5) {
 					cps = cache_page_stack.shift();
@@ -320,13 +314,13 @@ var Router = function() {
 						if (cache[cps.typ][cps.id]._root.parentNode) {
 							cache[cps.typ][cps.id]._root.parentNode.removeChild(cache[cps.typ][cps.id]._root);
 						}
-						delete(cache[cps.typ][cps.id]);
+						delete cache[cps.typ][cps.id];
 					}
 				}
 			}
 		}
 
-		var scroll_to = scroll_positions[typ][id] || 0;		// do BEFORE scroll.set_height calls reposition_callback!
+		var scroll_to = scroll_positions[typ][id] || 0; // do BEFORE scroll.set_height calls reposition_callback!
 		scroll.set_height(false);
 		scroll.scroll_to(scroll_to);
 	};
@@ -377,12 +371,10 @@ var Router = function() {
 						}
 					}, 300);
 					document.body.classList.add("detail");
-				}
-				else {
+				} else {
 					ready_to_render = true;
 				}
-			}
-			else {
+			} else {
 				document.body.classList.add("detail");
 				ready_to_render = true;
 			}
@@ -395,7 +387,7 @@ var Router = function() {
 			if (!cache[typ][id]) {
 				// console.log(typ + "/" + id + ": Loading from server.");
 				cache[typ][id] = true;
-				var params = { "id": id };
+				var params = { id: id };
 				var req = typ;
 				if (req == "request_line") {
 					req = "listener";
@@ -410,8 +402,7 @@ var Router = function() {
 						ready_to_render = true;
 					}
 				});
-			}
-			else if (cache[typ][id] !== true) {
+			} else if (cache[typ][id] !== true) {
 				// console.log(typ + "/" + id + ": Rendering from cache.");
 				actually_open(typ, id);
 				ready_to_render = true;
@@ -451,17 +442,16 @@ var Router = function() {
 				self.active_list.key_nav_blur();
 			}
 			self.active_list = lists[typ];
-			if ((typ != current_type) && document.body.classList.contains("normal")) {
+			if (typ != current_type && document.body.classList.contains("normal")) {
 				close_detail = false;
 			}
 			current_type = typ;
 			KeyHandler.route_to_lists();
-		}
-		else if (Sizing.simple) {
+		} else if (Sizing.simple) {
 			document.body.classList.remove("playlist");
 		}
 
-		if ((typ in lists) && id && !isNaN(id)) {
+		if (typ in lists && id && !isNaN(id)) {
 			id = parseInt(id);
 			if (cache[typ][id] && cache[typ][id]._root) {
 				// the page is already loaded from cache and ready to go
@@ -469,7 +459,9 @@ var Router = function() {
 			}
 			if (!ready_to_render) {
 				remove_excess_header_content();
-				detail_header.textContent = (lists[typ] && lists[typ].get_title_from_id ? lists[typ].get_title_from_id(id) : false) || $l("Loading...");
+				detail_header.textContent =
+					(lists[typ] && lists[typ].get_title_from_id ? lists[typ].get_title_from_id(id) : false) ||
+					$l("Loading...");
 			}
 			var scrolled = false;
 			if (!ready_to_render && lists[typ] && lists[typ].loaded) {
@@ -482,8 +474,7 @@ var Router = function() {
 					lists[typ].scroll_to_id(id);
 				}
 			}
-		}
-		else if (Sizing.simple && (close_detail || force_close_detail)) {
+		} else if (Sizing.simple && (close_detail || force_close_detail)) {
 			document.body.classList.remove("detail");
 			force_close_detail = false;
 		}
@@ -492,8 +483,7 @@ var Router = function() {
 			if (!self.active_list.loaded) {
 				self.active_list.load();
 			}
-		}
-		else {
+		} else {
 			if (self.active_list && self.active_list._key_handle) {
 				self.active_list.key_nav_blur();
 			}
@@ -509,14 +499,12 @@ var Router = function() {
 		var new_url = decodeURI(location.href);
 		if (new_url.indexOf("#") >= 0) {
 			new_url = new_url.substring(0, new_url.indexOf("#")) + "#!/" + r;
-		}
-		else {
+		} else {
 			new_url = new_url + "#!/" + r;
 		}
 		if (old_url == new_url) {
 			old_url = null;
-		}
-		else {
+		} else {
 			location.href = new_url;
 		}
 		// self.detect_url_change();
@@ -530,11 +518,10 @@ var Router = function() {
 	self.open_last_id = function() {
 		if (!last_open_id) {
 			return self.open_last();
-		}
-		else {
+		} else {
 			self.change(last_open, last_open_id);
 		}
 	};
 
 	return self;
-}();
+})();

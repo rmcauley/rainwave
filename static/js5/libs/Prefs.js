@@ -1,39 +1,71 @@
 // docCookies, by Mozilla.
 var docCookies = {
-	getItem: function (sKey) {
-		return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+	getItem: function(sKey) {
+		return (
+			decodeURIComponent(
+				document.cookie.replace(
+					new RegExp(
+						"(?:(?:^|.*;)\\s*" +
+							encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") +
+							"\\s*\\=\\s*([^;]*).*$)|^.*$"
+					),
+					"$1"
+				)
+			) || null
+		);
 	},
-	setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
-		if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+	setItem: function(sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+		if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) {
+			return false;
+		}
 		var sExpires = "";
 		if (vEnd) {
 			switch (vEnd.constructor) {
 				case Number:
-				sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
-				break;
+					sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+					break;
 				case String:
-				sExpires = "; expires=" + vEnd;
-				break;
+					sExpires = "; expires=" + vEnd;
+					break;
 				case Date:
-				sExpires = "; expires=" + vEnd.toUTCString();
-				break;
+					sExpires = "; expires=" + vEnd.toUTCString();
+					break;
 			}
 		}
-		document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+		document.cookie =
+			encodeURIComponent(sKey) +
+			"=" +
+			encodeURIComponent(sValue) +
+			sExpires +
+			(sDomain ? "; domain=" + sDomain : "") +
+			(sPath ? "; path=" + sPath : "") +
+			(bSecure ? "; secure" : "");
 		return true;
 	},
-	removeItem: function (sKey, sPath, sDomain) {
-		if (!sKey || !this.hasItem(sKey)) { return false; }
-		document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + ( sDomain ? "; domain=" + sDomain : "") + ( sPath ? "; path=" + sPath : "");
+	removeItem: function(sKey, sPath, sDomain) {
+		if (!sKey || !this.hasItem(sKey)) {
+			return false;
+		}
+		document.cookie =
+			encodeURIComponent(sKey) +
+			"=; expires=Thu, 01 Jan 1970 00:00:00 GMT" +
+			(sDomain ? "; domain=" + sDomain : "") +
+			(sPath ? "; path=" + sPath : "");
 		return true;
 	},
-	hasItem: function (sKey) {
-		return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+	hasItem: function(sKey) {
+		return new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=").test(
+			document.cookie
+		);
 	},
-	keys: /* optional method: you can safely remove it! */ function () {
-		var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
-		for (var nIdx = 0; nIdx < aKeys.length; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
-			return aKeys;
+	keys: /* optional method: you can safely remove it! */ function() {
+		var aKeys = document.cookie
+			.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "")
+			.split(/\s*(?:\=[^;]*)?;\s*/);
+		for (var nIdx = 0; nIdx < aKeys.length; nIdx++) {
+			aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]);
+		}
+		return aKeys;
 	}
 };
 
@@ -44,7 +76,7 @@ docCookies.removeItem("edilayouts", "/", BOOTSTRAP.cookie_domain);
 docCookies.removeItem("r4_prefs", "/", BOOTSTRAP.cookie_domain);
 docCookies.removeItem("r4_active_list", "/", BOOTSTRAP.cookie_domain);
 
-var Prefs = function() {
+var Prefs = (function() {
 	"use strict";
 	var self = {};
 	self.powertripped = false;
@@ -55,8 +87,7 @@ var Prefs = function() {
 	var values;
 	try {
 		values = JSON.parse(docCookies.getItem("r5_prefs")) || {};
-	}
-	catch(err) {
+	} catch (err) {
 		values = {};
 	}
 
@@ -110,19 +141,21 @@ var Prefs = function() {
 
 	self.define = function(name, legal_values, power_only) {
 		meta[name] = {};
-		meta[name].legal_values = legal_values || [ false, true ];
+		meta[name].legal_values = legal_values || [false, true];
 		meta[name].power_only = power_only;
-		if (meta[name].legal_values.length == 2 && (meta[name].legal_values.indexOf(false) !== -1) && (meta[name].legal_values.indexOf(true) !== -2)) {
+		if (
+			meta[name].legal_values.length == 2 &&
+			meta[name].legal_values.indexOf(false) !== -1 &&
+			meta[name].legal_values.indexOf(true) !== -2
+		) {
 			meta[name].bool = true;
-		}
-		else {
+		} else {
 			meta[name].bool = false;
 		}
 		if (!(name in values)) {
 			values[name] = legal_values ? legal_values[0] : false;
-		}
-		else {
-			if ((values[name] !== meta[name].legal_values[0]) && power_only) {
+		} else {
+			if (values[name] !== meta[name].legal_values[0] && power_only) {
 				self.powertripped = true;
 			}
 		}
@@ -144,30 +177,30 @@ var Prefs = function() {
 		var i, j;
 		for (i in meta) {
 			copy[i] = {
-				"legal_values": [],
-				"bool"        : meta[i].bool,
-				"power_only"  : meta[i].power_only,
-				"value"       : values[i],
-				"name"        : $l("prefs_" + i)
+				legal_values: [],
+				bool: meta[i].bool,
+				power_only: meta[i].power_only,
+				value: values[i],
+				name: $l("prefs_" + i)
 			};
 			if (!meta[i].bool) {
 				for (j = 0; j < meta[i].legal_values.length; j++) {
-					copy[i].legal_values.push({ "value": meta[i].legal_values[j], "name": meta[i].legal_values[j] });
+					copy[i].legal_values.push({ value: meta[i].legal_values[j], name: meta[i].legal_values[j] });
 				}
 			}
 		}
 		copy.locales = {
-			"legal_values": [],
-			"bool": false,
-			"power_only": false,
-			"name": $l("change_language"),
-			"value": LOCALE
+			legal_values: [],
+			bool: false,
+			power_only: false,
+			name: $l("change_language"),
+			value: LOCALE
 		};
 		for (i in locales) {
-			copy.locales.legal_values.push({ "value": i, "name": locales[i] });
+			copy.locales.legal_values.push({ value: i, name: locales[i] });
 		}
 		return copy;
 	};
 
 	return self;
-}();
+})();

@@ -39,15 +39,13 @@ var RequestLineList = function(el) {
 		item._user.textContent = item.position + ". " + item.username;
 		if (item.skip || !item.song) {
 			item._el.classList.add("skip");
-		}
-		else {
+		} else {
 			item._el.classList.remove("skip");
 		}
 		if (item.song) {
 			item._song_title.textContent = item.song.title;
 			item._album_title.textContent = item.song.album_name;
-		}
-		else {
+		} else {
 			item._song_title.textContent = $l("no_song_selected");
 			item._album_title.textContent = "_";
 		}

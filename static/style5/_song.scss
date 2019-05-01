@@ -1,12 +1,13 @@
 $song_transitions: opacity $transtime, transform $transtime, background-position 250ms linear, visibility $transtime;
-$webkit_song_transitions: opacity $transtime, -webkit-transform $transtime, background-position 250ms linear, visibility $transtime;
+$webkit_song_transitions: opacity $transtime, -webkit-transform $transtime, background-position 250ms linear,
+	visibility $transtime;
 
 div.song {
 	box-sizing: border-box;
 	position: absolute;
 	cursor: default;
 	-webkit-transition: $webkit_song_transitions, background-color $transtime;
-	        transition: $song_transitions, background-color $transtime;
+	transition: $song_transitions, background-color $transtime;
 	height: $art_size;
 	width: 100%;
 
@@ -25,7 +26,8 @@ div.song {
 			visibility: visible;
 			pointer-events: auto;
 
-			body.desktop &:hover, body.mobile:active {
+			body.desktop &:hover,
+			body.mobile:active {
 				opacity: 1;
 			}
 		}
@@ -52,14 +54,21 @@ div.song {
 		color: $fave;
 	}
 
-	div.title, div.album, div.artist, div.cooldown_info, div.song_link_container {
+	div.title,
+	div.album,
+	div.artist,
+	div.cooldown_info,
+	div.song_link_container {
 		text-overflow: ellipsis;
 		overflow: hidden;
 		white-space: nowrap;
 		min-height: $rating_height + 1;
 	}
 
-	div.album, div.artist, div.cooldown_info, div.song_link_container {
+	div.album,
+	div.artist,
+	div.cooldown_info,
+	div.song_link_container {
 		padding-left: 15px;
 		color: $text_d;
 
@@ -110,7 +119,8 @@ div.song {
 		}
 	}
 
-	body.desktop.simple.normal div.sched_current &, body.full div.sched_current & {
+	body.desktop.simple.normal div.sched_current &,
+	body.full div.sched_current & {
 		&.now_playing {
 			div.song_link_container {
 				display: block;
@@ -149,10 +159,10 @@ div.song {
 			left: 50%;
 			padding-bottom: 2px;
 			-webkit-transform-origin: top left;
-			        transform-origin: top left;
+			transform-origin: top left;
 			@include transform(rotate(90deg) translateX(-50%) translateY(-50%));
 
-			html[lang='ko_KO'] & {
+			html[lang="ko_KO"] & {
 				@include transform(translateX(-50%) translateY(-50%));
 			}
 		}
@@ -167,8 +177,8 @@ div.song {
 		}
 
 		&:active {
-			-webkit-box-shadow: inset 2px 2px 5px 0px rgba(0,0,0,0.75);
-			        box-shadow: inset 2px 2px 5px 0px rgba(0,0,0,0.75);
+			-webkit-box-shadow: inset 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
+			box-shadow: inset 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
 
 			span.vote_button_rotate {
 				@include transform(rotate(90deg) translateX(-50%) translateY(-50%) translateX(2px) translateY(-2px));
@@ -180,8 +190,8 @@ div.song {
 	$highlight_scaleY_h: 0.8;
 	$highlight_scaleX_clicked: 0.8;
 	$highlight_scaleY_clicked: 0.95;
-	$highlight_scaleX_voted: 1.0;
-	$highlight_scaleY_voted: 1.0;
+	$highlight_scaleX_voted: 1;
+	$highlight_scaleY_voted: 1;
 	$highlight_fade_duration: 2s;
 
 	div.song_highlight {
@@ -192,7 +202,7 @@ div.song {
 		left: 0;
 		background: $vote_highlight;
 		-webkit-transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
-		        transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
+		transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
 		@include transform(scaleX(0));
 	}
 
@@ -236,7 +246,8 @@ div.song {
 		background-repeat: repeat-x;
 		padding: 0px 10px;
 
-		div.art_anchor, div.song_content {
+		div.art_anchor,
+		div.song_content {
 			@include transition(TOUCHTRANSFORM);
 		}
 
@@ -249,14 +260,16 @@ div.song {
 		&.voting_enabled:not(.voting_registered):not(.voting_clicked) {
 			cursor: pointer;
 
-			body.mobile & div.art_anchor:active, body.mobile & div.art_anchor:active + div.song_content {
+			body.mobile & div.art_anchor:active,
+			body.mobile & div.art_anchor:active + div.song_content {
 				@include touchtransform();
 			}
 
-			body.desktop &:hover, body.mobile &:active {
+			body.desktop &:hover,
+			body.mobile &:active {
 				background-color: $hover_bkg;
 				-webkit-transition: $webkit_song_transitions;
-				        transition: $song_transitions;
+				transition: $song_transitions;
 
 				div.vote_button {
 					opacity: 1;
@@ -266,7 +279,8 @@ div.song {
 				div.song_content a {
 					@include transition-wtime(250ms, color, background-color, padding);
 
-					body.desktop &:hover, body.mobile &:active {
+					body.desktop &:hover,
+					body.mobile &:active {
 						background-color: $timeline_link_h_bkg;
 						padding: 0 10px;
 						color: $link_h;
@@ -275,14 +289,15 @@ div.song {
 			}
 		}
 
-		&.voting_clicked, &.voting_registered {
+		&.voting_clicked,
+		&.voting_registered {
 			background-image: url(/static/images4/vote_hover_r5.png);
 		}
 
 		&.voting_clicked {
 			background-color: $hover_bkg;
 			-webkit-transition: $webkit_song_transitions;
-				    transition: $song_transitions;
+			transition: $song_transitions;
 
 			div.song_highlight {
 				visibility: visible;
@@ -295,7 +310,7 @@ div.song {
 			background-color: $vote_registered;
 			background-position: 0px -35px;
 			-webkit-transition: $webkit_song_transitions;
-			        transition: $song_transitions;
+			transition: $song_transitions;
 
 			div.vote_button {
 				opacity: 1;
@@ -306,8 +321,8 @@ div.song {
 				visibility: visible;
 				background: transparent;
 				-webkit-transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
-		                transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
-				@include transform(scaleX(0.50));
+				transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
+				@include transform(scaleX(0.5));
 			}
 
 			&.autovoted {
@@ -328,7 +343,8 @@ div.song {
 		}
 	}
 
-	div.request_indicator, div.requester {
+	div.request_indicator,
+	div.requester {
 		box-sizing: border-box;
 		position: absolute;
 		width: 100%;
@@ -374,11 +390,12 @@ div.song {
 
 		@include transform(rotate(-90deg) translateX(-100%));
 		-webkit-transform-origin: 0% 0%;
-		        transform-origin: 0% 0%;
+		transform-origin: 0% 0%;
 	}
 
 	div.art_expanded {
-		div.request_indicator, div.requester {
+		div.request_indicator,
+		div.requester {
 			opacity: 0;
 		}
 	}
@@ -397,7 +414,7 @@ div.song {
 			z-index: -1;
 			opacity: 0.4;
 			-webkit-filter: blur(1px);
-			filter: blur(1px)
+			filter: blur(1px);
 		}
 
 		div.song_content {
@@ -417,11 +434,36 @@ div.song {
 		color: $text;
 	}
 
-	div.song_station_indicator_1 { background: $station_game;   &::before { content: 'G' } }
-	div.song_station_indicator_2 { background: $station_ocr;    &::before { content: 'O' } }
-	div.song_station_indicator_3 { background: $station_covers; &::before { content: 'Co' } }
-	div.song_station_indicator_4 { background: $station_chip;   &::before { content: 'Ch' } }
-	div.song_station_indicator_5 { background: $station_all;    &::before { content: 'A' } }
+	div.song_station_indicator_1 {
+		background: $station_game;
+		&::before {
+			content: "G";
+		}
+	}
+	div.song_station_indicator_2 {
+		background: $station_ocr;
+		&::before {
+			content: "O";
+		}
+	}
+	div.song_station_indicator_3 {
+		background: $station_covers;
+		&::before {
+			content: "Co";
+		}
+	}
+	div.song_station_indicator_4 {
+		background: $station_chip;
+		&::before {
+			content: "Ch";
+		}
+	}
+	div.song_station_indicator_5 {
+		background: $station_all;
+		&::before {
+			content: "A";
+		}
+	}
 }
 
 div.song div.plusminus {

@@ -1,6 +1,6 @@
 // Lyre AJAX :: http://rainwave.cc/api/ :: (c) Robert McAuley 2011
 
-var lyre = function() {
+var lyre = (function() {
 	var maxid = -1;
 	var sync = new XMLHttpRequest();
 	var sync_on = false;
@@ -60,7 +60,7 @@ var lyre = function() {
 			str.push(p + "=" + encodeURIComponent(obj[p]));
 		}
 		return str.join("&");
-	}
+	};
 
 	/*that.deserialize = function(getstring) {
 		var obj = {};
@@ -74,34 +74,34 @@ var lyre = function() {
 	}*/
 
 	var cloneObject = function() {
-		var nobj = {}
+		var nobj = {};
 		for (var i = 0; i < arguments.length; i++) {
 			for (var p in arguments[i]) {
-				nobj[p] = arguments[i][p]
+				nobj[p] = arguments[i][p];
 			}
 		}
 		return nobj;
-	}
+	};
 
 	var lyreClockHandle = function(response) {
-		if (response['time']) {
-			that.sync_time = response['time'];
+		if (response["time"]) {
+			that.sync_time = response["time"];
 			that.clockSync(that.sync_time);
 		}
 	};
 
 	var sync_get = function(params) {
-		if (!params) params = {}
-		var actionurl = sync_init ? "init" : "sync"
+		if (!params) params = {};
+		var actionurl = sync_init ? "init" : "sync";
 		var url = urlprefix + actionurl;
-		sync.open("POST", url, true)
+		sync.open("POST", url, true);
 		sync.onreadystatechange = sync_complete;
 		sync.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		var fparams = cloneObject(params, that.sync_extra);
-		fparams['sid'] = sid;
-		fparams['user_id'] = rw_user_id;
-		fparams['key'] = rw_apikey;
-		fparams['in_order'] = "true";
+		fparams["sid"] = sid;
+		fparams["user_id"] = rw_user_id;
+		fparams["key"] = rw_apikey;
+		fparams["in_order"] = "true";
 		var sfparams = that.serialize(fparams);
 		sync.send(sfparams);
 	};
@@ -111,14 +111,12 @@ var lyre = function() {
 		var synctimeout = 1000;
 		if (that.stop_sync) {
 			// do nothing
-		}
-		else if ((sync.readyState == 4) && (sync.status == 200)) {
+		} else if (sync.readyState == 4 && sync.status == 200) {
 			errorcount = 0;
 			try {
 				if (JSON) response = JSON.parse(sync.responseText);
 				else eval("response = " + sync.responseText);
-			}
-			catch(err) {
+			} catch (err) {
 				that.errorCallback("internal_error");
 			}
 			if (response) {
@@ -126,11 +124,10 @@ var lyre = function() {
 				sync_init = false;
 				performCallbacks(response);
 			}
-		}
-		else if (sync.readyState == 4) {
+		} else if (sync.readyState == 4) {
 			errorcount++;
 			if (errorcount > 1) {
-				response = [ { "error": { "tl_key": "internal_error" } } ];
+				response = [{ error: { tl_key: "internal_error" } }];
 				performCallbacks(response);
 			}
 			synctimeout = 5000;
@@ -139,9 +136,7 @@ var lyre = function() {
 		if (response && response[0] && response[0].error && response[0].error.code) {
 			if (response[0].error.code == 403) {
 				that.sync_stop = true;
-
-			}
-			else {
+			} else {
 				synctimeout = 5000;
 			}
 		}
@@ -172,14 +167,14 @@ var lyre = function() {
 
 	var async_queueAdd = function(action, params) {
 		var temp = {};
-		temp['action'] = action;
-		temp['params'] = params;
+		temp["action"] = action;
+		temp["params"] = params;
 		async_queue.push(temp);
 	};
 
 	var async_queueCheck = function(override) {
-		if ((async_queue.length > 0) && (async_ready || override)) {
-			that.async_get(async_queue[0]['action'], async_queue[0]['params'], true);
+		if (async_queue.length > 0 && (async_ready || override)) {
+			that.async_get(async_queue[0]["action"], async_queue[0]["params"], true);
 			async_queue.shift();
 			return true;
 		}
@@ -209,7 +204,7 @@ var lyre = function() {
 		}
 		if (sched_synced) performCallback({}, "sched_sync");
 
-		if (('success' in json) && (!json.success)) {
+		if ("success" in json && !json.success) {
 			errorcontrol.genericR4Error(json);
 		}
 	};
@@ -225,14 +220,12 @@ var lyre = function() {
 					if (that.catcherrors) {
 						try {
 							callbacks[segment][cb](json);
-						}
-						catch(err) {
+						} catch (err) {
 							that.jsErrorCallback(err, json);
 							that.sync_stop = true;
 							return;
 						}
-					}
-					else {
+					} else {
 						callbacks[segment][cb](json);
 					}
 				}
@@ -250,20 +243,19 @@ var lyre = function() {
 	// It's used internally when performing queued actions, i.e. when the library knows things are good to go
 	// but is holding off any calls from jumping the queue.
 	that.async_get = function(action, params, override) {
-		if (!params) params = {}
+		if (!params) params = {};
 		if (async_ready || override) {
 			async_ready = false;
 			async.open("POST", urlprefix + action, true);
 			async.onreadystatechange = async_complete;
 			async.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			var fparams = cloneObject(params)
-			fparams['sid'] = sid
-			fparams['user_id'] = rw_user_id;
-			fparams['key'] = rw_apikey;
-			fparams['in_order'] = "true";
+			var fparams = cloneObject(params);
+			fparams["sid"] = sid;
+			fparams["user_id"] = rw_user_id;
+			fparams["key"] = rw_apikey;
+			fparams["in_order"] = "true";
 			async.send(that.serialize(fparams));
-		}
-		else {
+		} else {
 			async_queueAdd(action, params);
 		}
 	};
@@ -275,7 +267,6 @@ var lyre = function() {
 		return maxid;
 	};
 
-
 	that.addUniversalCallback = function(method) {
 		universal_callbacks.push(method);
 		return universal_callbacks.length;
@@ -284,14 +275,14 @@ var lyre = function() {
 	that.removeCallback = function(lyreelement, cbid) {
 		if (callbacks[lyreelement]) {
 			if (callbacks[lyreelement][cbid]) {
-				delete(callbacks[lyreelement][cbid]);
+				delete callbacks[lyreelement][cbid];
 				return true;
 			}
 		}
 		return false;
-	}
+	};
 
 	that.addCallback(lyreClockHandle, "api_info");
 
 	return that;
-}();
+})();

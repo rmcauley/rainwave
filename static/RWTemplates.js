@@ -13,16 +13,15 @@
 
 	window.RWTemplateObject = RWTemplateObject;
 
-	if (typeof(RWTemplates) === "object") {
+	if (typeof RWTemplates === "object") {
 		RWTemplates.set_object(RWTemplateObject);
 	}
 
 	var RWTemplateHelpers;
 
-	if (typeof(window.RWTemplateHelpers) !== "undefined") {
+	if (typeof window.RWTemplateHelpers !== "undefined") {
 		RWTemplateHelpers = window.RWTemplateHelpers;
-	}
-	else {
+	} else {
 		RWTemplateHelpers = {};
 		window.RWTemplateHelpers = RWTemplateHelpers;
 	}
@@ -30,21 +29,17 @@
 	RWTemplateHelpers.copyObject = function(obj) {
 		var newobj = Object.prototype.toString.call(obj) === "[object Array]" ? [] : {};
 		for (var i in obj) {
-			if ((i.charAt(0) === "$") || (i.charAt(0) === "_")) {
+			if (i.charAt(0) === "$" || i.charAt(0) === "_") {
 				// console.log(i + ": skipping $ or _");
-			}
-			else if (typeof(obj[i]) === "function") {
+			} else if (typeof obj[i] === "function") {
 				// console.log(i + ": skipping function");
-			}
-			else if (Object.prototype.toString.call(obj[i]) === "[object Object]") {
+			} else if (Object.prototype.toString.call(obj[i]) === "[object Object]") {
 				// console.log(i + ": diving into object");
 				newobj[i] = RWTemplateHelpers.copyObject(obj[i]);
-			}
-			else if (Object.prototype.toString.call(obj[i]) === "[object Array]") {
+			} else if (Object.prototype.toString.call(obj[i]) === "[object Array]") {
 				// console.log(i + ": diving into array");
 				newobj[i] = RWTemplateHelpers.copyObject(obj[i]);
-			}
-			else {
+			} else {
 				// console.log(i + ": copying");
 				newobj[i] = obj[i];
 			}
@@ -60,8 +55,8 @@
 		var i;
 		if (Object.prototype.toString.call(arr) === "[object Object]") {
 			for (i in arr) {
-				if (arr.hasOwnProperty(i) && (typeof(arr[i]) !== "function")) {
-					template({ "key": i, "value": arr[i] }, el);
+				if (arr.hasOwnProperty(i) && typeof arr[i] !== "function") {
+					template({ key: i, value: arr[i] }, el);
 				}
 			}
 			return;
@@ -69,44 +64,43 @@
 
 		if (!arr._shadows) arr._shadows = [];
 		arr._shadows.push({
-			"arr": arr.slice(),
-			"template": template,
-			"el": el,
-			"render_append": arr.render_append,
-			"render_positions": arr.render_positions,
-			"render_delete": arr.render_delete,
-			"pre_append": arr.pre_append,
-			"post_append": arr.post_append,
-			"post_update": arr.post_update,
-			"pre_update": arr.pre_update,
-			"pcontext": (arr.post_append && pcontext) ? pcontext : null
+			arr: arr.slice(),
+			template: template,
+			el: el,
+			render_append: arr.render_append,
+			render_positions: arr.render_positions,
+			render_delete: arr.render_delete,
+			pre_append: arr.pre_append,
+			post_append: arr.post_append,
+			post_update: arr.post_update,
+			pre_update: arr.pre_update,
+			pcontext: arr.post_append && pcontext ? pcontext : null
 		});
-		if (typeof(arr.pre_update) === "function") {
+		if (typeof arr.pre_update === "function") {
 			arr.pre_update(arr);
 		}
 		for (i = 0; i < arr.length; i++) {
-			if (typeof(arr.pre_append) === "function") {
+			if (typeof arr.pre_append === "function") {
 				arr.pre_append(arr[i], pcontext);
 			}
 			if (!arr[i].$t) {
 				arr[i].$t = new RWTemplateObject(arr[i]);
 			}
-			if (typeof(arr.render_append) === "function") {
+			if (typeof arr.render_append === "function") {
 				template(arr[i], null, i);
 				arr.render_append(el, arr[i]);
-			}
-			else {
+			} else {
 				arr[i].$t.__i = i;
 				template(arr[i], el, i);
 				if (!arr[i].$t.item_root) {
-					throw("Array rendered without item_root element.");
+					throw "Array rendered without item_root element.";
 				}
 			}
-			if (typeof(arr.post_append) === "function") {
+			if (typeof arr.post_append === "function") {
 				arr.post_append(arr[i], pcontext);
 			}
 		}
-		if (typeof(arr.post_update) === "function") {
+		if (typeof arr.post_update === "function") {
 			arr.post_update(arr);
 		}
 	};
@@ -118,9 +112,10 @@
 					el.removeChild(deleted.$t.item_root[i]);
 				}
 			}
-		}
-		else {
-			console.warn("Cannot delete array item from page - make sure your template has a bind='item_root' inside the {{#each}} block if you want to enable automatic HTML element removal.");
+		} else {
+			console.warn(
+				"Cannot delete array item from page - make sure your template has a bind='item_root' inside the {{#each}} block if you want to enable automatic HTML element removal."
+			);
 		}
 	};
 
@@ -131,7 +126,7 @@
 		for (s = 0; s < arr._shadows.length; s++) {
 			shadow = arr._shadows[s];
 
-			if (typeof(shadow.pre_update) === "function") {
+			if (typeof shadow.pre_update === "function") {
 				shadow.pre_update(arr);
 			}
 
@@ -140,7 +135,10 @@
 				exists = arr.indexOf(shadow.arr[i]);
 				if (exists === -1) {
 					changed = true;
-					(shadow.render_delete || arr.render_delete || RWTemplateHelpers.array_item_delete)(shadow.el, shadow.arr[i]);
+					(shadow.render_delete || arr.render_delete || RWTemplateHelpers.array_item_delete)(
+						shadow.el,
+						shadow.arr[i]
+					);
 				}
 			}
 
@@ -157,8 +155,7 @@
 					}
 					if (arr._preserve_item_roots && arr[i].$t && arr[i].$t.item_root && arr[i].$t.item_root.length) {
 						shadow.el.appendChild(arr[i].$t.item_root[0]);
-					}
-					else if (shadow.template) {
+					} else if (shadow.template) {
 						arr[i].$t.__i = i;
 						shadow.template(arr[i], shadow.el);
 					}
@@ -168,8 +165,7 @@
 					if (shadow.post_append) {
 						shadow.post_append(arr[i], shadow.pcontext);
 					}
-				}
-				else if (exists !== i) {
+				} else if (exists !== i) {
 					changed = true;
 				}
 			}
@@ -187,8 +183,7 @@
 			if (changed) {
 				if (shadow.render_positions) {
 					shadow.render_positions();
-				}
-				else if (arr.length > 0 && arr[0].$t.item_root) {
+				} else if (arr.length > 0 && arr[0].$t.item_root) {
 					for (i = 0; i < arr.length; i++) {
 						for (j = 0; j < arr[i].$t.item_root.length; j++) {
 							if (arr[i].$t.item_root[j].parentNode) {
@@ -196,21 +191,22 @@
 							}
 						}
 					}
-				}
-				else if (arr.length > 0) {
-					console.warn("Array can't be updated with correct HTML sorting - make sure your array item templates have bind='item_root' to enable automatic HTML element position sorting.");
+				} else if (arr.length > 0) {
+					console.warn(
+						"Array can't be updated with correct HTML sorting - make sure your array item templates have bind='item_root' to enable automatic HTML element position sorting."
+					);
 				}
 			}
 
-			if (typeof(shadow.post_update) === "function") {
+			if (typeof shadow.post_update === "function") {
 				shadow.post_update(arr);
 			}
 		}
 	};
 
 	RWTemplateHelpers.elem_update = function(elem, val) {
-		if (typeof(val) === "undefined") return;
-		if (typeof(elem) !== "object") return;
+		if (typeof val === "undefined") return;
+		if (typeof elem !== "object") return;
 		if (!elem.getAttribute) return;
 		if (elem.hasAttribute("noupdates")) return;
 		var elemval = val;
@@ -218,44 +214,37 @@
 		if (elem.getAttribute("helper")) {
 			var hname = elem.getAttribute("helper");
 			if (!RWTemplateHelpers[hname]) {
-				throw("Helper " + hname + " doesn't exist.");
+				throw "Helper " + hname + " doesn't exist.";
 			}
 			elemval = RWTemplateHelpers[hname](val, elem);
 			if (elemval === undefined) return;
 		}
 		if (tagname === "select") {
 			elem.value = val;
-		}
-		else if (tagname === "input") {
+		} else if (tagname === "input") {
 			if (elem.getAttribute("type") === "radio") {
 				if (elem.getAttribute("value") === val) {
 					elem.checked = true;
-				}
-				else {
+				} else {
 					elem.checked = false;
 				}
-			}
-			else if (elem.getAttribute("type") === "checkbox") {
-				if (val && (val !== "False") && (val !== "false")) {
+			} else if (elem.getAttribute("type") === "checkbox") {
+				if (val && val !== "False" && val !== "false") {
 					elem.checked = true;
-				}
-				else {
+				} else {
 					elem.checked = false;
 				}
-			}
-			else if (document.activeElement !== elem) {
+			} else if (document.activeElement !== elem) {
 				elem.value = elemval;
 			}
-		}
-		else if ((tagname === "textarea") && (document.activeElement !== elem)) {
-			if (elem.value != elemval) {					// eslint-disable-line eqeqeq
+		} else if (tagname === "textarea" && document.activeElement !== elem) {
+			if (elem.value != elemval) {
+				// eslint-disable-line eqeqeq
 				elem.value = elemval;
 			}
-		}
-		else if (tagname === "img") {
+		} else if (tagname === "img") {
 			elem.setAttribute("src", elemval);
-		}
-		else {
+		} else {
 			elem.textContent = elemval || "";
 		}
 	};
@@ -272,24 +261,19 @@
 			if (i.charAt(0) === "$") continue;
 
 			val = from[i];
-			if (typeof(val) === "undefined") {
+			if (typeof val === "undefined") {
 				// do nothing
-			}
-			else if (Object.prototype.toString.call(val) === "[object Array]") {
+			} else if (Object.prototype.toString.call(val) === "[object Array]") {
 				RWTemplateHelpers.array_update(val, true);
-			}
-			else if ((Object.prototype.toString.call(val) === "[object Object]") && val.$t) {
+			} else if (Object.prototype.toString.call(val) === "[object Object]" && val.$t) {
 				if (val.$t instanceof RWTemplateObject) {
 					val.$t.update();
+				} else {
+					throw "$t is not an RWTemplateObject.";
 				}
-				else {
-					throw("$t is not an RWTemplateObject.");
-				}
-			}
-			else if (typeof(this[i]) === "function") {
+			} else if (typeof this[i] === "function") {
 				this[i](val);
-			}
-			else if (typeof(this[i]) === "object") {
+			} else if (typeof this[i] === "object") {
 				for (var eli = 0; eli < this[i].length; eli++) {
 					RWTemplateHelpers.elem_update(this[i][eli], val);
 				}
@@ -308,8 +292,7 @@
 			for (i = 0; i < Math.min(fresh.length, existing.length); i++) {
 				if (existing[i] && existing[i].$t) {
 					existing[i].$t.update_data(fresh[i]);
-				}
-				else {
+				} else {
 					existing[i] = fresh[i];
 				}
 			}
@@ -319,8 +302,7 @@
 			while (existing.length > fresh.length) {
 				existing.pop();
 			}
-		}
-		else if (existing._exact_match) {
+		} else if (existing._exact_match) {
 			for (j = existing.length - 1; j >= 0; j--) {
 				found = false;
 				for (i = fresh.length - 1; i >= 0; i--) {
@@ -343,14 +325,12 @@
 				if (!found) {
 					if (i < existing.length) {
 						existing.splice(i, 0, fresh[i]);
-					}
-					else {
+					} else {
 						existing.push(fresh[i]);
 					}
 				}
 			}
-		}
-		else {
+		} else {
 			for (j = existing.length - 1; j >= 0; j--) {
 				found = false;
 				for (i = fresh.length - 1; i >= 0; i--) {
@@ -370,8 +350,7 @@
 					if (fresh[i][existing._unique_field] === existing[j][existing._unique_field]) {
 						if (existing[j].$t) {
 							existing[j].$t.update_data(fresh[i]);
-						}
-						else {
+						} else {
 							existing[j] = fresh[i];
 						}
 						found = true;
@@ -381,8 +360,7 @@
 				if (!found) {
 					if (i < existing.length) {
 						existing.splice(i, 0, fresh[i]);
-					}
-					else {
+					} else {
 						existing.push(fresh[i]);
 					}
 				}
@@ -393,7 +371,8 @@
 				map[existing[i][existing._unique_field]] = existing[i];
 			}
 			for (i = 0; i < fresh.length; i++) {
-				if (existing[i][existing._unique_field] != fresh[i][existing._unique_field]) { // eslint-disable-line eqeqeq
+				if (existing[i][existing._unique_field] != fresh[i][existing._unique_field]) {
+					// eslint-disable-line eqeqeq
 					existing[i] = map[fresh[i][existing._unique_field]];
 				}
 			}
@@ -411,25 +390,24 @@
 		for (var i in newObj) {
 			if (!newObj.hasOwnProperty(i)) {
 				// do nothing
-			}
-			else if (i.charAt(0) === "$") {
+			} else if (i.charAt(0) === "$") {
 				// do nothing
-			}
-			else if (this._c[i] && ((Object.prototype.toString.call(this._c[i]) === "[object Array]") || (Object.prototype.toString.call(newObj[i]) === "[object Array]"))) {
+			} else if (
+				this._c[i] &&
+				(Object.prototype.toString.call(this._c[i]) === "[object Array]" ||
+					Object.prototype.toString.call(newObj[i]) === "[object Array]")
+			) {
 				if (Object.prototype.toString.call(this._c[i]) === Object.prototype.toString.call(newObj[i])) {
 					RWTemplateHelpers.array_reconcile(newObj[i], this._c[i]);
-				}
-				else {
+				} else {
 					console.warn("Mismatching object and error when updating object (new, old, key):");
 					console.warn(newObj, this._c, i);
 				}
-			}
-			else if ((typeof(this._c[i]) === "object") && this._c[i] && this._c[i].$t) {
+			} else if (typeof this._c[i] === "object" && this._c[i] && this._c[i].$t) {
 				this._c[i].$t.update_data(newObj[i]);
-			}
-			else {
+			} else {
 				this._c[i] = newObj[i];
 			}
 		}
 	};
-}());
+})();

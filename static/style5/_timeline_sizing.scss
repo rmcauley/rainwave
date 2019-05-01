@@ -37,8 +37,8 @@ body.simple.normal div.timeline {
 				height: $simple_np_size;
 
 				&.art_expandable:hover {
-					width: $simple_np_size * 1.20;
-					height: $simple_np_size * 1.20;
+					width: $simple_np_size * 1.2;
+					height: $simple_np_size * 1.2;
 				}
 			}
 		}
@@ -84,13 +84,17 @@ div.timeline {
 }
 
 body.simple {
-	div.panel.detail, div.search_panel {
-		div.artists, div.rating_clear, div.rating_site {
+	div.panel.detail,
+	div.search_panel {
+		div.artists,
+		div.rating_clear,
+		div.rating_site {
 			display: none;
 		}
 	}
 	div.search_panel {
-		div.cool_info, div.length {
+		div.cool_info,
+		div.length {
 			display: none;
 		}
 
@@ -109,10 +113,11 @@ body.full {
 		overflow: hidden;
 		border-left: solid 1px $panel_b;
 
-		&.lists, &.detail {
+		&.lists,
+		&.detail {
 			transform: none !important;
 			-ms-transform: none !important;
-			-webkit-transform: translate3d(0,0,0) !important;
+			-webkit-transform: translate3d(0, 0, 0) !important;
 		}
 
 		div.close {
@@ -120,11 +125,14 @@ body.full {
 		}
 	}
 
-	li.requests_link, li.playlist_link {
+	li.requests_link,
+	li.playlist_link {
 		display: none !important;
 	}
 
-	div.panel.detail, div.search_panel, div.dj_panel {
+	div.panel.detail,
+	div.search_panel,
+	div.dj_panel {
 		ul.panel_header li {
 			color: $pwrmode_tab;
 			border-bottom: 2px solid $pwrmode_tab_b;
@@ -162,10 +170,14 @@ body.full {
 			width: 25%;
 		}
 
-		div.panel.detail, div.search_panel, div.dj_panel {
+		div.panel.detail,
+		div.search_panel,
+		div.dj_panel {
 			width: 37%;
 
-			div.artists, div.rating_clear, div.rating_site {
+			div.artists,
+			div.rating_clear,
+			div.rating_site {
 				display: none;
 			}
 
@@ -175,7 +187,8 @@ body.full {
 		}
 
 		div.search_panel {
-			div.cool_info, div.length {
+			div.cool_info,
+			div.length {
 				display: none;
 			}
 		}
@@ -194,10 +207,14 @@ body.full {
 			width: 25%;
 		}
 
-		div.panel.detail, div.search_panel, div.dj_panel {
+		div.panel.detail,
+		div.search_panel,
+		div.dj_panel {
 			width: 37%;
 
-			div.artists, div.rating_clear, div.rating_site {
+			div.artists,
+			div.rating_clear,
+			div.rating_site {
 				display: none;
 			}
 
@@ -207,7 +224,8 @@ body.full {
 		}
 
 		div.search_panel {
-			div.cool_info, div.length {
+			div.cool_info,
+			div.length {
 				display: none;
 			}
 		}
@@ -226,7 +244,9 @@ body.full {
 			width: 25%;
 		}
 
-		div.panel.detail, div.search_panel, div.dj_panel {
+		div.panel.detail,
+		div.search_panel,
+		div.dj_panel {
 			width: 42%;
 		}
 	}
@@ -238,7 +258,9 @@ body.full {
 			width: 25%;
 		}
 
-		div.panel.detail, div.search_panel, div.dj_panel {
+		div.panel.detail,
+		div.search_panel,
+		div.dj_panel {
 			width: 40%;
 		}
 	}
@@ -250,7 +272,9 @@ body.full {
 			width: 23%;
 		}
 
-		div.panel.detail, div.search_panel, div.dj_panel {
+		div.panel.detail,
+		div.search_panel,
+		div.dj_panel {
 			width: 42%;
 		}
 	}
@@ -262,7 +286,9 @@ body.full {
 			width: 20%;
 		}
 
-		div.panel.detail, div.search_panel, div.dj_panel {
+		div.panel.detail,
+		div.search_panel,
+		div.dj_panel {
 			width: 45%;
 		}
 	}
@@ -274,7 +300,9 @@ body.full {
 			width: 15%;
 		}
 
-		div.panel.detail, div.search_panel, div.dj_panel {
+		div.panel.detail,
+		div.search_panel,
+		div.dj_panel {
 			width: 45%;
 		}
 	}
