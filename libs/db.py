@@ -285,9 +285,6 @@ def close():
 	return True
 
 def create_tables():
-	if config.get("standalone_mode"):
-		_create_test_tables()
-
 	trgrm_exists = c.fetch_var("SELECT extname FROM pg_extension WHERE extname = 'pg_trgm'")
 	if not trgrm_exists or not trgrm_exists == "pg_trgm":
 		try:
@@ -300,7 +297,7 @@ def create_tables():
 
 	# From: https://wiki.postgresql.org/wiki/First_%28aggregate%29
 	# Used in rainwave/playlist.py
-	first_exists = c.fetch_var("SELECT proname FROM pg_proc WHERE proname = 'first' AND proisagg")
+	first_exists = c.fetch_var("SELECT proname FROM pg_proc WHERE proname = 'first'")
 	if not first_exists or first_exists != "first":
 		c.update("""
 			-- Create a function that always returns the first non-NULL item
@@ -317,7 +314,7 @@ def create_tables():
 			);
 		""")
 
-	last_exists = c.fetch_var("SELECT proname FROM pg_proc WHERE proname = 'last' AND proisagg")
+	last_exists = c.fetch_var("SELECT proname FROM pg_proc WHERE proname = 'last'")
 	if not last_exists or last_exists != "last":
 		c.update("""
 			-- Create a function that always returns the last non-NULL item
@@ -333,6 +330,9 @@ def create_tables():
 			        stype    = anyelement
 			);
 		""")
+
+	if config.get("standalone_mode"):
+		_create_test_tables()
 
 	c.update(" \
 		CREATE TABLE r4_albums ( \
