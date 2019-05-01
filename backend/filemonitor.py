@@ -89,16 +89,16 @@ def full_art_update():
 
 def _print_to_screen_inline(txt):
 	txt += " " * (80 - len(txt))
-	print "\r" + txt,
+	print("\r" + txt, end=' ')
 
 def _scan_all_directories(art_only=False):
 	total_files = 0
 	file_counter = 0
-	for directory, sids in config.get("song_dirs").iteritems():
+	for directory, sids in config.get("song_dirs").items():
 		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):		#pylint: disable=W0612
 			total_files += len(files)
 
-	for directory, sids in config.get("song_dirs").iteritems():
+	for directory, sids in config.get("song_dirs").items():
 		for root, subdirs, files in os.walk(directory.encode("utf-8"), followlinks = True):
 			for filename in files:
 				filename = os.path.normpath(root + os.sep + filename)
@@ -109,7 +109,7 @@ def _scan_all_directories(art_only=False):
 				file_counter += 1
 				_print_to_screen_inline('%s %s / %s' % (directory, file_counter, total_files))
 				sys.stdout.flush()
-		print "\n"
+		print("\n")
 		sys.stdout.flush()
 
 def _check_codepage_1252(filename):
@@ -170,7 +170,7 @@ def _scan_file(filename, sids):
 			_add_scan_error(filename, e)
 			_disable_file(filename)
 		try:
-			log.debug("scan", u"sids: {} Scanning file: {}".format(sids, filename))
+			log.debug("scan", "sids: {} Scanning file: {}".format(sids, filename))
 			# Only scan the file if we don't have a previous mtime for it, or the mtime is different
 			old_mtime = db.c.fetch_var("SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s AND song_verified = TRUE", (filename,))
 			if old_mtime != new_mtime or not old_mtime:
@@ -234,12 +234,12 @@ def _process_album_art_queue(on_screen=False):
 			# print exception if there is one
 			if sys.exc_info()[0]:
 				type_, value_, traceback_ = sys.exc_info()	#pylint: disable=W0612
-				print "\n%s:\n\t %s" % (_album_art_queue[i][0], value_)
+				print("\n%s:\n\t %s" % (_album_art_queue[i][0], value_))
 				sys.stdout.flush()
 		if on_screen:
 			_print_to_screen_inline("Album art: %s/%s" % (i, len(_album_art_queue) - 1))
 	if on_screen:
-		print
+		print()
 	_album_art_queue = []
 
 def _process_album_art(filename, sids):
@@ -398,7 +398,7 @@ class FileEventHandler(ProcessEvent):
 
 		try:
 			matched_sids = []
-			for song_dirs_path, sids in config.get('song_dirs').iteritems():
+			for song_dirs_path, sids in config.get('song_dirs').items():
 				if event.pathname.startswith(song_dirs_path):
 					matched_sids.extend(sids)
 		except Exception as xception:
