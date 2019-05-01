@@ -46,3 +46,4 @@ out.json
 .idea
 .vagrant
 *.sublime-workspace
+node_modules
