@@ -39,51 +39,28 @@ or above is required.
 
 ### Prerequisites on Debian/Ubuntu
 
+Rainwave is designed to run on Python 3.7 using `pipenv`.
+
 ```
 git clone https://github.com/rmcauley/rainwave.git
-sudo apt-get install memcached postgresql-contrib python-pip python-psycopg2 python-mutagen python-nose python-imaging python-psutil python-unidecode python-pylibmc python-tornado python-meliae slimit python-fontforge python-dev libpython-dev mp3gain
-sudo pip install -r rainwave/requirements.txt
-sudo pip install ujson
+cd rainwave
+sudo apt-get install pipenv libpq-dev
+pipenv install
 cp rainwave/etc/rainwave_reference.conf rainwave/etc/$USER.conf
 ```
-
-### Prerequisites on Windows
-
--   [Install Postgres 11 or above](http://www.postgresql.org/download/windows/) with extras/"contrib" option during install
--   [Install Memcache for Windows](https://commaster.net/content/installing-memcached-windows), any version, and start it
--   [Download and install Python 2.7 64-bit for Windows](https://www.python.org/download/), during install, select to add Python to your PATH
--   [Download and install psycopg2 for 64-bit Python 2.7](http://www.stickpeople.com/projects/python/win-psycopg/)
--   [Download and install psutil for 64-bit Python 2.7](https://pypi.python.org/pypi?:action=display&name=psutil#downloads)
--   [Install setuptools](https://pypi.python.org/pypi/setuptools#installation-instructions)
--   Make sure the Python Scripts directory is also on your PATH (i.e. easy_install)
--   Clone/download the Rainwave repository to a folder
--   Open a command shell to the folder and execute:
-
-```
-easy_install pip
-pip install -r requirements.txt
-```
-
--   Copy `etc/rainwave_reference.conf` to `etc/[your username].conf`
 
 ## Postgres Setup For Testing/Development
 
 If you are using a phpBB install for user authentication, **skip this step** and use
 your existing phpBB database and database credentials.
 
--   On Windows, use PgAdmin to connect to your database, and open an SQL input window.
--   On most Linux installs, open an SQL prompt with `sudo -u postgres psql`.
-
-Execute the following SQL, replacing the password with your own:
+Open a Postgres prompt with `sudo -u postgres psql` and execute the following SQL,
+replacing the password with your own:
 
 ```
 CREATE ROLE rainwave WITH LOGIN PASSWORD 'password';
 CREATE DATABASE rainwave WITH OWNER rainwave;
-```
-
-Now connect to the database you created, and execute:
-
-```
+\c rainwave
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 ```
 
@@ -128,14 +105,11 @@ local    [DATABASE NAME]     [DATABASE USER]         md5
 Locate the "song_dir" entry from your configuration file and copy/paste
 your music library to this directory.
 
-Note: If using a remote Linux server you will need to use SFTP/SSH, or install
-vsftpd or similar FTP server package, to upload music to the directory.
-
 -   _Your MP3 tags must be accurate_. Rainwave reads the tags to obtain
     track information, which is necessary to manage song rotation.
 -   Upload a minimum of 1,000 songs. Rainwave requires a minimal library
     of this size to operate correctly.
--   Place albums in seperate directories if using album art. To add album art,
+-   Place albums in separate directories if using album art. To add album art,
     create a file named "folder.jpg" and place it in each album directory
     for it to appear. (sorry, embedded album art is not supported)
 -   Rainwave and LiquidSoap support unicode MP3 tags, but do not support
@@ -187,7 +161,7 @@ Open the beta URL at `/beta/?sid=1` to see your Rainwave.
 If you are not running against an installed phpBB and want
 to emulate being logged in, open `/api4/test/login_tuned_in/1`.
 
-## Deploying to Production (Linux Only)
+## Deploying to Production
 
 ### Installing a Production Rainwave
 
