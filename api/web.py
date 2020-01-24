@@ -91,7 +91,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 	# A None requirement means it is optional, and if present and invalid, will be set to None
 	fields = {}
 	# This URL variable is setup by the server decorator - DON'T TOUCH IT.
-	url = False
+	url = ""
 	# Do we need a Rainwave auth key for this request?
 	auth_required = True
 	# return_name is used for documentation, can be an array.
@@ -152,7 +152,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
  			self.fields['page_start'] = (fieldtypes.zero_or_greater_integer, False)
 
 	def set_cookie(self, name, value, *args, **kwargs):
-		if isinstance(value, (int, long)):
+		if isinstance(value, int):
 			value = repr(value)
 		super(RainwaveHandler, self).set_cookie(name, value, *args, **kwargs)
 
@@ -178,7 +178,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self.return_name = self.return_name
 
 	def arg_parse(self):
-		for field, field_attribs in self.__class__.fields.iteritems():
+		for field, field_attribs in self.__class__.fields.items():
 			type_cast, required = field_attribs
 			parsed = None
 			if required and field not in self.request.arguments:
@@ -255,7 +255,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self.sid = fieldtypes.integer(self.get_cookie("r4_sid", None))
 			hostname = self.request.headers.get('Host', None)
 			if hostname:
-				hostname = unicode(hostname).split(":")[0]
+				hostname = str(hostname).split(":")[0]
 				if hostname in config.station_hostnames:
 					self.sid = config.station_hostnames[hostname]
 			sid_arg = fieldtypes.integer(self.get_argument("sid", None))
@@ -353,7 +353,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			raise APIException("missing_argument", argument="key", http_code=400)
 
 		if user_id_present:
-			self.user = User(long(self.get_argument("user_id")))
+			self.user = User(int(self.get_argument("user_id")))
 			self.user.ip_address = self.request.remote_ip
 			self.user.authorize(self.sid, self.get_argument("key"))
 			if not self.user.authorized:
@@ -384,7 +384,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 			self.append(self.return_name, kwargs)
 
 	def write_error(self, status_code, **kwargs):
-		if kwargs.has_key("exc_info"):
+		if "exc_info" in kwargs:
 			exc = kwargs['exc_info'][1]
 			if isinstance(exc, APIException):
 				exc.localize(self.locale)
@@ -443,7 +443,7 @@ class APIHandler(RainwaveHandler):
 				}
 			else:
 				self._output = {}
-		if kwargs.has_key("exc_info"):
+		if "exc_info" in kwargs:
 			exc = kwargs['exc_info'][1]
 
 			# Restart DB on a connection error if that's what we're handling
@@ -464,11 +464,11 @@ class APIHandler(RainwaveHandler):
 				self.append("traceback", { "traceback": traceback.format_exception(kwargs['exc_info'][0], kwargs['exc_info'][1], kwargs['exc_info'][2]) })
 		else:
 			self.append("error", { "tl_key": "internal_error", "text": self.locale.translate("internal_error") } )
-		if not kwargs.has_key("no_finish") or not kwargs['no_finish']:
+		if not kwargs.get("no_finish"):
 			self.finish()
 
 def _html_write_error(self, status_code, **kwargs):
-	if kwargs.has_key("exc_info"):
+	if "exc_info" in kwargs:
 		exc = kwargs['exc_info'][1]
 
 		# Restart DB on a connection error if that's what we're handling
@@ -558,8 +558,8 @@ class PrettyPrintAPIMixin(object):
 			elif not self.return_name in self._output:
 				self.write("<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>" % (per_page_link, next_page_start))
 
-		for output_key, json_out in self._output.iteritems():	#pylint: disable=W0612
-			if type(json_out) != types.ListType:
+		for output_key, json_out in self._output.items():	#pylint: disable=W0612
+			if type(json_out) != list:
 				continue
 			if len(json_out) > 0:
 				self.write("<table class='%s'><th>#</th>" % self.return_name)

@@ -16,7 +16,7 @@ def get_stream_filename(sid, filetype = "mp3", user = None):
 	else:
 		return "%s.%s?%s:%s" % (filename, filetype, user.id, user.data['listen_key'])
 
-@handle_url("/tune_in/(\w+|\d)\.(ogg|mp3)(.m3u)?")
+@handle_url(r"/tune_in/(\w+|\d)\.(ogg|mp3)(.m3u)?")
 class TuneInIndex(api.web.HTMLRequest):
 	description = "Provides the user with an M3U file containing Ogg or MP3 URLs to relays."
 	login_required = False
@@ -33,7 +33,7 @@ class TuneInIndex(api.web.HTMLRequest):
 		if url_param:
 			url_param_int = api.web.fieldtypes.positive_integer(url_param)
 			if not url_param_int:
-				for k, v in config.station_id_friendly.iteritems():
+				for k, v in config.station_id_friendly.items():
 					if v.lower() == url_param.lower():
 						self.sid = k
 						break

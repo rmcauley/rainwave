@@ -6,7 +6,7 @@ class SingleSong(BaseEvent):
 
 	def __init__(self, song, sid):
 		super(SingleSong, self).__init__(sid)
-		if isinstance(song, (int, long)):
+		if isinstance(song, int):
 			self.songs = [ playlist.Song.load_from_id(song, sid) ]
 		elif isinstance(song, playlist.Song):
 			self.songs = [ song ]

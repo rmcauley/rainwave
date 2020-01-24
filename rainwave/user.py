@@ -2,8 +2,8 @@ from time import time as timestamp
 import re
 import random
 import string
-import urllib2
 import unicodedata
+from urllib import parse
 
 from libs import log
 from libs import cache
@@ -65,7 +65,7 @@ class User(object):
 	def authorize(self, sid, api_key, bypass = False):
 		self.api_key = api_key
 
-		if not bypass and not re.match('^[\w\d]+$', api_key):
+		if not bypass and not re.match(r'^[\w\d]+$', api_key):
 			return
 
 		if self.id > 1:
@@ -347,29 +347,27 @@ class User(object):
 	def get_requests(self, sid):
 		if self.id <= 1:
 			return []
-		requests = []
-		if db.c.is_postgres:
-			requests = db.c.fetch_all(
-				"SELECT r4_request_store.song_id AS id, COALESCE(r4_song_sid.sid, r4_request_store.sid) AS sid, r4_songs.song_origin_sid AS origin_sid, "
-					"r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
-					"CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_title AS title, song_length AS length, "
-					"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, song_exists AS good, "
-					"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
-					"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
-					"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
-					"song_fave AS fave, album_fave AS album_fave, "
-					"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating AS album_rating, album_rating_complete "
-				"FROM r4_request_store "
-					"JOIN r4_songs USING (song_id) "
-					"JOIN r4_albums USING (album_id) "
-					"JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_request_store.sid = r4_album_sid.sid) "
-					"LEFT JOIN r4_song_sid ON (r4_request_store.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
-					"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
-			 		"LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = %s) "
-			 		"LEFT JOIN r4_album_faves ON (r4_songs.album_id = r4_album_faves.album_id AND r4_album_faves.user_id = %s) "
-				"WHERE r4_request_store.user_id = %s "
-				"ORDER BY reqstor_order, reqstor_id",
-				(sid, self.id, self.id, sid, self.id, self.id))
+		requests = db.c.fetch_all(
+			"SELECT r4_request_store.song_id AS id, COALESCE(r4_song_sid.sid, r4_request_store.sid) AS sid, r4_songs.song_origin_sid AS origin_sid, "
+				"r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
+				"CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_title AS title, song_length AS length, "
+				"r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, song_exists AS good, "
+				"r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
+				"r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
+				"COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
+				"song_fave AS fave, album_fave AS album_fave, "
+				"r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating AS album_rating, album_rating_complete "
+			"FROM r4_request_store "
+				"JOIN r4_songs USING (song_id) "
+				"JOIN r4_albums USING (album_id) "
+				"JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_request_store.sid = r4_album_sid.sid) "
+				"LEFT JOIN r4_song_sid ON (r4_request_store.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
+				"LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
+				"LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = %s) "
+				"LEFT JOIN r4_album_faves ON (r4_songs.album_id = r4_album_faves.album_id AND r4_album_faves.user_id = %s) "
+			"WHERE r4_request_store.user_id = %s "
+			"ORDER BY reqstor_order, reqstor_id",
+			(sid, self.id, self.id, sid, self.id, self.id))
 		if not requests:
 			requests = []
 		for song in requests:
@@ -386,7 +384,6 @@ class User(object):
 				"rating_complete": song.pop('album_rating_complete'),
 				"art": playlist.Album.get_art_url(song.pop('album_id'), song['sid'])
 			 } ]
-		# cache.set_user(self, "requests", requests)
 		return requests
 
 	def set_request_tunein_expiry(self, t = None):
@@ -444,11 +441,9 @@ class User(object):
 	def save_preferences(self, ip_addr, prefs_json_string):
 		if not config.get("store_prefs") or not prefs_json_string:
 			return
-		if not db.c.is_postgres:
-			return
 
 		try:
-			prefs_json_string = urllib2.unquote(prefs_json_string)
+			prefs_json_string = parse.unquote(prefs_json_string)
 			if self.id > 1:
 				if not db.c.fetch_var("SELECT COUNT(*) FROM r4_pref_storage WHERE user_id = %s", (self.id,)):
 					db.c.update("INSERT INTO r4_pref_storage (user_id, prefs) VALUES (%s, %s::jsonb)", (self.id, prefs_json_string))

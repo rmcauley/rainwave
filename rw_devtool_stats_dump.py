@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import argparse
 import os
 import sys
@@ -63,10 +61,10 @@ tables = [
 ]
 
 if not os.path.exists("/tmp/rwstats"):
-	print "Make sure /tmp/rwstats exists and is world writable."
+	print( "Make sure /tmp/rwstats exists and is world writable.")
 else:
 	for table in tables:
-		print table
+		print( table)
 		sys.stdout.flush()
 		query = libs.db.c.fetch_var(
 			"SELECT "

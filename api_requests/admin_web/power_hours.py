@@ -38,7 +38,7 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 		self.write("{ 'fill_unrated': true, 'producer_type': 'OneUpProducer', 'end_utc_time': parseInt(document.getElementById('new_ph_timestamp').value) + parseInt(document.getElementById('unrated_length').value), 'start_utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\"")
 		self.write(">Create new PH w/unrated songs</button></div><hr>")
 
-		if self.return_name in self._output and type(self._output[self.return_name]) == types.ListType and len(self._output[self.return_name]) > 0:
+		if self.return_name in self._output and type(self._output[self.return_name]) == list and len(self._output[self.return_name]) > 0:
 			self.write("<ul>")
 			for producer in self._output[self.return_name]:
 				self.write("<li><div><b><a href='power_hour_detail?sid=%s&sched_id=%s'>%s</a></b></div>" % (self.sid, producer['id'], producer['name']))
@@ -68,7 +68,7 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 		self.write("<div style='font-family: monospace;'>%s</div>" % get_ph_formatted_time(ph['start'], ph['end'], 'Asia/Tokyo'))
 
 		total_len = 0
-		for i, song in enumerate(ph['songs']):
+		for song in ph['songs']:
 			total_len += song['length']
 		self.write("<br><div>Total length of songs: <b>%d:%02d</b></div>" % (int(total_len / 3600), (total_len / 60) % 60))
 

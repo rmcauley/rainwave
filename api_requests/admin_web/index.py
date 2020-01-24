@@ -127,7 +127,7 @@ class RelayStatus(api.web.HTMLRequest):
 		status = cache.get("relay_status")
 		self.write("<div style='float: right'>")
 		if status:
-			for relay, count in status.iteritems():
+			for relay, count in status.items():
 				self.write("%s: %s listeners<br />" % (relay, count))
 		else:
 			self.write("No relay status available.")
@@ -224,4 +224,3 @@ class SongList(api.web.PrettyPrintAPIMixin, api_requests.playlist.AlbumHandler):
 
 	def render_row_special(self, row):
 		pass
-

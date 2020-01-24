@@ -20,4 +20,3 @@ class UserInfo(APIHandler):
 
 	def post(self):
 		self.append("user", self.user.to_private_dict())
-

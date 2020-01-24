@@ -6,7 +6,10 @@
 	"editor.formatOnSave": true,
 	"prettier.endOfLine": "lf",
 	"prettier.printWidth": 120,
-	"prettier.tabWidth": 4,
-	"prettier.useTabs": true,
-	"python.formatting.provider": "black"
+	"python.formatting.provider": "black",
+	"python.linting.flake8Enabled": false,
+	"python.linting.pylintEnabled": true,
+	"python.linting.enabled": true,
+	"python.venvPath": "~/.local/share/virtualenvs",
+	"python.formatting.blackArgs": ["-t py37"]
 }

@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import argparse
 from libs import config
 from libs import db

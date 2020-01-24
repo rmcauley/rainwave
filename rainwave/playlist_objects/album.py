@@ -234,23 +234,18 @@ class Album(AssociatedMetadata):
 
 	def _start_cooldown_db(self, sid, cool_time):
 		cool_end = int(cool_time + timestamp())
-		if db.c.allows_join_on_update:
-			db.c.update("UPDATE r4_song_sid "
-							"SET song_cool = TRUE, song_cool_end = %s "
-							"FROM r4_songs "
-							"WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_cool_end <= %s ",
-						(cool_end, self.id, sid, cool_end))
-			request_only_end = cool_end + config.get_station(sid, "cooldown_request_only_period")
-			db.c.update("UPDATE r4_song_sid "
-							"SET song_request_only = TRUE, song_request_only_end = %s "
-							"FROM r4_songs "
-							"WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_cool_end <= %s "
-							"AND song_request_only_end IS NOT NULL",
-						(request_only_end, self.id, sid, cool_end))
-		else:
-			songs = db.c.fetch_list("SELECT song_id FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s AND song_exists = TRUE AND song_cool_end < %s", (self.id, sid, cool_end))
-			for song_id in songs:
-				db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND song_cool_end < %s AND sid = %s", (cool_end, song_id, cool_end, sid))
+		db.c.update("UPDATE r4_song_sid "
+						"SET song_cool = TRUE, song_cool_end = %s "
+						"FROM r4_songs "
+						"WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_cool_end <= %s ",
+					(cool_end, self.id, sid, cool_end))
+		request_only_end = cool_end + config.get_station(sid, "cooldown_request_only_period")
+		db.c.update("UPDATE r4_song_sid "
+						"SET song_request_only = TRUE, song_request_only_end = %s "
+						"FROM r4_songs "
+						"WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_cool_end <= %s "
+						"AND song_request_only_end IS NOT NULL",
+					(request_only_end, self.id, sid, cool_end))
 
 	def solve_cool_lowest(self, sid):
 		self.data['cool_lowest'] = db.c.fetch_var("SELECT MIN(song_cool_end) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s AND song_exists = TRUE", (self.id, sid))
@@ -310,8 +305,6 @@ class Album(AssociatedMetadata):
 		return all_ratings
 
 	def update_all_user_ratings(self):
-		if not db.c.allows_join_on_update:
-			return
 		for sid in config.station_ids:
 			num_songs = self.get_num_songs(sid)
 			db.c.update(
@@ -334,37 +327,26 @@ class Album(AssociatedMetadata):
 				(self.id, sid, self.id, sid, num_songs))
 
 	def reset_user_completed_flags(self):
-		if not db.c.allows_join_on_update:
-			return
-		if db.c.allows_join_on_update:
-			db.c.update(
-				"WITH status AS ( "
-					"SELECT CASE WHEN COUNT(song_rating) >= album_song_count THEN TRUE ELSE FALSE END AS rating_complete, r4_songs.album_id, r4_song_sid.sid, user_id "
-					"FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_song_ratings USING (song_id) JOIN r4_album_sid ON (r4_songs.album_id = r4_album_sid.album_id AND r4_song_sid.sid = r4_album_sid.sid) "
-					"WHERE r4_songs.album_id = %s AND r4_song_sid.song_rating_user IS NOT NULL "
-					"GROUP BY r4_songs.album_id, album_song_count, r4_song_sid.sid, user_id  "
-				") "
-				"UPDATE r4_album_ratings "
-					"SET album_rating_complete = status.rating_complete "
-				"FROM status "
-				"WHERE r4_album_ratings.album_id = status.album_id AND r4_album_ratings.sid = status.sid AND r4_album_ratings.user_id = status.user_id "
-				, (self.id,))
+		db.c.update(
+			"WITH status AS ( "
+				"SELECT CASE WHEN COUNT(song_rating) >= album_song_count THEN TRUE ELSE FALSE END AS rating_complete, r4_songs.album_id, r4_song_sid.sid, user_id "
+				"FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_song_ratings USING (song_id) JOIN r4_album_sid ON (r4_songs.album_id = r4_album_sid.album_id AND r4_song_sid.sid = r4_album_sid.sid) "
+				"WHERE r4_songs.album_id = %s AND r4_song_sid.song_rating_user IS NOT NULL "
+				"GROUP BY r4_songs.album_id, album_song_count, r4_song_sid.sid, user_id  "
+			") "
+			"UPDATE r4_album_ratings "
+				"SET album_rating_complete = status.rating_complete "
+			"FROM status "
+			"WHERE r4_album_ratings.album_id = status.album_id AND r4_album_ratings.sid = status.sid AND r4_album_ratings.user_id = status.user_id "
+			, (self.id,))
 
 	def _start_election_block_db(self, sid, num_elections):
-		if db.c.allows_join_on_update:
-			# refer to song.set_election_block for base SQL
-			db.c.update("UPDATE r4_song_sid "
-							"SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s "
-							"FROM r4_songs "
-							"WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_elec_blocked_num <= %s",
-						('album', num_elections, self.id, sid, num_elections))
-		# Disabled for SQLite to avoid circular module importing
-		# else:
-		# 	table = db.c.fetch_all("SELECT song_id FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s", (self.id, sid))
-		# 	for row in table:
-		# 		song = Song()
-		# 		song.id = row['song_id']
-		# 		song.set_election_block(sid, 'album', num_elections)
+		# refer to song.set_election_block for base SQL
+		db.c.update("UPDATE r4_song_sid "
+						"SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s "
+						"FROM r4_songs "
+						"WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_elec_blocked_num <= %s",
+					('album', num_elections, self.id, sid, num_elections))
 
 	def load_extra_detail(self, sid, get_all_groups=False):
 		global num_albums
@@ -392,14 +374,6 @@ class Album(AssociatedMetadata):
 			(sid, sid, self.id))
 
 		self.data['rating_histogram'] = {}
-		# histo = db.c.fetch_all("SELECT "
-		# 					   "ROUND(((album_rating_user * 10) - (CAST(album_rating_user * 10 AS SMALLINT) %% 5))) / 10 AS rating_rnd, "
-		# 					   "COUNT(album_rating_user) AS rating_count "
-		# 					   "FROM r4_album_ratings JOIN phpbb_users USING (user_id) "
-		# 					   "WHERE album_id = %s AND sid = %s "
-		# 					   "GROUP BY rating_rnd "
-		# 					   "ORDER BY rating_rnd",
-		# 					   (self.id, sid))
 		histo = db.c.fetch_all(
 			"SELECT song_rating_user, COUNT(song_rating) AS rating_count "
 			"FROM r4_song_ratings "

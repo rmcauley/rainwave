@@ -1,6 +1,5 @@
 import psycopg2
 import psycopg2.extras
-import sqlite3
 
 from libs import config
 from libs import log
@@ -8,11 +7,7 @@ from libs import log
 c = None
 connection = None
 
-# DO NOT USE SQLITE FOR PRODUCTION USE IN ANY WAY
-
 class PostgresCursor(psycopg2.extras.RealDictCursor):
-	allows_join_on_update = True
-	is_postgres = True
 	in_tx = False
 
 	def fetch_var(self, query, params = None):
@@ -20,13 +15,7 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		if self.rowcount <= 0 or not self.rowcount:
 			return None
 		r = self.fetchone()
-		# I realize this is not the most efficient way, but one of the primary
-		# uses of the DB is to pipe output directly to JSON as an object/dict.
-		# Thus why this class inherits RealDictCursor.
-		# Either I can use this small inefficiency here or for fetching rows
-		# and entire queries I can convert each row into a dict manually.
-		# This has a smaller penalty.
-		return r[r.keys()[0]]
+		return r[next(iter(r.keys()))]
 
 	def fetch_row(self, query, params = None):
 		self.execute(query, params)
@@ -46,7 +35,7 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 			return []
 		arr = []
 		row = self.fetchone()
-		col = row.keys()[0]
+		col = next(iter(row.keys()))
 		arr.append(row[col])
 		for row in self.fetchall():
 			arr.append(row[col])
@@ -74,10 +63,8 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 		self.execute("ALTER TABLE %s ADD CONSTRAINT %s_%s_fk FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE SET NULL" % (linking_table, linking_table, key, key, foreign_table, foreign_key))
 
 	def create_idx(self, table, *args):
-		#pylint: disable=W0141
 		name = "%s_%s_idx" % (table, '_'.join(map(str, args)))
 		columns = ','.join(map(str, args))
-		#pylint: enable=W0612
 		self.execute("CREATE INDEX %s ON %s (%s)" % (name, table, columns))
 
 	def start_transaction(self):
@@ -95,138 +82,6 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 	def rollback(self):
 		self.execute("ROLLBACK")
 		self.in_tx = False
-
-class SQLiteCursor(object):
-	allows_join_on_update = False
-	is_postgres = False
-	in_tx = False
-
-	def __init__(self, filename):
-		self.con = sqlite3.connect(filename, 0, sqlite3.PARSE_DECLTYPES)
-		self.con.row_factory = self._dict_factory
-		self.cur = self.con.cursor()
-		self.rowcount = 0
-		self.print_next = False
-
-	def close(self):
-		self.cur.close()
-		self.con.commit()
-		self.con.close()
-
-	# This isn't the most efficient.  See Pg's cursor class for explanation
-	# why we want pure dicts.  Besides, speed isn't the primary concern
-	# for SQLite, which is used for testing, not production.
-	def _dict_factory(self, cursor, row):
-		d = {}
-		for idx, col in enumerate(cursor.description):
-			d[col[0]] = row[idx]
-		return d
-
-	# Speaking of performance, everything gets mangled through this method anyway.
-	def _convert_pg_query(self, query, for_print = False):
-		if query.find("CREATE TABLE") >= 0:
-			query = query.replace("SERIAL", "INTEGER")
-		if query.find("ADD CONSTRAINT") >= 0:
-			return None
-		if not for_print:
-			query = query.replace("%s", "?")
-		query = query.replace("TRUE", "1")
-		query = query.replace("FALSE", "0")
-		query = query.replace("NULLS FIRST", "")
-		query = query.replace("JSONB", "TEXT")
-		query = query.replace("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP)", "(strftime('%s','now'))")
-		return query
-
-	def fetch_var(self, query, params = None):
-		self.execute(query, params)
-		# if self.cur.rowcount <= 0:
-			# return None
-		row = self.cur.fetchone()
-		if not row:
-			return None
-		return row[row.keys()[0]]
-
-	def fetch_row(self, query, params = None):
-		self.execute(query, params)
-		# if self.cur.rowcount <= 0:
-			# return None
-		return self.cur.fetchone()
-
-	def fetch_all(self, query, params = None):
-		self.execute(query, params)
-		if self.cur.rowcount <= 0:
-			return []
-		return self.cur.fetchall()
-
-	def fetch_list(self, query, params = None):
-		self.execute(query, params)
-		arr = []
-		for row in self.cur.fetchall():
-			arr.append(row[row.keys()[0]])
-		return arr
-
-	def update(self, query, params = None):
-		self.execute(query, params)
-		return self.cur.rowcount
-
-	def execute(self, query, params = None):
-		if self.print_next:
-			self.print_next = False
-			if params:
-				print self._convert_pg_query(query, True) % params
-			else:
-				print self._convert_pg_query(query, True)
-		query = self._convert_pg_query(query)
-		# If the query can't be done or properly to SQLite,
-		# silently drop it.  This is mostly for table creation, things like foreign keys.
-		if not query:
-			log.critical("sqlite", "Query has not been made SQLite friendly: %s" % query)
-			raise Exception("Query has not been made SQLite friendly: %s" % query)
-		try:
-			if params:
-				self.cur.execute(query, params)
-			else:
-				self.cur.execute(query)
-		except Exception as e:
-			log.critical("sqlite", query)
-			log.critical("sqlite", repr(params))
-			log.exception("sqlite", "Failed query.", e)
-			raise
-		self.rowcount = self.cur.rowcount
-		self.con.commit()
-
-	def get_next_id(self, table, column):
-		val = self.fetch_var("SELECT MAX(" + column + ") + 1 FROM " + table) or 1
-		# the schedule IDs are shared amongst many tables, thus, we must insert fake
-		# rows in order to maintain proper order.
-		# HEY, DON'T USE SQLITE IN PRODUCTION ANYWAY
-		if table == "r4_schedule":
-			c.update("INSERT INTO r4_schedule (sched_id, sid, sched_start) VALUES (%s, %s, %s)", (val, 0, 0))
-		return val
-
-	def fetchone(self):
-		return self.cur.fetchone()
-
-	def fetchall(self):
-		return self.cur.fetchall()
-
-	def create_delete_fk(self, *args, **kwargs):
-		pass
-
-	def create_null_fk(self, *args, **kwargs):
-		pass
-
-	def create_idx(self, table, *args):
-		pass
-
-	def start_transaction(self):
-		pass
-
-	def commit(self):
-		pass
-
-	def rollback(self):
-		pass
 
 def connect():
 	global connection
@@ -258,9 +113,6 @@ def connect():
 		connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 		connection.autocommit = True
 		c = connection.cursor(cursor_factory=PostgresCursor)
-	elif dbtype == "sqlite":
-		log.debug("dbopen", "Opening SQLite DB %s" % name)
-		c = SQLiteCursor(name)
 	else:
 		log.critical("dbopen", "Invalid DB type %s!" % dbtype)
 		return False
@@ -290,9 +142,9 @@ def create_tables():
 		try:
 			c.update("CREATE EXTENSION pg_trgm")
 		except:
-			print "Could not create trigram extension."
-			print "Please run 'CREATE EXTENSION pg_trgm;' as a superuser on the database."
-			print "You may also need to install the Postgres Contributions package. (postgres-contrib)"
+			print("Could not create trigram extension.")
+			print("Please run 'CREATE EXTENSION pg_trgm;' as a superuser on the database.")
+			print("You may also need to install the Postgres Contributions package. (postgres-contrib)")
 			raise
 
 	# From: https://wiki.postgresql.org/wiki/First_%28aggregate%29
@@ -342,8 +194,7 @@ def create_tables():
 			album_year				SMALLINT, \
 			album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
 		)")
-	if c.is_postgres:
-		c.update("CREATE INDEX album_name_trgm_gin ON r4_albums USING GIN(album_name_searchable gin_trgm_ops)")
+	c.update("CREATE INDEX album_name_trgm_gin ON r4_albums USING GIN(album_name_searchable gin_trgm_ops)")
 
 	c.update(" \
 		CREATE TABLE r4_songs ( \
@@ -380,8 +231,7 @@ def create_tables():
 	c.create_idx("r4_songs", "song_rating")
 	c.create_idx("r4_songs", "song_request_count")
 	c.create_null_fk("r4_songs", "r4_albums", "album_id")
-	if c.is_postgres:
-		c.update("CREATE INDEX song_title_trgm_gin ON r4_songs USING GIN(song_title_searchable gin_trgm_ops)")
+	c.update("CREATE INDEX song_title_trgm_gin ON r4_songs USING GIN(song_title_searchable gin_trgm_ops)")
 
 	c.update(" \
 		CREATE TABLE r4_song_sid ( \
@@ -488,8 +338,7 @@ def create_tables():
 			artist_name				TEXT		, \
 			artist_name_searchable	TEXT 		NOT NULL \
 		)")
-	if c.is_postgres:
-		c.update("CREATE INDEX artist_name_trgm_gin ON r4_artists USING GIN(artist_name_searchable gin_trgm_ops)")
+	c.update("CREATE INDEX artist_name_trgm_gin ON r4_artists USING GIN(artist_name_searchable gin_trgm_ops)")
 
 	c.update(" \
 		CREATE TABLE r4_song_artist	( \
@@ -564,8 +413,7 @@ def create_tables():
 			sid						SMALLINT	NOT NULL, \
 			sched_id 				INT 		 \
 		)")
-	if c.is_postgres:
-		c.update("ALTER TABLE r4_elections ALTER COLUMN elec_id SET DEFAULT nextval('r4_schedule_sched_id_seq')")
+	c.update("ALTER TABLE r4_elections ALTER COLUMN elec_id SET DEFAULT nextval('r4_schedule_sched_id_seq')")
 	c.create_idx("r4_elections", "elec_id")
 	c.create_idx("r4_elections", "elec_used")
 	c.create_idx("r4_elections", "sid")
@@ -595,8 +443,7 @@ def create_tables():
 			one_up_queued			BOOLEAN		DEFAULT FALSE, \
 			one_up_sid				SMALLINT	NOT NULL \
 		)")
-	if c.is_postgres:
-		c.update("ALTER TABLE r4_one_ups ALTER COLUMN one_up_id SET DEFAULT nextval('r4_schedule_sched_id_seq')")
+	c.update("ALTER TABLE r4_one_ups ALTER COLUMN one_up_id SET DEFAULT nextval('r4_schedule_sched_id_seq')")
 	# c.create_idx("r4_one_ups", "sched_id")		# handled by create_delete_fk
 	# c.create_idx("r4_one_ups", "song_id")
 	c.create_delete_fk("r4_one_ups", "r4_schedule", "sched_id")
@@ -669,8 +516,7 @@ def create_tables():
 	c.create_idx("r4_request_line", "sid")
 	c.create_idx("r4_request_line", "line_wait_start")
 	c.create_delete_fk("r4_request_line", "phpbb_users", "user_id")
-	if c.is_postgres:
-		c.update("ALTER TABLE r4_request_line ADD CONSTRAINT unique_user_id UNIQUE (user_id)")
+	c.update("ALTER TABLE r4_request_line ADD CONSTRAINT unique_user_id UNIQUE (user_id)")
 
 	c.update(" \
 		CREATE TABLE r4_request_history ( \

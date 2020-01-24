@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 from libs import font_slimmer
 
 font_slimmer.slim("static/fonts/KoPubDotum-Medium.ttf", "lang/ko_KO.json", "static/fonts/KoPubDotum-Medium.min.woff")

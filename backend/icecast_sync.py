@@ -34,27 +34,19 @@ class IcecastSyncCallback(object):
 		in_process[self] = listeners
 		log.debug("icecast_sync", "%s %s %s count: %s" % (self.relay_name, config.station_id_friendly[self.sid], self.ftype, len(listeners)))
 
-		# for asynchronous processing
-		# for relay, data in in_process.iteritems():
-		# 	print relay, data
-		# 	if not data:
-		# 		log.debug("icecast_sync", "%s %s not done yet." % (relay.relay_name, relay.sid))
-		# 		return None
-		# self.callback()
-
 def _cache_relay_status():
 	global in_process
 
 	relays = {}
-	for relay, relay_info in config.get("relays").iteritems():	#pylint: disable=W0612
+	for relay, relay_info in config.get("relays").items():	#pylint: disable=W0612
 		relays[relay] = 0
 
 
-	for handler, data in in_process.iteritems():
+	for handler, data in in_process.items():
 		if isinstance(data, list):
 			relays[handler.relay_name] += len(data)
 
-	for relay, count in relays.iteritems():
+	for relay, count in relays.items():
 		log.debug("icecast_sync", "%s total listeners: %s" % (relay, count))
 
 	cache.set("relay_status", relays)
@@ -70,11 +62,11 @@ def _count():
 		for sid in config.station_ids:
 			stations[sid] = 0
 
-		for handler, data in in_process.iteritems():
+		for handler, data in in_process.items():
 			if isinstance(data, list):
 				stations[handler.sid] += len(data)
 
-		for sid, listener_count in stations.iteritems():
+		for sid, listener_count in stations.items():
 			log.debug("icecast_sync", "%s has %s listeners." % (config.station_id_friendly[sid], listener_count))
 			db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests) VALUES (%s, %s)", (sid, listener_count))
 
@@ -104,7 +96,7 @@ def _start(callback):
 	for sid in config.station_ids:
 		stream_names[sid] = config.get_station(sid, 'stream_filename')
 
-	for relay, relay_info in config.get("relays").iteritems():
+	for relay, relay_info in config.get("relays").items():
 		relay_base_url = "%s%s:%s/admin/listclients?mount=/" % (relay_info['protocol'], relay_info['ip_address'], relay_info['port'])
 		for sid in relay_info['sids']:
 			for ftype in ('.mp3', '.ogg'):

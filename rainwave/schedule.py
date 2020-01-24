@@ -174,7 +174,6 @@ def post_process(sid):
 		log.debug("advance", "Cooldown warming: %.6f" % (timestamp() - start_time,))
 
 		start_time = timestamp()
-		_add_listener_count_record(sid)
 		_trim(sid)
 		user.trim_listeners(sid)
 		cache.update_user_rating_acl(sid, history[sid][0].get_song().id)
@@ -224,25 +223,6 @@ def post_process(sid):
 				log.debug("advance", "TuneIn updated (%s): %s" % (resp.status_code, resp.text))
 			except Exception as e:
 				log.exception("advance", "Could not update TuneIn.", e)
-
-# def refresh_schedule(sid):
-# 	integrate_new_events(sid)
-# 	sort_next(sid)
-# 	update_memcache(sid)
-# 	sync_to_front.sync_frontend_all_timed(sid)
-
-def _add_listener_count_record(sid):
-	# THIS FUNCTION IS BROKEN BECAUSE ACCURATE LISTENER TRACKING DOES NOT HAPPEN
-	#
-	# the listener_counts table is now being used differently, please check backend/icecast_sync.py
-	# for how it's used now
-	#
-	# lc_guests = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1", (sid,))
-	# lc_users = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1", (sid,))
-	# lc_guests_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id = 1 AND listener_voted_entry IS NOT NULL", (sid,))
-	# lc_users_active = db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE sid = %s AND listener_purge = FALSE AND user_id > 1 AND listener_voted_entry IS NOT NULL", (sid,))
-	# return db.c.update("INSERT INTO r4_listener_counts (sid, lc_guests, lc_users, lc_guests_active, lc_users_active) VALUES (%s, %s, %s, %s, %s)", (sid, lc_guests, lc_users, lc_guests_active, lc_users_active))
-	pass
 
 def _get_schedule_stats(sid):
 	global upnext

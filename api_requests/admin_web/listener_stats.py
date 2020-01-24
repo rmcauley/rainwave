@@ -41,7 +41,7 @@ class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
 		data = {}
 		data["labels"] = None
 		data["datasets"] = []
-		for sid, stats in self._output[self.return_name].iteritems():
+		for sid, stats in self._output[self.return_name].items():
 			if not data["labels"]:
 				data["labels"] = []
 				for stat in stats:

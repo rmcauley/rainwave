@@ -81,4 +81,3 @@ class ListenerStatsAggregate(ListenerStats):
 				dt = datetime.datetime.fromtimestamp(row['lc_time'])
 				row['lc_time'] = dt.strftime("%a %H:%M")
 		self.append(self.return_name, res)
-

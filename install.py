@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import os
 import shutil
 import subprocess
@@ -59,7 +57,7 @@ if __name__ == "__main__":
 
 	subprocess.call(["chown", "-R", "%s:%s" % (user, group), installdir ])
 
-	print "Rainwave installed to /opt/rainwave."
+	print( "Rainwave installed to /opt/rainwave.")
 
 	if os.path.exists("/etc/init.d/rainwave"):
 		subprocess.check_call([ "/etc/init.d/rainwave", "start" ])

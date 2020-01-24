@@ -104,10 +104,10 @@ def prime_rating_cache_for_events(sid, events, songs = None):
 			prime_rating_cache_for_song(song, sid)
 
 def prime_rating_cache_for_song(song, sid):
-	for user_id, rating in song.get_all_ratings().iteritems():
+	for user_id, rating in song.get_all_ratings().items():
 		set_song_rating(song.id, user_id, rating)
 	for album in song.albums:
-		for user_id, rating in album.get_all_ratings(sid).iteritems():
+		for user_id, rating in album.get_all_ratings(sid).items():
 			set_album_rating(sid, album.id, user_id, rating)
 
 def refresh_local(key):

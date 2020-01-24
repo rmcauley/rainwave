@@ -48,7 +48,7 @@ class AppLogin(api.web.HTMLRequest):
 		if not self.user or self.user.is_anonymous():
 			self.redirect('/forums/ucp.php?mode=login&redirect=%s' % self.url)
 			return
-		
+
 		self.user.ensure_api_key()
 
 		key = db.c.fetch_var("SELECT api_key FROM r4_api_keys WHERE user_id = %s LIMIT 1", (self.user.id,))

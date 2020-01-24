@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import argparse
 import shutil
 import os
@@ -55,14 +53,14 @@ if __name__ == "__main__":
 
 			song.disable()
 
-		print "Disabled: %s" % row['song_filename']
+		print( "Disabled: %s" % row['song_filename'])
 
 	for row in reqonly_songs:
 		if args.execute:
 			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = NULL WHERE song_id = %s", (row['song_id'],))
 			db.c.update("UPDATE r4_songs SET song_request_count = 0 WHERE song_id = %s", (row['song_id'],))
-		print "Req Only: %s" % row['song_filename']
+		print( "Req Only: %s" % row['song_filename'])
 
-	print
-	print "Number of songs disabled (this time): %s" % len(remove_songs)
-	print "Number of songs req only (all time) : %s" % len(reqonly_songs)
+	print()
+	print( "Number of songs disabled (this time): %s" % len(remove_songs))
+	print( "Number of songs req only (all time) : %s" % len(reqonly_songs))

@@ -141,7 +141,8 @@ class OneUpProducer(event.BaseProducer):
 		self._update_length()
 
 	def duplicate(self):
-		duped = super(OneUpProducer, self).duplicate()
+		# TODO: this should probably be a class method to avoid the pylint error
+		duped = super().duplicate()
 		for song_row in db.c.fetch_all("SELECT * FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order", (self.id,)):
 			db.c.update("INSERT INTO r4_one_ups (sched_id, song_id, one_up_order, one_up_sid) VALUES (%s, %s, %s, %s)", (duped.id, song_row['song_id'], song_row['one_up_order'], song_row['one_up_sid']))
 		duped._update_length()
@@ -149,7 +150,7 @@ class OneUpProducer(event.BaseProducer):
 
 	def to_dict(self):
 		self.load_all_songs()
-		return super(OneUpProducer, self).to_dict()
+		return super().to_dict()
 
 class OneUp(event.BaseEvent):
 	@classmethod

@@ -190,7 +190,6 @@ class Election(event.BaseEvent):
 				song.data['entry_type'] = ElecSongTypes.normal
 				song.data['elec_request_user_id'] = 0
 				song.data['elec_request_username'] = None
-				self._check_song_for_conflict(song)
 				self.add_song(song)
 			except Exception as e:
 				log.exception("elec_fill", "Song failed to fill in an election.", e)
@@ -205,25 +204,6 @@ class Election(event.BaseEvent):
 
 	def _fill_get_song(self, target_song_length):
 		return playlist.get_random_song_timed(self.sid, target_song_length)
-
-	def _check_song_for_conflict(self, song):
-		return False
-
-		# requesting_user = db.c.fetch_row(
-		# 	"SELECT username, phpbb_users.user_id AS user_id "
-		# 		"FROM r4_request_store "
-		# 			"JOIN r4_listeners ON (r4_request_store.user_id = r4_listeners.user_id AND r4_listeners.sid = %s) "
-		# 			"JOIN r4_request_line ON (r4_listeners.user_id = r4_request_line.user_id AND r4_listeners.sid = r4_request_line.sid) "
-		# 			"JOIN phpbb_users ON (r4_request_line.user_id = phpbb_users.user_id) "
-		# 		"WHERE r4_request_store.song_id = %s "
-		# 		"ORDER BY line_wait_start LIMIT 1",
-		# 	(self.sid, song.id))
-		# if requesting_user:
-		# 	song.data['entry_type'] = ElecSongTypes.request
-		# 	song.data['request_username'] = requesting_user['username']
-		# 	song.data['request_user_id'] = requesting_user['user_id']
-		# 	return True
-		# return False
 
 	def add_song(self, song):
 		if not song:
@@ -288,7 +268,7 @@ class Election(event.BaseEvent):
 						else:
 							db.c.update("UPDATE phpbb_users SET radio_losingrequests = radio_losingrequests + 1 WHERE user_id = %s", (song.data['elec_request_user_id'],))
 
-			if db.c.allows_join_on_update and len(self.songs) > 0:
+			if len(self.songs) > 0:
 				db.c.update("UPDATE phpbb_users SET radio_winningvotes = radio_winningvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id = %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
 				db.c.update("UPDATE phpbb_users SET radio_losingvotes = radio_losingvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id != %s AND phpbb_users.user_id = r4_vote_history.user_id", (self.id, self.songs[0].id))
 		self.start_actual = int(timestamp())

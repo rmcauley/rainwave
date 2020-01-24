@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import argparse
 import time
 import math
@@ -38,7 +36,7 @@ if __name__ == "__main__":
 			"AND sid = %s "
 			"AND song_origin_sid != 2 "        # no ocremix per request of jf
 		"ORDER BY random() ",
-		(long(time.time() - SONGS_ADDED_SINCE_WHEN), TARGET_SID)
+		(int(time.time() - SONGS_ADDED_SINCE_WHEN), TARGET_SID)
 	)
 
 	if len(songs_today) > 0:
@@ -62,7 +60,7 @@ if __name__ == "__main__":
 		delta_days = 0
 		for ph_num in range(number_of_ph):
 			start = datetime.now(timezone('US/Eastern')).replace(hour=14, minute=0, second=0, microsecond=0) + timedelta(days=delta_days)
-			start_epoch = long((start - datetime.fromtimestamp(0, timezone('US/Eastern'))).total_seconds())
+			start_epoch = int((start - datetime.fromtimestamp(0, timezone('US/Eastern'))).total_seconds())
 
 			name = original_start.strftime("%b %d New Music")
 			if number_of_ph > 1:
@@ -87,7 +85,7 @@ if __name__ == "__main__":
 			p.load_all_songs()
 
 			start_eu = datetime.now(timezone('Europe/London')).replace(hour=10, minute=0, second=0, microsecond=0) + timedelta(days=delta_days + 1)
-			start_epoch_eu = long((start_eu - datetime.fromtimestamp(0, timezone('US/Eastern'))).total_seconds())
+			start_epoch_eu = int((start_eu - datetime.fromtimestamp(0, timezone('US/Eastern'))).total_seconds())
 			p_eu = oneup.OneUpProducer.create(
 				sid=TARGET_SID,
 				start=start_epoch_eu,

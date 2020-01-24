@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import argparse
 import sys
 import psycopg2
@@ -16,5 +14,8 @@ libs.db.connect()
 
 libs.db.create_tables()
 libs.db.add_custom_fields()
+
+print("Done")
+print()
 
 sys.exit(0)

@@ -4,7 +4,7 @@ from api.exceptions import APIException
 from api.server import handle_api_url
 from libs import cache
 from libs import config
-from urlparse import urlsplit
+from urllib.parse import urlsplit
 import time
 
 @handle_api_url('error_report')
@@ -42,8 +42,8 @@ class ErrorReport(APIHandler):
 
     def post(self):
         # limit size of submission
-        for k, v in self.cleaned_args.iteritems():
-            if isinstance(object, (str, unicode)):
+        for k, v in self.cleaned_args.items():
+            if isinstance(object, str):
                 self.cleaned_args[k] = v[:2048]
         self.cleaned_args['user_id'] = self.user.id
         self.cleaned_args['username'] = self.user.data['name']

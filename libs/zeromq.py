@@ -18,7 +18,6 @@ def init_pub():
 	context = zmq.Context()
 	_pub = context.socket(zmq.PUB)
 	_pub.connect(config.get("zeromq_pub"))
-	# pub_stream = zmqstream.ZMQStream(_pub)
 
 def init_sub():
 	global _sub_stream

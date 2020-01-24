@@ -31,7 +31,7 @@ num_origin_songs = {}
 
 def set_umask():
     os.setpgrp()
-    os.umask(002)
+    os.umask(0o02)
 
 def zip_metadata(tag_metadata, kept_metadata):
 	new_metadata = copy.copy(tag_metadata)
@@ -61,7 +61,7 @@ class SongMetadataUnremovable(Exception):
 class Song(object):
 	#pylint: disable=W0212
 	@classmethod
-	def load_from_id(klass, song_id, sid = None, all_categories = False):
+	def load_from_id(cls, song_id, sid = None, all_categories = False):
 		if sid is not None:
 			d = db.c.fetch_row("SELECT * FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_id = %s AND r4_song_sid.sid = %s", (song_id, sid))
 		else:
@@ -71,7 +71,7 @@ class Song(object):
 			raise SongNonExistent
 
 		try:
-			s = klass()
+			s = cls()
 			s.id = song_id
 			s.sid = sid
 			s.filename = d['song_filename']
@@ -94,7 +94,7 @@ class Song(object):
 		return s
 
 	@classmethod
-	def load_from_file(klass, filename, sids):
+	def load_from_file(cls, filename, sids):
 		"""
 		Produces an instance of the Song class with all album, group, and artist IDs loaded from only a filename.
 		All metadata is saved to the database and updated where necessary.
@@ -106,7 +106,7 @@ class Song(object):
 		matched_entry = db.c.fetch_row("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
 		if matched_entry:
 			log.debug("playlist", "this filename matches an existing database entry, song_id {}".format(matched_entry['song_id']))
-			s = klass.load_from_id(matched_entry['song_id'])
+			s = cls.load_from_id(matched_entry['song_id'])
 			for metadata in s.artists:
 				try:
 					if not metadata.is_tag:
@@ -124,7 +124,7 @@ class Song(object):
 		elif len(sids) == 0:
 			raise SongHasNoSIDsException
 		else:
-			s = klass()
+			s = cls()
 
 		s.load_tag_from_file(filename)
 		s.save(sids)
@@ -150,20 +150,20 @@ class Song(object):
 		return s
 
 	@classmethod
-	def load_from_deleted_file(klass, filename):
+	def load_from_deleted_file(cls, filename):
 		matched_entry = db.c.fetch_row("SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,))
 		if matched_entry and 'song_id' in matched_entry:
-			s = klass.load_from_id(matched_entry['song_id'])
+			s = cls.load_from_id(matched_entry['song_id'])
 		else:
 			s = None
 		return s
 
 	@classmethod
-	def create_fake(klass, sid):
+	def create_fake(cls, sid):
 		if not config.test_mode:
 			raise Exception("Tried to create a fake song when not in test mode.")
 
-		s = klass()
+		s = cls()
 		s.filename = "fake.mp3"
 		s.data['title'] = "Test Song %s" % db.c.get_next_id("r4_songs", "song_id")
 		s.artist_tag = "Test Artist %s" % db.c.get_next_id("r4_artists", "artist_id")
@@ -210,57 +210,57 @@ class Song(object):
 			raise PassableScanError("Song filename \"%s\" has no tags." % filename)
 
 		w = f.tags.getall('TIT2')
-		if len(w) > 0 and len(unicode(w[0])) > 0:
-			self.data['title'] = unicode(w[0]).strip()
+		if len(w) > 0 and len(str(w[0])) > 0:
+			self.data['title'] = str(w[0]).strip()
 		else:
 			raise PassableScanError("Song filename \"%s\" has no title tag." % filename)
 		w = f.tags.getall('TPE1')
-		if len(w) > 0 and len(unicode(w[0])) > 0:
-			self.artist_tag = unicode(w[0])
+		if len(w) > 0 and len(str(w[0])) > 0:
+			self.artist_tag = str(w[0])
 		else:
 			raise PassableScanError("Song filename \"%s\" has no artist tag." % filename)
 		w = f.tags.getall('TALB')
-		if len(w) > 0 and len(unicode(w[0]).strip()) > 0:
-			self.album_tag = unicode(w[0]).strip()
+		if len(w) > 0 and len(str(w[0]).strip()) > 0:
+			self.album_tag = str(w[0]).strip()
 		else:
 			raise PassableScanError("Song filename \"%s\" has no album tag." % filename)
 		if config.get("scanner_use_tracknumbers"):
 			w = f.tags.getall('TRCK')
 			if w is not None and len(w) > 0:
 				try:
-					self.data['track_number'] = fieldtypes.integer(unicode(w[0]))
+					self.data['track_number'] = fieldtypes.integer(str(w[0]))
 				except ValueError:
 					pass
 			w = f.tags.getall('TPOS')
 			if w is not None and len(w) > 0:
 				try:
-					self.data['disc_number'] = fieldtypes.integer(unicode(w[0]))
+					self.data['disc_number'] = fieldtypes.integer(str(w[0]))
 				except ValueError:
 					pass
 		w = f.tags.getall('TCON')
-		if len(w) > 0 and len(unicode(w[0])) > 0:
-			self.genre_tag = unicode(w[0])
+		if len(w) > 0 and len(str(w[0])) > 0:
+			self.genre_tag = str(w[0])
 		w = f.tags.getall('COMM')
-		if len(w) > 0 and len(unicode(w[0])) > 0:
-			self.data['link_text'] = unicode(w[0]).strip()
+		if len(w) > 0 and len(str(w[0])) > 0:
+			self.data['link_text'] = str(w[0]).strip()
 		# what the heck is pylint code w0511?  a warning with X X X
 		# even happens on comments.
 		# guess it hates porn but that's what the ID3 wildcard tag is!
 		w = f.tags.getall('WXXX')	#pylint: disable=W0511
-		if len(w) > 0 and len(unicode(w[0])) > 0:
-			self.data['url'] = unicode(w[0]).strip()
+		if len(w) > 0 and len(str(w[0])) > 0:
+			self.data['url'] = str(w[0]).strip()
 		else:
 			self.data['url'] = None
 		w = f.tags.getall('TYER')
 		if w is not None and len(w) > 0:
 			try:
-				self.data['year'] = fieldtypes.integer(unicode(w[0]))
+				self.data['year'] = fieldtypes.integer(str(w[0]))
 			except ValueError:
 				pass
 		w = f.tags.getall('TDRC')
 		if self.data['year'] is None and w is not None and len(w) > 0:
 			try:
-				self.data['year'] = fieldtypes.integer(unicode(w[0]))
+				self.data['year'] = fieldtypes.integer(str(w[0]))
 			except ValueError:
 				pass
 
@@ -404,7 +404,7 @@ class Song(object):
 				metadata.reconcile_sids()
 
 	def _assign_from_dict(self, d):
-		for key, val in d.iteritems():
+		for key, val in d.items():
 			if key.find("song_") == 0:
 				key = key[5:]
 			# Skip any album-related values
@@ -469,33 +469,6 @@ class Song(object):
 		self.data['elec_blocked_by'] = blocked_by
 		self.data['elec_blocked'] = True
 
-	# def update_rating(self, skip_album_update = False):
-	# 	"""
-	# 	Calculate an updated rating from the database.
-	# 	"""
-	# 	dislikes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user < 3 GROUP BY song_id", (self.id,))
-	# 	if not dislikes:
-	# 		dislikes = 0
-	# 	neutrals = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3 AND song_rating_user < 3.5 GROUP BY song_id", (self.id,))
-	# 	if not neutrals:
-	# 		neutrals = 0
-	# 	neutralplus = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 3.5 AND song_rating_user < 4 GROUP BY song_id", (self.id,))
-	# 	if not neutralplus:
-	# 		neutralplus = 0
-	# 	likes = db.c.fetch_var("SELECT COUNT(*) FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s AND song_rating_user >= 4 GROUP BY song_id", (self.id,))
-	# 	if not likes:
-	# 		likes = 0
-	# 	rating_count = dislikes + neutrals + neutralplus + likes
-	# 	log.debug("song_rating", "%s ratings for %s" % (rating_count, self.filename))
-	# 	if rating_count > config.get("rating_threshold_for_calc"):
-	# 		self.data['rating'] = ((((likes + (neutrals * 0.5) + (neutralplus * 0.75)) / (likes + dislikes + neutrals + neutralplus) * 4.0)) + 1)
-	# 		log.debug("song_rating", "rating update: %s for %s" % (self.data['rating'], self.filename))
-	# 		db.c.update("UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s", (self.data['rating'], rating_count, self.id))
-
-	# 	if not skip_album_update:
-	# 		for album in self.albums:
-	# 			album.update_rating()
-
 	def update_rating(self, skip_album_update=False):
 		ratings = db.c.fetch_all("SELECT song_rating_user AS rating, COUNT(user_id) AS count FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE song_id = %s AND radio_inactive = FALSE AND song_rating_user IS NOT NULL GROUP BY song_rating_user", (self.id,))
 		(points, potential_points) = rating.rating_calculator(ratings)
@@ -534,11 +507,11 @@ class Song(object):
 	def add_group(self, name):
 		return self._add_metadata(self.groups, name, SongGroup)
 
-	def _add_metadata(self, lst, name, klass):
+	def _add_metadata(self, lst, name, cls):
 		for metadata in lst:
 			if metadata.data['name'] == name:
 				return True
-		new_md = klass.load_from_name(name)
+		new_md = cls.load_from_name(name)
 		new_md.associate_song_id(self.id)
 		lst.append(new_md)
 		return True
@@ -651,29 +624,6 @@ class Song(object):
 
 		return d
 
-	# def to_dict_full(self, user = None):
-	# 	self.data['id'] = self.id
-	# 	self.data['artists'] = []
-	# 	self.data['albums'] = []
-	# 	self.data['groups'] = []
-	# 	if self.albums:
-	# 		for metadata in self.albums:
-	# 			self.data['albums'].append(metadata.to_dict(user))
-	# 	if self.artists:
-	# 		for metadata in self.artists:
-	# 			self.data['artists'].append(metadata.to_dict(user))
-	# 	if self.groups:
-	# 		for metadata in self.groups:
-	# 			self.data['groups'].append(metadata.to_dict(user))
-	# 	self.data['rating_user'] = None
-	# 	self.data['fave'] = None
-	# 	self.data['rating_allowed'] = False
-	# 	if user:
-	# 		self.data.update(rating.get_song_rating(self.id, user.id))
-	# 		if user.data['rate_anything']:
-	# 			self.data['rating_allowed'] = True
-	# 	return self.data
-
 	def get_all_ratings(self):
 		table = db.c.fetch_all("SELECT song_rating_user, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s", (self.id,))
 		all_ratings = {}
@@ -720,7 +670,7 @@ class Song(object):
 
 		if update_albums:
 			for album in self.albums:
-				album.update_fave_count(sid)
+				album.update_fave_count()
 
 	def update_vote_count(self, sid, update_albums = True):
 		count = db.c.fetch_var("SELECT COUNT(*) FROM r4_vote_history AND song_id = %s", (self.id,))

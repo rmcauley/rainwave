@@ -46,8 +46,8 @@ def sectionize_requests():
 		else:
 			sections["Other"][url] = handler
 
-def add_help_class(klass, url):
-	help_classes[url] = klass
+def add_help_class(cls, url):
+	help_classes[url] = cls
 
 class IndexRequest(api.web.HTMLRequest):
 	auth_required = False
@@ -138,23 +138,23 @@ class HelpRequest(tornado.web.RequestHandler):
 		url = "/" + url
 		if not url in help_classes:
 			self.send_error(404)
-		klass = help_classes[url]
+		cls = help_classes[url]
 		self.write(self.render_string("basic_header.html", title="Rainwave API - %s" % url))
-		self.write("<p>%s</p>" % klass.description)
+		self.write("<p>%s</p>" % cls.description)
 		self.write("<ul>")
 		for prop in url_properties:
-			if prop[0] == "auth_required" and getattr(klass, "phpbb_auth", False):
+			if prop[0] == "auth_required" and getattr(cls, "phpbb_auth", False):
 				self.write("<li>User must be requesting from Rainwave.cc and logged in to the Rainwave.cc forum system.")
-			elif getattr(klass, prop[0], False):
+			elif getattr(cls, prop[0], False):
 				self.write("<li>" + prop[2] + "</li>")
 		self.write("</ul>")
 
 		self.write("<h2>Fields</h2>")
 		self.write("<table><tr><th>Field Name</th><th>Type</th><th>Required</th></tr>")
-		if getattr(klass, "auth_required", False):
-			if getattr(klass, "admin_required", False):
+		if getattr(cls, "auth_required", False):
+			if getattr(cls, "admin_required", False):
 				self.write("<tr><td>user_id</td><td>integer</td><td>Required, must be an administrator.</td></tr>")
-			elif getattr(klass, "login_required", False):
+			elif getattr(cls, "login_required", False):
 				self.write("<tr><td>user_id</td><td>integer</td><td>Required, registered users only. (user_id > 1)</td></tr>")
 			else:
 				self.write("<tr><td>user_id</td><td>integer</td><td>Required, anonymous users OK. (user_id == 1).</td></tr>")
@@ -162,12 +162,12 @@ class HelpRequest(tornado.web.RequestHandler):
 		else:
 			self.write("<tr><td>user_id</td><td>integer</td><td>Optional</td></tr>")
 			self.write("<tr><td>key</td><td>api_key</td><td>Optional</td></tr>")
-		if getattr(klass, "sid_required", False):
+		if getattr(cls, "sid_required", False):
 			self.write("<tr><td>sid</td><td>integer</td><td>Required</td></tr>")
-		if getattr(klass, "pagination", False) and not "per_page" in klass.fields:
+		if getattr(cls, "pagination", False) and not "per_page" in cls.fields:
 			self.write("<tr><td>per_page</td><td>integer</td><td>Optional, default 100</td></tr>")
 			self.write("<tr><td>page_start</td><td>integer</td><td>Optional, default 0</td></tr>")
-		for field, field_attribs in klass.fields.iteritems():
+		for field, field_attribs in cls.fields.items():
 			type_cast, required = field_attribs
 			self.write("<tr><td>%s</td><td>%s</td>" % (field, type_cast.__name__))
 			if required:
@@ -176,14 +176,5 @@ class HelpRequest(tornado.web.RequestHandler):
 				self.write("<td>Not required.</td>")
 			self.write("</tr>")
 		self.write("</table>")
-
-		# if (os.path.exists("api_tests/%s.json" % url)):
-		# 	self.write("<h2>Sample Output</h2>")
-		# 	self.write("<div class='json'>")
-		# 	json_file = open("api_tests/%s.json" % url)
-		# 	json_data = json.load(json_file)
-		# 	self.write(json.dumps(json_data, ensure_ascii=False, indent=4))
-		# 	json_file.close()
-		# 	self.write("</div>")
 
 		self.write(self.render_string("basic_footer.html"))

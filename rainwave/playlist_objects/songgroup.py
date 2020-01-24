@@ -19,9 +19,9 @@ class SongGroup(AssociatedMetadata):
 
 	#pylint: disable=W0212,W0221
 	@classmethod
-	def load_list_from_song_id(klass, song_id, sid=None, all_categories=False):
+	def load_list_from_song_id(cls, song_id, sid=None, all_categories=False):
 		if not sid:
-			return super(SongGroup, klass).load_list_from_song_id(song_id)
+			return super(SongGroup, cls).load_list_from_song_id(song_id)
 
 		show_all_condition = "" if all_categories else "AND r4_group_sid.group_display = TRUE"
 
@@ -37,7 +37,7 @@ class SongGroup(AssociatedMetadata):
 		)
 		instances = []
 		for row in rows:
-			instance = klass()
+			instance = cls()
 			instance._assign_from_dict(row)
 			instances.append(instance)
 		return instances
@@ -81,44 +81,27 @@ class SongGroup(AssociatedMetadata):
 		cool_end = int(cool_time + timestamp())
 		log.debug("cooldown", "Group ID %s Station ID %s cool_time period: %s" % (self.id, sid, cool_time))
 		# Make sure to update both the if and else SQL statements if doing any updates
-		if db.c.allows_join_on_update:
-			db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s "
-						"FROM r4_song_group "
-						"WHERE r4_song_sid.song_id = r4_song_group.song_id AND r4_song_group.group_id = %s "
-							"AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end <= %s ",
-						(cool_end, self.id, sid, cool_end))
-			request_only_end = cool_end + 300
-			db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s "
-						"FROM r4_song_group "
-						"WHERE r4_song_sid.song_id = r4_song_group.song_id AND r4_song_group.group_id = %s "
-							"AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end <= %s "
-							"AND song_request_only_end IS NOT NULL",
-						(request_only_end, self.id, sid, cool_end))
-		else:
-			song_ids = db.c.fetch_list(
-				"SELECT song_id "
-				"FROM r4_song_group JOIN r4_song_sid USING (song_id) "
-				"WHERE r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end < %s",
-				(self.id, sid, timestamp() - cool_time))
-			for song_id in song_ids:
-				db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s", (cool_end, song_id, sid))
+		db.c.update("UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s "
+					"FROM r4_song_group "
+					"WHERE r4_song_sid.song_id = r4_song_group.song_id AND r4_song_group.group_id = %s "
+						"AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end <= %s ",
+					(cool_end, self.id, sid, cool_end))
+		request_only_end = cool_end + 300
+		db.c.update("UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s "
+					"FROM r4_song_group "
+					"WHERE r4_song_sid.song_id = r4_song_group.song_id AND r4_song_group.group_id = %s "
+						"AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end <= %s "
+						"AND song_request_only_end IS NOT NULL",
+					(request_only_end, self.id, sid, cool_end))
 
 	def _start_election_block_db(self, sid, num_elections):
-		if db.c.allows_join_on_update:
-			# refer to song.set_election_block for base SQL
-			db.c.update("UPDATE r4_song_sid "
-						"SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s "
-						"FROM r4_song_group "
-						"WHERE r4_song_sid.song_id = r4_song_group.song_id AND "
-						"r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND song_elec_blocked_num < %s",
-						('group', num_elections, self.id, sid, num_elections))
-		# Disabled for SQLite to prevent circular module referencing
-		# else:
-		# 	table = db.c.fetch_all("SELECT r4_song_group.song_id FROM r4_song_group JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) WHERE group_id = %s", (self.id, sid))
-		# 	for row in table:
-		# 		song = Song()
-		# 		song.id = row['song_id']
-		# 		song.set_election_block(sid, 'group', num_elections)
+		# refer to song.set_election_block for base SQL
+		db.c.update("UPDATE r4_song_sid "
+					"SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s "
+					"FROM r4_song_group "
+					"WHERE r4_song_sid.song_id = r4_song_group.song_id AND "
+					"r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND song_elec_blocked_num < %s",
+					('group', num_elections, self.id, sid, num_elections))
 
 	def set_elec_block(self, num_elections):
 		db.c.update("UPDATE r4_groups SET group_elec_block = %s WHERE group_id = %s", (num_elections, self.id))

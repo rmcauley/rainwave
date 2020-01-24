@@ -9,25 +9,25 @@ def print_differences(ref_data, compare_data):
 
 	passed = True
 
-	for key, value in ref_data.iteritems():
+	for key, value in ref_data.items():
 		if key not in compare_data:
-			print "[Compare] lacks key: %s" % key
+			print( "[Compare] lacks key: %s" % key)
 			passed = False
 		elif type(value) == 'dict':
 			if not print_differences(value, compare_data[key]):
-				print "\t... in key %s" % key
+				print( "\t... in key %s" % key)
 				passed = False
 		elif value != compare_data[key]:
-			print "Compare differs on key %s" % key
-			print "\tReference data:"
+			print( "Compare differs on key %s" % key)
+			print( "\tReference data:")
 			pp.pprint(value)
-			print "\tComparison data:"
+			print( "\tComparison data:")
 			pp.pprint(compare_data[key])
 			passed = False
 
-	for key, value in compare_data.iteritems():
+	for key, value in compare_data.items():
 		if key not in ref_data:
-			print "[Ref    ] lacks key: %s" % key
+			print( "[Ref    ] lacks key: %s" % key)
 			passed = False
 
 	return passed

@@ -46,7 +46,7 @@ class IcecastHandler(RainwaveHandler):
 
 	def write_error(self, status_code, **kwargs):
 		self.failed = True
-		if kwargs.has_key("exc_info"):
+		if "exc_info" in kwargs:
 			exc = kwargs['exc_info'][1]
 			if isinstance(exc, APIException):
 				exc.localize(self.locale)
@@ -60,7 +60,7 @@ class IcecastHandler(RainwaveHandler):
 		self.set_header("icecast-auth-message", message)
 		self.write(message)
 
-@handle_api_url("listener_add/(\d+)")
+@handle_api_url(r"listener_add/(\d+)")
 class AddListener(IcecastHandler):
 	fields = {
 		"client": (fieldtypes.integer, True),
@@ -174,11 +174,11 @@ class RemoveListener(IcecastHandler):
 		self.failed = False
 
 # Compatible with R3 relays
-@handle_url("/sync/(\d+)/listener_add")
+@handle_url(r"/sync/(\d+)/listener_add")
 class AddListener_R3Relay(AddListener):
 	pass
 
 # Compatible with R3 relays
-@handle_url("/sync/(\d+)/listener_remove")
+@handle_url(r"/sync/(\d+)/listener_remove")
 class RemoveListener_R3Relay(RemoveListener):
 	pass

@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import argparse
 
 from libs import config
@@ -18,7 +16,7 @@ if __name__ == "__main__":
 	for album_id in albums:
 		txt = "Album %s / %s" % (i, len(albums))
 		txt += " " * (80 - len(txt))
-		print "\r" + txt,
+		print( "\r" + txt,)
 		i += 1
 
 		a = Album.load_from_id(album_id)

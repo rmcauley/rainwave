@@ -39,7 +39,7 @@ class AssociateGroupAddAlbum(api.web.APIHandler):
 		cache.set_user(self.user, "admin_associate_groups_albums", albums)
 		self.append_standard("album_added")
 
-@handle_url("/admin/tools/associate_groups_finish/(\d+)")
+@handle_url(r"/admin/tools/associate_groups_finish/(\d+)")
 class AssociateGroupToolFinish(api.web.HTMLRequest):
 	admin_required = True
 	sid_required = False

@@ -5,7 +5,7 @@ import datetime
 import numbers
 import sys
 import uuid
-import urlparse
+from urllib.parse import urlparse
 from time import time as timestamp
 
 try:
@@ -66,7 +66,7 @@ class SessionBank(object):
 			self.sessions.remove(session)
 
 	def clear(self):
-		for timer in self.throttled.itervalues():
+		for timer in self.throttled.values():
 			tornado.ioloop.IOLoop.instance().remove_timeout(timer)
 		self.sessions[:] = []
 		self.throttled.clear()
@@ -292,6 +292,7 @@ class Sync(APIHandler):
 	fields = { "offline_ack": (fieldtypes.boolean, None), "resync": (fieldtypes.boolean, None), "known_event_id": (fieldtypes.positive_integer, None) }
 	is_websocket = False
 
+	# TODO: this needs to be updated for 6.0.3 to use a generator/coroutine
 	@tornado.web.asynchronous
 	def post(self):
 		global sessions
@@ -396,7 +397,7 @@ class WSMessage(dict):
 	def __ne__(self, other):
 		return not self.__eq__(other)
 
-@handle_api_url("websocket/(\d+)")
+@handle_api_url(r"websocket/(\d+)")
 class WSHandler(tornado.websocket.WebSocketHandler):
 	is_websocket = True
 	local_only = False
@@ -408,7 +409,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 	def check_origin(self, origin):
 		if websocket_allow_from == "*":
 			return True
-		parsed_origin = urlparse.urlparse(origin)
+		parsed_origin = urlparse(origin)
 		return parsed_origin.netloc.endswith(websocket_allow_from)
 
 	def open(self, *args, **kwargs):

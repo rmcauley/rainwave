@@ -106,10 +106,6 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 		string += ":" + e.get_filename()
 		return string
 
-# class RefreshScheduleRequest(tornado.web.RequestHandler):
-# 	def get(self, sid):
-# 		schedule.refresh_schedule(int(sid))
-
 class BackendServer(object):
 	def _listen(self, sid):
 		pid = os.getpid()

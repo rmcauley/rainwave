@@ -249,8 +249,6 @@ def get_unrated_songs_for_user(user_id, limit = "LIMIT ALL"):
 		"WHERE song_verified = TRUE AND song_rating_user IS NULL AND song_origin_sid > 0 ORDER BY album_name, song_title " + limit, (user_id,))
 
 def _get_requested_albums_sql():
-	if not db.c.allows_join_on_update:
-		return
 	return ("WITH requested_albums AS ("
 		"SELECT r4_songs.album_id "
 		"FROM r4_request_store "

@@ -91,7 +91,7 @@ def load(filename = None, testmode = False):
 			#"url": "http://%s:%s" % (get_station(sid, "round_robin_relay_host"), get_station(sid, "round_robin_relay_port"))
 		})
 		relay_hostnames.append('http://{}'.format(get_station(sid, "round_robin_relay_host")))
-		for relay_name, relay in get("relays").iteritems():
+		for relay_name, relay in get("relays").items():
 			if sid in relay['sids']:
 				public_relays[sid].append({
 					"name": relay_name,
@@ -146,7 +146,7 @@ def has_station(sid, key):
 
 def require(key):
 	if not key in _opts:
-		raise StandardError("Required configuration key '%s' not found." % key)
+		raise RuntimeError("Required configuration key '%s' not found." % key)
 
 def get(key):
 	require(key)
@@ -167,9 +167,9 @@ def override(key, value):
 
 def get_station(sid, key):
 	if not sid in _opts['stations']:
-		raise StandardError("Station SID %s has no configuration." % sid)
+		raise RuntimeError("Station SID %s has no configuration." % sid)
 	if not key in _opts['stations'][sid]:
-		raise StandardError("Station SID %s has no configuration key %s." % (sid, key))
+		raise RuntimeError("Station SID %s has no configuration key %s." % (sid, key))
 	return _opts['stations'][sid][key]
 
 def set_station_ids(dirs, friendly):
@@ -177,11 +177,11 @@ def set_station_ids(dirs, friendly):
 	global station_id_friendly
 
 	sid_array = []
-	for d, sids in dirs.iteritems():	#pylint: disable=W0612
+	for d, sids in dirs.items():	#pylint: disable=W0612
 		for sid in sids:
 			if sid_array.count(sid) == 0 and sid != 0:
 				sid_array.append(sid)
 	station_ids = set(sid_array)
 
-	for sid, friendly in friendly.iteritems():
+	for sid, friendly in friendly.items():
 		station_id_friendly[int(sid)] = friendly

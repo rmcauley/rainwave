@@ -1,12 +1,10 @@
-#!/usr/bin/python
-
-import httplib
-import urllib
 import argparse
 import os
 import os.path
 import time
 import socket
+from http.client import HTTPConnection
+from urllib import parse
 from libs import cache
 from libs import config
 
@@ -19,7 +17,7 @@ args = parser.parse_args()
 config.load(args.config)
 cache.connect()
 
-params = urllib.urlencode({ "sid": args.sid })
+params = parse.quote({ "sid": args.sid })
 try:
 	dest_port = config.get("backend_port")
 	# Linux, multiprocessing is on
@@ -29,7 +27,7 @@ try:
 	else:
 		dest_port += int(list(config.station_ids)[0])
 	timeout = 5 if cache.get_station(args.sid, "backend_ok") else 120
-	conn = httplib.HTTPConnection(args.dest, config.get("backend_port") + int(args.sid), timeout=timeout)
+	conn = HTTPConnection(args.dest, config.get("backend_port") + int(args.sid), timeout=timeout)
 	conn.request("GET", "/advance/%s" % args.sid)
 	result = conn.getresponse()
 	if result.status == 200:
@@ -38,7 +36,7 @@ try:
 			raise Exception("Got zero-length filename from backend!")
 		if os.name == "nt":
 			next_song_filename = next_song_filename.replace("\\", "/")
-		print next_song_filename
+		print( next_song_filename)
 	else:
 		raise Exception("HTTP Error %s trying to reach backend!" % result.status)
 	cache.set_station(args.sid, "backend_ok", True)

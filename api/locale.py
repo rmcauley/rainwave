@@ -100,7 +100,7 @@ def compile_static_language_files():
 
 	buildtools.create_baked_directory()
 
-	for locale, translation in translations.iteritems():
+	for locale, translation in translations.items():
 			f = codecs.open(os.path.join(os.path.dirname(__file__), "../static/baked/", str(buildtools.get_build_number()), locale + ".js"), "w", encoding="utf-8")
 			f.write(u'\u4500')
 			f.seek(0)
@@ -124,14 +124,14 @@ class RainwaveLocale(tornado.locale.Locale):
 	def get_closest(self, *codes):
 		global translations
 
-		if type(codes) == types.TupleType:
+		if type(codes) == tuple:
 			codes = codes[0]
 
 		for i in range(0, len(codes)):
 			if codes[i] in translations:
 				return translations[codes[i]]
 
-			for locale_name, translation in translations.iteritems():
+			for locale_name, translation in translations.items():
 				if codes[i][:2] == locale_name[:2]:
 					return translation
 
@@ -146,7 +146,7 @@ class RainwaveLocale(tornado.locale.Locale):
 		# super(RainwaveLocale, self).__init__()
 		# remove lines that are no longer in the master file
 		to_pop = []
-		for k, v in translation.iteritems():
+		for k, v in translation.items():
 			if not code == "en_CA" and not mster.has_key(k) and not k.startswith("suffix_"):
 				to_pop.append(k)
 		for k in to_pop:
@@ -157,7 +157,7 @@ class RainwaveLocale(tornado.locale.Locale):
 
 		# document lines missing
 		self.missing = {}
-		for k, v in mster.iteritems():
+		for k, v in mster.items():
 			if not translation.has_key(k):
 				self.missing[k] = v
 	#pylint: enable=W0231
@@ -166,10 +166,10 @@ class RainwaveLocale(tornado.locale.Locale):
 		if not key in self.dict:
 			return "[[ " + key + " ]]"
 		line = self.dict[key]
-		for k, i in kwargs.iteritems():
+		for k, i in kwargs.items():
 			if "%(" + k + ")" in line:
 				line = line.replace("%(" + k + ")", str(i))
-			if type(i) == types.IntType or type(i) == types.LongType or type(i) == types.FloatType:
+			if isinstance(i, (int, float)):
 				if "#(" + k + ")" in line:
 					line = line.replace("#(" + k + ")", self.get_suffixed_number(i))
 				plural_check = "&(" + k + ":"
@@ -186,7 +186,7 @@ class RainwaveLocale(tornado.locale.Locale):
 		return line
 
 	def get_suffixed_number(self, number):
-		if not type(number) == types.StringType:
+		if not type(number) == str:
 			number = str(number)
 		for i in range(0, len(number) - 1):
 			if ("suffix_" + number[i:]) in self.dict:

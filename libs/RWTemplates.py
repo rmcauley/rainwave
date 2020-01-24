@@ -1,4 +1,3 @@
-#!/usr/bin/python
 
 ##########################################
 #
@@ -58,13 +57,13 @@
 #
 ##########################################
 
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 import re
 import os
 
 # Use as wide an array of ES5 compatible characters as we can to keep
 # variable names short.
-_unique_id_chars = [ chr(x) for x in xrange(65, 91) ] + [ chr(x) for x in xrange(97, 123) ]
+_unique_id_chars = [ chr(x) for x in range(65, 91) ] + [ chr(x) for x in range(97, 123) ]
 _unique_id = _unique_id_chars[0]
 _func_id = _unique_id_chars[0]
 _defined_dirs = []
@@ -195,12 +194,12 @@ class RainwaveParser(HTMLParser):
 					final_val += tm
 					use_plus = True
 		except:
-			print "-" * 80
-			print "Exception in %s" % self.name
-			print "Value: %s" % val
-			print "Current element tree: " % self.tree_names
-			print "Current call stack: " % self.stack
-			print "-" * 80
+			print( "-" * 80)
+			print( "Exception in %s" % self.name)
+			print( "Value: %s" % val)
+			print( "Current element tree: " % self.tree_names)
+			print( "Current call stack: " % self.stack)
+			print( "-" * 80)
 			raise
 
 		return final_val
@@ -285,7 +284,7 @@ class RainwaveParser(HTMLParser):
 		buffer_r = self.buffers['_r']
 		del(self.buffers['_r'])
 		final_buffer = ""
-		for key, buff in self.buffers.iteritems():
+		for buff in self.buffers.values():
 			final_buffer += buff
 		final_buffer += buffer_r
 		return final_buffer

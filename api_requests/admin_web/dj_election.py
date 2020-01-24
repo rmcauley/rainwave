@@ -66,6 +66,6 @@ class DJElectionAlbumList(AlbumList):
 class DJElectionSongList(SongList):
 	admin_required = False
 	dj_preparation = True
-	
+
 	def render_row_special(self, row):
 		self.write("<td><a onclick=\"window.top.call_api('admin/add_to_dj_election', { 'song_id': %s, 'song_sid': %s });\">add to election</a>" % (row['id'], self.sid))

@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import argparse
 from datetime import datetime
 from pytz import timezone

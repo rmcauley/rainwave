@@ -10,8 +10,8 @@ def _get_socket(sid):
 		client.connect(config.get_station(sid, "liquidsoap_socket_path"))
 	elif config.has_station(sid, "liquidsoap_telnet_host"):
 		client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    	client.settimeout(2)
-    	client.connect((config.get_station(sid, "liquidsoap_telnet_host"), config.get_station(sid, "liquidsoap_telnet_port")))
+		client.settimeout(2)
+		client.connect((config.get_station(sid, "liquidsoap_telnet_host"), config.get_station(sid, "liquidsoap_telnet_port")))
 	return client
 
 def _send_command(sid, cmd):
@@ -29,12 +29,6 @@ def _send_command(sid, cmd):
 	client.close()
 	to_ret = to_ret.strip().strip("END").strip()
 	return to_ret
-
-# def pause(sid):
-# 	return _send_command(sid, "var.set paused = true")
-
-# def unpause(sid):
-# 	return _send_command(sid, "var.set paused = false")
 
 def skip(sid):
 	return _send_command(sid, "%s(dot)mp3.skip" % config.get_station(sid, "stream_filename"))

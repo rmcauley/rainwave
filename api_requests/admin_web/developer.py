@@ -8,7 +8,7 @@ from api.server import handle_api_url
 from libs import config
 from libs import db
 
-@handle_api_url("test/create_anon_tuned_in/(\d+)")
+@handle_api_url(r"test/create_anon_tuned_in/(\d+)")
 class CreateAnonTunedIn(APIHandler):
 	description = "Creates a fake tune-in record for an anonymous user at 127.0.0.1."
 	local_only = True
@@ -60,7 +60,7 @@ class TestUserRequest(APIHandler):
 	def execute(self, user_id, sid):
 		pass
 
-@handle_api_url("test/login_tuned_in/(\d+)")
+@handle_api_url(r"test/login_tuned_in/(\d+)")
 class CreateLoginTunedIn(TestUserRequest):
 	description = "Creates or uses a user account with a tuned in record and sets the appropriate cookies so you're that user."
 	auth_required = False
@@ -71,7 +71,7 @@ class CreateLoginTunedIn(TestUserRequest):
 		if db.c.fetch_var("SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (user_id,)) == 0:
 			db.c.update("INSERT INTO r4_listeners (listener_ip, user_id, sid, listener_icecast_id) VALUES ('127.0.0.1', %s, %s, 1)", (user_id, sid))
 
-@handle_api_url("test/login_tuned_out/(\d+)")
+@handle_api_url(r"test/login_tuned_out/(\d+)")
 class CreateLoginTunedOut(TestUserRequest):
 	description = "Creates or uses a user account with no tuned in record sets the appropriate cookies so you're that user."
 	auth_required = False

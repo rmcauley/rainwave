@@ -3,8 +3,8 @@ from libs import db
 from unidecode import unidecode
 
 def make_searchable_string(s):
-	if not isinstance(s, unicode):
-		s = unicode(s)
+	if not isinstance(s, str):
+		s = str(s)
 	s = unidecode(s).lower()
 	return ''.join(e for e in s if (e.isalnum() or e == ' '))
 
@@ -37,9 +37,9 @@ class AssociatedMetadata(object):
 
 	#pylint: disable=W0212
 	@classmethod
-	def load_from_name(klass, name):
-		instance = klass()
-		data = db.c.fetch_row(klass.select_by_name_query, (name,))
+	def load_from_name(cls, name):
+		instance = cls()
+		data = db.c.fetch_row(cls.select_by_name_query, (name,))
 		if data:
 			instance._assign_from_dict(data)
 		else:
@@ -48,31 +48,31 @@ class AssociatedMetadata(object):
 		return instance
 
 	@classmethod
-	def load_from_id(klass, metadata_id):
-		instance = klass()
-		data = db.c.fetch_row(klass.select_by_id_query, (metadata_id,))
+	def load_from_id(cls, metadata_id):
+		instance = cls()
+		data = db.c.fetch_row(cls.select_by_id_query, (metadata_id,))
 		if not data:
-			raise MetadataNotFoundError("%s ID %s could not be found." % (klass.__name__, metadata_id))
+			raise MetadataNotFoundError("%s ID %s could not be found." % (cls.__name__, metadata_id))
 		instance._assign_from_dict(data)
 		return instance
 
 	@classmethod
-	def load_list_from_tag(klass, tag):
+	def load_list_from_tag(cls, tag):
 		if not tag:
 			return []
 		instances = []
 		for fragment in tag.split(","):
 			if len(fragment) > 0:
-				instance = klass.load_from_name(fragment.strip())
+				instance = cls.load_from_name(fragment.strip())
 				instance.is_tag = True
 				instances.append(instance)
 		return instances
 
 	@classmethod
-	def load_list_from_song_id(klass, song_id):
+	def load_list_from_song_id(cls, song_id):
 		instances = []
-		for row in db.c.fetch_all(klass.select_by_song_id_query, (song_id,)):
-			instance = klass()
+		for row in db.c.fetch_all(cls.select_by_song_id_query, (song_id,)):
+			instance = cls()
 			instance._assign_from_dict(row)
 			instances.append(instance)
 		return instances
@@ -90,11 +90,8 @@ class AssociatedMetadata(object):
 	def __str__(self):
 		return self.data['name']
 
-	def __unicode__(self):
-		return self.data['name']
-
 	def __repr__(self):
-		return self.data['name']
+		return self.__str__
 
 	def _assign_from_dict(self, d):
 		self.id = d["id"]

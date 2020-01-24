@@ -15,4 +15,3 @@ def change_user(user, group):
 	if user:
 		user_id = getpwnam(user).pw_uid
 		os.setuid(user_id)
-

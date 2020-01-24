@@ -1,6 +1,6 @@
 import sys
 import os
-import httplib
+import http.client
 import urllib
 import time
 import traceback
@@ -49,14 +49,14 @@ class handle_url(object):
 	def __init__(self, url):
 		self.url = url
 
-	def __call__(self, klass):
-		klass.url = self.url
-		request_classes.append((self.url, klass))
-		api.help.add_help_class(klass, klass.url)
+	def __call__(self, cls):
+		cls.url = self.url
+		request_classes.append((self.url, cls))
+		api.help.add_help_class(cls, cls.url)
 		global api_endpoints
-		if not getattr(klass, "local_only", False) and not getattr(klass, "is_websocket", False):
-			api_endpoints[klass.url] = klass
-		return klass
+		if not getattr(cls, "local_only", False) and not getattr(cls, "is_websocket", False):
+			api_endpoints[cls.url] = cls
+		return cls
 
 class handle_api_url(handle_url):
 	def __init__(self, url):
@@ -66,11 +66,11 @@ class handle_api_html_url(handle_url):
 	def __init__(self, url):
 		super(handle_api_html_url, self).__init__("/pages/" + url)
 
-def test_get(klass):
-	testable_requests.append({ "method": "GET", "class": klass })
+def test_get(cls):
+	testable_requests.append({ "method": "GET", "class": cls })
 
-def test_post(klass):
-	testable_requests.append({ "method": "POST", "class": klass })
+def test_post(cls):
+	testable_requests.append({ "method": "POST", "class": cls })
 
 class TestShutdownRequest(api.web.APIHandler):
 	auth_required = False
@@ -227,8 +227,8 @@ class APIServer(object):
 			time.sleep(1)
 			return self._run_tests()
 		elif task_id == None:
-			print
-			print "OK."
+			print()
+			print( "OK.")
 			return True
 		return False
 
@@ -240,7 +240,7 @@ class APIServer(object):
 			request = request_pair['class']
 			sys.stdout.write(".")
 			try:
-				#print "*** ", request.url
+				#print( "*** ", request.url)
 				# Setup and get the data from the HTTP server
 				params = {}
 				if request.auth_required:
@@ -254,7 +254,7 @@ class APIServer(object):
 						pass
 				params['sid'] = 1
 				params = urllib.urlencode(params)
-				conn = httplib.HTTPConnection('localhost', config.get("api_base_port"))
+				conn = http.client.HTTPConnection('localhost', config.get("api_base_port"))
 
 				conn.request(request_pair['method'], "/api/%s" % request.url, params, headers)
 				response = conn.getresponse()
@@ -269,29 +269,29 @@ class APIServer(object):
 
 					if not dict_compare.print_differences(ref_data, web_data):
 						response_pass = False
-						print "JSON from server:"
-						print json.dumps(web_data, ensure_ascii=False, indent=4)
-						print
+						print( "JSON from server:")
+						print( json.dumps(web_data, ensure_ascii=False, indent=4))
+						print()
 				else:
 					response_pass = False
 				if not response_pass:
 					passed = False
-					print
-					print "*** ERROR:", request.url, ": Response status", response.status
+					print()
+					print( "*** ERROR:", request.url, ": Response status", response.status)
 			except:
-				print
+				print()
 				traceback.print_exc(file=sys.stdout)
-				print "*** ERROR:", request.url, ": ", sys.exc_info()[0]
+				print( "*** ERROR:", request.url, ": ", sys.exc_info()[0])
 				passed = False
-				print
+				print()
 
-		conn = httplib.HTTPConnection('localhost', config.get("api_base_port"))
+		conn = http.client.HTTPConnection('localhost', config.get("api_base_port"))
 		conn.request("GET", "/api/shutdown", params, headers)
 		conn.getresponse()
 		time.sleep(3)
 
-		print
-		print "----------------------------------------------------------------------"
-		print "Ran %s tests." % len(testable_requests)
+		print()
+		print( "----------------------------------------------------------------------")
+		print( "Ran %s tests." % len(testable_requests))
 
 		return passed
