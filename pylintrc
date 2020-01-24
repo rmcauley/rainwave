@@ -1,0 +1,22 @@
+[MISCELLANEOUS]
+notes=FIXME,TODO
+
+[MESSAGES CONTROL]
+disable=
+    unused-argument,
+    broad-except,
+    missing-class-docstring,
+    abstract-method,
+    global-statement,
+    invalid-name,
+    missing-function-docstring,
+    arguments-differ,
+    missing-module-docstring,
+    bare-except,
+    subprocess-popen-preexec-fn,
+    too-many-branches,
+    protected-access,
+    format
+
+[TYPECHECK]
+ignored-modules=pyinotify,zmq

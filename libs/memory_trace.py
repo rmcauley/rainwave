@@ -10,34 +10,39 @@ import linecache
 # Meliae memory profiling (serious business, Linux only)
 import os
 import tempfile
+
 try:
-	import meliae.scanner
+    import meliae.scanner
 except:
-	pass
+    pass
 
 # Other includes
 from libs import config
 
 _prefix = ""
 
+
 def setup(unique_prefix):
-	global _prefix
-	_prefix = unique_prefix
+    global _prefix
+    _prefix = unique_prefix
 
-	if not config.get("memory_trace") or not "meliae" in sys.modules:
-		return
+    if not config.get("memory_trace") or not "meliae" in sys.modules:
+        return
 
-	record_loop = tornado.ioloop.PeriodicCallback(record_sizes, 60 * 60 * 1000)
-	record_loop.start()
+    record_loop = tornado.ioloop.PeriodicCallback(record_sizes, 60 * 60 * 1000)
+    record_loop.start()
+
 
 def record_sizes():
-	global _prefix
+    global _prefix
 
-	gc.collect()
-	linecache.clearcache()
+    gc.collect()
+    linecache.clearcache()
 
-	try:
-		d = os.path.join(tempfile.gettempdir(), "rw_memory_%s_%s.json" % (_prefix, int(timestamp())))
-		meliae.scanner.dump_all_objects(d)
-	except:
-		pass
+    try:
+        d = os.path.join(
+            tempfile.gettempdir(), "rw_memory_%s_%s.json" % (_prefix, int(timestamp()))
+        )
+        meliae.scanner.dump_all_objects(d)
+    except:
+        pass

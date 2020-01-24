@@ -7,7 +7,8 @@ from libs import config
 from urllib.parse import urlsplit
 import time
 
-@handle_api_url('error_report')
+
+@handle_api_url("error_report")
 class ErrorReport(APIHandler):
     login_required = False
     tunein_required = False
@@ -28,15 +29,24 @@ class ErrorReport(APIHandler):
 
     def prepare(self):
         if not self.request.headers.get("Referer"):
-            raise APIException("auth_failed", "Error reporting cannot be made from an external address. (no referral)")
+            raise APIException(
+                "auth_failed",
+                "Error reporting cannot be made from an external address. (no referral)",
+            )
         refhost = urlsplit(self.request.headers.get("Referer")).hostname
         failed = True
         if refhost in config.station_hostnames:
             failed = False
-        elif config.has("accept_error_reports_from_hosts") and refhost in config.get("accept_error_reports_from_hosts"):
+        elif config.has("accept_error_reports_from_hosts") and refhost in config.get(
+            "accept_error_reports_from_hosts"
+        ):
             failed = False
         if failed:
-            raise APIException("auth_failed", "Error reporting cannot be made from an external address. (%s)" % refhost)
+            raise APIException(
+                "auth_failed",
+                "Error reporting cannot be made from an external address. (%s)"
+                % refhost,
+            )
         else:
             return super(ErrorReport, self).prepare()
 
@@ -45,9 +55,9 @@ class ErrorReport(APIHandler):
         for k, v in self.cleaned_args.items():
             if isinstance(object, str):
                 self.cleaned_args[k] = v[:2048]
-        self.cleaned_args['user_id'] = self.user.id
-        self.cleaned_args['username'] = self.user.data['name']
-        self.cleaned_args['time'] = time.time()
+        self.cleaned_args["user_id"] = self.user.id
+        self.cleaned_args["username"] = self.user.data["name"]
+        self.cleaned_args["time"] = time.time()
 
         reports = cache.get("error_reports")
         if not isinstance(reports, list):

@@ -11,4 +11,4 @@ if __name__ == "__main__":
     libs.config.load(args.config)
 
     for sid in libs.config.station_ids:
-        print( liquidsoap.test(sid))
+        print(liquidsoap.test(sid))

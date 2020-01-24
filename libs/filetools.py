@@ -5,7 +5,7 @@ def which(program):
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
-    fpath, fname = os.path.split(program)   #pylint: disable=W0612
+    fpath, _fname = os.path.split(program)
     if fpath:
         if is_exe(program):
             return program
@@ -18,12 +18,13 @@ def which(program):
 
     return None
 
+
 # http://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
 def check_file_is_in_directory(filename, directory):
-    #make both absolute
-    directory = os.path.join(os.path.realpath(directory), '')
+    # make both absolute
+    directory = os.path.join(os.path.realpath(directory), "")
     filename = os.path.realpath(filename)
 
-    #return true, if the common prefix of both is equal to directory
-    #e.g. /a/b/c/d.rst and directory is /a/b, the common prefix is /a/b
+    # return true, if the common prefix of both is equal to directory
+    # e.g. /a/b/c/d.rst and directory is /a/b, the common prefix is /a/b
     return os.path.commonprefix([filename, directory]) == directory
