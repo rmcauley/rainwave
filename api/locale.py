@@ -182,7 +182,7 @@ class RainwaveLocale(tornado.locale.Locale):
         for k, v in translation.items():
             if (
                 not code == "en_CA"
-                and not mster.has_key(k)
+                and k not in mster
                 and not k.startswith("suffix_")
             ):
                 to_pop.append(k)
@@ -195,7 +195,7 @@ class RainwaveLocale(tornado.locale.Locale):
         # document lines missing
         self.missing = {}
         for k, v in mster.items():
-            if not translation.has_key(k):
+            if k not in translation:
                 self.missing[k] = v
 
     def translate(self, key, *args, **kwargs):
@@ -226,7 +226,7 @@ class RainwaveLocale(tornado.locale.Locale):
         return line
 
     def get_suffixed_number(self, number):
-        if not type(number) == str:
+        if not isinstance(number, str):
             number = str(number)
         for i in range(0, len(number) - 1):
             if ("suffix_" + number[i:]) in self.dict:

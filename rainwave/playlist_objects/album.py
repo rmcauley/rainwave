@@ -181,7 +181,7 @@ class Album(AssociatedMetadata):
         self.id = d["album_id"]
         self.data["name"] = d["album_name"]
         self.data["added_on"] = d["album_added_on"]
-        if d.has_key("album_rating"):
+        if "album_rating" in d:
             self.rating_precise = d["album_rating"]
             self.data["rating"] = round(self.rating_precise, 1)
         self._dict_check_assign(d, "album_rating_count")
@@ -195,7 +195,7 @@ class Album(AssociatedMetadata):
         self._dict_check_assign(d, "album_request_count", 0)
         self._dict_check_assign(d, "album_cool", False)
         self._dict_check_assign(d, "album_name_searchable", self.data["name"])
-        if d.has_key("sid"):
+        if "sid" in d:
             self.sid = d["sid"]
         self.data["art"] = Album.get_art_url(self.id, sid)
         self._dict_check_assign(d, "album_year", None)
@@ -203,7 +203,7 @@ class Album(AssociatedMetadata):
     def _dict_check_assign(self, d, key, default=None, new_key=None):
         if not new_key and key.find("album_") == 0:
             new_key = key[6:]
-        if d.has_key(key):
+        if key in d:
             self.data[new_key] = d[key]
         else:
             self.data[new_key] = default

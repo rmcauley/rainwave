@@ -1,5 +1,5 @@
 import socket
-import os, os.path
+import os
 
 from libs import config
 

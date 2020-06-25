@@ -116,15 +116,6 @@ def _scan_all_directories(art_only=False):
         sys.stdout.flush()
 
 
-def _check_codepage_1252(filename):
-    try:
-        filename.decode("utf-8")
-    except UnicodeDecodeError:
-        raise PassableScanError(
-            "Invalid filename. (possible cp1252 or obscure unicode)"
-        )
-
-
 def _scan_directory(directory, sids):
     # Normalize and add a trailing separator to the directory name
     directory = os.path.join(os.path.normpath(directory), "")
@@ -166,10 +157,6 @@ def _scan_file(filename, sids):
     global immediate_art
 
     s = None
-    try:
-        _check_codepage_1252(filename)
-    except Exception as e:
-        _add_scan_error(filename, e, sys.exc_info())
     if _is_mp3(filename):
         new_mtime = None
         try:

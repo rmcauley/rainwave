@@ -1,6 +1,5 @@
 import argparse
 import sys
-import psycopg2
 
 import libs.config
 import libs.db

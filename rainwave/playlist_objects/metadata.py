@@ -102,17 +102,17 @@ class AssociatedMetadata(object):
     def _assign_from_dict(self, d):
         self.id = d["id"]
         self.data["name"] = d["name"]
-        if d.has_key("is_tag"):
+        if "is_tag" in d:
             self.is_tag = d["is_tag"]
-        if d.has_key("elec_block") and d["elec_block"] is not None:
+        if d.get("elec_block") is not None:
             self.elec_block = d["elec_block"]
-        if d.has_key("cool_time") and d["cool_time"] is not None:
+        if d.get("cool_time") is not None:
             self.cool_time = d["cool_time"]
-        if d.has_key("cool_override") and d["cool_override"] is not None:
+        if d.get("cool_override") is not None:
             self.cool_time = d["cool_override"]
-        if d.has_key("name_searchable"):
+        if "name_searchable" in d:
             self.data["name_searchable"] = d["name_searchable"]
-        if d.has_key("order"):
+        if "order" in d:
             self.data["order"] = d["order"]
 
     def save(self):

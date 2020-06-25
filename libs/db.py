@@ -104,33 +104,27 @@ def connect():
     if c:
         return True
 
-    dbtype = config.get("db_type")
     name = config.get("db_name")
     host = config.get("db_host")
     port = config.get("db_port")
     user = config.get("db_user")
     password = config.get("db_password")
 
-    if dbtype == "postgres":
-        psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
-        psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
-        base_connstr = "sslmode=disable "
-        if host:
-            base_connstr += "host=%s " % host
-        if port:
-            base_connstr += "port=%s " % port
-        if user:
-            base_connstr += "user=%s " % user
-        if password:
-            base_connstr += "password=%s " % password
-        connection = psycopg2.connect(base_connstr + ("dbname=%s" % name))
-        connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
-        connection.autocommit = True
-        c = connection.cursor(cursor_factory=PostgresCursor)
-    else:
-        log.critical("dbopen", "Invalid DB type %s!" % dbtype)
-        return False
-
+    psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
+    psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
+    base_connstr = "sslmode=disable "
+    if host:
+        base_connstr += "host=%s " % host
+    if port:
+        base_connstr += "port=%s " % port
+    if user:
+        base_connstr += "user=%s " % user
+    if password:
+        base_connstr += "password=%s " % password
+    connection = psycopg2.connect(base_connstr + ("dbname=%s" % name))
+    connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+    connection.autocommit = True
+    c = connection.cursor(cursor_factory=PostgresCursor)
     return True
 
 

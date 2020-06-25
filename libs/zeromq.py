@@ -18,14 +18,14 @@ def init_pub():
     global _pub
     context = zmq.Context()
     _pub = context.socket(zmq.PUB)
-    _pub.connect(config.get("zeromq_pub"))
+    _pub.connect(bytes(config.get("zeromq_pub"), "utf-8"))
 
 
 def init_sub():
     global _sub_stream
     context = zmq.Context()
     sub = context.socket(zmq.SUB)
-    sub.connect(config.get("zeromq_sub"))
+    sub.connect(bytes(config.get("zeromq_sub"), "utf-8"))
     sub.setsockopt(zmq.SUBSCRIBE, "")
     _sub_stream = zmqstream.ZMQStream(sub)
 

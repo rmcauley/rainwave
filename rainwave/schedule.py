@@ -355,7 +355,7 @@ def manage_next(sid):
         now_producer.plan_ahead_limit, next_producer.plan_ahead_limit
     ):
         target_length = None
-        if time < 20:
+        if time_to_future_producer < 20:
             log.debug(
                 "timing", "SID %s <20 seconds to upnext event, not using timing." % sid
             )

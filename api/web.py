@@ -1,14 +1,15 @@
+import traceback
+import hashlib
+from time import time as timestamp
+
 try:
     import ujson as json
 except ImportError:
     import json
 
+import psycopg2
 import tornado.web
 import tornado.httputil
-import traceback
-import hashlib
-import psycopg2
-from time import time as timestamp
 
 from rainwave.user import User
 from rainwave.playlist_objects.song import SongNonExistent
@@ -474,7 +475,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 class APIHandler(RainwaveHandler):
     def initialize(self, **kwargs):
         super(APIHandler, self).initialize(**kwargs)
-        # FIXME: this line causes pylint to freak out and it's annoying
         if self.allow_get:
             self.get = self.post
 
