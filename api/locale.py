@@ -162,15 +162,15 @@ class RainwaveLocale(tornado.locale.Locale):
     def get_closest(cls, *codes):
         global translations
 
-        if type(codes) == tuple:
+        if isinstance(codes, tuple):
             codes = codes[0]
 
-        for i in range(0, len(codes)):
-            if codes[i] in translations:
-                return translations[codes[i]]
+        for code in codes:
+            if code in translations:
+                return translations[code]
 
             for locale_name, translation in translations.items():
-                if codes[i][:2] == locale_name[:2]:
+                if code[:2] == locale_name[:2]:
                     return translation
 
         return translations["en_CA"]
@@ -180,11 +180,7 @@ class RainwaveLocale(tornado.locale.Locale):
         # remove lines that are no longer in the master file
         to_pop = []
         for k, v in translation.items():
-            if (
-                not code == "en_CA"
-                and k not in mster
-                and not k.startswith("suffix_")
-            ):
+            if not code == "en_CA" and k not in mster and not k.startswith("suffix_"):
                 to_pop.append(k)
         for k in to_pop:
             translation.pop(k)

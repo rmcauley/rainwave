@@ -241,11 +241,11 @@ def _is_image(filename):
 
 def _process_album_art_queue(on_screen=False):
     global _album_art_queue
-    for i in range(0, len(_album_art_queue)):
-        if not _process_album_art(*_album_art_queue[i]) and on_screen:
+    for i, album_art in enumerate(_album_art_queue):
+        if not _process_album_art(*album_art) and on_screen:
             if sys.exc_info()[0]:
-                type_, value_, traceback_ = sys.exc_info()
-                print("\n%s:\n\t %s" % (_album_art_queue[i][0], value_))
+                _type, value_, _traceback = sys.exc_info()
+                print("\n%s:\n\t %s" % (album_art[0], value_))
                 sys.stdout.flush()
         if on_screen:
             _print_to_screen_inline("Album art: %s/%s" % (i, len(_album_art_queue) - 1))
@@ -266,7 +266,7 @@ def _process_album_art(filename, sids):
             (directory,),
         )
         if not album_ids or len(album_ids) == 0:
-            return
+            return False
         im_original = Image.open(filename)
         if not im_original:
             raise IOError
@@ -388,7 +388,7 @@ def _add_scan_error(filename, xception, full_exc=None):
     scan_errors.insert(0, eo)
     if len(scan_errors) > 100:
         scan_errors = scan_errors[0:100]
-    cache.set("backend_scan_errors", scan_errors)
+    cache.set_global("backend_scan_errors", scan_errors)
 
 
 DELETE_OPERATION = (IN_DELETE, IN_MOVED_FROM)

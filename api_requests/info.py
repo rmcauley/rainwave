@@ -1,8 +1,7 @@
 from api.web import APIHandler
 from api.exceptions import APIException
 from api import fieldtypes
-from api.server import test_post
-from api.server import handle_api_url
+from api.urls import handle_api_url
 import api_requests.vote
 import api_requests.playlist
 import api_requests.tune_in
@@ -170,7 +169,6 @@ def check_sync_status(sid, offline_ack=False):
         raise APIException("station_paused")
 
 
-@test_post
 @handle_api_url("info")
 class InfoRequest(APIHandler):
     auth_required = False

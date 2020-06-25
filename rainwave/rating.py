@@ -226,15 +226,12 @@ def set_album_fave(sid, album_id, user_id, fave):
             "UPDATE r4_album_sid SET album_fave_count = album_fave_count - 1 WHERE album_id = %s",
             (album_id,),
         )
-    if "album" == "album":
-        cache.set_album_rating(
-            sid,
-            album_id,
-            user_id,
-            {"rating_user": rating, "fave": fave, "rating_complete": rating_complete},
-        )
-    elif "album" == "song":
-        cache.set_song_rating(album_id, user_id, {"rating_user": rating, "fave": fave})
+    cache.set_album_rating(
+        sid,
+        album_id,
+        user_id,
+        {"rating_user": rating, "fave": fave, "rating_complete": rating_complete},
+    )
     db.c.commit()
     return True
 

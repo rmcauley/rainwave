@@ -1,8 +1,8 @@
 import time
 from time import time as timestamp
-import tornado.ioloop
 import datetime
 import requests
+import tornado.ioloop
 
 from backend import sync_to_front
 from rainwave import events
@@ -58,7 +58,7 @@ def load():
             ):
                 history[sid].insert(0, events.singlesong.SingleSong(song_id, sid))
             # create a fake history in case clients expect it without checking
-            if not len(history[sid]):
+            if not history[sid]:
                 for i in range(1, 5):
                     history[sid].insert(
                         0,
@@ -71,7 +71,7 @@ def load():
 def get_event_in_progress(sid):
     producer = get_current_producer(sid)
     evt = producer.load_event_in_progress()
-    if not evt or not evt.songs or not len(evt.songs):
+    if not evt or not evt.songs:
         producer = election.ElectionProducer(sid)
         evt = producer.load_event_in_progress()
     return evt
@@ -517,7 +517,7 @@ def update_memcache(sid):
         if getattr(evt, "dj_user_id", None):
             potential_dj_ids.append(evt.dj_user_id)
     if (
-        len(history[sid])
+        history[sid]
         and history[sid][-1]
         and getattr(history[sid][-1], "dj_user_id", None)
     ):

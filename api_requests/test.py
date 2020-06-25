@@ -1,5 +1,5 @@
 from api.web import APIHandler
-from api.server import handle_api_url
+from api.urls import handle_api_url
 
 
 @handle_api_url("test/hello_world")

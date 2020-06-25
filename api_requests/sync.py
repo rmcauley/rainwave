@@ -1,6 +1,3 @@
-import tornado.web
-import tornado.websocket
-import tornado.ioloop
 import datetime
 import numbers
 import sys
@@ -13,12 +10,16 @@ try:
 except ImportError:
     import json
 
+import tornado.web
+import tornado.websocket
+import tornado.ioloop
+
 from api import fieldtypes
 from api.exceptions import APIException
 from api.web import APIHandler
 from api.web import get_browser_locale
-from api.server import api_endpoints
-from api.server import handle_api_url
+from api.urls import api_endpoints
+from api.urls import handle_api_url
 from rainwave.user import User
 import api_requests.info
 import rainwave.playlist
@@ -30,7 +31,7 @@ from libs import config
 from libs import zeromq
 
 
-class SessionBank(object):
+class SessionBank:
     def __init__(self):
         super(SessionBank, self).__init__()
         self.sessions = []
@@ -65,7 +66,7 @@ class SessionBank(object):
                 and session in self.websockets_by_user
             ):
                 self.websockets_by_user[session.user.id].remove(session)
-                if not len(self.websockets_by_user[session.user.id]):
+                if not self.websockets_by_user[session.user.id]:
                     del self.websockets_by_user[session.user.id]
         elif session in self.sessions:
             self.sessions.remove(session)
@@ -344,6 +345,7 @@ class Sync(APIHandler):
         "known_event_id": (fieldtypes.positive_integer, None),
     }
     is_websocket = False
+    dj = False
 
     # TODO: this needs to be updated for 6.0.3 to use a generator/coroutine
     @tornado.web.asynchronous
@@ -432,7 +434,7 @@ class Sync(APIHandler):
         self.finish()
 
 
-class FakeRequestObject(object):
+class FakeRequestObject:
     def __init__(self, arguments, cookies):
         self.arguments = arguments
         self.cookies = cookies
@@ -563,10 +565,9 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
     def refresh_user(self):
         self.user.refresh(self.sid)
-        # TODO: DJ permission checks
 
     def process_throttle(self):
-        if not len(self.throttled_msgs):
+        if not self.throttled_msgs:
             self.throttled = False
             return
         self.throttled_msgs.sort()
@@ -636,7 +637,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             )
             return
 
-        if not "action" in message or not message["action"]:
+        if not message.get("action"):
             self.write_message(
                 {
                     "wserror": {
@@ -755,7 +756,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         endpoint.user = self.user
         try:
             startclock = timestamp()
-            # TODO: this should be a part of prepare_standalone!
             # it's required to see if another person on the same IP address has overriden the vote
             # for the in-memory user here, so it requires a DB fetch.
             if message["action"] == "/api4/vote" and self.user.is_anonymous():

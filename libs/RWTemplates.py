@@ -154,14 +154,14 @@ def js_end():
     return "return _rwt;}();"
 
 
-class _full_call(object):
+class _full_call:
     setAttribute = "setAttribute"
     appendChild = "appendChild"
     document = "document"
     createElement = "createElement"
 
 
-class _short_call(object):
+class _short_call:
     setAttribute = "s"
     appendChild = "a"
     document = "_d"
@@ -312,17 +312,15 @@ class RainwaveParser(HTMLParser):
     def close(self, *args, **kwargs):
         self.handle_data(None)
         HTMLParser.close(self, *args, **kwargs)
-        if len(self.stack):
+        if self.stack:
             raise Exception("%s unclosed stack: %s" % (self.name, repr(self.stack)))
-        if len(self.tree):
+        if self.tree:
             raise Exception("%s unclosed tags: %s" % (self.name, repr(self.tree_names)))
         self.buffers["_r"] += "return _c.$t;"
         self.buffers["_r"] += "};"
         buffer_r = self.buffers["_r"]
         del self.buffers["_r"]
-        final_buffer = ""
-        for buff in self.buffers.values():
-            final_buffer += buff
+        final_buffer = "".join(self.buffers.values())
         final_buffer += buffer_r
         return final_buffer
 
@@ -451,7 +449,7 @@ class RainwaveParser(HTMLParser):
                     self.buffers[self._current_stack_point()] += (
                         "_h._ofr(_c, %s);" % uid
                     )
-                elif tag == "select" or tag == "input" or tag == "textarea":
+                elif tag in ("select", "input", "textarea"):
                     self.buffers[self._current_stack_point()] += "_h._rec(%s);" % uid
             self.handle_append(uid)
         except IndexError:
@@ -462,7 +460,7 @@ class RainwaveParser(HTMLParser):
             self.input_buffer += lines
             return
         self.input_buffer = self.input_buffer.strip()
-        if not self.input_buffer or not len(self.input_buffer):
+        if not self.input_buffer or not self.input_buffer:
             return
         text_content_used = False
         for line in self.input_buffer.split("\n"):
@@ -478,7 +476,7 @@ class RainwaveParser(HTMLParser):
                     self.handle_stack_push(data[3:-2])
                 elif data[:3] == "{{/" and data[-2:] == "}}":
                     self.handle_stack_pop(data[3:-2])
-                elif not len(self.tree):
+                elif not self.tree:
                     raise Exception(
                         '%s: Tried to set textContent of root element.  Text needs to be in an element. ("%s")'
                         % (self.name, data)
@@ -513,12 +511,12 @@ class RainwaveParser(HTMLParser):
 
         # This quickly closes the 'if' tag itself and copies the arguments over to 'else'
         if (
-            len(self.stack)
+            self.stack
             and self.stack[-1]["name"] == "if"
-            and (data == "else" or data == "#else")
+            and (data in ("else", "#else"))
         ):
             if (
-                len(self.stack)
+                self.stack
                 and self.stack[-1]["function_id"]
                 and self.stack[-1]["function_id"] in self.bound_scopes
             ):
@@ -554,7 +552,7 @@ class RainwaveParser(HTMLParser):
             self.scope_bound = False
 
     def handle_stack_pop(self, name):
-        if not len(self.stack):
+        if not self.stack:
             raise Exception(
                 "Closing tag %s exists where there are no opening tags in %s template."
                 % (name, self.name)
@@ -571,7 +569,7 @@ class RainwaveParser(HTMLParser):
         if self.stack[-1]["function_id"]:
             self.buffers[self._current_stack_point()] += "};"
         stackpt = self.stack.pop()
-        if not len(self.stack):
+        if not self.stack:
             self.scope_bound = True
         else:
             self.scope_bound = False

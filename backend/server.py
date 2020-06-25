@@ -115,7 +115,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
         return string
 
 
-class BackendServer(object):
+class BackendServer:
     def _listen(self, sid):
         pid = os.getpid()
         pid_file = open(

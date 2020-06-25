@@ -27,7 +27,7 @@ from libs import cache
 
 # VERY IMPORTANT: YOU MUST DECORATE YOUR CLASSES.
 
-# from api.server import handle_api_url
+# from api.urls import handle_api_url
 # @handle_api_url(...)
 
 # Pass a string there for the URL to handle at /api/[url] and the server will do the rest of the work.
@@ -145,7 +145,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
     sync_across_sessions = False
 
     def __init__(self, *args, **kwargs):
-        if not "websocket" in kwargs:
+        if "websocket" not in kwargs:
             super(RainwaveHandler, self).__init__(*args, **kwargs)
         self.cleaned_args = {}
         self.sid = None
@@ -371,7 +371,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
         return False
 
     def _verify_phpbb_session(self, user_id=None):
-        # TODO: Do we want to enhance this with IP checking and other bits and pieces like phpBB does?
         if not user_id and not self.user:
             return None
         if not user_id:
@@ -429,7 +428,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
     # Will return a "code" if it exists in the hash passed in, if not, returns True
     def append(self, key, dct):
         if dct == None:
-            return
+            return None
         if self._output_array:
             self._output.append({key: dct})
         else:
@@ -611,9 +610,7 @@ def _html_write_error(self, status_code, **kwargs):
                 exc.localize(locale.RainwaveLocale.get("en_CA"))
             else:
                 exc.localize(self.locale)
-        if (
-            isinstance(exc, APIException) or isinstance(exc, tornado.web.HTTPError)
-        ) and exc.reason:
+        if isinstance(exc, (APIException, tornado.web.HTTPError)) and exc.reason:
             self.write(
                 self.render_string(
                     "basic_header.html", title="%s - %s" % (status_code, exc.reason)
@@ -651,26 +648,20 @@ class HTMLRequest(RainwaveHandler):
 
 
 # this mixin will overwrite anything in APIHandler and RainwaveHandler so be careful wielding it
-class PrettyPrintAPIMixin(object):
+class PrettyPrintAPIMixin:
     phpbb_auth = True
     allow_get = True
     write_error = _html_write_error
 
-    # pylint: disable=E1003
     # reset the initialize to ignore overwriting self.get with anything
-    # TODO: NO MONKEYPATCHING ARGH, NO, BAD CODER, LOOK AT THOSE PYLINT IGNORES
     def initialize(self, *args, **kwargs):
-        super(APIHandler, self).initialize(*args, **kwargs)
-        # pylint: disable=E0203
+        super().initialize(*args, **kwargs)
         self._real_post = self.post
         self.post = self.post_reject
-        # pylint: enable=E0203
 
     def prepare(self):
-        super(APIHandler, self).prepare()
+        super().prepare()
         self._real_post()
-
-    # pylint: enable=E1003
 
     def get(self, write_header=True):
         if write_header:
@@ -726,7 +717,7 @@ class PrettyPrintAPIMixin(object):
                 )
 
         for json_out in self._output.values():
-            if type(json_out) != list:
+            if not isinstance(json_out, list):
                 continue
             if len(json_out) > 0:
                 self.write("<table class='%s'><th>#</th>" % self.return_name)

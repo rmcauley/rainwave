@@ -114,7 +114,7 @@ class Album(AssociatedMetadata):
         instance._assign_from_dict(row, sid)
         instance.sid = sid
         user_id = None if not user else user.id
-        requestable = True if user else False
+        requestable = bool(user)
         sql = (
             "SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, song_added_on AS added_on, "
             "song_track_number AS track_number, song_disc_number as disc_number, "
@@ -367,7 +367,7 @@ class Album(AssociatedMetadata):
             "Album ID %s Station ID %s cool_time period: %s"
             % (self.id, sid, cool_time),
         )
-        return self._start_cooldown_db(sid, cool_time)
+        self._start_cooldown_db(sid, cool_time)
 
     def _start_cooldown_db(self, sid, cool_time):
         cool_end = int(cool_time + timestamp())

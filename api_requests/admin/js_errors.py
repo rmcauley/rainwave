@@ -1,6 +1,6 @@
 from libs import cache
 import api.web
-from api.server import handle_api_url
+from api.urls import handle_api_url
 
 
 @handle_api_url("admin/backend_scan_errors")

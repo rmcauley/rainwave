@@ -6,7 +6,7 @@ from libs import cache
 
 import api.web
 from api.exceptions import APIException
-from api.server import handle_api_url
+from api.urls import handle_api_url
 from api import liquidsoap
 from api import fieldtypes
 from api_requests.info import attach_dj_info_to_request

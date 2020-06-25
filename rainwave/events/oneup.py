@@ -20,7 +20,7 @@ class OneUpProducer(event.BaseProducer):
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE ORDER BY one_up_order LIMIT 1",
             (self.id,),
         )
-        return True if next_up_id else False
+        return bool(next_up_id)
 
     def load_next_event(self, target_length=None, min_elec_id=None):
         next_up_id = db.c.fetch_var(
@@ -195,7 +195,6 @@ class OneUpProducer(event.BaseProducer):
         self._update_length()
 
     def duplicate(self):
-        # TODO: this should probably be a class method to avoid the pylint error
         duped = super().duplicate()
         for song_row in db.c.fetch_all(
             "SELECT * FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order",
@@ -210,7 +209,8 @@ class OneUpProducer(event.BaseProducer):
                     song_row["one_up_sid"],
                 ),
             )
-        duped._update_length()
+        # ignore pylint, we deffo have update_length here
+        duped._update_length()  # pylint: disable=no-member
         return duped
 
     def to_dict(self):

@@ -225,8 +225,6 @@ def boolean(s, request=None):
         return True
     elif s == False:
         return False
-    elif not s:
-        return None
     elif s == "true":
         return True
     elif s == "false":

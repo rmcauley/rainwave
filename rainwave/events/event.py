@@ -15,7 +15,7 @@ def register_producer(cls):
 def get_admin_creatable_producers():
     types = []
     for key in all_producers.keys():
-        if (key != "ShortestElectionProducer") and (key != "OneUpProducer"):
+        if key not in ("ShortestElectionProducer", "OneUpProducer"):
             types.append(key)
     return types
 
@@ -32,7 +32,7 @@ class EventAlreadyUsed(Exception):
     pass
 
 
-class BaseProducer(object):
+class BaseProducer:
     @classmethod
     def load_producer_by_id(cls, sched_id):
         global all_producers
@@ -225,7 +225,7 @@ class BaseProducer(object):
         return obj
 
 
-class BaseEvent(object):
+class BaseEvent:
     def __init__(self, sid=None):
         self.id = None
         self.type = self.__class__.__name__

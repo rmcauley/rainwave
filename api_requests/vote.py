@@ -3,7 +3,7 @@ from time import time as timestamp
 from api import fieldtypes
 from api.web import APIHandler
 from api.exceptions import APIException
-from api.server import handle_api_url
+from api.urls import handle_api_url
 import rainwave.schedule
 
 from libs import cache

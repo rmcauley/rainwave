@@ -8,7 +8,7 @@ from libs import db
 from libs import cache
 
 import api.web
-from api.server import handle_url
+from api.urls import handle_url
 from api import fieldtypes
 
 import api_requests.playlist
@@ -151,7 +151,7 @@ class DJEventList(api.web.HTMLRequest):
             (self.user.id,),
         )
         self.write(self.render_string("bare_header.html", title="Event List"))
-        if not len(evts):
+        if not evts:
             self.write("<div>You have no upcoming events.</div>")
         for row in evts:
             self.write(

@@ -1,3 +1,6 @@
+from libs import config
+from libs import db
+
 __using_libmc = False
 try:
     import pylibmc as libmc
@@ -6,15 +9,12 @@ try:
 except ImportError:
     import memcache as libmc
 
-from libs import config
-from libs import db
-
 _memcache = None
 _memcache_ratings = None
 local = {}
 
 
-class TestModeCache(object):
+class TestModeCache:
     def __init__(self):
         self.vars = {}
 
@@ -59,15 +59,10 @@ def connect():
             _memcache_ratings = _memcache
 
 
-# FIXME: overriding Python built-in set
-# pylint: disable=W0622
-def set(key, value, save_local=False):
+def set_global(key, value, save_local=False):
     if save_local or key in local:
         local[key] = value
     _memcache.set(key, value)
-
-
-# pylint: disable=W0622
 
 
 def get(key):

@@ -66,7 +66,7 @@ class SongMetadataUnremovable(Exception):
     pass
 
 
-class Song(object):
+class Song:
     sid = 0
 
     @classmethod
@@ -618,7 +618,7 @@ class Song(object):
         return to_ret
 
     def add_album(self, name, sids=None):
-        if not sids and not "sids" in self.data:
+        if not sids and "sids" not in self.data:
             raise TypeError(
                 "add_album() requires a station ID list if song was not loaded/saved into database"
             )

@@ -31,7 +31,7 @@ class MetadataNotFoundError(MetadataInsertionError):
     pass
 
 
-class AssociatedMetadata(object):
+class AssociatedMetadata:
     select_by_name_query = None  # one %s argument: name
     select_by_id_query = None  # one %s argument: self.id
     select_by_song_id_query = None  # one %s argument: song_id

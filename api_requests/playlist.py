@@ -1,8 +1,8 @@
 from api.web import APIHandler
 from api.web import PrettyPrintAPIMixin
 from api import fieldtypes
-from api.server import handle_api_url
-from api.server import handle_api_html_url
+from api.urls import handle_api_url
+from api.urls import handle_api_html_url
 
 try:
     import ujson as json
@@ -159,7 +159,7 @@ class AlbumHandler(APIHandler):
                 "SELECT sid FROM r4_album_sid WHERE album_id = %s AND sid != 0 ORDER BY sid",
                 (self.get_argument("id"),),
             )
-            if not valid_sids or not len(valid_sids):
+            if not valid_sids:
                 raise APIException("album_is_dj_only")
             elif config.get("default_station") in valid_sids:
                 raise APIException(

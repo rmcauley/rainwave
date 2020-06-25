@@ -7,7 +7,7 @@ import datetime
 
 from libs import config
 import api.web
-from api.server import handle_url
+from api.urls import handle_url
 
 from api_requests.admin import listener_stats
 
@@ -25,7 +25,6 @@ class BlankPage(api.web.HTMLRequest):
 station_colors = {1: "#1f95e5", 2: "#de641b", 3: "#b7000f", 4: "#6e439d", 5: "#a8cb2b"}
 
 # pylint: disable=E1101
-# TODO: don't bypass pylint here
 class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
     def get(self):
         self.write(self.render_string("bare_header.html", title="Listener Stats"))

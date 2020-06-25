@@ -1,4 +1,4 @@
-from api.server import handle_url
+from api.urls import handle_url
 from api.web import HTMLRequest
 from libs import config
 

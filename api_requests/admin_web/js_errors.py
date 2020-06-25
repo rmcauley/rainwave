@@ -1,9 +1,10 @@
 from time import time as timestamp
-import tornado.escape
 import datetime
-import api.web
-from api.server import handle_url
+import tornado.escape
 from pytz import timezone
+
+import api.web
+from api.urls import handle_url
 
 from api_requests.admin.js_errors import JSErrors
 

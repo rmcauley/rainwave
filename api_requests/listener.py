@@ -3,7 +3,7 @@ import math
 from api.web import APIHandler
 from api.web import PrettyPrintAPIMixin
 from api import fieldtypes
-from api.server import handle_api_url, handle_api_html_url
+from api.urls import handle_api_url, handle_api_html_url
 
 from libs import cache
 from libs import db

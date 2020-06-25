@@ -2,8 +2,8 @@ from time import time as timestamp
 
 from api import fieldtypes
 from api.web import RainwaveHandler
-from api.server import handle_api_url
-from api.server import handle_url
+from api.urls import handle_api_url
+from api.urls import handle_url
 from api.exceptions import APIException
 
 from libs import cache
@@ -208,7 +208,7 @@ class AddListener(IcecastHandler):
             # Keep one valid entry on file for the listener by popping once
             listener_id = records.pop()
             # Erase the rest
-            while len(records):
+            while records:
                 popped = records.pop()
                 sync_to_front.sync_frontend_key(popped)
                 db.c.update(

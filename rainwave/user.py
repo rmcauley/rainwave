@@ -43,7 +43,7 @@ def solve_avatar(avatar_type, avatar):
         return _DEFAULT_AVATAR
 
 
-class User(object):
+class User:
     def __init__(self, user_id):
         self.id = user_id
         self.authorized = False
@@ -91,6 +91,7 @@ class User(object):
             )
             cache.set_user(self, "api_keys", keys)
             return keys
+        return []
 
     def _auth_registered_user(self, api_key, bypass=False):
         if not bypass:
@@ -386,7 +387,7 @@ class User(object):
                 "SELECT radio_requests_paused FROM phpbb_users WHERE user_id = %s",
                 (self.id,),
             ):
-                return
+                return False
             already_lined = db.c.fetch_row(
                 "SELECT * FROM r4_request_line WHERE user_id = %s", (self.id,)
             )
@@ -543,14 +544,14 @@ class User(object):
     def ensure_api_key(self):
         if self.id == 1:
             if self.data.get("api_key") and self.data["listen_key"]:
-                return
+                return self.data["api_key"]
             api_key = self.generate_api_key(
                 int(timestamp()) + 172800, self.data.get("api_key")
             )
             cache_key = unicodedata.normalize(
                 "NFKD", u"api_key_listen_key_%s" % api_key
             ).encode("ascii", "ignore")
-            cache.set(cache_key, self.data["listen_key"])
+            cache.set_global(cache_key, self.data["listen_key"])
         elif self.id > 1:
             if "api_key" in self.data and self.data["api_key"]:
                 return self.data["api_key"]

@@ -3,7 +3,7 @@ import tornado.web
 
 import api.web
 import api.locale
-from api.server import handle_url, handle_api_url
+from api.urls import handle_url, handle_api_url
 from api_requests import info
 from api.exceptions import APIException
 

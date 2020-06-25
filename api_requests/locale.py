@@ -1,8 +1,9 @@
-import tornado.web
 import json  # We have some features of stdlib JSON we need here, don't use ujson
 
+import tornado.web
+
 import api.web
-from api.server import handle_url
+from api.urls import handle_url
 from api import locale
 
 

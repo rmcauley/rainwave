@@ -4,7 +4,7 @@ import datetime
 from libs import db
 from libs import config
 import api.web
-from api.server import handle_api_url
+from api.urls import handle_api_url
 from api import fieldtypes
 from api.exceptions import APIException
 

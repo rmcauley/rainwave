@@ -1,7 +1,7 @@
 from libs import config
 import api.web
 from api import fieldtypes
-from api.server import handle_url
+from api.urls import handle_url
 from api_requests.admin import producers
 from rainwave.events import event
 from api_requests.admin_web import index
@@ -57,7 +57,7 @@ class WebCreateProducer(api.web.HTMLRequest):
         self.write(self.render_string("basic_footer.html"))
 
 
-class WebListProducersBase(object):
+class WebListProducersBase:
     # pylint: disable=E1101
     def header_special(self):
         self.write("<th>Time</th><th></th><th></th><th></th>")

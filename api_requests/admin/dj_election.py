@@ -1,11 +1,10 @@
-from libs import cache
+from libs import cache, db
 import api.web
-from api.server import handle_api_url
+from api.urls import handle_api_url
 from api.exceptions import APIException
 from api import fieldtypes
 from rainwave import playlist
 from rainwave import events
-from libs import db
 
 
 class GetCachedSongList(api.web.APIHandler):

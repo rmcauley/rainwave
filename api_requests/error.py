@@ -1,11 +1,11 @@
+from urllib.parse import urlsplit
+import time
 from api import fieldtypes
 from api.web import APIHandler
 from api.exceptions import APIException
-from api.server import handle_api_url
+from api.urls import handle_api_url
 from libs import cache
 from libs import config
-from urllib.parse import urlsplit
-import time
 
 
 @handle_api_url("error_report")
@@ -67,6 +67,6 @@ class ErrorReport(APIHandler):
             reports.pop()
 
         reports.insert(0, self.cleaned_args)
-        cache.set("error_reports", reports)
+        cache.set_global("error_reports", reports)
 
         self.append_standard("report_submitted", "Error report submitted.")

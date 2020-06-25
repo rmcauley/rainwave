@@ -1,7 +1,7 @@
 from libs import cache
 import api.web
-from api.server import handle_api_url
-from api.server import handle_api_html_url
+from api.urls import handle_api_url
+from api.urls import handle_api_html_url
 
 
 @handle_api_url("admin/request_line")

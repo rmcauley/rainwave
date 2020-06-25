@@ -13,7 +13,7 @@ from libs import db
 in_process = {}
 
 
-class IcecastSyncCallback(object):
+class IcecastSyncCallback:
     def __init__(self, relay_name, relay_info, ftype, sid, callback):
         self.relay_name = relay_name
         self.relay_info = relay_info
@@ -55,13 +55,14 @@ class IcecastSyncCallback(object):
                 len(listeners),
             ),
         )
+        return None
 
 
 def _cache_relay_status():
     global in_process
 
     relays = {}
-    for relay, relay_info in config.get("relays").items():
+    for relay, _relay_info in config.get("relays").items():
         relays[relay] = 0
 
     for handler, data in in_process.items():
@@ -71,7 +72,7 @@ def _cache_relay_status():
     for relay, count in relays.items():
         log.debug("icecast_sync", "%s total listeners: %s" % (relay, count))
 
-    cache.set("relay_status", relays)
+    cache.set_global("relay_status", relays)
 
 
 # Just do pure listener counts

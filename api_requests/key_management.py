@@ -1,5 +1,5 @@
 import api.web
-from api.server import handle_url
+from api.urls import handle_url
 from api import fieldtypes
 
 from libs import db

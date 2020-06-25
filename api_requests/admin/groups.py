@@ -1,5 +1,5 @@
 import api.web
-from api.server import handle_api_url
+from api.urls import handle_api_url
 from api import fieldtypes
 from rainwave.playlist import Song
 from rainwave.playlist import SongGroup

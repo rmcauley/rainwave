@@ -1,7 +1,7 @@
 from time import time as timestamp
 from libs import db
 import api.web
-from api.server import handle_api_url
+from api.urls import handle_api_url
 from api.exceptions import APIException
 from api import fieldtypes
 from rainwave.events import event

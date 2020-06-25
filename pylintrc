@@ -1,5 +1,5 @@
 [MISCELLANEOUS]
-notes=FIXME,TODO
+notes=FIXME
 
 [MESSAGES CONTROL]
 disable=
@@ -16,7 +16,25 @@ disable=
     subprocess-popen-preexec-fn,
     too-many-branches,
     protected-access,
-    format
+    format,
+    singleton-comparison,
+    no-else-return,
+    too-many-return-statements,
+    too-few-public-methods,
+    too-many-statements,
+    too-many-instance-attributes,
+    no-else-raise,
+    no-self-use,
+    duplicate-code,
+    import-outside-toplevel,
+    too-many-ancestors,
+    too-many-arguments,
+    ungrouped-imports,
+    wrong-import-order,
+    too-many-public-methods,
+    consider-iterating-dictionary,
+    simplifiable-if-expression,
+    too-many-locals,
 
 [TYPECHECK]
 ignored-modules=pyinotify,zmq

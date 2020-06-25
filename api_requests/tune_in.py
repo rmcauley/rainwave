@@ -1,6 +1,6 @@
 import tornado.web
 
-from api.server import handle_url
+from api.urls import handle_url
 import api.web
 
 from libs import config

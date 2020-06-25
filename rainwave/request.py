@@ -160,27 +160,27 @@ def update_expire_times():
             expiry_times[row["user_id"]] = row["line_expiry_election"]
         else:
             expiry_times[row["user_id"]] = row["line_expiry_tune_in"]
-    cache.set("request_expire_times", expiry_times, True)
+    cache.set_global("request_expire_times", expiry_times, True)
 
 
 def get_next_entry(sid):
     line = cache.get_station(sid, "request_line")
     if not line:
         return None, None
-    for pos in range(0, len(line)):
-        if not line[pos]:
+    for pos, line_entry in enumerate(line):
+        if not line_entry:
             pass  # ?!?!
-        elif "skip" in line[pos] and line[pos]["skip"]:
+        elif "skip" in line_entry and line_entry["skip"]:
             log.debug(
                 "request",
                 "Passing on user %s since they're marked as skippable."
-                % line[pos]["username"],
+                % line_entry["username"],
             )
-        elif not line[pos]["song_id"]:
+        elif not line_entry["song_id"]:
             log.debug(
                 "request",
                 "Passing on user %s since they have no valid first song."
-                % line[pos]["username"],
+                % line_entry["username"],
             )
         else:
             return line.pop(pos), line

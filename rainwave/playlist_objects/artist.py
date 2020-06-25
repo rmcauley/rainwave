@@ -22,7 +22,7 @@ class Artist(AssociatedMetadata):
 
     # needs to be specialized because of artist_order
     def associate_song_id(self, song_id, is_tag=None, order=None):
-        if not order and (not "order" in self.data or not self.data["order"]):
+        if not order and not self.data.get("order"):
             order = db.c.fetch_var(
                 "SELECT MAX(artist_order) FROM r4_song_artist WHERE song_id = %s",
                 (song_id,),
@@ -98,8 +98,8 @@ class Artist(AssociatedMetadata):
         # And of course, now we have to burn extra CPU cycles to make sure the right album name is used and that we present the data
         # in the same format seen everywhere else on the API.  Still, much faster then loading individual song objects.
         self.data["all_songs"] = {}
-        for sid in config.station_ids:
-            self.data["all_songs"][sid] = {}
+        for configured_sids in config.station_ids:
+            self.data["all_songs"][configured_sids] = {}
         requestable = True if user_id > 1 else False
         for song in all_songs:
             if not song["sid"] in config.station_ids:

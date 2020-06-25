@@ -2,7 +2,7 @@ from time import time as timestamp
 import datetime
 from libs import db
 import api.web
-from api.server import handle_url
+from api.urls import handle_url
 
 from api_requests.admin.scan_errors import BackendScanErrors
 
@@ -27,7 +27,7 @@ class ScanResults(api.web.PrettyPrintAPIMixin, BackendScanErrors):
     def get(self):  # pylint: disable=E0202
         new_results = []
         for row in self._output[self.return_name]:
-            if "traceback" in row and row["traceback"] and len(row["traceback"]):
+            if row.get("traceback"):
                 row["traceback"] = "\n".join(row["traceback"])
                 row["traceback"] = (
                     "<pre style='max-width: 450px; overflow: auto;'>%s</pre>"

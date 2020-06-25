@@ -1,16 +1,13 @@
-from libs import config
-from libs import cache
-import api.web
-from api.server import handle_url
-from api_requests.admin_web.index import AlbumList
-from api_requests.admin_web.index import SongList
+from api.urls import handle_url
+from api.web import HTMLRequest
 from api import fieldtypes
+from libs import config, cache, db
+from api_requests.admin_web.index import AlbumList, SongList
 from rainwave.events.election import Election
-from libs import db
 
 
 @handle_url("/admin/tools/dj_election")
-class DJElectionTool(api.web.HTMLRequest):
+class DJElectionTool(HTMLRequest):
     dj_preparation = True
     fields = {"sched_id": (fieldtypes.sched_id, False)}
 

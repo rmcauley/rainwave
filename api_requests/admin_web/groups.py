@@ -4,8 +4,8 @@ from libs import db
 
 import api.web
 import api.fieldtypes
-from api.server import handle_url
-from api.server import handle_api_url
+from api.urls import handle_url
+from api.urls import handle_api_url
 from api_requests.admin_web.index import AlbumList
 from api_requests.admin_web.index import SongList
 

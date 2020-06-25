@@ -16,7 +16,7 @@ _request_interval = {}
 _request_sequence = {}
 
 
-class ElecSongTypes(object):
+class ElecSongTypes:
     conflict = 0
     warn = 1
     normal = 2
@@ -80,7 +80,7 @@ class ElectionProducer(event.BaseProducer):
         )
         if elec_id:
             elec = self.elec_class.load_by_id(elec_id)
-            if not elec.songs or not len(elec.songs):
+            if not elec.songs:
                 log.warn("load_election", "Election ID %s is empty.  Marking as used.")
                 db.c.update(
                     "UPDATE r4_elections SET elec_used = TRUE WHERE elec_id = %s",
@@ -113,7 +113,7 @@ class ElectionProducer(event.BaseProducer):
         )
         if elec_id:
             elec = self.elec_class.load_by_id(elec_id)
-            if not elec.songs or not len(elec.songs):
+            if not elec.songs:
                 log.warn("load_election", "Election ID %s is empty.  Marking as used.")
                 db.c.update(
                     "UPDATE r4_elections SET elec_used = TRUE WHERE elec_id = %s",
@@ -414,7 +414,7 @@ class Election(event.BaseEvent):
             log.debug(
                 "requests", "Ready for requests, filling %s." % self._num_requests
             )
-            for i in range(0, self._num_requests):
+            for _i in range(0, self._num_requests):
                 self.add_song(self.get_request())
 
     def is_request_needed(self):

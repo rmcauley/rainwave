@@ -116,7 +116,7 @@ def load(filename=None, testmode=False):
                 relay_hostname_port = "{}{}:{}".format(
                     relay["protocol"], relay["hostname"], relay["port"]
                 )
-                if not relay_hostname_port in relay_hostnames:
+                if relay_hostname_port not in relay_hostnames:
                     relay_hostnames.append(relay_hostname_port)
         public_relays_json[sid] = json.dumps(public_relays[sid])
         station_hostnames[get_station(sid, "host")] = sid
@@ -210,5 +210,5 @@ def set_station_ids(dirs, friendly):
                 sid_array.append(sid)
     station_ids = set(sid_array)
 
-    for sid, friendly in friendly.items():
-        station_id_friendly[int(sid)] = friendly
+    for sid, friendly_name in friendly.items():
+        station_id_friendly[int(sid)] = friendly_name

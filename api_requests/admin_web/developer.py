@@ -3,7 +3,7 @@ import hashlib
 
 from api.web import APIHandler
 from api.exceptions import APIException
-from api.server import handle_api_url
+from api.urls import handle_api_url
 
 from libs import config
 from libs import db
