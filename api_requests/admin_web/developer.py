@@ -100,7 +100,7 @@ class TestUserRequest(APIHandler):
             (user_id,),
         )
         if not session_id:
-            session_id = hashlib.md5(repr(timestamp())).hexdigest()
+            session_id = hashlib.md5(bytes(str(timestamp()), "utf-8")).hexdigest()
             db.c.update(
                 "INSERT INTO phpbb_sessions (session_id, session_user_id) VALUES (%s, %s)",
                 (session_id, user_id),

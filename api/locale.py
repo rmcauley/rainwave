@@ -136,7 +136,6 @@ def compile_static_language_files():
                 json.dumps(
                     translation.dict,
                     ensure_ascii=False,
-                    encoding="utf-8",
                     separators=(",", ":"),
                 )
             )
@@ -176,7 +175,6 @@ class RainwaveLocale(tornado.locale.Locale):
         return translations["en_CA"]
 
     def __init__(self, code, mster, translation):
-        super().__init__()
         # remove lines that are no longer in the master file
         to_pop = []
         for k, v in translation.items():
@@ -185,8 +183,12 @@ class RainwaveLocale(tornado.locale.Locale):
         for k in to_pop:
             translation.pop(k)
 
-        self.dict = dict(mster.items() + translation.items())
+        self.dict = {}
+        self.dict.update(mster)
+        self.dict.update(translation)
         self.code = code
+
+        super().__init__(code)
 
         # document lines missing
         self.missing = {}

@@ -2,6 +2,7 @@ import datetime
 import numbers
 import sys
 import uuid
+import asyncio
 from urllib.parse import urlparse
 from time import time as timestamp
 
@@ -13,6 +14,7 @@ except ImportError:
 import tornado.web
 import tornado.websocket
 import tornado.ioloop
+import tornado.locks
 
 from api import fieldtypes
 from api.exceptions import APIException
@@ -346,10 +348,9 @@ class Sync(APIHandler):
     }
     is_websocket = False
     dj = False
+    wait_future = None
 
-    # TODO: this needs to be updated for 6.0.3 to use a generator/coroutine
-    @tornado.web.asynchronous
-    def post(self):
+    async def post(self):
         global sessions
 
         if self.user.is_dj():
@@ -373,6 +374,11 @@ class Sync(APIHandler):
                 self.update()
             else:
                 sessions[self.sid].append(self)
+                self.wait_future = tornado.locks.Condition().wait()
+                try:
+                    await self.wait_future
+                except asyncio.CancelledError:
+                    return
         else:
             self.update()
 
@@ -384,12 +390,16 @@ class Sync(APIHandler):
         if self.sid:
             global sessions
             sessions[self.sid].remove(self)
+        if self.wait_future:
+            self.wait_future.cancel()
         super(Sync, self).on_connection_close(*args, **kwargs)
 
     def finish(self, *args, **kwargs):
         if self.sid:
             global sessions
             sessions[self.sid].remove(self)
+        if self.wait_future:
+            self.wait_future.cancel()
         super(Sync, self).finish(*args, **kwargs)
 
     def rw_finish(self):

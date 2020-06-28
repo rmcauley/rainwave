@@ -357,7 +357,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
                     "SELECT 1 FROM phpbb_sessions_keys WHERE key_id = %s AND user_id = %s",
                     (
                         hashlib.md5(
-                            self.get_cookie(phpbb_cookie_name + "k")
+                            bytes(str(self.get_cookie(phpbb_cookie_name + "k")), "utf-8")
                         ).hexdigest(),
                         user_id,
                     ),

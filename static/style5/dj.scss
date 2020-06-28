@@ -1,126 +1,133 @@
 div.dj_panel {
-	z-index: 101 !important;
-	max-width: 100%;
+    z-index: 101 !important;
+    max-width: 100%;
 
-	ul.panel_header {
-		margin-bottom: 0;
-	}
+    ul.panel_header {
+        margin-bottom: 0;
+    }
 
-	body.full & {
-		left: 100%;
-		width: 450px;
-	}
+    body.full & {
+        left: 100%;
+        width: 450px;
+    }
 
-	body.dj_open & {
-		@include transform(translateX(-100%));
-		opacity: 1;
-		visibility: visible;
-	}
+    body.dj_open & {
+        @include transform(translateX(-100%));
+        opacity: 1;
+        visibility: visible;
+    }
 
-	body.full.dj_open & {
-		@include transform(translateX(-100%) translateX(-90px));
-	}
+    body.full.dj_open & {
+        @include transform(translateX(-100%) translateX(-90px));
+    }
 
-	body.full &.panel div.close {
-		display: block;
-	}
+    body.full &.panel div.close {
+        display: block;
+    }
 
-	button {
-		background: $text_ddd;
-		color: $text;
-		cursor: pointer;
-		margin-right: 1em;
+    button {
+        background: $text_ddd;
+        color: $text;
+        cursor: pointer;
+        margin-right: 1em;
 
-		&:disabled {
-			opacity: 0.4;
-			cursor: default;
-		}
+        &:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
 
-		&:enabled:hover {
-			color: $link;
-			background: $vote_registered;
-			border-color: $text_d;
-		}
-	}
+        &:enabled:hover {
+            color: $link;
+            background: $vote_registered;
+            border-color: $text_d;
+        }
+    }
 
-	div.dj_indicator,
-	button {
-		margin-top: 3px;
-		padding: 5px;
-		border: solid 1px $text_dd;
-		@include transition-wtime(300ms, background, border, LINKCOLOR, opacity, transform);
-	}
+    div.dj_indicator,
+    button {
+        margin-top: 3px;
+        padding: 5px;
+        border: solid 1px $text_dd;
+        @include transition-wtime(
+            300ms,
+            background,
+            border,
+            LINKCOLOR,
+            opacity,
+            transform
+        );
+    }
 
-	div.dj_indicator {
-		margin-right: 3em;
-		clear: left;
-		float: left;
-		text-align: center;
-		min-width: 170px;
-		color: $text_dd;
+    div.dj_indicator {
+        margin-right: 3em;
+        clear: left;
+        float: left;
+        text-align: center;
+        min-width: 170px;
+        color: $text_dd;
 
-		&.active {
-			font-weight: bold;
-			border: solid 1px $text;
-			color: $text;
-			background: $blue;
-		}
+        &.active {
+            font-weight: bold;
+            border: solid 1px $text;
+            color: $text;
+            background: $blue;
+        }
 
-		&.djerror {
-			font-weight: bold;
-			border: solid 1px $text;
-			color: $text;
-			background: $error_bkg;
-		}
-	}
+        &.djerror {
+            font-weight: bold;
+            border: solid 1px $text;
+            color: $text;
+            background: $error_bkg;
+        }
+    }
 }
 
 div.dj_controls {
-	padding: 10px;
-	border-bottom: solid 2px $text_ddd;
+    padding: 10px;
+    border-bottom: solid 2px $text_ddd;
 }
 
 div.quiet_range {
-	background-color: $text_ddd;
-	left: 0 !important;
+    background-color: $text_ddd;
+    left: 0 !important;
 }
 
 div.good_range {
-	background-color: $song_yours;
+    background-color: $song_yours;
 }
 
 div.volume_indicator {
-	width: 100%;
-	background-color: $blue;
-	left: 0;
-	transform-origin: left;
-	transform: scaleX(0);
+    width: 100%;
+    background-color: $blue;
+    left: 0;
+    transform-origin: left;
+    transform: scaleX(0);
 }
 
 div.chart_bar.peak_indicator {
-	width: 100%;
-	background-color: transparent;
-	left: 0;
-	transform-origin: left;
-	border-left: solid 3px $text;
+    width: 100%;
+    background-color: transparent;
+    left: 0;
+    transform-origin: left;
+    border-left: solid 3px $text;
 }
 
 div.clip_warning_text {
-	float: right;
-	display: none;
-	background: $error_b;
-	font-weight: bold;
-	font-size: larger;
+    float: right;
+    display: none;
+    background: $error_b;
+    font-weight: bold;
+    font-size: larger;
 
-	&.clipping {
-		display: block;
-	}
+    &.clipping {
+        display: block;
+    }
 }
 
 div.clip_indicator {
-	background-color: $error_bkg;
+    background-color: $error_bkg;
 
-	&.clipping {
-		background-color: $error_b;
-	}
+    &.clipping {
+        background-color: $error_b;
+    }
 }

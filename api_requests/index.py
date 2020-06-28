@@ -12,7 +12,10 @@ from libs import config
 from libs import buildtools
 from rainwave.user import User
 
-STATION_REGEX = "game|ocremix|chiptune|covers|all"
+STATION_REGEX = "|".join(
+    stream_filename for stream_filename
+    in config.stream_filename_to_sid.keys()
+)
 
 
 @handle_url("/blank")

@@ -73,9 +73,9 @@ def get(key):
 
 def set_user(user, key, value):
     if user.__class__.__name__ == "int" or user.__class__.__name__ == "long":
-        set("u%s_%s" % (user, key), value)
+        set_global("u%s_%s" % (user, key), value)
     else:
-        set("u%s_%s" % (user.id, key), value)
+        set_global("u%s_%s" % (user.id, key), value)
 
 
 def get_user(user, key):
@@ -86,7 +86,7 @@ def get_user(user, key):
 
 
 def set_station(sid, key, value, save_local=False):
-    set("sid%s_%s" % (sid, key), value, save_local)
+    set_global("sid%s_%s" % (sid, key), value, save_local)
 
 
 def get_station(sid, key):
@@ -160,11 +160,11 @@ def update_local_cache_for_sid(sid):
     all_stations = {}
     for station_id in config.station_ids:
         all_stations[station_id] = get_station(station_id, "all_station_info")
-    set("all_stations_info", all_stations)
+    set_global("all_stations_info", all_stations)
 
 
 def reset_station_caches():
-    set("request_expire_times", None, True)
+    set_global("request_expire_times", None, True)
     for sid in config.station_ids:
         set_station(sid, "album_diff", None, True)
         set_station(sid, "sched_next", None, True)

@@ -44,12 +44,16 @@ $song_yours: #18a485;
 $autovoted: darken($song_yours, 23%);
 $vote_requester: lighten(saturate($blue, 15%), 10%);
 $song_votes: $text_d;
-$song_cool_info: mix($blue, $text, 70%); // when request panel shows you "On cooldown for X"
+$song_cool_info: mix(
+    $blue,
+    $text,
+    70%
+); // when request panel shows you "On cooldown for X"
 $votebtn_h: $blue;
 $votebtn_voted: $blue;
 $timeline_link_h_bkg: lighten(
-	saturate($vote_registered, 10%),
-	19%
+    saturate($vote_registered, 10%),
+    19%
 ); // when vote hover is active but links need to be differentiated
 $vote_highlight: lighten($hover_b, 40%);
 
@@ -68,7 +72,10 @@ $new_indicator: $orange; // when album is new
 
 // Panels
 $panel_bkg: lighten($bkg, 4%);
-$panel_bkg_d: darken($panel_bkg, 2.5%); // playlist panel bkg when detail is open at same time
+$panel_bkg_d: darken(
+    $panel_bkg,
+    2.5%
+); // playlist panel bkg when detail is open at same time
 $panel_b: lighten($panel_bkg, 19%);
 $tab: $text_dd;
 $tab_b: $text_ddd;
@@ -86,9 +93,9 @@ $subheader_b: $text_dd; // Border color of song list table headers
 
 // Lists of Songs
 $row_bkg: transparent;
-$row_bkg_alternating: $panel_bkg / 1.2;
+$row_bkg_alternating: #1f2123;
 $row_cool_bkg: $cooldown;
-$row_cool_bkg_alternating: $cooldown / 1.2;
+$row_cool_bkg_alternating: #25264d;
 
 // Art
 $art_bkg: #000;
@@ -105,7 +112,7 @@ $requests_warn: darken($error_bkg, 10%);
 $request_delete: mix($text, $error_b, 25%);
 $request_delete_bkg: darken($request_delete, 55%);
 $request_delete_bkg_a: darken($request_delete, 35%);
-$request_drag_bkg: $blue * 0.5;
+$request_drag_bkg: #104b73;
 
 // Rating
 $rating_user_text: $blue;
@@ -137,11 +144,11 @@ $chart_tooltip_bkg: $bkg;
 $chart_tooltip_b: $blue;
 
 // Hotkey Prompt
-$hotkey_b: $blue * 1.4;
-$hotkey_bkg: $blue * 1.2;
+$hotkey_b: #2bd1ff;
+$hotkey_bkg: #25b3ff;
 
 // Timeline
-$history_header_h_bkg: $blue / 2.5;
+$history_header_h_bkg: #0c3c5c;
 $timeline_header: $orange;
 $progress_bkg: $text_ddd; // the countdown bar to the next song
 $progress_b: $orange;
@@ -150,17 +157,29 @@ $progress_b: $orange;
 $menu: $text;
 $menu_bkg: $blue;
 $menu_pad_bkg: $blue_d; // outside the main 1024px viewport of basic mode
-$menu_link_open: $menu_bkg * 0.8; // e.g. open playlist, look at playlist link bkg
-$submenu_separator: $blue * 1.2; // e.g.separator between options in tune in menu
+$menu_link_open: #1977b7; // e.g. open playlist, look at playlist link bkg
+$submenu_separator: #25b3ff; // e.g.separator between options in tune in menu
+
+$audio_icon_active_fill: #ffb224;
 
 // STYLE MIXINS **********************************************************************************************
 
 @mixin error_colors() {
-	color: $text;
-	border: 1px solid $error_b;
-	background: $error_bkg;
-	background: -moz-linear-gradient(100% 100% 90deg, $error_bkg, $error_bkg_bright);
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from($error_bkg_bright), to($error_bkg));
+    color: $text;
+    border: 1px solid $error_b;
+    background: $error_bkg;
+    background: -moz-linear-gradient(
+        100% 100% 90deg,
+        $error_bkg,
+        $error_bkg_bright
+    );
+    background: -webkit-gradient(
+        linear,
+        0% 0%,
+        0% 100%,
+        from($error_bkg_bright),
+        to($error_bkg)
+    );
 }
 
 // SIZE DEFINITIONS  *****************************************************************************************
@@ -191,117 +210,118 @@ $rating_bkg_size: 60px 728px;
 // CORE CONTENT **********************************************************************************************
 
 body {
-	height: 100%;
-	color: $text;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	background: $bkg;
-	font-family: "Roboto Condensed", "Helvetica Neue", sans-serif;
+    height: 100%;
+    color: $text;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: $bkg;
+    font-family: "Roboto Condensed", "Helvetica Neue", sans-serif;
 
-	html[lang="ko_KO"] & {
-		font-family: "KoPub Dotum", "Roboto Condensed", "Helvetica Neue", sans-serif;
-	}
+    html[lang="ko_KO"] & {
+        font-family: "KoPub Dotum", "Roboto Condensed", "Helvetica Neue",
+            sans-serif;
+    }
 
-	html[lang="ja_JA"] & {
-		font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-	}
+    html[lang="ja_JA"] & {
+        font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    }
 
-	&.nofont {
-		font-family: sans-serif !important;
-	}
+    &.nofont {
+        font-family: sans-serif !important;
+    }
 
-	&.loading {
-		//visibility: hidden;
+    &.loading {
+        //visibility: hidden;
 
-		* {
-			-webkit-transition: none !important;
-			-ms-transition: none !important;
-			transition: none !important;
-		}
-	}
+        * {
+            -webkit-transition: none !important;
+            -ms-transition: none !important;
+            transition: none !important;
+        }
+    }
 
-	&.safari {
-		-webkit-font-smoothing: antialiased;
-	}
+    &.safari {
+        -webkit-font-smoothing: antialiased;
+    }
 }
 
 div.sizeable {
-	overflow: hidden;
-	position: relative;
-	z-index: 0;
-	width: 100%;
-	margin: 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    margin: 0;
 }
 
 div.debug_div {
-	z-index: 1000;
-	position: absolute;
-	left: 100%;
-	margin-left: -600px;
-	text-align: left;
-	background: $text_ddd;
-	border: solid 1px $text_dd;
+    z-index: 1000;
+    position: absolute;
+    left: 100%;
+    margin-left: -600px;
+    text-align: left;
+    background: $text_ddd;
+    border: solid 1px $text_dd;
 }
 
 div.measure_box {
-	top: -300px;
-	position: absolute;
-	visibility: hidden;
-	width: 300px;
+    top: -300px;
+    position: absolute;
+    visibility: hidden;
+    width: 300px;
 }
 
 a,
 a:visited,
 .link {
-	cursor: pointer;
-	text-decoration: none;
-	color: $text;
-	@include transition(LINKCOLOR);
+    cursor: pointer;
+    text-decoration: none;
+    color: $text;
+    @include transition(LINKCOLOR);
 
-	&.obvious {
-		color: $link !important;
+    &.obvious {
+        color: $link !important;
 
-		body.desktop &:hover {
-			color: $link_h !important;
-		}
-	}
+        body.desktop &:hover {
+            color: $link_h !important;
+        }
+    }
 
-	&.no_pointer {
-		cursor: default;
-	}
+    &.no_pointer {
+        cursor: default;
+    }
 
-	body.desktop &:hover {
-		color: $link_h !important;
-	}
+    body.desktop &:hover {
+        color: $link_h !important;
+    }
 }
 
 body {
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-o-user-select: none;
-	user-select: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 
 .phoneonly {
-	display: inline-block;
+    display: inline-block;
 }
 
 body.simple div.power_only {
-	display: none;
+    display: none;
 }
 
-@media $pc-media {
-	.phoneonly {
-		display: none !important;
-	}
+@media ($pc-media) {
+    .phoneonly {
+        display: none !important;
+    }
 }
 
-@media $phone-media {
-	.pconly {
-		display: none !important;
-	}
+@media ($phone-media) {
+    .pconly {
+        display: none !important;
+    }
 }
 
 @import "modals";

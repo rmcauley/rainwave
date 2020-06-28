@@ -1,495 +1,508 @@
-$song_transitions: opacity $transtime, transform $transtime, background-position 250ms linear, visibility $transtime;
-$webkit_song_transitions: opacity $transtime, -webkit-transform $transtime, background-position 250ms linear,
-	visibility $transtime;
+$song_transitions: opacity $transtime, transform $transtime,
+    background-position 250ms linear, visibility $transtime;
+$webkit_song_transitions: opacity $transtime, -webkit-transform $transtime,
+    background-position 250ms linear, visibility $transtime;
 
 div.song {
-	box-sizing: border-box;
-	position: absolute;
-	cursor: default;
-	-webkit-transition: $webkit_song_transitions, background-color $transtime;
-	transition: $song_transitions, background-color $transtime;
-	height: $art_size;
-	width: 100%;
-
-	// used when mobile ratings are active
-	&.on_top {
-		z-index: 99 !important;
-	}
-
-	&.song_lost {
-		visibility: hidden;
-		opacity: 0;
-		pointer-events: none;
-
-		body.displose & {
-			opacity: 0.6;
-			visibility: visible;
-			pointer-events: auto;
-
-			body.desktop &:hover,
-			body.mobile:active {
-				opacity: 1;
-			}
-		}
-	}
-
-	&.cool {
-		opacity: 0.85;
-		background: $cooldown;
-	}
-
-	div.title {
-		margin-top: 5px;
-
-		body.desktop.logged_in & {
-			padding-left: 19px;
-		}
-	}
-
-	div.song_content.song_fave_highlight div.title {
-		color: $fave;
-	}
-
-	div.song_content.album_fave_highlight div.album a {
-		color: $fave;
-	}
-
-	div.title,
-	div.album,
-	div.artist,
-	div.cooldown_info,
-	div.song_link_container {
-		text-overflow: ellipsis;
-		overflow: hidden;
-		white-space: nowrap;
-		min-height: $rating_height + 1;
-	}
-
-	div.album,
-	div.artist,
-	div.cooldown_info,
-	div.song_link_container {
-		padding-left: 15px;
-		color: $text_d;
-
-		body.logged_in & {
-			padding-left: 30px;
-		}
-
-		a {
-			color: $text_d;
-		}
-	}
-
-	div.cooldown_info {
-		display: none;
-		color: $song_cool_info;
-	}
-
-	&.cool div.cooldown_info {
-		display: block;
-	}
-
-	div.song_link_container {
-		display: none;
-	}
-
-	a.song_link {
-		padding-right: 18px;
-		background-repeat: no-repeat;
-		background-size: 14px 14px;
-		background-image: url("/static/images4/link_external.svg");
-		background-position: right;
-	}
-
-	div.entry_votes {
-		display: inline;
-		float: right;
-		padding-right: 5px;
-		margin-left: 10px;
-		color: $song_votes;
-		position: relative;
-
-		body.full & {
-			min-width: 1em;
-		}
-
-		@media $phone-media {
-			display: none;
-		}
-	}
-
-	body.desktop.simple.normal div.sched_current &,
-	body.full div.sched_current & {
-		&.now_playing {
-			div.song_link_container {
-				display: block;
-			}
-		}
-	}
-
-	div.artist {
-		span + a {
-			margin-left: 5px;
-		}
-
-		span:last-child {
-			display: none;
-		}
-	}
-
-	div.vote_button {
-		display: none;
-		cursor: pointer;
-		float: left;
-		position: relative;
-		border: solid 1px $text_ddd;
-		border-top-left-radius: 3px;
-		border-bottom-left-radius: 3px;
-		height: $art_size;
-		opacity: 0.6;
-		width: 1.5em;
-		top: 50%;
-		@include transform(translateY(-50%) translateX(1px));
-		@include transition-wtime(300ms, border-color, color, opacity);
-
-		span.vote_button_rotate {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			padding-bottom: 2px;
-			-webkit-transform-origin: top left;
-			transform-origin: top left;
-			@include transform(rotate(90deg) translateX(-50%) translateY(-50%));
-
-			html[lang="ko_KO"] & {
-				@include transform(translateX(-50%) translateY(-50%));
-			}
-		}
-
-		div.sched_current & {
-			visibility: hidden;
-		}
-
-		body.desktop.normal & {
-			display: block;
-			visibility: hidden;
-		}
-
-		&:active {
-			-webkit-box-shadow: inset 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-			box-shadow: inset 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-
-			span.vote_button_rotate {
-				@include transform(rotate(90deg) translateX(-50%) translateY(-50%) translateX(2px) translateY(-2px));
-			}
-		}
-	}
-
-	$highlight_scaleX_h: 0.2;
-	$highlight_scaleY_h: 0.8;
-	$highlight_scaleX_clicked: 0.8;
-	$highlight_scaleY_clicked: 0.95;
-	$highlight_scaleX_voted: 1;
-	$highlight_scaleY_voted: 1;
-	$highlight_fade_duration: 2s;
-
-	div.song_highlight {
-		box-sizing: content-box;
-		position: absolute;
-		height: 1px;
-		width: 100%;
-		left: 0;
-		background: $vote_highlight;
-		-webkit-transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
-		transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
-		@include transform(scaleX(0));
-	}
-
-	div.song_highlight_topleft {
-		top: -1px;
-		@include transform-origin(top left);
-	}
-
-	div.song_highlight_topright {
-		top: -1px;
-		@include transform-origin(top right);
-	}
-
-	div.song_highlight_bottomleft {
-		top: 100%;
-		@include transform-origin(bottom left);
-	}
-
-	div.song_highlight_bottomright {
-		top: 100%;
-		@include transform-origin(bottom right);
-	}
-
-	div.song_highlight_left {
-		width: 1px;
-		height: 100%;
-		visibility: hidden;
-		@include transform(none !important);
-	}
-
-	div.song_highlight_right {
-		width: 1px;
-		height: 100%;
-		left: 100%;
-		visibility: hidden;
-		@include transform(translateX(-1px) !important);
-	}
-
-	div.timeline & {
-		background-position: 0% 200%;
-		background-repeat: repeat-x;
-		padding: 0px 10px;
-
-		div.art_anchor,
-		div.song_content {
-			@include transition(TOUCHTRANSFORM);
-		}
-
-		body.desktop.normal &.voting_enabled {
-			div.vote_button {
-				visibility: visible;
-			}
-		}
-
-		&.voting_enabled:not(.voting_registered):not(.voting_clicked) {
-			cursor: pointer;
-
-			body.mobile & div.art_anchor:active,
-			body.mobile & div.art_anchor:active + div.song_content {
-				@include touchtransform();
-			}
-
-			body.desktop &:hover,
-			body.mobile &:active {
-				background-color: $hover_bkg;
-				-webkit-transition: $webkit_song_transitions;
-				transition: $song_transitions;
-
-				div.vote_button {
-					opacity: 1;
-					background: $votebtn_h;
-				}
-
-				div.song_content a {
-					@include transition-wtime(250ms, color, background-color, padding);
-
-					body.desktop &:hover,
-					body.mobile &:active {
-						background-color: $timeline_link_h_bkg;
-						padding: 0 10px;
-						color: $link_h;
-					}
-				}
-			}
-		}
-
-		&.voting_clicked,
-		&.voting_registered {
-			background-image: url(/static/images4/vote_hover_r5.png);
-		}
-
-		&.voting_clicked {
-			background-color: $hover_bkg;
-			-webkit-transition: $webkit_song_transitions;
-			transition: $song_transitions;
-
-			div.song_highlight {
-				visibility: visible;
-				@include transition-duration($highlight_fade_duration);
-				@include transform(scaleX(0.4));
-			}
-		}
-
-		&.voting_registered {
-			background-color: $vote_registered;
-			background-position: 0px -35px;
-			-webkit-transition: $webkit_song_transitions;
-			transition: $song_transitions;
-
-			div.vote_button {
-				opacity: 1;
-				background: $votebtn_voted;
-			}
-
-			div.song_highlight {
-				visibility: visible;
-				background: transparent;
-				-webkit-transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
-				transition: transform 450ms $transfunc, background $highlight_fade_duration linear;
-				@include transform(scaleX(0.5));
-			}
-
-			&.autovoted {
-				background-color: $autovoted;
-				cursor: pointer;
-				background-position: 0% 200%;
-
-				div.song_highlight {
-					background: $vote_highlight;
-					visibility: hidden;
-					@include transform(scaleX(0));
-				}
-			}
-		}
-
-		&.voting_error {
-			background-color: $error_bkg;
-		}
-	}
-
-	div.request_indicator,
-	div.requester {
-		box-sizing: border-box;
-		position: absolute;
-		width: 100%;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		font-size: x-small;
-		background: $vote_requester;
-		text-align: left;
-		text-transform: uppercase;
-		@include transition(opacity, LINKCOLOR);
-
-		body.desktop.normal & {
-			font-size: 70%;
-		}
-
-		body.mobile & {
-			padding-top: 2px;
-		}
-	}
-
-	div.fave {
-		position: absolute;
-
-		body.mobile & {
-			display: none;
-		}
-	}
-
-	body.logged_in.desktop &:hover img.fave_lined {
-		opacity: 0.5;
-	}
-
-	div.requester {
-		z-index: 5;
-		padding-left: 1.5em;
-	}
-
-	div.request_indicator {
-		text-align: right;
-		z-index: 4;
-		padding-right: 2em;
-
-		@include transform(rotate(-90deg) translateX(-100%));
-		-webkit-transform-origin: 0% 0%;
-		transform-origin: 0% 0%;
-	}
-
-	div.art_expanded {
-		div.request_indicator,
-		div.requester {
-			opacity: 0;
-		}
-	}
-
-	div.your_request {
-		background: $song_yours;
-	}
-
-	div.rating {
-		margin-left: 25px;
-	}
-
-	@media (max-width: 320px) {
-		div.timeline & div.art_anchor {
-			position: absolute;
-			z-index: -1;
-			opacity: 0.4;
-			-webkit-filter: blur(1px);
-			filter: blur(1px);
-		}
-
-		div.song_content {
-			padding-left: 10px;
-		}
-	}
-
-	div.song_station_indicator {
-		position: absolute;
-		bottom: 0;
-		right: 0;
-		font-size: 12px;
-		padding: 0 2px;
-		text-align: center;
-		height: 12px;
-		line-height: 12px;
-		color: $text;
-	}
-
-	div.song_station_indicator_1 {
-		background: $station_game;
-		&::before {
-			content: "G";
-		}
-	}
-	div.song_station_indicator_2 {
-		background: $station_ocr;
-		&::before {
-			content: "O";
-		}
-	}
-	div.song_station_indicator_3 {
-		background: $station_covers;
-		&::before {
-			content: "Co";
-		}
-	}
-	div.song_station_indicator_4 {
-		background: $station_chip;
-		&::before {
-			content: "Ch";
-		}
-	}
-	div.song_station_indicator_5 {
-		background: $station_all;
-		&::before {
-			content: "A";
-		}
-	}
+    box-sizing: border-box;
+    position: absolute;
+    cursor: default;
+    -webkit-transition: $webkit_song_transitions, background-color $transtime;
+    transition: $song_transitions, background-color $transtime;
+    height: $art_size;
+    width: 100%;
+
+    // used when mobile ratings are active
+    &.on_top {
+        z-index: 99 !important;
+    }
+
+    &.song_lost {
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+
+        body.displose & {
+            opacity: 0.6;
+            visibility: visible;
+            pointer-events: auto;
+
+            body.desktop &:hover,
+            body.mobile:active {
+                opacity: 1;
+            }
+        }
+    }
+
+    &.cool {
+        opacity: 0.85;
+        background: $cooldown;
+    }
+
+    div.title {
+        margin-top: 5px;
+
+        body.desktop.logged_in & {
+            padding-left: 19px;
+        }
+    }
+
+    div.song_content.song_fave_highlight div.title {
+        color: $fave;
+    }
+
+    div.song_content.album_fave_highlight div.album a {
+        color: $fave;
+    }
+
+    div.title,
+    div.album,
+    div.artist,
+    div.cooldown_info,
+    div.song_link_container {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        min-height: $rating_height + 1;
+    }
+
+    div.album,
+    div.artist,
+    div.cooldown_info,
+    div.song_link_container {
+        padding-left: 15px;
+        color: $text_d;
+
+        body.logged_in & {
+            padding-left: 30px;
+        }
+
+        a {
+            color: $text_d;
+        }
+    }
+
+    div.cooldown_info {
+        display: none;
+        color: $song_cool_info;
+    }
+
+    &.cool div.cooldown_info {
+        display: block;
+    }
+
+    div.song_link_container {
+        display: none;
+    }
+
+    a.song_link {
+        padding-right: 18px;
+        background-repeat: no-repeat;
+        background-size: 14px 14px;
+        background-image: url("/static/images4/link_external.svg");
+        background-position: right;
+    }
+
+    div.entry_votes {
+        display: inline;
+        float: right;
+        padding-right: 5px;
+        margin-left: 10px;
+        color: $song_votes;
+        position: relative;
+
+        body.full & {
+            min-width: 1em;
+        }
+
+        @media ($phone-media) {
+            display: none;
+        }
+    }
+
+    body.desktop.simple.normal div.sched_current &,
+    body.full div.sched_current & {
+        &.now_playing {
+            div.song_link_container {
+                display: block;
+            }
+        }
+    }
+
+    div.artist {
+        span + a {
+            margin-left: 5px;
+        }
+
+        span:last-child {
+            display: none;
+        }
+    }
+
+    div.vote_button {
+        display: none;
+        cursor: pointer;
+        float: left;
+        position: relative;
+        border: solid 1px $text_ddd;
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
+        height: $art_size;
+        opacity: 0.6;
+        width: 1.5em;
+        top: 50%;
+        @include transform(translateY(-50%) translateX(1px));
+        @include transition-wtime(300ms, border-color, color, opacity);
+
+        span.vote_button_rotate {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            padding-bottom: 2px;
+            -webkit-transform-origin: top left;
+            transform-origin: top left;
+            @include transform(rotate(90deg) translateX(-50%) translateY(-50%));
+
+            html[lang="ko_KO"] & {
+                @include transform(translateX(-50%) translateY(-50%));
+            }
+        }
+
+        div.sched_current & {
+            visibility: hidden;
+        }
+
+        body.desktop.normal & {
+            display: block;
+            visibility: hidden;
+        }
+
+        &:active {
+            -webkit-box-shadow: inset 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
+            box-shadow: inset 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
+
+            span.vote_button_rotate {
+                @include transform(
+                    rotate(90deg) translateX(-50%) translateY(-50%)
+                        translateX(2px) translateY(-2px)
+                );
+            }
+        }
+    }
+
+    $highlight_scaleX_h: 0.2;
+    $highlight_scaleY_h: 0.8;
+    $highlight_scaleX_clicked: 0.8;
+    $highlight_scaleY_clicked: 0.95;
+    $highlight_scaleX_voted: 1;
+    $highlight_scaleY_voted: 1;
+    $highlight_fade_duration: 2s;
+
+    div.song_highlight {
+        box-sizing: content-box;
+        position: absolute;
+        height: 1px;
+        width: 100%;
+        left: 0;
+        background: $vote_highlight;
+        -webkit-transition: transform 450ms $transfunc,
+            background $highlight_fade_duration linear;
+        transition: transform 450ms $transfunc,
+            background $highlight_fade_duration linear;
+        @include transform(scaleX(0));
+    }
+
+    div.song_highlight_topleft {
+        top: -1px;
+        @include transform-origin(top left);
+    }
+
+    div.song_highlight_topright {
+        top: -1px;
+        @include transform-origin(top right);
+    }
+
+    div.song_highlight_bottomleft {
+        top: 100%;
+        @include transform-origin(bottom left);
+    }
+
+    div.song_highlight_bottomright {
+        top: 100%;
+        @include transform-origin(bottom right);
+    }
+
+    div.song_highlight_left {
+        width: 1px;
+        height: 100%;
+        visibility: hidden;
+        @include transform(none !important);
+    }
+
+    div.song_highlight_right {
+        width: 1px;
+        height: 100%;
+        left: 100%;
+        visibility: hidden;
+        @include transform(translateX(-1px) !important);
+    }
+
+    div.timeline & {
+        background-position: 0% 200%;
+        background-repeat: repeat-x;
+        padding: 0px 10px;
+
+        div.art_anchor,
+        div.song_content {
+            @include transition(TOUCHTRANSFORM);
+        }
+
+        body.desktop.normal &.voting_enabled {
+            div.vote_button {
+                visibility: visible;
+            }
+        }
+
+        &.voting_enabled:not(.voting_registered):not(.voting_clicked) {
+            cursor: pointer;
+
+            body.mobile & div.art_anchor:active,
+            body.mobile & div.art_anchor:active + div.song_content {
+                @include touchtransform();
+            }
+
+            body.desktop &:hover,
+            body.mobile &:active {
+                background-color: $hover_bkg;
+                -webkit-transition: $webkit_song_transitions;
+                transition: $song_transitions;
+
+                div.vote_button {
+                    opacity: 1;
+                    background: $votebtn_h;
+                }
+
+                div.song_content a {
+                    @include transition-wtime(
+                        250ms,
+                        color,
+                        background-color,
+                        padding
+                    );
+
+                    body.desktop &:hover,
+                    body.mobile &:active {
+                        background-color: $timeline_link_h_bkg;
+                        padding: 0 10px;
+                        color: $link_h;
+                    }
+                }
+            }
+        }
+
+        &.voting_clicked,
+        &.voting_registered {
+            background-image: url(/static/images4/vote_hover_r5.png);
+        }
+
+        &.voting_clicked {
+            background-color: $hover_bkg;
+            -webkit-transition: $webkit_song_transitions;
+            transition: $song_transitions;
+
+            div.song_highlight {
+                visibility: visible;
+                @include transition-duration($highlight_fade_duration);
+                @include transform(scaleX(0.4));
+            }
+        }
+
+        &.voting_registered {
+            background-color: $vote_registered;
+            background-position: 0px -35px;
+            -webkit-transition: $webkit_song_transitions;
+            transition: $song_transitions;
+
+            div.vote_button {
+                opacity: 1;
+                background: $votebtn_voted;
+            }
+
+            div.song_highlight {
+                visibility: visible;
+                background: transparent;
+                -webkit-transition: transform 450ms $transfunc,
+                    background $highlight_fade_duration linear;
+                transition: transform 450ms $transfunc,
+                    background $highlight_fade_duration linear;
+                @include transform(scaleX(0.5));
+            }
+
+            &.autovoted {
+                background-color: $autovoted;
+                cursor: pointer;
+                background-position: 0% 200%;
+
+                div.song_highlight {
+                    background: $vote_highlight;
+                    visibility: hidden;
+                    @include transform(scaleX(0));
+                }
+            }
+        }
+
+        &.voting_error {
+            background-color: $error_bkg;
+        }
+    }
+
+    div.request_indicator,
+    div.requester {
+        box-sizing: border-box;
+        position: absolute;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: x-small;
+        background: $vote_requester;
+        text-align: left;
+        text-transform: uppercase;
+        @include transition(opacity, LINKCOLOR);
+
+        body.desktop.normal & {
+            font-size: 70%;
+        }
+
+        body.mobile & {
+            padding-top: 2px;
+        }
+    }
+
+    div.fave {
+        position: absolute;
+
+        body.mobile & {
+            display: none;
+        }
+    }
+
+    body.logged_in.desktop &:hover img.fave_lined {
+        opacity: 0.5;
+    }
+
+    div.requester {
+        z-index: 5;
+        padding-left: 1.5em;
+    }
+
+    div.request_indicator {
+        text-align: right;
+        z-index: 4;
+        padding-right: 2em;
+
+        @include transform(rotate(-90deg) translateX(-100%));
+        -webkit-transform-origin: 0% 0%;
+        transform-origin: 0% 0%;
+    }
+
+    div.art_expanded {
+        div.request_indicator,
+        div.requester {
+            opacity: 0;
+        }
+    }
+
+    div.your_request {
+        background: $song_yours;
+    }
+
+    div.rating {
+        margin-left: 25px;
+    }
+
+    @media (max-width: 320px) {
+        div.timeline & div.art_anchor {
+            position: absolute;
+            z-index: -1;
+            opacity: 0.4;
+            -webkit-filter: blur(1px);
+            filter: blur(1px);
+        }
+
+        div.song_content {
+            padding-left: 10px;
+        }
+    }
+
+    div.song_station_indicator {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        font-size: 12px;
+        padding: 0 2px;
+        text-align: center;
+        height: 12px;
+        line-height: 12px;
+        color: $text;
+    }
+
+    div.song_station_indicator_1 {
+        background: $station_game;
+        &::before {
+            content: "G";
+        }
+    }
+    div.song_station_indicator_2 {
+        background: $station_ocr;
+        &::before {
+            content: "O";
+        }
+    }
+    div.song_station_indicator_3 {
+        background: $station_covers;
+        &::before {
+            content: "Co";
+        }
+    }
+    div.song_station_indicator_4 {
+        background: $station_chip;
+        &::before {
+            content: "Ch";
+        }
+    }
+    div.song_station_indicator_5 {
+        background: $station_all;
+        &::before {
+            content: "A";
+        }
+    }
 }
 
 div.song div.plusminus {
-	height: auto;
-	padding: 1px 2px;
-	min-width: 18px;
-	text-align: center;
+    height: auto;
+    padding: 1px 2px;
+    min-width: 18px;
+    text-align: center;
 
-	&.show {
-		opacity: 1;
-	}
+    &.show {
+        opacity: 1;
+    }
 
-	body.simple & {
-		left: 100%;
-		@include transform(translateX(-100%));
+    body.simple & {
+        left: 100%;
+        @include transform(translateX(-100%));
 
-		&.show {
-			@include transform(none);
-		}
-	}
+        &.show {
+            @include transform(none);
+        }
+    }
 
-	body.full & {
-		left: 0;
+    body.full & {
+        left: 0;
 
-		&.show {
-			@include transform(translateX(-100%) translateX(-5px));
-		}
-	}
+        &.show {
+            @include transform(translateX(-100%) translateX(-5px));
+        }
+    }
 }

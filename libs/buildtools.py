@@ -1,13 +1,15 @@
 import os
 import subprocess
-import scss
 import glob
 import shutil
 from pathlib import Path
+import sass
+from calmjs.parse import es5
+from calmjs.parse.unparsers.es5 import minify_print
+
 from libs import config
 from libs import RWTemplates
 from libs.config import get_build_number
-from slimit import minify
 
 
 def create_baked_directory():
@@ -49,9 +51,9 @@ def bake_css():
         str(get_build_number()),
         "style5.css",
     )
-    incl_path = Path(
+    incl_path = str(Path(
         os.path.join(os.path.dirname(__file__), "..", "static", "style5")
-    ).resolve()
+    ).resolve())
     if not os.path.exists(wfn):
         _bake_css_file("r5.scss", wfn, incl_path)
 
@@ -66,25 +68,22 @@ def bake_beta_css():
         str(get_build_number()),
         "style5b.css",
     )
-    incl_path = Path(
+    incl_path = str(Path(
         os.path.join(os.path.dirname(__file__), "..", "static", "style5")
-    ).resolve()
+    ).resolve())
     _bake_css_file("r5.scss", wfn, incl_path)
 
 
 def _bake_css_file(input_filename, output_filename, include_path):
-    css_content = scss.compiler.compile_file(
-        input_filename,
-        root=include_path,
-        search_path=[include_path],
-        output_style="compressed",
-        live_errors=True,
-        warn_unused_imports=False,
-    )
+    with open(os.path.join(include_path, input_filename)) as input_file:
+        css_content = sass.compile(
+            string=input_file.read(),
+            include_paths=[include_path],
+            # output_style="compressed",
+        )
 
-    dest = open(output_filename, "w")
-    dest.write(css_content)
-    dest.close()
+    with open(output_filename, "w") as dest:
+        dest.write(css_content)
 
 
 def get_js_file_list(js_dir="js"):
@@ -117,11 +116,12 @@ def bake_js(source_dir="js5", dest_file="script5.js"):
         js_content = ""
         for sfn in get_js_file_list(source_dir):
             jsfile = open(os.path.join(os.path.dirname(__file__), "..", sfn))
-            js_content += minify(jsfile.read()) + "\n"
+            js_content += jsfile.read() + "\n"
             jsfile.close()
 
         o = open(fn, "w")
-        o.write(minify(js_content, mangle=True, mangle_toplevel=False))
+        # Pylint disabled for next line because pylint is buggy about the es5 function
+        o.write(minify_print(es5(js_content), obfuscate=True, obfuscate_globals=True)) # pylint: disable=not-callable
         o.close()
 
 

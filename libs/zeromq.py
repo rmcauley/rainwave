@@ -26,7 +26,7 @@ def init_sub():
     context = zmq.Context()
     sub = context.socket(zmq.SUB)
     sub.connect(bytes(config.get("zeromq_sub"), "utf-8"))
-    sub.setsockopt(zmq.SUBSCRIBE, "")
+    sub.setsockopt(zmq.SUBSCRIBE, b"")
     _sub_stream = zmqstream.ZMQStream(sub)
 
 
@@ -35,17 +35,17 @@ def set_sub_callback(methd):
 
 
 def publish(dct):
-    _pub.send(json.dumps(dct))
+    _pub.send_string(json.dumps(dct))
 
 
 def init_proxy():
     td = zmq.devices.ThreadDevice(zmq.FORWARDER, zmq.SUB, zmq.PUB)
 
-    td.bind_in(config.get("zeromq_pub"))
-    td.setsockopt_in(zmq.IDENTITY, "SUB")
-    td.setsockopt_in(zmq.SUBSCRIBE, "")
+    td.bind_in(bytes(config.get("zeromq_pub"), "utf-8"))
+    td.setsockopt_in(zmq.IDENTITY, b"SUB")
+    td.setsockopt_in(zmq.SUBSCRIBE, b"")
 
-    td.bind_out(config.get("zeromq_sub"))
-    td.setsockopt_out(zmq.IDENTITY, "PUB")
+    td.bind_out(bytes(config.get("zeromq_sub"), "utf-8"))
+    td.setsockopt_out(zmq.IDENTITY, b"PUB")
 
     td.start()

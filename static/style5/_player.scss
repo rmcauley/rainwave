@@ -4,203 +4,203 @@ $player_icon_height: $menu_height * 0.6;
 $player_icon_width: $player_icon_height;
 
 @-webkit-keyframes bar_loader {
-	0% {
-		@include transform(translateX(-50%) scaleX(0));
-	}
-	50% {
-		@include transform(translateX(0%) scaleX(0.45));
-	}
-	100% {
-		@include transform(translateX(50%) scaleX(0));
-	}
+    0% {
+        @include transform(translateX(-50%) scaleX(0));
+    }
+    50% {
+        @include transform(translateX(0%) scaleX(0.45));
+    }
+    100% {
+        @include transform(translateX(50%) scaleX(0));
+    }
 }
 
 @keyframes bar_loader {
-	0% {
-		@include transform(translateX(-50%) scaleX(0));
-	}
-	50% {
-		@include transform(translateX(0%) scaleX(0.45));
-	}
-	100% {
-		@include transform(translateX(50%) scaleX(0));
-	}
+    0% {
+        @include transform(translateX(-50%) scaleX(0));
+    }
+    50% {
+        @include transform(translateX(0%) scaleX(0.45));
+    }
+    100% {
+        @include transform(translateX(50%) scaleX(0));
+    }
 }
 
 #r4_audio_player {
-	position: absolute;
-	display: inline-block;
-	margin-left: $station_select_width + 15;
-	top: 50%;
-	@include transform(translateY(-50%));
-	font-weight: 400;
+    position: absolute;
+    display: inline-block;
+    margin-left: $station_select_width + 15;
+    top: 50%;
+    @include transform(translateY(-50%));
+    font-weight: 400;
 
-	@media $mobile-media {
-		margin-left: 235px;
-	}
+    @media ($mobile-media) {
+        margin-left: 235px;
+    }
 
-	div.background {
-		position: relative;
-		background: $blue;
-		z-index: 1;
-	}
+    div.background {
+        position: relative;
+        background: $blue;
+        z-index: 1;
+    }
 
-	.audio_icon {
-		position: relative;
-		z-index: 1;
-		height: $player_icon_height;
-		width: $player_icon_width;
-		margin-right: 5px;
-		opacity: 0.3;
-		cursor: pointer;
+    .audio_icon {
+        position: relative;
+        z-index: 1;
+        height: $player_icon_height;
+        width: $player_icon_width;
+        margin-right: 5px;
+        opacity: 0.3;
+        cursor: pointer;
 
-		&,
-		* {
-			@include transition-wtime(300ms, fill, opacity);
-		}
+        &,
+        * {
+            @include transition-wtime(300ms, fill, opacity);
+        }
 
-		body.desktop &:hover,
-		&:hover * {
-			fill: $link_h;
-		}
-	}
+        body.desktop &:hover,
+        &:hover * {
+            fill: $link_h;
+        }
+    }
 
-	.audio_icon_play {
-		opacity: 1;
-		cursor: pointer;
-	}
+    .audio_icon_play {
+        opacity: 1;
+        cursor: pointer;
+    }
 
-	&.playing,
-	&.playing {
-		.audio_icon_play {
-			&,
-			* {
-				fill: $orange * 1.2;
-			}
-		}
-	}
+    &.playing,
+    &.playing {
+        .audio_icon_play {
+            &,
+            * {
+                fill: $audio_icon_active_fill;
+            }
+        }
+    }
 
-	&.playing {
-		.audio_icon {
-			opacity: 1;
-		}
+    &.playing {
+        .audio_icon {
+            opacity: 1;
+        }
 
-		.audio_volume {
-			opacity: 1;
-		}
-	}
+        .audio_volume {
+            opacity: 1;
+        }
+    }
 
-	&.muted {
-		.audio_icon_mute {
-			opacity: 1;
+    &.muted {
+        .audio_icon_mute {
+            opacity: 1;
 
-			&,
-			* {
-				fill: $orange * 1.2;
-			}
-		}
-	}
+            &,
+            * {
+                fill: $audio_icon_active_fill;
+            }
+        }
+    }
 
-	#audio_volume_container {
-		position: relative;
-		display: inline-block;
-		cursor: default;
-	}
+    #audio_volume_container {
+        position: relative;
+        display: inline-block;
+        cursor: default;
+    }
 
-	.audio_volume {
-		position: relative;
-		z-index: 1;
-		margin-left: 5px;
-		width: $player_icon_height * 2;
-		height: $player_icon_height;
-		opacity: 0.3;
-		cursor: default;
-		@include transition(opacity);
-	}
+    .audio_volume {
+        position: relative;
+        z-index: 1;
+        margin-left: 5px;
+        width: $player_icon_height * 2;
+        height: $player_icon_height;
+        opacity: 0.3;
+        cursor: default;
+        @include transition(opacity);
+    }
 
-	@media $mobile-media {
-		border-top: none;
-		// height: $menu-height - 3;
-		padding: 0;
-		top: 8px;
-		@include transform(none);
+    @media ($mobile-media) {
+        border-top: none;
+        // height: $menu-height - 3;
+        padding: 0;
+        top: 8px;
+        @include transform(none);
 
-		.menu_inline_dropdown,
-		.audio_icon_mute,
-		.audio_icon_stop {
-			display: none;
-		}
+        .menu_inline_dropdown,
+        .audio_icon_mute,
+        .audio_icon_stop {
+            display: none;
+        }
 
-		body.mobile & .audio_volume {
-			display: none;
-		}
-	}
+        body.mobile & .audio_volume {
+            display: none;
+        }
+    }
 
-	@media (max-width: 720px) {
-		.audio_volume,
-		body.desktop & .audio_volume {
-			display: none;
-		}
+    @media (max-width: 720px) {
+        .audio_volume,
+        body.desktop & .audio_volume {
+            display: none;
+        }
 
-		.audio_icon_play {
-			padding: 0 0 0 4px;
-		}
-	}
+        .audio_icon_play {
+            padding: 0 0 0 4px;
+        }
+    }
 
-	@media $phone-media {
-		margin-left: 125px;
-		padding: 0px;
-		top: 0px;
-		height: $phone_menu_height;
+    @media ($phone-media) {
+        margin-left: 125px;
+        padding: 0px;
+        top: 0px;
+        height: $phone_menu_height;
 
-		.audio_icon_play {
-			@include transform(translateY(5px));
-			height: 25px;
-			margin: 0;
-			padding: 3px 10px 4px 10px;
-		}
-	}
+        .audio_icon_play {
+            @include transform(translateY(5px));
+            height: 25px;
+            margin: 0;
+            padding: 3px 10px 4px 10px;
+        }
+    }
 
-	/* SPINNER *******************************************************************/
+    /* SPINNER *******************************************************************/
 
-	div.load_indicator,
-	div.tuned_in_indicator {
-		position: absolute;
-		z-index: 2;
-		top: 100%;
-		width: 100%;
-		height: 2px;
-		opacity: 0;
-		background: $text;
+    div.load_indicator,
+    div.tuned_in_indicator {
+        position: absolute;
+        z-index: 2;
+        top: 100%;
+        width: 100%;
+        height: 2px;
+        opacity: 0;
+        background: $text;
 
-		@include transition-wtime(300ms, opacity, transform);
+        @include transition-wtime(300ms, opacity, transform);
 
-		@media $phone-media {
-			top: $phone_menu_height - 4px;
-		}
-	}
+        @media ($phone-media) {
+            top: $phone_menu_height - 4px;
+        }
+    }
 
-	div.load_indicator {
-		-webkit-animation: bar_loader 0.8s infinite linear;
-		animation: bar_loader 0.8s infinite linear;
-		-webkit-animation-play-state: paused;
-		animation-play-state: paused;
-	}
+    div.load_indicator {
+        -webkit-animation: bar_loader 0.8s infinite linear;
+        animation: bar_loader 0.8s infinite linear;
+        -webkit-animation-play-state: paused;
+        animation-play-state: paused;
+    }
 
-	&.working div.load_indicator {
-		opacity: 1;
-		-webkit-animation-play-state: running;
-		animation-play-state: running;
-	}
+    &.working div.load_indicator {
+        opacity: 1;
+        -webkit-animation-play-state: running;
+        animation-play-state: running;
+    }
 
-	div.tuned_in_indicator,
-	body.tuned_in &.working div.tuned_in_indicator {
-		background: $text;
-		@include transform(scaleX(0));
-	}
+    div.tuned_in_indicator,
+    body.tuned_in &.working div.tuned_in_indicator {
+        background: $text;
+        @include transform(scaleX(0));
+    }
 
-	body.tuned_in & div.tuned_in_indicator {
-		opacity: 0.6;
-		@include transform(scaleX(1));
-	}
+    body.tuned_in & div.tuned_in_indicator {
+        opacity: 0.6;
+        @include transform(scaleX(1));
+    }
 }

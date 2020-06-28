@@ -8,45 +8,48 @@ $transfunc: cubic-bezier(0.165, 0.84, 0.44, 1);
 $transtime: 700ms $transfunc;
 
 @mixin no-transition() {
-	transition: none;
+    transition: none;
 }
 
 @mixin transform($transform_string...) {
-	transform: $transform_string;
+    transform: $transform_string;
 }
 
 @mixin transform-origin($t) {
-	transform-origin: $t;
+    transform-origin: $t;
 }
 
 @mixin transition-delay($t) {
-	transition-delay: $t;
+    transition-delay: $t;
 }
 
 @mixin transition-duration($t) {
-	transition-duration: $t;
+    transition-duration: $t;
 }
 
 @mixin transition-wtime($customtime, $trans...) {
-	$nice_rules: null;
-	@each $rule in $trans {
-		$finaltranstime: $customtime;
-		@if $rule == LINKCOLOR {
-			$rule: color;
-			$finaltranstime: 150ms;
-		} @else if $rule == TOUCHTRANSFORM {
-			$rule: transform;
-			$finaltranstime: 150ms;
-		}
-		$nice_rules: append($nice_rules, $rule $finaltranstime);
-	}
-	transition: $nice_rules;
+    $nice_rules: "";
+    @each $rule in $trans {
+        $finaltranstime: $customtime;
+        @if $rule == LINKCOLOR {
+            $rule: color;
+            $finaltranstime: 150ms;
+        } @else if $rule == TOUCHTRANSFORM {
+            $rule: transform;
+            $finaltranstime: 150ms;
+        }
+        @if $nice_rules != "" {
+            $nice_rules: $nice_rules + ", ";
+        }
+        $nice_rules: unquote($nice_rules + $rule + " " + $finaltranstime);
+    }
+    transition: $nice_rules;
 }
 
 @mixin transition($trans...) {
-	@include transition-wtime($transtime, $trans...);
+    @include transition-wtime($transtime, $trans...);
 }
 
 @mixin touchtransform() {
-	@include transform(scale(0.96));
+    @include transform(scale(0.96));
 }

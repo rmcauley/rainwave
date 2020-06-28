@@ -1,73 +1,73 @@
 div.fave {
-	width: 14px;
-	height: 13px;
-	display: none;
-	margin-top: 4px;
+    width: 14px;
+    height: 13px;
+    display: none;
+    margin-top: 4px;
 
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-o-user-select: none;
-	user-select: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 
-	img {
-		width: 14px;
-		height: 13px;
-		position: absolute;
-		opacity: 0;
-		@include transition-wtime(200ms, opacity);
-	}
+    img {
+        width: 14px;
+        height: 13px;
+        position: absolute;
+        opacity: 0;
+        @include transition-wtime(200ms, opacity);
+    }
 
-	&.is_fave {
-		img.fave_solid {
-			opacity: 1;
-		}
-	}
+    &.is_fave {
+        img.fave_solid {
+            opacity: 1;
+        }
+    }
 
-	&.fave_clicked {
-		img.fave_solid {
-			opacity: 0.5;
-		}
-	}
+    &.fave_clicked {
+        img.fave_solid {
+            opacity: 0.5;
+        }
+    }
 
-	body.logged_in & {
-		display: inline-block;
-		cursor: pointer;
-	}
+    body.logged_in & {
+        display: inline-block;
+        cursor: pointer;
+    }
 
-	body.logged_in.desktop & {
-		&:hover img.fave_lined {
-			opacity: 1;
-		}
-	}
+    body.logged_in.desktop & {
+        &:hover img.fave_lined {
+            opacity: 1;
+        }
+    }
 
-	// this only appears in lists for mobile versions
-	// and the CSS for album lists and song lists has slightly different CSS :/
-	body.logged_in.mobile & {
-		position: relative;
-		display: inline-block;
-		width: 30px;
-		margin-top: 0px;
-		padding: 2px 0;
-		border: solid 1px $text_ddd;
-		border-radius: 3px;
+    // this only appears in lists for mobile versions
+    // and the CSS for album lists and song lists has slightly different CSS :/
+    body.logged_in.mobile & {
+        position: relative;
+        display: inline-block;
+        width: 30px;
+        margin-top: 0px;
+        padding: 2px 0;
+        border: solid 1px $text_ddd;
+        border-radius: 3px;
 
-		img {
-			padding: 0 8px;
-		}
+        img {
+            padding: 0 8px;
+        }
 
-		img.fave_lined {
-			opacity: 0.7;
-		}
+        img.fave_lined {
+            opacity: 0.7;
+        }
 
-		&.is_fave {
-			img.fave_lined {
-				opacity: 0;
-			}
-		}
-	}
+        &.is_fave {
+            img.fave_lined {
+                opacity: 0;
+            }
+        }
+    }
 
-	body.logged_in.mobile div.list & {
-		top: 3px;
-	}
+    body.logged_in.mobile div.list & {
+        top: 3px;
+    }
 }

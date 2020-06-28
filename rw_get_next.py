@@ -1,3 +1,4 @@
+import json
 import argparse
 import time
 import socket
@@ -17,7 +18,7 @@ args = parser.parse_args()
 config.load(args.config)
 cache.connect()
 
-params = parse.quote({"sid": args.sid})
+params = parse.quote(json.dumps({"sid": args.sid}))
 try:
     dest_port = config.get("backend_port")
     dest_port += int(args.sid)

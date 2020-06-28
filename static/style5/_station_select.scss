@@ -2,256 +2,265 @@ $station_height: 70px;
 $station_select_width: 270px;
 
 #station_select {
-	box-sizing: border-box;
-	position: absolute;
-	z-index: 20000;
-	float: left;
-	width: $station_select_width;
-	border-right: 1px solid $stasel_b;
-	height: $menu_height;
-	overflow: hidden;
-	background: $stasel_bkg;
+    box-sizing: border-box;
+    position: absolute;
+    z-index: 20000;
+    float: left;
+    width: $station_select_width;
+    border-right: 1px solid $stasel_b;
+    height: $menu_height;
+    overflow: hidden;
+    background: $stasel_bkg;
 
-	-webkit-transition: width 350ms, background-color 350ms, height 700ms;
-	transition: width 350ms, background-color 350ms, height 700ms;
-	-webkit-transition-timing-function: $menu_transfunc;
-	transition-timing-function: $menu_transfunc;
+    -webkit-transition: width 350ms, background-color 350ms, height 700ms;
+    transition: width 350ms, background-color 350ms, height 700ms;
+    -webkit-transition-timing-function: $menu_transfunc;
+    transition-timing-function: $menu_transfunc;
 
-	@media $mobile-media {
-		width: 220px;
-	}
+    @media ($mobile-media) {
+        width: 220px;
+    }
 
-	@media $phone-media {
-		width: 120px;
-		height: $phone_menu_height;
-	}
+    @media ($phone-media) {
+        width: 120px;
+        height: $phone_menu_height;
+    }
 
-	&.open {
-		width: $station_select_width * 1.8;
-		height: ($station_height * 5) + $menu_height;
+    &.open {
+        width: $station_select_width * 1.8;
+        height: ($station_height * 5) + $menu_height;
 
-		@media $phone-media {
-			width: 150px;
-			height: ($phone_menu_height * 5) + $phone_menu_height;
-		}
-	}
+        @media ($phone-media) {
+            width: 150px;
+            height: ($phone_menu_height * 5) + $phone_menu_height;
+        }
+    }
 
-	svg.pulldown_arrow {
-		display: none;
-		float: right;
-		cursor: pointer;
-		position: relative;
-		z-index: 50;
-		margin-right: 15px;
-		top: $menu_height / 2;
+    svg.pulldown_arrow {
+        display: none;
+        float: right;
+        cursor: pointer;
+        position: relative;
+        z-index: 50;
+        margin-right: 15px;
+        top: $menu_height / 2;
 
-		@include transition-wtime(350ms, transform);
-		@include transform(translateY(-50%) rotate(0deg));
-		-webkit-transform-origin: center center;
-		transform-origin: center center;
-		-webkit-transition-timing-function: $menu_transfunc;
-		transition-timing-function: $menu_transfunc;
-	}
+        @include transition-wtime(350ms, transform);
+        @include transform(translateY(-50%) rotate(0deg));
+        -webkit-transform-origin: center center;
+        transform-origin: center center;
+        -webkit-transition-timing-function: $menu_transfunc;
+        transition-timing-function: $menu_transfunc;
+    }
 
-	&.openable svg.pulldown_arrow {
-		display: block;
+    &.openable svg.pulldown_arrow {
+        display: block;
 
-		@media $phone-media {
-			display: none;
-		}
-	}
+        @media ($phone-media) {
+            display: none;
+        }
+    }
 
-	&.open svg.pulldown_arrow {
-		@include transform(translateY(-50%) rotate(180deg));
-	}
+    &.open svg.pulldown_arrow {
+        @include transform(translateY(-50%) rotate(180deg));
+    }
 
-	#station_select_header {
-		position: absolute;
-		background: $menu_bkg;
-		z-index: 41;
-		height: $menu_height;
-		font-size: 0.6em;
+    #station_select_header {
+        position: absolute;
+        background: $menu_bkg;
+        z-index: 41;
+        height: $menu_height;
+        font-size: 0.6em;
 
-		@include transform(translateY(-100%));
+        @include transform(translateY(-100%));
 
-		@media $phone-media {
-			height: $phone_menu_height;
-		}
-	}
+        @media ($phone-media) {
+            height: $phone_menu_height;
+        }
+    }
 
-	&.open #station_select_header {
-		@include transform(none);
+    &.open #station_select_header {
+        @include transform(none);
 
-		div.station_details {
-			@include transform(translateY(-50%));
-		}
-	}
+        div.station_details {
+            @include transform(translateY(-50%));
+        }
+    }
 
-	&.openable a.station {
-		cursor: pointer;
-	}
+    &.openable a.station {
+        cursor: pointer;
+    }
 
-	a.station {
-		box-sizing: border-box;
-		display: block;
-		background: transparent;
-		position: absolute;
-		left: 0;
-		top: 0;
-		z-index: 1;
-		width: 100%;
-		overflow: hidden;
-		height: $station_height;
-		cursor: default;
+    a.station {
+        box-sizing: border-box;
+        display: block;
+        background: transparent;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 1;
+        width: 100%;
+        overflow: hidden;
+        height: $station_height;
+        cursor: default;
 
-		padding: 0px 0px 0px 20px;
-		@include transform(translateY(-15px));
-		-webkit-transition: -webkit-transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc;
-		transition: transform 700ms $menu_transfunc, background 350ms $transfunc, color 350ms $transfunc;
+        padding: 0px 0px 0px 20px;
+        @include transform(translateY(-15px));
+        -webkit-transition: -webkit-transform 700ms $menu_transfunc,
+            background 350ms $transfunc, color 350ms $transfunc;
+        transition: transform 700ms $menu_transfunc, background 350ms $transfunc,
+            color 350ms $transfunc;
 
-		@media $phone-media {
-			padding-left: 5px;
-			height: $phone_menu_height;
-			@include transform(none);
-		}
+        @media ($phone-media) {
+            padding-left: 5px;
+            height: $phone_menu_height;
+            @include transform(none);
+        }
 
-		body.desktop &:hover,
-		body.mobile &:active {
-			background: $stasel_h_bkg;
-			color: $text !important;
-		}
+        body.desktop &:hover,
+        body.mobile &:active {
+            background: $stasel_h_bkg;
+            color: $text !important;
+        }
 
-		&.selected_station {
-			background: $menu_bkg;
-			color: $menu;
-			z-index: 40 !important;
-			@include transform(translateY(-13px));
+        &.selected_station {
+            background: $menu_bkg;
+            color: $menu;
+            z-index: 40 !important;
+            @include transform(translateY(-13px));
 
-			@media $phone-media {
-				@include transform(none);
-			}
-		}
+            @media ($phone-media) {
+                @include transform(none);
+            }
+        }
 
-		div.station_name {
-			text-transform: uppercase;
-		}
+        div.station_name {
+            text-transform: uppercase;
+        }
 
-		div.station_details {
-			position: relative;
-			top: 50%;
+        div.station_details {
+            position: relative;
+            top: 50%;
 
-			font-weight: 400;
-			font-size: 2em;
-			@include transform(translateY(-50%));
-			@include transition-wtime(350ms, transform);
+            font-weight: 400;
+            font-size: 2em;
+            @include transform(translateY(-50%));
+            @include transition-wtime(350ms, transform);
 
-			@media $phone-media {
-				font-size: 1.3em;
-			}
-		}
+            @media ($phone-media) {
+                font-size: 1.3em;
+            }
+        }
 
-		div.station_description {
-			text-transform: uppercase;
-			font-weight: 400;
-			font-size: 0.4em;
-			position: absolute;
-			opacity: 0;
-			@include transition-wtime(300ms, transform, opacity);
-			@include transform(translateX(1em));
+        div.station_description {
+            text-transform: uppercase;
+            font-weight: 400;
+            font-size: 0.4em;
+            position: absolute;
+            opacity: 0;
+            @include transition-wtime(300ms, transform, opacity);
+            @include transform(translateX(1em));
 
-			@media $phone-media {
-				display: none;
-			}
-		}
+            @media ($phone-media) {
+                display: none;
+            }
+        }
 
-		div.station_song_container {
-			visibility: hidden;
-			position: relative;
-			width: 160px;
-			float: right;
-			top: 50%;
-			font-size: smaller;
-			opacity: 0;
-			@include transform(translateX(100%) translateY(-50%));
-			-webkit-transition: -webkit-transform 700ms $menu_transfunc, opacity 300ms $transfunc,
-				visibility 700ms $menu_transfunc;
-			transition: transform 700ms $menu_transfunc, opacity 300ms $transfunc, visibility 700ms $menu_transfunc;
+        div.station_song_container {
+            visibility: hidden;
+            position: relative;
+            width: 160px;
+            float: right;
+            top: 50%;
+            font-size: smaller;
+            opacity: 0;
+            @include transform(translateX(100%) translateY(-50%));
+            -webkit-transition: -webkit-transform 700ms $menu_transfunc,
+                opacity 300ms $transfunc, visibility 700ms $menu_transfunc;
+            transition: transform 700ms $menu_transfunc,
+                opacity 300ms $transfunc, visibility 700ms $menu_transfunc;
 
-			@media $phone-media {
-				display: none;
-			}
+            @media ($phone-media) {
+                display: none;
+            }
 
-			div {
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
+            div {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
 
-			div.ss_title {
-				margin-top: 7px;
-			}
+            div.ss_title {
+                margin-top: 7px;
+            }
 
-			div.ss_art {
-				float: left;
-				height: $station_height - 20;
-				width: $station_height - 20;
-				background-size: contain;
-				background-position: center;
-				background-repeat: no-repeat;
-				margin-right: 5px;
-			}
-		}
-	}
+            div.ss_art {
+                float: left;
+                height: $station_height - 20;
+                width: $station_height - 20;
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;
+                margin-right: 5px;
+            }
+        }
+    }
 
-	&.open a.station {
-		&.selected_station {
-			cursor: default;
-		}
+    &.open a.station {
+        &.selected_station {
+            cursor: default;
+        }
 
-		div.station_details {
-			@include transform(translateY(-72%));
-		}
+        div.station_details {
+            @include transform(translateY(-72%));
+        }
 
-		div.station_description {
-			opacity: 0.7;
-			@include transform(translateX(0px));
-			transition-delay: 400ms;
-		}
+        div.station_description {
+            opacity: 0.7;
+            @include transform(translateX(0px));
+            transition-delay: 400ms;
+        }
 
-		&:nth-of-type(2) {
-			border-top: 1px solid rgba(0, 0, 0, 0.1);
-		}
+        &:nth-of-type(2) {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
 
-		@for $i from 2 through 6 {
-			&:nth-of-type($i) {
-				z-index: 6 - $i;
-				@include transform(translateY($menu_height + ($station_height * ($i - 2))));
-			}
-		}
+        @for $i from 2 through 6 {
+            &:nth-of-type($i) {
+                z-index: 6 - $i;
+                @include transform(
+                    translateY($menu_height + ($station_height * ($i - 2)))
+                );
+            }
+        }
 
-		div.station_song_container {
-			visibility: visible;
-			opacity: 0.7;
-			@include transform(translateX(0%) translateY(-50%));
+        div.station_song_container {
+            visibility: visible;
+            opacity: 0.7;
+            @include transform(translateX(0%) translateY(-50%));
 
-			@media $mobile-media {
-				display: none;
-			}
-		}
+            @media ($mobile-media) {
+                display: none;
+            }
+        }
 
-		body.desktop &:hover,
-		body.mobile &:active {
-			div.station_song_container {
-				opacity: 1;
-			}
-		}
+        body.desktop &:hover,
+        body.mobile &:active {
+            div.station_song_container {
+                opacity: 1;
+            }
+        }
 
-		@media $phone-media {
-			@for $i from 2 through 6 {
-				&:nth-of-type($i) {
-					@include transform(translateY($phone_menu_height + ($phone_menu_height * ($i - 2))));
-				}
-			}
-		}
-	}
+        @media ($phone-media) {
+            @for $i from 2 through 6 {
+                &:nth-of-type($i) {
+                    @include transform(
+                        translateY(
+                            $phone_menu_height + ($phone_menu_height * ($i - 2))
+                        )
+                    );
+                }
+            }
+        }
+    }
 }
