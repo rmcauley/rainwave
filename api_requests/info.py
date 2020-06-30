@@ -148,7 +148,8 @@ def attach_info_to_request(
         else:
             if (
                 len(sched_next) > 0
-                and request.user.data["voted_entry"] > 0
+                and request.user.data.get("voted_entry")
+                and request.user.data.get("voted_entry") > 0
                 and request.user.data["lock_sid"] == request.sid
             ):
                 request.append(
