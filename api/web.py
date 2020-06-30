@@ -167,13 +167,14 @@ class RainwaveHandler(tornado.web.RequestHandler):
         super(RainwaveHandler, self).set_cookie(name, value, *args, **kwargs)
 
     def get_argument(self, name, default=None, **kwargs):
-        if name in self.cleaned_args:
-            return self.cleaned_args[name].decode("utf-8")
-        if name in self.request.arguments:
-            if isinstance(self.request.arguments[name], list):
-                return self.request.arguments[name][-1].decode("utf-8").strip()
-            return self.request.arguments[name]
-        return default
+        arg = self.cleaned_args.get(name, self.request.arguments(name, default))
+        if isinstance(self.request.arguments[name], list):
+            arg = self.request.arguments[name][-1]
+        if isinstance(arg, bytes):
+            arg = arg.decode("utf-8")
+        if isinstance(arg, str):
+            return arg.strip()
+        return arg
 
     def set_argument(self, name, value):
         self.cleaned_args[name] = value
