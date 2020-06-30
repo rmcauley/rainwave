@@ -167,7 +167,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
         super(RainwaveHandler, self).set_cookie(name, value, *args, **kwargs)
 
     def get_argument(self, name, default=None, **kwargs):
-        arg = self.cleaned_args.get(name, self.request.arguments(name, default))
+        arg = self.cleaned_args.get(name, self.request.arguments.get(name, default))
         if isinstance(self.request.arguments[name], list):
             arg = self.request.arguments[name][-1]
         if isinstance(arg, bytes):
