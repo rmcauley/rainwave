@@ -98,7 +98,7 @@ class AddListener(IcecastHandler):
 
     def add_registered(self, sid):
         real_key = db.c.fetch_var(
-            "SELECT radio_listenkey FROM r4_users WHERE user_id = %s",
+            "SELECT radio_listenkey FROM phpbb_users WHERE user_id = %s",
             (self.user_id,),
         )
         if real_key != self.listen_key:
