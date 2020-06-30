@@ -98,12 +98,15 @@ class APIServer:
 
         # Fire ze missiles!
         global app
+        debug = (config.test_mode or config.get("developer_mode"))
         app = tornado.web.Application(
             request_classes,
-            debug=(config.test_mode or config.get("developer_mode")),
+            debug=debug,
             template_path=os.path.join(os.path.dirname(__file__), "../templates"),
             static_path=os.path.join(os.path.dirname(__file__), "../static"),
             autoescape=None,
+            autoreload=debug,
+            serve_traceback=debug,
         )
         http_server = tornado.httpserver.HTTPServer(app, xheaders=True)
         http_server.listen(port_no)

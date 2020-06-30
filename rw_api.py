@@ -20,6 +20,7 @@ if __name__ == "__main__":
     from api_requests import *
     from api_requests.admin import *
     from api_requests.admin_web import *
+    from api_requests.auth import *
     # pylint: enable=W0614,W0401
 
     server = api.server.APIServer()
