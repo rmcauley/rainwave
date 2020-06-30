@@ -34,7 +34,7 @@ try:
         next_song_filename = result.read()
         if not next_song_filename or len(next_song_filename) == 0:
             raise Exception("Got zero-length filename from backend!")
-        print(str(next_song_filename))
+        print(next_song_filename.decode("utf-8"))
     else:
         raise Exception("HTTP Error %s trying to reach backend!" % result.status)
     cache.set_station(args.sid, "backend_ok", True)
