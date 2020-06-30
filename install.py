@@ -65,6 +65,7 @@ if __name__ == "__main__":
     shutil.copy("rw_auto_copy.py", installdir + "/rw_auto_copy.py")
     shutil.copy("rw_auto_ph.py", installdir + "/rw_auto_ph.py")
     shutil.copy("tagset.py", installdir + "/tagset.py")
+    shutil.copy("Pipfile.lock", installdir + "/Pipfile.lock")
 
     shutil.copy("initscript", "/etc/init.d/rainwave")
     shutil.copy("rw_get_next.py", "/usr/local/bin/rw_get_next.py")
@@ -79,6 +80,11 @@ if __name__ == "__main__":
         )
 
     subprocess.call(["chown", "-R", "%s:%s" % (user, group), installdir])
+
+    pwd = os.getcwd()
+    os.chdir(installdir)
+    subprocess.call(["pipenv", "sync"])
+    os.chdir(pwd)
 
     print("Rainwave installed to /opt/rainwave.")
 
