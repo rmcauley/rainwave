@@ -65,6 +65,7 @@ if __name__ == "__main__":
     shutil.copy("rw_auto_copy.py", installdir + "/rw_auto_copy.py")
     shutil.copy("rw_auto_ph.py", installdir + "/rw_auto_ph.py")
     shutil.copy("tagset.py", installdir + "/tagset.py")
+    shutil.copy("Pipfile", installdir + "/Pipfile")
     shutil.copy("Pipfile.lock", installdir + "/Pipfile.lock")
 
     shutil.copy("initscript", "/etc/init.d/rainwave")

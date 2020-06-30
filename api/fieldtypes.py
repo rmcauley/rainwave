@@ -13,6 +13,8 @@ string_error = "must be a string."
 def string(in_string, request=None):
     if not in_string:
         return None
+    if isinstance(str, bytes):
+        return in_string.decode("utf-8")
     if not isinstance(in_string, str):
         return None
     if isinstance(in_string, str):
@@ -33,6 +35,8 @@ def numeric(s, request=None):
         return s
     if not s:
         return None
+    if isinstance(str, bytes):
+        in_string = in_string.decode("utf-8")
     if not isinstance(s, str):
         return None
     if not re.match(r"^-?\d+(.\d+)?$", s):
@@ -48,6 +52,8 @@ def integer(s, request=None):
         return s
     if not s:
         return None
+    if isinstance(str, bytes):
+        in_string = in_string.decode("utf-8")
     if not isinstance(s, str):
         return None
     if not re.match(r"^-?\d+$", s):
