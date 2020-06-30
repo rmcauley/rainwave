@@ -13,7 +13,7 @@ string_error = "must be a string."
 def string(in_string, request=None):
     if not in_string:
         return None
-    if isinstance(str, bytes):
+    if isinstance(in_string, bytes):
         return in_string.decode("utf-8")
     if not isinstance(in_string, str):
         return None
@@ -35,7 +35,7 @@ def numeric(s, request=None):
         return s
     if not s:
         return None
-    if isinstance(str, bytes):
+    if isinstance(in_string, bytes):
         in_string = in_string.decode("utf-8")
     if not isinstance(s, str):
         return None
@@ -52,7 +52,7 @@ def integer(s, request=None):
         return s
     if not s:
         return None
-    if isinstance(str, bytes):
+    if isinstance(in_string, bytes):
         in_string = in_string.decode("utf-8")
     if not isinstance(s, str):
         return None
