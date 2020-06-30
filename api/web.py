@@ -168,10 +168,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
     def get_argument(self, name, default=None, **kwargs):
         if name in self.cleaned_args:
-            return self.cleaned_args[name]
+            return str(self.cleaned_args[name])
         if name in self.request.arguments:
             if isinstance(self.request.arguments[name], list):
-                return self.request.arguments[name][-1].strip()
+                return str(self.request.arguments[name][-1].strip())
             return self.request.arguments[name]
         return default
 
