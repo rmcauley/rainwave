@@ -35,8 +35,8 @@ def numeric(s, request=None):
         return s
     if not s:
         return None
-    if isinstance(in_string, bytes):
-        in_string = in_string.decode("utf-8")
+    if isinstance(s, bytes):
+        s = s.decode("utf-8")
     if not isinstance(s, str):
         return None
     if not re.match(r"^-?\d+(.\d+)?$", s):
@@ -52,8 +52,8 @@ def integer(s, request=None):
         return s
     if not s:
         return None
-    if isinstance(in_string, bytes):
-        in_string = in_string.decode("utf-8")
+    if isinstance(s, bytes):
+        s = s.decode("utf-8")
     if not isinstance(s, str):
         return None
     if not re.match(r"^-?\d+$", s):

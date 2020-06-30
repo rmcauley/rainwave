@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import json
 import argparse
 import time
@@ -32,7 +34,7 @@ try:
         next_song_filename = result.read()
         if not next_song_filename or len(next_song_filename) == 0:
             raise Exception("Got zero-length filename from backend!")
-        print(next_song_filename)
+        print(str(next_song_filename))
     else:
         raise Exception("HTTP Error %s trying to reach backend!" % result.status)
     cache.set_station(args.sid, "backend_ok", True)
