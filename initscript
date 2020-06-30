@@ -15,13 +15,13 @@ set -e
 case "$1" in
   start)
 	echo -n "Starting Rainwave Scanner: "
-	start-stop-daemon --start --background --exec /opt/rainwave/rw_scanner.py
+	start-stop-daemon --start --background -d /opt/rainwave --exec pipenv run rw_scanner.py
 	echo "OK"
 	echo -n "Starting Rainwave API: "
-	start-stop-daemon --make-pidfile --pidfile /var/run/rainwave/_api_core.pid --start --background --exec /opt/rainwave/rw_api.py
+	start-stop-daemon --make-pidfile --pidfile /var/run/rainwave/_api_core.pid --start --background -d /opt/rainwave --exec pipenv run rw_api.py
 	echo "OK"
 	echo -n "Starting Rainwave Backend: "
-	start-stop-daemon --make-pidfile --pidfile /var/run/rainwave/_backend_core.pid --start --background --exec /opt/rainwave/rw_backend.py
+	start-stop-daemon --make-pidfile --pidfile /var/run/rainwave/_backend_core.pid --start --background -d /opt/rainwave --exec pipenv run rw_backend.py
 	echo "OK"
 	;;
   stop)
