@@ -164,7 +164,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
     def set_cookie(self, name, value, *args, **kwargs):
         if isinstance(value, int):
             value = repr(value)
-        super(RainwaveHandler, self).set_cookie(name, value, *args, **kwargs)
+        super(RainwaveHandler, self).set_cookie(name, value, *args, **kwargs, same_site="strict")
 
     def get_argument(self, name, default=None, **kwargs):
         arg = default
@@ -266,6 +266,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
     # Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
     def prepare(self):
+        self.add_header("")
         if self.local_only and not self.request.remote_ip in config.get(
             "api_trusted_ip_addresses"
         ):
@@ -477,13 +478,15 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
 
 class APIHandler(RainwaveHandler):
+    content_type = "application/json"
+
     def initialize(self, **kwargs):
         super(APIHandler, self).initialize(**kwargs)
         if self.allow_get:
             self.get = self.post
 
     def finish(self, chunk=None):
-        self.set_header("Content-Type", "application/json")
+        self.set_header("Content-Type", self.content_type)
         self.write_output()
         super(APIHandler, self).finish(chunk)
 

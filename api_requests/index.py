@@ -195,6 +195,7 @@ class Bootstrap(api.web.APIHandler):
     sid_required = False
     allow_get = False
     is_mobile = False
+    content_type = "text/javascript"
 
     def prepare(self):
         super(Bootstrap, self).prepare()
@@ -207,7 +208,6 @@ class Bootstrap(api.web.APIHandler):
         )
 
     def get(self):  # pylint: disable=method-hidden
-        self.set_header("Content-Type", "text/javascript")
         self.post()
         if self.is_mobile:
             self.write("window.MOBILE = true;")

@@ -224,10 +224,8 @@ ul.menu {
         }
     }
 
-    @media ($phone-media) {
-        li.signup_link {
-            display: none;
-        }
+    li.signup_link {
+        display: none;
     }
 }
 
