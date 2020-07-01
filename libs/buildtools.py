@@ -79,7 +79,7 @@ def _bake_css_file(input_filename, output_filename, include_path):
         css_content = sass.compile(
             string=input_file.read(),
             include_paths=[include_path],
-            # output_style="compressed",
+            output_style="compressed",
         )
 
     with open(output_filename, "w") as dest:
@@ -121,7 +121,7 @@ def bake_js(source_dir="js5", dest_file="script5.js"):
 
         o = open(fn, "w")
         # Pylint disabled for next line because pylint is buggy about the es5 function
-        o.write(minify_print(es5(js_content), obfuscate=True, obfuscate_globals=True)) # pylint: disable=not-callable
+        o.write(minify_print(es5(js_content), obfuscate=True)) # pylint: disable=not-callable
         o.close()
 
 

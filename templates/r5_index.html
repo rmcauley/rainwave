@@ -22,11 +22,11 @@
 	{% if jsfiles %}
 		<script src="/static/baked/{{ revision_number }}/templates5b.js"></script>
 		{% for file in jsfiles %}
-			<script src="/{{ file }}" type="application/javascript"></script>
+			<script src="/{{ file }}"></script>
 		{% end %}
 	{% else %}
 		<script src="/static/baked/{{ revision_number }}/templates5.js"></script>
-		<script src="/static/baked/{{ revision_number }}/script5.js" type="application/javascript"></script>
+		<script src="/static/baked/{{ revision_number }}/script5.js"></script>
 	{% end %}
 
 	{% if dj %}
