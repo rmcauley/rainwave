@@ -171,7 +171,7 @@ class Song:
         
         # do not get replay gain earlier in case an exception is thrown above
         # it means a lot of wasted CPU time in that scenario
-        if not s.replay_gain:
+        if s.replay_gain is None:
             s.replay_gain = s.get_replay_gain()
             s.save()
 
