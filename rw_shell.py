@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from traitlets.config import Config
 
 import IPython

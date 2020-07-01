@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Updates the "searchable names" fields in the database that are used for full-text searches
 
 from libs import config

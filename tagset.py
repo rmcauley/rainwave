@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import math
 import os
@@ -17,10 +19,8 @@ parser.add_argument("--album")
 parser.add_argument("--artist")
 parser.add_argument("--group")
 parser.add_argument("--title")
-parser.add_argument("--gain", action="store_true")
 
 shell_args = parser.parse_args()
-config.set_value("mp3gain_scan", shell_args.gain)
 config.set_value("scanner_use_tracknumbers", True)
 
 
@@ -45,7 +45,6 @@ def scan_file(args, filename):
             "%s:%02u"
             % (int(math.floor(s.data["length"] / 60)), (s.data["length"] % 60)),
         )
-        print("Gain".ljust(10), ":", s.replay_gain)
         print("Track".ljust(10), ":", s.data["track_number"])
         print("Disc #".ljust(10), ":", s.data["disc_number"])
         print("Year".ljust(10), ":", s.data["year"])

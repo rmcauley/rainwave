@@ -8,11 +8,11 @@ or stream audio by itself.
 
 The software stack and data flow for broadcasting:
 
-- LiquidSoap asks Rainwave backend what song/MP3 file should be played
-- Rainwave backend replies with a song/MP3 file
-- LiquidSoap plays the song, encodes the stream, and sends the audio to Icecast
-- Icecast distributes audio to users
-- Icecast tells Rainwave API when users tune in/out
+-   LiquidSoap asks Rainwave backend what song/MP3 file should be played
+-   Rainwave backend replies with a song/MP3 file
+-   LiquidSoap plays the song, encodes the stream, and sends the audio to Icecast
+-   Icecast distributes audio to users
+-   Icecast tells Rainwave API when users tune in/out
 
 Rainwave only supports MP3 files.
 
@@ -20,9 +20,9 @@ Rainwave only supports MP3 files.
 
 Authentication for Rainwave users is dependant on Google, Facebook, Twitter, or Twitch.
 
-- Enable external auth by placing your app keys in the config file
-- If you're just running Rainwave for streaming audio, you do not need phpBB.
-- If you are just testing/developing locally, you do not need phpBB.
+-   Enable external auth by placing your app keys in the config file
+-   If you're just running Rainwave for streaming audio, you do not need phpBB.
+-   If you are just testing/developing locally, you do not need phpBB.
 
 If using Icecast, Icecast 2.3.3 or above is required.
 
@@ -32,13 +32,18 @@ or above is required.
 
 ### Prerequisites on Debian/Ubuntu
 
-Rainwave is designed to run on Python 3.8 using `pipenv`.
+Rainwave is designed to run on Python 3.7+ using `pipenv`. It also requires installation
+of various media libraries to run volume analysis on its files.
 
 ```
 git clone https://github.com/rmcauley/rainwave.git
 cd rainwave
 sudo apt-get install pipenv libpq-dev python3.8-dev
-pipenv install
+sudo apt-get install gir1.2-gstreamer-1.0 \
+     gstreamer1.0-plugins-base \
+     gstreamer1.0-plugins-good \
+     libcairo2-dev \
+     libgirepository1.0-dev
 cp rainwave/etc/rainwave_reference.conf rainwave/etc/$USER.conf
 ```
 
@@ -57,9 +62,9 @@ Some options are very important.
 
 Tips:
 
-- Until you're ready to deploy a production version, it's best to leave development mode
-  on and keep Rainwave single-processed.
-- Do not create a station with ID 0 - ID 0 is reseved.
+-   Until you're ready to deploy a production version, it's best to leave development mode
+    on and keep Rainwave single-processed.
+-   Do not create a station with ID 0 - ID 0 is reseved.
 
 Potential gotcha:
 
@@ -77,16 +82,16 @@ local    [DATABASE NAME]     [DATABASE USER]         md5
 Locate the "song_dir" entry from your configuration file and copy/paste
 your music library to this directory.
 
-- _Your MP3 tags must be accurate_. Rainwave reads the tags to obtain
-  track information, which is necessary to manage song rotation.
-- Upload a minimum of 1,000 songs. Rainwave requires a minimal library
-  of this size to operate correctly.
-- Place albums in separate directories if using album art. To add album art,
-  create a file named "folder.jpg" and place it in each album directory
-  for it to appear. (sorry, embedded album art is not supported)
-- Rainwave and LiquidSoap support unicode MP3 tags, but do not support
-  unicode filenames. Please rename files that contain accents and symbols.
-  Rainwave will reject and skip files that contain accents or symbols.
+-   _Your MP3 tags must be accurate_. Rainwave reads the tags to obtain
+    track information, which is necessary to manage song rotation.
+-   Upload a minimum of 1,000 songs. Rainwave requires a minimal library
+    of this size to operate correctly.
+-   Place albums in separate directories if using album art. To add album art,
+    create a file named "folder.jpg" and place it in each album directory
+    for it to appear. (sorry, embedded album art is not supported)
+-   Rainwave and LiquidSoap support unicode MP3 tags, but do not support
+    unicode filenames. Please rename files that contain accents and symbols.
+    Rainwave will reject and skip files that contain accents or symbols.
 
 ## First Start and Test
 
@@ -163,9 +168,9 @@ into the "baked" static directory.
 
 Rainwave depends on three daemons:
 
-- `rw_backend.py` to act for LiquidSoap
-- `rw_api.py` to act for browsers
-- `rw_scanner.py` which monitors the filesystem for new/changed songs
+-   `rw_backend.py` to act for LiquidSoap
+-   `rw_api.py` to act for browsers
+-   `rw_scanner.py` which monitors the filesystem for new/changed songs
 
 ### Updating a Running Rainwave
 
@@ -196,19 +201,19 @@ Rainwave! Open it up and start poking around with developer tools!
 
 To edit the site:
 
-- Using Visual Studio Code is recommended
-- Install the Python and Prettier extensions for VSCode.
-- Set "RW_ENVIRONMENT" environment variable to "develop"
+-   Using Visual Studio Code is recommended
+-   Install the Python and Prettier extensions for VSCode.
+-   Set "RW_ENVIRONMENT" environment variable to "develop"
 
 File locations:
 
-- HTML files for the index and admin panels can be found in `templates/`.
-- HTML templates for the main site can be found in `static/templates5/`.
-- CSS files are in `static/style5` and the entry point is `r5.scss`.
-- Image files are in `static/images4`.
-- JS files are in `static/js5`:
-  - Execution starts from `main.js`.
-  - No libraries or frameworks are used
+-   HTML files for the index and admin panels can be found in `templates/`.
+-   HTML templates for the main site can be found in `static/templates5/`.
+-   CSS files are in `static/style5` and the entry point is `r5.scss`.
+-   Image files are in `static/images4`.
+-   JS files are in `static/js5`:
+    -   Execution starts from `main.js`.
+    -   No libraries or frameworks are used
 
 Rainwave rebuilds CSS on each page load of `/beta` when
 development mode is on, and `/beta` serves the Javascript without
@@ -220,4 +225,4 @@ or watchers.
 You can get help for deployment and development through the main
 developer, Rob, on the Rainwave discord:
 
-- https://discord.gg/rNCBhSz
+-   https://discord.gg/rNCBhSz
