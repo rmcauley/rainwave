@@ -266,7 +266,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
     # Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
     def prepare(self):
-        self.add_header("")
         if self.local_only and not self.request.remote_ip in config.get(
             "api_trusted_ip_addresses"
         ):
