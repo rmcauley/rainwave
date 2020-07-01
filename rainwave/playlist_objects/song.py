@@ -13,8 +13,8 @@ from mutagen.mp3 import MP3
 from libs import db
 from libs import config
 from libs import cache
-from libs import filetools
 from libs import log
+from libs import replaygain
 from rainwave import rating
 from api import fieldtypes
 
@@ -24,8 +24,6 @@ from rainwave.playlist_objects.songgroup import SongGroup
 from rainwave.playlist_objects.metadata import make_searchable_string
 from rainwave.playlist_objects import cooldown
 from rainwave.playlist_objects.metadata import MetadataUpdateError
-
-_mp3gain_path = filetools.which("mp3gain")
 
 num_songs = {}
 num_origin_songs = {}
@@ -170,6 +168,12 @@ class Song:
         s.albums[0].associate_song_id(s.id)
 
         s.update_artist_parseable()
+        
+        # do not get replay gain earlier in case an exception is thrown above
+        # it means a lot of wasted CPU time in that scenario
+        if not s.replay_gain:
+            s.replay_gain = s.get_replay_gain()
+            s.save()
 
         return s
 
@@ -286,30 +290,10 @@ class Song:
             except ValueError:
                 pass
 
-        self.replay_gain = self._get_replaygain(f)
-
-        if not self.replay_gain and config.get("mp3gain_scan"):
-            gain_std, gain_error = subprocess.Popen(
-                [_mp3gain_path, "-o", "-q", "-s", "i", "-p", "-k", "-T", self.filename],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                preexec_fn=set_umask,
-            ).communicate()
-            if len(gain_error) > 0:
-                raise Exception(
-                    'Error when replay gaining "%s": %s' % (filename, gain_error)
-                )
-            f = MP3(filename, translate=False)
-            self.replay_gain = self._get_replaygain(f)
-
         self.data["length"] = int(f.info.length)
 
-    def _get_replaygain(self, f):
-        replay_gain = None
-        for txxx in f.tags.getall("TXXX"):
-            if txxx.desc.lower() == "replaygain_track_gain":
-                replay_gain = str(txxx)
-        return replay_gain
+    def get_replay_gain(self):
+        return replaygain.get_gain_for_song(self.filename)
 
     def is_valid(self):
         """
