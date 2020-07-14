@@ -68,6 +68,23 @@ class AllAlbumsHandler(APIHandler):
             ),
         )
 
+@handle_api_url("all_albums_paginated")
+class AllAlbumsPaginatedHandler(APIHandler):
+    description = "Returns chunks of a list of all albums on the station playlist."
+    return_name = "all_albums_by_cursor"
+    fields = {"after": (fieldtypes.integer, False)}
+
+    def post(self):
+        sql, args = playlist.get_all_albums_list_sql(self.sid, self.user, False)
+        albums = db.c.fetch_all(sql + " ORDER BY album_id LIMIT 1000", args)
+        self.append(
+            self.return_name,
+            {
+                "data": albums,
+                "has_more": albums and playlist.max_album_ids[self.sid] > albums[-1]["album_id"],
+                "progress": int(albums[-1]["album_id"] / playlist.max_album_ids[self.sid])
+            }
+        )
 
 @handle_api_url("all_artists")
 class AllArtistsHandler(APIHandler):

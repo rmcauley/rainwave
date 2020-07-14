@@ -408,5 +408,6 @@
    "user_recent_votes"                               : "Your Recent Votes",
    "user_requested_history"                          : "Your Request History",
    "song_id"                                         : "Song ID",
-   "user_id"                                         : "User ID"
+   "user_id"                                         : "User ID",
+   "cool_end"                                        : "Cooldown End"
 }

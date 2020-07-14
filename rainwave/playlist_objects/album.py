@@ -15,6 +15,7 @@ from rainwave.playlist_objects import cooldown
 
 num_albums = {}
 updated_album_ids = {}
+max_album_ids = {}
 
 
 def clear_updated_albums(sid):

@@ -481,7 +481,7 @@ class APIHandler(RainwaveHandler):
 
     def initialize(self, **kwargs):
         super(APIHandler, self).initialize(**kwargs)
-        if self.allow_get:
+        if self.allow_get and not isinstance(self, PrettyPrintAPIMixin):
             self.get = self.post
 
     def finish(self, chunk=None):
@@ -788,8 +788,7 @@ class PrettyPrintAPIMixin:
         for key in ["rating_user", "fave", "title", "album_rating_user", "album_name"]:
             if key in keys:
                 new_keys.append(key)
-                keys.remove(key)
-        new_keys.extend(keys)
+        new_keys.extend(key for key in keys if key not in new_keys)
         return new_keys
 
     # pylint: disable=E1003
