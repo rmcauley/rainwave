@@ -12,7 +12,6 @@ import api.locale
 from libs import log
 from libs import config
 from libs import db
-from libs import chuser
 from libs import cache
 from libs import memory_trace
 from libs import buildtools
@@ -110,9 +109,6 @@ class APIServer:
         )
         http_server = tornado.httpserver.HTTPServer(app, xheaders=True)
         http_server.listen(port_no)
-
-        if config.get("api_user") and config.get("api_group"):
-            chuser.change_user(config.get("api_user"), config.get("api_group"))
 
         for request in request_classes:
             log.debug("start", "   Handler: %s" % str(request))

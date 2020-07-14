@@ -18,9 +18,6 @@ from libs import db
 from rainwave import playlist
 from rainwave.playlist_objects.song import PassableScanError
 
-from libs.filetools import which
-
-mp3gain_path = which("mp3gain")
 # Art can be scanned before the music itself is scanned, in which case the art will
 # have no home.  We need to account for that by using an album art queue.
 # It's a hack, but a necessary one.
@@ -32,11 +29,6 @@ mimetypes.init()
 
 
 def _common_init():
-    if config.get("mp3gain_scan") and not mp3gain_path:
-        raise Exception(
-            "mp3gain_scan flag in config is enabled, but could not find mp3gain executable."
-        )
-
     try:
         p = psutil.Process(os.getpid())
         p.set_nice(10)
@@ -328,11 +320,11 @@ def _process_album_art(filename, sids):
             )
         log.debug("album_art", "Scanned %s for album ID %s." % (filename, album_ids))
         return True
-    except (IOError, OSError):
+    except (IOError, OSError) as err:
         _add_scan_error(
             filename,
             PassableScanError(
-                "Could not open album art. (this will happen when a directory has been deleted)"
+                f"Could not open album art. (this can happen if a directory has been deleted) {err}"
             ),
         )
         return False

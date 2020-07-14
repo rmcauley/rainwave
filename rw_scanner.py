@@ -7,7 +7,6 @@ import libs.config
 import libs.log
 import libs.db
 import libs.cache
-import libs.chuser
 import rainwave.playlist
 import rainwave.playlist_objects.album
 
@@ -31,11 +30,6 @@ if __name__ == "__main__":
 
     for sid in libs.config.station_ids:
         rainwave.playlist_objects.album.clear_updated_albums(sid)
-
-    if libs.config.get("scanner_user") and libs.config.get("scanner_group"):
-        libs.chuser.change_user(
-            libs.config.get("scanner_user"), libs.config.get("scanner_group")
-        )
 
     try:
         libs.db.connect()

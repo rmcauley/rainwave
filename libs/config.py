@@ -29,10 +29,8 @@ csp_header = ""
 
 
 def get_build_number():
-    bnf = open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), "r")
-    bn = int(bnf.read())
-    bnf.close()
-    return bn
+    with open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), "r") as bnf:
+        return int(bnf.read())
 
 
 def get_config_file(testmode=False):

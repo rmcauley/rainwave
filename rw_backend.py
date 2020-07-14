@@ -6,7 +6,6 @@ import libs.zeromq
 import argparse
 
 import backend.server
-import libs.chuser
 import libs.log
 import libs.config
 

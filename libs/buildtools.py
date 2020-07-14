@@ -1,5 +1,4 @@
 import os
-import subprocess
 import glob
 import shutil
 from pathlib import Path
@@ -7,7 +6,6 @@ import sass
 from calmjs.parse import es5
 from calmjs.parse.unparsers.es5 import minify_print
 
-from libs import config
 from libs import RWTemplates
 from libs.config import get_build_number
 
@@ -18,15 +16,6 @@ def create_baked_directory():
     )
     if not os.path.exists(d):
         os.makedirs(d)
-        subprocess.call(
-            [
-                "chown",
-                "-R",
-                "%s:%s" % (config.get("api_user"), config.get("api_group")),
-                d,
-            ]
-        )
-        return True
     return False
 
 
