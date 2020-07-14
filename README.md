@@ -174,11 +174,6 @@ Rainwave depends on three daemons:
 
 ### Updating a Running Rainwave
 
-When updating Rainwave, to bust caches and make sure your users
-are getting the latest code, you **have** to edit `etc/buildnum` and
-increase the build number _before_ using `install.py`. If you don't do this,
-your users will continually run old code.
-
 During installation, Rainwave has no safety mechanisms or rolling restarts.
 Rainwave will appear to be shutdown for a few seconds to the outside
 world while installing/updating. If the restart fails, Rainwave will be

@@ -1,93 +1,76 @@
-import os
-import shutil
-import subprocess
+#!/usr/bin/env python3
 
-installdir = "/opt/rainwave"
+import os
+import subprocess
+from glob import glob
+from os import path
+from distutils.dir_util import copy_tree
+from distutils.file_util import copy_file
+
+from libs import config
+
 user = "rainwave"
 group = "www-data"
-tmpdir = "/tmp/rw_install"
+
+root = path.abspath(os.sep)
+conf_file = path.join(root, "etc", "rainwave.conf")
+install_dir = path.join(root, "opt", "rainwave")
+install_static_baked_dir = path.join(install_dir, "static", "baked")
+
+copy_dirs = [
+    "api_requests",
+    "api",
+    "backend",
+    "etc",
+    "lang",
+    "libs",
+    "rainwave",
+    "static",
+    "templates",
+]
+
+copy_files = list(glob("rw_*.py")) + ["tagset.py", "Pipfile", "Pipfile.lock"]
+
+services = [
+    "rainwave-backend",
+    "rainwave-api",
+    "rainwave-scanner",
+]
 
 if __name__ == "__main__":
     if os.getuid() != 0:
         raise Exception("Installer must be run as root.")
 
-    if not os.path.exists("/etc/rainwave.conf"):
-        raise Exception(
-            "Configuration not found at /etc/rainwave.conf.  Please create a config."
-        )
+    build_num = config.get_and_bump_build_number()
 
-    if os.path.exists("/etc/init.d/rainwave"):
-        subprocess.check_call(["/etc/init.d/rainwave", "stop"])
-    if os.path.exists(tmpdir):
-        shutil.rmtree(tmpdir)
-    if os.path.exists(os.path.join(installdir, "static", "baked")):
-        os.makedirs(os.path.join(tmpdir, "static"))
-        shutil.copytree(
-            os.path.join(installdir, "static", "baked"),
-            os.path.join(tmpdir, "static", "baked"),
-            symlinks=True,
-        )
-    shutil.rmtree(installdir)
-    os.makedirs(installdir)
-    if not os.path.isdir(installdir):
-        raise Exception(
-            "Installation directory (%s) appears to be a filename.  Please check."
-            % installdir
-        )
+    print(f"Build number {build_num}")
 
-    shutil.copytree("api", installdir + "/api", ignore=shutil.ignore_patterns("*.pyc"))
-    shutil.copytree(
-        "api_requests",
-        installdir + "/api_requests",
-        ignore=shutil.ignore_patterns("*.pyc"),
-    )
-    shutil.copytree(
-        "backend", installdir + "/backend", ignore=shutil.ignore_patterns("*.pyc")
-    )
-    shutil.copytree("lang", installdir + "/lang")
-    shutil.copytree(
-        "libs", installdir + "/libs", ignore=shutil.ignore_patterns("*.pyc")
-    )
-    shutil.copytree(
-        "rainwave", installdir + "/rainwave", ignore=shutil.ignore_patterns("*.pyc")
-    )
-    shutil.copytree("etc", installdir + "/etc")
-    shutil.copytree("static", installdir + "/static")
-    shutil.copytree("templates", installdir + "/templates")
+    # actual baking is done on app start - check api/server.py
+    try:
+        os.makedirs(install_static_baked_dir, exist_ok=True)
+    except FileExistsError:
+        pass
 
-    shutil.copy("rw_api.py", installdir + "/rw_api.py")
-    shutil.copy("rw_backend.py", installdir + "/rw_backend.py")
-    shutil.copy("rw_scanner.py", installdir + "/rw_scanner.py")
-    shutil.copy("rw_clear_cache.py", installdir + "/rw_clear_cache.py")
-    shutil.copy("rw_get_next.py", installdir + "/rw_get_next.py")
-    shutil.copy("rw_icecast_count.py", installdir + "/rw_icecast_count.py")
-    shutil.copy("rw_auto_pvp.py", installdir + "/rw_auto_pvp.py")
-    shutil.copy("rw_auto_copy.py", installdir + "/rw_auto_copy.py")
-    shutil.copy("rw_auto_ph.py", installdir + "/rw_auto_ph.py")
-    shutil.copy("tagset.py", installdir + "/tagset.py")
-    shutil.copy("Pipfile", installdir + "/Pipfile")
-    shutil.copy("Pipfile.lock", installdir + "/Pipfile.lock")
+    for dir_to_copy in copy_dirs:
+        copy_tree(dir_to_copy, path.join(install_dir, dir_to_copy))
+    
+    for file_to_copy in copy_files:
+        copy_file(file_to_copy, path.join(install_dir, file_to_copy))
+    
+    for service in services:
+        service_file = f"{service}.service"
+        copy_file(path.join("systemd", service_file), path.join(root, "etc", "systemd", "system", service_file))
 
-    shutil.copy("initscript", "/etc/init.d/rainwave")
-    shutil.copy("rw_get_next.py", "/usr/local/bin/rw_get_next.py")
-
-    shutil.rmtree(os.path.join(installdir, "static", "baked"))
-
-    if os.path.exists(tmpdir):
-        shutil.copytree(
-            os.path.join(tmpdir, "static", "baked"),
-            os.path.join(installdir, "static", "baked"),
-            symlinks=True,
-        )
-
-    subprocess.call(["chown", "-R", "%s:%s" % (user, group), installdir])
+    subprocess.call(["sudo", "systemctl", "daemon-reload"])
+ 
+    subprocess.call(["chown", "-R", "%s:%s" % (user, group), install_dir])
 
     pwd = os.getcwd()
-    os.chdir(installdir)
-    subprocess.call(["pipenv", "sync"])
+    os.chdir(install_dir)
+    subprocess.call(["sudo", "--user=rainwave", "python3", "-m", "pipenv", "sync"])
     os.chdir(pwd)
 
-    print("Rainwave installed to /opt/rainwave.")
+    print(f"Rainwave installed to {install_dir}")
 
-    if os.path.exists("/etc/init.d/rainwave"):
-        subprocess.check_call(["/etc/init.d/rainwave", "start"])
+    # for service in services:
+    #     subprocess.check_call(["service", service, "restart"])

@@ -1,0 +1,14 @@
+[Unit]
+Description=Rainwave Internet Radio Backend
+Wants=network-online.target 
+Requires=postgresql.service memcached.service 
+
+[Service]
+Type=simple
+User=rainwave
+Group=www-data
+WorkingDirectory=/opt/rainwave
+ExecStart=/usr/bin/env pipenv run rw_backend.py
+
+[Install]
+WantedBy=multi-user.target

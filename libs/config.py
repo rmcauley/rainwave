@@ -27,10 +27,21 @@ station_mount_filenames = {}
 stream_filename_to_sid = {}
 csp_header = ""
 
+buildnum_file = os.path.join(os.path.dirname(__file__), "..", "etc", "buildnum")
+
 
 def get_build_number():
-    with open(os.path.join(os.path.dirname(__file__), "../etc/buildnum"), "r") as bnf:
-        return int(bnf.read())
+    try:
+        with open(buildnum_file) as bnf:
+            return int(bnf.read())
+    except:
+        return 0
+
+def get_and_bump_build_number():
+    buildnum = get_build_number() + 1
+    with open(buildnum_file, "w") as bnf:
+        bnf.write(str(buildnum))
+    return buildnum
 
 
 def get_config_file(testmode=False):

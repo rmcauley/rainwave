@@ -1,12 +1,10 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6d184c486cfa8b3088dea2f7da4b14279a0d8a792e4d2cd4b854db2dd88cdb33"
+            "sha256": "9662cdff5afffb84c7fb7dce2b19f1340144d95009be4a9dd4772571c9dd6099"
         },
         "pipfile-spec": 6,
-        "requires": {
-            "python_version": "3.8"
-        },
+        "requires": {},
         "sources": [
             {
                 "name": "pypi",
@@ -64,11 +62,11 @@
         },
         "calmjs.parse": {
             "hashes": [
-                "sha256:19d71667ecae22467b85d5b18394d1de730bab6142edb55551e398cde4e6735b",
-                "sha256:708e8952d5cb49a40dbad02db46a8294e9a09c17cb1d37282c7cfe9e1a81c68b",
-                "sha256:c60a9a9d5733e602a652f7cd4a7e6a4f29433d2c0c3f8a91262604e39ca771c5"
+                "sha256:163ae575c478944c3a54c8e26d5cca794a977c5bf160f6aaa3731b51ae88ab99",
+                "sha256:693d18bcfdb14f2a33f64288680adc138275d39de5980fb46f5b882df6e1dbde",
+                "sha256:dd2c576169e683f0a06b5e8908d7b9d134e756ae75763c21b721d9937b0b422a"
             ],
-            "version": "==1.2.4"
+            "version": "==1.2.5"
         },
         "calmjs.types": {
             "hashes": [

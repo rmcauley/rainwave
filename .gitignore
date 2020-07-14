@@ -38,6 +38,7 @@ Thumbs.db
 *.pyc
 static/baked
 etc/*.conf
+etc/buildnum
 !etc/rainwave_dev.conf
 !etc/rainwave_reference.conf
 *.sqlite-journal
