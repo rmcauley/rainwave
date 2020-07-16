@@ -110,7 +110,7 @@ def bake_js(source_dir="js5", dest_file="script5.js"):
 
         o = open(fn, "w")
         # Pylint disabled for next line because pylint is buggy about the es5 function
-        o.write(minify_print(es5(js_content), obfuscate=True)) # pylint: disable=not-callable
+        o.write(minify_print(es5(js_content))) # pylint: disable=not-callable
         o.close()
 
 
