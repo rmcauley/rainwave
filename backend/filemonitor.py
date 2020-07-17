@@ -263,7 +263,7 @@ def _process_album_art(filename, sids):
         if not im_original:
             raise IOError
         if im_original.mode != "RGB":
-            im_original = im_original.convert()
+            im_original = im_original.convert("RGB")
         im_320 = im_original
         im_240 = im_original
         im_120 = im_original
