@@ -484,11 +484,6 @@ class FileEventHandler(ProcessEvent):
 def monitor():
     _common_init()
 
-    pid = os.getpid()
-    pid_file = open("%s/scanner.pid" % config.get_directory("pid_dir"), "w")
-    pid_file.write(str(pid))
-    pid_file.close()
-
     mask = (
         pyinotify.IN_ATTRIB
         | pyinotify.IN_CREATE

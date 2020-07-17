@@ -117,18 +117,6 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 
 class BackendServer:
     def _listen(self, sid):
-        pid = os.getpid()
-        pid_file = open(
-            "%s/backend_%s.pid"
-            % (
-                config.get_directory("pid_dir"),
-                config.station_id_friendly[sid].lower(),
-            ),
-            "w",
-        )
-        pid_file.write(str(pid))
-        pid_file.close()
-
         db.connect()
         cache.connect()
         zeromq.init_pub()

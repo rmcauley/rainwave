@@ -1,6 +1,6 @@
 [Unit]
 Description=Rainwave Internet Radio API
-Wants=network-online.target 
+Wants=network.target 
 Requires=postgresql.service memcached.service 
 
 [Service]

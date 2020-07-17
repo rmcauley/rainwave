@@ -40,13 +40,6 @@ class APIServer:
         # task_ids start at zero, so we gobble up ports starting at the base port and work up
         port_no = int(config.get("api_base_port")) + task_id
 
-        pid = os.getpid()
-        pid_file = open(
-            "%s/api_%s.pid" % (config.get_directory("pid_dir"), port_no), "w"
-        )
-        pid_file.write(str(pid))
-        pid_file.close()
-
         # Log according to configured directory and port # we're operating on
         log_file = "%s/rw_api_%s.log" % (config.get_directory("log_dir"), port_no)
         if config.test_mode and os.path.exists(log_file):

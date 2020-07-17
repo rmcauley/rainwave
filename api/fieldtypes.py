@@ -2,6 +2,7 @@ import re
 import time
 import numbers
 from datetime import datetime
+from urllib.parse import urlparse
 
 from libs import config
 from libs import db
@@ -319,20 +320,22 @@ icecast_mount_error = "invalid Icecast mount."
 def icecast_mount(s, request=None):
     if not s:
         return None
-    m = re.search(
-        r"^/(?P<mount>[\d\w\-.]+)(\?(?P<user>\d+):(?P<key>[\d\w]+))?(?:\?\d+\.(?:mp3|ogg))?$",
-        s,
-    )
-    if not m:
+    parsed = urlparse(s)
+    path = parsed.path
+    if path[0] == "/":
+        path = path[1:]
+    mount = path.split(r"/")[0].split(".")[0]
+    if not mount:
         return None
 
-    rd = m.groupdict()
-    mount = rd["mount"]
     uid = 1
     listen_key = None
-    if "user" in rd and rd["user"]:
-        uid = int(rd["user"])
-        listen_key = rd["key"]
+    match = re.search(r"^(?P<user>\d+):(?P<key>[\d\w]+)$", parsed.query)
+    if match:
+        args = match.groupdict()
+        if args.get("user") and args.get("key"):
+            uid = int(args["user"])
+            listen_key = args["key"]
     return (mount, uid, listen_key)
 
 
