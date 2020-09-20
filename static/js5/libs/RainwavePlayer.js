@@ -1,6 +1,6 @@
 //  RainwavePlayer - http://github.com/rmcauley/rainwave_player
 
-var RainwavePlayer = (function() {
+var RainwavePlayer = (function () {
 	"use strict";
 
 	// callback registries
@@ -19,7 +19,7 @@ var RainwavePlayer = (function() {
 	var hardcodedStations = {
 		1: ["http://gamestream.rainwave.cc:8000/game"],
 		2: ["http://ocrstream.rainwave.cc:8000/ocremix"],
-		3: ["http://overstream.rainwave.cc:8000/covers"],
+		3: ["http://coverstream.rainwave.cc:8000/covers"],
 		4: ["http://chipstream.rainwave.cc:8000/chiptune"],
 		5: ["http://allstream.rainwave.cc:8000/all"]
 	};
@@ -59,7 +59,7 @@ var RainwavePlayer = (function() {
 	// We use this flag in a few places to stop Chrome from murdering itself on mobile
 	var chromeSpecialFlag = false;
 
-	var createEvent = function(eventType) {
+	var createEvent = function (eventType) {
 		try {
 			return new Event(eventType);
 		} catch (e) {
@@ -73,7 +73,7 @@ var RainwavePlayer = (function() {
 
 	var audioEl = document.createElement("audio");
 	if ("canPlayType" in audioEl) {
-		var canMP3 = audioEl.canPlayType('audio/mpeg; codecs="mp3"');
+		var canMP3 = audioEl.canPlayType('audio/mpeg');
 		if (canMP3 == "maybe" || canMP3 == "probably") {
 			self.mimetype = "audio/mpeg";
 			self.type = "mp3";
@@ -109,7 +109,7 @@ var RainwavePlayer = (function() {
 	//	Private Functions
 	// *******************************************************************************************
 
-	var setupAudio = function() {
+	var setupAudio = function () {
 		if (audioEl) {
 			// why call stop: we might still be playing if audioEl is not null.
 			// self.stop will recursively call setupAudio though, so you MUST return here
@@ -127,7 +127,7 @@ var RainwavePlayer = (function() {
 		audioEl.addEventListener("waiting", onWaiting);
 		audioEl.addEventListener("timeupdate", onTimeUpdate);
 		if (self.debug) {
-			audioEl.addEventListener("canplay", function() {
+			audioEl.addEventListener("canplay", function () {
 				if (self.debug) console.log("RainwavePlayer: <audio> canplay            :: " + audioEl.currentSrc);
 			});
 		}
@@ -138,7 +138,7 @@ var RainwavePlayer = (function() {
 		self.audioElDest.appendChild(audioEl);
 	};
 
-	var setupAudioSource = function(i, stream_url) {
+	var setupAudioSource = function (i, stream_url) {
 		var source = document.createElement("source");
 		source.setAttribute("src", stream_url);
 		source.setAttribute("type", self.mimetype);
@@ -150,7 +150,7 @@ var RainwavePlayer = (function() {
 		// on the final <source> of the audio stream, we throw an error event
 		// as the browser will stop trying to play audio
 		if (i === streamURLs.length - 1) {
-			source.addEventListener("error", function(e) {
+			source.addEventListener("error", function (e) {
 				if (self.debug) {
 					console.log("RainwavePlayer: Error on source " + stream_url);
 					console.log("RainwavePlayer: Error on final source.");
@@ -161,7 +161,7 @@ var RainwavePlayer = (function() {
 		// otherwise, have it throw a stall
 		// (sometimes the source will stall, other times <audio>, sometimes BOTH)
 		else {
-			source.addEventListener("error", function(e) {
+			source.addEventListener("error", function (e) {
 				if (self.debug) console.log("RainwavePlayer: Error on source " + stream_url);
 				onStall(e, i);
 			});
@@ -196,7 +196,7 @@ var RainwavePlayer = (function() {
 	 * Sets up the library to use a particular Rainwave station.
 	 * @param {(number|string)} station - Rainwave Station ID or Rainwave Station Name.
 	 */
-	self.useStation = function(station) {
+	self.useStation = function (station) {
 		if (isNaN(parseInt(station)) || !hardcodedStations[parseInt(station)]) {
 			if (station.toLowerCase && hardcodedStationToSID[station.toLowerCase()]) {
 				station = hardcodedStationToSID[station.toLowerCase()];
@@ -213,14 +213,14 @@ var RainwavePlayer = (function() {
 	 * Sets up the libray to use a list of stream URLs.
 	 * @param {string[]} newURLs - An array of stream URLs.
 	 */
-	self.useStreamURLs = function(newURLs) {
+	self.useStreamURLs = function (newURLs) {
 		streamURLs = newURLs;
 	};
 
 	/**
 	 * Toggles between playing and stopped.
 	 */
-	self.playToggle = function() {
+	self.playToggle = function () {
 		if (self.isPlaying) self.stop();
 		else self.play();
 	};
@@ -228,7 +228,7 @@ var RainwavePlayer = (function() {
 	/**
 	 * Start playback.
 	 */
-	self.play = function() {
+	self.play = function () {
 		if (!self.isSupported) {
 			console.error("Rainwave HTML5 Audio Playback is not supported on this browser.");
 			return;
@@ -263,7 +263,7 @@ var RainwavePlayer = (function() {
 	/**
 	 * Stop playback.
 	 */
-	self.stop = function() {
+	self.stop = function () {
 		if (!self.isSupported) return;
 		if (!audioEl) return;
 
@@ -295,7 +295,7 @@ var RainwavePlayer = (function() {
 	/**
 	 * Toggle mute.
 	 */
-	self.toggleMute = function() {
+	self.toggleMute = function () {
 		if (self.isMuted) {
 			self.isMuted = false;
 			if (audioEl) {
@@ -315,7 +315,7 @@ var RainwavePlayer = (function() {
 	 * Set volume.
 	 * @param {number} newVolume - 0.0 to 1.0
 	 */
-	self.setVolume = function(newVolume) {
+	self.setVolume = function (newVolume) {
 		self.volume = newVolume;
 		if (audioEl && !self.isMuted) {
 			audioEl.volume = newVolume;
@@ -337,7 +337,7 @@ var RainwavePlayer = (function() {
 
 	var stall_timeout;
 	var stall_active;
-	var stopAudioConnectError = function() {
+	var stopAudioConnectError = function () {
 		if (stall_timeout) {
 			if (self.debug) console.log("RainwavePlayer: Stutter on " + audioEl.currentSrc);
 			clearTimeout(stall_timeout);
@@ -346,19 +346,19 @@ var RainwavePlayer = (function() {
 		stall_active = false;
 	};
 
-	var doAudioConnectError = function(detail) {
+	var doAudioConnectError = function (detail) {
 		if (stall_active) {
 			return;
 		} else if (stall_timeout) {
 			return;
 		} else {
-			stall_timeout = setTimeout(function() {
+			stall_timeout = setTimeout(function () {
 				dispatchStall(detail);
 			}, STALL_DELAY);
 		}
 	};
 
-	var dispatchStall = function(detail) {
+	var dispatchStall = function (detail) {
 		if (self.debug) {
 			console.log("RainwavePlayer: Dispatching stall: " + (detail || "<audio>"));
 			console.log("RainwavePlayer: Stalled on URL " + audioEl.currentSrc);
@@ -370,44 +370,44 @@ var RainwavePlayer = (function() {
 		stall_active = true;
 	};
 
-	var onTimeUpdate = function() {
+	var onTimeUpdate = function () {
 		stopAudioConnectError();
 	};
 
-	var onPlay = function() {
+	var onPlay = function () {
 		if (self.debug) console.log("RainwavePlayer: <audio> playing            :: " + audioEl.currentSrc);
 		stopAudioConnectError();
 		self.dispatchEvent(createEvent("playing"));
 	};
 
-	var onWaiting = function() {
+	var onWaiting = function () {
 		if (self.debug) console.log("RainwavePlayer: <audio> waiting            ::" + audioEl.currentSrc);
 		stopAudioConnectError();
 		self.dispatchEvent(createEvent("loading"));
 	};
 
-	var onEnded = function() {
+	var onEnded = function () {
 		if (self.debug) console.log("RainwavePlayer: <audio> ended              :: " + audioEl.currentSrc);
 		onStop();
 		self.play();
 	};
 
-	var onAbort = function() {
+	var onAbort = function () {
 		if (self.debug) console.log("RainwavePlayer: <audio> aborted            :: " + audioEl.currentSrc);
 		onStop();
 	};
 
-	var onStop = function() {
+	var onStop = function () {
 		if (self.debug) console.log("RainwavePlayer: <audio> stop               :: " + audioEl.currentSrc);
 		self.stop();
 	};
 
-	var onSuspend = function(e) {
+	var onSuspend = function (e) {
 		if (self.debug) console.log("RainwavePlayer: <audio> suspend            :: " + audioEl.currentSrc);
 		onStall(e);
 	};
 
-	var onStall = function(e, i) {
+	var onStall = function (e, i) {
 		// we need to handle stalls from sources (which have an index)
 		// and stalls from the audio element themselves in this function
 		// we handle sources so that we know how bad things are.
@@ -433,7 +433,7 @@ var RainwavePlayer = (function() {
 		doAudioConnectError(detail);
 	};
 
-	var onError = function(e) {
+	var onError = function (e) {
 		if (self.debug) console.log("RainwavePlayer: <audio> error              :: " + audioEl.currentSrc);
 		stopAudioConnectError();
 		self.stop();
@@ -444,7 +444,7 @@ var RainwavePlayer = (function() {
 	//  Event Emitting
 	// *******************************************************************************************
 
-	self.dispatchEvent = function(evt) {
+	self.dispatchEvent = function (evt) {
 		if (!evt) {
 			console.error("RainwavePlayer: No event specified to dispatch.");
 			return;
@@ -458,7 +458,7 @@ var RainwavePlayer = (function() {
 		}
 	};
 
-	self.addEventListener = function(evtname, callback) {
+	self.addEventListener = function (evtname, callback) {
 		if (!callbacks[evtname]) {
 			console.error(evtname + " is not a supported event for the Rainwave Player.");
 			return;
@@ -466,7 +466,7 @@ var RainwavePlayer = (function() {
 		callbacks[evtname].push(callback);
 	};
 
-	self.removeEventListener = function(evtname, callback) {
+	self.removeEventListener = function (evtname, callback) {
 		if (!callbacks[evtname]) {
 			return;
 		}
