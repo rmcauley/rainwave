@@ -25,13 +25,20 @@ def init(logfile=None, loglevel="warning"):
     logging.getLogger("scss.compiler").setLevel(logging.DEBUG)
     logging.getLogger("tornado.access").setLevel(logging.CRITICAL)
 
-    handler = logging.handlers.RotatingFileHandler(
-        logfile, maxBytes=10000000, backupCount=1
-    )
-    handler.setFormatter(RWFormatter())
+    handler = None
+    if logfile:
+        handler = logging.handlers.RotatingFileHandler(
+            logfile, maxBytes=10000000, backupCount=1
+        )
+        handler.setFormatter(RWFormatter())
+
     print_handler = logging.StreamHandler()
     print_handler.setFormatter(RWFormatter())
     print_handler.setLevel(logging.DEBUG)
+
+    if not handler:
+        loglevel = "print"
+        handler = print_handler
 
     logging.getLogger("scss").addHandler(handler)
     logging.getLogger("scss.compiler").addHandler(handler)
@@ -51,7 +58,7 @@ def init(logfile=None, loglevel="warning"):
         handler.setLevel(logging.ERROR)
     elif loglevel == "info":
         handler.setLevel(logging.INFO)
-    elif loglevel == "debug":
+    elif loglevel == "debug" or loglevel == "print":
         handler.setLevel(logging.DEBUG)
     else:
         handler.setLevel(logging.WARNING)

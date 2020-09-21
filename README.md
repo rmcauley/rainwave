@@ -38,7 +38,7 @@ of various media libraries to run volume analysis on its files.
 ```
 git clone https://github.com/rmcauley/rainwave.git
 cd rainwave
-sudo apt-get install pipenv libpq-dev python3.8-dev
+sudo apt-get install pipenv libpq-dev python3.8-dev libmemcached-dev
 sudo apt-get install gir1.2-gstreamer-1.0 \
      gstreamer1.0-plugins-base \
      gstreamer1.0-plugins-good \

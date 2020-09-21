@@ -1,16 +1,19 @@
 from libs import config
 from libs import db
-
-__using_libmc = False
-try:
-    import pylibmc as libmc
-
-    __using_libmc = True
-except ImportError:
-    import memcache as libmc
+import pylibmc as libmc
 
 _memcache = None
 _memcache_ratings = None
+_memcache_behaviors = {
+    "tcp_nodelay": True,
+    "ketama": False,
+    "remove_failed": 1,
+    "retry_timeout": 1,
+    "dead_timeout": 60,
+    "connect_timeout": 1000000,
+    "receive_timeout": 5000000,
+    "send_timeout": 5000000,
+}
 local = {}
 
 
@@ -32,6 +35,8 @@ def connect():
     global _memcache
     global _memcache_ratings
 
+    _memcache_behaviors["ketama"] = config.has("memcached_ketama") and config.get("memcache_ketama")
+
     if _memcache:
         return
     if config.get("memcache_fake") or config.get("web_developer_mode"):
@@ -39,24 +44,14 @@ def connect():
         _memcache_ratings = TestModeCache()
         reset_station_caches()
     else:
-        if __using_libmc:
-            _memcache = libmc.Client(config.get("memcache_servers"), binary=True)
-            _memcache.behaviors = {
-                "tcp_nodelay": True,
-                "ketama": config.get("memcache_ketama"),
-            }
-            _memcache_ratings = libmc.Client(
-                config.get("memcache_ratings_servers"), binary=True
-            )
-            _memcache.behaviors = {
-                "tcp_nodelay": True,
-                "ketama": config.get("memcache_ratings_ketama"),
-            }
-        else:
-            _memcache = libmc.Client(config.get("memcache_servers"))
-            _memcache_ratings = libmc.Client(config.get("memcache_ratings_servers"))
-        if not _memcache_ratings:
-            _memcache_ratings = _memcache
+        _memcache = libmc.Client(config.get("memcache_servers"), binary=True)
+        _memcache.behaviors = _memcache_behaviors
+        _memcache_ratings = libmc.Client(
+            config.get("memcache_ratings_servers"), binary=True
+        )
+        _memcache_ratings = _memcache_behaviors
+        # memcache doesn't test its connection on start, so we do it here
+        _memcache.get("hello")
 
 
 def set_global(key, value, save_local=False):
