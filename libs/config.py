@@ -133,16 +133,17 @@ def load(filename=None, testmode=False):
         stream_filename_to_sid[get_station(sid, "stream_filename")] = sid
 
     global csp_header
+    hostname = get("hostname")
+    relay_hosts = " ".join(relay_hostnames)
     csp_header = ";".join(
         [
-            "default-src 'self' *.{} https://www.google.com https://calendar.google.com".format(
-                get("hostname")
-            ),
+            f"default-src 'self' {hostname} *.{hostname} https://www.google.com https://calendar.google.com",
             "object-src 'none'",
-            "media-src {}".format(" ".join(relay_hostnames)),
-            "font-src 'self' data: https://fonts.googleapis.com https://fonts.gstatic.com/",
+            f"media-src {relay_hosts}",
+            f"font-src 'self' {hostname} data: https://fonts.googleapis.com https://fonts.gstatic.com/",
             "connect-src wss://websocket.rainwave.cc",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            f"style-src 'self' {hostname} 'unsafe-inline' https://fonts.googleapis.com",
+            f"img-src 'self' {hostname} *.{hostname}",
         ]
     )
 
