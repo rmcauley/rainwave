@@ -46,12 +46,14 @@ def connect():
     else:
         _memcache = libmc.Client(config.get("memcache_servers"), binary=True)
         _memcache.behaviors = _memcache_behaviors
+        # memcache doesn't test its connection on start, so we force a get
+        _memcache.get("hello")
+
         _memcache_ratings = libmc.Client(
             config.get("memcache_ratings_servers"), binary=True
         )
-        _memcache_ratings = _memcache_behaviors
-        # memcache doesn't test its connection on start, so we do it here
-        _memcache.get("hello")
+        _memcache_ratings.behaviors = _memcache_behaviors
+        _memcache_ratings.get("hello")
 
 
 def set_global(key, value, save_local=False):
