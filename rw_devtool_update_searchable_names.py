@@ -4,9 +4,11 @@
 
 from libs import config
 from libs import db
+from libs import log
 from rainwave.playlist_objects.song import make_searchable_string
 
 config.load()
+log.init()
 db.connect()
 
 for row in db.c.fetch_all("SELECT song_id, song_title FROM r4_songs"):

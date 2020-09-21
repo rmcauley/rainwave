@@ -46,7 +46,7 @@ class APIServer:
             os.remove(log_file)
         log.init(log_file, config.get("log_level"))
         log.debug("start", "Server booting, port %s." % port_no)
-        db.connect()
+        db.connect(auto_retry=False, retry_only_this_time=True)
         cache.connect()
         memory_trace.setup(port_no)
 
@@ -107,6 +107,9 @@ class APIServer:
             log.debug("start", "   Handler: %s" % str(request))
         log.info("start", "API server on port %s ready to go." % port_no)
         self.ioloop = tornado.ioloop.IOLoop.instance()
+        
+        db_keepalive = tornado.ioloop.PeriodicCallback(db.connection_keepalive, 10000)
+        db_keepalive.start()
 
         try:
             self.ioloop.start()

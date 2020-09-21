@@ -1,4 +1,3 @@
-import os
 import psycopg2
 from time import time as timestamp
 import tornado.httpserver
@@ -47,12 +46,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 
         try:
             schedule.advance_station(self.sid)
-        except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
-            log.warn("backend", e.diag.message_primary)
-            db.close()
-            db.connect()
-            raise
-        except psycopg2.extensions.TransactionRollbackError as e:
+        except psycopg2.extensions.TransactionRollbackError:
             log.warn(
                 "backend",
                 "Database transaction deadlock.  Re-opening database and setting retry timeout.",
@@ -117,9 +111,6 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 
 class BackendServer:
     def _listen(self, sid):
-        db.connect()
-        cache.connect()
-        zeromq.init_pub()
         log.init(
             "%s/rw_%s.log"
             % (
@@ -128,6 +119,9 @@ class BackendServer:
             ),
             config.get("log_level"),
         )
+        db.connect()
+        cache.connect()
+        zeromq.init_pub()
         memory_trace.setup(config.station_id_friendly[sid].lower())
 
         if config.test_mode:

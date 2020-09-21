@@ -11,10 +11,8 @@ from libs import log
 
 config.load()
 cache.connect()
+log.init()
 db.connect()
-log.init(
-    f"{config.get_directory('log_dir')}/rw_scanner.log", "debug"
-)
 
 c = Config()
 c.InteractiveShellApp.exec_lines = [

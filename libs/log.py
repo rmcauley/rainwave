@@ -4,6 +4,9 @@ import datetime
 
 log = None
 
+class LogNotInitializedError(Exception):
+    pass
+
 
 class RWFormatter(logging.Formatter):
     def format(self, record):
@@ -15,7 +18,7 @@ class RWFormatter(logging.Formatter):
         )
 
 
-def init(logfile, loglevel="warning"):
+def init(logfile=None, loglevel="warning"):
     global log
     logging.getLogger().setLevel(logging.DEBUG)
     logging.getLogger("scss").setLevel(logging.DEBUG)
@@ -74,33 +77,35 @@ def _massage_line(key, message, user):
 
 def debug(key, message, user=None):
     if not log:
-        return
+        raise LogNotInitializedError
     log.debug(_massage_line(key, message, user))
 
 
 def warn(key, message, user=None):
     if not log:
-        return
+        raise LogNotInitializedError
     log.warning(_massage_line(key, message, user))
 
 
 def info(key, message, user=None):
     if not log:
-        return
+        raise LogNotInitializedError
     log.info(_massage_line(key, message, user))
 
 
 def error(key, message, user=None):
     if not log:
-        return
+        raise LogNotInitializedError
     log.error(_massage_line(key, message, user))
 
 
 def critical(key, message, user=None):
     if not log:
-        return
+        raise LogNotInitializedError
     log.critical(_massage_line(key, message, user))
 
 
 def exception(key, message, e):
+    if not log:
+        raise LogNotInitializedError
     log.critical(_massage_line(key, message, None), exc_info=e)

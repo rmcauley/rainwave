@@ -2,6 +2,8 @@ from gi.repository import GLib
 from rgain3 import rgcalc, util
 from rgain3.script import init_gstreamer
 
+from libs import config
+
 ref_level = 89
 init_gstreamer()
 
@@ -9,6 +11,9 @@ init_gstreamer()
 # mostly copy/pasted from rgain3 source
 # adapted for Rainwave usage
 def get_gain_for_song(file):
+    if config.has("disable_replaygain"):
+        return "0.0 dB"
+
     exceptions = []
 
     # handlers

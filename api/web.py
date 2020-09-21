@@ -7,7 +7,6 @@ try:
 except ImportError:
     import json
 
-import psycopg2
 import tornado.web
 import tornado.httputil
 
@@ -521,11 +520,8 @@ class APIHandler(RainwaveHandler):
         if "exc_info" in kwargs:
             exc = kwargs["exc_info"][1]
 
-            # Restart DB on a connection error if that's what we're handling
-            if isinstance(exc, (psycopg2.OperationalError, psycopg2.InterfaceError)):
+            if isinstance(exc, db.connection_errors):
                 try:
-                    db.close()
-                    db.connect()
                     self.append(
                         "error",
                         {
@@ -590,11 +586,8 @@ def _html_write_error(self, status_code, **kwargs):
     if "exc_info" in kwargs:
         exc = kwargs["exc_info"][1]
 
-        # Restart DB on a connection error if that's what we're handling
-        if isinstance(exc, (psycopg2.OperationalError, psycopg2.InterfaceError)):
+        if isinstance(exc, db.connection_errors):
             try:
-                db.close()
-                db.connect()
                 self.append(
                     "error",
                     {

@@ -5,6 +5,8 @@ import os
 import sys
 
 import libs.db
+import libs.config
+import libs.log
 
 parser = argparse.ArgumentParser(
     description="Dumps data to /tmp/rwstats in CSV format from SQL. Dangerous script in many, many ways - needs Postgres superuser permissions."
@@ -38,6 +40,7 @@ $$ LANGUAGE plpgsql strict immutable;
 """
 
 libs.config.load(args.config)
+libs.log.init()
 libs.db.connect()
 
 tables = [

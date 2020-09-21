@@ -4,6 +4,7 @@ import argparse
 
 from libs import config
 from libs import db
+from libs import log
 from rainwave.playlist import Song
 
 if __name__ == "__main__":
@@ -13,6 +14,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", default=None)
     args = parser.parse_args()
     config.load(args.config)
+    log.init()
     db.connect()
 
     songs = db.c.fetch_list("SELECT song_id FROM r4_songs")
