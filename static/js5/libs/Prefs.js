@@ -15,7 +15,7 @@ var docCookies = {
 		);
 	},
 	setItem: function(sKey, sValue, vEnd, sPath, sDomain, bSecure) {
-		if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) {
+		if (!sKey || /^(?:expires|max\-age|path|domain|secure|samesite)$/i.test(sKey)) {
 			return false;
 		}
 		var sExpires = "";
@@ -39,7 +39,7 @@ var docCookies = {
 			sExpires +
 			(sDomain ? "; domain=" + sDomain : "") +
 			(sPath ? "; path=" + sPath : "") +
-			(bSecure ? "; secure" : "");
+			"; secure; samesite=lax";
 		return true;
 	},
 	removeItem: function(sKey, sPath, sDomain) {
