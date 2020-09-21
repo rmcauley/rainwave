@@ -248,9 +248,9 @@ var RWAudioConstructor = function () {
             var song = now_playing.songs[0];
             var art_exists = song.albums[0].art ? true : false;
             var art_url =
-                "http://rainwave.cc/" +
+                "https://rainwave.cc" +
                 (now_playing.songs[0].albums[0].art ||
-                    "/static/images4/noart_1.jpg");
+                    "static/images4/noart_1.jpg");
             var artwork = [
                 {
                     src: art_url + (art_exists ? "_120.jpg" : ""),
