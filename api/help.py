@@ -145,30 +145,30 @@ class IndexRequest(api.web.HTMLRequest):
             """
 <p>Get the currently playing/election data for Covers/station ID 3 for an anonymous user or external website:</p>
 <pre>xhr = new XMLHttpRequest();
-xhr.open("POST", "http://rainwave.cc/api4/info", true);
+xhr.open("POST", "https://rainwave.cc/api4/info", true);
 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 xhr.onload = function() { console.log(xhr.response) };
 xhr.send("sid=3");</pre>
 <p>Get currently playing/election data for Game/station ID 1 for a user with ID 2:</p>
-<pre>xhr.open("POST", "http://rainwave.cc/api4/info", true);
+<pre>xhr.open("POST", "https://rainwave.cc/api4/info", true);
 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 xhr.send("sid=1&user=2&key=AUTHKEYFROMUSER");</pre>
 <p>Vote on a song on All/station ID 5:</p>
-<pre>xhr.open("POST", "http://rainwave.cc/api4/vote", true);
+<pre>xhr.open("POST", "https://rainwave.cc/api4/vote", true);
 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 xhr.send("sid=5&user=2&key=AUTHKEYFROMUSER&entry_id=1");</pre>
 <p>Grab album information for album ID 1 on OCR Remix/station ID 2:</p>
-<pre>xhr.open("POST", "http://rainwave.cc/api4/album", true);
+<pre>xhr.open("POST", "https://rainwave.cc/api4/album", true);
 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 xhr.send("sid=2&user=2&key=AUTHKEYFROMUSER&id=1");</pre>
 <p>Get the 300th to 350th previously played song for Chiptune (using paginated requests):</p>
-<pre>xhr.open("POST", "http://rainwave.cc/api4/playback_history", true);
+<pre>xhr.open("POST", "https://rainwave.cc/api4/playback_history", true);
 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 xhr.send("sid=4&user=2&key=AUTHKEYFROMUSER&id=1&per_page=50&page_start=6");</pre>
 <p>Please experiment by making requests yourself and looking at the output.  Parameters and conditions are noted in the table above.</p>"""
         )
         self.write(
-            "<ul><li>The Rainwave API endpoints are all: <b>http://rainwave.cc/api4/[URL]</b>, with URL corresponding to the table above.</li>"
+            "<ul><li>The Rainwave API endpoints are all: <b>https://rainwave.cc/api4/[URL]</b>, with URL corresponding to the table above.</li>"
         )
         self.write(
             "<li>All endpoints respond to POST.  Some allow GET requests as well, and are noted so in the table above. </li>"
@@ -177,7 +177,7 @@ xhr.send("sid=4&user=2&key=AUTHKEYFROMUSER&id=1&per_page=50&page_start=6");</pre
             "<li>Click the URL in the table above to get details on what the request does and what arguments it requires.</li>"
         )
         self.write(
-            "<li>Authentication keys and user IDs are only visible to end users, they can see theirs at <a href='http://rainwave.cc/keys/'>http://rainwave.cc/keys/</a></li>"
+            "<li>Authentication keys and user IDs are only visible to end users, they can see theirs at <a href='https://rainwave.cc/keys/'>https://rainwave.cc/keys/</a></li>"
         )
         self.write(
             "<li>If an API Key is required in the table above and the user is anonymous, you will not be able use that functionality.  API keys for anonymous users are only given to those using the rainwave.cc site and expire quickly.  Registered user's API keys do not expire.</li>"

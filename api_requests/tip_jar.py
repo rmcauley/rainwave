@@ -48,7 +48,7 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
         self.write(
             """
 			<div>
-				<a href='https://paypal.me/Rainwave/5USD'>Donate at http://paypal.me/Rainwave</a>
+				<a href='https://paypal.me/Rainwave/5USD'>Donate at https://paypal.me/Rainwave</a>
 			</div>"""
         )
 

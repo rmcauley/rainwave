@@ -30,7 +30,7 @@ class ManifestJSON(HTMLRequest):
             ),
             "launch_path": "/",
             "start_url": "/",
-            "developer": {"name": "Rainwave", "url": "http://rainwave.cc"},
+            "developer": {"name": "Rainwave", "url": "https://rainwave.cc"},
             "fullscreen": True,
             "orientation": "portrait",
             "display": "standalone",
