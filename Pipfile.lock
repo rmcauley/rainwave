@@ -1,10 +1,12 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6ef04d525736644bb2fa4bf3ecbb647e3f3d1641fc3147dd0c05995a6cbfbae3"
+            "sha256": "e550c54eecc1566889f5b301e518b6257dcfc8cca89c40db80c64278aedaf2f4"
         },
         "pipfile-spec": 6,
-        "requires": {},
+        "requires": {
+            "python_version": "3.7"
+        },
         "sources": [
             {
                 "name": "pypi",
@@ -513,6 +515,7 @@
                 "sha256:fc0fea399acb12edbf8a628ba8d2312f583bdbdb3335635db062fa98cf71fca4",
                 "sha256:fe460b922ec15dd205595c9b5b99e2f056fd98ae8f9f56b888e7a17dc2b757e7"
             ],
+            "markers": "implementation_name == 'cpython' and python_version < '3.8'",
             "version": "==1.4.1"
         },
         "ujson": {

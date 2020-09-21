@@ -1,6 +1,6 @@
 # Rainwave Radio Controller
 
-This is the git project for the Rainwave website, http://rainwave.cc.
+This is the git project for the Rainwave website, https://rainwave.cc.
 
 Rainwave is a system to control an external player such as MPD,
 or a streaming source such as Ices or LiquidSoap. It cannot play
@@ -32,7 +32,7 @@ or above is required.
 
 ### Prerequisites on Debian/Ubuntu
 
-Rainwave is designed to run on Python 3.7+ using `pipenv`. It also requires installation
+Rainwave is designed to run on Python 3.7 using `pipenv`. It also requires installation
 of various media libraries to run volume analysis on its files.
 
 ```
