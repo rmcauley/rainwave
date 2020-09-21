@@ -1,3 +1,4 @@
+from http import cookies
 import traceback
 import hashlib
 from time import time as timestamp
@@ -20,6 +21,9 @@ from libs import config
 from libs import log
 from libs import db
 from libs import cache
+
+# Add support for the SameSite attribute (obsolete when PY37 is unsupported).
+cookies.Morsel._reserved.setdefault('samesite', 'SameSite')
 
 # This is the Rainwave API main handling request class.  You'll inherit it in order to handle requests.
 # Does a lot of form checking and validation of user/etc.  There's a request class that requires no authentication at the bottom of this module.
@@ -58,7 +62,7 @@ class HTMLError404Handler(tornado.web.RequestHandler):
             self.render_string("basic_header.html", title="HTTP 404 - File Not Found")
         )
         self.write(
-            "<p><a href='http://rainwave.cc' target='_top'>Return to the front page.</a></p>"
+            "<p><a href='https://rainwave.cc' target='_top'>Return to the front page.</a></p>"
         )
         self.write(self.render_string("basic_footer.html"))
         self.finish()
@@ -67,7 +71,7 @@ class HTMLError404Handler(tornado.web.RequestHandler):
 def get_browser_locale(handler, default="en_CA"):
     """Determines the user's locale from ``Accept-Language`` header.  Copied from Tornado, adapted slightly.
 
-	See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+	See https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
 	"""
     if "rw_lang" in handler.cookies:
         if locale.RainwaveLocale.exists(handler.cookies["rw_lang"].value):
@@ -163,7 +167,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
     def set_cookie(self, name, value, *args, **kwargs):
         if isinstance(value, int):
             value = repr(value)
-        super(RainwaveHandler, self).set_cookie(name, value, *args, **kwargs)
+        super(RainwaveHandler, self).set_cookie(name, value, *args, secure=True, samesite="lax", **kwargs)
 
     def get_argument(self, name, default=None, **kwargs):
         arg = default
