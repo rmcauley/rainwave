@@ -6,6 +6,8 @@
 	<meta name="description" content="{{ site_description }}" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
+	<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet"> 
+
 	{% if jsfiles %}
 		<link href="/static/baked/{{ revision_number }}/style5b.css" type="text/css" rel="stylesheet" />
 	{% else %}
@@ -73,7 +75,6 @@
 
 	{% if not mobile %}
 		<style>
-			@import url(//fonts.googleapis.com/css?family=Roboto+Condensed:400,700);
 			{%if request.locale.code == "ko_KO" %}
 				@font-face {
 					font-family: 'KoPub Dotum';
