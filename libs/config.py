@@ -99,14 +99,13 @@ def load(filename=None, testmode=False):
         public_relays[sid].append(
             {
                 "name": "Random",
-                "protocol": "http://",
+                "protocol": "https://",
                 "hostname": get_station(sid, "round_robin_relay_host"),
-                "port": get_station(sid, "round_robin_relay_port"),
                 # "url": "http://%s:%s" % (get_station(sid, "round_robin_relay_host"), get_station(sid, "round_robin_relay_port"))
             }
         )
         relay_hostnames.append(
-            "http://{}".format(get_station(sid, "round_robin_relay_host"))
+            "https://{}".format(get_station(sid, "round_robin_relay_host"))
         )
         for relay_name, relay in get("relays").items():
             if sid in relay["sids"]:

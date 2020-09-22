@@ -23,8 +23,9 @@ tornado = "~=6.0.4"
 ujson = "*"
 Unidecode = "*"
 pyscss = "*"
+aiohttp = "*"
 
 [dev-packages]
 
 [requires]
-python_version = '3.7'
+python_version = "3.7"

@@ -18,4 +18,4 @@ if __name__ == "__main__":
     log.init(log_file, config.get("log_level"))
     db.connect()
     cache.connect()
-    icecast_sync.start_count()
+    icecast_sync.start()

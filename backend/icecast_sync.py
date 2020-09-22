@@ -1,50 +1,28 @@
+import asyncio
+import aiohttp
 from xml.etree import ElementTree
-import tornado.ioloop
-import tornado.httpclient
+
 from libs import cache
 from libs import config
 from libs import log
 from libs import db
 
-# A bunch of this code is setup to deal with asynchronous requests
-# I didn't put in the effort to make it work that way.
-# Good luck to you if you decide to resume that work. :)
-
-in_process = {}
-
-
-class IcecastSyncCallback:
-    def __init__(self, relay_name, relay_info, ftype, sid, callback):
+class IcecastSyncCall:
+    def __init__(self, relay_name, relay_info, ftype, sid):
         self.relay_name = relay_name
         self.relay_info = relay_info
         self.sid = sid
         self.ftype = ftype
-        self.callback = callback
+        self.response = None
 
-    def process(self, response):
-        global in_process
-
-        if response.code != 200:
-            log.warn(
-                "icecast_sync",
-                "%s %s %s failed query: %s %s"
-                % (
-                    self.relay_name,
-                    config.station_id_friendly[self.sid],
-                    self.ftype,
-                    response.code,
-                    response.reason,
-                ),
-            )
-            in_process[self] = True
-            return None
-
+    def get_listeners(self):
+        if not self.response:
+            return 0
         listeners = []
         for listener in (
-            ElementTree.fromstring(response.body).find("source").iter("listener")
+            ElementTree.fromstring(self.response).find("source").iter("listener")
         ):
             listeners.append(listener)
-        in_process[self] = listeners
         log.debug(
             "icecast_sync",
             "%s %s %s count: %s"
@@ -55,29 +33,69 @@ class IcecastSyncCallback:
                 len(listeners),
             ),
         )
-        return None
+        return listeners
+
+    async def request(self, client, url):
+        async with client.get(url, ssl=False) as response:
+            if response.status != 200:
+                log.warn(
+                    "icecast_sync",
+                    "%s %s %s failed query: %s %s"
+                    % (
+                        self.relay_name,
+                        config.station_id_friendly[self.sid],
+                        self.ftype,
+                        response.status,
+                        response.reason,
+                    ),
+                )
+            else:
+                self.response = await response.read()
 
 
-def _cache_relay_status():
-    global in_process
+async def _start():
+    loop = asyncio.get_running_loop()
 
-    relays = {}
-    for relay, _relay_info in config.get("relays").items():
-        relays[relay] = 0
+    stream_names = {}
+    for sid in config.station_ids:
+        stream_names[sid] = config.get_station(sid, "stream_filename")
 
-    for handler, data in in_process.items():
-        if isinstance(data, list):
-            relays[handler.relay_name] += len(data)
+    calls = []
+    requests = []
+    clients = []
+    for relay, relay_info in config.get("relays").items():
+        client = aiohttp.ClientSession(
+            loop=loop,
+            timeout=aiohttp.ClientTimeout(total=5),
+            auth=aiohttp.BasicAuth(
+                login=relay_info["admin_username"],
+                password=relay_info["admin_password"],
+            )
+        )
+        clients.append(client)
+        relay_base_url = "%s%s:%s/admin/listclients?mount=/" % (
+            relay_info["protocol"],
+            relay_info["ip_address"],
+            relay_info["port"],
+        )
+        for sid in relay_info["sids"]:
+            for ftype in (".mp3", ".ogg"):
+                call = IcecastSyncCall(
+                    relay, relay_info, ftype, sid
+                )
+                calls.append(call)
+                requests.append(
+                    call.request(
+                        client=client,
+                        url=relay_base_url + stream_names[sid] + ftype,
+                    )
+                )
 
-    for relay, count in relays.items():
-        log.debug("icecast_sync", "%s total listeners: %s" % (relay, count))
-
-    cache.set_global("relay_status", relays)
-
-
-# Just do pure listener counts
-def _count():
-    global in_process
+    try:
+        await asyncio.gather(*requests)
+    finally:
+        for client in clients:
+            await client.close()
 
     log.debug("icecast_sync", "All responses came back for counting.")
 
@@ -86,9 +104,14 @@ def _count():
         for sid in config.station_ids:
             stations[sid] = 0
 
-        for handler, data in in_process.items():
-            if isinstance(data, list):
-                stations[handler.sid] += len(data)
+        relays = {}
+        for relay, _relay_info in config.get("relays").items():
+            relays[relay] = 0
+
+        for call in calls:
+            listeners = call.get_listeners()
+            stations[call.sid] += len(listeners)
+            relays[call.relay_name] += len(listeners)
 
         for sid, listener_count in stations.items():
             log.debug(
@@ -101,63 +124,16 @@ def _count():
                 (sid, listener_count),
             )
 
-        _cache_relay_status()
+        for relay, count in relays.items():
+            log.debug("icecast_sync", "%s total listeners: %s" % (relay, count))
+
+        cache.set_global("relay_status", relays)
 
         # db.c.update("DELETE FROM r4_listener_counts WHERE lc_time <= %s", (current_time - config.get("trim_history_length"),))
-
-        in_process = {}
     except Exception as e:
         log.exception("icecast_sync", "Could not finish counting listeners.", e)
 
 
-# Sync r4_listeners table with what's on the relay
-def _sync():
-    # This whole system is broken for reasons I just don't understand
-    # Listeners that ARE tuned in aren't in the database
-    # as if Icecast never pinged the Rainwave servers properly
-    global in_process
-    _cache_relay_status()
-    in_process = {}
-
-
-def _start(callback):
-    global in_process
-    if in_process:
-        log.warn("icecast_sync", "Previous operation did not finish!")
-
-    stream_names = {}
-    for sid in config.station_ids:
-        stream_names[sid] = config.get_station(sid, "stream_filename")
-
-    for relay, relay_info in config.get("relays").items():
-        relay_base_url = "%s%s:%s/admin/listclients?mount=/" % (
-            relay_info["protocol"],
-            relay_info["ip_address"],
-            relay_info["port"],
-        )
-        for sid in relay_info["sids"]:
-            for ftype in (".mp3", ".ogg"):
-                try:
-                    handler = IcecastSyncCallback(
-                        relay, relay_info, ftype, sid, callback
-                    )
-                    in_process[handler] = False
-                    http_client = tornado.httpclient.HTTPClient()
-                    http_client.fetch(
-                        relay_base_url + stream_names[sid] + ftype,
-                        auth_username=relay_info["admin_username"],
-                        auth_password=relay_info["admin_password"],
-                        callback=handler.process,
-                    )
-                except Exception as e:
-                    log.exception(
-                        "icecast_sync",
-                        "Could not sync %s %s.%s" % (relay, stream_names[sid], ftype),
-                        e,
-                    )
-
-    callback()
-
-
-def start_count():
-    _start(_count)
+def start():
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(_start())

@@ -7,9 +7,8 @@ from libs import config
 
 
 def get_round_robin_url(sid, filetype="mp3", user=None):
-    return "http://%s:%s/%s" % (
+    return "http://%s/%s" % (
         config.get_station(sid, "round_robin_relay_host"),
-        config.get_station(sid, "round_robin_relay_port"),
         get_stream_filename(sid, filetype, user),
     )
 

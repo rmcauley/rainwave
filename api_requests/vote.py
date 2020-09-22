@@ -111,7 +111,7 @@ class SubmitVote(APIHandler):
             ):
                 raise APIException(
                     "user_locked",
-                    "User locked to %s for %s more songs."
+                    "User locked to %s for %s more song(s)."
                     % (
                         config.station_id_friendly[self.user.data["lock_sid"]],
                         self.user.data["lock_counter"],
