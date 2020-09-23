@@ -42,8 +42,6 @@ class APIServer:
 
         # Log according to configured directory and port # we're operating on
         log_file = "%s/rw_api_%s.log" % (config.get_directory("log_dir"), port_no)
-        if config.test_mode and os.path.exists(log_file):
-            os.remove(log_file)
         log.init(log_file, config.get("log_level"))
         log.debug("start", "Server booting, port %s." % port_no)
         db.connect(auto_retry=False, retry_only_this_time=True)
@@ -53,7 +51,7 @@ class APIServer:
         api.locale.load_translations()
         api.locale.compile_static_language_files()
 
-        if config.get("web_developer_mode"):
+        if config.get("developer_mode"):
             for station_id in config.station_ids:
                 playlist.prepare_cooldown_algorithm(station_id)
             # automatically loads every station ID and fills things in if there's no data
@@ -90,7 +88,7 @@ class APIServer:
 
         # Fire ze missiles!
         global app
-        debug = (config.test_mode or config.get("developer_mode"))
+        debug = config.get("developer_mode")
         app = tornado.web.Application(
             request_classes,
             debug=debug,
@@ -129,7 +127,7 @@ class APIServer:
 
         # Setup variables for the long poll module
         # Bypass Tornado's forking processes if num_processes is set to 1
-        if config.get("api_num_processes") == 1 or config.get("web_developer_mode"):
+        if config.get("api_num_processes") == 1:
             self._listen(0)
         else:
             # The way this works, is that the parent PID is hijacked away from us and everything after this

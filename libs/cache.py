@@ -39,7 +39,7 @@ def connect():
 
     if _memcache:
         return
-    if config.get("memcache_fake") or config.get("web_developer_mode"):
+    if config.get("memcache_fake"):
         _memcache = TestModeCache()
         _memcache_ratings = TestModeCache()
         reset_station_caches()

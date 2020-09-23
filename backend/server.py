@@ -124,13 +124,10 @@ class BackendServer:
         zeromq.init_pub()
         memory_trace.setup(config.station_id_friendly[sid].lower())
 
-        if config.test_mode:
-            playlist.remove_all_locks(sid)
-
         # (r"/refresh/([0-9]+)", RefreshScheduleRequest)
         app = tornado.web.Application(
             [(r"/advance/([0-9]+)", AdvanceScheduleRequest),],
-            debug=(config.test_mode or config.get("developer_mode")),
+            debug=config.get("developer_mode"),
         )
 
         port = int(config.get("backend_port")) + sid

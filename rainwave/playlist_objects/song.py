@@ -189,9 +189,6 @@ class Song:
 
     @classmethod
     def create_fake(cls, sid):
-        if not config.test_mode:
-            raise Exception("Tried to create a fake song when not in test mode.")
-
         s = cls()
         s.filename = "fake.mp3"
         s.data["title"] = "Test Song %s" % db.c.get_next_id("r4_songs", "song_id")
@@ -298,7 +295,7 @@ class Song:
         """
 		Lets callee know if this MP3 is valid or not.
 		"""
-        if config.test_mode and self.fake:
+        if self.fake:
             self.verified = True
             return True
 

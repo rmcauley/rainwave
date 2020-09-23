@@ -7,10 +7,11 @@ from libs import config
 
 
 def get_round_robin_url(sid, filetype="mp3", user=None):
-    return "http://%s/%s" % (
-        config.get_station(sid, "round_robin_relay_host"),
-        get_stream_filename(sid, filetype, user),
-    )
+    stream_url = config.get("round_robin_relay_protocol") + config.get("round_robin_relay_host")
+    if config.get("round_robin_relay_port"):
+        stream_url += ":" + config.get("round_robin_relay_port")
+    stream_url += "/" + get_stream_filename(sid, filetype, user)
+    return stream_url
 
 
 def get_stream_filename(sid, filetype="mp3", user=None):

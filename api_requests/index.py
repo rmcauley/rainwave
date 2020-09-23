@@ -107,9 +107,7 @@ class MainIndex(api.web.HTMLRequest):
 
         if (
             self.beta
-            or config.get("web_developer_mode")
             or config.get("developer_mode")
-            or config.get("test_mode")
         ):
             buildtools.bake_beta_css()
             buildtools.bake_beta_templates()

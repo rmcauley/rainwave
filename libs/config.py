@@ -10,11 +10,6 @@ import tempfile
 _opts = {}
 build_number = 0
 
-# This is used as a global flag.  Modules that require slightly different functionality
-# under test purposes (e.g. bypass song verification) will look here to see if we're
-# running unit tests.
-test_mode = False
-
 station_ids = set()
 station_id_friendly = {}
 station_hostnames = {}
@@ -65,7 +60,6 @@ def get_config_file(testmode=False):
 
 def load(filename=None, testmode=False):
     global _opts
-    global test_mode
     global build_number
     global public_relays
     global public_relays_json
@@ -89,8 +83,6 @@ def load(filename=None, testmode=False):
 
     require("stations")
     set_station_ids(get("song_dirs"), get("station_id_friendly"))
-    if get("test_mode") == True:
-        test_mode = True
 
     public_relays = {}
     relay_hostnames = []

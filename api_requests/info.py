@@ -219,13 +219,7 @@ class StationsRequest(APIHandler):
                     "description": self.locale.translate(
                         "station_description_id_%s" % station_id
                     ),
-                    "stream": "https://%s/%s"
-                    % (
-                        config.get_station(station_id, "round_robin_relay_host"),
-                        api_requests.tune_in.get_stream_filename(
-                            station_id, user=self.user
-                        ),
-                    ),
+                    "stream": api_requests.tune_in.get_round_robin_url(station_id, user=self.user),
                 }
             )
         self.append(self.return_name, station_list)
