@@ -35,7 +35,7 @@ class ErrorReport(APIHandler):
             )
         refhost = urlsplit(self.request.headers.get("Referer")).hostname
         failed = True
-        if refhost in config.station_hostnames:
+        if refhost == config.get("hostname"):
             failed = False
         elif config.has("accept_error_reports_from_hosts") and refhost in config.get(
             "accept_error_reports_from_hosts"

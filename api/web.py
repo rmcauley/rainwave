@@ -302,8 +302,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
             hostname = self.request.headers.get("Host", None)
             if hostname:
                 hostname = str(hostname).split(":")[0]
-                if hostname in config.station_hostnames:
-                    self.sid = config.station_hostnames[hostname]
             sid_arg = fieldtypes.integer(self.get_argument("sid", None))
             if sid_arg is not None:
                 self.sid = sid_arg

@@ -12,7 +12,6 @@ build_number = 0
 
 station_ids = set()
 station_id_friendly = {}
-station_hostnames = {}
 public_relays = None
 public_relays_json = {}
 station_list = {}
@@ -66,7 +65,6 @@ def load(filename=None, testmode=False):
     global station_ids
     global station_list
     global station_list_json
-    global station_hostnames
     global station_mount_filenames
 
     if not filename:
@@ -118,7 +116,6 @@ def load(filename=None, testmode=False):
                 if relay_hostname_port not in relay_hostnames:
                     relay_hostnames.append(relay_hostname_port)
         public_relays_json[sid] = json.dumps(public_relays[sid])
-        station_hostnames[get_station(sid, "host")] = sid
         station_mount_filenames[sid] = get_station(sid, "stream_filename")
         stream_filename_to_sid[get_station(sid, "stream_filename")] = sid
 
