@@ -18,15 +18,10 @@ if __name__ == "__main__":
     parser.add_argument("--art", action="store_true")
     args = parser.parse_args()
     libs.config.load(args.config)
-    if libs.config.get("log_level") == "print" and (args.art or args.full):
-        libs.log.init(
-            "%s/rw_scanner.log" % libs.config.get_directory("log_dir"), "debug"
-        )
-    else:
-        libs.log.init(
-            "%s/rw_scanner.log" % libs.config.get_directory("log_dir"),
-            libs.config.get("log_level"),
-        )
+    libs.log.init(
+        "%s/rw_scanner.log" % libs.config.get_directory("log_dir"),
+        "debug" if (args.art or args.full) else libs.config.get("log_level")
+    )
 
     for sid in libs.config.station_ids:
         rainwave.playlist_objects.album.clear_updated_albums(sid)
@@ -36,8 +31,10 @@ if __name__ == "__main__":
         libs.cache.connect()
 
         if args.art:
+            backend.filemonitor.set_on_screen(True)
             backend.filemonitor.full_art_update()
         elif args.full:
+            backend.filemonitor.set_on_screen(True)
             backend.filemonitor.full_music_scan(args.reset)
         else:
             backend.filemonitor.monitor()

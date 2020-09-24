@@ -18,14 +18,24 @@ from libs import db
 from rainwave import playlist
 from rainwave.playlist_objects.song import PassableScanError
 
-# Art can be scanned before the music itself is scanned, in which case the art will
-# have no home.  We need to account for that by using an album art queue.
-# It's a hack, but a necessary one.
-# We need a flag for immediate art because we don't want to worry about
-# threads or mutexes on the array when monitoring.
-immediate_art = True
-_album_art_queue = []
 mimetypes.init()
+
+_found_album_art = []
+_on_screen = False
+
+
+class AlbumArtNoAlbumFoundError(PassableScanError):
+    pass
+
+def write_unmatched_art_log():
+    with open(os.path.join(config.get_directory("log_dir"), "rw_unmatched_art.log"), "w") as unmatched_log:
+        for album_art_tuple in _found_album_art:
+            unmatched_log.write(album_art_tuple[0])
+            unmatched_log.write("\n")
+
+def set_on_screen(on_screen):
+    global _on_screen
+    _on_screen = on_screen
 
 
 def _common_init():
@@ -48,9 +58,6 @@ def full_music_scan(full_reset):
     cache.connect()
     db.c.start_transaction()
 
-    global immediate_art
-    immediate_art = False
-
     try:
         if full_reset:
             db.c.update("UPDATE r4_songs SET song_file_mtime = 0")
@@ -66,8 +73,11 @@ def full_music_scan(full_reset):
             song = playlist.Song.load_from_id(song_id)
             song.disable()
 
-        _process_album_art_queue(on_screen=True)
         db.c.commit()
+
+        _process_found_album_art()
+        print()
+        write_unmatched_art_log()
     except:
         db.c.rollback()
         raise
@@ -76,12 +86,15 @@ def full_music_scan(full_reset):
 def full_art_update():
     _common_init()
     _scan_all_directories(art_only=True)
-    _process_album_art_queue(on_screen=True)
-
+    _process_found_album_art()
+    write_unmatched_art_log()
+    print()
 
 def _print_to_screen_inline(txt):
-    txt += " " * (80 - len(txt))
-    print("\r" + txt, end="")
+    if _on_screen:
+        txt += " " * (80 - len(txt))
+        print("\r" + txt, end="")
+        sys.stdout.flush()
 
 
 def _scan_all_directories(art_only=False):
@@ -90,6 +103,7 @@ def _scan_all_directories(art_only=False):
     for directory, sids in config.get("song_dirs").items():
         for root, _subdirs, files in os.walk(directory, followlinks=True):
             total_files += len(files)
+            _print_to_screen_inline(f"Prepping {total_files}")
 
     for directory, sids in config.get("song_dirs").items():
         for root, _subdirs, files in os.walk(directory, followlinks=True):
@@ -102,10 +116,8 @@ def _scan_all_directories(art_only=False):
                 file_counter += 1
                 _print_to_screen_inline(
                     "%s %s / %s" % (directory, file_counter, total_files)
-                )
-                sys.stdout.flush()
-        print("\n")
-        sys.stdout.flush()
+                )                
+        _print_to_screen_inline("\n")
 
 
 def _scan_directory(directory, sids):
@@ -145,9 +157,6 @@ def _scan_directory(directory, sids):
 
 
 def _scan_file(filename, sids):
-    global _album_art_queue
-    global immediate_art
-
     s = None
     if _is_mp3(filename):
         new_mtime = None
@@ -182,6 +191,7 @@ def _scan_file(filename, sids):
                     "UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s",
                     (filename,),
                 )
+            _process_found_album_art(os.path.dirname(filename))
         except IOError as e:
             _add_scan_error(filename, e)
             _disable_file(filename)
@@ -189,10 +199,10 @@ def _scan_file(filename, sids):
             _add_scan_error(filename, e, sys.exc_info())
             _disable_file(filename)
     elif _is_image(filename):
-        if not immediate_art:
-            _album_art_queue.append([filename, sids])
-        else:
+        try:
             _process_album_art(filename, sids)
+        except AlbumArtNoAlbumFoundError:
+            _found_album_art.append((filename, sids))
     return True
 
 
@@ -231,19 +241,22 @@ def _is_image(filename):
     return False
 
 
-def _process_album_art_queue(on_screen=False):
-    global _album_art_queue
-    for i, album_art in enumerate(_album_art_queue):
-        if not _process_album_art(*album_art) and on_screen:
-            if sys.exc_info()[0]:
-                _type, value_, _traceback = sys.exc_info()
-                print("\n%s:\n\t %s" % (album_art[0], value_))
-                sys.stdout.flush()
-        if on_screen:
-            _print_to_screen_inline("Album art: %s/%s" % (i, len(_album_art_queue) - 1))
-    if on_screen:
-        print()
-    _album_art_queue = []
+def _process_found_album_art(dirname=None):
+    matched_count = 0
+    for album_art_tuple in _found_album_art:
+        filename, sids = album_art_tuple
+        if not dirname or os.path.dirname(filename) == dirname:
+            try:
+                if _process_album_art(filename, sids):
+                    matched_count += 1
+            except:
+                pass
+            if not dirname:
+                _print_to_screen_inline("Matched album art: %s/%s" % (matched_count, len(_found_album_art) - 1))
+            else:
+                print(f"Found album art for {dirname}")
+    if not dirname:
+        _print_to_screen_inline("\n")
 
 
 def _process_album_art(filename, sids):
@@ -258,7 +271,7 @@ def _process_album_art(filename, sids):
             (directory,),
         )
         if not album_ids or len(album_ids) == 0:
-            return False
+            raise AlbumArtNoAlbumFoundError
         im_original = Image.open(filename)
         if not im_original:
             raise IOError
@@ -285,39 +298,43 @@ def _process_album_art(filename, sids):
                 ),
             )
         for album_id in album_ids:
-            im_120.save(
-                os.path.join(
-                    config.get("album_art_file_path"),
-                    "%s_%s_120.jpg" % (sids[0], album_id),
+            for sid in sids:
+                im_120.save(
+                    os.path.join(
+                        config.get("album_art_file_path"),
+                        "%s_%s_120.jpg" % (sid, album_id),
+                    )
                 )
-            )
-            im_240.save(
-                os.path.join(
-                    config.get("album_art_file_path"),
-                    "%s_%s_240.jpg" % (sids[0], album_id),
+                im_240.save(
+                    os.path.join(
+                        config.get("album_art_file_path"),
+                        "%s_%s_240.jpg" % (sid, album_id),
+                    )
                 )
-            )
-            im_320.save(
-                os.path.join(
-                    config.get("album_art_file_path"),
-                    "%s_%s_320.jpg" % (sids[0], album_id),
+                im_320.save(
+                    os.path.join(
+                        config.get("album_art_file_path"),
+                        "%s_%s_320.jpg" % (sid, album_id),
+                    )
                 )
+            a_120_path = os.path.join(
+                config.get("album_art_file_path"), "a_%s_120.jpg" % (album_id)
             )
-            im_120.save(
-                os.path.join(
-                    config.get("album_art_file_path"), "a_%s_120.jpg" % (album_id)
+            # sids[0] is the origin SID
+            if sids[0] == config.get("album_art_master_sid") or not os.path.exists(a_120_path):
+                im_120.save(
+                    a_120_path
                 )
-            )
-            im_240.save(
-                os.path.join(
-                    config.get("album_art_file_path"), "a_%s_240.jpg" % (album_id)
+                im_240.save(
+                    os.path.join(
+                        config.get("album_art_file_path"), "a_%s_240.jpg" % (album_id)
+                    )
                 )
-            )
-            im_320.save(
-                os.path.join(
-                    config.get("album_art_file_path"), "a_%s_320.jpg" % (album_id)
+                im_320.save(
+                    os.path.join(
+                        config.get("album_art_file_path"), "a_%s_320.jpg" % (album_id)
+                    )
                 )
-            )
         log.debug("album_art", "Scanned %s for album ID %s." % (filename, album_ids))
         return True
     except (IOError, OSError) as err:
@@ -327,10 +344,11 @@ def _process_album_art(filename, sids):
                 f"Could not open album art. (this can happen if a directory has been deleted) {err}"
             ),
         )
-        return False
+    except AlbumArtNoAlbumFoundError:
+        raise
     except Exception as e:
         _add_scan_error(filename, e)
-        return False
+    return False
 
 
 def _disable_file(filename):
@@ -475,8 +493,6 @@ class FileEventHandler(ProcessEvent):
                 _disable_file(event.pathname)
             else:
                 _scan_file(event.pathname, matched_sids)
-
-            _process_album_art_queue()
         except Exception as xception:
             _add_scan_error(event.pathname, xception)
 
