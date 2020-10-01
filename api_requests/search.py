@@ -7,7 +7,7 @@ from api.exceptions import APIException
 
 
 @handle_api_url("search")
-class AlbumHandler(APIHandler):
+class SearchHandler(APIHandler):
     description = "Search artists, albums, and songs for a matching string.  Case insensitive.  Submitted string will be stripped of accents and punctuation."
     return_name = "search_results"
     sid_required = True
