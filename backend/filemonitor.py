@@ -242,10 +242,12 @@ def _is_image(filename):
 
 
 def _process_found_album_art(dirname=None):
+    if dirname and not dirname.endswith(os.sep):
+        dirname += os.sep
     matched_count = 0
     for album_art_tuple in _found_album_art:
         filename, sids = album_art_tuple
-        if not dirname or os.path.dirname(filename) == dirname:
+        if not dirname or (os.path.dirname(filename) + os.sep) == dirname:
             try:
                 if _process_album_art(filename, sids):
                     matched_count += 1
@@ -265,7 +267,7 @@ def _process_album_art(filename, sids):
     if not config.get("album_art_enabled"):
         return True
     try:
-        directory = os.path.dirname(filename)
+        directory = os.path.dirname(filename) + os.sep
         album_ids = db.c.fetch_list(
             "SELECT DISTINCT album_id FROM r4_songs WHERE song_filename LIKE %s || '%%'",
             (directory,),
