@@ -86,14 +86,6 @@ def load(filename=None, testmode=False):
     relay_hostnames = []
     for sid in station_ids:
         public_relays[sid] = []
-        public_relays[sid].append(
-            {
-                "name": "Random",
-                "protocol": get("round_robin_relay_protocol"),
-                "hostname": get("round_robin_relay_host"),
-                "port": get("round_robin_relay_port"),
-            }
-        )
         relay_hostnames.append(
             get("round_robin_relay_protocol") + get("round_robin_relay_host")
         )

@@ -220,6 +220,7 @@ class StationsRequest(APIHandler):
                         "station_description_id_%s" % station_id
                     ),
                     "stream": api_requests.tune_in.get_round_robin_url(station_id, user=self.user),
+                    "relays": config.public_relays[self.sid],
                 }
             )
         self.append(self.return_name, station_list)
