@@ -25,6 +25,7 @@ c.InteractiveShellApp.exec_lines = [
     "from rainwave.playlist_objects.artist import Artist",
     "from rainwave.playlist_objects.song import Song",
     "from rainwave.playlist_objects.songgroup import SongGroup",
+    "from rainwave.user import User",
 ]
 c.TerminalIPythonApp.display_banner = False
 

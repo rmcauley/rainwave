@@ -347,7 +347,7 @@ class User:
 
     def clear_all_requests_on_cooldown(self):
         return db.c.update(
-            "DELETE FROM r4_request_store JOIN r4_song_sid ON r4_song_sid.song_id = r4_request_store.song_id AND r4_song_sid.sid = r4_request_store.sid WHERE user_id = %s AND song_cool_end > %s",
+            "DELETE FROM r4_request_store USING r4_song_sid WHERE r4_song_sid.song_id = r4_request_store.song_id AND r4_song_sid.sid = r4_request_store.sid AND user_id = %s AND song_cool_end > %s",
             (self.id, timestamp() + (20 * 60),),
         )
 
