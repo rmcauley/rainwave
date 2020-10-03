@@ -305,23 +305,7 @@
 		}
 		var qstring = API.serialize(obj);
 
-		var subdomain;
-		if (obj.sid == 1) {
-			subdomain = "game";
-		}
-		else if (obj.sid == 2) {
-			subdomain = "ocr";
-		}
-		else if (obj.sid == 3) {
-			subdomain = "covers";
-		}
-		else if (obj.sid == 4) {
-			subdomain = "chiptune";
-		}
-		else {
-			subdomain = "all";
-		}
-		var url = "http://" + subdomain + ".rainwave.cc/widget/widget?" + qstring;
+		var url = "http://rainwave.cc/widget/widget?" + qstring;
 		document.getElementById("widget_url").textContent = url;
 		document.getElementById("iframe").setAttribute("src", "/widget/widget?" + qstring);
 
