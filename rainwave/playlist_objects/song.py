@@ -1,28 +1,23 @@
-import os
 import copy
+import os
 
 try:
     import ujson as json
 except ImportError:
     import json
+
 from time import time as timestamp
 
-from mutagen.mp3 import MP3
-
-from libs import db
-from libs import config
-from libs import cache
-from libs import log
-from libs import replaygain
-from rainwave import rating
 from api import fieldtypes
-
-from rainwave.playlist_objects.artist import Artist
-from rainwave.playlist_objects.album import Album
-from rainwave.playlist_objects.songgroup import SongGroup
-from rainwave.playlist_objects.metadata import make_searchable_string
+from libs import cache, config, db, log, replaygain
+from mutagen.mp3 import MP3
+from rainwave import rating
 from rainwave.playlist_objects import cooldown
-from rainwave.playlist_objects.metadata import MetadataUpdateError
+from rainwave.playlist_objects.album import Album
+from rainwave.playlist_objects.artist import Artist
+from rainwave.playlist_objects.metadata import (MetadataUpdateError,
+                                                make_searchable_string)
+from rainwave.playlist_objects.songgroup import SongGroup
 
 num_songs = {}
 num_origin_songs = {}
@@ -167,7 +162,7 @@ class Song:
         s.albums[0].associate_song_id(s.id)
 
         s.update_artist_parseable()
-        
+
         # do not get replay gain earlier in case an exception is thrown above
         # it means a lot of wasted CPU time in that scenario
         if s.replay_gain is None:
@@ -707,9 +702,10 @@ class Song:
             (self.id,),
         )
         for point in histo:
-            self.data["rating_histogram"][str(point["rating_user_rnd"])] = point[
-                "rating_user_count"
-            ]
+            if point["rating_user_rnd"]:
+                self.data["rating_histogram"][str(point["rating_user_rnd"])] = point[
+                    "rating_user_count"
+                ]
 
     def to_dict(self, user=None):
         d = {}

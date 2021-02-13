@@ -106,7 +106,6 @@
 
    "tip_jar"                                         : "Sakiewka",
    "tip_jar_opener"                                  : "Rainwave będzie wciąż działać niezależnie od tego ile znajduje się w sakiewce. Chcesz się dorzucić i wspomóc stronę, to proste:",
-   "tip_jar_instruction_1"                           : "Wyślij prezent przez PayPal do rmcauley@rainwave.cc w USD lub Dolarach Kanadyjskich, lub użyj przycisku PayPal poniżej.",
    "tip_jar_instruction_2"                           : "Wyślij nam swoje imię i komentarz w komentarzu płatności.",
    "tip_jar_instruction_3"                           : "Proszę poinformuj nas czy chciałbyś pozostać anonimowy.",
    "tip_jar_opener_end"                              : "Po sfinalizowaniu darowizny, otrzymasz status Donor na stronie.  To da Ci więcej głosów i możliwość głosowania w więcej, niż jednym głosowaniu jednocześnie.",
@@ -439,7 +438,7 @@
     "voted": "Zagłosowano",
     "waiting_for_hotkey": "Oczekiwanie Na Klawisz",
     "websocket_throttle": "Zwooolnij!",
-    "yell_on_forums": "nasze forum.",
+    "yell_on_forums": "nasze Discord.",
     "yell_on_twitter": "na Twitterze pod @Rainwavecc",
     "yell_or": "lub",
     "you_can_yell": "Możesz na nas za to nakrzyczeć",

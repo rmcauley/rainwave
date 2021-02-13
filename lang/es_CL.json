@@ -78,7 +78,7 @@
    "you_can_yell"                                    : "Nos puedes reclamar sobre esto",
    "yell_on_twitter"                                 : "por Twitter, en @Rainwavecc",
    "yell_or"                                         : "o",
-   "yell_on_forums"                                  : "en los foros.",
+   "yell_on_forums"                                  : "en los Discord.",
    "please_refresh"                                  : "Recarga la página para traer a Rainwave de vuelta.",
    "report_submitted"                                : "Reporte Enviado",
 
@@ -162,7 +162,6 @@
    "PayPal"                                          : "PayPal",
    "tip_jar"                                         : "Donaciones",
    "tip_jar_opener"                                  : "Rainwave seguirá funcionando independientemente de lo que haya en el jarro de propinas.  Si deseas echarle algunos guiles o rupias:",
-   "tip_jar_instruction_1"                           : "Envía un regalo de PayPal a rmcauley@rainwave.cc en dólares estadounidenses o canadienses, o usa el enlace de Paypal.me de abajo.",
    "tip_jar_instruction_2"                           : "Envíanos tu nombre de usuario y un mensaje como comentario.",
    "tip_jar_instruction_3"                           : "Por favor indica si deseas que tu nombre se mantenga anónimo.",
    "tip_jar_opener_end"                              : "Luego de procesar tu propina se te dará el estado de Donante en el sitio.  Esto te permitirá agregar más peticiones en tu fila y tener la capacidad de votar en más de 1 votación a la vez.",

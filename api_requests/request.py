@@ -1,10 +1,8 @@
 from api import fieldtypes
-from api.web import APIHandler, PrettyPrintAPIMixin
 from api.exceptions import APIException
-from api.urls import handle_api_url, handle_api_html_url
-
-from libs import cache
-from libs import db
+from api.urls import handle_api_html_url, handle_api_url
+from api.web import APIHandler, PrettyPrintAPIMixin
+from libs import cache, db
 
 
 @handle_api_url("request")
@@ -136,9 +134,9 @@ class PauseRequestQueue(APIHandler):
         self.user.pause_requests()
         self.append("user", self.user.to_private_dict())
         if self.user.data["requests_paused"]:
-            self.append_standard("radio_requests_paused")
+            self.append_standard("request_queue_paused")
         else:
-            self.append_standard("radio_requests_unpaused")
+            self.append_standard("request_queue_unpaused")
 
 
 @handle_api_url("unpause_request_queue")
@@ -153,9 +151,9 @@ class UnPauseRequestQueue(APIHandler):
         self.user.unpause_requests(self.sid)
         self.append("user", self.user.to_private_dict())
         if self.user.data["requests_paused"]:
-            self.append_standard("radio_requests_paused")
+            self.append_standard("request_queue_paused")
         else:
-            self.append_standard("radio_requests_unpaused")
+            self.append_standard("request_queue_unpaused")
 
 
 @handle_api_url("request_line")

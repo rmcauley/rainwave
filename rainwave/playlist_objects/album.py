@@ -1,17 +1,13 @@
-import os
 import math
+import os
 from time import time as timestamp
 
-from libs import db
-from libs import log
-from libs import config
-from libs import cache
+from libs import cache, config, db, log
 from rainwave import rating
-
-from rainwave.playlist_objects.metadata import MetadataNotFoundError
-from rainwave.playlist_objects.metadata import AssociatedMetadata
-from rainwave.playlist_objects.metadata import make_searchable_string
 from rainwave.playlist_objects import cooldown
+from rainwave.playlist_objects.metadata import (AssociatedMetadata,
+                                                MetadataNotFoundError,
+                                                make_searchable_string)
 
 num_albums = {}
 updated_album_ids = {}
@@ -577,9 +573,10 @@ class Album(AssociatedMetadata):
             (sid, self.id),
         )
         for point in histo:
-            self.data["rating_histogram"][str(point["song_rating_user"])] = point[
-                "rating_count"
-            ]
+            if point["song_rating_user"]:
+                self.data["rating_histogram"][str(point["song_rating_user"])] = point[
+                    "rating_count"
+                ]
 
     def update_request_count(self, sid):
         count = db.c.fetch_var(

@@ -75,7 +75,7 @@
    "you_can_yell"                                    : "Vous pouvez nous chicaner",
    "yell_on_twitter"                                 : "Sur Twitter @Rainwavecc",
    "yell_or"                                         : "ou",
-   "yell_on_forums"                                  : "notre forum.",
+   "yell_on_forums"                                  : "notre Discord.",
    "please_refresh"                                  : "Actualisez la page pour ressusciter Rainwave.",
    "report_submitted"                                : "Rapport soumis",
 
@@ -157,7 +157,6 @@
    "PayPal"                                          : "PayPal",
    "tip_jar"                                         : "Dons",
    "tip_jar_opener"                                  : "Rainwave apprécie vos dons mais ils ne sont pas nécessaires ^^  Toutefois vos gils et vos roupies sont les bienvenus :",
-   "tip_jar_instruction_1"                           : "Envoyez-nous un cadeau via PayPal à rmcauley@rainwave.cc en dollars américains ou canadiens, ou utilisez le lien Paypal.me ci-dessous.",
    "tip_jar_instruction_2"                           : "Laissez-nous votre nom d'utilisateur et un message en commentaire.",
    "tip_jar_instruction_3"                           : "Indiquez-nous si vous préférez que votre nom reste anonyme.",
    "tip_jar_opener_end"                              : "Lorsque nous aurons reçu votre don, vous obtiendrez le statut Donateur sur le site. Ce statut vous permet d'ajouter plus de chansons à la file d'attente, ainsi que de voter sur plus d'une chanson durant une séance de vote.",
