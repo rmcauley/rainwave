@@ -48,7 +48,7 @@
    "tunein_to_rate_current_song"                     : "You must be tuned in to rate the currently playing song.",
    "rating_submitted"                                : "Rating submitted.",
    "rating_cleared"                                  : "Rating cleared.",
-   "unknown_error_message"                           : "Sorry about that.  Please try again, or file a bug with the debug information below.  (this error has been logged)",
+   "unknown_error_message"                           : "Sorry about that. Please try again, or file a bug with the debug information below (this error has been logged).",
    "debug_information"                               : "Debug information:",
    "requests_reordered"                              : "Requests reordered.",
    "request_queue_paused"                            : "Request queue paused.",
