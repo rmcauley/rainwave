@@ -1,7 +1,7 @@
 [Unit]
 Description=Rainwave Internet Radio Scanner
 Wants=network.target
-Requires=postgresql.service memcached.service
+Requires=postgresql.service memcached.service memcached_ratings.service
 
 [Service]
 Type=simple
