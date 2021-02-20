@@ -24,7 +24,6 @@ var Router = (function() {
 	var detail_header;
 	var reset_cache_on_next_request = false;
 	var request_in_flight = false;
-	var has_autoplayed = false;
 	var taborder = ["album", "artist", "group", "request_line"];
 
 	var reset_cache = function() {
@@ -225,11 +224,6 @@ var Router = (function() {
 			document.body.classList.remove("requests");
 			document.body.classList.remove("search_open");
 			document.body.classList.remove("dj_open");
-			if (new_route[0] == "autoplay" && !has_autoplayed) {
-				RWAudio.play();
-				has_autoplayed = true;
-				return false;
-			}
 			if (tabs[new_route[0]] || views[new_route[0]]) {
 				self.open_route(new_route[0], new_route[1]);
 				return true;

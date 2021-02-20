@@ -9,7 +9,6 @@ var Menu = function() {
 		if (RWAudio && RWAudio.isPlaying && !MOBILE) {
 			e.stopPropagation();
 			e.preventDefault();
-			window.location.href = this._href + "#!/autoplay";
 			return false;
 		}
 	};
