@@ -68,6 +68,7 @@ if __name__ == "__main__":
     pwd = os.getcwd()
     os.chdir(install_dir)
     subprocess.call(["sudo", "--user=rainwave", "python3", "-m", "pipenv", "sync"])
+    subprocess.call(["python3", "-m", "pipenv", "sync"])
     os.chdir(pwd)
 
     print(f"Rainwave installed to {install_dir}")

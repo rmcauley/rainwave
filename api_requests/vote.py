@@ -154,32 +154,20 @@ class SubmitVote(APIHandler):
                         ),
                     )
                 else:
-                    time_window = int(timestamp()) - 1209600
-                    vote_count = db.c.fetch_var(
-                        "SELECT COUNT(vote_id) FROM r4_vote_history WHERE vote_time > %s AND user_id = %s",
-                        (time_window, self.user.id),
-                    )
-                    db.c.execute(
-                        "SELECT user_id, COUNT(song_id) AS c FROM r4_vote_history WHERE vote_time > %s GROUP BY user_id HAVING COUNT(song_id) > %s",
-                        (time_window, vote_count),
-                    )
-                    rank = db.c.rowcount + 1
                     db.c.update(
-                        "INSERT INTO r4_vote_history (elec_id, entry_id, user_id, song_id, vote_at_rank, vote_at_count, sid) "
-                        "VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                        "INSERT INTO r4_vote_history (elec_id, entry_id, user_id, song_id, sid) "
+                        "VALUES (%s, %s, %s, %s, %s)",
                         (
                             event.id,
                             entry_id,
                             self.user.id,
                             event.get_entry(entry_id).id,
-                            rank,
-                            vote_count,
                             event.sid,
                         ),
                     )
                     db.c.update(
-                        "UPDATE phpbb_users SET radio_inactive = FALSE, radio_last_active = %s, radio_totalvotes = %s WHERE user_id = %s",
-                        (timestamp(), vote_count, self.user.id),
+                        "UPDATE phpbb_users SET radio_inactive = FALSE, radio_last_active = %s, WHERE user_id = %s",
+                        (timestamp(), self.user.id),
                     )
 
                     autovoted_entry = event.has_request_by_user(self.user.id)

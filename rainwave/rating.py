@@ -74,9 +74,6 @@ def set_song_rating(sid, song_id, user_id, rating=None, fave=None):
         )
         if not existing_rating:
             count += 1
-        rank = db.c.fetch_var(
-            "SELECT COUNT(*) FROM phpbb_users WHERE radio_totalratings > %s", (count,)
-        )
         if existing_rating:
             if not rating:
                 rating = existing_rating["song_rating_user"]
@@ -84,13 +81,9 @@ def set_song_rating(sid, song_id, user_id, rating=None, fave=None):
                 fave = existing_rating["song_fave"]
             db.c.update(
                 "UPDATE r4_song_ratings "
-                "SET song_rating_user = %s, song_fave = %s, song_rated_at = %s, song_rated_at_rank = %s, song_rated_at_count = %s "
+                "SET song_rating_user = %s, song_fave = %s, song_rated_at = %s "
                 "WHERE user_id = %s AND song_id = %s",
-                (rating, fave, timestamp(), rank, count, user_id, song_id),
-            )
-            db.c.update(
-                "UPDATE phpbb_users SET radio_totalmindchange = radio_totalmindchange + 1, radio_inactive = FALSE, radio_last_active = %s WHERE user_id = %s",
-                (timestamp(), user_id,),
+                (rating, fave, timestamp(), user_id, song_id),
             )
         else:
             if not rating:
@@ -99,9 +92,9 @@ def set_song_rating(sid, song_id, user_id, rating=None, fave=None):
                 fave = None
             db.c.update(
                 "INSERT INTO r4_song_ratings "
-                "(song_rating_user, song_fave, song_rated_at, song_rated_at_rank, song_rated_at_count, user_id, song_id) "
-                "VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (rating, fave, timestamp(), rank, count, user_id, song_id),
+                "(song_rating_user, song_fave, song_rated_at, user_id, song_id) "
+                "VALUES (%s, %s, %s, %s, %s)",
+                (rating, fave, timestamp(), user_id, song_id),
             )
 
         db.c.update(
