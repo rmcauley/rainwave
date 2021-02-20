@@ -166,7 +166,7 @@ class SubmitVote(APIHandler):
                         ),
                     )
                     db.c.update(
-                        "UPDATE phpbb_users SET radio_inactive = FALSE, radio_last_active = %s, WHERE user_id = %s",
+                        "UPDATE phpbb_users SET radio_inactive = FALSE, radio_last_active = %s WHERE user_id = %s",
                         (timestamp(), self.user.id),
                     )
 
