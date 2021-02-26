@@ -116,7 +116,7 @@ def _scan_all_directories(art_only=False):
                 file_counter += 1
                 _print_to_screen_inline(
                     "%s %s / %s" % (directory, file_counter, total_files)
-                )                
+                )
         _print_to_screen_inline("\n")
 
 
@@ -274,71 +274,71 @@ def _process_album_art(filename, sids):
         )
         if not album_ids or len(album_ids) == 0:
             raise AlbumArtNoAlbumFoundError
-        im_original = Image.open(filename)
-        if not im_original:
-            raise IOError
-        if im_original.mode != "RGB":
-            im_original = im_original.convert("RGB")
-        im_320 = im_original
-        im_240 = im_original
-        im_120 = im_original
-        if im_original.size[0] > 420 or im_original.size[1] > 420:
-            im_320 = im_original.copy()
-            im_320.thumbnail((320, 320), Image.ANTIALIAS)
-        if im_original.size[0] > 240 or im_original.size[1] > 240:
-            im_240 = im_original.copy()
-            im_240.thumbnail((240, 240), Image.ANTIALIAS)
-        if im_original.size[0] > 160 or im_original.size[1] > 160:
-            im_120 = im_original.copy()
-            im_120.thumbnail((120, 120), Image.ANTIALIAS)
-        if im_original.size[0] < 320 or im_original.size[1] < 320:
-            _add_scan_error(
-                filename,
-                PassableScanError(
-                    "Small Art Warning: %sx%s"
-                    % (im_original.size[0], im_original.size[1])
-                ),
-            )
-        for album_id in album_ids:
-            for sid in sids:
-                im_120.save(
-                    os.path.join(
-                        config.get("album_art_file_path"),
-                        "%s_%s_120.jpg" % (sid, album_id),
+        with Image.open(filename) as im_original:
+            if not im_original:
+                raise IOError
+            if im_original.mode != "RGB":
+                im_original = im_original.convert("RGB")
+            im_320 = im_original
+            im_240 = im_original
+            im_120 = im_original
+            if im_original.size[0] > 420 or im_original.size[1] > 420:
+                im_320 = im_original.copy()
+                im_320.thumbnail((320, 320), Image.ANTIALIAS)
+            if im_original.size[0] > 240 or im_original.size[1] > 240:
+                im_240 = im_original.copy()
+                im_240.thumbnail((240, 240), Image.ANTIALIAS)
+            if im_original.size[0] > 160 or im_original.size[1] > 160:
+                im_120 = im_original.copy()
+                im_120.thumbnail((120, 120), Image.ANTIALIAS)
+            if im_original.size[0] < 320 or im_original.size[1] < 320:
+                _add_scan_error(
+                    filename,
+                    PassableScanError(
+                        "Small Art Warning: %sx%s"
+                        % (im_original.size[0], im_original.size[1])
+                    ),
+                )
+            for album_id in album_ids:
+                for sid in sids:
+                    im_120.save(
+                        os.path.join(
+                            config.get("album_art_file_path"),
+                            "%s_%s_120.jpg" % (sid, album_id),
+                        )
                     )
-                )
-                im_240.save(
-                    os.path.join(
-                        config.get("album_art_file_path"),
-                        "%s_%s_240.jpg" % (sid, album_id),
+                    im_240.save(
+                        os.path.join(
+                            config.get("album_art_file_path"),
+                            "%s_%s_240.jpg" % (sid, album_id),
+                        )
                     )
-                )
-                im_320.save(
-                    os.path.join(
-                        config.get("album_art_file_path"),
-                        "%s_%s_320.jpg" % (sid, album_id),
+                    im_320.save(
+                        os.path.join(
+                            config.get("album_art_file_path"),
+                            "%s_%s_320.jpg" % (sid, album_id),
+                        )
                     )
+                a_120_path = os.path.join(
+                    config.get("album_art_file_path"), "a_%s_120.jpg" % (album_id)
                 )
-            a_120_path = os.path.join(
-                config.get("album_art_file_path"), "a_%s_120.jpg" % (album_id)
-            )
-            # sids[0] is the origin SID
-            if sids[0] == config.get("album_art_master_sid") or not os.path.exists(a_120_path):
-                im_120.save(
-                    a_120_path
-                )
-                im_240.save(
-                    os.path.join(
-                        config.get("album_art_file_path"), "a_%s_240.jpg" % (album_id)
+                # sids[0] is the origin SID
+                if sids[0] == config.get("album_art_master_sid") or not os.path.exists(a_120_path):
+                    im_120.save(
+                        a_120_path
                     )
-                )
-                im_320.save(
-                    os.path.join(
-                        config.get("album_art_file_path"), "a_%s_320.jpg" % (album_id)
+                    im_240.save(
+                        os.path.join(
+                            config.get("album_art_file_path"), "a_%s_240.jpg" % (album_id)
+                        )
                     )
-                )
-        log.debug("album_art", "Scanned %s for album ID %s." % (filename, album_ids))
-        return True
+                    im_320.save(
+                        os.path.join(
+                            config.get("album_art_file_path"), "a_%s_320.jpg" % (album_id)
+                        )
+                    )
+            log.debug("album_art", "Scanned %s for album ID %s." % (filename, album_ids))
+            return True
     except (IOError, OSError) as err:
         _add_scan_error(
             filename,
