@@ -285,7 +285,10 @@ def integer_list(s, request=None):
 
     if not s:
         return None
-    if not re.match(r"^(\d+)(,\d+)*$", s):
+    try:
+        if not re.match(r"^(\d+)(,\d+)*$", s):
+            return None
+    except TypeError:
         return None
     l = []
     for entry in s.split(","):
