@@ -61,6 +61,7 @@ def get_album_rating(sid, album_id, user_id):
     cache.set_album_rating(sid, album_id, user_id, rating)
     return rating
 
+CLEAR_RATING_FLAG = "__clear_rating__"
 
 def set_song_rating(sid, song_id, user_id, rating=None, fave=None):
     db.c.start_transaction()
@@ -75,9 +76,11 @@ def set_song_rating(sid, song_id, user_id, rating=None, fave=None):
         if not existing_rating:
             count += 1
         if existing_rating:
-            if not rating:
+            if rating is None:
                 rating = existing_rating["song_rating_user"]
-            if not fave:
+            elif rating == CLEAR_RATING_FLAG:
+                rating = None
+            if fave is None:
                 fave = existing_rating["song_fave"]
             db.c.update(
                 "UPDATE r4_song_ratings "
@@ -86,7 +89,7 @@ def set_song_rating(sid, song_id, user_id, rating=None, fave=None):
                 (rating, fave, timestamp(), user_id, song_id),
             )
         else:
-            if not rating:
+            if not rating or rating == CLEAR_RATING_FLAG:
                 rating = None
             if not fave:
                 fave = None
@@ -112,11 +115,7 @@ def set_song_rating(sid, song_id, user_id, rating=None, fave=None):
 
 
 def clear_song_rating(sid, song_id, user_id):
-    db.c.update(
-        "UPDATE r4_song_ratings SET song_rating_user = NULL WHERE song_id = %s AND user_id = %s",
-        (song_id, user_id),
-    )
-    return update_album_ratings(sid, song_id, user_id)
+    return set_song_rating(sid, song_id, user_id, rating=CLEAR_RATING_FLAG)
 
 
 def set_song_fave(song_id, user_id, fave):
