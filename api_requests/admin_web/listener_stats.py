@@ -99,7 +99,7 @@ class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
             datetime.datetime.now() - datetime.timedelta(weeks=1)
         )
         dt_end = self.get_argument("date_end") or datetime.datetime.now()
-        for i in range(2015, datetime.datetime.now().year + 1):
+        for i in range(datetime.datetime.now().year - 1, datetime.datetime.now().year + 1):
             self.write(
                 "<option value='%s' %s>%s</option>"
                 % (
@@ -133,7 +133,7 @@ class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
         self.write("</select>")
         self.write(" to ")
         self.write("<select id='date_end_year'>")
-        for i in range(2015, datetime.datetime.now().year + 1):
+        for i in range(datetime.datetime.now().year -1, datetime.datetime.now().year + 1):
             self.write(
                 "<option value='%s' %s>%s</option>"
                 % (

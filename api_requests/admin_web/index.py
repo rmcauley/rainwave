@@ -2,6 +2,7 @@ import time
 import calendar
 import tornado.web
 import tornado.escape
+import datetime
 
 from libs import config
 from libs import db
@@ -18,9 +19,11 @@ def write_html_time_form(request, html_id, at_time=None):
     current_time = calendar.timegm(time.gmtime())
     if not at_time:
         at_time = current_time
+    year_range_start = datetime.datetime.now().year
+    year_range_end = datetime.datetime.now().year + 3
     request.write(
         request.render_string(
-            "admin_time_select.html", at_time=at_time, html_id=html_id
+            "admin_time_select.html", at_time=at_time, html_id=html_id, year_range_start=year_range_start, year_range_end=year_range_end
         )
     )
 
