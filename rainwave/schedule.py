@@ -322,7 +322,7 @@ def _get_schedule_stats(sid):
         for e in upnext[sid]:
             if e.is_election:
                 num_elections += 1
-                if e.id > max_elec_id:
+                if not max_elec_id or e.id > max_elec_id:
                     max_elec_id = e.id
             elif not e.is_election and e.id > max_sched_id:
                 max_sched_id = e.id
