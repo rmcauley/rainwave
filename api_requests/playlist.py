@@ -1,3 +1,5 @@
+import math
+
 from api.web import APIHandler
 from api.web import PrettyPrintAPIMixin
 from api import fieldtypes
@@ -71,18 +73,20 @@ class AllAlbumsHandler(APIHandler):
 @handle_api_url("all_albums_paginated")
 class AllAlbumsPaginatedHandler(APIHandler):
     description = "Returns chunks of a list of all albums on the station playlist."
-    return_name = "all_albums_by_cursor"
+    return_name = "all_albums_paginated"
     fields = {"after": (fieldtypes.integer, False)}
 
     def post(self):
         sql, args = playlist.get_all_albums_list_sql(self.sid, self.user, False)
-        albums = db.c.fetch_all(sql + " ORDER BY album_id LIMIT 1000", args)
+        offset = self.get_argument("after", 0) or 0
+        args = args + (offset,)
+        albums = db.c.fetch_all(sql + " ORDER BY album_name LIMIT 1000 OFFSET %s", args)
         self.append(
             self.return_name,
             {
                 "data": albums,
-                "has_more": albums and playlist.max_album_ids[self.sid] > albums[-1]["album_id"],
-                "progress": int(albums[-1]["album_id"] / playlist.max_album_ids[self.sid])
+                "has_more": albums and len(albums) == 1000,
+                "progress": min(math.ceil((offset + len(albums)) / playlist.num_albums[self.sid] * 100), 100),
             }
         )
 
@@ -98,6 +102,28 @@ class AllArtistsHandler(APIHandler):
             get_all_artists(
                 self.sid, with_searchable=not self.get_argument("no_searchable")
             ),
+        )
+
+@handle_api_url("all_artists_paginated")
+class AllArtistsPaginatedHandler(APIHandler):
+    description = "Returns chunks of a list of all artists on the station playlist."
+    return_name = "all_artists_paginated"
+    fields = {"after": (fieldtypes.integer, False)}
+
+    def post(self):
+        all_artists = get_all_artists(
+            sid=self.sid,
+            with_searchable=False,
+        )
+        offset = self.get_argument("after", 0) or 0
+        page = all_artists[offset: offset + 1000]
+        self.append(
+            self.return_name,
+            {
+                "data": page,
+                "has_more": page[-1] != all_artists[-1],
+                "progress": min(math.ceil((offset + len(page)) / len(all_artists) * 100), 100),
+            }
         )
 
 
@@ -126,6 +152,27 @@ class AllGroupsHandler(APIHandler):
                 ),
             )
 
+@handle_api_url("all_groups_paginated")
+class AllGroupsPaginatedHandler(APIHandler):
+    description = "Returns chunks of a list of all groups on the station playlist."
+    return_name = "all_groups_paginated"
+    fields = {"after": (fieldtypes.integer, False)}
+
+    def post(self):
+        all_groups = get_all_groups(
+            sid=self.sid,
+            with_searchable=False,
+        )
+        offset = self.get_argument("after", 0) or 0
+        page = all_groups[offset: offset + 1000]
+        self.append(
+            self.return_name,
+            {
+                "data": page,
+                "has_more": page[-1] != all_groups[-1],
+                "progress": min(math.ceil((offset + len(page)) / len(all_groups) * 1000), 100),
+            }
+        )
 
 @handle_api_url("artist")
 class ArtistHandler(APIHandler):
