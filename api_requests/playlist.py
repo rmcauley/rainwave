@@ -19,7 +19,7 @@ from rainwave import playlist
 from rainwave.playlist_objects.metadata import MetadataNotFoundError
 from api.exceptions import APIException
 
-PAGE_LIMIT = 10
+PAGE_LIMIT = 1000
 
 
 def get_all_albums(sid, user=None, with_searchable=True):
