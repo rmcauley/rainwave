@@ -111,6 +111,8 @@ def load(filename=None, testmode=False):
         station_mount_filenames[sid] = get_station(sid, "stream_filename")
         stream_filename_to_sid[get_station(sid, "stream_filename")] = sid
 
+    websocket_host = get("websocket_host")
+
     global csp_header
     hostname = get("hostname")
     relay_hosts = " ".join(relay_hostnames)
@@ -120,7 +122,7 @@ def load(filename=None, testmode=False):
             "object-src 'none'",
             f"media-src {relay_hosts}",
             f"font-src 'self' {hostname} data: https://fonts.googleapis.com https://fonts.gstatic.com/",
-            "connect-src wss://websocket.rainwave.cc",
+            f"connect-src wss://{websocket_host}",
             f"style-src 'self' {hostname} 'unsafe-inline' https://fonts.googleapis.com",
             f"img-src 'self' {hostname} *.{hostname}",
         ]
