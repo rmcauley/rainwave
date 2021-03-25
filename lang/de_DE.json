@@ -333,7 +333,6 @@
    "prefs_p_null1"                                   : "Unbewertete zuerst",
    "prefs_p_fav1"                                    : "Priorisiere Favoriten über Verfügbaren",
    "prefs_p_sort"                                    : "Sortiere Alben nach ...",
-   "prefs_p_allcats"                                 : "Zeige Kategorien mit nur einem Album",
    "prefs_sort_playlist_by_alpha"                    : "Alphabetisch",
    "prefs_sort_playlist_by_rating_user"              : "Bewertung",
    "rating_preferences"                              : "Bewertungen",

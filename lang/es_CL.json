@@ -333,7 +333,6 @@
    "prefs_p_null1"                                   : "Mostrar Sin Evaluar Primero",
    "prefs_p_fav1"                                    : "Priorizar Favoritos Sobre Disponibles",
    "prefs_p_sort"                                    : "Método para Ordenar Álbumes",
-   "prefs_p_allcats"                                 : "Mostrar Categorías de Álbum Único",
    "prefs_p_songsort"                                : "Ordenar Canciones Igual Que Álbumes",
    "prefs_sort_playlist_by_alpha"                    : "Alfabético",
    "prefs_sort_playlist_by_rating_user"              : "Valoración",

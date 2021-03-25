@@ -385,8 +385,6 @@ var Router = (function() {
 				var req = typ;
 				if (req == "request_line") {
 					req = "listener";
-				} else if (req == "album" && Prefs.get("p_allcats")) {
-					params.all_categories = true;
 				}
 				API.async_get(req, params, function(json) {
 					cache[typ][id] = json[req];

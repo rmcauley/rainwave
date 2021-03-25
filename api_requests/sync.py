@@ -458,6 +458,11 @@ nonunique_actions = (
     "rate",
     "clear_rating",
 )
+throttle_exempt = (
+    "all_albums_paginated",
+    "all_groups_paginated",
+    "all_artists_paginated",
+)
 
 
 class WSMessage(dict):
@@ -714,7 +719,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         throt_t = timestamp() - 3
         self.msg_times = [t for t in self.msg_times if t > throt_t]
 
-        if not is_throttle_process:
+        if not is_throttle_process and message["action"] not in throttle_exempt:
             self.msg_times.append(timestamp())
             # log.debug("throttle", "%s - %s" % (len(self.msg_times), message['action']))
             if self.throttled:

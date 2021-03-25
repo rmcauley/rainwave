@@ -19,6 +19,8 @@ from rainwave import playlist
 from rainwave.playlist_objects.metadata import MetadataNotFoundError
 from api.exceptions import APIException
 
+PAGE_LIMIT = 10
+
 
 def get_all_albums(sid, user=None, with_searchable=True):
     if with_searchable:
@@ -80,13 +82,14 @@ class AllAlbumsPaginatedHandler(APIHandler):
         sql, args = playlist.get_all_albums_list_sql(self.sid, self.user, False)
         offset = self.get_argument("after", 0) or 0
         args = args + (offset,)
-        albums = db.c.fetch_all(sql + " ORDER BY album_name LIMIT 1000 OFFSET %s", args)
+        albums = db.c.fetch_all(sql + f" ORDER BY album_name LIMIT {PAGE_LIMIT} OFFSET %s", args)
         self.append(
             self.return_name,
             {
                 "data": albums,
-                "has_more": albums and len(albums) == 1000,
+                "has_more": albums and len(albums) == PAGE_LIMIT,
                 "progress": min(math.ceil((offset + len(albums)) / playlist.num_albums[self.sid] * 100), 100),
+                "next": offset + PAGE_LIMIT
             }
         )
 
@@ -116,13 +119,14 @@ class AllArtistsPaginatedHandler(APIHandler):
             with_searchable=False,
         )
         offset = self.get_argument("after", 0) or 0
-        page = all_artists[offset: offset + 1000]
+        page = all_artists[offset: offset + PAGE_LIMIT]
         self.append(
             self.return_name,
             {
                 "data": page,
                 "has_more": page[-1] != all_artists[-1],
                 "progress": min(math.ceil((offset + len(page)) / len(all_artists) * 100), 100),
+                "next": offset + PAGE_LIMIT
             }
         )
 
@@ -164,13 +168,14 @@ class AllGroupsPaginatedHandler(APIHandler):
             with_searchable=False,
         )
         offset = self.get_argument("after", 0) or 0
-        page = all_groups[offset: offset + 1000]
+        page = all_groups[offset: offset + PAGE_LIMIT]
         self.append(
             self.return_name,
             {
                 "data": page,
                 "has_more": page[-1] != all_groups[-1],
-                "progress": min(math.ceil((offset + len(page)) / len(all_groups) * 1000), 100),
+                "progress": min(math.ceil((offset + len(page)) / len(all_groups) * 100), 100),
+                "next": offset + PAGE_LIMIT
             }
         )
 

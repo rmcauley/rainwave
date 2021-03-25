@@ -177,6 +177,19 @@ div.searchbox_container {
         }
     }
 
+    .searchlist_loading_bar {
+        display: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: $open_item_bkg;
+        left: 0;
+        top: 0;
+        @include transition-wtime(300ms, transform, opacity);
+        transform-origin: center left;
+        transform: scaleX(0);
+    }
+
     input {
         box-sizing: border-box;
         border: none;
